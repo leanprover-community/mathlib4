@@ -889,13 +889,7 @@ noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
     top_add' := top_add }
 
 noncomputable instance : CompleteLinearOrder PartENat :=
-  { PartENat.lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,
-    PartENat.linearOrder with
-    inf := (· ⊓ ·)
-    sup := (· ⊔ ·)
-    top := ⊤
-    bot := ⊥
-    le := (· ≤ ·)
-    lt := (· < ·) }
+  { lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,
+    linearOrder, LinearOrder.toBiheytingAlgebra with }
 
 end PartENat
