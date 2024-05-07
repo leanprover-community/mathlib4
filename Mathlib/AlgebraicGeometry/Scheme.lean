@@ -19,7 +19,12 @@ A morphism of schemes is just a morphism of the underlying locally ringed spaces
 
 -/
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 set_option linter.uppercaseLean3 false
+
+universe u
+
 noncomputable section
 
 open TopologicalSpace
