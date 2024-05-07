@@ -587,7 +587,7 @@ lemma SigmaFinite.withDensity_ofReal [SigmaFinite μ] {f : α → ℝ} (hf : AEM
 
 section SFinite
 
-/-- Auxiliary lemma for `sFinite_withDensity`. -/
+/-- Auxiliary lemma for `sFinite_withDensity_of_measurable`. -/
 lemma sFinite_withDensity_of_sigmaFinite_of_measurable (μ : Measure α) [SigmaFinite μ]
     {f : α → ℝ≥0∞} (hf : Measurable f) :
     SFinite (μ.withDensity f) := by
@@ -618,18 +618,14 @@ lemma sFinite_withDensity_of_sigmaFinite_of_measurable (μ : Measure α) [SigmaF
     split_ifs with h <;> simp [h]
   infer_instance
 
-/-- If `μ` is s-finite, then `μ.withDensity f` is s-finite. -/
-lemma sFinite_withDensity (μ : Measure α) [SFinite μ] {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
+/-- If `μ` is s-finite and `f` is measurable, then `μ.withDensity f` is s-finite.
+TODO: extend this to all functions and make it an instance. -/
+lemma sFinite_withDensity_of_measurable (μ : Measure α) [SFinite μ]
+    {f : α → ℝ≥0∞} (hf : Measurable f) :
     SFinite (μ.withDensity f) := by
-  rw [withDensity_congr_ae hf.ae_eq_mk]
-  have : μ.withDensity (hf.mk f)
-      = Measure.sum (fun n ↦ (sFiniteSeq μ n).withDensity (hf.mk f)) := by
-    rw [← withDensity_sum]
-    congr
-    rw [sum_sFiniteSeq μ]
-  rw [this]
-  have : ∀ n, SFinite ((sFiniteSeq μ n).withDensity (hf.mk f)) :=
-    fun n ↦ sFinite_withDensity_of_sigmaFinite_of_measurable _ hf.measurable_mk
+  rw [← sum_sFiniteSeq μ, withDensity_sum]
+  have : ∀ n, SFinite ((sFiniteSeq μ n).withDensity f) :=
+    fun n ↦ sFinite_withDensity_of_sigmaFinite_of_measurable _ hf
   infer_instance
 
 end SFinite
