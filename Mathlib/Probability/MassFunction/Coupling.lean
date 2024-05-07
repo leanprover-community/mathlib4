@@ -36,7 +36,7 @@ theorem mass_eq_of_coupling_exists (μ₁ : SPMF α) (μ₂ : SPMF β) :
   rintro ⟨μ, rfl, rfl⟩
   exact μ.fst_mass_eq_snd_mass
 
-section flip
+section Flip
 
 noncomputable def flip := bernoulli (1/2) (by norm_num)
 
@@ -85,7 +85,7 @@ example : coupling flip flip couple_flip_neg := by
   simp only [flip_apply, one_div, fst_def, snd_def, couple_flip_neg_apply, tsum_bool,
     ↓reduceIte, zero_add, add_zero, Bool.not_false, Bool.not_true]
 
-end flip
+end Flip
 
 end Coupling
 

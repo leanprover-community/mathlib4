@@ -1,9 +1,11 @@
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Algebra.Order.Interval.Set.Instances
 
+@[simp]
 theorem Set.indicator_singleton_apply_self {α M : Type*} {a : α} {f : α → M} [Zero M] :
     Set.indicator {a} f a = f a := indicator_of_mem rfl _
 
+@[simp]
 theorem Set.indicator_singleton_apply_of_ne {α M : Type*} [Zero M] {a a' : α} {f : α → M}
     (h : a' ≠ a) : Set.indicator {a} f a' = 0 :=
   indicator_of_not_mem (Set.eq_of_mem_singleton.mt h) _
