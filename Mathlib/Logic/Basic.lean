@@ -778,9 +778,27 @@ theorem Ne.ne_or_ne {x y : α} (z : α) (h : x ≠ y) : x ≠ z ∨ y ≠ z :=
   simp only [ExistsUnique, and_self, forall_eq', exists_eq']
 #align exists_unique_eq' exists_unique_eq'
 
--- @[simp] -- FIXME simp does not apply this lemma for some reason
+@[simp]
 theorem exists_apply_eq_apply' (f : α → β) (a' : α) : ∃ a, f a' = f a := ⟨a', rfl⟩
 #align exists_apply_eq_apply' exists_apply_eq_apply'
+
+@[simp]
+lemma exists_apply_eq_apply2 {α β γ} {f : α → β → γ} {a : α} {b : β} : ∃ x y, f x y = f a b :=
+  ⟨a, b, rfl⟩
+
+@[simp]
+lemma exists_apply_eq_apply2' {α β γ} {f : α → β → γ} {a : α} {b : β} : ∃ x y, f a b = f x y :=
+  ⟨a, b, rfl⟩
+
+@[simp]
+lemma exists_apply_eq_apply3 {α β γ δ} {f : α → β → γ → δ} {a : α} {b : β} {c : γ} :
+    ∃ x y z, f x y z = f a b c :=
+  ⟨a, b, c, rfl⟩
+
+@[simp]
+lemma exists_apply_eq_apply3' {α β γ δ} {f : α → β → γ → δ} {a : α} {b : β} {c : γ} :
+    ∃ x y z, f a b c = f x y z :=
+  ⟨a, b, c, rfl⟩
 
 -- Porting note: an alternative workaround theorem:
 theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun _ ↦ b, rfl⟩

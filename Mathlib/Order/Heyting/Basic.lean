@@ -907,7 +907,7 @@ theorem compl_compl_himp_distrib (a b : α) : (a ⇨ b)ᶜᶜ = aᶜᶜ ⇨ bᶜ
     exact inf_himp_le
 #align compl_compl_himp_distrib compl_compl_himp_distrib
 
-instance : CoheytingAlgebra αᵒᵈ :=
+instance OrderDual.instCoheytingAlgebra : CoheytingAlgebra αᵒᵈ :=
   { OrderDual.instLattice α, OrderDual.instBoundedOrder α with
     hnot := toDual ∘ compl ∘ ofDual,
     sdiff := fun a b => toDual (ofDual b ⇨ ofDual a),
@@ -1087,7 +1087,7 @@ theorem hnot_hnot_sdiff_distrib (a b : α) : ￢￢(a \ b) = ￢￢a \ ￢￢b :
     exact hnot_anti (hnot_anti le_sup_sdiff)
 #align hnot_hnot_sdiff_distrib hnot_hnot_sdiff_distrib
 
-instance : HeytingAlgebra αᵒᵈ :=
+instance OrderDual.instHeytingAlgebra : HeytingAlgebra αᵒᵈ :=
   { OrderDual.instLattice α, OrderDual.instBoundedOrder α with
     compl := toDual ∘ hnot ∘ ofDual,
     himp := fun a b => toDual (ofDual b \ ofDual a),
@@ -1180,6 +1180,20 @@ abbrev LinearOrder.toBiheytingAlgebra [LinearOrder α] [BoundedOrder α] : Bihey
       · rw [le_sup_iff, or_iff_right h],
     top_sdiff := fun a => if_congr top_le_iff rfl rfl }
 #align linear_order.to_biheyting_algebra LinearOrder.toBiheytingAlgebra
+
+instance OrderDual.instBiheytingAlgebra [BiheytingAlgebra α] : BiheytingAlgebra αᵒᵈ where
+  __ := instHeytingAlgebra
+  __ := instCoheytingAlgebra
+
+instance Prod.instBiheytingAlgebra [BiheytingAlgebra α] [BiheytingAlgebra β] :
+    BiheytingAlgebra (α × β) where
+  __ := instHeytingAlgebra
+  __ := instCoheytingAlgebra
+
+instance Pi.instBiheytingAlgebra {α : ι → Type*} [∀ i, BiheytingAlgebra (α i)] :
+    BiheytingAlgebra (∀ i, α i) where
+  __ := instHeytingAlgebra
+  __ := instCoheytingAlgebra
 
 section lift
 

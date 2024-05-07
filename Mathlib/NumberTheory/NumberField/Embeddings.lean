@@ -530,7 +530,7 @@ theorem prod_eq_abs_norm (x : K) :
 
 theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
     (h : ∀ ⦃z⦄, z ≠ w → z a < 1) : 1 ≤ w a := by
-  suffices (1:ℝ) ≤ |(Algebra.norm ℚ) (a:K)| by
+  suffices (1:ℝ) ≤ |Algebra.norm ℚ (a : K)| by
     contrapose! this
     rw [← InfinitePlace.prod_eq_abs_norm, ← Finset.prod_const_one]
     refine Finset.prod_lt_prod_of_nonempty (fun _ _ ↦ ?_) (fun z _ ↦ ?_) Finset.univ_nonempty
@@ -545,7 +545,7 @@ theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
 open scoped IntermediateField in
 theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
     {w : InfinitePlace K} (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' x < 1)
-    (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) : ℚ⟮(x:K)⟯ = ⊤ := by
+    (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) : ℚ⟮(x : K)⟯ = ⊤ := by
   rw [Field.primitive_element_iff_algHom_eq_of_eval ℚ ℂ ?_ _ w.embedding.toRatAlgHom]
   · intro ψ hψ
     have h : 1 ≤ w x := one_le_of_lt_one h₁ h₂
@@ -569,7 +569,7 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
 
 theorem _root_.NumberField.adjoin_eq_top_of_infinitePlace_lt {x : 𝓞 K} {w : InfinitePlace K}
     (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' x < 1) (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) :
-    Algebra.adjoin ℚ {(x:K)} = ⊤ := by
+    Algebra.adjoin ℚ {(x : K)} = ⊤ := by
   rw [← IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.of_finite ℚ _)]
   exact congr_arg IntermediateField.toSubalgebra <|
     NumberField.is_primitive_element_of_infinitePlace_lt h₁ h₂ h₃
