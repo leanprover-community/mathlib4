@@ -138,13 +138,12 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
   induction i with
   | zero => simp [(minpolyDiv_monic hx).leadingCoeff]
   | succ i IH =>
-    rw [coeff_minpolyDiv, add_sub_assoc, pow_succ', ← sub_mul, Algebra.algebraMap_eq_smul_one]
+    rw [coeff_minpolyDiv, add_sub_assoc, pow_succ, ← sub_mul, Algebra.algebraMap_eq_smul_one]
     refine add_mem ?_ ?_
     · apply Submodule.smul_mem
       apply Submodule.subset_span
       exact ⟨0, Nat.zero_lt_succ _, pow_zero _⟩
-    · rw [Nat.succ_eq_add_one, ← tsub_tsub, tsub_add_cancel_of_le
-        (le_tsub_of_add_le_left (b := 1) hi)]
+    · rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left (b := 1) hi)]
       apply SetLike.le_def.mp ?_
         (Submodule.mul_mem_mul (IH ((Nat.le_succ _).trans hi))
           (Submodule.mem_span_singleton_self x))
@@ -152,7 +151,7 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
       apply Submodule.span_mono
       rintro _ ⟨j, hj, rfl⟩
       rw [Set.mem_Iio] at hj
-      exact ⟨j + 1, Nat.add_lt_of_lt_sub hj, pow_succ' x j⟩
+      exact ⟨j + 1, Nat.add_lt_of_lt_sub hj, pow_succ x j⟩
 
 lemma span_coeff_minpolyDiv :
     Submodule.span R (Set.range (coeff (minpolyDiv R x))) =

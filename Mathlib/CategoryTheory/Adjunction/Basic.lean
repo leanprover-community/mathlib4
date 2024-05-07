@@ -78,7 +78,6 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
 #align category_theory.adjunction.hom_equiv_counit CategoryTheory.Adjunction.homEquiv_counit
 #align category_theory.adjunction.hom_equiv_counit' CategoryTheory.Adjunction.homEquiv_counit
 
--- mathport name: «expr ⊣ »
 /-- The notation `F ⊣ G` stands for `Adjunction F G` representing that `F` is left adjoint to `G` -/
 infixl:15 " ⊣ " => Adjunction
 
@@ -243,7 +242,7 @@ namespace Adjunction
 See `Adjunction.mkOfHomEquiv`.
 This structure won't typically be used anywhere else.
 -/
--- Porting comment: `has_nonempty_instance` linter doesn't exist (yet?)
+-- Porting note(#5171): `has_nonempty_instance` linter not ported yet
 -- @[nolint has_nonempty_instance]
 structure CoreHomEquiv (F : C ⥤ D) (G : D ⥤ C) where
   /-- The equivalence between `Hom (F X) Y` and `Hom X (G Y)` -/
@@ -305,7 +304,7 @@ end CoreHomEquiv
 See `Adjunction.mkOfUnitCounit`.
 This structure won't typically be used anywhere else.
 -/
--- Porting comment: `has_nonempty_instance` linter doesn't exist (yet?)
+-- Porting note(#5171): `has_nonempty_instance` linter not ported yet
 -- @[nolint has_nonempty_instance]
 structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   /-- The unit of an adjunction between `F` and `G` -/
@@ -598,8 +597,8 @@ isomorphisms, then the functor is an equivalence of categories.
 @[simps!]
 noncomputable def isRightAdjointToIsEquivalence [IsRightAdjoint G]
     [∀ X, IsIso ((Adjunction.ofRightAdjoint G).unit.app X)]
-    [∀ Y, IsIso ((Adjunction.ofRightAdjoint G).counit.app Y)] : IsEquivalence G :=
-  IsEquivalence.ofEquivalenceInverse (Adjunction.ofRightAdjoint G).toEquivalence
+    [∀ Y, IsIso ((Adjunction.ofRightAdjoint G).counit.app Y)] : G.IsEquivalence :=
+  Functor.IsEquivalence.ofEquivalenceInverse (Adjunction.ofRightAdjoint G).toEquivalence
 #align category_theory.adjunction.is_right_adjoint_to_is_equivalence CategoryTheory.Adjunction.isRightAdjointToIsEquivalence
 
 end Adjunction

@@ -112,7 +112,7 @@ theorem support_zero : support (0 : HahnSeries Γ R) = ∅ :=
 
 @[simp]
 nonrec theorem support_nonempty_iff {x : HahnSeries Γ R} : x.support.Nonempty ↔ x ≠ 0 := by
-  rw [support, support_nonempty_iff, Ne.def, coeff_fun_eq_zero_iff]
+  rw [support, support_nonempty_iff, Ne, coeff_fun_eq_zero_iff]
 #align hahn_series.support_nonempty_iff HahnSeries.support_nonempty_iff
 
 @[simp]
@@ -135,7 +135,7 @@ def of_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries �
       rw [hn] at hf
       exact hf rfl
     sorry
--- See Mathlib.Data.MvPolynomial.Monad for join and bind operations
+-- See Mathlib.Algebra.MvPolynomial.Monad for join and bind operations
 need a monotone pair. have:
 nonrec theorem IsPWO.exists_monotone_subseq (h : s.IsPWO) (f : ℕ → α) (hf : ∀ n, f n ∈ s) :
     ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
@@ -358,7 +358,7 @@ theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)
 
 theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
     BddBelow (Function.support f) := by
-  unfold BddBelow Set.Nonempty lowerBounds
+  simp only [BddBelow, Set.Nonempty, lowerBounds]
   use n
   intro m hm
   rw [Function.mem_support, ne_eq] at hm
@@ -383,7 +383,7 @@ theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
   dsimp only [order]
   by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0
   cases h
-  exact (hf rfl).elim
+  · exact (hf rfl).elim
   simp_all only [dite_false]
   rw [Set.IsWF.le_min_iff]
   intro m hm

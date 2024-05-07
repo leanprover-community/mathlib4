@@ -110,8 +110,8 @@ theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
   cases' hI
   simp? at hm says simp only [eqToHom_refl, Category.id_comp] at hm
   congr
-  · apply (cancel_mono Fm).1
-    rw [Ffac, hm, Ffac']
+  apply (cancel_mono Fm).1
+  rw [Ffac, hm, Ffac']
 #align category_theory.limits.mono_factorisation.ext CategoryTheory.Limits.MonoFactorisation.ext
 
 /-- Any mono factorisation of `f` gives a mono factorisation of `f ≫ g` when `g` is a mono. -/
@@ -493,7 +493,7 @@ def image.eqToHom (h : f = f') : image f ⟶ image f' :=
 instance (h : f = f') : IsIso (image.eqToHom h) :=
   ⟨⟨image.eqToHom h.symm,
       ⟨(cancel_mono (image.ι f)).1 (by
-          -- Porting note: added let's for used to be a simp[image.eqToHom]
+          -- Porting note: added let's for used to be a simp [image.eqToHom]
           let F : MonoFactorisation f' :=
             ⟨image f, image.ι f, factorThruImage f, (by aesop_cat)⟩
           dsimp [image.eqToHom]
@@ -502,7 +502,7 @@ instance (h : f = f') : IsIso (image.eqToHom h) :=
             ⟨image f', image.ι f', factorThruImage f', (by aesop_cat)⟩
           rw [image.lift_fac F'] ),
         (cancel_mono (image.ι f')).1 (by
-          -- Porting note: added let's for used to be a simp[image.eqToHom]
+          -- Porting note: added let's for used to be a simp [image.eqToHom]
           let F' : MonoFactorisation f :=
             ⟨image f', image.ι f', factorThruImage f', (by aesop_cat)⟩
           dsimp [image.eqToHom]
