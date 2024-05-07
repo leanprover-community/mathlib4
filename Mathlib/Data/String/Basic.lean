@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
+import Mathlib.Tactic.AdaptationNote
 
 #align_import data.string.basic from "leanprover-community/mathlib"@"d13b3a4a392ea7273dfa4727dbd1892e26cfd518"
 
@@ -78,12 +79,12 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
     · decide
     · rename_i c₂ cs₂; apply iff_of_true
       · unfold ltb
-        -- Adaptation note: v4.7.0-rc1 exclude reduceMk from simp
+        #adaptation_note /-- v4.7.0-rc1 exclude reduceMk from simp -/
         simp [-reduceMk, Iterator.hasNext, csize_pos]
       · apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih; apply iff_of_false
       · unfold ltb
-        -- Adaptation note: v4.7.0-rc1 exclude reduceMk from simp
+        #adaptation_note /-- v4.7.0-rc1 exclude reduceMk from simp -/
         simp [-reduceMk, Iterator.hasNext]
       · apply not_lt_of_lt; apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
