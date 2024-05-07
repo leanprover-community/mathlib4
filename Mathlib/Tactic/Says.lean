@@ -3,9 +3,9 @@ Copyright (c) 2023 Kim Liesinger. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Liesinger
 -/
-import Std.Data.String.Basic
+import Batteries.Data.String.Basic
 import Lean.Meta.Tactic.TryThis
-import Std.Linter.UnreachableTactic
+import Batteries.Linter.UnreachableTactic
 import Qq.Match
 
 /-!
