@@ -111,8 +111,8 @@ end LinearMap
 
 namespace Module.End
 
-lemma isNilpotent_restrict {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    {f : M →ₗ[R] M} {p : Submodule R M} {hf : MapsTo f p p} (hnil : IsNilpotent f) :
+lemma isNilpotent.restrict {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    {f : M →ₗ[R] M} {p : Submodule R M} (hf : MapsTo f p p) (hnil : IsNilpotent f) :
     IsNilpotent (f.restrict hf) := by
   obtain ⟨n, hn⟩ := hnil
   exact ⟨n, LinearMap.ext fun m ↦ by simp [LinearMap.pow_restrict n, LinearMap.restrict_apply, hn]⟩

@@ -44,7 +44,7 @@ lemma apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub
       eq_zero_of_isNilpotent_isSemisimple this (by simpa using hss.restrict)
     simpa [LinearMap.restrict_apply, sub_eq_zero] using LinearMap.congr_fun this ⟨m, hm⟩
   simpa [LinearMap.restrict_sub h₄ h₃] using (LinearMap.restrict_commute hfg h₄ h₃).isNilpotent_sub
-    (f.isNilpotent_restrict_sub_algebraMap μ k) (Module.End.isNilpotent_restrict hnil)
+    (f.isNilpotent_restrict_sub_algebraMap μ k) (Module.End.isNilpotent.restrict h₃ hnil)
 
 lemma IsSemisimple.generalizedEigenspace_eq_eigenspace
     (hf : f.IsSemisimple) (μ : R) {k : ℕ} (hk : 0 < k) :
