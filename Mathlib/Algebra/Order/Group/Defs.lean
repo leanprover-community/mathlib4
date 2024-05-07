@@ -1299,9 +1299,11 @@ assert_not_exists NeZero
 -- lower instance priorities to avoid instance synthesis trying this early
 attribute [instance 50] OrderedAddCommGroup.toAddCommGroup
 attribute [instance 50] OrderedCommGroup.toCommGroup
+attribute [instance 50] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
 
 -- add higer-priority versions in scope `AlgebraOrderInstances`
 namespace AlgebraOrderInstances
 attribute [scoped instance 200] OrderedAddCommGroup.toAddCommGroup
 attribute [scoped instance 200] OrderedCommGroup.toCommGroup
+attribute [scoped instance 200] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
 end AlgebraOrderInstances
