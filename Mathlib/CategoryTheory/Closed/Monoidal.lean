@@ -274,9 +274,8 @@ theorem coev_app_comp_pre_app (f : B ⟶ A) :
 
 @[simp]
 theorem pre_id (A : C) [Closed A] : pre (𝟙 A) = 𝟙 _ := by
-  simp only [pre, Functor.map_id]
-  dsimp
-  simp
+  rw [pre, Functor.map_id]
+  apply transferNatTransSelf_id
 #align category_theory.monoidal_closed.pre_id CategoryTheory.MonoidalClosed.pre_id
 
 @[simp]
