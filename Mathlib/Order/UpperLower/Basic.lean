@@ -1034,21 +1034,11 @@ noncomputable instance UpperSet.instLinearOrder : LinearOrder (UpperSet α) := b
 noncomputable instance LowerSet.instLinearOrder : LinearOrder (LowerSet α) := by
   classical exact Lattice.toLinearOrder _
 
-noncomputable instance UpperSet.instCompleteLinearOrder : CompleteLinearOrder (UpperSet α) where
-  __ := completelyDistribLattice
-  __ := LinearOrder.toBiheytingAlgebra
-  le_total := IsTotal.total
-  decidableLE := Classical.decRel _
-  decidableEq := Classical.decRel _
-  decidableLT := Classical.decRel _
+noncomputable instance UpperSet.instCompleteLinearOrder : CompleteLinearOrder (UpperSet α) :=
+  { completelyDistribLattice, instLinearOrder, LinearOrder.toBiheytingAlgebra with }
 
-noncomputable instance LowerSet.instCompleteLinearOrder : CompleteLinearOrder (LowerSet α) where
-  __ := completelyDistribLattice
-  __ := LinearOrder.toBiheytingAlgebra
-  le_total := IsTotal.total
-  decidableLE := Classical.decRel _
-  decidableEq := Classical.decRel _
-  decidableLT := Classical.decRel _
+noncomputable instance LowerSet.instCompleteLinearOrder : CompleteLinearOrder (LowerSet α) :=
+  { completelyDistribLattice, instLinearOrder, LinearOrder.toBiheytingAlgebra with }
 
 end LinearOrder
 
