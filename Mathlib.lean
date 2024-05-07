@@ -841,6 +841,7 @@ import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.Complex.Conformal
 import Mathlib.Analysis.Complex.Convex
+import Mathlib.Analysis.Complex.Hadamard
 import Mathlib.Analysis.Complex.HalfPlane
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Complex.Liouville
