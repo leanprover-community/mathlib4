@@ -306,6 +306,8 @@ protected theorem edist_dist (f g : Lp E p μ) : edist f g = .ofReal (dist f g) 
 protected theorem dist_edist (f g : Lp E p μ) : dist f g = (edist f g).toReal :=
   MeasureTheory.Lp.dist_def ..
 
+theorem dist_eq_norm (f g : Lp E p μ) : dist f g = ‖f - g‖ := rfl
+
 @[simp]
 theorem edist_toLp_toLp (f g : α → E) (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     edist (hf.toLp f) (hg.toLp g) = snorm (f - g) p μ := by
@@ -763,21 +765,17 @@ def indicatorConstLp (p : ℝ≥0∞) (hs : MeasurableSet s) (hμs : μ s ≠ �
 #align measure_theory.indicator_const_Lp MeasureTheory.indicatorConstLp
 
 /-- A version of `Set.indicator_add` for `MeasureTheory.indicatorConstLp`.-/
-theorem indicatorConstLp_add (hμs : μ s ≠ ∞) (c' : E) :
+theorem indicatorConstLp_add {c' : E} :
     indicatorConstLp p hs hμs c + indicatorConstLp p hs hμs c' =
     indicatorConstLp p hs hμs (c + c') := by
-  simp_rw [indicatorConstLp, ← Memℒp.toLp_add]
-  congr
-  rw [indicator_add]
+  simp_rw [indicatorConstLp, ← Memℒp.toLp_add, indicator_add]
   rfl
 
 /-- A version of `Set.indicator_sub` for `MeasureTheory.indicatorConstLp`.-/
-theorem indicatorConstLp_sub (hμs : μ s ≠ ∞) (c' : E) :
+theorem indicatorConstLp_sub {c' : E} :
     indicatorConstLp p hs hμs c - indicatorConstLp p hs hμs c' =
     indicatorConstLp p hs hμs (c - c') := by
-  simp_rw [indicatorConstLp, ← Memℒp.toLp_sub]
-  congr
-  rw [indicator_sub]
+  simp_rw [indicatorConstLp, ← Memℒp.toLp_sub, indicator_sub]
   rfl
 
 theorem indicatorConstLp_coeFn : ⇑(indicatorConstLp p hs hμs c) =ᵐ[μ] s.indicator fun _ => c :=
@@ -806,18 +804,6 @@ theorem norm_indicatorConstLp_top (hμs_ne_zero : μ s ≠ 0) :
     ENNReal.rpow_zero, mul_one, ENNReal.coe_toReal, coe_nnnorm]
 #align measure_theory.norm_indicator_const_Lp_top MeasureTheory.norm_indicatorConstLp_top
 
-open scoped symmDiff in
-/-- Compute the `ℒᵖ` norm of the difference of two constant indicators of sets with finite measure
-and same constant using symmetric difference. -/
-theorem norm_indicatorConstLp_sub {t : Set α} (ht : MeasurableSet t) (hμt : μ t ≠ ∞)
-    (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
-    ‖indicatorConstLp p hs hμs c - indicatorConstLp p ht hμt c‖ =
-    ‖c‖ * (μ (s ∆ t)).toReal ^ (1 / p.toReal) := by
-  rw [indicatorConstLp, indicatorConstLp, ← Memℒp.toLp_sub, Lp.norm_toLp, ← snorm_norm]
-  simp_rw [Pi.sub_apply, ← Set.apply_indicator_symmDiff norm_neg]
-  rw [snorm_norm, snorm_indicator_const (hs.symmDiff ht) hp_ne_zero hp_ne_top, ENNReal.toReal_mul,
-    toReal_coe_nnnorm, ← ENNReal.toReal_rpow]
-
 theorem norm_indicatorConstLp' (hp_pos : p ≠ 0) (hμs_pos : μ s ≠ 0) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * (μ s).toReal ^ (1 / p.toReal) := by
   by_cases hp_top : p = ∞
@@ -835,13 +821,13 @@ theorem norm_indicatorConstLp_le :
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
   exact ENNReal.rpow_ne_top_of_nonneg (by positivity) hμs
 
-theorem edist_indicatorConstLp_eq_nnnorm {t : Set α} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) :
+theorem edist_indicatorConstLp_eq_nnnorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖₊ := by
   unfold indicatorConstLp
   rw [Lp.edist_toLp_toLp, snorm_indicator_sub_indicator, Lp.coe_nnnorm_toLp]
 
-theorem dist_indicatorConstLp_eq_norm {t : Set α} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) :
+theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖ := by
   rw [Lp.dist_edist, edist_indicatorConstLp_eq_nnnorm, ENNReal.coe_toReal, Lp.coe_nnnorm]
@@ -1646,7 +1632,7 @@ theorem ae_tendsto_of_cauchy_snorm [CompleteSpace E] {f : ℕ → α → E}
     refine' cauchySeq_of_le_tendsto_0 (fun n => (B n).toReal) _ _
     · intro n m N hnN hmN
       specialize hx N n m hnN hmN
-      rw [dist_eq_norm, ← ENNReal.toReal_ofReal (norm_nonneg _),
+      rw [_root_.dist_eq_norm, ← ENNReal.toReal_ofReal (norm_nonneg _),
         ENNReal.toReal_le_toReal ENNReal.ofReal_ne_top (ENNReal.ne_top_of_tsum_ne_top hB N)]
       rw [← ofReal_norm_eq_coe_nnnorm] at hx
       exact hx.le
