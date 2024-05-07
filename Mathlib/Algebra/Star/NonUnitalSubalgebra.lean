@@ -101,6 +101,49 @@ add_decl_doc NonUnitalStarSubalgebra.toNonUnitalSubalgebra
 /-- Reinterpret a `NonUnitalStarSubalgebra` as a `StarSubset`. -/
 add_decl_doc NonUnitalStarSubalgebra.toStarSubset
 
+section StarSubset
+
+namespace StarSubset
+
+variable [Star A]
+variable [Star B]
+variable [Star C]
+
+instance instSetLike : SetLike (StarSubset A) A where
+  coe {s} := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr
+
+instance instStarMemClass : StarMemClass (StarSubset A) A where
+  star_mem {s} := s.star_mem'
+
+theorem mem_carrier {s : StarSubset A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
+  Iff.rfl
+
+@[ext]
+theorem ext {S T : StarSubset A} (h : ∀ x : A, x ∈ S ↔ x ∈ T) : S = T :=
+  SetLike.ext h
+
+/-- Copy of a non-unital star subalgebra with a new `carrier` equal to the old one.
+Useful to fix definitional equalities. -/
+protected def copy (S : StarSubset A) (s : Set A) (hs : s = ↑S) :
+    StarSubset A :=
+  { star_mem' := @fun x (hx : x ∈ s) => by
+      show star x ∈ s
+      rw [hs] at hx ⊢
+      exact S.star_mem' hx }
+
+@[simp]
+theorem coe_copy (S : StarSubset A) (s : Set A) (hs : s = ↑S) :
+    (S.copy s hs : Set A) = s :=
+  rfl
+
+theorem copy_eq (S : StarSubset A) (s : Set A) (hs : s = ↑S) : S.copy s hs = S :=
+  SetLike.coe_injective hs
+
+end StarSubset
+
+end StarSubset
+
 namespace NonUnitalStarSubalgebra
 
 variable [CommSemiring R]
