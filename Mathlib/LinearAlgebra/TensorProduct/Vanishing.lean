@@ -75,7 +75,8 @@ such that for all $i$,
 $$n_i = \sum_j a_{ij} y_j$$
 and for all $j$,
 $$\sum_{i} a_{ij} m_i = 0.$$
-Note that this condition is not symmetric in $M$ and $N$. -/
+Note that this condition is not symmetric in $M$ and $N$.
+(The terminology "trivial" comes from [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK).)-/
 abbrev VanishesTrivially : Prop :=
   ∃ (κ : Type u) (_ : Fintype κ) (a : ι → κ → R) (y : κ → N),
     (∀ i, n i = ∑ j, a i j • y j) ∧ ∀ j, ∑ i, a i j • m i = 0
@@ -125,13 +126,19 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
   have en_mem_range : en ∈ range (rTensor N (ker G).subtype) :=
     exact_rTensor_ker_subtype.linearMap_ker_eq ▸ en_mem_ker
   /- There is an element of in $\ker G \otimes N$ that maps to $\sum_i e_i \otimes n_i$.
-  Write it as a finite sum of pure tensors $\sum_j k_j \otimes y_j$. -/
+  Write it as a finite sum of pure tensors. -/
   obtain ⟨kn, hkn⟩ := en_mem_range
-  obtain ⟨ma, rfl⟩ := exists_finset kn
+  obtain ⟨ma, rfl : kn = ∑ kj ∈ ma, kj.1 ⊗ₜ[R] kj.2⟩ := exists_finset kn
   use ↑↑ma, FinsetCoe.fintype ma
-  -- Let $a_{ij}$ be the coefficient of $e_i$ in $k_j$.
-  use fun i ⟨x, _⟩ ↦ (x.1 : ι →₀ R) i
-  use fun ⟨x, _⟩ ↦ x.2
+  /- Let $\sum_j k_j \otimes y_j$ be the sum obtained in the previous step.
+  In order to show that $\sum_i m_i \otimes n_i$ vanishes trivially, it suffices to prove that there
+  exist $(a_{ij})_{i, j}$ such that for all $i$,
+  $$n_i = \sum_j a_{ij} y_j$$
+  and for all $j$,
+  $$\sum_{i} a_{ij} m_i = 0.$$
+  For this, take $a_{ij}$ to be the coefficient of $e_i$ in $k_j$. -/
+  use fun i ⟨⟨kj, _⟩, _⟩ ↦ (kj : ι →₀ R) i
+  use fun ⟨⟨_, yj⟩, _⟩ ↦ yj
   constructor
   · intro i
     apply_fun finsuppScalarLeft R N ι at hkn
