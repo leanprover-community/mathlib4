@@ -207,6 +207,8 @@ variable {K L} in
 dual. -/
 @[simps!]
 noncomputable def cartanEquivDual :
+    H ≃ₗ[K] Module.Dual K H :=
+  (traceForm K H L).toDual <| traceForm_cartan_nondegenerate K L H
 
 /-- This is Proposition 4.18 from [carter2005] except that we use
 `LieModule.exists_forall_lie_eq_smul` instead of Lie's theorem (and so avoid
