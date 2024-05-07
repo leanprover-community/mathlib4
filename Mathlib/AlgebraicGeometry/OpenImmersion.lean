@@ -662,6 +662,7 @@ theorem app_eq_inv_app_app_of_comp_eq_aux {X Y U : Scheme} (f : Y ⟶ U) (g : U 
   exact (Set.preimage_image_eq _ h.base_open.inj).symm
 #align algebraic_geometry.IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux AlgebraicGeometry.IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux
 
+set_option synthInstance.maxHeartbeats 0 in
 /-- The `fg` argument is to avoid nasty stuff about dependent types. -/
 theorem app_eq_invApp_app_of_comp_eq {X Y U : Scheme} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
     (H : fg = f ≫ g) [h : IsOpenImmersion g] (V : Opens U) :
@@ -678,6 +679,7 @@ theorem app_eq_invApp_app_of_comp_eq {X Y U : Scheme} (f : Y ⟶ U) (g : U ⟶ X
   convert Y.presheaf.map_id _
 #align algebraic_geometry.IsOpenImmersion.app_eq_inv_app_app_of_comp_eq AlgebraicGeometry.IsOpenImmersion.app_eq_invApp_app_of_comp_eq
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem lift_app {X Y U : Scheme} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersion f] (H)
     (V : Opens U) :
     (IsOpenImmersion.lift f g H).1.c.app (op V) =

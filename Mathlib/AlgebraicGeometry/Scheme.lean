@@ -140,6 +140,7 @@ theorem comp_val_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X)
   simp
 #align algebraic_geometry.Scheme.comp_val_base_apply AlgebraicGeometry.Scheme.comp_val_base_apply
 
+set_option synthInstance.maxHeartbeats 0 in
 @[simp, reassoc] -- reassoc lemma does not need `simp`
 theorem comp_val_c_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g).val.c.app U = g.val.c.app U ≫ f.val.c.app _ :=
@@ -151,6 +152,7 @@ theorem congr_app {X Y : Scheme} {f g : X ⟶ Y} (e : f = g) (U) :
   subst e; dsimp; simp
 #align algebraic_geometry.Scheme.congr_app AlgebraicGeometry.Scheme.congr_app
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) :
     f.val.c.app (op U) =
       Y.presheaf.map (eqToHom e.symm).op ≫
@@ -177,6 +179,7 @@ instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.val.c.app U) :=
   haveI := PresheafedSpace.c_isIso_of_iso f.val
   NatIso.isIso_app_of_isIso _ _
 
+set_option synthInstance.maxHeartbeats 0 in
 @[simp]
 theorem inv_val_c_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X.carrier) :
     (inv f).val.c.app (op U) =
@@ -190,6 +193,7 @@ theorem inv_val_c_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X.carrie
     eqToHom_op]
 #align algebraic_geometry.Scheme.inv_val_c_app AlgebraicGeometry.Scheme.inv_val_c_app
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem inv_val_c_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     (inv f).val.c.app (op ⊤) = inv (f.val.c.app (op ⊤)) := by simp
 
@@ -278,11 +282,13 @@ theorem Γ_obj_op (X : Scheme) : Γ.obj (op X) = X.presheaf.obj (op ⊤) :=
   rfl
 #align algebraic_geometry.Scheme.Γ_obj_op AlgebraicGeometry.Scheme.Γ_obj_op
 
+set_option synthInstance.maxHeartbeats 0 in
 @[simp]
 theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.1.c.app (op ⊤) :=
   rfl
 #align algebraic_geometry.Scheme.Γ_map AlgebraicGeometry.Scheme.Γ_map
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.1.c.app (op ⊤) :=
   rfl
 #align algebraic_geometry.Scheme.Γ_map_op AlgebraicGeometry.Scheme.Γ_map_op

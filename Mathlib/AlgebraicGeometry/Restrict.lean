@@ -49,6 +49,8 @@ abbrev Scheme.ιOpens {X : Scheme} (U : Opens X.carrier) : X ∣_ᵤ U ⟶ X := 
 lemma Scheme.ofRestrict_val_c_app_self {X : Scheme} (U : Opens X) :
     (X.ofRestrict U.openEmbedding).1.c.app (op U) = X.presheaf.map (eqToHom (by simp)).op := rfl
 
+set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
 lemma Scheme.eq_restrict_presheaf_map_eqToHom {X : Scheme} (U : Opens X) {V W : Opens U}
     (e : U.openEmbedding.isOpenMap.functor.obj V = U.openEmbedding.isOpenMap.functor.obj W) :
   X.presheaf.map (eqToHom e).op =
@@ -142,6 +144,8 @@ theorem Scheme.restrictFunctor_map_app_aux {U V : Opens X} (i : U ⟶ V) (W : Op
   exact ⟨_, h, rfl⟩
 #align algebraic_geometry.Scheme.restrict_functor_map_app_aux AlgebraicGeometry.Scheme.restrictFunctor_map_app_aux
 
+set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
 theorem Scheme.restrictFunctor_map_app {U V : Opens X} (i : U ⟶ V) (W : Opens V) :
     (X.restrictFunctor.map i).1.1.c.app (op W) =
       X.presheaf.map (homOfLE <| X.restrictFunctor_map_app_aux i W).op := by
@@ -334,6 +338,8 @@ theorem image_morphismRestrict_preimage {X Y : Scheme} (f : X ⟶ Y) (U : Opens 
     exact morphismRestrict_base_coe f U ⟨x, hx⟩
 #align algebraic_geometry.image_morphism_restrict_preimage AlgebraicGeometry.image_morphismRestrict_preimage
 
+set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
 theorem morphismRestrict_c_app {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
     (f ∣_ U).1.c.app (op V) =
       f.1.c.app (op (U.openEmbedding.isOpenMap.functor.obj V)) ≫
@@ -354,6 +360,8 @@ theorem morphismRestrict_c_app {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : O
     congr 1
 #align algebraic_geometry.morphism_restrict_c_app AlgebraicGeometry.morphismRestrict_c_app
 
+set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
 theorem Γ_map_morphismRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
     Scheme.Γ.map (f ∣_ U).op =
       Y.presheaf.map (eqToHom <| U.openEmbedding_obj_top.symm).op ≫

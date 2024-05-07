@@ -180,6 +180,7 @@ theorem comp_val_c {X Y Z : LocallyRingedSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.comp_val_c AlgebraicGeometry.LocallyRingedSpace.comp_val_c
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem comp_val_c_app {X Y Z : LocallyRingedSpace} (f : X ⟶ Y) (g : Y ⟶ Z) (U : (Opens Z)ᵒᵖ) :
     (f ≫ g).val.c.app U = g.val.c.app U ≫ f.val.c.app (op <| (Opens.map g.val.base).obj U.unop) :=
   rfl
@@ -281,12 +282,14 @@ theorem Γ_obj_op (X : LocallyRingedSpace) : Γ.obj (op X) = X.presheaf.obj (op 
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.Γ_obj_op AlgebraicGeometry.LocallyRingedSpace.Γ_obj_op
 
+set_option synthInstance.maxHeartbeats 0 in
 @[simp]
 theorem Γ_map {X Y : LocallyRingedSpaceᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.1.c.app (op ⊤) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.Γ_map AlgebraicGeometry.LocallyRingedSpace.Γ_map
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem Γ_map_op {X Y : LocallyRingedSpace} (f : X ⟶ Y) : Γ.map f.op = f.1.c.app (op ⊤) :=
   rfl
 set_option linter.uppercaseLean3 false in
