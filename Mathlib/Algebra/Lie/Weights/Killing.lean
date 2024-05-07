@@ -138,6 +138,7 @@ whose adjoint action on `L` is nilpotent, is the zero element.
 Over a perfect field a much stronger result is true, see
 `LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra`. -/
 lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
+    (hx' : _root_.IsNilpotent (ad K L x)) : x = 0 := by
   suffices ⟨x, hx⟩ ∈ LinearMap.ker (traceForm K H L) by simpa using this
   simp only [LinearMap.mem_ker]
   ext y
