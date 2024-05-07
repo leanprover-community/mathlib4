@@ -86,6 +86,16 @@ noncomputable instance (X₂ : C₂) :
     Lifting L₁ W₁ (F.flip.obj X₂) ((lift₂ F hF L₁ L₂).flip.obj (L₂.obj X₂)) :=
   Lifting₂.snd _ _ _ W₂ _ _ _
 
+lemma lift₂_iso_hom_app_app₁ (X₁ : C₁) (X₂ : C₂) :
+    ((Lifting₂.iso L₁ L₂ W₁ W₂ F (lift₂ F hF L₁ L₂)).hom.app X₁).app X₂ =
+      (Lifting.iso L₂ W₂ (F.obj X₁) ((lift₂ F hF L₁ L₂).obj (L₁.obj X₁))).hom.app X₂ :=
+  rfl
+
+lemma lift₂_iso_hom_app_app₂ (X₁ : C₁) (X₂ : C₂) :
+    ((Lifting₂.iso L₁ L₂ W₁ W₂ F (lift₂ F hF L₁ L₂)).hom.app X₁).app X₂ =
+      (Lifting.iso L₁ W₁ (F.flip.obj X₂) ((lift₂ F hF L₁ L₂).flip.obj (L₂.obj X₂))).hom.app X₁ :=
+  rfl
+
 end
 
 section
