@@ -22,7 +22,7 @@ The two important properties of this construction are:
   edge-disjoint.
 * `SimpleGraph.TripartiteFromTriangles.NoAccidental`: Whether all triangles are explicit.
 
-This construction shows up unrelatingly twice in the theory of Roth numbers:
+This construction shows up unrelatedly twice in the theory of Roth numbers:
 * The lower bound of the Ruzsa-Szemerédi problem: From a set `s` in a finite abelian group `G` of
   odd order, we construct a tripartite graph on `G ⊕ G ⊕ G`. The triangle indices are
   `(x, x + a, x + 2 * a)` for `x` any element and `a ∈ s`. The explicit triangles are always
@@ -43,8 +43,9 @@ variable {α β γ 𝕜 : Type*} [LinearOrderedField 𝕜] {t : Finset (α × β
 namespace SimpleGraph
 namespace TripartiteFromTriangles
 
-/-- The underlying relation of the tripartite-from-triangles graph. Two vertices are related iff
-there exists a triangle index containing them both. -/
+/-- The underlying relation of the tripartite-from-triangles graph.
+
+Two vertices are related iff there exists a triangle index containing them both. -/
 @[mk_iff] inductive Rel (t : Finset (α × β × γ)) : α ⊕ β ⊕ γ → α ⊕ β ⊕ γ → Prop
 | in₀₁ ⦃a b c⦄ : (a, b, c) ∈ t → Rel t (in₀ a) (in₁ b)
 | in₁₀ ⦃a b c⦄ : (a, b, c) ∈ t → Rel t (in₁ b) (in₀ a)
@@ -119,16 +120,16 @@ class ExplicitDisjoint (t : Finset (α × β × γ)) : Prop where
 /-- Predicate on the triangle indices for there to be no accidental triangle.
 
 Note that we cheat a bit, since the exact translation of this informal description would have
-`(a', b', c') ∈ s` as a conclusion rather than `a = a' ∨ b = b' ∨ c = c'`. Those conditions are
+`(a', b', c') ∈ t` as a conclusion rather than `a = a' ∨ b = b' ∨ c = c'`. Those conditions are
 equivalent when the explicit triangles are edge-disjoint (which is the case we care about). -/
 class NoAccidental (t : Finset (α × β × γ)) : Prop where
-  wow : ∀ ⦃a a' b b' c c'⦄, (a', b, c) ∈ t → (a, b', c) ∈ t → (a, b, c') ∈ t →
+  eq_or_eq_or_eq : ∀ ⦃a a' b b' c c'⦄, (a', b, c) ∈ t → (a, b', c) ∈ t → (a, b, c') ∈ t →
     a = a' ∨ b = b' ∨ c = c'
 
 section DecidableEq
 variable [DecidableEq α] [DecidableEq β] [DecidableEq γ]
 
-instance : DecidableRel (graph t).Adj
+instance graph.instDecidableRelAdj : DecidableRel (graph t).Adj
   | in₀ _a, in₀ _a' => Decidable.isFalse not_in₀₀
   | in₀ _a, in₁ _b' => decidable_of_iff' _ in₀₁_iff'
   | in₀ _a, in₂ _c' => decidable_of_iff' _ in₀₂_iff'
@@ -173,7 +174,7 @@ nonrec lemma is3Clique_iff [NoAccidental t] {s : Finset (α ⊕ β ⊕ γ)} :
     obtain ⟨c', hc'⟩ := in₀₁_iff.1 hab
     obtain ⟨b', hb'⟩ := in₀₂_iff.1 hac
     obtain ⟨a', ha'⟩ := in₁₂_iff.1 hbc
-    obtain (rfl | rfl | rfl) := NoAccidental.wow ha' hb' hc' <;> assumption
+    obtain rfl | rfl | rfl := NoAccidental.eq_or_eq_or_eq ha' hb' hc' <;> assumption
   · rintro ⟨x, hx, rfl⟩
     exact toTriangle_is3Clique hx
 
@@ -204,8 +205,8 @@ lemma map_toTriangle_disjoint [ExplicitDisjoint t] :
   · rintro ⟨rfl, rfl⟩
     exact this (ExplicitDisjoint.inj₀ habc hxyz) rfl rfl
 
-lemma cliqueSet_eq_image [NoAccidental t] : (graph t).cliqueSet 3 = toTriangle '' t :=
-by ext; exact is3Clique_iff
+lemma cliqueSet_eq_image [NoAccidental t] : (graph t).cliqueSet 3 = toTriangle '' t := by
+  ext; exact is3Clique_iff
 
 section Fintype
 variable [Fintype α] [Fintype β] [Fintype γ]
@@ -213,18 +214,18 @@ variable [Fintype α] [Fintype β] [Fintype γ]
 lemma cliqueFinset_eq_image [NoAccidental t] : (graph t).cliqueFinset 3 = t.image toTriangle :=
   coe_injective $ by push_cast; exact cliqueSet_eq_image _
 
-lemma cliqueFinset_eq_map [NoAccidental t] : (graph t).cliqueFinset 3 = t.map toTriangle :=
-by simp [cliqueFinset_eq_image, map_eq_image]
+lemma cliqueFinset_eq_map [NoAccidental t] : (graph t).cliqueFinset 3 = t.map toTriangle := by
+  simp [cliqueFinset_eq_image, map_eq_image]
 
-@[simp] lemma card_triangles [NoAccidental t] : ((graph t).cliqueFinset 3).card = t.card :=
-by rw [cliqueFinset_eq_map, card_map]
+@[simp] lemma card_triangles [NoAccidental t] : ((graph t).cliqueFinset 3).card = t.card := by
+  rw [cliqueFinset_eq_map, card_map]
 
 lemma farFromTriangleFree [ExplicitDisjoint t] {ε : 𝕜}
     (ht : ε * ((Fintype.card α + Fintype.card β + Fintype.card γ) ^ 2 : ℕ) ≤ t.card) :
-  (graph t).FarFromTriangleFree ε :=
-farFromTriangleFree_of_disjoint_triangles (t.map toTriangle)
-  (map_subset_iff_subset_preimage.2 fun x hx ↦ by simpa using toTriangle_is3Clique hx)
-  (map_toTriangle_disjoint t) $  by simpa [add_assoc] using ht
+    (graph t).FarFromTriangleFree ε :=
+  farFromTriangleFree_of_disjoint_triangles (t.map toTriangle)
+    (map_subset_iff_subset_preimage.2 fun x hx ↦ by simpa using toTriangle_is3Clique hx)
+    (map_toTriangle_disjoint t) $ by simpa [add_assoc] using ht
 
 end Fintype
 end DecidableEq
