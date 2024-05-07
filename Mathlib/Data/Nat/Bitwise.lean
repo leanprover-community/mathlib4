@@ -155,12 +155,10 @@ attribute [simp] testBit_xor
 
 end
 
-@[simp]
 theorem bit_false : bit false = bit0 :=
   rfl
 #align nat.bit_ff Nat.bit_false
 
-@[simp]
 theorem bit_true : bit true = bit1 :=
   rfl
 #align nat.bit_tt Nat.bit_true
