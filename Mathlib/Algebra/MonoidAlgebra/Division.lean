@@ -181,7 +181,7 @@ theorem divOf_add_modOf (x : k[G]) (g : G) :
   · rw [modOf_apply_of_not_exists_add x _ _ h, of'_apply, single_mul_apply_of_not_exists_add _ _ h,
       zero_add]
   · rw [modOf_apply_self_add, add_zero]
-    rw [of'_apply, single_mul_apply_aux _ _ _, one_mul, divOf_apply]
+    rw [of'_apply, single_mul_apply_aux _ _, one_mul, divOf_apply]
     intro a
     exact add_right_inj _
 #align add_monoid_algebra.div_of_add_mod_of AddMonoidAlgebra.divOf_add_modOf

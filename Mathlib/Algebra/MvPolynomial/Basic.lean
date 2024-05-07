@@ -719,13 +719,13 @@ theorem coeff_mul [DecidableEq σ] (p q : MvPolynomial σ R) (n : σ →₀ ℕ)
 @[simp]
 theorem coeff_mul_monomial (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :
     coeff (m + s) (p * monomial s r) = coeff m p * r :=
-  AddMonoidAlgebra.mul_single_apply_aux p _ _ _ _ fun _a => add_left_inj _
+  AddMonoidAlgebra.mul_single_apply_aux p fun _a => add_left_inj _
 #align mv_polynomial.coeff_mul_monomial MvPolynomial.coeff_mul_monomial
 
 @[simp]
 theorem coeff_monomial_mul (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :
     coeff (s + m) (monomial s r * p) = r * coeff m p :=
-  AddMonoidAlgebra.single_mul_apply_aux p _ _ _ _ fun _a => add_right_inj _
+  AddMonoidAlgebra.single_mul_apply_aux p fun _a => add_right_inj _
 #align mv_polynomial.coeff_monomial_mul MvPolynomial.coeff_monomial_mul
 
 @[simp]
