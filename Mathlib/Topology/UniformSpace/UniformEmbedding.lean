@@ -73,6 +73,12 @@ theorem UniformInducing.comp {g : β → γ} (hg : UniformInducing g) {f : α �
   ⟨by rw [← hf.1, ← hg.1, comap_comap]; rfl⟩
 #align uniform_inducing.comp UniformInducing.comp
 
+theorem UniformInducing.of_comp_iff {g : β → γ} (hg : UniformInducing g) {f : α → β} :
+    UniformInducing (g ∘ f) ↔ UniformInducing f := by
+  refine ⟨fun h ↦ ?_, hg.comp⟩
+  rw [uniformInducing_iff, ← hg.comap_uniformity, comap_comap, ← h.comap_uniformity,
+    Function.comp, Function.comp]
+
 theorem UniformInducing.basis_uniformity {f : α → β} (hf : UniformInducing f) {ι : Sort*}
     {p : ι → Prop} {s : ι → Set (β × β)} (H : (𝓤 β).HasBasis p s) :
     (𝓤 α).HasBasis p fun i => Prod.map f f ⁻¹' s i :=
@@ -182,6 +188,10 @@ theorem UniformEmbedding.comp {g : β → γ} (hg : UniformEmbedding g) {f : α 
   { hg.toUniformInducing.comp hf.toUniformInducing with inj := hg.inj.comp hf.inj }
 #align uniform_embedding.comp UniformEmbedding.comp
 
+theorem UniformEmbedding.of_comp_iff {g : β → γ} (hg : UniformEmbedding g) {f : α → β} :
+    UniformEmbedding (g ∘ f) ↔ UniformEmbedding f := by
+  simp_rw [uniformEmbedding_iff, hg.toUniformInducing.of_comp_iff, hg.inj.of_comp_iff f]
+
 theorem Equiv.uniformEmbedding {α β : Type*} [UniformSpace α] [UniformSpace β] (f : α ≃ β)
     (h₁ : UniformContinuous f) (h₂ : UniformContinuous f.symm) : UniformEmbedding f :=
   uniformEmbedding_iff'.2 ⟨f.injective, h₁, by rwa [← Equiv.prodCongr_apply, ← map_equiv_symm]⟩
@@ -286,7 +296,7 @@ theorem isComplete_of_complete_image {m : α → β} {s : Set α} (hm : UniformI
   intro f hf hfs
   rw [le_principal_iff] at hfs
   obtain ⟨_, ⟨x, hx, rfl⟩, hyf⟩ : ∃ y ∈ m '' s, map m f ≤ 𝓝 y
-  exact hs (f.map m) (hf.map hm.uniformContinuous) (le_principal_iff.2 (image_mem_map hfs))
+  · exact hs (f.map m) (hf.map hm.uniformContinuous) (le_principal_iff.2 (image_mem_map hfs))
   rw [map_le_iff_le_comap, ← nhds_induced, ← hm.inducing.induced] at hyf
   exact ⟨x, hx, hyf⟩
 #align is_complete_of_complete_image isComplete_of_complete_image

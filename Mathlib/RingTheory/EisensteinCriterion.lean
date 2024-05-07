@@ -56,7 +56,7 @@ theorem le_natDegree_of_map_eq_mul_X_pow {n : ℕ} {P : Ideal R} (hP : P.IsPrime
     (calc
       ↑n = degree (q.map (mk P)) := by
         rw [hq, degree_mul, hc0, zero_add, degree_pow, degree_X, nsmul_one]
-      _ ≤ degree q := (degree_map_le _ _)
+      _ ≤ degree q := degree_map_le _ _
       _ ≤ natDegree q := degree_le_natDegree
       )
 set_option linter.uppercaseLean3 false in
@@ -108,11 +108,11 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
       exact
         Ideal.mul_mem_mul (eval_zero_mem_ideal_of_eq_mul_X_pow hp hm0.ne')
           (eval_zero_mem_ideal_of_eq_mul_X_pow hq hn0.ne')
-    have hpql0 : (mk P) (p * q).leadingCoeff ≠ 0 := by rwa [Ne.def, eq_zero_iff_mem]
+    have hpql0 : (mk P) (p * q).leadingCoeff ≠ 0 := by rwa [Ne, eq_zero_iff_mem]
     have hp0 : p ≠ 0 := fun h => by
-      simp_all only [zero_mul, eq_self_iff_true, not_true, Ne.def]
+      simp_all only [zero_mul, eq_self_iff_true, not_true, Ne]
     have hq0 : q ≠ 0 := fun h => by
-      simp_all only [eq_self_iff_true, not_true, Ne.def, mul_zero]
+      simp_all only [eq_self_iff_true, not_true, Ne, mul_zero]
     have hbc0 : degree b = 0 ∧ degree c = 0 := by
       apply_fun degree at hbc
       rwa [degree_C hpql0, degree_mul, eq_comm, Nat.WithBot.add_eq_zero_iff] at hbc

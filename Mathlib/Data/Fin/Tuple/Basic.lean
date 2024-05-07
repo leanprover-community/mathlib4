@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
 import Mathlib.Data.Fin.OrderHom
 import Mathlib.Data.Pi.Lex
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
 
 #align_import data.fin.tuple.basic from "leanprover-community/mathlib"@"ef997baa41b5c428be3fb50089a7139bf4ee886b"
 
@@ -694,7 +694,7 @@ theorem append_snoc {α} (as : Fin n → α) (bs : Fin m → α) (b : α) :
     Fin.append as (snoc bs b) = snoc (Fin.append as bs) b := by
   funext i
   rcases i with ⟨i, isLt⟩
-  simp only [append, addCases, castLT, cast_mk, subNat_mk, natAdd_mk, cast, ge_iff_le, snoc._eq_1,
+  simp only [append, addCases, castLT, cast_mk, subNat_mk, natAdd_mk, cast, ge_iff_le, snoc.eq_1,
     cast_eq, eq_rec_constant, Nat.add_eq, Nat.add_zero, castLT_mk]
   split_ifs with lt_n lt_add sub_lt nlt_add lt_add <;> (try rfl)
   · have := Nat.lt_add_right m lt_n
@@ -966,6 +966,22 @@ theorem preimage_insertNth_Icc_of_not_mem {i : Fin (n + 1)} {x : α i} {q₁ q�
   Set.ext fun p ↦ by
     simp only [mem_preimage, insertNth_mem_Icc, hx, false_and_iff, mem_empty_iff_false]
 #align fin.preimage_insert_nth_Icc_of_not_mem Fin.preimage_insertNth_Icc_of_not_mem
+
+/-- Separates an `n+1`-tuple, returning a selected index and then the rest of the tuple.
+Functional form of `Equiv.piFinSuccAbove`. -/
+def extractNth (i : Fin (n + 1)) (f : (∀ j, α j)) :
+    α i × ∀ j, α (i.succAbove j) :=
+  (f i, fun j => f (i.succAbove j))
+
+@[simp]
+theorem extractNth_insertNth {i : Fin (n + 1)} (x : α i) (p : ∀ j : Fin n, α (i.succAbove j)) :
+    i.extractNth (i.insertNth x p) = (x, p) := by
+  simp [extractNth]
+
+@[simp]
+theorem insertNth_extractNth {i : Fin (n + 1)} (f : ∀ j, α j) :
+    i.insertNth (i.extractNth f).1 (i.extractNth f).2 = f := by
+  simp [Fin.extractNth, Fin.insertNth_eq_iff]
 
 end InsertNth
 

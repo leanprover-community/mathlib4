@@ -96,8 +96,7 @@ open scoped Derivation
 
 /-- The derivations at a point of a manifold. Some regard this as a possible definition of the
 tangent space -/
-@[reducible]
-def PointDerivation (x : M) :=
+abbrev PointDerivation (x : M) :=
   Derivation 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜
 #align point_derivation PointDerivation
 

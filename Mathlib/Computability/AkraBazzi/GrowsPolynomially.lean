@@ -69,7 +69,7 @@ lemma eventually_atTop_le {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomi
 lemma eventually_atTop_le_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
     ∃ c > 0, ∀ᶠ (n:ℕ) in atTop, ∀ u ∈ Set.Icc (b * n) n, f u ≤ c * f n := by
   obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_le hb
-  exact ⟨c, hc_mem, hc.nat_cast_atTop⟩
+  exact ⟨c, hc_mem, hc.natCast_atTop⟩
 
 lemma eventually_atTop_ge {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
     ∃ c > 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, c * f x ≤ f u := by
@@ -81,7 +81,7 @@ lemma eventually_atTop_ge {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomi
 lemma eventually_atTop_ge_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
     ∃ c > 0, ∀ᶠ (n:ℕ) in atTop, ∀ u ∈ Set.Icc (b * n) n, c * f n ≤ f u := by
   obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_ge hb
-  exact ⟨c, hc_mem, hc.nat_cast_atTop⟩
+  exact ⟨c, hc_mem, hc.natCast_atTop⟩
 
 lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃ᶠ x in atTop, f x = 0) :
     ∀ᶠ x in atTop, f x = 0 := by
@@ -134,16 +134,16 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
     rw [← le_div_iff x₀_pos]
     refine (logb_le_logb (b := 2) (by norm_num) (zpow_pos_of_pos (by norm_num) _)
       (by positivity)).mp ?_
-    rw [← rpow_int_cast, logb_rpow (by norm_num) (by norm_num), ← neg_le_neg_iff]
-    simp only [Int.cast_sub, Int.cast_neg, Int.cast_ofNat, Int.cast_one, neg_sub, sub_neg_eq_add]
+    rw [← rpow_intCast, logb_rpow (by norm_num) (by norm_num), ← neg_le_neg_iff]
+    simp only [Int.cast_sub, Int.cast_neg, Int.cast_natCast, Int.cast_one, neg_sub, sub_neg_eq_add]
     calc -logb 2 (x/x₀) ≤ ⌈-logb 2 (x/x₀)⌉₊ := Nat.le_ceil (-logb 2 (x / x₀))
          _ ≤ _ := by rw [add_comm]; exact_mod_cast Nat.ceil_le_floor_add_one _
   case ub =>
     rw [← div_le_iff x₀_pos]
     refine (logb_le_logb (b := 2) (by norm_num) (by positivity)
       (zpow_pos_of_pos (by norm_num) _)).mp ?_
-    rw [← rpow_int_cast, logb_rpow (by norm_num) (by norm_num), ← neg_le_neg_iff]
-    simp only [Int.cast_neg, Int.cast_ofNat, neg_neg]
+    rw [← rpow_intCast, logb_rpow (by norm_num) (by norm_num), ← neg_le_neg_iff]
+    simp only [Int.cast_neg, Int.cast_natCast, neg_neg]
     have : 0 ≤ -logb 2 (x / x₀) := by
       rw [neg_nonneg]
       refine logb_nonpos (by norm_num) (by positivity) ?_
@@ -615,12 +615,12 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
 
 protected lemma GrowsPolynomially.pow (p : ℕ) (hf : GrowsPolynomially f)
     (hf_nonneg : ∀ᶠ x in atTop, 0 ≤ f x) : GrowsPolynomially fun x => (f x) ^ p := by
-  simp_rw [← rpow_nat_cast]
+  simp_rw [← rpow_natCast]
   exact hf.rpow p hf_nonneg
 
 protected lemma GrowsPolynomially.zpow (p : ℤ) (hf : GrowsPolynomially f)
     (hf_nonneg : ∀ᶠ x in atTop, 0 ≤ f x) : GrowsPolynomially fun x => (f x) ^ p := by
-  simp_rw [← rpow_int_cast]
+  simp_rw [← rpow_intCast]
   exact hf.rpow p hf_nonneg
 
 lemma growsPolynomially_rpow (p : ℝ) : GrowsPolynomially fun x => x ^ p :=
