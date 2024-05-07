@@ -98,6 +98,8 @@ structure NonUnitalStarSubalgebra (R : Type u) (A : Type v) [CommSemiring R]
 
 /-- Reinterpret a `NonUnitalStarSubalgebra` as a `NonUnitalSubalgebra`. -/
 add_decl_doc NonUnitalStarSubalgebra.toNonUnitalSubalgebra
+/-- Reinterpret a `NonUnitalStarSubalgebra` as a `StarSubset`. -/
+add_decl_doc NonUnitalStarSubalgebra.toStarSubset
 
 namespace NonUnitalStarSubalgebra
 
