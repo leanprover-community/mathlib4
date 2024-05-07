@@ -71,8 +71,9 @@ theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m
 #align finset.le_sum_condensed' Finset.le_sum_condensed'
 
 theorem le_sum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
-    (hu : Monotone u) (n : ℕ) : (∑ k in range (u n), f k) ≤ ∑ k in range (u 0), f k +
-    ∑ k in range n, (u (k + 1) - u k) • f (u k) := by
+    (hu : Monotone u) (n : ℕ) :
+    (∑ k in range (u n), f k) ≤
+      ∑ k in range (u 0), f k + ∑ k in range n, (u (k + 1) - u k) • f (u k) := by
   convert add_le_add_left (le_sum_schlomilch' hf h_pos hu n) (∑ k in range (u 0), f k)
   rw [← sum_range_add_sum_Ico _ (hu n.zero_le)]
 
@@ -83,8 +84,8 @@ theorem le_sum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m)
 #align finset.le_sum_condensed Finset.le_sum_condensed
 
 theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
-    (hu : Monotone u) (n : ℕ) : (∑ k in range n, (u (k + 1) - u k) • f (u (k + 1))) ≤
-    ∑ k in Ico (u 0 + 1) (u n + 1), f k := by
+    (hu : Monotone u) (n : ℕ) :
+    (∑ k in range n, (u (k + 1) - u k) • f (u (k + 1))) ≤ ∑ k in Ico (u 0 + 1) (u n + 1), f k := by
   induction' n with n ihn
   · simp
   suffices (u (n + 1) - u n) • f (u (n + 1)) ≤ ∑ k in Ico (u n + 1) (u (n + 1) + 1), f k by
@@ -212,16 +213,15 @@ open ENNReal in
 theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     (Summable fun k : ℕ => (2 : ℝ≥0) ^ k * f (2 ^ k)) ↔ Summable f := by
   have h_pos (n : ℕ) : 0 < 2 ^ n := pow_pos zero_lt_two n
-  have hu_strict : StrictMono (2 ^ ·) := fun m n hm =>
-      pow_lt_pow_right (Nat.lt_succ_self 1) hm
+  have hu_strict : StrictMono (2 ^ ·) := pow_right_strictMono one_lt_two
   have h_succ_diff : SuccDiffBounded 2 (2 ^ ·) := by
     intro n
     simp [pow_succ, mul_two, two_mul]
-  have hC_nonzero : 2 ≠ 0 := by norm_num
-  convert summable_schlomilch_iff hf h_pos hu_strict hC_nonzero h_succ_diff
+  convert summable_schlomilch_iff hf h_pos hu_strict two_ne_zero h_succ_diff
   simp [pow_succ, mul_two, two_mul]
-end NNReal
 #align nnreal.summable_condensed_iff NNReal.summable_condensed_iff
+
+end NNReal
 
 open NNReal in
 /-- for series of nonnegative real numbers. -/
@@ -229,8 +229,7 @@ theorem summable_schlomilch_iff_of_nonneg {C : ℕ} {u : ℕ → ℕ} {f : ℕ �
     (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu_strict : StrictMono u) (hC_nonzero : C ≠ 0) (h_succ_diff : SuccDiffBounded C u) :
     (Summable fun k : ℕ => (u (k + 1) - (u k : ℝ)) * f (u k)) ↔ Summable f := by
-  lift f to ℕ → ℝ≥0
-  exact h_nonneg
+  lift f to ℕ → ℝ≥0 using h_nonneg
   simp only [NNReal.coe_le_coe] at *
   have (k : ℕ) : (u (k + 1) - (u k : ℝ)) = ((u (k + 1) : ℝ≥0) - (u k : ℝ≥0) : ℝ≥0) := by
     have := Nat.cast_le (α := ℝ≥0).mpr <| (hu_strict k.lt_succ_self).le
