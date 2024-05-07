@@ -1,10 +1,10 @@
 {"version": 7,
  "packagesDir": ".lake/packages",
  "packages":
- [{"url": "https://github.com/leanprover/std4",
+ [{"url": "https://github.com/nomeata/std4",
    "type": "git",
    "subDir": null,
-   "rev": "5d007aae84c9facae6274c1c1ac1073f90224b1f",
+   "rev": "cc3f39a1ce7a6803a85c0a84bae5edc70c917832",
    "name": "std",
    "manifestFile": "lake-manifest.json",
    "inputRev": "lean-pr-testing-4061",
