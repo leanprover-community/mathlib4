@@ -85,8 +85,8 @@ instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
   X.str
 
 -- Porting note: cannot see through forget; made reducible to get closer to Lean 3 behavior
-@[reducible]
-instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
+@[instance] abbrev topologicalSpace_forget
+    (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
   X.str
 
 @[simp]

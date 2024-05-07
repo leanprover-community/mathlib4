@@ -66,6 +66,12 @@ protected theorem Inducing.comp (hg : Inducing g) (hf : Inducing f) :
   ⟨by rw [hf.induced, hg.induced, induced_compose]⟩
 #align inducing.comp Inducing.comp
 
+theorem Inducing.of_comp_iff (hg : Inducing g) :
+    Inducing (g ∘ f) ↔ Inducing f := by
+  refine ⟨fun h ↦ ?_, hg.comp⟩
+  rw [inducing_iff, hg.induced, induced_compose, h.induced]
+#align inducing.inducing_iff Inducing.of_comp_iff
+
 theorem inducing_of_inducing_compose
     (hf : Continuous f) (hg : Continuous g) (hgf : Inducing (g ∘ f)) : Inducing f :=
   ⟨le_antisymm (by rwa [← continuous_iff_le_induced])
@@ -137,13 +143,6 @@ protected theorem continuous (hf : Inducing f) : Continuous f :=
   hf.continuous_iff.mp continuous_id
 #align inducing.continuous Inducing.continuous
 
-protected theorem inducing_iff (hg : Inducing g) :
-    Inducing f ↔ Inducing (g ∘ f) := by
-  refine' ⟨fun h => hg.comp h, fun hgf => inducing_of_inducing_compose _ hg.continuous hgf⟩
-  rw [hg.continuous_iff]
-  exact hgf.continuous
-#align inducing.inducing_iff Inducing.inducing_iff
-
 theorem closure_eq_preimage_closure_image (hf : Inducing f) (s : Set X) :
     closure s = f ⁻¹' closure (f '' s) := by
   ext x
@@ -205,6 +204,9 @@ protected theorem Embedding.comp (hg : Embedding g) (hf : Embedding f) :
     Embedding (g ∘ f) :=
   { hg.toInducing.comp hf.toInducing with inj := fun _ _ h => hf.inj <| hg.inj h }
 #align embedding.comp Embedding.comp
+
+theorem Embedding.of_comp_iff (hg : Embedding g) : Embedding (g ∘ f) ↔ Embedding f := by
+  simp_rw [embedding_iff, hg.toInducing.of_comp_iff, hg.inj.of_comp_iff f]
 
 theorem embedding_of_embedding_compose
     (hf : Continuous f) (hg : Continuous g) (hgf : Embedding (g ∘ f)) : Embedding f :=
@@ -697,6 +699,11 @@ theorem comp (hg : ClosedEmbedding g) (hf : ClosedEmbedding f) :
     ClosedEmbedding (g ∘ f) :=
   ⟨hg.toEmbedding.comp hf.toEmbedding, (hg.isClosedMap.comp hf.isClosedMap).isClosed_range⟩
 #align closed_embedding.comp ClosedEmbedding.comp
+
+theorem of_comp_iff (hg : ClosedEmbedding g) :
+    ClosedEmbedding (g ∘ f) ↔ ClosedEmbedding f := by
+  simp_rw [closedEmbedding_iff, hg.toEmbedding.of_comp_iff, Set.range_comp,
+    ← hg.closed_iff_image_closed]
 
 theorem closure_image_eq (hf : ClosedEmbedding f) (s : Set X) :
     closure (f '' s) = f '' closure s :=

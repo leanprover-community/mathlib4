@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis, Eric Wieser
 import Mathlib.GroupTheory.Congruence
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+import Mathlib.Tactic.AdaptationNote
 
 #align_import linear_algebra.pi_tensor_product from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
@@ -721,10 +722,10 @@ variable (s) in
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
   let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
   let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
+  #adaptation_note /-- v4.7.0-rc1
+  An alternative to the last two proofs would be `aesop (simp_config := {zetaDelta := true})`
+  or a wrapper macro to that effect. -/
   LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R)
-    -- Adaptation note: v4.7.0-rc1
-    -- An alternative here would be `aesop (simp_config := {zetaDelta := true})`
-    -- or a wrapper macro to that effect.
     (by aesop (add norm simp [f, g]))
     (by aesop (add norm simp [f, g]))
 #align pi_tensor_product.reindex PiTensorProduct.reindex
