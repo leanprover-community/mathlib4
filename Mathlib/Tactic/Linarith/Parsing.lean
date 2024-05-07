@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 
-import Std.Data.RBMap.Basic
+import Batteries.Data.RBMap.Basic
 import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
@@ -31,7 +31,7 @@ This is ultimately converted into a `Linexp` in the obvious way.
 
 set_option autoImplicit true
 
-open Linarith.Ineq Std
+open Linarith.Ineq Batteries
 
 section
 open Lean Elab Tactic Meta
@@ -64,7 +64,7 @@ abbrev Map (α β) [Ord α] := RBMap α β Ord.compare
 /-! ### Parsing datatypes -/
 
 /-- Variables (represented by natural numbers) map to their power. -/
-@[reducible] def Monom : Type := Map ℕ ℕ
+abbrev Monom : Type := Map ℕ ℕ
 
 /-- `1` is represented by the empty monomial, the product of no variables. -/
 def Monom.one : Monom := RBMap.empty
@@ -79,7 +79,7 @@ instance : Ord Monom where
   compare x y := if x.lt y then .lt else if x == y then .eq else .gt
 
 /-- Linear combinations of monomials are represented by mapping monomials to coefficients. -/
-@[reducible] def Sum : Type := Map Monom ℤ
+abbrev Sum : Type := Map Monom ℤ
 
 /-- `1` is represented as the singleton sum of the monomial `Monom.one` with coefficient 1. -/
 def Sum.one : Sum := RBMap.empty.insert Monom.one 1
