@@ -335,6 +335,38 @@ lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
 @[simp] lemma sqrt_le_one : √x ≤ 1 ↔ x ≤ 1 := by
   rw [← sqrt_one, sqrt_le_sqrt_iff zero_le_one, sqrt_one]
 
+theorem abs_sub_lt_of_abs_mul_self_sub_lt {ε : ℝ}
+    (hx : 0 ≤ x) (hy : 0 < y) (h : |x * x - y| < ε) :
+    |x - y.sqrt| < ε / |x + y.sqrt| := by
+  have : 0 < |x + y.sqrt| := by
+    apply abs_pos_of_pos (add_pos_of_nonneg_of_pos hx (Real.sqrt_pos.mpr hy))
+  rwa [← mul_self_sqrt (le_of_lt hy), mul_self_sub_mul_self, abs_mul, mul_comm,
+    ← lt_div_iff this] at h
+
+theorem abs_sub_le_of_abs_mul_self_sub_le {ε : ℝ}
+    (hx : 0 ≤ x) (hy : 0 < y) (h : |x * x - y| ≤ ε) :
+    |x - y.sqrt| ≤ ε / |x + y.sqrt| := by
+  have : 0 < |x + y.sqrt| := by
+    apply abs_pos_of_pos (add_pos_of_nonneg_of_pos hx (sqrt_pos.mpr hy))
+  rwa [← mul_self_sqrt (le_of_lt hy), mul_self_sub_mul_self, abs_mul, mul_comm,
+    ← le_div_iff this] at h
+
+theorem abs_sqrt_sub_sqrt_lt_of_abs_sub_lt {ε : ℝ}
+    (hx : 0 ≤ x) (hy : 0 < y) (h : |x - y| < ε) :
+    |x.sqrt - y.sqrt| < ε / |x.sqrt + y.sqrt| := by
+  apply Real.abs_sub_lt_of_abs_mul_self_sub_lt (x := x.sqrt) (y := y) (ε := ε)
+  · exact sqrt_nonneg x
+  · assumption
+  · rwa [Real.mul_self_sqrt hx]
+
+theorem abs_sqrt_sub_sqrt_le_of_abs_sub_le {ε : ℝ}
+    (hx : 0 ≤ x) (hy : 0 < y) (h : |x - y| ≤ ε) :
+    |x.sqrt - y.sqrt| ≤ ε / |x.sqrt + y.sqrt| := by
+  apply Real.abs_sub_le_of_abs_mul_self_sub_le (x := x.sqrt) (y := y) (ε := ε)
+  · exact sqrt_nonneg x
+  · assumption
+  · rwa [Real.mul_self_sqrt hx]
+
 end Real
 
 namespace Mathlib.Meta.Positivity
