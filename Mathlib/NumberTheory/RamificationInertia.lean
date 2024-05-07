@@ -505,9 +505,10 @@ noncomputable instance (priority := 1100) instModule_IdealMap {i : ℕ} :
   Submodule.module' (map (Quotient.mk (P ^ e)) (P ^ i))
 
 /-- The inclusion `(P^(i + 1) / P^e) ⊂ (P^i / P^e)`. -/
--- this is quite slow! (46.5k hb)
+-- this is quite slow! (46.5k hb without `noncomputable`)
 -- `whatsnew in ...` lists pages and pages of stuff...
 @[simps]
+noncomputable -- save 4k heartbeats
 def powQuotSuccInclusion (i : ℕ) :
     Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ (i + 1)) →ₗ[R ⧸ p]
     Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i) where
