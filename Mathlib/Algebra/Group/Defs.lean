@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.ZeroOne
-import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Simps.Basic
@@ -1064,12 +1063,11 @@ alias division_def := div_eq_mul_inv
 #align division_def division_def
 
 @[to_additive (attr := simp) one_zsmul]
-lemma zpow_one (a : G) : a ^ (1 : ℤ) = a := by convert pow_one a using 1; exact zpow_natCast a 1
+lemma zpow_one (a : G) : a ^ (1 : ℤ) = a := by rw [zpow_ofNat, pow_one]
 #align zpow_one zpow_one
 #align one_zsmul one_zsmul
 
-@[to_additive two_zsmul]
-lemma zpow_two (a : G) : a ^ (2 : ℤ) = a * a := by convert pow_two a using 1; exact zpow_natCast a 2
+@[to_additive two_zsmul] lemma zpow_two (a : G) : a ^ (2 : ℤ) = a * a := by rw [zpow_ofNat, pow_two]
 #align zpow_two zpow_two
 #align two_zsmul two_zsmul
 
@@ -1371,3 +1369,6 @@ initialize_simps_projections Group
 initialize_simps_projections AddGroup
 initialize_simps_projections CommGroup
 initialize_simps_projections AddCommGroup
+
+assert_not_exists Function.Injective
+assert_not_exists IsCommutative
