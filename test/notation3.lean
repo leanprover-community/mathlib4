@@ -176,3 +176,28 @@ open scoped MyNotation
 #guard_msgs in #check π
 
 end test_scoped
+
+/-!
+Verifying that delaborator does not match the exact `Inhabited` instance.
+Instead, it matches that it's an application of `Inhabited.default` whose first argument is `Nat`.
+-/
+/--
+info: [notation3] syntax declaration has name Test.termδNat
+[notation3] Generating matcher for pattern default
+[notation3] Matcher creation succeeded; assembling delaborator
+[notation3] matcher:
+      matchApp✝ (matchApp✝ (matchExpr✝ (Expr.isConstOf✝ · `Inhabited.default))
+(matchExpr✝ (Expr.isConstOf✝ · `Nat)))
+          pure✝ >=>
+        pure✝
+[notation3] Defined delaborator Test.termδNat.delab
+[notation3] Adding `delab` attribute for keys [app.Inhabited.default]
+-/
+#guard_msgs in
+set_option trace.notation3 true in
+notation3 "δNat" => (default : Nat)
+
+/-- info: δNat : ℕ -/
+#guard_msgs in #check (default : Nat)
+/-- info: δNat : ℕ -/
+#guard_msgs in #check @default Nat (Inhabited.mk 5)

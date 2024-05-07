@@ -163,8 +163,7 @@ Define the map `λ : TL ⟶ L`, which will serve as the structure of the coalgeb
 we will show is the colimiting object. We use the cocone constructed by `c` and the fact that
 `T` preserves colimits to produce this morphism.
 -/
-@[reducible]
-def lambda : ((T : C ⥤ C).mapCocone c).pt ⟶ c.pt :=
+abbrev lambda : ((T : C ⥤ C).mapCocone c).pt ⟶ c.pt :=
   (isColimitOfPreserves _ t).desc (newCocone c)
 #align category_theory.monad.forget_creates_colimits.lambda CategoryTheory.Monad.ForgetCreatesColimits.lambda
 
@@ -324,7 +323,7 @@ noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J �
     exact preservesColimitOfIsoDiagram _ (isoWhiskerRight i (leftAdjoint R ⋙ R)).symm
   letI : CreatesColimit (K ⋙ A) B := CategoryTheory.Monad.forgetCreatesColimit _
   letI : CreatesColimit K (A ⋙ B) := CategoryTheory.compCreatesColimit _ _
-  let e := (Monad.comparisonForget (Adjunction.ofRightAdjoint R))
+  let e := Monad.comparisonForget (Adjunction.ofRightAdjoint R)
   apply createsColimitOfNatIso e
 #align category_theory.monadic_creates_colimit_of_preserves_colimit CategoryTheory.monadicCreatesColimitOfPreservesColimit
 
@@ -400,7 +399,7 @@ noncomputable def leftAdjointPreservesTerminalOfReflective (R : D ⥤ C) [Reflec
       apply (asIso ((Adjunction.ofRightAdjoint R).counit.app _)).symm.trans
       apply (leftAdjoint R).mapIso
       letI := monadicCreatesLimits.{v, v} R
-      let A := (CategoryTheory.preservesLimitOfCreatesLimitAndHasLimit F R)
+      let A := CategoryTheory.preservesLimitOfCreatesLimitAndHasLimit F R
       apply (A.preserves (limit.isLimit F)).conePointUniqueUpToIso h
     apply preservesLimitOfIsoDiagram _ (Functor.emptyExt (F ⋙ R) _)
 #align category_theory.left_adjoint_preserves_terminal_of_reflective CategoryTheory.leftAdjointPreservesTerminalOfReflective

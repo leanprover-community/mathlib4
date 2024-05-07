@@ -74,12 +74,12 @@ theorem subset_product_image_snd [DecidableEq β] : (s ×ˢ t).image Prod.snd �
 
 theorem product_image_fst [DecidableEq α] (ht : t.Nonempty) : (s ×ˢ t).image Prod.fst = s := by
   ext i
-  simp [mem_image, ht.bex]
+  simp [mem_image, ht.exists_mem]
 #align finset.product_image_fst Finset.product_image_fst
 
 theorem product_image_snd [DecidableEq β] (ht : s.Nonempty) : (s ×ˢ t).image Prod.snd = t := by
   ext i
-  simp [mem_image, ht.bex]
+  simp [mem_image, ht.exists_mem]
 #align finset.product_image_snd Finset.product_image_snd
 
 theorem subset_product [DecidableEq α] [DecidableEq β] {s : Finset (α × β)} :
@@ -87,6 +87,7 @@ theorem subset_product [DecidableEq α] [DecidableEq β] {s : Finset (α × β)}
   mem_product.2 ⟨mem_image_of_mem _ hp, mem_image_of_mem _ hp⟩
 #align finset.subset_product Finset.subset_product
 
+@[gcongr]
 theorem product_subset_product (hs : s ⊆ s') (ht : t ⊆ t') : s ×ˢ t ⊆ s' ×ˢ t' := fun ⟨_, _⟩ h =>
   mem_product.2 ⟨hs (mem_product.1 h).1, ht (mem_product.1 h).2⟩
 #align finset.product_subset_product Finset.product_subset_product
@@ -366,6 +367,7 @@ theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
 @[simp]
 theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by
   conv_rhs => rw [← filter_union_filter_neg_eq (fun a => a.1 = a.2) (s ×ˢ s)]
+  rfl
 #align finset.diag_union_off_diag Finset.diag_union_offDiag
 
 @[simp]

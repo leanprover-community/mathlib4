@@ -148,12 +148,13 @@ def noncommPiCoprodEquiv :
     where
   toFun ϕ := noncommPiCoprod ϕ.1 ϕ.2
   invFun f :=
-    ⟨fun i => f.comp (MonoidHom.single N i), fun i j hij x y =>
+    ⟨fun i => f.comp (MonoidHom.mulSingle N i), fun i j hij x y =>
       Commute.map (Pi.mulSingle_commute hij x y) f⟩
   left_inv ϕ := by
     ext
-    simp
-  right_inv f := pi_ext fun i x => by simp
+    simp only [coe_comp, Function.comp_apply, mulSingle_apply, noncommPiCoprod_mulSingle]
+  right_inv f := pi_ext fun i x => by
+    simp only [noncommPiCoprod_mulSingle, coe_comp, Function.comp_apply, mulSingle_apply]
 #align monoid_hom.noncomm_pi_coprod_equiv MonoidHom.noncommPiCoprodEquiv
 #align add_monoid_hom.noncomm_pi_coprod_equiv AddMonoidHom.noncommPiCoprodEquiv
 
