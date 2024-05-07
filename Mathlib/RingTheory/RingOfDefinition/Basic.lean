@@ -143,7 +143,7 @@ def _root_.Subring.adjoinCoefficients (s : Set (MvPolynomial ι R)) (R₀ : Subr
 
 /-- If the coefficients of a set `s` of polynomials are adjoined, every element of the set `s`
 has coefficients in the new subring. -/
-instance (s : Set (MvPolynomial ι R)) (p : s) (R₀ : Subring R) :
+instance HasCoefficients.of_mem (s : Set (MvPolynomial ι R)) (p : s) (R₀ : Subring R) :
     HasCoefficients p.val (R₀.adjoinCoefficients s) where
   has_coeffs := Set.Subset.trans
     (s.coefficients_subset_coefficients p.val p.property)
@@ -160,15 +160,21 @@ instance HasCoefficients.trans (p : MvPolynomial ι R) (R₀ : Subring R) [HasCo
     rw [Subring.range_subtype] at this
     exact Set.Subset.trans HasCoefficients.has_coeffs this
 
+instance {α : Type*} (f : α → MvPolynomial ι R) (R₀ : Subring R) (a : α) :
+    HasCoefficients (f a) (R₀.adjoinCoefficients (Set.range f)) :=
+  HasCoefficients.of_mem _ ⟨f a, Set.mem_range_self a⟩ _
+
 /- Lean automatically infers that any of the adjoined polynomials has coefficients in the new
 ring. -/
-example (t₁ t₂ t₃ t₄ : Set (MvPolynomial ι R)) (p : t₁) :
-  HasCoefficients p.val <|
-    Subring.adjoinCoefficients t₄ <|
-    Subring.adjoinCoefficients t₃ <|
-    Subring.adjoinCoefficients t₂ <|
-    core t₁ :=
-  inferInstance
+example (t₁ t₂ t₃ t₄ : Set (MvPolynomial ι R)) (f : ℕ → MvPolynomial ι R) (p : t₁)
+  (n : ℕ) :
+    let R₀ := Subring.adjoinCoefficients t₄ <|
+      Subring.adjoinCoefficients t₃ <|
+      Subring.adjoinCoefficients (Set.range f) <|
+      Subring.adjoinCoefficients t₂ <|
+      core t₁;
+    HasCoefficients (f n) R₀ ∧ HasCoefficients p.val R₀ :=
+  ⟨inferInstance, inferInstance⟩
 
 end HasCoefficients
 
@@ -221,19 +227,19 @@ end Relation
 
 section HasRelation
 
-variable {ι : Type*} {s : Set (MvPolynomial ι R)}
+variable {ι : Type*} {s : Set (MvPolynomial ι R)} {t : Set (MvPolynomial ι R)}
 
 /-- A typeclass expressing that `R₀` contains the coefficients of a relation `r`. -/
 class HasRelation (r : Relation s) (R₀ : Subring R) : Prop where
   has_coeffs : ∀ p : (MvPolynomial.coefficients r), HasCoefficients p.val R₀
 
 /-- Adjoin the coefficients of a set of relations to a subring `R₀`. -/
-def adjoinRelations (rs : Set (Relation s)) (R₀ : Subring R) : Subring R :=
+def _root_.Subring.adjoinRelations (rs : Set (Relation s)) (R₀ : Subring R) : Subring R :=
   (Algebra.adjoin R₀ (rs.coefficients.coefficients)).toSubring
 
 /-- After adjoining a set `rs` of relations to `R₀`, it has each element of `rs`. -/
-instance (rs : Set (Relation s)) (r : rs) (R₀ : Subring R) :
-    HasRelation r.val (adjoinRelations rs R₀) where
+instance HasRelation.of_mem (rs : Set (Relation s)) (r : rs) (R₀ : Subring R) :
+    HasRelation r.val (R₀.adjoinRelations rs) where
   has_coeffs := fun ⟨p, hp⟩ ↦ by
     refine ⟨Set.Subset.trans ?_ Algebra.subset_adjoin⟩
     intro a ha
@@ -241,10 +247,41 @@ instance (rs : Set (Relation s)) (r : rs) (R₀ : Subring R) :
       Set.iUnion_exists, Set.biUnion_and']
     refine ⟨r.val, r.property, p, hp, ha⟩
 
-instance HasRelation.trans (r : Relation s) (rs : Set (Relation s)) (R₀ : Subring R) [HasRelation r R₀] :
-    HasRelation r (adjoinRelations rs R₀) where
+/-- If `R₀` has the coefficients of a relation `r`, then after adjoining more coefficients,
+the new subring still has the coefficients of `r`. -/
+instance HasRelation.trans (r : Relation t) (rs : Set (Relation s)) (R₀ : Subring R)
+    [HasRelation r R₀] : HasRelation r (R₀.adjoinRelations rs) where
   has_coeffs := fun ⟨p, hp⟩ ↦ by
-    sorry
+    have : ((R₀.subtype).range : Set R) ⊆
+        (Algebra.adjoin R₀ rs.coefficients.coefficients).toSubring :=
+      Set.Subset.trans (Set.subset_union_left _ _) Subsemiring.subset_closure
+    rw [Subring.range_subtype] at this
+    exact ⟨Set.Subset.trans (HasRelation.has_coeffs ⟨p, hp⟩).has_coeffs this⟩
+
+instance {α : Type*} (f : α → Relation s) (R₀ : Subring R) (a : α) :
+    HasRelation (f a) (R₀.adjoinRelations (Set.range f)) :=
+  HasRelation.of_mem _ ⟨f a, Set.mem_range_self a⟩ _
+
+instance (p : MvPolynomial ι R) (rs : Set (Relation s)) (R₀ : Subring R)
+    [HasCoefficients p R₀] : HasCoefficients p (R₀.adjoinRelations rs) where
+  has_coeffs := by
+    have : ((R₀.subtype).range : Set R) ⊆
+        (Algebra.adjoin R₀ rs.coefficients.coefficients).toSubring :=
+      Set.Subset.trans (Set.subset_union_left _ _) Subsemiring.subset_closure
+    rw [Subring.range_subtype] at this
+    exact Set.Subset.trans HasCoefficients.has_coeffs this
+
+/- Lean automatically infers that any of the adjoined polynomials has coefficients in the new
+ring. -/
+example (t₁ t₂ : Set (MvPolynomial ι R)) (f : ℕ → MvPolynomial ι R)
+  (rs : Set (Relation t₂)) (g : ℤ → Relation t₁) (r : rs) (n : ℕ) (m : ℤ) :
+    let R₀ := Subring.adjoinRelations rs <|
+      Subring.adjoinRelations (Set.range g) <|
+      Subring.adjoinCoefficients (Set.range f) <|
+      Subring.adjoinCoefficients t₂ <|
+      core t₁;
+    HasCoefficients (f n) R₀ ∧ HasRelation (g m) R₀ ∧ HasRelation r.val R₀ :=
+  ⟨inferInstance, inferInstance, inferInstance⟩
 
 end HasRelation
 
