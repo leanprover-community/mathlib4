@@ -269,50 +269,42 @@ section
 
 variable {σ : Type*}
 
-class HasCoefficients (s : Set (MvPolynomial σ R)) (R₀ : Subring R) where
-  has_coeffs : s.coefficients ⊆ R₀
+class HasCoefficients (p : MvPolynomial σ R) (R₀ : Subring R) where
+  has_coeffs : p.coefficients ⊆ R₀
 
 def minimalModel (s : Set (MvPolynomial σ R)) : Subring R :=
   (Algebra.adjoin ℤ s.coefficients).toSubring
 
-instance (s : Set (MvPolynomial σ R)) : HasCoefficients s (minimalModel s) where
-  has_coeffs := Algebra.subset_adjoin
+instance (s : Set (MvPolynomial σ R)) (p : s) : HasCoefficients p.val (minimalModel s) where
+  has_coeffs := Set.Subset.trans (s.coefficients_subset_coefficients p.val p.property) Algebra.subset_adjoin
 
 def _root_.Subring.adjoinCoefficients (s : Set (MvPolynomial σ R)) (R₀ : Subring R) :
     Subring R :=
   (Algebra.adjoin R₀ s.coefficients).toSubring
 
-instance (s : Set (MvPolynomial σ R)) (R₀ : Subring R) :
-    HasCoefficients s (R₀.adjoinCoefficients s) where
-  has_coeffs := Algebra.subset_adjoin
+instance (s : Set (MvPolynomial σ R)) (p : s) (R₀ : Subring R) :
+    HasCoefficients p.val (R₀.adjoinCoefficients s) where
+  has_coeffs := Set.Subset.trans (s.coefficients_subset_coefficients p.val p.property) Algebra.subset_adjoin
 
-instance (t₁ t₂ : Set (MvPolynomial σ R)) (R₀ : Subring R) [HasCoefficients t₁ R₀] :
-    HasCoefficients t₁ (R₀.adjoinCoefficients t₂) where
+instance (p : MvPolynomial σ R) (R₀ : Subring R) [HasCoefficients p R₀]
+    (s : Set (MvPolynomial σ R)) :
+    HasCoefficients p (R₀.adjoinCoefficients s) where
   has_coeffs := by
-    have : ((R₀.subtype).range : Set R) ⊆ (Algebra.adjoin R₀ t₂.coefficients).toSubring :=
+    have : ((R₀.subtype).range : Set R) ⊆ (Algebra.adjoin R₀ s.coefficients).toSubring :=
       Set.Subset.trans (Set.subset_union_left _ _) Subsemiring.subset_closure
     rw [Subring.range_subtype] at this
     exact Set.Subset.trans HasCoefficients.has_coeffs this
 
-noncomputable def repr {s : Set (MvPolynomial σ R)} (p : MvPolynomial σ R) (hp : p ∈ s)
-    (R₀ : Subring R) [HasCoefficients s R₀] : MvPolynomial σ R₀ := by
-  fapply MvPolynomial.choosePreimageOfCoeffs' p
-    (Set.Subset.trans 
-      (Set.coefficients_subset_coefficients s p hp)
-      HasCoefficients.has_coeffs)
-
-class HasRepresentative (p : MvPolynomial σ R) (R₀ : Subring R) : Prop where
-  has_coeffs : p.coefficients ⊆ R₀
-
 noncomputable def _root_.MvPolynomial.descend (p : MvPolynomial σ R) (R₀ : Subring R)
-    [HasRepresentative p R₀] : MvPolynomial σ R₀ :=
-  p.choosePreimageOfCoeffs' (HasRepresentative.has_coeffs)
+    [HasCoefficients p R₀] : MvPolynomial σ R₀ :=
+  p.choosePreimageOfCoeffs' (HasCoefficients.has_coeffs)
 
-instance (s : Set (MvPolynomial σ R)) (R₀ : Subring R) [HasCoefficients s R₀] (p : s) :
-    HasRepresentative p.val R₀ where
-  has_coeffs := Set.Subset.trans
-    (s.coefficients_subset_coefficients p.val p.property)
-    HasCoefficients.has_coeffs
+instance {ι : Type*} (f : ι → MvPolynomial ι R) (R₀ : Subring R) (i : ι) :
+    HasCoefficients (f i) (R₀.adjoinCoefficients (Set.range f)) where
+  has_coeffs :=
+    have h : f i ∈ Set.range f := Set.mem_range_self i
+    Set.Subset.trans ((Set.range f).coefficients_subset_coefficients (f i) h)
+      (Algebra.subset_adjoin)
 
 end
 
@@ -320,7 +312,7 @@ structure Model {σ : Type*} (I : Ideal (MvPolynomial σ R)) where
   s : Set (MvPolynomial σ R)
   hs : Ideal.span s = I
   R₀ : Subring R
-  coeffs : HasCoefficients s R₀ := by infer_instance
+  coeffs : ∀ p : s, HasCoefficients p.val R₀ := by infer_instance
 
 namespace Model
 
@@ -331,15 +323,19 @@ variable {σ : Type*} {I : Ideal (MvPolynomial σ R)} (M : Model I)
 def mkOfGenerators (s : Set (MvPolynomial σ R)) (hs : Ideal.span s = I) : Model I where
   s := s
   hs := hs
-  R₀ := Subalgebra.toSubring <| Algebra.adjoin ℤ s.coefficients
-  coeffs := ⟨Algebra.subset_adjoin⟩
+  R₀ := minimalModel s
+  coeffs := inferInstance
 
 theorem coefficients_subset (p : MvPolynomial σ R) (hp : p ∈ M.s) :
     p.coefficients ⊆ M.R₀ :=
-  Set.Subset.trans (M.s.coefficients_subset_coefficients p hp) M.coeffs.has_coeffs
+  (M.coeffs ⟨p, hp⟩).has_coeffs
 
-theorem coefficients_subset_range : M.s.coefficients ⊆ (algebraMap M.R₀ R).range :=
-  fun x hx ↦ ⟨⟨x, M.coeffs.has_coeffs hx⟩, rfl⟩
+theorem coefficients_subset_range : M.s.coefficients ⊆ (algebraMap M.R₀ R).range := by
+  intro x hx
+  simp only [Set.coefficients] at hx
+  simp at hx
+  obtain ⟨p, hp, hpx⟩ := hx
+  exact ⟨⟨x, coefficients_subset M p hp hpx⟩, rfl⟩
 
 def s₀ : Set (MvPolynomial σ M.R₀) :=
   (MvPolynomial.map (SubringClass.subtype M.R₀)) ⁻¹' M.s
@@ -362,18 +358,6 @@ noncomputable def baseChangeIso : (MvPolynomial σ R ⧸ I) ≃ₐ[R] R ⊗[M.R�
     apply Ideal.span_preimage_le_comap_span
   · exact M.coefficients_subset_range
   · exact Ideal.subset_span
-
-def adjoin (t : Set (MvPolynomial σ R)) : Model I where
-  s := M.s
-  hs := M.hs
-  R₀ := M.R₀.adjoinCoefficients t
-
-instance (t : Set (MvPolynomial σ R)) : HasCoefficients t (M.adjoin t).R₀ :=
-  inferInstanceAs <| HasCoefficients t (M.R₀.adjoinCoefficients t)
-
-instance (s : Set (MvPolynomial σ R)) [HasCoefficients s M.R₀]
-    (t : Set (MvPolynomial σ R)) : HasCoefficients s (M.adjoin t).R₀ :=
-  inferInstanceAs <| HasCoefficients s (M.R₀.adjoinCoefficients t)
 
 end Model
 

@@ -92,30 +92,32 @@ def Relation.coefficients (r : Relation s) : Set R :=
 def Relation.Set.coefficients (rs : Set (Relation s)) : Set R :=
   rs.coefficients.coefficients
 
-class HasRelations (rs : Set (Relation s)) (R₀ : Subring R) : Prop where
-  has_coeffs : Relation.Set.coefficients rs ⊆ R₀
-
 class HasRelation (r : Relation s) (R₀ : Subring R) : Prop where
   has_coeffs : r.coefficients ⊆ R₀
-
-theorem hasRelation_of_hasRelations (rs : Set (Relation s)) (r : Relation s) (hr : r ∈ rs)
-    (R₀ : Subring R) [HasRelations rs R₀] :
-    HasRelation r R₀ :=
-  sorry
 
 def adjoinRelations (rs : Set (Relation s)) (R₀ : Subring R) : Subring R :=
   (Algebra.adjoin R₀ (Relation.Set.coefficients rs)).toSubring
 
-instance (rs : Set (Relation s)) (R₀ : Subring R) : HasRelations rs (adjoinRelations rs R₀) where
-  has_coeffs := Algebra.subset_adjoin
+instance (rs : Set (Relation s)) (r : rs) (R₀ : Subring R) :
+    HasRelation r.val (adjoinRelations rs R₀) where
+  has_coeffs := sorry --Algebra.subset_adjoin
 
-instance (rs₁ rs₂ : Set (Relation s)) (R₀ : Subring R) [HasRelations rs₁ R₀] :
-    HasRelations rs₁ (adjoinRelations rs₂ R₀) where
+instance (r : Relation s) (rs : Set (Relation s)) (R₀ : Subring R) [HasRelation r R₀] :
+    HasRelation r (adjoinRelations rs R₀) where
   has_coeffs := sorry
 
-instance (t : Set (MvPolynomial σ R)) (rs : Set (Relation s)) (R₀ : Subring R)
-    [HasCoefficients t R₀] : HasCoefficients t (adjoinRelations rs R₀) where
+instance (p : MvPolynomial σ R) (rs : Set (Relation s)) (R₀ : Subring R)
+    [HasCoefficients p R₀] : HasCoefficients p (adjoinRelations rs R₀) where
   has_coeffs := sorry
+
+instance {ι : Type*} (f : ι → Relation s) (R₀ : Subring R) (i : ι) :
+    HasRelation (f i) (adjoinRelations (Set.range f) R₀) where
+  has_coeffs := sorry
+    --have h : f i ∈ Set.range f := Set.mem_range_self i
+    --Set.Subset.trans ((Set.range f).coefficients_subset_coefficients (f i) h)
+    --  (Algebra.subset_adjoin)
+
+--noncomputable def Relation.descend (r : Relation s) (R₀ : Subring R) : Relation
 
 end
 
@@ -171,6 +173,17 @@ theorem Relation.repr_homogeneous (r : Relation M.s) [RingOfDefinition.HasRelati
   apply Relation.isHomogeneous_of_map M.mapsTo
   · apply MvPolynomial.map_injective (SubringClass.subtype M.R₀) Subtype.val_injective
   · rwa [Relation.repr_map]
+
+theorem Relation.eval_map (r : Relation M.s₀) :
+    Relation.eval (Relation.map M.mapsTo r) = MvPolynomial.map M.R₀.subtype (Relation.eval r) := by
+  sorry
+
+theorem Relation.eval_eq_of_eval_eq (r : Relation M.s₀) (p : MvPolynomial σ M.R₀)
+    (h : Relation.eval (Relation.map M.mapsTo r) = MvPolynomial.map M.R₀.subtype p) :
+    Relation.eval r = p := by
+  apply MvPolynomial.map_injective M.R₀.subtype Subtype.val_injective
+  rw [← Relation.eval_map]
+  exact h
 
 end Model
 

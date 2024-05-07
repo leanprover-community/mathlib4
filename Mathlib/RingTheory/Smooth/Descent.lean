@@ -33,6 +33,65 @@ namespace Algebra
 variable (R : Type u) [CommRing R]
 variable (A : Type u) [CommRing A] [Algebra R A]
 
+section
+
+variable {R A}
+
+lemma Ideal.mem_span' (S : Set R) (x : R) (hx : x ∈ Ideal.span S) : ∃ (p : MvPolynomial S R),
+    MvPolynomial.IsHomogeneous p 1 ∧ MvPolynomial.eval Subtype.val p = x := by
+  refine Submodule.span_induction hx ?_ ?_ ?_ ?_
+  · intro s hs
+    exact ⟨MvPolynomial.X ⟨s, hs⟩, MvPolynomial.isHomogeneous_X _ _, by simp⟩
+  · exact ⟨0, MvPolynomial.isHomogeneous_zero _ _ _, by simp⟩
+  · rintro x y ⟨px, hpxhom, rfl⟩ ⟨py, hpyhom, rfl⟩
+    exact ⟨px + py, MvPolynomial.IsHomogeneous.add hpxhom hpyhom, by simp⟩
+  · rintro a x ⟨px, hpxhom, rfl⟩
+    exact ⟨MvPolynomial.C a * px, MvPolynomial.IsHomogeneous.C_mul hpxhom a, by simp⟩
+
+lemma Ideal.mem_span_pow' {n : ℕ} (S : Set R) (x : R) :
+    x ∈ (Ideal.span S) ^ n ↔ ∃ (p : MvPolynomial S R),
+    MvPolynomial.IsHomogeneous p n ∧ MvPolynomial.eval Subtype.val p = x := by
+  constructor
+  · revert x
+    apply Nat.caseStrongInductionOn n
+    · intro x _
+      exact ⟨MvPolynomial.C x, MvPolynomial.isHomogeneous_C _ _, by simp⟩
+    · intro n ih x h
+      refine Submodule.smul_induction_on h ?_ ?_
+      · intro r hr t ht
+        obtain ⟨pr, hprhom, rfl⟩ := ih n (by omega) r hr
+        obtain ⟨pt, hpthom, rfl⟩ := Ideal.mem_span' S t ht
+        exact ⟨pr * pt, MvPolynomial.IsHomogeneous.mul hprhom hpthom, by simp⟩
+      · rintro x y ⟨px, hpxhom, rfl⟩ ⟨py, hpyhom, rfl⟩
+        exact ⟨px + py, MvPolynomial.IsHomogeneous.add hpxhom hpyhom, by simp⟩
+  · rintro ⟨p, hp, rfl⟩
+    rw [← p.sum_single, map_finsupp_sum, Finsupp.sum]
+    apply sum_mem
+    rintro c hc
+    simp only [MvPolynomial.single_eq_monomial, MvPolynomial.eval_monomial]
+    apply Ideal.mul_mem_left
+    rw [← @hp c (by simpa using hc), MvPolynomial.weightedDegree_one,
+      MvPolynomial.degree, ← Finset.prod_pow_eq_pow_sum, Finsupp.prod]
+    apply Ideal.prod_mem_prod
+    exact fun x _ ↦ Ideal.pow_mem_pow (Ideal.subset_span x.2) _
+
+lemma Ideal.mem_sq (I : Ideal R) (S : Set R) (hsp : I = Ideal.span S) (x : R) :
+  x ∈ I ^ 2 ↔ ∃ (p : MvPolynomial S R),
+    MvPolynomial.IsHomogeneous p 2 ∧ MvPolynomial.eval Subtype.val p = x := by
+  subst hsp
+  exact Ideal.mem_span_pow' S x
+
+lemma Ideal.mem_span_iff (I : Ideal R) (S : Set R) (hsp : I = Ideal.span S) (x : R) :
+  x ∈ I ↔ ∃ (p : MvPolynomial S R),
+    MvPolynomial.IsHomogeneous p 1 ∧ MvPolynomial.eval Subtype.val p = x := by
+  subst hsp
+  have : Ideal.span S = Ideal.span S ^ 1 := by
+    simp
+  rw [this]
+  exact Ideal.mem_span_pow' (n := 1) S x
+
+end
+
 namespace Smooth
 
 section
@@ -119,13 +178,35 @@ local notation "R₀" => coefficientRing f s σ
 local notation "I₀" => Model.I₀ M
 local notation "s₀" => Model.s₀ M
 
-example : HasCoefficients s R₀ := inferInstance
-example (p : s) : HasRepresentative p.val R₀ := inferInstance
+example (p : s) : HasCoefficients p.val (Model.R₀ M) := inferInstance
 
-noncomputable def foo (p : s) : MvPolynomial ι R₀ := p.val.descend R₀
 noncomputable def hAux₀ (i : ι) : MvPolynomial ι R₀ := (hAux f σ i).descend R₀
+noncomputable def relP₀ (p : s₀) : Relation s₀ := Model.Relation.repr M (relP f s σ (Model.definingSetEquiv M p))
+noncomputable def relQ₀ (i : ι) : Relation s₀ := Model.Relation.repr M (relQ f s σ i)
 
 set_option maxHeartbeats 500000
+
+lemma hAux₀_eval (a : MvPolynomial ι R₀) (ha : a ∈ I₀) :
+    MvPolynomial.aeval (hAux₀ f s σ) a ∈ I₀ ^ 2 := by
+  refine Submodule.span_induction ha ?_ ?_ ?_ ?_
+  · intro p₀ hp₀
+    let p := Model.definingSetEquiv M ⟨p₀, hp₀⟩
+    rw [Ideal.mem_sq I₀ s₀ rfl]
+    refine ⟨Model.Relation.repr M (relP f s σ p), ?_, ?_⟩
+    · apply Model.Relation.repr_homogeneous M (relP f s σ p)
+      apply relP_homogeneous
+    · change Relation.eval (Model.Relation.repr M (relP f s σ p)) = (MvPolynomial.aeval (hAux₀ f s σ)) p₀
+      apply Model.Relation.eval_eq_of_eval_eq
+      rw [Model.Relation.repr_map]
+      sorry
+  · simp
+  · intro x y hx hy
+    simp only [map_add]
+    exact Ideal.add_mem _ hx hy
+  · intro a x hx
+    simp only [smul_eq_mul, _root_.map_mul]
+    apply Ideal.mul_mem_left
+    exact hx
 
 noncomputable def σ₀ : MvPolynomial ι R₀ ⧸ I₀ →ₐ[R₀]
     MvPolynomial ι R₀ ⧸ RingHom.ker (Ideal.Quotient.mkₐ R₀ I₀).toRingHom ^ 2 := by
@@ -137,7 +218,7 @@ noncomputable def σ₀ : MvPolynomial ι R₀ ⧸ I₀ →ₐ[R₀]
     simp only [AlgHom.comp_apply, ← RingHom.mem_ker]
     erw [Ideal.Quotient.mkₐ_ker R₀ (RingHom.ker (Ideal.Quotient.mkₐ R₀ I₀).toRingHom ^ 2)]
     erw [Ideal.Quotient.mkₐ_ker R₀]
-    sorry
+    apply hAux₀_eval f s hs σ a ha
 
 variable [Fintype ι]
 
