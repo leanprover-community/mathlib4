@@ -35,7 +35,6 @@ theorem UniformEmbedding.toClosedEmbedding [UniformSpace α] [UniformSpace β] [
     ClosedEmbedding f :=
   ⟨hf.embedding, hf.toUniformInducing.isComplete_range.isClosed⟩
 
-
 namespace DenseInducing
 
 open Filter
