@@ -128,9 +128,18 @@ noncomputable def _root_.MvPolynomial.repr (p : MvPolynomial ι R) (R₀ : Subri
     [HasCoefficients p R₀] : MvPolynomial ι R₀ :=
   p.choosePreimageOfCoeffs' (HasCoefficients.has_coeffs)
 
+@[simp]
+theorem map_repr (p : MvPolynomial ι R) (R₀ : Subring R) [HasCoefficients p R₀] :
+    MvPolynomial.map R₀.subtype (p.repr R₀) = p := by
+  simp [MvPolynomial.repr]
+
 /-- The smallest subring of `R` containing all coefficients of a set `s` of polynomials. -/
 def core (s : Set (MvPolynomial ι R)) : Subring R :=
   (Algebra.adjoin ℤ s.coefficients).toSubring
+
+theorem core_finiteType_of_finite (s : Set (MvPolynomial ι R)) (hf : s.Finite) :
+    FiniteType ℤ (core s) :=
+  FiniteType.of_adjoin_finite _ (s.coefficients_finite_of_finite hf)
 
 instance {s : Set (MvPolynomial ι R)} (p : s) : HasCoefficients p.val (core s) where
   has_coeffs := Set.Subset.trans
@@ -140,6 +149,10 @@ instance {s : Set (MvPolynomial ι R)} (p : s) : HasCoefficients p.val (core s) 
 def _root_.Subring.adjoinCoefficients (s : Set (MvPolynomial ι R)) (R₀ : Subring R) :
     Subring R :=
   (Algebra.adjoin R₀ s.coefficients).toSubring
+
+instance (s : Set (MvPolynomial ι R)) (R₀ : Subring R) :
+    Algebra R₀ (R₀.adjoinCoefficients s) :=
+  inferInstanceAs <| Algebra R₀ (Algebra.adjoin R₀ s.coefficients)
 
 /-- If the coefficients of a set `s` of polynomials are adjoined, every element of the set `s`
 has coefficients in the new subring. -/
@@ -163,6 +176,16 @@ instance HasCoefficients.trans (p : MvPolynomial ι R) (R₀ : Subring R) [HasCo
 instance {α : Type*} (f : α → MvPolynomial ι R) (R₀ : Subring R) (a : α) :
     HasCoefficients (f a) (R₀.adjoinCoefficients (Set.range f)) :=
   HasCoefficients.of_mem _ ⟨f a, Set.mem_range_self a⟩ _
+
+theorem _root_.Subring.adjoinCoefficients_finiteType_of_finite (s : Set (MvPolynomial ι R))
+      (hf : s.Finite) (R₀ : Subring R) :
+    FiniteType R₀ (R₀.adjoinCoefficients s) :=
+  FiniteType.of_adjoin_finite _ (s.coefficients_finite_of_finite hf)
+
+theorem _root_.Subring.adjoinCoefficients_finiteType_of_finite' (s : Set (MvPolynomial ι R))
+      (hf : s.Finite) (R₀ : Subring R) [FiniteType ℤ R₀] :
+    FiniteType ℤ (R₀.adjoinCoefficients s) :=
+  FiniteType.trans inferInstance (R₀.adjoinCoefficients_finiteType_of_finite s hf)
 
 /- Lean automatically infers that any of the adjoined polynomials has coefficients in the new
 ring. -/
@@ -254,6 +277,22 @@ theorem coefficients_coefficients_subset (r : Relation s) (R₀ : Subring R) [Ha
 /-- Adjoin the coefficients of a set of relations to a subring `R₀`. -/
 def _root_.Subring.adjoinRelations (rs : Set (Relation s)) (R₀ : Subring R) : Subring R :=
   (Algebra.adjoin R₀ (rs.coefficients.coefficients)).toSubring
+
+instance (rs : Set (Relation s)) (R₀ : Subring R) : Algebra R₀ (R₀.adjoinRelations rs) :=
+  inferInstanceAs <| Algebra R₀ <| Algebra.adjoin R₀ (rs.coefficients.coefficients)
+
+theorem _root_.Subring.adjoinRelations_finiteType_of_finite (rs : Set (Relation s))
+      (hf : rs.Finite) (R₀ : Subring R) :
+    FiniteType R₀ (R₀.adjoinRelations rs) := by
+  apply FiniteType.of_adjoin_finite _
+  apply rs.coefficients.coefficients_finite_of_finite
+  apply rs.coefficients_finite_of_finite
+  exact hf
+
+theorem _root_.Subring.adjoinRelations_finiteType_of_finite' (rs : Set (Relation s))
+      (hf : rs.Finite) (R₀ : Subring R) [FiniteType ℤ R₀] :
+    FiniteType ℤ (R₀.adjoinRelations rs) :=
+  FiniteType.trans inferInstance (R₀.adjoinRelations_finiteType_of_finite rs hf)
 
 /-- After adjoining a set `rs` of relations to `R₀`, it has each element of `rs`. -/
 instance HasRelation.of_mem (rs : Set (Relation s)) (r : rs) (R₀ : Subring R) :
@@ -372,6 +411,18 @@ theorem mapsTo_restrict_surjective : Function.Surjective M.mapsTo.restrict := by
 /-- Restricting `MvPolynomial σ R₀ → MvPolynomial σ R` yields an equivalence `M.s₀ ≃ M.s`. -/
 noncomputable def definingSetEquiv : M.s₀ ≃ M.s :=
   Equiv.ofBijective M.mapsTo.restrict ⟨M.mapsTo_restrict_injective, M.mapsTo_restrict_surjective⟩
+
+@[simp]
+theorem definingSetEquiv_apply (p : M.s₀) :
+    M.definingSetEquiv p = MvPolynomial.map M.R₀.subtype p.val := by
+  rfl
+
+theorem finitePresentation_of_finite [Fintype σ] (hf : Set.Finite M.s) :
+    FinitePresentation M.R₀ M.A₀ := by
+  apply FinitePresentation.quotient
+  have hf₀ : Set.Finite M.s₀ := (M.definingSetEquiv.set_finite_iff).mpr hf
+  obtain ⟨s₀', hs₀'⟩ := Set.Finite.exists_finset_coe hf₀
+  refine ⟨s₀', by rw [hs₀']; rfl⟩
 
 end Model
 
