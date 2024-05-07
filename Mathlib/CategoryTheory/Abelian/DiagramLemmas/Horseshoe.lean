@@ -519,16 +519,25 @@ instance (n : ℕ) : Projective <| (horseshoeChainComplex₃ A).X n := by
     horseshoeStep, π₃_obj, horseshoeBase_X₃] <;>
   infer_instance
 
+/--
+the augmentation map on the left term.
+-/
 abbrev horseshoeToSingle₁ :
     horseshoeChainComplex₁ A ⟶ (ChainComplex.single₀ 𝒞).obj A.X₁ :=
   ChainComplex.toSingle₀Equiv _ _ |>.symm
     ⟨ShortComplex.π₁.map (horseshoeπ A), by simp [horseshoeD, horseshoeStep]⟩
 
+/--
+the augmentation map on the middle term.
+-/
 abbrev horseshoeToSingle₂ :
     horseshoeChainComplex₂ A ⟶ (ChainComplex.single₀ 𝒞).obj A.X₂ :=
   ChainComplex.toSingle₀Equiv _ _ |>.symm
     ⟨ShortComplex.π₂.map (horseshoeπ A), by simp [horseshoeD, horseshoeStep]⟩
 
+/--
+the augmentation map on the right term.
+-/
 abbrev horseshoeToSingle₃ :
     horseshoeChainComplex₃ A ⟶ (ChainComplex.single₀ 𝒞).obj A.X₃ :=
   ChainComplex.toSingle₀Equiv _ _ |>.symm
