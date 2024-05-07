@@ -2897,12 +2897,12 @@ attribute [instance 50] NormedCommGroup.toCommGroup
 
 -- add higer-priority versions in scope `AlgebraNormedInstances`
 namespace AlgebraNormedInstances
-attribute [instance 50] SeminormedAddGroup.toAddGroup
-attribute [instance 50] SeminormedGroup.toGroup
-attribute [instance 50] NormedAddGroup.toAddGroup
-attribute [instance 50] NormedGroup.toGroup
-attribute [instance 50] SeminormedAddCommGroup.toAddCommGroup
-attribute [instance 50] SeminormedCommGroup.toCommGroup
-attribute [instance 50] NormedAddCommGroup.toAddCommGroup
-attribute [instance 50] NormedCommGroup.toCommGroup
+attribute [scoped instance 200] SeminormedAddGroup.toAddGroup
+attribute [scoped instance 200] SeminormedGroup.toGroup
+attribute [scoped instance 200] NormedAddGroup.toAddGroup
+attribute [scoped instance 200] NormedGroup.toGroup
+attribute [scoped instance 200] SeminormedAddCommGroup.toAddCommGroup
+attribute [scoped instance 200] SeminormedCommGroup.toCommGroup
+attribute [scoped instance 200] NormedAddCommGroup.toAddCommGroup
+attribute [scoped instance 200] NormedCommGroup.toCommGroup
 end AlgebraNormedInstances
