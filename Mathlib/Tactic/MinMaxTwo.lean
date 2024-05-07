@@ -25,6 +25,9 @@ abbrev toAddWords : HashMap String String := HashMap.empty
   |>.insert "Monoid" "AddMonoid"
   |>.insert "CommSemigroup" "AddCommSemigroup"
   |>.insert "MulOneClass" "AddZeroClass"
+  |>.insert "MonoidHomClass" "AddMonoidHomClass"
+  |>.insert "singleOneRingHom" "singleZeroRingHom"
+  |>.insert "singleOneAlgHom" "singleZeroAlgHom"
   |>.insert "MonoidAlgebra" "AddMonoidAlgebra"
   |>.insert "monoid" "add_monoid"
 
@@ -38,10 +41,18 @@ either `[alpha]*` or a single `non-alpha`. -/
 def stringReplacements (convs : HashMap String String) (str : String) : String :=
   String.join <| (splitAlpha str).map fun s => (convs.find? s).getD s
 
+def extraTranslations (s : String) : String :=
+  let repls := [("single_one", "single_zero"), ("exists_mul", "exists_add")]
+  Id.run do
+  let mut str := s
+  for (orig, new) in repls do
+    str := str.replace orig new
+  return str
+
 variable (convs : HashMap String String) in
 /-- converts a name involving `MonoidAlgebra` to a name involving `AddMonoidAlgebra`. -/
 def nameToAdd : Name → Name
-  | .str a b => .str (nameToAdd a) (stringReplacements convs b)
+  | .str a b => .str (nameToAdd a) (extraTranslations <| stringReplacements convs b)
   | _ => default
 
 variable {m} [Monad m] [MonadRef m] [MonadQuotation m] --[MonadLog m] [AddMessageContext m] [MonadOptions m]
@@ -83,6 +94,9 @@ def MaxToMin (stx : Syntax) : m Syntax := do
             if toPlus.contains x then return some <| ← `($(mkIdent `Zero) $(⟨x⟩))
             else return none
 
+          | `Finsupp.singleAddHom => return some <| ← `($(mkIdent `Finsupp.singleAddHom) 0)
+          | `single =>
+            if x == (← `(1)) then return some <| ← `($(mkIdent `single) 0) else return none
           | _ =>
             if azc == toMultArrow then
                     return some <| ← `($(mkIdent azc) ($(mkIdent `Multiplicative.ofAdd) $(⟨x⟩)))
@@ -100,6 +114,8 @@ def MaxToMin (stx : Syntax) : m Syntax := do
       | .node _ `«term_^_» #[a, _, b] =>
         if toPlus.contains a then return some <| ← `($(⟨b⟩) • $(⟨a⟩))
         else return none
+
+      | .ident _ _ `Commute.one_left _ => return some <| mkIdent `AddCommute.zero_left
 
       | .ident _ _ x _ => if x != toMult then return none else
                 return some <| ← `($(mkIdent `Multiplicative) $(mkIdent x))
