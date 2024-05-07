@@ -147,14 +147,15 @@ theorem zpow_ne_zero {a : G₀} : ∀ n : ℤ, a ≠ 0 → a ^ n ≠ 0
 #align zpow_ne_zero_of_ne_zero zpow_ne_zero
 #align zpow_ne_zero zpow_ne_zero
 
-@[deprecated (since := "2024-05-07")] alias zpow_ne_zero_of_ne_zero := zpow_ne_zero
-
 theorem zpow_sub₀ {a : G₀} (ha : a ≠ 0) (z1 z2 : ℤ) : a ^ (z1 - z2) = a ^ z1 / a ^ z2 := by
   rw [sub_eq_add_neg, zpow_add₀ ha, zpow_neg, div_eq_mul_inv]
 #align zpow_sub₀ zpow_sub₀
 
 lemma eq_zero_of_zpow_eq_zero : a ^ n = 0 → a = 0 := not_imp_not.1 (zpow_ne_zero _)
 #align zpow_eq_zero eq_zero_of_zpow_eq_zero
+
+@[deprecated (since := "2024-05-07")] alias zpow_ne_zero_of_ne_zero := zpow_ne_zero
+@[deprecated (since := "2024-05-07")] alias zpow_eq_zero := eq_zero_of_zpow_eq_zero
 
 lemma zpow_eq_zero_iff (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
   ⟨eq_zero_of_zpow_eq_zero, fun ha => ha.symm ▸ zero_zpow _ hn⟩
