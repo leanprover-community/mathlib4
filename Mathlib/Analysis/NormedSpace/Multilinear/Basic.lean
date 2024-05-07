@@ -1322,7 +1322,7 @@ noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α] [DecidableEq
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)] :
     ContinuousMultilinearMap 𝕜 (fun (i : {a : ι // a ∉ s}) ↦ E₁ i)
       (ContinuousMultilinearMap 𝕜 (fun (_ : α) ↦ (∀ i, E₁ i)) G) :=
-  (f.toMultilinearMap.iteratedFDerivComponent e).mkContinuousMultilinear (‖f‖) <| by
+  (f.toMultilinearMap.iteratedFDerivComponent e).mkContinuousMultilinear ‖f‖ <| by
     intro x m
     simp only [MultilinearMap.iteratedFDerivComponent, MultilinearMap.domDomRestrictₗ,
       MultilinearMap.coe_mk, MultilinearMap.domDomRestrict_apply, coe_coe]
@@ -1352,8 +1352,7 @@ noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α] [DecidableEq
 lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α] [DecidableEq ι]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]
     (x : (i : ι) → E₁ i) :
-    ‖f.iteratedFDerivComponent e (fun i ↦ x i)‖
-      ≤ ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := calc
+‖f.iteratedFDerivComponent e (x ·)‖ ≤ ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := calc
   ‖f.iteratedFDerivComponent e (fun i ↦ x i)‖
     ≤ ‖f.iteratedFDerivComponent e‖ * ∏ i : {a : ι // a ∉ s}, ‖x i‖ :=
       ContinuousMultilinearMap.le_opNorm _ _
@@ -1361,7 +1360,7 @@ lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α] [DecidableEq ι]
       gcongr
       · apply prod_nonneg (fun i _hi ↦ norm_nonneg _)
       · apply MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg _)
-      · exact fun i _hi ↦ norm_nonneg _
+      · exact fun i _ ↦ norm_nonneg _
       · apply norm_le_pi_norm
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card {a : ι // a ∉ s}) := by rw [prod_const, card_univ]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := by simp [Fintype.card_congr e]
@@ -1388,10 +1387,9 @@ lemma norm_iteratedFDeriv_le' (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : �
     ‖f.iteratedFDeriv k x‖
       ≤ Nat.descFactorial (Fintype.card ι) k * ‖f‖ * ‖x‖ ^ (Fintype.card ι - k) := by
   classical
-  calc
-  ‖f.iteratedFDeriv k x‖
-    ≤ ∑ e : Fin k ↪ ι, ‖iteratedFDerivComponent f e.toEquivRange (fun i ↦ x i)‖ := norm_sum_le _ _
-  _ ≤ ∑ _e : Fin k ↪ ι, ‖f‖ * ‖x‖ ^ (Fintype.card ι - k) := by
+  calc ‖f.iteratedFDeriv k x‖
+  _ ≤ ∑ e : Fin k ↪ ι, ‖iteratedFDerivComponent f e.toEquivRange (fun i ↦ x i)‖ := norm_sum_le _ _
+  _ ≤ ∑ _ : Fin k ↪ ι, ‖f‖ * ‖x‖ ^ (Fintype.card ι - k) := by
     gcongr with e _he
     simpa using norm_iteratedFDerivComponent_le f e.toEquivRange x
   _ = Nat.descFactorial (Fintype.card ι) k * ‖f‖ * ‖x‖ ^ (Fintype.card ι - k) := by

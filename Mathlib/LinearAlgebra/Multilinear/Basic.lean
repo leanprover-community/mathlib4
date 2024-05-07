@@ -786,17 +786,7 @@ lemma domDomRestrict_aux_right [DecidableEq ι] (P : ι → Prop) [DecidablePred
     (x : (i : {a // P a}) → M₁ i) (z : (i : {a // ¬ P a}) → M₁ i) (i : {a : ι // ¬ P a})
     (c : M₁ i) : (fun j ↦ if h : P j then x ⟨j, h⟩ else Function.update z i c ⟨j, h⟩) =
     Function.update (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by
-  ext j
-  by_cases h : j = i
-  · rw [h, Function.update_same]
-    simp only [i.2, update_same, dite_false]
-  · rw [Function.update_noteq h]
-    by_cases h' : P j
-    · simp only [h', ne_eq, Subtype.mk.injEq, dite_true]
-    · simp only [h', ne_eq, Subtype.mk.injEq, dite_false]
-      have h'' : ¬ ⟨j, h'⟩ = i :=
-        fun he => by apply_fun (fun x => x.1) at he; exact h he
-      rw [Function.update_noteq h'']
+  simpa only [dite_not] using domDomRestrict_aux _ z (fun j ↦ x ⟨j.1, not_not.mp j.2⟩) i c
 
 /-- Given a multilinear map `f` on `(i : ι) → M i`, a (decidable) predicate `P` on `ι` and
 an element `z` of `(i : {a // ¬ P a}) → M₁ i`, construct a multilinear map on
@@ -1047,13 +1037,9 @@ lemma iteratedFDeriv_aux {α : Type*} [DecidableEq α]
     (fun i_1 ↦ update m i z (e.symm i_1) i_1) =
       (fun i_1 ↦ update (fun j ↦ m (e.symm j) j) (e i) (z (e i)) i_1) := by
   ext i_1
-  rcases eq_or_ne i (e.symm i_1) with rfl|hne
-  · rw [Equiv.apply_symm_apply]
-    simp
-  · rw [update_noteq, update_noteq]
-    · rintro rfl
-      simp at hne
-    · exact hne.symm
+  rcases eq_or_ne i (e.symm i_1) with rfl | hne
+  · rw [Equiv.apply_symm_apply e i_1, update_same, update_same]
+  · rw [update_noteq hne.symm, update_noteq fun h ↦ (Equiv.symm_apply_apply .. ▸ h ▸ hne) rfl]
 
 /-- One of the components of the iterated derivative of a multilinear map. Given a bijection `e`
 between a type `α` (typically `Fin k`) and a subset `s` of `ι`, this component is a multilinear map

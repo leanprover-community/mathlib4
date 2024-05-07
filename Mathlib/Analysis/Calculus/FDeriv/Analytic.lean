@@ -391,16 +391,14 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
     congr with k
     by_cases hke : k ∈ Set.range e
     · simp only [hke, ↓reduceDite]
-      by_cases hkf : k ∈ Set.range (Equiv.embeddingFinSucc n ι e).1
-      · simp only [hkf, ↓reduceDite, ← Equiv.succ_embeddingFinSucc_fst_symm_apply e hkf hke,
-          Fin.cons_succ]
-      · simp only [hkf, ↓reduceDite]
-        obtain rfl : k = e 0 := by
+      split_ifs with hkf
+      · simp only [← Equiv.succ_embeddingFinSucc_fst_symm_apply e hkf hke, Fin.cons_succ]
+      · obtain rfl : k = e 0 := by
           rcases hke with ⟨j, rfl⟩
           congr
           simpa using hkf
         simp only [Function.Embedding.toEquivRange_symm_apply_self, Fin.cons_zero, Function.update,
-          Pi.compRightL_apply, dite_eq_ite]
+          Pi.compRightL_apply]
         split_ifs with h
         · congr!
         · exfalso
