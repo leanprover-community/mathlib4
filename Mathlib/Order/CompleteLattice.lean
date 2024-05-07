@@ -308,7 +308,7 @@ def completeLatticeOfCompleteSemilatticeSup (α : Type*) [CompleteSemilatticeSup
 -- Instead we add the fields by hand, and write a manual instance.
 
 /-- A complete linear order is a linear order whose lattice structure is complete. -/
-class CompleteLinearOrder (α : Type*) extends CompleteLattice α where
+class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlgebra α where
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
@@ -344,6 +344,7 @@ instance instCompleteLattice [CompleteLattice α] : CompleteLattice αᵒᵈ whe
 
 instance instCompleteLinearOrder [CompleteLinearOrder α] : CompleteLinearOrder αᵒᵈ where
   __ := instCompleteLattice
+  __ := instBiheytingAlgebra
   __ := instLinearOrder α
 
 end OrderDual
@@ -1698,6 +1699,7 @@ instance Prop.instCompleteLattice : CompleteLattice Prop where
 noncomputable instance Prop.instCompleteLinearOrder : CompleteLinearOrder Prop where
   __ := Prop.instCompleteLattice
   __ := Prop.linearOrder
+  __ := BooleanAlgebra.toBiheytingAlgebra
 #align Prop.complete_linear_order Prop.instCompleteLinearOrder
 
 @[simp]
