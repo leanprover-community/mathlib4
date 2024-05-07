@@ -381,11 +381,11 @@ is `p ^ p ^ s` if `s ≤ k` and `p ≠ 2`. -/
 lemma norm_toInteger_pow_sub_one_of_prime_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) {s : ℕ} (hs : s ≤ k) (hodd : p ≠ 2) :
     Algebra.norm ℤ (hζ.toInteger ^ (p : ℕ) ^ s - 1) = p ^ (p : ℕ) ^ s := by
-  have coe_two : ((2 : ℕ+) : ℕ) = 2 := by norm_cast
-  refine hζ.norm_toInteger_pow_sub_one_of_prime_pow_ne_two hs (fun h ↦ ?_)
-  rw [← PNat.coe_inj, coe_two, PNat.pow_coe, ← pow_one 2] at h
-  apply hodd
-  simp [← PNat.coe_inj, eq_of_prime_pow_eq hp.out.prime Nat.prime_two.prime (k - s).succ_pos h]
+  refine hζ.norm_toInteger_pow_sub_one_of_prime_pow_ne_two hs (fun h ↦ hodd ?_)
+  suffices h : (p : ℕ) = 2 from PNat.coe_injective h
+  apply eq_of_prime_pow_eq hp.out.prime Nat.prime_two.prime (k - s).succ_pos
+  rw [pow_one]
+  exact_mod_cast congr_arg Subtype.val h
 
 /-- The norm, relative to `ℤ`, of `ζ - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ` is
 `p` if `p ≠ 2`. -/
