@@ -28,6 +28,9 @@ noncomputable instance : CommRing (Relation A) :=
 
 variable {A}
 
+def Relation.eval : Relation A →+* R :=
+  MvPolynomial.eval Subtype.val
+
 def Relation.IsHomogeneous (r : Relation A) (n : ℕ) : Prop :=
   MvPolynomial.IsHomogeneous r n
 
@@ -79,11 +82,48 @@ lemma diag_rename_comm_apply (p : MvPolynomial A R) :
 
 end
 
+section
+
+variable {σ : Type*} {s : Set (MvPolynomial σ R)}
+
+def Relation.coefficients (r : Relation s) : Set R :=
+  (MvPolynomial.coefficients r).coefficients
+
+def Relation.Set.coefficients (rs : Set (Relation s)) : Set R :=
+  rs.coefficients.coefficients
+
+class HasRelations (rs : Set (Relation s)) (R₀ : Subring R) : Prop where
+  has_coeffs : Relation.Set.coefficients rs ⊆ R₀
+
+class HasRelation (r : Relation s) (R₀ : Subring R) : Prop where
+  has_coeffs : r.coefficients ⊆ R₀
+
+theorem hasRelation_of_hasRelations (rs : Set (Relation s)) (r : Relation s) (hr : r ∈ rs)
+    (R₀ : Subring R) [HasRelations rs R₀] :
+    HasRelation r R₀ :=
+  sorry
+
+def adjoinRelations (rs : Set (Relation s)) (R₀ : Subring R) : Subring R :=
+  (Algebra.adjoin R₀ (Relation.Set.coefficients rs)).toSubring
+
+instance (rs : Set (Relation s)) (R₀ : Subring R) : HasRelations rs (adjoinRelations rs R₀) where
+  has_coeffs := Algebra.subset_adjoin
+
+instance (rs₁ rs₂ : Set (Relation s)) (R₀ : Subring R) [HasRelations rs₁ R₀] :
+    HasRelations rs₁ (adjoinRelations rs₂ R₀) where
+  has_coeffs := sorry
+
+instance (t : Set (MvPolynomial σ R)) (rs : Set (Relation s)) (R₀ : Subring R)
+    [HasCoefficients t R₀] : HasCoefficients t (adjoinRelations rs R₀) where
+  has_coeffs := sorry
+
+end
+
 namespace Model
 
 variable {σ : Type*} {I : Ideal (MvPolynomial σ R)} (M : Model I)
 
-theorem mapsTo : Set.MapsTo (MvPolynomial.map (M.R₀.subtype)) M.definingSet M.s :=
+theorem mapsTo : Set.MapsTo (MvPolynomial.map (M.R₀.subtype)) M.s₀ M.s :=
   Set.mapsTo_preimage (MvPolynomial.map M.R₀.subtype) M.s
 
 theorem mapsTo_restrict_injective : Function.Injective M.mapsTo.restrict := by
@@ -100,23 +140,16 @@ theorem mapsTo_restrict_surjective : Function.Surjective M.mapsTo.restrict := by
     rw [hy]
     exact hx
 
-noncomputable def definingSetEquiv : M.definingSet ≃ M.s :=
+noncomputable def definingSetEquiv : M.s₀ ≃ M.s :=
   Equiv.ofBijective M.mapsTo.restrict ⟨M.mapsTo_restrict_injective, M.mapsTo_restrict_surjective⟩
 
-def Relation (s : Set (MvPolynomial σ R)) : Type _ := MvPolynomial s (MvPolynomial σ R)
-
-def Relation.coefficients {s : Set (MvPolynomial σ R)} (r : Relation s) : Set R :=
-  (MvPolynomial.coefficients r).coefficients
-
-def hasRelation (r : Relation M.s) :=
-  r.coefficients ⊆ M.R₀
-
-theorem Relation.exists_repr (r : Relation M.s) (hr : M.hasRelation r) :
-    ∃ (t : Relation M.definingSet), Relation.map M.mapsTo t = r := by
+theorem Relation.exists_repr (r : Relation M.s) [RingOfDefinition.HasRelation r M.R₀] :
+    ∃ (t : Relation M.s₀), Relation.map M.mapsTo t = r := by
   have hc : MvPolynomial.coefficients r ⊆ Set.range (MvPolynomial.map M.R₀.subtype) := by
     intro p hp
     have hc : MvPolynomial.coefficients p ⊆ M.R₀ :=
-      Set.Subset.trans (Set.coefficients_subset_coefficients _ _ hp) hr
+      Set.Subset.trans (Set.coefficients_subset_coefficients _ _ hp)
+        RingOfDefinition.HasRelation.has_coeffs
     obtain ⟨p₀, hp₀⟩ := MvPolynomial.mem_range_of_coefficients' p hc
     use p₀
   obtain ⟨t', ht'⟩ := MvPolynomial.mem_range_of_coefficients r hc
@@ -125,16 +158,16 @@ theorem Relation.exists_repr (r : Relation M.s) (hr : M.hasRelation r) :
   change MvPolynomial.rename (M.definingSetEquiv ∘ M.definingSetEquiv.symm) _ = _
   simpa
 
-noncomputable def Relation.repr (r : Relation M.s) (hr : M.hasRelation r) :
-    Relation M.definingSet :=
-  (r.exists_repr M hr).choose
+noncomputable def Relation.repr (r : Relation M.s) [RingOfDefinition.HasRelation r M.R₀] :
+    Relation M.s₀ :=
+  (Model.Relation.exists_repr M r).choose
 
-theorem Relation.repr_map (r : Relation M.s) (hr : M.hasRelation r) :
-    Relation.map M.mapsTo (r.repr M hr) = r :=
-  (r.exists_repr M hr).choose_spec
+theorem Relation.repr_map (r : Relation M.s) [RingOfDefinition.HasRelation r M.R₀] :
+    Relation.map M.mapsTo (Model.Relation.repr M r) = r :=
+  (Model.Relation.exists_repr M r).choose_spec
 
-theorem Relation.repr_homogeneous (r : Relation M.s) (hr : M.hasRelation r) {n : ℕ}
-    (homog : r.IsHomogeneous n) : (r.repr M hr).IsHomogeneous n := by
+theorem Relation.repr_homogeneous (r : Relation M.s) [RingOfDefinition.HasRelation r M.R₀] {n : ℕ}
+    (homog : r.IsHomogeneous n) : (Relation.repr M r).IsHomogeneous n := by
   apply Relation.isHomogeneous_of_map M.mapsTo
   · apply MvPolynomial.map_injective (SubringClass.subtype M.R₀) Subtype.val_injective
   · rwa [Relation.repr_map]
