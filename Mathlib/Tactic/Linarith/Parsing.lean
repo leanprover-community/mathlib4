@@ -31,7 +31,7 @@ This is ultimately converted into a `Linexp` in the obvious way.
 
 set_option autoImplicit true
 
-open Linarith.Ineq Std
+open Linarith.Ineq Batteries
 
 section
 open Lean Elab Tactic Meta

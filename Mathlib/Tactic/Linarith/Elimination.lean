@@ -29,6 +29,7 @@ we conclude that the original system was unsatisfiable.
 -/
 
 open Batteries
+open Std (format ToFormat)
 
 namespace Linarith
 
