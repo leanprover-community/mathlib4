@@ -507,13 +507,13 @@ variable {A B : Type*} [AddMonoid A] [AddMonoid B] [LinearOrder B] [OrderBot B]
 lemma Monic.pow (hp : p.Monic D) : (p ^ n).Monic D := by
   induction' n with n ih
   · rw [pow_zero]; exact monic_one hD
-  · rw [pow_succ]; exact hp.mul hD hadd ih
+  · rw [pow_succ']; exact hp.mul hD hadd ih
 
 lemma Monic.supDegree_pow [Nontrivial R] (hp : p.Monic D) :
     (p ^ n).supDegree D = n • p.supDegree D := by
   induction' n with n ih
   · rw [pow_zero, zero_nsmul, one_def, supDegree_single 0 1, if_neg one_ne_zero, hzero]
-  · rw [pow_succ, (hp.pow hadd hD).supDegree_mul_of_ne_zero hD hadd hp.ne_zero, ih, succ_nsmul]
+  · rw [pow_succ', (hp.pow hadd hD).supDegree_mul_of_ne_zero hD hadd hp.ne_zero, ih, succ_nsmul']
 
 end AddMonoid
 
