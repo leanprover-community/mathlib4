@@ -667,7 +667,7 @@ to_ama #align monoid_algebra.of MonoidAlgebra.of
 theorem of_apply [MulOneClass G] (a : G) : (of k G) a = single a 1 := rfl
 
 open AddMonoidAlgebra in
-@[simp]
+--@[simp]  -- simpNF linter complains
 theorem _root_.AddMonoidAlgebra.of_apply [AddZeroClass G] (a : Multiplicative G) :
     (AddMonoidAlgebra.of k G) a = AddMonoidAlgebra.single (Multiplicative.toAdd a) 1 :=
   rfl
@@ -1169,11 +1169,12 @@ def mapDomainNonUnitalAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebr
 #align monoid_algebra.map_domain_non_unital_alg_hom MonoidAlgebra.mapDomainNonUnitalAlgHom
 #align monoid_algebra.map_domain_non_unital_alg_hom_apply MonoidAlgebra.mapDomainNonUnitalAlgHom_apply
 
+to_ama
 variable (A) in
 theorem mapDomain_algebraMap {F : Type*} [FunLike F G H] [MonoidHomClass F G H] (f : F) (r : k) :
     mapDomain f (algebraMap k (MonoidAlgebra A G) r) = algebraMap k (MonoidAlgebra A H) r := by
-  simp only [coe_algebraMap, mapDomain_single, map_one, (· ∘ ·)]
-#align monoid_algebra.map_domain_algebra_map MonoidAlgebra.mapDomain_algebraMap
+  simp only [coe_algebraMap, mapDomain_single, map_one, map_zero, (· ∘ ·)]
+to_ama #align monoid_algebra.map_domain_algebra_map MonoidAlgebra.mapDomain_algebraMap
 
 /-- If `f : G → H` is a multiplicative homomorphism between two monoids, then
 `Finsupp.mapDomain f` is an algebra homomorphism between their monoid algebras. -/
@@ -1571,13 +1572,6 @@ theorem prod_single [CommSemiring k] [AddCommMonoid G] {s : Finset ι} {a : ι �
 #align add_monoid_algebra.prod_single AddMonoidAlgebra.prod_single
 
 end
-
-theorem mapDomain_algebraMap (A : Type*) {H F : Type*} [CommSemiring k] [Semiring A] [Algebra k A]
-    [AddMonoid G] [AddMonoid H] [FunLike F G H] [AddMonoidHomClass F G H]
-    (f : F) (r : k) :
-    mapDomain f (algebraMap k A[G] r) = algebraMap k A[H] r :=
-  by simp only [Function.comp_apply, mapDomain_single, AddMonoidAlgebra.coe_algebraMap, map_zero]
-#align add_monoid_algebra.map_domain_algebra_map AddMonoidAlgebra.mapDomain_algebraMap
 
 /-- If `f : G → H` is a homomorphism between two additive magmas, then `Finsupp.mapDomain f` is a
 non-unital algebra homomorphism between their additive magma algebras. -/
