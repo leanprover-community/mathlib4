@@ -204,7 +204,7 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
       trace[linarith.detail] "{comps}"
       let oracle := cfg.oracle.getD FourierMotzkin.produceCertificate
       -- perform the elimination and fail if no contradiction is found.
-      let certificate : Std.HashMap Nat Nat ← try
+      let certificate : Batteries.HashMap Nat Nat ← try
         oracle comps max_var
       catch e =>
         trace[linarith] e.toMessageData

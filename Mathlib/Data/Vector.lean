@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
-import Std.Data.List.Basic
-import Std.Data.List.Lemmas
+import Batteries.Data.List.Basic
+import Batteries.Data.List.Lemmas
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Algebra.Order.Ring.Nat
 

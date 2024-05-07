@@ -129,8 +129,7 @@ theorem powEquiv_symm_apply {n : ℕ} (hn : p.Coprime n) (g : G) :
 variable [hp : Fact p.Prime]
 
 /-- If `p ∤ n`, then the `n`th power map is a bijection. -/
-@[reducible]
-noncomputable def powEquiv' {n : ℕ} (hn : ¬p ∣ n) : G ≃ G :=
+noncomputable abbrev powEquiv' {n : ℕ} (hn : ¬p ∣ n) : G ≃ G :=
   powEquiv hG (hp.out.coprime_iff_not_dvd.mpr hn)
 #align is_p_group.pow_equiv' IsPGroup.powEquiv'
 
