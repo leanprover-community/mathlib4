@@ -527,12 +527,11 @@ instance isCentralScalar [Semiring k] [SMulZeroClass R k] [SMulZeroClass Rᵐᵒ
   Finsupp.isCentralScalar G k
 to_ama #align monoid_algebra.is_central_scalar MonoidAlgebra.isCentralScalar
 
-to_ama
 /-- This is not an instance as it conflicts with `MonoidAlgebra.distribMulAction` when `G = kˣ`.
 -/
 def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G (MonoidAlgebra k G) :=
   Finsupp.comapDistribMulAction
-to_ama #align monoid_algebra.comap_distrib_mul_action_self MonoidAlgebra.comapDistribMulActionSelf
+#align monoid_algebra.comap_distrib_mul_action_self MonoidAlgebra.comapDistribMulActionSelf
 
 end DerivedInstances
 
@@ -1302,30 +1301,34 @@ end
 section
 
 -- We now prove some additional statements that hold for group algebras.
-variable [Semiring k] [Group G]
+variable [Semiring k]
 
 -- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
 
+to_ama plus y variable [Group G] in
 @[simp]
 theorem mul_single_apply (f : MonoidAlgebra k G) (r : k) (x y : G) :
     (f * single x r) y = f (y * x⁻¹) * r :=
   f.mul_single_apply_aux fun _a => eq_mul_inv_iff_mul_eq.symm
-#align monoid_algebra.mul_single_apply MonoidAlgebra.mul_single_apply
+to_ama #align monoid_algebra.mul_single_apply MonoidAlgebra.mul_single_apply
 
+to_ama plus x variable [Group G] in
 @[simp]
 theorem single_mul_apply (r : k) (x : G) (f : MonoidAlgebra k G) (y : G) :
     (single x r * f) y = r * f (x⁻¹ * y) :=
   f.single_mul_apply_aux fun _z => eq_inv_mul_iff_mul_eq.symm
-#align monoid_algebra.single_mul_apply MonoidAlgebra.single_mul_apply
+to_ama #align monoid_algebra.single_mul_apply MonoidAlgebra.single_mul_apply
 
+to_ama plus a variable [Group G] in
 theorem mul_apply_left (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = f.sum fun a b => b * g (a⁻¹ * x) :=
   calc
     (f * g) x = sum f fun a b => (single a b * g) x := by
       rw [← Finsupp.sum_apply, ← Finsupp.sum_mul g f, f.sum_single]
     _ = _ := by simp only [single_mul_apply, Finsupp.sum]
-#align monoid_algebra.mul_apply_left MonoidAlgebra.mul_apply_left
+to_ama #align monoid_algebra.mul_apply_left MonoidAlgebra.mul_apply_left
 
+to_ama plus x variable [Group G] in
 -- If we'd assumed `CommSemiring`, we could deduce this from `mul_apply_left`.
 theorem mul_apply_right (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = g.sum fun a b => f (x * a⁻¹) * b :=
@@ -1333,7 +1336,7 @@ theorem mul_apply_right (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = sum g fun a b => (f * single a b) x := by
       rw [← Finsupp.sum_apply, ← Finsupp.mul_sum f g, g.sum_single]
     _ = _ := by simp only [mul_single_apply, Finsupp.sum]
-#align monoid_algebra.mul_apply_right MonoidAlgebra.mul_apply_right
+to_ama #align monoid_algebra.mul_apply_right MonoidAlgebra.mul_apply_right
 
 end
 
@@ -1443,16 +1446,6 @@ theorem of'_commute [Semiring k] [AddZeroClass G] {a : G} (h : ∀ a', AddCommut
     (f : AddMonoidAlgebra k G) :
     Commute (of' k G a) f :=
   MonoidAlgebra.of_commute (G := Multiplicative G) h f
-
-theorem mul_single_apply [AddGroup G] (f : k[G]) (r : k) (x y : G) :
-    (f * single x r) y = f (y - x) * r :=
-  (sub_eq_add_neg y x).symm ▸ @MonoidAlgebra.mul_single_apply k (Multiplicative G) _ _ _ _ _ _
-#align add_monoid_algebra.mul_single_apply AddMonoidAlgebra.mul_single_apply
-
-theorem single_mul_apply [AddGroup G] (r : k) (x : G) (f : k[G]) (y : G) :
-    (single x r * f) y = r * f (-x + y) :=
-  @MonoidAlgebra.single_mul_apply k (Multiplicative G) _ _ _ _ _ _
-#align add_monoid_algebra.single_mul_apply AddMonoidAlgebra.single_mul_apply
 
 end MiscTheorems
 
