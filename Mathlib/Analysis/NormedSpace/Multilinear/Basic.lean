@@ -1329,15 +1329,14 @@ noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α] [DecidableEq
     apply (f.le_opNorm _).trans _
     rw [← prod_compl_mul_prod s.toFinset, mul_assoc]
     gcongr
-    · apply prod_nonneg (fun i _ ↦ norm_nonneg _)
-    · apply prod_nonneg (fun i _ ↦ norm_nonneg _)
+    · exact prod_nonneg (fun i _ ↦ norm_nonneg _)
+    · exact prod_nonneg (fun i _ ↦ norm_nonneg _)
     · apply le_of_eq
       have : ∀ x, x ∈ s.toFinsetᶜ ↔ (fun x ↦ x ∉ s) x := by simp
       rw [prod_subtype _ this]
       congr with i
       simp [i.2]
-    · have : ∀ x, x ∈ s.toFinset ↔ (fun x ↦ x ∈ s) x := by simp
-      rw [prod_subtype (F := by infer_instance) _ this, ← Equiv.prod_comp e.symm]
+    · rw [prod_subtype _ (fun _ ↦ s.mem_toFinset), ← Equiv.prod_comp e.symm]
       apply Finset.prod_le_prod (fun i _ ↦ norm_nonneg _) (fun i _ ↦ ?_)
       simpa only [i.2, ↓reduceDite, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
 
@@ -1358,20 +1357,20 @@ lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α] [DecidableEq ι]
       ContinuousMultilinearMap.le_opNorm _ _
   _ ≤ ‖f‖ * ∏ _i : {a : ι // a ∉ s}, ‖x‖ := by
       gcongr
-      · apply prod_nonneg (fun i _hi ↦ norm_nonneg _)
-      · apply MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg _)
-      · exact fun i _ ↦ norm_nonneg _
-      · apply norm_le_pi_norm
+      · exact prod_nonneg (fun i _ ↦ norm_nonneg _)
+      · exact MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg _) _
+      · exact fun _ _ ↦ norm_nonneg _
+      · exact norm_le_pi_norm _ _
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card {a : ι // a ∉ s}) := by rw [prod_const, card_univ]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := by simp [Fintype.card_congr e]
 
 open Classical in
 /-- The `k`-th iterated derivative of a continuous multilinear map `f` at the point `x`. It is a
 continuous multilinear map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
-to `∑ f (x₁, (v_{i_1})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
-of the `(vᵢ)ⱼ`, where each `vᵢ` has to be used exactly once.
+to `∑ f (x₁, (v_{i₁})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
+of the `(vᵢ)ⱼ`, and each `vᵢ` has to be used exactly once.
 The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or, equivalently,
-by the subsets `s` of `ι` of cardinal `k` and then the bijections between `Fin k` and `s`).
+by the subsets `s` of `ι` of cardinality `k` and then the bijections between `Fin k` and `s`).
 
 The fact that this is indeed the iterated Fréchet derivative is proved in
 `ContinuousMultilinearMap.iteratedFDeriv_eq`.
@@ -1390,7 +1389,7 @@ lemma norm_iteratedFDeriv_le' (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : �
   calc ‖f.iteratedFDeriv k x‖
   _ ≤ ∑ e : Fin k ↪ ι, ‖iteratedFDerivComponent f e.toEquivRange (fun i ↦ x i)‖ := norm_sum_le _ _
   _ ≤ ∑ _ : Fin k ↪ ι, ‖f‖ * ‖x‖ ^ (Fintype.card ι - k) := by
-    gcongr with e _he
+    gcongr with e _
     simpa using norm_iteratedFDerivComponent_le f e.toEquivRange x
   _ = Nat.descFactorial (Fintype.card ι) k * ‖f‖ * ‖x‖ ^ (Fintype.card ι - k) := by
     simp [card_univ, mul_assoc]

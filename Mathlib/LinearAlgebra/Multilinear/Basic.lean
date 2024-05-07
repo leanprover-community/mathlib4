@@ -795,6 +795,8 @@ an element `z` of `(i : {a // ¬ P a}) → M₁ i`, construct a multilinear map 
 
 The naming is similar to `MultilinearMap.domDomCongr`: here we are applying the restriction to the
 domain of the domain.
+
+For a linear map version, see `MultilinearMap.domDomRestrictₗ`.
 -/
 def domDomRestrict (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P]
     (z : (i : {a : ι // ¬ P a}) → M₁ i) :
@@ -1014,8 +1016,9 @@ variable {M₁' : ι → Type*} [Π i, AddCommMonoid (M₁' i)] [Π i, Module R 
 
 /-- Given a predicate `P`, one may associate to a multilinear map `f` a multilinear map
 from the elements satisfying `P` to the multilinear maps on elements not satisfying `P`.
-In other words, splitting the variables into two subsets one gets a multilinear maps into
-multilinear maps. -/
+In other words, splitting the variables into two subsets one gets a multilinear map into
+multilinear maps.
+This is a linear map version of the function `MultilinearMap.domDomRestrict`. -/
 def domDomRestrictₗ (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P] :
     MultilinearMap R (fun (i : {a : ι // ¬ P a}) => M₁ i)
       (MultilinearMap R (fun (i : {a : ι // P a}) => M₁ i) M₂) where
@@ -1033,12 +1036,12 @@ def domDomRestrictₗ (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [Decida
 
 lemma iteratedFDeriv_aux {α : Type*} [DecidableEq α]
     (s : Set ι) [DecidableEq { x // x ∈ s }] (e : α ≃ s)
-    (m : α → ((i : ι) → M₁ i)) (i : α) (z : (i : ι) → M₁ i) :
-    (fun i_1 ↦ update m i z (e.symm i_1) i_1) =
-      (fun i_1 ↦ update (fun j ↦ m (e.symm j) j) (e i) (z (e i)) i_1) := by
-  ext i_1
-  rcases eq_or_ne i (e.symm i_1) with rfl | hne
-  · rw [Equiv.apply_symm_apply e i_1, update_same, update_same]
+    (m : α → ((i : ι) → M₁ i)) (a : α) (z : (i : ι) → M₁ i) :
+    (fun i ↦ update m a z (e.symm i) i) =
+      (fun i ↦ update (fun j ↦ m (e.symm j) j) (e a) (z (e a)) i) := by
+  ext i
+  rcases eq_or_ne a (e.symm i) with rfl | hne
+  · rw [Equiv.apply_symm_apply e i, update_same, update_same]
   · rw [update_noteq hne.symm, update_noteq fun h ↦ (Equiv.symm_apply_apply .. ▸ h ▸ hne) rfl]
 
 /-- One of the components of the iterated derivative of a multilinear map. Given a bijection `e`
@@ -1061,10 +1064,10 @@ noncomputable def iteratedFDerivComponent {α : Type*}
 open Classical in
 /-- The `k`-th iterated derivative of a multilinear map `f` at the point `x`. It is a multilinear
 map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
-to `∑ f (x₁, (v_{i_1})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
-of the `(vᵢ)ⱼ`, where each `vᵢ` has to be used exactly once.
+to `∑ f (x₁, (v_{i₁})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
+of the `(vᵢ)ⱼ`, and each `vᵢ` has to be used exactly once.
 The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or, equivalently,
-by the subsets `s` of `ι` of cardinal `k` and then the bijections between `Fin k` and `s`).
+by the subsets `s` of `ι` of cardinality `k` and then the bijections between `Fin k` and `s`).
 
 For the continuous version, see `ContinuousMultilinearMap.iteratedFDeriv`. -/
 protected noncomputable def iteratedFDeriv [Fintype ι]
