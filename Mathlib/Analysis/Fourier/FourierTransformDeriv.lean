@@ -63,6 +63,9 @@ We also give specialized versions of the one-dimensional real derivative (and it
 in `Real.deriv_fourierIntegral` and `Real.iteratedDeriv_fourierIntegral`.
 -/
 
+-- make this instance have higher priority to avoid instance mismatch below
+attribute [local instance 1000] NormedSpace.toModule -- 901 is enough
+
 noncomputable section
 
 open Real Complex MeasureTheory Filter TopologicalSpace
