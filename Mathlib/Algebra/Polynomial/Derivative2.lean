@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
 
-import Mathlib.Data.Polynomial.Derivative
-import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Data.Polynomial.Degree.Lemmas
-import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.RingDivision
 
 /-!
 TODO: move these results elsewhere

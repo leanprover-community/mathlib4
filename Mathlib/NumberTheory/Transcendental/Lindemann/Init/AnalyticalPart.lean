@@ -3,8 +3,8 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
+import Mathlib.Algebra.Polynomial.Derivative2
 import Mathlib.Analysis.Complex.Polynomial
-import Mathlib.Data.Polynomial.Derivative2
 
 /-!
 # The Lindemann-Weierstrass theorem

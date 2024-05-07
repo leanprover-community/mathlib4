@@ -564,6 +564,7 @@ import Mathlib.Algebra.Polynomial.Degree.TrailingDegree
 import Mathlib.Algebra.Polynomial.DenomsClearable
 import Mathlib.Algebra.Polynomial.Derivation
 import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Derivative2
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.EraseLead
 import Mathlib.Algebra.Polynomial.Eval
@@ -2112,7 +2113,6 @@ import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Part
 import Mathlib.Data.Pi.Interval
 import Mathlib.Data.Pi.Lex
-import Mathlib.Data.Polynomial.Derivative2
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
