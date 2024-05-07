@@ -41,8 +41,7 @@ Some functions on `Linexp` assume that `n : Nat` occurs at most once as the firs
 and that the list is sorted in decreasing order of the first argument.
 This is not enforced by the type but the operations here preserve it.
 -/
-@[reducible]
-def Linexp : Type := List (Nat × Int)
+abbrev Linexp : Type := List (Nat × Int)
 
 namespace Linexp
 /--

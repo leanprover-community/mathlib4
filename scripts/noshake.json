@@ -315,6 +315,7 @@
   "Mathlib.Lean.Meta": ["Std.Logic"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
   "Mathlib.Lean.Expr.Basic": ["Std.Logic"],
+  "Mathlib.Init.Function": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Init.Data.Nat.Lemmas": ["Std.Data.Nat.Lemmas", "Std.WF"],
   "Mathlib.Init.Data.Nat.GCD": ["Std.Data.Nat.Gcd"],
   "Mathlib.Init.Data.List.Basic": ["Std.Data.List.Basic"],
@@ -338,9 +339,9 @@
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
   "Mathlib.Control.Monad.Basic": ["Mathlib.Init.Control.Lawful"],
   "Mathlib.Control.Basic": ["Mathlib.Init.Function"],
-  "Mathlib.Combinatorics.SimpleGraph.Subgraph": ["Mathlib.Init.Core"],
   "Mathlib.Combinatorics.SimpleGraph.Triangle.Basic":
   ["Mathlib.Tactic.Positivity.Finset"],
+  "Mathlib.Combinatorics.SimpleGraph.Subgraph": ["Mathlib.Init.Core"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":

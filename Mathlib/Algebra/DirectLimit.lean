@@ -1006,8 +1006,7 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
 
 /-- Noncomputable field structure on the direct limit of fields.
 See note [reducible non-instances]. -/
-@[reducible]
-protected noncomputable def field [DirectedSystem G fun i j h => f' i j h] :
+protected noncomputable abbrev field [DirectedSystem G fun i j h => f' i j h] :
     Field (Ring.DirectLimit G fun i j h => f' i j h) where
   -- This used to include the parent CommRing and Nontrivial instances,
   -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.

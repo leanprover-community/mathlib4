@@ -163,8 +163,7 @@ Define the map `λ : TL ⟶ L`, which will serve as the structure of the coalgeb
 we will show is the colimiting object. We use the cocone constructed by `c` and the fact that
 `T` preserves colimits to produce this morphism.
 -/
-@[reducible]
-def lambda : ((T : C ⥤ C).mapCocone c).pt ⟶ c.pt :=
+abbrev lambda : ((T : C ⥤ C).mapCocone c).pt ⟶ c.pt :=
   (isColimitOfPreserves _ t).desc (newCocone c)
 #align category_theory.monad.forget_creates_colimits.lambda CategoryTheory.Monad.ForgetCreatesColimits.lambda
 
