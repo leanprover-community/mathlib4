@@ -41,6 +41,7 @@ either `[alpha]*` or a single `non-alpha`. -/
 def stringReplacements (convs : HashMap String String) (str : String) : String :=
   String.join <| (splitAlpha str).map fun s => (convs.find? s).getD s
 
+/-- some extra translations that help converting names from multiplicative to additive. -/
 def extraTranslations (s : String) : String :=
   let repls := [("single_one", "single_zero"), ("exists_mul", "exists_add")]
   Id.run do
@@ -73,6 +74,10 @@ def MaxToMin (stx : Syntax) : m Syntax := do
         if toPlus.contains a then
           return some <| ← `($(⟨a⟩) + $(⟨b⟩))
         else return none
+
+      | .node _ ``Lean.Parser.Term.app #[.ident _ _ `lift _, .node _ _ _args] =>
+        return some s
+
       | .node _ ``Lean.Parser.Term.app #[.ident _ _ ama _, .node _ _ #[first, second]] =>
         match ama with
           | `AddMonoidAlgebra => if second.getId == toMult then return s else return none
@@ -81,7 +86,11 @@ def MaxToMin (stx : Syntax) : m Syntax := do
           | `single => match first with
             | `(1)           => return some <| ← `($(mkIdent `single) 0 $(⟨second⟩))
             | `((1 : $type)) => return some <| ← `($(mkIdent `single) (0 : $(⟨type⟩)) $(⟨second⟩))
-            | _ => return none
+            | _ =>
+              if (toMultArrow != .anonymous) && toMultArrow == first.getId then
+                return some <| ←
+                  `($(mkIdent `single) ($(mkIdent `Multiplicative.toAdd) $(⟨first⟩)) $(⟨second⟩))
+              else return none
           | `Commute =>
             if toPlus.contains first then
               return some <| ← `($(mkIdent `AddCommute) $(⟨first⟩) $(⟨second⟩))
@@ -160,8 +169,8 @@ def toAmaCmd (verbose? : Bool) (id1 id2 : TSyntax `ident) (id3 : Array Syntax) (
   withScope (fun s => { s with currNamespace := nameToAdd toAddWords currNS }) <| elabCommand newCmd
 
 @[inherit_doc toAmaCmd]
-elab "to_ama " tk:("?")? "[" id:(ident)? "]" cmd:command : command =>
-  let rid := mkIdent `hi
+elab "to_ama " tk:("?")? "[" id:(ident)? "]" rid:(ident)? cmd:command : command =>
+  let rid := rid.getD (mkIdent `hi)
   toAmaCmd tk.isSome (id.getD default) rid #[] cmd
 
 @[inherit_doc toAmaCmd]
