@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
-import Std.Data.Bool
+import Batteries.Data.Bool
 
 /-!
 # Boolean operations

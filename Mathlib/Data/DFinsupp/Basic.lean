@@ -3,12 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Data.Set.Finite
-import Mathlib.GroupTheory.Submonoid.Membership
-import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Set.Finite
+import Mathlib.GroupTheory.GroupAction.BigOperators
 
 #align_import data.dfinsupp.basic from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 

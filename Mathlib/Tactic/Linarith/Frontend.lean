@@ -120,7 +120,7 @@ linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear progra
 set_option autoImplicit true
 
 open Lean Elab Tactic Meta
-open Std
+open Batteries
 
 
 namespace Linarith

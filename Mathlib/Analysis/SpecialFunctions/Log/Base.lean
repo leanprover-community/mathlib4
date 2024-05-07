@@ -160,7 +160,7 @@ theorem logb_eq_iff_rpow_eq (hy : 0 < y) : logb b y = x ↔ b ^ x = y := by
   · exact logb_rpow b_pos b_ne_one
 
 theorem surjOn_logb : SurjOn (logb b) (Ioi 0) univ := fun x _ =>
-  ⟨rpow b x, rpow_pos_of_pos b_pos x, logb_rpow b_pos b_ne_one⟩
+  ⟨b ^ x, rpow_pos_of_pos b_pos x, logb_rpow b_pos b_ne_one⟩
 #align real.surj_on_logb Real.surjOn_logb
 
 theorem logb_surjective : Surjective (logb b) := fun x => ⟨b ^ x, logb_rpow b_pos b_ne_one⟩

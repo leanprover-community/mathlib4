@@ -195,8 +195,7 @@ def torsion' (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S 
 
 /-- The torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
   non-zero-divisor `a` in `R`. -/
-@[reducible]
-def torsion :=
+abbrev torsion :=
   torsion' R M R⁰
 #align submodule.torsion Submodule.torsion
 
@@ -205,27 +204,23 @@ end Submodule
 namespace Module
 
 /-- An `a`-torsion module is a module where every element is `a`-torsion. -/
-@[reducible]
-def IsTorsionBy (a : R) :=
+abbrev IsTorsionBy (a : R) :=
   ∀ ⦃x : M⦄, a • x = 0
 #align module.is_torsion_by Module.IsTorsionBy
 
 /-- A module where every element is `a`-torsion for all `a` in `s`. -/
-@[reducible]
-def IsTorsionBySet (s : Set R) :=
+abbrev IsTorsionBySet (s : Set R) :=
   ∀ ⦃x : M⦄ ⦃a : s⦄, (a : R) • x = 0
 #align module.is_torsion_by_set Module.IsTorsionBySet
 
 /-- An `S`-torsion module is a module where every element is `a`-torsion for some `a` in `S`. -/
-@[reducible]
-def IsTorsion' (S : Type*) [SMul S M] :=
+abbrev IsTorsion' (S : Type*) [SMul S M] :=
   ∀ ⦃x : M⦄, ∃ a : S, a • x = 0
 #align module.is_torsion' Module.IsTorsion'
 
 /-- A torsion module is a module where every element is `a`-torsion for some non-zero-divisor `a`.
 -/
-@[reducible]
-def IsTorsion :=
+abbrev IsTorsion :=
   ∀ ⦃x : M⦄, ∃ a : R⁰, a • x = 0
 #align module.is_torsion Module.IsTorsion
 

@@ -87,7 +87,8 @@ def vecConsUnexpander : Lean.PrettyPrinter.Unexpander
 /-- Unexpander for the `![]` notation. -/
 @[app_unexpander vecEmpty]
 def vecEmptyUnexpander : Lean.PrettyPrinter.Unexpander
-  | _ => `(![])
+  | `($_:ident) => `(![])
+  | _ => throw ()
 
 /-- `vecHead v` gives the first entry of the vector `v` -/
 def vecHead {n : ℕ} (v : Fin n.succ → α) : α :=
@@ -314,11 +315,11 @@ theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v :
   split_ifs with h
   · rcases i with ⟨⟨⟩ | i, hi⟩
     · simp
-    · simp only [Nat.succ_eq_add_one, add_lt_add_iff_right, Fin.val_mk] at h
+    · simp only [add_lt_add_iff_right, Fin.val_mk] at h
       simp [h]
   · rcases i with ⟨⟨⟩ | i, hi⟩
     · simp at h
-    · rw [not_lt, Fin.val_mk, Nat.succ_eq_add_one, add_le_add_iff_right] at h
+    · rw [not_lt, Fin.val_mk, add_le_add_iff_right] at h
       simp [h, not_lt.2 h]
 #align matrix.cons_vec_append Matrix.cons_vecAppend
 
@@ -365,7 +366,7 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl 
       erw [Nat.mod_eq_of_lt h]
     · rw [Fin.val_mk, not_lt] at h
       simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_add_mod, Fin.val_one,
-        Nat.mod_eq_sub_mod h, show 1 % (n + 2) = 1 from Nat.mod_eq_of_lt (by simp)]
+        Nat.mod_eq_sub_mod h, show 1 % (n + 2) = 1 from Nat.mod_eq_of_lt (by omega)]
       refine (Nat.mod_eq_of_lt ?_).symm
       rw [tsub_lt_iff_left h]
       exact Nat.add_succ_lt_add i.2 i.2
@@ -409,7 +410,7 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   simp_rw [vecAlt0]
   rcases i with ⟨⟨⟩ | i, hi⟩
   · rfl
-  · simp [vecAlt0, Nat.add_succ, Nat.succ_add]
+  · simp [vecAlt0, Nat.add_right_comm, ← Nat.add_assoc]
 #align matrix.cons_vec_alt0 Matrix.cons_vecAlt0
 
 -- Although proved by simp, extracting element 8 of a five-element
@@ -432,7 +433,7 @@ theorem cons_vecAlt1 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   simp_rw [vecAlt1]
   rcases i with ⟨⟨⟩ | i, hi⟩
   · rfl
-  · simp [vecAlt1, Nat.add_succ, Nat.succ_add]
+  · simp [vecAlt1, Nat.add_right_comm, ← Nat.add_assoc]
 #align matrix.cons_vec_alt1 Matrix.cons_vecAlt1
 
 -- Although proved by simp, extracting element 9 of a five-element
