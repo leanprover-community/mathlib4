@@ -165,7 +165,7 @@ theorem bit_true : bit true = bit1 :=
 
 @[simp]
 theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false := by
-  cases b <;> simp [Nat.bit0_eq_zero, Nat.bit1_ne_zero]
+  cases b <;> simp [Nat.bit0_eq_zero, Nat.bit1_ne_zero, bit_false, bit_true]
 #align nat.bit_eq_zero Nat.bit_eq_zero
 
 theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
@@ -461,7 +461,7 @@ theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b <
 #align nat.lt_lxor_cases Nat.lt_xor_cases
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
-  cases b <;> simp [bit0, bit1] <;> omega
+  cases b <;> simp [bit, bit0, bit1] <;> omega
 
 /-- If `x` and `y` fit within `n` bits, then the result of any bitwise operation on `x` and `y` also
 fits within `n` bits -/
