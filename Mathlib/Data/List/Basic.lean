@@ -11,7 +11,7 @@ import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Logic.Unique
 import Mathlib.Order.Basic
-import Std.Data.List.Lemmas
+import Batteries.Data.List.Lemmas
 import Mathlib.Tactic.Common
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"

@@ -28,7 +28,7 @@ We recursively eliminate all variables from the system. If we derive an empty cl
 we conclude that the original system was unsatisfiable.
 -/
 
-open Std
+open Batteries
 
 namespace Linarith
 
