@@ -212,13 +212,11 @@ theorem ThreeGPFree.smul_set (hs : ThreeGPFree s) : ThreeGPFree (a • s) := by
 #noalign mul_salem_spencer.mul_right
 #noalign add_salem_spencer.add_right
 
-@[to_additive]
-theorem threeGPFree_smul_set : ThreeGPFree ((a * ·) '' s) ↔ ThreeGPFree s :=
-  ⟨fun hs b hb c hc d hd h ↦
-    mul_left_cancel
+@[to_additive] lemma threeGPFree_smul_set : ThreeGPFree (a • s) ↔ ThreeGPFree s where
+  mp hs b hb c hc d hd h := mul_left_cancel
       (hs (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) (mem_image_of_mem _ hd) <| by
-        rw [mul_mul_mul_comm, h, mul_mul_mul_comm]),
-    ThreeGPFree.smul_set⟩
+        rw [mul_mul_mul_comm, smul_eq_mul, smul_eq_mul, mul_mul_mul_comm, h])
+  mpr := ThreeGPFree.smul_set
 #align mul_salem_spencer_mul_left_iff threeGPFree_smul_set
 #align add_salem_spencer_add_left_iff threeAPFree_vadd_set
 
@@ -247,8 +245,7 @@ section CancelCommMonoidWithZero
 
 variable [CancelCommMonoidWithZero α] [NoZeroDivisors α] {s : Set α} {a : α}
 
-theorem ThreeGPFree.smul_set₀ (hs : ThreeGPFree s) (ha : a ≠ 0) :
-    ThreeGPFree ((a * ·) '' s) := by
+lemma ThreeGPFree.smul_set₀ (hs : ThreeGPFree s) (ha : a ≠ 0) : ThreeGPFree (a • s) := by
   rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩ h
   exact congr_arg (a • ·) $ hs hb hc hd $ by simpa [mul_mul_mul_comm _ _ a, ha] using h
 #align mul_salem_spencer.mul_left₀ ThreeGPFree.smul_set₀

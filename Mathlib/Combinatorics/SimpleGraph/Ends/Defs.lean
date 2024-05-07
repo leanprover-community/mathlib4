@@ -24,16 +24,14 @@ variable {V : Type u} (G : SimpleGraph V) (K L L' M : Set V)
 namespace SimpleGraph
 
 /-- The components outside a given set of vertices `K` -/
-@[reducible]
-def ComponentCompl :=
+abbrev ComponentCompl :=
   (G.induce Kᶜ).ConnectedComponent
 #align simple_graph.component_compl SimpleGraph.ComponentCompl
 
 variable {G} {K L M}
 
 /-- The connected component of `v` in `G.induce Kᶜ`. -/
-@[reducible]
-def componentComplMk (G : SimpleGraph V) {v : V} (vK : v ∉ K) : G.ComponentCompl K :=
+abbrev componentComplMk (G : SimpleGraph V) {v : V} (vK : v ∉ K) : G.ComponentCompl K :=
   connectedComponentMk (G.induce Kᶜ) ⟨v, vK⟩
 #align simple_graph.component_compl_mk SimpleGraph.componentComplMk
 
@@ -106,8 +104,7 @@ protected theorem ind {β : G.ComponentCompl K → Prop}
 #align simple_graph.component_compl.ind SimpleGraph.ComponentCompl.ind
 
 /-- The induced graph on the vertices `C`. -/
-@[reducible]
-protected def coeGraph (C : ComponentCompl G K) : SimpleGraph C :=
+protected abbrev coeGraph (C : ComponentCompl G K) : SimpleGraph C :=
   G.induce (C : Set V)
 #align simple_graph.component_compl.coe_graph SimpleGraph.ComponentCompl.coeGraph
 
@@ -174,8 +171,7 @@ theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
 /--
 If `K ⊆ L`, the components outside of `L` are all contained in a single component outside of `K`.
 -/
-@[reducible]
-def hom (h : K ⊆ L) (C : G.ComponentCompl L) : G.ComponentCompl K :=
+abbrev hom (h : K ⊆ L) (C : G.ComponentCompl L) : G.ComponentCompl K :=
   C.map <| induceHom Hom.id <| Set.compl_subset_compl.2 h
 #align simple_graph.component_compl.hom SimpleGraph.ComponentCompl.hom
 
