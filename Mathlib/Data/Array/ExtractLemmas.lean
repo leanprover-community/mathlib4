@@ -3,7 +3,6 @@ Copyright (c) 2024 Jiecheng Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiecheng Zhao
 -/
-import Batteries.Data.Array.Lemmas
 /-!
 # Lemmas about `Array.extract`
 
