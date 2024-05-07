@@ -28,8 +28,7 @@ namespace LinearMap
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- The group of invertible linear maps from `M` to itself -/
-@[reducible]
-def GeneralLinearGroup :=
+abbrev GeneralLinearGroup :=
   (M →ₗ[R] M)ˣ
 #align linear_map.general_linear_group LinearMap.GeneralLinearGroup
 

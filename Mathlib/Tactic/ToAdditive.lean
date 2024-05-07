@@ -12,8 +12,8 @@ import Mathlib.Lean.Meta.Simp
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
-import Std.Lean.NameMapAttribute
-import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
+import Batteries.Lean.NameMapAttribute
+import Batteries.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic

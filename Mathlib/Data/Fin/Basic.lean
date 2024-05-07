@@ -7,7 +7,7 @@ import Mathlib.Algebra.NeZero
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Hom.Set
-import Std.Data.Fin.Lemmas
+import Batteries.Data.Fin.Lemmas
 
 #align_import data.fin.basic from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
