@@ -587,6 +587,17 @@ theorem geom_sum_neg_iff [LinearOrderedRing α] (hn : n ≠ 0) :
 
 end Order
 
+theorem pow_sub_pow_le [StrictOrderedCommRing α]
+    {a b : α} (n : ℕ) (hb : 0 ≤ b) (ha : b ≤ a) :
+    a ^ n - b ^ n ≤ n * a ^ (n - 1) * (a - b) := by
+  rw [← geom_sum₂_mul]
+  apply mul_le_mul_of_nonneg_right _ (sub_nonneg.mpr ha)
+  rw [← @geom_sum₂_self]
+  apply Finset.sum_le_sum
+  intros
+  apply mul_le_mul_of_nonneg_left _ (pow_nonneg (le_trans hb ha) _)
+  apply pow_le_pow_left hb ha
+
 variable {m n : ℕ} {s : Finset ℕ}
 
 /-- If all the elements of a finset of naturals are less than `n`, then the sum of their powers of

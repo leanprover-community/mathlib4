@@ -130,6 +130,15 @@ variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 #align lattice_ordered_comm_group.mabs_mabs mabs_mabs
 #align lattice_ordered_comm_group.abs_abs abs_abs
 
+-- should those be simp lemmas?
+@[to_additive]
+theorem abs_ite_inv (x : α) (p : Prop) [Decidable p] : |if p then x⁻¹ else x|ₘ = |x|ₘ := by
+  split_ifs <;> simp
+
+@[to_additive]
+lemma abs_ite_inv'  (x : α) (p : Prop) [Decidable p] : |if p then x else x⁻¹|ₘ = |x|ₘ := by
+  split_ifs <;> simp
+
 end Group
 
 section CommGroup
