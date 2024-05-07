@@ -61,15 +61,13 @@ variable {N : Type*} [DecidableEq N]
 
 /-- The forward direction of the homeomorphism
   between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
-@[reducible]
-def splitAt (i : N) : (I^N) ≃ₜ I × I^{ j // j ≠ i } :=
+abbrev splitAt (i : N) : (I^N) ≃ₜ I × I^{ j // j ≠ i } :=
   funSplitAt I i
 #align cube.split_at Cube.splitAt
 
 /-- The backward direction of the homeomorphism
   between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
-@[reducible]
-def insertAt (i : N) : (I × I^{ j // j ≠ i }) ≃ₜ I^N :=
+abbrev insertAt (i : N) : (I × I^{ j // j ≠ i }) ≃ₜ I^N :=
   (funSplitAt I i).symm
 #align cube.insert_at Cube.insertAt
 
@@ -85,8 +83,7 @@ end Cube
 variable (N X : Type*) [TopologicalSpace X] (x : X)
 
 /-- The space of paths with both endpoints equal to a specified point `x : X`. -/
-@[reducible]
-def LoopSpace :=
+abbrev LoopSpace :=
   Path x x
 #align loop_space LoopSpace
 
@@ -274,8 +271,7 @@ theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^
 #align gen_loop.from_loop_apply GenLoop.fromLoop_apply
 
 /-- Composition with `Cube.insertAt` as a continuous map. -/
-@[reducible]
-def cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
+abbrev cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
   ⟨fun f => f.comp (Cube.insertAt i).toContinuousMap,
     (Cube.insertAt i).toContinuousMap.continuous_comp_left⟩
 #align gen_loop.c_comp_insert GenLoop.cCompInsert
@@ -409,8 +405,7 @@ def homotopyGroupEquivFundamentalGroup (i : N) :
 #align homotopy_group_equiv_fundamental_group homotopyGroupEquivFundamentalGroup
 
 /-- Homotopy group of finite index. -/
-@[reducible]
-def HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
+abbrev HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
   HomotopyGroup (Fin n) _ x
 #align homotopy_group.pi HomotopyGroup.Pi
 
@@ -507,8 +502,7 @@ instance group (N) [DecidableEq N] [Nonempty N] : Group (HomotopyGroup N X x) :=
 /-- Group structure on `HomotopyGroup` obtained by pulling back path composition along the
   `i`th direction. The group structures for two different `i j : N` distribute over each
   other, and therefore are equal by the Eckmann-Hilton argument. -/
-@[reducible]
-def auxGroup (i : N) : Group (HomotopyGroup N X x) :=
+abbrev auxGroup (i : N) : Group (HomotopyGroup N X x) :=
   (homotopyGroupEquivFundamentalGroup i).group
 #align homotopy_group.aux_group HomotopyGroup.auxGroup
 
