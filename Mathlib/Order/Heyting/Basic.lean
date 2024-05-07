@@ -201,8 +201,7 @@ instance (priority := 100) BiheytingAlgebra.toCoheytingAlgebra [BiheytingAlgebra
 
 -- See note [reducible non-instances]
 /-- Construct a Heyting algebra from the lattice structure and Heyting implication alone. -/
-@[reducible]
-def HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α → α → α)
+abbrev HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α → α → α)
     (le_himp_iff : ∀ a b c, a ≤ himp b c ↔ a ⊓ b ≤ c) : HeytingAlgebra α :=
   { ‹DistribLattice α›, ‹BoundedOrder α› with
     himp,
@@ -213,8 +212,7 @@ def HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α → �
 
 -- See note [reducible non-instances]
 /-- Construct a Heyting algebra from the lattice structure and complement operator alone. -/
-@[reducible]
-def HeytingAlgebra.ofCompl [DistribLattice α] [BoundedOrder α] (compl : α → α)
+abbrev HeytingAlgebra.ofCompl [DistribLattice α] [BoundedOrder α] (compl : α → α)
     (le_himp_iff : ∀ a b c, a ≤ compl b ⊔ c ↔ a ⊓ b ≤ c) : HeytingAlgebra α where
   himp := (compl · ⊔ ·)
   compl := compl
@@ -224,8 +222,7 @@ def HeytingAlgebra.ofCompl [DistribLattice α] [BoundedOrder α] (compl : α →
 
 -- See note [reducible non-instances]
 /-- Construct a co-Heyting algebra from the lattice structure and the difference alone. -/
-@[reducible]
-def CoheytingAlgebra.ofSDiff [DistribLattice α] [BoundedOrder α] (sdiff : α → α → α)
+abbrev CoheytingAlgebra.ofSDiff [DistribLattice α] [BoundedOrder α] (sdiff : α → α → α)
     (sdiff_le_iff : ∀ a b c, sdiff a b ≤ c ↔ a ≤ b ⊔ c) : CoheytingAlgebra α :=
   { ‹DistribLattice α›, ‹BoundedOrder α› with
     sdiff,
@@ -236,8 +233,7 @@ def CoheytingAlgebra.ofSDiff [DistribLattice α] [BoundedOrder α] (sdiff : α �
 
 -- See note [reducible non-instances]
 /-- Construct a co-Heyting algebra from the difference and Heyting negation alone. -/
-@[reducible]
-def CoheytingAlgebra.ofHNot [DistribLattice α] [BoundedOrder α] (hnot : α → α)
+abbrev CoheytingAlgebra.ofHNot [DistribLattice α] [BoundedOrder α] (hnot : α → α)
     (sdiff_le_iff : ∀ a b c, a ⊓ hnot b ≤ c ↔ a ≤ b ⊔ c) : CoheytingAlgebra α where
   sdiff a b := a ⊓ hnot b
   hnot := hnot
@@ -1166,8 +1162,7 @@ theorem compl_iff_not (p : Prop) : pᶜ ↔ ¬p :=
 /-- A bounded linear order is a bi-Heyting algebra by setting
 * `a ⇨ b = ⊤` if `a ≤ b` and `a ⇨ b = b` otherwise.
 * `a \ b = ⊥` if `a ≤ b` and `a \ b = a` otherwise. -/
-@[reducible]
-def LinearOrder.toBiheytingAlgebra [LinearOrder α] [BoundedOrder α] : BiheytingAlgebra α :=
+abbrev LinearOrder.toBiheytingAlgebra [LinearOrder α] [BoundedOrder α] : BiheytingAlgebra α :=
   { LinearOrder.toLattice, ‹BoundedOrder α› with
     himp := fun a b => if a ≤ b then ⊤ else b,
     compl := fun a => if a = ⊥ then ⊤ else ⊥,
@@ -1204,8 +1199,7 @@ section lift
 
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedHeytingAlgebra` along an injection. -/
-@[reducible]
-protected def Function.Injective.generalizedHeytingAlgebra [Sup α] [Inf α] [Top α]
+protected abbrev Function.Injective.generalizedHeytingAlgebra [Sup α] [Inf α] [Top α]
     [HImp α] [GeneralizedHeytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : GeneralizedHeytingAlgebra α :=
@@ -1223,8 +1217,7 @@ protected def Function.Injective.generalizedHeytingAlgebra [Sup α] [Inf α] [To
 
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedCoheytingAlgebra` along an injection. -/
-@[reducible]
-protected def Function.Injective.generalizedCoheytingAlgebra [Sup α] [Inf α] [Bot α]
+protected abbrev Function.Injective.generalizedCoheytingAlgebra [Sup α] [Inf α] [Bot α]
     [SDiff α] [GeneralizedCoheytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_bot : f ⊥ = ⊥) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
@@ -1243,8 +1236,7 @@ protected def Function.Injective.generalizedCoheytingAlgebra [Sup α] [Inf α] [
 
 -- See note [reducible non-instances]
 /-- Pullback a `HeytingAlgebra` along an injection. -/
-@[reducible]
-protected def Function.Injective.heytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
+protected abbrev Function.Injective.heytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
     [HasCompl α] [HImp α] [HeytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
@@ -1261,8 +1253,7 @@ protected def Function.Injective.heytingAlgebra [Sup α] [Inf α] [Top α] [Bot 
 
 -- See note [reducible non-instances]
 /-- Pullback a `CoheytingAlgebra` along an injection. -/
-@[reducible]
-protected def Function.Injective.coheytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
+protected abbrev Function.Injective.coheytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
     [HNot α] [SDiff α] [CoheytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_hnot : ∀ a, f (￢a) = ￢f a)
@@ -1279,8 +1270,7 @@ protected def Function.Injective.coheytingAlgebra [Sup α] [Inf α] [Top α] [Bo
 
 -- See note [reducible non-instances]
 /-- Pullback a `BiheytingAlgebra` along an injection. -/
-@[reducible]
-protected def Function.Injective.biheytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
+protected abbrev Function.Injective.biheytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
     [HasCompl α] [HNot α] [HImp α] [SDiff α] [BiheytingAlgebra β] (f : α → β)
     (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
