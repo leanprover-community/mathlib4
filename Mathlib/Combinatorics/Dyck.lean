@@ -97,6 +97,7 @@ where go (k : Nat) (d : Dyck (n + k + 2)) : Dyck (n + k) :=
 
 theorem rightCap_up : rightCap (up d) = down d := by
   rw [rightCap, rightCap.go]
+
 private theorem rightCap_go_prependUp {n} {d : Dyck (n + 1 + k + 1)} :
     rightCap.go (n := n + 1) k (prependUp d) =
       cast (by omega) (prependUp (rightCap.go (n := n) k (cast (by omega) d))) := by
