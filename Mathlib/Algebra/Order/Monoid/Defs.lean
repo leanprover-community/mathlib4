@@ -26,18 +26,12 @@ class OrderedAddCommMonoid (α : Type*) extends AddCommMonoid α, PartialOrder �
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c, c + a ≤ c + b
 #align ordered_add_comm_monoid OrderedAddCommMonoid
 
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] OrderedAddCommMonoid.toAddCommMonoid
-
 /-- An ordered commutative monoid is a commutative monoid with a partial order such that
 multiplication is monotone. -/
 @[to_additive]
 class OrderedCommMonoid (α : Type*) extends CommMonoid α, PartialOrder α where
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c, c * a ≤ c * b
 #align ordered_comm_monoid OrderedCommMonoid
-
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] OrderedCommMonoid.toCommMonoid
 
 section OrderedCommMonoid
 variable [OrderedCommMonoid α]
@@ -192,3 +186,13 @@ theorem mul_self_le_one_iff : a * a ≤ 1 ↔ a ≤ 1 := by simp [← not_iff_no
 
 @[to_additive (attr := simp)]
 theorem mul_self_lt_one_iff : a * a < 1 ↔ a < 1 := by simp [← not_iff_not]
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] OrderedAddCommMonoid.toAddCommMonoid
+attribute [instance 50] OrderedCommMonoid.toCommMonoid
+
+-- add higer-priority versions in scope `AlgebraOrderInstances`
+namespace AlgebraOrderInstances
+attribute [scoped instance 200] OrderedAddCommMonoid.toAddCommMonoid
+attribute [scoped instance 200] OrderedCommMonoid.toCommMonoid
+end AlgebraOrderInstances

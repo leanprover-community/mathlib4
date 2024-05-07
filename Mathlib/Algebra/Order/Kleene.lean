@@ -68,16 +68,10 @@ class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
   protected bot_le : ∀ a, bot ≤ a
 #align idem_semiring IdemSemiring
 
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] IdemSemiring.toSemiring
-
 /-- An idempotent commutative semiring is a commutative semiring with the additional property that
 addition is idempotent. -/
 class IdemCommSemiring (α : Type u) extends CommSemiring α, IdemSemiring α
 #align idem_comm_semiring IdemCommSemiring
-
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] IdemCommSemiring.toCommSemiring
 
 /-- Notation typeclass for the Kleene star `∗`. -/
 class KStar (α : Type*) where
@@ -424,3 +418,13 @@ protected def kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [Mul 
 #align function.injective.kleene_algebra Function.Injective.kleeneAlgebra
 
 end Function.Injective
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] IdemSemiring.toSemiring
+attribute [instance 50] IdemCommSemiring.toCommSemiring
+
+-- add higer-priority versions in scope `AlgebraOrderInstances`
+namespace AlgebraOrderInstances
+attribute [scoped instance 200] IdemSemiring.toSemiring
+attribute [scoped instance 200] IdemCommSemiring.toCommSemiring
+end AlgebraOrderInstances

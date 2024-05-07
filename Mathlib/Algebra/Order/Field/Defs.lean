@@ -32,15 +32,9 @@ variable {α : Type*}
 class LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, Semifield α
 #align linear_ordered_semifield LinearOrderedSemifield
 
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] LinearOrderedSemifield.toSemifield
-
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
 class LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
 #align linear_ordered_field LinearOrderedField
-
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] LinearOrderedField.toField
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield [LinearOrderedField α] :
@@ -107,3 +101,13 @@ lemma zpow_pos_of_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
   | -(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
 #align zpow_pos_of_pos zpow_pos_of_pos
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] LinearOrderedSemifield.toSemifield
+attribute [instance 50] LinearOrderedField.toField
+
+-- add higer-priority versions in scope `AlgebraOrderInstances`
+namespace AlgebraOrderInstances
+attribute [scoped instance 200] LinearOrderedSemifield.toSemifield
+attribute [scoped instance 200] LinearOrderedField.toField
+end AlgebraOrderInstances

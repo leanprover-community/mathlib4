@@ -87,9 +87,6 @@ class SeminormedAddGroup (E : Type*) extends Norm E, AddGroup E, PseudoMetricSpa
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align seminormed_add_group SeminormedAddGroup
 
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] SeminormedAddGroup.toAddGroup
-
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a
 pseudometric space structure. -/
 @[to_additive]
@@ -99,9 +96,6 @@ class SeminormedGroup (E : Type*) extends Norm E, Group E, PseudoMetricSpace E w
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align seminormed_group SeminormedGroup
 
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] SeminormedGroup.toGroup
-
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
 class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where
@@ -109,9 +103,6 @@ class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align normed_add_group NormedAddGroup
-
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] NormedAddGroup.toAddGroup
 
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
@@ -122,9 +113,6 @@ class NormedGroup (E : Type*) extends Norm E, Group E, MetricSpace E where
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align normed_group NormedGroup
 
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] NormedGroup.toGroup
-
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
 class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,
@@ -133,9 +121,6 @@ class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align seminormed_add_comm_group SeminormedAddCommGroup
-
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] SeminormedAddCommGroup.toAddCommGroup
 
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x / y‖`
 defines a pseudometric space structure. -/
@@ -146,9 +131,6 @@ class SeminormedCommGroup (E : Type*) extends Norm E, CommGroup E, PseudoMetricS
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align seminormed_comm_group SeminormedCommGroup
 
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] SeminormedCommGroup.toCommGroup
-
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
 class NormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E, MetricSpace E where
@@ -156,9 +138,6 @@ class NormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E, MetricSpace
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align normed_add_comm_group NormedAddCommGroup
-
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] NormedAddCommGroup.toAddCommGroup
 
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
@@ -168,9 +147,6 @@ class NormedCommGroup (E : Type*) extends Norm E, CommGroup E, MetricSpace E whe
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align normed_comm_group NormedCommGroup
-
--- lower instance priority to avoid instance synthesis trying this early
-attribute [instance 50] NormedCommGroup.toCommGroup
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -2908,3 +2884,25 @@ instance normedAddCommGroup [Ring 𝕜] [NormedAddCommGroup E] [Module 𝕜 E]
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 end Submodule
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] SeminormedAddGroup.toAddGroup
+attribute [instance 50] SeminormedGroup.toGroup
+attribute [instance 50] NormedAddGroup.toAddGroup
+attribute [instance 50] NormedGroup.toGroup
+attribute [instance 50] SeminormedAddCommGroup.toAddCommGroup
+attribute [instance 50] SeminormedCommGroup.toCommGroup
+attribute [instance 50] NormedAddCommGroup.toAddCommGroup
+attribute [instance 50] NormedCommGroup.toCommGroup
+
+-- add higer-priority versions in scope `AlgebraNormedInstances`
+namespace AlgebraNormedInstances
+attribute [instance 50] SeminormedAddGroup.toAddGroup
+attribute [instance 50] SeminormedGroup.toGroup
+attribute [instance 50] NormedAddGroup.toAddGroup
+attribute [instance 50] NormedGroup.toGroup
+attribute [instance 50] SeminormedAddCommGroup.toAddCommGroup
+attribute [instance 50] SeminormedCommGroup.toCommGroup
+attribute [instance 50] NormedAddCommGroup.toAddCommGroup
+attribute [instance 50] NormedCommGroup.toCommGroup
+end AlgebraNormedInstances
