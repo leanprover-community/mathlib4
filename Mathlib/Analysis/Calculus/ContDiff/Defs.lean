@@ -154,6 +154,9 @@ In this file, we denote `⊤ : ℕ∞` with `∞`.
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 noncomputable section
 
 open scoped Classical

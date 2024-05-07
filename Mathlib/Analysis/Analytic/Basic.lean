@@ -70,6 +70,9 @@ notion, describing the polydisk of convergence. This notion is more specific, an
 build the general theory. We do not define it here.
 -/
 
+-- make instances relating normed stuff to algebra have higher priority
+open scoped AlgebraNormedInstances
+
 noncomputable section
 
 variable {𝕜 E F G : Type*}

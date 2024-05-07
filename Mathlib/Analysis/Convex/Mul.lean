@@ -19,6 +19,9 @@ As corollaries, we also prove that `x ↦ x ^ n` is convex
 * `convexOn_zpow`: over $(0, +∞)$ For `n : ℤ`.
 -/
 
+-- make instances relating order and algebra have higher priority
+open scoped AlgebraOrderInstances
+
 open Set
 
 variable {𝕜 E F : Type*}
