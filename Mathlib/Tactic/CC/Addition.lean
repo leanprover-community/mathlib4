@@ -252,6 +252,10 @@ def hasHEqProofs (root : Expr) : CCM Bool := do
   guard (n.root == root)
   return n.heqProofs
 
+/-- Apply symmetry to `H`, which is an `Eq` or a `HEq`.
+
+* If `heqProofs` is true, ensure the result is a `HEq` (otherwise it is assumed to be `Eq`).
+* If `flipped` is true, apply `symm`, otherwise keep the same direction. -/
 def flipProofCore (H : Expr) (flipped heqProofs : Bool) : CCM Expr := do
   let mut newH := H
   if ← liftM <| pure heqProofs <&&> Expr.isEq <$> (inferType H >>= whnf) then
@@ -263,6 +267,10 @@ def flipProofCore (H : Expr) (flipped heqProofs : Bool) : CCM Expr := do
   else
     mkEqSymm newH
 
+/-- In a delayed way, apply symmetry to `H`, which is an `Eq` or a `HEq`.
+
+* If `heqProofs` is true, ensure the result is a `HEq` (otherwise it is assumed to be `Eq`).
+* If `flipped` is true, apply `symm`, otherwise keep the same direction. -/
 def flipDelayedProofCore (H : DelayedExpr) (flipped heqProofs : Bool) : CCM DelayedExpr := do
   let mut newH := H
   if heqProofs then
@@ -274,43 +282,69 @@ def flipDelayedProofCore (H : DelayedExpr) (flipped heqProofs : Bool) : CCM Dela
   else
     return .eqSymm newH
 
+/-- Apply symmetry to `H`, which is an `Eq` or a `HEq`.
+
+* If `heqProofs` is true, ensure the result is a `HEq` (otherwise it is assumed to be `Eq`).
+* If `flipped` is true, apply `symm`, otherwise keep the same direction. -/
 def flipProof (H : EntryExpr) (flipped heqProofs : Bool) : CCM EntryExpr :=
   match H with
   | .ofExpr H => EntryExpr.ofExpr <$> flipProofCore H flipped heqProofs
   | .ofDExpr H => EntryExpr.ofDExpr <$> flipDelayedProofCore H flipped heqProofs
   | _ => return H
 
+/-- Are `e₁` and `e₂` known to be in the same equivalence class? -/
 def isEqv (e₁ e₂ : Expr) : CCM Bool := do
   let some n₁ ← getEntry e₁ | return false
   let some n₂ ← getEntry e₂ | return false
   return n₁.root == n₂.root
 
+/-- Is `e₁ ≠ e₂` known to be true?
+
+Note that this is stronger than `not (isEqv e₁ e₂)`:
+only if we can prove they are distinct this returns `true`. -/
 def isNotEqv (e₁ e₂ : Expr) : CCM Bool := do
   let tmp ← mkEq e₁ e₂
   if ← isEqv tmp (.const ``False []) then return true
   let tmp ← mkHEq e₁ e₂
   isEqv tmp (.const ``False [])
 
+/-- Is the proposition `e` known to be true? -/
+@[inline]
 def isEqTrue (e : Expr) : CCM Bool :=
   isEqv e (.const ``True [])
 
+/-- Is the proposition `e` known to be false? -/
+@[inline]
 def isEqFalse (e : Expr) : CCM Bool :=
   isEqv e (.const ``False [])
 
+/-- Apply transitivity to `H₁` and `H₂`, which are both `Eq` or `HEq` depending on `heqProofs`. -/
 def mkTrans (H₁ H₂ : Expr) (heqProofs : Bool) : MetaM Expr :=
   if heqProofs then mkHEqTrans H₁ H₂ else mkEqTrans H₁ H₂
 
+/-- Apply transitivity to `H₁?` and `H₂`, which are both `Eq` or `HEq` depending on `heqProofs`.
+
+If `H₁?` is `none`, return `H₂` instead. -/
 def mkTransOpt (H₁? : Option Expr) (H₂ : Expr) (heqProofs : Bool) : MetaM Expr :=
   match H₁? with
   | some H₁ => mkTrans H₁ H₂ heqProofs
   | none => pure H₂
 
 mutual
+/-- Use congruence on arguments to prove `lhs = rhs`.
+
+That is, tries to prove that `lhsFn lhsArgs[0] ... lhsArgs[n-1] = lhsFn rhsArgs[0] ... rhsArgs[n-1]`
+by showing that `lhsArgs[i] = rhsArgs[i]` for all `i`.
+
+Fails if the head function of `lhs` is not that of `rhs`. -/
 partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := do
   let mut lhsArgsRev : Array Expr := #[]
   let mut rhsArgsRev : Array Expr := #[]
   let mut lhsIt := lhs
   let mut rhsIt := rhs
+  -- Collect the arguments to `lhs` and `rhs`.
+  -- As an optimization, we stop collecting arguments as soon as the functions are defeq,
+  -- so `lhsFn` and `rhsFn` might end up still of the form `(f x y z)` and `(f x' y' z')`.
   if lhs != rhs then
     repeat
       let .app lhsItFn lhsItArg := lhsIt | failure
@@ -326,6 +360,7 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
       if ← isEqv lhsIt rhsIt <&&>
           inferType lhsIt >>= fun i₁ => inferType rhsIt >>= fun i₂ => pureIsDefEq i₁ i₂ then
         break
+  -- If we collect no arguments, the expressions themselves are defeq; return `rfl`.
   if lhsArgsRev.isEmpty then
     if heqProofs then
       return (← mkHEqRefl lhs)
@@ -333,12 +368,13 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
       return (← mkEqRefl lhs)
   let lhsArgs := lhsArgsRev.reverse
   let rhsArgs := rhsArgsRev.reverse
+  -- Ensure that `lhsFn = rhsFn`, they have the same type and the same list of arguments.
   let PLift.up ha ← if ha : lhsArgs.size = rhsArgs.size then pure (PLift.up ha) else failure
   let lhsFn := lhsIt
   let rhsFn := rhsIt
   guard (← isEqv lhsFn rhsFn <||> pureIsDefEq lhsFn rhsFn)
   guard (← pureIsDefEq (← inferType lhsFn) (← inferType rhsFn))
-  /- Create proof for
+  /- Create `r`, a proof for
         `lhsFn lhsArgs[0] ... lhsArgs[n-1] = lhsFn rhsArgs[0] ... rhsArgs[n-1]`
      where
         `n := lhsArgs.size` -/
@@ -375,42 +411,52 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
         mkLambdaFVars #[x, h] motive
   mkEqRec motive r lhsFnEqRhsFn
 
+/-- If `e₁ : R lhs₁ rhs₁`, `e₂ : R lhs₂ rhs₂` and `lhs₁ = rhs₂`, where `R` is a symmetric relation,
+prove `R lhs₁ rhs₁` is equivalent to `R lhs₂ rhs₂`.
+
+ * if `lhs₁` is known to equal `lhs₂`, return `none`
+ * if `lhs₁` is not known to equal `rhs₂`, fail. -/
 partial def mkSymmCongrProof (e₁ e₂ : Expr) (heqProofs : Bool) : CCM (Option Expr) := do
   let some (R₁, lhs₁, rhs₁) ← e₁.relSidesIfSymm? | return none
   let some (R₂, lhs₂, rhs₂) ← e₂.relSidesIfSymm? | return none
   if R₁ != R₂ then return none
-  if !(← isEqv lhs₁ lhs₂) then
-    guard (← isEqv lhs₁ rhs₂)
-    /- We must apply symmetry.
-       The symm congruence table is implicitly using symmetry.
-       That is, we have
-         `e₁ := lhs₁ ~R₁~ rhs₁`
-       and
-         `e2 := lhs₂ ~R₁~ rhs₂`
-       But,
-       `lhs₁ ~R₁~ rhs₂` and `rhs₁ ~R₁~ lhs₂` -/
-    /- Given `e₁ := lhs₁ ~R₁~ rhs₁`,
-       create proof for
-         `lhs₁ ~R₁~ rhs₁` = `rhs₁ ~R₁~ lhs₁` -/
-    let newE₁ ← mkRel R₁ rhs₁ lhs₁
-    let e₁IffNewE₁ ←
-      withLocalDeclD `h₁ e₁ fun h₁ =>
-      withLocalDeclD `h₂ newE₁ fun h₂ => do
-        mkAppM ``Iff.intro
-          #[← mkLambdaFVars #[h₁] (← h₁.applySymm), ← mkLambdaFVars #[h₂] (← h₂.applySymm)]
-    let mut e₁EqNewE₁ := mkApp3 (.const ``propext []) e₁ newE₁ e₁IffNewE₁
-    let newE₁EqE₂ ← mkCongrProofCore newE₁ e₂ heqProofs
-    if heqProofs then
-      e₁EqNewE₁ ← mkAppM ``heq_of_eq #[e₁EqNewE₁]
-    return some (← mkTrans e₁EqNewE₁ newE₁EqE₂ heqProofs)
-  return none
+  if (← isEqv lhs₁ lhs₂) then
+    return none
+  guard (← isEqv lhs₁ rhs₂)
+  /- We must apply symmetry.
+     The symm congruence table is implicitly using symmetry.
+     That is, we have
+       `e₁ := lhs₁ ~R₁~ rhs₁`
+     and
+       `e2 := lhs₂ ~R₁~ rhs₂`
+     But,
+     `lhs₁ ~R₁~ rhs₂` and `rhs₁ ~R₁~ lhs₂` -/
+  /- Given `e₁ := lhs₁ ~R₁~ rhs₁`,
+     create proof for
+       `lhs₁ ~R₁~ rhs₁` = `rhs₁ ~R₁~ lhs₁` -/
+  let newE₁ ← mkRel R₁ rhs₁ lhs₁
+  let e₁IffNewE₁ ←
+    withLocalDeclD `h₁ e₁ fun h₁ =>
+    withLocalDeclD `h₂ newE₁ fun h₂ => do
+      mkAppM ``Iff.intro
+        #[← mkLambdaFVars #[h₁] (← h₁.applySymm), ← mkLambdaFVars #[h₂] (← h₂.applySymm)]
+  let mut e₁EqNewE₁ := mkApp3 (.const ``propext []) e₁ newE₁ e₁IffNewE₁
+  let newE₁EqE₂ ← mkCongrProofCore newE₁ e₂ heqProofs
+  if heqProofs then
+    e₁EqNewE₁ ← mkAppM ``heq_of_eq #[e₁EqNewE₁]
+  return some (← mkTrans e₁EqNewE₁ newE₁EqE₂ heqProofs)
 
+/-- Use congruence on arguments to prove `e₁ = e₂`.
+
+Special case: if `e₁` and `e₂` have the form `R lhs₁ rhs₁` and `R lhs₂ rhs₂` such that
+`R` is symmetric and `lhs₁ = rhs₂`, then use those facts instead. -/
 partial def mkCongrProof (e₁ e₂ : Expr) (heqProofs : Bool) : CCM Expr := do
   if let some r ← mkSymmCongrProof e₁ e₂ heqProofs then
     return r
   else
     mkCongrProofCore e₁ e₂ heqProofs
 
+/-- Turn a delayed proof into an actual proof term. -/
 partial def mkDelayedProof (H : DelayedExpr) : CCM Expr := do
   match H with
   | .ofExpr H => return H
@@ -428,6 +474,11 @@ partial def mkDelayedProof (H : DelayedExpr) : CCM Expr := do
   | .heqOfEq h => mkAppM ``heq_of_eq #[← mkDelayedProof h]
   | .heqSymm h => mkHEqSymm (← mkDelayedProof h)
 
+/-- Use the format of `H` to try and construct a proof or `lhs = rhs`:
+ * If `H = .congr`, then use congruence.
+ * If `H = .eqTrue`, try to prove `lhs = True` or `rhs = True`,
+   if they have the format `R a b`, by proving `a = b`.
+ * Otherwise, return the (delayed) proof encoded by `H` itself. -/
 partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Expr := do
   match H with
   | .congr => mkCongrProof lhs rhs heqProofs
@@ -532,28 +583,39 @@ partial def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr)
     pr ← mkAppM ``heq_of_eq #[pr]
   return pr
 
+/-- Build a proof for `e₁ = e₂`.
+The result is `none` if `e₁` and `e₂` are not in the same equivalence class. -/
+@[inline]
 partial def getEqProof (e₁ e₂ : Expr) : CCM (Option Expr) :=
   getEqProofCore e₁ e₂ false
 
+/-- Build a proof for `HEq e₁ e₂`.
+The result is `none` if `e₁` and `e₂` are not in the same equivalence class. -/
+@[inline]
 partial def getHEqProof (e₁ e₂ : Expr) : CCM (Option Expr) :=
   getEqProofCore e₁ e₂ true
 end
 
+/-- Build a proof for `e = True`. Fails if `e` is not known to be true. -/
 def getEqTrueProof (e : Expr) : CCM Expr := do
   guard (← isEqTrue e)
   let some p ← getEqProof e (.const ``True []) | failure
   return p
 
+/-- Build a proof for `e = False`. Fails if `e` is not known to be false. -/
 def getEqFalseProof (e : Expr) : CCM Expr := do
   guard (← isEqFalse e)
   let some p ← getEqProof e (.const ``False []) | failure
   return p
 
+/-- Build a proof for `a = b`. Fails if `a` and `b` are not known to be equal. -/
 def getPropEqProof (a b : Expr) : CCM Expr := do
   guard (← isEqv a b)
   let some p ← getEqProof a b | failure
   return p
 
+/-- Build a proof of `False` if the context is inconsistent.
+Returns `none` if `False` is not known to be true. -/
 def getInconsistencyProof : CCM (Option Expr) := do
   guard !(← get).frozePartitions
   if let some p ← getEqProof (.const ``True []) (.const ``False []) then
