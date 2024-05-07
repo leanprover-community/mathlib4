@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 
-import Std.Data.RBMap.Basic
+import Batteries.Data.RBMap.Basic
 import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
@@ -31,7 +31,7 @@ This is ultimately converted into a `Linexp` in the obvious way.
 
 set_option autoImplicit true
 
-open Linarith.Ineq Std
+open Linarith.Ineq Batteries
 
 section
 open Lean Elab Tactic Meta
