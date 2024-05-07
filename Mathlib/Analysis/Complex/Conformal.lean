@@ -32,6 +32,8 @@ Antiholomorphic functions such as the complex conjugate are considered as confor
 this file.
 -/
 
+-- make this instance have higher priority to avoid instance mismatch below
+attribute [local instance 1000] NormedSpace.toModule -- 901 is sufficient
 
 noncomputable section
 
