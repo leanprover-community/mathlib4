@@ -55,7 +55,8 @@ def nameToAdd : Name → Name
   | .str a b => .str (nameToAdd a) (extraTranslations <| stringReplacements convs b)
   | _ => default
 
-variable {m} [Monad m] [MonadRef m] [MonadQuotation m] --[MonadLog m] [AddMessageContext m] [MonadOptions m]
+variable {m} [Monad m] [MonadRef m] [MonadQuotation m]
+  --[MonadLog m] [AddMessageContext m] [MonadOptions m]
   (convs : HashMap String String) (toMultArrow : Name) (toMult : Name) (toPlus : Array Syntax) in
 /-- converts `WithBot _` to `ℕ∞` and `⊥` to `⊤`.
 Useful when converting a `degree` with values in `WithBot ℕ` to a `trailingDegree` with values

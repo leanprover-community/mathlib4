@@ -664,8 +664,7 @@ to_ama #align monoid_algebra.of MonoidAlgebra.of
 
 -- with `to_ama @[simps]` the auto-generated `apply` lemma is not ideal
 @[simp]
-theorem of_apply [MulOneClass G] (a : G) :
-  (of k G) a = single a 1 := rfl
+theorem of_apply [MulOneClass G] (a : G) : (of k G) a = single a 1 := rfl
 
 open AddMonoidAlgebra in
 @[simp]
@@ -924,14 +923,6 @@ theorem single_one_comm [CommSemiring k] [MulOneClass G] (r : k) (f : MonoidAlge
     single (1 : G) r * f = f * single (1 : G) r :=
   single_commute Commute.one_left (Commute.all _) f
 #align monoid_algebra.single_one_comm MonoidAlgebra.single_one_comm
-
-open AddMonoidAlgebra in
-@[simps]
-def _root_.AddMonoidAlgebra.singleZeroRingHom' [Semiring k] [AddMonoid G] : k →+* k[G] :=
-  { Finsupp.singleAddHom 0 with
-    map_one' := rfl
-    -- Porting note (#10691): Was `rw`.
-    map_mul' := fun x y => by simp only [singleAddHom, AddMonoidAlgebra.single_mul_single, zero_add] }
 
 to_ama
 /-- `Finsupp.single 1` as a `RingHom` -/
