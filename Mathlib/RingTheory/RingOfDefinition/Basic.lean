@@ -205,12 +205,23 @@ variable {S : Type*} [CommRing S]
 variable {f : R →+* S} {A : Set R} {B : Set S}
 
 noncomputable def map (h : Set.MapsTo f A B) : Relation A →+* Relation B :=
-  RingHom.comp (MvPolynomial.rename h.restrict).toRingHom (MvPolynomial.map f)
+  (MvPolynomial.map f).comp (MvPolynomial.rename h.restrict).toRingHom 
 
 @[simp]
 lemma map_apply (h : Set.MapsTo f A B) (p : Relation A) :
-    Relation.map h p = MvPolynomial.rename h.restrict (MvPolynomial.map f p) :=
+    map h p = MvPolynomial.map f (MvPolynomial.rename h.restrict p) :=
   rfl
+
+lemma eval_comp_map (h : Set.MapsTo f A B) :
+    f.comp eval = eval.comp (map h) := by
+  change f.comp eval = (MvPolynomial.eval Subtype.val).comp (map h)
+  dsimp only [eval, map]
+  exact MvPolynomial.ringHom_ext (fun r ↦ by simp) (fun a ↦ by simp)
+
+lemma eval_map_apply (h : Set.MapsTo f A B) (p : Relation A) :
+    eval (map h p) = f (eval p) := by
+  change (eval.comp (map h)) p = (f.comp eval) p
+  rw [eval_comp_map]
 
 lemma isHomogeneous_of_map (h : Set.MapsTo f A B) (hinj : Function.Injective f)
     (r : Relation A) {n : ℕ} (homog : Relation.IsHomogeneous (Relation.map h r) n) :
@@ -219,8 +230,8 @@ lemma isHomogeneous_of_map (h : Set.MapsTo f A B) (hinj : Function.Injective f)
   have h1 : Function.Injective h.restrict := by
     rw [Set.MapsTo.restrict_inj]
     apply Set.injOn_of_injective hinj
-  rw [Relation.IsHomogeneous_iff, MvPolynomial.IsHomogeneous.rename_isHomogeneous_iff h1] at homog
-  apply MvPolynomial.IsHomogeneous.of_map f hinj
+  apply MvPolynomial.IsHomogeneous.of_map f hinj at homog
+  rw [MvPolynomial.IsHomogeneous.rename_isHomogeneous_iff h1] at homog
   exact homog
 
 end Relation
@@ -232,6 +243,13 @@ variable {ι : Type*} {s : Set (MvPolynomial ι R)} {t : Set (MvPolynomial ι R)
 /-- A typeclass expressing that `R₀` contains the coefficients of a relation `r`. -/
 class HasRelation (r : Relation s) (R₀ : Subring R) : Prop where
   has_coeffs : ∀ p : (MvPolynomial.coefficients r), HasCoefficients p.val R₀
+
+theorem coefficients_coefficients_subset (r : Relation s) (R₀ : Subring R) [HasRelation r R₀] :
+    (MvPolynomial.coefficients r).coefficients ⊆ R₀ := by
+  intro a ha
+  simp only [Set.coefficients, Set.iUnion_coe_set, Set.mem_iUnion] at ha
+  obtain ⟨p, hp, hpa⟩ := ha
+  exact (HasRelation.has_coeffs ⟨p, hp⟩).has_coeffs hpa
 
 /-- Adjoin the coefficients of a set of relations to a subring `R₀`. -/
 def _root_.Subring.adjoinRelations (rs : Set (Relation s)) (R₀ : Subring R) : Subring R :=
@@ -356,5 +374,55 @@ noncomputable def definingSetEquiv : M.s₀ ≃ M.s :=
   Equiv.ofBijective M.mapsTo.restrict ⟨M.mapsTo_restrict_injective, M.mapsTo_restrict_surjective⟩
 
 end Model
+
+namespace Relation
+
+variable {σ : Type*} {I : Ideal (MvPolynomial σ R)} (M : Model I)
+
+/-- If a relation `r` in `M.s` has coefficients in `M.R₀`, it is represented by a relation
+in `M.s₀`. -/
+theorem exists_repr (r : Relation M.s) [HasRelation r M.R₀] :
+    ∃ (t : Relation M.s₀), Relation.map M.mapsTo t = r := by
+  have hc : MvPolynomial.coefficients r ⊆ Set.range (MvPolynomial.map M.R₀.subtype) := by
+    intro p hp
+    have hc : MvPolynomial.coefficients p ⊆ M.R₀ :=
+      Set.Subset.trans (Set.coefficients_subset_coefficients _ _ hp)
+        (coefficients_coefficients_subset r _)
+    obtain ⟨p₀, hp₀⟩ := MvPolynomial.mem_range_of_coefficients' p hc
+    use p₀
+  obtain ⟨t', ht'⟩ := MvPolynomial.mem_range_of_coefficients r hc
+  use (MvPolynomial.rename M.definingSetEquiv.symm t')
+  simp only [Relation.map_apply, MvPolynomial.map_rename, MvPolynomial.rename_rename]
+  change MvPolynomial.rename (M.definingSetEquiv ∘ M.definingSetEquiv.symm) _ = _
+  simpa
+
+/-- Choose a representative of a relation in `M.s` with coefficients in `M.R₀`. -/
+noncomputable def repr (r : Relation M.s) [HasRelation r M.R₀] :
+    Relation M.s₀ :=
+  (r.exists_repr M).choose
+
+@[simp]
+theorem repr_map (r : Relation M.s) [RingOfDefinition.HasRelation r M.R₀] :
+    map M.mapsTo (r.repr M) = r :=
+  (r.exists_repr M).choose_spec
+
+theorem repr_homogeneous (r : Relation M.s) [HasRelation r M.R₀] {n : ℕ}
+    (homog : r.IsHomogeneous n) : (Relation.repr M r).IsHomogeneous n := by
+  apply Relation.isHomogeneous_of_map M.mapsTo
+  · apply MvPolynomial.map_injective (SubringClass.subtype M.R₀) Subtype.val_injective
+  · rwa [Relation.repr_map]
+
+theorem eval_map (r : Relation M.s₀) :
+    eval (map M.mapsTo r) = MvPolynomial.map M.R₀.subtype (eval r) := by
+  rw [← eval_map_apply M.mapsTo]
+
+/-- Equality of a relation in `M.s₀` can be tested in `R`. -/
+theorem eval_eq_of_eval_eq (r : Relation M.s₀) (p : MvPolynomial σ M.R₀)
+    (h : eval (map M.mapsTo r) = MvPolynomial.map M.R₀.subtype p) :
+    eval r = p := by
+  apply MvPolynomial.map_injective M.R₀.subtype Subtype.val_injective
+  rwa [← Relation.eval_map]
+
+end Relation
 
 end RingOfDefinition
