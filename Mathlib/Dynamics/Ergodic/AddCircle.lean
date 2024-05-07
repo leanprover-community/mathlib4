@@ -74,7 +74,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
     have hδ₁ : Tendsto δ l (𝓝[>] 0) := by
       refine' tendsto_nhdsWithin_iff.mpr ⟨_, hδ₀⟩
       replace hu₂ : Tendsto (fun j => T⁻¹ * 2 * n j) l atTop :=
-        (tendsto_nat_cast_atTop_iff.mpr hu₂).const_mul_atTop (by positivity : 0 < T⁻¹ * 2)
+        (tendsto_natCast_atTop_iff.mpr hu₂).const_mul_atTop (by positivity : 0 < T⁻¹ * 2)
       convert hu₂.inv_tendsto_atTop
       ext j
       simp only [δ, Pi.inv_apply, mul_inv_rev, inv_inv, div_eq_inv_mul, ← mul_assoc]
@@ -111,7 +111,7 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
           (pow_pos (pos_of_gt hn) j) (gcd_one_left _)
         norm_cast
       have hnu : ∀ j, n ^ j • u j = 0 := fun j => by
-        rw [← addOrderOf_dvd_iff_zsmul_eq_zero, hu₀, Int.coe_nat_pow, Int.coe_natAbs, ← abs_pow,
+        rw [← addOrderOf_dvd_iff_zsmul_eq_zero, hu₀, Int.coe_nat_pow, Int.natCast_natAbs, ← abs_pow,
           abs_dvd]
       have hu₁ : ∀ j, (u j +ᵥ s : Set _) =ᵐ[volume] s := fun j => by
         rw [vadd_eq_self_of_preimage_zsmul_eq_self hs' (hnu j)]

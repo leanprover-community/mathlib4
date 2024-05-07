@@ -190,7 +190,7 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
   suffices h : ‖lift f'.toMultilinearMap x‖ ≤ ‖f'‖ * injectiveSeminorm x by
     change ‖(e (lift f'.toMultilinearMap x)).1‖ ≤ _ at h
     rw [heq] at h
-    refine le_trans h (mul_le_mul_of_nonneg_right hnorm (apply_nonneg _ _))
+    exact le_trans h (mul_le_mul_of_nonneg_right hnorm (apply_nonneg _ _))
   have hle : Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
       (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E)) ≤ injectiveSeminorm := by
     simp only [injectiveSeminorm]
@@ -388,7 +388,7 @@ theorem mapL_mul (f₁ f₂ : Π i, E i →L[𝕜] E i) :
     mapL (fun i ↦ f₁ i * f₂ i) = mapL f₁ * mapL f₂ :=
   mapL_comp f₁ f₂
 
-/-- Upgrading `PiTensorProduct.mapL` to a `MonoidHom` when `E = E'`.-/
+/-- Upgrading `PiTensorProduct.mapL` to a `MonoidHom` when `E = E'`. -/
 @[simps]
 noncomputable def mapLMonoidHom : (Π i, E i →L[𝕜] E i) →* ((⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E i) where
   toFun := mapL

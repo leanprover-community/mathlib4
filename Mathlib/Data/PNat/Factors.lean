@@ -364,12 +364,12 @@ theorem factorMultiset_gcd (m n : ℕ+) :
     factorMultiset (gcd m n) = factorMultiset m ⊓ factorMultiset n := by
   apply le_antisymm
   · apply le_inf_iff.mpr; constructor <;> apply factorMultiset_le_iff.mpr
-    exact gcd_dvd_left m n
-    exact gcd_dvd_right m n
+    · exact gcd_dvd_left m n
+    · exact gcd_dvd_right m n
   · rw [← PrimeMultiset.prod_dvd_iff, prod_factorMultiset]
     apply dvd_gcd <;> rw [PrimeMultiset.prod_dvd_iff']
-    exact inf_le_left
-    exact inf_le_right
+    · exact inf_le_left
+    · exact inf_le_right
 #align pnat.factor_multiset_gcd PNat.factorMultiset_gcd
 
 theorem factorMultiset_lcm (m n : ℕ+) :
@@ -377,11 +377,11 @@ theorem factorMultiset_lcm (m n : ℕ+) :
   apply le_antisymm
   · rw [← PrimeMultiset.prod_dvd_iff, prod_factorMultiset]
     apply lcm_dvd <;> rw [← factorMultiset_le_iff']
-    exact le_sup_left
-    exact le_sup_right
+    · exact le_sup_left
+    · exact le_sup_right
   · apply sup_le_iff.mpr; constructor <;> apply factorMultiset_le_iff.mpr
-    exact dvd_lcm_left m n
-    exact dvd_lcm_right m n
+    · exact dvd_lcm_left m n
+    · exact dvd_lcm_right m n
 #align pnat.factor_multiset_lcm PNat.factorMultiset_lcm
 
 /-- The number of occurrences of p in the factor multiset of m

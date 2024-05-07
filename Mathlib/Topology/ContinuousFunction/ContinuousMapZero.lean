@@ -61,6 +61,11 @@ def comp (g : C(Y, R)₀) (f : C(X, Y)₀) : C(X, R)₀ where
 @[simp]
 lemma comp_apply (g : C(Y, R)₀) (f : C(X, Y)₀) (x : X) : g.comp f x = g (f x) := rfl
 
+instance instPartialOrder [PartialOrder R] : PartialOrder C(X, R)₀ :=
+  .lift _ DFunLike.coe_injective'
+
+lemma le_def [PartialOrder R] (f g : C(X, R)₀) : f ≤ g ↔ ∀ x, f x ≤ g x := Iff.rfl
+
 end Basic
 
 section Semiring

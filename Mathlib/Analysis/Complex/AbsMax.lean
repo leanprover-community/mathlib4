@@ -125,11 +125,11 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     this inequality is strict at `ζ = w`. -/
   have hsub : sphere z r ⊆ closedBall z r := sphere_subset_closedBall
   refine' circleIntegral.norm_integral_lt_of_norm_le_const_of_lt hr _ _ ⟨w, rfl, _⟩
-  show ContinuousOn (fun ζ : ℂ => (ζ - z)⁻¹ • f ζ) (sphere z r)
-  · refine ((continuousOn_id.sub continuousOn_const).inv₀ ?_).smul (hd.continuousOn_ball.mono hsub)
+  · show ContinuousOn (fun ζ : ℂ => (ζ - z)⁻¹ • f ζ) (sphere z r)
+    refine ((continuousOn_id.sub continuousOn_const).inv₀ ?_).smul (hd.continuousOn_ball.mono hsub)
     exact fun ζ hζ => sub_ne_zero.2 (ne_of_mem_sphere hζ hr.ne')
-  show ∀ ζ ∈ sphere z r, ‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r
-  · rintro ζ (hζ : abs (ζ - z) = r)
+  · show ∀ ζ ∈ sphere z r, ‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r
+    rintro ζ (hζ : abs (ζ - z) = r)
     rw [le_div_iff hr, norm_smul, norm_inv, norm_eq_abs, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
     exact hz (hsub hζ)
   show ‖(w - z)⁻¹ • f w‖ < ‖f z‖ / r
@@ -402,7 +402,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
   rcases exists_mem_frontier_isMaxOn_norm (hL.isBounded_preimage hU) ⟨0, h₀⟩ hd with ⟨ζ, hζU, hζ⟩
   calc
     ‖f z‖ = ‖f (e 0)‖ := by simp only [e, lineMap_apply_zero]
-    _ ≤ ‖f (e ζ)‖ := (hζ (subset_closure h₀))
+    _ ≤ ‖f (e ζ)‖ := hζ (subset_closure h₀)
     _ ≤ C := hC _ (hde.continuous.frontier_preimage_subset _ hζU)
 #align complex.norm_le_of_forall_mem_frontier_norm_le Complex.norm_le_of_forall_mem_frontier_norm_le
 

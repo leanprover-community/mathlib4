@@ -26,7 +26,7 @@ theorem tendsto_sum_pi_div_four :
     apply Antitone.tendsto_alternating_series_of_tendsto_zero
     · exact antitone_iff_forall_lt.mpr fun _ _ _ ↦ by gcongr
     · apply Tendsto.inv_tendsto_atTop; apply tendsto_atTop_add_const_right
-      exact tendsto_nat_cast_atTop_atTop.const_mul_atTop zero_lt_two
+      exact tendsto_natCast_atTop_atTop.const_mul_atTop zero_lt_two
   -- Abel's limit theorem states that the corresponding power series has the same limit as `x → 1⁻`
   have abel := tendsto_tsum_powerSeries_nhdsWithin_lt h
   -- Massage the expression to get `x ^ (2 * n + 1)` in the tsum rather than `x ^ n`...
@@ -51,7 +51,7 @@ theorem tendsto_sum_pi_div_four :
     rw [Set.mem_Iio] at hy2
     have ny : ‖y‖ < 1 := by rw [norm_eq_abs, abs_lt]; constructor <;> linarith
     rw [← (hasSum_arctan ny).tsum_eq, Function.comp_apply, ← tsum_mul_right]
-    simp_rw [mul_assoc, ← pow_mul, ← pow_succ', div_mul_eq_mul_div]
+    simp_rw [mul_assoc, ← pow_mul, ← pow_succ, div_mul_eq_mul_div]
     norm_cast
   -- But `arctan` is continuous everywhere, so the limit is `arctan 1 = π / 4`
   rwa [tendsto_nhds_unique abel ((continuous_arctan.tendsto 1).mono_left m), arctan_one] at h

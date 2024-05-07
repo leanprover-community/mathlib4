@@ -8,7 +8,7 @@ import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.List.Rotate
 import Mathlib.GroupTheory.Perm.Cycle.Factors
 import Mathlib.GroupTheory.Perm.Closure
-import Mathlib.RingTheory.Int.Basic
+import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Tactic.NormNum.GCD
 
 #align_import group_theory.perm.cycle.type from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
@@ -205,7 +205,7 @@ theorem cycleType_prime_order {σ : Perm α} (hσ : (orderOf σ).Prime) :
     ∃ n : ℕ, σ.cycleType = Multiset.replicate (n + 1) (orderOf σ) := by
   refine ⟨Multiset.card σ.cycleType - 1, eq_replicate.2 ⟨?_, fun n hn ↦ ?_⟩⟩
   · rw [tsub_add_cancel_of_le]
-    rw [Nat.succ_le_iff, card_cycleType_pos, Ne.def, ← orderOf_eq_one_iff]
+    rw [Nat.succ_le_iff, card_cycleType_pos, Ne, ← orderOf_eq_one_iff]
     exact hσ.ne_one
   · exact (hσ.eq_one_or_self_of_dvd n (dvd_of_mem_cycleType hn)).resolve_left
       (one_lt_of_mem_cycleType hn).ne'
@@ -215,7 +215,7 @@ theorem isCycle_of_prime_order {σ : Perm α} (h1 : (orderOf σ).Prime)
     (h2 : σ.support.card < 2 * orderOf σ) : σ.IsCycle := by
   obtain ⟨n, hn⟩ := cycleType_prime_order h1
   rw [← σ.sum_cycleType, hn, Multiset.sum_replicate, nsmul_eq_mul, Nat.cast_id,
-    mul_lt_mul_right (orderOf_pos σ), Nat.succ_lt_succ_iff, Nat.lt_succ_iff, le_zero_iff] at h2
+    mul_lt_mul_right (orderOf_pos σ), Nat.succ_lt_succ_iff, Nat.lt_succ_iff, Nat.le_zero] at h2
   rw [← card_cycleType_eq_one, hn, card_replicate, h2]
 #align equiv.perm.is_cycle_of_prime_order Equiv.Perm.isCycle_of_prime_order
 
@@ -487,8 +487,10 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
   let σ :=
     Equiv.mk (f 1) (f (p - 1)) (fun s => by rw [hf2, add_tsub_cancel_of_le hp.out.one_lt.le, hf3])
       fun s => by rw [hf2, tsub_add_cancel_of_le hp.out.one_lt.le, hf3]
-  have hσ : ∀ k v, (σ ^ k) v = f k v := fun k v =>
-    Nat.rec (hf1 v).symm (fun k hk => Eq.trans (congr_arg σ hk) (hf2 k 1 v)) k
+  have hσ : ∀ k v, (σ ^ k) v = f k v := fun k =>
+    Nat.rec (fun v => (hf1 v).symm) (fun k hk v => by
+      rw [pow_succ, Perm.mul_apply, hk (σ v), Nat.succ_eq_one_add, ← hf2 1 k]
+      simp only [σ, coe_fn_mk]) k
   replace hσ : σ ^ p ^ 1 = 1 := Perm.ext fun v => by rw [pow_one, hσ, hf3, one_apply]
   let v₀ : vectorsProdEqOne G p :=
     ⟨Vector.replicate p 1, (List.prod_replicate p 1).trans (one_pow p)⟩
@@ -499,7 +501,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
       (List.rotate_one_eq_self_iff_eq_replicate.mp (Subtype.ext_iff.mp (Subtype.ext_iff.mp hv1)))
   · rw [← List.prod_replicate, ← v.1.2, ← hg, show v.val.val.prod = 1 from v.2]
   · rw [Subtype.ext_iff_val, Subtype.ext_iff_val, hg, hg', v.1.2]
-    rfl
+    simp only [v₀, Vector.replicate]
 #align exists_prime_order_of_dvd_card exists_prime_orderOf_dvd_card
 
 /-- For every prime `p` dividing the order of a finite additive group `G` there exists an element of
@@ -648,7 +650,7 @@ theorem isThreeCycle_swap_mul_swap_same {a b c : α} (ab : a ≠ b) (ac : a ≠ 
   · simp [ab, ac, bc]
   · simp only [Finset.mem_insert, Finset.mem_singleton] at hx
     rw [mem_support]
-    simp only [Perm.coe_mul, Function.comp_apply, Ne.def]
+    simp only [Perm.coe_mul, Function.comp_apply, Ne]
     obtain rfl | rfl | rfl := hx
     · rw [swap_apply_left, swap_apply_of_ne_of_ne ac.symm bc.symm]
       exact ac.symm

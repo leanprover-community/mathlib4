@@ -204,7 +204,7 @@ variable (R)
 
 @[simp]
 theorem star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
-  op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans (op_one _).symm
+  op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans op_one.symm
 #align star_one star_one
 
 variable {R}
@@ -236,8 +236,7 @@ theorem star_div [CommGroup R] [StarMul R] (x y : R) : star (x / y) = star x / s
 
 See note [reducible non-instances].
 -/
-@[reducible]
-def starMulOfComm {R : Type*} [CommMonoid R] : StarMul R where
+abbrev starMulOfComm {R : Type*} [CommMonoid R] : StarMul R where
   star := id
   star_involutive _ := rfl
   star_mul := mul_comm
@@ -352,6 +351,10 @@ theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
 #align star_int_cast star_intCast
 
 @[simp, norm_cast]
+lemma star_nnratCast [DivisionSemiring R] [StarRing R] (q : ℚ≥0) : star (q : R) = q :=
+  (congr_arg unop <| map_nnratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) q).trans (unop_nnratCast _)
+
+@[simp, norm_cast]
 theorem star_ratCast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
   (congr_arg unop <| map_ratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r).trans (unop_ratCast _)
 #align star_rat_cast star_ratCast
@@ -421,9 +424,9 @@ theorem RingHom.star_apply {S : Type*} [NonAssocSemiring S] (f : S →+* R) (s :
 alias Complex.conj_conj := starRingEnd_self_apply
 #align complex.conj_conj Complex.conj_conj
 
-alias IsROrC.conj_conj := starRingEnd_self_apply
+alias RCLike.conj_conj := starRingEnd_self_apply
 set_option linter.uppercaseLean3 false in
-#align is_R_or_C.conj_conj IsROrC.conj_conj
+#align is_R_or_C.conj_conj RCLike.conj_conj
 
 open scoped ComplexConjugate
 
@@ -468,8 +471,7 @@ end
 
 See note [reducible non-instances].
 -/
-@[reducible]
-def starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
+abbrev starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
   { starMulOfComm with
     star_add := fun _ _ => rfl }
 #align star_ring_of_comm starRingOfComm

@@ -157,7 +157,7 @@ derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor ser
 noncomputable section
 
 open scoped Classical
-open BigOperators NNReal Topology Filter
+open NNReal Topology Filter
 
 local notation "∞" => (⊤ : ℕ∞)
 
@@ -881,12 +881,19 @@ theorem norm_iteratedFDerivWithin_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜
 
 @[simp]
 theorem iteratedFDerivWithin_one_apply (h : UniqueDiffWithinAt 𝕜 s x) (m : Fin 1 → E) :
-    (iteratedFDerivWithin 𝕜 1 f s x : (Fin 1 → E) → F) m =
-      (fderivWithin 𝕜 f s x : E → F) (m 0) := by
+    iteratedFDerivWithin 𝕜 1 f s x m = fderivWithin 𝕜 f s x (m 0) := by
   simp only [iteratedFDerivWithin_succ_apply_left, iteratedFDerivWithin_zero_eq_comp,
     (continuousMultilinearCurryFin0 𝕜 E F).symm.comp_fderivWithin h]
   rfl
 #align iterated_fderiv_within_one_apply iteratedFDerivWithin_one_apply
+
+/-- On a set of unique differentiability, the second derivative is obtained by taking the
+derivative of the derivative. -/
+lemma iteratedFDerivWithin_two_apply (f : E → F) {z : E} (hs : UniqueDiffOn 𝕜 s) (hz : z ∈ s)
+    (m : Fin 2 → E) :
+    iteratedFDerivWithin 𝕜 2 f s z m = fderivWithin 𝕜 (fderivWithin 𝕜 f s) s z (m 0) (m 1) := by
+  simp only [iteratedFDerivWithin_succ_apply_right hs hz]
+  rfl
 
 theorem Filter.EventuallyEq.iteratedFDerivWithin' (h : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f₁ t =ᶠ[𝓝[s] x] iteratedFDerivWithin 𝕜 n f t := by
@@ -995,11 +1002,11 @@ theorem contDiffWithinAt_zero (hx : x ∈ s) :
 
 /-- On a set with unique differentiability, any choice of iterated differential has to coincide
 with the one we have chosen in `iteratedFDerivWithin 𝕜 m f s`. -/
-theorem HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn
+theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     (h : HasFTaylorSeriesUpToOn n f p s) {m : ℕ} (hmn : (m : ℕ∞) ≤ n) (hs : UniqueDiffOn 𝕜 s)
     (hx : x ∈ s) : p x m = iteratedFDerivWithin 𝕜 m f s x := by
   induction' m with m IH generalizing x
-  · rw [Nat.zero_eq, h.zero_eq' hx, iteratedFDerivWithin_zero_eq_comp]; rfl
+  · rw [h.zero_eq' hx, iteratedFDerivWithin_zero_eq_comp]; rfl
   · have A : (m : ℕ∞) < n := lt_of_lt_of_le (WithTop.coe_lt_coe.2 (lt_add_one m)) hmn
     have :
       HasFDerivWithinAt (fun y : E => iteratedFDerivWithin 𝕜 m f s y)
@@ -1008,7 +1015,10 @@ theorem HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn
         (IH (le_of_lt A) hx).symm
     rw [iteratedFDerivWithin_succ_eq_comp_left, Function.comp_apply, this.fderivWithin (hs x hx)]
     exact (ContinuousMultilinearMap.uncurry_curryLeft _).symm
-#align has_ftaylor_series_up_to_on.eq_ftaylor_series_of_unique_diff_on HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn
+#align has_ftaylor_series_up_to_on.eq_ftaylor_series_of_unique_diff_on HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
+
+@[deprecated] alias HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn :=
+  HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn -- 2024-03-28
 
 /-- When a function is `C^n` in a set `s` of unique differentiability, it admits
 `ftaylorSeriesWithin 𝕜 f s` as a Taylor series up to order `n` in `s`. -/
@@ -1544,8 +1554,8 @@ theorem norm_iteratedFDeriv_zero : ‖iteratedFDeriv 𝕜 0 f x‖ = ‖f x‖ :
   rw [iteratedFDeriv_zero_eq_comp, comp_apply, LinearIsometryEquiv.norm_map]
 #align norm_iterated_fderiv_zero norm_iteratedFDeriv_zero
 
-theorem iteratedFDeriv_with_zero_eq : iteratedFDerivWithin 𝕜 0 f s = iteratedFDeriv 𝕜 0 f := rfl
-#align iterated_fderiv_with_zero_eq iteratedFDeriv_with_zero_eq
+theorem iteratedFDerivWithin_zero_eq : iteratedFDerivWithin 𝕜 0 f s = iteratedFDeriv 𝕜 0 f := rfl
+#align iterated_fderiv_with_zero_eq iteratedFDerivWithin_zero_eq
 
 theorem iteratedFDeriv_succ_apply_left {n : ℕ} (m : Fin (n + 1) → E) :
     (iteratedFDeriv 𝕜 (n + 1) f x : (Fin (n + 1) → E) → F) m =
@@ -1604,6 +1614,13 @@ theorem iteratedFDerivWithin_univ {n : ℕ} :
     rw [iteratedFDeriv_succ_apply_left, iteratedFDerivWithin_succ_apply_left, IH, fderivWithin_univ]
 #align iterated_fderiv_within_univ iteratedFDerivWithin_univ
 
+theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
+    (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : (m : ℕ∞) ≤ n) (x : E) :
+    p x m = iteratedFDeriv 𝕜 m f x := by
+  rw [← iteratedFDerivWithin_univ]
+  rw [← hasFTaylorSeriesUpToOn_univ_iff] at h
+  exact h.eq_iteratedFDerivWithin_of_uniqueDiffOn hmn uniqueDiffOn_univ (mem_univ _)
+
 /-- In an open set, the iterated derivative within this set coincides with the global iterated
 derivative. -/
 theorem iteratedFDerivWithin_of_isOpen (n : ℕ) (hs : IsOpen s) :
@@ -1652,9 +1669,14 @@ theorem norm_iteratedFDeriv_fderiv {n : ℕ} :
 
 @[simp]
 theorem iteratedFDeriv_one_apply (m : Fin 1 → E) :
-    (iteratedFDeriv 𝕜 1 f x : (Fin 1 → E) → F) m = (fderiv 𝕜 f x : E → F) (m 0) := by
+    iteratedFDeriv 𝕜 1 f x m = fderiv 𝕜 f x (m 0) := by
   rw [iteratedFDeriv_succ_apply_right, iteratedFDeriv_zero_apply]; rfl
 #align iterated_fderiv_one_apply iteratedFDeriv_one_apply
+
+lemma iteratedFDeriv_two_apply (f : E → F) (z : E) (m : Fin 2 → E) :
+    iteratedFDeriv 𝕜 2 f z m = fderiv 𝕜 (fderiv 𝕜 f) z (m 0) (m 1) := by
+  simp only [iteratedFDeriv_succ_apply_right]
+  rfl
 
 /-- When a function is `C^n` in a set `s` of unique differentiability, it admits
 `ftaylorSeriesWithin 𝕜 f s` as a Taylor series up to order `n` in `s`. -/

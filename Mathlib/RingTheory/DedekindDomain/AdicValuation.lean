@@ -64,7 +64,7 @@ open scoped Classical DiscreteValuation
 
 open Multiplicative IsDedekindDomain
 
-variable {R : Type*} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type*} [Field K]
+variable {R : Type*} [CommRing R] [IsDedekindDomain R] {K : Type*} [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 namespace IsDedekindDomain.HeightOneSpectrum
@@ -117,7 +117,7 @@ theorem int_valuation_le_one (x : R) : v.intValuationDef x ≤ 1 := by
   · rw [if_pos hx]; exact WithZero.zero_le 1
   · rw [if_neg hx, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ofAdd_le,
       Right.neg_nonpos_iff]
-    exact Int.coe_nat_nonneg _
+    exact Int.natCast_nonneg _
 #align is_dedekind_domain.height_one_spectrum.int_valuation_le_one IsDedekindDomain.HeightOneSpectrum.int_valuation_le_one
 
 /-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
@@ -129,7 +129,7 @@ theorem int_valuation_lt_one_iff_dvd (r : R) :
   · rw [← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_lt_coe, ofAdd_lt, neg_lt_zero, ←
       Int.ofNat_zero, Int.ofNat_lt, zero_lt_iff]
     have h : (Ideal.span {r} : Ideal R) ≠ 0 := by
-      rw [Ne.def, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
+      rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
       exact hr
     apply Associates.count_ne_zero_iff_dvd h (by apply v.irreducible)
 #align is_dedekind_domain.height_one_spectrum.int_valuation_lt_one_iff_dvd IsDedekindDomain.HeightOneSpectrum.int_valuation_lt_one_iff_dvd
@@ -246,8 +246,8 @@ theorem int_valuation_exists_uniformizer :
   use π
   rw [intValuationDef, if_neg (Associates.mk_ne_zero'.mp hπ), WithZero.coe_inj]
   apply congr_arg
-  rw [neg_inj, ← Int.ofNat_one, Int.coe_nat_inj']
-  rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd_iff] at mem nmem
+  rw [neg_inj, ← Int.ofNat_one, Int.natCast_inj]
+  rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd] at mem nmem
   rw [← pow_one (Associates.mk v.asIdeal), Associates.prime_pow_dvd_iff_le hπ hv] at mem
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at nmem
   exact Nat.eq_of_le_of_lt_succ mem nmem

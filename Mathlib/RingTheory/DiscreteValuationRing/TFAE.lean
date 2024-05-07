@@ -115,7 +115,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     by_contra! h'; rw [Nat.find_eq_iff] at hn; exact hn.2 n n.lt_succ_self fun x hx => h' x hx
   have hb₃ : ∀ m ∈ maximalIdeal R, ∃ k : R, k * a = b * m := by
     intro m hm; rw [← Ideal.mem_span_singleton']; apply Nat.find_spec this
-    rw [hn, pow_succ']; exact Ideal.mul_mem_mul hb₁ hm
+    rw [hn, pow_succ]; exact Ideal.mul_mem_mul hb₁ hm
   have hb₄ : b ≠ 0 := by rintro rfl; apply hb₂; exact zero_mem _
   let K := FractionRing R
   let x : K := algebraMap R K b / algebraMap R K a
