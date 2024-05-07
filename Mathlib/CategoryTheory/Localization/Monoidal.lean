@@ -5,6 +5,33 @@ namespace CategoryTheory
 
 open Category MonoidalCategory
 
+namespace MonoidalCategory
+
+variable {C : Type*} [Category C] [MonoidalCategoryStruct C]
+
+def Pentagon (Y₁ Y₂ Y₃ Y₄ : C) : Prop :=
+    (α_ Y₁ Y₂ Y₃).hom ▷ Y₄ ≫ (α_ Y₁ (Y₂ ⊗ Y₃) Y₄).hom ≫ Y₁ ◁ (α_ Y₂ Y₃ Y₄).hom =
+      (α_ (Y₁ ⊗ Y₂) Y₃ Y₄).hom ≫ (α_ Y₁ Y₂ (Y₃ ⊗ Y₄)).hom
+
+variable (naturality : ∀ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C}
+    (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃),
+    ((f₁ ⊗ f₂) ⊗ f₃) ≫ (α_ Y₁ Y₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ⊗ f₂ ⊗ f₃))
+    (tensorHom_def : ∀ {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂), f ⊗ g = f ▷ X₂ ≫ Y₁ ◁ g)
+
+variable {X₁ X₂ X₃ X₄ Y₁ Y₂ Y₃ Y₄ : C} (e₁ : X₁ ≅ Y₁) (e₂ : X₂ ≅ Y₂) (e₃ : X₃ ≅ Y₃)
+  (e₄ : X₄ ≅ Y₄)
+
+lemma pentagon_of_iso (h : Pentagon X₁ X₂ X₃ X₄) : Pentagon Y₁ Y₂ Y₃ Y₄ := by
+  dsimp [Pentagon] at h ⊢
+  have := @naturality
+  refine' Eq.trans _ (((((e₁.inv ⊗ e₂.inv) ⊗ e₃.inv) ⊗ e₄.inv) ≫= h =≫ (e₁.hom ⊗ e₂.hom ⊗ e₃.hom ⊗ e₄.hom)).trans sorry)
+  · dsimp
+    simp only [assoc]
+    --rw [← tensorHom_id]
+    sorry
+
+end MonoidalCategory
+
 variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C)
   [MonoidalCategory C]
 
@@ -144,17 +171,20 @@ lemma rightUnitor_hom_app (X : C) :
   change _ ≫ (μ L W ε  _ _).hom ≫ _ ≫ 𝟙 _ ≫ 𝟙 _ = _
   simp only [comp_id]
 
+lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε}
+    (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
+    ((f₁ ⊗ f₂) ⊗ f₃) ≫ (α_ Y₁ Y₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ⊗ f₂ ⊗ f₃) := sorry
+
 variable {L W ε} in
 lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
-    (α_ Y₁ Y₂ Y₃).hom ▷ Y₄ ≫ (α_ Y₁ (Y₂ ⊗ Y₃) Y₄).hom ≫ Y₁ ◁ (α_ Y₂ Y₃ Y₄).hom =
-      (α_ (Y₁ ⊗ Y₂) Y₃ Y₄).hom ≫ (α_ Y₁ Y₂ (Y₃ ⊗ Y₄)).hom := by
-  suffices ∀ (X₁ X₂ X₃ X₄ : C),
-    (α_ ((L').obj X₁) ((L').obj X₂) ((L').obj X₃)).hom ▷ (L').obj X₄ ≫
-      (α_ ((L').obj X₁) (((L').obj X₂) ⊗ ((L').obj X₃)) ((L').obj X₄)).hom ≫
-      ((L').obj X₁) ◁ (α_ ((L').obj X₂) ((L').obj X₃) ((L').obj X₄)).hom =
-    (α_ (((L').obj X₁) ⊗ ((L').obj X₂)) ((L').obj X₃) ((L').obj X₄)).hom ≫
-      (α_ ((L').obj X₁) ((L').obj X₂) (((L').obj X₃) ⊗ ((L').obj X₄))).hom by
-    sorry
+    Pentagon Y₁ Y₂ Y₃ Y₄ := by
+  have : (L').EssSurj := Localization.essSurj L' W
+  obtain ⟨X₁, ⟨e₁⟩⟩ : ∃ X₁, Nonempty ((L').obj X₁ ≅ Y₁) := ⟨_, ⟨(L').objObjPreimageIso Y₁⟩⟩
+  obtain ⟨X₂, ⟨e₂⟩⟩ : ∃ X₂, Nonempty ((L').obj X₂ ≅ Y₂) := ⟨_, ⟨(L').objObjPreimageIso Y₂⟩⟩
+  obtain ⟨X₃, ⟨e₃⟩⟩ : ∃ X₃, Nonempty ((L').obj X₃ ≅ Y₃) := ⟨_, ⟨(L').objObjPreimageIso Y₃⟩⟩
+  obtain ⟨X₄, ⟨e₄⟩⟩ : ∃ X₄, Nonempty ((L').obj X₄ ≅ Y₄) := ⟨_, ⟨(L').objObjPreimageIso Y₄⟩⟩
+  apply pentagon_of_iso (associator_naturality L W ε) e₁ e₂ e₃ e₄
+  dsimp [Pentagon]
   sorry
 
 noncomputable instance :
@@ -164,7 +194,8 @@ noncomputable instance :
   tensor_comp := by intros; simp [monoidalCategoryStruct]
   whiskerLeft_id := by intros; simp [monoidalCategoryStruct]
   id_whiskerRight := by intros; simp [monoidalCategoryStruct]
-  associator_naturality := sorry
+  associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := by
+    sorry
   leftUnitor_naturality := by intros; simp [monoidalCategoryStruct]
   rightUnitor_naturality f := (rightUnitor L W ε).hom.naturality f
   pentagon := pentagon
