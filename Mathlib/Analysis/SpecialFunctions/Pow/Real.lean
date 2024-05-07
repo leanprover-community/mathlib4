@@ -85,6 +85,10 @@ theorem rpow_eq_zero_iff_of_nonneg (hx : 0 ≤ x) : x ^ y = 0 ↔ x = 0 ∧ y �
 lemma rpow_eq_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y = 0 ↔ x = 0 := by
   simp [rpow_eq_zero_iff_of_nonneg, *]
 
+@[simp]
+lemma rpow_ne_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y ≠ 0 ↔ x ≠ 0 :=
+  Real.rpow_eq_zero hx hy |>.not
+
 open Real
 
 theorem rpow_def_of_neg {x : ℝ} (hx : x < 0) (y : ℝ) : x ^ y = exp (log x * y) * cos (y * π) := by
@@ -810,26 +814,24 @@ lemma log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : log n ≤ n 
   log_le_rpow_div n.cast_nonneg hε
 
 lemma strictMono_rpow_of_base_gt_one {b : ℝ} (hb : 1 < b) :
-    StrictMono (rpow b) := by
-  show StrictMono (fun (x:ℝ) => b ^ x)
+    StrictMono (b ^ · : ℝ → ℝ) := by
   simp_rw [Real.rpow_def_of_pos (zero_lt_one.trans hb)]
   exact exp_strictMono.comp <| StrictMono.const_mul strictMono_id <| Real.log_pos hb
 
 lemma monotone_rpow_of_base_ge_one {b : ℝ} (hb : 1 ≤ b) :
-    Monotone (rpow b) := by
+    Monotone (b ^ · : ℝ → ℝ) := by
   rcases lt_or_eq_of_le hb with hb | rfl
   case inl => exact (strictMono_rpow_of_base_gt_one hb).monotone
   case inr => intro _ _ _; simp
 
 lemma strictAnti_rpow_of_base_lt_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b < 1) :
-    StrictAnti (rpow b) := by
-  show StrictAnti (fun (x:ℝ) => b ^ x)
+    StrictAnti (b ^ · : ℝ → ℝ) := by
   simp_rw [Real.rpow_def_of_pos hb₀]
   exact exp_strictMono.comp_strictAnti <| StrictMono.const_mul_of_neg strictMono_id
       <| Real.log_neg hb₀ hb₁
 
 lemma antitone_rpow_of_base_le_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b ≤ 1) :
-    Antitone (rpow b) := by
+    Antitone (b ^ · : ℝ → ℝ) := by
   rcases lt_or_eq_of_le hb₁ with hb₁ | rfl
   case inl => exact (strictAnti_rpow_of_base_lt_one hb₀ hb₁).antitone
   case inr => intro _ _ _; simp

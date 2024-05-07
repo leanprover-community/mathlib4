@@ -522,7 +522,7 @@ Measures and integral calculus:
     change of variables for multiple integrals: 'MeasureTheory.integral_image_eq_integral_abs_det_fderiv_smul'
     change of variables to polar co-ordinates: 'integral_comp_polarCoord_symm'
     change of variables to spherical co-ordinates: ''
-    convolution: 'convolution'
+    convolution: 'MeasureTheory.convolution'
     approximation by convolution: 'ContDiffBump.convolution_tendsto_right'
     regularization by convolution: 'HasCompactSupport.contDiff_convolution_left'
   Fourier analysis:

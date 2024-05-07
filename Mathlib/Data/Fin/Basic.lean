@@ -7,7 +7,7 @@ import Mathlib.Algebra.NeZero
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Hom.Set
-import Std.Data.Fin.Lemmas
+import Batteries.Data.Fin.Lemmas
 
 #align_import data.fin.basic from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
@@ -689,13 +689,30 @@ in the same value.  -/
   simp [ext_iff, Nat.dvd_iff_mod_eq_zero]
 
 @[simp]
-theorem cast_nat_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp
-#align fin.coe_nat_eq_last Fin.cast_nat_eq_last
+theorem natCast_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp
+#align fin.coe_nat_eq_last Fin.natCast_eq_last
+
+@[deprecated (since := "2024-05-04")] alias cast_nat_eq_last := natCast_eq_last
 
 theorem le_val_last (i : Fin (n + 1)) : i ≤ n := by
-  rw [Fin.cast_nat_eq_last]
+  rw [Fin.natCast_eq_last]
   exact Fin.le_last i
 #align fin.le_coe_last Fin.le_val_last
+
+variable {a b : ℕ}
+
+lemma natCast_le_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) ≤ b ↔ a ≤ b := by
+  rw [← Nat.lt_succ_iff] at han hbn
+  simp [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, han, hbn]
+
+lemma natCast_lt_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) < b ↔ a < b := by
+  rw [← Nat.lt_succ_iff] at han hbn; simp [lt_iff_val_lt_val, Nat.mod_eq_of_lt, han, hbn]
+
+lemma natCast_mono (hbn : b ≤ n) (hab : a ≤ b) : (a : Fin (n + 1)) ≤ b :=
+  (natCast_le_natCast (hab.trans hbn) hbn).2 hab
+
+lemma natCast_strictMono (hbn : b ≤ n) (hab : a < b) : (a : Fin (n + 1)) < b :=
+  (natCast_lt_natCast (hab.le.trans hbn) hbn).2 hab
 
 end OfNatCoe
 
@@ -1654,7 +1671,7 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
 theorem neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
 
 theorem neg_natCast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
-  simp only [cast_nat_eq_last, neg_last]
+  simp only [natCast_eq_last, neg_last]
 
 lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
     0 < a :=

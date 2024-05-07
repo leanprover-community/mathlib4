@@ -406,7 +406,7 @@ namespace Measure
 /-- A finite measure coerced into a real function is a signed measure. -/
 @[simps]
 def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure α where
-  measureOf' := fun i : Set α => if MeasurableSet i then (μ.measureOf i).toReal else 0
+  measureOf' := fun s : Set α => if MeasurableSet s then (μ s).toReal else 0
   empty' := by simp [μ.empty]
   not_measurable' _ hi := if_neg hi
   m_iUnion' f hf₁ hf₂ := by

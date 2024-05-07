@@ -203,8 +203,7 @@ namespace LocalRing
 variable (R : Type*) [CommRing R] [LocalRing R]
 
 /-- The `A ⧸ I`-vector space `I ⧸ I ^ 2`. -/
-@[reducible]
-def CotangentSpace : Type _ := (maximalIdeal R).Cotangent
+abbrev CotangentSpace : Type _ := (maximalIdeal R).Cotangent
 #align local_ring.cotangent_space LocalRing.CotangentSpace
 
 instance : Module (ResidueField R) (CotangentSpace R) := Ideal.cotangentModule _
