@@ -49,6 +49,19 @@ section
 variable {f : Bool → Bool → Bool}
 
 @[simp]
+lemma succ_testBit_zero (n : ℕ) : (n + 1).testBit 0 = !n.testBit 0 := by
+  apply Nat.bitCasesOn n
+  intro b n
+  cases b <;> simp [Nat.testBit_bit_zero, -Nat.testBit_zero]
+
+@[simp]
+lemma add_pow_testBit (n : ℕ) : (i : ℕ) → (n + 2^i).testBit i = !n.testBit i
+  | 0 => succ_testBit_zero n
+  | i+1 => by
+    simp only [pow_succ, testBit_succ, (by decide : 0 < 2), add_mul_div_right]
+    exact add_pow_testBit (n/2) i
+
+@[simp]
 lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 0 :=
   rfl
 #align nat.bitwise_zero_left Nat.bitwise_zero_left
