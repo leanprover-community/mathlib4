@@ -76,6 +76,9 @@ theorem div_le_iff (hb : 0 < b) : a / b ≤ c ↔ a ≤ c * b :=
 theorem div_le_iff' (hb : 0 < b) : a / b ≤ c ↔ a ≤ b * c := by rw [mul_comm, div_le_iff hb]
 #align div_le_iff' div_le_iff'
 
+lemma div_le_comm₀ (hb : 0 < b) (hc : 0 < c) : a / b ≤ c ↔ a / c ≤ b := by
+  rw [div_le_iff hb, div_le_iff' hc]
+
 theorem lt_div_iff (hc : 0 < c) : a < b / c ↔ a * c < b :=
   lt_iff_lt_of_le_iff_le <| div_le_iff hc
 #align lt_div_iff lt_div_iff
@@ -89,6 +92,9 @@ theorem div_lt_iff (hc : 0 < c) : b / c < a ↔ b < a * c :=
 
 theorem div_lt_iff' (hc : 0 < c) : b / c < a ↔ b < c * a := by rw [mul_comm, div_lt_iff hc]
 #align div_lt_iff' div_lt_iff'
+
+lemma div_lt_comm₀ (hb : 0 < b) (hc : 0 < c) : a / b < c ↔ a / c < b := by
+  rw [div_lt_iff hb, div_lt_iff' hc]
 
 theorem inv_mul_le_iff (h : 0 < b) : b⁻¹ * a ≤ c ↔ a ≤ b * c := by
   rw [inv_eq_one_div, mul_comm, ← div_eq_mul_one_div]
@@ -145,8 +151,8 @@ theorem inv_pos_lt_iff_one_lt_mul' (ha : 0 < a) : a⁻¹ < b ↔ 1 < a * b := by
 /-- One direction of `div_le_iff` where `b` is allowed to be `0` (but `c` must be nonnegative) -/
 theorem div_le_of_nonneg_of_le_mul (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ c * b) : a / b ≤ c := by
   rcases eq_or_lt_of_le hb with (rfl | hb')
-  simp only [div_zero, hc]
-  rwa [div_le_iff hb']
+  · simp only [div_zero, hc]
+  · rwa [div_le_iff hb']
 #align div_le_of_nonneg_of_le_mul div_le_of_nonneg_of_le_mul
 
 /-- One direction of `div_le_iff` where `c` is allowed to be `0` (but `b` must be nonnegative) -/

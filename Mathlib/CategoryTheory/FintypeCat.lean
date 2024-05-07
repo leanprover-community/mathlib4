@@ -187,7 +187,7 @@ def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.incl FintypeCat.Skeleton.incl
 
-instance : incl.Full where preimage f := f
+instance : incl.Full where map_surjective f := ⟨f, rfl⟩
 
 instance : incl.Faithful where
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 
-import Std.Data.Int.Order
+import Batteries.Data.Int.Order
 import Mathlib.Mathport.Rename
 
 /-!

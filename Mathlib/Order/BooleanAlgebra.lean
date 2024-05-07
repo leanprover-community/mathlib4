@@ -555,8 +555,7 @@ instance (priority := 100) BooleanAlgebra.toBoundedOrder [h : BooleanAlgebra α]
 
 -- See note [reducible non instances]
 /-- A bounded generalized boolean algebra is a boolean algebra. -/
-@[reducible]
-def GeneralizedBooleanAlgebra.toBooleanAlgebra [GeneralizedBooleanAlgebra α] [OrderTop α] :
+abbrev GeneralizedBooleanAlgebra.toBooleanAlgebra [GeneralizedBooleanAlgebra α] [OrderTop α] :
     BooleanAlgebra α where
   __ := ‹GeneralizedBooleanAlgebra α›
   __ := GeneralizedBooleanAlgebra.toOrderBot
@@ -845,8 +844,7 @@ section lift
 
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedBooleanAlgebra` along an injection. -/
-@[reducible]
-protected def Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] [Bot α] [SDiff α]
+protected abbrev Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] [Bot α] [SDiff α]
     [GeneralizedBooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_bot : f ⊥ = ⊥) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
@@ -859,8 +857,7 @@ protected def Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] [Bo
 
 -- See note [reducible non-instances]
 /-- Pullback a `BooleanAlgebra` along an injection. -/
-@[reducible]
-protected def Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot α] [HasCompl α]
+protected abbrev Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot α] [HasCompl α]
     [SDiff α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)

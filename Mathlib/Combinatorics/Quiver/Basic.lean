@@ -135,6 +135,10 @@ infixl:60 " ⋙q " => Prefunctor.comp
 /-- Notation for the identity prefunctor on a quiver. -/
 notation "𝟭q" => id
 
+theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {f g : X ⟶ Y}
+    (h : f = g) : F.map f = F.map g := by
+  rw [h]
+
 end Prefunctor
 
 namespace Quiver
@@ -168,8 +172,7 @@ theorem empty_arrow {V : Type u} (a b : Empty V) : (a ⟶ b) = PEmpty := rfl
 #align quiver.empty_arrow Quiver.empty_arrow
 
 /-- A quiver is thin if it has no parallel arrows. -/
-@[reducible]
-def IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶ b)
+abbrev IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶ b)
 #align quiver.is_thin Quiver.IsThin
 
 end Quiver
