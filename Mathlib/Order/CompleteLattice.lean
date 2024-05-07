@@ -1991,3 +1991,14 @@ instance instCompleteLattice [CompleteLattice Î±] : CompleteLattice (ULift.{v} Î
     (fun s => by rw [sInf_eq_iInf', down_iInf, iInf_subtype'']) down_top down_bot
 
 end ULift
+
+namespace PUnit
+
+instance instCompleteLinearOrder : CompleteLinearOrder PUnit := by
+  refine'
+    { instBooleanAlgebra, instLinearOrder with
+      sSup := fun _ => unit
+      sInf := fun _ => unit
+      .. } <;> intros <;> trivial
+
+end PUnit
