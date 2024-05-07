@@ -1,14 +1,15 @@
 import Mathlib.Probability.MassFunction.Monad
+import Mathlib.Data.Finset.Card
 
 open BigOperators ENNReal
 
 namespace MassFunction
 
-universe u
+universe u v
 
 section Map
 
-variable {M : Type u → Type*} [MFLike M] [DiracPure M] [WeightedSumBind M]
+variable {M : Type u → Type v} [MFLike M] [DiracPure M] [WeightedSumBind M]
 {α β γ : Type u} {f : α → β} {g : β → γ} {μ : M α} {φ : α → M β} {ξ : β → M γ} {b b' : β}
 
 open DiracPure WeightedSumBind
@@ -67,7 +68,7 @@ end Map
 
 section Seq
 
-variable {M : Type u → Type*} [MFLike M] [DiracPure M] [WeightedSumBind M]
+variable {M : Type u → Type v} [MFLike M] [DiracPure M] [WeightedSumBind M]
 {α β γ : Type u} {κ : M (α → β)} {μ : M α} {b : β}
 
 open DiracPure WeightedSumBind
@@ -107,7 +108,7 @@ end Seq
 
 section Lawful
 
-variable {M : Type u → Type*} [MFLike M] [DiracPure M] [WeightedSumBind M]
+variable {M : Type u → Type v} [MFLike M] [DiracPure M] [WeightedSumBind M]
 
 open DiracPure WeightedSumBind
 
@@ -126,8 +127,8 @@ end Lawful
 
 section Filter
 
-variable {M : Type u → Type*} [MFLike M] [DiracPure M] [WeightedSumBind M]
-[∀ α, Zero (M α)] [ZeroNull M] {α β γ : Type u} {μ : M α} {s : Set α} {a a' : α}
+variable {M : Type u → Type v} [MFLike M] [DiracPure M] [WeightedSumBind M]
+[∀ α, ZeroNull M α] {α β γ : Type u} {μ : M α} {s : Set α} {a a' : α}
 
 open DiracPure WeightedSumBind
 
@@ -179,7 +180,7 @@ namespace SPMF
 
 section OfFinset
 
-variable {α : Type*}
+variable {α : Type u}
 
 /-- Given a finset `s` and a function `f : α → ℝ≥0∞` with sum `1` on `s`,
   such that `f a = 0` for `a ∉ s`, we get a `SPMF`. -/
@@ -207,7 +208,7 @@ end OfFinset
 
 section OfFintype
 
-variable {α : Type*}
+variable {α : Type u}
 
 def ofFintype [Fintype α] (f : α → ℝ≥0∞) (h : ∑ a, f a ≤ 1) : SPMF α :=
   ofFinset f Finset.univ h fun a ha => absurd (Finset.mem_univ a) ha
@@ -260,7 +261,7 @@ namespace PMF
 
 section OfFinset
 
-variable {α : Type*}
+variable {α : Type u}
 
 /-- Given a finset `s` and a function `f : α → ℝ≥0∞` with sum `1` on `s`,
   such that `f a = 0` for `a ∉ s`, we get a `PMF`. -/
@@ -288,7 +289,7 @@ end OfFinset
 
 section OfFintype
 
-variable {α : Type*}
+variable {α : Type u}
 
 def ofFintype [Fintype α] (f : α → ℝ≥0∞) (h : ∑ a, f a = 1) : PMF α :=
   ofFinset f Finset.univ h fun a ha => absurd (Finset.mem_univ a) ha
@@ -306,9 +307,56 @@ theorem mem_support_ofFintype_iff (a : α) :
 
 end OfFintype
 
+section UniformOn
+
+variable {α : Type u} [DecidableEq α] {s : Finset α} {a : α}
+
+noncomputable def uniformOn (s : Finset α) (hs : s.Nonempty) : PMF α :=
+    ofFinset (fun a => if a ∈ s then (s.card)⁻¹ else 0) s (by
+  rw [Finset.sum_ite_of_true _ _ (fun _ => id), Finset.sum_const, nsmul_eq_mul]
+  exact ENNReal.mul_inv_cancel
+    (Nat.cast_ne_zero.mpr (hs.card_ne_zero)) (ENNReal.natCast_ne_top _)) (fun _ h => if_neg h)
+
+@[simp]
+theorem uniform_apply_of_mem {a : α} (ha : a ∈ s) (hs : s.Nonempty := ⟨a, ha⟩) :
+    uniformOn s hs a = (s.card : ℝ≥0∞)⁻¹ := by
+  rw [uniformOn, ofFinset_apply, if_pos ha]
+
+@[simp]
+theorem support_uniform : support (uniform α) = Function.support f := rfl
+
+theorem mem_support_ofFintype_iff (a : α) :
+  a ∈ support (ofFintype f h) ↔ f a ≠ 0 := Iff.rfl
+
+end UniformOn
+
+section Uniform
+
+variable {α : Type u}
+
+noncomputable def uniform (α : Type u) [Fintype α] [Nonempty α] : PMF α :=
+  ofFintype (Function.const α (Fintype.card α)⁻¹) (by
+    simp_rw [Function.const_apply, Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
+    exact ENNReal.mul_inv_cancel
+      (Nat.cast_ne_zero.mpr Fintype.card_ne_zero)
+      (ENNReal.natCast_ne_top _))
+
+variable [Fintype α] [Nonempty α]
+
+@[simp]
+theorem uniform_apply (a : α) : uniform α a = (Fintype.card α : ℝ≥0∞)⁻¹ := rfl
+
+@[simp]
+theorem support_uniform : support (uniform α) = Function.support f := rfl
+
+theorem mem_support_ofFintype_iff (a : α) :
+  a ∈ support (ofFintype f h) ↔ f a ≠ 0 := Iff.rfl
+
+end Uniform
+
 section Normalize
 
-variable {M : Type u → Type*} {α : Type u} [MFLike M] [FMFClass M] {μ : M α} {a : α}
+variable {M : Type u → Type v} {α : Type u} [MFLike M] [FMFClass M] {μ : M α} {a : α}
 {hf : mass μ ≠ 0}
 
 noncomputable def normalize (μ : M α) (hf : mass μ ≠ 0) : PMF α :=

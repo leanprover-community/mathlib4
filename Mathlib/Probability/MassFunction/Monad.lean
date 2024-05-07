@@ -4,16 +4,16 @@ open BigOperators ENNReal
 
 namespace MassFunction
 
-universe u
+universe u v
 
 section DiracPure
 
-class DiracPure (M : Type u → Type*) [MFLike M] extends Pure M :=
+class DiracPure (M : Type u → Type v) [MFLike M] extends Pure M :=
 (coeFn' : ∀ {α} {a : α}, ⇑(pure a : M α) = Set.indicator {a} 1)
 
 namespace DiracPure
 
-variable {M : Type u → Type*} [MFLike M] [DiracPure M] {α : Type u} {a a' : α} {s : Set α}
+variable {M : Type u → Type v} [MFLike M] [DiracPure M] {α : Type u} {a a' : α} {s : Set α}
 
 theorem coeFn_pure : ⇑(pure a : M α) = Set.indicator {a} 1 := coeFn'
 
@@ -44,7 +44,7 @@ theorem pure_apply' [DecidableEq α] : (pure a : M α) a' = if a' = a then 1 els
   · rw [if_pos rfl, pure_apply_self]
   · rw [if_neg h, pure_apply_of_ne h]
 
-theorem indicator_pure_apply [∀ α, Zero (M α)] [ZeroNull M] :
+theorem indicator_pure_apply [∀ α, ZeroNull M α] :
     (s.indicator (pure : α → M α) a') a = (s ∩ {a'}).indicator 1 a := by
   by_cases ha' : a' ∈ s
   · rw [s.indicator_of_mem ha', pure_apply]
@@ -75,14 +75,14 @@ end DiracPure
 
 section WeightedSumBind
 
-class WeightedSumBind (M : Type u → Type*) [MFLike M] extends Bind M :=
+class WeightedSumBind (M : Type u → Type v) [MFLike M] extends Bind M :=
 (coeFn' : ∀ {α β} {μ : M α} {φ : α → M β}, ⇑(bind μ φ : M β) = fun b => ∑' a, μ a * φ a b)
 
 namespace WeightedSumBind
 
 open DiracPure
 
-variable {M : Type u → Type*} [MFLike M] [WeightedSumBind M] {α β γ : Type u}
+variable {M : Type u → Type v} [MFLike M] [WeightedSumBind M] {α β γ : Type u}
 {μ : M α} {ν : M β} {φ : α → M β} {ξ : β → M γ} {ψ : α → M α} {υ : α → β → M γ} {a : α} {b : β}
 
 theorem coeFn_bind : ⇑(bind μ φ) = fun b => ∑' a, μ a * φ a b := coeFn'
@@ -158,7 +158,7 @@ end WeightedSumBind
 
 section BindOnSupport
 
-variable {M : Type u → Type*} [MFLike M] [WeightedSumBind M] {α β γ : Type u}
+variable {M : Type u → Type v} [MFLike M] [WeightedSumBind M] {α β γ : Type u}
 
 def IsBindOnSupport (ρ : {α β : Type u} → (μ : M α) → ((a : α) → a ∈ support μ → M β) → M β) :=
     ∀ {α β} {μ : M α} {φ : (a : α) → a ∈ support μ → M β},
@@ -299,7 +299,7 @@ end BindOnSupport
 
 section Monad
 
-variable {M : Type u → Type*}
+variable {M : Type u → Type v}
 
 instance [MFLike M] [DiracPure M] [WeightedSumBind M] : Monad M where
 

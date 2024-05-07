@@ -13,11 +13,11 @@ open BigOperators ENNReal NNReal
 
 namespace MassFunction
 
-universe u
+universe u v
 
-abbrev MFLike (M : Type* → Type*) := ∀ α, FunLike (M α) α ℝ≥0∞
+abbrev MFLike (M : Type u → Type v) := ∀ α, FunLike (M α) α ℝ≥0∞
 
-variable {M : Type u → Type*} [MFLike M] {α : Type u} {μ ν : M α} {a b : α} {s t : Set α}
+variable {M : Type u → Type v} [MFLike M] {α : Type u} {μ ν : M α} {a b : α} {s t : Set α}
 
 noncomputable def mass (μ : M α) := tsum μ
 
@@ -174,15 +174,29 @@ theorem massOf_eq_zero_iff_support_disjoint : massOf μ s = 0 ↔ Disjoint (supp
 theorem massOf_eq_zero_iff_disjoint_support : massOf μ s = 0 ↔ Disjoint s (support μ) := by
   simp_rw [massOf_eq_zero_iff, disjoint_support_iff]
 
+theorem massOf_eq_zero_iff_mem_nmem_support : massOf μ s = 0 ↔ ∀ a ∈ s, a ∉ support μ := by
+  simp_rw [massOf_eq_zero_iff_support_disjoint, Set.disjoint_right]
+
+theorem massOf_eq_zero_iff_mem_support_nmem : massOf μ s = 0 ↔ ∀ a ∈ support μ, a ∉ s := by
+  simp_rw [massOf_eq_zero_iff_support_disjoint, Set.disjoint_left]
+
 theorem massOf_ne_zero_iff : massOf μ s ≠ 0 ↔ ∃ a ∈ s, μ a ≠ 0 := by
-  simp_rw [Ne.def, massOf_eq_zero_iff_disjoint_support, Set.not_disjoint_iff,
+  simp_rw [ne_eq, massOf_eq_zero_iff_disjoint_support, Set.not_disjoint_iff,
   mem_support_iff]
 
-theorem massOf_ne_zero_iff_support_disjoint : massOf μ s ≠ 0 ↔ ((support μ) ∩ s).Nonempty := by
-  simp_rw [Ne.def, massOf_eq_zero_iff_support_disjoint, Set.not_disjoint_iff_nonempty_inter]
+theorem massOf_ne_zero_iff_support_inter_nonempty :
+    massOf μ s ≠ 0 ↔ ((support μ) ∩ s).Nonempty := by
+  simp_rw [ne_eq, massOf_eq_zero_iff_support_disjoint, Set.not_disjoint_iff_nonempty_inter]
 
-theorem massOf_ne_zero_iff_disjoint_support : massOf μ s ≠ 0 ↔ (s ∩ (support μ)).Nonempty := by
-  simp_rw [Ne.def, massOf_eq_zero_iff_disjoint_support, Set.not_disjoint_iff_nonempty_inter]
+theorem massOf_ne_zero_iff_inter_suppport_nonempty :
+    massOf μ s ≠ 0 ↔ (s ∩ (support μ)).Nonempty := by
+  simp_rw [ne_eq, massOf_eq_zero_iff_disjoint_support, Set.not_disjoint_iff_nonempty_inter]
+
+theorem massOf_ne_zero_iff_exists_mem_mem_support : massOf μ s ≠ 0 ↔ ∃ a ∈ s, a ∈ support μ := by
+  simp_rw [massOf_ne_zero_iff_support_inter_nonempty, Set.inter_nonempty_iff_exists_right]
+
+theorem massOf_ne_zero_iff_exists_mem_support_mem : massOf μ s ≠ 0 ↔ ∃ a ∈ support μ, a ∈ s := by
+  simp_rw [massOf_ne_zero_iff_support_inter_nonempty, Set.inter_nonempty_iff_exists_left]
 
 @[simp]
 theorem massOf_apply_inter_support :
@@ -219,12 +233,12 @@ theorem exists_apply_eq_mass_of_support_subsingleton [Inhabited α]
 
 end MassOf
 
-class ZeroNull (M : Type u → Type*) [MFLike M] [∀ α, Zero (M α)] where
-(coeFn_zero' : ∀ {α}, ⇑(0 : M α) = 0)
+class ZeroNull (M : Type u → Type v) [MFLike M] (α : Type u) extends Zero (M α) where
+(coeFn_zero' : ⇑(0 : M α) = 0)
 
 namespace ZeroNull
 
-variable [∀ α, Zero (M α)] [ZeroNull M] {a : α} {s : Set α} {μ : M α}
+variable [∀ α, ZeroNull M α] {a : α} {s : Set α} {μ : M α}
 
 @[simp]
 theorem coeFn_zero : ⇑(0 : M α) = 0 := ZeroNull.coeFn_zero'
@@ -260,7 +274,7 @@ theorem massOf_zero : massOf (0 : M α) s = 0 :=
 
 end ZeroNull
 
-class FMFClass (M : Type u → Type*) [MFLike M] : Prop :=
+class FMFClass (M : Type u → Type v) [MFLike M] : Prop :=
   (mass_lt_top : ∀ {α} (μ : M α), mass μ < ∞)
 
 section FiniteMassFunction
@@ -370,7 +384,7 @@ end MassOf
 
 end FiniteMassFunction
 
-class SPMFClass (M : Type u → Type*) [MFLike M] : Prop :=
+class SPMFClass (M : Type u → Type v) [MFLike M] : Prop :=
   (mass_le_one : ∀ {α} (μ : M α), mass μ ≤ 1)
 
 instance SPMFClass.toFMFClass [SPMFClass M] : FMFClass M  where
@@ -403,7 +417,7 @@ end MassOf
 
 end SubProbabilityMassFunction
 
-class PMFClass (M : Type u → Type*) [MFLike M] : Prop :=
+class PMFClass (M : Type u → Type v) [MFLike M] : Prop :=
   (mass_eq_one : ∀ {α} (μ : M α), mass μ = 1)
 
 instance PMFClass.toSPMFClass [PMFClass M] : SPMFClass M where
@@ -438,7 +452,7 @@ end HasSum
 
 end ProbabilityMassFunction
 
-structure MF (α : Type*) where
+structure MF (α : Type u) where
   toFun : α → ℝ≥0∞
 
 namespace MF
@@ -449,9 +463,8 @@ instance instMFLike : MFLike MF := fun α => ⟨fun μ => μ.toFun, fun ⟨_⟩ 
 
 @[ext] theorem ext {μ ν : MF α} (h : ∀ x, μ x = ν x) : μ = ν := DFunLike.ext _ _ (by assumption)
 
-instance instZero : Zero (MF α) := ⟨⟨0⟩⟩
-
-instance instZeroNull : ZeroNull MF where
+instance instZeroNull (α : Type u) : ZeroNull MF α where
+  zero := ⟨0⟩
   coeFn_zero' := rfl
 
 instance : Inhabited (MF α) := ⟨0⟩
@@ -481,13 +494,13 @@ noncomputable instance : MulActionWithZero ℝ≥0∞ (MF α) :=
 
 end MF
 
-structure FMF (α : Type*) where
+structure FMF (α : Type u) where
   toFun : α → ℝ≥0∞
   mass_lt_top' : tsum (toFun) < ∞
 
 namespace FMF
 
-variable {α : Type*} {r : ℝ≥0} {μ : FMF α} {a : α} {s : Set α}
+variable {r : ℝ≥0} {μ : FMF α} {a : α} {s : Set α}
 
 instance instMFLike : MFLike FMF := fun α => ⟨fun μ => μ.toFun, fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr⟩
 
@@ -495,9 +508,8 @@ instance instFMFClass : FMFClass FMF where mass_lt_top := FMF.mass_lt_top'
 
 @[ext] theorem ext {μ ν : FMF α} (h : ∀ x, μ x = ν x) : μ = ν := DFunLike.ext _ _ (by assumption)
 
-instance instZero : Zero (FMF α) := ⟨0, tsum_zero.trans_lt zero_lt_top⟩
-
-instance instZeroNull : ZeroNull FMF where
+instance instZeroNull (α : Type u) : ZeroNull FMF α where
+  zero := ⟨0, tsum_zero.trans_lt zero_lt_top⟩
   coeFn_zero' := rfl
 
 instance : Inhabited (FMF α) := ⟨0⟩
@@ -534,7 +546,7 @@ structure SPMF (α : Type*) where
 
 namespace SPMF
 
-variable {α : Type*} {r : (Set.Icc 0 1 : Set ℝ≥0∞)} {μ : SPMF α} {a : α} {s : Set α}
+variable {r : (Set.Icc 0 1 : Set ℝ≥0∞)} {μ : SPMF α} {a : α} {s : Set α}
 
 instance instMFLike : MFLike SPMF := fun α => ⟨fun μ => μ.toFun, fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr⟩
 
@@ -542,9 +554,8 @@ instance instSPMFClass : SPMFClass SPMF where mass_le_one := SPMF.mass_le_one'
 
 @[ext] theorem ext {μ ν : SPMF α} (h : ∀ x, μ x = ν x) : μ = ν := DFunLike.ext _ _ (by assumption)
 
-instance instZero : Zero (SPMF α) := ⟨0, tsum_zero.trans_le zero_le_one⟩
-
-instance instZeroNull : ZeroNull SPMF where
+instance instZeroNull (α : Type u) : ZeroNull SPMF α where
+  zero := ⟨0, tsum_zero.trans_le zero_le_one⟩
   coeFn_zero' := rfl
 
 instance : Inhabited (SPMF α) := ⟨0⟩
@@ -575,13 +586,11 @@ noncomputable instance : MulActionWithZero ℝ≥0 (FMF α) :=
 
 end SPMF
 
-structure PMF (α : Type*) where
+structure PMF (α : Type u) where
   toFun : α → ℝ≥0∞
   mass_eq_one' : tsum (toFun) = 1
 
 namespace PMF
-
-variable {α : Type*}
 
 instance instMFLike : MFLike PMF := fun α => ⟨fun μ => μ.toFun, fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr⟩
 
