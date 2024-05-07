@@ -244,7 +244,8 @@ protected def rightOp (F : Cᵒᵖ ⥤ D) : C ⥤ Dᵒᵖ where
   map f := (F.map f.op).op
 #align category_theory.functor.right_op CategoryTheory.Functor.rightOp
 
-instance {F : C ⥤ D} [Full F] : Full F.op where preimage := @fun X Y f => (F.preimage f.unop).op
+instance {F : C ⥤ D} [Full F] : Full F.op where
+  map_surjective f := ⟨(F.preimage f.unop).op, by simp⟩
 
 instance {F : C ⥤ D} [Faithful F] : Faithful F.op where
   map_injective h := Quiver.Hom.unop_inj <| by simpa using map_injective F (Quiver.Hom.op_inj h)

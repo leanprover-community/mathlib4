@@ -92,7 +92,7 @@ theorem extentClosure_empty : extentClosure r ∅ = univ :=
 @[simp]
 theorem intentClosure_union (s₁ s₂ : Set α) :
     intentClosure r (s₁ ∪ s₂) = intentClosure r s₁ ∩ intentClosure r s₂ :=
-  Set.ext fun _ => ball_or_left
+  Set.ext fun _ => forall₂_or_left
 #align intent_closure_union intentClosure_union
 
 @[simp]

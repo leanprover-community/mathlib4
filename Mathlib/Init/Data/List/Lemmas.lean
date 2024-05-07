@@ -3,7 +3,7 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn
 -/
-import Std.Data.List.Lemmas
+import Batteries.Data.List.Lemmas
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Cases
 
@@ -72,20 +72,17 @@ alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
 #align list.mem_append_left List.mem_append_left
 #align list.mem_append_right List.mem_append_right
 
-theorem not_bex_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x := fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
-#align list.not_bex_nil List.not_bex_nil
+theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
+  fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
+#align list.not_bex_nil List.not_exists_mem_nil
 
 #align list.ball_nil List.forall_mem_nil
 
-theorem bex_cons (p : α → Prop) (a : α) (l : List α) : (∃ x ∈ a :: l, p x) ↔ p a ∨ ∃ x ∈ l, p x :=
-  ⟨fun ⟨x, h, px⟩ => by
-    simp only [find?, mem_cons] at h
-    cases' h with h h
-    · cases h; exact Or.inl px;
-    · exact Or.inr ⟨x, h, px⟩,
-  fun o =>
-    o.elim (fun pa => ⟨a, mem_cons_self _ _, pa⟩) fun ⟨x, h, px⟩ => ⟨x, mem_cons_of_mem _ h, px⟩⟩
-#align list.bex_cons List.bex_cons
+#align list.bex_cons List.exists_mem_cons
+
+-- 2024-03-23
+@[deprecated] alias not_bex_nil := not_exists_mem_nil
+@[deprecated] alias bex_cons := exists_mem_cons
 
 #align list.ball_cons List.forall_mem_consₓ
 
@@ -93,8 +90,7 @@ theorem bex_cons (p : α → Prop) (a : α) (l : List α) : (∃ x ∈ a :: l, p
 
 #align list.subset List.Subset
 -- This is relying on an automatically generated instance name from Std.
--- See https://github.com/leanprover/lean4/issues/2343
-#align list.has_subset List.instHasSubsetList
+#align list.has_subset List.instHasSubset_batteries
 #align list.nil_subset List.nil_subset
 #align list.subset.refl List.Subset.refl
 #align list.subset.trans List.Subset.trans
@@ -109,7 +105,8 @@ theorem bex_cons (p : α → Prop) (a : α) (l : List α) : (∃ x ∈ a :: l, p
 #align list.length_map₂ List.length_zipWith
 #align list.length_take List.length_take
 #align list.length_take_le List.length_take_le
-#align list.length_remove_nth List.length_removeNth
+#align list.remove_nth List.eraseIdx
+#align list.length_remove_nth List.length_eraseIdx
 #align list.partition_eq_filter_filter List.partition_eq_filter_filterₓ
 
 /-! sublists -/

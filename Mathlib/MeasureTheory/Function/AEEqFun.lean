@@ -106,7 +106,6 @@ def AEEqFun (μ : Measure α) : Type _ :=
 
 variable {α β}
 
--- mathport name: «expr →ₘ[ ] »
 @[inherit_doc MeasureTheory.AEEqFun]
 notation:25 α " →ₘ[" μ "] " β => AEEqFun α β μ
 

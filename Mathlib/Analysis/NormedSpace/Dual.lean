@@ -120,7 +120,7 @@ theorem norm_le_dual_bound (x : E) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ f : Dual 
       calc
         ‖x‖ = ‖(‖x‖ : 𝕜)‖ := RCLike.norm_coe_norm.symm
         _ = ‖f x‖ := by rw [hfx]
-        _ ≤ M * ‖f‖ := (hM f)
+        _ ≤ M * ‖f‖ := hM f
         _ = M := by rw [hf₁, mul_one]
 #align normed_space.norm_le_dual_bound NormedSpace.norm_le_dual_bound
 
@@ -138,7 +138,7 @@ theorem eq_iff_forall_dual_eq {x y : E} : x = y ↔ ∀ g : Dual 𝕜 E, g x = g
   simp [sub_eq_zero]
 #align normed_space.eq_iff_forall_dual_eq NormedSpace.eq_iff_forall_dual_eq
 
-/-- The inclusion of a normed space in its double dual is an isometry onto its image.-/
+/-- The inclusion of a normed space in its double dual is an isometry onto its image. -/
 def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] Dual 𝕜 (Dual 𝕜 E) :=
   { inclusionInDoubleDual 𝕜 E with
     norm_map' := by
@@ -234,7 +234,7 @@ theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
     _ ≤ r⁻¹ * r :=
       (mul_le_mul (mem_closedBall_zero_iff.1 hx') (mem_closedBall_zero_iff.1 hx) (norm_nonneg _)
         (dist_nonneg.trans hx'))
-    _ = r / r := (inv_mul_eq_div _ _)
+    _ = r / r := inv_mul_eq_div _ _
     _ ≤ 1 := div_self_le_one r
 #align normed_space.closed_ball_inv_subset_polar_closed_ball NormedSpace.closedBall_inv_subset_polar_closedBall
 

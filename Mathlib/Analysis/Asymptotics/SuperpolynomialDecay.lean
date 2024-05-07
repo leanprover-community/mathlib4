@@ -3,9 +3,9 @@ Copyright (c) 2021 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
+import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Data.Polynomial.Eval
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 #align_import analysis.asymptotics.superpolynomial_decay from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"

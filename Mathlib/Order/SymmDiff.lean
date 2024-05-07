@@ -215,6 +215,12 @@ theorem symmDiff_triangle : a ∆ c ≤ a ∆ b ⊔ b ∆ c := by
   rw [sup_comm (c \ b), sup_sup_sup_comm, symmDiff, symmDiff]
 #align symm_diff_triangle symmDiff_triangle
 
+theorem le_symmDiff_sup_right (a b : α) : a ≤ (a ∆ b) ⊔ b := by
+  convert symmDiff_triangle a b ⊥ <;> rw [symmDiff_bot]
+
+theorem le_symmDiff_sup_left (a b : α) : b ≤ (a ∆ b) ⊔ a :=
+  symmDiff_comm a b ▸ le_symmDiff_sup_right ..
+
 end GeneralizedCoheytingAlgebra
 
 section GeneralizedHeytingAlgebra
@@ -571,7 +577,7 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra α] (a b c d : α)
 
-/- `CogeneralizedBooleanAlgebra` isn't actually a typeclass, but the lemmas in here are dual to
+/-! `CogeneralizedBooleanAlgebra` isn't actually a typeclass, but the lemmas in here are dual to
 the `GeneralizedBooleanAlgebra` ones -/
 section CogeneralizedBooleanAlgebra
 
