@@ -2,107 +2,184 @@ import Mathlib.Probability.MassFunction.Monad
 
 open BigOperators ENNReal
 
+namespace MassFunction
+
 universe u
-
-variable {α β γ : Type*}
-
-namespace SPMF
 
 section Map
 
-/-- The functorial action of a function on a `SPMF`. -/
-noncomputable def map (f : α → β) (d : SPMF α) : SPMF β := bind d (pure ∘ f)
+variable {M : Type u → Type*} [MFLike M] [DiracPure M] [WeightedSumBind M]
+{α β γ : Type u} {f : α → β} {g : β → γ} {μ : M α} {φ : α → M β} {ξ : β → M γ} {b b' : β}
 
-variable {f : α → β} {g : β → γ} {d : SPMF α} {b : β}
+open DiracPure WeightedSumBind
 
-theorem monad_map_eq_map {α β : Type u} (f : α → β) (d : SPMF α) : f <$> d = d.map f := rfl
+noncomputable def map (f : α → β) (μ : M α) : M β := bind μ (pure ∘ f)
 
-theorem map_def : (map f d) b = ∑' a, d a * Set.indicator {f a} 1 b := rfl
+theorem monad_map_eq_map : f <$> μ = map f μ := rfl
 
-@[simp]
-theorem massSupport_map : massSupport (map f d) = f '' massSupport d :=
-  Set.ext fun b => by simp [map, @eq_comm β b]
+theorem map_def : map f μ = bind μ (pure ∘ f) := rfl
 
-theorem mem_massSupport_map_iff :
-  b ∈ massSupport (map f d) ↔ ∃ a ∈ massSupport d, f a = b := by simp only [massSupport_map,
-    Set.mem_image, mem_massSupport_iff, ne_eq]
+theorem coeFn_map : ⇑(map f μ) = fun b => ∑' a, μ a * Set.indicator {f a} 1 b := by
+  simp_rw [map_def, coeFn_bind, Function.comp_apply, coeFn_pure]
 
-theorem bind_pure_comp : bind d (pure ∘ f) = map f d := rfl
+theorem map_apply : map f μ b = ∑' a, μ a * Set.indicator {f a} 1 b := by rw [coeFn_map]
 
 @[simp]
-theorem mass_map : mass (map f d) = mass d := by
-  simp_rw [← bind_pure_comp, mass_bind, Function.comp_apply, mass_pure, mul_one, tsum_eq_mass]
+theorem support_map : support (map f μ) = f '' support μ := Set.ext fun b => by
+  simp_rw [mem_support_iff, ne_eq, Set.mem_image, coeFn_map, ENNReal.tsum_eq_zero, not_forall,
+  mul_eq_zero, Set.indicator_apply_eq_zero, Set.mem_singleton_iff, @eq_comm β b, Pi.one_apply,
+  one_ne_zero, imp_false, mem_support_iff, not_or, not_not]
 
-theorem map_id : map id d = d := bind_pure
+theorem mem_support_map_iff :
+    b ∈ support (map f μ) ↔ ∃ a ∈ support μ, f a = b := by
+  simp only [support_map, Set.mem_image, mem_support_iff, ne_eq]
 
-theorem map_comp  : (d.map f).map g = d.map (g ∘ f) := by simp [map, Function.comp]
-
-theorem pure_map {a : α} : (pure a).map f = pure (f a) := pure_bind
-
-theorem map_bind {q : α → SPMF β} {f : β → γ} :
-    (d.bind q).map f = d.bind fun a => (q a).map f := bind_bind
+theorem bind_pure_comp : bind μ (pure ∘ f) = map f μ := rfl
 
 @[simp]
-theorem bind_map (d : SPMF α) (f : α → β) (q : β → SPMF γ) : (d.map f).bind q = d.bind (q ∘ f) :=
+theorem mass_map : mass (map f μ) = mass μ := by
+  simp_rw [← bind_pure_comp, WeightedSumBind.mass_bind, Function.comp_apply,
+  DiracPure.mass_pure, mul_one, mass_eq_tsum_coeFn]
+
+theorem map_id : map id μ = μ := bind_pure
+
+theorem map_comp : map g (map f μ) = map (g ∘ f) μ := by simp [map_def, Function.comp]
+
+theorem pure_map {a : α} : map f (pure a) = (pure (f a) : M β) := pure_bind
+
+theorem map_bind : map g (bind μ φ) = bind μ fun a => map g (φ a) := bind_bind
+
+@[simp]
+theorem bind_map : bind (map f μ) ξ = bind μ (ξ ∘ f) :=
   (bind_bind).trans (congr_arg _ (funext fun _ => pure_bind))
 
 @[simp]
-theorem map_const_apply (b' : β) :
-  d.map (Function.const α b) b' = mass d * pure b b' :=
+theorem map_const_apply :
+  map (Function.const α b) μ b' = mass μ * (pure b : M β) b' :=
   bind_apply.trans (by simp_rw [Function.comp_apply, Function.const_apply,
-    ENNReal.tsum_mul_right, tsum_eq_mass])
+    ENNReal.tsum_mul_right, mass_eq_tsum_coeFn])
 
 @[simp]
-theorem map_apply [DecidableEq β] : (map f d) b = ∑' a, if b = f a then d a else 0 :=
-  bind_apply.trans (by simp_rw [Function.comp_apply, pure_apply, mul_ite, mul_one, mul_zero])
+theorem map_apply' [DecidableEq β] : map f μ b = ∑' a, if b = f a then μ a else 0 :=
+  bind_apply.trans (by simp_rw [Function.comp_apply, pure_apply', mul_ite, mul_one, mul_zero])
 
 end Map
 
 section Seq
 
-/-- The monadic sequencing operation for `SPMF`. -/
-noncomputable def seq (q : SPMF (α → β)) (d : SPMF α) : SPMF β :=
-  q.bind fun m => d.bind fun a => pure (m a)
+variable {M : Type u → Type*} [MFLike M] [DiracPure M] [WeightedSumBind M]
+{α β γ : Type u} {κ : M (α → β)} {μ : M α} {b : β}
 
-variable {q : SPMF (α → β)} {d : SPMF α} {b : β}
+open DiracPure WeightedSumBind
 
-theorem monad_seq_eq_seq {α β : Type u} (q : SPMF (α → β)) (d : SPMF α) : q <*> d = q.seq d := rfl
+noncomputable def seq (κ : M (α → β)) (μ : M α) : M β :=
+  bind κ fun f => bind μ fun a => pure (f a)
 
-@[simp]
-theorem massSupport_seq : massSupport (seq q d) = ⋃ f ∈ massSupport q, f '' massSupport d :=
-  Set.ext fun b => by simp [-mem_massSupport_iff, seq, @eq_comm β b]
+theorem monad_seq_eq_seq : κ <*> μ = seq κ μ := rfl
 
-theorem mem_massSupport_seq_iff :
-  b ∈ massSupport (seq q d) ↔ ∃ f ∈ massSupport q, b ∈ f '' massSupport d := by simp
+theorem seq_def : seq κ μ = bind κ fun f => bind μ fun a => pure (f a) := rfl
 
-theorem seq_def :
-    (seq q d) b = ∑' (f : α → β) (a : α), q f * (d a * Set.indicator {f a} 1 b) :=
-  bind_apply.trans (by simp_rw [bind_apply, ←ENNReal.tsum_mul_left, pure_def])
+theorem seq_apply : seq κ μ b = ∑' (f : α → β) (a : α), κ f * (μ a * Set.indicator {f a} 1 b) := by
+  simp_rw [seq_def, bind_apply, pure_apply, ENNReal.tsum_mul_left]
 
-@[simp]
-theorem mass_seq : mass (seq q d) = ∑' (a : α → β), q a * mass d := by
-  simp_rw [seq, mass_bind, mass_pure, mul_one, tsum_eq_mass]
+theorem coeFn_seq : ⇑(seq κ μ) =
+    fun b => ∑' (f : α → β) (a : α), κ f * (μ a * Set.indicator {f a} 1 b) := by
+    simp_rw [Function.funext_iff, seq_apply, implies_true]
 
 @[simp]
-theorem seq_apply [DecidableEq β] :
-    (seq q d) b = ∑' (f : α → β) (a : α), if b = f a then q f * d a else 0 :=
-  bind_apply.trans (by simp_rw [bind_apply, ←ENNReal.tsum_mul_left, pure_apply,
+theorem support_seq : support (seq κ μ) = ⋃ f ∈ support κ, f '' support μ := by
+  simp_rw [seq_def, support_bind, support_pure, Set.image_eq_iUnion]
+
+theorem mem_support_seq_iff : b ∈ support (seq κ μ) ↔ ∃ f ∈ support κ, b ∈ f '' support μ := by
+  simp_rw [support_seq, mem_support_iff, ne_eq, Set.mem_iUnion, Set.mem_image, exists_prop]
+
+@[simp]
+theorem mass_seq : mass (seq κ μ) = ∑' (a : α → β), κ a * mass μ := by
+  simp_rw [seq, mass_bind, mass_pure, mul_one, mass_eq_tsum_coeFn]
+
+@[simp]
+theorem seq_apply' [DecidableEq β] :
+    (seq κ μ) b = ∑' (f : α → β) (a : α), if b = f a then κ f * μ a else 0 :=
+  bind_apply.trans (by simp_rw [bind_apply, ←ENNReal.tsum_mul_left, pure_apply',
   mul_ite, mul_one, mul_zero])
 
 end Seq
 
-instance : LawfulFunctor SPMF where
+section Lawful
+
+variable {M : Type u → Type*} [MFLike M] [DiracPure M] [WeightedSumBind M]
+
+open DiracPure WeightedSumBind
+
+instance : LawfulFunctor M where
   map_const := rfl
   id_map _ := bind_pure
   comp_map _ _ _ := (map_comp).symm
 
-instance : LawfulMonad SPMF := LawfulMonad.mk'
+instance : LawfulMonad M := LawfulMonad.mk'
   (bind_pure_comp := fun f x => rfl)
   (id_map := id_map)
   (pure_bind := fun _ _ => pure_bind)
   (bind_assoc := fun _ _ _ => bind_bind)
 
+end Lawful
+
+section Filter
+
+variable {M : Type u → Type*} [MFLike M] [DiracPure M] [WeightedSumBind M]
+[∀ α, Zero (M α)] [ZeroNull M] {α β γ : Type u} {μ : M α} {s : Set α} {a a' : α}
+
+open DiracPure WeightedSumBind
+
+noncomputable def filter (μ : M α) (s : Set α) : M α := bind μ (fun a => s.indicator pure a)
+
+theorem filter_apply_of_mem (ha : a ∈ s) : (filter μ s) a = μ a :=
+  bind_apply.trans (by
+  simp_rw [indicator_pure_apply]
+  refine' (tsum_eq_single a _).trans _
+  · intros b' h
+    rw [Set.indicator_of_not_mem (s := s ∩ {b'}) (Set.mem_of_mem_inter_right.mt h.symm), mul_zero]
+  · rw [Set.indicator_of_mem (Set.mem_inter ha (Set.mem_singleton _)), Pi.one_apply, mul_one])
+
+theorem filter_apply_of_not_mem (ha : a ∉ s) : (filter μ s) a = 0 :=
+  bind_apply.trans (by
+  simp_rw [ENNReal.tsum_eq_zero, indicator_pure_apply, mul_eq_zero, Set.indicator_apply_eq_zero,
+    Set.mem_inter_iff, Set.mem_singleton_iff, Pi.one_apply, one_ne_zero, and_imp, imp_false]
+  exact fun _ => Or.inr (fun h => (ha h).elim))
+
+@[simp]
+theorem filter_apply (a : α) : (filter μ s) a = s.indicator μ a := by
+  by_cases ha : a ∈ s
+  · rw [filter_apply_of_mem ha, Set.indicator_of_mem ha]
+  · rw [filter_apply_of_not_mem ha, Set.indicator_of_not_mem ha]
+
+@[simp]
+theorem mass_filter : mass (filter μ s) = massOf μ s := by
+  simp_rw [mass_eq_tsum_coeFn, filter_apply, massOf_eq_tsum_indicator_coeFn]
+
+theorem mem_support_filter_iff {a : α} : a ∈ support (filter μ s) ↔ a ∈ s ∧ a ∈ support μ := by
+  simp_rw [mem_support_iff, filter_apply, Set.indicator_apply_ne_zero,
+  Set.mem_inter_iff, Function.mem_support]
+
+@[simp]
+theorem support_filter : support (filter μ s) = s ∩ support μ :=
+  Set.ext fun _ => mem_support_filter_iff
+
+theorem filter_apply_eq_zero_iff (a : α) :
+  (filter μ s) a = 0 ↔ a ∉ s ∨ a ∉ support μ := by
+  erw [← nmem_support_iff, support_filter, Set.mem_inter_iff, not_and_or]
+
+theorem filter_apply_ne_zero_iff (a : α) :
+  (filter μ s) a ≠ 0 ↔ a ∈ s ∧ a ∈ support μ := by
+  rw [Ne, filter_apply_eq_zero_iff, not_or, Classical.not_not, Classical.not_not]
+
+end Filter
+
+namespace SPMF
+
 section OfFinset
+
+variable {α : Type*}
 
 /-- Given a finset `s` and a function `f : α → ℝ≥0∞` with sum `1` on `s`,
   such that `f a = 0` for `a ∉ s`, we get a `SPMF`. -/
@@ -116,11 +193,11 @@ variable {f : α → ℝ≥0∞} {s : Finset α} (h : ∑ a in s, f a ≤ 1) (h'
 theorem ofFinset_apply (a : α) : ofFinset f s h h' a = f a := rfl
 
 @[simp]
-theorem support_ofFinset : massSupport (ofFinset f s h h') = ↑s ∩ Function.support f :=
-  Set.ext fun a => by simpa [mem_massSupport_iff] using mt (h' a)
+theorem support_ofFinset : support (ofFinset f s h h') = ↑s ∩ Function.support f :=
+  Set.ext fun a => by simpa [mem_support_iff] using mt (h' a)
 
-theorem mem_massSupport_ofFinset_iff (a : α) :
-  a ∈ massSupport (ofFinset f s h h') ↔ a ∈ s ∧ f a ≠ 0 := by
+theorem mem_support_ofFinset_iff (a : α) :
+  a ∈ support (ofFinset f s h h') ↔ a ∈ s ∧ f a ≠ 0 := by
   simp
 
 theorem ofFinset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofFinset f s h h' a = 0 :=
@@ -129,6 +206,8 @@ theorem ofFinset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofFinset f s h h' a 
 end OfFinset
 
 section OfFintype
+
+variable {α : Type*}
 
 def ofFintype [Fintype α] (f : α → ℝ≥0∞) (h : ∑ a, f a ≤ 1) : SPMF α :=
   ofFinset f Finset.univ h fun a ha => absurd (Finset.mem_univ a) ha
@@ -139,62 +218,12 @@ variable [Fintype α] {f : α → ℝ≥0∞} (h : ∑ a, f a ≤ 1)
 theorem ofFintype_apply (a : α) : ofFintype f h a = f a := rfl
 
 @[simp]
-theorem massSupport_ofFintype : massSupport (ofFintype f h) = Function.support f := rfl
+theorem support_ofFintype : support (ofFintype f h) = Function.support f := rfl
 
-theorem mem_massSupport_ofFintype_iff (a : α) :
-  a ∈ massSupport (ofFintype f h) ↔ f a ≠ 0 := Iff.rfl
+theorem mem_support_ofFintype_iff (a : α) :
+  a ∈ support (ofFintype f h) ↔ f a ≠ 0 := Iff.rfl
 
 end OfFintype
-
-section Filter
-
-noncomputable def filter (d : SPMF α) (s : Set α) : SPMF α :=
-  d.bind (fun a => s.indicator pure a)
-
-variable {d : SPMF α} {s : Set α} {a a' : α}
-
-theorem filter_apply_of_mem (ha : a ∈ s) : (d.filter s) a = d a :=
-  bind_apply.trans (by
-  simp_rw [indicator_pure_apply]
-  refine' (tsum_eq_single a _).trans _
-  · intros b' h
-    rw [Set.indicator_of_not_mem (s := s ∩ {b'}) (Set.mem_of_mem_inter_right.mt h.symm), mul_zero]
-  · rw [Set.indicator_of_mem (Set.mem_inter ha (Set.mem_singleton _)), Pi.one_apply, mul_one])
-
-theorem filter_apply_of_not_mem (ha : a ∉ s) : (d.filter s) a = 0 :=
-  bind_apply.trans (by
-  simp_rw [ENNReal.tsum_eq_zero, indicator_pure_apply, mul_eq_zero, Set.indicator_apply_eq_zero,
-    Set.mem_inter_iff, Set.mem_singleton_iff, Pi.one_apply, one_ne_zero, and_imp, imp_false]
-  exact fun _ => Or.inr (fun h => (ha h).elim))
-
-@[simp]
-theorem filter_apply (a : α) : (d.filter s) a = s.indicator d a := by
-  by_cases ha : a ∈ s
-  · rw [filter_apply_of_mem ha, Set.indicator_of_mem ha]
-  · rw [filter_apply_of_not_mem ha, Set.indicator_of_not_mem ha]
-
-@[simp]
-theorem mass_filter : mass (d.filter s) = massOf d s := by
-  simp_rw [← tsum_eq_mass, filter_apply, ← tsum_coe_indicator_eq_massOf]
-
-theorem mem_massSupport_filter_iff {a : α} :
-  a ∈ massSupport (d.filter s) ↔ a ∈ s ∧ a ∈ massSupport d := by
-  rw [mem_massSupport_iff, filter_apply, Set.indicator_apply_ne_zero,
-  Set.mem_inter_iff, coe_support_eq_massSupport]
-
-@[simp]
-theorem massSupport_filter : massSupport (d.filter s) = s ∩ massSupport d :=
-  Set.ext fun _ => mem_massSupport_filter_iff
-
-theorem filter_apply_eq_zero_iff (a : α) :
-  (d.filter s) a = 0 ↔ a ∉ s ∨ a ∉ massSupport d := by
-  erw [← nmem_massSupport_iff, massSupport_filter, Set.mem_inter_iff, not_and_or]
-
-theorem filter_apply_ne_zero_iff (a : α) :
-  (d.filter s) a ≠ 0 ↔ a ∈ s ∧ a ∈ massSupport d := by
-  rw [Ne, filter_apply_eq_zero_iff, not_or, Classical.not_not, Classical.not_not]
-
-end Filter
 
 section Bernoulli
 
@@ -208,19 +237,19 @@ variable {p : ℝ≥0∞} (h : p ≤ 1) (b : Bool)
 theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) := rfl
 
 theorem mass_bernoulli : mass (bernoulli p h) = 1 := by
-  simp_rw [← tsum_eq_mass, tsum_bool, bernoulli_apply,
+  simp_rw [mass_eq_tsum_coeFn, tsum_bool, bernoulli_apply,
   cond_false, cond_true, tsub_add_cancel_of_le h]
 
 @[simp]
-theorem massSupport_bernoulli : massSupport (bernoulli p h) = { b | cond b (p ≠ 0) (p ≠ 1) } := by
+theorem support_bernoulli : support (bernoulli p h) = { b | cond b (p ≠ 0) (p ≠ 1) } := by
   refine' Set.ext fun b => _
   cases b
-  · simp_rw [mem_massSupport_iff, bernoulli_apply, Bool.cond_false, Ne, tsub_eq_zero_iff_le, not_le]
+  · simp_rw [mem_support_iff, bernoulli_apply, Bool.cond_false, Ne, tsub_eq_zero_iff_le, not_le]
     exact ⟨ne_of_lt, lt_of_le_of_ne h⟩
-  · simp only [mem_massSupport_iff, bernoulli_apply, Bool.cond_true, Set.mem_setOf_eq]
+  · simp only [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_setOf_eq]
 
-theorem mem_massSupport_bernoulli_iff :
-  b ∈ massSupport (bernoulli p h) ↔ cond b (p ≠ 0) (p ≠ 1) := by simp
+theorem mem_support_bernoulli_iff :
+  b ∈ support (bernoulli p h) ↔ cond b (p ≠ 0) (p ≠ 1) := by simp
 
 end Bernoulli
 
@@ -229,93 +258,9 @@ end SPMF
 
 namespace PMF
 
-section Map
-
-/-- The functorial action of a function on a `SPMF`. -/
-noncomputable def map (f : α → β) (d : PMF α) : PMF β := bind d (pure ∘ f)
-
-variable {f : α → β} {g : β → γ} {d : PMF α} {b : β}
-
-theorem monad_map_eq_map {α β : Type u} (f : α → β) (d : PMF α) : f <$> d = d.map f := rfl
-
-theorem map_def : (map f d) b = ∑' a, d a * Set.indicator {f a} 1 b := rfl
-
-@[simp]
-theorem massSupport_map : massSupport (map f d) = f '' massSupport d :=
-  Set.ext fun b => by simp [map, @eq_comm β b]
-
-theorem mem_massSupport_map_iff :
-  b ∈ massSupport (map f d) ↔ ∃ a ∈ massSupport d, f a = b := by simp only [massSupport_map,
-    Set.mem_image, mem_massSupport_iff, ne_eq]
-
-theorem bind_pure_comp : bind d (pure ∘ f) = map f d := rfl
-
-theorem map_id : map id d = d := bind_pure
-
-theorem map_comp  : (d.map f).map g = d.map (g ∘ f) := by simp [map, Function.comp]
-
-theorem pure_map {a : α} : (pure a).map f = pure (f a) := pure_bind
-
-theorem map_bind {q : α → PMF β} {f : β → γ} :
-    (d.bind q).map f = d.bind fun a => (q a).map f := bind_bind
-
-@[simp]
-theorem bind_map (d : PMF α) (f : α → β) (q : β → PMF γ) : (d.map f).bind q = d.bind (q ∘ f) :=
-  (bind_bind).trans (congr_arg _ (funext fun _ => pure_bind))
-
-@[simp]
-theorem map_const_apply (b' : β) :
-  d.map (Function.const α b) b' = mass d * pure b b' :=
-  bind_apply.trans (by simp_rw [Function.comp_apply, Function.const_apply,
-    ENNReal.tsum_mul_right, tsum_eq_mass])
-
-@[simp]
-theorem map_apply [DecidableEq β] : (map f d) b = ∑' a, if b = f a then d a else 0 :=
-  bind_apply.trans (by simp_rw [Function.comp_apply, pure_apply, mul_ite, mul_one, mul_zero])
-
-end Map
-
-section Seq
-
-/-- The monadic sequencing operation for `PMF`. -/
-noncomputable def seq (q : PMF (α → β)) (d : PMF α) : PMF β :=
-  q.bind fun m => d.bind fun a => pure (m a)
-
-variable {q : PMF (α → β)} {d : PMF α} {b : β}
-
-theorem monad_seq_eq_seq {α β : Type u} (q : PMF (α → β)) (d : PMF α) : q <*> d = q.seq d := rfl
-
-@[simp]
-theorem massSupport_seq : massSupport (seq q d) = ⋃ f ∈ massSupport q, f '' massSupport d :=
-  Set.ext fun b => by simp [-mem_massSupport_iff, seq, @eq_comm β b]
-
-theorem mem_massSupport_seq_iff :
-  b ∈ massSupport (seq q d) ↔ ∃ f ∈ massSupport q, b ∈ f '' massSupport d := by simp
-
-theorem seq_def :
-    (seq q d) b = ∑' (f : α → β) (a : α), q f * (d a * Set.indicator {f a} 1 b) :=
-  bind_apply.trans (by simp_rw [bind_apply, ←ENNReal.tsum_mul_left, pure_def])
-
-@[simp]
-theorem seq_apply [DecidableEq β] :
-    (seq q d) b = ∑' (f : α → β) (a : α), if b = f a then q f * d a else 0 :=
-  bind_apply.trans (by simp_rw [bind_apply, ←ENNReal.tsum_mul_left, pure_apply,
-  mul_ite, mul_one, mul_zero])
-
-end Seq
-
-instance : LawfulFunctor PMF where
-  map_const := rfl
-  id_map _ := bind_pure
-  comp_map _ _ _ := (map_comp).symm
-
-instance : LawfulMonad PMF := LawfulMonad.mk'
-  (bind_pure_comp := fun f x => rfl)
-  (id_map := id_map)
-  (pure_bind := fun _ _ => pure_bind)
-  (bind_assoc := fun _ _ _ => bind_bind)
-
 section OfFinset
+
+variable {α : Type*}
 
 /-- Given a finset `s` and a function `f : α → ℝ≥0∞` with sum `1` on `s`,
   such that `f a = 0` for `a ∉ s`, we get a `PMF`. -/
@@ -329,11 +274,11 @@ variable {f : α → ℝ≥0∞} {s : Finset α} (h : ∑ a in s, f a = 1) (h' :
 theorem ofFinset_apply (a : α) : ofFinset f s h h' a = f a := rfl
 
 @[simp]
-theorem support_ofFinset : massSupport (ofFinset f s h h') = ↑s ∩ Function.support f :=
-  Set.ext fun a => by simpa [mem_massSupport_iff] using mt (h' a)
+theorem support_ofFinset : support (ofFinset f s h h') = ↑s ∩ Function.support f :=
+  Set.ext fun a => by simpa [mem_support_iff] using mt (h' a)
 
-theorem mem_massSupport_ofFinset_iff (a : α) :
-  a ∈ massSupport (ofFinset f s h h') ↔ a ∈ s ∧ f a ≠ 0 := by
+theorem mem_support_ofFinset_iff (a : α) :
+  a ∈ support (ofFinset f s h h') ↔ a ∈ s ∧ f a ≠ 0 := by
   simp
 
 theorem ofFinset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofFinset f s h h' a = 0 :=
@@ -342,6 +287,8 @@ theorem ofFinset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofFinset f s h h' a 
 end OfFinset
 
 section OfFintype
+
+variable {α : Type*}
 
 def ofFintype [Fintype α] (f : α → ℝ≥0∞) (h : ∑ a, f a = 1) : PMF α :=
   ofFinset f Finset.univ h fun a ha => absurd (Finset.mem_univ a) ha
@@ -352,70 +299,34 @@ variable [Fintype α] {f : α → ℝ≥0∞} (h : ∑ a, f a = 1)
 theorem ofFintype_apply (a : α) : ofFintype f h a = f a := rfl
 
 @[simp]
-theorem massSupport_ofFintype : massSupport (ofFintype f h) = Function.support f := rfl
+theorem support_ofFintype : support (ofFintype f h) = Function.support f := rfl
 
-theorem mem_massSupport_ofFintype_iff (a : α) :
-  a ∈ massSupport (ofFintype f h) ↔ f a ≠ 0 := Iff.rfl
+theorem mem_support_ofFintype_iff (a : α) :
+  a ∈ support (ofFintype f h) ↔ f a ≠ 0 := Iff.rfl
 
 end OfFintype
 
 section Normalize
 
-variable {F : Sort*} {α : Type*} [MFLike F α] [FMFClass F α] {f : F} {a : α} {hf : mass f ≠ 0}
+variable {M : Type u → Type*} {α : Type u} [MFLike M] [FMFClass M] {μ : M α} {a : α}
+{hf : mass μ ≠ 0}
 
-noncomputable def normalize (f : F) (hf : mass f ≠ 0) : PMF α :=
-  ⟨fun a => f a * (mass f)⁻¹, by simp_rw [ENNReal.tsum_mul_right,
-  tsum_eq_mass, ENNReal.mul_inv_cancel hf mass_ne_top]⟩
+noncomputable def normalize (μ : M α) (hf : mass μ ≠ 0) : PMF α :=
+  ⟨fun a => μ a * (mass μ)⁻¹, by
+    simp_rw [ENNReal.tsum_mul_right, ← mass_eq_tsum_coeFn,
+    ENNReal.mul_inv_cancel hf mass_ne_top]⟩
 
 @[simp]
-theorem normalize_apply : (normalize f hf) a = f a * (mass f)⁻¹ := rfl
+theorem normalize_apply : (normalize μ hf) a = μ a * (mass μ)⁻¹ := rfl
 
 @[simp]
-theorem massSupport_normalize : massSupport (normalize f hf) = Function.support f :=
-  Set.ext fun a => by simp [mass_ne_top, mem_massSupport_iff]
+theorem support_normalize : support (normalize μ hf) = Function.support μ :=
+  Set.ext fun a => by simp [mass_ne_top, mem_support_iff]
 
-theorem mem_massSupport_normalize_iff :
-    a ∈ massSupport (normalize f hf) ↔ f a ≠ 0 := by simp
+theorem mem_support_normalize_iff :
+    a ∈ support (normalize μ hf) ↔ μ a ≠ 0 := by simp
 
 end Normalize
-
-section Filter
-
-noncomputable def filter (d : PMF α) (s : Set α) (h : (s ∩ massSupport d).Nonempty) : PMF α :=
-  normalize (SPMF.filter d s) (by rwa [SPMF.mass_filter, massOf_ne_zero_iff_disjoint_massSupport])
-
-variable {d : PMF α} {s : Set α} {a a' : α} {h : (s ∩ massSupport d).Nonempty}
-
-@[simp]
-theorem filter_apply (a : α) : (d.filter s) h a = s.indicator d a * (massOf d s)⁻¹ := by
-  exact (normalize_apply).trans
-    (by rw [SPMF.filter_apply, SPMF.mass_filter, SPMFClass.coe_eq_coe, SPMFClass.coe_massOf])
-
-theorem filter_apply_of_mem (ha : a ∈ s) : (d.filter s) h a = d a * (massOf d s)⁻¹ := by
-  rw [filter_apply, Set.indicator_of_mem ha]
-
-theorem filter_apply_of_not_mem (ha : a ∉ s) : (d.filter s) h a = 0 := by
-    rw [filter_apply, Set.indicator_of_not_mem ha, zero_mul]
-
-theorem mem_massSupport_filter_iff {a : α} :
-  a ∈ massSupport (d.filter s h) ↔ a ∈ s ∧ a ∈ massSupport d := by
-  simp_rw [mem_massSupport_iff, filter_apply, mul_ne_zero_iff, Set.indicator_apply_ne_zero,
-  Set.mem_inter_iff, coe_support_eq_massSupport, mem_massSupport_iff, ENNReal.inv_ne_zero,
-  and_iff_left (massOf_ne_top)]
-
-@[simp]
-theorem massSupport_filter : massSupport (d.filter s h) = s ∩ massSupport d :=
-  Set.ext fun _ => mem_massSupport_filter_iff
-
-theorem filter_apply_eq_zero_iff :
-  (d.filter s h) a = 0 ↔ a ∉ s ∨ a ∉ massSupport d := by
-  erw [← nmem_massSupport_iff, massSupport_filter, Set.mem_inter_iff, not_and_or]
-
-theorem filter_apply_ne_zero_iff (a : α) :
-  (d.filter s h) a ≠ 0 ↔ a ∈ s ∧ a ∈ massSupport d := by
-  rw [Ne, filter_apply_eq_zero_iff, not_or, Classical.not_not, Classical.not_not]
-
-end Filter
 
 section Bernoulli
 
@@ -429,16 +340,18 @@ variable {p : ℝ≥0∞} (h : p ≤ 1) (b : Bool)
 theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) := rfl
 
 @[simp]
-theorem massSupport_bernoulli : massSupport (bernoulli p h) = { b | cond b (p ≠ 0) (p ≠ 1) } := by
+theorem support_bernoulli : support (bernoulli p h) = { b | cond b (p ≠ 0) (p ≠ 1) } := by
   refine' Set.ext fun b => _
   cases b
-  · simp_rw [mem_massSupport_iff, bernoulli_apply, Bool.cond_false, Ne, tsub_eq_zero_iff_le, not_le]
+  · simp_rw [mem_support_iff, bernoulli_apply, Bool.cond_false, Ne, tsub_eq_zero_iff_le, not_le]
     exact ⟨ne_of_lt, lt_of_le_of_ne h⟩
-  · simp only [mem_massSupport_iff, bernoulli_apply, Bool.cond_true, Set.mem_setOf_eq]
+  · simp only [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_setOf_eq]
 
-theorem mem_massSupport_bernoulli_iff :
-  b ∈ massSupport (bernoulli p h) ↔ cond b (p ≠ 0) (p ≠ 1) := by simp
+theorem mem_support_bernoulli_iff :
+  b ∈ support (bernoulli p h) ↔ cond b (p ≠ 0) (p ≠ 1) := by simp
 
 end Bernoulli
 
 end PMF
+
+end MassFunction

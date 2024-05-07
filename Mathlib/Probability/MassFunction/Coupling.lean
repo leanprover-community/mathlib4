@@ -2,6 +2,31 @@ import Mathlib.Probability.MassFunction.Constructions
 
 open BigOperators ENNReal
 
+universe u
+
+namespace MassFunction
+
+section Coupling
+
+variable {M : Type u → Type*} [MFLike M] [DiracPure M] [WeightedSumBind M]
+{α β : Type u}
+
+noncomputable def fst : M (α × β) → M α := map Prod.fst
+
+noncomputable def snd : M (α × β) → M β := map Prod.snd
+
+noncomputable def blahj (ξ : M (α × β)) : M α × M β := (fst ξ, snd ξ)
+
+theorem fst_def (μ : M (α × β)) (a : α) : fst μ a = ∑' b, μ (a, b) := by
+  rw [fst, map_apply, ENNReal.tsum_prod', tsum_eq_single a]
+  simp
+  simp
+
+end Coupling
+
+
+end MassFunction
+
 namespace SPMF
 
 variable {α β : Type*}
