@@ -97,7 +97,7 @@ theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
   change _ = ite _ _ _ * (ite _ _ _)⁻¹
   rw [IsLocalization.toLocalizationMap_sec]
   rw [if_neg <| IsLocalization.sec_fst_ne_zero le_rfl x.ne_zero, if_neg ?_]
-  rfl
+  · rfl
   exact nonZeroDivisors.coe_ne_zero _
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero_to_fun_eq IsDedekindDomain.HeightOneSpectrum.valuationOfNeZeroToFun_eq
 

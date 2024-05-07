@@ -31,8 +31,7 @@ natural numbers, up to and including the first value satisfying `p`.
 
 We will be particularly interested in the case where there exists a value
 satisfying `p`, because in this case the `>` relation is well-founded.  -/
-@[reducible]
-def Upto (p : ℕ → Prop) : Type :=
+abbrev Upto (p : ℕ → Prop) : Type :=
   { i : ℕ // ∀ j < i, ¬p j }
 #align nat.upto Nat.Upto
 

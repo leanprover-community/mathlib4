@@ -8,7 +8,7 @@ import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.TypeStar
-import Std.Classes.RatCast
+import Batteries.Classes.RatCast
 
 #align_import data.rat.init from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 

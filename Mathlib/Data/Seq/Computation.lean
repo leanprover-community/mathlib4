@@ -575,7 +575,7 @@ theorem of_results_think {s : Computation α} {a n} (h : Results (think s) a n) 
 theorem results_think_iff {s : Computation α} {a n} : Results (think s) a (n + 1) ↔ Results s a n :=
   ⟨fun h => by
     let ⟨n', r, e⟩ := of_results_think h
-    injection e with h'; rw [Nat.add, Nat.add] at h'; rwa [h'], results_think⟩
+    injection e with h'; rwa [h'], results_think⟩
 #align computation.results_think_iff Computation.results_think_iff
 
 theorem results_thinkN {s : Computation α} {a m} :
@@ -919,8 +919,7 @@ instance instAlternativeComputation : Alternative Computation :=
 @[simp]
 theorem ret_orElse (a : α) (c₂ : Computation α) : (pure a <|> c₂) = pure a :=
   destruct_eq_pure <| by
-    unfold HOrElse.hOrElse instHOrElse
-    unfold OrElse.orElse instOrElse Alternative.orElse instAlternativeComputation
+    unfold_projs
     simp [orElse]
 #align computation.ret_orelse Computation.ret_orElse
 
@@ -928,8 +927,7 @@ theorem ret_orElse (a : α) (c₂ : Computation α) : (pure a <|> c₂) = pure a
 @[simp]
 theorem orElse_pure (c₁ : Computation α) (a : α) : (think c₁ <|> pure a) = pure a :=
   destruct_eq_pure <| by
-    unfold HOrElse.hOrElse instHOrElse
-    unfold OrElse.orElse instOrElse Alternative.orElse instAlternativeComputation
+    unfold_projs
     simp [orElse]
 #align computation.orelse_ret Computation.orElse_pure
 
@@ -937,8 +935,7 @@ theorem orElse_pure (c₁ : Computation α) (a : α) : (think c₁ <|> pure a) =
 @[simp]
 theorem orElse_think (c₁ c₂ : Computation α) : (think c₁ <|> think c₂) = think (c₁ <|> c₂) :=
   destruct_eq_think <| by
-    unfold HOrElse.hOrElse instHOrElse
-    unfold OrElse.orElse instOrElse Alternative.orElse instAlternativeComputation
+    unfold_projs
     simp [orElse]
 #align computation.orelse_think Computation.orElse_think
 

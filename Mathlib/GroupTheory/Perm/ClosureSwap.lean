@@ -47,8 +47,10 @@ theorem Equiv.Perm.IsSwap.finite_compl_fixedBy {σ : Perm α} (h : σ.IsSwap) :
 theorem SubmonoidClass.swap_mem_trans {a b c : α} {C} [SetLike C (Perm α)]
     [SubmonoidClass C (Perm α)] (M : C) (hab : swap a b ∈ M) (hbc : swap b c ∈ M) :
     swap a c ∈ M := by
-  obtain rfl | hab' := eq_or_ne a b; exact hbc
-  obtain rfl | hac := eq_or_ne a c; exact swap_self a ▸ one_mem M
+  obtain rfl | hab' := eq_or_ne a b
+  · exact hbc
+  obtain rfl | hac := eq_or_ne a c
+  · exact swap_self a ▸ one_mem M
   rw [swap_comm, ← swap_mul_swap_mul_swap hab' hac]
   exact mul_mem (mul_mem hbc hab) hbc
 
@@ -107,7 +109,8 @@ theorem mem_closure_isSwap {S : Set (Perm α)} (hS : ∀ f ∈ S, f.IsSwap) {f :
   · contrapose! hb
     simp_rw [not_mem_compl_iff, mem_fixedBy, Perm.smul_def, Perm.mul_apply, swap_apply_def,
       apply_eq_iff_eq]
-    by_cases hb' : f b = b; rw [hb']; split_ifs with h <;> simp only [h]
+    by_cases hb' : f b = b
+    · rw [hb']; split_ifs with h <;> simp only [h]
     simp [show b = a by simpa [hb] using supp_subset hb']
 
 /-- A permutation is a product of transpositions if and only if it has finite support. -/
