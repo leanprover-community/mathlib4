@@ -290,8 +290,8 @@ partial def reduceCast (n : Q(ℕ)) (e : Q($α)) (instRing : Q(Ring $α))
     (instCharP : Q(CharP $α $n))
     (ze : ℤ) (ne : Q(ℤ)) (pe : Q(IsInt $e $ne)) : Option (NormNum.Result e) := do
   let rr ← evalIntMod.go _ _ ze q(IsInt.raw_refl $ne) _ <|
-    .isNat q(instAddMonoidWithOne) n q(isNat_cast _ _ (IsNat.raw_refl $n))
-  let ⟨zr, nr, pr⟩ ← rr.toInt q(Int.instRingInt)
+    .isNat q(instAddMonoidWithOne) n q(isNat_natCast _ _ (IsNat.raw_refl $n))
+  let ⟨zr, nr, pr⟩ ← rr.toInt q(Int.instRing)
   return .isInt instRing nr zr q(CharP.isInt_of_mod $instCharP $pe (IsNat.raw_refl _) $pr)
 
 /-- Given an expression `e : t` such that `t` is a ring of characteristic `n`,
@@ -910,14 +910,19 @@ structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) :=
   deriving Repr
 
 /-- Create a new cache for `α` by doing the necessary instance searches. -/
-def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) (cfg : RingConfig) : MetaM (Cache sα) :=
+def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) (cfg : RingConfig) : MetaM (Cache sα) := do
   let charExpr : Q(ℕ) := .lit (.natVal cfg.char)
+  -- Note that this next `let` was inlined until updating to Lean 4.8.0-rc1.
+  let cpα ←
+    if cfg.char ≠ 0
+    then pure (← trySynthInstanceQ q(CharP $α $charExpr)).toOption
+    else pure none
   return {
     char := cfg.char
     rα := (← trySynthInstanceQ q(Ring $α)).toOption
     dα := (← trySynthInstanceQ q(DivisionRing $α)).toOption
     czα := (← trySynthInstanceQ q(CharZero $α)).toOption
-    cpα := if cfg.char ≠ 0 then (← trySynthInstanceQ q(CharP $α $charExpr)).toOption else none }
+    cpα := cpα }
 
 theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
   | ⟨e⟩ => by simp [e]
