@@ -2163,9 +2163,8 @@ theorem map_pure (f : α → β) (a : α) : map f (pure a) = pure (f a) :=
   rfl
 #align filter.map_pure Filter.map_pure
 
-@[simp]
 theorem pure_le_principal (a : α) : pure a ≤ 𝓟 s ↔ a ∈ s := by
-  rw [← principal_singleton, principal_mono, singleton_subset_iff]
+  simp
 
 @[simp] theorem join_pure (f : Filter α) : join (pure f) = f := rfl
 #align filter.join_pure Filter.join_pure
