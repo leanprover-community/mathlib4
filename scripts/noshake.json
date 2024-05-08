@@ -239,7 +239,7 @@
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
   "Mathlib.Tactic.FunProp.Types": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Tactic.FunProp.RefinedDiscrTree": ["Mathlib.Algebra.Group.Pi.Basic"],
-  "Mathlib.Tactic.FunProp.MorExt": ["Mathlib.Tactic.FunProp.ToStd"],
+  "Mathlib.Tactic.FunProp.MorExt": ["Mathlib.Tactic.FunProp.ToBatteries"],
   "Mathlib.Tactic.FunProp.Mor": ["Mathlib.Data.FunLike.Basic"],
   "Mathlib.Tactic.FunProp.Measurable":
   ["Mathlib.Analysis.Calculus.ContDiff.Basic",
