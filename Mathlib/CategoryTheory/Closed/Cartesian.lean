@@ -52,7 +52,6 @@ abbrev Exponentiable {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C)
 
 /-- Constructor for `Exponentiable X` which takes as an input an adjunction
 `MonoidalCategory.tensorLeft X ⊣ exp` for some functor `exp : C ⥤ C`. -/
-@[reducible]
 abbrev Exponentiable.mk {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C)
     (exp : C ⥤ C) (adj : MonoidalCategory.tensorLeft X ⊣ exp) :
     Exponentiable X where
