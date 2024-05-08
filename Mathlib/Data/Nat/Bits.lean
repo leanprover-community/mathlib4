@@ -335,7 +335,6 @@ lemma bodd_eq_and_one_ne_zero : ∀ n, bodd n = (n &&& 1 != 0)
   | 1 => rfl
   | n + 2 => by simpa using bodd_eq_and_one_ne_zero n
 
-@[simp]
 lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
     simp only [shiftRight_eq_div_pow]

@@ -48,7 +48,6 @@ set_option linter.deprecated false
 section
 variable {f : Bool → Bool → Bool}
 
-@[simp]
 lemma succ_testBit_zero (n : ℕ) : (n + 1).testBit 0 = !n.testBit 0 := by
   apply Nat.bitCasesOn n
   intro b n
