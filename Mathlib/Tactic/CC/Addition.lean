@@ -90,17 +90,20 @@ See also `pushEq`, `pushHEq` and `pushReflEq`. -/
 def pushTodo (lhs rhs : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
   modifyTodo fun todo => todo.push (lhs, rhs, H, heqProof)
 
-/-- Add the equality proof `H : $lhs = $rhs` to the end of the todo list. -/
+/-- Add the equality proof `H : lhs = rhs` to the end of the todo list. -/
+@[inline]
 def pushEq (lhs rhs : Expr) (H : EntryExpr) : CCM Unit :=
-  modifyTodo fun todo => todo.push (lhs, rhs, H, false)
+  pushTodo lhs rhs H false
 
-/-- Add the heterogeneous equality proof `H : HEq $lhs $rhs` to the end of the todo list. -/
+/-- Add the heterogeneous equality proof `H : HEq lhs rhs` to the end of the todo list. -/
+@[inline]
 def pushHEq (lhs rhs : Expr) (H : EntryExpr) : CCM Unit :=
-  modifyTodo fun todo => todo.push (lhs, rhs, H, true)
+  pushTodo lhs rhs H true
 
-/-- Add `rfl : $lhs = $rhs` to the todo list. -/
+/-- Add `rfl : lhs = rhs` to the todo list. -/
+@[inline]
 def pushReflEq (lhs rhs : Expr) : CCM Unit :=
-  modifyTodo fun todo => todo.push (lhs, rhs, .refl, false)
+  pushEq lhs rhs .refl
 
 /-- Return the root expression of the expression's congruence class. -/
 def getRoot (e : Expr) : CCM Expr := do
@@ -625,7 +628,7 @@ def getInconsistencyProof : CCM (Option Expr) := do
 
 /-- Auxiliary function for comparing `lhs₁ ~ rhs₁` and `lhs₂ ~ rhs₂`,
     when `~` is symmetric/commutative.
-    It returns true (equal) for `a ~ b` `b ~ a`-/
+    It returns `true` (equal) for `a ~ b` `b ~ a`-/
 def compareSymmAux (lhs₁ rhs₁ lhs₂ rhs₂ : Expr) : CCM Bool := do
   let lhs₁ ← getRoot lhs₁
   let rhs₁ ← getRoot rhs₁
@@ -635,17 +638,20 @@ def compareSymmAux (lhs₁ rhs₁ lhs₂ rhs₂ : Expr) : CCM Bool := do
   let (lhs₂, rhs₂) := if rhs₂.lt lhs₂ then (rhs₂, lhs₂) else (lhs₂, rhs₂)
   return lhs₁ == lhs₂ && rhs₁ == rhs₂
 
-def compareSymm (k₁ k₂ : Expr × Name) : CCM Bool := do
-  if k₁.2 != k₂.2 then return false
-  let e₁ := k₁.1
-  let e₂ := k₂.1
-  if k₁.2 == ``Eq || k₁.2 == ``Iff then
-    compareSymmAux e₁.appFn!.appArg! e₁.appArg! e₂.appFn!.appArg! e₂.appArg!
-  else
-    let some (_, lhs₁, rhs₁) ← e₁.relSidesIfSymm? | failure
-    let some (_, lhs₂, rhs₂) ← e₂.relSidesIfSymm? | failure
-    compareSymmAux lhs₁ rhs₁ lhs₂ rhs₂
+/-- Given ``k₁ := (R₁ lhs₁ rhs₁, `R₁)`` and ``k₂ := (R₂ lhs₂ rhs₂, `R₂)``, return `true` if
+`R₁ lhs₁ rhs₁` is equivalent to `R₂ lhs₂ rhs₂` modulo the symmetry of `R₁` and `R₂`. -/
+def compareSymm : (k₁ k₂ : Expr × Name) → CCM Bool
+  | (e₁, n₁), (e₂, n₂) => do
+    if n₁ != n₂ then return false
+    if n₁ == ``Eq || n₁ == ``Iff then
+      compareSymmAux e₁.appFn!.appArg! e₁.appArg! e₂.appFn!.appArg! e₂.appArg!
+    else
+      let some (_, lhs₁, rhs₁) ← e₁.relSidesIfSymm? | failure
+      let some (_, lhs₂, rhs₂) ← e₂.relSidesIfSymm? | failure
+      compareSymmAux lhs₁ rhs₁ lhs₂ rhs₂
 
+/-- Given `e := R lhs rhs`, if `R` is a reflexive relation and `lhs` is equivalent to `rhs`, add
+equality `e = True`. -/
 def checkEqTrue (e : Expr) : CCM Unit := do
   let some (_, lhs, rhs) ← e.relSidesIfRefl? | return
   if ← isEqv e (.const ``True []) then return -- it is already equivalent to `True`
