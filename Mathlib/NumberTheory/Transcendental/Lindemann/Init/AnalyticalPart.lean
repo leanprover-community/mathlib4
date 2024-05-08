@@ -111,7 +111,7 @@ theorem P_le' (p : ℕ → ℂ[X]) (s : ℂ)
   apply mul_le_mul_of_nonneg_right _ (Complex.abs.nonneg _)
   rw [intervalIntegral.integral_of_le zero_le_one, ← Complex.norm_eq_abs, ← mul_one (_ * _)]
   clear h
-  convert MeasureTheory.norm_set_integral_le_of_norm_le_const' _ _ _
+  convert MeasureTheory.norm_setIntegral_le_of_norm_le_const' _ _ _
   · rw [Real.volume_Ioc, sub_zero, ENNReal.toReal_ofReal zero_le_one]
   · rw [Real.volume_Ioc, sub_zero]; exact ENNReal.ofReal_lt_top
   · exact measurableSet_Ioc
@@ -190,7 +190,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     split_ifs with h
     · apply Finset.le_max'; rw [Multiset.mem_toFinset]
       refine' Multiset.mem_map_of_mem _ hx
-    · rw [Finset.nonempty_iff_ne_empty, Ne.def, Multiset.toFinset_eq_empty,
+    · rw [Finset.nonempty_iff_ne_empty, Ne, Multiset.toFinset_eq_empty,
         Multiset.eq_zero_iff_forall_not_mem] at h
       push_neg at h
       exact absurd (Multiset.mem_map_of_mem _ hx) (h (c' x))
@@ -207,10 +207,10 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
   use p.eval 0 ^ q + q • aeval (0 : ℤ) gp'
   rw [exists_prop]
   constructor
-  · rw [Int.add_emod, nsmul_eq_mul, Int.mul_emod_right, add_zero, Int.emod_emod, Ne.def, ←
-      Int.dvd_iff_emod_eq_zero]
+  · rw [Int.add_emod, nsmul_eq_mul, Int.mul_emod_right, add_zero, Int.emod_emod, Ne,
+      ← Int.dvd_iff_emod_eq_zero]
     intro h
-    replace h := Int.Prime.dvd_pow' prime_q h; rw [Int.coe_nat_dvd_left] at h
+    replace h := Int.Prime.dvd_pow' prime_q h; rw [Int.natCast_dvd] at h
     replace h := Nat.le_of_dvd (Int.natAbs_pos.mpr p0) h
     revert h; rwa [imp_false, not_le]
   obtain ⟨gp, gp'_le, h⟩ := sumIderiv_sl ℂ (X ^ (q - 1) * p ^ q) q
@@ -237,7 +237,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
   rw [le_div_iff (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← abs_natCast, ← map_mul,
     mul_comm, mul_sub, ← nsmul_eq_mul, ← nsmul_eq_mul, smul_smul, mul_comm,
     Nat.mul_factorial_pred q0, ← h]
-  rw [nsmul_eq_mul, ← Int.cast_ofNat, ← zsmul_eq_mul, smul_smul, mul_add, ← nsmul_eq_mul, ←
+  rw [nsmul_eq_mul, ← Int.cast_natCast, ← zsmul_eq_mul, smul_smul, mul_add, ← nsmul_eq_mul, ←
     nsmul_eq_mul, smul_smul, mul_comm, Nat.mul_factorial_pred q0, ← h', zsmul_eq_mul, aeval_def,
     eval₂_at_zero, ← eq_intCast (algebraMap ℤ ℂ), ← IsScalarTower.algebraMap_apply, ←
     eval₂_at_zero, aeval_def, eval₂_eq_eval_map, eval₂_eq_eval_map, mul_comm, ← sumIderiv_map, ← P]

@@ -187,6 +187,7 @@ lemma aevalMultiset_sumPolynomial
   · rw [Finset.sum]
     apply congr_arg
     conv_rhs => rw [eq_univ_map, Multiset.map_map]
+    simp only [Function.comp_apply]
 
 end symmetricSubalgebra
 
