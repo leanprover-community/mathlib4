@@ -742,5 +742,5 @@ example (y a : ℤ) (k : ℕ) (h : a ^ k = 0) : a ^ k * y = 0 := by
   polyrith
 
 example (a b : ℤ) (h : a + b = 4) (h2 : a + b = 0) : a + b = 0 := by
-  try polyrith --should fail
+  fail_if_success polyrith -- should fail
   polyrith only [h2]
