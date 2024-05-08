@@ -69,6 +69,8 @@ The starting object `T : Set α → E →L[ℝ] F` matters only through its rest
 with finite measure. Its value on other sets is ignored.
 -/
 
+-- give instances relating normed stuff to algebra higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

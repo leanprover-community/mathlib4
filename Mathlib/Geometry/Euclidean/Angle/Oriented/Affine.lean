@@ -21,6 +21,8 @@ This file defines oriented angles in Euclidean affine spaces.
 
 -/
 
+-- give instances relating normed stuff to algebra higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

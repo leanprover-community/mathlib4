@@ -16,6 +16,8 @@ degenerate) right-angled triangles in real inner product spaces and Euclidean af
 
 -/
 
+-- give instances relating normed stuff to algebra higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

@@ -17,6 +17,8 @@ A function expressible as a power series at a point has a Frechet derivative the
 Also the special case in terms of `deriv` when the domain is 1-dimensional.
 -/
 
+-- give instances relating normed stuff to algebra higher priority
+open scoped AlgebraNormedInstances
 
 open Filter Asymptotics
 

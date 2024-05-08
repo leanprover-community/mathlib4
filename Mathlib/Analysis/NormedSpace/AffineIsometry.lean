@@ -35,6 +35,8 @@ algebra-homomorphisms.)
 
 -/
 
+-- give instances relating normed stuff to algebra higher priority
+open scoped AlgebraNormedInstances
 
 open Function Set
 

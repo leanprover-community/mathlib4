@@ -73,6 +73,9 @@ depends on PR #11156. It should probably go in a separate file.
 
 -/
 
+-- give instances relating normed stuff to algebra higher priority
+open scoped AlgebraNormedInstances
+
 universe uι u𝕜 uE uF
 
 variable {ι : Type uι} [Fintype ι]

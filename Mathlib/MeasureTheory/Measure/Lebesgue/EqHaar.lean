@@ -47,6 +47,9 @@ Statements on integrals of functions with respect to an additive Haar measure ca
 
 assert_not_exists MeasureTheory.integral
 
+-- give instances relating normed stuff to algebra higher priority
+open scoped AlgebraNormedInstances
+
 open TopologicalSpace Set Filter Metric Bornology
 
 open scoped ENNReal Pointwise Topology NNReal

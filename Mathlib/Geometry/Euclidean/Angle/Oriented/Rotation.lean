@@ -19,6 +19,8 @@ This file defines rotations by oriented angles in real inner product spaces.
 
 -/
 
+-- give instances relating normed stuff to algebra higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

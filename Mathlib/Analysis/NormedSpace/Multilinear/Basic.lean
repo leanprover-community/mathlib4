@@ -44,6 +44,9 @@ the final result is independent of the order. While everything could be done fol
 approach, it turns out that direct proofs are easier and more efficient.
 -/
 
+-- give instances relating normed stuff to algebra higher priority
+open scoped AlgebraNormedInstances
+
 suppress_compilation
 
 noncomputable section
