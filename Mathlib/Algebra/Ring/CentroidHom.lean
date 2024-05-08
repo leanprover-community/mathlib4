@@ -9,6 +9,7 @@ import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Basic
+import Mathlib.Algebra.Star.NonUnitalSubalgebra
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -697,8 +698,12 @@ instance : Star (CentroidHom α) where
     map_mul_left' := fun a b => by simp only [star_mul, map_mul_right, star_star]
     map_mul_right' := fun a b => by simp only [star_mul, map_mul_left, star_star] }
 
-
 @[simp] lemma star_apply (f : CentroidHom α) (a : α) : (star f) a = star (f (star a)) := rfl
+
+instance : InvolutiveStar (CentroidHom α) where
+  star_involutive _ := by
+    ext a
+    rw [star_apply, star_apply, star_star, star_star]
 
 instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
   star_involutive f := by
