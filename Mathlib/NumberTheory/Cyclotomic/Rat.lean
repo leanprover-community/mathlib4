@@ -347,34 +347,32 @@ theorem subOneIntegralPowerBasis'_gen_prime [IsCyclotomicExtension {p} ℚ K]
   simpa only [subOneIntegralPowerBasis'_gen] using hζ.zeta_sub_one_prime'
 
 open nonZeroDivisors in
+/-- The norm of `hζ : 𝓞 K` in `ℤ` can be computed in `ℚ`. -/
+lemma norm_toInteger_eq_iff [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+    (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) {f : 𝓞 K → 𝓞 K} {y : ℤ} :
+    Algebra.norm ℤ (f hζ.toInteger) = y ↔
+      (Algebra.norm ℚ) ((algebraMap (𝓞 K) K) (f hζ.toInteger)) = ↑y := by
+  have : NumberField K := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
+  rw [← (algebraMap ℤ ℚ).injective_int.eq_iff, ← Algebra.norm_localization (Sₘ := K) ℤ ℤ⁰,
+      eq_intCast]
+
 /-- The norm, relative to `ℤ`, of `ζ ^ p ^ s - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ`
 is p ^ p ^ s` if `s ≤ k` and `p ^ (k - s + 1) ≠ 2`. -/
 lemma norm_toInteger_pow_sub_one_of_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) {s : ℕ} (hs : s ≤ k) (htwo : p ^ (k - s + 1) ≠ 2) :
     Algebra.norm ℤ (hζ.toInteger ^ (p : ℕ) ^ s - 1) = p ^ (p : ℕ) ^ s := by
-  apply (algebraMap ℤ ℚ).injective_int
-  have : NumberField K := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
-  have : algebraMap (𝓞 K) K (hζ.toInteger ^ (p : ℕ) ^ s - 1) = ζ ^ (p : ℕ) ^ s - 1 := by
-    simp only [map_sub, map_pow, map_one, sub_left_inj, RingOfIntegers.map_mk]
-  rw [← Algebra.norm_localization (Sₘ := K) ℤ ℤ⁰, this,
-    hζ.norm_pow_sub_one_of_prime_pow_ne_two
-      (cyclotomic.irreducible_rat (by simp only [PNat.pow_coe, gt_iff_lt, PNat.pos, pow_pos]))
-      hs htwo]
-  simp only [algebraMap_int_eq, map_pow, map_natCast]
+  rw [norm_toInteger_eq_iff (f := fun x => x ^ (p : ℕ) ^ s - 1)]
+  simp [hζ.norm_pow_sub_one_of_prime_pow_ne_two
+          (cyclotomic.irreducible_rat (by simp only [PNat.pow_coe, gt_iff_lt, PNat.pos, pow_pos]))
+          hs htwo]
 
-open nonZeroDivisors in
 /-- The norm, relative to `ℤ`, of `ζ ^ 2 ^ k - 1` in a `2 ^ (k + 1)`-th cyclotomic extension of `ℚ`
 is `(-2) ^ 2 ^ k`. -/
 lemma norm_toInteger_pow_sub_one_of_two [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑((2 : ℕ+) ^ (k + 1))) :
     Algebra.norm ℤ (hζ.toInteger ^ 2 ^ k - 1) = (-2) ^ (2 : ℕ) ^ k := by
-  apply (algebraMap ℤ ℚ).injective_int
-  have : NumberField K := IsCyclotomicExtension.numberField {2 ^ (k + 1)} ℚ K
-  have : algebraMap (𝓞 K) K (hζ.toInteger ^ 2 ^ k - 1) = ζ ^ (2 : ℕ) ^ k - 1 := by
-    simp only [map_sub, map_pow, map_one, sub_left_inj, RingOfIntegers.map_mk]
-  rw [← Algebra.norm_localization (Sₘ := K) ℤ ℤ⁰, this,
-    hζ.norm_pow_sub_one_two (cyclotomic.irreducible_rat (pow_pos (by decide) _))]
-  simp only [algebraMap_int_eq, Int.reduceNeg, map_pow, map_neg, map_ofNat]
+  rw [norm_toInteger_eq_iff (f := fun x => x ^ 2 ^ k - 1)]
+  simp [hζ.norm_pow_sub_one_two (cyclotomic.irreducible_rat (pow_pos (by decide) _))]
 
 /-- The norm, relative to `ℤ`, of `ζ ^ p ^ s - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ`
 is `p ^ p ^ s` if `s ≤ k` and `p ≠ 2`. -/
