@@ -82,10 +82,10 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
   map_mul' := by
       dsimp
       intro f g
-      have H : diagonal (RCLike.ofReal ∘ (⇑f * ⇑g) ∘ Set.codRestrict
-      (fun (i : n) ↦ hA.eigenvalues i) _ (hA.eigenvalue_mem_real)) = diagonal (RCLike.ofReal ∘ ⇑f ∘ Set.codRestrict
-      (fun (i : n) ↦ hA.eigenvalues i) _ (hA.eigenvalue_mem_real)) * (1 : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ ⇑g ∘ Set.codRestrict
-      (fun (i : n) ↦ hA.eigenvalues i) _ (hA.eigenvalue_mem_real)) := by
+      have H : diagonal ((RCLike.ofReal ∘ (⇑f * ⇑g) ∘
+      (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))) = diagonal ((RCLike.ofReal ∘ ⇑f ∘
+      (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))) * (1 : Matrix n n 𝕜)
+      * diagonal (RCLike.ofReal ∘ ⇑g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) := by
             simp only [mul_one, Matrix.diagonal_mul_diagonal']
             refine diagonal_eq_diagonal_iff.mpr ?_
             intro i
