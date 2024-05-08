@@ -131,8 +131,7 @@ protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv
 
 /-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is a field.
 See note [reducible non-instances]. -/
-@[reducible]
-noncomputable def toField : Field K where
+noncomputable abbrev toField : Field K where
   __ := IsFractionRing.isDomain A
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
   inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
@@ -288,8 +287,7 @@ commutative ring `R` is an integral domain only when this is needed for proving.
 
 In this generality, this construction is also known as the *total fraction ring* of `R`.
 -/
-@[reducible]
-def FractionRing :=
+abbrev FractionRing :=
   Localization (nonZeroDivisors R)
 #align fraction_ring FractionRing
 
@@ -317,8 +315,7 @@ theorem mk_eq_div {r s} :
 /-- This is not an instance because it creates a diamond when `K = FractionRing R`.
 Should usually be introduced locally along with `isScalarTower_liftAlgebra`
 See note [reducible non-instances]. -/
-@[reducible]
-noncomputable def liftAlgebra [IsDomain R] [Field K] [Algebra R K]
+noncomputable abbrev liftAlgebra [IsDomain R] [Field K] [Algebra R K]
     [NoZeroSMulDivisors R K] : Algebra (FractionRing R) K :=
   RingHom.toAlgebra (IsFractionRing.lift (NoZeroSMulDivisors.algebraMap_injective R _))
 
