@@ -197,8 +197,7 @@ variable {M : Type u} {N : Type v} [Monoid M] [Monoid N]
 
 /-- Reinterpret a monoid homomorphism `f : M → N` as a functor `(single_obj M) ⥤ (single_obj N)`.
 See also `CategoryTheory.SingleObj.mapHom` for an equivalence between these types. -/
-@[reducible]
-def toFunctor (f : M →* N) : SingleObj M ⥤ SingleObj N :=
+abbrev toFunctor (f : M →* N) : SingleObj M ⥤ SingleObj N :=
   SingleObj.mapHom M N f
 #align monoid_hom.to_functor MonoidHom.toFunctor
 

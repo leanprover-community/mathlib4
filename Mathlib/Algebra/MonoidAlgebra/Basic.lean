@@ -1358,7 +1358,7 @@ section One
 
 variable [Semiring k] [Zero G] [NonAssocSemiring R]
 
-/-- The unit of the multiplication is `single 1 1`, i.e. the function
+/-- The unit of the multiplication is `single 0 1`, i.e. the function
   that is `1` at `0` and zero elsewhere. -/
 instance one : One k[G] :=
   ⟨single 0 1⟩

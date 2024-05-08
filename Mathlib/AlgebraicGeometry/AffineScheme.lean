@@ -32,6 +32,8 @@ We also define predicates about affine schemes and affine open sets.
 
 -/
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 set_option linter.uppercaseLean3 false
 
 noncomputable section

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Order.Filter.ListTraverse
+import Mathlib.Tactic.AdaptationNote
 
 #align_import topology.list from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
@@ -57,8 +58,8 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
     have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
       refine' List.Forall₂.flip _
       replace hv := hv.flip
-      -- Adaptation note: nightly-2024-03-16: simp was
-      -- simp only [List.forall₂_and_left, flip] at hv ⊢
+      #adaptation_note /-- nightly-2024-03-16: simp was
+      simp only [List.forall₂_and_left, flip] at hv ⊢ -/
       simp only [List.forall₂_and_left, Function.flip_def] at hv ⊢
       exact ⟨hv.1, hu.flip⟩
     refine' mem_of_superset _ hvs
@@ -165,7 +166,7 @@ theorem continuous_eraseIdx {n : ℕ} : Continuous fun l : List α => eraseIdx l
   continuous_iff_continuousAt.mpr fun _a => tendsto_eraseIdx
 #align list.continuous_remove_nth List.continuous_eraseIdx
 
-@[deprecated] alias continuous_removeNth := continuous_eraseIdx -- 2024-05-04
+@[deprecated (since := "2024-05-04")] alias continuous_removeNth := continuous_eraseIdx
 
 @[to_additive]
 theorem tendsto_prod [Monoid α] [ContinuousMul α] {l : List α} :
@@ -227,13 +228,13 @@ theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     exact Tendsto.comp List.tendsto_eraseIdx continuousAt_subtype_val
 #align vector.continuous_at_remove_nth Vector.continuousAt_eraseIdx
 
-@[deprecated] alias continuousAt_removeNth := continuousAt_eraseIdx -- 2024-05-04
+@[deprecated (since := "2024-05-04")] alias continuousAt_removeNth := continuousAt_eraseIdx
 
 theorem continuous_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     Continuous (eraseIdx i : Vector α (n + 1) → Vector α n) :=
   continuous_iff_continuousAt.mpr fun ⟨_a, _l⟩ => continuousAt_eraseIdx
 #align vector.continuous_remove_nth Vector.continuous_eraseIdx
 
-@[deprecated] alias continuous_removeNth := continuous_eraseIdx -- 2024-05-04
+@[deprecated (since := "2024-05-04")] alias continuous_removeNth := continuous_eraseIdx
 
 end Vector

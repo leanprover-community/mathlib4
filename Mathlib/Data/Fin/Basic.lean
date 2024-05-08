@@ -7,7 +7,7 @@ import Mathlib.Algebra.NeZero
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Hom.Set
-import Std.Data.Fin.Lemmas
+import Batteries.Data.Fin.Lemmas
 
 #align_import data.fin.basic from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
@@ -304,7 +304,7 @@ instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 #align fin.coe_zero Fin.val_zero
 
 /--
-The `Fin.val_zero` in `Std` only applies in `Fin (n+1)`.
+The `Fin.val_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
@@ -315,7 +315,7 @@ theorem val_zero' (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
 #align fin.mk_zero Fin.mk_zero
 
 /--
-The `Fin.zero_le` in `Std` only applies in `Fin (n+1)`.
+The `Fin.zero_le` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
@@ -327,7 +327,7 @@ protected theorem zero_le' [NeZero n] (a : Fin n) : 0 ≤ a :=
 #align fin.not_lt_zero Fin.not_lt_zero
 
 /--
-The `Fin.pos_iff_ne_zero` in `Std` only applies in `Fin (n+1)`.
+The `Fin.pos_iff_ne_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
@@ -689,13 +689,30 @@ in the same value.  -/
   simp [ext_iff, Nat.dvd_iff_mod_eq_zero]
 
 @[simp]
-theorem cast_nat_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp
-#align fin.coe_nat_eq_last Fin.cast_nat_eq_last
+theorem natCast_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp
+#align fin.coe_nat_eq_last Fin.natCast_eq_last
+
+@[deprecated (since := "2024-05-04")] alias cast_nat_eq_last := natCast_eq_last
 
 theorem le_val_last (i : Fin (n + 1)) : i ≤ n := by
-  rw [Fin.cast_nat_eq_last]
+  rw [Fin.natCast_eq_last]
   exact Fin.le_last i
 #align fin.le_coe_last Fin.le_val_last
+
+variable {a b : ℕ}
+
+lemma natCast_le_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) ≤ b ↔ a ≤ b := by
+  rw [← Nat.lt_succ_iff] at han hbn
+  simp [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, han, hbn]
+
+lemma natCast_lt_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) < b ↔ a < b := by
+  rw [← Nat.lt_succ_iff] at han hbn; simp [lt_iff_val_lt_val, Nat.mod_eq_of_lt, han, hbn]
+
+lemma natCast_mono (hbn : b ≤ n) (hab : a ≤ b) : (a : Fin (n + 1)) ≤ b :=
+  (natCast_le_natCast (hab.trans hbn) hbn).2 hab
+
+lemma natCast_strictMono (hbn : b ≤ n) (hab : a < b) : (a : Fin (n + 1)) < b :=
+  (natCast_lt_natCast (hab.le.trans hbn) hbn).2 hab
 
 end OfNatCoe
 
@@ -763,7 +780,7 @@ theorem zero_ne_one' [NeZero n] : (0 : Fin (n + 1)) ≠ 1 := Fin.ne_of_lt one_po
 #align fin.succ_zero_eq_one' Fin.succ_zero_eq_one
 
 /--
-The `Fin.succ_one_eq_two` in `Std` only applies in `Fin (n+2)`.
+The `Fin.succ_one_eq_two` in `Lean` only applies in `Fin (n+2)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
@@ -786,7 +803,7 @@ theorem succ_one_eq_two' [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 := by
 #align fin.lt_add_one_iff Fin.lt_add_one_iff
 
 /--
-The `Fin.le_zero_iff` in `Std` only applies in `Fin (n+1)`.
+The `Fin.le_zero_iff` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
@@ -799,7 +816,7 @@ theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
 #align fin.coe_cast_lt Fin.coe_castLT
 #align fin.cast_lt_mk Fin.castLT_mk
 
--- Move to Std?
+-- Move to Batteries?
 @[simp] theorem cast_refl {n : Nat} (h : n = n) :
     Fin.cast h = id := rfl
 
@@ -1028,7 +1045,7 @@ theorem exists_fin_succ' {P : Fin (n + 1) → Prop} :
    fun h => h.elim (fun ⟨i, hi⟩ => ⟨i.castSucc, hi⟩) (fun h => ⟨.last _, h⟩)⟩
 
 /--
-The `Fin.castSucc_zero` in `Std` only applies in `Fin (n+1)`.
+The `Fin.castSucc_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
@@ -1039,14 +1056,14 @@ theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 :=
 
 /-- `castSucc i` is positive when `i` is positive.
 
-The `Fin.castSucc_pos` in `Std` only applies in `Fin (n+1)`.
+The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis. -/
 theorem castSucc_pos' [NeZero n] {i : Fin n} (h : 0 < i) : 0 < castSucc i := by
   simpa [lt_iff_val_lt_val] using h
 #align fin.cast_succ_pos Fin.castSucc_pos'
 
 /--
-The `Fin.castSucc_eq_zero_iff` in `Std` only applies in `Fin (n+1)`.
+The `Fin.castSucc_eq_zero_iff` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
@@ -1055,7 +1072,7 @@ theorem castSucc_eq_zero_iff' [NeZero n] (a : Fin n) : castSucc a = 0 ↔ a = 0 
 #align fin.cast_succ_eq_zero_iff Fin.castSucc_eq_zero_iff'
 
 /--
-The `Fin.castSucc_ne_zero_iff` in `Std` only applies in `Fin (n+1)`.
+The `Fin.castSucc_ne_zero_iff` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 theorem castSucc_ne_zero_iff' [NeZero n] (a : Fin n) : castSucc a ≠ 0 ↔ a ≠ 0 :=
@@ -1654,7 +1671,7 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
 theorem neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
 
 theorem neg_natCast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
-  simp only [cast_nat_eq_last, neg_last]
+  simp only [natCast_eq_last, neg_last]
 
 lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
     0 < a :=
