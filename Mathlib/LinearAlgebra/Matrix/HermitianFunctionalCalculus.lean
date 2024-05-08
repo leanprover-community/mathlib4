@@ -71,8 +71,8 @@ theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A
 
 noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
-      diagonal (RCLike.ofReal ∘ g ∘ Set.codRestrict
-      (fun (i : n) ↦ hA.eigenvalues i) _ (hA.eigenvalue_mem_real))
+      diagonal ((RCLike.ofReal ∘ g ∘ Set.codRestrict
+      (fun (i : n) ↦ hA.eigenvalues i) _ (hA.eigenvalue_mem_real)))
       * star (eigenvectorUnitary hA : Matrix n n 𝕜)
   map_one' := by
       dsimp
@@ -94,20 +94,18 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
       simp only [mul_assoc]
   map_zero' := by
       dsimp
-      simp only [algebraMap.coe_zero, Function.const_zero]
-      have h : diagonal 0 = (0 : Matrix n n 𝕜) := by
-          refine (Matrix.ext ?_).symm
-          intro i j
-          simp only [zero_apply, Matrix.diagonal]
-          dsimp
-          refine (ite_self 0).symm
+      simp only [algebraMap.coe_zero, Function.const_zero, diagonal_zero]
+      --have h : diagonal 0 = (0 : Matrix n n 𝕜) := by
+      --    refine (Matrix.ext ?_).symm
+      --    intro i j
+      --    simp only [zero_apply, Matrix.diagonal]
+      --    refine (ite_self 0).symm
+#exit
   map_add' := by sorry
   commutes' := by sorry
   map_star' := fun
     | .mk toFun continuous_toFun => sorry
 
-
-#exit
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus 𝕜 (IsHermitian : Matrix n n 𝕜 → Prop) where
 exists_cfc_of_predicate
