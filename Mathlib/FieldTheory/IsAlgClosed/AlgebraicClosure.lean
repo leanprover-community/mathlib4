@@ -44,8 +44,7 @@ namespace AlgebraicClosure
 open MvPolynomial
 
 /-- The subtype of monic irreducible polynomials -/
-@[reducible]
-def MonicIrreducible : Type u :=
+abbrev MonicIrreducible : Type u :=
   { f : k[X] // Monic f ∧ Irreducible f }
 #align algebraic_closure.monic_irreducible AlgebraicClosure.MonicIrreducible
 
