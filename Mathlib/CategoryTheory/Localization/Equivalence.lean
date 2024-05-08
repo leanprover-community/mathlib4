@@ -66,7 +66,7 @@ the case of a functor `L₂ : C₂ ⥤ D` for a suitable `W₂ : MorphismPropert
 we have an equivalence of category `E : C₁ ≌ C₂` and an isomorphism `E.functor ⋙ L₂ ≅ L₁`. -/
 lemma of_equivalence_source (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁)
     (L₂ : C₂ ⥤ D) (W₂ : MorphismProperty C₂)
-    (E : C₁ ≌ C₂) (hW₁ : W₁ ⊆ W₂.isoClosure.inverseImage E.functor) (hW₂ : W₂.IsInvertedBy L₂)
+    (E : C₁ ≌ C₂) (hW₁ : W₁ ≤ W₂.isoClosure.inverseImage E.functor) (hW₂ : W₂.IsInvertedBy L₂)
     [L₁.IsLocalization W₁] (iso : E.functor ⋙ L₂ ≅ L₁) : L₂.IsLocalization W₂ := by
   have h : W₁.IsInvertedBy (E.functor ⋙ W₂.Q) := fun _ _ f hf => by
     obtain ⟨_, _, f', hf', ⟨e⟩⟩ := hW₁ f hf
@@ -99,7 +99,7 @@ a suitable `W₂ : MorphismProperty C₂`. -/
 lemma of_equivalences (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L₁.IsLocalization W₁]
     (L₂ : C₂ ⥤ D₂) (W₂ : MorphismProperty C₂)
     (E : C₁ ≌ C₂) (E' : D₁ ≌ D₂) [CatCommSq E.functor L₁ L₂ E'.functor]
-    (hW₁ : W₁ ⊆ W₂.isoClosure.inverseImage E.functor) (hW₂ : W₂.IsInvertedBy L₂) :
+    (hW₁ : W₁ ≤ W₂.isoClosure.inverseImage E.functor) (hW₂ : W₂.IsInvertedBy L₂) :
     L₂.IsLocalization W₂ := by
   haveI : (E.functor ⋙ L₂).IsLocalization W₁ :=
     of_equivalence_target L₁ W₁ _ E' ((CatCommSq.iso _ _ _ _).symm)

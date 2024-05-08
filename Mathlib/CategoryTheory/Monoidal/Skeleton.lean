@@ -32,8 +32,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 /-- If `C` is monoidal and skeletal, it is a monoid.
 See note [reducible non-instances]. -/
-@[reducible]
-def monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
+abbrev monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
   mul X Y := (X ⊗ Y : C)
   one := (𝟙_ C : C)
   one_mul X := hC ⟨λ_ X⟩

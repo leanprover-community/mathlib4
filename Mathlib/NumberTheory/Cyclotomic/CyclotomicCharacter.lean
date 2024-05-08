@@ -100,6 +100,7 @@ namespace ModularCyclotomicCharacter
 
 local notation "χ₀" => ModularCyclotomicCharacter.toFun
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- The formula which characterises the output of `ModularCyclotomicCharacter g n`. -/
 theorem toFun_spec (g : L ≃+* L) {n : ℕ+} (t : rootsOfUnity n L) :
     g (t : Lˣ) = (t ^ (χ₀ n g).val : Lˣ) := by
@@ -127,6 +128,7 @@ theorem toFun_unique' (g : L ≃+* L) (c : ZMod (Fintype.card (rootsOfUnity n L)
     (hc : ∀ t ∈ rootsOfUnity n L, g t = t ^ c.val) : c = χ₀ n g :=
   toFun_unique n g c (fun ⟨_, ht⟩ ↦ hc _ ht)
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 lemma id : χ₀ n (RingEquiv.refl L) = 1 := by
   refine (toFun_unique n (RingEquiv.refl L) 1 <| fun t ↦ ?_).symm
   have : 1 ≤ Fintype.card { x // x ∈ rootsOfUnity n L } := Fin.size_positive'
@@ -137,6 +139,7 @@ lemma id : χ₀ n (RingEquiv.refl L) = 1 := by
     obtain rfl : t = 1 := Subsingleton.elim t 1
     simp
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 lemma comp (g h : L ≃+* L) : χ₀ n (g * h) =
     χ₀ n g * χ₀ n h := by
   refine (toFun_unique n (g * h) _ <| fun ζ ↦ ?_).symm

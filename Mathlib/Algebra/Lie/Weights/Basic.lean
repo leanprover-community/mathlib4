@@ -363,7 +363,8 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
     obtain ⟨n, rfl⟩ := (mem_posFittingCompOf R x m).mp hm k
     exact this n k
   intro m l
-  induction' l with l ih; simp
+  induction' l with l ih
+  · simp
   simp only [lowerCentralSeries_succ, pow_succ', LinearMap.mul_apply]
   exact LieSubmodule.lie_mem_lie _ ⊤ (LieSubmodule.mem_top x) ih
 
@@ -602,7 +603,8 @@ lemma independent_weightSpace [NoZeroSMulDivisors R M] :
     simpa only [CompleteLattice.independent_iff_supIndep_of_injOn (injOn_weightSpace R L M),
       Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.not_mem_erase χ)
   intro χ₁ s
-  induction' s using Finset.induction_on with χ₂ s _ ih; simp
+  induction' s using Finset.induction_on with χ₂ s _ ih
+  · simp
   intro hχ₁₂
   obtain ⟨hχ₁₂ : χ₁ ≠ χ₂, hχ₁ : χ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hχ₁₂
   specialize ih hχ₁

@@ -54,8 +54,7 @@ variable (M : Type u2) [AddCommGroup M] [Module R M]
 
 /-- The exterior algebra of an `R`-module `M`.
 -/
-@[reducible]
-def ExteriorAlgebra :=
+abbrev ExteriorAlgebra :=
   CliffordAlgebra (0 : QuadraticForm R M)
 #align exterior_algebra ExteriorAlgebra
 
@@ -65,8 +64,7 @@ variable {M}
 
 /-- The canonical linear map `M →ₗ[R] ExteriorAlgebra R M`.
 -/
-@[reducible]
-def ι : M →ₗ[R] ExteriorAlgebra R M :=
+abbrev ι : M →ₗ[R] ExteriorAlgebra R M :=
   CliffordAlgebra.ι _
 #align exterior_algebra.ι ExteriorAlgebra.ι
 
@@ -448,6 +446,7 @@ theorem ιInv_comp_map (f : M →ₗ[R] N) :
   unfold ιInv
   conv_lhs => rw [LinearMap.comp_assoc, ← AlgHom.comp_toLinearMap, toTrivSqZeroExt_comp_map,
                 AlgHom.comp_toLinearMap, ← LinearMap.comp_assoc, TrivSqZeroExt.sndHom_comp_map]
+  rfl
 
 open Function in
 /-- For a linear map `f` from `M` to `N`,
