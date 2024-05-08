@@ -535,3 +535,33 @@ theorem coe_to_nonUnitalAlgHom (f : A →ₐ[R] B) : ⇑(f.toNonUnitalAlgHom) = 
 #align alg_hom.coe_to_non_unital_alg_hom AlgHom.coe_to_nonUnitalAlgHom
 
 end AlgHom
+
+section RestrictScalars
+
+namespace NonUnitalAlgHom
+
+variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S]
+    [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MulAction R S]
+    [DistribMulAction S A] [DistribMulAction S B] [DistribMulAction R A] [DistribMulAction R B]
+    [IsScalarTower R S A] [IsScalarTower R S B]
+
+/-- If a monoid `R` acts on another monoid `S`, then a non-unital algebra homomorphism
+over `S` can be viewed as a non-unital algebra homomorphism over `R`.  -/
+def restrictScalars (f : A →ₙₐ[S] B) : A →ₙₐ[R] B :=
+  { (f : A →ₙ+* B) with
+    map_smul' := fun r x ↦ by have := map_smul f (r • 1) x; simpa }
+
+@[simp]
+lemma restrictScalars_apply (f : A →ₙₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
+
+lemma coe_restrictScalars (f : A →ₙₐ[S] B) : (f.restrictScalars R : A →ₙ+* B) = f := rfl
+
+lemma coe_restrictScalars' (f : A →ₙₐ[S] B) : (f.restrictScalars R : A → B) = f := rfl
+
+theorem restrictScalars_injective :
+    Function.Injective (restrictScalars R : (A →ₙₐ[S] B) → A →ₙₐ[R] B) :=
+  fun _ _ h ↦ ext (congr_fun h : _)
+
+end NonUnitalAlgHom
+
+end RestrictScalars

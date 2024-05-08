@@ -808,8 +808,7 @@ theorem eq_empty_of_ssubset_singleton {s : Finset α} {x : α} (hs : s ⊂ {x}) 
 #align finset.eq_empty_of_ssubset_singleton Finset.eq_empty_of_ssubset_singleton
 
 /-- A finset is nontrivial if it has at least two elements. -/
-@[reducible]
-protected def Nontrivial (s : Finset α) : Prop := (s : Set α).Nontrivial
+protected abbrev Nontrivial (s : Finset α) : Prop := (s : Set α).Nontrivial
 #align finset.nontrivial Finset.Nontrivial
 
 @[simp]

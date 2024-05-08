@@ -385,22 +385,19 @@ end Set
 
 /-- The betweenness relation obtained from "looping around" `≤`.
 See note [reducible non-instances]. -/
-@[reducible]
-def LE.toBtw (α : Type*) [LE α] : Btw α where
+abbrev LE.toBtw (α : Type*) [LE α] : Btw α where
   btw a b c := a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b
 #align has_le.to_has_btw LE.toBtw
 
 /-- The strict betweenness relation obtained from "looping around" `<`.
 See note [reducible non-instances]. -/
-@[reducible]
-def LT.toSBtw (α : Type*) [LT α] : SBtw α where
+abbrev LT.toSBtw (α : Type*) [LT α] : SBtw α where
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
 #align has_lt.to_has_sbtw LT.toSBtw
 
 /-- The circular preorder obtained from "looping around" a preorder.
 See note [reducible non-instances]. -/
-@[reducible]
-def Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder α where
+abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder α where
   btw a b c := a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
   btw_refl a := Or.inl ⟨le_rfl, le_rfl⟩
@@ -435,8 +432,7 @@ def Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder α
 
 /-- The circular partial order obtained from "looping around" a partial order.
 See note [reducible non-instances]. -/
-@[reducible]
-def PartialOrder.toCircularPartialOrder (α : Type*) [PartialOrder α] : CircularPartialOrder α :=
+abbrev PartialOrder.toCircularPartialOrder (α : Type*) [PartialOrder α] : CircularPartialOrder α :=
   { Preorder.toCircularPreorder α with
     btw_antisymm := fun {a b c} => by
       rintro (⟨hab, hbc⟩ | ⟨hbc, hca⟩ | ⟨hca, hab⟩) (⟨hcb, hba⟩ | ⟨hba, hac⟩ | ⟨hac, hcb⟩)
@@ -453,8 +449,7 @@ def PartialOrder.toCircularPartialOrder (α : Type*) [PartialOrder α] : Circula
 
 /-- The circular order obtained from "looping around" a linear order.
 See note [reducible non-instances]. -/
-@[reducible]
-def LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder α :=
+abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder α :=
   { PartialOrder.toCircularPartialOrder α with
     btw_total := fun a b c => by
       rcases le_total a b with hab | hba <;> rcases le_total b c with hbc | hcb <;>

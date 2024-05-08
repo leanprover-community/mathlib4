@@ -1312,7 +1312,7 @@ theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : 
     exact hf' n m h
 #align exists_seq_of_forall_finset_exists' exists_seq_of_forall_finset_exists'
 
-open Std.ExtendedBinder Lean Meta
+open Batteries.ExtendedBinder Lean Meta
 
 /-- `finset% t` elaborates `t` as a `Finset`.
 If `t` is a `Set`, then inserts `Set.toFinset`.
