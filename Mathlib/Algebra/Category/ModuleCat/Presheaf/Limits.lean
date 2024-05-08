@@ -13,9 +13,6 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 In this file, it is shown that under suitable assumptions,
 limits exist in the category `PresheafOfModules R`.
 
-## TODO
-* do the same for colimits
-
 -/
 
 universe v v₁ v₂ u₁ u₂ u u'
