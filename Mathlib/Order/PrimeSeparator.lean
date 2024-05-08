@@ -58,7 +58,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
     intros c hcS hcC hcNe
     use sUnion c
     refine ⟨?_, fun s hs ↦ le_sSup hs⟩
-    simp [S]
+    simp only [le_eq_subset, mem_setOf_eq, disjoint_sUnion_right, S]
     let ⟨J, hJ⟩ := hcNe
     refine ⟨Order.isIdeal_sUnion_of_isChain (fun _ hJ ↦ (hcS hJ).1) hcC hcNe,
             ⟨le_trans (hcS hJ).2.1 (le_sSup hJ), fun J hJ ↦ (hcS hJ).2.2⟩⟩
@@ -67,7 +67,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   have zorn := zorn_subset_nonempty S chainub I IinS
   have hJ := Exists.choose_spec zorn
   set Jset := Exists.choose zorn
-  obtain ⟨⟨Jidl, IJ, JF⟩, ⟨_, Jmax⟩⟩ := hJ
+  let ⟨⟨Jidl, IJ, JF⟩, ⟨_, Jmax⟩⟩ := hJ
   set J := IsIdeal.toIdeal Jidl
   use J
   have IJ' : I ≤ J := IJ
@@ -90,40 +90,37 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   let J₁ := J ⊔ principal a₁
   let J₂ := J ⊔ principal a₂
 
-  -- For each i, Jᵢ is an ideal that contains J, I and aᵢ, and is not equal to J.
-  have JsubJ₁ : J ≤ J₁ := le_sup_left
-  have JsubJ₂ : J ≤ J₂ := le_sup_left
-  have IJ₁ : I ≤ J₁ := le_trans IJ' le_sup_left
-  have IJ₂ : I ≤ J₂ := le_trans IJ' le_sup_left
+  -- For each i, Jᵢ is an ideal that contains aᵢ, and is not equal to J.
+
   have a₁J₁ : a₁ ∈ J₁ := mem_of_subset_of_mem (le_sup_right : _ ≤ J ⊔ _) mem_principal_self
   have a₂J₂ : a₂ ∈ J₂ := mem_of_subset_of_mem (le_sup_right : _ ≤ J ⊔ _) mem_principal_self
   have J₁J : ↑J₁ ≠ Jset := by refine ne_of_mem_of_not_mem' a₁J₁ ha₁
   have J₂J : ↑J₂ ≠ Jset := by refine ne_of_mem_of_not_mem' a₂J₂ ha₂
 
   -- Therefore, since J is maximal, we must have Jᵢ ∉ S.
-  have J₁S : ↑J₁ ∉ S := fun h => J₁J (Jmax J₁ h JsubJ₁)
-  have J₂S : ↑J₂ ∉ S := fun h => J₂J (Jmax J₂ h JsubJ₂)
+  have J₁S : ↑J₁ ∉ S := fun h => J₁J (Jmax J₁ h (le_sup_left : J ≤ J₁))
+  have J₂S : ↑J₂ ∉ S := fun h => J₂J (Jmax J₂ h (le_sup_left : J ≤ J₂))
 
   -- Since Jᵢ is an ideal that contains I, we have that Jᵢ is not disjoint from F.
   have J₁F : ¬ (Disjoint (F : Set α) J₁) := by
     intro hdis
     apply J₁S
     simp only [le_eq_subset, mem_setOf_eq, SetLike.coe_subset_coe, S]
-    exact ⟨J₁.isIdeal, IJ₁, hdis⟩
+    exact ⟨J₁.isIdeal, le_trans IJ' le_sup_left, hdis⟩
 
   have J₂F : ¬ (Disjoint (F : Set α) J₂) := by
     intro hdis
     apply J₂S
     simp only [le_eq_subset, mem_setOf_eq, SetLike.coe_subset_coe, S]
-    exact ⟨J₂.isIdeal, IJ₂, hdis⟩
+    exact ⟨J₂.isIdeal, le_trans IJ' le_sup_left, hdis⟩
 
   -- Thus, pick cᵢ ∈ F ∩ Jᵢ.
-  obtain ⟨c₁, ⟨c₁F, c₁J₁⟩⟩ := Set.not_disjoint_iff.1 J₁F
-  obtain ⟨c₂, ⟨c₂F, c₂J₂⟩⟩ := Set.not_disjoint_iff.1 J₂F
+  let ⟨c₁, ⟨c₁F, c₁J₁⟩⟩ := Set.not_disjoint_iff.1 J₁F
+  let ⟨c₂, ⟨c₂F, c₂J₂⟩⟩ := Set.not_disjoint_iff.1 J₂F
 
   -- Using the definition of Jᵢ, we can pick bᵢ ∈ J such that cᵢ ≤ bᵢ ⊔ aᵢ.
-  obtain ⟨b₁, ⟨b₁J, cba₁⟩⟩ := (mem_ideal_sup_principal a₁ c₁ J).1 c₁J₁
-  obtain ⟨b₂, ⟨b₂J, cba₂⟩⟩ := (mem_ideal_sup_principal a₂ c₂ J).1 c₂J₂
+  let ⟨b₁, ⟨b₁J, cba₁⟩⟩ := (mem_ideal_sup_principal a₁ c₁ J).1 c₁J₁
+  let ⟨b₂, ⟨b₂J, cba₂⟩⟩ := (mem_ideal_sup_principal a₂ c₂ J).1 c₂J₂
 
   -- Since J is an ideal, we have b := b₁ ⊔ b₂ ∈ J.
   let b := b₁ ⊔ b₂
@@ -153,3 +150,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
     use b ⊔ (a₁ ⊓ a₂)
     exact ⟨ba₁a₂F, sup_mem bJ ha₁a₂⟩
   exact notdis JF
+
+-- TODO: Define prime filters in Mathlib so that the following corollary can be stated and proved.
+-- theorem prime_filter_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : Set α)) :
+--     ∃ G : PFilter α, (IsPrime G) ∧ F ≤ G ∧ Disjoint (G : Set α) I := by sorry
