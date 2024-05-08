@@ -350,7 +350,9 @@ protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x)
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
 
-lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [DecidableEq ι]
+/-- Technical lemma used in the proof of `hasFTaylorSeriesUpTo_iteratedFDeriv`, to compare sums
+over embedding of `Fin k` and `Fin (k + 1)`. -/
+private lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [DecidableEq ι]
     {n : ℕ} (e : Fin (n+1) ↪ ι) {k : ι}
     (h'k : k ∈ Set.range (Equiv.embeddingFinSucc n ι e).1) (hk : k ∈ Set.range e) :
     Fin.succ ((Equiv.embeddingFinSucc n ι e).1.toEquivRange.symm ⟨k, h'k⟩)
@@ -371,7 +373,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
   classical
   constructor
   · simp [ContinuousMultilinearMap.iteratedFDeriv]
-  · intro n _hn x
+  · rintro n - x
     suffices H : curryLeft (f.iteratedFDeriv (Nat.succ n) x) = (∑ e : Fin n ↪ ι,
           ((iteratedFDerivComponent f e.toEquivRange).linearDeriv
             (Pi.compRightL 𝕜 _ Subtype.val x)) ∘L (Pi.compRightL 𝕜 _ Subtype.val)) by
@@ -391,16 +393,13 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
     congr with k
     by_cases hke : k ∈ Set.range e
     · simp only [hke, ↓reduceDite]
-      by_cases hkf : k ∈ Set.range (Equiv.embeddingFinSucc n ι e).1
-      · simp only [hkf, ↓reduceDite, ← Equiv.succ_embeddingFinSucc_fst_symm_apply e hkf hke,
-          Fin.cons_succ]
-      · simp only [hkf, ↓reduceDite]
-        obtain rfl : k = e 0 := by
+      split_ifs with hkf
+      · simp only [← Equiv.succ_embeddingFinSucc_fst_symm_apply e hkf hke, Fin.cons_succ]
+      · obtain rfl : k = e 0 := by
           rcases hke with ⟨j, rfl⟩
-          congr
           simpa using hkf
         simp only [Function.Embedding.toEquivRange_symm_apply_self, Fin.cons_zero, Function.update,
-          Pi.compRightL_apply, dite_eq_ite]
+          Pi.compRightL_apply]
         split_ifs with h
         · congr!
         · exfalso
@@ -410,21 +409,19 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
         contrapose! hke
         rw [Equiv.embeddingFinSucc_fst] at hke
         exact Set.range_comp_subset_range _ _ hke
-      simp only [hke, hkf, ↓reduceDite]
-      simp only [Pi.compRightL, ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
+      simp only [hke, hkf, ↓reduceDite, Pi.compRightL,
+        ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
       rw [Function.update_noteq]
       contrapose! hke
-      have hk : k = (Equiv.embeddingFinSucc n ι e).2 := Subtype.ext_iff_val.1 hke
-      rw [hk, Equiv.embeddingFinSucc_snd e]
-      apply Set.mem_range_self
-  · intro n _hn
-    apply continuous_finset_sum _ (fun e _he ↦ ?_)
+      rw [show k = _ from Subtype.ext_iff_val.1 hke, Equiv.embeddingFinSucc_snd e]
+      exact Set.mem_range_self _
+  · rintro n -
+    apply continuous_finset_sum _ (fun e _ ↦ ?_)
     exact (ContinuousMultilinearMap.coe_continuous _).comp (ContinuousLinearMap.continuous _)
 
 theorem iteratedFDeriv_eq (n : ℕ) :
-    iteratedFDeriv 𝕜 n f = f.iteratedFDeriv n := by
-  ext x : 1
-  exact (f.hasFTaylorSeriesUpTo_iteratedFDeriv.eq_iteratedFDeriv (m := n) le_top x).symm
+    iteratedFDeriv 𝕜 n f = f.iteratedFDeriv n :=
+  funext fun x ↦ (f.hasFTaylorSeriesUpTo_iteratedFDeriv.eq_iteratedFDeriv (m := n) le_top x).symm
 
 theorem norm_iteratedFDeriv_le (n : ℕ) (x : (i : ι) → E i) :
     ‖iteratedFDeriv 𝕜 n f x‖

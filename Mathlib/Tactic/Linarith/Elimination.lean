@@ -28,7 +28,8 @@ We recursively eliminate all variables from the system. If we derive an empty cl
 we conclude that the original system was unsatisfiable.
 -/
 
-open Std
+open Batteries
+open Std (format ToFormat)
 
 namespace Linarith
 
@@ -255,7 +256,7 @@ structure LinarithData : Type where
 The linarith monad extends an exceptional monad with a `LinarithData` state.
 An exception produces a contradictory `PComp`.
 -/
-@[reducible] def LinarithM : Type → Type :=
+abbrev LinarithM : Type → Type :=
   StateT LinarithData (ExceptT PComp Id)
 
 /-- Returns the current max variable. -/
