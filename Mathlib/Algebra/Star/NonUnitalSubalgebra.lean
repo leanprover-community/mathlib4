@@ -92,6 +92,11 @@ structure StarSubset (A : Type v) [Star A] : Type v where
 
 structure SubStarmagma (A : Type v) [Mul A] [Star A] extends Subsemigroup A, StarSubset A :Type v
 
+/-- Reinterpret a `SubStarmagma` as a `Subsemigroup`. -/
+add_decl_doc SubStarmagma.toSubsemigroup
+/-- Reinterpret a `SubStarmagma` as a `StarSubset`. -/
+add_decl_doc SubStarmagma.toStarSubset
+
 /-- A non-unital star subalgebra is a non-unital subalgebra which is closed under the `star`
 operation. -/
 structure NonUnitalStarSubalgebra (R : Type u) (A : Type v) [CommSemiring R]
