@@ -332,7 +332,7 @@ section SecondCountableLp
 then the associated `Lᵖ` space is second-countable. -/
 instance instSecondCountableLp [IsSeparable μ] [SecondCountableTopology E] :
     SecondCountableTopology (Lp E p μ) := by
-  -- It is enough to show that the measure is separable, i.e. admits a countable and dense susbet.
+  -- It is enough to show that the space is separable, i.e. admits a countable and dense susbet.
   refine @UniformSpace.secondCountable_of_separable _ _ _ ?_
   -- There exists a countable and measure-dense family, and we can keep only the sets with finite
   -- measure while preserving the two properties. This family is denoted `𝒜₀`.
