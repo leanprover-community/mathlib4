@@ -1351,7 +1351,7 @@ noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α] [DecidableEq
 lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α] [DecidableEq ι]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]
     (x : (i : ι) → E₁ i) :
-‖f.iteratedFDerivComponent e (x ·)‖ ≤ ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := calc
+    ‖f.iteratedFDerivComponent e (x ·)‖ ≤ ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := calc
   ‖f.iteratedFDerivComponent e (fun i ↦ x i)‖
     ≤ ‖f.iteratedFDerivComponent e‖ * ∏ i : {a : ι // a ∉ s}, ‖x i‖ :=
       ContinuousMultilinearMap.le_opNorm _ _
