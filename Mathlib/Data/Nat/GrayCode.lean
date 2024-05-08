@@ -22,9 +22,7 @@ is a power of 2 for all `n ≠ 0` and `m`.
 -/
 namespace Nat
 
-/-!
-The inverse of `f(n) = n ⊕ ⌊n/2⌋`, defined by `g(n) = n ⊕ g(⌊n/2⌋)`.
--/
+/-- The inverse of `f(n) = n ⊕ ⌊n/2⌋`, defined by `g(n) = n ⊕ g(⌊n/2⌋)`. -/
 def gray_code_inv : ℕ → ℕ
   | 0 => 0
   | n+1 => (n+1) ^^^ gray_code_inv (n+1).div2
@@ -36,9 +34,7 @@ theorem gray_code_inv_val : (n : ℕ) → gray_code_inv n = n ^^^ gray_code_inv 
   | 0 => rfl
   | _+1 => rfl
 
-/-!
-Gray code, `f(n) = n ⊕ ⌊n/2⌋`, as a permutation of `ℕ`.
--/
+/-- Gray code, `f(n) = n ⊕ ⌊n/2⌋`, as a permutation of `ℕ`. -/
 def gray_code : Equiv.Perm ℕ where
   toFun (n : ℕ) := n ^^^ n.div2
   invFun := gray_code_inv
@@ -129,9 +125,7 @@ theorem gray_code_size (n : ℕ) : n.size = (gray_code n).size := by
       refine' (v.2 ..).symm
       omega
 
-/-!
-Gray code, `f(n) = n ⊕ ⌊n/2⌋`, as a permutation of `BitVec n`.
--/
+/-- Gray code, `f(n) = n ⊕ ⌊n/2⌋`, as a permutation of `BitVec n`. -/
 def partial_gray_code (n : ℕ) : Equiv.Perm (BitVec n) where
   toFun (n : BitVec n) := ⟨gray_code n.toNat,
     by rw [← Nat.size_le, ← gray_code_size, Nat.size_le]; simp [BitVec.isLt]⟩
