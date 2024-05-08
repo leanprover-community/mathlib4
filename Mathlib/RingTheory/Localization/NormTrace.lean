@@ -72,7 +72,7 @@ theorem Algebra.norm_localization [Module.Free R S] [Module.Finite R S] (a : S) 
 variable {M} in
 /-- The norm of `a : S` in `R` can be computed in `Sₘ`. -/
 lemma Algebra.norm_eq_iff [Module.Free R S] [Module.Finite R S] {a : S} {b : R}
-   (hM : M ≤ nonZeroDivisors R) : Algebra.norm R a = b ↔
+    (hM : M ≤ nonZeroDivisors R) : Algebra.norm R a = b ↔
       (Algebra.norm Rₘ) ((algebraMap S Sₘ) a) = algebraMap R Rₘ b :=
   ⟨fun h ↦ h.symm ▸ Algebra.norm_localization _ M _, fun h ↦
     IsLocalization.injective Rₘ hM <| h.symm ▸ (Algebra.norm_localization R M a).symm⟩
