@@ -200,7 +200,6 @@ theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
   funext <| Unique.forall_iff.2 rfl
 #align matrix.vec_single_eq_const Matrix.vec_single_eq_const
 
-unseal Nat.modCore in
 /-- `![a, b, ...] 1` is equal to `b`.
 
   The simplifier needs a special lemma for length `≥ 2`, in addition to
