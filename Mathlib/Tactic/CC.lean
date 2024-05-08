@@ -49,11 +49,6 @@ Journal of the ACM (1980)
 * The congruence lemmas for dependent type theory as used in Lean are described in
 [Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
 (de Moura, Selsam IJCAR 2016).
-
-## TODO
-
-This file is ported from C++ code, so many declarations lack documents.
-
 -/
 
 universe u
@@ -66,19 +61,21 @@ namespace CCState
 
 open CCM
 
+/-- Make an new `CCState` from the given `config`. -/
 def mkCore (config : CCConfig) : CCState :=
   let s : CCState := { config with }
   s.mkEntryCore (.const ``True []) true false |>.mkEntryCore (.const ``False []) true false
 #align cc_state.mk_core Mathlib.Tactic.CC.CCState.mkCore
 
-/-- Create a congruence closure state object using the hypotheses in the current goal. -/
-def mkUsingHsCore (cfg : CCConfig) : MetaM CCState := do
+/-- Create a congruence closure state object from the given `config` using the hypotheses in the
+current goal. -/
+def mkUsingHsCore (config : CCConfig) : MetaM CCState := do
   let ctx ← getLCtx
   let ctx ← instantiateLCtxMVars ctx
   let (_, c) ← CCM.run (ctx.forM fun dcl => do
     unless dcl.isImplementationDetail do
       if ← isProp dcl.type then
-        add dcl.type dcl.toExpr) { mkCore cfg with }
+        add dcl.type dcl.toExpr) { mkCore config with }
   return c.toCCState
 #align cc_state.mk_using_hs_core Mathlib.Tactic.CC.CCState.mkUsingHsCore
 
@@ -150,14 +147,14 @@ def proofForFalse (ccs : CCState) : MetaM Expr := do
   return pr
 #align cc_state.proof_for_false Mathlib.Tactic.CC.CCState.proofForFalse
 
-def mk' : CCState :=
-  CCState.mkCore {}
-#align cc_state.mk Mathlib.Tactic.CC.CCState.mk'
+#align cc_state.mk Mathlib.Tactic.CC.CCState.mk
 
+/-- Create a congruence closure state object using the hypotheses in the current goal. -/
 def mkUsingHs : MetaM CCState :=
   CCState.mkUsingHsCore {}
 #align cc_state.mk_using_hs Mathlib.Tactic.CC.CCState.mkUsingHs
 
+/-- The root expressions for each equivalence class in the graph. -/
 def roots (s : CCState) : List Expr :=
   CCState.rootsCore s true
 #align cc_state.roots Mathlib.Tactic.CC.CCState.roots
@@ -165,19 +162,25 @@ def roots (s : CCState) : List Expr :=
 instance : ToMessageData CCState :=
   ⟨fun s => CCState.ppEqcs s true⟩
 
+/-- Continue to append following expressions in the equivalence class of `e` to `r` until `f` is
+found. -/
 partial def eqcOfCore (s : CCState) (e : Expr) (f : Expr) (r : List Expr) : List Expr :=
-    let n := s.next e
-    if n == f then e :: r else eqcOfCore s n f (e :: r)
+  let n := s.next e
+  if n == f then e :: r else eqcOfCore s n f (e :: r)
 #align cc_state.eqc_of_core Mathlib.Tactic.CC.CCState.eqcOfCore
 
+/-- The equivalence class of `e`. -/
 def eqcOf (s : CCState) (e : Expr) : List Expr :=
   s.eqcOfCore e e []
 #align cc_state.eqc_of Mathlib.Tactic.CC.CCState.eqcOf
 
+/-- The equivalence class of `e`. -/
 def eqcSize (s : CCState) (e : Expr) : Nat :=
   s.eqcOf e |>.length
 #align cc_state.eqc_size Mathlib.Tactic.CC.CCState.eqcSize
 
+/-- Continue to apply `f` using following expressions in the equivalence class of `first` to `a`
+until `first` is found. -/
 partial def foldEqcCore {α} (s : CCState) (f : α → Expr → α) (first : Expr) (c : Expr) (a : α) :
     α :=
   let new_a := f a c
@@ -185,19 +188,61 @@ partial def foldEqcCore {α} (s : CCState) (f : α → Expr → α) (first : Exp
   if next == first then new_a else foldEqcCore s f first next new_a
 #align cc_state.fold_eqc_core Mathlib.Tactic.CC.CCState.foldEqcCore
 
+/-- Fold the function of `f` over the equivalence class of `e`. -/
 def foldEqc {α} (s : CCState) (e : Expr) (a : α) (f : α → Expr → α) : α :=
   foldEqcCore s f e e a
 #align cc_state.fold_eqc Mathlib.Tactic.CC.CCState.foldEqc
 
-def mfoldEqc {α} {m : Type → Type} [Monad m] (s : CCState) (e : Expr) (a : α)
+/-- Fold the monadic function of `f` over the equivalence class of `e`. -/
+def foldEqcM {α} {m : Type → Type} [Monad m] (s : CCState) (e : Expr) (a : α)
     (f : α → Expr → m α) : m α :=
   foldEqc s e (return a) fun act e => do
     let a ← act
     f a e
-#align cc_state.mfold_eqc Mathlib.Tactic.CC.CCState.mfoldEqc
+#align cc_state.mfold_eqc Mathlib.Tactic.CC.CCState.foldEqcM
 
 end CCState
 
+/--
+The congruence closure tactic `cc` tries to solve the goal by chaining
+equalities from context and applying congruence (i.e. if `a = b`, then `f a = f b`).
+It is a finishing tactic, i.e. it is meant to close
+the current goal, not to make some inconclusive progress.
+A mostly trivial example would be:
+
+```lean
+example (a b c : ℕ) (f : ℕ → ℕ) (h: a = b) (h' : b = c) : f a = f c := by
+  cc
+```
+
+As an example requiring some thinking to do by hand, consider:
+
+```lean
+example (f : ℕ → ℕ) (x : ℕ)
+    (H1 : f (f (f x)) = x) (H2 : f (f (f (f (f x)))) = x) :
+    f x = x := by
+  cc
+```
+
+The tactic works by building an equality matching graph. It's a graph where
+the vertices are terms and they are linked by edges if they are known to
+be equal. Once you've added all the equalities in your context, you take
+the transitive closure of the graph and, for each connected component
+(i.e. equivalence class) you can elect a term that will represent the
+whole class and store proofs that the other elements are equal to it.
+You then take the transitive closure of these equalities under the
+congruence lemmas.
+
+The `cc` implementation in Lean does a few more tricks: for example it
+derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for any `a`.
+
+* The starting reference point is Nelson, Oppen, [Fast decision procedures based on congruence
+closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
+Journal of the ACM (1980)
+
+* The congruence lemmas for dependent type theory as used in Lean are described in
+[Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
+(de Moura, Selsam IJCAR 2016). -/
 def _root_.Lean.MVarId.cc (m : MVarId) (cfg : CCConfig := {}) : MetaM Unit := do
   let (_, m) ← m.intros
   m.withContext do

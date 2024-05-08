@@ -1023,15 +1023,4 @@
  ["docBlame", "Mathlib.Tactic.CC.CCStructure.phandler"],
  ["docBlame", "Mathlib.Tactic.CC.ParentOcc.expr"],
  ["docBlame", "Mathlib.Tactic.CC.SymmCongruencesKey.h₁"],
- ["docBlame", "Mathlib.Tactic.CC.SymmCongruencesKey.h₂"],
- ["docBlame", "Lean.MVarId.cc"],
- ["docBlame", "Mathlib.Tactic.CC.CCState.eqcOf"],
- ["docBlame", "Mathlib.Tactic.CC.CCState.eqcOfCore"],
- ["docBlame", "Mathlib.Tactic.CC.CCState.eqcSize"],
- ["docBlame", "Mathlib.Tactic.CC.CCState.foldEqc"],
- ["docBlame", "Mathlib.Tactic.CC.CCState.foldEqcCore"],
- ["docBlame", "Mathlib.Tactic.CC.CCState.mfoldEqc"],
- ["docBlame", "Mathlib.Tactic.CC.CCState.mk'"],
- ["docBlame", "Mathlib.Tactic.CC.CCState.mkCore"],
- ["docBlame", "Mathlib.Tactic.CC.CCState.mkUsingHs"],
- ["docBlame", "Mathlib.Tactic.CC.CCState.roots"]]
+ ["docBlame", "Mathlib.Tactic.CC.SymmCongruencesKey.h₂"]]
