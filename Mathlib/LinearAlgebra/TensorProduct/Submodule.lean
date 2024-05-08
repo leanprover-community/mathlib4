@@ -56,8 +56,7 @@ variable (M N : Submodule R S)
 
 /-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural map
 `M ⊗[R] N →ₗ[R] S` induced by multiplication in `S`. -/
-def mulMap : M ⊗[R] N →ₗ[R] S :=
-  TensorProduct.lift <| ((LinearMap.domRestrict' N).comp <| .mul R S).domRestrict M
+def mulMap : M ⊗[R] N →ₗ[R] S := TensorProduct.lift ((LinearMap.mul R S).domRestrict₁₂ M N)
 
 @[simp]
 theorem mulMap_tmul (m : M) (n : N) : mulMap M N (m ⊗ₜ[R] n) = m.1 * n.1 := rfl
@@ -179,6 +178,20 @@ theorem rTensorOne_symm_apply (m : M) :
 
 theorem mulMap_one_right_eq : mulMap M 1 = M.subtype ∘ₗ M.rTensorOne.toLinearMap :=
   TensorProduct.ext' fun _ _ ↦ rfl
+
+@[simp]
+theorem comm_trans_lTensorOne :
+    (TensorProduct.comm R _ _).trans M.lTensorOne = M.rTensorOne := by
+  refine LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun x ⟨m, hm⟩ ↦ ?_
+  obtain ⟨y, rfl⟩ := mem_one.1 hm
+  simp
+
+@[simp]
+theorem comm_trans_rTensorOne :
+    (TensorProduct.comm R _ _).trans M.rTensorOne = M.lTensorOne := by
+  refine LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun  ⟨m, hm⟩ x ↦ ?_
+  obtain ⟨y, rfl⟩ := mem_one.1 hm
+  simp
 
 variable {M} in
 theorem mulLeftMap_eq_mulMap_comp {ι : Type*} (m : ι → M) :
