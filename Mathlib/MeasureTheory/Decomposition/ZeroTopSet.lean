@@ -149,9 +149,8 @@ lemma measure_eq_iSup_measure_subset [SigmaFinite μ] (hs : MeasurableSet s) :
   · simp only [ne_eq, iSup_le_iff]
     exact fun _ _ _ hts ↦ measure_mono hts
 
-/-! ### Method of exhaustion -/
+/-! ### Method of exhaustion
 
-/-!
 If `μ, ν` are two measures with `ν` finite, then there exists a set `s` such that
 `μ` is sigma-finite on `s`, and for all sets `t ⊆ sᶜ`, either `ν t = 0` or `μ t = ∞`. -/
 
