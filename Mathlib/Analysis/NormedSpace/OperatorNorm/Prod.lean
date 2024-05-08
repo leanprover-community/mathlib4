@@ -5,14 +5,14 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
 
--- make instances connecting normed things and algebra have higher priority
-open scoped AlgebraNormedInstances
-
 /-!
 # Operator norm: Cartesian products
 
 Interaction of operator norm with Cartesian products.
 -/
+
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
 
