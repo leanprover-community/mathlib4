@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import ImportGraph
-import Std.Lean.Util.Path
+import Mathlib.Data.String.Defs
+import Batteries.Lean.Util.Path
 import Cli
 import LongestPole.FormatTable
 import LongestPole.SpeedCenterJson

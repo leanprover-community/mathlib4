@@ -80,7 +80,8 @@ theorem rotate'_rotate' : ∀ (l : List α) (n m : ℕ), (l.rotate' n).rotate' m
   | a :: l, 0, m => by simp
   | [], n, m => by simp
   | a :: l, n + 1, m => by
-    rw [rotate'_cons_succ, rotate'_rotate' _ n, Nat.add_right_comm, ← rotate'_cons_succ]
+    rw [rotate'_cons_succ, rotate'_rotate' _ n, Nat.add_right_comm, ← rotate'_cons_succ,
+      Nat.succ_eq_add_one]
 #align list.rotate'_rotate' List.rotate'_rotate'
 
 @[simp]
@@ -116,7 +117,7 @@ theorem rotate_eq_rotate' (l : List α) (n : ℕ) : l.rotate n = l.rotate' n :=
 #align list.rotate_eq_rotate' List.rotate_eq_rotate'
 
 theorem rotate_cons_succ (l : List α) (a : α) (n : ℕ) :
-    (a :: l : List α).rotate n.succ = (l ++ [a]).rotate n := by
+    (a :: l : List α).rotate (n + 1) = (l ++ [a]).rotate n := by
   rw [rotate_eq_rotate', rotate_eq_rotate', rotate'_cons_succ]
 #align list.rotate_cons_succ List.rotate_cons_succ
 
@@ -353,7 +354,7 @@ theorem reverse_rotate (l : List α) (n : ℕ) :
   · simp
   · cases' l with hd tl
     · simp
-    · rw [rotate_cons_succ, Nat.succ_eq_add_one, ← rotate_rotate, hn]
+    · rw [rotate_cons_succ, ← rotate_rotate, hn]
       simp
 #align list.reverse_rotate List.reverse_rotate
 
@@ -592,14 +593,14 @@ theorem get_cyclicPermutations (l : List α) (n : Fin (length (cyclicPermutation
 #align list.nth_le_cyclic_permutations List.get_cyclicPermutations
 
 @[simp]
-theorem head?_cyclicPermutations (l : List α) : (cyclicPermutations l).head? = l := by
-  have h : 0 < length (cyclicPermutations l) := length_pos_of_ne_nil (cyclicPermutations_ne_nil _)
-  simp_rw [← get_zero h, get_cyclicPermutations, rotate_zero]
-
-@[simp]
 theorem head_cyclicPermutations (l : List α) :
     (cyclicPermutations l).head (cyclicPermutations_ne_nil l) = l := by
-  rw [← Option.some_inj, ← head?_eq_head, head?_cyclicPermutations]
+  have h : 0 < length (cyclicPermutations l) := length_pos_of_ne_nil (cyclicPermutations_ne_nil _)
+  rw [← get_mk_zero h, get_cyclicPermutations, Fin.val_mk, rotate_zero]
+
+@[simp]
+theorem head?_cyclicPermutations (l : List α) : (cyclicPermutations l).head? = l := by
+  rw [head?_eq_head, head_cyclicPermutations]
 
 theorem cyclicPermutations_injective : Function.Injective (@cyclicPermutations α) := fun l l' h ↦ by
   simpa using congr_arg head? h

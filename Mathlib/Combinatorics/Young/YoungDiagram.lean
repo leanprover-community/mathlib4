@@ -195,8 +195,7 @@ instance : DistribLattice YoungDiagram :=
 end DistribLattice
 
 /-- Cardinality of a Young diagram -/
-@[reducible]
-protected def card (μ : YoungDiagram) : ℕ :=
+protected abbrev card (μ : YoungDiagram) : ℕ :=
   μ.cells.card
 #align young_diagram.card YoungDiagram.card
 
