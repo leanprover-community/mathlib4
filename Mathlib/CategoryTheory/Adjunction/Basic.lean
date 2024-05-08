@@ -635,6 +635,16 @@ def adjunction (E : C ⥤ D) [IsEquivalence E] : E ⊣ E.inv :=
   E.asEquivalence.toAdjunction
 #align category_theory.functor.adjunction CategoryTheory.Functor.adjunction
 
+@[simp]
+theorem adjunction_unit (E : C ⥤ D) [IsEquivalence E] :
+    E.adjunction.unit = E.asEquivalence.unit :=
+  rfl
+
+@[simp]
+theorem adjunction_counit (E : C ⥤ D) [IsEquivalence E] :
+    E.adjunction.counit = E.asEquivalence.counit :=
+  rfl
+
 /-- If `F` is an equivalence, it's a left adjoint. -/
 instance (priority := 10) leftAdjointOfEquivalence {F : C ⥤ D} [IsEquivalence F] : IsLeftAdjoint F
     where
