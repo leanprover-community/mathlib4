@@ -134,7 +134,7 @@ noncomputable instance [Small.{v} α] (R : Type*) [SMul R α] : SMul R (Shrink.{
   (equivShrink α).symm.smul R
 
 /-- Transfer `Pow` across an `Equiv` -/
-@[to_additive (attr := reducible) existing smul]
+@[reducible, to_additive existing smul]
 protected def pow (N : Type*) [Pow β N] : Pow α N :=
   ⟨fun x n => e.symm (e x ^ n)⟩
 #align equiv.has_pow Equiv.pow

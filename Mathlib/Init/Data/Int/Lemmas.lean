@@ -8,7 +8,7 @@ import Batteries.Data.Int.Order
 import Mathlib.Mathport.Rename
 
 /-!
-# Align statements for declarations from Std
+# Align statements for declarations from Batteries
 -/
 
 #align int.default_eq_zero Int.default_eq_zero
