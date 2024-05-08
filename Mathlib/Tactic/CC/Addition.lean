@@ -712,6 +712,8 @@ def addSymmCongruenceTable (e : Expr) : CCM Unit := do
       { ccs with symmCongruences := ccs.symmCongruences.insert k [newP] }
     checkEqTrue e
 
+/-- Given subsingleton elements `a` and `b` which are not necessarily is the same type, add the
+(heterogeneous) equality proof between `a` and `b` to the todo list. -/
 def pushSubsingletonEq (a b : Expr) : CCM Unit := do
   -- Remark: we must use normalize here because we have use it before
   -- internalizing the types of `a` and `b`.
@@ -762,6 +764,8 @@ def propagateBeta (fn : Expr) (revArgs : Array Expr) (lambdas newLambdaApps : Ar
         newLambdaApps := newLambdaApps.push newApp
   return newLambdaApps
 
+/-- Given `a`, `a₁` and `a₁NeB : a₁ ≠ b`, return a proof of `a ≠ b` if `a` and `a₁` are in the
+same equivalence class. -/
 def mkNeOfEqOfNe (a a₁ a₁NeB : Expr) : CCM (Option Expr) := do
   guard (← isEqv a a₁)
   if a == a₁ then
@@ -771,6 +775,8 @@ def mkNeOfEqOfNe (a a₁ a₁NeB : Expr) : CCM (Option Expr) := do
   | none => return none -- failed to build proof
   | some aEqA₁ => mkAppM ``ne_of_eq_of_ne #[aEqA₁, a₁NeB]
 
+/-- Given `aNeB₁ : a ≠ b₁`, `b₁` and `b`, return a proof of `a ≠ b` if `b` and `b₁` are in the
+same equivalence class. -/
 def mkNeOfNeOfEq (aNeB₁ b₁ b : Expr) : CCM (Option Expr) := do
   guard (← isEqv b b₁)
   if b == b₁ then
@@ -780,6 +786,8 @@ def mkNeOfNeOfEq (aNeB₁ b₁ b : Expr) : CCM (Option Expr) := do
   | none => return none -- failed to build proof
   | some b₁EqB => mkAppM ``ne_of_ne_of_eq #[aNeB₁, b₁EqB]
 
+/-- If `e` is of the form `op e₁ e₂` where `op` is an associative and commutative binary operator,
+return the conanocal form of `op`. -/
 def isAC (e : Expr) : CCM (Option Expr) := do
   let .app (.app op _) _ := e | return none
   let ccs ← get
@@ -1045,6 +1053,7 @@ def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
               ofFormat (Format.line ++ ":=" ++ .line) ++ eq)
 
 open MessageData in
+/-- Process the tasks in the `acTodo` field. -/
 def processAC : CCM Unit := do
   repeat
     let acTodo ← getACTodo
@@ -1486,6 +1495,8 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
 
   propagateUp e
 
+/-- If `e` is a subsingleton element, push the equality proof between `e` and its canonical form
+to the todo list or register `e` as the canonical form of itself. -/
 partial def processSubsingletonElem (e : Expr) : CCM Unit := do
   let type ← inferType e
   let ss ← synthInstance? (← mkAppM ``Subsingleton #[type])
@@ -1682,20 +1693,23 @@ partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
     if 0 < c₁.numFields then
       let name := mkInjectiveTheoremNameFor c₁.name
       if env.contains name then
-        let rec go (type val : Expr) : CCM Unit := do
-          let push (type val : Expr) : CCM Unit :=
-            match type.eq? with
-            | some (_, lhs, rhs) => pushEq lhs rhs val
+        let rec
+          /-- Given an injective theorem `val : type`, whose `type` is the form of
+          `a₁ = a₂ ∧ HEq b₁ b₂ ∧ ..`, destruct `val` and push equality proofs to the todo list. -/
+          go (type val : Expr) : CCM Unit := do
+            let push (type val : Expr) : CCM Unit :=
+              match type.eq? with
+              | some (_, lhs, rhs) => pushEq lhs rhs val
+              | none =>
+                match type.heq? with
+                | some (_, _, lhs, rhs) => pushHEq lhs rhs val
+                | none => failure
+            match type.and? with
+            | some (l, r) =>
+              push l (.proj ``And 0 val)
+              go r (.proj ``And 1 val)
             | none =>
-              match type.heq? with
-              | some (_, _, lhs, rhs) => pushHEq lhs rhs val
-              | none => failure
-          match type.and? with
-          | some (l, r) =>
-            push l (.proj ``And 0 val)
-            go r (.proj ``And 1 val)
-          | none =>
-            push type val
+              push type val
         let val ← mkAppM name #[h]
         let type ← inferType val
         go type val
@@ -1797,6 +1811,7 @@ def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit :
   else
     go e₁ e₂ n₁ n₂ r₁ r₂ false H heqProof
 where
+  /-- The auxiliary definition for `addEqvStep` to flip the input. -/
   go (e₁ e₂: Expr) (n₁ n₂ r₁ r₂ : Entry) (flipped : Bool) (H : EntryExpr) (heqProof : Bool) :
       CCM Unit := do
     let mut valueInconsistency := false
@@ -1925,6 +1940,7 @@ where
     trace[Debug.Meta.Tactic.cc] "merged: {e₁Root} = {e₂Root}\n{ccs.ppEqcs}"
     trace[Debug.Meta.Tactic.cc.parentOccs] ccs.ppParentOccs
 
+/-- Process the tasks in the `todo` field. -/
 def processTodo : CCM Unit := do
   repeat
     let todo ← getTodo
