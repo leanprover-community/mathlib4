@@ -95,7 +95,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
         · -- normalized
           have := ht₃ v
           have := he₃ v
-          ◾
+          split <;> ◾
         · -- lookup = none
           have := ht₃ w
           have := he₃ w

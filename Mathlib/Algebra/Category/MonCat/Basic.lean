@@ -409,6 +409,7 @@ set_option linter.uppercaseLean3 false in
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]
-instance CommMonCat.forget₂Full : (forget₂ CommMonCat MonCat).Full where preimage f := f
+instance CommMonCat.forget₂_full : (forget₂ CommMonCat MonCat).Full where
+  map_surjective f := ⟨f, rfl⟩
 
 example : (forget₂ CommMonCat MonCat).ReflectsIsomorphisms := inferInstance

@@ -64,12 +64,10 @@ section Definitions
 variable (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
   [CompactSpace Y] [Nonempty Y]
 
-@[reducible]
-private def ProdSpaceFun : Type _ :=
+private abbrev ProdSpaceFun : Type _ :=
   (X ⊕ Y) × (X ⊕ Y) → ℝ
 
-@[reducible]
-private def Cb : Type _ :=
+private abbrev Cb : Type _ :=
   BoundedContinuousFunction ((X ⊕ Y) × (X ⊕ Y)) ℝ
 
 private def maxVar : ℝ≥0 :=

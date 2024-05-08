@@ -186,8 +186,7 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
 @[to_additive]
 theorem uniformEmbedding_translate_mul (a : α) : UniformEmbedding fun x : α => x * a :=
   { comap_uniformity := by
-      nth_rewrite 1 [← uniformity_translate_mul a, comap_map]
-      rfl
+      nth_rw 1 [← uniformity_translate_mul a, comap_map]
       rintro ⟨p₁, p₂⟩ ⟨q₁, q₂⟩
       simp only [Prod.mk.injEq, mul_left_inj, imp_self]
     inj := mul_left_injective a }
@@ -593,7 +592,7 @@ variable {G}
 instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
     IsClosed (H : Set G) := by
   obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1}
-  exact nhds_inter_eq_singleton_of_mem_discrete H.one_mem
+  · exact nhds_inter_eq_singleton_of_mem_discrete H.one_mem
   have : (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
