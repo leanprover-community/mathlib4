@@ -179,7 +179,7 @@ theorem le_degree_of_ne_zero (h : coeff p n ≠ 0) : (n : WithBot ℕ) ≤ degre
 
 theorem le_natDegree_of_ne_zero (h : coeff p n ≠ 0) : n ≤ natDegree p := by
   rw [← Nat.cast_le (α := WithBot ℕ), ← degree_eq_natDegree]
-  exact le_degree_of_ne_zero h
+  · exact le_degree_of_ne_zero h
   · rintro rfl
     exact h rfl
 #align polynomial.le_nat_degree_of_ne_zero Polynomial.le_natDegree_of_ne_zero
@@ -691,7 +691,7 @@ lemma natDegree_le_pred (hf : p.natDegree ≤ n) (hn : p.coeff n = 0) : p.natDeg
   obtain _ | n := n
   · exact hf
   · refine (Nat.le_succ_iff_eq_or_le.1 hf).resolve_left fun h ↦ ?_
-    rw [← h, coeff_natDegree, leadingCoeff_eq_zero] at hn
+    rw [← Nat.succ_eq_add_one, ← h, coeff_natDegree, leadingCoeff_eq_zero] at hn
     aesop
 
 theorem natDegree_mem_support_of_nonzero (H : p ≠ 0) : p.natDegree ∈ p.support := by
@@ -777,7 +777,7 @@ lemma natDegree_eq_of_natDegree_add_lt_right (p q : R[X])
 
 lemma natDegree_eq_of_natDegree_add_eq_zero (p q : R[X])
     (H : natDegree (p + q) = 0) : natDegree p = natDegree q := by
-  by_cases h₁ : natDegree p = 0; by_cases h₂ : natDegree q = 0
+  by_cases h₁ : natDegree p = 0; on_goal 1 => by_cases h₂ : natDegree q = 0
   · exact h₁.trans h₂.symm
   · apply natDegree_eq_of_natDegree_add_lt_right; rwa [H, Nat.pos_iff_ne_zero]
   · apply natDegree_eq_of_natDegree_add_lt_left; rwa [H, Nat.pos_iff_ne_zero]

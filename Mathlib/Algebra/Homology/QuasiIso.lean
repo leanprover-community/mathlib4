@@ -497,8 +497,8 @@ instance : QuasiIso e.inv := (inferInstance : QuasiIso e.symm.hom)
 
 variable (C c)
 
-lemma homotopyEquivalences_subset_quasiIso [CategoryWithHomology C] :
-    homotopyEquivalences C c ⊆ quasiIso C c := by
+lemma homotopyEquivalences_le_quasiIso [CategoryWithHomology C] :
+    homotopyEquivalences C c ≤ quasiIso C c := by
   rintro K L _ ⟨e, rfl⟩
   simp only [HomologicalComplex.mem_quasiIso_iff]
   infer_instance
