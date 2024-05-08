@@ -147,7 +147,7 @@ class IsPurelyInseparable : Prop where
 attribute [instance] IsPurelyInseparable.isIntegral
 
 variable {E} in
-instance IsPurelyInseparable.isIntegral' [IsPurelyInseparable F E] (x : E) : IsIntegral F x :=
+theorem IsPurelyInseparable.isIntegral' [IsPurelyInseparable F E] (x : E) : IsIntegral F x :=
   Algebra.IsIntegral.isIntegral _
 
 instance IsPurelyInseparable.isAlgebraic [IsPurelyInseparable F E] :

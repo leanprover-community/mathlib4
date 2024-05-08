@@ -1145,7 +1145,7 @@ theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimension
   (adjoin.powerBasis hx).finite
 #align intermediate_field.adjoin.finite_dimensional IntermediateField.adjoin.finiteDimensional
 
-instance isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
+theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
   have := adjoin.finiteDimensional hx; Algebra.IsAlgebraic.of_finite K K⟮x⟯
 
 theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
@@ -1223,7 +1223,7 @@ theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
 
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
-instance isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
+theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
     (h : ∀ i, Algebra.IsAlgebraic K (t i)) :
     Algebra.IsAlgebraic K (⨆ i, t i : IntermediateField K L) := by
   constructor
@@ -1235,7 +1235,7 @@ instance isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
   apply IsAlgebraic.of_finite
 #align intermediate_field.is_algebraic_supr IntermediateField.isAlgebraic_iSup
 
-instance isAlgebraic_adjoin {S : Set L} (hS : ∀ x ∈ S, IsIntegral K x) :
+theorem isAlgebraic_adjoin {S : Set L} (hS : ∀ x ∈ S, IsIntegral K x) :
     Algebra.IsAlgebraic K (adjoin K S) := by
   rw [← biSup_adjoin_simple, ← iSup_subtype'']
   exact isAlgebraic_iSup fun x ↦ isAlgebraic_adjoin_simple (hS x x.2)
