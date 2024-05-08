@@ -190,21 +190,10 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
         rw [mem_roots_map_of_injective (algebraMap ℤ ℂ).injective_int P0', ← aeval_def]
         rw [map_prod]
         exact prod_eq_zero (mem_univ j) hx
-  -- simp_rw [Int.norm_eq_abs, Int.cast_pow, _root_.abs_pow, ← Int.norm_eq_abs, Multiset.map_const,
-  --   Multiset.sum_replicate, ← mul_sum, ← sum_smul, nsmul_eq_mul, mul_comm (‖k‖ ^ t), mul_assoc,
-  --   mul_comm (_ / _ : ℝ), t, pow_mul, mul_div (_ ^ _ : ℝ), ← mul_pow, ← mul_assoc, mul_div, ←
-  --   pow_mul] at H
-  rw [Int.norm_eq_abs, _root_.abs_pow, Int.cast_pow, ← Int.norm_eq_abs] at H
-  conv_rhs at H =>
-    congr
-    · skip
-    · congr
-      · skip
-      · ext
-        rw [Multiset.map_const', Multiset.sum_replicate]
-  conv_rhs at H =>
-    rw [← mul_sum, mul_left_comm, ← sum_smul, nsmul_eq_mul, mul_comm (‖k‖ ^ t), mul_assoc,
-      mul_comm (_ / _ : ℝ), pow_mul, mul_div (_ ^ _ : ℝ), ← mul_pow, ← mul_assoc, mul_div]
+  simp_rw [Int.norm_eq_abs, Int.cast_pow, _root_.abs_pow, ← Int.norm_eq_abs, Multiset.map_const',
+    Multiset.sum_replicate, ← mul_sum, ← sum_smul, nsmul_eq_mul, mul_comm (‖k‖ ^ t), mul_assoc,
+    mul_comm (_ / _ : ℝ), t, pow_mul, mul_div (_ ^ _ : ℝ), ← mul_pow, ← mul_assoc, mul_div, ←
+    pow_mul] at H
   replace H := H.trans_lt hq
   have : ∑ j, w' j • (((p j).aroots K).map fun x : K => k ^ (P.natDegree * q) • aeval x gp).sum =
       algebraMap ℤ K (∑ j, w' j • sz j) := by
@@ -215,20 +204,20 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
       ‖algebraMap ℤ ℂ (k ^ (P.natDegree * q) * n * w + q * ∑ j, w' j • sz j)‖ := by
     simp_rw [IsScalarTower.algebraMap_apply ℤ K ℂ, algebraMap_int_eq, Int.coe_castRingHom]
     norm_cast
-  rw [nsmul_eq_mul, this, algebraMap_int_eq, Int.coe_castRingHom, norm_int, ← Int.cast_abs,
+  rw [this, algebraMap_int_eq, Int.coe_castRingHom, norm_int, ← Int.cast_abs,
     ← Int.cast_one, Int.cast_lt, Int.abs_lt_one_iff] at H
   replace H : (k ^ (P.natDegree * q) * n * w + q * ∑ j : Fin m, w' j • sz j) % q = 0 := by
     rw [H, Int.zero_emod]
   rw [Int.add_mul_emod_self_left, ← Int.dvd_iff_emod_eq_zero] at H
   replace H :=
-    (Int.Prime.dvd_mul prime_q H).imp_left (Int.Prime.dvd_mul prime_q ∘ Int.coe_nat_dvd_left.mpr)
+    (Int.Prime.dvd_mul prime_q H).imp_left (Int.Prime.dvd_mul prime_q ∘ Int.natCast_dvd.mpr)
   revert H; rw [Int.natAbs_pow, imp_false]; push_neg
   exact
     ⟨⟨fun h =>
         Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr k0)
           (((le_max_left _ _).trans (le_max_right _ _)).trans_lt hqN)
           (Nat.Prime.dvd_of_dvd_pow prime_q h),
-        fun h => hn ((Int.dvd_iff_emod_eq_zero _ _).mp (Int.coe_nat_dvd_left.mpr h))⟩,
+        fun h => hn ((Int.dvd_iff_emod_eq_zero _ _).mp (Int.natCast_dvd.mpr h))⟩,
       Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr w0)
         (((le_max_right _ _).trans (le_max_right _ _)).trans_lt hqN)⟩
 #align linear_independent_exp linear_independent_exp
