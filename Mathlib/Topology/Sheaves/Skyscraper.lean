@@ -386,11 +386,11 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
     rfl
 #align skyscraper_presheaf_stalk_adjunction skyscraperPresheafStalkAdjunction
 
-instance [HasColimits C] : IsRightAdjoint (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X) :=
-  ⟨_, skyscraperPresheafStalkAdjunction _⟩
+instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint  :=
+  (skyscraperPresheafStalkAdjunction _).isRightAdjoint
 
-instance [HasColimits C] : IsLeftAdjoint (Presheaf.stalkFunctor C p₀) :=
-  ⟨_, skyscraperPresheafStalkAdjunction _⟩
+instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint  :=
+  (skyscraperPresheafStalkAdjunction _).isLeftAdjoint
 
 /-- Taking stalks of a sheaf is the left adjoint functor to `skyscraperSheafFunctor`
 -/
@@ -410,8 +410,8 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
   homEquiv_counit {𝓐} c f := (skyscraperPresheafStalkAdjunction p₀).homEquiv_counit
 #align stalk_skyscraper_sheaf_adjunction stalkSkyscraperSheafAdjunction
 
-instance [HasColimits C] : IsRightAdjoint (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X) :=
-  ⟨_, stalkSkyscraperSheafAdjunction _⟩
+instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint  :=
+  (stalkSkyscraperSheafAdjunction _).isRightAdjoint
 
 end
 

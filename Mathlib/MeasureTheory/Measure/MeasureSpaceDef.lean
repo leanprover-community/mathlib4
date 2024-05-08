@@ -80,7 +80,7 @@ extension of the restricted measure. -/
 structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α where
   m_iUnion ⦃f : ℕ → Set α⦄ :
     (∀ i, MeasurableSet (f i)) →
-      Pairwise (Disjoint on f) → measureOf (⋃ i, f i) = ∑' i, measureOf (f i)
+      Pairwise (Disjoint on f) → toOuterMeasure (⋃ i, f i) = ∑' i, toOuterMeasure (f i)
   trimmed : toOuterMeasure.trim = toOuterMeasure
 #align measure_theory.measure MeasureTheory.Measure
 
