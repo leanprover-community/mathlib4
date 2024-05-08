@@ -17,6 +17,9 @@ differentiable, with an explicit derivative given by a Fourier transform. See
 `SchwartzMap.hasFDerivAt_fourier`.
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 open Real Complex TopologicalSpace SchwartzMap MeasureTheory MeasureTheory.Measure VectorFourier
 
 noncomputable section

@@ -15,6 +15,8 @@ This file proves results about angles in circles and spheres.
 
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

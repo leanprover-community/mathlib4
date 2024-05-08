@@ -29,6 +29,9 @@ We also register continuous linear equiv versions of these correspondences, in
 
 suppress_compilation
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 noncomputable section
 
 open BigOperators NNReal Finset Metric ContinuousMultilinearMap Fin Function

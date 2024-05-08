@@ -53,6 +53,8 @@ in `Topology.Algebra.Module.Basic`, theory over normed spaces developed in
 artifact, really.
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

@@ -17,6 +17,9 @@ interpreted as linear maps `E → F → G` as usual (and similarly for semilinea
 
 suppress_compilation
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 open Bornology
 open Filter hiding map_smul
 open scoped Classical NNReal Topology Uniformity

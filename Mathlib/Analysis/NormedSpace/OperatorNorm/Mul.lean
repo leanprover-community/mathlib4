@@ -15,6 +15,9 @@ of multiplication and scalar-multiplication operations in normed algebras and no
 
 suppress_compilation
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 set_option linter.uppercaseLean3 false
 
 open Metric

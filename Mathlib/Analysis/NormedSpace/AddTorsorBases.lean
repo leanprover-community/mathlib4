@@ -24,6 +24,8 @@ This file contains results about bases in normed affine spaces.
  * `interior_convexHull_nonempty_iff_affineSpan_eq_top`
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 section Barycentric
 

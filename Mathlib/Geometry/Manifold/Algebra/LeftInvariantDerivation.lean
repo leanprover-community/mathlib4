@@ -21,6 +21,8 @@ implementing one of the possible definitions of the Lie algebra attached to a Li
 
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

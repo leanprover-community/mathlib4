@@ -27,6 +27,9 @@ assert_not_exists HasFDerivAt
 
 assert_not_exists ConformalAt
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 noncomputable section
 
 open Real Set
