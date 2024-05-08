@@ -28,7 +28,7 @@ open nonZeroDivisors
 
 /-- The units of the monoid of non zero divisors of `α` are equivalent to the units of `α`. -/
 def nonZeroDivisorsUnitsEquiv (α : Type*) [MonoidWithZero α] :
-  (α⁰)ˣ ≃* αˣ :=
+    (α⁰)ˣ ≃* αˣ :=
   MulEquiv.ofBijective (Units.map α⁰.subtype) ⟨Units.map_injective Subtype.val_injective,
     fun u ↦ ⟨IsUnit.unit ⟨⟨⟨u, IsUnit.mem_nonZeroDivisors u.isUnit⟩, ⟨(u⁻¹ : αˣ),
         IsUnit.mem_nonZeroDivisors u⁻¹.isUnit⟩, by simp, by simp⟩, rfl⟩,
@@ -56,7 +56,7 @@ theorem Associates_mk_mem_nonZeroDivisors_iff {α : Type*} [CommMonoidWithZero �
   · refine fun ⟨b, hb₁, hb₂⟩ ↦ ⟨Associates.mk b, ?_, by rwa [Associates.mk_ne_zero]⟩
     rw [Associates.mk_mul_mk, hb₁, Associates.mk_zero]
 
-/-- To any class in `Associates α⁰`, one can associate a class in `(Associate α)⁰` by sending a
+/-- To any class in `Associates α⁰`, one can associate a class in `(Associates α)⁰` by sending a
 representative `a : α⁰` of the class to the class of `(a : α)`. The map obtained is in fact a
 `MulEquiv`, see `AssociatesNonZeroDivisorsMulEquiv`. -/
 def AssociatesNonZeroDivisorsMonoidHom (α : Type*) [CommMonoidWithZero α] :
