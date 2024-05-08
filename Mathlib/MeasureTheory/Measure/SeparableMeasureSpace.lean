@@ -290,7 +290,7 @@ theorem exists_countable_measureDense [IsSeparable μ] :
 /-- If a measurable space is countably generated and equipped with a `σ`-finite measure, then the
 measure is separable.
 
-TODO: This remains true if `μ` is only assumed to be `σ`-finite. -/
+TODO: This remains true if `μ` is only assumed to be s-finite. -/
 instance instIsSeparableCountablyGeneratedSigmaFinite [CountablyGenerated X]
     [SigmaFinite μ] : IsSeparable μ where
   exists_countable_measureDense := by
