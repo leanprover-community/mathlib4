@@ -43,28 +43,10 @@ variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α} {s t : Set α
 
 namespace Measure
 
-theorem iSup_restrict_spanningSets'' [SigmaFinite μ] (s : Set α) :
-    ⨆ i, μ.restrict (spanningSets μ i) (toMeasurable μ s) = μ s := by
-  rw [← measure_toMeasurable s, iSup_restrict_spanningSets]
-
-theorem iSup_restrict_spanningSets' [SigmaFinite μ] (s : Set α) :
-    ⨆ i, μ.restrict (spanningSets μ i) s = μ s := by
-  rw [← measure_toMeasurable s, ← iSup_restrict_spanningSets]
-  simp_rw [restrict_apply' (measurable_spanningSets μ _), Set.inter_comm s,
-    ← restrict_apply (measurable_spanningSets μ _), ← restrict_toMeasurable_of_sFinite s,
-    restrict_apply (measurable_spanningSets μ _), Set.inter_comm _ (toMeasurable μ s)]
-
-instance instSFiniteRestrict (μ : Measure α) [SFinite μ] (s : Set α) :
-    SFinite (μ.restrict s) := by
-  refine ⟨fun n ↦ (sFiniteSeq μ n).restrict s, fun n ↦ inferInstance, ?_⟩
-  rw [← restrict_sum_of_countable, sum_sFiniteSeq]
-
 lemma ae_lt_top_of_sigmaFinite [SigmaFinite μ] {f : α → ℝ≥0∞} (hf : Measurable f)
     (h2f : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ ≠ ∞) :
-    ∀ᵐ x ∂μ, f x < ∞ := by
-  refine ae_of_forall_measure_lt_top_ae_restrict _ (fun s hs hμs ↦ ?_)
-  specialize h2f s hs hμs
-  exact ae_lt_top hf h2f
+    ∀ᵐ x ∂μ, f x < ∞ :=
+  ae_of_forall_measure_lt_top_ae_restrict _ (fun s hs hμs ↦ ae_lt_top hf (h2f s hs hμs))
 
 /-! ### IsSigmaFiniteSet -/
 
