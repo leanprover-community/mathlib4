@@ -10,6 +10,7 @@ import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
 import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Topology.ContinuousFunction.UniqueCFC
 import Mathlib.Analysis.NormedSpace.Star.Matrix
+import Mathlib.Algebra.Star.StarAlgHom
 
 /-
 This file defines an instance of the continuous functional calculus for Hermitian matrices over an
@@ -63,9 +64,25 @@ theorem spec_EuclideanCLM_eq_spec : spectrum 𝕜 (toEuclideanCLM (𝕜:= 𝕜) 
 theorem spec_EuclideanCLM_eq_spec_toEuclideanLin : spectrum 𝕜 (toEuclideanCLM (𝕜:= 𝕜) A)
     = spectrum 𝕜 (toEuclideanLin A) := AlgEquiv.spectrum_eq (LinearAlgEquiv) _
 
+theorem StarAlgEquiv.toAlgEquiv {R : Type u_1} {A : Type u_2} {B : Type u_3} [Add A] [Add B]
+    [Mul A] [Mul B] [SMul R A] [SMul R B] [StarAlg A] [StarAlg B] (A ≃⋆ₐ[R] B) : (A ≃ₐ[R] B):= by sorry
+
 theorem spec_toEuclideanLin_eq_spec_EuclideanCLM : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A
-    := by
-simp only [spec_EuclideanCLM_eq_spec.symm, spec_EuclideanCLM_eq_spec_toEuclideanLin]
+    := by sorry --AlgEquiv.spectrum_eq (AlgEquiv.trans (LinearAlgEquiv) (((toEuclideanCLM (𝕜:= 𝕜) (n := n)).symm : (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) ≃⋆ₐ[𝕜] (Matrix n n 𝕜)) : (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) ≃ₐ[𝕜] (Matrix n n 𝕜)))
+#check LinearAlgEquiv
+#check AlgEquivClass.instCoeTCAlgEquiv (F := (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) ≃⋆ₐ[𝕜] (Matrix n n 𝕜)) (R := 𝕜) (A := (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)) (B := Matrix n n 𝕜)
+#check (toEuclideanCLM (𝕜:= 𝕜) (n := n)).symm
+#synth EquivLike ((EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) ≃⋆ₐ[𝕜] (Matrix n n 𝕜)) _ _
+#synth AlgEquivClass ((EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) ≃⋆ₐ[𝕜] (Matrix n n 𝕜)) 𝕜 _ _
+#check (AlgEquivClass.instCoeTCAlgEquiv (F := (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) ≃⋆ₐ[𝕜] (Matrix n n 𝕜)) (R := 𝕜) (A := (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)) (B := Matrix n n 𝕜))
+#check (((toEuclideanCLM (𝕜:= 𝕜) (n := n)).symm : (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) ≃⋆ₐ[𝕜] (Matrix n n 𝕜)) : (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) ≃ₐ[𝕜] (Matrix n n 𝕜))
+#check AlgEquiv.trans (LinearAlgEquiv) (((toEuclideanCLM (𝕜:= 𝕜) (n := n)).symm : (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) ≃⋆ₐ[𝕜] (Matrix n n 𝕜)) : (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) ≃ₐ[𝕜] (Matrix n n 𝕜))
+#check AlgEquiv.spectrum_eq (AlgEquiv.trans (LinearAlgEquiv) ((((toEuclideanCLM (𝕜:= 𝕜) (n := n)).symm : (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) ≃⋆ₐ[𝕜] (Matrix n n 𝕜))) : (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) ≃ₐ[𝕜] (Matrix n n 𝕜)))
+--AlgEquiv.trans spec_EuclideanCLM_eq_spec_toEuclideanLin spec_EuclideanCLM_eq_spec.symm
+--simp only [spec_EuclideanCLM_eq_spec.symm, spec_EuclideanCLM_eq_spec_toEuclideanLin]
+--(toEuclideanCLM (𝕜:= 𝕜) (n := n)).symm
+#check Matrix.coe_toEuclideanCLM_eq_toEuclideanLin
+#exit
 
 noncomputable def f : n → spectrum ℝ A := by
 apply Set.codRestrict fun (i : n) ↦ (RCLike.ofReal ∘ hA.eigenvalues) i
@@ -79,6 +96,7 @@ noncomputable def φ₀ : C(spectrum ℝ A, ℝ) →  Matrix n n 𝕜 :=
   fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ g ∘ f hA)
       * star (eigenvectorUnitary hA : Matrix n n 𝕜)
 
+#exit
 noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := φ₀ hA
   map_one' := sorry
