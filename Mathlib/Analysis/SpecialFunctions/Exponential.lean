@@ -312,9 +312,9 @@ theorem hasStrictFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
     HasStrictFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x))
       (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) t :=
   let ⟨_, hp⟩ := analyticAt_exp_of_mem_ball (t • x) htx
-  have deriv₁ : HasStrictFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x)) _ t :=
+  have deriv₁ :=
     hp.hasStrictFDerivAt.comp t ((ContinuousLinearMap.id 𝕂 𝕊).smulRight x).hasStrictFDerivAt
-  have deriv₂ : HasFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x)) _ t :=
+  have deriv₂ :=
     hasFDerivAt_exp_smul_const_of_mem_ball 𝕂 x t htx
   deriv₁.hasFDerivAt.unique deriv₂ ▸ deriv₁
 #align has_strict_fderiv_at_exp_smul_const_of_mem_ball hasStrictFDerivAt_exp_smul_const_of_mem_ball

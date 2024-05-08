@@ -184,7 +184,7 @@ theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star
 
 @[simp]
 lemma star_le_star_iff {x y : R} : star x ≤ star y ↔ x ≤ y := by
-  suffices ∀ x y, x ≤ y → star x ≤ star y from
+  suffices ∀ x y : R, x ≤ y → star x ≤ star y from
     ⟨by simpa only [star_star] using this (star x) (star y), this x y⟩
   intro x y h
   rw [StarOrderedRing.le_iff] at h ⊢

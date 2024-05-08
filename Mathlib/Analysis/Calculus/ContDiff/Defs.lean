@@ -899,7 +899,8 @@ theorem Filter.EventuallyEq.iteratedFDerivWithin' (h : f₁ =ᶠ[𝓝[s] x] f) (
     iteratedFDerivWithin 𝕜 n f₁ t =ᶠ[𝓝[s] x] iteratedFDerivWithin 𝕜 n f t := by
   induction' n with n ihn
   · exact h.mono fun y hy => DFunLike.ext _ _ fun _ => hy
-  · have : fderivWithin 𝕜 _ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 _ t := ihn.fderivWithin' ht
+  · have : fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f₁ t) t
+      =ᶠ[𝓝[s] x] fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f t) t := ihn.fderivWithin' ht
     apply this.mono
     intro y hy
     simp only [iteratedFDerivWithin_succ_eq_comp_left, hy, (· ∘ ·)]

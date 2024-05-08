@@ -188,7 +188,8 @@ This is a special case of `adjointTriangleLift` which is often more useful in pr
 -/
 noncomputable def monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint U] {R : A ⥤ B}
     [HasReflexiveCoequalizers A] [IsRightAdjoint (R ⋙ U)] : IsRightAdjoint R := by
-  let R' : A ⥤ _ := R ⋙ Monad.comparison (Adjunction.ofRightAdjoint U)
+  let R' : A ⥤ (Adjunction.ofRightAdjoint U).toMonad.Algebra :=
+    R ⋙ Monad.comparison (Adjunction.ofRightAdjoint U)
   rsuffices : IsRightAdjoint R'
   · let this : IsRightAdjoint (R' ⋙ (Monad.comparison (Adjunction.ofRightAdjoint U)).inv) := by
       infer_instance

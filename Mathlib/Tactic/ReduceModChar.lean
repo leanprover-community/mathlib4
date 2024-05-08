@@ -202,8 +202,8 @@ partial def derive (e : Expr) : MetaM Simp.Result := do
   let pre := Simp.preDefault #[] >> fun e =>
       try return (Simp.Step.done (← matchAndNorm e))
       catch _ => pure .continue
-  let post := Simp.postDefault #[]
-  let r ← r.mkEqTrans (← Simp.main r.expr ctx (methods := { pre, post, discharge? := discharge })).1
+  let r ← r.mkEqTrans (← Simp.main r.expr ctx
+    (methods := { pre, post := Simp.postDefault #[], discharge? := discharge })).1
 
   return r
 

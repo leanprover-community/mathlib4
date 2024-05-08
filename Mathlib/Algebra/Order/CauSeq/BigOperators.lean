@@ -148,7 +148,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
     (hnm : ∀ n ≥ m, f n.succ ≤ f n) : IsCauSeq abs f := fun ε ε0 ↦ by
   classical
   let ⟨k, hk⟩ := Archimedean.arch a ε0
-  have h : ∃ l, ∀ n ≥ m, a - l • ε < f n :=
+  have h : ∃ l : ℕ, ∀ n ≥ m, a - l • ε < f n :=
     ⟨k + k + 1, fun n hnm ↦
       lt_of_lt_of_le (show a - (k + (k + 1)) • ε < -|f n| from
           lt_neg.1 <| (ham n hnm).trans_lt

@@ -222,7 +222,8 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
   -- dependent functions. Thus everything follows need two additional explicit variables.
   choose W i₁ i₂ hi₂ h₁ h₂ using this
   dsimp [-Sieve.bind_apply] at *
-  let x'' : Presieve.FamilyOfElements F S' := fun V i hi => F.map (i₁ V i hi).op (x _ (hi₂ V i hi))
+  let x'' : Presieve.FamilyOfElements F S'.arrows :=
+    fun V i hi => F.map (i₁ V i hi).op (x _ (hi₂ V i hi))
   have H : ∀ s, x.IsAmalgamation s ↔ x''.IsAmalgamation s.1 := by
     intro s
     constructor

@@ -398,7 +398,7 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1) (h
     have := PresheafedSpace.congr_app eq (op (hf.isOpenMap.functor.obj V))
     simp only [PresheafedSpace.comp_c_app, PresheafedSpace.ofRestrict_c_app, Category.assoc,
       cancel_epi] at this
-    have h : _ ≫ _ = _ ≫ _ ≫ _ :=
+    have h : _ ≫ _ = _ ≫ _ ≫ Z.presheaf.map _ :=
       congr_arg (fun f => (X.restrict hf).presheaf.map (eqToHom hV).op ≫ f) this
     erw [g₁.c.naturality, g₂.c.naturality_assoc] at h
     simp only [Presheaf.pushforwardObj_map, eqToHom_op, Category.assoc, eqToHom_map,

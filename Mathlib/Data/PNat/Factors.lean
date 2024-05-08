@@ -139,10 +139,10 @@ def prod (v : PrimeMultiset) : ℕ+ :=
 #align prime_multiset.prod PrimeMultiset.prod
 
 theorem coe_prod (v : PrimeMultiset) : (v.prod : ℕ) = (v : Multiset ℕ).prod := by
-  let h : (v.prod : ℕ) = ((v.map Coe.coe).map Coe.coe).prod :=
+  let h : (v.prod : ℕ) = ((v.map Coe.coe).map PNat.coeMonoidHom).prod :=
     PNat.coeMonoidHom.map_multiset_prod v.toPNatMultiset
   rw [Multiset.map_map] at h
-  have : (Coe.coe : ℕ+ → ℕ) ∘ (Coe.coe : Nat.Primes → ℕ+) = Coe.coe := funext fun p => rfl
+  have : (PNat.coeMonoidHom : ℕ+ → ℕ) ∘ (Coe.coe : Nat.Primes → ℕ+) = Coe.coe := funext fun p => rfl
   rw [this] at h; exact h
 #align prime_multiset.coe_prod PrimeMultiset.coe_prod
 
