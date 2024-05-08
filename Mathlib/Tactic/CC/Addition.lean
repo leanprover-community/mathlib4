@@ -1428,22 +1428,22 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
     ```
     HEq (cast H a) a
 
-    theorem cast_heq : ∀ {A B : Type.{l_1}} (H : A = B) (a : A), HEq (@cast.{l_1} A B H a) a
+    theorem cast_heq.{l₁} : ∀ {A B : Sort l₁} (H : A = B) (a : A), HEq (@cast.{l₁} A B H a) a
     ```
     -/
     let proof := mkApp4 (.const ``cast_heq [l₁]) A B H a
     pushHEq e a proof
 
-  if let .app (.app (.app (.app (.app (.app (.const ``Eq.recOn [l₁, l₂]) A) a) P) a') H) p := e then
+  if let .app (.app (.app (.app (.app (.app (.const ``Eq.rec [l₁, l₂]) A) a) P) p) a') H := e then
     /-
     ```
-    HEq (Eq.recOn H p) p
+    HEq (t ▸ p) p
 
-    theorem eq_rec_heq : ∀ {A : Type.{l_1}} {P : A → Type.{l_2}} {a a' : A} (H : a = a')
-      (p : P a), HEq (@Eq.recOn.{l_2 l_1} A a P a' H p) p
+    theorem eqRec_heq'.{l₁, l₂} : ∀ {A : Sort l₂} {a : A} {P : (a' : A) → a = a' → Sort l₁}
+      (p : P a) {a' : A} (H : a = a'), HEq (@Eq.rec.{l₁ l₂} A a P p a' H) p
     ```
     -/
-    let proof := mkApp6 (.const ``eq_rec_heq [l₁, l₂]) A P a a' H p
+    let proof := mkApp6 (.const ``eqRec_heq' [l₁, l₂]) A a P p a' H
     pushHEq e p proof
 
   if let .app (.app (.app (.const ``Ne [l₁]) α) a) b := e then
