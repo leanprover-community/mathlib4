@@ -132,7 +132,7 @@ nonrec def tan (x : ℝ) : ℝ :=
   (tan x).re
 #align real.tan Real.tan
 
-/-- The real tangent function, defined as the real part of the complex cotangent -/
+/-- The real cotangent function, defined as the real part of the complex cotangent -/
 nonrec def cot (x : ℝ) : ℝ :=
   (cot x).re
 
