@@ -56,8 +56,7 @@ variable (M N : Submodule R S)
 
 /-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural map
 `M ⊗[R] N →ₗ[R] S` induced by multiplication in `S`. -/
-def mulMap : M ⊗[R] N →ₗ[R] S :=
-  TensorProduct.lift <| ((LinearMap.domRestrict' N).comp <| .mul R S).domRestrict M
+def mulMap : M ⊗[R] N →ₗ[R] S := TensorProduct.lift ((LinearMap.mul R S).domRestrict₁₂ M N)
 
 @[simp]
 theorem mulMap_tmul (m : M) (n : N) : mulMap M N (m ⊗ₜ[R] n) = m.1 * n.1 := rfl
