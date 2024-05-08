@@ -231,9 +231,6 @@ theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
   | Nat.succ n => by rw [pow_succ, Nat.cast_add_one, add_mul, exp_add, ← exp_nat_mul _ n, one_mul]
 #align complex.exp_nat_mul Complex.exp_nat_mul
 
-theorem exp_mul_nat (x : ℂ) (n : ℕ) : exp (x * n) = exp x ^ n := by
-  rw [mul_comm, exp_nat_mul]
-
 theorem exp_ne_zero : exp x ≠ 0 := fun h =>
   zero_ne_one <| by rw [← exp_zero, ← add_neg_self x, exp_add, h]; simp
 #align complex.exp_ne_zero Complex.exp_ne_zero

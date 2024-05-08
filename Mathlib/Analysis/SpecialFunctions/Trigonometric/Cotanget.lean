@@ -43,8 +43,8 @@ theorem UpperHalfPlane.exp_two_pi_I_lt_one (z : ℍ) :
     coe_im, zero_sub, exp_lt_one_iff, Left.neg_neg_iff]
   positivity
 
-theorem pi_cot_q_exp (z : ℍ) :
-    π * Complex.cot (π * z) = π * I - 2 * π * I * ∑' n : ℕ, Complex.exp (2 * π * I * z * n) := by
+theorem pi_mul_cot_pi_q_exp (z : ℍ) :
+    π * cot (π * z) = π * I - 2 * π * I * ∑' n : ℕ, Complex.exp (2 * π * I * z) ^ n := by
   rw [cot_pi_eq_exp_ratio]
   have h1 : π * ((exp (2 * π * I * z) + 1) / (I * (1 - exp (2 * π * I * z)))) =
       -π * I * ((exp (2 * π * I * z) + 1) * (1 / (1 - exp (2 * π * I * z)))) := by
@@ -52,10 +52,6 @@ theorem pi_cot_q_exp (z : ℍ) :
     ring
   rw [h1, one_div,
     (tsum_geometric_of_norm_lt_one (by exact UpperHalfPlane.exp_two_pi_I_lt_one z)).symm ,add_comm]
-  conv =>
-    enter [2,2,2,1]
-    intro n
-    rw [Complex.exp_mul_nat]
   rw [geom_series_mul_one_add (Complex.exp (2 * π * I * (z : ℂ)))
     (UpperHalfPlane.exp_two_pi_I_lt_one _) ]
   ring
