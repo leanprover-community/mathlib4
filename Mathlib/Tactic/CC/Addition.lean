@@ -1699,10 +1699,10 @@ partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
 def propagateValueInconsistency (e₁ e₂ : Expr) : CCM Unit := do
   guard (← isInterpretedValue e₁)
   guard (← isInterpretedValue e₂)
-  let neProof :=
-    Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[e₁, e₂])) (← mkEqRefl (.const ``true []))
   let some eqProof ← getEqProof e₁ e₂ | failure
   let trueEqFalse ← mkEq (.const ``True []) (.const ``False [])
+  let neProof :=
+    Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[e₁, e₂])) (← mkEqRefl (.const ``true []))
   let H ← mkAbsurd trueEqFalse eqProof neProof
   pushEq (.const ``True []) (.const ``False []) H
 
