@@ -290,7 +290,6 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 variable (F : MonoidalFunctor C D) {G : D ⥤ C} (adj : F.toFunctor ⊣ G)
   [F.IsEquivalence] [MonoidalClosed D]
-  
 /-- Transport the property of being monoidal closed across a monoidal equivalence of categories -/
 noncomputable def ofEquiv : MonoidalClosed C where
   closed X :=
