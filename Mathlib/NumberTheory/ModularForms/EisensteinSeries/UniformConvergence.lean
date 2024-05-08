@@ -113,7 +113,7 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
   · let n := max (x 0).natAbs (x 1).natAbs
     have hn0 : n ≠ 0 := by
       rw [← Iff.ne ((eq_zero_iff_eq_zero_of_mem_box  (α := ℤ × ℤ) (x := ((x 0, x 1)))) (by simp)),
-        ← Iff.ne (Function.Injective.eq_iff (Equiv.injective (piFinTwoEquiv fun x ↦ ℤ)))] at *
+        ← Iff.ne (Function.Injective.eq_iff (Equiv.injective (piFinTwoEquiv fun _ ↦ ℤ)))] at *
       simpa using hx
     have h11 : ((x 0) * ↑z + (x 1)) =
         (((x 0 : ℝ) / (n : ℝ)) * (z : ℂ) + (x 1 : ℝ) / (n : ℝ)) * ((n : ℝ)) := by
