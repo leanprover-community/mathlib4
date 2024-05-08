@@ -159,12 +159,7 @@ theorem get_indexOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.leng
     from Fin.val_eq_of_eq this
   nodup_iff_injective_get.1 H (by simp)
 
-set_option linter.deprecated false in
-@[simp, deprecated get_indexOf] -- 2023-01-10
-theorem nthLe_index_of [DecidableEq α] {l : List α} (H : Nodup l) (n h) :
-    indexOf (nthLe l n h) l = n :=
-  nodup_iff_nthLe_inj.1 H _ _ _ h <| indexOf_nthLe <| indexOf_lt_length.2 <| nthLe_mem _ _ _
-#align list.nth_le_index_of List.nthLe_index_of
+#align list.nth_le_index_of List.get_indexOf
 
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
@@ -243,7 +238,7 @@ theorem inj_on_of_nodup_map {f : α → β} {l : List α} (d : Nodup (map f l)) 
     ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → f x = f y → x = y := by
   induction' l with hd tl ih
   · simp
-  · simp only [map, nodup_cons, mem_map, not_exists, not_and, ← Ne.def] at d
+  · simp only [map, nodup_cons, mem_map, not_exists, not_and, ← Ne.eq_def] at d
     simp only [mem_cons]
     rintro _ (rfl | h₁) _ (rfl | h₂) h₃
     · rfl

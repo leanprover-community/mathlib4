@@ -271,8 +271,7 @@ set_option linter.uppercaseLean3 false in
 -- Can it be avoided?
 /-- Constructor of a value of `P.obj (α ::: β)` from components.
 Useful to avoid complicated type annotation -/
-@[reducible]
-def objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
+abbrev objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → β) : P (α ::: β) :=
   ⟨a, splitFun f' f⟩
 #align mvpfunctor.obj_append1 MvPFunctor.objAppend1

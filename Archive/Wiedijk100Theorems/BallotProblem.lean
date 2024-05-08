@@ -118,13 +118,6 @@ theorem counted_ne_nil_right {p q : ℕ} (hq : q ≠ 0) {l : List ℤ} (hl : l �
     l ≠ [] := by simp [counted_eq_nil_iff hl, hq]
 #align ballot.counted_ne_nil_right Ballot.counted_ne_nil_right
 
--- Porting note: Added this helper function to help with golfing
-private theorem get0_eq_head! {l : List ℤ} (h : l ≠ []) :
-    l.get ⟨0, List.length_pos_of_ne_nil h⟩ = l.head! := by
-  cases l
-  · tauto
-  · rw [List.get, List.head!_cons]
-
 theorem counted_succ_succ (p q : ℕ) :
     countedSequence (p + 1) (q + 1) =
       List.cons 1 '' countedSequence p (q + 1) ∪ List.cons (-1) '' countedSequence (p + 1) q := by
@@ -134,21 +127,17 @@ theorem counted_succ_succ (p q : ℕ) :
   · intro hl
     have hlnil := counted_ne_nil_left (Nat.succ_ne_zero p) hl
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
-    obtain hlast | hlast := hl₂ l.head! (List.head!_mem_self hlnil)
+    obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
     · refine' Or.inl ⟨l.tail, ⟨_, _, _⟩, _⟩
-      · rw [List.count_tail l 1 (List.length_pos_of_ne_nil hlnil), hl₀, get0_eq_head! hlnil, hlast,
-          if_pos rfl, Nat.add_sub_cancel]
-      · rw [List.count_tail l (-1) (List.length_pos_of_ne_nil hlnil), hl₁, get0_eq_head! hlnil,
-          hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail l 1 hlnil, hl₀, hlast, if_pos rfl, Nat.add_sub_cancel]
+      · rw [List.count_tail l (-1) hlnil, hl₁, hlast, if_neg (by decide), Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
-      · rw [← hlast, List.cons_head!_tail hlnil]
+      · rw [← hlast, List.head_cons_tail]
     · refine' Or.inr ⟨l.tail, ⟨_, _, _⟩, _⟩
-      · rw [List.count_tail l 1 (List.length_pos_of_ne_nil hlnil), hl₀, get0_eq_head! hlnil, hlast,
-          if_neg (by decide), Nat.sub_zero]
-      · rw [List.count_tail l (-1) (List.length_pos_of_ne_nil hlnil), hl₁, get0_eq_head! hlnil,
-          hlast, if_pos rfl, Nat.add_sub_cancel]
+      · rw [List.count_tail l 1 hlnil, hl₀, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail l (-1) hlnil, hl₁, hlast, if_pos rfl, Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
-      · rw [← hlast, List.cons_head!_tail hlnil]
+      · rw [← hlast, List.head_cons_tail]
   · rintro (⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩ | ⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩)
     · refine' ⟨_, _, _⟩
       · rw [List.count_cons, if_pos rfl, ht₀]
@@ -387,8 +376,8 @@ theorem ballot_problem' :
       ring
     all_goals
       refine' (ENNReal.mul_lt_top _ _).ne
-      exact (measure_lt_top _ _).ne
-      simp [Ne, ENNReal.div_eq_top]
+      · exact (measure_lt_top _ _).ne
+      · simp [Ne, ENNReal.div_eq_top]
 #align ballot.ballot_problem' Ballot.ballot_problem'
 
 /-- The ballot problem. -/

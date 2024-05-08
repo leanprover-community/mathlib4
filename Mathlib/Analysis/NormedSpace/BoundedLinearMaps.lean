@@ -217,24 +217,18 @@ operation. -/
 theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedLinearMap 𝕜 fun p : ContinuousMultilinearMap 𝕜 E F × ContinuousMultilinearMap 𝕜 E G =>
-      p.1.prod p.2 :=
-  { map_add := fun p₁ p₂ => by
-      ext1 m
-      rfl
-    map_smul := fun c p => by
-      ext1 m
-      rfl
-    bound :=
-      ⟨1, zero_lt_one, fun p => by
-        rw [one_mul]
-        apply ContinuousMultilinearMap.opNorm_le_bound _ (norm_nonneg _) _
-        intro m
-        rw [ContinuousMultilinearMap.prod_apply, norm_prod_le_iff]
-        constructor
-        · exact (p.1.le_opNorm m).trans (mul_le_mul_of_nonneg_right (norm_fst_le p)
-            (Finset.prod_nonneg fun i _ => norm_nonneg _))
-        · exact (p.2.le_opNorm m).trans (mul_le_mul_of_nonneg_right (norm_snd_le p)
-            (Finset.prod_nonneg fun i _ => norm_nonneg _))⟩ }
+      p.1.prod p.2 where
+  map_add p₁ p₂ := by ext : 1; rfl
+  map_smul c p := by ext : 1; rfl
+  bound := by
+    refine ⟨1, zero_lt_one, fun p ↦ ?_⟩
+    rw [one_mul]
+    apply ContinuousMultilinearMap.opNorm_le_bound _ (norm_nonneg _) _
+    intro m
+    rw [ContinuousMultilinearMap.prod_apply, norm_prod_le_iff]
+    constructor
+    · exact (p.1.le_opNorm m).trans (mul_le_mul_of_nonneg_right (norm_fst_le p) <| by positivity)
+    · exact (p.2.le_opNorm m).trans (mul_le_mul_of_nonneg_right (norm_snd_le p) <| by positivity)
 #align is_bounded_linear_map_prod_multilinear isBoundedLinearMap_prod_multilinear
 
 /-- Given a fixed continuous linear map `g`, associating to a continuous multilinear map `f` the

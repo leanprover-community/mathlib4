@@ -38,9 +38,9 @@ structure IsField (R : Type u) [Semiring R] : Prop where
 #align is_field IsField
 
 /-- Transferring from `Semifield` to `IsField`. -/
-theorem Semifield.toIsField (R : Type u) [Semifield R] : IsField R :=
-  { ‹Semifield R› with
-    mul_inv_cancel := @fun a ha => ⟨a⁻¹, mul_inv_cancel a ha⟩ }
+theorem Semifield.toIsField (R : Type u) [Semifield R] : IsField R where
+  __ := ‹Semifield R›
+  mul_inv_cancel {a} ha := ⟨a⁻¹, mul_inv_cancel ha⟩
 #align semifield.to_is_field Semifield.toIsField
 
 /-- Transferring from `Field` to `IsField`. -/

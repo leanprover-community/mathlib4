@@ -307,8 +307,8 @@ theorem colorable_chromaticNumber {m : ℕ} (hc : G.Colorable m) :
     G.Colorable (ENat.toNat G.chromaticNumber) := by
   classical
   rw [hc.chromaticNumber_eq_sInf, Nat.sInf_def]
-  apply Nat.find_spec
-  exact colorable_set_nonempty_of_colorable hc
+  · apply Nat.find_spec
+  · exact colorable_set_nonempty_of_colorable hc
 #align simple_graph.colorable_chromatic_number SimpleGraph.colorable_chromaticNumber
 
 theorem colorable_chromaticNumber_of_fintype (G : SimpleGraph V) [Finite V] :

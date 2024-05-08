@@ -5,7 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Algebra.InfiniteSum.Real
 
 #align_import analysis.normed.field.infinite_sum from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -66,7 +66,6 @@ In order to avoid `Nat` subtraction, we also provide
 `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm`,
 where the `n`-th term is a sum over all pairs `(k, l)` such that `k+l=n`, which corresponds to the
 `Finset` `Finset.antidiagonal n`. -/
-
 
 section Nat
 

@@ -13,9 +13,6 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 In this file, it is shown that under suitable assumptions,
 limits exist in the category `PresheafOfModules R`.
 
-## TODO
-* do the same for colimits
-
 -/
 
 universe v v₁ v₂ u₁ u₂ u u'
@@ -58,6 +55,7 @@ instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   change HasLimit ((F ⋙ evaluation R Y) ⋙ ModuleCat.restrictScalars (R.map f))
   infer_instance
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the `BundledCorePresheafOfModules R` which
 corresponds to the presheaf of modules which sends `X` to the limit of `F ⋙ evaluation R X`. -/
 @[simps]

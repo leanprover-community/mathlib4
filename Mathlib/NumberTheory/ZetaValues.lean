@@ -75,7 +75,6 @@ theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (fun x => bernoulliFun (k + 1) x / (k + 1)) (bernoulliFun k x) x := by
   convert (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
   field_simp [Nat.cast_add_one_ne_zero k]
-  ring
 #align antideriv_bernoulli_fun antideriv_bernoulliFun
 
 theorem integral_bernoulliFun_eq_zero {k : ℕ} (hk : k ≠ 0) :
@@ -218,11 +217,11 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
       ((summable_bernoulli_fourier hk).congr fun n => (step1 n).symm) y
   simp_rw [step1] at step2
   convert step2.mul_left (-(2 * ↑π * I) ^ k / (k ! : ℂ)) using 2 with n
-  rw [smul_eq_mul, ← mul_assoc, mul_div, mul_neg, div_mul_cancel₀, neg_neg, mul_pow _ (n : ℂ),
-    ← div_div, div_self]
-  · rw [Ne, pow_eq_zero_iff', not_and_or]
-    exact Or.inl two_pi_I_ne_zero
-  · exact Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero _)
+  · rw [smul_eq_mul, ← mul_assoc, mul_div, mul_neg, div_mul_cancel₀, neg_neg, mul_pow _ (n : ℂ),
+      ← div_div, div_self]
+    · rw [Ne, pow_eq_zero_iff', not_and_or]
+      exact Or.inl two_pi_I_ne_zero
+    · exact Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero _)
   · rw [ContinuousMap.coe_mk, Function.comp_apply, ofReal_inj, periodizedBernoulli,
       AddCircle.liftIco_coe_apply (show y ∈ Ico 0 (0 + 1) by rwa [zero_add])]
 #align has_sum_one_div_pow_mul_fourier_mul_bernoulli_fun hasSum_one_div_pow_mul_fourier_mul_bernoulliFun
@@ -362,7 +361,8 @@ theorem hasSum_zeta_two : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2) (π 
 theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π ^ 4 / 90) := by
   convert hasSum_zeta_nat two_ne_zero using 1; norm_num
   rw [bernoulli_eq_bernoulli'_of_ne_one, bernoulli'_four]
-  norm_num [Nat.factorial]; field_simp; ring; decide
+  · norm_num [Nat.factorial]; field_simp; ring
+  · decide
 #align has_sum_zeta_four hasSum_zeta_four
 
 theorem Polynomial.bernoulli_three_eval_one_quarter :
@@ -393,7 +393,9 @@ theorem hasSum_L_function_mod_four_eval_three :
     rw [this, mul_pow, Polynomial.eval_map, Polynomial.eval₂_at_apply, (by decide : 2 * 1 + 1 = 3),
       Polynomial.bernoulli_three_eval_one_quarter]
     norm_num [Nat.factorial]; field_simp; ring
-  · rw [mem_Icc]; constructor; linarith; linarith
+  · rw [mem_Icc]; constructor
+    · linarith
+    · linarith
 set_option linter.uppercaseLean3 false in
 #align has_sum_L_function_mod_four_eval_three hasSum_L_function_mod_four_eval_three
 

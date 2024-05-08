@@ -3,9 +3,8 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Duplicate
+import Mathlib.Data.List.Sort
 
 #align_import data.list.nodup_equiv_fin from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -220,7 +219,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
     · rintro ⟨f, hf⟩
       refine' ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩,
         f.lt_iff_lt.2 (show (0 : ℕ) < 1 from zero_lt_one), _⟩
-      · rw [← hf, ← hf]; simp
+      rw [← hf, ← hf]; simp
     · rintro ⟨n, m, hnm, h, h'⟩
       refine' ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) _, _⟩
       · rintro ⟨⟨_ | i⟩, hi⟩ ⟨⟨_ | j⟩, hj⟩

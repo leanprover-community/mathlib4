@@ -309,12 +309,12 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
     apply UniqueFactorizationMonoid.factors_unique _ _ (associated_iff_eq.2 h)
     · intro z hz
       apply irreducible_of_normalized_factor z
-      rw [← Multiset.mem_toFinset]
-      apply hx hz
+      · rw [← Multiset.mem_toFinset]
+        apply hx hz
     · intro z hz
       apply irreducible_of_normalized_factor z
-      rw [← Multiset.mem_toFinset]
-      apply hy hz
+      · rw [← Multiset.mem_toFinset]
+        apply hy hz
 #align nat.divisors_filter_squarefree Nat.divisors_filter_squarefree
 
 open BigOperators
