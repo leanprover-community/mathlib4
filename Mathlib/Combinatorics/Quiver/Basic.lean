@@ -40,7 +40,7 @@ For graphs with no repeated edges, one can use `Quiver.{0} V`, which ensures
 Because `Category` will later extend this class, we call the field `Hom`.
 Except when constructing instances, you should rarely see this, and use the `⟶` notation instead.
 -/
-class Quiver (V : Type u) where
+class Quiver (V : Sort u) where
   /-- The type of edges/arrows/morphisms between a given source and target. -/
   Hom : V → V → Sort v
 #align quiver Quiver
