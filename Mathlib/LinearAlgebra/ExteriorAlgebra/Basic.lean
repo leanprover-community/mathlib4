@@ -54,8 +54,7 @@ variable (M : Type u2) [AddCommGroup M] [Module R M]
 
 /-- The exterior algebra of an `R`-module `M`.
 -/
-@[reducible]
-def ExteriorAlgebra :=
+abbrev ExteriorAlgebra :=
   CliffordAlgebra (0 : QuadraticForm R M)
 #align exterior_algebra ExteriorAlgebra
 
@@ -65,8 +64,7 @@ variable {M}
 
 /-- The canonical linear map `M →ₗ[R] ExteriorAlgebra R M`.
 -/
-@[reducible]
-def ι : M →ₗ[R] ExteriorAlgebra R M :=
+abbrev ι : M →ₗ[R] ExteriorAlgebra R M :=
   CliffordAlgebra.ι _
 #align exterior_algebra.ι ExteriorAlgebra.ι
 

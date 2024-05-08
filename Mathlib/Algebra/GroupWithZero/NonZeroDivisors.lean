@@ -3,10 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.MulOpposite
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.Submonoid.Operations
-import Mathlib.GroupTheory.Submonoid.Membership
-import Mathlib.GroupTheory.Submonoid.MulOpposite
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.Algebra.Ring.Opposite
 

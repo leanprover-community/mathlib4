@@ -267,7 +267,7 @@ theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : 
     Bool.cond_decide]
 #align list.find_indexes_eq_map_indexes_values List.findIdxs_eq_map_indexesValues
 
-section FindIdx -- TODO: upstream to Std
+section FindIdx -- TODO: upstream to Batteries
 
 theorem findIdx_eq_length {p : α → Bool} {xs : List α} :
     xs.findIdx p = xs.length ↔ ∀ x ∈ xs, ¬p x := by

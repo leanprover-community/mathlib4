@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Basic
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.Data.Fintype.Units
-import Mathlib.Data.Nat.Parity
+import Mathlib.Algebra.Ring.Prod
 import Mathlib.Tactic.FinCases
 
 #align_import data.zmod.basic from "leanprover-community/mathlib"@"74ad1c88c77e799d2fea62801d1dbbd698cff1b7"
@@ -31,6 +29,8 @@ Definition of the integers mod n, and the field structure on the integers mod p.
 This is a ring hom if the ring has characteristic dividing `n`
 
 -/
+
+assert_not_exists Submodule
 
 open Function
 
@@ -117,14 +117,14 @@ theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod
   cases' a with a
   · simp only [Nat.zero_eq, Nat.cast_zero, addOrderOf_zero, Nat.gcd_zero_right,
       Nat.pos_of_ne_zero n0, Nat.div_self]
-  rw [← Nat.smul_one_eq_coe, addOrderOf_nsmul' _ a.succ_ne_zero, ZMod.addOrderOf_one]
+  rw [← Nat.smul_one_eq_cast, addOrderOf_nsmul' _ a.succ_ne_zero, ZMod.addOrderOf_one]
 #align zmod.add_order_of_coe ZMod.addOrderOf_coe
 
 /-- This lemma works in the case in which `a ≠ 0`.  The version where
  `ZMod n` is not infinite, i.e. `n ≠ 0`, is `addOrderOf_coe`. -/
 @[simp]
 theorem addOrderOf_coe' {a : ℕ} (n : ℕ) (a0 : a ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
-  rw [← Nat.smul_one_eq_coe, addOrderOf_nsmul' _ a0, ZMod.addOrderOf_one]
+  rw [← Nat.smul_one_eq_cast, addOrderOf_nsmul' _ a0, ZMod.addOrderOf_one]
 #align zmod.add_order_of_coe' ZMod.addOrderOf_coe'
 
 /-- We have that `ringChar (ZMod n) = n`. -/
@@ -598,12 +598,6 @@ theorem ker_intCastAddHom (n : ℕ) :
   rw [Int.mem_zmultiples_iff, AddMonoidHom.mem_ker, Int.coe_castAddHom,
     intCast_zmod_eq_zero_iff_dvd]
 #align zmod.ker_int_cast_add_hom ZMod.ker_intCastAddHom
-
-theorem ker_intCastRingHom (n : ℕ) :
-    RingHom.ker (Int.castRingHom (ZMod n)) = Ideal.span ({(n : ℤ)} : Set ℤ) := by
-  ext
-  rw [Ideal.mem_span_singleton, RingHom.mem_ker, Int.coe_castRingHom, intCast_zmod_eq_zero_iff_dvd]
-#align zmod.ker_int_cast_ring_hom ZMod.ker_intCastRingHom
 
 theorem cast_injective_of_le {m n : ℕ} [nzm : NeZero m] (h : m ≤ n) :
     Function.Injective (@cast (ZMod n) _ m) := by
@@ -1292,21 +1286,16 @@ theorem ringHom_map_cast [Ring R] (f : R →+* ZMod n) (k : ZMod n) : f (cast k)
     erw [map_natCast, Fin.cast_val_eq_self]
 #align zmod.ring_hom_map_cast ZMod.ringHom_map_cast
 
+/-- Any ring homomorphism into `ZMod n` has a right inverse. -/
 theorem ringHom_rightInverse [Ring R] (f : R →+* ZMod n) :
     Function.RightInverse (cast : ZMod n → R) f :=
   ringHom_map_cast f
 #align zmod.ring_hom_right_inverse ZMod.ringHom_rightInverse
 
+/-- Any ring homomorphism into `ZMod n` is surjective. -/
 theorem ringHom_surjective [Ring R] (f : R →+* ZMod n) : Function.Surjective f :=
   (ringHom_rightInverse f).surjective
 #align zmod.ring_hom_surjective ZMod.ringHom_surjective
-
-theorem ringHom_eq_of_ker_eq [CommRing R] (f g : R →+* ZMod n)
-    (h : RingHom.ker f = RingHom.ker g) : f = g := by
-  have := f.liftOfRightInverse_comp _ (ZMod.ringHom_rightInverse f) ⟨g, le_of_eq h⟩
-  rw [Subtype.coe_mk] at this
-  rw [← this, RingHom.ext_zmod (f.liftOfRightInverse _ _ ⟨g, _⟩) _, RingHom.id_comp]
-#align zmod.ring_hom_eq_of_ker_eq ZMod.ringHom_eq_of_ker_eq
 
 @[simp]
 lemma castHom_self : ZMod.castHom dvd_rfl (ZMod n) = RingHom.id (ZMod n) :=

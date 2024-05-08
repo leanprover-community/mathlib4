@@ -354,7 +354,7 @@ theorem natDegree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
 /-- The degree of `cyclotomic n R` is positive. -/
 theorem degree_cyclotomic_pos (n : ℕ) (R : Type*) (hpos : 0 < n) [Ring R] [Nontrivial R] :
     0 < (cyclotomic n R).degree := by
-  rw [degree_cyclotomic n R, Nat.cast_pos]; exact Nat.totient_pos hpos
+  rwa [degree_cyclotomic n R, Nat.cast_pos, Nat.totient_pos]
 #align polynomial.degree_cyclotomic_pos Polynomial.degree_cyclotomic_pos
 
 open Finset
