@@ -62,8 +62,8 @@ Currently that is not a problem, as there are almost no instances of `BundledHom
 -/
 instance category : Category (Bundled c) where
   Hom := fun X Y => hom X.str Y.str
-  id := fun X => @BundledHom.id c hom 𝒞 X X.str
-  comp := @fun X Y Z f g => @BundledHom.comp c hom 𝒞 X Y Z X.str Y.str Z.str g f
+  id := fun X => BundledHom.id 𝒞 (α := X) X.str
+  comp := fun {X Y Z} f g => BundledHom.comp 𝒞 (α := X) (β := Y) (γ := Z) X.str Y.str Z.str g f
   comp_id _ := by apply 𝒞.hom_ext; simp
   assoc _ _ _ := by apply 𝒞.hom_ext; aesop_cat
   id_comp _ := by apply 𝒞.hom_ext; simp
