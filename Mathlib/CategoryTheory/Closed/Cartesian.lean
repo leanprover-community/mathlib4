@@ -50,7 +50,7 @@ abbrev Exponentiable {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C)
   Closed X
 #align category_theory.exponentiable CategoryTheory.Exponentiable
 
-/-- Constructor for `Exponentialble X` which takes as an input an adjunction
+/-- Constructor for `Exponentiable X` which takes as an input an adjunction
 `MonoidalCategory.tensorLeft X ⊣ exp` for some functor `exp : C ⥤ C`. -/
 @[reducible]
 abbrev Exponentiable.mk {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C)
