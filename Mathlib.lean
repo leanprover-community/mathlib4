@@ -3094,7 +3094,6 @@ import Mathlib.NumberTheory.SumTwoSquares
 import Mathlib.NumberTheory.Transcendental.Lindemann.Basic
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AlgebraicPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
-import Mathlib.NumberTheory.Transcendental.Lindemann.Init.ExistsLargePrime
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.SumAEvalARoots
 import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber

@@ -3,6 +3,7 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
+import Mathlib.Algebra.Order.Floor.Prime
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AlgebraicPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.ExistsLargePrime
@@ -74,8 +75,8 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
   have W0 : 0 ≤ W := I.elim fun j => (norm_nonneg (w' j)).trans (le_sup' (‖w' ·‖) (mem_univ j))
 
   obtain ⟨q, hqN, prime_q, hq⟩ :=
-    linear_independent_exp_exists_prime N (W * ↑(∑ i : Fin m, Multiset.card ((p i).aroots ℂ)))
-      (‖k‖ ^ P.natDegree * c)
+    FloorRing.exists_prime_mul_pow_div_factorial_lt_one N
+      (W * ↑(∑ i : Fin m, Multiset.card ((p i).aroots ℂ))) (‖k‖ ^ P.natDegree * c)
 
   obtain ⟨n, hn, gp, hgp, hc⟩ := hc' q ((le_max_left _ _).trans_lt hqN) prime_q
   replace hgp : gp.natDegree ≤ P.natDegree * q := by rw [mul_comm]; exact hgp.trans tsub_le_self
