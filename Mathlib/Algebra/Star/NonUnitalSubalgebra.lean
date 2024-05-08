@@ -90,11 +90,13 @@ structure StarSubset (A : Type v) [Star A] : Type v where
   /-- The `carrier` of a `StarSubset` is closed under the `star` operation. -/
   star_mem' : ∀ {a : A} (_ha : a ∈ carrier), star a ∈ carrier
 
+structure SubStarmagma (A : Type v) [Mul A] [Star A] extends Subsemigroup A, StarSubset A :Type v
+
 /-- A non-unital star subalgebra is a non-unital subalgebra which is closed under the `star`
 operation. -/
 structure NonUnitalStarSubalgebra (R : Type u) (A : Type v) [CommSemiring R]
     [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
-    extends NonUnitalSubalgebra R A, StarSubset A : Type v where
+    extends NonUnitalSubalgebra R A, StarSubset A : Type v
 
 /-- Reinterpret a `NonUnitalStarSubalgebra` as a `NonUnitalSubalgebra`. -/
 add_decl_doc NonUnitalStarSubalgebra.toNonUnitalSubalgebra
@@ -144,21 +146,21 @@ end StarSubset
 
 end StarSubset
 
-section
+section StarSubmagma
 
 variable (A) [Mul A] [StarMul A]
 
-namespace StarSubset
+namespace StarSubmagma
 
 /-- The center of `A` is the set of elements that commute and associate
 with everything in `A` -/
-def center : StarSubset A :=
-  { carrier :=  Set.center A
+def center : SubStarmagma A :=
+  { Subsemigroup.center A with
     star_mem' := Set.star_mem_center }
 
-end StarSubset
+end StarSubmagma
 
-end
+end StarSubmagma
 
 namespace NonUnitalStarSubalgebra
 
