@@ -71,8 +71,8 @@ theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A
 
 noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
-      diagonal ((RCLike.ofReal ∘ g ∘ Set.codRestrict
-      (fun (i : n) ↦ hA.eigenvalues i) _ (hA.eigenvalue_mem_real)))
+      diagonal (RCLike.ofReal ∘ g ∘
+      (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
       * star (eigenvectorUnitary hA : Matrix n n 𝕜)
   map_one' := by
       dsimp
