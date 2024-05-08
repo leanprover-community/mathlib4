@@ -79,7 +79,19 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
       have h1 : diagonal 1 = (1 : Matrix n n 𝕜) := rfl
       simp only  [h1, algebraMap.coe_one, Function.const_one, mul_one,
                  Matrix.mem_unitaryGroup_iff.mp, SetLike.coe_mem]
-  map_mul' := sorry
+  map_mul' := by
+      dsimp
+      intro f g
+      have H : diagonal (RCLike.ofReal ∘ (⇑f * ⇑g) ∘ Set.codRestrict
+      (fun (i : n) ↦ hA.eigenvalues i) _ (hA.eigenvalue_mem_real)) = diagonal (RCLike.ofReal ∘ ⇑f ∘ Set.codRestrict
+      (fun (i : n) ↦ hA.eigenvalues i) _ (hA.eigenvalue_mem_real)) * (1 : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ ⇑g ∘ Set.codRestrict
+      (fun (i : n) ↦ hA.eigenvalues i) _ (hA.eigenvalue_mem_real)) := by
+            simp only [mul_one, Matrix.diagonal_mul_diagonal']
+            refine diagonal_eq_diagonal_iff.mpr ?_
+            intro i
+            simp only [Function.comp_apply, Pi.mul_apply, RCLike.ofReal_mul]
+      rw [H, ←(hA.eigenvectorUnitary).2.1]
+      simp only [mul_assoc]
   map_zero' := sorry
   map_add' := sorry
   commutes' := sorry
