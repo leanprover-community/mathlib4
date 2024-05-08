@@ -477,6 +477,9 @@ def ofContinuousOpenEquiv (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap 
   toEquiv := e
 #align homeomorph.homeomorph_of_continuous_open Homeomorph.ofContinuousOpenEquiv
 
+@[deprecated] -- May 8th 2024
+alias homeomorphOfContinuousOpen := ofContinuousOpenEquiv
+
 /-- An embedding is an homeomorphism onto its range. -/
 noncomputable def _root_.Embedding.toHomeomorph {f : X → Y} (hf : Embedding f) :
     X ≃ₜ Set.range f where
