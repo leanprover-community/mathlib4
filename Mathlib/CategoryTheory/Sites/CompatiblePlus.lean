@@ -207,7 +207,7 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   simp only [ι_plusCompIso_hom, Functor.map_comp, Category.assoc]
   simp only [← Category.assoc]
   congr 1
-  -- -- See https://github.com/leanprover-community/mathlib4/issues/5229
+  -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext; intro a
   rw [Category.assoc, diagramCompIso_hom_ι, ← F.map_comp]
   simp only [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map]
