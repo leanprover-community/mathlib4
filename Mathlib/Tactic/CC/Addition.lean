@@ -815,6 +815,7 @@ def isAC (e : Expr) : CCM (Option Expr) := do
   return bif b then some op else none
 
 open MessageData in
+/-- Given `lhs`, `rhs`, and `header := "my header:"`, Trace `my header: lhs = rhs`. -/
 def dbgTraceACEq (header : String) (lhs rhs : ACApps) : CCM Unit := do
   let ccs ← get
   trace[Debug.Meta.Tactic.cc.ac]
@@ -822,10 +823,12 @@ def dbgTraceACEq (header : String) (lhs rhs : ACApps) : CCM Unit := do
       ofFormat (.line ++ "=" ++ .line) ++ ccs.ppACApps rhs)
 
 open MessageData in
+/-- Trace the state of AC module. -/
 def dbgTraceACState : CCM Unit := do
   let ccs ← get
   trace[Debug.Meta.Tactic.cc.ac] group ("state: " ++ nest 6 ccs.ppAC)
 
+/-- Return the proof of `e₁ = e₂` using `ac_rfl` tactic. -/
 def mkACProof (e₁ e₂ : Expr) : MetaM Expr := do
   let eq ← mkEq e₁ e₂
   let .mvar m ← mkFreshExprSyntheticOpaqueMVar eq | failure
@@ -1106,12 +1109,16 @@ def processAC : CCM Unit := do
       "new rw: " ++
         group (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
 
+/-- Given AC variables `e₁` and `e₂` which are in the same equivalence class, add the proof of
+`e₁ = e₂` to the AC module. -/
 def addACEq (e₁ e₂ : Expr) : CCM Unit := do
   dbgTraceACEq "cc eq:" e₁ e₂
   modifyACTodo fun acTodo => acTodo.push (e₁, e₂, .eqProof e₁ e₂)
   processAC
   dbgTraceACState
 
+/-- If the root expression of `e` is AC variable, add equality to AC module. If not, register the
+AC variable to the root entry. -/
 def setACVar (e : Expr) : CCM Unit := do
   let eRoot ← getRoot e
   let some rootEntry ← getEntry eRoot | failure
@@ -1121,6 +1128,7 @@ def setACVar (e : Expr) : CCM Unit := do
     let newRootEntry := { rootEntry with acVar := some e }
     modify fun ccs => { ccs with entries := ccs.entries.insert eRoot newRootEntry }
 
+/-- If `e` isn't an AC variable, set `e` as an new AC variable. -/
 def internalizeACVar (e : Expr) : CCM Bool := do
   let ccs ← get
   if ccs.acEntries.contains e then return false
@@ -1130,7 +1138,7 @@ def internalizeACVar (e : Expr) : CCM Bool := do
   setACVar e
   return true
 
-partial def convertAC (op e : Expr) (args : Array Expr) : CCM (Array Expr × Expr) := do
+partial def convertAC (op e : Expr) (args : Array Expr := #[]) : CCM (Array Expr × Expr) := do
   if let some currOp ← isAC e then
     if op == currOp then
       let (args, arg₁) ← convertAC op e.appFn!.appArg! args
@@ -1141,6 +1149,7 @@ partial def convertAC (op e : Expr) (args : Array Expr) : CCM (Array Expr × Exp
   return (args.push e, e)
 
 open MessageData in
+/-- Internalize `e` so that the AC module can deal with the given expression. -/
 def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
   let some op ← isAC e | return
   let parentOp? ← parent?.casesOn (pure none) isAC
@@ -1148,7 +1157,7 @@ def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
 
   unless (← internalizeACVar e) do return
 
-  let (args, norme) ← convertAC op e #[]
+  let (args, norme) ← convertAC op e
   let rep := ACApps.mkApps op args
   let some true := (← get).opInfo.find? op | failure
   let some repe := rep.toExpr | failure
@@ -1164,7 +1173,8 @@ def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
   dbgTraceACState
 
 mutual
-partial def internalizeApp (e : Expr) : CCM Unit := do
+/-- The specialized `internalizeCore` for applications or literals. -/
+partial def internalizeAppLit (e : Expr) : CCM Unit := do
   if ← isInterpretedValue e then
     mkEntry e true
     if (← get).values then return -- we treat values as atomic symbols
@@ -1226,6 +1236,8 @@ partial def internalizeApp (e : Expr) : CCM Unit := do
         addCongruenceTable curr
   applySimpleEqvs e
 
+/-- Internalize `e` so that the congruence closure can deal with the given expression. Don't forget
+to process the tasks in the `todo` field later. -/
 partial def internalizeCore (e : Expr) (parent? : Option Expr) : CCM Unit := do
   guard !e.hasLooseBVars
   /- We allow metavariables after partitions have been frozen. -/
@@ -1257,12 +1269,12 @@ partial def internalizeCore (e : Expr) (parent? : Option Expr) : CCM Unit := do
           propagateImpUp e
       if ← isProp e then
         mkEntry e false
-    | .app _ _ | .lit _ => internalizeApp e
+    | .app _ _ | .lit _ => internalizeAppLit e
     | .proj sn i pe =>
       mkEntry e false
       let some fn := (getStructureFields (← getEnv) sn)[i]? | failure
       let e' ← pe.mkDirectProjection fn
-      internalizeApp e'
+      internalizeAppLit e'
       pushReflEq e e'
 
   /- Remark: if should invoke `internalizeAC` even if the test `(← getEntry e).isNone` above failed.
@@ -1783,6 +1795,7 @@ def propagateDown (e : Expr) : CCM Unit := do
   else if e.isAppOfArity ``Exists 2 then
     propagateExistsDown e
 
+/-- Performs one step in the process when the new equation is added. -/
 def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
   let some n₁ ← getEntry e₁ | return -- `e₁` have not been internalized
   let some n₂ ← getEntry e₂ | return -- `e₂` have not been internalized
@@ -1882,7 +1895,7 @@ where
         size := r₂.size + r₁.size
         hasLambdas := r₂.hasLambdas || r₁.hasLambdas
         heqProofs := r₂.heqProofs || heqProof
-        acVar := acVar?₂.orElse fun _ => acVar?₁ }
+        acVar := acVar?₂ <|> acVar?₁ }
     modify fun ccs =>
       { ccs with
         entries :=
@@ -1951,14 +1964,18 @@ def processTodo : CCM Unit := do
     modifyTodo Array.pop
     addEqvStep lhs rhs H heqProof
 
+/-- Internalize `e` so that the congruence closure can deal with the given expression. -/
 def internalize (e : Expr) : CCM Unit := do
   internalizeCore e none
   processTodo
 
+/-- Add `H : lhs = rhs` or `H : HEq lhs rhs` to the congruence closure. Don't forget to internalize
+`lhs` and `rhs` beforehand. -/
 def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := do
   pushTodo lhs rhs H heqProof
   processTodo
 
+/-- Add `proof : type` to the congruence closure. -/
 def add (type : Expr) (proof : Expr) : CCM Unit := do
   if (← get).inconsistent then return
   modifyTodo fun _ => #[]
