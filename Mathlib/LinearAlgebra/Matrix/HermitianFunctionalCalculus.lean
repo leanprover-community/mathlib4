@@ -92,9 +92,17 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
             simp only [Function.comp_apply, Pi.mul_apply, RCLike.ofReal_mul]
       rw [H, ←(hA.eigenvectorUnitary).2.1]
       simp only [mul_assoc]
-  map_zero' := sorry
-  map_add' := sorry
-  commutes' := sorry
+  map_zero' := by
+      dsimp
+      simp only [algebraMap.coe_zero, Function.const_zero]
+      have h : diagonal 0 = (0 : Matrix n n 𝕜) := by
+          refine (Matrix.ext ?_).symm
+          intro i j
+          simp only [zero_apply, Matrix.diagonal]
+          dsimp
+          refine (ite_self 0).symm
+  map_add' := by sorry
+  commutes' := by sorry
   map_star' := fun
     | .mk toFun continuous_toFun => sorry
 
