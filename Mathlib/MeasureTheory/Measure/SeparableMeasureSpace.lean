@@ -351,17 +351,17 @@ instance instSecondCountableLp [IsSeparable μ] [SecondCountableTopology E] :
   let key : (n : ℕ) → (Fin n → u) → (Fin n → 𝒜₀) → (Lp E p μ) :=
     fun n d s ↦ ∑ i, indicatorConstLp p (h𝒜₀.measurable (s i) (Subtype.mem (s i)))
       (s i).2.2 (d i : E)
-  let D := {s : Lp E p μ | ∃ n d A, s = key n d A}
+  let D := {s : Lp E p μ | ∃ n d t, s = key n d t}
   refine ⟨D, ?_, ?_⟩
   · -- Countability directly follows from countability of `u` and `𝒜₀`. The function `f` below
     -- is the uncurryfied version of `key`, which is easier to manipulate as countability of the
     -- domain is automatically infered.
-    let f : (Σ n : ℕ, (Fin n → u) × (Fin n → 𝒜₀)) → Lp E p μ := fun ndA ↦ key ndA.1 ndA.2.1 ndA.2.2
+    let f : (Σ n : ℕ, (Fin n → u) × (Fin n → 𝒜₀)) → Lp E p μ := fun nds ↦ key nds.1 nds.2.1 nds.2.2
     have := count_𝒜₀.to_subtype
     have := countable_u.to_subtype
     have : D ⊆ range f := by
-      rintro - ⟨n, d, A, rfl⟩
-      use ⟨n, (d, A)⟩
+      rintro - ⟨n, d, s, rfl⟩
+      use ⟨n, (d, s)⟩
     exact (countable_range f).mono this
   · -- Let's turn to the density. Thanks to the density of simple functions in `Lᵖ`, it is enough
     -- to show that the closure of `D` contains constant indicators which are in `Lᵖ` (i. e. the
