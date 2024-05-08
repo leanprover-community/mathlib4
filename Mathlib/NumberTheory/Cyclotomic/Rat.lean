@@ -422,6 +422,37 @@ lemma prime_norm_toInteger_sub_one_of_prime_ne_two' [hcycl : IsCyclotomicExtensi
   replace hζ : IsPrimitiveRoot ζ (p ^ (0 + 1)) := by simpa using hζ
   exact hζ.prime_norm_toInteger_sub_one_of_prime_ne_two hodd
 
+/-- In a `p ^ (k + 1)`-th cyclotomic extension of `ℚ`, we have that
+  `ζ - 1` divides `p` in `𝓞 K`. -/
+lemma toInteger_sub_one_dvd_prime [hcycl : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+  (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) : ((hζ.toInteger - 1)) ∣ p := by
+  by_cases htwo : p ^ (k + 1) = 2
+  · replace htwo : (p : ℕ) ^ (k + 1) = 2 := by exact_mod_cast htwo
+    have ⟨hp2, hk⟩ := (Nat.Prime.pow_eq_iff Nat.prime_two).1 htwo
+    simp only [add_left_eq_self] at hk
+    have hζ' : ζ = -1 := by
+      refine IsPrimitiveRoot.eq_neg_one_of_two_right ?_
+      rwa [hk, zero_add, pow_one, hp2] at hζ
+    replace hζ' : hζ.toInteger = -1 := by
+      ext
+      exact hζ'
+    rw [hζ', hp2]
+    exact ⟨-1, by ring⟩
+  suffices (hζ.toInteger - 1) ∣ (p : ℤ) by simpa
+  have := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
+  have H := hζ.norm_toInteger_pow_sub_one_of_prime_pow_ne_two (zero_le _) htwo
+  rw [pow_zero, pow_one] at H
+  rw [← Ideal.norm_dvd_iff, H]
+  · simp
+  · exact prime_norm_toInteger_sub_one_of_prime_pow_ne_two hζ htwo
+
+/-- In a `p`-th cyclotomic extension of `ℚ`, we have that `ζ - 1` divides `p` in `𝓞 K`. -/
+lemma toInteger_sub_one_dvd_prime' [hcycl : IsCyclotomicExtension {p} ℚ K]
+  (hζ : IsPrimitiveRoot ζ ↑p) : ((hζ.toInteger - 1)) ∣ p := by
+  have : IsCyclotomicExtension {p ^ (0 + 1)} ℚ K := by simpa using hcycl
+  replace hζ : IsPrimitiveRoot ζ (p ^ (0 + 1)) := by simpa using hζ
+  exact toInteger_sub_one_dvd_prime hζ
+
 end IsPrimitiveRoot
 
 section absdiscr
