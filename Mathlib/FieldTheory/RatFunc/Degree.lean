@@ -11,6 +11,9 @@ import Mathlib.RingTheory.Polynomial.Content
 /-!
 # The degree of rational functions
 
+## Main definitions
+* Degree
+* IntDegree
 -/
 
 

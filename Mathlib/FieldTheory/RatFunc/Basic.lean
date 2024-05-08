@@ -11,8 +11,10 @@ import Mathlib.Algebra.Polynomial.RingDivision
 /-!
 # The field of rational functions
 
-This file defines the field `RatFunc K` of rational functions over a field `K`,
-and shows it is the field of fractions of `K[X]`.
+Files in this folder define the field `RatFunc K` of rational functions over a field `K`, show it
+is the field of fractions of `K[X]` and provide the main results concerning it.
+
+For connections with Laurent Series, see `Mathlib.RingTheory.LaurentSeries`.
 
 ## Main definitions
 
