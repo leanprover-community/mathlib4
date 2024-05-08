@@ -422,6 +422,66 @@ lemma prime_norm_toInteger_sub_one_of_prime_ne_two' [hcycl : IsCyclotomicExtensi
   replace hζ : IsPrimitiveRoot ζ (p ^ (0 + 1)) := by simpa using hζ
   exact hζ.prime_norm_toInteger_sub_one_of_prime_ne_two hodd
 
+/-- In a `p ^ (k + 1)`-th cyclotomic extension of `ℚ `, we have that `ζ - 1` is not congruent to an
+  integer modulo `p` if `p ^ (k  + 1) ≠ 2`. -/
+theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
+  [hcycl : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+    (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) (htwo : p ^ (k + 1) ≠ 2) :
+    ¬(∃ n : ℤ, (p : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := by
+  intro ⟨n, x, h⟩
+  let pB := hζ.integralPowerBasis
+  have hdim : pB.dim = ↑p ^ k * (↑p - 1) := by
+    simp [integralPowerBasis_dim, pB, Nat.totient_prime_pow hp.1 (Nat.zero_lt_succ k)]
+  replace hdim : 1 < pB.dim := by
+    by_cases hk : k = 0
+    · rw [hdim, hk, pow_zero, one_mul]
+      contrapose htwo
+      simp only [hk, zero_add, pow_one, ne_eq, Decidable.not_not]
+      rcases lt_or_eq_of_le (Nat.Prime.two_le hp.1) with (h | h)
+      · omega
+      · exact_mod_cast h.symm
+    · rw [hdim]
+      exact one_lt_mul_of_lt_of_le (one_lt_pow hp.1.one_lt hk)
+        (have := Nat.Prime.two_le hp.1; by omega)
+  rw [sub_eq_iff_eq_add] at h
+  replace h := pB.basis.ext_elem_iff.1 h ⟨1, hdim⟩
+  have := pB.basis_eq_pow ⟨1, hdim⟩
+  rw [hζ.integralPowerBasis_gen] at this
+  simp only [PowerBasis.coe_basis, pow_one] at this
+  rw [← this, show pB.gen = pB.gen ^ (⟨1, hdim⟩: Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
+    pB.basis.repr_self_apply] at h
+  simp only [↓reduceIte, map_add, Finsupp.coe_add, Pi.add_apply] at h
+  rw [show (p : 𝓞 K) * x = (p : ℤ) • x by simp, ← pB.basis.coord_apply,
+    LinearMap.map_smul, ← zsmul_one, ← pB.basis.coord_apply, LinearMap.map_smul,
+    show 1 = pB.gen ^ (⟨0, by linarith⟩: Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
+    pB.basis.coord_apply, pB.basis.coord_apply, pB.basis.repr_self_apply] at h
+  simp only [smul_eq_mul, Fin.mk.injEq, zero_ne_one, ↓reduceIte, mul_zero, add_zero] at h
+  exact (Int.prime_iff_natAbs_prime.2 (by simp [hp.1])).not_dvd_one ⟨_, h⟩
+
+/-- In a `p ^ (k + 1)`-th cyclotomic extension of `ℚ `, we have that `ζ - 1` is not congruent to an
+  integer modulo `p` if `p ≠ 2`. -/
+theorem not_exists_int_prime_dvd_sub_of_prime_ne_two
+  [hcycl : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+    (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) (hodd : p ≠ 2) :
+    ¬(∃ n : ℤ, (p : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := by
+  refine not_exists_int_prime_dvd_sub_of_prime_pow_ne_two hζ (fun h ↦ ?_)
+  by_cases hk : k = 0
+  · apply hodd
+    simpa [hk] using h
+  · apply hk
+    replace h : (p : ℕ) ^ (k + 1) = 2 := by exact_mod_cast h
+    simpa using ((Nat.Prime.pow_eq_iff Nat.prime_two).1 h).2
+
+/-- In a `p`-th cyclotomic extension of `ℚ `, we have that `ζ - 1` is not congruent to an
+  integer modulo `p` if `p ≠ 2`. -/
+theorem not_exists_int_prime_dvd_sub_of_prime_ne_two'
+  [hcycl : IsCyclotomicExtension {p} ℚ K]
+    (hζ : IsPrimitiveRoot ζ ↑p) (hodd : p ≠ 2) :
+    ¬(∃ n : ℤ, (p : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := by
+  have : IsCyclotomicExtension {p ^ (0 + 1)} ℚ K := by simpa using hcycl
+  replace hζ : IsPrimitiveRoot ζ (p ^ (0 + 1)) := by simpa using hζ
+  exact not_exists_int_prime_dvd_sub_of_prime_ne_two hζ hodd
+
 end IsPrimitiveRoot
 
 section absdiscr
