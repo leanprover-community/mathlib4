@@ -3,7 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Devon Tuma
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors.Basic
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.Tactic.AdaptationNote
