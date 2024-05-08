@@ -249,7 +249,8 @@ end PerfectField
 /-- If `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable. -/
 instance Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K] [Field L]
     [Algebra K L] [PerfectField K] [Algebra.IsAlgebraic K L] : IsSeparable K L :=
-  ⟨fun x ↦ PerfectField.separable_of_irreducible <| minpoly.irreducible (Algebra.IsIntegral.isIntegral x)⟩
+  ⟨fun x ↦ PerfectField.separable_of_irreducible <|
+    minpoly.irreducible (Algebra.IsIntegral.isIntegral x)⟩
 
 /-- If `L / K` is an algebraic extension, `K` is a perfect field, then so is `L`. -/
 theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Algebra K L]
