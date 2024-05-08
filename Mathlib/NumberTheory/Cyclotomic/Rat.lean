@@ -79,8 +79,8 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
   · rintro ⟨y, rfl⟩
     exact
       IsIntegral.algebraMap
-        (le_integralClosure_iff_isIntegral.1
-          (adjoin_le_integralClosure (hζ.isIntegral (p ^ k).pos)) _)
+        ((le_integralClosure_iff_isIntegral.1
+          (adjoin_le_integralClosure (hζ.isIntegral (p ^ k).pos))).isIntegral _)
   let B := hζ.subOnePowerBasis ℚ
   have hint : IsIntegral ℤ B.gen := (hζ.isIntegral (p ^ k).pos).sub isIntegral_one
 -- Porting note: the following `haveI` was not needed because the locale `cyclotomic` set it
@@ -141,7 +141,7 @@ theorem cyclotomicRing_isIntegralClosure_of_prime_pow :
     simp only [PNat.pow_coe, Set.singleton_subset_iff, Set.mem_setOf_eq]
     exact hζ.pow_eq_one
   · rintro ⟨y, rfl⟩
-    exact IsIntegral.algebraMap ((IsCyclotomicExtension.integral {p ^ k} ℤ _) _)
+    exact IsIntegral.algebraMap ((IsCyclotomicExtension.integral {p ^ k} ℤ _).isIntegral _)
 #align is_cyclotomic_extension.rat.cyclotomic_ring_is_integral_closure_of_prime_pow IsCyclotomicExtension.Rat.cyclotomicRing_isIntegralClosure_of_prime_pow
 
 theorem cyclotomicRing_isIntegralClosure_of_prime :

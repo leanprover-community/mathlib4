@@ -207,7 +207,7 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
       refine ⟨finrank_pos, ?_⟩
       intro σ
       exact ((Polynomial.natDegree_smul_le _ _).trans (natDegree_map_le _ _)).trans_lt
-        ((natDegree_minpolyDiv_lt (Algebra.IsIntegral.of_finite _ _ x)).trans_le
+        ((natDegree_minpolyDiv_lt (Algebra.IsIntegral.isIntegral x)).trans_le
           (minpoly.natDegree_le _))
     · rwa [natDegree_pow, natDegree_X, mul_one, AlgHom.card]
 

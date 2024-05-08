@@ -532,7 +532,8 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff {ι : Type w} {R : Type u}
 #align algebraic_independent.is_transcendence_basis_iff AlgebraicIndependent.isTranscendenceBasis_iff
 
 theorem IsTranscendenceBasis.isAlgebraic [Nontrivial R] (hx : IsTranscendenceBasis R x) :
-    IsAlgebraic (adjoin R (range x)) A := by
+    Algebra.IsAlgebraic (adjoin R (range x)) A := by
+  constructor
   intro a
   rw [← not_iff_comm.1 (hx.1.option_iff _).symm]
   intro ai

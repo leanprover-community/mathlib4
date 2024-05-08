@@ -603,8 +603,8 @@ theorem AlgEquiv.isSeparable_iff : IsSeparable F K ↔ IsSeparable F E :=
 
 variable (F K)
 
-theorem IsSeparable.isAlgebraic [Nontrivial F] [IsSeparable F K] : Algebra.IsAlgebraic F K :=
-  fun x ↦ (IsSeparable.isIntegral F x).isAlgebraic
+instance IsSeparable.isAlgebraic [Nontrivial F] [IsSeparable F K] : Algebra.IsAlgebraic F K :=
+  ⟨fun x ↦ (IsSeparable.isIntegral F x).isAlgebraic⟩
 
 end CommRing
 

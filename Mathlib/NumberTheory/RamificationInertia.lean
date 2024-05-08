@@ -377,11 +377,11 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
   -- And we conclude `L = span L {det A} ≤ span K b`, so `span K b` spans everything.
   · intro x hx
     rw [Submodule.restrictScalars_mem, IsScalarTower.algebraMap_apply R S L] at hx
-    refine' IsFractionRing.ideal_span_singleton_map_subset R _ hRL span_d hx
-    haveI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective hRL
-    rw [← IsFractionRing.isAlgebraic_iff' R S]
-    intro x
-    exact (isIntegral_of_noetherian inferInstance _).isAlgebraic
+    have : Algebra.IsAlgebraic R L := by
+      have : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective hRL
+      rw [← IsFractionRing.isAlgebraic_iff' R S]
+      infer_instance
+    refine' IsFractionRing.ideal_span_singleton_map_subset R hRL span_d hx
 #align ideal.finrank_quotient_map.span_eq_top Ideal.FinrankQuotientMap.span_eq_top
 
 variable (K L)

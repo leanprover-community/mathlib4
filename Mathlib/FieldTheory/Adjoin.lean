@@ -631,7 +631,7 @@ theorem adjoin_algebraic_toSubalgebra {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic
   simp only [isAlgebraic_iff_isIntegral] at hS
   have : Algebra.IsIntegral F (Algebra.adjoin F S) := by
     rwa [← le_integralClosure_iff_isIntegral, Algebra.adjoin_le_iff]
-  have := isField_of_isIntegral_of_isField' this (Field.toIsField F)
+  have : IsField (Algebra.adjoin F S) := isField_of_isIntegral_of_isField' (Field.toIsField F)
   rw [← ((Algebra.adjoin F S).toIntermediateField' this).eq_adjoin_of_eq_algebra_adjoin F S] <;> rfl
 #align intermediate_field.adjoin_algebraic_to_subalgebra IntermediateField.adjoin_algebraic_toSubalgebra
 
@@ -675,18 +675,19 @@ theorem le_sup_toSubalgebra : E1.toSubalgebra ⊔ E2.toSubalgebra ≤ (E1 ⊔ E2
   sup_le (show E1 ≤ E1 ⊔ E2 from le_sup_left) (show E2 ≤ E1 ⊔ E2 from le_sup_right)
 #align intermediate_field.le_sup_to_subalgebra IntermediateField.le_sup_toSubalgebra
 
-theorem sup_toSubalgebra_of_isAlgebraic_right (halg : Algebra.IsAlgebraic K E2) :
+theorem sup_toSubalgebra_of_isAlgebraic_right [Algebra.IsAlgebraic K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra := by
   have : (adjoin E1 (E2 : Set L)).toSubalgebra = _ := adjoin_algebraic_toSubalgebra fun x h ↦
-    IsAlgebraic.tower_top E1 (isAlgebraic_iff.1 (halg ⟨x, h⟩))
+    IsAlgebraic.tower_top E1 (isAlgebraic_iff.1
+      (Algebra.IsAlgebraic.isAlgebraic (⟨x, h⟩ : E2)))
   apply_fun Subalgebra.restrictScalars K at this
   erw [← restrictScalars_toSubalgebra, restrictScalars_adjoin,
     Algebra.restrictScalars_adjoin] at this
   exact this
 
-theorem sup_toSubalgebra_of_isAlgebraic_left (halg : Algebra.IsAlgebraic K E1) :
+theorem sup_toSubalgebra_of_isAlgebraic_left [Algebra.IsAlgebraic K E1] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra := by
-  have := sup_toSubalgebra_of_isAlgebraic_right E2 E1 halg
+  have := sup_toSubalgebra_of_isAlgebraic_right E2 E1
   rwa [sup_comm (a := E1), sup_comm (a := E1.toSubalgebra)]
 
 /-- The compositum of two intermediate fields is equal to the compositum of them
@@ -694,19 +695,19 @@ as subalgebras, if one of them is algebraic over the base field. -/
 theorem sup_toSubalgebra_of_isAlgebraic
     (halg : Algebra.IsAlgebraic K E1 ∨ Algebra.IsAlgebraic K E2) :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
-  halg.elim (sup_toSubalgebra_of_isAlgebraic_left E1 E2)
-    (sup_toSubalgebra_of_isAlgebraic_right E1 E2)
+  halg.elim (fun _ ↦ sup_toSubalgebra_of_isAlgebraic_left E1 E2)
+    (fun _ ↦ sup_toSubalgebra_of_isAlgebraic_right E1 E2)
 
 theorem sup_toSubalgebra_of_left [FiniteDimensional K E1] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
-  sup_toSubalgebra_of_isAlgebraic_left E1 E2 (Algebra.IsAlgebraic.of_finite K _)
+  sup_toSubalgebra_of_isAlgebraic_left E1 E2
 #align intermediate_field.sup_to_subalgebra IntermediateField.sup_toSubalgebra_of_left
 
 @[deprecated] alias sup_toSubalgebra := sup_toSubalgebra_of_left
 
 theorem sup_toSubalgebra_of_right [FiniteDimensional K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
-  sup_toSubalgebra_of_isAlgebraic_right E1 E2 (Algebra.IsAlgebraic.of_finite K _)
+  sup_toSubalgebra_of_isAlgebraic_right E1 E2
 
 instance finiteDimensional_sup [FiniteDimensional K E1] [FiniteDimensional K E2] :
     FiniteDimensional K (E1 ⊔ E2 : IntermediateField K L) := by
@@ -804,15 +805,16 @@ theorem adjoin_toSubalgebra_of_isAlgebraic (L : IntermediateField F K)
   erw [← restrictScalars_toSubalgebra, restrictScalars_adjoin_of_algEquiv i' hi,
     Algebra.restrictScalars_adjoin_of_algEquiv i' hi, restrictScalars_adjoin,
     Algebra.restrictScalars_adjoin]
-  exact E'.sup_toSubalgebra_of_isAlgebraic L (halg.imp i'.isAlgebraic id)
+  exact E'.sup_toSubalgebra_of_isAlgebraic L (halg.imp
+    (fun (_ : Algebra.IsAlgebraic F E) ↦ i'.isAlgebraic) id)
 
 theorem adjoin_toSubalgebra_of_isAlgebraic_left (L : IntermediateField F K)
-    (halg : Algebra.IsAlgebraic F E) :
+    [halg : Algebra.IsAlgebraic F E] :
     (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) :=
   adjoin_toSubalgebra_of_isAlgebraic E L (Or.inl halg)
 
 theorem adjoin_toSubalgebra_of_isAlgebraic_right (L : IntermediateField F K)
-    (halg : Algebra.IsAlgebraic F L) :
+    [halg : Algebra.IsAlgebraic F L] :
     (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) :=
   adjoin_toSubalgebra_of_isAlgebraic E L (Or.inr halg)
 
@@ -829,12 +831,12 @@ theorem adjoin_rank_le_of_isAlgebraic (L : IntermediateField F K)
   rwa [(Subalgebra.equivOfEq _ _ h).symm.toLinearEquiv.rank_eq] at this
 
 theorem adjoin_rank_le_of_isAlgebraic_left (L : IntermediateField F K)
-    (halg : Algebra.IsAlgebraic F E) :
+    [halg : Algebra.IsAlgebraic F E] :
     Module.rank E (adjoin E (L : Set K)) ≤ Module.rank F L :=
   adjoin_rank_le_of_isAlgebraic E L (Or.inl halg)
 
 theorem adjoin_rank_le_of_isAlgebraic_right (L : IntermediateField F K)
-    (halg : Algebra.IsAlgebraic F L) :
+    [halg : Algebra.IsAlgebraic F L] :
     Module.rank E (adjoin E (L : Set K)) ≤ Module.rank F L :=
   adjoin_rank_le_of_isAlgebraic E L (Or.inr halg)
 
@@ -905,7 +907,7 @@ theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F
     (subset_adjoin F (rootSet (minpoly F x1) E) _)
   · rw [IntermediateField.minpoly_eq, Subtype.coe_mk]
   · rw [mem_rootSet_of_ne, minpoly.aeval]
-    exact minpoly.ne_zero (isIntegral_iff.mp (h i ⟨x1, hx1⟩).isIntegral)
+    exact minpoly.ne_zero (isIntegral_iff.mp (Algebra.IsIntegral.isIntegral (⟨x1, hx1⟩ : f i)))
 #align intermediate_field.exists_finset_of_mem_supr'' IntermediateField.exists_finset_of_mem_supr''
 
 theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) :
@@ -1143,7 +1145,7 @@ theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimension
   (adjoin.powerBasis hx).finite
 #align intermediate_field.adjoin.finite_dimensional IntermediateField.adjoin.finiteDimensional
 
-theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
+instance isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
   have := adjoin.finiteDimensional hx; Algebra.IsAlgebraic.of_finite K K⟮x⟯
 
 theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
@@ -1192,7 +1194,7 @@ variable {F} in
 /-- If `E / F` is an infinite algebraic extension, then there exists an intermediate field
 `L / F` with arbitrarily large finite extension degree. -/
 theorem exists_lt_finrank_of_infinite_dimensional
-    (halg : Algebra.IsAlgebraic F E) (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
+    [Algebra.IsAlgebraic F E] (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
     ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
   induction' n with n ih
   · exact ⟨⊥, Subalgebra.finite_bot, finrank_pos⟩
@@ -1202,7 +1204,7 @@ theorem exists_lt_finrank_of_infinite_dimensional
     rw [show L = ⊤ from eq_top_iff.2 fun x _ ↦ hnfd x] at fin
     exact topEquiv.toLinearEquiv.finiteDimensional
   let L' := L ⊔ F⟮x⟯
-  haveI := adjoin.finiteDimensional (halg x).isIntegral
+  haveI := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := F) x)
   refine ⟨L', inferInstance, by_contra fun h ↦ ?_⟩
   have h1 : L = L' := eq_of_le_of_finrank_le le_sup_left ((not_lt.1 h).trans hn)
   have h2 : F⟮x⟯ ≤ L' := le_sup_right
@@ -1221,18 +1223,19 @@ theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
 
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
-theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
+instance isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
     (h : ∀ i, Algebra.IsAlgebraic K (t i)) :
     Algebra.IsAlgebraic K (⨆ i, t i : IntermediateField K L) := by
+  constructor
   rintro ⟨x, hx⟩
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr' hx
   rw [isAlgebraic_iff, Subtype.coe_mk, ← Subtype.coe_mk (p := (· ∈ _)) x hx, ← isAlgebraic_iff]
   haveI : ∀ i : Σ i, t i, FiniteDimensional K K⟮(i.2 : L)⟯ := fun ⟨i, x⟩ ↦
-    adjoin.finiteDimensional (isIntegral_iff.1 (h i x).isIntegral)
-  apply Algebra.IsAlgebraic.of_finite
+    adjoin.finiteDimensional (isIntegral_iff.1 (Algebra.IsIntegral.isIntegral x))
+  apply IsAlgebraic.of_finite
 #align intermediate_field.is_algebraic_supr IntermediateField.isAlgebraic_iSup
 
-theorem isAlgebraic_adjoin {S : Set L} (hS : ∀ x ∈ S, IsIntegral K x) :
+instance isAlgebraic_adjoin {S : Set L} (hS : ∀ x ∈ S, IsIntegral K x) :
     Algebra.IsAlgebraic K (adjoin K S) := by
   rw [← biSup_adjoin_simple, ← iSup_subtype'']
   exact isAlgebraic_iSup fun x ↦ isAlgebraic_adjoin_simple (hS x x.2)

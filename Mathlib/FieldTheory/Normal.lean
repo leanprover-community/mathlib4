@@ -39,14 +39,16 @@ class Normal : Prop where
   splits' (x : K) : Splits (algebraMap F K) (minpoly F x)
 #align normal Normal
 
+attribute [instance] Normal.isAlgebraic'
+
 variable {F K}
 
 theorem Normal.isAlgebraic (_ : Normal F K) (x : K) : IsAlgebraic F x :=
-  Normal.isAlgebraic' x
+  Algebra.IsAlgebraic.isAlgebraic x
 #align normal.is_algebraic Normal.isAlgebraic
 
-theorem Normal.isIntegral (h : Normal F K) (x : K) : IsIntegral F x :=
-  (h.isAlgebraic' x).isIntegral
+theorem Normal.isIntegral (_ : Normal F K) (x : K) : IsIntegral F x :=
+  Algebra.IsIntegral.isIntegral x
 #align normal.is_integral Normal.isIntegral
 
 theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpoly F x) :=
@@ -55,7 +57,7 @@ theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpol
 
 theorem normal_iff : Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
   ⟨fun h x => ⟨h.isIntegral x, h.splits x⟩, fun h =>
-    ⟨fun x => (h x).1.isAlgebraic, fun x => (h x).2⟩⟩
+    ⟨⟨fun x => (h x).1.isAlgebraic⟩, fun x => (h x).2⟩⟩
 #align normal_iff normal_iff
 
 theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
@@ -65,7 +67,7 @@ theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebr
 variable (F K)
 
 instance normal_self : Normal F F :=
-  ⟨fun _ => isIntegral_algebraMap.isAlgebraic, fun x =>
+  ⟨⟨fun _ => isIntegral_algebraMap.isAlgebraic⟩, fun x =>
     (minpoly.eq_X_sub_C' x).symm ▸ splits_X_sub_C _⟩
 #align normal_self normal_self
 

@@ -232,7 +232,7 @@ instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K :=
 
 instance (priority := 100) isGalois [Algebra k K] [IsSepClosure k K] : IsGalois k K where
   to_isSeparable := IsSepClosure.separable
-  to_normal := ⟨fun x ↦ (IsSeparable.isIntegral k x).isAlgebraic,
+  to_normal := ⟨inferInstance,
     fun x ↦ (IsSepClosure.sep_closed k).splits_codomain _ (IsSeparable.separable k x)⟩
 
 end IsSepClosure
