@@ -24,6 +24,8 @@ values in `F`. This is the space in which the `n`-th derivative of a function fr
 multilinear, formal series
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

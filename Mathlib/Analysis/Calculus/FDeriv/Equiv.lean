@@ -22,6 +22,9 @@ We also prove the usual formula for the derivative of the inverse function, assu
 The inverse function theorem is in `Mathlib/Analysis/Calculus/InverseFunctionTheorem/FDeriv.lean`.
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
 open scoped Classical
