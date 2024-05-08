@@ -17,8 +17,8 @@ We prove that if `X` is `MeasurableSpace.CountablyGenerated` and `μ` is `σ`-fi
 is separable. We then prove that if `μ` is separable and `E` is second-countable,
 then `Lp E p μ` is second-countable.
 
-A family `𝒜` of `(X, μ)` is said to be **measure-dense** if it contains only measurable sets and
-can approximate any measurable set with finite measure, in the sense that
+A family `𝒜` of subsets of `X` is said to be **measure-dense** if it contains only measurable sets
+and can approximate any measurable set with finite measure, in the sense that
 for any measurable set `s` such that `μ s ≠ ∞`, `μ (s ∆ t)` can be made
 arbitrarily small when `t ∈ 𝒜`. We show below that such a family can be chosen to contain only
 sets with finite measure.
@@ -26,7 +26,7 @@ The term "measure-dense" is justified by the fact that the approximating conditi
 to the usual notion of density in the metric space made by constant indicators of measurable sets
 equipped with the `L¹` norm.
 
-`μ` is **separable** if it admits a countable and measure-dense family of sets.
+A measure `μ` is **separable** if it admits a countable and measure-dense family of sets.
 The term "separable" is justified by the fact that the definition translates to the usual notion
 of separability in the metric space made by constant indicators equipped with the `L¹` norm.
 
@@ -54,13 +54,17 @@ a normed commutative group `E`. We also consider an extended non-negative real `
 Through the whole file, when we write that an extended non-negative real is finite, it is always
 written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch from one to the other.
 
+## TODO
+  * Weaken the `σ`-finite hypothesis in `instIsSeparableCountablyGeneratedSigmaFinite` to
+  s-finite.
+
 ## References
 
 * [D. L. Cohn, *Measure Theory*][cohn2013measure]
 
 ## Tags
 
-separable measure space, measure-dense, Lp space, second-countable
+separable measure, measure-dense, Lp space, second-countable
 -/
 
 open MeasurableSpace Set ENNReal TopologicalSpace BigOperators symmDiff Filter Real
@@ -284,7 +288,9 @@ theorem exists_countable_measureDense [IsSeparable μ] :
   IsSeparable.exists_countable_measureDense
 
 /-- If a measurable space is countably generated and equipped with a `σ`-finite measure, then the
-measure is separable. -/
+measure is separable.
+
+TODO: This remains true if `μ` is only assumed to be `σ`-finite. -/
 instance instIsSeparableCountablyGeneratedSigmaFinite [CountablyGenerated X]
     [SigmaFinite μ] : IsSeparable μ where
   exists_countable_measureDense := by
