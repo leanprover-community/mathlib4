@@ -138,8 +138,7 @@ theorem reduce_to_affine_global (P : ∀ (X : Scheme) (_ : Opens X.carrier), Pro
   intro x
   obtain ⟨_, ⟨j, rfl⟩, hx, i⟩ :=
     X.affineBasisCover_is_basis.exists_subset_of_mem_open (SetLike.mem_coe.2 x.prop) U.isOpen
-  let U' : Opens ((forget TopCat).obj X.toPresheafedSpace) :=
-    ⟨_, (X.affineBasisCover.IsOpen j).base_open.isOpen_range⟩
+  let U' : Opens _ := ⟨_, (X.affineBasisCover.IsOpen j).base_open.isOpen_range⟩
   let i' : U' ⟶ U := homOfLE i
   refine' ⟨U', hx, i', _⟩
   obtain ⟨_, _, rfl, rfl, h₂'⟩ := h₂ (X.affineBasisCover.map j)
@@ -242,7 +241,7 @@ instance is_irreducible_of_isIntegral [IsIntegral X] : IrreducibleSpace X.carrie
   haveI : Nonempty (⟨Tᶜ, hT.1⟩ : Opens X.carrier) := ⟨⟨_, h₃.choose_spec.choose_spec⟩⟩
   haveI : Nonempty (⟨Sᶜ, hS.1⟩ ⊔ ⟨Tᶜ, hT.1⟩ : Opens X.carrier) :=
     ⟨⟨_, Or.inl h₂.choose_spec.choose_spec⟩⟩
-  let e : X.presheaf.obj _ ≅ CommRingCat.of ((X.sheaf.val.obj _).prodFan _).1 :=
+  let e : X.presheaf.obj _ ≅ CommRingCat.of _ :=
     (X.sheaf.isProductOfDisjoint ⟨_, hS.1⟩ ⟨_, hT.1⟩ ?_).conePointUniqueUpToIso
       (CommRingCat.prodFanIsLimit _ _)
   · apply (config := { allowSynthFailures := true }) false_of_nontrivial_of_product_domain

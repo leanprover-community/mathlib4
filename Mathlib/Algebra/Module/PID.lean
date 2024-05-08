@@ -215,8 +215,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
         · rw [← f.comp_coe, LinearMap.comp_assoc, LinearMap.comp_assoc,
             LinearEquiv.toLinearMap_symm_comp_eq, LinearMap.comp_id, ← LinearMap.comp_assoc,
             ← LinearMap.comp_assoc]
-          suffices (f.toLinearMap.comp (R ∙ s j).mkQ).comp (DirectSum.toModule _ _ _ _) =
-              LinearMap.id by
+          suffices (f.toLinearMap.comp (R ∙ s j).mkQ).comp _ = LinearMap.id by
             rw [this, LinearMap.id_comp]
           ext i : 3
           simp only [LinearMap.coe_comp, Function.comp_apply, mkQ_apply]

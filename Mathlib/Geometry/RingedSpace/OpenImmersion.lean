@@ -864,7 +864,7 @@ theorem sigma_ι_openEmbedding : OpenEmbedding (colimit.ι F i).base := by
     HasColimit.isoOfNatIso_ι_hom Discrete.natIsoFunctor i
   rw [← Iso.eq_comp_inv] at this
   rw [this]
-  have : colimit.ι (Discrete.functor ((F.comp (forget C)).obj ∘ Discrete.mk)) _ ≫ _ = _ :=
+  have : colimit.ι _ _ ≫ _ = _ :=
     TopCat.sigmaIsoSigma_hom_ι.{v, v} ((F ⋙ SheafedSpace.forget C).obj ∘ Discrete.mk) i.as
   rw [← Iso.eq_comp_inv] at this
   cases i

@@ -422,7 +422,7 @@ theorem inner_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsCo
     refine' ⟨(∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q), _⟩
     rintro a ⟨s, rfl⟩
     exact H₁ s
-  have H₂ : Summable fun i ↦ f i * g i := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
+  have H₂ : Summable _ := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
   exact ⟨H₂, tsum_le_of_sum_le H₂ H₁⟩
 #align nnreal.inner_le_Lp_mul_Lq_tsum NNReal.inner_le_Lp_mul_Lq_tsum
 
@@ -536,7 +536,7 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
     refine' ⟨((∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p)) ^ p, _⟩
     rintro a ⟨s, rfl⟩
     exact H₁ s
-  have H₂ : Summable fun i ↦ (f i + g i) ^ p := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
+  have H₂ : Summable _ := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
   refine' ⟨H₂, _⟩
   rw [NNReal.rpow_one_div_le_iff pos]
   exact tsum_le_of_sum_le H₂ H₁

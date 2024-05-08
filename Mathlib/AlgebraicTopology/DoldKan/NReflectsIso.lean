@@ -103,7 +103,7 @@ instance : (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)
     -- a composition of four functors which reflects isomorphisms.
     -- Then, it suffices to show that `F.map f` is an isomorphism.
     let F₁ := karoubiFunctorCategoryEmbedding SimplexCategoryᵒᵖ C
-    let F₂ : SimplicialObject (Karoubi C) ⥤ Karoubi (ChainComplex (Karoubi C) ℕ) := N₁
+    let F₂ : SimplicialObject (Karoubi C) ⥤ _ := N₁
     let F₃ := (karoubiChainComplexEquivalence (Karoubi C) ℕ).functor
     let F₄ := Functor.mapHomologicalComplex (KaroubiKaroubi.equivalence C).inverse
       (ComplexShape.down ℕ)

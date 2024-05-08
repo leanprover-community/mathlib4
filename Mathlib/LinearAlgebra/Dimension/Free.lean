@@ -95,8 +95,7 @@ whenever `#R < #M`. -/
 lemma rank_eq_mk_of_infinite_lt [Infinite R] (h_lt : lift.{v} #R < lift.{u} #M) :
     Module.rank R M = #M := by
   have : Infinite M := infinite_iff.mpr <| lift_le.mp <| le_trans (by simp) h_lt.le
-  have h : lift.{max u v, v} #M = lift.{v, max v u} #(ChooseBasisIndex R M →₀ R) :=
-    lift_mk_eq'.mpr ⟨(chooseBasis R M).repr⟩
+  have h : lift #M = lift #(ChooseBasisIndex R M →₀ R) := lift_mk_eq'.mpr ⟨(chooseBasis R M).repr⟩
   simp only [mk_finsupp_lift_of_infinite', lift_id', ← rank_eq_card_chooseBasisIndex, lift_max,
     lift_lift] at h
   refine lift_inj.mp ((max_eq_iff.mp h.symm).resolve_right <| not_and_of_not_left _ ?_).left

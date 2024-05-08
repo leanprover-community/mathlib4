@@ -425,7 +425,7 @@ converse to `leftAdjointPreservesColimits`.
 -/
 noncomputable def isLeftAdjointOfPreservesColimits (L : (C ⥤ Type u₁) ⥤ ℰ) [PreservesColimits L] :
     IsLeftAdjoint L :=
-  let e : Cᵒᵖᵒᵖ ⥤ Type u₁ ≌ C ⥤ Type u₁ := (opOpEquivalence C).congrLeft
+  let e : _ ⥤ Type u₁ ≌ _ ⥤ Type u₁ := (opOpEquivalence C).congrLeft
   let _ := isLeftAdjointOfPreservesColimitsAux (e.functor ⋙ L : _)
   Adjunction.leftAdjointOfNatIso (e.invFunIdAssoc _)
 #align category_theory.is_left_adjoint_of_preserves_colimits CategoryTheory.isLeftAdjointOfPreservesColimits
@@ -499,16 +499,7 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
       (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow c.pt).isoCompInverse
 
   apply IsTerminal.ofIso Over.mkIdTerminal
-  #adaptation_note
-  /--
-  Before https://github.com/leanprover/lean4/pull/4096 this was just
-  ```
-  let isc : IsColimit ((Over.forget _).mapCocone _) := ...
-  ```
-  -/
-  let isc : IsColimit ((Over.forget _).mapCocone (colimit.cocone
-      ((c.toCostructuredArrow.comp (CostructuredArrow.pre F yoneda c.pt)).comp
-        (CostructuredArrow.toOver yoneda c.pt)))) := PreservesColimit.preserves
+  let isc : IsColimit ((Over.forget _).mapCocone _) := PreservesColimit.preserves
     (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt))
   exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)

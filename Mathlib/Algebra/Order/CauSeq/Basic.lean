@@ -600,7 +600,7 @@ section IsDomain
 variable [Ring β] [IsDomain β] (abv : β → α) [IsAbsoluteValue abv]
 
 theorem one_not_equiv_zero : ¬const abv 1 ≈ const abv 0 := fun h =>
-  have : ∀ ε > 0, ∃ i, ∀ k : ℕ, i ≤ k → abv (1 - 0) < ε := h
+  have : ∀ ε > 0, ∃ i, ∀ k, i ≤ k → abv (1 - 0) < ε := h
   have h1 : abv 1 ≤ 0 :=
     le_of_not_gt fun h2 : 0 < abv 1 =>
       (Exists.elim (this _ h2)) fun i hi => lt_irrefl (abv 1) <| by simpa using hi _ le_rfl

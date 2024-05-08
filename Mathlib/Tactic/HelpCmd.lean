@@ -45,7 +45,7 @@ syntax withPosition("#help " colGt &"option" (colGt ppSpace Parser.rawIdent)?) :
 
 private def elabHelpOption (id : Option Ident) : CommandElabM Unit := do
   let id := id.map (·.raw.getId.toString false)
-  let mut decls : Lean.RBMap String _ compare := {}
+  let mut decls : Lean.RBMap _ _ compare := {}
   for (name, decl) in show Lean.RBMap .. from ← getOptionDecls do
     let name := name.toString false
     if let some id := id then
@@ -92,7 +92,7 @@ syntax withPosition("#help " colGt (&"attr" <|> &"attribute")
 
 private def elabHelpAttr (id : Option Ident) : CommandElabM Unit := do
   let id := id.map (·.raw.getId.toString false)
-  let mut decls : Lean.RBMap String _ compare := {}
+  let mut decls : Lean.RBMap _ _ compare := {}
   for (name, decl) in ← attributeMapRef.get do
     let name := name.toString false
     if let some id := id then
@@ -151,7 +151,7 @@ syntax withPosition("#help " colGt &"cats" (colGt ppSpace Parser.rawIdent)?) : c
 
 private def elabHelpCats (id : Option Ident) : CommandElabM Unit := do
   let id := id.map (·.raw.getId.toString false)
-  let mut decls : Lean.RBMap String _ compare := {}
+  let mut decls : Lean.RBMap _ _ compare := {}
   for (name, cat) in (Parser.parserExtension.getState (← getEnv)).categories do
     let name := name.toString false
     if let some id := id then
@@ -193,8 +193,8 @@ syntax withPosition("#help " colGt &"cat" "+"? colGt ident
 
 private def elabHelpCat (more : Option Syntax) (catStx : Ident) (id : Option String) :
     CommandElabM Unit := do
-  let mut decls : Lean.RBMap String _ compare := {}
-  let mut rest : Lean.RBMap String _ compare := {}
+  let mut decls : Lean.RBMap _ _ compare := {}
+  let mut rest : Lean.RBMap _ _ compare := {}
   let catName := catStx.getId.eraseMacroScopes
   let some cat := (Parser.parserExtension.getState (← getEnv)).categories.find? catName
     | throwErrorAt catStx "{catStx} is not a syntax category"

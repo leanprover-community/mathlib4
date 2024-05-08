@@ -38,8 +38,8 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
   apply
     @Basis.mk (Fin (minpoly K x).natDegree) _ (adjoin K {x}) fun i =>
       ⟨x, subset_adjoin (Set.mem_singleton x)⟩ ^ (i : ℕ)
-  · have : LinearIndependent K fun i : Fin _ ↦ (⟨x, _⟩ : adjoin K {x}) ^ (i : Nat) :=
-      linearIndependent_pow (⟨x, self_mem_adjoin_singleton _ _⟩ : adjoin K {x})
+  · have : LinearIndependent K _ := linearIndependent_pow
+      (⟨x, self_mem_adjoin_singleton _ _⟩ : adjoin K {x})
     rwa [← minpoly.algebraMap_eq hST] at this
   · rintro ⟨y, hy⟩ _
     have := hx'.mem_span_pow (y := ⟨y, hy⟩)

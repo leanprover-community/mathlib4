@@ -252,7 +252,7 @@ theorem adjugate_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m α) :
   rw [adjugate_apply, submatrix_apply, adjugate_apply, ← det_submatrix_equiv_self e,
     updateRow_submatrix_equiv]
   -- Porting note: added
-  suffices (fun j => Pi.single (f := fun _ => α) i 1 (e.symm j)) = Pi.single (e i) 1 by
+  suffices (fun j => Pi.single i 1 (e.symm j)) = Pi.single (e i) 1 by
     erw [this]
   exact Function.update_comp_equiv _ e.symm _ _
 #align matrix.adjugate_submatrix_equiv_self Matrix.adjugate_submatrix_equiv_self

@@ -2025,8 +2025,7 @@ theorem contDiffOn_succ_iff_derivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s₂) 
       ext x; simp [derivWithin]
     simp only [this]
     apply ContDiff.comp_contDiffOn _ h
-    have : IsBoundedBilinearMap 𝕜 fun x : (𝕜 →L[𝕜] 𝕜) × F => x.1.smulRight x.2 :=
-      isBoundedBilinearMap_smulRight
+    have : IsBoundedBilinearMap 𝕜 fun _ : (𝕜 →L[𝕜] 𝕜) × F => _ := isBoundedBilinearMap_smulRight
     exact (this.isBoundedLinearMap_right _).contDiff
 #align cont_diff_on_succ_iff_deriv_within contDiffOn_succ_iff_derivWithin
 

@@ -206,7 +206,7 @@ theorem iInf_eq_dif {p : Prop} [Decidable p] (s : p → Set α) :
 
 theorem exists_set_mem_of_union_eq_top {ι : Type*} (t : Set ι) (s : ι → Set β)
     (w : ⋃ i ∈ t, s i = ⊤) (x : β) : ∃ i ∈ t, x ∈ s i := by
-  have p : x ∈ (⊤ : Set β) := Set.mem_univ x
+  have p : x ∈ ⊤ := Set.mem_univ x
   rw [← w, Set.mem_iUnion] at p
   simpa using p
 #align set.exists_set_mem_of_union_eq_top Set.exists_set_mem_of_union_eq_top

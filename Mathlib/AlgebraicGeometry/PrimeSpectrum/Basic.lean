@@ -200,7 +200,7 @@ theorem gc :
 theorem gc_set :
     @GaloisConnection (Set R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun s => zeroLocus s) fun t =>
       vanishingIdeal t := by
-  have ideal_gc : GaloisConnection (α := Set R) Ideal.span _ := (Submodule.gi R R).gc
+  have ideal_gc : GaloisConnection Ideal.span _ := (Submodule.gi R R).gc
   simpa [zeroLocus_span, Function.comp] using ideal_gc.compose (gc R)
 #align prime_spectrum.gc_set PrimeSpectrum.gc_set
 

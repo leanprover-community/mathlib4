@@ -137,7 +137,7 @@ theorem gc_ideal :
 theorem gc_set :
     @GaloisConnection (Set A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
       (fun s => zeroLocus 𝒜 s) fun t => vanishingIdeal t := by
-  have ideal_gc : GaloisConnection (α := Set A) Ideal.span _ := (Submodule.gi A _).gc
+  have ideal_gc : GaloisConnection Ideal.span _ := (Submodule.gi A _).gc
   simpa [zeroLocus_span, Function.comp] using GaloisConnection.compose ideal_gc (gc_ideal 𝒜)
 #align projective_spectrum.gc_set ProjectiveSpectrum.gc_set
 

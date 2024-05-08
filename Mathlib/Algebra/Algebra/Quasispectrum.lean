@@ -311,7 +311,7 @@ lemma mem_spectrum_inr_of_not_isUnit {R A : Type*} [CommRing R]
 lemma quasispectrum_eq_spectrum_inr (R : Type*) {A : Type*} [CommRing R] [Ring A]
     [Algebra R A] (a : A) : quasispectrum R a = spectrum R (a : Unitization R A) := by
   ext r
-  have : { r | ¬ IsUnit r} ⊆ spectrum R (a : Unitization R A) := mem_spectrum_inr_of_not_isUnit a
+  have : { r | ¬ IsUnit r} ⊆ spectrum R _ := mem_spectrum_inr_of_not_isUnit a
   rw [← Set.union_eq_left.mpr this, ← quasispectrum_eq_spectrum_union]
   apply forall_congr' fun hr ↦ ?_
   rw [not_iff_not, Units.smul_def, Units.smul_def, ← inr_smul, ← inr_neg, isQuasiregular_inr_iff]

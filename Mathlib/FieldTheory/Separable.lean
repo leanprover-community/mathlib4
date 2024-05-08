@@ -192,8 +192,7 @@ theorem multiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep : 
   apply isUnit_of_self_mul_dvd_separable hsep
   rw [← sq]
   apply multiplicity.pow_dvd_of_le_multiplicity
-  have h : ⟨Part.Dom (1 : Part ℕ) ∧ Part.Dom (1 : Part ℕ), fun _ ↦ 2⟩ ≤ multiplicity q p :=
-    PartENat.add_one_le_of_lt hq
+  have h : ⟨Part.Dom 1 ∧ Part.Dom 1, fun _ ↦ 2⟩ ≤ multiplicity q p := PartENat.add_one_le_of_lt hq
   rw [and_self] at h
   exact h
 #align polynomial.multiplicity_le_one_of_separable Polynomial.multiplicity_le_one_of_separable

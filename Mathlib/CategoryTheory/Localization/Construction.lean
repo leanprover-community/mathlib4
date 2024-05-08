@@ -240,7 +240,7 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
   · intro
     apply MorphismProperty.top_apply
   · intro
-    let G : Paths (LocQuiver W) ⥤ W.Localization := Quotient.functor _
+    let G : _ ⥤ W.Localization := Quotient.functor _
     haveI : G.Full := Quotient.full_functor _
     suffices ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f) by
       rcases X with ⟨⟨X⟩⟩

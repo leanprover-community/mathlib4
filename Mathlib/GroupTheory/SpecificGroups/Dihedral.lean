@@ -177,7 +177,7 @@ theorem orderOf_r_one : orderOf (r 1 : DihedralGroup n) = n := by
   · apply (Nat.le_of_dvd (NeZero.pos n) <|
       orderOf_dvd_of_pow_eq_one <| @r_one_pow_n n).lt_or_eq.resolve_left
     intro h
-    have h1 := pow_orderOf_eq_one (r 1 : DihedralGroup n)
+    have h1 : (r 1 : DihedralGroup n) ^ orderOf (r 1) = 1 := pow_orderOf_eq_one _
     rw [r_one_pow] at h1
     injection h1 with h2
     rw [← ZMod.val_eq_zero, ZMod.val_natCast, Nat.mod_eq_of_lt h] at h2

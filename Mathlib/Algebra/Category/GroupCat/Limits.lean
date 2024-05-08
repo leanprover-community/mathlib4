@@ -279,7 +279,7 @@ and then reuse the existing limit.
 noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ CommGroupCat GroupCat.{u}) :=
   createsLimitOfReflectsIso (fun c hc => by
-    have : HasLimit (F.comp (forget₂ CommGroupCat GroupCat)) := ⟨_, hc⟩
+    have : HasLimit _ := ⟨_, hc⟩
     have : Small.{u} (F ⋙ forget CommGroupCat).sections :=
       Concrete.small_sections_of_hasLimit (F ⋙ forget₂ CommGroupCat GroupCat)
     have : Small.{u} ((F ⋙ forget₂ CommGroupCat GroupCat ⋙ forget₂ GroupCat MonCat) ⋙

@@ -142,7 +142,7 @@ theorem right_induction {P : CliffordAlgebra Q → Prop} (algebraMap : ∀ r : R
   /- It would be neat if we could prove this via `foldr` like how we prove
     `CliffordAlgebra.induction`, but going via the grading seems easier. -/
   intro x
-  have : x ∈ (⊤ : Submodule R (CliffordAlgebra Q)) := Submodule.mem_top (R := R)
+  have : x ∈ ⊤ := Submodule.mem_top (R := R)
   rw [← iSup_ι_range_eq_top] at this
   induction this using Submodule.iSup_induction' with
   | mem i x hx =>

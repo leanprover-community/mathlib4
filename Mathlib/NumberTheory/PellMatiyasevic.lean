@@ -313,7 +313,7 @@ theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
             have t := mul_le_mul_of_nonneg_left hn (le_trans zero_le_one h1)
             erw [bm, mul_one] at t
             exact h1l t
-        have yl2 : (⟨_, _⟩ : ℤ√d a1) < ⟨_, _⟩ :=
+        have yl2 : (⟨_, _⟩ : ℤ√_) < ⟨_, _⟩ :=
           show (⟨x, y⟩ - ⟨x, -y⟩ : ℤ√d a1) < ⟨a, 1⟩ - ⟨a, -1⟩ from
             sub_lt_sub ha fun hn : (⟨x, -y⟩ : ℤ√d a1) ≤ ⟨a, -1⟩ => by
               have t := mul_le_mul_of_nonneg_right

@@ -202,7 +202,7 @@ theorem Int.pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (
     multiplicity (↑p) (x ^ n - y ^ n) = multiplicity (↑p) (x - y) + multiplicity p n := by
   cases' n with n
   · simp only [multiplicity.zero, add_top, pow_zero, sub_self, Nat.zero_eq]
-  have h : (multiplicity p _).Dom := finite_nat_iff.mpr ⟨hp.ne_one, n.succ_pos⟩
+  have h : (multiplicity _ _).Dom := finite_nat_iff.mpr ⟨hp.ne_one, n.succ_pos⟩
   simp only [Nat.succ_eq_add_one] at h
   rcases eq_coe_iff.mp (PartENat.natCast_get h).symm with ⟨⟨k, hk⟩, hpn⟩
   conv_lhs => rw [hk, pow_mul, pow_mul]

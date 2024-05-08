@@ -423,7 +423,7 @@ theorem finrank_quotient_map [IsDomain S] [IsDedekindDomain R] [Algebra K L]
       Submodule.restrictScalars_span R (R ⧸ p) Ideal.Quotient.mk_surjective, b_eq_b',
       Set.range_comp, ← Submodule.map_span] at mem_span_b
     obtain ⟨y, y_mem, y_eq⟩ := Submodule.mem_map.mp mem_span_b
-    suffices y + -(y - x) ∈ Submodule.span R _ ⊔ _ by simpa
+    suffices y + -(y - x) ∈ _ by simpa
     rw [LinearMap.restrictScalars_apply, Submodule.mkQ_apply, Submodule.mkQ_apply,
       Submodule.Quotient.eq] at y_eq
     exact add_mem (Submodule.mem_sup_left y_mem) (neg_mem <| Submodule.mem_sup_right y_eq)

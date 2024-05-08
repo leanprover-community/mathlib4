@@ -191,7 +191,7 @@ theorem normalizer_eq_self_iff :
       coe_toLieSubmodule, mem_coe_submodule]
     rw [← h, H.mem_normalizer_iff']
     intro y hy
-    replace hx : ⁅(⟨y, hy⟩ : H), (LieSubmodule.Quotient.mk' H.toLieSubmodule) x⁆ = 0 := hx ⟨y, hy⟩
+    replace hx : ⁅_, LieSubmodule.Quotient.mk' _ x⁆ = 0 := hx ⟨y, hy⟩
     rwa [← LieModuleHom.map_lie, LieSubmodule.Quotient.mk_eq_zero] at hx
   · intro x hx
     let y := LieSubmodule.Quotient.mk' H.toLieSubmodule x

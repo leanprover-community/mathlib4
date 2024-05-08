@@ -224,12 +224,12 @@ theorem fderivWithin_zero_of_nmem_closure (h : x ∉ closure s) : fderivWithin �
 
 theorem fderivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWithinAt 𝕜 f s x) :
     fderivWithin 𝕜 f s x = 0 := by
-  have : ¬∃ f' : E →L[𝕜] F, HasFDerivWithinAt f f' s x := h
+  have : ¬∃ f', HasFDerivWithinAt f f' s x := h
   simp [fderivWithin, this]
 #align fderiv_within_zero_of_not_differentiable_within_at fderivWithin_zero_of_not_differentiableWithinAt
 
 theorem fderiv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : fderiv 𝕜 f x = 0 := by
-  have : ¬∃ f' : E →L[𝕜] F, HasFDerivAt f f' x := h
+  have : ¬∃ f', HasFDerivAt f f' x := h
   simp [fderiv, this]
 #align fderiv_zero_of_not_differentiable_at fderiv_zero_of_not_differentiableAt
 

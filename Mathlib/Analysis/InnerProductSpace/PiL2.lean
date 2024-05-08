@@ -544,9 +544,9 @@ protected theorem coe_mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.spa
 /-- Any finite subset of an orthonormal family is an `OrthonormalBasis` for its span. -/
 protected def span [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s : Finset ι') :
     OrthonormalBasis s 𝕜 (span 𝕜 (s.image v' : Set E)) :=
-  let e₀' : Basis s 𝕜 (span 𝕜 (range (v' ∘ Subtype.val))) :=
+  let e₀' : Basis s 𝕜 _ :=
     Basis.span (h.linearIndependent.comp ((↑) : s → ι') Subtype.val_injective)
-  let e₀ : OrthonormalBasis s 𝕜 (span 𝕜 (range (v' ∘ Subtype.val))) :=
+  let e₀ : OrthonormalBasis s 𝕜 _ :=
     OrthonormalBasis.mk
       (by
         convert orthonormal_span (h.comp ((↑) : s → ι') Subtype.val_injective)

@@ -586,7 +586,7 @@ theorem contMDiffOn_iff_target :
   intro h
   constructor
   · refine' fun h' y => ⟨_, fun x _ => h' x y⟩
-    have h'' : ContinuousOn I' univ := (ModelWithCorners.continuous I').continuousOn
+    have h'' : ContinuousOn _ univ := (ModelWithCorners.continuous I').continuousOn
     convert (h''.comp' (chartAt H' y).continuousOn_toFun).comp' h
     simp
   · exact fun h' x y => (h' y).2 x 0

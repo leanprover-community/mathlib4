@@ -181,10 +181,7 @@ theorem eqvGen_of_π_eq
     rfl
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
-      (colimit.ι diagram _ ≫ colim.map _ ≫
-        (colimit.isoColimitCocone (Types.coequalizerColimit
-          (diagram.map WalkingParallelPairHom.left)
-          (diagram.map WalkingParallelPairHom.right))).hom) _ :=
+      (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ :=
     (congr_arg
         (colim.map (diagramIsoParallelPair diagram).hom ≫
           (colimit.isoColimitCocone (Types.coequalizerColimit _ _)).hom)

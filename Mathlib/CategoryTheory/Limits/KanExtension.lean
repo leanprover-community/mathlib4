@@ -243,8 +243,8 @@ def loc (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] : L ⥤ D
     dsimp
     haveI : HasColimit (CostructuredArrow.map (f ≫ g) ⋙ diagram ι F z) := I _
     ext j
-    let ff : CostructuredArrow ι x ⥤ CostructuredArrow ι y := CostructuredArrow.map f
-    let gg : CostructuredArrow ι y ⥤ CostructuredArrow ι z := CostructuredArrow.map g
+    let ff : CostructuredArrow ι _ ⥤ _ := CostructuredArrow.map f
+    let gg : CostructuredArrow ι _ ⥤ _ := CostructuredArrow.map g
     let dd := diagram ι F z
     -- Porting note: It seems that even Lean3 had some trouble with instances in this case.
     -- I don't know why lean can't deduce the following three instances...
@@ -272,8 +272,7 @@ def equiv (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] (G : L ⥤ D) :
         dsimp only [whiskeringLeft]
         simp only [Functor.comp_map, Category.assoc]
         rw [← f.naturality (ι.map ff), ← Category.assoc, ← Category.assoc]
-        let fff : CostructuredArrow ι (ι.obj x) ⥤ CostructuredArrow ι (ι.obj y) :=
-          CostructuredArrow.map (ι.map ff)
+        let fff : CostructuredArrow ι _ ⥤ _ := CostructuredArrow.map (ι.map ff)
         -- same issue :-(
         haveI : HasColimit (fff ⋙ diagram ι F (ι.obj y)) := I _
         erw [colimit.ι_pre (diagram ι F (ι.obj y)) fff (CostructuredArrow.mk (𝟙 _))]
