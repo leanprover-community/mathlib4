@@ -8,7 +8,7 @@ import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
-import Std.Classes.Order
+import Batteries.Classes.Order
 
 #align_import init.algebra.order from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
 
@@ -455,7 +455,7 @@ theorem compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.toRel a b 
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt
 
-instance : Std.TransCmp (compare (α := α)) where
+instance : Batteries.TransCmp (compare (α := α)) where
   symm a b := by
     cases h : compare a b <;>
     simp only [Ordering.swap] <;> symm

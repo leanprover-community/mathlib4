@@ -105,8 +105,7 @@ section
 
 For typical usage, see the construction of `CommMonCat` from `MonCat`.
 -/
-@[reducible]
-def MapHom (F : ∀ {α}, d α → c α) : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u :=
+abbrev MapHom (F : ∀ {α}, d α → c α) : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u :=
   fun _ _ iα iβ => hom (F iα) (F iβ)
 #align category_theory.bundled_hom.map_hom CategoryTheory.BundledHom.MapHom
 

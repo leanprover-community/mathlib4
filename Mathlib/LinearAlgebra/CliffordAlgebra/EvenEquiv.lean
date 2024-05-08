@@ -46,8 +46,7 @@ variable (Q : QuadraticForm R M)
 namespace EquivEven
 
 /-- The quadratic form on the augmented vector space `M × R` sending `v + r•e0` to `Q v - r^2`. -/
-@[reducible]
-def Q' : QuadraticForm R (M × R) :=
+abbrev Q' : QuadraticForm R (M × R) :=
   Q.prod <| -@QuadraticForm.sq R _
 set_option linter.uppercaseLean3 false in
 #align clifford_algebra.equiv_even.Q' CliffordAlgebra.EquivEven.Q'

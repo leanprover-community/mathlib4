@@ -240,8 +240,7 @@ variable {α β : Type*}
 /-- An empty type is locally finite.
 
 This is not an instance as it would not be defeq to more specific instances. -/
-@[reducible]
-protected def IsEmpty.toLocallyFiniteOrder [Preorder α] [IsEmpty α] : LocallyFiniteOrder α where
+protected abbrev IsEmpty.toLocallyFiniteOrder [Preorder α] [IsEmpty α] : LocallyFiniteOrder α where
   finsetIcc := isEmptyElim
   finsetIco := isEmptyElim
   finsetIoc := isEmptyElim
@@ -256,8 +255,7 @@ protected def IsEmpty.toLocallyFiniteOrder [Preorder α] [IsEmpty α] : LocallyF
 /-- An empty type is locally finite.
 
 This is not an instance as it would not be defeq to more specific instances. -/
-@[reducible]
-protected def IsEmpty.toLocallyFiniteOrderTop [Preorder α] [IsEmpty α] : LocallyFiniteOrderTop α
+protected abbrev IsEmpty.toLocallyFiniteOrderTop [Preorder α] [IsEmpty α] : LocallyFiniteOrderTop α
     where
   finsetIci := isEmptyElim
   finsetIoi := isEmptyElim
@@ -269,8 +267,7 @@ protected def IsEmpty.toLocallyFiniteOrderTop [Preorder α] [IsEmpty α] : Local
 /-- An empty type is locally finite.
 
 This is not an instance as it would not be defeq to more specific instances. -/
-@[reducible]
-protected def IsEmpty.toLocallyFiniteOrderBot [Preorder α] [IsEmpty α] : LocallyFiniteOrderBot α
+protected abbrev IsEmpty.toLocallyFiniteOrderBot [Preorder α] [IsEmpty α] : LocallyFiniteOrderBot α
     where
   finsetIic := isEmptyElim
   finsetIio := isEmptyElim
@@ -620,9 +617,8 @@ noncomputable def LocallyFiniteOrder.ofFiniteIcc (h : ∀ a b : α, (Set.Icc a b
 This is not an instance as it would not be defeq to better instances such as
 `Fin.locallyFiniteOrder`.
 -/
-@[reducible]
-def Fintype.toLocallyFiniteOrder [Fintype α] [@DecidableRel α (· < ·)] [@DecidableRel α (· ≤ ·)] :
-    LocallyFiniteOrder α where
+abbrev Fintype.toLocallyFiniteOrder [Fintype α] [@DecidableRel α (· < ·)]
+    [@DecidableRel α (· ≤ ·)] : LocallyFiniteOrder α where
   finsetIcc a b := (Set.Icc a b).toFinset
   finsetIco a b := (Set.Ico a b).toFinset
   finsetIoc a b := (Set.Ioc a b).toFinset
@@ -1104,8 +1100,7 @@ variable [Preorder α] [Preorder β]
 
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrder` across an `OrderIso`. -/
-@[reducible]
-def locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFiniteOrder α where
+abbrev locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFiniteOrder α where
   finsetIcc a b := (Icc (f a) (f b)).map f.symm.toEquiv.toEmbedding
   finsetIco a b := (Ico (f a) (f b)).map f.symm.toEquiv.toEmbedding
   finsetIoc a b := (Ioc (f a) (f b)).map f.symm.toEquiv.toEmbedding
@@ -1118,8 +1113,7 @@ def locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFiniteO
 
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrderTop` across an `OrderIso`. -/
-@[reducible]
-def locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : LocallyFiniteOrderTop α where
+abbrev locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : LocallyFiniteOrderTop α where
   finsetIci a := (Ici (f a)).map f.symm.toEquiv.toEmbedding
   finsetIoi a := (Ioi (f a)).map f.symm.toEquiv.toEmbedding
   finset_mem_Ici := by simp
@@ -1128,8 +1122,7 @@ def locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : LocallyF
 
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrderBot` across an `OrderIso`. -/
-@[reducible]
-def locallyFiniteOrderBot [LocallyFiniteOrderBot β] (f : α ≃o β) : LocallyFiniteOrderBot α where
+abbrev locallyFiniteOrderBot [LocallyFiniteOrderBot β] (f : α ≃o β) : LocallyFiniteOrderBot α where
   finsetIic a := (Iic (f a)).map f.symm.toEquiv.toEmbedding
   finsetIio a := (Iio (f a)).map f.symm.toEquiv.toEmbedding
   finset_mem_Iic := by simp
