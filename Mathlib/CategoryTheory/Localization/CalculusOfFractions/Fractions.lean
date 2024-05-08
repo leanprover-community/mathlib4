@@ -95,24 +95,21 @@ namespace LeftFraction₂
 variable {X Y : C} (φ : W.LeftFraction₂ X Y)
 
 /-- The first left fraction. -/
-@[reducible]
-def fst : W.LeftFraction X Y where
+abbrev fst : W.LeftFraction X Y where
   Y' := φ.Y'
   f := φ.f
   s := φ.s
   hs := φ.hs
 
 /-- The second left fraction. -/
-@[reducible]
-def snd : W.LeftFraction X Y where
+abbrev snd : W.LeftFraction X Y where
   Y' := φ.Y'
   f := φ.f'
   s := φ.s
   hs := φ.hs
 
 /-- The exchange of the two fractions. -/
-@[reducible]
-def symm : W.LeftFraction₂ X Y where
+abbrev symm : W.LeftFraction₂ X Y where
   Y' := φ.Y'
   f := φ.f'
   f' := φ.f
@@ -126,32 +123,28 @@ namespace LeftFraction₃
 variable {X Y : C} (φ : W.LeftFraction₃ X Y)
 
 /-- The first left fraction. -/
-@[reducible]
-def fst : W.LeftFraction X Y where
+abbrev fst : W.LeftFraction X Y where
   Y' := φ.Y'
   f := φ.f
   s := φ.s
   hs := φ.hs
 
 /-- The second left fraction. -/
-@[reducible]
-def snd : W.LeftFraction X Y where
+abbrev snd : W.LeftFraction X Y where
   Y' := φ.Y'
   f := φ.f'
   s := φ.s
   hs := φ.hs
 
 /-- The third left fraction. -/
-@[reducible]
-def thd : W.LeftFraction X Y where
+abbrev thd : W.LeftFraction X Y where
   Y' := φ.Y'
   f := φ.f''
   s := φ.s
   hs := φ.hs
 
 /-- Forgets the first fraction. -/
-@[reducible]
-def forgetFst : W.LeftFraction₂ X Y where
+abbrev forgetFst : W.LeftFraction₂ X Y where
   Y' := φ.Y'
   f := φ.f'
   f' := φ.f''
@@ -159,8 +152,7 @@ def forgetFst : W.LeftFraction₂ X Y where
   hs := φ.hs
 
 /-- Forgets the second fraction. -/
-@[reducible]
-def forgetSnd : W.LeftFraction₂ X Y where
+abbrev forgetSnd : W.LeftFraction₂ X Y where
   Y' := φ.Y'
   f := φ.f
   f' := φ.f''
@@ -168,8 +160,7 @@ def forgetSnd : W.LeftFraction₂ X Y where
   hs := φ.hs
 
 /-- Forgets the third fraction. -/
-@[reducible]
-def forgetThd : W.LeftFraction₂ X Y where
+abbrev forgetThd : W.LeftFraction₂ X Y where
   Y' := φ.Y'
   f := φ.f
   f' := φ.f'
@@ -231,16 +222,14 @@ variable {X Y : C}
 variable (φ : W.RightFraction₂ X Y)
 
 /-- The first right fraction. -/
-@[reducible]
-def fst : W.RightFraction X Y where
+abbrev fst : W.RightFraction X Y where
   X' := φ.X'
   f := φ.f
   s := φ.s
   hs := φ.hs
 
 /-- The second right fraction. -/
-@[reducible]
-def snd : W.RightFraction X Y where
+abbrev snd : W.RightFraction X Y where
   X' := φ.X'
   f := φ.f'
   s := φ.s
