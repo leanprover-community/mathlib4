@@ -82,7 +82,7 @@ theorem coeSubtype : (subtype s : s → A) = Subtype.val :=
 
 end NonUnitalStarSubalgebraClass
 
-/-- A non-unital star subalgebra is a non-unital subalgebra which is closed under the `star`
+/-- A non-unital star subset is a subset which is closed under the `star`
 operation. -/
 structure StarSubset (A : Type v) [Star A] : Type v where
   /-- The underlying set of a `SubStar`. -/
@@ -90,6 +90,7 @@ structure StarSubset (A : Type v) [Star A] : Type v where
   /-- The `carrier` of a `StarSubset` is closed under the `star` operation. -/
   star_mem' : ∀ {a : A} (_ha : a ∈ carrier), star a ∈ carrier
 
+/-- A sub star magma is a subset of a magma which is closed under the `star`-/
 structure SubStarmagma (A : Type v) [Mul A] [Star A] extends Subsemigroup A, StarSubset A :Type v
 
 /-- Reinterpret a `SubStarmagma` as a `Subsemigroup`. -/
