@@ -282,7 +282,7 @@ lemma sFinite_of_absolutelyContinuous_aux {ν : Measure α} [IsFiniteMeasure ν]
     SFinite μ := by
   let f : α → ℝ≥0∞ := fun _ ↦ ∞
   have hf : Measurable f := measurable_const
-  suffices μ = ν.withDensity f by rw [this]; exact sFinite_withDensity _ hf
+  suffices μ = ν.withDensity f by rw [this]; exact sFinite_withDensity_of_measurable _ hf
   ext s hs
   simp only [withDensity_const, Measure.smul_apply, smul_eq_mul, f]
   by_cases hνs : ν s = 0
