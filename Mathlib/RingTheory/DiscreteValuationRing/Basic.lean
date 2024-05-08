@@ -356,7 +356,7 @@ theorem ideal_eq_span_pow_irreducible {s : Ideal R} (hs : s ≠ ⊥) {ϖ : R} (h
     assumption
   rcases associated_pow_irreducible gen_ne_zero hirr with ⟨n, u, hnu⟩
   use n
-  have : span _ = _ := Ideal.span_singleton_generator s
+  have : span {generator s} = s := Ideal.span_singleton_generator s
   rw [← this, ← hnu, span_singleton_eq_span_singleton]
   use u
 #align discrete_valuation_ring.ideal_eq_span_pow_irreducible DiscreteValuationRing.ideal_eq_span_pow_irreducible

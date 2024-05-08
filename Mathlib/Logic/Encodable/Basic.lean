@@ -324,7 +324,7 @@ theorem decode_one : (decode 1 : Option Bool) = some true :=
 #align encodable.decode_one Encodable.decode_one
 
 theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
-  suffices decodeSum n = none by
+  suffices (decodeSum n : Option (Unit ⊕ Unit)) = none by
     change (decodeSum n).bind _ = none
     rw [this]
     rfl

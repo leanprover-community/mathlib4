@@ -1777,7 +1777,7 @@ theorem trTape'_move_left (L R : ListBlank Γ) :
 
 theorem trTape'_move_right (L R : ListBlank Γ) :
     (Tape.move Dir.right)^[n] (trTape' enc0 L R) = trTape' enc0 (L.cons R.head) R.tail := by
-  suffices ∀ i L, (Tape.move Dir.right)^[i] ((Tape.move Dir.left)^[i] L) = L by
+  suffices ∀ i (L : Tape Bool), (Tape.move Dir.right)^[i] ((Tape.move Dir.left)^[i] L) = L by
     refine' (Eq.symm _).trans (this n _)
     simp only [trTape'_move_left, ListBlank.cons_head_tail, ListBlank.head_cons,
       ListBlank.tail_cons]

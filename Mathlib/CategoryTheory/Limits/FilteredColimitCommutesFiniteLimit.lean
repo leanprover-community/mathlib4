@@ -210,7 +210,7 @@ theorem colimitLimitToLimitColimit_surjective :
     -- where these images of `y j` and `y j'` become equal.
     simp_rw [colimit_eq_iff] at w
     -- We take a moment to restate `w` more conveniently.
-    let kf : ∀ {j j'} (_ : j ⟶ j'), K := fun f => (w f).choose
+    let kf : ∀ {j j' : J} (_ : j ⟶ j'), K := fun f => (w f).choose
     let gf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun f => (w f).choose_spec.choose
     let hf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun f =>
       (w f).choose_spec.choose_spec.choose

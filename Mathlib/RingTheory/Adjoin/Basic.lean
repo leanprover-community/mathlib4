@@ -182,7 +182,7 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
     refine' Submodule.add_mem _ _ (ih HL.2)
     replace HL := HL.1
     clear ih tl
-    suffices ∃ (z r : _) (_hr : r ∈ Submonoid.closure s), z • r = List.prod hd by
+    suffices ∃ (z : R) (r : A) (_hr : r ∈ Submonoid.closure s), z • r = List.prod hd by
       rcases this with ⟨z, r, hr, hzr⟩
       rw [← hzr]
       exact smul_mem _ _ (subset_span hr)
