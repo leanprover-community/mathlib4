@@ -6,8 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Init.Algebra.Classes
-import Std.Util.LibraryNote
-import Std.Tactic.Lint.Basic
+import Batteries.Util.LibraryNote
+import Batteries.Tactic.Lint.Basic
 
 #align_import logic.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 #align_import init.ite_simp from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
@@ -42,7 +42,7 @@ attribute [simp] cast_eq cast_heq imp_false
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
 as done in the `elide` and `unelide` tactics. -/
-@[reducible] def hidden {α : Sort*} {a : α} := a
+abbrev hidden {α : Sort*} {a : α} := a
 #align hidden hidden
 
 variable {α : Sort*}
@@ -132,7 +132,7 @@ instance {p : Prop} [Decidable p] : Decidable (Fact p) :=
   decidable_of_iff _ fact_iff.symm
 
 /-- Swaps two pairs of arguments to a function. -/
-@[reducible] def Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
+abbrev Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
     {φ : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Sort*} (f : ∀ i₁ j₁ i₂ j₂, φ i₁ j₁ i₂ j₂)
     (i₂ j₂ i₁ j₁) : φ i₁ j₁ i₂ j₂ := f i₁ j₁ i₂ j₂
 #align function.swap₂ Function.swap₂
@@ -167,18 +167,17 @@ instance : IsTrans Prop Iff := ⟨fun _ _ _ ↦ Iff.trans⟩
 alias Iff.imp := imp_congr
 #align iff.imp Iff.imp
 
-@[simp] theorem eq_true_eq_id : Eq True = id := by
-  funext _; simp only [true_iff, id, eq_iff_iff]
 #align eq_true_eq_id eq_true_eq_id
-
 #align imp_and_distrib imp_and
 #align imp_iff_right imp_iff_rightₓ -- reorder implicits
 #align imp_iff_not imp_iff_notₓ -- reorder implicits
 
-@[simp] theorem imp_iff_right_iff {a b : Prop} : (a → b ↔ b) ↔ a ∨ b := Decidable.imp_iff_right_iff
+-- This is a duplicate of `Classical.imp_iff_right_iff`. Deprecate?
+theorem imp_iff_right_iff {a b : Prop} : (a → b ↔ b) ↔ a ∨ b := Decidable.imp_iff_right_iff
 #align imp_iff_right_iff imp_iff_right_iff
 
-@[simp] theorem and_or_imp {a b c : Prop} : a ∧ b ∨ (a → c) ↔ a → b ∨ c := Decidable.and_or_imp
+-- This is a duplicate of `Classical.and_or_imp`. Deprecate?
+theorem and_or_imp {a b c : Prop} : a ∧ b ∨ (a → c) ↔ a → b ∨ c := Decidable.and_or_imp
 #align and_or_imp and_or_imp
 
 /-- Provide modus tollens (`mt`) as dot notation for implications. -/
@@ -403,9 +402,7 @@ theorem imp_iff_or_not {b a : Prop} : b → a ↔ a ∨ ¬b := Decidable.imp_iff
 theorem not_imp_not : ¬a → ¬b ↔ b → a := Decidable.not_imp_not
 #align not_imp_not not_imp_not
 
-@[simp]
-theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by
-  rw [imp_iff_or_not, imp_iff_or_not, not_not, ← or_and_left, not_and_self_iff, or_false_iff]
+theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by simp
 
 /-- Provide the reverse of modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mtr : (¬a → ¬b) → b → a := not_imp_not.mp
@@ -556,7 +553,7 @@ theorem eq_equivalence {α : Sort*} : Equivalence (@Eq α) :=
   ⟨Eq.refl, @Eq.symm _, @Eq.trans _⟩
 #align eq_equivalence eq_equivalence
 
--- These were migrated to Std but the `@[simp]` attributes were (mysteriously?) removed.
+-- These were migrated to Batteries but the `@[simp]` attributes were (mysteriously?) removed.
 attribute [simp] eq_mp_eq_cast eq_mpr_eq_cast
 
 #align eq_mp_eq_cast eq_mp_eq_cast
@@ -640,7 +637,7 @@ theorem pi_congr {β' : α → Sort _} (h : ∀ a, β a = β' a) : (∀ a, β a)
 #align pi_congr pi_congr
 
 -- Porting note: some higher order lemmas such as `forall₂_congr` and `exists₂_congr`
--- were moved to `Std4`
+-- were moved to `Batteries`
 
 theorem forall₂_imp {p q : ∀ a, β a → Prop} (h : ∀ a b, p a b → q a b) :
     (∀ a b, p a b) → ∀ a b, q a b :=
@@ -719,7 +716,7 @@ theorem forall_imp_iff_exists_imp {α : Sort*} {p : α → Prop} {b : Prop} [ha 
     (∀ x, p x) → b ↔ ∃ x, p x → b := by
   let ⟨a⟩ := ha
   refine ⟨fun h ↦ not_forall_not.1 fun h' ↦ ?_, fun ⟨x, hx⟩ h ↦ hx (h x)⟩
-  exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (not_imp.1 (h' x)).1
+  exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (_root_.not_imp.1 (h' x)).1
 #align forall_imp_iff_exists_imp forall_imp_iff_exists_imp
 
 @[mfld_simps]
@@ -781,9 +778,27 @@ theorem Ne.ne_or_ne {x y : α} (z : α) (h : x ≠ y) : x ≠ z ∨ y ≠ z :=
   simp only [ExistsUnique, and_self, forall_eq', exists_eq']
 #align exists_unique_eq' exists_unique_eq'
 
--- @[simp] -- FIXME simp does not apply this lemma for some reason
+@[simp]
 theorem exists_apply_eq_apply' (f : α → β) (a' : α) : ∃ a, f a' = f a := ⟨a', rfl⟩
 #align exists_apply_eq_apply' exists_apply_eq_apply'
+
+@[simp]
+lemma exists_apply_eq_apply2 {α β γ} {f : α → β → γ} {a : α} {b : β} : ∃ x y, f x y = f a b :=
+  ⟨a, b, rfl⟩
+
+@[simp]
+lemma exists_apply_eq_apply2' {α β γ} {f : α → β → γ} {a : α} {b : β} : ∃ x y, f a b = f x y :=
+  ⟨a, b, rfl⟩
+
+@[simp]
+lemma exists_apply_eq_apply3 {α β γ δ} {f : α → β → γ → δ} {a : α} {b : β} {c : γ} :
+    ∃ x y z, f x y z = f a b c :=
+  ⟨a, b, c, rfl⟩
+
+@[simp]
+lemma exists_apply_eq_apply3' {α β γ δ} {f : α → β → γ → δ} {a : α} {b : β} {c : γ} :
+    ∃ x y z, f a b c = f x y z :=
+  ⟨a, b, c, rfl⟩
 
 -- Porting note: an alternative workaround theorem:
 theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun _ ↦ b, rfl⟩
@@ -1333,16 +1348,9 @@ theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
     dite P Q R ↔ (∀ h, Q h) ∧ (∀ h, R h) := by
   by_cases h : P <;> simp [h, forall_prop_of_false, forall_prop_of_true]
 
-@[simp] lemma if_true_right : (if P then Q else True) ↔ ¬P ∨ Q := by by_cases P <;> simp [*]
 #align if_true_right_eq_or if_true_right
-
-@[simp] lemma if_true_left : (if P then True else Q) ↔ P ∨ Q := by by_cases P <;> simp [*]
 #align if_true_left_eq_or if_true_left
-
-@[simp] lemma if_false_right : (if P then Q else False) ↔ P ∧ Q := by by_cases P <;> simp [*]
 #align if_false_right_eq_and if_false_right
-
-@[simp] lemma if_false_left : (if P then False else Q) ↔ ¬P ∧ Q := by by_cases P <;> simp [*]
 #align if_false_left_eq_and if_false_left
 
 end ite

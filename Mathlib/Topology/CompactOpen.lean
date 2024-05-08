@@ -52,7 +52,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {K : Set
 
 /-- The compact-open topology on the space of continuous maps `C(X, Y)`. -/
 instance compactOpen : TopologicalSpace C(X, Y) :=
- .generateFrom <| image2 (fun K U ↦ {f | MapsTo f K U}) {K | IsCompact K} {U | IsOpen U}
+  .generateFrom <| image2 (fun K U ↦ {f | MapsTo f K U}) {K | IsCompact K} {U | IsOpen U}
 #align continuous_map.compact_open ContinuousMap.compactOpen
 
 /-- Definition of `ContinuousMap.compactOpen`. -/
@@ -200,14 +200,44 @@ lemma isClopen_setOf_mapsTo (hK : IsCompact K) (hU : IsClopen U) :
     IsClopen {f : C(X, Y) | MapsTo f K U} :=
   ⟨isClosed_setOf_mapsTo hU.isClosed K, isOpen_setOf_mapsTo hK hU.isOpen⟩
 
+@[norm_cast]
+lemma specializes_coe {f g : C(X, Y)} : ⇑f ⤳ ⇑g ↔ f ⤳ g := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.map continuous_coe⟩
+  suffices ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → MapsTo f K U by
+    simpa [specializes_iff_pure, nhds_compactOpen]
+  exact fun K _ U hU hg x hx ↦ (h.map (continuous_apply x)).mem_open hU (hg hx)
+
+@[norm_cast]
+lemma inseparable_coe {f g : C(X, Y)} : Inseparable (f : X → Y) g ↔ Inseparable f g := by
+  simp only [inseparable_iff_specializes_and, specializes_coe]
+
 instance [T0Space Y] : T0Space C(X, Y) :=
   t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
+
+instance [R0Space Y] : R0Space C(X, Y) where
+  specializes_symmetric f g h := by
+    rw [← specializes_coe] at h ⊢
+    exact h.symm
 
 instance [T1Space Y] : T1Space C(X, Y) :=
   t1Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
 
-instance [T2Space Y] : T2Space C(X, Y) :=
-  .of_injective_continuous DFunLike.coe_injective continuous_coe
+instance [R1Space Y] : R1Space C(X, Y) :=
+  .of_continuous_specializes_imp continuous_coe fun _ _ ↦ specializes_coe.1
+
+instance [T2Space Y] : T2Space C(X, Y) := inferInstance
+
+instance [RegularSpace Y] : RegularSpace C(X, Y) :=
+  .of_lift'_closure_le fun f ↦ by
+    rw [← tendsto_id', tendsto_nhds_compactOpen]
+    intro K hK U hU hf
+    rcases (hK.image f.continuous).exists_isOpen_closure_subset (hU.mem_nhdsSet.2 hf.image_subset)
+      with ⟨V, hVo, hKV, hVU⟩
+    filter_upwards [mem_lift' (eventually_mapsTo hK hVo (mapsTo'.2 hKV))] with g hg
+    refine ((isClosed_setOf_mapsTo isClosed_closure K).closure_subset ?_).mono_right hVU
+    exact closure_mono (fun _ h ↦ h.mono_right subset_closure) hg
+
+instance [T3Space Y] : T3Space C(X, Y) := inferInstance
 
 end Ev
 

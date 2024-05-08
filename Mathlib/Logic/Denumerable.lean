@@ -220,7 +220,7 @@ open scoped Classical
 
 theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s :=
   _root_.by_contradiction fun h =>
-    have : ∀ (a : ℕ) (_ : a ∈ s), a < succ x := fun a ha =>
+    have : ∀ (a : ℕ) (_ : a ∈ s), a < x + 1 := fun a ha =>
       lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [add_right_comm, add_tsub_cancel_of_le hax]⟩
     Fintype.false
       ⟨(((Multiset.range (succ x)).filter (· ∈ s)).pmap
@@ -270,12 +270,14 @@ theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
     lt_of_le_of_lt h (lt_succ_self _)⟩
 #align nat.subtype.lt_succ_iff_le Nat.Subtype.lt_succ_iff_le
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Returns the `n`-th element of a set, according to the usual ordering of `ℕ`. -/
 def ofNat (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : ℕ → s
   | 0 => ⊥
   | n + 1 => succ (ofNat s n)
 #align nat.subtype.of_nat Nat.Subtype.ofNat
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = ⟨x, hx⟩
   | x => fun hx => by
     set t : List s :=
@@ -324,6 +326,7 @@ private theorem toFunAux_eq (x : s) : toFunAux x = ((Finset.range x).filter (· 
 
 open Finset
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
     rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_not_mem]
