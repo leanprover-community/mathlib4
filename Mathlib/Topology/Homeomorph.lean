@@ -260,13 +260,6 @@ protected theorem embedding (h : X ≃ₜ Y) : Embedding h :=
   ⟨h.inducing, h.injective⟩
 #align homeomorph.embedding Homeomorph.embedding
 
-/-- Homeomorphism given an embedding. -/
-noncomputable def ofEmbedding (f : X → Y) (hf : Embedding f) : X ≃ₜ Set.range f where
-  continuous_toFun := hf.continuous.subtype_mk _
-  continuous_invFun := hf.continuous_iff.2 <| by simp [continuous_subtype_val]
-  toEquiv := Equiv.ofInjective f hf.inj
-#align homeomorph.of_embedding Homeomorph.ofEmbedding
-
 protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
   h.inducing.secondCountableTopology
@@ -475,15 +468,28 @@ theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
     fun _ => h.closedEmbedding.locallyCompactSpace⟩
 
 /-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
-def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) : X ≃ₜ Y where
+def ofContinuousOpenEquiv (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) : X ≃ₜ Y where
   continuous_toFun := h₁
   continuous_invFun := by
-    rw [continuous_def]
-    intro s hs
-    convert ← h₂ s hs using 1
-    apply e.image_eq_preimage
+    rw [openEmbedding_of_continuous_injective_open h₁ e.injective h₂ |>.continuous_iff,
+        e.invFun_as_coe, e.self_comp_symm]
+    exact continuous_id
   toEquiv := e
-#align homeomorph.homeomorph_of_continuous_open Homeomorph.homeomorphOfContinuousOpen
+#align homeomorph.homeomorph_of_continuous_open Homeomorph.ofContinuousOpenEquiv
+
+/-- An embedding is an homeomorphism onto its range. -/
+noncomputable def _root_.Embedding.toHomeomorph {f : X → Y} (hf : Embedding f) :
+    X ≃ₜ Set.range f where
+  continuous_toFun := hf.continuous.subtype_mk _
+  continuous_invFun := hf.continuous_iff.2 <| by simp [continuous_subtype_val]
+  toEquiv := Equiv.ofInjective f hf.inj
+#align homeomorph.of_embedding Embedding.toHomeomorph
+
+/-- A surjective embedding is a homeomorphism. -/
+noncomputable def _root_.Embedding.toHomeomorph_of_surjective {f : X → Y}  (hf : Embedding f)
+    (hsurj : Function.Surjective f) : X ≃ₜ Y :=
+  .ofContinuousOpenEquiv (Equiv.ofBijective f ⟨hf.inj, hsurj⟩)
+    hf.continuous (hf.toOpenEmbedding_of_surjective hsurj).isOpenMap
 
 @[simp]
 theorem comp_continuousOn_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) :
@@ -686,8 +692,8 @@ section Distrib
 
 /-- `(X ⊕ Y) × Z` is homeomorphic to `X × Z ⊕ Y × Z`. -/
 def sumProdDistrib : Sum X Y × Z ≃ₜ Sum (X × Z) (Y × Z) :=
-  Homeomorph.symm <|
-    homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y Z).symm
+  .symm <|
+    .ofContinuousOpenEquiv (Equiv.sumProdDistrib X Y Z).symm
         ((continuous_inl.prod_map continuous_id).sum_elim
           (continuous_inr.prod_map continuous_id)) <|
       (isOpenMap_inl.prod IsOpenMap.id).sum_elim (isOpenMap_inr.prod IsOpenMap.id)
@@ -702,8 +708,8 @@ variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
 /-- `(Σ i, X i) × Y` is homeomorphic to `Σ i, (X i × Y)`. -/
 def sigmaProdDistrib : (Σi, X i) × Y ≃ₜ Σi, X i × Y :=
-  Homeomorph.symm <|
-    homeomorphOfContinuousOpen (Equiv.sigmaProdDistrib X Y).symm
+  .symm <|
+    .ofContinuousOpenEquiv (Equiv.sigmaProdDistrib X Y).symm
       (continuous_sigma fun _ => continuous_sigmaMk.fst'.prod_mk continuous_snd)
       (isOpenMap_sigma.2 fun _ => isOpenMap_sigmaMk.prod IsOpenMap.id)
 #align homeomorph.sigma_prod_distrib Homeomorph.sigmaProdDistrib
