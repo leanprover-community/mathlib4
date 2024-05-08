@@ -443,7 +443,8 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_same {m : M} {p : MvP
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
   · split_ifs
-    rfl; rw [zero_coeff]
+    · rfl
+    rw [zero_coeff]
   · rw [hp zero_coeff, if_pos]; rfl
 
 theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
@@ -455,8 +456,11 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
   · split_ifs
-    rw [zero_coeff]; rw [coeff_zero]; rw [coeff_zero]
-  · rw [if_neg]; rw [coeff_zero]; rw [hp zero_coeff]; exact Ne.symm hn
+    · rw [zero_coeff]; rw [coeff_zero]
+    · rw [coeff_zero]
+  · rw [if_neg]
+    · rw [coeff_zero]
+    · rw [hp zero_coeff]; exact Ne.symm hn
 
 /-- The weighted homogeneous components of a weighted homogeneous polynomial. -/
 theorem weightedHomogeneousComponent_weighted_homogeneous_polynomial [DecidableEq M] (m n : M)
@@ -494,7 +498,7 @@ theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i
   · simp only [coeff_weightedHomogeneousComponent, if_pos, map_zero, coeff_zero_C]
   · rw [coeff_weightedHomogeneousComponent, if_neg, coeff_C, if_neg (Ne.symm hd)]
     simp only [weightedDegree, LinearMap.toAddMonoidHom_coe, Finsupp.total_apply, Finsupp.sum,
-      sum_eq_zero_iff, Finsupp.mem_support_iff, Ne.def, smul_eq_zero, not_forall, not_or,
+      sum_eq_zero_iff, Finsupp.mem_support_iff, Ne, smul_eq_zero, not_forall, not_or,
       and_self_left, exists_prop]
     simp only [DFunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply, not_forall] at hd
     obtain ⟨i, hi⟩ := hd

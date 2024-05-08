@@ -188,15 +188,13 @@ theorem IsTopologicalBasis.open_eq_sUnion' {B : Set (Set α)} (hB : IsTopologica
       fun ⟨_b, ⟨_, bu⟩, ab⟩ => bu ab⟩
 #align topological_space.is_topological_basis.open_eq_sUnion' TopologicalSpace.IsTopologicalBasis.open_eq_sUnion'
 
--- Porting note: use `∃ S, S ⊆ B ∧ _` instead of `∃ S (_ : S ⊆ B), _`
 theorem IsTopologicalBasis.open_eq_sUnion {B : Set (Set α)} (hB : IsTopologicalBasis B) {u : Set α}
-    (ou : IsOpen u) : ∃ S, S ⊆ B ∧ u = ⋃₀ S :=
+    (ou : IsOpen u) : ∃ S ⊆ B, u = ⋃₀ S :=
   ⟨{ s ∈ B | s ⊆ u }, fun _ h => h.1, hB.open_eq_sUnion' ou⟩
 #align topological_space.is_topological_basis.open_eq_sUnion TopologicalSpace.IsTopologicalBasis.open_eq_sUnion
 
--- Porting note: use `∃ S, S ⊆ B ∧ _` instead of `∃ S (_ : S ⊆ B), _`
 theorem IsTopologicalBasis.open_iff_eq_sUnion {B : Set (Set α)} (hB : IsTopologicalBasis B)
-    {u : Set α} : IsOpen u ↔ ∃ S, S ⊆ B ∧ u = ⋃₀ S :=
+    {u : Set α} : IsOpen u ↔ ∃ S ⊆ B, u = ⋃₀ S :=
   ⟨hB.open_eq_sUnion, fun ⟨_S, hSB, hu⟩ => hu.symm ▸ isOpen_sUnion fun _s hs => hB.isOpen (hSB hs)⟩
 #align topological_space.is_topological_basis.open_iff_eq_sUnion TopologicalSpace.IsTopologicalBasis.open_iff_eq_sUnion
 
@@ -555,14 +553,14 @@ theorem IsSeparable.of_subtype (s : Set α) [SeparableSpace s] : IsSeparable s :
   simpa using isSeparable_range (continuous_subtype_val (p := (· ∈ s)))
 #align topological_space.is_separable_of_separable_space_subtype TopologicalSpace.IsSeparable.of_subtype
 
-@[deprecated] -- Since 2024/02/05
+@[deprecated] -- Since 2024-02-05
 alias isSeparable_of_separableSpace_subtype := IsSeparable.of_subtype
 
 theorem IsSeparable.of_separableSpace [h : SeparableSpace α] (s : Set α) : IsSeparable s :=
   IsSeparable.mono (isSeparable_univ_iff.2 h) (subset_univ _)
 #align topological_space.is_separable_of_separable_space TopologicalSpace.IsSeparable.of_separableSpace
 
-@[deprecated] -- Since 2024/02/05
+@[deprecated] -- Since 2024-02-05
 alias isSeparable_of_separableSpace := IsSeparable.of_separableSpace
 
 end TopologicalSpace
@@ -621,7 +619,6 @@ theorem isTopologicalBasis_subtype
 
 -- Porting note: moved `DenseRange.separableSpace` up
 
--- Porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
 theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {s : Set α}
     [SeparableSpace s] (hs : Dense s) : ∃ t ⊆ s, t.Countable ∧ Dense t :=
   let ⟨t, htc, htd⟩ := exists_countable_dense s
@@ -629,7 +626,6 @@ theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {
     hs.denseRange_val.dense_image continuous_subtype_val htd⟩
 #align dense.exists_countable_dense_subset Dense.exists_countable_dense_subsetₓ
 
--- Porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
 /-- Let `s` be a dense set in a topological space `α` with partial order structure. If `s` is a
 separable space (e.g., if `α` has a second countable topology), then there exists a countable
 dense subset `t ⊆ s` such that `t` contains bottom/top element of `α` when they exist and belong
@@ -900,9 +896,8 @@ theorem countable_cover_nhds [SecondCountableTopology α] {f : α → Set α} (h
   exact fun x => ⟨x, mem_interior_iff_mem_nhds.2 (hf x)⟩
 #align topological_space.countable_cover_nhds TopologicalSpace.countable_cover_nhds
 
--- Porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
 theorem countable_cover_nhdsWithin [SecondCountableTopology α] {f : α → Set α} {s : Set α}
-    (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
+    (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ t ⊆ s, t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
   have : ∀ x : s, (↑) ⁻¹' f x ∈ 𝓝 x := fun x => preimage_coe_mem_nhds_subtype.2 (hf x x.2)
   rcases countable_cover_nhds this with ⟨t, htc, htU⟩
   refine' ⟨(↑) '' t, Subtype.coe_image_subset _ _, htc.image _, fun x hx => _⟩
@@ -1034,3 +1029,9 @@ protected theorem Embedding.secondCountableTopology [SecondCountableTopology β]
     SecondCountableTopology α :=
   hf.1.secondCountableTopology
 #align embedding.second_countable_topology Embedding.secondCountableTopology
+
+protected theorem Embedding.separableSpace [TopologicalSpace α]
+    [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : Embedding f) :
+    TopologicalSpace.SeparableSpace α := by
+  have := hf.secondCountableTopology
+  exact SecondCountableTopology.to_separableSpace

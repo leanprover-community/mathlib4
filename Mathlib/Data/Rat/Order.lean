@@ -30,7 +30,7 @@ variable {a b c : ℚ}
 
 #noalign rat.nonneg
 
-@[simp] lemma num_nonneg : 0 ≤ a.num ↔ 0 ≤ a := by simp [instLERat, Rat.blt, le_iff_lt_or_eq]; tauto
+@[simp] lemma num_nonneg : 0 ≤ a.num ↔ 0 ≤ a := by simp [instLE, Rat.blt, le_iff_lt_or_eq]; tauto
 #align rat.num_nonneg_iff_zero_le Rat.num_nonneg
 
 @[simp] lemma divInt_nonneg_iff_of_pos_right {a b : ℤ} (hb : 0 < b) : 0 ≤ a /. b ↔ 0 ≤ a := by
@@ -49,11 +49,32 @@ variable {a b c : ℚ}
 @[simp] lemma mkRat_nonneg {a : ℤ} (ha : 0 ≤ a) (b : ℕ) : 0 ≤ mkRat a b := by
   simpa using divInt_nonneg ha b.cast_nonneg
 
+theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) :
+    0 ≤ Rat.ofScientific m s e := by
+  rw [Rat.ofScientific]
+  cases s
+  · rw [if_neg (by decide)]
+    refine num_nonneg.mp ?_
+    rw [num_natCast]
+    exact Nat.cast_nonneg _
+  · rw [if_pos rfl, normalize_eq_mkRat]
+    exact Rat.mkRat_nonneg (Nat.cast_nonneg _) _
+
+instance _root_.NNRatCast.toOfScientific {K} [NNRatCast K] : OfScientific K where
+  ofScientific (m : ℕ) (b : Bool) (d : ℕ) :=
+    NNRat.cast ⟨Rat.ofScientific m b d, ofScientific_nonneg m b d⟩
+
+/-- Casting a scientific literal via `ℚ≥0` is the same as casting directly. -/
+@[simp, norm_cast]
+theorem _root_.NNRat.cast_ofScientific {K} [NNRatCast K] (m : ℕ) (s : Bool) (e : ℕ) :
+    (OfScientific.ofScientific m s e : ℚ≥0) = (OfScientific.ofScientific m s e : K) :=
+  rfl
+
 protected lemma add_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a + b :=
   numDenCasesOn' a fun n₁ d₁ h₁ ↦ numDenCasesOn' b fun n₂ d₂ h₂ ↦ by
     have d₁0 : 0 < (d₁ : ℤ) := mod_cast h₁.bot_lt
     have d₂0 : 0 < (d₂ : ℤ) := mod_cast h₂.bot_lt
-    simp only [d₁0, d₂0, h₁, h₂, mul_pos, divInt_nonneg_iff_of_pos_right, divInt_add_divInt, Ne.def,
+    simp only [d₁0, d₂0, h₁, h₂, mul_pos, divInt_nonneg_iff_of_pos_right, divInt_add_divInt, Ne,
       Nat.cast_eq_zero, not_false_iff]
     intro n₁0 n₂0
     apply add_nonneg <;> apply mul_nonneg <;> · first |assumption|apply Int.ofNat_zero_le
@@ -78,7 +99,7 @@ protected theorem nonneg_total (a : ℚ) : 0 ≤ a ∨ 0 ≤ -a := by
   simp_rw [← num_nonneg, num_neg_eq_neg_num, neg_nonneg]; exact le_total _ _
 #align rat.nonneg_total Rat.nonneg_total
 
-#align rat.decidable_nonneg Rat.instDecidableLeRatInstLERat
+#align rat.decidable_nonneg Rat.instDecidableLe
 
 -- Porting note (#11215): TODO can this be shortened?
 protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
@@ -162,7 +183,7 @@ instance : LT ℚ := by infer_instance
 
 instance : DistribLattice ℚ := by infer_instance
 
-instance : Lattice ℚ := by infer_instance
+instance instLattice : Lattice ℚ := by infer_instance
 
 instance : SemilatticeInf ℚ := by infer_instance
 

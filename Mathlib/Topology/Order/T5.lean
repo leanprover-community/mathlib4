@@ -3,7 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Set.Intervals.OrdConnectedComponent
+import Mathlib.Order.Interval.Set.OrdConnectedComponent
 import Mathlib.Topology.Order.Basic
 
 #align_import topology.algebra.order.t5 from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"

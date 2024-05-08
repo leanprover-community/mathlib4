@@ -124,23 +124,23 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
   refine' dvd_trans _ d_dvd_right
   rw [dvd_generator_iff, Ideal.span, ←
     span_singleton_generator (Submodule.span R {a, ψ ⟨y, hNO yN⟩})]
-  obtain ⟨r₁, r₂, d_eq⟩ : ∃ r₁ r₂ : R, d = r₁ * a + r₂ * ψ ⟨y, hNO yN⟩ := by
-    obtain ⟨r₁, r₂', hr₂', hr₁⟩ :=
-      mem_span_insert.mp (IsPrincipal.generator_mem (Submodule.span R {a, ψ ⟨y, hNO yN⟩}))
-    obtain ⟨r₂, rfl⟩ := mem_span_singleton.mp hr₂'
-    exact ⟨r₁, r₂, hr₁⟩
-  let ψ' : O →ₗ[R] R := r₁ • ϕ + r₂ • ψ
-  have : span R {d} ≤ ψ'.submoduleImage N := by
-    rw [span_le, singleton_subset_iff, SetLike.mem_coe, LinearMap.mem_submoduleImage_of_le hNO]
-    refine' ⟨y, yN, _⟩
-    change r₁ * ϕ ⟨y, hNO yN⟩ + r₂ * ψ ⟨y, hNO yN⟩ = d
-    rw [d_eq, ϕy_eq]
-  refine'
-    le_antisymm (this.trans (le_of_eq _)) (Ideal.span_singleton_le_span_singleton.mpr d_dvd_left)
-  rw [span_singleton_generator]
-  apply (le_trans _ this).eq_of_not_gt (hϕ ψ')
-  rw [← span_singleton_generator (ϕ.submoduleImage N)]
-  exact Ideal.span_singleton_le_span_singleton.mpr d_dvd_left
+  · obtain ⟨r₁, r₂, d_eq⟩ : ∃ r₁ r₂ : R, d = r₁ * a + r₂ * ψ ⟨y, hNO yN⟩ := by
+      obtain ⟨r₁, r₂', hr₂', hr₁⟩ :=
+        mem_span_insert.mp (IsPrincipal.generator_mem (Submodule.span R {a, ψ ⟨y, hNO yN⟩}))
+      obtain ⟨r₂, rfl⟩ := mem_span_singleton.mp hr₂'
+      exact ⟨r₁, r₂, hr₁⟩
+    let ψ' : O →ₗ[R] R := r₁ • ϕ + r₂ • ψ
+    have : span R {d} ≤ ψ'.submoduleImage N := by
+      rw [span_le, singleton_subset_iff, SetLike.mem_coe, LinearMap.mem_submoduleImage_of_le hNO]
+      refine' ⟨y, yN, _⟩
+      change r₁ * ϕ ⟨y, hNO yN⟩ + r₂ * ψ ⟨y, hNO yN⟩ = d
+      rw [d_eq, ϕy_eq]
+    refine'
+      le_antisymm (this.trans (le_of_eq _)) (Ideal.span_singleton_le_span_singleton.mpr d_dvd_left)
+    rw [span_singleton_generator]
+    apply (le_trans _ this).eq_of_not_gt (hϕ ψ')
+    rw [← span_singleton_generator (ϕ.submoduleImage N)]
+    exact Ideal.span_singleton_le_span_singleton.mpr d_dvd_left
   · exact subset_span (mem_insert _ _)
 #align generator_maximal_submodule_image_dvd generator_maximal_submoduleImage_dvd
 
@@ -291,15 +291,15 @@ theorem Submodule.nonempty_basis_of_pid {ι : Type*} [Finite ι] (b : Basis ι R
   cases nonempty_fintype ι
   induction' N using inductionOnRank with N ih
   · exact b
-  let b' := (b.reindex (Fintype.equivFin ι)).map (LinearEquiv.ofTop _ rfl).symm
-  by_cases N_bot : N = ⊥
-  · subst N_bot
-    exact ⟨0, ⟨Basis.empty _⟩⟩
-  obtain ⟨y, -, a, hay, M', -, N', N'_le_N, -, -, ay_ortho, h'⟩ :=
-    Submodule.basis_of_pid_aux ⊤ N b' N_bot le_top
-  obtain ⟨n', ⟨bN'⟩⟩ := ih N' N'_le_N _ hay ay_ortho
-  obtain ⟨bN, _hbN⟩ := h' n' bN'
-  exact ⟨n' + 1, ⟨bN⟩⟩
+  · let b' := (b.reindex (Fintype.equivFin ι)).map (LinearEquiv.ofTop _ rfl).symm
+    by_cases N_bot : N = ⊥
+    · subst N_bot
+      exact ⟨0, ⟨Basis.empty _⟩⟩
+    obtain ⟨y, -, a, hay, M', -, N', N'_le_N, -, -, ay_ortho, h'⟩ :=
+      Submodule.basis_of_pid_aux ⊤ N b' N_bot le_top
+    obtain ⟨n', ⟨bN'⟩⟩ := ih N' N'_le_N _ hay ay_ortho
+    obtain ⟨bN, _hbN⟩ := h' n' bN'
+    exact ⟨n' + 1, ⟨bN⟩⟩
   infer_instance
 #align submodule.nonempty_basis_of_pid Submodule.nonempty_basis_of_pid
 
@@ -513,19 +513,19 @@ theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) 
   revert N
   induction' O using inductionOnRank with M0 ih
   · exact b
-  intro N N_le_M0
-  obtain ⟨m, b'M⟩ := M0.basisOfPid b
-  by_cases N_bot : N = ⊥
-  · subst N_bot
-    exact ⟨0, m, Nat.zero_le _, b'M, Basis.empty _, finZeroElim, finZeroElim⟩
-  obtain ⟨y, hy, a, _, M', M'_le_M, N', _, N'_le_M', y_ortho, _, h⟩ :=
-    Submodule.basis_of_pid_aux M0 N b'M N_bot N_le_M0
+  · intro N N_le_M0
+    obtain ⟨m, b'M⟩ := M0.basisOfPid b
+    by_cases N_bot : N = ⊥
+    · subst N_bot
+      exact ⟨0, m, Nat.zero_le _, b'M, Basis.empty _, finZeroElim, finZeroElim⟩
+    obtain ⟨y, hy, a, _, M', M'_le_M, N', _, N'_le_M', y_ortho, _, h⟩ :=
+      Submodule.basis_of_pid_aux M0 N b'M N_bot N_le_M0
 
-  obtain ⟨n', m', hn'm', bM', bN', as', has'⟩ := ih M' M'_le_M y hy y_ortho N' N'_le_M'
-  obtain ⟨bN, h'⟩ := h n' bN'
-  obtain ⟨hmn, bM, h''⟩ := h' m' hn'm' bM'
-  obtain ⟨as, has⟩ := h'' as' has'
-  exact ⟨_, _, hmn, bM, bN, as, has⟩
+    obtain ⟨n', m', hn'm', bM', bN', as', has'⟩ := ih M' M'_le_M y hy y_ortho N' N'_le_M'
+    obtain ⟨bN, h'⟩ := h n' bN'
+    obtain ⟨hmn, bM, h''⟩ := h' m' hn'm' bM'
+    obtain ⟨as, has⟩ := h'' as' has'
+    exact ⟨_, _, hmn, bM, bN, as, has⟩
 -- Porting note: Lean generates a goal Fintype ι for some reason
   infer_instance
 #align submodule.exists_smith_normal_form_of_le Submodule.exists_smith_normal_form_of_le

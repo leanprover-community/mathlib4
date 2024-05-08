@@ -332,7 +332,8 @@ instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Faithful] : (preLeft F L R
     (by apply congrArg CommaMorphism.right h)
 
 instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Full] : (preLeft F L R).Full where
-  preimage {X Y} f := CommaMorphism.mk (F.preimage f.left) f.right (by simpa using f.w)
+  map_surjective {X Y} f :=
+    ⟨CommaMorphism.mk (F.preimage f.left) f.right (by simpa using f.w), by aesop_cat⟩
 
 instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.EssSurj] : (preLeft F L R).EssSurj where
   mem_essImage Y :=
@@ -340,10 +341,8 @@ instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.EssSurj] : (preLeft F L R)
      ⟨isoMk (F.objObjPreimageIso _) (Iso.refl _) (by simp)⟩⟩
 
 /-- If `F` is an equivalence, then so is `preLeft F L R`. -/
-noncomputable def isEquivalencePreLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.IsEquivalence] :
-    (preLeft F L R).IsEquivalence :=
-  have := Equivalence.essSurj_of_equivalence F
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance isEquivalence_preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.IsEquivalence] :
+    (preLeft F L R).IsEquivalence where
 
 /-- The functor `(F ⋙ L, R) ⥤ (L, R)` -/
 @[simps]
@@ -362,7 +361,8 @@ instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.Faithful] : (preRight L F 
     (F.map_injective (congrArg CommaMorphism.right h))
 
 instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.Full] : (preRight L F R).Full where
-  preimage {X Y} f := CommaMorphism.mk f.left (F.preimage f.right) (by simpa using f.w)
+  map_surjective {X Y} f :=
+    ⟨CommaMorphism.mk f.left (F.preimage f.right) (by simpa using f.w), by aesop_cat⟩
 
 instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.EssSurj] : (preRight L F R).EssSurj where
   mem_essImage Y :=
@@ -370,10 +370,8 @@ instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.EssSurj] : (preRight L F R
      ⟨isoMk (Iso.refl _) (F.objObjPreimageIso _) (by simp [← R.map_comp])⟩⟩
 
 /-- If `F` is an equivalence, then so is `preRight L F R`. -/
-noncomputable def isEquivalencePreRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.IsEquivalence] :
-    (preRight L F R).IsEquivalence :=
-  have := Equivalence.essSurj_of_equivalence F
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance isEquivalence_preRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.IsEquivalence] :
+    (preRight L F R).IsEquivalence where
 
 /-- The functor `(L, R) ⥤ (L ⋙ F, R ⋙ F)` -/
 @[simps]

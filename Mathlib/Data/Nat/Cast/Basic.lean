@@ -101,9 +101,9 @@ theorem ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = 
   DFunLike.ext f g <| by
     intro n
     induction n with
-    | zero => simp_rw [Nat.zero_eq, map_zero f, map_zero g]
+    | zero => simp_rw [map_zero f, map_zero g]
     | succ n ihn =>
-      simp [Nat.succ_eq_add_one, h, ihn]
+      simp [h, ihn]
 #align ext_nat' ext_nat'
 
 @[ext]
@@ -311,7 +311,7 @@ variable {π : α → Type*} [∀ a, NatCast (π a)]
 
 /- Porting note: manually wrote this instance.
 Was `by refine_struct { .. } <;> pi_instance_derive_field` -/
-instance natCast : NatCast (∀ a, π a) := { natCast := fun n _ ↦ n }
+instance instNatCast : NatCast (∀ a, π a) where natCast n _ := n
 
 theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl

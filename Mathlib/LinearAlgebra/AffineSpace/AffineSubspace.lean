@@ -371,8 +371,7 @@ theorem ext_of_direction_eq {s1 s2 : AffineSubspace k P} (hd : s1.direction = s2
 
 -- See note [reducible non instances]
 /-- This is not an instance because it loops with `AddTorsor.nonempty`. -/
-@[reducible]
-def toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s where
+abbrev toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s where
   vadd a b := ⟨(a : V) +ᵥ (b : P), vadd_mem_of_mem_direction a.2 b.2⟩
   zero_vadd := fun a => by
     ext
@@ -1176,7 +1175,7 @@ instance [Nonempty s] : Nonempty (affineSpan k s) :=
 /-- The affine span of a set is `⊥` if and only if that set is empty. -/
 @[simp]
 theorem affineSpan_eq_bot : affineSpan k s = ⊥ ↔ s = ∅ := by
-  rw [← not_iff_not, ← Ne.def, ← Ne.def, ← nonempty_iff_ne_bot, affineSpan_nonempty,
+  rw [← not_iff_not, ← Ne, ← Ne, ← nonempty_iff_ne_bot, affineSpan_nonempty,
     nonempty_iff_ne_empty]
 #align affine_span_eq_bot affineSpan_eq_bot
 

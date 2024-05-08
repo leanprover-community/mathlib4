@@ -275,7 +275,7 @@ instance proj_reflectsIsomorphisms : (proj S T).ReflectsIsomorphisms where
 open CategoryTheory.Limits
 
 /-- The identity structured arrow is initial. -/
-def mkIdInitial [T.Full] [T.Faithful] : IsInitial (mk (𝟙 (T.obj Y))) where
+noncomputable def mkIdInitial [T.Full] [T.Faithful] : IsInitial (mk (𝟙 (T.obj Y))) where
   desc c := homMk (T.preimage c.pt.hom)
   uniq c m _ := by
     apply CommaMorphism.ext
@@ -302,9 +302,9 @@ instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.EssSurj] : (pre S F G).EssSurj :
   show (Comma.preRight _ _ _).EssSurj from inferInstance
 
 /-- If `F` is an equivalence, then so is the functor `(S, F ⋙ G) ⥤ (S, G)`. -/
-noncomputable def isEquivalencePre (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.IsEquivalence] :
+instance isEquivalence_pre (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.IsEquivalence] :
     (pre S F G).IsEquivalence :=
-  Comma.isEquivalencePreRight _ _ _
+  Comma.isEquivalence_preRight _ _ _
 
 /-- The functor `(S, F) ⥤ (G(S), F ⋙ G)`. -/
 @[simps]
@@ -318,15 +318,14 @@ instance (S : C) (F : B ⥤ C) (G : C ⥤ D) : (post S F G).Faithful where
   map_injective {_ _} _ _ h := by simpa [ext_iff] using h
 
 instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Faithful] : (post S F G).Full where
-  preimage {_ _} f := homMk f.right (G.map_injective (by simpa using f.w.symm))
+  map_surjective f := ⟨homMk f.right (G.map_injective (by simpa using f.w.symm)), by aesop_cat⟩
 
 instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] : (post S F G).EssSurj where
   mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
 
 /-- If `G` is fully faithful, then `post S F G : (S, F) ⥤ (G(S), F ⋙ G)` is an equivalence. -/
-noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] [G.Faithful] :
-    (post S F G).IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance isEquivalence_post (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] [G.Faithful] :
+    (post S F G).IsEquivalence where
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
@@ -613,7 +612,7 @@ instance proj_reflectsIsomorphisms : (proj S T).ReflectsIsomorphisms where
 open CategoryTheory.Limits
 
 /-- The identity costructured arrow is terminal. -/
-def mkIdTerminal [S.Full] [S.Faithful] : IsTerminal (mk (𝟙 (S.obj Y))) where
+noncomputable def mkIdTerminal [S.Full] [S.Faithful] : IsTerminal (mk (𝟙 (S.obj Y))) where
   lift c := homMk (S.preimage c.pt.hom)
   uniq := by
     rintro c m -
@@ -640,9 +639,9 @@ instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [F.EssSurj] : (pre F G S).EssSurj :
   show (Comma.preLeft _ _ _).EssSurj from inferInstance
 
 /-- If `F` is an equivalence, then so is the functor `(F ⋙ G, S) ⥤ (G, S)`. -/
-noncomputable def isEquivalencePre (F : B ⥤ C) (G : C ⥤ D) (S : D) [F.IsEquivalence] :
+instance isEquivalence_pre (F : B ⥤ C) (G : C ⥤ D) (S : D) [F.IsEquivalence] :
     (pre F G S).IsEquivalence :=
-  Comma.isEquivalencePreLeft _ _ _
+  Comma.isEquivalence_preLeft _ _ _
 
 /-- The functor `(F, S) ⥤ (F ⋙ G, G(S))`. -/
 @[simps]
@@ -656,15 +655,14 @@ instance (F : B ⥤ C) (G : C ⥤ D) (S : C) : (post F G S).Faithful where
   map_injective {_ _} _ _ h := by simpa [ext_iff] using h
 
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [G.Faithful] : (post F G S).Full where
-  preimage {_ _} f := homMk f.left (G.map_injective (by simpa using f.w))
+  map_surjective f := ⟨homMk f.left (G.map_injective (by simpa using f.w)), by aesop_cat⟩
 
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [G.Full] : (post F G S).EssSurj where
   mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
 
 /-- If `G` is fully faithful, then `post F G S : (F, S) ⥤ (F ⋙ G, G(S))` is an equivalence. -/
-noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] [G.Faithful] :
-    (post F G S).IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance isEquivalence_post (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] [G.Faithful] :
+    (post F G S).IsEquivalence where
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
