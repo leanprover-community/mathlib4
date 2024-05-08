@@ -314,16 +314,6 @@ lemma _root_.ContDiff.fourierPowSMulRight {f : V → E} {k : ℕ∞} (hf : ContD
   apply (ContinuousMultilinearMap.contDiff _).comp
   exact contDiff_pi.2 (fun _ ↦ L.contDiff)
 
-lemma ContinuousLinearMap.norm_pi_le_of_le {ι : Type*} {𝕜 : Type*} [Fintype ι]
-    [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)] {C : ℝ}
-    {L : (i : ι) → (E →L[𝕜] M i)} (hL : ∀ i, ‖L i‖ ≤ C) (hC : 0 ≤ C) :
-    ‖ContinuousLinearMap.pi L‖ ≤ C := by
-  apply ContinuousLinearMap.opNorm_le_bound _ (by positivity) (fun x ↦ ?_)
-  simp only [ContinuousLinearMap.coe_pi']
-  refine (pi_norm_le_iff_of_nonneg (by positivity)).mpr (fun i ↦ ?_)
-  exact (L i).le_of_opNorm_le_of_le (hL i) le_rfl
-
 lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
     ‖fourierPowSMulRight L f v n‖ ≤ (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ := by
   apply ContinuousMultilinearMap.opNorm_le_bound _ (by positivity) (fun m ↦ ?_)
@@ -345,6 +335,10 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     {v : V} (hv : ∀ i ≤ k, ∀ j ≤ n, ‖v‖ ^ j * ‖iteratedFDeriv ℝ i f v‖ ≤ C) :
     ‖iteratedFDeriv ℝ k (fun v ↦ fourierPowSMulRight L f v n) v‖ ≤
       (2 * π) ^ n * (2 * n + 2) ^ k * ‖L‖ ^ n * C := by
+  /- We write `fourierPowSMulRight L f v n` as a composition of bilinear and multilinear maps,
+  thanks to `fourierPowSMulRight_eq_comp`, and then we control the iterated derivatives of these
+  thanks to general bounds on derivatives of bilinear and multilinear maps. -/
+  simp_rw [fourierPowSMulRight_eq_comp]
   let T : (W →L[ℝ] ℝ) [×n]→L[ℝ] (W [×n]→L[ℝ] ℝ) :=
     compContinuousLinearMapLRight (ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ)
   have I₁ m : ‖iteratedFDeriv ℝ m T (fun _ ↦ L v)‖ ≤
@@ -358,7 +352,7 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     refine (pi_norm_le_iff_of_nonneg (by positivity)).mpr (fun _i ↦ ?_)
     exact ContinuousLinearMap.le_opNorm _ _
   have I₂ m : ‖iteratedFDeriv ℝ m (T ∘ (ContinuousLinearMap.pi (fun (_i : Fin n) ↦ L))) v‖ ≤
-      (Nat.descFactorial n m * 1 * (‖L‖ * ‖v‖) ^ (n - m)) * ‖L‖^m := by
+      (Nat.descFactorial n m * 1 * (‖L‖ * ‖v‖) ^ (n - m)) * ‖L‖ ^ m := by
     rw [ContinuousLinearMap.iteratedFDeriv_comp_right _ (ContinuousMultilinearMap.contDiff _)
       _ le_top]
     apply (norm_compContinuousLinearMap_le _ _).trans
@@ -377,7 +371,6 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
   have A : ContDiff ℝ K fun y ↦ T fun _ ↦ L y := by
     apply (ContinuousMultilinearMap.contDiff _).comp
     exact contDiff_pi.2 (fun _ ↦ L.contDiff)
-  simp_rw [fourierPowSMulRight_eq_comp]
   rw [iteratedFDeriv_const_smul_apply', norm_smul (β := V [×k]→L[ℝ] (W [×n]→L[ℝ] E))]; swap
   · exact (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).isBoundedBilinearMap.contDiff.comp₂ (A.of_le hk)
       (hf.of_le hk)
@@ -409,7 +402,6 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
   _ = (2 * n + 2) ^ k * (‖L‖^n * C) := by
     simp only [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose]
     simp [← mul_pow, mul_add, ← mul_assoc]
-
 
 variable [SecondCountableTopology V] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
 
