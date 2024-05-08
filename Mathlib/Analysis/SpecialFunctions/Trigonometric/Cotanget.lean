@@ -43,6 +43,7 @@ theorem UpperHalfPlane.exp_two_pi_I_lt_one (z : ℍ) :
     coe_im, zero_sub, exp_lt_one_iff, Left.neg_neg_iff]
   positivity
 
+/-This is the version one probably wants, which is why the pi's are there. -/
 theorem pi_mul_cot_pi_q_exp (z : ℍ) :
     π * cot (π * z) = π * I - 2 * π * I * ∑' n : ℕ, Complex.exp (2 * π * I * z) ^ n := by
   rw [cot_pi_eq_exp_ratio]
