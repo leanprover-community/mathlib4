@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 If `μ` is an s-finite measure, then there exists a finite measure `μ.toFinite` and a measurable
 function `densityToFinite μ` such that `μ = μ.toFinite.withDensity μ.densityToFinite`.
 
-That measure is not unique, and in particular our implementation lead to `μ.toFinite ≠ μ` even if
+That measure is not unique, and in particular our implementation leads to `μ.toFinite ≠ μ` even if
 `μ` is finite.
 
 ## Main definitions
