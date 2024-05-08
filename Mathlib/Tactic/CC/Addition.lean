@@ -1261,6 +1261,7 @@ partial def internalizeCore (e : Expr) (parent? : Option Expr) : CCM Unit := do
   if (← get).ac then
     internalizeAC e parent?
 
+/-- Propagate equality from `a` and `b` to `a ↔ b`. -/
 partial def propagateIffUp (e : Expr) : CCM Unit := do
   let some (a, b) := e.iff? | failure
   if ← isEqTrue a then
@@ -1273,6 +1274,7 @@ partial def propagateIffUp (e : Expr) : CCM Unit := do
     -- `a = b     → (Iff a b) = True`
     pushEq e (.const ``True []) (mkApp3 (.const ``iff_eq_true_of_eq []) a b (← getPropEqProof a b))
 
+/-- Propagate equality from `a` and `b` to `a ∧ b`. -/
 partial def propagateAndUp (e : Expr) : CCM Unit := do
   let some (a, b) := e.and? | failure
   if ← isEqTrue a then
@@ -1294,6 +1296,7 @@ partial def propagateAndUp (e : Expr) : CCM Unit := do
     pushEq e a (mkApp3 (.const ``and_eq_of_eq []) a b (← getPropEqProof a b))
   -- We may also add `a = Not b -> (And a b) = False`
 
+/-- Propagate equality from `a` and `b` to `a ∨ b`. -/
 partial def propagateOrUp (e : Expr) : CCM Unit := do
   let some (a, b) := e.app2? ``Or | failure
   if ← isEqTrue a then
@@ -1315,6 +1318,7 @@ partial def propagateOrUp (e : Expr) : CCM Unit := do
     pushEq e a (mkApp3 (.const ``or_eq_of_eq []) a b (← getPropEqProof a b))
   -- We may also add `a = Not b -> (Or a b) = True`
 
+/-- Propagate equality from `a` to `¬a`. -/
 partial def propagateNotUp (e : Expr) : CCM Unit := do
   let some a := e.not? | failure
   if ← isEqTrue a then
@@ -1328,7 +1332,7 @@ partial def propagateNotUp (e : Expr) : CCM Unit := do
     let H := Expr.app (.const ``true_eq_false_of_false []) falsePr
     pushEq (.const ``True []) (.const ``False []) H
 
-
+/-- Propagate equality from `a` and `b` to `a → b`. -/
 partial def propagateImpUp (e : Expr) : CCM Unit := do
   guard e.isArrow
   let .forallE _ a b _ := e | unreachable!
@@ -1363,6 +1367,7 @@ partial def propagateImpUp (e : Expr) : CCM Unit := do
     pushEq e (.const ``True [])
       (mkApp3 (.const ``imp_eq_true_of_eq []) a b (← getPropEqProof a b))
 
+/-- Propagate equality from `p`, `a` and `b` to `if p then a else b`. -/
 partial def propagateIteUp (e : Expr) : CCM Unit := do
   let .app (.app (.app (.app (.app (.const ``ite [lvl]) A) c) d) a) b := e | failure
   if ← isEqTrue c then
@@ -1375,6 +1380,7 @@ partial def propagateIteUp (e : Expr) : CCM Unit := do
     -- `a = b     → (ite c a b) = a`
     pushEq e a (mkApp6 (.const ``if_eq_of_eq [lvl]) c d A a b (← getPropEqProof a b))
 
+/-- Propagate equality from `a` and `b` to `a = b`. -/
 partial def propagateEqUp (e : Expr) : CCM Unit := do
   -- Remark: the positive case is implemented at `checkEqTrue` for any reflexive relation.
   let some (_, a, b) := e.eq? | failure
@@ -1396,6 +1402,7 @@ partial def propagateEqUp (e : Expr) : CCM Unit := do
     if let some aNeB ← mkNeOfNeOfEq aNeRb rb b then
       pushEq e (.const ``False []) (← mkEqFalse aNeB)
 
+/-- Propagate equality from subexpressions of `e` to `e`. -/
 partial def propagateUp (e : Expr) : CCM Unit := do
   if (← get).inconsistent then return
   if e.isAppOfArity ``Iff 2 then
@@ -1510,6 +1517,7 @@ partial def mkEntry (e : Expr) (interpreted : Bool) : CCM Unit := do
   processSubsingletonElem e
 end
 
+/-- Can we propagate equality from subexpressions of `e` to `e`? -/
 def mayPropagate (e : Expr) : Bool :=
   e.isAppOfArity ``Iff 2 || e.isAppOfArity ``And 2 || e.isAppOfArity ``Or 2 ||
     e.isAppOfArity ``Not 1 || e.isArrow || e.isIte
@@ -1598,6 +1606,7 @@ def reinsertParents (e : Expr) : CCM Unit := do
       else
         addCongruenceTable p.expr
 
+/-- Check for integrity of the `CCStructure`. -/
 def checkInvariant : CCM Unit := do
   guard (← get).checkInvariant
 
@@ -1605,8 +1614,7 @@ def checkInvariant : CCM Unit := do
 For each `fnRoot` in `fnRoots` traverse its parents, and look for a parent prefix that is
 in the same equivalence class of the given lambdas.
 
-remark All expressions in lambdas are in the same equivalence class
--/
+remark All expressions in lambdas are in the same equivalence class -/
 def propagateBetaToEqc (fnRoots lambdas newLambdaApps : Array Expr) : CCM (Array Expr) := do
   if lambdas.isEmpty then return newLambdaApps
   let mut newLambdaApps := newLambdaApps
@@ -1696,6 +1704,7 @@ partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
     let H := Expr.app (.const ``true_eq_false_of_false []) falsePr
     pushEq (.const ``True []) (.const ``False []) H
 
+/-- Derive contradiction if we can get equality between different values. -/
 def propagateValueInconsistency (e₁ e₂ : Expr) : CCM Unit := do
   guard (← isInterpretedValue e₁)
   guard (← isInterpretedValue e₂)
@@ -1706,6 +1715,7 @@ def propagateValueInconsistency (e₁ e₂ : Expr) : CCM Unit := do
   let H ← mkAbsurd trueEqFalse eqProof neProof
   pushEq (.const ``True []) (.const ``False []) H
 
+/-- Propagate equality from `a ∧ b` to `a` and `b`. -/
 def propagateAndDown (e : Expr) : CCM Unit := do
   if ← isEqTrue e then
     let some (a, b) := e.and? | failure
@@ -1713,6 +1723,7 @@ def propagateAndDown (e : Expr) : CCM Unit := do
     pushEq a (.const ``True []) (mkApp3 (.const ``eq_true_of_and_eq_true_left []) a b h)
     pushEq b (.const ``True []) (mkApp3 (.const ``eq_true_of_and_eq_true_right []) a b h)
 
+/-- Propagate equality from `a ∨ b` to `a` and `b`. -/
 def propagateOrDown (e : Expr) : CCM Unit := do
   if ← isEqFalse e then
     let some (a, b) := e.app2? ``Or | failure
@@ -1720,6 +1731,7 @@ def propagateOrDown (e : Expr) : CCM Unit := do
     pushEq a (.const ``False []) (mkApp3 (.const ``eq_false_of_or_eq_false_left []) a b h)
     pushEq b (.const ``False []) (mkApp3 (.const ``eq_false_of_or_eq_false_right []) a b h)
 
+/-- Propagate equality from `¬a` to `a`. -/
 def propagateNotDown (e : Expr) : CCM Unit := do
   if ← isEqTrue e then
     let some a := e.not? | failure
@@ -1730,11 +1742,13 @@ def propagateNotDown (e : Expr) : CCM Unit := do
     pushEq a (.const ``True [])
       (mkApp2 (.const ``eq_true_of_not_eq_false []) a (← getEqFalseProof e))
 
+/-- Propagate equality from `a = b` to `a` and `b`. -/
 def propagateEqDown (e : Expr) : CCM Unit := do
   if ← isEqTrue e then
     let some (a, b) := e.eqOrIff? | failure
     pushEq a b (← mkAppM ``of_eq_true #[← getEqTrueProof e])
 
+/-- Propagate equality from `¬∃ x, p x` to `∀ x, ¬p x`. -/
 def propagateExistsDown (e : Expr) : CCM Unit := do
   if ← isEqFalse e then
     let hNotE ← mkAppM ``not_of_eq_false #[← getEqFalseProof e]
@@ -1742,6 +1756,7 @@ def propagateExistsDown (e : Expr) : CCM Unit := do
     internalizeCore all none
     pushEq all (.const ``True []) (← mkEqTrue hAll)
 
+/-- Propagate equality from `e` to subexpressions of `e`. -/
 def propagateDown (e : Expr) : CCM Unit := do
   if e.isAppOfArity ``And 2 then
     propagateAndDown e
