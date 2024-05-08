@@ -458,6 +458,8 @@ def evalPosPart : PositivityExt where eval zα pα e := do
   match e with
   | ~q(@posPart _ $instαlat $instαgrp $a) =>
     assertInstancesCommute
+    -- FIXME: There seems to be a bug in `Positivity.core` that makes it fail (instead of returning
+    -- `.none`) here sometimes. See eg the first test for `posPart`. This is why we need `catchNone`
     match ← catchNone (core zα pα a) with
     | .positive pf => return .positive q(posPart_pos $pf)
     | _ => return .nonnegative q(posPart_nonneg $a)
@@ -471,9 +473,3 @@ def evalNegPart : PositivityExt where eval _ _ e := do
     assertInstancesCommute
     return .nonnegative q(negPart_nonneg $a)
   | _ => throwError "not `negPart`"
-
--- There seems to be a bug in `Positivity.core` that makes it fail (instead of returning `.none`) in
--- the first example
-example (a : ℤ) : 0 ≤ a⁺ := by positivity
-example (a : ℤ) (ha : 0 < a) : 0 < a⁺ := by positivity
-example (a : ℤ) : 0 ≤ a⁻ := by positivity
