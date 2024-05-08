@@ -22,6 +22,8 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 theorem Prod.map_apply (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p = (f p.1, g p.2) := rfl
 #align prod_map Prod.map_apply
 
+@[deprecated (since := "2024-05-08")] alias Prod_map := Prod.map_apply
+
 namespace Prod
 
 @[simp]
@@ -332,6 +334,13 @@ theorem Involutive.prodMap {f : α → α} {g : β → β} :
     Involutive f → Involutive g → Involutive (map f g) :=
   LeftInverse.prodMap
 #align function.involutive.prod_map Function.Involutive.prodMap
+
+@[deprecated (since := "2024-05-08")] alias Injective.Prod_map := Injective.prodMap
+@[deprecated (since := "2024-05-08")] alias Surjective.Prod_map := Surjective.prodMap
+@[deprecated (since := "2024-05-08")] alias Bijective.Prod_map := Bijective.prodMap
+@[deprecated (since := "2024-05-08")] alias LeftInverse.Prod_map := LeftInverse.prodMap
+@[deprecated (since := "2024-05-08")] alias RightInverse.Prod_map := RightInverse.prodMap
+@[deprecated (since := "2024-05-08")] alias Involutive.Prod_map := Involutive.prodMap
 
 end Function
 
