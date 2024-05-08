@@ -710,44 +710,32 @@ instance OrderDual.instLocallyFiniteOrder : LocallyFiniteOrder αᵒᵈ where
   finset_mem_Ioc _ _ _ := (mem_Ico (α := α)).trans and_comm
   finset_mem_Ioo _ _ _ := (mem_Ioo (α := α)).trans and_comm
 
-theorem Icc_toDual : Icc (toDual a) (toDual b) = (Icc b a).map toDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
-  rfl
+theorem Icc_toDual : Icc (toDual a) (toDual b) = (Icc b a).map toDual.toEmbedding := map_refl.symm
 #align Icc_to_dual Icc_toDual
 
-theorem Ico_toDual : Ico (toDual a) (toDual b) = (Ioc b a).map toDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
-  exact rfl
+theorem Ico_toDual : Ico (toDual a) (toDual b) = (Ioc b a).map toDual.toEmbedding := map_refl.symm
 #align Ico_to_dual Ico_toDual
 
-theorem Ioc_toDual : Ioc (toDual a) (toDual b) = (Ico b a).map toDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
-  rfl
+theorem Ioc_toDual : Ioc (toDual a) (toDual b) = (Ico b a).map toDual.toEmbedding := map_refl.symm
 #align Ioc_to_dual Ioc_toDual
 
-theorem Ioo_toDual : Ioo (toDual a) (toDual b) = (Ioo b a).map toDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
-  rfl
+theorem Ioo_toDual : Ioo (toDual a) (toDual b) = (Ioo b a).map toDual.toEmbedding := map_refl.symm
 #align Ioo_to_dual Ioo_toDual
 
-theorem Icc_ofDual (a b : αᵒᵈ) : Icc (ofDual a) (ofDual b) = (Icc b a).map ofDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
-  rfl
+theorem Icc_ofDual (a b : αᵒᵈ) : Icc (ofDual a) (ofDual b) = (Icc b a).map ofDual.toEmbedding :=
+  map_refl.symm
 #align Icc_of_dual Icc_ofDual
 
-theorem Ico_ofDual (a b : αᵒᵈ) : Ico (ofDual a) (ofDual b) = (Ioc b a).map ofDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
-  rfl
+theorem Ico_ofDual (a b : αᵒᵈ) : Ico (ofDual a) (ofDual b) = (Ioc b a).map ofDual.toEmbedding :=
+  map_refl.symm
 #align Ico_of_dual Ico_ofDual
 
-theorem Ioc_ofDual (a b : αᵒᵈ) : Ioc (ofDual a) (ofDual b) = (Ico b a).map ofDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
-  rfl
+theorem Ioc_ofDual (a b : αᵒᵈ) : Ioc (ofDual a) (ofDual b) = (Ico b a).map ofDual.toEmbedding :=
+  map_refl.symm
 #align Ioc_of_dual Ioc_ofDual
 
-theorem Ioo_ofDual (a b : αᵒᵈ) : Ioo (ofDual a) (ofDual b) = (Ioo b a).map ofDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
-  rfl
+theorem Ioo_ofDual (a b : αᵒᵈ) : Ioo (ofDual a) (ofDual b) = (Ioo b a).map ofDual.toEmbedding :=
+  map_refl.symm
 #align Ioo_of_dual Ioo_ofDual
 
 end LocallyFiniteOrder
@@ -1265,8 +1253,8 @@ theorem BddBelow.finite_of_bddAbove [Preorder α] [LocallyFiniteOrder α]
 
 theorem Set.finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [OrderBot α] :
     s.Finite ↔ BddAbove s :=
-  ⟨fun h ↦ ⟨h.toFinset.sup id, fun x hx ↦ Finset.le_sup (f := id) ((Finite.mem_toFinset h).mpr hx)⟩,
-    fun ⟨m, hm⟩ ↦ (Set.finite_Icc ⊥ m).subset (fun x hx ↦ ⟨bot_le, hm hx⟩)⟩
+  ⟨fun h ↦ ⟨h.toFinset.sup id, fun _ hx ↦ Finset.le_sup (f := id) ((Finite.mem_toFinset h).mpr hx)⟩,
+    fun ⟨m, hm⟩ ↦ (Set.finite_Icc ⊥ m).subset (fun _ hx ↦ ⟨bot_le, hm hx⟩)⟩
 
 theorem Set.finite_iff_bddBelow [SemilatticeInf α] [LocallyFiniteOrder α] [OrderTop α] :
     s.Finite ↔ BddBelow s :=
