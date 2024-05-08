@@ -1,41 +1,160 @@
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Algebra.Order.Interval.Set.Instances
 
-theorem Set.indicator_singleton_apply_self {α M : Type*} {a : α} {f : α → M} [Zero M] :
-    Set.indicator {a} f a = f a := indicator_of_mem rfl _
+section
+
+variable {α : Type*} {a : α} {s : Set α}
 
 @[simp]
-theorem Set.indicator_singleton_apply_of_ne {α M : Type*} [Zero M] {a a' : α} {f : α → M}
-    (h : a' ≠ a) : Set.indicator {a} f a' = 0 :=
-  indicator_of_not_mem (Set.eq_of_mem_singleton.mt h) _
+theorem Set.inter_singleton_of_mem (h : a ∈ s): s ∩ {a} = {a} :=
+  Set.inter_eq_self_of_subset_right (Set.singleton_subset_iff.mpr h)
 
 @[simp]
-theorem Set.indicator_singleton_apply {α M : Type*} [DecidableEq α] [Zero M] {a a' : α} {f : α → M}
-    : Set.indicator {a} f a' = if a' = a then f a else 0 := by
-  rcases (eq_or_ne a' a) with (rfl | ha)
-  · rw [if_pos rfl, indicator_singleton_apply_self]
-  · rw [if_neg ha, indicator_singleton_apply_of_ne ha]
+theorem Set.singleton_inter_of_mem (h : a ∈ s) : s ∩ {a} = {a} :=
+  Set.inter_eq_self_of_subset_right (Set.singleton_subset_iff.mpr h)
 
-theorem ite_eq_apply_left {α β : Type*} [DecidableEq α] (f : α → β) :
-    ∀ a a' b, (if a = a' then f a else b) = (if a = a' then f a' else b) :=
-  fun _ _ _ => ite_congr rfl (congrArg fun a ↦ f a) (congrFun rfl)
+end
 
-theorem ite_eq_apply_right {α β : Type*} [DecidableEq α] (f : α → β) :
-    ∀ a a' b, (if a = a' then f a' else b) = (if a = a' then f a else b) :=
-  fun _ _ _ => (ite_eq_apply_left _ _ _ _).symm
+section
 
-theorem ite_eq_comm_apply_left {α β : Type*} [DecidableEq α] (f : α → β) :
-    ∀ a a' b, (if a = a' then f a else b) = (if a' = a then f a else b) :=
-  fun _ _ _ => ite_congr (by rw [eq_iff_iff, eq_comm]) (fun _ => rfl) (fun _ => rfl)
+variable {α β : Type*} (f : α → β) (a a' : α) (b b' : β)
 
-theorem ite_eq_comm_apply_right {α β : Type*} [DecidableEq α] (f : α → β) :
-    ∀ a a' b, (if a = a' then f a' else b) = (if a' = a then f a' else b) :=
-  fun _ _ _ => (ite_eq_comm_apply_left _ _ _ _).symm
+theorem ite_eq_apply_subst [Decidable (a = a')] :
+    (if a = a' then f a else b) = (if a = a' then f a' else b) :=
+  ite_congr rfl (congrArg fun a ↦ f a) (congrFun rfl)
 
-theorem Set.indicator_singleton_comm {α M : Type*} [Zero M] {a a' : α} {f : α → M}
-    : Set.indicator {a} f a' = Set.indicator {a'} f a := by
-  classical
-  simp_rw [indicator_singleton_apply, ite_eq_comm_apply_right, ite_eq_apply_right]
+theorem ite_eq_comm [Decidable (a = a')] [Decidable (a' = a)] :
+    (if a = a' then b else b') = (if a' = a then b else b') :=
+  ite_congr (by rw [eq_iff_iff, eq_comm]) (fun _ => rfl) (fun _ => rfl)
+
+end
+
+section
+
+variable {α β : Type*} {b b' : β} {f : β → α} [One α] [Decidable (b' = b)] [Decidable (b = b')]
+
+@[to_additive]
+theorem Set.mulIndicator_singleton_apply_self : Set.mulIndicator {b} f b = f b :=
+  mulIndicator_of_mem rfl _
+
+@[to_additive (attr := simp)]
+theorem Set.mulIndicator_singleton_apply_of_ne (h : b' ≠ b) :
+    Set.mulIndicator {b} f b' = 1 :=
+  mulIndicator_of_not_mem (Set.eq_of_mem_singleton.mt h) _
+
+@[to_additive (attr := simp)]
+theorem Set.mulIndicator_singleton_apply_of_ne' (h : b ≠ b') :
+    Set.mulIndicator {b} f b' = 1 :=
+  mulIndicator_of_not_mem (Set.eq_of_mem_singleton.mt h.symm) _
+
+@[to_additive (attr := simp)]
+theorem Set.mulIndicator_singleton_apply :
+    Set.mulIndicator {b} f b' = if b' = b then f b else 1 := by
+  rcases (eq_or_ne b' b) with (rfl | ha)
+  · rw [if_pos rfl, mulIndicator_singleton_apply_self]
+  · rw [if_neg ha, mulIndicator_singleton_apply_of_ne ha]
+
+@[to_additive]
+theorem Set.mulIndicator_singleton_apply' :
+    Set.mulIndicator {b} f b' = if b = b' then f b else 1 := by
+  simp
+  exact (ite_eq_comm b' b (f b) 1)
+
+@[to_additive]
+theorem Set.mulIndicator_singleton_comm {α β : Type*} {b b' : β} {f : β → α} [One α] :
+    ({b} : Set β).mulIndicator f b' = ({b'} : Set β).mulIndicator f b := by
+  classical simp_rw [mulIndicator_singleton_apply, ite_eq_comm, ite_eq_apply_subst _ b]
+
+end
+
+section
+
+variable {α β : Type*} [CommMonoid α] [TopologicalSpace α]
+
+@[to_additive (attr := simp)]
+theorem tprod_ite_eq' (a : α) (b : β) [DecidablePred (b = ·)] :
+    ∏' b', (if b = b' then a else 1) = a := by
+  rw [tprod_eq_mulSingle b]
+  · simp
+  · intro b' hb'; simp [hb'.symm]
+
+@[to_additive (attr := simp)]
+theorem tprod_ite_eq_dep (b : β) [DecidablePred (· = b)] (f : β → α) :
+    ∏' b', (if b' = b then f b' else 1) = f b := by
+  rw [tprod_eq_mulSingle b]
+  · simp
+  · intro b' hb'; simp [hb']
+
+@[to_additive (attr := simp)]
+theorem tprod_ite_eq_dep' (b : β) [DecidablePred (b = ·)] (f : β → α) :
+    ∏' b', (if b = b' then f b' else 1) = f b := by
+  rw [tprod_eq_mulSingle b]
+  · simp
+  · intro b' hb'; simp [hb'.symm]
+
+@[to_additive (attr := simp)]
+theorem tprod_dite_eq (b : β) [DecidablePred (· = b)] (f : (b' : β) → b' = b → α) :
+    ∏' b', (if h : b' = b then f b' h else 1) = f b rfl := by
+  rw [tprod_eq_mulSingle b]
+  · simp
+  · intro b' hb'; simp [hb']
+
+@[to_additive (attr := simp)]
+theorem tprod_dite_eq' (b : β) [DecidablePred (b = ·)] (f : (b' : β) → b = b' → α) :
+    ∏' b', (if h : b = b' then f b' h else 1) = f b rfl := by
+  rw [tprod_eq_mulSingle b]
+  · simp
+  · intro b' hb'; simp [hb'.symm]
+
+@[to_additive (attr := simp)]
+theorem tprod_const_singleton_mulIndicator (b : β) (f : β → α) :
+    ∏' (b' : β), ({b} : Set β).mulIndicator f b' = f b := by
+  classical simp_rw [Set.mulIndicator_singleton_apply]
+  simp_rw [tprod_ite_eq]
+
+@[to_additive (attr := simp)]
+theorem tprod_singleton_mulIndicator (b : β) (f : β → α) :
+    ∏' (b' : β), ({b'} : Set β).mulIndicator f b = f b := by
+  classical simp_rw [Set.mulIndicator_singleton_apply]
+  simp_rw [tprod_ite_eq_dep']
+
+end
+
+section
+
+variable {α β : Type*} [Semiring α] [TopologicalSpace α]
+--(b : β) (f : β → α) (g h : β → β → α)
+@[simp]
+theorem tsum_singleton_indicator_mul_left_right :
+    ∀ {b f} (g h : β → β → α),
+  ∑' (b' : β), h b b' * ({b} : Set β).indicator f b' * g b b' = h b b * f b * g b b := by
+  classical simp_rw [Set.indicator_singleton_apply]
+  simp_rw [mul_ite, mul_zero, ite_mul, zero_mul, tsum_ite_eq_dep, implies_true]
+
+@[simp]
+theorem tsum_const_singleton_indicator_mul_left_right :
+    ∀ {b f} (g h : β → β → α),
+  ∑' (b' : β), h b b' * ({b'} : Set β).indicator f b * g b b' = h b b * f b * g b b := by
+  classical simp_rw [Set.indicator_singleton_apply]
+  simp_rw [mul_ite, mul_zero, ite_mul, zero_mul, tsum_ite_eq_dep', implies_true]
+
+@[simp]
+theorem tsum_singleton_indicator_mul_left :
+    ∀ {b f} (g : β → β → α),
+  ∑' (b' : β), g b b' * ({b'} : Set β).indicator f b = g b b * f b := by
+  classical simp only [Set.indicator_singleton_apply, mul_ite,
+  mul_zero, tsum_ite_eq_dep', implies_true]
+
+@[simp]
+theorem tsum_singleton_indicator_mul_right :
+    ∀ {b f} (g : β → β → α),
+  ∑' (b' : β), ({b'} : Set β).indicator f b * g b b'  = f b * g b b := by
+  classical simp_rw [Set.indicator_singleton_apply]
+  simp only [ite_mul, zero_mul, tsum_ite_eq_dep', implies_true]
+
+end
+
+#lint
 
 open BigOperators ENNReal NNReal
 

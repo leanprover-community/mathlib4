@@ -9,17 +9,16 @@ universe u v
 
 section Map
 
-noncomputable def map {M : Type u → Type v} [MFLike M] [Pure M] [Bind M]
-{α β : Type u} (f : α → β) (μ : M α) : M β := bind μ (pure ∘ f)
+open Functor
 
 variable {M : Type u → Type v} [MFLike M] [DiracPure M] [WeightedSumBind M]
 {α β γ : Type u} {f : α → β} {g : β → γ} {μ : M α} {φ : α → M β} {ξ : β → M γ} {b b' : β}
 
-open DiracPure WeightedSumBind
-
-theorem monad_map_eq_map : f <$> μ = map f μ := rfl
+theorem map_eq_monad_map : map f μ = f <$> μ := rfl
 
 theorem map_def : map f μ = bind μ (pure ∘ f) := rfl
+
+theorem map_eq_pure_bind : map f μ = (do let x ← μ; pure (f x)) := rfl
 
 theorem coeFn_map : ⇑(map f μ) = fun b => ∑' a, μ a * Set.indicator {f a} 1 b := by
   simp_rw [map_def, coeFn_bind, Function.comp_apply, coeFn_pure]
@@ -40,24 +39,24 @@ theorem bind_pure_comp : bind μ (pure ∘ f) = map f μ := rfl
 
 @[simp]
 theorem mass_map : mass (map f μ) = mass μ := by
-  simp_rw [← bind_pure_comp, WeightedSumBind.mass_bind, Function.comp_apply,
-  DiracPure.mass_pure, mul_one, mass_eq_tsum_coeFn]
+  simp_rw [← bind_pure_comp, mass_bind, Function.comp_apply,
+  mass_pure, mul_one, mass_eq_tsum_coeFn]
 
-theorem map_id : map id μ = μ := bind_pure
+theorem map_id : map id μ = μ := bind_pure _
 
-theorem map_comp : map g (map f μ) = map (g ∘ f) μ := by simp [map_def, Function.comp]
+theorem map_comp : map g (map f μ) = map (g ∘ f) μ := (LawfulFunctor.comp_map _ _ _).symm
 
-theorem pure_map {a : α} : map f (pure a) = (pure (f a) : M β) := pure_bind
+theorem pure_map {a : α} : map f (pure a) = (pure (f a) : M β) := pure_bind _ _
 
-theorem map_bind : map g (bind μ φ) = bind μ fun a => map g (φ a) := bind_bind
+theorem map_bind : map g (bind μ φ) = bind μ fun a => map g (φ a) := bind_assoc _ _ _
 
 @[simp]
-theorem bind_map : bind (map f μ) ξ = bind μ (ξ ∘ f) :=
-  (bind_bind).trans (congr_arg _ (funext fun _ => pure_bind))
+theorem bind_map : (do let g ← (f <$> μ); ξ g) = (do let x ← μ; (ξ ∘ f) x) := by
+  simp_rw [map_eq_pure_bind, bind_assoc, pure_bind, Function.comp_apply]
 
 @[simp]
 theorem map_const_apply :
-  map (Function.const α b) μ b' = mass μ * (pure b : M β) b' :=
+  (map (Function.const α b) μ) b' = mass μ * (pure b : M β) b' :=
   bind_apply.trans (by simp_rw [Function.comp_apply, Function.const_apply,
     ENNReal.tsum_mul_right, mass_eq_tsum_coeFn])
 
@@ -70,7 +69,8 @@ end Map
 section Seq
 
 noncomputable def seq {M : Type u → Type v} [MFLike M] [Pure M] [Bind M]
-    {α β : Type u} (κ : M (α → β)) (μ : M α) : M β := bind κ fun f => bind μ fun a => pure (f a)
+    {α β : Type u} (κ : M (α → β)) (μ : M α) : M β := do
+  let f ← κ ; let x ← μ ; return (f x)
 
 variable {M : Type u → Type v} [MFLike M] [DiracPure M] [WeightedSumBind M]
 {α β γ : Type u} {κ : M (α → β)} {μ : M α} {b : β}
@@ -106,25 +106,6 @@ theorem seq_apply' [DecidableEq β] :
   mul_ite, mul_one, mul_zero])
 
 end Seq
-
-section Lawful
-
-variable {M : Type u → Type v} [MFLike M] [DiracPure M] [WeightedSumBind M]
-
-open DiracPure WeightedSumBind
-
-instance : LawfulFunctor M where
-  map_const := rfl
-  id_map _ := bind_pure
-  comp_map _ _ _ := (map_comp).symm
-
-instance : LawfulMonad M := LawfulMonad.mk'
-  (bind_pure_comp := fun f x => rfl)
-  (id_map := id_map)
-  (pure_bind := fun _ _ => pure_bind)
-  (bind_assoc := fun _ _ _ => bind_bind)
-
-end Lawful
 
 section Filter
 

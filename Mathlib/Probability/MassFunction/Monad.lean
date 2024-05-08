@@ -6,16 +6,40 @@ namespace MassFunction
 
 universe u v
 
-section DiracPure
-
 class DiracPure (M : Type u → Type v) [MFLike M] extends Pure M :=
 (coeFn' : ∀ {α} {a : α}, ⇑(pure a : M α) = Set.indicator {a} 1)
 
-namespace DiracPure
+class WeightedSumBind (M : Type u → Type v) [MFLike M] extends Bind M :=
+(coeFn' : ∀ {α β} {μ : M α} {φ : α → M β}, ⇑(bind μ φ : M β) = fun b => ∑' a, μ a * φ a b)
+
+section Monad
+
+variable {M : Type u → Type v} [MFLike M]
+
+instance [Pure M] [Bind M] : Monad M where
+
+instance [DiracPure M] [WeightedSumBind M] : LawfulMonad M := LawfulMonad.mk'
+  (bind_pure_comp := fun _ _ => rfl)
+  (id_map := fun μ => DFunLike.ext' (by
+    refine' WeightedSumBind.coeFn'.trans (Function.comp_id _ ▸ _)
+    simp_rw [DiracPure.coeFn', tsum_singleton_indicator_mul_left (fun _ a' => μ a'),
+    Pi.one_apply, mul_one]))
+  (pure_bind := fun _ _ => DFunLike.ext _ _ fun _ => by
+    rw [WeightedSumBind.coeFn', DiracPure.coeFn']
+    exact (tsum_eq_single _
+      (fun a' h => by rw [Set.indicator_singleton_apply_of_ne h, zero_mul])).trans
+      (by rw [Set.indicator_singleton_apply_self, Pi.one_apply, one_mul]))
+  (bind_assoc := fun {_ β} _ _ _ _ => DFunLike.ext _ _ fun _ => by
+    simp_rw [WeightedSumBind.coeFn', ENNReal.tsum_mul_right.symm, ENNReal.tsum_mul_left.symm,
+    ENNReal.tsum_comm (α := β), mul_assoc])
+
+end Monad
+
+section DiracPure
 
 variable {M : Type u → Type v} [MFLike M] [DiracPure M] {α : Type u} {a a' : α} {s : Set α}
 
-theorem coeFn_pure : ⇑(pure a : M α) = Set.indicator {a} 1 := coeFn'
+theorem coeFn_pure : ⇑(pure a : M α) = Set.indicator {a} 1 := DiracPure.coeFn'
 
 theorem pure_apply : (pure a : M α) a' = Set.indicator {a} 1 a' := by rw [coeFn_pure]
 
@@ -39,6 +63,14 @@ theorem pure_apply_of_ne (h : a' ≠ a) : (pure a : M α) a' = 0 :=
 theorem mass_pure : mass (pure a : M α) = 1 := by
   rw [mass_eq_tsum_coeFn, tsum_eq_single a (fun _ h => pure_apply_of_ne h), pure_apply_self]
 
+theorem massOf_pure : massOf (pure a : M α) s = s.indicator 1 a := by
+  rw [← massOf_apply_inter_support, support_pure]
+  by_cases h : a ∈ s
+  · rw [Set.inter_singleton_of_mem h, massOf_singleton, pure_apply_self,
+    Set.indicator_of_mem h, Pi.one_apply]
+  · rw [Set.inter_singleton_eq_empty.mpr h, massOf_empty,
+    Set.indicator_of_not_mem h]
+
 theorem pure_apply' [DecidableEq α] : (pure a : M α) a' = if a' = a then 1 else 0 := by
   rcases eq_or_ne a' a with (rfl | h)
   · rw [if_pos rfl, pure_apply_self]
@@ -47,45 +79,34 @@ theorem pure_apply' [DecidableEq α] : (pure a : M α) a' = if a' = a then 1 els
 theorem indicator_pure_apply [∀ α, ZeroNull M α] :
     (s.indicator (pure : α → M α) a') a = (s ∩ {a'}).indicator 1 a := by
   by_cases ha' : a' ∈ s
-  · rw [s.indicator_of_mem ha', pure_apply]
-    congr
-    rwa [Set.right_eq_inter, Set.singleton_subset_iff]
+  · rw [s.indicator_of_mem ha', pure_apply, Set.inter_singleton_of_mem ha']
   · rw [s.indicator_of_not_mem ha', Set.inter_singleton_eq_empty.mpr ha',
     Set.indicator_empty, ZeroNull.zero_apply]
-
-end DiracPure
 
 noncomputable instance MF.instDiracPure : DiracPure MF where
   pure a := ⟨Set.indicator {a} 1⟩
   coeFn' := rfl
 
 noncomputable instance FMF.instDiracPure : DiracPure FMF where
-  pure a := ⟨Set.indicator {a} 1, (DiracPure.mass_pure (M := MF)).trans_lt one_lt_top⟩
+  pure a := ⟨Set.indicator {a} 1, (mass_pure (M := MF)).trans_lt one_lt_top⟩
   coeFn' := rfl
 
 noncomputable instance SPMF.instDiracPure : DiracPure SPMF where
-  pure a := ⟨Set.indicator {a} 1, (DiracPure.mass_pure (M := MF)).le⟩
+  pure a := ⟨Set.indicator {a} 1, (mass_pure (M := MF)).le⟩
   coeFn' := rfl
 
 noncomputable instance PMF.instDiracPure : DiracPure PMF where
-  pure a := ⟨Set.indicator {a} 1, DiracPure.mass_pure (M := MF)⟩
+  pure a := ⟨Set.indicator {a} 1, mass_pure (M := MF)⟩
   coeFn' := rfl
 
 end DiracPure
 
 section WeightedSumBind
 
-class WeightedSumBind (M : Type u → Type v) [MFLike M] extends Bind M :=
-(coeFn' : ∀ {α β} {μ : M α} {φ : α → M β}, ⇑(bind μ φ : M β) = fun b => ∑' a, μ a * φ a b)
-
-namespace WeightedSumBind
-
-open DiracPure
-
 variable {M : Type u → Type v} [MFLike M] [WeightedSumBind M] {α β γ : Type u}
 {μ : M α} {ν : M β} {φ : α → M β} {ξ : β → M γ} {ψ : α → M α} {υ : α → β → M γ} {a : α} {b : β}
 
-theorem coeFn_bind : ⇑(bind μ φ) = fun b => ∑' a, μ a * φ a b := coeFn'
+theorem coeFn_bind : ⇑(bind μ φ) = fun b => ∑' a, μ a * φ a b := WeightedSumBind.coeFn'
 
 theorem bind_apply : (bind μ φ) b = ∑' a, μ a * φ a b := by rw [coeFn_bind]
 
@@ -105,36 +126,14 @@ theorem mem_support_bind_iff : b ∈ support (bind μ φ) ↔ ∃ a ∈ support 
 theorem nmem_support_bind_iff : b ∉ support (bind μ φ) ↔ ∀ a ∈ support μ, b ∉ support (φ a) := by
   simp_rw [mem_support_bind_iff.not, not_exists, not_and]
 
-@[simp]
-theorem pure_bind [DiracPure M] : bind (pure a) φ = φ a := DFunLike.ext _ _ fun _ => by
-  rw [bind_apply, coeFn_pure]
-  exact (tsum_eq_single a
-    (fun a' h => by rw [Set.indicator_singleton_apply_of_ne h, zero_mul])).trans
-    (by rw [Set.indicator_singleton_apply_self, Pi.one_apply, one_mul])
-
-@[simp]
-theorem bind_pure [DiracPure M] : bind μ pure = μ := DFunLike.ext _ _ fun _ => by
-  rw [bind_apply]
-  exact (tsum_eq_single _
-    (fun a' h => by rw [pure_apply_of_ne h.symm, mul_zero])).trans
-    (by rw [pure_apply_self, mul_one])
-
-@[simp]
-theorem bind_bind : bind (bind μ φ) ξ = bind μ fun a => bind (φ a) ξ :=
-    DFunLike.ext _ _ fun _ => by
-  simp_rw [bind_apply, ENNReal.tsum_mul_right.symm, ENNReal.tsum_mul_left.symm,
-  ENNReal.tsum_comm (α := β), mul_assoc]
-
-theorem bind_comm : (bind μ fun a => bind ν (υ a)) = bind ν fun b => bind μ fun a => υ a b :=
+theorem bind_comm' : (do let x ← μ; let y ← ν ; υ x y) = (do let y ← ν; let x ← μ ; υ x y) :=
   DFunLike.ext _ _ fun _ => by
   simp_rw [bind_apply, ENNReal.tsum_mul_left.symm, ENNReal.tsum_comm (α := β), mul_left_comm]
 
 @[simp]
-theorem bind_const_apply : (bind μ fun _ => ν) b = mass μ * ν b := by
-  rw [bind_apply, ENNReal.tsum_mul_right]
+theorem bind_const_apply : (do let _ ← μ ; ν) b = mass μ * ν b := by
+  simp_rw [bind_apply, ENNReal.tsum_mul_right]
   rfl
-
-end WeightedSumBind
 
 noncomputable instance MF.instWeightedSumBind : WeightedSumBind MF where
   bind μ φ := ⟨fun b => ∑' a, μ a * φ a b⟩
@@ -235,7 +234,7 @@ theorem map_pure_left [DiracPure M] {ς : (a' : α) → a' ∈ support (pure a) 
   by_cases h : a' = a <;> simp [h]
 
 theorem map_pure_right [WeightedSumBind M] [DiracPure M] : (ρ μ fun a _ => pure a) = μ := by
-  rw [hρ.eq_bind, WeightedSumBind.bind_pure]
+  rw [hρ.eq_bind, bind_pure]
 
 @[simp]
 theorem map_map_left :
@@ -297,15 +296,5 @@ noncomputable def bindOnSupport (μ : PMF α) (φ : ∀ a ∈ support μ, PMF β
 end PMF
 
 end BindOnSupport
-
-section Monad
-
-variable {M : Type u → Type v}
-
-instance [MFLike M] [Pure M] [Bind M] : Monad M where
-
-instance [MFLike M] [Pure M] [Bind M] : Applicative M := by infer_instance
-
-end Monad
 
 end MassFunction
