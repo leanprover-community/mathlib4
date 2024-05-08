@@ -97,7 +97,7 @@ theorem CharP.cast_card_eq_zero [AddGroupWithOne R] [Fintype R] : (Fintype.card 
 #align char_p.cast_card_eq_zero CharP.cast_card_eq_zero
 
 theorem CharP.addOrderOf_one (R) [Semiring R] : CharP R (addOrderOf (1 : R)) :=
-  ⟨fun n => by rw [← Nat.smul_one_eq_coe, addOrderOf_dvd_iff_nsmul_eq_zero]⟩
+  ⟨fun n => by rw [← Nat.smul_one_eq_cast, addOrderOf_dvd_iff_nsmul_eq_zero]⟩
 #align char_p.add_order_of_one CharP.addOrderOf_one
 
 theorem add_pow_char_of_commute [Semiring R] {p : ℕ} [hp : Fact p.Prime] [CharP R p] (x y : R)

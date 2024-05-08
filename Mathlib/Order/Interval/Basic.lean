@@ -302,8 +302,8 @@ end NonemptyInterval
 We represent intervals either as `⊥` or a nonempty interval given by its endpoints `fst`, `snd`.
 To convert intervals to the set of elements between these endpoints, use the coercion
 `Interval α → Set α`. -/
-@[reducible] -- Porting note: added reducible, it seems to help with coercions
-def Interval (α : Type*) [LE α] :=
+-- Porting note: added reducible, it seems to help with coercions
+abbrev Interval (α : Type*) [LE α] :=
   WithBot (NonemptyInterval α) -- deriving Inhabited, LE, OrderBot
 #align interval Interval
 
