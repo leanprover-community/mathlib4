@@ -48,6 +48,18 @@ set_option linter.deprecated false
 section
 variable {f : Bool → Bool → Bool}
 
+lemma succ_testBit_zero (n : ℕ) : (n + 1).testBit 0 = !n.testBit 0 := by
+  apply Nat.bitCasesOn n
+  intro b n
+  cases b <;> simp [Nat.testBit_bit_zero, -Nat.testBit_zero]
+
+@[simp]
+lemma add_pow_testBit (n : ℕ) : (i : ℕ) → (n + 2^i).testBit i = !n.testBit i
+  | 0 => succ_testBit_zero n
+  | i+1 => by
+    simp only [pow_succ, testBit_succ, (by decide : 0 < 2), add_mul_div_right]
+    exact add_pow_testBit (n/2) i
+
 @[simp]
 lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 0 :=
   rfl
@@ -155,19 +167,17 @@ attribute [simp] testBit_xor
 
 end
 
-@[simp]
 theorem bit_false : bit false = bit0 :=
   rfl
 #align nat.bit_ff Nat.bit_false
 
-@[simp]
 theorem bit_true : bit true = bit1 :=
   rfl
 #align nat.bit_tt Nat.bit_true
 
 @[simp]
 theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false := by
-  cases b <;> simp [Nat.bit0_eq_zero, Nat.bit1_ne_zero]
+  cases b <;> simp [Nat.bit0_eq_zero, Nat.bit1_ne_zero, bit_false, bit_true]
 #align nat.bit_eq_zero Nat.bit_eq_zero
 
 theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
@@ -463,7 +473,7 @@ theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b <
 #align nat.lt_lxor_cases Nat.lt_xor_cases
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
-  cases b <;> simp [bit0, bit1] <;> omega
+  cases b <;> simp [bit, bit0, bit1] <;> omega
 
 /-- If `x` and `y` fit within `n` bits, then the result of any bitwise operation on `x` and `y` also
 fits within `n` bits -/
