@@ -866,29 +866,32 @@ end AddMonoid
 
 namespace AddSubgroup
 
-variable (A : Type*) [AddCommGroup A] (n : ℕ)
+variable (A : Type*) [AddCommGroup A] (n : ℤ)
 
-/-- The additive `n`-torsion subgroup for `n` in `ℕ`. -/
+/-- The additive `n`-torsion subgroup for an integer `n`. -/
 @[reducible]
-def torsionBy := (Submodule.torsionBy ℤ A n).toAddSubgroup
+def torsionBy : AddSubgroup A :=
+  (Submodule.torsionBy ℤ A n).toAddSubgroup
 
 @[inherit_doc]
 scoped notation:max A"["n"]" => torsionBy A n
 
-variable {A n}
+lemma torsionBy_negative_eq : A[-n] = A[n] := by
+  ext a
+  simp
 
-lemma mem_torsionBy (x : A) : x ∈ A[n] ↔ n • x = 0 := by simp
+variable {A} {n : ℕ}
 
 @[simp]
 lemma nsmul_torsionBy (x : A[n]) : n • x = 0 :=
-  ZeroMemClass.coe_eq_zero.mp <| (mem_torsionBy _).mp x.property
+  nsmul_eq_smul_cast ℤ n x ▸ Submodule.smul_torsionBy ..
 
 lemma mod_nsmul_torsionBy_eq_nsmul (m : A[n]) (s : ℕ) :
     (s % n) • m = s • m := by
   nth_rewrite 2 [← Nat.div_add_mod s n]
   rw [add_smul, self_eq_add_left, mul_comm, mul_smul, nsmul_torsionBy, smul_zero]
 
-/-- The `n`-torsion subgroup of `A` is a `ZMod n` module. -/
+/-- For a natural number `n`, the `n`-torsion subgroup of `A` is a `ZMod n` module. -/
 def moduleZModTorsionBy : Module (ZMod n) A[n] :=
   AddCommGroup.zmodModule nsmul_torsionBy
 
