@@ -100,6 +100,65 @@ open scoped Classical
       inlineText := nt!"set{.s} {fvarid} in {X}" }
 | _, _, _, _ => failure
 
+@[english_param const.Finset] def param_Finset : EnglishParam
+| fvarid, _deps, type@(.app _ (.app (.const `Set _) X)), _used => do
+  trace[English] "Using the english_param handler for Set"
+  addNoun' fvarid #[type]
+    { kind := `Set
+      article := .a
+      text := nt!"finite set{.s} of sets in {X}"
+      inlineText := nt!"finite set{.s} {fvarid} of sets in {X}" }
+| fvarid, _deps, type@(.app _ X), _used => do
+  trace[English] "Using the english_param handler for Finset"
+  addNoun' fvarid #[type]
+    { kind := `Finset
+      article := .a
+      text := nt!"finite set{.s} in {X}"
+      inlineText := nt!"finite set{.s} {fvarid} in {X}" }
+| _, _, _, _ => failure
+
+@[english_param const.Set.Finite] def param_setFinite : EnglishParam
+| fvarid, deps, type@(mkAppN _ #[_, .fvar fvaridE]), false => do
+  let e ← getEntityFor fvaridE deps
+  addEntity <| e.pushAdjective fvarid
+    { kind := `Set.Finite,
+      expr := type,
+      article := .a,
+      text := "finite" }
+| _, _, _, _ => failure
+
+@[english_param const.Finite] def param_Finite : EnglishParam
+| fvarid, deps, type@(mkAppN _ #[.fvar fvaridE]), false => do
+  let e ← getEntityFor fvaridE deps
+  addEntity <| e.pushAdjective fvarid
+    { kind := `Finite,
+      expr := type,
+      article := .a,
+      text := "finite" }
+| _, _, _, _ => failure
+
+@[english_param const.Monotone] def param_Monotone : EnglishParam
+| fvarid, deps, type@(mkAppN _ #[_, _, _, _, .fvar fvaridE]), false => do
+  let e ← getEntityFor fvaridE deps
+  addEntity <| e.pushAdjective fvarid
+    { kind := `Monotone,
+      expr := type,
+      article := .a,
+      text := "monotone" }
+| _, _, _, _ => failure
+
+@[english_param const.Antitone] def param_Antitone : EnglishParam
+| fvarid, deps, type@(mkAppN _ #[_, _, _, _, .fvar fvaridE]), false => do
+  let e ← getEntityFor fvaridE deps
+  addEntity <| e.pushAdjective fvarid
+    { kind := `Antitone,
+      expr := type,
+      article := .a,
+      text := "antitone" }
+| _, _, _, _ => failure
+
+variable (f : Nat → Nat)
+
 universe u v w x y
 
 /-- A filter `F` on a type `α` is a collection of sets of `α` which contains the whole `α`,
@@ -131,10 +190,80 @@ latex_pp_app_rules (const := Filter.sets)
     let A ← latexPP f
     return A.sub (LatexData.atomString "\\mathrm{Sets}")
 
+open Lean in
+latex_pp_app_rules (const := setOf)
+  | _, #[X, p] => do
+    let X ← latexPP X
+    let some v ← p.getBinderName | throwError "This shouldn't happen"
+    let b ← Lean.Meta.lambdaTelescope p (λ _ => latexPP)
+    (LatexData.atomString $ "\\left\\{" ++ v.toLatex ++ " \\mid " ++ b.latex.1 ++ "\\right\\}").maybeWithTooltip s!"inside \\({X.latex.1}\\)"
+
+latex_pp_app_rules (const := Set.sInter)
+  | _, #[_α, s] => do
+    withBindingBodyUnusedName' s `i fun name _ => do
+      let ps ← latexPP s
+      let pinter := (← (LatexData.atomString "\\bigcap" |>.bigger 1).sub
+        (s!"{name.toLatex} \\in " ++ ps) |>.maybeWithTooltip "Set.sInter") ++
+        name.toLatex
+      return pinter |>.resetBP (lbp := .Infinity) |>.mergeBP (rbp := .NonAssoc 65)
+
+latex_pp_app_rules (const := Set.iInter)
+  | _, #[_α, ι, s] => do
+    let i ← withExtraSmallness 2 <| latexPP ι
+    withBindingBodyUnusedName' s `i fun name body => do
+      match body with -- Detect bounded intersections
+      | (mkAppN (.const `Set.iInter _) #[_α, h, s']) => 
+        withBindingBodyUnusedName' s' `i fun _name body => do
+          let cond ← withExtraSmallness 2 <| latexPP h
+          let pbody ← latexPP body
+          let pbody := pbody.protectLeft 66
+          let pinter := (← (LatexData.atomString "\\bigcap" |>.bigger 1).sub
+            cond |>.maybeWithTooltip "Set.iInter") ++ pbody
+          return pinter |>.resetBP (lbp := .Infinity) |>.mergeBP (rbp := .NonAssoc 65)
+      | _ =>
+      let pbody ← latexPP body
+      let pbody := pbody.protectLeft 66
+      let pinter := (← (LatexData.atomString "\\bigcap" |>.bigger 1).sub
+        (s!"{name.toLatex} : " ++ i) |>.maybeWithTooltip "Set.iInter") ++ pbody
+      return pinter |>.resetBP (lbp := .Infinity) |>.mergeBP (rbp := .NonAssoc 65)
+
+latex_pp_app_rules (const := EmptyCollection.emptyCollection)
+  | _, #[X, _] => do
+      let X ← latexPP X
+      (LatexData.atomString "\\varnothing").maybeWithTooltip s!"in \\({X.latex.1}\\)"
+
 latex_pp_app_rules (const := HasCompl.compl)
-  | _, #[_, _, f] => do
-    let A ← latexPP f
+  | _, #[_, _, A] => do
+    let A ← latexPP A
     return A.sup (LatexData.atomString "c")
+
+latex_pp_app_rules (const := Singleton.singleton)
+  | _, #[_, X, _, A] => do
+    let X ← latexPP X
+    let A ← latexPP A
+    LatexData.atomString "\\{" ++ A ++ "\\}" |>.maybeWithTooltip s!"in \\({X.latex.1}\\)"
+
+@[latex_pp_app const.SDiff.sdiff] def pp_sdiff := basicBinOpPrinter " \\setminus " 70 .none 4
+
+latex_pp_app_rules (const := Prod.fst)
+  | _, #[_, _, p] => do
+    let p ← latexPP p
+    return LatexData.atomString <| "{" ++ p.latex.1 ++ "}_1"
+
+latex_pp_app_rules (const := Prod.snd)
+  | _, #[_, _, p] => do
+    let p ← latexPP p
+    return LatexData.atomString <| "{" ++ p.latex.1 ++ "}_2"
+
+latex_pp_app_rules (const := Monotone)
+  | _, #[_, _, _, _, f] => do
+    let A ← latexPP f
+    return A ++ (LatexData.atomString "\\text{ is monotone}")
+
+latex_pp_app_rules (const := Antitone)
+  | _, #[_, _, _, _, f] => do
+    let A ← latexPP f
+    return A ++ (LatexData.atomString "\\text{ is antitone}")
 
 /-- If `F` is a filter on `α`, and `U` a subset of `α` then we can write `U ∈ F` as on paper. -/
 instance {α : Type*} : Membership (Set α) (Filter α) :=
@@ -283,3 +412,196 @@ theorem forall_in_swap {β : Type*} {p : Set α → β → Prop} :
 
 end Filter
 
+namespace Mathlib.Tactic
+
+open Lean Meta Elab Tactic
+
+/--
+`filter_upwards [h₁, ⋯, hₙ]` replaces a goal of the form `s ∈ f` and terms
+`h₁ : t₁ ∈ f, ⋯, hₙ : tₙ ∈ f` with `∀ x, x ∈ t₁ → ⋯ → x ∈ tₙ → x ∈ s`.
+The list is an optional parameter, `[]` being its default value.
+
+`filter_upwards [h₁, ⋯, hₙ] with a₁ a₂ ⋯ aₖ` is a short form for
+`{ filter_upwards [h₁, ⋯, hₙ], intros a₁ a₂ ⋯ aₖ }`.
+
+`filter_upwards [h₁, ⋯, hₙ] using e` is a short form for
+`{ filter_upwards [h1, ⋯, hn], exact e }`.
+
+Combining both shortcuts is done by writing `filter_upwards [h₁, ⋯, hₙ] with a₁ a₂ ⋯ aₖ using e`.
+Note that in this case, the `aᵢ` terms can be used in `e`.
+-/
+syntax (name := filterUpwards) "filter_upwards" (" [" term,* "]")?
+  (" with" (ppSpace colGt term:max)*)? (" using " term)? : tactic
+
+elab_rules : tactic
+| `(tactic| filter_upwards $[[$[$args],*]]? $[with $wth*]? $[using $usingArg]?) => do
+  let config : ApplyConfig := {newGoals := ApplyNewGoals.nonDependentOnly}
+  for e in args.getD #[] |>.reverse do
+    let goal ← getMainGoal
+    replaceMainGoal <| ← goal.withContext <| runTermElab do
+      let m ← mkFreshExprMVar none
+      let lem ← Term.elabTermEnsuringType
+        (← ``(Filter.mp_mem $e $(← Term.exprToSyntax m))) (← goal.getType)
+      goal.assign lem
+      return [m.mvarId!]
+  liftMetaTactic fun goal => do
+    goal.apply (← mkConstWithFreshMVarLevels ``Filter.univ_mem') config
+  evalTactic <|← `(tactic| dsimp (config := {zeta := false}) only [Set.mem_setOf_eq])
+  if let some l := wth then
+    evalTactic <|← `(tactic| intro $[$l]*)
+  if let some e := usingArg then
+    evalTactic <|← `(tactic| exact $e)
+
+end Mathlib.Tactic
+
+namespace Filter
+
+variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {ι : Sort x}
+
+section Principal
+
+/-- The principal filter of `s` is the collection of all supersets of `s`. -/
+def principal (s : Set α) : Filter α where
+  sets := { t | s ⊆ t }
+  univ_sets := subset_univ s
+  sets_of_superset hx := Subset.trans hx
+  inter_sets := subset_inter
+#align filter.principal Filter.principal
+
+@[inherit_doc]
+scoped notation "𝓟" => Filter.principal
+
+
+latex_pp_app_rules (const := Filter.principal)
+  | _, #[_, s] => do
+    let s ← latexPP s
+    LatexData.atomString "\\mathcal{P}(" ++ s ++ ")" |>.maybeWithTooltip
+      "Principal filter"
+
+@[simp] theorem mem_principal {s t : Set α} : s ∈ 𝓟 t ↔ t ⊆ s := Iff.rfl
+#align filter.mem_principal Filter.mem_principal
+
+theorem mem_principal_self (s : Set α) : s ∈ 𝓟 s := Subset.rfl
+#align filter.mem_principal_self Filter.mem_principal_self
+
+end Principal
+
+open Filter
+
+section Join
+
+/-- The join of a filter of filters is defined by the relation `s ∈ join f ↔ {t | s ∈ t} ∈ f`. -/
+def join (f : Filter (Filter α)) : Filter α where
+  sets := { s | { t : Filter α | s ∈ t } ∈ f }
+  univ_sets := by simp only [mem_setOf_eq, univ_sets, ← Filter.mem_sets, setOf_true]
+  sets_of_superset hx xy := mem_of_superset hx fun f h => mem_of_superset h xy
+  inter_sets hx hy := mem_of_superset (inter_mem hx hy) fun f ⟨h₁, h₂⟩ => inter_mem h₁ h₂
+#align filter.join Filter.join
+
+latex_pp_app_rules (const := Filter.join)
+  | _, #[_, s] => do
+    let s ← latexPP s
+    LatexData.atomString "\\mathcal{FJ}(" ++ s ++ ")" |>.maybeWithTooltip
+      "Filter join"
+
+@[simp]
+theorem mem_join {s : Set α} {f : Filter (Filter α)} : s ∈ join f ↔ { t | s ∈ t } ∈ f :=
+  Iff.rfl
+#align filter.mem_join Filter.mem_join
+
+end Join
+
+section Lattice
+
+variable {f g : Filter α} {s t : Set α}
+
+instance : PartialOrder (Filter α) where
+  le f g := ∀ ⦃U : Set α⦄, U ∈ g → U ∈ f
+  le_antisymm a b h₁ h₂ := filter_eq <| Subset.antisymm h₂ h₁
+  le_refl a := Subset.rfl
+  le_trans a b c h₁ h₂ := Subset.trans h₂ h₁
+
+theorem le_def : f ≤ g ↔ ∀ x ∈ g, x ∈ f :=
+  Iff.rfl
+#align filter.le_def Filter.le_def
+
+protected theorem not_le : ¬f ≤ g ↔ ∃ s ∈ g, s ∉ f := by simp_rw [le_def, not_forall, exists_prop]
+#align filter.not_le Filter.not_le
+
+/-- `generate_sets g s`: `s` is in the filter closure of `g`. -/
+inductive GenerateSets (g : Set (Set α)) : Set α → Prop
+  | basic {s : Set α} : s ∈ g → GenerateSets g s
+  | univ : GenerateSets g univ
+  | superset {s t : Set α} : GenerateSets g s → s ⊆ t → GenerateSets g t
+  | inter {s t : Set α} : GenerateSets g s → GenerateSets g t → GenerateSets g (s ∩ t)
+#align filter.generate_sets Filter.GenerateSets
+
+/-- `generate g` is the largest filter containing the sets `g`. -/
+def generate (g : Set (Set α)) : Filter α where
+  sets := {s | GenerateSets g s}
+  univ_sets := GenerateSets.univ
+  sets_of_superset := GenerateSets.superset
+  inter_sets := GenerateSets.inter
+#align filter.generate Filter.generate
+
+latex_pp_app_rules (const := Filter.generate)
+  | _, #[_, s] => do
+    let s ← latexPP s
+    LatexData.atomString "\\langle " ++ s ++ "\\rangle" |>.maybeWithTooltip
+      "Generated filter"
+
+lemma mem_generate_of_mem {s : Set <| Set α} {U : Set α} (h : U ∈ s) :
+    U ∈ generate s := GenerateSets.basic h
+
+theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s ↔ s ⊆ f.sets :=
+  Iff.intro (fun h _ hu => h <| GenerateSets.basic <| hu) fun h _ hu =>
+    hu.recOn (fun h' => h h') univ_mem (fun _ hxy hx => mem_of_superset hx hxy) fun _ _ hx hy =>
+      inter_mem hx hy
+#align filter.sets_iff_generate Filter.le_generate_iff
+
+theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
+    U ∈ generate s ↔ ∃ t ⊆ s, Set.Finite t ∧ ⋂₀ t ⊆ U := by
+  constructor <;> intro h
+  · induction h with
+    | @basic V V_in =>
+      exact ⟨{V}, singleton_subset_iff.2 V_in, finite_singleton _, (sInter_singleton _).subset⟩
+    | univ => exact ⟨∅, empty_subset _, finite_empty, subset_univ _⟩
+    | superset _ hVW hV =>
+      rcases hV with ⟨t, hts, ht, htV⟩
+      exact ⟨t, hts, ht, htV.trans hVW⟩
+    | inter _ _ hV hW =>
+      rcases hV, hW with ⟨⟨t, hts, ht, htV⟩, u, hus, hu, huW⟩
+      exact
+        ⟨t ∪ u, union_subset hts hus, ht.union hu,
+          (sInter_union _ _).subset.trans <| inter_subset_inter htV huW⟩
+  · rcases h with ⟨t, hts, tfin, h⟩
+    exact mem_of_superset ((sInter_mem tfin).2 fun V hV => GenerateSets.basic <| hts hV) h
+#align filter.mem_generate_iff Filter.mem_generate_iff
+
+@[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
+  le_antisymm (fun _t ht ↦ mem_of_superset (mem_generate_of_mem <| mem_singleton _) ht) <|
+    le_generate_iff.2 <| singleton_subset_iff.2 Subset.rfl
+
+/-- `mk_of_closure s hs` constructs a filter on `α` whose elements set is exactly
+`s : Set (Set α)`, provided one gives the assumption `hs : (generate s).sets = s`. -/
+protected def mkOfClosure (s : Set (Set α)) (hs : (generate s).sets = s) : Filter α where
+  sets := s
+  univ_sets := hs ▸ univ_mem
+  sets_of_superset := hs ▸ mem_of_superset
+  inter_sets := hs ▸ inter_mem
+#align filter.mk_of_closure Filter.mkOfClosure
+
+theorem mkOfClosure_sets {s : Set (Set α)} {hs : (generate s).sets = s} :
+    Filter.mkOfClosure s hs = generate s :=
+  Filter.ext fun u =>
+    show u ∈ (Filter.mkOfClosure s hs).sets ↔ u ∈ (generate s).sets from hs.symm ▸ Iff.rfl
+#align filter.mk_of_closure_sets Filter.mkOfClosure_sets
+
+/-- Galois insertion from sets of sets into filters. -/
+def giGenerate (α : Type*) :
+    @GaloisInsertion (Set (Set α)) (Filter α)ᵒᵈ _ _ Filter.generate Filter.sets where
+  gc _ _ := le_generate_iff
+  le_l_u _ _ h := GenerateSets.basic h
+  choice s hs := Filter.mkOfClosure s (le_antisymm hs <| le_generate_iff.1 <| le_rfl)
+  choice_eq _ _ := mkOfClosure_sets
+#align filter.gi_generate Filter.giGenerate
