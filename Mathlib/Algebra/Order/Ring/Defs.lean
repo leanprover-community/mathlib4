@@ -1346,13 +1346,13 @@ attribute [instance 50] LinearOrderedCommRing.toCommMonoid
 
 -- add higer-priority versions in scope `AlgebraOrderInstances`
 namespace AlgebraOrderInstances
-attribute [scoped instance 200] OrderedSemiring.toSemiring
-attribute [scoped instance 200] OrderedCommSemiring.toCommSemiring
-attribute [scoped instance 200] OrderedRing.toRing
-attribute [scoped instance 200] OrderedCommRing.toCommRing
-attribute [scoped instance 200] StrictOrderedSemiring.toSemiring
-attribute [scoped instance 200] StrictOrderedCommSemiring.toCommSemiring
-attribute [scoped instance 200] StrictOrderedRing.toRing
-attribute [scoped instance 200] StrictOrderedCommRing.toCommRing
-attribute [scoped instance 200] LinearOrderedCommRing.toCommMonoid
+attribute [scoped instance 1000] OrderedSemiring.toSemiring
+attribute [scoped instance 1000] OrderedCommSemiring.toCommSemiring
+attribute [scoped instance 1000] OrderedRing.toRing
+attribute [scoped instance 1000] OrderedCommRing.toCommRing
+attribute [scoped instance 1000] StrictOrderedSemiring.toSemiring
+attribute [scoped instance 1000] StrictOrderedCommSemiring.toCommSemiring
+attribute [scoped instance 1000] StrictOrderedRing.toRing
+attribute [scoped instance 1000] StrictOrderedCommRing.toCommRing
+attribute [scoped instance 1000] LinearOrderedCommRing.toCommMonoid
 end AlgebraOrderInstances

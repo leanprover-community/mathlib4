@@ -478,6 +478,6 @@ attribute [instance 50] LinearOrderedCommGroupWithZero.toCommGroupWithZero
 
 -- add higer-priority versions in scope `AlgebraOrderInstances`
 namespace AlgebraOrderInstances
-attribute [scoped instance 200] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
-attribute [scoped instance 200] LinearOrderedCommGroupWithZero.toCommGroupWithZero
+attribute [scoped instance 1000] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
+attribute [scoped instance 1000] LinearOrderedCommGroupWithZero.toCommGroupWithZero
 end AlgebraOrderInstances

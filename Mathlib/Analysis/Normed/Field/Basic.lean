@@ -1308,8 +1308,8 @@ attribute [instance 50] NormedDivisionRing.toDivisionRing
 
 -- add higer-priority versions in scope `AlgebraNormedInstances`
 namespace AlgebraNormedInstances
-attribute [scoped instance 200] SeminormedRing.toRing
-attribute [scoped instance 200] NonUnitalNormedRing.toNonUnitalRing
-attribute [scoped instance 200] NormedRing.toRing
-attribute [scoped instance 200] NormedDivisionRing.toDivisionRing
+attribute [scoped instance 1000] SeminormedRing.toRing
+attribute [scoped instance 1000] NonUnitalNormedRing.toNonUnitalRing
+attribute [scoped instance 1000] NormedRing.toRing
+attribute [scoped instance 1000] NormedDivisionRing.toDivisionRing
 end AlgebraNormedInstances

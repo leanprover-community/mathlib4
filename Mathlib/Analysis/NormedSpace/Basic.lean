@@ -523,6 +523,6 @@ attribute [instance 50] NormedAlgebra.toAlgebra
 
 -- add higer-priority versions in scope `AlgebraNormedInstances`
 namespace AlgebraNormedInstances
-attribute [scoped instance 200] NormedSpace.toModule
-attribute [scoped instance 200] NormedAlgebra.toAlgebra
+attribute [scoped instance 1000] NormedSpace.toModule
+attribute [scoped instance 1000] NormedAlgebra.toAlgebra
 end AlgebraNormedInstances

@@ -193,6 +193,6 @@ attribute [instance 50] OrderedCommMonoid.toCommMonoid
 
 -- add higer-priority versions in scope `AlgebraOrderInstances`
 namespace AlgebraOrderInstances
-attribute [scoped instance 200] OrderedAddCommMonoid.toAddCommMonoid
-attribute [scoped instance 200] OrderedCommMonoid.toCommMonoid
+attribute [scoped instance 1000] OrderedAddCommMonoid.toAddCommMonoid
+attribute [scoped instance 1000] OrderedCommMonoid.toCommMonoid
 end AlgebraOrderInstances

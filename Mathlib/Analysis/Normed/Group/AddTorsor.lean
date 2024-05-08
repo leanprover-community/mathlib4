@@ -337,3 +337,8 @@ end Pointwise
 
 -- lower instance priorities to avoid instance synthesis trying this early
 attribute [instance 50] NormedAddTorsor.toAddTorsor
+
+-- add higer-priority versions in scope `AlgebraNormedInstances`
+namespace AlgebraNormedInstances
+attribute [scoped instance 1000] NormedAddTorsor.toAddTorsor
+end AlgebraNormedInstances

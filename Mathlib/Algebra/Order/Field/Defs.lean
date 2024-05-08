@@ -108,6 +108,6 @@ attribute [instance 50] LinearOrderedField.toField
 
 -- add higer-priority versions in scope `AlgebraOrderInstances`
 namespace AlgebraOrderInstances
-attribute [scoped instance 200] LinearOrderedSemifield.toSemifield
-attribute [scoped instance 200] LinearOrderedField.toField
+attribute [scoped instance 1000] LinearOrderedSemifield.toSemifield
+attribute [scoped instance 1000] LinearOrderedField.toField
 end AlgebraOrderInstances
