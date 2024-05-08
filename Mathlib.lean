@@ -3008,6 +3008,7 @@ import Mathlib.NumberTheory.Cyclotomic.Gal
 import Mathlib.NumberTheory.Cyclotomic.PID
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.NumberTheory.Cyclotomic.Rat
+import Mathlib.NumberTheory.Cyclotomic.Three
 import Mathlib.NumberTheory.Dioph
 import Mathlib.NumberTheory.DiophantineApproximation
 import Mathlib.NumberTheory.DirichletCharacter.Basic
