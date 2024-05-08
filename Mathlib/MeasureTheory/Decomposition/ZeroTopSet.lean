@@ -309,6 +309,9 @@ lemma sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : μ
     SFinite μ :=
   sFinite_of_absolutelyContinuous_of_isFiniteMeasure (hμν.trans (absolutelyContinuous_toFinite ν))
 
+instance [SFinite μ] (f : α → ENNReal) : SFinite (μ.withDensity f) :=
+  sFinite_of_absolutelyContinuous (withDensity_absolutelyContinuous _ _)
+
 /-! ### IsZeroTopSet -/
 
 def IsZeroTopSet (s : Set α) (μ : Measure α) : Prop :=
