@@ -554,7 +554,8 @@ theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η] [DecidableEq 
   simp only [Pi.orthonormalBasis, coe_ofRepr, LinearIsometryEquiv.symm_trans,
     LinearIsometryEquiv.symm_symm, LinearIsometryEquiv.piLpCongrRight_symm,
     LinearIsometryEquiv.trans_apply, LinearIsometryEquiv.piLpCongrRight_apply]
-  simp [LinearIsometryEquiv.piLpCurry, Sigma.curry]
+  simp [LinearIsometryEquiv.piLpCurry] -- nonterminal...
+  rw [Sigma.curry_single (γ := fun _ _ => 𝕜)]
   sorry
 
 @[simp]
