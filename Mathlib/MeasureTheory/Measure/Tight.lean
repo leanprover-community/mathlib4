@@ -48,7 +48,7 @@ variable {α ι : Type*} [MeasurableSpace α] {μ : Measure α}
 /-- For a finite measure `μ`, we can extract from a countable cover that has full measure, a finite
 cover of accumulated sets that has `ε`-almost full measure. -/
 lemma exists_sub_le_measure_accumulate [IsFiniteMeasure μ] (K : ℕ → Set α)
-    (h : μ (⋃ n, K n) = μ Set.univ) {ε : ENNReal} (hε : ε > 0) :
+    (h : μ (⋃ n, K n) = μ Set.univ) {ε : ENNReal} (hε : 0 < ε) :
     ∃ n, μ Set.univ - ε ≤ μ (Set.Accumulate K n) := by
   have : Filter.Tendsto (μ ∘ Set.Accumulate K) Filter.atTop (nhds (μ (⋃ n, Set.Accumulate K n))) :=
     MeasureTheory.tendsto_measure_iUnion Set.monotone_accumulate
@@ -58,9 +58,27 @@ lemma exists_sub_le_measure_accumulate [IsFiniteMeasure μ] (K : ℕ → Set α)
   simp_all only [Function.comp_apply, mem_Icc, le_refl]
 
 /-- For a finite measure `μ`, we can extract from a countable cover that has full measure, a finite
+cover of accumulated sets that has `ε`-almost full measure. -/
+lemma exists_sub_le_measure_accumulate2 [IsFiniteMeasure μ] (K : ℕ → Set α)
+    (h : μ (⋃ n, K n)ᶜ = 0) {ε : ENNReal} (hε : 0 < ε) :
+    ∀ᶠ n in atTop, μ (Accumulate K n)ᶜ ≤ ε := by
+  rw [Filter.eventually_atTop]
+
+  have : Filter.Tendsto (μ ∘ (Accumulate K)ᶜ) Filter.atTop (nhds (μ (⋂ n, (Accumulate K n)ᶜ))) := by
+    apply MeasureTheory.tendsto_measure_iInter
+
+
+  rw [ENNReal.tendsto_atTop (measure_ne_top μ (⋃ n, Accumulate K n)), Set.iUnion_accumulate] at this
+  obtain ⟨N, hN⟩ := this ε hε
+  use N
+  intro b hb
+  have := hN b hb
+  simp at this
+
+/-- For a finite measure `μ`, we can extract from a countable cover that has full measure, a finite
 cover of accumulated sets for which the complement has measure below `ε`. -/
 lemma exists_sub_le_measure_accumulate_compl [IsFiniteMeasure μ] (K : ℕ → Set α)
-    (hKmeas : ∀ n, MeasurableSet (K n)) (h : μ (⋃ n, K n) = μ Set.univ) {ε : ENNReal} (hε : ε > 0) :
+    (hKmeas : ∀ n, MeasurableSet (K n)) (h : μ (⋃ n, K n) = μ Set.univ) {ε : ENNReal} (hε : 0 < ε) :
     ∃ n, μ ((Set.Accumulate K n)ᶜ) ≤ ε := by
   obtain ⟨n, hn⟩ := exists_sub_le_measure_accumulate K h hε
   use n
@@ -108,8 +126,8 @@ namespace IsSeparablySupported
 
 lemma of_separableSpace [TopologicalSpace α] [TopologicalSpace.SeparableSpace α] :
     IsSeparablySupported μ := by
-    refine ⟨Set.univ, TopologicalSpace.isSeparable_univ_iff.mpr ‹_›, ?_⟩
-    rw [Set.compl_univ, measure_empty]
+  refine ⟨Set.univ, TopologicalSpace.isSeparable_univ_iff.mpr ‹_›, ?_⟩
+  rw [Set.compl_univ, measure_empty]
 
 lemma separablySupported_nat_iff [TopologicalSpace α] :
     IsSeparablySupported μ ↔ ∀ n : ℕ, ∃ S : Set α, TopologicalSpace.IsSeparable S ∧ μ Sᶜ ≤ 1/n := by
