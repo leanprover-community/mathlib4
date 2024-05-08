@@ -538,6 +538,32 @@ theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : ((1 - x) * ∑' i : ℕ,
   rw [← mul_neg_geom_sum, Finset.mul_sum]
 #align mul_neg_geom_series mul_neg_geom_series
 
+theorem geom_series_succ (x : R) (h : ‖x‖ < 1) : ∑' i : ℕ, x ^ (i + 1) = ∑' i : ℕ, x ^ i - 1 := by
+  apply symm
+  rw [sub_eq_iff_eq_add, tsum_eq_zero_add (NormedRing.summable_geometric_of_norm_lt_one x h),
+    pow_zero, add_comm]
+
+theorem geom_series_mul_shift (x : R) (h : ‖x‖ < 1) :
+    x * ∑' i : ℕ, x ^ i = ∑' i : ℕ, x ^ (i + 1) := by
+  refine' tendsto_nhds_unique
+      ((NormedRing.summable_geometric_of_norm_lt_one x h).hasSum.mul_left x).tendsto_sum_nat _
+  have : Tendsto (fun n : ℕ => ∑ i in Finset.range (n + 1), x ^ i - 1) atTop
+      (𝓝 (∑' i : ℕ, x ^ (i + 1))) := by
+    rw [geom_series_succ x h]
+    apply Tendsto.sub_const
+    simp only [sum_range_succ]
+    have hp : tsum (fun (i : ℕ)=> x^i) = tsum (fun (i : ℕ)=> x^i) + 0 := by exact (add_zero _).symm
+    rw [hp]
+    apply Tendsto.add ((NormedRing.summable_geometric_of_norm_lt_one x h).hasSum.tendsto_sum_nat)
+      (tendsto_pow_atTop_nhds_zero_of_norm_lt_one h)
+  convert this
+  rw [@geom_sum_succ _ _ x, mul_sum, add_sub_cancel_right]
+
+theorem geom_series_mul_one_add (x : R) (h : ‖x‖ < 1) :
+    (1 + x) * ∑' i : ℕ, x ^ i = 2 * ∑' i : ℕ, x ^ i - 1 := by
+  rw [add_mul, one_mul, geom_series_mul_shift x h, geom_series_succ x h, two_mul]
+  abel
+
 end NormedRingGeometric
 
 /-! ### Summability tests based on comparison with geometric series -/
