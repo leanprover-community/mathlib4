@@ -137,7 +137,7 @@ theorem CharP.cast_card_eq_zero [AddGroupWithOne R] [Fintype R] : (Fintype.card 
 #align char_p.cast_card_eq_zero CharP.cast_card_eq_zero
 
 theorem CharP.addOrderOf_one (R) [Semiring R] : CharP R (addOrderOf (1 : R)) :=
-  ⟨fun n => by rw [← Nat.smul_one_eq_coe, addOrderOf_dvd_iff_nsmul_eq_zero]⟩
+  ⟨fun n => by rw [← Nat.smul_one_eq_cast, addOrderOf_dvd_iff_nsmul_eq_zero]⟩
 #align char_p.add_order_of_one CharP.addOrderOf_one
 
 theorem CharP.intCast_eq_zero_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a : ℤ) :
@@ -171,6 +171,10 @@ theorem CharP.natCast_eq_natCast [AddMonoidWithOne R] [IsRightCancelAdd R] (p : 
     ← add_right_cancel_iff (G := R) (a := a) (b := b - a), zero_add, ← Nat.cast_add,
     Nat.sub_add_cancel hle, eq_comm]
 #align char_p.nat_cast_eq_nat_cast CharP.natCast_eq_natCast
+
+lemma CharP.natCast_injOn_Iio (R) [AddMonoidWithOne R] (p : ℕ) [CharP R p] [IsRightCancelAdd R] :
+    (Set.Iio p).InjOn ((↑) : ℕ → R) :=
+  fun _a ha _b hb hab ↦ ((natCast_eq_natCast _ _).1 hab).eq_of_lt_of_lt ha hb
 
 theorem CharP.intCast_eq_intCast_mod [AddGroupWithOne R] (p : ℕ) [CharP R p] {a : ℤ} :
     (a : R) = a % (p : ℤ) :=

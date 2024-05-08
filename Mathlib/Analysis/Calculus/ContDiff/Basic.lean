@@ -578,10 +578,9 @@ proof would work fine, but this is not the case. One could still write the proof
 in any universe in `u, v, w, max u v, max v w, max u v w`, but it would be extremely tedious and
 lead to a lot of duplication. Instead, we formulate the above proof when all spaces live in the same
 universe (where everything is fine), and then we deduce the general result by lifting all our spaces
-to a common universe. We use the trick that any space `H` is isomorphic through a continuous linear
-equiv to `ContinuousMultilinearMap (fun (i : Fin 0) ↦ E × F × G) H` to change the universe level,
-and then argue that composing with such a linear equiv does not change the fact of being `C^n`,
-which we have already proved previously.
+to a common universe through `ULift`. This lifting is done through a continuous linear equiv.
+We have already proved that composing with such a linear equiv does not change the fact of
+being `C^n`, which concludes the proof.
 -/
 
 
@@ -1085,7 +1084,7 @@ theorem ContDiffWithinAt.iteratedFderivWithin_right {i : ℕ} (hf : ContDiffWith
     (hs : UniqueDiffOn 𝕜 s) (hmn : (m + i : ℕ∞) ≤ n) (hx₀s : x₀ ∈ s) :
     ContDiffWithinAt 𝕜 m (iteratedFDerivWithin 𝕜 i f s) s x₀ := by
   induction' i with i hi generalizing m
-  · rw [Nat.zero_eq, ENat.coe_zero, add_zero] at hmn
+  · rw [ENat.coe_zero, add_zero] at hmn
     exact (hf.of_le hmn).continuousLinearMap_comp
       ((continuousMultilinearCurryFin0 𝕜 E F).symm : _ →L[𝕜] E [×0]→L[𝕜] F)
   · rw [Nat.cast_succ, add_comm _ 1, ← add_assoc] at hmn

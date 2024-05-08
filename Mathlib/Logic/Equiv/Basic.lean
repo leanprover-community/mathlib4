@@ -353,8 +353,7 @@ def subtypeSum {p : α ⊕ β → Prop} : {c // p c} ≃ {a // p (Sum.inl a)} �
 namespace Perm
 
 /-- Combine a permutation of `α` and of `β` into a permutation of `α ⊕ β`. -/
-@[reducible]
-def sumCongr (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (Sum α β) :=
+abbrev sumCongr (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (Sum α β) :=
   Equiv.sumCongr ea eb
 #align equiv.perm.sum_congr Equiv.Perm.sumCongr
 
@@ -745,13 +744,23 @@ theorem piComm_symm {φ : α → β → Sort*} : (piComm φ).symm = (piComm <| s
 to the type of dependent functions of two arguments (i.e., functions to the space of functions).
 
 This is `Sigma.curry` and `Sigma.uncurry` together as an equiv. -/
-def piCurry {β : α → Sort _} (γ : ∀ a, β a → Sort _) :
+def piCurry {β : α → Type*} (γ : ∀ a, β a → Type*) :
     (∀ x : Σ i, β i, γ x.1 x.2) ≃ ∀ a b, γ a b where
   toFun := Sigma.curry
   invFun := Sigma.uncurry
   left_inv := Sigma.uncurry_curry
   right_inv := Sigma.curry_uncurry
 #align equiv.Pi_curry Equiv.piCurry
+
+-- `simps` overapplies these but `simps (config := .asFn)` under-applies them
+@[simp] theorem piCurry_apply {β : α → Type*} (γ : ∀ a, β a → Type*)
+    (f : ∀ x : Σ i, β i, γ x.1 x.2) :
+    piCurry γ f = Sigma.curry f :=
+  rfl
+
+@[simp] theorem piCurry_symm_apply {β : α → Type*} (γ : ∀ a, β a → Type*) (f : ∀ a b, γ a b) :
+    (piCurry γ).symm f = Sigma.uncurry f :=
+  rfl
 
 end
 

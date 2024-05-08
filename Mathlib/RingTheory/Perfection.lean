@@ -10,7 +10,7 @@ import Mathlib.Algebra.Ring.Pi
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.FieldTheory.Perfect
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.RingTheory.Valuation.Integers
 
 #align_import ring_theory.perfection from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"

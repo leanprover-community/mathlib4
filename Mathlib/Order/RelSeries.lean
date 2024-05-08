@@ -112,7 +112,8 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
   left_inv x := ext (by simp) <| by ext; apply List.get_ofFn
   right_inv x := by
     refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => List.get_ofFn _ _)
-    simp [Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1]
+    have := Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1
+    simp_all
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
 
@@ -194,7 +195,7 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
       lt_trichotomy i (Fin.castLE (by omega) (Fin.last _ : Fin (p.length + 1)))
     · convert p.step ⟨i.1, hi⟩ <;> convert Fin.append_left p q _ <;> rfl
     · convert connect
-      · convert Fin.append_left p q _; rfl
+      · convert Fin.append_left p q _
       · convert Fin.append_right p q _; rfl
     · set x := _; set y := _
       change r (Fin.append p q x) (Fin.append p q y)
@@ -207,6 +208,7 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
         dsimp
         conv_rhs => rw [Nat.add_comm p.length 1, add_assoc,
           Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi), add_comm]
+        rfl
       rw [hx, Fin.append_right, hy, Fin.append_right]
       convert q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
         by convert i.2 using 1; abel⟩
