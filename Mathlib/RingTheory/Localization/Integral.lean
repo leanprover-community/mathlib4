@@ -239,6 +239,8 @@ theorem isIntegral_localization [Algebra.IsIntegral R S] :
     exact hx.symm ▸ is_integral_localization_at_leadingCoeff p hp.2 (hp.1.symm ▸ M.one_mem)
 #align is_integral_localization isIntegral_localization
 
+@[nolint unusedHavesSuffices] -- It claims the `have : IsLocalization` line is unnecessary,
+                              -- but remove it and the proof won't work.
 theorem isIntegral_localization' {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S}
     (hf : f.IsIntegral) (M : Submonoid R) :
     (map (Localization (M.map (f : R →* S))) f
