@@ -544,7 +544,7 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
 #align adjoin_root.is_integral_root AdjoinRoot.isIntegral_root
 
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
-  have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
+  have f'_monic : Monic (f * C f.leadingCoeff⁻¹) := monic_mul_leadingCoeff_inv hf
   refine' (minpoly.unique K _ f'_monic _ _).symm
   · rw [AlgHom.map_mul, aeval_eq, mk_self, zero_mul]
   intro q q_monic q_aeval

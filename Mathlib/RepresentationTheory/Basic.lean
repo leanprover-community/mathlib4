@@ -416,7 +416,7 @@ theorem tprod_apply (g : G) : (ρV ⊗ ρW) g = TensorProduct.map (ρV g) (ρW g
 theorem smul_tprod_one_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
     -- Porting note: required to since Lean 4 doesn't unfold asModule
     let x' : ρV.asModule := x
-    let z : (ρV.tprod 1).asModule := x ⊗ₜ y
+    let z : (ρV.tprod (1 : Representation k G W)).asModule := x ⊗ₜ y
     r • z = (r • x') ⊗ₜ y := by
   show asAlgebraHom (ρV ⊗ 1) _ _ = asAlgebraHom ρV _ _ ⊗ₜ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
@@ -428,7 +428,7 @@ theorem smul_tprod_one_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
 theorem smul_one_tprod_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
     -- Porting note: required to since Lean 4 doesn't unfold asModule
     let y' : ρW.asModule := y
-    let z : (1 ⊗ ρW).asModule := x ⊗ₜ y
+    let z : ((1 : Representation k G V) ⊗ ρW).asModule := x ⊗ₜ y
     r • z = x ⊗ₜ (r • y') := by
   show asAlgebraHom (1 ⊗ ρW) _ _ = _ ⊗ₜ asAlgebraHom ρW _ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,

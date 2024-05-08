@@ -50,7 +50,8 @@ theorem HasStrictDerivAt.real_of_complex (h : HasStrictDerivAt e e' z) :
     HasStrictDerivAt (fun x : ℝ => (e x).re) e'.re z := by
   have A : HasStrictFDerivAt ((↑) : ℝ → ℂ) ofRealCLM z := ofRealCLM.hasStrictFDerivAt
   have B :
-    HasStrictFDerivAt e ((ContinuousLinearMap.smulRight 1 e' : ℂ →L[ℂ] ℂ).restrictScalars ℝ)
+    HasStrictFDerivAt e
+      ((ContinuousLinearMap.smulRight (1 : ℂ →L[ℂ] ℂ) e' : ℂ →L[ℂ] ℂ).restrictScalars ℝ)
       (ofRealCLM z) :=
     h.hasStrictFDerivAt.restrictScalars ℝ
   have C : HasStrictFDerivAt re reCLM (e (ofRealCLM z)) := reCLM.hasStrictFDerivAt
@@ -69,7 +70,7 @@ theorem HasDerivAt.real_of_complex (h : HasDerivAt e e' z) :
     HasDerivAt (fun x : ℝ => (e x).re) e'.re z := by
   have A : HasFDerivAt ((↑) : ℝ → ℂ) ofRealCLM z := ofRealCLM.hasFDerivAt
   have B :
-    HasFDerivAt e ((ContinuousLinearMap.smulRight 1 e' : ℂ →L[ℂ] ℂ).restrictScalars ℝ)
+    HasFDerivAt e ((ContinuousLinearMap.smulRight (1 : ℂ →L[ℂ] ℂ) e' : ℂ →L[ℂ] ℂ).restrictScalars ℝ)
       (ofRealCLM z) :=
     h.hasFDerivAt.restrictScalars ℝ
   have C : HasFDerivAt re reCLM (e (ofRealCLM z)) := reCLM.hasFDerivAt

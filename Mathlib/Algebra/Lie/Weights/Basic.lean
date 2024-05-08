@@ -718,9 +718,9 @@ lemma iSup_weightSpace_eq_top [IsTriangularizable K L M] :
   · choose χ hχ using h'
     replace hχ : weightSpace M χ = ⊤ := by simpa only [weightSpace, hχ] using iInf_top
     exact eq_top_iff.mpr <| hχ ▸ le_iSup (weightSpace M) χ
-  · replace hy : ∀ φ, finrank K (weightSpaceOf M φ y) < n := fun φ ↦ by
+  · replace hy : ∀ φ, finrank K (weightSpaceOf M φ y : LieSubmodule K L M) < n := fun φ ↦ by
       simp_rw [not_exists, ← lt_top_iff_ne_top] at hy; exact h_dim ▸ Submodule.finrank_lt (hy φ)
-    replace ih : ∀ φ, ⨆ χ : L → K, weightSpace (weightSpaceOf M φ y) χ = ⊤ :=
+    replace ih : ∀ φ, ⨆ χ : L → K, weightSpace (weightSpaceOf M φ y : LieSubmodule K L M) χ = ⊤ :=
       fun φ ↦ ih _ (hy φ) (weightSpaceOf M φ y) rfl
     replace ih : ∀ φ, ⨆ (χ : L → K) (_ : χ y = φ), weightSpace (weightSpaceOf M φ y) χ = ⊤ := by
       intro φ

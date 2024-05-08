@@ -232,7 +232,7 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
         Or.resolve_left (h.splits z).def (minpoly.ne_zero (h.isIntegral z)) (minpoly.irreducible _)
           (minpoly.dvd E _ (by simp [aeval_algHom_apply]))
       simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom]
-      suffices IsIntegral F _ by exact this.tower_top
+      suffices IsIntegral F (ϕ _) by exact this.tower_top
       exact ((h.isIntegral z).map <| toAlgHom F E K₁).map ϕ⟩
   map_zero' := Subtype.ext ϕ.map_zero
   map_one' := Subtype.ext ϕ.map_one
