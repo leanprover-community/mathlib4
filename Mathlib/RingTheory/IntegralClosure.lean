@@ -306,8 +306,12 @@ alias RingHom.IsIntegral.of_finite := RingHom.Finite.to_isIntegral
 /-- The [Kurosh problem](https://en.wikipedia.org/wiki/Kurosh_problem) asks to show that
   this is still true when `A` is not necessarily commutative and `R` is a field, but it has
   been solved in the negative. See https://arxiv.org/pdf/1706.02383.pdf for criteria for a
-  finitely generated algebraic (= integral) algebra over a field to be finite dimensional. -/
-instance Algebra.IsIntegral.finite [Algebra.IsIntegral R A] [h' : Algebra.FiniteType R A] :
+  finitely generated algebraic (= integral) algebra over a field to be finite dimensional.
+
+This could be an `instance`, but we tend to go from `Module.Finite` to `IsIntegral`/`IsAlgebraic`,
+and making it an instance will cause the search to be complicated a lot.
+-/
+theorem Algebra.IsIntegral.finite [Algebra.IsIntegral R A] [h' : Algebra.FiniteType R A] :
     Module.Finite R A :=
   have ⟨s, hs⟩ := h'
   ⟨by apply hs ▸ fg_adjoin_of_finite s.finite_toSet fun x _ ↦ Algebra.IsIntegral.isIntegral x⟩
