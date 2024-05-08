@@ -723,28 +723,18 @@ instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
   star_add f g := ext fun _ => star_add _ _
 
 instance : Star (Subsemiring.center (CentroidHom α)) where
-  star f :=
-  { val := {
-      toFun := fun a => star (f.val (star a))
-      map_zero' := by
-        simp only [star_zero, map_zero]
-      map_add' := fun a b => by simp only [star_add, map_add]
-      map_mul_left' := fun a b => by simp only [star_mul, map_mul_right, star_star]
-      map_mul_right' := fun a b => by simp only [star_mul, map_mul_left, star_star]
-  }
-    property := by
-      rw [Subsemiring.mem_center_iff]
-      intro g
-      ext a
-      simp only [mul_apply]
-      have e1 : star (f.val (star (g a))) = g (star (f.val (star a))) := calc
+  star f := ⟨star (f : CentroidHom α), by
+    rw [Subsemiring.mem_center_iff]
+    intro g
+    ext a
+    simp only [mul_apply]
+    have e1 : star (f.val (star (g a))) = g (star (f.val (star a))) := calc
         star (f.val (star (g a))) = star (f.val (star g (star a))) := by rw [star_apply, star_star]
         _ = star ((f.val * star g) (star a)) := by simp only [star_apply, star_star, mul_apply]
         _ = star ((star g * f.val) (star a)) := by rw [f.property.comm]
         _ = star (star g (f.val (star a))) := by simp only [mul_apply, star_apply, star_star]
         _ = g (star (f.val (star a))) := by simp only [star_apply, star_star]
-      exact e1.symm
-  }
+    exact e1.symm⟩
 
 /--
 Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
