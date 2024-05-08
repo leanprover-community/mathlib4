@@ -57,7 +57,7 @@ theorem einfsep_zero : s.einfsep = 0 ↔ ∀ C > 0, ∃ x ∈ s, ∃ y ∈ s, x 
 #align set.einfsep_zero Set.einfsep_zero
 
 theorem einfsep_pos : 0 < s.einfsep ↔ ∃ C > 0, ∀ x ∈ s, ∀ y ∈ s, x ≠ y → C ≤ edist x y := by
-  rw [pos_iff_ne_zero, Ne.def, einfsep_zero]
+  rw [pos_iff_ne_zero, Ne, einfsep_zero]
   simp only [not_forall, not_exists, not_lt, exists_prop, not_and]
 #align set.einfsep_pos Set.einfsep_pos
 
@@ -428,7 +428,7 @@ theorem infsep_pair : ({x, y} : Set α).infsep = dist x y := by
 theorem infsep_triple (hxy : x ≠ y) (hyz : y ≠ z) (hxz : x ≠ z) :
     ({x, y, z} : Set α).infsep = dist x y ⊓ dist x z ⊓ dist y z := by
   simp only [infsep, einfsep_triple hxy hyz hxz, ENNReal.toReal_inf, edist_ne_top x y,
-    edist_ne_top x z, edist_ne_top y z, dist_edist, Ne.def, inf_eq_top_iff, and_self_iff,
+    edist_ne_top x z, edist_ne_top y z, dist_edist, Ne, inf_eq_top_iff, and_self_iff,
     not_false_iff]
 #align set.infsep_triple Set.infsep_triple
 

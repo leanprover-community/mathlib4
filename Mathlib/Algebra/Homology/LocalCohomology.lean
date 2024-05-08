@@ -226,7 +226,7 @@ variable {I J K : Ideal R}
 /-- The lemma below essentially says that `idealPowersToSelfLERadical I` is initial in
 `selfLERadicalDiagram I`.
 
-PORTING NOTE: This lemma should probably be moved to `Mathlib/RingTheory/Finiteness`
+Porting note: This lemma should probably be moved to `Mathlib/RingTheory/Finiteness`
 to be near `Ideal.exists_radical_pow_le_of_fg`, which it generalizes. -/
 theorem Ideal.exists_pow_le_of_le_radical_of_fG (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
     ∃ k : ℕ, I ^ k ≤ J := by
@@ -273,12 +273,19 @@ def SelfLERadical.cast (hJK : J.radical = K.radical) : SelfLERadical J ⥤ SelfL
 #align local_cohomology.self_le_radical.cast localCohomology.SelfLERadical.cast
 
 -- TODO generalize this to the equivalence of full categories for any `iff`.
-instance SelfLERadical.castIsEquivalence (hJK : J.radical = K.radical) :
-    IsEquivalence (SelfLERadical.cast hJK) where
+/-- The equivalence of categories `SelfLERadical J ≌ SelfLERadical K`
+when `J.radical = K.radical`. -/
+def SelfLERadical.castEquivalence (hJK : J.radical = K.radical) :
+    SelfLERadical J ≌ SelfLERadical K where
+  functor := SelfLERadical.cast hJK
   inverse := SelfLERadical.cast hJK.symm
   unitIso := Iso.refl _
   counitIso := Iso.refl _
-#align local_cohomology.self_le_radical.cast_is_equivalence localCohomology.SelfLERadical.castIsEquivalence
+
+instance SelfLERadical.cast_isEquivalence (hJK : J.radical = K.radical) :
+    (SelfLERadical.cast hJK).IsEquivalence :=
+  (castEquivalence hJK).isEquivalence_functor
+#align local_cohomology.self_le_radical.cast_is_equivalence localCohomology.SelfLERadical.cast_isEquivalence
 
 /-- The natural isomorphism between local cohomology defined using the `of_self_le_radical`
 diagram, assuming `J.radical = K.radical`. -/

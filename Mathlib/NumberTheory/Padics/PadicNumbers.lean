@@ -69,8 +69,7 @@ open scoped Classical
 open Nat multiplicity padicNorm CauSeq CauSeq.Completion Metric
 
 /-- The type of Cauchy sequences of rationals with respect to the `p`-adic norm. -/
-@[reducible]
-def PadicSeq (p : ℕ) :=
+abbrev PadicSeq (p : ℕ) :=
   CauSeq _ (padicNorm p)
 #align padic_seq PadicSeq
 
@@ -465,7 +464,6 @@ def Padic (p : ℕ) [Fact p.Prime] :=
   CauSeq.Completion.Cauchy (padicNorm p)
 #align padic Padic
 
--- mathport name: «exprℚ_[ ]»
 /-- notation for p-padic rationals -/
 notation "ℚ_[" p "]" => Padic p
 
@@ -923,7 +921,7 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
     rw [eq_comm]
     calc
       ‖(k : ℚ_[p])‖ = ‖((k : ℚ) : ℚ_[p])‖ := by norm_cast
-      _ = padicNorm p k := (padicNormE.eq_padicNorm _)
+      _ = padicNorm p k := padicNormE.eq_padicNorm _
       _ = 1 := mod_cast (int_eq_one_iff k).mpr h
   · rintro ⟨x, rfl⟩
     push_cast
@@ -1090,7 +1088,7 @@ theorem valuation_map_mul {x y : ℚ_[p]} (hx : x ≠ 0) (hy : y ≠ 0) :
     valuation (x * y : ℚ_[p]) = valuation x + valuation y := by
   have h_norm : ‖x * y‖ = ‖x‖ * ‖y‖ := norm_mul x y
   have hp_ne_one : (p : ℝ) ≠ 1 := by
-    rw [← Nat.cast_one, Ne.def, Nat.cast_inj]
+    rw [← Nat.cast_one, Ne, Nat.cast_inj]
     exact Nat.Prime.ne_one hp.elim
   have hp_pos : (0 : ℝ) < p := by
     rw [← Nat.cast_zero, Nat.cast_lt]

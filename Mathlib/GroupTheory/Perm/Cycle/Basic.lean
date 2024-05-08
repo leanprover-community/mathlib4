@@ -228,7 +228,7 @@ theorem SameCycle.exists_pow_eq' [Finite α] : SameCycle f x y → ∃ i < order
   classical
     rintro ⟨k, rfl⟩
     use (k % orderOf f).natAbs
-    have h₀ := Int.coe_nat_pos.mpr (orderOf_pos f)
+    have h₀ := Int.natCast_pos.mpr (orderOf_pos f)
     have h₁ := Int.emod_nonneg k h₀.ne'
     rw [← zpow_natCast, Int.natAbs_of_nonneg h₁, zpow_mod_orderOf]
     refine' ⟨_, by rfl⟩
@@ -249,12 +249,12 @@ instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f
   decidable_of_iff (∃ n ∈ List.range (Fintype.card (Perm α)), (f ^ n) x = y)
     ⟨fun ⟨n, _, hn⟩ => ⟨n, hn⟩, fun ⟨i, hi⟩ => ⟨(i % orderOf f).natAbs,
       List.mem_range.2 (Int.ofNat_lt.1 <| by
-        rw [Int.natAbs_of_nonneg (Int.emod_nonneg _ <| Int.coe_nat_ne_zero.2 (orderOf_pos _).ne')]
-        · refine' (Int.emod_lt _ <| Int.coe_nat_ne_zero_iff_pos.2 <| orderOf_pos _).trans_le _
+        rw [Int.natAbs_of_nonneg (Int.emod_nonneg _ <| Int.natCast_ne_zero.2 (orderOf_pos _).ne')]
+        · refine' (Int.emod_lt _ <| Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _).trans_le _
           simp [orderOf_le_card_univ]),
       by
         rw [← zpow_natCast, Int.natAbs_of_nonneg (Int.emod_nonneg _ <|
-          Int.coe_nat_ne_zero_iff_pos.2 <| orderOf_pos _), zpow_mod_orderOf, hi]⟩⟩
+          Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _), zpow_mod_orderOf, hi]⟩⟩
 
 end SameCycle
 
@@ -340,7 +340,7 @@ theorem IsCycle.exists_pow_eq (hf : IsCycle f) (hx : f x ≠ x) (hy : f y ≠ y)
   let ⟨n, hn⟩ := hf.exists_zpow_eq hx hy
   classical exact
       ⟨(n % orderOf f).toNat, by
-        {have := n.emod_nonneg (Int.coe_nat_ne_zero.mpr (ne_of_gt (orderOf_pos f)))
+        {have := n.emod_nonneg (Int.natCast_ne_zero.mpr (ne_of_gt (orderOf_pos f)))
          rwa [← zpow_natCast, Int.toNat_of_nonneg this, zpow_mod_orderOf]}⟩
 #align equiv.perm.is_cycle.exists_pow_eq Equiv.Perm.IsCycle.exists_pow_eq
 
@@ -427,7 +427,7 @@ theorem isCycle_swap_mul_aux₁ {α : Type*} [DecidableEq α] :
       else
         have : f b ≠ b ∧ b ≠ x := ne_and_ne_of_swap_mul_apply_ne_self hb
         have hb' : (swap x (f x) * f) (f⁻¹ b) ≠ f⁻¹ b := by
-          rw [mul_apply, apply_inv_self, swap_apply_of_ne_of_ne this.2 (Ne.symm hfbx), Ne.def, ←
+          rw [mul_apply, apply_inv_self, swap_apply_of_ne_of_ne this.2 (Ne.symm hfbx), Ne, ←
             f.injective.eq_iff, apply_inv_self]
           exact this.1
         let ⟨i, hi⟩ := hn hb' (f.injective <| by
@@ -450,9 +450,8 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
         have hb : (swap x (f⁻¹ x) * f⁻¹) (f⁻¹ b) ≠ f⁻¹ b := by
           rw [mul_apply, swap_apply_def]
           split_ifs <;>
-              simp only [inv_eq_iff_eq, Perm.mul_apply, zpow_negSucc,
-                Ne.def, Perm.apply_inv_self] at
-                * <;> tauto
+            simp only [inv_eq_iff_eq, Perm.mul_apply, zpow_negSucc, Ne, Perm.apply_inv_self] at *
+              <;> tauto
         let ⟨i, hi⟩ :=
           isCycle_swap_mul_aux₁ n hb
             (show (f⁻¹ ^ n) (f⁻¹ x) = f⁻¹ b by
@@ -815,10 +814,10 @@ theorem isCycleOn_swap [DecidableEq α] (hab : a ≠ b) : (swap a b).IsCycleOn {
   ⟨bijOn_swap (by simp) (by simp), fun x hx y hy => by
     rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hx hy
     obtain rfl | rfl := hx <;> obtain rfl | rfl := hy
-    · exact ⟨0, by rw [zpow_zero, coe_one, id.def]⟩
+    · exact ⟨0, by rw [zpow_zero, coe_one, id]⟩
     · exact ⟨1, by rw [zpow_one, swap_apply_left]⟩
     · exact ⟨1, by rw [zpow_one, swap_apply_right]⟩
-    · exact ⟨0, by rw [zpow_zero, coe_one, id.def]⟩⟩
+    · exact ⟨0, by rw [zpow_zero, coe_one, id]⟩⟩
 #align equiv.perm.is_cycle_on_swap Equiv.Perm.isCycleOn_swap
 
 protected theorem IsCycleOn.apply_ne (hf : f.IsCycleOn s) (hs : s.Nontrivial) (ha : a ∈ s) :
@@ -893,10 +892,10 @@ theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ 
 
 theorem IsCycleOn.zpow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
     ∀ {n : ℤ}, (f ^ n) a = a ↔ (s.card : ℤ) ∣ n
-  | Int.ofNat n => (hf.pow_apply_eq ha).trans Int.coe_nat_dvd.symm
+  | Int.ofNat n => (hf.pow_apply_eq ha).trans Int.natCast_dvd_natCast.symm
   | Int.negSucc n => by
     rw [zpow_negSucc, ← inv_pow]
-    exact (hf.inv.pow_apply_eq ha).trans (dvd_neg.trans Int.coe_nat_dvd).symm
+    exact (hf.inv.pow_apply_eq ha).trans (dvd_neg.trans Int.natCast_dvd_natCast).symm
 #align equiv.perm.is_cycle_on.zpow_apply_eq Equiv.Perm.IsCycleOn.zpow_apply_eq
 
 theorem IsCycleOn.pow_apply_eq_pow_apply {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s)
@@ -980,7 +979,6 @@ section
 
 variable [DecidableEq α] {l : List α}
 
-set_option linter.deprecated false in -- nthLe
 theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
     l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine' ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => _⟩
@@ -988,7 +986,7 @@ theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
   rw [← List.indexOf_get ha, ← List.indexOf_get hb]
   refine' ⟨l.indexOf b - l.indexOf a, _⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_natCast,
-    Equiv.Perm.coe_mul, ← List.nthLe_eq, List.formPerm_pow_apply_nthLe _ h, Function.comp]
+    Equiv.Perm.coe_mul, List.formPerm_pow_apply_get _ h, Function.comp]
   rw [add_comm]
 #align list.nodup.is_cycle_on_form_perm List.Nodup.isCycleOn_formPerm
 
@@ -1003,7 +1001,7 @@ variable [DecidableEq α] [Fintype α]
 theorem exists_cycleOn (s : Finset α) :
     ∃ f : Perm α, f.IsCycleOn s ∧ f.support ⊆ s := by
   refine ⟨s.toList.formPerm, ?_, fun x hx => by
-    simpa using List.mem_of_formPerm_apply_ne _ _ (Perm.mem_support.1 hx)⟩
+    simpa using List.mem_of_formPerm_apply_ne (Perm.mem_support.1 hx)⟩
   convert s.nodup_toList.isCycleOn_formPerm
   simp
 #align finset.exists_cycle_on Finset.exists_cycleOn
@@ -1019,7 +1017,7 @@ theorem Countable.exists_cycleOn (hs : s.Countable) :
   classical
   obtain hs' | hs' := s.finite_or_infinite
   · refine ⟨hs'.toFinset.toList.formPerm, ?_, fun x hx => by
-      simpa using List.mem_of_formPerm_apply_ne _ _ hx⟩
+      simpa using List.mem_of_formPerm_apply_ne hx⟩
     convert hs'.toFinset.nodup_toList.isCycleOn_formPerm
     simp
   · haveI := hs.to_subtype

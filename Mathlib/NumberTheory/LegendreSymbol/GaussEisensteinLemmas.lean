@@ -47,9 +47,9 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     refine' ⟨(b / a : ZMod p).valMinAbs.natAbs, mem_Ico.mpr ⟨_, _⟩, _⟩
     · apply Nat.pos_of_ne_zero
       simp only [div_eq_mul_inv, hap, CharP.cast_eq_zero_iff (ZMod p) p, hpe hb, not_false_iff,
-        valMinAbs_eq_zero, inv_eq_zero, Int.natAbs_eq_zero, Ne.def, _root_.mul_eq_zero, or_self_iff]
+        valMinAbs_eq_zero, inv_eq_zero, Int.natAbs_eq_zero, Ne, _root_.mul_eq_zero, or_self_iff]
     · apply lt_succ_of_le; apply natAbs_valMinAbs_le
-    · rw [nat_cast_natAbs_valMinAbs]
+    · rw [natCast_natAbs_valMinAbs]
       split_ifs
       · erw [mul_div_cancel₀ _ hap, valMinAbs_def_pos, val_cast_of_lt (hep hb),
           if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
@@ -72,7 +72,7 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
     _ = ∏ x in Ico 1 (p / 2).succ, (if (a * x : ZMod p).val ≤ p / 2 then (1 : ZMod p) else -1) *
         (a * x : ZMod p).valMinAbs.natAbs :=
       (prod_congr rfl fun _ _ => by
-        simp only [nat_cast_natAbs_valMinAbs]
+        simp only [natCast_natAbs_valMinAbs]
         split_ifs <;> simp)
     _ = (-1 : ZMod p) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ =>
         ¬(a * x : ZMod p).val ≤ p / 2).card * ∏ x in Ico 1 (p / 2).succ,
@@ -95,7 +95,7 @@ theorem gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] {a : ℤ}
     (hap : (a : ZMod p) ≠ 0) : (↑a ^ (p / 2) : ZMod p) =
     ((-1) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card :) :=
   (mul_left_inj' (show ((p / 2)! : ZMod p) ≠ 0 by
-    rw [Ne.def, CharP.cast_eq_zero_iff (ZMod p) p, hp.1.dvd_factorial, not_le]
+    rw [Ne, CharP.cast_eq_zero_iff (ZMod p) p, hp.1.dvd_factorial, not_le]
     exact Nat.div_lt_self hp.1.pos (by decide))).1 <| by
       simpa using gauss_lemma_aux₁ p hap
 #align zmod.gauss_lemma_aux ZMod.gauss_lemma_aux
@@ -126,7 +126,7 @@ private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p 
       simp only [mod_add_div]
     _ = (∑ x in Ico 1 (p / 2).succ, ((a * x : ℕ) : ZMod p).val : ℕ) +
         (∑ x in Ico 1 (p / 2).succ, a * x / p : ℕ) := by
-      simp only [val_nat_cast]
+      simp only [val_natCast]
       simp [sum_add_distrib, ← mul_sum, Nat.cast_add, Nat.cast_mul, Nat.cast_sum, hp2]
     _ = _ :=
       congr_arg₂ (· + ·)

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 #align_import data.nat.factorial.big_operators from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -28,8 +28,7 @@ lemma monotone_factorial : Monotone factorial := fun _ _ => factorial_le
 
 variable {α : Type*} (s : Finset α) (f : α → ℕ)
 
-theorem prod_factorial_pos : 0 < ∏ i in s, (f i)! :=
-  Finset.prod_pos fun i _ => factorial_pos (f i)
+theorem prod_factorial_pos : 0 < ∏ i in s, (f i)! := by positivity
 #align nat.prod_factorial_pos Nat.prod_factorial_pos
 
 theorem prod_factorial_dvd_factorial_sum : (∏ i in s, (f i)!) ∣ (∑ i in s, f i)! := by
