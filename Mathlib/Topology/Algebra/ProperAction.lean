@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guirardel
 -/
 import Mathlib.Topology.ProperMap
-import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Defs.Sequences
 import Mathlib.Topology.Sequences
