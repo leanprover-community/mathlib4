@@ -28,7 +28,7 @@ universe u
 
 open Algebra IsCyclotomicExtension Polynomial NumberField
 
-open scoped Cyclotomic NumberField Nat
+open scoped Cyclotomic Nat
 
 variable {p : ℕ+} {k : ℕ} {K : Type u} [Field K] [CharZero K] {ζ : K} [hp : Fact (p : ℕ).Prime]
 
@@ -481,6 +481,21 @@ theorem not_exists_int_prime_dvd_sub_of_prime_ne_two'
   have : IsCyclotomicExtension {p ^ (0 + 1)} ℚ K := by simpa using hcycl
   replace hζ : IsPrimitiveRoot ζ (p ^ (0 + 1)) := by simpa using hζ
   exact not_exists_int_prime_dvd_sub_of_prime_ne_two hζ hodd
+
+theorem finite_quotient_span_sub_one [hcycl : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+    (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) :
+    Finite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) := by
+  have : NumberField K := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
+  refine Fintype.finite <| Ideal.fintypeQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
+  simp only [Ideal.span_singleton_eq_bot, sub_eq_zero, ← Subtype.coe_inj] at h
+  exact hζ.ne_one (one_lt_pow hp.1.one_lt (Nat.zero_ne_add_one k).symm) (RingOfIntegers.ext_iff.1 h)
+
+theorem finite_quotient_span_sub_one' [hcycl : IsCyclotomicExtension {p} ℚ K]
+    (hζ : IsPrimitiveRoot ζ ↑p) :
+    Finite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) := by
+  have : IsCyclotomicExtension {p ^ (0 + 1)} ℚ K := by simpa using hcycl
+  replace hζ : IsPrimitiveRoot ζ (p ^ (0 + 1)) := by simpa using hζ
+  exact hζ.finite_quotient_span_sub_one
 
 end IsPrimitiveRoot
 
