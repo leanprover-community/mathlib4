@@ -44,7 +44,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
     exact (hI' hI).elim
   apply h₂ (I ^ 2) _ (Ideal.pow_le_self two_ne_zero)
   · apply H n.succ _ (I ^ 2)
-    · rw [← pow_mul, eq_bot_iff, ← hI, Nat.succ_eq_add_one, Nat.succ_eq_add_one]
+    · rw [← pow_mul, eq_bot_iff, ← hI, Nat.succ_eq_add_one]
       apply Ideal.pow_le_pow_right (by omega)
     · exact n.succ.lt_succ_self
   · apply h₁
