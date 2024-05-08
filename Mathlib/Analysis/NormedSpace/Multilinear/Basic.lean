@@ -1324,8 +1324,6 @@ noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α] [DecidableEq
     apply (f.le_opNorm _).trans _
     rw [← prod_compl_mul_prod s.toFinset, mul_assoc]
     gcongr
-    · exact prod_nonneg (fun i _ ↦ norm_nonneg _)
-    · exact prod_nonneg (fun i _ ↦ norm_nonneg _)
     · apply le_of_eq
       have : ∀ x, x ∈ s.toFinsetᶜ ↔ (fun x ↦ x ∉ s) x := by simp
       rw [prod_subtype _ this]
@@ -1352,7 +1350,6 @@ lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α] [DecidableEq ι]
       ContinuousMultilinearMap.le_opNorm _ _
   _ ≤ ‖f‖ * ∏ _i : {a : ι // a ∉ s}, ‖x‖ := by
       gcongr
-      · exact prod_nonneg (fun i _ ↦ norm_nonneg _)
       · exact MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg _) _
       · exact fun _ _ ↦ norm_nonneg _
       · exact norm_le_pi_norm _ _
