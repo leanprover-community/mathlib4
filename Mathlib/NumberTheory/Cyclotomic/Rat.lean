@@ -375,7 +375,7 @@ lemma norm_toInteger_pow_sub_one_of_prime_ne_two [IsCyclotomicExtension {p ^ (k 
   suffices h : (p : ℕ) = 2 from PNat.coe_injective h
   apply eq_of_prime_pow_eq hp.out.prime Nat.prime_two.prime (k - s).succ_pos
   rw [pow_one]
-  exact_mod_cast congr_arg Subtype.val h
+  exact congr_arg Subtype.val h
 
 /-- The norm, relative to `ℤ`, of `ζ - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ` is
 `p` if `p ≠ 2`. -/
