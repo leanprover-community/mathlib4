@@ -319,18 +319,18 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
   constructor
   · apply s.sub_mem hx
     rw [Finsupp.total_apply, Finsupp.lmapDomain_apply, Finsupp.sum_mapDomain_index]
-    refine' s.sum_mem _
-    · intro y hy
+    · refine' s.sum_mem _
+      intro y hy
       exact s.smul_mem _ (hg y (hl1 hy)).1
     · exact zero_smul _
     · exact fun _ _ _ => add_smul _ _ _
   · rw [LinearMap.mem_ker, f.map_sub, ← hl2]
     rw [Finsupp.total_apply, Finsupp.total_apply, Finsupp.lmapDomain_apply]
     rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, map_sum]
-    rw [sub_eq_zero]
-    refine' Finset.sum_congr rfl fun y hy => _
-    unfold id
-    rw [f.map_smul, (hg y (hl1 hy)).2]
+    · rw [sub_eq_zero]
+      refine' Finset.sum_congr rfl fun y hy => _
+      unfold id
+      rw [f.map_smul, (hg y (hl1 hy)).2]
     · exact zero_smul _
     · exact fun _ _ _ => add_smul _ _ _
 #align submodule.fg_of_fg_map_of_fg_inf_ker Submodule.fg_of_fg_map_of_fg_inf_ker
@@ -575,10 +575,11 @@ theorem exists_fin [Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.spa
   Submodule.fg_iff_exists_fin_generating_family.mp out
 #align module.finite.exists_fin Module.Finite.exists_fin
 
-lemma exists_fin' (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] [Finite R M] :
-    ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
+variable (R M) in
+lemma exists_fin' [Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
   have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
-  exact ⟨n, piEquiv (Fin n) R M s, by simpa⟩
+  refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
+  rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
 
 theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) : Finite R N :=
   ⟨by

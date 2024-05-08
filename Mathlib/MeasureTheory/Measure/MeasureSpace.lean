@@ -886,23 +886,12 @@ section SMul
 variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
 variable [SMul R' ℝ≥0∞] [IsScalarTower R' ℝ≥0∞ ℝ≥0∞]
 
--- TODO: refactor
 instance instSMul [MeasurableSpace α] : SMul R (Measure α) :=
   ⟨fun c μ =>
     { toOuterMeasure := c • μ.toOuterMeasure
       m_iUnion := fun s hs hd => by
-        rw [← smul_one_smul ℝ≥0∞ c (_ : OuterMeasure α)]
-        conv_lhs =>
-          change OuterMeasure.measureOf
-            ((c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) • μ.toOuterMeasure) (⋃ i, s i)
-          change (c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) *
-            OuterMeasure.measureOf μ.toOuterMeasure (⋃ i, s i)
-        conv_rhs =>
-          change ∑' i, OuterMeasure.measureOf
-            ((c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) • μ.toOuterMeasure) (s i)
-          change ∑' i, (c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) *
-            OuterMeasure.measureOf (μ.toOuterMeasure) (s i)
-        simp_rw [measure_iUnion hd hs, ENNReal.tsum_mul_left]
+        simp_rw [OuterMeasure.smul_apply, measure_iUnion hd hs]
+        simpa using (ENNReal.tsum_mul_left (a := c • 1)).symm
       trimmed := by rw [OuterMeasure.trim_smul, μ.trimmed] }⟩
 #align measure_theory.measure.has_smul MeasureTheory.Measure.instSMul
 
@@ -1125,17 +1114,19 @@ instance instCompleteSemilatticeInf [MeasurableSpace α] : CompleteSemilatticeIn
 #align measure_theory.measure.complete_semilattice_Inf MeasureTheory.Measure.instCompleteSemilatticeInf
 
 instance instCompleteLattice [MeasurableSpace α] : CompleteLattice (Measure α) :=
-  { /- Porting note:
-    Adding an explicit `top` made `leanchecker` fail in Lean3 because of lean#364,
-    but in Lean4 it's all right.
-    top := (⊤ : OuterMeasure α).toMeasure
-      (by rw [OuterMeasure.top_caratheodory]; exact le_top)
-    le_top := fun a s hs => by
-      rcases s.eq_empty_or_nonempty with rfl | h <;>
-      dsimp only [] <;>
-        [simp, (rw [fun h' => toMeasure_apply ⊤ h' hs, OuterMeasure.top_apply h]; exact le_top) ]
-    -/
-    completeLatticeOfCompleteSemilatticeInf (Measure α) with
+  { completeLatticeOfCompleteSemilatticeInf (Measure α) with
+    top :=
+      { toOuterMeasure := ⊤,
+        m_iUnion := by
+          intro f _ _
+          refine (OuterMeasure.iUnion _ _).antisymm ?_
+          if hne : (⋃ i, f i).Nonempty then
+            rw [OuterMeasure.top_apply hne]
+            exact le_top
+          else
+            simp_all [Set.not_nonempty_iff_eq_empty]
+        trimmed := le_antisymm le_top (OuterMeasure.le_trim _) },
+    le_top := fun μ => toOuterMeasure_le.mp le_top
     bot := 0
     bot_le := fun _a _s => bot_le }
 #align measure_theory.measure.complete_lattice MeasureTheory.Measure.instCompleteLattice
@@ -1143,17 +1134,16 @@ instance instCompleteLattice [MeasurableSpace α] : CompleteLattice (Measure α)
 end sInf
 
 @[simp]
-theorem _root_.MeasureTheory.OuterMeasure.toMeasure_top [MeasurableSpace α] :
+theorem _root_.MeasureTheory.OuterMeasure.toMeasure_top :
     (⊤ : OuterMeasure α).toMeasure (by rw [OuterMeasure.top_caratheodory]; exact le_top) =
       (⊤ : Measure α) :=
-  top_unique <| le_intro fun s hs hne => by
-    simp [hne, toMeasure_apply ⊤ _ hs, OuterMeasure.top_apply]
+  toOuterMeasure_toMeasure (μ := ⊤)
 #align measure_theory.outer_measure.to_measure_top MeasureTheory.OuterMeasure.toMeasure_top
 
 @[simp]
 theorem toOuterMeasure_top [MeasurableSpace α] :
-    (⊤ : Measure α).toOuterMeasure = (⊤ : OuterMeasure α) := by
-  rw [← OuterMeasure.toMeasure_top, toMeasure_toOuterMeasure, OuterMeasure.trim_top]
+    (⊤ : Measure α).toOuterMeasure = (⊤ : OuterMeasure α) :=
+  rfl
 #align measure_theory.measure.to_outer_measure_top MeasureTheory.Measure.toOuterMeasure_top
 
 @[simp]
@@ -1726,6 +1716,16 @@ lemma absolutelyContinuous_zero_iff : μ ≪ 0 ↔ μ = 0 :=
 
 alias absolutelyContinuous_refl := AbsolutelyContinuous.refl
 alias absolutelyContinuous_rfl := AbsolutelyContinuous.rfl
+
+lemma absolutelyContinuous_sum_left {μs : ι → Measure α} (hμs : ∀ i, μs i ≪ ν) :
+    Measure.sum μs ≪ ν :=
+  AbsolutelyContinuous.mk fun s hs hs0 ↦ by simp [sum_apply _ hs, fun i ↦ hμs i hs0]
+
+lemma absolutelyContinuous_sum_right {μs : ι → Measure α} (i : ι) (hνμ : ν ≪ μs i) :
+    ν ≪ Measure.sum μs := by
+  refine AbsolutelyContinuous.mk fun s hs hs0 ↦ ?_
+  simp only [sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
+  exact hνμ (hs0 i)
 
 theorem absolutelyContinuous_of_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hμ'_le : μ' ≤ c • μ) :
     μ' ≪ μ :=

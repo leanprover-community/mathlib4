@@ -302,8 +302,8 @@ end NonemptyInterval
 We represent intervals either as `⊥` or a nonempty interval given by its endpoints `fst`, `snd`.
 To convert intervals to the set of elements between these endpoints, use the coercion
 `Interval α → Set α`. -/
-@[reducible] -- Porting note: added reducible, it seems to help with coercions
-def Interval (α : Type*) [LE α] :=
+-- Porting note: added reducible, it seems to help with coercions
+abbrev Interval (α : Type*) [LE α] :=
   WithBot (NonemptyInterval α) -- deriving Inhabited, LE, OrderBot
 #align interval Interval
 
@@ -557,7 +557,7 @@ instance lattice : Lattice (Interval α) :=
         change _ ≤ dite _ _ _
         simp only [WithBot.some_eq_coe, WithBot.coe_le_coe] at hb hc ⊢
         rw [dif_pos, WithBot.coe_le_coe]
-        exact ⟨sup_le hb.1 hc.1, le_inf hb.2 hc.2⟩
+        · exact ⟨sup_le hb.1 hc.1, le_inf hb.2 hc.2⟩
         -- Porting note: had to add the next 6 lines including the changes because
         -- it seems that lean cannot automatically turn `NonemptyInterval.toDualProd s`
         -- into `s.toProd` anymore.
