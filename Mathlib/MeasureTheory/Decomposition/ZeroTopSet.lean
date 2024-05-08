@@ -45,11 +45,11 @@ namespace Measure
 
 theorem iSup_restrict_spanningSets'' [SigmaFinite μ] (s : Set α) :
     ⨆ i, μ.restrict (spanningSets μ i) (toMeasurable μ s) = μ s := by
-  rw [← measure_toMeasurable s, iSup_restrict_spanningSets (measurableSet_toMeasurable _ _)]
+  rw [← measure_toMeasurable s, iSup_restrict_spanningSets]
 
 theorem iSup_restrict_spanningSets' [SigmaFinite μ] (s : Set α) :
     ⨆ i, μ.restrict (spanningSets μ i) s = μ s := by
-  rw [← measure_toMeasurable s, ← iSup_restrict_spanningSets (measurableSet_toMeasurable _ _)]
+  rw [← measure_toMeasurable s, ← iSup_restrict_spanningSets]
   simp_rw [restrict_apply' (measurable_spanningSets μ _), Set.inter_comm s,
     ← restrict_apply (measurable_spanningSets μ _), ← restrict_toMeasurable_of_sFinite s,
     restrict_apply (measurable_spanningSets μ _), Set.inter_comm _ (toMeasurable μ s)]
@@ -138,7 +138,7 @@ lemma IsSigmaFiniteSet.union (hsσ : IsSigmaFiniteSet s μ) (htσ : IsSigmaFinit
 lemma measure_eq_iSup_measure_subset [SigmaFinite μ] (hs : MeasurableSet s) :
     μ s = ⨆ (t : Set α) (_ht : MeasurableSet t) (_hμt : μ t ≠ ∞) (_hts : t ⊆ s), μ t := by
   refine le_antisymm ?_ ?_
-  · rw [← iSup_restrict_spanningSets hs]
+  · rw [← iSup_restrict_spanningSets]
     simp only [ne_eq, iSup_le_iff]
     intro i
     rw [restrict_apply' (measurable_spanningSets _ _)]
@@ -282,7 +282,7 @@ lemma sFinite_of_absolutelyContinuous_aux {ν : Measure α} [IsFiniteMeasure ν]
     SFinite μ := by
   let f : α → ℝ≥0∞ := fun _ ↦ ∞
   have hf : Measurable f := measurable_const
-  suffices μ = ν.withDensity f by rw [this]; exact sFinite_withDensity' _ hf
+  suffices μ = ν.withDensity f by rw [this]; exact sFinite_withDensity _ hf
   ext s hs
   simp only [withDensity_const, Measure.smul_apply, smul_eq_mul, f]
   by_cases hνs : ν s = 0
