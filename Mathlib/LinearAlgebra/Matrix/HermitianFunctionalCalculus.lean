@@ -72,9 +72,13 @@ theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A
 noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
       diagonal (RCLike.ofReal ∘ g ∘ Set.codRestrict
-      (fun (i : n) ↦ hA.eigenvalues i) (spectrum ℝ A) (hA.eigenvalue_mem_real))
+      (fun (i : n) ↦ hA.eigenvalues i) _ (hA.eigenvalue_mem_real))
       * star (eigenvectorUnitary hA : Matrix n n 𝕜)
-  map_one' := sorry
+  map_one' := by
+      dsimp
+      have h1 : diagonal 1 = (1 : Matrix n n 𝕜) := rfl
+      simp only  [h1, algebraMap.coe_one, Function.const_one, mul_one,
+                 Matrix.mem_unitaryGroup_iff.mp, SetLike.coe_mem]
   map_mul' := sorry
   map_zero' := sorry
   map_add' := sorry
@@ -83,7 +87,7 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
     | .mk toFun continuous_toFun => sorry
 
 
-
+#exit
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus 𝕜 (IsHermitian : Matrix n n 𝕜 → Prop) where
 exists_cfc_of_predicate
