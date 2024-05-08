@@ -425,7 +425,7 @@ lemma prime_norm_toInteger_sub_one_of_prime_ne_two' [hcycl : IsCyclotomicExtensi
 /-- In a `p ^ (k + 1)`-th cyclotomic extension of `ℚ `, we have that `ζ - 1` is not congruent to an
   integer modulo `p` if `p ^ (k  + 1) ≠ 2`. -/
 theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
-  [hcycl : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+    [hcycl : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) (htwo : p ^ (k + 1) ≠ 2) :
     ¬(∃ n : ℤ, (p : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := by
   intro ⟨n, x, h⟩
