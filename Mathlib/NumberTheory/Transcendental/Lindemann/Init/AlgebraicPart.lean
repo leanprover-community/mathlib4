@@ -181,10 +181,10 @@ def RatCoeffEquiv.aux : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra (⊥ : Intermedi
       mem_support_toFun := fun i => by
         rw [Finsupp.mem_support_iff]
         have : (0 : (⊥ : IntermediateField ℚ (K s))) = ⟨0, ZeroMemClass.zero_mem _⟩ := rfl
-        simp_rw [this, Ne.def, Subtype.mk_eq_mk] }
+        simp_rw [this, Ne, Subtype.mk_eq_mk] }
   invFun x :=
     ⟨⟨x.support, fun i => x i, fun i => by
-        simp_rw [Finsupp.mem_support_iff, Ne.def, ZeroMemClass.coe_eq_zero]⟩,
+        simp_rw [Finsupp.mem_support_iff, Ne, ZeroMemClass.coe_eq_zero]⟩,
       fun i => SetLike.coe_mem _⟩
   left_inv x := by ext; rfl
   right_inv x := by
@@ -373,12 +373,35 @@ instance : CommSemigroup (GalConjClasses ℚ (K s) →₀ F) where
     simp_rw [mul_def]
     exact congr_arg _ (mul_comm _ _)
 
+instance : ZeroHomClass
+    ((mapDomainFixed s F) ≃ₗ[F] GalConjClasses ℚ (K s) →₀ F)
+    (mapDomainFixed s F)
+    (GalConjClasses ℚ (K s) →₀ F) :=
+  have : SemilinearMapClass
+      ((mapDomainFixed s F) ≃ₗ[F] GalConjClasses ℚ (K s) →₀ F)
+      (RingHom.id F)
+      (mapDomainFixed s F)
+      (GalConjClasses ℚ (K s) →₀ F) :=
+    inferInstance
+  have : DistribMulActionSemiHomClass
+      ((mapDomainFixed s F) ≃ₗ[F] GalConjClasses ℚ (K s) →₀ F)
+      (RingHom.id F)
+      (mapDomainFixed s F)
+      (GalConjClasses ℚ (K s) →₀ F) :=
+    inferInstance
+  have : AddMonoidHomClass
+      ((mapDomainFixed s F) ≃ₗ[F] GalConjClasses ℚ (K s) →₀ F)
+      (mapDomainFixed s F)
+      (GalConjClasses ℚ (K s) →₀ F) :=
+    inferInstance
+  inferInstance
+
 instance : MulZeroClass (GalConjClasses ℚ (K s) →₀ F) where
   zero_mul a :=
-    graph_eq_empty.mp rfl
+    graph_eq_empty.mp <| by rw [mul_def, map_zero, zero_mul, map_zero, graph_zero]
   mul_zero a := by
     rw [mul_comm]
-    exact graph_eq_empty.mp rfl
+    exact graph_eq_empty.mp <| by rw [mul_def, map_zero, zero_mul, map_zero, graph_zero]
 
 instance : AddEquivClass (↥(mapDomainFixed s F) ≃ₗ[F] GalConjClasses ℚ (K s) →₀ F) _ _ := by
   infer_instance
@@ -386,9 +409,9 @@ instance : AddEquivClass (↥(mapDomainFixed s F) ≃ₗ[F] GalConjClasses ℚ (
 instance : AddHomClass (↥(mapDomainFixed s F) ≃ₗ[F] GalConjClasses ℚ (K s) →₀ F) _ _ :=
   AddEquivClass.instAddHomClass _
 
-instance : SMulHomClass ((GalConjClasses ℚ (K s) →₀ F) ≃ₗ[F] ↥(mapDomainFixed s F)) F
+instance : MulActionHomClass ((GalConjClasses ℚ (K s) →₀ F) ≃ₗ[F] ↥(mapDomainFixed s F)) F
     (GalConjClasses ℚ (K s) →₀ F) ↥(mapDomainFixed s F) :=
-  DistribMulActionHomClass.toSMulHomClass
+  inferInstance
 
 instance : CommRing (GalConjClasses ℚ (K s) →₀ F) :=
   { (inferInstance : AddCommGroup (GalConjClasses ℚ (K s) →₀ F)),
@@ -408,11 +431,11 @@ instance : CommRing (GalConjClasses ℚ (K s) →₀ F) :=
 instance : Algebra F (GalConjClasses ℚ (K s) →₀ F) :=
   Algebra.ofModule'
     (fun r x => by
-      rw [one_def, mul_def, SMulHomClass.map_smul, LinearEquiv.symm_apply_apply, smul_one_mul, ←
-        SMulHomClass.map_smul, LinearEquiv.apply_symm_apply])
+      rw [one_def, mul_def, map_smul, LinearEquiv.symm_apply_apply, smul_one_mul, ← map_smul,
+        LinearEquiv.apply_symm_apply])
     fun r x => by
-    rw [one_def, mul_def, SMulHomClass.map_smul, LinearEquiv.symm_apply_apply, mul_smul_one, ←
-      SMulHomClass.map_smul, LinearEquiv.apply_symm_apply]
+    rw [one_def, mul_def, map_smul, LinearEquiv.symm_apply_apply, mul_smul_one, ← map_smul,
+      LinearEquiv.apply_symm_apply]
 
 theorem one_eq_single : (1 : GalConjClasses ℚ (K s) →₀ F) = Finsupp.single 0 1 := by
   change toConjEquiv s F 1 = _
@@ -483,7 +506,7 @@ theorem single_prod_apply_zero_ne_zero_iff (x : GalConjClasses ℚ (K s)) {a : F
     rw [Finsupp.coe_finset_sum, sum_apply]
   simp_rw [Finsupp.single_apply, ←
     sum_product', sum_ite, sum_const_zero, add_zero, sum_const, smul_ne_zero_iff, mul_ne_zero_iff,
-    iff_true_intro ha, iff_true_intro hb, and_true_iff, Ne.def, card_eq_zero, filter_eq_empty_iff]
+    iff_true_intro ha, iff_true_intro hb, and_true_iff, Ne, card_eq_zero, filter_eq_empty_iff]
   push_neg
   simp_rw [Prod.exists, mem_product, Set.mem_toFinset]
   exact GalConjClasses.exist_mem_orbit_add_eq_zero x y
@@ -718,11 +741,11 @@ theorem linear_independent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral 
     rw [dif_pos, u'_inj.right_inv_of_invOfMemRange]; · rfl
     exact mem_image_of_mem _ (mem_univ _)
   have f0 : f ≠ 0 := by
-    rw [Ne.def, Function.funext_iff] at v0; push_neg at v0
+    rw [Ne, Function.funext_iff] at v0; push_neg at v0
     cases' v0 with i hi
     rw [Pi.zero_apply] at hi
     have h : f (u' i) ≠ 0 := by
-      rwa [Finsupp.onFinset_apply, dif_pos, u'_inj.right_inv_of_invOfMemRange, Ne.def,
+      rwa [Finsupp.onFinset_apply, dif_pos, u'_inj.right_inv_of_invOfMemRange, Ne,
         map_eq_zero_iff, ← ZeroMemClass.coe_eq_zero]
       exact AlgEquiv.injective (Lift s)
       exact mem_image_of_mem _ (mem_univ _)
@@ -743,7 +766,7 @@ theorem linear_independent_exp_aux'' (u : ι → ℂ) (hu : ∀ i, IsIntegral �
   obtain ⟨w, w0, q, hq, w', h⟩ := linear_independent_exp_aux_rat u hu u_inj v hv v0 h
   let N := w.den * ∏ c in q, (w' c).den
   have wN0 : (w * N).num ≠ 0 := by
-    refine' Rat.num_ne_zero_of_ne_zero (mul_ne_zero w0 _); dsimp only
+    refine' Rat.num_ne_zero.mpr (mul_ne_zero w0 _); dsimp only
     rw [Nat.cast_ne_zero, mul_ne_zero_iff, prod_ne_zero_iff]
     exact ⟨Rat.den_nz _, fun c _hc => Rat.den_nz _⟩
   use (w * N).num, wN0, q, hq, fun c => (w' c * N).num
@@ -762,7 +785,7 @@ theorem linear_independent_exp_aux'' (u : ι → ℂ) (hu : ∀ i, IsIntegral �
   · congr 1
     · norm_cast
     · refine' sum_congr rfl fun i hi => _
-      rw [← hw' i hi, Rat.coe_int_num, ← zsmul_eq_smul_cast]
+      rw [← hw' i hi, Rat.num_intCast, ← zsmul_eq_smul_cast]
   · simp_rw [mul_comm _ (N : ℂ), mul_comm _ (N : ℚ), ← smul_smul, ← smul_sum, ← nsmul_eq_mul,
       ← nsmul_eq_smul_cast, ← smul_add, h, nsmul_zero]
 #align linear_independent_exp_aux'' linear_independent_exp_aux''
@@ -823,7 +846,7 @@ theorem linear_independent_exp_aux (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ 
   refine' sum_congr rfl fun j _hj => congr_arg _ (congr_arg _ (Multiset.map_congr _ fun _ _ => rfl))
   change roots _ = roots _
   rw [IsScalarTower.algebraMap_eq ℤ ℚ ℂ, ← Polynomial.map_map, hb,
-    zsmul_eq_mul, ← C_eq_int_cast, Polynomial.map_mul, map_C, roots_C_mul]
+    zsmul_eq_mul, ← C_eq_intCast, Polynomial.map_mul, map_C, roots_C_mul]
   rw [map_ne_zero_iff _ (algebraMap ℚ ℂ).injective, Int.cast_ne_zero]
   exact nonZeroDivisors.coe_ne_zero _
 #align linear_independent_exp_aux linear_independent_exp_aux
