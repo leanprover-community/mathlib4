@@ -54,12 +54,14 @@ def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
 variable (R A)
 
 /-- An algebra is algebraic if all its elements are algebraic. -/
-nonrec
-def Algebra.IsAlgebraic : Prop :=
-  ∀ x : A, IsAlgebraic R x
+protected class Algebra.IsAlgebraic : Prop :=
+  isAlgebraic : ∀ x : A, IsAlgebraic R x
 #align algebra.is_algebraic Algebra.IsAlgebraic
 
 variable {R A}
+
+lemma Algebra.isAlgebraic_def : Algebra.IsAlgebraic R A ↔ ∀ x : A, IsAlgebraic R x :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 /-- A subalgebra is algebraic if and only if it is algebraic as an algebra. -/
 theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :

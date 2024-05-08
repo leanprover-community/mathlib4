@@ -65,11 +65,14 @@ def IsIntegral (x : A) : Prop :=
 variable (A)
 
 /-- An algebra is integral if every element of the extension is integral over the base ring -/
-protected def Algebra.IsIntegral : Prop :=
-  ∀ x : A, IsIntegral R x
+protected class Algebra.IsIntegral : Prop :=
+  isIntegral : ∀ x : A, IsIntegral R x
 #align algebra.is_integral Algebra.IsIntegral
 
 variable {R A}
+
+lemma Algebra.isIntegral_def : Algebra.IsIntegral R A ↔ ∀ x : A, IsIntegral R x :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 theorem RingHom.isIntegralElem_map {x : R} : f.IsIntegralElem (f x) :=
   ⟨X - C x, monic_X_sub_C _, by simp⟩
