@@ -16,9 +16,6 @@ then `C ⥤ D` is also `R`-linear.
 
 -/
 
-
-open BigOperators
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits Linear

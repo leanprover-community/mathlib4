@@ -5,14 +5,16 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Infix
 
 #align_import data.list.sort from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Sorting algorithms on lists
 
-In this file we define `List.Sorted r l` to be an alias for `Pairwise r l`. This alias is preferred
-in the case that `r` is a `<` or `≤`-like relation. Then we define two sorting algorithms:
+In this file we define `List.Sorted r l` to be an alias for `List.Pairwise r l`.
+This alias is preferred in the case that `r` is a `<` or `≤`-like relation.
+Then we define two sorting algorithms:
 `List.insertionSort` and `List.mergeSort`, and prove their correctness.
 -/
 
@@ -32,7 +34,7 @@ section Sorted
 
 variable {α : Type uu} {r : α → α → Prop} {a : α} {l : List α}
 
-/-- `Sorted r l` is the same as `Pairwise r l`, preferred in the case that `r`
+/-- `Sorted r l` is the same as `List.Pairwise r l`, preferred in the case that `r`
   is a `<` or `≤`-like relation (transitive and antisymmetric or asymmetric) -/
 def Sorted :=
   @Pairwise
@@ -176,7 +178,7 @@ strictly monotone. -/
   sorted_ofFn_iff.trans monotone_iff_forall_lt.symm
 
 /-- A tuple is monotone if and only if the list obtained from it is sorted. -/
-@[deprecated sorted_le_ofFn_iff]
+@[deprecated sorted_le_ofFn_iff] -- 2023-01-10
 theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := sorted_le_ofFn_iff.symm
 #align list.monotone_iff_of_fn_sorted List.monotone_iff_ofFn_sorted
 
@@ -396,6 +398,12 @@ theorem length_split_le :
     exact ⟨Nat.succ_le_succ h₂, Nat.le_succ_of_le h₁⟩
 #align list.length_split_le List.length_split_le
 
+theorem length_split_fst_le (l : List α) : length (split l).1 ≤ length l :=
+  (length_split_le rfl).1
+
+theorem length_split_snd_le (l : List α) : length (split l).2 ≤ length l :=
+  (length_split_le rfl).2
+
 theorem length_split_lt {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
     length l₁ < length (a :: b :: l) ∧ length l₂ < length (a :: b :: l) := by
   cases' e : split l with l₁' l₂'
@@ -421,10 +429,8 @@ def mergeSort : List α → List α
   | a :: b :: l => by
     -- Porting note: rewrote to make `mergeSort_cons_cons` proof easier
     let ls := (split (a :: b :: l))
-    have e : split (a :: b :: l) = ⟨ls.1, ls.2⟩ := rfl
-    have h := length_split_lt e
-    have := h.1
-    have := h.2
+    have := length_split_fst_le l
+    have := length_split_snd_le l
     exact merge (r · ·) (mergeSort ls.1) (mergeSort ls.2)
   termination_by l => length l
 #align list.merge_sort List.mergeSort

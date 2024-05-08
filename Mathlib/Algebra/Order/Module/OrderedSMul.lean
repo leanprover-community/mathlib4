@@ -86,13 +86,13 @@ instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ 
     | succ n =>
       induction n with
       | zero => dsimp; rwa [one_nsmul, one_nsmul]
-      | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add hab (ih n.succ_pos)]
+      | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add (ih n.succ_pos) hab]
 #align nat.ordered_smul Nat.orderedSMul
 
 instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
   OrderedSMul.mk'' fun n hn => by
     cases n
-    · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, natCast_zsmul] at hn ⊢
+    · simp only [Int.ofNat_eq_coe, Int.natCast_pos, natCast_zsmul] at hn ⊢
       exact strictMono_smul_left_of_pos hn
     · cases (Int.negSucc_not_pos _).1 hn
 #align int.ordered_smul Int.orderedSMul
@@ -119,7 +119,7 @@ theorem OrderedSMul.mk' (h : ∀ ⦃a b : M⦄ ⦃c : 𝕜⦄, a < b → 0 < c �
     OrderedSMul 𝕜 M := by
   have hlt' : ∀ (a b : M) (c : 𝕜), a < b → 0 < c → c • a < c • b := by
     refine' fun a b c hab hc => (h hab hc).lt_of_ne _
-    rw [Ne.def, hc.ne'.isUnit.smul_left_cancel]
+    rw [Ne, hc.ne'.isUnit.smul_left_cancel]
     exact hab.ne
   refine' { smul_lt_smul_of_pos := fun {a b c} => hlt' a b c..}
   intro a b c hab hc

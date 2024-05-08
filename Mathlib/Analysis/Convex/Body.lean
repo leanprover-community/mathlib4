@@ -110,7 +110,7 @@ instance : SMul ℕ (ConvexBody V) where
 -- Porting note: add @[simp, norm_cast]; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : Set V)
   | 0, _ => rfl
-  | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) rfl (coe_nsmul n K)
+  | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) (coe_nsmul n K) rfl
 
 instance : AddMonoid (ConvexBody V) :=
   SetLike.coe_injective.addMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _

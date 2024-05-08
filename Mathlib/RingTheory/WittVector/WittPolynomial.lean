@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
 import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.MvPolynomial.Variables
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.MvPolynomial.Variables
-import Mathlib.Data.MvPolynomial.CommRing
-import Mathlib.Data.MvPolynomial.Expand
 import Mathlib.Data.ZMod.Basic
 
 #align_import ring_theory.witt_vector.witt_polynomial from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
@@ -93,13 +93,11 @@ set_option linter.uppercaseLean3 false in
 This allows us to simply write `W n` or `W_ ℤ n`. -/
 
 
--- mathport name: witt_polynomial
 -- Notation with ring of coefficients explicit
 set_option quotPrecheck false in
 @[inherit_doc]
 scoped[Witt] notation "W_" => wittPolynomial p
 
--- mathport name: witt_polynomial.infer
 -- Notation with ring of coefficients implicit
 set_option quotPrecheck false in
 @[inherit_doc]
@@ -109,7 +107,7 @@ open Witt
 
 open MvPolynomial
 
-/- The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
+/-! The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
 If we map the coefficients through a ring homomorphism, we obtain the corresponding Witt polynomial
 over the target ring. -/
 section
@@ -153,8 +151,7 @@ theorem aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ →
 #align aeval_witt_polynomial aeval_wittPolynomial
 
 /-- Over the ring `ZMod (p^(n+1))`, we produce the `n+1`st Witt polynomial
-by expanding the `n`th Witt polynomial by `p`.
--/
+by expanding the `n`th Witt polynomial by `p`. -/
 @[simp]
 theorem wittPolynomial_zmod_self (n : ℕ) :
     W_ (ZMod (p ^ (n + 1))) (n + 1) = expand p (W_ (ZMod (p ^ (n + 1))) n) := by
@@ -162,7 +159,7 @@ theorem wittPolynomial_zmod_self (n : ℕ) :
   rw [sum_range_succ, ← Nat.cast_pow, CharP.cast_eq_zero (ZMod (p ^ (n + 1))) (p ^ (n + 1)), C_0,
     zero_mul, add_zero, AlgHom.map_sum, sum_congr rfl]
   intro k hk
-  rw [AlgHom.map_mul, AlgHom.map_pow, expand_X, algHom_C, ← pow_mul, ← pow_succ]
+  rw [AlgHom.map_mul, AlgHom.map_pow, expand_X, algHom_C, ← pow_mul, ← pow_succ']
   congr
   rw [mem_range] at hk
   rw [add_comm, add_tsub_assoc_of_le (Nat.lt_succ_iff.mp hk), ← add_comm]
