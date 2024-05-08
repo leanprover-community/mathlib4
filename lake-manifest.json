@@ -7,7 +7,7 @@
    "rev": "56d2e4ee226603eb6b90b05f6b944bde42672cd5",
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "YK-removeNth",
+   "inputRev": "main",
    "inherited": false,
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover-community/quote4",
