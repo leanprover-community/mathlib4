@@ -513,6 +513,19 @@ theorem measure_iUnion_eq_iSup [Countable ι] {s : ι → Set α} (hd : Directed
         _ ≤ ⨆ n, μ (t n) := le_iSup (μ ∘ t) N
 #align measure_theory.measure_Union_eq_supr MeasureTheory.measure_iUnion_eq_iSup
 
+/-- Continuity from below: the measure of the union of a sequence of
+(not necessarily measurable) sets is the supremum of the measures of the partial unions. -/
+theorem measure_iUnion_eq_iSup' {α ι : Type*} [MeasurableSpace α] {μ : Measure α}
+    [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
+    {f : ι → Set α} : μ (⋃ i, f i) = ⨆ i, μ (Accumulate f i) := by
+  have hd : Directed (· ⊆ ·) (Accumulate f) := by
+    intro i j
+    rcases directed_of (· ≤ ·) i j with ⟨k, rik, rjk⟩
+    exact ⟨k, biUnion_subset_biUnion_left fun l rli ↦ le_trans rli rik,
+      biUnion_subset_biUnion_left fun l rlj ↦ le_trans rlj rjk⟩
+  rw [← iUnion_accumulate]
+  exact measure_iUnion_eq_iSup hd
+
 theorem measure_biUnion_eq_iSup {s : ι → Set α} {t : Set ι} (ht : t.Countable)
     (hd : DirectedOn ((· ⊆ ·) on s) t) : μ (⋃ i ∈ t, s i) = ⨆ i ∈ t, μ (s i) := by
   haveI := ht.toEncodable
@@ -542,13 +555,47 @@ theorem measure_iInter_eq_iInf [Countable ι] {s : ι → Set α} (h : ∀ i, Me
   · exact hd.mono_comp _ fun _ _ => diff_subset_diff_right
 #align measure_theory.measure_Inter_eq_infi MeasureTheory.measure_iInter_eq_iInf
 
-/-- Continuity from below: the measure of the union of an increasing sequence of measurable sets
-is the limit of the measures. -/
+/-- Continuity from above: the measure of the intersection of a sequence of
+measurable sets is the infimum of the measures of the partial intersections. -/
+theorem measure_iInter_eq_iInf' {α ι : Type*} [MeasurableSpace α] {μ : Measure α}
+    [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
+    {f : ι → Set α} (h : ∀ i, MeasurableSet (f i)) (hfin : ∃ i, μ (f i) ≠ ∞) :
+    μ (⋂ i, f i) = ⨅ i, μ (⋂ j ≤ i, f j) := by
+  let s := fun i ↦ ⋂ j ≤ i, f j
+  have iInter_eq : ⋂ i, f i = ⋂ i, s i := by
+    ext x; simp [s]; constructor
+    · exact fun h _ j _ ↦ h j
+    · intro h i
+      rcases directed_of (· ≤ ·) i i with ⟨j, rij, -⟩
+      exact h j i rij
+  have ms : ∀ i, MeasurableSet (s i) :=
+    fun i ↦ MeasurableSet.biInter (countable_univ.mono <| subset_univ _) fun i _ ↦ h i
+  have hd : Directed (· ⊇ ·) s := by
+    intro i j
+    rcases directed_of (· ≤ ·) i j with ⟨k, rik, rjk⟩
+    exact ⟨k, biInter_subset_biInter_left fun j rji ↦ le_trans rji rik,
+      biInter_subset_biInter_left fun i rij ↦ le_trans rij rjk⟩
+  have hfin' : ∃ i, μ (s i) ≠ ∞ := by
+    rcases hfin with ⟨i, hi⟩
+    rcases directed_of (· ≤ ·) i i with ⟨j, rij, -⟩
+    exact ⟨j, ne_top_of_le_ne_top hi <| measure_mono <| biInter_subset_of_mem rij⟩
+  exact iInter_eq ▸ measure_iInter_eq_iInf ms hd hfin'
+
+/-- Continuity from below: the measure of the union of an increasing sequence of (not necessarily
+measurable) sets is the limit of the measures. -/
 theorem tendsto_measure_iUnion [Preorder ι] [IsDirected ι (· ≤ ·)] [Countable ι]
     {s : ι → Set α} (hm : Monotone s) : Tendsto (μ ∘ s) atTop (𝓝 (μ (⋃ n, s n))) := by
   rw [measure_iUnion_eq_iSup hm.directed_le]
   exact tendsto_atTop_iSup fun n m hnm => measure_mono <| hm hnm
 #align measure_theory.tendsto_measure_Union MeasureTheory.tendsto_measure_iUnion
+
+/-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
+sets is the limit of the measures of the partial unions. -/
+theorem tendsto_measure_iUnion' {α ι : Type*} [MeasurableSpace α] {μ : Measure α} [Countable ι]
+    [Preorder ι] [IsDirected ι (· ≤ ·)] {f : ι → Set α} :
+    Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
+  rw [measure_iUnion_eq_iSup']
+  exact tendsto_atTop_iSup fun i j hij ↦ measure_mono <| monotone_accumulate hij
 
 /-- Continuity from above: the measure of the intersection of a decreasing sequence of measurable
 sets is the limit of the measures. -/
@@ -558,6 +605,16 @@ theorem tendsto_measure_iInter [Countable ι] [Preorder ι] [IsDirected ι (· �
   rw [measure_iInter_eq_iInf hs hm.directed_ge hf]
   exact tendsto_atTop_iInf fun n m hnm => measure_mono <| hm hnm
 #align measure_theory.tendsto_measure_Inter MeasureTheory.tendsto_measure_iInter
+
+/-- Continuity from above: the measure of the intersection of a sequence of measurable
+sets such that one has finite measure is the limit of the measures of the partial intersections. -/
+theorem tendsto_measure_iInter' {α ι : Type*} [MeasurableSpace α] {μ : Measure α} [Countable ι]
+    [Preorder ι] [IsDirected ι (· ≤ ·)] {f : ι → Set α} (hm : ∀ i, MeasurableSet (f i))
+    (hf : ∃ i, μ (f i) ≠ ∞) :
+    Tendsto (fun i ↦ μ (⋂ j ∈ {j | j ≤ i}, f j)) atTop (𝓝 (μ (⋂ i, f i))) := by
+  rw [measure_iInter_eq_iInf' hm hf]
+  exact tendsto_atTop_iInf
+    fun i j hij ↦ measure_mono <| biInter_subset_biInter_left fun k hki ↦ le_trans hki hij
 
 /-- The measure of the intersection of a decreasing sequence of measurable
 sets indexed by a linear order with first countable topology is the limit of the measures. -/

@@ -19,6 +19,8 @@ This is a field when the scheme is integral.
   field. This map is injective.
 -/
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 set_option linter.uppercaseLean3 false
 
 universe u v

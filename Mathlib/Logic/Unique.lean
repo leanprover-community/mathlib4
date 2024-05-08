@@ -254,7 +254,7 @@ theorem uniqueElim_const {β : Sort*} {_ : Unique ι} (x : β) (i : ι) :
 
 end Pi
 
--- TODO: Mario turned this off as a simp lemma in Std, wanting to profile it.
+-- TODO: Mario turned this off as a simp lemma in Batteries, wanting to profile it.
 attribute [local simp] eq_iff_true_of_subsingleton in
 theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bijective f := by
   rw [Function.bijective_iff_has_inverse]
