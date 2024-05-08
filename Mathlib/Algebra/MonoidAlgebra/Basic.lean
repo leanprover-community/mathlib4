@@ -974,6 +974,17 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H
 #align monoid_algebra.map_domain_alg_hom MonoidAlgebra.mapDomainAlgHom
 #align monoid_algebra.map_domain_alg_hom_apply MonoidAlgebra.mapDomainAlgHom_apply
 
+@[simp]
+lemma mapDomainAlgHom_id (k A) [CommSemiring k] [Semiring A] [Algebra k A] :
+    mapDomainAlgHom k A (MonoidHom.id G) = AlgHom.id k (MonoidAlgebra A G) := by
+  ext; simp [MonoidHom.id, ← Function.id_def]
+
+@[simp]
+lemma mapDomainAlgHom_comp (k A) {G₁ G₂ G₃} [CommSemiring k] [Semiring A] [Algebra k A]
+    [Monoid G₁] [Monoid G₂] [Monoid G₃] (f : G₁ →* G₂) (g : G₂ →* G₃) :
+    mapDomainAlgHom k A (g.comp f) = (mapDomainAlgHom k A g).comp (mapDomainAlgHom k A f) := by
+  ext; simp [mapDomain_comp]
+
 variable (k A)
 
 /-- If `e : G ≃* H` is a multiplicative equivalence between two monoids, then
@@ -2105,6 +2116,17 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] [A
   { mapDomainRingHom A f with commutes' := mapDomain_algebraMap A f }
 #align add_monoid_algebra.map_domain_alg_hom AddMonoidAlgebra.mapDomainAlgHom
 #align add_monoid_algebra.map_domain_alg_hom_apply AddMonoidAlgebra.mapDomainAlgHom_apply
+
+@[simp]
+lemma mapDomainAlgHom_id (k A) [CommSemiring k] [Semiring A] [Algebra k A] [AddMonoid G] :
+    mapDomainAlgHom k A (AddMonoidHom.id G) = AlgHom.id k (AddMonoidAlgebra A G) := by
+  ext; simp [AddMonoidHom.id, ← Function.id_def]
+
+@[simp]
+lemma mapDomainAlgHom_comp (k A) {G₁ G₂ G₃} [CommSemiring k] [Semiring A] [Algebra k A]
+    [AddMonoid G₁] [AddMonoid G₂] [AddMonoid G₃] (f : G₁ →+ G₂) (g : G₂ →+ G₃) :
+    mapDomainAlgHom k A (g.comp f) = (mapDomainAlgHom k A g).comp (mapDomainAlgHom k A f) := by
+  ext; simp [mapDomain_comp]
 
 variable (k A)
 variable [CommSemiring k] [AddMonoid G] [AddMonoid H] [Semiring A] [Algebra k A]
