@@ -95,9 +95,9 @@ theorem mass_bind : mass (bind μ φ) = ∑' a, μ a * mass (φ a) := by
 
 @[simp]
 theorem support_bind : support (bind μ φ) = ⋃ a ∈ support μ, support (φ a) :=
-  Set.ext fun b => by
-    simp_rw [mem_support_iff, Set.mem_iUnion, exists_prop, bind_apply,
-    tsum_ne_zero_iff ENNReal.summable, mul_ne_zero_iff, mem_support_iff]
+    Set.ext fun b => by
+  simp_rw [mem_support_iff, Set.mem_iUnion, exists_prop, bind_apply,
+  tsum_ne_zero_iff ENNReal.summable, mul_ne_zero_iff, mem_support_iff]
 
 theorem mem_support_bind_iff : b ∈ support (bind μ φ) ↔ ∃ a ∈ support μ, b ∈ support (φ a) := by
   simp only [support_bind, Set.mem_iUnion, Set.mem_setOf_eq, exists_prop]
@@ -121,7 +121,7 @@ theorem bind_pure [DiracPure M] : bind μ pure = μ := DFunLike.ext _ _ fun _ =>
 
 @[simp]
 theorem bind_bind : bind (bind μ φ) ξ = bind μ fun a => bind (φ a) ξ :=
-  DFunLike.ext _ _ fun _ => by
+    DFunLike.ext _ _ fun _ => by
   simp_rw [bind_apply, ENNReal.tsum_mul_right.symm, ENNReal.tsum_mul_left.symm,
   ENNReal.tsum_comm (α := β), mul_assoc]
 
@@ -140,7 +140,7 @@ noncomputable instance MF.instWeightedSumBind : WeightedSumBind MF where
   bind μ φ := ⟨fun b => ∑' a, μ a * φ a b⟩
   coeFn' := rfl
 
-noncomputable instance SPNF.instWeightedSumBind : WeightedSumBind SPMF where
+noncomputable instance SPMF.instWeightedSumBind : WeightedSumBind SPMF where
   bind μ φ := ⟨fun b => ∑' a, μ a * φ a b, by
     rw [ENNReal.tsum_comm]
     simp_rw [ENNReal.tsum_mul_left]
@@ -191,6 +191,7 @@ theorem mass_eq [DecidablePred (· ∈ support μ)] :
 @[simp]
 theorem support_eq :
     support (ρ μ φ) = ⋃ (a : α) (h : a ∈ support μ), support (φ a h) := by
+
   refine' Set.ext fun b => _
   simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff,
     hρ.apply, Ne, not_forall, mul_eq_zero, Set.mem_iUnion]
@@ -301,7 +302,9 @@ section Monad
 
 variable {M : Type u → Type v}
 
-instance [MFLike M] [DiracPure M] [WeightedSumBind M] : Monad M where
+instance [MFLike M] [Pure M] [Bind M] : Monad M where
+
+instance [MFLike M] [Pure M] [Bind M] : Applicative M := by infer_instance
 
 end Monad
 

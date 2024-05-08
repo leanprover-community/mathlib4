@@ -9,6 +9,34 @@ theorem Set.indicator_singleton_apply_of_ne {α M : Type*} [Zero M] {a a' : α} 
     (h : a' ≠ a) : Set.indicator {a} f a' = 0 :=
   indicator_of_not_mem (Set.eq_of_mem_singleton.mt h) _
 
+@[simp]
+theorem Set.indicator_singleton_apply {α M : Type*} [DecidableEq α] [Zero M] {a a' : α} {f : α → M}
+    : Set.indicator {a} f a' = if a' = a then f a else 0 := by
+  rcases (eq_or_ne a' a) with (rfl | ha)
+  · rw [if_pos rfl, indicator_singleton_apply_self]
+  · rw [if_neg ha, indicator_singleton_apply_of_ne ha]
+
+theorem ite_eq_apply_left {α β : Type*} [DecidableEq α] (f : α → β) :
+    ∀ a a' b, (if a = a' then f a else b) = (if a = a' then f a' else b) :=
+  fun _ _ _ => ite_congr rfl (congrArg fun a ↦ f a) (congrFun rfl)
+
+theorem ite_eq_apply_right {α β : Type*} [DecidableEq α] (f : α → β) :
+    ∀ a a' b, (if a = a' then f a' else b) = (if a = a' then f a else b) :=
+  fun _ _ _ => (ite_eq_apply_left _ _ _ _).symm
+
+theorem ite_eq_comm_apply_left {α β : Type*} [DecidableEq α] (f : α → β) :
+    ∀ a a' b, (if a = a' then f a else b) = (if a' = a then f a else b) :=
+  fun _ _ _ => ite_congr (by rw [eq_iff_iff, eq_comm]) (fun _ => rfl) (fun _ => rfl)
+
+theorem ite_eq_comm_apply_right {α β : Type*} [DecidableEq α] (f : α → β) :
+    ∀ a a' b, (if a = a' then f a' else b) = (if a' = a then f a' else b) :=
+  fun _ _ _ => (ite_eq_comm_apply_left _ _ _ _).symm
+
+theorem Set.indicator_singleton_comm {α M : Type*} [Zero M] {a a' : α} {f : α → M}
+    : Set.indicator {a} f a' = Set.indicator {a'} f a := by
+  classical
+  simp_rw [indicator_singleton_apply, ite_eq_comm_apply_right, ite_eq_apply_right]
+
 open BigOperators ENNReal NNReal
 
 namespace MassFunction
@@ -621,6 +649,11 @@ instance [SPMFClass M] : CoeHead (M α) (SPMF α) := ⟨SPMFClass.toSPMF⟩
 def PMFClass.toPMF [PMFClass M] (μ : M α) : PMF α := ⟨μ, mass_eq_one _⟩
 
 instance [PMFClass M] : CoeHead (M α) (PMF α) := ⟨PMFClass.toPMF⟩
+
+@[simp] theorem coeMF_MF_eq (μ : MF α) : (MFLike.toMF μ) = μ := rfl
+@[simp] theorem coeFMF_FMF_eq (μ : FMF α) : (FMFClass.toFMF μ) = μ := rfl
+@[simp] theorem coeSPMF_SPMF_eq  (μ : SPMF α) : (SPMFClass.toSPMF μ) = μ := rfl
+@[simp] theorem coePMF_PMF_eq (μ : PMF α) : (PMFClass.toPMF μ) = μ := rfl
 
 @[simp] theorem coeFn_coeMF_eq_coeFn (μ : M α) :
     ⇑(μ : MF α) = ⇑μ := rfl

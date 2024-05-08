@@ -9,12 +9,13 @@ universe u v
 
 section Map
 
+noncomputable def map {M : Type u → Type v} [MFLike M] [Pure M] [Bind M]
+{α β : Type u} (f : α → β) (μ : M α) : M β := bind μ (pure ∘ f)
+
 variable {M : Type u → Type v} [MFLike M] [DiracPure M] [WeightedSumBind M]
 {α β γ : Type u} {f : α → β} {g : β → γ} {μ : M α} {φ : α → M β} {ξ : β → M γ} {b b' : β}
 
 open DiracPure WeightedSumBind
-
-noncomputable def map (f : α → β) (μ : M α) : M β := bind μ (pure ∘ f)
 
 theorem monad_map_eq_map : f <$> μ = map f μ := rfl
 
@@ -68,13 +69,13 @@ end Map
 
 section Seq
 
+noncomputable def seq {M : Type u → Type v} [MFLike M] [Pure M] [Bind M]
+    {α β : Type u} (κ : M (α → β)) (μ : M α) : M β := bind κ fun f => bind μ fun a => pure (f a)
+
 variable {M : Type u → Type v} [MFLike M] [DiracPure M] [WeightedSumBind M]
 {α β γ : Type u} {κ : M (α → β)} {μ : M α} {b : β}
 
 open DiracPure WeightedSumBind
-
-noncomputable def seq (κ : M (α → β)) (μ : M α) : M β :=
-  bind κ fun f => bind μ fun a => pure (f a)
 
 theorem monad_seq_eq_seq : κ <*> μ = seq κ μ := rfl
 
@@ -101,7 +102,7 @@ theorem mass_seq : mass (seq κ μ) = ∑' (a : α → β), κ a * mass μ := by
 @[simp]
 theorem seq_apply' [DecidableEq β] :
     (seq κ μ) b = ∑' (f : α → β) (a : α), if b = f a then κ f * μ a else 0 :=
-  bind_apply.trans (by simp_rw [bind_apply, ←ENNReal.tsum_mul_left, pure_apply',
+  bind_apply.trans (by simp_rw [bind_apply, ← ENNReal.tsum_mul_left, pure_apply',
   mul_ite, mul_one, mul_zero])
 
 end Seq
@@ -127,12 +128,15 @@ end Lawful
 
 section Filter
 
+noncomputable def filter {M : Type u → Type v} [MFLike M] [Pure M] [Bind M] [∀ α, ZeroNull M α]
+    {α : Type u} (μ : M α) (s : Set α) : M α :=
+  bind μ (fun a => s.indicator pure a)
+
+
 variable {M : Type u → Type v} [MFLike M] [DiracPure M] [WeightedSumBind M]
 [∀ α, ZeroNull M α] {α β γ : Type u} {μ : M α} {s : Set α} {a a' : α}
 
 open DiracPure WeightedSumBind
-
-noncomputable def filter (μ : M α) (s : Set α) : M α := bind μ (fun a => s.indicator pure a)
 
 theorem filter_apply_of_mem (ha : a ∈ s) : (filter μ s) a = μ a :=
   bind_apply.trans (by
@@ -318,15 +322,29 @@ noncomputable def uniformOn (s : Finset α) (hs : s.Nonempty) : PMF α :=
     (Nat.cast_ne_zero.mpr (hs.card_ne_zero)) (ENNReal.natCast_ne_top _)) (fun _ h => if_neg h)
 
 @[simp]
-theorem uniform_apply_of_mem {a : α} (ha : a ∈ s) (hs : s.Nonempty := ⟨a, ha⟩) :
-    uniformOn s hs a = (s.card : ℝ≥0∞)⁻¹ := by
-  rw [uniformOn, ofFinset_apply, if_pos ha]
+theorem uniformOn_apply (hs : s.Nonempty) :
+    uniformOn s hs a = if a ∈ s then (s.card : ℝ≥0∞)⁻¹ else 0 := ofFinset_apply _ _ _
 
 @[simp]
-theorem support_uniform : support (uniform α) = Function.support f := rfl
+theorem uniformOn_apply_of_mem (ha : a ∈ s) (hs : s.Nonempty := ⟨a, ha⟩) :
+    uniformOn s hs a = (s.card : ℝ≥0∞)⁻¹ := by
+  rw [uniformOn_apply, if_pos ha]
 
-theorem mem_support_ofFintype_iff (a : α) :
-  a ∈ support (ofFintype f h) ↔ f a ≠ 0 := Iff.rfl
+@[simp]
+theorem uniformOn_apply_of_not_mem (hs : s.Nonempty) (ha : a ∉ s) :
+    uniformOn s hs a = 0 := by
+  rw [uniformOn_apply, if_neg ha]
+
+@[simp]
+theorem support_uniformOn (hs : s.Nonempty) : support (uniformOn s hs) = s := Set.ext fun _ => by
+  simp_rw [mem_support_iff, uniformOn_apply, ite_ne_right_iff,ENNReal.inv_ne_zero,
+  and_iff_left (natCast_ne_top _), Finset.mem_coe]
+
+theorem mem_support_uniformOn_iff (hs : s.Nonempty) :
+    a ∈ support (uniformOn s hs) ↔ a ∈ s := by rw [support_uniformOn, Finset.mem_coe]
+
+theorem nmem_support_uniformOn_iff (hs : s.Nonempty) :
+    a ∉ support (uniformOn s hs) ↔ a ∉ s := (mem_support_uniformOn_iff hs).not
 
 end UniformOn
 
@@ -334,45 +352,53 @@ section Uniform
 
 variable {α : Type u}
 
-noncomputable def uniform (α : Type u) [Fintype α] [Nonempty α] : PMF α :=
-  ofFintype (Function.const α (Fintype.card α)⁻¹) (by
-    simp_rw [Function.const_apply, Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
-    exact ENNReal.mul_inv_cancel
-      (Nat.cast_ne_zero.mpr Fintype.card_ne_zero)
-      (ENNReal.natCast_ne_top _))
+noncomputable def uniform (α : Type u) [DecidableEq α] [Fintype α] [Nonempty α] : PMF α :=
+  uniformOn Finset.univ Finset.univ_nonempty
 
-variable [Fintype α] [Nonempty α]
+variable [DecidableEq α] [Fintype α] [Nonempty α] {a : α}
 
 @[simp]
-theorem uniform_apply (a : α) : uniform α a = (Fintype.card α : ℝ≥0∞)⁻¹ := rfl
+theorem uniform_apply : uniform α a = (Fintype.card α : ℝ≥0∞)⁻¹ :=
+  uniformOn_apply_of_mem (Finset.mem_univ _)
 
 @[simp]
-theorem support_uniform : support (uniform α) = Function.support f := rfl
+theorem support_uniform : support (uniform α) = Set.univ :=
+  (support_uniformOn _).trans Finset.coe_univ
 
-theorem mem_support_ofFintype_iff (a : α) :
-  a ∈ support (ofFintype f h) ↔ f a ≠ 0 := Iff.rfl
+theorem mem_support_uniform (a : α) : a ∈ support (uniform α) :=
+  support_uniform (α := α) ▸ Set.mem_univ _
 
 end Uniform
 
 section Normalize
 
-variable {M : Type u → Type v} {α : Type u} [MFLike M] [FMFClass M] {μ : M α} {a : α}
-{hf : mass μ ≠ 0}
+variable {M : Type u → Type v} {α : Type u} [MFLike M] {μ : M α} {a : α}
+{hμ : mass μ ≠ 0}
 
-noncomputable def normalize (μ : M α) (hf : mass μ ≠ 0) : PMF α :=
+noncomputable def normalize [FMFClass M] (μ : M α) (hμ : mass μ ≠ 0) : PMF α :=
   ⟨fun a => μ a * (mass μ)⁻¹, by
     simp_rw [ENNReal.tsum_mul_right, ← mass_eq_tsum_coeFn,
-    ENNReal.mul_inv_cancel hf mass_ne_top]⟩
+    ENNReal.mul_inv_cancel hμ mass_ne_top]⟩
 
 @[simp]
-theorem normalize_apply : (normalize μ hf) a = μ a * (mass μ)⁻¹ := rfl
+theorem normalize_apply [FMFClass M] : (normalize μ hμ) a = μ a * (mass μ)⁻¹ := rfl
 
 @[simp]
-theorem support_normalize : support (normalize μ hf) = Function.support μ :=
+theorem support_normalize [FMFClass M] : support (normalize μ hμ) = Function.support μ :=
   Set.ext fun a => by simp [mass_ne_top, mem_support_iff]
 
-theorem mem_support_normalize_iff :
-    a ∈ support (normalize μ hf) ↔ μ a ≠ 0 := by simp
+theorem mem_support_normalize_iff [FMFClass M] :
+    a ∈ support (normalize μ hμ) ↔ μ a ≠ 0 := by simp
+
+theorem normalize_pmf [PMFClass M] (μ : M α) (hμ : mass μ ≠ 0 := mass_ne_zero) :
+    normalize μ hμ = (μ : PMF α) := by
+  ext
+  rw [normalize_apply, mass_eq_one, inv_one, mul_one, coePMF_apply]
+
+@[simp]
+theorem normalize_normalize [FMFClass M] (μ : M α) (hμ : mass μ ≠ 0)
+    (hμ' : mass (normalize μ hμ) ≠ 0 := mass_ne_zero) :
+  normalize (normalize μ hμ) hμ' = normalize μ hμ := by rw [normalize_pmf, coePMF_PMF_eq]
 
 end Normalize
 

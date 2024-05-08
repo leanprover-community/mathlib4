@@ -4,25 +4,133 @@ open BigOperators ENNReal
 
 universe u
 
+theorem Prod.mk_injective {α β : Type*} [Nonempty β] :
+    Function.Injective (α := α) (β := β → α × β) Prod.mk :=
+  fun _ _ h' => Prod.mk.inj_right (Classical.arbitrary _) (congrFun h' _)
+
+theorem Prod.mk_injective_of_nonempty {α β : Type*} (h : Nonempty β) :
+    Function.Injective (α := α) (β := β → α × β) Prod.mk :=
+  fun _ _ h' => Prod.mk.inj_right h.some (congrFun h' _)
+
+theorem Prod.mk_injective_of_snd {α β : Type*} (b : β) :
+    Function.Injective (α := α) (β := β → α × β) Prod.mk :=
+  fun _ _ h' => Prod.mk.inj_right (by assumption) (congrFun h' _)
+
+theorem Prod.swap_mk_injective {α β : Type*} [Nonempty α] :
+    Function.Injective (α := β) (β := α → α × β) (Function.swap Prod.mk) :=
+  fun _ _ h' => Prod.mk.inj_left (Classical.arbitrary _) (congrFun h' _)
+
+theorem Prod.swap_mk_injective_of_nonempty {α β : Type*} (h : Nonempty α) :
+    Function.Injective (α := β) (β := α → α × β) (Function.swap Prod.mk) :=
+  fun _ _ h' => Prod.mk.inj_left h.some (congrFun h' _)
+
+theorem Prod.swap_mk_injective_of_snd {α β : Type*} (a : α) :
+    Function.Injective (α := β) (β := α → α × β) (Function.swap Prod.mk) :=
+  fun _ _ h' => Prod.mk.inj_left (by assumption) (congrFun h' _)
+
 namespace MassFunction
 
-section Coupling
+section Sum
 
 variable {M : Type u → Type*} [MFLike M] [DiracPure M] [WeightedSumBind M]
 {α β : Type u}
 
-noncomputable def fst : M (α × β) → M α := map Prod.fst
+noncomputable def inl : M α → M (α ⊕ β) := map Sum.inl
 
-noncomputable def snd : M (α × β) → M β := map Prod.snd
+noncomputable def inr : M β → M (α ⊕ β) := map Sum.inr
 
-noncomputable def blahj (ξ : M (α × β)) : M α × M β := (fst ξ, snd ξ)
+end Sum
 
-theorem fst_def (μ : M (α × β)) (a : α) : fst μ a = ∑' b, μ (a, b) := by
-  rw [fst, map_apply, ENNReal.tsum_prod', tsum_eq_single a]
-  simp
-  simp
+section Prod
 
-end Coupling
+variable {M : Type u → Type*} [MFLike M] {α β : Type u}
+
+noncomputable def prod [Pure M] [Bind M] (μ₁ : M α) (μ₂ : M β) : M (α × β) := do
+  let a ← μ₁
+  let b ← μ₂
+  return (a, b)
+
+noncomputable def fst [Pure M] [Bind M] (μ : M (α × β)) : M α := do
+  let (a, _) ← μ
+  return a
+
+noncomputable def snd [Pure M] [Bind M] (μ : M (α × β)) : M β := do
+  let (_, b) ← μ
+  return b
+
+variable [DiracPure M] [WeightedSumBind M] {μ : M (α × β)} {μ₁ : M α} {μ₂ : M β} {a : α} {b : β}
+{p : α × β}
+
+open DiracPure WeightedSumBind
+
+theorem prod_apply : prod μ₁ μ₂ (a, b) = μ₁ a * μ₂ b := by
+  simp_rw [prod, bind_apply, pure_apply]
+  refine' (tsum_eq_single a (fun a' ha => _)).trans _
+  · refine' mul_eq_zero_of_right _ (ENNReal.tsum_eq_zero.mpr (fun b' =>
+      mul_eq_zero_of_right _ (Set.indicator_singleton_apply_of_ne (by
+      simp_rw [ne_eq, Prod.mk.inj_iff, not_and, ha.symm, false_implies]))))
+  · refine' congrArg (μ₁ a  * ·) ((tsum_eq_single b (fun b' hb => _)).trans
+      (by rw [Set.indicator_singleton_apply_self, Pi.one_apply, mul_one]))
+    · rw [Set.indicator_singleton_apply_of_ne (ne_eq _ _ ▸ ((Prod.mk.inj_left a).mt hb.symm)),
+      mul_zero]
+
+theorem prod_apply' : prod μ₁ μ₂ p = μ₁ p.1 * μ₂ p.2 := by
+  rcases p with ⟨_, _⟩
+  exact prod_apply
+
+theorem fst_apply : fst μ a = ∑' b, μ (a, b) := by
+  classical
+  refine' map_apply'.trans _
+  simp_rw [ENNReal.tsum_prod', ENNReal.tsum_comm (α := α),
+  fun b => ite_eq_apply_right (fun a => μ (a, b)) a,
+  fun b => ite_eq_comm_apply_left (fun a => μ (a, b)) a, tsum_ite_eq]
+
+theorem snd_apply : snd μ b = ∑' a, μ (a, b) := by
+  classical
+  refine' map_apply'.trans _
+  simp_rw [ENNReal.tsum_prod',
+  fun a => ite_eq_apply_right (fun b => μ (a, b)) b,
+  fun a => ite_eq_comm_apply_left (fun b => μ (a, b)) b, tsum_ite_eq]
+
+theorem fst_prod_apply : fst (prod μ₁ μ₂) a = μ₁ a * mass μ₂ := by
+  simp_rw [mass_eq_tsum_coeFn, fst_apply, prod_apply, ENNReal.tsum_mul_left]
+
+theorem snd_prod_apply : snd (prod μ₁ μ₂) b = mass μ₁ * μ₂ b := by
+  simp_rw [mass_eq_tsum_coeFn, snd_apply, prod_apply, ENNReal.tsum_mul_right]
+
+theorem prod_fst_snd_apply : prod (fst μ) (snd μ) (a, b) =
+    ∑' (a' : α) (b' : β), μ (a, b') * μ (a', b) := by
+  simp_rw [prod_apply, fst_apply, snd_apply]
+  simp_rw [← ENNReal.tsum_mul_left, ← ENNReal.tsum_mul_right]
+
+theorem prod_fst_snd_apply' : prod (fst μ) (snd μ) p =
+    ∑' (q : α × β), μ (p.1, q.2) * μ (q.1, p.2) := by
+  rcases p with ⟨_, _⟩
+  simp_rw [prod_fst_snd_apply, ENNReal.tsum_prod']
+
+@[simp]
+theorem mass_prod : mass (prod μ₁ μ₂) = mass μ₁ * mass μ₂ := by
+  simp_rw [mass_eq_tsum_coeFn, prod_apply', ENNReal.tsum_prod',
+  ENNReal.tsum_mul_left, ENNReal.tsum_mul_right]
+
+@[simp]
+theorem mass_fst : mass (fst μ) = mass μ := by
+  simp_rw [mass_eq_tsum_coeFn, fst_apply, ENNReal.tsum_prod']
+
+@[simp]
+theorem mass_snd : mass (snd μ) = mass μ := by
+  simp_rw [mass_eq_tsum_coeFn, snd_apply, ENNReal.tsum_prod', ENNReal.tsum_comm (α := α)]
+
+@[simp]
+theorem mass_prod_fst_snd : mass (prod (fst μ) (snd μ)) = mass μ * mass μ := by
+  simp_rw [mass_prod, mass_fst, mass_snd]
+
+theorem fst_mass_eq_snd_mass : mass (fst μ) = mass (snd μ) := by
+  rw [mass_fst, mass_snd]
+
+def couplings (μ₁ : M α) (μ₂ : M β) : Set (M (α × β)) := {μ | fst μ = μ₁ ∧ snd μ = μ₂}
+
+end Prod
 
 
 end MassFunction
