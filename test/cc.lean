@@ -264,6 +264,9 @@ example : ∀ (a a' : A), HEq a a' → HEq (mk_B1 a) (mk_B1 a') := by
 example : ∀ (a a' : A), HEq a a' → HEq (mk_B2 a) (mk_B2 a') := by
   cc
 
+example : ∀ (a a' : A) (h : a = a') (b : B a), HEq (h ▸ b) b := by
+  cc
+
 example : HEq a1 (y a2) → HEq (mk_B1 a1) (mk_B1 (y a2)) := by
   cc
 
