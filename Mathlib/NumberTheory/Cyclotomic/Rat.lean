@@ -475,7 +475,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_ne_two
 /-- In a `p`-th cyclotomic extension of `ℚ `, we have that `ζ - 1` is not congruent to an
   integer modulo `p` if `p ≠ 2`. -/
 theorem not_exists_int_prime_dvd_sub_of_prime_ne_two'
-  [hcycl : IsCyclotomicExtension {p} ℚ K]
+    [hcycl : IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑p) (hodd : p ≠ 2) :
     ¬(∃ n : ℤ, (p : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := by
   have : IsCyclotomicExtension {p ^ (0 + 1)} ℚ K := by simpa using hcycl
