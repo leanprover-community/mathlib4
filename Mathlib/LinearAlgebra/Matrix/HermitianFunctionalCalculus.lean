@@ -103,10 +103,19 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
     intro g
     dsimp
     simp only [star_mul, star_star]
-    have H :
+    have H1 : star (RCLike.ofReal ∘ ⇑g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
+            = RCLike.ofReal (K := 𝕜) ∘ star ⇑g ∘
+              (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) := by
+        apply funext
+        intro x
+        simp only [Pi.star_apply, Function.comp_apply, RCLike.star_def, RCLike.conj_ofReal,
+          star_trivial]
+    have H2 :
      star (diagonal (RCLike.ofReal ∘ ⇑g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))) =
-     diagonal (RCLike.ofReal ∘ star ⇑g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) := by sorry
-    simp only [H]
+     diagonal (α := 𝕜) (RCLike.ofReal ∘ star ⇑g ∘
+     (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) := by
+     simp only [star_eq_conjTranspose, diagonal_conjTranspose, H1]
+    simp only [H2, mul_assoc]
 
 #exit
 instance instContinuousFunctionalCalculus :
