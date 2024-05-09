@@ -238,7 +238,6 @@
   "Mathlib.Tactic.GCongr.Core": ["Mathlib.Init.Order.Defs"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
   "Mathlib.Tactic.FunProp.RefinedDiscrTree": ["Mathlib.Algebra.Group.Pi.Basic"],
-  "Mathlib.Tactic.FunProp.MorExt": ["Mathlib.Tactic.FunProp.ToBatteries"],
   "Mathlib.Tactic.FunProp.Mor": ["Mathlib.Data.FunLike.Basic"],
   "Mathlib.Tactic.FunProp.Measurable":
   ["Mathlib.Analysis.Calculus.ContDiff.Basic",
@@ -259,12 +258,6 @@
    "Mathlib.Analysis.SpecialFunctions.Log.Deriv",
    "Mathlib.Tactic.FunProp",
    "Mathlib.Tactic.FunProp.Differentiable"],
-  "Mathlib.Tactic.FunProp.AEMesurable":
-  ["Mathlib.MeasureTheory.Constructions.Pi",
-   "Mathlib.MeasureTheory.Constructions.Prod.Basic",
-   "Mathlib.MeasureTheory.Measure.Haar.OfBasis",
-   "Mathlib.Tactic.FunProp",
-   "Mathlib.Tactic.FunProp.Measurable"],
   "Mathlib.Tactic.FunProp.AEMeasurable":
   ["Mathlib.MeasureTheory.Constructions.Prod.Basic",
    "Mathlib.Tactic.FunProp",
@@ -288,9 +281,6 @@
   "Mathlib.Tactic.Basic": ["Batteries"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
-  "Mathlib.RingTheory.Subsemiring.Order":
-  ["Mathlib.GroupTheory.Submonoid.Order"],
-  "Mathlib.RingTheory.Subring.Order": ["Mathlib.GroupTheory.Subgroup.Order"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
@@ -317,7 +307,6 @@
   "Mathlib.Init.Data.Nat.GCD": ["Batteries.Data.Nat.Gcd"],
   "Mathlib.Init.Data.List.Basic": ["Batteries.Data.List.Basic"],
   "Mathlib.Init.Data.Int.Basic": ["Batteries.Data.Int.Order"],
-  "Mathlib.GroupTheory.Subgroup.Order": ["Mathlib.GroupTheory.Submonoid.Order"],
   "Mathlib.GroupTheory.MonoidLocalization": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
