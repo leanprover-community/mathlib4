@@ -2281,3 +2281,50 @@ lemma coe_ideal_map (I : Ideal A) :
     Ideal.map f I = Ideal.map (f : A →+* B) I := rfl
 
 end AlgHom
+
+noncomputable section nonZeroDivisors
+
+open Submodule nonZeroDivisors
+
+theorem Ideal.associatesEquivIsPrincipal_mem_nonZeroDivisors (R : Type*) [CommRing R] [IsDomain R]
+    {x : R} :
+    ↑(Ideal.associatesEquivIsPrincipal R ⟦x⟧) ∈ (Ideal R)⁰ ↔ x ∈ R⁰ := by
+  rw [associatesEquivIsPrincipal_apply, mem_nonZeroDivisors_iff, mem_nonZeroDivisors_iff,
+    ← not_iff_not]
+  push_neg
+  refine ⟨?_, ?_⟩
+  · rintro ⟨I, hI₁, hI₂⟩
+    rw [Ideal.zero_eq_bot, Submodule.ne_bot_iff] at hI₂
+    refine ⟨hI₂.choose, ?_, hI₂.choose_spec.2⟩
+    · have : hI₂.choose * x ∈ I * Ideal.span {x} := by
+        rw [Ideal.mem_mul_span_singleton]
+        exact ⟨hI₂.choose, hI₂.choose_spec.1, rfl⟩
+      rwa [hI₁] at this
+  · rintro ⟨y, hy₁, hy₂⟩
+    refine ⟨Ideal.span {y}, ?_, ?_⟩
+    · rw [Ideal.span_singleton_mul_span_singleton, hy₁, Set.singleton_zero, Ideal.span_zero,
+      Ideal.zero_eq_bot]
+    · rw [Ideal.zero_eq_bot, Submodule.ne_bot_iff]
+      exact ⟨y, Ideal.mem_span_singleton_self y, hy₂⟩
+
+/-- A version of `Ideal.associatesEquivIsPrincipal` for non-zero-divisors generators. -/
+def Ideal.associatesNonZeroDivisorsEquivIsPrincipal (R : Type*) [CommRing R] [IsDomain R] :
+    Associates R⁰ ≃ {I : (Ideal R)⁰ // IsPrincipal (I : Ideal R)} :=
+  calc Associates R⁰ ≃ (Associates R)⁰ := (AssociatesNonZeroDivisorsMulEquiv R).toEquiv
+    _ ≃ {I : {I : Ideal R // IsPrincipal I} // I.1 ∈ (Ideal R)⁰} :=
+      Equiv.subtypeEquiv (Ideal.associatesEquivIsPrincipal R)
+        (fun x ↦ by rw [← Associates.quot_out x, Associates_mk_mem_nonZeroDivisors_iff,
+          Ideal.associatesEquivIsPrincipal_mem_nonZeroDivisors])
+    _ ≃ {I : Ideal R // IsPrincipal I ∧ I ∈ (Ideal R)⁰} :=
+      Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ IsPrincipal I) (fun I ↦ I ∈ (Ideal R)⁰)
+    _ ≃ {I : Ideal R // I ∈ (Ideal R)⁰ ∧ IsPrincipal I} := Equiv.setCongr (by simp_rw [and_comm])
+    _ ≃ {I : (Ideal R)⁰ // IsPrincipal I.1} := (Equiv.subtypeSubtypeEquivSubtypeInter _ _).symm
+
+@[simp]
+theorem Ideal.associatesNonZeroDivisorsEquivIsPrincipal_apply (R : Type*) [CommRing R] [IsDomain R]
+    (x : R⁰) :
+    Ideal.associatesNonZeroDivisorsEquivIsPrincipal R ⟦x⟧  = Ideal.span {(x : R)} := by
+  rw [← Ideal.associatesEquivIsPrincipal_apply]
+  rfl
+
+end nonZeroDivisors
