@@ -2945,6 +2945,8 @@ theorem span_eq_take_drop (l : List α) : span p l = (takeWhile p l, dropWhile p
 
 #align list.take_while_append_drop List.takeWhile_append_dropWhile
 
+-- TODO update to use `get` instead of `nthLe`
+set_option linter.deprecated false in
 theorem dropWhile_nthLe_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
     ¬p ((l.dropWhile p).nthLe 0 hl) := by
   induction' l with hd tl IH
@@ -2990,6 +2992,8 @@ theorem takeWhile_eq_self_iff : takeWhile p l = l ↔ ∀ x ∈ l, p x := by
   · by_cases hp : p x <;> simp [hp, takeWhile_cons, IH]
 #align list.take_while_eq_self_iff List.takeWhile_eq_self_iff
 
+-- TODO update to use `get` instead of `nthLe`
+set_option linter.deprecated false in
 @[simp]
 theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
   induction' l with x xs IH
