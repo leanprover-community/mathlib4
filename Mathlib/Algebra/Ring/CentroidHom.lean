@@ -703,18 +703,6 @@ instance instInvolutiveStar : InvolutiveStar (CentroidHom α) where
     ext a
     rw [star_apply, star_apply, star_star, star_star]
 
-/-
-lemma test (f g : CentroidHom α) (a : α) : star (g * f) a = star f a * star g a := calc
-  star (g * f) a = star ((g * f) (star a)) := sorry
-  _ = star (g (star a) * f (star a)) := by simp [MulHom.comp_apply]
-  _ = star (f (g (star a) * star a)) := by rw [map_mul_left]
-  _ = star (f (star (star (g (star a) * star a)))) := by rw [star_star]
-  _ = star f (star (g (star a) * star a)) := by simp only [star_mul, star_star, star_apply]
-  _ = star f (a * star (g (star a))) := by simp only [star_mul, star_star, star_apply]
-  _ = star f (a * star g a) := by simp only [star_apply, star_mul, star_star]
-  _ = star f a * star g a := by exact map_mul_right (star f) a ((star g) a)
--/
-
 instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
   star_involutive f := by
     ext
@@ -738,7 +726,11 @@ instance : Star (Subsemiring.center (CentroidHom α)) where
 instance : InvolutiveStar (Subsemiring.center (CentroidHom α)) where
   star_involutive f := SetCoe.ext (instInvolutiveStar.star_involutive f.val)
 
-instance : StarMul (Subsemiring.center (CentroidHom α)) where
+instance instStarAddMonoidCenter : StarAddMonoid (Subsemiring.center (CentroidHom α)) where
+  star_add f g := SetCoe.ext (instStarAddMonoid.star_add f.val g.val)
+
+instance : StarRing (Subsemiring.center (CentroidHom α)) where
+  __ := instStarAddMonoidCenter
   star_mul f g := by
     apply SetCoe.ext
     ext a
