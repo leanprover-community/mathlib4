@@ -320,8 +320,8 @@ lemma isLeftKanExtension_iff_postcomp₁ (α : F ⟶ L' ⋙ F') :
     F'.IsLeftKanExtension α ↔ (G ⋙ F').IsLeftKanExtension
       (α ≫ whiskerRight e.inv _ ≫ (Functor.associator _ _ _).hom) := by
   let eq : (LeftExtension.mk _ α).IsUniversal ≃
-      (LeftExtension.mk _ (α ≫ whiskerRight e.inv _ ≫
-        (Functor.associator _ _ _).hom)).IsUniversal :=
+      (LeftExtension.mk _
+        (α ≫ whiskerRight e.inv _ ≫ (Functor.associator _ _ _).hom)).IsUniversal :=
     (LeftExtension.isUniversalPostcomp₁Equiv G e F _).trans
     (IsInitial.equivOfIso (StructuredArrow.isoMk (Iso.refl _)))
   constructor
@@ -331,8 +331,9 @@ lemma isLeftKanExtension_iff_postcomp₁ (α : F ⟶ L' ⋙ F') :
 lemma isRightKanExtension_iff_postcomp₁ (α : L' ⋙ F' ⟶ F) :
     F'.IsRightKanExtension α ↔ (G ⋙ F').IsRightKanExtension
       ((Functor.associator _ _ _).inv ≫ whiskerRight e.hom F' ≫ α) := by
-  let eq : (RightExtension.mk _ α).IsUniversal ≃ (RightExtension.mk _
-    ((Functor.associator _ _ _).inv ≫ whiskerRight e.hom F' ≫ α)).IsUniversal :=
+  let eq : (RightExtension.mk _ α).IsUniversal ≃
+    (RightExtension.mk _
+      ((Functor.associator _ _ _).inv ≫ whiskerRight e.hom F' ≫ α)).IsUniversal :=
   (RightExtension.isUniversalPostcomp₁Equiv G e F _).trans
     (IsTerminal.equivOfIso (CostructuredArrow.isoMk (Iso.refl _)))
   constructor
@@ -381,7 +382,7 @@ variable {F L}
 
 lemma isLeftKanExtension_iff_precomp (α : F ⟶ L ⋙ F') :
     F'.IsLeftKanExtension α ↔ F'.IsLeftKanExtension
-          (whiskerLeft G α ≫ (Functor.associator _ _ _).inv) := by
+      (whiskerLeft G α ≫ (Functor.associator _ _ _).inv) := by
   let eq : (LeftExtension.mk _ α).IsUniversal ≃ (LeftExtension.mk _
       (whiskerLeft G α ≫ (Functor.associator _ _ _).inv)).IsUniversal :=
     (LeftExtension.isUniversalPrecompEquiv L F G _).trans
@@ -392,7 +393,7 @@ lemma isLeftKanExtension_iff_precomp (α : F ⟶ L ⋙ F') :
 
 lemma isRightKanExtension_iff_precomp (α : L ⋙ F' ⟶ F) :
     F'.IsRightKanExtension α ↔
-    F'.IsRightKanExtension ((Functor.associator _ _ _).hom ≫ whiskerLeft G α)   := by
+      F'.IsRightKanExtension ((Functor.associator _ _ _).hom ≫ whiskerLeft G α) := by
   let eq : (RightExtension.mk _ α).IsUniversal ≃ (RightExtension.mk _
       ((Functor.associator _ _ _).hom ≫ whiskerLeft G α)).IsUniversal :=
     (RightExtension.isUniversalPrecompEquiv L F G _).trans
