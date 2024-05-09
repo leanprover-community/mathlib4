@@ -793,11 +793,15 @@ theorem _root_.LinearIsometryEquiv.piLpCongrRight_single (e : ∀ i, α i ≃ₗ
 
 end piLpCongrRight
 
+section piLpCurry
+
+variable {ι : Type*} {κ : ι → Type*} (p : ℝ≥0∞) [Fact (1 ≤ p)]
+  [Fintype ι] [∀ i, Fintype (κ i)]
+  (α : ∀ i, κ i → Type*) [∀ i k, SeminormedAddCommGroup (α i k)] [∀ i k, Module 𝕜 (α i k)]
+
 variable (𝕜) in
 /-- `LinearEquiv.piCurry` for `PiLp`, as an isometry. -/
-def _root_.LinearIsometryEquiv.piLpCurry {ι : Type*} {κ : ι → Type*} (p) [Fact (1 ≤ p)]
-    [Fintype ι] [∀ i, Fintype (κ i)]
-    (α : ∀ i, κ i → Type*) [∀ i k, SeminormedAddCommGroup (α i k)] [∀ i k, Module 𝕜 (α i k)] :
+def _root_.LinearIsometryEquiv.piLpCurry  :
     PiLp p (fun i : Sigma _ => α i.1 i.2) ≃ₗᵢ[𝕜] PiLp p (fun i => PiLp p (α i)) where
   toLinearEquiv :=
     WithLp.linearEquiv _ _ _
@@ -814,6 +818,21 @@ def _root_.LinearIsometryEquiv.piLpCurry {ι : Type*} {κ : ι → Type*} (p) [F
       simp_rw [PiLp.nnnorm_eq_sum hp, WithLp.equiv_symm_pi_apply]
       dsimp [Sigma.curry]
       simp_rw [one_div, NNReal.rpow_inv_rpow this.ne', ← Finset.univ_sigma_univ, Finset.sum_sigma]
+
+@[simp] theorem _root_.LinearIsometryEquiv.piLpCurry_apply
+    (f : PiLp p (fun i : Sigma κ => α i.1 i.2)) :
+    _root_.LinearIsometryEquiv.piLpCurry 𝕜 p α f =
+      (WithLp.equiv _ _).symm (fun i => (WithLp.equiv _ _).symm <|
+        Sigma.curry (WithLp.equiv _ _ f) i) :=
+  rfl
+
+@[simp] theorem _root_.LinearIsometryEquiv.piLpCurry_symm_apply
+    (f : PiLp p (fun i => PiLp p (α i))) :
+    (_root_.LinearIsometryEquiv.piLpCurry 𝕜 p α).symm f =
+      (WithLp.equiv _ _).symm (Sigma.uncurry fun i j => f i j) :=
+  rfl
+
+end piLpCurry
 
 section Single
 

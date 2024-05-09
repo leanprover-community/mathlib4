@@ -551,12 +551,15 @@ theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η] [DecidableEq 
     Pi.orthonormalBasis B j = (WithLp.equiv _ _).symm (Pi.single _ (B j.fst j.snd)) := by
   classical
   ext k
+  obtain ⟨i, j⟩ := j
   simp only [Pi.orthonormalBasis, coe_ofRepr, LinearIsometryEquiv.symm_trans,
     LinearIsometryEquiv.symm_symm, LinearIsometryEquiv.piLpCongrRight_symm,
-    LinearIsometryEquiv.trans_apply, LinearIsometryEquiv.piLpCongrRight_apply]
-  simp [LinearIsometryEquiv.piLpCurry] -- nonterminal...
-  rw [Sigma.curry_single (γ := fun _ _ => 𝕜)]
-  sorry
+    LinearIsometryEquiv.trans_apply, LinearIsometryEquiv.piLpCongrRight_apply,
+    LinearIsometryEquiv.piLpCurry_apply, WithLp.equiv_single, WithLp.equiv_symm_pi_apply,
+    Sigma.curry_single (γ := fun _ _ => 𝕜)]
+  obtain rfl | hi := Decidable.eq_or_ne i k
+  · simp only [Pi.single_eq_same, WithLp.equiv_symm_single, OrthonormalBasis.repr_symm_single]
+  · simp only [Pi.single_eq_of_ne' hi, WithLp.equiv_symm_zero, _root_.map_zero]
 
 @[simp]
 theorem _root_.Pi.orthonormalBasis_repr {η : Type*} [Fintype η] {ι : η → Type*}
