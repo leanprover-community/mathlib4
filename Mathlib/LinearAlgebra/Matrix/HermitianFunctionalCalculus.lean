@@ -98,7 +98,10 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
       simp only [algebraMap.coe_zero, Function.const_zero, diagonal_zero, Pi.zero_def, zero_mul,
       mul_zero]
   map_add' := by sorry
-  commutes' := by sorry
+  commutes' := by
+    intro r
+    dsimp
+    sorry --this one seems a little puzzling. It must be point evaluation...
   map_star' := by
     intro g
     dsimp
