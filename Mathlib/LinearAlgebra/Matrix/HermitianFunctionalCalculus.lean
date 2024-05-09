@@ -51,9 +51,9 @@ theorem range_thm_RCLike : Set.range
     rw [Set.range_subset_iff]
     apply eigenvalue_mem_toEuclideanLin_spectrum_RCLike
 
-noncomputable def AlgEquivEuclideanLinearEuclideanCLM : AlgEquiv (R := 𝕜)
-    (A := (EuclideanSpace 𝕜 n) →ₗ[𝕜] (EuclideanSpace 𝕜 n))
-    (B := (EuclideanSpace 𝕜 n) →L[𝕜] (EuclideanSpace 𝕜 n)):=
+def AlgEquivFiniteDimNormedLinearCLM.{v} (E : Type v) [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E][FiniteDimensional 𝕜 E] :
+    AlgEquiv (R := 𝕜) (A := E →ₗ[𝕜] E) (B := E →L[𝕜] E) :=
     {LinearMap.toContinuousLinearMap with
     map_mul' := fun _ _ ↦ rfl
     commutes' := fun _ ↦ rfl}
@@ -61,7 +61,8 @@ noncomputable def AlgEquivEuclideanLinearEuclideanCLM : AlgEquiv (R := 𝕜)
 theorem spec_toEuclideanLin_eq_spec : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A
     := AlgEquiv.spectrum_eq ((AlgEquiv.trans ((toEuclideanCLM : Matrix n n 𝕜 ≃⋆ₐ[𝕜]
     EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) : Matrix n n 𝕜 ≃ₐ[𝕜]
-    EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)) AlgEquivEuclideanLinearEuclideanCLM.symm) _
+    EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n))
+    (AlgEquivFiniteDimNormedLinearCLM (EuclideanSpace 𝕜 n)).symm) _
 
 theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A := by
     intro i
@@ -69,6 +70,7 @@ theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A
     rw [←spec_toEuclideanLin_eq_spec]
     apply hA.eigenvalue_mem_toEuclideanLin_spectrum_RCLike i
 
+#exit
 noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
       diagonal (RCLike.ofReal ∘ g ∘
@@ -94,17 +96,13 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
       simp only [mul_assoc]
   map_zero' := by
       dsimp
-      simp only [algebraMap.coe_zero, Function.const_zero, diagonal_zero]
-      --have h : diagonal 0 = (0 : Matrix n n 𝕜) := by
-      --    refine (Matrix.ext ?_).symm
-      --    intro i j
-      --    simp only [zero_apply, Matrix.diagonal]
-      --    refine (ite_self 0).symm
-#exit
+      simp only [algebraMap.coe_zero, Function.const_zero, diagonal_zero, Pi.zero_def, zero_mul,
+      mul_zero]
   map_add' := by sorry
   commutes' := by sorry
-  map_star' := fun
-    | .mk toFun continuous_toFun => sorry
+  map_star' := by
+    intro g
+    dsimp
 
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus 𝕜 (IsHermitian : Matrix n n 𝕜 → Prop) where
