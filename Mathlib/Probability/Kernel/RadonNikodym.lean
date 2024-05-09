@@ -170,8 +170,7 @@ lemma withDensity_one_sub_rnDerivAux (κ η : kernel α γ) [IsFiniteKernel κ] 
         = κ a s + η a s := by
       rw [this]
       simp
-    simp only [coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure, OuterMeasure.coe_add]
-      at h
+    simp only [coeFn_add, Pi.add_apply, Measure.coe_add] at h
     rwa [withDensity_rnDerivAux, add_comm, ENNReal.add_right_inj (measure_ne_top _ _)] at h
   have : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
   simp_rw [this, ENNReal.ofReal_sub _ (rnDerivAux_nonneg h_le), ENNReal.ofReal_one]
@@ -401,8 +400,7 @@ lemma rnDeriv_add_singularPart (κ η : kernel α γ) [IsFiniteKernel κ] [IsFin
     withDensity η (rnDeriv κ η) + singularPart κ η = κ := by
   ext a s hs
   rw [← inter_union_diff s (mutuallySingularSetSlice κ η a)]
-  simp only [coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure,
-    OuterMeasure.coe_add]
+  simp only [coeFn_add, Pi.add_apply, Measure.coe_add]
   have hm := measurableSet_mutuallySingularSetSlice κ η a
   simp only [measure_union (Disjoint.mono (inter_subset_right _ _) subset_rfl disjoint_sdiff_right)
     (hs.diff hm)]
@@ -459,7 +457,7 @@ lemma singularPart_eq_zero_iff_measure_eq_zero (κ η : kernel α γ)
   simp_rw [ext_iff, Measure.ext_iff] at h_eq_add
   specialize h_eq_add a (mutuallySingularSetSlice κ η a)
     (measurableSet_mutuallySingularSetSlice κ η a)
-  simp only [coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure, OuterMeasure.coe_add,
+  simp only [coeFn_add, Pi.add_apply, Measure.coe_add,
     withDensity_rnDeriv_mutuallySingularSetSlice κ η, zero_add] at h_eq_add
   rw [← h_eq_add]
   exact singularPart_eq_zero_iff_apply_eq_zero κ η a
@@ -471,7 +469,7 @@ lemma withDensity_rnDeriv_eq_zero_iff_measure_eq_zero (κ η : kernel α γ)
   simp_rw [ext_iff, Measure.ext_iff] at h_eq_add
   specialize h_eq_add a (mutuallySingularSetSlice κ η a)ᶜ
     (measurableSet_mutuallySingularSetSlice κ η a).compl
-  simp only [coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure, OuterMeasure.coe_add,
+  simp only [coeFn_add, Pi.add_apply, Measure.coe_add,
     singularPart_compl_mutuallySingularSetSlice κ η, add_zero] at h_eq_add
   rw [← h_eq_add]
   exact withDensity_rnDeriv_eq_zero_iff_apply_eq_zero κ η a

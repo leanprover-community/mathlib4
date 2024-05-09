@@ -159,11 +159,13 @@ theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsC
   · exact ⟨0, 1, 2, fun a _ha => by norm_num, by norm_num, by simp⟩
   obtain ⟨U, V, hU, hV, hU₁, hV₁, sU, tV, disj'⟩ := disj.exists_open_convexes hs₁ hs₂ ht₁ ht₂
   obtain ⟨f, u, hf₁, hf₂⟩ := geometric_hahn_banach_open_open hU₁ hU hV₁ hV disj'
-  obtain ⟨x, hx₁, hx₂⟩ := hs₂.exists_forall_ge hs f.continuous.continuousOn
+  obtain ⟨x, hx₁, hx₂⟩ := hs₂.exists_isMaxOn hs f.continuous.continuousOn
   have : f x < u := hf₁ x (sU hx₁)
   exact
-    ⟨f, (f x + u) / 2, u, fun a ha => by linarith [hx₂ a ha], by linarith, fun b hb =>
-      hf₂ b (tV hb)⟩
+    ⟨f, (f x + u) / 2, u,
+      fun a ha => by have := hx₂ ha; dsimp at this; linarith,
+      by linarith,
+      fun b hb => hf₂ b (tV hb)⟩
 #align geometric_hahn_banach_compact_closed geometric_hahn_banach_compact_closed
 
 /-- A version of the **Hahn-Banach theorem**: given disjoint convex sets `s`, `t` where `s` is
