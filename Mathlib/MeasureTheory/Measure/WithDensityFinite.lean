@@ -9,16 +9,18 @@ import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 # s-finite measures can be written as `withDensity` of a finite measure
 
 If `μ` is an s-finite measure, then there exists a finite measure `μ.toFinite` and a measurable
-function `densityToFinite μ` such that `μ = μ.toFinite.withDensity μ.densityToFinite`.
+function `densityToFinite μ` such that `μ = μ.toFinite.withDensity μ.densityToFinite`. If `μ` is
+zero this is the zero measure, and otherwise we can choose a probability measure for `μ.toFinite`.
 
 That measure is not unique, and in particular our implementation leads to `μ.toFinite ≠ μ` even if
-`μ` is finite.
+`μ` is a probability measure.
 
 ## Main definitions
 
 In all these definitions and the results below, `μ` is an s-finite measure (`SFinite μ`).
 
 * `MeasureTheory.Measure.toFinite`: a finite measure with `μ ≪ μ.toFinite` and `μ.toFinite ≪ μ`.
+  If `μ ≠ 0`, this is a probabilty measure.
 * `MeasureTheory.Measure.densityToFinite`: a measurable function such that
   `μ = μ.toFinite.withDensity μ.densityToFinite`.
 * `MeasureTheory.Measure.toSigmaFinite`: a sigma-finite measure with `μ ≪ μ.toSigmaFinite` and
@@ -45,33 +47,47 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α}
 
-/-- A finite measure obtained from an s-finite measure `μ`, such that
-`μ = μ.toFinite.withDensity μ.densityToFinite` (see `withDensity_densitytoFinite`). -/
-noncomputable def Measure.toFinite (μ : Measure α) [SFinite μ] : Measure α :=
+/-- Auxiliary definition for `MeasureTheory.Measure.toFinite`. -/
+noncomputable def Measure.toFiniteAux (μ : Measure α) [SFinite μ] : Measure α :=
   Measure.sum (fun n ↦ (2 ^ (n + 1) * sFiniteSeq μ n Set.univ)⁻¹ • sFiniteSeq μ n)
 
+/-- A finite measure obtained from an s-finite measure `μ`, such that
+`μ = μ.toFinite.withDensity μ.densityToFinite` (see `withDensity_densitytoFinite`).
+If `μ` is non-zero, this is a probability measure. -/
+noncomputable def Measure.toFinite (μ : Measure α) [SFinite μ] : Measure α :=
+  (μ.toFiniteAux Set.univ)⁻¹ • μ.toFiniteAux
+
+lemma toFiniteAux_apply (μ : Measure α) [SFinite μ] (s : Set α) :
+    μ.toFiniteAux s = ∑' n, (2 ^ (n + 1) * sFiniteSeq μ n Set.univ)⁻¹ * sFiniteSeq μ n s := by
+  rw [Measure.toFiniteAux, Measure.sum_apply_of_countable]; rfl
+
 lemma toFinite_apply (μ : Measure α) [SFinite μ] (s : Set α) :
-    μ.toFinite s = ∑' n, (2 ^ (n + 1) * sFiniteSeq μ n Set.univ)⁻¹ * sFiniteSeq μ n s := by
-  rw [Measure.toFinite, Measure.sum_apply_of_countable]; rfl
+    μ.toFinite s = (μ.toFiniteAux Set.univ)⁻¹ * μ.toFiniteAux s := rfl
 
-lemma sFiniteSeq_absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] (n : ℕ) :
-    sFiniteSeq μ n ≪ μ.toFinite := by
-  refine Measure.absolutelyContinuous_sum_right n (Measure.absolutelyContinuous_smul ?_)
-  simp only [ne_eq, ENNReal.inv_eq_zero]
-  exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
+lemma toFiniteAux_zero : Measure.toFiniteAux (0 : Measure α) = 0 := by
+  ext s
+  simp [toFiniteAux_apply]
 
-lemma absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] : μ ≪ μ.toFinite := by
-  conv_lhs => rw [← sum_sFiniteSeq μ]
-  exact Measure.absolutelyContinuous_sum_left (sFiniteSeq_absolutelyContinuous_toFinite μ)
+@[simp]
+lemma toFinite_zero : Measure.toFinite (0 : Measure α) = 0 := by
+  simp [Measure.toFinite, toFiniteAux_zero]
 
-lemma toFinite_absolutelyContinuous (μ : Measure α) [SFinite μ] : μ.toFinite ≪ μ := by
-  conv_rhs => rw [← sum_sFiniteSeq μ]
-  refine Measure.AbsolutelyContinuous.mk (fun s hs hs0 ↦ ?_)
-  simp only [Measure.sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
-  simp [toFinite_apply _ s, hs0]
+lemma toFiniteAux_eq_zero_iff {μ : Measure α} [SFinite μ] : μ.toFiniteAux = 0 ↔ μ = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h, toFiniteAux_zero]⟩
+  ext s hs
+  rw [Measure.ext_iff] at h
+  specialize h s hs
+  simp only [toFiniteAux_apply, Measure.zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply,
+    ENNReal.tsum_eq_zero, mul_eq_zero, ENNReal.inv_eq_zero] at h
+  rw [← sum_sFiniteSeq μ, Measure.sum_apply _ hs]
+  simp only [Measure.zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply,
+    ENNReal.tsum_eq_zero]
+  intro n
+  specialize h n
+  simpa [ENNReal.mul_eq_top, measure_ne_top] using h
 
-lemma toFinite_univ_le_one (μ : Measure α) [SFinite μ] : μ.toFinite Set.univ ≤ 1 := by
-  rw [toFinite_apply]
+lemma toFiniteAux_univ_le_one (μ : Measure α) [SFinite μ] : μ.toFiniteAux Set.univ ≤ 1 := by
+  rw [toFiniteAux_apply]
   have h_le_pow : ∀ n, (2 ^ (n + 1) * sFiniteSeq μ n Set.univ)⁻¹ * sFiniteSeq μ n Set.univ
       ≤ (2 ^ (n + 1))⁻¹ := by
     intro n
@@ -84,8 +100,50 @@ lemma toFinite_univ_le_one (μ : Measure α) [SFinite μ] : μ.toFinite Set.univ
   refine (tsum_le_tsum h_le_pow ENNReal.summable ENNReal.summable).trans ?_
   simp [ENNReal.inv_pow, ENNReal.tsum_geometric_add_one, ENNReal.inv_mul_cancel]
 
-instance instIsFiniteMeasureToFinite {μ : Measure α} [SFinite μ] : IsFiniteMeasure μ.toFinite :=
-  ⟨(toFinite_univ_le_one μ).trans_lt ENNReal.one_lt_top⟩
+instance {μ : Measure α} [SFinite μ] : IsFiniteMeasure μ.toFiniteAux :=
+  ⟨(toFiniteAux_univ_le_one μ).trans_lt ENNReal.one_lt_top⟩
+
+@[simp]
+lemma toFinite_eq_zero_iff {μ : Measure α} [SFinite μ] : μ.toFinite = 0 ↔ μ = 0 := by
+  rw [Measure.toFinite]
+  simp [measure_ne_top μ.toFiniteAux Set.univ, toFiniteAux_eq_zero_iff]
+
+instance {μ : Measure α} [SFinite μ] : IsFiniteMeasure μ.toFinite := by
+  constructor
+  by_cases h_zero : μ.toFiniteAux Set.univ = 0
+  · simp [toFinite_apply, h_zero]
+  · rw [toFinite_apply, ENNReal.inv_mul_cancel h_zero (measure_ne_top _ _)]
+    exact ENNReal.one_lt_top
+
+instance {μ : Measure α} [SFinite μ] [h_zero : NeZero μ] : IsProbabilityMeasure μ.toFinite := by
+  constructor
+  rw [toFinite_apply, ENNReal.inv_mul_cancel _ (measure_ne_top _ _)]
+  rw [ne_eq, Measure.measure_univ_eq_zero, toFiniteAux_eq_zero_iff]
+  exact h_zero.out
+
+lemma sFiniteSeq_absolutelyContinuous_toFiniteAux (μ : Measure α) [SFinite μ] (n : ℕ) :
+    sFiniteSeq μ n ≪ μ.toFiniteAux := by
+  refine Measure.absolutelyContinuous_sum_right n (Measure.absolutelyContinuous_smul ?_)
+  simp only [ne_eq, ENNReal.inv_eq_zero]
+  exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
+
+lemma toFiniteAux_absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] :
+    μ.toFiniteAux ≪ μ.toFinite := Measure.absolutelyContinuous_smul (by simp [measure_ne_top])
+
+lemma sFiniteSeq_absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] (n : ℕ) :
+    sFiniteSeq μ n ≪ μ.toFinite :=
+  (sFiniteSeq_absolutelyContinuous_toFiniteAux μ n).trans
+    (toFiniteAux_absolutelyContinuous_toFinite μ)
+
+lemma absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] : μ ≪ μ.toFinite := by
+  conv_lhs => rw [← sum_sFiniteSeq μ]
+  exact Measure.absolutelyContinuous_sum_left (sFiniteSeq_absolutelyContinuous_toFinite μ)
+
+lemma toFinite_absolutelyContinuous (μ : Measure α) [SFinite μ] : μ.toFinite ≪ μ := by
+  conv_rhs => rw [← sum_sFiniteSeq μ]
+  refine Measure.AbsolutelyContinuous.mk (fun s hs hs0 ↦ ?_)
+  simp only [Measure.sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
+  simp [toFinite_apply, toFiniteAux_apply, hs0]
 
 /-- A measurable function such that `μ.toFinite.withDensity μ.densityToFinite = μ`.
 See `withDensity_densitytoFinite`. -/
