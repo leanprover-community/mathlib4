@@ -636,8 +636,7 @@ instance isMulLeftInvariant_haarMeasure (K₀ : PositiveCompacts G) :
 @[to_additive]
 theorem haarMeasure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ K₀ = 1 := by
   haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
-  simp only [haarMeasure, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
-    smul_eq_mul]
+  simp only [haarMeasure, coe_smul, Pi.smul_apply, smul_eq_mul]
   rw [← OuterRegular.measure_closure_eq_of_isCompact K₀.isCompact,
     Content.measure_apply _ isClosed_closure.measurableSet, ENNReal.inv_mul_cancel]
   · exact (haarContent_outerMeasure_closure_pos K₀).ne'
