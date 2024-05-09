@@ -738,6 +738,21 @@ instance : Star (Subsemiring.center (CentroidHom α)) where
 instance : InvolutiveStar (Subsemiring.center (CentroidHom α)) where
   star_involutive f := SetCoe.ext (instInvolutiveStar.star_involutive f.val)
 
+instance : StarMul (Subsemiring.center (CentroidHom α)) where
+  star_mul f g := by
+    apply SetCoe.ext
+    ext a
+    have e1 : star (f * g).val a = (star g * star f).val a := calc
+      star (f * g).val a = star (f.val * g.val) a := rfl
+      _ = star (g.val * f.val) a := by rw [f.property.comm g]
+      _ = star ((g.val * f.val) (star a)) := by simp only [star_apply, mul_apply, star_inj]
+      _ = star (g.val (f.val (star a))) := by simp only [mul_apply]
+      _ = star (g.val (star (star (f.val (star a))))) := by simp only [star_star]
+      _ = (star g.val) ((star f.val) a) := by simp only [star_star, star_apply]
+      _ = (star g.val * star f.val) a := by simp only [star_apply, star_star, mul_apply]
+      _ = (star g * star f).val a := rfl
+    exact e1
+
 /--
 Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
 -/
