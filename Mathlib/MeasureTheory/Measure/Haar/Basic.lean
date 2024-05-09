@@ -718,7 +718,7 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
     rcases MeasurableSet.exists_lt_isCompact hE hEpos with ⟨K, KE, K_comp, K_meas⟩
     refine ⟨closure K, ?_, K_comp.closure, isClosed_closure, ?_⟩
     · exact K_comp.closure_subset_measurableSet hE KE
-    · rwa [K_comp.measure_closure_eq_of_group]
+    · rwa [K_comp.measure_closure]
   filter_upwards [eventually_nhds_one_measure_smul_diff_lt hK K_closed hKpos.ne' (μ := μ)] with g hg
   have : ¬Disjoint (g • K) K := fun hd ↦ by
     rw [hd.symm.sdiff_eq_right, measure_smul] at hg
