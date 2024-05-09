@@ -186,3 +186,13 @@ theorem mul_self_le_one_iff : a * a ≤ 1 ↔ a ≤ 1 := by simp [← not_iff_no
 
 @[to_additive (attr := simp)]
 theorem mul_self_lt_one_iff : a * a < 1 ↔ a < 1 := by simp [← not_iff_not]
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] OrderedAddCommMonoid.toAddCommMonoid
+attribute [instance 50] OrderedCommMonoid.toCommMonoid
+
+-- add higer-priority versions in scope `AlgebraOrderInstances`
+namespace AlgebraOrderInstances
+attribute [scoped instance 1000] OrderedAddCommMonoid.toAddCommMonoid
+attribute [scoped instance 1000] OrderedCommMonoid.toCommMonoid
+end AlgebraOrderInstances
