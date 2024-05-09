@@ -3,12 +3,12 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Order.LocallyFinite
-import Mathlib.Order.SuccPred.Basic
-import Mathlib.Order.Hom.Basic
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Logic.Encodable.Basic
+import Mathlib.Order.Hom.Basic
+import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Order.SuccPred.Basic
 
 #align_import order.succ_pred.linear_locally_finite from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
@@ -273,7 +273,7 @@ theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin (pred^[n] i0)) :
     exact isMin_iterate_pred_of_eq_of_ne h_pred_eq_pred (Nat.succ_ne_zero n)
   let m := (-toZ i0 (pred^[n.succ] i0)).toNat
   have h_eq : pred^[m] i0 = pred^[n.succ] i0 := iterate_pred_toZ _ this
-  by_cases hmn : m = n.succ
+  by_cases hmn : m = n + 1
   · nth_rw 2 [← hmn]
     rw [Int.toNat_eq_max, toZ_of_lt this, max_eq_left, neg_neg]
     rw [neg_neg]

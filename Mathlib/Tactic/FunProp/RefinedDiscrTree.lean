@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: J. W. Gerbscheid
 -/
 import Mathlib.Tactic.FunProp.StateList
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
 import Mathlib.Algebra.Group.Pi.Basic
 
 /-!

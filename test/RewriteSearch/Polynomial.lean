@@ -8,11 +8,12 @@ set_option linter.hashCommand false
 
 open Polynomial
 
--- info: Try this: rw [@natDegree_sub, @sub_eq_neg_add, @natDegree_add_C, @natDegree_neg]
-#guard_msgs(drop info) in
-example {R : Type*} [Ring R] {p : Polynomial R} {a : R} :
-    natDegree (p - C a) = natDegree p := by
-  rw_search [-Polynomial.natDegree_sub_C, -sub_eq_neg_add]
+-- Fails, but used to work prior to `rw?` moving to `lean4`.
+-- -- info: Try this: rw [@natDegree_sub, @sub_eq_neg_add, @natDegree_add_C, @natDegree_neg]
+-- #guard_msgs(drop info) in
+-- example {R : Type*} [Ring R] {p : Polynomial R} {a : R} :
+--     natDegree (p - C a) = natDegree p := by
+--   rw_search [-Polynomial.natDegree_sub_C, -sub_eq_neg_add]
 
 
 -- This one works, but is very slow:

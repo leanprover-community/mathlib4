@@ -75,8 +75,7 @@ open Cardinal Submodule Module Function
 
 /-- `FiniteDimensional` vector spaces are defined to be finite modules.
 Use `FiniteDimensional.of_fintype_basis` to prove finite dimension from another definition. -/
-@[reducible]
-def FiniteDimensional (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] :=
+abbrev FiniteDimensional (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] :=
   Module.Finite K V
 #align finite_dimensional FiniteDimensional
 
@@ -157,11 +156,11 @@ theorem of_finite_basis {ι : Type w} {s : Set ι} (h : Basis s K V) (hs : Set.F
 instance finiteDimensional_submodule [FiniteDimensional K V] (S : Submodule K V) :
     FiniteDimensional K S := by
   letI : IsNoetherian K V := iff_fg.2 ?_
-  exact
-    iff_fg.1
-      (IsNoetherian.iff_rank_lt_aleph0.2
-        (lt_of_le_of_lt (rank_submodule_le _) (_root_.rank_lt_aleph0 K V)))
-  infer_instance
+  · exact
+      iff_fg.1
+        (IsNoetherian.iff_rank_lt_aleph0.2
+          (lt_of_le_of_lt (rank_submodule_le _) (_root_.rank_lt_aleph0 K V)))
+  · infer_instance
 #align finite_dimensional.finite_dimensional_submodule FiniteDimensional.finiteDimensional_submodule
 
 /-- A quotient of a finite-dimensional space is also finite-dimensional. -/
@@ -217,8 +216,8 @@ theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [F
     {v : ι → V} (h : LinearIndependent K v) : #ι < ℵ₀ :=
   h.lt_aleph0_of_finite
 #align finite_dimensional.lt_aleph_0_of_linear_independent LinearIndependent.lt_aleph0_of_finiteDimensional
-@[deprecated] alias
-lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finiteDimensional
+@[deprecated (since := "2023-12-27")]
+alias lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finiteDimensional
 
 /-- If a submodule has maximal dimension in a finite dimensional space, then it is equal to the
 whole space. -/
@@ -368,21 +367,21 @@ theorem FiniteDimensional.of_rank_eq_nat {n : ℕ} (h : Module.rank K V = n) :
   Module.finite_of_rank_eq_nat h
 #align finite_dimensional_of_rank_eq_nat FiniteDimensional.of_rank_eq_nat
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_rank_eq_nat := FiniteDimensional.of_rank_eq_nat
 
 theorem FiniteDimensional.of_rank_eq_zero (h : Module.rank K V = 0) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_zero h
 #align finite_dimensional_of_rank_eq_zero FiniteDimensional.of_rank_eq_zero
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_rank_eq_zero := FiniteDimensional.of_rank_eq_zero
 
 theorem FiniteDimensional.of_rank_eq_one (h : Module.rank K V = 1) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_one h
 #align finite_dimensional_of_rank_eq_one FiniteDimensional.of_rank_eq_one
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_rank_eq_one := FiniteDimensional.of_rank_eq_one
 
 variable (K V)
@@ -487,7 +486,7 @@ theorem finrank_sup_add_finrank_inf_eq (s t : Submodule K V) [FiniteDimensional 
     finrank K ↑(s ⊔ t) + finrank K ↑(s ⊓ t) = finrank K ↑s + finrank K ↑t := by
   have key : Module.rank K ↑(s ⊔ t) + Module.rank K ↑(s ⊓ t) = Module.rank K s + Module.rank K t :=
     rank_sup_add_rank_inf_eq s t
-  repeat' rw [← finrank_eq_rank] at key
+  repeat rw [← finrank_eq_rank] at key
   norm_cast at key
 #align submodule.finrank_sup_add_finrank_inf_eq Submodule.finrank_sup_add_finrank_inf_eq
 
@@ -859,19 +858,18 @@ lemma FiniteDimensional.exists_mul_eq_one (F : Type*) {K : Type*} [Field F] [Rin
   exact this 1
 
 /-- A domain that is module-finite as an algebra over a field is a division ring. -/
-noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [h : Ring K] [IsDomain K]
-    [Algebra F K] [FiniteDimensional F K] : DivisionRing K :=
-  { ‹IsDomain K› with
-    toRing := h
-    inv := fun x =>
-      letI := Classical.decEq K
-      if H : x = 0 then 0 else Classical.choose <| FiniteDimensional.exists_mul_eq_one F H
-    mul_inv_cancel := fun x hx =>
-      show x * dite _ (h := _) _ = _ by
-        rw [dif_neg hx]
-        exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
-    inv_zero := dif_pos rfl
-    qsmul := qsmulRec _ }
+noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring K] [IsDomain K]
+    [Algebra F K] [FiniteDimensional F K] : DivisionRing K where
+  __ := ‹IsDomain K›
+  inv x :=
+    letI := Classical.decEq K
+    if H : x = 0 then 0 else Classical.choose <| FiniteDimensional.exists_mul_eq_one F H
+  mul_inv_cancel x hx := show x * dite _ (h := _) _ = _ by
+    rw [dif_neg hx]
+    exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
+  inv_zero := dif_pos rfl
+  nnqsmul := _
+  qsmul := _
 #align division_ring_of_finite_dimensional divisionRingOfFiniteDimensional
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
@@ -965,7 +963,7 @@ theorem LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty 
   lin_ind.span_eq_top_of_card_eq_finrank' card_eq
 #align span_eq_top_of_linear_independent_of_card_eq_finrank LinearIndependent.span_eq_top_of_card_eq_finrank
 
-@[deprecated] -- 2024-02-14
+@[deprecated (since := "2024-02-14")]
 alias span_eq_top_of_linearIndependent_of_card_eq_finrank :=
   LinearIndependent.span_eq_top_of_card_eq_finrank
 
