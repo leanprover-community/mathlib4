@@ -35,7 +35,7 @@ def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
     have lit : Q(ℕ) := mkRawNatLit n
     have k : Q(ℕ) := mkRawNatLit k
     haveI : $lit =Q $k + 2 := ⟨⟩
-    by exact q(OfNat.ofNat $lit)
+    q(OfNat.ofNat $lit)
 
 end Qq
 
@@ -109,7 +109,7 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
       return t
   | ((h, c)::t) => do
       let (iq, h') ← mkSingleCompZeroOf c h
-      let (_, t) ← t.foldlM (λ pr ce => step pr.1 pr.2 ce.1 ce.2) (iq, h')
+      let (_, t) ← t.foldlM (fun pr ce ↦ step pr.1 pr.2 ce.1 ce.2) (iq, h')
       return t
   where
     /--
@@ -204,7 +204,7 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
       trace[linarith.detail] "{comps}"
       let oracle := cfg.oracle.getD FourierMotzkin.produceCertificate
       -- perform the elimination and fail if no contradiction is found.
-      let certificate : Std.HashMap Nat Nat ← try
+      let certificate : Batteries.HashMap Nat Nat ← try
         oracle comps max_var
       catch e =>
         trace[linarith] e.toMessageData

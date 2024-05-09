@@ -48,11 +48,11 @@ Such spaces are equivalently specified by their bounded sets, see `Bornology.ofB
 and `Bornology.ext_iff_isBounded`-/
 class Bornology (α : Type*) where
   /-- The filter of cobounded sets in a bornology. This is a field of the structure, but one
-  should always prefer `Bornology.cobounded` because it makes the `α` argument explciit. -/
+  should always prefer `Bornology.cobounded` because it makes the `α` argument explicit. -/
   cobounded' : Filter α
   /-- The cobounded filter in a bornology is smaller than the cofinite filter. This is a field of
   the structure, but one should always prefer `Bornology.le_cofinite` because it makes the `α`
-  argument explciit. -/
+  argument explicit. -/
   le_cofinite' : cobounded' ≤ cofinite
 #align bornology Bornology
 
@@ -297,7 +297,7 @@ theorem isBounded_sUnion {S : Set (Set α)} (hs : S.Finite) :
 
 @[simp]
 theorem isBounded_iUnion [Finite ι] {s : ι → Set α} : IsBounded (⋃ i, s i) ↔ ∀ i, IsBounded (s i) :=
-  by rw [← sUnion_range, isBounded_sUnion (finite_range s), forall_range_iff]
+  by rw [← sUnion_range, isBounded_sUnion (finite_range s), forall_mem_range]
 #align bornology.is_bounded_Union Bornology.isBounded_iUnion
 
 lemma eventually_ne_cobounded (a : α) : ∀ᶠ x in cobounded α, x ≠ a :=
@@ -324,8 +324,7 @@ instance : Bornology PUnit :=
   ⟨⊥, bot_le⟩
 
 /-- The cofinite filter as a bornology -/
-@[reducible]
-def Bornology.cofinite : Bornology α where
+abbrev Bornology.cofinite : Bornology α where
   cobounded' := Filter.cofinite
   le_cofinite' := le_rfl
 #align bornology.cofinite Bornology.cofinite

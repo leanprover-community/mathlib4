@@ -45,7 +45,8 @@ namespace CantorScheme
 
 open List Function Filter Set PiNat
 
-open Classical Topology
+open scoped Classical
+open Topology
 
 variable {β α : Type*} (A : List β → Set α)
 
@@ -104,7 +105,7 @@ theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (induc
   simp only [res_succ, cons.injEq]
   refine' ⟨_, ih⟩
   contrapose hA
-  simp only [CantorScheme.Disjoint, _root_.Pairwise, Ne.def, not_forall, exists_prop]
+  simp only [CantorScheme.Disjoint, _root_.Pairwise, Ne, not_forall, exists_prop]
   refine' ⟨res x n, _, _, hA, _⟩
   rw [not_disjoint_iff]
   refine' ⟨(inducedMap A).2 ⟨x, hx⟩, _, _⟩

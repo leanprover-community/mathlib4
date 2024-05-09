@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+import Mathlib.LinearAlgebra.Dual
 
 #align_import linear_algebra.clifford_algebra.contraction from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -41,13 +42,12 @@ Within this file, we use the local notation
 
 -/
 
+open LinearMap (BilinForm)
 
 universe u1 u2 u3
 
 variable {R : Type u1} [CommRing R]
-
 variable {M : Type u2} [AddCommGroup M] [Module R M]
-
 variable (Q : QuadraticForm R M)
 
 namespace CliffordAlgebra
@@ -243,21 +243,18 @@ local infixl:70 "⌊" => contractRight
 @[simps!]
 def changeFormAux (B : BilinForm R M) : M →ₗ[R] CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
   haveI v_mul := (Algebra.lmul R (CliffordAlgebra Q)).toLinearMap ∘ₗ ι Q
-  v_mul - contractLeft ∘ₗ (BilinForm.toLin B)
+  v_mul - contractLeft ∘ₗ B
 #align clifford_algebra.change_form_aux CliffordAlgebra.changeFormAux
 
 theorem changeFormAux_changeFormAux (B : BilinForm R M) (v : M) (x : CliffordAlgebra Q) :
     changeFormAux Q B v (changeFormAux Q B v x) = (Q v - B v v) • x := by
   simp only [changeFormAux_apply_apply]
   rw [mul_sub, ← mul_assoc, ι_sq_scalar, map_sub, contractLeft_ι_mul, ← sub_add, sub_sub_sub_comm,
-    ← Algebra.smul_def, BilinForm.toLin_apply, sub_self, sub_zero, contractLeft_contractLeft,
-    add_zero, sub_smul]
+    ← Algebra.smul_def, sub_self, sub_zero, contractLeft_contractLeft, add_zero, sub_smul]
 #align clifford_algebra.change_form_aux_change_form_aux CliffordAlgebra.changeFormAux_changeFormAux
 
 variable {Q}
-
 variable {Q' Q'' : QuadraticForm R M} {B B' : BilinForm R M}
-
 variable (h : B.toQuadraticForm = Q' - Q) (h' : B'.toQuadraticForm = Q'' - Q')
 
 /-- Convert between two algebras of different quadratic form, sending vector to vectors, scalars to
@@ -311,7 +308,7 @@ theorem changeForm_ι (m : M) : changeForm h (ι (M := M) Q m) = ι (M := M) Q' 
 
 theorem changeForm_ι_mul (m : M) (x : CliffordAlgebra Q) :
     changeForm h (ι (M := M) Q m * x) = ι (M := M) Q' m * changeForm h x
-    - contractLeft (Q := Q') (BilinForm.toLin B m) (changeForm h x) :=
+    - contractLeft (Q := Q') (B m) (changeForm h x) :=
 -- Porting note: original statement
 --    - BilinForm.toLin B m⌋changeForm h x :=
   (foldr_mul _ _ _ _ _ _).trans <| by rw [foldr_ι]; rfl
@@ -319,7 +316,7 @@ theorem changeForm_ι_mul (m : M) (x : CliffordAlgebra Q) :
 
 theorem changeForm_ι_mul_ι (m₁ m₂ : M) :
     changeForm h (ι Q m₁ * ι Q m₂) = ι Q' m₁ * ι Q' m₂ - algebraMap _ _ (B m₁ m₂) := by
-  rw [changeForm_ι_mul, changeForm_ι, contractLeft_ι, BilinForm.toLin_apply]
+  rw [changeForm_ι_mul, changeForm_ι, contractLeft_ι]
 #align clifford_algebra.change_form_ι_mul_ι CliffordAlgebra.changeForm_ι_mul_ι
 
 /-- Theorem 23 of [grinberg_clifford_2016][] -/
@@ -339,7 +336,7 @@ theorem changeForm_self_apply (x : CliffordAlgebra Q) : changeForm (Q' := Q)
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
   · simp_rw [changeForm_algebraMap]
   · rw [map_add, hx, hy]
-  · rw [changeForm_ι_mul, hx, map_zero, LinearMap.zero_apply, map_zero, LinearMap.zero_apply,
+  · rw [changeForm_ι_mul, hx, LinearMap.zero_apply, map_zero, LinearMap.zero_apply,
       sub_zero]
 #align clifford_algebra.change_form_self_apply CliffordAlgebra.changeForm_self_apply
 
@@ -355,7 +352,7 @@ theorem changeForm_changeForm (x : CliffordAlgebra Q) :
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
   · simp_rw [changeForm_algebraMap]
   · rw [map_add, map_add, map_add, hx, hy]
-  · rw [changeForm_ι_mul, map_sub, changeForm_ι_mul, changeForm_ι_mul, hx, sub_sub, map_add,
+  · rw [changeForm_ι_mul, map_sub, changeForm_ι_mul, changeForm_ι_mul, hx, sub_sub,
       LinearMap.add_apply, map_add, LinearMap.add_apply, changeForm_contractLeft, hx,
       add_comm (_ : CliffordAlgebra Q'')]
 #align clifford_algebra.change_form_change_form CliffordAlgebra.changeForm_changeForm
@@ -375,11 +372,12 @@ def changeFormEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q' :=
     invFun := changeForm (changeForm.neg_proof h)
     left_inv := fun x => by
       dsimp only
-      exact (changeForm_changeForm _ _ x).trans <| by simp_rw [add_right_neg, changeForm_self_apply]
+      exact (changeForm_changeForm _ _ x).trans <|
+        by simp_rw [(add_neg_self B), changeForm_self_apply]
     right_inv := fun x => by
       dsimp only
       exact (changeForm_changeForm _ _ x).trans <|
-        by simp_rw [add_left_neg, changeForm_self_apply] }
+        by simp_rw [(add_left_neg B), changeForm_self_apply] }
 #align clifford_algebra.change_form_equiv CliffordAlgebra.changeFormEquiv
 
 @[simp]

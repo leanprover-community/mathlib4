@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Int.Defs
+import Mathlib.Data.Nat.Defs
+import Mathlib.Tactic.Common
 
 #align_import data.int.sqrt from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
 
@@ -26,7 +28,7 @@ def sqrt (z : ℤ) : ℤ :=
 #align int.sqrt Int.sqrt
 
 theorem sqrt_eq (n : ℤ) : sqrt (n * n) = n.natAbs := by
-  rw [sqrt, ← natAbs_mul_self, toNat_coe_nat, Nat.sqrt_eq]
+  rw [sqrt, ← natAbs_mul_self, toNat_natCast, Nat.sqrt_eq]
 #align int.sqrt_eq Int.sqrt_eq
 
 theorem exists_mul_self (x : ℤ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=
@@ -34,12 +36,7 @@ theorem exists_mul_self (x : ℤ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :
 #align int.exists_mul_self Int.exists_mul_self
 
 theorem sqrt_nonneg (n : ℤ) : 0 ≤ sqrt n :=
-  coe_nat_nonneg _
+  natCast_nonneg _
 #align int.sqrt_nonneg Int.sqrt_nonneg
-
-/-- `IsSquare` can be decided on `ℤ` by checking against the square root. -/
-instance : DecidablePred (IsSquare : ℤ → Prop) :=
-  fun m => decidable_of_iff' (sqrt m * sqrt m = m) <| by
-    simp_rw [← exists_mul_self m, IsSquare, eq_comm]
 
 end Int

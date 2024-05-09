@@ -33,6 +33,7 @@ namespace EuclideanGeometry
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
+/-- A fixed choice of positive orientation of Euclidean space `ℝ²` -/
 abbrev o := @Module.Oriented.positiveOrientation
 
 /-- The oriented angle at `p₂` between the line segments to `p₁` and `p₃`, modulo `2 * π`. If
@@ -707,14 +708,14 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
     have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) s := by
       refine' ContinuousAt.continuousOn fun p hp => continuousAt_oangle _ _
       all_goals
-        simp_rw [Set.mem_image, Set.mem_prod, Set.mem_univ, true_and_iff, Prod.ext_iff] at hp
+        simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_univ, true_and_iff, Prod.ext_iff] at hp
         obtain ⟨q₁, q₅, q₂⟩ := p
         dsimp only at hp ⊢
         obtain ⟨⟨⟨q, hq⟩, v⟩, hv, rfl, rfl, rfl⟩ := hp
         dsimp only [Subtype.coe_mk, Set.mem_setOf] at hv ⊢
         obtain ⟨hvr, -⟩ := hv
         rintro rfl
-        refine' hc₅₁₂ ((collinear_insert_iff_of_mem_affineSpan _).2 (collinear_pair _ _ _))
+        refine hc₅₁₂ ((collinear_insert_iff_of_mem_affineSpan ?_).2 (collinear_pair _ _ _))
       · exact hq
       · refine' vadd_mem_of_mem_direction _ hq
         rw [← exists_nonneg_left_iff_sameRay (vsub_ne_zero.2 hp₁p₂.symm)] at hvr
@@ -723,7 +724,7 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
         exact smul_vsub_rev_mem_vectorSpan_pair _ _ _
     have hsp : ∀ p : P × P × P, p ∈ s → ∡ p.1 p.2.1 p.2.2 ≠ 0 ∧ ∡ p.1 p.2.1 p.2.2 ≠ π := by
       intro p hp
-      simp_rw [Set.mem_image, Set.mem_prod, Set.mem_setOf, Set.mem_univ, true_and_iff,
+      simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_setOf, Set.mem_univ, true_and_iff,
         Prod.ext_iff] at hp
       obtain ⟨q₁, q₅, q₂⟩ := p
       dsimp only at hp ⊢
@@ -741,12 +742,14 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
         rw [direction_affineSpan]
         exact smul_vsub_rev_mem_vectorSpan_pair _ _ _
     have hp₁p₂s : (p₁, p₅, p₂) ∈ s := by
-      simp_rw [Set.mem_image, Set.mem_prod, Set.mem_setOf, Set.mem_univ, true_and_iff, Prod.ext_iff]
+      simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_setOf, Set.mem_univ, true_and_iff,
+        Prod.ext_iff]
       refine' ⟨⟨⟨p₁, left_mem_affineSpan_pair ℝ _ _⟩, p₂ -ᵥ p₁⟩,
         ⟨SameRay.rfl, vsub_ne_zero.2 hp₁p₂.symm⟩, _⟩
       simp
     have hp₃p₄s : (p₃, p₅, p₄) ∈ s := by
-      simp_rw [Set.mem_image, Set.mem_prod, Set.mem_setOf, Set.mem_univ, true_and_iff, Prod.ext_iff]
+      simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_setOf, Set.mem_univ, true_and_iff,
+        Prod.ext_iff]
       refine' ⟨⟨⟨p₃, hc.mem_affineSpan_of_mem_of_ne (Set.mem_insert _ _)
         (Set.mem_insert_of_mem _ (Set.mem_insert _ _))
         (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_insert _ _))) hp₁p₂⟩, p₄ -ᵥ p₃⟩,
@@ -807,7 +810,7 @@ theorem _root_.AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P
   have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) sp := by
     refine' ContinuousAt.continuousOn fun p hp => continuousAt_oangle _ _
     all_goals
-      simp_rw [Set.mem_image, Set.mem_setOf] at hp
+      simp_rw [sp, Set.mem_image, Set.mem_setOf] at hp
       obtain ⟨p', hp', rfl⟩ := hp
       dsimp only
       rintro rfl
@@ -815,7 +818,7 @@ theorem _root_.AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P
     · exact hp'.2.2 hp₂
   have hsp : ∀ p : P × P × P, p ∈ sp → ∡ p.1 p.2.1 p.2.2 ≠ 0 ∧ ∡ p.1 p.2.1 p.2.2 ≠ π := by
     intro p hp
-    simp_rw [Set.mem_image, Set.mem_setOf] at hp
+    simp_rw [sp, Set.mem_image, Set.mem_setOf] at hp
     obtain ⟨p', hp', rfl⟩ := hp
     dsimp only
     rw [oangle_ne_zero_and_ne_pi_iff_affineIndependent]

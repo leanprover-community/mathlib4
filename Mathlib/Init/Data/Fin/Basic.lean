@@ -9,18 +9,16 @@ import Mathlib.Init.Data.Nat.Notation
 # Theorems about equality in `Fin`.
 -/
 
-set_option autoImplicit true
-
 namespace Fin
 
-theorem eq_of_veq : ∀ {i j : Fin n}, i.val = j.val → i = j
-  | ⟨iv, ilt₁⟩, ⟨jv, jlt₁⟩, h => by cases h; rfl
+variable {n : ℕ} {i j : Fin n}
 
-theorem veq_of_eq : ∀ {i j : Fin n}, i = j → i.val = j.val
-  | ⟨_, _⟩, _, rfl => rfl
+@[deprecated eq_of_val_eq] theorem eq_of_veq : i.val = j.val → i = j := eq_of_val_eq -- 2024-02-15
+@[deprecated val_eq_of_eq] theorem veq_of_eq : i = j → i.val = j.val := val_eq_of_eq -- 2024-02-15
 
-theorem ne_of_vne {i j : Fin n} (h : i.val ≠ j.val) : i ≠ j := fun h' ↦ absurd (veq_of_eq h') h
-
-theorem vne_of_ne {i j : Fin n} (h : i ≠ j) : i.val ≠ j.val := fun h' ↦ absurd (eq_of_veq h') h
+-- These two aren't deprecated because `ne_of_val_ne` and `val_ne_of_ne`
+-- use `¬a = b` instead of `a ≠ b`. TODO: fix or rename in Lean core.
+theorem ne_of_vne (h : i.val ≠ j.val) : i ≠ j := ne_of_val_ne h
+theorem vne_of_ne (h : i ≠ j) : i.val ≠ j.val := val_ne_of_ne h
 
 end Fin

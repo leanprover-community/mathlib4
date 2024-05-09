@@ -1,11 +1,9 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
+Authors: Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Data.Set.Image
-import Mathlib.Order.Lattice
-import Mathlib.Order.Max
 
 #align_import order.directed from "leanprover-community/mathlib"@"ffde2d8a6e689149e44fd95fa862c23a57f8c780"
 
@@ -23,6 +21,11 @@ directed iff each pair of elements has a shared upper bound.
   unbundled relation classes such as `IsTotal`.
 * `ScottContinuous`: Predicate stating that a function between preorders preserves `IsLUB` on
   directed sets.
+
+## TODO
+
+Define connected orders (the transitive symmetric closure of `≤` is everything) and show that
+(co)directed orders are connected.
 
 ## References
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
@@ -53,21 +56,22 @@ def DirectedOn (s : Set α) :=
 variable {r r'}
 
 theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype.val : s → α) := by
-  simp [Directed, DirectedOn]; refine' ball_congr fun x _ => by simp [And.comm, and_assoc]
+  simp only [DirectedOn, Directed, Subtype.exists, exists_and_left, exists_prop, Subtype.forall]
+  exact forall₂_congr fun x _ => by simp [And.comm, and_assoc]
 #align directed_on_iff_directed directedOn_iff_directed
 
 alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
 #align directed_on.directed_coe DirectedOn.directed_val
 
 theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
-  simp_rw [Directed, DirectedOn, Set.forall_range_iff, Set.exists_range_iff]
+  simp_rw [Directed, DirectedOn, Set.forall_mem_range, Set.exists_range_iff]
 #align directed_on_range directedOn_range
 
--- porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
+-- Porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
 alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
 #align directed.directed_on_range Directed.directedOn_range
 
--- porting note: `attribute [protected]` doesn't work
+-- Porting note: `attribute [protected]` doesn't work
 -- attribute [protected] Directed.directedOn_range
 
 theorem directedOn_image {s : Set β} {f : β → α} :
@@ -307,6 +311,23 @@ theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] [Nontrivial β] : �
   let ⟨a, b, h⟩ := exists_lt_of_directed_ge βᵒᵈ
   ⟨b, a, h⟩
 #align exists_lt_of_directed_le exists_lt_of_directed_le
+
+variable {f : α → β} {s : Set α}
+
+-- TODO: Generalise the following two lemmas to connected orders
+
+/-- If `f` is monotone and antitone on a directed order, then `f` is constant. -/
+lemma constant_of_monotone_antitone [IsDirected α (· ≤ ·)] (hf : Monotone f) (hf' : Antitone f)
+    (a b : α) : f a = f b := by
+  obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
+  exact le_antisymm ((hf hac).trans $ hf' hbc) ((hf hbc).trans $ hf' hac)
+
+/-- If `f` is monotone and antitone on a directed set `s`, then `f` is constant on `s`. -/
+lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn f s)
+    (hs : DirectedOn (· ≤ ·) s) : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → f a = f b := by
+  rintro a ha b hb
+  obtain ⟨c, hc, hac, hbc⟩ := hs _ ha _ hb
+  exact le_antisymm ((hf ha hc hac).trans $ hf' hb hc hbc) ((hf hb hc hbc).trans $ hf' ha hc hac)
 
 end Preorder
 

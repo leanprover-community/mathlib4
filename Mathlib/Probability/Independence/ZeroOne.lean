@@ -21,6 +21,9 @@ is measurable with respect to the tail σ-algebra `limsup s atTop` has probabili
   σ-algebras `s` has probability 0 or 1.
 -/
 
+-- See https://github.com/leanprover-community/mathlib4/issues/12532
+-- This option is needed so often in this file that we set it for the whole file.
+set_option backward.synthInstance.canonInstances false
 
 open MeasureTheory MeasurableSpace
 
@@ -247,7 +250,7 @@ theorem kernel.indep_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIn
     rintro t ⟨a, ha⟩
     obtain ⟨b, hb⟩ : ∃ b, a < b := exists_gt a
     refine' ⟨b, fun c hc hct => _⟩
-    suffices : ∀ i ∈ t, i < c; exact lt_irrefl c (this c hct)
+    suffices ∀ i ∈ t, i < c from lt_irrefl c (this c hct)
     exact fun i hi => (ha hi).trans_lt (hb.trans_le hc)
   · exact Monotone.directed_le fun i j hij k hki => le_trans hki hij
   · exact fun n => ⟨n, le_rfl⟩
@@ -301,7 +304,7 @@ theorem kernel.indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIn
     rintro t ⟨a, ha⟩
     obtain ⟨b, hb⟩ : ∃ b, b < a := exists_lt a
     refine' ⟨b, fun c hc hct => _⟩
-    suffices : ∀ i ∈ t, c < i; exact lt_irrefl c (this c hct)
+    suffices ∀ i ∈ t, c < i from lt_irrefl c (this c hct)
     exact fun i hi => hc.trans_lt (hb.trans_le (ha hi))
   · exact Antitone.directed_le fun _ _ ↦ Set.Ici_subset_Ici.2
   · exact fun n => ⟨n, le_rfl⟩

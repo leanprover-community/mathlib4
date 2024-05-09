@@ -148,8 +148,8 @@ def BlankRel.above {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ 
   refine'
     if hl : l₁.length ≤ l₂.length then ⟨l₂, Or.elim h id fun h' ↦ _, BlankExtends.refl _⟩
     else ⟨l₁, BlankExtends.refl _, Or.elim h (fun h' ↦ _) id⟩
-  exact (BlankExtends.refl _).above_of_le h' hl
-  exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
+  · exact (BlankExtends.refl _).above_of_le h' hl
+  · exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
 #align turing.blank_rel.above Turing.BlankRel.above
 
 /-- Given two `BlankRel` lists, there exists (constructively) a common meet. -/
@@ -158,8 +158,8 @@ def BlankRel.below {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ 
   refine'
     if hl : l₁.length ≤ l₂.length then ⟨l₁, BlankExtends.refl _, Or.elim h id fun h' ↦ _⟩
     else ⟨l₂, Or.elim h (fun h' ↦ _) id, BlankExtends.refl _⟩
-  exact (BlankExtends.refl _).above_of_le h' hl
-  exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
+  · exact (BlankExtends.refl _).above_of_le h' hl
+  · exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
 #align turing.blank_rel.below Turing.BlankRel.below
 
 theorem BlankRel.equivalence (Γ) [Inhabited Γ] : Equivalence (@BlankRel Γ _) :=
@@ -188,8 +188,8 @@ instance ListBlank.hasEmptyc {Γ} [Inhabited Γ] : EmptyCollection (ListBlank Γ
 
 /-- A modified version of `Quotient.liftOn'` specialized for `ListBlank`, with the stronger
 precondition `BlankExtends` instead of `BlankRel`. -/
-@[reducible]  -- Porting note: Removed `@[elab_as_elim]`
-protected def ListBlank.liftOn {Γ} [Inhabited Γ] {α} (l : ListBlank Γ) (f : List Γ → α)
+-- Porting note: Removed `@[elab_as_elim]`
+protected abbrev ListBlank.liftOn {Γ} [Inhabited Γ] {α} (l : ListBlank Γ) (f : List Γ → α)
     (H : ∀ a b, BlankExtends a b → f a = f b) : α :=
   l.liftOn' f <| by rintro a b (h | h) <;> [exact H _ _ h; exact (H _ _ h).symm]
 #align turing.list_blank.lift_on Turing.ListBlank.liftOn
@@ -358,7 +358,7 @@ instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : Inhabited (PointedMap Γ Γ')
 instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : CoeFun (PointedMap Γ Γ') fun _ ↦ Γ → Γ' :=
   ⟨PointedMap.f⟩
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem PointedMap.mk_val {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : Γ → Γ') (pt) :
     (PointedMap.mk f pt : Γ → Γ') = f :=
   rfl
@@ -471,7 +471,8 @@ def ListBlank.bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ) (f
   apply l.liftOn (fun l ↦ ListBlank.mk (List.bind l f))
   rintro l _ ⟨i, rfl⟩; cases' hf with n e; refine' Quotient.sound' (Or.inl ⟨i * n, _⟩)
   rw [List.append_bind, mul_comm]; congr
-  induction' i with i IH; rfl
+  induction' i with i IH
+  · rfl
   simp only [IH, e, List.replicate_add, Nat.mul_succ, add_comm, List.replicate_succ, List.cons_bind]
 #align turing.list_blank.bind Turing.ListBlank.bind
 
@@ -633,7 +634,7 @@ theorem Tape.move_left_nth {Γ} [Inhabited Γ] :
   | ⟨_, L, _⟩, 0 => (ListBlank.nth_zero _).symm
   | ⟨a, L, R⟩, 1 => (ListBlank.nth_zero _).trans (ListBlank.head_cons _ _)
   | ⟨a, L, R⟩, (n + 1 : ℕ) + 1 => by
-    rw [add_sub_cancel]
+    rw [add_sub_cancel_right]
     change (R.cons a).nth (n + 1) = R.nth n
     rw [ListBlank.nth_succ, ListBlank.tail_cons]
 #align turing.tape.move_left_nth Turing.Tape.move_left_nth
@@ -642,7 +643,7 @@ theorem Tape.move_left_nth {Γ} [Inhabited Γ] :
 theorem Tape.move_right_nth {Γ} [Inhabited Γ] (T : Tape Γ) (i : ℤ) :
     (T.move Dir.right).nth i = T.nth (i + 1) := by
   conv => rhs; rw [← T.move_right_left]
-  rw [Tape.move_left_nth, add_sub_cancel]
+  rw [Tape.move_left_nth, add_sub_cancel_right]
 #align turing.tape.move_right_nth Turing.Tape.move_right_nth
 
 @[simp]
@@ -1015,10 +1016,10 @@ set_option linter.uppercaseLean3 false
 
 section
 
--- type of "labels" or TM states
+-- type of tape symbols
 variable (Γ : Type*) [Inhabited Γ]
 
--- type of tape symbols
+-- type of "labels" or TM states
 variable (Λ : Type*) [Inhabited Λ]
 
 /-- A Turing machine "statement" is just a command to either move
@@ -1028,7 +1029,7 @@ inductive Stmt
   | write : Γ → Stmt
 #align turing.TM0.stmt Turing.TM0.Stmt
 
-local notation "Stmt₀" => Stmt Γ  -- Porting note: Added this to clean up types.
+local notation "Stmt₀" => Stmt Γ  -- Porting note (#10750): added this to clean up types.
 
 instance Stmt.inhabited : Inhabited Stmt₀ :=
   ⟨Stmt.write default⟩
@@ -1048,7 +1049,7 @@ def Machine [Inhabited Λ] :=
   Λ → Γ → Option (Λ × Stmt₀)
 #align turing.TM0.machine Turing.TM0.Machine
 
-local notation "Machine₀" => Machine Γ Λ  -- Porting note: Added this to clean up types.
+local notation "Machine₀" => Machine Γ Λ  -- Porting note (#10750): added this to clean up types.
 
 instance Machine.inhabited : Inhabited Machine₀ := by
   unfold Machine; infer_instance
@@ -1064,7 +1065,7 @@ structure Cfg where
   Tape : Tape Γ
 #align turing.TM0.cfg Turing.TM0.Cfg
 
-local notation "Cfg₀" => Cfg Γ Λ  -- Porting note: Added this to clean up types.
+local notation "Cfg₀" => Cfg Γ Λ  -- Porting note (#10750): added this to clean up types.
 
 instance Cfg.inhabited : Inhabited Cfg₀ :=
   ⟨⟨default, default⟩⟩
@@ -1123,11 +1124,8 @@ end
 section
 
 variable {Γ : Type*} [Inhabited Γ]
-
 variable {Γ' : Type*} [Inhabited Γ']
-
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {Λ' : Type*} [Inhabited Λ']
 
 /-- Map a TM statement across a function. This does nothing to move statements and maps the write
@@ -1253,7 +1251,7 @@ inductive Stmt
   | halt : Stmt
 #align turing.TM1.stmt Turing.TM1.Stmt
 
-local notation "Stmt₁" => Stmt Γ Λ σ  -- Porting note: Added this to clean up types.
+local notation "Stmt₁" => Stmt Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
 open Stmt
 
@@ -1269,7 +1267,7 @@ structure Cfg where
   Tape : Tape Γ
 #align turing.TM1.cfg Turing.TM1.Cfg
 
-local notation "Cfg₁" => Cfg Γ Λ σ  -- Porting note: Added this to clean up types.
+local notation "Cfg₁" => Cfg Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
 instance Cfg.inhabited [Inhabited σ] : Inhabited Cfg₁ :=
   ⟨⟨default, default, default⟩⟩
@@ -1304,7 +1302,7 @@ def SupportsStmt (S : Finset Λ) : Stmt₁ → Prop
   | halt => True
 #align turing.TM1.supports_stmt Turing.TM1.SupportsStmt
 
-open Classical
+open scoped Classical
 
 /-- The subterm closure of a statement. -/
 noncomputable def stmts₁ : Stmt₁ → Finset Stmt₁
@@ -1438,9 +1436,7 @@ set_option linter.uppercaseLean3 false
 section
 
 variable {Γ : Type*} [Inhabited Γ]
-
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => TM1.Stmt Γ Λ σ
@@ -1463,7 +1459,7 @@ def Λ' (M : Λ → TM1.Stmt Γ Λ σ) :=
   Option Stmt₁ × σ
 #align turing.TM1to0.Λ' Turing.TM1to0.Λ'
 
-local notation "Λ'₁₀" => Λ' M -- Porting note: Added this to clean up types.
+local notation "Λ'₁₀" => Λ' M -- Porting note (#10750): added this to clean up types.
 
 instance : Inhabited Λ'₁₀ :=
   ⟨(some (M default), default)⟩
@@ -1528,7 +1524,7 @@ noncomputable def trStmts (S : Finset Λ) : Finset Λ'₁₀ :=
   (TM1.stmts M S) ×ˢ Finset.univ
 #align turing.TM1to0.tr_stmts Turing.TM1to0.trStmts
 
-open Classical
+open scoped Classical
 
 attribute [local simp] TM1.stmts₁_self
 
@@ -1616,22 +1612,19 @@ section
 
 variable {Γ : Type*} [Inhabited Γ]
 
-theorem exists_enc_dec [Fintype Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ),
+theorem exists_enc_dec [Finite Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ),
     enc default = Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
-  letI := Classical.decEq Γ
-  let n := Fintype.card Γ
-  obtain ⟨F⟩ := Fintype.truncEquivFin Γ
+  rcases Finite.exists_equiv_fin Γ with ⟨n, ⟨e⟩⟩
+  letI : DecidableEq Γ := e.decidableEq
   let G : Fin n ↪ Fin n → Bool :=
     ⟨fun a b ↦ a = b, fun a b h ↦
       Bool.of_decide_true <| (congr_fun h b).trans <| Bool.decide_true rfl⟩
-  let H := (F.toEmbedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
-  classical
-    let enc := H.setValue default (Vector.replicate n false)
-    exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
+  let H := (e.toEmbedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
+  let enc := H.setValue default (Vector.replicate n false)
+  exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
 #align turing.TM1to1.exists_enc_dec Turing.TM1to1.exists_enc_dec
 
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => Stmt Γ Λ σ
@@ -1644,7 +1637,7 @@ inductive Λ'
   | write : Γ → Stmt₁ → Λ'
 #align turing.TM1to1.Λ' Turing.TM1to1.Λ'
 
-local notation "Λ'₁" => @Λ' Γ Λ σ  -- Porting note: Added this to clean up types.
+local notation "Λ'₁" => @Λ' Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
 instance : Inhabited Λ'₁ :=
   ⟨Λ'.normal default⟩
@@ -1668,7 +1661,7 @@ def move (d : Dir) (q : Stmt'₁) : Stmt'₁ :=
   (Stmt.move d)^[n] q
 #align turing.TM1to1.move Turing.TM1to1.move
 
-local notation "moveₙ" => @move Γ Λ σ n  -- Porting note: Added this to clean up types.
+local notation "moveₙ" => @move Γ Λ σ n  -- Porting note (#10750): added this to clean up types.
 
 /-- To read a symbol from the tape, we use `readAux` to traverse the symbol,
 then return to the original position with `n` moves to the left. -/
@@ -1801,7 +1794,7 @@ theorem stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
   suffices ∀ {L' R'} (l₁ l₂ l₂' : List Bool) (_ : l₂'.length = l₂.length),
       stepAux (write l₂ q) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂' R')) =
       stepAux q v (Tape.mk' (L'.append (List.reverseAux l₂ l₁)) R') by
-    refine' this [] _ _ ((enc b).2.trans (enc a).2.symm)
+    exact this [] _ _ ((enc b).2.trans (enc a).2.symm)
   clear a b L R
   intro L' R' l₁ l₂ l₂' e
   induction' l₂ with a l₂ IH generalizing l₁ l₂'
@@ -1877,7 +1870,7 @@ theorem tr_respects {enc₀} :
       simp only [trNormal, stepAux_read dec enc0 encdec]
       apply IH
     | branch p q₁ q₂ IH₁ IH₂ =>
-      simp only [trNormal, stepAux_read dec enc0 encdec, stepAux]
+      simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, Tape.mk'_head]
       cases p R.head v <;> [apply IH₂; apply IH₁]
     | goto l =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, trCfg, trTape_mk']
@@ -1888,7 +1881,7 @@ theorem tr_respects {enc₀} :
       apply ReflTransGen.refl
 #align turing.TM1to1.tr_respects Turing.TM1to1.tr_respects
 
-open Classical
+open scoped Classical
 
 variable [Fintype Γ]
 
@@ -1936,7 +1929,7 @@ theorem tr_supports {S : Finset Λ} (ss : Supports M S) : Supports (tr enc dec M
     | load a q IH =>
       unfold writes at hw ⊢
       replace IH := IH hs hw
-      refine' ⟨supportsStmt_read _ fun _ ↦ IH.1, IH.2⟩
+      exact ⟨supportsStmt_read _ fun _ ↦ IH.1, IH.2⟩
     | branch p q₁ q₂ IH₁ IH₂ =>
       unfold writes at hw ⊢
       simp only [Finset.mem_union] at hw ⊢
@@ -1979,7 +1972,6 @@ set_option linter.uppercaseLean3 false
 section
 
 variable {Γ : Type*} [Inhabited Γ]
-
 variable {Λ : Type*} [Inhabited Λ]
 
 /-- The machine states for a TM1 emulating a TM0 machine. States of the TM0 machine are embedded
@@ -1990,7 +1982,7 @@ inductive Λ'
   | act : TM0.Stmt Γ → Λ → Λ'
 #align turing.TM0to1.Λ' Turing.TM0to1.Λ'
 
-local notation "Λ'₁" => @Λ' Γ Λ  -- Porting note: Added this to clean up types.
+local notation "Λ'₁" => @Λ' Γ Λ  -- Porting note (#10750): added this to clean up types.
 
 instance : Inhabited Λ'₁ :=
   ⟨Λ'.normal default⟩
@@ -2112,7 +2104,7 @@ inductive Stmt
   | halt : Stmt
 #align turing.TM2.stmt Turing.TM2.Stmt
 
-local notation "Stmt₂" => Stmt Γ Λ σ  -- Porting note: Added this to clean up types.
+local notation "Stmt₂" => Stmt Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
 open Stmt
 
@@ -2129,7 +2121,7 @@ structure Cfg where
   stk : ∀ k, List (Γ k)
 #align turing.TM2.cfg Turing.TM2.Cfg
 
-local notation "Cfg₂" => Cfg Γ Λ σ  -- Porting note: Added this to clean up types.
+local notation "Cfg₂" => Cfg Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
 instance Cfg.inhabited [Inhabited σ] : Inhabited Cfg₂ :=
   ⟨⟨default, default, default⟩⟩
@@ -2172,7 +2164,7 @@ def SupportsStmt (S : Finset Λ) : Stmt₂ → Prop
   | halt => True
 #align turing.TM2.supports_stmt Turing.TM2.SupportsStmt
 
-open Classical
+open scoped Classical
 
 /-- The set of subtree statements in a statement. -/
 noncomputable def stmts₁ : Stmt₂ → Finset Stmt₂
@@ -2334,11 +2326,8 @@ theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option
 section
 
 variable {K : Type*} [DecidableEq K]
-
 variable {Γ : K → Type*}
-
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₂" => TM2.Stmt Γ Λ σ
@@ -2352,7 +2341,7 @@ def Γ' :=
   Bool × ∀ k, Option (Γ k)
 #align turing.TM2to1.Γ' Turing.TM2to1.Γ'
 
-local notation "Γ'₂₁" => @Γ' K Γ  -- Porting note: Added this to clean up types.
+local notation "Γ'₂₁" => @Γ' K Γ  -- Porting note (#10750): added this to clean up types.
 
 instance Γ'.inhabited : Inhabited Γ'₂₁ :=
   ⟨⟨false, fun _ ↦ none⟩⟩
@@ -2407,7 +2396,7 @@ inductive StAct (k : K)
   | pop : (σ → Option (Γ k) → σ) → StAct k
 #align turing.TM2to1.st_act Turing.TM2to1.StAct
 
-local notation "StAct₂" => @StAct K Γ σ  -- Porting note: Added this to clean up types.
+local notation "StAct₂" => @StAct K Γ σ  -- Porting note (#10750): added this to clean up types.
 
 instance StAct.inhabited {k : K} : Inhabited (StAct₂ k) :=
   ⟨StAct.peek fun s _ ↦ s⟩
@@ -2472,7 +2461,7 @@ inductive Λ'
   | ret : Stmt₂ → Λ'
 #align turing.TM2to1.Λ' Turing.TM2to1.Λ'
 
-local notation "Λ'₂₁" => @Λ' K Γ Λ σ  -- Porting note: Added this to clean up types.
+local notation "Λ'₂₁" => @Λ' K Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
 open Λ'
 
@@ -2529,7 +2518,7 @@ theorem trNormal_run {k : K} (s : StAct₂ k) (q : Stmt₂) :
   cases s <;> rfl
 #align turing.TM2to1.tr_normal_run Turing.TM2to1.trNormal_run
 
-open Classical
+open scoped Classical
 
 /-- The set of machine states accessible from an initial TM2 statement. -/
 noncomputable def trStmts₁ : Stmt₂ → Finset Λ'₂₁
@@ -2662,7 +2651,9 @@ theorem tr_respects_aux₁ {k} (o q v) {S : List (Γ k)} {L : ListBlank (∀ k, 
   rw [iterate_succ_apply'];
   simp only [TM1.step, TM1.stepAux, tr, Tape.mk'_nth_nat, Tape.move_right_n_head,
     addBottom_nth_snd, Option.mem_def]
-  rw [stk_nth_val _ hL, List.get?_eq_get]; rfl; rwa [List.length_reverse]
+  rw [stk_nth_val _ hL, List.get?_eq_get]
+  · rfl
+  · rwa [List.length_reverse]
 #align turing.TM2to1.tr_respects_aux₁ Turing.TM2to1.tr_respects_aux₁
 
 theorem tr_respects_aux₃ {q v} {L : ListBlank (∀ k, Option (Γ k))} (n) : Reaches₀ (TM1.step (tr M))
@@ -2700,11 +2691,10 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
 attribute [local simp] Respects TM2.step TM2.stepAux trNormal
 
 theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
-  -- Porting note: `simp only`s are required for beta reductions.
+  -- Porting note(#12129): additional beta reduction needed
   intro c₁ c₂ h
   cases' h with l v S L hT
   cases' l with l; · constructor
-  simp only [TM2.step, Respects, Option.map_some']
   rsuffices ⟨b, c, r⟩ : ∃ b, _ ∧ Reaches (TM1.step (tr M)) _ _
   · exact ⟨b, c, TransGen.head' rfl r⟩
   simp only [tr]
@@ -2715,7 +2705,7 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   | H₂ a _ IH => exact IH _ hT
   | H₃ p q₁ q₂ IH₁ IH₂ =>
     unfold TM2.stepAux trNormal TM1.stepAux
-    simp only []
+    beta_reduce
     cases p v <;> [exact IH₂ _ hT; exact IH₁ _ hT]
   | H₄ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
   | H₅ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩

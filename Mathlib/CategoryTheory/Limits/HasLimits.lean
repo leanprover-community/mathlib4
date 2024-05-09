@@ -67,15 +67,13 @@ namespace CategoryTheory.Limits
 universe v₁ u₁ v₂ u₂ v₃ u₃ v v' v'' u u' u''
 
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
-
 variable {C : Type u} [Category.{v} C]
-
 variable {F : J ⥤ C}
 
 section Limit
 
 /-- `LimitCone F` contains a cone over `F` together with the information that it is a limit. -/
--- @[nolint has_nonempty_instance] -- Porting note: removed
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): removed; linter not ported yet
 structure LimitCone (F : J ⥤ C) where
   /-- The cone itself -/
   cone : Cone F
@@ -317,17 +315,7 @@ theorem limit.lift_extend {F : J ⥤ C} [HasLimit F] (c : Cone F) {X : C} (f : X
 theorem hasLimitOfIso {F G : J ⥤ C} [HasLimit F] (α : F ≅ G) : HasLimit G :=
   HasLimit.mk
     { cone := (Cones.postcompose α.hom).obj (limit.cone F)
-      isLimit :=
-        { lift := fun s => limit.lift F ((Cones.postcompose α.inv).obj s)
-          fac := fun s j => by
-            rw [Cones.postcompose_obj_π, NatTrans.comp_app, limit.cone_π, ← Category.assoc,
-              limit.lift_π]
-            simp
-          uniq := fun s m w => by
-            apply limit.hom_ext; intro j
-            rw [limit.lift_π, Cones.postcompose_obj_π, NatTrans.comp_app, ← NatIso.app_inv,
-              Iso.eq_comp_inv]
-            simpa using w j } }
+      isLimit := (IsLimit.postcomposeHomEquiv _ _).symm (limit.isLimit F) }
 #align category_theory.limits.has_limit_of_iso CategoryTheory.Limits.hasLimitOfIso
 
 -- See the construction of limits from products and equalizers
@@ -424,7 +412,6 @@ theorem limit.lift_pre (c : Cone F) :
 #align category_theory.limits.limit.lift_pre CategoryTheory.Limits.limit.lift_pre
 
 variable {L : Type u₃} [Category.{v₃} L]
-
 variable (D : L ⥤ K) [HasLimit (D ⋙ E ⋙ F)]
 
 @[simp]
@@ -451,7 +438,6 @@ end Pre
 section Post
 
 variable {D : Type u'} [Category.{v'} D]
-
 variable (F) [HasLimit F] (G : C ⥤ D) [HasLimit (F ⋙ G)]
 
 /-- The canonical morphism from `G` applied to the limit of `F` to the limit of `F ⋙ G`.
@@ -594,7 +580,7 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim where
 #align category_theory.limits.const_lim_adj CategoryTheory.Limits.constLimAdj
 
 instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=
-  ⟨_, constLimAdj⟩
+  ⟨_, ⟨constLimAdj⟩⟩
 
 end LimFunctor
 
@@ -607,6 +593,37 @@ instance limMap_mono {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) [�
   ⟨fun {Z} u v h =>
     limit.hom_ext fun j => (cancel_mono (α.app j)).1 <| by simpa using h =≫ limit.π _ j⟩
 #align category_theory.limits.lim_map_mono CategoryTheory.Limits.limMap_mono
+
+section Adjunction
+
+variable {L : (J ⥤ C) ⥤ C} (adj : Functor.const _ ⊣ L)
+
+/- The fact that the existence of limits of shape `J` is equivalent to the existence
+of a right adjoint to the constant functor `C ⥤ (J ⥤ C)` is obtained in
+the file `Mathlib.CategoryTheory.Limits.ConeCategory`: see the lemma
+`hasLimitsOfShape_iff_isLeftAdjoint_const`. In the definitions below, given an
+adjunction `adj : Functor.const _ ⊣ (L : (J ⥤ C) ⥤ C)`, we directly construct
+a limit cone for any `F : J ⥤ C`. -/
+
+/-- The limit cone obtained from a right adjoint of the constant functor. -/
+@[simps]
+noncomputable def coneOfAdj (F : J ⥤ C) : Cone F where
+  pt := L.obj F
+  π := adj.counit.app F
+
+/-- The cones defined by `coneOfAdj` are limit cones. -/
+@[simps]
+def isLimitConeOfAdj (F : J ⥤ C) :
+    IsLimit (coneOfAdj adj F) where
+  lift s := adj.homEquiv _ _ s.π
+  fac s j := by
+    have eq := NatTrans.congr_app (adj.counit.naturality s.π) j
+    have eq' := NatTrans.congr_app (adj.left_triangle_components s.pt) j
+    dsimp at eq eq' ⊢
+    rw [Adjunction.homEquiv_unit, assoc, eq, reassoc_of% eq']
+  uniq s m hm := (adj.homEquiv _ _).symm.injective (by ext j; simpa using hm j)
+
+end Adjunction
 
 /-- We can transport limits of shape `J` along an equivalence `J ≌ J'`.
 -/
@@ -642,7 +659,7 @@ section Colimit
 
 /-- `ColimitCocone F` contains a cocone over `F` together with the information that it is a
     colimit. -/
--- @[nolint has_nonempty_instance] -- Porting note: removed
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): removed; linter not ported yet
 structure ColimitCocone (F : J ⥤ C) where
   /-- The cocone itself -/
   cocone : Cocone F
@@ -894,16 +911,7 @@ theorem colimit.desc_extend (F : J ⥤ C) [HasColimit F] (c : Cocone F) {X : C} 
 theorem hasColimitOfIso {F G : J ⥤ C} [HasColimit F] (α : G ≅ F) : HasColimit G :=
   HasColimit.mk
     { cocone := (Cocones.precompose α.hom).obj (colimit.cocone F)
-      isColimit :=
-        { desc := fun s => colimit.desc F ((Cocones.precompose α.inv).obj s)
-          fac := fun s j => by
-            rw [Cocones.precompose_obj_ι, NatTrans.comp_app, colimit.cocone_ι]
-            rw [Category.assoc, colimit.ι_desc, ← NatIso.app_hom, ← Iso.eq_inv_comp]; rfl
-          uniq := fun s m w => by
-            apply colimit.hom_ext; intro j
-            rw [colimit.ι_desc, Cocones.precompose_obj_ι, NatTrans.comp_app, ← NatIso.app_inv,
-              Iso.eq_inv_comp]
-            simpa using w j } }
+      isColimit := (IsColimit.precomposeHomEquiv _ _).symm (colimit.isColimit F) }
 #align category_theory.limits.has_colimit_of_iso CategoryTheory.Limits.hasColimitOfIso
 
 /-- If a functor `G` has the same collection of cocones as a functor `F`
@@ -996,7 +1004,6 @@ theorem colimit.pre_desc (c : Cocone F) :
 #align category_theory.limits.colimit.pre_desc CategoryTheory.Limits.colimit.pre_desc
 
 variable {L : Type u₃} [Category.{v₃} L]
-
 variable (D : L ⥤ K) [HasColimit (D ⋙ E ⋙ F)]
 
 @[simp]
@@ -1027,7 +1034,6 @@ end Pre
 section Post
 
 variable {D : Type u'} [Category.{v'} D]
-
 variable (F) [HasColimit F] (G : C ⥤ D) [HasColimit (F ⋙ G)]
 
 /-- The canonical morphism from `G` applied to the colimit of `F ⋙ G`
@@ -1178,7 +1184,7 @@ def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J where
 #align category_theory.limits.colim_const_adj CategoryTheory.Limits.colimConstAdj
 
 instance : IsLeftAdjoint (colim : (J ⥤ C) ⥤ C) :=
-  ⟨_, colimConstAdj⟩
+  ⟨_, ⟨colimConstAdj⟩⟩
 
 end ColimFunctor
 

@@ -24,9 +24,7 @@ noncomputable section
 universe u v v' w
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'} {ι : Type w}
-
 variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
-
 variable [Module R M] [Module R M'] [Module R M₁]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
@@ -52,8 +50,8 @@ lemma rank_eq_zero_iff :
   · contrapose!
     rintro ⟨x, hx⟩
     rw [← Cardinal.one_le_iff_ne_zero]
-    have : LinearIndependent R (fun _ : Unit ↦ x)
-    · exact linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
+    have : LinearIndependent R (fun _ : Unit ↦ x) :=
+      linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
         hx _ H ((Finsupp.total_unique _ _ _).symm.trans hl))
     simpa using this.cardinal_lift_le_rank
   · intro h
@@ -67,10 +65,9 @@ lemma rank_eq_zero_iff :
     simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
 variable [Nontrivial R]
-
 variable [NoZeroSMulDivisors R M]
 
-theorem rank_zero_iff_forall_zero [NoZeroSMulDivisors R M] :
+theorem rank_zero_iff_forall_zero :
     Module.rank R M = 0 ↔ ∀ x : M, x = 0 := by
   simp_rw [rank_eq_zero_iff, smul_eq_zero, and_or_left, not_and_self_iff, false_or,
     exists_and_right, and_iff_right (exists_ne (0 : R))]
@@ -96,7 +93,7 @@ lemma rank_eq_zero_iff_isTorsion {R M} [CommRing R] [IsDomain R] [AddCommGroup M
   rw [Module.IsTorsion, rank_eq_zero_iff]
   simp [mem_nonZeroDivisors_iff_ne_zero]
 
-theorem rank_pos [NoZeroSMulDivisors R M] [Nontrivial M] : 0 < Module.rank R M :=
+theorem rank_pos [Nontrivial M] : 0 < Module.rank R M :=
   rank_pos_iff_nontrivial.mpr ‹_›
 #align rank_pos rank_pos
 
@@ -205,14 +202,62 @@ theorem setFinite [Module.Finite R M] {b : Set M}
 
 end LinearIndependent
 
-@[deprecated]
+@[deprecated (since := "2023-12-27")]
 alias cardinal_mk_le_finrank_of_linearIndependent := LinearIndependent.cardinal_mk_le_finrank
-@[deprecated]
+@[deprecated (since := "2023-12-27")]
 alias fintype_card_le_finrank_of_linearIndependent := LinearIndependent.fintype_card_le_finrank
-@[deprecated]
+@[deprecated (since := "2023-12-27")]
 alias finset_card_le_finrank_of_linearIndependent := LinearIndependent.finset_card_le_finrank
-@[deprecated]
+@[deprecated (since := "2023-12-27")]
 alias Module.Finite.lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finite
+
+lemma exists_set_linearIndependent_of_lt_rank {n : Cardinal} (hn : n < Module.rank R M) :
+    ∃ s : Set M, #s = n ∧ LinearIndependent R ((↑) : s → M) := by
+  obtain ⟨⟨s, hs⟩, hs'⟩ := exists_lt_of_lt_ciSup' (hn.trans_eq (Module.rank_def R M))
+  obtain ⟨t, ht, ht'⟩ := le_mk_iff_exists_subset.mp hs'.le
+  exact ⟨t, ht', .mono ht hs⟩
+
+lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
+    ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
+  have := nonempty_linearIndependent_set
+  cases' hn.eq_or_lt with h h
+  · obtain ⟨⟨s, hs⟩, hs'⟩ := Cardinal.exists_eq_natCast_of_iSup_eq _
+      (Cardinal.bddAbove_range.{v, v} _) _ (h.trans (Module.rank_def R M)).symm
+    have : Finite s := lt_aleph0_iff_finite.mp (hs' ▸ nat_lt_aleph0 n)
+    cases nonempty_fintype s
+    exact ⟨s.toFinset, by simpa using hs', by convert hs <;> exact Set.mem_toFinset⟩
+  · obtain ⟨s, hs, hs'⟩ := exists_set_linearIndependent_of_lt_rank h
+    have : Finite s := lt_aleph0_iff_finite.mp (hs ▸ nat_lt_aleph0 n)
+    cases nonempty_fintype s
+    exact ⟨s.toFinset, by simpa using hs, by convert hs' <;> exact Set.mem_toFinset⟩
+
+lemma exists_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
+    ∃ f : Fin n → M, LinearIndependent R f :=
+  have ⟨_, hs, hs'⟩ := exists_finset_linearIndependent_of_le_rank hn
+  ⟨_, (linearIndependent_equiv (Finset.equivFinOfCardEq hs).symm).mpr hs'⟩
+
+lemma natCast_le_rank_iff {n : ℕ} :
+    n ≤ Module.rank R M ↔ ∃ f : Fin n → M, LinearIndependent R f :=
+  ⟨exists_linearIndependent_of_le_rank,
+    fun H ↦ by simpa using H.choose_spec.cardinal_lift_le_rank⟩
+
+lemma natCast_le_rank_iff_finset {n : ℕ} :
+    n ≤ Module.rank R M ↔ ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) :=
+  ⟨exists_finset_linearIndependent_of_le_rank,
+    fun ⟨s, h₁, h₂⟩ ↦ by simpa [h₁] using h₂.cardinal_le_rank⟩
+
+lemma exists_finset_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finrank R M) :
+    ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
+  by_cases h : finrank R M = 0
+  · rw [le_zero_iff.mp (hn.trans_eq h)]
+    exact ⟨∅, rfl, by convert linearIndependent_empty R M using 2 <;> aesop⟩
+  exact exists_finset_linearIndependent_of_le_rank
+    ((natCast_le.mpr hn).trans_eq (cast_toNat_of_lt_aleph0 (toNat_ne_zero.mp h).2))
+
+lemma exists_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finrank R M) :
+    ∃ f : Fin n → M, LinearIndependent R f :=
+  have ⟨_, hs, hs'⟩ := exists_finset_linearIndependent_of_le_finrank hn
+  ⟨_, (linearIndependent_equiv (Finset.equivFinOfCardEq hs).symm).mpr hs'⟩
 
 variable [Module.Finite R M]
 
@@ -309,15 +354,16 @@ theorem Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
   -- After this, it's a matter of verifying the properties,
   -- based on the corresponding properties for `g`.
   · rw [sum_map, Embedding.coeFn_mk] at gsum
-    simp_rw [← t.sum_erase_add _ x₀_mem, if_pos, neg_smul, sum_smul,
+    simp_rw [f, ← t.sum_erase_add _ x₀_mem, if_pos, neg_smul, sum_smul,
              ← sub_eq_add_neg, ← sum_sub_distrib, ← gsum, smul_sub]
     refine sum_congr rfl fun x x_mem ↦ ?_
     rw [if_neg (mem_erase.mp x_mem).1]
-  · simp_rw [← t.sum_erase_add _ x₀_mem, if_pos, add_neg_eq_zero]
+  · simp_rw [f, ← t.sum_erase_add _ x₀_mem, if_pos, add_neg_eq_zero]
     exact sum_congr rfl fun x x_mem ↦ if_neg (mem_erase.mp x_mem).1
   · obtain ⟨x₁, x₁_mem', rfl⟩ := Finset.mem_map.mp x₁_mem
     have := mem_erase.mp x₁_mem'
-    exact ⟨x₁, by simpa only [Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, if_neg this.1]⟩
+    exact ⟨x₁, by
+      simpa only [f, Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, if_neg this.1]⟩
 #align finite_dimensional.exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
 
 end
@@ -384,7 +430,7 @@ theorem FiniteDimensional.finrank_pos [NoZeroSMulDivisors R M] [h : Nontrivial M
 
 /-- See `FiniteDimensional.finrank_zero_iff`
   for the stronger version with `NoZeroSMulDivisors R M`. -/
-theorem FiniteDimensional.finrank_eq_zero_iff [Module.Finite R M] :
+theorem FiniteDimensional.finrank_eq_zero_iff :
     finrank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
   rw [← rank_eq_zero_iff (R := R), ← finrank_eq_rank]
   norm_cast
@@ -437,6 +483,12 @@ theorem Submodule.finrank_eq_zero [StrongRankCondition R] [NoZeroSMulDivisors R 
     finrank R S = 0 ↔ S = ⊥ := by
   rw [← Submodule.rank_eq_zero, ← finrank_eq_rank, ← @Nat.cast_zero Cardinal, Cardinal.natCast_inj]
 #align finrank_eq_zero Submodule.finrank_eq_zero
+
+@[simp]
+lemma Submodule.one_le_finrank_iff [StrongRankCondition R] [NoZeroSMulDivisors R M]
+    {S : Submodule R M} [Module.Finite R S] :
+    1 ≤ finrank R S ↔ S ≠ ⊥ := by
+  simp [← not_iff_not]
 
 variable [Module.Free R M]
 

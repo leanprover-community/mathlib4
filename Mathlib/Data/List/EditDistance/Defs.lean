@@ -3,7 +3,8 @@ Copyright (c) 2023 Kim Liesinger. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Liesinger
 -/
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Group.Defs
+import Batteries.Data.List.Lemmas
 
 /-!
 # Levenshtein distances
@@ -47,7 +48,7 @@ structure Cost (α β δ : Type*) where
   delete : α → δ
   /-- Cost in insert an element into a list. -/
   insert : β → δ
-  /-- Cost to substitute one elemenet for another in a list. -/
+  /-- Cost to substitute one element for another in a list. -/
   substitute : α → β → δ
 
 /-- The default cost structure, for which all operations cost `1`. -/
@@ -205,7 +206,7 @@ theorem suffixLevenshtein_nil_nil : (suffixLevenshtein C [] []).1 = [0] := by
 
 -- Not sure if this belongs in the main `List` API, or can stay local.
 theorem List.eq_of_length_one (x : List α) (w : x.length = 1) :
-    have : 0 < x.length := (lt_of_lt_of_eq Nat.zero_lt_one w.symm)
+    have : 0 < x.length := lt_of_lt_of_eq Nat.zero_lt_one w.symm
     x = [x[0]] := by
   match x, w with
   | [r], _ => rfl
@@ -297,11 +298,3 @@ theorem levenshtein_cons_cons
         (min (C.insert y + levenshtein C (x :: xs) ys)
           (C.substitute x y + levenshtein C xs ys)) :=
   suffixLevenshtein_cons_cons_fst_get_zero _ _ _ _ _
-
-#guard
-  (suffixLevenshtein Levenshtein.defaultCost "kitten".toList "sitting".toList).1 =
-    [3, 3, 4, 5, 6, 6, 7]
-
-#guard levenshtein Levenshtein.defaultCost
-  "but our fish said, 'no! no!'".toList
-  "'put me down!' said the fish.".toList = 21

@@ -61,9 +61,7 @@ open IsLocalization Pointwise nonZeroDivisors
 section Defs
 
 variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
-
 variable [Algebra R P]
-
 variable (S)
 
 /-- A submodule `I` is a fractional ideal if `a I ⊆ R` for some `a ≠ 0`. -/
@@ -90,7 +88,6 @@ namespace FractionalIdeal
 open Set Submodule
 
 variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
-
 variable [Algebra R P] [loc : IsLocalization S P]
 
 /-- Map a fractional ideal `I` to a submodule by forgetting that `∃ a, a I ⊆ R`.
@@ -116,12 +113,12 @@ protected theorem isFractional (I : FractionalIdeal S P) : IsFractional S (I : S
 #align fractional_ideal.is_fractional FractionalIdeal.isFractional
 
 /-- An element of `S` such that `I.den • I = I.num`, see `FractionalIdeal.num` and
-`FractionalIdeal.den_mul_eq_num`. -/
+`FractionalIdeal.den_mul_self_eq_num`. -/
 noncomputable def den (I : FractionalIdeal S P) : S :=
   ⟨I.2.choose, I.2.choose_spec.1⟩
 
 /-- An ideal of `R` such that `I.den • I = I.num`, see `FractionalIdeal.den` and
-`FractionalIdeal.den_mul_eq_num`. -/
+`FractionalIdeal.den_mul_self_eq_num`. -/
 noncomputable def num (I : FractionalIdeal S P) : Ideal R :=
   (I.den • (I : Submodule R P)).comap (Algebra.linearMap R P)
 
@@ -208,7 +205,7 @@ theorem coe_mk (I : Submodule R P) (hI : IsFractional S I) :
   rfl
 #align fractional_ideal.coe_mk FractionalIdeal.coe_mk
 
--- Porting note: added this lemma because Lean can't see through the composition of coercions.
+-- Porting note (#10756): added lemma because Lean can't see through the composition of coercions.
 theorem coeToSet_coeToSubmodule (I : FractionalIdeal S P) :
     ((I : Submodule R P) : Set P) = I :=
   rfl
@@ -525,7 +522,7 @@ theorem _root_.IsFractional.nsmul {I : Submodule R P} :
     simp
   | n + 1, h => by
     rw [succ_nsmul]
-    exact h.sup (IsFractional.nsmul n h)
+    exact (IsFractional.nsmul n h).sup h
 #align is_fractional.nsmul IsFractional.nsmul
 
 instance : SMul ℕ (FractionalIdeal S P) where smul n I := ⟨n • ↑I, I.isFractional.nsmul n⟩
@@ -554,7 +551,7 @@ theorem _root_.IsFractional.mul {I J : Submodule R P} :
 theorem _root_.IsFractional.pow {I : Submodule R P} (h : IsFractional S I) :
     ∀ n : ℕ, IsFractional S (I ^ n : Submodule R P)
   | 0 => isFractional_of_le_one _ (pow_zero _).le
-  | n + 1 => (pow_succ I n).symm ▸ h.mul (IsFractional.pow h n)
+  | n + 1 => (pow_succ I n).symm ▸ (IsFractional.pow h n).mul h
 #align is_fractional.pow IsFractional.pow
 
 /-- `FractionalIdeal.mul` is the product of two fractional ideals,
@@ -635,14 +632,14 @@ protected theorem mul_induction_on {I J : FractionalIdeal S P} {C : P → Prop} 
 instance : NatCast (FractionalIdeal S P) :=
   ⟨Nat.unaryCast⟩
 
-theorem coe_nat_cast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n :=
+theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n :=
   show ((n.unaryCast : FractionalIdeal S P) : Submodule R P) = n
   by induction n <;> simp [*, Nat.unaryCast]
-#align fractional_ideal.coe_nat_cast FractionalIdeal.coe_nat_cast
+#align fractional_ideal.coe_nat_cast FractionalIdeal.coe_natCast
 
 instance commSemiring : CommSemiring (FractionalIdeal S P) :=
   Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
-    (fun _ _ => coe_nsmul _ _) coe_pow coe_nat_cast
+    (fun _ _ => coe_nsmul _ _) coe_pow coe_natCast
 
 end Semiring
 

@@ -32,11 +32,12 @@ variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Set α → Filter β}
 theorem lift_top (g : Set α → Filter β) : (⊤ : Filter α).lift g = g univ := by simp [Filter.lift]
 #align filter.lift_top Filter.lift_top
 
--- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`
+-- Porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`
 /-- If `(p : ι → Prop, s : ι → Set α)` is a basis of a filter `f`, `g` is a monotone function
 `Set α → Filter γ`, and for each `i`, `(pg : β i → Prop, sg : β i → Set α)` is a basis
-of the filter `g (s i)`, then `(λ (i : ι) (x : β i), p i ∧ pg i x, λ (i : ι) (x : β i), sg i x)`
-is a basis of the filter `f.lift g`.
+of the filter `g (s i)`, then
+`(fun (i : ι) (x : β i) ↦ p i ∧ pg i x, fun (i : ι) (x : β i) ↦ sg i x)` is a basis
+of the filter `f.lift g`.
 
 This basis is parametrized by `i : ι` and `x : β i`, so in order to formulate this fact using
 `Filter.HasBasis` one has to use `Σ i, β i` as the index type, see `Filter.HasBasis.lift`.
@@ -54,7 +55,8 @@ theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Fi
 
 /-- If `(p : ι → Prop, s : ι → Set α)` is a basis of a filter `f`, `g` is a monotone function
 `Set α → Filter γ`, and for each `i`, `(pg : β i → Prop, sg : β i → Set α)` is a basis
-of the filter `g (s i)`, then `(λ (i : ι) (x : β i), p i ∧ pg i x, λ (i : ι) (x : β i), sg i x)`
+of the filter `g (s i)`, then
+`(fun (i : ι) (x : β i) ↦ p i ∧ pg i x, fun (i : ι) (x : β i) ↦ sg i x)`
 is a basis of the filter `f.lift g`.
 
 This basis is parametrized by `i : ι` and `x : β i`, so in order to formulate this fact using
@@ -173,7 +175,7 @@ theorem monotone_lift [Preorder γ] {f : γ → Filter α} {g : γ → Set α �
 #align filter.monotone_lift Filter.monotone_lift
 
 theorem lift_neBot_iff (hm : Monotone g) : (NeBot (f.lift g)) ↔ ∀ s ∈ f, NeBot (g s) := by
-  simp only [neBot_iff, Ne.def, ← empty_mem_iff_bot, mem_lift_sets hm, not_exists, not_and]
+  simp only [neBot_iff, Ne, ← empty_mem_iff_bot, mem_lift_sets hm, not_exists, not_and]
 #align filter.lift_ne_bot_iff Filter.lift_neBot_iff
 
 @[simp]

@@ -26,7 +26,6 @@ multiple of `a` as the multiples of some fixed number (aka `ceilRoot n a`). See
 ## TODO
 
 * `norm_num` extension
-* Computable `csimp` version
 -/
 
 open Finsupp
@@ -47,8 +46,14 @@ we special-case the following values:
 * `floorRoot 0 a = 0`
 * `floorRoot n 0 = 0`
 -/
-noncomputable def floorRoot (n a : ℕ) : ℕ :=
-  if n = 0 ∨ a = 0 then 0 else (a.factorization ⌊/⌋ n).prod (· ^ ·)
+def floorRoot (n a : ℕ) : ℕ :=
+  if n = 0 ∨ a = 0 then 0 else a.factorization.prod fun p k ↦ p ^ (k / n)
+
+/-- The RHS is a noncomputable version of `Nat.floorRoot` with better order theoretical
+properties. -/
+lemma floorRoot_def :
+    floorRoot n a = if n = 0 ∨ a = 0 then 0 else (a.factorization ⌊/⌋ n).prod (· ^ ·) := by
+  unfold floorRoot; split_ifs with h <;> simp [Finsupp.floorDiv_def, prod_mapRange_index pow_zero]
 
 @[simp] lemma floorRoot_zero_left (a : ℕ) : floorRoot 0 a = 0 := by simp [floorRoot]
 @[simp] lemma floorRoot_zero_right (n : ℕ) : floorRoot n 0 = 0 := by simp [floorRoot]
@@ -57,7 +62,7 @@ noncomputable def floorRoot (n a : ℕ) : ℕ :=
 @[simp] lemma floorRoot_one_right (hn : n ≠ 0) : floorRoot n 1 = 1 := by simp [floorRoot, hn]
 
 @[simp] lemma floorRoot_pow_self (hn : n ≠ 0) (a : ℕ) : floorRoot n (a ^ n) = a := by
-  simp [floorRoot, pos_iff_ne_zero.2, hn]; split_ifs <;> simp [*]
+  simp [floorRoot_def, pos_iff_ne_zero.2, hn]; split_ifs <;> simp [*]
 
 lemma floorRoot_ne_zero : floorRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   simp (config := { contextual := true }) [floorRoot, not_imp_not, not_or]
@@ -67,7 +72,7 @@ lemma floorRoot_ne_zero : floorRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
 
 @[simp] lemma factorization_floorRoot (n a : ℕ) :
     (floorRoot n a).factorization = a.factorization ⌊/⌋ n := by
-  unfold floorRoot
+  rw [floorRoot_def]
   split_ifs with h
   · obtain rfl | rfl := h <;> simp
   refine prod_pow_factorization_eq_self fun p hp ↦ ?_
@@ -101,8 +106,16 @@ we special-case the following values:
 * `ceilRoot 0 a = 0` (this one is not strictly necessary)
 * `ceilRoot n 0 = 0`
 -/
-noncomputable def ceilRoot (n a : ℕ) : ℕ :=
-  if n = 0 ∨ a = 0 then 0 else (a.factorization ⌈/⌉ n).prod (· ^ ·)
+def ceilRoot (n a : ℕ) : ℕ :=
+  if n = 0 ∨ a = 0 then 0 else a.factorization.prod fun p k ↦ p ^ ((k + n - 1) / n)
+
+/-- The RHS is a noncomputable version of `Nat.ceilRoot` with better order theoretical
+properties. -/
+lemma ceilRoot_def :
+    ceilRoot n a = if n = 0 ∨ a = 0 then 0 else (a.factorization ⌈/⌉ n).prod (· ^ ·) := by
+  unfold ceilRoot
+  split_ifs with h <;>
+    simp [Finsupp.ceilDiv_def, prod_mapRange_index pow_zero, Nat.ceilDiv_eq_add_pred_div]
 
 @[simp] lemma ceilRoot_zero_left (a : ℕ) : ceilRoot 0 a = 0 := by simp [ceilRoot]
 @[simp] lemma ceilRoot_zero_right (n : ℕ) : ceilRoot n 0 = 0 := by simp [ceilRoot]
@@ -111,17 +124,17 @@ noncomputable def ceilRoot (n a : ℕ) : ℕ :=
 @[simp] lemma ceilRoot_one_right (hn : n ≠ 0) : ceilRoot n 1 = 1 := by simp [ceilRoot, hn]
 
 @[simp] lemma ceilRoot_pow_self (hn : n ≠ 0) (a : ℕ) : ceilRoot n (a ^ n) = a := by
-  simp [ceilRoot, pos_iff_ne_zero.2, hn]; split_ifs <;> simp [*]
+  simp [ceilRoot_def, pos_iff_ne_zero.2, hn]; split_ifs <;> simp [*]
 
 lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
-  simp (config := { contextual := true }) [ceilRoot, not_imp_not, not_or]
+  simp (config := { contextual := true }) [ceilRoot_def, not_imp_not, not_or]
 
 @[simp] lemma ceilRoot_eq_zero : ceilRoot n a = 0 ↔ n = 0 ∨ a = 0 :=
   ceilRoot_ne_zero.not_right.trans $ by simp only [not_and_or, ne_eq, not_not]
 
 @[simp] lemma factorization_ceilRoot (n a : ℕ) :
     (ceilRoot n a).factorization = a.factorization ⌈/⌉ n := by
-  unfold ceilRoot
+  rw [ceilRoot_def]
   split_ifs with h
   · obtain rfl | rfl := h <;> simp
   refine prod_pow_factorization_eq_self fun p hp ↦ ?_

@@ -146,7 +146,7 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
     have key : (σ b / b) ^ n = 1 := by rw [div_pow, ← σ.map_pow, hb, σ.commutes, div_self ha']
     obtain ⟨c, hc⟩ := mem_range key
     use c
-    rw [hc, mul_div_cancel' (σ b) hb']
+    rw [hc, mul_div_cancel₀ (σ b) hb']
   obtain ⟨c, hc⟩ := key σ
   obtain ⟨d, hd⟩ := key τ
   rw [σ.mul_apply, τ.mul_apply, hc, τ.map_mul, τ.commutes, hd, σ.map_mul, σ.commutes, hc,
@@ -186,7 +186,7 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
       C b * (X - C (c / b)) := by
     ext1 c
     dsimp only [Function.comp_apply]
-    rw [sub_comp, X_comp, C_comp, mul_sub, ← C_mul, mul_div_cancel' c hb']
+    rw [sub_comp, X_comp, C_comp, mul_sub, ← C_mul, mul_div_cancel₀ c hb']
   rw [key1, hs, multiset_prod_comp, Multiset.map_map, key2, Multiset.prod_map_mul,
     -- Porting note: needed for `Multiset.map_const` to work
     show (fun (_ : E) => C b) = Function.const E (C b) by rfl,
@@ -341,19 +341,15 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
   let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField :=
     Classical.choice <| nonempty_algHom_adjoin_of_splits <| by
       intro x hx
-      cases' hx with hx hx
-      rw [hx]
-      exact ⟨isIntegral α, hpq.1⟩
-      cases hx
-      exact ⟨isIntegral β, hpq.2⟩
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hx
+      cases hx with rw [hx]
+      | inl hx => exact ⟨isIntegral α, hpq.1⟩
+      | inr hx => exact ⟨isIntegral β, hpq.2⟩
   have key : minpoly F γ = minpoly F (f ⟨γ, hγ⟩) := by
     refine' minpoly.eq_of_irreducible_of_monic
       (minpoly.irreducible (isIntegral γ)) _ (minpoly.monic (isIntegral γ))
     suffices aeval (⟨γ, hγ⟩ : F⟮α, β⟯) (minpoly F γ) = 0 by
       rw [aeval_algHom_apply, this, AlgHom.map_zero]
-    -- Porting note: this instance is needed for the following `apply`
-    haveI := @IntermediateField.toAlgebra F (solvableByRad F E) _ _ _ F⟮α, β⟯
-      (solvableByRad F E) _ (Algebra.id (solvableByRad F E))
     apply (algebraMap (↥F⟮α, β⟯) (solvableByRad F E)).injective
     simp only [map_zero, _root_.map_eq_zero]
     -- Porting note: end of the proof was `exact minpoly.aeval F γ`.

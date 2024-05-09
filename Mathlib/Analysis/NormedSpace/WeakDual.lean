@@ -3,9 +3,8 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Analysis.NormedSpace.Dual
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 
 #align_import analysis.normed_space.weak_dual from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -105,7 +104,6 @@ by the dual-norm (i.e. the operator-norm).
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 namespace NormedSpace

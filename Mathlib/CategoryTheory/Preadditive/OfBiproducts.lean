@@ -47,10 +47,8 @@ def rightAdd (f g : X ⟶ Y) : X ⟶ Y :=
   biprod.lift (𝟙 X) (𝟙 X) ≫ biprod.desc f g
 #align category_theory.semiadditive_of_binary_biproducts.right_add CategoryTheory.SemiadditiveOfBinaryBiproducts.rightAdd
 
--- mathport name: «expr +ₗ »
 local infixr:65 " +ₗ " => leftAdd X Y
 
--- mathport name: «expr +ᵣ »
 local infixr:65 " +ᵣ " => rightAdd X Y
 
 theorem isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by
@@ -89,18 +87,17 @@ theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
 
 theorem distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ g +ₗ k := by
   let diag : X ⊞ X ⟶ Y ⊞ Y := biprod.lift (biprod.desc f g) (biprod.desc h k)
-  have hd₁ : biprod.inl ≫ diag = biprod.lift f h := by ext <;> simp
-  have hd₂ : biprod.inr ≫ diag = biprod.lift g k := by ext <;> simp
+  have hd₁ : biprod.inl ≫ diag = biprod.lift f h := by ext <;> simp [diag]
+  have hd₂ : biprod.inr ≫ diag = biprod.lift g k := by ext <;> simp [diag]
   have h₁ : biprod.lift (f +ᵣ g) (h +ᵣ k) = biprod.lift (𝟙 X) (𝟙 X) ≫ diag := by
-      ext <;> aesop_cat
+    ext <;> aesop_cat
   have h₂ : diag ≫ biprod.desc (𝟙 Y) (𝟙 Y) = biprod.desc (f +ₗ h) (g +ₗ k) := by
     ext <;> simp [reassoc_of% hd₁, reassoc_of% hd₂]
   rw [leftAdd, h₁, Category.assoc, h₂, rightAdd]
 #align category_theory.semiadditive_of_binary_biproducts.distrib CategoryTheory.SemiadditiveOfBinaryBiproducts.distrib
 
 /-- In a category with binary biproducts, the morphisms form a commutative monoid. -/
-def addCommMonoidHomOfHasBinaryBiproducts : AddCommMonoid (X ⟶ Y)
-    where
+def addCommMonoidHomOfHasBinaryBiproducts : AddCommMonoid (X ⟶ Y) where
   add := (· +ᵣ ·)
   add_assoc :=
     (EckmannHilton.mul_assoc (isUnital_leftAdd X Y) (isUnital_rightAdd X Y) (distrib X Y)).assoc
@@ -109,6 +106,7 @@ def addCommMonoidHomOfHasBinaryBiproducts : AddCommMonoid (X ⟶ Y)
   add_zero := (isUnital_rightAdd X Y).right_id
   add_comm :=
     (EckmannHilton.mul_comm (isUnital_leftAdd X Y) (isUnital_rightAdd X Y) (distrib X Y)).comm
+  nsmul := letI : Add (X ⟶ Y) := ⟨(· +ᵣ ·)⟩; nsmulRec
 #align category_theory.semiadditive_of_binary_biproducts.add_comm_monoid_hom_of_has_binary_biproducts CategoryTheory.SemiadditiveOfBinaryBiproducts.addCommMonoidHomOfHasBinaryBiproducts
 
 end

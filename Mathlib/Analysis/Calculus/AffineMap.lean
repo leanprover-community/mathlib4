@@ -23,9 +23,7 @@ This file contains results about smoothness of affine maps.
 namespace ContinuousAffineMap
 
 variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜]
-
 variable [NormedAddCommGroup V] [NormedSpace 𝕜 V]
-
 variable [NormedAddCommGroup W] [NormedSpace 𝕜 W]
 
 /-- A continuous affine map between normed vector spaces is smooth. -/

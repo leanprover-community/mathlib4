@@ -3,7 +3,6 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.NormedSpace.ProdLp
 import Mathlib.Topology.Instances.TrivSqZeroExt
@@ -317,7 +316,7 @@ end Normed
 
 section
 
-variable [IsROrC 𝕜] [NormedRing R] [NormedAddCommGroup M]
+variable [RCLike 𝕜] [NormedRing R] [NormedAddCommGroup M]
 variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]

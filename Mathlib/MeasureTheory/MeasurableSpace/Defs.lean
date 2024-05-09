@@ -39,7 +39,7 @@ measurable space, σ-algebra, measurable function
 
 open Set Encodable Function Equiv
 
-open Classical
+open scoped Classical
 
 variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
 
@@ -64,7 +64,7 @@ def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 #align measurable_set MeasurableSet
 
--- porting note: todo: `scoped[MeasureTheory]` doesn't work for unknown reason
+-- Porting note (#11215): TODO: `scoped[MeasureTheory]` doesn't work for unknown reason
 namespace MeasureTheory
 set_option quotPrecheck false in
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
@@ -453,6 +453,14 @@ theorem generateFrom_sup_generateFrom {s t : Set (Set α)} :
   (@giGenerateFrom α).gc.l_sup.symm
 #align measurable_space.generate_from_sup_generate_from MeasurableSpace.generateFrom_sup_generateFrom
 
+lemma iSup_generateFrom (s : ι → Set (Set α)) :
+    ⨆ i, generateFrom (s i) = generateFrom (⋃ i, s i) :=
+  (@MeasurableSpace.giGenerateFrom α).gc.l_iSup.symm
+
+@[simp]
+lemma generateFrom_empty : generateFrom (∅ : Set (Set α)) = ⊥ :=
+  le_bot_iff.mp (generateFrom_le (by simp))
+
 theorem generateFrom_singleton_empty : generateFrom {∅} = (⊥ : MeasurableSpace α) :=
   bot_unique <| generateFrom_le <| by simp [@MeasurableSet.empty α ⊥]
 #align measurable_space.generate_from_singleton_empty MeasurableSpace.generateFrom_singleton_empty
@@ -478,7 +486,7 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
     { MeasurableSet' := fun s => s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
       measurableSet_compl := by simp (config := { contextual := true }) [or_imp]
-      measurableSet_iUnion := fun f hf => sUnion_mem_empty_univ (forall_range_iff.2 hf) }
+      measurableSet_iUnion := fun f hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
   have : b = ⊥ :=
     bot_unique fun s hs =>
       hs.elim (fun s => s.symm ▸ @measurableSet_empty _ ⊥) fun s =>
@@ -489,7 +497,8 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
 @[simp, measurability] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
 #align measurable_space.measurable_set_top MeasurableSpace.measurableSet_top
 
-@[simp, nolint simpNF] -- porting note: todo: `simpNF` claims that this lemma doesn't simplify LHS
+@[simp, nolint simpNF] -- Porting note (#11215): TODO: `simpNF` claims that
+-- this lemma doesn't simplify LHS
 theorem measurableSet_inf {m₁ m₂ : MeasurableSpace α} {s : Set α} :
     MeasurableSet[m₁ ⊓ m₂] s ↔ MeasurableSet[m₁] s ∧ MeasurableSet[m₂] s :=
   Iff.rfl
@@ -503,7 +512,7 @@ theorem measurableSet_sInf {ms : Set (MeasurableSpace α)} {s : Set α} :
 
 theorem measurableSet_iInf {ι} {m : ι → MeasurableSpace α} {s : Set α} :
     MeasurableSet[iInf m] s ↔ ∀ i, MeasurableSet[m i] s := by
-  rw [iInf, measurableSet_sInf, forall_range_iff]
+  rw [iInf, measurableSet_sInf, forall_mem_range]
 #align measurable_space.measurable_set_infi MeasurableSpace.measurableSet_iInf
 
 theorem measurableSet_sup {m₁ m₂ : MeasurableSpace α} {s : Set α} :
@@ -570,7 +579,7 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
 #align measurable.comp Measurable.comp
 
 -- This is needed due to reducibility issues with the `measurability` tactic.
-@[aesop safe 50 (rule_sets [Measurable])]
+@[aesop safe 50 (rule_sets := [Measurable])]
 protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (fun x => g (f x)) := Measurable.comp hg hf

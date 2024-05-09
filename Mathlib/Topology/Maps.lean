@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Topology.Order
-import Mathlib.Topology.NhdsSet
 
 #align_import topology.maps from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
 
@@ -53,16 +52,6 @@ variable {X : Type*} {Y : Type*} {Z : Type*} {ι : Type*} {f : X → Y} {g : Y �
 
 section Inducing
 
-/-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
-by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage
-under `f` of some open set `t : Set Y`. -/
-@[mk_iff]
-structure Inducing [tX : TopologicalSpace X] [tY : TopologicalSpace Y] (f : X → Y) : Prop where
-  /-- The topology on the domain is equal to the induced topology. -/
-  induced : tX = tY.induced f
-#align inducing Inducing
-#align inducing_iff inducing_iff
-
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 theorem inducing_induced (f : X → Y) : @Inducing X Y (TopologicalSpace.induced f ‹_›) _ f :=
@@ -76,6 +65,12 @@ protected theorem Inducing.comp (hg : Inducing g) (hf : Inducing f) :
     Inducing (g ∘ f) :=
   ⟨by rw [hf.induced, hg.induced, induced_compose]⟩
 #align inducing.comp Inducing.comp
+
+theorem Inducing.of_comp_iff (hg : Inducing g) :
+    Inducing (g ∘ f) ↔ Inducing f := by
+  refine ⟨fun h ↦ ?_, hg.comp⟩
+  rw [inducing_iff, hg.induced, induced_compose, h.induced]
+#align inducing.inducing_iff Inducing.of_comp_iff
 
 theorem inducing_of_inducing_compose
     (hf : Continuous f) (hg : Continuous g) (hgf : Inducing (g ∘ f)) : Inducing f :=
@@ -95,6 +90,10 @@ theorem nhds_eq_comap (hf : Inducing f) : ∀ x : X, 𝓝 x = comap f (𝓝 <| f
   inducing_iff_nhds.1 hf
 #align inducing.nhds_eq_comap Inducing.nhds_eq_comap
 
+theorem basis_nhds {p : ι → Prop} {s : ι → Set Y} (hf : Inducing f) {x : X}
+    (h_basis : (𝓝 (f x)).HasBasis p s) : (𝓝 x).HasBasis p (preimage f ∘ s) :=
+  hf.nhds_eq_comap x ▸ h_basis.comap f
+
 theorem nhdsSet_eq_comap (hf : Inducing f) (s : Set X) :
     𝓝ˢ s = comap f (𝓝ˢ (f '' s)) := by
   simp only [nhdsSet, sSup_image, comap_iSup, hf.nhds_eq_comap, iSup_image]
@@ -109,7 +108,7 @@ theorem map_nhds_of_mem (hf : Inducing f) (x : X) (h : range f ∈ 𝓝 (f x)) :
   hf.induced.symm ▸ map_nhds_induced_of_mem h
 #align inducing.map_nhds_of_mem Inducing.map_nhds_of_mem
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem mapClusterPt_iff (hf : Inducing f) {x : X} {l : Filter X} :
     MapClusterPt (f x) l f ↔ ClusterPt x l := by
   delta MapClusterPt ClusterPt
@@ -144,13 +143,6 @@ protected theorem continuous (hf : Inducing f) : Continuous f :=
   hf.continuous_iff.mp continuous_id
 #align inducing.continuous Inducing.continuous
 
-protected theorem inducing_iff (hg : Inducing g) :
-    Inducing f ↔ Inducing (g ∘ f) := by
-  refine' ⟨fun h => hg.comp h, fun hgf => inducing_of_inducing_compose _ hg.continuous hgf⟩
-  rw [hg.continuous_iff]
-  exact hgf.continuous
-#align inducing.inducing_iff Inducing.inducing_iff
-
 theorem closure_eq_preimage_closure_image (hf : Inducing f) (s : Set X) :
     closure s = f ⁻¹' closure (f '' s) := by
   ext x
@@ -183,21 +175,14 @@ theorem dense_iff (hf : Inducing f) {s : Set X} :
   simp only [Dense, hf.closure_eq_preimage_closure_image, mem_preimage]
 #align inducing.dense_iff Inducing.dense_iff
 
+theorem of_subsingleton [Subsingleton X] (f : X → Y) : Inducing f :=
+  ⟨Subsingleton.elim _ _⟩
+
 end Inducing
 
 end Inducing
 
 section Embedding
-
-/-- A function between topological spaces is an embedding if it is injective,
-  and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
-@[mk_iff]
-structure Embedding [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) extends
-  Inducing f : Prop where
-  /-- A topological embedding is injective. -/
-  inj : Injective f
-#align embedding Embedding
-#align embedding_iff embedding_iff
 
 theorem Function.Injective.embedding_induced [t : TopologicalSpace Y] (hf : Injective f) :
     @_root_.Embedding X Y (t.induced f) t f :=
@@ -219,6 +204,9 @@ protected theorem Embedding.comp (hg : Embedding g) (hf : Embedding f) :
     Embedding (g ∘ f) :=
   { hg.toInducing.comp hf.toInducing with inj := fun _ _ h => hf.inj <| hg.inj h }
 #align embedding.comp Embedding.comp
+
+theorem Embedding.of_comp_iff (hg : Embedding g) : Embedding (g ∘ f) ↔ Embedding f := by
+  simp_rw [embedding_iff, hg.toInducing.of_comp_iff, hg.inj.of_comp_iff f]
 
 theorem embedding_of_embedding_compose
     (hf : Continuous f) (hg : Continuous g) (hgf : Embedding (g ∘ f)) : Embedding f :=
@@ -268,15 +256,12 @@ theorem Embedding.discreteTopology [DiscreteTopology Y] (hf : Embedding f) : Dis
   .of_continuous_injective hf.continuous hf.inj
 #align embedding.discrete_topology Embedding.discreteTopology
 
+theorem Embedding.of_subsingleton [Subsingleton X] (f : X → Y) : Embedding f :=
+  ⟨.of_subsingleton f, f.injective_of_subsingleton⟩
+
 end Embedding
 
 section QuotientMap
-/-- A function between topological spaces is a quotient map if it is surjective,
-  and for all `s : Set Y`, `s` is open iff its preimage is an open set. -/
-def QuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
-    (f : X → Y) : Prop :=
-  Surjective f ∧ tY = tX.coinduced f
-#align quotient_map QuotientMap
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
@@ -339,12 +324,6 @@ end QuotientMap
 end QuotientMap
 
 section OpenMap
-/-- A map `f : X → Y` is said to be an *open map*, if the image of any open `U : Set X`
-is open in `Y`. -/
-def IsOpenMap [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :=
-  ∀ U : Set X, IsOpen U → IsOpen (f '' U)
-#align is_open_map IsOpenMap
-
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 namespace IsOpenMap
@@ -446,6 +425,8 @@ theorem preimage_frontier_eq_frontier_preimage (hf : IsOpenMap f) (hfc : Continu
     hf.preimage_closure_eq_closure_preimage hfc]
 #align is_open_map.preimage_frontier_eq_frontier_preimage IsOpenMap.preimage_frontier_eq_frontier_preimage
 
+theorem of_isEmpty [h : IsEmpty X] (f : X → Y) : IsOpenMap f := of_nhds_le h.elim
+
 end IsOpenMap
 
 theorem isOpenMap_iff_nhds_le : IsOpenMap f ↔ ∀ x : X, 𝓝 (f x) ≤ (𝓝 x).map f :=
@@ -470,12 +451,6 @@ end OpenMap
 section IsClosedMap
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
-/-- A map `f : X → Y` is said to be a *closed map*, if the image of any closed `U : Set X`
-is closed in `Y`. -/
-def IsClosedMap (f : X → Y) :=
-  ∀ U : Set X, IsClosed U → IsClosed (f '' U)
-#align is_closed_map IsClosedMap
 
 namespace IsClosedMap
 open Function
@@ -507,9 +482,11 @@ theorem of_nonempty (h : ∀ s, IsClosed s → s.Nonempty → IsClosed (f '' s))
   · exact h s hs h2s
 #align is_closed_map.of_nonempty IsClosedMap.of_nonempty
 
-theorem closed_range (hf : IsClosedMap f) : IsClosed (range f) :=
+theorem isClosed_range (hf : IsClosedMap f) : IsClosed (range f) :=
   @image_univ _ _ f ▸ hf _ isClosed_univ
-#align is_closed_map.closed_range IsClosedMap.closed_range
+#align is_closed_map.closed_range IsClosedMap.isClosed_range
+
+@[deprecated] alias closed_range := isClosed_range -- 2024-03-17
 
 theorem to_quotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
     (hsurj : Surjective f) : QuotientMap f :=
@@ -569,21 +546,13 @@ section OpenEmbedding
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
-/-- An open embedding is an embedding with open image. -/
-@[mk_iff]
-structure OpenEmbedding (f : X → Y) extends Embedding f : Prop where
-  /-- The range of an open embedding is an open set. -/
-  open_range : IsOpen <| range f
-#align open_embedding OpenEmbedding
-#align open_embedding_iff openEmbedding_iff
-
 theorem OpenEmbedding.isOpenMap (hf : OpenEmbedding f) : IsOpenMap f :=
-  hf.toEmbedding.toInducing.isOpenMap hf.open_range
+  hf.toEmbedding.toInducing.isOpenMap hf.isOpen_range
 #align open_embedding.is_open_map OpenEmbedding.isOpenMap
 
 theorem OpenEmbedding.map_nhds_eq (hf : OpenEmbedding f) (x : X) :
     map f (𝓝 x) = 𝓝 (f x) :=
-  hf.toEmbedding.map_nhds_of_mem _ <| hf.open_range.mem_nhds <| mem_range_self _
+  hf.toEmbedding.map_nhds_of_mem _ <| hf.isOpen_range.mem_nhds <| mem_range_self _
 #align open_embedding.map_nhds_eq OpenEmbedding.map_nhds_eq
 
 theorem OpenEmbedding.open_iff_image_open (hf : OpenEmbedding f) {s : Set X} :
@@ -671,6 +640,9 @@ theorem of_comp (f : X → Y) (hg : OpenEmbedding g)
   (OpenEmbedding.of_comp_iff f hg).1 h
 #align open_embedding.of_comp OpenEmbedding.of_comp
 
+theorem of_isEmpty [IsEmpty X] (f : X → Y) : OpenEmbedding f :=
+  openEmbedding_of_embedding_open (.of_subsingleton f) (IsOpenMap.of_isEmpty f)
+
 end OpenEmbedding
 
 end OpenEmbedding
@@ -678,14 +650,6 @@ end OpenEmbedding
 section ClosedEmbedding
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
-/-- A closed embedding is an embedding with closed image. -/
-@[mk_iff]
-structure ClosedEmbedding (f : X → Y) extends Embedding f : Prop where
-  /-- The range of a closed embedding is a closed set. -/
-  closed_range : IsClosed <| range f
-#align closed_embedding ClosedEmbedding
-#align closed_embedding_iff closedEmbedding_iff
 
 namespace ClosedEmbedding
 
@@ -699,7 +663,7 @@ theorem continuous (hf : ClosedEmbedding f) : Continuous f :=
 #align closed_embedding.continuous ClosedEmbedding.continuous
 
 theorem isClosedMap (hf : ClosedEmbedding f) : IsClosedMap f :=
-  hf.toEmbedding.toInducing.isClosedMap hf.closed_range
+  hf.toEmbedding.toInducing.isClosedMap hf.isClosed_range
 #align closed_embedding.is_closed_map ClosedEmbedding.isClosedMap
 
 theorem closed_iff_image_closed (hf : ClosedEmbedding f) {s : Set X} :
@@ -728,13 +692,18 @@ theorem _root_.closedEmbedding_of_continuous_injective_closed (h₁ : Continuous
 #align closed_embedding_of_continuous_injective_closed closedEmbedding_of_continuous_injective_closed
 
 theorem _root_.closedEmbedding_id : ClosedEmbedding (@id X) :=
-  ⟨embedding_id, IsClosedMap.id.closed_range⟩
+  ⟨embedding_id, IsClosedMap.id.isClosed_range⟩
 #align closed_embedding_id closedEmbedding_id
 
 theorem comp (hg : ClosedEmbedding g) (hf : ClosedEmbedding f) :
     ClosedEmbedding (g ∘ f) :=
-  ⟨hg.toEmbedding.comp hf.toEmbedding, (hg.isClosedMap.comp hf.isClosedMap).closed_range⟩
+  ⟨hg.toEmbedding.comp hf.toEmbedding, (hg.isClosedMap.comp hf.isClosedMap).isClosed_range⟩
 #align closed_embedding.comp ClosedEmbedding.comp
+
+theorem of_comp_iff (hg : ClosedEmbedding g) :
+    ClosedEmbedding (g ∘ f) ↔ ClosedEmbedding f := by
+  simp_rw [closedEmbedding_iff, hg.toEmbedding.of_comp_iff, Set.range_comp,
+    ← hg.closed_iff_image_closed]
 
 theorem closure_image_eq (hf : ClosedEmbedding f) (s : Set X) :
     closure (f '' s) = f '' closure s :=

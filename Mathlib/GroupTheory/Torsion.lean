@@ -3,11 +3,11 @@ Copyright (c) 2022 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Berman
 -/
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.QuotientGroup
-import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import group_theory.torsion from "leanprover-community/mathlib"@"1f4705ccdfe1e557fc54a0ce081a05e33d2e6240"
 
@@ -28,7 +28,7 @@ This file defines torsion groups, i.e. groups where all elements have finite ord
 ## Implementation
 
 All torsion monoids are really groups (which is proven here as `Monoid.IsTorsion.group`), but since
-the definition can be stated on monoids it is implemented on `monoid` to match other declarations in
+the definition can be stated on monoids it is implemented on `Monoid` to match other declarations in
 the group theory library.
 
 ## Tags
@@ -75,7 +75,7 @@ noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
   { ‹Monoid G› with
     inv := fun g => g ^ (orderOf g - 1)
     mul_left_inv := fun g => by
-      erw [← pow_succ', tsub_add_cancel_of_le, pow_orderOf_eq_one]
+      erw [← pow_succ, tsub_add_cancel_of_le, pow_orderOf_eq_one]
       exact (tG g).orderOf_pos }
 #align is_torsion.group IsTorsion.group
 #align is_torsion.add_group IsTorsion.addGroup
@@ -138,7 +138,7 @@ theorem ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g =
       "The group exponent exists for any bounded additive torsion group."]
 theorem IsTorsion.exponentExists (tG : IsTorsion G)
     (bounded : (Set.range fun g : G => orderOf g).Finite) : ExponentExists G :=
-  exponentExists_iff_ne_zero.mpr <|
+  exponent_ne_zero.mp <|
     (exponent_ne_zero_iff_range_orderOf_finite fun g => (tG g).orderOf_pos).mpr bounded
 #align is_torsion.exponent_exists IsTorsion.exponentExists
 #align is_add_torsion.exponent_exists IsAddTorsion.exponentExists
@@ -146,7 +146,7 @@ theorem IsTorsion.exponentExists (tG : IsTorsion G)
 /-- Finite groups are torsion groups. -/
 @[to_additive is_add_torsion_of_finite "Finite additive groups are additive torsion groups."]
 theorem isTorsion_of_finite [Finite G] : IsTorsion G :=
-  ExponentExists.isTorsion <| exponentExists_iff_ne_zero.mpr exponent_ne_zero_of_finite
+  ExponentExists.isTorsion .of_finite
 #align is_torsion_of_finite isTorsion_of_finite
 #align is_add_torsion_of_finite is_add_torsion_of_finite
 
@@ -365,7 +365,7 @@ variable {G}
 @[to_additive (attr := simp) "An additive monoid is not torsion free if any
   nontrivial element has finite order."]
 theorem not_isTorsionFree_iff : ¬IsTorsionFree G ↔ ∃ g : G, g ≠ 1 ∧ IsOfFinOrder g := by
-  simp_rw [IsTorsionFree, Ne.def, not_forall, Classical.not_not, exists_prop]
+  simp_rw [IsTorsionFree, Ne, not_forall, Classical.not_not, exists_prop]
 #align monoid.not_is_torsion_free_iff Monoid.not_isTorsionFree_iff
 #align add_monoid.not_is_torsion_free_iff AddMonoid.not_isTorsionFree_iff
 
@@ -449,3 +449,21 @@ theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun
 #align add_is_torsion_free.quotient_torsion AddIsTorsionFree.quotient_torsion
 
 end CommGroup
+
+lemma isTorsionFree_iff_noZeroSMulDivisors_nat {M : Type*} [AddMonoid M] :
+    AddMonoid.IsTorsionFree M ↔ NoZeroSMulDivisors ℕ M := by
+  simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_nsmul_eq_zero, not_exists, not_and,
+    pos_iff_ne_zero, noZeroSMulDivisors_iff, forall_swap (β := ℕ)]
+  exact forall₂_congr fun _ _ ↦ by tauto
+
+lemma isTorsionFree_iff_noZeroSMulDivisors_int [AddGroup G] :
+    AddMonoid.IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
+  simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_zsmul_eq_zero, not_exists, not_and,
+    noZeroSMulDivisors_iff, forall_swap (β := ℤ)]
+  exact forall₂_congr fun _ _ ↦ by tauto
+
+@[deprecated] -- 2024-02-29
+alias AddMonoid.IsTorsionFree_iff_noZeroSMulDivisors := isTorsionFree_iff_noZeroSMulDivisors_int
+
+lemma IsTorsionFree.of_noZeroSMulDivisors {M : Type*} [AddMonoid M] [NoZeroSMulDivisors ℕ M] :
+    AddMonoid.IsTorsionFree M := isTorsionFree_iff_noZeroSMulDivisors_nat.2 ‹_›

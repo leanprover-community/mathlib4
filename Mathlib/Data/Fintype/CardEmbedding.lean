@@ -32,7 +32,7 @@ theorem card_embedding_eq_of_unique {α β : Type*} [Unique α] [Fintype β] [Fi
 #align fintype.card_embedding_eq_of_unique Fintype.card_embedding_eq_of_unique
 
 -- Establishes the cardinality of the type of all injections between two finite types.
--- porting note: `induction'` is broken so instead we make an ugly refine and `dsimp` a lot.
+-- Porting note: `induction'` is broken so instead we make an ugly refine and `dsimp` a lot.
 @[simp]
 theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Fintype (α ↪ β)] :
     ‖α ↪ β‖ = ‖β‖.descFactorial ‖α‖ := by
@@ -51,7 +51,7 @@ theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Finty
       smul_eq_mul, mul_comm]
 #align fintype.card_embedding_eq Fintype.card_embedding_eq
 
-/- The cardinality of embeddings from an infinite type to a finite type is zero.
+/-- The cardinality of embeddings from an infinite type to a finite type is zero.
 This is a re-statement of the pigeonhole principle. -/
 theorem card_embedding_eq_of_infinite {α β : Type*} [Infinite α] [Fintype β] [Fintype (α ↪ β)] :
     ‖α ↪ β‖ = 0 :=

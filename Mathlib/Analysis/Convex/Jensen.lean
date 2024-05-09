@@ -35,7 +35,8 @@ As corollaries, we get:
 
 open Finset LinearMap Set
 
-open BigOperators Classical Convex Pointwise
+open scoped Classical
+open BigOperators Convex Pointwise
 
 variable {𝕜 E F β ι : Type*}
 
@@ -111,10 +112,11 @@ lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈
   -- We replace `t` by `t \ {j, k}`
   have : k ∈ t.erase j := mem_erase.2 ⟨ne_of_apply_ne _ hjk.symm, hk⟩
   let u := (t.erase j).erase k
-  have hj : j ∉ u := by simp
-  have hk : k ∉ u := by simp
-  have ht : t = (u.cons k hk).cons j (mem_cons.not.2 <| not_or_intro (ne_of_apply_ne _ hjk) hj)
-  · simp [insert_erase this, insert_erase ‹j ∈ t›, *]
+  have hj : j ∉ u := by simp [u]
+  have hk : k ∉ u := by simp [u]
+  have ht :
+      t = (u.cons k hk).cons j (mem_cons.not.2 <| not_or_intro (ne_of_apply_ne _ hjk) hj) := by
+    simp [insert_erase this, insert_erase ‹j ∈ t›, *]
   clear_value u
   subst ht
   simp only [sum_cons]
@@ -122,8 +124,8 @@ lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈
   have := h₀ k <| by simp
   let c := w j + w k
   have hc : w j / c + w k / c = 1 := by field_simp
-  have hcj : c * (w j / c) = w j := by field_simp; ring
-  have hck : c * (w k / c) = w k := by field_simp; ring
+  have hcj : c * (w j / c) = w j := by field_simp
+  have hck : c * (w k / c) = w k := by field_simp
   calc f (w j • p j + (w k • p k + ∑ x in u, w x • p x))
     _ = f (c • ((w j / c) • p j + (w k / c) • p k) + ∑ x in u, w x • p x) := by
       rw [smul_add, ← mul_smul, ← mul_smul, hcj, hck, add_assoc]
