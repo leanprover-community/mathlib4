@@ -458,7 +458,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
   simp only [smul_eq_mul, Fin.mk.injEq, zero_ne_one, ↓reduceIte, mul_zero, add_zero] at h
   exact (Int.prime_iff_natAbs_prime.2 (by simp [hp.1])).not_dvd_one ⟨_, h⟩
 
-/-- In a `p ^ (k + 1)`-th cyclotomic extension of `ℚ `, we have that `ζ - 1` is not congruent to an
+/-- In a `p ^ (k + 1)`-th cyclotomic extension of `ℚ `, we have that `ζ` is not congruent to an
   integer modulo `p` if `p ≠ 2`. -/
 theorem not_exists_int_prime_dvd_sub_of_prime_ne_two
     [hcycl : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
@@ -472,7 +472,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_ne_two
     replace h : (p : ℕ) ^ (k + 1) = 2 := by exact_mod_cast h
     simpa using ((Nat.Prime.pow_eq_iff Nat.prime_two).1 h).2
 
-/-- In a `p`-th cyclotomic extension of `ℚ `, we have that `ζ - 1` is not congruent to an
+/-- In a `p`-th cyclotomic extension of `ℚ `, we have that `ζ` is not congruent to an
   integer modulo `p` if `p ≠ 2`. -/
 theorem not_exists_int_prime_dvd_sub_of_prime_ne_two'
     [hcycl : IsCyclotomicExtension {p} ℚ K]
