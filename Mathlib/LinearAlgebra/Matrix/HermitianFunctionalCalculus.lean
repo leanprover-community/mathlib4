@@ -70,7 +70,6 @@ theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A
     rw [←spec_toEuclideanLin_eq_spec]
     apply hA.eigenvalue_mem_toEuclideanLin_spectrum_RCLike i
 
-#exit
 noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
       diagonal (RCLike.ofReal ∘ g ∘
@@ -103,7 +102,13 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
   map_star' := by
     intro g
     dsimp
+    simp only [star_mul, star_star]
+    have H :
+     star (diagonal (RCLike.ofReal ∘ ⇑g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))) =
+     diagonal (RCLike.ofReal ∘ star ⇑g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) := by sorry
+    simp only [H]
 
+#exit
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus 𝕜 (IsHermitian : Matrix n n 𝕜 → Prop) where
 exists_cfc_of_predicate
