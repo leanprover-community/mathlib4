@@ -39,7 +39,7 @@ class BoundedSub (R : Type*) [Bornology R] [Sub R] : Prop where
 variable {R : Type*}
 
 lemma isBounded_sub [Bornology R] [Sub R] [BoundedSub R] {s t : Set R}
-    (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t):
+    (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t) :
     Bornology.IsBounded (s - t) := BoundedSub.isBounded_sub hs ht
 
 lemma sub_bounded_of_bounded_of_bounded {X : Type*} [PseudoMetricSpace R] [Sub R] [BoundedSub R]
