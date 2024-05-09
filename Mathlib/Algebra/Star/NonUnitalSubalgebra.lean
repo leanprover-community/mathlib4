@@ -91,12 +91,100 @@ structure StarSubset (A : Type v) [Star A] : Type v where
   star_mem' : ∀ {a : A} (_ha : a ∈ carrier), star a ∈ carrier
 
 /-- A sub star magma is a subset of a magma which is closed under the `star`-/
-structure SubStarmagma (A : Type v) [Mul A] [Star A] extends Subsemigroup A, StarSubset A :Type v
+structure SubStarmagma (M : Type v) [Mul M] [Star M] extends Subsemigroup M, StarSubset M : Type v
 
 /-- Reinterpret a `SubStarmagma` as a `Subsemigroup`. -/
 add_decl_doc SubStarmagma.toSubsemigroup
 /-- Reinterpret a `SubStarmagma` as a `StarSubset`. -/
 add_decl_doc SubStarmagma.toStarSubset
+
+/-- A non-unital star subsemiring is a non-unital non-associative ring which is closed under the
+`star` operation. -/
+structure NonUnitalStarSubsemiring (R : Type v) [NonUnitalNonAssocSemiring R] [Star R]
+    extends NonUnitalSubsemiring R, StarSubset R : Type v
+
+/-- Reinterpret a `NonUnitalStarSubsemiring` as a `NonUnitalSubsemiring`. -/
+add_decl_doc NonUnitalStarSubsemiring.toNonUnitalSubsemiring
+/-- Reinterpret a `NonUnitalStarSubsemiring` as a `StarSubset`. -/
+add_decl_doc NonUnitalStarSubsemiring.toStarSubset
+
+section NonUnitalStarSubsemiring
+
+namespace NonUnitalStarSubsemiring
+
+variable (R : Type v) [NonUnitalNonAssocSemiring R] [Star R]
+
+instance instSetLike : SetLike (NonUnitalStarSubsemiring R) R where
+  coe {s} := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+
+instance instNonUnitalSubsemiringClass : NonUnitalSubsemiringClass (NonUnitalStarSubsemiring R) R
+    where
+  add_mem {s} := s.add_mem'
+  mul_mem {s} := s.mul_mem'
+  zero_mem {s} := s.zero_mem'
+
+/-
+instance instNonUnitalSubringClass {A : Type v} [NonUnitalNonAssocRing A]
+    [Star A] : NonUnitalSubringClass (NonUnitalStarSubsemiring A) A :=
+  { NonUnitalStarSubsemiring.instNonUnitalSubsemiringClass A with
+    neg_mem := sorry
+    --fun _S {x} hx => neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx
+    }
+-/
+
+instance instStarMemClass : StarMemClass (NonUnitalStarSubsemiring R) R where
+  star_mem {s} := s.star_mem'
+
+theorem mem_carrier {s : NonUnitalStarSubsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
+  Iff.rfl
+
+/-
+@[simp]
+theorem mem_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
+    [Star A] {S : NonUnitalStarSubalgebra R A} {x} : x ∈ S.toNonUnitalSubring ↔ x ∈ S :=
+  Iff.rfl
+-/
+
+@[simp]
+theorem mem_toNonUnitalSubring {R : Type u} {A : Type v} [ NonUnitalNonAssocSemiring R]
+    [Star R] {S : NonUnitalStarSubsemiring R} {x} : x ∈ S.toSubsemigroup ↔ x ∈ S :=
+  Iff.rfl
+
+
+/-- Copy of a non-unital star subalgebra with a new `carrier` equal to the old one.
+Useful to fix definitional equalities. -/
+protected def copy (S : NonUnitalStarSubsemiring R) (s : Set R) (hs : s = ↑S) :
+    NonUnitalStarSubsemiring R :=
+  { S.toNonUnitalSubsemiring.copy s hs with
+    star_mem' := @fun x (hx : x ∈ s) => by
+      show star x ∈ s
+      rw [hs] at hx ⊢
+      exact S.star_mem' hx }
+
+@[simp]
+theorem coe_copy (S : NonUnitalStarSubsemiring R) (s : Set R) (hs : s = ↑S) :
+    (S.copy s hs : Set R) = s :=
+  rfl
+
+theorem copy_eq (S : NonUnitalStarSubsemiring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
+  SetLike.coe_injective hs
+
+/-- The center of a semiring `R` is the set of elements that commute and associate with everything
+in `R` -/
+def center : NonUnitalStarSubsemiring R :=
+  { Subsemigroup.center R with
+    zero_mem' := Set.zero_mem_center R
+    add_mem' := by
+      apply Set.add_mem_center
+    star_mem' := by
+      simp only [Subsemigroup.mem_carrier]
+      intros a ha
+      apply Set.star_mem_center }
+
+end NonUnitalStarSubsemiring
+
+end NonUnitalStarSubsemiring
 
 /-- A non-unital star subalgebra is a non-unital subalgebra which is closed under the `star`
 operation. -/
