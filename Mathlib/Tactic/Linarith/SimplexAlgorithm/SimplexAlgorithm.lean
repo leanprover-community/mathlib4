@@ -12,8 +12,6 @@ To obtain required vector in `Linarith.SimplexAlgorithm.findPositiveVector` we r
 Algorithm. We use Bland's rule for pivoting, which guarantees that the algorithm terminates.
 -/
 
-open Std Linarith
-
 namespace Linarith.SimplexAlgorithm
 
 /-- An exception in the `SimplexAlgorithmM` monad. -/

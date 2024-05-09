@@ -3,7 +3,7 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Std.Data.Rat.Basic
+import Batteries.Data.Rat.Basic
 
 /-!
 # Datatypes for Simplex Algorithm implementation
@@ -28,7 +28,6 @@ structure Matrix (n m : Nat) where
   -- hm_pos : m > 0
   -- hn : data.size = n
   -- hm (i : Fin n) : data[i].size = m
-deriving Repr
 
 instance (n m : Nat) : GetElem (Matrix n m) Nat (Array Rat) fun _ i => i < n where
   getElem mat i _ := mat.data[i]!

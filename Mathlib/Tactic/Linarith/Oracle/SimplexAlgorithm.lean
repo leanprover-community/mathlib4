@@ -10,7 +10,7 @@ import Mathlib.Tactic.Linarith.SimplexAlgorithm.PositiveVector
 # Hooks to enable the use of the simplex algorithm in `linarith`
 -/
 
-open Std
+open Batteries
 
 namespace Linarith.SimplexAlgorithm
 
