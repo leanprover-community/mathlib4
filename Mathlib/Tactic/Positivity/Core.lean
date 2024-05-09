@@ -21,6 +21,8 @@ and elsewhere.
 
 set_option autoImplicit true
 
+open scoped AlgebraOrderInstances
+
 open Lean hiding Rat
 open Lean.Meta Qq Lean.Elab Term
 
@@ -178,7 +180,6 @@ def throwNone [Monad m] [Alternative m]
   | .none => failure
   | r => pure r
 
-attribute [instance 1000] OrderedSemiring.toSemiring StrictOrderedRing.toRing in
 /-- Attempts to prove a `Strictness` result when `e` evaluates to a literal number. -/
 def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone do
   match ← NormNum.derive e with

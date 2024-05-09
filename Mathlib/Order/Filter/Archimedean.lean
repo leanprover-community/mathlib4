@@ -19,6 +19,8 @@ well as version of these two results for `ℤ` (and a ring `R`) and `ℚ` (and a
 -/
 
 
+open scoped AlgebraOrderInstances
+
 variable {α R : Type*}
 
 open Filter Set Function

@@ -19,6 +19,8 @@ We state several auxiliary results pertaining to sequences of the form `‚åäc^n‚å
   to `1/j^2`, up to a multiplicative constant.
 -/
 
+open scoped AlgebraOrderInstances
+
 open Filter Finset
 
 open Topology BigOperators

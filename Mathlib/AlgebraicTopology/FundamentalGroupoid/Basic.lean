@@ -20,6 +20,8 @@ homotopy equivalence. With this, the fundamental group of `X` based at `x` is ju
 group of `x`.
 -/
 
+open scoped AlgebraOrderInstances
+
 open CategoryTheory
 
 universe u v

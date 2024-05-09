@@ -14,6 +14,8 @@ The antidiagonal of a multiset `s` consists of all pairs `(t₁, t₂)`
 such that `t₁ + t₂ = s`. These pairs are counted with multiplicities.
 -/
 
+open scoped AlgebraOrderInstances
+
 universe u
 
 namespace Multiset

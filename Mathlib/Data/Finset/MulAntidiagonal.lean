@@ -15,6 +15,8 @@ of an element in `s` and an element in `t` that multiply to `a`,
 given that `s` and `t` are well-ordered. -/
 
 
+open scoped AlgebraOrderInstances
+
 namespace Set
 
 open Pointwise

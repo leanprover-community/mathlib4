@@ -20,7 +20,7 @@ then `f * g` tends to positive infinity.
 
 
 open Set Filter TopologicalSpace Function
-open scoped Pointwise Topology
+open scoped Pointwise Topology AlgebraOrderInstances
 open OrderDual (toDual ofDual)
 
 /-- If a (possibly non-unital and/or non-associative) ring `R` admits a submultiplicative

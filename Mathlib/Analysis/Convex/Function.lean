@@ -29,7 +29,7 @@ a convex set.
 -/
 
 
-open scoped Classical
+open scoped Classical AlgebraOrderInstances
 open LinearMap Set BigOperators Convex Pointwise
 
 variable {𝕜 E F α β ι : Type*}

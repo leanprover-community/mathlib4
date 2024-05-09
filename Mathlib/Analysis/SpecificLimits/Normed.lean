@@ -23,7 +23,7 @@ well as such computations in `ℝ` when the natural proof passes through a fact 
 
 noncomputable section
 
-open scoped Classical
+open scoped Classical AlgebraOrderInstances
 open Set Function Filter Finset Metric Asymptotics
 
 open scoped Classical

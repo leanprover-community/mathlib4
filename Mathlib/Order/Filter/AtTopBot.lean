@@ -32,7 +32,7 @@ set_option autoImplicit true
 variable {ι ι' α β γ : Type*}
 
 open Set
-open scoped BigOperators
+open scoped BigOperators AlgebraOrderInstances
 
 namespace Filter
 

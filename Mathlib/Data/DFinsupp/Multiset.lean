@@ -14,6 +14,8 @@ This defines `DFinsupp.toMultiset` the equivalence between `Π₀ a : α, ℕ` a
 with `Multiset.toDFinsupp` the reverse equivalence.
 -/
 
+open scoped AlgebraOrderInstances
+
 open Function
 
 variable {α : Type*} {β : α → Type*}

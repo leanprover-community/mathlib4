@@ -22,6 +22,8 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 * `Multiset.sigma`: Disjoint sum of multisets in a sigma type.
 -/
 
+open scoped AlgebraOrderInstances
+
 universe v
 
 variable {α : Type*} {β : Type v} {γ δ : Type*}

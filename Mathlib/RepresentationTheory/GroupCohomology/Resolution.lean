@@ -63,6 +63,8 @@ https://github.com/leanprover-community/mathlib4/issues/5026 and
 https://github.com/leanprover-community/mathlib4/issues/5164 are relevant. -/
 noncomputable section
 
+open scoped AlgebraOrderInstances
+
 universe u v w
 
 variable {k G : Type u} [CommRing k] {n : ℕ}

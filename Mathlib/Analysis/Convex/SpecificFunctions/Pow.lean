@@ -27,6 +27,8 @@ requires slightly less imports.
 * Prove convexity for negative powers.
 -/
 
+open scoped AlgebraOrderInstances
+
 open Set
 
 namespace NNReal

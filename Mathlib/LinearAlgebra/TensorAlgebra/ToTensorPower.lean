@@ -17,7 +17,7 @@ In this file we show that `TensorAlgebra R M` is isomorphic to a direct sum of t
 
 suppress_compilation
 
-open scoped DirectSum TensorProduct
+open scoped DirectSum TensorProduct AlgebraOrderInstances
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 

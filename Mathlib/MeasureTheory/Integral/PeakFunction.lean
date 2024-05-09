@@ -37,7 +37,7 @@ Note that there are related results about convolution with respect to peak funct
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
-open scoped Topology ENNReal
+open scoped Topology ENNReal AlgebraOrderInstances
 
 /-!
 ### General convergent result for integrals against a sequence of peak functions

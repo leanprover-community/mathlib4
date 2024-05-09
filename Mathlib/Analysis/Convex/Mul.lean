@@ -19,6 +19,8 @@ As corollaries, we also prove that `x ↦ x ^ n` is convex
 * `convexOn_zpow`: over $(0, +∞)$ For `n : ℤ`.
 -/
 
+open scoped AlgebraOrderInstances
+
 open Set
 
 variable {𝕜 E F : Type*}

@@ -18,6 +18,8 @@ Those in the `Linarith` namespace should stay here.
 Those outside the `Linarith` namespace may be deleted as they are ported to mathlib4.
 -/
 
+open scoped AlgebraOrderInstances
+
 set_option autoImplicit true
 
 namespace Linarith
