@@ -5,8 +5,8 @@ Authors: Damiano Testa
 -/
 import Lean.Elab.Command
 import Lean.Linter.Util
-import Std.Tactic.Unreachable
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
+import Batteries.Tactic.Unreachable
 
 /-!
 #  The unused tactic linter
@@ -69,7 +69,7 @@ abbrev M := StateRefT (HashMap String.Range Syntax) IO
 /-- `Parser`s allowed to not change the tactic state. -/
 def allowed : HashSet SyntaxNodeKind:= HashSet.empty
   |>.insert `Mathlib.Tactic.Says.says
-  |>.insert `Std.Tactic.«tacticOn_goal-_=>_»
+  |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
   -- attempt to speed up, by ignoring more tactics
   |>.insert `by
   |>.insert `null
@@ -106,7 +106,7 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     |>.insert ``Lean.Parser.Command.mixfix
     |>.insert ``Lean.Parser.Tactic.discharger
     |>.insert ``Lean.Parser.Tactic.Conv.conv
-    |>.insert `Std.Tactic.seq_focus
+    |>.insert `Batteries.Tactic.seq_focus
     |>.insert `Mathlib.Tactic.Hint.registerHintStx
     |>.insert `Mathlib.Tactic.LinearCombination.linearCombination
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
@@ -206,7 +206,8 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
   let key (r : String.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
   let mut last : String.Range := ⟨0, 0⟩
   for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
-    if stx.getKind ∈ [``Std.Tactic.unreachable, ``Std.Tactic.unreachableConv] then continue
+    if stx.getKind ∈ [``Batteries.Tactic.unreachable, ``Batteries.Tactic.unreachableConv] then
+      continue
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
     Linter.logLint linter.unusedTactic stx m!"'{stx}' tactic does nothing"
     last := r
