@@ -221,7 +221,7 @@ lemma absolutelyContinuous_withDensity_rnDeriv [HaveLebesgueDecomposition ν μ]
   simp only [nonpos_iff_eq_zero, add_eq_zero]
   constructor
   · refine hμν ?_
-    simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, add_eq_zero]
+    simp only [coe_add, Pi.add_apply, add_eq_zero]
     constructor
     · exact measure_mono_null (Set.inter_subset_right _ _) ht1
     · exact measure_mono_null (Set.inter_subset_left _ _) hνs
