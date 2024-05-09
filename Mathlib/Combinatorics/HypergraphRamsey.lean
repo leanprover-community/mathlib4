@@ -7,7 +7,7 @@ import Mathlib.Data.Finset.Sort
 import Mathlib.Order.Extension.Linear
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Data.Nat.Interval
-import Mathlib.Data.Set.Intervals.Infinite
+import Mathlib.Order.Interval.Set.Infinite
 
 /-!
 # Ramsey's theorem for infinite hypergraphs
