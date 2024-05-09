@@ -43,8 +43,7 @@ theorem Units.mem : ↑u ∈({1, -1, η, -η, η ^ 2, -η ^ 2} : Set (𝓞 K)) :
     rfl
   obtain ⟨⟨x, e⟩, hxu, -⟩ := exist_unique_eq_mul_prod _ u
   replace hxu : u = x := by
-    rw [← mul_one x.1]
-    rw [hxu]
+    rw [← mul_one x.1, hxu]
     apply congr_arg
     rw [← Finset.prod_empty]
     congr
