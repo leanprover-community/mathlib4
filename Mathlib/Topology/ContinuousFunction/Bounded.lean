@@ -1236,14 +1236,6 @@ section Seminormed
 
 variable [NonUnitalSeminormedRing R]
 
-/-
-instance instMul : Mul (α →ᵇ R) where
-  mul f g :=
-    ofNormedAddCommGroup (f * g) (f.continuous.mul g.continuous) (‖f‖ * ‖g‖) fun x =>
-      le_trans (norm_mul_le (f x) (g x)) <|
-        mul_le_mul (f.norm_coe_le_norm x) (g.norm_coe_le_norm x) (norm_nonneg _) (norm_nonneg _)
- -/
-
 @[simp]
 theorem coe_mul (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
 #align bounded_continuous_function.coe_mul BoundedContinuousFunction.coe_mul
