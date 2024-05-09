@@ -268,21 +268,21 @@ end
 
 section
 
-variable {L : C ⥤ H} {L' : C ⥤ H'} (G : H ⥤ H') (e : L ⋙ G ≅ L') (F : C ⥤ D)
+variable {L : C ⥤ D} {L' : C ⥤ D'} (G : D ⥤ D') (e : L ⋙ G ≅ L') (F : C ⥤ H)
 
 /-- The functor `LeftExtension L' F ⥤ LeftExtension L F` induced by an isomorphism
 `L ⋙ G ≅ L'`. -/
 @[simps!]
 def LeftExtension.postcomp₁ : LeftExtension L' F ⥤ LeftExtension L F :=
-  StructuredArrow.map₂ (F := (whiskeringLeft H H' D).obj G) (G := 𝟭 _) (𝟙 _)
-    ((whiskeringLeft C H' D).map e.inv)
+  StructuredArrow.map₂ (F := (whiskeringLeft D D' H).obj G) (G := 𝟭 _) (𝟙 _)
+    ((whiskeringLeft C D' H).map e.inv)
 
 /-- The functor `RightExtension L' F ⥤ RightExtension L F` induced by an isomorphism
 `L ⋙ G ≅ L'`. -/
 @[simps!]
 def RightExtension.postcomp₁ : RightExtension L' F ⥤ RightExtension L F :=
-  CostructuredArrow.map₂ (F := (whiskeringLeft H H' D).obj G) (G := 𝟭 _)
-    ((whiskeringLeft C H' D).map e.hom) (𝟙 _)
+  CostructuredArrow.map₂ (F := (whiskeringLeft D D' H).obj G) (G := 𝟭 _)
+    ((whiskeringLeft C D' H).map e.hom) (𝟙 _)
 
 variable [IsEquivalence G]
 
@@ -344,19 +344,19 @@ end
 
 section
 
-variable (L : C ⥤ H) (F : C ⥤ D) (F' : H ⥤ D) (G : C' ⥤ C)
+variable (L : C ⥤ D) (F : C ⥤ H) (F' : D ⥤ H) (G : C' ⥤ C)
 
 /-- The functor `LeftExtension L F ⥤ LeftExtension (G ⋙ L) (G ⋙ F)`
 obtained by precomposition. -/
 @[simps!]
 def LeftExtension.precomp : LeftExtension L F ⥤ LeftExtension (G ⋙ L) (G ⋙ F) :=
-  StructuredArrow.map₂ (F := 𝟭 _) (G := (whiskeringLeft C' C D).obj G) (𝟙 _) (𝟙 _)
+  StructuredArrow.map₂ (F := 𝟭 _) (G := (whiskeringLeft C' C H).obj G) (𝟙 _) (𝟙 _)
 
 /-- The functor `RightExtension L F ⥤ RightExtension (G ⋙ L) (G ⋙ F)`
 obtained by precomposition. -/
 @[simps!]
 def RightExtension.precomp : RightExtension L F ⥤ RightExtension (G ⋙ L) (G ⋙ F) :=
-  CostructuredArrow.map₂ (F := 𝟭 _) (G := (whiskeringLeft C' C D).obj G) (𝟙 _) (𝟙 _)
+  CostructuredArrow.map₂ (F := 𝟭 _) (G := (whiskeringLeft C' C H).obj G) (𝟙 _) (𝟙 _)
 
 variable [IsEquivalence G]
 
@@ -450,7 +450,7 @@ end
 
 section
 
-variable {L : C ⥤ H} {F₁ F₂ : C ⥤ D}
+variable {L : C ⥤ D} {F₁ F₂ : C ⥤ H}
 
 /-- When two left extensions `α₁ : LeftExtension L F₁` and `α₂ : LeftExtension L F₂`
 are essentially the same via an isomorphism of functors `F₁ ≅ F₂`,
@@ -464,7 +464,7 @@ noncomputable def LeftExtension.isUniversalEquivOfIso₂
     (IsInitial.equivOfIso (StructuredArrow.isoMk e'
       (by simp [leftExtensionEquivalenceOfIso₂, h])))
 
-lemma isLeftKanExtension_iff_of_iso₂ {F₁' F₂' : H ⥤ D} (α₁ : F₁ ⟶ L ⋙ F₁') (α₂ : F₂ ⟶ L ⋙ F₂')
+lemma isLeftKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : F₁ ⟶ L ⋙ F₁') (α₂ : F₂ ⟶ L ⋙ F₂')
     (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') (h : α₁ ≫ whiskerLeft L e'.hom = e.hom ≫ α₂) :
     F₁'.IsLeftKanExtension α₁ ↔ F₂'.IsLeftKanExtension α₂ := by
   let eq := LeftExtension.isUniversalEquivOfIso₂ (LeftExtension.mk _ α₁)
@@ -485,7 +485,7 @@ noncomputable def RightExtension.isUniversalEquivOfIso₂
     (IsTerminal.equivOfIso (CostructuredArrow.isoMk e'
       (by simp [rightExtensionEquivalenceOfIso₂, h])))
 
-lemma isRightKanExtension_iff_of_iso₂ {F₁' F₂' : H ⥤ D} (α₁ : L ⋙ F₁' ⟶ F₁) (α₂ : L ⋙ F₂' ⟶ F₂)
+lemma isRightKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : L ⋙ F₁' ⟶ F₁) (α₂ : L ⋙ F₂' ⟶ F₂)
     (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') (h : whiskerLeft L e'.hom ≫ α₂ = α₁ ≫ e.hom) :
     F₁'.IsRightKanExtension α₁ ↔ F₂'.IsRightKanExtension α₂ := by
   let eq := RightExtension.isUniversalEquivOfIso₂ (RightExtension.mk _ α₁)
