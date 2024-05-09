@@ -76,14 +76,7 @@ convergence in distribution, convergence in law, weak convergence of measures, p
 
 noncomputable section
 
-open MeasureTheory
-
-open Set
-
-open Filter
-
-open BoundedContinuousFunction
-
+open MeasureTheory Set Filter BoundedContinuousFunction
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 namespace MeasureTheory
