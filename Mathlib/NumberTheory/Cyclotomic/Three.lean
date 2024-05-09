@@ -66,7 +66,7 @@ theorem Units.mem : ↑u ∈({1, -1, η, -η, η ^ 2, -η ^ 2} : Set (𝓞 K)) :
   fin_cases hr
   · rcases hru with (h | h)
     · simp only [h, pow_zero, Set.mem_insert_iff, eq_neg_self_iff, one_ne_zero,
-      Set.mem_singleton_iff, false_or, true_or]
+        Set.mem_singleton_iff, false_or, true_or]
     · simp only [h, pow_zero, Set.mem_insert_iff, neg_eq_self_iff, one_ne_zero, neg_inj,
       Set.mem_singleton_iff, true_or, or_true]
   · rcases hru with (h | h)
