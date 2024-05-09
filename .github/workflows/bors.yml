@@ -75,7 +75,7 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: import files in {Mathlib MathlibExtras Mathlib/Tactic Counterexamples Archive}.lean
+      - name: import files in {Mathlib Mathlib/Tactic Counterexamples Archive}.lean
         run: |
           ./scripts/mk_all.sh
 
