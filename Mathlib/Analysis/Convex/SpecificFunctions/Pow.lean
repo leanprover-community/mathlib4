@@ -84,10 +84,8 @@ lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
   · simpa only [rpow_one] using concaveOn_id (convex_Ici _)
   exact (strictConcaveOn_rpow hp₀ hp₁).concaveOn
 
-lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ (Set.Ici 0) Real.sqrt := by
-  have : Real.sqrt = fun x : ℝ ↦ x ^ (1 / (2 : ℝ)) := by
-    ext x; exact Real.sqrt_eq_rpow x
-  rw [this]
+lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ (Set.Ici 0) (√· : ℝ → ℝ) := by
+  rw [funext Real.sqrt_eq_rpow]
   exact strictConcaveOn_rpow (by positivity) (by linarith)
 
 end Real

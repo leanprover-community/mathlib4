@@ -25,7 +25,7 @@ open CategoryTheory.MonoidalCategory
 
 /-- The type of objects of the opposite (or "reverse") monoidal category.
 Use the notation `Cᴹᵒᵖ`. -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
 structure MonoidalOpposite (C : Type u₁) where
   /-- The object of `MonoidalOpposite C` that represents `x : C`. -/ mop ::
   /-- The object of `C` represented by `x : MonoidalOpposite C`. -/ unmop : C
@@ -152,13 +152,11 @@ variable {C}
 namespace Iso
 
 /-- An isomorphism in `C` gives an isomorphism in `Cᴹᵒᵖ`. -/
-@[reducible]
-def mop {X Y : C} (f : X ≅ Y) : mop X ≅ mop Y := (mopFunctor C).mapIso f
+abbrev mop {X Y : C} (f : X ≅ Y) : mop X ≅ mop Y := (mopFunctor C).mapIso f
 #align category_theory.iso.mop CategoryTheory.Iso.mop
 
 /-- An isomorphism in `Cᴹᵒᵖ` gives an isomorphism in `C`. -/
-@[reducible]
-def unmop {X Y : Cᴹᵒᵖ} (f : X ≅ Y) : unmop X ≅ unmop Y := (unmopFunctor C).mapIso f
+abbrev unmop {X Y : Cᴹᵒᵖ} (f : X ≅ Y) : unmop X ≅ unmop Y := (unmopFunctor C).mapIso f
 
 end Iso
 

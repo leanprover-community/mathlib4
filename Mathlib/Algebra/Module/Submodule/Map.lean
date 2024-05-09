@@ -637,7 +637,7 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Modul
 /-- A linear map between two modules restricts to a linear map from any submodule p of the
 domain onto the image of that submodule.
 
-This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`.-/
+This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`. -/
 def submoduleMap (f : M →ₗ[R] M₁) (p : Submodule R M) : p →ₗ[R] p.map f :=
   f.restrict fun x hx ↦ Submodule.mem_map.mpr ⟨x, hx, rfl⟩
 

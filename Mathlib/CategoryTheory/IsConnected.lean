@@ -210,13 +210,13 @@ theorem IsConnected.of_induct [Nonempty J] {j₀ : J}
 instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) := by
   have : Nonempty (ULiftHom.{v₂} (ULift.{u₂} J)) := by simp [ULiftHom, hc.is_nonempty]
   apply IsConnected.of_induct
-  rintro p hj₀ h ⟨j⟩
-  let p' : Set J := {j : J | p ⟨j⟩}
-  have hj₀' : Classical.choice hc.is_nonempty ∈ p' := by
-    simp only [p', (eq_self p')]
-    exact hj₀
-  apply induct_on_objects p' hj₀' @fun _ _ f =>
-    h ((ULiftHomULiftCategory.equiv J).functor.map f)
+  · rintro p hj₀ h ⟨j⟩
+    let p' : Set J := {j : J | p ⟨j⟩}
+    have hj₀' : Classical.choice hc.is_nonempty ∈ p' := by
+      simp only [p', (eq_self p')]
+      exact hj₀
+    apply induct_on_objects p' hj₀' @fun _ _ f =>
+      h ((ULiftHomULiftCategory.equiv J).functor.map f)
 
 /-- Another induction principle for `IsPreconnected J`:
 given a type family `Z : J → Sort*` and
@@ -367,7 +367,7 @@ theorem zigzag_obj_of_zigzag (F : J ⥤ K) {j₁ j₂ : J} (h : Zigzag j₁ j₂
 #align category_theory.zigzag_obj_of_zigzag CategoryTheory.zigzag_obj_of_zigzag
 
 -- TODO: figure out the right way to generalise this to `Zigzag`.
-theorem zag_of_zag_obj (F : J ⥤ K) [Full F] {j₁ j₂ : J} (h : Zag (F.obj j₁) (F.obj j₂)) :
+theorem zag_of_zag_obj (F : J ⥤ K) [F.Full] {j₁ j₂ : J} (h : Zag (F.obj j₁) (F.obj j₂)) :
     Zag j₁ j₂ :=
   Or.imp (Nonempty.map F.preimage) (Nonempty.map F.preimage) h
 #align category_theory.zag_of_zag_obj CategoryTheory.zag_of_zag_obj
@@ -460,11 +460,10 @@ theorem nat_trans_from_is_connected [IsPreconnected J] {X Y : C}
     exact this.symm
 #align category_theory.nat_trans_from_is_connected CategoryTheory.nat_trans_from_is_connected
 
-instance [IsConnected J] : Full (Functor.const J : C ⥤ J ⥤ C) where
-  preimage f := f.app (Classical.arbitrary J)
-  witness f := by
+instance [IsConnected J] : (Functor.const J : C ⥤ J ⥤ C).Full where
+  map_surjective f := ⟨f.app (Classical.arbitrary J), by
     ext j
-    apply nat_trans_from_is_connected f (Classical.arbitrary J) j
+    apply nat_trans_from_is_connected f (Classical.arbitrary J) j⟩
 
 theorem nonempty_hom_of_preconnected_groupoid {G} [Groupoid G] [IsPreconnected G] :
     ∀ x y : G, Nonempty (x ⟶ y) := by

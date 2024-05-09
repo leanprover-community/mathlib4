@@ -118,11 +118,11 @@ theorem HasConstantSpeedOnWith.union {t : Set ℝ} (hfs : HasConstantSpeedOnWith
       · rintro (⟨ws, zw, wx⟩ | ⟨wt, xw, wy⟩)
         exacts [⟨Or.inl ws, zw, wx.trans (ht.2 yt)⟩, ⟨Or.inr wt, (hs.2 zs).trans xw, wy⟩]
     rw [this, @eVariationOn.union _ _ _ _ f _ _ x, hfs zs hs.1 (hs.2 zs), hft ht.1 yt (ht.2 yt)]
-    have q := ENNReal.ofReal_add (mul_nonneg l.prop (sub_nonneg.mpr (hs.2 zs)))
-      (mul_nonneg l.prop (sub_nonneg.mpr (ht.2 yt)))
-    simp only [NNReal.val_eq_coe] at q
-    rw [← q]
-    ring_nf
+    · have q := ENNReal.ofReal_add (mul_nonneg l.prop (sub_nonneg.mpr (hs.2 zs)))
+        (mul_nonneg l.prop (sub_nonneg.mpr (ht.2 yt)))
+      simp only [NNReal.val_eq_coe] at q
+      rw [← q]
+      ring_nf
     exacts [⟨⟨hs.1, hs.2 zs, le_rfl⟩, fun w ⟨_, _, wx⟩ => wx⟩,
       ⟨⟨ht.1, le_rfl, ht.2 yt⟩, fun w ⟨_, xw, _⟩ => xw⟩]
   · cases le_antisymm zy ((hs.2 ys).trans (ht.2 zt))
@@ -140,13 +140,13 @@ theorem HasConstantSpeedOnWith.union {t : Set ℝ} (hfs : HasConstantSpeedOnWith
 theorem HasConstantSpeedOnWith.Icc_Icc {x y z : ℝ} (hfs : HasConstantSpeedOnWith f (Icc x y) l)
     (hft : HasConstantSpeedOnWith f (Icc y z) l) : HasConstantSpeedOnWith f (Icc x z) l := by
   rcases le_total x y with (xy | yx)
-  rcases le_total y z with (yz | zy)
-  · rw [← Set.Icc_union_Icc_eq_Icc xy yz]
-    exact hfs.union hft (isGreatest_Icc xy) (isLeast_Icc yz)
-  · rintro u ⟨xu, uz⟩ v ⟨xv, vz⟩
-    rw [Icc_inter_Icc, sup_of_le_right xu, inf_of_le_right vz, ←
-      hfs ⟨xu, uz.trans zy⟩ ⟨xv, vz.trans zy⟩, Icc_inter_Icc, sup_of_le_right xu,
-      inf_of_le_right (vz.trans zy)]
+  · rcases le_total y z with (yz | zy)
+    · rw [← Set.Icc_union_Icc_eq_Icc xy yz]
+      exact hfs.union hft (isGreatest_Icc xy) (isLeast_Icc yz)
+    · rintro u ⟨xu, uz⟩ v ⟨xv, vz⟩
+      rw [Icc_inter_Icc, sup_of_le_right xu, inf_of_le_right vz, ←
+        hfs ⟨xu, uz.trans zy⟩ ⟨xv, vz.trans zy⟩, Icc_inter_Icc, sup_of_le_right xu,
+        inf_of_le_right (vz.trans zy)]
   · rintro u ⟨xu, uz⟩ v ⟨xv, vz⟩
     rw [Icc_inter_Icc, sup_of_le_right xu, inf_of_le_right vz, ←
       hft ⟨yx.trans xu, uz⟩ ⟨yx.trans xv, vz⟩, Icc_inter_Icc, sup_of_le_right (yx.trans xu),

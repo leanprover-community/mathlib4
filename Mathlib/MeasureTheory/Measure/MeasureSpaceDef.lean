@@ -29,6 +29,10 @@ extension of the restricted measure.
 
 Measures on `α` form a complete lattice, and are closed under scalar multiplication with `ℝ≥0∞`.
 
+## Notation
+
+TODO add this!
+
 ## Implementation notes
 
 Given `μ : Measure α`, `μ s` is the value of the *outer measure* applied to `s`.
@@ -74,23 +78,21 @@ namespace MeasureTheory
 measurable sets, with the additional assumption that the outer measure is the canonical
 extension of the restricted measure. -/
 structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α where
-  m_iUnion ⦃f : ℕ → Set α⦄ :
-    (∀ i, MeasurableSet (f i)) →
-      Pairwise (Disjoint on f) → measureOf (⋃ i, f i) = ∑' i, measureOf (f i)
+  m_iUnion ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
+    toOuterMeasure (⋃ i, f i) = ∑' i, toOuterMeasure (f i)
   trimmed : toOuterMeasure.trim = toOuterMeasure
 #align measure_theory.measure MeasureTheory.Measure
 
-/-- Measure projections for a measure space.
+theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
+    Injective (toOuterMeasure : Measure α → OuterMeasure α)
+  | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
+#align measure_theory.measure.to_outer_measure_injective MeasureTheory.Measure.toOuterMeasure_injective
 
-For measurable sets this returns the measure assigned by the `measureOf` field in `Measure`.
-But we can extend this to _all_ sets, but using the outer measure. This gives us monotonicity and
-subadditivity for all sets.
--/
-instance Measure.instCoeFun [MeasurableSpace α] : CoeFun (Measure α) fun _ => Set α → ℝ≥0∞ :=
-  ⟨fun m => m.toOuterMeasure⟩
-#align measure_theory.measure.has_coe_to_fun MeasureTheory.Measure.instCoeFun
+instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α) ℝ≥0∞ where
+  coe μ := μ.toOuterMeasure
+  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h
 
-attribute [coe] Measure.toOuterMeasure
+#noalign measure_theory.measure.has_coe_to_fun
 
 section
 
@@ -99,7 +101,6 @@ variable [MeasurableSpace α] {μ μ₁ μ₂ : Measure α} {s s₁ s₂ t : Set
 namespace Measure
 
 /-! ### General facts about measures -/
-
 
 /-- Obtain a measure by giving a countably additive function that sends `∅` to `0`. -/
 def ofMeasurable (m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞) (m0 : m ∅ MeasurableSet.empty = 0)
@@ -128,11 +129,6 @@ theorem ofMeasurable_apply {m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞}
   inducedOuterMeasure_eq m0 mU hs
 #align measure_theory.measure.of_measurable_apply MeasureTheory.Measure.ofMeasurable_apply
 
-theorem toOuterMeasure_injective : Injective (toOuterMeasure : Measure α → OuterMeasure α) :=
-  fun ⟨m₁, u₁, h₁⟩ ⟨m₂, _u₂, _h₂⟩ _h => by
-  congr
-#align measure_theory.measure.to_outer_measure_injective MeasureTheory.Measure.toOuterMeasure_injective
-
 @[ext]
 theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :=
   toOuterMeasure_injective <| by
@@ -148,15 +144,20 @@ theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
 
 end Measure
 
-#noalign measure_theory.coe_to_outer_measure
+@[simp] theorem Measure.coe_toOuterMeasure (μ : Measure α) : ⇑μ.toOuterMeasure = μ := rfl
+#align measure_theory.coe_to_outer_measure MeasureTheory.Measure.coe_toOuterMeasure
 
-#noalign measure_theory.to_outer_measure_apply
+theorem Measure.toOuterMeasure_apply (μ : Measure α) (s : Set α) :
+    μ.toOuterMeasure s = μ s :=
+  rfl
+#align measure_theory.to_outer_measure_apply MeasureTheory.Measure.toOuterMeasure_apply
 
-theorem measure_eq_trim (s : Set α) : μ s = μ.toOuterMeasure.trim s := by rw [μ.trimmed]
+theorem measure_eq_trim (s : Set α) : μ s = μ.toOuterMeasure.trim s := by
+  rw [μ.trimmed, μ.coe_toOuterMeasure]
 #align measure_theory.measure_eq_trim MeasureTheory.measure_eq_trim
 
 theorem measure_eq_iInf (s : Set α) : μ s = ⨅ (t) (_ : s ⊆ t) (_ : MeasurableSet t), μ t := by
-  rw [measure_eq_trim, OuterMeasure.trim_eq_iInf]
+  rw [measure_eq_trim, OuterMeasure.trim_eq_iInf, μ.coe_toOuterMeasure]
 #align measure_theory.measure_eq_infi MeasureTheory.measure_eq_iInf
 
 /-- A variant of `measure_eq_iInf` which has a single `iInf`. This is useful when applying a
@@ -183,7 +184,7 @@ theorem measure_eq_extend (hs : MeasurableSet s) :
     exact hs
 #align measure_theory.measure_eq_extend MeasureTheory.measure_eq_extend
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem measure_empty : μ ∅ = 0 :=
   μ.empty
 #align measure_theory.measure_empty MeasureTheory.measure_empty
@@ -273,7 +274,7 @@ theorem measure_iUnion_null [Countable ι] {s : ι → Set α} : (∀ i, μ (s i
   μ.toOuterMeasure.iUnion_null
 #align measure_theory.measure_Union_null MeasureTheory.measure_iUnion_null
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem measure_iUnion_null_iff [Countable ι] {s : ι → Set α} :
     μ (⋃ i, s i) = 0 ↔ ∀ i, μ (s i) = 0 :=
   μ.toOuterMeasure.iUnion_null_iff
@@ -333,7 +334,7 @@ theorem measure_symmDiff_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s 
 
 @[simp]
 theorem measure_union_eq_top_iff : μ (s ∪ t) = ∞ ↔ μ s = ∞ ∨ μ t = ∞ :=
-  not_iff_not.1 <| by simp only [← lt_top_iff_ne_top, ← Ne.def, not_or, measure_union_lt_top_iff]
+  not_iff_not.1 <| by simp only [← lt_top_iff_ne_top, ← Ne.eq_def, not_or, measure_union_lt_top_iff]
 #align measure_theory.measure_union_eq_top_iff MeasureTheory.measure_union_eq_top_iff
 
 theorem exists_measure_pos_of_not_measure_iUnion_null [Countable ι] {s : ι → Set α}
@@ -362,6 +363,7 @@ theorem measure_inter_null_of_null_left {S : Set α} (T : Set α) (h : μ S = 0)
 #align measure_theory.measure_inter_null_of_null_left MeasureTheory.measure_inter_null_of_null_left
 
 /-! ### The almost everywhere filter -/
+section ae
 
 /-- The “almost everywhere” filter of co-null sets. -/
 def Measure.ae {α : Type*} {_m : MeasurableSpace α} (μ : Measure α) : Filter α :=
@@ -369,16 +371,27 @@ def Measure.ae {α : Type*} {_m : MeasurableSpace α} (μ : Measure α) : Filter
     measure_mono_null hs ht
 #align measure_theory.measure.ae MeasureTheory.Measure.ae
 
--- mathport name: «expr∀ᵐ ∂ , »
+/-- `∀ᵐ a ∂μ, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
+
+This is notation for `Filter.Eventually p (Measure.ae μ)`. -/
 notation3 "∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| Measure.ae μ) => r
 
--- mathport name: «expr∃ᵐ ∂ , »
+/-- `∃ᵐ a ∂μ, p a` means that `p` holds `∂μ`-frequently,
+i.e. `p` holds on a set of positive measure.
+
+This is notation for `Filter.Frequently p (Measure.ae μ)`. -/
 notation3 "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measure.ae μ) => r
 
--- mathport name: «expr =ᵐ[ ] »
+/-- `f =ᵐ[μ] g` means `f` and `g` are eventually equal along the a.e. filter,
+i.e. `f=g` away from a null set.
+
+This is notation for `Filter.EventuallyEq (Measure.ae μ) f g`. -/
 notation:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (Measure.ae μ) f g
 
--- mathport name: «expr ≤ᵐ[ ] »
+/-- `f ≤ᵐ[μ] g` means `f` is eventually less than `g` along the a.e. filter,
+i.e. `f ≤ g` away from a null set.
+
+This is notation for `Filter.EventuallyLE (Measure.ae μ) f g`. -/
 notation:50 f " ≤ᵐ[" μ:50 "] " g:50 => Filter.EventuallyLE (Measure.ae μ) f g
 
 theorem mem_ae_iff {s : Set α} : s ∈ μ.ae ↔ μ sᶜ = 0 :=
@@ -595,7 +608,7 @@ theorem measure_mono_ae (H : s ≤ᵐ[μ] t) : μ s ≤ μ t :=
   calc
     μ s ≤ μ (s ∪ t) := measure_mono <| subset_union_left s t
     _ = μ (t ∪ s \ t) := by rw [union_diff_self, Set.union_comm]
-    _ ≤ μ t + μ (s \ t) := (measure_union_le _ _)
+    _ ≤ μ t + μ (s \ t) := measure_union_le _ _
     _ = μ t := by rw [ae_le_set.1 H, add_zero]
 #align measure_theory.measure_mono_ae MeasureTheory.measure_mono_ae
 
@@ -613,6 +626,8 @@ alias _root_.Filter.EventuallyEq.measure_eq := measure_congr
 theorem measure_mono_null_ae (H : s ≤ᵐ[μ] t) (ht : μ t = 0) : μ s = 0 :=
   nonpos_iff_eq_zero.1 <| ht ▸ H.measure_le
 #align measure_theory.measure_mono_null_ae MeasureTheory.measure_mono_null_ae
+
+end ae
 
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
@@ -668,11 +683,16 @@ add_decl_doc volume
 
 section MeasureSpace
 
--- mathport name: «expr∀ᵐ , »
+/-- `∀ᵐ a, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
+
+This is notation for `Filter.Eventually P (Measure.ae MeasureSpace.volume)`. -/
 notation3 "∀ᵐ "(...)", "r:(scoped P =>
   Filter.Eventually P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
--- mathport name: «expr∃ᵐ , »
+/-- `∃ᵐ a, p a` means that `p` holds frequently, i.e. on a set of positive measure,
+w.r.t. the volume measure.
+
+This is notation for `Filter.Frequently P (Measure.ae MeasureSpace.volume)`. -/
 notation3 "∃ᵐ "(...)", "r:(scoped P =>
   Filter.Frequently P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
