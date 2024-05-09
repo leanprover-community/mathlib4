@@ -64,8 +64,6 @@ lemma jacobiTheta₂''_conj (z τ : ℂ) :
 /-- Restatement of `jacobiTheta₂'_add_left'`: the function `jacobiTheta₂''` is 1-periodic in `z`. -/
 lemma jacobiTheta₂''_add_left (z τ : ℂ) : jacobiTheta₂'' (z + 1) τ = jacobiTheta₂'' z τ := by
   simp only [jacobiTheta₂'', add_mul z 1, one_mul, jacobiTheta₂'_add_left', jacobiTheta₂_add_left']
-  -- this proof should ideally be done using `field_simp` and `ring_nf` but these are unusably
-  -- slow at the time of writing
   generalize jacobiTheta₂ (z * τ) τ = J
   generalize jacobiTheta₂' (z * τ) τ = J'
   -- clear denominator
@@ -506,12 +504,9 @@ lemma differentiableAt_sinZeta (a : UnitAddCircle) :
 /-- Formula for `hurwitzZetaOdd` as a Dirichlet series in the convergence range (sum over `ℤ`). -/
 theorem hasSum_int_hurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℤ ↦ SignType.sign (n + a) / (↑|n + a| : ℂ) ^ s / 2) (hurwitzZetaOdd a s) := by
-  rw [hurwitzZetaOdd]
   refine ((hasSum_int_completedHurwitzZetaOdd a hs).div_const (Gammaℝ _)).congr_fun fun n ↦ ?_
-  simp_rw [div_right_comm _ _ (Gammaℝ _)]
-  rw [mul_div_cancel_left₀ _ (Gammaℝ_ne_zero_of_re_pos ?_)]
-  rw [add_re, one_re]
-  positivity
+  have : 0 < re (s + 1) := by rw [add_re, one_re]; positivity
+  simp only [div_right_comm _ _ (Gammaℝ _), mul_div_cancel_left₀ _ (Gammaℝ_ne_zero_of_re_pos this)]
 
 /-- Formula for `hurwitzZetaOdd` as a Dirichlet series in the convergence range, with sum over `ℕ`
 (version with absolute values) -/
@@ -540,22 +535,19 @@ lemma hasSum_nat_hurwitzZetaOdd_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : �
 
 /-- Formula for `sinZeta` as a Dirichlet series in the convergence range, with sum over `ℤ`. -/
 theorem hasSum_int_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
-    HasSum (fun n : ℤ ↦ -I * Int.sign n * cexp (2 * π * I * a * n) / ↑|n| ^ s / 2)
-    (sinZeta a s) := by
+    HasSum (fun n : ℤ ↦ -I * n.sign * cexp (2 * π * I * a * n) / ↑|n| ^ s / 2) (sinZeta a s) := by
   rw [sinZeta]
   refine ((hasSum_int_completedSinZeta a hs).div_const (Gammaℝ (s + 1))).congr_fun fun n ↦ ?_
-  simp_rw [mul_assoc, div_right_comm _ _ (Gammaℝ _)]
-  rw [mul_div_cancel_left₀ _ (Gammaℝ_ne_zero_of_re_pos (?_ : 0 < (s + 1).re))]
-  rw [add_re, one_re]
-  positivity
+  have : 0 < re (s + 1) := by rw [add_re, one_re]; positivity
+  simp only [mul_assoc, div_right_comm _ _ (Gammaℝ _),
+    mul_div_cancel_left₀ _ (Gammaℝ_ne_zero_of_re_pos this)]
 
 /-- Formula for `sinZeta` as a Dirichlet series in the convergence range, with sum over `ℕ`. -/
 lemma hasSum_nat_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ Real.sin (2 * π * a * n) / (n : ℂ) ^ s) (sinZeta a s) := by
-  have hs' : s ≠ 0 := (fun h ↦ (not_lt.mpr zero_le_one) ((zero_re ▸ h ▸ hs)))
   have := (hasSum_int_sinZeta a hs).sum_nat_of_sum_int
-  simp_rw [abs_neg, Int.sign_neg, Int.cast_neg, Nat.abs_cast, Int.cast_natCast, mul_neg,
-    abs_zero, Int.cast_zero, zero_cpow hs', div_zero, zero_div, add_zero] at this
+  simp_rw [abs_neg, Int.sign_neg, Int.cast_neg, Nat.abs_cast, Int.cast_natCast, mul_neg, abs_zero,
+    Int.cast_zero, zero_cpow (ne_zero_of_one_lt_re hs), div_zero, zero_div, add_zero] at this
   simp_rw [push_cast, Complex.sin]
   refine this.congr_fun fun n ↦ ?_
   rcases ne_or_eq n 0 with h | rfl
