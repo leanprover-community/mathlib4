@@ -63,39 +63,6 @@ lemma measure_eq_iSup_measure_subset [SigmaFinite μ] (hs : MeasurableSet s) :
   · simp only [ne_eq, iSup_le_iff]
     exact fun _ _ _ hts ↦ measure_mono hts
 
-/-- Auxiliary lemma for `sFinite_of_absolutelyContinuous`. -/
-lemma sFinite_of_absolutelyContinuous_aux [IsFiniteMeasure ν]
-    (hμν : μ ≪ ν) (h : ∀ s, MeasurableSet s → ν s ≠ 0 → μ s = ∞) :
-    SFinite μ := by
-  suffices μ = ν.withDensity (fun _ ↦ ∞) by
-    rw [this]
-    exact sFinite_withDensity_of_measurable _ measurable_const
-  ext s hs
-  simp only [withDensity_const, Measure.smul_apply, smul_eq_mul]
-  by_cases hνs : ν s = 0
-  · simp [hνs, hμν hνs]
-  · simp [h s hs hνs, hνs]
-
-/-- Auxiliary lemma for `sFinite_of_absolutelyContinuous`. -/
-lemma sFinite_of_absolutelyContinuous_of_isFiniteMeasure [IsFiniteMeasure ν] (hμν : μ ≪ ν) :
-    SFinite μ := by
-  let s := sigmaFiniteSetWRT μ ν
-  have hs : MeasurableSet s := measurableSet_sigmaFiniteSetWRT μ ν
-  rw [← restrict_add_restrict_compl (μ := μ) hs]
-  have : SFinite (μ.restrict sᶜ) := by
-    refine sFinite_of_absolutelyContinuous_aux (hμν.restrict sᶜ) (fun t ht hνt ↦ ?_)
-    rw [restrict_apply ht] at hνt ⊢
-    refine measure_eq_top_of_subset_compl_sigmaFiniteSetWRT (ht.inter hs.compl) ?_ hνt
-    exact Set.inter_subset_right _ _
-  infer_instance
-
-/-- If `μ ≪ ν` and `ν` is s-finite, then `μ` is s-finite. -/
-theorem sFinite_of_absolutelyContinuous [SFinite ν] (hμν : μ ≪ ν) : SFinite μ :=
-  sFinite_of_absolutelyContinuous_of_isFiniteMeasure (hμν.trans (absolutelyContinuous_toFinite ν))
-
-instance [SFinite μ] (f : α → ENNReal) : SFinite (μ.withDensity f) :=
-  sFinite_of_absolutelyContinuous (withDensity_absolutelyContinuous _ _)
-
 /-! ### IsZeroTopSet -/
 
 def IsZeroTopSet (s : Set α) (μ : Measure α) : Prop :=

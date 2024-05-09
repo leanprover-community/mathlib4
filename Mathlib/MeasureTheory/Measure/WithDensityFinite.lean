@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
+import Mathlib.MeasureTheory.Decomposition.Exhaustion
 
 /-!
 # s-finite measures can be written as `withDensity` of a finite measure
@@ -33,11 +34,17 @@ In all these definitions and the results below, `μ` is an s-finite measure (`SF
 
 ## Main statements
 
+Properties of `toFinite` and `toSigmaFinite`:
+
 * `absolutelyContinuous_toFinite`: `μ ≪ μ.toFinite`.
 * `toFinite_absolutelyContinuous`: `μ.toFinite ≪ μ`.
 * `withDensity_densitytoFinite`: `μ.toFinite.withDensity μ.densityToFinite = μ`.
 * `withDensity_densityToSigmaFinite`: `μ.toSigmaFinite.withDensity μ.densityToSigmaFinite = μ`.
 * `toSigmaFinite_eq_self_iff`: `μ.toSigmaFinite = μ ↔ SigmaFinite μ`.
+
+Others:
+
+*
 
 -/
 
@@ -290,5 +297,25 @@ lemma toSigmaFinite_eq_self (μ : Measure α) [SigmaFinite μ] : μ.toSigmaFinit
 lemma toSigmaFinite_eq_self_iff (μ : Measure α) [SFinite μ] :
     μ.toSigmaFinite = μ ↔ SigmaFinite μ :=
   ⟨fun h ↦ h.symm ▸ inferInstance, fun _ ↦ toSigmaFinite_eq_self μ⟩
+
+section WithDensitySFinite
+
+variable {μ ν : Measure α}
+
+/-- Auxiliary lemma for `sFinite_of_absolutelyContinuous`. -/
+lemma sFinite_of_absolutelyContinuous_of_isFiniteMeasure [IsFiniteMeasure ν] (hμν : μ ≪ ν) :
+    SFinite μ := by
+  rw [← Measure.restrict_add_restrict_compl (μ := μ) (measurableSet_sigmaFiniteSetWRT μ ν),
+    restrict_compl_sigmaFiniteSetWRT hμν]
+  infer_instance
+
+/-- If `μ ≪ ν` and `ν` is s-finite, then `μ` is s-finite. -/
+theorem sFinite_of_absolutelyContinuous [SFinite ν] (hμν : μ ≪ ν) : SFinite μ :=
+  sFinite_of_absolutelyContinuous_of_isFiniteMeasure (hμν.trans (absolutelyContinuous_toFinite ν))
+
+instance [SFinite μ] (f : α → ENNReal) : SFinite (μ.withDensity f) :=
+  sFinite_of_absolutelyContinuous (withDensity_absolutelyContinuous _ _)
+
+end WithDensitySFinite
 
 end MeasureTheory

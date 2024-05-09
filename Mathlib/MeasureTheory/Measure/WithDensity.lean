@@ -627,6 +627,10 @@ lemma sFinite_withDensity_of_measurable (μ : Measure α) [SFinite μ]
     fun n ↦ sFinite_withDensity_of_sigmaFinite_of_measurable _ hf
   infer_instance
 
+instance [SFinite μ] (c : ℝ≥0∞) : SFinite (c • μ) := by
+  rw [← withDensity_const]
+  exact sFinite_withDensity_of_measurable _ measurable_const
+
 end SFinite
 
 variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ]

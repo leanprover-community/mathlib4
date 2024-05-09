@@ -177,4 +177,16 @@ lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT [IsFiniteMeasure ν]
         (μ.sigmaFiniteSetWRT ν ∪ s) ((measurableSet_sigmaFiniteSetWRT μ ν).union hs)
   exact h_lt.not_le h_le
 
+lemma restrict_compl_sigmaFiniteSetWRT [IsFiniteMeasure ν] (hμν : μ ≪ ν) :
+    μ.restrict (μ.sigmaFiniteSetWRT ν)ᶜ = ∞ • ν.restrict (μ.sigmaFiniteSetWRT ν)ᶜ := by
+  ext s hs
+  rw [Measure.restrict_apply' (measurableSet_sigmaFiniteSetWRT _ _).compl,
+    Measure.smul_apply, smul_eq_mul,
+    Measure.restrict_apply' (measurableSet_sigmaFiniteSetWRT _ _).compl]
+  by_cases hνs : ν (s ∩ (μ.sigmaFiniteSetWRT ν)ᶜ) = 0
+  · rw [hνs, mul_zero]
+    exact hμν hνs
+  · rw [ENNReal.top_mul hνs, measure_eq_top_of_subset_compl_sigmaFiniteSetWRT
+      (hs.inter (measurableSet_sigmaFiniteSetWRT _ _).compl) (Set.inter_subset_right _ _) hνs]
+
 end MeasureTheory
