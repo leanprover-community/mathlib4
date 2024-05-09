@@ -78,23 +78,21 @@ namespace MeasureTheory
 measurable sets, with the additional assumption that the outer measure is the canonical
 extension of the restricted measure. -/
 structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α where
-  m_iUnion ⦃f : ℕ → Set α⦄ :
-    (∀ i, MeasurableSet (f i)) →
-      Pairwise (Disjoint on f) → measureOf (⋃ i, f i) = ∑' i, measureOf (f i)
+  m_iUnion ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
+    toOuterMeasure (⋃ i, f i) = ∑' i, toOuterMeasure (f i)
   trimmed : toOuterMeasure.trim = toOuterMeasure
 #align measure_theory.measure MeasureTheory.Measure
 
-/-- Measure projections for a measure space.
+theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
+    Injective (toOuterMeasure : Measure α → OuterMeasure α)
+  | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
+#align measure_theory.measure.to_outer_measure_injective MeasureTheory.Measure.toOuterMeasure_injective
 
-For measurable sets this returns the measure assigned by the `measureOf` field in `Measure`.
-But we can extend this to _all_ sets, but using the outer measure. This gives us monotonicity and
-subadditivity for all sets.
--/
-instance Measure.instCoeFun [MeasurableSpace α] : CoeFun (Measure α) fun _ => Set α → ℝ≥0∞ :=
-  ⟨fun m => m.toOuterMeasure⟩
-#align measure_theory.measure.has_coe_to_fun MeasureTheory.Measure.instCoeFun
+instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α) ℝ≥0∞ where
+  coe μ := μ.toOuterMeasure
+  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h
 
-attribute [coe] Measure.toOuterMeasure
+#noalign measure_theory.measure.has_coe_to_fun
 
 section
 
@@ -103,7 +101,6 @@ variable [MeasurableSpace α] {μ μ₁ μ₂ : Measure α} {s s₁ s₂ t : Set
 namespace Measure
 
 /-! ### General facts about measures -/
-
 
 /-- Obtain a measure by giving a countably additive function that sends `∅` to `0`. -/
 def ofMeasurable (m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞) (m0 : m ∅ MeasurableSet.empty = 0)
@@ -132,11 +129,6 @@ theorem ofMeasurable_apply {m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞}
   inducedOuterMeasure_eq m0 mU hs
 #align measure_theory.measure.of_measurable_apply MeasureTheory.Measure.ofMeasurable_apply
 
-theorem toOuterMeasure_injective : Injective (toOuterMeasure : Measure α → OuterMeasure α) :=
-  fun ⟨m₁, u₁, h₁⟩ ⟨m₂, _u₂, _h₂⟩ _h => by
-  congr
-#align measure_theory.measure.to_outer_measure_injective MeasureTheory.Measure.toOuterMeasure_injective
-
 @[ext]
 theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :=
   toOuterMeasure_injective <| by
@@ -152,15 +144,20 @@ theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
 
 end Measure
 
-#noalign measure_theory.coe_to_outer_measure
+@[simp] theorem Measure.coe_toOuterMeasure (μ : Measure α) : ⇑μ.toOuterMeasure = μ := rfl
+#align measure_theory.coe_to_outer_measure MeasureTheory.Measure.coe_toOuterMeasure
 
-#noalign measure_theory.to_outer_measure_apply
+theorem Measure.toOuterMeasure_apply (μ : Measure α) (s : Set α) :
+    μ.toOuterMeasure s = μ s :=
+  rfl
+#align measure_theory.to_outer_measure_apply MeasureTheory.Measure.toOuterMeasure_apply
 
-theorem measure_eq_trim (s : Set α) : μ s = μ.toOuterMeasure.trim s := by rw [μ.trimmed]
+theorem measure_eq_trim (s : Set α) : μ s = μ.toOuterMeasure.trim s := by
+  rw [μ.trimmed, μ.coe_toOuterMeasure]
 #align measure_theory.measure_eq_trim MeasureTheory.measure_eq_trim
 
 theorem measure_eq_iInf (s : Set α) : μ s = ⨅ (t) (_ : s ⊆ t) (_ : MeasurableSet t), μ t := by
-  rw [measure_eq_trim, OuterMeasure.trim_eq_iInf]
+  rw [measure_eq_trim, OuterMeasure.trim_eq_iInf, μ.coe_toOuterMeasure]
 #align measure_theory.measure_eq_infi MeasureTheory.measure_eq_iInf
 
 /-- A variant of `measure_eq_iInf` which has a single `iInf`. This is useful when applying a
@@ -187,7 +184,7 @@ theorem measure_eq_extend (hs : MeasurableSet s) :
     exact hs
 #align measure_theory.measure_eq_extend MeasureTheory.measure_eq_extend
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem measure_empty : μ ∅ = 0 :=
   μ.empty
 #align measure_theory.measure_empty MeasureTheory.measure_empty
@@ -277,7 +274,7 @@ theorem measure_iUnion_null [Countable ι] {s : ι → Set α} : (∀ i, μ (s i
   μ.toOuterMeasure.iUnion_null
 #align measure_theory.measure_Union_null MeasureTheory.measure_iUnion_null
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem measure_iUnion_null_iff [Countable ι] {s : ι → Set α} :
     μ (⋃ i, s i) = 0 ↔ ∀ i, μ (s i) = 0 :=
   μ.toOuterMeasure.iUnion_null_iff
