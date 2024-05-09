@@ -5,7 +5,7 @@ Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.RingTheory.HahnSeries.Multiplication
+import Mathlib.RingTheory.HahnSeries.Binomial
 
 /-!
 # Vertex operators
@@ -37,22 +37,24 @@ abbrev HetVertexOperator (Γ : Type*) [PartialOrder Γ] (R : Type*) [CommRing R]
     (V : Type*) (W : Type*) [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] :=
   V →ₗ[R] (HahnModule Γ R W)
 
-namespace VertexAlg
+namespace HetVertexOperator
 
-section
+section Coeff
 
 variable {Γ : Type*} [PartialOrder Γ] {R : Type*} {V W : Type*} [CommRing R]
   [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
+open HahnModule
+
 @[ext]
-theorem HetVertexOperator.ext (A B : HetVertexOperator Γ R V W) (h : ∀(v : V), A v = B v) :
+theorem ext (A B : HetVertexOperator Γ R V W) (h : ∀(v : V), A v = B v) :
     A = B := LinearMap.ext h
 
 /-- The coefficient of a heterogeneous vertex operator, viewed as a formal power series with
 coefficients in linear maps. -/
 @[simps]
 def coeff (A : HetVertexOperator Γ R V W) (n : Γ) : V →ₗ[R] W where
-  toFun := fun (x : V) => (A x).coeff n
+  toFun := fun (x : V) => ((of R).symm (A x)).coeff n
   map_add' := by
       intro x y
       simp only [map_add, HahnSeries.add_coeff', Pi.add_apply, forall_const]
@@ -62,8 +64,9 @@ def coeff (A : HetVertexOperator Γ R V W) (n : Γ) : V →ₗ[R] W where
       simp only [map_smul, HahnSeries.smul_coeff, RingHom.id_apply, forall_const]
       exact rfl
 
-theorem coeff.isPWOsupport (A : HetVertexOperator Γ R V W) (v : V) : (A v).coeff.support.IsPWO :=
-  (A v).isPWO_support'
+theorem coeff.isPWOsupport (A : HetVertexOperator Γ R V W) (v : V) :
+    ((of R).symm (A v)).coeff.support.IsPWO :=
+  ((of R).symm (A v)).isPWO_support'
 
 @[ext]
 theorem coeff_inj : Function.Injective (coeff : HetVertexOperator Γ R V W → Γ → (V →ₗ[R] W)) := by
@@ -74,7 +77,7 @@ theorem coeff_inj : Function.Injective (coeff : HetVertexOperator Γ R V W → �
 /-- Given a coefficient function valued in linear maps satisfying a partially well-ordered support
 condition, we produce a heterogeneous vertex operator. -/
 @[simps]
-def HetVertexOperator.of_coeff (f : Γ → V →ₗ[R] W)
+def of_coeff (f : Γ → V →ₗ[R] W)
     (hf : ∀(x : V), (Function.support (fun g => f g x)).IsPWO) : HetVertexOperator Γ R V W where
   toFun := fun x => {
     coeff := fun g => f g x
@@ -89,22 +92,52 @@ def HetVertexOperator.of_coeff (f : Γ → V →ₗ[R] W)
     simp only [map_smul, RingHom.id_apply]
     exact rfl
 
-end
+@[simp]
+theorem add_coeff_apply (A B : HetVertexOperator Γ R V W) (n : Γ) :
+    (A + B).coeff n = A.coeff n + B.coeff n := by
+  ext v
+  simp only [coeff_apply, LinearMap.add_apply, of_symm_add, HahnSeries.add_coeff', Pi.add_apply]
 
--- Change this to OrderCancelVAdd Γ Γ' !!!
-variable {Γ : Type*} [OrderedCancelAddCommMonoid Γ] {R : Type*} {V W : Type*} [CommRing R]
-  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+@[simp]
+theorem add_coeff (A B : HetVertexOperator Γ R V W) : (A + B).coeff = A.coeff + B.coeff := by
+  ext1 n
+  exact add_coeff_apply A B n
+
+@[simp]
+theorem smul_coeff_apply (A : HetVertexOperator Γ R V W) (r : R) (n : Γ) :
+    (r • A).coeff n = r • (A.coeff) n := by
+  ext v
+  simp only [coeff_apply, LinearMap.smul_apply, of_symm_smul, HahnSeries.smul_coeff]
+
+@[simp]
+theorem smul_coeff (A : HetVertexOperator Γ R V W) (r : R) : (r • A).coeff = r • (A.coeff) := by
+  ext1 n
+  exact smul_coeff_apply A r n
+
+@[simp]
+theorem nsmul_coeff (A : HetVertexOperator Γ R V W) {n : ℕ} : (n • A).coeff = n • (A.coeff) := by
+  induction n with
+  | zero => ext; simp
+  | succ n ih => ext; simp [add_nsmul, add_coeff, ih]
+
+end Coeff
+
+section Module
+
+variable {Γ Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ']
+  [OrderedCancelAddAction Γ Γ'] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V] [Module R V]
+  [AddCommGroup W] [Module R W]
 
 /-- The scalar multiplication of Hahn series on heterogeneous vertex operators. -/
-def HahnSMul (x : HahnSeries Γ R) (A : HetVertexOperator Γ R V W) :
-    HetVertexOperator Γ R V W where
+def HahnSMul (x : HahnSeries Γ R) (A : HetVertexOperator Γ' R V W) :
+    HetVertexOperator Γ' R V W where
   toFun v := x • (A v)
   map_add' u v := by simp only [map_add, smul_add]
   map_smul' r v := by
     simp only [map_smul, RingHom.id_apply]
     exact (HahnModule.smul_comm r x (A v)).symm
 
-instance instHahnModule : Module (HahnSeries Γ R) (HetVertexOperator Γ R V W) where
+instance instHahnModule : Module (HahnSeries Γ R) (HetVertexOperator Γ' R V W) where
   smul x A := HahnSMul x A
   one_smul _ := by
     ext _ _
@@ -127,7 +160,14 @@ instance instHahnModule : Module (HahnSeries Γ R) (HetVertexOperator Γ R V W) 
     ext _ _
     simp only [zero_smul, LinearMap.zero_apply, HahnModule.of_symm_zero, HahnSeries.zero_coeff]
 
-variable {Γ' : Type*} [OrderedCancelAddCommMonoid Γ']
+end  Module
+
+section Products
+
+variable {Γ Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [OrderedCancelAddCommMonoid Γ'] {R : Type*}
+  [CommRing R] {V W : Type*} [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+
+open HahnModule
 
 /-- The composite of two heterogeneous vertex operators acting on a vector, as an iterated Hahn
   series.-/
@@ -136,7 +176,7 @@ def CompHahnSeries {U : Type*} [AddCommGroup U] [Module R U] (A : HetVertexOpera
     (B : HetVertexOperator Γ' R U V) (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
   coeff g' := A (coeff B g' u)
   isPWO_support' := by
-    refine Set.IsPWO.mono ((B u).isPWO_support') ?_
+    refine Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') ?_
     simp_all only [coeff_apply, Function.support_subset_iff, ne_eq, Function.mem_support]
     intro g' hg' hAB
     apply hg'
@@ -161,7 +201,7 @@ theorem CompHahnSeries.sMul {U : Type*} [AddCommGroup U] [Module R U]
 
 /-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
 @[simps]
-def HetComp {U : Type*} [AddCommGroup U] [Module R U] (A : HetVertexOperator Γ R V W)
+def hetComp {U : Type*} [AddCommGroup U] [Module R U] (A : HetVertexOperator Γ R V W)
     (B : HetVertexOperator Γ' R U V) : HetVertexOperator (Γ' ×ₗ Γ) R U W where
   toFun u := HahnModule.of R (HahnSeries.ofIterate (CompHahnSeries A B u))
   map_add' := by
@@ -175,6 +215,8 @@ def HetComp {U : Type*} [AddCommGroup U] [Module R U] (A : HetVertexOperator Γ 
     simp only [HahnSeries.ofIterate, CompHahnSeries.sMul, Equiv.symm_apply_apply, RingHom.id_apply,
       HahnSeries.smul_coeff, CompHahnSeries_coeff, coeff_apply]
     exact rfl
+
+-- TODO: comp_assoc
 
 /-- The restriction of a heterogeneous vertex operator on a lex product to an element of the left
 factor. -/
@@ -217,5 +259,74 @@ def ResRight.linearMap (g' : Γ') :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+end Products
 
-end VertexAlg
+section Binomial
+
+variable {Γ : Type*} [OrderedCancelAddCommMonoid Γ] {R : Type*} {V W : Type*} [CommRing R]
+  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+
+theorem lex_basis_lt : (toLex (0,1) : ℤ ×ₗ ℤ) < (toLex (1,0) : ℤ ×ₗ ℤ) := by decide
+--#find_home! lex_basis_lt --[Mathlib.Data.Prod.Lex]
+
+theorem toLex_vAdd_of_sub (k l m n : ℤ) :
+    toLex ((m : ℤ) , (n : ℤ)) +ᵥ toLex (k - m, l - n) = toLex (k, l) := by
+  rw [vadd_eq_add, ← @toLex_add, Prod.mk_add_mk, Int.add_comm, Int.sub_add_cancel, Int.add_comm,
+    Int.sub_add_cancel]
+
+/-- `-Y + X` as a unit of `R((X))((Y))` -/
+def subLeft (R : Type*) [CommRing R] : (HahnSeries (ℤ ×ₗ ℤ) R)ˣ :=
+  HahnSeries.UnitBinomial (AddGroup.isAddUnit (toLex (0,1))) lex_basis_lt (isUnit_neg_one (α := R))
+    (1 : R)
+
+theorem subLeft_eq : (subLeft R).val = HahnSeries.single (toLex (1,0)) 1 +
+    HahnSeries.single (toLex (0,1)) (-1 : R) := by
+  rw [subLeft, HahnSeries.UnitBinomial_val, add_comm, IsUnit.unit_spec]
+
+@[simp]
+theorem subLeft_leadingCoeff [Nontrivial R] : (subLeft R).val.leadingCoeff = (-1 : R) := by
+  rw [subLeft_eq, add_comm, HahnSeries.leadingCoeff_single_add_single lex_basis_lt (by simp)]
+
+theorem subLeft_order [Nontrivial R] : (subLeft R).val.order = toLex (0,1) := by
+  rw [subLeft_eq, add_comm, HahnSeries.order_single_add_single lex_basis_lt (by simp)]
+
+theorem subLeft_smul_coeff (A : HetVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : ℤ) :
+    ((subLeft R).val • A).coeff (toLex (k, l)) =
+      A.coeff (toLex (k - 1, l)) - A.coeff (toLex (k, l - 1)) := by
+  rw [subLeft_eq, add_smul, add_coeff_apply]
+  ext v
+  simp only [LinearMap.add_apply, coeff_apply, LinearMap.smul_apply, LinearMap.sub_apply]
+  nth_rw 1 [← toLex_vAdd_of_sub k l 1 0]
+  rw [sub_zero, HahnModule.single_smul_coeff_add, one_smul, ← toLex_vAdd_of_sub k l 0 1,
+    sub_zero, HahnModule.single_smul_coeff_add, neg_one_smul, ← sub_eq_add_neg]
+
+--describe coefficients of powers
+--describe coefficients of `subLeft R • A` for `A : HetVO`.
+
+/-- `X - Y` as a unit of `R((Y))((X))` -/
+def subRight (R : Type*) [CommRing R] : (HahnSeries (ℤ ×ₗ ℤ) R)ˣ :=
+    HahnSeries.UnitBinomial (AddGroup.isAddUnit (toLex (0,1))) lex_basis_lt (isUnit_one (M := R))
+    (-1 : R)
+
+theorem subRight_eq : (subRight R).val = HahnSeries.single (toLex (1,0)) (-1 : R) +
+    HahnSeries.single (toLex (0,1)) (1 : R) := by
+  rw [subRight, HahnSeries.UnitBinomial_val, add_comm, IsUnit.unit_spec]
+
+theorem subRight_leadingCoeff [Nontrivial R] : (subRight R).val.leadingCoeff = (1 : R) := by
+  rw [subRight_eq, add_comm, HahnSeries.leadingCoeff_single_add_single lex_basis_lt one_ne_zero]
+
+theorem subRight_order [Nontrivial R] : (subRight R).val.order = toLex (0,1) := by
+  rw [subRight_eq, add_comm, HahnSeries.order_single_add_single lex_basis_lt one_ne_zero]
+
+--describe coefficients of powers
+
+/-!
+theorem subLeft_smul_eq_subRight_smul (A B : HetVertexOperator (ℤ ×ₗ ℤ) R V W)
+    (h : ∀ (k l : ℤ), A.coeff (toLex (k, l)) = B.coeff (toLex (l, k))) (k l : ℤ) :
+    ((subLeft R).val • A).coeff (toLex (k, l)) = ((subRight R).val • B).coeff (toLex (l, k)) := by
+  sorry
+-/
+
+end Binomial
+
+end HetVertexOperator

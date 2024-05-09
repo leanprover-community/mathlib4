@@ -325,7 +325,7 @@ theorem choose_zero_succ (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S
     multichoose_succ_neg_cast]
 
 theorem choose_zero_pos (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] [BinomialRing S]
-    (k : ℕ) (h_pos: 0 < k) : choose (0 : S) k = 0 := by
+    {k : ℕ} (h_pos: 0 < k) : choose (0 : S) k = 0 := by
   rw [← Nat.succ_pred_eq_of_pos h_pos, choose_zero_succ]
 
 theorem choose_zero_ite (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] [BinomialRing S]
@@ -338,7 +338,7 @@ theorem choose_zero_ite (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S]
   constructor
   exact hk
   rw [← @Nat.le_zero, Nat.not_le] at hk
-  rw [choose_zero_pos S k hk]
+  rw [choose_zero_pos S hk]
 
 theorem choose_one_right' (r : R) : choose r 1 = r ^ 1 := by
   rw [choose, Nat.cast_one, sub_add_cancel, multichoose_one_right']

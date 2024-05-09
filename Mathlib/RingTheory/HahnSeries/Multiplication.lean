@@ -169,6 +169,8 @@ instance instRSMulZeroClass [PartialOrder Γ] [SMulZeroClass R V] :
     SMulZeroClass R (HahnModule Γ R V) :=
   inferInstanceAs <| SMulZeroClass R (HahnSeries Γ V)
 
+@[simp] theorem of_smul [PartialOrder Γ] [SMulZeroClass R V] (r : R) (x : HahnSeries Γ V) :
+  (of R) (r • x) = r • (of R) x := rfl
 @[simp] theorem of_symm_smul [PartialOrder Γ] [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
   (of R).symm (r • x) = r • (of R).symm x := rfl
 
@@ -607,6 +609,15 @@ private theorem mul_smul' [Semiring R] [Module R V] (x y : HahnSeries Γ R)
 
 instance instRModule [Semiring R] [Module R V] : Module R (HahnModule Γ R V) :=
   inferInstanceAs <| Module R (HahnSeries Γ V)
+
+@[simps]
+def lof (R : Type*) [Semiring R] [Module R V] : HahnSeries Γ V ≃ₗ[R] HahnModule Γ R V where
+  toFun := of R
+  map_add' := of_add
+  map_smul' := of_smul
+  invFun := (of R).symm
+  left_inv := congrFun rfl
+  right_inv := congrFun rfl
 
 instance instModule [Semiring R] [Module R V] : Module (HahnSeries Γ R)
     (HahnModule Γ' R V) := {

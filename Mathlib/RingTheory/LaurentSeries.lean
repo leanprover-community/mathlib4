@@ -44,7 +44,6 @@ namespace LaurentSeries
 section HasseDeriv
 
 /-- The Hasse derivative of Laurent series, as a linear map. -/
-@[simps]
 def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] (k : ℕ) :
     LaurentSeries V →ₗ[R] LaurentSeries V where
   toFun f := HahnSeries.ofSuppBddBelow (fun (n : ℤ) => (Ring.choose (n + k) k) • f.coeff (n + k))
@@ -59,21 +58,24 @@ def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
 
 variable [Semiring R] {V : Type*} [AddCommGroup V] [Module R V]
 
+@[simp]
 theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
     (hasseDeriv R k f).coeff n = Ring.choose (n + k) k • f.coeff (n + k) :=
   rfl
 
 theorem hasseDeriv_zero' (f : LaurentSeries V) : hasseDeriv R 0 f = f := by
-  simp only [hasseDeriv_apply, Nat.cast_zero, add_zero, Ring.choose_zero_right, one_smul]
-  exact rfl
+  ext n
+  simp
 
 theorem hasseDeriv_single' (k : ℕ) (n : ℤ) (x : V) :
     hasseDeriv R k (single (n + k) x) = single n ((Ring.choose (n + k) k) • x) := by
-  ext
-  simp_rw [hasseDeriv, single, Pi.single]
-  simp only [ZeroHom.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
-  simp_rw [Function.update_apply, HahnSeries.ofSuppBddBelow_coeff]
-  simp_all only [add_left_inj, Pi.zero_apply, smul_ite, smul_zero]
+  ext m
+  simp only [hasseDeriv_coeff]
+  by_cases h : m = n
+  · rw [h]
+    simp
+  · have _ : m + k ≠ n + k := by omega
+    simp_all
 
 theorem hasseDeriv_single (k : ℕ) (n : ℤ) (x : V) :
     hasseDeriv R k (single n x) = single (n - k) ((Ring.choose n k) • x) := by
@@ -90,7 +92,7 @@ theorem hasseDeriv_comp_coeff (k l : ℕ) (f : LaurentSeries V) (n : ℤ) :
 theorem hasseDeriv_comp' (k l : ℕ) (f : LaurentSeries V) :
     hasseDeriv R k (hasseDeriv R l f) = (k + l).choose k • hasseDeriv R (k + l) f := by
   ext n
-  rw [@hasseDeriv_comp_coeff R]
+  rw [hasseDeriv_comp_coeff (R := R)]
 
 /-- The derivative of a Laurent series. -/
 def derivative (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] :

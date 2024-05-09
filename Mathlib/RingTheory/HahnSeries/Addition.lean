@@ -70,6 +70,12 @@ theorem add_coeff {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a
   rfl
 #align hahn_series.add_coeff HahnSeries.add_coeff
 
+@[simp]
+theorem nsmul_coeff {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [add_nsmul, ih]
+
 theorem add_coeffTop {x y : HahnSeries Γ R} {a : WithTop Γ} :
     (x + y).coeffTop a = x.coeffTop a + y.coeffTop a := by
   match a with
@@ -215,6 +221,12 @@ theorem sub_coeff' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff :
 theorem sub_coeff {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a - y.coeff a := by
   simp
 #align hahn_series.sub_coeff HahnSeries.sub_coeff
+
+@[simp]
+theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
+  cases n with
+  | ofNat n => simp_all only [Int.ofNat_eq_coe, natCast_zsmul, nsmul_coeff]
+  | negSucc _ => simp_all only [negSucc_zsmul, neg_coeff', nsmul_coeff]
 
 theorem orderTop_neg {x : HahnSeries Γ R} : (-x).orderTop = x.orderTop := by
   by_cases hx : x = 0

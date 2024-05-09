@@ -117,7 +117,7 @@ end Binomial
 
 section OneSubSingle -- may be superfluous
 
---theorem xxx : IsUnit (1 : R) := isUnit_one
+--theorem xxx [CommRing R] : IsUnit (1 : R) := by exact isUnit_one
 
 -- if k ∈ Monoid.closure g, then ... else 0
 

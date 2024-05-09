@@ -31,7 +31,7 @@ In this file we introduce vertex operators as
 
 noncomputable section
 
-variable {R : Type*} {V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 
 /-- A vertex operator over a commutative ring `R` is an `R`-linear map from an `R`-module `V` to
 Laurent series with coefficients in `V`.  We write this as a specialization of the heterogeneous
@@ -40,6 +40,8 @@ abbrev VertexOperator (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V]
     [Module R V] := HetVertexOperator ℤ R V V
 
 namespace VertexAlg
+
+open HetVertexOperator
 
 /-- We write `ncoef` instead of `coefficient of a vertex operator under normalized indexing`.
 Alternative suggestions welcome. -/
@@ -81,38 +83,46 @@ noncomputable def VertexOperator.of_coeff (f : ℤ → Module.End R V)
 
 noncomputable instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexOperator R V) :=
   {
-    one := HahnSeries.single.linearMap 0
+    one := (HahnModule.lof R (Γ := ℤ) (V := V)) ∘ₗ HahnSeries.single.linearMap (0 : ℤ)
   }
 
-theorem one : (1 : VertexOperator R V) = HahnSeries.single.linearMap 0 := rfl
+theorem one : (1 : VertexOperator R V) =
+    (HahnModule.lof R (Γ := ℤ) (V := V)) ∘ₗ HahnSeries.single.linearMap (0 : ℤ) :=
+  rfl
+
+@[simp]
+theorem one_coeff_zero : coeff (1 : VertexOperator R V) 0 = LinearMap.id := by
+  ext v
+  simp [one]
+
+@[simp]
+theorem one_coeff_ne {n : ℤ} (hn : n ≠ 0) : coeff (1 : VertexOperator R V) n = 0 := by
+  ext v
+  simp_all [one]
+
+theorem one_coeff_ite (n : ℤ) :
+    (1 : VertexOperator R V).coeff n = if n = 0 then LinearMap.id else 0 := by
+  split_ifs with h
+  · rw [h]
+    exact one_coeff_zero (R := R) (V := V)
+  · exact one_coeff_ne h
 
 theorem one_ncoef_neg_one (x : V) : ncoef R 1 (-1) x = x := by
-  rw [one]
-  unfold ncoef HahnSeries.single.linearMap HahnSeries.single.addMonoidHom HahnSeries.single
-    Pi.single Function.update
-  simp_all only [eq_rec_constant, Pi.zero_apply, dite_eq_ite]
-  exact rfl
+  rw [ncoef]
+  simp
 
-/-!
-theorem one_ncoef_ne_neg_one (x : V) (n : ℤ) (hn : n ≠ -1): @ncoef R V _ _ _ 1 n x = 0 := by
-  rw [one]
+theorem one_ncoef_ne_neg_one (x : V) (n : ℤ) (hn : n ≠ -1): ncoef R 1 n x = 0 := by
+  rw [ncoef]
   have h' : -n-1 ≠ 0:= by omega
-  rw [ncoef, coeff_apply]
-  erw [HahnSeries.single.linearMap_apply 0 x]
-  simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-    HahnSeries.single.addMonoidHom_apply_coeff]
-  --exact Pi.single_eq_of_ne h' x -- try proving this goal as a separate theorem to see the problem.
-  sorry
+  simp_all
 
---theorem xxx (n : ℤ) (h : -n - 1 ≠ 0) (x : V) : Pi.single 0 x (-n - 1) = (0 : V) := by
-
-theorem one_ncoef_ite (x : V) (n : ℤ) : @ncoef R V _ _ _ 1 n x = if n = (-1) then x else 0 := by
+theorem one_ncoef_ite (x : V) (n : ℤ) : ncoef R 1 n x = if n = (-1) then x else 0 := by
   by_cases h : n = -1
-  · simp_all only [ite_true]
+  · rw [h]
     exact one_ncoef_neg_one x
   · simp_all only [ite_false]
     exact one_ncoef_ne_neg_one x n h
--/
+
 section HasseDerivative
 
 -- start out with this as a linear map?
@@ -122,42 +132,38 @@ That is, it sends a vector to the `k`th Hasse derivative of the corresponding La
 It satisfies `k! * (hasseDeriv k A) = derivative^[k] A`. -/
 @[simps]
 def hasseDeriv (k : ℕ) (A : VertexOperator R V) : VertexOperator R V where
-  toFun := fun (x : V) => LaurentSeries.hasseDeriv R k ((HahnModule.of R).symm (A x))
+  toFun := fun (x : V) => HahnModule.of R
+    (LaurentSeries.hasseDeriv R k ((HahnModule.of R).symm (A x)))
   map_add' := by
       intros
-      simp only [map_add, HahnModule.of_symm_add]
+      simp
   map_smul' := by
       intros
-      simp only [map_smul, RingHom.id_apply, HahnModule.of_symm_smul]
+      simp
 
+@[simp]
 theorem hasseDeriv_add (k : ℕ) (A B : VertexOperator R V) : hasseDeriv k (A + B) =
     hasseDeriv k A + hasseDeriv k B := by
   ext
-  simp_all only [coeff_apply, hasseDeriv_apply, LinearMap.add_apply, HahnModule.of_symm_add,
-    map_add, LaurentSeries.hasseDeriv_apply, HahnSeries.add_coeff', Pi.add_apply,
-    HahnSeries.ofSuppBddBelow_coeff]
-  exact rfl
+  simp
 
+@[simp]
 theorem hasseDeriv_smul (k : ℕ) (A : VertexOperator R V) (r : R) :
     hasseDeriv k (r • A) = r • hasseDeriv k A := by
   ext
-  simp_all only [coeff_apply, hasseDeriv_apply, LinearMap.smul_apply, HahnModule.of_symm_smul,
-    LinearMapClass.map_smul, LaurentSeries.hasseDeriv_apply, HahnSeries.smul_coeff,
-    HahnSeries.ofSuppBddBelow_coeff]
-  exact rfl
+  simp
 
 /-- The Hasse derivative as a linear map on vertex operators. -/
 @[simps]
-def hasseDeriv.linearMap (k : ℕ) : VertexOperator R V →ₗ[R] VertexOperator R V :=
-  {
-    toFun := fun A => hasseDeriv k A
-    map_add' := by
-      intros
-      simp only [hasseDeriv_add]
-    map_smul' := by
-      intros
-      simp only [hasseDeriv_smul, RingHom.id_apply]
-  }
+def hasseDeriv.linearMap (R : Type*) [CommRing R] [Module R V] (k : ℕ) :
+    VertexOperator R V →ₗ[R] VertexOperator R V where
+  toFun := fun A => hasseDeriv k A
+  map_add' := by
+    intros
+    simp
+  map_smul' := by
+    intros
+    simp
 
 theorem hasseDeriv_coeff (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
     coeff (hasseDeriv k A) n = (Ring.choose (n + k) k) • coeff A (n + k) := by
@@ -170,102 +176,104 @@ theorem hasseDeriv_ncoef (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
 
 theorem hasseDeriv_zero' (A : VertexOperator R V) : hasseDeriv 0 A = A := by
   ext
-  simp_all only [coeff_apply, hasseDeriv_apply, LaurentSeries.hasseDeriv_zero', LinearMap.coe_mk,
-    AddHom.coe_mk]
-  exact rfl
+  simp
 
 @[simp]
-theorem hasseDeriv_zero : @hasseDeriv.linearMap R V _ _ _ 0 = LinearMap.id := by
+theorem hasseDeriv_zero : hasseDeriv.linearMap R 0 = LinearMap.id (M := VertexOperator R V) := by
   exact LinearMap.ext <| hasseDeriv_zero'
 
 theorem hasseDeriv_one_coeff (A : VertexOperator R V) (n : ℤ) :
     coeff (hasseDeriv 1 A) n = (n + 1) • coeff A (n + 1) := by
-  rw [hasseDeriv_coeff 1, Nat.cast_one, @Ring.choose_one_right ℤ _ _ _ _ _]
+  rw [hasseDeriv_coeff 1, Nat.cast_one, Ring.choose_one_right]
 
 /-- The derivative of a vertex operator is the first Hasse derivative, taking `∑ A_n X^n` to
 `∑ n A_n X^{n-1}`, or `∑ A_n X^{-n-1}` to `∑ (-n-1) A_{n-1} X^{-n-1}` -/
-def derivative : VertexOperator R V →ₗ[R] VertexOperator R V := hasseDeriv.linearMap 1
+def derivative (R : Type*) [CommRing R] [Module R V] :
+    VertexOperator R V →ₗ[R] VertexOperator R V :=
+  hasseDeriv.linearMap R 1
 
-theorem derivative_apply (A : VertexOperator R V) : derivative A = hasseDeriv 1 A := by
-  exact rfl
+theorem derivative_apply (A : VertexOperator R V) : derivative R A = hasseDeriv 1 A :=
+  rfl
 
 @[simp]
-theorem hasseDeriv_one : hasseDeriv.linearMap 1 = @derivative R V _ _ _ := rfl
+theorem hasseDeriv_one : hasseDeriv.linearMap R 1 = derivative R (V := V) :=
+  rfl
 
 theorem hasseDeriv_apply_one (k : ℕ) (hk : 0 < k) : hasseDeriv k (1 : VertexOperator R V) = 0 := by
-  ext
-  simp_all only [hasseDeriv_apply, LinearMap.zero_apply, HahnModule.of_symm_zero,
-    HahnSeries.zero_coeff, one, coeff_apply]
-  simp only [HahnSeries.single.linearMap, HahnSeries.single.addMonoidHom, HahnModule.of, hasseDeriv]
-  simp_all only [Equiv.refl_symm, ZeroHom.toFun_eq_coe, LinearMap.coe_mk, AddHom.coe_mk, ]
-  erw [LaurentSeries.hasseDeriv_single, Ring.choose_zero_pos ℤ k hk, zero_smul,
-    HahnSeries.single_eq_zero]
-  exact rfl
+  ext n v
+  rw [one, coeff_apply, hasseDeriv_apply, Equiv.symm_apply_apply]
+  rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, HahnModule.lof_apply,
+    Equiv.symm_apply_apply]
+  rw [LaurentSeries.hasseDeriv_coeff]
+  by_cases h: n + k = 0
+  · rw [h, Ring.choose_zero_pos ℤ hk]
+    simp
+  · simp_all
 
-theorem hasseDeriv_comp_coeff (k l : ℕ) (A : VertexOperator R V) (x : V) (n : ℤ) :
-    HahnSeries.coeff ((hasseDeriv k (hasseDeriv l A)) x) n =
-    HahnSeries.coeff ((Nat.choose (k + l) k • hasseDeriv (k + l) A) x) n := by
-  rw [hasseDeriv, hasseDeriv]
-  simp only [LinearMap.coe_mk, AddHom.coe_mk, Pi.smul_apply]
-  erw [@LaurentSeries.hasseDeriv_comp' R]
-  exact rfl
+theorem hasseDeriv_comp_coeff (k l : ℕ) (A : VertexOperator R V) :
+    coeff (hasseDeriv k (hasseDeriv l A)) =
+      Nat.choose (k + l) k • coeff (hasseDeriv (k + l) A) := by
+  ext n v
+  rw [coeff_apply, hasseDeriv_apply, Equiv.symm_apply_apply, hasseDeriv_apply,
+    Equiv.symm_apply_apply, LaurentSeries.hasseDeriv_comp_coeff, HahnSeries.nsmul_coeff]
+  rw [Pi.smul_apply]
+  simp only [Pi.smul_apply, LaurentSeries.hasseDeriv_coeff, Nat.cast_add, nsmul_eq_mul,
+    LinearMap.mul_apply, coeff_apply, hasseDeriv_apply, Equiv.symm_apply_apply, map_zsmul,
+    Module.End.natCast_apply]
+  rw [smul_comm]
 
 theorem hasseDeriv_comp' (k l : ℕ) (A : VertexOperator R V) :
-    (@hasseDeriv R V _ _ _ k) (hasseDeriv l A) = (k + l).choose k • (hasseDeriv (k + l) A) := by
-  ext x n
-  exact @hasseDeriv_comp_coeff R V _ _ _ k l A n x
+    (hasseDeriv k) (hasseDeriv l A) = (k + l).choose k • (hasseDeriv (k + l) A) := by
+  ext1
+  rw [nsmul_coeff]
+  exact hasseDeriv_comp_coeff k l A
 
-theorem hasseDeriv_comp (k l : ℕ) : (@hasseDeriv.linearMap R V _ _ _ k).comp
-    (hasseDeriv.linearMap l) = (k + l).choose k • hasseDeriv.linearMap (k + l) := by
-  ext
-  simp_all only [LinearMap.coe_comp, Function.comp_apply, hasseDeriv.linearMap_apply, nsmul_eq_mul,
-    LinearMap.mul_apply, hasseDeriv_apply, hasseDeriv_comp_coeff]
-  simp_all only [coeff_apply, hasseDeriv_apply, Module.End.natCast_apply]
-  rw [← @hasseDeriv_comp_coeff]
-  exact rfl
+theorem hasseDeriv_comp (k l : ℕ) : (hasseDeriv.linearMap R k).comp
+    (hasseDeriv.linearMap R l) = (k + l).choose k • hasseDeriv.linearMap R (k + l) (V := V) := by
+  ext1
+  simp only [LinearMap.coe_comp, Function.comp_apply, hasseDeriv.linearMap_apply, nsmul_eq_mul,
+    LinearMap.mul_apply, Module.End.natCast_apply]
+  rw [hasseDeriv_comp']
 
 theorem factorial_smul_hasseDeriv' (k : ℕ) (A : VertexOperator R V) :
-    k.factorial • hasseDeriv k A = (@derivative R V _ _ _)^[k] A := by
+    k.factorial • hasseDeriv k A = (derivative R)^[k] A := by
   induction k generalizing A with
-  | zero =>
-    rw [Nat.zero_eq, Nat.factorial_zero, one_smul, Function.iterate_zero, id_eq, hasseDeriv_zero']
+  | zero => simp [hasseDeriv_zero']
   | succ k ih =>
     rw [Function.iterate_succ, Function.comp_apply,  ← ih, derivative_apply,
       @hasseDeriv_comp' R, Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]
 
 theorem factorial_smul_hasseDeriv (k : ℕ) :
-    k.factorial • @hasseDeriv.linearMap R V _ _ _ k = (@derivative R V _ _ _)^[k] := by
+    k.factorial • hasseDeriv.linearMap R k (V := V) = (derivative R (V := V))^[k] := by
   ext A : 1
   simp_all only [Pi.smul_apply, hasseDeriv_apply]
   exact factorial_smul_hasseDeriv' k A
 
 end HasseDerivative
 
-section Binomial
-
-/-- `X - Y` as an element of `R((X))((Y))` -/
-def sub_right: HahnSeries (ℤ ×ₗ ℤ) R :=
-  HahnSeries.single (toLex (1,0)) 1 - HahnSeries.single (toLex (0,1)) 1
-
--- show it is invertible
-
---describe coefficients of powers
-
-/-- `X - Y` as an element of `R((Y))((X))` -/
-def sub_left: HahnSeries (ℤ ×ₗ ℤ) R :=
-  -HahnSeries.single (toLex (1,0)) 1 + HahnSeries.single (toLex (0,1)) 1
-
--- show it is invertible
-
---describe coefficients of powers
-
-end Binomial
-
 section Local
 
---define locality to order `n`
---show locality to order `n` implies locality to order `n+1`
+open HetVertexOperator
+
+/-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
+vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to switch coordinates,
+since `BA` takes values in the opposite-order Hahn series. -/
+def IsLocalToOrderLeq (R V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
+    (A B : VertexOperator R V) (n : ℕ) : Prop :=
+  ∀ (k l : ℤ), (((subLeft R)^n).val • (hetComp A B)).coeff (toLex (k, l)) =
+    (((subRight R)^n).val • (hetComp B A)).coeff (toLex (l, k))
+
+/-!
+theorem isLocalToOrderLeqAdd (R V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
+    (A B : VertexOperator R V) (m n : ℕ) (h : IsLocalToOrderLeq R V A B n) :
+    IsLocalToOrderLeq R V A B (n + m) := by
+  intro k l
+  rw [pow_add, Units.val_mul, mul_smul]
+  -- better to use induction to get explicit coefficient comparison.
+  sorry
+-/
 --show `A` and `B` local to order `n` implies `∂^[k]A` and `B` are local to order `n+k`.
+--show any vertex operator is local with identity.
 end Local
 /-!
 section Composite
