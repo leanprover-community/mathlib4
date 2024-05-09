@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 import Lean.Elab.Command
 import Lean.Server.InfoUtils
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
 
 /-!
 #  The `have` vs `let` linter
