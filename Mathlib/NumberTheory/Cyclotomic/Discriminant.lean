@@ -102,8 +102,8 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     replace H := congr_arg (Algebra.norm K) H
     have hnorm : (norm K) (ζ ^ (p : ℕ) ^ k - 1) = (p : K) ^ (p : ℕ) ^ k := by
       by_cases hp : p = 2
-      · exact mod_cast hζ.pow_sub_one_norm_prime_pow_of_ne_zero hirr le_rfl (hp2 hp)
-      · exact mod_cast hζ.pow_sub_one_norm_prime_ne_two hirr le_rfl hp
+      · exact mod_cast hζ.norm_pow_sub_one_eq_prime_pow_of_ne_zero hirr le_rfl (hp2 hp)
+      · exact mod_cast hζ.norm_pow_sub_one_of_prime_ne_two hirr le_rfl hp
     rw [MonoidHom.map_mul, hnorm, MonoidHom.map_mul, ← map_natCast (algebraMap K L),
       Algebra.norm_algebraMap, finrank L hirr] at H
     conv_rhs at H => -- Porting note: need to drill down to successfully rewrite the totient
