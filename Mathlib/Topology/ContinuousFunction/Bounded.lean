@@ -581,7 +581,7 @@ theorem arzela_ascoli₂ (s : Set β) (hs : IsCompact s) (A : Set (α →ᵇ β)
     IsCompact A := by
   /- This version is deduced from the previous one by restricting to the compact type in the target,
   using compactness there and then lifting everything to the original space. -/
-  have M : LipschitzWith 1 (↑) := LipschitzWith.subtype_val s
+  have M : LipschitzWith 1 Subtype.val := LipschitzWith.subtype_val s
   let F : (α →ᵇ s) → α →ᵇ β := comp (↑) M
   refine' IsCompact.of_isClosed_subset ((_ : IsCompact (F ⁻¹' A)).image (continuous_comp M)) closed
       fun f hf => _

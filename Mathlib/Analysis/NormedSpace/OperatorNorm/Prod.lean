@@ -160,7 +160,7 @@ variable (𝕜 E F)
     ‖fst 𝕜 E F‖ = 1 := by
   refine le_antisymm (norm_fst_le ..) ?_
   let ⟨e, he⟩ := exists_ne (0 : E)
-  have : ‖e‖ ≤ _ * max ‖e‖ ‖0‖ := (fst 𝕜 E F).le_opNorm (e, 0)
+  have : ‖e‖ ≤ _ * max ‖e‖ ‖(0 : F)‖ := (fst 𝕜 E F).le_opNorm (e, 0)
   rw [norm_zero, max_eq_left (norm_nonneg e)] at this
   rwa [← mul_le_mul_iff_of_pos_right (norm_pos_iff.mpr he), one_mul]
 
@@ -170,7 +170,7 @@ variable (𝕜 E F)
     ‖snd 𝕜 E F‖ = 1 := by
   refine le_antisymm (norm_snd_le ..) ?_
   let ⟨f, hf⟩ := exists_ne (0 : F)
-  have : ‖f‖ ≤ _ * max ‖0‖ ‖f‖ := (snd 𝕜 E F).le_opNorm (0, f)
+  have : ‖f‖ ≤ _ * max ‖(0 : E)‖ ‖f‖ := (snd 𝕜 E F).le_opNorm (0, f)
   rw [norm_zero, max_eq_right (norm_nonneg f)] at this
   rwa [← mul_le_mul_iff_of_pos_right (norm_pos_iff.mpr hf), one_mul]
 
