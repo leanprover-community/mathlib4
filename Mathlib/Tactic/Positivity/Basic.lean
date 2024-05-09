@@ -431,29 +431,25 @@ private alias ⟨_, NNRat.num_ne_zero_of_ne_zero⟩ := num_ne_zero
 such that `positivity` successfully recognises `q`. -/
 @[positivity NNRat.num _]
 def evalNNRatNum : PositivityExt where eval {u α} _ _ e := do
-  if let 0 := u then -- lean4#3060 means we can't combine this with the match below
-    match α, e with
-    | ~q(ℕ), ~q(NNRat.num $a) =>
-      let zα : Q(Zero ℚ≥0) := q(inferInstance)
-      let pα : Q(PartialOrder ℚ≥0) := q(inferInstance)
-      assumeInstancesCommute
-      match ← core zα pα a with
-      | .positive pa => return .positive q(NNRat.num_pos_of_pos $pa)
-      | .nonzero pa => return .nonzero q(NNRat.num_ne_zero_of_ne_zero $pa)
-      | _ => return .none
-    | _, _ => throwError "not NNRat.num"
-  else throwError "not NNRat.num"
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(NNRat.num $a) =>
+    let zα : Q(Zero ℚ≥0) := q(inferInstance)
+    let pα : Q(PartialOrder ℚ≥0) := q(inferInstance)
+    assumeInstancesCommute
+    match ← core zα pα a with
+    | .positive pa => return .positive q(NNRat.num_pos_of_pos $pa)
+    | .nonzero pa => return .nonzero q(NNRat.num_ne_zero_of_ne_zero $pa)
+    | _ => return .none
+  | _, _, _ => throwError "not NNRat.num"
 
 /-- The `positivity` extension which identifies expressions of the form `Rat.den a`. -/
 @[positivity NNRat.den _]
 def evalNNRatDen : PositivityExt where eval {u α} _ _ e := do
-  if let 0 := u then -- lean4#3060 means we can't combine this with the match below
-    match α, e with
-    | ~q(ℕ), ~q(NNRat.den $a) =>
-      assumeInstancesCommute
-      return .positive q(den_pos $a)
-    | _, _ => throwError "not NNRat.num"
-  else throwError "not NNRat.num"
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(NNRat.den $a) =>
+    assumeInstancesCommute
+    return .positive q(den_pos $a)
+  | _, _, _ => throwError "not NNRat.num"
 
 variable {q : ℚ≥0}
 
