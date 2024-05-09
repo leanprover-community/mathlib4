@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.LocallyFinite.Basic
 import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Order.Interval.Multiset
+import Mathlib.Algebra.Order.Interval.Finset
 
 #align_import data.nat.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -17,7 +19,7 @@ intervals as finsets and fintypes.
 ## TODO
 
 Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedCommMonoid` or `SuccOrder`
-and subsequently be moved upstream to `Data.Finset.LocallyFinite`.
+and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
 
@@ -257,10 +259,10 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
     rw [lt_tsub_iff_left, Nat.lt_succ_iff] at ha
     have hx : x ≤ c := (Nat.le_add_left _ _).trans ha
     refine' ⟨c - x, _, tsub_tsub_cancel_of_le hx⟩
-    · rw [mem_Ico]
-      exact
-        ⟨le_tsub_of_add_le_right ha,
-          (tsub_lt_iff_left hx).2 <| succ_le_iff.1 <| tsub_le_iff_right.1 hb⟩
+    rw [mem_Ico]
+    exact
+      ⟨le_tsub_of_add_le_right ha,
+        (tsub_lt_iff_left hx).2 <| succ_le_iff.1 <| tsub_le_iff_right.1 hb⟩
 #align nat.Ico_image_const_sub_eq_Ico Nat.Ico_image_const_sub_eq_Ico
 
 theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by

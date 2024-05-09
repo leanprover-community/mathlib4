@@ -441,11 +441,12 @@ def compactumToCompHaus : Compactum ⥤ CompHaus where
 namespace compactumToCompHaus
 
 /-- The functor `compactumToCompHaus` is full. -/
-def full : compactumToCompHaus.{u}.Full where preimage X Y {f} := Compactum.homOfContinuous f.1 f.2
+instance full : compactumToCompHaus.{u}.Full where
+  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.2, rfl⟩
 #align Compactum_to_CompHaus.full compactumToCompHaus.full
 
 /-- The functor `compactumToCompHaus` is faithful. -/
-theorem faithful : compactumToCompHaus.Faithful where
+instance faithful : compactumToCompHaus.Faithful where
   -- Porting note: this used to be obviously (though it consumed a bit of memory)
   map_injective := by
     intro _ _ _ _ h
@@ -473,16 +474,12 @@ def isoOfTopologicalSpace {D : CompHaus} :
 #align Compactum_to_CompHaus.iso_of_topological_space compactumToCompHaus.isoOfTopologicalSpace
 
 /-- The functor `compactumToCompHaus` is essentially surjective. -/
-theorem essSurj : compactumToCompHaus.EssSurj :=
+instance essSurj : compactumToCompHaus.EssSurj :=
   { mem_essImage := fun X => ⟨Compactum.ofTopologicalSpace X, ⟨isoOfTopologicalSpace⟩⟩ }
 #align Compactum_to_CompHaus.ess_surj compactumToCompHaus.essSurj
 
 /-- The functor `compactumToCompHaus` is an equivalence of categories. -/
-noncomputable instance isEquivalence : compactumToCompHaus.IsEquivalence := by
-  have := compactumToCompHaus.full
-  have := compactumToCompHaus.faithful
-  have := compactumToCompHaus.essSurj
-  apply Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance isEquivalence : compactumToCompHaus.IsEquivalence where
 #align Compactum_to_CompHaus.is_equivalence compactumToCompHaus.isEquivalence
 
 end compactumToCompHaus

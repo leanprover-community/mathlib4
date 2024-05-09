@@ -80,7 +80,7 @@ example : natDegree (X + X ^ 2 : ℕ[X]) = 0 := by compute_degree!
 set_option linter.unusedTactic false in
 /--
 error: 'compute_degree' inapplicable. The goal
-  natDegree X ≠ 0
+  X.natDegree ≠ 0
 is expected to be '≤' or '='.
 -/
 #guard_msgs in
@@ -216,7 +216,7 @@ example : natDegree ((5 * X * C 3 : _root_.Rat[X]) ^ 4) ≤ 4 := by compute_degr
 
 example : natDegree ((C a * X) ^ 4) ≤ 4 := by compute_degree
 
-example : degree ((X : ℤ[X]) ^ 4) ≤ 4 := by compute_degree
+example : degree ((X : ℤ[X]) ^ 4) ≤ 4 := by compute_degree; rfl
 
 example : natDegree ((X : ℤ[X]) ^ 4) ≤ 40 := by compute_degree!
 
@@ -233,6 +233,6 @@ example {a : R} (a0 : a ≠ 0) : natDegree (a • X ^ 5 + X : R[X]) = 5 := by
   compute_degree!
 
 example {a : R} (a0 : a ≠ 0) : degree (a • X ^ 5 + X ^ 2 : R[X]) = 5 := by
-  compute_degree!
+  compute_degree!; rfl
 
 end tests_from_mathlib3

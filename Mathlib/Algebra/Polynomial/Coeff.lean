@@ -81,8 +81,8 @@ def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A
   toFun p := p.sum (f · ·)
   map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
   map_smul' c p := by
-    -- Porting note: `dsimp only []` is required for beta reduction.
-    dsimp only []
+    -- Porting note: added `dsimp only`; `beta_reduce` alone is not sufficient
+    dsimp only
     rw [sum_eq_of_subset (f · ·) (fun n => (f n).map_zero) (support_smul c p)]
     simp only [sum_def, Finset.smul_sum, coeff_smul, LinearMap.map_smul, RingHom.id_apply]
 #align polynomial.lsum Polynomial.lsum
@@ -329,7 +329,7 @@ theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
   rw [(commute_X (C r : R[X])).add_pow, ← lcoeff_apply, map_sum]
-  simp only [one_pow, mul_one, lcoeff_apply, ← C_eq_nat_cast, ← C_pow, coeff_mul_C, Nat.cast_id]
+  simp only [one_pow, mul_one, lcoeff_apply, ← C_eq_natCast, ← C_pow, coeff_mul_C, Nat.cast_id]
   rw [Finset.sum_eq_single k, coeff_X_pow_self, one_mul]
   · intro _ _ h
     simp [coeff_X_pow, h.symm]
@@ -392,12 +392,12 @@ end Coeff
 
 section cast
 
-theorem nat_cast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coeff 0 = n := by
-  simp only [coeff_nat_cast_ite, ite_true]
-#align polynomial.nat_cast_coeff_zero Polynomial.nat_cast_coeff_zero
+theorem natCast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coeff 0 = n := by
+  simp only [coeff_natCast_ite, ite_true]
+#align polynomial.nat_cast_coeff_zero Polynomial.natCast_coeff_zero
 
 @[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
-theorem nat_cast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
+theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h
@@ -405,26 +405,26 @@ theorem nat_cast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     simpa using h
   · rintro rfl
     rfl
-#align polynomial.nat_cast_inj Polynomial.nat_cast_inj
+#align polynomial.nat_cast_inj Polynomial.natCast_inj
 
 @[simp]
-theorem int_cast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 = i := by
+theorem intCast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 = i := by
   cases i <;> simp
-#align polynomial.int_cast_coeff_zero Polynomial.int_cast_coeff_zero
+#align polynomial.int_cast_coeff_zero Polynomial.intCast_coeff_zero
 
 @[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
-theorem int_cast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
+theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h
     apply_fun fun p => p.coeff 0 at h
     simpa using h
   · rintro rfl
     rfl
-#align polynomial.int_cast_inj Polynomial.int_cast_inj
+#align polynomial.int_cast_inj Polynomial.intCast_inj
 
 end cast
 
-instance charZero [CharZero R] : CharZero R[X] where cast_injective _x _y := nat_cast_inj.mp
+instance charZero [CharZero R] : CharZero R[X] where cast_injective _x _y := natCast_inj.mp
 #align polynomial.char_zero Polynomial.charZero
 
 end Polynomial

@@ -451,8 +451,8 @@ theorem injective_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : �
 /-- Restrict the codomain of a non-unital star algebra homomorphism `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-@[reducible]
-def rangeRestrict (f : F) : A →⋆ₙₐ[R] (NonUnitalStarAlgHom.range f : NonUnitalStarSubalgebra R B) :=
+abbrev rangeRestrict (f : F) :
+    A →⋆ₙₐ[R] (NonUnitalStarAlgHom.range f : NonUnitalStarSubalgebra R B) :=
   NonUnitalStarAlgHom.codRestrict f (NonUnitalStarAlgHom.range f)
     (NonUnitalStarAlgHom.mem_range_self f)
 

@@ -3,12 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Data.Set.Finite
-import Mathlib.GroupTheory.Submonoid.Membership
-import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Set.Finite
+import Mathlib.GroupTheory.GroupAction.BigOperators
 
 #align_import data.dfinsupp.basic from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -69,9 +69,6 @@ variable {β}
 
 /-- `Π₀ i, β i` denotes the type of dependent functions with finite support `DFinsupp β`. -/
 notation3 "Π₀ "(...)", "r:(scoped f => DFinsupp f) => r
-
-@[inherit_doc]
-infixl:25 " →ₚ " => DFinsupp
 
 namespace DFinsupp
 
@@ -1012,7 +1009,7 @@ theorem add_closure_iUnion_range_single :
     AddSubmonoid.closure (⋃ i : ι, Set.range (single i : β i → Π₀ i, β i)) = ⊤ :=
   top_unique fun x _ => by
     apply DFinsupp.induction x
-    exact AddSubmonoid.zero_mem _
+    · exact AddSubmonoid.zero_mem _
     exact fun a b f _ _ hf =>
       AddSubmonoid.add_mem _
         (AddSubmonoid.subset_closure <| Set.mem_iUnion.2 ⟨a, Set.mem_range_self _⟩) hf
@@ -1250,8 +1247,8 @@ theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase
 theorem support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
   ext j
   by_cases h1 : j = i
-  simp only [h1, mem_support_toFun, erase_apply, ite_true, ne_eq, not_true, not_not,
-    Finset.mem_erase, false_and]
+  · simp only [h1, mem_support_toFun, erase_apply, ite_true, ne_eq, not_true, not_not,
+      Finset.mem_erase, false_and]
   by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
 #align dfinsupp.support_erase DFinsupp.support_erase
 
@@ -1958,8 +1955,8 @@ theorem sumAddHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decida
   intro i _
   dsimp only [coe_mk', Subtype.coe_mk] at *
   split_ifs with h
-  rfl
-  rw [not_not.mp h, AddMonoidHom.map_zero]
+  · rfl
+  · rw [not_not.mp h, AddMonoidHom.map_zero]
 #align dfinsupp.sum_add_hom_apply DFinsupp.sumAddHom_apply
 
 theorem _root_.dfinsupp_sumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] {S : Type*}

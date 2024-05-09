@@ -1874,6 +1874,10 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_finish
 #align regular_space_tfae regularSpace_TFAE
 
+theorem RegularSpace.of_lift'_closure_le (h : ∀ x : X, (𝓝 x).lift' closure ≤ 𝓝 x) :
+    RegularSpace X :=
+  Iff.mpr ((regularSpace_TFAE X).out 0 4) h
+
 theorem RegularSpace.of_lift'_closure (h : ∀ x : X, (𝓝 x).lift' closure = 𝓝 x) : RegularSpace X :=
   Iff.mpr ((regularSpace_TFAE X).out 0 5) h
 #align regular_space.of_lift'_closure RegularSpace.of_lift'_closure
@@ -1944,6 +1948,22 @@ theorem hasBasis_nhds_closure (x : X) : (𝓝 x).HasBasis (fun s => s ∈ 𝓝 x
 theorem hasBasis_opens_closure (x : X) : (𝓝 x).HasBasis (fun s => x ∈ s ∧ IsOpen s) closure :=
   (nhds_basis_opens x).nhds_closure
 #align has_basis_opens_closure hasBasis_opens_closure
+
+theorem IsCompact.exists_isOpen_closure_subset {K U : Set X} (hK : IsCompact K) (hU : U ∈ 𝓝ˢ K) :
+    ∃ V, IsOpen V ∧ K ⊆ V ∧ closure V ⊆ U := by
+  have hd : Disjoint (𝓝ˢ K) (𝓝ˢ Uᶜ) := by
+    simpa [hK.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet,
+      ← subset_interior_iff_mem_nhdsSet] using hU
+  rcases ((hasBasis_nhdsSet _).disjoint_iff (hasBasis_nhdsSet _)).1 hd
+    with ⟨V, ⟨hVo, hKV⟩, W, ⟨hW, hUW⟩, hVW⟩
+  refine ⟨V, hVo, hKV, Subset.trans ?_ (compl_subset_comm.1 hUW)⟩
+  exact closure_minimal hVW.subset_compl_right hW.isClosed_compl
+
+theorem IsCompact.lift'_closure_nhdsSet {K : Set X} (hK : IsCompact K) :
+    (𝓝ˢ K).lift' closure = 𝓝ˢ K := by
+  refine le_antisymm (fun U hU ↦ ?_) (le_lift'_closure _)
+  rcases hK.exists_isOpen_closure_subset hU with ⟨V, hVo, hKV, hVU⟩
+  exact mem_of_superset (mem_lift' <| hVo.mem_nhdsSet.2 hKV) hVU
 
 theorem TopologicalSpace.IsTopologicalBasis.nhds_basis_closure {B : Set (Set X)}
     (hB : IsTopologicalBasis B) (x : X) :
@@ -2056,7 +2076,7 @@ a T₂.₅ space.  -/
 class T3Space (X : Type u) [TopologicalSpace X] extends T0Space X, RegularSpace X : Prop
 #align t3_space T3Space
 
-instance (priority := 90) [T0Space X] [RegularSpace X] : T3Space X := ⟨⟩
+instance (priority := 90) instT3Space [T0Space X] [RegularSpace X] : T3Space X := ⟨⟩
 
 theorem RegularSpace.t3Space_iff_t0Space [RegularSpace X] : T3Space X ↔ T0Space X := by
   constructor <;> intro <;> infer_instance
@@ -2384,8 +2404,8 @@ theorem compact_t2_tot_disc_iff_tot_sep : TotallyDisconnectedSpace X ↔ Totally
   rw [connectedComponent_eq_iInter_isClopen, mem_iInter]
   rintro ⟨w : Set X, hw : IsClopen w, hy : y ∈ w⟩
   by_contra hx
-  exact hyp wᶜ w hw.1.isOpen_compl hw.2 hx hy (@isCompl_compl _ w _).symm.codisjoint.top_le
-    disjoint_compl_left
+  exact hyp ⟨wᶜ, w, hw.1.isOpen_compl, hw.2, hx, hy, (@isCompl_compl _ w _).symm.codisjoint.top_le,
+    disjoint_compl_left⟩
 #align compact_t2_tot_disc_iff_tot_sep compact_t2_tot_disc_iff_tot_sep
 
 variable [TotallyDisconnectedSpace X]

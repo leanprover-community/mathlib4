@@ -46,8 +46,11 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
     split_ifs with h
     · subst h
       simp
-    · rw [if_neg h]
-      simp
+    · -- Adaptation note: after nightly-2024-03-07, the previous sensible proof
+      -- `rw [if_neg h]; simp` fails with "motive not type correct".
+      -- The following is horrible.
+      convert (id_zero (C := V)).symm
+      all_goals simp [if_neg h]
   map_comp f g := by
     ext
     dsimp
@@ -117,11 +120,11 @@ instance (j : ι) : (single V c j).Faithful where
       ← cancel_epi (singleObjXSelf c j A).hom, ← single_map_f_self,
       ← single_map_f_self, w]
 
-noncomputable instance (j : ι) : (single V c j).Full where
-  preimage {A B} f := (singleObjXSelf c j A).inv ≫ f.f j ≫ (singleObjXSelf c j B).hom
-  witness f := by
-    ext
-    simp [single_map_f_self]
+instance (j : ι) : (single V c j).Full where
+  map_surjective {A B} f :=
+    ⟨(singleObjXSelf c j A).inv ≫ f.f j ≫ (singleObjXSelf c j B).hom, by
+      ext
+      simp [single_map_f_self]⟩
 
 variable {c}
 
