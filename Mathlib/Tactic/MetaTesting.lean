@@ -92,7 +92,7 @@ nodes or nodes corresponding to a semicolon (`;`) separator.
 For example
 ```lean
 set_option pp.rawOnError true in
-#eval show CommandElabM _ from do
+run_cmd do
   let stx ← `(tacticSeq| skip; done)
   logInfo m!"{stx.getTactics}"
 /-
@@ -102,7 +102,7 @@ set_option pp.rawOnError true in
 -/
 
 set_option pp.rawOnError true in
-#eval show CommandElabM _ from do
+run_cmd do
   let stx ← `(tacticSeq| skip
                          done)
   logInfo m!"{stx.getTactics}"
