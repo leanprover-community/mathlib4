@@ -789,6 +789,23 @@ theorem coe_sub : ⇑(f - g) = f - g := rfl
 
 end sub
 
+section mul
+
+variable [TopologicalSpace α]
+variable {R : Type*} [PseudoMetricSpace R] [Mul R] [BoundedMul R] [ContinuousMul R]
+variable (f g : α →ᵇ R)
+
+instance instMul :
+    Mul (α →ᵇ R) where
+  mul f g := {
+    toFun := fun x ↦ f x * g x
+    continuous_toFun := f.continuous.mul g.continuous
+    map_bounded' :=
+      mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g)
+  }
+
+end mul
+
 section NormedAddCommGroup
 
 /- In this section, if `β` is a normed group, then we show that the space of bounded
@@ -1219,11 +1236,13 @@ section Seminormed
 
 variable [NonUnitalSeminormedRing R]
 
+/-
 instance instMul : Mul (α →ᵇ R) where
   mul f g :=
     ofNormedAddCommGroup (f * g) (f.continuous.mul g.continuous) (‖f‖ * ‖g‖) fun x =>
       le_trans (norm_mul_le (f x) (g x)) <|
         mul_le_mul (f.norm_coe_le_norm x) (g.norm_coe_le_norm x) (norm_nonneg _) (norm_nonneg _)
+ -/
 
 @[simp]
 theorem coe_mul (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
@@ -1238,8 +1257,10 @@ instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) :=
 
 instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) :=
   { instSeminormedAddCommGroup with
-    norm_mul := fun _ _ =>
-      norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
+    norm_mul := fun f g =>
+      norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _))
+        (fun x ↦ (norm_mul_le _ _).trans <|
+          mul_le_mul (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))
     -- Porting note: These 5 fields were missing. Add them.
     left_distrib, right_distrib, zero_mul, mul_zero, mul_assoc }
 

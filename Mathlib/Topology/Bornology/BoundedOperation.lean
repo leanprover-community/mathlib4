@@ -17,9 +17,7 @@ we can equip bounded continuous functions with the corresponding operations.
 ## Main definitions
 
 * `BoundedSub R`: a class guaranteeing boundedness of subtraction.
-
-TODO:
-* Add bounded multiplication. (So that, e.g., multiplication works in `X →ᵇ ℝ≥0`.)
+* `BoundedMul R`: a class guaranteeing boundedness of multiplication.
 
 -/
 
@@ -212,15 +210,3 @@ instance : BoundedMul ℝ≥0 where
      _ = 2 * Af * Ag                            := by simp [← two_mul, mul_assoc]
 
 end NNReal
-
-/-
-example {X : Type*} [TopologicalSpace X]
-    [PseudoMetricSpace R] [Mul R] [BoundedMul R] [ContinuousMul R] :
-    Mul (X →ᵇ R) where
-  mul f g := {
-    toFun := fun x ↦ f x * g x
-    continuous_toFun := f.continuous.mul g.continuous
-    map_bounded' :=
-      mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g)
-  }
- -/
