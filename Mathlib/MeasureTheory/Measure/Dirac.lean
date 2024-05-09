@@ -65,8 +65,8 @@ theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f
 
 lemma map_const (μ : Measure α) (c : β) : μ.map (fun _ ↦ c) = (μ Set.univ) • dirac c := by
   ext s hs
-  simp only [aemeasurable_const, measurable_const, smul_toOuterMeasure, OuterMeasure.coe_smul,
-    Pi.smul_apply, dirac_apply' _ hs, smul_eq_mul]
+  simp only [aemeasurable_const, measurable_const, Measure.coe_smul, Pi.smul_apply,
+    dirac_apply' _ hs, smul_eq_mul]
   classical
   rw [Measure.map_apply measurable_const hs, Set.preimage_const]
   by_cases hsc : c ∈ s

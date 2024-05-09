@@ -148,9 +148,7 @@ theorem cyclotomic_injective [CharZero R] : Function.Injective fun n => cyclotom
   rcases eq_or_ne n 0 with (rfl | hzero)
   · rw [cyclotomic_zero] at hnm
     replace hnm := congr_arg natDegree hnm
-    rw [natDegree_one, natDegree_cyclotomic] at hnm
-    by_contra h
-    exact (Nat.totient_pos (zero_lt_iff.2 (Ne.symm h))).ne hnm
+    rwa [natDegree_one, natDegree_cyclotomic, eq_comm, Nat.totient_eq_zero, eq_comm] at hnm
   · haveI := NeZero.mk hzero
     rw [← map_cyclotomic_int _ R, ← map_cyclotomic_int _ R] at hnm
     replace hnm := map_injective (Int.castRingHom R) Int.cast_injective hnm
@@ -169,7 +167,7 @@ theorem cyclotomic_injective [CharZero R] : Function.Injective fun n => cyclotom
 theorem _root_.IsPrimitiveRoot.minpoly_dvd_cyclotomic {n : ℕ} {K : Type*} [Field K] {μ : K}
     (h : IsPrimitiveRoot μ n) (hpos : 0 < n) [CharZero K] : minpoly ℤ μ ∣ cyclotomic n ℤ := by
   apply minpoly.isIntegrallyClosed_dvd (h.isIntegral hpos)
-  simpa [aeval_def, eval₂_eq_eval_map, IsRoot.definition] using h.isRoot_cyclotomic hpos
+  simpa [aeval_def, eval₂_eq_eval_map, IsRoot.def] using h.isRoot_cyclotomic hpos
 #align is_primitive_root.minpoly_dvd_cyclotomic IsPrimitiveRoot.minpoly_dvd_cyclotomic
 
 section minpoly
@@ -181,7 +179,7 @@ theorem _root_.IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible {K : Type*} 
     (h : Irreducible <| cyclotomic n K) [NeZero (n : K)] : cyclotomic n K = minpoly K μ := by
   haveI := NeZero.of_noZeroSMulDivisors K R n
   refine' minpoly.eq_of_irreducible_of_monic h _ (cyclotomic.monic n K)
-  rwa [aeval_def, eval₂_eq_eval_map, map_cyclotomic, ← IsRoot.definition, isRoot_cyclotomic_iff]
+  rwa [aeval_def, eval₂_eq_eval_map, map_cyclotomic, ← IsRoot.def, isRoot_cyclotomic_iff]
 #align is_primitive_root.minpoly_eq_cyclotomic_of_irreducible IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible
 
 /-- `cyclotomic n ℤ` is the minimal polynomial of a primitive `n`-th root of unity `μ`. -/

@@ -796,8 +796,8 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
       show IsOpen s
       · rw [← fst_image_prod s st.2]
         exact isOpenMap_fst _ H
-      show IsOpen t
-      · rw [← snd_image_prod st.1 t]
+      · show IsOpen t
+        rw [← snd_image_prod st.1 t]
         exact isOpenMap_snd _ H
     · intro H
       simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false_iff] at H
@@ -1420,7 +1420,7 @@ theorem isOpen_pi_iff {s : Set (∀ a, π a)} :
         (∀ a, a ∈ I → IsOpen (u a) ∧ f a ∈ u a) ∧ (I : Set ι).pi u ⊆ s := by
   rw [isOpen_iff_nhds]
   simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff]
-  refine ball_congr fun a _ => ⟨?_, ?_⟩
+  refine forall₂_congr fun a _ => ⟨?_, ?_⟩
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
     refine ⟨I, fun a => eval a '' (I : Set ι).pi fun a => (h1 a).choose, fun i hi => ?_, ?_⟩
     · simp_rw [Set.eval_image_pi (Finset.mem_coe.mpr hi)
@@ -1447,7 +1447,7 @@ theorem isOpen_pi_iff' [Finite ι] {s : Set (∀ a, π a)} :
   cases nonempty_fintype ι
   rw [isOpen_iff_nhds]
   simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff]
-  refine ball_congr fun a _ => ⟨?_, ?_⟩
+  refine forall₂_congr fun a _ => ⟨?_, ?_⟩
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
     refine
       ⟨fun i => (h1 i).choose,

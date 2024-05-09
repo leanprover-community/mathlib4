@@ -151,6 +151,11 @@ theorem smul_nnreal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
   h.smul r
 #align measure_theory.measure.mutually_singular.smul_nnreal MeasureTheory.Measure.MutuallySingular.smul_nnreal
 
+lemma restrict (h : μ ⟂ₘ ν) (s : Set α) : μ.restrict s ⟂ₘ ν := by
+  refine ⟨h.nullSet, h.measurableSet_nullSet, ?_, h.measure_compl_nullSet⟩
+  rw [Measure.restrict_apply h.measurableSet_nullSet]
+  exact measure_mono_null (Set.inter_subset_left _ _) h.measure_nullSet
+
 end MutuallySingular
 
 lemma eq_zero_of_absolutelyContinuous_of_mutuallySingular {μ ν : Measure α}

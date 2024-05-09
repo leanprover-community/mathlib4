@@ -55,14 +55,14 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
       have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne'
       rw [cyclotomic_eq_minpoly_rat hprim hpos]
       refine' minpoly.dvd ℚ _ _
-      rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.definition,
+      rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
         @isRoot_cyclotomic_iff]
       convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
       rw [Nat.mul_div_cancel _ (Nat.Prime.pos hp)]
     · have hprim := Complex.isPrimitiveRoot_exp _ hnpos.ne.symm
       rw [cyclotomic_eq_minpoly_rat hprim hnpos]
       refine' minpoly.dvd ℚ _ _
-      rw [aeval_def, ← eval_map, map_expand, expand_eval, ← IsRoot.definition, ←
+      rw [aeval_def, ← eval_map, map_expand, expand_eval, ← IsRoot.def, ←
         cyclotomic_eq_minpoly_rat hprim hnpos, map_cyclotomic, @isRoot_cyclotomic_iff]
       exact IsPrimitiveRoot.pow_of_prime hprim hp hdiv
   · rw [natDegree_expand, natDegree_cyclotomic,
@@ -88,7 +88,7 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
     have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne.symm
     rw [cyclotomic_eq_minpoly hprim hpos]
     refine' minpoly.isIntegrallyClosed_dvd (hprim.isIntegral hpos) _
-    rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.definition,
+    rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
       @isRoot_cyclotomic_iff]
     · convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
       rw [Nat.mul_div_cancel _ hp.pos]
@@ -156,9 +156,9 @@ theorem cyclotomic_mul_prime_pow_eq (R : Type*) {p m : ℕ} [Fact (Nat.Prime p)]
     have hdiv : p ∣ p ^ a.succ * m := ⟨p ^ a * m, by rw [← mul_assoc, pow_succ']⟩
     rw [pow_succ', mul_assoc, mul_comm, cyclotomic_mul_prime_dvd_eq_pow R hdiv,
       cyclotomic_mul_prime_pow_eq _ _ a.succ_pos, ← pow_mul]
-    congr 1
-    simp only [tsub_zero, Nat.succ_sub_succ_eq_sub]
-    rwa [Nat.mul_sub_right_distrib, mul_comm, pow_succ]
+    · simp only [tsub_zero, Nat.succ_sub_succ_eq_sub]
+      rw [Nat.mul_sub_right_distrib, mul_comm, pow_succ]
+    · assumption
 #align polynomial.cyclotomic_mul_prime_pow_eq Polynomial.cyclotomic_mul_prime_pow_eq
 
 /-- If `R` is of characteristic `p` and `¬p ∣ m`, then `ζ` is a root of `cyclotomic (p ^ k * m) R`
@@ -169,12 +169,12 @@ theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [
   rcases k.eq_zero_or_pos with (rfl | hk)
   · rw [pow_zero, one_mul, isRoot_cyclotomic_iff]
   refine' ⟨fun h => _, fun h => _⟩
-  · rw [IsRoot.definition, cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, eval_pow]
+  · rw [IsRoot.def, cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, eval_pow]
       at h
     replace h := pow_eq_zero h
-    rwa [← IsRoot.definition, isRoot_cyclotomic_iff] at h
-  · rw [← isRoot_cyclotomic_iff, IsRoot.definition] at h
-    rw [cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, IsRoot.definition, eval_pow,
+    rwa [← IsRoot.def, isRoot_cyclotomic_iff] at h
+  · rw [← isRoot_cyclotomic_iff, IsRoot.def] at h
+    rw [cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, IsRoot.def, eval_pow,
       h, zero_pow]
     exact Nat.sub_ne_zero_of_lt $ pow_right_strictMono hp.out.one_lt $ Nat.pred_lt hk.ne'
 #align polynomial.is_root_cyclotomic_prime_pow_mul_iff_of_char_p Polynomial.isRoot_cyclotomic_prime_pow_mul_iff_of_charP

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
 import Mathlib.Algebra.Function.Indicator
+import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Data.Set.Finite
-import Mathlib.GroupTheory.Submonoid.Basic
 
 #align_import data.finsupp.defs from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
 
@@ -231,8 +231,6 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
   f.fun_support_eq.symm ▸ f.support.finite_toSet
 #align finsupp.finite_support Finsupp.finite_support
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-  warning: expanding binder collection (a «expr ∉ » s) -/
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
   simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
@@ -463,8 +461,6 @@ theorem support_eq_singleton {f : α →₀ M} {a : α} :
     fun h => h.2.symm ▸ support_single_ne_zero _ h.1⟩
 #align finsupp.support_eq_singleton Finsupp.support_eq_singleton
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-  warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
     f.support = {a} ↔ ∃ b ≠ 0, f = single a b :=
   ⟨fun h =>
@@ -477,8 +473,6 @@ theorem card_support_eq_one {f : α →₀ M} : card f.support = 1 ↔ ∃ a, f 
   by simp only [card_eq_one, support_eq_singleton]
 #align finsupp.card_support_eq_one Finsupp.card_support_eq_one
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-  warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem card_support_eq_one' {f : α →₀ M} :
     card f.support = 1 ↔ ∃ a, ∃ b ≠ 0, f = single a b := by
   simp only [card_eq_one, support_eq_singleton']
@@ -639,8 +633,8 @@ def erase (a : α) (f : α →₀ M) : α →₀ M where
     classical
     rw [mem_erase, mem_support_iff]; dsimp
     split_ifs with h
-    exact ⟨fun H _ => H.1 h, fun H => (H rfl).elim⟩
-    exact and_iff_right h
+    · exact ⟨fun H _ => H.1 h, fun H => (H rfl).elim⟩
+    · exact and_iff_right h
 #align finsupp.erase Finsupp.erase
 
 @[simp]
@@ -1067,10 +1061,10 @@ noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
   __ := Equiv.finsuppUnique
   map_add' _ _ := rfl
 
-  lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
-      AddEquiv.finsuppUnique.symm d = single () d := by
+lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
+    AddEquiv.finsuppUnique.symm d = single () d := by
   rw [Finsupp.unique_single (AddEquiv.finsuppUnique.symm d), Finsupp.unique_single_eq_iff]
-  rfl
+  simp [AddEquiv.finsuppUnique]
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
   add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
