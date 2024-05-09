@@ -3,6 +3,58 @@ import Mathlib.Algebra.Order.Interval.Set.Instances
 
 section
 
+open scoped ENNReal
+
+variable {α β γ : Type*}
+
+theorem Set.inl_range_disjoint_inr_range :
+    Disjoint (Set.range (Sum.inl (α := α))) (Set.range (Sum.inr (β := β))) :=
+  Set.disjoint_iff_inter_eq_empty.mpr Set.range_inl_inter_range_inr
+
+theorem tsum_sum_type [AddCommMonoid γ] [TopologicalSpace γ] [T2Space γ]
+  [ContinuousAdd γ] {f : α ⊕ β → γ}
+  (hfl : Summable (f ∘ ((↑) : Set.range (Sum.inl (α := α) (β := β)) → α ⊕ β)))
+  (hfr : Summable (f ∘ ((↑) : Set.range (Sum.inr (α := α) (β := β)) → α ⊕ β)))
+    : ∑' p : α ⊕ β, f p =
+  ∑' a, f (.inl a) + ∑' b, f (.inr b) := by
+  rw [← tsum_univ, ← Set.range_inl_union_range_inr]
+  rw [tsum_union_disjoint (Set.inl_range_disjoint_inr_range) hfl hfr,
+  tsum_range _ Sum.inl_injective, tsum_range _ Sum.inr_injective]
+
+theorem tsum_sum_type_elim [AddCommGroup γ] [UniformSpace γ] [T2Space γ]
+  [UniformAddGroup γ] [CompleteSpace γ]
+  [ContinuousAdd γ] {f : α → γ} {g : β → γ} (hfg : Summable (Sum.elim f g)) :
+    ∑' p : α ⊕ β, Sum.elim f g p = ∑' a, f a + ∑' b, g b := by
+  simp_rw [tsum_sum_type (hfg.subtype _) (hfg.subtype _), Sum.elim_inl, Sum.elim_inr]
+
+protected theorem ENNReal.tsum_sum_type {f : α ⊕ β → ℝ≥0∞} :
+    ∑' p : α ⊕ β, f p = ∑' a, f (.inl a) + ∑' b, f (.inr b) :=
+  tsum_sum_type ENNReal.summable ENNReal.summable
+
+protected theorem ENNReal.tsum_sum_unit_type {f : α ⊕ Unit → ℝ≥0∞} :
+    ∑' p : α ⊕ Unit, f p = ∑' a, f (.inl a) + f (.inr ()) := by
+  rw [ENNReal.tsum_sum_type, tsum_eq_single () (fun ⟨⟩ h => absurd rfl h)]
+
+protected theorem ENNReal.tsum_unit_type_sum {f : Unit ⊕ β → ℝ≥0∞} :
+    ∑' p : Unit ⊕ β, f p = f (.inl ()) + ∑' b, f (.inr b) := by
+  rw [ENNReal.tsum_sum_type, tsum_eq_single () (fun ⟨⟩ h => absurd rfl h)]
+
+protected theorem ENNReal.tsum_sum_type_elim {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} :
+    ∑' p : α ⊕ β, Sum.elim f g p = ∑' a, f a + ∑' b, g b := by
+  simp_rw [ENNReal.tsum_sum_type, Sum.elim_inl, Sum.elim_inr]
+
+protected theorem ENNReal.tsum_sum_unit_type_elim {f : α → ℝ≥0∞} {g : Unit → ℝ≥0∞} :
+    ∑' p : α ⊕ Unit, Sum.elim f g p = ∑' a, f a + g () := by
+  simp_rw [ENNReal.tsum_sum_unit_type, Sum.elim_inl, Sum.elim_inr]
+
+protected theorem ENNReal.tsum_unit_type_sum_elim {f : Unit → ℝ≥0∞} {g : β → ℝ≥0∞} :
+    ∑' p : Unit ⊕ β , Sum.elim f g p = f () + ∑' a, g a := by
+  simp_rw [ENNReal.tsum_unit_type_sum, Sum.elim_inl, Sum.elim_inr]
+
+end
+
+section
+
 variable {α : Type*} {a : α} {s : Set α}
 
 @[simp]
@@ -123,7 +175,7 @@ end
 section
 
 variable {α β : Type*} [Semiring α] [TopologicalSpace α]
---(b : β) (f : β → α) (g h : β → β → α)
+
 @[simp]
 theorem tsum_singleton_indicator_mul_left_right :
     ∀ {b f} (g h : β → β → α),
@@ -154,17 +206,33 @@ theorem tsum_singleton_indicator_mul_right :
 
 end
 
-#lint
-
 open BigOperators ENNReal NNReal
 
 namespace MassFunction
 
 universe u v
 
-abbrev MFLike (M : Type u → Type v) := ∀ α, FunLike (M α) α ℝ≥0∞
+structure MF (α : Type u) where
+  toFun : α → ℝ≥0∞
 
-variable {M : Type u → Type v} [MFLike M] {α : Type u} {μ ν : M α} {a b : α} {s t : Set α}
+structure FMF (α : Type u) where
+  toFun : α → ℝ≥0∞
+  mass_lt_top' : tsum (toFun) < ∞
+
+structure SPMF (α : Type*) where
+  toFun : α → ℝ≥0∞
+  mass_le_one' : tsum (toFun) ≤ 1
+
+structure PMF (α : Type u) where
+  toFun : α → ℝ≥0∞
+  mass_eq_one' : tsum (toFun) = 1
+
+abbrev MFLike (M : Type u → Type v) (α : Type u) := FunLike (M α) α ℝ≥0∞
+
+variable {M : Type u → Type v} [∀ α, MFLike M α] {α : Type u} {μ ν : M α} {a b : α} {s t : Set α}
+
+@[ext] theorem MFLike.ext {μ ν : M α} (h : ∀ x, μ x = ν x) : μ = ν :=
+  DFunLike.ext _ _ (by assumption)
 
 noncomputable def mass (μ : M α) := tsum μ
 
@@ -380,12 +448,15 @@ theorem exists_apply_eq_mass_of_support_subsingleton [Inhabited α]
 
 end MassOf
 
-class ZeroNull (M : Type u → Type v) [MFLike M] (α : Type u) extends Zero (M α) where
+class ZeroNull (M : Type u → Type v) [∀ α, MFLike M α] (α : Type u) extends Zero (M α) where
 (coeFn_zero' : ⇑(0 : M α) = 0)
+
 
 namespace ZeroNull
 
-variable [∀ α, ZeroNull M α] {a : α} {s : Set α} {μ : M α}
+variable [ZeroNull M α] {a : α} {s : Set α} {μ : M α}
+
+instance : Zero (M α) := inferInstance
 
 @[simp]
 theorem coeFn_zero : ⇑(0 : M α) = 0 := ZeroNull.coeFn_zero'
@@ -421,7 +492,7 @@ theorem massOf_zero : massOf (0 : M α) s = 0 :=
 
 end ZeroNull
 
-class FMFClass (M : Type u → Type v) [MFLike M] : Prop :=
+class FMFClass (M : Type u → Type v) [∀ α, MFLike M α] : Prop :=
   (mass_lt_top : ∀ {α} (μ : M α), mass μ < ∞)
 
 section FiniteMassFunction
@@ -531,7 +602,7 @@ end MassOf
 
 end FiniteMassFunction
 
-class SPMFClass (M : Type u → Type v) [MFLike M] : Prop :=
+class SPMFClass (M : Type u → Type v) [∀ α, MFLike M α] : Prop :=
   (mass_le_one : ∀ {α} (μ : M α), mass μ ≤ 1)
 
 instance SPMFClass.toFMFClass [SPMFClass M] : FMFClass M  where
@@ -564,7 +635,7 @@ end MassOf
 
 end SubProbabilityMassFunction
 
-class PMFClass (M : Type u → Type v) [MFLike M] : Prop :=
+class PMFClass (M : Type u → Type v) [∀ α, MFLike M α] : Prop :=
   (mass_eq_one : ∀ {α} (μ : M α), mass μ = 1)
 
 instance PMFClass.toSPMFClass [PMFClass M] : SPMFClass M where
@@ -599,14 +670,11 @@ end HasSum
 
 end ProbabilityMassFunction
 
-structure MF (α : Type u) where
-  toFun : α → ℝ≥0∞
-
 namespace MF
 
 variable {r : ℝ≥0∞} {μ : MF α} {a : α} {s : Set α}
 
-instance instMFLike : MFLike MF := fun α => ⟨fun μ => μ.toFun, fun ⟨_⟩ ⟨_⟩ _ => by congr⟩
+instance instMFLike : MFLike MF α := ⟨fun μ => μ.toFun, fun ⟨_⟩ ⟨_⟩ _ => by congr⟩
 
 @[ext] theorem ext {μ ν : MF α} (h : ∀ x, μ x = ν x) : μ = ν := DFunLike.ext _ _ (by assumption)
 
@@ -641,15 +709,11 @@ noncomputable instance : MulActionWithZero ℝ≥0∞ (MF α) :=
 
 end MF
 
-structure FMF (α : Type u) where
-  toFun : α → ℝ≥0∞
-  mass_lt_top' : tsum (toFun) < ∞
-
 namespace FMF
 
 variable {r : ℝ≥0} {μ : FMF α} {a : α} {s : Set α}
 
-instance instMFLike : MFLike FMF := fun α => ⟨fun μ => μ.toFun, fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr⟩
+instance instMFLike : MFLike FMF α:= ⟨fun μ => μ.toFun, fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr⟩
 
 instance instFMFClass : FMFClass FMF where mass_lt_top := FMF.mass_lt_top'
 
@@ -687,15 +751,11 @@ noncomputable instance : MulActionWithZero ℝ≥0 (FMF α) :=
 
 end FMF
 
-structure SPMF (α : Type*) where
-  toFun : α → ℝ≥0∞
-  mass_le_one' : tsum (toFun) ≤ 1
-
 namespace SPMF
 
 variable {r : (Set.Icc 0 1 : Set ℝ≥0∞)} {μ : SPMF α} {a : α} {s : Set α}
 
-instance instMFLike : MFLike SPMF := fun α => ⟨fun μ => μ.toFun, fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr⟩
+instance instMFLike : MFLike SPMF α := ⟨fun μ => μ.toFun, fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr⟩
 
 instance instSPMFClass : SPMFClass SPMF where mass_le_one := SPMF.mass_le_one'
 
@@ -733,13 +793,9 @@ noncomputable instance : MulActionWithZero ℝ≥0 (FMF α) :=
 
 end SPMF
 
-structure PMF (α : Type u) where
-  toFun : α → ℝ≥0∞
-  mass_eq_one' : tsum (toFun) = 1
-
 namespace PMF
 
-instance instMFLike : MFLike PMF := fun α => ⟨fun μ => μ.toFun, fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr⟩
+instance instMFLike : MFLike PMF α := ⟨fun μ => μ.toFun, fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr⟩
 
 instance instPMFClass : PMFClass PMF where mass_eq_one := PMF.mass_eq_one'
 
@@ -749,87 +805,83 @@ end PMF
 
 section Coe
 
-@[coe]
-def MFLike.toMF (μ : M α) : MF α := ⟨μ⟩
+def castMF (μ : M α) : MF α := ⟨μ⟩
 
-instance : CoeHead (M α) (MF α) := ⟨MFLike.toMF⟩
+def castFMF (μ : M α) (h : mass μ < ⊤) : FMF α := ⟨μ, h⟩
 
-@[coe]
-def FMFClass.toFMF [FMFClass M] (μ : M α) : FMF α := ⟨μ, mass_lt_top _⟩
+def castSPMF (μ : M α) (h : mass μ ≤ 1) : SPMF α := ⟨μ, h⟩
 
-instance [FMFClass M] : CoeHead (M α) (FMF α) := ⟨FMFClass.toFMF⟩
+def castPMF (μ : M α) (h : mass μ = 1) : PMF α := ⟨μ, h⟩
 
-@[coe]
-def SPMFClass.toSPMF [SPMFClass M] (μ : M α) : SPMF α := ⟨μ, mass_le_one _⟩
+instance : CoeHead (M α) (MF α) := ⟨castMF⟩
 
-instance [SPMFClass M] : CoeHead (M α) (SPMF α) := ⟨SPMFClass.toSPMF⟩
+instance [FMFClass M] : CoeHead (M α) (FMF α) := ⟨(castFMF · mass_lt_top)⟩
 
-@[coe]
-def PMFClass.toPMF [PMFClass M] (μ : M α) : PMF α := ⟨μ, mass_eq_one _⟩
+instance [SPMFClass M] : CoeHead (M α) (SPMF α) := ⟨(castSPMF · mass_le_one)⟩
 
-instance [PMFClass M] : CoeHead (M α) (PMF α) := ⟨PMFClass.toPMF⟩
+instance [PMFClass M] : CoeHead (M α) (PMF α) := ⟨(castPMF · mass_eq_one)⟩
 
-@[simp] theorem coeMF_MF_eq (μ : MF α) : (MFLike.toMF μ) = μ := rfl
-@[simp] theorem coeFMF_FMF_eq (μ : FMF α) : (FMFClass.toFMF μ) = μ := rfl
-@[simp] theorem coeSPMF_SPMF_eq  (μ : SPMF α) : (SPMFClass.toSPMF μ) = μ := rfl
-@[simp] theorem coePMF_PMF_eq (μ : PMF α) : (PMFClass.toPMF μ) = μ := rfl
+@[simp] theorem castMF_MF (μ : MF α) : (castMF μ) = μ := rfl
+@[simp] theorem castFMF_FMF_eq (μ : FMF α) (h := mass_lt_top) : (castFMF μ h) = μ := rfl
+@[simp] theorem castSPMF_SPMF_eq  (μ : SPMF α) (h := mass_le_one) : (castSPMF μ h) = μ := rfl
+@[simp] theorem castPMF_PMF_eq (μ : PMF α) (h := mass_eq_one) : (castPMF μ h) = μ := rfl
 
-@[simp] theorem coeFn_coeMF_eq_coeFn (μ : M α) :
+@[simp] theorem coeFn_castMF_eq_coeFn (μ : M α) :
     ⇑(μ : MF α) = ⇑μ := rfl
-@[simp] theorem coeFn_coeFMF_eq_coeFn [FMFClass M] (μ : M α) :
+@[simp] theorem coeFn_castFMF_eq_coeFn [FMFClass M] (μ : M α) :
     ⇑(μ : FMF α) = ⇑μ := rfl
-@[simp] theorem coeFn_coeSPMF_eq_coeFn [SPMFClass M] (μ : M α) :
+@[simp] theorem coeFn_castSPMF_eq_coeFn [SPMFClass M] (μ : M α) :
     ⇑(μ : SPMF α) = ⇑μ := rfl
-@[simp] theorem coeFn_coePMF_eq_coeFn [PMFClass M] (μ : M α) :
+@[simp] theorem coeFn_castPMF_eq_coeFn [PMFClass M] (μ : M α) :
     ⇑(μ : PMF α) = ⇑μ := rfl
 
-@[simp] theorem coeMF_apply (μ : M α) (a : α) :
+@[simp] theorem castMF_apply (μ : M α) (a : α) :
     (μ : MF α) a = μ a := rfl
-@[simp] theorem coeFMF_apply [FMFClass M] (μ : M α) (a : α) :
+@[simp] theorem castFMF_apply [FMFClass M] (μ : M α) (a : α) :
     (μ : FMF α) a = μ a := rfl
-@[simp] theorem coeSPMF_apply [SPMFClass M] (μ : M α) (a : α) :
+@[simp] theorem castSPMF_apply [SPMFClass M] (μ : M α) (a : α) :
     (μ : SPMF α) a = μ a := rfl
-@[simp] theorem coePMF_apply [PMFClass M] (μ : M α) (a : α) :
+@[simp] theorem castPMF_apply [PMFClass M] (μ : M α) (a : α) :
     (μ : PMF α) a = μ a := rfl
 
-@[simp] theorem coeMF_eq (μ ν : M α) :
+@[simp] theorem castMF_eq (μ ν : M α) :
     (μ : MF α) = (ν : MF α) ↔ μ = ν := by
-  simp_rw [DFunLike.ext'_iff, coeFn_coeMF_eq_coeFn]
-@[simp] theorem coeFMF_eq [FMFClass M] (μ ν : M α) :
+  simp_rw [DFunLike.ext'_iff, coeFn_castMF_eq_coeFn]
+@[simp] theorem castFMF_eq [FMFClass M] (μ ν : M α) :
     (μ : FMF α) = (ν : FMF α) ↔ μ = ν := by
-  simp_rw [DFunLike.ext'_iff, coeFn_coeFMF_eq_coeFn]
-@[simp] theorem coeSPMF_eq [SPMFClass M] (μ ν : M α) :
+  simp_rw [DFunLike.ext'_iff, coeFn_castFMF_eq_coeFn]
+@[simp] theorem castSPMF_eq [SPMFClass M] (μ ν : M α) :
     (μ : SPMF α) = (ν : SPMF α) ↔ μ = ν := by
-  simp_rw [DFunLike.ext'_iff, coeFn_coeSPMF_eq_coeFn]
-@[simp] theorem coePMF_eq [PMFClass M] (μ ν : M α) :
+  simp_rw [DFunLike.ext'_iff, coeFn_castSPMF_eq_coeFn]
+@[simp] theorem castPMF_eq [PMFClass M] (μ ν : M α) :
     (μ : PMF α) = (ν : PMF α) ↔ μ = ν := by
-  simp_rw [DFunLike.ext'_iff, coeFn_coePMF_eq_coeFn]
+  simp_rw [DFunLike.ext'_iff, coeFn_castPMF_eq_coeFn]
 
-@[simp] theorem mass_coeMF (μ : M α) :
+@[simp] theorem mass_castMF (μ : M α) :
     mass (μ : MF α) = mass μ := rfl
-@[simp] theorem mass_coeFMF [FMFClass M] (μ : M α) :
+@[simp] theorem mass_castFMF [FMFClass M] (μ : M α) :
     mass (μ : FMF α) = mass μ := rfl
-@[simp] theorem mass_coeSPMF [SPMFClass M] (μ : M α) :
+@[simp] theorem mass_castSPMF [SPMFClass M] (μ : M α) :
     mass (μ : SPMF α) = mass μ := rfl
-@[simp] theorem mass_coePMF [PMFClass M] (μ : M α) :
+@[simp] theorem mass_castPMF [PMFClass M] (μ : M α) :
     mass (μ : PMF α) = mass μ := rfl
 
-@[simp] theorem support_coeMF (μ : M α) :
+@[simp] theorem support_castMF (μ : M α) :
     support (μ : MF α) = support μ := rfl
-@[simp] theorem support_coeFMF [FMFClass M] (μ : M α) :
+@[simp] theorem support_castFMF [FMFClass M] (μ : M α) :
     support (μ : FMF α) = support μ := rfl
-@[simp] theorem support_coeSPMF [SPMFClass M] (μ : M α) :
+@[simp] theorem support_castSPMF [SPMFClass M] (μ : M α) :
     support (μ : SPMF α) = support μ := rfl
-@[simp] theorem support_coePMF [PMFClass M] (μ : M α) :
+@[simp] theorem support_castPMF [PMFClass M] (μ : M α) :
     support (μ : PMF α) = support μ := rfl
 
-@[simp] theorem massOf_coeMF (μ : M α) :
+@[simp] theorem massOf_castMF (μ : M α) :
     massOf (μ : MF α) = massOf μ := rfl
-@[simp] theorem massOf_coeFMF [FMFClass M] (μ : M α) :
+@[simp] theorem massOf_castFMF [FMFClass M] (μ : M α) :
     massOf (μ : FMF α) = massOf μ := rfl
-@[simp] theorem massOf_coeSPMF [SPMFClass M] (μ : M α) :
+@[simp] theorem massOf_castSPMF [SPMFClass M] (μ : M α) :
     massOf (μ : SPMF α) = massOf μ := rfl
-@[simp] theorem massOf_coePMF [PMFClass M] (μ : M α) :
+@[simp] theorem massOf_castPMF [PMFClass M] (μ : M α) :
     massOf (μ : PMF α) = massOf μ := rfl
 
 end Coe

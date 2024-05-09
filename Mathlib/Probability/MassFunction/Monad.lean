@@ -6,15 +6,15 @@ namespace MassFunction
 
 universe u v
 
-class DiracPure (M : Type u → Type v) [MFLike M] extends Pure M :=
+class DiracPure (M : Type u → Type v) [∀ α, MFLike M α] extends Pure M :=
 (coeFn' : ∀ {α} {a : α}, ⇑(pure a : M α) = Set.indicator {a} 1)
 
-class WeightedSumBind (M : Type u → Type v) [MFLike M] extends Bind M :=
+class WeightedSumBind (M : Type u → Type v) [∀ α, MFLike M α] extends Bind M :=
 (coeFn' : ∀ {α β} {μ : M α} {φ : α → M β}, ⇑(bind μ φ : M β) = fun b => ∑' a, μ a * φ a b)
 
 section Monad
 
-variable {M : Type u → Type v} [MFLike M]
+variable {M : Type u → Type v} [∀ α, MFLike M α]
 
 instance [Pure M] [Bind M] : Monad M where
 
@@ -37,12 +37,13 @@ end Monad
 
 section DiracPure
 
-variable {M : Type u → Type v} [MFLike M] [DiracPure M] {α : Type u} {a a' : α} {s : Set α}
+variable {M : Type u → Type v} [∀ α, MFLike M α] [DiracPure M] {α : Type u} {a a' : α} {s : Set α}
 
 theorem coeFn_pure : ⇑(pure a : M α) = Set.indicator {a} 1 := DiracPure.coeFn'
 
 theorem pure_apply : (pure a : M α) a' = Set.indicator {a} 1 a' := by rw [coeFn_pure]
 
+@[simp]
 theorem support_pure : support (pure a : M α) = {a} := by
   simp_rw [Set.ext_iff, mem_support_iff, coeFn_pure, Set.indicator_apply_ne_zero,
   Function.support_one, Set.inter_univ, implies_true]
@@ -51,9 +52,11 @@ theorem support_pure : support (pure a : M α) = {a} := by
 theorem pure_apply_self : (pure a : M α) a = 1 := by
   rw [coeFn_pure, Set.indicator_singleton_apply_self, Pi.one_apply]
 
+@[simp]
 theorem mem_support_pure_iff : a' ∈ support (pure a : M α) ↔ a' = a := by
   rw [support_pure, Set.mem_singleton_iff]
 
+@[simp]
 theorem nmem_support_pure_iff : a' ∉ support (pure a : M α) ↔ a' ≠ a := mem_support_pure_iff.not
 
 @[simp]
@@ -76,7 +79,7 @@ theorem pure_apply' [DecidableEq α] : (pure a : M α) a' = if a' = a then 1 els
   · rw [if_pos rfl, pure_apply_self]
   · rw [if_neg h, pure_apply_of_ne h]
 
-theorem indicator_pure_apply [∀ α, ZeroNull M α] :
+theorem indicator_pure_apply [ZeroNull M α] :
     (s.indicator (pure : α → M α) a') a = (s ∩ {a'}).indicator 1 a := by
   by_cases ha' : a' ∈ s
   · rw [s.indicator_of_mem ha', pure_apply, Set.inter_singleton_of_mem ha']
@@ -103,7 +106,7 @@ end DiracPure
 
 section WeightedSumBind
 
-variable {M : Type u → Type v} [MFLike M] [WeightedSumBind M] {α β γ : Type u}
+variable {M : Type u → Type v} [∀ α, MFLike M α] [WeightedSumBind M] {α β γ : Type u}
 {μ : M α} {ν : M β} {φ : α → M β} {ξ : β → M γ} {ψ : α → M α} {υ : α → β → M γ} {a : α} {b : β}
 
 theorem coeFn_bind : ⇑(bind μ φ) = fun b => ∑' a, μ a * φ a b := WeightedSumBind.coeFn'
@@ -126,7 +129,7 @@ theorem mem_support_bind_iff : b ∈ support (bind μ φ) ↔ ∃ a ∈ support 
 theorem nmem_support_bind_iff : b ∉ support (bind μ φ) ↔ ∀ a ∈ support μ, b ∉ support (φ a) := by
   simp_rw [mem_support_bind_iff.not, not_exists, not_and]
 
-theorem bind_comm' : (do let x ← μ; let y ← ν ; υ x y) = (do let y ← ν; let x ← μ ; υ x y) :=
+theorem bind_comm : (do let x ← μ; let y ← ν ; υ x y) = (do let y ← ν; let x ← μ ; υ x y) :=
   DFunLike.ext _ _ fun _ => by
   simp_rw [bind_apply, ENNReal.tsum_mul_left.symm, ENNReal.tsum_comm (α := β), mul_left_comm]
 
@@ -157,7 +160,7 @@ end WeightedSumBind
 
 section BindOnSupport
 
-variable {M : Type u → Type v} [MFLike M] [WeightedSumBind M] {α β γ : Type u}
+variable {M : Type u → Type v} [∀ α, MFLike M α] [WeightedSumBind M] {α β γ : Type u}
 
 def IsBindOnSupport (ρ : {α β : Type u} → (μ : M α) → ((a : α) → a ∈ support μ → M β) → M β) :=
     ∀ {α β} {μ : M α} {φ : (a : α) → a ∈ support μ → M β},

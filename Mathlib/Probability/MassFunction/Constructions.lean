@@ -11,7 +11,7 @@ section Map
 
 open Functor
 
-variable {M : Type u → Type v} [MFLike M] [DiracPure M] [WeightedSumBind M]
+variable {M : Type u → Type v} [∀ α, MFLike M α] [DiracPure M] [WeightedSumBind M]
 {α β γ : Type u} {f : α → β} {g : β → γ} {μ : M α} {φ : α → M β} {ξ : β → M γ} {b b' : β}
 
 theorem map_eq_monad_map : map f μ = f <$> μ := rfl
@@ -68,11 +68,11 @@ end Map
 
 section Seq
 
-noncomputable def seq {M : Type u → Type v} [MFLike M] [Pure M] [Bind M]
+noncomputable def seq {M : Type u → Type v} [∀ α, MFLike M α] [Pure M] [Bind M]
     {α β : Type u} (κ : M (α → β)) (μ : M α) : M β := do
   let f ← κ ; let x ← μ ; return (f x)
 
-variable {M : Type u → Type v} [MFLike M] [DiracPure M] [WeightedSumBind M]
+variable {M : Type u → Type v} [∀ α, MFLike M α] [DiracPure M] [WeightedSumBind M]
 {α β γ : Type u} {κ : M (α → β)} {μ : M α} {b : β}
 
 open DiracPure WeightedSumBind
@@ -109,15 +109,22 @@ end Seq
 
 section Filter
 
-noncomputable def filter {M : Type u → Type v} [MFLike M] [Pure M] [Bind M] [∀ α, ZeroNull M α]
-    {α : Type u} (μ : M α) (s : Set α) : M α :=
-  bind μ (fun a => s.indicator pure a)
+noncomputable def filter {M : Type u → Type v} [∀ α, MFLike M α] [Pure M] [Bind M]
+    {α : Type u} [Zero (M α)] (μ : M α) (s : Set α) : M α := do
+  let x ← μ
+  s.indicator pure x
 
-
-variable {M : Type u → Type v} [MFLike M] [DiracPure M] [WeightedSumBind M]
-[∀ α, ZeroNull M α] {α β γ : Type u} {μ : M α} {s : Set α} {a a' : α}
+variable {M : Type u → Type v} [∀ α, MFLike M α] [DiracPure M] [WeightedSumBind M]
+{α β γ : Type u} {μ : M α} {s : Set α} {a a' : α}
 
 open DiracPure WeightedSumBind
+
+theorem filter_eq_ite [Zero (M α)] [∀ a, Decidable (a ∈ s)] : filter μ s = (do
+    let x ← μ
+    if x ∈ s then pure x else 0) := by
+  simp_rw [filter, Set.indicator_apply]
+
+variable [ZeroNull M α]
 
 theorem filter_apply_of_mem (ha : a ∈ s) : (filter μ s) a = μ a :=
   bind_apply.trans (by
@@ -353,7 +360,7 @@ end Uniform
 
 section Normalize
 
-variable {M : Type u → Type v} {α : Type u} [MFLike M] {μ : M α} {a : α}
+variable {M : Type u → Type v} {α : Type u} [∀ α, MFLike M α] {μ : M α} {a : α}
 {hμ : mass μ ≠ 0}
 
 noncomputable def normalize [FMFClass M] (μ : M α) (hμ : mass μ ≠ 0) : PMF α :=
@@ -374,12 +381,12 @@ theorem mem_support_normalize_iff [FMFClass M] :
 theorem normalize_pmf [PMFClass M] (μ : M α) (hμ : mass μ ≠ 0 := mass_ne_zero) :
     normalize μ hμ = (μ : PMF α) := by
   ext
-  rw [normalize_apply, mass_eq_one, inv_one, mul_one, coePMF_apply]
+  rw [normalize_apply, mass_eq_one, inv_one, mul_one, castPMF_apply]
 
 @[simp]
 theorem normalize_normalize [FMFClass M] (μ : M α) (hμ : mass μ ≠ 0)
     (hμ' : mass (normalize μ hμ) ≠ 0 := mass_ne_zero) :
-  normalize (normalize μ hμ) hμ' = normalize μ hμ := by rw [normalize_pmf, coePMF_PMF_eq]
+  normalize (normalize μ hμ) hμ' = normalize μ hμ := by rw [normalize_pmf, castPMF_PMF_eq]
 
 end Normalize
 
