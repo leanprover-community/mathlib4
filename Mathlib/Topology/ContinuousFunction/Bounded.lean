@@ -800,9 +800,7 @@ instance instMul :
   mul f g := {
     toFun := fun x ↦ f x * g x
     continuous_toFun := f.continuous.mul g.continuous
-    map_bounded' :=
-      mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g)
-  }
+    map_bounded' := mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
 
 end mul
 
