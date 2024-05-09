@@ -106,6 +106,8 @@ This file acts as a substitute for `Mathlib.Algebra.Order.SMul`. We now need to
 * rethink `OrderedSMul`
 -/
 
+open scoped AlgebraOrderInstances
+
 open OrderDual
 
 variable (α β : Type*)

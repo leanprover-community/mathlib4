@@ -12,6 +12,7 @@ import Mathlib.Algebra.Order.Sub.Defs
 # Lemmas about subtraction in canonically ordered monoids
 -/
 
+open scoped AlgebraOrderInstances
 
 variable {α : Type*}
 

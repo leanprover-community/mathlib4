@@ -13,6 +13,8 @@ import Mathlib.Algebra.Ring.InjSurj
 # Pulling back ordered rings along injective maps
 -/
 
+open scoped AlgebraOrderInstances
+
 open Function
 
 variable {α β : Type*}

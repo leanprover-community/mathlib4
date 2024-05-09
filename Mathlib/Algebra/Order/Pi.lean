@@ -14,6 +14,8 @@ import Mathlib.Algebra.Ring.Pi
 This file defines instances for ordered group, monoid, and related structures on Pi types.
 -/
 
+open scoped AlgebraOrderInstances
+
 variable {ι I α β γ : Type*}
 
 -- The indexing type

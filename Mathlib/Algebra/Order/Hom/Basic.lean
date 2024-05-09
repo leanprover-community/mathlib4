@@ -68,6 +68,8 @@ There are two workarounds:
   `Middle.toTop`'s parameter, in this example replacing `[Left α]` with `[Leaf α]`.
 -/
 
+open scoped AlgebraOrderInstances
+
 open Function
 
 variable {ι F α β γ δ : Type*}

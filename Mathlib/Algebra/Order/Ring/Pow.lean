@@ -8,6 +8,8 @@ import Mathlib.Data.Nat.Cast.Order
 
 /-! # Bernoulli's inequality -/
 
+open scoped AlgebraOrderInstances
+
 variable {R : Type*}
 
 section OrderedSemiring

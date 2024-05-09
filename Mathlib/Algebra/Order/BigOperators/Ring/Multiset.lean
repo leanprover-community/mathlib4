@@ -13,6 +13,8 @@ This file contains the results concerning the interaction of multiset big operat
 rings.
 -/
 
+open scoped AlgebraOrderInstances
+
 namespace Multiset
 variable {R : Type*}
 

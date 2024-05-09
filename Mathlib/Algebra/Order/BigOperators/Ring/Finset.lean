@@ -16,7 +16,7 @@ This file contains the results concerning the interaction of finset big operator
 rings.
 -/
 
-open scoped BigOperators
+open scoped BigOperators AlgebraOrderInstances
 
 variable {ι R : Type*}
 

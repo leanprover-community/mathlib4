@@ -37,6 +37,8 @@ equal, this often confuses the elaborator. Similar problems arise when doing cas
 The disadvantage is that we have to duplicate some instances about `Set.Ici` to this subtype.
 -/
 
+open scoped AlgebraOrderInstances
+
 open Set
 
 variable {α : Type*}
