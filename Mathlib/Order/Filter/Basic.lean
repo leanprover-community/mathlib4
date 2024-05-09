@@ -201,14 +201,30 @@ structure Filter (α : Type*) where
   inter_sets {x y} : x ∈ sets → y ∈ sets → x ∩ y ∈ sets
 #align filter Filter
 
+open Lean in
+def stealEntity (fvarid : FVarId) (requireNoun : Bool) : EnglishM (Option Entity) := do
+  trace s!"Will look for an entity describing {← fvarid.toLatex} if nothing after it depends on it"
+  let entities := (← get).entities
+  let some i := entities.findIdx? fun entity => entity.fvarid == fvarid
+    | trace[English] "No entity for this fvarid"
+      return none
+  for i in [i + 1 : entities.size] do
+    if entities[i]!.uses.contains fvarid then
+      trace[English] "Stuck because of dependencies"
+      return none
+  let entity := entities[i]!
+  if requireNoun && entity.noun.isNone then
+    trace[English] "Found entity, but has no noun"
+    return none
+  modify fun st => { st with entities := entities.eraseIdx i }
+  return entity
+
 @[english_param const.Filter] def param_Filter : EnglishParam
 | fvarid, deps, type@(.app _ X), _used => do
   trace[English] "Using the english_param handler for Filter"
   if X.isFVar then
-    let e ← getEntityFor X.fvarId! deps
-    if e.noun.isSome then
+    if let some e ← stealEntity X.fvarId! (requireNoun := true) then
       -- We're capturing e, so remove it from the state.
-      modify fun state => { state with entities := state.entities.filter fun e' => e.fvarid != e'.fvarid }
       if let Sum.inl (Xart, Xst) := e.phraseForm (plural := false) (inline := true) then
         addNoun' fvarid #[type]
           { kind := `Filter
