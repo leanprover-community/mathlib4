@@ -151,7 +151,7 @@ theorem evariance_eq_zero_iff (hX : AEMeasurable X μ) :
       using hω
   · rw [hω]
     simp
-  · measurability
+  · exact (hX.sub_const _).ennnorm.pow_const _ -- TODO `measurability` and `fun_prop` fail
 #align probability_theory.evariance_eq_zero_iff ProbabilityTheory.evariance_eq_zero_iff
 
 theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :

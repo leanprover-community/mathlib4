@@ -12,7 +12,7 @@ import Mathlib.Tactic.TypeStar
 /-!
 # Difference list
 
-This file provides a few results about `DList`, which is defined in `Std`.
+This file provides a few results about `DList`, which is defined in `Batteries`.
 
 A difference list is a function that, given a list, returns the original content of the
 difference list prepended to the given list. It is useful to represent elements of a given type
