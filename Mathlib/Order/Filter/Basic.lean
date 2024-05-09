@@ -202,8 +202,20 @@ structure Filter (α : Type*) where
 #align filter Filter
 
 @[english_param const.Filter] def param_Filter : EnglishParam
-| fvarid, _deps, type@(.app _ X), _used => do
+| fvarid, deps, type@(.app _ X), _used => do
   trace[English] "Using the english_param handler for Filter"
+  if X.isFVar then
+    let e ← getEntityFor X.fvarId! deps
+    if e.noun.isSome then
+      -- We're capturing e, so remove it from the state.
+      modify fun state => { state with entities := state.entities.filter fun e' => e.fvarid != e'.fvarid }
+      if let Sum.inl (Xart, Xst) := e.phraseForm (plural := false) (inline := true) then
+        addNoun' fvarid #[type]
+          { kind := `Filter
+            article := .a
+            text := nt!"filter{.s} on {toString Xart} {Xst}"
+            inlineText := nt!"filter{.s} {fvarid} on {toString Xart} {Xst}" }
+        return
   addNoun' fvarid #[type]
     { kind := `Filter
       article := .a
@@ -238,7 +250,7 @@ latex_pp_app_rules (const := Set.iInter)
     let i ← withExtraSmallness 2 <| latexPP ι
     withBindingBodyUnusedName' s `i fun name body => do
       match body with -- Detect bounded intersections
-      | (mkAppN (.const `Set.iInter _) #[_α, h, s']) => 
+      | (mkAppN (.const `Set.iInter _) #[_α, h, s']) =>
         withBindingBodyUnusedName' s' `i fun _name body => do
           let cond ← withExtraSmallness 2 <| latexPP h
           let pbody ← latexPP body
