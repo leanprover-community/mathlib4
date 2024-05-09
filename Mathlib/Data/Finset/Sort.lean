@@ -292,11 +292,13 @@ variable {α : Type*} [LinearOrder α] {t : ℕ}
     rw [← Finset.coe_inj, ← Finset.range_orderEmbOfFin s rfl]
     simp
 
+/-- Add a new element greater than all existing elements to the end of a tuple. -/
 def appendRight (f : Fin t ↪o α) (a : α) (ha : ∀ i, f i < a) : Fin (t+1) ↪o α :=
   OrderEmbedding.ofStrictMono (Fin.lastCases a f) (
     Fin.lastCases (fun b h ↦ (h.not_le <| Fin.le_last b).elim)
       (fun i ↦ Fin.lastCases (by simp [ha]) fun _ hij ↦ by simpa using hij))
 
+/-- Add a new element greater than the maximum to the end of a nonempty tuple. -/
 @[reducible] def appendRight' (f : Fin (t+1) ↪o α) (a : α) (ha : f (Fin.last t) < a) :
     Fin (t+2) ↪o α :=
   appendRight f a (fun i ↦ (f.monotone (Fin.le_last i)).trans_lt ha)
@@ -314,9 +316,11 @@ def appendRight (f : Fin t ↪o α) (a : α) (ha : ∀ i, f i < a) : Fin (t+1) �
   ext x
   exact Fin.lastCases (i := x) (by simp) (fun i ↦ by simp)
 
+/-- Restrict a tuple to an initial subsegment. -/
 def truncate (f : Fin t ↪o α) {t' : ℕ} (ht' : t' ≤ t) : Fin t' ↪o α :=
   (Fin.castLEEmb ht').trans f
 
+/-- Remove the last element of a nonempty tuple. -/
 def eraseRight (f : Fin (t+1) ↪o α) : Fin t ↪o α :=
   truncate f (Nat.le_add_right t 1)
 
