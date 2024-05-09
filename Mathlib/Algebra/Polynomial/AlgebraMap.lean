@@ -50,6 +50,7 @@ instance algebraOfAlgebra : Algebra R A[X]
   toRingHom := C.comp (algebraMap R A)
 #align polynomial.algebra_of_algebra Polynomial.algebraOfAlgebra
 
+@[simp]
 theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
   rfl
 #align polynomial.algebra_map_apply Polynomial.algebraMap_apply
@@ -75,6 +76,10 @@ theorem C_eq_algebraMap (r : R) : C r = algebraMap R R[X] r :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.C_eq_algebra_map Polynomial.C_eq_algebraMap
 
+@[simp]
+theorem algebraMap_eq : algebraMap R R[X] = C :=
+  rfl
+
 /-- `Polynomial.C` as an `AlgHom`. -/
 @[simps! apply]
 def CAlgHom : A →ₐ[R] A[X] where
@@ -99,8 +104,7 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
     commutes' := fun r => by
-      dsimp
-      exact toFinsupp_algebraMap _ }
+      dsimp }
 #align polynomial.to_finsupp_iso_alg Polynomial.toFinsuppIsoAlg
 
 variable {R}
@@ -142,11 +146,11 @@ theorem ringHom_eval₂_cast_int_ringHom {R S : Type*} [Ring R] [Ring S] (p : �
 #align polynomial.ring_hom_eval₂_cast_int_ring_hom Polynomial.ringHom_eval₂_cast_int_ringHom
 
 @[simp]
-theorem eval₂_int_castRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] →+* R) :
+theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] →+* R) :
     eval₂ (Int.castRingHom R) (f X) p = f p :=
   eval₂_algebraMap_X p f.toIntAlgHom
 set_option linter.uppercaseLean3 false in
-#align polynomial.eval₂_int_cast_ring_hom_X Polynomial.eval₂_int_castRingHom_X
+#align polynomial.eval₂_int_cast_ring_hom_X Polynomial.eval₂_intCastRingHom_X
 
 end CommSemiring
 
@@ -171,8 +175,6 @@ This is a stronger variant of the linear map `Polynomial.leval`. -/
 def aeval : R[X] →ₐ[R] A :=
   eval₂AlgHom' (Algebra.ofId _ _) x (Algebra.commutes · _)
 #align polynomial.aeval Polynomial.aeval
-
--- Porting note: removed `variable` due to redundant binder annotation update
 
 @[simp]
 theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
@@ -249,9 +251,9 @@ theorem aeval_bit1 : aeval x (bit1 p) = bit1 (aeval x p) :=
 end deprecated
 
 -- Porting note: removed `@[simp]` because `simp` can prove this
-theorem aeval_nat_cast (n : ℕ) : aeval x (n : R[X]) = n :=
+theorem aeval_natCast (n : ℕ) : aeval x (n : R[X]) = n :=
   map_natCast _ _
-#align polynomial.aeval_nat_cast Polynomial.aeval_nat_cast
+#align polynomial.aeval_nat_cast Polynomial.aeval_natCast
 
 theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
   AlgHom.map_mul _ _ _
@@ -452,12 +454,10 @@ theorem aevalTower_comp_C : (aevalTower g y : R[X] →+* A').comp C = g :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.aeval_tower_comp_C Polynomial.aevalTower_comp_C
 
-@[simp]
 theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R R[X] x) = g x :=
   eval₂_C _ _
 #align polynomial.aeval_tower_algebra_map Polynomial.aevalTower_algebraMap
 
-@[simp]
 theorem aevalTower_comp_algebraMap : (aevalTower g y : R[X] →+* A').comp (algebraMap R R[X]) = g :=
   aevalTower_comp_C _ _
 #align polynomial.aeval_tower_comp_algebra_map Polynomial.aevalTower_comp_algebraMap
@@ -529,7 +529,7 @@ theorem eval_mul_X_sub_C {p : R[X]} (r : R) : (p * (X - C r)).eval r = 0 := by
   have bound :=
     calc
       (p * (X - C r)).natDegree ≤ p.natDegree + (X - C r).natDegree := natDegree_mul_le
-      _ ≤ p.natDegree + 1 := (add_le_add_left (natDegree_X_sub_C_le _) _)
+      _ ≤ p.natDegree + 1 := add_le_add_left (natDegree_X_sub_C_le _) _
       _ < p.natDegree + 2 := lt_add_one _
   rw [sum_over_range' _ _ (p.natDegree + 2) bound]
   swap

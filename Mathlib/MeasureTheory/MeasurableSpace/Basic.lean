@@ -689,6 +689,53 @@ theorem measurable_of_measurable_on_compl_singleton [MeasurableSingletonClass α
 
 end Subtype
 
+section Atoms
+
+variable [MeasurableSpace β]
+
+/-- The *measurable atom* of `x` is the intersection of all the measurable sets countaining `x`.
+It is measurable when the space is countable (or more generally when the measurable space is
+countably generated). -/
+def measurableAtom (x : β) : Set β :=
+  ⋂ (s : Set β) (_h's : x ∈ s) (_hs : MeasurableSet s), s
+
+@[simp] lemma mem_measurableAtom_self (x : β) : x ∈ measurableAtom x := by
+  simp (config := {contextual := true}) [measurableAtom]
+
+lemma mem_of_mem_measurableAtom {x y : β} (h : y ∈ measurableAtom x) {s : Set β}
+    (hs : MeasurableSet s) (hxs : x ∈ s) : y ∈ s := by
+  simp only [measurableAtom, mem_iInter] at h
+  exact h s hxs hs
+
+lemma measurableAtom_subset {s : Set β} {x : β} (hs : MeasurableSet s) (hx : x ∈ s) :
+    measurableAtom x ⊆ s :=
+  iInter₂_subset_of_subset s hx fun ⦃a⦄ ↦ (by simp [hs])
+
+@[simp] lemma measurableAtom_of_measurableSingletonClass [MeasurableSingletonClass β] (x : β) :
+    measurableAtom x = {x} :=
+  Subset.antisymm (measurableAtom_subset (measurableSet_singleton x) rfl) (by simp)
+
+lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
+    MeasurableSet (measurableAtom x) := by
+  have : ∀ (y : β), y ∉ measurableAtom x → ∃ s, x ∈ s ∧ MeasurableSet s ∧ y ∉ s :=
+    fun y hy ↦ by simpa [measurableAtom] using hy
+  choose! s hs using this
+  have : measurableAtom x = ⋂ (y ∈ (measurableAtom x)ᶜ), s y := by
+    apply Subset.antisymm
+    · intro z hz
+      simp only [mem_iInter, mem_compl_iff]
+      intro i hi
+      show z ∈ s i
+      exact mem_of_mem_measurableAtom hz (hs i hi).2.1 (hs i hi).1
+    · apply compl_subset_compl.1
+      intro z hz
+      simp only [compl_iInter, mem_iUnion, mem_compl_iff, exists_prop]
+      exact ⟨z, hz, (hs z hz).2.2⟩
+  rw [this]
+  exact MeasurableSet.biInter (to_countable (measurableAtom x)ᶜ) (fun i hi ↦ (hs i hi).2.1)
+
+end Atoms
+
 section Prod
 
 /-- A `MeasurableSpace` structure on the product of two measurable spaces. -/
@@ -813,14 +860,23 @@ instance Prod.instMeasurableSingletonClass
   ⟨fun ⟨a, b⟩ => @singleton_prod_singleton _ _ a b ▸ .prod (.singleton a) (.singleton b)⟩
 #align prod.measurable_singleton_class Prod.instMeasurableSingletonClass
 
+theorem measurable_from_prod_countable' [Countable β]
+    {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y))
+    (h'f : ∀ y y' x, y' ∈ measurableAtom y → f (x, y') = f (x, y)) :
+    Measurable f := fun s hs => by
+  have : f ⁻¹' s = ⋃ y, ((fun x => f (x, y)) ⁻¹' s) ×ˢ (measurableAtom y : Set β) := by
+    ext1 ⟨x, y⟩
+    simp only [mem_preimage, mem_iUnion, mem_prod]
+    refine ⟨fun h ↦ ⟨y, h, mem_measurableAtom_self y⟩, ?_⟩
+    rintro ⟨y', hy's, hy'⟩
+    rwa [h'f y' y x hy']
+  rw [this]
+  exact .iUnion (fun y ↦ (hf y hs).prod (.measurableAtom_of_countable y))
+
 theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass β]
     {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
-    Measurable f := fun s hs => by
-  have : f ⁻¹' s = ⋃ y, ((fun x => f (x, y)) ⁻¹' s) ×ˢ ({y} : Set β) := by
-    ext1 ⟨x, y⟩
-    simp [and_assoc, and_left_comm]
-  rw [this]
-  exact .iUnion fun y => (hf y hs).prod (.singleton y)
+    Measurable f :=
+  measurable_from_prod_countable' hf (by simp (config := {contextual := true}))
 #align measurable_from_prod_countable measurable_from_prod_countable
 
 /-- A piecewise function on countably many pieces is measurable if all the data is measurable. -/
@@ -1072,8 +1128,8 @@ theorem measurable_tProd_elim' [DecidableEq δ] {l : List δ} (h : ∀ i, i ∈ 
 theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (π i)} (hs : ∀ i, MeasurableSet (s i)) :
     MeasurableSet (Set.tprod l s) := by
   induction' l with i l ih
-  exact MeasurableSet.univ
-  exact (hs i).prod ih
+  · exact MeasurableSet.univ
+  · exact (hs i).prod ih
 #align measurable_set.tprod MeasurableSet.tProd
 
 end TProd
@@ -1779,14 +1835,30 @@ def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)]
   · refine Measurable.prod ?_ ?_ <;>
       rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
   · rw [measurable_pi_iff]; rintro (i|i)
-    exact measurable_pi_iff.1 measurable_fst _
-    exact measurable_pi_iff.1 measurable_snd _
+    · exact measurable_pi_iff.1 measurable_fst _
+    · exact measurable_pi_iff.1 measurable_snd _
 
 theorem coe_sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
     ⇑(MeasurableEquiv.sumPiEquivProdPi α) = Equiv.sumPiEquivProdPi α := by rfl
 
 theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
     ⇑(MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
+
+/-- The measurable equivalence for (dependent) functions on an Option type
+  `(∀ i : Option δ, α i) ≃ᵐ (∀ (i : δ), α i) × α none`. -/
+def piOptionEquivProd {δ : Type*} (α : Option δ → Type*) [∀ i, MeasurableSpace (α i)] :
+    (∀ i, α i) ≃ᵐ (∀ (i : δ), α i) × α none :=
+  let e : Option δ ≃ δ ⊕ Unit := Equiv.optionEquivSumPUnit δ
+  let em1 : ((i : δ ⊕ Unit) → α (e.symm i)) ≃ᵐ ((a : Option δ) → α a) :=
+    MeasurableEquiv.piCongrLeft α e.symm
+  let em2 : ((i : δ ⊕ Unit) → α (e.symm i)) ≃ᵐ ((i : δ) → α (e.symm (Sum.inl i)))
+      × ((i' : Unit) → α (e.symm (Sum.inr i'))) :=
+    MeasurableEquiv.sumPiEquivProdPi (fun i ↦ α (e.symm i))
+  let em3 : ((i : δ) → α (e.symm (Sum.inl i))) × ((i' : Unit) → α (e.symm (Sum.inr i')))
+      ≃ᵐ ((i : δ) → α (some i)) × α none :=
+    MeasurableEquiv.prodCongr (MeasurableEquiv.refl ((i : δ) → α (e.symm (Sum.inl i))))
+      (MeasurableEquiv.piUnique fun i ↦ α (e.symm (Sum.inr i)))
+  em1.symm.trans <| em2.trans em3
 
 /-- The measurable equivalence `(∀ i : s, π i) × (∀ i : t, π i) ≃ᵐ (∀ i : s ∪ t, π i)`
   for disjoint finsets `s` and `t`. `Equiv.piFinsetUnion` as a measurable equivalence. -/

@@ -13,7 +13,7 @@ import Mathlib.Analysis.NormedSpace.Basic
 # A collection of specific asymptotic results
 
 This file contains specific lemmas about asymptotics which don't have their place in the general
-theory developed in `Analysis.Asymptotics.Asymptotics`.
+theory developed in `Mathlib.Analysis.Asymptotics.Asymptotics`.
 -/
 
 
@@ -114,7 +114,7 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
   calc
     ‖∑ i in range n, f i‖ = ‖(∑ i in range N, f i) + ∑ i in Ico N n, f i‖ := by
       rw [sum_range_add_sum_Ico _ Nn]
-    _ ≤ ‖∑ i in range N, f i‖ + ‖∑ i in Ico N n, f i‖ := (norm_add_le _ _)
+    _ ≤ ‖∑ i in range N, f i‖ + ‖∑ i in Ico N n, f i‖ := norm_add_le _ _
     _ ≤ ‖∑ i in range N, f i‖ + ∑ i in Ico N n, ε / 2 * g i :=
       (add_le_add le_rfl (norm_sum_le_of_le _ fun i hi => hN _ (mem_Ico.1 hi).1))
     _ ≤ ‖∑ i in range N, f i‖ + ∑ i in range n, ε / 2 * g i := by
@@ -134,8 +134,8 @@ theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddC
     {f : ℕ → α} (h : Tendsto f atTop (𝓝 0)) :
     (fun n => ∑ i in range n, f i) =o[atTop] fun n => (n : ℝ) := by
   have := ((isLittleO_one_iff ℝ).2 h).sum_range fun i => zero_le_one
-  simp only [sum_const, card_range, Nat.smul_one_eq_coe] at this
-  exact this tendsto_nat_cast_atTop_atTop
+  simp only [sum_const, card_range, Nat.smul_one_eq_cast] at this
+  exact this tendsto_natCast_atTop_atTop
 #align asymptotics.is_o_sum_range_of_tendsto_zero Asymptotics.isLittleO_sum_range_of_tendsto_zero
 
 /-- The Cesaro average of a converging sequence converges to the same limit. -/

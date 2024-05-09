@@ -69,7 +69,7 @@ theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
   conv_lhs => rw [← p.pow_mul_divByMonic_rootMultiplicity_eq t, ← hm]
   rw [iterate_derivative_mul, eval_finset_sum, sum_eq_single_of_mem _ (mem_range.mpr m.succ_pos)]
   · rw [m.choose_zero_right, one_smul, eval_mul, m.sub_zero, iterate_derivative_X_sub_pow_self,
-      eval_nat_cast, nsmul_eq_mul]; rfl
+      eval_natCast, nsmul_eq_mul]; rfl
   · intro b hb hb0
     rw [iterate_derivative_X_sub_pow, eval_smul, eval_mul, eval_smul, eval_pow,
       Nat.sub_sub_self (mem_range_succ_iff.mp hb), eval_sub, eval_X, eval_C, sub_self,
@@ -337,7 +337,7 @@ theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :
   divByMonic_eq_div p (monic_X_sub_C a) ▸ mul_divByMonic_eq_iff_isRoot
 #align polynomial.mul_div_eq_iff_is_root Polynomial.mul_div_eq_iff_isRoot
 
-instance : EuclideanDomain R[X] :=
+instance instEuclideanDomain : EuclideanDomain R[X] :=
   { Polynomial.commRing,
     Polynomial.nontrivial with
     quotient := (· / ·)
@@ -661,7 +661,7 @@ theorem irreducible_iff_degree_lt (p : R[X]) (hp0 : p ≠ 0) (hpu : ¬ IsUnit p)
     Irreducible p ↔ ∀ q, q.degree ≤ ↑(natDegree p / 2) → q ∣ p → IsUnit q := by
   rw [← irreducible_mul_leadingCoeff_inv,
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_degree_lt]
-  simp [hp0, natDegree_mul_leadingCoeff_inv]
+  · simp [hp0, natDegree_mul_leadingCoeff_inv]
   · contrapose! hpu
     exact isUnit_of_mul_eq_one _ _ hpu
 

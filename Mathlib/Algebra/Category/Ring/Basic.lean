@@ -134,12 +134,11 @@ theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x 
 set_option linter.uppercaseLean3 false in
 #align SemiRing.of_hom_apply SemiRingCat.ofHom_apply
 
-set_option autoImplicit true in
 /--
 Ring equivalence are isomorphisms in category of semirings
 -/
 @[simps]
-def _root_.RingEquiv.toSemiRingCatIso [Semiring X] [Semiring Y] (e : X ≃+* Y) :
+def _root_.RingEquiv.toSemiRingCatIso {X Y : Type u} [Semiring X] [Semiring Y] (e : X ≃+* Y) :
     SemiRingCat.of X ≅ SemiRingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
@@ -355,13 +354,12 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.has_forget_to_CommMon CommSemiRingCat.hasForgetToCommMonCat
 
-set_option autoImplicit true in
 /--
 Ring equivalence are isomorphisms in category of commutative semirings
 -/
 @[simps]
-def _root_.RingEquiv.toCommSemiRingCatIso [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
-    CommSemiRingCat.of X ≅ CommSemiRingCat.of Y where
+def _root_.RingEquiv.toCommSemiRingCatIso {X Y : Type u} [CommSemiring X] [CommSemiring Y]
+    (e : X ≃+* Y) : CommSemiRingCat.of X ≅ CommSemiRingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
 
@@ -490,7 +488,7 @@ instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :
 set_option linter.uppercaseLean3 false in
 #align CommRing.has_forget_to_CommSemiRing CommRingCat.hasForgetToCommSemiRingCat
 
-instance : (forget₂ CommRingCat CommSemiRingCat).Full where preimage {X Y} f := f
+instance : (forget₂ CommRingCat CommSemiRingCat).Full where map_surjective f := ⟨f, rfl⟩
 
 end CommRingCat
 

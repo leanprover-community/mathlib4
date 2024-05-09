@@ -69,8 +69,7 @@ open scoped Classical
 open Nat multiplicity padicNorm CauSeq CauSeq.Completion Metric
 
 /-- The type of Cauchy sequences of rationals with respect to the `p`-adic norm. -/
-@[reducible]
-def PadicSeq (p : ℕ) :=
+abbrev PadicSeq (p : ℕ) :=
   CauSeq _ (padicNorm p)
 #align padic_seq PadicSeq
 
@@ -922,7 +921,7 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
     rw [eq_comm]
     calc
       ‖(k : ℚ_[p])‖ = ‖((k : ℚ) : ℚ_[p])‖ := by norm_cast
-      _ = padicNorm p k := (padicNormE.eq_padicNorm _)
+      _ = padicNorm p k := padicNormE.eq_padicNorm _
       _ = 1 := mod_cast (int_eq_one_iff k).mpr h
   · rintro ⟨x, rfl⟩
     push_cast

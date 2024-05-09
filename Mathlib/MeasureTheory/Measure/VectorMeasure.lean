@@ -406,7 +406,7 @@ namespace Measure
 /-- A finite measure coerced into a real function is a signed measure. -/
 @[simps]
 def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure α where
-  measureOf' := fun i : Set α => if MeasurableSet i then (μ.measureOf i).toReal else 0
+  measureOf' := fun s : Set α => if MeasurableSet s then (μ s).toReal else 0
   empty' := by simp [μ.empty]
   not_measurable' _ hi := if_neg hi
   m_iUnion' f hf₁ hf₂ := by
@@ -920,15 +920,15 @@ theorem restrict_le_restrict_iUnion {f : ℕ → Set α} (hf₁ : ∀ n, Measura
   have ha₄ : Pairwise (Disjoint on fun n => a ∩ disjointed f n) :=
     (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
   rw [← ha₃, v.of_disjoint_iUnion_nat _ ha₄, w.of_disjoint_iUnion_nat _ ha₄]
-  refine' tsum_le_tsum (fun n => (restrict_le_restrict_iff v w (hf₁ n)).1 (hf₂ n) _ _) _ _
-  · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
-  · exact Set.Subset.trans (Set.inter_subset_right _ _) (disjointed_subset _ _)
-  · refine' (v.m_iUnion (fun n => _) _).summable
+  · refine' tsum_le_tsum (fun n => (restrict_le_restrict_iff v w (hf₁ n)).1 (hf₂ n) _ _) _ _
     · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
-    · exact (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
-  · refine' (w.m_iUnion (fun n => _) _).summable
-    · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
-    · exact (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
+    · exact Set.Subset.trans (Set.inter_subset_right _ _) (disjointed_subset _ _)
+    · refine' (v.m_iUnion (fun n => _) _).summable
+      · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
+      · exact (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
+    · refine' (w.m_iUnion (fun n => _) _).summable
+      · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
+      · exact (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
   · intro n
     exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
   · exact fun n => ha₁.inter (MeasurableSet.disjointed hf₁ n)
@@ -1310,7 +1310,7 @@ def toMeasureOfZeroLE (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet
       intro n m hnm
       exact ((hf₂ hnm).inf_left' i).inf_right' i
     simp only [toMeasureOfZeroLE', s.restrict_apply hi₁ (MeasurableSet.iUnion hf₁), Set.inter_comm,
-      Set.inter_iUnion, s.of_disjoint_iUnion_nat h₁ h₂, ENNReal.some_eq_coe, id.def]
+      Set.inter_iUnion, s.of_disjoint_iUnion_nat h₁ h₂, ENNReal.some_eq_coe, id]
     have h : ∀ n, 0 ≤ s (i ∩ f n) := fun n =>
       s.nonneg_of_zero_le_restrict (s.zero_le_restrict_subset hi₁ (Set.inter_subset_left _ _) hi₂)
     rw [NNReal.coe_tsum_of_nonneg h, ENNReal.coe_tsum]

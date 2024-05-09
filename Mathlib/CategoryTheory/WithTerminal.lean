@@ -67,7 +67,7 @@ namespace WithTerminal
 variable {C}
 
 /-- Morphisms for `WithTerminal C`. -/
--- Porting note: unsupported `nolint has_nonempty_instance`
+-- Porting note(#5171): removed `nolint has_nonempty_instance`
 @[simp]
 def Hom : WithTerminal C → WithTerminal C → Type v
   | of X, of Y => X ⟶ Y
@@ -124,7 +124,7 @@ def incl : C ⥤ WithTerminal C where
 #align category_theory.with_terminal.incl CategoryTheory.WithTerminal.incl
 
 instance : (incl : C ⥤ _).Full where
-  preimage f := f
+  map_surjective f := ⟨f, rfl⟩
 
 instance : (incl : C ⥤ _).Faithful where
 
@@ -367,7 +367,7 @@ namespace WithInitial
 variable {C}
 
 /-- Morphisms for `WithInitial C`. -/
--- Porting note: unsupported `nolint has_nonempty_instance`
+-- Porting note(#5171): removed `nolint has_nonempty_instance`
 @[simp]
 def Hom : WithInitial C → WithInitial C → Type v
   | of X, of Y => X ⟶ Y
@@ -422,7 +422,7 @@ def incl : C ⥤ WithInitial C where
 #align category_theory.with_initial.incl CategoryTheory.WithInitial.incl
 
 instance : (incl : C ⥤ _).Full where
-  preimage f := f
+  map_surjective f := ⟨f, rfl⟩
 
 instance : (incl : C ⥤ _).Faithful where
 

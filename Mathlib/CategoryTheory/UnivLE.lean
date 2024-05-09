@@ -13,13 +13,13 @@ import Mathlib.CategoryTheory.Types
 We show `UnivLE.{max u v, v} ↔ EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v)`.
 -/
 
-set_option autoImplicit true
-
 open CategoryTheory
+
+universe u v
 
 noncomputable section
 
-theorem UnivLE.ofEssSurj.{u, v} (w : (uliftFunctor.{u, v} : Type v ⥤ Type max u v).EssSurj) :
+theorem UnivLE.ofEssSurj (w : (uliftFunctor.{u, v} : Type v ⥤ Type max u v).EssSurj) :
     UnivLE.{max u v, v} :=
   fun α ↦ by
     obtain ⟨a', ⟨m⟩⟩ := w.mem_essImage α
@@ -30,14 +30,13 @@ instance EssSurj.ofUnivLE [UnivLE.{max u v, v}] :
   mem_essImage α :=
     ⟨Shrink α, ⟨Equiv.toIso (Equiv.ulift.trans (equivShrink α).symm)⟩⟩
 
-theorem UnivLE_iff_essSurj.{u, v} :
+theorem UnivLE_iff_essSurj :
     UnivLE.{max u v, v} ↔ (uliftFunctor.{u, v} : Type v ⥤ Type max u v).EssSurj :=
   ⟨fun _ => inferInstance, fun w => UnivLE.ofEssSurj w⟩
 
-instance [UnivLE.{max u v, v}] : uliftFunctor.{u, v}.IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj uliftFunctor
+instance [UnivLE.{max u v, v}] : uliftFunctor.{u, v}.IsEquivalence where
 
-def UnivLE.witness.{u, v} [UnivLE.{max u v, v}] : Type u ⥤ Type v :=
+def UnivLE.witness [UnivLE.{max u v, v}] : Type u ⥤ Type v :=
   uliftFunctor.{v, u} ⋙ (uliftFunctor.{u, v}).inv
 
 instance [UnivLE.{max u v, v}] : UnivLE.witness.{u, v}.Faithful :=

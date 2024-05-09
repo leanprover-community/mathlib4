@@ -7,6 +7,8 @@ on: pull_request
 jobs:
   label-and-report-new-contributor:
     runs-on: ubuntu-latest
+    # Don't run on forks, where we wouldn't have permissions to add the label anyway.
+    if: github.repository == 'leanprover-community/mathlib4'
     permissions:
       checks: write
       pull-requests: write

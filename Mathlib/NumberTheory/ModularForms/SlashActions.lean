@@ -6,6 +6,7 @@ Authors: Chris Birkbeck
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.Tactic.AdaptationNote
 
 #align_import number_theory.modular_forms.slash_actions from "leanprover-community/mathlib"@"738054fa93d43512da144ec45ce799d18fd44248"
 
@@ -99,9 +100,9 @@ section
 -- temporary notation until the instance is built
 local notation:100 f " ∣[" k "]" γ:100 => ModularForm.slash k γ f
 
--- Adaptation note: after v4.7.0-rc1, there is a performance problem in `field_simp`.
--- (Part of the code was ignoring the `maxDischargeDepth` setting: now that we have to increase it,
--- other paths becomes slow.)
+#adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
+(Part of the code was ignoring the `maxDischargeDepth` setting:
+ now that we have to increase it, other paths become slow.) -/
 set_option maxHeartbeats 400000 in
 private theorem slash_mul (k : ℤ) (A B : GL(2, ℝ)⁺) (f : ℍ → ℂ) :
     f ∣[k](A * B) = (f ∣[k]A) ∣[k]B := by
