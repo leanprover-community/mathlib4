@@ -17,7 +17,7 @@ injective presentation for `A`, hence category of abelian groups has enough inje
 
 ## Implementation notes
 
-This file is splitted from `Mathlib.Algebra.GroupCat.Injective` is to prevent import loop.
+This file is split from `Mathlib.Algebra.GroupCat.Injective` is to prevent import loop.
 This file's dependency imports `Mathlib.Algebra.GroupCat.Injective`.
 -/
 
