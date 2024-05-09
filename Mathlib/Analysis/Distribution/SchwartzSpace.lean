@@ -655,7 +655,7 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
   apply Function.HasTemperateGrowth.of_fderiv ?_ f.differentiable (k := 1) (C := ‖f‖) (fun x ↦ ?_)
   · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
     simpa [this] using .const _
-  · exact (f.le_op_norm x).trans (by simp [mul_add])
+  · exact (f.le_opNorm x).trans (by simp [mul_add])
 
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D] [FiniteDimensional ℝ D]

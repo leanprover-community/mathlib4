@@ -161,11 +161,11 @@ instance {β : Type v} (c : β → C) [HasZeroMorphisms C] [HasBiproduct c] [∀
     ext
     simp only [Category.assoc, biproduct.lift_π, comp_factorThru]
 
-instance {P : Cᵒᵖ} [Projective P] : Injective (unop P) where
+instance {P : Cᵒᵖ} [Projective P] : Injective no_index (unop P) where
   factors g f mono :=
     ⟨(@Projective.factorThru Cᵒᵖ _ P _ _ _ g.op f.op _).unop, Quiver.Hom.op_inj (by simp)⟩
 
-instance {J : Cᵒᵖ} [Injective J] : Projective (unop J) where
+instance {J : Cᵒᵖ} [Injective J] : Projective no_index (unop J) where
   factors f e he :=
     ⟨(@factorThru Cᵒᵖ _ J _ _ _ f.op e.op _).unop, Quiver.Hom.op_inj (by simp)⟩
 

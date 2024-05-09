@@ -41,8 +41,7 @@ Some functions on `Linexp` assume that `n : Nat` occurs at most once as the firs
 and that the list is sorted in decreasing order of the first argument.
 This is not enforced by the type but the operations here preserve it.
 -/
-@[reducible]
-def Linexp : Type := List (Nat × Int)
+abbrev Linexp : Type := List (Nat × Int)
 
 namespace Linexp
 /--
@@ -311,7 +310,7 @@ structure CertificateOracle : Type where
   `hyps` by eliminating all variables ≤ `max_var`.
   If successful, it returns a map `coeff : Nat → Nat` as a certificate.
   This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`. -/
-  produceCertificate (hyps : List Comp) (max_var : Nat) : MetaM (Std.HashMap Nat Nat)
+  produceCertificate (hyps : List Comp) (max_var : Nat) : MetaM (Batteries.HashMap Nat Nat)
 
 open Meta
 

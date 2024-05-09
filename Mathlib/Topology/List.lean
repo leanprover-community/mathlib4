@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Order.Filter.ListTraverse
+import Mathlib.Tactic.AdaptationNote
 
 #align_import topology.list from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
@@ -57,8 +58,8 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
     have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
       refine' List.Forall₂.flip _
       replace hv := hv.flip
-      -- Adaptation note: nightly-2024-03-16: simp was
-      -- simp only [List.forall₂_and_left, flip] at hv ⊢
+      #adaptation_note /-- nightly-2024-03-16: simp was
+      simp only [List.forall₂_and_left, flip] at hv ⊢ -/
       simp only [List.forall₂_and_left, Function.flip_def] at hv ⊢
       exact ⟨hv.1, hu.flip⟩
     refine' mem_of_superset _ hvs

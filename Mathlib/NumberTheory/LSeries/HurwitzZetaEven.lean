@@ -218,7 +218,7 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℕ ↦ 2 * Real.cos (2 * π * a * (n + 1)) * rexp (-π * (n + 1) ^ 2 * t))
     (cosKernel a t - 1) := by
   rw [← hasSum_ofReal, ofReal_sub, ofReal_one]
-  have := (hasSum_int_cosKernel a ht).sum_nat_of_sum_int
+  have := (hasSum_int_cosKernel a ht).nat_add_neg
   rw [← hasSum_nat_add_iff' 1] at this
   simp_rw [Finset.sum_range_one, Nat.cast_zero, neg_zero, Int.cast_zero, zero_pow two_ne_zero,
     mul_zero, zero_mul, Complex.exp_zero, Real.exp_zero, ofReal_one, mul_one, Int.cast_neg,
@@ -531,7 +531,7 @@ lemma hasSum_nat_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     (completedCosZeta a s) := by
   have aux : ((|0| : ℤ) : ℂ) ^ s = 0 := by
     rw [abs_zero, Int.cast_zero, zero_cpow (ne_zero_of_one_lt_re hs)]
-  have hint := (hasSum_int_completedCosZeta a hs).sum_nat_of_sum_int
+  have hint := (hasSum_int_completedCosZeta a hs).nat_add_neg
   rw [aux, div_zero, zero_div, add_zero] at hint
   refine hint.congr_fun fun n ↦ ?_
   split_ifs with h
@@ -757,7 +757,7 @@ lemma hasSum_int_cosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 /-- Formula for `cosZeta` as a Dirichlet series in the convergence range, with sum over `ℕ`. -/
 lemma hasSum_nat_cosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ Real.cos (2 * π * a * n) / (n : ℂ) ^ s) (cosZeta a s) := by
-  have := (hasSum_int_cosZeta a hs).sum_nat_of_sum_int
+  have := (hasSum_int_cosZeta a hs).nat_add_neg
   simp_rw [abs_neg, Int.cast_neg, Nat.abs_cast, Int.cast_natCast, mul_neg, abs_zero, Int.cast_zero,
     zero_cpow (ne_zero_of_one_lt_re hs), div_zero, zero_div, add_zero, ← add_div,
     div_right_comm _ _ (2 : ℂ)] at this
