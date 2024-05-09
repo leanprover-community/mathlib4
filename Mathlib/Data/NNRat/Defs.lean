@@ -420,13 +420,13 @@ lemma divNat_mul_left {a : ℕ} (ha : a ≠ 0) (n d : ℕ) : divNat (a * n) (a *
 lemma divNat_mul_right {a : ℕ} (ha : a ≠ 0) (n d : ℕ) : divNat (n * a) (d * a) = divNat n d := by
   ext; push_cast; exact Rat.divInt_mul_right (mod_cast ha)
 
-lemma mul_den_eq_num (q : ℚ≥0) : q * q.den = q.num := by
+@[simp] lemma mul_den_eq_num (q : ℚ≥0) : q * q.den = q.num := by
   ext
   push_cast
   rw [← Int.cast_natCast, ← den_coe, ← Int.cast_natCast q.num, ← num_coe]
   exact Rat.mul_den_eq_num _
 
-lemma den_mul_eq_num (q : ℚ≥0) : q.den * q = q.num := by rw [mul_comm, mul_den_eq_num]
+@[simp] lemma den_mul_eq_num (q : ℚ≥0) : q.den * q = q.num := by rw [mul_comm, mul_den_eq_num]
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with nonnegative rational
 numbers of the form `n / d` with `d ≠ 0` and `n`, `d` coprime. -/

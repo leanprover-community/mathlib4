@@ -582,7 +582,7 @@ theorem natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
   rw [divInt_mul_divInt _ _ this one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
 #align rat.mul_denom_eq_num Rat.mul_den_eq_num
 
-lemma den_mul_eq_num (q : ℚ) : q.den * q = q.num := by rw [mul_comm, mul_den_eq_num]
+@[simp] lemma den_mul_eq_num (q : ℚ) : q.den * q = q.num := by rw [mul_comm, mul_den_eq_num]
 
 -- 2024-04-05
 @[deprecated] alias coe_int_eq_divInt := intCast_eq_divInt
