@@ -698,7 +698,7 @@ instance : Star (CentroidHom α) where
 
 @[simp] lemma star_apply (f : CentroidHom α) (a : α) : (star f) a = star (f (star a)) := rfl
 
-instance : InvolutiveStar (CentroidHom α) where
+instance instInvolutiveStar : InvolutiveStar (CentroidHom α) where
   star_involutive _ := by
     ext a
     rw [star_apply, star_apply, star_star, star_star]
@@ -734,6 +734,9 @@ instance : Star (Subsemiring.center (CentroidHom α)) where
         _ = star (star g (f.val (star a))) := by simp only [mul_apply, star_apply, star_star]
         _ = g (star (f.val (star a))) := by simp only [star_apply, star_star]
     exact e1.symm⟩
+
+instance : InvolutiveStar (Subsemiring.center (CentroidHom α)) where
+  star_involutive f := SetCoe.ext (instInvolutiveStar.star_involutive f.val)
 
 /--
 Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
