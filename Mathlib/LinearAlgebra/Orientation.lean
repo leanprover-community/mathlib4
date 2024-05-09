@@ -33,6 +33,7 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 
 -/
 
+open scoped AlgebraOrderInstances
 
 noncomputable section
 

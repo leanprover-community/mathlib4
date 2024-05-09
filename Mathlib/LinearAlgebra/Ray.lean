@@ -25,6 +25,8 @@ common positive multiple.
 -/
 
 
+open scoped AlgebraOrderInstances
+
 noncomputable section
 
 open BigOperators
