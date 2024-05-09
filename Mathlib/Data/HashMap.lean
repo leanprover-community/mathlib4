@@ -3,7 +3,7 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 
-As `HashMap` has been completely reimplemented in `Std`,
+As `HashMap` has been completely reimplemented in `Batteries`,
 nothing from the mathlib3 file `data.hash_map` is reflected here.
 The porting header is just here to mark that no further work on `data.hash_map` is desired.
 -/
@@ -16,7 +16,7 @@ import Mathlib.Mathport.Rename
 /-!
 # Additional API for `HashMap` and `RBSet`.
 
-These should be replaced by proper implementations in Std.
+These should be replaced by proper implementations in Batteries.
 -/
 
 set_option autoImplicit true
