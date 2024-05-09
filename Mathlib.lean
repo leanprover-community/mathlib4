@@ -614,6 +614,7 @@ import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Divisibility.Lemmas
 import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.Ring.Ext
 import Mathlib.Algebra.Ring.Fin
 import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
@@ -3905,6 +3906,7 @@ import Mathlib.Topology.Bases
 import Mathlib.Topology.Basic
 import Mathlib.Topology.Bornology.Absorbs
 import Mathlib.Topology.Bornology.Basic
+import Mathlib.Topology.Bornology.BoundedOperation
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.Category.Born

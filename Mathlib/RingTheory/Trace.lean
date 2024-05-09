@@ -589,7 +589,7 @@ theorem det_traceMatrix_ne_zero' [IsSeparable K L] : det (traceMatrix K pb.basis
   suffices algebraMap K (AlgebraicClosure L) (det (traceMatrix K pb.basis)) ≠ 0 by
     refine' mt (fun ht => _) this
     rw [ht, RingHom.map_zero]
-  haveI : FiniteDimensional K L := pb.finiteDimensional
+  haveI : FiniteDimensional K L := pb.finite
   let e : Fin pb.dim ≃ (L →ₐ[K] AlgebraicClosure L) := (Fintype.equivFinOfCardEq ?_).symm
   · rw [RingHom.map_det, RingHom.mapMatrix_apply,
       traceMatrix_eq_embeddingsMatrixReindex_mul_trans K _ _ e,

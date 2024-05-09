@@ -420,7 +420,7 @@ variable (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X]
 we can finally select a candidate minimizing `HD`. This will be the candidate realizing the
 optimal coupling. -/
 private theorem exists_minimizer : ∃ f ∈ candidatesB X Y, ∀ g ∈ candidatesB X Y, HD f ≤ HD g :=
-  isCompact_candidatesB.exists_forall_le candidatesB_nonempty HD_continuous.continuousOn
+  isCompact_candidatesB.exists_isMinOn candidatesB_nonempty HD_continuous.continuousOn
 
 private def optimalGHDist : Cb X Y :=
   Classical.choose (exists_minimizer X Y)
