@@ -62,7 +62,6 @@ noncomputable def leftInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
     -∑ c : { c : Composition (n + 2) // c.length < n + 2 },
         (leftInv p i (c : Composition (n + 2)).length).compAlongComposition
           (p.compContinuousLinearMap i.symm) c
-  decreasing_by exact c.2
 #align formal_multilinear_series.left_inv FormalMultilinearSeries.leftInv
 
 @[simp]
@@ -100,7 +99,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
   ext (n v)
   match n with
   | 0 =>
-    simp only [leftInv_coeff_zero, ContinuousMultilinearMap.zero_apply, id_apply_ne_one, Ne.def,
+    simp only [leftInv_coeff_zero, ContinuousMultilinearMap.zero_apply, id_apply_ne_one, Ne,
       not_false_iff, zero_ne_one, comp_coeff_zero']
   | 1 =>
     simp only [leftInv_coeff_one, comp_coeff_one, h, id_apply_one, ContinuousLinearEquiv.coe_apply,
@@ -145,7 +144,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       congr
       ext k
       simp [h, Function.comp]
-    simp [FormalMultilinearSeries.comp, show n + 2 ≠ 1 by norm_num, A, Finset.sum_union B,
+    simp [FormalMultilinearSeries.comp, show n + 2 ≠ 1 by omega, A, Finset.sum_union B,
       applyComposition_ones, C, D, -Set.toFinset_setOf]
 #align formal_multilinear_series.left_inv_comp FormalMultilinearSeries.leftInv_comp
 
@@ -252,14 +251,14 @@ theorem comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F
   ext (n v)
   match n with
   | 0 =>
-    simp only [h0, ContinuousMultilinearMap.zero_apply, id_apply_ne_one, Ne.def, not_false_iff,
+    simp only [h0, ContinuousMultilinearMap.zero_apply, id_apply_ne_one, Ne, not_false_iff,
       zero_ne_one, comp_coeff_zero']
   | 1 =>
     simp only [comp_coeff_one, h, rightInv_coeff_one, ContinuousLinearEquiv.apply_symm_apply,
       id_apply_one, ContinuousLinearEquiv.coe_apply, continuousMultilinearCurryFin1_symm_apply]
   | n + 2 =>
     have N : 0 < n + 2 := by norm_num
-    simp [comp_rightInv_aux1 N, h, rightInv, lt_irrefl n, show n + 2 ≠ 1 by norm_num,
+    simp [comp_rightInv_aux1 N, h, rightInv, lt_irrefl n, show n + 2 ≠ 1 by omega,
       ← sub_eq_add_neg, sub_eq_zero, comp_rightInv_aux2, -Set.toFinset_setOf]
 #align formal_multilinear_series.comp_right_inv FormalMultilinearSeries.comp_rightInv
 
@@ -477,8 +476,7 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {n : ℕ} (hn : 2 ≤ n + 1)
       gcongr
       apply (compAlongComposition_norm _ _ _).trans
       gcongr
-      · exact prod_nonneg fun j _ => norm_nonneg _
-      · apply hp
+      apply hp
     _ =
         I * a +
           I * C *
@@ -530,13 +528,11 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
   let S n := ∑ k in Ico 1 n, a ^ k * ‖p.rightInv i k‖
   have IRec : ∀ n, 1 ≤ n → S n ≤ (I + 1) * a := by
     apply Nat.le_induction
-    · simp only
+    · simp only [S]
       rw [Ico_eq_empty_of_le (le_refl 1), sum_empty]
       exact mul_nonneg (add_nonneg (norm_nonneg _) zero_le_one) apos.le
     · intro n one_le_n hn
       have In : 2 ≤ n + 1 := by linarith only [one_le_n]
-      have Snonneg : 0 ≤ S n :=
-        sum_nonneg fun x _ => mul_nonneg (pow_nonneg apos.le _) (norm_nonneg _)
       have rSn : r * S n ≤ 1 / 2 :=
         calc
           r * S n ≤ r * ((I + 1) * a) := by gcongr
@@ -557,8 +553,8 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
         _ ≤ (I + 1) * a := by gcongr
   -- conclude that all coefficients satisfy `aⁿ Qₙ ≤ (I + 1) a`.
   let a' : NNReal := ⟨a, apos.le⟩
-  suffices H : (a' : ENNReal) ≤ (p.rightInv i).radius
-  · apply lt_of_lt_of_le _ H
+  suffices H : (a' : ENNReal) ≤ (p.rightInv i).radius by
+    apply lt_of_lt_of_le _ H
     -- Prior to leanprover/lean4#2734, this was `exact_mod_cast apos`.
     simpa only [ENNReal.coe_pos]
   apply le_radius_of_bound _ ((I + 1) * a) fun n => ?_
@@ -572,7 +568,7 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
       _ ≤ ∑ k in Ico 1 (n + 1), a ^ k * ‖p.rightInv i k‖ :=
         (haveI : ∀ k ∈ Ico 1 (n + 1), 0 ≤ a ^ k * ‖p.rightInv i k‖ := fun k _ => by positivity
         single_le_sum this (by simp [one_le_n]))
-      _ ≤ (I + 1) * a := IRec (n + 1) (by norm_num)
+      _ ≤ (I + 1) * a := IRec (n + 1) (by set_option tactic.skipAssignedInstances false in norm_num)
 #align formal_multilinear_series.radius_right_inv_pos_of_radius_pos FormalMultilinearSeries.radius_rightInv_pos_of_radius_pos
 
 end FormalMultilinearSeries

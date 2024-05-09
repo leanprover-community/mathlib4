@@ -63,8 +63,7 @@ theorem ContinuousLinearMap.norm_map_tail_le
     ‖f (m 0) (tail m)‖ ≤ ‖f‖ * ∏ i, ‖m i‖ :=
   calc
     ‖f (m 0) (tail m)‖ ≤ ‖f (m 0)‖ * ∏ i, ‖(tail m) i‖ := (f (m 0)).le_opNorm _
-    _ ≤ ‖f‖ * ‖m 0‖ * ∏ i, ‖(tail m) i‖ :=
-      (mul_le_mul_of_nonneg_right (f.le_opNorm _) (prod_nonneg fun _ _ => norm_nonneg _))
+    _ ≤ ‖f‖ * ‖m 0‖ * ∏ i, ‖tail m i‖ := mul_le_mul_of_nonneg_right (f.le_opNorm _) <| by positivity
     _ = ‖f‖ * (‖m 0‖ * ∏ i, ‖(tail m) i‖) := by ring
     _ = ‖f‖ * ∏ i, ‖m i‖ := by
       rw [prod_univ_succ]
@@ -78,7 +77,7 @@ theorem ContinuousMultilinearMap.norm_map_init_le
     ‖f (init m) (m (last n))‖ ≤ ‖f (init m)‖ * ‖m (last n)‖ := (f (init m)).le_opNorm _
     _ ≤ (‖f‖ * ∏ i, ‖(init m) i‖) * ‖m (last n)‖ :=
       (mul_le_mul_of_nonneg_right (f.le_opNorm _) (norm_nonneg _))
-    _ = ‖f‖ * ((∏ i, ‖(init m) i‖) * ‖m (last n)‖) := (mul_assoc _ _ _)
+    _ = ‖f‖ * ((∏ i, ‖(init m) i‖) * ‖m (last n)‖) := mul_assoc _ _ _
     _ = ‖f‖ * ∏ i, ‖m i‖ := by
       rw [prod_univ_castSucc]
       rfl
@@ -268,9 +267,8 @@ def ContinuousMultilinearMap.curryRight (f : ContinuousMultilinearMap 𝕜 Ei G)
         ext
         simp }
   f'.mkContinuous ‖f‖ fun m => by
-    simp only [MultilinearMap.coe_mk]
-    exact LinearMap.mkContinuous_norm_le _
-      (mul_nonneg (norm_nonneg _) (prod_nonneg fun _ _ => norm_nonneg _)) _
+    simp only [f', MultilinearMap.coe_mk]
+    exact LinearMap.mkContinuous_norm_le _ (by positivity) _
 #align continuous_multilinear_map.curry_right ContinuousMultilinearMap.curryRight
 
 @[simp]
@@ -650,7 +648,7 @@ theorem curryFinFinset_symm_apply (hk : s.card = k) (hl : sᶜ.card = l)
   rfl
 #align continuous_multilinear_map.curry_fin_finset_symm_apply ContinuousMultilinearMap.curryFinFinset_symm_apply
 
--- @[simp] -- Porting note: simp removed: simp can reduce LHS
+-- @[simp] -- Porting note (#10618): simp removed: simp can reduce LHS
 theorem curryFinFinset_symm_apply_piecewise_const (hk : s.card = k) (hl : sᶜ.card = l)
     (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (x y : G) :
     (curryFinFinset 𝕜 G G' hk hl).symm f (s.piecewise (fun _ => x) fun _ => y) =
@@ -665,7 +663,7 @@ theorem curryFinFinset_symm_apply_const (hk : s.card = k) (hl : sᶜ.card = l)
   rfl
 #align continuous_multilinear_map.curry_fin_finset_symm_apply_const ContinuousMultilinearMap.curryFinFinset_symm_apply_const
 
--- @[simp] -- Porting note: simp removed: simp can reduce LHS
+-- @[simp] -- Porting note (#10618): simp removed: simp can reduce LHS
 theorem curryFinFinset_apply_const (hk : s.card = k) (hl : sᶜ.card = l) (f : G[×n]→L[𝕜] G')
     (x y : G) : (curryFinFinset 𝕜 G G' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by

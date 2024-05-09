@@ -218,7 +218,7 @@ theorem IsEquivalent.exists_eq_mul (huv : u ~[l] v) :
 theorem isEquivalent_of_tendsto_one (hz : ∀ᶠ x in l, v x = 0 → u x = 0)
     (huv : Tendsto (u / v) l (𝓝 1)) : u ~[l] v := by
   rw [isEquivalent_iff_exists_eq_mul]
-  refine' ⟨u / v, huv, hz.mono fun x hz' ↦ (div_mul_cancel_of_imp hz').symm⟩
+  exact ⟨u / v, huv, hz.mono fun x hz' ↦ (div_mul_cancel_of_imp hz').symm⟩
 #align asymptotics.is_equivalent_of_tendsto_one Asymptotics.isEquivalent_of_tendsto_one
 
 theorem isEquivalent_of_tendsto_one' (hz : ∀ x, v x = 0 → u x = 0) (huv : Tendsto (u / v) l (𝓝 1)) :
@@ -274,7 +274,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
   calc
     ‖((fun x : α ↦ φ x • u x) - v) x‖ = ‖(φ x - 1) • u x + (u x - v x)‖ := by
       simp [sub_smul, sub_add]
-    _ ≤ ‖(φ x - 1) • u x‖ + ‖u x - v x‖ := (norm_add_le _ _)
+    _ ≤ ‖(φ x - 1) • u x‖ + ‖u x - v x‖ := norm_add_le _ _
     _ = ‖φ x - 1‖ * ‖u x‖ + ‖u x - v x‖ := by rw [norm_smul]
     _ ≤ c / 2 * ‖v x‖ + ‖u x - v x‖ := by gcongr
     _ ≤ c / 2 * ‖v x‖ + c / 2 * ‖v x‖ := by gcongr; exact huvx

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mac Malone, Kyle Miller
 -/
 import Lean.Elab.MutualDef
-import Std.Tactic.OpenPrivate
+import Batteries.Tactic.OpenPrivate
 
 /-!
 # `recall` command

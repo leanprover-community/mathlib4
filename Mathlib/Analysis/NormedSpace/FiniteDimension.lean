@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.Normed.Group.Lemmas
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.AffineIsometry
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -59,9 +59,7 @@ namespace LinearIsometry
 open LinearMap
 
 variable {R : Type*} [Semiring R]
-
 variable {F E₁ : Type*} [SeminormedAddCommGroup F] [NormedAddCommGroup E₁] [Module R E₁]
-
 variable {R₁ : Type*} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteDimensional R₁ E₁]
   [FiniteDimensional R₁ F]
 
@@ -216,7 +214,7 @@ theorem LipschitzOnWith.extend_finite_dimension {α : Type*} [PseudoMetricSpace 
       apply A.symm.lipschitz
     apply (LAsymm.comp hg).weaken
     rw [lipschitzExtensionConstant, ← mul_assoc]
-    refine' mul_le_mul' (le_max_left _ _) le_rfl
+    exact mul_le_mul' (le_max_left _ _) le_rfl
   · intro x hx
     have : A (f x) = g x := gs hx
     simp only [(· ∘ ·), ← this, A.symm_apply_apply]
@@ -231,6 +229,31 @@ theorem LinearMap.exists_antilipschitzWith [FiniteDimensional 𝕜 E] (f : E →
     exact ⟨_, e.nnnorm_symm_pos, e.antilipschitz⟩
 #align linear_map.exists_antilipschitz_with LinearMap.exists_antilipschitzWith
 
+open Function in
+/-- A `LinearMap` on a finite-dimensional space over a complete field
+  is injective iff it is anti-Lipschitz. -/
+theorem LinearMap.injective_iff_antilipschitz [FiniteDimensional 𝕜 E] (f : E →ₗ[𝕜] F) :
+    Injective f ↔ ∃ K > 0, AntilipschitzWith K f := by
+  constructor
+  · rw [← LinearMap.ker_eq_bot]
+    exact f.exists_antilipschitzWith
+  · rintro ⟨K, -, H⟩
+    exact H.injective
+
+open Function in
+/-- The set of injective continuous linear maps `E → F` is open,
+  if `E` is finite-dimensional over a complete field. -/
+theorem ContinuousLinearMap.isOpen_injective [FiniteDimensional 𝕜 E] :
+    IsOpen { L : E →L[𝕜] F | Injective L } := by
+  rw [isOpen_iff_eventually]
+  rintro φ₀ hφ₀
+  rcases φ₀.injective_iff_antilipschitz.mp hφ₀ with ⟨K, K_pos, H⟩
+  have : ∀ᶠ φ in 𝓝 φ₀, ‖φ - φ₀‖₊ < K⁻¹ := eventually_nnnorm_sub_lt _ <| inv_pos_of_pos K_pos
+  filter_upwards [this] with φ hφ
+  apply φ.injective_iff_antilipschitz.mpr
+  exact ⟨(K⁻¹ - ‖φ - φ₀‖₊)⁻¹, inv_pos_of_pos (tsub_pos_of_lt hφ),
+    H.add_sub_lipschitzWith (φ - φ₀).lipschitz hφ⟩
+
 protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
     (hf : LinearIndependent 𝕜 f) : ∀ᶠ g in 𝓝 f, LinearIndependent 𝕜 g := by
   cases nonempty_fintype ι
@@ -241,8 +264,8 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
       Tendsto.norm <| ((continuous_apply i).tendsto _).sub tendsto_const_nhds
   simp only [sub_self, norm_zero, Finset.sum_const_zero] at this
   refine' (this.eventually (gt_mem_nhds <| inv_pos.2 K0)).mono fun g hg => _
-  replace hg : ∑ i, ‖g i - f i‖₊ < K⁻¹
-  · rw [← NNReal.coe_lt_coe]
+  replace hg : ∑ i, ‖g i - f i‖₊ < K⁻¹ := by
+    rw [← NNReal.coe_lt_coe]
     push_cast
     exact hg
   rw [LinearMap.ker_eq_bot]
@@ -277,7 +300,7 @@ theorem Basis.opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E
     calc
       ‖u e‖₊ = ‖u (∑ i, v.equivFun e i • v i)‖₊ := by rw [v.sum_equivFun]
       _ = ‖∑ i, v.equivFun e i • (u <| v i)‖₊ := by simp [u.map_sum, LinearMap.map_smul]
-      _ ≤ ∑ i, ‖v.equivFun e i • (u <| v i)‖₊ := (nnnorm_sum_le _ _)
+      _ ≤ ∑ i, ‖v.equivFun e i • (u <| v i)‖₊ := nnnorm_sum_le _ _
       _ = ∑ i, ‖v.equivFun e i‖₊ * ‖u (v i)‖₊ := by simp only [nnnorm_smul]
       _ ≤ ∑ i, ‖v.equivFun e i‖₊ * M := by gcongr; apply hu
       _ = (∑ i, ‖v.equivFun e i‖₊) * M := by rw [Finset.sum_mul]
@@ -289,9 +312,7 @@ theorem Basis.opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E
       _ = Fintype.card ι • ‖φ‖₊ * M * ‖e‖₊ := by simp only [smul_mul_assoc, mul_right_comm]
 #align basis.op_nnnorm_le Basis.opNNNorm_le
 
-@[deprecated]
-alias Basis.op_nnnorm_le :=
-  Basis.opNNNorm_le -- deprecated on 2024-02-02
+@[deprecated] alias Basis.op_nnnorm_le := Basis.opNNNorm_le -- deprecated on 2024-02-02
 
 theorem Basis.opNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} {M : ℝ}
     (hM : 0 ≤ M) (hu : ∀ i, ‖u (v i)‖ ≤ M) :
@@ -299,9 +320,7 @@ theorem Basis.opNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E �
   simpa using NNReal.coe_le_coe.mpr (v.opNNNorm_le ⟨M, hM⟩ hu)
 #align basis.op_norm_le Basis.opNorm_le
 
-@[deprecated]
-alias Basis.op_norm_le :=
-  Basis.opNorm_le -- deprecated on 2024-02-02
+@[deprecated] alias Basis.op_norm_le := Basis.opNorm_le -- deprecated on 2024-02-02
 
 /-- A weaker version of `Basis.opNNNorm_le` that abstracts away the value of `C`. -/
 theorem Basis.exists_opNNNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
@@ -313,9 +332,7 @@ theorem Basis.exists_opNNNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) 
       (v.opNNNorm_le M hu).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (zero_le M)⟩
 #align basis.exists_op_nnnorm_le Basis.exists_opNNNorm_le
 
-@[deprecated]
-alias Basis.exists_op_nnnorm_le :=
-  Basis.exists_opNNNorm_le -- deprecated on 2024-02-02
+@[deprecated] alias Basis.exists_op_nnnorm_le := Basis.exists_opNNNorm_le -- 2024-02-02
 
 /-- A weaker version of `Basis.opNorm_le` that abstracts away the value of `C`. -/
 theorem Basis.exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
@@ -327,9 +344,7 @@ theorem Basis.exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
   simpa using h ⟨M, hM⟩ H
 #align basis.exists_op_norm_le Basis.exists_opNorm_le
 
-@[deprecated]
-alias Basis.exists_op_norm_le :=
-  Basis.exists_opNorm_le -- deprecated on 2024-02-02
+@[deprecated] alias Basis.exists_op_norm_le := Basis.exists_opNorm_le -- deprecated on 2024-02-02
 
 instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     SecondCountableTopology (E →L[𝕜] F) := by
@@ -360,11 +375,10 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
       exact ⟨n, le_of_lt hn⟩
     choose n hn using this
     use n
-    replace hn : ∀ i : Fin d, ‖(φ - (v.constrL <| u ∘ n)) (v i)‖ ≤ ε / (2 * C)
-    · simp [hn]
+    replace hn : ∀ i : Fin d, ‖(φ - (v.constrL <| u ∘ n)) (v i)‖ ≤ ε / (2 * C) := by simp [hn]
     have : C * (ε / (2 * C)) = ε / 2 := by
       rw [eq_div_iff (two_ne_zero : (2 : ℝ) ≠ 0), mul_comm, ← mul_assoc,
-        mul_div_cancel' _ (ne_of_gt h_2C)]
+        mul_div_cancel₀ _ (ne_of_gt h_2C)]
     specialize hC (le_of_lt hε2C) hn
     rwa [this] at hC
   choose n hn using this
@@ -374,7 +388,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
   intro x y hxy
   calc
     dist x y ≤ dist x (Φ x) + dist (Φ x) y := dist_triangle _ _ _
-    _ = dist x (Φ x) + dist y (Φ y) := by simp [hxy, dist_comm]
+    _ = dist x (Φ x) + dist y (Φ y) := by simp [Φ, hxy, dist_comm]
     _ ≤ ε := by linarith [hn x, hn y]
 
 theorem AffineSubspace.closed_of_finiteDimensional {P : Type*} [MetricSpace P]
@@ -400,7 +414,7 @@ theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : 
       ext x
       simp [h]
     have : FiniteDimensional 𝕜 (⊤ : Submodule 𝕜 E) := by rwa [this]
-    refine' Module.finite_def.2 ((Submodule.fg_top _).1 (Module.finite_def.1 this))
+    exact Module.finite_def.2 ((Submodule.fg_top _).1 (Module.finite_def.1 this))
   obtain ⟨x, xR, hx⟩ : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y : E, y ∈ F → 1 ≤ ‖x - y‖ :=
     riesz_lemma_of_norm_lt hc hR Fclosed this
   have hx' : ∀ y : E, y ∈ F → 1 ≤ ‖y - x‖ := by
@@ -450,7 +464,7 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
   let g := fun n : ℕ => c • f n
   have A : ∀ n, g n ∈ Metric.closedBall (0 : E) r := by
     intro n
-    simp only [norm_smul, dist_zero_right, Metric.mem_closedBall]
+    simp only [g, norm_smul, dist_zero_right, Metric.mem_closedBall]
     calc
       ‖c‖ * ‖f n‖ ≤ r / R * R := by gcongr; exact hc.2.le; apply fle
       _ = r := by field_simp [(zero_lt_one.trans Rgt).ne']
@@ -464,14 +478,14 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
   calc
     ‖c‖ ≤ dist (g (φ (N + 1))) (g (φ N)) := by
       conv_lhs => rw [← mul_one ‖c‖]
-      simp only [dist_eq_norm, ← smul_sub, norm_smul]
+      simp only [g, dist_eq_norm, ← smul_sub, norm_smul]
       gcongr
       apply lef (ne_of_gt _)
       exact φmono (Nat.lt_succ_self N)
     _ < ‖c‖ := hN (N + 1) (Nat.le_succ N)
 #align finite_dimensional_of_is_compact_closed_ball₀ FiniteDimensional.of_isCompact_closedBall₀
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated] -- Since 2024-02-02
 alias finiteDimensional_of_isCompact_closedBall₀ := FiniteDimensional.of_isCompact_closedBall₀
 
 /-- **Riesz's theorem**: if a closed ball of positive radius is compact in a vector space, then the
@@ -481,7 +495,7 @@ theorem FiniteDimensional.of_isCompact_closedBall {r : ℝ} (rpos : 0 < r) {c : 
   .of_isCompact_closedBall₀ 𝕜 rpos <| by simpa using h.vadd (-c)
 #align finite_dimensional_of_is_compact_closed_ball FiniteDimensional.of_isCompact_closedBall
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated] -- Since 2024-02-02
 alias finiteDimensional_of_isCompact_closedBall := FiniteDimensional.of_isCompact_closedBall
 
 /-- **Riesz's theorem**: a locally compact normed vector space is finite-dimensional. -/
@@ -490,7 +504,7 @@ theorem FiniteDimensional.of_locallyCompactSpace [LocallyCompactSpace E] :
   let ⟨_r, rpos, hr⟩ := exists_isCompact_closedBall (0 : E)
   .of_isCompact_closedBall₀ 𝕜 rpos hr
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated] -- Since 2024-02-02
 alias finiteDimensional_of_locallyCompactSpace := FiniteDimensional.of_locallyCompactSpace
 
 /-- If a function has compact support, then either the function is trivial
@@ -526,7 +540,7 @@ lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
   exact .of_seq_closedBall hTop (eventually_of_forall hC)
 
-@[deprecated] -- Since 2024/01/31
+@[deprecated] -- Since 2024-01-31
 alias properSpace_of_locallyCompactSpace := ProperSpace.of_locallyCompactSpace
 
 variable (E)
@@ -539,7 +553,7 @@ lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E
     apply ClosedEmbedding.locallyCompactSpace this
   .of_locallyCompactSpace 𝕜
 
-@[deprecated] -- Since 2024/01/31
+@[deprecated] -- Since 2024-01-31
 alias properSpace_of_locallyCompact_module := ProperSpace.of_locallyCompact_module
 
 end Riesz

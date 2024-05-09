@@ -87,9 +87,7 @@ end CanonicallyOrderedCommSemiring
 section Sub
 
 variable [CanonicallyOrderedCommSemiring α] {a b c : α}
-
 variable [Sub α] [OrderedSub α]
-
 variable [IsTotal α (· ≤ ·)]
 
 namespace AddLECancellable

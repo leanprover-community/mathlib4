@@ -44,9 +44,8 @@ instance coePNatNat : Coe ℕ+ ℕ :=
 instance : Repr ℕ+ :=
   ⟨fun n n' => reprPrec n.1 n'⟩
 
---Porting note: New instance not in Lean3
-instance (n : ℕ) : OfNat ℕ+ (n+1) :=
-  ⟨⟨n + 1, Nat.succ_pos n⟩⟩
+instance (n : ℕ) [NeZero n] : OfNat ℕ+ n :=
+  ⟨⟨n, Nat.pos_of_ne_zero <| NeZero.ne n⟩⟩
 
 namespace PNat
 
@@ -101,6 +100,9 @@ theorem _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
 def toPNat' (n : ℕ) : ℕ+ :=
   succPNat (pred n)
 #align nat.to_pnat' Nat.toPNat'
+
+@[simp]
+theorem toPNat'_zero : Nat.toPNat' 0 = 1 := rfl
 
 @[simp]
 theorem toPNat'_coe : ∀ n : ℕ, (toPNat' n : ℕ) = ite (0 < n) n 1
@@ -191,7 +193,7 @@ theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
   rfl
 #align pnat.mk_one PNat.mk_one
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
   rfl
 #align pnat.one_coe PNat.one_coe

@@ -35,12 +35,6 @@ open scoped MeasureTheory BigOperators ENNReal
 
 open TopologicalSpace
 
--- Porting note: move to `Topology/Instances/Discrete`
-instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable {α : Type*}
-    [TopologicalSpace α] [DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
-  @DiscreteTopology.secondCountableTopology_of_encodable _ _ _ (Encodable.ofCountable _)
-#align discrete_topology.second_countable_topology_of_countable DiscreteTopology.secondCountableTopology_of_countable
-
 namespace MeasureTheory
 
 namespace Martingale
@@ -189,6 +183,7 @@ theorem condexp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f �
   exact condexp_of_aestronglyMeasurable' hσ.measurableSpace_le h_meas h_int
 #align measure_theory.martingale.condexp_stopped_value_stopping_time_ae_eq_restrict_le MeasureTheory.Martingale.condexp_stoppedValue_stopping_time_ae_eq_restrict_le
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- **Optional Sampling theorem**. If `τ` is a bounded stopping time and `σ` is another stopping
 time, then the value of a martingale `f` at the stopping time `min τ σ` is almost everywhere equal
 to the conditional expectation of `f` stopped at `τ` with respect to the σ-algebra generated

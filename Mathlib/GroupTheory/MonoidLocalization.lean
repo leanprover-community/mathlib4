@@ -3,11 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Init.Data.Prod
-import Mathlib.GroupTheory.Congruence
-import Mathlib.GroupTheory.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.GroupTheory.Congruence
+import Mathlib.Init.Data.Prod
 
 #align_import group_theory.monoid_localization from "leanprover-community/mathlib"@"10ee941346c27bdb5e87bb3535100c0b1f08ac41"
 
@@ -85,7 +85,7 @@ variable {M : Type*} [AddCommMonoid M] (S : AddSubmonoid M) (N : Type*) [AddComm
 
 /-- The type of AddMonoid homomorphisms satisfying the characteristic predicate: if `f : M →+ N`
 satisfies this predicate, then `N` is isomorphic to the localization of `M` at `S`. -/
--- Porting note: This linter does not exist yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure LocalizationMap extends AddMonoidHom M N where
   map_add_units' : ∀ y : S, IsAddUnit (toFun y)
@@ -111,7 +111,7 @@ namespace Submonoid
 
 /-- The type of monoid homomorphisms satisfying the characteristic predicate: if `f : M →* N`
 satisfies this predicate, then `N` is isomorphic to the localization of `M` at `S`. -/
--- Porting note: This linter does not exist yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure LocalizationMap extends MonoidHom M N where
   map_units' : ∀ y : S, IsUnit (toFun y)
@@ -145,7 +145,7 @@ quotient is the localization of `M` at `S`, defined as the unique congruence rel
 `(1, 1) ∼ (y, y)` under `s`, we have that `(x₁, y₁) ∼ (x₂, y₂)` by `r` implies
 `(x₁, y₁) ∼ (x₂, y₂)` by `s`. -/
 @[to_additive AddLocalization.r
-    "The congruence relation on `M × S`, `M` an `AddCommMonoid` and `S` an `add_submonoid` of `M`,
+    "The congruence relation on `M × S`, `M` an `AddCommMonoid` and `S` an `AddSubmonoid` of `M`,
 whose quotient is the localization of `M` at `S`, defined as the unique congruence relation on
 `M × S` such that for any other congruence relation `s` on `M × S` where for all `y ∈ S`,
 `(0, 0) ∼ (y, y)` under `s`, we have that `(x₁, y₁) ∼ (x₂, y₂)` by `r` implies
@@ -276,7 +276,7 @@ instance commMonoid : CommMonoid (Localization S) where
   npow := Localization.npow S
   npow_zero x := show Localization.npow S 0 x = .one S by
     rw [Localization.npow, Localization.one]; apply (r S).commMonoid.npow_zero
-  npow_succ n x := show .npow S n.succ x = x.mul S (.npow S n x) by
+  npow_succ n x := show Localization.npow S n.succ x = (Localization.npow S n x).mul S x by
     rw [Localization.npow, Localization.mul]; apply (r S).commMonoid.npow_succ
 
 variable {S}
@@ -444,10 +444,10 @@ protected irreducible_def smul [SMul R M] [IsScalarTower R M M] (c : R) (z : Loc
   Localization S :=
     Localization.liftOn z (fun a b ↦ mk (c • a) b)
       (fun {a a' b b'} h ↦ mk_eq_mk_iff.2 (by
-        cases' b with b hb
-        cases' b' with b' hb'
+        let ⟨b, hb⟩ := b
+        let ⟨b', hb'⟩ := b'
         rw [r_eq_r'] at h ⊢
-        cases' h with t ht
+        let ⟨t, ht⟩ := h
         use t
         dsimp only [Subtype.coe_mk] at ht ⊢
 -- TODO: this definition should take `SMulCommClass R M M` instead of `IsScalarTower R M M` if
@@ -701,7 +701,7 @@ variable (f : LocalizationMap S N)
 theorem map_right_cancel {x y} {c : S} (h : f.toMap (c * x) = f.toMap (c * y)) :
     f.toMap x = f.toMap y := by
   rw [f.toMap.map_mul, f.toMap.map_mul] at h
-  cases' f.map_units c with u hu
+  let ⟨u, hu⟩ := f.map_units c
   rw [← hu] at h
   exact (Units.mul_right_inj u).1 h
 #align submonoid.localization_map.map_right_cancel Submonoid.LocalizationMap.map_right_cancel
@@ -961,7 +961,7 @@ noncomputable def lift : N →* P where
     dsimp only
     rw [mul_inv_left hg, ← mul_assoc, ← mul_assoc, mul_inv_right hg, mul_comm _ (g (f.sec y).1), ←
       mul_assoc, ← mul_assoc, mul_inv_right hg]
-    repeat' rw [← g.map_mul]
+    repeat rw [← g.map_mul]
     exact f.eq_of_eq hg (by simp_rw [f.toMap.map_mul, sec_spec']; ac_rfl)
 #align submonoid.localization_map.lift Submonoid.LocalizationMap.lift
 #align add_submonoid.localization_map.lift AddSubmonoid.LocalizationMap.lift
@@ -1087,27 +1087,37 @@ theorem lift_id (x) : f.lift f.map_units x = x :=
 #align submonoid.localization_map.lift_id Submonoid.LocalizationMap.lift_id
 #align add_submonoid.localization_map.lift_id AddSubmonoid.LocalizationMap.lift_id
 
+/-- Given Localization maps `f : M →* N` for a Submonoid `S ⊆ M` and
+`k : M →* Q` for a Submonoid `T ⊆ M`, such that `S ≤ T`, and we have
+`l : M →* A`, the composition of the induced map `f.lift` for `k` with
+the induced map `k.lift` for `l` is equal to the  induced map `f.lift` for `l`. -/
+@[to_additive
+    "Given Localization maps `f : M →+ N` for a Submonoid `S ⊆ M` and
+`k : M →+ Q` for a Submonoid `T ⊆ M`, such that `S ≤ T`, and we have
+`l : M →+ A`, the composition of the induced map `f.lift` for `k` with
+the induced map `k.lift` for `l` is equal to the  induced map `f.lift` for `l`"]
+theorem lift_comp_lift {T : Submonoid M} (hST : S ≤ T) {Q : Type*} [CommMonoid Q]
+    (k : LocalizationMap T Q) {A : Type*} [CommMonoid A] {l : M →* A}
+    (hl : ∀ w : T, IsUnit (l w)) :
+    (k.lift hl).comp (f.lift (map_units k ⟨_, hST ·.2⟩)) =
+    f.lift (hl ⟨_, hST ·.2⟩) := .symm <|
+  lift_unique _ _ fun x ↦ by rw [← MonoidHom.comp_apply,
+    MonoidHom.comp_assoc, lift_comp, lift_comp]
+
+@[to_additive]
+theorem lift_comp_lift_eq {Q : Type*} [CommMonoid Q] (k : LocalizationMap S Q)
+    {A : Type*} [CommMonoid A] {l : M →* A} (hl : ∀ w : S, IsUnit (l w)) :
+    (k.lift hl).comp (f.lift k.map_units) = f.lift hl :=
+  lift_comp_lift f le_rfl k hl
+
 /-- Given two Localization maps `f : M →* N, k : M →* P` for a Submonoid `S ⊆ M`, the hom
 from `P` to `N` induced by `f` is left inverse to the hom from `N` to `P` induced by `k`. -/
 @[to_additive (attr := simp)
     "Given two Localization maps `f : M →+ N, k : M →+ P` for a Submonoid `S ⊆ M`, the hom
 from `P` to `N` induced by `f` is left inverse to the hom from `N` to `P` induced by `k`."]
 theorem lift_left_inverse {k : LocalizationMap S P} (z : N) :
-    k.lift f.map_units (f.lift k.map_units z) = z := by
-  rw [lift_spec]
-  cases' f.surj z with x hx
-  conv_rhs =>
-    congr
-    next => skip
-    rw [f.eq_mk'_iff_mul_eq.2 hx]
-  rw [mk', ← mul_assoc, mul_inv_right f.map_units, ← f.toMap.map_mul, ← f.toMap.map_mul]
-  apply k.eq_of_eq f.map_units
-  rw [k.toMap.map_mul, k.toMap.map_mul, ← sec_spec, mul_assoc, lift_spec_mul]
-  repeat' rw [← k.toMap.map_mul]
-  apply f.eq_of_eq k.map_units
-  repeat' rw [f.toMap.map_mul]
-  rw [sec_spec', ← hx]
-  ac_rfl
+    k.lift f.map_units (f.lift k.map_units z) = z :=
+  (DFunLike.congr_fun (lift_comp_lift_eq f k f.map_units) z).trans (lift_id f z)
 #align submonoid.localization_map.lift_left_inverse Submonoid.LocalizationMap.lift_left_inverse
 #align add_submonoid.localization_map.lift_left_inverse AddSubmonoid.LocalizationMap.lift_left_inverse
 
@@ -1182,9 +1192,9 @@ theorem map_comp : (f.map hy k).comp f.toMap = k.toMap.comp g :=
 @[to_additive]
 theorem map_mk' (x) (y : S) : f.map hy k (f.mk' x y) = k.mk' (g x) ⟨g y, hy y⟩ := by
   rw [map, lift_mk', mul_inv_left]
-  · show k.toMap (g x) = k.toMap (g y) * _
-    rw [mul_mk'_eq_mk'_of_mul]
-    exact (k.mk'_mul_cancel_left (g x) ⟨g y, hy y⟩).symm
+  show k.toMap (g x) = k.toMap (g y) * _
+  rw [mul_mk'_eq_mk'_of_mul]
+  exact (k.mk'_mul_cancel_left (g x) ⟨g y, hy y⟩).symm
 #align submonoid.localization_map.map_mk' Submonoid.LocalizationMap.map_mk'
 #align add_submonoid.localization_map.map_mk' AddSubmonoid.LocalizationMap.map_mk'
 
@@ -1285,8 +1295,8 @@ theorem map_injective_of_injective (hg : Injective g) (k : LocalizationMap (S.ma
   set i := map f (apply_coe_mem_map g S) k
   have ifkg (a : M) : i (f.toMap a) = k.toMap (g a) := map_eq f (apply_coe_mem_map g S) a
   let ⟨z', w', x, hxz, hxw⟩ := surj₂ f z w
-  have : k.toMap (g z') = k.toMap (g w')
-  · rw [← ifkg, ← ifkg, ← hxz, ← hxw, map_mul, map_mul, hizw]
+  have : k.toMap (g z') = k.toMap (g w') := by
+    rw [← ifkg, ← ifkg, ← hxz, ← hxw, map_mul, map_mul, hizw]
   obtain ⟨⟨_, c, hc, rfl⟩, eq⟩ := k.exists_of_eq _ _ this
   simp_rw [← map_mul, hg.eq_iff] at eq
   rw [← (f.map_units x).mul_left_inj, hxz, hxw, f.eq_iff_exists]
@@ -1491,7 +1501,7 @@ theorem mulEquivOfLocalizations_right_inv (k : LocalizationMap S P) :
 #align submonoid.localization_map.mul_equiv_of_localizations_right_inv Submonoid.LocalizationMap.mulEquivOfLocalizations_right_inv
 #align add_submonoid.localization_map.add_equiv_of_localizations_right_inv AddSubmonoid.LocalizationMap.addEquivOfLocalizations_right_inv
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 @[to_additive addEquivOfLocalizations_right_inv_apply]
 theorem mulEquivOfLocalizations_right_inv_apply {k : LocalizationMap S P} {x} :
     (f.ofMulEquivOfLocalizations (f.mulEquivOfLocalizations k)).toMap x = k.toMap x := by simp
@@ -1505,7 +1515,7 @@ theorem mulEquivOfLocalizations_left_inv (k : N ≃* P) :
 #align submonoid.localization_map.mul_equiv_of_localizations_left_inv Submonoid.LocalizationMap.mulEquivOfLocalizations_left_inv
 #align add_submonoid.localization_map.add_equiv_of_localizations_left_neg AddSubmonoid.LocalizationMap.addEquivOfLocalizations_left_neg
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem mulEquivOfLocalizations_left_inv_apply {k : N ≃* P} (x) :
     f.mulEquivOfLocalizations (f.ofMulEquivOfLocalizations k) x = k x := by simp
@@ -1747,7 +1757,7 @@ noncomputable def mulEquivOfQuotient (f : Submonoid.LocalizationMap S N) : Local
 
 variable {f}
 
--- Porting note: dsimp can not prove this
+-- Porting note (#10675): dsimp can not prove this
 @[to_additive (attr := simp, nolint simpNF)]
 theorem mulEquivOfQuotient_apply (x) : mulEquivOfQuotient f x = (monoidOf S).lift f.map_units x :=
   rfl
@@ -1766,7 +1776,7 @@ theorem mulEquivOfQuotient_mk (x y) : mulEquivOfQuotient f (mk x y) = f.mk' x y 
 #align localization.mul_equiv_of_quotient_mk Localization.mulEquivOfQuotient_mk
 #align add_localization.add_equiv_of_quotient_mk AddLocalization.addEquivOfQuotient_mk
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem mulEquivOfQuotient_monoidOf (x) : mulEquivOfQuotient f ((monoidOf S).toMap x) = f.toMap x :=
   by simp
@@ -1825,7 +1835,7 @@ def Away.monoidOf : Submonoid.LocalizationMap.AwayMap x (Away x) :=
 #align localization.away.monoid_of Localization.Away.monoidOf
 #align add_localization.away.add_monoid_of AddLocalization.Away.addMonoidOf
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove thisrove this
 @[to_additive]
 theorem Away.mk_eq_monoidOf_mk' : mk = (Away.monoidOf x).mk' := by simp
 #align localization.away.mk_eq_monoid_of_mk' Localization.Away.mk_eq_monoidOf_mk'
@@ -1866,7 +1876,7 @@ theorem LocalizationMap.subsingleton  (f : Submonoid.LocalizationMap S N) (h : 0
 /-- The type of homomorphisms between monoids with zero satisfying the characteristic predicate:
 if `f : M →*₀ N` satisfies this predicate, then `N` is isomorphic to the localization of `M` at
 `S`. -/
--- Porting note: This linter does not exist yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure LocalizationWithZeroMap extends LocalizationMap S N where
   map_zero' : toFun 0 = 0
@@ -1969,8 +1979,8 @@ theorem leftCancelMulZero_of_le_isLeftRegular
     exact ha hb
   have main : g (b.1 * (x.2 * y.1)) = g (b.1 * (y.2 * x.1)) :=
     calc
-      g (b.1 * (x.2 * y.1)) = g b.1 * (g x.2 * g y.1) := by rw[map_mul g,map_mul g]
-      _ = a * g b.2 * (g x.2 * (w * g y.2)) := by rw[hb, hy]
+      g (b.1 * (x.2 * y.1)) = g b.1 * (g x.2 * g y.1) := by rw [map_mul g,map_mul g]
+      _ = a * g b.2 * (g x.2 * (w * g y.2)) := by rw [hb, hy]
       _ = a * w * g b.2 * (g x.2 * g y.2) := by
         rw [← mul_assoc, ← mul_assoc _ w, mul_comm _ w, mul_assoc w, mul_assoc,
           ← mul_assoc w, ← mul_assoc w, mul_comm w]
@@ -2005,12 +2015,14 @@ namespace Localization
 
 variable {α : Type*} [CancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[to_additive]
 theorem mk_left_injective (b : s) : Injective fun a => mk a b := fun c d h => by
   simpa [-mk_eq_monoidOf_mk', mk_eq_mk_iff, r_iff_exists] using h
 #align localization.mk_left_injective Localization.mk_left_injective
 #align add_localization.mk_left_injective AddLocalization.mk_left_injective
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[to_additive]
 theorem mk_eq_mk_iff' : mk a₁ a₂ = mk b₁ b₂ ↔ ↑b₂ * a₁ = a₂ * b₁ := by
   simp_rw [mk_eq_mk_iff, r_iff_exists, mul_left_cancel_iff, exists_const]
@@ -2089,10 +2101,11 @@ instance partialOrder : PartialOrder (Localization s) where
       rwa [mul_left_comm, mul_left_comm (b.2 : α), mul_le_mul_iff_left]
   le_antisymm a b := by
     induction' a using Localization.rec with a₁ a₂
-    induction' b using Localization.rec with b₁ b₂
-    simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
-    exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
-    all_goals intros; rfl
+    on_goal 1 =>
+      induction' b using Localization.rec with b₁ b₂
+      · simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
+        exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
+    all_goals rfl
   lt_iff_le_not_le a b := Localization.induction_on₂ a b fun a b => lt_iff_le_not_le
 
 @[to_additive]
@@ -2144,7 +2157,7 @@ instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
         simp_rw [mk_le_mk]
         exact le_total _ _
     decidableLE := Localization.decidableLE
-    decidableLT := Localization.decidableLT  -- porting note: was wrong in mathlib3
+    decidableLT := Localization.decidableLT  -- Porting note: was wrong in mathlib3
     decidableEq := Localization.decidableEq }
 
 end Localization

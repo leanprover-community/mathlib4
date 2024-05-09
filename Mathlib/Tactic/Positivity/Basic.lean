@@ -3,12 +3,13 @@ Copyright (c) 2022 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
-import Std.Lean.Parser
+import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Data.Int.CharZero
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Rat.Order
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.HaveI
 import Qq
 
 /-!
@@ -269,7 +270,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℕ)) ← withReducible (whnf e) | throwError "not ^"
   let result ← catchNone do
     let .true := b.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ n where n is a literal"
-    let some n := (b.getRevArg! 1).natLit? | throwError "not a ^ n where n is a literal"
+    let some n := (b.getRevArg! 1).rawNatLit? | throwError "not a ^ n where n is a literal"
     guard (n % 2 = 0)
     have m : Q(ℕ) := mkRawNatLit (n / 2)
     haveI' : $b =Q bit0 $m := ⟨⟩
@@ -350,6 +351,8 @@ def evalNatAbs : PositivityExt where eval {u α} _zα _pα e := do
       pure .none
   | _, _, _ => throwError "not Int.natAbs"
 
+/-- Extension for the `positivity` tactic: `Nat.cast` is always non-negative,
+and positive when its input is. -/
 @[positivity Nat.cast _]
 def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
   let ~q(@Nat.cast _ (_) ($a : ℕ)) := e | throwError "not Nat.cast"
@@ -364,6 +367,8 @@ def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
   | _ =>
     pure (.nonnegative q(Nat.cast_nonneg _))
 
+/-- Extension for the `positivity` tactic: `Int.cast` is positive (resp. non-negative)
+if its input is. -/
 @[positivity Int.cast _]
 def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
   let ~q(@Int.cast _ (_) ($a : ℤ)) := e | throwError "not Int.cast"
@@ -389,7 +394,7 @@ def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
   | .none =>
     pure .none
 
-/-- Extension for Nat.succ. -/
+/-- Extension for `Nat.succ`. -/
 @[positivity Nat.succ _]
 def evalNatSucc : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
@@ -398,7 +403,7 @@ def evalNatSucc : PositivityExt where eval {u α} _zα _pα e := do
     pure (.positive q(Nat.succ_pos $a))
   | _, _, _ => throwError "not Nat.succ"
 
-/-- Extension for Nat.factorial. -/
+/-- Extension for `Nat.factorial`. -/
 @[positivity Nat.factorial _]
 def evalFactorial : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
@@ -407,7 +412,7 @@ def evalFactorial : PositivityExt where eval {u α} _ _ e := do
     pure (.positive q(Nat.factorial_pos $a))
   | _, _, _ => throwError "failed to match Nat.factorial"
 
-/-- Extension for Nat.ascFactorial. -/
+/-- Extension for `Nat.ascFactorial`. -/
 @[positivity Nat.ascFactorial _ _]
 def evalAscFactorial : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
@@ -415,3 +420,56 @@ def evalAscFactorial : PositivityExt where eval {u α} _ _ e := do
     assertInstancesCommute
     pure (.positive q(Nat.ascFactorial_pos $n $k))
   | _, _, _ => throwError "failed to match Nat.ascFactorial"
+
+open Rat
+
+private alias ⟨_, num_pos_of_pos⟩ := num_pos
+private alias ⟨_, num_nonneg_of_nonneg⟩ := num_nonneg
+private alias ⟨_, num_ne_zero_of_ne_zero⟩ := num_ne_zero
+
+/-- The `positivity` extension which identifies expressions of the form `Rat.num a`,
+such that `positivity` successfully recognises `a`. -/
+@[positivity Rat.num _]
+def evalRatNum : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℤ), ~q(Rat.num $a) =>
+    let zα : Q(Zero ℚ) := q(inferInstance)
+    let pα : Q(PartialOrder ℚ) := q(inferInstance)
+    assumeInstancesCommute
+    match ← core zα pα a with
+    | .positive pa => pure $ .positive q(num_pos_of_pos $pa)
+    | .nonnegative pa => pure $ .nonnegative q(num_nonneg_of_nonneg $pa)
+    | .nonzero pa => pure $ .nonzero q(num_ne_zero_of_ne_zero $pa)
+    | .none => pure .none
+  | _, _ => throwError "not Rat.num"
+
+/-- The `positivity` extension which identifies expressions of the form `Rat.den a`. -/
+@[positivity Rat.den _]
+def evalRatDen : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Rat.den $a) =>
+    assumeInstancesCommute
+    pure $ .positive q(den_pos $a)
+  | _, _ => throwError "not Rat.num"
+
+/-- Extension for `posPart`. `a⁺` is always nonegative, and positive if `a` is. -/
+@[positivity _⁺]
+def evalPosPart : PositivityExt where eval zα pα e := do
+  match e with
+  | ~q(@posPart _ $instαlat $instαgrp $a) =>
+    assertInstancesCommute
+    -- FIXME: There seems to be a bug in `Positivity.core` that makes it fail (instead of returning
+    -- `.none`) here sometimes. See eg the first test for `posPart`. This is why we need `catchNone`
+    match ← catchNone (core zα pα a) with
+    | .positive pf => return .positive q(posPart_pos $pf)
+    | _ => return .nonnegative q(posPart_nonneg $a)
+  | _ => throwError "not `posPart`"
+
+/-- Extension for `negPart`. `a⁻` is always nonegative. -/
+@[positivity _⁻]
+def evalNegPart : PositivityExt where eval _ _ e := do
+  match e with
+  | ~q(@negPart _ $instαlat $instαgrp $a) =>
+    assertInstancesCommute
+    return .nonnegative q(negPart_nonneg $a)
+  | _ => throwError "not `negPart`"

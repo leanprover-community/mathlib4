@@ -41,7 +41,7 @@ theorem TopologicalSpace.Clopens.exists_prod_subset (W : Clopens (X × Y)) {a : 
   let U : Set X := {x | MapsTo (Prod.mk x) V W}
   have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 hw.2
   exact ⟨⟨U, (ContinuousMap.isClopen_setOf_mapsTo hV W.2).preimage
-    (ContinuousMap.id (X × Y)).curry.2⟩, by simp [MapsTo], ⟨V, W.2.preimage hp⟩, h, hUV⟩
+    (ContinuousMap.id (X × Y)).curry.2⟩, by simp [U, V, MapsTo], ⟨V, W.2.preimage hp⟩, h, hUV⟩
 
 variable [CompactSpace X]
 

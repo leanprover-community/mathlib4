@@ -64,9 +64,7 @@ open Opposite CategoryTheory Category Limits Sieve
 namespace Presheaf
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {A : Type u₂} [Category.{v₂} A]
-
 variable (J : GrothendieckTopology C)
 
 -- We follow https://stacks.math.columbia.edu/tag/00VL definition 00VR
@@ -272,9 +270,7 @@ theorem isSheaf_of_isTerminal {X : A} (hX : IsTerminal X) :
 end Presheaf
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable (J : GrothendieckTopology C)
-
 variable (A : Type u₂) [Category.{v₂} A]
 
 /-- The category of sheaves taking values in `A` on a grothendieck topology. -/
@@ -311,10 +307,18 @@ instance instCategorySheaf : Category (Sheaf J A) where
 instance (X : Sheaf J A) : Inhabited (Hom X X) :=
   ⟨𝟙 X⟩
 
--- porting note: added because `Sheaf.Hom.ext` was not triggered automatically
+-- Porting note: added because `Sheaf.Hom.ext` was not triggered automatically
 @[ext]
 lemma hom_ext {X Y : Sheaf J A} (x y : X ⟶ Y) (h : x.val = y.val) : x = y :=
   Sheaf.Hom.ext _ _ h
+
+/-- The bijection `(X ⟶ Y) ≃ (X.val ⟶ Y.val)` when `X` and `Y` are sheaves. -/
+@[simps]
+def homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.val ⟶ Y.val) where
+  toFun f := f.val
+  invFun f := ⟨f⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 end Sheaf
 
@@ -331,12 +335,12 @@ set_option linter.uppercaseLean3 false in
 /-- The sections of a sheaf (i.e. evaluation as a presheaf on `C`). -/
 abbrev sheafSections : Cᵒᵖ ⥤ Sheaf J A ⥤ A := (sheafToPresheaf J A).flip
 
-instance : Full (sheafToPresheaf J A) where preimage f := ⟨f⟩
+instance : (sheafToPresheaf J A).Full where map_surjective f := ⟨⟨f⟩, rfl⟩
 
-instance : Faithful (sheafToPresheaf J A) where
+instance : (sheafToPresheaf J A).Faithful where
 
 /-- This is stated as a lemma to prevent class search from forming a loop since a sheaf morphism is
-monic if and only if it is monic as a presheaf morphism (under suitable assumption).-/
+monic if and only if it is monic as a presheaf morphism (under suitable assumption). -/
 theorem Sheaf.Hom.mono_of_presheaf_mono {F G : Sheaf J A} (f : F ⟶ G) [h : Mono f.1] : Mono f :=
   (sheafToPresheaf J A).mono_of_mono_map h
 set_option linter.uppercaseLean3 false in
@@ -359,7 +363,7 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
   constructor
   · intro hP
     refine' Presieve.isSheaf_iso J _ (hP PUnit)
-    refine' isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
+    exact isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
   · intro hP X Y S hS z hz
     refine' ⟨fun x => (hP S hS).amalgamate (fun Z f hf => z f hf x) _, _, _⟩
     · intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ h
@@ -398,7 +402,7 @@ variable {J} {A}
 /-- If the empty sieve is a cover of `X`, then `F(X)` is terminal. -/
 def Sheaf.isTerminalOfBotCover (F : Sheaf J A) (X : C) (H : ⊥ ∈ J X) :
     IsTerminal (F.1.obj (op X)) := by
-  refine' @IsTerminal.ofUnique _ _ _ ?_
+  refine @IsTerminal.ofUnique _ _ _ ?_
   intro Y
   choose t h using F.2 Y _ H (by tauto) (by tauto)
   exact ⟨⟨t⟩, fun a => h.2 a (by tauto)⟩
@@ -483,11 +487,8 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {A : Type u₂} [Category.{v₂} A]
 variable {A' : Type u₂} [Category.{max v₁ u₁} A']
 variable {B : Type u₃} [Category.{v₃} B]
-
 variable (J : GrothendieckTopology C)
-
 variable {U : C} (R : Presieve U)
-
 variable (P : Cᵒᵖ ⥤ A) (P' : Cᵒᵖ ⥤ A')
 
 section MultiequalizerConditions
@@ -677,7 +678,7 @@ theorem isSheaf_comp_of_isSheaf (s : A ⥤ B) [PreservesLimitsOfSize.{v₁, max 
   apply fun X S hS ↦ (h S hS).map fun t ↦ isLimitOfPreserves s t
 
 theorem isSheaf_iff_isSheaf_comp (s : A ⥤ B) [HasLimitsOfSize.{v₁, max v₁ u₁} A]
-    [PreservesLimitsOfSize.{v₁, max v₁ u₁} s] [ReflectsIsomorphisms s] :
+    [PreservesLimitsOfSize.{v₁, max v₁ u₁} s] [s.ReflectsIsomorphisms] :
     IsSheaf J P ↔ IsSheaf J (P ⋙ s) := by
   letI : ReflectsLimitsOfSize s := reflectsLimitsOfReflectsIsomorphisms
   exact ⟨isSheaf_comp_of_isSheaf J P s, isSheaf_of_isSheaf_comp J P s⟩
@@ -692,7 +693,7 @@ for the category of topological spaces, topological rings, etc since reflecting 
 hold.
 -/
 theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [HasLimits A'] [PreservesLimits s]
-    [ReflectsIsomorphisms s] : IsSheaf J P' ↔ IsSheaf J (P' ⋙ s) := by
+    [s.ReflectsIsomorphisms] : IsSheaf J P' ↔ IsSheaf J (P' ⋙ s) := by
   have : HasLimitsOfSize.{v₁, max v₁ u₁} A' := hasLimitsOfSizeShrink.{_, _, u₁, 0} A'
   have : PreservesLimitsOfSize.{v₁, max v₁ u₁} s := preservesLimitsOfSizeShrink.{_, 0, _, u₁} s
   apply isSheaf_iff_isSheaf_comp

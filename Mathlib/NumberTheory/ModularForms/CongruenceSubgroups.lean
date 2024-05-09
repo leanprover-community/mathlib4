@@ -3,9 +3,9 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
 #align_import number_theory.modular_forms.congruence_subgroups from "leanprover-community/mathlib"@"ae690b0c236e488a0043f6faa8ce3546e7f2f9c5"
@@ -43,7 +43,7 @@ theorem SL_reduction_mod_hom_val (N : ℕ) (γ : SL(2, ℤ)) :
 #align SL_reduction_mod_hom_val SL_reduction_mod_hom_val
 
 /-- The full level `N` congruence subgroup of `SL(2, ℤ)` of matrices that reduce to the identity
-modulo `N`.-/
+modulo `N`. -/
 def Gamma (N : ℕ) : Subgroup SL(2, ℤ) :=
   SLMOD(N).ker
 #align Gamma Gamma
@@ -135,7 +135,7 @@ def Gamma0Map (N : ℕ) : Gamma0 N →* ZMod N where
 #align Gamma_0_map Gamma0Map
 
 /-- The congruence subgroup `Gamma1` (as a subgroup of `Gamma0`) of matrices whose bottom
-row is congruent to `(0,1)` modulo `N`.-/
+row is congruent to `(0,1)` modulo `N`. -/
 def Gamma1' (N : ℕ) : Subgroup (Gamma0 N) :=
   (Gamma0Map N).ker
 #align Gamma1' Gamma1'
@@ -209,7 +209,7 @@ def IsCongruenceSubgroup (Γ : Subgroup SL(2, ℤ)) : Prop :=
 theorem isCongruenceSubgroup_trans (H K : Subgroup SL(2, ℤ)) (h : H ≤ K)
     (h2 : IsCongruenceSubgroup H) : IsCongruenceSubgroup K := by
   obtain ⟨N, hN⟩ := h2
-  refine' ⟨N, le_trans hN h⟩
+  exact ⟨N, le_trans hN h⟩
 #align is_congruence_subgroup_trans isCongruenceSubgroup_trans
 
 theorem Gamma_is_cong_sub (N : ℕ+) : IsCongruenceSubgroup (Gamma N) :=

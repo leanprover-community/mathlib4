@@ -37,7 +37,6 @@ theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := b
   refine' StableUnderBaseChange.mk _ surjective_respectsIso _
   classical
   introv h x
-  skip
   induction x using TensorProduct.induction_on with
   | zero => exact ⟨0, map_zero _⟩
   | tmul x y =>
@@ -50,7 +49,6 @@ open scoped BigOperators
 
 theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R hs H
-  skip
   letI := f.toAlgebra
   show Function.Surjective (Algebra.ofId R S)
   rw [← Algebra.range_top_iff_surjective, eq_top_iff]

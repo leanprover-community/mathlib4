@@ -21,7 +21,6 @@ on `R / J` = `Ideal.Quotient J` is `onQuot v h`.
 namespace Valuation
 
 variable {R Γ₀ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀]
-
 variable (v : Valuation R Γ₀)
 
 /-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on `R / J` as a function.
@@ -85,9 +84,7 @@ end Valuation
 namespace AddValuation
 
 variable {R Γ₀ : Type*}
-
 variable [CommRing R] [LinearOrderedAddCommMonoidWithTop Γ₀]
-
 variable (v : AddValuation R Γ₀)
 
 -- attribute [local reducible] AddValuation -- Porting note: reducible not supported
