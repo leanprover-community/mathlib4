@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Logic.Embedding.Basic
+import Mathlib.Data.Fintype.CardEmbedding
 import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 #align_import analysis.normed_space.multilinear from "leanprover-community/mathlib"@"f40476639bac089693a489c9e354ebd75dc0f886"
@@ -71,7 +73,6 @@ We use the following type variables in this file:
 * `Ei` : a family of normed vector spaces over `𝕜` indexed by `i : Fin (Nat.succ n)`;
 * `G`, `G'` : normed vector spaces over `𝕜`.
 -/
-
 
 universe u v v' wE wE₁ wE' wEi wG wG'
 
@@ -1305,6 +1306,85 @@ theorem compContinuousLinearMapEquivL_apply (g : ContinuousMultilinearMap 𝕜 E
       g.compContinuousLinearMap fun i => (f i : E i →L[𝕜] E₁ i) :=
   rfl
 #align continuous_multilinear_map.comp_continuous_linear_map_equivL_apply ContinuousMultilinearMap.compContinuousLinearMapEquivL_apply
+
+/-- One of the components of the iterated derivative of a continuous multilinear map. Given a
+bijection `e` between a type `α` (typically `Fin k`) and a subset `s` of `ι`, this component is a
+continuous multilinear map of `k` vectors `v₁, ..., vₖ`, mapping them
+to `f (x₁, (v_{e.symm 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the `i`-th coordinate of
+the vector `v_{e.symm i}` and otherwise one uses the `i`-th coordinate of a reference vector `x`.
+This is continuous multilinear in the components of `x` outside of `s`, and in the `v_j`. -/
+noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α] [DecidableEq ι]
+    (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)] :
+    ContinuousMultilinearMap 𝕜 (fun (i : {a : ι // a ∉ s}) ↦ E₁ i)
+      (ContinuousMultilinearMap 𝕜 (fun (_ : α) ↦ (∀ i, E₁ i)) G) :=
+  (f.toMultilinearMap.iteratedFDerivComponent e).mkContinuousMultilinear ‖f‖ <| by
+    intro x m
+    simp only [MultilinearMap.iteratedFDerivComponent, MultilinearMap.domDomRestrictₗ,
+      MultilinearMap.coe_mk, MultilinearMap.domDomRestrict_apply, coe_coe]
+    apply (f.le_opNorm _).trans _
+    rw [← prod_compl_mul_prod s.toFinset, mul_assoc]
+    gcongr
+    · apply le_of_eq
+      have : ∀ x, x ∈ s.toFinsetᶜ ↔ (fun x ↦ x ∉ s) x := by simp
+      rw [prod_subtype _ this]
+      congr with i
+      simp [i.2]
+    · rw [prod_subtype _ (fun _ ↦ s.mem_toFinset), ← Equiv.prod_comp e.symm]
+      apply Finset.prod_le_prod (fun i _ ↦ norm_nonneg _) (fun i _ ↦ ?_)
+      simpa only [i.2, ↓reduceDite, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
+
+@[simp] lemma iteratedFDerivComponent_apply {α : Type*} [Fintype α] [DecidableEq ι]
+    (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]
+    (v : ∀ i : {a : ι // a ∉ s}, E₁ i) (w : α → (∀ i, E₁ i)) :
+    f.iteratedFDerivComponent e v w =
+      f (fun j ↦ if h : j ∈ s then w (e.symm ⟨j, h⟩) j else v ⟨j, h⟩) := by
+  simp [iteratedFDerivComponent, MultilinearMap.iteratedFDerivComponent,
+    MultilinearMap.domDomRestrictₗ]
+
+lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α] [DecidableEq ι]
+    (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]
+    (x : (i : ι) → E₁ i) :
+    ‖f.iteratedFDerivComponent e (x ·)‖ ≤ ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := calc
+  ‖f.iteratedFDerivComponent e (fun i ↦ x i)‖
+    ≤ ‖f.iteratedFDerivComponent e‖ * ∏ i : {a : ι // a ∉ s}, ‖x i‖ :=
+      ContinuousMultilinearMap.le_opNorm _ _
+  _ ≤ ‖f‖ * ∏ _i : {a : ι // a ∉ s}, ‖x‖ := by
+      gcongr
+      · exact MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg _) _
+      · exact fun _ _ ↦ norm_nonneg _
+      · exact norm_le_pi_norm _ _
+  _ = ‖f‖ * ‖x‖ ^ (Fintype.card {a : ι // a ∉ s}) := by rw [prod_const, card_univ]
+  _ = ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := by simp [Fintype.card_congr e]
+
+open Classical in
+/-- The `k`-th iterated derivative of a continuous multilinear map `f` at the point `x`. It is a
+continuous multilinear map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
+to `∑ f (x₁, (v_{i₁})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
+of the `(vᵢ)ⱼ`, and each `vᵢ` has to be used exactly once.
+The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or, equivalently,
+by the subsets `s` of `ι` of cardinality `k` and then the bijections between `Fin k` and `s`).
+
+The fact that this is indeed the iterated Fréchet derivative is proved in
+`ContinuousMultilinearMap.iteratedFDeriv_eq`.
+-/
+protected def iteratedFDeriv (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
+    ContinuousMultilinearMap 𝕜 (fun (_ : Fin k) ↦ (∀ i, E₁ i)) G :=
+  ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (Pi.compRightL 𝕜 _ Subtype.val x)
+
+/-- Controlling the norm of `f.iteratedFDeriv` when `f` is continuous multilinear. For the same
+bound on the iterated derivative of `f` in the calculus sense,
+see `ContinuousMultilinearMap.norm_iteratedFDeriv_le`. -/
+lemma norm_iteratedFDeriv_le' (f : ContinuousMultilinearMap 𝕜 E₁ G) (k : ℕ) (x : (i : ι) → E₁ i) :
+    ‖f.iteratedFDeriv k x‖
+      ≤ Nat.descFactorial (Fintype.card ι) k * ‖f‖ * ‖x‖ ^ (Fintype.card ι - k) := by
+  classical
+  calc ‖f.iteratedFDeriv k x‖
+  _ ≤ ∑ e : Fin k ↪ ι, ‖iteratedFDerivComponent f e.toEquivRange (fun i ↦ x i)‖ := norm_sum_le _ _
+  _ ≤ ∑ _ : Fin k ↪ ι, ‖f‖ * ‖x‖ ^ (Fintype.card ι - k) := by
+    gcongr with e _
+    simpa using norm_iteratedFDerivComponent_le f e.toEquivRange x
+  _ = Nat.descFactorial (Fintype.card ι) k * ‖f‖ * ‖x‖ ^ (Fintype.card ι - k) := by
+    simp [card_univ, mul_assoc]
 
 end ContinuousMultilinearMap
 
