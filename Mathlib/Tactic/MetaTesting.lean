@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Std.Data.String.Basic
-import Std.Lean.Expr
-import Std.Lean.PersistentHashMap
-import Std.Lean.Syntax
+import Batteries.Data.String.Basic
+import Batteries.Lean.Expr
+import Batteries.Lean.PersistentHashMap
+import Batteries.Lean.Syntax
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Set
@@ -195,7 +195,7 @@ def addPropHaves (tac : TSyntax ``tacticSeq) (ldecls : Array LocalDecl) :
     let str := decl.userName.toString ++ "__"++ decl.userName.toString ++ "__" ++ (toString i)
     -- prefer to `let newId := mkIdent (← mkFreshId)` that also requires `[MonadNameGenerator m]`
     -- just for easier copy/pasting
-    let newId : Ident := ⟨.ident .none str str []⟩
+    let newId : Ident := ⟨.ident .none str `str []⟩
 --    let dtyp := ⟨← decl.type.toSyntax⟩
     t1 ← t1.replaceM fun s => return if s == oldId then some newId else none
     repls := repls.push (← `(tactic| have $newId := $oldId ))
