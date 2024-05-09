@@ -26,7 +26,7 @@ see `Complex.hasSum_taylorSeries_of_entire`, `Complex.taylorSeries_eq_of_entire`
 
 namespace Complex
 
-open BigOperators Nat
+open Nat
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E] ⦃f : ℂ → E⦄
 

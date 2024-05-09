@@ -317,7 +317,7 @@ def map (f : F) (S : NonUnitalSubalgebra R A) : NonUnitalSubalgebra R B :=
   { S.toNonUnitalSubsemiring.map (f : A →ₙ+* B) with
     smul_mem' := fun r b hb => by
       rcases hb with ⟨a, ha, rfl⟩
-      exact map_smul f r a ▸ Set.mem_image_of_mem f (S.smul_mem' r ha) }
+      exact map_smulₛₗ f r a ▸ Set.mem_image_of_mem f (S.smul_mem' r ha) }
 
 theorem map_mono {S₁ S₂ : NonUnitalSubalgebra R A} {f : F} :
     S₁ ≤ S₂ → (map f S₁ : NonUnitalSubalgebra R B) ≤ map f S₂ :=
@@ -342,7 +342,7 @@ theorem mem_map {S : NonUnitalSubalgebra R A} {f : F} {y : B} : y ∈ map f S �
 
 theorem map_toSubmodule {S : NonUnitalSubalgebra R A} {f : F} :
     -- TODO: introduce a better coercion from `NonUnitalAlgHomClass` to `LinearMap`
-    (map f S).toSubmodule = Submodule.map ((↑f : A →+[R] B) : A →ₗ[R] B) S.toSubmodule :=
+    (map f S).toSubmodule = Submodule.map (LinearMapClass.linearMap f) S.toSubmodule :=
   SetLike.coe_injective rfl
 
 theorem map_toNonUnitalSubsemiring {S : NonUnitalSubalgebra R A} {f : F} :
@@ -357,7 +357,7 @@ theorem coe_map (S : NonUnitalSubalgebra R A) (f : F) : (map f S : Set B) = f ''
 def comap (f : F) (S : NonUnitalSubalgebra R B) : NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.comap (f : A →ₙ+* B) with
     smul_mem' := fun r a (ha : f a ∈ S) =>
-      show f (r • a) ∈ S from (map_smul f r a).symm ▸ SMulMemClass.smul_mem r ha }
+      show f (r • a) ∈ S from (map_smulₛₗ f r a).symm ▸ SMulMemClass.smul_mem r ha }
 
 theorem map_le {S : NonUnitalSubalgebra R A} {f : F} {U : NonUnitalSubalgebra R B} :
     map f S ≤ U ↔ S ≤ comap f U :=
@@ -476,8 +476,7 @@ theorem injective_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x 
 /-- Restrict the codomain of an `NonUnitalAlgHom` `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-@[reducible]
-def rangeRestrict (f : F) : A →ₙₐ[R] (NonUnitalAlgHom.range f : NonUnitalSubalgebra R B) :=
+abbrev rangeRestrict (f : F) : A →ₙₐ[R] (NonUnitalAlgHom.range f : NonUnitalSubalgebra R B) :=
   NonUnitalAlgHom.codRestrict f (NonUnitalAlgHom.range f) (NonUnitalAlgHom.mem_range_self f)
 
 /-- The equalizer of two non-unital `R`-algebra homomorphisms -/
@@ -934,7 +933,9 @@ theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
 
 @[simp]
 theorem iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
-    (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
+    (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by
+  ext
+  simp only [NonUnitalAlgHom.comp_apply, iSupLift_inclusion]
 
 @[simp]
 theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :

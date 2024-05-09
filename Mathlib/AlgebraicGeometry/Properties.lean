@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.RingTheory.LocalProperties
@@ -23,6 +23,10 @@ We provide some basic properties of schemes
   are reduced.
 -/
 
+
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
+universe u
 
 open TopologicalSpace Opposite CategoryTheory CategoryTheory.Limits TopCat
 
@@ -89,7 +93,7 @@ theorem isReducedOfOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersi
       Y.presheaf.obj _ ≅ _).symm.commRingCatIsoToRingEquiv.injective
 #align algebraic_geometry.is_reduced_of_open_immersion AlgebraicGeometry.isReducedOfOpenImmersion
 
-instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj <| op R) := by
+instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj <| op R) := by
   apply (config := { allowSynthFailures := true }) isReducedOfStalkIsReduced
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
@@ -185,8 +189,8 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
     replace hs := hs.map (SpecΓIdentity.app R).inv
     -- what the hell?!
     replace hs := @IsNilpotent.eq_zero _ _ _ _ (show _ from ?_) hs
-    rw [Iso.hom_inv_id_apply] at hs
-    rw [hs, map_zero]
+    · rw [Iso.hom_inv_id_apply] at hs
+      rw [hs, map_zero]
     exact @IsReduced.component_reduced _ hX ⊤
 #align algebraic_geometry.eq_zero_of_basic_open_eq_bot AlgebraicGeometry.eq_zero_of_basicOpen_eq_bot
 
@@ -240,10 +244,10 @@ instance is_irreducible_of_isIntegral [IsIntegral X] : IrreducibleSpace X.carrie
   let e : X.presheaf.obj _ ≅ CommRingCat.of _ :=
     (X.sheaf.isProductOfDisjoint ⟨_, hS.1⟩ ⟨_, hT.1⟩ ?_).conePointUniqueUpToIso
       (CommRingCat.prodFanIsLimit _ _)
-  apply (config := { allowSynthFailures := true }) false_of_nontrivial_of_product_domain
-  · exact e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
-  · apply X.toLocallyRingedSpace.component_nontrivial
-  · apply X.toLocallyRingedSpace.component_nontrivial
+  · apply (config := { allowSynthFailures := true }) false_of_nontrivial_of_product_domain
+    · exact e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
+    · apply X.toLocallyRingedSpace.component_nontrivial
+    · apply X.toLocallyRingedSpace.component_nontrivial
   · ext x
     constructor
     · rintro ⟨hS, hT⟩

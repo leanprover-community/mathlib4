@@ -234,11 +234,9 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
         rfl }
 #align UniformSpace.adj UniformSpaceCat.adj
 
-noncomputable instance : IsRightAdjoint (forget₂ CpltSepUniformSpace UniformSpaceCat) :=
-  ⟨completionFunctor, adj⟩
-
 noncomputable instance : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where
-  preimage {X Y} f := f
+  adj := adj
+  map_surjective f := ⟨f, rfl⟩
 
 open CategoryTheory.Limits
 

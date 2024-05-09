@@ -3,14 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Data.Polynomial.Lifts
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.IntegralClosure
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 #align_import ring_theory.localization.integral from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 

@@ -337,16 +337,17 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       _ = (∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (u N)) (f (u (N - 1))) +
             ∑ i in Finset.Ico N n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
-        congr 1; congr 1
-        · apply Finset.sum_congr rfl fun i hi => ?_
-          simp only [Finset.mem_Ico, zero_le', true_and_iff] at hi
-          dsimp only [w]
-          have A : i + 1 < N := Nat.lt_pred_iff.1 hi
-          have B : i < N := Nat.lt_of_succ_lt A
-          rw [if_pos A, if_pos B]
-        · have A : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
-          have : Finset.Ico (N - 1) N = {N - 1} := by rw [← Nat.Ico_succ_singleton, A]
-          simp only [this, A, Finset.sum_singleton]
+        congr 1
+        · congr 1
+          · apply Finset.sum_congr rfl fun i hi => ?_
+            simp only [Finset.mem_Ico, zero_le', true_and_iff] at hi
+            dsimp only [w]
+            have A : i + 1 < N := Nat.lt_pred_iff.1 hi
+            have B : i < N := Nat.lt_of_succ_lt A
+            rw [if_pos A, if_pos B]
+          · have A : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
+            have : Finset.Ico (N - 1) N = {N - 1} := by rw [← Nat.Ico_succ_singleton, A]
+            simp only [this, A, Finset.sum_singleton]
         · apply Finset.sum_congr rfl fun i hi => ?_
           rw [Finset.mem_Ico] at hi
           dsimp only [w]
@@ -359,12 +360,13 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       _ = (∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (w (N + 1))) (f (w (N - 1))) +
             ∑ i in Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
-        congr 1; congr 1
-        · dsimp only [w]
-          have A : ¬N + 1 < N := Nat.not_succ_lt_self
-          have B : N - 1 < N := Nat.pred_lt Npos.ne'
-          simp only [A, not_and, not_lt, Nat.succ_ne_self, Nat.add_succ_sub_one, add_zero, if_false,
-            B, if_true]
+        congr 1
+        · congr 1
+          · dsimp only [w]
+            have A : ¬N + 1 < N := Nat.not_succ_lt_self
+            have B : N - 1 < N := Nat.pred_lt Npos.ne'
+            simp only [A, not_and, not_lt, Nat.succ_ne_self, Nat.add_succ_sub_one, add_zero,
+              if_false, B, if_true]
         · exact Finset.sum_Ico_add (fun i => edist (f (w (i + 1))) (f (w i))) N n 1
       _ ≤ ((∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               ∑ i in Finset.Ico (N - 1) (N + 1), edist (f (w (i + 1))) (f (w i))) +
@@ -524,11 +526,10 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
     ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left xy n),
       fun i => φst (ut _)⟩
     le_rfl
-  rw [edist_comm, Nat.sub_sub, add_comm, Nat.sub_succ, Nat.add_one, Nat.succ_eq_add_one]
-  simp only [Function.comp_apply, Nat.pred_eq_sub_one, Nat.sub_add_eq]
-  congr
-  simp only [Finset.mem_range] at hx
-  omega
+  rw [Finset.mem_range] at hx
+  dsimp only [Subtype.coe_mk, Function.comp_apply]
+  rw [edist_comm]
+  congr 4 <;> omega
 #align evariation_on.comp_le_of_antitone_on eVariationOn.comp_le_of_antitoneOn
 
 theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t) :
@@ -926,7 +927,7 @@ theorem LipschitzOnWith.ae_differentiableWithinAt_real {C : ℝ≥0} {f : ℝ �
 
 /-- A real Lipschitz function into a finite dimensional real vector space is differentiable
 almost everywhere. For the general Rademacher theorem assuming
-that the source space is finite dimensional, see `LipschitzWith.ae_differentiableAt`.-/
+that the source space is finite dimensional, see `LipschitzWith.ae_differentiableAt`. -/
 theorem LipschitzWith.ae_differentiableAt_real {C : ℝ≥0} {f : ℝ → V} (h : LipschitzWith C f) :
     ∀ᵐ x, DifferentiableAt ℝ f x :=
   (h.locallyBoundedVariationOn univ).ae_differentiableAt

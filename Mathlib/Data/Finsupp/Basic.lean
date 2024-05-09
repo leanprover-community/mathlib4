@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import data.finsupp.basic from "leanprover-community/mathlib"@"f69db8cecc668e2d5894d7e9bfc491da60db3b9f"
 
@@ -481,7 +482,7 @@ theorem mapDomain_comp {f : α → β} {g : β → γ} :
   · intro
     exact single_add _
   refine' sum_congr fun _ _ => sum_single_index _
-  · exact single_zero _
+  exact single_zero _
 #align finsupp.map_domain_comp Finsupp.mapDomain_comp
 
 @[simp]
@@ -537,7 +538,7 @@ theorem mapDomain_finset_sum {f : α → β} {s : Finset ι} {v : ι → α →�
 
 theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N → α →₀ M} :
     mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
-  (mapDomain.addMonoidHom f : (α →₀ M) →+ β →₀ M).map_finsupp_sum _ _
+  map_finsupp_sum (mapDomain.addMonoidHom f : (α →₀ M) →+ β →₀ M) _ _
 #align finsupp.map_domain_sum Finsupp.mapDomain_sum
 
 theorem mapDomain_support [DecidableEq β] {f : α → β} {s : α →₀ M} :
@@ -793,6 +794,7 @@ theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
     (hl : ↑l.support ⊆ Set.range f) :
     mapDomain f (comapDomain f l (hf.injOn _)) = l := by
   conv_rhs => rw [← embDomain_comapDomain (f := ⟨f, hf⟩) hl (M := M), embDomain_eq_mapDomain]
+  rfl
 #align finsupp.map_domain_comap_domain Finsupp.mapDomain_comapDomain
 
 end FInjective
@@ -850,8 +852,8 @@ theorem prod_option_index [AddCommMonoid M] [CommMonoid N] (f : Option α →₀
     · simp [some_zero, h_zero]
     · intro f₁ f₂ h₁ h₂
       rw [Finsupp.prod_add_index, h₁, h₂, some_add, Finsupp.prod_add_index]
-      simp only [h_add, Pi.add_apply, Finsupp.coe_add]
-      rw [mul_mul_mul_comm]
+      · simp only [h_add, Pi.add_apply, Finsupp.coe_add]
+        rw [mul_mul_mul_comm]
       all_goals simp [h_zero, h_add]
     · rintro (_ | a) m <;> simp [h_zero, h_add]
 #align finsupp.prod_option_index Finsupp.prod_option_index
@@ -881,7 +883,7 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
   toFun a := if p a then f a else 0
   support := f.support.filter p
   mem_support_toFun a := by
-    simp only -- Porting note: necessary to beta reduce to activate `split_ifs`
+    beta_reduce -- Porting note(#12129): additional beta reduction needed to activate `split_ifs`
     split_ifs with h <;>
       · simp only [h, mem_filter, mem_support_iff]
         tauto
@@ -1598,9 +1600,9 @@ theorem mapRange_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] [AddMo
     [DistribMulAction R N] {f : M → N} {hf : f 0 = 0} (c : R) (v : α →₀ M)
     (hsmul : ∀ x, f (c • x) = c • f x) : mapRange f hf (c • v) = c • mapRange f hf v := by
   erw [← mapRange_comp]
-  have : f ∘ (c • ·) = (c • ·) ∘ f := funext hsmul
-  simp_rw [this]
-  apply mapRange_comp
+  · have : f ∘ (c • ·) = (c • ·) ∘ f := funext hsmul
+    simp_rw [this]
+    apply mapRange_comp
   simp only [Function.comp_apply, smul_zero, hf]
 #align finsupp.map_range_smul Finsupp.mapRange_smul
 
@@ -1649,12 +1651,12 @@ instance noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Ty
       Finsupp.ext fun i => (smul_eq_zero.mp (DFunLike.ext_iff.mp h i)).resolve_left hc⟩
 #align finsupp.no_zero_smul_divisors Finsupp.noZeroSMulDivisors
 
-section DistribMulActionHom
+section DistribMulActionSemiHom
 
 variable [Semiring R]
 variable [AddCommMonoid M] [AddCommMonoid N] [DistribMulAction R M] [DistribMulAction R N]
 
-/-- `Finsupp.single` as a `DistribMulActionHom`.
+/-- `Finsupp.single` as a `DistribMulActionSemiHom`.
 
 See also `Finsupp.lsingle` for the version as a linear map. -/
 def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
@@ -1680,7 +1682,7 @@ theorem distribMulActionHom_ext' {f g : (α →₀ M) →+[R] N}
   distribMulActionHom_ext fun a => DistribMulActionHom.congr_fun (h a)
 #align finsupp.distrib_mul_action_hom_ext' Finsupp.distribMulActionHom_ext'
 
-end DistribMulActionHom
+end DistribMulActionSemiHom
 
 section
 
@@ -1858,11 +1860,11 @@ def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
 #align finsupp.split_support Finsupp.splitSupport
 
 theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
-  rw [splitSupport, @mem_image _ _ (Classical.decEq _), Ne.def, ← support_eq_empty, ← Ne.def, ←
+  rw [splitSupport, @mem_image _ _ (Classical.decEq _), Ne, ← support_eq_empty, ← Ne, ←
     Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
   -- porting note (#10754): had to add the `Classical.decEq` instance manually
   simp only [exists_prop, Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
-    Sigma.exists, Ne.def]
+    Sigma.exists, Ne]
 #align finsupp.mem_split_support_iff_nonzero Finsupp.mem_splitSupport_iff_nonzero
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ i, αs i` to `β` and

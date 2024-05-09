@@ -92,8 +92,8 @@ theorem cond_isProbabilityMeasure_of_finite (hcs : μ s ≠ 0) (hs : μ s ≠ �
     IsProbabilityMeasure μ[|s] :=
   ⟨by
     unfold ProbabilityTheory.cond
-    simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
-      MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, smul_eq_mul]
+    simp only [Measure.coe_smul, Pi.smul_apply, MeasurableSet.univ, Measure.restrict_apply,
+      Set.univ_inter, smul_eq_mul]
     exact ENNReal.inv_mul_cancel hcs hs⟩
 
 /-- The conditional probability measure of any finite measure on any set of positive measure
@@ -104,9 +104,8 @@ theorem cond_isProbabilityMeasure [IsFiniteMeasure μ] (hcs : μ s ≠ 0) :
 
 instance cond_isFiniteMeasure : IsFiniteMeasure μ[|s] := by
   constructor
-  simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, MeasurableSet.univ,
-    Measure.restrict_apply, Set.univ_inter, smul_eq_mul, ProbabilityTheory.cond,
-    ← ENNReal.div_eq_inv_mul]
+  simp only [Measure.coe_smul, Pi.smul_apply, MeasurableSet.univ, Measure.restrict_apply,
+    Set.univ_inter, smul_eq_mul, ProbabilityTheory.cond, ← ENNReal.div_eq_inv_mul]
   exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
 
 theorem cond_toMeasurable_eq :
@@ -171,8 +170,8 @@ lemma cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (
     simp [this, ← Set.inter_assoc]
   · have hcs' : μ s ≠ 0 :=
       (μ.toOuterMeasure.pos_of_subset_ne_zero (Set.inter_subset_left _ _) hst).ne'
-    simp [*, hms.inter hmt, cond_apply, ← mul_assoc, ← Set.inter_assoc, ENNReal.mul_inv, mul_comm, ←
-      mul_assoc, ENNReal.mul_inv_cancel]
+    simp [*, ← mul_assoc, ← Set.inter_assoc, ENNReal.mul_inv, ENNReal.mul_inv_cancel,
+      mul_right_comm _ _ (μ s)⁻¹]
 #align probability_theory.cond_cond_eq_cond_inter' ProbabilityTheory.cond_cond_eq_cond_inter'
 
 /-- Conditioning first on `s` and then on `t` results in the same measure as conditioning
@@ -234,8 +233,8 @@ lemma sum_meas_smul_cond_fiber {X : Ω → α} (hX : Measurable X) (μ : Measure
   ext E hE
   calc
     _ = ∑ x, μ (X ⁻¹' {x} ∩ E) := by
-      simp only [Measure.coe_finset_sum, smul_toOuterMeasure, OuterMeasure.coe_smul,
-        Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+      simp only [Measure.coe_finset_sum, Measure.coe_smul, Finset.sum_apply,
+        Pi.smul_apply, smul_eq_mul]
       simp_rw [mul_comm (μ _), cond_mul_eq_inter _ (hX (.singleton _))]
     _ = _ := by
       have : ⋃ x ∈ Finset.univ, X ⁻¹' {x} ∩ E = E := by simp; ext _; simp
