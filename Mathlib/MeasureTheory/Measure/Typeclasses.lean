@@ -539,6 +539,16 @@ instance isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure
 lemma sum_sFiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sFiniteSeq μ) = μ :=
   h.1.choose_spec.2.symm
 
+instance : SFinite (0 : Measure α) := ⟨fun _ ↦ 0, inferInstance, by rw [Measure.sum_zero]⟩
+
+@[simp]
+lemma sFiniteSeq_zero (n : ℕ) : sFiniteSeq (0 : Measure α) n = 0 := by
+  ext s hs
+  have h : ∑' n, sFiniteSeq (0 : Measure α) n s = 0 := by
+    simp [← Measure.sum_apply _ hs, sum_sFiniteSeq]
+  simp only [ENNReal.tsum_eq_zero] at h
+  exact h n
+
 /-- A countable sum of finite measures is s-finite.
 This lemma is superseeded by the instance below. -/
 lemma sfinite_sum_of_countable [Countable ι]
