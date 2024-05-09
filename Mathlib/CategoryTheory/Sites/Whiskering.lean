@@ -53,6 +53,18 @@ def sheafCompose : Sheaf J A ⥤ Sheaf J B where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_compose CategoryTheory.sheafCompose
 
+instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
+  show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Faithful from inferInstance
+
+instance [F.Faithful] [F.Full] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Full :=
+  show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Full from inferInstance
+
+instance [F.Faithful] : (sheafCompose J F).Faithful :=
+  Functor.Faithful.of_comp (sheafCompose J F) (sheafToPresheaf _ _)
+
+instance [F.Full] [F.Faithful] : (sheafCompose J F).Full :=
+  Functor.Full.of_comp_faithful (sheafCompose J F) (sheafToPresheaf _ _)
+
 variable {F G}
 
 /--

@@ -135,6 +135,7 @@ instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
 #align submodule.quotient.has_smul Submodule.Quotient.instSMul
 
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 @[simp]
 theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl
@@ -365,7 +366,7 @@ theorem liftQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) (h) : (p.liftQ f h).comp p.mk
 #align submodule.liftq_mkq Submodule.liftQ_mkQ
 
 /-- Special case of `submodule.liftQ` when `p` is the span of `x`. In this case, the condition on
-`f` simply becomes vanishing at `x`.-/
+`f` simply becomes vanishing at `x`. -/
 def liftQSpanSingleton (x : M) (f : M →ₛₗ[τ₁₂] M₂) (h : f x = 0) : (M ⧸ R ∙ x) →ₛₗ[τ₁₂] M₂ :=
   (R ∙ x).liftQ f <| by rw [span_singleton_le_iff_mem, LinearMap.mem_ker, h]
 #align submodule.liftq_span_singleton Submodule.liftQSpanSingleton

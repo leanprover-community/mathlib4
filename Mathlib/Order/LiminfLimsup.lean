@@ -208,7 +208,7 @@ def IsCoboundedUnder (r : α → α → Prop) (f : Filter β) (u : β → α) :=
 /-- To check that a filter is frequently bounded, it suffices to have a witness
 which bounds `f` at some point for every admissible set.
 
-This is only an implication, as the other direction is wrong for the trivial filter.-/
+This is only an implication, as the other direction is wrong for the trivial filter. -/
 theorem IsCobounded.mk [IsTrans α r] (a : α) (h : ∀ s ∈ f, ∃ x ∈ s, r a x) : f.IsCobounded r :=
   ⟨a, fun _ s =>
     let ⟨_, h₁, h₂⟩ := h _ s
@@ -1050,7 +1050,7 @@ theorem bliminf_or_le_inf_aux_right : (bliminf u f fun x => p x ∨ q x) ≤ bli
   bliminf_or_le_inf.trans inf_le_right
 
 /- Porting note: Replaced `e` with `DFunLike.coe e` to override the strange
- coercion to `↑(RelIso.toRelEmbedding e).toEmbedding`.-/
+ coercion to `↑(RelIso.toRelEmbedding e).toEmbedding`. -/
 theorem OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
     DFunLike.coe e (blimsup u f p) = blimsup ((DFunLike.coe e) ∘ u) f p := by
   simp only [blimsup_eq, map_sInf, Function.comp_apply]

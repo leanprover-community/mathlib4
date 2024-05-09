@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sober
 
@@ -398,8 +398,9 @@ theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 #align prime_spectrum.mem_compl_zero_locus_iff_not_mem PrimeSpectrum.mem_compl_zeroLocus_iff_not_mem
 
-/-- The Zariski topology on the prime spectrum of a commutative (semi)ring is defined via the closed
-sets of the topology: they are exactly those sets that are the zero locus of a subset of the ring.-/
+/-- The Zariski topology on the prime spectrum of a commutative (semi)ring is defined
+via the closed sets of the topology: they are exactly those sets that are the zero locus
+of a subset of the ring. -/
 instance zariskiTopology : TopologicalSpace (PrimeSpectrum R) :=
   TopologicalSpace.ofClosed (Set.range PrimeSpectrum.zeroLocus) ⟨Set.univ, by simp⟩
     (by

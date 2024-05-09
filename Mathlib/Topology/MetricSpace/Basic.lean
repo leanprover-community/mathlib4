@@ -145,8 +145,7 @@ theorem uniformEmbedding_iff' [MetricSpace β] {f : γ → β} :
 #align metric.uniform_embedding_iff' Metric.uniformEmbedding_iff'
 
 /-- If a `PseudoMetricSpace` is a T₀ space, then it is a `MetricSpace`. -/
-@[reducible]
-def _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type*) [PseudoMetricSpace α] [T0Space α] :
+abbrev _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type*) [PseudoMetricSpace α] [T0Space α] :
     MetricSpace α where
   toPseudoMetricSpace := ‹_›
   eq_of_dist_eq_zero hdist := (Metric.inseparable_iff.2 hdist).eq
@@ -198,8 +197,7 @@ theorem MetricSpace.replaceUniformity_eq {γ} [U : UniformSpace γ] (m : MetricS
 (but typically non-definitionaly) equal to some given topological structure.
 See Note [forgetful inheritance].
 -/
-@[reducible]
-def MetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : MetricSpace γ)
+abbrev MetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : MetricSpace γ)
     (H : U = m.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace) : MetricSpace γ :=
   @MetricSpace.replaceUniformity γ (m.toUniformSpace.replaceTopology H) m rfl
 #align metric_space.replace_topology MetricSpace.replaceTopology
@@ -215,8 +213,7 @@ is everywhere finite, by pushing the edistance to reals. We set it up so that th
 uniformity are defeq in the metric space and the emetric space. In this definition, the distance
 is given separately, to be able to prescribe some expression which is not defeq to the push-forward
 of the edistance to reals. -/
-@[reducible]
-def EMetricSpace.toMetricSpaceOfDist {α : Type u} [EMetricSpace α] (dist : α → α → ℝ)
+abbrev EMetricSpace.toMetricSpaceOfDist {α : Type u} [EMetricSpace α] (dist : α → α → ℝ)
     (edist_ne_top : ∀ x y : α, edist x y ≠ ⊤) (h : ∀ x y, dist x y = ENNReal.toReal (edist x y)) :
     MetricSpace α :=
   @MetricSpace.ofT0PseudoMetricSpace _
@@ -249,8 +246,7 @@ theorem MetricSpace.replaceBornology_eq {α} [m : MetricSpace α] [B : Bornology
 
 /-- Metric space structure pulled back by an injective function. Injectivity is necessary to
 ensure that `dist x y = 0` only if `x = y`. -/
-@[reducible]
-def MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : MetricSpace β) :
+abbrev MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : MetricSpace β) :
     MetricSpace γ :=
   { PseudoMetricSpace.induced f m.toPseudoMetricSpace with
     eq_of_dist_eq_zero := fun h => hf (dist_eq_zero.1 h) }
@@ -258,16 +254,14 @@ def MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m :
 
 /-- Pull back a metric space structure by a uniform embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `UniformSpace` structure. -/
-@[reducible]
-def UniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : MetricSpace β] (f : α → β)
+abbrev UniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : MetricSpace β] (f : α → β)
     (h : UniformEmbedding f) : MetricSpace α :=
   .replaceUniformity (.induced f h.inj m) h.comap_uniformity.symm
 #align uniform_embedding.comap_metric_space UniformEmbedding.comapMetricSpace
 
 /-- Pull back a metric space structure by an embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `TopologicalSpace` structure. -/
-@[reducible]
-def Embedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β] (f : α → β)
+abbrev Embedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β] (f : α → β)
     (h : Embedding f) : MetricSpace α :=
   .replaceTopology (.induced f h.inj m) h.induced
 #align embedding.comap_metric_space Embedding.comapMetricSpace
@@ -444,6 +438,9 @@ instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
 
 instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Additive X) := ‹ProperSpace X›
 instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Multiplicative X) := ‹ProperSpace X›
+
+instance MulOpposite.instMetricSpace [MetricSpace X] : MetricSpace Xᵐᵒᵖ :=
+  MetricSpace.induced unop unop_injective ‹_›
 
 /-!
 ### Order dual

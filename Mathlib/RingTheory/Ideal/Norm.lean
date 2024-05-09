@@ -11,6 +11,7 @@ import Mathlib.Data.Int.Associated
 import Mathlib.LinearAlgebra.FreeModule.Determinant
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.DedekindDomain.PID
+import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.RingTheory.LocalProperties
 import Mathlib.RingTheory.Localization.NormTrace
 
@@ -331,7 +332,7 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivCl
       rw [LinearMap.det_toMatrix]
     _ = Int.natAbs (Matrix.diagonal a).det := ?_
     _ = Int.natAbs (∏ i, a i) := by rw [Matrix.det_diagonal]
-    _ = ∏ i, Int.natAbs (a i) := (map_prod Int.natAbsHom a Finset.univ)
+    _ = ∏ i, Int.natAbs (a i) := map_prod Int.natAbsHom a Finset.univ
     _ = Fintype.card (S ⧸ I) := ?_
     _ = absNorm I := (Submodule.cardQuot_apply _).symm
   -- since `LinearMap.toMatrix b' b' f` is the diagonal matrix with `a` along the diagonal.
@@ -383,7 +384,7 @@ theorem absNorm_dvd_absNorm_of_le {I J : Ideal S} (h : J ≤ I) : Ideal.absNorm 
 
 theorem absNorm_dvd_norm_of_mem {I : Ideal S} {x : S} (h : x ∈ I) :
     ↑(Ideal.absNorm I) ∣ Algebra.norm ℤ x := by
-  rw [← Int.dvd_natAbs, ← absNorm_span_singleton x, Int.coe_nat_dvd]
+  rw [← Int.dvd_natAbs, ← absNorm_span_singleton x, Int.natCast_dvd_natCast]
   exact absNorm_dvd_absNorm_of_le ((span_singleton_le_iff_mem _).mpr h)
 #align ideal.abs_norm_dvd_norm_of_mem Ideal.absNorm_dvd_norm_of_mem
 
@@ -452,7 +453,7 @@ theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
       ((Nat.irreducible_iff_nat_prime _).mpr hI)).comap (algebraMap ℤ S)).ne_top
   · rw [span_singleton_le_iff_mem, mem_comap, algebraMap_int_eq, map_natCast]
     exact absNorm_mem I
-  · rw [Ne.def, span_singleton_eq_bot]
+  · rw [Ne, span_singleton_eq_bot]
     exact Int.ofNat_ne_zero.mpr hI.ne_zero
 
 theorem finite_setOf_absNorm_eq [CharZero S] {n : ℕ} (hn : 0 < n) :
@@ -464,7 +465,7 @@ theorem finite_setOf_absNorm_eq [CharZero S] {n : ℕ} (hn : 0 < n) :
       refine @Set.Finite.of_finite_image _ _ _ g ?_ (SetLike.coe_injective.injOn _)
       exact Set.Finite.subset (@Set.finite_univ _ (@Set.finite' _ this)) (Set.subset_univ _)
     rw [← absNorm_ne_zero_iff, absNorm_span_singleton]
-    simpa only [Ne.def, Int.natAbs_eq_zero, Algebra.norm_eq_zero_iff, Nat.cast_eq_zero] using
+    simpa only [Ne, Int.natAbs_eq_zero, Algebra.norm_eq_zero_iff, Nat.cast_eq_zero] using
       ne_of_gt hn
   · intro I hI J hJ h
     rw [← comap_map_mk (span_singleton_absNorm_le I), ← hI.symm, ←

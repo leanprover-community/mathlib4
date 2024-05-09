@@ -154,7 +154,7 @@ section
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
-variable [HasLimits C] [ReflectsIsomorphisms (forget C)] [PreservesLimits (forget C)]
+variable [HasLimits C] [(forget C).ReflectsIsomorphisms] [PreservesLimits (forget C)]
 variable {X : TopCat.{v}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
 
 /-- For presheaves valued in a concrete category, whose forgetful functor reflects isomorphisms and
@@ -180,7 +180,7 @@ section
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
-variable [HasLimits C] [ReflectsIsomorphisms (ConcreteCategory.forget (C := C))]
+variable [HasLimits C] [(ConcreteCategory.forget (C := C)).ReflectsIsomorphisms]
 variable [PreservesLimits (ConcreteCategory.forget (C := C))]
 variable {X : TopCat.{v}} (F : Sheaf C X) {ι : Type v} (U : ι → Opens X)
 

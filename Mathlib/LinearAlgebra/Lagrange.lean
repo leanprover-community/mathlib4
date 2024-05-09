@@ -418,7 +418,7 @@ theorem eq_interpolate_iff {f : F[X]} (hvs : Set.InjOn v s) :
 #align lagrange.eq_interpolate_iff Lagrange.eq_interpolate_iff
 
 /-- Lagrange interpolation induces isomorphism between functions from `s`
-and polynomials of degree less than `Fintype.card ι`.-/
+and polynomials of degree less than `Fintype.card ι`. -/
 def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F s.card ≃ₗ[F] s → F where
   toFun f i := f.1.eval (v i)
   map_add' f g := funext fun v => eval_add
@@ -534,7 +534,7 @@ rcases s.eq_empty_or_nonempty with (rfl | h)
 
 @[simp]
 theorem degree_nodal [Nontrivial R] : (nodal s v).degree = s.card := by
-  simp_rw [degree_eq_natDegree (nodal_ne_zero), natDegree_nodal]
+  simp_rw [degree_eq_natDegree nodal_ne_zero, natDegree_nodal]
 #align lagrange.degree_nodal Lagrange.degree_nodal
 
 theorem nodal_monic : (nodal s v).Monic :=
@@ -588,6 +588,7 @@ theorem eval_nodal_derivative_eval_node_eq [DecidableEq ι] {i : ι} (hi : i ∈
   exact sum_eq_zero fun j hj => (eval_nodal_at_node (mem_erase.mpr ⟨(mem_erase.mp hj).1.symm, hi⟩))
 #align lagrange.eval_nodal_derivative_eval_node_eq Lagrange.eval_nodal_derivative_eval_node_eq
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/
 @[simp] theorem nodal_subgroup_eq_X_pow_card_sub_one [IsDomain R]
   (G : Subgroup Rˣ) [Fintype G] :
@@ -627,7 +628,7 @@ theorem nodalWeight_eq_eval_nodal_erase_inv :
 
 theorem nodal_erase_eq_nodal_div (hi : i ∈ s) :
     nodal (s.erase i) v = nodal s v / (X - C (v i)) := by
-  rw [nodal_eq_mul_nodal_erase hi, EuclideanDomain.mul_div_cancel_left]
+  rw [nodal_eq_mul_nodal_erase hi, mul_div_cancel_left₀]
   exact X_sub_C_ne_zero _
 #align lagrange.nodal_erase_eq_nodal_div Lagrange.nodal_erase_eq_nodal_div
 

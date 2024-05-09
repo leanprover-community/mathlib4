@@ -219,7 +219,7 @@ theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field
   obtain ⟨n', hp', hc'⟩ := FiniteField.card F' (ringChar F')
   let ψ := primitiveCharFiniteField F F' hch₁
   -- Porting note: this was a `let` but then Lean would time out at
-  -- unification so it is changed to as `set` and `FF'` is replaced by its
+  -- unification so it is changed to a `set` and `FF'` is replaced by its
   -- definition before unification
   set FF' := CyclotomicField ψ.n F' with FF'_def
   have hchar := Algebra.ringChar_eq F' FF'
@@ -317,7 +317,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
       -- Porting note: original proof
       -- ext; congr; apply pow_one
       ext (x : Fin 8); rw [← map_nsmul_pow ψ₈char]; congr 2;
-      rw [Nat.smul_one_eq_coe, Fin.cast_val_eq_self x]
+      rw [Nat.smul_one_eq_cast, Fin.cast_val_eq_self x]
     have h₂ : (0 + 1 * τ ^ 1 + 0 + -1 * τ ^ 3 + 0 + -1 * τ ^ 5 + 0 + 1 * τ ^ 7) ^ 2 =
         8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) := by ring
     have h₃ : 8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) = ↑8 := by

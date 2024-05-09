@@ -139,8 +139,8 @@ theorem pairwise_union :
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
   simp only [Set.Pairwise, mem_union, or_imp, forall_and]
   exact
-    ⟨fun H => ⟨H.1.1, H.2.2, H.2.1, fun x hx y hy hne => H.1.2 y hy x hx hne.symm⟩, fun H =>
-      ⟨⟨H.1, fun x hx y hy hne => H.2.2.2 y hy x hx hne.symm⟩, H.2.2.1, H.2.1⟩⟩
+    ⟨fun H => ⟨H.1.1, H.2.2, H.1.2, fun x hx y hy hne => H.2.1 y hy x hx hne.symm⟩,
+     fun H => ⟨⟨H.1, H.2.2.1⟩, fun x hx y hy hne => H.2.2.2 y hy x hx hne.symm, H.2.1⟩⟩
 #align set.pairwise_union Set.pairwise_union
 
 theorem pairwise_union_of_symmetric (hr : Symmetric r) :
@@ -458,3 +458,8 @@ lemma exists_lt_mem_inter_of_not_pairwise_disjoint [LinearOrder ι]
 theorem pairwise_disjoint_fiber (f : ι → α) : Pairwise (Disjoint on fun a : α => f ⁻¹' {a}) :=
   pairwise_univ.1 <| Set.pairwiseDisjoint_fiber f univ
 #align pairwise_disjoint_fiber pairwise_disjoint_fiber
+
+lemma subsingleton_setOf_mem_iff_pairwise_disjoint {f : ι → Set α} :
+    (∀ a, {i | a ∈ f i}.Subsingleton) ↔ Pairwise (Disjoint on f) :=
+  ⟨fun h _ _ hij ↦ disjoint_left.2 fun a hi hj ↦ hij (h a hi hj),
+   fun h _ _ hx _ hy ↦ by_contra fun hne ↦ disjoint_left.1 (h hne) hx hy⟩

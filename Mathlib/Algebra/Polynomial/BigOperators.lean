@@ -3,7 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.Data.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.Monic
 
 #align_import algebra.polynomial.big_operators from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
 
@@ -44,6 +44,7 @@ section Semiring
 
 variable {S : Type*} [Semiring S]
 
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 theorem natDegree_list_sum_le (l : List S[X]) : natDegree l.sum ≤ (l.map natDegree).foldr max 0 :=
   List.sum_le_foldr_max natDegree (by simp) natDegree_add_le _
 #align polynomial.nat_degree_list_sum_le Polynomial.natDegree_list_sum_le
@@ -150,7 +151,7 @@ theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     simp only [ne_eq]
     apply right_ne_zero_of_mul h
   · rw [ih]
-    exact h
+    · exact h
     simp only [ne_eq, not_false_eq_true]
     apply right_ne_zero_of_mul h
 #align polynomial.leading_coeff_multiset_prod' Polynomial.leadingCoeff_multiset_prod'

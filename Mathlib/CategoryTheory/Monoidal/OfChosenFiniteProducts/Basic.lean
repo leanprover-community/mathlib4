@@ -147,15 +147,15 @@ def IsLimit.assoc {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY) {sYZ : Bin
     have h := R.uniq (BinaryFan.assocInv P t) m
     rw [h]
     rintro ⟨⟨⟩⟩ <;> simp
-    apply P.hom_ext
-    rintro ⟨⟨⟩⟩ <;> simp
-    · exact w ⟨WalkingPair.left⟩
-    · specialize w ⟨WalkingPair.right⟩
-      simp? at w says
-        simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
-          Functor.const_obj_obj, pair_obj_left] at w
-      rw [← w]
-      simp
+    · apply P.hom_ext
+      rintro ⟨⟨⟩⟩ <;> simp
+      · exact w ⟨WalkingPair.left⟩
+      · specialize w ⟨WalkingPair.right⟩
+        simp? at w says
+          simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+            Functor.const_obj_obj, pair_obj_left] at w
+        rw [← w]
+        simp
     · specialize w ⟨WalkingPair.right⟩
       simp? at w says
         simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
@@ -167,17 +167,15 @@ def IsLimit.assoc {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY) {sYZ : Bin
 /-- Given two pairs of limit cones corresponding to the parenthesisations of `X × Y × Z`,
 we obtain an isomorphism between the cone points.
 -/
-@[reducible]
-def BinaryFan.associator {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY) {sYZ : BinaryFan Y Z}
-    (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z} (R : IsLimit s) {t : BinaryFan X sYZ.pt}
-    (S : IsLimit t) : s.pt ≅ t.pt :=
+abbrev BinaryFan.associator {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY)
+    {sYZ : BinaryFan Y Z} (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z} (R : IsLimit s)
+    {t : BinaryFan X sYZ.pt} (S : IsLimit t) : s.pt ≅ t.pt :=
   IsLimit.conePointUniqueUpToIso (IsLimit.assoc P Q R) S
 #align category_theory.limits.binary_fan.associator CategoryTheory.Limits.BinaryFan.associator
 
 /-- Given a fixed family of limit data for every pair `X Y`, we obtain an associator.
 -/
-@[reducible]
-def BinaryFan.associatorOfLimitCone (L : ∀ X Y : C, LimitCone (pair X Y)) (X Y Z : C) :
+abbrev BinaryFan.associatorOfLimitCone (L : ∀ X Y : C, LimitCone (pair X Y)) (X Y Z : C) :
     (L (L X Y).cone.pt Z).cone.pt ≅ (L X (L Y Z).cone.pt).cone.pt :=
   BinaryFan.associator (L X Y).isLimit (L Y Z).isLimit (L (L X Y).cone.pt Z).isLimit
     (L X (L Y Z).cone.pt).isLimit
@@ -231,14 +229,12 @@ variable (ℬ : ∀ X Y : C, LimitCone (pair X Y))
 namespace MonoidalOfChosenFiniteProducts
 
 /-- Implementation of the tensor product for `MonoidalOfChosenFiniteProducts`. -/
-@[reducible]
-def tensorObj (X Y : C) : C :=
+abbrev tensorObj (X Y : C) : C :=
   (ℬ X Y).cone.pt
 #align category_theory.monoidal_of_chosen_finite_products.tensor_obj CategoryTheory.MonoidalOfChosenFiniteProducts.tensorObj
 
 /-- Implementation of the tensor product of morphisms for `MonoidalOfChosenFiniteProducts`. -/
-@[reducible]
-def tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : tensorObj ℬ W Y ⟶ tensorObj ℬ X Z :=
+abbrev tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : tensorObj ℬ W Y ⟶ tensorObj ℬ X Z :=
   (BinaryFan.IsLimit.lift' (ℬ X Z).isLimit ((ℬ W Y).cone.π.app ⟨WalkingPair.left⟩ ≫ f)
       (((ℬ W Y).cone.π.app ⟨WalkingPair.right⟩ : (ℬ W Y).cone.pt ⟶ Y) ≫ g)).val
 #align category_theory.monoidal_of_chosen_finite_products.tensor_hom CategoryTheory.MonoidalOfChosenFiniteProducts.tensorHom
@@ -344,7 +340,7 @@ a fixed choice of limit data for the empty functor, and for `pair X Y` for every
 
 This is an implementation detail for `SymmetricOfChosenFiniteProducts`.
 -/
--- Porting note: no `has_nonempty_instance` linter.
+-- Porting note(#5171): linter `has_nonempty_instance` not ported yet
 -- @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def MonoidalOfChosenFiniteProductsSynonym (_𝒯 : LimitCone (Functor.empty.{0} C))
