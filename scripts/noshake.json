@@ -233,6 +233,7 @@
   ["Mathlib.Algebra.Group.Basic", "Mathlib.Init.Order.LinearOrder"],
   "Mathlib.Tactic.Measurability":
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
+  "Mathlib.Tactic.MKAll": ["Lean.Elab.Command"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
