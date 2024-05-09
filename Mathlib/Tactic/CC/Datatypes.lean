@@ -23,7 +23,7 @@ This file is ported from C++ code, so many declarations lack documents.
 
 universe u
 
-open Lean Meta Elab Tactic Std
+open Lean Meta Elab Tactic
 
 namespace Mathlib.Tactic.CC
 

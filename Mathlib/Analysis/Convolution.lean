@@ -256,13 +256,13 @@ theorem AEStronglyMeasurable.convolution_integrand_snd (hf : AEStronglyMeasurabl
     (hg : AEStronglyMeasurable g μ) (x : G) :
     AEStronglyMeasurable (fun t => L (f t) (g (x - t))) μ :=
   hf.convolution_integrand_snd' L <|
-    hg.mono' <| (quasiMeasurePreserving_sub_left_of_right_invariant μ x).absolutelyContinuous
+    hg.mono_ac <| (quasiMeasurePreserving_sub_left_of_right_invariant μ x).absolutelyContinuous
 #align measure_theory.ae_strongly_measurable.convolution_integrand_snd MeasureTheory.AEStronglyMeasurable.convolution_integrand_snd
 
 theorem AEStronglyMeasurable.convolution_integrand_swap_snd
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x : G) :
     AEStronglyMeasurable (fun t => L (f (x - t)) (g t)) μ :=
-  (hf.mono'
+  (hf.mono_ac
         (quasiMeasurePreserving_sub_left_of_right_invariant μ
             x).absolutelyContinuous).convolution_integrand_swap_snd'
     L hg
@@ -274,7 +274,7 @@ theorem ConvolutionExistsAt.ofNorm {x₀ : G}
     (hmf : AEStronglyMeasurable f μ) (hmg : AEStronglyMeasurable g μ) :
     ConvolutionExistsAt f g x₀ L μ :=
   h.ofNorm' L hmf <|
-    hmg.mono' (quasiMeasurePreserving_sub_left_of_right_invariant μ x₀).absolutelyContinuous
+    hmg.mono_ac (quasiMeasurePreserving_sub_left_of_right_invariant μ x₀).absolutelyContinuous
 #align convolution_exists_at.of_norm MeasureTheory.ConvolutionExistsAt.ofNorm
 
 end Left
@@ -288,7 +288,7 @@ theorem AEStronglyMeasurable.convolution_integrand (hf : AEStronglyMeasurable f 
     (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (fun p : G × G => L (f p.2) (g (p.1 - p.2))) (μ.prod ν) :=
   hf.convolution_integrand' L <|
-    hg.mono' (quasiMeasurePreserving_sub_of_right_invariant μ ν).absolutelyContinuous
+    hg.mono_ac (quasiMeasurePreserving_sub_of_right_invariant μ ν).absolutelyContinuous
 #align measure_theory.ae_strongly_measurable.convolution_integrand MeasureTheory.AEStronglyMeasurable.convolution_integrand
 
 theorem Integrable.convolution_integrand (hf : Integrable f ν) (hg : Integrable g μ) :
@@ -383,7 +383,7 @@ theorem _root_.BddAbove.convolutionExistsAt [MeasurableAdd₂ G] [SigmaFinite μ
   refine' BddAbove.convolutionExistsAt' L _ hs h2s hf _
   · simp_rw [← sub_eq_neg_add, hbg]
   · have : AEStronglyMeasurable g (map (fun t : G => x₀ - t) μ) :=
-      hmg.mono' (quasiMeasurePreserving_sub_left_of_right_invariant μ x₀).absolutelyContinuous
+      hmg.mono_ac (quasiMeasurePreserving_sub_left_of_right_invariant μ x₀).absolutelyContinuous
     apply this.mono_measure
     exact map_mono restrict_le_self (measurable_const.sub measurable_id')
 #align bdd_above.convolution_exists_at BddAbove.convolutionExistsAt
@@ -968,7 +968,8 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
       (μ.prod ν) := by
     refine' L₃.aestronglyMeasurable_comp₂ hf.snd _
     refine' L₄.aestronglyMeasurable_comp₂ hg.fst _
-    refine' (hk.mono' _).comp_measurable ((measurable_const.sub measurable_snd).sub measurable_fst)
+    refine' (hk.mono_ac _).comp_measurable
+      ((measurable_const.sub measurable_snd).sub measurable_fst)
     refine' QuasiMeasurePreserving.absolutelyContinuous _
     refine' QuasiMeasurePreserving.prod_of_left
       ((measurable_const.sub measurable_snd).sub measurable_fst) (eventually_of_forall fun y => _)
