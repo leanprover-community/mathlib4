@@ -156,8 +156,8 @@ theorem ContinuousAt.rexp (h : ContinuousAt f x) : ContinuousAt (fun y ↦ exp (
 #align continuous_at.exp ContinuousAt.rexp
 
 @[fun_prop]
-theorem ContinuousOn.rexp (h : ContinuousOn f s)
-    ContinuousOn (fun y => exp (f y)) s :=
+theorem ContinuousOn.rexp (h : ContinuousOn f s) :
+    ContinuousOn (fun y ↦ exp (f y)) s :=
   fun x hx ↦ (h x hx).rexp
 #align continuous_on.exp ContinuousOn.rexp
 
