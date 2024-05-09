@@ -6,7 +6,7 @@ Authors: Damiano Testa
 
 import Lean.Elab.Command
 import Lean.Linter.Util
-import Std.Lean.HashSet
+import Batteries.Lean.HashSet
 
 /-!
 #  `#`-command linter
