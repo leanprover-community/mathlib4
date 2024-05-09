@@ -115,7 +115,7 @@ lemma rightDerivedNatTrans_id :
 
 @[reassoc (attr:= simp)]
 lemma rightDerivedNatTrans_comp (τ : F ⟶ F') (τ' : F' ⟶ F'') :
-  rightDerivedNatTrans RF RF' α α' W τ ≫ rightDerivedNatTrans RF' RF'' α' α'' W τ' =
+    rightDerivedNatTrans RF RF' α α' W τ ≫ rightDerivedNatTrans RF' RF'' α' α'' W τ' =
     rightDerivedNatTrans RF RF'' α α'' W (τ ≫ τ') :=
   rightDerived_ext RF α W _ _ _ (by aesop_cat)
 
