@@ -106,7 +106,12 @@ theorem ext_iff {inst₁ inst₂ : NonUnitalSemiring R} :
 
 end NonUnitalSemiring
 
-/-! ### NonAssocSemiring -/
+/-! ### NonAssocSemiring and its ancestors
+
+This section also includes results for `AddMonoidWithOne`, `AddCommMonoidWithOne`, etc.
+as these are considered implementation detail of the ring classes.
+TODO consider relocating these lemmas.
+-/
 /- TODO consider relocating these lemmas. -/
 @[ext] theorem AddMonoidWithOne.ext ⦃inst₁ inst₂ : AddMonoidWithOne R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
@@ -236,8 +241,11 @@ theorem ext_iff {inst₁ inst₂ : NonUnitalRing R} :
 
 end NonUnitalRing
 
-/-! ### NonAssocRing -/
-/- TODO consider relocating these lemmas. -/
+/-! ### NonAssocRing and its ancestors
+
+This section also includes results for `AddGroupWithOne`, `AddCommGroupWithOne`, etc.
+as these are considered implementation detail of the ring classes.
+TODO consider relocating these lemmas. -/
 @[ext] theorem AddGroupWithOne.ext ⦃inst₁ inst₂ : AddGroupWithOne R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one)) :
