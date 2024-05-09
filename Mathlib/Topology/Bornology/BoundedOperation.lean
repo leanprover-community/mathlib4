@@ -142,17 +142,14 @@ instance : BoundedMul R where
     by_cases absurd_Af : Af < 0
     · simpa [Metric.closedBall_eq_empty.mpr absurd_Af] using hAf hx₁
     simp only [not_lt] at absurd_Af
-    have obs₁ : ‖x₁ * y₁‖ ≤ Af * Ag := by
+    have aux : ∀ {x y}, x ∈ s → y ∈ t → ‖x * y‖ ≤ Af * Ag := by
+      intro x y x_in_s y_in_t
       apply (norm_mul_le _ _).trans (mul_le_mul _ _ (norm_nonneg _) absurd_Af)
-      · exact mem_closedBall_zero_iff.mp (hAf hx₁)
-      · exact mem_closedBall_zero_iff.mp (hAg hy₁)
-    have obs₂ : ‖x₂ * y₂‖ ≤ Af * Ag := by
-      apply (norm_mul_le _ _).trans (mul_le_mul _ _ (norm_nonneg _) absurd_Af)
-      · exact mem_closedBall_zero_iff.mp (hAf hx₂)
-      · exact mem_closedBall_zero_iff.mp (hAg hy₂)
+      · exact mem_closedBall_zero_iff.mp (hAf x_in_s)
+      · exact mem_closedBall_zero_iff.mp (hAg y_in_t)
     calc ‖x₁ * y₁ - x₂ * y₂‖
      _ ≤ ‖x₁ * y₁‖ + ‖x₂ * y₂‖        := norm_sub_le _ _
-     _ ≤ Af * Ag + Af * Ag            := add_le_add obs₁ obs₂
+     _ ≤ Af * Ag + Af * Ag            := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
      _ = 2 * Af * Ag                  := by simp [← two_mul, mul_assoc]
 
 end NonUnitalSeminormedRing
@@ -190,23 +187,18 @@ instance : BoundedMul ℝ≥0 where
     by_cases absurd_Af : Af < 0
     · simpa [Metric.closedBall_eq_empty.mpr absurd_Af] using hAf hx₁
     simp only [not_lt] at absurd_Af
-    have obs₁ : dist (x₁ * y₁) 0 ≤ Af * Ag := by
-      have x_mem_ball := hAf hx₁
-      have y_mem_ball := hAg hy₁
+    have aux : ∀ {x y}, x ∈ s → y ∈ t → dist (x * y) 0 ≤ Af * Ag := by
+      intro x y x_in_s y_in_t
+      have x_mem_ball := hAf x_in_s
+      have y_mem_ball := hAg y_in_t
       simp only [Metric.mem_closedBall, NNReal.dist_eq, NNReal.coe_zero, sub_zero, NNReal.abs_eq,
                  NNReal.coe_mul, ge_iff_le, abs_mul] at x_mem_ball y_mem_ball ⊢
       apply mul_le_mul (by simpa using x_mem_ball) (by simpa using y_mem_ball) ?_ absurd_Af
       simp only [NNReal.zero_le_coe]
-    have obs₂ : dist 0 (x₂ * y₂) ≤ Af * Ag := by
-      have x_mem_ball := hAf hx₂
-      have y_mem_ball := hAg hy₂
-      simp only [Metric.mem_closedBall, NNReal.dist_eq, NNReal.coe_zero, sub_zero, NNReal.abs_eq,
-                 NNReal.coe_mul, zero_sub, abs_neg, abs_mul, ge_iff_le] at x_mem_ball y_mem_ball ⊢
-      apply mul_le_mul (by simpa using x_mem_ball) (by simpa using y_mem_ball) ?_ absurd_Af
-      simp only [NNReal.zero_le_coe]
     calc dist (x₁ * y₁) (x₂ * y₂)
      _ ≤ dist (x₁ * y₁) 0 + dist 0 (x₂ * y₂)    := dist_triangle _ _ _
-     _ ≤ Af * Ag + Af * Ag                      := add_le_add obs₁ obs₂
+     _ ≤ dist (x₁ * y₁) 0 + dist (x₂ * y₂) 0    := by rw [dist_comm 0]
+     _ ≤ Af * Ag + Af * Ag                      := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
      _ = 2 * Af * Ag                            := by simp [← two_mul, mul_assoc]
 
 end NNReal
