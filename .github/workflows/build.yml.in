@@ -121,7 +121,6 @@ jobs:
       # but verify that this didn't change anything in the `check_imported` job.
       - name: update Mathlib.lean
         run: |
-          chmod u+x scripts/mk_all.sh
           ./scripts/mk_all.sh Mathlib
 
       - name: If using a lean-pr-release toolchain, uninstall
@@ -191,7 +190,6 @@ jobs:
       - name: find `#`-commands
         id: hash_commands
         run: |
-          chmod u+x scripts/lint_hash_commands.sh
           ./scripts/lint_hash_commands.sh
 
       - name: build archive
