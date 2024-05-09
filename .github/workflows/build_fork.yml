@@ -81,7 +81,6 @@ jobs:
 
       - name: import files in {Mathlib MathlibExtras Mathlib/Tactic Counterexamples Archive}.lean
         run: |
-          chmod u+x scripts/mk_all.sh
           ./scripts/mk_all.sh
 
       - name: check that all files are imported
