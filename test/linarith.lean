@@ -8,6 +8,7 @@ import Mathlib.Data.Rat.Order
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
 set_option autoImplicit true
+set_option pp.mvars false
 
 example [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
   linarith
@@ -580,7 +581,7 @@ example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
 
 /--
 error: Argument passed to linarith has metavariables:
-  p ?a
+  p ?_
 -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
@@ -588,7 +589,7 @@ example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
 
 /--
 error: Argument passed to nlinarith has metavariables:
-  p ?a
+  p ?_
 -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
@@ -637,9 +638,9 @@ example :
 /--
 error: linarith failed to find a contradiction
 case h1.h
-E : Type ?u.243006
+E : Type _
 inst✝¹ : AddGroup E
-R : Type ?u.243012
+R : Type _
 inst✝ : Ring R
 abs : R → ℚ
 a b c d e : ℚ
@@ -666,9 +667,9 @@ example (a b c d e : ℚ)
 -- TODO: still broken with Fourier-Motzkin
 /--
 error: linarith failed to find a contradiction
-E : Type ?u.244607
+E : Type _
 inst✝¹ : AddGroup E
-R : Type ?u.244613
+R : Type _
 inst✝ : Ring R
 abs : R → ℚ
 x4 x3 x2 x1 x5 x6 x8 x7 : ℚ
