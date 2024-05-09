@@ -84,6 +84,7 @@ open Function Set Order
 open scoped Classical
 
 @[english_param const.Set] def param_Set : EnglishParam
+-- TODO: get rid of the special case
 | fvarid, _deps, type@(.app _ (.app (.const `Set _) X)), _used => do
   trace[English] "Using the english_param handler for Set"
   addNoun' fvarid #[type]
@@ -101,8 +102,9 @@ open scoped Classical
 | _, _, _, _ => failure
 
 @[english_param const.Finset] def param_Finset : EnglishParam
+-- TODO: get rid of the special case
 | fvarid, _deps, type@(.app _ (.app (.const `Set _) X)), _used => do
-  trace[English] "Using the english_param handler for Set"
+  trace[English] "Using the english_param handler for Finset"
   addNoun' fvarid #[type]
     { kind := `Set
       article := .a
@@ -157,6 +159,30 @@ open scoped Classical
       text := "antitone" }
 | _, _, _, _ => failure
 
+@[english_param const.Membership] def param_Membership : EnglishParam
+| fvarid, _deps, type@(mkAppN _ #[X, Y]), _used => do
+  addNoun' fvarid #[type]
+    { kind := `Membership
+      article := .a
+      text := nt!"the membership relation{.s} between {X} and {Y}"
+      inlineText := nt!"the membership relation{.s} {fvarid} between {X} and {Y}" }
+| _, _, _, _ => failure
+
+latex_pp_app_rules (const := Membership.mk)
+  | _, #[α, β, mem] => do
+    withBindingBodyUnusedName' mem `x fun x b => do
+    withBindingBodyUnusedName' b `y fun y z => do
+      let pz ← latexPP z
+      return LatexData.atomString s!"{x.toLatex} \\in {y.toLatex} \\text\{ if }" ++ pz
+
+@[english_param const.Membership.mk] def param_Membership_mk : EnglishParam
+| fvarid, _deps, type@(mkAppN _ #[X, Y, mem]), _used => do
+  addNoun' fvarid #[type]
+    { kind := `Set
+      article := .a
+      text := nt!"toto {X} and {Y}"
+      inlineText := nt!"toto {fvarid} between {X} and {Y}" }
+| _, _, _, _ => failure
 variable (f : Nat → Nat)
 
 universe u v w x y
