@@ -4,6 +4,12 @@ import Mathlib.Tactic.MetaTesting
 
 section exclude
 
+/--
+info: Skipped since it contains 'guard_target'
+
+Use '#meta_test cmd' if you really want to run the test on 'cmd'
+-/
+#guard_msgs in
 set_option linter.metaTest true in
 /--
 info: Skipped since it contains 'guard_target'
@@ -15,6 +21,12 @@ example : Nat := by
   guard_target = _
   exact 0
 
+/--
+info: Skipped since it contains 'guard_target'
+
+Use '#meta_test cmd' if you really want to run the test on 'cmd'
+-/
+#guard_msgs in
 set_option linter.metaTest true in
 /--
 warning: missing withContext?
@@ -54,7 +66,7 @@ elab (name := buggyExactTac) "buggy_exact " md:"clearMD"? imv:"instMV"? h:ident 
     | none => logWarningAt h m!"hypothesis '{h}' not found"
     | some h1 =>
       let r ← elabTermEnsuringType h h1.type
-      let tgt := if md.isNone then ← getMainTarget else (← getMainTarget).consumeMData
+      let tgt := ← if md.isNone then getMainTarget else return (← getMainTarget).consumeMData
       -- warning: syntactic matching of the target
       if tgt == (← if imv.isSome then instantiateMVars h1.type else return h1.type) then
         replaceMainGoal (← (← getMainGoal).apply r)
