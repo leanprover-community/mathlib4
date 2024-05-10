@@ -31,12 +31,14 @@ MulAut, AddAut
 variable {A : Type*} {M : Type*} {G : Type*}
 
 /-- The group of multiplicative automorphisms. -/
-@[to_additive (attr := reducible) "The group of additive automorphisms."]
+@[reducible, to_additive "The group of additive automorphisms."]
 def MulAut (M : Type*) [Mul M] :=
   M ≃* M
 #align mul_aut MulAut
 #align add_aut AddAut
 
+-- Note that `(attr := reducible)` in `to_additive` currently doesn't work,
+-- so we add the reducible attribute manually.
 attribute [reducible] AddAut
 
 namespace MulAut

@@ -282,7 +282,6 @@ theorem induction_linear {P : PolynomialModule R M → Prop} (f : PolynomialModu
   Finsupp.induction_linear f h0 hadd hsingle
 #align polynomial_module.induction_linear PolynomialModule.induction_linear
 
-@[semireducible]
 noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) :=
   inferInstanceAs (Module R[X] (Module.AEval' (Finsupp.lmapDomain M R Nat.succ)))
 #align polynomial_module.polynomial_module PolynomialModule.polynomialModule

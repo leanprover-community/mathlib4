@@ -294,6 +294,7 @@ theorem formPerm_pow_apply_get (l : List α) (h : Nodup l) (n k : ℕ) (hk : k <
   · simp [Nat.mod_eq_of_lt hk]
   · simp [pow_succ', mul_apply, hn, formPerm_apply_get _ h, Nat.succ_eq_add_one, ← Nat.add_assoc]
 
+set_option linter.deprecated false in
 @[deprecated formPerm_pow_apply_get] -- 2024-04-23
 theorem formPerm_pow_apply_nthLe (l : List α) (h : Nodup l) (n k : ℕ) (hk : k < l.length) :
     (formPerm l ^ n) (l.nthLe k hk) =

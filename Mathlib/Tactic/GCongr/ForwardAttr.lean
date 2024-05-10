@@ -3,7 +3,7 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Std.Tactic.Basic
+import Batteries.Tactic.Basic
 
 /-!
 # Environment extension for the forward-reasoning part of the `gcongr` tactic

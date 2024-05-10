@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 import Mathlib.Tactic.Basic
 import Mathlib.Mathport.Rename
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.TypeStar
@@ -28,11 +29,11 @@ attribute [eqns comp_def] comp
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
--- Adaptation note: nightly-2024-03-16
--- Because of changes in how equation lemmas are generated,
--- `@[eqns]` will only work properly when used immediately after the definition
--- (and when none of the default equation lemmas are needed).
--- Thus this usage is no longer allowed:
+#adaptation_note /-- nightly-2024-03-16
+Because of changes in how equation lemmas are generated,
+`@[eqns]` will only work properly when used immediately after the definition
+(and when none of the default equation lemmas are needed).
+Thus this usage is no longer allowed: -/
 -- attribute [eqns flip_def] flip
 
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
@@ -55,8 +56,7 @@ def compLeft (f : β → β → β) (g : α → β) : α → β → β := fun a 
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
 from `β` to `α`. -/
-@[reducible]
-def onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
+abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
 #align function.on_fun Function.onFun
 
 @[inherit_doc onFun]
@@ -75,11 +75,10 @@ def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ
 
 #align function.const Function.const
 
-@[reducible]
-def swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
+abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 #align function.swap Function.swap
 
--- Adaptation note: nightly-2024-03-16: added to replace simp [Function.swap]
+#adaptation_note /-- nightly-2024-03-16: added to replace simp [Function.swap] -/
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
 
 @[reducible, deprecated] -- Deprecated since 13 January 2024

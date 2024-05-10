@@ -273,8 +273,7 @@ section
 open scoped Classical
 
 /-- A well founded linear order is conditionally complete, with a bottom element. -/
-@[reducible]
-noncomputable def IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type*)
+noncomputable abbrev IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type*)
   [i₁ : _root_.LinearOrder α] [i₂ : OrderBot α] [h : IsWellOrder α (· < ·)] :
     ConditionallyCompleteLinearOrderBot α :=
   { i₁, i₂, LinearOrder.toLattice with

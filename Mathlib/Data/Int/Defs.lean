@@ -20,7 +20,7 @@ See note [foundational algebra order theory].
 ## TODO
 
 Split this file into:
-* `Data.Int.Init` (or maybe `Data.Int.Std`?) for lemmas that could go to Std
+* `Data.Int.Init` (or maybe `Data.Int.Batteries`?) for lemmas that could go to Batteries
 * `Data.Int.Basic` for the lemmas that require mathlib definitions
 -/
 
@@ -47,7 +47,7 @@ variable {m n : ℕ}
 #align int.of_nat_nat_abs_eq_of_nonneg Int.ofNat_natAbs_eq_of_nonnegₓ
 #align int.nat_abs_of_neg_succ_of_nat Int.natAbs_negSucc
 
--- TODO: Tag in Std
+-- TODO: Tag in Lean
 attribute [simp] natAbs_pos
 
 protected lemma one_pos : 0 < (1 : Int) := Int.zero_lt_one
