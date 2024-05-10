@@ -131,7 +131,7 @@ jobs:
           lean --version
           lake --version
 
-      - name: update {Mathlib, MathlibExtras, Tactic, Counterexamples, Archive}.lean
+      - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         run: lake exe mkAll
 
       - name: check_imported
