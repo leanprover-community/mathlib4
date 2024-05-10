@@ -164,25 +164,29 @@ open scoped Classical
   addNoun' fvarid #[type]
     { kind := `Membership
       article := .a
-      text := nt!"the membership relation{.s} between {X} and {Y}"
-      inlineText := nt!"the membership relation{.s} {fvarid} between {X} and {Y}" }
+      text := nt!"membership relation{.s} between {X} and {Y}"
+      inlineText := nt!"membership relation{.s} {fvarid} between {X} and {Y}" }
 | _, _, _, _ => failure
 
 latex_pp_app_rules (const := Membership.mk)
-  | _, #[α, β, mem] => do
+  | _, #[_α, _β, mem] => do
     withBindingBodyUnusedName' mem `x fun x b => do
     withBindingBodyUnusedName' b `y fun y z => do
       let pz ← latexPP z
       return LatexData.atomString s!"{x.toLatex} \\in {y.toLatex} \\text\{ if }" ++ pz
 
-@[english_param const.Membership.mk] def param_Membership_mk : EnglishParam
-| fvarid, _deps, type@(mkAppN _ #[X, Y, mem]), _used => do
+@[english_param const.Inhabited] def param_Inhabited : EnglishParam
+| fvarid, _deps, type@(mkAppN _ #[X]), _used => do
   addNoun' fvarid #[type]
-    { kind := `Set
+    { kind := `Inhabited
       article := .a
-      text := nt!"toto {X} and {Y}"
-      inlineText := nt!"toto {fvarid} between {X} and {Y}" }
+      text := nt!"default element{.s} of {X}"
+      inlineText := nt!"default element{.s} {fvarid} of {X}" }
 | _, _, _, _ => failure
+
+latex_pp_app_rules (const := Inhabited.mk)
+  | _, #[_α, default] => latexPP default
+
 variable (f : Nat → Nat)
 
 universe u v w x y
@@ -220,7 +224,7 @@ def stealEntity (fvarid : FVarId) (requireNoun : Bool) : EnglishM (Option Entity
   return entity
 
 @[english_param const.Filter] def param_Filter : EnglishParam
-| fvarid, deps, type@(.app _ X), _used => do
+| fvarid, _deps, type@(.app _ X), _used => do
   trace[English] "Using the english_param handler for Filter"
   if X.isFVar then
     if let some e ← stealEntity X.fvarId! (requireNoun := true) then
@@ -244,8 +248,27 @@ latex_pp_app_rules (const := Filter.sets)
     let A ← latexPP f
     return A.sub (LatexData.atomString "\\mathrm{Sets}")
 
-open Lean in
+latex_pp_app_rules (const := Filter.mk)
+  | _, #[_, s, h₁, h₂, h₃] => do
+    let s ← latexPP s
+    let h₁ ← latexPP h₁
+    let h₂ ← latexPP h₂
+    let h₃ ← latexPP h₃
+    return LatexData.atomString s!"\\text\{the filter with sets } {s.latex.1}\\text\{ using } {h₁.latex.1}, {h₂.latex.1}\\text\{ and }{h₃.latex.1}"
+
 latex_pp_app_rules (const := setOf)
+  | _, #[X, p] => do
+    let X ← latexPP X
+    let some v ← p.getBinderName | throwError "This shouldn't happen"
+    let b ← Lean.Meta.lambdaTelescope p (λ _ => latexPP)
+    (LatexData.atomString $ "\\left\\{" ++ v.toLatex ++ " \\mid " ++ b.latex.1 ++ "\\right\\}").maybeWithTooltip s!"inside \\({X.latex.1}\\)"
+
+latex_pp_app_rules (const := Set.univ)
+  | _, #[X] => do
+    let X ← latexPP X
+    (LatexData.atomString "\\text{univ}_{" ++ X ++ "}").maybeWithTooltip s!"the set of all elements of \\({X.latex.1}\\)"
+
+latex_pp_app_rules (const := Subtype)
   | _, #[X, p] => do
     let X ← latexPP X
     let some v ← p.getBinderName | throwError "This shouldn't happen"
