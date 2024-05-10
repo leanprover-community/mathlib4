@@ -507,12 +507,35 @@ theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     simp
 #align mv_polynomial.nat_degree_fin_succ_equiv MvPolynomial.natDegree_finSuccEquiv
 
+lemma optionEquivLeft_support [DecidableEq σ] (p : MvPolynomial (Option σ) R) :
+    (optionEquivLeft R σ p).support
+      = Finset.image (fun m => m none) p.support := by
+  ext m
+  rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
+  constructor
+  · rintro ⟨m', hm'⟩
+    sorry
+
+    -- aesop
+    -- refine' ⟨m.erase_none, _, Finsupp.erase_none _⟩
+    -- rw [← support_coeff_finSuccEquiv]
+    -- simpa using hm
+  · rintro ⟨m, h, rfl⟩
+    sorry
+    -- refine' ⟨m.insert_none, _⟩
+    -- rwa [← coeff, none_apply, ← mem_support_iff, support_coeff_finSuccEquiv, insert_none]
+
 lemma natDegree_OptionEquivLeft [DecidableEq σ]
     (p : MvPolynomial (Option σ) R) :
   Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := σ) p)
    = p.degreeOf none := by
+  unfold Polynomial.natDegree degreeOf degrees degree
+  rw [Finset.max_eq_sup_coe, optionEquivLeft_support]
+  simp [optionEquivLeft_apply]
+  unfold
+  -- simp
 
-  rw? [degreeOf_eq_degree]
+  aesop
   sorry
 
 /-- Generalization of `natDegree_finSuccEquiv` to arbitrary variable types -/
