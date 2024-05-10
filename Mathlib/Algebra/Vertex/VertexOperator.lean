@@ -111,9 +111,9 @@ theorem one_ncoef_neg_one (x : V) : ncoef R 1 (-1) x = x := by
   rw [ncoef]
   simp
 
-theorem one_ncoef_ne_neg_one (x : V) (n : ℤ) (hn : n ≠ -1): ncoef R 1 n x = 0 := by
+theorem one_ncoef_ne_neg_one (x : V) (n : ℤ) (hn : n ≠ -1) : ncoef R 1 n x = 0 := by
   rw [ncoef]
-  have h' : -n-1 ≠ 0:= by omega
+  have h' : -n - 1 ≠ 0 := by omega
   simp_all
 
 theorem one_ncoef_ite (x : V) (n : ℤ) : ncoef R 1 n x = if n = (-1) then x else 0 := by
@@ -275,6 +275,7 @@ theorem isLocalToOrderLeqAdd (R V : Type*) [CommRing R] [AddCommGroup V] [Module
 --show `A` and `B` local to order `n` implies `∂^[k]A` and `B` are local to order `n+k`.
 --show any vertex operator is local with identity.
 end Local
+
 /-!
 section Composite
 
@@ -434,9 +435,11 @@ def isLocalToOrderLeq (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Modu
 /-- Two fields are local if they are local to order `≤ n` for some `n`. -/
 def isLocal (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
     (A B : VertexOperator R V) : Prop := ∃(n : ℕ), isLocalToOrderLeq R V A B n
-
+-/
 section ResidueProduct
 
+open HetVertexOperator
+/-!
 theorem res_prod_left_bound (A B : VertexOperator R V) (m : ℤ): ∀(x : V), ∃(n : ℤ), ∀(k : ℤ),
     k < n → composite_ncoef.linearMap A B m 0 (-k - 1)
     (fun i ↦ (-1) ^ i • Ring.choose m i) x = 0 := by
@@ -445,13 +448,14 @@ theorem res_prod_left_bound (A B : VertexOperator R V) (m : ℤ): ∀(x : V), �
   intro k hk
   have h : - HahnSeries.order (B x) < (-k - 1) := by omega
   exact composite_bdd_below_right A B m 0 (fun i => (-1)^i • Ring.choose m i) x (-k - 1) h
+-/
 
 /-- The left side of the `m`-th residue product, given by the residue of `(x-y)^m A(x)B(y)` at
-`x=0`, where we formally expand `(x-y)^m` as `x^m(1-y/x)^m` using binomials. -/
+`x=0`, where we formally expand `(x-y)^m` as `x^m(1-y/x)^m` in `R((x))((y))` using binomials. -/
 noncomputable def res_prod_left (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
-  VertexOperator.of_coeff (fun n => composite_ncoef.linearMap A B m 0 (-n - 1)
-  (fun i => (-1)^i • Ring.choose m i)) (res_prod_left_bound A B m)
+  ResLeft ((subLeft R)^ m • hetComp A B) (0 : ℤ)
 
+/-!
 theorem res_prod_right_bound (A B : VertexOperator R V) (m : ℤ): ∀(x : V), ∃(N : ℤ), ∀(k : ℤ),
     k < N → composite_ncoef.linearMap A B m (-k - 1) 0
     (fun i ↦ (-1 : ℤˣ)^(m + i) • Ring.choose m i) x = 0 := by
@@ -462,18 +466,20 @@ theorem res_prod_right_bound (A B : VertexOperator R V) (m : ℤ): ∀(x : V), �
   refine (Exists.choose_spec
     (composite_bdd_below_left A B m 0 (fun i ↦ (-1 : ℤˣ)^(m + i) • Ring.choose m i) x)) (-k - 1) ?_
   omega
+-/
 
 /-- The right side of the `m`-th residue product, given by the residue of `(x-y)^m B(x)A(y)` at
 `x=0`, where we formally expand `(x-y)^m` as `(-y)^m(1-x/y)^m` using binomials (i.e., in the domain
 where `x` is big). -/
 noncomputable def res_prod_right (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
-  VertexOperator.of_coeff (fun n => composite_ncoef.linearMap B A m (-n - 1) 0
-  (fun i => (-1 : ℤˣ)^(m + i) • Ring.choose m i)) (res_prod_right_bound B A m)
+  ResRight ((subRight R)^ m • hetComp B A) (0 : ℤ)
+
 
 /-- The the `m`-th residue product of vertex operators -/
 noncomputable def res_prod (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
   res_prod_left A B m + res_prod_right A B m
 
+/-!
 theorem res_prod_neg_one_one_left (A : VertexOperator R V) : res_prod 1 A (-1) = A := by
   ext x n
   unfold res_prod res_prod_left res_prod_right composite_ncoef.linearMap composite_ncoef
@@ -492,8 +498,8 @@ theorem local_to_residue_product (A B C : VertexOperator R V) (n : ℤ) (k l m :
     (hAB : isLocaltoOrderLeq A B k) (hAC : isLocaltoOrderLeq A C l)
     (hBC : isLocaltoOrderLeq B C m) : isLocaltoOrderLeq (k + l + m) := by
   sorry
-
+-/
 
 end ResidueProduct
--/
+
 end VertexAlg

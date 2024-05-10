@@ -24,14 +24,27 @@ We postpone the proofs of equivalences of various identities to Mathlib.Algebra.
 ## To do:
 * Refactor: remove non-unital non-associative vertex algebra.  Introduce Y by itself.
 * Use formal series more, instead of combinatorial coefficient calculations.
-*  order of associativity, weak associativity
+* order of associativity, weak associativity
 * Fix weak associativity defs
 * cofiniteness conditions?
+* Typeclasses for worldsheet symmetry: basic, graded, Möbius, quasi-conformal, gauged
 ## References
 G. Mason `Vertex rings and Pierce bundles` ArXiv 1707.00328
 A. Matsuo, K. Nagatomo `On axioms for a vertex algebra and locality of quantum fields`
 arXiv:hep-th/9706118
 -/
+
+section StateFieldMap
+
+open HetVertexOperator
+
+/-- The state-field correspondence. -/
+abbrev stateFieldMap (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V] :=
+  V →ₗ[R] VertexOperator R V
+
+
+
+end StateFieldMap
 
 section NonAssocNonUnitalVertexAlgebra
 
@@ -43,7 +56,7 @@ class NonAssocNonUnitalVertexAlgebra (R : Type*) (V : Type*) [CommRing R] [AddCo
   Y: V →ₗ[R] VertexOperator R V
 
 namespace VertexAlg
-
+open HetVertexOperator
 variable (R : Type*) {V : Type*} [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
 
 /-- The multiplication in a vertex algebra. -/
@@ -182,6 +195,8 @@ section Unital
 
 namespace VertexAlg
 
+open HetVertexOperator
+
 variable (R : Type*) {V : Type*} [CommRing R] [AddCommGroupWithOne V] [Module R V]
 
 /-- A field is creative with respect to the unit vector `1` if evaluating at `1` yields a regular
@@ -219,6 +234,8 @@ end Unital
 
 section VertexAlgebra
 
+open HetVertexOperator
+
 /-- A vertex algebra over a commutative ring `R` is an `R`-module `V` with a distinguished unit
 element `1`, together with a multiplication operation that takes values in Laurent series with
 coefficients in `V`, such that `a(z) 1 ∈ a + zV[[z]]` for all `a ∈ V` -/
@@ -229,7 +246,7 @@ class VertexAlgebra (R : Type*) (V : Type*) [CommRing R] [AddCommGroupWithOne V]
   /-- Right multiplication by the unit vector is nonsingular. -/
   unit_comm : ∀ (a : V), VertexAlg.order R a 1 = 0
   /-- The constant coefficient of right multiplication by the unit vector is identity. -/
-  unit_right : ∀ (a : V), VertexAlg.coeff (Y a) 0 1 = a
+  unit_right : ∀ (a : V), coeff (Y a) 0 1 = a
 
 namespace VertexAlg
 

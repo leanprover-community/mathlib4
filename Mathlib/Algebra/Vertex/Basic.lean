@@ -58,6 +58,7 @@ variable {R : Type*} {V : Type*}
 
 namespace VertexAlg
 
+open HetVertexOperator
 section VertexOperator
 
 variable [CommRing R] [AddCommGroup V] [Module R V]
@@ -91,7 +92,7 @@ theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 R a b c 0 s
         (Nat.succ_ne_zero n)), Finset.sum_range_one, zero_add, Ring.choose_zero_right (0 : ℤ),
         one_smul, Nat.cast_zero, add_zero, sub_zero]
       intro i hi
-      rw [Ring.choose_zero_pos ℤ i (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
+      rw [Ring.choose_zero_pos ℤ (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
           zero_smul]
 
 theorem associativity_right (a b c : V) (s t : ℤ) : Borcherds_sum_2 R a b c 0 s t +
@@ -120,7 +121,7 @@ theorem commutator_right_2 (a b c : V) (r s : ℤ) : Borcherds_sum_2 R a b c r s
         (Nat.succ_ne_zero n)), Finset.sum_range_one, add_zero, Ring.choose_zero_right (0 : ℤ),
         one_smul, Nat.cast_zero, add_zero, sub_zero, pow_zero, one_smul]
     intro i hi
-    rw [Ring.choose_zero_pos ℤ i (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
+    rw [Ring.choose_zero_pos ℤ (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
       zero_smul, smul_zero]
 
 theorem commutator_right_3 (a b c : V) (r s : ℤ) : Borcherds_sum_3 R a b c r s 0 =
@@ -135,7 +136,7 @@ theorem commutator_right_3 (a b c : V) (r s : ℤ) : Borcherds_sum_3 R a b c r s
         Finset.sum_range_one, add_zero, Ring.choose_zero_right (0 : ℤ), one_smul, Nat.cast_zero,
         add_zero, sub_zero, zero_add, add_zero, zpow_one, Units.neg_smul, one_smul]
     intro i hi
-    rw [Ring.choose_zero_pos ℤ i (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
+    rw [Ring.choose_zero_pos ℤ (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
         zero_smul, smul_zero]
 
 theorem Borcherds_id_at_zero_iff_commutator_formula (a b c : V) (r s : ℤ) :

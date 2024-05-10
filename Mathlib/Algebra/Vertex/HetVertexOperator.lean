@@ -273,6 +273,8 @@ theorem toLex_vAdd_of_sub (k l m n : ℤ) :
     toLex ((m : ℤ) , (n : ℤ)) +ᵥ toLex (k - m, l - n) = toLex (k, l) := by
   rw [vadd_eq_add, ← @toLex_add, Prod.mk_add_mk, Int.add_comm, Int.sub_add_cancel, Int.add_comm,
     Int.sub_add_cancel]
+--#find_home! toLex_vAdd_of_sub --[Mathlib.RingTheory.HahnSeries.Multiplication]
+
 
 /-- `-Y + X` as a unit of `R((X))((Y))` -/
 def subLeft (R : Type*) [CommRing R] : (HahnSeries (ℤ ×ₗ ℤ) R)ˣ :=
