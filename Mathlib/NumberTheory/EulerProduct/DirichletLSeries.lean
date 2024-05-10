@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 import Mathlib.NumberTheory.DirichletCharacter.Bounds
 import Mathlib.NumberTheory.EulerProduct.Basic
-import Mathlib.NumberTheory.LSeries.Dirichlet
+import Mathlib.NumberTheory.LSeries.Basic
 import Mathlib.NumberTheory.ZetaFunction
 
 /-!
