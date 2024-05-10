@@ -16,8 +16,6 @@ import Mathlib.Topology.Order.T5
 # Topology on extended non-negative reals
 -/
 
-set_option profiler true
-
 noncomputable section
 
 open Set Filter Metric Function
