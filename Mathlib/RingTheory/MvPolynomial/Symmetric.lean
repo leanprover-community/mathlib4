@@ -267,9 +267,7 @@ theorem esymmMu_zero : esymmMu σ R (Nat.Partition.indiscrete 0) = 1 := by
 
 @[simp]
 theorem esymmMu_onePart (n : ℕ) : esymmMu σ R (Nat.Partition.indiscrete n) = esymm σ R n := by
-  cases n
-  · simp only [esymmMu, esymm_zero, muProduct_indiscrete_zero]
-  · simp only [esymmMu, gt_iff_lt, Nat.zero_lt_succ, muProduct_indiscrete_of_pos]
+  cases n <;> simp [esymmMu]
 
 theorem map_esymm (n : ℕ) (f : R →+* S) : map f (esymm σ R n) = esymm σ S n := by
   simp_rw [esymm, map_sum, map_prod, map_X]
