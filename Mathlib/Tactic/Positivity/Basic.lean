@@ -449,7 +449,7 @@ def evalNNRatDen : PositivityExt where eval {u α} _ _ e := do
   | 0, ~q(ℕ), ~q(NNRat.den $a) =>
     assumeInstancesCommute
     return .positive q(den_pos $a)
-  | _, _, _ => throwError "not NNRat.num"
+  | _, _, _ => throwError "not NNRat.den"
 
 variable {q : ℚ≥0}
 
