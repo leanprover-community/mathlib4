@@ -123,6 +123,8 @@ lemma ofSym_map (e : σ ≃ τ) (s : Sym σ n) :
   congr; funext i
   rw [← Multiset.count_map_eq_count' e _ e.injective]
 
+/-- An equivalence between `σ` and `τ` induces an equivalence between the subtypes of `Sym σ n` and
+`Sym τ n` corresponding to a given partition. -/
 def ofSym_shape_equiv (μ : Partition n) (e : σ ≃ τ) :
     {x : Sym σ n // Nat.Partition.ofSym x = μ} ≃ {x : Sym τ n // Nat.Partition.ofSym x = μ} where
   toFun := fun x => ⟨Sym.equivCongr e x, by simp [ofSym_map, x.2]⟩
@@ -157,6 +159,7 @@ instance UniquePartitionOne : Unique (Partition 1) where
 lemma ofSym_one (s : Sym σ 1) : Nat.Partition.ofSym s = Nat.Partition.indiscrete 1 := by
   ext; simp
 
+/-- The equivalence between `σ` and `1`-tuples of elements of σ -/
 def ofSym_equiv_onePart (σ : Type*) [DecidableEq σ] : σ ≃
     { a : Sym σ 1 // Nat.Partition.ofSym a = Nat.Partition.indiscrete 1 } where
   toFun := fun a => ⟨Sym.oneEquiv a, by ext; simp⟩
