@@ -102,8 +102,6 @@ theorem unitary_right_cancel (U : unitaryGroup n 𝕜) (A : Matrix n n 𝕜) (B 
                                mul_one]
      _ = B := by rw [mul_one]
 
---Matrix.diagonal_one, Matrix.diagonal_smul
-
 noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
       diagonal (RCLike.ofReal ∘ g ∘
@@ -191,8 +189,21 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
     exact rfl
 
 instance instContinuousFunctionalCalculus :
-    ContinuousFunctionalCalculus 𝕜 (IsHermitian : Matrix n n 𝕜 → Prop) where
-exists_cfc_of_predicate := by sorry
+    ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
+exists_cfc_of_predicate := by
+    intro A hA
+    use (φ hA)
+    constructor
+    refine {toEmbedding := ?h.left.toEmbedding, isClosed_range := ?h.left.isClosed_range}
+    · sorry
+    · sorry
+    · constructor
+      · sorry
+      · constructor
+        · sorry
+        · intro f
+          sorry
+
 
 
 --theorem spec_EuclideanCLM_eq_spec : spectrum 𝕜 (toEuclideanCLM (𝕜:= 𝕜) A) = spectrum 𝕜 A :=
