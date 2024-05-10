@@ -98,7 +98,15 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
       simp only [algebraMap.coe_zero, Function.const_zero, diagonal_zero, Pi.zero_def, zero_mul,
       mul_zero]
   map_add' := by sorry
-  commutes' := by sorry --must be scalar embedding...
+  commutes' := by
+    dsimp
+    intro r
+    have h : RCLike.ofReal ∘ ⇑((algebraMap ℝ C(↑(spectrum ℝ A), ℝ)) r) ∘
+        (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) =
+        (RCLike (K := 𝕜)).ofReal  ∘ (Function.const (spectrum ℝ A) r) ∘
+        (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) := by sorry
+    apply?
+
   map_star' := by
     intro g
     dsimp
@@ -116,9 +124,9 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
      (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) := by
      simp only [star_eq_conjTranspose, diagonal_conjTranspose, H1]
     simp only [H2, mul_assoc]
-#check (algebraMap ℝ C(↑(spectrum ℝ A), ℝ))
 
 #exit
+
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus 𝕜 (IsHermitian : Matrix n n 𝕜 → Prop) where
 exists_cfc_of_predicate
