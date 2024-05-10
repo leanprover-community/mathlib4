@@ -3,10 +3,13 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Uthaiwat, Oliver Nash
 -/
-import Mathlib.RingTheory.Nilpotent
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Div
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Div
+import Mathlib.Algebra.Polynomial.Identities
 import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.RingTheory.Polynomial.Tower
+import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!
 # Nilpotency in polynomial rings.
@@ -109,19 +112,17 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
     exact hunit.map C }
   set P₁ := P.eraseLead with hP₁
   suffices IsUnit P₁ by
-    rw [← eraseLead_add_monomial_natDegree_leadingCoeff P, ← C_mul_X_pow_eq_monomial]
-    obtain ⟨Q, hQ⟩ := this
-    rw [← hP₁, ← hQ]
-    refine' Commute.IsNilpotent.add_isUnit (isNilpotent_C_mul_pow_X_of_isNilpotent _ (hnil _ hdeg))
-      ((Commute.all _ _).mul_left (Commute.all _ _))
+    rw [← eraseLead_add_monomial_natDegree_leadingCoeff P, ← C_mul_X_pow_eq_monomial, ← hP₁]
+    refine IsNilpotent.isUnit_add_left_of_commute ?_ this (Commute.all _ _)
+    exact isNilpotent_C_mul_pow_X_of_isNilpotent _ (hnil _ hdeg)
   have hdeg₂ := lt_of_le_of_lt P.eraseLead_natDegree_le (Nat.sub_lt
     (Nat.pos_of_ne_zero hdeg) zero_lt_one)
   refine' hind P₁.natDegree _ _ (fun i hi => _) rfl
   · simp_rw [← h, hdeg₂]
   · simp_rw [eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
   · by_cases H : i ≤ P₁.natDegree
-    simp_rw [eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
-    simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
+    · simp_rw [eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
+    · simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
 
 /-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
 except its constant term which is a unit.
@@ -169,6 +170,41 @@ lemma isUnit_iff' :
   conv_lhs => rw [← modByMonic_add_div P monic_X]
   simp [modByMonic_X]
 
+theorem not_isUnit_of_natDegree_pos_of_isReduced [IsReduced R] (p : R[X])
+    (hpl : 0 < p.natDegree) : ¬ IsUnit p := by
+  simp only [ne_eq, isNilpotent_iff_eq_zero, not_and, not_forall, exists_prop,
+    Polynomial.isUnit_iff_coeff_isUnit_isNilpotent]
+  intro _
+  refine ⟨p.natDegree, hpl.ne', ?_⟩
+  contrapose! hpl
+  simp only [coeff_natDegree, leadingCoeff_eq_zero] at hpl
+  simp [hpl]
+
+theorem not_isUnit_of_degree_pos_of_isReduced [IsReduced R] (p : R[X])
+    (hpl : 0 < p.degree) : ¬ IsUnit p :=
+  not_isUnit_of_natDegree_pos_of_isReduced _ (natDegree_pos_iff_degree_pos.mpr hpl)
+
 end CommRing
+
+section CommAlgebra
+
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (P : R[X]) {a b : S}
+
+lemma isNilpotent_aeval_sub_of_isNilpotent_sub (h : IsNilpotent (a - b)) :
+    IsNilpotent (aeval a P - aeval b P) := by
+  simp only [← eval_map_algebraMap]
+  have ⟨c, hc⟩ := evalSubFactor (map (algebraMap R S) P) a b
+  exact hc ▸ (Commute.all _ _).isNilpotent_mul_right h
+
+variable {P}
+
+lemma isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub
+    (hb : IsUnit (aeval b P)) (hab : IsNilpotent (a - b)) :
+    IsUnit (aeval a P) := by
+  rw [← add_sub_cancel (aeval b P) (aeval a P)]
+  refine IsNilpotent.isUnit_add_left_of_commute ?_ hb (Commute.all _ _)
+  exact isNilpotent_aeval_sub_of_isNilpotent_sub P hab
+
+end CommAlgebra
 
 end Polynomial

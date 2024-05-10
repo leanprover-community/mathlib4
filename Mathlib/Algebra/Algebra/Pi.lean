@@ -32,9 +32,7 @@ variable {R : Type*}
 
 -- The family of types already equipped with instances
 variable {f : I → Type v}
-
 variable (x y : ∀ i, f i) (i : I)
-
 variable (I f)
 
 instance algebra {r : CommSemiring R} [s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)] :
@@ -104,9 +102,7 @@ instance Function.algebra {R : Type*} (I : Type*) (A : Type*) [CommSemiring R] [
 namespace AlgHom
 
 variable {R : Type u} {A : Type v} {B : Type w} {I : Type*}
-
 variable [CommSemiring R] [Semiring A] [Semiring B]
-
 variable [Algebra R A] [Algebra R B]
 
 /-- `R`-algebra homomorphism between the function spaces `I → A` and `I → B`, induced by an

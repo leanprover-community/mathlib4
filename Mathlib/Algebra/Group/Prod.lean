@@ -5,6 +5,7 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 #align_import algebra.group.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
@@ -328,7 +329,7 @@ section Prod
 
 variable (M N) [Mul M] [Mul N] [Mul P]
 
-/-- Given magmas `M`, `N`, the natural projection homomorphism from `M × N` to `M`.-/
+/-- Given magmas `M`, `N`, the natural projection homomorphism from `M × N` to `M`. -/
 @[to_additive
       "Given additive magmas `A`, `B`, the natural projection homomorphism
       from `A × B` to `A`"]
@@ -337,7 +338,7 @@ def fst : M × N →ₙ* M :=
 #align mul_hom.fst MulHom.fst
 #align add_hom.fst AddHom.fst
 
-/-- Given magmas `M`, `N`, the natural projection homomorphism from `M × N` to `N`.-/
+/-- Given magmas `M`, `N`, the natural projection homomorphism from `M × N` to `N`. -/
 @[to_additive
       "Given additive magmas `A`, `B`, the natural projection homomorphism
       from `A × B` to `B`"]
@@ -474,7 +475,7 @@ namespace MonoidHom
 
 variable (M N) [MulOneClass M] [MulOneClass N]
 
-/-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `M`.-/
+/-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `M`. -/
 @[to_additive
       "Given additive monoids `A`, `B`, the natural projection homomorphism
       from `A × B` to `A`"]
@@ -485,7 +486,7 @@ def fst : M × N →* M :=
 #align monoid_hom.fst MonoidHom.fst
 #align add_monoid_hom.fst AddMonoidHom.fst
 
-/-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `N`.-/
+/-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `N`. -/
 @[to_additive
       "Given additive monoids `A`, `B`, the natural projection homomorphism
       from `A × B` to `B`"]
@@ -746,9 +747,9 @@ section
 
 variable (M N M' N')
 
-/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+/-- Four-way commutativity of `Prod`. The name matches `mul_mul_mul_comm`. -/
 @[to_additive (attr := simps apply) prodProdProdComm
-    "Four-way commutativity of `prod`.\nThe name matches `mul_mul_mul_comm`"]
+    "Four-way commutativity of `Prod`.\nThe name matches `mul_mul_mul_comm`"]
 def prodProdProdComm : (M × N) × M' × N' ≃* (M × M') × N × N' :=
   { Equiv.prodProdProdComm M N M' N' with
     toFun := fun mnmn => ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
@@ -771,7 +772,7 @@ theorem prodProdProdComm_symm : (prodProdProdComm M N M' N').symm = prodProdProd
 
 end
 
-/-- Product of multiplicative isomorphisms; the maps come from `Equiv.prodCongr`.-/
+/-- Product of multiplicative isomorphisms; the maps come from `Equiv.prodCongr`. -/
 @[to_additive prodCongr "Product of additive isomorphisms; the maps come from `Equiv.prodCongr`."]
 def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
   { f.toEquiv.prodCongr g.toEquiv with
@@ -779,14 +780,14 @@ def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
 #align mul_equiv.prod_congr MulEquiv.prodCongr
 #align add_equiv.prod_congr AddEquiv.prodCongr
 
-/-- Multiplying by the trivial monoid doesn't change the structure.-/
+/-- Multiplying by the trivial monoid doesn't change the structure. -/
 @[to_additive uniqueProd "Multiplying by the trivial monoid doesn't change the structure."]
 def uniqueProd [Unique N] : N × M ≃* M :=
   { Equiv.uniqueProd M N with map_mul' := fun _ _ => rfl }
 #align mul_equiv.unique_prod MulEquiv.uniqueProd
 #align add_equiv.unique_prod AddEquiv.uniqueProd
 
-/-- Multiplying by the trivial monoid doesn't change the structure.-/
+/-- Multiplying by the trivial monoid doesn't change the structure. -/
 @[to_additive prodUnique "Multiplying by the trivial monoid doesn't change the structure."]
 def prodUnique [Unique N] : M × N ≃* M :=
   { Equiv.prodUnique M N with map_mul' := fun _ _ => rfl }

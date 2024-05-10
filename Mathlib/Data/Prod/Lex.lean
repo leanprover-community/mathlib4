@@ -35,7 +35,7 @@ variable {α β γ : Type*}
 
 namespace Prod.Lex
 
--- porting note: `Prod.Lex` is not protected in core, hence the `_root_.` prefix
+-- Porting note: `Prod.Lex` is not protected in core, hence the `_root_.` prefix
 -- This will be fixed in nightly-2022-11-30
 @[inherit_doc] notation:35 α " ×ₗ " β:34 => _root_.Lex (Prod α β)
 

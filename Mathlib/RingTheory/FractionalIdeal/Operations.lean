@@ -40,13 +40,11 @@ namespace FractionalIdeal
 open Set Submodule
 
 variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
-
 variable [Algebra R P] [loc : IsLocalization S P]
 
 section
 
 variable {P' : Type*} [CommRing P'] [Algebra R P'] [loc' : IsLocalization S P']
-
 variable {P'' : Type*} [CommRing P''] [Algebra R P''] [loc'' : IsLocalization S P'']
 
 theorem _root_.IsFractional.map (g : P →ₐ[R] P') {I : Submodule R P} :
@@ -301,9 +299,7 @@ i.e. the type `FractionalIdeal R⁰ K` where `IsFractionRing R K`.
 
 
 variable {K K' : Type*} [Field K] [Field K']
-
 variable [Algebra R K] [IsFractionRing R K] [Algebra R K'] [IsFractionRing R K']
-
 variable {I J : FractionalIdeal R⁰ K} (h : K →ₐ[R] K')
 
 /-- Nonzero fractional ideals contain a nonzero integer. -/
@@ -314,7 +310,7 @@ theorem exists_ne_zero_mem_isInteger [Nontrivial R] (hI : I ≠ 0) :
   have y_ne_zero : y ≠ 0 := by simpa using y_not_mem
   obtain ⟨z, ⟨x, hx⟩⟩ := exists_integer_multiple R⁰ y
   refine' ⟨x, _, _⟩
-  · rw [Ne.def, ← @IsFractionRing.to_map_eq_zero_iff R _ K, hx, Algebra.smul_def]
+  · rw [Ne, ← @IsFractionRing.to_map_eq_zero_iff R _ K, hx, Algebra.smul_def]
     exact mul_ne_zero (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors z.2) y_ne_zero
   · rw [hx]
     exact smul_mem _ _ y_mem
@@ -359,6 +355,10 @@ theorem coeIdeal_ne_one {I : Ideal R} : (I : FractionalIdeal R⁰ K) ≠ 1 ↔ I
   not_iff_not.mpr coeIdeal_eq_one
 #align fractional_ideal.coe_ideal_ne_one FractionalIdeal.coeIdeal_ne_one
 
+theorem num_eq_zero_iff [Nontrivial R] {I : FractionalIdeal R⁰ K} : I.num = 0 ↔ I = 0 :=
+   ⟨fun h ↦ zero_of_num_eq_bot zero_not_mem_nonZeroDivisors h,
+     fun h ↦ h ▸ num_zero_eq (IsFractionRing.injective R K)⟩
+
 end IsFractionRing
 
 section Quotient
@@ -375,10 +375,9 @@ is a field because `R` is a domain.
 -/
 
 
-open Classical
+open scoped Classical
 
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
-
 variable [Algebra R₁ K] [frac : IsFractionRing R₁ K]
 
 instance : Nontrivial (FractionalIdeal R₁⁰ K) :=
@@ -500,10 +499,8 @@ theorem div_one {I : FractionalIdeal R₁⁰ K} : I / 1 = I := by
 theorem eq_one_div_of_mul_eq_one_right (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) :
     J = 1 / I := by
   have hI : I ≠ 0 := ne_zero_of_mul_eq_one I J h
-  suffices h' : I * (1 / I) = 1
-  · exact
-      congr_arg Units.inv <|
-        @Units.ext _ _ (Units.mkOfMulEqOne _ _ h) (Units.mkOfMulEqOne _ _ h') rfl
+  suffices h' : I * (1 / I) = 1 from
+    congr_arg Units.inv <| @Units.ext _ _ (Units.mkOfMulEqOne _ _ h) (Units.mkOfMulEqOne _ _ h') rfl
   apply le_antisymm
   · apply mul_le.mpr _
     intro x hx y hy
@@ -543,7 +540,6 @@ end Quotient
 section Field
 
 variable {R₁ K L : Type*} [CommRing R₁] [Field K] [Field L]
-
 variable [Algebra R₁ K] [IsFractionRing R₁ K] [Algebra K L] [IsFractionRing K L]
 
 theorem eq_zero_or_one (I : FractionalIdeal K⁰ L) : I = 0 ∨ I = 1 := by
@@ -558,7 +554,7 @@ theorem eq_zero_or_one (I : FractionalIdeal K⁰ L) : I = 0 ∨ I = 1 := by
     rw [map_div₀, IsFractionRing.mk'_eq_div]
   · rintro ⟨x, rfl⟩
     obtain ⟨y, y_ne, y_mem⟩ := exists_ne_zero_mem_isInteger hI
-    rw [← div_mul_cancel x y_ne, RingHom.map_mul, ← Algebra.smul_def]
+    rw [← div_mul_cancel₀ x y_ne, RingHom.map_mul, ← Algebra.smul_def]
     exact smul_mem (M := L) I (x / y) y_mem
 #align fractional_ideal.eq_zero_or_one FractionalIdeal.eq_zero_or_one
 
@@ -569,13 +565,12 @@ theorem eq_zero_or_one_of_isField (hF : IsField R₁) (I : FractionalIdeal R₁�
 
 end Field
 
-section PrincipalIdealRing
+section PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
-
 variable [Algebra R₁ K] [IsFractionRing R₁ K]
 
-open Classical
+open scoped Classical
 
 variable (R₁)
 
@@ -646,6 +641,7 @@ theorem mem_spanSingleton_self (x : P) : x ∈ spanSingleton S x :=
   (mem_spanSingleton S).mpr ⟨1, one_smul _ _⟩
 #align fractional_ideal.mem_span_singleton_self FractionalIdeal.mem_spanSingleton_self
 
+variable (P) in
 /-- A version of `FractionalIdeal.den_mul_self_eq_num` in terms of fractional ideals. -/
 theorem den_mul_self_eq_num' (I : FractionalIdeal S P) :
     spanSingleton S (algebraMap R P I.den) * I = I.num := by
@@ -886,10 +882,16 @@ theorem eq_spanSingleton_mul {x : P} {I J : FractionalIdeal S P} :
   simp only [le_antisymm_iff, le_spanSingleton_mul_iff, spanSingleton_mul_le_iff]
 #align fractional_ideal.eq_span_singleton_mul FractionalIdeal.eq_spanSingleton_mul
 
-end PrincipalIdealRing
+theorem num_le (I : FractionalIdeal S P) :
+    (I.num : FractionalIdeal S P) ≤ I := by
+  rw [← I.den_mul_self_eq_num', spanSingleton_mul_le_iff]
+  intro _ h
+  rw [← Algebra.smul_def]
+  exact Submodule.smul_mem _ _ h
+
+end PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁]
-
 variable {K : Type*} [Field K] [Algebra R₁ K] [frac : IsFractionRing R₁ K]
 
 attribute [local instance] Classical.propDecidable

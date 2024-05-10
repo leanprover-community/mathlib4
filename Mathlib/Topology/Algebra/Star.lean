@@ -17,8 +17,6 @@ This file defines the `ContinuousStar` typeclass, along with instances on `Pi`, 
 `MulOpposite`, and `Units`.
 -/
 
-set_option autoImplicit true
-
 open Filter Topology
 
 /-- Basic hypothesis to talk about a topological space with a continuous `star` operator. -/
@@ -31,7 +29,7 @@ export ContinuousStar (continuous_star)
 
 section Continuity
 
-variable [TopologicalSpace R] [Star R] [ContinuousStar R]
+variable {α R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar R]
 
 theorem continuousOn_star {s : Set R} : ContinuousOn star s :=
   continuous_star.continuousOn
@@ -56,15 +54,17 @@ theorem Filter.Tendsto.star {f : α → R} {l : Filter α} {y : R} (h : Tendsto 
 
 variable [TopologicalSpace α] {f : α → R} {s : Set α} {x : α}
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.star (hf : Continuous f) : Continuous fun x => star (f x) :=
   continuous_star.comp hf
 #align continuous.star Continuous.star
 
+@[fun_prop]
 theorem ContinuousAt.star (hf : ContinuousAt f x) : ContinuousAt (fun x => star (f x)) x :=
   continuousAt_star.comp hf
 #align continuous_at.star ContinuousAt.star
 
+@[fun_prop]
 theorem ContinuousOn.star (hf : ContinuousOn f s) : ContinuousOn (fun x => star (f x)) s :=
   continuous_star.comp_continuousOn hf
 #align continuous_on.star ContinuousOn.star
@@ -83,6 +83,8 @@ def starContinuousMap : C(R, R) :=
 end Continuity
 
 section Instances
+
+variable {R S ι : Type*}
 
 instance [Star R] [Star S] [TopologicalSpace R] [TopologicalSpace S] [ContinuousStar R]
     [ContinuousStar S] : ContinuousStar (R × S) :=

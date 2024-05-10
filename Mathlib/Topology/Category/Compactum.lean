@@ -71,13 +71,14 @@ We also add wrappers around structures which already exist. Here are the main on
 
 -/
 
--- porting note: "Compactum" is already upper case
+-- Porting note: "Compactum" is already upper case
 set_option linter.uppercaseLean3 false
 universe u
 
 open CategoryTheory Filter Ultrafilter TopologicalSpace CategoryTheory.Limits FiniteInter
 
-open Classical Topology
+open scoped Classical
+open Topology
 
 local notation "β" => ofTypeMonad Ultrafilter
 
@@ -94,8 +95,8 @@ def forget : Compactum ⥤ Type* :=
   -- Porting note: deriving fails, adding manually. Note `CreatesLimits` now noncomputable
 #align Compactum.forget Compactum.forget
 
-instance : Faithful forget :=
-  show Faithful <| Monad.forget _ from inferInstance
+instance : forget.Faithful :=
+  show (Monad.forget _).Faithful from inferInstance
 
 noncomputable instance : CreatesLimits forget :=
   show CreatesLimits <| Monad.forget _ from inferInstance
@@ -270,7 +271,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   -- Finish
   apply claim4.finiteInter_mem T
   intro t ht
-  refine' finiteInterClosure.basic (@hT t ht)
+  exact finiteInterClosure.basic (@hT t ht)
 
 theorem isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
   rw [isClosed_iff]
@@ -440,11 +441,12 @@ def compactumToCompHaus : Compactum ⥤ CompHaus where
 namespace compactumToCompHaus
 
 /-- The functor `compactumToCompHaus` is full. -/
-def full : Full compactumToCompHaus.{u} where preimage X Y {f} := Compactum.homOfContinuous f.1 f.2
+instance full : compactumToCompHaus.{u}.Full where
+  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.2, rfl⟩
 #align Compactum_to_CompHaus.full compactumToCompHaus.full
 
 /-- The functor `compactumToCompHaus` is faithful. -/
-theorem faithful : Faithful compactumToCompHaus where
+instance faithful : compactumToCompHaus.Faithful where
   -- Porting note: this used to be obviously (though it consumed a bit of memory)
   map_injective := by
     intro _ _ _ _ h
@@ -472,16 +474,12 @@ def isoOfTopologicalSpace {D : CompHaus} :
 #align Compactum_to_CompHaus.iso_of_topological_space compactumToCompHaus.isoOfTopologicalSpace
 
 /-- The functor `compactumToCompHaus` is essentially surjective. -/
-theorem essSurj : EssSurj compactumToCompHaus :=
+instance essSurj : compactumToCompHaus.EssSurj :=
   { mem_essImage := fun X => ⟨Compactum.ofTopologicalSpace X, ⟨isoOfTopologicalSpace⟩⟩ }
 #align Compactum_to_CompHaus.ess_surj compactumToCompHaus.essSurj
 
 /-- The functor `compactumToCompHaus` is an equivalence of categories. -/
-noncomputable instance isEquivalence : IsEquivalence compactumToCompHaus := by
-  have := compactumToCompHaus.full
-  have := compactumToCompHaus.faithful
-  have := compactumToCompHaus.essSurj
-  apply Equivalence.ofFullyFaithfullyEssSurj _
+instance isEquivalence : compactumToCompHaus.IsEquivalence where
 #align Compactum_to_CompHaus.is_equivalence compactumToCompHaus.isEquivalence
 
 end compactumToCompHaus

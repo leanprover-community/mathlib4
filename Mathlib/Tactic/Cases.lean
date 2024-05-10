@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Lean.Elab.Tactic.Induction
-import Std.Tactic.OpenPrivate
-import Std.Data.List.Basic
+import Batteries.Tactic.OpenPrivate
+import Batteries.Data.List.Basic
 import Mathlib.Lean.Expr.Basic
 
 /-!
@@ -38,9 +38,15 @@ Prefer `cases` or `rcases` when possible, because these tactics promote structur
 namespace Mathlib.Tactic
 open Lean Meta Elab Elab.Tactic
 
-open private getAltNumFields in evalCases ElimApp.evalAlts.go in
+private def getAltNumFields (elimInfo : ElimInfo) (altName : Name) : TermElabM Nat := do
+  for altInfo in elimInfo.altsInfo do
+    if altInfo.name == altName then
+      return altInfo.numFields
+  throwError "unknown alternative name '{altName}'"
+
 def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg : Syntax)
-    (numEqs := 0) (numGeneralized := 0) (toClear : Array FVarId := #[]) :
+    (numEqs := 0) (generalized : Array FVarId := #[]) (toClear : Array FVarId := #[])
+    (toTag : Array (Ident × FVarId) := #[]) :
     TermElabM (Array MVarId) := do
   let mut names : List Syntax := withArg[1].getArgs |>.toList
   let mut subgoals := #[]
@@ -50,10 +56,15 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     names := names'
     let (fvars, g) ← g.introN numFields <| altVarNames.map (getNameOfIdent' ·[0])
     let some (g, subst) ← Cases.unifyEqs? numEqs g {} | pure ()
-    let (_, g) ← g.introNP numGeneralized
-    let g ← liftM <| toClear.foldlM (·.tryClear) g
-    for fvar in fvars, stx in altVarNames do
-      g.withContext <| (subst.apply <| .fvar fvar).addLocalVarInfoForBinderIdent ⟨stx⟩
+    let (introduced, g) ← g.introNP generalized.size
+    let subst := (generalized.zip introduced).foldl (init := subst) fun subst (a, b) =>
+      subst.insert a (.fvar b)
+    let g ← liftM $ toClear.foldlM (·.tryClear) g
+    g.withContext do
+      for (stx, fvar) in toTag do
+        Term.addLocalVarInfo stx (subst.get fvar)
+      for fvar in fvars, stx in altVarNames do
+        (subst.get fvar).addLocalVarInfoForBinderIdent ⟨stx⟩
     subgoals := subgoals.push g
   pure subgoals
 
@@ -62,7 +73,7 @@ elab (name := induction') "induction' " tgts:(Parser.Tactic.casesTarget,+)
     usingArg:((" using " ident)?)
     withArg:((" with" (ppSpace colGt binderIdent)+)?)
     genArg:((" generalizing" (ppSpace colGt ident)+)?) : tactic => do
-  let targets ← elabCasesTargets tgts.1.getSepArgs
+  let (targets, toTag) ← elabCasesTargets tgts.1.getSepArgs
   let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do
     let elimInfo ← getElimNameInfo usingArg targets (induction := true)
@@ -88,12 +99,12 @@ elab (name := induction') "induction' " tgts:(Parser.Tactic.casesTarget,+)
         ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos]!.mvarId! targetFVarIds
         g.assign result.elimApp
         let subgoals ← ElimApp.evalNames elimInfo result.alts withArg
-          (numGeneralized := fvarIds.size) (toClear := targetFVarIds)
+          (generalized := fvarIds) (toClear := targetFVarIds) (toTag := toTag)
         setGoals <| (subgoals ++ result.others).toList ++ gs
 
 elab (name := cases') "cases' " tgts:(Parser.Tactic.casesTarget,+) usingArg:((" using " ident)?)
   withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
-  let targets ← elabCasesTargets tgts.1.getSepArgs
+  let (targets, toTag) ← elabCasesTargets tgts.1.getSepArgs
   let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do
     let elimInfo ← getElimNameInfo usingArg targets (induction := false)
@@ -108,5 +119,5 @@ elab (name := cases') "cases' " tgts:(Parser.Tactic.casesTarget,+) usingArg:((" 
       ElimApp.setMotiveArg g motive.mvarId! targetsNew
       g.assign result.elimApp
       let subgoals ← ElimApp.evalNames elimInfo result.alts withArg
-         (numEqs := targets.size) (toClear := targetsNew)
+         (numEqs := targets.size) (toClear := targetsNew) (toTag := toTag)
       setGoals <| subgoals.toList ++ gs

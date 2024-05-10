@@ -86,7 +86,7 @@ example : Precoherent Stonean.{u} := inferInstance
 -- TODO: prove this for `Type*`
 open List in
 theorem effectiveEpiFamily_tfae
-    {α : Type} [Fintype α] {B : Stonean.{u}}
+    {α : Type} [Finite α] {B : Stonean.{u}}
     (X : α → Stonean.{u}) (π : (a : α) → (X a ⟶ B)) :
     TFAE
     [ EffectiveEpiFamily X π
@@ -122,13 +122,13 @@ theorem effectiveEpiFamily_tfae
     rw [Iso.inv_comp_eq]
     apply colimit.hom_ext
     rintro ⟨a⟩
-    simp only [Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
+    simp only [i, Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
       colimit.comp_coconePointUniqueUpToIso_hom_assoc]
     ext; rfl
   tfae_finish
 
 theorem effectiveEpiFamily_of_jointly_surjective
-    {α : Type} [Fintype α] {B : Stonean.{u}}
+    {α : Type} [Finite α] {B : Stonean.{u}}
     (X : α → Stonean.{u}) (π : (a : α) → (X a ⟶ B))
     (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b) :
     EffectiveEpiFamily X π :=
@@ -137,7 +137,7 @@ theorem effectiveEpiFamily_of_jointly_surjective
 open CompHaus Functor
 
 theorem _root_.CategoryTheory.EffectiveEpiFamily.toCompHaus
-    {α : Type} [Fintype α] {B : Stonean.{u}}
+    {α : Type} [Finite α] {B : Stonean.{u}}
     {X : α → Stonean.{u}} {π : (a : α) → (X a ⟶ B)} (H : EffectiveEpiFamily X π) :
     EffectiveEpiFamily (toCompHaus.obj <| X ·) (toCompHaus.map <| π ·) := by
   refine' ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => _)

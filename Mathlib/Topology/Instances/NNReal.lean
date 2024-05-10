@@ -86,6 +86,11 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 #align continuous_real_to_nnreal continuous_real_toNNReal
 
+/-- `Real.toNNReal` bundled as a continuous map for convenience. -/
+@[simps (config := .asFn)]
+noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
+  .mk Real.toNNReal continuous_real_toNNReal
+
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
   continuous_subtype_val
 #align nnreal.continuous_coe NNReal.continuous_coe
@@ -171,8 +176,8 @@ theorem hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 �
 @[norm_cast]
 theorem summable_coe {f : α → ℝ≥0} : (Summable fun a => (f a : ℝ)) ↔ Summable f := by
   constructor
-  exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
-  exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
+  · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
+  · exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
 #align nnreal.summable_coe NNReal.summable_coe
 
 theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
@@ -180,7 +185,7 @@ theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
   Iff.symm <| summable_coe (f := fun x => ⟨f x, hf x⟩)
 #align nnreal.summable_coe_of_nonneg NNReal.summable_mk
 
-open Classical
+open scoped Classical
 
 @[norm_cast]
 theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) :=
@@ -260,5 +265,34 @@ def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
       simpa [OrderBot.atBot_eq, pos_iff_ne_zero]
 #align nnreal.pow_order_iso NNReal.powOrderIso
+
+section Monotone
+
+/-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
+theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
+    (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
+  obtain ⟨B, hB⟩ := Real.exists_isLUB  (Set.range_nonempty f) h_bdd
+  exact ⟨B, tendsto_atTop_isLUB h_mon hB⟩
+
+/-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/
+theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddBelow (Set.range f))
+    (h_ant : Antitone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
+  obtain ⟨B, hB⟩ := Real.exists_isGLB (Set.range_nonempty f) h_bdd
+  exact ⟨B, tendsto_atTop_isGLB h_ant hB⟩
+
+/-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
+theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
+    ∃ r : ℝ≥0, Tendsto f atTop (𝓝 r) := by
+  have h_bdd_0 : (0 : ℝ) ∈ lowerBounds (Set.range fun n : ℕ => (f n : ℝ)) := by
+    rintro r ⟨n, hn⟩
+    simp_rw [← hn]
+    exact NNReal.coe_nonneg _
+  obtain ⟨L, hL⟩ := Real.tendsto_of_bddBelow_antitone ⟨0, h_bdd_0⟩ h_ant
+  have hL0 : 0 ≤ L :=
+    haveI h_glb : IsGLB (Set.range fun n => (f n : ℝ)) L := isGLB_of_tendsto_atTop h_ant hL
+    (le_isGLB_iff h_glb).mpr h_bdd_0
+  exact ⟨⟨L, hL0⟩, NNReal.tendsto_coe.mp hL⟩
+
+end Monotone
 
 end NNReal

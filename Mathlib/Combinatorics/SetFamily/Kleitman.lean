@@ -52,7 +52,7 @@ theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finse
   have hf₁ : ∀ j, j ∈ cons i s hi → f j ⊆ f' j ∧ 2 * (f' j).card =
       2 ^ Fintype.card α ∧ (f' j : Set (Finset α)).Intersecting := by
     rintro j hj
-    simp_rw [dif_pos hj, ← Fintype.card_finset]
+    simp_rw [f', dif_pos hj, ← Fintype.card_finset]
     exact Classical.choose_spec (hf j hj).exists_card_eq
   have hf₂ : ∀ j, j ∈ cons i s hi → IsUpperSet (f' j : Set (Finset α)) := by
     refine' fun j hj ↦ (hf₁ _ hj).2.2.isUpperSet' ((hf₁ _ hj).2.2.is_max_iff_card_eq.2 _)
@@ -64,7 +64,7 @@ theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finse
   refine' (card_mono <| @le_sup_sdiff _ _ _ <| f' i).trans ((card_union_le _ _).trans _)
   rw [union_sdiff_left, sdiff_eq_inter_compl]
   refine' le_of_mul_le_mul_left _ (pow_pos (zero_lt_two' ℕ) <| Fintype.card α + 1)
-  rw [pow_succ', mul_add, mul_assoc, mul_comm _ 2, mul_assoc]
+  rw [pow_succ, mul_add, mul_assoc, mul_comm _ 2, mul_assoc]
   refine' (add_le_add
       ((mul_le_mul_left <| pow_pos (zero_lt_two' ℕ) _).2
       (hf₁ _ <| mem_cons_self _ _).2.2.card_le) <|
@@ -80,7 +80,7 @@ theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finse
   refine' (add_le_add_left
     (ih _ (fun i hi ↦ (hf₁ _ <| subset_cons _ hi).2.2)
     ((card_le_card <| subset_cons _).trans hs)) _).trans _
-  rw [mul_tsub, two_mul, ← pow_succ,
+  rw [mul_tsub, two_mul, ← pow_succ',
     ← add_tsub_assoc_of_le (pow_le_pow_right' (one_le_two : (1 : ℕ) ≤ 2) tsub_le_self),
     tsub_add_eq_add_tsub hs, card_cons, add_tsub_add_eq_tsub_right]
 #align finset.card_bUnion_le_of_intersecting Finset.card_biUnion_le_of_intersecting

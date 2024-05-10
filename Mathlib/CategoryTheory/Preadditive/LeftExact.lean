@@ -97,7 +97,7 @@ def preservesEqualizerOfPreservesKernels [∀ {X Y} (f : X ⟶ Y), PreservesLimi
   exact
     IsLimit.ofIsoLimit
       (isLimitForkOfKernelFork ((IsLimit.postcomposeHomEquiv p _).symm iFc))
-      (Fork.ext (Iso.refl _) (by simp))
+      (Fork.ext (Iso.refl _) (by simp [p]))
 #align category_theory.functor.preserves_equalizer_of_preserves_kernels CategoryTheory.Functor.preservesEqualizerOfPreservesKernels
 
 /-- A functor between preadditive categories preserves all equalizers if it preserves all kernels.
@@ -186,7 +186,7 @@ def preservesCoequalizerOfPreservesCokernels
   exact
     IsColimit.ofIsoColimit
       (isColimitCoforkOfCokernelCofork ((IsColimit.precomposeHomEquiv p.symm _).symm iFc))
-      (Cofork.ext (Iso.refl _) (by simp))
+      (Cofork.ext (Iso.refl _) (by simp [p]))
 #align category_theory.functor.preserves_coequalizer_of_preserves_cokernels CategoryTheory.Functor.preservesCoequalizerOfPreservesCokernels
 
 /-- A functor between preadditive categories preserves all coequalizers if it preserves all kernels.

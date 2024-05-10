@@ -5,6 +5,7 @@ Authors: Damiano Testa, Yuyang Zhao
 -/
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Tactic.GCongr.Core
 
 #align_import algebra.order.ring.lemmas from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
 
@@ -200,18 +201,22 @@ instance MulPosReflectLT.to_contravariantClass_pos_mul_lt [MulPosReflectLT α] :
   ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => y * x) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
 #align mul_pos_reflect_lt.to_contravariant_class_pos_mul_lt MulPosReflectLT.to_contravariantClass_pos_mul_lt
 
+@[gcongr]
 theorem mul_le_mul_of_nonneg_left [PosMulMono α] (h : b ≤ c) (a0 : 0 ≤ a) : a * b ≤ a * c :=
   @CovariantClass.elim α≥0 α (fun x y => x * y) (· ≤ ·) _ ⟨a, a0⟩ _ _ h
 #align mul_le_mul_of_nonneg_left mul_le_mul_of_nonneg_left
 
+@[gcongr]
 theorem mul_le_mul_of_nonneg_right [MulPosMono α] (h : b ≤ c) (a0 : 0 ≤ a) : b * a ≤ c * a :=
   @CovariantClass.elim α≥0 α (fun x y => y * x) (· ≤ ·) _ ⟨a, a0⟩ _ _ h
 #align mul_le_mul_of_nonneg_right mul_le_mul_of_nonneg_right
 
+@[gcongr]
 theorem mul_lt_mul_of_pos_left [PosMulStrictMono α] (bc : b < c) (a0 : 0 < a) : a * b < a * c :=
   @CovariantClass.elim α>0 α (fun x y => x * y) (· < ·) _ ⟨a, a0⟩ _ _ bc
 #align mul_lt_mul_of_pos_left mul_lt_mul_of_pos_left
 
+@[gcongr]
 theorem mul_lt_mul_of_pos_right [MulPosStrictMono α] (bc : b < c) (a0 : 0 < a) : b * a < c * a :=
   @CovariantClass.elim α>0 α (fun x y => y * x) (· < ·) _ ⟨a, a0⟩ _ _ bc
 #align mul_lt_mul_of_pos_right mul_lt_mul_of_pos_right
@@ -463,6 +468,7 @@ theorem mul_le_mul_of_le_of_le [PosMulMono α] [MulPosMono α] (h₁ : a ≤ b) 
   (mul_le_mul_of_nonneg_left h₂ a0).trans <| mul_le_mul_of_nonneg_right h₁ d0
 #align mul_le_mul_of_le_of_le mul_le_mul_of_le_of_le
 
+@[gcongr]
 theorem mul_le_mul [PosMulMono α] [MulPosMono α] (h₁ : a ≤ b) (h₂ : c ≤ d) (c0 : 0 ≤ c)
     (b0 : 0 ≤ b) : a * c ≤ b * d :=
   (mul_le_mul_of_nonneg_right h₁ c0).trans <| mul_le_mul_of_nonneg_left h₂ b0

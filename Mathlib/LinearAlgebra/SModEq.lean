@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.RingTheory.Ideal.Quotient
 
 #align_import linear_algebra.smodeq from "leanprover-community/mathlib"@"146d3d1fa59c091fedaad8a4afa09d6802886d24"
@@ -18,23 +18,21 @@ open Submodule
 open Polynomial
 
 variable {R : Type*} [Ring R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M] (U U₁ U₂ : Submodule R M)
-
 variable {x x₁ x₂ y y₁ y₂ z z₁ z₂ : M}
-
 variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- A predicate saying two elements of a module are equivalent modulo a submodule. -/
 def SModEq (x y : M) : Prop :=
   (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y
 #align smodeq SModEq
 
--- mathport name: «expr ≡ [SMOD ]»
 notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
 
 variable {U U₁ U₂}
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 protected theorem SModEq.def :
     x ≡ y [SMOD U] ↔ (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y :=
   Iff.rfl
@@ -81,6 +79,9 @@ nonrec theorem symm (hxy : x ≡ y [SMOD U]) : y ≡ x [SMOD U] :=
 nonrec theorem trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z [SMOD U] :=
   hxy.trans hyz
 #align smodeq.trans SModEq.trans
+
+instance instTrans : Trans (SModEq U) (SModEq U) (SModEq U) where
+  trans := trans
 
 theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
   rw [SModEq.def] at hxy₁ hxy₂ ⊢

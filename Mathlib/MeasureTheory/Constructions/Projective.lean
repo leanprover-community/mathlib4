@@ -38,8 +38,7 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
 
 /-- A family of measures indexed by finite sets of `ι` is projective if, for finite sets `J ⊆ I`,
 the projection from `∀ i : I, α i` to `∀ i : J, α i` maps `P I` to `P J`. -/
-def IsProjectiveMeasureFamily [∀ i, MeasurableSpace (α i)]
-    (P : ∀ J : Finset ι, Measure (∀ j : J, α j)) : Prop :=
+def IsProjectiveMeasureFamily (P : ∀ J : Finset ι, Measure (∀ j : J, α j)) : Prop :=
   ∀ (I J : Finset ι) (hJI : J ⊆ I),
     P J = (P I).map (fun (x : ∀ i : I, α i) (j : J) ↦ x ⟨j, hJI j.2⟩)
 
@@ -93,8 +92,7 @@ lemma congr_cylinder (hP : IsProjectiveMeasureFamily P)
   let U := (fun f : ∀ i : (I ∪ J : Finset ι), α i
         ↦ fun j : I ↦ f ⟨j, Finset.mem_union_left J j.prop⟩) ⁻¹' S ∩
       (fun f ↦ fun j : J ↦ f ⟨j, Finset.mem_union_right I j.prop⟩) ⁻¹' T
-  suffices : P (I ∪ J) U = P I S ∧ P (I ∪ J) U = P J T
-  exact this.1.symm.trans this.2
+  suffices P (I ∪ J) U = P I S ∧ P (I ∪ J) U = P J T from this.1.symm.trans this.2
   constructor
   · have h_eq_union : cylinder I S = cylinder (I ∪ J) U := by
       rw [← inter_cylinder, h_eq, inter_self]

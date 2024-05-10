@@ -39,7 +39,7 @@ noncomputable def toPGame : Ordinal.{u} → PGame.{u}
       have := Ordinal.typein_lt_self x
       (typein (· < ·) x).toPGame,
       PEmpty.elim⟩
-termination_by toPGame x => x
+termination_by x => x
 #align ordinal.to_pgame Ordinal.toPGame
 
 @[nolint unusedHavesSuffices]
@@ -204,7 +204,7 @@ theorem toPGame_add : ∀ a b : Ordinal.{u}, a.toPGame + b.toPGame ≈ (a ♯ b)
         rwa [toPGame_lf_iff]
       · apply add_lf_add_left
         rwa [toPGame_lf_iff]
-termination_by toPGame_add a b => (a, b)
+termination_by a b => (a, b)
 #align ordinal.to_pgame_add Ordinal.toPGame_add
 
 @[simp]

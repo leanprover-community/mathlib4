@@ -13,7 +13,7 @@ import Mathlib.Tactic.Ring.RingNF
 # Implementation of floating-point numbers (experimental).
 -/
 
--- Porting note: TODO add docs and remove `@[nolint docBlame]`
+-- Porting note (#11215): TODO add docs and remove `@[nolint docBlame]`
 
 @[nolint docBlame]
 def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ
@@ -155,7 +155,7 @@ unsafe def ofPosRatDn (n : ℕ+) (d : ℕ+) : Float × Bool := by
   let r := mkRat n₂ d₂
   let m := r.floor
   refine' (Float.finite Bool.false e₃ (Int.toNat m) _, r.den = 1)
-  · exact lcProof
+  exact lcProof
 #align fp.of_pos_rat_dn FP.ofPosRatDn
 
 -- Porting note: remove this line when you dropped 'lcProof'

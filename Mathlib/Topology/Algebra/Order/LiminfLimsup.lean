@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.Support
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.Topology.Order.Basic
+import Mathlib.Data.Set.Lattice
+import Mathlib.Topology.Order.Monotone
 
 #align_import topology.algebra.order.liminf_limsup from "leanprover-community/mathlib"@"ce64cd319bb6b3e82f31c2d38e79080d377be451"
 
@@ -183,7 +184,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem limsSup_nhds (a : α) : limsSup (𝓝 a) = a :=
   csInf_eq_of_forall_ge_of_forall_gt_exists_lt (isBounded_le_nhds a)
-    (fun a' (h : { n : α | n ≤ a' } ∈ 𝓝 a) ↦ show a ≤ a' from @mem_of_mem_nhds α _ a _ h)
+    (fun a' (h : { n : α | n ≤ a' } ∈ 𝓝 a) ↦ show a ≤ a' from @mem_of_mem_nhds α a _ _ h)
     fun b (hba : a < b) ↦
     show ∃ c, { n : α | n ≤ c } ∈ 𝓝 a ∧ c < b from
       match dense_or_discrete a b with
@@ -361,7 +362,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
         have : (Set.Ioo c F.limsSup).Nonempty := ⟨x, ⟨hx, this⟩⟩
         simp only [hc, Set.not_nonempty_empty] at this
       apply liminf_le_of_frequently_le _ (bdd_above.isBoundedUnder f_decr)
-      exact (B.mono fun x hx ↦ f_decr hx)
+      exact B.mono fun x hx ↦ f_decr hx
     push_neg at h'
     by_contra! H
     have not_bot : ¬ IsBot F.limsSup := fun maybe_bot ↦
@@ -573,7 +574,7 @@ theorem limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring
   simp only [Set.mem_setOf_eq]
   rw [(_ : (fun n ↦ ∑ k in Finset.range n, (s (k + 1)).indicator (1 : α → R) ω) = fun n ↦
     ↑(∑ k in Finset.range n, (s (k + 1)).indicator (1 : α → ℕ) ω))]
-  · exact tendsto_nat_cast_atTop_iff.symm
+  · exact tendsto_natCast_atTop_iff.symm
   · ext n
     simp only [Set.indicator, Pi.one_apply, Finset.sum_boole, Nat.cast_id]
 #align limsup_eq_tendsto_sum_indicator_at_top limsup_eq_tendsto_sum_indicator_atTop

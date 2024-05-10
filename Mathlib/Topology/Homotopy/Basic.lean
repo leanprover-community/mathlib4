@@ -3,7 +3,7 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Algebra.Order.ProjIcc
+import Mathlib.Topology.Order.ProjIcc
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.UnitInterval
@@ -54,15 +54,11 @@ and for `ContinuousMap.homotopic` and `ContinuousMap.homotopic_rel`, we also def
 - [HOL-Analysis formalisation](https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Homotopy.html)
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 universe u v w x
 
-variable {F : Type*} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
-
+variable {F : Type*} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x} {ι : Type*}
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
 open unitInterval
@@ -89,7 +85,8 @@ section
 
 You should extend this class when you extend `ContinuousMap.Homotopy`. -/
 class HomotopyLike {X Y : outParam (Type*)} [TopologicalSpace X] [TopologicalSpace Y]
-    (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) extends ContinuousMapClass F (I × X) Y where
+    (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) [FunLike F (I × X) Y]
+    extends ContinuousMapClass F (I × X) Y : Prop where
   /-- value of the homotopy at 0 -/
   map_zero_left (f : F) : ∀ x, f (0, x) = f₀ x
   /-- value of the homotopy at 1 -/
@@ -104,21 +101,17 @@ section
 
 variable {f₀ f₁ : C(X, Y)}
 
-instance : HomotopyLike (Homotopy f₀ f₁) f₀ f₁ where
+instance instFunLike : FunLike (Homotopy f₀ f₁) (I × X) Y where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+instance : HomotopyLike (Homotopy f₀ f₁) f₀ f₁ where
   map_continuous f := f.continuous_toFun
   map_zero_left f := f.map_zero_left
   map_one_left f := f.map_one_left
-
-/- porting note: probably not needed anymore
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
-directly. -/
-instance : CoeFun (Homotopy f₀ f₁) fun _ => I × X → Y :=
-  DFunLike.hasCoeToFun -/
 
 @[ext]
 theorem ext {F G : Homotopy f₀ f₁} (h : ∀ x, F x = G x) : F = G :=
@@ -248,8 +241,8 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
         (G.continuous.comp (by continuity)).continuousOn _
     rintro x hx
     norm_num [hx]
-  map_zero_left x := by norm_num
-  map_one_left x := by norm_num
+  map_zero_left x := by set_option tactic.skipAssignedInstances false in norm_num
+  map_one_left x := by set_option tactic.skipAssignedInstances false in norm_num
 #align continuous_map.homotopy.trans ContinuousMap.Homotopy.trans
 
 theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) (x : I × X) :
@@ -410,7 +403,7 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 `P : C(X, Y) → Prop`
 -/
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
-  -- porting note: todo: use `toHomotopy.curry t`
+  -- Porting note (#11215): TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
   prop' : ∀ t, P ⟨fun x => toFun (t, x),
     Continuous.comp continuous_toFun (continuous_const.prod_mk continuous_id')⟩
@@ -422,10 +415,12 @@ section
 
 variable {f₀ f₁ : C(X, Y)} {P : C(X, Y) → Prop}
 
-instance : HomotopyLike (HomotopyWith f₀ f₁ P) f₀ f₁ where
+instance instFunLike : FunLike (HomotopyWith f₀ f₁ P) (I × X) Y where
   coe F := ⇑F.toHomotopy
   coe_injective'
   | ⟨⟨⟨_, _⟩, _, _⟩, _⟩, ⟨⟨⟨_, _⟩, _, _⟩, _⟩, rfl => rfl
+
+instance : HomotopyLike (HomotopyWith f₀ f₁ P) f₀ f₁ where
   map_continuous F := F.continuous_toFun
   map_zero_left F := F.map_zero_left
   map_one_left F := F.map_one_left
@@ -461,7 +456,7 @@ theorem apply_one (F : HomotopyWith f₀ f₁ P) (x : X) : F (1, x) = f₁ x :=
   F.map_one_left x
 #align continuous_map.homotopy_with.apply_one ContinuousMap.HomotopyWith.apply_one
 
--- porting note: removed `simp`
+-- Porting note: removed `simp`
 theorem coe_toContinuousMap (F : HomotopyWith f₀ f₁ P) : ⇑F.toContinuousMap = F :=
   rfl
 #align continuous_map.homotopy_with.coe_to_continuous_map ContinuousMap.HomotopyWith.coe_toContinuousMap
@@ -563,7 +558,7 @@ namespace HomotopicWith
 
 variable {P : C(X, Y) → Prop}
 
--- porting note: removed @[refl]
+-- Porting note: removed @[refl]
 theorem refl (f : C(X, Y)) (hf : P f) : HomotopicWith f f P :=
   ⟨HomotopyWith.refl f hf⟩
 #align continuous_map.homotopic_with.refl ContinuousMap.HomotopicWith.refl
@@ -699,7 +694,7 @@ variable {S : Set X}
 protected theorem homotopic {f₀ f₁ : C(X, Y)} (h : HomotopicRel f₀ f₁ S) : Homotopic f₀ f₁ :=
   h.map fun F ↦ F.1
 
--- porting note: removed @[refl]
+-- Porting note: removed @[refl]
 theorem refl (f : C(X, Y)) : HomotopicRel f f S :=
   ⟨HomotopyRel.refl f S⟩
 #align continuous_map.homotopic_rel.refl ContinuousMap.HomotopicRel.refl

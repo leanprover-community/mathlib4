@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Logic.Embedding.Set
+import Mathlib.Logic.Equiv.Set
 
 #align_import order.rel_iso.set from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
 
@@ -27,16 +28,16 @@ namespace RelHomClass
 
 variable {F : Type*}
 
-theorem map_inf [SemilatticeInf α] [LinearOrder β]
-    [RelHomClass F ((· < ·) : β → β → Prop) ((· < ·) : α → α → Prop)] (a : F) (m n : β) :
+theorem map_inf [SemilatticeInf α] [LinearOrder β] [FunLike F β α]
+    [RelHomClass F (· < ·) (· < ·)] (a : F) (m n : β) :
     a (m ⊓ n) = a m ⊓ a n :=
   (StrictMono.monotone fun _ _ => map_rel a).map_inf m n
 #align rel_hom_class.map_inf RelHomClass.map_inf
 
-theorem map_sup [SemilatticeSup α] [LinearOrder β]
-    [RelHomClass F ((· > ·) : β → β → Prop) ((· > ·) : α → α → Prop)] (a : F) (m n : β) :
+theorem map_sup [SemilatticeSup α] [LinearOrder β] [FunLike F β α]
+    [RelHomClass F (· > ·) (· > ·)] (a : F) (m n : β) :
     a (m ⊔ n) = a m ⊔ a n :=
-  @map_inf αᵒᵈ βᵒᵈ _ _ _ _ _ _ _
+  map_inf (α := αᵒᵈ) (β := βᵒᵈ) _ _ _
 #align rel_hom_class.map_sup RelHomClass.map_sup
 
 end RelHomClass
@@ -99,3 +100,15 @@ theorem RelEmbedding.codRestrict_apply (p) (f : r ↪r s) (H a) :
     RelEmbedding.codRestrict p f H a = ⟨f a, H a⟩ :=
   rfl
 #align rel_embedding.cod_restrict_apply RelEmbedding.codRestrict_apply
+
+section image
+
+variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
+
+theorem RelIso.image_eq_preimage_symm (e : r ≃r s) (t : Set α) : e '' t = e.symm ⁻¹' t :=
+  e.toEquiv.image_eq_preimage t
+
+theorem RelIso.preimage_eq_image_symm (e : r ≃r s) (t : Set β) : e ⁻¹' t = e.symm '' t := by
+  rw [e.symm.image_eq_preimage_symm]; rfl
+
+end image
