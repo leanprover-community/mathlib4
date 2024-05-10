@@ -214,9 +214,7 @@ jobs:
             lake exe cache clean!
             rm -rf .lake/build/lib/Mathlib
             lake exe cache get || (sleep 1; lake exe cache get)
-            # We pipe the output of `lake build` to a file,
-            # and if we find " Building Mathlib" in that file we kill `lake build`, and error.
-            lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building Mathlib" && kill $! ))
+            lake build --no-build
           fi
 
       - name: find `#`-commands

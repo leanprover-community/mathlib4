@@ -970,6 +970,10 @@ theorem eqOn_comp_right_iff : s.EqOn (g₁ ∘ f) (g₂ ∘ f) ↔ (f '' s).EqOn
   (s.surjOn_image f).cancel_right <| s.mapsTo_image f
 #align set.eq_on_comp_right_iff Set.eqOn_comp_right_iff
 
+theorem SurjOn.forall {p : β → Prop} (hf : s.SurjOn f t) (hf' : s.MapsTo f t) :
+    (∀ y ∈ t, p y) ↔ (∀ x ∈ s, p (f x)) :=
+  ⟨fun H x hx ↦ H (f x) (hf' hx), fun H _y hy ↦ let ⟨x, hx, hxy⟩ := hf hy; hxy ▸ H x hx⟩
+
 end surjOn
 
 /-! ### Bijectivity -/

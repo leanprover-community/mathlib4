@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Monoidal.Category
-import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Products.Basic
 
 #align_import category_theory.monoidal.functor from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
@@ -522,11 +522,22 @@ theorem prod'_toLaxMonoidalFunctor :
 
 end MonoidalFunctor
 
+section
+
+-- TODO: The definitions below would be slightly better phrased if, in addition to
+-- `MonoidalFunctor` (which extends `Functor`), we had a data valued type class
+-- `Functor.Monoidal` (resp. `Functor.LaxMonoidal`) so that the definitions below
+-- could be phrased in terms of `F : C ⥤ D`, `G : D ⥤ D`, `h : F ⊣ G` and `[F.Monoidal]`.
+-- Then, in the case of an equivalence (see `monoidalInverse`), we could just take as
+-- input an equivalence of categories `e : C ≌ D` and the data `[e.functor.Monoidal]`.
+
+variable (F : MonoidalFunctor C D) {G : D ⥤ C} (h : F.toFunctor ⊣ G)
+
 /-- If we have a right adjoint functor `G` to a monoidal functor `F`, then `G` has a lax monoidal
 structure as well.
 -/
 @[simp]
-noncomputable def monoidalAdjoint (F : MonoidalFunctor C D) {G : D ⥤ C} (h : F.toFunctor ⊣ G) :
+noncomputable def monoidalAdjoint :
     LaxMonoidalFunctor D C where
   toFunctor := G
   ε := h.homEquiv _ _ (inv F.ε)
@@ -580,18 +591,23 @@ noncomputable def monoidalAdjoint (F : MonoidalFunctor C D) {G : D ⥤ C} (h : F
     simp
 #align category_theory.monoidal_adjoint CategoryTheory.monoidalAdjoint
 
+instance [F.IsEquivalence] : IsIso (monoidalAdjoint F h).ε := by
+  dsimp
+  rw [Adjunction.homEquiv_unit]
+  infer_instance
+
+instance (X Y : D) [F.IsEquivalence] : IsIso ((monoidalAdjoint F h).μ X Y) := by
+  dsimp
+  rw [Adjunction.homEquiv_unit]
+  infer_instance
+
 /-- If a monoidal functor `F` is an equivalence of categories then its inverse is also monoidal. -/
 @[simps]
-noncomputable def monoidalInverse (F : MonoidalFunctor C D) [F.IsEquivalence] :
-    MonoidalFunctor D C
-    where
-  toLaxMonoidalFunctor := monoidalAdjoint F (asEquivalence _).toAdjunction
-  ε_isIso := by
-    dsimp [Equivalence.toAdjunction]
-    infer_instance
-  μ_isIso X Y := by
-    dsimp [Equivalence.toAdjunction]
-    infer_instance
+noncomputable def monoidalInverse [F.IsEquivalence] :
+    MonoidalFunctor D C where
+  toLaxMonoidalFunctor := monoidalAdjoint F h
 #align category_theory.monoidal_inverse CategoryTheory.monoidalInverse
+
+end
 
 end CategoryTheory

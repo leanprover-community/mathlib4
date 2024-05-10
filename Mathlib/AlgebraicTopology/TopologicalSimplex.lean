@@ -55,10 +55,7 @@ def toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) : y.toTopObj
     · apply Set.pairwiseDisjoint_filter⟩
 #align simplex_category.to_Top_map SimplexCategory.toTopMap
 
--- Adaptation note: nightly-2024-04-23
--- The simpNF linter now times out on this lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/12227
-@[simp, nolint simpNF]
+@[simp]
 theorem coe_toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) (i : y) :
     toTopMap f g i = ∑ j in Finset.univ.filter (f · = i), g j :=
   rfl
