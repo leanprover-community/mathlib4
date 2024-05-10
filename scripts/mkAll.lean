@@ -46,15 +46,16 @@ def getAll (git : Bool) (ml : String) : IO String := do
 open Lake in
 /-- `getLeanLibs` returns the array of names (as an `Array` of `String`s) of all the libraries
 on which the current project depends.
-If the package is `mathlib`, then it replaces the library `Cache` by `Mathlib/Tactic`. -/
+If the package is `mathlib`, then it excludes the libraries `Cache` and `LongestPole` and it
+includes `Mathlib/Tactic`. -/
 def getLeanLibs : IO (Array String) := do
   let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
-  let config ← MonadError.runEIO <| mkLoadConfig.{0} { elanInstall?, leanInstall?, lakeInstall? }
-  let ws ← MonadError.runEIO <| (loadWorkspace config).run (.eio .normal)
+  let config ← MonadError.runEIO <| mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
+  let ws ← MonadError.runEIO <| (MainM.runLogIO (loadWorkspace config)).toEIO
   let package := ws.root
   let libs := (package.leanLibs.map (·.name)).map (·.toString)
-  return if package.name == "mathlib" then
-    libs.erase "Cache" |>.push ("Mathlib".push pathSeparator ++ "Tactic")
+  return if package.name == `mathlib then
+    libs.erase "Cache" |>.erase "LongestPole" |>.push ("Mathlib".push pathSeparator ++ "Tactic")
   else
     libs
 
