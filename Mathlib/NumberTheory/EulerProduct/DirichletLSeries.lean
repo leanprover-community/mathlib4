@@ -16,11 +16,12 @@ the Euler Product formula for the Riemann ζ function
 $$\prod_p \frac{1}{1 - p^{-s}}
    = \lim_{n \to \infty} \prod_{p < n} \frac{1}{1 - p^{-s}} = \zeta(s)$$
 for $s$ with real part $> 1$ ($p$ runs through the primes).
-The formalized statement is the second equality above, since infinite products are not yet
-available in Mathlib.
+This statement is the second equality above. There are versions `riemannZeta_eulerProduct_hasProd`
+and `riemannZeta_eulerProduct_tprod` in terms of `HasProd` and `tprod`, respectively.
 
-The second result is `dirichletLSeries_eulerProduct`, which is the analogous statement
-for Dirichlet L-functions.
+The second result is `dirichletLSeries_eulerProduct` (with variants
+`dirichletLSeries_eulerProduct_hasProd` and `dirichletLSeries_eulerProduct_tprod`),
+which is the analogous statement for Dirichlet L-series.
 -/
 
 open Complex
