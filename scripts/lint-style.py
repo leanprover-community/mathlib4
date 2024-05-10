@@ -68,15 +68,14 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
     for exline in f:
         filename, _, _, _, _, errno, *extra = exline.split()
         path = ROOT_DIR / filename
-        if errno == "ERR_MOD":
-            exceptions += [(Error.ERR_MOD, path, None)]
-        elif errno == "ERR_LIN":
-            exceptions += [(Error.ERR_LIN, path, None)]
-        elif errno == "ERR_NUM_LIN":
-            exceptions += [(Error.ERR_NUM_LIN, path, extra[1])]
-        else:
+        err = None
+        try:
+            err = Error[errno]
+        except KeyError:
             print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
             sys.exit(1)
+        extras = extra[1] if err == Error.ERR_NUM_LIN else None
+        exceptions += [(err, path, extras)]
 
 new_exceptions = False
 
