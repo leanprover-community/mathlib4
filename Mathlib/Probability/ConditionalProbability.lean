@@ -92,7 +92,8 @@ theorem cond_isProbabilityMeasure_of_finite (hcs : μ s ≠ 0) (hs : μ s ≠ �
     IsProbabilityMeasure μ[|s] :=
   ⟨by
     unfold ProbabilityTheory.cond
-    simp only [Measure.coe_smul, Pi.smul_apply, Measure.restrict_apply_univ, smul_eq_mul]
+    simp only [Measure.coe_smul, Pi.smul_apply, MeasurableSet.univ, Measure.restrict_apply,
+      Set.univ_inter, smul_eq_mul]
     exact ENNReal.inv_mul_cancel hcs hs⟩
 
 /-- The conditional probability measure of any finite measure on any set of positive measure
@@ -103,8 +104,8 @@ theorem cond_isProbabilityMeasure [IsFiniteMeasure μ] (hcs : μ s ≠ 0) :
 
 instance cond_isFiniteMeasure : IsFiniteMeasure μ[|s] := by
   constructor
-  simp only [Measure.smul_apply, Measure.restrict_apply_univ, smul_eq_mul, ProbabilityTheory.cond,
-    ← ENNReal.div_eq_inv_mul]
+  simp only [Measure.coe_smul, Pi.smul_apply, MeasurableSet.univ, Measure.restrict_apply,
+    Set.univ_inter, smul_eq_mul, ProbabilityTheory.cond, ← ENNReal.div_eq_inv_mul]
   exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
 
 theorem cond_toMeasurable_eq :
