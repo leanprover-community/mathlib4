@@ -113,13 +113,22 @@ def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition w
     rw [this, Multiset.toFinset_sum_count_eq]
     exact s.2
 
-lemma ofSym_map {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ] (e : σ ≃ τ) (s : Sym σ n) :
+variable {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ]
+
+lemma ofSym_map (e : σ ≃ τ) (s : Sym σ n) :
     Nat.Partition.ofSym (s.map e) = Nat.Partition.ofSym s := by
   simp only [ofSym, Sym.val_eq_coe, Sym.coe_map, toFinset_val, mk.injEq]
   rw [Multiset.dedup_map_of_injective e.injective]
   simp only [map_map, Function.comp_apply]
   congr; funext i
   rw [← Multiset.count_map_eq_count' e _ e.injective]
+
+def ofSym_shape_equiv (μ : Partition n) (e : σ ≃ τ) :
+    {x : Sym σ n // Nat.Partition.ofSym x = μ} ≃ {x : Sym τ n // Nat.Partition.ofSym x = μ} where
+  toFun := fun x => ⟨Sym.equivCongr e x, by simp [ofSym_map, x.2]⟩
+  invFun := fun x => ⟨Sym.equivCongr e.symm x, by simp [ofSym_map, x.2]⟩
+  left_inv := by intro x; simp
+  right_inv := by intro x; simp
 
 /-- The partition of exactly one part. -/
 def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
@@ -144,6 +153,15 @@ instance UniquePartitionZero : Unique (Partition 0) where
 
 instance UniquePartitionOne : Unique (Partition 1) where
   uniq _ := Partition.ext _ _ <| by simp
+
+lemma ofSym_one (s : Sym σ 1) : Nat.Partition.ofSym s = Nat.Partition.indiscrete 1 := by
+  ext; simp
+
+def ofSym_equiv_onePart (σ : Type*) [DecidableEq σ] : σ ≃ { a : Sym σ 1 // Nat.Partition.ofSym a = Nat.Partition.indiscrete 1 } where
+  toFun := fun a => ⟨Sym.oneEquiv a, by ext; simp⟩
+  invFun := fun a => Sym.oneEquiv.symm a.1
+  left_inv := by intro a; simp only [Sym.oneEquiv_apply]; rfl
+  right_inv := by intro a; simp only [Equiv.apply_symm_apply, Subtype.coe_eta]
 
 /-- The number of times a positive integer `i` appears in the partition `ofSums n l hl` is the same
 as the number of times it appears in the multiset `l`.
