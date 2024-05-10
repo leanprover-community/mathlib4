@@ -3,7 +3,6 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Tactic.Basic
 import Mathlib.Control.Traversable.Lemmas
 
 #align_import control.traversable.derive from "leanprover-community/mathlib"@"b01d6eb9d0a308807af54319b264d0994b91774b"
@@ -86,7 +85,7 @@ This is convenient to make a definition with equation lemmas. -/
 def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (motive : Expr)
     (indices : List Expr) (val : Expr)
     (rhss : (ctor : Name) → (fields : List FVarId) → TermElabM Expr) : TermElabM Expr := do
-  let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxName (n?.getD type ++ "match") 1)
+  let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxName (.mkStr (n?.getD type) "match") 1)
   let matchType ← generalizeTelescope (indices.concat val).toArray fun iargs =>
     mkForallFVars iargs (motive.beta iargs)
   let iinfo ← getConstInfoInduct type
@@ -159,8 +158,8 @@ def deriveFunctor (m : MVarId) : TermElabM Unit := do
   let d ← getConstInfo n
   let [m] ← run m <| evalTactic (← `(tactic| refine { map := @(?_) })) | failure
   let t ← m.getType >>= instantiateMVars
-  let n' := n ++ "map"
-  withDeclName n' <| withAuxDecl "map" t n' fun ad => do
+  let n' := .mkStr n "map"
+  withDeclName n' <| withAuxDecl (.mkSimple "map") t n' fun ad => do
     let m' := (← mkFreshExprSyntheticOpaqueMVar t).mvarId!
     mkMap n m'
     let e ← instantiateMVars (mkMVar m')
@@ -179,7 +178,8 @@ def deriveFunctor (m : MVarId) : TermElabM Unit := do
                     stx := ← `(attr| specialize) }] }
           declName := n'
           type := t'
-          value := e' }] {}
+          value := e'
+          termination := .none }] {}
   m.assign (mkAppN (mkConst n' (levels.map Level.param)) vars.toArray)
 
 /-- Similar to `mkInstanceName`, but for a `Expr` type. -/
@@ -244,7 +244,8 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
                     stx := ← `(attr| instance) }] }
           declName := instN
           type := tgt
-          value := val }] {}
+          value := val
+          termination := .none }] {}
 
 /-- Make the new deriving handler depends on other deriving handlers. -/
 def higherOrderDeriveHandler (cls : Name) (tac : MVarId → TermElabM Unit)
@@ -284,7 +285,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
   xs.forM fun ⟨mim, _, _⟩ =>
     mim.withContext do
       if let (some (_, mim), _) ←
-          simpGoal mim (← rules [(``Functor.map_id, false)] [n ++ "map"] true) then
+          simpGoal mim (← rules [(``Functor.map_id, false)] [.mkStr n "map"] true) then
         mim.refl
   let (#[_, _, _, _, _, x], mcm) ← mcm.introN 6 | failure
   let (some mcm, _) ← dsimpGoal mcm (← rules [] [``Functor.map] false) | failure
@@ -292,7 +293,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
   xs.forM fun ⟨mcm, _, _⟩ =>
     mcm.withContext do
       if let (some (_, mcm), _) ←
-          simpGoal mcm (← rules [(``Functor.map_comp_map, true)] [n ++ "map"] true) then
+          simpGoal mcm (← rules [(``Functor.map_comp_map, true)] [.mkStr n "map"] true) then
         mcm.refl
 
 /-- The deriving handler for `LawfulFunctor`. -/
@@ -398,8 +399,8 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
   let d ← getConstInfo n
   let [m] ← run m <| evalTactic (← `(tactic| refine { traverse := @(?_) })) | failure
   let t ← m.getType >>= instantiateMVars
-  let n' := n ++ "traverse"
-  withDeclName n' <| withAuxDecl "traverse" t n' fun ad => do
+  let n' := .mkStr n "traverse"
+  withDeclName n' <| withAuxDecl (.mkSimple "traverse") t n' fun ad => do
     let m' := (← mkFreshExprSyntheticOpaqueMVar t).mvarId!
     mkTraverse n m'
     let e ← instantiateMVars (mkMVar m')
@@ -415,7 +416,8 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
               visibility := .protected }
           declName := n'
           type := t'
-          value := e' }] {}
+          value := e'
+          termination := .none }] {}
   m.assign (mkAppN (mkConst n' (levels.map Level.param)) vars.toArray)
 
 /-- The deriving handler for `Traversable`. -/
@@ -425,14 +427,15 @@ def traversableDeriveHandler : DerivingHandlerNoArgs :=
 initialize registerDerivingHandler ``Traversable traversableDeriveHandler
 
 /-- Simplify the goal `m` using `functor_norm`. -/
-def simpFunctorGoal (m : MVarId) (s : Simp.Context) (discharge? : Option Simp.Discharge := none)
+def simpFunctorGoal (m : MVarId) (s : Simp.Context) (simprocs : Simp.SimprocsArray := {})
+    (discharge? : Option Simp.Discharge := none)
     (simplifyTarget : Bool := true) (fvarIdsToSimp : Array FVarId := #[])
-    (usedSimps : Simp.UsedSimps := {}) :
-    MetaM (Option (Array FVarId × MVarId) × Simp.UsedSimps) := do
+    (stats : Simp.Stats := {}) :
+    MetaM (Option (Array FVarId × MVarId) × Simp.Stats) := do
   let some e ← getSimpExtension? `functor_norm | failure
   let s' ← e.getTheorems
-  simpGoal m { s with simpTheorems := s.simpTheorems.push s' } discharge? simplifyTarget
-    fvarIdsToSimp usedSimps
+  simpGoal m { s with simpTheorems := s.simpTheorems.push s' } simprocs discharge? simplifyTarget
+    fvarIdsToSimp stats
 /--
 Run the following tactic:
 ```lean
@@ -469,12 +472,12 @@ def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
   let .app (.app (.const ``LawfulTraversable _) F) _ ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
   let [mit, mct, mtmi, mn] ← m.applyConst ``LawfulTraversable.mk | failure
-  let defEqns : MetaM Simp.Context := rules [] [n ++ "map", n ++ "traverse"] true
+  let defEqns : MetaM Simp.Context := rules [] [.mkStr n "map", .mkStr n "traverse"] true
   traversableLawStarter mit n defEqns fun _ _ m => m.refl
   traversableLawStarter mct n defEqns fun _ _ m => do
-    if let (some (_, m), _) ←
-        simpFunctorGoal m (← rules [] [n ++ "map", n ++ "traverse", ``Function.comp] true) then
-    m.refl
+    if let (some (_, m), _) ← simpFunctorGoal m
+        (← rules [] [.mkStr n "map", .mkStr n "traverse", ``Function.comp] true) then
+      m.refl
   traversableLawStarter mtmi n defEqns fun _ _ m => do
     if let (some (_, m), _) ←
         simpGoal m (← rules [(``Traversable.traverse_eq_map_id', false)] [] false) then

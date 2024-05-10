@@ -3,9 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Complex.Module
-import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Polynomial.Chebyshev
 
 #align_import analysis.special_functions.trigonometric.chebyshev from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
@@ -77,7 +77,7 @@ theorem T_complex_cos : ∀ n, (T ℂ n).eval (cos θ) = cos (n * θ)
   | n + 2 => by
     -- Porting note: partially rewrote proof for lean4 numerals.
     have : (2 : ℂ[X]) = (2 : ℕ) := by norm_num
-    simp only [this, eval_X, eval_one, T_add_two, eval_sub, eval_mul, eval_nat_cast]
+    simp only [this, eval_X, eval_one, T_add_two, eval_sub, eval_mul, eval_natCast]
     simp only [Nat.cast_ofNat, Nat.cast_add]
     rw [T_complex_cos (n + 1), T_complex_cos n]
     simp only [Nat.cast_add, Nat.cast_one, add_mul, cos_add, one_mul, mul_assoc, sin_two_mul,
@@ -114,14 +114,14 @@ variable (θ : ℝ) (n : ℕ)
 /-- The `n`-th Chebyshev polynomial of the first kind evaluates on `cos θ` to the
 value `cos (n * θ)`. -/
 @[simp]
-theorem T_real_cos : (T ℝ n).eval (cos θ) = cos (n * θ) := by exact_mod_cast T_complex_cos θ n
+theorem T_real_cos : (T ℝ n).eval (cos θ) = cos (n * θ) := mod_cast T_complex_cos θ n
 #align polynomial.chebyshev.T_real_cos Polynomial.Chebyshev.T_real_cos
 
 /-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cos θ` to the
 value `sin ((n + 1) * θ) / sin θ`. -/
 @[simp]
-theorem U_real_cos : (U ℝ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) := by
-  exact_mod_cast U_complex_cos θ n
+theorem U_real_cos : (U ℝ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) :=
+  mod_cast U_complex_cos θ n
 #align polynomial.chebyshev.U_real_cos Polynomial.Chebyshev.U_real_cos
 
 end Real

@@ -195,5 +195,5 @@ theorem Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
     (Equiv.Perm.card_fixedPoints_modEq (p := 2) (n := 1) (complexInvo_sq k))
   contrapose key
   rw [Set.not_nonempty_iff_eq_empty] at key
-  simp_rw [key, Fintype.card_of_isEmpty, card_fixedPoints_eq_one]
+  simp_rw [key, Fintype.card_eq_zero, card_fixedPoints_eq_one]
   decide

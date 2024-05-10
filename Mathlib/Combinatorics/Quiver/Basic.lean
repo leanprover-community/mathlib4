@@ -17,15 +17,12 @@ is a very permissive notion of directed graph.
 
 ## Implementation notes
 
-Currently `Quiver` is defined with `arrow : V → V → Sort v`.
+Currently `Quiver` is defined with `Hom : V → V → Sort v`.
 This is different from the category theory setup,
 where we insist that morphisms live in some `Type`.
 There's some balance here: it's nice to allow `Prop` to ensure there are no multiple arrows,
 but it is also results in error-prone universe signatures when constraints require a `Type`.
 -/
-
-set_option autoImplicit true
-
 
 open Opposite
 
@@ -64,15 +61,15 @@ structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{
   map : ∀ {X Y : V}, (X ⟶ Y) → (obj X ⟶ obj Y)
 #align prefunctor Prefunctor
 
-attribute [pp_dot] Prefunctor.obj Prefunctor.map
-
 namespace Prefunctor
 
 -- Porting note: added during port.
 -- These lemmas can not be `@[simp]` because after `whnfR` they have a variable on the LHS.
 -- Nevertheless they are sometimes useful when building functors.
-lemma mk_obj [Quiver V] {obj : V → V} {map} {X : V} : (Prefunctor.mk obj map).obj X = obj X := rfl
-lemma mk_map [Quiver V] {obj : V → V} {map} {X Y : V} {f : X ⟶ Y} :
+lemma mk_obj {V : Type*} [Quiver V] {obj : V → V} {map} {X : V} :
+    (Prefunctor.mk obj map).obj X = obj X := rfl
+
+lemma mk_map {V : Type*} [Quiver V] {obj : V → V} {map} {X Y : V} {f : X ⟶ Y} :
     (Prefunctor.mk obj map).map f = map f := rfl
 
 @[ext]
@@ -138,6 +135,10 @@ infixl:60 " ⋙q " => Prefunctor.comp
 /-- Notation for the identity prefunctor on a quiver. -/
 notation "𝟭q" => id
 
+theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {f g : X ⟶ Y}
+    (h : f = g) : F.map f = F.map g := by
+  rw [h]
+
 end Prefunctor
 
 namespace Quiver
@@ -158,7 +159,7 @@ def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X :=
 #align quiver.hom.unop Quiver.Hom.unop
 
 /-- A type synonym for a quiver with no arrows. -/
--- Porting note: no has_nonempty_instance linter yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 def Empty (V : Type u) : Type u := V
 #align quiver.empty Quiver.Empty
@@ -171,8 +172,7 @@ theorem empty_arrow {V : Type u} (a b : Empty V) : (a ⟶ b) = PEmpty := rfl
 #align quiver.empty_arrow Quiver.empty_arrow
 
 /-- A quiver is thin if it has no parallel arrows. -/
-@[reducible]
-def IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶ b)
+abbrev IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶ b)
 #align quiver.is_thin Quiver.IsThin
 
 end Quiver

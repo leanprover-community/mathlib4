@@ -44,13 +44,9 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 universe u v w
 
 variable {R S T : Type*} [CommRing R] [Ring S]
-
 variable [Algebra R S]
-
 variable {K L F : Type*} [Field K] [Field L] [Field F]
-
 variable [Algebra K L] [Algebra K F]
-
 variable {ι : Type w}
 
 open FiniteDimensional
@@ -99,7 +95,7 @@ theorem norm_algebraMap_of_basis [Fintype ι] (b : Basis ι R S) (x : R) :
   haveI := Classical.decEq ι
   rw [norm_apply, ← det_toMatrix b, lmul_algebraMap]
   convert @det_diagonal _ _ _ _ _ fun _ : ι => x
-  · ext (i j); rw [toMatrix_lsmul, Matrix.diagonal]
+  · ext (i j); rw [toMatrix_lsmul]
   · rw [Finset.prod_const, Finset.card_univ]
 #align algebra.norm_algebra_map_of_basis Algebra.norm_algebraMap_of_basis
 
@@ -157,7 +153,7 @@ theorem norm_zero [Nontrivial S] [Module.Free R S] [Module.Finite R S] : norm R 
 theorem norm_eq_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Finite R S] {x : S} :
     norm R x = 0 ↔ x = 0 := by
   constructor
-  let b := Module.Free.chooseBasis R S
+  on_goal 1 => let b := Module.Free.chooseBasis R S
   swap
   · rintro rfl; exact norm_zero
   · letI := Classical.decEq (Module.Free.ChooseBasisIndex R S)
@@ -256,10 +252,10 @@ theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
   rw [PowerBasis.norm_gen_eq_prod_roots pb hE]
   rw [@Fintype.prod_equiv (S →ₐ[R] F) _ _ (PowerBasis.AlgHom.fintype pb) _ _ pb.liftEquiv'
     (fun σ => σ pb.gen) (fun x => x) ?_]
-  rw [Finset.prod_mem_multiset, Finset.prod_eq_multiset_prod, Multiset.toFinset_val,
-    Multiset.dedup_eq_self.mpr, Multiset.map_id]
-  · exact nodup_roots hfx.map
-  · intro x; rfl
+  · rw [Finset.prod_mem_multiset, Finset.prod_eq_multiset_prod, Multiset.toFinset_val,
+      Multiset.dedup_eq_self.mpr, Multiset.map_id]
+    · exact nodup_roots hfx.map
+    · intro x; rfl
   · intro σ; simp only [PowerBasis.liftEquiv'_apply_coe]
 #align algebra.norm_eq_prod_embeddings_gen Algebra.norm_eq_prod_embeddings_gen
 
@@ -278,11 +274,10 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
   haveI : IsSeparable L F := isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
-  letI : ∀ f : L →ₐ[K] E, Fintype (@AlgHom L F E _ _ _ _ f.toRingHom.toAlgebra) := ?_
   rw [Fintype.prod_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen,
     ← Finset.univ_sigma_univ, Finset.prod_sigma, ← Finset.prod_pow]
-  refine Finset.prod_congr rfl fun σ _ => ?_
-  · letI : Algebra L E := σ.toRingHom.toAlgebra
+  · refine Finset.prod_congr rfl fun σ _ => ?_
+    letI : Algebra L E := σ.toRingHom.toAlgebra
     simp_rw [Finset.prod_const]
     congr
     exact AlgHom.card L F E
@@ -312,8 +307,8 @@ theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L
   rw [map_prod (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.prod_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
   · rw [← norm_eq_prod_embeddings]
-    simp only [algebraMap_eq_smul_one, smul_one_smul]
-    rfl
+    · simp only [algebraMap_eq_smul_one, smul_one_smul]
+      rfl
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
       AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
@@ -330,6 +325,43 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSep
     exact minpoly.aeval_of_isScalarTower R x y hy
   · apply IsAlgClosed.splits_codomain
 #align algebra.is_integral_norm Algebra.isIntegral_norm
+
+lemma norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
+    Algebra.norm R (e x) = Algebra.norm R x := by
+  simp_rw [Algebra.norm_apply, ← LinearMap.det_conj _ e.toLinearEquiv]; congr; ext; simp
+
+lemma norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
+    [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C)
+    (x : C) :
+    e (Algebra.norm A x) = Algebra.norm B x := by
+  classical
+  by_cases h : ∃ s : Finset C, Nonempty (Basis s B C)
+  · obtain ⟨s, ⟨b⟩⟩ := h
+    letI : Algebra A B := RingHom.toAlgebra e
+    letI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
+    rw [Algebra.norm_eq_matrix_det b,
+      Algebra.norm_eq_matrix_det (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he])),
+      e.map_det]
+    congr
+    ext i j
+    simp [leftMulMatrix_apply, LinearMap.toMatrix_apply]
+  rw [norm_eq_one_of_not_exists_basis _ h, norm_eq_one_of_not_exists_basis, _root_.map_one]
+  intro ⟨s, ⟨b⟩⟩
+  exact h ⟨s, ⟨b.mapCoeffs e (by simp [Algebra.smul_def, ← he])⟩⟩
+
+lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring B₁]
+    [CommRing A₂] [Ring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
+    Algebra.norm A₁ x = e₁.symm (Algebra.norm A₂ (e₂ x)) := by
+  letI := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra' ?_
+  · let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
+    rw [← Algebra.norm_eq_of_ringEquiv e₁ he, ← Algebra.norm_eq_of_algEquiv e',
+      RingEquiv.symm_apply_apply]
+    rfl
+  intros c x
+  apply e₂.symm.injective
+  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, _root_.map_mul,
+    RingEquiv.symm_apply_apply, commutes]
 
 variable {F} (L)
 

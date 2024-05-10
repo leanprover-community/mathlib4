@@ -28,7 +28,8 @@ We recursively eliminate all variables from the system. If we derive an empty cl
 we conclude that the original system was unsatisfiable.
 -/
 
-open Std
+open Batteries
+open Std (format ToFormat)
 
 namespace Linarith
 
@@ -110,7 +111,7 @@ structure PComp : Type where
   effective : RBSet ℕ Ord.compare
   /-- The variables which have been *implicitly eliminated*.
   These are variables that appear in the historical set,
-  do not appear in `c` itself, and are not in `effective.-/
+  do not appear in `c` itself, and are not in `effective. -/
   implicit : RBSet ℕ Ord.compare
   /-- The union of all variables appearing in those original assumptions
   which appear in the `history` set. -/
@@ -255,7 +256,7 @@ structure LinarithData : Type where
 The linarith monad extends an exceptional monad with a `LinarithData` state.
 An exception produces a contradictory `PComp`.
 -/
-@[reducible] def LinarithM : Type → Type :=
+abbrev LinarithM : Type → Type :=
   StateT LinarithData (ExceptT PComp Id)
 
 /-- Returns the current max variable. -/
@@ -321,7 +322,7 @@ def elimAllVarsM : LinarithM Unit := do
 those hypotheses. It produces an initial state for the elimination monad.
 -/
 def mkLinarithData (hyps : List Comp) (maxVar : ℕ) : LinarithData :=
-  ⟨maxVar, .ofList (hyps.enum.map $ fun ⟨n, cmp⟩ => PComp.assump cmp n) _⟩
+  ⟨maxVar, .ofList (hyps.enum.map fun ⟨n, cmp⟩ => PComp.assump cmp n) _⟩
 
 /--
 `produceCertificate hyps vars` tries to derive a contradiction from the comparisons in `hyps`

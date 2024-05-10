@@ -30,7 +30,7 @@ def invertibleOfRingCharNotDvd {t : ℕ} (not_dvd : ¬ringChar K ∣ t) : Invert
 #align invertible_of_ring_char_not_dvd invertibleOfRingCharNotDvd
 
 theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : K)] : ¬ringChar K ∣ t := by
-  rw [← ringChar.spec, ← Ne.def]
+  rw [← ringChar.spec, ← Ne]
   exact nonzero_of_invertible (t : K)
 #align not_ring_char_dvd_of_invertible not_ringChar_dvd_of_invertible
 
@@ -63,11 +63,11 @@ number when you need its inverse.
 
 
 instance invertibleTwo : Invertible (2 : K) :=
-  invertibleOfNonzero (by exact_mod_cast (by decide : 2 ≠ 0))
+  invertibleOfNonzero (mod_cast (by decide : 2 ≠ 0))
 #align invertible_two invertibleTwo
 
 instance invertibleThree : Invertible (3 : K) :=
-  invertibleOfNonzero (by exact_mod_cast (by decide : 3 ≠ 0))
+  invertibleOfNonzero (mod_cast (by decide : 3 ≠ 0))
 #align invertible_three invertibleThree
 
 end DivisionRing

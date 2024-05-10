@@ -52,11 +52,11 @@ theorem mem_sigma {a : Σi, α i} : a ∈ s.sigma t ↔ a.1 ∈ s ∧ a.2 ∈ t 
 
 @[simp, norm_cast]
 theorem coe_sigma (s : Finset ι) (t : ∀ i, Finset (α i)) :
-    (s.sigma t : Set (Σi, α i)) = (s : Set ι).Sigma fun i => (t i : Set (α i)) :=
+    (s.sigma t : Set (Σ i, α i)) = (s : Set ι).sigma fun i ↦ (t i : Set (α i)) :=
   Set.ext fun _ => mem_sigma
 #align finset.coe_sigma Finset.coe_sigma
 
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem sigma_nonempty : (s.sigma t).Nonempty ↔ ∃ i ∈ s, (t i).Nonempty := by simp [Finset.Nonempty]
 #align finset.sigma_nonempty Finset.sigma_nonempty
 
@@ -108,6 +108,38 @@ theorem inf_sigma [SemilatticeInf β] [OrderTop β] :
     (s.sigma t).inf f = s.inf fun i => (t i).inf fun b => f ⟨i, b⟩ :=
   @sup_sigma _ _ βᵒᵈ _ _ _ _ _
 #align finset.inf_sigma Finset.inf_sigma
+
+theorem _root_.biSup_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : Sigma α → β) : ⨆ ij ∈ s.sigma t, f ij = ⨆ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
+  by simp_rw [← Finset.iSup_coe, Finset.coe_sigma, biSup_sigma]
+
+theorem _root_.biSup_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : ∀ i, α i → β) : ⨆ (i ∈ s) (j ∈ t i), f i j = ⨆ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  Eq.symm (biSup_finsetSigma _ _ _)
+
+theorem _root_.biInf_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : Sigma α → β) : ⨅ ij ∈ s.sigma t, f ij = ⨅ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
+  biSup_finsetSigma (β := βᵒᵈ) _ _ _
+
+theorem _root_.biInf_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : ∀ i, α i → β) : ⨅ (i ∈ s) (j ∈ t i), f i j = ⨅ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  Eq.symm (biInf_finsetSigma _ _ _)
+
+theorem _root_.Set.biUnion_finsetSigma (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : Sigma α → Set β) : ⋃ ij ∈ s.sigma t, f ij = ⋃ i ∈ s, ⋃ j ∈ t i, f ⟨i, j⟩ :=
+  biSup_finsetSigma _ _ _
+
+theorem _root_.Set.biUnion_finsetSigma' (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : ∀ i, α i → Set β) : ⋃ i ∈ s, ⋃ j ∈ t i, f i j = ⋃ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  biSup_finsetSigma' _ _ _
+
+theorem _root_.Set.biInter_finsetSigma (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : Sigma α → Set β) : ⋂ ij ∈ s.sigma t, f ij = ⋂ i ∈ s, ⋂ j ∈ t i, f ⟨i, j⟩ :=
+  biInf_finsetSigma _ _ _
+
+theorem _root_.Set.biInter_finsetSigma' (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : ∀ i, α i → Set β) : ⋂ i ∈ s, ⋂ j ∈ t i, f i j = ⋂ ij ∈ s.sigma t, f ij.1 ij.2 :=
+  biInf_finsetSigma' _ _ _
 
 end Sigma
 

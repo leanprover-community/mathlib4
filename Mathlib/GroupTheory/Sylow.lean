@@ -9,6 +9,7 @@ import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.Order.Atoms.Finite
+import Mathlib.Data.Set.Lattice
 
 #align_import group_theory.sylow from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
@@ -61,7 +62,7 @@ namespace Sylow
 
 attribute [coe] Sylow.toSubgroup
 
---Porting note: Changed to `CoeOut`
+-- Porting note: Changed to `CoeOut`
 instance : CoeOut (Sylow p G) (Subgroup G) :=
   ⟨Sylow.toSubgroup⟩
 
@@ -394,12 +395,12 @@ theorem Sylow.conj_eq_normalizer_conj_of_mem [Fact p.Prime] [Finite (Sylow p G)]
 #align sylow.conj_eq_normalizer_conj_of_mem Sylow.conj_eq_normalizer_conj_of_mem
 
 /-- Sylow `p`-subgroups are in bijection with cosets of the normalizer of a Sylow `p`-subgroup -/
-noncomputable def Sylow.equivQuotientNormalizer [Fact p.Prime] [Fintype (Sylow p G)]
+noncomputable def Sylow.equivQuotientNormalizer [Fact p.Prime] [Finite (Sylow p G)]
     (P : Sylow p G) : Sylow p G ≃ G ⧸ (P : Subgroup G).normalizer :=
   calc
     Sylow p G ≃ (⊤ : Set (Sylow p G)) := (Equiv.Set.univ (Sylow p G)).symm
-    _ ≃ orbit G P := by rw [P.orbit_eq_top]
-    _ ≃ G ⧸ stabilizer G P := (orbitEquivQuotientStabilizer G P)
+    _ ≃ orbit G P := Equiv.setCongr P.orbit_eq_top.symm
+    _ ≃ G ⧸ stabilizer G P := orbitEquivQuotientStabilizer G P
     _ ≃ G ⧸ (P : Subgroup G).normalizer := by rw [P.stabilizer_eq_normalizer]
 
 #align sylow.equiv_quotient_normalizer Sylow.equivQuotientNormalizer
@@ -532,7 +533,7 @@ def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] 
     (fun a => (@mem_fixedPoints_mul_left_cosets_iff_mem_normalizer _ _ _ ‹_› _).symm)
     (by
       intros
-      dsimp only [instHasEquiv]
+      unfold_projs
       rw [leftRel_apply (α := normalizer H), leftRel_apply]
       rfl)
 #align sylow.fixed_points_mul_left_cosets_equiv_quotient Sylow.fixedPointsMulLeftCosetsEquivQuotient
@@ -554,10 +555,11 @@ theorem card_normalizer_modEq_card [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact p.
   have : H.subgroupOf (normalizer H) ≃ H := (subgroupOfEquivOfLe le_normalizer).toEquiv
   rw [card_eq_card_quotient_mul_card_subgroup H,
     card_eq_card_quotient_mul_card_subgroup (H.subgroupOf (normalizer H)), Fintype.card_congr this,
-    hH, pow_succ]
+    hH, pow_succ']
   exact (card_quotient_normalizer_modEq_card_quotient hH).mul_right' _
 #align sylow.card_normalizer_modeq_card Sylow.card_normalizer_modEq_card
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- If `H` is a `p`-subgroup but not a Sylow `p`-subgroup, then `p` divides the
   index of `H` inside its normalizer. -/
 theorem prime_dvd_card_quotient_normalizer [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime]
@@ -583,6 +585,7 @@ theorem prime_pow_dvd_card_normalizer [Fintype G] {p : ℕ} {n : ℕ} [_hp : Fac
   Nat.modEq_zero_iff_dvd.1 ((card_normalizer_modEq_card hH).trans hdvd.modEq_zero_nat)
 #align sylow.prime_pow_dvd_card_normalizer Sylow.prime_pow_dvd_card_normalizer
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- If `H` is a subgroup of `G` of cardinality `p ^ n`,
   then `H` is contained in a subgroup of cardinality `p ^ (n + 1)`
   if `p ^ (n + 1)` divides the cardinality of `G` -/
@@ -612,7 +615,7 @@ theorem exists_subgroup_card_pow_succ [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact
     rw [Set.card_image_of_injective
         (Subgroup.comap (mk' (H.subgroupOf H.normalizer)) (zpowers x) : Set H.normalizer)
         Subtype.val_injective,
-      pow_succ', ← hH, Fintype.card_congr hequiv, ← hx, ←Fintype.card_zpowers, ←
+      pow_succ, ← hH, Fintype.card_congr hequiv, ← hx, ← Fintype.card_zpowers, ←
       Fintype.card_prod]
     exact @Fintype.card_congr _ _ (_) (_)
       (preimageMkEquivSubgroupProdSet (H.subgroupOf H.normalizer) (zpowers x)), by
@@ -652,6 +655,39 @@ theorem exists_subgroup_card_pow_prime [Fintype G] (p : ℕ) {n : ℕ} [Fact p.P
   let ⟨K, hK⟩ := exists_subgroup_card_pow_prime_le p hdvd ⊥ (card_bot.trans (by simp)) n.zero_le
   ⟨K, hK.1⟩
 #align sylow.exists_subgroup_card_pow_prime Sylow.exists_subgroup_card_pow_prime
+
+/-- A special case of **Sylow's first theorem**. If `G` is a `p`-group of size at least `p ^ n`
+then there is a subgroup of cardinality `p ^ n`. -/
+lemma exists_subgroup_card_pow_prime_of_le_card {n p : ℕ} (hp : p.Prime) (h : IsPGroup p G)
+    (hn : p ^ n ≤ Nat.card G) : ∃ H : Subgroup G, Nat.card H = p ^ n := by
+  have : Fact p.Prime := ⟨hp⟩
+  have : Finite G := Nat.finite_of_card_ne_zero <| by linarith [Nat.one_le_pow n p hp.pos]
+  cases nonempty_fintype G
+  obtain ⟨m, hm⟩ := h.exists_card_eq
+  simp_rw [Nat.card_eq_fintype_card] at hm hn ⊢
+  refine exists_subgroup_card_pow_prime _ ?_
+  rw [hm] at hn ⊢
+  exact pow_dvd_pow _ <| (pow_le_pow_iff_right hp.one_lt).1 hn
+
+/-- A special case of **Sylow's first theorem**. If `G` is a `p`-group and `H` a subgroup of size at
+least `p ^ n` then there is a subgroup of `H` of cardinality `p ^ n`. -/
+lemma exists_subgroup_le_card_pow_prime_of_le_card {n p : ℕ} (hp : p.Prime) (h : IsPGroup p G)
+    {H : Subgroup G} (hn : p ^ n ≤ Nat.card H) : ∃ H' ≤ H, Nat.card H' = p ^ n := by
+  obtain ⟨H', H'card⟩ := exists_subgroup_card_pow_prime_of_le_card hp (h.to_subgroup H) hn
+  refine ⟨H'.map H.subtype, map_subtype_le _, ?_⟩
+  rw [← H'card]
+  let e : H' ≃* H'.map H.subtype := H'.equivMapOfInjective (Subgroup.subtype H) H.subtype_injective
+  exact Nat.card_congr e.symm.toEquiv
+
+/-- A special case of **Sylow's first theorem**. If `G` is a `p`-group and `H` a subgroup of size at
+least `k` then there is a subgroup of `H` of cardinality between `k / p` and `k`. -/
+lemma exists_subgroup_le_card_le {k p : ℕ} (hp : p.Prime) (h : IsPGroup p G) {H : Subgroup G}
+    (hk : k ≤ Nat.card H) (hk₀ : k ≠ 0) : ∃ H' ≤ H, Nat.card H' ≤ k ∧ k < p * Nat.card H' := by
+  obtain ⟨m, hmk, hkm⟩ : ∃ s, p ^ s ≤ k ∧ k < p ^ (s + 1) :=
+    exists_nat_pow_near (Nat.one_le_iff_ne_zero.2 hk₀) hp.one_lt
+  obtain ⟨H', H'H, H'card⟩ := exists_subgroup_le_card_pow_prime_of_le_card hp h (hmk.trans hk)
+  refine ⟨H', H'H, ?_⟩
+  simpa only [pow_succ', H'card] using And.intro hmk hkm
 
 theorem pow_dvd_card_of_pow_dvd_card [Fintype G] {p n : ℕ} [hp : Fact p.Prime] (P : Sylow p G)
     (hdvd : p ^ n ∣ card G) : p ^ n ∣ card P :=
@@ -820,7 +856,6 @@ noncomputable def directProductOfNormal [Fintype G]
         (Finset.prod_finset_coe (fun p => p ^ (card G).factorization p) _)
       _ = (card G).factorization.prod (· ^ ·) := rfl
       _ = card G := Nat.factorization_prod_pow_eq_self Fintype.card_ne_zero
-
 #align sylow.direct_product_of_normal Sylow.directProductOfNormal
 
 end Sylow

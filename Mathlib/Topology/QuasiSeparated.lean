@@ -43,17 +43,16 @@ def IsQuasiSeparated (s : Set α) : Prop :=
 
 /-- A topological space is quasi-separated if the intersections of any pairs of compact open
 subsets are still compact. -/
--- Porting note: mk_iff currently generates `QuasiSeparatedSpace_iff`. Undesirable capitalization?
 @[mk_iff]
 class QuasiSeparatedSpace (α : Type*) [TopologicalSpace α] : Prop where
-  /-- The intersection of two open compact subsets of a quasi-separated space is compact.-/
+  /-- The intersection of two open compact subsets of a quasi-separated space is compact. -/
   inter_isCompact :
     ∀ U V : Set α, IsOpen U → IsCompact U → IsOpen V → IsCompact V → IsCompact (U ∩ V)
 #align quasi_separated_space QuasiSeparatedSpace
 
 theorem isQuasiSeparated_univ_iff {α : Type*} [TopologicalSpace α] :
     IsQuasiSeparated (Set.univ : Set α) ↔ QuasiSeparatedSpace α := by
-  rw [QuasiSeparatedSpace_iff]
+  rw [quasiSeparatedSpace_iff]
   simp [IsQuasiSeparated]
 #align is_quasi_separated_univ_iff isQuasiSeparated_univ_iff
 

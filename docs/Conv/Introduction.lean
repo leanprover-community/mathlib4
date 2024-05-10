@@ -118,7 +118,7 @@ example (a b c : ℕ) : a * (b * c) = a * (c * b) := by
 ```
 
 In all those cases, only the first match is affected.
-One can also specify which occurences to convert using an `occs` clause, which
+One can also specify which occurrences to convert using an `occs` clause, which
 creates goals for every matched occurrence. These can then all be handled at once
 using the `all_goals` combinator.
 The following performs rewriting only for the second and third occurrences of `b * c`:

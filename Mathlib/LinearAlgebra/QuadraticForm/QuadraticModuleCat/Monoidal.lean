@@ -3,7 +3,6 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat
@@ -69,6 +68,9 @@ instance : MonoidalCategoryStruct (QuadraticModuleCat.{u} R) where
   leftUnitor X := ofIso (tensorLId X.form)
   rightUnitor X := ofIso (tensorRId X.form)
 
+@[simp] theorem toModuleCat_tensor (X Y : QuadraticModuleCat.{u} R) :
+    (X ⊗ Y).toModuleCat = X.toModuleCat ⊗ Y.toModuleCat := rfl
+
 theorem forget₂_map_associator_hom (X Y Z : QuadraticModuleCat.{u} R) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).hom =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).hom := rfl
@@ -82,12 +84,28 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))
     { μIso := fun X Y => Iso.refl _
       εIso := Iso.refl _
+      leftUnitor_eq := fun X => by
+        simp only [forget₂_obj, forget₂_map, Iso.refl_symm, Iso.trans_assoc, Iso.trans_hom,
+          Iso.refl_hom, tensorIso_hom, MonoidalCategory.tensorHom_id]
+        dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
+        erw [MonoidalCategory.id_whiskerRight]
+        simp
+        rfl
+      rightUnitor_eq := fun X => by
+        simp only [forget₂_obj, forget₂_map, Iso.refl_symm, Iso.trans_assoc, Iso.trans_hom,
+          Iso.refl_hom, tensorIso_hom, MonoidalCategory.id_tensorHom]
+        dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
+        erw [MonoidalCategory.whiskerLeft_id]
+        simp
+        rfl
       associator_eq := fun X Y Z => by
         dsimp only [forget₂_obj, forget₂_map_associator_hom]
         simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,
           Iso.refl_hom, MonoidalCategory.tensor_id]
-        erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.id_comp]
-        rfl }
+        dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
+        rw [Category.id_comp, Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id,
+          Category.id_comp] }
+
 
 variable (R) in
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a monoidal functor. -/
@@ -95,7 +113,7 @@ def toModuleCatMonoidalFunctor : MonoidalFunctor (QuadraticModuleCat.{u} R) (Mod
   unfold instMonoidalCategory
   exact Monoidal.fromInduced (forget₂ (QuadraticModuleCat R) (ModuleCat R)) _
 
-instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
+instance : (toModuleCatMonoidalFunctor R).Faithful :=
   forget₂_faithful _ _
 
 end QuadraticModuleCat

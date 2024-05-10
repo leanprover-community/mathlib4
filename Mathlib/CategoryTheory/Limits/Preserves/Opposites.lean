@@ -33,7 +33,6 @@ namespace CategoryTheory.Limits
 section
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
 variable {J : Type w} [Category.{w'} J]
 
 /-- If `F : C ⥤ D` preserves colimits of `K.left_op : Jᵒᵖ ⥤ C`, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves
@@ -57,7 +56,7 @@ def preservesLimitLeftOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ Dᵒᵖ) [PreservesColim
 def preservesLimitRightOp (K : J ⥤ C) (F : Cᵒᵖ ⥤ D) [PreservesColimit K.op F] :
     PreservesLimit K F.rightOp where
   preserves {_} hc :=
-    isLimitConeRightOpOfCocone _ (isColimitOfPreserves F (isColimitConeOp _ hc))
+    isLimitConeRightOpOfCocone _ (isColimitOfPreserves F hc.op)
 #align category_theory.limits.preserves_limit_right_op CategoryTheory.Limits.preservesLimitRightOp
 
 /-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves colimits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F.unop : C ⥤ D` preserves
@@ -65,7 +64,7 @@ def preservesLimitRightOp (K : J ⥤ C) (F : Cᵒᵖ ⥤ D) [PreservesColimit K.
 def preservesLimitUnop (K : J ⥤ C) (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesColimit K.op F] :
     PreservesLimit K F.unop where
   preserves {_} hc :=
-    isLimitConeUnopOfCocone _ (isColimitOfPreserves F (isColimitConeOp _ hc))
+    isLimitConeUnopOfCocone _ (isColimitOfPreserves F hc.op)
 #align category_theory.limits.preserves_limit_unop CategoryTheory.Limits.preservesLimitUnop
 
 /-- If `F : C ⥤ D` preserves limits of `K.left_op : Jᵒᵖ ⥤ C`, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves
@@ -89,7 +88,7 @@ def preservesColimitLeftOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ Dᵒᵖ) [PreservesLim
 def preservesColimitRightOp (K : J ⥤ C) (F : Cᵒᵖ ⥤ D) [PreservesLimit K.op F] :
     PreservesColimit K F.rightOp where
   preserves {_} hc :=
-    isColimitCoconeRightOpOfCone _ (isLimitOfPreserves F (isLimitCoconeOp _ hc))
+    isColimitCoconeRightOpOfCone _ (isLimitOfPreserves F hc.op)
 #align category_theory.limits.preserves_colimit_right_op CategoryTheory.Limits.preservesColimitRightOp
 
 /-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves limits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F.unop : C ⥤ D` preserves
@@ -97,7 +96,7 @@ def preservesColimitRightOp (K : J ⥤ C) (F : Cᵒᵖ ⥤ D) [PreservesLimit K.
 def preservesColimitUnop (K : J ⥤ C) (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesLimit K.op F] :
     PreservesColimit K F.unop where
   preserves {_} hc :=
-    isColimitCoconeUnopOfCone _ (isLimitOfPreserves F (isLimitCoconeOp _ hc))
+    isColimitCoconeUnopOfCone _ (isLimitOfPreserves F hc.op)
 #align category_theory.limits.preserves_colimit_unop CategoryTheory.Limits.preservesColimitUnop
 
 section

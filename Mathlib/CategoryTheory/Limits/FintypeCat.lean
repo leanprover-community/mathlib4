@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.Data.FunLike.Fintype
+import Mathlib.Data.Finite.Basic
 
 /-!
 # (Co)limits in the category of finite types
@@ -40,6 +40,11 @@ noncomputable instance inclusionCreatesFiniteLimits {J : Type} [SmallCategory J]
   CreatesLimit {K} := createsLimitOfFullyFaithfulOfIso
     (FintypeCat.of <| limit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
+/- Help typeclass inference to infer creation of finite limits for the forgtful functor. -/
+noncomputable instance {J : Type} [SmallCategory J] [FinCategory J] :
+    CreatesLimitsOfShape J (forget FintypeCat) :=
+  FintypeCat.inclusionCreatesFiniteLimits
+
 instance {J : Type} [SmallCategory J] [FinCategory J] : HasLimitsOfShape J FintypeCat.{u} where
   has_limit F := hasLimit_of_created F FintypeCat.incl
 
@@ -50,6 +55,10 @@ noncomputable instance inclusionPreservesFiniteLimits :
     PreservesFiniteLimits FintypeCat.incl.{u} where
   preservesFiniteLimits _ :=
     preservesLimitOfShapeOfCreatesLimitsOfShapeAndHasLimitsOfShape FintypeCat.incl
+
+/- Help typeclass inference to infer preservation of finite limits for the forgtful functor. -/
+noncomputable instance : PreservesFiniteLimits (forget FintypeCat) :=
+  FintypeCat.inclusionPreservesFiniteLimits
 
 /-- Any functor from a finite category to Types that only involves finite objects,
 has a finite colimit. -/
@@ -64,6 +73,11 @@ noncomputable instance inclusionCreatesFiniteColimits {J : Type} [SmallCategory 
   CreatesColimit {K} := createsColimitOfFullyFaithfulOfIso
     (FintypeCat.of <| colimit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
+/- Help typeclass inference to infer creation of finite colimits for the forgtful functor. -/
+noncomputable instance {J : Type} [SmallCategory J] [FinCategory J] :
+    CreatesColimitsOfShape J (forget FintypeCat) :=
+  FintypeCat.inclusionCreatesFiniteColimits
+
 instance {J : Type} [SmallCategory J] [FinCategory J] : HasColimitsOfShape J FintypeCat.{u} where
   has_colimit F := hasColimit_of_created F FintypeCat.incl
 
@@ -74,5 +88,9 @@ noncomputable instance inclusionPreservesFiniteColimits :
     PreservesFiniteColimits FintypeCat.incl.{u} where
   preservesFiniteColimits _ :=
     preservesColimitOfShapeOfCreatesColimitsOfShapeAndHasColimitsOfShape FintypeCat.incl
+
+/- Help typeclass inference to infer preservation of finite colimits for the forgtful functor. -/
+noncomputable instance : PreservesFiniteColimits (forget FintypeCat) :=
+  FintypeCat.inclusionPreservesFiniteColimits
 
 end CategoryTheory.Limits.FintypeCat

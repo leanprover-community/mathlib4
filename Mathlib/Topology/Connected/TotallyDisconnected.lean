@@ -28,7 +28,7 @@ variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*} [Topologic
 section TotallyDisconnected
 
 /-- A set `s` is called totally disconnected if every subset `t ⊆ s` which is preconnected is
-a subsingleton, ie either empty or a singleton.-/
+a subsingleton, ie either empty or a singleton. -/
 def IsTotallyDisconnected (s : Set α) : Prop :=
   ∀ t, t ⊆ s → IsPreconnected t → t.Subsingleton
 #align is_totally_disconnected IsTotallyDisconnected
@@ -87,22 +87,22 @@ instance [∀ i, TopologicalSpace (π i)] [∀ i, TotallyDisconnectedSpace (π i
   · obtain ⟨a, t, ht, rfl⟩ := Sigma.isConnected_iff.1 ⟨h, hs⟩
     exact ht.isPreconnected.subsingleton.image _
 
--- porting note: reformulated using `Pairwise`
+-- Porting note: reformulated using `Pairwise`
 /-- Let `X` be a topological space, and suppose that for all distinct `x,y ∈ X`, there
   is some clopen set `U` such that `x ∈ U` and `y ∉ U`. Then `X` is totally disconnected. -/
-theorem isTotallyDisconnected_of_clopen_set {X : Type*} [TopologicalSpace X]
+theorem isTotallyDisconnected_of_isClopen_set {X : Type*} [TopologicalSpace X]
     (hX : Pairwise fun x y => ∃ (U : Set X), IsClopen U ∧ x ∈ U ∧ y ∉ U) :
     IsTotallyDisconnected (Set.univ : Set X) := by
   rintro S - hS
   unfold Set.Subsingleton
-  by_contra' h_contra
+  by_contra! h_contra
   rcases h_contra with ⟨x, hx, y, hy, hxy⟩
-  obtain ⟨U, h_clopen, hxU, hyU⟩ := hX hxy
+  obtain ⟨U, hU, hxU, hyU⟩ := hX hxy
   specialize
-    hS U Uᶜ h_clopen.1 h_clopen.compl.1 (fun a _ => em (a ∈ U)) ⟨x, hx, hxU⟩ ⟨y, hy, hyU⟩
+    hS U Uᶜ hU.2 hU.compl.2 (fun a _ => em (a ∈ U)) ⟨x, hx, hxU⟩ ⟨y, hy, hyU⟩
   rw [inter_compl_self, Set.inter_empty] at hS
   exact Set.not_nonempty_empty hS
-#align is_totally_disconnected_of_clopen_set isTotallyDisconnected_of_clopen_set
+#align is_totally_disconnected_of_clopen_set isTotallyDisconnected_of_isClopen_set
 
 /-- A space is totally disconnected iff its connected components are subsingletons. -/
 theorem totallyDisconnectedSpace_iff_connectedComponent_subsingleton :
@@ -170,7 +170,7 @@ lemma Embedding.isTotallyDisconnected_image [TopologicalSpace β] {f : α → β
 
 lemma Embedding.isTotallyDisconnected_range [TopologicalSpace β] {f : α → β} (hf : Embedding f) :
     IsTotallyDisconnected (range f) ↔ TotallyDisconnectedSpace α := by
-  rw [TotallyDisconnectedSpace_iff, ← image_univ, hf.isTotallyDisconnected_image]
+  rw [totallyDisconnectedSpace_iff, ← image_univ, hf.isTotallyDisconnected_image]
 
 lemma totallyDisconnectedSpace_subtype_iff {s : Set α} :
     TotallyDisconnectedSpace s ↔ IsTotallyDisconnected s := by
@@ -185,12 +185,11 @@ end TotallyDisconnected
 
 section TotallySeparated
 
--- todo: reformulate using `Set.Pairwise`
 /-- A set `s` is called totally separated if any two points of this set can be separated
 by two disjoint open sets covering `s`. -/
 def IsTotallySeparated (s : Set α) : Prop :=
-  ∀ x ∈ s, ∀ y ∈ s, x ≠ y →
-    ∃ u v : Set α, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ s ⊆ u ∪ v ∧ Disjoint u v
+  Set.Pairwise s fun x y =>
+  ∃ u v : Set α, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ s ⊆ u ∪ v ∧ Disjoint u v
 #align is_totally_separated IsTotallySeparated
 
 theorem isTotallySeparated_empty : IsTotallySeparated (∅ : Set α) := fun _ => False.elim
@@ -207,7 +206,7 @@ theorem isTotallyDisconnected_of_isTotallySeparated {s : Set α} (H : IsTotallyS
   obtain
     ⟨u : Set α, v : Set α, hu : IsOpen u, hv : IsOpen v, hxu : x ∈ u, hyv : y ∈ v, hs : s ⊆ u ∪ v,
       huv⟩ :=
-    H x (hts x_in) y (hts y_in) h
+    H (hts x_in) (hts y_in) h
   refine' (ht _ _ hu hv (hts.trans hs) ⟨x, x_in, hxu⟩ ⟨y, y_in, hyv⟩).ne_empty _
   rw [huv.inter_eq, inter_empty]
 #align is_totally_disconnected_of_is_totally_separated isTotallyDisconnected_of_isTotallySeparated
@@ -235,16 +234,16 @@ instance (priority := 100) TotallySeparatedSpace.of_discrete (α : Type*) [Topol
     (compl_union_self _).symm.subset, disjoint_compl_left⟩⟩
 #align totally_separated_space.of_discrete TotallySeparatedSpace.of_discrete
 
-theorem exists_clopen_of_totally_separated {α : Type*} [TopologicalSpace α]
+theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
     [TotallySeparatedSpace α] {x y : α} (hxy : x ≠ y) :
     ∃ U : Set α, IsClopen U ∧ x ∈ U ∧ y ∈ Uᶜ := by
   obtain ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ :=
-    TotallySeparatedSpace.isTotallySeparated_univ x (Set.mem_univ x) y (Set.mem_univ y) hxy
-  have clopen_U := isClopen_inter_of_disjoint_cover_clopen isClopen_univ f hU hV disj
-  rw [univ_inter _] at clopen_U
+    TotallySeparatedSpace.isTotallySeparated_univ (Set.mem_univ x) (Set.mem_univ y) hxy
+  have hU := isClopen_inter_of_disjoint_cover_clopen isClopen_univ f hU hV disj
+  rw [univ_inter _] at hU
   rw [← Set.subset_compl_iff_disjoint_right, subset_compl_comm] at disj
-  exact ⟨U, clopen_U, Ux, disj Vy⟩
-#align exists_clopen_of_totally_separated exists_clopen_of_totally_separated
+  exact ⟨U, hU, Ux, disj Vy⟩
+#align exists_clopen_of_totally_separated exists_isClopen_of_totally_separated
 
 end TotallySeparated
 
@@ -332,7 +331,7 @@ theorem PreconnectedSpace.constant {Y : Type*} [TopologicalSpace Y] [DiscreteTop
 
 /-- Refinement of `IsPreconnected.constant` only assuming the map factors through a
 discrete subset of the target. -/
-theorem IsPreconnected.constant_of_mapsTo [TopologicalSpace β] {S : Set α} (hS : IsPreconnected S)
+theorem IsPreconnected.constant_of_mapsTo {S : Set α} (hS : IsPreconnected S)
     {T : Set β} [DiscreteTopology T] {f : α → β} (hc : ContinuousOn f S) (hTm : MapsTo f S T)
     {x y : α} (hx : x ∈ S) (hy : y ∈ S) : f x = f y := by
   let F : S → T := hTm.restrict f S T
@@ -342,7 +341,7 @@ theorem IsPreconnected.constant_of_mapsTo [TopologicalSpace β] {S : Set α} (hS
 
 /-- A version of `IsPreconnected.constant_of_mapsTo` that assumes that the codomain is nonempty and
 proves that `f` is equal to `const α y` on `S` for some `y ∈ T`. -/
-theorem IsPreconnected.eqOn_const_of_mapsTo [TopologicalSpace β] {S : Set α} (hS : IsPreconnected S)
+theorem IsPreconnected.eqOn_const_of_mapsTo {S : Set α} (hS : IsPreconnected S)
     {T : Set β} [DiscreteTopology T] {f : α → β} (hc : ContinuousOn f S) (hTm : MapsTo f S T)
     (hne : T.Nonempty) : ∃ y ∈ T, EqOn f (const α y) S := by
   rcases S.eq_empty_or_nonempty with (rfl | ⟨x, hx⟩)

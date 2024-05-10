@@ -3,11 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Order.Basic
-import Mathlib.Order.WellFounded
 import Mathlib.Algebra.Group.OrderSynonym
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Order.WellFounded
 import Mathlib.Mathport.Notation
 
 #align_import data.pi.lex from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
@@ -74,7 +73,7 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y
 theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r) :
     IsTrichotomous (∀ i, β i) (Pi.Lex r @s) :=
   { trichotomous := fun a b => by
-      cases' eq_or_ne a b with hab hab
+      rcases eq_or_ne a b with hab | hab
       · exact Or.inr (Or.inl hab)
       · rw [Function.ne_iff] at hab
         let i := wf.min _ hab
@@ -120,7 +119,7 @@ open Function
 
 theorem toLex_monotone : Monotone (@toLex (∀ i, β i)) := fun a b h =>
   or_iff_not_imp_left.2 fun hne =>
-    let ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < · )) { i | a i ≠ b i }
+    let ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < ·)) { i | a i ≠ b i }
       (Function.ne_iff.1 hne)
     ⟨i, fun j hj => by
       contrapose! hl
@@ -128,7 +127,7 @@ theorem toLex_monotone : Monotone (@toLex (∀ i, β i)) := fun a b h =>
 #align pi.to_lex_monotone Pi.toLex_monotone
 
 theorem toLex_strictMono : StrictMono (@toLex (∀ i, β i)) := fun a b h =>
-  let ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < · )) { i | a i ≠ b i }
+  let ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < ·)) { i | a i ≠ b i }
     (Function.ne_iff.1 h.ne)
   ⟨i, fun j hj => by
     contrapose! hl
@@ -192,9 +191,9 @@ instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
     obtain ⟨a, ha₁, ha₂⟩ := exists_between hi
     classical
       refine' ⟨Function.update a₂ _ a, ⟨i, fun j hj => _, _⟩, i, fun j hj => _, _⟩
-      rw [h j hj]
-      dsimp only at hj
-      · rw [Function.update_noteq hj.ne a]
+      · rw [h j hj]
+        dsimp only at hj
+        rw [Function.update_noteq hj.ne a]
       · rwa [Function.update_same i a]
       · rw [Function.update_noteq hj.ne a]
       · rwa [Function.update_same i a]⟩

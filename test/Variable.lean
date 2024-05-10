@@ -1,10 +1,8 @@
 import Mathlib.Tactic.Variable
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain
-import Std.Tactic.GuardMsgs
-
 set_option autoImplicit true
 namespace Tests
 
@@ -235,6 +233,32 @@ use the command `set_option checkBinderAnnotations false` to disable the check
 #guard_msgs in
 variable? [UniqueFactorizationDomain R] =>
   [CommRing R] [IsDomain R] [UniqueFactorizationMonoid R] [UniqueFactorizationDomain R]
+end
+
+section
+/-!
+Test that unused variables are not reported for the variable list either before or after `=>`.
+-/
+
+/-- info: Try this: variable? {α : _} => {α : _} -/
+#guard_msgs in
+variable? {α : _}
+
+#guard_msgs in
+variable? {α : _} => {α : _}
+end
+
+section
+/-!
+Test that `Sort*` works. This creates new universe level variables, so we need
+to be sure that the state is reset when testing what comes after the `=>`.
+-/
+
+class foo (β : Nat → Sort*) [CoeFun Nat (fun _ ↦ ∀ a : Nat, β a)] where
+
+#guard_msgs in
+variable? {β : Sort*} [i : foo fun _ ↦ β] =>
+  {β : Sort*} [CoeFun Nat fun _ ↦ (a : Nat) → (fun _ ↦ β) a] [i : foo fun _ ↦ β]
 end
 
 end Tests

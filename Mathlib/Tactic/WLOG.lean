@@ -3,7 +3,6 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Murrills
 -/
-import Lean
 import Mathlib.Tactic.Core
 
 /-!
@@ -74,7 +73,7 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let fvars ← getFVarIdsAt goal xs
   let fvars := fvars.map Expr.fvar
   let lctx := (← goal.getDecl).lctx
-  let (revertedFVars, HType) ← liftMkBindingM <| fun ctx => (do
+  let (revertedFVars, HType) ← liftMkBindingM fun ctx => (do
     let f ← collectForwardDeps lctx fvars
     let revertedFVars := filterOutImplementationDetails lctx (f.map Expr.fvarId!)
     let HType ← withFreshCache do mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix

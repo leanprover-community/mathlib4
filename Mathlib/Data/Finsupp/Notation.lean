@@ -19,11 +19,16 @@ open Lean
 open Lean.Parser
 open Lean.Parser.Term
 
-/-- A variant of `Lean.Parser.Term.matchAlts` with less line wrapping. -/
+-- A variant of `Lean.Parser.Term.matchAlts` with less line wrapping.
+@[nolint docBlame] -- we do not want any doc hover on this notation.
 def fun₀.matchAlts : Parser :=
-  leading_parser withPosition $ ppRealGroup <| many1Indent (ppSpace >> ppGroup matchAlt)
+  leading_parser withPosition <| ppRealGroup <| many1Indent (ppSpace >> ppGroup matchAlt)
 
-@[term_parser, inherit_doc Finsupp]
+/-- `fun₀ | i => a` is notation for `Finsupp.single i a`, and with multiple match arms,
+`fun₀ ... | i => a` is notation for `Finsupp.update (fun₀ ...) i a`.
+
+As a result, if multiple match arms coincide, the last one takes precedence. -/
+@[term_parser]
 def fun₀ := leading_parser:maxPrec
   ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> fun₀.matchAlts
 
@@ -58,7 +63,7 @@ def updateUnexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- Display `Finsupp` using `fun₀` notation. -/
-unsafe instance {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) where
+unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) where
   reprPrec f p :=
     if f.support.card = 0 then
       "0"

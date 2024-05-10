@@ -142,7 +142,7 @@ many of the paths do not have defeq starting/ending points, so we end up needing
 /-- Interpret a homotopy `H : C(I × X, Y)` as a map `C(ULift I × X, Y)` -/
 def uliftMap : C(TopCat.of (ULift.{u} I × X), Y) :=
   ⟨fun x => H (x.1.down, x.2),
-    H.continuous.comp ((continuous_induced_dom.comp continuous_fst).prod_mk continuous_snd)⟩
+    H.continuous.comp ((continuous_uLift_down.comp continuous_fst).prod_mk continuous_snd)⟩
 #align continuous_map.homotopy.ulift_map ContinuousMap.Homotopy.uliftMap
 
 -- This lemma has always been bad, but the linter only noticed after lean4#2644.
@@ -210,8 +210,10 @@ theorem eq_diag_path : (πₘ f).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath'
   constructor
   · slice_lhs 2 4 => rw [eqToHom_trans, eqToHom_refl] -- Porting note: this ↓ `simp` didn't do this
     slice_lhs 2 4 => simp [← CategoryTheory.Functor.map_comp]
+    rfl
   · slice_lhs 2 4 => rw [eqToHom_trans, eqToHom_refl] -- Porting note: this ↓ `simp` didn't do this
     slice_lhs 2 4 => simp [← CategoryTheory.Functor.map_comp]
+    rfl
 #align continuous_map.homotopy.eq_diag_path ContinuousMap.Homotopy.eq_diag_path
 
 end ContinuousMap.Homotopy

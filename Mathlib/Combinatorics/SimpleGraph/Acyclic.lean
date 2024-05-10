@@ -63,10 +63,10 @@ structure IsTree : Prop where
 
 variable {G}
 
-@[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := λ _a _w hw ↦ hw.ne_bot rfl
+@[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
 
 theorem isAcyclic_iff_forall_adj_isBridge :
-    G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge ⟦(v, w)⟧ := by
+    G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
   simp_rw [isBridge_iff_adj_and_forall_cycle_not_mem]
   constructor
   · intro ha v w hvw
@@ -117,7 +117,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
 
 theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic := by
   intro v c hc
-  simp only [Walk.isCycle_def, Ne.def] at hc
+  simp only [Walk.isCycle_def, Ne] at hc
   cases c with
   | nil => cases hc.2.1 rfl
   | cons ha c' =>
@@ -134,7 +134,7 @@ theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.P
 theorem isTree_iff_existsUnique_path :
     G.IsTree ↔ Nonempty V ∧ ∀ v w : V, ∃! p : G.Walk v w, p.IsPath := by
   classical
-  rw [IsTree_iff, isAcyclic_iff_path_unique]
+  rw [isTree_iff, isAcyclic_iff_path_unique]
   constructor
   · rintro ⟨hc, hu⟩
     refine ⟨hc.nonempty, ?_⟩
@@ -181,9 +181,8 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     · have h1 : ((f a).firstDart <| not_nil_of_ne (by simpa using ha)).snd = b :=
         congrArg (·.snd) h
       have h3 := congrArg length (hf' _ (((f _).tail _).copy h1 rfl) ?_)
-      rw [length_copy, ← add_left_inj 1, length_tail_add_one] at h3
-      · exfalso
-        linarith
+      · rw [length_copy, ← add_left_inj 1, length_tail_add_one] at h3
+        omega
       · simp only [ne_eq, eq_mp_eq_cast, id_eq, isPath_copy]
         exact (hf _).tail _
   case surj =>
@@ -197,12 +196,12 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       rw [← hf' _ nil IsPath.nil, length_nil,
           ← hf' _ (.cons h .nil) (IsPath.nil.cons <| by simpa using h.ne),
           length_cons, length_nil] at h'
-      simp [le_zero_iff, Nat.one_ne_zero] at h'
+      simp [Nat.le_zero, Nat.one_ne_zero] at h'
     rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
-    rfl
+    · rfl
     case contra =>
-      suffices : (f x).takeUntil y hy = .cons h .nil
-      · rw [← take_spec _ hy] at h'
+      suffices (f x).takeUntil y hy = .cons h .nil by
+        rw [← take_spec _ hy] at h'
         simp [this, hf' _ _ ((hf _).dropUntil hy)] at h'
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]

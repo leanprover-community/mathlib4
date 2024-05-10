@@ -55,7 +55,7 @@ example (f : ℕ → ℕ → ℕ) (h : f 1 x ≠ f 1 y) : x ≠ y := by
   case foo => exact 1
   assumption
 
-example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective $ g ∘ f) : Injective f := by
+example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) : Injective f := by
   intros x x' h
   apply_fun g at h
   exact H h
@@ -142,11 +142,9 @@ example (a b : ℕ) (h : a ≠ b) : a + 1 ≠ b + 1 := by
 
 -- TODO
 -- -- monotonicity will be proved by `mono` in the next example
--- example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 :=
--- begin
---   apply_fun (λ n, n+1) at h,
+-- example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 := by
+--   apply_fun (fun n ↦ n+1) at h
 --   exact h
--- end
 
 example {n : Type} [Fintype n] {X : Type} [Semiring X]
   (f : Matrix n n X → Matrix n n X) (A B : Matrix n n X) (h : A * B = 0) : f (A * B) = f 0 := by
@@ -254,8 +252,7 @@ example (x : ℕ) : x = x := by
 example : 1 = 1 := by
   let f := fun (x : Nat) => x + 1
   -- clearly false but for demo purposes only
-  have g : ∀ f, Function.Injective f
-  · exact test_sorry
+  have g : ∀ (f : ℕ → ℕ), Function.Injective f := test_sorry
   apply_fun f using (g f)
   rfl
 
@@ -263,8 +260,11 @@ example : 1 = 1 := by
 def funFamily (_i : ℕ) : Bool → Bool := id
 
 -- `apply_fun` should not silence errors in `assumption`
+set_option linter.unreachableTactic false in
 /--
-error: maximum recursion depth has been reached (use `set_option maxRecDepth <num>` to increase limit)
+error: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
 -/
 #guard_msgs (error) in
 example (_h₁ : Function.Injective (funFamily ((List.range 128).map (fun _ => 0)).sum)) : true = true := by

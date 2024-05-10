@@ -12,7 +12,7 @@ import Mathlib.Tactic.ApplyFun
 /-!
 # The equalizer diagram sheaf condition for a presieve
 
-In `Mathlib/CategoryTheory/Sites/IsSheafFor` it is defined what it means for a presheaf to be a
+In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
 sheaf *for* a particular presieve. In this file we provide equivalent conditions in terms of
 equalizer diagrams.
 
@@ -55,7 +55,7 @@ def FirstObj : Type max v u :=
 
 variable {P R}
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
     (hf : R f), (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶ _) z₁ =
@@ -76,7 +76,7 @@ def firstObjEqFamily : FirstObj P R ≅ R.FamilyOfElements P where
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
   (firstObjEqFamily P _).toEquiv.inhabited
 
--- porting note: was not needed in mathlib
+-- Porting note: was not needed in mathlib
 instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) :=
   (inferInstance : Inhabited (FirstObj P (⊥ : Presieve X)))
 
@@ -105,7 +105,7 @@ def SecondObj : Type max v u :=
 
 variable {P S}
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma SecondObj.ext (z₁ z₂ : SecondObj P S) (h : ∀ (Y Z : C) (g : Z ⟶ Y) (f : Y ⟶ X)
     (hf : S.arrows f), (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶ _) z₁ =
@@ -159,7 +159,7 @@ theorem equalizer_sheaf_condition :
     ← Equiv.forall_congr_left (firstObjEqFamily P (S : Presieve X)).toEquiv.symm]
   simp_rw [← compatible_iff]
   simp only [inv_hom_id_apply, Iso.toEquiv_symm_fun]
-  apply ball_congr
+  apply forall₂_congr
   intro x _
   apply exists_unique_congr
   intro t
@@ -247,7 +247,7 @@ theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P
   rw [Types.type_equalizer_iff_unique]
   erw [← Equiv.forall_congr_left (firstObjEqFamily P R).toEquiv.symm]
   simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
-  apply ball_congr
+  apply forall₂_congr
   intro x _
   apply exists_unique_congr
   intro t
@@ -266,7 +266,7 @@ namespace Arrows
 open Presieve
 
 variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B) [UnivLE.{w, max v u}]
-    [(ofArrows X π).hasPullbacks]
+    [(Presieve.ofArrows X π).hasPullbacks]
 -- TODO: allow `I : Type w` 
 
 /--
@@ -339,12 +339,12 @@ theorem compatible_iff (x : FirstObj P X) : (Arrows.Compatible P π ((Types.prod
 `P` is a sheaf for `Presieve.ofArrows X π`, iff the fork given by `w` is an equalizer.
 See <https://stacks.math.columbia.edu/tag/00VM>.
 -/
-theorem sheaf_condition : (ofArrows X π).IsSheafFor P ↔
+theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
     Nonempty (IsLimit (Fork.ofι (forkMap P X π) (w P X π))) := by
   rw [Types.type_equalizer_iff_unique, isSheafFor_arrows_iff]
   erw [← Equiv.forall_congr_left (Types.productIso _).toEquiv.symm]
   simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
-  apply ball_congr
+  apply forall₂_congr
   intro x _
   apply exists_unique_congr
   intro t

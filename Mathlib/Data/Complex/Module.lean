@@ -3,11 +3,11 @@ Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
-import Mathlib.Algebra.Order.SMul
+import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.FieldTheory.Tower
-import Mathlib.Algebra.CharP.Invertible
+import Mathlib.LinearAlgebra.FiniteDimensional
 
 #align_import data.complex.module from "leanprover-community/mathlib"@"c7bce2818663f456335892ddbdd1809f111a5b72"
 
@@ -48,36 +48,54 @@ namespace Complex
 
 open ComplexConjugate
 
+open scoped SMul
+
 variable {R : Type*} {S : Type*}
 
--- Test that the `SMul ℚ ℂ` instance is correct.
-example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
+attribute [local ext] Complex.ext
 
-instance [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
+-- Test that the `SMul ℚ ℂ` instance is correct.
+example : (Complex.SMul.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
+
+/- The priority of the following instances has been manually lowered, as when they don't apply
+they lead Lean to a very costly path, and most often they don't apply (most actions on `ℂ` don't
+come from actions on `ℝ`). See #11980-/
+
+-- priority manually adjusted in #11980
+instance (priority := 90) [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
   smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm]
 
-instance [SMul R S] [SMul R ℝ] [SMul S ℝ] [IsScalarTower R S ℝ] : IsScalarTower R S ℂ where
+-- priority manually adjusted in #11980
+instance (priority := 90) [SMul R S] [SMul R ℝ] [SMul S ℝ] [IsScalarTower R S ℝ] :
+    IsScalarTower R S ℂ where
   smul_assoc r s x := by ext <;> simp [smul_re, smul_im, smul_assoc]
 
-instance [SMul R ℝ] [SMul Rᵐᵒᵖ ℝ] [IsCentralScalar R ℝ] : IsCentralScalar R ℂ where
+-- priority manually adjusted in #11980
+instance (priority := 90) [SMul R ℝ] [SMul Rᵐᵒᵖ ℝ] [IsCentralScalar R ℝ] :
+    IsCentralScalar R ℂ where
   op_smul_eq_smul r x := by ext <;> simp [smul_re, smul_im, op_smul_eq_smul]
 
-instance mulAction [Monoid R] [MulAction R ℝ] : MulAction R ℂ where
+-- priority manually adjusted in #11980
+instance (priority := 90) mulAction [Monoid R] [MulAction R ℝ] : MulAction R ℂ where
   one_smul x := by ext <;> simp [smul_re, smul_im, one_smul]
   mul_smul r s x := by ext <;> simp [smul_re, smul_im, mul_smul]
 
-instance distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ where
+-- priority manually adjusted in #11980
+instance (priority := 90) distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ where
   smul_add r x y := by ext <;> simp [smul_re, smul_im, smul_add]
   smul_zero r := by ext <;> simp [smul_re, smul_im, smul_zero]
 
-instance [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
+-- priority manually adjusted in #11980
+instance (priority := 90) [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
   { Complex.distribSMul, Complex.mulAction with }
 
-instance [Semiring R] [Module R ℝ] : Module R ℂ where
+-- priority manually adjusted in #11980
+instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ where
   add_smul r s x := by ext <;> simp [smul_re, smul_im, add_smul]
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
-instance [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
+-- priority manually adjusted in #11980
+instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
   { Complex.ofReal.comp (algebraMap R ℝ) with
     smul := (· • ·)
     smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
@@ -141,7 +159,7 @@ theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
         fin_cases i <;> fin_cases j <;>
           -- Porting note: removed `only`, consider squeezing again
           simp [coe_basisOneI_repr, Finsupp.single_eq_of_ne, Matrix.cons_val_zero,
-            Matrix.cons_val_one, Matrix.head_cons, Fin.one_eq_zero_iff, Ne.def, not_false_iff, I_re,
+            Matrix.cons_val_one, Matrix.head_cons, Fin.one_eq_zero_iff, Ne, not_false_iff, I_re,
             Nat.succ_succ_ne_one, one_im, I_im, one_re, Finsupp.single_eq_same, Fin.zero_eq_one_iff]
 set_option linter.uppercaseLean3 false in
 #align complex.coe_basis_one_I Complex.coe_basisOneI
@@ -177,10 +195,25 @@ instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Mo
   RestrictScalars.module ℝ ℂ E
 #align module.complex_to_real Module.complexToReal
 
-instance Module.real_complex_tower (E : Type*) [AddCommGroup E] [Module ℂ E] :
-    IsScalarTower ℝ ℂ E :=
-  RestrictScalars.isScalarTower ℝ ℂ E
-#align module.real_complex_tower Module.real_complex_tower
+/- Register as an instance (with low priority) the fact that a complex algebra is also a real
+algebra. -/
+instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] :
+    Algebra ℝ A :=
+  RestrictScalars.algebra ℝ ℂ A
+
+-- try to make sure we're not introducing diamonds but we will need
+-- `reducible_and_instances` which currently fails #10906
+example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal := rfl
+
+-- try to make sure we're not introducing diamonds but we will need
+-- `reducible_and_instances` which currently fails #10906
+example {ι : Type*} [Fintype ι] :
+    Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal :=
+  rfl
+
+example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
+    (inst.complexToReal).toModule = (inst.toModule).complexToReal :=
+  by with_reducible_and_instances rfl
 
 @[simp, norm_cast]
 theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
@@ -194,6 +227,16 @@ instance (priority := 900) SMulCommClass.complexToReal {M E : Type*} [AddCommGro
     [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E where
   smul_comm r _ _ := (smul_comm (r : ℂ) _ _ : _)
 #align smul_comm_class.complex_to_real SMulCommClass.complexToReal
+
+/-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `Module.complexToReal` associates with
+another scalar action of `M` on `E` whenever the action of `ℂ` associates with the action of `M`. -/
+instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ M] [AddCommGroup E]
+    [Module ℂ E] [SMul M E] [IsScalarTower ℂ M E] : IsScalarTower ℝ M E where
+  smul_assoc r _ _ := (smul_assoc (r : ℂ) _ _ : _)
+#align module.real_complex_tower IsScalarTower.complexToReal
+
+-- check that the following instance is implied by the one above.
+example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance
 
 instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
     [Module ℂ E] [FiniteDimensional ℂ E] : FiniteDimensional ℝ E :=
@@ -282,7 +325,7 @@ theorem toMatrix_conjAe :
 theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ ℂ ∨ f = conjAe := by
   refine'
       (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp _ _ <;>
-    refine' fun h => algHom_ext _
+    refine fun h => algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 #align complex.real_alg_hom_eq_id_or_conj Complex.real_algHom_eq_id_or_conj
 
@@ -300,7 +343,7 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
   { equivRealProdAddHom with
     -- Porting note: `simp` has issues with `Prod.smul_def`
-    map_smul' := fun r c => by simp [equivRealProdAddHom, (Prod.smul_def), smul_eq_mul] }
+    map_smul' := fun r c => by simp [equivRealProdAddHom, Prod.smul_def, smul_eq_mul] }
 #align complex.equiv_real_prod_lm Complex.equivRealProdLm
 
 theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :
@@ -323,7 +366,7 @@ def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
       rw [add_mul, mul_add, mul_add, add_comm _ (y₁ • I' * y₂ • I'), add_add_add_comm]
       congr 1
       -- equate "real" and "imaginary" parts
-      · let inst : SMulCommClass ℝ A A := by infer_instance  -- porting note: added
+      · let inst : SMulCommClass ℝ A A := by infer_instance  -- Porting note: added
         rw [smul_mul_smul, hf, smul_neg, ← Algebra.algebraMap_eq_smul_one, ← sub_eq_add_neg, ←
           RingHom.map_mul, ← RingHom.map_sub]
       · rw [Algebra.smul_def, Algebra.smul_def, Algebra.smul_def, ← Algebra.right_comm _ x₂, ←
@@ -450,7 +493,7 @@ theorem realPart_I_smul (a : A) : ℜ (I • a) = -ℑ a := by
   ext
   -- Porting note: was
   -- simp [smul_comm I, smul_sub, sub_eq_add_neg, add_comm]
-  rw [realPart_apply_coe, AddSubgroupClass.coe_neg, imaginaryPart_apply_coe, neg_smul, neg_neg,
+  rw [realPart_apply_coe, NegMemClass.coe_neg, imaginaryPart_apply_coe, neg_smul, neg_neg,
     smul_comm I, star_smul, star_def, conj_I, smul_sub, neg_smul, sub_eq_add_neg]
 set_option linter.uppercaseLean3 false in
 #align real_part_I_smul realPart_I_smul
@@ -461,7 +504,7 @@ theorem imaginaryPart_I_smul (a : A) : ℑ (I • a) = ℜ a := by
   -- Porting note: was
   -- simp [smul_comm I, smul_smul I]
   rw [realPart_apply_coe, imaginaryPart_apply_coe, smul_comm]
-  simp [←smul_assoc]
+  simp [← smul_assoc]
 set_option linter.uppercaseLean3 false in
 #align imaginary_part_I_smul imaginaryPart_I_smul
 
@@ -527,7 +570,7 @@ open Submodule
 
 lemma span_selfAdjoint : span ℂ (selfAdjoint A : Set A) = ⊤ := by
   refine eq_top_iff'.mpr fun x ↦ ?_
-  rw [←realPart_add_I_smul_imaginaryPart x]
+  rw [← realPart_add_I_smul_imaginaryPart x]
   exact add_mem (subset_span (ℜ x).property) <|
     SMulMemClass.smul_mem _ <| subset_span (ℑ x).property
 
@@ -548,7 +591,7 @@ lemma Complex.coe_selfAdjointEquiv (z : selfAdjoint ℂ) :
 
 @[simp]
 lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
-  rw [realPart_apply_coe, star_def, conj_ofReal, ←two_smul ℝ (r : ℂ)]
+  rw [realPart_apply_coe, star_def, conj_ofReal, ← two_smul ℝ (r : ℂ)]
   simp
 
 @[simp]
@@ -558,8 +601,21 @@ lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
 lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
   (ℜ z : ℂ) = _    := by congrm (ℜ $((re_add_im z).symm))
   _          = z.re := by
-    rw [map_add, AddSubmonoid.coe_add, mul_comm, ←smul_eq_mul, realPart_I_smul]
-    simp [conj_ofReal, ←two_mul]
+    rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
+    simp [conj_ofReal, ← two_mul]
+
+lemma star_mul_self_add_self_mul_star {A : Type*} [NonUnitalRing A] [StarRing A]
+    [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A] (a : A) :
+    star a * a + a * star a = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) :=
+  have a_eq := (realPart_add_I_smul_imaginaryPart a).symm
+  calc
+    star a * a + a * star a = _ :=
+      congr((star $(a_eq)) * $(a_eq) + $(a_eq) * (star $(a_eq)))
+    _ = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) := by
+      simp [mul_add, add_mul, smul_smul, two_smul, mul_smul_comm,
+        smul_mul_assoc]
+      abel
+
 end RealImaginaryPart
 
 section Rational

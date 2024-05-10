@@ -20,7 +20,7 @@ open Set Filter Bornology Function
 
 open Filter
 
-variable {α β ι : Type*} {π : ι → Type*} [Fintype ι] [Bornology α] [Bornology β]
+variable {α β ι : Type*} {π : ι → Type*} [Bornology α] [Bornology β]
   [∀ i, Bornology (π i)]
 
 instance Prod.instBornology : Bornology (α × β) where
@@ -31,13 +31,11 @@ instance Prod.instBornology : Bornology (α × β) where
 
 instance Pi.instBornology : Bornology (∀ i, π i) where
   cobounded' := Filter.coprodᵢ fun i => cobounded (π i)
-  le_cofinite' := @coprodᵢ_cofinite ι π _ ▸ Filter.coprodᵢ_mono fun _ => Bornology.le_cofinite _
+  le_cofinite' := iSup_le fun _ ↦ (comap_mono (Bornology.le_cofinite _)).trans (comap_cofinite_le _)
 #align pi.bornology Pi.instBornology
 
 /-- Inverse image of a bornology. -/
-@[reducible]
-def Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology α
-    where
+abbrev Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology α where
   cobounded' := comap f (cobounded β)
   le_cofinite' := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
 #align bornology.induced Bornology.induced
@@ -61,14 +59,20 @@ theorem isBounded_image_fst_and_snd {s : Set (α × β)} :
   compl_mem_coprod.symm
 #align bornology.is_bounded_image_fst_and_snd Bornology.isBounded_image_fst_and_snd
 
+lemma IsBounded.image_fst {s : Set (α × β)} (hs : IsBounded s) : IsBounded (Prod.fst '' s) :=
+  (isBounded_image_fst_and_snd.2 hs).1
+
+lemma IsBounded.image_snd {s : Set (α × β)} (hs : IsBounded s) : IsBounded (Prod.snd '' s) :=
+  (isBounded_image_fst_and_snd.2 hs).2
+
 variable {s : Set α} {t : Set β} {S : ∀ i, Set (π i)}
 
 theorem IsBounded.fst_of_prod (h : IsBounded (s ×ˢ t)) (ht : t.Nonempty) : IsBounded s :=
-  fst_image_prod s ht ▸ (isBounded_image_fst_and_snd.2 h).1
+  fst_image_prod s ht ▸ h.image_fst
 #align bornology.is_bounded.fst_of_prod Bornology.IsBounded.fst_of_prod
 
 theorem IsBounded.snd_of_prod (h : IsBounded (s ×ˢ t)) (hs : s.Nonempty) : IsBounded t :=
-  snd_image_prod hs t ▸ (isBounded_image_fst_and_snd.2 h).2
+  snd_image_prod hs t ▸ h.image_snd
 #align bornology.is_bounded.snd_of_prod Bornology.IsBounded.snd_of_prod
 
 theorem IsBounded.prod (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ×ˢ t) :=
@@ -106,6 +110,10 @@ theorem forall_isBounded_image_eval_iff {s : Set (∀ i, π i)} :
   compl_mem_coprodᵢ.symm
 #align bornology.forall_is_bounded_image_eval_iff Bornology.forall_isBounded_image_eval_iff
 
+lemma IsBounded.image_eval {s : Set (∀ i, π i)} (hs : IsBounded s) (i : ι) :
+    IsBounded (eval i '' s) :=
+  forall_isBounded_image_eval_iff.2 hs i
+
 theorem IsBounded.pi (h : ∀ i, IsBounded (S i)) : IsBounded (pi univ S) :=
   forall_isBounded_image_eval_iff.1 fun i => (h i).subset eval_image_univ_pi_subset
 #align bornology.is_bounded.pi Bornology.IsBounded.pi
@@ -119,7 +127,7 @@ theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, I
   by_cases hne : ∃ i, S i = ∅
   · simp [hne, univ_pi_eq_empty_iff.2 hne]
   · simp only [hne, false_or_iff]
-    simp only [not_exists, ← Ne.def, ← nonempty_iff_ne_empty, ← univ_pi_nonempty_iff] at hne
+    simp only [not_exists, ← Ne.eq_def, ← nonempty_iff_ne_empty, ← univ_pi_nonempty_iff] at hne
     exact isBounded_pi_of_nonempty hne
 #align bornology.is_bounded_pi Bornology.isBounded_pi
 
@@ -156,7 +164,7 @@ instance [∀ i, BoundedSpace (π i)] : BoundedSpace (∀ i, π i) := by
 theorem boundedSpace_induced_iff {α β : Type*} [Bornology β] {f : α → β} :
     @BoundedSpace α (Bornology.induced f) ↔ IsBounded (range f) := by
   rw [← @isBounded_univ _ (Bornology.induced f), isBounded_induced, image_univ]
--- porting note: had to explicitly provided the bornology to `isBounded_univ`.
+-- Porting note: had to explicitly provided the bornology to `isBounded_univ`.
 #align bounded_space_induced_iff boundedSpace_induced_iff
 
 theorem boundedSpace_subtype_iff {p : α → Prop} :
