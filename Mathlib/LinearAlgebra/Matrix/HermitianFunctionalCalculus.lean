@@ -202,7 +202,7 @@ exists_cfc_of_predicate := by
       · constructor
         · sorry
         · intro f
-          sorry
+          sorry --probably an easy lemma saying that *-homs preserve Hermitian elements...
 
 
 
