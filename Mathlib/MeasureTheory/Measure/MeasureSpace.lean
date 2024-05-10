@@ -764,7 +764,6 @@ theorem toMeasure_apply₀ (m : OuterMeasure α) (h : ms ≤ m.caratheodory) {s 
     m.toMeasure h s = m.toMeasure h t := measure_congr heq.symm
     _ = m t := toMeasure_apply m h htm
     _ ≤ m s := m.mono hts
-
 #align measure_theory.to_measure_apply₀ MeasureTheory.toMeasure_apply₀
 
 @[simp]
@@ -887,8 +886,8 @@ instance instSMul [MeasurableSpace α] : SMul R (Measure α) :=
   ⟨fun c μ =>
     { toOuterMeasure := c • μ.toOuterMeasure
       m_iUnion := fun s hs hd => by
-        simp_rw [OuterMeasure.smul_apply, coe_toOuterMeasure, measure_iUnion hd hs]
-        simpa using (ENNReal.tsum_mul_left (a := c • 1)).symm
+        simp only [OuterMeasure.smul_apply, coe_toOuterMeasure, ENNReal.tsum_const_smul,
+          measure_iUnion hd hs]
       trimmed := by rw [OuterMeasure.trim_smul, μ.trimmed] }⟩
 #align measure_theory.measure.has_smul MeasureTheory.Measure.instSMul
 
