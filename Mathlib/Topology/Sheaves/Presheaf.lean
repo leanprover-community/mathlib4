@@ -41,6 +41,10 @@ variable (C : Type u) [Category.{v} C]
 
 namespace TopCat
 
+variable (Z : TopCat)
+
+set_option trace.Meta.synthInstance true in
+#synth Category (Opens Z)
 /-- The category of `C`-valued presheaves on a (bundled) topological space `X`. -/
 -- Porting note(#5171): was @[nolint has_nonempty_instance]
 def Presheaf (X : TopCat.{w}) : Type max u v w :=

@@ -73,6 +73,7 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
+#synth PartialOrder (α → Prop)
 instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
     sup := (· ∪ ·),

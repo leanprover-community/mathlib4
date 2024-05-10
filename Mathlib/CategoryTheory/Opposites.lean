@@ -170,6 +170,7 @@ section
 
 variable {D : Type u₂} [Category.{v₂} D]
 
+#synth Category Dᵒᵖ
 /-- The opposite of a functor, i.e. considering a functor `F : C ⥤ D` as a functor `Cᵒᵖ ⥤ Dᵒᵖ`.
 In informal mathematics no distinction is made between these. -/
 @[simps, pp_dot]

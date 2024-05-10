@@ -148,6 +148,7 @@ protected theorem «forall» {q : p → Prop} : (∀ x, q x) ↔ ∀ (x : B) (h 
   SetCoe.forall
 #align set_like.forall SetLike.forall
 
+#synth PartialOrder (Set B)
 theorem coe_injective : Function.Injective (SetLike.coe : A → Set B) := fun _ _ h =>
   SetLike.coe_injective' h
 #align set_like.coe_injective SetLike.coe_injective

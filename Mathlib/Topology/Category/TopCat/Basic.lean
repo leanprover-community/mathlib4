@@ -41,6 +41,7 @@ instance bundledHom : BundledHom @ContinuousMap :=
 set_option linter.uppercaseLean3 false in
 #align Top.bundled_hom TopCat.bundledHom
 
+set_option trace.Meta.synthInstance true in
 deriving instance LargeCategory for TopCat
 
 -- Porting note: currently no derive handler for ConcreteCategory
