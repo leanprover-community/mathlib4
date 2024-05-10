@@ -18,7 +18,7 @@ For `E : Set α`, ...
 * `loopyOn E` is the matroid on `E` whose elements are all loops, or equivalently in which `∅`
   is the only base.
 * `freeOn E` is the 'free matroid' whose ground set `E` is the only base.
-* For `I ⊆ E`, `trivialOn I E` is the matroid with ground set `E` in which `I` is the only base.
+* For `I ⊆ E`, `uniqueBaseOn I E` is the matroid with ground set `E` in which `I` is the only base.
 
 ## Implementation details
 
@@ -181,63 +181,65 @@ theorem freeOn_restrict (h : R ⊆ E) : (freeOn E) ↾ R = freeOn R := by
 
 end FreeOn
 
-section TrivialOn
+section uniqueBaseOn
 
 /-- The matroid on `E` whose unique base is the subset `I` of `E`.
 Intended for use when `I ⊆ E`; if this not not the case, then the base is `I ∩ E`. -/
-def trivialOn (I E : Set α) : Matroid α := (freeOn I) ↾ E
+def uniqueBaseOn (I E : Set α) : Matroid α := (freeOn I) ↾ E
 
-@[simp] theorem trivialOn_ground : (trivialOn I E).E = E :=
+@[simp] theorem uniqueBaseOn_ground : (uniqueBaseOn I E).E = E :=
   rfl
 
-theorem trivialOn_base_iff (hIE : I ⊆ E) : (trivialOn I E).Base B ↔ B = I := by
-  rw [trivialOn, base_restrict_iff', freeOn_basis'_iff, inter_eq_self_of_subset_right hIE]
+theorem uniqueBaseOn_base_iff (hIE : I ⊆ E) : (uniqueBaseOn I E).Base B ↔ B = I := by
+  rw [uniqueBaseOn, base_restrict_iff', freeOn_basis'_iff, inter_eq_self_of_subset_right hIE]
 
-theorem trivialOn_inter_ground_eq (I E : Set α) :
-    trivialOn (I ∩ E) E = trivialOn I E := by
-  simp only [trivialOn, restrict_eq_restrict_iff, freeOn_indep_iff, subset_inter_iff,
+theorem uniqueBaseOn_inter_ground_eq (I E : Set α) :
+    uniqueBaseOn (I ∩ E) E = uniqueBaseOn I E := by
+  simp only [uniqueBaseOn, restrict_eq_restrict_iff, freeOn_indep_iff, subset_inter_iff,
     iff_self_and]
   tauto
 
-@[simp] theorem trivialOn_indep_iff' : (trivialOn I E).Indep J ↔ J ⊆ I ∩ E := by
-  rw [trivialOn, restrict_indep_iff, freeOn_indep_iff, subset_inter_iff]
+@[simp] theorem uniqueBaseOn_indep_iff' : (uniqueBaseOn I E).Indep J ↔ J ⊆ I ∩ E := by
+  rw [uniqueBaseOn, restrict_indep_iff, freeOn_indep_iff, subset_inter_iff]
 
-theorem trivialOn_indep_iff (hIE : I ⊆ E) : (trivialOn I E).Indep J ↔ J ⊆ I := by
-  rw [trivialOn, restrict_indep_iff, freeOn_indep_iff, and_iff_left_iff_imp]
+theorem uniqueBaseOn_indep_iff (hIE : I ⊆ E) : (uniqueBaseOn I E).Indep J ↔ J ⊆ I := by
+  rw [uniqueBaseOn, restrict_indep_iff, freeOn_indep_iff, and_iff_left_iff_imp]
   exact fun h ↦ h.trans hIE
 
-theorem trivialOn_basis_iff (hI : I ⊆ E) (hX : X ⊆ E) :
-    (trivialOn I E).Basis J X ↔ J = X ∩ I := by
+theorem uniqueBaseOn_basis_iff (hI : I ⊆ E) (hX : X ⊆ E) :
+    (uniqueBaseOn I E).Basis J X ↔ J = X ∩ I := by
   rw [basis_iff_mem_maximals]
-  simp_rw [trivialOn_indep_iff', ← subset_inter_iff, ← le_eq_subset, Iic_def, maximals_Iic,
+  simp_rw [uniqueBaseOn_indep_iff', ← subset_inter_iff, ← le_eq_subset, Iic_def, maximals_Iic,
     mem_singleton_iff, inter_eq_self_of_subset_left hI, inter_comm I]
 
-theorem trivialOn_inter_basis (hI : I ⊆ E) (hX : X ⊆ E) : (trivialOn I E).Basis (X ∩ I) X := by
-  rw [trivialOn_basis_iff hI hX]
+theorem uniqueBaseOn_inter_basis (hI : I ⊆ E) (hX : X ⊆ E) :
+    (uniqueBaseOn I E).Basis (X ∩ I) X := by
+  rw [uniqueBaseOn_basis_iff hI hX]
 
-@[simp] theorem trivialOn_dual_eq (I E : Set α) : (trivialOn I E)﹡ = trivialOn (E \ I) E := by
-  rw [← trivialOn_inter_ground_eq]
+@[simp] theorem uniqueBaseOn_dual_eq (I E : Set α) :
+    (uniqueBaseOn I E)﹡ = uniqueBaseOn (E \ I) E := by
+  rw [← uniqueBaseOn_inter_ground_eq]
   refine eq_of_base_iff_base_forall rfl (fun B (hB : B ⊆ E) ↦ ?_)
-  rw [dual_base_iff, trivialOn_base_iff (inter_subset_right _ _),
-    trivialOn_base_iff (diff_subset _ _), trivialOn_ground]
+  rw [dual_base_iff, uniqueBaseOn_base_iff (inter_subset_right _ _),
+    uniqueBaseOn_base_iff (diff_subset _ _), uniqueBaseOn_ground]
   refine' ⟨fun h ↦ _, fun h ↦ _⟩
   · rw [← diff_diff_cancel_left hB, h, diff_inter_self_eq_diff]
   rw [h, inter_comm I]; simp
 
-@[simp] theorem trivialOn_self (I : Set α) : (trivialOn I I) = freeOn I := by
-  rw [trivialOn, freeOn_restrict rfl.subset]
+@[simp] theorem uniqueBaseOn_self (I : Set α) : (uniqueBaseOn I I) = freeOn I := by
+  rw [uniqueBaseOn, freeOn_restrict rfl.subset]
 
-@[simp] theorem trivialOn_empty (I : Set α) : (trivialOn ∅ I) = loopyOn I := by
-  rw [← dual_inj, trivialOn_dual_eq, diff_empty, trivialOn_self, loopyOn_dual_eq]
+@[simp] theorem uniqueBaseOn_empty (I : Set α) : (uniqueBaseOn ∅ I) = loopyOn I := by
+  rw [← dual_inj, uniqueBaseOn_dual_eq, diff_empty, uniqueBaseOn_self, loopyOn_dual_eq]
 
-@[simp] theorem trivialOn_restrict' (I E R : Set α) :
-    (trivialOn I E) ↾ R = trivialOn (I ∩ R ∩ E) R := by
-  simp_rw [eq_iff_indep_iff_indep_forall, restrict_ground_eq, trivialOn_ground, true_and,
-    restrict_indep_iff, trivialOn_indep_iff', subset_inter_iff]
+@[simp] theorem uniqueBaseOn_restrict' (I E R : Set α) :
+    (uniqueBaseOn I E) ↾ R = uniqueBaseOn (I ∩ R ∩ E) R := by
+  simp_rw [eq_iff_indep_iff_indep_forall, restrict_ground_eq, uniqueBaseOn_ground, true_and,
+    restrict_indep_iff, uniqueBaseOn_indep_iff', subset_inter_iff]
   tauto
 
-theorem trivialOn_restrict (h : I ⊆ E) (R : Set α) :
-    (trivialOn I E) ↾ R = trivialOn (I ∩ R) R := by
-  rw [trivialOn_restrict', inter_right_comm, inter_eq_self_of_subset_left h]
+theorem uniqueBaseOn_restrict (h : I ⊆ E) (R : Set α) :
+    (uniqueBaseOn I E) ↾ R = uniqueBaseOn (I ∩ R) R := by
+  rw [uniqueBaseOn_restrict', inter_right_comm, inter_eq_self_of_subset_left h]
 
-end TrivialOn
+end uniqueBaseOn
