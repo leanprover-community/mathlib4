@@ -1382,7 +1382,7 @@ def subtypeProdEquivProd {p : α → Prop} {q : β → Prop} :
 
 /-- A subtype of a `Prod` that depends only on the first component is equivalent to the
 corresponding subtype of the first type times the second type. -/
-def prodSubtypeEquivSubtypeProd {p : α → Prop} : {s : α × β // p s.1} ≃ {a // p a} × β where
+def prodSubtypeFstEquivSubtypeProd {p : α → Prop} : {s : α × β // p s.1} ≃ {a // p a} × β where
   toFun x := ⟨⟨x.1.1, x.2⟩, x.1.2⟩
   invFun x := ⟨⟨x.1.1, x.2⟩, x.1.2⟩
   left_inv _ := rfl
