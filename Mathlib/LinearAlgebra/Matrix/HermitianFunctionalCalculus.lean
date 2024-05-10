@@ -76,12 +76,11 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
       (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
       * star (eigenvectorUnitary hA : Matrix n n 𝕜)
   map_one' := by
-      dsimp
       have h1 : diagonal 1 = (1 : Matrix n n 𝕜) := rfl
-      simp only  [h1, algebraMap.coe_one, Function.const_one, mul_one,
-                 Matrix.mem_unitaryGroup_iff.mp, SetLike.coe_mem]
+      simp only [h1, mul_one, Matrix.mem_unitaryGroup_iff.mp, SetLike.coe_mem,ContinuousMap.coe_one,
+                 Pi.one_comp, Pi.comp_one, algebraMap.coe_one, Function.const_one]
   map_mul' := by
-      dsimp
+      simp only [ContinuousMap.coe_mul]
       intro f g
       have H : diagonal ((RCLike.ofReal ∘ (⇑f * ⇑g) ∘
       (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))) = diagonal ((RCLike.ofReal ∘ ⇑f ∘
@@ -103,14 +102,12 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
     intro r
     have h : RCLike.ofReal ∘ ⇑((algebraMap ℝ C(↑(spectrum ℝ A), ℝ)) r) ∘
         (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) =
-        (RCLike (K := 𝕜)).ofReal  ∘ (Function.const (spectrum ℝ A) r) ∘
+        RCLike.ofReal (K := 𝕜) ∘ (Function.const (spectrum ℝ A) r) ∘
         (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) := by sorry
-    apply?
-
+    sorry
   map_star' := by
     intro g
-    dsimp
-    simp only [star_mul, star_star]
+    simp only [star_trivial, StarMul.star_mul, star_star]
     have H1 : star (RCLike.ofReal ∘ ⇑g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
             = RCLike.ofReal (K := 𝕜) ∘ star ⇑g ∘
               (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) := by
@@ -124,7 +121,7 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
      (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) := by
      simp only [star_eq_conjTranspose, diagonal_conjTranspose, H1]
     simp only [H2, mul_assoc]
-
+    exact rfl
 #exit
 
 instance instContinuousFunctionalCalculus :
