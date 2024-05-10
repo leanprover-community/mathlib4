@@ -822,7 +822,7 @@ theorem measure_toMeasurable_inter {s t : Set α} (hs : MeasurableSet s) (ht : �
 instance instZero [MeasurableSpace α] : Zero (Measure α) :=
   ⟨{  toOuterMeasure := 0
       m_iUnion := fun _f _hf _hd => tsum_zero.symm
-      trimmed := OuterMeasure.trim_zero }⟩
+      trim_le := OuterMeasure.trim_zero.le }⟩
 #align measure_theory.measure.has_zero MeasureTheory.Measure.instZero
 
 @[simp]
@@ -858,7 +858,7 @@ instance instAdd [MeasurableSpace α] : Add (Measure α) :=
       m_iUnion := fun s hs hd =>
         show μ₁ (⋃ i, s i) + μ₂ (⋃ i, s i) = ∑' i, (μ₁ (s i) + μ₂ (s i)) by
           rw [ENNReal.tsum_add, measure_iUnion hd hs, measure_iUnion hd hs]
-      trimmed := by rw [OuterMeasure.trim_add, μ₁.trimmed, μ₂.trimmed] }⟩
+      trim_le := by rw [OuterMeasure.trim_add, μ₁.trimmed, μ₂.trimmed] }⟩
 #align measure_theory.measure.has_add MeasureTheory.Measure.instAdd
 
 @[simp]
@@ -888,7 +888,7 @@ instance instSMul [MeasurableSpace α] : SMul R (Measure α) :=
       m_iUnion := fun s hs hd => by
         simp only [OuterMeasure.smul_apply, coe_toOuterMeasure, ENNReal.tsum_const_smul,
           measure_iUnion hd hs]
-      trimmed := by rw [OuterMeasure.trim_smul, μ.trimmed] }⟩
+      trim_le := by rw [OuterMeasure.trim_smul, μ.trimmed] }⟩
 #align measure_theory.measure.has_smul MeasureTheory.Measure.instSMul
 
 @[simp]
@@ -1118,7 +1118,7 @@ instance instCompleteLattice [MeasurableSpace α] : CompleteLattice (Measure α)
             exact le_top
           else
             simp_all [Set.not_nonempty_iff_eq_empty]
-        trimmed := le_antisymm le_top (OuterMeasure.le_trim _) },
+        trim_le := le_top },
     le_top := fun μ => toOuterMeasure_le.mp le_top
     bot := 0
     bot_le := fun _a _s => bot_le }
