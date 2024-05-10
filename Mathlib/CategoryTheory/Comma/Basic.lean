@@ -239,7 +239,7 @@ instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (
           assoc, assoc]
         erw [← α.naturality_assoc, β.naturality]
         dsimp
-        rw [F₁.image_preimage, F₂.image_preimage]
+        rw [F₁.map_preimage, F₂.map_preimage]
         simpa using φ.w) }, by aesop_cat⟩
 
 instance essSurj_map [F₁.EssSurj] [F₂.EssSurj] [F.Full] [IsIso α] [IsIso β] :
