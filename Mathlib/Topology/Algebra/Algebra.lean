@@ -100,9 +100,9 @@ section
 variable (R : Type*) [CommSemiring R] [TopologicalSpace R] [TopologicalSemiring R]
   (A : Type*) [Semiring A] [TopologicalSpace A] [TopologicalSemiring A]
 
-/-- Continuous algebra homomorphisms between algebras. We only put the type classes that are necessary for the
-definition, although in applications `M` and `B` will be topological algebras over the topological
-ring `R`. -/
+/-- Continuous algebra homomorphisms between algebras. We only put the type classes that are
+  necessary for the definition, although in applications `M` and `B` will be topological algebras
+  over the topological ring `R`. -/
 structure ContinuousAlgHom (R : Type*) [CommSemiring R] (A : Type*) [Semiring A]
     [TopologicalSpace A] (B : Type*) [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
     extends A →ₐ[R] B where
