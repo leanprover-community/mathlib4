@@ -254,6 +254,42 @@ theorem IsSheaf.hom_ext {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P :
   (hP _ _ S.condition).isSeparatedFor.ext fun Y f hf => h ⟨Y, f, hf⟩
 #align category_theory.presheaf.is_sheaf.hom_ext CategoryTheory.Presheaf.IsSheaf.hom_ext
 
+lemma IsSheaf.hom_ext_ofArrows
+    {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) {I : Type*} {S : C} {X : I → C}
+    (f : ∀ i, X i ⟶ S) (hf : Sieve.ofArrows _ f ∈ J S) {E : A}
+    {x y : E ⟶ P.obj (op S)} (h : ∀ i, x ≫ P.map (f i).op = y ≫ P.map (f i).op) :
+    x = y := by
+  apply hP.hom_ext ⟨_, hf⟩
+  rintro ⟨Z, _, _, g, _, ⟨i⟩, rfl⟩
+  dsimp
+  rw [P.map_comp, reassoc_of% (h i)]
+
+section
+
+variable {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) {I : Type*} {S : C} {X : I → C}
+  (f : ∀ i, X i ⟶ S) (hf : Sieve.ofArrows _ f ∈ J S) {E : A}
+  (x : ∀ i, E ⟶ P.obj (op (X i)))
+  (hx : ∀ ⦃W : C⦄ ⦃i j : I⦄ (a : W ⟶ X i) (b : W ⟶ X j),
+    a ≫ f i = b ≫ f j → x i ≫ P.map a.op = x j ≫ P.map b.op)
+
+lemma IsSheaf.exists_unique_amalgamation_ofArrows :
+    ∃! (g : E ⟶ P.obj (op S)), ∀ (i : I), g ≫ P.map (f i).op = x i :=
+  (Presieve.isSheafFor_arrows_iff _ _).1
+    ((Presieve.isSheafFor_iff_generate _).2 (hP E _ hf)) x (fun _ _ _ _ _ w => hx _ _ w)
+
+/-- If `P : Cᵒᵖ ⥤ A` is a sheaf and `f i : X i ⟶ S` is a covering family, then
+a morphism `E ⟶ P.obj (op S)` can be constructed from a compatible family of
+morphisms `x : E ⟶ P.obj (op (X i))`. -/
+def IsSheaf.amalgamateOfArrows : E ⟶ P.obj (op S) :=
+  (hP.exists_unique_amalgamation_ofArrows f hf x hx).choose
+
+@[reassoc (attr := simp)]
+lemma IsSheaf.amalgamateOfArrows_map (i : I) :
+    hP.amalgamateOfArrows f hf x hx ≫ P.map (f i).op = x i :=
+  (hP.exists_unique_amalgamation_ofArrows f hf x hx).choose_spec.1 i
+
+end
+
 theorem isSheaf_of_iso_iff {P P' : Cᵒᵖ ⥤ A} (e : P ≅ P') : IsSheaf J P ↔ IsSheaf J P' :=
   forall_congr' fun _ =>
     ⟨Presieve.isSheaf_iso J (isoWhiskerRight e _),

@@ -15,13 +15,18 @@ of elements of `I₀`, a "covering `Y j` of the fibre product of `X i₁` and
 `X i₂` over S", a condition which is phrased here without assuming that
 the fibre product actually exist.
 
+The definition `OneHypercover.isLimitMultifork` shows that if `E` is a
+`1`-hypercover of `S` and `F` is a sheaf, then `F.obj (op S)`
+identifies to the multiequalizer of suitable maps
+`F.obj (op (E.X i)) ⟶ F.obj (op (E.Y j))`.
+
 -/
 
 universe w v u
 
 namespace CategoryTheory
 
-open Limits
+open Category Limits
 
 variable {C : Type u} [Category.{v} C] {A : Type*} [Category A]
 
@@ -166,12 +171,44 @@ def mk' {S : C} (E : PreOneHypercover S) [E.HasPullbacks]
     rw [E.sieve₁_eq_pullback_sieve₁' _ _ w]
     exact J.pullback_stable' _ (mem₁' i₁ i₂)
 
+section
+
 variable {S : C} (E : J.OneHypercover S) (F : Sheaf J A)
+
+section
+
+variable {E F}
+variable (c : Multifork (E.multicospanIndex F.val))
+
+/-- Auxiliary definition of `isLimitMultifork`. -/
+noncomputable def multiforkLift : c.pt ⟶ F.val.obj (Opposite.op S) :=
+  F.cond.amalgamateOfArrows _ E.mem₀ c.ι (fun W i₁ i₂ p₁ p₂ w => by
+    apply F.cond.hom_ext ⟨_, E.mem₁ _ _ _ _ w⟩
+    rintro ⟨T, g, j, h, fac₁, fac₂⟩
+    dsimp
+    simp only [assoc, ← Functor.map_comp, ← op_comp, fac₁, fac₂]
+    simp only [op_comp, Functor.map_comp]
+    simpa using c.condition ⟨⟨i₁, i₂⟩, j⟩ =≫ F.val.map h.op)
+
+@[reassoc]
+lemma multiforkLift_map (i₀ : E.I₀) : multiforkLift c ≫ F.val.map (E.f i₀).op = c.ι i₀ := by
+  simp [multiforkLift]
+
+end
 
 /-- If `E : J.OneHypercover S` and `F : Sheaf J A`, then `F.obj (op S)` is
 a multiequalizer of suitable maps `F.obj (op (E.X i)) ⟶ F.obj (op (E.Y j))`
 induced by `E.p₁ j` and `E.p₂ j`. -/
-def isLimitMultifork : IsLimit (E.multifork F.1) := sorry
+noncomputable def isLimitMultifork : IsLimit (E.multifork F.1) :=
+  Multifork.IsLimit.mk _ (fun c => multiforkLift c) (fun c => multiforkLift_map c) (by
+    intro c m hm
+    apply F.cond.hom_ext_ofArrows _ E.mem₀
+    intro i₀
+    dsimp only
+    rw [multiforkLift_map]
+    exact hm i₀)
+
+end
 
 end OneHypercover
 
