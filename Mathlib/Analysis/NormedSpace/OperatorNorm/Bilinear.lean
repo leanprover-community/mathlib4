@@ -159,7 +159,7 @@ def flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : F →SL[σ₂₃] E →SL
 #align continuous_linear_map.flip ContinuousLinearMap.flip
 
 private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
-  f.opNorm_le_bound₂ (norm_nonneg _) fun x y => by
+  f.opNorm_le_bound₂ (norm_nonneg f.flip) fun x y => by
     rw [mul_right_comm]
     exact (flip f).le_opNorm₂ y x
 
@@ -297,7 +297,7 @@ theorem norm_compSL_le :
     -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
     -- see leanprover/lean4#3927
     letI : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) :=
-      hasOpNorm (E := F →SL[σ₂₃] G) (F := (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G)
+      hasOpNorm (𝕜₂ := 𝕜₃) (E := F →SL[σ₂₃] G) (F := (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G)
     ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 #align continuous_linear_map.norm_compSL_le ContinuousLinearMap.norm_compSL_le
@@ -334,7 +334,7 @@ theorem norm_compL_le :
     -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
     -- see leanprover/lean4#3927
     letI : Norm ((Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) :=
-      hasOpNorm (E := Fₗ →L[𝕜] Gₗ) (F := (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ)
+      hasOpNorm (𝕜₂ := 𝕜) (E := Fₗ →L[𝕜] Gₗ) (F := (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ)
     ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
   norm_compSL_le _ _ _ _ _
 #align continuous_linear_map.norm_compL_le ContinuousLinearMap.norm_compL_le
