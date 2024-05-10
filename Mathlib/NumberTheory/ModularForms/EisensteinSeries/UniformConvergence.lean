@@ -177,7 +177,7 @@ theorem summand_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : �
       exact Nat.pos_of_ne_zero hn
 
 /-This is a special case of the above, but one that we use more. -/
-theorem eisSummand_is_bounded_on_box {k: ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hk : 0 ≤ k)
+theorem eisSummand_is_bounded_on_box {k : ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hk : 0 ≤ k)
     (hx : (x 0, x 1) ∈ box n) : Complex.abs (eisSummand k x z) ≤ (((r z) ^ k * n ^ k))⁻¹ := by
   have := summand_is_bounded_on_box_rpow (Int.cast_nonneg.2 hk) z n x hx
   norm_cast at *
