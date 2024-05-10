@@ -598,20 +598,20 @@ theorem eqRec_heq' {α : Sort*} {a' : α} {motive : (a : α) → a' = a → Sort
     HEq (@Eq.rec α a' motive p a t) p :=
   by subst t; rfl
 
-set_option autoImplicit true in
+section
+set_option autoImplicit true
 theorem rec_heq_of_heq {C : α → Sort*} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
     HEq (e ▸ x) y := by subst e; exact h
 #align rec_heq_of_heq rec_heq_of_heq
 
-set_option autoImplicit true in
 theorem rec_heq_iff_heq {C : α → Sort*} {x : C a} {y : β} {e : a = b} :
     HEq (e ▸ x) y ↔ HEq x y := by subst e; rfl
 #align rec_heq_iff_heq rec_heq_iff_heq
 
-set_option autoImplicit true in
 theorem heq_rec_iff_heq {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
     HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 #align heq_rec_iff_heq heq_rec_iff_heq
+end
 
 #align eq.congr Eq.congr
 #align eq.congr_left Eq.congr_left
@@ -1066,7 +1066,8 @@ def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) :
 
 end Classical
 
-set_option autoImplicit true in
+section
+set_option autoImplicit true
 /-- This function has the same type as `Exists.recOn`, and can be used to case on an equality,
 but `Exists.recOn` can only eliminate into Prop, while this version eliminates into any universe
 using the axiom of choice. -/
@@ -1074,6 +1075,7 @@ using the axiom of choice. -/
 noncomputable def Exists.classicalRecOn {p : α → Prop} (h : ∃ a, p a) {C} (H : ∀ a, p a → C) : C :=
   H (Classical.choose h) (Classical.choose_spec h)
 #align exists.classical_rec_on Exists.classicalRecOn
+end
 
 /-! ### Declarations about bounded quantifiers -/
 section BoundedQuantifiers
