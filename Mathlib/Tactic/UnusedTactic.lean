@@ -70,6 +70,8 @@ abbrev M := StateRefT (HashMap String.Range Syntax) IO
 def allowed : HashSet SyntaxNodeKind:= HashSet.empty
   |>.insert `Mathlib.Tactic.Says.says
   |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
+  |>.insert `«<;>»
+  |>.insert `«;»
   -- attempt to speed up, by ignoring more tactics
   |>.insert `by
   |>.insert `null
@@ -161,12 +163,13 @@ partial def eraseUsedTactics : InfoTree → M Unit
      if let .original .. := i.stx.getHeadInfo then
       let stx := i.stx
       let kind := stx.getKind
+      dbg_trace "processing {stx}"
       if let some r := stx.getRange? true then
         if allowed.contains kind
         -- if the tactic is allowed to not change the goals
         then modify (·.erase r)
         else
-        --dbg_trace "{kind} {i.goalsAfter.map (·.name)} {i.goalsBefore.map (·.name)}"
+        dbg_trace "{kind} {i.goalsAfter.map (·.name)} {i.goalsBefore.map (·.name)}"
         -- if the goals have changed
         if i.goalsAfter != i.goalsBefore
         then modify (·.erase r)
