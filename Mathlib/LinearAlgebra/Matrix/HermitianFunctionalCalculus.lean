@@ -136,7 +136,13 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
     have h : (RCLike.ofReal ∘ (⇑x + ⇑y) ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) =
             (RCLike.ofReal (K := 𝕜) ∘ ⇑x ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) +
             (RCLike.ofReal (K := 𝕜) ∘ ⇑y ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
-            := by sorry
+            := by
+               apply funext
+               intro j
+               simp only [Pi.add_apply, Function.comp_apply]
+               exact
+                 RCLike.ofReal_add (x ⟨hA.eigenvalues j, eigenvalue_mem_real hA j⟩)
+                   (y ⟨hA.eigenvalues j, eigenvalue_mem_real hA j⟩)
     rw [h]
     have h1: (RCLike.ofReal (K := 𝕜) ∘ ⇑x ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
         + (RCLike.ofReal (K := 𝕜) ∘ ⇑y ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) =
@@ -150,8 +156,8 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
     conv_lhs => rw [h1, ← h2]
     simp only [add_mul, mul_add]
   commutes' := by
-    dsimp
     intro r
+    simp only --cleans up so that pattern match works below
     have h : RCLike.ofReal ∘ ⇑((algebraMap ℝ C(↑(spectrum ℝ A), ℝ)) r) ∘
         (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) =
         RCLike.ofReal (K := 𝕜) ∘ (Function.const ↑(spectrum ℝ A) r) ∘
