@@ -241,7 +241,6 @@ theorem star_mem {U : Matrix n n α} (hU : U ∈ specialUnitaryGroup n α) :
     star U ∈ specialUnitaryGroup n α :=
   ⟨unitary.star_mem (mem_specialUnitaryGroup_iff.mp hU).1, star_det_of_mem hU⟩
 
-@[simp]
 theorem star_mem_iff {U : Matrix n n α} :
     star U ∈ specialUnitaryGroup n α ↔ U ∈ specialUnitaryGroup n α :=
   ⟨fun h => star_star U ▸ star_mem h, star_mem⟩
