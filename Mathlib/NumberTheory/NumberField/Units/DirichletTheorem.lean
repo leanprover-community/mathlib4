@@ -393,11 +393,11 @@ private theorem unitLatticeEquiv_aux2 :
 `ℤ`-module. -/
 def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (torsion K)) :=
   AddEquiv.toIntLinearEquiv <|
-    AddMonoidHom.range_eq_map (logEmbedding K) ▸ (QuotientAddGroup.quotientKerEquivRange
-      (logEmbedding K)).symm.trans <|
-        (QuotientAddGroup.quotientAddEquivOfEq (unitLatticeEquiv_aux1  K)).trans
-          (QuotientAddGroup.quotientKerEquivOfSurjective
-            (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))) (unitLatticeEquiv_aux2 K))
+    (AddEquiv.addSubgroupCongr (AddMonoidHom.range_eq_map (logEmbedding K)).symm).trans <|
+      (QuotientAddGroup.quotientKerEquivRange (logEmbedding K)).symm.trans <|
+          (QuotientAddGroup.quotientAddEquivOfEq (unitLatticeEquiv_aux1  K)).trans <|
+            QuotientAddGroup.quotientKerEquivOfSurjective
+              (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))) (unitLatticeEquiv_aux2 K)
 
 instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Module.Free.of_equiv (unitLatticeEquiv K)
