@@ -88,18 +88,18 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   return updates
 
 open Cli in
-/-- Setting up command line options and help text for `lake exe mkAll`. -/
+/-- Setting up command line options and help text for `lake exe mk_all`. -/
 def mkAll : Cmd := `[Cli|
-  mkAll VIA mkAllCLI; ["0.0.1"]
+  mk_all VIA mkAllCLI; ["0.0.1"]
   "Generate a file importing all the files of a Lean folder. \
    By default, it generates the files for the Lean libraries of the package.\
    In the case of `Mathlib`, it replaces `Cache` with `Mathlib/Tactic`. \
-   If you are working in a downstream project, use `lake exe mkAll --lib MyProject`."
+   If you are working in a downstream project, use `lake exe mk_all --lib MyProject`."
 
   FLAGS:
     lib : String; "Create a folder importing all Lean files from the specified library/subfolder."
     git;          "Use the folder content information from git."
 ]
 
-/-- The entrypoint to the `lake exe mkAll` command. -/
+/-- The entrypoint to the `lake exe mk_all` command. -/
 def main (args : List String) : IO UInt32 := mkAll.validate args
