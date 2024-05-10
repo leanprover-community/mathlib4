@@ -37,8 +37,8 @@ namespace List
 #noalign list.length_of_fn_aux
 
 @[simp]
-theorem length_ofFn_go {n} (f : Fin n → α) (i : Nat) (h : i ≤ n) : length (ofFn.go f i h) = i := by
-  induction i <;> simp_all [ofFn.go]
+theorem length_ofFn_go {n} (f : Fin n → α) (i j h) : length (ofFn.go f i j h) = i := by
+  induction i generalizing j <;> simp_all [ofFn.go]
 
 /-- The length of a list converted from a function is the size of the domain. -/
 @[simp]
@@ -48,16 +48,11 @@ theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
 
 #noalign list.nth_of_fn_aux
 
-theorem get_ofFn_go {n} (f : Fin n → α) (i : Nat) (h : i ≤ n) (j) (hj) :
-    get (ofFn.go f i h) ⟨j, hj⟩ = f ⟨n + j - i, by simp at hj; omega⟩ := by
-  induction i, h using ofFn.go.induct f generalizing j
-  case case1 => simp at hj
-  case case2 ih =>
-  · cases j
-    · simp [ofFn.go]
-    · simp [ofFn.go, ih]
-      congr 2
-      omega
+theorem get_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
+    get (ofFn.go f i j h) ⟨k, hk⟩ = f ⟨j + k, by simp at hk; omega⟩ := by
+  let i+1 := i
+  cases k <;> simp [ofFn.go, get_ofFn_go (i := i)]
+  congr 2; omega
 
 -- Porting note (#10756): new theorem
 @[simp]
