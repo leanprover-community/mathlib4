@@ -158,7 +158,7 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
   let S := AdjoinRoot ((minpoly K g).map <| algebraMap K R)
   have : Finite K R := (AdjoinRoot.powerBasis' <| minpoly.monic <| isIntegral f).finite
   have : Finite R S := (AdjoinRoot.powerBasis' <| (minpoly.monic <| isIntegral g).map _).finite
-  have : IsScalarTower K R S := .of_algebraMap_eq (S := R) fun _ ↦ rfl
+  have : IsScalarTower K R S := .of_algebraMap_eq fun _ ↦ rfl
   have : Finite K S := .trans R S
   have : IsArtinianRing R := .of_finite K R
   have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
