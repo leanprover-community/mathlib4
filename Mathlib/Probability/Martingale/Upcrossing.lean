@@ -6,6 +6,7 @@ Authors: Kexing Ying
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Martingale.Basic
+import Mathlib.Tactic.AdaptationNote
 
 #align_import probability.martingale.upcrossing from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
@@ -682,9 +683,9 @@ theorem crossing_pos_eq (hab : a < b) :
   have hf' (ω i) : (f i ω - a)⁺ ≤ 0 ↔ f i ω ≤ a := by rw [posPart_nonpos, sub_nonpos]
   induction' n with k ih
   · refine' ⟨rfl, _⟩
-    -- Adaptation note: nightly-2024-03-16: simp was
-    -- simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
-    --   Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
+    #adaptation_note /-- nightly-2024-03-16: simp was
+    simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
+      Set.mem_Icc, Set.mem_Iic, Nat.zero_eq] -/
     simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting_def,
       Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
     ext ω

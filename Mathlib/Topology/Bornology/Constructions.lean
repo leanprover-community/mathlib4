@@ -35,8 +35,7 @@ instance Pi.instBornology : Bornology (∀ i, π i) where
 #align pi.bornology Pi.instBornology
 
 /-- Inverse image of a bornology. -/
-@[reducible]
-def Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology α where
+abbrev Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology α where
   cobounded' := comap f (cobounded β)
   le_cofinite' := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
 #align bornology.induced Bornology.induced
