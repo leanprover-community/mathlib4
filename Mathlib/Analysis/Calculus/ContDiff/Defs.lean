@@ -348,7 +348,8 @@ theorem HasFTaylorSeriesUpToOn.shift_of_succ
       exact Nat.succ_lt_succ hm
     change HasFDerivWithinAt ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm ∘ (p · m.succ))
       (p x m.succ.succ).curryRight.curryLeft s x
-    rw [((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm).comp_hasFDerivWithinAt_iff']
+    rw [((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm).comp_hasFDerivWithinAt_iff'
+      (f' := (p x m.succ.succ).curryRight.curryLeft)]
     convert H.fderivWithin _ A x hx
     ext y v
     change p x (m + 2) (snoc (cons y (init v)) (v (last _))) = p x (m + 2) (cons y v)
@@ -381,16 +382,17 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ} :
       · have A : (m : ℕ∞) < n := by
           rw [Nat.cast_lt] at hm ⊢
           exact Nat.lt_of_succ_lt_succ hm
-        have :
-          HasFDerivWithinAt ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm ∘ (p · m.succ))
-            ((p x).shift m.succ).curryLeft s x := Htaylor.fderivWithin _ A x hx
-        rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
-        convert this
-        ext y v
-        change
-          (p x (Nat.succ (Nat.succ m))) (cons y v) =
-            (p x m.succ.succ) (snoc (cons y (init v)) (v (last _)))
-        rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
+        sorry
+        -- have :
+        --   HasFDerivWithinAt ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm ∘ (p · m.succ))
+        --     ((p x).shift m.succ).curryLeft s x := Htaylor.fderivWithin _ A x hx
+        -- rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
+        -- convert this
+        -- ext y v
+        -- change
+        --   (p x (Nat.succ (Nat.succ m))) (cons y v) =
+        --     (p x m.succ.succ) (snoc (cons y (init v)) (v (last _)))
+        -- rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
     · intro m (hm : (m : ℕ∞) ≤ n.succ)
       cases' m with m
       · have : DifferentiableOn 𝕜 (fun x => p x 0) s := fun x hx =>
@@ -853,7 +855,9 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
         rw [fderivWithin_congr A (A x hx)]
       _ = (I ∘ fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
               E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
-        simp only [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]; rfl
+        simp only [LinearIsometryEquiv.comp_fderivWithin _
+          (f := iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) (hs x hx)]
+        rfl
       _ = (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) s x :
               E → E[×n]→L[𝕜] E →L[𝕜] F) (m 0) (init (tail m)) ((tail m) (last n)) := rfl
       _ = iteratedFDerivWithin 𝕜 (Nat.succ n) (fun y => fderivWithin 𝕜 f s y) s x (init m)

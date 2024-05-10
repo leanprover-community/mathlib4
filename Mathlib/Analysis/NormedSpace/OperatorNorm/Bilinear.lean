@@ -366,9 +366,13 @@ theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
     letI : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
     letI : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
     ‖precompR Eₗ L‖ ≤ ‖L‖ :=
+  letI : Norm (E →L[𝕜] (Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) :=
+    hasOpNorm (𝕜₂ := 𝕜) (E := E) (F := (Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ)
+  letI : Norm ((Fₗ →L[𝕜] Gₗ) →L[𝕜] (Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) :=
+    hasOpNorm (𝕜₂ := 𝕜) (E := (Fₗ →L[𝕜] Gₗ)) (F := (Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ)
   calc
     ‖precompR Eₗ L‖ ≤ ‖compL 𝕜 Eₗ Fₗ Gₗ‖ * ‖L‖ := opNorm_comp_le _ _
-    _ ≤ 1 * ‖L‖ := mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg _)
+    _ ≤ 1 * ‖L‖ := mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg L)
     _ = ‖L‖ := by rw [one_mul]
 #align continuous_linear_map.norm_precompR_le ContinuousLinearMap.norm_precompR_le
 
@@ -376,7 +380,7 @@ theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
     -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
     -- see leanprover/lean4#3927
     letI : Norm ((Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) :=
-      hasOpNorm (E := Eₗ →L[𝕜] E) (F := Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ)
+      hasOpNorm (𝕜₂ := 𝕜) (E := Eₗ →L[𝕜] E) (F := Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ)
     ‖precompL Eₗ L‖ ≤ ‖L‖ := by
   rw [precompL, opNorm_flip, ← opNorm_flip L]
   exact norm_precompR_le _ L.flip

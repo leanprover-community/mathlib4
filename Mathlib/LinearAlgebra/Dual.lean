@@ -1691,8 +1691,15 @@ theorem dualCoannihilator_dualAnnihilator_eq {W : Subspace K (Dual K V)} [Finite
 theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)} :
     FiniteDimensional K (V ⧸ W.dualCoannihilator) ↔ FiniteDimensional K W :=
   ⟨fun _ ↦ FiniteDimensional.of_injective _ W.flip_quotDualCoannihilatorToDual_injective,
-    fun _ ↦ have := Basis.dual_finite (R := K) (M := W)
-    FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
+    fun _ ↦ by
+      #adaptation_note
+      /--
+      After https://github.com/leanprover/lean4/pull/4119
+      the `Free K W` instance isn't found by synthesis.
+      -/
+      have := Free.of_divisionRing K ↥W
+      have := Basis.dual_finite (R := K) (M := W)
+      exact FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
 
 open OrderDual in
 /-- For any vector space, `dualAnnihilator` and `dualCoannihilator` gives an antitone order

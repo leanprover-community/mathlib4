@@ -374,6 +374,8 @@ theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
   rw [← Units.finrank_eq_rank, Zlattice.rank ℝ]
 
+local instance : CommGroup (𝓞 K)ˣ := inferInstance
+
 /-- The linear equivalence between `unitLattice` and `(𝓞 K)ˣ ⧸ (torsion K)` as an additive
 `ℤ`-module. -/
 def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (torsion K)) := by
