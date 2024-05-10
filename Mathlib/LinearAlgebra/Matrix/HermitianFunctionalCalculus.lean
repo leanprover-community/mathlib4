@@ -165,7 +165,7 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
     conv_lhs => rw [h]; simp only [Function.const_comp, Function.comp_const]
     dsimp [algebraMap]
     rw [mul_assoc]
-    have h1 : Function.const n (r : 𝕜) = fun (x : n) => (r : 𝕜) := rfl
+    have h1 : Function.const n (r : 𝕜) = fun (_ : n) => (r : 𝕜) := rfl
     conv_lhs => simp only [h1, ← Matrix.smul_eq_diagonal_mul
                            (star (hA.eigenvectorUnitary : Matrix n n 𝕜)) (r : 𝕜)]
     simp only [Matrix.mul_smul]
