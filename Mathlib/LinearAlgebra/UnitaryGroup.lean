@@ -216,6 +216,85 @@ theorem mem_specialUnitaryGroup_iff :
     A ∈ specialUnitaryGroup n α ↔ A ∈ unitaryGroup n α ∧ A.det = 1 :=
   Iff.rfl
 
+namespace specialUnitaryGroup
+
+@[simp]
+theorem star_mul_self_of_mem {U : Matrix n n α} (hU : U ∈ specialUnitaryGroup n α) :
+    star U * U = 1 :=
+  hU.1.1
+
+@[simp]
+theorem mul_star_self_of_mem {U : Matrix n n α} (hU : U ∈ specialUnitaryGroup n α) :
+    U * star U = 1 :=
+  hU.1.2
+
+@[simp]
+theorem det_of_mem {U : Matrix n n α} (hU : U ∈ specialUnitaryGroup n α) :
+    U.det = 1 :=
+  hU.2
+
+theorem star_det_of_mem {U : Matrix n n α} (hU : U ∈ specialUnitaryGroup n α) :
+    (star U).det = 1 := by
+  rw [star_eq_conjTranspose, det_conjTranspose, det_of_mem hU, star_one]
+
+theorem star_mem {U : Matrix n n α} (hU : U ∈ specialUnitaryGroup n α) :
+    star U ∈ specialUnitaryGroup n α :=
+  ⟨unitary.star_mem (mem_specialUnitaryGroup_iff.mp hU).1, star_det_of_mem hU⟩
+
+@[simp]
+theorem star_mem_iff {U : Matrix n n α} :
+    star U ∈ specialUnitaryGroup n α ↔ U ∈ specialUnitaryGroup n α :=
+  ⟨fun h => star_star U ▸ star_mem h, star_mem⟩
+
+instance : Star (specialUnitaryGroup n α) :=
+  ⟨fun U => ⟨star U, star_mem U.prop⟩⟩
+
+@[simp, norm_cast]
+theorem coe_star {U : specialUnitaryGroup n α} : ↑(star U) = (star U : Matrix n n α) :=
+  rfl
+
+theorem coe_star_mul_self (U : specialUnitaryGroup n α) : (star U : Matrix n n α) * U = 1 :=
+  star_mul_self_of_mem U.prop
+
+theorem coe_mul_star_self (U : specialUnitaryGroup n α) : (U : Matrix n n α) * star U = 1 :=
+  mul_star_self_of_mem U.prop
+
+@[simp]
+theorem star_mul_self (U : specialUnitaryGroup n α) : star U * U = 1 :=
+  Subtype.ext <| coe_star_mul_self U
+
+@[simp]
+theorem mul_star_self (U : specialUnitaryGroup n α) : U * star U = 1 :=
+  Subtype.ext <| coe_mul_star_self U
+
+instance : Group (specialUnitaryGroup n α) :=
+  { Submonoid.toMonoid _ with
+    inv := star
+    mul_left_inv := star_mul_self }
+
+instance : InvolutiveStar (specialUnitaryGroup n α) :=
+  ⟨by
+    intro x
+    ext
+    rw [coe_star, coe_star, star_star]⟩
+
+instance : StarMul (specialUnitaryGroup n α) :=
+  ⟨by
+    intro x y
+    ext
+    rw [coe_star, Submonoid.coe_mul, Submonoid.coe_mul, coe_star, coe_star, star_mul]⟩
+
+instance : Inhabited (specialUnitaryGroup n α) :=
+  ⟨1⟩
+
+theorem star_eq_inv (U : specialUnitaryGroup n α) : star U = U⁻¹ :=
+  rfl
+
+theorem star_eq_inv' : (star : specialUnitaryGroup n α → specialUnitaryGroup n α) = Inv.inv :=
+  rfl
+
+end specialUnitaryGroup
+
 end specialUnitaryGroup
 
 section OrthogonalGroup
