@@ -70,6 +70,40 @@ theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A
     rw [←spec_toEuclideanLin_eq_spec]
     apply hA.eigenvalue_mem_toEuclideanLin_spectrum_RCLike i
 
+--Need unitary_left_cancel, unitary_right_cancel, star_unitary to simplify the following
+
+@[simp]
+theorem unitary_left_cancel (U : unitaryGroup n 𝕜) (A : Matrix n n 𝕜) (B : Matrix n n 𝕜) :
+    (U : Matrix n n 𝕜) * A = (U : Matrix n n 𝕜) * B → A = B := by
+    intro h
+    calc
+     A = 1 * A := by rw [one_mul]
+     _ = ((star U) * U) * A := by simp only [one_mul, unitary.coe_star, SetLike.coe_mem,
+                                            unitary.star_mul_self_of_mem]
+     _ = (star U) * (U * A) := by rw [mul_assoc]
+     _ = (star U) * (U * B) := by rw [h]
+     _ = ((star U) * U) * B := by rw [← mul_assoc]
+     _ = 1 * B := by simp only [unitary.coe_star, SetLike.coe_mem, unitary.star_mul_self_of_mem,
+                                one_mul]
+     _ = B := by rw [one_mul]
+
+@[simp]
+theorem unitary_right_cancel (U : unitaryGroup n 𝕜) (A : Matrix n n 𝕜) (B : Matrix n n 𝕜) :
+    A * (U : Matrix n n 𝕜) = B * (U : Matrix n n 𝕜) → A = B := by
+    intro h
+    calc
+     A = A * 1 := by rw [mul_one]
+     _ = A * (U * star U) := by simp only [mul_one, unitary.coe_star, SetLike.coe_mem,
+                                          unitary.mul_star_self_of_mem]
+     _ = (A * U) * star U := by rw [mul_assoc]
+     _ = (B * U) * star U := by rw [h]
+     _ = B * (U * star U) := by rw [← mul_assoc]
+     _ = B * 1 := by simp only [unitary.coe_star, SetLike.coe_mem, unitary.mul_star_self_of_mem,
+                               mul_one]
+     _ = B := by rw [mul_one]
+
+--Matrix.diagonal_one, Matrix.diagonal_smul
+
 noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
       diagonal (RCLike.ofReal ∘ g ∘
@@ -102,13 +136,17 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
     intro r
     have h : RCLike.ofReal ∘ ⇑((algebraMap ℝ C(↑(spectrum ℝ A), ℝ)) r) ∘
         (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) =
-        RCLike.ofReal (K := 𝕜) ∘ (Function.const (spectrum ℝ A) r) ∘
-        (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) := by sorry
-    conv =>
-     lhs
-     rw [h]
-     simp only [Function.const_comp, Function.comp_const]
-    --Moogle is down, but I think the algebra map on matrices can simplify and we can work via ext.
+        RCLike.ofReal (K := 𝕜) ∘ (Function.const ↑(spectrum ℝ A) r) ∘
+        (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) := rfl
+    conv_lhs => rw [h]; simp only [Function.const_comp, Function.comp_const]
+    dsimp [algebraMap]
+    rw [mul_assoc]
+    have h1 : Function.const n (r : 𝕜) = fun (x : n) => (r : 𝕜) := rfl
+    conv_lhs => simp only [h1, ← Matrix.smul_eq_diagonal_mul
+                           (star (hA.eigenvectorUnitary : Matrix n n 𝕜)) (r : 𝕜)]
+    simp only [Matrix.mul_smul]
+    rw [unitary.mul_star_self_of_mem, Algebra.smul_def', mul_one]
+    exact rfl
     sorry
   map_star' := by
     intro g
