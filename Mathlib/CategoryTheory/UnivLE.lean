@@ -34,8 +34,7 @@ theorem UnivLE_iff_essSurj :
     UnivLE.{max u v, v} ↔ (uliftFunctor.{u, v} : Type v ⥤ Type max u v).EssSurj :=
   ⟨fun _ => inferInstance, fun w => UnivLE.ofEssSurj w⟩
 
-instance [UnivLE.{max u v, v}] : uliftFunctor.{u, v}.IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj uliftFunctor
+instance [UnivLE.{max u v, v}] : uliftFunctor.{u, v}.IsEquivalence where
 
 def UnivLE.witness [UnivLE.{max u v, v}] : Type u ⥤ Type v :=
   uliftFunctor.{v, u} ⋙ (uliftFunctor.{u, v}).inv

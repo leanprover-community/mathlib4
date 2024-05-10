@@ -250,8 +250,8 @@ theorem ContinuousLinearMap.iteratedFDerivWithin_comp_left {f : E → F} (g : F 
     (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {i : ℕ} (hi : (i : ℕ∞) ≤ n) :
     iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
       g.compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) :=
-  (((hf.ftaylorSeriesWithin hs).continuousLinearMap_comp g).eq_ftaylor_series_of_uniqueDiffOn hi hs
-      hx).symm
+  (((hf.ftaylorSeriesWithin hs).continuousLinearMap_comp g).eq_iteratedFDerivWithin_of_uniqueDiffOn
+    hi hs hx).symm
 #align continuous_linear_map.iterated_fderiv_within_comp_left ContinuousLinearMap.iteratedFDerivWithin_comp_left
 
 /-- The iterated derivative of the composition with a linear map on the left is
@@ -416,8 +416,8 @@ theorem ContinuousLinearMap.iteratedFDerivWithin_comp_right {f : E → F} (g : G
     (hx : g x ∈ s) {i : ℕ} (hi : (i : ℕ∞) ≤ n) :
     iteratedFDerivWithin 𝕜 i (f ∘ g) (g ⁻¹' s) x =
       (iteratedFDerivWithin 𝕜 i f s (g x)).compContinuousLinearMap fun _ => g :=
-  (((hf.ftaylorSeriesWithin hs).compContinuousLinearMap g).eq_ftaylor_series_of_uniqueDiffOn hi h's
-      hx).symm
+  (((hf.ftaylorSeriesWithin hs).compContinuousLinearMap g).eq_iteratedFDerivWithin_of_uniqueDiffOn
+    hi h's hx).symm
 #align continuous_linear_map.iterated_fderiv_within_comp_right ContinuousLinearMap.iteratedFDerivWithin_comp_right
 
 /-- The iterated derivative within a set of the composition with a linear equiv on the right is
@@ -1304,7 +1304,7 @@ theorem iteratedFDerivWithin_add_apply {f g : E → F} (hf : ContDiffOn 𝕜 i f
     iteratedFDerivWithin 𝕜 i (f + g) s x =
       iteratedFDerivWithin 𝕜 i f s x + iteratedFDerivWithin 𝕜 i g s x :=
   Eq.symm <| ((hf.ftaylorSeriesWithin hu).add
-    (hg.ftaylorSeriesWithin hu)).eq_ftaylor_series_of_uniqueDiffOn le_rfl hu hx
+    (hg.ftaylorSeriesWithin hu)).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hu hx
 #align iterated_fderiv_within_add_apply iteratedFDerivWithin_add_apply
 
 /-- The iterated derivative of the sum of two functions is the sum of the iterated derivatives.
