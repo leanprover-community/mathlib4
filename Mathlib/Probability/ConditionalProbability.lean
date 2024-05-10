@@ -165,8 +165,7 @@ lemma cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (
   ext u
   rw [cond_apply _ hmt, cond_apply _ hms, cond_apply _ hms, cond_apply _ (hms.inter hmt)]
   obtain hst | hst := eq_or_ne (μ (s ∩ t)) 0
-  · have : μ (s ∩ t ∩ u) = 0 :=
-      le_antisymm (le_trans (measure_mono (Set.inter_subset_left _ _)) hst.le) bot_le
+  · have : μ (s ∩ t ∩ u) = 0 := measure_mono_null (Set.inter_subset_left _ _) hst
     simp [this, ← Set.inter_assoc]
   · have hcs' : μ s ≠ 0 :=
       (μ.toOuterMeasure.pos_of_subset_ne_zero (Set.inter_subset_left _ _) hst).ne'

@@ -859,16 +859,7 @@ theorem eqOn_right_half_plane_of_superexponential_decay {g : ℂ → E}
   suffices EqOn (f - g) 0 {z : ℂ | 0 ≤ z.re} by
     simpa only [EqOn, Pi.sub_apply, Pi.zero_apply, sub_eq_zero] using this
   refine' eq_zero_on_right_half_plane_of_superexponential_decay (hfd.sub hgd) _ hre _
-  · set l : Filter ℂ := cobounded ℂ ⊓ 𝓟 {z : ℂ | 0 < z.re}
-    suffices ∀ {c₁ c₂ B₁ B₂ : ℝ}, c₁ ≤ c₂ → B₁ ≤ B₂ → 0 ≤ B₂ →
-        (fun z => expR (B₁ * abs z ^ c₁)) =O[l] fun z => expR (B₂ * abs z ^ c₂) by
-      rcases hfexp with ⟨cf, hcf, Bf, hOf⟩; rcases hgexp with ⟨cg, hcg, Bg, hOg⟩
-      refine' ⟨max cf cg, max_lt hcf hcg, max 0 (max Bf Bg), _⟩
-      refine' .sub (hOf.trans <| this _ _ _) (hOg.trans <| this _ _ _) <;> simp
-    refine fun hc hB hB₂ ↦ .of_bound 1 ?_
-    filter_upwards [(eventually_cobounded_le_norm 1).filter_mono inf_le_left] with z hz
-    simp only [Real.norm_eq_abs, Complex.norm_eq_abs, Real.abs_exp, one_mul] at hz ⊢
-    gcongr; assumption
+  · exact isBigO_sub_exp_rpow hfexp hgexp
   · rcases hfim with ⟨Cf, hCf⟩; rcases hgim with ⟨Cg, hCg⟩
     exact ⟨Cf + Cg, fun x => norm_sub_le_of_le (hCf x) (hCg x)⟩
 #align phragmen_lindelof.eq_on_right_half_plane_of_superexponential_decay PhragmenLindelof.eqOn_right_half_plane_of_superexponential_decay
