@@ -32,28 +32,31 @@ to perform this update.
 
 # TODO: This is adapted from the linter for mathlib3. It should be rewritten in Lean.
 
+from enum import Enum
 from pathlib import Path
 import re
 import shutil
 import sys
 
 
-ERR_COP = 0 # copyright header
-ERR_MOD = 2 # module docstring
-ERR_LIN = 3 # line length
-ERR_OPT = 6 # set_option
-ERR_AUT = 7 # malformed authors list
-ERR_TAC = 9 # imported Mathlib.Tactic
-ERR_IBY = 11 # isolated by
-ERR_DOT = 12 # isolated or low focusing dot
-ERR_SEM = 13 # the substring " ;"
-ERR_WIN = 14 # Windows line endings "\r\n"
-ERR_TWS = 15 # trailing whitespace
-ERR_CLN = 16 # line starts with a colon
-ERR_IND = 17 # second line not correctly indented
-ERR_ARR = 18 # space after "←"
-ERR_NUM_LIN = 19 # file is too large
-ERR_NSP = 20 # non-terminal simp
+class Error(Enum):
+    '''Possible errors raised by this script.'''
+    ERR_COP = 0 # copyright header
+    ERR_MOD = 2 # module docstring
+    ERR_LIN = 3 # line length
+    ERR_OPT = 6 # set_option
+    ERR_AUT = 7 # malformed authors list
+    ERR_TAC = 9 # imported Mathlib.Tactic
+    ERR_IBY = 11 # isolated by
+    ERR_DOT = 12 # isolated or low focusing dot
+    ERR_SEM = 13 # the substring " ;"
+    ERR_WIN = 14 # Windows line endings "\r\n"
+    ERR_TWS = 15 # trailing whitespace
+    ERR_CLN = 16 # line starts with a colon
+    ERR_IND = 17 # second line not correctly indented
+    ERR_ARR = 18 # space after "←"
+    ERR_NUM_LIN = 19 # file is too large
+    ERR_NSP = 20 # non-terminal simp
 
 exceptions = []
 
@@ -65,20 +68,12 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
     for exline in f:
         filename, _, _, _, _, errno, *extra = exline.split()
         path = ROOT_DIR / filename
-        if errno == "ERR_COP":
-            exceptions += [(ERR_COP, path, None)]
-        elif errno == "ERR_MOD":
-            exceptions += [(ERR_MOD, path, None)]
+        if errno == "ERR_MOD":
+            exceptions += [(Error.ERR_MOD, path, None)]
         elif errno == "ERR_LIN":
-            exceptions += [(ERR_LIN, path, None)]
-        elif errno == "ERR_OPT":
-            exceptions += [(ERR_OPT, path, None)]
-        elif errno == "ERR_AUT":
-            exceptions += [(ERR_AUT, path, None)]
-        elif errno == "ERR_TAC":
-            exceptions += [(ERR_TAC, path, None)]
+            exceptions += [(Error.ERR_LIN, path, None)]
         elif errno == "ERR_NUM_LIN":
-            exceptions += [(ERR_NUM_LIN, path, extra[1])]
+            exceptions += [(Error.ERR_NUM_LIN, path, extra[1])]
         else:
             print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
             sys.exit(1)
@@ -151,7 +146,7 @@ def set_option_check(lines, path):
             option_prefix = line.strip().split(' ', 2)[1].split('.', 1)[0]
             # forbidden options: pp, profiler, trace
             if option_prefix in {'pp', 'profiler', 'trace'}:
-                errors += [(ERR_OPT, line_nr, path)]
+                errors += [(Error.ERR_OPT, line_nr, path)]
                 # skip adding this line to newlines so that we suggest removal
                 continue
         newlines.append((line_nr, line))
@@ -162,10 +157,10 @@ def line_endings_check(lines, path):
     newlines = []
     for line_nr, line in lines:
         if "\r\n" in line:
-            errors += [(ERR_WIN, line_nr, path)]
+            errors += [(Error.ERR_WIN, line_nr, path)]
             line = line.replace("\r\n", "\n")
         if line.endswith(" \n"):
-            errors += [(ERR_TWS, line_nr, path)]
+            errors += [(Error.ERR_TWS, line_nr, path)]
             line = line.rstrip() + "\n"
         newlines.append((line_nr, line))
     return errors, newlines
@@ -194,12 +189,12 @@ def four_spaces_in_second_line(lines, path):
                 if stripped_next_line.startswith("| ") or line.endswith("where\n"):
                     # Check and fix if the number of leading space is not 2
                     if num_spaces != 2:
-                        errors += [(ERR_IND, next_line_nr, path)]
+                        errors += [(Error.ERR_IND, next_line_nr, path)]
                         new_next_line = ' ' * 2 + stripped_next_line
                 # Check and fix if the number of leading spaces is not 4
                 else:
                     if num_spaces != 4:
-                        errors += [(ERR_IND, next_line_nr, path)]
+                        errors += [(Error.ERR_IND, next_line_nr, path)]
                         new_next_line = ' ' * 4 + stripped_next_line
         newlines.append((next_line_nr, new_next_line))
     return errors, newlines
@@ -225,7 +220,7 @@ def nonterminal_simp_check(lines, path):
                 # Check if the number of leading spaces is the same
                 if num_spaces == num_next_spaces:
                     # If so, the simp is nonterminal
-                    errors += [(ERR_NSP, line_nr, path)]
+                    errors += [(Error.ERR_NSP, line_nr, path)]
                     new_line = line.replace("simp", "simp?")
         newlines.append((line_nr, new_line))
     newlines.append(lines[-1])
@@ -239,7 +234,7 @@ def long_lines_check(lines, path):
         if "http" in line or "#align" in line:
             continue
         if len(line) > 101:
-            errors += [(ERR_LIN, line_nr, path)]
+            errors += [(Error.ERR_LIN, line_nr, path)]
     return errors, lines
 
 def import_only_check(lines, path):
@@ -261,14 +256,14 @@ def regular_check(lines, path):
     copy_lines = ""
     for line_nr, line in lines:
         if not copy_started and line == "\n":
-            errors += [(ERR_COP, copy_start_line_nr, path)]
+            errors += [(Error.ERR_COP, copy_start_line_nr, path)]
             continue
         if not copy_started and line == "/-\n":
             copy_started = True
             copy_start_line_nr = line_nr
             continue
         if not copy_started:
-            errors += [(ERR_COP, line_nr, path)]
+            errors += [(Error.ERR_COP, line_nr, path)]
         if copy_started and not copy_done:
             copy_lines += line
             if "Author" in line:
@@ -279,19 +274,19 @@ def regular_check(lines, path):
                     ("  " in line) or
                     (" and " in line) or
                     (line[-2] == '.')):
-                    errors += [(ERR_AUT, line_nr, path)]
+                    errors += [(Error.ERR_AUT, line_nr, path)]
             if line == "-/\n":
                 if ((not "Copyright" in copy_lines) or
                     (not "Apache" in copy_lines) or
                     (not "Authors: " in copy_lines)):
-                    errors += [(ERR_COP, copy_start_line_nr, path)]
+                    errors += [(Error.ERR_COP, copy_start_line_nr, path)]
                 copy_done = True
             continue
         if copy_done and line == "\n":
             continue
         words = line.split()
         if words[0] != "import" and words[0] != "--" and words[0] != "/-!" and words[0] != "#align_import":
-            errors += [(ERR_MOD, line_nr, path)]
+            errors += [(Error.ERR_MOD, line_nr, path)]
             break
         if words[0] == "/-!":
             break
@@ -306,7 +301,7 @@ def banned_import_check(lines, path):
         if imports[0] != "import":
             break
         if imports[1] in ["Mathlib.Tactic"]:
-            errors += [(ERR_TAC, line_nr, path)]
+            errors += [(Error.ERR_TAC, line_nr, path)]
     return errors, lines
 
 def isolated_by_dot_semicolon_check(lines, path):
@@ -319,17 +314,17 @@ def isolated_by_dot_semicolon_check(lines, path):
             # See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
             prev_line = lines[line_nr - 2][1].rstrip()
             if not prev_line.endswith(",") and not re.search(", fun [^,]* (=>|↦)$", prev_line):
-                errors += [(ERR_IBY, line_nr, path)]
+                errors += [(Error.ERR_IBY, line_nr, path)]
         if line.lstrip().startswith(". "):
-            errors += [(ERR_DOT, line_nr, path)]
+            errors += [(Error.ERR_DOT, line_nr, path)]
             line = line.replace(". ", "· ", 1)
         if line.strip() in (".", "·"):
-            errors += [(ERR_DOT, line_nr, path)]
+            errors += [(Error.ERR_DOT, line_nr, path)]
         if " ;" in line:
-            errors += [(ERR_SEM, line_nr, path)]
+            errors += [(Error.ERR_SEM, line_nr, path)]
             line = line.replace(" ;", ";")
         if line.lstrip().startswith(":"):
-            errors += [(ERR_CLN, line_nr, path)]
+            errors += [(Error.ERR_CLN, line_nr, path)]
         newlines.append((line_nr, line))
     return errors, newlines
 
@@ -344,7 +339,7 @@ def left_arrow_check(lines, path):
         # are used for syntax quotations). Otherwise, insert a space after "←".
         new_line = re.sub(r'←(?:(?=``?\()|(?![%`]))(\S)', r'← \1', line)
         if new_line != line:
-            errors += [(ERR_ARR, line_nr, path)]
+            errors += [(Error.ERR_ARR, line_nr, path)]
         newlines.append((line_nr, new_line))
     return errors, newlines
 
@@ -369,25 +364,24 @@ def format_errors(errors):
             continue
         new_exceptions = True
         messages = {
-            ERR_COP : ("ERR_COP", "Malformed or missing copyright header"),
-            ERR_MOD : ("ERR_MOD", "Module docstring missing, or too late"),
-            ERR_LIN : ("ERR_LIN", "Line has more than 100 characters"),
-            ERR_OPT : ("ERR_OPT", "Forbidden set_option command"),
-            ERR_AUT : ("ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'"),
-            ERR_TAC : ("ERR_TAC", "Files in mathlib cannot import the whole tactic folder"),
-            ERR_IBY : ("ERR_IBY", "Line is an isolated 'by'"),
-            ERR_DOT : ("ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·"),
-            ERR_SEM : ("ERR_SEM", "Line contains a space before a semicolon"),
-            ERR_WIN : ("ERR_WIN", "Windows line endings (\\r\\n) detected"),
-            ERR_TWS : ("ERR_TWS", "Trailing whitespace detected on line"),
-            ERR_CLN : ("ERR_CLN", "Put : and := before line breaks, not after"),
-            ERR_IND : ("ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)"),
-            ERR_ARR : ("ERR_ARR", "Missing space after '←'."),
-            ERR_NSP : ("ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output"),
+            Error.ERR_COP : "Malformed or missing copyright header",
+            Error.ERR_MOD : "Module docstring missing, or too late",
+            Error.ERR_LIN : "Line has more than 100 characters",
+            Error.ERR_OPT : "Forbidden set_option command",
+            Error.ERR_AUT : "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'",
+            Error.ERR_TAC : "Files in mathlib cannot import the whole tactic folder",
+            Error.ERR_IBY : "Line is an isolated 'by'",
+            Error.ERR_DOT : "Line is an isolated focusing dot or uses . instead of ·",
+            Error.ERR_SEM : "Line contains a space before a semicolon",
+            Error.ERR_WIN : "Windows line endings (\\r\\n) detected",
+            Error.ERR_TWS : "Trailing whitespace detected on line",
+            Error.ERR_CLN : "Put : and := before line breaks, not after",
+            Error.ERR_IND : "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)",
+            Error.ERR_ARR : "Missing space after '←'.",
+            Error.ERR_NSP : "Non-terminal simp. Replace with `simp?` and use the suggested output",
         }
         if errno in messages:
-            name, message = messages[errno]
-            output_message(path, line_nr, name, message)
+            output_message(path, line_nr, errno.name, messages[errno])
         else:
             print(f"unhandled error kind: {errno}")
 
