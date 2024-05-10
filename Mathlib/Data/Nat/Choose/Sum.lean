@@ -239,8 +239,7 @@ theorem sum_antidiagonal_choose_add (d n : ℕ) :
     (Finset.sum (antidiagonal n) fun ij => (d + ij.2).choose d) =
     (d + n).choose d + (d + n).choose (succ d) := by
   induction n with
-  | zero => simp only [zero_eq, antidiagonal_zero, sum_singleton, add_zero, choose_self,
-              choose_succ_self]
-  | succ n hn => rw [Nat.sum_antidiagonal_succ]; simp only [add_right_inj]; exact hn
+  | zero => simp
+  | succ n hn => simpa [Nat.sum_antidiagonal_succ] using hn
 
 end Finset
