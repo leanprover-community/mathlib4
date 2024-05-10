@@ -204,8 +204,19 @@ lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
         ← tensor_comp, e₁.inv_hom_id, ← tensor_comp, e₂.inv_hom_id, ← tensor_comp,
         e₃.inv_hom_id, e₄.inv_hom_id, tensor_id, tensor_id, tensor_id, comp_id]
   dsimp [Pentagon]
-  have eq := (L').congr_map (MonoidalCategory.pentagon X₁ X₂ X₃ X₄)
-  sorry
+  let a := (((μ L W ε X₁ X₂).hom ⊗ 𝟙 _) ⊗ 𝟙 _) ≫ ((μ L W ε _ X₃).hom ⊗ 𝟙 _) ≫ (μ L W ε _ X₄).hom
+  let b := (μ L W ε X₁ _).inv ≫ (𝟙 _ ⊗ (μ L W ε X₂ _).inv) ≫ (𝟙 _ ⊗ 𝟙 _ ⊗ (μ L W ε X₃ X₄).inv)
+  convert a ≫= (L').congr_map (MonoidalCategory.pentagon X₁ X₂ X₃ X₄) =≫ b using 1
+  · dsimp [a, b]
+    rw [assoc, assoc, ← id_tensorHom, ← tensorHom_id, associator_hom_app]
+    nth_rw 1 [← id_comp (𝟙 ((L').obj X₄))]
+    nth_rw 2 [← id_comp (𝟙 ((L').obj X₄))]
+    simp only [tensor_comp]
+    simp only [assoc]
+    congr 2
+    sorry
+  · dsimp [a, b]
+    sorry
 
 noncomputable instance :
     MonoidalCategory (LocalizedMonoidal L W ε) where
