@@ -114,7 +114,7 @@ lemma hasFiniteColimits_of_hasColimitsOfSize [HasColimitsOfSize.{v', u'} C] :
 instance (priority := 100) hasFiniteColimits_of_hasColimits [HasColimits C] : HasFiniteColimits C :=
   hasFiniteColimits_of_hasColimitsOfSize C
 
-instance (priority := 90) hasFiniteColimits_of_hasColimits₀ [HasColimitsOfSize.{0, 0} C] :
+instance (priority := 90) hasFiniteColimits_of_hasColimitsOfSize₀ [HasColimitsOfSize.{0, 0} C] :
     HasFiniteColimits C :=
   hasFiniteColimits_of_hasColimitsOfSize C
 
