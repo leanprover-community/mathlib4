@@ -361,6 +361,11 @@ lemma smul_le_smul' [PosSMulMono α β] [SMulPosMono α β] (ha : a₁ ≤ a₂)
     (h₁ : 0 ≤ b₁) : a₁ • b₁ ≤ a₂ • b₂ :=
   (smul_le_smul_of_nonneg_right ha h₁).trans (smul_le_smul_of_nonneg_left hb h₂)
 
+lemma smul_le_smul'' [PosSMulMono α β] [SMulPosMono α β] (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂)
+    (h0a : 0 ≤ a₁) (h0b : 0 ≤ b₁) :
+    a₁ • b₁ ≤ a₂ • b₂ :=
+  smul_le_smul ha hb h0a (h0b.trans hb)
+
 end LeftRight
 end Preorder
 

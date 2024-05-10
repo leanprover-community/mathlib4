@@ -474,6 +474,10 @@ theorem mul_le_mul [PosMulMono α] [MulPosMono α] (h₁ : a ≤ b) (h₂ : c �
   (mul_le_mul_of_nonneg_right h₁ c0).trans <| mul_le_mul_of_nonneg_left h₂ b0
 #align mul_le_mul mul_le_mul
 
+theorem mul_le_mul'' [PosMulMono α] [MulPosMono α] (h₁ : a ≤ b) (h₂ : c ≤ d) (c0 : 0 ≤ c)
+    (a0 : 0 ≤ a) : a * c ≤ b * d :=
+  mul_le_mul h₁ h₂ c0 (a0.trans h₁)
+
 theorem mul_self_le_mul_self [PosMulMono α] [MulPosMono α] (ha : 0 ≤ a) (hab : a ≤ b) :
     a * a ≤ b * b :=
   mul_le_mul hab hab ha <| ha.trans hab
