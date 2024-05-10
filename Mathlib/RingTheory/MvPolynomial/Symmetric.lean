@@ -397,8 +397,7 @@ theorem hsymmMu_onePart (n : ℕ) : hsymmMu σ R (Nat.Partition.indiscrete n) = 
   · simp only [hsymmMu, gt_iff_lt, Nat.zero_lt_succ, muProduct_indiscrete_of_pos]
 
 theorem map_hsymm (n : ℕ) (f : R →+* S) : map f (hsymm σ R n) = hsymm σ S n := by
-  simp_rw [hsymm, map_sum, ← Multiset.prod_hom']
-  simp only [val_eq_coe, map_X]
+  simp [hsymm, ← Multiset.prod_hom']
 
 theorem rename_hsymm (n : ℕ) (e : σ ≃ τ) : rename e (hsymm σ R n) = hsymm τ R n := by
   simp_rw [hsymm, map_sum, ← prod_hom', rename_X]
