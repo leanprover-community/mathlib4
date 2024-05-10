@@ -268,7 +268,7 @@ def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
 
 section Monotone
 
-/-- An monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
+/-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
 theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
     (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
   obtain ⟨B, hB⟩ := Real.exists_isLUB  (Set.range_nonempty f) h_bdd
@@ -281,8 +281,8 @@ theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddB
   exact ⟨B, tendsto_atTop_isGLB h_ant hB⟩
 
 /-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
-theorem tendsto_of_antitone {f : ℕ → NNReal} (h_ant : Antitone f) :
-    ∃ r : NNReal, Tendsto f atTop (𝓝 r) := by
+theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
+    ∃ r : ℝ≥0, Tendsto f atTop (𝓝 r) := by
   have h_bdd_0 : (0 : ℝ) ∈ lowerBounds (Set.range fun n : ℕ => (f n : ℝ)) := by
     rintro r ⟨n, hn⟩
     simp_rw [← hn]
