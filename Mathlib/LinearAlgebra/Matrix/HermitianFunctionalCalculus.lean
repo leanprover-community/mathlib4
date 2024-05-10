@@ -130,7 +130,25 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
       dsimp
       simp only [algebraMap.coe_zero, Function.const_zero, diagonal_zero, Pi.zero_def, zero_mul,
       mul_zero]
-  map_add' := by sorry
+  map_add' := by
+    intro x y
+    dsimp
+    have h : (RCLike.ofReal ∘ (⇑x + ⇑y) ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) =
+            (RCLike.ofReal (K := 𝕜) ∘ ⇑x ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) +
+            (RCLike.ofReal (K := 𝕜) ∘ ⇑y ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
+            := by sorry
+    rw [h]
+    have h1: (RCLike.ofReal (K := 𝕜) ∘ ⇑x ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
+        + (RCLike.ofReal (K := 𝕜) ∘ ⇑y ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) =
+        fun (j : n) => ((RCLike.ofReal (K := 𝕜) ∘ ⇑x ∘
+        (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) j) +
+        ((RCLike.ofReal (K := 𝕜) ∘ ⇑y ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) j)
+        := rfl
+    have h2 := diagonal_add (n := n) (α := 𝕜)
+      (RCLike.ofReal (K := 𝕜) ∘ ⇑x ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
+      (RCLike.ofReal (K := 𝕜) ∘ ⇑y ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
+    conv_lhs => rw [h1, ← h2]
+    simp only [add_mul, mul_add]
   commutes' := by
     dsimp
     intro r
