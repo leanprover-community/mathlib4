@@ -19,7 +19,7 @@ universe u
 
 open Set Classical
 
-open Classical
+open scoped Classical
 
 /-- Any partial order can be extended to a linear order.
 -/
@@ -61,11 +61,11 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
     { refl := fun x ↦ Or.inl (refl _)
       trans := _
       antisymm := _ }
-    rintro a b c (ab | ⟨ax : s a x, yb : s y b⟩) (bc | ⟨bx : s b x, yc : s y c⟩)
-    · exact Or.inl (_root_.trans ab bc)
-    · exact Or.inr ⟨_root_.trans ab bx, yc⟩
-    · exact Or.inr ⟨ax, _root_.trans yb bc⟩
-    · exact Or.inr ⟨ax, yc⟩
+    · rintro a b c (ab | ⟨ax : s a x, yb : s y b⟩) (bc | ⟨bx : s b x, yc : s y c⟩)
+      · exact Or.inl (_root_.trans ab bc)
+      · exact Or.inr ⟨_root_.trans ab bx, yc⟩
+      · exact Or.inr ⟨ax, _root_.trans yb bc⟩
+      · exact Or.inr ⟨ax, yc⟩
     rintro a b (ab | ⟨ax : s a x, yb : s y b⟩) (ba | ⟨bx : s b x, ya : s y a⟩)
     · exact antisymm ab ba
     · exact (h.2 (_root_.trans ya (_root_.trans ab bx))).elim

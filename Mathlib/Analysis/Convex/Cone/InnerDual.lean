@@ -31,7 +31,8 @@ We prove the following theorems:
 
 open Set LinearMap
 
-open Classical Pointwise
+open scoped Classical
+open Pointwise
 
 variable {𝕜 E F G : Type*}
 
@@ -179,8 +180,8 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : Co
   · -- the rest of the proof is a straightforward calculation
     rintro x hxK
     specialize hinner _ (K.add_mem hxK hzK)
-    rwa [add_sub_cancel, real_inner_comm, ← neg_nonneg, neg_eq_neg_one_mul, ← real_inner_smul_right,
-      neg_smul, one_smul, neg_sub] at hinner
+    rwa [add_sub_cancel_right, real_inner_comm, ← neg_nonneg, neg_eq_neg_one_mul,
+      ← real_inner_smul_right, neg_smul, one_smul, neg_sub] at hinner
   · -- as `K` is closed and non-empty, it is pointed
     have hinner₀ := hinner 0 (K.pointed_of_nonempty_of_isClosed ne hc)
     -- the rest of the proof is a straightforward calculation
@@ -194,7 +195,7 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : Co
     calc
       0 < ⟪b - z, b - z⟫_ℝ := lt_of_not_le ((Iff.not real_inner_self_nonpos).2 hbz)
       _ = ⟪b - z, b - z⟫_ℝ + 0 := (add_zero _).symm
-      _ ≤ ⟪b - z, b - z⟫_ℝ + ⟪b - z, z⟫_ℝ := (add_le_add rfl.ge hinner₀)
+      _ ≤ ⟪b - z, b - z⟫_ℝ + ⟪b - z, z⟫_ℝ := add_le_add rfl.ge hinner₀
       _ = ⟪b - z, b - z + z⟫_ℝ := (inner_add_right _ _ _).symm
       _ = ⟪b - z, b⟫_ℝ := by rw [sub_add_cancel]
 

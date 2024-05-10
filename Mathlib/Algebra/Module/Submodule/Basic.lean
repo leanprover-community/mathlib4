@@ -3,8 +3,8 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.GroupTheory.Submonoid.Membership
 
 #align_import algebra.module.submodule.basic from "leanprover-community/mathlib"@"8130e5155d637db35907c272de9aec9dc851c03a"
 
@@ -205,11 +205,8 @@ variable [Semiring R] [AddCommMonoid M]
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
 variable {module_M : Module R M}
-
 variable {p q : Submodule R M}
-
 variable {r : R} {x y : M}
-
 variable (p)
 
 -- Porting note: removing `@[simp]` since it can already be proven
@@ -290,7 +287,7 @@ theorem mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
 
 variable {p}
 
-@[norm_cast] -- porting note: removed `@[simp]` because this follows from `ZeroMemClass.coe_zero`
+@[norm_cast] -- Porting note: removed `@[simp]` because this follows from `ZeroMemClass.coe_zero`
 theorem coe_eq_zero {x : p} : (x : M) = 0 ↔ x = 0 :=
   (SetLike.coe_eq_coe : (x : M) = (0 : p) ↔ x = 0)
 #align submodule.coe_eq_zero Submodule.coe_eq_zero
@@ -316,12 +313,12 @@ theorem coe_smul_of_tower [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (x
   rfl
 #align submodule.coe_smul_of_tower Submodule.coe_smul_of_tower
 
-@[norm_cast] -- porting note: removed `@[simp]` because this is now structure eta
+@[norm_cast] -- Porting note: removed `@[simp]` because this is now structure eta
 theorem coe_mk (x : M) (hx : x ∈ p) : ((⟨x, hx⟩ : p) : M) = x :=
   rfl
 #align submodule.coe_mk Submodule.coe_mk
 
--- porting note: removed `@[simp]` because this is exactly `SetLike.coe_mem`
+-- Porting note: removed `@[simp]` because this is exactly `SetLike.coe_mem`
 theorem coe_mem (x : p) : (x : M) ∈ p :=
   x.2
 #align submodule.coe_mem Submodule.coe_mem
@@ -386,11 +383,8 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [Ring R] [AddCommGroup M]
-
 variable {module_M : Module R M}
-
 variable (p p' : Submodule R M)
-
 variable {r : R} {x y : M}
 
 instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
@@ -485,7 +479,6 @@ end AddCommGroup
 section IsDomain
 
 variable [Ring R] [IsDomain R]
-
 variable [AddCommGroup M] [Module R M] {b : ι → M}
 
 theorem not_mem_of_ortho {x : M} {N : Submodule R M}
@@ -506,9 +499,7 @@ end Submodule
 namespace Submodule
 
 variable [DivisionSemiring S] [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable [SMul S R] [Module S M] [IsScalarTower S R M]
-
 variable (p : Submodule R M) {s : S} {x y : M}
 
 theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=

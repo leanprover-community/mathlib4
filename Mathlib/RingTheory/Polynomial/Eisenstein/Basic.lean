@@ -74,7 +74,6 @@ end CommSemiring
 section CommRing
 
 variable [CommRing R] {𝓟 : Ideal R} {f : R[X]} (hf : f.IsWeaklyEisensteinAt 𝓟)
-
 variable {S : Type v} [CommRing S] [Algebra R S]
 
 section Principal
@@ -176,7 +175,7 @@ theorem dvd_pow_natDegree_of_eval₂_eq_zero {f : R →+* A} (hf : Function.Inje
           (Ideal.mem_span_singleton.mpr <| dvd_refl x)).pow_natDegree_le_of_root_of_monic_mem
       _ ((monic_scaleRoots_iff x).mpr hp) _ le_rfl
   rw [injective_iff_map_eq_zero'] at hf
-  have : eval₂ _ _ (p.scaleRoots x) = 0 := scaleRoots_eval₂_eq_zero f h
+  have : eval₂ f _ (p.scaleRoots x) = 0 := scaleRoots_eval₂_eq_zero f h
   rwa [hz, Polynomial.eval₂_at_apply, hf] at this
 #align polynomial.dvd_pow_nat_degree_of_eval₂_eq_zero Polynomial.dvd_pow_natDegree_of_eval₂_eq_zero
 

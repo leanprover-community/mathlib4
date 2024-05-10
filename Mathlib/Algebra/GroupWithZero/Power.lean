@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.GroupWithZero.Commute
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Ring.Int
 
 #align_import algebra.group_with_zero.power from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
@@ -54,11 +56,11 @@ section ZPow
 
 open Int
 
-variable {G₀ : Type*} [GroupWithZero G₀]
+variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀} {n : ℤ}
 
 theorem zero_zpow : ∀ z : ℤ, z ≠ 0 → (0 : G₀) ^ z = 0
   | (n : ℕ), h => by
-    rw [zpow_coe_nat, zero_pow]
+    rw [zpow_natCast, zero_pow]
     simpa using h
   | -[n+1], _ => by simp
 #align zero_zpow zero_zpow
@@ -70,11 +72,11 @@ theorem zero_zpow_eq (n : ℤ) : (0 : G₀) ^ n = if n = 0 then 1 else 0 := by
 #align zero_zpow_eq zero_zpow_eq
 
 theorem zpow_add_one₀ {a : G₀} (ha : a ≠ 0) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
-  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_coe_nat, pow_succ']
+  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
   | -[0+1] => by erw [zpow_zero, zpow_negSucc, pow_one, inv_mul_cancel ha]
   | -[n + 1+1] => by
     rw [Int.negSucc_eq, zpow_neg, neg_add, neg_add_cancel_right, zpow_neg, ← Int.ofNat_succ,
-      zpow_coe_nat, zpow_coe_nat, pow_succ _ (n + 1), mul_inv_rev, mul_assoc, inv_mul_cancel ha,
+      zpow_natCast, zpow_natCast, pow_succ' _ (n + 1), mul_inv_rev, mul_assoc, inv_mul_cancel ha,
       mul_one]
 #align zpow_add_one₀ zpow_add_one₀
 
@@ -99,7 +101,7 @@ theorem zpow_add' {a : G₀} {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 
   · simp [hn]
   by_cases ha : a = 0
   · subst a
-    simp only [false_or_iff, eq_self_iff_true, not_true, Ne.def, hm, hn, false_and_iff,
+    simp only [false_or_iff, eq_self_iff_true, not_true, Ne, hm, hn, false_and_iff,
       or_false_iff] at h
     rw [zero_zpow _ h, zero_zpow _ hm, zero_mul]
   · exact zpow_add₀ ha m n
@@ -139,30 +141,27 @@ theorem Commute.zpow_zpow_self₀ (a : G₀) (m n : ℤ) : Commute (a ^ m) (a ^ 
   (Commute.refl a).zpow_zpow₀ m n
 #align commute.zpow_zpow_self₀ Commute.zpow_zpow_self₀
 
-theorem zpow_ne_zero_of_ne_zero {a : G₀} (ha : a ≠ 0) : ∀ z : ℤ, a ^ z ≠ 0
-  | (_ : ℕ) => by
-    rw [zpow_coe_nat]
-    exact pow_ne_zero _ ha
-  | -[_+1] => by
-    rw [zpow_negSucc]
-    exact inv_ne_zero (pow_ne_zero _ ha)
-#align zpow_ne_zero_of_ne_zero zpow_ne_zero_of_ne_zero
+theorem zpow_ne_zero {a : G₀} : ∀ n : ℤ, a ≠ 0 → a ^ n ≠ 0
+  | (_ : ℕ) => by rw [zpow_natCast]; exact pow_ne_zero _
+  | -[_+1] => fun ha ↦ by rw [zpow_negSucc]; exact inv_ne_zero (pow_ne_zero _ ha)
+#align zpow_ne_zero_of_ne_zero zpow_ne_zero
+#align zpow_ne_zero zpow_ne_zero
 
 theorem zpow_sub₀ {a : G₀} (ha : a ≠ 0) (z1 z2 : ℤ) : a ^ (z1 - z2) = a ^ z1 / a ^ z2 := by
   rw [sub_eq_add_neg, zpow_add₀ ha, zpow_neg, div_eq_mul_inv]
 #align zpow_sub₀ zpow_sub₀
 
-theorem zpow_eq_zero {x : G₀} {n : ℤ} (h : x ^ n = 0) : x = 0 :=
-  by_contradiction fun hx => zpow_ne_zero_of_ne_zero hx n h
-#align zpow_eq_zero zpow_eq_zero
+lemma eq_zero_of_zpow_eq_zero : a ^ n = 0 → a = 0 := not_imp_not.1 (zpow_ne_zero _)
+#align zpow_eq_zero eq_zero_of_zpow_eq_zero
 
-theorem zpow_eq_zero_iff {a : G₀} {n : ℤ} (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
-  ⟨zpow_eq_zero, fun ha => ha.symm ▸ zero_zpow _ hn⟩
+@[deprecated (since := "2024-05-07")] alias zpow_ne_zero_of_ne_zero := zpow_ne_zero
+@[deprecated (since := "2024-05-07")] alias zpow_eq_zero := eq_zero_of_zpow_eq_zero
+
+lemma zpow_eq_zero_iff (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
+  ⟨eq_zero_of_zpow_eq_zero, fun ha => ha.symm ▸ zero_zpow _ hn⟩
 #align zpow_eq_zero_iff zpow_eq_zero_iff
 
-theorem zpow_ne_zero {x : G₀} (n : ℤ) : x ≠ 0 → x ^ n ≠ 0 :=
-  mt zpow_eq_zero
-#align zpow_ne_zero zpow_ne_zero
+lemma zpow_ne_zero_iff (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (zpow_eq_zero_iff hn).ne
 
 theorem zpow_neg_mul_zpow_self (n : ℤ) {x : G₀} (h : x ≠ 0) : x ^ (-n) * x ^ n = 1 := by
   rw [zpow_neg]
@@ -178,7 +177,7 @@ variable {G₀ : Type*} [CommGroupWithZero G₀]
 theorem div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
   by_cases ha : a = 0
   · simp [ha]
-  rw [sq, mul_assoc, mul_div_cancel_left _ ha]
+  rw [sq, mul_assoc, mul_div_cancel_left₀ _ ha]
 #align div_sq_cancel div_sq_cancel
 
 end

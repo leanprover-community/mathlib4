@@ -74,7 +74,7 @@ theorem antidiagonalTuple_zero_zero : antidiagonalTuple 0 0 = [![]] :=
 #align list.nat.antidiagonal_tuple_zero_zero List.Nat.antidiagonalTuple_zero_zero
 
 @[simp]
-theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = [] :=
+theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 (n + 1) = [] :=
   rfl
 #align list.nat.antidiagonal_tuple_zero_succ List.Nat.antidiagonalTuple_zero_succ
 
@@ -87,7 +87,7 @@ theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
     · simp [eq_comm]
   | h x₀ x ih =>
     simp_rw [Fin.sum_cons]
-    rw [antidiagonalTuple]  -- porting note: simp_rw doesn't use the equation lemma properly
+    rw [antidiagonalTuple]  -- Porting note: simp_rw doesn't use the equation lemma properly
     simp_rw [List.mem_bind, List.mem_map,
       List.Nat.mem_antidiagonal, Fin.cons_eq_cons, exists_eq_right_right, ih,
       @eq_comm _ _ (Prod.snd _), and_comm (a := Prod.snd _ = _),

@@ -85,24 +85,26 @@ theorem monic_Phi : (Φ R a b).Monic :=
 theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b) (hp2b : ¬p ^ 2 ∣ b) :
     Irreducible (Φ ℚ a b) := by
   rw [← map_Phi a b (Int.castRingHom ℚ), ← IsPrimitive.Int.irreducible_iff_irreducible_map_cast]
-  apply irreducible_of_eisenstein_criterion
-  · rwa [span_singleton_prime (Int.coe_nat_ne_zero.mpr hp.ne_zero), Int.prime_iff_natAbs_prime]
-  · rw [leadingCoeff_Phi, mem_span_singleton]
-    exact mod_cast mt Nat.dvd_one.mp hp.ne_one
-  · intro n hn
-    rw [mem_span_singleton]
-    rw [degree_Phi] at hn; norm_cast at hn
-    interval_cases hn : n <;>
-    simp (config := {decide := true}) only [Φ, coeff_X_pow, coeff_C, Int.coe_nat_dvd.mpr, hpb,
-      if_true, coeff_C_mul, if_false, coeff_X_zero, hpa, coeff_add, zero_add, mul_zero, coeff_sub,
-      add_zero, zero_sub, dvd_neg, neg_zero, dvd_mul_of_dvd_left]
-  · simp only [degree_Phi, ← WithBot.coe_zero, WithBot.coe_lt_coe, Nat.succ_pos']
-    decide
-  · rw [coeff_zero_Phi, span_singleton_pow, mem_span_singleton]
-    exact mt Int.coe_nat_dvd.mp hp2b
+  on_goal 1 =>
+    apply irreducible_of_eisenstein_criterion
+    · rwa [span_singleton_prime (Int.natCast_ne_zero.mpr hp.ne_zero), Int.prime_iff_natAbs_prime]
+    · rw [leadingCoeff_Phi, mem_span_singleton]
+      exact mod_cast mt Nat.dvd_one.mp hp.ne_one
+    · intro n hn
+      rw [mem_span_singleton]
+      rw [degree_Phi] at hn; norm_cast at hn
+      interval_cases n <;>
+      simp (config := {decide := true}) only [Φ, coeff_X_pow, coeff_C, Int.natCast_dvd_natCast.mpr,
+        hpb, if_true, coeff_C_mul, if_false, coeff_X_zero, hpa, coeff_add, zero_add, mul_zero,
+        coeff_sub, add_zero, zero_sub, dvd_neg, neg_zero, dvd_mul_of_dvd_left]
+    · simp only [degree_Phi, ← WithBot.coe_zero, WithBot.coe_lt_coe, Nat.succ_pos']
+      decide
+    · rw [coeff_zero_Phi, span_singleton_pow, mem_span_singleton]
+      exact mt Int.natCast_dvd_natCast.mp hp2b
   all_goals exact Monic.isPrimitive (monic_Phi a b)
 #align abel_ruffini.irreducible_Phi AbelRuffini.irreducible_Phi
 
+set_option tactic.skipAssignedInstances false in
 theorem real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 := by
   rw [← map_Phi a b (algebraMap ℤ ℚ), Φ, ← one_mul (X ^ 5), ← C_1]
   refine' (card_rootSet_le_derivative _).trans
@@ -114,6 +116,7 @@ theorem real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 := by
   norm_num
 #align abel_ruffini.real_roots_Phi_le AbelRuffini.real_roots_Phi_le
 
+set_option tactic.skipAssignedInstances false in
 theorem real_roots_Phi_ge_aux (hab : b < a) :
     ∃ x y : ℝ, x ≠ y ∧ aeval x (Φ ℚ a b) = 0 ∧ aeval y (Φ ℚ a b) = 0 := by
   let f : ℝ → ℝ := fun x : ℝ => aeval x (Φ ℚ a b)
@@ -125,8 +128,7 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
   by_cases hb : (1 : ℝ) - a + b < 0
   · have hf1 : f 1 < 0 := by simp [hf, hb]
     have hfa : 0 ≤ f a := by
-      -- Porting note: was `simp_rw`
-      simp only [hf, ← sq]
+      simp_rw [hf, ← sq]
       refine' add_nonneg (sub_nonneg.mpr (pow_le_pow_right ha _)) _ <;> norm_num
     obtain ⟨x, ⟨-, hx1⟩, hx2⟩ := intermediate_value_Ico' hle (hc _) (Set.mem_Ioc.mpr ⟨hf1, hf0⟩)
     obtain ⟨y, ⟨hy1, -⟩, hy2⟩ := intermediate_value_Ioc ha (hc _) (Set.mem_Ioc.mpr ⟨hf1, hfa⟩)

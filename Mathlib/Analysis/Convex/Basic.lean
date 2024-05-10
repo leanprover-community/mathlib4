@@ -101,7 +101,7 @@ theorem convex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s) : Conve
 
 theorem convex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, Convex 𝕜 (s i)) :
     Convex 𝕜 (⋂ i, s i) :=
-  sInter_range s ▸ convex_sInter <| forall_range_iff.2 h
+  sInter_range s ▸ convex_sInter <| forall_mem_range.2 h
 #align convex_Inter convex_iInter
 
 theorem convex_iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set E}
@@ -187,10 +187,8 @@ theorem convex_segment (x y : E) : Convex 𝕜 [x -[𝕜] y] := by
 #align convex_segment convex_segment
 
 theorem Convex.linear_image (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f '' s) := by
-  intro x hx y hy a b ha hb hab
-  obtain ⟨x', hx', rfl⟩ := mem_image_iff_bex.1 hx
-  obtain ⟨y', hy', rfl⟩ := mem_image_iff_bex.1 hy
-  exact ⟨a • x' + b • y', hs hx' hy' ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
+  exact ⟨a • x + b • y, hs hx hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
 #align convex.linear_image Convex.linear_image
 
 theorem Convex.is_linear_image (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
@@ -599,7 +597,7 @@ theorem Convex.exists_mem_add_smul_eq (h : Convex 𝕜 s) {x y : E} {p q : 𝕜}
     simp
   · replace hpq : 0 < p + q := (add_nonneg hp hq).lt_of_ne' (mt (add_eq_zero_iff' hp hq).1 hpq)
     refine ⟨_, convex_iff_div.1 h hx hy hp hq hpq, ?_⟩
-    simp only [smul_add, smul_smul, mul_div_cancel' _ hpq.ne']
+    simp only [smul_add, smul_smul, mul_div_cancel₀ _ hpq.ne']
 
 theorem Convex.add_smul (h_conv : Convex 𝕜 s) {p q : 𝕜} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     (p + q) • s = p • s + q • s := (add_smul_subset _ _ _).antisymm <| by
@@ -712,12 +710,16 @@ theorem ite_eq_mem_stdSimplex (i : ι) : (if i = · then (1 : 𝕜) else 0) ∈ 
   simpa only [@eq_comm _ i, ← Pi.single_apply] using single_mem_stdSimplex 𝕜 i
 #align ite_eq_mem_std_simplex ite_eq_mem_stdSimplex
 
+-- Adaptation note: as of `nightly-2024-03-11`, we need a type annotation on the segment in the
+-- following two lemmas.
+
 /-- The edges are contained in the simplex. -/
 lemma segment_single_subset_stdSimplex (i j : ι) :
-    [Pi.single i 1 -[𝕜] Pi.single j 1] ⊆ stdSimplex 𝕜 ι :=
+    ([Pi.single i 1 -[𝕜] Pi.single j 1] : Set (ι → 𝕜)) ⊆ stdSimplex 𝕜 ι :=
   (convex_stdSimplex 𝕜 ι).segment_subset (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
 
-lemma stdSimplex_fin_two : stdSimplex 𝕜 (Fin 2) = [Pi.single 0 1 -[𝕜] Pi.single 1 1] := by
+lemma stdSimplex_fin_two :
+    stdSimplex 𝕜 (Fin 2) = ([Pi.single 0 1 -[𝕜] Pi.single 1 1] : Set (Fin 2 → 𝕜)) := by
   refine Subset.antisymm ?_ (segment_single_subset_stdSimplex 𝕜 (0 : Fin 2) 1)
   rintro f ⟨hf₀, hf₁⟩
   rw [Fin.sum_univ_two] at hf₁
@@ -738,11 +740,11 @@ def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
   invFun x := ⟨![x, 1 - x], Fin.forall_fin_two.2 ⟨x.2.1, sub_nonneg.2 x.2.2⟩,
     calc
       ∑ i : Fin 2, ![(x : 𝕜), 1 - x] i = x + (1 - x) := Fin.sum_univ_two _
-      _ = 1 := add_sub_cancel'_right _ _⟩
+      _ = 1 := add_sub_cancel _ _⟩
   left_inv f := Subtype.eq <| funext <| Fin.forall_fin_two.2 <| .intro rfl <|
       calc
         (1 : 𝕜) - f.1 0 = f.1 0 + f.1 1 - f.1 0 := by rw [← Fin.sum_univ_two f.1, f.2.2]
-        _ = f.1 1 := add_sub_cancel' _ _
+        _ = f.1 1 := add_sub_cancel_left _ _
   right_inv x := Subtype.eq rfl
 
 end OrderedRing

@@ -21,9 +21,6 @@ This file defines bundled isomorphisms of `R`-algebras.
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
 
-set_option autoImplicit true
-
-
 open BigOperators
 
 universe u v w u₁ v₁
@@ -92,10 +89,8 @@ section Semiring
 
 variable [CommSemiring R] [Semiring A₁] [Semiring A₂] [Semiring A₃]
 variable [Semiring A₁'] [Semiring A₂'] [Semiring A₃']
-
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 variable [Algebra R A₁'] [Algebra R A₂'] [Algebra R A₃']
-
 variable (e : A₁ ≃ₐ[R] A₂)
 
 instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
@@ -237,7 +232,7 @@ nonrec theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
 
 theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
     e (f.sum g) = f.sum fun i b => e (g i b) :=
-  e.map_sum _ _
+  _root_.map_sum e _ _
 #align alg_equiv.map_finsupp_sum AlgEquiv.map_finsupp_sum
 
 -- Porting note: Added [coe] attribute
@@ -521,6 +516,7 @@ theorem equivCongr_trans (e₁₂ : A₁ ≃ₐ[R] A₂) (e₁₂' : A₁' ≃�
   rfl
 
 /-- If an algebra morphism has an inverse, it is an algebra isomorphism. -/
+@[simps]
 def ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ : f.comp g = AlgHom.id R A₂)
     (h₂ : g.comp f = AlgHom.id R A₁) : A₁ ≃ₐ[R] A₂ :=
   { f with
@@ -821,7 +817,6 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A₁] [CommSemiring A₂]
-
 variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
 -- Porting note: Added nonrec
@@ -841,7 +836,6 @@ end CommSemiring
 section Ring
 
 variable [CommSemiring R] [Ring A₁] [Ring A₂]
-
 variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
 protected theorem map_neg (x) : e (-x) = -e x :=

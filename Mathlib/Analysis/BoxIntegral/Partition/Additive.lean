@@ -23,7 +23,7 @@ integrable function over a box.
 In this file we define box-additive functions and prove that a function such that
 `f J = f (J ∩ {x | x i < y}) + f (J ∩ {x | y ≤ x i})` is box-additive.
 
-### Tags
+## Tags
 
 rectangular box, additive function
 -/
@@ -31,7 +31,8 @@ rectangular box, additive function
 
 noncomputable section
 
-open Classical BigOperators Function Set
+open scoped Classical
+open BigOperators Function Set
 
 namespace BoxIntegral
 
@@ -166,7 +167,7 @@ theorem sum_boxes_congr [Finite ι] (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I�
       Finset.sum_congr rfl fun J hJ => (f.sum_partition_boxes ?_ (isPartition_splitMany _ _)).symm
     _ = ∑ J in (π₁.biUnion fun J => splitMany J s).boxes, f J := (sum_biUnion_boxes _ _ _).symm
     _ = ∑ J in (π₂.biUnion fun J => splitMany J s).boxes, f J := by rw [h₁, h₂]
-    _ = ∑ J in π₂.boxes, ∑ J' in (splitMany J s).boxes, f J' := (sum_biUnion_boxes _ _ _)
+    _ = ∑ J in π₂.boxes, ∑ J' in (splitMany J s).boxes, f J' := sum_biUnion_boxes _ _ _
     _ = ∑ J in π₂.boxes, f J :=
       Finset.sum_congr rfl fun J hJ => f.sum_partition_boxes ?_ (isPartition_splitMany _ _)
   exacts [(WithTop.coe_le_coe.2 <| π₁.le_of_mem hJ).trans hI,

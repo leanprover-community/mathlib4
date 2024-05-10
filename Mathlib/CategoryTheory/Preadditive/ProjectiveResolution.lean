@@ -30,7 +30,7 @@ open Projective
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /--
 A `ProjectiveResolution Z` consists of a bundled `ℕ`-indexed chain complex of projective objects,
 along with a quasi-isomorphism to the complex consisting of just `Z` supported in degree `0`.

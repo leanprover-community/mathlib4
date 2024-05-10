@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: J. W. Gerbscheid
 -/
 import Mathlib.Tactic.FunProp.StateList
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
 import Mathlib.Algebra.Group.Pi.Basic
 
 /-!
@@ -401,7 +401,7 @@ def DTExpr.flatten (e : DTExpr) (initCapacity := 16) : Array Key :=
 - `Nat.succ x` where `isNumeral x`
 - `OfNat.ofNat _ x _` where `isNumeral x` -/
 private partial def isNumeral (e : Expr) : Bool :=
-  if e.isNatLit then true
+  if e.isRawNatLit then true
   else
     let f := e.getAppFn
     if !f.isConst then false

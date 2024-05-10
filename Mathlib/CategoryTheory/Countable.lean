@@ -5,7 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.Data.Countable.Small
 import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.FinCategory.Basic
+import Mathlib.Data.Fintype.Card
 /-!
 # Countable categories
 
@@ -15,7 +16,7 @@ A category is countable in this sense if it has countably many objects and count
 
 universe w v u
 
-open Classical
+open scoped Classical
 
 noncomputable section
 
@@ -59,7 +60,7 @@ def HomAsType := ShrinkHoms (ObjAsType α)
 instance : LocallySmall.{0} (ObjAsType α) where
   hom_small _ _ := inferInstance
 
-instance : SmallCategory (HomAsType α) := ShrinkHoms.instCategoryShrinkHoms.{0} _
+instance : SmallCategory (HomAsType α) := inferInstanceAs <| SmallCategory (ShrinkHoms _)
 
 instance : Countable (HomAsType α) := Countable.of_equiv α (equivShrink.{0} α)
 

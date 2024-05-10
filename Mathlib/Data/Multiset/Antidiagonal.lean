@@ -76,9 +76,12 @@ theorem antidiagonal_cons (a : α) (s) :
       map (Prod.map id (cons a)) (antidiagonal s) + map (Prod.map (cons a) id) (antidiagonal s) :=
   Quotient.inductionOn s fun l ↦ by
     simp only [revzip, reverse_append, quot_mk_to_coe, coe_eq_coe, powersetAux'_cons, cons_coe,
-      coe_map, antidiagonal_coe', coe_add]
+      map_coe, antidiagonal_coe', coe_add]
     rw [← zip_map, ← zip_map, zip_append, (_ : _ ++ _ = _)]
-    · congr; simp; rw [map_reverse]; simp
+    · congr
+      · simp only [List.map_id]
+      · rw [map_reverse]
+      · simp
     · simp
 #align multiset.antidiagonal_cons Multiset.antidiagonal_cons
 
@@ -87,7 +90,7 @@ theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
   induction' s using Multiset.induction_on with a s hs
   · simp only [antidiagonal_zero, powerset_zero, zero_tsub, map_singleton]
   · simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_mk,
-      id.def, sub_cons, erase_cons_head]
+      id, sub_cons, erase_cons_head]
     rw [add_comm]
     congr 1
     refine' Multiset.map_congr rfl fun x hx ↦ _

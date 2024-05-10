@@ -121,7 +121,7 @@ def _root_.MeasureTheory.FiniteMeasure (Ω : Type*) [MeasurableSpace Ω] : Type 
   { μ : Measure Ω // IsFiniteMeasure μ }
 #align measure_theory.finite_measure MeasureTheory.FiniteMeasure
 
--- porting note: as with other subtype synonyms (e.g., `ℝ≥0`, we need a new function for the
+-- Porting note: as with other subtype synonyms (e.g., `ℝ≥0`, we need a new function for the
 -- coercion instead of relying on `Subtype.val`.
 /-- Coercion from `MeasureTheory.FiniteMeasure Ω` to `MeasureTheory.Measure Ω`. -/
 @[coe]
@@ -138,7 +138,7 @@ instance isFiniteMeasure (μ : FiniteMeasure Ω) : IsFiniteMeasure (μ : Measure
 instance instCoeFun : CoeFun (FiniteMeasure Ω) fun _ => Set Ω → ℝ≥0 :=
   ⟨fun μ s => ((μ : Measure Ω) s).toNNReal⟩
 
--- porting note: now a syntactic tautology because of the way coercions work in Lean 4
+-- Porting note: now a syntactic tautology because of the way coercions work in Lean 4
 #noalign measure_theory.finite_measure.coe_fn_eq_to_nnreal_coe_fn_to_measure
 
 @[simp]
@@ -222,27 +222,25 @@ variable {R : Type*} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ�
 instance instSMul : SMul R (FiniteMeasure Ω) where
   smul (c : R) μ := ⟨c • (μ : Measure Ω), MeasureTheory.isFiniteMeasureSMulOfNNRealTower⟩
 
--- porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
-@[norm_cast]
+@[simp, norm_cast]
 theorem toMeasure_zero : ((↑) : FiniteMeasure Ω → Measure Ω) 0 = 0 :=
   rfl
 #align measure_theory.finite_measure.coe_zero MeasureTheory.FiniteMeasure.toMeasure_zero
 
--- porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
+-- Porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
 @[norm_cast]
 theorem toMeasure_add (μ ν : FiniteMeasure Ω) : ↑(μ + ν) = (↑μ + ↑ν : Measure Ω) :=
   rfl
 #align measure_theory.finite_measure.coe_add MeasureTheory.FiniteMeasure.toMeasure_add
 
--- porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
+-- Porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
 @[norm_cast]
 theorem toMeasure_smul (c : R) (μ : FiniteMeasure Ω) : ↑(c • μ) = c • (μ : Measure Ω) :=
   rfl
 #align measure_theory.finite_measure.coe_smul MeasureTheory.FiniteMeasure.toMeasure_smul
 
-@[simp, norm_cast]
-theorem coeFn_zero : (⇑(0 : FiniteMeasure Ω) : Set Ω → ℝ≥0) = (0 : Set Ω → ℝ≥0) := by
-  funext; rfl
+@[norm_cast]
+theorem coeFn_zero : (⇑(0 : FiniteMeasure Ω) : Set Ω → ℝ≥0) = (0 : Set Ω → ℝ≥0) := rfl
 #align measure_theory.finite_measure.coe_fn_zero MeasureTheory.FiniteMeasure.coeFn_zero
 
 @[simp, norm_cast]
@@ -276,11 +274,11 @@ def toMeasureAddMonoidHom : FiniteMeasure Ω →+ Measure Ω where
 instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
   Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
 
--- porting note: `@[simp]` breaks the LHS of `coeFn_smul`
+-- Porting note: `@[simp]` breaks the LHS of `coeFn_smul`
 theorem coeFn_smul_apply [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) (s : Set Ω) :
     (c • μ) s = c • μ s := by
   rw [coeFn_smul, Pi.smul_apply]
-  -- porting note: why doesn't `simp only` work in place of `rw` here?
+  -- Porting note: why doesn't `simp only` work in place of `rw` here?
 #align measure_theory.finite_measure.coe_fn_smul_apply MeasureTheory.FiniteMeasure.coeFn_smul_apply
 
 /-- Restrict a finite measure μ to a set A. -/
@@ -471,7 +469,7 @@ theorem toWeakDualBCNN_continuous : Continuous (@toWeakDualBCNN Ω _ _ _) :=
   continuous_induced_dom
 #align measure_theory.finite_measure.to_weak_dual_bcnn_continuous MeasureTheory.FiniteMeasure.toWeakDualBCNN_continuous
 
-/- Integration of (nonnegative bounded continuous) test functions against finite Borel measures
+/-- Integration of (nonnegative bounded continuous) test functions against finite Borel measures
 depends continuously on the measure. -/
 theorem continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
     Continuous fun μ : FiniteMeasure Ω => μ.testAgainstNN f := by

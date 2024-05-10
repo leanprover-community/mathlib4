@@ -32,7 +32,6 @@ instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> (try simp)
 open LawfulTraversable CommApplicative
 
 variable {F : Type u → Type u} [Applicative F] [CommApplicative F]
-
 variable {α' β' : Type u} (f : α' → F β')
 
 /-- Map each element of a `Multiset` to an action, evaluate these actions in order,
@@ -94,7 +93,7 @@ theorem lift_coe {α β : Type*} (x : List α) (f : List α → β)
 @[simp]
 theorem map_comp_coe {α β} (h : α → β) :
     Functor.map h ∘ Coe.coe = (Coe.coe ∘ Functor.map h : List α → Multiset β) := by
-  funext; simp only [Function.comp_apply, Coe.coe, fmap_def, coe_map, List.map_eq_map]
+  funext; simp only [Function.comp_apply, Coe.coe, fmap_def, map_coe, List.map_eq_map]
 #align multiset.map_comp_coe Multiset.map_comp_coe
 
 theorem id_traverse {α : Type*} (x : Multiset α) : traverse (pure : α → Id α) x = x := by
@@ -128,7 +127,7 @@ theorem traverse_map {G : Type* → Type _} [Applicative G] [CommApplicative G] 
     (g : α → β) (h : β → G γ) (x : Multiset α) : traverse h (map g x) = traverse (h ∘ g) x := by
   refine' Quotient.inductionOn x _
   intro
-  simp only [traverse, quot_mk_to_coe, coe_map, lift_coe, Function.comp_apply]
+  simp only [traverse, quot_mk_to_coe, map_coe, lift_coe, Function.comp_apply]
   rw [← Traversable.traverse_map h g, List.map_eq_map]
 #align multiset.traverse_map Multiset.traverse_map
 

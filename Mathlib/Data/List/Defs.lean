@@ -7,8 +7,8 @@ import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Control.Functor
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
-import Std.Tactic.Lint.Basic
-import Std.Data.RBMap.Basic
+import Batteries.Tactic.Lint.Basic
+import Batteries.Data.RBMap.Basic
 
 #align_import data.list.defs from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 
@@ -19,10 +19,8 @@ This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
 
-set_option autoImplicit true
-
 -- Porting note
--- Many of the definitions in `Data.List.Defs` were already defined upstream in `Std4`
+-- Many of the definitions in `Data.List.Defs` were already defined upstream in `Batteries`
 -- These have been annotated with `#align`s
 -- To make this easier for review, the `#align`s have been placed in order of occurrence
 -- in `mathlib`
@@ -152,7 +150,7 @@ end foldIdxM
 section mapIdxM
 
 -- Porting note: This was defined in `mathlib` with an `Applicative`
--- constraint on `m` and have been `#align`ed to the `Std` versions defined
+-- constraint on `m` and have been `#align`ed to the `Batteries` versions defined
 -- with a `Monad` typeclass constraint.
 -- Since all `Monad`s are `Applicative` this won't cause issues
 -- downstream & `Monad`ic code is more performant per Mario C
@@ -217,7 +215,7 @@ def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List �
     (y :: us, f (t :: y :: us) :: zs)
 #align list.permutations_aux2 List.permutationsAux2
 
--- porting note: removed `[elab_as_elim]` per Mario C
+-- Porting note: removed `[elab_as_elim]` per Mario C
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Status.20of.20data.2Elist.2Edefs.3F/near/313571979
 /-- A recursor for pairs of lists. To have `C l₁ l₂` for all `l₁`, `l₂`, it suffices to have it for
 `l₂ = []` and to be able to pour the elements of `l₁` into `l₂`. -/
@@ -314,14 +312,15 @@ instance instSProd : SProd (List α) (List β) (List (α × β)) where
 
 section Chain
 
-instance decidableChain [DecidableRel R] (a : α) (l : List α) :
+instance decidableChain {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
   induction l generalizing a with
   | nil => simp only [List.Chain.nil]; infer_instance
   | cons a as ih => haveI := ih; simp only [List.chain_cons]; infer_instance
 #align list.decidable_chain List.decidableChain
 
-instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
+instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α) :
+    Decidable (Chain' R l) := by
   cases l <;> dsimp only [List.Chain'] <;> infer_instance
 #align list.decidable_chain' List.decidableChain'
 
@@ -359,7 +358,7 @@ def destutter (R : α → α → Prop) [DecidableRel R] : List α → List α
 #align list.reduce_option List.reduceOption
 -- Porting note: replace ilast' by getLastD
 #align list.ilast' List.ilast'
--- Porting note: remove last' from Std
+-- Porting note: remove last' from Batteries
 #align list.last' List.getLast?
 #align list.rotate List.rotate
 #align list.rotate' List.rotate'
@@ -515,7 +514,7 @@ These can also be written in terms of `List.zip` or `List.zipWith`.
 For example, `zipWith3 f xs ys zs` could also be written as
 `zipWith id (zipWith f xs ys) zs`
 or as
-`(zip xs <| zip ys zs).map <| λ ⟨x, y, z⟩, f x y z`.
+`(zip xs <| zip ys zs).map <| fun ⟨x, y, z⟩ ↦ f x y z`.
 -/
 
 /-- Ternary version of `List.zipWith`. -/

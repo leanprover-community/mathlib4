@@ -28,7 +28,7 @@ lemma hom_add_apply {P Q : AddCommGroupCat} (f g : P ⟶ Q) (x : P) : (f + g) x 
 
 section
 
--- porting note: the simp attribute was locally deactivated here,
+-- Porting note: the simp attribute was locally deactivated here,
 -- otherwise Lean would try to infer `Preadditive AddCommGroupCat`
 -- in order to prove the axioms `add_comp` and `comp_add` in the
 -- next instance declaration

@@ -34,7 +34,6 @@ namespace Language
 open Structure
 
 variable (L : Language) (M : Type*) (N : Type*) {P : Type*} {Q : Type*}
-
 variable [L.Structure M] [L.Structure N] [L.Structure P] [L.Structure Q]
 
 /-- An elementary embedding of first-order structures is an embedding that commutes with the
@@ -53,7 +52,6 @@ structure ElementaryEmbedding where
 #align first_order.language.elementary_embedding.to_fun FirstOrder.Language.ElementaryEmbedding.toFun
 #align first_order.language.elementary_embedding.map_formula' FirstOrder.Language.ElementaryEmbedding.map_formula'
 
--- mathport name: elementary_embedding
 @[inherit_doc FirstOrder.Language.ElementaryEmbedding]
 scoped[FirstOrder] notation:25 A " ↪ₑ[" L "] " B => FirstOrder.Language.ElementaryEmbedding L A B
 

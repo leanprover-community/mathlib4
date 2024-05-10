@@ -33,7 +33,6 @@ quaternion, normed ring, normed space, normed algebra
 -/
 
 
--- mathport name: quaternion.real
 @[inherit_doc] scoped[Quaternion] notation "ℍ" => Quaternion ℝ
 
 open scoped RealInnerProductSpace
@@ -96,7 +95,7 @@ noncomputable instance : NormedDivisionRing ℍ where
     simp only [norm_eq_sqrt_real_inner, inner_self, normSq.map_mul]
     exact Real.sqrt_mul normSq_nonneg _
 
--- porting note: added `noncomputable`
+-- Porting note: added `noncomputable`
 noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
   toAlgebra := Quaternion.algebra
@@ -175,7 +174,7 @@ theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
     ‖(WithLp.equiv 2 (Fin 4 → _)).symm (equivTuple ℝ x)‖ = ‖x‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
     Fin.sum_univ_four]
-  simp_rw [IsROrC.inner_apply, starRingEnd_apply, star_trivial, ← sq]
+  simp_rw [RCLike.inner_apply, starRingEnd_apply, star_trivial, ← sq]
   rfl
 set_option linter.uppercaseLean3 false in
 #align quaternion.norm_pi_Lp_equiv_symm_equiv_tuple Quaternion.norm_piLp_equiv_symm_equivTuple

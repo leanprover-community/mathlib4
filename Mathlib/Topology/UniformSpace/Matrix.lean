@@ -20,7 +20,7 @@ variable (m n 𝕜 : Type*) [UniformSpace 𝕜]
 
 namespace Matrix
 
-instance : UniformSpace (Matrix m n 𝕜) :=
+instance instUniformSpace : UniformSpace (Matrix m n 𝕜) :=
   (by infer_instance : UniformSpace (m → n → 𝕜))
 
 instance instUniformAddGroup [AddGroup 𝕜] [UniformAddGroup 𝕜] :
@@ -29,8 +29,8 @@ instance instUniformAddGroup [AddGroup 𝕜] [UniformAddGroup 𝕜] :
 
 theorem uniformity :
     𝓤 (Matrix m n 𝕜) = ⨅ (i : m) (j : n), (𝓤 𝕜).comap fun a => (a.1 i j, a.2 i j) := by
-  erw [Pi.uniformity, Pi.uniformity]
-  simp_rw [Filter.comap_iInf, Filter.comap_comap]
+  erw [Pi.uniformity]
+  simp_rw [Pi.uniformity, Filter.comap_iInf, Filter.comap_comap]
   rfl
 #align matrix.uniformity Matrix.uniformity
 
@@ -43,7 +43,7 @@ theorem uniformContinuous {β : Type*} [UniformSpace β] {f : β → Matrix m n 
 instance [CompleteSpace 𝕜] : CompleteSpace (Matrix m n 𝕜) :=
   (by infer_instance : CompleteSpace (m → n → 𝕜))
 
-instance [SeparatedSpace 𝕜] : SeparatedSpace (Matrix m n 𝕜) :=
-  (by infer_instance : SeparatedSpace (m → n → 𝕜))
+instance [T0Space 𝕜] : T0Space (Matrix m n 𝕜) :=
+  inferInstanceAs (T0Space (m → n → 𝕜))
 
 end Matrix

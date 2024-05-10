@@ -73,11 +73,8 @@ def UniqueDiffOn (s : Set E) : Prop :=
 end TangentCone
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
-
 variable {𝕜} {x y : E} {s t : Set E}
 
 section TangentCone
@@ -115,7 +112,7 @@ theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d
   have : ∀ᶠ n in l, ‖c n‖⁻¹ * ‖c n • d n‖ = ‖d n‖ := by
     refine (eventually_ne_of_tendsto_norm_atTop hc 0).mono fun n hn => ?_
     rw [norm_smul, ← mul_assoc, inv_mul_cancel, one_mul]
-    rwa [Ne.def, norm_eq_zero]
+    rwa [Ne, norm_eq_zero]
   have D : Tendsto (fun n => ‖d n‖) l (𝓝 0) := Tendsto.congr' this C
   rw [tendsto_zero_iff_norm_tendsto_zero]
   exact D
