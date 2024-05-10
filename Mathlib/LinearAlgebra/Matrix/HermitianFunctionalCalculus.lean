@@ -102,6 +102,9 @@ theorem unitary_right_cancel (U : unitaryGroup n 𝕜) (A : Matrix n n 𝕜) (B 
                                mul_one]
      _ = B := by rw [mul_one]
 
+theorem mul_eq_mul_one_mul (A B : Matrix n n 𝕜) : A * B = A * (1 : Matrix n n 𝕜) * B := by
+    rw [mul_assoc, one_mul B] --maybe this can be used to shorten something?
+
 noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
       diagonal (RCLike.ofReal ∘ g ∘
