@@ -21,6 +21,7 @@ while the impact on writing code is minimal as `convexHull 𝕜 s` is automatica
 `(convexHull 𝕜) s`.
 -/
 
+open scoped AlgebraOrderInstances
 
 open Set
 

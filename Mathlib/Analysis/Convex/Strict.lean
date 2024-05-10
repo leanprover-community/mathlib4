@@ -18,6 +18,8 @@ A set is strictly convex if the open segment between any two distinct points lie
 -/
 
 
+open scoped AlgebraOrderInstances
+
 open Set
 
 open Convex Pointwise

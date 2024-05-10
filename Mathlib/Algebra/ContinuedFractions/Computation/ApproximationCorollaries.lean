@@ -42,6 +42,8 @@ convergence, fractions
 -/
 
 
+open scoped AlgebraOrderInstances
+
 variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
 
 open GeneralizedContinuedFraction (of)

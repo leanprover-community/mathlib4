@@ -16,9 +16,6 @@ The main result is `CliffordAlgebra.gradedAlgebra`, which says that the clifford
 ℤ₂-graded algebra (or "superalgebra").
 -/
 
-
-open scoped AlgebraOrderInstances
-
 namespace CliffordAlgebra
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]

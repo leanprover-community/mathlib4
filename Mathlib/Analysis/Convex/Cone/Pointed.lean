@@ -17,6 +17,8 @@ as it allows us to use the `Module` API to work with convex cones.
 
 -/
 
+open scoped AlgebraOrderInstances
+
 variable {𝕜 E F G : Type*}
 
 local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
