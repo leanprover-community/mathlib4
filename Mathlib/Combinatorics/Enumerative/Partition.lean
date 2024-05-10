@@ -116,11 +116,10 @@ def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition w
 lemma ofSym_map {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ] (e : σ ≃ τ) (s : Sym σ n) :
     Nat.Partition.ofSym (s.map e) = Nat.Partition.ofSym s := by
   simp only [ofSym, Sym.val_eq_coe, Sym.coe_map, toFinset_val, mk.injEq]
-  rw [Multiset.dedup_map_of_injective]
+  rw [Multiset.dedup_map_of_injective e.injective]
   simp only [map_map, Function.comp_apply]
   congr; funext i
-  rw [← Multiset.count_map_eq_count' e]
-  all_goals exact e.injective
+  rw [← Multiset.count_map_eq_count' e _ e.injective]
 
 /-- The partition of exactly one part. -/
 def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
