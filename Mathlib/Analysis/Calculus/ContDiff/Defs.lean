@@ -382,17 +382,19 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ} :
       · have A : (m : ℕ∞) < n := by
           rw [Nat.cast_lt] at hm ⊢
           exact Nat.lt_of_succ_lt_succ hm
-        sorry
-        -- have :
-        --   HasFDerivWithinAt ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm ∘ (p · m.succ))
-        --     ((p x).shift m.succ).curryLeft s x := Htaylor.fderivWithin _ A x hx
-        -- rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
-        -- convert this
-        -- ext y v
-        -- change
-        --   (p x (Nat.succ (Nat.succ m))) (cons y v) =
-        --     (p x m.succ.succ) (snoc (cons y (init v)) (v (last _)))
-        -- rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
+        have eq : (p x (m + 1).succ).curryLeft =
+            (continuousMultilinearCurryRightEquiv' 𝕜 m E F : ContinuousLinearMap ..).comp
+            ((p x).shift (m + 1)).curryLeft := by
+          ext y v
+          change
+          (p x (Nat.succ (Nat.succ m))) (cons y v) =
+            (p x m.succ.succ) (snoc (cons y (init v)) (v (last _)))
+          rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
+        rw [eq]
+        have :
+          HasFDerivWithinAt ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm ∘ (p · m.succ))
+            ((p x).shift m.succ).curryLeft s x := by apply Htaylor.fderivWithin _ A x hx
+        rwa [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
     · intro m (hm : (m : ℕ∞) ≤ n.succ)
       cases' m with m
       · have : DifferentiableOn 𝕜 (fun x => p x 0) s := fun x hx =>
