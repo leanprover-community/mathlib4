@@ -164,6 +164,9 @@ def ofSym_equiv_onePart (σ : Type*) [DecidableEq σ] : σ ≃
   left_inv := by intro a; simp only [Sym.oneEquiv_apply]; rfl
   right_inv := by intro a; simp only [Equiv.apply_symm_apply, Subtype.coe_eta]
 
+@[simp]
+lemma ofSym_equiv_onePart_apply (i : σ) : ((Nat.Partition.ofSym_equiv_onePart σ) i : Multiset σ) = {i} := rfl
+
 /-- The number of times a positive integer `i` appears in the partition `ofSums n l hl` is the same
 as the number of times it appears in the multiset `l`.
 (For `i = 0`, `Partition.non_zero` combined with `Multiset.count_eq_zero_of_not_mem` gives that

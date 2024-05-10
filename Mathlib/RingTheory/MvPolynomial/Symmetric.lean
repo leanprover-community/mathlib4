@@ -465,9 +465,7 @@ theorem msymm_zero : msymm σ R (Nat.Partition.indiscrete 0) = 1 := by
 theorem msymm_one : msymm σ R (Nat.Partition.indiscrete 1) = ∑ i, X i := by
   symm
   apply Fintype.sum_equiv (Nat.Partition.ofSym_equiv_onePart σ)
-  intro i
-  show X i = Multiset.prod (Multiset.map X {i})
-  simp only [Multiset.map_singleton, Multiset.prod_singleton]
+  simp
 
 @[simp]
 theorem rename_msymm {n : ℕ} (μ : n.Partition) (e : σ ≃ τ) :
