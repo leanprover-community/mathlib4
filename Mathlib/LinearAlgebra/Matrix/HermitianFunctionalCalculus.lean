@@ -104,6 +104,11 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
         (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) =
         RCLike.ofReal (K := 𝕜) ∘ (Function.const (spectrum ℝ A) r) ∘
         (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) := by sorry
+    conv =>
+     lhs
+     rw [h]
+     simp only [Function.const_comp, Function.comp_const]
+    --Moogle is down, but I think the algebra map on matrices can simplify and we can work via ext.
     sorry
   map_star' := by
     intro g
@@ -122,13 +127,11 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
      simp only [star_eq_conjTranspose, diagonal_conjTranspose, H1]
     simp only [H2, mul_assoc]
     exact rfl
-#exit
 
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus 𝕜 (IsHermitian : Matrix n n 𝕜 → Prop) where
-exists_cfc_of_predicate
+exists_cfc_of_predicate := by sorry
 
-sorry
 
 --theorem spec_EuclideanCLM_eq_spec : spectrum 𝕜 (toEuclideanCLM (𝕜:= 𝕜) A) = spectrum 𝕜 A :=
 --    AlgEquiv.spectrum_eq _ A
