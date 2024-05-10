@@ -147,7 +147,7 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
     simp only [Matrix.mul_smul]
     rw [unitary.mul_star_self_of_mem, Algebra.smul_def', mul_one]
     exact rfl
-    sorry
+    simp only [hA.eigenvectorUnitary.2]
   map_star' := by
     intro g
     simp only [star_trivial, StarMul.star_mul, star_star]
