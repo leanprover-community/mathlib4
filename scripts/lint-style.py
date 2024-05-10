@@ -33,9 +33,10 @@ to perform this update.
 # TODO: This is adapted from the linter for mathlib3. It should be rewritten in Lean.
 
 from pathlib import Path
-import sys
 import re
 import shutil
+import sys
+
 
 ERR_COP = 0 # copyright header
 ERR_MOD = 2 # module docstring
