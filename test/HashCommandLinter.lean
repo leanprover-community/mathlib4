@@ -35,13 +35,15 @@ end ignored_commands
 
 section linted_commands
 /--
-warning: `#`-commands, such as '#guard', are not allowed in 'Mathlib' [linter.hashCommand]
+warning: `#`-commands, such as '#guard', are not allowed in 'Mathlib'
+note: this linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 #guard true
 
 /--
-warning: `#`-commands, such as '#check_tactic', are not allowed in 'Mathlib' [linter.hashCommand]
+warning: `#`-commands, such as '#check_tactic', are not allowed in 'Mathlib'
+note: this linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 #check_tactic True ~> True by skip
@@ -49,14 +51,16 @@ warning: `#`-commands, such as '#check_tactic', are not allowed in 'Mathlib' [li
 -- Testing that the linter enters `in` recursively.
 
 /--
-warning: `#`-commands, such as '#guard', are not allowed in 'Mathlib' [linter.hashCommand]
+warning: `#`-commands, such as '#guard', are not allowed in 'Mathlib'
+note: this linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 variable (n : Nat) in
 #guard true
 
 /--
-warning: `#`-commands, such as '#guard', are not allowed in 'Mathlib' [linter.hashCommand]
+warning: `#`-commands, such as '#guard', are not allowed in 'Mathlib'
+note: this linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 open Nat in
@@ -65,7 +69,8 @@ variable (n : Nat) in
 #guard true
 
 /--
-warning: `#`-commands, such as '#guard', are not allowed in 'Mathlib' [linter.hashCommand]
+warning: `#`-commands, such as '#guard', are not allowed in 'Mathlib'
+note: this linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 open Nat in
