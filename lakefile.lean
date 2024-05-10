@@ -56,8 +56,8 @@ lean_exe checkYaml where
   srcDir := "scripts"
   supportInterpreter := true
 
-/-- `lake exe mkAll` constructs the files containing all imports for a project. -/
-lean_exe mkAll where
+/-- `lake exe mk_all` constructs the files containing all imports for a project. -/
+lean_exe mk_all where
   srcDir := "scripts"
   supportInterpreter := true
 
