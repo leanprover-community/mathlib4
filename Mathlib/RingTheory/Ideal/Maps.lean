@@ -49,7 +49,7 @@ def comap (I : Ideal S) : Ideal R where
     exact mul_mem_left I _ hx
 #align ideal.comap Ideal.comap
 
-@[simp] -- Porting note (#11215): TODO enable simp after the port
+@[simp]
 theorem coe_comap (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
 
 variable {f}
