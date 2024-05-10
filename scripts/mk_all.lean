@@ -15,7 +15,7 @@ This file declares a command to gather all Lean files from a folder into a singl
 
 open Lean System.FilePath
 
-/-- `getAll git str` takes all `.lean` files in the dir `str` (recursing into sub-dirs) and
+/-- `getAll git ml` takes all `.lean` files in the dir `ml` (recursing into sub-dirs) and
 returns the string
 ```
 import file₁
@@ -38,7 +38,7 @@ def getAll (git : Bool) (ml : String) : IO String := do
       return all.filter (·.extension == some "lean"))
   let files := (stdout.erase ml.lean).qsort (·.toString < ·.toString)
   let withImport ← files.mapM fun f => do
-    if ←  pathExists f then
+    if ← pathExists f then
       return "import " ++ (← moduleNameOfFileName f none).toString
     else return ""
   return ("\n".intercalate (withImport.filter (· != "")).toList).push '\n'
@@ -51,7 +51,7 @@ includes `Mathlib/Tactic`. -/
 def getLeanLibs : IO (Array String) := do
   let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
   let config ← MonadError.runEIO <| mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
-  let ws ← MonadError.runEIO <| (MainM.runLogIO (loadWorkspace config)).toEIO
+  let ws ← MonadError.runEIO (MainM.runLogIO (loadWorkspace config)).toEIO
   let package := ws.root
   let libs := (package.leanLibs.map (·.name)).map (·.toString)
   return if package.name == `mathlib then
@@ -67,16 +67,17 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let git := (args.flag? "git").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build all the libraries of the package.
-  -- If the package is `mathlib`, then it replaces the library `Cache` by `Mathlib/Tactic`.
+  -- If the package is `mathlib`, then it removes the libraries `Cache` and `LongestPole` and it
+  -- adds `Mathlib/Tactic`.
   let libs := ← match args.flag? "lib" with
               | some lib => return #[lib.as! String]
               | none => getLeanLibs
   let mut updates := 0
-  for d in libs.reverse do  -- reverse to create `Mathlib.Tactic` before `Mathlib`
+  for d in libs.reverse do  -- reverse to create `Mathlib/Tactic.lean` before `Mathlib.lean`
     let fileName := addExtension d "lean"
     let fileContent ← getAll git d
     if !(← pathExists fileName) then
-      IO.println s!"Updating '{fileName}'"
+      IO.println s!"Creating '{fileName}'"
       updates := updates + 1
       IO.FS.writeFile fileName fileContent
     else if (← IO.FS.readFile fileName) != fileContent then
@@ -93,7 +94,8 @@ def mkAll : Cmd := `[Cli|
   mk_all VIA mkAllCLI; ["0.0.1"]
   "Generate a file importing all the files of a Lean folder. \
    By default, it generates the files for the Lean libraries of the package.\
-   In the case of `Mathlib`, it replaces `Cache` with `Mathlib/Tactic`. \
+   In the case of `Mathlib`, it removes the libraries `Cache` and `LongestPole`\
+   and it adds `Mathlib/Tactic`. \
    If you are working in a downstream project, use `lake exe mk_all --lib MyProject`."
 
   FLAGS:
