@@ -416,9 +416,9 @@ variable {K L : Type _} [Field K] [Field L] [Algebra K L]
 
 open AlgEquiv IntermediateField
 
-/-- If `x : L` is a root of `minpoly K y`, then we can find `σ : L ≃ₐ[K] L)` with `σ x = y`.
+/-- If `x : L` is a root of `minpoly K y`, then we can find `(σ : L ≃ₐ[K] L)` with `σ x = y`.
   That is, `x` and `y` are Galois conjugates. -/
-theorem exists_algEquiv_of_root (hn : Normal K L) {x y : L} (hy : IsAlgebraic K y)
+theorem exists_algEquiv_of_root [Normal K L] {x y : L} (hy : IsAlgebraic K y)
     (h_ev : (Polynomial.aeval x) (minpoly K y) = 0) : ∃ σ : L ≃ₐ[K] L, σ x = y := by
   have hx : IsAlgebraic K x := ⟨minpoly K y, ne_zero hy.isIntegral, h_ev⟩
   set f : K⟮x⟯ ≃ₐ[K] K⟮y⟯ := algEquiv hx (eq_of_root hy h_ev)
@@ -426,11 +426,11 @@ theorem exists_algEquiv_of_root (hn : Normal K L) {x y : L} (hy : IsAlgebraic K 
     rw [liftNormal_commutes f L, algEquiv_apply, AdjoinSimple.algebraMap_gen K y]
   exact ⟨(liftNormal f L), hxy⟩
 
-/-- If `x : L` is a root of `minpoly K y`, then we can find `σ : L ≃ₐ[K] L)` with `σ y = x`.
+/-- If `x : L` is a root of `minpoly K y`, then we can find `(σ : L ≃ₐ[K] L)` with `σ y = x`.
   That is, `x` and `y` are Galois conjugates. -/
-theorem exists_algEquiv_of_root' (hn : Normal K L) {x y : L} (hy : IsAlgebraic K y)
+theorem exists_algEquiv_of_root' [Normal K L]{x y : L} (hy : IsAlgebraic K y)
     (h_ev : (Polynomial.aeval x) (minpoly K y) = 0) : ∃ σ : L ≃ₐ[K] L, σ y = x := by
-  obtain ⟨σ, hσ⟩ := exists_algEquiv_of_root hn hy h_ev
+  obtain ⟨σ, hσ⟩ := exists_algEquiv_of_root hy h_ev
   use σ.symm
   rw [← hσ, symm_apply_apply]
 
