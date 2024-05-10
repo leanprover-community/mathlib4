@@ -157,7 +157,8 @@ instance UniquePartitionOne : Unique (Partition 1) where
 lemma ofSym_one (s : Sym σ 1) : Nat.Partition.ofSym s = Nat.Partition.indiscrete 1 := by
   ext; simp
 
-def ofSym_equiv_onePart (σ : Type*) [DecidableEq σ] : σ ≃ { a : Sym σ 1 // Nat.Partition.ofSym a = Nat.Partition.indiscrete 1 } where
+def ofSym_equiv_onePart (σ : Type*) [DecidableEq σ] : σ ≃
+    { a : Sym σ 1 // Nat.Partition.ofSym a = Nat.Partition.indiscrete 1 } where
   toFun := fun a => ⟨Sym.oneEquiv a, by ext; simp⟩
   invFun := fun a => Sym.oneEquiv.symm a.1
   left_inv := by intro a; simp only [Sym.oneEquiv_apply]; rfl
