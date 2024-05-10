@@ -117,7 +117,7 @@ jobs:
       # but verify that this didn't change anything in the `check_imported` job.
       - name: update Mathlib.lean
         run: |
-          lake exe mkAll --lib Mathlib
+          lake exe mk_all --lib Mathlib
 
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
@@ -132,7 +132,7 @@ jobs:
           lake --version
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
-        run: lake exe mkAll
+        run: lake exe mk_all
 
       - name: check_imported
         run: git diff --exit-code
