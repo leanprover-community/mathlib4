@@ -113,7 +113,7 @@ namespace Condensed
 variable {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1)) [HasLimits A] [PreservesLimits G]
     [G.ReflectsIsomorphisms]
 
-local instance : HasLimitsOfSize.{u, u+1} A := hasLimitsOfSizeShrink.{u, u+1, u+1, u+1} _
+instance : HasLimitsOfSize.{u, u+1} A := hasLimitsOfSizeShrink.{u, u+1, u+1, u+1} _
 
 /-- The condensed set associated to a finite-product-preserving presheaf on `Stonean`. -/
 noncomputable def ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F] :
