@@ -241,17 +241,13 @@ theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
   exact mem_takeWhile_imp hx
 #align list.mem_rtake_while_imp List.mem_rtakeWhile_imp
 
-variable (p) (l)
-
-theorem rtakeWhile_idempotent : rtakeWhile p (rtakeWhile p l) = rtakeWhile p l :=
+theorem rtakeWhile_idempotent (p : α → Bool) (l : List α) :
+    rtakeWhile p (rtakeWhile p l) = rtakeWhile p l :=
   rtakeWhile_eq_self_iff.mpr fun _ => mem_rtakeWhile_imp
 #align list.rtake_while_idempotent List.rtakeWhile_idempotent
 
-
-lemma rdrop_add {l : List α} (i j : ℕ) :
-    l.rdrop (i + j) = (l.rdrop i).rdrop j := by
-  simp_rw [List.rdrop_eq_reverse_drop_reverse, reverse_reverse,
-           drop_drop, Nat.add_comm]
+lemma rdrop_add (i j : ℕ) : (l.rdrop i).rdrop j = l.rdrop (i + j) := by
+  simp_rw [rdrop_eq_reverse_drop_reverse, reverse_reverse, drop_drop, Nat.add_comm]
 
 @[simp]
 lemma rdrop_append_length {l₁ l₂ : List α} :
@@ -260,9 +256,8 @@ lemma rdrop_append_length {l₁ l₂ : List α} :
       reverse_append, drop_left, reverse_reverse]
 
 @[simp]
-lemma rdrop_append {l₁ l₂ : List α} (i : ℕ) :
+lemma rdrop_append_length_add {l₁ l₂ : List α} (i : ℕ) :
     List.rdrop (l₁ ++ l₂) (List.length l₂ + i)  = List.rdrop l₁ i:= by
-  rw [rdrop_add, rdrop_append_length]
-
+  rw [← rdrop_add, rdrop_append_length]
 
 end List
