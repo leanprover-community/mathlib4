@@ -54,7 +54,6 @@ structure Discrete (α : Type u₁) where
 
 @[simp]
 theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X := by
-  ext
   rfl
 #align category_theory.discrete.mk_as CategoryTheory.Discrete.mk_as
 
@@ -225,6 +224,11 @@ def natIso {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.o
     change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
     simp
 #align category_theory.discrete.nat_iso CategoryTheory.Discrete.natIso
+
+instance {I : Type*} {F G : Discrete I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i) [∀ i, IsIso (f i)] :
+    IsIso (Discrete.natTrans f) := by
+  change IsIso (Discrete.natIso (fun i => asIso (f i))).hom
+  infer_instance
 
 @[simp]
 theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i)

@@ -44,9 +44,8 @@ instance coePNatNat : Coe ℕ+ ℕ :=
 instance : Repr ℕ+ :=
   ⟨fun n n' => reprPrec n.1 n'⟩
 
---Porting note (#10754): New instance not in Lean3
-instance (n : ℕ) : OfNat ℕ+ (n+1) :=
-  ⟨⟨n + 1, Nat.succ_pos n⟩⟩
+instance (n : ℕ) [NeZero n] : OfNat ℕ+ n :=
+  ⟨⟨n, Nat.pos_of_ne_zero <| NeZero.ne n⟩⟩
 
 namespace PNat
 

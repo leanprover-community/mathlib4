@@ -175,9 +175,7 @@ def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
 scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
 
 instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
-  -- Porting note: this instance was called `Pi.inhabited` in lean3-core, which is much
-  -- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
-  instInhabitedForAll_1 _
+  inferInstanceAs <| Inhabited <| m → n → α
 
 -- Porting note: new, Lean3 found this automatically
 instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
@@ -226,8 +224,7 @@ instance unique [Unique α] : Unique (Matrix m n α) :=
   Pi.unique
 
 instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
-  instSubsingletonForAll
--- Porting note: this instance was `Pi.subsingleton` in lean3-core
+  inferInstanceAs <| Subsingleton <| m → n → α
 
 instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
   Function.nontrivial
@@ -880,7 +877,7 @@ variable [NonAssocSemiring α]
 
 @[simp]
 theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
-  simp [dotProduct, Fintype.card]
+  simp [dotProduct]
 #align matrix.one_dot_product_one Matrix.one_dotProduct_one
 
 end NonAssocSemiring
@@ -1892,6 +1889,37 @@ theorem vecMul_one (v : m → α) : v ᵥ* 1 = v := by
   rw [← diagonal_one, vecMul_diagonal, mul_one]
 #align matrix.vec_mul_one Matrix.vecMul_one
 
+@[simp]
+theorem diagonal_const_mulVec (x : α) (v : m → α) :
+    (diagonal fun _ => x) *ᵥ v = x • v := by
+  ext; simp [mulVec_diagonal]
+
+@[simp]
+theorem vecMul_diagonal_const (x : α) (v : m → α) :
+    v ᵥ* (diagonal fun _ => x) = MulOpposite.op x • v := by
+  ext; simp [vecMul_diagonal]
+
+@[simp]
+theorem natCast_mulVec (x : ℕ) (v : m → α) : x *ᵥ v = (x : α) • v :=
+  diagonal_const_mulVec _ _
+
+@[simp]
+theorem vecMul_natCast (x : ℕ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v :=
+  vecMul_diagonal_const _ _
+
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_mulVec (x : ℕ) [x.AtLeastTwo] (v : m → α) :
+    OfNat.ofNat (no_index x) *ᵥ v = (OfNat.ofNat x : α) • v :=
+  natCast_mulVec _ _
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
+    v ᵥ* OfNat.ofNat (no_index x) = MulOpposite.op (OfNat.ofNat x : α) • v :=
+  vecMul_natCast _ _
+
 end NonAssocSemiring
 
 section NonUnitalNonAssocRing
@@ -1973,6 +2001,22 @@ theorem mulVec_smul_assoc [Fintype n] (A : Matrix m n α) (b : n → α) (a : α
 #align matrix.mul_vec_smul_assoc Matrix.mulVec_smul_assoc
 
 end CommSemiring
+
+section NonAssocRing
+
+variable [NonAssocRing α]
+
+variable [Fintype m] [DecidableEq m]
+
+@[simp]
+theorem intCast_mulVec (x : ℤ) (v : m → α) : x *ᵥ v = (x : α) • v :=
+  diagonal_const_mulVec _ _
+
+@[simp]
+theorem vecMul_intCast (x : ℤ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v :=
+  vecMul_diagonal_const _ _
+
+end NonAssocRing
 
 section Transpose
 
@@ -2288,7 +2332,10 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
   Matrix.ext <| by simp
 #align matrix.conj_transpose_rat_cast_smul Matrix.conjTranspose_ratCast_smul
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12231
+@[simp, nolint simpNF]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=
   Matrix.ext <| by simp
@@ -2652,53 +2699,45 @@ theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid
 #align matrix.submatrix_mul_transpose_submatrix Matrix.submatrix_mul_transpose_submatrix
 
 /-- The left `n × l` part of an `n × (l+r)` matrix. -/
-@[reducible]
-def subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
+abbrev subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
   submatrix A id (Fin.castAdd r)
 #align matrix.sub_left Matrix.subLeft
 
 /-- The right `n × r` part of an `n × (l+r)` matrix. -/
-@[reducible]
-def subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
+abbrev subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
   submatrix A id (Fin.natAdd l)
 #align matrix.sub_right Matrix.subRight
 
 /-- The top `u × n` part of a `(u+d) × n` matrix. -/
-@[reducible]
-def subUp {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin u) (Fin n) α :=
+abbrev subUp {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin u) (Fin n) α :=
   submatrix A (Fin.castAdd d) id
 #align matrix.sub_up Matrix.subUp
 
 /-- The bottom `d × n` part of a `(u+d) × n` matrix. -/
-@[reducible]
-def subDown {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin d) (Fin n) α :=
+abbrev subDown {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin d) (Fin n) α :=
   submatrix A (Fin.natAdd u) id
 #align matrix.sub_down Matrix.subDown
 
 /-- The top-right `u × r` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subUpRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subUpRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin u) (Fin r) α :=
   subUp (subRight A)
 #align matrix.sub_up_right Matrix.subUpRight
 
 /-- The bottom-right `d × r` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subDownRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subDownRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin d) (Fin r) α :=
   subDown (subRight A)
 #align matrix.sub_down_right Matrix.subDownRight
 
 /-- The top-left `u × l` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subUpLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subUpLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin u) (Fin l) α :=
   subUp (subLeft A)
 #align matrix.sub_up_left Matrix.subUpLeft
 
 /-- The bottom-left `d × l` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin d) (Fin l) α :=
   subDown (subLeft A)
 #align matrix.sub_down_left Matrix.subDownLeft

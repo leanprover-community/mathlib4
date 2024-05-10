@@ -25,6 +25,8 @@ We give the corresonding result for the regular topology as well (see
 -/
 
 
+universe v₁ v₂ v₃ u₁ u₂ u₃
+
 namespace CategoryTheory
 
 open Limits Functor
@@ -63,16 +65,13 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     let Z : α → C := fun a ↦ (Functor.EffectivelyEnough.presentation (F := F) (Y a)).some.p
     let g₀ : (a : α) → F.obj (Z a) ⟶ Y a := fun a ↦ F.effectiveEpiOver (Y a)
     have : EffectiveEpiFamily _ (fun a ↦ g₀ a ≫ π a) := inferInstance
-    refine ⟨Z , fun a ↦ Full.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (Full.preimage _))⟩
+    refine ⟨Z , fun a ↦ F.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (F.preimage _))⟩
     · refine F.finite_effectiveEpiFamily_of_map _ _ ?_
       simpa using this
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂ a
       rw [h₂]
-      have : Full.preimage (g₀ a ≫ g₂ ≫ F.map g₁) = (Full.preimage (g₀ a ≫ g₂)) ≫ g₁ := by
-        apply Faithful.map_injective (F := F)
-        simp
-      rw [this]
-      exact S.downward_closed h₁ _
+      convert S.downward_closed h₁ (F.preimage (g₀ a ≫ g₂))
+      exact F.map_injective (by simp)
 
 lemma eq_induced : haveI := F.reflects_precoherent
     coherentTopology C =
@@ -98,9 +97,7 @@ instance isContinuous : haveI := F.reflects_precoherent
 
 section SheafEquiv
 
-universe u
-
-variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] (F : C ⥤ D)
   [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFamilies]
   [F.Full] [F.Faithful]
   [Precoherent D]
@@ -112,7 +109,8 @@ functor `F : C ⥤ D` to a precoherent category, which preserves and reflects e
 families, and satisfies `F.EffectivelyEnough`.
 -/
 noncomputable
-def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] : haveI := F.reflects_precoherent
+def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
+    haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
   Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting F _ _ _
 
@@ -120,9 +118,7 @@ end SheafEquiv
 
 section RegularExtensive
 
-universe u
-
-variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] (F : C ⥤ D)
   [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
   [F.Full] [F.Faithful]
   [FinitaryExtensive D] [Preregular D]
@@ -136,7 +132,8 @@ functor `F : C ⥤ D` to an extensive preregular category, which preserves and 
 epimorphisms and satisfies `F.EffectivelyEnough`.
 -/
 noncomputable
-def equivalence' (A : Type _) [Category.{u+1} A] [HasLimits A] :
+def equivalence' (A : Type u₃) [Category.{v₃} A]
+    [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
   Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting F _ _ _
@@ -169,17 +166,14 @@ theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
     exact F.map_effectiveEpi _
   · obtain ⟨Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpi _).mp hS
     let g₀ := F.effectiveEpiOver Y
-    refine ⟨_, Full.preimage (g₀ ≫ π), ?_, (?_ : S.arrows (Full.preimage _))⟩
+    refine ⟨_, F.preimage (g₀ ≫ π), ?_, (?_ : S.arrows (F.preimage _))⟩
     · refine F.effectiveEpi_of_map _ ?_
-      simp only [Full.witness]
+      simp only [map_preimage]
       infer_instance
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂
       rw [h₂]
-      have : Full.preimage (g₀ ≫ g₂ ≫ F.map g₁) = (Full.preimage (g₀ ≫ g₂)) ≫ g₁ := by
-        apply Faithful.map_injective (F := F)
-        simp
-      rw [this]
-      exact S.downward_closed h₁ _
+      convert S.downward_closed h₁ (F.preimage (g₀ ≫ g₂))
+      exact F.map_injective (by simp)
 
 lemma eq_induced : haveI := F.reflects_preregular
     regularTopology C =
@@ -205,9 +199,7 @@ instance isContinuous : haveI := F.reflects_preregular
 
 section SheafEquiv
 
-universe u
-
-variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] (F : C ⥤ D)
   [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
   [F.Full] [F.Faithful]
   [Preregular D]
@@ -219,7 +211,8 @@ functor `F : C ⥤ D` to a preregular category, which preserves and reflects ef
 epimorphisms and satisfies `F.EffectivelyEnough`.
 -/
 noncomputable
-def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] : haveI := F.reflects_preregular
+def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
+    haveI := F.reflects_preregular
     Sheaf (regularTopology C) A ≌ Sheaf (regularTopology D) A :=
   Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting F _ _ _
 
