@@ -137,6 +137,7 @@ lemma IsMatching.induce_connectedComponent (h : M.IsMatching) (c : ConnectedComp
     true_and, ConnectedComponent.eq, hw, hvw, M.edge_vert hvw.symm, (M.adj_sub hvw).symm.reachable]
   exact fun _ _ _ ↦ hw _
 
+
 lemma IsPerfectMatching.induce_connectedComponent_isMatching (h : M.IsPerfectMatching)
     (c : ConnectedComponent G) : (M.induce c.supp).IsMatching := by
   simpa [h.2.verts_eq_univ] using h.1.induce_connectedComponent c
@@ -157,23 +158,19 @@ lemma even_card_of_isPerfectMatching (c : ConnectedComponent G) (hM : M.IsPerfec
     Even (Fintype.card c.supp) := by
   classical simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
-theorem mem_supp_of_adj {u : Set V} {c : ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe}
-    (hv : v ∈ Subtype.val '' c.supp) (hw : w ∈ ((⊤ : Subgraph G).deleteVerts  u).verts)
-    (hadj : G.Adj v w) : w ∈ Subtype.val '' c.supp := by
+theorem mem_coe_supp_of_adj {H : Subgraph G} {c : ConnectedComponent H.coe}
+    (hv : v ∈ (c.supp : Set V)) (hw : w ∈ H.verts)
+    (hadj : H.Adj v w) : w ∈ (c.supp : Set V) := by
   rw [Set.mem_image]
   obtain ⟨v' , hv'⟩ := hv
-  use ⟨ w , ⟨ by trivial , by refine Set.not_mem_of_mem_diff hw ⟩ ⟩
+  use ⟨w, hw⟩
   rw [ConnectedComponent.mem_supp_iff]
   refine ⟨?_, rfl⟩
   rw [← (ConnectedComponent.mem_supp_iff _ _).mp hv'.1]
   apply ConnectedComponent.connectedComponentMk_eq_of_adj
   apply SimpleGraph.Subgraph.Adj.coe
-  rw [Subgraph.deleteVerts_adj]
-  refine ⟨by trivial, Set.not_mem_of_mem_diff hw, by trivial, v'.prop.2, ?_⟩
-  rw [Subgraph.top_adj]
   rw [hv'.2]
-  exact adj_symm G hadj
-
+  exact hadj.symm
 
 lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.deleteVerts ⊤ u).coe}
     (hM : M.IsPerfectMatching) (codd : Odd (Nat.card c.supp)) :
@@ -181,12 +178,12 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
     by_contra! h
     have h' : (M.induce c.supp).IsMatching := by
       intro v hv
-      obtain ⟨ w , hw ⟩ := hM.1 (hM.2 v)
-      obtain ⟨ v' , hv' ⟩ := hv
+      obtain ⟨w , hw⟩ := hM.1 (hM.2 v)
+      obtain ⟨v' , hv'⟩ := hv
       use w
       constructor
       · constructor
-        · exact ⟨ v' , hv' ⟩
+        · exact ⟨v', hv'⟩
         · constructor
           · have h'' : w ∉ u := by
               intro hw'
@@ -194,9 +191,16 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
               · exact hv'.1
               rw [hv'.2]
               exact hw.1
-            apply mem_supp_of_adj ⟨ v' , ⟨ hv'.1 , rfl ⟩ ⟩ ⟨ by trivial , h'' ⟩
+            apply mem_coe_supp_of_adj ⟨v', ⟨hv'.1, rfl⟩⟩ ⟨by trivial, h''⟩
             rw [hv'.2]
-            exact Subgraph.adj_sub _ hw.1
+            rw [SimpleGraph.Subgraph.deleteVerts_adj]
+            exact ⟨trivial,
+              ⟨Set.not_mem_of_mem_diff (SimpleGraph.Subgraph.deleteVerts_verts ▸ hv'.2 ▸ v'.2),
+                ⟨trivial,
+                ⟨h'' , by
+                  rw [SimpleGraph.Subgraph.top_adj]
+                  exact M.adj_sub hw.1
+                ⟩⟩⟩⟩
           · exact hw.1
       · intro y hy
         apply hw.2
