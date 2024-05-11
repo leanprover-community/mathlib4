@@ -1022,9 +1022,7 @@ theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x :
   funext n
   ext x
   rw [← mkPiRing_apply_one_eq_self (p n)]
-  -- Porting note: nasty hack, was `simp [h.apply_eq_zero n 1]`
-  have := Or.intro_right ?_ (h.apply_eq_zero n 1)
-  simpa using this
+  simp [h.apply_eq_zero n 1]
 #align has_fpower_series_at.eq_zero HasFPowerSeriesAt.eq_zero
 
 /-- One-dimensional formal multilinear series representing the same function are equal. -/
@@ -1086,7 +1084,7 @@ $$
 The corresponding power series has thus a `k`-th coefficient equal to
 $\sum_{n} \binom{n}{k} p_n y^{n-k}$. In the general case where `pₙ` is a multilinear map, this has
 to be interpreted suitably: instead of having a binomial coefficient, one should sum over all
-possible subsets `s` of `Fin n` of cardinal `k`, and attribute `z` to the indices in `s` and
+possible subsets `s` of `Fin n` of cardinality `k`, and attribute `z` to the indices in `s` and
 `y` to the indices outside of `s`.
 
 In this paragraph, we implement this. The new power series is called `p.changeOrigin y`. Then, we

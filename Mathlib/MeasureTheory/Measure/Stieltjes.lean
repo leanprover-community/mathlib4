@@ -281,7 +281,7 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
       (add_le_add (ENNReal.tsum_le_tsum fun i => (hg i).2.le)
         (by simp only [ENNReal.ofReal_coe_nnreal, le_rfl]))
     _ = ∑' i, f.length (s i) + ∑' i, (ε' i : ℝ≥0∞) + δ := by rw [ENNReal.tsum_add]
-    _ ≤ ∑' i, f.length (s i) + δ + δ := (add_le_add (add_le_add le_rfl hε.le) le_rfl)
+    _ ≤ ∑' i, f.length (s i) + δ + δ := add_le_add (add_le_add le_rfl hε.le) le_rfl
     _ = ∑' i : ℕ, f.length (s i) + ε := by simp [δ, add_assoc, ENNReal.add_halves]
 #align stieltjes_function.outer_Ioc StieltjesFunction.outer_Ioc
 
@@ -346,7 +346,7 @@ protected irreducible_def measure : Measure ℝ :=
   { toOuterMeasure := f.outer
     m_iUnion := fun _s hs =>
       f.outer.iUnion_eq_of_caratheodory fun i => f.borel_le_measurable _ (hs i)
-    trimmed := f.outer_trim }
+    trim_le := f.outer_trim.le }
 #align stieltjes_function.measure StieltjesFunction.measure
 
 @[simp]
@@ -355,7 +355,9 @@ theorem measure_Ioc (a b : ℝ) : f.measure (Ioc a b) = ofReal (f b - f a) := by
   exact f.outer_Ioc a b
 #align stieltjes_function.measure_Ioc StieltjesFunction.measure_Ioc
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+@[simp, nolint simpNF]
 theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a) := by
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
     ∃ u : ℕ → ℝ, StrictMono u ∧ (∀ n : ℕ, u n < a) ∧ Tendsto u atTop (𝓝 a) :=

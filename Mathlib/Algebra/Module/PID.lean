@@ -93,7 +93,7 @@ theorem Submodule.exists_isInternal_prime_power_torsion_of_pid [Module.Finite R 
     ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i)
         (e : ι → ℕ), DirectSum.IsInternal fun i => torsionBy R M <| p i ^ e i := by
   refine' ⟨_, _, _, _, _, _, Submodule.isInternal_prime_power_torsion_of_pid hM⟩
-  exact Finset.fintypeCoeSort _
+  · exact Finset.fintypeCoeSort _
   · rintro ⟨p, hp⟩
     have hP := prime_of_factor p (Multiset.mem_toFinset.mp hp)
     haveI := Ideal.isPrime_of_prime hP
@@ -119,10 +119,8 @@ theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
       (Associates.mk <| generator <| torsionOf R M x) ∣ Associates.mk p ^ n :=
     by ext n; rw [← Associates.mk_pow, Associates.mk_dvd_mk, ← mem_iff_generator_dvd]; rfl
   have := (isTorsion'_powers_iff p).mp hM x; rw [prop] at this
-  classical
-  convert
-    Associates.eq_pow_find_of_dvd_irreducible_pow ((Associates.irreducible_mk p).mpr hp)
-      this.choose_spec
+  convert Associates.eq_pow_find_of_dvd_irreducible_pow (Associates.irreducible_mk.mpr hp)
+    this.choose_spec
 #align ideal.torsion_of_eq_span_pow_p_order Ideal.torsionOf_eq_span_pow_pOrder
 
 theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ pOrder hM y))
@@ -133,17 +131,18 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
   · let f :=
       ((R ∙ p ^ (pOrder hM y - k) * p ^ k).quotEquivOfEq _ ?_).trans
         (quotTorsionOfEquivSpanSingleton R M y)
-    have : f.symm ⟨p ^ k • x, h⟩ ∈
-        R ∙ Ideal.Quotient.mk (R ∙ p ^ (pOrder hM y - k) * p ^ k) (p ^ k) := by
-      rw [← Quotient.torsionBy_eq_span_singleton, mem_torsionBy_iff, ← f.symm.map_smul]
-      convert f.symm.map_zero; ext
-      rw [coe_smul_of_tower, coe_mk, coe_zero, smul_smul, ← pow_add, Nat.sub_add_cancel hk, @hM' x]
-      · exact mem_nonZeroDivisors_of_ne_zero (pow_ne_zero _ hp.ne_zero)
-    rw [Submodule.mem_span_singleton] at this; obtain ⟨a, ha⟩ := this; use a
-    rw [f.eq_symm_apply, ← Ideal.Quotient.mk_eq_mk, ← Quotient.mk_smul] at ha
-    dsimp only [smul_eq_mul, LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mk,
-      quotTorsionOfEquivSpanSingleton_apply_mk] at ha
-    rw [smul_smul, mul_comm]; exact congr_arg ((↑) : _ → M) ha.symm
+    · have : f.symm ⟨p ^ k • x, h⟩ ∈
+          R ∙ Ideal.Quotient.mk (R ∙ p ^ (pOrder hM y - k) * p ^ k) (p ^ k) := by
+        rw [← Quotient.torsionBy_eq_span_singleton, mem_torsionBy_iff, ← f.symm.map_smul]
+        · convert f.symm.map_zero; ext
+          rw [coe_smul_of_tower, coe_mk, coe_zero, smul_smul, ← pow_add, Nat.sub_add_cancel hk,
+            @hM' x]
+        · exact mem_nonZeroDivisors_of_ne_zero (pow_ne_zero _ hp.ne_zero)
+      rw [Submodule.mem_span_singleton] at this; obtain ⟨a, ha⟩ := this; use a
+      rw [f.eq_symm_apply, ← Ideal.Quotient.mk_eq_mk, ← Quotient.mk_smul] at ha
+      dsimp only [smul_eq_mul, LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mk,
+        quotTorsionOfEquivSpanSingleton_apply_mk] at ha
+      rw [smul_smul, mul_comm]; exact congr_arg ((↑) : _ → M) ha.symm
     · symm; convert Ideal.torsionOf_eq_span_pow_pOrder hp hM y
       rw [← pow_add, Nat.sub_add_cancel hk]
   · use 0
@@ -177,8 +176,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
     ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| N ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
   obtain ⟨d, s, hs⟩ := @Module.Finite.exists_fin _ _ _ _ _ h'; use d; clear h'
   induction' d with d IH generalizing N
-  · simp only [Nat.zero_eq] at *
-    -- Porting note: was `use fun i => finZeroElim i`
+  · -- Porting note: was `use fun i => finZeroElim i`
     use finZeroElim
     rw [Set.range_eq_empty, Submodule.span_empty] at hs
     haveI : Unique N :=
@@ -191,9 +189,9 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
     -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
     -- `obtain` doesn't work with placeholders.
     have := IH ?_ s' ?_
-    obtain ⟨k, ⟨f⟩⟩ := this
-    clear IH
-    · have : ∀ i : Fin d,
+    · obtain ⟨k, ⟨f⟩⟩ := this
+      clear IH
+      have : ∀ i : Fin d,
           ∃ x : N, p ^ k i • x = 0 ∧ f (Submodule.Quotient.mk x) = DirectSum.lof R _ _ i 1 := by
         intro i
         let fi := f.symm.toLinearMap.comp (DirectSum.lof _ _ _ i)

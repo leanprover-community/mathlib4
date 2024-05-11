@@ -152,6 +152,7 @@ theorem imageToKernel_isIso_of_image_eq_kernel {A B C : V} (f : A ⟶ B) (g : B 
   simp only [Subobject.ofLE_comp_ofLE, Subobject.ofLE_refl, and_self]
 #align category_theory.image_to_kernel_is_iso_of_image_eq_kernel CategoryTheory.imageToKernel_isIso_of_image_eq_kernel
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 -- We'll prove the converse later, when `V` is abelian.
 theorem exact_of_image_eq_kernel {A B C : V} (f : A ⟶ B) (g : B ⟶ C)
     (p : imageSubobject f = kernelSubobject g) : Exact f g :=
@@ -189,8 +190,8 @@ theorem exact_comp_hom_inv_comp_iff (i : B ≅ D) : Exact (f ≫ i.hom) (i.inv �
 theorem exact_epi_comp (hgh : Exact g h) [Epi f] : Exact (f ≫ g) h := by
   refine' ⟨by simp [hgh.w], _⟩
   rw [imageToKernel_comp_left]
-  haveI := hgh.epi
-  infer_instance
+  · haveI := hgh.epi
+    infer_instance
 #align category_theory.exact_epi_comp CategoryTheory.exact_epi_comp
 
 @[simp]
@@ -223,7 +224,7 @@ theorem exact_comp_iso [IsIso h] : Exact f (g ≫ h) ↔ Exact f g :=
 
 theorem exact_kernelSubobject_arrow : Exact (kernelSubobject f).arrow f := by
   refine' ⟨by simp, _⟩
-  refine' @IsIso.epi_of_iso _ _ _ _ _ ?_
+  refine @IsIso.epi_of_iso _ _ _ _ _ ?_
   exact ⟨⟨factorThruImageSubobject _, by aesop_cat, by aesop_cat⟩⟩
 #align category_theory.exact_kernel_subobject_arrow CategoryTheory.exact_kernelSubobject_arrow
 

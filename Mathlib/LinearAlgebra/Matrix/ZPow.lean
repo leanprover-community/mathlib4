@@ -60,8 +60,7 @@ theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m * A ^ n = A ^ n * A⁻¹ 
   cases' m with m m
   · simp
   rcases nonsing_inv_cancel_or_zero A with (⟨h, h'⟩ | h)
-  · simp only [Nat.succ_eq_add_one]
-    calc
+  · calc
        A⁻¹ ^ (m + 1) * A ^ (n + 1) = A⁻¹ ^ m * (A⁻¹ * A) * A ^ n := by
         simp only [pow_succ A⁻¹, pow_succ' A, Matrix.mul_assoc]
       _ = A ^ n * A⁻¹ ^ m := by simp only [h, Matrix.mul_one, Matrix.one_mul, IH m]
@@ -116,8 +115,7 @@ theorem zpow_neg_natCast (A : M) (n : ℕ) : A ^ (-n : ℤ) = (A ^ n)⁻¹ := by
   · exact DivInvMonoid.zpow_neg' _ _
 #align matrix.zpow_neg_coe_nat Matrix.zpow_neg_natCast
 
--- 2024-04-05
-@[deprecated] alias zpow_neg_coe_nat := zpow_neg_natCast
+@[deprecated (since := "2024-04-05")] alias zpow_neg_coe_nat := zpow_neg_natCast
 
 theorem _root_.IsUnit.det_zpow {A : M} (h : IsUnit A.det) (n : ℤ) : IsUnit (A ^ n).det := by
   cases' n with n n

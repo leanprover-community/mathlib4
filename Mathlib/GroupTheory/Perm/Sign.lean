@@ -3,12 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-
+import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
-import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Tactic.NormNum.Ineq
 
@@ -339,10 +338,8 @@ def signAux3 [Finite α] (f : Perm α) {s : Multiset α} : (∀ x, x ∈ s) → 
 theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs : ∀ x, x ∈ s) :
     signAux3 (f * g) hs = signAux3 f hs * signAux3 g hs ∧
       Pairwise fun x y => signAux3 (swap x y) hs = -1 := by
-  let ⟨l, hl⟩ := Quotient.exists_rep s
-  rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
-  --clear _let_match
-  subst hl
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin α
+  induction s using Quotient.inductionOn with | _ l => ?_
   show
     signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧
     Pairwise fun x y => signAux2 l (swap x y) = -1
@@ -353,8 +350,8 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
       signAux_eq_signAux2 _ _ e fun _ _ => hs _, ← signAux_eq_signAux2 _ _ e fun _ _ => hs _,
       hfg, signAux_mul]
   · intro x y hxy
-    have hexy : e x ≠ e y := mt e.injective.eq_iff.1 hxy
-    rw [← signAux_eq_signAux2 _ _ e fun _ _ => hs _, symm_trans_swap_trans, signAux_swap hexy]
+    rw [← e.injective.ne_iff] at hxy
+    rw [← signAux_eq_signAux2 _ _ e fun _ _ => hs _, symm_trans_swap_trans, signAux_swap hxy]
 #align equiv.perm.sign_aux3_mul_and_swap Equiv.Perm.signAux3_mul_and_swap
 
 theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : Perm α) (e : α ≃ β)
@@ -594,11 +591,11 @@ theorem sign_sumCongr (σa : Perm α) (σb : Perm β) : sign (sumCongr σa σb) 
   suffices sign (sumCongr σa (1 : Perm β)) = sign σa ∧ sign (sumCongr (1 : Perm α) σb) = sign σb
     by rw [← this.1, ← this.2, ← sign_mul, sumCongr_mul, one_mul, mul_one]
   constructor
-  · refine' σa.swap_induction_on ?_ fun σa' a₁ a₂ ha ih => ?_
+  · refine σa.swap_induction_on ?_ fun σa' a₁ a₂ ha ih => ?_
     · simp
     · rw [← one_mul (1 : Perm β), ← sumCongr_mul, sign_mul, sign_mul, ih, sumCongr_swap_one,
         sign_swap ha, sign_swap (Sum.inl_injective.ne_iff.mpr ha)]
-  · refine' σb.swap_induction_on ?_ fun σb' b₁ b₂ hb ih => ?_
+  · refine σb.swap_induction_on ?_ fun σb' b₁ b₂ hb ih => ?_
     · simp
     · rw [← one_mul (1 : Perm α), ← sumCongr_mul, sign_mul, sign_mul, ih, sumCongr_one_swap,
         sign_swap hb, sign_swap (Sum.inr_injective.ne_iff.mpr hb)]

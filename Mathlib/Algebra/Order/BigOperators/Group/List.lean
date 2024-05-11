@@ -76,7 +76,8 @@ lemma prod_lt_prod' [Preorder M] [CovariantClass M M (· * ·) (· < ·)]
     (h₁ : ∀ i ∈ l, f i ≤ g i) (h₂ : ∃ i ∈ l, f i < g i) : (l.map f).prod < (l.map g).prod := by
   induction' l with i l ihl
   · rcases h₂ with ⟨_, ⟨⟩, _⟩
-  simp only [forall_mem_cons, exists_mem_cons, map_cons, prod_cons] at h₁ h₂ ⊢
+  simp only [forall_mem_cons, map_cons, prod_cons] at h₁ ⊢
+  simp only [mem_cons, exists_eq_or_imp] at h₂
   cases h₂
   · exact mul_lt_mul_of_lt_of_le ‹_› (prod_le_prod' h₁.2)
   · exact mul_lt_mul_of_le_of_lt h₁.1 <| ihl h₁.2 ‹_›
@@ -191,7 +192,9 @@ variable [CanonicallyOrderedCommMonoid M] {l : List M}
 
 @[to_additive] lemma prod_eq_one_iff : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
-    rw [List.eq_replicate.2 ⟨_, h⟩, prod_replicate, one_pow]; exact (length l); rfl⟩
+    rw [List.eq_replicate.2 ⟨_, h⟩, prod_replicate, one_pow]
+    · exact (length l)
+    · rfl⟩
 #align list.prod_eq_one_iff List.prod_eq_one_iff
 #align list.sum_eq_zero_iff List.sum_eq_zero_iff
 

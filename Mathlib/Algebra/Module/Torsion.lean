@@ -112,7 +112,7 @@ theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι
     (h_ne_zero : ∀ i, Ideal.torsionOf R M (v i) = ⊥) : LinearIndependent R v := by
   refine' linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => _
   replace hv := CompleteLattice.independent_def.mp hv i
-  simp only [iSup_subtype', ← Submodule.span_range_eq_iSup, disjoint_iff] at hv
+  simp only [iSup_subtype', ← Submodule.span_range_eq_iSup (ι := Subtype _), disjoint_iff] at hv
   have : r • v i ∈ ⊥ := by
     rw [← hv, Submodule.mem_inf]
     refine' ⟨Submodule.mem_span_singleton.mpr ⟨r, rfl⟩, _⟩
@@ -170,13 +170,12 @@ def torsionBySet (s : Set R) : Submodule R M :=
   sInf (torsionBy R M '' s)
 #align submodule.torsion_by_set Submodule.torsionBySet
 
-set_option autoImplicit true in
 -- Porting note: torsion' had metavariables and factoring out this fixed it
 -- perhaps there is a better fix
 /-- The additive submonoid of all elements `x` of `M` such that `a • x = 0`
 for some `a` in `S`. -/
 @[simps!]
-def torsion'AddSubMonoid (S : Type w) [CommMonoid S] [DistribMulAction S M] :
+def torsion'AddSubMonoid (S : Type*) [CommMonoid S] [DistribMulAction S M] :
     AddSubmonoid M where
   carrier := { x | ∃ a : S, a • x = 0 }
   add_mem' := by
@@ -185,11 +184,10 @@ def torsion'AddSubMonoid (S : Type w) [CommMonoid S] [DistribMulAction S M] :
     rw [smul_add, mul_smul, mul_comm, mul_smul, hx, hy, smul_zero, smul_zero, add_zero]
   zero_mem' := ⟨1, smul_zero 1⟩
 
-set_option autoImplicit true in
 /-- The `S`-torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
 `a` in `S`. -/
 @[simps!]
-def torsion' (S : Type w) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M] :
+def torsion' (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M] :
     Submodule R M :=
   { torsion'AddSubMonoid M S with
     smul_mem' := fun a x ⟨b, h⟩ => ⟨b, by rw [smul_comm, h, smul_zero]⟩}
@@ -197,8 +195,7 @@ def torsion' (S : Type w) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S
 
 /-- The torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
   non-zero-divisor `a` in `R`. -/
-@[reducible]
-def torsion :=
+abbrev torsion :=
   torsion' R M R⁰
 #align submodule.torsion Submodule.torsion
 
@@ -207,27 +204,23 @@ end Submodule
 namespace Module
 
 /-- An `a`-torsion module is a module where every element is `a`-torsion. -/
-@[reducible]
-def IsTorsionBy (a : R) :=
+abbrev IsTorsionBy (a : R) :=
   ∀ ⦃x : M⦄, a • x = 0
 #align module.is_torsion_by Module.IsTorsionBy
 
 /-- A module where every element is `a`-torsion for all `a` in `s`. -/
-@[reducible]
-def IsTorsionBySet (s : Set R) :=
+abbrev IsTorsionBySet (s : Set R) :=
   ∀ ⦃x : M⦄ ⦃a : s⦄, (a : R) • x = 0
 #align module.is_torsion_by_set Module.IsTorsionBySet
 
 /-- An `S`-torsion module is a module where every element is `a`-torsion for some `a` in `S`. -/
-@[reducible]
-def IsTorsion' (S : Type*) [SMul S M] :=
+abbrev IsTorsion' (S : Type*) [SMul S M] :=
   ∀ ⦃x : M⦄, ∃ a : S, a • x = 0
 #align module.is_torsion' Module.IsTorsion'
 
 /-- A torsion module is a module where every element is `a`-torsion for some non-zero-divisor `a`.
 -/
-@[reducible]
-def IsTorsion :=
+abbrev IsTorsion :=
   ∀ ⦃x : M⦄, ∃ a : R⁰, a • x = 0
 #align module.is_torsion Module.IsTorsion
 
@@ -449,11 +442,11 @@ theorem iSup_torsionBy_eq_torsionBy_prod :
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf, ←
     iSup_torsionBySet_ideal_eq_torsionBySet_iInf]
-  congr
-  ext : 1
-  congr
-  ext : 1
-  exact (torsionBySet_span_singleton_eq _).symm
+  · congr
+    ext : 1
+    congr
+    ext : 1
+    exact (torsionBySet_span_singleton_eq _).symm
   exact fun i hi j hj ij => (Ideal.sup_eq_top_iff_isCoprime _ _).mpr (hq hi hj ij)
 #align submodule.supr_torsion_by_eq_torsion_by_prod Submodule.iSup_torsionBy_eq_torsionBy_prod
 

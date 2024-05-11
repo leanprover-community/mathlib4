@@ -62,7 +62,7 @@ theorem dart_fst_fiber [DecidableEq V] (v : V) :
   simp only [mem_image, true_and_iff, mem_filter, SetCoe.exists, mem_univ, exists_prop_of_true]
   constructor
   · rintro rfl
-    exact ⟨_, d.is_adj, by ext <;> rfl⟩
+    exact ⟨_, d.adj, by ext <;> rfl⟩
   · rintro ⟨e, he, rfl⟩
     rfl
 #align simple_graph.dart_fst_fiber SimpleGraph.dart_fst_fiber
@@ -115,6 +115,12 @@ theorem sum_degrees_eq_twice_card_edges : ∑ v, G.degree v = 2 * G.edgeFinset.c
   G.dart_card_eq_sum_degrees.symm.trans G.dart_card_eq_twice_card_edges
 #align simple_graph.sum_degrees_eq_twice_card_edges SimpleGraph.sum_degrees_eq_twice_card_edges
 
+lemma two_mul_card_edgeFinset :
+    2 * G.edgeFinset.card = (univ.filter fun (x, y) ↦ G.Adj x y).card := by
+  rw [← dart_card_eq_twice_card_edges, ← card_univ]
+  refine card_congr (fun d _ ↦ (d.fst, d.snd)) (by simp) (by simp [Dart.ext_iff, ← and_imp]) ?_
+  exact fun xy h ↦ ⟨⟨xy, (mem_filter.1 h).2⟩, mem_univ _, Prod.mk.eta⟩
+
 end DegreeSum
 
 /-- The handshaking lemma.  See also `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
@@ -122,7 +128,7 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     Even (univ.filter fun v => Odd (G.degree v)).card := by
   classical
     have h := congr_arg (fun n => ↑n : ℕ → ZMod 2) G.sum_degrees_eq_twice_card_edges
-    simp only [ZMod.nat_cast_self, zero_mul, Nat.cast_mul] at h
+    simp only [ZMod.natCast_self, zero_mul, Nat.cast_mul] at h
     rw [Nat.cast_sum, ← sum_filter_ne_zero] at h
     rw [@sum_congr _ _ _ _ (fun v => (G.degree v : ZMod 2)) (fun _v => (1 : ZMod 2)) _ rfl] at h
     · simp only [filter_congr, mul_one, nsmul_eq_mul, sum_const, Ne] at h

@@ -277,7 +277,7 @@ theorem separable_X_pow_sub_C_unit {n : ℕ} (u : Rˣ) (hn : IsUnit (n : R)) :
   calc
     -C ↑u⁻¹ * (X ^ n - C ↑u) + C ↑u⁻¹ * C n' * X * (↑n * X ^ (n - 1)) =
         C (↑u⁻¹ * ↑u) - C ↑u⁻¹ * X ^ n + C ↑u⁻¹ * C (n' * ↑n) * (X * X ^ (n - 1)) := by
-      simp only [C.map_mul, C_eq_nat_cast]
+      simp only [C.map_mul, C_eq_natCast]
       ring
     _ = 1 := by
       simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ',

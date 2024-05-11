@@ -63,13 +63,13 @@ instance CharZero.NeZero.two : NeZero (2 : M) :=
 
 namespace Function
 
-lemma support_nat_cast (hn : n ≠ 0) : support (n : α → M) = univ :=
+lemma support_natCast (hn : n ≠ 0) : support (n : α → M) = univ :=
   support_const <| Nat.cast_ne_zero.2 hn
-#align function.support_nat_cast Function.support_nat_cast
+#align function.support_nat_cast Function.support_natCast
 
-lemma mulSupport_nat_cast (hn : n ≠ 1) : mulSupport (n : α → M) = univ :=
+lemma mulSupport_natCast (hn : n ≠ 1) : mulSupport (n : α → M) = univ :=
   mulSupport_const <| Nat.cast_ne_one.2 hn
-#align function.mul_support_nat_cast Function.mulSupport_nat_cast
+#align function.mul_support_nat_cast Function.mulSupport_natCast
 
 end Function
 end AddMonoidWithOne
@@ -206,7 +206,7 @@ section RingHom
 
 variable {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
-theorem RingHom.charZero (ϕ : R →+* S) [hS : CharZero S] : CharZero R :=
+theorem RingHom.charZero (ϕ : R →+* S) [CharZero S] : CharZero R :=
   ⟨fun a b h => CharZero.cast_injective (by rw [← map_natCast ϕ, ← map_natCast ϕ, h])⟩
 #align ring_hom.char_zero RingHom.charZero
 

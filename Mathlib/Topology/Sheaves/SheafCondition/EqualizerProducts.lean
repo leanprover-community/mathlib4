@@ -97,8 +97,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The equalizer diagram for the sheaf condition.
 -/
-@[reducible]
-def diagram : WalkingParallelPair ⥤ C :=
+abbrev diagram : WalkingParallelPair ⥤ C :=
   parallelPair (leftRes.{v'} F U) (rightRes F U)
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_equalizer_products.diagram TopCat.Presheaf.SheafConditionEqualizerProducts.diagram

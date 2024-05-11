@@ -3,7 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.MvPolynomial.Degrees
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
@@ -140,6 +140,10 @@ theorem coe_basisMonomials :
     (basisMonomials σ R : (σ →₀ ℕ) → MvPolynomial σ R) = fun s => monomial s 1 :=
   rfl
 #align mv_polynomial.coe_basis_monomials MvPolynomial.coe_basisMonomials
+
+/-- The `R`-module `MvPolynomial σ R` is free. -/
+instance : Module.Free R (MvPolynomial σ R) :=
+  Module.Free.of_basis (MvPolynomial.basisMonomials σ R)
 
 theorem linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R) :=
   (basisMonomials σ R).linearIndependent.comp (fun s : σ => Finsupp.single s 1)

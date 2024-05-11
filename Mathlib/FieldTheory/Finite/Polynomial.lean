@@ -22,7 +22,7 @@ variable {σ : Type*}
 if and only if it is zero over `ZMod n`. -/
 theorem C_dvd_iff_zmod (n : ℕ) (φ : MvPolynomial σ ℤ) :
     C (n : ℤ) ∣ φ ↔ map (Int.castRingHom (ZMod n)) φ = 0 :=
-  C_dvd_iff_map_hom_eq_zero _ _ (CharP.int_cast_eq_zero_iff (ZMod n) n) _
+  C_dvd_iff_map_hom_eq_zero _ _ (CharP.intCast_eq_zero_iff (ZMod n) n) _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_dvd_iff_zmod MvPolynomial.C_dvd_iff_zmod
 
@@ -96,10 +96,10 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   simp_rw [← Multiset.coe_countAddMonoidHom, map_sum,
     AddMonoidHom.map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
   trans
-  refine' Finset.sum_eq_single n _ _
-  · intro b _ ne
-    simp [Multiset.count_singleton, ne, if_neg (Ne.symm _)]
-  · intro h; exact (h <| Finset.mem_univ _).elim
+  · refine' Finset.sum_eq_single n _ _
+    · intro b _ ne
+      simp [Multiset.count_singleton, ne, if_neg (Ne.symm _)]
+    · intro h; exact (h <| Finset.mem_univ _).elim
   · rw [Multiset.count_singleton_self, mul_one]
 #align mv_polynomial.indicator_mem_restrict_degree MvPolynomial.indicator_mem_restrictDegree
 
