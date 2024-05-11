@@ -242,8 +242,7 @@ theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀
 end Units
 
 section GroupWithZero
-
-variable [GroupWithZero G₀] {a b c d : G₀}
+variable [GroupWithZero G₀] {a b c d : G₀} {m n : ℕ}
 
 theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
   (Units.mk0 x hx).isUnit
@@ -405,6 +404,50 @@ lemma mul_div_cancel_of_imp (h : b = 0 → a = 0) : a * b / b = a := by
 
 @[simp] lemma divp_mk0 (a : G₀) (hb : b ≠ 0) : a /ₚ Units.mk0 b hb = a / b := divp_eq_div _ _
 #align divp_mk0 divp_mk0
+
+lemma pow_sub₀ (a : G₀) (ha : a ≠ 0) (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
+  have h1 : m - n + n = m := Nat.sub_add_cancel h
+  have h2 : a ^ (m - n) * a ^ n = a ^ m := by rw [← pow_add, h1]
+  simpa only [div_eq_mul_inv] using eq_div_of_mul_eq (pow_ne_zero _ ha) h2
+#align pow_sub₀ pow_sub₀
+
+lemma pow_sub_of_lt (a : G₀) (h : n < m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
+  obtain rfl | ha := eq_or_ne a 0
+  · rw [zero_pow (Nat.sub_pos_of_lt h).ne', zero_pow (by omega), zero_mul]
+  · exact pow_sub₀ _ ha h.le
+#align pow_sub_of_lt pow_sub_of_lt
+
+lemma inv_pow_sub₀ (ha : a ≠ 0) (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
+  rw [pow_sub₀ _ (inv_ne_zero ha) h, inv_pow, inv_pow, inv_inv]
+#align inv_pow_sub₀ inv_pow_sub₀
+
+lemma inv_pow_sub_of_lt (a : G₀) (h : n < m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
+  rw [pow_sub_of_lt a⁻¹ h, inv_pow, inv_pow, inv_inv]
+#align inv_pow_sub_of_lt inv_pow_sub_of_lt
+
+lemma zpow_ne_zero_of_ne_zero (ha : a ≠ 0) : ∀ z : ℤ, a ^ z ≠ 0
+  | (_ : ℕ) => by rw [zpow_natCast]; exact pow_ne_zero _ ha
+  | .negSucc _ => by rw [zpow_negSucc]; exact inv_ne_zero (pow_ne_zero _ ha)
+#align zpow_ne_zero_of_ne_zero zpow_ne_zero_of_ne_zero
+
+lemma zpow_sub₀ (ha : a ≠ 0) (m n : ℤ) : a ^ (m - n) = a ^ m / a ^ n := by
+  rw [Int.sub_eq_add_neg, zpow_add₀ ha, zpow_neg, div_eq_mul_inv]
+#align zpow_sub₀ zpow_sub₀
+
+lemma zpow_eq_zero {n : ℤ} (h : a ^ n = 0) : a = 0 :=
+  by_contradiction fun ha ↦ zpow_ne_zero_of_ne_zero ha n h
+#align zpow_eq_zero zpow_eq_zero
+
+lemma zpow_eq_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
+  ⟨zpow_eq_zero, fun ha => ha.symm ▸ zero_zpow _ hn⟩
+#align zpow_eq_zero_iff zpow_eq_zero_iff
+
+lemma zpow_ne_zero (n : ℤ) : a ≠ 0 → a ^ n ≠ 0 := mt zpow_eq_zero
+#align zpow_ne_zero zpow_ne_zero
+
+lemma zpow_neg_mul_zpow_self (n : ℤ) (ha : a ≠ 0) : a ^ (-n) * a ^ n = 1 := by
+  rw [zpow_neg]; exact inv_mul_cancel (zpow_ne_zero n ha)
+#align zpow_neg_mul_zpow_self zpow_neg_mul_zpow_self
 
 theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
