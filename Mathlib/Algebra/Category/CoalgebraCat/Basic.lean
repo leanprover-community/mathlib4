@@ -131,8 +131,8 @@ variable [Coalgebra R X] [Coalgebra R Y] [Coalgebra R Z]
 `CoalgEquiv`. -/
 @[simps]
 def toIso (e : X ≃ₗc[R] Y) : CoalgebraCat.of R X ≅ CoalgebraCat.of R Y where
-  hom := ⟨e.toCoalgHom⟩
-  inv := ⟨e.symm.toCoalgHom⟩
+  hom := CoalgebraCat.ofHom e
+  inv := CoalgebraCat.ofHom e.symm
   hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
 
@@ -156,12 +156,14 @@ variable {X Y Z : CoalgebraCat.{v} R}
 
 /-- Build a `CoalgEquiv` from an isomorphism in the category
 `CoalgebraCat R`. -/
-@[simps! toCoalgHom]
 def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
   { i.hom.toCoalgHom with
     invFun := i.inv.toCoalgHom
     left_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgebraCat.Hom.toCoalgHom i.3) x
     right_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgebraCat.Hom.toCoalgHom i.4) x }
+
+@[simp] theorem toCoalgEquiv_toCoalgHom (i : X ≅ Y) :
+    i.toCoalgEquiv = i.hom.toCoalgHom := rfl
 
 @[simp] theorem toCoalgEquiv_refl : toCoalgEquiv (.refl X) = .refl _ _ :=
   rfl
