@@ -49,60 +49,63 @@ instance (X : PointedGaloisObject F) : CoeDep (PointedGaloisObject F) X C where
   coe := X.obj
 
 instance : Category.{u₂} (PointedGaloisObject F) where
-  Hom A B := { f : (B : C) ⟶ A // F.map f B.pt = A.pt }
+  Hom A B := { f : (A : C) ⟶ B // F.map f A.pt = B.pt }
   id A := ⟨𝟙 (A : C), by simp⟩
   comp {A B C} f g := by
-    refine ⟨g.val ≫ f.val, ?_⟩
+    refine ⟨f.val ≫ g.val, ?_⟩
     simp only [F.map_comp, FintypeCat.comp_apply, f.property, g.property]
 
-instance : IsFilteredOrEmpty (PointedGaloisObject F) where
-  cocone_objs := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ↦ by
+instance : IsCofilteredOrEmpty (PointedGaloisObject F) where
+  cone_objs := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ↦ by
     obtain ⟨Z, f, z, hgal, hfz⟩ := exists_hom_from_galois_of_fiber F (A ⨯ B)
       <| (fiberBinaryProductEquiv F A B).symm (a, b)
     refine ⟨⟨Z, z, hgal⟩, ⟨f ≫ prod.fst, ?_⟩, ⟨f ≫ prod.snd, ?_⟩, trivial⟩
     simp only [F.map_comp, hfz, FintypeCat.comp_apply, fiberBinaryProductEquiv_symm_fst_apply]
     simp only [F.map_comp, hfz, FintypeCat.comp_apply, fiberBinaryProductEquiv_symm_snd_apply]
-  cocone_maps := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨f, hf⟩ ⟨g, hg⟩ ↦ by
-    obtain ⟨Z, h, z, hgal, hhz⟩ := exists_hom_from_galois_of_fiber F B b
+  cone_maps := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨f, hf⟩ ⟨g, hg⟩ ↦ by
+    obtain ⟨Z, h, z, hgal, hhz⟩ := exists_hom_from_galois_of_fiber F A a
     refine ⟨⟨Z, z, hgal⟩, ⟨h, hhz⟩, ?_⟩
     apply Subtype.ext
-    apply evaluationInjective_of_isConnected F Z A z
+    apply evaluationInjective_of_isConnected F Z B z
     show F.map (h ≫ f) z = F.map (h ≫ g) z
     simp only [map_comp, FintypeCat.comp_apply, hhz, hf, hg]
 
 end PointedGaloisObject
 
 /-- The canonical (contravariant) functor from pointed Galois objects to `C`. -/
-def can : (PointedGaloisObject F)ᵒᵖ ⥤ C where
-  obj := fun ⟨A⟩ ↦ A
+def can : PointedGaloisObject F ⥤ C where
+  obj := fun A ↦ A
   map := fun ⟨f, _⟩ ↦ f
 
 @[simp]
-lemma can_obj (A : (PointedGaloisObject F)ᵒᵖ) : (can F).obj A = A.unop :=
+lemma can_obj (A : PointedGaloisObject F) : (can F).obj A = A :=
   rfl
 
 @[simp]
-lemma can_map_eq {A B : (PointedGaloisObject F)ᵒᵖ} (f : A ⟶ B) : ((can F).map f) = f.unop.val :=
+lemma can_map_eq {A B : PointedGaloisObject F} (f : A ⟶ B) : ((can F).map f) = f.val :=
   rfl
 
-def cocone : Cocone ((can F).rightOp ⋙ coyoneda) where
+def cocone : Cocone ((can F).op ⋙ coyoneda) where
   pt := F ⋙ FintypeCat.incl
   ι := {
     app := fun ⟨A, a, _⟩ ↦ { app := fun X (f : (A : C) ⟶ X) ↦ F.map f a }
-    naturality := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨f, hf⟩ ↦ by
+    naturality := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨f, (hf : F.map f b = a)⟩ ↦ by
       ext Y (g : (A : C) ⟶ Y)
-      simp [hf]
+      suffices h : F.map g (F.map f b) = F.map g a by
+        simpa
+      rw [hf]
   }
 
 @[simp]
 lemma cocone_app (A : PointedGaloisObject F) (B : C) (f : (A : C) ⟶ B) :
-    ((cocone F).ι.app A).app B f = F.map f A.2 :=
+    ((cocone F).ι.app ⟨A⟩).app B f = F.map f A.2 :=
   rfl
 
 noncomputable def isColimit : IsColimit (cocone F) := by
   apply evaluationJointlyReflectsColimits
   intro X
-  let G : PointedGaloisObject F ⥤ Type u₂ := (((can F).rightOp ⋙ coyoneda) ⋙ (evaluation C (Type u₂)).obj X)
+  let G : (PointedGaloisObject F)ᵒᵖ ⥤ Type u₂ :=
+    (((can F).op ⋙ coyoneda) ⋙ (evaluation C (Type u₂)).obj X)
   let s : Cocone G := ((evaluation C (Type u₂)).obj X).mapCocone (cocone F)
   show IsColimit s
   refine Types.FilteredColimit.isColimitOf G s ?_ ?_
@@ -116,9 +119,9 @@ noncomputable def isColimit : IsColimit (cocone F) := by
   intro ⟨A, a, _⟩ ⟨B, b, _⟩ (u : (A : C) ⟶ X) --(v : (B : C) ⟶ X) (h : F.map u a = F.map v b)
   intro (v : (B : C) ⟶ X) (h : F.map u a = F.map v b)
   obtain ⟨⟨Z, z, _⟩, ⟨f, hf⟩, ⟨g, hg⟩, _⟩ :=
-    @IsFilteredOrEmpty.cocone_objs (PointedGaloisObject F) _ _
-    ({ obj := A, pt := a} : PointedGaloisObject F) ({obj := B, pt := b} : PointedGaloisObject F)
-  refine ⟨{ obj := Z, pt := z }, ⟨f, hf⟩, ⟨g, hg⟩, ?_⟩
+    @IsFilteredOrEmpty.cocone_objs (PointedGaloisObject F)ᵒᵖ _ _
+    ⟨{ obj := A, pt := a}⟩ ⟨{obj := B, pt := b}⟩
+  refine ⟨⟨{ obj := Z, pt := z }⟩, ⟨f, hf⟩, ⟨g, hg⟩, ?_⟩
   apply evaluationInjective_of_isConnected F Z X z
   show F.map (f ≫ u) z = F.map (g ≫ v) z
   rw [map_comp, FintypeCat.comp_apply, hf, map_comp, FintypeCat.comp_apply, hg, h]
@@ -163,20 +166,20 @@ lemma autMap_mul {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (a : F.obj
   erw [← autMap_comp F f a b h τ, Category.assoc, Category.assoc,
     ← autMap_comp F f a b h σ]
 
-noncomputable def autMapMul {A B : (PointedGaloisObject F)ᵒᵖ} (f : A ⟶ B) :
-     Aut (A.unop : C) →* Aut (B.unop : C) :=
-  MonoidHom.mk' _ (autMap_mul F f.unop.val A.unop.pt B.unop.pt f.unop.property)
+noncomputable def autMapMul {A B : PointedGaloisObject F} (f : A ⟶ B) :
+     Aut (A : C) →* Aut (B : C) :=
+  MonoidHom.mk' _ (autMap_mul F f.val A.pt B.pt f.property)
 
-noncomputable def autGaloisSystem : (PointedGaloisObject F)ᵒᵖ ⥤ GroupCat.{u₂} where
-  obj := fun A ↦ GroupCat.of <| Aut (A.unop : C)
-  map := fun {A B} f ↦ (autMapMul F f : Aut (A.unop : C) →* Aut (B.unop : C))
-  map_id := fun ⟨⟨A, a, _⟩⟩ ↦ by
+noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GroupCat.{u₂} where
+  obj := fun A ↦ GroupCat.of <| Aut (A : C)
+  map := fun {A B} f ↦ (autMapMul F f : Aut (A : C) →* Aut (B : C))
+  map_id := fun ⟨A, a, _⟩ ↦ by
     ext (σ : Aut (A : C))
     show autMap F (𝟙 A) a a σ = σ
     apply evaluation_aut_injective_of_isConnected F A a
     simp only [autMap_eval F (𝟙 A) a a σ, Category.comp_id]
   map_comp := by
-    intro ⟨⟨A, a, _⟩⟩ ⟨⟨B, b, _⟩⟩ ⟨⟨C, c, _⟩⟩ ⟨f, hf⟩ ⟨g, hg⟩
+    intro ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨C, c, _⟩ ⟨f, hf⟩ ⟨g, hg⟩
     ext (σ : Aut A)
     show autMap F (f ≫ g) a c σ = autMap F g b c (autMap F f a b σ)
     apply evaluation_aut_injective_of_isConnected F C c
@@ -196,40 +199,40 @@ def GroupCat.uliftFunctor : GroupCat.{u₁} ⥤ GroupCat.{max u₁ u₂} where
   map_id X := by rfl
   map_comp {X Y Z} f g := by rfl
 
-noncomputable def autGaloisSystem' : (PointedGaloisObject F)ᵒᵖ ⥤ GroupCat.{max u₁ u₂} :=
+noncomputable def autGaloisSystem' : PointedGaloisObject F ⥤ GroupCat.{max u₁ u₂} :=
   autGaloisSystem F ⋙ GroupCat.uliftFunctor.{u₂, u₁}
 
 @[simp]
-theorem autGaloisSystem'_map {A B : (PointedGaloisObject F)ᵒᵖ} (f : A ⟶ B) (φ : Aut (A.unop : C)) :
+theorem autGaloisSystem'_map {A B : PointedGaloisObject F} (f : A ⟶ B) (φ : Aut (A : C)) :
     ((autGaloisSystem' F).map f) ⟨φ⟩ = ⟨autMapMul F f φ⟩ :=
   rfl
 
 noncomputable def autGalois : GroupCat.{max u₁ u₂} := limit (autGaloisSystem' F)
 
 noncomputable def autGalois.π (A : PointedGaloisObject F) : autGalois F →* Aut (A : C) :=
-  MonoidHom.comp MulEquiv.ulift.toMonoidHom (limit.π (autGaloisSystem' F) (Opposite.op A))
+  MonoidHom.comp MulEquiv.ulift.toMonoidHom (limit.π (autGaloisSystem' F) A)
 
 theorem autGalois.π_apply (A : PointedGaloisObject F) (x : autGalois F) :
-    autGalois.π F A x = Equiv.ulift (limit.π (autGaloisSystem' F) (Opposite.op A) x) :=
+    autGalois.π F A x = Equiv.ulift (limit.π (autGaloisSystem' F) A x) :=
   rfl
 
 lemma autGalois_ext (f g : autGalois F)
-    (h : ∀ (A : (PointedGaloisObject F)ᵒᵖ), autGalois.π F A.unop f = autGalois.π F A.unop g) : f = g := by
+    (h : ∀ (A : PointedGaloisObject F), autGalois.π F A f = autGalois.π F A g) : f = g := by
   apply Concrete.limit_ext (autGaloisSystem' F) f g
-  intro ⟨A⟩
-  have h1 : MulEquiv.ulift ((limit.π (autGaloisSystem' F) ⟨A⟩) f) =
-    MulEquiv.ulift ((limit.π (autGaloisSystem' F) ⟨A⟩) g) := h ⟨A⟩
+  intro A
+  have h1 : MulEquiv.ulift ((limit.π (autGaloisSystem' F) A) f) =
+    MulEquiv.ulift ((limit.π (autGaloisSystem' F) A) g) := h A
   exact (EquivLike.injective _) h1
 
 lemma autGalois_ext' (x y : autGalois F)
-    (h : ∀ (A : (PointedGaloisObject F)ᵒᵖ),
+    (h : ∀ (A : PointedGaloisObject F),
       limit.π (autGaloisSystem' F) A x = limit.π (autGaloisSystem' F) A y) : x = y :=
   Concrete.limit_ext (autGaloisSystem' F) x y h
 
-instance : HasColimit ((can F).rightOp ⋙ coyoneda) where
+instance : HasColimit ((can F).op ⋙ coyoneda) where
   exists_colimit := ⟨cocone F, isColimit F⟩
 
-noncomputable def prorep : colimit ((can F).rightOp ⋙ coyoneda) ≅ F ⋙ FintypeCat.incl :=
+noncomputable def prorep : colimit ((can F).op ⋙ coyoneda) ≅ F ⋙ FintypeCat.incl :=
   colimit.isoColimitCocone ⟨cocone F, isColimit F⟩
 
 local notation "F'" => F ⋙ FintypeCat.incl
@@ -237,13 +240,13 @@ local notation "F'" => F ⋙ FintypeCat.incl
 noncomputable def iso0 : End F ≅ End (F ⋙ FintypeCat.incl) :=
   Equiv.toIso (NatTrans.equivOfCompFullyFaithful FintypeCat.incl)
 
-noncomputable def iso1 : End F' ≅ (colimit ((can F).rightOp ⋙ coyoneda) ⟶ F') :=
+noncomputable def iso1 : End F' ≅ (colimit ((can F).op ⋙ coyoneda) ⟶ F') :=
   (yoneda.obj (F ⋙ FintypeCat.incl)).mapIso (prorep F).op
 
 -- coproyoneda lemma
 noncomputable def iso2 :
-    (colimit ((can F).rightOp ⋙ coyoneda) ⟶ F') ≅ limit (can F ⋙ F' ⋙ uliftFunctor.{u₁}) :=
-  procoyonedaIso (can F) F'
+    (colimit ((can F).op ⋙ coyoneda) ⟶ F') ≅ limit (can F ⋙ F' ⋙ uliftFunctor.{u₁}) :=
+  procoyonedaIso' (can F) F'
 
 noncomputable def iso3 : End F ≅ limit (can F ⋙ F' ⋙ uliftFunctor.{u₁}) := by
   apply Iso.trans
@@ -251,22 +254,22 @@ noncomputable def iso3 : End F ≅ limit (can F ⋙ F' ⋙ uliftFunctor.{u₁}) 
   apply Iso.trans (iso1 F) (iso2 F)
 
 theorem iso3_pi (f : End F) (A : PointedGaloisObject F) :
-    limit.π (can F ⋙ F' ⋙ uliftFunctor.{u₁}) ⟨A⟩ ((iso3 F).hom f) = ⟨f.app A A.pt⟩ := by
+    limit.π (can F ⋙ F' ⋙ uliftFunctor.{u₁}) A ((iso3 F).hom f) = ⟨f.app A A.pt⟩ := by
   apply ULift.ext
   simp [iso3, iso2, iso1, iso0, iso1, iso0, prorep]
   change ((NatTrans.equivOfCompFullyFaithful FintypeCat.incl) f).app A
-    (((colimit.ι ((can F).rightOp.comp coyoneda) A) ≫ (colimit.isoColimitCocone ⟨cocone F, isColimit F⟩).hom).app
+    (((colimit.ι ((can F).op.comp coyoneda) ⟨A⟩) ≫ (colimit.isoColimitCocone ⟨cocone F, isColimit F⟩).hom).app
       A _) = f.app A A.pt
   simp
 
 noncomputable def galautiso' :
     autGaloisSystem' F ⋙ forget GroupCat.{max u₁ u₂} ≅ can F ⋙ F' ⋙ uliftFunctor.{u₁} := by
   fapply NatIso.ofComponents
-  · intro ⟨⟨A, a, _⟩⟩
+  · intro ⟨A, a, _⟩
     apply Equiv.toIso
     exact (Equiv.ulift.{u₁, u₂}).trans
       ((evaluationEquivOfIsGalois F A a).trans Equiv.ulift.{u₁, u₂}.symm)
-  · intro ⟨⟨A, a, _⟩⟩ ⟨⟨B, b, _⟩⟩ ⟨(f : A ⟶ B), hf⟩
+  · intro ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨(f : A ⟶ B), hf⟩
     dsimp
     ext ⟨φ : Aut A⟩
     apply ULift.ext
@@ -285,7 +288,7 @@ noncomputable def galautiso :
 
 @[simp]
 theorem galautiso_app (A : PointedGaloisObject F) (b : F.obj A) :
-    (galautiso F).hom.app (Opposite.op A) ⟨b⟩ =
+    (galautiso F).hom.app A ⟨b⟩ =
       ⟨(evaluationEquivOfIsGalois F A A.pt).symm b⟩ :=
   rfl
 
@@ -296,7 +299,7 @@ noncomputable def iso4 : End F ≅ limit (autGaloisSystem' F ⋙ forget GroupCat
 
 @[simp]
 theorem iso4_pi_apply (A : PointedGaloisObject F) (f : End F) :
-    limit.π (autGaloisSystem' F ⋙ forget _) (Opposite.op A) ((iso4 F).hom f) =
+    limit.π (autGaloisSystem' F ⋙ forget _) A ((iso4 F).hom f) =
       ⟨(evaluationEquivOfIsGalois F A A.pt).symm (f.app A A.pt)⟩ := by
   simp [iso4]
   erw [iso3_pi]
@@ -317,7 +320,7 @@ lemma iso5_pi_foo (f : End F) (A : PointedGaloisObject F) :
   change F.map
     (((iso4 F).hom
         ≫ (preservesLimitIso (forget GroupCat) (autGaloisSystem' F)).inv
-        ≫ (forget GroupCat).map (limit.π (autGaloisSystem' F) ⟨A⟩)) f).down.hom
+        ≫ (forget GroupCat).map (limit.π (autGaloisSystem' F) A)) f).down.hom
     A.2 = _
   rw [preservesLimitsIso_inv_π]
   simp
@@ -325,7 +328,7 @@ lemma iso5_pi_foo (f : End F) (A : PointedGaloisObject F) :
 @[simp]
 theorem iso5_mul (f g : End F) : (iso5 F) (g ≫ f) = (iso5 F g) * (iso5 F f) := by
   apply autGalois_ext F
-  intro ⟨⟨A, a, _⟩⟩
+  intro ⟨A, a, _⟩
   simp
   apply evaluation_aut_injective_of_isConnected F A a
   simp
@@ -384,18 +387,18 @@ theorem autMulEquivAutGalois_symm_app (x : autGalois F) (A : C) [IsGalois A] (a 
 
 lemma proj_surj (A : C) [IsGalois A] (a : F.obj A) :
     Function.Surjective (autGalois.π F ⟨A, a, inferInstance⟩) := fun (σ : Aut A) ↦ by
-  have (i : (PointedGaloisObject F)ᵒᵖ) : Finite ((autGaloisSystem' F ⋙ forget _).obj i) :=
-    inferInstanceAs <| Finite (ULift (Aut (i.unop.obj)))
-  have fsur (i j : (PointedGaloisObject F)ᵒᵖ) (f : i ⟶ j) : Function.Surjective ((autGaloisSystem' F).map f) := by
-    intro ⟨(φ : Aut j.unop.obj)⟩
-    obtain ⟨ψ, hψ⟩ := autMap_surjective F f.unop.val i.unop.pt j.unop.pt φ
+  have (i : PointedGaloisObject F) : Finite ((autGaloisSystem' F ⋙ forget _).obj i) :=
+    inferInstanceAs <| Finite (ULift (Aut (i.obj)))
+  have fsur (i j : PointedGaloisObject F) (f : i ⟶ j) : Function.Surjective ((autGaloisSystem' F).map f) := by
+    intro ⟨(φ : Aut j.obj)⟩
+    obtain ⟨ψ, hψ⟩ := autMap_surjective F f.val i.pt j.pt φ
     use ⟨ψ⟩
     simp only [autGaloisSystem'_map]
     apply ULift.ext
     exact hψ
   have := eval_section_surjective_of_surjective (autGaloisSystem' F ⋙ forget _) fsur
   obtain ⟨s', hs⟩ := eval_section_surjective_of_surjective
-    (autGaloisSystem' F ⋙ forget _) fsur ⟨⟨A, a, _⟩⟩ ⟨σ⟩
+    (autGaloisSystem' F ⋙ forget _) fsur ⟨A, a, _⟩ ⟨σ⟩
   simp only [comp_obj] at hs
   let s : limit _ := (Types.limitEquivSections (autGaloisSystem' F ⋙ forget _)).symm s'
   let t : autGalois F := (preservesLimitIso (forget GroupCat) (autGaloisSystem' F)).inv s
@@ -403,7 +406,7 @@ lemma proj_surj (A : C) [IsGalois A] (a : F.obj A) :
   simp [t, s, autGalois.π]
   change MulEquiv.ulift
       (((preservesLimitIso (forget GroupCat) (autGaloisSystem' F)).inv
-        ≫ (forget _).map (limit.π (autGaloisSystem' F) ⟨⟨A, a, inferInstance⟩⟩))
+        ≫ (forget _).map (limit.π (autGaloisSystem' F) ⟨A, a, inferInstance⟩))
         ((Types.limitEquivSections ((autGaloisSystem' F).comp (forget GroupCat))).symm s')) =
     σ
   rw [preservesLimitsIso_inv_π]
