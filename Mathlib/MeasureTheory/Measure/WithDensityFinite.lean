@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
+import Mathlib.MeasureTheory.Decomposition.Exhaustion
+import Mathlib.Probability.ConditionalProbability
 
 /-!
 # s-finite measures can be written as `withDensity` of a finite measure
@@ -17,27 +19,24 @@ That measure is not unique, and in particular our implementation leads to `μ.to
 
 ## Main definitions
 
-In all these definitions and the results below, `μ` is an s-finite measure (`SFinite μ`).
+In these definitions and the results below, `μ` is an s-finite measure (`SFinite μ`).
 
 * `MeasureTheory.Measure.toFinite`: a finite measure with `μ ≪ μ.toFinite` and `μ.toFinite ≪ μ`.
   If `μ ≠ 0`, this is a probability measure.
 * `MeasureTheory.Measure.densityToFinite`: a measurable function such that
   `μ = μ.toFinite.withDensity μ.densityToFinite`.
-* `MeasureTheory.Measure.toSigmaFinite`: a sigma-finite measure with `μ ≪ μ.toSigmaFinite` and
-  `μ.toSigmaFinite ≪ μ`. If `μ` is sigma-finite, `μ.toSigmaFinite = μ`.
-* `MeasureTheory.Measure.densityToSigmaFinite`: a measurable function such that
-  `μ = μ.toSigmaFinite.withDensity μ.densityToSigmaFinite`. This function takes only two values,
-  `1` and `∞`.
-* `MeasureTheory.Measure.densitySigmaFiniteToFinite`: a measurable function such that
-  `μ.toSigmaFinite = μ.toFinite.withDensity μ.densitySigmaFiniteToFinite`.
 
 ## Main statements
+
+Properties of `toFinite`:
 
 * `absolutelyContinuous_toFinite`: `μ ≪ μ.toFinite`.
 * `toFinite_absolutelyContinuous`: `μ.toFinite ≪ μ`.
 * `withDensity_densitytoFinite`: `μ.toFinite.withDensity μ.densityToFinite = μ`.
-* `withDensity_densityToSigmaFinite`: `μ.toSigmaFinite.withDensity μ.densityToSigmaFinite = μ`.
-* `toSigmaFinite_eq_self_iff`: `μ.toSigmaFinite = μ ↔ SigmaFinite μ`.
+
+Others:
+
+*
 
 -/
 
@@ -55,14 +54,15 @@ noncomputable def Measure.toFiniteAux (μ : Measure α) [SFinite μ] : Measure �
 `μ = μ.toFinite.withDensity μ.densityToFinite` (see `withDensity_densitytoFinite`).
 If `μ` is non-zero, this is a probability measure. -/
 noncomputable def Measure.toFinite (μ : Measure α) [SFinite μ] : Measure α :=
-  (μ.toFiniteAux Set.univ)⁻¹ • μ.toFiniteAux
+  ProbabilityTheory.cond μ.toFiniteAux Set.univ
 
 lemma toFiniteAux_apply (μ : Measure α) [SFinite μ] (s : Set α) :
     μ.toFiniteAux s = ∑' n, (2 ^ (n + 1) * sFiniteSeq μ n Set.univ)⁻¹ * sFiniteSeq μ n s := by
   rw [Measure.toFiniteAux, Measure.sum_apply_of_countable]; rfl
 
 lemma toFinite_apply (μ : Measure α) [SFinite μ] (s : Set α) :
-    μ.toFinite s = (μ.toFiniteAux Set.univ)⁻¹ * μ.toFiniteAux s := rfl
+    μ.toFinite s = (μ.toFiniteAux Set.univ)⁻¹ * μ.toFiniteAux s := by
+  rw [Measure.toFinite, ProbabilityTheory.cond_apply _ MeasurableSet.univ, Set.univ_inter]
 
 lemma toFiniteAux_zero : Measure.toFiniteAux (0 : Measure α) = 0 := by
   ext s
@@ -105,21 +105,15 @@ instance {μ : Measure α} [SFinite μ] : IsFiniteMeasure μ.toFiniteAux :=
 
 @[simp]
 lemma toFinite_eq_zero_iff {μ : Measure α} [SFinite μ] : μ.toFinite = 0 ↔ μ = 0 := by
-  rw [Measure.toFinite]
-  simp [measure_ne_top μ.toFiniteAux Set.univ, toFiniteAux_eq_zero_iff]
+  simp [Measure.toFinite, measure_ne_top μ.toFiniteAux Set.univ, toFiniteAux_eq_zero_iff]
 
 instance {μ : Measure α} [SFinite μ] : IsFiniteMeasure μ.toFinite := by
-  constructor
-  by_cases h_zero : μ.toFiniteAux Set.univ = 0
-  · simp [toFinite_apply, h_zero]
-  · rw [toFinite_apply, ENNReal.inv_mul_cancel h_zero (measure_ne_top _ _)]
-    exact ENNReal.one_lt_top
+  rw [Measure.toFinite]
+  infer_instance
 
 instance {μ : Measure α} [SFinite μ] [h_zero : NeZero μ] : IsProbabilityMeasure μ.toFinite := by
-  constructor
-  rw [toFinite_apply, ENNReal.inv_mul_cancel _ (measure_ne_top _ _)]
-  rw [ne_eq, Measure.measure_univ_eq_zero, toFiniteAux_eq_zero_iff]
-  exact h_zero.out
+  refine ProbabilityTheory.cond_isProbabilityMeasure μ.toFiniteAux ?_
+  simp [toFiniteAux_eq_zero_iff, h_zero.out]
 
 lemma sFiniteSeq_absolutelyContinuous_toFiniteAux (μ : Measure α) [SFinite μ] (n : ℕ) :
     sFiniteSeq μ n ≪ μ.toFiniteAux := by
@@ -128,7 +122,7 @@ lemma sFiniteSeq_absolutelyContinuous_toFiniteAux (μ : Measure α) [SFinite μ]
   exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
 
 lemma toFiniteAux_absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] :
-    μ.toFiniteAux ≪ μ.toFinite := Measure.absolutelyContinuous_smul (by simp [measure_ne_top])
+    μ.toFiniteAux ≪ μ.toFinite := ProbabilityTheory.absolutelyContinuous_cond_univ
 
 lemma sFiniteSeq_absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] (n : ℕ) :
     sFiniteSeq μ n ≪ μ.toFinite :=
@@ -182,113 +176,88 @@ lemma densityToFinite_ae_ne_top (μ : Measure α) [SigmaFinite μ] :
     ∀ᵐ x ∂μ, μ.densityToFinite x ≠ ∞ :=
   (densityToFinite_ae_lt_top μ).mono (fun _ hx ↦ hx.ne)
 
-/-- A measurable function such that `μ.toSigmaFinite.withDensity μ.densityToSigmaFinite = μ`.
-See `withDensity_densityToSigmaFinite`.
-This function takes only two values, `1` and `∞`. -/
-noncomputable
-def Measure.densityToSigmaFinite (μ : Measure α) [SFinite μ] (a : α) : ℝ≥0∞ :=
-  if μ.densityToFinite a = ∞ then μ.densityToFinite a else 1
+section SigmaFiniteSet
 
-lemma densityToSigmaFinite_def (μ : Measure α) [SFinite μ] :
-    μ.densityToSigmaFinite = fun a ↦ if μ.densityToFinite a = ∞ then μ.densityToFinite a else 1 :=
-  rfl
+variable {μ : Measure α} {s t : Set α}
 
-lemma measurable_densityToSigmaFinite (μ : Measure α) [SFinite μ] :
-    Measurable μ.densityToSigmaFinite :=
-  Measurable.ite (measurable_densityToFinite μ (measurableSet_singleton _))
-    (measurable_densityToFinite μ) measurable_const
+def Measure.sigmaFiniteSet (μ : Measure α) [SFinite μ] : Set α := {x | μ.densityToFinite x ≠ ∞}
 
-lemma densityToSigmaFinite_eq_one_or_top (μ : Measure α) [SFinite μ] (a : α) :
-    μ.densityToSigmaFinite a = 1 ∨ μ.densityToSigmaFinite a = ∞ := by
-  rw [Measure.densityToSigmaFinite]
-  split_ifs with h <;> simp [h]
+lemma measurableSet_sigmaFiniteSet (μ : Measure α) [SFinite μ] :
+    MeasurableSet μ.sigmaFiniteSet :=
+  (measurable_densityToFinite μ (measurableSet_singleton ∞)).compl
 
-lemma densityToSigmaFinite_eq_top_iff (μ : Measure α) [SFinite μ] (a : α) :
-    μ.densityToSigmaFinite a = ∞ ↔ μ.densityToFinite a = ∞ := by
-  rw [Measure.densityToSigmaFinite]
-  split_ifs with h <;> simp [h]
+lemma measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet {μ : Measure α} [SFinite μ]
+    (ht : MeasurableSet t) (ht_subset : t ⊆ μ.sigmaFiniteSetᶜ) :
+    μ t = 0 ∨ μ t = ∞ := by
+  rw [← withDensity_densitytoFinite μ, withDensity_apply _ ht]
+  have h_int_eq : ∫⁻ a in t, μ.densityToFinite a ∂μ.toFinite = ∞ * μ.toFinite t := by
+    calc ∫⁻ a in t, μ.densityToFinite a ∂μ.toFinite
+    _ = ∫⁻ _ in t, ∞ ∂μ.toFinite := by
+        refine set_lintegral_congr_fun ht (ae_of_all _ (fun x hx ↦ ?_))
+        simpa [Measure.sigmaFiniteSet] using (ht_subset hx)
+    _ = ∞ * μ.toFinite t := by simp
+  rw [h_int_eq]
+  by_cases h0 : μ.toFinite t = 0 <;> simp [h0]
 
-lemma densityToSigmaFinite_eq_one_iff (μ : Measure α) [SFinite μ] (a : α) :
-    μ.densityToSigmaFinite a = 1 ↔ μ.densityToFinite a ≠ ∞ := by
-  rw [Measure.densityToSigmaFinite]
-  split_ifs with h <;> simp [h]
+lemma restrict_compl_sigmaFiniteSet_eq_zero_or_top (μ : Measure α) [SFinite μ]
+    (hs : MeasurableSet s) :
+    μ.restrict μ.sigmaFiniteSetᶜ s = 0 ∨ μ.restrict μ.sigmaFiniteSetᶜ s = ∞ := by
+  rw [Measure.restrict_apply' (measurableSet_sigmaFiniteSet μ).compl]
+  exact measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet
+    (hs.inter (measurableSet_sigmaFiniteSet μ).compl) (Set.inter_subset_right _ _)
 
-lemma densityToSigmaFinite_ae_eq_one (μ : Measure α) [SigmaFinite μ] :
-    μ.densityToSigmaFinite =ᵐ[μ] fun _ ↦ 1 := by
-  filter_upwards [densityToFinite_ae_ne_top μ] with x hx
-  rwa [densityToSigmaFinite_eq_one_iff]
+lemma toSigmaFinite_restrict_sigmaFiniteSet (μ : Measure α) [SFinite μ] :
+    (μ.toFinite.withDensity
+        (fun x ↦ if μ.densityToFinite x ≠ ∞ then μ.densityToFinite x else 1)).restrict
+        μ.sigmaFiniteSet
+      = μ.restrict μ.sigmaFiniteSet := by
+  have : μ.restrict μ.sigmaFiniteSet
+      = (μ.toFinite.withDensity μ.densityToFinite).restrict μ.sigmaFiniteSet := by
+    rw [withDensity_densitytoFinite μ]
+  rw [this]
+  ext s hs
+  rw [Measure.restrict_apply hs, Measure.restrict_apply hs,
+    withDensity_apply _ (hs.inter (measurableSet_sigmaFiniteSet μ)),
+    withDensity_apply _ (hs.inter (measurableSet_sigmaFiniteSet μ))]
+  refine set_lintegral_congr_fun (hs.inter (measurableSet_sigmaFiniteSet μ))
+    (ae_of_all _ (fun x hx ↦ Eq.symm ?_))
+  simp only [Measure.sigmaFiniteSet, Set.mem_inter_iff, Set.mem_compl_iff, Set.mem_setOf_eq,
+    ne_eq] at hx
+  rw [if_pos hx.2]
 
-/-- A measurable function such that
-`μ.toFinite.withDensity μ.densitySigmaFiniteToFinite = μ.toSigmaFinite` (by definition of
-`μ.toSigmaFinite`). -/
-noncomputable
-def Measure.densitySigmaFiniteToFinite (μ : Measure α) [SFinite μ] (a : α) : ℝ≥0∞ :=
-  if μ.densityToFinite a ≠ ∞ then μ.densityToFinite a else 1
+instance (μ : Measure α) [SFinite μ] : SigmaFinite (μ.restrict μ.sigmaFiniteSet) := by
+  rw [← toSigmaFinite_restrict_sigmaFiniteSet]
+  have : SigmaFinite (μ.toFinite.withDensity
+      (fun x ↦ if μ.densityToFinite x ≠ ∞ then μ.densityToFinite x else 1)) := by
+    refine SigmaFinite.withDensity_of_ne_top ?_ ?_
+    · exact (Measurable.ite (measurable_densityToFinite μ (measurableSet_singleton _)).compl
+        (measurable_densityToFinite μ) measurable_const).aemeasurable
+    · refine ae_of_all _ (fun x ↦ ?_)
+      split_ifs with h <;> simp [h]
+  exact Restrict.sigmaFinite _ _
 
-lemma densitySigmaFiniteToFinite_def (μ : Measure α) [SFinite μ] :
-    μ.densitySigmaFiniteToFinite
-      = fun a ↦ if μ.densityToFinite a ≠ ∞ then μ.densityToFinite a else 1 := rfl
-
-lemma measurable_densitySigmaFiniteToFinite (μ : Measure α) [SFinite μ] :
-    Measurable μ.densitySigmaFiniteToFinite :=
-  Measurable.ite (measurable_densityToFinite μ (measurableSet_singleton _)).compl
-    (measurable_densityToFinite μ) measurable_const
-
-lemma densitySigmaFiniteToFinite_lt_top (μ : Measure α) [SFinite μ] (a : α) :
-    μ.densitySigmaFiniteToFinite a < ∞ := by
-  rw [Measure.densitySigmaFiniteToFinite]
-  split_ifs with h <;> simp [lt_top_iff_ne_top, h]
-
-lemma densitySigmaFiniteToFinite_ne_top (μ : Measure α) [SFinite μ] (a : α) :
-    μ.densitySigmaFiniteToFinite a ≠ ∞ := (densitySigmaFiniteToFinite_lt_top μ a).ne
-
-lemma densitySigmaFiniteToFinite_mul_densityToSigmaFinite (μ : Measure α) [SFinite μ] (a : α) :
-    μ.densitySigmaFiniteToFinite a * μ.densityToSigmaFinite a = μ.densityToFinite a := by
-  rw [Measure.densitySigmaFiniteToFinite, Measure.densityToSigmaFinite]
-  by_cases h : μ.densityToFinite a = ∞ <;> simp [h]
-
-lemma densitySigmaFiniteToFinite_mul_densityToSigmaFinite' (μ : Measure α) [SFinite μ] :
-    μ.densitySigmaFiniteToFinite * μ.densityToSigmaFinite = μ.densityToFinite := by
-  ext a
-  rw [Pi.mul_apply]
-  exact densitySigmaFiniteToFinite_mul_densityToSigmaFinite μ a
-
-/-- A sigma-finite measure obtained from an s-finite measure `μ`, such that
-`μ = μ.toSigmaFinite.withDensity μ.densityToSigmaFinite`. The function `μ.densityToSigmaFinite`
-takes only two values, `1` and `∞`. -/
-noncomputable def Measure.toSigmaFinite (μ : Measure α) [SFinite μ] : Measure α :=
-  μ.toFinite.withDensity μ.densitySigmaFiniteToFinite
-
-instance instSigmaFiniteToSigmaFinite (μ : Measure α) [SFinite μ] : SigmaFinite μ.toSigmaFinite :=
-  SigmaFinite.withDensity_of_ne_top' (measurable_densitySigmaFiniteToFinite μ).aemeasurable
-    (densitySigmaFiniteToFinite_ne_top μ)
+lemma sigmaFinite_of_measure_compl_sigmaFiniteSet_eq_zero [SFinite μ]
+    (h : μ μ.sigmaFiniteSetᶜ = 0) :
+    SigmaFinite μ := by
+  rw [← Measure.restrict_add_restrict_compl (μ := μ) (measurableSet_sigmaFiniteSet μ),
+    Measure.restrict_eq_zero.mpr h, add_zero]
+  infer_instance
 
 @[simp]
-lemma withDensity_densityToSigmaFinite (μ : Measure α) [SFinite μ] :
-    μ.toSigmaFinite.withDensity μ.densityToSigmaFinite = μ := by
-  rw [Measure.toSigmaFinite, ← withDensity_mul]
-  · rw [densitySigmaFiniteToFinite_mul_densityToSigmaFinite', withDensity_densitytoFinite]
-  · exact measurable_densitySigmaFiniteToFinite μ
-  · exact measurable_densityToSigmaFinite μ
+lemma measure_compl_sigmaFiniteSet (μ : Measure α) [SigmaFinite μ] : μ μ.sigmaFiniteSetᶜ = 0 := by
+  rw [← Measure.iSup_restrict_spanningSets]
+  simp only [ENNReal.iSup_eq_zero]
+  intro n
+  rw [Measure.restrict_apply' (measurable_spanningSets μ n)]
+  refine (measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet
+    ((measurableSet_sigmaFiniteSet _).compl.inter (measurable_spanningSets μ n))
+    (Set.inter_subset_left _ _)).resolve_right (ne_of_lt ?_)
+  exact (measure_mono (Set.inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top _ _)
 
-lemma absolutelyContinuous_toSigmaFinite (μ : Measure α) [SFinite μ] : μ ≪ μ.toSigmaFinite := by
-  nth_rewrite 1 [← withDensity_densityToSigmaFinite μ]
-  exact withDensity_absolutelyContinuous _ _
+lemma measure_compl_sigmaFiniteSet_eq_zero_iff_sigmaFinite (μ : Measure α) [SFinite μ] :
+  μ μ.sigmaFiniteSetᶜ = 0 ↔ SigmaFinite μ :=
+  ⟨sigmaFinite_of_measure_compl_sigmaFiniteSet_eq_zero, fun _ ↦ measure_compl_sigmaFiniteSet μ⟩
 
-lemma toSigmaFinite_absolutelyContinuous (μ : Measure α) [SFinite μ] : μ.toSigmaFinite ≪ μ :=
-  (withDensity_absolutelyContinuous _ _).trans (toFinite_absolutelyContinuous μ)
-
-@[simp]
-lemma toSigmaFinite_eq_self (μ : Measure α) [SigmaFinite μ] : μ.toSigmaFinite = μ := by
-  ext s
-  suffices μ.toSigmaFinite.withDensity μ.densityToSigmaFinite s = μ.toSigmaFinite s by
-    rw [← this, withDensity_densityToSigmaFinite μ]
-  have h : μ.densityToSigmaFinite =ᵐ[μ.toSigmaFinite] 1 :=
-    toSigmaFinite_absolutelyContinuous μ (densityToSigmaFinite_ae_eq_one μ)
-  rw [withDensity_congr_ae h, withDensity_one]
-
-lemma toSigmaFinite_eq_self_iff (μ : Measure α) [SFinite μ] :
-    μ.toSigmaFinite = μ ↔ SigmaFinite μ :=
-  ⟨fun h ↦ h.symm ▸ inferInstance, fun _ ↦ toSigmaFinite_eq_self μ⟩
+end SigmaFiniteSet
 
 end MeasureTheory
