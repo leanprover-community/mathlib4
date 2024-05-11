@@ -97,6 +97,5 @@ variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀} {m n : ℕ}
 theorem pow_inv_comm₀ (a : G₀) (m n : ℕ) : a⁻¹ ^ m * a ^ n = a ^ n * a⁻¹ ^ m :=
   (Commute.refl a).inv_left₀.pow_pow m n
 #align pow_inv_comm₀ pow_inv_comm₀
-#minimize_imports
 
 end GroupWithZero
