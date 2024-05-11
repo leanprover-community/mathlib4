@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Rat.Defs
@@ -134,9 +135,7 @@ theorem mul_num_den' (q r : ℚ) :
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.num) hs
   rw [c_mul_num, mul_assoc, mul_comm]
   nth_rw 1 [c_mul_den]
-  repeat rw [Int.mul_assoc]
-  apply mul_eq_mul_left_iff.2
-  rw [or_iff_not_imp_right]
+  rw [Int.mul_assoc, Int.mul_assoc, mul_eq_mul_left_iff, or_iff_not_imp_right]
   intro
   have h : _ = s := divInt_mul_divInt q.num r.num (mod_cast q.den_ne_zero) (mod_cast r.den_ne_zero)
   rw [num_divInt_den, num_divInt_den] at h

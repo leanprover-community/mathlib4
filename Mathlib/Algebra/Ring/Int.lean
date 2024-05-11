@@ -39,6 +39,11 @@ instance instCommRing : CommRing ℤ where
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
 
+instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℤ where
+  mul_left_cancel_of_ne_zero {_a _b _c} ha := (mul_eq_mul_left_iff ha).1
+
+instance instCharZero : CharZero ℤ where cast_injective _ _ := ofNat.inj
+
 instance instMulDivCancelClass : MulDivCancelClass ℤ where mul_div_cancel _ _ := mul_ediv_cancel _
 
 @[simp, norm_cast]
@@ -68,9 +73,6 @@ instance instCommSemiring : CommSemiring ℤ := inferInstance
 instance instSemiring     : Semiring ℤ     := inferInstance
 instance instRing         : Ring ℤ         := inferInstance
 instance instDistrib      : Distrib ℤ      := inferInstance
-
-instance instCharZero : CharZero ℤ where
-  cast_injective _ _ := ofNat.inj
 
 end Int
 
