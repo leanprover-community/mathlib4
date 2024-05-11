@@ -132,7 +132,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
 theorem generateFrom_eq_pi [h : ∀ i, MeasurableSpace (α i)] {C : ∀ i, Set (Set (α i))}
     (hC : ∀ i, generateFrom (C i) = h i) (h2C : ∀ i, IsCountablySpanning (C i)) :
     generateFrom (pi univ '' pi univ C) = MeasurableSpace.pi := by
-  rw [← funext hC, generateFrom_pi_eq h2C]
+  simp only [← funext hC, generateFrom_pi_eq h2C]
 #align generate_from_eq_pi generateFrom_eq_pi
 
 /-- The product σ-algebra is generated from boxes, i.e. `s ×ˢ t` for sets `s : set α` and
@@ -252,8 +252,12 @@ instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, Si
 theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)]
     (s : ∀ i, Set (π i)) :
     Measure.tprod l μ (Set.tprod l s) = (l.map fun i => (μ i) (s i)).prod := by
-  induction' l with i l ih; · simp
-  rw [tprod_cons, Set.tprod, prod_prod, map_cons, prod_cons, ih]
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    rw [tprod_cons, Set.tprod]
+    erw [prod_prod] -- TODO: why `rw` fails?
+    rw [map_cons, prod_cons, ih]
 #align measure_theory.measure.tprod_tprod MeasureTheory.Measure.tprod_tprod
 
 end Tprod
@@ -844,10 +848,10 @@ theorem measurePreserving_piUnique {π : ι → Type*} [Unique ι] {m : ∀ i, M
     set e := MeasurableEquiv.piUnique π
     have : (piPremeasure fun i => (μ i).toOuterMeasure) = Measure.map e.symm (μ default) := by
       ext1 s
-      rw [piPremeasure, Fintype.prod_unique, e.symm.map_apply]
+      rw [piPremeasure, Fintype.prod_unique, e.symm.map_apply, coe_toOuterMeasure]
       congr 1; exact e.toEquiv.image_eq_preimage s
-    simp_rw [Measure.pi, OuterMeasure.pi, this, boundedBy_eq_self, toOuterMeasure_toMeasure,
-      MeasurableEquiv.map_map_symm]
+    simp_rw [Measure.pi, OuterMeasure.pi, this, ← coe_toOuterMeasure, boundedBy_eq_self,
+      toOuterMeasure_toMeasure, MeasurableEquiv.map_map_symm]
 
 theorem volume_preserving_piUnique (π : ι → Type*) [Unique ι] [∀ i, MeasureSpace (π i)] :
     MeasurePreserving (MeasurableEquiv.piUnique π) volume volume :=

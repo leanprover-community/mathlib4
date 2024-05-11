@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
 
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Algebra.CharP.Basic
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -360,8 +361,8 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
 @[simp]
 theorem divided_by_X_pow_order_of_X_eq_one : divided_by_X_pow_order X_ne_zero = (1 : R⟦X⟧) := by
   rw [← mul_eq_left₀ X_ne_zero]
-  simpa only [order_X, X_ne_zero, PartENat.get_one, pow_one, Ne.def,
-    not_false_iff] using self_eq_X_pow_order_mul_divided_by_X_pow_order (@X_ne_zero R _ _)
+  simpa only [order_X, X_ne_zero, PartENat.get_one, pow_one, Ne, not_false_iff] using
+    self_eq_X_pow_order_mul_divided_by_X_pow_order (@X_ne_zero R _ _)
 
 -- Dividing a power series by the maximal power of `X` dividing it, respects multiplication.
 theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0) :

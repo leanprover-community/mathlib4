@@ -248,8 +248,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
 theorem _root_.IsCompact.exists_infEdist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infEdist x s = edist x y := by
   have A : Continuous fun y => edist x y := continuous_const.edist continuous_id
-  obtain ⟨y, ys, hy⟩ : ∃ y ∈ s, ∀ z, z ∈ s → edist x y ≤ edist x z :=
-    hs.exists_forall_le hne A.continuousOn
+  obtain ⟨y, ys, hy⟩ := hs.exists_isMinOn hne A.continuousOn
   exact ⟨y, ys, le_antisymm (infEdist_le_edist_of_mem ys) (by rwa [le_infEdist])⟩
 #align is_compact.exists_inf_edist_eq_edist IsCompact.exists_infEdist_eq_edist
 
@@ -258,12 +257,11 @@ theorem exists_pos_forall_lt_edist (hs : IsCompact s) (ht : IsClosed t) (hst : D
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · use 1
     simp
-  obtain ⟨x, hx, h⟩ : ∃ x ∈ s, ∀ y ∈ s, infEdist x t ≤ infEdist y t :=
-    hs.exists_forall_le hne continuous_infEdist.continuousOn
+  obtain ⟨x, hx, h⟩ := hs.exists_isMinOn hne continuous_infEdist.continuousOn
   have : 0 < infEdist x t :=
     pos_iff_ne_zero.2 fun H => hst.le_bot ⟨hx, (mem_iff_infEdist_zero_of_closed ht).mpr H⟩
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 this with ⟨r, h₀, hr⟩
-  exact ⟨r, ENNReal.coe_pos.mp h₀, fun y hy z hz => hr.trans_le <| le_infEdist.1 (h y hy) z hz⟩
+  exact ⟨r, ENNReal.coe_pos.mp h₀, fun y hy z hz => hr.trans_le <| le_infEdist.1 (h hy) z hz⟩
 #align emetric.exists_pos_forall_lt_edist EMetric.exists_pos_forall_lt_edist
 
 end InfEdist
