@@ -270,7 +270,7 @@ theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPow
 
 end PowerSeries
 
-namespace LaurentSeries
+namespace RatFunc
 section RatFunc
 
 open RatFunc
@@ -282,7 +282,7 @@ def coeAlgHom (F : Type u) [Field F] : RatFunc F →ₐ[F[X]] LaurentSeries F :=
   liftAlgHom (Algebra.ofId _ _) <|
     nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ <|
       Polynomial.algebraMap_hahnSeries_injective _
--- #align ratfunc.coe_alg_hom LaurentSeries.coeAlgHom
+#align ratfunc.coe_alg_hom RatFunc.coeAlgHom
 
 /-- The coercion `RatFunc F → LaurentSeries F` as a function.
 
@@ -294,26 +294,26 @@ def coeToLaurentSeries_fun {F : Type u} [Field F] : RatFunc F → LaurentSeries 
 
 instance coeToLaurentSeries : Coe (RatFunc F) (LaurentSeries F) :=
   ⟨coeToLaurentSeries_fun⟩
--- #align ratfunc.coe_to_laurent_series RatFunc.coeToLaurentSeries
+#align ratfunc.coe_to_laurent_series RatFunc.coeToLaurentSeries
 
 theorem coe_def : (f : LaurentSeries F) = coeAlgHom F f :=
   rfl
--- #align ratfunc.coe_def RatFunc.coe_def
+#align ratfunc.coe_def RatFunc.coe_def
 
 theorem coe_num_denom : (f : LaurentSeries F) = f.num / f.denom :=
   liftAlgHom_apply _ _ f
--- #align ratfunc.coe_num_denom RatFunc.coe_num_denom
+#align ratfunc.coe_num_denom RatFunc.coe_num_denom
 
 theorem coe_injective : Function.Injective ((↑) : RatFunc F → LaurentSeries F) :=
   liftAlgHom_injective _ (Polynomial.algebraMap_hahnSeries_injective _)
--- #align ratfunc.coe_injective RatFunc.coe_injective
+#align ratfunc.coe_injective RatFunc.coe_injective
 
 -- Porting note: removed the `norm_cast` tag:
 -- `norm_cast: badly shaped lemma, rhs can't start with coe `↑(coeAlgHom F) f`
 @[simp]
 theorem coe_apply : coeAlgHom F f = f :=
   rfl
--- #align ratfunc.coe_apply RatFunc.coe_apply
+#align ratfunc.coe_apply RatFunc.coe_apply
 
 theorem coe_coe (P : Polynomial F) : (P : LaurentSeries F) = (P : RatFunc F) := by
   simp only [coePolynomial, coe_def, AlgHom.commutes, algebraMap_hahnSeries_apply]
@@ -321,7 +321,7 @@ theorem coe_coe (P : Polynomial F) : (P : LaurentSeries F) = (P : RatFunc F) := 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : RatFunc F) : LaurentSeries F) = 0 :=
   (coeAlgHom F).map_zero
--- #align ratfunc.coe_zero RatFunc.coe_zero
+#align ratfunc.coe_zero RatFunc.coe_zero
 
 theorem coe_ne_zero {f : Polynomial F} (hf : f ≠ 0) : (↑f : PowerSeries F) ≠ 0 := by
   simp only [ne_eq, Polynomial.coe_eq_zero_iff, hf, not_false_eq_true]
@@ -329,38 +329,38 @@ theorem coe_ne_zero {f : Polynomial F} (hf : f ≠ 0) : (↑f : PowerSeries F) �
 @[simp, norm_cast]
 theorem coe_one : ((1 : RatFunc F) : LaurentSeries F) = 1 :=
   (coeAlgHom F).map_one
--- #align ratfunc.coe_one RatFunc.coe_one
+#align ratfunc.coe_one RatFunc.coe_one
 
 @[simp, norm_cast]
 theorem coe_add : ((f + g : RatFunc F) : LaurentSeries F) = f + g :=
   (coeAlgHom F).map_add _ _
--- #align ratfunc.coe_add RatFunc.coe_add
+#align ratfunc.coe_add RatFunc.coe_add
 
 @[simp, norm_cast]
 theorem coe_sub : ((f - g : RatFunc F) : LaurentSeries F) = f - g :=
   (coeAlgHom F).map_sub _ _
--- #align ratfunc.coe_sub RatFunc.coe_sub
+#align ratfunc.coe_sub RatFunc.coe_sub
 
 @[simp, norm_cast]
 theorem coe_neg : ((-f : RatFunc F) : LaurentSeries F) = -f :=
   (coeAlgHom F).map_neg _
--- #align ratfunc.coe_neg RatFunc.coe_neg
+#align ratfunc.coe_neg RatFunc.coe_neg
 
 @[simp, norm_cast]
 theorem coe_mul : ((f * g : RatFunc F) : LaurentSeries F) = f * g :=
   (coeAlgHom F).map_mul _ _
--- #align ratfunc.coe_mul RatFunc.coe_mul
+#align ratfunc.coe_mul RatFunc.coe_mul
 
 @[simp, norm_cast]
 theorem coe_pow (n : ℕ) : ((f ^ n : RatFunc F) : LaurentSeries F) = (f : LaurentSeries F) ^ n :=
   (coeAlgHom F).map_pow _ _
--- #align ratfunc.coe_pow RatFunc.coe_pow
+#align ratfunc.coe_pow RatFunc.coe_pow
 
 @[simp, norm_cast]
 theorem coe_div :
     ((f / g : RatFunc F) : LaurentSeries F) = (f : LaurentSeries F) / (g : LaurentSeries F) :=
   map_div₀ (coeAlgHom F) _ _
--- #align ratfunc.coe_div RatFunc.coe_div
+#align ratfunc.coe_div RatFunc.coe_div
 
 @[simp, norm_cast]
 theorem coe_C (r : F) : ((RatFunc.C r : RatFunc F) : LaurentSeries F) = HahnSeries.C r := by
@@ -369,13 +369,13 @@ theorem coe_C (r : F) : ((RatFunc.C r : RatFunc F) : LaurentSeries F) = HahnSeri
     PowerSeries.coe_one, div_one]
   simp only [algebraMap_eq_C, ofPowerSeries_C, C_apply]  -- Porting note: added
 set_option linter.uppercaseLean3 false in
--- #align ratfunc.coe_C RatFunc.coe_C
+#align ratfunc.coe_C RatFunc.coe_C
 
 -- TODO: generalize over other modules
 @[simp, norm_cast]
 theorem coe_smul (r : F) : ((r • f : RatFunc F) : LaurentSeries F) = r • (f : LaurentSeries F) :=
   by rw [RatFunc.smul_eq_C_mul, ← C_mul_eq_smul, coe_mul, coe_C]
--- #align ratfunc.coe_smul RatFunc.coe_smul
+#align ratfunc.coe_smul RatFunc.coe_smul
 
 -- Porting note: removed `norm_cast` because "badly shaped lemma, rhs can't start with coe"
 -- even though `single 1 1` is a bundled function application, not a "real" coercion
@@ -386,7 +386,7 @@ theorem coe_X : ((X : RatFunc F) : LaurentSeries F) = single 1 1 := by
      PowerSeries.coe_one, div_one]
   simp only [ofPowerSeries_X]  -- Porting note: added
 set_option linter.uppercaseLean3 false in
--- #align ratfunc.coe_X RatFunc.coe_X
+#align ratfunc.coe_X RatFunc.coe_X
 
 theorem single_one_eq_pow {R : Type _} [Ring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
@@ -402,7 +402,6 @@ theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
   rw [HahnSeries.single_mul_single, add_right_neg, mul_comm,
     inv_mul_cancel hα]
   rfl
-
 
 theorem single_zpow (n : ℤ) :
     single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
@@ -422,7 +421,7 @@ theorem algebraMap_apply_div :
   convert coe_div (algebraMap F[X] (RatFunc F) p) (algebraMap F[X] (RatFunc F) q) <;>
     rw [← mk_one, coe_def, coeAlgHom, mk_eq_div, liftAlgHom_apply_div, map_one, div_one,
       Algebra.ofId_apply]
--- #align ratfunc.algebra_map_apply_div RatFunc.algebraMap_apply_div
+#align ratfunc.algebra_map_apply_div RatFunc.algebraMap_apply_div
 
 instance : IsScalarTower F[X] (RatFunc F) (LaurentSeries F) :=
   ⟨fun x y z => by
@@ -431,4 +430,4 @@ instance : IsScalarTower F[X] (RatFunc F) (LaurentSeries F) :=
 
 end RatFunc
 
-end LaurentSeries
+end RatFunc

@@ -108,18 +108,18 @@ Fractions are reduced by clearing common denominators before evaluating:
 -/
 def eval (f : K →+* L) (a : L) (p : RatFunc K) : L :=
   (num p).eval₂ f a / (denom p).eval₂ f a
--- #align ratfunc.eval RatFunc.eval
+#align ratfunc.eval RatFunc.eval
 
 variable {f : K →+* L} {a : L}
 
 theorem eval_eq_zero_of_eval₂_denom_eq_zero {x : RatFunc K}
     (h : Polynomial.eval₂ f a (denom x) = 0) : eval f a x = 0 := by rw [eval, h, div_zero]
--- #align ratfunc.eval_eq_zero_of_eval₂_denom_eq_zero RatFunc.eval_eq_zero_of_eval₂_denom_eq_zero
+#align ratfunc.eval_eq_zero_of_eval₂_denom_eq_zero RatFunc.eval_eq_zero_of_eval₂_denom_eq_zero
 
 theorem eval₂_denom_ne_zero {x : RatFunc K} (h : eval f a x ≠ 0) :
     Polynomial.eval₂ f a (denom x) ≠ 0 :=
   mt eval_eq_zero_of_eval₂_denom_eq_zero h
--- #align ratfunc.eval₂_denom_ne_zero RatFunc.eval₂_denom_ne_zero
+#align ratfunc.eval₂_denom_ne_zero RatFunc.eval₂_denom_ne_zero
 
 variable (f a)
 
@@ -133,17 +133,17 @@ theorem eval_X : eval f a X = a := by simp [eval]
 
 @[simp]
 theorem eval_zero : eval f a 0 = 0 := by simp [eval]
--- #align ratfunc.eval_zero RatFunc.eval_zero
+#align ratfunc.eval_zero RatFunc.eval_zero
 
 @[simp]
 theorem eval_one : eval f a 1 = 1 := by simp [eval]
--- #align ratfunc.eval_one RatFunc.eval_one
+#align ratfunc.eval_one RatFunc.eval_one
 
 @[simp]
 theorem eval_algebraMap {S : Type*} [CommSemiring S] [Algebra S K[X]] (p : S) :
     eval f a (algebraMap _ _ p) = (algebraMap _ K[X] p).eval₂ f a := by
   simp [eval, IsScalarTower.algebraMap_apply S K[X] (RatFunc K)]
--- #align ratfunc.eval_algebra_map RatFunc.eval_algebraMap
+#align ratfunc.eval_algebra_map RatFunc.eval_algebraMap
 
 /-- `eval` is an additive homomorphism except when a denominator evaluates to `0`.
 
@@ -164,7 +164,7 @@ theorem eval_add {x y : RatFunc K} (hx : Polynomial.eval₂ f a (denom x) ≠ 0)
   simp only [← Polynomial.eval₂_mul, ← Polynomial.eval₂_add]
   congr 1
   apply num_denom_add
--- #align ratfunc.eval_add RatFunc.eval_add
+#align ratfunc.eval_add RatFunc.eval_add
 
 /-- `eval` is a multiplicative homomorphism except when a denominator evaluates to `0`.
 
@@ -184,7 +184,7 @@ theorem eval_mul {x y : RatFunc K} (hx : Polynomial.eval₂ f a (denom x) ≠ 0)
   repeat' rw [← Polynomial.eval₂_mul]
   congr 1
   apply num_denom_mul
--- #align ratfunc.eval_mul RatFunc.eval_mul
+#align ratfunc.eval_mul RatFunc.eval_mul
 
 end Field
 

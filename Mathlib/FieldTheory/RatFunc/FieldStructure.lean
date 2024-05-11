@@ -32,7 +32,7 @@ variable [CommRing K]
 /-- The zero rational function. -/
 protected irreducible_def zero : RatFunc K :=
   ⟨0⟩
--- #align ratfunc.zero RatFunc.zero
+#align ratfunc.zero RatFunc.zero
 
 instance : Zero (RatFunc K) :=
   ⟨RatFunc.zero⟩
@@ -374,7 +374,7 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
           Localization.mk_mul, Submonoid.mk_mul_mk]
       · rfl
     · rfl
--- #align ratfunc.map RatFunc.map
+#align ratfunc.map RatFunc.map
 
 theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
     (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) (n : R[X]) (d : R[X]⁰) :
