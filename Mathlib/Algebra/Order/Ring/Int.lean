@@ -5,7 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Ring.Int
 import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 
 #align_import data.int.order.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
