@@ -187,14 +187,14 @@ theorem summable_nat_rpow_inv {p : ℝ} :
   · suffices ¬Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) by
       have : ¬1 < p := fun hp₁ => hp.not_le (zero_le_one.trans hp₁.le)
       simpa only [this, iff_false]
-    · intro h
-      obtain ⟨k : ℕ, hk₁ : ((k : ℝ) ^ p)⁻¹ < 1, hk₀ : k ≠ 0⟩ :=
-        ((h.tendsto_cofinite_zero.eventually (gt_mem_nhds zero_lt_one)).and
-            (eventually_cofinite_ne 0)).exists
-      apply hk₀
-      rw [← pos_iff_ne_zero, ← @Nat.cast_pos ℝ] at hk₀
-      simpa [inv_lt_one_iff_of_pos (rpow_pos_of_pos hk₀ _), one_lt_rpow_iff_of_pos hk₀, hp,
-        hp.not_lt, hk₀] using hk₁
+    intro h
+    obtain ⟨k : ℕ, hk₁ : ((k : ℝ) ^ p)⁻¹ < 1, hk₀ : k ≠ 0⟩ :=
+      ((h.tendsto_cofinite_zero.eventually (gt_mem_nhds zero_lt_one)).and
+          (eventually_cofinite_ne 0)).exists
+    apply hk₀
+    rw [← pos_iff_ne_zero, ← @Nat.cast_pos ℝ] at hk₀
+    simpa [inv_lt_one_iff_of_pos (rpow_pos_of_pos hk₀ _), one_lt_rpow_iff_of_pos hk₀, hp,
+      hp.not_lt, hk₀] using hk₁
 #align real.summable_nat_rpow_inv Real.summable_nat_rpow_inv
 
 @[simp]

@@ -171,14 +171,14 @@ theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryE
           rw [Category.assoc, pullback.lift_fst, ← H.w, ← w.w]; exact hf.paste_horiz hc₄
         · apply IsPullback.of_right _ e₂ (IsPullback.of_hasPullback _ _)
           rw [Category.assoc, pullback.lift_fst]; exact hc₃
-    · rw [← Category.id_comp αZ, ← show cmp ≫ pullback.snd = αY from pullback.lift_snd _ _ _]
-      apply IsPullback.paste_vert _ (IsPullback.of_hasPullback αZ i)
-      have : cmp = (hc₂.coconePointUniqueUpToIso hc₄).hom := by
-        apply BinaryCofan.IsColimit.hom_ext hc₂
-        exacts [(hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.left⟩).symm,
-          (hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.right⟩).symm]
-      rw [this]
-      exact IsPullback.of_vert_isIso ⟨by rw [← this, Category.comp_id, pullback.lift_fst]⟩
+    rw [← Category.id_comp αZ, ← show cmp ≫ pullback.snd = αY from pullback.lift_snd _ _ _]
+    apply IsPullback.paste_vert _ (IsPullback.of_hasPullback αZ i)
+    have : cmp = (hc₂.coconePointUniqueUpToIso hc₄).hom := by
+      apply BinaryCofan.IsColimit.hom_ext hc₂
+      exacts [(hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.left⟩).symm,
+        (hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.right⟩).symm]
+    rw [this]
+    exact IsPullback.of_vert_isIso ⟨by rw [← this, Category.comp_id, pullback.lift_fst]⟩
   · rintro ⟨hc₃, hc₄⟩
     exact ⟨(IsPullback.of_hasPullback αY c.inr).paste_horiz hc₄, hc₃⟩
 #align category_theory.is_pushout.is_van_kampen_inl CategoryTheory.IsPushout.isVanKampen_inl

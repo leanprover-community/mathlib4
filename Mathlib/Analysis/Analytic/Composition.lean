@@ -1120,7 +1120,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
       have A : length (gather a b) = List.length (splitWrtComposition a.blocks b) := by
         simp only [length, gather, length_map, length_splitWrtComposition]
       congr! 2
-      · exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
+      exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
     · have B : Composition.length (Composition.gather a b) = List.length b.blocks :=
         Composition.length_gather _ _
       conv_rhs => rw [← ofFn_get b.blocks]
