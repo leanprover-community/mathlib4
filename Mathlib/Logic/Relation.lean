@@ -244,16 +244,6 @@ end Map
 
 variable {r : α → α → Prop} {a b c d : α}
 
-/-- `ReflTransGen r`: reflexive transitive closure of `r` -/
-@[mk_iff ReflTransGen.cases_tail_iff]
-inductive ReflTransGen (r : α → α → Prop) (a : α) : α → Prop
-  | refl : ReflTransGen r a a
-  | tail {b c} : ReflTransGen r a b → r b c → ReflTransGen r a c
-#align relation.refl_trans_gen Relation.ReflTransGen
-#align relation.refl_trans_gen.cases_tail_iff Relation.ReflTransGen.cases_tail_iff
-
-attribute [refl] ReflTransGen.refl
-
 /-- `ReflGen r`: reflexive closure of `r` -/
 @[mk_iff]
 inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
@@ -273,11 +263,13 @@ inductive TransGen (r : α → α → Prop) (a : α) : α → Prop
 
 attribute [refl] ReflGen.refl
 
+/-- `ReflTransGen r`: reflexive transitive closure of `r` -/
+def ReflTransGen (r : α → α → Prop) : α → α → Prop := TransGen (ReflGen r)
+#align relation.refl_trans_gen Relation.ReflTransGen
+
 namespace ReflGen
 
-theorem to_reflTransGen : ∀ {a b}, ReflGen r a b → ReflTransGen r a b
-  | a, _, refl => by rfl
-  | a, b, single h => ReflTransGen.tail ReflTransGen.refl h
+theorem to_reflTransGen {a b} (h : ReflGen r a b) : ReflTransGen r a b := TransGen.single h
 #align relation.refl_gen.to_refl_trans_gen Relation.ReflGen.to_reflTransGen
 
 theorem mono {p : α → α → Prop} (hp : ∀ a b, r a b → p a b) : ∀ {a b}, ReflGen r a b → ReflGen p a b
@@ -290,93 +282,14 @@ instance : IsRefl α (ReflGen r) :=
 
 end ReflGen
 
-namespace ReflTransGen
-
-@[trans]
-theorem trans (hab : ReflTransGen r a b) (hbc : ReflTransGen r b c) : ReflTransGen r a c := by
-  induction hbc with
-  | refl => assumption
-  | tail _ hcd hac => exact hac.tail hcd
-#align relation.refl_trans_gen.trans Relation.ReflTransGen.trans
-
-theorem single (hab : r a b) : ReflTransGen r a b :=
-  refl.tail hab
-#align relation.refl_trans_gen.single Relation.ReflTransGen.single
-
-theorem head (hab : r a b) (hbc : ReflTransGen r b c) : ReflTransGen r a c := by
-  induction hbc with
-  | refl => exact refl.tail hab
-  | tail _ hcd hac => exact hac.tail hcd
-#align relation.refl_trans_gen.head Relation.ReflTransGen.head
-
-theorem symmetric (h : Symmetric r) : Symmetric (ReflTransGen r) := by
-  intro x y h
-  induction' h with z w _ b c
-  · rfl
-  · apply Relation.ReflTransGen.head (h b) c
-#align relation.refl_trans_gen.symmetric Relation.ReflTransGen.symmetric
-
-theorem cases_tail : ReflTransGen r a b → b = a ∨ ∃ c, ReflTransGen r a c ∧ r c b :=
-  (cases_tail_iff r a b).1
-#align relation.refl_trans_gen.cases_tail Relation.ReflTransGen.cases_tail
-
-@[elab_as_elim]
-theorem head_induction_on {P : ∀ a : α, ReflTransGen r a b → Prop} {a : α} (h : ReflTransGen r a b)
-    (refl : P b refl)
-    (head : ∀ {a c} (h' : r a c) (h : ReflTransGen r c b), P c h → P a (h.head h')) : P a h := by
-  induction h with
-  | refl => exact refl
-  | @tail b c _ hbc ih =>
-  apply ih
-  · exact head hbc _ refl
-  · exact fun h1 h2 ↦ head h1 (h2.tail hbc)
-#align relation.refl_trans_gen.head_induction_on Relation.ReflTransGen.head_induction_on
-
-@[elab_as_elim]
-theorem trans_induction_on {P : ∀ {a b : α}, ReflTransGen r a b → Prop} {a b : α}
-    (h : ReflTransGen r a b) (ih₁ : ∀ a, @P a a refl) (ih₂ : ∀ {a b} (h : r a b), P (single h))
-    (ih₃ : ∀ {a b c} (h₁ : ReflTransGen r a b) (h₂ : ReflTransGen r b c), P h₁ → P h₂ →
-     P (h₁.trans h₂)) : P h := by
-  induction h with
-  | refl => exact ih₁ a
-  | tail hab hbc ih => exact ih₃ hab (single hbc) ih (ih₂ hbc)
-#align relation.refl_trans_gen.trans_induction_on Relation.ReflTransGen.trans_induction_on
-
-theorem cases_head (h : ReflTransGen r a b) : a = b ∨ ∃ c, r a c ∧ ReflTransGen r c b := by
-  induction h using Relation.ReflTransGen.head_induction_on
-  · left
-    rfl
-  · right
-    exact ⟨_, by assumption, by assumption⟩;
-#align relation.refl_trans_gen.cases_head Relation.ReflTransGen.cases_head
-
-theorem cases_head_iff : ReflTransGen r a b ↔ a = b ∨ ∃ c, r a c ∧ ReflTransGen r c b := by
-  use cases_head
-  rintro (rfl | ⟨c, hac, hcb⟩)
-  · rfl
-  · exact head hac hcb
-#align relation.refl_trans_gen.cases_head_iff Relation.ReflTransGen.cases_head_iff
-
-theorem total_of_right_unique (U : Relator.RightUnique r) (ab : ReflTransGen r a b)
-    (ac : ReflTransGen r a c) : ReflTransGen r b c ∨ ReflTransGen r c b := by
-  induction' ab with b d _ bd IH
-  · exact Or.inl ac
-  · rcases IH with (IH | IH)
-    · rcases cases_head IH with (rfl | ⟨e, be, ec⟩)
-      · exact Or.inr (single bd)
-      · cases U bd be
-        exact Or.inl ec
-    · exact Or.inr (IH.tail bd)
-#align relation.refl_trans_gen.total_of_right_unique Relation.ReflTransGen.total_of_right_unique
-
-end ReflTransGen
-
 namespace TransGen
 
 theorem to_reflTransGen {a b} (h : TransGen r a b) : ReflTransGen r a b := by
   induction' h with b h b c _ bc ab
-  · exact ReflTransGen.single h
-  · exact ReflTransGen.tail ab bc
+  · apply TransGen.single
+    exact ReflGen.single h
+  · apply TransGen.tail ab
+    exact ReflGen.single bc
 -- Porting note: in Lean 3 this function was called `to_refl` which seems wrong.
 #align relation.trans_gen.to_refl Relation.TransGen.to_reflTransGen
 
@@ -547,6 +460,88 @@ theorem transGen_swap : TransGen (swap r) a b ↔ TransGen r b a :=
 #align relation.trans_gen_swap Relation.transGen_swap
 
 end TransGen
+
+
+namespace ReflTransGen
+
+@[trans]
+theorem trans (hab : ReflTransGen r a b) (hbc : ReflTransGen r b c) : ReflTransGen r a c := by
+  apply TransGen.tail hab
+  exact hbc
+#align relation.refl_trans_gen.trans Relation.ReflTransGen.trans
+
+theorem single (hab : r a b) : ReflTransGen r a b :=
+  refl.tail hab
+#align relation.refl_trans_gen.single Relation.ReflTransGen.single
+
+theorem head (hab : r a b) (hbc : ReflTransGen r b c) : ReflTransGen r a c := by
+  induction hbc with
+  | refl => exact refl.tail hab
+  | tail _ hcd hac => exact hac.tail hcd
+#align relation.refl_trans_gen.head Relation.ReflTransGen.head
+
+theorem symmetric (h : Symmetric r) : Symmetric (ReflTransGen r) := by
+  intro x y h
+  induction' h with z w _ b c
+  · rfl
+  · apply Relation.ReflTransGen.head (h b) c
+#align relation.refl_trans_gen.symmetric Relation.ReflTransGen.symmetric
+
+theorem cases_tail : ReflTransGen r a b → b = a ∨ ∃ c, ReflTransGen r a c ∧ r c b :=
+  (cases_tail_iff r a b).1
+#align relation.refl_trans_gen.cases_tail Relation.ReflTransGen.cases_tail
+
+@[elab_as_elim]
+theorem head_induction_on {P : ∀ a : α, ReflTransGen r a b → Prop} {a : α} (h : ReflTransGen r a b)
+    (refl : P b refl)
+    (head : ∀ {a c} (h' : r a c) (h : ReflTransGen r c b), P c h → P a (h.head h')) : P a h := by
+  induction h with
+  | refl => exact refl
+  | @tail b c _ hbc ih =>
+  apply ih
+  · exact head hbc _ refl
+  · exact fun h1 h2 ↦ head h1 (h2.tail hbc)
+#align relation.refl_trans_gen.head_induction_on Relation.ReflTransGen.head_induction_on
+
+@[elab_as_elim]
+theorem trans_induction_on {P : ∀ {a b : α}, ReflTransGen r a b → Prop} {a b : α}
+    (h : ReflTransGen r a b) (ih₁ : ∀ a, @P a a refl) (ih₂ : ∀ {a b} (h : r a b), P (single h))
+    (ih₃ : ∀ {a b c} (h₁ : ReflTransGen r a b) (h₂ : ReflTransGen r b c), P h₁ → P h₂ →
+     P (h₁.trans h₂)) : P h := by
+  induction h with
+  | refl => exact ih₁ a
+  | tail hab hbc ih => exact ih₃ hab (single hbc) ih (ih₂ hbc)
+#align relation.refl_trans_gen.trans_induction_on Relation.ReflTransGen.trans_induction_on
+
+theorem cases_head (h : ReflTransGen r a b) : a = b ∨ ∃ c, r a c ∧ ReflTransGen r c b := by
+  induction h using Relation.ReflTransGen.head_induction_on
+  · left
+    rfl
+  · right
+    exact ⟨_, by assumption, by assumption⟩;
+#align relation.refl_trans_gen.cases_head Relation.ReflTransGen.cases_head
+
+theorem cases_head_iff : ReflTransGen r a b ↔ a = b ∨ ∃ c, r a c ∧ ReflTransGen r c b := by
+  use cases_head
+  rintro (rfl | ⟨c, hac, hcb⟩)
+  · rfl
+  · exact head hac hcb
+#align relation.refl_trans_gen.cases_head_iff Relation.ReflTransGen.cases_head_iff
+
+theorem total_of_right_unique (U : Relator.RightUnique r) (ab : ReflTransGen r a b)
+    (ac : ReflTransGen r a c) : ReflTransGen r b c ∨ ReflTransGen r c b := by
+  induction' ab with b d _ bd IH
+  · exact Or.inl ac
+  · rcases IH with (IH | IH)
+    · rcases cases_head IH with (rfl | ⟨e, be, ec⟩)
+      · exact Or.inr (single bd)
+      · cases U bd be
+        exact Or.inl ec
+    · exact Or.inr (IH.tail bd)
+#align relation.refl_trans_gen.total_of_right_unique Relation.ReflTransGen.total_of_right_unique
+
+end ReflTransGen
+
 
 section ReflTransGen
 
