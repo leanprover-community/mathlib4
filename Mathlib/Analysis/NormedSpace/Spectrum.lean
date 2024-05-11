@@ -156,7 +156,7 @@ theorem spectralRadius_le_nnnorm [NormOneClass A] (a : A) : spectralRadius 𝕜 
 
 theorem exists_nnnorm_eq_spectralRadius_of_nonempty [ProperSpace 𝕜] {a : A} (ha : (σ a).Nonempty) :
     ∃ k ∈ σ a, (‖k‖₊ : ℝ≥0∞) = spectralRadius 𝕜 a := by
-  obtain ⟨k, hk, h⟩ := (spectrum.isCompact a).exists_forall_ge ha continuous_nnnorm.continuousOn
+  obtain ⟨k, hk, h⟩ := (spectrum.isCompact a).exists_isMaxOn ha continuous_nnnorm.continuousOn
   exact ⟨k, hk, le_antisymm (le_iSup₂ (α := ℝ≥0∞) k hk) (iSup₂_le <| mod_cast h)⟩
 #align spectrum.exists_nnnorm_eq_spectral_radius_of_nonempty spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty
 
@@ -282,10 +282,10 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
       · refine'
           le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) _)
             (le_max_left _ _)
-        · by_cases h : ‖a‖₊ = 0
-          · simp only [h, zero_mul, zero_le', pow_succ']
-          · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
-            simpa only [← mul_pow, mul_comm] using pow_le_one' hr.le n.succ
+        by_cases h : ‖a‖₊ = 0
+        · simp only [h, zero_mul, zero_le', pow_succ']
+        · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
+          simpa only [← mul_pow, mul_comm] using pow_le_one' hr.le n.succ
     r_pos := ENNReal.inv_pos.mpr coe_ne_top
     hasSum := fun {y} hy => by
       have norm_lt : ‖y • a‖ < 1 := by

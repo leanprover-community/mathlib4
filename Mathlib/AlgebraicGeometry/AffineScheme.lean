@@ -32,6 +32,8 @@ We also define predicates about affine schemes and affine open sets.
 
 -/
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 set_option linter.uppercaseLean3 false
 
 noncomputable section
@@ -67,8 +69,8 @@ def Scheme.isoSpec (X : Scheme) [IsAffine X] : X ≅ Scheme.Spec.obj (op <| Sche
 /-- Construct an affine scheme from a scheme and the information that it is affine.
 Also see `AffineScheme.of` for a typeclass version. -/
 @[simps]
-def AffineScheme.mk (X : Scheme) (h : IsAffine X) : AffineScheme :=
-  ⟨X, @mem_essImage_of_unit_isIso _ _ _ _ _ _ _ h.1⟩
+def AffineScheme.mk (X : Scheme) (_ : IsAffine X) : AffineScheme :=
+  ⟨X, mem_essImage_of_unit_isIso (adj := ΓSpec.adjunction) _⟩
 #align algebraic_geometry.AffineScheme.mk AlgebraicGeometry.AffineScheme.mk
 
 /-- Construct an affine scheme from a scheme. Also see `AffineScheme.mk` for a non-typeclass
@@ -84,7 +86,8 @@ def AffineScheme.ofHom {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
 #align algebraic_geometry.AffineScheme.of_hom AlgebraicGeometry.AffineScheme.ofHom
 
 theorem mem_Spec_essImage (X : Scheme) : X ∈ Scheme.Spec.essImage ↔ IsAffine X :=
-  ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩, fun h => @mem_essImage_of_unit_isIso _ _ _ _ _ _ X h.1⟩
+  ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩,
+    fun _ => mem_essImage_of_unit_isIso (adj := ΓSpec.adjunction) _⟩
 #align algebraic_geometry.mem_Spec_ess_image AlgebraicGeometry.mem_Spec_essImage
 
 instance isAffineAffineScheme (X : AffineScheme.{u}) : IsAffine X.obj :=
@@ -139,10 +142,12 @@ def equivCommRingCat : AffineScheme ≌ CommRingCatᵒᵖ :=
   equivEssImageOfReflective.symm
 #align algebraic_geometry.AffineScheme.equiv_CommRing AlgebraicGeometry.AffineScheme.equivCommRingCat
 
+instance : Γ.{u}.rightOp.IsEquivalence := equivCommRingCat.isEquivalence_functor
+
+instance : Γ.{u}.rightOp.op.IsEquivalence := equivCommRingCat.op.isEquivalence_functor
+
 instance ΓIsEquiv : Γ.{u}.IsEquivalence :=
-  haveI : Γ.{u}.rightOp.op.IsEquivalence :=
-    Functor.IsEquivalence.ofEquivalence equivCommRingCat.op
-  Functor.isEquivalenceTrans Γ.{u}.rightOp.op (opOpEquivalence _).functor
+  inferInstanceAs (Γ.{u}.rightOp.op ⋙ (opOpEquivalence _).functor).IsEquivalence
 #align algebraic_geometry.AffineScheme.Γ_is_equiv AlgebraicGeometry.AffineScheme.ΓIsEquiv
 
 instance hasColimits : HasColimits AffineScheme.{u} :=
@@ -154,9 +159,7 @@ instance hasLimits : HasLimits AffineScheme.{u} := by
   haveI : HasLimits AffineScheme.{u}ᵒᵖᵒᵖ := Limits.hasLimits_op_of_hasColimits
   exact Adjunction.has_limits_of_equivalence (opOpEquivalence AffineScheme.{u}).inverse
 
-noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp :=
-  @Adjunction.isEquivalencePreservesLimits _ _ _ _ Γ.rightOp
-    (Functor.IsEquivalence.ofEquivalence equivCommRingCat)
+noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp := inferInstance
 
 noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
   apply (config := { allowSynthFailures := true })

@@ -512,7 +512,7 @@ private theorem eq_imp_of_iff_imp {p : x = y → Prop} (h : (he : x ↔ y) → p
 /--
 Does `Lean.MVarId.intros` but then cleans up the introduced hypotheses, removing anything
 that is trivial. If there are any patterns in the current `CongrMetaM` state then instead
-of `Lean.MVarId.intros` it does `Std.Tactic.RCases.rintro`.
+of `Lean.MVarId.intros` it does `Lean.Elab..Tactic.RCases.rintro`.
 
 Cleaning up includes:
 - deleting hypotheses of the form `HEq x x`, `x = x`, and `x ↔ x`.
