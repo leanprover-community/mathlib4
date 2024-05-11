@@ -222,16 +222,19 @@ theorem natCast_div (a b : ℕ) (h : b ∣ a) : ((a / b : ℕ) : ℚ) = a / b :=
   intCast_div a b (Int.ofNat_dvd.mpr h)
 #align rat.coe_nat_div Rat.natCast_div
 
-theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m := by
+theorem den_div_intCast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m := by
   replace hn : (n : ℚ) ≠ 0 := num_ne_zero.mp hn
   constructor
   · rw [Rat.den_eq_one_iff, eq_div_iff hn]
     exact mod_cast (Dvd.intro_left _)
   · exact (intCast_div _ _ · ▸ rfl)
-#align rat.denom_div_cast_eq_one_iff Rat.den_div_cast_eq_one_iff
+#align rat.denom_div_cast_eq_one_iff Rat.den_div_intCast_eq_one_iff
 
 theorem den_div_natCast_eq_one_iff (m n : ℕ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m :=
-  (den_div_cast_eq_one_iff m n (Int.ofNat_ne_zero.mpr hn)).trans Int.ofNat_dvd
+  (den_div_intCast_eq_one_iff m n (Int.ofNat_ne_zero.mpr hn)).trans Int.ofNat_dvd
+
+-- 2024-05-11
+@[deprecated] alias den_div_cast_eq_one_iff := den_div_intCast_eq_one_iff
 
 theorem inv_intCast_num_of_pos {a : ℤ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 := by
   rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_divInt', divInt_eq_div, Nat.cast_one]
