@@ -95,11 +95,6 @@ def hInvEquiv : CatCommSq T.functor L R B.functor ≃ CatCommSq T.inverse R L B.
 
 end
 
-instance hInv' [h : CatCommSq T L R B] [T.IsEquivalence] [B.IsEquivalence] :
-    CatCommSq T.inv R L B.inv :=
-  hInv T.asEquivalence L R B.asEquivalence h
-
-
 section
 
 variable (T : C₁ ⥤ C₂) (L : C₁ ≌ C₃) (R : C₂ ≌ C₄) (B : C₃ ⥤ C₄)
