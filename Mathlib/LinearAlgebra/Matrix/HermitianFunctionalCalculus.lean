@@ -110,18 +110,30 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
       diagonal (RCLike.ofReal ∘ g ∘
       (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
       * star (eigenvectorUnitary hA : Matrix n n 𝕜)
-  map_one' := by
+  map_one' := by ---everything needs to be changed to continuous functions, so Lean doesn't have to coerce all of this!!!
       have h1 : diagonal 1 = (1 : Matrix n n 𝕜) := rfl
-      simp only [h1, mul_one, Matrix.mem_unitaryGroup_iff.mp, SetLike.coe_mem,ContinuousMap.coe_one,
-                 Pi.one_comp, Pi.comp_one, algebraMap.coe_one, Function.const_one]
+      simp only [h1, mul_one, Matrix.mem_unitaryGroup_iff.mp, SetLike.coe_mem,
+                 ContinuousMap.coe_one, Pi.one_comp, Pi.comp_one, algebraMap.coe_one,
+                 Function.const_one]
   map_mul' := by
       simp only [ContinuousMap.coe_mul]
       intro f g
+      have h1 : diagonal 1 = (1 : Matrix n n 𝕜) := rfl
+      --have h2 : ∀(i : n), OfNat.ofNat 1 i = (1 : 𝕜) := rfl
+      have J : diagonal (φ.toFun (f * g)) =
+               diagonal (φ.toFun f) * diagonal (φ.toFun 1) * diagonal (φ.toFun g) := by
+            simp only [Matrix.diagonal_mul_diagonal']
+            refine diagonal_eq_diagonal_iff.mpr ?_
+            intro i
+            simp only [φ.map_one']
+            sorry
+            --simp only [mul_one, one_mul, Function.comp_apply, Pi.mul_apply, RCLike.ofReal_mul]
+      --rw [H, ←(hA.eigenvectorUnitary).2.1]
       have H : diagonal ((RCLike.ofReal ∘ (⇑f * ⇑g) ∘
       (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))) = diagonal ((RCLike.ofReal ∘ ⇑f ∘
       (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))) * (1 : Matrix n n 𝕜)
       * diagonal (RCLike.ofReal ∘ ⇑g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) := by
-            simp only [mul_one, Matrix.diagonal_mul_diagonal']
+            simp only [mul_one ,Matrix.diagonal_mul_diagonal']
             refine diagonal_eq_diagonal_iff.mpr ?_
             intro i
             simp only [Function.comp_apply, Pi.mul_apply, RCLike.ofReal_mul]
@@ -190,6 +202,7 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
      simp only [star_eq_conjTranspose, diagonal_conjTranspose, H1]
     simp only [H2, mul_assoc]
     exact rfl
+#exit
 
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
