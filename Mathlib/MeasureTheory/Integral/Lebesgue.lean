@@ -393,10 +393,10 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     _ ≤ ⨆ n : ℕ, ((rs.map c).restrict { a | (rs.map c) a ≤ f n a }).lintegral μ := by
       gcongr with n
       rw [restrict_lintegral _ (h_meas n)]
-      · refine' le_of_eq (Finset.sum_congr rfl fun r _ => _)
-        congr 2 with a
-        refine' and_congr_right _
-        simp (config := { contextual := true })
+      refine' le_of_eq (Finset.sum_congr rfl fun r _ => _)
+      congr 2 with a
+      refine' and_congr_right _
+      simp (config := { contextual := true })
     _ ≤ ⨆ n, ∫⁻ a, f n a ∂μ := by
       gcongr with n
       rw [← SimpleFunc.lintegral_eq_lintegral]
@@ -1763,7 +1763,7 @@ lemma tendsto_of_lintegral_tendsto_of_antitone {α : Type*} {mα : MeasurableSpa
     filter_upwards [h_bound] with a ha using ha 0
   have h_exists : ∀ᵐ a ∂μ, ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := by
     filter_upwards [hf_mono] with a h_mono
-    rcases tendsto_of_antitone h_mono with h | h
+    rcases _root_.tendsto_of_antitone h_mono with h | h
     · refine ⟨0, h.mono_right ?_⟩
       rw [OrderBot.atBot_eq]
       exact pure_le_nhds _
