@@ -32,7 +32,7 @@ gh_api() {
     "https://api.github.com/$url" "$@"
 }
 
-git push origin-bot HEAD:$branch_name
+git push "${remote_name}" HEAD:$branch_name
 
 pr_id=$(gh_api repos/$owner_name/mathlib/pulls -X POST -d @- <<EOF | jq -r .number
 {
@@ -44,6 +44,6 @@ pr_id=$(gh_api repos/$owner_name/mathlib/pulls -X POST -d @- <<EOF | jq -r .numb
 EOF
 )
 
-gh_api repos/$owner_name/mathlib/issues/$pr_id/comments -X POST -d @- <<EOF
+gh_api "repos/$owner_name/mathlib/issues/$pr_id/comments" -X POST -d @- <<EOF
 { "body": "bors r+" }
 EOF
