@@ -79,13 +79,16 @@ section Basic
 
 variable {α β R R' : Type*} {ms : Set (OuterMeasure α)} {m : OuterMeasure α}
 
-instance instCoeFun : CoeFun (OuterMeasure α) (fun _ => Set α → ℝ≥0∞) where
-  coe m := m.measureOf
+instance instFunLike : FunLike (OuterMeasure α) (Set α) ℝ≥0∞ where
+  coe := measureOf
+  coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
+
+instance instCoeFun : CoeFun (OuterMeasure α) (fun _ => Set α → ℝ≥0∞) :=
+  inferInstance
 #align measure_theory.outer_measure.has_coe_to_fun MeasureTheory.OuterMeasure.instCoeFun
 
-attribute [coe] measureOf
-
-#noalign measure_theory.outer_measure.measureOf_eq_coe
+@[simp] theorem measureOf_eq_coe : m.measureOf = m := rfl
+#align measure_theory.outer_measure.measure_of_eq_coe MeasureTheory.OuterMeasure.measureOf_eq_coe
 
 @[simp]
 theorem empty' (m : OuterMeasure α) : m ∅ = 0 :=
@@ -226,7 +229,7 @@ theorem union_null (m : OuterMeasure α) {s₁ s₂ : Set α} (h₁ : m s₁ = 0
 #align measure_theory.outer_measure.union_null MeasureTheory.OuterMeasure.union_null
 
 theorem coe_fn_injective : Injective fun (μ : OuterMeasure α) (s : Set α) => μ s :=
-  fun μ₁ μ₂ h => by cases μ₁; cases μ₂; congr
+  DFunLike.coe_injective
 #align measure_theory.outer_measure.coe_fn_injective MeasureTheory.OuterMeasure.coe_fn_injective
 
 @[ext]
@@ -1621,6 +1624,13 @@ theorem le_trim_iff {m₁ m₂ : OuterMeasure α} :
   intro s
   apply le_iInf_iff
 #align measure_theory.outer_measure.le_trim_iff MeasureTheory.OuterMeasure.le_trim_iff
+
+/-- `OuterMeasure.trim` is antitone in the σ-algebra. -/
+theorem trim_anti_measurableSpace (m : OuterMeasure α) {m0 m1 : MeasurableSpace α}
+    (h : m0 ≤ m1) : @trim _ m1 m ≤ @trim _ m0 m := by
+  simp only [le_trim_iff]
+  intro s hs
+  rw [trim_eq _ (h s hs)]
 
 theorem trim_le_trim_iff {m₁ m₂ : OuterMeasure α} :
     m₁.trim ≤ m₂.trim ↔ ∀ s, MeasurableSet s → m₁ s ≤ m₂ s :=
