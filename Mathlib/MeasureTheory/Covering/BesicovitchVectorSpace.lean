@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Covering.Besicovitch
+import Mathlib.Tactic.AdaptationNote
 
 #align_import measure_theory.covering.besicovitch_vector_space from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -381,9 +382,9 @@ theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
 
 variable [NormedSpace ℝ E]
 
--- Adaptation note: after v4.7.0-rc1, there is a performance problem in `field_simp`.
--- (Part of the code was ignoring the `maxDischargeDepth` setting: now that we have to increase it,
--- other paths becomes slow.)
+#adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
+(Part of the code was ignoring the `maxDischargeDepth` setting:
+ now that we have to increase it, other paths becomes slow.) -/
 set_option maxHeartbeats 400000 in
 theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastc : a.c (last N) = 0) (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4)

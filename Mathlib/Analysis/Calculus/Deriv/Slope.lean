@@ -129,7 +129,7 @@ theorem range_derivWithin_subset_closure_span_image
     suffices A : f x ∈ closure (f '' (s ∩ t)) from
       closure_mono (image_subset _ (inter_subset_right _ _)) A
     apply ContinuousWithinAt.mem_closure_image
-    apply H'.continuousWithinAt.mono (inter_subset_left _ _)
+    · apply H'.continuousWithinAt.mono (inter_subset_left _ _)
     rw [mem_closure_iff_nhdsWithin_neBot]
     exact I.mono (nhdsWithin_mono _ (diff_subset _ _))
 

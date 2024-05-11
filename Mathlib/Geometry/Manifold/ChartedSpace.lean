@@ -419,8 +419,7 @@ theorem mem_pregroupoid_of_eqOnSource (PG : Pregroupoid H) {e e' : PartialHomeom
 #align mem_pregroupoid_of_eq_on_source mem_pregroupoid_of_eqOnSource
 
 /-- The pregroupoid of all partial maps on a topological space `H`. -/
-@[reducible]
-def continuousPregroupoid (H : Type*) [TopologicalSpace H] : Pregroupoid H where
+abbrev continuousPregroupoid (H : Type*) [TopologicalSpace H] : Pregroupoid H where
   property _ _ := True
   comp _ _ _ _ _ := trivial
   id_mem := trivial

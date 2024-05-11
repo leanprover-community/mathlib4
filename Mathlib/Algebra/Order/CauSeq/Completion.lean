@@ -236,7 +236,7 @@ theorem inv_mk {f} (hf) : (@mk α _ β _ abv _ f)⁻¹ = mk (inv f hf) :=
 #align cau_seq.completion.inv_mk CauSeq.Completion.inv_mk
 
 theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
-  have : LimZero (1 - 0) := Setoid.symm h
+  have : LimZero (1 - 0 : CauSeq _ abv) := Setoid.symm h
   have : LimZero 1 := by simpa
   by apply one_ne_zero <| const_limZero.1 this
 #align cau_seq.completion.cau_seq_zero_ne_one CauSeq.Completion.cau_seq_zero_ne_one
