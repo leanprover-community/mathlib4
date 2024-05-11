@@ -3,9 +3,11 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.CategoryTheory.Monoidal.Linear
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.CategoryTheory.Abelian.Exact
 
 #align_import algebra.category.Module.monoidal.basic from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
 
@@ -331,5 +333,86 @@ instance : MonoidalLinear R (ModuleCat.{u} R) := by
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [MonoidalCategory.whiskerRight_apply, MonoidalCategory.whiskerRight_apply]
     rw [LinearMap.smul_apply, TensorProduct.smul_tmul, TensorProduct.tmul_smul]
+
+set_option maxHeartbeats 400000 in
+instance (M : ModuleCat R) {X Y : ModuleCat R} (f : X ⟶ Y) :
+    Limits.PreservesColimit (Limits.parallelPair f 0) (tensorLeft M) where
+  preserves {c} hc := by
+    let π : Y ⟶ c.pt := c.ι.app .one
+    have epi0 : Epi π := by
+      constructor
+      intro Z g h H
+      let c' : Limits.Cocone (Limits.parallelPair f 0) :=
+        ⟨Z, ⟨fun x => match x with
+          | .zero => 0
+          | .one => π ≫ h,
+          fun _ _ l => match l with
+          | .left => by simp [π]
+          | .right => by simp [π]
+          | .id x => by simp⟩⟩
+      rw [hc.uniq c' g (fun x => match x with
+        | .zero => by simp
+        | .one => by simpa [π] using H),
+        hc.uniq c' h fun x => match x with
+        | .zero => by simp
+        | .one => by simp [π]]
+    have surj0 : Function.Surjective π := by rwa [← ModuleCat.epi_iff_surjective]
+    have exact0 : Exact f π := by
+      refine Abelian.exact_of_is_cokernel (w := by simp [π]) (h := ?_)
+      refine Limits.IsColimit.equivOfNatIsoOfIso (Iso.refl _) _ _
+        ⟨(Limits.Cocones.precomposeId (F := Limits.parallelPair f 0) |>.hom.app c) ≫
+          ⟨hc.desc (Limits.CokernelCofork.ofπ π (by simp [π])),
+          fun x => match x with
+          | .zero => by simp [π]
+          | .one => by simp⟩,
+          ⟨𝟙 c.pt, fun x => match x with
+            | .zero => by simp [π]
+            | .one => by simp [π]⟩ ≫
+            (Limits.Cocones.precomposeId (F := Limits.parallelPair f 0) |>.inv.app c),
+        ?_, ?_⟩ hc <;>
+      ext : 1 <;>
+      simp only [Iso.refl_inv, Limits.Cocones.precompose_obj_pt, Functor.const_obj_obj,
+        Functor.id_obj, Limits.Cocones.precomposeId, NatIso.ofComponents_hom_app,
+        NatIso.ofComponents_inv_app, Category.assoc, Limits.Cocone.category_comp_hom,
+        Limits.Cocones.ext_hom_hom, Iso.refl_hom, Limits.Cofork.ofπ_pt,
+        Limits.Cocones.ext_inv_hom, Category.comp_id, Category.id_comp,
+        Limits.Cocone.category_id_hom] <;>
+      exact hc.uniq (Limits.CokernelCofork.ofπ π (by simp [π])) (𝟙 c.pt) (fun x => match x with
+          | .zero => by simp [π]
+          | .one => by simp [π]) |>.symm
+    let f' : M ⊗ X ⟶ M ⊗ Y := M ◁ f
+    let π' : M ⊗ Y ⟶ M ⊗ c.pt := M ◁ π
+    letI exact1 : Exact f' π' := by
+      rw [exact_iff, Eq.comm, ← Function.LinearMap.exact_iff]
+      refine lTensor_exact _ ?_ surj0
+      rwa [Function.LinearMap.exact_iff, Eq.comm, ← exact_iff]
+    letI epi1 : Epi π' := by
+      rw [ModuleCat.epi_iff_surjective]; exact LinearMap.lTensor_surjective _ (hg := surj0)
+    letI ic1 := Abelian.isColimitOfExactOfEpi f' π' exact1
+
+    refine Limits.IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ ic1
+    · exact ⟨⟨fun x => match x with
+      | .zero => 𝟙 _
+      | .one => 𝟙 _, fun _ _ l => match l with
+      | .left => by aesop_cat
+      | .right => by aesop_cat
+      | .id x => match x with
+      | .zero => by aesop_cat
+      | .one => by aesop_cat⟩, ⟨fun x => match x with
+      | .zero => 𝟙 _
+      | .one => 𝟙 _, fun _ _ l => match l with
+      | .left => by aesop_cat
+      | .right => by aesop_cat
+      | .id x => match x with
+      | .zero => by aesop_cat
+      | .one => by aesop_cat⟩, by aesop_cat, by aesop_cat⟩
+    · exact ⟨⟨𝟙 _, fun x => match x with
+      | .zero => by simpa using exact1.w
+      | .one => by simp [π', π]⟩, ⟨𝟙 _, fun x => match x with
+      | .zero => by simp [exact1.w]
+      | .one => by simp [π', π]⟩, by ext; simp, by ext; simp⟩
+
+instance (M : ModuleCat R) : Limits.PreservesFiniteColimits (tensorLeft M) :=
+  (tensorLeft M).preservesFiniteColimitsOfPreservesCokernels
 
 end ModuleCat
