@@ -160,7 +160,6 @@ leftmost or rightmost maps (or objects) are zero. -/
 
 section Three
 
-
 variable {R₁ R₂ : ComposableArrows C 2} (φ : R₁ ⟶ R₂)
 
 attribute [local simp] Precomp.map
