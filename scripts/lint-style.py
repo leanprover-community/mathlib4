@@ -32,13 +32,13 @@ to perform this update.
 
 # TODO: This is adapted from the linter for mathlib3. It should be rewritten in Lean.
 
-from enum import Enum
+from enum import Enum, unique
 from pathlib import Path
 import re
 import shutil
 import sys
 
-
+@unique
 class Error(Enum):
     '''Possible errors raised by this script.'''
     ERR_COP = 0 # copyright header
