@@ -42,7 +42,7 @@
   "Mathlib.Tactic.Choose",
   "Mathlib.Tactic.Classical",
   "Mathlib.Tactic.Clean",
-  "Mathlib.Tactic.Clear!",
+  "Mathlib.Tactic.ClearExclamation",
   "Mathlib.Tactic.ClearExcept",
   "Mathlib.Tactic.Clear_",
   "Mathlib.Tactic.Coe",
