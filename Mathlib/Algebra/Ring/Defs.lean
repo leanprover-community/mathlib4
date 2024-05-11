@@ -284,6 +284,17 @@ theorem add_mul_self_eq (a b : α) : (a + b) * (a + b) = a * a + 2 * a * b + b *
   simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
 #align add_mul_self_eq add_mul_self_eq
 
+lemma add_sq (a b : α) : (a + b) ^ 2 = a ^ 2 + 2 * a * b + b ^ 2 := by
+  simp only [sq, add_mul_self_eq]
+#align add_sq add_sq
+
+lemma add_sq' (a b : α) : (a + b) ^ 2 = a ^ 2 + b ^ 2 + 2 * a * b := by
+  rw [add_sq, add_assoc, add_comm _ (b ^ 2), add_assoc]
+#align add_sq' add_sq'
+
+alias add_pow_two := add_sq
+#align add_pow_two add_pow_two
+
 end CommSemiring
 
 section HasDistribNeg
