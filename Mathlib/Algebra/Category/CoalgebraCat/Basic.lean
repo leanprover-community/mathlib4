@@ -1,232 +1,177 @@
 /-
 Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert A. Spencer, Markus Himmel, Amelia Livingston
+Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Equiv
 import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.RingTheory.Coalgebra.Equiv
 
 /-!
-# The category of `R`-coalgebras
+# The category of coalgebras
 
-`CoalgebraCat.{v} R` is the category of bundled `R`-coalgebras with carrier in the universe v.
-
-This file simply mimics `Mathlib.Algebra.Category.ModuleCat.Basic`.
+This file mimics `Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat`.
 
 -/
+
+open CategoryTheory
 
 universe v u
 
 variable (R : Type u) [CommRing R]
 
-/-- Objects in the category of `R`-coalgebras. -/
-structure CoalgebraCat where
-  /-- the underlying type of an object in `CoalgebraCat R` -/
-  carrier : Type v
-  [isAddCommGroup : AddCommGroup carrier]
-  [isModule : Module R carrier]
-  [isCoalgebra : Coalgebra R carrier]
+/-- The category of `R`-coalgebras. -/
+structure CoalgebraCat extends ModuleCat.{v} R where
+  isCoalgebra : Coalgebra R carrier
 
-attribute [instance] CoalgebraCat.isAddCommGroup CoalgebraCat.isModule CoalgebraCat.isCoalgebra
+attribute [instance] CoalgebraCat.isCoalgebra
 
-/-- An alias for `CoalgebraCat.{max u₁ u₂}`, to deal around unification issues.
-Since the universe the ring lives in can be inferred, we put that last. -/
-@[nolint checkUnivs]
-abbrev CoalgebraCatMax.{v₁, v₂, u₁} (R : Type u₁) [CommRing R] := CoalgebraCat.{max v₁ v₂, u₁} R
+variable {R}
 
 namespace CoalgebraCat
-open CategoryTheory CategoryTheory.Limits
+
+open Coalgebra
 
 instance : CoeSort (CoalgebraCat.{v} R) (Type v) :=
-  ⟨CoalgebraCat.carrier⟩
+  ⟨(·.carrier)⟩
 
-attribute [coe] CoalgebraCat.carrier
+@[simp] theorem moduleCat_of_toModuleCat (X : CoalgebraCat.{v} R) :
+    ModuleCat.of R X.toModuleCat = X.toModuleCat :=
+  rfl
 
-instance CoalgebraCategory : Category.{v, max (v+1) u} (CoalgebraCat.{v} R) where
-  Hom M N := M →ₗc[R] N
-  id _ := CoalgHom.id R _
-  comp f g := g.comp f
-  id_comp _ := CoalgHom.id_comp _
-  comp_id _ := CoalgHom.comp_id _
-  assoc f g h := CoalgHom.comp_assoc h g f
+variable (R)
+-- do I need simp lemmas for the coalgebra struct?
+/-- The object in the category of `R`-coalgebras associated to an `R`-coalgebra. -/
+@[simps]
+def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
+    CoalgebraCat R where
+  isCoalgebra := (inferInstance : Coalgebra R X)
 
-instance {M N : CoalgebraCat.{v} R} : FunLike (M ⟶ N) M N :=
-  inferInstanceAs (FunLike (M →ₗc[R] N) M N)
+variable {R}
 
-instance {M N : CoalgebraCat.{v} R} : CoalgHomClass (M ⟶ N) R M N :=
-  CoalgHom.coalgHomClass
+@[simp]
+lemma of_comul {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
+    Coalgebra.comul (A := of R X) = Coalgebra.comul (R := R) (A := X) := rfl
 
-instance coalgebraConcreteCategory : ConcreteCategory.{v} (CoalgebraCat.{v} R) where
-  forget :=
-    { obj := fun R => R
-      map := fun f => f.toFun }
-  forget_faithful := ⟨fun h => CoalgHom.ext (fun x => by
-    dsimp at h
-    rw [h])⟩
+@[simp]
+lemma of_counit {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
+    Coalgebra.counit (A := of R X) = Coalgebra.counit (R := R) (A := X) := rfl
 
-instance {M : CoalgebraCat.{v} R} : AddCommGroup ((forget (CoalgebraCat R)).obj M) :=
-  (inferInstance : AddCommGroup M)
-instance {M : CoalgebraCat.{v} R} : Module R ((forget (CoalgebraCat R)).obj M) :=
-  (inferInstance : Module R M)
-instance {M : CoalgebraCat.{v} R} : Coalgebra R ((forget (CoalgebraCat R)).obj M) :=
-  (inferInstance : Coalgebra R M)
-
+/-- A type alias for `CoalgHom` to avoid confusion between the categorical and
+algebraic spellings of composition. -/
 @[ext]
-lemma ext {M N : CoalgebraCat.{v} R} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
-  DFunLike.ext _ _ h
+structure Hom (V W : CoalgebraCat.{v} R) :=
+  /-- The underlying isometry -/
+  toCoalgHom : V →ₗc[R] W
+
+lemma Hom.toCoalgHom_injective (V W : CoalgebraCat.{v} R) :
+    Function.Injective (Hom.toCoalgHom : Hom V W → _) :=
+  fun ⟨f⟩ ⟨g⟩ _ => by congr
+
+instance category : Category (CoalgebraCat.{v} R) where
+  Hom M N := Hom M N
+  id M := ⟨CoalgHom.id R M⟩
+  comp f g := ⟨CoalgHom.comp g.toCoalgHom f.toCoalgHom⟩
+  id_comp g := Hom.ext _ _ <| CoalgHom.id_comp g.toCoalgHom
+  comp_id f := Hom.ext _ _ <| CoalgHom.comp_id f.toCoalgHom
+  assoc f g h := Hom.ext _ _ <| CoalgHom.comp_assoc h.toCoalgHom g.toCoalgHom f.toCoalgHom
+
+-- TODO: if `Quiver.Hom` and the instance above were `reducible`, this wouldn't be needed.
+@[ext]
+lemma hom_ext {M N : CoalgebraCat.{v} R} (f g : M ⟶ N) (h : f.toCoalgHom = g.toCoalgHom) :
+    f = g :=
+  Hom.ext _ _ h
+
+/-- Typecheck a `QuadraticForm.CoalgHom` as a morphism in `CoalgebraCat R`. -/
+abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+    [Coalgebra R X] [Coalgebra R Y] (f : X →ₗc[R] Y) :
+    of R X ⟶ of R Y :=
+  ⟨f⟩
+
+@[simp] theorem toCoalgHom_comp {M N U : CoalgebraCat.{v} R} (f : M ⟶ N) (g : N ⟶ U) :
+    (f ≫ g).toCoalgHom = g.toCoalgHom.comp f.toCoalgHom :=
+  rfl
+
+@[simp] theorem toCoalgHom_id {M : CoalgebraCat.{v} R} :
+    Hom.toCoalgHom (𝟙 M) = CoalgHom.id _ _ :=
+  rfl
+
+instance concreteCategory : ConcreteCategory.{v} (CoalgebraCat.{v} R) where
+  forget :=
+    { obj := fun M => M
+      map := @fun M N f => f.toCoalgHom }
+  forget_faithful :=
+    { map_injective := @fun M N => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (CoalgebraCat R) (ModuleCat R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun f => ModuleCat.ofHom f.toLinearMap }
-
-instance {M : CoalgebraCat.{v} R} :
-    AddCommGroup ((forget₂ (CoalgebraCat R) (ModuleCat R)).obj M) :=
-  (inferInstance : AddCommGroup M)
-instance {M : CoalgebraCat.{v} R} : Module R ((forget₂ (CoalgebraCat R) (ModuleCat R)).obj M) :=
-  (inferInstance : Module R M)
-instance {M : CoalgebraCat.{v} R} : Coalgebra R ((forget₂ (CoalgebraCat R) (ModuleCat R)).obj M) :=
-  (inferInstance : Coalgebra R M)
-
-instance {M : CoalgebraCat.{v} R} : Coalgebra R (ModuleCat.of R M) :=
-  (inferInstance : Coalgebra R M)
-
-instance hasForgetToAddCommGroup : HasForget₂ (CoalgebraCat R) AddCommGroupCat where
-  forget₂ :=
-    { obj := fun M => AddCommGroupCat.of M
-      map := fun f => AddCommGroupCat.ofHom f.toLinearMap }
-
-/-- The object in the category of R-coalgebras associated to an R-coalgebra. -/
-def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] : CoalgebraCat R :=
-  ⟨X⟩
+      map := fun f => f.toCoalgHom.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : CoalgebraCat R) :
     (forget₂ (CoalgebraCat R) (ModuleCat R)).obj X = ModuleCat.of R X :=
   rfl
 
--- following the advice of corresponding line in `ModuleCat.Basic`:
-@[simp]
-theorem moduleCat_of_of (X : Type v) [AddCommGroup X] [Module R X]
-    [Coalgebra R X] :
-    ModuleCat.of R (of R X) = ModuleCat.of R X :=
-  rfl
-
 @[simp]
 theorem forget₂_map (X Y : CoalgebraCat R) (f : X ⟶ Y) :
-    (forget₂ (CoalgebraCat R) (ModuleCat R)).map f = (f : X →ₗ[R] Y) :=
+    (forget₂ (CoalgebraCat R) (ModuleCat R)).map f = (f.toCoalgHom : X →ₗ[R] Y) :=
   rfl
-
-/-- Typecheck a `CoalgHom` as a morphism in `CoalgebraCat R`. -/
-def ofHom {R : Type u} [CommRing R] {X Y : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X]
-    [AddCommGroup Y] [Module R Y] [Coalgebra R Y] (f : X →ₗc[R] Y) : of R X ⟶ of R Y :=
-  f
-
-@[simp 1100]
-theorem ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [AddCommGroup X]
-    [Module R X] [Coalgebra R X]
-    [AddCommGroup Y] [Module R Y] [Coalgebra R Y] (f : X →ₗc[R] Y) (x : X) : ofHom f x = f x :=
-  rfl
-
-instance ofUnique {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X]
-    [i : Unique X] : Unique (of R X) :=
-  i
-
-variable {R}
-
-/-- Forgetting to the underlying type and then building the bundled object returns the original
-coalgebra. -/
-@[simps]
-def ofSelfIso (M : CoalgebraCat R) : CoalgebraCat.of R M ≅ M where
-  hom := 𝟙 M
-  inv := 𝟙 M
-
-variable {M N U : CoalgebraCat.{v} R}
-
-@[simp]
-theorem id_apply (m : M) : (𝟙 M : M → M) m = m :=
-  rfl
-
-@[simp]
-theorem coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
-  rfl
-
-theorem comp_def (f : M ⟶ N) (g : N ⟶ U) : f ≫ g = g.comp f :=
-  rfl
-
-@[simp] lemma forget_map (f : M ⟶ N) : (forget (CoalgebraCat R)).map f = (f : M → N) := rfl
 
 end CoalgebraCat
 
-variable {R}
+namespace CoalgEquiv
 
-variable {X₁ X₂ : Type v}
+open CoalgebraCat
 
-section
+variable {X Y Z : Type v}
+variable [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y] [AddCommGroup Z] [Module R Z]
+variable [Coalgebra R X] [Coalgebra R Y] [Coalgebra R Z]
 
-/-- Build an isomorphism in the category `CoalgebraCat R` from a `CoalgEquiv`
-between coalgebras. -/
+/-- Build an isomorphism in the category `CoalgebraCat R` from a
+`CoalgEquiv`. -/
 @[simps]
-def CoalgEquiv.toCoalgebraIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂} {m₁ : Module R X₁}
-    {c₁ : Coalgebra R X₁} {m₂ : Module R X₂} {c₂ : Coalgebra R X₂} (e : X₁ ≃ₗc[R] X₂) :
-    CoalgebraCat.of R X₁ ≅ CoalgebraCat.of R X₂ where
-  hom := (e : X₁ →ₗc[R] X₂)
-  inv := (e.symm : X₂ →ₗc[R] X₁)
-  hom_inv_id := by ext; apply e.left_inv
-  inv_hom_id := by ext; apply e.right_inv
+def toIso (e : X ≃ₗc[R] Y) : CoalgebraCat.of R X ≅ CoalgebraCat.of R Y where
+  hom := ⟨e.toCoalgHom⟩
+  inv := ⟨e.symm.toCoalgHom⟩
+  hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
+  inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
 
-/-- Build an isomorphism in the category `CoalgebraCat R` from a `CoalgEquiv`
-between coalgebras. -/
-abbrev CoalgEquiv.toCoalgebraIso' {M N : CoalgebraCat.{v} R} (i : M ≃ₗc[R] N) : M ≅ N :=
-  i.toCoalgebraIso
+@[simp] theorem toIso_refl : toIso (CoalgEquiv.refl R X) = .refl _ :=
+  rfl
 
-/-- Build an isomorphism in the category `CoalgebraCat R` from a `CoalgEquiv`
-between coalgebras. -/
-abbrev CoalgEquiv.toCoalgebraIso'Left {X₁ : CoalgebraCat.{v} R}
-    [AddCommGroup X₂] [Module R X₂] [Coalgebra R X₂]
-    (e : X₁ ≃ₗc[R] X₂) : X₁ ≅ CoalgebraCat.of R X₂ :=
-  e.toCoalgebraIso
+@[simp] theorem toIso_symm (e : X ≃ₗc[R] Y) : toIso e.symm = (toIso e).symm :=
+  rfl
 
-/-- Build an isomorphism in the category `CoalgebraCat R` from a `CoalgEquiv`
-between coalgebras. -/
-abbrev CoalgEquiv.toCoalgebraIso'Right
-    [AddCommGroup X₁] [Module R X₁] [Coalgebra R X₁] {X₂ : CoalgebraCat.{v} R}
-    (e : X₁ ≃ₗc[R] X₂) : CoalgebraCat.of R X₁ ≅ X₂ :=
-  e.toCoalgebraIso
+@[simp] theorem toIso_trans (e : X ≃ₗc[R] Y) (f : Y ≃ₗc[R] Z) :
+    toIso (e.trans f) = toIso e ≪≫ toIso f :=
+  rfl
+
+end CoalgEquiv
 
 namespace CategoryTheory.Iso
 
-/-- Build a `CoalgEquiv` from an isomorphism in the category `CoalgebraCat R`. -/
-def toCoalgEquiv {X Y : CoalgebraCat R} (i : X ≅ Y) : X ≃ₗc[R] Y :=
-  { i.hom with
-    invFun := i.inv
-    left_inv := fun x => CoalgHom.congr_fun i.3 x
-    right_inv := fun x => CoalgHom.congr_fun i.4 x }
+open Coalgebra
 
-@[simp]
-theorem toCoalgEquiv_apply {X Y : CoalgebraCat R} (i : X ≅ Y) (x : X) :
-    i.toCoalgEquiv x = i.hom x :=
+variable {X Y Z : CoalgebraCat.{v} R}
+
+/-- Build a `CoalgEquiv` from an isomorphism in the category
+`CoalgebraCat R`. -/
+@[simps! toCoalgHom]
+def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
+  { i.hom.toCoalgHom with
+    invFun := i.inv.toCoalgHom
+    left_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgebraCat.Hom.toCoalgHom i.3) x
+    right_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgebraCat.Hom.toCoalgHom i.4) x }
+
+@[simp] theorem toCoalgEquiv_refl : toCoalgEquiv (.refl X) = .refl _ _ :=
   rfl
 
-@[simp]
-theorem toCoalgEquiv_toCoalgHom {X Y : CoalgebraCat R} (i : X ≅ Y) :
-    (i.toCoalgEquiv : X →ₗc[R] Y) = i.hom :=
+@[simp] theorem toCoalgEquiv_symm (e : X ≅ Y) :
+    toCoalgEquiv e.symm = (toCoalgEquiv e).symm :=
   rfl
 
-@[simp]
-theorem toCoalgEquiv_symm_toCoalgHom {X Y : CoalgebraCat R} (i : X ≅ Y) :
-    (i.toCoalgEquiv.symm : Y →ₗc[R] X) = i.inv :=
+@[simp] theorem toCoalgEquiv_trans (e : X ≅ Y) (f : Y ≅ Z) :
+    toCoalgEquiv (e ≪≫ f) = e.toCoalgEquiv.trans f.toCoalgEquiv :=
   rfl
 
 end CategoryTheory.Iso
-
-/-- Coalgebra equivalences are the same as (isomorphic to) isomorphisms
-in `CoalgebraCat R` -/
-@[simps]
-def coalgEquivIsoCoalgebraIso {X Y : Type u} [AddCommGroup X] [AddCommGroup Y]
-    [Module R X] [Coalgebra R X] [Module R Y] [Coalgebra R Y] :
-    (X ≃ₗc[R] Y) ≅ CoalgebraCat.of R X ≅ CoalgebraCat.of R Y where
-  hom e := e.toCoalgebraIso
-  inv i := i.toCoalgEquiv
-
-end

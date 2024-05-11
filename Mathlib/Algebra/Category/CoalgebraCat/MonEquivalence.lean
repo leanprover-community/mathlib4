@@ -5,6 +5,7 @@ Authors: Amelia Livingston
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.CategoryTheory.Monoidal.Mon_
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.Algebra.Category.CoalgebraCat.Basic
@@ -40,31 +41,31 @@ variable {R : Type u} [CommRing R]
   one := (ModuleCat.ofHom Coalgebra.counit).op
   mul := (ModuleCat.ofHom Coalgebra.comul).op
   one_mul := by
-    simp only [MonoidalCategory.whiskerRight, ← op_comp]
+    simp only [MonoidalCategory.whiskerRight, ← op_comp, ModuleCat.of_coe]
     congr 1
     exact Coalgebra.rTensor_counit_comp_comul
   mul_one := by
-    simp only [MonoidalCategory.whiskerLeft, ← op_comp]
+    simp only [MonoidalCategory.whiskerLeft, ← op_comp, ModuleCat.of_coe]
     congr 1
     exact Coalgebra.lTensor_counit_comp_comul
   mul_assoc := by
     simp only [MonoidalCategory.whiskerRight, MonoidalCategory.whiskerLeft, ← op_comp,
-      MonoidalCategory.associator, Iso.op_hom, Iso.symm_hom]
+      MonoidalCategory.associator, Iso.op_hom, Iso.symm_hom, ModuleCat.of_coe]
     congr 1
     simp only [← Category.assoc, Iso.eq_comp_inv]
     exact Coalgebra.coassoc
 
 /-- `CoalgebraCat.toMonObj` is functorial. -/
 @[simps] def toMonMap {X Y : CoalgebraCat R} (f : X ⟶ Y) : toMonObj Y ⟶ toMonObj X where
-  hom := (ModuleCat.ofHom f.toLinearMap).op
+  hom := (ModuleCat.ofHom f.1).op
   one_hom := by
     simp only [toMonObj_one, ← op_comp]
     congr
-    exact f.counit_comp
+    exact f.1.counit_comp
   mul_hom := by
     simp only [toMonObj_mul, Opposite.unop_op, ← op_comp]
     congr 1
-    exact f.map_comp_comul.symm
+    exact f.1.map_comp_comul.symm
 
 variable (R)
 
@@ -103,14 +104,14 @@ def ofMonObj (X : Mon_ (ModuleCat R)ᵒᵖ) : CoalgebraCat R where
 
 /-- `CoalgebraCat.ofMonObj` is functorial. -/
 def ofMonMap {X Y : Mon_ (ModuleCat R)ᵒᵖ} (f : X ⟶ Y) : ofMonObj Y ⟶ ofMonObj X :=
-  { f.hom.unop with
+  ⟨{ f.hom.unop with
     counit_comp := by
       show f.hom.unop ≫ X.one.unop = Y.one.unop
       simp only [← unop_comp, Mon_.Hom.one_hom]
     map_comp_comul := by
       show Y.mul.unop ≫ tensorHom f.hom.unop f.hom.unop = f.hom.unop ≫ X.mul.unop
       simp only [← unop_comp, Mon_.Hom.mul_hom]
-      rfl }
+      rfl }⟩
 
 variable (R)
 
@@ -156,20 +157,20 @@ theorem tensorObj_comul (K L : CoalgebraCat R) :
     ModuleCat.comp_def, ModuleCat.ofHom, ModuleCat.of]
 
 theorem tensorHom_toLinearMap (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :
-    (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).toLinearMap
+    (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).1.toLinearMap
       = TensorProduct.map f.toLinearMap g.toLinearMap := rfl
 
 theorem associator_hom_toLinearMap :
-    (α_ (CoalgebraCat.of R M) (CoalgebraCat.of R N) (CoalgebraCat.of R P)).hom.toLinearMap
+    (α_ (CoalgebraCat.of R M) (CoalgebraCat.of R N) (CoalgebraCat.of R P)).hom.1.toLinearMap
       = (TensorProduct.assoc R M N P).toLinearMap :=
   TensorProduct.ext <| TensorProduct.ext <| by ext; rfl
 
 theorem leftUnitor_hom_toLinearMap :
-    (λ_ (CoalgebraCat.of R M)).hom.toLinearMap = (TensorProduct.lid R M).toLinearMap :=
+    (λ_ (CoalgebraCat.of R M)).hom.1.toLinearMap = (TensorProduct.lid R M).toLinearMap :=
   TensorProduct.ext <| by ext; rfl
 
 theorem rightUnitor_hom_toLinearMap :
-    (ρ_ (CoalgebraCat.of R M)).hom.toLinearMap = (TensorProduct.rid R M).toLinearMap :=
+    (ρ_ (CoalgebraCat.of R M)).hom.1.toLinearMap = (TensorProduct.rid R M).toLinearMap :=
   TensorProduct.ext <| by ext; rfl
 
 open TensorProduct

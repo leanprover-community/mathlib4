@@ -1,248 +1,200 @@
 /-
 Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert A. Spencer, Markus Himmel, Amelia Livingston
+Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Bialgebra.Equiv
 import Mathlib.Algebra.Category.CoalgebraCat.Basic
 import Mathlib.Algebra.Category.AlgebraCat.Basic
+import Mathlib.RingTheory.Bialgebra.Equiv
 
 /-!
-# The category of `R`-bialgebras
+# The category of bialgebras
 
-`BialgebraCat.{v} R` is the category of bundled `R`-bialgebras with carrier in the universe v.
-
-This file simply mimics `Mathlib.Algebra.Category.ModuleCat.Basic`.
+This file mimics `Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat`.
 
 -/
+
+open CategoryTheory
 
 universe v u
 
 variable (R : Type u) [CommRing R]
 
-/-- Objects in the category of `R`-bialgebras. -/
-structure BialgebraCat where
-  /-- the underlying type of an object in `BialgebraCat R` -/
-  carrier : Type v
-  [isRing : Ring carrier]
-  [isBialgebra : Bialgebra R carrier]
+/-- The category of `R`-bialgebras. -/
+structure BialgebraCat extends Bundled Ring.{v} where
+  isBialgebra : Bialgebra R α
 
-attribute [instance] BialgebraCat.isRing BialgebraCat.isBialgebra
+attribute [instance] BialgebraCat.isBialgebra
 
-/-- An alias for `BialgebraCat.{max u₁ u₂}`, to deal around unification issues.
-Since the universe the ring lives in can be inferred, we put that last. -/
-@[nolint checkUnivs]
-abbrev BialgebraCatMax.{v₁, v₂, u₁} (R : Type u₁) [CommRing R] := BialgebraCat.{max v₁ v₂, u₁} R
+variable {R}
 
 namespace BialgebraCat
-open CategoryTheory CategoryTheory.Limits
+
+open Bialgebra
 
 instance : CoeSort (BialgebraCat.{v} R) (Type v) :=
-  ⟨BialgebraCat.carrier⟩
+  ⟨(·.α)⟩
 
-attribute [coe] BialgebraCat.carrier
+-- I guess I'm only making this because I wanted to extend `RingCat` but can't.
+/-- The object in `RingCat` underlying an object in `BialgebraCat R`. -/
+def toRingCat (X : BialgebraCat.{v} R) : RingCat := toBundled X
 
-instance BialgebraCategory : Category.{v, max (v+1) u} (BialgebraCat.{v} R) where
-  Hom M N := M →ₐc[R] N
-  id _ := BialgHom.id R _
-  comp f g := g.comp f
-  id_comp _ := BialgHom.id_comp _
-  comp_id _ := BialgHom.comp_id _
-  assoc f g h := BialgHom.comp_assoc h g f
+@[simp] theorem ringCat_of_toRingCat (X : BialgebraCat.{v} R) :
+    RingCat.of X.toRingCat = X.toRingCat :=
+  rfl
 
-instance {M N : BialgebraCat.{v} R} : FunLike (M ⟶ N) M N :=
-  inferInstanceAs (FunLike (M →ₐc[R] N) M N)
+variable (R)
 
-instance {M N : BialgebraCat.{v} R} : BialgHomClass (M ⟶ N) R M N :=
-  BialgHom.bialgHomClass
+/-- The object in the category of `R`-bialgebras associated to an `R`-bialgebra. -/
+@[simps]
+def of (X : Type v) [Ring X] [Bialgebra R X] :
+    BialgebraCat R where
+  isBialgebra := (inferInstance : Bialgebra R X)
 
-instance bialgebraConcreteCategory : ConcreteCategory.{v} (BialgebraCat.{v} R) where
-  forget :=
-    { obj := fun R => R
-      map := fun f => f }
-  forget_faithful := ⟨fun h => BialgHom.ext (fun x => by
-    dsimp at h
-    rw [h])⟩
+variable {R}
 
-instance {M : BialgebraCat.{v} R} : Ring ((forget (BialgebraCat R)).obj M) :=
-  (inferInstance : Ring M)
-instance {M : BialgebraCat.{v} R} : Module R ((forget (BialgebraCat R)).obj M) :=
-  (inferInstance : Module R M)
-instance {M : BialgebraCat.{v} R} : Algebra R ((forget (BialgebraCat R)).obj M) :=
-  (inferInstance : Algebra R M)
-instance {M : BialgebraCat.{v} R} : Coalgebra R ((forget (BialgebraCat R)).obj M) :=
-  (inferInstance : Coalgebra R M)
-instance {M : BialgebraCat.{v} R} : Bialgebra R ((forget (BialgebraCat R)).obj M) :=
-  (inferInstance : Bialgebra R M)
+@[simp]
+lemma of_comul {X : Type v} [Ring X] [Bialgebra R X] :
+    Coalgebra.comul (A := of R X) = Coalgebra.comul (R := R) (A := X) := rfl
 
+@[simp]
+lemma of_counit {X : Type v} [Ring X] [Bialgebra R X] :
+    Coalgebra.counit (A := of R X) = Coalgebra.counit (R := R) (A := X) := rfl
+
+/-- A type alias for `BialgHom` to avoid confusion between the categorical and
+algebraic spellings of composition. -/
 @[ext]
-lemma ext {M N : BialgebraCat.{v} R} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
-  DFunLike.ext _ _ h
+structure Hom (V W : BialgebraCat.{v} R) :=
+  /-- The underlying isometry -/
+  toBialgHom : V →ₐc[R] W
 
-instance hasForgetToCoalgebra : HasForget₂ (BialgebraCat R) (CoalgebraCat R) where
-  forget₂ :=
-    { obj := fun M => CoalgebraCat.of R M
-      map := fun f => CoalgebraCat.ofHom f }
+lemma Hom.toBialgHom_injective (V W : BialgebraCat.{v} R) :
+    Function.Injective (Hom.toBialgHom : Hom V W → _) :=
+  fun ⟨f⟩ ⟨g⟩ _ => by congr
+
+instance category : Category (BialgebraCat.{v} R) where
+  Hom X Y := Hom X Y
+  id X := ⟨BialgHom.id R X⟩
+  comp f g := ⟨BialgHom.comp g.toBialgHom f.toBialgHom⟩
+  id_comp g := Hom.ext _ _ <| BialgHom.id_comp g.toBialgHom
+  comp_id f := Hom.ext _ _ <| BialgHom.comp_id f.toBialgHom
+  assoc f g h := Hom.ext _ _ <| BialgHom.comp_assoc h.toBialgHom g.toBialgHom f.toBialgHom
+
+-- TODO: if `Quiver.Hom` and the instance above were `reducible`, this wouldn't be needed.
+@[ext]
+lemma hom_ext {X Y : BialgebraCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBialgHom) :
+    f = g :=
+  Hom.ext _ _ h
+
+/-- Typecheck a `BialgHom` as a morphism in `BialgebraCat R`. -/
+abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
+    [Bialgebra R X] [Bialgebra R Y] (f : X →ₐc[R] Y) :
+    of R X ⟶ of R Y :=
+  ⟨f⟩
+
+@[simp] theorem toBialgHom_comp {X Y Z : BialgebraCat.{v} R} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).toBialgHom = g.toBialgHom.comp f.toBialgHom :=
+  rfl
+
+@[simp] theorem toBialgHom_id {M : BialgebraCat.{v} R} :
+    Hom.toBialgHom (𝟙 M) = BialgHom.id _ _ :=
+  rfl
+
+instance concreteCategory : ConcreteCategory.{v} (BialgebraCat.{v} R) where
+  forget :=
+    { obj := fun M => M
+      map := @fun M N f => f.toBialgHom }
+  forget_faithful :=
+    { map_injective := @fun M N => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
 
 instance hasForgetToAlgebra : HasForget₂ (BialgebraCat R) (AlgebraCat R) where
   forget₂ :=
-    { obj := fun M => AlgebraCat.of R M
-      map := fun f => AlgebraCat.ofHom f }
-
-instance hasForgetToModule : HasForget₂ (BialgebraCat R) (ModuleCat R) where
-  forget₂ :=
-    { obj := fun M => ModuleCat.of R M
-      map := fun f => ModuleCat.ofHom f }
-
-instance hasForgetToRing : HasForget₂ (BialgebraCat R) RingCat where
-  forget₂ :=
-    { obj := fun M => RingCat.of M
-      map := fun f => RingCat.ofHom f }
-
-/-- The object in the category of R-bialgebras associated to an R-bialgebra. -/
-def of (X : Type v) [Ring X]  [Bialgebra R X] : BialgebraCat R :=
-  ⟨X⟩
+    { obj := fun X => AlgebraCat.of R X
+      map := fun {X Y} f => (f.toBialgHom : X →ₐ[R] Y) }
 
 @[simp]
-theorem forget₂_coalgebraCat_obj (X : BialgebraCat R) :
-    (forget₂ (BialgebraCat R) (CoalgebraCat R)).obj X = CoalgebraCat.of R X :=
-  rfl
-
-@[simp]
-theorem forget₂_algebraCat_obj (X : BialgebraCat R) :
+theorem forget₂_algebra_obj (X : BialgebraCat R) :
     (forget₂ (BialgebraCat R) (AlgebraCat R)).obj X = AlgebraCat.of R X :=
   rfl
 
 @[simp]
-theorem coalgebraCat_of_of (X : Type v) [Ring X]
-    [Bialgebra R X] :
-    CoalgebraCat.of R (of R X) = CoalgebraCat.of R X :=
+theorem forget₂_algebra_map (X Y : BialgebraCat R) (f : X ⟶ Y) :
+    (forget₂ (BialgebraCat R) (AlgebraCat R)).map f = (f.toBialgHom : X →ₐ[R] Y) :=
+  rfl
+
+instance hasForgetToCoalgebra : HasForget₂ (BialgebraCat R) (CoalgebraCat R) where
+  forget₂ :=
+    { obj := fun X => CoalgebraCat.of R X
+      map := fun {X Y} f => CoalgebraCat.ofHom f.toBialgHom }
+
+@[simp]
+theorem forget₂_coalgebra_obj (X : BialgebraCat R) :
+    (forget₂ (BialgebraCat R) (CoalgebraCat R)).obj X = CoalgebraCat.of R X :=
   rfl
 
 @[simp]
-theorem algebraCat_of_of (X : Type v) [Ring X]
-    [Bialgebra R X] :
-    AlgebraCat.of R (of R X) = AlgebraCat.of R X :=
+theorem forget₂_coalgebra_map (X Y : BialgebraCat R) (f : X ⟶ Y) :
+    (forget₂ (BialgebraCat R) (CoalgebraCat R)).map f = CoalgebraCat.ofHom f.toBialgHom :=
   rfl
-
-@[simp]
-theorem forget₂_coalgebraCat_map (X Y : BialgebraCat R) (f : X ⟶ Y) :
-    (forget₂ (BialgebraCat R) (CoalgebraCat R)).map f = (f : X →ₗc[R] Y) :=
-  rfl
-
-@[simp]
-theorem forget₂_algebraCat_map (X Y : BialgebraCat R) (f : X ⟶ Y) :
-    (forget₂ (BialgebraCat R) (AlgebraCat R)).map f = (f : X →ₐ[R] Y) :=
-  rfl
-
-/-- Typecheck a `BialgHom` as a morphism in `BialgebraCat R`. -/
-def ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Bialgebra R X]
-    [Ring Y] [Bialgebra R Y] (f : X →ₐc[R] Y) : of R X ⟶ of R Y :=
-  f
-
-@[simp 1100]
-theorem ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Bialgebra R X]
-    [Ring Y] [Bialgebra R Y] (f : X →ₐc[R] Y) (x : X) : ofHom f x = f x :=
-  rfl
-
-instance ofUnique {X : Type v} [Ring X] [Bialgebra R X] [i : Unique X] : Unique (of R X) :=
-  i
-
-variable {R}
-
-/-- Forgetting to the underlying type and then building the bundled object returns the original
-bialgebra. -/
-@[simps]
-def ofSelfIso (M : BialgebraCat R) : BialgebraCat.of R M ≅ M where
-  hom := 𝟙 M
-  inv := 𝟙 M
-
-variable {M N U : BialgebraCat.{v} R}
-
-@[simp]
-theorem id_apply (m : M) : (𝟙 M : M → M) m = m :=
-  rfl
-
-@[simp]
-theorem coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
-  rfl
-
-theorem comp_def (f : M ⟶ N) (g : N ⟶ U) : f ≫ g = g.comp f :=
-  rfl
-
-@[simp] lemma forget_map (f : M ⟶ N) : (forget (BialgebraCat R)).map f = (f : M → N) := rfl
 
 end BialgebraCat
 
-variable {R}
+namespace BialgEquiv
 
-variable {X₁ X₂ : Type v}
+open BialgebraCat
 
-section
+variable {X Y Z : Type v}
+variable [Ring X] [Ring Y] [Ring Z]
+variable [Bialgebra R X] [Bialgebra R Y] [Bialgebra R Z]
 
-/-- Build an isomorphism in the category `BialgebraCat R` from a `BialgEquiv`
-between bialgebras. -/
+/-- Build an isomorphism in the category `BialgebraCat R` from a
+`BialgEquiv`. -/
 @[simps]
-def BialgEquiv.toBialgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂}
-    {c₁ : Bialgebra R X₁} {c₂ : Bialgebra R X₂} (e : X₁ ≃ₐc[R] X₂) :
-    BialgebraCat.of R X₁ ≅ BialgebraCat.of R X₂ where
-  hom := (e : X₁ →ₐc[R] X₂)
-  inv := (e.symm : X₂ →ₐc[R] X₁)
-  hom_inv_id := by ext; apply e.left_inv
-  inv_hom_id := by ext; apply e.right_inv
+def toIso (e : X ≃ₐc[R] Y) : BialgebraCat.of R X ≅ BialgebraCat.of R Y where
+  hom := ⟨e.toBialgHom⟩
+  inv := ⟨e.symm.toBialgHom⟩
+  hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
+  inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
 
-/-- Build an isomorphism in the category `BialgebraCat R` from a `BialgEquiv`
-between bialgebras. -/
-abbrev BialgEquiv.toBialgebraIso' {M N : BialgebraCat.{v} R} (i : M ≃ₐc[R] N) : M ≅ N :=
-  i.toBialgebraIso
+@[simp] theorem toIso_refl : toIso (BialgEquiv.refl R X) = .refl _ :=
+  rfl
 
-/-- Build an isomorphism in the category `BialgebraCat R` from a `BialgEquiv`
-between bialgebras. -/
-abbrev BialgEquiv.toBialgebraIso'Left
-    {X₁ : BialgebraCat.{v} R} [Ring X₂] [Bialgebra R X₂]
-    (e : X₁ ≃ₐc[R] X₂) : X₁ ≅ BialgebraCat.of R X₂ :=
-  e.toBialgebraIso
+@[simp] theorem toIso_symm (e : X ≃ₐc[R] Y) :
+    toIso e.symm = (toIso e).symm :=
+  rfl
 
-/-- Build an isomorphism in the category `BialgebraCat R` from a `BialgEquiv`
-between bialgebras. -/
-abbrev BialgEquiv.toBialgebraIso'Right
-    [Ring X₁] [Bialgebra R X₁] {X₂ : BialgebraCat.{v} R}
-    (e : X₁ ≃ₐc[R] X₂) : BialgebraCat.of R X₁ ≅ X₂ :=
-  e.toBialgebraIso
+@[simp] theorem toIso_trans (e : X ≃ₐc[R] Y) (f : Y ≃ₐc[R] Z) :
+    toIso (e.trans f) = toIso e ≪≫ toIso f :=
+  rfl
+
+end BialgEquiv
 
 namespace CategoryTheory.Iso
 
-/-- Build a `BialgEquiv` from an isomorphism in the category `BialgebraCat R`. -/
-def toBialgEquiv {X Y : BialgebraCat R} (i : X ≅ Y) : X ≃ₐc[R] Y :=
-  { i.hom with
-    invFun := i.inv
-    left_inv := fun x => BialgHom.congr_fun i.3 x
-    right_inv := fun x => BialgHom.congr_fun i.4 x }
+open Bialgebra
 
-@[simp]
-theorem toBialgEquiv_apply {X Y : BialgebraCat R} (i : X ≅ Y) (x : X) :
-    i.toBialgEquiv x = i.hom x :=
+variable {X Y Z : BialgebraCat.{v} R}
+
+/-- Build a `BialgEquiv` from an isomorphism in the category
+`BialgebraCat R`. -/
+def toBialgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
+  { i.hom.toBialgHom with
+    invFun := i.inv.toBialgHom
+    left_inv := fun x => BialgHom.congr_fun (congr_arg BialgebraCat.Hom.toBialgHom i.3) x
+    right_inv := fun x => BialgHom.congr_fun (congr_arg BialgebraCat.Hom.toBialgHom i.4) x }
+
+@[simp] theorem toBialgEquiv_toBialgHom (i : X ≅ Y) :
+    (i.toBialgEquiv : X →ₐc[R] Y) = i.hom.1 := rfl
+
+@[simp] theorem toBialgEquiv_refl : toBialgEquiv (.refl X) = .refl _ _ :=
   rfl
 
-@[simp]
-theorem toBialgEquiv_toBialgHom {X Y : BialgebraCat R} (i : X ≅ Y) :
-    (i.toBialgEquiv : X →ₐc[R] Y) = i.hom :=
+@[simp] theorem toBialgEquiv_symm (e : X ≅ Y) :
+    toBialgEquiv e.symm = (toBialgEquiv e).symm :=
   rfl
 
-@[simp]
-theorem toBialgEquiv_symm_toBialgHom {X Y : BialgebraCat R} (i : X ≅ Y) :
-    (i.toBialgEquiv.symm : Y →ₐc[R] X) = i.inv :=
+@[simp] theorem toBialgEquiv_trans (e : X ≅ Y) (f : Y ≅ Z) :
+    toBialgEquiv (e ≪≫ f) = e.toBialgEquiv.trans f.toBialgEquiv :=
   rfl
 
 end CategoryTheory.Iso
-
-/-- Bialgebra equivalences are the same as (isomorphic to) isomorphisms
-in `BialgebraCat R` -/
-@[simps]
-def bialgEquivIsoBialgebraIso {X Y : Type u} [Ring X] [Ring Y]
-    [Bialgebra R X] [Bialgebra R Y] :
-    (X ≃ₐc[R] Y) ≅ BialgebraCat.of R X ≅ BialgebraCat.of R Y where
-  hom e := e.toBialgebraIso
-  inv i := i.toBialgEquiv
-
-end
