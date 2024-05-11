@@ -31,12 +31,6 @@ def swapRows {n m : Nat} (i j : Nat) : GaussM n m Unit := do
       let swapped : SparseMatrix n m := ⟨mat.data.swap! i j⟩
       swapped
 
-
--- delete me! for debug
--- local instance : ToString <| Lean.HashMap Nat Rat := {
---   toString := fun hm : Lean.HashMap Nat Rat  => hm.fold (fun cur k v => cur ++ s!" ⟨{k}: {v}⟩ ") ""
--- }
-
 /-- Subtracts `i`-th row * `coef` from `j`-th row. -/
 def subtractRow {n m : Nat} (i j : Nat) (coef : Rat) : GaussM n m Unit := do
   if coef != 0 then
