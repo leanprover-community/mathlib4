@@ -208,7 +208,7 @@ theorem isUnitTrinomial_iff' :
       Int.sq_eq_one_of_sq_le_three
         ((single_le_sum (fun k _ => sq_nonneg (p.coeff k)) hk).trans hp.le) (mem_support_iff.mp hk)
     refine' isUnitTrinomial_iff.mpr ⟨_, fun k hk => isUnit_ofPowEqOne (key k hk) two_ne_zero⟩
-    rw [sum_def, sum_congr rfl key, sum_const, Nat.smul_one_eq_coe] at hp
+    rw [sum_def, sum_congr rfl key, sum_const, Nat.smul_one_eq_cast] at hp
     exact Nat.cast_injective hp
 #align polynomial.is_unit_trinomial_iff' Polynomial.isUnitTrinomial_iff'
 
