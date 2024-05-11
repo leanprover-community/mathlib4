@@ -435,15 +435,13 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
   intros ε ε_pos μF_finite
   have keyB := tendsto_measure_cthickening_of_isClosed (μ := μ) (s := F)
                 ⟨1, ⟨by simp only [gt_iff_lt, zero_lt_one], measure_ne_top _ _⟩⟩ F_closed
-  have nhd : Iio (μ F + ε) ∈ 𝓝 (μ F) := by
-    apply Iio_mem_nhds
-    exact ENNReal.lt_add_right μF_finite.ne (ENNReal.coe_pos.mpr ε_pos).ne'
+  have nhd : Iio (μ F + ε) ∈ 𝓝 (μ F) :=
+    Iio_mem_nhds <| ENNReal.lt_add_right μF_finite.ne (ENNReal.coe_pos.mpr ε_pos).ne'
   specialize rs_lim (keyB nhd)
   simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage, mem_Iio] at rs_lim
   obtain ⟨m, hm⟩ := rs_lim
-  have aux' := fun i ↦ measure_mono (μ := μs i) (Metric.self_subset_thickening (rs_pos m) F)
   have aux : (fun i ↦ (μs i F)) ≤ᶠ[L] (fun i ↦ μs i (Metric.thickening (rs m) F)) :=
-    eventually_of_forall aux'
+    eventually_of_forall <| fun i ↦ measure_mono (Metric.self_subset_thickening (rs_pos m) F)
   refine (limsup_le_limsup aux).trans ?_
   rw [Tendsto.limsup_eq (key m)]
   apply (measure_mono (Metric.thickening_subset_cthickening (rs m) F)).trans (hm m rfl.le).le
@@ -512,12 +510,12 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
     have bound : ∀ i, ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i) ≤ nndist 0 g := fun i ↦ by
       simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one, ge_iff_le] using
-            BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
-    apply ENNReal.liminf_toReal_eq ENNReal.coe_ne_top (eventually_of_forall bound)
+        BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
+    exact ENNReal.liminf_toReal_eq ENNReal.coe_ne_top (eventually_of_forall bound)
   · exact (f.lintegral_of_real_lt_top μ).ne
   · apply ne_of_lt
-    have obs := fun (i : ℕ) ↦ @BoundedContinuousFunction.lintegral_nnnorm_le Ω _ _ (μs i) ℝ _ f
-    simp only [measure_univ, mul_one] at obs
+    have obs : ∀ i, ∫⁻ x, ENNReal.ofNNReal ‖f x‖₊ ∂μs i ≤  ENNReal.ofNNReal ‖f‖₊ :=
+      fun i ↦ by simpa only [measure_univ, mul_one] using f.lintegral_nnnorm_le (μs i)
     apply lt_of_le_of_lt _ (show (‖f‖₊ : ℝ≥0∞) < ∞ from ENNReal.coe_lt_top)
     apply liminf_le_of_le
     · refine ⟨0, eventually_of_forall (by simp only [ge_iff_le, zero_le, forall_const])⟩
@@ -525,9 +523,8 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
       obtain ⟨i, hi⟩ := hx.exists
       apply le_trans hi
       convert obs i with x
-      have aux := ENNReal.ofReal_eq_coe_nnreal (f_nn x)
-      simp only [ContinuousMap.toFun_eq_coe, BoundedContinuousFunction.coe_to_continuous_fun] at aux
-      rw [aux]
+      rw [show ENNReal.ofReal (f x) = ENNReal.ofNNReal ⟨f x, f_nn x⟩
+          from ENNReal.ofReal_eq_coe_nnreal (f_nn x)]
       congr
       exact (Real.norm_of_nonneg (f_nn x)).symm
 
