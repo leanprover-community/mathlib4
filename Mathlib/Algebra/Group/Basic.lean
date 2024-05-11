@@ -949,13 +949,14 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
 lemma pow_natAbs_eq_one : a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
 
 set_option linter.existingAttributeWarning false in
-@[to_additive, deprecated pow_natAbs_eq_one] -- 2024-02-14
+@[to_additive, deprecated pow_natAbs_eq_one (since := "2024-02-14")]
 lemma exists_pow_eq_one_of_zpow_eq_one (hn : n ≠ 0) (h : a ^ n = 1) :
     ∃ n : ℕ, 0 < n ∧ a ^ n = 1 := ⟨_, Int.natAbs_pos.2 hn, pow_natAbs_eq_one.2 h⟩
 #align exists_npow_eq_one_of_zpow_eq_one exists_pow_eq_one_of_zpow_eq_one
 #align exists_nsmul_eq_zero_of_zsmul_eq_zero exists_nsmul_eq_zero_of_zsmul_eq_zero
 
-attribute [deprecated natAbs_nsmul_eq_zero] exists_nsmul_eq_zero_of_zsmul_eq_zero -- 2024-02-14
+attribute [deprecated natAbs_nsmul_eq_zero (since := "2024-02-14")]
+exists_nsmul_eq_zero_of_zsmul_eq_zero
 
 end Group
 
@@ -1160,16 +1161,15 @@ attribute [to_additive (attr := simp)] dite_smul smul_dite ite_smul smul_ite
 
 end ite
 
--- 2024-03-20
-@[deprecated] alias div_mul_cancel' := div_mul_cancel
-@[deprecated] alias mul_div_cancel'' := mul_div_cancel_right
+@[deprecated (since := "2024-03-20")] alias div_mul_cancel' := div_mul_cancel
+@[deprecated (since := "2024-03-20")] alias mul_div_cancel'' := mul_div_cancel_right
 -- The name `add_sub_cancel` was reused
--- @[deprecated] alias add_sub_cancel := add_sub_cancel_right
-@[deprecated] alias div_mul_cancel''' := div_mul_cancel_right
-@[deprecated] alias sub_add_cancel'' := sub_add_cancel_right
-@[deprecated] alias mul_div_cancel''' := mul_div_cancel_left
-@[deprecated] alias add_sub_cancel' := add_sub_cancel_left
-@[deprecated] alias mul_div_cancel'_right := mul_div_cancel
-@[deprecated] alias add_sub_cancel'_right := add_sub_cancel
-@[deprecated] alias div_mul_cancel'' := div_mul_cancel_left
-@[deprecated] alias sub_add_cancel' := sub_add_cancel_left
+-- @[deprecated (since := "2024-03-20")] alias add_sub_cancel := add_sub_cancel_right
+@[deprecated (since := "2024-03-20")] alias div_mul_cancel''' := div_mul_cancel_right
+@[deprecated (since := "2024-03-20")] alias sub_add_cancel'' := sub_add_cancel_right
+@[deprecated (since := "2024-03-20")] alias mul_div_cancel''' := mul_div_cancel_left
+@[deprecated (since := "2024-03-20")] alias add_sub_cancel' := add_sub_cancel_left
+@[deprecated (since := "2024-03-20")] alias mul_div_cancel'_right := mul_div_cancel
+@[deprecated (since := "2024-03-20")] alias add_sub_cancel'_right := add_sub_cancel
+@[deprecated (since := "2024-03-20")] alias div_mul_cancel'' := div_mul_cancel_left
+@[deprecated (since := "2024-03-20")] alias sub_add_cancel' := sub_add_cancel_left
