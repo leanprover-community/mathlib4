@@ -1300,6 +1300,8 @@ end Dvd
 
 end MulAndRadical
 
+
+
 section Total
 
 variable (ι : Type*)
