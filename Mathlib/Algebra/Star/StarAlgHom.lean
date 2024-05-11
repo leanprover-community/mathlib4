@@ -48,14 +48,18 @@ open EquivLike
 /-- A *non-unital ⋆-ring homomorphism* is a non-unital ring homomorphism between non-unital
 non-associative semirings `A` and `B` equipped with a `star` operation, and this homomorphism is
 also `star`-preserving. -/
-structure StarRingHom (A B : Type*) [NonUnitalNonAssocSemiring A]
+structure NonUnitalStarRingHom (A B : Type*) [NonUnitalNonAssocSemiring A]
   [Star A] [NonUnitalNonAssocSemiring B]
   [Star B] extends A →ₙ+* B where
   /-- By definition, a non-unital ⋆-algebra homomorphism preserves the `star` operation. -/
   map_star' : ∀ a : A, toFun (star a) = star (toFun a)
 
 /-- `α →⋆ₙ+* β` denotes the type of non-unital ring homomorphisms from `α` to `β`. -/
-infixr:25 " →⋆ₙ+* " => StarRingHom
+infixr:25 " →⋆ₙ+* " => NonUnitalStarRingHom
+
+/-- Reinterpret a non-unital star ring homomorphism as a non-unital ring homomorphism
+by forgetting the interaction with the star operation. -/
+add_decl_doc NonUnitalStarRingHom.toNonUnitalRingHom
 
 /-! ### Non-unital star algebra homomorphisms -/
 
