@@ -172,6 +172,7 @@ instance linearOrder : LinearOrder ℚ where
     have := eq_neg_of_add_eq_zero_left (Rat.nonneg_antisymm hba hab)
     rwa [neg_neg] at this
   le_total _ _ := Rat.le_total
+  decidableEq := inferInstance
   decidableLE := inferInstance
   decidableLT := inferInstance
   lt_iff_le_not_le _ _ := by rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
