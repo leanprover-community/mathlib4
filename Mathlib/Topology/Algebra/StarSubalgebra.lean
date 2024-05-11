@@ -128,16 +128,14 @@ theorem _root_.Subalgebra.topologicalClosure_star_comm (s : Subalgebra R A) :
 
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/
-@[reducible]
-def commSemiringTopologicalClosure [T2Space A] (s : StarSubalgebra R A)
+abbrev commSemiringTopologicalClosure [T2Space A] (s : StarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
   s.toSubalgebra.commSemiringTopologicalClosure hs
 #align star_subalgebra.comm_semiring_topological_closure StarSubalgebra.commSemiringTopologicalClosure
 
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/
-@[reducible]
-def commRingTopologicalClosure {R A} [CommRing R] [StarRing R] [TopologicalSpace A] [Ring A]
+abbrev commRingTopologicalClosure {R A} [CommRing R] [StarRing R] [TopologicalSpace A] [Ring A]
     [Algebra R A] [StarRing A] [StarModule R A] [TopologicalRing A] [ContinuousStar A] [T2Space A]
     (s : StarSubalgebra R A) (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
   s.toSubalgebra.commRingTopologicalClosure hs

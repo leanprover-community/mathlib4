@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.RingTheory.Subring.Pointwise
+import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.RingTheory.Adjoin.Basic
 
 #align_import algebra.algebra.subalgebra.pointwise from "leanprover-community/mathlib"@"b2c707cd190a58ea0565c86695a19e99ccecc215"

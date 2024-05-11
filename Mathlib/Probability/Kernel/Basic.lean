@@ -296,7 +296,10 @@ class _root_.ProbabilityTheory.IsSFiniteKernel (κ : kernel α β) : Prop where
 
 instance (priority := 100) IsFiniteKernel.isSFiniteKernel [h : IsFiniteKernel κ] :
     IsSFiniteKernel κ :=
-  ⟨⟨fun n => if n = 0 then κ else 0, fun n => by simp only; split_ifs; exact h; infer_instance, by
+  ⟨⟨fun n => if n = 0 then κ else 0, fun n => by
+      simp only; split_ifs
+      · exact h
+      · infer_instance, by
       ext a s hs
       rw [kernel.sum_apply' _ _ hs]
       have : (fun i => ((ite (i = 0) κ 0) a) s) = fun i => ite (i = 0) (κ a s) 0 := by

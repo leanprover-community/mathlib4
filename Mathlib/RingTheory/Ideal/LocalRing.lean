@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.JacobsonIdeal
 import Mathlib.Logic.Equiv.TransferInstance
@@ -533,7 +533,6 @@ theorem LocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : LocalRing.maximalI
 
 namespace RingEquiv
 
-@[reducible]
 protected theorem localRing {A B : Type*} [CommSemiring A] [LocalRing A] [CommSemiring B]
     (e : A ≃+* B) : LocalRing B :=
   haveI := e.symm.toEquiv.nontrivial

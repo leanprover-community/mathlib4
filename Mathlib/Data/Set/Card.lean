@@ -436,7 +436,9 @@ theorem Finite.exists_injOn_of_encard_le [Nonempty β] {s : Set α} {t : Set β}
     mem_image, ite_eq_left_iff, not_exists, not_and, not_forall, exists_prop, and_iff_right hbt]
 
   refine ⟨?_, ?_, fun x hxs hxa ↦ ⟨hxa, (hf₀s x hxs hxa).2⟩⟩
-  · rintro x hx; split_ifs with h; assumption; exact (hf₀s x hx h).1
+  · rintro x hx; split_ifs with h
+    · assumption
+    · exact (hf₀s x hx h).1
   exact InjOn.congr hinj (fun x ⟨_, hxa⟩ ↦ by rwa [Function.update_noteq])
 termination_by encard s
 
@@ -1120,10 +1122,4 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
 
 end ncard
 
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023-12-27.
--/
-
-@[deprecated] alias ncard_le_of_subset := ncard_le_ncard
+@[deprecated] alias ncard_le_of_subset := ncard_le_ncard -- 2023-12-27

@@ -530,7 +530,7 @@ end
 theorem prod_fst_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
     TypeVec.prod.fst i (prod.mk i a b) = a := by
   induction' i with _ _ _ i_ih
-  simp_all only [prod.fst, prod.mk]
+  · simp_all only [prod.fst, prod.mk]
   apply i_ih
 #align typevec.prod_fst_mk TypeVec.prod_fst_mk
 
@@ -538,7 +538,7 @@ theorem prod_fst_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
 theorem prod_snd_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
     TypeVec.prod.snd i (prod.mk i a b) = b := by
   induction' i with _ _ _ i_ih
-  simp_all [prod.snd, prod.mk]
+  · simp_all [prod.snd, prod.mk]
   apply i_ih
 #align typevec.prod_snd_mk TypeVec.prod_snd_mk
 
@@ -582,7 +582,7 @@ theorem snd_diag {α : TypeVec n} : TypeVec.prod.snd ⊚ (prod.diag : α ⟹ _) 
 theorem repeatEq_iff_eq {α : TypeVec n} {i x y} :
     ofRepeat (repeatEq α i (prod.mk _ x y)) ↔ x = y := by
   induction' i with _ _ _ i_ih
-  rfl
+  · rfl
   erw [repeatEq, i_ih]
 #align typevec.repeat_eq_iff_eq TypeVec.repeatEq_iff_eq
 
@@ -645,7 +645,7 @@ theorem subtypeVal_nil {α : TypeVec.{u} 0} (ps : α ⟹ «repeat» 0 Prop) :
 theorem diag_sub_val {n} {α : TypeVec.{u} n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
   ext i x
   induction' i with _ _ _ i_ih
-  simp only [comp, subtypeVal, repeatEq._eq_2, diagSub, prod.diag]
+  · simp only [comp, subtypeVal, repeatEq.eq_2, diagSub, prod.diag]
   apply @i_ih (drop α)
 #align typevec.diag_sub_val TypeVec.diag_sub_val
 
@@ -762,8 +762,8 @@ theorem prod_map_id {α β : TypeVec n} : (@TypeVec.id _ α ⊗' @TypeVec.id _ �
   ext i x : 2
   induction i <;> simp only [TypeVec.prod.map, *, dropFun_id]
   cases x
-  rfl
-  rfl
+  · rfl
+  · rfl
 #align typevec.prod_map_id TypeVec.prod_map_id
 
 @[simp]

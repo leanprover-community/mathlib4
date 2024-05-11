@@ -265,7 +265,7 @@ def sheafOfTypesToPresheaf : SheafOfTypes J ⥤ Cᵒᵖ ⥤ Type w where
 set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes_to_presheaf CategoryTheory.sheafOfTypesToPresheaf
 
-instance : (sheafOfTypesToPresheaf J).Full where preimage f := ⟨f⟩
+instance : (sheafOfTypesToPresheaf J).Full where map_surjective f := ⟨⟨f⟩, rfl⟩
 
 instance : (sheafOfTypesToPresheaf J).Faithful where
 
@@ -278,10 +278,8 @@ def sheafOfTypesBotEquiv : SheafOfTypes (⊥ : GrothendieckTopology C) ≌ Cᵒ�
   functor := sheafOfTypesToPresheaf _
   inverse :=
     { obj := fun P => ⟨P, Presieve.isSheaf_bot⟩
-      map := fun f => (sheafOfTypesToPresheaf _).preimage f }
-  unitIso :=
-    { hom := { app := fun _ => ⟨𝟙 _⟩ }
-      inv := { app := fun _ => ⟨𝟙 _⟩ } }
+      map := fun f => ⟨f⟩ }
+  unitIso := Iso.refl _
   counitIso := Iso.refl _
 set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes_bot_equiv CategoryTheory.sheafOfTypesBotEquiv

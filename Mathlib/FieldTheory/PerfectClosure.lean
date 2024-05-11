@@ -433,7 +433,8 @@ instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
 @[simp]
 theorem iterate_frobenius_mk (n : ℕ) (x : K) :
     (frobenius (PerfectClosure K p) p)^[n] (mk K p ⟨n, x⟩) = of K p x := by
-  induction' n with n ih; rfl
+  induction' n with n ih
+  · rfl
   rw [iterate_succ_apply, ← ih, frobenius_mk, mk_succ_pow]
 
 /-- Given a ring `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
@@ -507,6 +508,7 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) where
     simp only [iterate_map_one, iterate_map_zero, iterate_zero_apply, ← iterate_map_mul] at this ⊢
     rw [mul_inv_cancel this, iterate_map_one]
   inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
+  nnqsmul := _
   qsmul := _
 
 instance instField : Field (PerfectClosure K p) :=

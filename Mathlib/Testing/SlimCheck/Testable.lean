@@ -291,6 +291,11 @@ instance forallTypesTestable {f : Type → Prop} [Testable (f Int)] :
     let r ← runProp (f Int) cfg min
     pure <| addVarInfo var "ℤ" (· <| Int) r
 
+instance factTestable [Testable p] : Testable (Fact p) where
+  run cfg min := do
+    let h ← runProp p cfg min
+    pure <| iff fact_iff h
+
 /--
 Format the counter-examples found in a test failure.
 -/
@@ -450,6 +455,9 @@ instance False.printableProp : PrintableProp False where
 
 instance Bool.printableProp {b : Bool} : PrintableProp b where
   printProp := if b then "true" else "false"
+
+instance Fact.printableProp [PrintableProp p] : PrintableProp (Fact p) where
+  printProp := printProp p
 
 end PrintableProp
 
