@@ -978,7 +978,8 @@ termination_by l => l.length
 theorem bidirectionalRec_nil {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) :
-    bidirectionalRec nil singleton cons_append [] = nil := bidirectionalRec.eq_1 ..
+    bidirectionalRec nil singleton cons_append [] = nil := by
+  unfold bidirectionalRec; rfl
 
 
 @[simp]
