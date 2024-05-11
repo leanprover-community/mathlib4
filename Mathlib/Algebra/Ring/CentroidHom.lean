@@ -11,6 +11,7 @@ import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
+import Mathlib.Algebra.Star.Subalgebra
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -523,6 +524,9 @@ def centerToCentroidCenter :
     ext a
     exact (((Set.mem_center_iff _).mp z₁.prop).left_assoc z₂ a).symm
 
+lemma centerToCentroidCenter_apply (z : NonUnitalSubsemiring.center α) (a : α) :
+    (centerToCentroidCenter z).val a = z * a := rfl
+
 /-- The canonical homomorphism from the center into the centroid -/
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α :=
   NonUnitalRingHom.comp
@@ -731,6 +735,15 @@ instance : InvolutiveStar (Subsemiring.center (CentroidHom α)) where
 instance instStarAddMonoidCenter : StarAddMonoid (Subsemiring.center (CentroidHom α)) where
   star_add f g := SetCoe.ext (instStarAddMonoid.star_add f.val g.val)
 
+instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
+  coe f := f.val.toFun
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr with x
+    exact congrFun h x
+
+
 instance : StarRing (Subsemiring.center (CentroidHom α)) where
   __ := instStarAddMonoidCenter
   star_mul f g := by
@@ -747,10 +760,59 @@ instance : StarRing (Subsemiring.center (CentroidHom α)) where
       _ = (star g * star f).val a := rfl
     exact e1
 
+--variable (z : ↥(NonUnitalStarSubsemiring.center α))
+
+--#check (star z)
+
+#check NonUnitalStarRingHom (NonUnitalStarSubsemiring.center α) (Subsemiring.center (CentroidHom α))
+
+/-
+@[simp]
+theorem inr_star [AddMonoid R] [StarAddMonoid R] [Star A] (a : A) :
+    ↑(star a) = star (a : Unitization R A) :=
+  ext (by simp only [fst_star, star_zero, fst_inr]) rfl
+-/
+
+variable  (z : NonUnitalStarSubsemiring.center α) (a : α)
+
+#check z.val
+#check z.property
+
+#check ((star z) : NonUnitalStarSubsemiring.center α)
+#check (star z).val
+#check (star z).property
+
+#check (centerToCentroidCenter z)
+#check (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)).val a
+
+#check (star (centerToCentroidCenter z)) a
+
+
+#check (centerToCentroidCenter z) a
+
+theorem inr_star (z : NonUnitalStarSubsemiring.center α) :
+  (star (centerToCentroidCenter z))  =
+    (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) := by
+  ext a
+  have e1 : (star (centerToCentroidCenter z)) a =
+    (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) a := calc
+      (star (centerToCentroidCenter z)) a = star (z * star a) := rfl
+      _ = star (star a) * star z := by simp only [star_mul, star_star, StarMemClass.coe_star]
+      _ = a * star z := by rw [star_star]
+      _ = (star z) * a := by rw [(star z).property.comm]
+      _ = (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) a := rfl
+  exact e1
+
+
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
 def starcenterToCentroidCenter :
     NonUnitalStarSubsemiring.center α →⋆ₙ+* Subsemiring.center (CentroidHom α) :=
-  { centerToCentroidCenter with }
+  { toNonUnitalRingHom := centerToCentroidCenter
+    map_star' := by
+      intro z
+      simp only [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom]
+      exact (inr_star z).symm
+  }
 
 /--
 Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
