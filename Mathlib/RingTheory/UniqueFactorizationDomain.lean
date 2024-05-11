@@ -546,12 +546,12 @@ theorem factors_pow {x : α} (n : ℕ) :
   match n with
   | 0 => rw [zero_smul, pow_zero, factors_one, Multiset.rel_zero_right]
   | n+1 =>
-    · by_cases h0 : x = 0
-      · simp [h0, zero_pow n.succ_ne_zero, smul_zero]
-      · rw [pow_succ', succ_nsmul']
-        refine' Multiset.Rel.trans _ (factors_mul h0 (pow_ne_zero n h0)) _
-        refine' Multiset.Rel.add _ <| factors_pow n
-        exact Multiset.rel_refl_of_refl_on fun y _ => Associated.refl _
+    by_cases h0 : x = 0
+    · simp [h0, zero_pow n.succ_ne_zero, smul_zero]
+    · rw [pow_succ', succ_nsmul']
+      refine' Multiset.Rel.trans _ (factors_mul h0 (pow_ne_zero n h0)) _
+      refine' Multiset.Rel.add _ <| factors_pow n
+      exact Multiset.rel_refl_of_refl_on fun y _ => Associated.refl _
 #align unique_factorization_monoid.factors_pow UniqueFactorizationMonoid.factors_pow
 
 @[simp]
@@ -1228,8 +1228,7 @@ gives us a representation of each element as a unique multisets (or the added �
 complete lattice structure. Infimum is the greatest common divisor and supremum is the least common
 multiple.
 -/
-@[reducible]
-def FactorSet.{u} (α : Type u) [CancelCommMonoidWithZero α] : Type u :=
+abbrev FactorSet.{u} (α : Type u) [CancelCommMonoidWithZero α] : Type u :=
   WithTop (Multiset { a : Associates α // Irreducible a })
 #align associates.factor_set Associates.FactorSet
 

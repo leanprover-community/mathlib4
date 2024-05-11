@@ -59,8 +59,7 @@ theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range 
 
 -- Porting note: breaking up original definition of quotientInfToSupQuotient to avoid timing out
 /-- Linear map from `p` to `p+p'/p'` where `p p'` are submodules of `R` -/
-@[reducible]
-def subToSupQuotient (p p' : Submodule R M) :
+abbrev subToSupQuotient (p p' : Submodule R M) :
     { x // x ∈ p } →ₗ[R] { x // x ∈ p ⊔ p' } ⧸ comap (Submodule.subtype (p ⊔ p')) p' :=
   (comap (p ⊔ p').subtype p').mkQ.comp (Submodule.inclusion le_sup_left)
 

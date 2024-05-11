@@ -51,9 +51,7 @@ instance {G : Type*} [AddGroup G] [UniformSpace G] [UniformAddGroup G] [Nonarchi
       `0` in `Completion G`. This follows from the fact that `toCompl : G → Completion G` is dense
       inducing and `W` is a neighborhood of `0` in `G`. -/
       apply isOpen_of_mem_nhds (g := 0)
-      simp only [topologicalClosure_coe, coe_map]
       apply (denseInducing_toCompl _).closure_image_mem_nhds
-      rw [coe_toAddSubgroup]
       exact mem_nhds_zero W
     use ⟨_, this⟩
     /- Finally, it remains to show that `V ⊆ U`. It suffices to show that `V ⊆ C`, which
