@@ -273,12 +273,12 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
   rcases index_elim hK hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   apply Nat.sInf_le; rw [mem_image]
   refine' ⟨s.map (Equiv.mulRight g⁻¹).toEmbedding, _, Finset.card_map _⟩
-  · simp only [mem_setOf_eq]; refine' Subset.trans (image_subset _ h1s) _
-    rintro _ ⟨g₁, ⟨_, ⟨g₂, rfl⟩, ⟨_, ⟨hg₂, rfl⟩, hg₁⟩⟩, rfl⟩
-    simp only [mem_preimage] at hg₁;
-    simp only [exists_prop, mem_iUnion, Finset.mem_map, Equiv.coe_mulRight,
-      exists_exists_and_eq_and, mem_preimage, Equiv.toEmbedding_apply]
-    refine' ⟨_, hg₂, _⟩; simp only [mul_assoc, hg₁, inv_mul_cancel_left]
+  simp only [mem_setOf_eq]; refine' Subset.trans (image_subset _ h1s) _
+  rintro _ ⟨g₁, ⟨_, ⟨g₂, rfl⟩, ⟨_, ⟨hg₂, rfl⟩, hg₁⟩⟩, rfl⟩
+  simp only [mem_preimage] at hg₁;
+  simp only [exists_prop, mem_iUnion, Finset.mem_map, Equiv.coe_mulRight,
+    exists_exists_and_eq_and, mem_preimage, Equiv.toEmbedding_apply]
+  refine' ⟨_, hg₂, _⟩; simp only [mul_assoc, hg₁, inv_mul_cancel_left]
 #align measure_theory.measure.haar.mul_left_index_le MeasureTheory.Measure.haar.mul_left_index_le
 #align measure_theory.measure.haar.add_left_add_index_le MeasureTheory.Measure.haar.add_left_addIndex_le
 

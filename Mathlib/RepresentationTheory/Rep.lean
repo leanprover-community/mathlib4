@@ -348,7 +348,7 @@ theorem leftRegularHom_apply {A : Rep k G} (x : A) :
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [leftRegularHom_hom, Finsupp.lift_apply, Finsupp.sum_single_index, one_smul,
     A.ρ.map_one, LinearMap.one_apply]
-  · rw [zero_smul]
+  rw [zero_smul]
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_apply Rep.leftRegularHom_apply
 
@@ -387,7 +387,7 @@ theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [leftRegularHomEquiv_symm_apply, leftRegularHom_hom, Finsupp.lift_apply,
     Finsupp.sum_single_index, one_smul]
-  · rw [zero_smul]
+  rw [zero_smul]
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_equiv_symm_single Rep.leftRegularHomEquiv_symm_single
 
