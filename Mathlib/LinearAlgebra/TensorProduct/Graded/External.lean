@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.ZMod.IntUnitsPower
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.Algebra.DirectSum.Algebra
 
@@ -102,7 +102,7 @@ theorem gradedCommAux_comp_gradedCommAux :
 This sends $a ⊗ b$ to $(-1)^{\deg a' \deg b} (b ⊗ a)$. -/
 def gradedComm :
     (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i) ≃ₗ[R] (⨁ i, ℬ i) ⊗[R] (⨁ i, 𝒜 i) := by
-  refine TensorProduct.directSum R 𝒜 ℬ ≪≫ₗ ?_ ≪≫ₗ (TensorProduct.directSum R ℬ 𝒜).symm
+  refine TensorProduct.directSum R R 𝒜 ℬ ≪≫ₗ ?_ ≪≫ₗ (TensorProduct.directSum R R ℬ 𝒜).symm
   exact LinearEquiv.ofLinear (gradedCommAux _ _ _) (gradedCommAux _ _ _)
     (gradedCommAux_comp_gradedCommAux _ _ _) (gradedCommAux_comp_gradedCommAux _ _ _)
 
@@ -236,7 +236,7 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
       (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mA.flip ∘ₗ mA).flip by
     exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
   ext ixa xa ixb xb iya ya iyb yb iza za izb zb
-  dsimp
+  dsimp [mA]
   simp_rw [tmul_of_gradedMul_of_tmul, Units.smul_def, zsmul_eq_smul_cast R,
     LinearMap.map_smul₂, LinearMap.map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, tmul_of_gradedMul_of_tmul, DirectSum.lof_eq_of, ← DirectSum.of_mul_of,

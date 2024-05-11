@@ -221,7 +221,7 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n] {S : Type*} [LinearOrderedCommR
         simp_rw [not_exists, not_lt] at h_sup
         refine ⟨i, ?_⟩
         rw [Pi.smul_apply, neg_smul, one_smul, Left.neg_pos_iff]
-        refine Ne.lt_of_le hi (h_sup i)
+        exact Ne.lt_of_le hi (h_sup i)
     · obtain ⟨j₀, -, h_j₀⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty v
       refine ⟨j₀, ?_⟩
       rw [← mul_le_mul_left (h_j₀ ▸ h_sup), Finset.mul_sum, mul_zero]

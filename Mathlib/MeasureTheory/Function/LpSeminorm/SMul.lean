@@ -200,8 +200,8 @@ theorem snorm_le_snorm_mul_snorm_of_nnnorm {p q r : ℝ≥0∞} {f : α → E}
     suffices 1 / q < 1 / p by rwa [one_div, one_div, ENNReal.inv_lt_inv] at this
     rw [hpqr]
     refine' ENNReal.lt_add_right _ _
-    · simp only [hq_ne_zero, one_div, Ne.def, ENNReal.inv_eq_top, not_false_iff]
-    · simp only [hr_top, one_div, Ne.def, ENNReal.inv_eq_zero, not_false_iff]
+    · simp only [hq_ne_zero, one_div, Ne, ENNReal.inv_eq_top, not_false_iff]
+    · simp only [hr_top, one_div, Ne, ENNReal.inv_eq_zero, not_false_iff]
   rw [snorm_eq_snorm' hp_zero (hpq.trans_le le_top).ne, snorm_eq_snorm' hq_ne_zero hq_top,
     snorm_eq_snorm' hr_ne_zero hr_top]
   refine' snorm'_le_snorm'_mul_snorm' hf hg _ h _ _ _
@@ -209,8 +209,8 @@ theorem snorm_le_snorm_mul_snorm_of_nnnorm {p q r : ℝ≥0∞} {f : α → E}
   · exact ENNReal.toReal_strict_mono hq_top hpq
   rw [← ENNReal.one_toReal, ← ENNReal.toReal_div, ← ENNReal.toReal_div, ← ENNReal.toReal_div, hpqr,
     ENNReal.toReal_add]
-  · simp only [hq_ne_zero, one_div, Ne.def, ENNReal.inv_eq_top, not_false_iff]
-  · simp only [hr_ne_zero, one_div, Ne.def, ENNReal.inv_eq_top, not_false_iff]
+  · simp only [hq_ne_zero, one_div, Ne, ENNReal.inv_eq_top, not_false_iff]
+  · simp only [hr_ne_zero, one_div, Ne, ENNReal.inv_eq_top, not_false_iff]
 #align measure_theory.snorm_le_snorm_mul_snorm_of_nnnorm MeasureTheory.snorm_le_snorm_mul_snorm_of_nnnorm
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation

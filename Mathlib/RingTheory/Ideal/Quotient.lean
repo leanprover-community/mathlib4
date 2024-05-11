@@ -41,11 +41,10 @@ variable {S : Type v}
 /-- The quotient `R/I` of a ring `R` by an ideal `I`.
 
 The ideal quotient of `I` is defined to equal the quotient of `I` as an `R`-submodule of `R`.
-This definition is marked `reducible` so that typeclass instances can be shared between
+This definition uses `abbrev` so that typeclass instances can be shared between
 `Ideal.Quotient I` and `Submodule.Quotient I`.
 -/
-@[reducible]
-instance : HasQuotient R (Ideal R) :=
+@[instance] abbrev instHasQuotient : HasQuotient R (Ideal R) :=
   Submodule.hasQuotient
 
 namespace Quotient
@@ -131,7 +130,7 @@ theorem eq_zero_iff_mem {I : Ideal R} : mk I a = 0 ↔ a ∈ I :=
 theorem eq_zero_iff_dvd (x y : R) : Ideal.Quotient.mk (Ideal.span ({x} : Set R)) y = 0 ↔ x ∣ y := by
   rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
   rw [← eq_zero_iff_mem, map_sub, sub_eq_zero]
 
@@ -204,14 +203,13 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
   rwa [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
 #align ideal.quotient.exists_inv Ideal.Quotient.exists_inv
 
-open Classical
+open scoped Classical
 
 /-- The quotient by a maximal ideal is a group with zero. This is a `def` rather than `instance`,
 since users will have computable inverses in some applications.
 
 See note [reducible non-instances]. -/
-@[reducible]
-protected noncomputable def groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
+protected noncomputable abbrev groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
     GroupWithZero (R ⧸ I) :=
   { inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
@@ -220,12 +218,14 @@ protected noncomputable def groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
 #align ideal.quotient.group_with_zero Ideal.Quotient.groupWithZero
 
 /-- The quotient by a maximal ideal is a field. This is a `def` rather than `instance`, since users
-will have computable inverses (and `qsmul`, `rat_cast`) in some applications.
+will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 
 See note [reducible non-instances]. -/
-@[reducible]
-protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) :=
-  { Quotient.commRing I, Quotient.groupWithZero I with }
+protected noncomputable abbrev field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) where
+  __ := commRing _
+  __ := Quotient.groupWithZero _
+  nnqsmul := _
+  qsmul := _
 #align ideal.quotient.field Ideal.Quotient.field
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/
@@ -238,7 +238,7 @@ theorem maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal
   · intro J x hIJ hxnI hxJ
     rcases hqf.mul_inv_cancel (mt Ideal.Quotient.eq_zero_iff_mem.1 hxnI) with ⟨⟨y⟩, hy⟩
     rw [← zero_add (1 : R), ← sub_self (x * y), sub_add]
-    refine' J.sub_mem (J.mul_mem_right _ hxJ) (hIJ (Ideal.Quotient.eq.1 hy))
+    exact J.sub_mem (J.mul_mem_right _ hxJ) (hIJ (Ideal.Quotient.eq.1 hy))
 #align ideal.quotient.maximal_of_is_field Ideal.Quotient.maximal_of_isField
 
 /-- The quotient of a ring by an ideal is a field iff the ideal is maximal. -/

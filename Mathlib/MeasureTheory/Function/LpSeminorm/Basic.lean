@@ -103,13 +103,6 @@ def Memℒp {α} {_ : MeasurableSpace α} (f : α → E) (p : ℝ≥0∞)
   AEStronglyMeasurable f μ ∧ snorm f p μ < ∞
 #align measure_theory.mem_ℒp MeasureTheory.Memℒp
 
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
-theorem memℒp_def {α} {_ : MeasurableSpace α} (f : α → E) (p : ℝ≥0∞) (μ : Measure α) :
-    Memℒp f p μ ↔ (AEStronglyMeasurable f μ ∧ snorm f p μ < ∞) :=
-  Iff.rfl
-
-attribute [eqns memℒp_def] Memℒp
-
 theorem Memℒp.aestronglyMeasurable {f : α → E} {p : ℝ≥0∞} (h : Memℒp f p μ) :
     AEStronglyMeasurable f μ :=
   h.1
@@ -289,8 +282,11 @@ theorem Memℒp.mono_measure {f : α → E} (hμν : ν ≤ μ) (hf : Memℒp f 
   ⟨hf.1.mono_measure hμν, (snorm_mono_measure f hμν).trans_lt hf.2⟩
 #align measure_theory.mem_ℒp.mono_measure MeasureTheory.Memℒp.mono_measure
 
-protected theorem Memℒp.restrict (s : Set α) {f : α → E} (hf : Memℒp f p μ) :
-    Memℒp f p (μ.restrict s) :=
+lemma snorm_restrict_le (f : α → F) (p : ℝ≥0∞) (μ : Measure α) (s : Set α) :
+    snorm f p (μ.restrict s) ≤ snorm f p μ :=
+  snorm_mono_measure f Measure.restrict_le_self
+
+theorem Memℒp.restrict (s : Set α) {f : α → E} (hf : Memℒp f p μ) : Memℒp f p (μ.restrict s) :=
   hf.mono_measure Measure.restrict_le_self
 #align measure_theory.mem_ℒp.restrict MeasureTheory.Memℒp.restrict
 
@@ -528,18 +524,18 @@ theorem Memℒp.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMea
 
 end Const
 
-section IsROrC
+section RCLike
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {f : α → 𝕜}
+variable {𝕜 : Type*} [RCLike 𝕜] {f : α → 𝕜}
 
-protected lemma Memℒp.re (hf : Memℒp f p μ) : Memℒp (fun x => IsROrC.re (f x)) p μ :=
-  hf.of_le (IsROrC.continuous_re.comp_aestronglyMeasurable hf.1) <| ae_of_all _ fun _ ↦
-    IsROrC.norm_re_le_norm _
+protected lemma Memℒp.re (hf : Memℒp f p μ) : Memℒp (fun x => RCLike.re (f x)) p μ :=
+  hf.of_le (RCLike.continuous_re.comp_aestronglyMeasurable hf.1) <| ae_of_all _ fun _ ↦
+    RCLike.norm_re_le_norm _
 #align measure_theory.mem_ℒp.re MeasureTheory.Memℒp.re
 
-protected lemma Memℒp.im (hf : Memℒp f p μ) : Memℒp (fun x => IsROrC.im (f x)) p μ :=
-  hf.of_le (IsROrC.continuous_im.comp_aestronglyMeasurable hf.1) <| ae_of_all _ fun _ ↦
-    IsROrC.norm_im_le_norm _
+protected lemma Memℒp.im (hf : Memℒp f p μ) : Memℒp (fun x => RCLike.im (f x)) p μ :=
+  hf.of_le (RCLike.continuous_im.comp_aestronglyMeasurable hf.1) <| ae_of_all _ fun _ ↦
+    RCLike.norm_im_le_norm _
 #align measure_theory.mem_ℒp.im MeasureTheory.Memℒp.im
 
-end IsROrC
+end RCLike

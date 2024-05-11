@@ -175,10 +175,10 @@ theorem withDensity_pdf_le_map {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Me
   withDensity_rnDeriv_le _ _
 
 theorem set_lintegral_pdf_le_map {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
-    (μ : Measure E := by volume_tac) {s : Set E} (hs : MeasurableSet s) :
+    (μ : Measure E := by volume_tac) (s : Set E) :
     ∫⁻ x in s, pdf X ℙ μ x ∂μ ≤ map X ℙ s := by
   apply (withDensity_apply_le _ s).trans
-  exact withDensity_pdf_le_map _ _ _ s hs
+  exact withDensity_pdf_le_map _ _ _ s
 
 theorem map_eq_withDensity_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) [hX : HasPDF X ℙ μ] :
@@ -241,9 +241,10 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F
 theorem integrable_pdf_smul_iff [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X ℙ μ] {f : E → F}
     (hf : AEStronglyMeasurable f μ) :
     Integrable (fun x => (pdf X ℙ μ x).toReal • f x) μ ↔ Integrable (fun x => f (X x)) ℙ := by
-  -- porting note: using `erw` because `rw` doesn't recognize `(f <| X ·)` as `f ∘ X`
+  -- Porting note: using `erw` because `rw` doesn't recognize `(f <| X ·)` as `f ∘ X`
   -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [← integrable_map_measure (hf.mono' HasPDF.absolutelyContinuous) (HasPDF.aemeasurable X ℙ μ),
+  erw [← integrable_map_measure (hf.mono_ac HasPDF.absolutelyContinuous)
+    (HasPDF.aemeasurable X ℙ μ),
     map_eq_withDensity_pdf X ℙ μ, pdf_def, integrable_rnDeriv_smul_iff HasPDF.absolutelyContinuous]
   eta_reduce
   rw [withDensity_rnDeriv_eq _ _ HasPDF.absolutelyContinuous]
@@ -254,7 +255,7 @@ function `f`, `f ∘ X` is a random variable with expectation `∫ x, pdf X x �
 where `μ` is a measure on the codomain of `X`. -/
 theorem integral_pdf_smul [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X ℙ μ] {f : E → F}
     (hf : AEStronglyMeasurable f μ) : ∫ x, (pdf X ℙ μ x).toReal • f x ∂μ = ∫ x, f (X x) ∂ℙ := by
-  rw [← integral_map (HasPDF.aemeasurable X ℙ μ) (hf.mono' HasPDF.absolutelyContinuous),
+  rw [← integral_map (HasPDF.aemeasurable X ℙ μ) (hf.mono_ac HasPDF.absolutelyContinuous),
     map_eq_withDensity_pdf X ℙ μ, pdf_def, integral_rnDeriv_smul HasPDF.absolutelyContinuous,
     withDensity_rnDeriv_eq _ _ HasPDF.absolutelyContinuous]
 #align measure_theory.pdf.integral_fun_mul_eq_integral MeasureTheory.pdf.integral_pdf_smul
@@ -337,138 +338,6 @@ theorem hasFiniteIntegral_mul {f : ℝ → ℝ} {g : ℝ → ℝ≥0∞} (hg : p
 #align measure_theory.pdf.has_finite_integral_mul MeasureTheory.pdf.hasFiniteIntegral_mul
 
 end Real
-
-section
-
-/-! **Uniform Distribution** -/
-
-/-- A random variable `X` has uniform distribution on `s` if its push-forward measure is
-`(μ s)⁻¹ • μ.restrict s`. -/
-def IsUniform (X : Ω → E) (support : Set E) (ℙ : Measure Ω) (μ : Measure E := by volume_tac) :=
-  map X ℙ = (μ support)⁻¹ • μ.restrict support
-#align measure_theory.pdf.is_uniform MeasureTheory.pdf.IsUniform
-
-namespace IsUniform
-
-theorem aemeasurable {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
-    (hu : IsUniform X s ℙ μ) : AEMeasurable X ℙ := by
-  dsimp [IsUniform] at hu
-  by_contra h
-  rw [map_of_not_aemeasurable h] at hu
-  apply zero_ne_one' ℝ≥0∞
-  calc
-    0 = (0 : Measure E) Set.univ := rfl
-    _ = _ := by rw [hu, smul_apply, restrict_apply MeasurableSet.univ,
-      Set.univ_inter, smul_eq_mul, ENNReal.inv_mul_cancel hns hnt]
-
-theorem absolutelyContinuous {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) : map X ℙ ≪ μ := by
-  intro t ht
-  rw [hu, smul_apply, smul_eq_mul]
-  apply mul_eq_zero.mpr
-  refine Or.inr (le_antisymm ?_ (zero_le _))
-  exact ht ▸ restrict_apply_le s t
-
-theorem measure_preimage {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
-    (hu : IsUniform X s ℙ μ) {A : Set E} (hA : MeasurableSet A) :
-    ℙ (X ⁻¹' A) = μ (s ∩ A) / μ s := by
-  rw [← map_apply_of_aemeasurable (hu.aemeasurable hns hnt) hA, hu, smul_apply, restrict_apply hA,
-    ENNReal.div_eq_inv_mul, smul_eq_mul, Set.inter_comm]
-#align measure_theory.pdf.is_uniform.measure_preimage MeasureTheory.pdf.IsUniform.measure_preimage
-
-theorem isProbabilityMeasure {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
-    (hu : IsUniform X s ℙ μ) : IsProbabilityMeasure ℙ :=
-  ⟨by
-    have : X ⁻¹' Set.univ = Set.univ := Set.preimage_univ
-    rw [← this, hu.measure_preimage hns hnt MeasurableSet.univ, Set.inter_univ,
-      ENNReal.div_self hns hnt]⟩
-#align measure_theory.pdf.is_uniform.is_probability_measure MeasureTheory.pdf.IsUniform.isProbabilityMeasure
-
-theorem toMeasurable_iff {X : Ω → E} {s : Set E} :
-    IsUniform X (toMeasurable μ s) ℙ μ ↔ IsUniform X s ℙ μ := by
-  by_cases hnt : μ s = ∞
-  · simp [IsUniform, hnt]
-  · simp [IsUniform, restrict_toMeasurable hnt]
-
-protected theorem toMeasurable {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) :
-    IsUniform X (toMeasurable μ s) ℙ μ := toMeasurable_iff.2 hu
-
-theorem hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
-    (hu : IsUniform X s ℙ μ) : HasPDF X ℙ μ := by
-  let t := toMeasurable μ s
-  apply hasPDF_of_map_eq_withDensity (hu.aemeasurable hns hnt) (t.indicator ((μ t)⁻¹ • 1)) <|
-    (measurable_one.aemeasurable.const_smul (μ t)⁻¹).indicator (measurableSet_toMeasurable μ s)
-  rw [hu, withDensity_indicator (measurableSet_toMeasurable μ s), withDensity_smul _ measurable_one,
-    withDensity_one, restrict_toMeasurable hnt, measure_toMeasurable]
-#align measure_theory.pdf.is_uniform.has_pdf MeasureTheory.pdf.IsUniform.hasPDF
-
-theorem pdf_eq_zero_of_measure_eq_zero_or_top {X : Ω → E} {s : Set E}
-    (hu : IsUniform X s ℙ μ) (hμs : μ s = 0 ∨ μ s = ∞) : pdf X ℙ μ =ᵐ[μ] 0 := by
-  rcases hμs with H|H
-  · simp only [IsUniform, H, ENNReal.inv_zero, restrict_eq_zero.mpr H, smul_zero] at hu
-    simp [pdf, hu]
-  · simp only [IsUniform, H, ENNReal.inv_top, zero_smul] at hu
-    simp [pdf, hu]
-
-theorem pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
-    (hu : IsUniform X s ℙ μ) : pdf X ℙ μ =ᵐ[μ] s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) := by
-  by_cases hnt : μ s = ∞
-  · simp [pdf_eq_zero_of_measure_eq_zero_or_top hu (Or.inr hnt), hnt]
-  by_cases hns : μ s = 0
-  · filter_upwards [measure_zero_iff_ae_nmem.mp hns,
-      pdf_eq_zero_of_measure_eq_zero_or_top hu (Or.inl hns)] with x hx h'x
-    simp [hx, h'x, hns]
-  have : HasPDF X ℙ μ := hasPDF hns hnt hu
-  have : IsProbabilityMeasure ℙ := isProbabilityMeasure hns hnt hu
-  apply (eq_of_map_eq_withDensity _ _).mp
-  · rw [hu, withDensity_indicator hms, withDensity_smul _ measurable_one, withDensity_one]
-  · exact (measurable_one.aemeasurable.const_smul (μ s)⁻¹).indicator hms
-
-theorem pdf_toReal_ae_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
-    (hX : IsUniform X s ℙ μ) :
-    (fun x => (pdf X ℙ μ x).toReal) =ᵐ[μ] fun x =>
-      (s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) x).toReal :=
-  Filter.EventuallyEq.fun_comp (pdf_eq hms hX) ENNReal.toReal
-#align measure_theory.pdf.is_uniform.pdf_to_real_ae_eq MeasureTheory.pdf.IsUniform.pdf_toReal_ae_eq
-
-variable {X : Ω → ℝ} {s : Set ℝ}
-
-theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
-    Integrable fun x : ℝ => x * (pdf X ℙ volume x).toReal := by
-  by_cases hnt : volume s = 0 ∨ volume s = ∞
-  · have I : Integrable (fun x ↦ x * ENNReal.toReal (0)) := by simp
-    apply I.congr
-    filter_upwards [pdf_eq_zero_of_measure_eq_zero_or_top huX hnt] with x hx
-    simp [hx]
-  simp only [not_or] at hnt
-  have : IsProbabilityMeasure ℙ := isProbabilityMeasure hnt.1 hnt.2 huX
-  constructor
-  · exact aestronglyMeasurable_id.mul
-      (measurable_pdf X ℙ).aemeasurable.ennreal_toReal.aestronglyMeasurable
-  refine' hasFiniteIntegral_mul (pdf_eq hcs.measurableSet huX) _
-  set ind := (volume s)⁻¹ • (1 : ℝ → ℝ≥0∞)
-  have : ∀ x, ↑‖x‖₊ * s.indicator ind x = s.indicator (fun x => ‖x‖₊ * ind x) x := fun x =>
-    (s.indicator_mul_right (fun x => ↑‖x‖₊) ind).symm
-  simp only [this, lintegral_indicator _ hcs.measurableSet, mul_one, Algebra.id.smul_eq_mul,
-    Pi.one_apply, Pi.smul_apply]
-  rw [lintegral_mul_const _ measurable_nnnorm.coe_nnreal_ennreal]
-  exact (ENNReal.mul_lt_top (set_lintegral_lt_top_of_isCompact hnt.2 hcs continuous_nnnorm).ne
-    (ENNReal.inv_lt_top.2 (pos_iff_ne_zero.mpr hnt.1)).ne).ne
-#align measure_theory.pdf.is_uniform.mul_pdf_integrable MeasureTheory.pdf.IsUniform.mul_pdf_integrable
-
-/-- A real uniform random variable `X` with support `s` has expectation
-`(λ s)⁻¹ * ∫ x in s, x ∂λ` where `λ` is the Lebesgue measure. -/
-theorem integral_eq (huX : IsUniform X s ℙ) :
-    ∫ x, X x ∂ℙ = (volume s)⁻¹.toReal * ∫ x in s, x := by
-  rw [← smul_eq_mul, ← integral_smul_measure, ← huX]
-  by_cases hX : AEMeasurable X ℙ
-  · exact (integral_map hX aestronglyMeasurable_id).symm
-  · rw [map_of_not_aemeasurable hX, integral_zero_measure, integral_non_aestronglyMeasurable]
-    rwa [aestronglyMeasurable_iff_aemeasurable]
-#align measure_theory.pdf.is_uniform.integral_eq MeasureTheory.pdf.IsUniform.integral_eq
-
-end IsUniform
-
-end
 
 section TwoVariables
 

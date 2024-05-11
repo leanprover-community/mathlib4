@@ -3,7 +3,7 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
@@ -56,6 +56,6 @@ theorem Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical
   have hc : f.leadingCoeff = _ := congr(coeff $h f.natDegree)
   rw [hm, coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j ↦ a.coeff i * b.coeff j,
     Finset.sum_range_succ, ← sub_eq_iff_eq_add, Nat.sub_self] at hc
-  rw [← add_sub_cancel' 1 (-(_ * _)), ← sub_eq_add_neg, hc]
+  rw [← add_sub_cancel_left 1 (-(_ * _)), ← sub_eq_add_neg, hc]
   exact IsNilpotent.isUnit_sub_one <| show _ ∈ nilradical R from sum_mem fun i hi ↦
     Ideal.mul_mem_left _ _ <| hn _ <| Nat.sub_ne_zero_of_lt (List.mem_range.1 hi)

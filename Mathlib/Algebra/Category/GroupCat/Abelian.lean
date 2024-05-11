@@ -69,7 +69,8 @@ instance {J : Type u} [SmallCategory J] [IsFiltered J] :
     rcases Concrete.colimit_exists_rep G x with ⟨j, y, rfl⟩
     erw [← comp_apply, colimit.ι_map, comp_apply,
       ← map_zero (by exact colimit.ι H j : H.obj j →+ ↑(colimit H))] at hx
-    rcases Concrete.colimit_exists_of_rep_eq H _ _ hx with ⟨k, e₁, e₂, hk : _ = H.map e₂ 0⟩
+    rcases Concrete.colimit_exists_of_rep_eq.{u} H _ _ hx with
+      ⟨k, e₁, e₂, hk : _ = H.map e₂ 0⟩
     rw [map_zero, ← comp_apply, ← NatTrans.naturality, comp_apply] at hk
     rcases ((exact_iff _ _).mp <| h k).ge hk with ⟨t, ht⟩
     use colimit.ι F k t

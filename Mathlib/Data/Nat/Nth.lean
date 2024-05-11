@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Scott Morrison, Eric Rodriguez
 -/
 import Mathlib.Data.Nat.Count
-import Mathlib.Data.Set.Intervals.Monotone
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.OrderIsoNat
 
 #align_import data.nat.nth from "leanprover-community/mathlib"@"7fdd4f3746cb059edfdb5d52cba98f66fce418c0"
@@ -69,7 +70,7 @@ theorem nth_eq_getD_sort (h : (setOf p).Finite) (n : ℕ) :
 
 theorem nth_eq_orderEmbOfFin (hf : (setOf p).Finite) {n : ℕ} (hn : n < hf.toFinset.card) :
     nth p n = hf.toFinset.orderEmbOfFin rfl ⟨n, hn⟩ := by
-  rw [nth_eq_getD_sort hf, Finset.orderEmbOfFin_apply, List.getD_eq_get]; rfl
+  rw [nth_eq_getD_sort hf, Finset.orderEmbOfFin_apply, List.getD_eq_get]
 #align nat.nth_eq_order_emb_of_fin Nat.nth_eq_orderEmbOfFin
 
 theorem nth_strictMonoOn (hf : (setOf p).Finite) :
@@ -167,7 +168,7 @@ theorem nth_le_nth (hf : (setOf p).Infinite) {k n} : nth p k ≤ nth p n ↔ k �
 theorem range_nth_of_infinite (hf : (setOf p).Infinite) : Set.range (nth p) = setOf p := by
   rw [nth_eq_orderIsoOfNat hf]
   haveI := hf.to_subtype
-  -- porting note: added `classical`; probably, Lean 3 found instance by unification
+  -- Porting note: added `classical`; probably, Lean 3 found instance by unification
   classical exact Nat.Subtype.coe_comp_ofNat_range
 #align nat.range_nth_of_infinite Nat.range_nth_of_infinite
 

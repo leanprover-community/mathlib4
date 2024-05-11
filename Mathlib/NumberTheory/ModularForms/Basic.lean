@@ -261,7 +261,7 @@ def mul {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1) (g :
   toSlashInvariantForm := f.1.mul g.1
   holo' := f.holo'.mul g.holo'
   bdd_at_infty' A := by
-    -- porting note: was `by simpa using ...`
+    -- Porting note: was `by simpa using ...`
     -- `mul_slash_SL2` is no longer a `simp` and `simpa only [mul_slash_SL2] using ...` failed
     rw [SlashInvariantForm.coe_mul, mul_slash_SL2]
     exact (f.bdd_at_infty' A).mul (g.bdd_at_infty' A)

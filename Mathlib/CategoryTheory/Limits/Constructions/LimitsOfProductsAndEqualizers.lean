@@ -41,7 +41,6 @@ namespace CategoryTheory.Limits
 universe w v v₂ u u₂
 
 variable {C : Type u} [Category.{v} C]
-
 variable {J : Type w} [SmallCategory J]
 
 -- We hide the "implementation details" inside a namespace
@@ -122,6 +121,7 @@ theorem hasLimit_of_equalizer_and_product (F : J ⥤ C) [HasLimit (Discrete.func
 /-- A limit can be realised as a subobject of a product. -/
 noncomputable def limitSubobjectProduct [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) :
     limit F ⟶ ∏ fun j => F.obj j :=
+  have := hasFiniteLimits_of_hasLimitsOfSize C
   (limit.isoLimitCone (limitConeOfEqualizerAndProduct F)).hom ≫ equalizer.ι _ _
 #align category_theory.limits.limit_subobject_product CategoryTheory.Limits.limitSubobjectProduct
 
@@ -175,7 +175,7 @@ noncomputable def preservesLimitOfPreservesEqualizersAndProduct : PreservesLimit
     let i : I ⟶ P := equalizer.ι s t
     apply
       preservesLimitOfPreservesLimitCone
-        (buildIsLimit s t (by simp) (by simp) (limit.isLimit _) (limit.isLimit _)
+        (buildIsLimit s t (by simp [s]) (by simp [t]) (limit.isLimit _) (limit.isLimit _)
           (limit.isLimit _))
     refine' IsLimit.ofIsoLimit (buildIsLimit _ _ _ _ _ _ _) _
     · exact Fan.mk _ fun j => G.map (Pi.π _ j)
@@ -183,11 +183,11 @@ noncomputable def preservesLimitOfPreservesEqualizersAndProduct : PreservesLimit
     · apply G.map s
     · apply G.map t
     · intro f
-      dsimp [Fan.mk]
+      dsimp [s, Fan.mk]
       simp only [← G.map_comp, limit.lift_π]
       congr
     · intro f
-      dsimp [Fan.mk]
+      dsimp [t, Fan.mk]
       simp only [← G.map_comp, limit.lift_π]
       apply congrArg G.map
       dsimp
@@ -350,6 +350,7 @@ theorem hasColimit_of_coequalizer_and_coproduct (F : J ⥤ C) [HasColimit (Discr
 /-- A colimit can be realised as a quotient of a coproduct. -/
 noncomputable def colimitQuotientCoproduct [HasColimitsOfSize.{w, w} C] (F : J ⥤ C) :
     ∐ (fun j => F.obj j) ⟶ colimit F :=
+  have := hasFiniteColimits_of_hasColimitsOfSize C
   coequalizer.π _ _ ≫ (colimit.isoColimitCocone (colimitCoconeOfCoequalizerAndCoproduct F)).inv
 #align category_theory.limits.colimit_quotient_coproduct CategoryTheory.Limits.colimitQuotientCoproduct
 
@@ -400,7 +401,7 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
     let i : P ⟶ I := coequalizer.π s t
     apply
       preservesColimitOfPreservesColimitCocone
-        (buildIsColimit s t (by simp) (by simp) (colimit.isColimit _) (colimit.isColimit _)
+        (buildIsColimit s t (by simp [s]) (by simp [t]) (colimit.isColimit _) (colimit.isColimit _)
           (colimit.isColimit _))
     refine' IsColimit.ofIsoColimit (buildIsColimit _ _ _ _ _ _ _) _
     · refine Cofan.mk (G.obj Q) fun j => G.map ?_
@@ -410,11 +411,11 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
     · apply G.map s
     · apply G.map t
     · intro f
-      dsimp [Cofan.mk]
+      dsimp [s, Cofan.mk]
       simp only [← G.map_comp, colimit.ι_desc]
       congr
     · intro f
-      dsimp [Cofan.mk]
+      dsimp [t, Cofan.mk]
       simp only [← G.map_comp, colimit.ι_desc]
       dsimp
     · refine Cofork.ofπ (G.map i) ?_

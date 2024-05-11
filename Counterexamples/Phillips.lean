@@ -308,17 +308,17 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       simp only [not_exists, mem_iUnion, mem_diff]
       tauto
     · congr 1
-      simp only [Function.iterate_succ', Subtype.coe_mk, union_diff_left, Function.comp]
+      simp only [s, Function.iterate_succ', Subtype.coe_mk, union_diff_left, Function.comp]
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
     induction' n with n IH
-    · simp only [BoundedAdditiveMeasure.empty, id.def, Nat.cast_zero, zero_mul,
+    · simp only [s, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
         Function.iterate_zero, Subtype.coe_mk, Nat.zero_eq]
       rfl
     · have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
-        simpa only [Function.iterate_succ', union_diff_self]
+        simpa only [s, Function.iterate_succ', union_diff_self]
           using (diff_union_of_subset <| subset_union_left _ _).symm
-      rw [Nat.succ_eq_add_one, this, f.additive]
+      rw [this, f.additive]
       swap; · exact disjoint_sdiff_self_left
       calc
         ((n + 1 : ℕ) : ℝ) * (ε / 2) = ε / 2 + n * (ε / 2) := by simp only [Nat.cast_succ]; ring
@@ -374,7 +374,7 @@ def continuousPart (f : BoundedAdditiveMeasure α) : BoundedAdditiveMeasure α :
 theorem eq_add_parts (f : BoundedAdditiveMeasure α) (s : Set α) :
     f s = f.discretePart s + f.continuousPart s := by
   simp only [discretePart, continuousPart, restrict_apply]
-  rw [← f.additive, ← inter_distrib_right]
+  rw [← f.additive, ← union_inter_distrib_right]
   · simp only [union_univ, union_diff_self, univ_inter]
   · have : Disjoint f.discreteSupport (univ \ f.discreteSupport) := disjoint_sdiff_self_right
     exact this.mono (inter_subset_left _ _) (inter_subset_left _ _)
@@ -413,7 +413,8 @@ section
 
 
 theorem norm_indicator_le_one (s : Set α) (x : α) : ‖(indicator s (1 : α → ℝ)) x‖ ≤ 1 := by
-  simp only [indicator, Pi.one_apply]; split_ifs <;> norm_num
+  simp only [indicator, Pi.one_apply]; split_ifs <;>
+  set_option tactic.skipAssignedInstances false in norm_num
 #align counterexample.phillips_1940.norm_indicator_le_one Counterexample.Phillips1940.norm_indicator_le_one
 
 /-- A functional in the dual space of bounded functions gives rise to a bounded additive measure,
@@ -497,7 +498,6 @@ We need the continuum hypothesis to construct it.
 theorem sierpinski_pathological_family (Hcont : #ℝ = aleph 1) :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
   rcases Cardinal.ord_eq ℝ with ⟨r, hr, H⟩
-  skip
   refine' ⟨fun x => {y | r x y}, fun x => _, fun y => _⟩
   · have : univ \ {y | r x y} = {y | r y x} ∪ {x} := by
       ext y
@@ -577,7 +577,7 @@ theorem countable_ne (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ
       ⋃ y ∈ φ.toBoundedAdditiveMeasure.discreteSupport, {x | y ∈ spf Hcont x} := by
     intro x hx
     dsimp at hx
-    rw [← Ne.def, ← nonempty_iff_ne_empty] at hx
+    rw [← Ne, ← nonempty_iff_ne_empty] at hx
     simp only [exists_prop, mem_iUnion, mem_setOf_eq]
     exact hx
   apply Countable.mono (Subset.trans A B)

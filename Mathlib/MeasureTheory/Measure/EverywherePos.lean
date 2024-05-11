@@ -109,7 +109,7 @@ lemma measure_eq_zero_of_subset_diff_everywherePosSubset
 its everywhere positive subset. -/
 lemma everywherePosSubset_ae_eq [OpensMeasurableSpace α] [InnerRegular μ] (hs : MeasurableSet s) :
     μ.everywherePosSubset s =ᵐ[μ] s := by
-  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), OuterMeasure.empty',
+  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact, ENNReal.iSup_eq_zero]
   intro k hk h'k
   exact measure_eq_zero_of_subset_diff_everywherePosSubset h'k hk
@@ -121,7 +121,7 @@ lemma everywherePosSubset_ae_eq_of_measure_ne_top
     μ.everywherePosSubset s =ᵐ[μ] s := by
   have A : μ (s \ μ.everywherePosSubset s) ≠ ∞ :=
     ((measure_mono (diff_subset _ _ )).trans_lt h's.lt_top).ne
-  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), OuterMeasure.empty',
+  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact_of_ne_top A,
     ENNReal.iSup_eq_zero]
   intro k hk h'k
@@ -148,7 +148,7 @@ lemma isEverywherePos_everywherePosSubset
 of a measurable set of finite measure is itself everywhere positive. This is not obvious as
 `μ.everywherePosSubset s` is defined as the points whose neighborhoods intersect `s` along positive
 measure subsets, but this does not say they also intersect `μ.everywherePosSubset s` along positive
-measure subsets.-/
+measure subsets. -/
 lemma isEverywherePos_everywherePosSubset_of_measure_ne_top
     [OpensMeasurableSpace α] [InnerRegularCompactLTTop μ] (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
     μ.IsEverywherePos (μ.everywherePosSubset s) := by
@@ -232,10 +232,10 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   suffices ⋂ n, V n * k ⊆ k by
     replace : k = ⋂ n, V n * k := by
       apply Subset.antisymm (subset_iInter_iff.2 (fun n ↦ ?_)) this
-      exact subset_mul_right k (by simp [mem_W])
+      exact subset_mul_right k (by simp [V, mem_W])
     rw [this]
-    refine isGδ_iInter_of_isOpen (fun n ↦ ?_)
-    exact IsOpen.mul_right (isOpen_biInter_finset (fun i _hi ↦ W_open i))
+    refine .iInter_of_isOpen fun n ↦ ?_
+    exact .mul_right (isOpen_biInter_finset (fun i _hi ↦ W_open i))
   intro x hx
   choose v hv y hy hvy using mem_iInter.1 hx
   obtain ⟨z, zk, hz⟩ : ∃ z ∈ k, MapClusterPt z atTop y := hk.exists_mapClusterPt (by simp [hy])

@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 import Mathlib.Tactic.Basic
 import Mathlib.Mathport.Rename
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.TypeStar
@@ -19,7 +20,7 @@ universe u₁ u₂ u₃ u₄ u₅
 
 namespace Function
 
--- porting note: fix the universe of `ζ`, it used to be `u₁`
+-- Porting note: fix the universe of `ζ`, it used to be `u₁`
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
 #align function.comp Function.comp
@@ -28,7 +29,12 @@ attribute [eqns comp_def] comp
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
-attribute [eqns flip_def] flip
+#adaptation_note /-- nightly-2024-03-16
+Because of changes in how equation lemmas are generated,
+`@[eqns]` will only work properly when used immediately after the definition
+(and when none of the default equation lemmas are needed).
+Thus this usage is no longer allowed: -/
+-- attribute [eqns flip_def] flip
 
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
 and type of `f (g x)` depends on `x` and `g x`. -/
@@ -50,8 +56,7 @@ def compLeft (f : β → β → β) (g : α → β) : α → β → β := fun a 
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
 from `β` to `α`. -/
-@[reducible]
-def onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
+abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
 #align function.on_fun Function.onFun
 
 @[inherit_doc onFun]
@@ -70,16 +75,18 @@ def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ
 
 #align function.const Function.const
 
-@[reducible]
-def swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
+abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 #align function.swap Function.swap
+
+#adaptation_note /-- nightly-2024-03-16: added to replace simp [Function.swap] -/
+theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
 
 @[reducible, deprecated] -- Deprecated since 13 January 2024
 def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
   f x
 #align function.app Function.app
 
--- porting note: removed, it was never used
+-- Porting note: removed, it was never used
 -- notation f " -[" op "]- " g => combine f op g
 
 @[simp, mfld_simps]
@@ -167,7 +174,7 @@ theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f 
   fun h a b faeqfb =>
   calc
     a = g (f a) := (h a).symm
-    _ = g (f b) := (congr_arg g faeqfb)
+    _ = g (f b) := congr_arg g faeqfb
     _ = b := h b
 #align function.left_inverse.injective Function.LeftInverse.injective
 
@@ -194,7 +201,7 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
   Exists.elim (surjf y) fun x hx =>
     calc
       f (g y) = f (g (f x)) := hx ▸ rfl
-      _ = f x := (Eq.symm (rfg x) ▸ rfl)
+      _ = f x := Eq.symm (rfg x) ▸ rfl
       _ = y := hx
 #align function.left_inverse_of_surjective_of_right_inverse Function.leftInverse_of_surjective_of_rightInverse
 

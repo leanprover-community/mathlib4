@@ -62,19 +62,17 @@ theorem snorm'_le_snorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq
   have hpq : p < q := lt_of_le_of_ne hpq hpq_eq
   let g := fun _ : α => (1 : ℝ≥0∞)
   have h_rw : (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ p ∂μ) = ∫⁻ a, ((‖f a‖₊ : ℝ≥0∞) * g a) ^ p ∂μ :=
-    lintegral_congr fun a => by simp
+    lintegral_congr fun a => by simp [g]
   repeat' rw [snorm']
   rw [h_rw]
   let r := p * q / (q - p)
-  have hpqr : 1 / p = 1 / q + 1 / r := by
-    field_simp [(ne_of_lt hp0_lt).symm, (ne_of_lt hq0_lt).symm]
-    ring
+  have hpqr : 1 / p = 1 / q + 1 / r := by field_simp [r, hp0_lt.ne', hq0_lt.ne']
   calc
     (∫⁻ a : α, (↑‖f a‖₊ * g a) ^ p ∂μ) ^ (1 / p) ≤
         (∫⁻ a : α, ↑‖f a‖₊ ^ q ∂μ) ^ (1 / q) * (∫⁻ a : α, g a ^ r ∂μ) ^ (1 / r) :=
       ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hp0_lt hpq hpqr μ hf.ennnorm aemeasurable_const
     _ = (∫⁻ a : α, ↑‖f a‖₊ ^ q ∂μ) ^ (1 / q) * μ Set.univ ^ (1 / p - 1 / q) := by
-      rw [hpqr]; simp
+      rw [hpqr]; simp [r, g]
 #align measure_theory.snorm'_le_snorm'_mul_rpow_measure_univ MeasureTheory.snorm'_le_snorm'_mul_rpow_measure_univ
 
 theorem snorm'_le_snormEssSup_mul_rpow_measure_univ (hq_pos : 0 < q) {f : α → F} :
@@ -82,7 +80,7 @@ theorem snorm'_le_snormEssSup_mul_rpow_measure_univ (hq_pos : 0 < q) {f : α →
   have h_le : (∫⁻ a : α, (‖f a‖₊ : ℝ≥0∞) ^ q ∂μ) ≤ ∫⁻ _ : α, snormEssSup f μ ^ q ∂μ := by
     refine' lintegral_mono_ae _
     have h_nnnorm_le_snorm_ess_sup := coe_nnnorm_ae_le_snormEssSup f μ
-    refine' h_nnnorm_le_snorm_ess_sup.mono fun x hx => ENNReal.rpow_le_rpow hx (le_of_lt hq_pos)
+    exact h_nnnorm_le_snorm_ess_sup.mono fun x hx => by gcongr
   rw [snorm', ← ENNReal.rpow_one (snormEssSup f μ)]
   nth_rw 2 [← mul_inv_cancel (ne_of_lt hq_pos).symm]
   rw [ENNReal.rpow_mul, one_div, ← ENNReal.mul_rpow_of_nonneg _ _ (by simp [hq_pos.le] : 0 ≤ q⁻¹)]
@@ -95,7 +93,7 @@ theorem snorm_le_snorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤ q) 
     snorm f p μ ≤ snorm f q μ * μ Set.univ ^ (1 / p.toReal - 1 / q.toReal) := by
   by_cases hp0 : p = 0
   · simp [hp0, zero_le]
-  rw [← Ne.def] at hp0
+  rw [← Ne] at hp0
   have hp0_lt : 0 < p := lt_of_le_of_ne (zero_le _) hp0.symm
   have hq0_lt : 0 < q := lt_of_lt_of_le hp0_lt hpq
   by_cases hq_top : q = ∞
@@ -155,7 +153,7 @@ theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {
   cases' hfq with hfq_m hfq_lt_top
   by_cases hp0 : p = 0
   · rwa [hp0, memℒp_zero_iff_aestronglyMeasurable]
-  rw [← Ne.def] at hp0
+  rw [← Ne] at hp0
   refine' ⟨hfq_m, _⟩
   by_cases hp_top : p = ∞
   · have hq_top : q = ∞ := by rwa [hp_top, top_le_iff] at hpq

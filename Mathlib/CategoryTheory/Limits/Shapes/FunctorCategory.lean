@@ -22,7 +22,6 @@ namespace CategoryTheory.Limits
 universe v₁ v₂ u₁ u₂ w
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 instance functor_category_hasFiniteLimits [HasFiniteLimits D] : HasFiniteLimits (C ⥤ D) where

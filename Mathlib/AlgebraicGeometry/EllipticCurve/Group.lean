@@ -17,8 +17,8 @@ under the geometric group law defined in `Mathlib.AlgebraicGeometry.EllipticCurv
 
 Let `W` be a Weierstrass curve over a field `F` given by a Weierstrass equation $W(X, Y) = 0$ in
 affine coordinates. As in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`, the set of nonsingular
-rational points $W(F)$ of `W` consist of the unique point at infinity $0$ and nonsingular affine
-points $(x, y)$. With this description, there is an addition-preserving injection between $W(F)$
+rational points `W⟮F⟯` of `W` consist of the unique point at infinity $0$ and nonsingular affine
+points $(x, y)$. With this description, there is an addition-preserving injection between `W⟮F⟯`
 and the ideal class group of the coordinate ring $F[W] := F[X, Y] / \langle W(X, Y)\rangle$ of `W`.
 This is defined by mapping the point at infinity $0$ to the trivial ideal class and an affine point
 $(x, y)$ to the ideal class of the invertible fractional ideal $\langle X - x, Y - y\rangle$.
@@ -70,7 +70,7 @@ namespace WeierstrassCurve.Affine
 
 variable {R : Type u} [CommRing R] (W : Affine R)
 
--- porting note: in Lean 3, this is a `def` under a `derive comm_ring` tag.
+-- Porting note: in Lean 3, this is a `def` under a `derive comm_ring` tag.
 -- This generates a reducible instance of `comm_ring` for `coordinate_ring`. In certain
 -- circumstances this might be extremely slow, because all instances in its definition are unified
 -- exponentially many times. In this case, one solution is to manually add the local attribute
@@ -98,7 +98,7 @@ section Ring
 instance instIsDomainCoordinateRing [IsDomain R] [NormalizedGCDMonoid R] :
     IsDomain W.CoordinateRing :=
   (Quotient.isDomain_iff_prime _).mpr <| by
-    simpa only [span_singleton_prime W.polynomial_ne_zero, ← GCDMonoid.irreducible_iff_prime]
+    simpa only [span_singleton_prime W.polynomial_ne_zero, ← irreducible_iff_prime]
       using W.irreducible_polynomial
 #align weierstrass_curve.coordinate_ring.is_domain WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing
 
@@ -107,12 +107,12 @@ instance instIsDomainCoordinateRing_of_Field {F : Type u} [Field F] (W : Affine 
   classical exact instIsDomainCoordinateRing W
 #align weierstrass_curve.coordinate_ring.is_domain_of_field WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing_of_Field
 
--- porting note: added the abbreviation `mk` for `AdjoinRoot.mk W.polynomial`
+-- Porting note: added the abbreviation `mk` for `AdjoinRoot.mk W.polynomial`
 /-- An element of the coordinate ring `R[W]` of `W` over `R`. -/
 noncomputable abbrev mk : R[X][Y] →+* W.CoordinateRing :=
   AdjoinRoot.mk W.polynomial
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The class of the element $X - x$ in $R[W]$ for some $x \in R$. -/
 noncomputable def XClass (x : R) : W.CoordinateRing :=
   mk W <| C <| X - C x
@@ -125,7 +125,7 @@ lemma XClass_ne_zero [Nontrivial R] (x : R) : XClass W x ≠ 0 :=
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.X_class_ne_zero WeierstrassCurve.Affine.CoordinateRing.XClass_ne_zero
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The class of the element $Y - y(X)$ in $R[W]$ for some $y(X) \in R[X]$. -/
 noncomputable def YClass (y : R[X]) : W.CoordinateRing :=
   mk W <| Y - C y
@@ -140,25 +140,25 @@ set_option linter.uppercaseLean3 false in
 
 lemma C_addPolynomial (x y L : R) : mk W (C <| W.addPolynomial x y L) =
     mk W ((Y - C (linePolynomial x y L)) * (W.negPolynomial - C (linePolynomial x y L))) :=
-  AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [W.C_addPolynomial, add_sub_cancel', mul_one]⟩
+  AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [W.C_addPolynomial, add_sub_cancel_left, mul_one]⟩
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.C_add_polynomial WeierstrassCurve.Affine.CoordinateRing.C_addPolynomial
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The ideal $\langle X - x \rangle$ of $R[W]$ for some $x \in R$. -/
 noncomputable def XIdeal (x : R) : Ideal W.CoordinateRing :=
   span {XClass W x}
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.X_ideal WeierstrassCurve.Affine.CoordinateRing.XIdeal
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The ideal $\langle Y - y(X) \rangle$ of $R[W]$ for some $y(X) \in R[X]$. -/
 noncomputable def YIdeal (y : R[X]) : Ideal W.CoordinateRing :=
   span {YClass W y}
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.Y_ideal WeierstrassCurve.Affine.CoordinateRing.YIdeal
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The ideal $\langle X - x, Y - y(X) \rangle$ of $R[W]$ for some $x \in R$ and $y(X) \in R[X]$. -/
 noncomputable def XYIdeal (x : R) (y : R[X]) : Ideal W.CoordinateRing :=
   span {XClass W x, YClass W y}
@@ -266,7 +266,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁
         XYIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)
           (C <| W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
   have sup_rw : ∀ a b c d : Ideal W.CoordinateRing, a ⊔ (b ⊔ (c ⊔ d)) = a ⊔ d ⊔ b ⊔ c :=
-    fun _ _ c _ => by rw [← sup_assoc, @sup_comm _ _ c, sup_sup_sup_comm, ← sup_assoc]
+    fun _ _ c _ => by rw [← sup_assoc, sup_comm c, sup_sup_sup_comm, ← sup_assoc]
   rw [XYIdeal_add_eq, XIdeal, mul_comm, XYIdeal_eq₁ W x₁ y₁ <| W.slope x₁ x₂ y₁ y₂, XYIdeal,
     XYIdeal_eq₂ h₁ h₂ hxy, XYIdeal, span_pair_mul_span_pair]
   simp_rw [span_insert, sup_rw, Ideal.sup_mul, span_singleton_mul_span_singleton]
@@ -303,7 +303,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.XY_ideal_mul_XY_ideal WeierstrassCurve.Affine.CoordinateRing.XYIdeal_mul_XYIdeal
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The non-zero fractional ideal $\langle X - x, Y - y \rangle$ of $F(W)$ for some $x, y \in F$. -/
 noncomputable def XYIdeal' {x y : F} (h : W.nonsingular x y) :
     (FractionalIdeal W.CoordinateRing⁰ W.FunctionField)ˣ :=
@@ -371,7 +371,7 @@ noncomputable def quotientXYIdealEquiv {x : R} {y : R[X]} (h : (W.polynomial.eva
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.quotient_XY_ideal_equiv WeierstrassCurve.Affine.CoordinateRing.quotientXYIdealEquiv
 
--- porting note: added `classical` explicitly
+-- Porting note: added `classical` explicitly
 /-- The basis $\{1, Y\}$ for the coordinate ring $R[W]$ over the polynomial ring $R[X]$. -/
 protected noncomputable def basis : Basis (Fin 2) R[X] W.CoordinateRing := by
   classical exact (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
@@ -387,19 +387,19 @@ lemma basis_apply (n : Fin 2) :
   rfl
 #align weierstrass_curve.coordinate_ring.basis_apply WeierstrassCurve.Affine.CoordinateRing.basis_apply
 
--- porting note: added `@[simp]` in lieu of `coe_basis`
+-- Porting note: added `@[simp]` in lieu of `coe_basis`
 @[simp]
 lemma basis_zero : CoordinateRing.basis W 0 = 1 := by
   simpa only [basis_apply] using pow_zero _
 #align weierstrass_curve.coordinate_ring.basis_zero WeierstrassCurve.Affine.CoordinateRing.basis_zero
 
--- porting note: added `@[simp]` in lieu of `coe_basis`
+-- Porting note: added `@[simp]` in lieu of `coe_basis`
 @[simp]
 lemma basis_one : CoordinateRing.basis W 1 = mk W Y := by
   simpa only [basis_apply] using pow_one _
 #align weierstrass_curve.coordinate_ring.basis_one WeierstrassCurve.Affine.CoordinateRing.basis_one
 
--- porting note: removed `@[simp]` in lieu of `basis_zero` and `basis_one`
+-- Porting note: removed `@[simp]` in lieu of `basis_zero` and `basis_one`
 lemma coe_basis : (CoordinateRing.basis W : Fin 2 → W.CoordinateRing) = ![1, mk W Y] := by
   ext n
   fin_cases n
@@ -489,7 +489,7 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
     · simpa only [hq, hdp, sub_zero, zero_mul, mul_zero, zero_pow two_ne_zero] using
         (max_bot_right _).symm
     · rw [← not_congr degree_eq_bot] at hp hq
-      -- porting note: BUG `cases` tactic does not modify assumptions in `hp'` and `hq'`
+      -- Porting note: BUG `cases` tactic does not modify assumptions in `hp'` and `hq'`
       rcases hp' : p.degree with _ | dp -- `hp' : ` should be redundant
       · exact (hp hp').elim -- `hp'` should be `rfl`
       · rw [hp'] at hdp hdpq -- line should be redundant
@@ -516,7 +516,7 @@ lemma degree_norm_ne_one [IsDomain R] (x : W.CoordinateRing) :
   rw [degree_norm_smul_basis]
   rcases p.degree with (_ | _ | _ | _) <;> cases q.degree
   any_goals rintro (_ | _)
-  -- porting note: replaced `dec_trivial` with `by exact (cmp_eq_lt_iff ..).mp rfl`
+  -- Porting note: replaced `dec_trivial` with `by exact (cmp_eq_lt_iff ..).mp rfl`
   exact (lt_max_of_lt_right <| by exact (cmp_eq_lt_iff ..).mp rfl).ne'
 #align weierstrass_curve.coordinate_ring.degree_norm_ne_one WeierstrassCurve.Affine.CoordinateRing.degree_norm_ne_one
 
@@ -563,7 +563,7 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
         (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ fun h => (hx h).elim).symm
 #align weierstrass_curve.point.to_class WeierstrassCurve.Affine.Point.toClass
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma toClass_zero : toClass (0 : W.Point) = 0 :=
   rfl
 #align weierstrass_curve.point.to_class_zero WeierstrassCurve.Affine.Point.toClass_zero
@@ -573,7 +573,7 @@ lemma toClass_some {x y : F} (h : W.nonsingular x y) :
   rfl
 #align weierstrass_curve.point.to_class_some WeierstrassCurve.Affine.Point.toClass_some
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
   rcases P, Q with ⟨_ | @⟨x₁, y₁, _⟩, _ | @⟨x₂, y₂, _⟩⟩
   any_goals rfl
@@ -591,12 +591,12 @@ lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
     · exact fun ⟨hx, hy⟩ => some_add_some_of_Yeq hx hy
 #align weierstrass_curve.point.add_eq_zero WeierstrassCurve.Affine.Point.add_eq_zero
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma add_left_neg (P : W.Point) : -P + P = 0 := by
   rw [add_eq_zero]
 #align weierstrass_curve.point.add_left_neg WeierstrassCurve.Affine.Point.add_left_neg
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma neg_add_eq_zero (P Q : W.Point) : -P + Q = 0 ↔ P = Q := by
   rw [add_eq_zero, neg_inj]
 #align weierstrass_curve.point.neg_add_eq_zero WeierstrassCurve.Affine.Point.neg_add_eq_zero
@@ -631,6 +631,8 @@ lemma add_assoc (P Q R : W.Point) : P + Q + R = P + (Q + R) :=
 #align weierstrass_curve.point.add_assoc WeierstrassCurve.Affine.Point.add_assoc
 
 noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
+  nsmul := nsmulRec
+  zsmul := zsmulRec
   zero_add := zero_add
   add_zero := add_zero
   add_left_neg := add_left_neg

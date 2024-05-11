@@ -47,13 +47,13 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     refine' ⟨(b / a : ZMod p).valMinAbs.natAbs, mem_Ico.mpr ⟨_, _⟩, _⟩
     · apply Nat.pos_of_ne_zero
       simp only [div_eq_mul_inv, hap, CharP.cast_eq_zero_iff (ZMod p) p, hpe hb, not_false_iff,
-        valMinAbs_eq_zero, inv_eq_zero, Int.natAbs_eq_zero, Ne.def, _root_.mul_eq_zero, or_self_iff]
+        valMinAbs_eq_zero, inv_eq_zero, Int.natAbs_eq_zero, Ne, _root_.mul_eq_zero, or_self_iff]
     · apply lt_succ_of_le; apply natAbs_valMinAbs_le
-    · rw [nat_cast_natAbs_valMinAbs]
+    · rw [natCast_natAbs_valMinAbs]
       split_ifs
-      · erw [mul_div_cancel' _ hap, valMinAbs_def_pos, val_cast_of_lt (hep hb),
+      · erw [mul_div_cancel₀ _ hap, valMinAbs_def_pos, val_cast_of_lt (hep hb),
           if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
-      · erw [mul_neg, mul_div_cancel' _ hap, natAbs_valMinAbs_neg, valMinAbs_def_pos,
+      · erw [mul_neg, mul_div_cancel₀ _ hap, natAbs_valMinAbs_neg, valMinAbs_def_pos,
           val_cast_of_lt (hep hb), if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
   exact Multiset.map_eq_map_of_bij_of_nodup _ _ (Finset.nodup _) (Finset.nodup _)
     (fun x _ => (a * x : ZMod p).valMinAbs.natAbs) hmem
@@ -72,7 +72,7 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
     _ = ∏ x in Ico 1 (p / 2).succ, (if (a * x : ZMod p).val ≤ p / 2 then (1 : ZMod p) else -1) *
         (a * x : ZMod p).valMinAbs.natAbs :=
       (prod_congr rfl fun _ _ => by
-        simp only [nat_cast_natAbs_valMinAbs]
+        simp only [natCast_natAbs_valMinAbs]
         split_ifs <;> simp)
     _ = (-1 : ZMod p) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ =>
         ¬(a * x : ZMod p).val ≤ p / 2).card * ∏ x in Ico 1 (p / 2).succ,
@@ -95,7 +95,7 @@ theorem gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] {a : ℤ}
     (hap : (a : ZMod p) ≠ 0) : (↑a ^ (p / 2) : ZMod p) =
     ((-1) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card :) :=
   (mul_left_inj' (show ((p / 2)! : ZMod p) ≠ 0 by
-    rw [Ne.def, CharP.cast_eq_zero_iff (ZMod p) p, hp.1.dvd_factorial, not_le]
+    rw [Ne, CharP.cast_eq_zero_iff (ZMod p) p, hp.1.dvd_factorial, not_le]
     exact Nat.div_lt_self hp.1.pos (by decide))).1 <| by
       simpa using gauss_lemma_aux₁ p hap
 #align zmod.gauss_lemma_aux ZMod.gauss_lemma_aux
@@ -126,7 +126,7 @@ private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p 
       simp only [mod_add_div]
     _ = (∑ x in Ico 1 (p / 2).succ, ((a * x : ℕ) : ZMod p).val : ℕ) +
         (∑ x in Ico 1 (p / 2).succ, a * x / p : ℕ) := by
-      simp only [val_nat_cast]
+      simp only [val_natCast]
       simp [sum_add_distrib, ← mul_sum, Nat.cast_add, Nat.cast_mul, Nat.cast_sum, hp2]
     _ = _ :=
       congr_arg₂ (· + ·)
@@ -175,11 +175,10 @@ private theorem sum_Ico_eq_card_lt {p q : ℕ} :
     calc
       ∑ a in Ico 1 (p / 2).succ, a * q / p =
           ∑ a in Ico 1 (p / 2).succ, ((Ico 1 (q / 2).succ).filter fun x => x * p ≤ a * q).card :=
-        Finset.sum_congr rfl fun x hx => div_eq_filter_card (Nat.pos_of_ne_zero hp0)
-          (calc
-            x * q / p ≤ p / 2 * q / p := Nat.div_le_div_right
-              (mul_le_mul_of_nonneg_right (le_of_lt_succ <| (mem_Ico.mp hx).2) (Nat.zero_le _))
-            _ ≤ _ := Nat.div_mul_div_le_div _ _ _)
+        Finset.sum_congr rfl fun x hx => div_eq_filter_card (Nat.pos_of_ne_zero hp0) <|
+          calc
+            x * q / p ≤ p / 2 * q / p := by have := le_of_lt_succ (mem_Ico.mp hx).2; gcongr
+            _ ≤ _ := Nat.div_mul_div_le_div _ _ _
       _ = _ := by
         rw [← card_sigma]
         exact card_congr (fun a _ => ⟨a.1, a.2⟩) (by
@@ -234,7 +233,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       have := le_total (x.2 * p) (x.1 * q)
       simp only [mem_union, mem_filter, mem_Ico, mem_product]
       tauto
-  rw [sum_Ico_eq_card_lt, sum_Ico_eq_card_lt, hswap, ← card_disjoint_union hdisj, hunion,
+  rw [sum_Ico_eq_card_lt, sum_Ico_eq_card_lt, hswap, ← card_union_of_disjoint hdisj, hunion,
     card_product]
   simp only [card_Ico, tsub_zero, succ_sub_succ_eq_sub]
 #align zmod.sum_mul_div_add_sum_mul_div_eq_mul ZMod.sum_mul_div_add_sum_mul_div_eq_mul

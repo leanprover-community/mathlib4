@@ -113,7 +113,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
       ext; simp_rw [mem_univ_pi]; apply forall_congr'; intro i'
       by_cases h : i' = i
       · subst h; simp
-      · rw [← Ne.def] at h; simp [h]
+      · rw [← Ne] at h; simp [h]
     rw [this, ← iUnion_univ_pi]
     apply MeasurableSet.iUnion
     intro n; apply measurableSet_generateFrom
@@ -130,7 +130,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
 theorem generateFrom_eq_pi [h : ∀ i, MeasurableSpace (α i)] {C : ∀ i, Set (Set (α i))}
     (hC : ∀ i, generateFrom (C i) = h i) (h2C : ∀ i, IsCountablySpanning (C i)) :
     generateFrom (pi univ '' pi univ C) = MeasurableSpace.pi := by
-  rw [← funext hC, generateFrom_pi_eq h2C]
+  simp only [← funext hC, generateFrom_pi_eq h2C]
 #align generate_from_eq_pi generateFrom_eq_pi
 
 /-- The product σ-algebra is generated from boxes, i.e. `s ×ˢ t` for sets `s : set α` and
@@ -249,8 +249,12 @@ instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, Si
 theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)]
     (s : ∀ i, Set (π i)) :
     Measure.tprod l μ (Set.tprod l s) = (l.map fun i => (μ i) (s i)).prod := by
-  induction' l with i l ih; · simp
-  rw [tprod_cons, Set.tprod, prod_prod, map_cons, prod_cons, ih]
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    rw [tprod_cons, Set.tprod]
+    erw [prod_prod] -- TODO: why `rw` fails?
+    rw [map_cons, prod_cons, ih]
 #align measure_theory.measure.tprod_tprod MeasureTheory.Measure.tprod_tprod
 
 end Tprod
@@ -300,7 +304,7 @@ protected irreducible_def pi : Measure (∀ i, α i) :=
   toMeasure (OuterMeasure.pi fun i => (μ i).toOuterMeasure) (pi_caratheodory μ)
 #align measure_theory.measure.pi MeasureTheory.Measure.pi
 
--- porting note: moved from below so that instances about `Measure.pi` and `MeasureSpace.pi`
+-- Porting note: moved from below so that instances about `Measure.pi` and `MeasureSpace.pi`
 -- go together
 instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, MeasureSpace (α i)] :
     MeasureSpace (∀ i, α i) :=
@@ -411,6 +415,23 @@ instance pi.sigmaFinite : SigmaFinite (Measure.pi μ) :=
 instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] :
     SigmaFinite (volume : Measure (∀ i, α i)) :=
   pi.sigmaFinite _
+
+instance pi.instIsFiniteMeasure [∀ i, IsFiniteMeasure (μ i)] :
+    IsFiniteMeasure (Measure.pi μ) :=
+  ⟨Measure.pi_univ μ ▸ ENNReal.prod_lt_top (fun i _ ↦ measure_ne_top (μ i) _)⟩
+
+instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, IsFiniteMeasure (volume : Measure (α i))] :
+    IsFiniteMeasure (volume : Measure (∀ i, α i)) :=
+  pi.instIsFiniteMeasure _
+
+instance pi.instIsProbabilityMeasure [∀ i, IsProbabilityMeasure (μ i)] :
+    IsProbabilityMeasure (Measure.pi μ) :=
+  ⟨by simp only [Measure.pi_univ, measure_univ, Finset.prod_const_one]⟩
+
+instance {α : ι → Type*} [∀ i, MeasureSpace (α i)]
+    [∀ i, IsProbabilityMeasure (volume : Measure (α i))] :
+    IsProbabilityMeasure (volume : Measure (∀ i, α i)) :=
+  pi.instIsProbabilityMeasure _
 
 theorem pi_of_empty {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
     {m : ∀ a, MeasurableSpace (β a)} (μ : ∀ a : α, Measure (β a)) (x : ∀ a, β a := isEmptyElim) :
@@ -807,7 +828,7 @@ theorem measurePreserving_piFinSuccAbove {n : ℕ} {α : Fin (n + 1) → Type u}
   refine' ⟨e.measurable, (pi_eq fun s _ => _).symm⟩
   rw [e.map_apply, i.prod_univ_succAbove _, ← pi_pi, ← prod_prod]
   congr 1 with ⟨x, f⟩
-  simp [i.forall_iff_succAbove]
+  simp [e, i.forall_iff_succAbove]
 #align measure_theory.measure_preserving_pi_fin_succ_above_equiv MeasureTheory.measurePreserving_piFinSuccAbove
 
 theorem volume_preserving_piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type u)
@@ -824,10 +845,10 @@ theorem measurePreserving_piUnique {π : ι → Type*} [Unique ι] {m : ∀ i, M
     set e := MeasurableEquiv.piUnique π
     have : (piPremeasure fun i => (μ i).toOuterMeasure) = Measure.map e.symm (μ default) := by
       ext1 s
-      rw [piPremeasure, Fintype.prod_unique, e.symm.map_apply]
+      rw [piPremeasure, Fintype.prod_unique, e.symm.map_apply, coe_toOuterMeasure]
       congr 1; exact e.toEquiv.image_eq_preimage s
-    simp_rw [Measure.pi, OuterMeasure.pi, this, boundedBy_eq_self, toOuterMeasure_toMeasure,
-      MeasurableEquiv.map_map_symm]
+    simp_rw [Measure.pi, OuterMeasure.pi, this, ← coe_toOuterMeasure, boundedBy_eq_self,
+      toOuterMeasure_toMeasure, MeasurableEquiv.map_map_symm]
 
 theorem volume_preserving_piUnique (π : ι → Type*) [Unique ι] [∀ i, MeasureSpace (π i)] :
     MeasurePreserving (MeasurableEquiv.piUnique π) volume volume :=

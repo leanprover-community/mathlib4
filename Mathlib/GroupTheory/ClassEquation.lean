@@ -5,9 +5,10 @@ Authors: Johan Commelin, Eric Rodriguez
 -/
 
 import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Data.Set.Card
 import Mathlib.Algebra.Group.ConjFinite
-import Mathlib.GroupTheory.Subgroup.Finite
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Data.Set.Card
+import Mathlib.GroupTheory.Subgroup.Center
 
 /-!
 # Class Equation
@@ -22,20 +23,17 @@ This file establishes the class equation for finite groups.
 
 -/
 
-set_option autoImplicit true
-
 open MulAction ConjClasses
 
 open scoped BigOperators
 
-variable (G : Type u) [Group G]
+variable (G : Type*) [Group G]
 
 /-- Conjugacy classes form a partition of G, stated in terms of cardinality. -/
 theorem sum_conjClasses_card_eq_card [Fintype <| ConjClasses G] [Fintype G]
     [∀ x : ConjClasses G, Fintype x.carrier] :
     ∑ x : ConjClasses G, x.carrier.toFinset.card = Fintype.card G := by
-  suffices : (Σ x : ConjClasses G, x.carrier) ≃ G
-  · simpa using (Fintype.card_congr this)
+  suffices (Σ x : ConjClasses G, x.carrier) ≃ G by simpa using (Fintype.card_congr this)
   simpa [carrier_eq_preimage_mk] using Equiv.sigmaFiberEquiv ConjClasses.mk
 
 /-- Conjugacy classes form a partition of G, stated in terms of cardinality. -/

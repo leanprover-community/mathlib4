@@ -5,7 +5,6 @@ Authors: Simon Hudon, David Renshaw
 -/
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Core
-import Std.Tactic.SolveByElim
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Logic.Basic
 import Qq
@@ -16,7 +15,7 @@ The `tauto` tactic.
 
 namespace Mathlib.Tactic.Tauto
 
-open Lean Elab.Tactic Parser.Tactic Lean.Meta MVarId
+open Lean Elab.Tactic Parser.Tactic Lean.Meta MVarId Batteries.Tactic
 open Qq
 
 initialize registerTraceClass `tauto
@@ -37,7 +36,7 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
   | ~q(¬ (($a : Prop) ∧ $b)) => do
     let h' : Q(¬($a ∧ $b)) := h.toExpr
     let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
-    replace q(Decidable.not_and'.mp $h')
+    replace q(Decidable.not_and_iff_or_not_not'.mp $h')
   | ~q(¬ (($a : Prop) ∨ $b)) => do
     let h' : Q(¬($a ∨ $b)) := h.toExpr
     replace q(not_or.mp $h')
@@ -52,7 +51,7 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
   | ~q(¬ ((($a : Prop)) → $b)) => do
     let h' : Q(¬($a → $b)) := h.toExpr
     let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
-    replace q(Decidable.not_imp.mp $h')
+    replace q(Decidable.not_imp_iff_and_not.mp $h')
   | ~q(¬ (($a : Prop) ↔ $b)) => do
     let h' : Q(¬($a ↔ $b)) := h.toExpr
     let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
@@ -187,12 +186,12 @@ def finishingConstructorMatcher (e : Q(Prop)) : MetaM Bool :=
 
 /-- Implementation of the `tauto` tactic. -/
 def tautology : TacticM Unit := focusAndDoneWithScope "tauto" do
-  evalTactic (← `(tactic| classical!))
-  tautoCore
-  allGoals (iterateUntilFailure
-    (evalTactic (← `(tactic| rfl)) <|>
-     evalTactic (← `(tactic| solve_by_elim)) <|>
-     liftMetaTactic (constructorMatching · finishingConstructorMatcher)))
+  classical do
+    tautoCore
+    allGoals (iterateUntilFailure
+      (evalTactic (← `(tactic| rfl)) <|>
+      evalTactic (← `(tactic| solve_by_elim)) <|>
+      liftMetaTactic (constructorMatching · finishingConstructorMatcher)))
 
 /--
 `tauto` breaks down assumptions of the form `_ ∧ _`, `_ ∨ _`, `_ ↔ _` and `∃ _, _`

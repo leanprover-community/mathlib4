@@ -3,8 +3,8 @@ Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth
 -/
+import Mathlib.Algebra.MvPolynomial.Supported
 import Mathlib.RingTheory.WittVector.Truncated
-import Mathlib.Data.MvPolynomial.Supported
 
 #align_import ring_theory.witt_vector.mul_coeff from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -33,7 +33,6 @@ noncomputable section
 namespace WittVector
 
 variable (p : ℕ) [hp : Fact p.Prime]
-
 variable {k : Type*} [CommRing k]
 
 local notation "𝕎" => WittVector p
@@ -78,7 +77,7 @@ theorem wittPolyProdRemainder_vars (n : ℕ) :
   apply Subset.trans (vars_mul _ _)
   refine' union_subset _ _
   · apply Subset.trans (vars_pow _ _)
-    have : (p : 𝕄) = C (p : ℤ) := by simp only [Int.cast_ofNat, eq_intCast]
+    have : (p : 𝕄) = C (p : ℤ) := by simp only [Int.cast_natCast, eq_intCast]
     rw [this, vars_C]
     apply empty_subset
   · apply Subset.trans (vars_pow _ _)
@@ -130,9 +129,9 @@ theorem mul_polyOfInterest_aux1 (n : ℕ) :
     congr 1
     have hsupp : (Finsupp.single i (p ^ (n - i))).support = {i} := by
       rw [Finsupp.support_eq_singleton]
-      simp only [and_true_iff, Finsupp.single_eq_same, eq_self_iff_true, Ne.def]
+      simp only [and_true_iff, Finsupp.single_eq_same, eq_self_iff_true, Ne]
       exact pow_ne_zero _ hp.out.ne_zero
-    simp only [bind₁_monomial, hsupp, Int.cast_ofNat, prod_singleton, eq_intCast,
+    simp only [bind₁_monomial, hsupp, Int.cast_natCast, prod_singleton, eq_intCast,
       Finsupp.single_eq_same, C_pow, mul_eq_mul_left_iff, true_or_iff, eq_self_iff_true,
       Int.cast_pow]
   · simp only [map_mul, bind₁_X_right]
@@ -267,10 +266,10 @@ theorem nth_mul_coeff' (n : ℕ) :
     simp_rw [product_val, this, Multiset.mem_product, mem_univ_val, true_and_iff, range_val,
       Multiset.range_succ, Multiset.mem_cons, Multiset.mem_range] at ha
     refine' ⟨a.fst, ⟨a.snd, _⟩⟩
-    cases' ha with ha ha <;> linarith only [ha]
+    cases' ha with ha ha <;> omega
   use f
   intro x y
-  dsimp [peval]
+  dsimp [f, peval]
   rw [← hf₀]
   congr
   ext a

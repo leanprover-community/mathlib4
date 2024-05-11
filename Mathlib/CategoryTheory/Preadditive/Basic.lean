@@ -5,7 +5,7 @@ Authors: Markus Himmel, Jakob von Raumer
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
@@ -203,7 +203,7 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 #align category_theory.preadditive.preadditive_has_zero_morphisms CategoryTheory.Preadditive.preadditiveHasZeroMorphisms
 
-/--Porting note: adding this before the ring instance allowed moduleEndRight to find
+/-- Porting note: adding this before the ring instance allowed moduleEndRight to find
 the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms
 to make use of them -/
 instance {X : C} : Semiring (End X) :=
@@ -475,10 +475,10 @@ instance : SMul (Units ℤ) (X ≅ Y) where
         simp only [comp_zsmul, zsmul_comp, smul_smul, Units.mul_inv, one_smul, e.inv_hom_id] }
 
 @[simp]
-lemma smul_iso_hom (a : Units ℤ) (e : X ≅ Y) : (a • e).hom = (a : ℤ) • e.hom := rfl
+lemma smul_iso_hom (a : Units ℤ) (e : X ≅ Y) : (a • e).hom = a • e.hom := rfl
 
 @[simp]
-lemma smul_iso_inv (a : Units ℤ) (e : X ≅ Y) : (a • e).inv = ((a⁻¹ : Units ℤ) : ℤ) • e.inv := rfl
+lemma smul_iso_inv (a : Units ℤ) (e : X ≅ Y) : (a • e).inv = a⁻¹ • e.inv := rfl
 
 instance : Neg (X ≅ Y) where
   neg e :=

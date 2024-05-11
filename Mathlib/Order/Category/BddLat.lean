@@ -44,7 +44,7 @@ attribute [instance] BddLat.isBoundedOrder
 
 /-- Construct a bundled `BddLat` from `Lattice` + `BoundedOrder`. -/
 def of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat :=
-  -- porting note: was `⟨⟨α⟩⟩`, see https://github.com/leanprover-community/mathlib4/issues/4998
+  -- Porting note: was `⟨⟨α⟩⟩`, see https://github.com/leanprover-community/mathlib4/issues/4998
   ⟨{α := α}⟩
 #align BddLat.of BddLat.of
 

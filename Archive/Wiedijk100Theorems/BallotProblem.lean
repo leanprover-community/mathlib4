@@ -118,13 +118,6 @@ theorem counted_ne_nil_right {p q : ℕ} (hq : q ≠ 0) {l : List ℤ} (hl : l �
     l ≠ [] := by simp [counted_eq_nil_iff hl, hq]
 #align ballot.counted_ne_nil_right Ballot.counted_ne_nil_right
 
--- Porting note: Added this helper function to help with golfing
-private theorem get0_eq_head! {l : List ℤ} (h : l ≠ []) :
-    l.get ⟨0, List.length_pos_of_ne_nil h⟩ = l.head! := by
-  cases l
-  · tauto
-  · rw [List.get, List.head!_cons]
-
 theorem counted_succ_succ (p q : ℕ) :
     countedSequence (p + 1) (q + 1) =
       List.cons 1 '' countedSequence p (q + 1) ∪ List.cons (-1) '' countedSequence (p + 1) q := by
@@ -134,21 +127,17 @@ theorem counted_succ_succ (p q : ℕ) :
   · intro hl
     have hlnil := counted_ne_nil_left (Nat.succ_ne_zero p) hl
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
-    obtain hlast | hlast := hl₂ l.head! (List.head!_mem_self hlnil)
+    obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
     · refine' Or.inl ⟨l.tail, ⟨_, _, _⟩, _⟩
-      · rw [List.count_tail l 1 (List.length_pos_of_ne_nil hlnil), hl₀, get0_eq_head! hlnil, hlast,
-          if_pos rfl, Nat.add_sub_cancel]
-      · rw [List.count_tail l (-1) (List.length_pos_of_ne_nil hlnil), hl₁, get0_eq_head! hlnil,
-          hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail l 1 hlnil, hl₀, hlast, if_pos rfl, Nat.add_sub_cancel]
+      · rw [List.count_tail l (-1) hlnil, hl₁, hlast, if_neg (by decide), Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
-      · rw [← hlast, List.cons_head!_tail hlnil]
+      · rw [← hlast, List.head_cons_tail]
     · refine' Or.inr ⟨l.tail, ⟨_, _, _⟩, _⟩
-      · rw [List.count_tail l 1 (List.length_pos_of_ne_nil hlnil), hl₀, get0_eq_head! hlnil, hlast,
-          if_neg (by decide), Nat.sub_zero]
-      · rw [List.count_tail l (-1) (List.length_pos_of_ne_nil hlnil), hl₁, get0_eq_head! hlnil,
-          hlast, if_pos rfl, Nat.add_sub_cancel]
+      · rw [List.count_tail l 1 hlnil, hl₀, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail l (-1) hlnil, hl₁, hlast, if_pos rfl, Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
-      · rw [← hlast, List.cons_head!_tail hlnil]
+      · rw [← hlast, List.head_cons_tail]
   · rintro (⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩ | ⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩)
     · refine' ⟨_, _, _⟩
       · rw [List.count_cons, if_pos rfl, ht₀]
@@ -171,7 +160,6 @@ theorem countedSequence_finite : ∀ p q : ℕ, (countedSequence p q).Finite
     rw [counted_succ_succ, Set.finite_union, Set.finite_image_iff (List.cons_injective.injOn _),
       Set.finite_image_iff (List.cons_injective.injOn _)]
     exact ⟨countedSequence_finite _ _, countedSequence_finite _ _⟩
-termination_by p q => p + q -- Porting note: Added `termination_by`
 #align ballot.counted_sequence_finite Ballot.countedSequence_finite
 
 theorem countedSequence_nonempty : ∀ p q : ℕ, (countedSequence p q).Nonempty
@@ -215,7 +203,6 @@ theorem count_countedSequence : ∀ p q : ℕ, count (countedSequence p q) = (p 
       count_injective_image List.cons_injective, count_countedSequence _ _]
     · norm_cast
       rw [add_assoc, add_comm 1 q, ← Nat.choose_succ_succ, Nat.succ_eq_add_one, add_right_comm]
-termination_by p q => p + q -- Porting note: Added `termination_by`
 #align ballot.count_counted_sequence Ballot.count_countedSequence
 
 theorem first_vote_pos :
@@ -315,7 +302,7 @@ theorem ballot_pos (p q : ℕ) :
   have : (1 :: ·) '' countedSequence p (q + 1) ∩ staysPositive =
       (1 :: ·) '' (countedSequence p (q + 1) ∩ staysPositive) := by
     simp only [image_inter List.cons_injective, Set.ext_iff, mem_inter_iff, and_congr_right_iff,
-      ball_image_iff, List.cons_injective.mem_set_image, staysPositive_cons_pos _ one_pos]
+      forall_mem_image, List.cons_injective.mem_set_image, staysPositive_cons_pos _ one_pos]
     exact fun _ _ ↦ trivial
   rw [this, count_injective_image]
   exact List.cons_injective
@@ -344,7 +331,7 @@ theorem ballot_neg (p q : ℕ) (qp : q < p) :
   have : List.cons (-1) '' countedSequence (p + 1) q ∩ staysPositive =
       List.cons (-1) '' (countedSequence (p + 1) q ∩ staysPositive) := by
     simp only [image_inter List.cons_injective, Set.ext_iff, mem_inter_iff, and_congr_right_iff,
-      ball_image_iff, List.cons_injective.mem_set_image, staysPositive_cons, and_iff_left_iff_imp]
+      forall_mem_image, List.cons_injective.mem_set_image, staysPositive_cons, and_iff_left_iff_imp]
     intro l hl _
     simp [sum_of_mem_countedSequence hl, lt_sub_iff_add_lt', qp]
   rw [this, count_injective_image]
@@ -389,8 +376,8 @@ theorem ballot_problem' :
       ring
     all_goals
       refine' (ENNReal.mul_lt_top _ _).ne
-      exact (measure_lt_top _ _).ne
-      simp [Ne.def, ENNReal.div_eq_top]
+      · exact (measure_lt_top _ _).ne
+      · simp [Ne, ENNReal.div_eq_top]
 #align ballot.ballot_problem' Ballot.ballot_problem'
 
 /-- The ballot problem. -/
@@ -405,13 +392,13 @@ theorem ballot_problem :
     rw [ballot_problem' q p qp]
     rw [ENNReal.toReal_div, ← Nat.cast_add, ← Nat.cast_add, ENNReal.toReal_nat,
       ENNReal.toReal_sub_of_le, ENNReal.toReal_nat, ENNReal.toReal_nat]
-    exacts [Nat.cast_le.2 qp.le, ENNReal.nat_ne_top _]
+    exacts [Nat.cast_le.2 qp.le, ENNReal.natCast_ne_top _]
   rwa [ENNReal.toReal_eq_toReal (measure_lt_top _ _).ne] at this
-  · simp only [Ne.def, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
-      add_eq_zero_iff, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.nat_ne_top, or_self_iff,
+  · simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
+      add_eq_zero_iff, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
       not_false_iff, and_true_iff]
     push_neg
-    exact ⟨fun _ _ => by linarith, (lt_of_le_of_lt tsub_le_self (ENNReal.nat_ne_top p).lt_top).ne⟩
+    exact ⟨fun _ _ => by linarith, (tsub_le_self.trans_lt (ENNReal.natCast_ne_top p).lt_top).ne⟩
 #align ballot.ballot_problem Ballot.ballot_problem
 
 end Ballot

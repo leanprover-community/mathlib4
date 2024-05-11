@@ -451,8 +451,8 @@ theorem injective_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : �
 /-- Restrict the codomain of a non-unital star algebra homomorphism `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-@[reducible]
-def rangeRestrict (f : F) : A →⋆ₙₐ[R] (NonUnitalStarAlgHom.range f : NonUnitalStarSubalgebra R B) :=
+abbrev rangeRestrict (f : F) :
+    A →⋆ₙₐ[R] (NonUnitalStarAlgHom.range f : NonUnitalStarSubalgebra R B) :=
   NonUnitalStarAlgHom.codRestrict f (NonUnitalStarAlgHom.range f)
     (NonUnitalStarAlgHom.mem_range_self f)
 
@@ -633,7 +633,7 @@ theorem adjoin_toNonUnitalSubalgebra (s : Set A) :
     (adjoin R s).toNonUnitalSubalgebra = NonUnitalAlgebra.adjoin R (s ∪ star s) :=
   rfl
 
-@[aesop safe 20 apply (rule_sets [SetLike])]
+@[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   (Set.subset_union_left s (star s)).trans <| NonUnitalAlgebra.subset_adjoin R
 
@@ -740,7 +740,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalStarSubalgebra R A} :
     (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by simp [iInf]
 
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalStarSubalgebra R A} {x : A} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
+    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
 theorem iInf_toNonUnitalSubalgebra {ι : Sort*} (S : ι → NonUnitalStarSubalgebra R A) :

@@ -154,10 +154,10 @@ def free : Type u ⥤ AlgebraCat.{u} R where
     { carrier := FreeAlgebra R S
       isRing := Algebra.semiringToRing R }
   map f := FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
-  -- porting note: `apply FreeAlgebra.hom_ext` was `ext1`.
+  -- Porting note: `apply FreeAlgebra.hom_ext` was `ext1`.
   map_id := by intro X; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; rfl
   map_comp := by
-  -- porting note: `apply FreeAlgebra.hom_ext` was `ext1`.
+  -- Porting note: `apply FreeAlgebra.hom_ext` was `ext1`.
     intros; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; ext1
     -- Porting node: this ↓ `erw` used to be handled by the `simp` below it
     erw [CategoryTheory.coe_comp]
@@ -173,7 +173,7 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
     { homEquiv := fun X A => (FreeAlgebra.lift _).symm
       -- Relying on `obviously` to fill out these proofs is very slow :(
       homEquiv_naturality_left_symm := by
-        -- porting note: `apply FreeAlgebra.hom_ext` was `ext1`.
+        -- Porting note: `apply FreeAlgebra.hom_ext` was `ext1`.
         intros; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; ext1
         simp only [free_map, Equiv.symm_symm, FreeAlgebra.lift_ι_apply, CategoryTheory.coe_comp,
           Function.comp_apply, types_comp_apply]
@@ -190,13 +190,11 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
         rfl }
 #align Algebra.adj AlgebraCat.adj
 
-instance : IsRightAdjoint (forget (AlgebraCat.{u} R)) :=
-  ⟨_, adj R⟩
+instance : (forget (AlgebraCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 
 end AlgebraCat
 
 variable {R}
-
 variable {X₁ X₂ : Type u}
 
 /-- Build an isomorphism in the category `AlgebraCat R` from a `AlgEquiv` between `Algebra`s. -/
@@ -217,13 +215,13 @@ def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y where
   toFun := i.hom
   invFun := i.inv
   left_inv x := by
-    -- porting note: was `by tidy`
+    -- Porting note: was `by tidy`
     change (i.hom ≫ i.inv) x = x
     simp only [hom_inv_id]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [id_apply]
   right_inv x := by
-    -- porting note: was `by tidy`
+    -- Porting note: was `by tidy`
     change (i.inv ≫ i.hom) x = x
     simp only [inv_hom_id]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -248,7 +246,7 @@ def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebr
 instance (X : Type u) [Ring X] [Algebra R X] : CoeOut (Subalgebra R X) (AlgebraCat R) :=
   ⟨fun N => AlgebraCat.of R N⟩
 
-instance AlgebraCat.forget_reflects_isos : ReflectsIsomorphisms (forget (AlgebraCat.{u} R)) where
+instance AlgebraCat.forget_reflects_isos : (forget (AlgebraCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget (AlgebraCat.{u} R)).map f)
     let e : X ≃ₐ[R] Y := { f, i.toEquiv with }

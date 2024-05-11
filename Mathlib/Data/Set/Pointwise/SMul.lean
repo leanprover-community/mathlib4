@@ -3,9 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.GroupTheory.GroupAction.Group
 
 #align_import data.set.pointwise.smul from "leanprover-community/mathlib"@"5e526d18cea33550268dcbbddcb822d5cde40654"
 
@@ -573,7 +574,7 @@ instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
   ⟨fun {s t} h ↦ by
     by_contra! H
     have hst : (s • t).Nonempty := h.symm.subst zero_nonempty
-    rw [Ne.def, ← hst.of_smul_left.subset_zero_iff, Ne.def,
+    rw [Ne, ← hst.of_smul_left.subset_zero_iff, Ne,
       ← hst.of_smul_right.subset_zero_iff] at H
     simp only [not_subset, mem_zero] at H
     obtain ⟨⟨a, hs, ha⟩, b, ht, hb⟩ := H
@@ -584,7 +585,7 @@ instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivi
   ⟨fun {a s} h ↦ by
     by_contra! H
     have hst : (a • s).Nonempty := h.symm.subst zero_nonempty
-    rw [Ne.def, Ne.def, ← hst.of_image.subset_zero_iff, not_subset] at H
+    rw [Ne, Ne, ← hst.of_image.subset_zero_iff, not_subset] at H
     obtain ⟨ha, b, ht, hb⟩ := H
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul_set ht).elim ha hb⟩
 #align set.no_zero_smul_divisors_set Set.noZeroSMulDivisors_set
@@ -973,6 +974,10 @@ theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ 
 #align set.vadd_univ Set.vadd_univ
 
 @[to_additive]
+theorem smul_set_compl : a • sᶜ = (a • s)ᶜ := by
+  simp_rw [Set.compl_eq_univ_diff, smul_set_sdiff, smul_set_univ]
+
+@[to_additive]
 theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
     x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
   rw [← nonempty_iff_ne_empty]
@@ -1025,6 +1030,10 @@ lemma inv_smul_set_distrib (a : α) (s : Set α) : (a • s)⁻¹ = op a⁻¹ �
 @[to_additive (attr := simp)]
 lemma inv_op_smul_set_distrib (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹ • s⁻¹ := by
   ext; simp [mem_smul_set_iff_inv_smul_mem]
+
+@[to_additive (attr := simp)]
+lemma smul_set_disjoint_iff : Disjoint (a • s) (a • t) ↔ Disjoint s t := by
+  simp [disjoint_iff, ← smul_set_inter]
 
 end Group
 
@@ -1127,7 +1136,7 @@ section Semiring
 
 variable [Semiring α] [AddCommMonoid β] [Module α β]
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b • s := by
   rintro _ ⟨x, hx, rfl⟩
   simpa only [add_smul] using add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hx)

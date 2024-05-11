@@ -52,7 +52,7 @@ attribute [local simp] eqToHom_map
 -- Porting note: we used to have:
 -- local attribute [tidy] tactic.auto_cases_opens
 -- We would replace this by:
--- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
 -- although it doesn't appear to help in this file, in any case.
 
 @[simp]
@@ -134,7 +134,7 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       dsimp [comp_obj, forget_obj, Functor.comp_map, forget_map, op_comp, unop_op,
         pushforwardObj_obj, op_obj, Opens.map_obj, opEquiv, Equiv.coe_fn_mk, unop_comp,
         Quiver.Hom.unop_op, unop_id]
-      -- Porting note : some `simp` lemmas are not picked up
+      -- Porting note: some `simp` lemmas are not picked up
       rw [NatTrans.id_app]
       simp only [op_obj, unop_op, Opens.map_obj, map_id_c_app, Opens.map_id_obj',
         map_id, pushforwardEq_hom_app, eqToHom_op, id_eq, eqToHom_map, id_comp,
@@ -147,7 +147,7 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     refine NatTrans.ext _ _ (funext fun U => ?_)
     dsimp only [comp_obj, forget_obj, Functor.comp_map, forget_map, op_comp, unop_op,
       pushforwardObj_obj, op_obj, opEquiv, Equiv.coe_fn_mk, unop_comp, Quiver.Hom.unop_op]
-    -- Porting note : some `simp` lemmas are not picked up
+    -- Porting note: some `simp` lemmas are not picked up
     rw [NatTrans.comp_app, pushforwardMap_app, NatTrans.comp_app, Pushforward.comp_inv_app,
       id_comp, pushforwardEq_hom_app, NatTrans.comp_app, NatTrans.comp_app, NatTrans.comp_app,
       pushforwardMap_app, Pushforward.comp_inv_app, id_comp, pushforwardEq_hom_app,
@@ -220,7 +220,7 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
             ← congr_arg NatTrans.app (limit.w (pushforwardDiagramToColimit F).leftOp f.op),
             NatTrans.comp_app, Functor.leftOp_map, pushforwardDiagramToColimit_map]
           dsimp [-Presheaf.comp_app]
-          rw [NatTrans.comp_app, NatTrans.comp_app, pushforwardEq_hom_app, id.def, eqToHom_op,
+          rw [NatTrans.comp_app, NatTrans.comp_app, pushforwardEq_hom_app, _root_.id, eqToHom_op,
             Pushforward.comp_inv_app, id_comp, pushforwardMap_app, ← assoc]
           congr 1 }
 set_option linter.uppercaseLean3 false in
@@ -301,7 +301,7 @@ theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) 
     (colimitCocone F).ι.app j ≫ desc F s = s.ι.app j := by
   ext U
   · simp [desc]
-  · -- Porting note : the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
+  · -- Porting note: the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
     -- but this has to be expanded a bit
     rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app]
     dsimp [desc, descCApp]
@@ -394,7 +394,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
     refine' (F.obj (unop X)).presheaf.mapIso (eqToIso _)
     simp only [Functor.op_obj, unop_op, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
       Set.preimage_preimage]
-    refine congr_arg (Set.preimage . U.1) (funext fun x => ?_)
+    refine congr_arg (Set.preimage · U.1) (funext fun x => ?_)
     erw [← TopCat.comp_app]
     congr
     exact ι_preservesColimitsIso_inv (forget C) F (unop X)
@@ -422,7 +422,7 @@ theorem colimitPresheafObjIsoComponentwiseLimit_inv_ι_app (F : J ⥤ Presheafed
   erw [← comp_c_app_assoc]
   rw [congr_app (colimit.isoColimitCocone_ι_hom _ _), assoc]
   erw [limitObjIsoLimitCompEvaluation_inv_π_app_assoc, limMap_π_assoc]
-  -- Porting note : `convert` doesn't work due to meta variable, so change to a `suffices` block
+  -- Porting note: `convert` doesn't work due to meta variable, so change to a `suffices` block
   set f := _
   change _ ≫ f = _
   suffices f_eq : f = 𝟙 _ by rw [f_eq, comp_id]

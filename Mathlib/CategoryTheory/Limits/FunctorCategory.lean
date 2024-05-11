@@ -3,6 +3,7 @@ Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
 #align_import category_theory.limits.functor_category from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
@@ -30,7 +31,6 @@ universe w' w v₁ v₂ u₁ u₂ v v' u u'
 namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
 
 @[reassoc (attr := simp)]
@@ -321,7 +321,7 @@ theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W 
 
 instance evaluationPreservesLimits [HasLimits C] (k : K) :
     PreservesLimits ((evaluation K C).obj k) where
-  preservesLimitsOfShape {J} 𝒥 := by skip; infer_instance
+  preservesLimitsOfShape {_} _𝒥 := inferInstance
 #align category_theory.limits.evaluation_preserves_limits CategoryTheory.Limits.evaluationPreservesLimits
 
 /-- `F : D ⥤ K ⥤ C` preserves the limit of some `G : J ⥤ D` if it does for each `k : K`. -/
@@ -358,7 +358,7 @@ instance preservesLimitsConst : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _
 
 instance evaluationPreservesColimits [HasColimits C] (k : K) :
     PreservesColimits ((evaluation K C).obj k) where
-  preservesColimitsOfShape := by skip; infer_instance
+  preservesColimitsOfShape := inferInstance
 #align category_theory.limits.evaluation_preserves_colimits CategoryTheory.Limits.evaluationPreservesColimits
 
 /-- `F : D ⥤ K ⥤ C` preserves the colimit of some `G : J ⥤ D` if it does for each `k : K`. -/
