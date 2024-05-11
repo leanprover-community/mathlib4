@@ -576,8 +576,8 @@ theorem quotient_mk_comp_C_isIntegral_of_jacobson :
       (fun h => absurd (_root_.trans (h ▸ hPJ : P = comap f ⊤) comap_top : P = ⊤) hP.ne_top) id
   apply quotient_mk_comp_C_isIntegral_of_jacobson' _ ?_ (fun x hx => ?_)
   any_goals exact Ideal.isJacobson_quotient
-  · obtain ⟨z, rfl⟩ := Quotient.mk_surjective x
-    rwa [Quotient.eq_zero_iff_mem, mem_comap, hPJ, mem_comap, coe_mapRingHom, map_C]
+  obtain ⟨z, rfl⟩ := Quotient.mk_surjective x
+  rwa [Quotient.eq_zero_iff_mem, mem_comap, hPJ, mem_comap, coe_mapRingHom, map_C]
 set_option linter.uppercaseLean3 false in
 #align ideal.polynomial.quotient_mk_comp_C_is_integral_of_jacobson Ideal.Polynomial.quotient_mk_comp_C_isIntegral_of_jacobson
 

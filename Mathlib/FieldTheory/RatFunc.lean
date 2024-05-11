@@ -731,13 +731,13 @@ theorem liftMonoidWithZeroHom_injective [Nontrivial R] (φ : R[X] →*₀ G₀) 
   rintro ⟨x⟩ ⟨y⟩
   induction' x using Localization.induction_on with a
   induction' y using Localization.induction_on with a'
-  · simp_rw [liftMonoidWithZeroHom_apply_ofFractionRing_mk]
-    intro h
-    congr 1
-    refine Localization.mk_eq_mk_iff.mpr (Localization.r_of_eq (M := R[X]) ?_)
-    have := mul_eq_mul_of_div_eq_div _ _ ?_ ?_ h
-    · rwa [← map_mul, ← map_mul, hφ.eq_iff, mul_comm, mul_comm a'.fst] at this
-    all_goals exact map_ne_zero_of_mem_nonZeroDivisors _ hφ (SetLike.coe_mem _)
+  simp_rw [liftMonoidWithZeroHom_apply_ofFractionRing_mk]
+  intro h
+  congr 1
+  refine Localization.mk_eq_mk_iff.mpr (Localization.r_of_eq (M := R[X]) ?_)
+  have := mul_eq_mul_of_div_eq_div _ _ ?_ ?_ h
+  · rwa [← map_mul, ← map_mul, hφ.eq_iff, mul_comm, mul_comm a'.fst] at this
+  all_goals exact map_ne_zero_of_mem_nonZeroDivisors _ hφ (SetLike.coe_mem _)
 #align ratfunc.lift_monoid_with_zero_hom_injective RatFunc.liftMonoidWithZeroHom_injective
 
 /-- Lift an injective ring homomorphism `R[X] →+* L` to a `RatFunc R →+* L`
@@ -810,9 +810,9 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) w
   smul_def' c x := by
     induction' x using RatFunc.induction_on' with p q hq
       -- Porting note: the first `rw [...]` was not needed
-    · rw [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-      rw [mk_one', ← mk_smul, mk_def_of_ne (c • p) hq, mk_def_of_ne p hq, ←
-        ofFractionRing_mul, IsLocalization.mul_mk'_eq_mk'_of_mul, Algebra.smul_def]
+    rw [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+    rw [mk_one', ← mk_smul, mk_def_of_ne (c • p) hq, mk_def_of_ne p hq, ←
+      ofFractionRing_mul, IsLocalization.mul_mk'_eq_mk'_of_mul, Algebra.smul_def]
   commutes' c x := mul_comm _ _
 
 variable {K}
@@ -1309,7 +1309,7 @@ theorem denom_dvd {x : RatFunc K} {q : K[X]} (hq : q ≠ 0) :
     obtain ⟨_hx, hp⟩ := mul_ne_zero_iff.mp hq
     use num x * p
     rw [RingHom.map_mul, RingHom.map_mul, ← div_mul_div_comm, div_self, mul_one, num_div_denom]
-    · exact algebraMap_ne_zero hp
+    exact algebraMap_ne_zero hp
   · rintro ⟨p, rfl⟩
     exact denom_div_dvd p q
 #align ratfunc.denom_dvd RatFunc.denom_dvd
