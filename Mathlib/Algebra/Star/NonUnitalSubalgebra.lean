@@ -170,11 +170,17 @@ theorem coe_copy (S : NonUnitalStarSubsemiring R) (s : Set R) (hs : s = ↑S) :
 theorem copy_eq (S : NonUnitalStarSubsemiring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
 
+section Center
+
+variable (R)
+
 /-- The center of a semiring `R` is the set of elements that commute and associate with everything
 in `R` -/
 def center : NonUnitalStarSubsemiring R where
   toNonUnitalSubsemiring := NonUnitalSubsemiring.center R
   star_mem' := Set.star_mem_center
+
+end Center
 
 end NonUnitalStarSubsemiring
 
