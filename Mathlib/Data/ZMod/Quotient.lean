@@ -8,6 +8,7 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.ZMod
 
 #align_import data.zmod.quotient from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 

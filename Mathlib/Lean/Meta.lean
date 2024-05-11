@@ -7,8 +7,8 @@ import Lean.Elab.Term
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
-import Std.Data.List.Basic
-import Std.Logic
+import Batteries.Data.List.Basic
+import Batteries.Logic
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 

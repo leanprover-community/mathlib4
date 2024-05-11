@@ -360,8 +360,7 @@ structure and the bornology by the product ones using this pseudometric space,
 `PseudoMetricSpace.replaceUniformity`, and `PseudoMetricSpace.replaceBornology`.
 
 See note [reducible non-instances] -/
-@[reducible]
-def pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
+abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by
       rcases p.dichotomy with (rfl | h)
@@ -375,21 +374,21 @@ def pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [edist_eq_iSup, dist_eq_iSup]
-      · cases isEmpty_or_nonempty ι
-        · simp only [Real.iSup_of_isEmpty, ciSup_of_empty, ENNReal.bot_eq_zero, ENNReal.zero_toReal]
-        · refine' le_antisymm (ciSup_le fun i => _) _
-          · rw [← ENNReal.ofReal_le_iff_le_toReal (iSup_edist_ne_top_aux f g), ←
-              PseudoMetricSpace.edist_dist]
-            -- Porting note: `le_iSup` needed some help
-            exact le_iSup (fun k => edist (f k) (g k)) i
-          · refine' ENNReal.toReal_le_of_le_ofReal (Real.sSup_nonneg _ _) (iSup_le fun i => _)
-            · rintro - ⟨i, rfl⟩
-              exact dist_nonneg
-            · change PseudoMetricSpace.edist _ _ ≤ _
-              rw [PseudoMetricSpace.edist_dist]
-              -- Porting note: `le_ciSup` needed some help
-              exact ENNReal.ofReal_le_ofReal
-                (le_ciSup (Finite.bddAbove_range (fun k => dist (f k) (g k))) i)
+      cases isEmpty_or_nonempty ι
+      · simp only [Real.iSup_of_isEmpty, ciSup_of_empty, ENNReal.bot_eq_zero, ENNReal.zero_toReal]
+      · refine' le_antisymm (ciSup_le fun i => _) _
+        · rw [← ENNReal.ofReal_le_iff_le_toReal (iSup_edist_ne_top_aux f g), ←
+            PseudoMetricSpace.edist_dist]
+          -- Porting note: `le_iSup` needed some help
+          exact le_iSup (fun k => edist (f k) (g k)) i
+        · refine' ENNReal.toReal_le_of_le_ofReal (Real.sSup_nonneg _ _) (iSup_le fun i => _)
+          · rintro - ⟨i, rfl⟩
+            exact dist_nonneg
+          · change PseudoMetricSpace.edist _ _ ≤ _
+            rw [PseudoMetricSpace.edist_dist]
+            -- Porting note: `le_ciSup` needed some help
+            exact ENNReal.ofReal_le_ofReal
+              (le_ciSup (Finite.bddAbove_range (fun k => dist (f k) (g k))) i)
     · have A : ∀ i, edist (f i) (g i) ^ p.toReal ≠ ⊤ := fun i =>
         ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
       simp only [edist_eq_sum (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,

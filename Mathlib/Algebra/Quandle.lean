@@ -427,8 +427,7 @@ instance oppositeQuandle : Quandle Qᵐᵒᵖ where
 the corresponding inner automorphism.
 -/
 -- Porting note: no need for `nolint` and added `reducible`
-@[reducible]
-def Conj (G : Type*) := G
+abbrev Conj (G : Type*) := G
 #align quandle.conj Quandle.Conj
 
 instance Conj.quandle (G : Type*) [Group G] : Quandle (Conj G)
