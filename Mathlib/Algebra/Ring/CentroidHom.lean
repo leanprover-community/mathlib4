@@ -791,7 +791,7 @@ variable  (z : NonUnitalStarSubsemiring.center α) (a : α)
 #check (centerToCentroidCenter z) a
 
 theorem inr_star (z : NonUnitalStarSubsemiring.center α) :
-  (star (centerToCentroidCenter z))  =
+    (star (centerToCentroidCenter z))  =
     (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) := by
   ext a
   have e1 : (star (centerToCentroidCenter z)) a =
