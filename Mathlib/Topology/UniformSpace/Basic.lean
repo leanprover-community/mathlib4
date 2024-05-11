@@ -335,8 +335,7 @@ scoped[Uniformity] notation "𝓤" => uniformity
 
 /-- Construct a `UniformSpace` from a `u : UniformSpace.Core` and a `TopologicalSpace` structure
 that is equal to `u.toTopologicalSpace`. -/
-@[reducible]
-def UniformSpace.ofCoreEq {α : Type u} (u : UniformSpace.Core α) (t : TopologicalSpace α)
+abbrev UniformSpace.ofCoreEq {α : Type u} (u : UniformSpace.Core α) (t : TopologicalSpace α)
     (h : t = u.toTopologicalSpace) : UniformSpace α where
   __ := u
   toTopologicalSpace := t
@@ -344,14 +343,12 @@ def UniformSpace.ofCoreEq {α : Type u} (u : UniformSpace.Core α) (t : Topologi
 #align uniform_space.of_core_eq UniformSpace.ofCoreEq
 
 /-- Construct a `UniformSpace` from a `UniformSpace.Core`. -/
-@[reducible]
-def UniformSpace.ofCore {α : Type u} (u : UniformSpace.Core α) : UniformSpace α :=
+abbrev UniformSpace.ofCore {α : Type u} (u : UniformSpace.Core α) : UniformSpace α :=
   .ofCoreEq u _ rfl
 #align uniform_space.of_core UniformSpace.ofCore
 
 /-- Construct a `UniformSpace.Core` from a `UniformSpace`. -/
-@[reducible]
-def UniformSpace.toCore (u : UniformSpace α) : UniformSpace.Core α where
+abbrev UniformSpace.toCore (u : UniformSpace α) : UniformSpace.Core α where
   __ := u
   refl := by
     rintro U hU ⟨x, y⟩ (rfl : x = y)
@@ -399,8 +396,7 @@ theorem UniformSpace.ofCoreEq_toCore (u : UniformSpace α) (t : TopologicalSpace
 
 /-- Replace topology in a `UniformSpace` instance with a propositionally (but possibly not
 definitionally) equal one. -/
-@[reducible]
-def UniformSpace.replaceTopology {α : Type*} [i : TopologicalSpace α] (u : UniformSpace α)
+abbrev UniformSpace.replaceTopology {α : Type*} [i : TopologicalSpace α] (u : UniformSpace α)
     (h : i = u.toTopologicalSpace) : UniformSpace α where
   __ := u
   toTopologicalSpace := i
@@ -1161,6 +1157,8 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
   show 𝓤[t] ≤ ⨅ u ∈ tt, 𝓤[u] from le_iInf₂ h
 
+set_option linter.deprecated false in
+-- TODO update this code to avoid the deprecation
 instance : Top (UniformSpace α) :=
   ⟨.ofNhdsEqComap ⟨⊤, le_top, le_top, le_top⟩ ⊤ fun x ↦ by simp only [nhds_top, comap_top]⟩
 
@@ -1230,8 +1228,7 @@ instance [Subsingleton α] : Unique (UniformSpace α) where
 /-- Given `f : α → β` and a uniformity `u` on `β`, the inverse image of `u` under `f`
   is the inverse image in the filter sense of the induced function `α × α → β × β`.
   See note [reducible non-instances]. -/
-@[reducible]
-def UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α where
+abbrev UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α where
   uniformity := 𝓤[u].comap fun p : α × α => (f p.1, f p.2)
   symm := by
     simp only [tendsto_comap_iff, Prod.swap, (· ∘ ·)]

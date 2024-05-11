@@ -26,7 +26,7 @@ was defined in `Mathlib.Data.Rat.Defs`.
 We have to define the field structure in a separate file to avoid cyclic imports:
 the `Field` class contains a map from `ℚ` (see `Field`'s docstring for the rationale),
 so we have a dependency `Rat.Field → Field → Rat` that is reflected in the import
-hierarchy `Mathlib.Data.Rat.Basic → Mathlib.Algebra.Field.Defs → Std.Data.Rat`.
+hierarchy `Mathlib.Data.Rat.Basic → Mathlib.Algebra.Field.Defs → Batteries.Data.Rat`.
 
 ## Tags
 

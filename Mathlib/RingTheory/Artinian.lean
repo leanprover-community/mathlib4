@@ -359,8 +359,7 @@ end CommRing
 
 Strictly speaking, this should be called `IsLeftArtinianRing` but we omit the `Left` for
 convenience in the commutative case. For a right Artinian ring, use `IsArtinian Rᵐᵒᵖ R`. -/
-@[reducible]
-def IsArtinianRing (R) [Ring R] :=
+abbrev IsArtinianRing (R) [Ring R] :=
   IsArtinian R R
 #align is_artinian_ring IsArtinianRing
 

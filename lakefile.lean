@@ -5,7 +5,6 @@ open Lake DSL
 package mathlib where
   leanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
-    ⟨`pp.proofs.withType, false⟩,
     ⟨`autoImplicit, false⟩,
     ⟨`relaxedAutoImplicit, false⟩
   ]
@@ -13,11 +12,7 @@ package mathlib where
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
   -- or inconsistent behavior may result
-  weakLeanArgs :=
-    if get_config? CI |>.isSome then
-      #["-DwarningAsError=true"]
-    else
-      #[]
+  -- weakLeanArgs := #[]
 
 /-!
 ## Mathlib dependencies on upstream projects.
@@ -26,10 +21,10 @@ package mathlib where
 meta if get_config? doc = some "on" then -- do not download and build doc-gen4 by default
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 
-require std from git "https://github.com/leanprover/std4" @ "main"
+require batteries from git "https://github.com/leanprover-community/batteries" @ "main"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.35"
+require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.36"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "main"
 
