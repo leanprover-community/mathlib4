@@ -26,12 +26,12 @@ variable {C ι : Type*} {c : ComplexShape ι} [Category C] [Abelian C]
 noncomputable instance : NormalEpiCategory (HomologicalComplex C c) := ⟨fun p _ =>
   NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
     (isColimitOfEval _ _ (fun _ =>
-      Abelian.isColimitMapCoconeOfCokernelCoforkOfπKernelConditionOfEpi _ _))⟩
+      Abelian.isColimitMapCoconeOfCokernelCoforkOfπ _ _))⟩
 
 noncomputable instance : NormalMonoCategory (HomologicalComplex C c) := ⟨fun p _ =>
   NormalMono.mk _ (cokernel.π p) (cokernel.condition _)
     (isLimitOfEval _ _ (fun _ =>
-      Abelian.isLimitMapConeOfKernelForkOfιCokernelConditionOfMono _ _))⟩
+      Abelian.isLimitMapConeOfKernelForkOfι _ _))⟩
 
 noncomputable instance : Abelian (HomologicalComplex C c) where
 

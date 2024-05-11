@@ -45,9 +45,12 @@ protected theorem tfae (f : X → Y) :
       ∀ x, IsOpen { x' | f x' = f x },
       ∀ y, IsOpen (f ⁻¹' {y}),
       ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x] := by
-  tfae_have 1 → 4; exact fun h y => h {y}
-  tfae_have 4 → 3; exact fun h x => h (f x)
-  tfae_have 3 → 2; exact fun h x => IsOpen.mem_nhds (h x) rfl
+  tfae_have 1 → 4
+  · exact fun h y => h {y}
+  tfae_have 4 → 3
+  · exact fun h x => h (f x)
+  tfae_have 3 → 2
+  · exact fun h x => IsOpen.mem_nhds (h x) rfl
   tfae_have 2 → 5
   · intro h x
     rcases mem_nhds_iff.1 (h x) with ⟨U, eq, hU, hx⟩
