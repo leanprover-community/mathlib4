@@ -446,6 +446,14 @@ theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap 
   h ▸ (f.commutes _).symm
 #align alg_hom.algebra_map_eq_apply AlgHom.algebraMap_eq_apply
 
+theorem cancel_right {g₁ g₂ : B →ₐ[R] C} {f : A →ₐ[R] B} (hf : Function.Surjective f) :
+    g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
+  ⟨fun h ↦ ext <| hf.forall.2 (ext_iff.1 h), fun h ↦ h ▸ rfl⟩
+
+theorem cancel_left {g : B →ₐ[R] C} {f₁ f₂ : A →ₐ[R] B} (hg : Function.Injective g) :
+    g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
+  ⟨fun h ↦ ext fun x ↦ hg <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
+
 end Semiring
 
 section CommSemiring
