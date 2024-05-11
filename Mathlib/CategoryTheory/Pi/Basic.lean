@@ -236,8 +236,8 @@ end EqToHom
 @[simp]
 theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
   apply Functor.ext
-  intro _ _ _
-  · simp
+  · intro _ _ _
+    simp
   · intro _
     rfl
 #align category_theory.functor.pi'_eval CategoryTheory.Functor.pi'_eval
