@@ -646,6 +646,7 @@ theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
   rw [dif_pos]
 #align ratfunc.map_apply_of_fraction_ring_mk RatFunc.map_apply_ofFractionRing_mk
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ)
     (hf : Function.Injective φ) : Function.Injective (map φ hφ) := by
   rintro ⟨x⟩ ⟨y⟩ h
@@ -780,16 +781,15 @@ end LiftHom
 
 variable (K)
 
-instance instField [IsDomain K] : Field (RatFunc K) :=
-  { RatFunc.instCommRing K, RatFunc.instNontrivial K with
-    inv := Inv.inv
-    -- Porting note: used to be `by frac_tac`
-    inv_zero := by rw [← ofFractionRing_zero, ← ofFractionRing_inv, inv_zero]
-    div := (· / ·)
-    div_eq_mul_inv := by frac_tac
-    mul_inv_cancel := fun _ => mul_inv_cancel
-    zpow := zpowRec
-    qsmul := qsmulRec _ }
+instance instField [IsDomain K] : Field (RatFunc K) where
+  -- Porting note: used to be `by frac_tac`
+  inv_zero := by rw [← ofFractionRing_zero, ← ofFractionRing_inv, inv_zero]
+  div := (· / ·)
+  div_eq_mul_inv := by frac_tac
+  mul_inv_cancel _ := mul_inv_cancel
+  zpow := zpowRec
+  nnqsmul := _
+  qsmul := _
 
 section IsFractionRing
 
@@ -815,6 +815,13 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) w
   commutes' c x := mul_comm _ _
 
 variable {K}
+
+/-- The coercion from polynomials to rational functions, implemented as the algebra map from a
+domain to its field of fractions -/
+@[coe]
+def coePolynomial (P : Polynomial K) : RatFunc K := algebraMap _ _ P
+
+instance : Coe (Polynomial K) (RatFunc K) := ⟨coePolynomial⟩
 
 theorem mk_one (x : K[X]) : RatFunc.mk x 1 = algebraMap _ _ x :=
   rfl
@@ -877,7 +884,6 @@ theorem liftMonoidWithZeroHom_apply_div {L : Type*} [CommGroupWithZero L]
     liftMonoidWithZeroHom_apply_ofFractionRing_mk]
 #align ratfunc.lift_monoid_with_zero_hom_apply_div RatFunc.liftMonoidWithZeroHom_apply_div
 
--- Porting note: added `simpNF` form of `liftMonoidWithZeroHom_apply_div`
 @[simp]
 theorem liftMonoidWithZeroHom_apply_div' {L : Type*} [CommGroupWithZero L]
     (φ : MonoidWithZeroHom K[X] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
@@ -890,7 +896,6 @@ theorem liftRingHom_apply_div {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K
   liftMonoidWithZeroHom_apply_div _ hφ _ _  -- Porting note: gave explicitly the `hφ`
 #align ratfunc.lift_ring_hom_apply_div RatFunc.liftRingHom_apply_div
 
--- Porting note: added `simpNF` form of `liftRingHom_apply_div`
 @[simp]
 theorem liftRingHom_apply_div' {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
     (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p) / liftRingHom φ hφ (algebraMap _ _ q) =
@@ -962,7 +967,6 @@ theorem liftAlgHom_injective (φ : K[X] →ₐ[S] L) (hφ : Function.Injective �
   liftMonoidWithZeroHom_injective _ hφ
 #align ratfunc.lift_alg_hom_injective RatFunc.liftAlgHom_injective
 
--- Porting note: added `simpNF` form of `liftAlgHom_apply_div`
 @[simp]
 theorem liftAlgHom_apply_div' (p q : K[X]) :
     liftAlgHom φ hφ (algebraMap _ _ p) / liftAlgHom φ hφ (algebraMap _ _ q) = φ p / φ q :=
@@ -1694,10 +1698,16 @@ theorem coe_apply : coeAlgHom F f = f :=
   rfl
 #align ratfunc.coe_apply RatFunc.coe_apply
 
+theorem coe_coe (P : Polynomial F) : (P : LaurentSeries F) = (P : RatFunc F) := by
+  simp only [coePolynomial, coe_def, AlgHom.commutes, Polynomial.algebraMap_hahnSeries_apply]
+
 @[simp, norm_cast]
 theorem coe_zero : ((0 : RatFunc F) : LaurentSeries F) = 0 :=
   (coeAlgHom F).map_zero
 #align ratfunc.coe_zero RatFunc.coe_zero
+
+theorem coe_ne_zero {f : Polynomial F} (hf : f ≠ 0) : (↑f : PowerSeries F) ≠ 0 := by
+  simp only [ne_eq, Polynomial.coe_eq_zero_iff, hf, not_false_eq_true]
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : RatFunc F) : LaurentSeries F) = 1 :=
@@ -1760,6 +1770,30 @@ theorem coe_X : ((X : RatFunc F) : LaurentSeries F) = single 1 1 := by
   simp only [ofPowerSeries_X]  -- Porting note: added
 set_option linter.uppercaseLean3 false in
 #align ratfunc.coe_X RatFunc.coe_X
+
+theorem single_one_eq_pow {R : Type _} [Ring R] (n : ℕ) :
+    single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
+  induction' n with n h_ind
+  · simp only [Nat.cast_zero, pow_zero]
+    rfl
+  · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
+      add_comm]
+
+theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
+    single (-d) (α⁻¹ : F) = (single (d : ℤ) (α : F))⁻¹ := by
+  apply eq_inv_of_mul_eq_one_right
+  rw [HahnSeries.single_mul_single, add_right_neg, mul_comm,
+    inv_mul_cancel hα]
+  rfl
+
+
+theorem single_zpow (n : ℤ) :
+    single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
+  induction' n with n_pos n_neg
+  · apply single_one_eq_pow
+  · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one,
+      single_inv (n_neg + 1 : ℤ) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
+      Nat.cast_one, inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 
 instance : Algebra (RatFunc F) (LaurentSeries F) :=
   RingHom.toAlgebra (coeAlgHom F).toRingHom

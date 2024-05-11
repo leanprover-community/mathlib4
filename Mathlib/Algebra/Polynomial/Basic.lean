@@ -290,15 +290,13 @@ instance inhabited : Inhabited R[X] :=
   ⟨0⟩
 #align polynomial.inhabited Polynomial.inhabited
 
-instance natCast : NatCast R[X] :=
-  ⟨fun n => Polynomial.ofFinsupp n⟩
-#align polynomial.has_nat_cast Polynomial.natCast
+instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
+#align polynomial.has_nat_cast Polynomial.instNatCast
 
 instance semiring : Semiring R[X] :=
   --TODO: add reference to library note in PR #7432
   { Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
       toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl with
-    toNatCast := Polynomial.natCast
     toAdd := Polynomial.add'
     toMul := Polynomial.mul'
     toZero := Polynomial.zero
@@ -650,7 +648,7 @@ theorem monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) :
     monomial n r * X ^ k = monomial (n + k) r := by
   induction' k with k ih
   · simp
-  · simp [ih, pow_succ, ← mul_assoc, add_assoc]
+  · simp [ih, pow_succ, ← mul_assoc, add_assoc, Nat.succ_eq_add_one]
 #align polynomial.monomial_mul_X_pow Polynomial.monomial_mul_X_pow
 
 @[simp]
@@ -690,8 +688,7 @@ theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f
 #align polynomial.to_finsupp_apply Polynomial.toFinsupp_apply
 
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
-  simp only [← ofFinsupp_single, coeff, LinearMap.coe_mk]
-  rw [Finsupp.single_apply]
+  simp [coeff, Finsupp.single_apply]
 #align polynomial.coeff_monomial Polynomial.coeff_monomial
 
 @[simp]
@@ -991,8 +988,8 @@ theorem mul_eq_sum_sum :
     p * q = ∑ i in p.support, q.sum fun j a => (monomial (i + j)) (p.coeff i * a) := by
   apply toFinsupp_injective
   rcases p with ⟨⟩; rcases q with ⟨⟩
-  simp [support, sum, coeff, toFinsupp_sum]
-  rfl
+  simp_rw [sum, coeff, toFinsupp_sum, support, toFinsupp_mul, toFinsupp_monomial,
+    AddMonoidAlgebra.mul_def, Finsupp.sum]
 #align polynomial.mul_eq_sum_sum Polynomial.mul_eq_sum_sum
 
 @[simp]
@@ -1178,9 +1175,8 @@ section Ring
 
 variable [Ring R]
 
-instance intCast : IntCast R[X] :=
-  ⟨fun n => ofFinsupp n⟩
-#align polynomial.has_int_cast Polynomial.intCast
+instance instIntCast : IntCast R[X] where intCast n := ofFinsupp n
+#align polynomial.has_int_cast Polynomial.instIntCast
 
 instance ring : Ring R[X] :=
   --TODO: add reference to library note in PR #7432
@@ -1189,7 +1185,6 @@ instance ring : Ring R[X] :=
       toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
       (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl with
     toSemiring := Polynomial.semiring,
-    toIntCast := Polynomial.intCast
     toNeg := Polynomial.neg'
     toSub := Polynomial.sub
     zsmul := ((· • ·) : ℤ → R[X] → R[X]) }
@@ -1263,13 +1258,21 @@ theorem X_ne_zero : (X : R[X]) ≠ 0 :=
 
 end NonzeroSemiring
 
+section DivisionSemiring
+variable [DivisionSemiring R]
+
+lemma nnqsmul_eq_C_mul (q : ℚ≥0) (f : R[X]) : q • f = Polynomial.C (q : R) * f := by
+  rw [← NNRat.smul_one_eq_cast, ← Polynomial.smul_C, C_1, smul_one_mul]
+
+end DivisionSemiring
+
 section DivisionRing
 
 variable [DivisionRing R]
 
-theorem rat_smul_eq_C_mul (a : ℚ) (f : R[X]) : a • f = Polynomial.C (a : R) * f := by
-  rw [← Rat.smul_one_eq_coe, ← Polynomial.smul_C, C_1, smul_one_mul]
-#align polynomial.rat_smul_eq_C_mul Polynomial.rat_smul_eq_C_mul
+theorem qsmul_eq_C_mul (a : ℚ) (f : R[X]) : a • f = Polynomial.C (a : R) * f := by
+  rw [← Rat.smul_one_eq_cast, ← Polynomial.smul_C, C_1, smul_one_mul]
+#align polynomial.rat_smul_eq_C_mul Polynomial.qsmul_eq_C_mul
 
 end DivisionRing
 

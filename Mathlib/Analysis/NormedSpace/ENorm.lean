@@ -184,8 +184,7 @@ theorem max_map (e₁ e₂ : ENorm 𝕜 V) (x : V) : (e₁ ⊔ e₂) x = max (e�
 #align enorm.max_map ENorm.max_map
 
 /-- Structure of an `EMetricSpace` defined by an extended norm. -/
-@[reducible]
-def emetricSpace : EMetricSpace V where
+abbrev emetricSpace : EMetricSpace V where
   edist x y := e (x - y)
   edist_self x := by simp
   eq_of_edist_eq_zero {x y} := by simp [sub_eq_zero]

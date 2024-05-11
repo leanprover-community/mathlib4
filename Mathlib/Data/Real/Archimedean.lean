@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Intervals.Disjoint
+import Mathlib.Order.Interval.Set.Disjoint
 
 #align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
 
@@ -56,7 +56,7 @@ theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ,
     ⟨n, le_of_lt hn⟩)
 #align real.exists_floor Real.exists_floor
 
-theorem exists_isLUB (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ x, IsLUB S x := by
+theorem exists_isLUB {S : Set ℝ} (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ x, IsLUB S x := by
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩
   have : ∀ d : ℕ, BddAbove { m : ℤ | ∃ y ∈ S, (m : ℝ) ≤ y * d } := by
     cases' exists_int_gt U with k hk
@@ -107,11 +107,19 @@ theorem exists_isLUB (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ 
           le_trans hx (h xS)⟩
 #align real.exists_is_lub Real.exists_isLUB
 
+/-- A nonempty, bounded below set of real numbers has a greatest lower bound. -/
+theorem exists_isGLB {S : Set ℝ} (hne : S.Nonempty) (hbdd : BddBelow S) : ∃ x, IsGLB S x := by
+  have hne' : (-S).Nonempty := Set.nonempty_neg.mpr hne
+  have hbdd' : BddAbove (-S) := bddAbove_neg.mpr hbdd
+  use -Classical.choose (Real.exists_isLUB hne' hbdd')
+  rw [← isLUB_neg]
+  exact Classical.choose_spec (Real.exists_isLUB hne' hbdd')
+
 noncomputable instance : SupSet ℝ :=
-  ⟨fun S => if h : S.Nonempty ∧ BddAbove S then Classical.choose (exists_isLUB S h.1 h.2) else 0⟩
+  ⟨fun S => if h : S.Nonempty ∧ BddAbove S then Classical.choose (exists_isLUB h.1 h.2) else 0⟩
 
 theorem sSup_def (S : Set ℝ) :
-    sSup S = if h : S.Nonempty ∧ BddAbove S then Classical.choose (exists_isLUB S h.1 h.2) else 0 :=
+    sSup S = if h : S.Nonempty ∧ BddAbove S then Classical.choose (exists_isLUB h.1 h.2) else 0 :=
   rfl
 #align real.Sup_def Real.sSup_def
 
