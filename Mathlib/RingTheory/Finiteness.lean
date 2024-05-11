@@ -8,7 +8,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Nilpotent.Defs
 
 #align_import ring_theory.finiteness from "leanprover-community/mathlib"@"c813ed7de0f5115f956239124e9b30f3a621966f"
