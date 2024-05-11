@@ -5,7 +5,7 @@ Authors: Alex J. Best
 -/
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Rewrite
-import Std.Tactic.Exact
+import Batteries.Tactic.Exact
 
 /-!
 ## Dischargers for `simp` to tactics

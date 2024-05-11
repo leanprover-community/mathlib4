@@ -81,8 +81,7 @@ variable (S)
 
 /-- The short complex consisting of maps `S.map' i j` and `S.map' j k` when we know
 that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
-@[reducible]
-def sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
+abbrev sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
     (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
     ShortComplex C :=
   ShortComplex.mk (S.map' i j) (S.map' j k) (hS.zero' i j k)

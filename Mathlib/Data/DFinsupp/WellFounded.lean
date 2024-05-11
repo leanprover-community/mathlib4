@@ -7,6 +7,7 @@ import Mathlib.Data.DFinsupp.Lex
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Antisymmetrization
 import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.Tactic.AdaptationNote
 
 #align_import data.dfinsupp.well_founded from "leanprover-community/mathlib"@"e9b8651eb1ad354f4de6be35a38ef31efcd2cfaa"
 
@@ -224,8 +225,8 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
       refine Lex.wellFounded' ?_ (fun i ↦ IsWellFounded.wf) ?_
       · rintro i ⟨a⟩
         apply hbot
-      · -- Adaptation note: nightly-2024-03-16: simp was
-        -- simp (config := { unfoldPartialApp := true }) only [Function.swap]
+      · #adaptation_note /-- nightly-2024-03-16: simp was
+        simp (config := { unfoldPartialApp := true }) only [Function.swap] -/
         simp only [Function.swap_def]
         exact IsWellFounded.wf
     refine Subrelation.wf (fun h => ?_) <| InvImage.wf (mapRange (fun i ↦ e i) fun _ ↦ rfl) this

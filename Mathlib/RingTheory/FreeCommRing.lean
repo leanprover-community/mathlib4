@@ -131,7 +131,7 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
     let x' := Multiplicative.toAdd x
     show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
       erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
-      exact F.congr_arg (Multiset.sum_map_singleton x')
+      exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')
 
 /-- Lift a map `α → R` to an additive group homomorphism `FreeCommRing α → R`. -/
 def lift : (α → R) ≃ (FreeCommRing α →+* R) :=

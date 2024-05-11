@@ -906,7 +906,7 @@ theorem forall_map_sub_of_Icc (P : ℝ → Prop) (h : ∀ x ∈ Icc (0 : ℝ) 1,
 theorem translationNumber_lt_of_forall_lt_add (hf : Continuous f) {z : ℝ} (hz : ∀ x, f x < x + z) :
     τ f < z := by
   obtain ⟨x, -, hx⟩ : ∃ x ∈ Icc (0 : ℝ) 1, ∀ y ∈ Icc (0 : ℝ) 1, f y - y ≤ f x - x :=
-    isCompact_Icc.exists_forall_ge (nonempty_Icc.2 zero_le_one)
+    isCompact_Icc.exists_isMaxOn (nonempty_Icc.2 zero_le_one)
       (hf.sub continuous_id).continuousOn
   refine' lt_of_le_of_lt _ (sub_lt_iff_lt_add'.2 <| hz x)
   apply translationNumber_le_of_le_add
@@ -917,8 +917,8 @@ theorem translationNumber_lt_of_forall_lt_add (hf : Continuous f) {z : ℝ} (hz 
 theorem lt_translationNumber_of_forall_add_lt (hf : Continuous f) {z : ℝ} (hz : ∀ x, x + z < f x) :
     z < τ f := by
   obtain ⟨x, -, hx⟩ : ∃ x ∈ Icc (0 : ℝ) 1, ∀ y ∈ Icc (0 : ℝ) 1, f x - x ≤ f y - y
-  exact isCompact_Icc.exists_forall_le (nonempty_Icc.2 zero_le_one)
-    (hf.sub continuous_id).continuousOn
+  · exact isCompact_Icc.exists_isMinOn (nonempty_Icc.2 zero_le_one)
+      (hf.sub continuous_id).continuousOn
   refine' lt_of_lt_of_le (lt_sub_iff_add_lt'.2 <| hz x) _
   apply le_translationNumber_of_add_le
   simp only [← le_sub_iff_add_le']
