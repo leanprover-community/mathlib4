@@ -167,6 +167,16 @@ noncomputable def _root_.NumberField.mixedEmbedding : K →+* (E K) :=
   RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
     (Pi.ringHom fun w => w.val.embedding)
 
+@[simp]
+theorem mixedEmbedding_apply_ofIsReal (x : K) (w : {w // IsReal w}) :
+    (mixedEmbedding K x).1 w = embedding_of_isReal w.prop x := by
+  simp_rw [mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
+
+@[simp]
+theorem mixedEmbedding_apply_ofIsComplex (x : K) (w : {w // IsComplex w}) :
+    (mixedEmbedding K x).2 w = w.val.embedding x := by
+  simp_rw [mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
+
 instance [NumberField K] : Nontrivial (E K) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   obtain hw | hw := w.isReal_or_isComplex
@@ -267,6 +277,15 @@ protected def norm  : (E K) →*₀ ℝ where
   map_mul' _ _ := by simp only [Prod.fst_mul, Pi.mul_apply, norm_mul, Real.norm_eq_abs,
       Finset.prod_mul_distrib, Prod.snd_mul, Complex.norm_eq_abs, mul_pow]; ring
 
+protected theorem norm_apply (x : E K) :
+    mixedEmbedding.norm x =  (∏ w, ‖x.1 w‖) * (∏ w, ‖x.2 w‖ ^ 2) := rfl
+
+protected theorem norm_nonneg (x : E K) :
+    0 ≤ mixedEmbedding.norm x := by
+  refine mul_nonneg ?_ ?_
+  · exact Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _)
+  · exact Finset.prod_nonneg (fun _ _ ↦ pow_nonneg (norm_nonneg _) _)
+
 protected theorem norm_eq_zero_iff {x : E K} :
     mixedEmbedding.norm x = 0 ↔ (∃ w, x.1 w = 0) ∨ (∃ w, x.2 w = 0) := by
   simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mul_eq_zero,
@@ -283,7 +302,7 @@ theorem norm_real (c : ℝ) :
     Complex.norm_eq_abs, Complex.abs_ofReal, Finset.prod_const, ← pow_mul,
     ← card_add_two_mul_card_eq_rank, Finset.card_univ, pow_add]
 
-theorem norm_smul (c : ℝ) (x : E K) :
+protected theorem norm_smul (c : ℝ) (x : E K) :
     mixedEmbedding.norm (c • x) = |c| ^ finrank ℚ K * (mixedEmbedding.norm x) := by
   rw [show c • x = ((fun _ ↦ c, fun _ ↦ c) : (E K)) * x by rfl, map_mul, norm_real]
 
@@ -583,5 +602,3 @@ theorem mem_span_fractionalIdealLatticeBasis (x : (E K)) :
 end integerLattice
 
 end NumberField.mixedEmbedding
-
-#minimize_imports
