@@ -821,11 +821,11 @@ theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι
     ↑J / I = ↑J * I⁻¹ := div_eq_mul_inv (↑J) I
     _ < 1 * I⁻¹ := mul_right_strictMono (inv_ne_zero hI0) ?_
     _ = I⁻¹ := one_mul _
-  · rw [← coeIdeal_top]
-    -- And multiplying by `I⁻¹` is indeed strictly monotone.
-    exact
-      strictMono_of_le_iff_le (fun _ _ => (coeIdeal_le_coeIdeal K).symm)
-        (lt_top_iff_ne_top.mpr hJ)
+  rw [← coeIdeal_top]
+  -- And multiplying by `I⁻¹` is indeed strictly monotone.
+  exact
+    strictMono_of_le_iff_le (fun _ _ => (coeIdeal_le_coeIdeal K).symm)
+      (lt_top_iff_ne_top.mpr hJ)
 #align ideal.exist_integer_multiples_not_mem Ideal.exist_integer_multiples_not_mem
 
 section Gcd
