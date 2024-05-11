@@ -28,7 +28,7 @@ homomorphism is part of a long exact sequence
 The exactness of this long exact sequence is given by three lemmas
 `F.homologySequence_exact₁`, `F.homologySequence_exact₂` and `F.homologySequence_exact₃`.
 
-If `F` is a homological functor, we defined the strictly full triangulated subcategory
+If `F` is a homological functor, we define the strictly full triangulated subcategory
 `F.homologicalKernel`: it consists of objects `X : C` such that for all `n : ℤ`,
 `(F.shift n).obj X` (or `F.obj (X⟦n⟧)`) is zero. We show that a morphism `f` in `C`
 belongs to `F.homologicalKernel.W` (i.e. the cone of `f` is in this kernel) iff

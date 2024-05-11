@@ -192,7 +192,7 @@ instance : S.W.IsCompatibleWithShift ℤ where
     exact ⟨fun hf => hf.unshift, fun hf => hf.shift n⟩
 
 instance [IsTriangulated C] : S.W.IsMultiplicative where
-  stableUnderComposition := by
+  comp_mem := by
     rw [← isoClosure_W]
     rintro X₁ X₂ X₃ u₁₂ u₂₃ ⟨Z₁₂, v₁₂, w₁₂, H₁₂, mem₁₂⟩ ⟨Z₂₃, v₂₃, w₂₃, H₂₃, mem₂₃⟩
     obtain ⟨Z₁₃, v₁₃, w₁₂, H₁₃⟩ := distinguished_cocone_triangle (u₁₂ ≫ u₂₃)

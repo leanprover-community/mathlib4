@@ -27,7 +27,7 @@ import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Clean
 import Mathlib.Tactic.Clear_
-import Mathlib.Tactic.Clear!
+import Mathlib.Tactic.ClearExclamation
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Congrm
