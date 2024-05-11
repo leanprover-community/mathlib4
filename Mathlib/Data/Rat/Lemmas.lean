@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Int.Div
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Rat.Defs
 

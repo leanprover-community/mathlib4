@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
+import Mathlib.Data.Nat.Defs
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.ZeroOne
 import Mathlib.Logic.Nontrivial.Defs
@@ -28,7 +29,7 @@ Split this file into:
 open Nat
 
 namespace Int
-variable {m n : ℤ}
+variable {a b c d m n : ℤ}
 
 #noalign int.ne_neg_of_ne
 #noalign int.neg_ne_zero_of_ne
@@ -497,6 +498,62 @@ lemma natCast_dvd {m : ℕ} : (m : ℤ) ∣ n ↔ m ∣ n.natAbs := by
 lemma dvd_natCast {n : ℕ} : m ∣ (n : ℤ) ↔ m.natAbs ∣ n := by
   obtain hn | hn := natAbs_eq m <;> rw [hn] <;> simp [← natCast_dvd_natCast, Int.neg_dvd]
 #align int.coe_nat_dvd_right Int.dvd_natCast
+
+lemma natAbs_ediv (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natAbs b := by
+  rcases Nat.eq_zero_or_pos (natAbs b) with (h | h)
+  · rw [natAbs_eq_zero.1 h]
+    simp [Int.ediv_zero]
+  calc
+    natAbs (a / b) = natAbs (a / b) * 1 := by rw [Nat.mul_one]
+    _ = natAbs (a / b) * (natAbs b / natAbs b) := by rw [Nat.div_self h]
+    _ = natAbs (a / b) * natAbs b / natAbs b := by rw [Nat.mul_div_assoc _ b.natAbs.dvd_refl]
+    _ = natAbs (a / b * b) / natAbs b := by rw [natAbs_mul (a / b) b]
+    _ = natAbs a / natAbs b := by rw [Int.ediv_mul_cancel H]
+#align int.nat_abs_div Int.natAbs_ediv
+
+lemma dvd_of_mul_dvd_mul_left (ha : a ≠ 0) (h : a * m ∣ a * n) : m ∣ n := by
+  obtain ⟨b, hb⟩ := h
+  rw [Int.mul_assoc, Int.mul_eq_mul_left_iff ha] at hb
+  exact ⟨_, hb⟩
+#align int.dvd_of_mul_dvd_mul_left Int.dvd_of_mul_dvd_mul_left
+
+lemma dvd_of_mul_dvd_mul_right (ha : a ≠ 0) (h : m * a ∣ n * a) : m ∣ n :=
+  dvd_of_mul_dvd_mul_left ha (by simpa [Int.mul_comm] using h)
+#align int.dvd_of_mul_dvd_mul_right Int.dvd_of_mul_dvd_mul_right
+
+lemma eq_mul_div_of_mul_eq_mul_of_dvd_left (hb : b ≠ 0) (hbc : b ∣ c) (h : b * a = c * d) :
+    a = c / b * d := by
+  obtain ⟨k, rfl⟩ := hbc
+  rw [Int.mul_ediv_cancel_left _ hb]
+  rwa [Int.mul_assoc, Int.mul_eq_mul_left_iff hb] at h
+#align int.eq_mul_div_of_mul_eq_mul_of_dvd_left Int.eq_mul_div_of_mul_eq_mul_of_dvd_left
+
+/-- If an integer with larger absolute value divides an integer, it is zero. -/
+lemma eq_zero_of_dvd_of_natAbs_lt_natAbs (hmn : m ∣ n) (hnm : natAbs n < natAbs m) : n = 0 := by
+  rw [← natAbs_dvd, ← dvd_natAbs, natCast_dvd_natCast] at hmn
+  rw [← natAbs_eq_zero]
+  exact Nat.eq_zero_of_dvd_of_lt hmn hnm
+#align int.eq_zero_of_dvd_of_nat_abs_lt_nat_abs Int.eq_zero_of_dvd_of_natAbs_lt_natAbs
+
+lemma eq_zero_of_dvd_of_nonneg_of_lt (hm : 0 ≤ m) (hmn : m < n) (hnm : n ∣ m) : m = 0 :=
+  eq_zero_of_dvd_of_natAbs_lt_natAbs hnm (natAbs_lt_natAbs_of_nonneg_of_lt hm hmn)
+#align int.eq_zero_of_dvd_of_nonneg_of_lt Int.eq_zero_of_dvd_of_nonneg_of_lt
+
+/-- If two integers are congruent to a sufficiently large modulus, they are equal. -/
+lemma eq_of_mod_eq_of_natAbs_sub_lt_natAbs {a b c : ℤ} (h1 : a % b = c)
+    (h2 : natAbs (a - c) < natAbs b) : a = c :=
+  Int.eq_of_sub_eq_zero (eq_zero_of_dvd_of_natAbs_lt_natAbs (dvd_sub_of_emod_eq h1) h2)
+#align int.eq_of_mod_eq_of_nat_abs_sub_lt_nat_abs Int.eq_of_mod_eq_of_natAbs_sub_lt_natAbs
+
+lemma ofNat_add_negSucc_of_ge {m n : ℕ} (h : n.succ ≤ m) :
+    ofNat m + -[n+1] = ofNat (m - n.succ) := by
+  rw [negSucc_eq, ofNat_eq_natCast, ofNat_eq_natCast, ← natCast_one, ← natCast_add,
+    ← Int.sub_eq_add_neg, ← Int.natCast_sub h]
+#align int.of_nat_add_neg_succ_of_nat_of_ge Int.ofNat_add_negSucc_of_ge
+
+lemma natAbs_le_of_dvd_ne_zero (hmn : m ∣ n) (hn : n ≠ 0) : natAbs m ≤ natAbs n :=
+  not_lt.mp (mt (eq_zero_of_dvd_of_natAbs_lt_natAbs hmn) hn)
+#align int.nat_abs_le_of_dvd_ne_zero Int.natAbs_le_of_dvd_ne_zero
 
 -- 2024-04-02
 @[deprecated] alias coe_nat_dvd := natCast_dvd_natCast

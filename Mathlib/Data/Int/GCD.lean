@@ -208,30 +208,6 @@ theorem gcd_eq_gcd_ab : ∀ x y : ℤ, (gcd x y : ℤ) = x * gcdA x y + y * gcdB
       apply Nat.gcd_eq_gcd_ab
 #align int.gcd_eq_gcd_ab Int.gcd_eq_gcd_ab
 
-theorem natAbs_ediv (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natAbs b := by
-  rcases Nat.eq_zero_or_pos (natAbs b) with (h | h)
-  · rw [natAbs_eq_zero.1 h]
-    simp [Int.ediv_zero]
-  calc
-    natAbs (a / b) = natAbs (a / b) * 1 := by rw [mul_one]
-    _ = natAbs (a / b) * (natAbs b / natAbs b) := by rw [Nat.div_self h]
-    _ = natAbs (a / b) * natAbs b / natAbs b := by rw [Nat.mul_div_assoc _ dvd_rfl]
-    _ = natAbs (a / b * b) / natAbs b := by rw [natAbs_mul (a / b) b]
-    _ = natAbs a / natAbs b := by rw [Int.ediv_mul_cancel H]
-#align int.nat_abs_div Int.natAbs_ediv
-
-/-- special case of `mul_dvd_mul_iff_right` for `ℤ`.
-Duplicated here to keep simple imports for this file. -/
-theorem dvd_of_mul_dvd_mul_left {i j k : ℤ} (k_non_zero : k ≠ 0) (H : k * i ∣ k * j) : i ∣ j :=
-  Dvd.elim H fun l H1 => by rw [mul_assoc] at H1; exact ⟨_, mul_left_cancel₀ k_non_zero H1⟩
-#align int.dvd_of_mul_dvd_mul_left Int.dvd_of_mul_dvd_mul_left
-
-/-- special case of `mul_dvd_mul_iff_right` for `ℤ`.
-Duplicated here to keep simple imports for this file. -/
-theorem dvd_of_mul_dvd_mul_right {i j k : ℤ} (k_non_zero : k ≠ 0) (H : i * k ∣ j * k) : i ∣ j := by
-  rw [mul_comm i k, mul_comm j k] at H; exact dvd_of_mul_dvd_mul_left k_non_zero H
-#align int.dvd_of_mul_dvd_mul_right Int.dvd_of_mul_dvd_mul_right
-
 #align int.lcm Int.lcm
 
 theorem lcm_def (i j : ℤ) : lcm i j = Nat.lcm (natAbs i) (natAbs j) :=
@@ -387,8 +363,7 @@ theorem gcd_dvd_iff {a b : ℤ} {n : ℕ} : gcd a b ∣ n ↔ ∃ x y : ℤ, ↑
     exact ⟨_, _, rfl⟩
   · rintro ⟨x, y, h⟩
     rw [← Int.natCast_dvd_natCast, h]
-    exact
-      dvd_add (dvd_mul_of_dvd_left gcd_dvd_left _) (dvd_mul_of_dvd_left gcd_dvd_right y)
+    exact Int.dvd_add (dvd_mul_of_dvd_left gcd_dvd_left _) (dvd_mul_of_dvd_left gcd_dvd_right y)
 #align int.gcd_dvd_iff Int.gcd_dvd_iff
 
 theorem gcd_greatest {a b d : ℤ} (hd_pos : 0 ≤ d) (hda : d ∣ a) (hdb : d ∣ b)
@@ -406,7 +381,7 @@ theorem dvd_of_dvd_mul_left_of_gcd_one {a b c : ℤ} (habc : a ∣ b * c) (hab :
   simp only [hab, Int.ofNat_zero, Int.ofNat_succ, zero_add] at this
   have : b * a * gcdA a c + b * c * gcdB a c = b := by simp [mul_assoc, ← mul_add, ← this]
   rw [← this]
-  exact dvd_add (dvd_mul_of_dvd_left (dvd_mul_left a b) _) (dvd_mul_of_dvd_left habc _)
+  exact Int.dvd_add (dvd_mul_of_dvd_left (dvd_mul_left a b) _) (dvd_mul_of_dvd_left habc _)
 #align int.dvd_of_dvd_mul_left_of_gcd_one Int.dvd_of_dvd_mul_left_of_gcd_one
 
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a b = 1` then `a ∣ c`.

@@ -1614,7 +1614,7 @@ theorem lt_sub_one_iff {n : ℕ} {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   have : (k + 1 + (n + 1)) % (n + 2) = k % (n + 2) := by
     rw [add_right_comm, add_assoc, add_assoc, one_add_one_eq_two, add_mod_right]
   simp [lt_iff_val_lt_val, ext_iff, Fin.coe_sub, succ_eq_add_one, this,
-    mod_eq_of_lt ((lt_succ_self _).trans hk)]
+    mod_eq_of_lt (k.lt_succ_self.trans hk)]
 #align fin.lt_sub_one_iff Fin.lt_sub_one_iff
 
 @[simp]
