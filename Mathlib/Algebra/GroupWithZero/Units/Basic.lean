@@ -375,6 +375,7 @@ lemma div_eq_one_iff_eq (hb : b ≠ 0) : a / b = 1 ↔ a = b := hb.isUnit.div_eq
 lemma div_mul_cancel_right₀ (hb : b ≠ 0) (a : G₀) : b / (a * b) = a⁻¹ :=
   hb.isUnit.div_mul_cancel_right _
 
+set_option linter.deprecated false in
 @[deprecated div_mul_cancel_right₀] -- 2024-03-20
 lemma div_mul_left (hb : b ≠ 0) : b / (a * b) = 1 / a := hb.isUnit.div_mul_left
 #align div_mul_left div_mul_left
@@ -441,6 +442,7 @@ instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
 lemma div_mul_cancel_left₀ (ha : a ≠ 0) (b : G₀) : a / (a * b) = b⁻¹ :=
   ha.isUnit.div_mul_cancel_left _
 
+set_option linter.deprecated false in
 @[deprecated div_mul_cancel_left₀] -- 2024-03-22
 lemma div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b := ha.isUnit.div_mul_right _
 #align div_mul_right div_mul_right

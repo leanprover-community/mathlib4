@@ -192,7 +192,7 @@ theorem convexIndependent_iff_finset {p : ι → E} :
   suffices x ∈ t.preimage p (hp.injOn _) by rwa [mem_preimage, ← mem_coe] at this
   refine' h _ x _
   rwa [t.image_preimage p (hp.injOn _), filter_true_of_mem]
-  · exact fun y hy => s.image_subset_range p (ht <| mem_coe.2 hy)
+  exact fun y hy => s.image_subset_range p (ht <| mem_coe.2 hy)
 #align convex_independent_iff_finset convexIndependent_iff_finset
 
 /-! ### Extreme points -/
