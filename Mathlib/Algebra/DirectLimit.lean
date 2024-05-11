@@ -6,7 +6,7 @@ Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 import Mathlib.Data.Finset.Order
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.RingTheory.FreeCommRing
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.Tactic.SuppressCompilation
 
@@ -768,11 +768,11 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       ⟨k, s ∪ t, this,
         isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
           (isSupported_upwards hyt <| Set.subset_union_right s t), fun [_] => _⟩
-    · -- Porting note: was `(restriction _).map_add`
-      classical rw [RingHom.map_add, (FreeCommRing.lift _).map_add, ←
-        of.zero_exact_aux2 G f' hxs hi this hik (Set.subset_union_left s t), ←
-        of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right s t), ihs,
-        (f' i k hik).map_zero, iht, (f' j k hjk).map_zero, zero_add]
+    -- Porting note: was `(restriction _).map_add`
+    classical rw [RingHom.map_add, (FreeCommRing.lift _).map_add, ←
+      of.zero_exact_aux2 G f' hxs hi this hik (Set.subset_union_left s t), ←
+      of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right s t), ihs,
+      (f' i k hik).map_zero, iht, (f' j k hjk).map_zero, zero_add]
   · rintro x y ⟨j, t, hj, hyt, iht⟩
     rw [smul_eq_mul]
     rcases exists_finset_support x with ⟨s, hxs⟩
@@ -1006,8 +1006,7 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
 
 /-- Noncomputable field structure on the direct limit of fields.
 See note [reducible non-instances]. -/
-@[reducible]
-protected noncomputable def field [DirectedSystem G fun i j h => f' i j h] :
+protected noncomputable abbrev field [DirectedSystem G fun i j h => f' i j h] :
     Field (Ring.DirectLimit G fun i j h => f' i j h) where
   -- This used to include the parent CommRing and Nontrivial instances,
   -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
