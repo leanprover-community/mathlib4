@@ -588,6 +588,20 @@ def coeff (m : σ →₀ ℕ) (p : MvPolynomial σ R) : R :=
   -- I think it should work better syntactically. They are defeq.
 #align mv_polynomial.coeff MvPolynomial.coeff
 
+/-- The set of coefficients of a multivariate polynomial. -/
+def coefficients (p : MvPolynomial σ R) : Set R := p.coeff '' p.support
+
+theorem coeff_mem_coefficients {p : MvPolynomial σ R} (m : σ →₀ ℕ) (h : m ∈ MvPolynomial.support p) :
+    p.coeff m ∈ p.coefficients :=
+  Set.mem_image_of_mem p.coeff h
+
+/-- The set of coefficients of a multivariate polynomial is finite. -/
+theorem coefficients_finite (p : MvPolynomial σ R) : Set.Finite p.coefficients := by
+  apply Set.Finite.image
+  change Set.Finite (Finsupp.support p)
+  rw [← Finsupp.fun_support_eq]
+  exact Finsupp.finite_support p
+
 @[simp]
 theorem mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∈ p.support ↔ p.coeff m ≠ 0 := by
   simp [support, coeff]

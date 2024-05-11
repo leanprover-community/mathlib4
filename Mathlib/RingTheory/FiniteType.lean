@@ -219,6 +219,11 @@ theorem _root_.Subalgebra.fg_iff_finiteType (S : Subalgebra R A) : S.FG ↔ Alge
   S.fg_top.symm.trans ⟨fun h => ⟨h⟩, fun h => h.out⟩
 #align subalgebra.fg_iff_finite_type Subalgebra.fg_iff_finiteType
 
+theorem of_adjoin_finite (s : Set A) (h : Set.Finite s) :
+    FiniteType R (Algebra.adjoin R s) := by
+  rw [← Subalgebra.fg_iff_finiteType, Subalgebra.fg_def]
+  use s
+
 end FiniteType
 
 end Algebra
