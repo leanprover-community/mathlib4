@@ -97,7 +97,6 @@ Mathlib/Order/LocallyFinite.lean : line 1 : ERR_NUM_LIN : 1700 file contains 153
 Mathlib/Order/SuccPred/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1560 lines, try to split it up
 Mathlib/Order/UpperLower/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2019 lines, try to split it up
 Mathlib/RingTheory/DedekindDomain/Ideal.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1542 lines, try to split it up
-Mathlib/RingTheory/Ideal/Operations.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2324 lines, try to split it up
 Mathlib/RingTheory/UniqueFactorizationDomain.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2066 lines, try to split it up
 Mathlib/SetTheory/Cardinal/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2367 lines, try to split it up
 Mathlib/SetTheory/Cardinal/Ordinal.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1649 lines, try to split it up
