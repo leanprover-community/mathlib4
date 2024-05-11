@@ -78,7 +78,7 @@ lemma isClique_singleton (a : α) : G.IsClique {a} := by simp
 #align simple_graph.is_clique_singleton SimpleGraph.isClique_singleton
 
 theorem isClique_subsingleton (G : SimpleGraph α) (ht : s.Subsingleton) : G.IsClique s :=
-  Set.Subsingleton.pairwise ht G.Adj
+  ht.pairwise G.Adj
 
 lemma isClique_pair : G.IsClique {a, b} ↔ a ≠ b → G.Adj a b := Set.pairwise_pair_of_symmetric G.symm
 #align simple_graph.is_clique_pair SimpleGraph.isClique_pair
