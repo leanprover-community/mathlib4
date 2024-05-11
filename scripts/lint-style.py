@@ -58,6 +58,33 @@ class Error(Enum):
     ERR_NUM_LIN = 19 # file is too large
     ERR_NSP = 20 # non-terminal simp
 
+def error_message(err):
+    '''Return the error message corresponding to a style error.'''
+    d = {
+        Error.ERR_COP : "Malformed or missing copyright header",
+        Error.ERR_MOD : "Module docstring missing, or too late",
+        Error.ERR_LIN : "Line has more than 100 characters",
+        Error.ERR_OPT : "Forbidden set_option command",
+        Error.ERR_AUT : "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'",
+        Error.ERR_TAC : "Files in mathlib cannot import the whole tactic folder",
+        Error.ERR_IBY : "Line is an isolated 'by'",
+        Error.ERR_DOT : "Line is an isolated focusing dot or uses . instead of ·",
+        Error.ERR_SEM : "Line contains a space before a semicolon",
+        Error.ERR_WIN : "Windows line endings (\\r\\n) detected",
+        Error.ERR_TWS : "Trailing whitespace detected on line",
+        Error.ERR_CLN : "Put : and := before line breaks, not after",
+        Error.ERR_IND : "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)",
+        Error.ERR_ARR : "Missing space after '←'.",
+        # Error.ERR_NUM_LIN deliberately omitted, as its error message is more complex
+        Error.ERR_NSP : "Non-terminal simp. Replace with `simp?` and use the suggested output",
+    }
+    if err in d:
+        return d[err]
+    else:
+        print(f"unhandled error kind: {errno}")
+        sys.exit(1)
+
+
 exceptions = []
 
 SCRIPTS_DIR = Path(__file__).parent.resolve()
@@ -362,27 +389,7 @@ def format_errors(errors):
         if (errno, path.resolve(), None) in exceptions:
             continue
         new_exceptions = True
-        messages = {
-            Error.ERR_COP : "Malformed or missing copyright header",
-            Error.ERR_MOD : "Module docstring missing, or too late",
-            Error.ERR_LIN : "Line has more than 100 characters",
-            Error.ERR_OPT : "Forbidden set_option command",
-            Error.ERR_AUT : "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'",
-            Error.ERR_TAC : "Files in mathlib cannot import the whole tactic folder",
-            Error.ERR_IBY : "Line is an isolated 'by'",
-            Error.ERR_DOT : "Line is an isolated focusing dot or uses . instead of ·",
-            Error.ERR_SEM : "Line contains a space before a semicolon",
-            Error.ERR_WIN : "Windows line endings (\\r\\n) detected",
-            Error.ERR_TWS : "Trailing whitespace detected on line",
-            Error.ERR_CLN : "Put : and := before line breaks, not after",
-            Error.ERR_IND : "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)",
-            Error.ERR_ARR : "Missing space after '←'.",
-            Error.ERR_NSP : "Non-terminal simp. Replace with `simp?` and use the suggested output",
-        }
-        if errno in messages:
-            output_message(path, line_nr, errno.name, messages[errno])
-        else:
-            print(f"unhandled error kind: {errno}")
+        output_message(path, line_nr, errno.name, error_message(errno))
 
 
 def lint(path, fix=False):
