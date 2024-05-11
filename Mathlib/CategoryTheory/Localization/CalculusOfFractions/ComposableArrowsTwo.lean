@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 /-! # Essential surjectivity of the functor induced on tuples of composable arrows
 
 Assuming that `L : C ⥤ D` is a localization functor for a class of morphisms `W`
-that has both calculs of left and right fractions, we show in this file
+that has both calculus of left and right fractions, we show in this file
 that the functor `L.mapComposableArrows 2 : ComposableArrows C 2 ⥤ ComposableArrows D 2`
 is essentially surjective.
 
@@ -41,7 +41,7 @@ lemma essSurj_mapComposableArrows_two : (L.mapComposableArrows 2).EssSurj  where
     · dsimp
       rw [← cancel_mono (L.objObjPreimageIso Y₁).inv, assoc, assoc, assoc, hf',
         Iso.hom_inv_id, comp_id, MorphismProperty.RightFraction.map_s_comp_map]
-    · dsimp
+    · dsimp [ComposableArrows.Precomp.map]
       rw [← cancel_mono (L.objObjPreimageIso Y₂).inv, assoc, assoc, assoc, hg',
         Iso.hom_inv_id, comp_id, IsIso.comp_inv_eq,
         MorphismProperty.LeftFraction.map_comp_map_s]
