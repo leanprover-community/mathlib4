@@ -932,7 +932,7 @@ decreasing_by
 @[simp]
 theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
-    reverseRecOn [] nil append_singleton = nil := reverseRecOn.eq_1 ..
+    reverseRecOn [] nil append_singleton = nil := by unfold reverseRecOn; rfl
 
 -- `unusedHavesSuffices` is getting confused by the unfolding of `reverseRecOn`
 @[simp, nolint unusedHavesSuffices]
