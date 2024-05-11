@@ -223,12 +223,12 @@ lemma D₂_D₁ (i₁₂ i₁₂' i₁₂'' : I₁₂) :
             ComplexShape.ε₂_ε₁ c₁₂ h₃ h₄, neg_mul, Units.neg_smul]
         · simp only [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp, comp_zero, smul_zero, neg_zero]
       · rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, zero_comp, neg_zero]
-        · by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
-          · rw [totalAux.d₂_eq K c₁₂ i₁ h₄ i₁₂']; swap
-            · rw [← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₄, ← c₁₂.next_eq' h₁, h]
-            simp only [Linear.units_smul_comp, assoc, totalAux.ιMapObj_D₁]
-            rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, comp_zero, smul_zero]
-          · rw [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp]
+        by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
+        · rw [totalAux.d₂_eq K c₁₂ i₁ h₄ i₁₂']; swap
+          · rw [← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₄, ← c₁₂.next_eq' h₁, h]
+          simp only [Linear.units_smul_comp, assoc, totalAux.ιMapObj_D₁]
+          rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, comp_zero, smul_zero]
+        · rw [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp]
     · rw [K.D₁_shape c₁₂ _ _ h₂, K.D₂_shape c₁₂ _ _ h₂, comp_zero, comp_zero, neg_zero]
   · rw [K.D₁_shape c₁₂ _ _ h₁, K.D₂_shape c₁₂ _ _ h₁, zero_comp, zero_comp, neg_zero]
 

@@ -44,8 +44,7 @@ variable {V : Type*} {G : SimpleGraph V}
 namespace Walk
 
 /-- The edges of a trail as a finset, since each edge in a trail appears exactly once. -/
-@[reducible]
-def IsTrail.edgesFinset {u v : V} {p : G.Walk u v} (h : p.IsTrail) : Finset (Sym2 V) :=
+abbrev IsTrail.edgesFinset {u v : V} {p : G.Walk u v} (h : p.IsTrail) : Finset (Sym2 V) :=
   ⟨p.edges, h.edges_nodup⟩
 #align simple_graph.walk.is_trail.edges_finset SimpleGraph.Walk.IsTrail.edgesFinset
 

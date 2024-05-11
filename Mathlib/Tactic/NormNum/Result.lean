@@ -439,8 +439,7 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
   Note that `BoolResult p b` is definitionally equal to `Expr`, and if you write `match b with ...`,
   then in the `true` branch `BoolResult p true` is reducibly equal to `Q($p)` and
   in the `false` branch it is reducibly equal to `Q(¬ $p)`. -/
-@[reducible]
-def BoolResult (p : Q(Prop)) (b : Bool) : Type :=
+abbrev BoolResult (p : Q(Prop)) (b : Bool) : Type :=
   Q(Bool.rec (¬ $p) ($p) $b)
 
 /-- Obtain a `Result` from a `BoolResult`. -/
