@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Embedding
-import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Decoy
 import Mathlib.Data.Finset.Union
 import Mathlib.Algebra.Order.Ring.Int
 
