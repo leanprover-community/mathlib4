@@ -32,6 +32,8 @@ case the unit and the counit would switch to each other.
 
 -/
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 set_option linter.uppercaseLean3 false
 
 noncomputable section
@@ -318,6 +320,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
 
 namespace ΓSpec
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem left_triangle (X : LocallyRingedSpace) :
     SpecΓIdentity.inv.app (Γ.obj (op X)) ≫ (identityToΓSpec.app X).val.c.app (op ⊤) = 𝟙 _ :=
   X.Γ_Spec_left_triangle
@@ -394,6 +397,7 @@ theorem adjunction_homEquiv_symm_apply {X : Scheme} {R : CommRingCatᵒᵖ}
   by rw [adjunction_homEquiv]; rfl
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_symm_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_symm_apply
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
     ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := by
@@ -476,31 +480,31 @@ instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
 
 /-- Spec is a full functor. -/
 instance : Spec.toLocallyRingedSpace.Full  :=
-  R_full_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
+  ΓSpec.locallyRingedSpaceAdjunction.R_full_of_counit_isIso
 
 instance Spec.full : Scheme.Spec.Full  :=
-  R_full_of_counit_isIso ΓSpec.adjunction
+  ΓSpec.adjunction.R_full_of_counit_isIso
 #align algebraic_geometry.Spec.full AlgebraicGeometry.Spec.full
 
 /-- Spec is a faithful functor. -/
 instance : Spec.toLocallyRingedSpace.Faithful :=
-  R_faithful_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
+  ΓSpec.locallyRingedSpaceAdjunction.R_faithful_of_counit_isIso
 
 instance Spec.faithful : Scheme.Spec.Faithful :=
-  R_faithful_of_counit_isIso ΓSpec.adjunction
+  ΓSpec.adjunction.R_faithful_of_counit_isIso
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
 
-instance : IsRightAdjoint Spec.toLocallyRingedSpace :=
-  ⟨_, ΓSpec.locallyRingedSpaceAdjunction⟩
+instance : Spec.toLocallyRingedSpace.IsRightAdjoint  :=
+  (ΓSpec.locallyRingedSpaceAdjunction).isRightAdjoint
 
-instance : IsRightAdjoint Scheme.Spec :=
-  ⟨_, ΓSpec.adjunction⟩
+instance : Scheme.Spec.IsRightAdjoint  :=
+  (ΓSpec.adjunction).isRightAdjoint
 
-instance : Reflective Spec.toLocallyRingedSpace :=
-  ⟨⟩
+instance : Reflective Spec.toLocallyRingedSpace where
+  adj := ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.reflective : Reflective Scheme.Spec :=
-  ⟨⟩
+instance Spec.reflective : Reflective Scheme.Spec where
+  adj := ΓSpec.adjunction
 #align algebraic_geometry.Spec.reflective AlgebraicGeometry.Spec.reflective
 
 end AlgebraicGeometry

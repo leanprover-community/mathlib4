@@ -468,7 +468,7 @@ end Measure
 
 theorem OuterMeasure.coe_mkMetric [MeasurableSpace X] [BorelSpace X] (m : ℝ≥0∞ → ℝ≥0∞) :
     ⇑(OuterMeasure.mkMetric m : OuterMeasure X) = Measure.mkMetric m := by
-  rw [← Measure.mkMetric_toOuterMeasure]
+  rw [← Measure.mkMetric_toOuterMeasure, Measure.coe_toOuterMeasure]
 #align measure_theory.outer_measure.coe_mk_metric MeasureTheory.OuterMeasure.coe_mkMetric
 
 namespace Measure
@@ -519,7 +519,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
     push_neg at htr; rcases htr with ⟨n, hn⟩
     refine' ENNReal.tsum_eq_top_of_eq_top ⟨n, _⟩
     rw [iSup_eq_if, if_pos, iInf_eq_if, if_neg]
-    exact hn.not_le
+    · exact hn.not_le
     rcases diam_pos_iff.1 ((zero_le r).trans_lt hn) with ⟨x, hx, -⟩
     exact ⟨x, hx⟩
 #align measure_theory.measure.mk_metric_apply MeasureTheory.Measure.mkMetric_apply
@@ -799,10 +799,10 @@ theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedA
   suffices ∀ {r : 𝕜}, r ≠ 0 → ∀ s : Set E, μH[d] (r • s) ≤ ‖r‖₊ ^ d • μH[d] s by
     refine' le_antisymm (this hr s) _
     rw [← le_inv_smul_iff_of_pos]
-    dsimp
-    rw [← NNReal.inv_rpow, ← nnnorm_inv]
-    · refine' Eq.trans_le _ (this (inv_ne_zero hr) (r • s))
-      rw [inv_smul_smul₀ hr]
+    · dsimp
+      rw [← NNReal.inv_rpow, ← nnnorm_inv]
+      · refine' Eq.trans_le _ (this (inv_ne_zero hr) (r • s))
+        rw [inv_smul_smul₀ hr]
     · simp [pos_iff_ne_zero, hr]
   intro r _ s
   simp only [NNReal.rpow_eq_pow, ENNReal.smul_def, ← ENNReal.coe_rpow_of_nonneg _ hd, smul_eq_mul]
@@ -870,12 +870,8 @@ variable {f : X → Y} {d : ℝ}
 theorem hausdorffMeasure_image (hf : Isometry f) (hd : 0 ≤ d ∨ Surjective f) (s : Set X) :
     μH[d] (f '' s) = μH[d] s := by
   simp only [hausdorffMeasure, ← OuterMeasure.coe_mkMetric, ← OuterMeasure.comap_apply]
-  -- Porting note: this proof was slightly nicer before the port
-  simp only [mkMetric_toOuterMeasure]
-  have : 0 ≤ d → Monotone fun r : ℝ≥0∞ ↦ r ^ d := by
-    exact fun hd x y hxy => ENNReal.rpow_le_rpow hxy hd
-  have := OuterMeasure.isometry_comap_mkMetric (fun (r : ℝ≥0∞) => r ^ d) hf (hd.imp_left this)
-  congr
+  rw [OuterMeasure.isometry_comap_mkMetric _ hf (hd.imp_left _)]
+  exact ENNReal.monotone_rpow_of_nonneg
 #align isometry.hausdorff_measure_image Isometry.hausdorffMeasure_image
 
 theorem hausdorffMeasure_preimage (hf : Isometry f) (hd : 0 ≤ d ∨ Surjective f) (s : Set Y) :

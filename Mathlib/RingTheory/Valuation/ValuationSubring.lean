@@ -5,7 +5,7 @@ Authors: Adam Topaz, Junyan Xu, Jack McKoen
 -/
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
-import Mathlib.RingTheory.Subring.Pointwise
+import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
 #align_import ring_theory.valuation.valuation_subring from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
@@ -351,13 +351,13 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
   · intro hx; by_cases hr : x ∈ R; · exact R.le_ofPrime _ hr
     have : x ≠ 0 := fun h => hr (by rw [h]; exact R.zero_mem)
     replace hr := (R.mem_or_inv_mem x).resolve_left hr
-    · -- Porting note: added `⟨⟩` brackets and reordered goals
-      use 1, ⟨x⁻¹, hr⟩; constructor
-      · field_simp
-      · change (⟨x⁻¹, h hr⟩ : S) ∉ nonunits S
-        rw [mem_nonunits_iff, Classical.not_not]
-        apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
-        ext; field_simp
+    -- Porting note: added `⟨⟩` brackets and reordered goals
+    use 1, ⟨x⁻¹, hr⟩; constructor
+    · field_simp
+    · change (⟨x⁻¹, h hr⟩ : S) ∉ nonunits S
+      rw [mem_nonunits_iff, Classical.not_not]
+      apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
+      ext; field_simp
 #align valuation_subring.of_prime_ideal_of_le ValuationSubring.ofPrime_idealOfLE
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
@@ -727,6 +727,7 @@ def unitGroupToResidueFieldUnits : A.unitGroup →* (LocalRing.ResidueField A)ˣ
   MonoidHom.comp (Units.map <| (Ideal.Quotient.mk _).toMonoidHom) A.unitGroupMulEquiv.toMonoidHom
 #align valuation_subring.unit_group_to_residue_field_units ValuationSubring.unitGroupToResidueFieldUnits
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
     (A.unitGroupToResidueFieldUnits x : LocalRing.ResidueField A) =

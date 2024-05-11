@@ -189,8 +189,8 @@ variable (M)
 -- is empty if the base manifold is empty
 /-- The tangent bundle to a smooth manifold, as a Sigma type. Defined in terms of
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
-@[reducible] -- Porting note(#5171): was nolint has_nonempty_instance
-def TangentBundle :=
+-- Porting note(#5171): was nolint has_nonempty_instance
+abbrev TangentBundle :=
   Bundle.TotalSpace E (TangentSpace I : M → Type _)
 #align tangent_bundle TangentBundle
 
@@ -352,10 +352,10 @@ instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
   refine' ⟨fun i j => _⟩
   rw [SmoothOn, contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas I i.2),
     contMDiffOn_iff_contDiffOn]
-  refine' ((contDiffOn_fderiv_coord_change I i j).congr fun x hx => _).mono _
-  · rw [PartialEquiv.trans_source'] at hx
-    simp_rw [Function.comp_apply, tangentBundleCore_coordChange, (i.1.extend I).right_inv hx.1]
-  · exact (i.1.extend_image_source_inter j.1 I).subset
+  · refine' ((contDiffOn_fderiv_coord_change I i j).congr fun x hx => _).mono _
+    · rw [PartialEquiv.trans_source'] at hx
+      simp_rw [Function.comp_apply, tangentBundleCore_coordChange, (i.1.extend I).right_inv hx.1]
+    · exact (i.1.extend_image_source_inter j.1 I).subset
   · apply inter_subset_left
 #align tangent_bundle_core.is_smooth tangentBundleCore.isSmooth
 
