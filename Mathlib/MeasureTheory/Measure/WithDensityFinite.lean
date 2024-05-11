@@ -82,11 +82,10 @@ lemma toFiniteAux_eq_zero_iff [SFinite μ] : μ.toFiniteAux = 0 ↔ μ = 0 := by
   ext s hs
   rw [Measure.ext_iff] at h
   specialize h s hs
-  simp only [toFiniteAux_apply, Measure.zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply,
+  simp only [toFiniteAux_apply, Measure.coe_zero, Pi.zero_apply,
     ENNReal.tsum_eq_zero, mul_eq_zero, ENNReal.inv_eq_zero] at h
   rw [← sum_sFiniteSeq μ, Measure.sum_apply _ hs]
-  simp only [Measure.zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply,
-    ENNReal.tsum_eq_zero]
+  simp only [Measure.coe_zero, Pi.zero_apply, ENNReal.tsum_eq_zero]
   intro n
   specialize h n
   simpa [ENNReal.mul_eq_top, measure_ne_top] using h
@@ -214,8 +213,8 @@ lemma restrict_compl_sigmaFiniteSet [SFinite μ] :
 lemma restrict_compl_sigmaFiniteSet_eq_zero_or_top (μ : Measure α) [SFinite μ] (s : Set α) :
     μ.restrict μ.sigmaFiniteSetᶜ s = 0 ∨ μ.restrict μ.sigmaFiniteSetᶜ s = ∞ := by
   rw [restrict_compl_sigmaFiniteSet]
-  simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, smul_eq_mul,
-    mul_eq_zero, ENNReal.top_ne_zero, false_or]
+  simp only [Measure.coe_smul, Pi.smul_apply, smul_eq_mul, mul_eq_zero, ENNReal.top_ne_zero,
+    false_or]
   rw [Measure.restrict_apply' (measurableSet_sigmaFiniteSet μ).compl]
   by_cases h_zero : μ.toFinite (s ∩ μ.sigmaFiniteSetᶜ) = 0
   · exact Or.inl h_zero
