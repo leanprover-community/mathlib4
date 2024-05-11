@@ -93,6 +93,15 @@ def of_coeff (f : Γ → V →ₗ[R] W)
     exact rfl
 
 @[simp]
+theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)
+    (hf : ∀(x : V), (Function.support (fun g => f g x)).IsPWO) : (of_coeff f hf).coeff = f :=
+  rfl
+
+@[simp]
+theorem zero_coeff : (0 : HetVertexOperator Γ R V W).coeff = 0 :=
+  rfl
+
+@[simp]
 theorem add_coeff_apply (A B : HetVertexOperator Γ R V W) (n : Γ) :
     (A + B).coeff n = A.coeff n + B.coeff n := by
   ext v
@@ -216,6 +225,12 @@ def hetComp {U : Type*} [AddCommGroup U] [Module R U] (A : HetVertexOperator Γ 
       HahnSeries.smul_coeff, CompHahnSeries_coeff, coeff_apply]
     exact rfl
 
+@[simp]
+theorem coeff_hetComp {U : Type*} [AddCommGroup U] [Module R U] (A : HetVertexOperator Γ R V W)
+    (B : HetVertexOperator Γ' R U V) (g : Γ' ×ₗ Γ) :
+    (hetComp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
+  rfl
+
 -- TODO: comp_assoc
 
 /-- The restriction of a heterogeneous vertex operator on a lex product to an element of the left
@@ -246,7 +261,8 @@ theorem coeff_left_lex_supp.isPWO (A : HetVertexOperator (Γ ×ₗ Γ') R V W) (
 /-- The restriction of a heterogeneous vertex operator on a lex product to an element of the right
 factor. -/
 def ResRight (A : HetVertexOperator (Γ ×ₗ Γ') R V W) (g' : Γ') : HetVertexOperator Γ R V W :=
-  HetVertexOperator.of_coeff (fun g => coeff A (g, g')) (fun v => coeff_left_lex_supp.isPWO A g' v)
+  HetVertexOperator.of_coeff (fun g => coeff A (toLex (g, g')))
+    (fun v => coeff_left_lex_supp.isPWO A g' v)
 
 theorem coeff_ResRight (A : HetVertexOperator (Γ ×ₗ Γ') R V W) (g' : Γ') (g : Γ) :
     coeff (ResRight A g') g = coeff A (toLex (g, g')) := rfl
@@ -286,12 +302,18 @@ theorem subLeft_eq : (subLeft R).val = HahnSeries.single (toLex (1,0)) 1 +
   rw [subLeft, HahnSeries.UnitBinomial_val, add_comm, IsUnit.unit_spec]
 
 @[simp]
+theorem subLeft_smul_eq {A : HetVertexOperator (ℤ ×ₗ ℤ) R V W} :
+    subLeft R • A = (subLeft R).val • A :=
+  rfl
+
+@[simp]
 theorem subLeft_leadingCoeff [Nontrivial R] : (subLeft R).val.leadingCoeff = (-1 : R) := by
   rw [subLeft_eq, add_comm, HahnSeries.leadingCoeff_single_add_single lex_basis_lt (by simp)]
 
 theorem subLeft_order [Nontrivial R] : (subLeft R).val.order = toLex (0,1) := by
   rw [subLeft_eq, add_comm, HahnSeries.order_single_add_single lex_basis_lt (by simp)]
 
+@[simp]
 theorem subLeft_smul_coeff (A : HetVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : ℤ) :
     ((subLeft R).val • A).coeff (toLex (k, l)) =
       A.coeff (toLex (k - 1, l)) - A.coeff (toLex (k, l - 1)) := by
@@ -305,7 +327,7 @@ theorem subLeft_smul_coeff (A : HetVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : 
 --describe coefficients of powers
 --describe coefficients of `subLeft R • A` for `A : HetVO`.
 
-/-- `X - Y` as a unit of `R((Y))((X))` -/
+/-- `X - Y` as a unit of `R((Y))((X))`.  This is `-1` times subLeft, so it may be superfluous. -/
 def subRight (R : Type*) [CommRing R] : (HahnSeries (ℤ ×ₗ ℤ) R)ˣ :=
     HahnSeries.UnitBinomial (AddGroup.isAddUnit (toLex (0,1))) lex_basis_lt (isUnit_one (M := R))
     (-1 : R)

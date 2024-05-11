@@ -439,58 +439,48 @@ def isLocal (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
 section ResidueProduct
 
 open HetVertexOperator
-/-!
-theorem res_prod_left_bound (A B : VertexOperator R V) (m : ℤ): ∀(x : V), ∃(n : ℤ), ∀(k : ℤ),
-    k < n → composite_ncoef.linearMap A B m 0 (-k - 1)
-    (fun i ↦ (-1) ^ i • Ring.choose m i) x = 0 := by
-  intro x
-  use HahnSeries.order (B x) - 1
-  intro k hk
-  have h : - HahnSeries.order (B x) < (-k - 1) := by omega
-  exact composite_bdd_below_right A B m 0 (fun i => (-1)^i • Ring.choose m i) x (-k - 1) h
--/
 
 /-- The left side of the `m`-th residue product, given by the residue of `(x-y)^m A(x)B(y)` at
 `x=0`, where we formally expand `(x-y)^m` as `x^m(1-y/x)^m` in `R((x))((y))` using binomials. -/
 noncomputable def res_prod_left (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
-  ResLeft ((subLeft R)^ m • hetComp A B) (0 : ℤ)
-
-/-!
-theorem res_prod_right_bound (A B : VertexOperator R V) (m : ℤ): ∀(x : V), ∃(N : ℤ), ∀(k : ℤ),
-    k < N → composite_ncoef.linearMap A B m (-k - 1) 0
-    (fun i ↦ (-1 : ℤˣ)^(m + i) • Ring.choose m i) x = 0 := by
-  intro x
-  use (-Exists.choose
-    (composite_bdd_below_left A B m 0 (fun i ↦ (-1 : ℤˣ)^(m + i) • Ring.choose m i) x)) + m - 1
-  intro k hk
-  refine (Exists.choose_spec
-    (composite_bdd_below_left A B m 0 (fun i ↦ (-1 : ℤˣ)^(m + i) • Ring.choose m i) x)) (-k - 1) ?_
-  omega
--/
+  ResRight ((subLeft R) ^ m • hetComp A B) (-1 : ℤ)
 
 /-- The right side of the `m`-th residue product, given by the residue of `(x-y)^m B(x)A(y)` at
 `x=0`, where we formally expand `(x-y)^m` as `(-y)^m(1-x/y)^m` using binomials (i.e., in the domain
 where `x` is big). -/
 noncomputable def res_prod_right (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
-  ResRight ((subRight R)^ m • hetComp B A) (0 : ℤ)
-
+  ResRight ((subRight R) ^ m • hetComp B A) (-1 : ℤ)
 
 /-- The the `m`-th residue product of vertex operators -/
 noncomputable def res_prod (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
   res_prod_left A B m + res_prod_right A B m
 
+theorem subLeft_smul_hetComp_one_left_eq (A : VertexOperator R V) {m : ℤ} {k n : ℕ} :
+    coeff ((subLeft R ^ k) • hetComp (1 : VertexOperator R V) A)
+      (toLex (m, Int.negSucc n)) = 0 := by
+  induction k generalizing m n with
+  | zero => simp
+  | succ k ih => simp [pow_succ', mul_smul, ih]
+
+/-!
+theorem coeff_res_prod_left (A B : VertexOperator R V) (m k : ℤ) :
+    (res_prod_left A B m).coeff k = sum i?
+-/
+
+theorem res_prod_left_one_nat (A : VertexOperator R V) (m : ℕ) : res_prod_left 1 A m = 0 := by
+  ext1
+  simp only [res_prod_left, ResRight, zpow_natCast, coeff_of_coeff, zero_coeff]
+  funext
+  rw [show -1 = Int.negSucc 0 by exact rfl, subLeft_smul_hetComp_one_left_eq]
+  exact rfl
+
 /-!
 theorem res_prod_neg_one_one_left (A : VertexOperator R V) : res_prod 1 A (-1) = A := by
   ext x n
-  unfold res_prod res_prod_left res_prod_right composite_ncoef.linearMap composite_ncoef
-  unfold composite_summand
-  simp only [neg_sub, sub_neg_eq_add, smul_eq_mul, add_zero, LinearMap.coe_mk, AddHom.coe_mk,
-    neg_zero, zero_sub, zero_add, smul_assoc, LinearMap.add_apply, HahnSeries.add_coeff',
-    Pi.add_apply]
 
   sorry
 
-residue products with 1, interaction with Hasse derivatives.
+--residue products with 1, interaction with Hasse derivatives.
 
 /-- Dong's Lemma: if vertex operators `A` `B` `C` are pairwise local, then `A` is local to `B_n C`
 for all integers `n`. -/
