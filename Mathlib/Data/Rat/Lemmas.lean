@@ -227,7 +227,7 @@ theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den
   constructor
   · rw [Rat.den_eq_one_iff, eq_div_iff hn]
     exact mod_cast (Dvd.intro_left _)
-  · exact fun h ↦ intCast_div _ _ h ▸ rfl
+  · exact (intCast_div _ _ · ▸ rfl)
 #align rat.denom_div_cast_eq_one_iff Rat.den_div_cast_eq_one_iff
 
 theorem den_div_natCast_eq_one_iff (m n : ℕ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m :=
