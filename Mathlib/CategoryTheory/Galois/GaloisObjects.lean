@@ -95,6 +95,28 @@ instance isPretransitive_of_isGalois (X : C) [IsGalois X] :
   rw [← isGalois_iff_pretransitive]
   infer_instance
 
+theorem evaluation_aut_surjective_of_isGalois (A : C) [IsGalois A] (a : F.obj A) :
+    Function.Surjective (fun f : Aut A ↦ F.map f.hom a) :=
+  MulAction.IsPretransitive.exists_smul_eq a
+
+theorem evaluation_aut_bijective_of_isGalois (A : C) [IsGalois A] (a : F.obj A) :
+    Function.Bijective (fun f : Aut A ↦ F.map f.hom a) :=
+  ⟨evaluation_aut_injective_of_isConnected F A a, evaluation_aut_surjective_of_isGalois F A a⟩
+
+noncomputable def evaluationEquivOfIsGalois (A : C) [IsGalois A] (a : F.obj A) : Aut A ≃ F.obj A :=
+  Equiv.ofBijective _ (evaluation_aut_bijective_of_isGalois F A a)
+
+@[simp]
+theorem evaluationEquivOfIsGalois_apply (A : C) [IsGalois A] (a : F.obj A) (φ : Aut A) :
+    evaluationEquivOfIsGalois F A a φ = F.map φ.hom a :=
+  rfl
+
+@[simp]
+theorem evaluationEquivOfIsGalois_symm_fiber (A : C) [IsGalois A] (a b : F.obj A) :
+    F.map ((evaluationEquivOfIsGalois F A a).symm b).hom a = b := by
+  change (evaluationEquivOfIsGalois F A a) _ = _
+  simp
+
 end PreGaloisCategory
 
 end CategoryTheory
