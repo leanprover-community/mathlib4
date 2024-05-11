@@ -47,7 +47,7 @@ We choose the former formula so that the `Lᵖ` space is a normed group for all 
 noncomputable section
 
 open TopologicalSpace MeasureTheory Filter Function ENNReal
-open scoped NNReal BigOperators Topology MeasureTheory
+open scoped NNReal BigOperators Topology MeasureTheory symmDiff
 
 variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
