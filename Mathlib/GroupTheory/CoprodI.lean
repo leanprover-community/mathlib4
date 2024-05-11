@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
-import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.Data.List.Chain
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Data.Set.Pointwise.SMul
