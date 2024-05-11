@@ -213,14 +213,12 @@ attribute [simp, norm_cast] Int.natAbs_ofNat
 end Nat
 
 /-- `AddMonoidWithOne` implementation using unary recursion. -/
-@[reducible]
-protected def AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected abbrev AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with }
 #align add_monoid_with_one.unary AddMonoidWithOne.unary
 
 /-- `AddMonoidWithOne` implementation using binary recursion. -/
-@[reducible]
-protected def AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
     natCast_zero := by simp only [Nat.binCast, Nat.cast],

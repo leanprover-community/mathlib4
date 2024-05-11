@@ -580,8 +580,7 @@ lemma compProd_add_right (μ : kernel α β) (κ η : kernel (α × β) γ)
     [IsSFiniteKernel μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     μ ⊗ₖ (κ + η) = μ ⊗ₖ κ + μ ⊗ₖ η := by
   ext a s hs
-  simp only [compProd_apply _ _ _ hs, coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure,
-    OuterMeasure.coe_add]
+  simp only [compProd_apply _ _ _ hs, coeFn_add, Pi.add_apply, Measure.coe_add]
   rw [lintegral_add_left]
   exact measurable_kernel_prod_mk_left' hs a
 
