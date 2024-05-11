@@ -291,8 +291,8 @@ instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
     · -- Porting note: was `apply Subsingleton.helim; rw [this]`
       -- See https://github.com/leanprover/lean4/issues/2273
       congr
-      simp only [unop_op]
-      congr
+      · simp only [unop_op]
+        congr
       apply Subsingleton.helim
       rw [this]
     · infer_instance
@@ -1172,11 +1172,11 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
   rw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   -- Porting note (#11224): change `rw` to `erw` on this lemma
-  erw [TopCat.pullback_fst_range]
-  ext
-  constructor
-  · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
-  · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
+  · erw [TopCat.pullback_fst_range]
+    ext
+    constructor
+    · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
+    · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
   · rw [← TopCat.epi_iff_surjective]
     rw [show (inv (pullback.snd : pullback f g ⟶ _)).val.base = _ from
         (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).map_inv _]
