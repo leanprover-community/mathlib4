@@ -29,8 +29,7 @@ In these definitions and the results below, `μ` is an s-finite measure (`SFinit
 * `MeasureTheory.Measure.densityToFinite`: a measurable function such that
   `μ = μ.toFinite.withDensity μ.densityToFinite`.
 * `MeasureTheory.Measure.sigmaFiniteSet`: a measurable set such that `μ.restrict μ.sigmaFiniteSet`
-  is sigma-finite, and for all measurable sets `s ⊆ μ.sigmaFiniteSetᶜ`, either `μ s = 0`
-  or `μ s = ∞`.
+  is sigma-finite, and for all sets `s ⊆ μ.sigmaFiniteSetᶜ`, either `μ s = 0` or `μ s = ∞`.
 
 ## Main statements
 
@@ -223,10 +222,11 @@ lemma restrict_compl_sigmaFiniteSet_eq_zero_or_top (μ : Measure α) [SFinite μ
   · exact Or.inr (ENNReal.top_mul h_zero)
 
 lemma measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet [SFinite μ]
-    (ht : MeasurableSet t) (ht_subset : t ⊆ μ.sigmaFiniteSetᶜ) :
+    (ht_subset : t ⊆ μ.sigmaFiniteSetᶜ) :
     μ t = 0 ∨ μ t = ∞ := by
   have : μ t = μ.restrict μ.sigmaFiniteSetᶜ t := by
-    rw [Measure.restrict_apply ht, Set.inter_eq_left.mpr ht_subset]
+    rw [Measure.restrict_apply' (measurableSet_sigmaFiniteSet μ).compl,
+      Set.inter_eq_left.mpr ht_subset]
   rw [this]
   exact restrict_compl_sigmaFiniteSet_eq_zero_or_top μ t
 
