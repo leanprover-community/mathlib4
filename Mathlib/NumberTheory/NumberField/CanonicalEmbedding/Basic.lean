@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.Algebra.Module.Zlattice.Basic
-import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
+import Mathlib.NumberTheory.NumberField.Units.Basic
 
 #align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
 
@@ -306,6 +306,11 @@ theorem norm_eq_zero_iff' {x : E K} (hx : x ∈ Set.range (mixedEmbedding K)) :
   rw [norm_eq_norm, Rat.cast_abs, abs_eq_zero, Rat.cast_eq_zero, Algebra.norm_eq_zero_iff,
     map_eq_zero]
 
+theorem norm_unit (u : (𝓞 K)ˣ) :
+    mixedEmbedding.norm (mixedEmbedding K u) = 1 := by
+  rw [norm_eq_norm, show |(Algebra.norm ℚ) (u : K)| = 1
+      by exact NumberField.isUnit_iff_norm.mp (Units.isUnit u), Rat.cast_one]
+
 end norm
 
 noncomputable section stdBasis
@@ -578,3 +583,5 @@ theorem mem_span_fractionalIdealLatticeBasis (x : (E K)) :
 end integerLattice
 
 end NumberField.mixedEmbedding
+
+#minimize_imports
