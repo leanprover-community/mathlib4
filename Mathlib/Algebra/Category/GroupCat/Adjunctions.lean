@@ -81,8 +81,8 @@ def adj : free ⊣ forget AddCommGroupCat.{u} :=
         apply FreeAbelianGroup.lift_comp }
 #align AddCommGroup.adj AddCommGroupCat.adj
 
-instance : IsRightAdjoint (forget AddCommGroupCat.{u}) :=
-  ⟨_, adj⟩
+instance : (forget AddCommGroupCat.{u}).IsRightAdjoint :=
+  ⟨_, ⟨adj⟩⟩
 
 /-- As an example, we now give a high-powered proof that
 the monomorphisms in `AddCommGroup` are just the injective functions.
@@ -127,8 +127,8 @@ def adj : free ⊣ forget GroupCat.{u} :=
         apply FreeGroup.lift.of }
 #align Group.adj GroupCat.adj
 
-instance : IsRightAdjoint (forget GroupCat.{u}) :=
-  ⟨_, adj⟩
+instance : (forget GroupCat.{u}).IsRightAdjoint  :=
+  ⟨_, ⟨adj⟩⟩
 
 end GroupCat
 
@@ -196,8 +196,8 @@ def GroupCat.forget₂MonAdj : forget₂ GroupCat MonCat ⊣ MonCat.units.{u} wh
   homEquiv_counit := MonoidHom.ext fun _ => rfl
 #align Group.forget₂_Mon_adj GroupCat.forget₂MonAdj
 
-instance : IsRightAdjoint MonCat.units.{u} :=
-  ⟨_, GroupCat.forget₂MonAdj⟩
+instance : MonCat.units.{u}.IsRightAdjoint :=
+  ⟨_, ⟨GroupCat.forget₂MonAdj⟩⟩
 
 /-- The functor taking a monoid to its subgroup of units. -/
 @[simps]
@@ -225,5 +225,5 @@ def CommGroupCat.forget₂CommMonAdj : forget₂ CommGroupCat CommMonCat ⊣ Com
   homEquiv_counit := MonoidHom.ext fun _ => rfl
 #align CommGroup.forget₂_CommMon_adj CommGroupCat.forget₂CommMonAdj
 
-instance : IsRightAdjoint CommMonCat.units.{u} :=
-  ⟨_, CommGroupCat.forget₂CommMonAdj⟩
+instance : CommMonCat.units.{u}.IsRightAdjoint :=
+  ⟨_, ⟨CommGroupCat.forget₂CommMonAdj⟩⟩

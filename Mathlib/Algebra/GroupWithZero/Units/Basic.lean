@@ -374,6 +374,7 @@ lemma div_eq_one_iff_eq (hb : b ≠ 0) : a / b = 1 ↔ a = b := hb.isUnit.div_eq
 lemma div_mul_cancel_right₀ (hb : b ≠ 0) (a : G₀) : b / (a * b) = a⁻¹ :=
   hb.isUnit.div_mul_cancel_right _
 
+set_option linter.deprecated false in
 @[deprecated div_mul_cancel_right₀] -- 2024-03-20
 lemma div_mul_left (hb : b ≠ 0) : b / (a * b) = 1 / a := hb.isUnit.div_mul_left
 #align div_mul_left div_mul_left
@@ -425,25 +426,27 @@ lemma inv_pow_sub_of_lt (a : G₀) (h : n < m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹
   rw [pow_sub_of_lt a⁻¹ h, inv_pow, inv_pow, inv_inv]
 #align inv_pow_sub_of_lt inv_pow_sub_of_lt
 
-lemma zpow_ne_zero_of_ne_zero (ha : a ≠ 0) : ∀ z : ℤ, a ^ z ≠ 0
-  | (_ : ℕ) => by rw [zpow_natCast]; exact pow_ne_zero _ ha
-  | .negSucc _ => by rw [zpow_negSucc]; exact inv_ne_zero (pow_ne_zero _ ha)
-#align zpow_ne_zero_of_ne_zero zpow_ne_zero_of_ne_zero
-
 lemma zpow_sub₀ (ha : a ≠ 0) (m n : ℤ) : a ^ (m - n) = a ^ m / a ^ n := by
   rw [Int.sub_eq_add_neg, zpow_add₀ ha, zpow_neg, div_eq_mul_inv]
 #align zpow_sub₀ zpow_sub₀
 
-lemma zpow_eq_zero {n : ℤ} (h : a ^ n = 0) : a = 0 :=
-  by_contradiction fun ha ↦ zpow_ne_zero_of_ne_zero ha n h
-#align zpow_eq_zero zpow_eq_zero
+lemma zpow_ne_zero {a : G₀} : ∀ n : ℤ, a ≠ 0 → a ^ n ≠ 0
+  | (_ : ℕ) => by rw [zpow_natCast]; exact pow_ne_zero _
+  | .negSucc n => fun ha ↦ by rw [zpow_negSucc]; exact inv_ne_zero (pow_ne_zero _ ha)
+#align zpow_ne_zero_of_ne_zero zpow_ne_zero
+#align zpow_ne_zero zpow_ne_zero
+
+lemma eq_zero_of_zpow_eq_zero {n : ℤ} : a ^ n = 0 → a = 0 := not_imp_not.1 (zpow_ne_zero _)
+#align zpow_eq_zero eq_zero_of_zpow_eq_zero
+
+@[deprecated (since := "2024-05-07")] alias zpow_ne_zero_of_ne_zero := zpow_ne_zero
+@[deprecated (since := "2024-05-07")] alias zpow_eq_zero := eq_zero_of_zpow_eq_zero
 
 lemma zpow_eq_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
-  ⟨zpow_eq_zero, fun ha => ha.symm ▸ zero_zpow _ hn⟩
+  ⟨eq_zero_of_zpow_eq_zero, fun ha => ha.symm ▸ zero_zpow _ hn⟩
 #align zpow_eq_zero_iff zpow_eq_zero_iff
 
-lemma zpow_ne_zero (n : ℤ) : a ≠ 0 → a ^ n ≠ 0 := mt zpow_eq_zero
-#align zpow_ne_zero zpow_ne_zero
+lemma zpow_ne_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (zpow_eq_zero_iff hn).ne
 
 lemma zpow_neg_mul_zpow_self (n : ℤ) (ha : a ≠ 0) : a ^ (-n) * a ^ n = 1 := by
   rw [zpow_neg]; exact inv_mul_cancel (zpow_ne_zero n ha)
@@ -484,6 +487,7 @@ instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
 lemma div_mul_cancel_left₀ (ha : a ≠ 0) (b : G₀) : a / (a * b) = b⁻¹ :=
   ha.isUnit.div_mul_cancel_left _
 
+set_option linter.deprecated false in
 @[deprecated div_mul_cancel_left₀] -- 2024-03-22
 lemma div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b := ha.isUnit.div_mul_right _
 #align div_mul_right div_mul_right
