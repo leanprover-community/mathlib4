@@ -176,46 +176,27 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
     (hM : M.IsPerfectMatching) (codd : Odd (Nat.card c.supp)) :
     ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.supp := by
     by_contra! h
-    have h' : (M.induce c.supp).IsMatching := by
+    have hMmatch : (M.induce c.supp).IsMatching := by
       intro v hv
-      obtain ⟨w , hw⟩ := hM.1 (hM.2 v)
-      obtain ⟨v' , hv'⟩ := hv
+      obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
+      obtain ⟨⟨v', hv'⟩, ⟨hv , rfl⟩⟩ := hv
       use w
-      constructor
-      · constructor
-        · exact ⟨v', hv'⟩
-        · constructor
-          · have h'' : w ∉ u := by
-              intro hw'
-              apply h w hw' v' _
-              · exact hv'.1
-              rw [hv'.2]
-              exact hw.1
-            apply mem_coe_supp_of_adj ⟨v', ⟨hv'.1, rfl⟩⟩ ⟨by trivial, h''⟩
-            rw [hv'.2]
-            rw [SimpleGraph.Subgraph.deleteVerts_adj]
-            exact ⟨trivial,
-              ⟨Set.not_mem_of_mem_diff (SimpleGraph.Subgraph.deleteVerts_verts ▸ hv'.2 ▸ v'.2),
-                ⟨trivial,
-                ⟨h'' , by
-                  rw [SimpleGraph.Subgraph.top_adj]
-                  exact M.adj_sub hw.1
-                ⟩⟩⟩⟩
-          · exact hw.1
-      · intro y hy
-        apply hw.2
-        exact hy.2.2
+      have hwnu : w ∉ u := fun hw' ↦ h w hw' ⟨v', hv'⟩ (hw.1) hv
+      refine ⟨⟨⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩, ⟨?_, hw.1⟩⟩, fun _ hy ↦ hw.2 _ hy.2.2⟩
+      apply mem_coe_supp_of_adj ⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩ ⟨by trivial, hwnu⟩
+      simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.mem_diff, Set.mem_univ, true_and,
+        Subgraph.induce_adj, hwnu, not_false_eq_true, and_self, Subgraph.top_adj, M.adj_sub hw.1,
+        and_true] at hv' ⊢
+      trivial
 
     apply Nat.odd_iff_not_even.mp codd
     haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
-    have h'' := Subgraph.IsMatching.even_card h'
-    simp only [Subgraph.induce_verts, Subgraph.verts_top] at h''
-
-    rw [Nat.even_iff] at h'' ⊢
+    have hMeven := Subgraph.IsMatching.even_card hMmatch
     haveI : Fintype (c.supp) := Fintype.ofFinite _
-    rw [← h'', Set.toFinset_image, Finset.card_image_of_injective _ (Subtype.val_injective)]
-    simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_card]
-    rw [Fintype.card_eq_nat_card]
+    simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image,
+      Nat.card_eq_fintype_card, Set.toFinset_image,
+      Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card] at hMeven ⊢
+    exact hMeven
 
 end Finite
 end ConnectedComponent
