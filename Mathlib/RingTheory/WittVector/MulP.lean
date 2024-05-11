@@ -52,8 +52,7 @@ theorem mulN_coeff (n : ℕ) (x : 𝕎 R) (k : ℕ) :
   induction' n with n ih generalizing k
   · simp only [Nat.zero_eq, Nat.cast_zero, mul_zero, zero_coeff, wittMulN,
       AlgHom.map_zero, Pi.zero_apply]
-  · rw [wittMulN, Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, mul_add, mul_one, aeval_bind₁,
-      add_coeff]
+  · rw [wittMulN, Nat.cast_add, Nat.cast_one, mul_add, mul_one, aeval_bind₁, add_coeff]
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
     ext1 ⟨b, i⟩
     fin_cases b

@@ -669,8 +669,8 @@ theorem pairwise_disjoint_fundamentalInterior :
   rintro _ ⟨x, hx, rfl⟩ ⟨y, hy, hxy⟩
   rw [mem_fundamentalInterior] at hx hy
   refine' hx.2 (a⁻¹ * b) _ _
-  rwa [Ne, inv_mul_eq_iff_eq_mul, mul_one, eq_comm]
-  simpa [mul_smul, ← hxy, mem_inv_smul_set_iff] using hy.1
+  · rwa [Ne, inv_mul_eq_iff_eq_mul, mul_one, eq_comm]
+  · simpa [mul_smul, ← hxy, mem_inv_smul_set_iff] using hy.1
 #align measure_theory.pairwise_disjoint_fundamental_interior MeasureTheory.pairwise_disjoint_fundamentalInterior
 #align measure_theory.pairwise_disjoint_add_fundamental_interior MeasureTheory.pairwise_disjoint_addFundamentalInterior
 
@@ -942,7 +942,7 @@ theorem IsFundamentalDomain.quotientMeasureEqMeasurePreimage_of_zero
     QuotientMeasureEqMeasurePreimage ν (0 : Measure (Quotient α_mod_G)) := by
   apply fund_dom_s.quotientMeasureEqMeasurePreimage
   ext U meas_U
-  simp only [zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply]
+  simp only [Measure.coe_zero, Pi.zero_apply]
   convert (measure_inter_null_of_null_right (h := vol_s) (Quotient.mk α_mod_G ⁻¹' U)).symm
   rw [measure_map_restrict_apply (meas_U := meas_U)]
 

@@ -60,14 +60,13 @@ set_option synthInstance.checkSynthOrder false in
 This instance generates the type-class problem `BundledHom ?m`.
 Currently that is not a problem, as there are almost no instances of `BundledHom`.
 -/
-instance category : Category (Bundled c) := by
-  refine' { Hom := fun X Y => @hom X Y X.str Y.str
-            id := fun X => @BundledHom.id c hom 𝒞 X X.str
-            comp := @fun X Y Z f g => @BundledHom.comp c hom 𝒞 X Y Z X.str Y.str Z.str g f
-            comp_id := _
-            id_comp := _
-            assoc := _ } <;> intros <;> apply 𝒞.hom_ext <;>
-    aesop_cat
+instance category : Category (Bundled c) where
+  Hom := fun X Y => hom X.str Y.str
+  id := fun X => BundledHom.id 𝒞 (α := X) X.str
+  comp := fun {X Y Z} f g => BundledHom.comp 𝒞 (α := X) (β := Y) (γ := Z) X.str Y.str Z.str g f
+  comp_id _ := by apply 𝒞.hom_ext; simp
+  assoc _ _ _ := by apply 𝒞.hom_ext; aesop_cat
+  id_comp _ := by apply 𝒞.hom_ext; simp
 #align category_theory.bundled_hom.category CategoryTheory.BundledHom.category
 
 /-- A category given by `BundledHom` is a concrete category. -/
@@ -105,8 +104,7 @@ section
 
 For typical usage, see the construction of `CommMonCat` from `MonCat`.
 -/
-@[reducible]
-def MapHom (F : ∀ {α}, d α → c α) : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u :=
+abbrev MapHom (F : ∀ {α}, d α → c α) : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u :=
   fun _ _ iα iβ => hom (F iα) (F iβ)
 #align category_theory.bundled_hom.map_hom CategoryTheory.BundledHom.MapHom
 
@@ -151,9 +149,10 @@ instance forget₂ (F : ∀ {α}, d α → c α) [ParentProjection @F] :
       map := @fun X Y f => f }
 #align category_theory.bundled_hom.forget₂ CategoryTheory.BundledHom.forget₂
 
-instance forget₂Full (F : ∀ {α}, d α → c α) [ParentProjection @F] :
-    Functor.Full (CategoryTheory.forget₂ (Bundled d) (Bundled c)) where preimage X Y {f} := f
-#align category_theory.bundled_hom.forget₂_full CategoryTheory.BundledHom.forget₂Full
+instance forget₂_full (F : ∀ {α}, d α → c α) [ParentProjection @F] :
+    Functor.Full (CategoryTheory.forget₂ (Bundled d) (Bundled c)) where
+  map_surjective f := ⟨f, rfl⟩
+#align category_theory.bundled_hom.forget₂_full CategoryTheory.BundledHom.forget₂_full
 
 end BundledHom
 

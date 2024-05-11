@@ -28,7 +28,7 @@ variable {s : Set β} {ι : Type*} {U : ι → Opens β} (hU : iSup U = ⊤)
 
 theorem Set.restrictPreimage_inducing (s : Set β) (h : Inducing f) :
     Inducing (s.restrictPreimage f) := by
-  simp_rw [inducing_subtype_val.inducing_iff, inducing_iff_nhds, restrictPreimage,
+  simp_rw [← inducing_subtype_val.of_comp_iff, inducing_iff_nhds, restrictPreimage,
     MapsTo.coe_restrict, restrict_eq, ← @Filter.comap_comap _ _ _ _ _ f, Function.comp_apply] at h ⊢
   intro a
   rw [← h, ← inducing_subtype_val.nhds_eq_comap]
@@ -128,7 +128,7 @@ theorem isClosedMap_iff_isClosedMap_of_iSup_eq_top :
 
 theorem inducing_iff_inducing_of_iSup_eq_top (h : Continuous f) :
     Inducing f ↔ ∀ i, Inducing ((U i).1.restrictPreimage f) := by
-  simp_rw [inducing_subtype_val.inducing_iff, inducing_iff_nhds, restrictPreimage,
+  simp_rw [← inducing_subtype_val.of_comp_iff, inducing_iff_nhds, restrictPreimage,
     MapsTo.coe_restrict, restrict_eq, ← @Filter.comap_comap _ _ _ _ _ f]
   constructor
   · intro H i x

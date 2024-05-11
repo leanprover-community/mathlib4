@@ -63,6 +63,10 @@ lemma abs_pow (a : α) (n : ℕ) : |a ^ n| = |a| ^ n := (absHom.toMonoidHom : α
 lemma pow_abs (a : α) (n : ℕ) : |a| ^ n = |a ^ n| := (abs_pow a n).symm
 #align pow_abs pow_abs
 
+lemma Even.pow_abs (hn : Even n) (a : α) : |a| ^ n = a ^ n := by
+  rw [← abs_pow, abs_eq_self]; exact hn.pow_nonneg _
+#align even.pow_abs Even.pow_abs
+
 lemma abs_neg_one_pow (n : ℕ) : |(-1 : α) ^ n| = 1 := by rw [← pow_abs, abs_neg, abs_one, one_pow]
 #align abs_neg_one_pow abs_neg_one_pow
 
