@@ -335,7 +335,7 @@ protected theorem IsPrefix.filterMap (h : l₁ <+: l₂) (f : α → Option β) 
 
 protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
-  h.filter_map id
+  h.filterMap id
 #align list.is_prefix.reduce_option List.IsPrefix.reduceOption
 
 #align list.is_prefix.filter List.IsPrefix.filter

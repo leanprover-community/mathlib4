@@ -226,8 +226,7 @@ theorem IsVanKampenColimit.mapCocone_iff (G : C ⥤ D) {F : J ⥤ C} {c : Cocone
     let e : F ⋙ G ⋙ Functor.inv G ≅ F := NatIso.hcomp (Iso.refl F) G.asEquivalence.unitIso.symm
     apply IsVanKampenColimit.of_mapCocone G.inv
     apply (IsVanKampenColimit.precompose_isIso_iff e.inv).mp
-    refine hc.of_iso (Cocones.ext (G.asEquivalence.unitIso.app c.pt) ?_)
-    simp [e, Functor.asEquivalence]⟩
+    exact hc.of_iso (Cocones.ext (G.asEquivalence.unitIso.app c.pt) (fun j => (by simp [e])))⟩
 
 theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} (hc : IsUniversalColimit c) :
@@ -360,7 +359,7 @@ theorem IsUniversalColimit.map_reflective
         exact c.w _
   let cf : (Cocones.precompose β.hom).obj c' ⟶ Gl.mapCocone c'' := by
     refine { hom := pullback.lift ?_ f ?_ ≫ (PreservesPullback.iso _ _ _).inv, w := ?_ }
-    exact inv <| adj.counit.app c'.pt
+    · exact inv <| adj.counit.app c'.pt
     · rw [IsIso.inv_comp_eq, ← adj.counit_naturality_assoc f, ← cancel_mono (adj.counit.app <|
         Gl.obj c.pt), Category.assoc, Category.assoc, adj.left_triangle_components]
       erw [Category.comp_id]
@@ -457,10 +456,10 @@ theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
   have := ((H (colimit.cocone <| F' ⋙ Gr) (whiskerRight α' Gr)
     (colimit.desc _ ⟨_, whiskerRight α' Gr ≫ c.2⟩) ?_ (hα'.whiskerRight Gr)).mp
     ⟨(getColimitCocone <| F' ⋙ Gr).2⟩ j).map Gl
-  convert IsPullback.paste_vert _ this
-  refine IsPullback.of_vert_isIso ⟨?_⟩
-  rw [← IsIso.inv_comp_eq, ← Category.assoc, NatIso.inv_inv_app]
-  exact IsColimit.comp_coconePointUniqueUpToIso_hom hl hr _
+  · convert IsPullback.paste_vert _ this
+    refine IsPullback.of_vert_isIso ⟨?_⟩
+    rw [← IsIso.inv_comp_eq, ← Category.assoc, NatIso.inv_inv_app]
+    exact IsColimit.comp_coconePointUniqueUpToIso_hom hl hr _
   · clear_value α'
     ext j
     simp

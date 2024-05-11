@@ -12,7 +12,7 @@ import Mathlib.Data.List.Basic
 Porting note:
 Following the discussion on [Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-
 mathlib4/topic/porting.20.60.2Earray.60.20files.20whose.20PR's.20were.20closed.3F), these
-will wait until Std4 has finalized `DArray` and `Array'` types so we can translates
+will wait until Batteries has finalized `DArray` and `Array'` types so we can translates
 apples to apples.
 
 `align` for lemmas about lean3/mathlib3 versions of d_array and array with mathport output
