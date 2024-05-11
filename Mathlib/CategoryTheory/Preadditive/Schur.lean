@@ -206,8 +206,8 @@ open scoped Classical
 theorem finrank_hom_simple_simple (X Y : C) [∀ X Y : C, FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X]
     [Simple Y] : finrank 𝕜 (X ⟶ Y) = if Nonempty (X ≅ Y) then 1 else 0 := by
   split_ifs with h
-  exact (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y).2 h
-  exact (finrank_hom_simple_simple_eq_zero_iff 𝕜 X Y).2 (not_nonempty_iff.mp h)
+  · exact (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y).2 h
+  · exact (finrank_hom_simple_simple_eq_zero_iff 𝕜 X Y).2 (not_nonempty_iff.mp h)
 #align category_theory.finrank_hom_simple_simple CategoryTheory.finrank_hom_simple_simple
 
 end CategoryTheory

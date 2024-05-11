@@ -321,9 +321,9 @@ theorem StronglyMeasurable.integral_kernel_prod_right'' {f : β × γ → E}
   -- Porting note: was (`Function.comp` reducibility)
   -- refine' MeasureTheory.StronglyMeasurable.integral_kernel_prod_right' _
   -- exact hf.comp_measurable (measurable_fst.snd.prod_mk measurable_snd)
-  have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_right' (κ := η)
-    (hf.comp_measurable (measurable_fst.snd.prod_mk measurable_snd))
-  simpa using this
+  · have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_right' (κ := η)
+      (hf.comp_measurable (measurable_fst.snd.prod_mk measurable_snd))
+    simpa using this
 #align measure_theory.strongly_measurable.integral_kernel_prod_right'' MeasureTheory.StronglyMeasurable.integral_kernel_prod_right''
 
 theorem StronglyMeasurable.integral_kernel_prod_left ⦃f : β → α → E⦄
@@ -345,9 +345,9 @@ theorem StronglyMeasurable.integral_kernel_prod_left'' {f : γ × β → E} (hf 
   -- Porting note: was (`Function.comp` reducibility)
   -- refine' MeasureTheory.StronglyMeasurable.integral_kernel_prod_left' _
   -- exact hf.comp_measurable (measurable_fst.prod_mk measurable_snd.snd)
-  have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_left' (κ := η)
-    (hf.comp_measurable (measurable_fst.prod_mk measurable_snd.snd))
-  simpa using this
+  · have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_left' (κ := η)
+      (hf.comp_measurable (measurable_fst.prod_mk measurable_snd.snd))
+    simpa using this
 #align measure_theory.strongly_measurable.integral_kernel_prod_left'' MeasureTheory.StronglyMeasurable.integral_kernel_prod_left''
 
 end MeasureTheory
