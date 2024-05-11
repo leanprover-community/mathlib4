@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
-import Mathlib.MeasureTheory.Decomposition.Exhaustion
 
 /-!
 # s-finite measures can be written as `withDensity` of a finite measure
@@ -21,7 +20,7 @@ That measure is not unique, and in particular our implementation leads to `μ.to
 In all these definitions and the results below, `μ` is an s-finite measure (`SFinite μ`).
 
 * `MeasureTheory.Measure.toFinite`: a finite measure with `μ ≪ μ.toFinite` and `μ.toFinite ≪ μ`.
-  If `μ ≠ 0`, this is a probabilty measure.
+  If `μ ≠ 0`, this is a probability measure.
 * `MeasureTheory.Measure.densityToFinite`: a measurable function such that
   `μ = μ.toFinite.withDensity μ.densityToFinite`.
 * `MeasureTheory.Measure.toSigmaFinite`: a sigma-finite measure with `μ ≪ μ.toSigmaFinite` and
