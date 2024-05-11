@@ -158,7 +158,7 @@ instance (priority := 100) IsMaximal.isPrime [IsMaximal I] : IsPrime I := by
   let J := I ⊔ principal x
   have hJuniv : (J : Set P) = Set.univ :=
     IsMaximal.maximal_proper (lt_sup_principal_of_not_mem ‹_›)
-  have hyJ : y ∈ ↑J := Set.eq_univ_iff_forall.mp hJuniv y
+  have hyJ : y ∈ (J : Set P) := Set.eq_univ_iff_forall.mp hJuniv y
   rw [coe_sup_eq] at hyJ
   rcases hyJ with ⟨a, ha, b, hb, hy⟩
   rw [hy]

@@ -42,7 +42,7 @@ small colimits.
 -/
 
 
-universe w v v₁ v₂ v₃ u u₁ u₂ u₃
+universe w' w v v₁ v₂ v₃ u u₁ u₂ u₃
 
 noncomputable section
 
@@ -113,9 +113,8 @@ In `glued_limit_cone`, we verify these obtained sections are indeed compatible, 
 A `X ⟶ 𝒢(U)`. The remaining work is to verify that this is indeed the amalgamation and is unique.
 -/
 
-
-variable {C D : Type u} [Category.{v} C] [Category.{v} D] (G : C ⥤ D)
-variable {A : Type w} [Category.{max u v} A] [HasLimits A]
+variable {C D : Type*} [Category C] [Category D] (G : C ⥤ D)
+variable {A : Type w} [Category.{w'} A] [∀ X, HasLimitsOfShape (StructuredArrow X G.op) A]
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
   [G.IsCocontinuous J K]
 
@@ -124,10 +123,6 @@ namespace RanIsSheafOfIsCocontinuous
 variable {G}
 variable (ℱ : Sheaf J A)
 variable {X : A} {U : D} (S : Sieve U) (hS : S ∈ K U)
-
-instance (X : Dᵒᵖ) : HasLimitsOfShape (StructuredArrow X G.op) A :=
-  haveI := Limits.hasLimitsOfSizeShrink.{v, max u v, max u v, max u v} A
-  HasLimitsOfSize.has_limits_of_shape _
 
 variable (x : S.arrows.FamilyOfElements ((ran G.op).obj ℱ.val ⋙ coyoneda.obj (op X)))
 variable (hx : x.Compatible)
