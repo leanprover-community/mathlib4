@@ -69,8 +69,6 @@ instance instAddSemigroup     : AddSemigroup ℤ     := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 
-@[simp, norm_cast] lemma cast_id {n : ℤ} : Int.cast n = n := rfl
-
 lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
   induction' k with k ih
   · rfl
