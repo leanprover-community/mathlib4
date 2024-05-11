@@ -57,12 +57,12 @@ def stateLP {n m : Nat} (A : Matrix n m) (strictIndexes : List Nat) : Matrix (n 
 /-- TODO: write docs -/
 def stateLPSparse {n m : Nat} (A : SparseMatrix n m) (strictIndexes : List Nat) :
     SparseMatrix (n + 2) (m + 3) := Id.run do
-  let mut objectiveRow : Lean.HashMap Nat Rat := Lean.HashMap.ofList [⟨0, -1⟩] --#[-1, 0] ++ (Array.mkArray m 0) ++ #[0]
+  let mut objectiveRow : Lean.HashMap Nat Rat := Lean.HashMap.ofList [⟨0, -1⟩]
   for idx in strictIndexes do
     objectiveRow := objectiveRow.insert (idx + 2) 1 -- +2 due to shifting by `f` and `z`
 
   let constraintRow : Lean.HashMap Nat Rat := Lean.HashMap.ofList <|
-    [⟨1, 1⟩, ⟨m + 2, -1⟩] ++ (List.range m).map (fun i => ⟨i + 2, 1⟩) --#[0, 1] ++ (Array.mkArray m 1) ++ #[-1]
+    [⟨1, 1⟩, ⟨m + 2, -1⟩] ++ (List.range m).map (fun i => ⟨i + 2, 1⟩)
 
   let data : Array (Lean.HashMap Nat Rat) := #[objectiveRow, constraintRow]
     ++ A.data.map fun row => row.fold (fun cur k v => cur.insert (k + 2) v) Lean.HashMap.empty
@@ -99,7 +99,8 @@ where go : SimplexAlgorithmM <| Array Rat := do
   | .infeasible => return Array.mkArray ((← get).table.basic.size + (← get).table.free.size - 3) 0
 
 /-- TODO: write docs -/
-def findPositiveVectorSparse {n m : Nat} (A : SparseMatrix n m) (strictIndexes : List Nat) : Array Rat :=
+def findPositiveVectorSparse {n m : Nat} (A : SparseMatrix n m) (strictIndexes : List Nat) :
+    Array Rat :=
   /- State the linear programming problem. -/
   let B := stateLPSparse A strictIndexes
 
