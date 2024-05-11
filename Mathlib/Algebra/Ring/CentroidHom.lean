@@ -9,7 +9,8 @@ import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Algebra.Star.StarRingHom
+import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.Algebra.Star.NonUnitalSubalgebra
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -745,6 +746,11 @@ instance : StarRing (Subsemiring.center (CentroidHom α)) where
       _ = (star g.val * star f.val) a := by simp only [star_apply, star_star, mul_apply]
       _ = (star g * star f).val a := rfl
     exact e1
+
+/-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
+def starcenterToCentroidCenter :
+    NonUnitalStarSubsemiring.center α →⋆ₙ+* Subsemiring.center (CentroidHom α) :=
+  { centerToCentroidCenter with }
 
 /--
 Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
