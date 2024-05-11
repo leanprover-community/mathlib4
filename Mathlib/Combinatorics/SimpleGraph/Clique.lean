@@ -171,6 +171,10 @@ theorem isClique_map_finset_iff :
   · simp [ht, Finset.map_eq_image]
   exact Finset.one_lt_card_iff_nontrivial.mp ht
 
+protected theorem IsClique.finset_map {f : α ↪ β} {s : Finset α} (h : G.IsClique s) :
+    (G.map f).IsClique (s.map f) := by
+  simpa
+
 end DecidableEq
 
 end Clique
@@ -215,6 +219,16 @@ protected theorem IsNClique.map (h : G.IsNClique n s) {f : α ↪ β} :
   ⟨by rw [coe_map]; exact h.1.map, (card_map _).trans h.2⟩
 #align simple_graph.is_n_clique.map SimpleGraph.IsNClique.map
 
+theorem isNClique_map_iff [DecidableEq β] (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
+    (G.map f).IsNClique n t ↔ ∃ (s : Finset α), G.IsNClique n s ∧ s.map f = t := by
+  rw [isNClique_iff, isClique_map_finset_iff, or_and_right,
+    or_iff_right (by rintro ⟨h', rfl⟩; exact h'.not_lt hn)]
+  constructor
+  · rintro ⟨⟨s, hs, rfl⟩, rfl⟩
+    simp [isNClique_iff, hs]
+  rintro ⟨s, hs, rfl⟩
+  simp [hs.card_eq, hs.clique]
+
 @[simp]
 theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧ s.card = n := by
   rw [isNClique_iff, isClique_bot_iff]
@@ -232,16 +246,6 @@ theorem isNClique_zero : G.IsNClique 0 s ↔ s = ∅ := by
 theorem isNClique_one : G.IsNClique 1 s ↔ ∃ a, s = {a} := by
   simp only [isNClique_iff, card_eq_one, and_iff_right_iff_imp]; rintro ⟨a, rfl⟩; simp
 #align simple_graph.is_n_clique_one SimpleGraph.isNClique_one
-
-theorem isNClique_map_iff [DecidableEq β] (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
-    (G.map f).IsNClique n t ↔ ∃ (s : Finset α), G.IsNClique n s ∧ s.map f = t := by
-  rw [isNClique_iff, isClique_map_finset_iff, or_and_right,
-    or_iff_right (by rintro ⟨h', rfl⟩; exact h'.not_lt hn)]
-  constructor
-  · rintro ⟨⟨s, hs, rfl⟩, rfl⟩
-    simp [isNClique_iff, hs]
-  rintro ⟨s, hs, rfl⟩
-  simp [hs.card_eq, hs.clique]
 
 section DecidableEq
 
