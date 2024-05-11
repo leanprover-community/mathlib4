@@ -186,12 +186,17 @@ theorem ofFn_mul' {m n} (f : Fin (m * n) → α) :
   simp_rw [mul_comm m n, mul_comm m, ofFn_mul, Fin.cast_mk]
 #align list.of_fn_mul' List.ofFn_mul'
 
+@[simp]
 theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
   | [] => rfl
   | a :: l => by
     rw [ofFn_succ]
     congr
     exact ofFn_get l
+
+@[simp]
+theorem ofFn_get_eq_map {β : Type*} (l : List α) (f : α → β) : ofFn (f <| l.get ·) = l.map f := by
+  rw [← Function.comp_def, ← map_ofFn, ofFn_get]
 
 set_option linter.deprecated false in
 @[deprecated ofFn_get] -- 2023-01-17

@@ -134,7 +134,7 @@ theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
     ← coeff_map,
     prod_roots_eq_coeff_zero_of_monic_of_split (this.map _) ((splits_id_iff_splits _).2 hf),
     this.natDegree_map, map_pow, ← mul_assoc, ← mul_pow]
-  · simp only [map_neg, _root_.map_one, neg_mul, neg_neg, one_pow, one_mul]
+  simp only [map_neg, _root_.map_one, neg_mul, neg_neg, one_pow, one_mul]
 #align algebra.power_basis.norm_gen_eq_prod_roots Algebra.PowerBasis.norm_gen_eq_prod_roots
 
 end EqProdRoots
@@ -385,10 +385,10 @@ theorem norm_norm [Algebra L F] [IsScalarTower K L F] [IsSeparable K F] (x : F) 
         haveI := σ.toRingHom.toAlgebra
         ∏ π : F →ₐ[L] A, π x = σ (norm L x)
       by simp_rw [← Finset.univ_sigma_univ, Finset.prod_sigma, this, norm_eq_prod_embeddings]
-    · intro σ
-      letI : Algebra L A := σ.toRingHom.toAlgebra
-      rw [← norm_eq_prod_embeddings L A (_ : F)]
-      rfl
+    intro σ
+    letI : Algebra L A := σ.toRingHom.toAlgebra
+    rw [← norm_eq_prod_embeddings L A (_ : F)]
+    rfl
   · rw [norm_eq_one_of_not_module_finite hKF]
     by_cases hKL : FiniteDimensional K L
     · have hLF : ¬FiniteDimensional L F := by

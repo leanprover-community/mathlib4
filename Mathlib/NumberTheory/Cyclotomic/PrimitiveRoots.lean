@@ -443,24 +443,24 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
   haveI := IsCyclotomicExtension.finiteDimensional {p ^ (k + 1)} K L
   haveI := IsCyclotomicExtension.isGalois (p ^ (k + 1)) K L
   rw [norm_eq_norm_adjoin K]
-  · have H := hη.sub_one_norm_isPrimePow ?_ hirr₁ htwo
-    swap; · rw [PNat.pow_coe]; exact hpri.1.isPrimePow.pow (Nat.succ_ne_zero _)
-    rw [add_sub_cancel_right] at H
-    rw [H]
-    congr
-    · rw [PNat.pow_coe, Nat.pow_minFac, hpri.1.minFac_eq]
-      exact Nat.succ_ne_zero _
-    have := FiniteDimensional.finrank_mul_finrank K K⟮η⟯ L
-    rw [IsCyclotomicExtension.finrank L hirr, IsCyclotomicExtension.finrank K⟮η⟯ hirr₁,
-      PNat.pow_coe, PNat.pow_coe, Nat.totient_prime_pow hpri.out (k - s).succ_pos,
-      Nat.totient_prime_pow hpri.out k.succ_pos, mul_comm _ ((p : ℕ) - 1), mul_assoc,
-      mul_comm ((p : ℕ) ^ (k.succ - 1))] at this
-    replace this := mul_left_cancel₀ (tsub_pos_iff_lt.2 hpri.out.one_lt).ne' this
-    have Hex : k.succ - 1 = (k - s).succ - 1 + s := by
-      simp only [Nat.succ_sub_succ_eq_sub, tsub_zero]
-      exact (Nat.sub_add_cancel hs).symm
-    rw [Hex, pow_add] at this
-    exact mul_left_cancel₀ (pow_ne_zero _ hpri.out.ne_zero) this
+  have H := hη.sub_one_norm_isPrimePow ?_ hirr₁ htwo
+  swap; · rw [PNat.pow_coe]; exact hpri.1.isPrimePow.pow (Nat.succ_ne_zero _)
+  rw [add_sub_cancel_right] at H
+  rw [H]
+  congr
+  · rw [PNat.pow_coe, Nat.pow_minFac, hpri.1.minFac_eq]
+    exact Nat.succ_ne_zero _
+  have := FiniteDimensional.finrank_mul_finrank K K⟮η⟯ L
+  rw [IsCyclotomicExtension.finrank L hirr, IsCyclotomicExtension.finrank K⟮η⟯ hirr₁,
+    PNat.pow_coe, PNat.pow_coe, Nat.totient_prime_pow hpri.out (k - s).succ_pos,
+    Nat.totient_prime_pow hpri.out k.succ_pos, mul_comm _ ((p : ℕ) - 1), mul_assoc,
+    mul_comm ((p : ℕ) ^ (k.succ - 1))] at this
+  replace this := mul_left_cancel₀ (tsub_pos_iff_lt.2 hpri.out.one_lt).ne' this
+  have Hex : k.succ - 1 = (k - s).succ - 1 + s := by
+    simp only [Nat.succ_sub_succ_eq_sub, tsub_zero]
+    exact (Nat.sub_add_cancel hs).symm
+  rw [Hex, pow_add] at this
+  exact mul_left_cancel₀ (pow_ne_zero _ hpri.out.ne_zero) this
 #align is_primitive_root.pow_sub_one_norm_prime_pow_ne_two IsPrimitiveRoot.norm_pow_sub_one_of_prime_pow_ne_two
 
 /-- If `Irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,

@@ -2418,6 +2418,7 @@ import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Coxeter.Basic
+import Mathlib.GroupTheory.Coxeter.Length
 import Mathlib.GroupTheory.Coxeter.Matrix
 import Mathlib.GroupTheory.Divisible
 import Mathlib.GroupTheory.DoubleCoset
@@ -2964,6 +2965,7 @@ import Mathlib.MeasureTheory.Measure.Trim
 import Mathlib.MeasureTheory.Measure.Typeclasses
 import Mathlib.MeasureTheory.Measure.VectorMeasure
 import Mathlib.MeasureTheory.Measure.WithDensity
+import Mathlib.MeasureTheory.Measure.WithDensityFinite
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.Order.Group.Lattice
 import Mathlib.MeasureTheory.Order.Lattice
@@ -3432,6 +3434,7 @@ import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Norm
 import Mathlib.RingTheory.Ideal.Operations
