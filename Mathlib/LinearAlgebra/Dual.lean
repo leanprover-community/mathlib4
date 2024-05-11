@@ -104,8 +104,7 @@ variable (R : Type uR) (A : Type uA) (M : Type uM)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The dual space of an R-module M is the R-module of linear maps `M → R`. -/
-@[reducible]
-def Dual :=
+abbrev Dual :=
   M →ₗ[R] R
 #align module.dual Module.Dual
 
@@ -1012,12 +1011,12 @@ theorem dualCoannihilator_sup_eq (U V : Submodule R (Module.Dual R M)) :
   (dualAnnihilator_gc R M).u_inf
 #align submodule.dual_coannihilator_sup_eq Submodule.dualCoannihilator_sup_eq
 
-theorem dualAnnihilator_iSup_eq {ι : Type*} (U : ι → Submodule R M) :
+theorem dualAnnihilator_iSup_eq {ι : Sort*} (U : ι → Submodule R M) :
     (⨆ i : ι, U i).dualAnnihilator = ⨅ i : ι, (U i).dualAnnihilator :=
   (dualAnnihilator_gc R M).l_iSup
 #align submodule.dual_annihilator_supr_eq Submodule.dualAnnihilator_iSup_eq
 
-theorem dualCoannihilator_iSup_eq {ι : Type*} (U : ι → Submodule R (Module.Dual R M)) :
+theorem dualCoannihilator_iSup_eq {ι : Sort*} (U : ι → Submodule R (Module.Dual R M)) :
     (⨆ i : ι, U i).dualCoannihilator = ⨅ i : ι, (U i).dualCoannihilator :=
   (dualAnnihilator_gc R M).u_iInf
 #align submodule.dual_coannihilator_supr_eq Submodule.dualCoannihilator_iSup_eq
@@ -1030,7 +1029,7 @@ theorem sup_dualAnnihilator_le_inf (U V : Submodule R M) :
 #align submodule.sup_dual_annihilator_le_inf Submodule.sup_dualAnnihilator_le_inf
 
 /-- See also `Subspace.dualAnnihilator_iInf_eq` for vector subspaces when `ι` is finite. -/
-theorem iSup_dualAnnihilator_le_iInf {ι : Type*} (U : ι → Submodule R M) :
+theorem iSup_dualAnnihilator_le_iInf {ι : Sort*} (U : ι → Submodule R M) :
     ⨆ i : ι, (U i).dualAnnihilator ≤ (⨅ i : ι, U i).dualAnnihilator := by
   rw [le_dualAnnihilator_iff_le_dualCoannihilator, dualCoannihilator_iSup_eq]
   apply iInf_mono
@@ -1453,6 +1452,36 @@ universe uK uV₁ uV₂
 variable {K : Type uK} [Field K] {V₁ : Type uV₁} {V₂ : Type uV₂}
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
+namespace Module.Dual
+
+variable [FiniteDimensional K V₁] {f : Module.Dual K V₁} (hf : f ≠ 0)
+
+open FiniteDimensional
+
+lemma range_eq_top_of_ne_zero :
+    LinearMap.range f = ⊤ := by
+  obtain ⟨v, hv⟩ : ∃ v, f v ≠ 0 := by contrapose! hf; ext v; simpa using hf v
+  rw [eq_top_iff]
+  exact fun x _ ↦ ⟨x • (f v)⁻¹ • v, by simp [inv_mul_cancel hv]⟩
+
+lemma finrank_ker_add_one_of_ne_zero :
+    finrank K (LinearMap.ker f) + 1 = finrank K V₁ := by
+  suffices finrank K (LinearMap.range f) = 1 by
+    rw [← (LinearMap.ker f).finrank_quotient_add_finrank, add_comm, add_left_inj,
+    f.quotKerEquivRange.finrank_eq, this]
+  rw [range_eq_top_of_ne_zero hf, finrank_top, finrank_self]
+
+lemma isCompl_ker_of_disjoint_of_ne_bot {p : Submodule K V₁}
+    (hpf : Disjoint (LinearMap.ker f) p) (hp : p ≠ ⊥) :
+    IsCompl (LinearMap.ker f) p := by
+  refine ⟨hpf, codisjoint_iff.mpr <| eq_of_le_of_finrank_le le_top ?_⟩
+  have : finrank K ↑(LinearMap.ker f ⊔ p) = finrank K (LinearMap.ker f) + finrank K p := by
+    simp [← Submodule.finrank_sup_add_finrank_inf_eq (LinearMap.ker f) p, hpf.eq_bot]
+  rwa [finrank_top, this, ← finrank_ker_add_one_of_ne_zero hf, add_le_add_iff_left,
+    Submodule.one_le_finrank_iff]
+
+end Module.Dual
+
 namespace LinearMap
 
 theorem dualPairing_nondegenerate : (dualPairing K V₁).Nondegenerate :=
@@ -1541,6 +1570,7 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
 -- for `Module.Dual R (Π (i : ι), V ⧸ W i) ≃ₗ[K] Π (i : ι), Module.Dual R (V ⧸ W i)`, which is not
 -- true for infinite `ι`. One would need to add additional hypothesis on `W` (for example, it might
 -- be true when the family is inf-closed).
+-- TODO: generalize to `Sort`
 theorem dualAnnihilator_iInf_eq {ι : Type*} [Finite ι] (W : ι → Subspace K V₁) :
     (⨅ i : ι, W i).dualAnnihilator = ⨆ i : ι, (W i).dualAnnihilator := by
   revert ι

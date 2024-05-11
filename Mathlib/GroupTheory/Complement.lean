@@ -480,9 +480,9 @@ theorem equiv_mul_right_of_mem {g k : G} (h : k ∈ K) :
 theorem equiv_mul_left (h : H) (g : G) :
     hHT.equiv (h * g) = (h * (hHT.equiv g).fst, (hHT.equiv g).snd) := by
   have : (hHT.equiv (h * g)).2 = (hHT.equiv g).2 := hHT.equiv_snd_eq_iff_rightCosetEquivalence.2 ?_
-  ext
-  · rw [coe_mul, equiv_fst_eq_mul_inv, this, equiv_fst_eq_mul_inv, mul_assoc]
-  · rw [this]
+  · ext
+    · rw [coe_mul, equiv_fst_eq_mul_inv, this, equiv_fst_eq_mul_inv, mul_assoc]
+    · rw [this]
   · simp [RightCosetEquivalence, ← smul_smul]
 
 theorem equiv_mul_left_of_mem {h g : G} (hh : h ∈ H) :

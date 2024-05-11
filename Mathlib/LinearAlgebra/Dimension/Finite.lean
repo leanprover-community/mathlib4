@@ -202,13 +202,13 @@ theorem setFinite [Module.Finite R M] {b : Set M}
 
 end LinearIndependent
 
-@[deprecated]
+@[deprecated (since := "2023-12-27")]
 alias cardinal_mk_le_finrank_of_linearIndependent := LinearIndependent.cardinal_mk_le_finrank
-@[deprecated]
+@[deprecated (since := "2023-12-27")]
 alias fintype_card_le_finrank_of_linearIndependent := LinearIndependent.fintype_card_le_finrank
-@[deprecated]
+@[deprecated (since := "2023-12-27")]
 alias finset_card_le_finrank_of_linearIndependent := LinearIndependent.finset_card_le_finrank
-@[deprecated]
+@[deprecated (since := "2023-12-27")]
 alias Module.Finite.lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finite
 
 lemma exists_set_linearIndependent_of_lt_rank {n : Cardinal} (hn : n < Module.rank R M) :
@@ -483,6 +483,12 @@ theorem Submodule.finrank_eq_zero [StrongRankCondition R] [NoZeroSMulDivisors R 
     finrank R S = 0 ↔ S = ⊥ := by
   rw [← Submodule.rank_eq_zero, ← finrank_eq_rank, ← @Nat.cast_zero Cardinal, Cardinal.natCast_inj]
 #align finrank_eq_zero Submodule.finrank_eq_zero
+
+@[simp]
+lemma Submodule.one_le_finrank_iff [StrongRankCondition R] [NoZeroSMulDivisors R M]
+    {S : Submodule R M} [Module.Finite R S] :
+    1 ≤ finrank R S ↔ S ≠ ⊥ := by
+  simp [← not_iff_not]
 
 variable [Module.Free R M]
 

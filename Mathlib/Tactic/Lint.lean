@@ -4,15 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Lean.Linter.Util
-import Std.Data.Array.Basic
-import Std.Tactic.Lint
+import Batteries.Data.Array.Basic
+import Batteries.Tactic.Lint
 
 /-!
 # Linters for Mathlib
 
 In this file we define additional linters for mathlib.
 
-Perhaps these should be moved to Std in the future.
+Perhaps these should be moved to Batteries in the future.
 -/
 
 namespace Std.Tactic.Lint
@@ -21,7 +21,7 @@ open Lean Meta
 /--
 Linter that checks whether a structure should be in Prop.
 -/
-@[std_linter] def structureInType : Linter where
+@[env_linter] def structureInType : Linter where
   noErrorsFound := "no structures that should be in Prop found."
   errorsFound := "FOUND STRUCTURES THAT SHOULD BE IN PROP."
   test declName := do
