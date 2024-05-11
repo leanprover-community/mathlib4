@@ -86,6 +86,7 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.substVars
   |>.insert `Batteries.Tactic.«tacticPick_goal-_»
   |>.insert ``Lean.Parser.Tactic.case'
+  |>.insert `«tactic#adaptation_note_»
 
 /-- these are `SyntaxNodeKind`s that block the linter. -/
 abbrev ignoreBranch : HashSet SyntaxNodeKind := HashSet.empty
