@@ -21,6 +21,18 @@ def preprocess (hyps : List Comp) (maxVar : ℕ) : Matrix (maxVar + 1) (hyps.len
   let strictIndexes : List ℕ := hyps.findIdxs (·.str == Ineq.lt)
   ⟨⟨mdata⟩, strictIndexes⟩
 
+def preprocessSparse (hyps : List Comp) (maxVar : ℕ) :
+    SparseMatrix (maxVar + 1) (hyps.length) × List Nat :=
+  let mdata : Array (Lean.HashMap ℕ ℚ) := Array.ofFn fun i : Fin (maxVar + 1) =>
+    Lean.HashMap.ofList <| (hyps.zip <| List.range hyps.length).filterMap fun ⟨h, idx⟩ =>
+      if h.coeffOf i == 0 then
+        .none
+      else
+        .some ⟨idx, h.coeffOf i⟩
+
+  let strictIndexes : List ℕ := hyps.findIdxs (·.str == Ineq.lt)
+  ⟨⟨mdata⟩, strictIndexes⟩
+
 /-- Extract the certificate from the `vec` found by `findPositiveVector`. -/
 def postprocess (vec : Array ℚ) : HashMap ℕ ℕ :=
   let common_den : ℕ := vec.foldl (fun acc item => acc.lcm item.den) 1
@@ -33,10 +45,18 @@ end SimplexAlgorithm
 open SimplexAlgorithm
 
 /-- An oracle that uses the simplex algorithm. -/
-def CertificateOracle.simplexAlgorithm : CertificateOracle where
+def CertificateOracle.simplexAlgorithm' : CertificateOracle where
   produceCertificate hyps maxVar := do
     let ⟨A, strictIndexes⟩ := preprocess hyps maxVar
     let vec := findPositiveVector A strictIndexes
+    return postprocess vec
+
+
+/-- TODO: write docs -/
+def CertificateOracle.simplexAlgorithm : CertificateOracle where
+  produceCertificate hyps maxVar := do
+    let ⟨A, strictIndexes⟩ := preprocessSparse hyps maxVar
+    let vec := findPositiveVectorSparse A strictIndexes
     return postprocess vec
 
 end Linarith

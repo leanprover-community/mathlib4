@@ -102,19 +102,13 @@ def choosePivots : SimplexAlgorithmM (Nat × Nat) := do
   let exitIdx ← chooseExitingVar enterIdx
   return ⟨exitIdx, enterIdx⟩
 
-/-- Implementation of `runSimplexAlgorithm` in `SimplexAlgorithmM` monad. -/
-def runSimplexAlgorithmImp : SimplexAlgorithmM Unit := do
-  while !(← checkSuccess) do
-    let ⟨exitIdx, enterIdx⟩ ← try
-      choosePivots
-    catch | .infeasible => return
-    doPivotOperation exitIdx enterIdx
-
 /--
 Runs Simplex Algorithm starting with `initTable`. It always terminates, finding solution if
-such exists. Returns the table obtained at the last step.
+such exists.
 -/
-def runSimplexAlgorithm (initTable : Table) : Table := Id.run do
-  return (← runSimplexAlgorithmImp.run ⟨initTable⟩).snd.table
+def runSimplexAlgorithm : SimplexAlgorithmM Unit := do
+  while !(← checkSuccess) do
+    let ⟨exitIdx, enterIdx⟩ ← choosePivots
+    doPivotOperation exitIdx enterIdx
 
 end Linarith.SimplexAlgorithm

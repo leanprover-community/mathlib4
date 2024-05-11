@@ -32,6 +32,11 @@ structure Matrix (n m : Nat) where
 instance (n m : Nat) : GetElem (Matrix n m) Nat (Array Rat) fun _ i => i < n where
   getElem mat i _ := mat.data[i]!
 
+/-- TODO: write docs -/
+structure SparseMatrix (n m : Nat) where
+  /-- TODO: write docs -/
+  data : Array <| Lean.HashMap Nat Rat
+
 /--
 `Table` is a structure Simplex Algorithm operates on. The `i`-th row of `mat` expresses the
 variable `basic[i]` as a linear combination of variables from `free`.

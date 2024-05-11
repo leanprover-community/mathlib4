@@ -3721,6 +3721,7 @@ import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.SimplexAlgorithm.Datatypes
 import Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
+import Mathlib.Tactic.Linarith.SimplexAlgorithm.GaussSparse
 import Mathlib.Tactic.Linarith.SimplexAlgorithm.PositiveVector
 import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Verification
