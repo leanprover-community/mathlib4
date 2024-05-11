@@ -62,11 +62,11 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert `«{»
   |>.insert `«]»
   |>.insert `null
-  |>.insert `Std.Tactic.tacticSwap
+  |>.insert `Batteries.Tactic.tacticSwap
   |>.insert ``Lean.Parser.Tactic.rotateLeft
   |>.insert ``Lean.Parser.Tactic.rotateRight
   |>.insert ``Lean.Parser.Tactic.skip
-  |>.insert `Std.Tactic.«tacticOn_goal-_=>_»
+  |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
   |>.insert `Mathlib.Tactic.«tacticSwap_var__,,»
   |>.insert ``Lean.Parser.Tactic.constructor
   |>.insert ``Lean.Parser.Tactic.tacticSeqBracketed
@@ -84,7 +84,7 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.tacticRepeat_
   |>.insert ``Lean.Parser.Tactic.injections
   |>.insert ``Lean.Parser.Tactic.substVars
-  |>.insert `Std.Tactic.«tacticPick_goal-_»
+  |>.insert `Batteries.Tactic.«tacticPick_goal-_»
   |>.insert ``Lean.Parser.Tactic.case'
 
 /-- these are `SyntaxNodeKind`s that block the linter. -/
