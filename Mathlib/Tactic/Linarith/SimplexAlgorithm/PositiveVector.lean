@@ -91,7 +91,9 @@ def findPositiveVector {n m : Nat} (A : Matrix n m) (strictIndexes : List Nat) :
 
   /- Run Simplex Algorithm and extract the solution. -/
   (go.run ⟨initTable⟩).fst.toOption.get!
-where go : SimplexAlgorithmM <| Array Rat := do
+where
+  /-- TODO: write docs -/
+  go : SimplexAlgorithmM <| Array Rat := do
   try
     runSimplexAlgorithm
     return extractSolution (← get).table
@@ -110,7 +112,9 @@ def findPositiveVectorSparse {n m : Nat} (A : SparseMatrix n m) (strictIndexes :
 
   /- Run Simplex Algorithm and extract the solution. -/
   (go.run ⟨initTable⟩).fst.toOption.get!
-where go : SimplexAlgorithmM <| Array Rat := do
+where
+  /-- TODO: write docs -/
+  go : SimplexAlgorithmM <| Array Rat := do
   try
     runSimplexAlgorithm
     return extractSolution (← get).table

@@ -21,6 +21,7 @@ def preprocess (hyps : List Comp) (maxVar : ℕ) : Matrix (maxVar + 1) (hyps.len
   let strictIndexes : List ℕ := hyps.findIdxs (·.str == Ineq.lt)
   ⟨⟨mdata⟩, strictIndexes⟩
 
+/-- TODO: write docs -/
 def preprocessSparse (hyps : List Comp) (maxVar : ℕ) :
     SparseMatrix (maxVar + 1) (hyps.length) × List Nat :=
   let mdata : Array (Lean.HashMap ℕ ℚ) := Array.ofFn fun i : Fin (maxVar + 1) =>
