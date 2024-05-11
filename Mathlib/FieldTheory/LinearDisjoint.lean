@@ -5,6 +5,9 @@ Authors: Jz Pan
 -/
 import Mathlib.FieldTheory.Adjoin
 import Mathlib.RingTheory.LinearDisjoint
+import Mathlib.Algebra.MvPolynomial.Cardinal
+import Mathlib.FieldTheory.MvPolynomial
+import Mathlib.RingTheory.AlgebraicIndependent
 
 /-!
 
@@ -229,7 +232,154 @@ theorem inf_eq_bot (H : A.LinearDisjoint B) :
 theorem eq_bot_of_self (H : A.LinearDisjoint A) : A = ⊥ :=
   inf_of_le_left (le_refl A) ▸ H.inf_eq_bot
 
--- -- I don't know how to prove it for non-algebraic case (mathematically)
+-- TODO: move to suitable place
+theorem _root_.IntermediateField.rank_sup_le_of_isAlgebraic
+    (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F B) :
+    Module.rank F ↥(A ⊔ B) ≤ Module.rank F A * Module.rank F B := by
+  have := A.toSubalgebra.rank_sup_le_of_free B.toSubalgebra
+  rw [← sup_toSubalgebra_of_isAlgebraic A B halg] at this
+  exact this
+
+-- TODO: move to suitable place
+theorem _root_.Localization.card_le' {M : Type u} [CommMonoid M] (S : Submonoid M) :
+    Cardinal.mk (Localization S) ≤ Cardinal.mk M * Cardinal.mk S := by
+  let i : M × S → Localization S := (Localization.r S).toQuotient
+  have h : Function.Surjective i := Quotient.surjective_Quotient_mk''
+  simpa using Cardinal.mk_le_of_surjective h
+
+-- TODO: move to suitable place
+theorem _root_.Localization.card_le {M : Type u} [CommMonoid M] (S : Submonoid M) :
+    Cardinal.mk (Localization S) ≤ Cardinal.mk M * Cardinal.mk M :=
+  (Localization.card_le' S).trans (by gcongr; exact Cardinal.mk_subtype_le _)
+
+-- TODO: move to suitable place
+theorem _root_.FractionRing.card_le (R : Type u) [CommRing R] :
+    Cardinal.mk (FractionRing R) ≤ Cardinal.mk R * Cardinal.mk R := Localization.card_le _
+
+-- TODO: move to suitable place
+theorem _root_.transcendental_iff
+    {R A : Type*} [CommRing R] [Ring A] [Algebra R A] {x : A} :
+    Transcendental R x ↔ ∀ p : Polynomial R, Polynomial.aeval x p = 0 → p = 0 := by
+  rw [Transcendental, IsAlgebraic, not_exists]
+  congr! 1; tauto
+
+-- TODO: move to suitable place
+theorem _root_.transcendental_iff_injective_aeval
+    {R A : Type*} [CommRing R] [Ring A] [Algebra R A] {x : A} :
+    Transcendental R x ↔ Function.Injective (Polynomial.aeval (R := R) x) := by
+  rw [transcendental_iff, injective_iff_map_eq_zero]
+
+-- TODO: move to suitable place
+theorem _root_.transcendental_iff_ker_eq_bot
+    {R A : Type*} [CommRing R] [Ring A] [Algebra R A] {x : A} :
+    Transcendental R x ↔ RingHom.ker (Polynomial.aeval (R := R) x) = ⊥ := by
+  rw [transcendental_iff_injective_aeval, RingHom.injective_iff_ker_eq_bot]
+
+-- TODO: move to suitable place
+theorem _root_.transcendental_iff_algebraicIndependent
+    {R A : Type*} {x : A} [CommRing R] [CommRing A] [Algebra R A] :
+    Transcendental R x ↔ AlgebraicIndependent R ![x] := by
+  rw [transcendental_iff_injective_aeval, algebraicIndependent_iff_injective_aeval]
+  let i := (MvPolynomial.finSuccEquiv R 0).toRingEquiv.trans <|
+    Polynomial.mapEquiv (MvPolynomial.isEmptyAlgEquiv R (Fin 0)).toRingEquiv
+  have key : (MvPolynomial.aeval (R := R) ![x]).toRingHom =
+      (Polynomial.aeval (R := R) x).toRingHom.comp i.toRingHom := by
+    ext y
+    · simp [i]
+    · fin_cases y; simp [i]
+  change _ ↔ Function.Injective (MvPolynomial.aeval (R := R) ![x]).toRingHom
+  rw [key]; simp
+
+-- TODO: move to suitable place
+theorem _root_.AlgebraicIndependent.transcendental {ι R A : Type*} {x : ι → A}
+    [CommRing R] [CommRing A] [Algebra R A] (h : AlgebraicIndependent R x) (i : ι) :
+    Transcendental R (x i) := by
+  replace h := h.comp ![i] (Function.injective_of_subsingleton _)
+  replace h : AlgebraicIndependent R ![x i] := by rwa [← FinVec.map_eq] at h
+  rwa [transcendental_iff_algebraicIndependent]
+
+-- TODO: move to suitable place
+theorem _root_.MvPolynomial.algebraicIndependent_X (σ : Type u) (R : Type v) [CommRing R] :
+    AlgebraicIndependent R (MvPolynomial.X (R := R) (σ := σ)) := by
+  rw [AlgebraicIndependent, MvPolynomial.aeval_X_left]
+  exact Function.injective_id
+
+-- TODO: move to suitable place
+theorem _root_.MvPolynomial.transcendental_X {σ : Type u} (R : Type v) [CommRing R] (i : σ) :
+    Transcendental R (MvPolynomial.X (R := R) i) :=
+  (MvPolynomial.algebraicIndependent_X σ R).transcendental i
+
+-- TODO: move to suitable place
+theorem _root_.Polynomial.transcendental_X (R : Type v) [CommRing R] :
+    Transcendental R (Polynomial.X (R := R)) := by
+  simp [transcendental_iff]
+
+-- TODO: move to suitable place
+theorem _root_.transcendental_algebraMap_iff {R S A : Type*} [CommRing R] [CommRing S] [Ring A]
+    [Algebra R A] [Algebra R S] [Algebra S A] [IsScalarTower R S A] {a : S}
+    (h : Function.Injective (algebraMap S A)) :
+    Transcendental R ((algebraMap S A) a) ↔ Transcendental R a := by
+  simp_rw [Transcendental, isAlgebraic_algebraMap_iff h]
+
+-- TODO: move to suitable place
+theorem _root_.Transcendental.linearIndependent_sub_inv
+    {F E : Type*} [Field F] [Field E] [Algebra F E] {x : E} (H : Transcendental F x) :
+    LinearIndependent F fun a ↦ (x - algebraMap F E a)⁻¹ := by
+  rw [transcendental_iff] at H
+  refine linearIndependent_iff'.2 fun s m hm i hi ↦ ?_
+  have hnz (a : F) : x - algebraMap F E a ≠ 0 := fun h ↦
+    Polynomial.X_sub_C_ne_zero a <| H (.X - .C a) (by simp [h])
+  let b := s.prod fun j ↦ x - algebraMap F E j
+  have h1 : ∀ i ∈ s, m i • (b * (x - algebraMap F E i)⁻¹) =
+      m i • (s.erase i).prod fun j ↦ x - algebraMap F E j := fun i hi ↦ by
+    simp_rw [b, ← s.prod_erase_mul _ hi, mul_inv_cancel_right₀ (hnz i)]
+  replace hm := congr(b * $(hm))
+  simp_rw [mul_zero, Finset.mul_sum, mul_smul_comm, Finset.sum_congr rfl h1] at hm
+  let p : Polynomial F := s.sum fun i ↦ .C (m i) * (s.erase i).prod fun j ↦ .X - .C j
+  replace hm := congr(Polynomial.aeval i $(H p (by simp_rw [← hm, p, map_sum, map_mul, map_prod,
+    map_sub, Polynomial.aeval_X, Polynomial.aeval_C, Algebra.smul_def])))
+  have h2 : ∀ j ∈ s.erase i, m j * ((s.erase j).prod fun x ↦ i - x) = 0 := fun j hj ↦ by
+    have := Finset.mem_erase_of_ne_of_mem (Finset.ne_of_mem_erase hj).symm hi
+    simp_rw [← (s.erase j).prod_erase_mul _ this, sub_self, mul_zero]
+  simp_rw [map_zero, p, map_sum, map_mul, map_prod, map_sub, Polynomial.aeval_X,
+    Polynomial.aeval_C, Algebra.id.map_eq_self, ← s.sum_erase_add _ hi,
+    Finset.sum_eq_zero h2, zero_add] at hm
+  exact eq_zero_of_ne_zero_of_mul_right_eq_zero (Finset.prod_ne_zero_iff.2 fun j hj ↦
+    sub_ne_zero.2 (Finset.ne_of_mem_erase hj).symm) hm
+
+-- TODO: move to suitable place
+theorem _root_.rank_fractionRing_mvPolynomial_eq {σ : Type u} {F : Type v} [Field F] [Nonempty σ] :
+    Module.rank F (FractionRing (MvPolynomial σ F)) =
+      max (max (Cardinal.lift.{u} (Cardinal.mk F)) (Cardinal.lift.{v} (Cardinal.mk σ)))
+        Cardinal.aleph0 := by
+  refine le_antisymm ?_ ?_
+  · refine (rank_le_card _ _).trans ?_
+    convert FractionRing.card_le (MvPolynomial σ F) using 1
+    rw [MvPolynomial.cardinal_mk_eq_max_lift]
+    exact (Cardinal.mul_eq_self (le_max_right _ _)).symm
+  · have hinj := NoZeroSMulDivisors.algebraMap_injective (MvPolynomial σ F)
+      (FractionRing (MvPolynomial σ F))
+    have h1 := IsScalarTower.toAlgHom F (MvPolynomial σ F) (FractionRing (MvPolynomial σ F))
+      |>.toLinearMap.rank_le_of_injective hinj
+    simp_rw [Cardinal.lift_id'.{u, v} _ ▸ (MvPolynomial.basisMonomials σ F).mk_eq_rank.symm] at h1
+    rw [Cardinal.lift_umax.{u, v}, Cardinal.mk_finsupp_nat, Cardinal.lift_max,
+      Cardinal.lift_aleph0, max_le_iff] at h1
+    obtain ⟨i⟩ := ‹Nonempty σ›
+    let x := algebraMap (MvPolynomial σ F) (FractionRing (MvPolynomial σ F)) (MvPolynomial.X i)
+    have hx : Transcendental F x := (transcendental_algebraMap_iff hinj).2
+      (MvPolynomial.transcendental_X F i)
+    have h2 := hx.linearIndependent_sub_inv.cardinal_lift_le_rank
+    rw [Cardinal.lift_id'.{v, u} _, Cardinal.lift_umax.{v, u}] at h2
+    exact max_le_iff.2 ⟨max_le_iff.2 ⟨h2, h1.1⟩, h1.2⟩
+
+-- -- TODO: move to suitable place
+-- /-- Canonical isomorphism between rational functions and the
+-- intermediate field generated by algebraically independent elements. -/
+-- def _root_.AlgebraicIndependent.algEquivField {ι F E : Type*} {x : ι → E} [Field F] [Field E]
+--     [Algebra F E] (hx : AlgebraicIndependent F x) :
+--     FractionRing (MvPolynomial ι F) ≃ₐ[F] ↥(IntermediateField.adjoin F (Set.range x)) := by
+--   sorry
+
 -- -- TODO: move to suitable place
 -- variable (A B) in
 -- theorem _root_.IntermediateField.rank_sup_le :
