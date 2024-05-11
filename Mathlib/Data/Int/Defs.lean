@@ -482,7 +482,8 @@ lemma exists_lt_and_lt_iff_not_dvd (m : ℤ) (hn : 0 < n) :
     obtain rfl | hm := m.eq_zero_or_pos
     · simpa using h
     have ha : 0 ≤ a := Int.not_lt.1 fun ha ↦ by
-      simpa [← h, Int.not_lt.2 (Int.natCast_nonneg _)] using Int.mul_neg_of_pos_of_neg (natCast_pos.2 hm) ha
+      simpa [← h, Int.not_lt.2 (Int.natCast_nonneg _)]
+        using Int.mul_neg_of_pos_of_neg (natCast_pos.2 hm) ha
     lift a to ℕ using ha
     norm_cast at h
     exact ⟨a, h⟩
