@@ -197,7 +197,7 @@ theorem mapIdx_append {α} (K L : List α) (f : ℕ → α → β) :
     (K ++ L).mapIdx f = K.mapIdx f ++ L.mapIdx fun i a ↦ f (i + K.length) a := by
   induction' K with a J IH generalizing f
   · rfl
-  · simp [IH fun i ↦ f (i + 1), add_assoc]
+  · simp [IH fun i ↦ f (i + 1), add_assoc, Nat.succ_eq_add_one]
 #align list.map_with_index_append List.mapIdx_append
 
 @[simp]
@@ -211,6 +211,7 @@ theorem length_mapIdx {α β} (l : List α) (f : ℕ → α → β) : (l.mapIdx 
 theorem mapIdx_eq_nil {α β} {f : ℕ → α → β} {l : List α} : List.mapIdx f l = [] ↔ l = [] := by
   rw [List.mapIdx_eq_enum_map, List.map_eq_nil, List.enum_eq_nil]
 
+set_option linter.deprecated false in
 @[simp, deprecated] -- 2023-02-11
 theorem nthLe_mapIdx {α β} (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
     (h' : i < (l.mapIdx f).length := h.trans_le (l.length_mapIdx f).ge) :
@@ -257,7 +258,7 @@ end FoldrIdx
 theorem indexesValues_eq_filter_enum (p : α → Prop) [DecidablePred p] (as : List α) :
     indexesValues p as = filter (p ∘ Prod.snd) (enum as) := by
   simp (config := { unfoldPartialApp := true }) [indexesValues, foldrIdx_eq_foldr_enum, uncurry,
-    filter_eq_foldr]
+    filter_eq_foldr, cond_eq_if]
 #align list.indexes_values_eq_filter_enum List.indexesValues_eq_filter_enum
 
 theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : List α) :
@@ -267,7 +268,7 @@ theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : 
     Bool.cond_decide]
 #align list.find_indexes_eq_map_indexes_values List.findIdxs_eq_map_indexesValues
 
-section FindIdx -- TODO: upstream to Std
+section FindIdx -- TODO: upstream to Batteries
 
 theorem findIdx_eq_length {p : α → Bool} {xs : List α} :
     xs.findIdx p = xs.length ↔ ∀ x ∈ xs, ¬p x := by

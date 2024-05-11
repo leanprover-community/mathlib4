@@ -1194,7 +1194,7 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
       Finset.prod_subset (Finset.subset_union_left _ (normalizedFactors b).toFinset),
       Finset.prod_subset (Finset.subset_union_right _ (normalizedFactors b).toFinset), ←
       Finset.prod_mul_distrib]
-    simp_rw [id, ← pow_add, this]
+    · simp_rw [id, ← pow_add, this]
     all_goals simp only [Multiset.mem_toFinset]
     · intro p _ hpb
       simp [hpb]
@@ -1228,8 +1228,7 @@ gives us a representation of each element as a unique multisets (or the added �
 complete lattice structure. Infimum is the greatest common divisor and supremum is the least common
 multiple.
 -/
-@[reducible]
-def FactorSet.{u} (α : Type u) [CancelCommMonoidWithZero α] : Type u :=
+abbrev FactorSet.{u} (α : Type u) [CancelCommMonoidWithZero α] : Type u :=
   WithTop (Multiset { a : Associates α // Irreducible a })
 #align associates.factor_set Associates.FactorSet
 
@@ -1841,8 +1840,8 @@ theorem count_pow [Nontrivial α] [DecidableEq (Associates α)] {a : Associates 
     {p : Associates α} (hp : Irreducible p) (k : ℕ) :
     count p (a ^ k).factors = k * count p a.factors := by
   induction' k with n h
-  · rw [pow_zero, factors_one, Nat.zero_eq, zero_mul, count_zero hp]
-  · rw [pow_succ', count_mul ha (pow_ne_zero _ ha) hp, h, Nat.succ_eq_add_one]
+  · rw [pow_zero, factors_one, zero_mul, count_zero hp]
+  · rw [pow_succ', count_mul ha (pow_ne_zero _ ha) hp, h]
     ring
 #align associates.count_pow Associates.count_pow
 

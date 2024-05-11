@@ -8,7 +8,7 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.ULift
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 
 #align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
@@ -152,8 +152,7 @@ variable (R)
 
 /-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
 See note [reducible non-instances]. -/
-@[reducible]
-def semiringToRing [Semiring A] [Algebra R A] : Ring A :=
+abbrev semiringToRing [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
     intCast := fun z => algebraMap R A z

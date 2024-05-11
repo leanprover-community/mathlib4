@@ -3,8 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Ring.Subring.Basic
 
 #align_import algebra.char_p.subring from "leanprover-community/mathlib"@"168ad7fc5d8173ad38be9767a22d50b8ecf1cd00"
 
