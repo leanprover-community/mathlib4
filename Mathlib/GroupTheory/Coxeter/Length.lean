@@ -116,7 +116,8 @@ theorem length_mul_ge_max (w₁ w₂ : W) :
     max (ℓ w₁ - ℓ w₂) (ℓ w₂ - ℓ w₁) ≤ ℓ (w₁ * w₂) :=
   max_le_iff.mpr ⟨length_mul_ge_length_sub_length _ _ _, length_mul_ge_length_sub_length' _ _ _⟩
 
-/-- The homomorphism that sends each element `w : W` to the parity of the length of `w`. -/
+/-- The homomorphism that sends each element `w : W` to the parity of the length of `w`.
+(See `lengthParity_eq_ofAdd_length`.) -/
 def lengthParity : W →* Multiplicative (ZMod 2) := cs.lift ⟨fun _ ↦ Multiplicative.ofAdd 1, by
   simp_rw [CoxeterMatrix.IsLiftable, ← ofAdd_add, (by decide : (1 + 1 : ZMod 2) = 0)]
   simp⟩
