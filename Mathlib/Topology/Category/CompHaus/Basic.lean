@@ -258,7 +258,8 @@ set_option linter.uppercaseLean3 false in
 /-- The category of compact Hausdorff spaces is reflective in the category of topological spaces.
 -/
 noncomputable instance compHausToTop.reflective : Reflective compHausToTop where
-  toIsRightAdjoint := ⟨topToCompHaus, Adjunction.adjunctionOfEquivLeft _ _⟩
+  L := topToCompHaus
+  adj := Adjunction.adjunctionOfEquivLeft _ _
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top.reflective compHausToTop.reflective
 

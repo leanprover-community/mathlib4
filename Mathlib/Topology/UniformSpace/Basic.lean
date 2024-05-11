@@ -1157,6 +1157,8 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
   show 𝓤[t] ≤ ⨅ u ∈ tt, 𝓤[u] from le_iInf₂ h
 
+set_option linter.deprecated false in
+-- TODO update this code to avoid the deprecation
 instance : Top (UniformSpace α) :=
   ⟨.ofNhdsEqComap ⟨⊤, le_top, le_top, le_top⟩ ⊤ fun x ↦ by simp only [nhds_top, comap_top]⟩
 
