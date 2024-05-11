@@ -112,7 +112,7 @@ section NonUnitalStarSubsemiring
 
 namespace NonUnitalStarSubsemiring
 
-variable (R : Type v) [NonUnitalNonAssocSemiring R] [Star R]
+variable {R : Type v} [NonUnitalNonAssocSemiring R] [StarRing R]
 
 instance instSetLike : SetLike (NonUnitalStarSubsemiring R) R where
   coe {s} := s.carrier
@@ -147,8 +147,8 @@ theorem mem_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnital
 -/
 
 @[simp]
-theorem mem_toNonUnitalSubring {R : Type u} {A : Type v} [ NonUnitalNonAssocSemiring R]
-    [Star R] {S : NonUnitalStarSubsemiring R} {x} : x ∈ S.toSubsemigroup ↔ x ∈ S :=
+theorem mem_toNonUnitalSubring {R : Type u} [NonUnitalNonAssocSemiring R] [StarRing R]
+    {S : NonUnitalStarSubsemiring R} {x} : x ∈ S.toSubsemigroup ↔ x ∈ S :=
   Iff.rfl
 
 
@@ -172,15 +172,9 @@ theorem copy_eq (S : NonUnitalStarSubsemiring R) (s : Set R) (hs : s = ↑S) : S
 
 /-- The center of a semiring `R` is the set of elements that commute and associate with everything
 in `R` -/
-def center : NonUnitalStarSubsemiring R :=
-  { Subsemigroup.center R with
-    zero_mem' := Set.zero_mem_center R
-    add_mem' := by
-      apply Set.add_mem_center
-    star_mem' := by
-      simp only [Subsemigroup.mem_carrier]
-      intros a ha
-      apply Set.star_mem_center }
+def center : NonUnitalStarSubsemiring R where
+  toNonUnitalSubsemiring := NonUnitalSubsemiring.center R
+  star_mem' := Set.star_mem_center
 
 end NonUnitalStarSubsemiring
 
