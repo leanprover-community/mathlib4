@@ -274,7 +274,7 @@ lemma measure_compl_sigmaFiniteSet (μ : Measure α) [SigmaFinite μ] : μ μ.si
 
 /-- An s-finite measure `μ` is sigma-finite iff `μ μ.sigmaFiniteSetᶜ = 0`. -/
 lemma measure_compl_sigmaFiniteSet_eq_zero_iff_sigmaFinite (μ : Measure α) [SFinite μ] :
-  μ μ.sigmaFiniteSetᶜ = 0 ↔ SigmaFinite μ :=
+    μ μ.sigmaFiniteSetᶜ = 0 ↔ SigmaFinite μ :=
   ⟨sigmaFinite_of_measure_compl_sigmaFiniteSet_eq_zero, fun _ ↦ measure_compl_sigmaFiniteSet μ⟩
 
 end SigmaFiniteSet
