@@ -9,7 +9,7 @@ import Mathlib.MeasureTheory.SetSemiring
 # Algebra of sets
 
 in this file we define the notion of algebra of sets ang give its basic properties. An algebra
-of sets is a family of sets containing the empty set and closed by complement and union.
+of sets is a family of sets containing the empty set and closed by complement and binary union.
 It is therefore similar to a `σ`-algebra, except that it is not necessarily closed
 by countable unions.
 
