@@ -302,8 +302,8 @@ theorem coe_closure_eq_range_term_realize :
   change _ = (S : Set M)
   rw [← SetLike.ext'_iff]
   refine' closure_eq_of_le (fun x hx => ⟨var ⟨x, hx⟩, rfl⟩) (le_sInf fun S' hS' => _)
-  · rintro _ ⟨t, rfl⟩
-    exact t.realize_mem _ fun i => hS' i.2
+  rintro _ ⟨t, rfl⟩
+  exact t.realize_mem _ fun i => hS' i.2
 #align first_order.language.substructure.coe_closure_eq_range_term_realize FirstOrder.Language.Substructure.coe_closure_eq_range_term_realize
 
 instance small_closure [Small.{u} s] : Small.{u} (closure L s) := by
@@ -792,7 +792,7 @@ theorem closure_withConstants_eq :
   rw [← (L.lhomWithConstants A).substructureReduct.le_iff_le]
   simp only [subset_closure, reduct_withConstants, closure_le, LHom.coe_substructureReduct,
     Set.union_subset_iff, and_true_iff]
-  · exact subset_closure_withConstants
+  exact subset_closure_withConstants
 #align first_order.language.substructure.closure_with_constants_eq FirstOrder.Language.Substructure.closure_withConstants_eq
 
 end Substructure

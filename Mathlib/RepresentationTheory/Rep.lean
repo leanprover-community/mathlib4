@@ -348,7 +348,7 @@ theorem leftRegularHom_apply {A : Rep k G} (x : A) :
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [leftRegularHom_hom, Finsupp.lift_apply, Finsupp.sum_single_index, one_smul,
     A.ρ.map_one, LinearMap.one_apply]
-  · rw [zero_smul]
+  rw [zero_smul]
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_apply Rep.leftRegularHom_apply
 
@@ -373,9 +373,9 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
     simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, leftRegularHom_hom]
     erw [Finsupp.lift_apply]
     rw [Finsupp.sum_single_index, ← this, of_ρ_apply]
-    erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
-    simp only [one_smul, smul_eq_mul, mul_one]
-    · -- This goal didn't exist before leanprover/lean4#2644
+    · erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
+      simp only [one_smul, smul_eq_mul, mul_one]
+      -- This goal didn't exist before leanprover/lean4#2644
       rfl
     · rw [zero_smul]
   right_inv x := leftRegularHom_apply x
@@ -387,7 +387,7 @@ theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [leftRegularHomEquiv_symm_apply, leftRegularHom_hom, Finsupp.lift_apply,
     Finsupp.sum_single_index, one_smul]
-  · rw [zero_smul]
+  rw [zero_smul]
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_equiv_symm_single Rep.leftRegularHomEquiv_symm_single
 
@@ -474,15 +474,14 @@ set_option linter.uppercaseLean3 false in
 #align Rep.hom_equiv_symm_apply_hom Rep.homEquiv_symm_apply_hom
 
 instance : MonoidalClosed (Rep k G) where
-  closed := fun A =>
-  { isAdj :=
-    { right := Rep.ihom A
+  closed A :=
+    { rightAdj := Rep.ihom A
       adj := Adjunction.mkOfHomEquiv (
       { homEquiv := Rep.homEquiv A
         homEquiv_naturality_left_symm := fun _ _ => Action.Hom.ext _ _
           (TensorProduct.ext' fun _ _ => rfl)
         homEquiv_naturality_right := fun _ _ => Action.Hom.ext _ _ (LinearMap.ext
-          fun _ => LinearMap.ext fun _ => rfl) })}}
+          fun _ => LinearMap.ext fun _ => rfl) })}
 
 @[simp]
 theorem ihom_obj_ρ_def (A B : Rep k G) : ((ihom A).obj B).ρ = ((Rep.ihom A).obj B).ρ :=

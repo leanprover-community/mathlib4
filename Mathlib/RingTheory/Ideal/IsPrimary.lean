@@ -49,9 +49,10 @@ theorem isPrimary_inf {I J : Ideal R} (hi : IsPrimary I) (hj : IsPrimary J)
   ⟨ne_of_lt <| lt_of_le_of_lt inf_le_left (lt_top_iff_ne_top.2 hi.1),
    fun {x y} ⟨hxyi, hxyj⟩ => by
     rw [radical_inf, hij, inf_idem]
-    cases' hi.2 hxyi with hxi hyi; cases' hj.2 hxyj with hxj hyj
-    · exact Or.inl ⟨hxi, hxj⟩
-    · exact Or.inr hyj
+    cases' hi.2 hxyi with hxi hyi
+    · cases' hj.2 hxyj with hxj hyj
+      · exact Or.inl ⟨hxi, hxj⟩
+      · exact Or.inr hyj
     · rw [hij] at hyi
       exact Or.inr hyi⟩
 #align ideal.is_primary_inf Ideal.isPrimary_inf
