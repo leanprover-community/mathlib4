@@ -26,6 +26,9 @@ See note [foundational algebra order theory].
   induction on numbers less than `b`.
 -/
 
+-- We should need only a minimal development of sets in order to get here.
+assert_not_exists Set.Subsingleton
+
 assert_not_exists Ring
 
 open Function Nat
@@ -454,6 +457,3 @@ lemma zpow_abs_eq_one (a : G) (n : ℤ) : a ^ |n| = 1 ↔ a ^ n = 1 := by
   rw [← Int.natCast_natAbs, zpow_natCast, pow_natAbs_eq_one]
 
 end Group
-
--- We should need only a minimal development of sets in order to get here.
-assert_not_exists Set.range

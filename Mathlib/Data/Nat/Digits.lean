@@ -5,7 +5,6 @@ Authors: Scott Morrison, Shing Tak Lam, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.List.Lemmas
-import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Log
