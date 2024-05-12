@@ -48,7 +48,7 @@ def emptyOn (α : Type*) : Matroid α :=
 @[simp] theorem emptyOn_indep_iff : (emptyOn α).Indep B ↔ B = ∅ := by
   simp [indep_iff_subset_base, subset_empty_iff]
 
-@[simp] theorem ground_eq_empty_iff : (M.E = ∅) ↔ M = emptyOn α := by
+theorem ground_eq_empty_iff : (M.E = ∅) ↔ M = emptyOn α := by
   refine' ⟨fun h ↦ eq_of_base_iff_base_forall (by simp [h]) _, fun h ↦ by simp [h]⟩
   simp only [h, subset_empty_iff, emptyOn_base_iff, forall_eq, iff_true]
   obtain ⟨B', hB'⟩ := M.exists_base
@@ -63,9 +63,6 @@ def emptyOn (α : Type*) : Matroid α :=
 theorem eq_emptyOn_or_nonempty (M : Matroid α) : M = emptyOn α ∨ Matroid.Nonempty M := by
   rw [← ground_eq_empty_iff]
   exact M.E.eq_empty_or_nonempty.elim Or.inl (fun h ↦ Or.inr ⟨h⟩)
-
-theorem ground_nonempty_iff (M : Matroid α) : M.E.Nonempty ↔ M.Nonempty :=
-  ⟨fun h ↦ ⟨h⟩, fun ⟨h⟩ ↦ h⟩
 
 theorem eq_emptyOn [IsEmpty α] (M : Matroid α) : M = emptyOn α := by
   rw [← ground_eq_empty_iff]
@@ -90,7 +87,7 @@ def loopyOn (E : Set α) : Matroid α := (emptyOn α ↾ E)
   simp only [loopyOn, restrict_indep_iff, emptyOn_indep_iff, and_iff_left_iff_imp]
   rintro rfl; apply empty_subset
 
-@[simp] theorem eq_loopyOn_iff : (M = loopyOn E) ↔ M.E = E ∧ ∀ X ⊆ M.E, M.Indep X → X = ∅ := by
+theorem eq_loopyOn_iff : (M = loopyOn E) ↔ M.E = E ∧ ∀ X ⊆ M.E, M.Indep X → X = ∅ := by
   simp_rw [eq_iff_indep_iff_indep_forall]
   simp only [loopyOn_ground, loopyOn_indep_iff, and_congr_right_iff]
   rintro rfl
@@ -115,7 +112,7 @@ theorem Finite.loopyOn_finite (hE : E.Finite) : Matroid.Finite (loopyOn E) :=
   simp only [restrict_ground_eq, restrict_indep_iff, loopyOn_indep_iff, and_iff_left_iff_imp]
   exact fun _ h _ ↦ h
 
-@[simp] theorem empty_base_iff : M.Base ∅ ↔ M = loopyOn M.E := by
+theorem empty_base_iff : M.Base ∅ ↔ M = loopyOn M.E := by
   simp_rw [eq_iff_indep_iff_indep_forall, and_iff_right (show M.E = (loopyOn M.E).E from rfl),
     loopyOn_indep_iff]
   refine ⟨fun h I hIE ↦ ⟨fun hI ↦ ?_, ?_⟩, fun h ↦ ?_⟩
@@ -167,7 +164,7 @@ theorem freeOn_indep (hIE : I ⊆ E) : (freeOn E).Indep I :=
   rw [basis'_iff_basis_inter_ground, freeOn_basis_iff, freeOn_ground,
     and_iff_left (inter_subset_right _ _)]
 
-@[simp] theorem eq_freeOn_iff : M = freeOn E ↔ M.E = E ∧ M.Indep E := by
+theorem eq_freeOn_iff : M = freeOn E ↔ M.E = E ∧ M.Indep E := by
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro rfl; simp [Subset.rfl]
   simp only [eq_iff_indep_iff_indep_forall, freeOn_ground, freeOn_indep_iff, h.1, true_and]
