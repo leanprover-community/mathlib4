@@ -229,7 +229,7 @@ theorem uniqueBaseOn_inter_basis (hI : I ⊆ E) (hX : X ⊆ E) :
 @[simp] theorem uniqueBaseOn_self (I : Set α) : uniqueBaseOn I I = freeOn I := by
   rw [uniqueBaseOn, freeOn_restrict rfl.subset]
 
-@[simp] theorem uniqueBaseOn_empty (I : Set α) : (uniqueBaseOn ∅ I) = loopyOn I := by
+@[simp] theorem uniqueBaseOn_empty (I : Set α) : uniqueBaseOn ∅ I = loopyOn I := by
   rw [← dual_inj, uniqueBaseOn_dual_eq, diff_empty, uniqueBaseOn_self, loopyOn_dual_eq]
 
 @[simp] theorem uniqueBaseOn_restrict' (I E R : Set α) :
