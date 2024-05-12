@@ -101,7 +101,7 @@ def loopyOn (E : Set α) : Matroid α := (emptyOn α ↾ E)
   exact fun h _ ↦ h
 
 @[simp] theorem loopyOn_basis_iff : (loopyOn E).Basis I X ↔ I = ∅ ∧ X ⊆ E :=
-  ⟨fun h ↦⟨loopyOn_indep_iff.mp h.indep, h.subset_ground⟩,
+  ⟨fun h ↦ ⟨loopyOn_indep_iff.mp h.indep, h.subset_ground⟩,
     by rintro ⟨rfl, hX⟩; rw [basis_iff]; simp⟩
 
 instance : FiniteRk (loopyOn E) :=
