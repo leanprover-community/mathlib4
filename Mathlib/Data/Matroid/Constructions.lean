@@ -226,7 +226,7 @@ theorem uniqueBaseOn_inter_basis (hI : I ⊆ E) (hX : X ⊆ E) :
   · rw [← diff_diff_cancel_left hB, h, diff_inter_self_eq_diff]
   rw [h, inter_comm I]; simp
 
-@[simp] theorem uniqueBaseOn_self (I : Set α) : (uniqueBaseOn I I) = freeOn I := by
+@[simp] theorem uniqueBaseOn_self (I : Set α) : uniqueBaseOn I I = freeOn I := by
   rw [uniqueBaseOn, freeOn_restrict rfl.subset]
 
 @[simp] theorem uniqueBaseOn_empty (I : Set α) : (uniqueBaseOn ∅ I) = loopyOn I := by
