@@ -123,6 +123,26 @@ class ContravariantClass : Prop where
   protected elim : Contravariant M N μ r
 #align contravariant_class ContravariantClass
 
+namespace CovariantClass
+
+private inductive Hack
+
+instance : Mul Hack where mul := nofun
+instance : Add Hack where add := nofun
+instance : LE Hack where le := nofun
+instance : LT Hack where lt := nofun
+
+instance (priority := high) : CovariantClass Hack Hack (· * ·) (· ≤ ·) where elim := nofun
+instance (priority := high) : CovariantClass Hack Hack (· + ·) (· ≤ ·) where elim := nofun
+instance (priority := high) : CovariantClass Hack Hack (· * ·) (· < ·) where elim := nofun
+instance (priority := high) : CovariantClass Hack Hack (· + ·) (· < ·) where elim := nofun
+instance (priority := high) : ContravariantClass Hack Hack (· * ·) (· ≤ ·) where elim := nofun
+instance (priority := high) : ContravariantClass Hack Hack (· + ·) (· ≤ ·) where elim := nofun
+instance (priority := high) : ContravariantClass Hack Hack (· * ·) (· < ·) where elim := nofun
+instance (priority := high) : ContravariantClass Hack Hack (· + ·) (· < ·) where elim := nofun
+
+end CovariantClass
+
 theorem rel_iff_cov [CovariantClass M N μ r] [ContravariantClass M N μ r] (m : M) {a b : N} :
     r (μ m a) (μ m b) ↔ r a b :=
   ⟨ContravariantClass.elim _, CovariantClass.elim _⟩
