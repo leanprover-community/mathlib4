@@ -10,8 +10,8 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - id: message
       - uses: actions/checkout@v4
+      - id: message
         run: ./scripts/no_lost_declarations.sh
       - name: Add comment
         run: gh pr comment "$NUMBER" --body "$BODY"
