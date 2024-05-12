@@ -3,11 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.Algebra.Category.GroupCat.Limits
 import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.CategoryTheory.Galois.Decomposition
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.IndYoneda
-import Mathlib.Algebra.Category.GroupCat.Limits
 
 /-!
 # Pro-Representability of fiber functors
@@ -23,6 +23,7 @@ groups of all Galois objects.
 - `PointedGaloisObject`: the category of pointed Galois objects
 - `PointedGaloisObject.cocone`: a cocone on `(PointedGaloisObject.incl F).op ≫ coyoneda` with
   point `F ⋙ FintypeCat.incl`.
+- `autGaloisSystem`: the system of automorphism groups indexed by the pointed Galois objects.
 
 ## Main results
 
@@ -51,8 +52,11 @@ variable (F : C ⥤ FintypeCat.{u₂}) [FiberFunctor F]
 
 /-- A pointed Galois object is a Galois object with a fixed point of its fiber. -/
 structure PointedGaloisObject : Type (max u₁ u₂) where
+  /-- The underlying object of `C`. -/
   obj : C
+  /-- An element of the fiber of `obj`. -/
   pt : F.obj obj
+  /-- `obj` is Galois. -/
   isGalois : IsGalois obj := by infer_instance
 
 namespace PointedGaloisObject
@@ -63,8 +67,12 @@ instance (X : PointedGaloisObject F) : CoeDep (PointedGaloisObject F) X C where
   coe := X.obj
 
 variable {F} in
+/-- The type of homomorphisms between two pointed Galois objects. This is a homomorphism
+of the underlying objects of `C` that maps the distinguished points to each other. -/
 structure Hom (A B : PointedGaloisObject F) where
+  /-- The underlying homomorphism of `C`. -/
   val : A.obj ⟶ B.obj
+  /-- The distinguished point of `A` is mapped to the distinguished point of `B`. -/
   comp : F.map val A.pt = B.pt
 
 /-- The category of pointed Galois objects. -/
@@ -170,6 +178,8 @@ instance : HasColimit ((incl F).op ⋙ coyoneda) where
 
 variable {F}
 
+/-- A morphism of pointed Galois objects induces a map on automorphism groups
+of the underlying objects in `C`. This is a group homomorphism (see `autMapMul`). -/
 noncomputable def autMap {A B : PointedGaloisObject F} (f : A ⟶ B) (σ : Aut A.obj) : Aut B.obj :=
   (evaluationEquivOfIsGalois F B B.pt).symm (F.map (σ.hom ≫ f) A.pt)
 
