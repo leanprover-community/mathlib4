@@ -6,9 +6,8 @@ Authors: Kevin Kappelmann
 import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 import Mathlib.Algebra.Order.Archimedean
-import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Tactic.GCongr
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.LeftRightNhds
 
 #align_import algebra.continued_fractions.computation.approximation_corollaries from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -46,8 +45,8 @@ convergence, fractions
 variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
 
 open GeneralizedContinuedFraction (of)
-
 open GeneralizedContinuedFraction
+open scoped Topology
 
 theorem GeneralizedContinuedFraction.of_isSimpleContinuedFraction :
     (of v).IsSimpleContinuedFraction := fun _ _ nth_part_num_eq =>
@@ -142,10 +141,8 @@ theorem of_convergence_epsilon :
       _ ≤ B * nB := by gcongr
 #align generalized_continued_fraction.of_convergence_epsilon GeneralizedContinuedFraction.of_convergence_epsilon
 
-attribute [local instance] Preorder.topology
-
-theorem of_convergence [OrderTopology K] :
-    Filter.Tendsto (of v).convergents Filter.atTop <| nhds v := by
+theorem of_convergence [TopologicalSpace K] [OrderTopology K] :
+    Filter.Tendsto (of v).convergents Filter.atTop <| 𝓝 v := by
   simpa [LinearOrderedAddCommGroup.tendsto_nhds, abs_sub_comm] using of_convergence_epsilon v
 #align generalized_continued_fraction.of_convergence GeneralizedContinuedFraction.of_convergence
 

@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
+import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.LinearAlgebra.AffineSpace.MidpointZero
+import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.LinearAlgebra.AffineSpace.Slope
+import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.Tactic.FieldSimp
 
 #align_import linear_algebra.affine_space.ordered from "leanprover-community/mathlib"@"78261225eb5cedc61c5c74ecb44e5b385d13b733"
@@ -45,7 +47,6 @@ other arguments belong to specific domains.
 section OrderedRing
 
 variable [OrderedRing k] [OrderedAddCommGroup E] [Module k E] [OrderedSMul k E]
-
 variable {a a' b b' : E} {r r' : k}
 
 theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lineMap a' b r := by
@@ -117,7 +118,6 @@ end LinearOrderedRing
 section LinearOrderedField
 
 variable [LinearOrderedField k] [OrderedAddCommGroup E]
-
 variable [Module k E] [OrderedSMul k E]
 
 section
@@ -199,7 +199,6 @@ These inequalities can be used to restate `convexOn` in terms of monotonicity of
 
 variable {f : k → E} {a b r : k}
 
--- mathport name: exprc
 local notation "c" => lineMap a b r
 
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is non-strictly below the
@@ -207,7 +206,7 @@ segment `[(a, f a), (b, f b)]` if and only if `slope f a c ≤ slope f a b`. -/
 theorem map_le_lineMap_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
     f c ≤ lineMap (f a) (f b) r ↔ slope f a c ≤ slope f a b := by
   rw [lineMap_apply, lineMap_apply, slope, slope, vsub_eq_sub, vsub_eq_sub, vsub_eq_sub,
-    vadd_eq_add, vadd_eq_add, smul_eq_mul, add_sub_cancel, smul_sub, smul_sub, smul_sub,
+    vadd_eq_add, vadd_eq_add, smul_eq_mul, add_sub_cancel_right, smul_sub, smul_sub, smul_sub,
     sub_le_iff_le_add, mul_inv_rev, mul_smul, mul_smul, ← smul_sub, ← smul_sub, ← smul_add,
     smul_smul, ← mul_inv_rev, inv_smul_le_iff_of_pos h, smul_smul,
     mul_inv_cancel_right₀ (right_ne_zero_of_mul h.ne'), smul_add,

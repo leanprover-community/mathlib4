@@ -29,7 +29,8 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 -/
 
 
-open Classical Set
+open scoped Classical
+open Set
 
 variable {α β : Type*}
 
@@ -159,18 +160,17 @@ theorem IsMaxChain.top_mem [LE α] [OrderTop α] (h : IsMaxChain (· ≤ ·) s) 
   (h.2 (h.1.insert fun _ _ _ => Or.inr le_top) <| subset_insert _ _).symm ▸ mem_insert _ _
 #align is_max_chain.top_mem IsMaxChain.top_mem
 
-open Classical
+open scoped Classical
 
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`
 is one of these chains. Otherwise it is `s`. -/
 def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
-  if h : ∃ t, IsChain r s ∧ SuperChain r s t then choose h else s
+  if h : ∃ t, IsChain r s ∧ SuperChain r s t then h.choose else s
 #align succ_chain SuccChain
 
 theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
     SuperChain r s (SuccChain r s) := by
-  have : IsChain r s ∧ SuperChain r s (choose h) :=
-    @choose_spec _ (fun t => IsChain r s ∧ SuperChain r s t) _
+  have : IsChain r s ∧ SuperChain r s h.choose := h.choose_spec
   simpa [SuccChain, dif_pos, exists_and_left.mp h] using this.2
 #align succ_chain_spec succChain_spec
 
@@ -183,7 +183,7 @@ theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
 
 theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain r s) :
     SuperChain r s (SuccChain r s) := by
-  simp only [IsMaxChain, not_and, not_forall, exists_prop, exists_and_left] at hs₂
+  simp only [IsMaxChain, _root_.not_and, not_forall, exists_prop, exists_and_left] at hs₂
   obtain ⟨t, ht, hst⟩ := hs₂ hs₁
   exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
 #align is_chain.super_chain_succ_chain IsChain.superChain_succChain
@@ -318,7 +318,7 @@ theorem ext : (s : Set α) = t → s = t :=
   SetLike.ext'
 #align flag.ext Flag.ext
 
--- Porting note: `simp` can now prove this
+-- Porting note (#10618): `simp` can now prove this
 -- @[simp]
 theorem mem_coe_iff : a ∈ (s : Set α) ↔ a ∈ s :=
   Iff.rfl

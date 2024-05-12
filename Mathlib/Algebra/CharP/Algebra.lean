@@ -3,9 +3,9 @@ Copyright (c) 2021 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.FreeAlgebra
+import Mathlib.RingTheory.Localization.FractionRing
 
 #align_import algebra.char_p.algebra from "leanprover-community/mathlib"@"96782a2d6dcded92116d8ac9ae48efb41d46a27c"
 
@@ -31,8 +31,8 @@ Instances constructed from this result:
 
 
 /-- If a ring homomorphism `R →+* A` is injective then `A` has the same characteristic as `R`. -/
-theorem charP_of_injective_ringHom {R A : Type*} [Semiring R] [Semiring A] {f : R →+* A}
-    (h : Function.Injective f) (p : ℕ) [CharP R p] : CharP A p where
+theorem charP_of_injective_ringHom {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A]
+    {f : R →+* A} (h : Function.Injective f) (p : ℕ) [CharP R p] : CharP A p where
   cast_eq_zero_iff' x := by
     rw [← CharP.cast_eq_zero_iff R p x, ← map_natCast f x, map_eq_zero_iff f h]
 
@@ -49,8 +49,8 @@ theorem charP_of_injective_algebraMap' (R A : Type*) [Field R] [Semiring A] [Alg
 
 /-- If a ring homomorphism `R →+* A` is injective and `R` has characteristic zero
 then so does `A`. -/
-theorem charZero_of_injective_ringHom {R A : Type*} [Semiring R] [Semiring A] {f : R →+* A}
-    (h : Function.Injective f) [CharZero R] : CharZero A where
+theorem charZero_of_injective_ringHom {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A]
+    {f : R →+* A} (h : Function.Injective f) [CharZero R] : CharZero A where
   cast_injective _ _ _ := CharZero.cast_injective <| h <| by simpa only [map_natCast f]
 
 /-- If the algebra map `R →+* A` is injective and `R` has characteristic zero then so does `A`. -/
@@ -58,6 +58,19 @@ theorem charZero_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semirin
     (h : Function.Injective (algebraMap R A)) [CharZero R] : CharZero A :=
   charZero_of_injective_ringHom h
 #align char_zero_of_injective_algebra_map charZero_of_injective_algebraMap
+
+/-- If `R →+* A` is injective, and `A` is of characteristic `p`, then `R` is also of
+characteristic `p`. Similar to `RingHom.charZero`. -/
+theorem RingHom.charP {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) [CharP A p] : CharP R p := by
+  obtain ⟨q, h⟩ := CharP.exists R
+  exact CharP.eq _ (charP_of_injective_ringHom H q) ‹CharP A p› ▸ h
+
+/-- If `R →+* A` is injective, then `R` is of characteristic `p` if and only if `A` is also of
+characteristic `p`. Similar to `RingHom.charZero_iff`. -/
+theorem RingHom.charP_iff {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) : CharP R p ↔ CharP A p :=
+  ⟨fun _ ↦ charP_of_injective_ringHom H p, fun _ ↦ f.charP H p⟩
 
 /-!
 As an application, a `ℚ`-algebra has characteristic zero.
@@ -131,7 +144,6 @@ end FreeAlgebra
 namespace IsFractionRing
 
 variable (R : Type*) {K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
-
 variable (p : ℕ)
 
 /-- If `R` has characteristic `p`, then so does Frac(R). -/

@@ -30,7 +30,7 @@ it. We generally put such theorems into the `SetTheory.Cardinal.Finite` module.
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 variable {α β γ : Type*}
 

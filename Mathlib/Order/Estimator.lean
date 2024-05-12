@@ -3,11 +3,11 @@ Copyright (c) 2023 Kim Liesinger. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Liesinger
 -/
+import Mathlib.Data.Set.Defs
+import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.RelClasses
-import Mathlib.Data.Set.Image
 import Mathlib.Order.Hom.Basic
 import Mathlib.Lean.Thunk
-import Mathlib.Data.Prod.Lex
 
 /-!
 # Improvable lower bounds.
@@ -33,7 +33,6 @@ the exact value.
 -/
 
 set_option autoImplicit true
-set_option relaxedAutoImplicit true
 
 /--
 Given `[EstimatorData a ε]`
@@ -75,7 +74,7 @@ abbrev Estimator.trivial (a : α) : Type* := { b : α // b = a }
 instance : Bot (Estimator.trivial a) := ⟨⟨a, rfl⟩⟩
 
 instance : WellFoundedGT Unit where
-  wf := ⟨fun .unit => ⟨.unit, fun.⟩⟩
+  wf := ⟨fun .unit => ⟨.unit, nofun⟩⟩
 
 instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
   let f : Estimator.trivial a ≃o Unit := RelIso.relIsoOfUniqueOfRefl _ _
@@ -107,7 +106,7 @@ def Estimator.improveUntilAux
       | none, _ => .error <| if r then none else e
       | some e', _ =>
         improveUntilAux a p e' true
-termination_by Estimator.improveUntilAux p I e r => (⟨_, mem_range_self e⟩ : range (bound a))
+termination_by (⟨_, mem_range_self e⟩ : range (bound a))
 
 /--
 Improve an estimate until it satisfies a predicate,
@@ -140,7 +139,7 @@ theorem Estimator.improveUntilAux_spec (a : Thunk α) (p : α → Bool)
       exact Bool.bool_eq_false h
     | some e', _ =>
       exact Estimator.improveUntilAux_spec a p e' true
-termination_by Estimator.improveUntilAux_spec p I e r => (⟨_, mem_range_self e⟩ : range (bound a))
+termination_by (⟨_, mem_range_self e⟩ : range (bound a))
 
 /--
 If `Estimator.improveUntil a p e` returns `some e'`, then `bound a e'` satisfies `p`.

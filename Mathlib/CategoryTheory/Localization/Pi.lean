@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.Prod
+import Mathlib.CategoryTheory.Localization.Equivalence
+import Mathlib.Data.Fintype.Option
 
 /-!
 # Localization of product categories
@@ -61,10 +63,36 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
       (Pi.optionEquivalence C).symm (Pi.optionEquivalence D).symm ?_ ?_
     · intro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ f ⟨hf₁, hf₂⟩
       refine ⟨_, _, (Pi.optionEquivalence C).inverse.map f, ?_, ⟨Iso.refl _⟩⟩
-      · rintro (_|i)
-        · exact hf₁
-        · apply hf₂
+      rintro (_|i)
+      · exact hf₁
+      · apply hf₂
     · apply MorphismProperty.IsInvertedBy.pi
       rintro (_|i) <;> apply Localization.inverts
+
+/-- If `L : C ⥤ D` is a localization functor for `W : MorphismProperty C`, then
+the induced functor `(Discrete J ⥤ C) ⥤ (Discrete J ⥤ D)` is also a localization
+for `W.functorCategory (Discrete J)` if `W` contains identities. -/
+instance {J : Type} [Finite J] {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
+    (L : C ⥤ D) (W : MorphismProperty C) [W.ContainsIdentities] [L.IsLocalization W]  :
+    ((whiskeringRight (Discrete J) C D).obj L).IsLocalization
+      (W.functorCategory (Discrete J)) := by
+  let E := piEquivalenceFunctorDiscrete J C
+  let E' := piEquivalenceFunctorDiscrete J D
+  let L₂ := (whiskeringRight (Discrete J) C D).obj L
+  let L₁ := Functor.pi (fun (_ : J) => L)
+  have : CatCommSq E.functor L₁ L₂ E'.functor :=
+    ⟨(Functor.rightUnitor _).symm ≪≫ isoWhiskerLeft _ E'.counitIso.symm ≪≫
+      Functor.associator _ _ _≪≫ isoWhiskerLeft _ ((Functor.associator _ _ _).symm ≪≫
+      isoWhiskerRight (by exact Iso.refl _) _) ≪≫ (Functor.associator _ _ _).symm ≪≫
+      isoWhiskerRight ((Functor.associator _ _ _).symm ≪≫
+      isoWhiskerRight E.unitIso.symm L₁) _ ≪≫ isoWhiskerRight L₁.leftUnitor _⟩
+  refine Functor.IsLocalization.of_equivalences L₁
+    (MorphismProperty.pi (fun _ => W)) L₂ _ E E' ?_ ?_
+  · intro X Y f hf
+    exact MorphismProperty.le_isoClosure _ _ (fun ⟨j⟩ => hf j)
+  · intro X Y f hf
+    have : ∀ (j : Discrete J), IsIso ((L₂.map f).app j) :=
+      fun j => Localization.inverts L W _ (hf j)
+    apply NatIso.isIso_of_isIso_app
 
 end CategoryTheory.Functor.IsLocalization

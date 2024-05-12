@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Module.Prod
 
 #align_import algebra.algebra.prod from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
@@ -14,16 +15,15 @@ The R-algebra structure on `(i : I) → A i` when each `A i` is an R-algebra.
 
 ## Main definitions
 
-* `Pi.algebra`
-* `Pi.evalAlgHom`
-* `Pi.constAlgHom`
+* `Prod.algebra`
+* `AlgHom.fst`
+* `AlgHom.snd`
+* `AlgHom.prod`
 -/
 
 
 variable {R A B C : Type*}
-
 variable [CommSemiring R]
-
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
 
 namespace Prod
@@ -93,14 +93,13 @@ theorem snd_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (snd R B C).comp (pro
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  FunLike.coe_injective Pi.prod_fst_snd
+  DFunLike.coe_injective Pi.prod_fst_snd
 #align alg_hom.prod_fst_snd AlgHom.prod_fst_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
 @[simps]
-def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C)
-    where
+def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C) where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv f := by ext <;> rfl

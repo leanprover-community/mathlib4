@@ -16,15 +16,11 @@ then `C ⥤ D` is also `R`-linear.
 
 -/
 
-
-open BigOperators
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits Linear
 
 variable {R : Type*} [Semiring R]
-
 variable {C D : Type*} [Category C] [Category D] [Preadditive D] [Linear R D]
 
 instance functorCategoryLinear : Linear R (C ⥤ D)

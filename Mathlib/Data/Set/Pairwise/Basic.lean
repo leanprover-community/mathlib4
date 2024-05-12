@@ -139,8 +139,8 @@ theorem pairwise_union :
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
   simp only [Set.Pairwise, mem_union, or_imp, forall_and]
   exact
-    ⟨fun H => ⟨H.1.1, H.2.2, H.2.1, fun x hx y hy hne => H.1.2 y hy x hx hne.symm⟩, fun H =>
-      ⟨⟨H.1, fun x hx y hy hne => H.2.2.2 y hy x hx hne.symm⟩, H.2.2.1, H.2.1⟩⟩
+    ⟨fun H => ⟨H.1.1, H.2.2, H.1.2, fun x hx y hy hne => H.2.1 y hy x hx hne.symm⟩,
+     fun H => ⟨⟨H.1, H.2.2.1⟩, fun x hx y hy hne => H.2.2.2 y hy x hx hne.symm, H.2.1⟩⟩
 #align set.pairwise_union Set.pairwise_union
 
 theorem pairwise_union_of_symmetric (hr : Symmetric r) :
@@ -216,7 +216,7 @@ lemma injOn_iff_pairwise_ne {s : Set ι} : InjOn f s ↔ s.Pairwise (f · ≠ f 
 alias ⟨InjOn.pairwise_ne, _⟩ := injOn_iff_pairwise_ne
 
 protected theorem Pairwise.image {s : Set ι} (h : s.Pairwise (r on f)) : (f '' s).Pairwise r :=
-  ball_image_iff.2 fun _x hx ↦ ball_image_iff.2 fun _y hy hne ↦ h hx hy <| ne_of_apply_ne _ hne
+  forall_mem_image.2 fun _x hx ↦ forall_mem_image.2 fun _y hy hne ↦ h hx hy <| ne_of_apply_ne _ hne
 
 /-- See also `Set.Pairwise.image`. -/
 theorem InjOn.pairwise_image {s : Set ι} (h : s.InjOn f) :
@@ -224,13 +224,16 @@ theorem InjOn.pairwise_image {s : Set ι} (h : s.InjOn f) :
   simp (config := { contextual := true }) [h.eq_iff, Set.Pairwise]
 #align set.inj_on.pairwise_image Set.InjOn.pairwise_image
 
+lemma _root_.Pairwise.range_pairwise (hr : Pairwise (r on f)) : (Set.range f).Pairwise r :=
+  image_univ ▸ (pairwise_univ.mpr hr).image
+
 end Set
 
 end Pairwise
 
 theorem pairwise_subtype_iff_pairwise_set (s : Set α) (r : α → α → Prop) :
     (Pairwise fun (x : s) (y : s) => r x y) ↔ s.Pairwise r := by
-  simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne.def, Subtype.ext_iff, Subtype.coe_mk]
+  simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff, Subtype.coe_mk]
 #align pairwise_subtype_iff_pairwise_set pairwise_subtype_iff_pairwise_set
 
 alias ⟨Pairwise.set_of_subtype, Set.Pairwise.subtype⟩ := pairwise_subtype_iff_pairwise_set
@@ -355,9 +358,8 @@ end SemilatticeInfBot
 variable {s : Set ι} {t : Set ι'}
 
 theorem pairwiseDisjoint_range_singleton :
-    (range (singleton : ι → Set ι)).PairwiseDisjoint id := by
-  rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ h
-  exact disjoint_singleton.2 (ne_of_apply_ne _ h)
+    (range (singleton : ι → Set ι)).PairwiseDisjoint id :=
+  Pairwise.range_pairwise fun _ _ => disjoint_singleton.2
 #align set.pairwise_disjoint_range_singleton Set.pairwiseDisjoint_range_singleton
 
 theorem pairwiseDisjoint_fiber (f : ι → α) (s : Set α) : s.PairwiseDisjoint fun a => f ⁻¹' {a} :=
@@ -425,7 +427,7 @@ lemma exists_ne_mem_inter_of_not_pairwiseDisjoint
   simp only [not_forall] at h
   obtain ⟨i, hi, j, hj, h_ne, t, hfi, hfj, ht⟩ := h
   replace ht : t.Nonempty := by
-    rwa [le_bot_iff, bot_eq_empty, ← Ne.def, ← nonempty_iff_ne_empty] at ht
+    rwa [le_bot_iff, bot_eq_empty, ← Ne, ← nonempty_iff_ne_empty] at ht
   obtain ⟨x, hx⟩ := ht
   exact ⟨i, hi, j, hj, h_ne, x, hfi hx, hfj hx⟩
 
@@ -456,3 +458,8 @@ lemma exists_lt_mem_inter_of_not_pairwise_disjoint [LinearOrder ι]
 theorem pairwise_disjoint_fiber (f : ι → α) : Pairwise (Disjoint on fun a : α => f ⁻¹' {a}) :=
   pairwise_univ.1 <| Set.pairwiseDisjoint_fiber f univ
 #align pairwise_disjoint_fiber pairwise_disjoint_fiber
+
+lemma subsingleton_setOf_mem_iff_pairwise_disjoint {f : ι → Set α} :
+    (∀ a, {i | a ∈ f i}.Subsingleton) ↔ Pairwise (Disjoint on f) :=
+  ⟨fun h _ _ hij ↦ disjoint_left.2 fun a hi hj ↦ hij (h a hi hj),
+   fun h _ _ hx _ hy ↦ by_contra fun hne ↦ disjoint_left.1 (h hne) hx hy⟩

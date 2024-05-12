@@ -5,7 +5,6 @@ Authors: Kevin H. Wilson
 -/
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Data.Set.Function
-import Mathlib.Analysis.SpecialFunctions.Integrals
 
 #align_import analysis.sum_integral_comparisons from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -95,7 +94,7 @@ theorem AntitoneOn.integral_le_sum_Ico (hab : a ≤ b) (hf : AntitoneOn f (Set.I
     ext
     rw [Nat.cast_add]
   apply AntitoneOn.integral_le_sum
-  simp only [hf, hab, Nat.cast_sub, add_sub_cancel'_right]
+  simp only [hf, hab, Nat.cast_sub, add_sub_cancel]
 #align antitone_on.integral_le_sum_Ico AntitoneOn.integral_le_sum_Ico
 
 theorem AntitoneOn.sum_le_integral (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
@@ -147,7 +146,7 @@ theorem AntitoneOn.sum_le_integral_Ico (hab : a ≤ b) (hf : AntitoneOn f (Set.I
     ext
     rw [add_assoc, Nat.cast_add]
   apply AntitoneOn.sum_le_integral
-  simp only [hf, hab, Nat.cast_sub, add_sub_cancel'_right]
+  simp only [hf, hab, Nat.cast_sub, add_sub_cancel]
 #align antitone_on.sum_le_integral_Ico AntitoneOn.sum_le_integral_Ico
 
 theorem MonotoneOn.sum_le_integral (hf : MonotoneOn f (Icc x₀ (x₀ + a))) :

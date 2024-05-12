@@ -3,12 +3,11 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-
+import Lean.Elab.Tactic.Simp
+import Lean.Elab.App
 import Mathlib.Tactic.Simps.NotationClass
-import Std.Classes.Dvd
-import Std.Data.String.Basic
-import Std.Util.LibraryNote
-import Std.Data.List.Count
+import Batteries.Data.String.Basic
+import Batteries.Util.LibraryNote
 import Mathlib.Lean.Expr.Basic
 
 /-!
@@ -83,13 +82,14 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
     simpOnlyBuiltins.foldlM (·.addConst ·) ({} : SimpTheorems)
   else
     getSimpTheorems
+  let simprocs := #[← if simpOnly then pure {} else Simp.getSimprocs]
   let congrTheorems ← getSimpCongrTheorems
   let ctx : Simp.Context := {
     config       := cfg
     simpTheorems := #[simpTheorems], congrTheorems
   }
   if !hasStar then
-    return { ctx, dischargeWrapper }
+    return { ctx, simprocs, dischargeWrapper }
   else
     let mut simpTheorems := ctx.simpTheorems
     let hs ← getPropHyps
@@ -97,7 +97,7 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
       unless simpTheorems.isErased (.fvar h) do
         simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
     let ctx := { ctx with simpTheorems }
-    return { ctx, dischargeWrapper }
+    return { ctx, simprocs, dischargeWrapper }
 
 /-- Make `Simp.Context` giving data instead of Syntax. Doesn't support arguments.
 Intended to be very similar to `Lean.Elab.Tactic.mkSimpContext`
@@ -302,10 +302,10 @@ This command specifies custom names and custom projections for the simp attribut
 
 Some common uses:
 * If you define a new homomorphism-like structure (like `MulHom`) you can just run
-  `initialize_simps_projections` after defining the `FunLike` instance (or instance that implies
-  a `FunLike` instance).
+  `initialize_simps_projections` after defining the `DFunLike` instance (or instance that implies
+  a `DFunLike` instance).
   ```
-    instance {mM : Mul M} {mN : Mul N} : FunLike (MulHom M N) M N := ...
+    instance {mM : Mul M} {mN : Mul N} : DFunLike (MulHom M N) M N := ...
     initialize_simps_projections MulHom (toFun → apply)
   ```
   This will generate `foo_apply` lemmas for each declaration `foo`.
@@ -322,7 +322,7 @@ Some common uses:
   In the first case, you can get both lemmas using `@[simps, simps (config := .asFn) coe]` and in
   the second case you can get both lemmas using `@[simps (config := .asFn), simps apply]`.
 * If you declare a new homomorphism-like structure (like `RelEmbedding`),
-  then `initialize_simps_projections` will automatically find any `FunLike` coercions
+  then `initialize_simps_projections` will automatically find any `DFunLike` coercions
   that will be used as the default projection for the `toFun` field.
   ```
     initialize_simps_projections relEmbedding (toFun → apply)
@@ -520,7 +520,7 @@ def getCompositeOfProjections (structName : Name) (proj : String) : MetaM (Expr 
 /-- Get the default `ParsedProjectionData` for structure `str`.
   It first returns the direct fields of the structure in the right order, and then
   all (non-subobject fields) of all parent structures. The subobject fields are precisely the
-  non-default fields.-/
+  non-default fields. -/
 def mkParsedProjectionData (structName : Name) : CoreM (Array ParsedProjectionData) := do
   let env ← getEnv
   let projs := getStructureFields env structName
@@ -627,7 +627,10 @@ def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedP
   let nrCustomProjections := projs.toList.countP (·.isCustom)
   let env ← getEnv
   let customDeclarations := env.constants.map₂.foldl (init := #[]) fun xs nm _ =>
-    if (str ++ `Simps).isPrefixOf nm && !nm.isInternalDetail then xs.push nm else xs
+    if (str ++ `Simps).isPrefixOf nm && !nm.isInternalDetail && !isReservedName env nm then
+      xs.push nm
+    else
+      xs
   if nrCustomProjections < customDeclarations.size then
     Linter.logLintIf linter.simpsUnusedCustomDeclarations stx m!"\
       Not all of the custom declarations {customDeclarations} are used. Double check the \
@@ -680,7 +683,7 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
 
 /-- Auxiliary function for `getRawProjections`.
 Find custom projections, automatically found by simps.
-These come from `FunLike` and `SetLike` instances. -/
+These come from `DFunLike` and `SetLike` instances. -/
 def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
     CoreM (Array ParsedProjectionData) := do
   let strDecl ← getConstInfo str
@@ -793,7 +796,7 @@ composite of multiple projections).
 -/
 
 /-- Parse a rule for `initialize_simps_projections`. It is `<name>→<name>`, `-<name>`, `+<name>`
-  or `as_prefix <name>`.-/
+  or `as_prefix <name>`. -/
 def elabSimpsRule : Syntax → CommandElabM ProjectionRule
   | `(simpsRule| $id1 → $id2)   => return .rename id1.getId id1.raw id2.getId id2.raw
   | `(simpsRule| - $id)         => return .erase id.getId id.raw
@@ -894,7 +897,7 @@ def getProjectionExprs (stx : Syntax) (tgt : Expr) (rhs : Expr) (cfg : Config) :
   let rhsArgs := rhs.getAppArgs.toList.drop params.size
   let (rawUnivs, projDeclata) ← getRawProjections stx str
   return projDeclata.map fun proj ↦
-    (rhsArgs.getD (a₀ := default) proj.projNrs.head!,
+    (rhsArgs.getD (fallback := default) proj.projNrs.head!,
       { proj with
         expr := (proj.expr.instantiateLevelParams rawUnivs
           tgt.getAppFn.constLevels!).instantiateLambdasOrApps params
@@ -992,7 +995,7 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
 partial def addProjections (nm : Name) (type lhs rhs : Expr)
   (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
   (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
-  -- we don't want to unfold non-reducible definitions (like `set`) to apply more arguments
+  -- we don't want to unfold non-reducible definitions (like `Set`) to apply more arguments
   trace[simps.debug] "Type of the Expression before normalizing: {type}"
   withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt ↦ withDefault do
   trace[simps.debug] "Type after removing pi's: {tgt}"

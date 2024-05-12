@@ -55,7 +55,7 @@ instance isScalarTower'' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] 
 instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar R (ULift M) :=
   ⟨fun r m => congr_arg up <| op_smul_eq_smul r m.down⟩
 
--- Porting note: TODO this takes way longer to elaborate than it should
+-- Porting note (#11215): TODO this takes way longer to elaborate than it should
 @[to_additive]
 instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
   smul := (· • ·)
@@ -132,7 +132,8 @@ instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (UL
 instance mulActionWithZero [MonoidWithZero R] [Zero M] [MulActionWithZero R M] :
     MulActionWithZero (ULift R) M :=
   { ULift.smulWithZero with
-    -- Porting note: TODO there seems to be a mismatch in whether the carrier is explicit here
+    -- Porting note (#11215): TODO there seems to be a mismatch in whether
+    -- the carrier is explicit here
     one_smul := one_smul _
     mul_smul := mul_smul }
 #align ulift.mul_action_with_zero ULift.mulActionWithZero

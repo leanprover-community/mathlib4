@@ -5,11 +5,9 @@ Authors: Scott Morrison
 -/
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Logic
-import Std.Tactic.RCases
 import Mathlib.Tactic.Constructor
-import Std.Tactic.PermuteGoals
-import Std.Tactic.SolveByElim
-import Std.Test.Internal.DummyLabelAttr
+import Batteries.Tactic.PermuteGoals
+import Batteries.Test.Internal.DummyLabelAttr
 
 set_option autoImplicit true
 
@@ -45,7 +43,7 @@ example {α β γ : Type} (_f : α → β) (g : β → γ) (b : β) : γ := by s
 example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 4 := by
   solve_by_elim only [f, a]
 
-example (h₁ h₂ : False) : True := by
+example (h₁ h₂ : False) : Empty := by
   -- 'It doesn't make sense to remove local hypotheses when using `only` without `*`.'
   fail_if_success solve_by_elim only [-h₁]
   -- 'It does make sense to use `*` without `only`.'
@@ -58,7 +56,7 @@ example (P₁ P₂ : α → Prop) (f : ∀ (a : α), P₁ a → P₂ a → β)
   solve_by_elim
 
 example {X : Type} (x : X) : x = x := by
-  fail_if_success solve_by_elim only -- needs the `rfl` lemma
+  fail_if_success solve_by_elim (config := {constructor := false}) only -- needs the `rfl` lemma
   solve_by_elim
 
 -- Needs to apply `rfl` twice, with different implicit arguments each time.
@@ -66,8 +64,15 @@ example {X : Type} (x : X) : x = x := by
 example {X : Type} (x y : X) (p : Prop) (h : x = x → y = y → p) : p := by solve_by_elim
 
 example : True := by
-  fail_if_success solve_by_elim only -- needs the `trivial` lemma
+  fail_if_success solve_by_elim (config := {constructor := false}) only -- needs the `trivial` lemma
   solve_by_elim
+
+example : True := by
+  -- uses the `trivial` lemma, which should now be removed from the default set:
+  solve_by_elim (config := {constructor := false})
+
+example : True := by
+  solve_by_elim only -- uses the constructor discharger.
 
 -- Requires backtracking.
 example (P₁ P₂ : α → Prop) (f : ∀ (a: α), P₁ a → P₂ a → β)
@@ -119,15 +124,13 @@ example (f g : ℕ → Prop) : (∃ k : ℕ, f k) ∨ (∃ k : ℕ, g k) ↔ ∃
   rintro ⟨n, hf | hg⟩
   solve_by_elim* (config := {maxDepth := 13}) [Or.inl, Or.inr, Exists.intro]
 
--- Test that `Config.intros` causes `solve_by_elim` to call `intro` on intermediate goals.
+-- Test that we can disable the `intro` discharger.
 example (P : Prop) : P → P := by
-  fail_if_success solve_by_elim
-  solve_by_elim (config := .intros)
+  fail_if_success solve_by_elim (config := {intro := false})
+  solve_by_elim
 
--- This worked in mathlib3 without the `@`, but now goes into a loop.
--- If someone wants to diagnose this, please do!
 example (P Q : Prop) : P ∧ Q → P ∧ Q := by
-  solve_by_elim [And.imp, @id]
+  solve_by_elim
 
 section apply_assumption
 

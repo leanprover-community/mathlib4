@@ -98,14 +98,9 @@ namespace Poly
 
 section
 
-instance funLike : FunLike (Poly α) (α → ℕ) fun _ => ℤ :=
+instance instFunLike : FunLike (Poly α) (α → ℕ) ℤ :=
   ⟨Subtype.val, Subtype.val_injective⟩
-#align poly.fun_like Poly.funLike
-
--- Porting note: This instance is not necessary anymore
--- /-- Helper instance for when there are too many metavariables to apply `fun_like.has_coe_to_fun`
--- directly. -/
--- instance : CoeFun (Poly α) fun _ => (α → ℕ) → ℤ := FunLike.hasCoeToFun
+#align poly.fun_like Poly.instFunLike
 
 /-- The underlying function of a `Poly` is a polynomial -/
 protected theorem isPoly (f : Poly α) : IsPoly f := f.2
@@ -113,7 +108,7 @@ protected theorem isPoly (f : Poly α) : IsPoly f := f.2
 
 /-- Extensionality for `Poly α` -/
 @[ext]
-theorem ext {f g : Poly α} : (∀ x, f x = g x) → f = g := FunLike.ext _ _
+theorem ext {f g : Poly α} : (∀ x, f x = g x) → f = g := DFunLike.ext _ _
 #align poly.ext Poly.ext
 
 /-- The `i`th projection function, `x_i`. -/
@@ -199,8 +194,9 @@ instance : AddCommGroup (Poly α) := by
             neg := (Neg.neg : Poly α → Poly α)
             sub := Sub.sub
             zero := 0
-            zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
             nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
+            zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
+              (@nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩)
             .. }
   all_goals
     intros
@@ -613,21 +609,18 @@ theorem eq_dioph : Dioph fun v => f v = g v :=
       exact Int.ofNat_inj.symm.trans ⟨@sub_eq_zero_of_eq ℤ _ (v &0) (v &1), eq_of_sub_eq_zero⟩
 #align dioph.eq_dioph Dioph.eq_dioph
 
--- mathport name: eq_dioph
 scoped infixl:50 " D= " => Dioph.eq_dioph
 
 theorem add_dioph : DiophFn fun v => f v + g v :=
   diophFn_comp2 df dg <| abs_poly_dioph (@Poly.proj (Fin2 2) &0 + @Poly.proj (Fin2 2) &1)
 #align dioph.add_dioph Dioph.add_dioph
 
--- mathport name: add_dioph
 scoped infixl:80 " D+ " => Dioph.add_dioph
 
 theorem mul_dioph : DiophFn fun v => f v * g v :=
   diophFn_comp2 df dg <| abs_poly_dioph (@Poly.proj (Fin2 2) &0 * @Poly.proj (Fin2 2) &1)
 #align dioph.mul_dioph Dioph.mul_dioph
 
--- mathport name: mul_dioph
 scoped infixl:90 " D* " => Dioph.mul_dioph
 
 theorem le_dioph : Dioph {v | f v ≤ g v} :=
@@ -718,7 +711,6 @@ theorem div_dioph : DiophFn fun v => f v / g v :=
                     Iff.trans ⟨lt_succ_of_le, le_of_lt_succ⟩ (div_lt_iff_lt_mul ypos)).symm
 #align dioph.div_dioph Dioph.div_dioph
 
--- mathport name: div_dioph
 scoped infixl:80 " D/ " => Dioph.div_dioph
 
 open Pell

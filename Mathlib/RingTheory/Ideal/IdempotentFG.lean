@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kevin Buzzard
 -/
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.RingTheory.Finiteness
+import Mathlib.Order.Basic
 
 #align_import ring_theory.ideal.idempotent_fg from "leanprover-community/mathlib"@"25cf7631da8ddc2d5f957c388bf5e4b25a77d8dc"
 

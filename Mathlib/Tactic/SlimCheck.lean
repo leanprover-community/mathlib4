@@ -5,7 +5,6 @@ Authors: Simon Hudon, Scott Morrison
 -/
 
 import Mathlib.Testing.SlimCheck.Testable
-import Mathlib.Data.List.Sort
 import Qq
 
 /-!
@@ -167,6 +166,7 @@ syntax (name := slimCheckSyntax) "slim_check" (config)? : tactic
 elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
   let cfg ← elabConfig (mkOptionalNode cfg)
   let (_, g) ← (← getMainGoal).revert ((← getLocalHyps).map (Expr.fvarId!))
+  g.withContext do
   let tgt ← g.getType
   let tgt' ← addDecorations tgt
   let cfg := { cfg with
@@ -200,9 +200,9 @@ set_option trace.Meta.synthInstance true
   --   when_tracing `slim_check.instance   <| do
   --   { inst ← summarize_instance inst >>= pp,
   --     trace!"\n[testable instance]{format.indent inst 2}" },
-  let code ← unsafe evalExpr (IO PUnit) q(IO PUnit) e
+  let code ← unsafe evalExpr (CoreM PUnit) q(CoreM PUnit) e
   _ ← code
-  admitGoal (← getMainGoal)
+  admitGoal g
 
 -- Porting note: below is the remaining code from mathlib3 which supports the
 -- `trace.slim_check.instance` trace option, and which has not been ported.

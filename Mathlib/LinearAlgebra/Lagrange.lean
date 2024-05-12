@@ -166,7 +166,7 @@ theorem basisDivisor_eq_zero_iff : basisDivisor x y = 0 ↔ x = y :=
 #align lagrange.basis_divisor_eq_zero_iff Lagrange.basisDivisor_eq_zero_iff
 
 theorem basisDivisor_ne_zero_iff : basisDivisor x y ≠ 0 ↔ x ≠ y := by
-  rw [Ne.def, basisDivisor_eq_zero_iff]
+  rw [Ne, basisDivisor_eq_zero_iff]
 #align lagrange.basis_divisor_ne_zero_iff Lagrange.basisDivisor_ne_zero_iff
 
 theorem degree_basisDivisor_of_ne (hxy : x ≠ y) : (basisDivisor x y).degree = 1 := by
@@ -236,7 +236,7 @@ theorem basis_pair_right (hij : i ≠ j) : Lagrange.basis {i, j} v j = basisDivi
 #align lagrange.basis_pair_right Lagrange.basis_pair_right
 
 theorem basis_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : Lagrange.basis s v i ≠ 0 := by
-  simp_rw [Lagrange.basis, prod_ne_zero_iff, Ne.def, mem_erase]
+  simp_rw [Lagrange.basis, prod_ne_zero_iff, Ne, mem_erase]
   rintro j ⟨hij, hj⟩
   rw [basisDivisor_eq_zero_iff, hvs.eq_iff hi hj]
   exact hij.symm
@@ -262,12 +262,12 @@ theorem eval_basis_of_ne (hij : i ≠ j) (hj : j ∈ s) : (Lagrange.basis s v i)
 theorem natDegree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
     (Lagrange.basis s v i).natDegree = s.card - 1 := by
   have H : ∀ j, j ∈ s.erase i → basisDivisor (v i) (v j) ≠ 0 := by
-    simp_rw [Ne.def, mem_erase, basisDivisor_eq_zero_iff]
+    simp_rw [Ne, mem_erase, basisDivisor_eq_zero_iff]
     exact fun j ⟨hij₁, hj⟩ hij₂ => hij₁ (hvs hj hi hij₂.symm)
   rw [← card_erase_of_mem hi, card_eq_sum_ones]
   convert natDegree_prod _ _ H using 1
   refine' sum_congr rfl fun j hj => (natDegree_basisDivisor_of_ne _).symm
-  rw [Ne.def, ← basisDivisor_eq_zero_iff]
+  rw [Ne, ← basisDivisor_eq_zero_iff]
   exact H _ hj
 #align lagrange.nat_degree_basis Lagrange.natDegree_basis
 
@@ -327,12 +327,12 @@ def interpolate (s : Finset ι) (v : ι → F) : (ι → F) →ₗ[F] F[X] where
     simp_rw [Finset.smul_sum, C_mul', smul_smul, Pi.smul_apply, RingHom.id_apply, smul_eq_mul]
 #align lagrange.interpolate Lagrange.interpolate
 
--- Porting note: There was originally '@[simp]' on this line but it was removed because
+-- Porting note (#10618): There was originally '@[simp]' on this line but it was removed because
 -- 'simp' could prove 'interpolate_empty'
 theorem interpolate_empty : interpolate ∅ v r = 0 := by rw [interpolate_apply, sum_empty]
 #align lagrange.interpolate_empty Lagrange.interpolate_empty
 
--- Porting note: There was originally '@[simp]' on this line but it was removed because
+-- Porting note (#10618): There was originally '@[simp]' on this line but it was removed because
 -- 'simp' could prove 'interpolate_singleton'
 theorem interpolate_singleton : interpolate {i} v r = C (r i) := by
   rw [interpolate_apply, sum_singleton, basis_singleton, mul_one]
@@ -418,7 +418,7 @@ theorem eq_interpolate_iff {f : F[X]} (hvs : Set.InjOn v s) :
 #align lagrange.eq_interpolate_iff Lagrange.eq_interpolate_iff
 
 /-- Lagrange interpolation induces isomorphism between functions from `s`
-and polynomials of degree less than `Fintype.card ι`.-/
+and polynomials of degree less than `Fintype.card ι`. -/
 def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F s.card ≃ₗ[F] s → F where
   toFun f i := f.1.eval (v i)
   map_add' f g := funext fun v => eval_add
@@ -488,7 +488,7 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
     sdiff_singleton_eq_erase, pair_comm,
     sdiff_insert_insert_of_mem_of_not_mem hj (not_mem_singleton.mpr hij.symm),
     sdiff_singleton_eq_erase]
-  · exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
+  exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
 #align lagrange.interpolate_eq_add_interpolate_erase Lagrange.interpolate_eq_add_interpolate_erase
 
 end Interpolate
@@ -534,7 +534,7 @@ rcases s.eq_empty_or_nonempty with (rfl | h)
 
 @[simp]
 theorem degree_nodal [Nontrivial R] : (nodal s v).degree = s.card := by
-  simp_rw [degree_eq_natDegree (nodal_ne_zero), natDegree_nodal]
+  simp_rw [degree_eq_natDegree nodal_ne_zero, natDegree_nodal]
 #align lagrange.degree_nodal Lagrange.degree_nodal
 
 theorem nodal_monic : (nodal s v).Monic :=
@@ -588,6 +588,7 @@ theorem eval_nodal_derivative_eval_node_eq [DecidableEq ι] {i : ι} (hi : i ∈
   exact sum_eq_zero fun j hj => (eval_nodal_at_node (mem_erase.mpr ⟨(mem_erase.mp hj).1.symm, hi⟩))
 #align lagrange.eval_nodal_derivative_eval_node_eq Lagrange.eval_nodal_derivative_eval_node_eq
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/
 @[simp] theorem nodal_subgroup_eq_X_pow_card_sub_one [IsDomain R]
   (G : Subgroup Rˣ) [Fintype G] :
@@ -627,7 +628,7 @@ theorem nodalWeight_eq_eval_nodal_erase_inv :
 
 theorem nodal_erase_eq_nodal_div (hi : i ∈ s) :
     nodal (s.erase i) v = nodal s v / (X - C (v i)) := by
-  rw [nodal_eq_mul_nodal_erase hi, EuclideanDomain.mul_div_cancel_left]
+  rw [nodal_eq_mul_nodal_erase hi, mul_div_cancel_left₀]
   exact X_sub_C_ne_zero _
 #align lagrange.nodal_erase_eq_nodal_div Lagrange.nodal_erase_eq_nodal_div
 
@@ -640,7 +641,7 @@ theorem nodalWeight_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : nodalWeight s
   rw [nodalWeight, prod_ne_zero_iff]
   intro j hj
   rcases mem_erase.mp hj with ⟨hij, hj⟩
-  refine' inv_ne_zero (sub_ne_zero_of_ne (mt (hvs.eq_iff hi hj).mp hij.symm))
+  exact inv_ne_zero (sub_ne_zero_of_ne (mt (hvs.eq_iff hi hj).mp hij.symm))
 #align lagrange.nodal_weight_ne_zero Lagrange.nodalWeight_ne_zero
 
 end NodalWeight

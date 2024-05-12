@@ -82,7 +82,7 @@ theorem exists_sq_eq_two_iff : IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7
   have h₂ := mod_lt p (by norm_num : 0 < 8)
   revert h₂ h₁
   generalize p % 8 = m; clear! p
-  intros; interval_cases m <;> simp_all -- Porting note: was `decide!`
+  intros; interval_cases m <;> simp_all -- Porting note (#11043): was `decide!`
 #align zmod.exists_sq_eq_two_iff ZMod.exists_sq_eq_two_iff
 
 /-- `-2` is a square modulo an odd prime `p` iff `p` is congruent to `1` or `3` mod `8`. -/
@@ -93,7 +93,7 @@ theorem exists_sq_eq_neg_two_iff : IsSquare (-2 : ZMod p) ↔ p % 8 = 1 ∨ p % 
   have h₂ := mod_lt p (by norm_num : 0 < 8)
   revert h₂ h₁
   generalize p % 8 = m; clear! p
-  intros; interval_cases m <;> simp_all -- Porting note: was `decide!`
+  intros; interval_cases m <;> simp_all -- Porting note (#11043): was `decide!`
 #align zmod.exists_sq_eq_neg_two_iff ZMod.exists_sq_eq_neg_two_iff
 
 end ZMod
@@ -139,7 +139,7 @@ theorem quadratic_reciprocity' (hp : p ≠ 2) (hq : q ≠ 2) :
     legendreSym q p = (-1) ^ (p / 2 * (q / 2)) * legendreSym p q := by
   rcases eq_or_ne p q with h | h
   · subst p
-    rw [(eq_zero_iff q q).mpr (mod_cast nat_cast_self q), mul_zero]
+    rw [(eq_zero_iff q q).mpr (mod_cast natCast_self q), mul_zero]
   · have qr := congr_arg (· * legendreSym p q) (quadratic_reciprocity hp hq h)
     have : ((q : ℤ) : ZMod p) ≠ 0 := mod_cast prime_ne_zero p q h
     simpa only [mul_assoc, ← pow_two, sq_one p this, mul_one] using qr

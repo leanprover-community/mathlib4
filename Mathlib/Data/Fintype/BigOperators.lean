@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Vector
-import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Option
 
 #align_import data.fintype.big_operators from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
@@ -120,81 +118,74 @@ end
 
 open Finset
 
-@[simp]
-nonrec theorem Fintype.card_sigma {α : Type*} (β : α → Type*) [Fintype α] [∀ a, Fintype (β a)] :
-    Fintype.card (Sigma β) = ∑ a, Fintype.card (β a) :=
-  card_sigma _ _
-#align fintype.card_sigma Fintype.card_sigma
+section Pi
+variable {ι κ : Type*} {α : ι → Type*} [DecidableEq ι] [DecidableEq κ] [Fintype ι]
+  [∀ i, DecidableEq (α i)]
 
-@[simp]
-theorem Finset.card_pi [DecidableEq α] {δ : α → Type*} (s : Finset α) (t : ∀ a, Finset (δ a)) :
-    (s.pi t).card = ∏ a in s, card (t a) :=
-  Multiset.card_pi _ _
+@[simp] lemma Finset.card_pi (s : Finset ι) (t : ∀ i, Finset (α i)) :
+    (s.pi t).card = ∏ i in s, card (t i) := Multiset.card_pi _ _
 #align finset.card_pi Finset.card_pi
 
-@[simp]
-theorem Fintype.card_piFinset [DecidableEq α] [Fintype α] {δ : α → Type*} (t : ∀ a, Finset (δ a)) :
-    (Fintype.piFinset t).card = ∏ a, Finset.card (t a) := by simp [Fintype.piFinset, card_map]
+namespace Fintype
+
+@[simp] lemma card_piFinset (s : ∀ i, Finset (α i)) :
+    (piFinset s).card = ∏ i, (s i).card := by simp [piFinset, card_map]
 #align fintype.card_pi_finset Fintype.card_piFinset
 
-@[simp]
-theorem Fintype.card_pi {β : α → Type*} [DecidableEq α] [Fintype α] [∀ a, Fintype (β a)] :
-    Fintype.card (∀ a, β a) = ∏ a, Fintype.card (β a) :=
-  Fintype.card_piFinset _
+@[simp] lemma card_pi [DecidableEq ι] [∀ i, Fintype (α i)] : card (∀ i, α i) = ∏ i, card (α i) :=
+  card_piFinset _
 #align fintype.card_pi Fintype.card_pi
 
--- FIXME ouch, this should be in the main file.
-@[simp]
+@[simp] nonrec lemma card_sigma [Fintype ι] [∀ i, Fintype (α i)] :
+    card (Sigma α) = ∑ i, card (α i) := card_sigma _ _
+#align fintype.card_sigma Fintype.card_sigma
+
+/-- The number of dependent maps `f : Π j, s j` for which the `i` component is `a` is the product
+over all `j ≠ i` of `(s j).card`.
+
+Note that this is just a composition of easier lemmas, but there's some glue missing to make that
+smooth enough not to need this lemma. -/
+lemma card_filter_piFinset_eq_of_mem (s : ∀ i, Finset (α i)) (i : ι) {a : α i} (ha : a ∈ s i) :
+    ((piFinset s).filter fun f ↦ f i = a).card = ∏ j in univ.erase i, (s j).card := by
+  calc
+    _ = ∏ j, (Function.update s i {a} j).card := by
+      rw [← piFinset_update_singleton_eq_filter_piFinset_eq _ _ ha, Fintype.card_piFinset]
+    _ = ∏ j, Function.update (fun j ↦ (s j).card) i 1 j :=
+      Fintype.prod_congr _ _ fun j ↦ by obtain rfl | hji := eq_or_ne j i <;> simp [*]
+    _ = _ := by simp [prod_update_of_mem, erase_eq]
+
+lemma card_filter_piFinset_const_eq_of_mem (s : Finset κ) (i : ι) {x : κ} (hx : x ∈ s) :
+    ((piFinset fun _ ↦ s).filter fun f ↦ f i = x).card = s.card ^ (card ι - 1) :=
+  (card_filter_piFinset_eq_of_mem _ _ hx).trans $ by
+    rw [prod_const s.card, card_erase_of_mem (mem_univ _), card_univ]
+
+lemma card_filter_piFinset_eq (s : ∀ i, Finset (α i)) (i : ι) (a : α i) :
+    ((piFinset s).filter fun f ↦ f i = a).card =
+      if a ∈ s i then ∏ b in univ.erase i, (s b).card else 0 := by
+  split_ifs with h
+  · rw [card_filter_piFinset_eq_of_mem _ _ h]
+  · rw [filter_piFinset_of_not_mem _ _ _ h, Finset.card_empty]
+
+lemma card_filter_piFinset_const (s : Finset κ) (i : ι) (j : κ) :
+    ((piFinset fun _ ↦ s).filter fun f ↦ f i = j).card =
+      if j ∈ s then s.card ^ (card ι - 1) else 0 :=
+  (card_filter_piFinset_eq _ _ _).trans $ by
+    rw [prod_const s.card, card_erase_of_mem (mem_univ _), card_univ]
+
+end Fintype
+end Pi
+
+-- TODO: this is a basic thereom about `Fintype.card`,
+-- and ideally could be moved to `Mathlib.Data.Fintype.Card`.
 theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
     Fintype.card (α → β) = Fintype.card β ^ Fintype.card α := by
-  rw [Fintype.card_pi, Finset.prod_const]; rfl
+  simp
 #align fintype.card_fun Fintype.card_fun
 
 @[simp]
 theorem card_vector [Fintype α] (n : ℕ) : Fintype.card (Vector α n) = Fintype.card α ^ n := by
   rw [Fintype.ofEquiv_card]; simp
 #align card_vector card_vector
-
-@[to_additive (attr := simp)]
-theorem Finset.prod_attach_univ [Fintype α] [CommMonoid β] (f : { a : α // a ∈ @univ α _ } → β) :
-    ∏ x in univ.attach, f x = ∏ x, f ⟨x, mem_univ _⟩ :=
-  Fintype.prod_equiv (Equiv.subtypeUnivEquiv fun x => mem_univ _) _ _ fun x => by simp
-#align finset.prod_attach_univ Finset.prod_attach_univ
-#align finset.sum_attach_univ Finset.sum_attach_univ
-
-/-- Taking a product over `univ.pi t` is the same as taking the product over `Fintype.piFinset t`.
-  `univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`, but differ
-  in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
-  `Fintype.piFinset t` is a `Finset (Π a, t a)`. -/
-@[to_additive "Taking a sum over `univ.pi t` is the same as taking the sum over
-  `Fintype.piFinset t`. `univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`,
-  but differ in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
-  `Fintype.piFinset t` is a `Finset (Π a, t a)`."]
-theorem Finset.prod_univ_pi [DecidableEq α] [Fintype α] [CommMonoid β] {δ : α → Type*}
-    {t : ∀ a : α, Finset (δ a)} (f : (∀ a : α, a ∈ (univ : Finset α) → δ a) → β) :
-    ∏ x in univ.pi t, f x = ∏ x in Fintype.piFinset t, f fun a _ => x a := by
-  apply prod_nbij' (fun x i ↦ x i <| mem_univ _) (fun x i _ ↦ x i) <;> simp
-#align finset.prod_univ_pi Finset.prod_univ_pi
-#align finset.sum_univ_pi Finset.sum_univ_pi
-
-/-- The product over `univ` of a sum can be written as a sum over the product of sets,
-  `Fintype.piFinset`. `Finset.prod_sum` is an alternative statement when the product is not
-  over `univ` -/
-theorem Finset.prod_univ_sum [DecidableEq α] [Fintype α] [CommSemiring β] {δ : α → Type u_1}
-    [∀ a : α, DecidableEq (δ a)] {t : ∀ a : α, Finset (δ a)} {f : ∀ a : α, δ a → β} :
-    (∏ a, ∑ b in t a, f a b) = ∑ p in Fintype.piFinset t, ∏ x, f x (p x) := by
-  simp only [Finset.prod_attach_univ, prod_sum, Finset.sum_univ_pi]
-#align finset.prod_univ_sum Finset.prod_univ_sum
-
-/-- Summing `a^s.card * b^(n-s.card)` over all finite subsets `s` of a fintype of cardinality `n`
-gives `(a + b)^n`. The "good" proof involves expanding along all coordinates using the fact that
-`x^n` is multilinear, but multilinear maps are only available now over rings, so we give instead
-a proof reducing to the usual binomial theorem to have a result over semirings. -/
-theorem Fintype.sum_pow_mul_eq_add_pow (α : Type*) [Fintype α] {R : Type*} [CommSemiring R]
-    (a b : R) :
-    (∑ s : Finset α, a ^ s.card * b ^ (Fintype.card α - s.card)) = (a + b) ^ Fintype.card α :=
-  Finset.sum_pow_mul_eq_add_pow _ _ _
-#align fintype.sum_pow_mul_eq_add_pow Fintype.sum_pow_mul_eq_add_pow
 
 /-- It is equivalent to compute the product of a function over `Fin n` or `Finset.range n`. -/
 @[to_additive "It is equivalent to sum a function over `fin n` or `finset.range n`."]

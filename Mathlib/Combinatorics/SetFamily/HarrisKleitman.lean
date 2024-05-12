@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Powerset
 
 #align_import combinatorics.set_family.harris_kleitman from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
@@ -28,8 +28,6 @@ correlate in the uniform measure.
 
 
 open Finset
-
-open BigOperators
 
 variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α} {a : α}
 
@@ -74,7 +72,7 @@ theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset
             card_le_card hℬ.memberSubfamily_subset_nonMemberSubfamily)
           _).trans
       _
-  rw [← two_mul, pow_succ, mul_assoc]
+  rw [← two_mul, pow_succ', mul_assoc]
   have h₀ : ∀ 𝒞 : Finset (Finset α), (∀ t ∈ 𝒞, t ⊆ insert a s) →
       ∀ t ∈ 𝒞.nonMemberSubfamily a, t ⊆ s := by
     rintro 𝒞 h𝒞 t ht

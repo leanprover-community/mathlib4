@@ -72,9 +72,9 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
---Porting note: upgrade to `FunLike`
+-- Porting note: upgrade to `FunLike`
 /-- A coercion from a congruence relation to its underlying binary relation. -/
-instance : FunLike (RingCon R) R fun _ => R → Prop :=
+instance : FunLike (RingCon R) R (R → Prop) :=
   { coe := fun c => c.r,
     coe_injective' := fun x y h => by
       rcases x with ⟨⟨x, _⟩, _⟩
@@ -119,7 +119,7 @@ theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ s a b :=
   Iff.rfl
 
 /-- The map sending a congruence relation to its underlying binary relation is injective. -/
-theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := FunLike.coe_injective H
+theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injective H
 
 /-- Extensionality rule for congruence relations. -/
 theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=
@@ -301,9 +301,9 @@ instance : NatCast c.Quotient :=
   ⟨fun n => ↑(n : R)⟩
 
 @[simp, norm_cast]
-theorem coe_nat_cast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
+theorem coe_natCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
-#align ring_con.coe_nat_cast RingCon.coe_nat_cast
+#align ring_con.coe_nat_cast RingCon.coe_natCast
 
 end NatCast
 
@@ -315,9 +315,9 @@ instance : IntCast c.Quotient :=
   ⟨fun z => ↑(z : R)⟩
 
 @[simp, norm_cast]
-theorem coe_int_cast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
+theorem coe_intCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
-#align ring_con.coe_int_cast RingCon.coe_int_cast
+#align ring_con.coe_int_cast RingCon.coe_intCast
 
 end IntCast
 

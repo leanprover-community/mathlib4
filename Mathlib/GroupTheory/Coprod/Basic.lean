@@ -3,10 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.PUnitInstances
-import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.Congruence
-import Mathlib.GroupTheory.Submonoid.Membership
 
 /-!
 # Coproduct (free product) of two monoids or groups
@@ -242,7 +242,7 @@ theorem clift_apply_mk (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN w) :
 @[to_additive (attr := simp)]
 theorem clift_comp_mk (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN) :
     (clift f hM₁ hN₁ hM hN).comp mk = f :=
-  FunLike.ext' rfl
+  DFunLike.ext' rfl
 
 @[to_additive (attr := simp)]
 theorem mclosure_range_inl_union_inr :
@@ -275,7 +275,7 @@ then they are equal. -/
 theorem hom_ext {f g : M ∗ N →* P} (h₁ : f.comp inl = g.comp inl) (h₂ : f.comp inr = g.comp inr) :
     f = g :=
   MonoidHom.eq_of_eqOn_denseM mclosure_range_inl_union_inr <| eqOn_union.2
-    ⟨eqOn_range.2 <| FunLike.ext'_iff.1 h₁, eqOn_range.2 <| FunLike.ext'_iff.1 h₂⟩
+    ⟨eqOn_range.2 <| DFunLike.ext'_iff.1 h₁, eqOn_range.2 <| DFunLike.ext'_iff.1 h₂⟩
 
 @[to_additive (attr := simp)]
 theorem clift_mk :
@@ -322,7 +322,7 @@ theorem map_comp_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →*
 theorem map_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →* M'') (g' : N' →* N'')
     (f : M →* M') (g : N →* N') (x : M ∗ N) :
     map f' g' (map f g x) = map (f'.comp f) (g'.comp g) x :=
-  FunLike.congr_fun (map_comp_map f' g' f g) x
+  DFunLike.congr_fun (map_comp_map f' g' f g) x
 
 variable (M N)
 
@@ -347,7 +347,7 @@ variable {M N}
 
 @[to_additive (attr := simp)]
 theorem swap_swap (x : M ∗ N) : swap N M (swap M N x) = x :=
-  FunLike.congr_fun (swap_comp_swap _ _) x
+  DFunLike.congr_fun (swap_comp_swap _ _) x
 
 @[to_additive]
 theorem swap_comp_map (f : M →* M') (g : N →* N') :
@@ -357,7 +357,7 @@ theorem swap_comp_map (f : M →* M') (g : N →* N') :
 @[to_additive]
 theorem swap_map (f : M →* M') (g : N →* N') (x : M ∗ N) :
     swap M' N' (map f g x) = map g f (swap M N x) :=
-  FunLike.congr_fun (swap_comp_map f g) x
+  DFunLike.congr_fun (swap_comp_map f g) x
 
 @[to_additive (attr := simp)] theorem swap_comp_inl : (swap M N).comp inl = inr := rfl
 @[to_additive (attr := simp)] theorem swap_inl (x : M) : swap M N (inl x) = inr x := rfl
@@ -436,7 +436,7 @@ theorem lift_comp_swap (f : M →* P) (g : N →* P) : (lift f g).comp (swap N M
 
 @[to_additive (attr := simp)]
 theorem lift_swap (f : M →* P) (g : N →* P) (x : N ∗ M) : lift f g (swap N M x) = lift g f x :=
-  FunLike.congr_fun (lift_comp_swap f g) x
+  DFunLike.congr_fun (lift_comp_swap f g) x
 
 @[to_additive]
 theorem comp_lift {P' : Type*} [Monoid P'] (f : P →* P') (g₁ : M →* P) (g₂ : N →* P) :

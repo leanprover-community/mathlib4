@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 
-import Mathlib.Tactic.Linarith.Elimination
+-- import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Util.Qq
 
@@ -35,7 +36,7 @@ def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
     have lit : Q(ℕ) := mkRawNatLit n
     have k : Q(ℕ) := mkRawNatLit k
     haveI : $lit =Q $k + 2 := ⟨⟩
-    by exact q(OfNat.ofNat $lit)
+    q(OfNat.ofNat $lit)
 
 end Qq
 
@@ -109,7 +110,7 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
       return t
   | ((h, c)::t) => do
       let (iq, h') ← mkSingleCompZeroOf c h
-      let (_, t) ← t.foldlM (λ pr ce => step pr.1 pr.2 ce.1 ce.2) (iq, h')
+      let (_, t) ← t.foldlM (fun pr ce ↦ step pr.1 pr.2 ce.1 ce.2) (iq, h')
       return t
   where
     /--
@@ -202,10 +203,10 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
       let (comps, max_var) ← linearFormsAndMaxVar cfg.transparency inputs
       trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
       trace[linarith.detail] "{comps}"
-      let oracle := cfg.oracle.getD FourierMotzkin.produceCertificate
+      let oracle := cfg.oracle.getD (.simplexAlgorithm)
       -- perform the elimination and fail if no contradiction is found.
-      let certificate : Std.HashMap Nat Nat ← try
-        oracle comps max_var
+      let certificate : Batteries.HashMap Nat Nat ← try
+        oracle.produceCertificate comps max_var
       catch e =>
         trace[linarith] e.toMessageData
         throwError "linarith failed to find a contradiction"

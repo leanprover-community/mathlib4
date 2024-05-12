@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
 import Lean.Elab.Tactic.Basic
-import Lean.Meta.Tactic.Simp.Main
-import Std.Tactic.Exact
+import Lean.Meta.Tactic.Simp.Rewrite
+import Batteries.Tactic.Exact
 
 /-!
 ## Dischargers for `simp` to tactics
@@ -22,5 +22,7 @@ This is inverse to `mkDischargeWrapper`. -/
 def wrapSimpDischarger (dis : Simp.Discharge) : TacticM Unit := do
   let eS : Lean.Meta.Simp.State := {}
   let eC : Lean.Meta.Simp.Context := {}
-  let (some a, _) ← liftM <| StateRefT'.run (ReaderT.run (dis <| ← getMainTarget) eC) eS | failure
+  let eM : Lean.Meta.Simp.Methods := {}
+  let (some a, _) ← liftM <| StateRefT'.run (ReaderT.run (ReaderT.run (dis <| ← getMainTarget)
+    eM.toMethodsRef) eC) eS | failure
   (← getMainGoal).assignIfDefeq a

@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Algebra.Classes
+import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
 
 #align_import data.option.defs from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -14,8 +16,6 @@ This file defines more operations involving `Option α`. Lemmas about them are l
 files under `Mathlib.Data.Option`.
 Other basic operations on `Option` are defined in the core library.
 -/
-
-set_option autoImplicit true
 
 namespace Option
 
@@ -34,6 +34,7 @@ protected def traverse.{u, v}
 #align option.mmap Option.mapM
 #align option.melim Option.elimM
 
+set_option autoImplicit true in
 @[deprecated getDM]
 protected def getDM' [Monad m] (x : m (Option α)) (y : m α) : m α := do
   (← x).getDM y
@@ -53,9 +54,9 @@ protected def elim' (b : β) (f : α → β) : Option α → β
 @[simp]
 theorem elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
 @[simp]
-theorem elim'_some (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
+theorem elim'_some {a : α} (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
 
--- porting note: this lemma was introduced because it is necessary
+-- Porting note: this lemma was introduced because it is necessary
 -- in `CategoryTheory.Category.PartialFun`
 lemma elim'_eq_elim {α β : Type*} (b : β) (f : α → β) (a : Option α) :
     Option.elim' b f a = Option.elim a b f := by
@@ -87,8 +88,7 @@ instance decidableExistsMem {p : α → Prop} [DecidablePred p] :
   | some a => if h : p a then isTrue <| ⟨_, rfl, h⟩ else isFalse fun ⟨_, ⟨rfl, hn⟩⟩ ↦ h hn
 
 /-- Inhabited `get` function. Returns `a` if the input is `some a`, otherwise returns `default`. -/
-@[reducible]
-def iget [Inhabited α] : Option α → α
+abbrev iget [Inhabited α] : Option α → α
   | some x => x
   | none => default
 #align option.iget Option.iget
@@ -102,29 +102,27 @@ theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
   cases o <;> simp [toList, eq_comm]
 #align option.mem_to_list Option.mem_toList
 
-instance liftOrGet_isCommutative (f : α → α → α) [IsCommutative α f] :
-    IsCommutative (Option α) (liftOrGet f) :=
-  ⟨fun a b ↦ by cases a <;> cases b <;> simp [liftOrGet, IsCommutative.comm]⟩
+instance liftOrGet_isCommutative (f : α → α → α) [Std.Commutative f] :
+    Std.Commutative (liftOrGet f) :=
+  ⟨fun a b ↦ by cases a <;> cases b <;> simp [liftOrGet, Std.Commutative.comm]⟩
 
-instance liftOrGet_isAssociative (f : α → α → α) [IsAssociative α f] :
-    IsAssociative (Option α) (liftOrGet f) :=
-  ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [liftOrGet, IsAssociative.assoc]⟩
+instance liftOrGet_isAssociative (f : α → α → α) [Std.Associative f] :
+    Std.Associative (liftOrGet f) :=
+  ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [liftOrGet, Std.Associative.assoc]⟩
 
-instance liftOrGet_isIdempotent (f : α → α → α) [IsIdempotent α f] :
-    IsIdempotent (Option α) (liftOrGet f) :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet, IsIdempotent.idempotent]⟩
+instance liftOrGet_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
+    Std.IdempotentOp (liftOrGet f) :=
+  ⟨fun a ↦ by cases a <;> simp [liftOrGet, Std.IdempotentOp.idempotent]⟩
 
-instance liftOrGet_isLeftId (f : α → α → α) : IsLeftId (Option α) (liftOrGet f) none :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet]⟩
-
-instance liftOrGet_isRightId (f : α → α → α) : IsRightId (Option α) (liftOrGet f) none :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet]⟩
+instance liftOrGet_isId (f : α → α → α) : Std.LawfulIdentity (liftOrGet f) none where
+  left_id a := by cases a <;> simp [liftOrGet]
+  right_id a := by cases a <;> simp [liftOrGet]
 
 #align option.lift_or_get_comm Option.liftOrGet_isCommutative
 #align option.lift_or_get_assoc Option.liftOrGet_isAssociative
 #align option.lift_or_get_idem Option.liftOrGet_isIdempotent
-#align option.lift_or_get_is_left_id Option.liftOrGet_isLeftId
-#align option.lift_or_get_is_right_id Option.liftOrGet_isRightId
+#align option.lift_or_get_is_left_id Option.liftOrGet_isId
+#align option.lift_or_get_is_right_id Option.liftOrGet_isId
 
 /-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
 def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α

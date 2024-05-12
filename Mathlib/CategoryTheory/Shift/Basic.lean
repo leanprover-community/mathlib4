@@ -3,6 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johan Commelin, Andrew Yang
 -/
+import Mathlib.Algebra.Group.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Discrete
@@ -61,7 +62,7 @@ class HasShift (C : Type u) (A : Type*) [Category.{v} C] [AddMonoid A] where
   shift : MonoidalFunctor (Discrete A) (C ⥤ C)
 #align category_theory.has_shift CategoryTheory.HasShift
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- A helper structure to construct the shift functor `(Discrete A) ⥤ (C ⥤ C)`. -/
 structure ShiftMkCore where
   /-- the family of shift functors -/
@@ -128,8 +129,13 @@ def hasShiftMk (h : ShiftMkCore C A) : HasShift C A :=
   ⟨{ Discrete.functor h.F with
       ε := h.zero.inv
       μ := fun m n => (h.add m.as n.as).inv
-      μ_natural := by
-        rintro ⟨X⟩ ⟨Y⟩ ⟨X'⟩ ⟨Y'⟩ ⟨⟨⟨rfl⟩⟩⟩ ⟨⟨⟨rfl⟩⟩⟩
+      μ_natural_left := by
+        rintro ⟨X⟩ ⟨Y⟩ ⟨⟨⟨rfl⟩⟩⟩ ⟨X'⟩
+        ext
+        dsimp
+        simp
+      μ_natural_right := by
+        rintro ⟨X⟩ ⟨Y⟩ ⟨X'⟩ ⟨⟨⟨rfl⟩⟩⟩
         ext
         dsimp
         simp
@@ -383,6 +389,7 @@ abbrev shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
 theorem shift_shift' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftAdd X i j).inv ≫ f⟦i + j⟧' ≫ (shiftAdd Y i j).hom := by
   symm
+  rw [← Functor.comp_map, NatIso.app_inv]
   apply NatIso.naturality_1
 #align category_theory.shift_shift' CategoryTheory.shift_shift'
 
@@ -395,6 +402,7 @@ abbrev shiftZero : X⟦(0 : A)⟧ ≅ X :=
 
 theorem shiftZero' : f⟦(0 : A)⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero A Y).inv := by
   symm
+  rw [NatIso.app_inv, NatIso.app_hom]
   apply NatIso.naturality_2
 #align category_theory.shift_zero' CategoryTheory.shiftZero'
 
@@ -440,23 +448,9 @@ abbrev shiftEquiv (n : A) : C ≌ C := shiftEquiv' C n (-n) (add_neg_self n)
 variable (X Y : C) (f : X ⟶ Y)
 
 /-- Shifting by `i` is an equivalence. -/
-instance (i : A) : IsEquivalence (shiftFunctor C i) := by
-  change IsEquivalence (shiftEquiv C i).functor
+instance (i : A) : (shiftFunctor C i).IsEquivalence := by
+  change (shiftEquiv C i).functor.IsEquivalence
   infer_instance
-
-@[simp]
-theorem shiftFunctor_inv (i : A) : (shiftFunctor C i).inv = shiftFunctor C (-i) :=
-  rfl
-#align category_theory.shift_functor_inv CategoryTheory.shiftFunctor_inv
-
-section
-
-/-- Shifting by `n` is an essentially surjective functor. -/
-instance shiftFunctor_essSurj (i : A) : EssSurj (shiftFunctor C i) :=
-  Equivalence.essSurj_of_equivalence _
-#align category_theory.shift_functor_ess_surj CategoryTheory.shiftFunctor_essSurj
-
-end
 
 variable {C}
 
@@ -551,7 +545,6 @@ end AddGroup
 section AddCommMonoid
 
 variable [AddCommMonoid A] [HasShift C A]
-
 variable (C)
 
 /-- When shifts are indexed by an additive commutative monoid, then shifts commute. -/
@@ -583,7 +576,6 @@ lemma shiftFunctorComm_symm (i j : A) :
 #align category_theory.shift_functor_comm_symm CategoryTheory.shiftFunctorComm_symm
 
 variable {C}
-
 variable (X Y : C) (f : X ⟶ Y)
 
 /-- When shifts are indexed by an additive commutative monoid, then shifts commute. -/
@@ -666,8 +658,7 @@ lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m�
 end AddCommMonoid
 
 variable {D : Type*} [Category D] [AddMonoid A] [HasShift D A]
-
-variable (F : C ⥤ D) [Full F] [Faithful F]
+variable (F : C ⥤ D) [F.Full] [F.Faithful]
 
 section
 

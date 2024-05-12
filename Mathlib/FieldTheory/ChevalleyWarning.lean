@@ -61,10 +61,10 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     _ = ∑ d in f.support, ∑ x : σ → K, f.coeff d * ∏ i, x i ^ d i := sum_comm
     _ = 0 := sum_eq_zero ?_
   intro d hd
-  obtain ⟨i, hi⟩ : ∃ i, d i < q - 1; exact f.exists_degree_lt (q - 1) h hd
+  obtain ⟨i, hi⟩ : ∃ i, d i < q - 1 := f.exists_degree_lt (q - 1) h hd
   calc
     (∑ x : σ → K, f.coeff d * ∏ i, x i ^ d i) = f.coeff d * ∑ x : σ → K, ∏ i, x i ^ d i :=
-      mul_sum.symm
+      (mul_sum ..).symm
     _ = 0 := (mul_eq_zero.mpr ∘ Or.inr) ?_
   calc
     (∑ x : σ → K, ∏ i, x i ^ d i) =
@@ -76,7 +76,7 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
   calc
     (∑ x : { x : σ → K // x ∘ (↑) = x₀ }, ∏ j, (x : σ → K) j ^ d j) =
         ∑ a : K, ∏ j : σ, (e a : σ → K) j ^ d j := (e.sum_comp _).symm
-    _ = ∑ a : K, (∏ j, x₀ j ^ d j) * a ^ d i := (Fintype.sum_congr _ _ ?_)
+    _ = ∑ a : K, (∏ j, x₀ j ^ d j) * a ^ d i := Fintype.sum_congr _ _ ?_
     _ = (∏ j, x₀ j ^ d j) * ∑ a : K, a ^ d i := by rw [mul_sum]
     _ = 0 := by rw [sum_pow_lt_card_sub_one K _ hi, mul_zero]
   intro a
@@ -90,13 +90,13 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
       by rw [← e'.prod_comp, Fintype.prod_sum_type, univ_unique, prod_singleton]; rfl
     _ = a ^ d i * ∏ j : { j // j ≠ i }, (e a : σ → K) j ^ d j := by
       rw [Equiv.subtypeEquivCodomain_symm_apply_eq]
-    _ = a ^ d i * ∏ j, x₀ j ^ d j := (congr_arg _ (Fintype.prod_congr _ _ ?_))
+    _ = a ^ d i * ∏ j, x₀ j ^ d j := congr_arg _ (Fintype.prod_congr _ _ ?_)
     -- see below
     _ = (∏ j, x₀ j ^ d j) * a ^ d i := mul_comm _ _
-  · -- the remaining step of the calculation above
-    rintro ⟨j, hj⟩
-    show (e a : σ → K) j ^ d j = x₀ ⟨j, hj⟩ ^ d j
-    rw [Equiv.subtypeEquivCodomain_symm_apply_ne]
+  -- the remaining step of the calculation above
+  rintro ⟨j, hj⟩
+  show (e a : σ → K) j ^ d j = x₀ ⟨j, hj⟩ ^ d j
+  rw [Equiv.subtypeEquivCodomain_symm_apply_ne]
 #align mv_polynomial.sum_eval_eq_zero MvPolynomial.sum_eval_eq_zero
 
 variable [DecidableEq K] (p : ℕ) [CharP K p]
@@ -113,7 +113,7 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
   let S : Finset (σ → K) := { x ∈ univ | ∀ i ∈ s, eval x (f i) = 0 }.toFinset
   have hS : ∀ x : σ → K, x ∈ S ↔ ∀ i : ι, i ∈ s → eval x (f i) = 0 := by
     intro x
-    simp only [Set.toFinset_setOf, mem_univ, true_and, mem_filter]
+    simp only [S, Set.toFinset_setOf, mem_univ, true_and, mem_filter]
   /- The polynomial `F = ∏ i in s, (1 - (f i)^(q - 1))` has the nice property
     that it takes the value `1` on elements of `{x : σ → K // ∀ i ∈ s, (f i).eval x = 0}`
     while it is `0` outside that locus.
@@ -130,15 +130,15 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
     · apply Finset.prod_eq_one
       intro i hi
       rw [hS] at hx
-      rw [hx i hi, zero_pow hq, sub_zero]
-    · obtain ⟨i, hi, hx⟩ : ∃ i : ι, i ∈ s ∧ eval x (f i) ≠ 0 := by
-        simpa only [hS, not_forall, not_imp] using hx
+      rw [hx i hi, zero_pow hq.ne', sub_zero]
+    · obtain ⟨i, hi, hx⟩ : ∃ i ∈ s, eval x (f i) ≠ 0 := by
+        simpa [hS, not_forall, Classical.not_imp] using hx
       apply Finset.prod_eq_zero hi
       rw [pow_card_sub_one_eq_one (eval x (f i)) hx, sub_self]
   -- In particular, we can now show:
-  have key : ∑ x, eval x F = Fintype.card { x : σ → K // ∀ i ∈ s, eval x (f i) = 0 }
-  rw [Fintype.card_of_subtype S hS, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one, ←
-    Fintype.sum_extend_by_zero S, sum_congr rfl fun x _ => hF x]
+  have key : ∑ x, eval x F = Fintype.card { x : σ → K // ∀ i ∈ s, eval x (f i) = 0 } := by
+    rw [Fintype.card_of_subtype S hS, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one, ←
+      Fintype.sum_extend_by_zero S, sum_congr rfl fun x _ => hF x]
   -- With these preparations under our belt, we will approach the main goal.
   show p ∣ Fintype.card { x // ∀ i : ι, i ∈ s → eval x (f i) = 0 }
   rw [← CharP.cast_eq_zero_iff K, ← key]
@@ -149,9 +149,9 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
   show F.totalDegree < (q - 1) * Fintype.card σ
   calc
     F.totalDegree ≤ ∑ i in s, (1 - f i ^ (q - 1)).totalDegree := totalDegree_finset_prod s _
-    _ ≤ ∑ i in s, (q - 1) * (f i).totalDegree := (sum_le_sum fun i _ => ?_)
+    _ ≤ ∑ i in s, (q - 1) * (f i).totalDegree := sum_le_sum fun i _ => ?_
     -- see ↓
-    _ = (q - 1) * ∑ i in s, (f i).totalDegree := mul_sum.symm
+    _ = (q - 1) * ∑ i in s, (f i).totalDegree := (mul_sum ..).symm
     _ < (q - 1) * Fintype.card σ := by rwa [mul_lt_mul_left hq]
   -- Now we prove the remaining step from the preceding calculation
   show (1 - f i ^ (q - 1)).totalDegree ≤ (q - 1) * (f i).totalDegree

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Data.List.Count
 
 #align_import algebra.free_monoid.count from "leanprover-community/mathlib"@"a2d2e18906e2b62627646b5d5be856e6a642062f"
 

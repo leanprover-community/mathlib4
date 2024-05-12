@@ -60,7 +60,7 @@ def Scheme.emptyTo (X : Scheme.{u}) : ∅ ⟶ X :=
 
 @[ext]
 theorem Scheme.empty_ext {X : Scheme.{u}} (f g : ∅ ⟶ X) : f = g :=
-  -- Porting note : `ext` regression
+  -- Porting note: `ext` regression
   -- see https://github.com/leanprover-community/mathlib4/issues/5229
   LocallyRingedSpace.Hom.ext _ _ <| PresheafedSpace.ext _ _ (by ext a; exact PEmpty.elim a) <|
     NatTrans.ext _ _ <| funext fun a => by aesop_cat
@@ -93,19 +93,15 @@ instance spec_punit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUn
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
     [IsEmpty X.carrier] : IsOpenImmersion f := by
   apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_stalk_iso
-  · apply openEmbedding_of_continuous_injective_open
-    · continuity
-    · rintro (i : X.carrier); exact isEmptyElim i
-    · intro U _; convert isOpen_empty (α := Y); ext; rw [Set.mem_empty_iff_false, iff_false_iff]
-      exact fun x => isEmptyElim (show X.carrier from x.choose)
-  · rintro (i : X.carrier); exact isEmptyElim i
+  · exact .of_isEmpty (X := X.carrier) _
+  · intro (i : X.carrier); exact isEmptyElim i
 #align algebraic_geometry.is_open_immersion_of_is_empty AlgebraicGeometry.isOpenImmersion_of_isEmpty
 
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y.carrier] :
     IsIso f := by
-  haveI : IsEmpty X.carrier := ⟨fun x => isEmptyElim (show Y.carrier from f.1.base x)⟩
-  have : Epi f.1.base
-  · rw [TopCat.epi_iff_surjective]; rintro (x : Y.carrier)
+  haveI : IsEmpty X.carrier := f.1.base.1.isEmpty
+  have : Epi f.1.base := by
+    rw [TopCat.epi_iff_surjective]; rintro (x : Y.carrier)
     exact isEmptyElim x
   apply IsOpenImmersion.to_iso
 #align algebraic_geometry.is_iso_of_is_empty AlgebraicGeometry.isIso_of_isEmpty
@@ -126,7 +122,7 @@ instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X.carrier] 
 #align algebraic_geometry.is_affine_of_is_empty AlgebraicGeometry.isAffine_of_isEmpty
 
 instance : HasInitial Scheme :=
-  -- Porting note : this instance was not needed
+  -- Porting note: this instance was not needed
   haveI : (Y : Scheme) → Unique (Scheme.empty ⟶ Y) := Scheme.hom_unique_of_empty_source
   hasInitial_of_unique Scheme.empty
 
@@ -137,7 +133,7 @@ instance initial_isEmpty : IsEmpty (⊥_ Scheme).carrier :=
 theorem bot_isAffineOpen (X : Scheme) : IsAffineOpen (⊥ : Opens X.carrier) := by
   convert rangeIsAffineOpenOfOpenImmersion (initial.to X)
   ext
-  -- Porting note : added this `erw` to turn LHS to `False`
+  -- Porting note: added this `erw` to turn LHS to `False`
   erw [Set.mem_empty_iff_false]
   rw [false_iff_iff]
   exact fun x => isEmptyElim (show (⊥_ Scheme).carrier from x.choose)

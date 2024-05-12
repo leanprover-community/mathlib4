@@ -18,11 +18,11 @@ jobs:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
         organization-url: 'https://leanprover.zulipchat.com'
-        to: 'mathlib reviewers'
+        to: 'nightly-testing'
         type: 'stream'
-        topic: 'CI failure on the nightly-testing branch'
+        topic: 'Mathlib status updates'
         content: |
-          The latest CI for branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}).
+          ❌ The latest CI for Mathlib's branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}).
 
   handle_success:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'nightly-testing' }}
@@ -30,18 +30,28 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: nightly-testing # checkout nightly-testing branch
         fetch-depth: 0 # checkout all branches so that we can push from `nightly-testing` to `nightly-testing-YYYY-MM-DD`
         token: ${{ secrets.NIGHTLY_TESTING }}
     - name: Update the nightly-testing-YYYY-MM-DD branch
       run: |
-        toolchain=$(<lean-toolchain)
+        toolchain="$(<lean-toolchain)"
         if [[ $toolchain =~ leanprover/lean4:nightly-([a-zA-Z0-9_-]+) ]]; then
           version=${BASH_REMATCH[1]}
-          echo "NIGHTLY=$version" >> $GITHUB_ENV
-          git push origin refs/heads/nightly-testing:refs/heads/nightly-testing-$version
+          printf 'NIGHTLY=%s\n' "${version}" >> "${GITHUB_ENV}"
+          # Check if the remote tag exists
+          if git ls-remote --tags --exit-code origin "nightly-testing-$version" >/dev/null; then
+              printf 'Tag nightly-testing-%s already exists on the remote.' "${version}"
+          else
+              # If the tag does not exist, create and push the tag to remote
+              printf 'Creating tag %s from the current state of the nightly-testing branch.' "nightly-testing-${version}"
+              git tag "nightly-testing-${version}"
+              git push origin "nightly-testing-${version}"
+              hash="$(git rev-parse "nightly-testing-${version}")"
+              curl -X POST "http://speed.lean-fro.org/mathlib4/api/queue/commit/e7b27246-a3e6-496a-b552-ff4b45c7236e/$hash" -u "admin:${{ secrets.SPEED }}"
+          fi
         else
           echo "Error: The file lean-toolchain does not contain the expected pattern."
           exit 1
@@ -50,10 +60,10 @@ jobs:
     # Next, we'll update the `nightly-with-mathlib` branch at Lean.
     - name: Cleanup workspace
       run: |
-        sudo rm -rf *
+        sudo rm -rf -- *
     # Checkout the Lean repository on 'nightly-with-mathlib'
     - name: Checkout Lean repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: leanprover/lean4
         token: ${{ secrets.LEAN_PR_TESTING }}
@@ -64,5 +74,126 @@ jobs:
         git remote add nightly https://github.com/leanprover/lean4-nightly.git
         git fetch nightly --tags
         # Note: old jobs may run out of order, but it is safe to merge an older `nightly-YYYY-MM-DD`.
-        git merge nightly-${NIGHTLY} --strategy-option ours --allow-unrelated-histories || true
+        git merge "nightly-${NIGHTLY}" --strategy-option ours --allow-unrelated-histories || true
         git push origin
+
+    # Now post a success message to zulip, if the last message there is not a success message.
+    # https://chat.openai.com/share/87656d2c-c804-4583-91aa-426d4f1537b3
+    - name: Install Zulip API client
+      run: pip install zulip
+
+    - name: Check last message and post if necessary
+      run: |
+        import zulip
+        client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key='${{ secrets.ZULIP_API_KEY }}', site='https://leanprover.zulipchat.com')
+
+        # Get the last message in the 'status updates' topic
+        request = {
+          'anchor': 'newest',
+          'num_before': 1,
+          'num_after': 0,
+          'narrow': [{'operator': 'stream', 'operand': 'nightly-testing'}, {'operator': 'topic', 'operand': 'Mathlib status updates'}],
+          'apply_markdown': False    # Otherwise the content test below fails.
+        }
+        response = client.get_messages(request)
+        messages = response['messages']
+        if not messages or messages[0]['content'] != "✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!":
+            # Post the success message
+            request = {
+                'type': 'stream',
+                'to': 'nightly-testing',
+                'topic': 'Mathlib status updates',
+                'content': "✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!"
+            }
+            result = client.send_message(request)
+            print(result)
+      shell: python
+
+    # Next, determine if we should remind the humans to create a new PR to the `bump/v4.X.0` branch.
+    # https://chat.openai.com/share/504882f9-9d98-4d8d-ad19-5161c4a24fe1
+
+    - name: Check for matching bump/nightly-YYYY-MM-DD branch
+      id: check_branch
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const branchName = `bump/nightly-${process.env.NIGHTLY}`;
+          const branches = await github.rest.repos.listBranches({
+            owner: context.repo.owner,
+            repo: context.repo.repo
+          });
+          const exists = branches.data.some(branch => branch.name === branchName);
+          if (exists) {
+            console.log(`Branch ${branchName} exists.`);
+            return true;
+          } else {
+            console.log(`Branch ${branchName} does not exist.`);
+            return false;
+          }
+        result-encoding: string
+
+    - name: Exit if matching branch exists
+      if: steps.check_branch.outputs.result == 'true'
+      run: |
+        echo "Matching bump/nightly-YYYY-MM-DD branch found, no further action needed."
+        exit 0
+
+    - name: Fetch latest bump branch name
+      id: latest_bump_branch
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const branches = await github.paginate(github.rest.repos.listBranches, {
+            owner: context.repo.owner,
+            repo: context.repo.repo
+          });
+          const bumpBranches = branches
+            .map(branch => branch.name)
+            .filter(name => name.match(/^bump\/v4\.\d+\.0$/))
+            .sort((a, b) => b.localeCompare(a, undefined, {numeric: true, sensitivity: 'base'}));
+          if (!bumpBranches.length) {
+            throw new Exception("Did not find any bump/v4.x.0 branch")
+          }
+          const latestBranch = bumpBranches[0];
+          return latestBranch;
+
+    - name: Fetch lean-toolchain from latest bump branch
+      id: bump_version
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const response = await github.rest.repos.getContent({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            path: 'lean-toolchain',
+            ref: ${{ steps.latest_bump_branch.outputs.result }}
+          });
+          const content = Buffer.from(response.data.content, 'base64').toString();
+          const version = content.match(/leanprover\/lean4:nightly-(\d{4}-\d{2}-\d{2})/)[1];
+          return version;
+
+    - name: Compare versions and post a reminder.
+      env:
+        BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
+        BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
+        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+      shell: python
+      run: |
+        import os
+        import zulip
+        client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key=os.getenv('ZULIP_API_KEY'), site='https://leanprover.zulipchat.com')
+        current_version = os.getenv('NIGHTLY')
+        bump_version = os.getenv('BUMP_VERSION')
+        bump_branch = os.getenv('BUMP_BRANCH')
+        print(f'Current version: {current_version}, Bump version: {bump_version}')
+        if current_version > bump_version:
+            print('Lean toolchain in `nightly-testing` is ahead of the bump branch.')
+            request = {
+                'type': 'stream',
+                'to': 'nightly-testing',
+                'topic': 'Mathlib bump branch reminders',
+                'content': f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}."
+            }
+            result = client.send_message(request)
+        else:
+            print('No action needed.')

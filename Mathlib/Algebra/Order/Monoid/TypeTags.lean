@@ -11,7 +11,7 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-! # Ordered monoid structures on `Multiplicative α` and `Additive α`. -/
 
-set_option autoImplicit true
+variable {α : Type*}
 
 instance : ∀ [LE α], LE (Multiplicative α) :=
   fun {inst} => inst

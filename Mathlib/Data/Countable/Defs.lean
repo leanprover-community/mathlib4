@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Finite.Defs
-import Mathlib.Init.Data.Fin.Basic
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Subtype
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 #align_import data.countable.defs from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -96,7 +96,7 @@ instance (priority := 500) Subtype.countable [Countable α] {p : α → Prop} :
   Subtype.val_injective.countable
 
 instance {n : ℕ} : Countable (Fin n) :=
-  Function.Injective.countable (@Fin.eq_of_veq n)
+  Function.Injective.countable (@Fin.eq_of_val_eq n)
 
 instance (priority := 100) Finite.to_countable [Finite α] : Countable α :=
   let ⟨_, ⟨e⟩⟩ := Finite.exists_equiv_fin α
