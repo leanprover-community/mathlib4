@@ -18,7 +18,7 @@ This file contains the results concerning the interaction of list big operators 
 
 open MulOpposite List
 
-variable {ι M M₀ R : Type*}
+variable {ι κ M M₀ R : Type*}
 
 namespace Commute
 variable [NonUnitalNonAssocSemiring R]
@@ -95,5 +95,13 @@ lemma dvd_sum [NonUnitalSemiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) 
   · rw [List.sum_cons]
     exact dvd_add (h _ (mem_cons_self _ _)) (ih fun x hx ↦ h x (mem_cons_of_mem _ hx))
 #align list.dvd_sum List.dvd_sum
+
+@[simp] lemma sum_zipWith_distrib_left [Semiring R] (f : ι → κ → R) (a : R) :
+    ∀ (l₁ : List ι) (l₂ : List κ), 
+      (zipWith (fun i j ↦ a * f i j) l₁ l₂).sum = a * (zipWith f l₁ l₂).sum
+  | [], _ => by simp
+  | _, [] => by simp
+  | i :: l₁, j :: l₂ => by simp [sum_zipWith_distrib_left, mul_add]
+#align list.sum_zip_with_distrib_left List.sum_zipWith_distrib_left
 
 end List
