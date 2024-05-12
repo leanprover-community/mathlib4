@@ -545,7 +545,7 @@ theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.coeff x.order = 1) :
     rw [addVal_apply_of_ne x0, addVal_apply_of_ne (single_ne_zero h10), addVal_apply_of_ne _,
       order_C, order_single h10, WithTop.coe_zero, zero_add, ← WithTop.coe_add, neg_add_self,
       WithTop.coe_zero]
-    · exact C_ne_zero (left_ne_zero_of_mul_eq_one hr)
+    exact C_ne_zero (left_ne_zero_of_mul_eq_one hr)
   · rw [addVal_apply, ← WithTop.coe_zero]
     split_ifs with h
     · apply WithTop.coe_ne_top

@@ -286,13 +286,13 @@ lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b 
   have hcd := gcd_dvd_right m c
   rw [modEq_iff_dvd]
   refine' @Int.dvd_of_dvd_mul_right_of_gcd_one (m / d) (c / d) (b - a) _ _
-  show (m / d : ℤ) ∣ c / d * (b - a)
-  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (Int.natCast_dvd_natCast.mpr hcd), mul_comm]
+  · show (m / d : ℤ) ∣ c / d * (b - a)
+    rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (Int.natCast_dvd_natCast.mpr hcd), mul_comm]
     apply Int.ediv_dvd_ediv (Int.natCast_dvd_natCast.mpr hmd)
     rw [mul_sub]
     exact modEq_iff_dvd.mp h
-  show Int.gcd (m / d) (c / d) = 1
-  · simp only [← Int.natCast_div, Int.coe_nat_gcd (m / d) (c / d), gcd_div hmd hcd,
+  · show Int.gcd (m / d) (c / d) = 1
+    simp only [← Int.natCast_div, Int.coe_nat_gcd (m / d) (c / d), gcd_div hmd hcd,
       Nat.div_self (gcd_pos_of_pos_left c hm)]
 #align nat.modeq.cancel_left_div_gcd Nat.ModEq.cancel_left_div_gcd
 
@@ -331,9 +331,15 @@ end ModEq
 
 /-- The natural number less than `lcm n m` congruent to `a` mod `n` and `b` mod `m` -/
 def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k ≡ b [MOD m] } :=
-  if hn : n = 0 then ⟨a, by rw [hn, gcd_zero_left] at h; constructor; rfl; exact h⟩
+  if hn : n = 0 then ⟨a, by
+    rw [hn, gcd_zero_left] at h; constructor
+    · rfl
+    · exact h⟩
   else
-    if hm : m = 0 then ⟨b, by rw [hm, gcd_zero_right] at h; constructor; exact h.symm; rfl⟩
+    if hm : m = 0 then ⟨b, by
+      rw [hm, gcd_zero_right] at h; constructor
+      · exact h.symm
+      · rfl⟩
     else
       ⟨let (c, d) := xgcd n m; Int.toNat ((n * c * b + m * d * a) / gcd n m % lcm n m), by
         rw [xgcd_val]
@@ -353,7 +359,7 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
           rw [← this, sub_mul, ← add_sub_assoc, add_comm, add_sub_assoc, ← mul_sub,
             Int.add_ediv_of_dvd_left, Int.mul_ediv_cancel_left _ hnonzero,
             Int.mul_ediv_assoc _ h.dvd, ← sub_sub, sub_self, zero_sub, dvd_neg, mul_assoc]
-          exact dvd_mul_right _ _
+          · exact dvd_mul_right _ _
           norm_cast
           exact dvd_mul_right _ _
         · exact dvd_lcm_left n m
@@ -361,8 +367,8 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
           rw [← this, sub_mul, sub_add, ← mul_sub, Int.sub_ediv_of_dvd,
             Int.mul_ediv_cancel_left _ hnonzero, Int.mul_ediv_assoc _ h.dvd, ← sub_add, sub_self,
             zero_add, mul_assoc]
-          exact dvd_mul_right _ _
-          exact hcoedvd _
+          · exact dvd_mul_right _ _
+          · exact hcoedvd _
         · exact dvd_lcm_right n m⟩
 #align nat.chinese_remainder' Nat.chineseRemainder'
 

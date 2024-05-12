@@ -472,10 +472,12 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     -- This used to be the end of the proof before leanprover/lean4#2644
     dsimp
     congr 1
+    · conv_lhs => erw [IsComplement.equiv_mul_left]
+      simp? says
+        simp only [toSubgroup_one, SetLike.coe_sort_coe, map_mul, Submonoid.coe_mul,
+          coe_toSubmonoid]
     conv_lhs => erw [IsComplement.equiv_mul_left]
-    simp? says
-      simp only [toSubgroup_one, SetLike.coe_sort_coe, map_mul, Submonoid.coe_mul, coe_toSubmonoid]
-    conv_lhs => erw [IsComplement.equiv_mul_left]
+    rfl
 
 noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
   MulAction.ofEndHom <| (MulAction.toEndHom (M := Equiv.Perm (NormalWord d))).comp
@@ -564,10 +566,10 @@ theorem prod_smul_empty (w : NormalWord d) :
     erw [(d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
     ext <;> simp
     -- The next 4 were not needed before leanprover/lean4#2644
-    · erw [(d.compl _).equiv_snd_eq_inv_mul]
-      simp_rw [SetLike.coe_sort_coe]
-      erw [(d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
-      simp
+    erw [(d.compl _).equiv_snd_eq_inv_mul]
+    simp_rw [SetLike.coe_sort_coe]
+    erw [(d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
+    simp
 
 variable (d)
 /-- The equivalence between elements of the HNN extension and words in normal form. -/

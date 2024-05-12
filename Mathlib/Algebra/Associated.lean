@@ -403,6 +403,9 @@ protected theorem refl [Monoid α] (x : α) : x ~ᵤ x :=
   ⟨1, by simp⟩
 #align associated.refl Associated.refl
 
+protected theorem rfl [Monoid α] {x : α} : x ~ᵤ x :=
+  .refl x
+
 instance [Monoid α] : IsRefl α Associated :=
   ⟨Associated.refl⟩
 
@@ -561,6 +564,9 @@ protected theorem Associated.dvd [Monoid α] {a b : α} : a ~ᵤ b → a ∣ b :
   ⟨u, hu.symm⟩
 #align associated.dvd Associated.dvd
 
+protected theorem Associated.dvd' [Monoid α] {a b : α} (h : a ~ᵤ b) : b ∣ a :=
+  h.symm.dvd
+
 protected theorem Associated.dvd_dvd [Monoid α] {a b : α} (h : a ~ᵤ b) : a ∣ b ∧ b ∣ a :=
   ⟨h.dvd, h.symm.dvd⟩
 #align associated.dvd_dvd Associated.dvd_dvd
@@ -607,6 +613,18 @@ theorem Associated.eq_zero_iff [MonoidWithZero α] {a b : α} (h : a ~ᵤ b) : a
 theorem Associated.ne_zero_iff [MonoidWithZero α] {a b : α} (h : a ~ᵤ b) : a ≠ 0 ↔ b ≠ 0 :=
   not_congr h.eq_zero_iff
 #align associated.ne_zero_iff Associated.ne_zero_iff
+
+theorem Associated.neg_left [Monoid α] [HasDistribNeg α] {a b : α} (h : Associated a b) :
+    Associated (-a) b :=
+  let ⟨u, hu⟩ := h; ⟨-u, by simp [hu]⟩
+
+theorem Associated.neg_right [Monoid α] [HasDistribNeg α] {a b : α} (h : Associated a b) :
+    Associated a (-b) :=
+  h.symm.neg_left.symm
+
+theorem Associated.neg_neg [Monoid α] [HasDistribNeg α] {a b : α} (h : Associated a b) :
+    Associated (-a) (-b) :=
+  h.neg_left.neg_right
 
 protected theorem Associated.prime [CommMonoidWithZero α] {p q : α} (h : p ~ᵤ q) (hp : Prime p) :
     Prime q :=
@@ -1026,7 +1044,7 @@ theorem isPrimal_mk {a : α} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
     exact ⟨a₁, a₂ * u, h₁, Units.mul_right_dvd.mpr h₂, mul_assoc _ _ _⟩
   · exact ⟨a₁, a₂, h₁, h₂, congr_arg _ eq⟩
 
-@[deprecated] alias isPrimal_iff := isPrimal_mk -- 2024/03/16
+@[deprecated] alias isPrimal_iff := isPrimal_mk -- 2024-03-16
 
 @[simp]
 theorem decompositionMonoid_iff : DecompositionMonoid (Associates α) ↔ DecompositionMonoid α := by

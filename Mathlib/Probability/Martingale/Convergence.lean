@@ -144,9 +144,9 @@ theorem tendsto_of_uncrossing_lt_top (hf₁ : liminf (fun n => (‖f n ω‖₊ 
   by_cases h : IsBoundedUnder (· ≤ ·) atTop fun n => |f n ω|
   · rw [isBoundedUnder_le_abs] at h
     refine' tendsto_of_no_upcrossings Rat.denseRange_cast _ h.1 h.2
-    · intro a ha b hb hab
-      obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩ := ha, hb
-      exact not_frequently_of_upcrossings_lt_top hab (hf₂ a b (Rat.cast_lt.1 hab)).ne
+    intro a ha b hb hab
+    obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩ := ha, hb
+    exact not_frequently_of_upcrossings_lt_top hab (hf₂ a b (Rat.cast_lt.1 hab)).ne
   · obtain ⟨a, b, hab, h₁, h₂⟩ := ENNReal.exists_upcrossings_of_not_bounded_under hf₁.ne h
     exact
       False.elim ((hf₂ a b hab).ne (upcrossings_eq_top_of_frequently_lt (Rat.cast_lt.2 hab) h₁ h₂))
@@ -173,10 +173,10 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         fun n => le_trans _ (hR' n)⟩)
       refine' lintegral_mono fun ω => _
       rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]
-      by_cases hnonneg : 0 ≤ f n ω - a
-      · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
-      · rw [posPart_eq_zero.2 (not_le.1 hnonneg).le]
-        exact norm_nonneg _
+      · by_cases hnonneg : 0 ≤ f n ω - a
+        · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
+        · rw [posPart_eq_zero.2 (not_le.1 hnonneg).le]
+          exact norm_nonneg _
       · simp only [Ne, ENNReal.coe_ne_top, not_false_iff]
     · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
   · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or_iff]
