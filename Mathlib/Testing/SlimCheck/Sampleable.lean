@@ -187,7 +187,7 @@ open Shrinkable
 /-- Shrink a list of a shrinkable type, either by discarding an element or shrinking an element. -/
 instance List.shrinkable [Shrinkable α] : Shrinkable (List α) where
   shrink := fun L =>
-    (L.mapIdx fun i _ => L.removeNth i) ++
+    (L.mapIdx fun i _ => L.eraseIdx i) ++
     (L.mapIdx fun i a => (shrink a).map fun a' => L.modifyNth (fun _ => a') i).join
 
 end Shrinkers

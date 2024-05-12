@@ -85,15 +85,19 @@ theorem rpow_eq_zero_iff_of_nonneg (hx : 0 ≤ x) : x ^ y = 0 ↔ x = 0 ∧ y �
 lemma rpow_eq_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y = 0 ↔ x = 0 := by
   simp [rpow_eq_zero_iff_of_nonneg, *]
 
+@[simp]
+lemma rpow_ne_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y ≠ 0 ↔ x ≠ 0 :=
+  Real.rpow_eq_zero hx hy |>.not
+
 open Real
 
 theorem rpow_def_of_neg {x : ℝ} (hx : x < 0) (y : ℝ) : x ^ y = exp (log x * y) * cos (y * π) := by
   rw [rpow_def, Complex.cpow_def, if_neg]
-  have : Complex.log x * y = ↑(log (-x) * y) + ↑(y * π) * Complex.I := by
-    simp only [Complex.log, abs_of_neg hx, Complex.arg_ofReal_of_neg hx, Complex.abs_ofReal,
-      Complex.ofReal_mul]
-    ring
-  · rw [this, Complex.exp_add_mul_I, ← Complex.ofReal_exp, ← Complex.ofReal_cos, ←
+  · have : Complex.log x * y = ↑(log (-x) * y) + ↑(y * π) * Complex.I := by
+      simp only [Complex.log, abs_of_neg hx, Complex.arg_ofReal_of_neg hx, Complex.abs_ofReal,
+        Complex.ofReal_mul]
+      ring
+    rw [this, Complex.exp_add_mul_I, ← Complex.ofReal_exp, ← Complex.ofReal_cos, ←
       Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ← mul_assoc, ← Complex.ofReal_mul,
       Complex.add_re, Complex.ofReal_re, Complex.mul_re, Complex.I_re, Complex.ofReal_im,
       Real.log_neg_eq_log]
@@ -545,13 +549,13 @@ theorem monotoneOn_rpow_Ici_of_exponent_nonneg {r : ℝ} (hr : 0 ≤ r) :
 lemma rpow_lt_rpow_of_neg (hx : 0 < x) (hxy : x < y) (hz : z < 0) : y ^ z < x ^ z := by
   have := hx.trans hxy
   rw [← inv_lt_inv, ← rpow_neg, ← rpow_neg]
-  refine rpow_lt_rpow ?_ hxy (neg_pos.2 hz)
+  on_goal 1 => refine rpow_lt_rpow ?_ hxy (neg_pos.2 hz)
   all_goals positivity
 
 lemma rpow_le_rpow_of_nonpos (hx : 0 < x) (hxy : x ≤ y) (hz : z ≤ 0) : y ^ z ≤ x ^ z := by
   have := hx.trans_le hxy
   rw [← inv_le_inv, ← rpow_neg, ← rpow_neg]
-  refine rpow_le_rpow ?_ hxy (neg_nonneg.2 hz)
+  on_goal 1 => refine rpow_le_rpow ?_ hxy (neg_nonneg.2 hz)
   all_goals positivity
 
 theorem rpow_lt_rpow_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
@@ -810,26 +814,24 @@ lemma log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : log n ≤ n 
   log_le_rpow_div n.cast_nonneg hε
 
 lemma strictMono_rpow_of_base_gt_one {b : ℝ} (hb : 1 < b) :
-    StrictMono (rpow b) := by
-  show StrictMono (fun (x:ℝ) => b ^ x)
+    StrictMono (b ^ · : ℝ → ℝ) := by
   simp_rw [Real.rpow_def_of_pos (zero_lt_one.trans hb)]
   exact exp_strictMono.comp <| StrictMono.const_mul strictMono_id <| Real.log_pos hb
 
 lemma monotone_rpow_of_base_ge_one {b : ℝ} (hb : 1 ≤ b) :
-    Monotone (rpow b) := by
+    Monotone (b ^ · : ℝ → ℝ) := by
   rcases lt_or_eq_of_le hb with hb | rfl
   case inl => exact (strictMono_rpow_of_base_gt_one hb).monotone
   case inr => intro _ _ _; simp
 
 lemma strictAnti_rpow_of_base_lt_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b < 1) :
-    StrictAnti (rpow b) := by
-  show StrictAnti (fun (x:ℝ) => b ^ x)
+    StrictAnti (b ^ · : ℝ → ℝ) := by
   simp_rw [Real.rpow_def_of_pos hb₀]
   exact exp_strictMono.comp_strictAnti <| StrictMono.const_mul_of_neg strictMono_id
       <| Real.log_neg hb₀ hb₁
 
 lemma antitone_rpow_of_base_le_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b ≤ 1) :
-    Antitone (rpow b) := by
+    Antitone (b ^ · : ℝ → ℝ) := by
   rcases lt_or_eq_of_le hb₁ with hb₁ | rfl
   case inl => exact (strictAnti_rpow_of_base_lt_one hb₀ hb₁).antitone
   case inr => intro _ _ _; simp
@@ -1040,7 +1042,7 @@ def evalRPow : NormNumExt where eval {u α} e := do
       assumeInstancesCommute
       return .isNat sα' ne' q(isNat_rpow_neg $pb $pe')
     | .isNegNat sα' ne' pe' =>
-      let _ := q(instRingReal)
+      let _ := q(Real.instRing)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_rpow_neg $pb $pe')
     | .isRat sα' qe' nume' dene' pe' =>

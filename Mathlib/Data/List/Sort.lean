@@ -135,6 +135,8 @@ theorem Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length}
     r (l.get a) (l.get b) :=
   List.pairwise_iff_get.1 h _ _ hab
 
+set_option linter.deprecated false in
+@[deprecated Sorted.rel_get_of_lt (since := "2024-05-08")]
 theorem Sorted.rel_nthLe_of_lt {l : List α} (h : l.Sorted r) {a b : ℕ} (ha : a < l.length)
     (hb : b < l.length) (hab : a < b) : r (l.nthLe a ha) (l.nthLe b hb) :=
   List.pairwise_iff_get.1 h ⟨a, ha⟩ ⟨b, hb⟩ hab
@@ -145,6 +147,8 @@ theorem Sorted.rel_get_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b :
   rcases hab.eq_or_lt with (rfl | hlt)
   exacts [refl _, h.rel_get_of_lt hlt]
 
+set_option linter.deprecated false in
+@[deprecated Sorted.rel_get_of_le (since := "2024-05-08")]
 theorem Sorted.rel_nthLe_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : ℕ}
     (ha : a < l.length) (hb : b < l.length) (hab : a ≤ b) : r (l.nthLe a ha) (l.nthLe b hb) :=
   h.rel_get_of_le hab
@@ -156,7 +160,7 @@ theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {
   obtain ⟨⟨ix, hix⟩, rfl⟩ := get_of_mem hx
   rw [get_take', get_drop']
   rw [length_take] at hix
-  exact h.rel_nthLe_of_lt _ _ (Nat.lt_add_right _ (lt_min_iff.mp hix).left)
+  exact h.rel_get_of_lt (Nat.lt_add_right _ (lt_min_iff.mp hix).left)
 #align list.sorted.rel_of_mem_take_of_mem_drop List.Sorted.rel_of_mem_take_of_mem_drop
 
 end Sorted
@@ -398,6 +402,12 @@ theorem length_split_le :
     exact ⟨Nat.succ_le_succ h₂, Nat.le_succ_of_le h₁⟩
 #align list.length_split_le List.length_split_le
 
+theorem length_split_fst_le (l : List α) : length (split l).1 ≤ length l :=
+  (length_split_le rfl).1
+
+theorem length_split_snd_le (l : List α) : length (split l).2 ≤ length l :=
+  (length_split_le rfl).2
+
 theorem length_split_lt {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
     length l₁ < length (a :: b :: l) ∧ length l₂ < length (a :: b :: l) := by
   cases' e : split l with l₁' l₂'
@@ -423,10 +433,8 @@ def mergeSort : List α → List α
   | a :: b :: l => by
     -- Porting note: rewrote to make `mergeSort_cons_cons` proof easier
     let ls := (split (a :: b :: l))
-    have e : split (a :: b :: l) = ⟨ls.1, ls.2⟩ := rfl
-    have h := length_split_lt e
-    have := h.1
-    have := h.2
+    have := length_split_fst_le l
+    have := length_split_snd_le l
     exact merge (r · ·) (mergeSort ls.1) (mergeSort ls.2)
   termination_by l => length l
 #align list.merge_sort List.mergeSort

@@ -88,7 +88,7 @@ section restrict
       rw [union_subset_iff, and_iff_left (subset_union_right _ _), union_comm]
       exact hBIB'.trans (union_subset_union_left _ (subset_inter hIY hI.subset_ground))
 
-    have hi : M﹡.Indep (M.E \ (B ∪ (R ∩ M.E))) := by
+    have hi : M✶.Indep (M.E \ (B ∪ (R ∩ M.E))) := by
       rw [dual_indep_iff_exists]
       exact ⟨B, hB, disjoint_of_subset_right (subset_union_left _ _) disjoint_sdiff_left⟩
 
@@ -120,8 +120,7 @@ def restrict (M : Matroid α) (R : Set α) : Matroid α := (M.restrictIndepMatro
 /-- `M ↾ R` means `M.restrict R`. -/
 scoped infixl:65  " ↾ " => Matroid.restrict
 
-@[simp] theorem restrict_indep_iff : (M ↾ R).Indep I ↔ M.Indep I ∧ I ⊆ R := by
-  simp [Matroid.restrict]
+@[simp] theorem restrict_indep_iff : (M ↾ R).Indep I ↔ M.Indep I ∧ I ⊆ R := Iff.rfl
 
 theorem Indep.indep_restrict_of_subset (h : M.Indep I) (hIR : I ⊆ R) : (M ↾ R).Indep I :=
   restrict_indep_iff.mpr ⟨h,hIR⟩

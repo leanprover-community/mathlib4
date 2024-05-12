@@ -59,7 +59,7 @@ theorem coeff_derivative (p : R[X]) (n : ℕ) :
   rw [derivative_apply]
   simp only [coeff_X_pow, coeff_sum, coeff_C_mul]
   rw [sum, Finset.sum_eq_single (n + 1)]
-  simp only [Nat.add_succ_sub_one, add_zero, mul_one, if_true, eq_self_iff_true]; norm_cast
+  · simp only [Nat.add_succ_sub_one, add_zero, mul_one, if_true, eq_self_iff_true]; norm_cast
   · intro b
     cases b
     · intros
@@ -300,12 +300,12 @@ theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f 
   simp only [monomial_mul_monomial, derivative_monomial]
   simp only [mul_assoc, (Nat.cast_commute _ _).eq, Nat.cast_add, mul_add, map_add]
   cases m with
-  | zero => simp only [zero_add, Nat.cast_zero, mul_zero, map_zero, Nat.zero_eq]
+  | zero => simp only [zero_add, Nat.cast_zero, mul_zero, map_zero]
   | succ m =>
   cases n with
-  | zero => simp only [add_zero, Nat.cast_zero, mul_zero, map_zero, Nat.zero_eq]
+  | zero => simp only [add_zero, Nat.cast_zero, mul_zero, map_zero]
   | succ n =>
-  simp only [Nat.add_succ_sub_one, add_tsub_cancel_right, Nat.zero_eq, Nat.succ_eq_add_one]
+  simp only [Nat.add_succ_sub_one, add_tsub_cancel_right]
   rw [add_assoc, add_comm n 1]
 #align polynomial.derivative_mul Polynomial.derivative_mul
 
@@ -320,9 +320,9 @@ theorem derivative_map [Semiring S] (p : R[X]) (f : R →+* S) :
   let n := max p.natDegree (map f p).natDegree
   rw [derivative_apply, derivative_apply]
   rw [sum_over_range' _ _ (n + 1) ((le_max_left _ _).trans_lt (lt_add_one _))]
-  rw [sum_over_range' _ _ (n + 1) ((le_max_right _ _).trans_lt (lt_add_one _))]
-  simp only [Polynomial.map_sum, Polynomial.map_mul, Polynomial.map_C, map_mul, coeff_map,
-    map_natCast, Polynomial.map_natCast, Polynomial.map_pow, map_X]
+  on_goal 1 => rw [sum_over_range' _ _ (n + 1) ((le_max_right _ _).trans_lt (lt_add_one _))]
+  · simp only [Polynomial.map_sum, Polynomial.map_mul, Polynomial.map_C, map_mul, coeff_map,
+      map_natCast, Polynomial.map_natCast, Polynomial.map_pow, map_X]
   all_goals intro n; rw [zero_mul, C_0, zero_mul]
 #align polynomial.derivative_map Polynomial.derivative_map
 
@@ -486,7 +486,7 @@ theorem iterate_derivative_X_pow_eq_natCast_mul (n k : ℕ) :
   induction' k with k ih
   · erw [Function.iterate_zero_apply, tsub_zero, Nat.descFactorial_zero, Nat.cast_one, one_mul]
   · rw [Function.iterate_succ_apply', ih, derivative_natCast_mul, derivative_X_pow, C_eq_natCast,
-      Nat.succ_eq_add_one, Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul];
+      Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul];
     simp [mul_comm, mul_assoc, mul_left_comm]
 set_option linter.uppercaseLean3 false in
 #align polynomial.iterate_derivative_X_pow_eq_nat_cast_mul Polynomial.iterate_derivative_X_pow_eq_natCast_mul
