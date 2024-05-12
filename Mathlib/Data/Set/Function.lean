@@ -773,6 +773,11 @@ lemma InjOn.image_subset_image_iff_of_subset (h : s.InjOn f) (h₁ : s₁ ⊆ s)
   rw [← h.preimage_image_inter h₁, ← h.preimage_image_inter h₂]
   exact inter_subset_inter_left _ (preimage_mono h')
 
+lemma InjOn.image_ssubset_image_iff_of_subset (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) :
+    f '' s₁ ⊂ f '' s₂ ↔ s₁ ⊂ s₂ := by
+  simp_rw [ssubset_def, h.image_subset_image_iff_of_subset h₁ h₂,
+    h.image_subset_image_iff_of_subset h₂ h₁]
+
 -- TODO: can this move to a better place?
 theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
     (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
@@ -785,13 +790,17 @@ lemma InjOn.image_diff {t : Set α} (h : s.InjOn f) : f '' (s \ t) = f '' s \ f 
     (diff_subset_iff.2 (by rw [← image_union, inter_union_diff]))
   exact Disjoint.image disjoint_sdiff_inter h (diff_subset _ _) (inter_subset_left _ _)
 
-lemma InjOn.image_diff_of_subset {f : α → β} {t : Set α} (h : InjOn f s) (hst : t ⊆ s) :
+lemma InjOn.image_diff_subset {f : α → β} {t : Set α} (h : InjOn f s) (hst : t ⊆ s) :
     f '' (s \ t) = f '' s \ f '' t := by
   rw [h.image_diff, inter_eq_self_of_subset_right hst]
 
 theorem InjOn.imageFactorization_injective (h : InjOn f s) :
     Injective (s.imageFactorization f) :=
   fun ⟨x, hx⟩ ⟨y, hy⟩ h' ↦ by simpa [imageFactorization, h.eq_iff hx hy] using h'
+
+@[simp] theorem imageFactorization_injective_iff : Injective (s.imageFactorization f) ↔ InjOn f s :=
+  ⟨fun h x hx y hy _ ↦ by simpa using @h ⟨x, hx⟩ ⟨y, hy⟩ (by simpa [imageFactorization]),
+    InjOn.imageFactorization_injective⟩
 
 end injOn
 
@@ -1392,8 +1401,8 @@ theorem SurjOn.mapsTo_invFunOn [Nonempty α] (h : SurjOn f s t) : MapsTo (invFun
   fun _y hy => mem_preimage.2 <| invFunOn_mem <| h hy
 #align set.surj_on.maps_to_inv_fun_on Set.SurjOn.mapsTo_invFunOn
 
-theorem SurjOn.image_invFunOn_image_subset [Nonempty α] {r : Set β} (hf : SurjOn f s t)
-    (hrt : r ⊆ t) : f '' ((f.invFunOn s) '' r) = r :=
+theorem SurjOn.image_invFunOn_image_of_subset [Nonempty α] {r : Set β} (hf : SurjOn f s t)
+    (hrt : r ⊆ t) : f '' (f.invFunOn s '' r) = r :=
   hf.rightInvOn_invFunOn.image_image' hrt
 
 theorem SurjOn.image_invFunOn_image [Nonempty α] (hf : SurjOn f s t) :
