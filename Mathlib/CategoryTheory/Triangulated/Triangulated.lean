@@ -157,8 +157,8 @@ def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' �
   · refine' isomorphic_distinguished _ H.mem _ _
     refine' Triangle.isoMk _ _ (Triangle.π₃.mapIso iso₁₂) (Triangle.π₃.mapIso iso₁₃)
       (Triangle.π₃.mapIso iso₂₃) (by simp) (by simp) _
-    · dsimp
-      rw [assoc, ← Functor.map_comp, eq₁₂, Functor.map_comp, reassoc_of% eq₂₃']
+    dsimp
+    rw [assoc, ← Functor.map_comp, eq₁₂, Functor.map_comp, reassoc_of% eq₂₃']
 
 end Octahedron
 

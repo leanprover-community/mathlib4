@@ -394,8 +394,8 @@ def toCycle (f : Perm α) (hf : IsCycle f) : Cycle α :=
       intro x y _ s
       refine' heq_of_eq _
       split_ifs with hx hy hy <;> try rfl
-      · have hc : SameCycle f x y := IsCycle.sameCycle hf hx hy
-        exact Quotient.sound' hc.toList_isRotated)
+      have hc : SameCycle f x y := IsCycle.sameCycle hf hx hy
+      exact Quotient.sound' hc.toList_isRotated)
 #align equiv.perm.to_cycle Equiv.Perm.toCycle
 
 theorem toCycle_eq_toList (f : Perm α) (hf : IsCycle f) (x : α) (hx : f x ≠ x) :
