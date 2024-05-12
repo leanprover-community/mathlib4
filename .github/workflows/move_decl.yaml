@@ -1,22 +1,35 @@
-name: Add comment
+name: Add Comment on PR with 'move-decls' label
+
 on:
-  issues:
-    types:
-      - labeled
+  pull_request:
+    types: [labeled]
+
 jobs:
   add-comment:
-    if: github.event.label.name == 'move-decls'
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
     steps:
-      - name: Add comment
-        run: gh issue comment "$NUMBER" --body "$BODY"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          NUMBER: ${{ github.event.issue.number }}
-          BODY: >
-            This issue is available for anyone to work on.
-            **Make sure to reference this issue in your pull request.**
-            :sparkles: Thank you for your contribution! :sparkles:
+      - name: Check if label is 'move-decls'
+        id: check_label
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const label = 'move-decls';
+            const payload = github.context.payload;
+            const labels = payload.pull_request.labels.map(label => label.name);
+            const hasMoveDeclsLabel = labels.includes(label);
+            return hasMoveDeclsLabel;
+
+      - name: Add comment if label is 'move-decls'
+        if: steps.check_label.outputs.result == 'true'
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const message = 'The "move-decls" label has been added. Please review.';
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
