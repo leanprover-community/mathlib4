@@ -332,6 +332,14 @@ theorem I_mul_im (z : ℂ) : (I * z).im = z.re := by simp
 set_option linter.uppercaseLean3 false in
 #align complex.I_mul_im Complex.I_mul_im
 
+lemma ofReal_mul_I_im (x : ℝ) : (x * I).im = x := by simp
+
+lemma I_mul_ofReal_im (x : ℝ) : (I * x).im = x := by simp
+
+lemma ofReal_mul_I_re (x : ℝ) : (x * I).re = 0 := by simp
+
+lemma I_mul_ofReal_re (x : ℝ) : (I * x).re = 0 := by simp
+
 @[simp]
 theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 + p.2 * I := by
   ext <;> simp [Complex.equivRealProd, ofReal']
