@@ -8,7 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Ring.Semiconj
+import Mathlib.Algebra.Ring.Commute
 
 /-!
 # Big operators on a list in rings
@@ -18,7 +18,7 @@ This file contains the results concerning the interaction of list big operators 
 
 open MulOpposite List
 
-variable {ι M₀ R : Type*}
+variable {ι M M₀ R : Type*}
 
 namespace Commute
 variable [NonUnitalNonAssocSemiring R]
@@ -37,6 +37,17 @@ lemma list_sum_left (b : R) (l : List R) (h : ∀ a ∈ l, Commute a b) : Commut
 end Commute
 
 namespace List
+section HasDistribNeg
+variable [CommMonoid M] [HasDistribNeg M]
+
+@[simp]
+lemma prod_map_neg (l : List M) :
+    (l.map Neg.neg).prod = (-1) ^ l.length * l.prod := by
+  induction l <;> simp [*, pow_succ, ((Commute.neg_one_left _).pow_left _).left_comm]
+#align list.prod_map_neg List.prod_map_neg
+
+end HasDistribNeg
+
 section MonoidWithZero
 variable [MonoidWithZero M₀] {l : List M₀}
 
