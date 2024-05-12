@@ -829,8 +829,7 @@ instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R)
     toFun := fun x ↦ (f x) ^ n
     continuous_toFun := f.continuous.pow n
     map_bounded' := by
-      obtain ⟨C, hC⟩ :=
-        Metric.isBounded_iff.mp <| @isBounded_pow R _ _ _ (Set.range f) (isBounded_range f) n
+      obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <| isBounded_pow (isBounded_range f) n
       exact ⟨C, fun x y ↦ @hC ((f x)^n) (by simp) ((f y)^n) (by simp)⟩ }
 
 theorem coe_pow [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) :
