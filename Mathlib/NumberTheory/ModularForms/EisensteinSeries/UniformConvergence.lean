@@ -132,8 +132,7 @@ theorem summand_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : �
         and_true, not_and, piFinTwoEquiv_apply, Function.comp_apply, Pi.zero_apply,
         Prod.mk.injEq] using this
     · apply mul_pos (Real.rpow_pos_of_pos (r_pos z) _)
-      apply Real.rpow_pos_of_pos
-      exact Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn)
+      apply Real.rpow_pos_of_pos (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn))
 
 /-This is a special case of the above, but one that we use more. -/
 theorem eisSummand_is_bounded_on_box {k : ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hk : 0 ≤ k)
@@ -188,7 +187,7 @@ lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
   rw [← (piFinTwoEquiv _).symm.summable_iff,
     summable_partition _ (s := fun n ↦ (box n : Finset (ℤ × ℤ))) Int.existsUnique_mem_box]
   · simp_rw [coe_sort_coe, Finset.tsum_subtype]
-    simp only [one_div, piFinTwoEquiv_symm_apply, Function.comp_apply, Fin.cons_zero, Fin.cons_one]
+    simp only [piFinTwoEquiv_symm_apply, Function.comp_apply]
     refine ⟨fun n ↦ ?_, (summable_over_box z h).congr fun n ↦ Finset.sum_congr rfl
       fun x hx ↦ ?_⟩
     · simpa only [coe_sort_coe, piFinTwoEquiv_symm_apply] using
