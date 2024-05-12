@@ -844,7 +844,7 @@ instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
 instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
     CommMonoid (α →ᵇ R) where
   __ := instMonoid
-  mul_comm f g := by ext x ; simp [mul_apply, mul_comm]
+  mul_comm f g := by ext x; simp [mul_apply, mul_comm]
 
 instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R] [LipschitzAdd R] :
     Semiring (α →ᵇ R) :=
@@ -1427,22 +1427,9 @@ theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k 
   rfl
 #align bounded_continuous_function.algebra_map_apply BoundedContinuousFunction.algebraMap_apply
 
-/-
 instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where
   __ := instAlgebra
   __ := instNormedSpace
- -/
-
-instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where
-  smul := by sorry
-  toFun := by sorry
-  map_one' := by sorry
-  map_mul' := by sorry
-  map_zero' := by sorry
-  map_add' := by sorry
-  commutes' := by sorry
-  smul_def' := by sorry
-  norm_smul_le := by sorry
 
 /-!
 ### Structure as normed module over scalar functions
