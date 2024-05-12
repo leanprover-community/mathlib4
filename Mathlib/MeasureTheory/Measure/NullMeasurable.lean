@@ -486,8 +486,7 @@ def completion {_ : MeasurableSpace α} (μ : Measure α) :
     @MeasureTheory.Measure (NullMeasurableSpace α μ) _ where
   toOuterMeasure := μ.toOuterMeasure
   m_iUnion s hs hd := measure_iUnion₀ (hd.mono fun i j h => h.aedisjoint) hs
-  trimmed := by
-    refine le_antisymm ?_ (@OuterMeasure.le_trim (NullMeasurableSpace α μ) _ _)
+  trim_le := by
     nth_rewrite 2 [← μ.trimmed]
     exact OuterMeasure.trim_anti_measurableSpace _ fun _ ↦ MeasurableSet.nullMeasurableSet
 #align measure_theory.measure.completion MeasureTheory.Measure.completion
