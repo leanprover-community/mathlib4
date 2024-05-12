@@ -67,14 +67,15 @@ def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
 
 variable (L F)
 
+/-- The cocones for `CostructuredArrow.proj L Y ⋙ F`, as a functor from `LeftExtension L F`. -/
 @[simps]
-def coconeAtFunctor (Y : D) : LeftExtension L F ⥤ Cocone (CostructuredArrow.proj L Y ⋙ F) where
+def coconeAtFunctor (Y : D) :
+    LeftExtension L F ⥤ Cocone (CostructuredArrow.proj L Y ⋙ F) where
   obj E := E.coconeAt Y
   map {E E'} φ := CoconeMorphism.mk (φ.right.app Y) (fun G => by
     dsimp
     rw [← StructuredArrow.w φ]
-    simp only [assoc, NatTrans.naturality, const_obj_obj, whiskeringLeft_obj_obj,
-      whiskeringLeft_obj_map, NatTrans.comp_app, comp_obj, whiskerLeft_app])
+    simp)
 
 variable {L F}
 
@@ -87,30 +88,31 @@ lemma IsPointwiseLeftKanExtensionAt.hasPointwiseLeftKanExtensionAt
     {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y) :
   HasPointwiseLeftKanExtensionAt L F Y := ⟨_, h⟩
 
+lemma IsPointwiseLeftKanExtensionAt.isIso_hom_app
+    {X : C} (h : E.IsPointwiseLeftKanExtensionAt (L.obj X)) [L.Full] [L.Faithful] :
+    IsIso (E.hom.app X) := by
+  simpa using h.isIso_ι_app_of_isTerminal _ CostructuredArrow.mkIdTerminal
+
 /-- A left extension `E : LeftExtension L F` is a pointwise left Kan extension when
 it is a pointwise left Kan extension at any object. -/
 abbrev IsPointwiseLeftKanExtension := ∀ (Y : D), E.IsPointwiseLeftKanExtensionAt Y
 
 variable {E E'}
 
+/-- If two left extensions `E` and `E'` are isomorphic, `E` is a pointwise
+left Kan extension at `Y` iff `E'` is. -/
 def isPointwiseLeftKanExtensionAtEquivOfIso (e : E ≅ E') (Y : D) :
-    E.IsPointwiseLeftKanExtensionAt Y ≃ E'.IsPointwiseLeftKanExtensionAt Y where
-  toFun h := IsColimit.ofIsoColimit h ((coconeAtFunctor L F Y).mapIso e)
-  invFun h := IsColimit.ofIsoColimit h ((coconeAtFunctor L F Y).mapIso e.symm)
-  left_inv h := by
-    dsimp only [IsPointwiseLeftKanExtensionAt]
-    apply Subsingleton.elim
-  right_inv h := by
-    dsimp only [IsPointwiseLeftKanExtensionAt]
-    apply Subsingleton.elim
+    E.IsPointwiseLeftKanExtensionAt Y ≃ E'.IsPointwiseLeftKanExtensionAt Y :=
+  IsColimit.equivIsoColimit ((coconeAtFunctor L F Y).mapIso e)
 
+/-- If two left extensions `E` and `E'` are isomorphic, `E` is a pointwise
+left Kan extension iff `E'` is. -/
 def isPointwiseLeftKanExtensionEquivOfIso (e : E ≅ E') :
     E.IsPointwiseLeftKanExtension ≃ E'.IsPointwiseLeftKanExtension where
   toFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y) (h Y)
   invFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y).symm (h Y)
-  left_inv h := by aesop_cat
+  left_inv h := by aesop
   right_inv h := by aesop
-
 
 variable (h : E.IsPointwiseLeftKanExtension)
 
@@ -151,6 +153,11 @@ lemma IsPointwiseLeftKanExtension.hasLeftKanExtension :
     HasLeftKanExtension L F :=
   have := h.isLeftKanExtension
   HasLeftKanExtension.mk E.right E.hom
+
+lemma IsPointwiseLeftKanExtension.isIso_hom [L.Full] [L.Faithful] :
+    IsIso (E.hom) := by
+  have := fun X => (h (L.obj X)).isIso_hom_app
+  apply NatIso.isIso_of_isIso_app
 
 end LeftExtension
 
@@ -219,6 +226,8 @@ instance : HasLeftKanExtension L F :=
 
 variable {F L}
 
+/-- If `F` admits a pointwise left Kan extension along `L`, then any left Kan extension of `F`
+along `L` is a pointwise left Kan extension. -/
 noncomputable def isPointwiseLeftKanExtensionOfIsLeftKanExtension (F' : D ⥤ H) (α : F ⟶ L ⋙ F')
     [F'.IsLeftKanExtension α] :
     (LeftExtension.mk _ α).IsPointwiseLeftKanExtension :=

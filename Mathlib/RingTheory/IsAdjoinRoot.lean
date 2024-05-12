@@ -221,14 +221,14 @@ def lift (h : IsAdjoinRoot S f) : S →+* T where
   map_add' z w := by
     dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z + h.repr w), eval₂_add]
-    · rw [map_add, map_repr, map_repr]
+    rw [map_add, map_repr, map_repr]
   map_one' := by
-    dsimp only -- Porting note (#10752): added `dsimp only`
+    beta_reduce -- Porting note (#12129): additional beta reduction needed
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_one _), eval₂_one]
   map_mul' z w := by
     dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z * h.repr w), eval₂_mul]
-    · rw [map_mul, map_repr, map_repr]
+    rw [map_mul, map_repr, map_repr]
 #align is_adjoin_root.lift IsAdjoinRoot.lift
 
 variable {i x}
@@ -371,7 +371,7 @@ def modByMonicHom (h : IsAdjoinRootMonic S f) : S →ₗ[R] R[X] where
   map_add' x y := by
     conv_lhs =>
       rw [← h.map_repr x, ← h.map_repr y, ← map_add]
-      dsimp only -- Porting note (#10752): added `dsimp only`
+      beta_reduce -- Porting note (#12129): additional beta reduction needed
       rw [h.modByMonic_repr_map, add_modByMonic]
   map_smul' c x := by
     rw [RingHom.id_apply, ← h.map_repr x, Algebra.smul_def, h.algebraMap_apply, ← map_mul]
@@ -429,7 +429,7 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         refine coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le ?_ hi)
         dsimp -- Porting note (#11227):added a `dsimp`
         rw [natDegree_lt_natDegree_iff hx]
-        · exact degree_modByMonic_lt _ h.Monic
+        exact degree_modByMonic_lt _ h.Monic
       right_inv := fun g => by
         nontriviality R
         ext i
@@ -446,7 +446,7 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         rintro i rfl
         exact i.prop.not_le hm
       map_add' := fun x y => by
-        dsimp only -- Porting note (#10752): added `dsimp only`
+        beta_reduce -- Porting note (#12129): additional beta reduction needed
         rw [map_add, toFinsupp_add, Finsupp.comapDomain_add_of_injective Fin.val_injective]
       -- Porting note: the original simp proof with the same lemmas does not work
       -- See https://github.com/leanprover-community/mathlib4/issues/5026

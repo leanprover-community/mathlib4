@@ -25,7 +25,7 @@ theorem map_real_smul {G} [FunLike G E F] [AddMonoidHomClass G E F] (f : G) (hf 
     f (c • x) = c • f x :=
   suffices (fun c : ℝ => f (c • x)) = fun c : ℝ => c • f x from congr_fun this c
   Rat.denseEmbedding_coe_real.dense.equalizer (hf.comp <| continuous_id.smul continuous_const)
-    (continuous_id.smul continuous_const) (funext fun r => map_rat_cast_smul f ℝ ℝ r x)
+    (continuous_id.smul continuous_const) (funext fun r => map_ratCast_smul f ℝ ℝ r x)
 #align map_real_smul map_real_smul
 
 namespace AddMonoidHom

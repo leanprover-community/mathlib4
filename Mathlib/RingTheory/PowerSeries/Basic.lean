@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kenny Lau
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.MvPowerSeries.Basic
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
@@ -166,6 +167,10 @@ theorem ext_iff {φ ψ : R⟦X⟧} : φ = ψ ↔ ∀ n, coeff R n φ = coeff R n
   ⟨fun h n => congr_arg (coeff R n) h, ext⟩
 #align power_series.ext_iff PowerSeries.ext_iff
 
+instance [Subsingleton R] : Subsingleton R⟦X⟧ := by
+  simp only [subsingleton_iff, ext_iff]
+  exact fun _ _ _ ↦ (subsingleton_iff).mp (by infer_instance) _ _
+
 /-- Constructor for formal power series. -/
 def mk {R} (f : ℕ → R) : R⟦X⟧ := fun s => f (s ())
 #align power_series.mk PowerSeries.mk
@@ -261,6 +266,16 @@ theorem coeff_ne_zero_C {a : R} {n : ℕ} (h : n ≠ 0) : coeff R n (C R a) = 0 
 theorem coeff_succ_C {a : R} {n : ℕ} : coeff R (n + 1) (C R a) = 0 :=
   coeff_ne_zero_C n.succ_ne_zero
 
+theorem C_injective : Function.Injective (C R) := by
+  intro a b H
+  have := (ext_iff (φ := C R a) (ψ := C R b)).mp H 0
+  rwa [coeff_zero_C, coeff_zero_C] at this
+
+protected theorem subsingleton_iff : Subsingleton R⟦X⟧ ↔ Subsingleton R := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
+  rw [subsingleton_iff] at h ⊢
+  exact fun a b ↦ C_injective (h (C R a) (C R b))
+
 theorem X_eq : (X : R⟦X⟧) = monomial R 1 1 :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -340,6 +355,11 @@ theorem coeff_smul {S : Type*} [Semiring S] [Module R S] (n : ℕ) (φ : PowerSe
   rfl
 #align power_series.coeff_smul PowerSeries.coeff_smul
 
+@[simp]
+theorem constantCoeff_smul {S : Type*} [Semiring S] [Module R S] (φ : PowerSeries S) (a : R) :
+    constantCoeff S (a • φ) = a • constantCoeff S φ :=
+  rfl
+
 theorem smul_eq_C_mul (f : R⟦X⟧) (a : R) : a • f = C R a * f := by
   ext
   simp
@@ -399,6 +419,9 @@ set_option linter.uppercaseLean3 false in
 theorem coeff_zero_X_mul (φ : R⟦X⟧) : coeff R 0 (X * φ) = 0 := by simp
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_X_mul PowerSeries.coeff_zero_X_mul
+
+theorem constantCoeff_surj : Function.Surjective (constantCoeff R) :=
+  fun r => ⟨(C R) r, constantCoeff_C r⟩
 
 -- The following section duplicates the API of `Data.Polynomial.Coeff` and should attempt to keep
 -- up to date with that
@@ -655,6 +678,19 @@ section CommRing
 
 variable {A : Type*} [CommRing A]
 
+theorem not_isField : ¬IsField A⟦X⟧ := by
+  by_cases hA : Subsingleton A
+  · exact not_isField_of_subsingleton _
+  · nontriviality A
+    rw [Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
+    use Ideal.span {X}
+    constructor
+    · rw [bot_lt_iff_ne_bot, Ne, Ideal.span_singleton_eq_bot]
+      exact X_ne_zero
+    · rw [lt_top_iff_ne_top, Ne, Ideal.eq_top_iff_one, Ideal.mem_span_singleton,
+        X_dvd_iff, constantCoeff_one]
+      exact one_ne_zero
+
 @[simp]
 theorem rescale_X (a : A) : rescale a X = C A a * X := by
   ext
@@ -757,6 +793,9 @@ theorem X_prime : Prime (X : R⟦X⟧) := by
     simpa [map_zero (coeff R 1)] using congr_arg (coeff R 1) h
 set_option linter.uppercaseLean3 false in
 #align power_series.X_prime PowerSeries.X_prime
+
+/-- The variable of the power series ring over an integral domain is irreducible. -/
+theorem X_irreducible : Irreducible (X : R⟦X⟧) := X_prime.irreducible
 
 theorem rescale_injective {a : R} (ha : a ≠ 0) : Function.Injective (rescale a) := by
   intro p q h

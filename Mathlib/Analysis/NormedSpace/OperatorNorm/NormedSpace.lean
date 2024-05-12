@@ -57,7 +57,7 @@ theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[�
   refine' bound_of_shell _ r_pos hk (fun x hko hxo => _) _
   calc
     ‖f x‖ ≤ c := h _ (mem_ball_zero_iff.mpr hxo)
-    _ ≤ c * (‖x‖ * ‖k‖ / r) := (le_mul_of_one_le_right ?_ ?_)
+    _ ≤ c * (‖x‖ * ‖k‖ / r) := le_mul_of_one_le_right ?_ ?_
     _ = _ := by ring
   · exact le_trans (norm_nonneg _) (h 0 (by simp [r_pos]))
   · rw [div_le_iff (zero_lt_one.trans hk)] at hko
@@ -107,9 +107,7 @@ theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
       exact opNorm_zero)
 #align continuous_linear_map.op_norm_zero_iff ContinuousLinearMap.opNorm_zero_iff
 
-@[deprecated]
-alias op_norm_zero_iff :=
-  opNorm_zero_iff -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_zero_iff := opNorm_zero_iff -- deprecated on 2024-02-02
 
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
@@ -212,9 +210,8 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 #align continuous_linear_map.op_norm_comp_linear_isometry_equiv ContinuousLinearMap.opNorm_comp_linearIsometryEquiv
 
-@[deprecated]
-alias op_norm_comp_linearIsometryEquiv :=
-  opNorm_comp_linearIsometryEquiv -- deprecated on 2024-02-02
+@[deprecated] -- deprecated on 2024-02-02
+alias op_norm_comp_linearIsometryEquiv := opNorm_comp_linearIsometryEquiv
 
 /-- The norm of the tensor product of a scalar linear map and of an element of a normed space
 is the product of the norms. -/
@@ -224,7 +221,7 @@ theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c
   · refine' opNorm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => _
     calc
       ‖c x • f‖ = ‖c x‖ * ‖f‖ := norm_smul _ _
-      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := (mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _))
+      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _)
       _ = ‖c‖ * ‖f‖ * ‖x‖ := by ring
   · by_cases h : f = 0
     · simp [h]
@@ -278,7 +275,17 @@ theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRight
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 #align continuous_linear_map.norm_smul_rightL ContinuousLinearMap.norm_smulRightL
 
-variable (𝕜) (𝕜' : Type*)
+variable (𝕜 E Fₗ) in
+/-- An auxiliary instance to be able to just state the fact that the norm of `smulRightL` makes
+sense. This shouldn't be needed. See lean4#3927. -/
+def seminormedAddCommGroup_aux_for_smulRightL :
+    SeminormedAddCommGroup ((E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ) :=
+  toSeminormedAddCommGroup (F := Fₗ →L[𝕜] E →L[𝕜] Fₗ) (𝕜 := 𝕜) (σ₁₂ := RingHom.id 𝕜)
+
+lemma norm_smulRightL_le :
+    letI := seminormedAddCommGroup_aux_for_smulRightL 𝕜 E Fₗ
+    ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
+  LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 
 end ContinuousLinearMap
 

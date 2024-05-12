@@ -64,12 +64,10 @@ section Definitions
 variable (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
   [CompactSpace Y] [Nonempty Y]
 
-@[reducible]
-private def ProdSpaceFun : Type _ :=
+private abbrev ProdSpaceFun : Type _ :=
   (X ⊕ Y) × (X ⊕ Y) → ℝ
 
-@[reducible]
-private def Cb : Type _ :=
+private abbrev Cb : Type _ :=
   BoundedContinuousFunction ((X ⊕ Y) × (X ⊕ Y)) ℝ
 
 private def maxVar : ℝ≥0 :=
@@ -132,7 +130,7 @@ private theorem candidates_nonneg (fA : f ∈ candidates X Y) : 0 ≤ f (x, y) :
   have : 0 ≤ 2 * f (x, y) :=
     calc
       0 = f (x, x) := (candidates_refl fA).symm
-      _ ≤ f (x, y) + f (y, x) := (candidates_triangle fA)
+      _ ≤ f (x, y) + f (y, x) := candidates_triangle fA
       _ = f (x, y) + f (x, y) := by rw [candidates_symm fA]
       _ = 2 * f (x, y) := by ring
   linarith
@@ -422,7 +420,7 @@ variable (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X]
 we can finally select a candidate minimizing `HD`. This will be the candidate realizing the
 optimal coupling. -/
 private theorem exists_minimizer : ∃ f ∈ candidatesB X Y, ∀ g ∈ candidatesB X Y, HD f ≤ HD g :=
-  isCompact_candidatesB.exists_forall_le candidatesB_nonempty HD_continuous.continuousOn
+  isCompact_candidatesB.exists_isMinOn candidatesB_nonempty HD_continuous.continuousOn
 
 private def optimalGHDist : Cb X Y :=
   Classical.choose (exists_minimizer X Y)

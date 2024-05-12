@@ -119,7 +119,7 @@ open Function
 
 theorem toLex_monotone : Monotone (@toLex (∀ i, β i)) := fun a b h =>
   or_iff_not_imp_left.2 fun hne =>
-    let ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < · )) { i | a i ≠ b i }
+    let ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < ·)) { i | a i ≠ b i }
       (Function.ne_iff.1 hne)
     ⟨i, fun j hj => by
       contrapose! hl
@@ -127,7 +127,7 @@ theorem toLex_monotone : Monotone (@toLex (∀ i, β i)) := fun a b h =>
 #align pi.to_lex_monotone Pi.toLex_monotone
 
 theorem toLex_strictMono : StrictMono (@toLex (∀ i, β i)) := fun a b h =>
-  let ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < · )) { i | a i ≠ b i }
+  let ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < ·)) { i | a i ≠ b i }
     (Function.ne_iff.1 h.ne)
   ⟨i, fun j hj => by
     contrapose! hl
@@ -191,9 +191,9 @@ instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
     obtain ⟨a, ha₁, ha₂⟩ := exists_between hi
     classical
       refine' ⟨Function.update a₂ _ a, ⟨i, fun j hj => _, _⟩, i, fun j hj => _, _⟩
-      rw [h j hj]
-      dsimp only at hj
-      · rw [Function.update_noteq hj.ne a]
+      · rw [h j hj]
+        dsimp only at hj
+        rw [Function.update_noteq hj.ne a]
       · rwa [Function.update_same i a]
       · rw [Function.update_noteq hj.ne a]
       · rwa [Function.update_same i a]⟩

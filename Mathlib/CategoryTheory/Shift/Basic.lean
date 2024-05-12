@@ -389,6 +389,7 @@ abbrev shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
 theorem shift_shift' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftAdd X i j).inv ≫ f⟦i + j⟧' ≫ (shiftAdd Y i j).hom := by
   symm
+  rw [← Functor.comp_map, NatIso.app_inv]
   apply NatIso.naturality_1
 #align category_theory.shift_shift' CategoryTheory.shift_shift'
 
@@ -401,6 +402,7 @@ abbrev shiftZero : X⟦(0 : A)⟧ ≅ X :=
 
 theorem shiftZero' : f⟦(0 : A)⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero A Y).inv := by
   symm
+  rw [NatIso.app_inv, NatIso.app_hom]
   apply NatIso.naturality_2
 #align category_theory.shift_zero' CategoryTheory.shiftZero'
 
@@ -449,20 +451,6 @@ variable (X Y : C) (f : X ⟶ Y)
 instance (i : A) : (shiftFunctor C i).IsEquivalence := by
   change (shiftEquiv C i).functor.IsEquivalence
   infer_instance
-
-@[simp]
-theorem shiftFunctor_inv (i : A) : (shiftFunctor C i).inv = shiftFunctor C (-i) :=
-  rfl
-#align category_theory.shift_functor_inv CategoryTheory.shiftFunctor_inv
-
-section
-
-/-- Shifting by `n` is an essentially surjective functor. -/
-instance shiftFunctor_essSurj (i : A) : (shiftFunctor C i).EssSurj :=
-  Equivalence.essSurj_of_equivalence _
-#align category_theory.shift_functor_ess_surj CategoryTheory.shiftFunctor_essSurj
-
-end
 
 variable {C}
 

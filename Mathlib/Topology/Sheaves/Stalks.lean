@@ -140,7 +140,7 @@ stalk of `f _ * F` at `f x` and the stalk of `F` at `x`.
 def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (f x) ⟶ F.stalk x := by
   -- This is a hack; Lean doesn't like to elaborate the term written directly.
   -- Porting note: The original proof was `trans; swap`, but `trans` does nothing.
-  refine' ?_ ≫ colimit.pre _ (OpenNhds.map f x).op
+  refine ?_ ≫ colimit.pre _ (OpenNhds.map f x).op
   exact colim.map (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) F)
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward TopCat.Presheaf.stalkPushforward

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
 import Mathlib.Algebra.GroupPower.Order
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
 
 #align_import ring_theory.valuation.basic from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
@@ -292,7 +292,7 @@ theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
 theorem map_sub (x y : R) : v (x - y) ≤ max (v x) (v y) :=
   calc
     v (x - y) = v (x + -y) := by rw [sub_eq_add_neg]
-    _ ≤ max (v x) (v <| -y) := (v.map_add _ _)
+    _ ≤ max (v x) (v <| -y) := v.map_add _ _
     _ = max (v x) (v y) := by rw [map_neg]
 #align valuation.map_sub Valuation.map_sub
 
@@ -312,7 +312,7 @@ theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) 
   apply lt_irrefl (v x)
   calc
     v x = v (x + y - y) := by simp
-    _ ≤ max (v <| x + y) (v y) := (map_sub _ _ _)
+    _ ≤ max (v <| x + y) (v y) := map_sub _ _ _
     _ < v x := max_lt h' vyx
 #align valuation.map_add_of_distinct_val Valuation.map_add_of_distinct_val
 
@@ -385,7 +385,7 @@ theorem map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f
   fun r s =>
   calc
     f (v r) ≤ f (v s) ↔ v r ≤ v s := by rw [H.le_iff_le]
-    _ ↔ v' r ≤ v' s := (h r s)
+    _ ↔ v' r ≤ v' s := h r s
     _ ↔ f (v' r) ≤ f (v' s) := by rw [H.le_iff_le]
 #align valuation.is_equiv.map Valuation.IsEquiv.map
 
@@ -541,7 +541,7 @@ def supp : Ideal R where
   smul_mem' c x hx :=
     calc
       v (c * x) = v c * v x := map_mul v c x
-      _ = v c * 0 := (congr_arg _ hx)
+      _ = v c * 0 := congr_arg _ hx
       _ = 0 := mul_zero _
 #align valuation.supp Valuation.supp
 

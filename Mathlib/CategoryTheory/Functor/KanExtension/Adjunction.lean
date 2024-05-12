@@ -1,132 +1,130 @@
--- refactor of Limits.KanExtension
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+
+/-! # The Kan extension functor
+
+Given a functor `L : C ⥤ D`, we define the left Kan extension functor
+`L.lan : (C ⥤ H) ⥤ (D ⥤ H)` which sends a functor `F : C ⥤ H` to its
+left Kan extension along `L`. This is defined if all `F` have such
+a left Kan extension. It is shown that `L.lan` is the left adjoint to
+the functor `(D ⥤ H) ⥤ (C ⥤ H)` given by the precomposition
+with `L` (see `Functor.lanAdjunction`).
+
+## TODO
+- dualize the results for right Kan extensions
+- refactor the file `CategoryTheory.Limits.KanExtension` so that
+the definitions of `Lan` and `Ran` in that file (which rely on the
+existence of (co)limits) are replaced by the new definition
+`Functor.lan` which is based on Kan extensions API.
+
+-/
 
 namespace CategoryTheory
 
 open Category
 
-namespace Limits
-
-namespace IsColimit
-
-variable {J C : Type*} [Category J] [Category C] {F : J ⥤ C} {c : Cocone F}
-  (hc : IsColimit c)
-
-lemma isIso_ι_app_of_isTerminal (X : J) (hX : IsTerminal X) : IsIso (c.ι.app X) := by
-  change IsIso (coconePointUniqueUpToIso (colimitOfDiagramTerminal hX F) hc).hom
-  infer_instance
-
-end IsColimit
-
-end Limits
-
 namespace Functor
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
-  {E : Type*} [Category E] [∀ (G : C ⥤ E), HasLeftKanExtension F G]
+variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D)
+  {H : Type*} [Category H] [∀ (F : C ⥤ H), HasLeftKanExtension L F]
 
-noncomputable def lan : (C ⥤ E) ⥤ (D ⥤ E) where
-  obj G := leftKanExtension F G
-  map {G₁ G₂} φ := descOfIsLeftKanExtension _ (leftKanExtensionUnit F G₁) _
-    (φ ≫ leftKanExtensionUnit F G₂)
+/-- The left Kan extension functor `(C ⥤ H) ⥤ (D ⥤ H)` along a functor `C ⥤ D`. -/
+@[pp_dot]
+noncomputable def lan : (C ⥤ H) ⥤ (D ⥤ H) where
+  obj F := leftKanExtension L F
+  map {F₁ F₂} φ := descOfIsLeftKanExtension _ (leftKanExtensionUnit L F₁) _
+    (φ ≫ leftKanExtensionUnit L F₂)
 
-noncomputable def lanUnit : (𝟭 (C ⥤ E)) ⟶ lan F ⋙ (whiskeringLeft C D E).obj F where
-  app G := leftKanExtensionUnit F G
-  naturality {G₁ G₂} φ := by ext; simp [lan]
+/-- The natural transformation `F ⟶ L ⋙ (L.lan).obj G`. -/
+@[pp_dot]
+noncomputable def lanUnit : (𝟭 (C ⥤ H)) ⟶ L.lan ⋙ (whiskeringLeft C D H).obj L where
+  app F := leftKanExtensionUnit L F
+  naturality {F₁ F₂} φ := by ext; simp [lan]
 
-instance (G : C ⥤ E) : ((lan F).obj G).IsLeftKanExtension ((lanUnit F).app G) := by
+instance (F : C ⥤ H) : (L.lan.obj F).IsLeftKanExtension (L.lanUnit.app F) := by
   dsimp [lan, lanUnit]
   infer_instance
 
+/-- If there exists a pointwise left Kan extension of `F` along `L`,
+then `L.lan.obj G` is a pointwise left Kan extension of `F`. -/
 noncomputable def isPointwiseLeftKanExtensionLanUnit
-    (G : C ⥤ E) [HasPointwiseLeftKanExtension F G] :
-    (LeftExtension.mk _ ((lanUnit F).app G)).IsPointwiseLeftKanExtension := by
-  have : HasPointwiseLeftKanExtension F ((𝟭 (C ⥤ E)).obj G) := by
-    dsimp
-    infer_instance
-  exact isPointwiseLeftKanExtensionOfIsLeftKanExtension _ ((lanUnit F).app G)
+    (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] :
+    (LeftExtension.mk _ (L.lanUnit.app F)).IsPointwiseLeftKanExtension :=
+  isPointwiseLeftKanExtensionOfIsLeftKanExtension (F := F) _ (L.lanUnit.app F)
 
-variable {F} in
-noncomputable def homEquivOfIsLeftKanExtension
-    {G : C ⥤ E} (G' : D ⥤ E) (α : G ⟶ F ⋙ G') (H : D ⥤ E)
-    [G'.IsLeftKanExtension α] : (G' ⟶ H) ≃ (G ⟶ F ⋙ H) where
-  toFun β := α ≫ whiskerLeft _ β
-  invFun β := descOfIsLeftKanExtension _ α _ β
-  left_inv β := Functor.hom_ext_of_isLeftKanExtension _ α _ _ (by aesop_cat)
-  right_inv := by aesop_cat
-
-variable (E) in
-noncomputable def Lan.adjunction : lan F ⊣ (whiskeringLeft _ _ E).obj F :=
+variable (H) in
+/-- The left Kan extension functor `L.Lan` is left adjoint to the
+precomposition by `L`. -/
+@[pp_dot]
+noncomputable def lanAdjunction : L.lan ⊣ (whiskeringLeft C D H).obj L :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun G H => homEquivOfIsLeftKanExtension _ ((lanUnit F).app G) H
-      homEquiv_naturality_left_symm := fun {G₁ G₂ H} f α =>
-        hom_ext_of_isLeftKanExtension _  ((lanUnit F).app G₁) _ _ (by
+    { homEquiv := fun F G => homEquivOfIsLeftKanExtension _ (L.lanUnit.app F) G
+      homEquiv_naturality_left_symm := fun {F₁ F₂ G} f α =>
+        hom_ext_of_isLeftKanExtension _  (L.lanUnit.app F₁) _ _ (by
           ext X
           dsimp [homEquivOfIsLeftKanExtension]
           rw [descOfIsLeftKanExtension_fac_app, NatTrans.comp_app, ← assoc]
-          have h := congr_app ((lanUnit F).naturality f) X
+          have h := congr_app (L.lanUnit.naturality f) X
           dsimp at h ⊢
           rw [← h, assoc, descOfIsLeftKanExtension_fac_app] )
-      homEquiv_naturality_right := fun {G H₁ H₂} β f => by
+      homEquiv_naturality_right := fun {F G₁ G₂} β f => by
         dsimp [homEquivOfIsLeftKanExtension]
         rw [assoc] }
 
-variable (E) in
+variable (H) in
 @[simp]
-lemma Lan.adjunction_unit :
-    (Lan.adjunction F E).unit =
-      lanUnit F := by
-  ext G : 2
-  dsimp [adjunction, homEquivOfIsLeftKanExtension]
+lemma lanAdjunction_unit : (L.lanAdjunction H).unit = L.lanUnit := by
+  ext F : 2
+  dsimp [lanAdjunction, homEquivOfIsLeftKanExtension]
   simp
 
-namespace LeftExtension
+lemma lanAdjunction_counit_app (G : D ⥤ H) :
+    (L.lanAdjunction H).counit.app G =
+      descOfIsLeftKanExtension (L.lan.obj (L ⋙ G)) (L.lanUnit.app (L ⋙ G)) G (𝟙 (L ⋙ G)) :=
+  rfl
 
-namespace IsPointwiseLeftKanExtensionAt
+@[reassoc (attr := simp)]
+lemma lanUnit_app_whiskerLeft_lanAdjunction_counit_app (G : D ⥤ H) :
+    L.lanUnit.app (L ⋙ G) ≫ whiskerLeft L ((L.lanAdjunction H).counit.app G) = 𝟙 (L ⋙ G) := by
+  simp [lanAdjunction_counit_app]
 
-variable {F}
-variable {G : C ⥤ E} {e : LeftExtension F G} {X : C}
-    (he : e.IsPointwiseLeftKanExtensionAt (F.obj X))
+@[reassoc (attr := simp)]
+lemma lanUnit_app_app_lanAdjunction_counit_app_app (G : D ⥤ H) (X : C) :
+    (L.lanUnit.app (L ⋙ G)).app X ≫ ((L.lanAdjunction H).counit.app G).app (L.obj X) = 𝟙 _ :=
+  congr_app (L.lanUnit_app_whiskerLeft_lanAdjunction_counit_app G) X
 
-lemma isIso_hom_app [Full F] [Faithful F] : IsIso (e.hom.app X) := by
-  simpa using he.isIso_ι_app_of_isTerminal _ CostructuredArrow.mkIdTerminal
-
-end IsPointwiseLeftKanExtensionAt
-
-namespace IsPointwiseLeftKanExtension
-
-variable {F}
-variable {G : C ⥤ E} {e : LeftExtension F G}
-    (he : e.IsPointwiseLeftKanExtension)
-
-lemma isIso_hom [Full F] [Faithful F] : IsIso e.hom := by
-  have : ∀ (X : C), IsIso (e.hom.app X) := fun (X : C) => (he (F.obj X)).isIso_hom_app
-  apply NatIso.isIso_of_isIso_app
-
-end IsPointwiseLeftKanExtension
-
-end LeftExtension
+lemma isIso_lanAdjunction_counit_app_iff (G : D ⥤ H) :
+    IsIso ((L.lanAdjunction H).counit.app G) ↔ G.IsLeftKanExtension (𝟙 (L ⋙ G)) :=
+  (isLeftKanExtension_iff_isIso _ (L.lanUnit.app (L ⋙ G)) _ (by simp)).symm
 
 section
 
-variable [Full F] [Faithful F]
+variable [Full L] [Faithful L]
 
-instance (G : C ⥤ E) (X : C) [HasPointwiseLeftKanExtension F G] :
-    IsIso (((Lan.adjunction F E).unit.app G).app X) := by
-  simpa using (isPointwiseLeftKanExtensionLanUnit F G (F.obj X)).isIso_hom_app
+instance (F : C ⥤ H) (X : C) [HasPointwiseLeftKanExtension L F] :
+    IsIso ((L.lanUnit.app F).app X) :=
+  (isPointwiseLeftKanExtensionLanUnit L F (L.obj X)).isIso_hom_app
 
-instance (G : C ⥤ E) [HasPointwiseLeftKanExtension F G] :
-    IsIso ((Lan.adjunction F E).unit.app G) :=
+instance (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] :
+    IsIso (L.lanUnit.app F) :=
   NatIso.isIso_of_isIso_app _
 
-instance coreflective [∀ (G : C ⥤ E), HasPointwiseLeftKanExtension F G] :
-    IsIso ((Lan.adjunction F E).unit) :=
-  NatIso.isIso_of_isIso_app _
+instance coreflective [∀ (F : C ⥤ H), HasPointwiseLeftKanExtension L F] :
+    IsIso (L.lanUnit (H := H)) := by
+  apply NatIso.isIso_of_isIso_app _
 
-instance coreflective' [∀ (G : C ⥤ E), HasPointwiseLeftKanExtension F G] :
-    IsIso (lanUnit F : (𝟭 (C ⥤ E)) ⟶ _) := by
-  rw [← Lan.adjunction_unit]
+instance (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] :
+    IsIso ((L.lanAdjunction H).unit.app F) := by
+  rw [lanAdjunction_unit]
   infer_instance
+
+instance coreflective' [∀ (F : C ⥤ H), HasPointwiseLeftKanExtension L F] :
+    IsIso (L.lanAdjunction H).unit := by
+  apply NatIso.isIso_of_isIso_app _
 
 end
 

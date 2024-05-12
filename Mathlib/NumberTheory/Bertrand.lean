@@ -69,20 +69,20 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
   -- porting note (#11083): the proof was rewritten, because it was too slow
   have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
     apply ConcaveOn.sub
-    apply ConcaveOn.add
-    exact strictConcaveOn_log_Ioi.concaveOn.subset
-      (Set.Ioi_subset_Ioi (by norm_num)) (convex_Ioi 0.5)
-    convert ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap
-      ((2 : ℝ) • LinearMap.id))) using 1
-    · ext x
+    · apply ConcaveOn.add
+      · exact strictConcaveOn_log_Ioi.concaveOn.subset
+          (Set.Ioi_subset_Ioi (by norm_num)) (convex_Ioi 0.5)
+      convert ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap
+        ((2 : ℝ) • LinearMap.id))) using 1
+      ext x
       simp only [Set.mem_Ioi, Set.mem_preimage, LinearMap.smul_apply,
         LinearMap.id_coe, id_eq, smul_eq_mul]
       rw [← mul_lt_mul_left (two_pos)]
       norm_num1
       rfl
     apply ConvexOn.smul
-    refine div_nonneg (log_nonneg (by norm_num1)) (by norm_num1)
-    exact convexOn_id (convex_Ioi (0.5 : ℝ))
+    · refine div_nonneg (log_nonneg (by norm_num1)) (by norm_num1)
+    · exact convexOn_id (convex_Ioi (0.5 : ℝ))
   suffices ∃ x1 x2, 0.5 < x1 ∧ x1 < x2 ∧ x2 ≤ x ∧ 0 ≤ f x1 ∧ f x2 ≤ 0 by
     obtain ⟨x1, x2, h1, h2, h0, h3, h4⟩ := this
     exact (h.right_le_of_le_left'' h1 ((h1.trans h2).trans_le h0) h2 h0 (h4.trans h3)).trans h4
@@ -97,10 +97,10 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
     conv in 512 => equals 2 ^ 9 => norm_num1
     conv in 2 * 512 => equals 2 ^ 10 => norm_num1
     conv in 32 => rw [← Nat.cast_ofNat]
-    rw [rpow_nat_cast, ← pow_mul, ← pow_add]
+    rw [rpow_natCast, ← pow_mul, ← pow_add]
     conv in 4 => equals 2 ^ (2 : ℝ) => rw [rpow_two]; norm_num1
-    rw [← rpow_mul, ← rpow_nat_cast]
-    apply rpow_le_rpow_of_exponent_le
+    rw [← rpow_mul, ← rpow_natCast]
+    on_goal 1 => apply rpow_le_rpow_of_exponent_le
     all_goals norm_num1
  #align bertrand.real_main_inequality Bertrand.real_main_inequality
 
@@ -117,8 +117,8 @@ open Nat
 theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
     n * (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) ≤ 4 ^ n := by
   rw [← @cast_le ℝ]
-  simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_nat_cast]
-  refine' _root_.trans ?_ (Bertrand.real_main_inequality (by exact_mod_cast n_large))
+  simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_natCast]
+  refine _root_.trans ?_ (Bertrand.real_main_inequality (by exact_mod_cast n_large))
   gcongr
   · have n2_pos : 0 < 2 * n := by positivity
     exact mod_cast n2_pos

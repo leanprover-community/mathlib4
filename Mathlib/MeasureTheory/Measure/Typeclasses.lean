@@ -68,7 +68,7 @@ theorem measure_compl_le_add_of_le_add [IsFiniteMeasure μ] (hs : MeasurableSet 
     tsub_le_iff_right]
   calc
     μ univ = μ univ - μ s + μ s := (tsub_add_cancel_of_le <| measure_mono s.subset_univ).symm
-    _ ≤ μ univ - μ s + (μ t + ε) := (add_le_add_left h _)
+    _ ≤ μ univ - μ s + (μ t + ε) := add_le_add_left h _
     _ = _ := by rw [add_right_comm, add_assoc]
 
 #align measure_theory.measure_compl_le_add_of_le_add MeasureTheory.measure_compl_le_add_of_le_add
@@ -498,7 +498,7 @@ theorem FiniteAtFilter.exists_mem_basis {f : Filter α} (hμ : FiniteAtFilter μ
 #align measure_theory.measure.finite_at_filter.exists_mem_basis MeasureTheory.Measure.FiniteAtFilter.exists_mem_basis
 
 theorem finiteAtBot {m0 : MeasurableSpace α} (μ : Measure α) : μ.FiniteAtFilter ⊥ :=
-  ⟨∅, mem_bot, by simp only [OuterMeasure.empty', zero_lt_top]⟩
+  ⟨∅, mem_bot, by simp only [measure_empty, zero_lt_top]⟩
 #align measure_theory.measure.finite_at_bot MeasureTheory.Measure.finiteAtBot
 
 /-- `μ` has finite spanning sets in `C` if there is a countable sequence of sets in `C` that have
@@ -539,9 +539,19 @@ instance isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure
 lemma sum_sFiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sFiniteSeq μ) = μ :=
   h.1.choose_spec.2.symm
 
+instance : SFinite (0 : Measure α) := ⟨fun _ ↦ 0, inferInstance, by rw [Measure.sum_zero]⟩
+
+@[simp]
+lemma sFiniteSeq_zero (n : ℕ) : sFiniteSeq (0 : Measure α) n = 0 := by
+  ext s hs
+  have h : ∑' n, sFiniteSeq (0 : Measure α) n s = 0 := by
+    simp [← Measure.sum_apply _ hs, sum_sFiniteSeq]
+  simp only [ENNReal.tsum_eq_zero] at h
+  exact h n
+
 /-- A countable sum of finite measures is s-finite.
 This lemma is superseeded by the instance below. -/
-lemma sfinite_sum_of_countable {ι : Type*} [Countable ι]
+lemma sfinite_sum_of_countable [Countable ι]
     (m : ι → Measure α) [∀ n, IsFiniteMeasure (m n)] : SFinite (Measure.sum m) := by
   classical
   obtain ⟨f, hf⟩ : ∃ f : ι → ℕ, Function.Injective f := Countable.exists_injective_nat ι
@@ -552,11 +562,21 @@ lemma sfinite_sum_of_countable {ι : Type*} [Countable ι]
   · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply]
     infer_instance
 
-instance {ι : Type*} [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] :
-    SFinite (Measure.sum m) := by
+instance [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] : SFinite (Measure.sum m) := by
   change SFinite (Measure.sum (fun i ↦ m i))
   simp_rw [← sum_sFiniteSeq (m _), Measure.sum_sum]
   apply sfinite_sum_of_countable
+
+instance [SFinite μ] [SFinite ν] : SFinite (μ + ν) := by
+  refine ⟨fun n ↦ sFiniteSeq μ n + sFiniteSeq ν n, inferInstance, ?_⟩
+  ext s hs
+  simp only [Measure.add_apply, sum_apply _ hs]
+  rw [tsum_add ENNReal.summable ENNReal.summable, ← sum_apply _ hs, ← sum_apply _ hs,
+    sum_sFiniteSeq, sum_sFiniteSeq]
+
+instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
+  ⟨fun n ↦ (sFiniteSeq μ n).restrict s, fun n ↦ inferInstance,
+    by rw [← restrict_sum_of_countable, sum_sFiniteSeq]⟩
 
 end SFinite
 
@@ -672,27 +692,6 @@ instance (priority := 100) [SigmaFinite μ] : SFinite μ := by
     (sum_restrict_disjointed_spanningSets μ).symm⟩⟩
 
 namespace Measure
-
-theorem iSup_restrict_spanningSets [SigmaFinite μ] (hs : MeasurableSet s) :
-    ⨆ i, μ.restrict (spanningSets μ i) s = μ s :=
-  calc
-    ⨆ i, μ.restrict (spanningSets μ i) s = μ.restrict (⋃ i, spanningSets μ i) s :=
-      (restrict_iUnion_apply_eq_iSup (monotone_spanningSets μ).directed_le hs).symm
-    _ = μ s := by rw [iUnion_spanningSets, restrict_univ]
-#align measure_theory.measure.supr_restrict_spanning_sets MeasureTheory.Measure.iSup_restrict_spanningSets
-
-/-- In a σ-finite space, any measurable set of measure `> r` contains a measurable subset of
-finite measure `> r`. -/
-theorem exists_subset_measure_lt_top [SigmaFinite μ] {r : ℝ≥0∞} (hs : MeasurableSet s)
-    (h's : r < μ s) : ∃ t, MeasurableSet t ∧ t ⊆ s ∧ r < μ t ∧ μ t < ∞ := by
-  rw [← iSup_restrict_spanningSets hs,
-    @lt_iSup_iff _ _ _ r fun i : ℕ => μ.restrict (spanningSets μ i) s] at h's
-  rcases h's with ⟨n, hn⟩
-  simp only [restrict_apply hs] at hn
-  refine'
-    ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left _ _, hn, _⟩
-  exact (measure_mono (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top _ _)
-#align measure_theory.measure.exists_subset_measure_lt_top MeasureTheory.Measure.exists_subset_measure_lt_top
 
 /-- A set in a σ-finite space has zero measure if and only if its intersection with
 all members of the countable family of finite measure spanning sets has zero measure. -/
@@ -895,7 +894,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
         calc
           μ (t ∩ disjointed w n) ≤ μ (t ∩ w n) :=
             measure_mono (inter_subset_inter_right _ (disjointed_le w n))
-          _ ≤ μ (w n) := (measure_mono (inter_subset_right _ _))
+          _ ≤ μ (w n) := measure_mono (inter_subset_right _ _)
           _ < ∞ := hw n
       _ = ∑' n, μ.restrict (t ∩ u) (disjointed w n) := by
         congr 1
@@ -909,7 +908,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
         · intro i
           refine MeasurableSet.disjointed (fun n => ?_) i
           exact measurableSet_toMeasurable _ _
-      _ ≤ μ.restrict (t ∩ u) univ := (measure_mono (subset_univ _))
+      _ ≤ μ.restrict (t ∩ u) univ := measure_mono (subset_univ _)
       _ = μ (t ∩ u) := by rw [restrict_apply MeasurableSet.univ, univ_inter]
   -- thanks to the definition of `toMeasurable`, the previous property will also be shared
   -- by `toMeasurable μ t`, which is enough to conclude the proof.
@@ -942,6 +941,36 @@ theorem restrict_toMeasurable_of_sFinite [SFinite μ] (s : Set α) :
     rw [restrict_apply ht, inter_comm t, measure_toMeasurable_inter_of_sFinite ht,
       restrict_apply ht, inter_comm t]
 #align measure_theory.measure.restrict_to_measurable_of_sigma_finite MeasureTheory.Measure.restrict_toMeasurable_of_sFinite
+
+/-- Auxiliary lemma for `iSup_restrict_spanningSets`. -/
+theorem iSup_restrict_spanningSets_of_measurableSet [SigmaFinite μ] (hs : MeasurableSet s) :
+    ⨆ i, μ.restrict (spanningSets μ i) s = μ s :=
+  calc
+    ⨆ i, μ.restrict (spanningSets μ i) s = μ.restrict (⋃ i, spanningSets μ i) s :=
+      (restrict_iUnion_apply_eq_iSup (monotone_spanningSets μ).directed_le hs).symm
+    _ = μ s := by rw [iUnion_spanningSets, restrict_univ]
+#align measure_theory.measure.supr_restrict_spanning_sets MeasureTheory.Measure.iSup_restrict_spanningSets_of_measurableSet
+
+theorem iSup_restrict_spanningSets [SigmaFinite μ] (s : Set α) :
+    ⨆ i, μ.restrict (spanningSets μ i) s = μ s := by
+  rw [← measure_toMeasurable s,
+    ← iSup_restrict_spanningSets_of_measurableSet (measurableSet_toMeasurable _ _)]
+  simp_rw [restrict_apply' (measurable_spanningSets μ _), Set.inter_comm s,
+    ← restrict_apply (measurable_spanningSets μ _), ← restrict_toMeasurable_of_sFinite s,
+    restrict_apply (measurable_spanningSets μ _), Set.inter_comm _ (toMeasurable μ s)]
+
+/-- In a σ-finite space, any measurable set of measure `> r` contains a measurable subset of
+finite measure `> r`. -/
+theorem exists_subset_measure_lt_top [SigmaFinite μ] {r : ℝ≥0∞} (hs : MeasurableSet s)
+    (h's : r < μ s) : ∃ t, MeasurableSet t ∧ t ⊆ s ∧ r < μ t ∧ μ t < ∞ := by
+  rw [← iSup_restrict_spanningSets,
+    @lt_iSup_iff _ _ _ r fun i : ℕ => μ.restrict (spanningSets μ i) s] at h's
+  rcases h's with ⟨n, hn⟩
+  simp only [restrict_apply hs] at hn
+  refine'
+    ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left _ _, hn, _⟩
+  exact (measure_mono (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top _ _)
+#align measure_theory.measure.exists_subset_measure_lt_top MeasureTheory.Measure.exists_subset_measure_lt_top
 
 namespace FiniteSpanningSetsIn
 
@@ -1007,7 +1036,7 @@ theorem sigmaFinite_of_le (μ : Measure α) [hs : SigmaFinite μ] (h : ν ≤ μ
   ext s hs
   rw [← ENNReal.add_right_inj (measure_mono (inter_subset_right s _) |>.trans_lt <|
     measure_spanningSets_lt_top μ i).ne]
-  simp only [ext_iff', add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply] at h
+  simp only [ext_iff', coe_add, Pi.add_apply] at h
   simp [hs, h]
 
 @[simp] lemma add_left_inj (μ ν₁ ν₂ : Measure α) [SigmaFinite μ] :
@@ -1077,8 +1106,7 @@ instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
       set_mem := fun _ ↦ trivial
       finite := by
         intro i
-        simp only [smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
-          nnreal_smul_coe_apply]
+        simp only [Measure.coe_smul, Pi.smul_apply, nnreal_smul_coe_apply]
         exact ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_spanningSets_lt_top μ i).ne
       spanning := iUnion_spanningSets μ }⟩
 

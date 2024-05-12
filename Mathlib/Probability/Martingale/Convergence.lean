@@ -144,9 +144,9 @@ theorem tendsto_of_uncrossing_lt_top (hf₁ : liminf (fun n => (‖f n ω‖₊ 
   by_cases h : IsBoundedUnder (· ≤ ·) atTop fun n => |f n ω|
   · rw [isBoundedUnder_le_abs] at h
     refine' tendsto_of_no_upcrossings Rat.denseRange_cast _ h.1 h.2
-    · intro a ha b hb hab
-      obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩ := ha, hb
-      exact not_frequently_of_upcrossings_lt_top hab (hf₂ a b (Rat.cast_lt.1 hab)).ne
+    intro a ha b hb hab
+    obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩ := ha, hb
+    exact not_frequently_of_upcrossings_lt_top hab (hf₂ a b (Rat.cast_lt.1 hab)).ne
   · obtain ⟨a, b, hab, h₁, h₂⟩ := ENNReal.exists_upcrossings_of_not_bounded_under hf₁.ne h
     exact
       False.elim ((hf₂ a b hab).ne (upcrossings_eq_top_of_frequently_lt (Rat.cast_lt.2 hab) h₁ h₂))
@@ -173,10 +173,10 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         fun n => le_trans _ (hR' n)⟩)
       refine' lintegral_mono fun ω => _
       rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]
-      by_cases hnonneg : 0 ≤ f n ω - a
-      · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
-      · rw [posPart_eq_zero.2 (not_le.1 hnonneg).le]
-        exact norm_nonneg _
+      · by_cases hnonneg : 0 ≤ f n ω - a
+        · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
+        · rw [posPart_eq_zero.2 (not_le.1 hnonneg).le]
+          exact norm_nonneg _
       · simp only [Ne, ENNReal.coe_ne_top, not_false_iff]
     · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
   · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or_iff]
@@ -384,11 +384,11 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
   have : ∀ n s, MeasurableSet[ℱ n] s →
       ∫ x in s, g x ∂μ = ∫ x in s, ℱ.limitProcess (fun n x => (μ[g|ℱ n]) x) μ x ∂μ := by
     intro n s hs
-    rw [← set_integral_condexp (ℱ.le n) hg hs, ← set_integral_condexp (ℱ.le n) hlimint hs]
-    refine' set_integral_congr_ae (ℱ.le _ _ hs) _
+    rw [← setIntegral_condexp (ℱ.le n) hg hs, ← setIntegral_condexp (ℱ.le n) hlimint hs]
+    refine' setIntegral_congr_ae (ℱ.le _ _ hs) _
     filter_upwards [(martingale_condexp g ℱ μ).ae_eq_condexp_limitProcess hunif n] with x hx _
     rw [hx]
-  refine' ae_eq_of_forall_set_integral_eq_of_sigmaFinite' hle (fun s _ _ => hg.integrableOn)
+  refine' ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hle (fun s _ _ => hg.integrableOn)
     (fun s _ _ => hlimint.integrableOn) (fun s hs => _) hgmeas.aeStronglyMeasurable'
     stronglyMeasurable_limitProcess.aeStronglyMeasurable'
   apply @MeasurableSpace.induction_on_inter _ _ _ (⨆ n, ℱ n)
@@ -406,10 +406,10 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
     have hheq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas
       (hlimint.trim hle stronglyMeasurable_limitProcess)
     rw [add_comm, ← eq_sub_iff_add_eq] at hgeq hheq
-    rw [set_integral_trim hle hgmeas htmeas.compl,
-      set_integral_trim hle stronglyMeasurable_limitProcess htmeas.compl, hgeq, hheq, ←
-      set_integral_trim hle hgmeas htmeas, ←
-      set_integral_trim hle stronglyMeasurable_limitProcess htmeas, ← integral_trim hle hgmeas, ←
+    rw [setIntegral_trim hle hgmeas htmeas.compl,
+      setIntegral_trim hle stronglyMeasurable_limitProcess htmeas.compl, hgeq, hheq, ←
+      setIntegral_trim hle hgmeas htmeas, ←
+      setIntegral_trim hle stronglyMeasurable_limitProcess htmeas, ← integral_trim hle hgmeas, ←
       integral_trim hle stronglyMeasurable_limitProcess, ← integral_univ,
       this 0 _ MeasurableSet.univ, integral_univ, ht (measure_lt_top _ _)]
   · rintro f hf hfmeas heq -

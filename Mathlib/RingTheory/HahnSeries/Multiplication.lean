@@ -3,7 +3,6 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
-import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Data.Finset.MulAntidiagonal
@@ -442,6 +441,18 @@ theorem single_mul_single {a b : Γ} {r s : R} :
 #align hahn_series.single_mul_single HahnSeries.single_mul_single
 
 end NonUnitalNonAssocSemiring
+
+section Semiring
+
+variable [Semiring R]
+
+@[simp]
+theorem single_pow (a : Γ) (n : ℕ) (r : R) : single a r ^ n = single (n • a) (r ^ n) := by
+  induction' n with n IH
+  · simp; rfl
+  · rw [pow_succ, pow_succ, IH, single_mul_single, succ_nsmul]
+
+end Semiring
 
 section NonAssocSemiring
 
