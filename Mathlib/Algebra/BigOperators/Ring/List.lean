@@ -97,7 +97,7 @@ lemma dvd_sum [NonUnitalSemiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) 
 #align list.dvd_sum List.dvd_sum
 
 @[simp] lemma sum_zipWith_distrib_left [Semiring R] (f : ι → κ → R) (a : R) :
-    ∀ (l₁ : List ι) (l₂ : List κ), 
+    ∀ (l₁ : List ι) (l₂ : List κ),
       (zipWith (fun i j ↦ a * f i j) l₁ l₂).sum = a * (zipWith f l₁ l₂).sum
   | [], _ => by simp
   | _, [] => by simp
