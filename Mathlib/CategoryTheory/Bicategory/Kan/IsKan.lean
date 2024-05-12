@@ -106,6 +106,12 @@ def ofCompId (t : LeftExtension f (g ≫ 𝟙 c)) (P : IsKan t) : IsKan t.ofComp
     apply P.hom_ext
     simp [← LeftExtension.w τ]
 
+/-- If `s ≅ t` and `IsKan (s.whisker h)`, then `IsKan (t.whisker h)`. -/
+def whiskerOfCommute (s t : LeftExtension f g) (i : s ≅ t) {x : B} (h : c ⟶ x)
+    (P : IsKan (s.whisker h)) :
+    IsKan (t.whisker h) :=
+  P.ofIsoKan <| whiskerIso i h
+
 end IsKan
 
 namespace IsAbsKan
@@ -190,6 +196,12 @@ def ofIdComp (t : LeftLift f (𝟙 c ≫ g)) (P : IsKan t) : IsKan t.ofIdComp :=
     ext
     apply P.hom_ext
     simp [← LeftLift.w τ]
+
+/-- If `s ≅ t` and `IsKan (s.whisker h)`, then `IsKan (t.whisker h)`. -/
+def whiskerOfCommute (s t : LeftLift f g) (i : s ≅ t) {x : B} (h : x ⟶ c)
+    (P : IsKan (s.whisker h)) :
+    IsKan (t.whisker h) :=
+  P.ofIsoKan <| whiskerIso i h
 
 end IsKan
 
