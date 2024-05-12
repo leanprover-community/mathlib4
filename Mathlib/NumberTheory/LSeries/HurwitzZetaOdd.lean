@@ -230,7 +230,7 @@ lemma hasSum_int_oddKernel (a : ℝ) {x : ℝ} (hx : 0 < x) :
 lemma hasSum_int_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) : HasSum
     (fun n : ℤ ↦ -I * n * cexp (2 * π * I * a * n) * rexp (-π * n ^ 2 * t)) ↑(sinKernel a t) := by
   have h : -2 * (π : ℂ) ≠ (0 : ℂ) := by
-    simp? [pi_ne_zero] says simp only [neg_mul, ne_eq, neg_eq_zero, mul_eq_zero,
+    simp only [neg_mul, ne_eq, neg_eq_zero, mul_eq_zero,
       OfNat.ofNat_ne_zero, ofReal_eq_zero, pi_ne_zero, or_self, not_false_eq_true]
   rw [sinKernel_def]
   have := hasSum_jacobiTheta₂'_term a (by rwa [I_mul_im, ofReal_re])
@@ -269,8 +269,8 @@ section asymp
 /-- The function `oddKernel a` has exponential decay at `+∞`, for any `a`. -/
 lemma isBigO_atTop_oddKernel (a : UnitAddCircle) :
     ∃ p, 0 < p ∧ IsBigO atTop (oddKernel a) (fun x ↦ Real.exp (-p * x)) := by
-  obtain ⟨b, _, rfl⟩ := a.eq_coe_Ico
-  let ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_int_one b
+  induction' a using QuotientAddGroup.induction_on with b
+  obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_int_one b
   refine ⟨p, hp, (Eventually.isBigO ?_).trans hp'⟩
   filter_upwards [eventually_gt_atTop 0] with t ht
   simpa only [← (hasSum_int_oddKernel b ht).tsum_eq, Real.norm_eq_abs, HurwitzKernelBounds.F_int,
@@ -298,7 +298,7 @@ end asymp
 
 section FEPair
 /-!
-## Construction of a FE-pair
+## Construction of an FE-pair
 -/
 
 /-- A `StrongFEPair` structure with `f = oddKernel a` and `g = sinKernel a`. -/
@@ -314,9 +314,9 @@ def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
   hk := by norm_num
   hε := one_ne_zero
   f₀ := 0
-  hf₀ := by rfl
+  hf₀ := rfl
   g₀ := 0
-  hg₀ := by rfl
+  hg₀ := rfl
   hf_top r := by
     let ⟨v, hv, hv'⟩ := isBigO_atTop_oddKernel a
     rw [← isBigO_norm_left] at hv' ⊢
@@ -405,8 +405,7 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   have hF t (ht : 0 < t) :
       HasSum (fun n ↦ c n * n * rexp (-π * n ^ 2 * t)) (sinKernel a t / 2) := by
     refine ((hasSum_int_sinKernel a ht).div_const 2).congr_fun fun n ↦ ?_
-    rw [div_mul_eq_mul_div, div_mul_eq_mul_div, mul_assoc (-I), mul_assoc (-I),
-      mul_assoc (-I), mul_assoc (-I), mul_comm (cexp _)]
+    rw [div_mul_eq_mul_div, div_mul_eq_mul_div, mul_right_comm (-I)]
   have h_sum : Summable fun i ↦ ‖c i‖ / |↑i| ^ s.re := by
     simp_rw [hc, div_right_comm]
     apply Summable.div_const
@@ -578,8 +577,8 @@ lemma hurwitzZetaOdd_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), 
     inv_Gammaℝ_two_sub hs, completedHurwitzZetaOdd_one_sub, sinZeta, ← div_eq_mul_inv,
     ← mul_div_assoc, ← mul_div_assoc, mul_comm]
 
-/-- If `s` is not in `-ℕ`, then `hurwitzZetaOdd a (1 - s)` is an explicit multiple of
-`sinZeta s`. -/
+/-- If `s` is not in `-ℕ`, then `sinZeta a (1 - s)` is an explicit multiple of
+`hurwitzZetaOdd s`. -/
 lemma sinZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
     sinZeta a (1 - s) = 2 * (2 * π) ^ (-s) * Gamma s * sin (π * s / 2) * hurwitzZetaOdd a s := by
   rw [← Gammaℂ, sinZeta, (by ring : 1 - s + 1 = 2 - s), div_eq_mul_inv, inv_Gammaℝ_two_sub hs,
