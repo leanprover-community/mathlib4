@@ -45,16 +45,17 @@ end Finset
 namespace Fin
 
 @[to_additive]
-theorem prod_univ_def [CommMonoid β] {n : ℕ} (f : Fin n → β) :
-    ∏ i, f i = ((List.finRange n).map f).prod := by simp [univ_def]
-#align fin.prod_univ_def Fin.prod_univ_def
-#align fin.sum_univ_def Fin.sum_univ_def
-
-@[to_additive]
 theorem prod_ofFn [CommMonoid β] {n : ℕ} (f : Fin n → β) : (List.ofFn f).prod = ∏ i, f i := by
-  rw [List.ofFn_eq_map, prod_univ_def]
+  simp [prod_eq_multiset_prod]
 #align fin.prod_of_fn Fin.prod_ofFn
 #align fin.sum_of_fn Fin.sum_ofFn
+
+@[to_additive]
+theorem prod_univ_def [CommMonoid β] {n : ℕ} (f : Fin n → β) :
+    ∏ i, f i = ((List.finRange n).map f).prod := by
+  rw [← List.ofFn_eq_map, prod_ofFn]
+#align fin.prod_univ_def Fin.prod_univ_def
+#align fin.sum_univ_def Fin.sum_univ_def
 
 /-- A product of a function `f : Fin 0 → β` is `1` because `Fin 0` is empty -/
 @[to_additive "A sum of a function `f : Fin 0 → β` is `0` because `Fin 0` is empty"]
@@ -94,6 +95,15 @@ theorem prod_univ_castSucc [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) :
   simpa [mul_comm] using prod_univ_succAbove f (last n)
 #align fin.prod_univ_cast_succ Fin.prod_univ_castSucc
 #align fin.sum_univ_cast_succ Fin.sum_univ_castSucc
+
+@[to_additive (attr := simp)]
+theorem prod_univ_get [CommMonoid α] (l : List α) : ∏ i, l.get i = l.prod := by
+  simp [Finset.prod_eq_multiset_prod]
+
+@[to_additive (attr := simp)]
+theorem prod_univ_get' [CommMonoid β] (l : List α) (f : α → β) :
+    ∏ i, f (l.get i) = (l.map f).prod := by
+  simp [Finset.prod_eq_multiset_prod]
 
 @[to_additive]
 theorem prod_cons [CommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) :
@@ -477,10 +487,8 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → α) (i : ℕ) :
 #align list.sum_take_of_fn List.sum_take_ofFn
 
 @[to_additive]
-theorem prod_ofFn {n : ℕ} {f : Fin n → α} : (ofFn f).prod = ∏ i, f i := by
-  convert prod_take_ofFn f n
-  · rw [take_all_of_le (le_of_eq (length_ofFn f))]
-  · simp
+theorem prod_ofFn {n : ℕ} {f : Fin n → α} : (ofFn f).prod = ∏ i, f i :=
+  Fin.prod_ofFn f
 #align list.prod_of_fn List.prod_ofFn
 #align list.sum_of_fn List.sum_ofFn
 
