@@ -1410,7 +1410,7 @@ theorem SurjOn.image_invFunOn_image_of_subset [Nonempty α] {r : Set β} (hf : S
   hf.rightInvOn_invFunOn.image_image' hrt
 
 theorem SurjOn.image_invFunOn_image [Nonempty α] (hf : SurjOn f s t) :
-    f '' ((f.invFunOn s) '' t) = t :=
+    f '' (f.invFunOn s '' t) = t :=
   hf.rightInvOn_invFunOn.image_image
 
 theorem SurjOn.bijOn_subset [Nonempty α] (h : SurjOn f s t) : BijOn f (invFunOn f s '' t) t := by
