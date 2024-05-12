@@ -11,8 +11,15 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ## fetch the whole repository, useful to find a common fork
+          fetch-depth: 0
       - id: message
-        run: echo "{some_output}={$(./scripts/no_lost_declarations.sh)}" >> "$GITHUB_OUTPUT"
+        run: |
+          ## back and forth to settle a "detached head" (maybe?)
+          git checkout -q master
+          git checkout -q -
+          echo "{some_output}={$(./scripts/no_lost_declarations.sh)}" >> "$GITHUB_OUTPUT"
       - name: Add comment
         run: gh pr comment "$NUMBER" --body "$BODY"
         env:
