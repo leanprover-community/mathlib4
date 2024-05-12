@@ -3,7 +3,7 @@ Copyright (c) 2023 Shogo Saito. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
-import Mathlib.Algebra.BigOperators.List.Lemmas
+import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.GCD.BigOperators
 
