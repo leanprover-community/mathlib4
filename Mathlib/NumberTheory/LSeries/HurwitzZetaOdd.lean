@@ -419,9 +419,8 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     rw [← SignType.map_cast (f := Int.castRingHom ℂ), Int.coe_castRingHom, Int.cast_inj,
       ← eq_intCast (Int.castRingHom ℝ) n, StrictMono.sign_comp, Int.sign_eq_sign n]
     simp_rw [strictMono_iff_map_pos, Int.coe_castRingHom, Int.cast_pos, imp_self, forall_const]
-  rw [this, ← mul_div_assoc, div_mul_eq_mul_div, div_right_comm, mul_assoc (Gammaℝ _),
-    mul_assoc (Gammaℝ _), mul_assoc (Gammaℝ _), mul_assoc (-I), mul_assoc (-I),
-    mul_comm (cexp _)]
+  rw [this]
+  ring
 
 /-- Formula for `completedSinZeta` as a Dirichlet series in the convergence range
 (second version, with sum over `ℕ`). -/
