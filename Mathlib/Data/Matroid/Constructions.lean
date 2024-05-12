@@ -46,7 +46,7 @@ def emptyOn (α : Type*) : Matroid α :=
   simp [emptyOn]
 
 @[simp] theorem emptyOn_indep_iff : (emptyOn α).Indep B ↔ B = ∅ := by
-  simp [indep_iff_subset_base, subset_empty_iff]
+  simp [indep_iff, subset_empty_iff]
 
 theorem ground_eq_empty_iff : (M.E = ∅) ↔ M = emptyOn α := by
   refine' ⟨fun h ↦ eq_of_base_iff_base_forall (by simp [h]) _, fun h ↦ by simp [h]⟩
@@ -54,7 +54,7 @@ theorem ground_eq_empty_iff : (M.E = ∅) ↔ M = emptyOn α := by
   obtain ⟨B', hB'⟩ := M.exists_base
   rwa [← eq_empty_of_subset_empty (hB'.subset_ground.trans_eq h)]
 
-@[simp] theorem emptyOn_dual_eq : (emptyOn α)﹡ = emptyOn α := by
+@[simp] theorem emptyOn_dual_eq : (emptyOn α)✶ = emptyOn α := by
   rw [← ground_eq_empty_iff]; rfl
 
 @[simp] theorem restrict_to_empty (M : Matroid α) : M ↾ (∅ : Set α) = emptyOn α := by
@@ -133,14 +133,14 @@ end LoopyOn
 section FreeOn
 
 /-- The `Matroid α` with ground set `E` whose only base is `E`. -/
-def freeOn (E : Set α) : Matroid α := (loopyOn E)﹡
+def freeOn (E : Set α) : Matroid α := (loopyOn E)✶
 
 @[simp] theorem freeOn_ground : (freeOn E).E = E := rfl
 
-@[simp] theorem freeOn_dual_eq : (freeOn E)﹡ = loopyOn E := by
+@[simp] theorem freeOn_dual_eq : (freeOn E)✶ = loopyOn E := by
   rw [freeOn, dual_dual]
 
-@[simp] theorem loopyOn_dual_eq : (loopyOn E)﹡ = freeOn E := rfl
+@[simp] theorem loopyOn_dual_eq : (loopyOn E)✶ = freeOn E := rfl
 
 @[simp] theorem freeOn_empty (α : Type*) : freeOn (∅ : Set α) = emptyOn α := by
   simp [freeOn]
@@ -150,7 +150,7 @@ def freeOn (E : Set α) : Matroid α := (loopyOn E)﹡
     ← subset_antisymm_iff, eq_comm (a := E)]
 
 @[simp] theorem freeOn_indep_iff : (freeOn E).Indep I ↔ I ⊆ E := by
-  simp [indep_iff_subset_base]
+  simp [indep_iff]
 
 theorem freeOn_indep (hIE : I ⊆ E) : (freeOn E).Indep I :=
   freeOn_indep_iff.2 hIE
@@ -214,7 +214,7 @@ theorem uniqueBaseOn_inter_basis (hI : I ⊆ E) (hX : X ⊆ E) :
   rw [uniqueBaseOn_basis_iff hI hX]
 
 @[simp] theorem uniqueBaseOn_dual_eq (I E : Set α) :
-    (uniqueBaseOn I E)﹡ = uniqueBaseOn (E \ I) E := by
+    (uniqueBaseOn I E)✶ = uniqueBaseOn (E \ I) E := by
   rw [← uniqueBaseOn_inter_ground_eq]
   refine eq_of_base_iff_base_forall rfl (fun B (hB : B ⊆ E) ↦ ?_)
   rw [dual_base_iff, uniqueBaseOn_base_iff (inter_subset_right _ _),
