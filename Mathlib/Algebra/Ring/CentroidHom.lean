@@ -508,11 +508,7 @@ def centerToCentroidCenter :
     { val := { L (z : α) with
       map_mul_left' := ((Set.mem_center_iff _).mp z.prop).left_comm
       map_mul_right' := ((Set.mem_center_iff _).mp z.prop).left_assoc }
-      property := by
-        rw [Subsemiring.mem_center_iff]
-        intros g
-        ext a
-        exact map_mul_left g (↑z) a }
+      property := Subsemiring.mem_center_iff.mpr ( fun g => ext (by exact map_mul_left g (↑z))) }
   map_zero' := by
     simp only [ZeroMemClass.coe_zero, map_zero]
     exact rfl
