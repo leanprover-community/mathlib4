@@ -824,24 +824,6 @@ theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (
     (f * g) x = f x * g x := rfl
 #align bounded_continuous_function.mul_apply BoundedContinuousFunction.mul_apply
 
-open Pointwise in
-private lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set R}
-    (s_bdd : Bornology.IsBounded s) (n : ℕ) :
-    Bornology.IsBounded ((fun x ↦ x ^ n) '' s) := by
-  induction' n with n hn
-  · by_cases s_empty : s = ∅
-    · simp [s_empty]
-    simp_rw [← nonempty_iff_ne_empty] at s_empty
-    simp [s_empty]
-  · have obs : ((fun x ↦ x ^ (n + 1)) '' s) ⊆ ((fun x ↦ x ^ n) '' s) * s := by
-      intro x hx
-      simp only [mem_image] at hx
-      obtain ⟨y, y_in_s, ypow_eq_x⟩ := hx
-      rw [← ypow_eq_x, pow_succ y n]
-      apply Set.mul_mem_mul _ y_in_s
-      use y
-    exact (isBounded_mul hn s_bdd).subset obs
-
 instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where
   pow f n := {
     toFun := fun x ↦ (f x) ^ n
