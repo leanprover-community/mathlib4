@@ -240,7 +240,7 @@ theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_l
 
 @[to_additive (attr := simp) add_pos_iff]
 theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
-  simp only [one_lt_iff_ne_one, Ne.def, mul_eq_one_iff, not_and_or]
+  simp only [one_lt_iff_ne_one, Ne, mul_eq_one_iff, not_and_or]
 #align one_lt_mul_iff one_lt_mul_iff
 #align add_pos_iff add_pos_iff
 

@@ -6,7 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Data.RCLike.Basic
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 
@@ -198,7 +198,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     idealOfSet 𝕜 (setOfIdeal I) = I.closure := by
   /- Since `idealOfSet 𝕜 (setOfIdeal I)` is closed and contains `I`, it contains `I.closure`.
     For the reverse inclusion, given `f ∈ idealOfSet 𝕜 (setOfIdeal I)` and `(ε : ℝ≥0) > 0` it
-    suffices to show that `f` is within `ε` of `I`.-/
+    suffices to show that `f` is within `ε` of `I`. -/
   refine' le_antisymm _
       ((idealOfSet_closed 𝕜 <| setOfIdeal I).closure_subset_iff.mpr fun f hf x hx =>
         not_mem_setOfIdeal.mp hx hf)
@@ -292,7 +292,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   obtain ⟨c, hc, hgc'⟩ : ∃ c > 0, ∀ y : X, y ∈ t → c ≤ g' y :=
     t.eq_empty_or_nonempty.elim
       (fun ht' => ⟨1, zero_lt_one, fun y hy => False.elim (by rwa [ht'] at hy)⟩) fun ht' =>
-      let ⟨x, hx, hx'⟩ := ht.isCompact.exists_forall_le ht' (map_continuous g').continuousOn
+      let ⟨x, hx, hx'⟩ := ht.isCompact.exists_isMinOn ht' (map_continuous g').continuousOn
       ⟨g' x, hgt' x hx, hx'⟩
   obtain ⟨g, hg, hgc⟩ := exists_mul_le_one_eqOn_ge g' hc
   refine' ⟨g * g', _, hg, hgc.mono hgc'⟩
@@ -437,7 +437,7 @@ theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
       ⟨f, fx, fy, -⟩
     rw [DFunLike.ne_iff]
     use (⟨fun (x : ℝ) => (x : 𝕜), RCLike.continuous_ofReal⟩ : C(ℝ, 𝕜)).comp f
-    simpa only [continuousMapEval_apply_apply, ContinuousMap.comp_apply, coe_mk, Ne.def,
+    simpa only [continuousMapEval_apply_apply, ContinuousMap.comp_apply, coe_mk, Ne,
       RCLike.ofReal_inj] using
       ((fx (Set.mem_singleton x)).symm ▸ (fy (Set.mem_singleton y)).symm ▸ zero_ne_one : f x ≠ f y)
   · obtain ⟨x, hx⟩ := (ideal_isMaximal_iff (RingHom.ker φ)).mp inferInstance

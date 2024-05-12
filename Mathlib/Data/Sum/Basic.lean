@@ -11,7 +11,7 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 /-!
 # Additional lemmas about sum types
 
-Most of the former contents of this file have been moved to Std.
+Most of the former contents of this file have been moved to Batteries.
 -/
 
 

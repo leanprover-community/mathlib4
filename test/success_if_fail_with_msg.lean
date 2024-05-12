@@ -13,7 +13,7 @@ example : Nat → Nat → True := by
 
 def err (t : Bool) := if t then
   "tactic 'rewrite' failed, equality or iff proof expected
-  n ≤ Nat.succ n
+  n ≤ n.succ
 n : Nat
 ⊢ True"
   else

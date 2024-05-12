@@ -45,16 +45,17 @@ end Finset
 namespace Fin
 
 @[to_additive]
-theorem prod_univ_def [CommMonoid β] {n : ℕ} (f : Fin n → β) :
-    ∏ i, f i = ((List.finRange n).map f).prod := by simp [univ_def]
-#align fin.prod_univ_def Fin.prod_univ_def
-#align fin.sum_univ_def Fin.sum_univ_def
-
-@[to_additive]
 theorem prod_ofFn [CommMonoid β] {n : ℕ} (f : Fin n → β) : (List.ofFn f).prod = ∏ i, f i := by
-  rw [List.ofFn_eq_map, prod_univ_def]
+  simp [prod_eq_multiset_prod]
 #align fin.prod_of_fn Fin.prod_ofFn
 #align fin.sum_of_fn Fin.sum_ofFn
+
+@[to_additive]
+theorem prod_univ_def [CommMonoid β] {n : ℕ} (f : Fin n → β) :
+    ∏ i, f i = ((List.finRange n).map f).prod := by
+  rw [← List.ofFn_eq_map, prod_ofFn]
+#align fin.prod_univ_def Fin.prod_univ_def
+#align fin.sum_univ_def Fin.sum_univ_def
 
 /-- A product of a function `f : Fin 0 → β` is `1` because `Fin 0` is empty -/
 @[to_additive "A sum of a function `f : Fin 0 → β` is `0` because `Fin 0` is empty"]
@@ -94,6 +95,15 @@ theorem prod_univ_castSucc [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) :
   simpa [mul_comm] using prod_univ_succAbove f (last n)
 #align fin.prod_univ_cast_succ Fin.prod_univ_castSucc
 #align fin.sum_univ_cast_succ Fin.sum_univ_castSucc
+
+@[to_additive (attr := simp)]
+theorem prod_univ_get [CommMonoid α] (l : List α) : ∏ i, l.get i = l.prod := by
+  simp [Finset.prod_eq_multiset_prod]
+
+@[to_additive (attr := simp)]
+theorem prod_univ_get' [CommMonoid β] (l : List α) (f : α → β) :
+    ∏ i, f (l.get i) = (l.map f).prod := by
+  simp [Finset.prod_eq_multiset_prod]
 
 @[to_additive]
 theorem prod_cons [CommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) :
@@ -267,11 +277,10 @@ theorem partialProd_right_inv {G : Type*} [Group G] (f : Fin n → G) (i : Fin n
     specialize hi (lt_trans (Nat.lt_succ_self i) hn)
     simp only [Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk] at hi ⊢
     rw [← Fin.succ_mk _ _ (lt_trans (Nat.lt_succ_self _) hn), ← Fin.succ_mk]
-    rw [Nat.succ_eq_add_one] at hn
     simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]
     -- Porting note: was
     -- assoc_rw [hi, inv_mul_cancel_left]
-    rw [← mul_assoc, mul_left_eq_self, mul_assoc, hi, mul_left_inv]
+    rw [← mul_assoc, mul_left_eq_self, mul_assoc, castSucc_mk, hi, mul_left_inv]
 #align fin.partial_prod_right_inv Fin.partialProd_right_inv
 #align fin.partial_sum_right_neg Fin.partialSum_right_neg
 
@@ -322,19 +331,15 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       induction' n with n ih
       · simp
       cases m
-      · dsimp only [Nat.zero_eq] at f -- Porting note: added, wrong zero
-        exact isEmptyElim (f <| Fin.last _)
+      · exact isEmptyElim (f <| Fin.last _)
       simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
       refine' (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
-      rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']
-      -- Porting note: added, wrong `succ`
-      rfl⟩)
+      rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']⟩)
     (fun a b => ⟨a / m ^ (b : ℕ) % m, by
       cases' n with n
       · exact b.elim0
       cases' m with m
-      · dsimp only [Nat.zero_eq] at a -- Porting note: added, wrong zero
-        rw [zero_pow n.succ_ne_zero] at a
+      · rw [zero_pow n.succ_ne_zero] at a
         exact a.elim0
       · exact Nat.mod_lt _ m.succ_pos⟩)
     fun a => by
@@ -382,12 +387,9 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         exact this
       intro n nn f fn
       cases nn
-      · dsimp only [Nat.zero_eq] at fn -- Porting note: added, wrong zero
-        exact isEmptyElim fn
+      · exact isEmptyElim fn
       refine' (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
-      rw [← one_add_mul (_ : ℕ), mul_comm, add_comm]
-      -- Porting note: added, wrong `succ`
-      rfl⟩)
+      rw [← one_add_mul (_ : ℕ), mul_comm, add_comm]⟩)
     (fun a b => ⟨(a / ∏ j : Fin b, n (Fin.castLE b.is_lt.le j)) % n b, by
       cases m
       · exact b.elim0
@@ -485,16 +487,13 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → α) (i : ℕ) :
 #align list.sum_take_of_fn List.sum_take_ofFn
 
 @[to_additive]
-theorem prod_ofFn {n : ℕ} {f : Fin n → α} : (ofFn f).prod = ∏ i, f i := by
-  convert prod_take_ofFn f n
-  · rw [take_all_of_le (le_of_eq (length_ofFn f))]
-  · simp
+theorem prod_ofFn {n : ℕ} {f : Fin n → α} : (ofFn f).prod = ∏ i, f i :=
+  Fin.prod_ofFn f
 #align list.prod_of_fn List.prod_ofFn
 #align list.sum_of_fn List.sum_ofFn
 
 end CommMonoid
 
--- Porting note: Statement had deprecated `L.nthLe i i.is_lt` instead of `L.get i`.
 @[to_additive]
 theorem alternatingProd_eq_finset_prod {G : Type*} [CommGroup G] :
     ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L.get i ^ (-1 : ℤ) ^ (i : ℕ)

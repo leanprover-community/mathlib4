@@ -3,19 +3,20 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Eric Wieser
 -/
-import Mathlib.Data.List.BigOperators.Lemmas
+import Mathlib.Algebra.BigOperators.List.Lemmas
 import Mathlib.Algebra.BigOperators.Multiset.Basic
+import Mathlib.Algebra.Group.Prod
 
 #align_import algebra.big_operators.multiset.lemmas from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-! # Lemmas about `Multiset.sum` and `Multiset.prod` requiring extra algebra imports -/
 
 
-variable {α : Type*}
+variable {α β : Type*}
 
 namespace Multiset
 section CommMonoid
-variable [CommMonoid α] {s : Multiset α} {a : α}
+variable [CommMonoid α] [CommMonoid β] {s : Multiset α} {a : α}
 
 lemma dvd_prod : a ∈ s → a ∣ s.prod :=
   Quotient.inductionOn s (fun l a h => by simpa using List.dvd_prod h) a
@@ -24,6 +25,12 @@ lemma dvd_prod : a ∈ s → a ∣ s.prod :=
 @[simp] lemma prod_map_neg [HasDistribNeg α] (s : Multiset α) :
     (s.map Neg.neg).prod = (-1) ^ card s * s.prod := Quotient.inductionOn s (by simp)
 #align multiset.prod_map_neg Multiset.prod_map_neg
+
+@[to_additive] lemma fst_prod (s : Multiset (α × β)) : s.prod.1 = (s.map Prod.fst).prod :=
+  map_multiset_prod (MonoidHom.fst _ _) _
+
+@[to_additive] lemma snd_prod (s : Multiset (α × β)) : s.prod.2 = (s.map Prod.snd).prod :=
+  map_multiset_prod (MonoidHom.snd _ _) _
 
 end CommMonoid
 
@@ -45,13 +52,6 @@ lemma prod_ne_zero (h : (0 : α) ∉ s) : s.prod ≠ 0 := mt prod_eq_zero_iff.1 
 
 end CommMonoidWithZero
 
-@[to_additive]
-theorem prod_eq_one_iff [CanonicallyOrderedCommMonoid α] {m : Multiset α} :
-    m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
-  Quotient.inductionOn m fun l => by simpa using List.prod_eq_one_iff l
-#align multiset.prod_eq_one_iff Multiset.prod_eq_one_iff
-#align multiset.sum_eq_zero_iff Multiset.sum_eq_zero_iff
-
 section NonUnitalSemiring
 variable [NonUnitalSemiring α] {s : Multiset α} {a : α}
 
@@ -63,13 +63,6 @@ lemma dvd_sum : (∀ x ∈ s, a ∣ x) → a ∣ s.sum :=
 
 end NonUnitalSemiring
 end Multiset
-
-@[simp]
-lemma CanonicallyOrderedCommSemiring.multiset_prod_pos {R} [CanonicallyOrderedCommSemiring R]
-    [Nontrivial R] {m : Multiset R} : 0 < m.prod ↔ (∀ x ∈ m, (0 : R) < x) := by
-  rcases m with ⟨l⟩
-  rw [Multiset.quot_mk_to_coe'', Multiset.prod_coe]
-  exact CanonicallyOrderedCommSemiring.list_prod_pos
 
 open Multiset
 

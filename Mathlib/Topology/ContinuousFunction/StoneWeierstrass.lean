@@ -3,7 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Heather Macbeth
 -/
-import Mathlib.Data.RCLike.Basic
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.ContinuousFunction.Weierstrass
 
@@ -284,7 +284,7 @@ theorem subalgebra_topologicalClosure_eq_top_of_separatesPoints (A : Subalgebra 
       (fun f fm g gm => sup_mem_closed_subalgebra L A.isClosed_topologicalClosure ⟨f, fm⟩ ⟨g, gm⟩)
       (Subalgebra.SeparatesPoints.strongly
         (Subalgebra.separatesPoints_monotone A.le_topologicalClosure w))
-  · simp [L]
+  simp [L]
 #align continuous_map.subalgebra_topological_closure_eq_top_of_separates_points ContinuousMap.subalgebra_topologicalClosure_eq_top_of_separatesPoints
 
 /-- An alternative statement of the Stone-Weierstrass theorem.

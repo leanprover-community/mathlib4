@@ -266,5 +266,5 @@ lemma support_ceilDiv_subset : (f ⌈/⌉ a).support ⊆ f.support := by
 end CeilDiv
 end Finsupp
 
-/-- This is the motivating example.-/
+/-- This is the motivating example. -/
 noncomputable example : FloorDiv ℕ (ℕ →₀ ℕ) := inferInstance

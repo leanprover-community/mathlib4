@@ -129,8 +129,7 @@ theorem powEquiv_symm_apply {n : ℕ} (hn : p.Coprime n) (g : G) :
 variable [hp : Fact p.Prime]
 
 /-- If `p ∤ n`, then the `n`th power map is a bijection. -/
-@[reducible]
-noncomputable def powEquiv' {n : ℕ} (hn : ¬p ∣ n) : G ≃ G :=
+noncomputable abbrev powEquiv' {n : ℕ} (hn : ¬p ∣ n) : G ≃ G :=
   powEquiv hG (hp.out.coprime_iff_not_dvd.mpr hn)
 #align is_p_group.pow_equiv' IsPGroup.powEquiv'
 
@@ -187,9 +186,9 @@ theorem card_modEq_card_fixedPoints [Fintype (fixedPoints G α)] :
     calc
       card α = card (Σy : Quotient (orbitRel G α), { x // Quotient.mk'' x = y }) :=
         card_congr (Equiv.sigmaFiberEquiv (@Quotient.mk'' _ (orbitRel G α))).symm
-      _ = ∑ a : Quotient (orbitRel G α), card { x // Quotient.mk'' x = a } := (card_sigma _)
+      _ = ∑ a : Quotient (orbitRel G α), card { x // Quotient.mk'' x = a } := card_sigma
       _ ≡ ∑ _a : fixedPoints G α, 1 [MOD p] := ?_
-      _ = _ := by simp; rfl
+      _ = _ := by simp
     rw [← ZMod.eq_iff_modEq_nat p, Nat.cast_sum, Nat.cast_sum]
     have key :
       ∀ x,
@@ -205,7 +204,7 @@ theorem card_modEq_card_fixedPoints [Fintype (fixedPoints G α)] :
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     have : k = 0 :=
-      le_zero_iff.1
+      Nat.le_zero.1
         (Nat.le_of_lt_succ
           (lt_of_not_ge
             (mt (pow_dvd_pow p)

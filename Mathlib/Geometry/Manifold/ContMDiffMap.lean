@@ -32,8 +32,7 @@ def ContMDiffMap :=
 #align cont_mdiff_map ContMDiffMap
 
 /-- Bundled smooth maps. -/
-@[reducible]
-def SmoothMap :=
+abbrev SmoothMap :=
   ContMDiffMap I I' M M' ⊤
 #align smooth_map SmoothMap
 

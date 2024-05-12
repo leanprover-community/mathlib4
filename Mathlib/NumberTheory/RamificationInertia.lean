@@ -147,7 +147,7 @@ theorem ramificationIdx_eq_normalizedFactors_count (hp0 : map f p ≠ ⊥) (hP :
     rw [dvd_iff_normalizedFactors_le_normalizedFactors (pow_ne_zero _ hP0) hp0,
       normalizedFactors_pow, normalizedFactors_irreducible hPirr, normalize_eq,
       Multiset.nsmul_singleton, ← Multiset.le_count_iff_replicate_le]
-  · exact (Nat.lt_succ_self _).not_le
+  exact (Nat.lt_succ_self _).not_le
 #align ideal.is_dedekind_domain.ramification_idx_eq_normalized_factors_count Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count
 
 theorem ramificationIdx_eq_factors_count (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (hP0 : P ≠ ⊥) :
@@ -447,9 +447,13 @@ noncomputable instance Quotient.algebraQuotientPowRamificationIdx : Algebra (R �
   Quotient.algebraQuotientOfLEComap (Ideal.map_le_iff_le_comap.mp le_pow_ramificationIdx)
 #align ideal.quotient.algebra_quotient_pow_ramification_idx Ideal.Quotient.algebraQuotientPowRamificationIdx
 
+-- Adaptation note: 2024-04-23
+-- The right hand side here used to be `Ideal.Quotient.mk _ (f x)` which was somewhat slow,
+-- but this is now even slower without `set_option backward.isDefEq.lazyProjDelta false in`
+-- Instead we've replaced it with `Ideal.Quotient.mk (P ^ e) (f x)` (compare #12412)
 @[simp]
 theorem Quotient.algebraMap_quotient_pow_ramificationIdx (x : R) :
-    algebraMap (R ⧸ p) (S ⧸ P ^ e) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk _ (f x) := rfl
+    algebraMap (R ⧸ p) (S ⧸ P ^ e) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk (P ^ e) (f x) := rfl
 #align ideal.quotient.algebra_map_quotient_pow_ramification_idx Ideal.Quotient.algebraMap_quotient_pow_ramificationIdx
 
 variable [hfp : NeZero (ramificationIdx f p P)]
@@ -466,9 +470,13 @@ set_option synthInstance.checkSynthOrder false -- Porting note: this is okay by 
 -- In this file, the value for `f` can be inferred.
 attribute [local instance] Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero
 
+-- Adaptation note: 2024-04-28
+-- The RHS used to be `Ideal.Quotient.mk _ (f x)`, which was slow,
+-- but this is now even slower without `set_option backward.isDefEq.lazyWhnfCore false in`
+-- (compare https://github.com/leanprover-community/mathlib4/pull/12412)
 @[simp]
 theorem Quotient.algebraMap_quotient_of_ramificationIdx_neZero (x : R) :
-    algebraMap (R ⧸ p) (S ⧸ P) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk _ (f x) := rfl
+    algebraMap (R ⧸ p) (S ⧸ P) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk P (f x) := rfl
 #align ideal.quotient.algebra_map_quotient_of_ramification_idx_ne_zero Ideal.Quotient.algebraMap_quotient_of_ramificationIdx_neZero
 
 /-- The inclusion `(P^(i + 1) / P^e) ⊂ (P^i / P^e)`. -/
@@ -625,7 +633,7 @@ theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P �
   let Q : ℕ → Prop :=
     fun i => Module.rank (R ⧸ p) { x // x ∈ map (Quotient.mk (P ^ e)) (P ^ i) }
       = (e - i) • Module.rank (R ⧸ p) (S ⧸ P)
-  refine @Nat.decreasingInduction' Q i e (fun j lt_e _le_j ih => ?_) hi ?_
+  refine Nat.decreasingInduction' (P := Q) (fun j lt_e _le_j ih => ?_) hi ?_
   · dsimp only [Q]
     rw [rank_pow_quot_aux f p P _ lt_e, ih, ← succ_nsmul', Nat.sub_succ, ← Nat.succ_eq_add_one,
       Nat.succ_pred_eq_of_pos (Nat.sub_pos_of_lt lt_e)]
@@ -830,7 +838,7 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
     refine Finset.sum_congr rfl fun P _ => ?_
     rw [Factors.finrank_pow_ramificationIdx]
   · refine LinearEquiv.finrank_eq (Factors.piQuotientLinearEquiv S p ?_).symm
-    rwa [Ne.def, Ideal.map_eq_bot_iff_le_ker, (RingHom.injective_iff_ker_eq_bot _).mp inj_RS,
+    rwa [Ne, Ideal.map_eq_bot_iff_le_ker, (RingHom.injective_iff_ker_eq_bot _).mp inj_RS,
       le_bot_iff]
   · exact finrank_quotient_map p K L
 #align ideal.sum_ramification_inertia Ideal.sum_ramification_inertia

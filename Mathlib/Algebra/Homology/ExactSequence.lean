@@ -81,8 +81,7 @@ variable (S)
 
 /-- The short complex consisting of maps `S.map' i j` and `S.map' j k` when we know
 that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
-@[reducible]
-def sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
+abbrev sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
     (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
     ShortComplex C :=
   ShortComplex.mk (S.map' i j) (S.map' j k) (hS.zero' i j k)
@@ -180,6 +179,12 @@ lemma isComplex₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 
     S.IsComplex :=
   S.isComplex₂_iff.2 w
 
+-- Adaptation note: nightly-2024-03-11
+-- We turn off simprocs here.
+-- Ideally someone will investigate whether `simp` lemmas can be rearranged
+-- so that this works without the `set_option`,
+-- *or* come up with a proposal regarding finer control of disabling simprocs.
+set_option simprocs false in
 lemma _root_.CategoryTheory.ShortComplex.isComplex_toComposableArrows (S : ShortComplex C) :
     S.toComposableArrows.IsComplex :=
   isComplex₂_mk _ (by simp)
@@ -250,10 +255,12 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
       exact h.exact n (by omega)
   · rintro ⟨h, h'⟩
     refine' Exact.mk (IsComplex.mk (fun i hi => _)) (fun i hi => _)
-    · obtain hi | rfl := LE.le.lt_or_eq (show i ≤ n by omega)
+    · simp only [add_le_add_iff_right, ge_iff_le] at hi
+      obtain hi | rfl := hi.lt_or_eq
       · exact h.toIsComplex.zero i
       · exact h'.toIsComplex.zero 0
-    · obtain hi | rfl := LE.le.lt_or_eq (show i ≤ n by omega)
+    · simp only [add_le_add_iff_right, ge_iff_le] at hi
+      obtain hi | rfl := hi.lt_or_eq
       · exact h.exact i
       · exact h'.exact 0
 
