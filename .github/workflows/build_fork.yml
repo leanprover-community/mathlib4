@@ -313,7 +313,9 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          git checkout v4.8.0-rc1
+          currTag="$(git tag | tail -1)"
+          echo "$currTag"
+          git checkout "${currTag}"
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .
