@@ -204,10 +204,7 @@ instance : BoundedMul ℝ≥0 where
     have key : IsCompact (closedBall (0 : ℝ≥0) Af ×ˢ closedBall (0 : ℝ≥0) Ag) :=
       IsCompact.prod (isCompact_closedBall _ _) (isCompact_closedBall _ _)
     apply Bornology.IsBounded.subset (key.image continuous_mul).isBounded
-    intro z hz
-    obtain ⟨x, x_in_s, y, y_in_t, xy_eq_z⟩  := Set.mem_mul.mp hz
-    use ⟨x, y⟩
-    simp only [Set.mem_prod]
-    refine ⟨⟨hAf x_in_s, hAg y_in_t⟩, xy_eq_z⟩
+    intro _ ⟨x, x_in_s, y, y_in_t, xy_eq⟩
+    exact ⟨⟨x, y⟩, by simpa only [Set.mem_prod] using ⟨⟨hAf x_in_s, hAg y_in_t⟩, xy_eq⟩⟩
 
 end NNReal
