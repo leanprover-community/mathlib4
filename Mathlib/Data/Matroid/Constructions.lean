@@ -171,10 +171,10 @@ theorem eq_freeOn_iff : M = freeOn E ↔ M.E = E ∧ M.Indep E := by
   exact fun I hIX ↦ iff_of_true (h.2.subset hIX) hIX
 
 theorem ground_indep_iff_eq_freeOn : M.Indep M.E ↔ M = freeOn M.E := by
-  simp
+  simp [eq_freeOn_iff]
 
 theorem freeOn_restrict (h : R ⊆ E) : (freeOn E) ↾ R = freeOn R := by
-  simp [h, Subset.rfl]
+  simp [h, eq_freeOn_iff, Subset.rfl]
 
 end FreeOn
 
