@@ -2229,7 +2229,9 @@ theorem real_inner_I_smul_self (x : E) :
 set_option linter.uppercaseLean3 false in
 #align real_inner_I_smul_self real_inner_I_smul_self
 
-/-- A complex inner product implies a real inner product -/
+/-- A complex inner product implies a real inner product. This cannot be an instance since it
+creates a diamond with `PiLp.innerProductSpace` because `re (sum i, inner (x i) (y i))` and
+`sum i, re (inner (x i) (y i))` are not defeq. -/
 def InnerProductSpace.complexToReal [NormedAddCommGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G
