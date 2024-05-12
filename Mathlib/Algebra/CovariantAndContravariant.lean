@@ -123,8 +123,6 @@ class ContravariantClass : Prop where
   protected elim : Contravariant M N μ r
 #align contravariant_class ContravariantClass
 
-namespace CovariantClass
-
 theorem rel_iff_cov [CovariantClass M N μ r] [ContravariantClass M N μ r] (m : M) {a b : N} :
     r (μ m a) (μ m b) ↔ r a b :=
   ⟨ContravariantClass.elim _, CovariantClass.elim _⟩
