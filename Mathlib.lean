@@ -2419,6 +2419,7 @@ import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Coxeter.Basic
+import Mathlib.GroupTheory.Coxeter.Length
 import Mathlib.GroupTheory.Coxeter.Matrix
 import Mathlib.GroupTheory.Divisible
 import Mathlib.GroupTheory.DoubleCoset
@@ -2965,6 +2966,7 @@ import Mathlib.MeasureTheory.Measure.Trim
 import Mathlib.MeasureTheory.Measure.Typeclasses
 import Mathlib.MeasureTheory.Measure.VectorMeasure
 import Mathlib.MeasureTheory.Measure.WithDensity
+import Mathlib.MeasureTheory.Measure.WithDensityFinite
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.Order.Group.Lattice
 import Mathlib.MeasureTheory.Order.Lattice

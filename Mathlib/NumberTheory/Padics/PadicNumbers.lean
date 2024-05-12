@@ -707,21 +707,21 @@ theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε h�
     ring_nf at this ⊢
     rw [← padicNormE.eq_padic_norm']
     exact mod_cast this
-  · apply lt_of_le_of_lt
-    · apply padicNormE.add_le
-    · rw [← add_thirds ε]
-      apply _root_.add_lt_add
-      · suffices padicNormE (limSeq f j - f j + (f j - f (max N N2)) : ℚ_[p]) < ε / 3 + ε / 3 by
-          simpa only [sub_add_sub_cancel]
-        apply lt_of_le_of_lt
-        · apply padicNormE.add_le
-        · apply _root_.add_lt_add
-          · rw [padicNormE.map_sub]
-            apply mod_cast hN j
-            exact le_of_max_le_left hj
-          · exact hN2 _ (le_of_max_le_right hj) _ (le_max_right _ _)
-      · apply mod_cast hN (max N N2)
-        apply le_max_left
+  apply lt_of_le_of_lt
+  · apply padicNormE.add_le
+  · rw [← add_thirds ε]
+    apply _root_.add_lt_add
+    · suffices padicNormE (limSeq f j - f j + (f j - f (max N N2)) : ℚ_[p]) < ε / 3 + ε / 3 by
+        simpa only [sub_add_sub_cancel]
+      apply lt_of_le_of_lt
+      · apply padicNormE.add_le
+      · apply _root_.add_lt_add
+        · rw [padicNormE.map_sub]
+          apply mod_cast hN j
+          exact le_of_max_le_left hj
+        · exact hN2 _ (le_of_max_le_right hj) _ (le_max_right _ _)
+    · apply mod_cast hN (max N N2)
+      apply le_max_left
 #align padic.exi_rat_seq_conv_cauchy Padic.exi_rat_seq_conv_cauchy
 
 private def lim' : PadicSeq p :=
@@ -903,9 +903,9 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
       rw [padicNorm.eq_zpow_of_nonzero hnz', padicValRat, neg_sub,
         padicValNat.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_natCast]
       apply inv_le_one
-      · norm_cast
-        apply one_le_pow
-        exact hp.1.pos
+      norm_cast
+      apply one_le_pow
+      exact hp.1.pos
 #align padic_norm_e.norm_rat_le_one padicNormE.norm_rat_le_one
 
 theorem norm_int_le_one (z : ℤ) : ‖(z : ℚ_[p])‖ ≤ 1 :=
