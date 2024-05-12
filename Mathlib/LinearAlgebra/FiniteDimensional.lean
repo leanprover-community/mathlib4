@@ -1197,7 +1197,7 @@ theorem Subalgebra.rank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
 @[simp]
 theorem Subalgebra.finrank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
     finrank F S = 1 ↔ S = ⊥ :=
-  ⟨Subalgebra.eq_bot_of_finrank_one, fun h => h.symm ▸ Subalgebra.finrank_bot⟩
+  ⟨fun h ↦ Subalgebra.eq_bot_of_finrank_one h, fun h ↦ h.symm ▸ Subalgebra.finrank_bot⟩
 #align subalgebra.finrank_eq_one_iff Subalgebra.finrank_eq_one_iff
 
 theorem Subalgebra.bot_eq_top_iff_rank_eq_one [Nontrivial E] :
