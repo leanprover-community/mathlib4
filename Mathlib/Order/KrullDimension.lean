@@ -78,6 +78,12 @@ le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
   erw [WithBot.coe_lt_coe, WithTop.coe_lt_coe]
   simp
 
+lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
+  iSup_le <| fun p ↦ le_sSup ⟨p.map f hf, rfl⟩
+
+lemma height_mono {a b : α} (h : a ≤ b) : height α a ≤ height α b :=
+  krullDim_le_of_strictMono (fun x ↦ ⟨x, le_trans x.2 h⟩) <| fun _ _ ↦ id
+
 lemma krullDim_eq_length_of_finiteDimensionalOrder [FiniteDimensionalOrder α] :
     krullDim α = (LTSeries.longestOf α).length :=
 le_antisymm
@@ -90,19 +96,6 @@ lemma krullDim_eq_zero_of_unique [Unique α] : krullDim α = 0 :=  by
   refine (LTSeries.longestOf_len_unique (default : LTSeries α) fun q ↦ show _ ≤ 0 from ?_).symm
   by_contra r
   exact ne_of_lt (q.step ⟨0, not_le.mp r⟩) <| Subsingleton.elim _ _
-
-/-- If `f : α → β` is a strictly monotonic function and `α` is an infinite dimensional type then so
-  is `β`. -/
-lemma infiniteDimensionalOrder_of_strictMono
-    (f : α → β) (hf : StrictMono f) [InfiniteDimensionalOrder α] :
-    InfiniteDimensionalOrder β :=
-  ⟨fun n ↦ ⟨(LTSeries.withLength _ n).map f hf, LTSeries.length_withLength α n⟩⟩
-
-lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
-  iSup_le <| fun p ↦ le_sSup ⟨p.map f hf, rfl⟩
-
-lemma height_mono {a b : α} (h : a ≤ b) : height α a ≤ height α b :=
-  krullDim_le_of_strictMono (fun x ↦ ⟨x, le_trans x.2 h⟩) <| fun _ _ h ↦ h
 
 lemma krullDim_le_of_strictComono_and_surj
     (f : α → β) (hf : ∀ ⦃a b⦄, f a < f b → a < b) (hf' : Function.Surjective f) :

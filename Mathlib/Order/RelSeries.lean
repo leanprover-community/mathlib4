@@ -575,3 +575,10 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
 end LTSeries
 
 end LTSeries
+
+/-- If `f : α → β` is a strictly monotonic function and `α` is an infinite dimensional type then so
+  is `β`. -/
+lemma infiniteDimensionalOrder_of_strictMono [Preorder α] [Preorder β]
+    (f : α → β) (hf : StrictMono f) [InfiniteDimensionalOrder α] :
+    InfiniteDimensionalOrder β :=
+  ⟨fun n ↦ ⟨(LTSeries.withLength _ n).map f hf, LTSeries.length_withLength α n⟩⟩
