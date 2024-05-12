@@ -10,11 +10,7 @@ jobs:
     steps:
       - name: Check if label is 'move-decls'
         id: check_label
-        uses: actions/github-script@v4
         if: github.event.label.name == 'move-decls'
-
-      - name: Add comment if label is 'move-decls'
-        if: steps.check_label.outputs.result == 'true'
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
