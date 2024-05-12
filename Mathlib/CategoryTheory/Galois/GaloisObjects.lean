@@ -107,12 +107,12 @@ noncomputable def evaluationEquivOfIsGalois (A : C) [IsGalois A] (a : F.obj A) :
   Equiv.ofBijective _ (evaluation_aut_bijective_of_isGalois F A a)
 
 @[simp]
-theorem evaluationEquivOfIsGalois_apply (A : C) [IsGalois A] (a : F.obj A) (φ : Aut A) :
+lemma evaluationEquivOfIsGalois_apply (A : C) [IsGalois A] (a : F.obj A) (φ : Aut A) :
     evaluationEquivOfIsGalois F A a φ = F.map φ.hom a :=
   rfl
 
 @[simp]
-theorem evaluationEquivOfIsGalois_symm_fiber (A : C) [IsGalois A] (a b : F.obj A) :
+lemma evaluationEquivOfIsGalois_symm_fiber (A : C) [IsGalois A] (a b : F.obj A) :
     F.map ((evaluationEquivOfIsGalois F A a).symm b).hom a = b := by
   change (evaluationEquivOfIsGalois F A a) _ = _
   simp
