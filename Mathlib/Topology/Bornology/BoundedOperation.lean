@@ -5,6 +5,7 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Topology.Algebra.ProperConstSMul
 
 /-!
 # Bounded operations
@@ -190,8 +191,28 @@ noncomputable instance : BoundedSub ℝ≥0 where
     simp only [NNReal.ball_zero_eq_Ico, ← z_eq, Set.mem_Ico, zero_le, true_and, gt_iff_lt] at *
     exact tsub_lt_of_lt key
 
+#check IsCompact.image
+
+#check ClosedEmbedding.isCompact_preimage
+
+instance : ProperSpace ℝ≥0 := sorry
+
+open Metric in
 instance : BoundedMul ℝ≥0 where
   isBounded_mul := by
+    intro s t hs ht
+    obtain ⟨Af, hAf⟩ := (isBounded_iff_subset_closedBall 0).mp hs
+    obtain ⟨Ag, hAg⟩ := (isBounded_iff_subset_closedBall 0).mp ht
+    have key : IsCompact (closedBall (0 : ℝ≥0) Af ×ˢ closedBall (0 : ℝ≥0) Ag) :=
+      IsCompact.prod (isCompact_closedBall _ _) (isCompact_closedBall _ _)
+    apply Bornology.IsBounded.subset (key.image continuous_mul).isBounded
+    intro z hz
+    obtain ⟨x, x_in_s, y, y_in_t, xy_eq_z⟩  := Set.mem_mul.mp hz
+    use ⟨x, y⟩
+    simp only [Set.mem_prod]
+    refine ⟨⟨hAf x_in_s, hAg y_in_t⟩, xy_eq_z⟩
+
+/-
     intro s t hs ht
     obtain ⟨Af, hAf⟩ := (Metric.isBounded_iff_subset_closedBall 0).mp hs
     obtain ⟨Ag, hAg⟩ := (Metric.isBounded_iff_subset_closedBall 0).mp ht
@@ -217,5 +238,5 @@ instance : BoundedMul ℝ≥0 where
      _ ≤ dist (x₁ * y₁) 0 + dist (x₂ * y₂) 0    := by rw [dist_comm 0]
      _ ≤ Af * Ag + Af * Ag                      := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
      _ = 2 * Af * Ag                            := by simp [← two_mul, mul_assoc]
-
+ -/
 end NNReal
