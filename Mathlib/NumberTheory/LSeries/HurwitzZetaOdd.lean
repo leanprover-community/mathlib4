@@ -67,10 +67,10 @@ lemma jacobiTheta₂''_add_left (z τ : ℂ) : jacobiTheta₂'' (z + 1) τ = jac
   generalize jacobiTheta₂ (z * τ) τ = J
   generalize jacobiTheta₂' (z * τ) τ = J'
   -- clear denominator
-  simp_rw [div_add' _ _ _ two_pi_I_ne_zero,  ← mul_div_assoc]
+  simp_rw [div_add' _ _ _ two_pi_I_ne_zero, ← mul_div_assoc]
   refine congr_arg (· / (2 * π * I)) ?_
   -- get all exponential terms to left
-  rw [← mul_assoc _ (cexp _), mul_comm z (cexp _), mul_assoc (cexp _), ← mul_add,
+  rw [mul_left_comm _ (cexp _),, ← mul_add,
     mul_assoc (cexp _), ← mul_add, ← mul_assoc (cexp _), ← Complex.exp_add]
   congrm (cexp ?_ * ?_) <;> ring
 
@@ -82,10 +82,11 @@ lemma jacobiTheta₂'_functional_equation' (z τ : ℂ) :
     jacobiTheta₂' z τ = (-2 * π) / (-I * τ) ^ (3 / 2 : ℂ) * jacobiTheta₂'' z (-1 / τ) := by
   rcases eq_or_ne τ 0 with rfl | hτ
   · rw [jacobiTheta₂'_undef _ (by simp), mul_zero, zero_cpow (by norm_num), div_zero, zero_mul]
-  have aux1 : (-2 * π : ℂ) / (2 * π * I) = I := by rw [div_eq_iff two_pi_I_ne_zero, mul_comm I,
-    mul_assoc _ I I, I_mul_I, neg_mul, mul_neg, mul_one]
-  rw [jacobiTheta₂'_functional_equation, ← mul_one_div _ τ, mul_assoc _ (cexp _), mul_comm (cexp _),
-    ← mul_assoc, (by rw [cpow_one, ← div_div, div_self (neg_ne_zero.mpr I_ne_zero)] :
+  have aux1 : (-2 * π : ℂ) / (2 * π * I) = I := by
+    rw [div_eq_iff two_pi_I_ne_zero, mul_comm I, mul_assoc _ I I, I_mul_I, neg_mul, mul_neg,
+      mul_one]
+  rw [jacobiTheta₂'_functional_equation, ← mul_one_div _ τ, mul_right_comm _ (cexp _),
+    (by rw [cpow_one, ← div_div, div_self (neg_ne_zero.mpr I_ne_zero)] :
       1 / τ = -I / (-I * τ) ^ (1 : ℂ)), div_mul_div_comm,
     ← cpow_add _ _ (mul_ne_zero (neg_ne_zero.mpr I_ne_zero) hτ), ← div_mul_eq_mul_div,
     (by norm_num : (1 / 2  + 1 : ℂ) = 3 / 2), mul_assoc (1 / _), mul_assoc (1 / _),
@@ -130,8 +131,7 @@ for the defining sum. -/
 
 lemma sinKernel_def (a x : ℝ) : ↑(sinKernel ↑a x) = jacobiTheta₂' a (I * x) / (-2 * π) := by
   rw [sinKernel, Function.Periodic.lift_coe, re_eq_add_conj, map_div₀, jacobiTheta₂'_conj]
-  simp_rw [map_mul, conj_I, conj_ofReal, map_neg, map_ofNat, neg_mul, neg_neg]
-  ring
+  simp_rw [map_mul, conj_I, conj_ofReal, map_neg, map_ofNat, neg_mul, neg_neg, half_add_self]
 
 lemma sinKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : sinKernel a x = 0 := by
   induction' a using QuotientAddGroup.induction_on' with a'
@@ -162,11 +162,9 @@ lemma continuousOn_oddKernel (a : UnitAddCircle) : ContinuousOn (oddKernel a) (I
     (continuous_re.comp_continuousOn this).congr fun a _ ↦ (ofReal_re _).symm
   simp_rw [oddKernel_def' a]
   refine fun x hx ↦ ((Continuous.continuousAt ?_).mul ?_).continuousWithinAt
-  · exact continuous_exp.comp (continuous_const.mul continuous_ofReal)
+  · fun_prop
   · have hx' : 0 < im (I * x) := by rwa [I_mul_im, ofReal_re]
-    have hf : Continuous fun u : ℝ ↦ (a * I * u, I * u) := by
-      rw [continuous_prod_mk]
-      constructor <;> exact continuous_const.mul continuous_ofReal
+    have hf : Continuous fun u : ℝ ↦ (a * I * u, I * u) := by fun_prop
     apply ContinuousAt.add
     · exact ((continuousAt_jacobiTheta₂' (a * I * x) hx').comp
         (f := fun u : ℝ ↦ (a * I * u, I * u)) hf.continuousAt).div_const _
@@ -180,8 +178,7 @@ lemma continuousOn_sinKernel (a : UnitAddCircle) : ContinuousOn (sinKernel a) (I
   simp_rw [sinKernel_def]
   apply (ContinuousAt.continuousOn (fun x hx ↦ ?_)).div_const
   have h := continuousAt_jacobiTheta₂' a (by rwa [I_mul_im, ofReal_re] : 0 < im (I * x))
-  exact h.comp (f := fun u : ℝ ↦ ((a : ℂ), I * u)) (continuous_prod_mk.mpr ⟨continuous_const,
-    continuous_const.mul continuous_ofReal⟩).continuousAt
+  fun_prop
 
 lemma oddKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
     oddKernel a x = 1 / x ^ (3 / 2 : ℝ) * sinKernel a (1 / x) := by
@@ -202,8 +199,7 @@ lemma oddKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
   rw [one_div (x : ℂ), inv_cpow _ _ h4, div_inv_eq_mul, one_div, ofReal_inv, ofReal_cpow hx.le,
     ofReal_div, ofReal_ofNat, ofReal_ofNat, ← mul_div_assoc _ _ (-2 * π : ℂ),
     eq_div_iff <| mul_ne_zero (neg_ne_zero.mpr two_ne_zero) (ofReal_ne_zero.mpr pi_ne_zero),
-    ← div_eq_inv_mul, eq_div_iff h3, mul_comm J _, mul_assoc (-2 * π : ℂ) ((x : ℂ) ^ _),
-    mul_comm ((x : ℂ) ^ _) J, ← mul_assoc]
+    ← div_eq_inv_mul, eq_div_iff h3, mul_comm J _, mul_right_comm]
 
 end kernel_defs
 
@@ -221,8 +217,7 @@ lemma hasSum_int_oddKernel (a : ℝ) {x : ℝ} (hx : 0 < x) :
   refine (((h2.div_const (2 * π * I)).add (h1.mul_left ↑a)).mul_left
     (cexp (-π * a ^ 2 * x))).congr_fun (fun n ↦ ?_)
   rw [jacobiTheta₂'_term, mul_assoc (2 * π * I), mul_div_cancel_left₀ _ two_pi_I_ne_zero, ← add_mul,
-    ← mul_assoc, mul_comm _ (n + a : ℂ), mul_assoc (n + a : ℂ), jacobiTheta₂_term,
-    ← Complex.exp_add]
+    mul_left_comm, jacobiTheta₂_term, ← Complex.exp_add]
   push_cast
   congr 2
   simp only [← mul_assoc, ← add_mul]
