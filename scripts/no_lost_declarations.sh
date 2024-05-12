@@ -51,7 +51,7 @@ Running
 ./scripts/no_lost_declarations.sh short <optional_commit>
 ```
 produces a diff of just the declaration names.
-')$
+')
 
 if [ "${short}" == "0" ]
 then
