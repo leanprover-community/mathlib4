@@ -139,19 +139,6 @@ instance instStarMemClass : StarMemClass (NonUnitalStarSubsemiring R) R where
 theorem mem_carrier {s : NonUnitalStarSubsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
-/-
-@[simp]
-theorem mem_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
-    [Star A] {S : NonUnitalStarSubalgebra R A} {x} : x ∈ S.toNonUnitalSubring ↔ x ∈ S :=
-  Iff.rfl
--/
-
-@[simp]
-theorem mem_toNonUnitalSubring {R : Type u} [NonUnitalNonAssocSemiring R] [StarRing R]
-    {S : NonUnitalStarSubsemiring R} {x} : x ∈ S.toSubsemigroup ↔ x ∈ S :=
-  Iff.rfl
-
-
 /-- Copy of a non-unital star subalgebra with a new `carrier` equal to the old one.
 Useful to fix definitional equalities. -/
 protected def copy (S : NonUnitalStarSubsemiring R) (s : Set R) (hs : s = ↑S) :
