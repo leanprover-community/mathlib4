@@ -138,7 +138,7 @@ theorem mapAccumr_snoc :
       (r.1, r.2.snoc q.2) := by
   induction xs using Vector.inductionOn
   · rfl
-  · simp[*]
+  · simp [*]
 
 variable (ys : Vector β n)
 

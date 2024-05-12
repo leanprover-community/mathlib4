@@ -60,7 +60,7 @@ theorem dvd_mul_left : a ∣ u * b ↔ a ∣ b := by
 #align units.dvd_mul_left Units.dvd_mul_left
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff all
-  left associates of `a` divide `b`.-/
+  left associates of `a` divide `b`. -/
 theorem mul_left_dvd : ↑u * a ∣ b ↔ a ∣ b := by
   rw [mul_comm]
   apply mul_right_dvd
@@ -89,7 +89,7 @@ theorem dvd_mul_right : a ∣ b * u ↔ a ∣ b := by
   apply Units.dvd_mul_right
 #align is_unit.dvd_mul_right IsUnit.dvd_mul_right
 
-/-- In a monoid, an element a divides an element b iff all associates of `a` divide `b`.-/
+/-- In a monoid, an element a divides an element b iff all associates of `a` divide `b`. -/
 @[simp]
 theorem mul_right_dvd : a * u ∣ b ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
@@ -113,7 +113,7 @@ theorem dvd_mul_left : a ∣ u * b ↔ a ∣ b := by
 #align is_unit.dvd_mul_left IsUnit.dvd_mul_left
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff all
-  left associates of `a` divide `b`.-/
+  left associates of `a` divide `b`. -/
 @[simp]
 theorem mul_left_dvd : u * a ∣ b ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
@@ -251,8 +251,9 @@ theorem IsRelPrime.mul_left (H1 : IsRelPrime x z) (H2 : IsRelPrime y z) : IsRelP
     obtain ⟨a, b, ha, hb, rfl⟩ := exists_dvd_and_dvd_of_dvd_mul h
     exact (H1 ha <| (dvd_mul_right a b).trans hz).mul (H2 hb <| (dvd_mul_left b a).trans hz)
 
-theorem IsRelPrime.mul_right (H1 : IsRelPrime x y) (H2 : IsRelPrime x z) : IsRelPrime x (y * z) :=
-  by rw [isRelPrime_comm] at H1 H2 ⊢; exact H1.mul_left H2
+theorem IsRelPrime.mul_right (H1 : IsRelPrime x y) (H2 : IsRelPrime x z) :
+    IsRelPrime x (y * z) := by
+  rw [isRelPrime_comm] at H1 H2 ⊢; exact H1.mul_left H2
 
 theorem IsRelPrime.mul_left_iff : IsRelPrime (x * y) z ↔ IsRelPrime x z ∧ IsRelPrime y z :=
   ⟨fun H ↦ ⟨H.of_mul_left_left, H.of_mul_left_right⟩, fun ⟨H1, H2⟩ ↦ H1.mul_left H2⟩

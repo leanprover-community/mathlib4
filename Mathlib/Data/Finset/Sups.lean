@@ -445,7 +445,7 @@ variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α}
   ext u
   simp only [mem_sups, mem_powerset, le_eq_subset, sup_eq_union]
   refine ⟨fun h ↦ ⟨_, inter_subset_left _ u, _, inter_subset_left _ u, ?_⟩, ?_⟩
-  · rwa [← inter_distrib_right, inter_eq_right]
+  · rwa [← union_inter_distrib_right, inter_eq_right]
   · rintro ⟨v, hv, w, hw, rfl⟩
     exact union_subset_union hv hw
 

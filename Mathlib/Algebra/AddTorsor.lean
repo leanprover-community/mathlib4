@@ -53,18 +53,20 @@ class AddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| AddGroup G] exte
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 #align add_torsor AddTorsor
 
-attribute [instance 100] AddTorsor.nonempty -- Porting note: removers `nolint instance_priority`
+ -- Porting note(#12096): removed `nolint instance_priority`; lint not ported yet
+attribute [instance 100] AddTorsor.nonempty
 
--- Porting note: removed
+-- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
 --attribute [nolint dangerous_instance] AddTorsor.toVSub
 
 /-- An `AddGroup G` is a torsor for itself. -/
---@[nolint instance_priority] Porting note: linter does not exist
+-- Porting note(#12096): linter not ported yet
+--@[nolint instance_priority]
 instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G
     where
   vsub := Sub.sub
   vsub_vadd' := sub_add_cancel
-  vadd_vsub' := add_sub_cancel
+  vadd_vsub' := add_sub_cancel_right
 #align add_group_is_add_torsor addGroupIsAddTorsor
 
 /-- Simplify subtraction for a torsor for an `AddGroup G` over
@@ -253,7 +255,7 @@ theorem vsub_sub_vsub_cancel_left (p₁ p₂ p₃ : P) : p₃ -ᵥ p₂ - (p₃ 
 
 @[simp]
 theorem vadd_vsub_vadd_cancel_left (v : G) (p₁ p₂ : P) : v +ᵥ p₁ -ᵥ (v +ᵥ p₂) = p₁ -ᵥ p₂ := by
-  rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_cancel']
+  rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_cancel_left]
 #align vadd_vsub_vadd_cancel_left vadd_vsub_vadd_cancel_left
 
 theorem vsub_vadd_comm (p₁ p₂ p₃ : P) : (p₁ -ᵥ p₂ : G) +ᵥ p₃ = p₃ -ᵥ p₂ +ᵥ p₁ := by

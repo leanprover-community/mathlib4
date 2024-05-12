@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Data.MLList.Basic
+import Batteries.Data.MLList.Basic
 import Mathlib.Data.Prod.Lex
 import Mathlib.Order.Estimator
 import Mathlib.Data.Set.Finite
@@ -31,7 +31,7 @@ Options:
 
 set_option autoImplicit true
 
-open Std EstimatorData Estimator Set
+open Batteries EstimatorData Estimator Set
 
 /-!
 We begin by defining a best-first queue of `MLList`s.
@@ -128,7 +128,7 @@ def insertAndEject
     if q.size < max then
       q.insert n l
     else
-      match q.max with
+      match q.max? with
       | none => RBMap.empty
       | some m => q.insert n l |>.erase m.1
 
@@ -172,7 +172,7 @@ This may require improving estimates of priorities and shuffling the queue.
 partial def popWithBound (q : BestFirstQueue prio ε m β maxSize) :
     m (Option (((a : α) × (ε a) × β) × BestFirstQueue prio ε m β maxSize)) := do
   let q' ← ensureFirstIsBest q
-  match q'.min with
+  match q'.min? with
   | none =>
     -- The queue is empty, nothing to return.
     return none
