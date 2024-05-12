@@ -15,6 +15,9 @@ import Mathlib.ProCoyoneda
 We show that any fiber functor is pro-representable, i.e. there exists a pro-object
 `X : I ⥤ C` such that `F` is naturally isomorphic to `X ⋙ coyoneda`.
 
+From this we deduce the canonical isomorphism of `Aut F` with the limit over the automorphism
+groups of all Galois objects.
+
 ## Main definitions
 
 - `PointedGaloisObject`: the category of pointed Galois objects
@@ -24,6 +27,10 @@ We show that any fiber functor is pro-representable, i.e. there exists a pro-obj
 ## Main results
 
 - `PointedGaloisObject.isColimit`: the cocone `PointedGaloisObject.cocone` is a colimit cocone.
+- `autMulEquivAutGalois`: `Aut F` is canonically isomorphic to the limit over the automorphism
+  groups of all Galois objects.
+- `FiberFunctor.isPretransitive_of_isConnected`: The `Aut F` action on the fiber of a connected
+  object is transitive.
 
 ## References
 
@@ -222,20 +229,6 @@ noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GroupCat.{u₂} wh
     apply evaluation_aut_injective_of_isConnected F C C.pt
     simp
 
-def MonCat.uliftFunctor : MonCat.{u₁} ⥤ MonCat.{max u₁ u₂} where
-  obj X := MonCat.of (ULift.{max u₁ u₂, u₁} X)
-  map {X Y} f := MonCat.ofHom <|
-    MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
-  map_id X := by rfl
-  map_comp {X Y Z} f g := by rfl
-
-def GroupCat.uliftFunctor : GroupCat.{u₁} ⥤ GroupCat.{max u₁ u₂} where
-  obj X := GroupCat.of (ULift.{u₂, u₁} X)
-  map {X Y} f := GroupCat.ofHom <|
-    MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
-  map_id X := by rfl
-  map_comp {X Y Z} f g := by rfl
-
 /-- `autGaloisSystem` but lifted to a bigger universe. This is needed to compute its limit. -/
 noncomputable def autGaloisSystem' : PointedGaloisObject F ⥤ GroupCat.{max u₁ u₂} :=
   autGaloisSystem F ⋙ GroupCat.uliftFunctor.{u₂, u₁}
@@ -253,23 +246,72 @@ pointed Galois object. -/
 noncomputable def autGalois.π (A : PointedGaloisObject F) : autGalois F →* Aut (A : C) :=
   MonoidHom.comp MulEquiv.ulift.toMonoidHom (limit.π (autGaloisSystem' F) A)
 
+/- Not a `simp` lemma, because we usually don't want to expose the internals here. -/
 lemma autGalois.π_apply (A : PointedGaloisObject F) (x : autGalois F) :
     autGalois.π F A x = Equiv.ulift (limit.π (autGaloisSystem' F) A x) :=
   rfl
 
-lemma autGalois_ext (f g : autGalois F)
-    (h : ∀ (A : PointedGaloisObject F), autGalois.π F A f = autGalois.π F A g) : f = g := by
-  apply Concrete.limit_ext (autGaloisSystem' F) f g
-  intro A
-  have h1 : MulEquiv.ulift ((limit.π (autGaloisSystem' F) A) f) =
-    MulEquiv.ulift ((limit.π (autGaloisSystem' F) A) g) := h A
-  exact (EquivLike.injective _) h1
+lemma autGaloisSystem'_map_surjective ⦃A B : PointedGaloisObject F⦄ (f : A ⟶ B) :
+    Function.Surjective ((autGaloisSystem' F).map f) := by
+  intro ⟨(φ : Aut B.obj)⟩
+  obtain ⟨ψ, hψ⟩ := autMap_surjective f φ
+  use ⟨ψ⟩
+  simp only [autGaloisSystem'_map]
+  apply ULift.ext
+  exact hψ
 
-lemma autGalois_ext' (x y : autGalois F)
-    (h : ∀ (A : PointedGaloisObject F),
-      limit.π (autGaloisSystem' F) A x = limit.π (autGaloisSystem' F) A y) : x = y :=
-  Concrete.limit_ext (autGaloisSystem' F) x y h
+/-- `autGalois.π` is surjective for every pointed Galois object. -/
+theorem autGalois.π_surjective (A : PointedGaloisObject F) :
+    Function.Surjective (autGalois.π F A) := fun (σ : Aut A.obj) ↦ by
+  have (i : PointedGaloisObject F) : Finite ((autGaloisSystem' F ⋙ forget _).obj i) :=
+    inferInstanceAs <| Finite (ULift (Aut (i.obj)))
+  obtain ⟨s', hs⟩ := eval_section_surjective_of_surjective
+    (autGaloisSystem' F ⋙ forget _) (autGaloisSystem'_map_surjective F) A ⟨σ⟩
+  simp only [comp_obj] at hs
+  use (preservesLimitIso (forget GroupCat) (autGaloisSystem' F)).inv
+    ((Types.limitEquivSections (autGaloisSystem' F ⋙ forget _)).symm s')
+  dsimp [autGalois.π]
+  change MulEquiv.ulift (((preservesLimitIso _ _).inv
+    ≫ (forget _).map (limit.π (autGaloisSystem' F) A)) _) = σ
+  simp only [preservesLimitsIso_inv_π, comp_obj, Types.limitEquivSections_symm_apply, hs]
+  rfl
 
+/-- Equality of elements of `autGalois F` can be checked on the projections on each pointed
+Galois object. -/
+lemma autGalois_ext {f g : autGalois F}
+    (h : ∀ (A : PointedGaloisObject F), autGalois.π F A f = autGalois.π F A g) : f = g :=
+  Concrete.limit_ext (autGaloisSystem' F) f g (fun A ↦ EquivLike.injective MulEquiv.ulift (h A))
+
+section EndAutGaloisIsomorphism
+
+/-!
+
+### Isomorphism between `Aut F` and `autGalois F`
+
+In this section we establish the isomorphism between the automorphism group of `F` and
+the limit over the automorphism groups of all Galois objects.
+
+We first establish the isomorphism between `End F` and `autGalois F`, from which we deduce that
+`End F` is a group, hence `End F = Aut F`. The isomorphism is built in multiple steps:
+
+- `endIsoLimitFibers : End F ≅ limit (incl F ⋙ F' ⋙ uliftFunctor.{u₁})`: the endomorphisms of
+  `F` are isomorphic to the limit over `F.obj A` for all Galois objects `A`.
+  This is obtained as the composition (slighty simplified):
+
+  `End F ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F) ≅ limit (incl F ⋙ F)`
+
+  Where the first isomorphism is induced from the pro-representability of `F` and the second one
+  from the pro-coyoneda lemma.
+
+- `endIsoAutGalois : End F ≅ autGalois F`: this is the composition of `endIsoLimitFibers` with:
+
+  `limit (incl F ⋙ F) ≅ limit (autGaloisSystem' F ⋙ forget GroupCat)`
+
+  which is induced from the level-wise equivalence `Aut A ≃ F.obj A` for a Galois object `A`.
+
+-/
+
+-- Local notation for `F` considered as a functor to types instead of finite types.
 local notation "F'" => F ⋙ FintypeCat.incl
 
 /-- The endomorphisms of `F` are isomorphic to the limit over the fibers of `F` on all
@@ -283,7 +325,8 @@ noncomputable def endIsoLimitFibers : End F ≅ limit (incl F ⋙ F' ⋙ uliftFu
     procoyonedaIso' (incl F) F'
   i1 ≪≫ i2 ≪≫ i3
 
-theorem endIsoLimitFibers_π (f : End F) (A : PointedGaloisObject F) :
+@[simp]
+lemma endIsoLimitFibers_π (f : End F) (A : PointedGaloisObject F) :
     limit.π (incl F ⋙ F' ⋙ uliftFunctor.{u₁}) A ((endIsoLimitFibers F).hom f) = ⟨f.app A A.pt⟩ := by
   apply ULift.ext
   simp [endIsoLimitFibers]
@@ -292,186 +335,126 @@ theorem endIsoLimitFibers_π (f : End F) (A : PointedGaloisObject F) :
       A _) = f.app A A.pt
   simp
 
-noncomputable def galautiso' :
-    autGaloisSystem' F ⋙ forget GroupCat.{max u₁ u₂} ≅ incl F ⋙ F' ⋙ uliftFunctor.{u₁} := by
-  fapply NatIso.ofComponents
-  · intro ⟨A, a, _⟩
-    apply Equiv.toIso
-    exact (Equiv.ulift.{u₁, u₂}).trans
-      ((evaluationEquivOfIsGalois F A a).trans Equiv.ulift.{u₁, u₂}.symm)
-  · intro ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨(f : A ⟶ B), hf⟩
-    dsimp
-    ext ⟨φ : Aut A⟩
-    apply ULift.ext
-    erw [Equiv.ulift_apply, Equiv.ulift_apply]
-    simp only [types_comp_apply, autGaloisSystem'_map, Function.comp_apply, uliftFunctor_map,
-      FintypeCat.incl_map]
-    erw [Equiv.ulift_symm_down, Equiv.ulift_symm_down]
-    simp only [autMapMul, MonoidHom.mk'_apply, autMap, map_comp, FintypeCat.comp_apply]
-    erw [Equiv.apply_symm_apply]
-    rfl
+/-- Functorial isomorphism `Aut A ≅ F.obj A` for Galois objects `A`. -/
+noncomputable def autIsoFibers :
+    autGaloisSystem' F ⋙ forget GroupCat.{max u₁ u₂} ≅ incl F ⋙ F' ⋙ uliftFunctor.{u₁} :=
+  NatIso.ofComponents (fun A ↦ ((Equiv.ulift.{u₁, u₂}).trans
+      ((evaluationEquivOfIsGalois F A A.pt).trans Equiv.ulift.{u₁, u₂}.symm)).toIso)
+    (fun {A B} f ↦ by
+      ext ⟨φ : Aut A.obj⟩
+      apply ULift.ext
+      dsimp
+      erw [Equiv.ulift_symm_down, Equiv.ulift_symm_down, Equiv.apply_symm_apply]
+      simp)
 
-/-- functorial isomorphism `F.obj A ≃ Aut A` for Galois object `A`. -/
-noncomputable def galautiso :
-    incl F ⋙ F' ⋙ uliftFunctor.{u₁} ≅ autGaloisSystem' F ⋙ forget GroupCat.{max u₁ u₂} :=
-  (galautiso' F).symm
-
-@[simp]
-theorem galautiso_app (A : PointedGaloisObject F) (b : F.obj A) :
-    (galautiso F).hom.app A ⟨b⟩ =
-      ⟨(evaluationEquivOfIsGalois F A A.pt).symm b⟩ :=
+lemma autIsoFibers_inv_app (A : PointedGaloisObject F) (b : F.obj A) :
+    (autIsoFibers F).inv.app A ⟨b⟩ = ⟨(evaluationEquivOfIsGalois F A A.pt).symm b⟩ :=
   rfl
 
-noncomputable def iso4 : End F ≅ limit (autGaloisSystem' F ⋙ forget GroupCat.{max u₁ u₂}) := by
-  apply Iso.trans
-  exact endIsoLimitFibers F
-  exact lim.mapIso (galautiso F)
+/-- The isomorphism between endomorphisms of `F` and the limit over the automorphism groups
+of all Galois objects. -/
+noncomputable def endIsoAutGalois : End F ≅ autGalois F := by
+  let i1 := endIsoLimitFibers F
+  let i2 := lim.mapIso (autIsoFibers F).symm
+  let i3 := (preservesLimitIso (forget GroupCat.{max u₁ u₂}) (autGaloisSystem' F)).symm
+  exact i1 ≪≫ i2 ≪≫ i3
+
+/-- `endIsoAutGalois` as an equiv. -/
+noncomputable def endEquivAutGalois : End F ≃ autGalois F := (endIsoAutGalois F).toEquiv
+
+lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :
+    F.map (autGalois.π F A (endEquivAutGalois F f)).hom A.2 = f.app A A.pt := by
+  dsimp [endEquivAutGalois, endIsoAutGalois, autGalois.π_apply]
+  change F.map (Equiv.ulift (((preservesLimitIso (forget GroupCat) (autGaloisSystem' F)).inv
+      ≫ (forget GroupCat).map (limit.π (autGaloisSystem' F) A)) _)).hom A.pt = f.app A.obj A.pt
+  rw [preservesLimitsIso_inv_π, Types.Limit.map_π_apply', endIsoLimitFibers_π, Equiv.ulift_apply,
+    autIsoFibers_inv_app, evaluationEquivOfIsGalois_symm_fiber]
 
 @[simp]
-theorem iso4_pi_apply (A : PointedGaloisObject F) (f : End F) :
-    limit.π (autGaloisSystem' F ⋙ forget _) A ((iso4 F).hom f) =
-      ⟨(evaluationEquivOfIsGalois F A A.pt).symm (f.app A A.pt)⟩ := by
-  simp [iso4]
-  erw [endIsoLimitFibers_π]
-  rw [galautiso_app]
+theorem endEquivAutGalois_mul (f g : End F) :
+    (endEquivAutGalois F) (g ≫ f) = (endEquivAutGalois F g) * (endEquivAutGalois F f) := by
+  refine autGalois_ext F (fun A ↦ evaluation_aut_injective_of_isConnected F A A.pt ?_)
+  simp only [map_mul, endEquivAutGalois_π, Aut.Aut_mul_def, NatTrans.comp_app, Iso.trans_hom]
+  simp only [map_comp, FintypeCat.comp_apply, endEquivAutGalois_π]
+  change f.app A (g.app A A.pt) =
+    (f.app A ≫ F.map ((autGalois.π F A) ((endEquivAutGalois F) g)).hom) A.pt
+  rw [← f.naturality, FintypeCat.comp_apply, endEquivAutGalois_π]
 
-noncomputable def iso5' : End F ≅ autGalois F := by
-  show End F ≅ (forget GroupCat.{max u₁ u₂}).obj (limit (autGaloisSystem' F))
-  apply Iso.trans
-  exact iso4 F
-  exact (preservesLimitIso (forget GroupCat.{max u₁ u₂}) (autGaloisSystem' F)).symm
+/-- The monoid isomorphism between endomorphisms of `F` and the (multiplicative oppososite of the)
+limit of automorphism groups of all Galois objects. -/
+noncomputable def endMulEquivAutGalois : End F ≃* (autGalois F)ᵐᵒᵖ :=
+  MulEquiv.mk (Equiv.trans (endEquivAutGalois F) MulOpposite.opEquiv) (by simp)
 
-noncomputable def iso5 : End F ≃ autGalois F := (iso5' F).toEquiv
+lemma endMulEquivAutGalois_pi (f : End F) (A : PointedGaloisObject F) :
+    F.map (autGalois.π F A (endMulEquivAutGalois F f).unop).hom A.2 = f.app A A.pt :=
+  endEquivAutGalois_π F f A
 
-lemma iso5_pi_foo (f : End F) (A : PointedGaloisObject F) :
-    F.map (autGalois.π F A (iso5 F f)).hom A.2 = f.app A A.pt := by
-  simp [iso5, iso5']
-  rw [autGalois.π_apply]
-  change F.map
-    (((iso4 F).hom
-        ≫ (preservesLimitIso (forget GroupCat) (autGaloisSystem' F)).inv
-        ≫ (forget GroupCat).map (limit.π (autGaloisSystem' F) A)) f).down.hom
-    A.2 = _
-  rw [preservesLimitsIso_inv_π]
-  simp
-
-@[simp]
-theorem iso5_mul (f g : End F) : (iso5 F) (g ≫ f) = (iso5 F g) * (iso5 F f) := by
-  apply autGalois_ext F
-  intro ⟨A, a, _⟩
-  simp
-  apply evaluation_aut_injective_of_isConnected F A a
-  simp
-  rw [iso5_pi_foo]
-  simp
-  rw [Aut.Aut_mul_def]
-  simp [-FintypeCat.comp_apply]
-  simp
-  rw [iso5_pi_foo]
-  change f.app A (g.app A a) =
-    (f.app A ≫ F.map ((autGalois.π F ⟨A, a, _⟩) ((iso5 F) g)).hom) a
-  rw [← f.naturality]
-  simp
-  rw [iso5_pi_foo]
-
-noncomputable def iso5Monoid : End F ≃* (autGalois F)ᵐᵒᵖ :=
-  MulEquiv.mk (Equiv.trans (iso5 F) MulOpposite.opEquiv) (by simp)
-
-lemma iso5Monoid_pi (f : End F) (A : PointedGaloisObject F) :
-    F.map (autGalois.π F A (iso5Monoid F f).unop).hom A.2 = f.app A A.pt :=
-  iso5_pi_foo F f A
-
+/-- Any endomorphism of a fiber functor is a unit. -/
 theorem FibreFunctor.end_isUnit (f : End F) : IsUnit f :=
-  isUnit_of_equiv _ _ (iso5Monoid F).symm f
+  (MulEquiv.map_isUnit_iff (endMulEquivAutGalois F)).mp
+    (Group.isUnit ((endMulEquivAutGalois F) f))
 
-theorem FibreFunctor.end_isIso (f : End F) : IsIso f := by
+/-- Any endomorphism of a fiber functor is an isomorphism. -/
+instance FibreFunctor.end_isIso (f : End F) : IsIso f := by
   rw [← isUnit_iff_isIso]
   exact FibreFunctor.end_isUnit F f
 
+/-- The automorphism group of `F` is multiplicatively isomorphic to
+(the multiplicative opposite of) the limit over the automorphism groups of
+the Galois objects. -/
 noncomputable def autMulEquivAutGalois : Aut F ≃* (autGalois F)ᵐᵒᵖ where
-  toFun := MonoidHom.comp (iso5Monoid F) (Aut.toEnd F)
-  invFun t := by
-    let s : End F := (iso5Monoid F).symm t
-    have : IsIso s := FibreFunctor.end_isIso F s
-    apply asIso s
+  toFun := MonoidHom.comp (endMulEquivAutGalois F) (Aut.toEnd F)
+  invFun t := asIso ((endMulEquivAutGalois F).symm t)
   left_inv t := by
-    simp
+    simp only [MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply,
+      MulEquiv.symm_apply_apply]
     exact Aut.ext rfl
   right_inv t := by
-    simp
-    exact (MulEquiv.eq_symm_apply (iso5Monoid F)).mp rfl
+    simp only [MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, Aut.toEnd_apply]
+    exact (MulEquiv.eq_symm_apply (endMulEquivAutGalois F)).mp rfl
   map_mul' := by simp
 
-theorem autMulEquivAutGalois_π (f : Aut F) (A : C) [IsGalois A] (a : F.obj A) :
-    F.map (autGalois.π F { obj := A, pt := a } (autMulEquivAutGalois F f).unop).hom a = f.hom.app A a := by
-  simp [autMulEquivAutGalois, iso5Monoid]
-  rw [iso5_pi_foo]
+lemma autMulEquivAutGalois_π (f : Aut F) (A : C) [IsGalois A] (a : F.obj A) :
+    F.map (autGalois.π F { obj := A, pt := a } (autMulEquivAutGalois F f).unop).hom a
+      = f.hom.app A a := by
+  dsimp [autMulEquivAutGalois, endMulEquivAutGalois]
+  rw [endEquivAutGalois_π]
   rfl
 
 @[simp]
-theorem autMulEquivAutGalois_symm_app (x : autGalois F) (A : C) [IsGalois A] (a : F.obj A) :
+lemma autMulEquivAutGalois_symm_app (x : autGalois F) (A : C) [IsGalois A] (a : F.obj A) :
     ((autMulEquivAutGalois F).symm ⟨x⟩).hom.app A a =
       F.map (autGalois.π F ⟨A, a, inferInstance⟩ x).hom a := by
   rw [← autMulEquivAutGalois_π, MulEquiv.apply_symm_apply]
   rfl
 
-lemma proj_surj (A : C) [IsGalois A] (a : F.obj A) :
-    Function.Surjective (autGalois.π F ⟨A, a, inferInstance⟩) := fun (σ : Aut A) ↦ by
-  have (i : PointedGaloisObject F) : Finite ((autGaloisSystem' F ⋙ forget _).obj i) :=
-    inferInstanceAs <| Finite (ULift (Aut (i.obj)))
-  have fsur (i j : PointedGaloisObject F) (f : i ⟶ j) : Function.Surjective ((autGaloisSystem' F).map f) := by
-    intro ⟨(φ : Aut j.obj)⟩
-    obtain ⟨ψ, hψ⟩ := autMap_surjective f φ
-    use ⟨ψ⟩
-    simp only [autGaloisSystem'_map]
-    apply ULift.ext
-    exact hψ
-  have := eval_section_surjective_of_surjective (autGaloisSystem' F ⋙ forget _) fsur
-  obtain ⟨s', hs⟩ := eval_section_surjective_of_surjective
-    (autGaloisSystem' F ⋙ forget _) fsur ⟨A, a, _⟩ ⟨σ⟩
-  simp only [comp_obj] at hs
-  let s : limit _ := (Types.limitEquivSections (autGaloisSystem' F ⋙ forget _)).symm s'
-  let t : autGalois F := (preservesLimitIso (forget GroupCat) (autGaloisSystem' F)).inv s
-  use t
-  simp [t, s, autGalois.π]
-  change MulEquiv.ulift
-      (((preservesLimitIso (forget GroupCat) (autGaloisSystem' F)).inv
-        ≫ (forget _).map (limit.π (autGaloisSystem' F) ⟨A, a, inferInstance⟩))
-        ((Types.limitEquivSections ((autGaloisSystem' F).comp (forget GroupCat))).symm s')) =
-    σ
-  rw [preservesLimitsIso_inv_π]
-  simp
-  rw [hs]
-  rfl
+end EndAutGaloisIsomorphism
 
-instance (X : C) : MulAction (Aut F) (F.obj X) where
-  smul σ x := σ.hom.app X x
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
-
-theorem mulAction_def {X : C} (σ : Aut F) (x : F.obj X) :
-    σ • x = σ.hom.app X x :=
-  rfl
-
-theorem pretransitive_of_isGalois (X : C) [IsGalois X] :
+/-- The `Aut F` action on the fiber of a Galois object is transitive. See
+`pretransitive_of_isConnected` for the same result for connected objects. -/
+theorem FiberFunctor.isPretransitive_of_isGalois (X : C) [IsGalois X] :
     MulAction.IsPretransitive (Aut F) (F.obj X) := by
   refine ⟨fun x y ↦ ?_⟩
   obtain ⟨(φ : Aut X), h⟩ := MulAction.IsPretransitive.exists_smul_eq (M := Aut X) x y
-  obtain ⟨a, ha⟩ := proj_surj F X x φ
+  obtain ⟨a, ha⟩ := autGalois.π_surjective F ⟨X, x, inferInstance⟩ φ
   use (autMulEquivAutGalois F).symm ⟨a⟩
   simpa [mulAction_def, ha]
 
 /-- The `Aut F` action on the fiber of a connected object is transitive. -/
-instance pretransitive_of_isConnected (X : C) [IsConnected X] :
+instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
     MulAction.IsPretransitive (Aut F) (F.obj X) := by
   obtain ⟨A, f, hgal⟩ := exists_hom_from_galois_of_connected F X
   have hs : Function.Surjective (F.map f) := surjective_of_nonempty_fiber_of_isConnected F f
   refine ⟨fun x y ↦ ?_⟩
   obtain ⟨a, ha⟩ := hs x
   obtain ⟨b, hb⟩ := hs y
-  have : MulAction.IsPretransitive (Aut F) (F.obj A) := pretransitive_of_isGalois F A
+  have : MulAction.IsPretransitive (Aut F) (F.obj A) := isPretransitive_of_isGalois F A
   obtain ⟨σ, (hσ : σ.hom.app A a = b)⟩ := MulAction.exists_smul_eq (Aut F) a b
   use σ
-  rw [←ha, ←hb]
+  rw [← ha, ← hb]
   show (F.map f ≫ σ.hom.app X) a = F.map f b
   rw [σ.hom.naturality, FintypeCat.comp_apply, hσ]
+
+end PreGaloisCategory
+
+end CategoryTheory

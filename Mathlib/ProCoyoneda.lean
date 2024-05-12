@@ -5,19 +5,6 @@ import Mathlib.CategoryTheory.Yoneda
 import Mathlib.CategoryTheory.Limits.Indization.IndObject
 import Mathlib.CategoryTheory.Limits.Opposites
 
-section
-
-variable (G M : Type*) [Group G] [Monoid M] (f : G ≃* M) (g : M ≃* G)
-
-lemma isUnit_of_equiv (x : M) : IsUnit x := by
-  rw [isUnit_iff_exists]
-  refine ⟨f (f.symm x)⁻¹, ?_, ?_⟩
-  all_goals
-  apply EquivLike.injective f.symm
-  simp
-
-end
-
 open CategoryTheory Limits Opposite
 
 universe u₁ u₂ v₁ v₂

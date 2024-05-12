@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Algebra.Group.ULift
 import Mathlib.CategoryTheory.Endomorphism
 
 #align_import algebra.category.Group.basic from "leanprover-community/mathlib"@"524793de15bc4c52ee32d254e7d7867c7176b3af"
@@ -161,6 +162,15 @@ set_option linter.uppercaseLean3 false in
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
 example {R S : GroupCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
+
+/-- Universe lift functor for groups. -/
+@[to_additive (attr := simps)]
+def uliftFunctor : GroupCat.{u} ⥤ GroupCat.{max u v} where
+  obj X := GroupCat.of (ULift.{v, u} X)
+  map {X Y} f := GroupCat.ofHom <|
+    MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
+  map_id X := by rfl
+  map_comp {X Y Z} f g := by rfl
 
 end GroupCat
 
@@ -328,6 +338,15 @@ set_option linter.uppercaseLean3 false in
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
 example {R S : CommGroupCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
+
+/-- Universe lift functor for commutative groups. -/
+@[to_additive (attr := simps)]
+def uliftFunctor : CommGroupCat.{u} ⥤ CommGroupCat.{max u v} where
+  obj X := CommGroupCat.of (ULift.{v, u} X)
+  map {X Y} f := CommGroupCat.ofHom <|
+    MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
+  map_id X := by rfl
+  map_comp {X Y Z} f g := by rfl
 
 end CommGroupCat
 
