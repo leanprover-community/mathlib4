@@ -45,6 +45,12 @@ printf $'\n---\n\nYou can run this locally using
 ```bash
 ./scripts/no_lost_declarations.sh <optional_commit>
 ```
+
+Running
+```bash
+./scripts/no_lost_declarations.sh short <optional_commit>
+```
+produces a diff of just the declaration names.
 ')$
 
 if [ "${short}" == "0" ]
@@ -65,5 +71,5 @@ fi
 
  : <<ReferenceTest
 theorem oh hello
-inductives  counted even if it is inductives, rather than inductive
+inductive  counts even if it is not lean code
 ReferenceTest
