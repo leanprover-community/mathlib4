@@ -12,11 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: message
-        run: ./scripts/no_lost_declarations.sh
+        run: echo ::set-output name=some_output::"$(./scripts/no_lost_declarations.sh)"
       - name: Add comment
         run: gh pr comment "$NUMBER" --body "$BODY"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.pull_request.number }}
-          BODY: ${{ steps.message.outcome }}
+          BODY: ${{ steps.message.outputs.some_output }}
