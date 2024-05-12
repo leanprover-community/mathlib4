@@ -408,8 +408,7 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
       rwa [summable_one_div_nat_rpow]
   refine (mellin_div_const .. ▸ hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF h_sum).congr_fun
     fun n ↦ ?_
-  simp only [Int.sign_eq_sign n, SignType.intCast_cast, SignType.sign_intCast, ← Int.cast_abs,
-    ofReal_intCast]
+  simp only [Int.sign_eq_sign, SignType.intCast_cast, sign_intCast, ← Int.cast_abs, ofReal_intCast]
   ring
 
 /-- Formula for `completedSinZeta` as a Dirichlet series in the convergence range
