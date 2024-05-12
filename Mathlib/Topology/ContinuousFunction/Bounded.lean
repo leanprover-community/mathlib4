@@ -791,16 +791,42 @@ end sub
 
 section mul
 
-variable [TopologicalSpace α]
-variable {R : Type*} [PseudoMetricSpace R] [Mul R] [BoundedMul R] [ContinuousMul R]
-variable (f g : α →ᵇ R)
+variable [TopologicalSpace α] {R : Type*} [PseudoMetricSpace R]
 
-instance instMul :
+instance instMul [Mul R] [BoundedMul R] [ContinuousMul R] :
     Mul (α →ᵇ R) where
   mul f g := {
     toFun := fun x ↦ f x * g x
     continuous_toFun := f.continuous.mul g.continuous
     map_bounded' := mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
+
+@[simp]
+theorem coe_mul [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
+#align bounded_continuous_function.coe_mul BoundedContinuousFunction.coe_mul
+
+theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (x : α) :
+    (f * g) x = f x * g x := rfl
+#align bounded_continuous_function.mul_apply BoundedContinuousFunction.mul_apply
+
+instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
+    Monoid (α →ᵇ R) where
+  mul_assoc f g h := by ext x ; simp [mul_apply, mul_assoc]
+  one_mul f := by ext x ; simp [mul_apply]
+  mul_one f := by ext x ; simp [mul_apply]
+
+instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
+    CommMonoid (α →ᵇ R) where
+  mul_comm f g := by ext x ; simp [mul_apply, mul_comm]
+
+instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R] [LipschitzAdd R] :
+    Semiring (α →ᵇ R) where
+  left_distrib f g h := by ext x ; simp [mul_apply, left_distrib]
+  right_distrib f g h := by ext x ; simp [mul_apply, right_distrib]
+  zero_mul f := by ext x ; simp [mul_apply]
+  mul_zero f := by ext x ; simp [mul_apply]
+  mul_assoc f g h := by ext x ; simp [mul_apply, mul_assoc]
+  one_mul f := by ext x ; simp [mul_apply]
+  mul_one f := by ext x ; simp [mul_apply]
 
 end mul
 
@@ -1233,13 +1259,6 @@ section NonUnital
 section Seminormed
 
 variable [NonUnitalSeminormedRing R]
-
-@[simp]
-theorem coe_mul (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
-#align bounded_continuous_function.coe_mul BoundedContinuousFunction.coe_mul
-
-theorem mul_apply (f g : α →ᵇ R) (x : α) : (f * g) x = f x * g x := rfl
-#align bounded_continuous_function.mul_apply BoundedContinuousFunction.mul_apply
 
 instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
