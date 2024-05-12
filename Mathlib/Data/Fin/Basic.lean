@@ -437,7 +437,8 @@ instance : Lattice (Fin (n + 1)) :=
 
 theorem last_pos' [NeZero n] : 0 < last n := NeZero.pos n
 
-theorem one_lt_last [NeZero n] : 1 < last (n + 1) := (lt_add_iff_pos_left 1).mpr (NeZero.pos n)
+theorem one_lt_last [NeZero n] : 1 < last (n + 1) :=
+  (lt_add_iff_pos_left 1).mpr (NeZero.pos n)
 
 theorem top_eq_last (n : ℕ) : ⊤ = Fin.last n :=
   rfl
@@ -779,6 +780,7 @@ theorem zero_ne_one' [NeZero n] : (0 : Fin (n + 1)) ≠ 1 := Fin.ne_of_lt one_po
 
 #align fin.succ_zero_eq_one' Fin.succ_zero_eq_one
 
+unseal Nat.modCore in
 /--
 The `Fin.succ_one_eq_two` in `Lean` only applies in `Fin (n+2)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
