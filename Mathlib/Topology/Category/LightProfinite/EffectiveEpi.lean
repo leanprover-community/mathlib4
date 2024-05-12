@@ -53,7 +53,6 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     rintro ⟨y, hy⟩ hf
     let C := Set.range f
     have hC : IsClosed C := (isCompact_range f.continuous).isClosed
-    let U := Cᶜ
     have hyU : y ∈ U := by
       refine' Set.mem_compl _
       rintro ⟨y', hy'⟩
