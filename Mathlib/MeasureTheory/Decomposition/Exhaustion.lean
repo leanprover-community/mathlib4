@@ -21,6 +21,10 @@ If `μ, ν` are two measures with `ν` finite, then there exists a set `s` such 
 
 * `measure_eq_top_of_subset_compl_sigmaFiniteSetWRT`: for all measurable sets `s` in
   `(sigmaFiniteSetWRT μ ν)ᶜ`, if `ν s ≠ 0` then `μ s = ∞`.
+* An instance showing that `μ.restrict (sigmaFiniteSetWRT μ ν)` is sigma-finite.
+* `restrict_compl_sigmaFiniteSetWRT`: if `μ ≪ ν`, then
+  `μ.restrict (μ.sigmaFiniteSetWRT ν)ᶜ = ∞ • ν.restrict (μ.sigmaFiniteSetWRT ν)ᶜ`. As a consequence,
+  that restriction is s-finite.
 
 ## References
 
@@ -28,13 +32,13 @@ If `μ, ν` are two measures with `ν` finite, then there exists a set `s` such 
 
 -/
 
-open scoped NNReal ENNReal Topology
+open scoped ENNReal Topology
 
 open Filter
 
 namespace MeasureTheory
 
-variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {s t : Set α}
+variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} [IsFiniteMeasure ν] {s t : Set α}
 
 /-- Let `C` be the supremum of `ν s` over all measurable sets `s` such that `μ.restrict s` is
 sigma-finite. `C` is finite since `ν` is a finite measure. Then there exists a measurable set `t`
@@ -67,8 +71,8 @@ lemma exists_isSigmaFiniteSet_measure_ge (μ ν : Measure α) [IsFiniteMeasure �
     rw [tsub_eq_zero_of_le (not_lt.mp hC_lt)]
     exact zero_le'
 
-/-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetGE ν n)` is sigma finite and
-for `C` the supremum of `ν s` over all measurable sigma-finite sets `s`,
+/-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetGE ν n)` is sigma-finite and
+for `C` the supremum of `ν s` over all measurable sets `s` with `μ.restrict s` sigma-finite,
 `ν (μ.sigmaFiniteSetGE ν n) ≥ C - 1/n`. -/
 def Measure.sigmaFiniteSetGE (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) : Set α :=
   (exists_isSigmaFiniteSet_measure_ge μ ν n).choose
@@ -77,7 +81,7 @@ lemma measurableSet_sigmaFiniteSetGE (μ ν : Measure α) [IsFiniteMeasure ν] (
     MeasurableSet (μ.sigmaFiniteSetGE ν n) :=
   (exists_isSigmaFiniteSet_measure_ge μ ν n).choose_spec.1
 
-instance [IsFiniteMeasure ν] (n : ℕ) : SigmaFinite (μ.restrict (μ.sigmaFiniteSetGE ν n)) :=
+instance (n : ℕ) : SigmaFinite (μ.restrict (μ.sigmaFiniteSetGE ν n)) :=
   (exists_isSigmaFiniteSet_measure_ge μ ν n).choose_spec.2.1
 
 lemma measure_sigmaFiniteSetGE_le (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) :
@@ -156,8 +160,8 @@ lemma measure_sigmaFiniteSetWRT (μ ν : Measure α) [IsFiniteMeasure ν] :
       (fun _ ↦ measure_mono (Set.subset_iUnion _ _))
 
 /-- For all measurable sets `s` in `(μ.sigmaFiniteSetWRT ν)ᶜ`, if `ν s ≠ 0` then `μ s = ∞`. -/
-lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT [IsFiniteMeasure ν]
-    (hs : MeasurableSet s) (hs_subset_compl : s ⊆ (μ.sigmaFiniteSetWRT ν)ᶜ) (hμs : ν s ≠ 0) :
+lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT
+    (hs : MeasurableSet s) (hs_subset : s ⊆ (μ.sigmaFiniteSetWRT ν)ᶜ) (hμs : ν s ≠ 0) :
     μ s = ∞ := by
   suffices ¬ SigmaFinite (μ.restrict s) by
     by_contra h
@@ -167,7 +171,7 @@ lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT [IsFiniteMeasure ν]
   have h_lt : ν (μ.sigmaFiniteSetWRT ν) < ν (μ.sigmaFiniteSetWRT ν ∪ s) := by
     rw [measure_union _ hs]
     · exact ENNReal.lt_add_right (measure_ne_top _ _) hμs
-    · exact disjoint_compl_right.mono_right hs_subset_compl
+    · exact disjoint_compl_right.mono_right hs_subset
   have h_le : ν (μ.sigmaFiniteSetWRT ν ∪ s) ≤ ν (μ.sigmaFiniteSetWRT ν) := by
     conv_rhs => rw [measure_sigmaFiniteSetWRT]
     refine (le_iSup
@@ -177,7 +181,7 @@ lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT [IsFiniteMeasure ν]
         (μ.sigmaFiniteSetWRT ν ∪ s) ((measurableSet_sigmaFiniteSetWRT μ ν).union hs)
   exact h_lt.not_le h_le
 
-lemma restrict_compl_sigmaFiniteSetWRT [IsFiniteMeasure ν] (hμν : μ ≪ ν) :
+lemma restrict_compl_sigmaFiniteSetWRT (hμν : μ ≪ ν) :
     μ.restrict (μ.sigmaFiniteSetWRT ν)ᶜ = ∞ • ν.restrict (μ.sigmaFiniteSetWRT ν)ᶜ := by
   ext s hs
   rw [Measure.restrict_apply' (measurableSet_sigmaFiniteSetWRT _ _).compl,
@@ -188,5 +192,16 @@ lemma restrict_compl_sigmaFiniteSetWRT [IsFiniteMeasure ν] (hμν : μ ≪ ν) 
     exact hμν hνs
   · rw [ENNReal.top_mul hνs, measure_eq_top_of_subset_compl_sigmaFiniteSetWRT
       (hs.inter (measurableSet_sigmaFiniteSetWRT _ _).compl) (Set.inter_subset_right _ _) hνs]
+
+/-- If `μ ≪ ν`, then for all sets `s` in `(μ.sigmaFiniteSetWRT ν)ᶜ`,
+if `ν s ≠ 0` then `μ s = ∞`. -/
+lemma measure_eq_top_of_absolutelyContinuous_of_subset_compl_sigmaFiniteSetWRT
+    (hμν : μ ≪ ν) (hs_subset : s ⊆ (μ.sigmaFiniteSetWRT ν)ᶜ) (hμs : ν s ≠ 0) :
+    μ s = ∞ := by
+  rw [← Set.inter_eq_left.mpr hs_subset,
+    ← Measure.restrict_apply' (measurableSet_sigmaFiniteSetWRT μ ν).compl,
+    restrict_compl_sigmaFiniteSetWRT hμν, Measure.smul_apply, smul_eq_mul, ENNReal.top_mul]
+  rwa [Measure.restrict_apply' (measurableSet_sigmaFiniteSetWRT μ ν).compl,
+    Set.inter_eq_left.mpr hs_subset]
 
 end MeasureTheory

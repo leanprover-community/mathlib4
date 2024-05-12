@@ -48,6 +48,6 @@ lemma isZeroTopSet_iff_null [SigmaFinite μ] (hs : MeasurableSet s) :
 
 lemma isZeroTopSet_compl_sigmaFiniteSet (μ : Measure α) [SFinite μ] :
     IsZeroTopSet μ.sigmaFiniteSetᶜ μ :=
-  fun _ ht ht_subset ↦ measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet ht ht_subset
+  fun _ _ ht_subset ↦ measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet ht_subset
 
 end MeasureTheory
