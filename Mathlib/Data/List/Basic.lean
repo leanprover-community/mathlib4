@@ -928,18 +928,19 @@ def reverseRecOn {motive : List α → Sort*} (l : List α) (nil : motive [])
   | [] => cast (congr_arg motive <| by simpa using congr(reverse $h.symm)) <|
       nil
   | head :: tail =>
-    have : tail.length < l.length := by
-      rw [← length_reverse l, h, length_cons]
-      simp [Nat.lt_succ]
     cast (congr_arg motive <| by simpa using congr(reverse $h.symm)) <|
       append_singleton _ head <| reverseRecOn (reverse tail) nil append_singleton
 termination_by l.length
+decreasing_by
+  simp_wf
+  rw [← length_reverse l, h, length_cons]
+  simp [Nat.lt_succ]
 #align list.reverse_rec_on List.reverseRecOn
 
 @[simp]
 theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
-    reverseRecOn [] nil append_singleton = nil := rfl
+    reverseRecOn [] nil append_singleton = nil := by unfold reverseRecOn; rfl
 
 -- `unusedHavesSuffices` is getting confused by the unfolding of `reverseRecOn`
 @[simp, nolint unusedHavesSuffices]
@@ -985,15 +986,16 @@ termination_by l => l.length
 theorem bidirectionalRec_nil {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) :
-    bidirectionalRec nil singleton cons_append [] = nil :=
-  rfl
+    bidirectionalRec nil singleton cons_append [] = nil := by
+  unfold bidirectionalRec; rfl
+
 
 @[simp]
 theorem bidirectionalRec_singleton {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) (a : α):
     bidirectionalRec nil singleton cons_append [a] = singleton a :=
-  rfl
+  by simp [bidirectionalRec]
 
 @[simp]
 theorem bidirectionalRec_cons_append {motive : List α → Sort*}
