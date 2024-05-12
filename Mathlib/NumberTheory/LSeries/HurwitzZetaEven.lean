@@ -78,7 +78,7 @@ lemma evenKernel_def (a x : ℝ) :
 
 /-- For `x ≤ 0` the defining sum diverges, so the kernel is 0. -/
 lemma evenKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : evenKernel a x = 0 := by
-  have : (I * ↑x).im ≤ 0 := by rwa [I_mul_im, ofReal_re]
+  have : (I * ↑x).im ≤ 0 := by rwa [I_mul_ofReal_im]
   induction' a using QuotientAddGroup.induction_on' with a'
   rw [← ofReal_inj, evenKernel_def, jacobiTheta₂_undef _ this, mul_zero, ofReal_zero]
 
@@ -95,8 +95,7 @@ lemma cosKernel_def (a x : ℝ) : ↑(cosKernel ↑a x) = jacobiTheta₂ a (I * 
 
 lemma cosKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : cosKernel a x = 0 := by
   induction' a using QuotientAddGroup.induction_on' with a'
-  rw [← ofReal_inj, cosKernel_def, jacobiTheta₂_undef, ofReal_zero]
-  rwa [I_mul_im, ofReal_re]
+  rw [← ofReal_inj, cosKernel_def, jacobiTheta₂_undef _ (I_mul_ofReal_im _ ▸ hx), ofReal_zero]
 
 /-- For `a = 0`, both kernels agree. -/
 lemma evenKernel_eq_cosKernel_of_zero : evenKernel 0 = cosKernel 0 := by
@@ -174,7 +173,7 @@ lemma hasSum_int_evenKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     ring_nf
     simp only [I_sq, mul_neg, neg_mul, mul_one]
   simp only [this]
-  exact (hasSum_jacobiTheta₂_term _ (by rwa [I_mul_im, ofReal_re])).mul_left _
+  apply (hasSum_jacobiTheta₂_term _ (I_mul_ofReal_im _ ▸ ht)).mul_left
 
 lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ cexp (2 * π * I * a * n) * rexp (-π * n ^ 2 * t)) ↑(cosKernel a t) := by
@@ -186,7 +185,7 @@ lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     ring_nf
     simp only [I_sq, mul_neg, neg_mul, mul_one, sub_eq_add_neg]
   simp only [this]
-  exact hasSum_jacobiTheta₂_term a (by rwa [I_mul_im, ofReal_re] : 0 < im (I * t))
+  exact hasSum_jacobiTheta₂_term _ (I_mul_ofReal_im _ ▸ ht)
 
 /-- Modified version of `hasSum_int_evenKernel` omitting the constant term at `∞`. -/
 lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
