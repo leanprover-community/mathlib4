@@ -17,6 +17,10 @@ In this file we define integer power functions for groups with an adjoined zero 
 This generalises the integer power function on a division ring.
 -/
 
+-- Guard against import creep regression.
+assert_not_exists Int.bitwise_or
+assert_not_exists Set.Subsingleton
+assert_not_exists Nat.gcdA
 
 section GroupWithZero
 
@@ -181,8 +185,3 @@ theorem div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
 #align div_sq_cancel div_sq_cancel
 
 end
-
--- Guard against import creep regression.
-assert_not_exists Int.bitwise_or
-assert_not_exists Set.range
-assert_not_exists Nat.gcdA
