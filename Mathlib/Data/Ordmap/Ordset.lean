@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Group.Int
 import Mathlib.Data.Nat.Dist
-import Mathlib.Data.Nat.Units
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
