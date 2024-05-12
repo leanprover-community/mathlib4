@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Set.Defs
