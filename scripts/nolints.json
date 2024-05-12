@@ -125,8 +125,6 @@
  ["docBlame", "ContT.run"],
  ["docBlame", "ContT.withContT"],
  ["docBlame", "ContinuousMap.«term_≃ₕ_»"],
- ["docBlame", "ConvexBody.carrier"],
- ["docBlame", "ConvexCone.carrier"],
  ["docBlame", "Ctop.f"],
  ["docBlame", "Ctop.inter"],
  ["docBlame", "Ctop.top"],
