@@ -1124,11 +1124,15 @@ theorem BijOn.compl (hst : BijOn f s t) (hf : Bijective f) : BijOn f sᶜ tᶜ :
   ⟨hst.surjOn.mapsTo_compl hf.1, hf.1.injOn _, hst.mapsTo.surjOn_compl hf.2⟩
 #align set.bij_on.compl Set.BijOn.compl
 
-theorem BijOn.subset_right {r : Set β} (hf : BijOn f s t) (hxt : r ⊆ t) :
+theorem BijOn.subset_right {r : Set β} (hf : BijOn f s t) (hrt : r ⊆ t) :
     BijOn f (s ∩ f ⁻¹' r) r := by
   refine ⟨inter_subset_right _ _, hf.injOn.mono <| inter_subset_left _ _, fun x hx ↦ ?_⟩
-  obtain ⟨y, hy, rfl⟩ := hf.surjOn (hxt hx)
+  obtain ⟨y, hy, rfl⟩ := hf.surjOn (hrt hx)
   exact ⟨y, ⟨hy, hx⟩, rfl⟩
+
+theorem BijOn.subset_left {r : Set α} (hf : BijOn f s t) (hrs : r ⊆ s) :
+    BijOn f r (f '' r) :=
+  (hf.injOn.mono hrs).bijOn_image
 
 end bijOn
 
