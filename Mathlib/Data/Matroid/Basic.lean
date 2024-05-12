@@ -65,8 +65,8 @@ There are a few design decisions worth discussing.
   and that all lack nice properties.
   Many different competing notions of infinite matroid were studied through the years;
   in fact, the problem of which definition is the best was only really solved in 2013,
-  when Bruhn et al. [2] showed that there is a unique 'reasonable' notion of an infinite matroid;
-  these objects had been previously called 'B-matroids'.
+  when Bruhn et al. [2] showed that there is a unique 'reasonable' notion of an infinite matroid
+  (these objects had previously defined by Higgs under the name 'B-matroid').
   These are defined by adding one carefully chosen axiom to the standard set,
   and adapting existing axioms to not mention set cardinalities;
   they enjoy nearly all the nice properties of standard finite matroids.
@@ -188,21 +188,21 @@ def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X :
 @[ext] structure Matroid (α : Type _) where
   /-- `M` has a ground set `E`. -/
   (E : Set α)
-  /-- `M` has a predicate `Base` definining its bases -/
+  /-- `M` has a predicate `Base` definining its bases. -/
   (Base : Set α → Prop)
-  /-- `M` has a predicate `Indep` defining its independent sets -/
+  /-- `M` has a predicate `Indep` defining its independent sets. -/
   (Indep : Set α → Prop)
-  /-- the `Indep`endent sets are those contained in `Base`s. -/
+  /-- The `Indep`endent sets are those contained in `Base`s. -/
   (indep_iff' : ∀ ⦃I⦄, Indep I ↔ ∃ B, Base B ∧ I ⊆ B)
-  /-- There is at least one `Base` -/
+  /-- There is at least one `Base`. -/
   (exists_base : ∃ B, Base B)
   /-- For any bases `B`, `B'` and `e ∈ B \ B'`, there is some `f ∈ B' \ B` for which `B-e+f`
-    is a base -/
+    is a base. -/
   (base_exchange : Matroid.ExchangeProperty Base)
   /-- Every independent subset `I` of a set `X` for is contained in a maximal independent
     subset of `X`. -/
   (maximality : ∀ X, X ⊆ E → Matroid.ExistsMaximalSubsetProperty Indep X)
-  /-- every base is contained in the ground set -/
+  /-- Every base is contained in the ground set. -/
   (subset_ground : ∀ B, Base B → B ⊆ E)
 
 namespace Matroid
