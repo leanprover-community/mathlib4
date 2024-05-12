@@ -36,7 +36,7 @@ open Set
 
 section EmptyOn
 
-/-- The `Matroid α` with empty ground set-/
+/-- The `Matroid α` with empty ground set. -/
 def emptyOn (α : Type*) : Matroid α :=
   Matroid.ofBaseOfFinite finite_empty (· = ∅) ⟨_, rfl⟩ (by rintro _ _ rfl; simp) (by simp)
 
