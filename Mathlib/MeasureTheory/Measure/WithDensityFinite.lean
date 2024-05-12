@@ -30,12 +30,9 @@ In these definitions and the results below, `μ` is an s-finite measure (`SFinit
 * `MeasureTheory.Measure.densityToFinite`: a measurable function such that
   `μ = μ.toFinite.withDensity μ.densityToFinite`.
 * `MeasureTheory.Measure.sigmaFiniteSet`: a measurable set such that `μ.restrict μ.sigmaFiniteSet`
-  is sigma-finite, and for all measurable sets `s ⊆ μ.sigmaFiniteSetᶜ`, either `μ s = 0`
-  or `μ s = ∞`.
+  is sigma-finite, and for all sets `s ⊆ μ.sigmaFiniteSetᶜ`, either `μ s = 0` or `μ s = ∞`.
 
 ## Main statements
-
-Properties of `toFinite`:
 
 * `absolutelyContinuous_toFinite`: `μ ≪ μ.toFinite`.
 * `toFinite_absolutelyContinuous`: `μ.toFinite ≪ μ`.
@@ -86,11 +83,10 @@ lemma toFiniteAux_eq_zero_iff [SFinite μ] : μ.toFiniteAux = 0 ↔ μ = 0 := by
   ext s hs
   rw [Measure.ext_iff] at h
   specialize h s hs
-  simp only [toFiniteAux_apply, Measure.zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply,
+  simp only [toFiniteAux_apply, Measure.coe_zero, Pi.zero_apply,
     ENNReal.tsum_eq_zero, mul_eq_zero, ENNReal.inv_eq_zero] at h
   rw [← sum_sFiniteSeq μ, Measure.sum_apply _ hs]
-  simp only [Measure.zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply,
-    ENNReal.tsum_eq_zero]
+  simp only [Measure.coe_zero, Pi.zero_apply, ENNReal.tsum_eq_zero]
   intro n
   specialize h n
   simpa [ENNReal.mul_eq_top, measure_ne_top] using h
@@ -218,18 +214,19 @@ lemma restrict_compl_sigmaFiniteSet [SFinite μ] :
 lemma restrict_compl_sigmaFiniteSet_eq_zero_or_top (μ : Measure α) [SFinite μ] (s : Set α) :
     μ.restrict μ.sigmaFiniteSetᶜ s = 0 ∨ μ.restrict μ.sigmaFiniteSetᶜ s = ∞ := by
   rw [restrict_compl_sigmaFiniteSet]
-  simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, smul_eq_mul,
-    mul_eq_zero, ENNReal.top_ne_zero, false_or]
+  simp only [Measure.coe_smul, Pi.smul_apply, smul_eq_mul, mul_eq_zero, ENNReal.top_ne_zero,
+    false_or]
   rw [Measure.restrict_apply' (measurableSet_sigmaFiniteSet μ).compl]
   by_cases h_zero : μ.toFinite (s ∩ μ.sigmaFiniteSetᶜ) = 0
   · exact Or.inl h_zero
   · exact Or.inr (ENNReal.top_mul h_zero)
 
 lemma measure_eq_zero_or_top_of_subset_compl_sigmaFiniteSet [SFinite μ]
-    (ht : MeasurableSet t) (ht_subset : t ⊆ μ.sigmaFiniteSetᶜ) :
+    (ht_subset : t ⊆ μ.sigmaFiniteSetᶜ) :
     μ t = 0 ∨ μ t = ∞ := by
   have : μ t = μ.restrict μ.sigmaFiniteSetᶜ t := by
-    rw [Measure.restrict_apply ht, Set.inter_eq_left.mpr ht_subset]
+    rw [Measure.restrict_apply' (measurableSet_sigmaFiniteSet μ).compl,
+      Set.inter_eq_left.mpr ht_subset]
   rw [this]
   exact restrict_compl_sigmaFiniteSet_eq_zero_or_top μ t
 

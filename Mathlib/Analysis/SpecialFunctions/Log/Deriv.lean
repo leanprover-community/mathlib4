@@ -280,16 +280,16 @@ theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     refine' (tendsto_const_nhds.mul _).div_const _
     exact tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg _) h
   show Summable fun n : ℕ => x ^ (n + 1) / (n + 1)
-  · refine' .of_norm_bounded _ (summable_geometric_of_lt_one (abs_nonneg _) h) fun i => _
-    calc
-      ‖x ^ (i + 1) / (i + 1)‖ = |x| ^ (i + 1) / (i + 1) := by
-        have : (0 : ℝ) ≤ i + 1 := le_of_lt (Nat.cast_add_one_pos i)
-        rw [norm_eq_abs, abs_div, ← pow_abs, abs_of_nonneg this]
-      _ ≤ |x| ^ (i + 1) / (0 + 1) := by
-        gcongr
-        exact i.cast_nonneg
-      _ ≤ |x| ^ i := by
-        simpa [pow_succ] using mul_le_of_le_one_right (pow_nonneg (abs_nonneg x) i) (le_of_lt h)
+  refine' .of_norm_bounded _ (summable_geometric_of_lt_one (abs_nonneg _) h) fun i => _
+  calc
+    ‖x ^ (i + 1) / (i + 1)‖ = |x| ^ (i + 1) / (i + 1) := by
+      have : (0 : ℝ) ≤ i + 1 := le_of_lt (Nat.cast_add_one_pos i)
+      rw [norm_eq_abs, abs_div, ← pow_abs, abs_of_nonneg this]
+    _ ≤ |x| ^ (i + 1) / (0 + 1) := by
+      gcongr
+      exact i.cast_nonneg
+    _ ≤ |x| ^ i := by
+      simpa [pow_succ] using mul_le_of_le_one_right (pow_nonneg (abs_nonneg x) i) (le_of_lt h)
 #align real.has_sum_pow_div_log_of_abs_lt_1 Real.hasSum_pow_div_log_of_abs_lt_one
 @[deprecated] alias hasSum_pow_div_log_of_abs_lt_1 := hasSum_pow_div_log_of_abs_lt_one -- 2024-01-31
 

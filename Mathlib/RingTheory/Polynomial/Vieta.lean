@@ -64,9 +64,9 @@ theorem prod_X_add_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s
   · rw [if_pos (Nat.sub_sub_self h).symm]
   · intro j hj1 hj2
     suffices k ≠ card s - j by rw [if_neg this]
-    · intro hn
-      rw [hn, Nat.sub_sub_self (Nat.lt_succ_iff.mp (Finset.mem_range.mp hj1))] at hj2
-      exact Ne.irrefl hj2
+    intro hn
+    rw [hn, Nat.sub_sub_self (Nat.lt_succ_iff.mp (Finset.mem_range.mp hj1))] at hj2
+    exact Ne.irrefl hj2
   · rw [Finset.mem_range]
     exact Nat.lt_succ_of_le (Nat.sub_le (Multiset.card s) k)
 set_option linter.uppercaseLean3 false in
