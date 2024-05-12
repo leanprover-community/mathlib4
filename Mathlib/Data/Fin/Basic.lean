@@ -72,6 +72,7 @@ This file expands on the development in the core library.
 
 -/
 
+assert_not_exists OrderedCommMonoid
 assert_not_exists Ring
 
 universe u v
