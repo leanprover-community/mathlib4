@@ -1795,7 +1795,7 @@ import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Erased
 import Mathlib.Data.FP.Basic
-import Mathlib.Data.Fin.Decoy
+import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.FlagRange
 import Mathlib.Data.Fin.Interval

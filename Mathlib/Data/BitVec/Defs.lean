@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joe Hendrix, Sebastian Ullrich, Harun Khan, Alex Keizer, Abdalrhman M Mohamed
 -/
 import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Fin.Decoy
+import Mathlib.Data.Fin.Basic
 import Mathlib.Data.ZMod.Defs
 import Batteries.Data.BitVec
 

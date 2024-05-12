@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Cover
 import Mathlib.Order.Chain
-import Mathlib.Data.Fin.Decoy
+import Mathlib.Data.Fin.Basic
 
 /-!
 # Range of `f : Fin (n + 1) → α` as a `Flag`

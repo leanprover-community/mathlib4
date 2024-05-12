@@ -3,7 +3,8 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fin.Decoy
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Fin.Basic
 import Mathlib.Order.SuccPred.Basic
 
 #align_import data.nat.succ_pred from "leanprover-community/mathlib"@"a2d2e18906e2b62627646b5d5be856e6a642062f"
