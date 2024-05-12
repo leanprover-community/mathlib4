@@ -15,6 +15,20 @@ def length : ∀ {n}, Dyck n → Nat
 def cast (h : n = m) : Dyck n → Dyck m :=
   by subst h; exact id
 
+def concat : ∀ {n m}, Dyck n → Dyck m → Dyck (n + m)
+  | _, _, d, nil => d
+  | _, _, d, up d' => up (concat d d')
+  | _, _, d, down d' => down (cast (by omega) (concat d d'))
+
+def prependUp (x : Dyck n) : Dyck (n + 1) := cast (by omega) (concat (up nil) x)
+
+def concatRev : Dyck (n + m) → Dyck m → Dyck n
+  | d, nil => d
+  | d, up e => concatRev (down d) e
+  | d, down e => concatRev (cast (by omega) (up d)) e
+
+/-! Theorems about `Dyck.cast`. -/
+
 @[simp] theorem cast_cast {n m o} (h : n = m) (h' : m = o) (d : Dyck n) :
     cast h' (cast h d) = cast (by simp [h, h']) d := by
   subst h h'
@@ -29,10 +43,7 @@ def cast (h : n = m) : Dyck n → Dyck m :=
 @[simp] theorem down_cast (h : n + 1 = m + 1) : down (cast h d) = cast (by omega) (down d) := by
   cases h; rfl
 
-@[simp] def concat : ∀ {n m}, Dyck n → Dyck m → Dyck (n + m)
-  | _, _, d, nil => d
-  | _, _, d, up d' => up (concat d d')
-  | _, _, d, down d' => down (cast (by omega) (concat d d'))
+/-! Theorems about `Dyck.concat`. -/
 
 @[simp] theorem cast_concat {n m o} (d : Dyck n) (e : Dyck m) (h : n = o) :
     concat (cast h d) e = cast (by simp [h]) (concat d e) :=
@@ -47,14 +58,9 @@ theorem concat_assoc {n m o} (d : Dyck n) (e : Dyck m) (f : Dyck o) :
   match f with
   | nil
   | up _
-  | down _ => by simp [concat_assoc]
+  | down _ => by simp [concat, concat_assoc]
 
-def concatRev : Dyck (n + m) → Dyck m → Dyck n
-  | d, nil => d
-  | d, up e => concatRev (down d) e
-  | d, down e => concatRev (cast (by omega) (up d)) e
-
-def prependUp (x : Dyck n) : Dyck (n + 1) := cast (by omega) (concat (up nil) x)
+/-! Theorems about `Dyck.prependUp`. -/
 
 theorem prependUp_cast (h : n = m) :
     prependUp (cast h d) = cast (by omega) (prependUp d) :=
@@ -81,81 +87,85 @@ def leftCap : ∀ {n}, Dyck (n + 2) → Dyck n
   cases h
   rfl
 
-def rightCap (d : Dyck (n + 2)) : Dyck n :=
-  go 0 d
-where go (k : Nat) (d : Dyck (n + k + 2)) : Dyck (n + k) :=
+def cap (k : Nat) (d : Dyck (n + k + 2)) : Dyck (n + k) :=
   match k, d with
   | 0, up x => down x
-  | k+1, up x => up (go k x)
-  | k, down x => down (go (k+1) x)
+  | k+1, up x => up (cap k x)
+  | k, down x => down (cap (k+1) x)
 
-@[local simp] private theorem rightCap_go_cast {k} (h : n + k + 2 = m + k + 2) (d : Dyck (n + k + 2)):
-    rightCap.go k (cast h d) = cast (by omega) (rightCap.go k d) := by
+@[local simp] private theorem cap_cast {k} (h : n + k + 2 = m + k + 2) (d : Dyck (n + k + 2)):
+    cap k (cast h d) = cast (by omega) (cap k d) := by
   have h' : n = m := by omega
   subst h'
   rfl
 
-theorem rightCap_up : rightCap (up d) = down d := by
-  rw [rightCap, rightCap.go]
-
-private theorem rightCap_go_prependUp {n} {d : Dyck (n + 1 + k + 1)} :
-    rightCap.go (n := n + 1) k (prependUp d) =
-      cast (by omega) (prependUp (rightCap.go (n := n) k (cast (by omega) d))) := by
+private theorem cap_prependUp {n} {d : Dyck (n + 1 + k + 1)} :
+    cap (n := n + 1) k (prependUp d) =
+      cast (by omega) (prependUp (cap (n := n) k (cast (by omega) d))) := by
   match k, d with
   | 0, up d =>
     unfold prependUp
-    rw [concat, ← up_cast, rightCap.go, ← up_cast (by omega), rightCap.go, concat, cast_cast,
-      cast_refl, down_cast]
+    rw [concat, ← up_cast, cap, ← up_cast (by omega), cap, concat, cast_cast, cast_refl, down_cast]
     · rfl
     · simp; omega
   | k+1, up x =>
-    rw [prependUp_up, rightCap.go, rightCap_go_prependUp, ← up_cast, rightCap.go, up_cast,
-      prependUp_up]
+    rw [prependUp_up, cap, cap_prependUp, ← up_cast, cap, up_cast, prependUp_up]
   | _, down d =>
-    rw [prependUp_down, rightCap.go, rightCap_go_prependUp, ← down_cast, rightCap.go, down_cast,
-      prependUp_down]
+    rw [prependUp_down, cap, cap_prependUp, ← down_cast, cap, down_cast, prependUp_down]
+
+def cap' (k : Nat) (d : Dyck (n + 2)) : Dyck n :=
+  let k' := min k n
+  cast (by omega) (cap (n := n - k') k' (cast (by omega) d))
+
+theorem cap'_cap'_of_ge (h : k₁ ≥ k₂)
+
+
+theorem cap_cap_of_ge (h : k₁ ≥ k₂) (w : m ≥ {d : Dyck m} : cap k₁ (cast sorry (cap k₂ d)) = cap k₂ (cap (k₁ + 2) d) := sorry
+
+abbrev rightCap (d : Dyck (n + 2)) : Dyck n := cap 0 d
+
+theorem rightCap_up : rightCap (up d) = down d := by
+  rw [rightCap, cap]
 
 theorem rightCap_prependUp {n} {d : Dyck (n + 2)} :
     rightCap (prependUp d) = prependUp (rightCap d) := by
-  rw [rightCap, rightCap_go_prependUp]
+  rw [rightCap, cap_prependUp]
   rfl
 
-private theorem rightCap_go_leftCap {n} {d : Dyck (n + k + 4)} :
-    rightCap.go k (leftCap d) =
-      leftCap (cast (by omega) (rightCap.go (n := n + 2) k (cast (by omega) d))) := by
+private theorem cap_leftCap {n} {d : Dyck (n + k + 4)} :
+    cap k (leftCap d) =
+      leftCap (cast (by omega) (cap (n := n + 2) k (cast (by omega) d))) := by
   match k, d with
-  | 0, up x => simp [leftCap, rightCap.go]
+  | 0, up x => simp [leftCap, cap]
   | k+1, up x =>
-    rw [leftCap, rightCap.go, rightCap_go_leftCap, ← up_cast (by omega), rightCap.go, ← up_cast,
-      leftCap]
+    rw [leftCap, cap, cap_leftCap, ← up_cast (by omega), cap, ← up_cast, leftCap]
   | _, down x =>
-    rw [leftCap, rightCap.go, rightCap_go_leftCap, ← down_cast (by omega), rightCap.go, ← down_cast,
-      leftCap]
+    rw [leftCap, cap, cap_leftCap, ← down_cast (by omega), cap, ← down_cast, leftCap]
+
 theorem rightCap_leftCap {n} {d : Dyck (n + 4)} : rightCap (leftCap d) = leftCap (rightCap d) := by
-  rw [rightCap, rightCap_go_leftCap, leftCap_cast, rightCap_go_cast, leftCap_cast, cast_cast]
+  rw [rightCap, cap_leftCap, leftCap_cast, cap_cast, leftCap_cast, cast_cast]
   rfl
 
-theorem rightCap_go_eq_leftCap {d : Dyck (0 + k + 2)} : rightCap.go (n := 0) k d = leftCap d := by
+theorem cap_eq_leftCap {d : Dyck (0 + k + 2)} : cap (n := 0) k d = leftCap d := by
   match k, d with
-  | 0, up x => rw [rightCap.go, leftCap]
-  | k+1, up x => rw [rightCap.go, rightCap_go_eq_leftCap, leftCap]
-  | _, down x => rw [rightCap.go, rightCap_go_eq_leftCap, leftCap]
+  | 0, up x => rw [cap, leftCap]
+  | k+1, up x => rw [cap, cap_eq_leftCap, leftCap]
+  | _, down x => rw [cap, cap_eq_leftCap, leftCap]
 
 theorem rightCap_eq_leftCap {d : Dyck 2} : rightCap d = leftCap d := by
   match d with
   | up x => rw [leftCap, rightCap_up]
-  | down x => rw [leftCap, rightCap, rightCap.go, rightCap_go_eq_leftCap]
+  | down x => rw [leftCap, rightCap, cap, cap_eq_leftCap]
 
 def flip : Dyck n → Dyck n
   | nil => nil
   | up x => prependUp (flip x)
   | down x => leftCap (prependUp (flip x))
 
-example : flip (down <| up <| nil) = (down <| up <| nil) := rfl
-example : flip (up <| up <| up <| nil) = (up <| up <| up <| nil) := rfl
-example : flip (down <| up <| up <| up <| nil) = (up <| up <| down <| up <| nil) := rfl
-example : flip (down <| up <| down <| down <| up <| up <| nil) =
-    (down <| down <| up <| up <| down <| up <| nil) := rfl
+example : flip nil.up.down = nil.up.down := rfl
+example : flip nil.up.up.up = nil.up.up.up := rfl
+example : flip nil.up.up.up.down = nil.up.down.up.up := rfl
+example : flip nil.up.up.down.down.up.down = nil.up.down.up.up.down.down := rfl
 
 theorem flip_cast (h : n = m) : flip (cast h d) = cast h (flip d) := by
   subst h; rfl
