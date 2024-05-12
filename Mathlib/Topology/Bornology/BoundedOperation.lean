@@ -75,17 +75,6 @@ lemma isBounded_mul [Bornology R] [Mul R] [BoundedMul R] {s t : Set R}
     (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t) :
     Bornology.IsBounded (s * t) := BoundedMul.isBounded_mul hs ht
 
-lemma mul_bounded_of_bounded_of_bounded {X : Type*} [PseudoMetricSpace R] [Mul R] [BoundedMul R]
-    {f g : X → R} (f_bdd : ∃ C, ∀ x y, dist (f x) (f y) ≤ C)
-    (g_bdd : ∃ C, ∀ x y, dist (g x) (g y) ≤ C) :
-    ∃ C, ∀ x y, dist ((f * g) x) ((f * g) y) ≤ C := by
-  obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <|
-    isBounded_mul (Metric.isBounded_range_iff.mpr f_bdd) (Metric.isBounded_range_iff.mpr g_bdd)
-  use C
-  intro x y
-  exact hC (Set.mul_mem_mul (Set.mem_range_self (f := f) x) (Set.mem_range_self (f := g) x))
-           (Set.mul_mem_mul (Set.mem_range_self (f := f) y) (Set.mem_range_self (f := g) y))
-
 lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set R}
     (s_bdd : Bornology.IsBounded s) (n : ℕ) :
     Bornology.IsBounded ((fun x ↦ x ^ n) '' s) := by
@@ -102,6 +91,17 @@ lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set
       apply Set.mul_mem_mul _ y_in_s
       use y
     exact (isBounded_mul hn s_bdd).subset obs
+
+lemma mul_bounded_of_bounded_of_bounded {X : Type*} [PseudoMetricSpace R] [Mul R] [BoundedMul R]
+    {f g : X → R} (f_bdd : ∃ C, ∀ x y, dist (f x) (f y) ≤ C)
+    (g_bdd : ∃ C, ∀ x y, dist (g x) (g y) ≤ C) :
+    ∃ C, ∀ x y, dist ((f * g) x) ((f * g) y) ≤ C := by
+  obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <|
+    isBounded_mul (Metric.isBounded_range_iff.mpr f_bdd) (Metric.isBounded_range_iff.mpr g_bdd)
+  use C
+  intro x y
+  exact hC (Set.mul_mem_mul (Set.mem_range_self (f := f) x) (Set.mem_range_self (f := g) x))
+           (Set.mul_mem_mul (Set.mem_range_self (f := f) y) (Set.mem_range_self (f := g) y))
 
 end bounded_mul
 
