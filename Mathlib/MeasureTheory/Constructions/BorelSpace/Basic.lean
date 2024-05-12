@@ -802,8 +802,8 @@ theorem ext_of_Ico_finite {α : Type*} [TopologicalSpace α] {m : MeasurableSpac
   refine'
     ext_of_generate_finite _ (BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ico α))
       (isPiSystem_Ico (id : α → α) id) _ hμν
-  · rintro - ⟨a, b, hlt, rfl⟩
-    exact h hlt
+  rintro - ⟨a, b, hlt, rfl⟩
+  exact h hlt
 #align measure_theory.measure.ext_of_Ico_finite MeasureTheory.Measure.ext_of_Ico_finite
 
 /-- Two finite measures on a Borel space are equal if they agree on all open-closed intervals.  If

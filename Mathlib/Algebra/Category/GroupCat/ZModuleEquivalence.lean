@@ -50,8 +50,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.forget₂_AddCommGroup_ess_surj ModuleCat.forget₂_addCommGroupCat_essSurj
 
 noncomputable instance forget₂AddCommGroupIsEquivalence :
-    (forget₂ (ModuleCat ℤ) AddCommGroupCat.{u}).IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj (forget₂ (ModuleCat ℤ) AddCommGroupCat)
+    (forget₂ (ModuleCat ℤ) AddCommGroupCat.{u}).IsEquivalence where
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_AddCommGroup_is_equivalence ModuleCat.forget₂AddCommGroupIsEquivalence
 

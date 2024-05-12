@@ -93,11 +93,11 @@ open Real
 
 theorem rpow_def_of_neg {x : ℝ} (hx : x < 0) (y : ℝ) : x ^ y = exp (log x * y) * cos (y * π) := by
   rw [rpow_def, Complex.cpow_def, if_neg]
-  have : Complex.log x * y = ↑(log (-x) * y) + ↑(y * π) * Complex.I := by
-    simp only [Complex.log, abs_of_neg hx, Complex.arg_ofReal_of_neg hx, Complex.abs_ofReal,
-      Complex.ofReal_mul]
-    ring
-  · rw [this, Complex.exp_add_mul_I, ← Complex.ofReal_exp, ← Complex.ofReal_cos, ←
+  · have : Complex.log x * y = ↑(log (-x) * y) + ↑(y * π) * Complex.I := by
+      simp only [Complex.log, abs_of_neg hx, Complex.arg_ofReal_of_neg hx, Complex.abs_ofReal,
+        Complex.ofReal_mul]
+      ring
+    rw [this, Complex.exp_add_mul_I, ← Complex.ofReal_exp, ← Complex.ofReal_cos, ←
       Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ← mul_assoc, ← Complex.ofReal_mul,
       Complex.add_re, Complex.ofReal_re, Complex.mul_re, Complex.I_re, Complex.ofReal_im,
       Real.log_neg_eq_log]
@@ -549,13 +549,13 @@ theorem monotoneOn_rpow_Ici_of_exponent_nonneg {r : ℝ} (hr : 0 ≤ r) :
 lemma rpow_lt_rpow_of_neg (hx : 0 < x) (hxy : x < y) (hz : z < 0) : y ^ z < x ^ z := by
   have := hx.trans hxy
   rw [← inv_lt_inv, ← rpow_neg, ← rpow_neg]
-  refine rpow_lt_rpow ?_ hxy (neg_pos.2 hz)
+  on_goal 1 => refine rpow_lt_rpow ?_ hxy (neg_pos.2 hz)
   all_goals positivity
 
 lemma rpow_le_rpow_of_nonpos (hx : 0 < x) (hxy : x ≤ y) (hz : z ≤ 0) : y ^ z ≤ x ^ z := by
   have := hx.trans_le hxy
   rw [← inv_le_inv, ← rpow_neg, ← rpow_neg]
-  refine rpow_le_rpow ?_ hxy (neg_nonneg.2 hz)
+  on_goal 1 => refine rpow_le_rpow ?_ hxy (neg_nonneg.2 hz)
   all_goals positivity
 
 theorem rpow_lt_rpow_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
