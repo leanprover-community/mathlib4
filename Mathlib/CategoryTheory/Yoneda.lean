@@ -642,4 +642,19 @@ lemma isIso_of_coyoneda_map_bijective {X Y : C} (f : X ⟶ Y)
 
 end CoyonedaLemma
 
+section
+
+variable {C}
+variable {D : Type*} [Category.{v₁} D] (F : C ⥤ D)
+
+def yonedaMap (X : C) : yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X) :=
+  yonedaEquiv.symm (𝟙 _)
+
+@[simp]
+lemma yonedaMap_app_apply {Y : C} {X : Cᵒᵖ} (f : X.unop ⟶ Y) :
+    (yonedaMap F Y).app X f = F.map f := by
+  simp [yonedaMap, yonedaEquiv]
+
+end
+
 end CategoryTheory

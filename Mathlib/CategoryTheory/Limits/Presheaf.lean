@@ -55,9 +55,9 @@ namespace Presheaf
 
 section SmallCategory
 
-variable {C : Type u₁} [SmallCategory C]
+variable {C : Type u₁} [Category.{v₁} C]
 
-variable {ℰ : Type u₂} [Category.{u₁} ℰ] (A : C ⥤ ℰ)
+variable {ℰ : Type u₂} [Category.{v₁} ℰ] (A : C ⥤ ℰ)
 
 /--
 The functor taking `(E : ℰ) (c : Cᵒᵖ)` to the homset `(A.obj C ⟶ E)`. It is shown in `L_adjunction`
@@ -68,8 +68,8 @@ In the case where `ℰ = Cᵒᵖ ⥤ Type u` and `A = yoneda`, this functor is i
 Defined as in [MM92], Chapter I, Section 5, Theorem 2.
 -/
 @[simps!]
-def restrictedYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type u₁ :=
-  yoneda ⋙ (whiskeringLeft _ _ (Type u₁)).obj (Functor.op A)
+def restrictedYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type v₁ :=
+  yoneda ⋙ (whiskeringLeft _ _ (Type v₁)).obj (Functor.op A)
 #align category_theory.colimit_adj.restricted_yoneda CategoryTheory.Presheaf.restrictedYoneda
 
 --/--
@@ -127,7 +127,7 @@ theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type v₂) (E₁ E₂ : 
   apply (assoc _ _ _).symm
 #align category_theory.colimit_adj.restrict_yoneda_hom_equiv_natural CategoryTheory.ColimitAdj.restrictYonedaHomEquiv_natural-/
 
-def homEquiv' (P : Cᵒᵖ ⥤ Type u₁) (E : ℰ) :
+def homEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
     (CostructuredArrow.proj yoneda P ⋙ A ⟶
       (Functor.const (CostructuredArrow yoneda P)).obj E) ≃
       (P ⟶ (restrictedYoneda A).obj E) where
@@ -173,15 +173,17 @@ def homEquiv' (P : Cᵒᵖ ⥤ Type u₁) (E : ℰ) :
     erw [yonedaEquiv_symm_app_apply]
     simp
 
-example [HasColimits ℰ] :
+section
+
+example [HasColimitsOfSize.{v₁, max u₁ v₁} ℰ] :
     yoneda.HasPointwiseLeftKanExtension A := inferInstance
 
 variable [yoneda.HasPointwiseLeftKanExtension A]
 
 variable {A}
-variable (L : (Cᵒᵖ ⥤ Type u₁) ⥤ ℰ) (α : A ⟶ yoneda ⋙ L) [L.IsLeftKanExtension α]
+variable (L : (Cᵒᵖ ⥤ Type v₁) ⥤ ℰ) (α : A ⟶ yoneda ⋙ L) [L.IsLeftKanExtension α]
 
-noncomputable def homEquiv (P : Cᵒᵖ ⥤ Type u₁) (E : ℰ) :
+noncomputable def homEquiv (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
     (L.obj P ⟶ E) ≃ (P ⟶ (restrictedYoneda A).obj E) :=
   ((Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α P).homEquiv E).trans
     (homEquiv' A P E)
@@ -232,6 +234,8 @@ instance : IsIso (yoneda.leftKanExtensionUnit A) :=
 noncomputable def isExtensionAlongYoneda :
     yoneda ⋙ yoneda.leftKanExtension A ≅ A :=
   (asIso (yoneda.leftKanExtensionUnit A)).symm
+
+end
 
 /-
 /--
@@ -400,8 +404,71 @@ set_option linter.uppercaseLean3 false in
 
 section
 
-variable {D : Type u₁} [SmallCategory D] (F : C ⥤ D)
+variable {D : Type u₂} [Category.{v₁} D] (F : C ⥤ D)
 
+section
+
+instance (X : C) (Y : F.op.LeftExtension (yoneda.obj X)) :
+    Unique (Functor.LeftExtension.mk _ (yonedaMap F X) ⟶ Y) where
+  default := StructuredArrow.homMk
+      (yonedaEquiv.symm (yonedaEquiv (F := F.op.comp Y.right) Y.hom)) (by
+        ext Z f
+        simpa using congr_fun (Y.hom.naturality f.op).symm (𝟙 _))
+  uniq φ := by
+    ext1
+    apply yonedaEquiv.injective
+    dsimp
+    simp only [Equiv.apply_symm_apply, ← StructuredArrow.w φ]
+    dsimp [yonedaEquiv]
+    simp only [yonedaMap_app_apply, Functor.map_id]
+
+/-- Given `F : C ⥤ D` and `X : C`, `yoneda.obj (F.obj X) : Dᵒᵖ ⥤ Type _` is the
+left Kan extension of `yoneda.obj X : Cᵒᵖ ⥤ Type _` along `F.op`. -/
+instance (X : C) : (yoneda.obj (F.obj X)).IsLeftKanExtension (yonedaMap F X) :=
+  ⟨⟨Limits.IsInitial.ofUnique _⟩⟩
+
+end
+
+variable [∀ (P : Cᵒᵖ ⥤ Type v₁), F.op.HasLeftKanExtension P]
+
+/-- `F ⋙ yoneda` is naturally isomorphic to `yoneda ⋙ F.op.lan`. -/
+noncomputable def compYonedaIsoYonedaCompLan :
+    F ⋙ yoneda ≅ yoneda ⋙ F.op.lan :=
+  NatIso.ofComponents (fun X => Functor.leftKanExtensionUnique _
+    (yonedaMap F X) (F.op.lan.obj _) (F.op.lanUnit.app (yoneda.obj X))) (fun {X Y} f => by
+      apply yonedaEquiv.injective
+      have eq₁ := congr_fun ((yoneda.obj (F.obj Y)).descOfIsLeftKanExtension_fac_app
+        (yonedaMap F Y) (F.op.lan.obj (yoneda.obj Y)) (F.op.lanUnit.app (yoneda.obj Y)) _) f
+      have eq₂ := congr_fun (((yoneda.obj (F.obj X)).descOfIsLeftKanExtension_fac_app
+        (yonedaMap F X) (F.op.lan.obj (yoneda.obj X)) (F.op.lanUnit.app (yoneda.obj X))) _) (𝟙 _)
+      have eq₃ := congr_fun (congr_app (F.op.lanUnit.naturality (yoneda.map f)) _) (𝟙 _)
+      dsimp at eq₁ eq₂ eq₃
+      rw [yonedaMap_app_apply] at eq₁
+      simp only [yonedaMap_app_apply, Functor.map_id] at eq₂
+      simp only [id_comp] at eq₃
+      dsimp [yonedaEquiv]
+      rw [id_comp, eq₁, eq₂, eq₃])
+
+noncomputable instance (Y : StructuredArrow (F ⋙ yoneda)
+    ((whiskeringLeft C (Cᵒᵖ ⥤ Type v₁) (Dᵒᵖ ⥤ Type v₁)).obj yoneda)) :
+    Unique (Functor.LeftExtension.mk F.op.lan (compYonedaIsoYonedaCompLan F).hom ⟶ Y) where
+  default := StructuredArrow.homMk
+    { app := fun P => (F.op.lan.obj P).descOfIsLeftKanExtension (F.op.lanUnit.app P) _ (by
+        dsimp
+        suffices ∀ X, yoneda.obj X ⟶ F.op.comp (Y.right.obj (yoneda.obj X)) by
+          -- needs the colimit cocone expressing `P` as a colimit of `yoneda.obj _`
+          sorry
+        intro X
+        exact yonedaEquiv.2 ((Y.hom.app X).app _ (𝟙 _)))
+      naturality := sorry } sorry
+  uniq := sorry
+
+example : F.op.lan.IsLeftKanExtension (compYonedaIsoYonedaCompLan F).hom :=
+  ⟨⟨Limits.IsInitial.ofUnique _⟩⟩
+
+end
+
+#exit
 /-- extending `F ⋙ yoneda` along the yoneda embedding is isomorphic to `F.op.lan`. -/
 @[simps!]
 noncomputable def yonedaLeftKanExtensionCompYonedaIsoLan  :
@@ -419,8 +486,6 @@ noncomputable def compYonedaIsoYonedaCompLan :
 set_option linter.uppercaseLean3 false in
 #align category_theory.comp_yoneda_iso_yoneda_comp_Lan CategoryTheory.Presheaf.compYonedaIsoYonedaCompLan
 
-example : F.op.lan.IsLeftKanExtension (compYonedaIsoYonedaCompLan F).hom := by
-  sorry
 
 end
 
