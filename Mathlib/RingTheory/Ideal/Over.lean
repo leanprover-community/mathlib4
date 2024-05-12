@@ -396,7 +396,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isPrime
   refine' _root_.trans _ (_root_.trans (congr_arg (comap (Ideal.Quotient.mk
     (comap (algebraMap R S) I))) hQ') _)
   · rw [comap_comap]
-    exact congr_arg (comap . Q') (RingHom.ext fun r => rfl)
+    exact congr_arg (comap · Q') (RingHom.ext fun r => rfl)
   · refine' _root_.trans (comap_map_of_surjective _ Quotient.mk_surjective _) (sup_eq_left.2 _)
     simpa [← RingHom.ker_eq_comap_bot] using hIP
 
@@ -410,7 +410,7 @@ lemma exists_ideal_comap_le_prime (P : Ideal R) [P.IsPrime]
     rintro _ ⟨⟨x, hx : x ∉ P, rfl⟩, hx'⟩
     exact (hx (hI hx')).elim
   have : Iₚ ≠ ⊤ := by
-    rw [Ne.def, Ideal.eq_top_iff_one, IsLocalization.mem_map_algebraMap_iff
+    rw [Ne, Ideal.eq_top_iff_one, IsLocalization.mem_map_algebraMap_iff
       (Algebra.algebraMapSubmonoid S P.primeCompl) Sₚ, not_exists]
     simp only [one_mul, IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S P.primeCompl),
       not_exists]

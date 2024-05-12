@@ -3,7 +3,6 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.FieldTheory.Perfect
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.AnnihilatingPolynomial
@@ -129,7 +128,6 @@ theorem IsSemisimple.minpoly_squarefree : Squarefree (minpoly K f) :=
 protected theorem IsSemisimple.aeval (p : K[X]) : (aeval f p).IsSemisimple :=
   let R := K[X] ⧸ Ideal.span {minpoly K f}
   have : Finite K R := (AdjoinRoot.powerBasis' <| minpoly.monic <| isIntegral f).finite
-  have : IsArtinianRing R := .of_finite K R
   have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
     span_minpoly_eq_annihilator K f ▸ hf.annihilator_isRadical
   isSemisimple_of_squarefree_aeval_eq_zero ((minpoly.isRadical K _).squarefree <|
@@ -151,6 +149,7 @@ section PerfectField
 
 variable [PerfectField K] (comm : Commute f g) (hf : f.IsSemisimple) (hg : g.IsSemisimple)
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin K {f, g}) :
     a.IsSemisimple := by
   let R := K[X] ⧸ Ideal.span {minpoly K f}
@@ -171,7 +170,7 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
   · rw [Ideal.span, ← minpoly.ker_aeval_eq_span_minpoly]; exact id
   · rintro ⟨p⟩; exact p.induction_on (fun k ↦ by simp [R, Algebra.commute_algebraMap_left])
       (fun p q hp hq ↦ by simpa using hp.add_left hq)
-      fun n k ↦ by simpa [R, pow_succ', ← mul_assoc _ _ X] using (·.mul_left comm)
+      fun n k ↦ by simpa [R, pow_succ, ← mul_assoc _ _ X] using (·.mul_left comm)
   · simpa only [RingHom.mem_ker, eval₂AlgHom'_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
       using minpoly.aeval K g
   have : Algebra.adjoin K {f, g} ≤ φ.range := Algebra.adjoin_le fun x ↦ by

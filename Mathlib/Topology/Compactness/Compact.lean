@@ -419,6 +419,32 @@ theorem IsCompact.mem_prod_nhdsSet_of_forall {K : Set Y} {l : Filter X} {s : Set
     (hK : IsCompact K) (hs : ∀ y ∈ K, s ∈ l ×ˢ 𝓝 y) : s ∈ l ×ˢ 𝓝ˢ K :=
   (hK.prod_nhdsSet_eq_biSup l).symm ▸ by simpa using hs
 
+-- TODO: Is there a way to prove directly the `inf` version and then deduce the `Prod` one ?
+-- That would seem a bit more natural.
+theorem IsCompact.nhdsSet_inf_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
+    (𝓝ˢ K) ⊓ l = ⨆ x ∈ K, 𝓝 x ⊓ l := by
+  have : ∀ f : Filter X, f ⊓ l = comap (fun x ↦ (x, x)) (f ×ˢ l) := fun f ↦ by
+    simpa only [comap_prod] using congrArg₂ (· ⊓ ·) comap_id.symm comap_id.symm
+  simp_rw [this, ← comap_iSup, hK.nhdsSet_prod_eq_biSup]
+
+theorem IsCompact.inf_nhdsSet_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
+    l ⊓ (𝓝ˢ K) = ⨆ x ∈ K, l ⊓ 𝓝 x := by
+  simp only [inf_comm l, hK.nhdsSet_inf_eq_biSup]
+
+/-- If `s : Set X` belongs to `𝓝 x ⊓ l` for all `x` from a compact set `K`,
+then it belongs to `(𝓝ˢ K) ⊓ l`,
+i.e., there exist an open `U ⊇ K` and `T ∈ l` such that `U ∩ T ⊆ s`. -/
+theorem IsCompact.mem_nhdsSet_inf_of_forall {K : Set X} {l : Filter X} {s : Set X}
+    (hK : IsCompact K) (hs : ∀ x ∈ K, s ∈ 𝓝 x ⊓ l) : s ∈ (𝓝ˢ K) ⊓ l :=
+  (hK.nhdsSet_inf_eq_biSup l).symm ▸ by simpa using hs
+
+/-- If `s : Set S` belongs to `l ⊓ 𝓝 x` for all `x` from a compact set `K`,
+then it belongs to `l ⊓ (𝓝ˢ K)`,
+i.e., there exist `T ∈ l` and an open `U ⊇ K` such that `T ∩ U ⊆ s`. -/
+theorem IsCompact.mem_inf_nhdsSet_of_forall {K : Set X} {l : Filter X} {s : Set X}
+    (hK : IsCompact K) (hs : ∀ y ∈ K, s ∈ l ⊓ 𝓝 y) : s ∈ l ⊓ 𝓝ˢ K :=
+  (hK.inf_nhdsSet_eq_biSup l).symm ▸ by simpa using hs
+
 /-- To show that `∀ y ∈ K, P x y` holds for `x` close enough to `x₀` when `K` is compact,
 it is sufficient to show that for all `y₀ ∈ K` there `P x y` holds for `(x, y)` close enough
 to `(x₀, y₀)`.
@@ -586,6 +612,18 @@ theorem cocompact_eq_cofinite (X : Type*) [TopologicalSpace X] [DiscreteTopology
   simp only [cocompact, hasBasis_cofinite.eq_biInf, isCompact_iff_finite]
 #align filter.cocompact_eq_cofinite Filter.cocompact_eq_cofinite
 
+/-- A filter is disjoint from the cocompact filter if and only if it contains a compact set. -/
+theorem disjoint_cocompact_left (f : Filter X) :
+    Disjoint (Filter.cocompact X) f ↔ ∃ K ∈ f, IsCompact K := by
+  simp_rw [hasBasis_cocompact.disjoint_iff_left, compl_compl]
+  tauto
+
+/-- A filter is disjoint from the cocompact filter if and only if it contains a compact set. -/
+theorem disjoint_cocompact_right (f : Filter X) :
+    Disjoint f (Filter.cocompact X) ↔ ∃ K ∈ f, IsCompact K := by
+  simp_rw [hasBasis_cocompact.disjoint_iff_right, compl_compl]
+  tauto
+
 -- deprecated on 2024-02-07: see `cocompact_eq_atTop` with `import Mathlib.Topology.Instances.Nat`
 @[deprecated] theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
   (cocompact_eq_cofinite ℕ).trans Nat.cofinite_eq_atTop
@@ -696,6 +734,28 @@ theorem IsCompact.nhdsSet_prod_eq {t : Set Y} (hs : IsCompact s) (ht : IsCompact
     𝓝ˢ (s ×ˢ t) = 𝓝ˢ s ×ˢ 𝓝ˢ t := by
   simp_rw [hs.nhdsSet_prod_eq_biSup, ht.prod_nhdsSet_eq_biSup, nhdsSet, sSup_image, biSup_prod,
     nhds_prod_eq]
+
+theorem nhdsSet_prod_le_of_disjoint_cocompact {f : Filter Y} (hs : IsCompact s)
+    (hf : Disjoint f (Filter.cocompact Y)) :
+    𝓝ˢ s ×ˢ f ≤ 𝓝ˢ (s ×ˢ Set.univ) := by
+  obtain ⟨K, hKf, hK⟩ := (disjoint_cocompact_right f).mp hf
+  calc
+    𝓝ˢ s ×ˢ f
+    _ ≤ 𝓝ˢ s ×ˢ 𝓟 K        := Filter.prod_mono_right _ (Filter.le_principal_iff.mpr hKf)
+    _ ≤ 𝓝ˢ s ×ˢ 𝓝ˢ K       := Filter.prod_mono_right _ principal_le_nhdsSet
+    _ = 𝓝ˢ (s ×ˢ K)         := (hs.nhdsSet_prod_eq hK).symm
+    _ ≤ 𝓝ˢ (s ×ˢ Set.univ)  := nhdsSet_mono (prod_mono_right le_top)
+
+theorem prod_nhdsSet_le_of_disjoint_cocompact {f : Filter X} (ht : IsCompact t)
+    (hf : Disjoint f (Filter.cocompact X)) :
+    f ×ˢ 𝓝ˢ t ≤ 𝓝ˢ (Set.univ ×ˢ t) := by
+  obtain ⟨K, hKf, hK⟩ := (disjoint_cocompact_right f).mp hf
+  calc
+    f ×ˢ 𝓝ˢ t
+    _ ≤ (𝓟 K) ×ˢ 𝓝ˢ t      := Filter.prod_mono_left _ (Filter.le_principal_iff.mpr hKf)
+    _ ≤ 𝓝ˢ K ×ˢ 𝓝ˢ t       := Filter.prod_mono_left _ principal_le_nhdsSet
+    _ = 𝓝ˢ (K ×ˢ t)         := (hK.nhdsSet_prod_eq ht).symm
+    _ ≤ 𝓝ˢ (Set.univ ×ˢ t)  := nhdsSet_mono (prod_mono_left le_top)
 
 /-- If `s` and `t` are compact sets and `n` is an open neighborhood of `s × t`, then there exist
 open neighborhoods `u ⊇ s` and `v ⊇ t` such that `u × v ⊆ n`.

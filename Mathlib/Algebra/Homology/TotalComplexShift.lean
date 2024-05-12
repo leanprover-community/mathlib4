@@ -78,7 +78,8 @@ lemma D₁_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x 
     ((shiftFunctor₁ C x).obj K).D₁ (up ℤ) n₀ n₁ ≫ (K.totalShift₁XIso x n₁ n₁' h₁).hom =
       x.negOnePow • ((K.totalShift₁XIso x n₀ n₀' h₀).hom ≫ K.D₁ (up ℤ) n₀' n₁') := by
   by_cases h : (up ℤ).Rel n₀ n₁
-  · ext ⟨p, q⟩ hpq
+  · apply total.hom_ext
+    intro p q hpq
     dsimp at h hpq
     dsimp [totalShift₁XIso]
     rw [ι_D₁_assoc, Linear.comp_units_smul, ι_totalDesc_assoc, ι_D₁,
@@ -97,7 +98,8 @@ lemma D₂_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x 
     ((shiftFunctor₁ C x).obj K).D₂ (up ℤ) n₀ n₁ ≫ (K.totalShift₁XIso x n₁ n₁' h₁).hom =
       x.negOnePow • ((K.totalShift₁XIso x n₀ n₀' h₀).hom ≫ K.D₂ (up ℤ) n₀' n₁') := by
   by_cases h : (up ℤ).Rel n₀ n₁
-  · ext ⟨p, q⟩ hpq
+  · apply total.hom_ext
+    intro p q hpq
     dsimp at h hpq
     dsimp [totalShift₁XIso]
     rw [ι_D₂_assoc, Linear.comp_units_smul, ι_totalDesc_assoc, ι_D₂,
@@ -153,7 +155,8 @@ lemma D₁_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
     ((shiftFunctor₂ C y).obj K).D₁ (up ℤ) n₀ n₁ ≫ (K.totalShift₂XIso y n₁ n₁' h₁).hom =
       y.negOnePow • ((K.totalShift₂XIso y n₀ n₀' h₀).hom ≫ K.D₁ (up ℤ) n₀' n₁') := by
   by_cases h : (up ℤ).Rel n₀ n₁
-  · ext ⟨p, q⟩ hpq
+  · apply total.hom_ext
+    intro p q hpq
     dsimp at h hpq
     dsimp [totalShift₂XIso]
     rw [ι_D₁_assoc, Linear.comp_units_smul, ι_totalDesc_assoc, Linear.units_smul_comp,
@@ -174,7 +177,8 @@ lemma D₂_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
     ((shiftFunctor₂ C y).obj K).D₂ (up ℤ) n₀ n₁ ≫ (K.totalShift₂XIso y n₁ n₁' h₁).hom =
       y.negOnePow • ((K.totalShift₂XIso y n₀ n₀' h₀).hom ≫ K.D₂ (up ℤ) n₀' n₁') := by
   by_cases h : (up ℤ).Rel n₀ n₁
-  · ext ⟨p, q⟩ hpq
+  · apply total.hom_ext
+    intro p q hpq
     dsimp at h hpq
     dsimp [totalShift₂XIso]
     rw [ι_D₂_assoc, Linear.comp_units_smul, ι_totalDesc_assoc, Linear.units_smul_comp,

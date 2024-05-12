@@ -69,8 +69,7 @@ open scoped Classical
 open Nat multiplicity padicNorm CauSeq CauSeq.Completion Metric
 
 /-- The type of Cauchy sequences of rationals with respect to the `p`-adic norm. -/
-@[reducible]
-def PadicSeq (p : ℕ) :=
+abbrev PadicSeq (p : ℕ) :=
   CauSeq _ (padicNorm p)
 #align padic_seq PadicSeq
 
@@ -382,7 +381,7 @@ theorem norm_nonarchimedean (f g : PadicSeq p) : (f + g).norm ≤ max f.norm g.n
     if hf : f ≈ 0 then by
       have hfg' : f + g ≈ g := by
         change LimZero (f - 0) at hf
-        show LimZero (f + g - g); · simpa only [sub_zero, add_sub_cancel] using hf
+        show LimZero (f + g - g); · simpa only [sub_zero, add_sub_cancel_right] using hf
       have hcfg : (f + g).norm = g.norm := norm_equiv hfg'
       have hcl : f.norm = 0 := (norm_zero_iff f).2 hf
       have : max f.norm g.norm = g.norm := by rw [hcl]; exact max_eq_right (norm_nonneg _)
@@ -391,7 +390,7 @@ theorem norm_nonarchimedean (f g : PadicSeq p) : (f + g).norm ≤ max f.norm g.n
       if hg : g ≈ 0 then by
         have hfg' : f + g ≈ f := by
           change LimZero (g - 0) at hg
-          show LimZero (f + g - f); · simpa only [add_sub_cancel', sub_zero] using hg
+          show LimZero (f + g - f); · simpa only [add_sub_cancel_left, sub_zero] using hg
         have hcfg : (f + g).norm = f.norm := norm_equiv hfg'
         have hcl : g.norm = 0 := (norm_zero_iff g).2 hg
         have : max f.norm g.norm = f.norm := by rw [hcl]; exact max_eq_left (norm_nonneg _)
@@ -436,14 +435,14 @@ theorem add_eq_max_of_ne {f g : PadicSeq p} (hfgne : f.norm ≠ g.norm) :
   have hfg : ¬f + g ≈ 0 := mt norm_eq_of_add_equiv_zero hfgne
   if hf : f ≈ 0 then by
     have : LimZero (f - 0) := hf
-    have : f + g ≈ g := show LimZero (f + g - g) by simpa only [sub_zero, add_sub_cancel]
+    have : f + g ≈ g := show LimZero (f + g - g) by simpa only [sub_zero, add_sub_cancel_right]
     have h1 : (f + g).norm = g.norm := norm_equiv this
     have h2 : f.norm = 0 := (norm_zero_iff _).2 hf
     rw [h1, h2, max_eq_right (norm_nonneg _)]
   else
     if hg : g ≈ 0 then by
       have : LimZero (g - 0) := hg
-      have : f + g ≈ f := show LimZero (f + g - f) by rw [add_sub_cancel']; simpa only [sub_zero]
+      have : f + g ≈ f := show LimZero (f + g - f) by simpa only [add_sub_cancel_left, sub_zero]
       have h1 : (f + g).norm = f.norm := norm_equiv this
       have h2 : g.norm = 0 := (norm_zero_iff _).2 hg
       rw [h1, h2, max_eq_left (norm_nonneg _)]
@@ -465,7 +464,6 @@ def Padic (p : ℕ) [Fact p.Prime] :=
   CauSeq.Completion.Cauchy (padicNorm p)
 #align padic Padic
 
--- mathport name: «exprℚ_[ ]»
 /-- notation for p-padic rationals -/
 notation "ℚ_[" p "]" => Padic p
 
@@ -709,21 +707,21 @@ theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε h�
     ring_nf at this ⊢
     rw [← padicNormE.eq_padic_norm']
     exact mod_cast this
-  · apply lt_of_le_of_lt
-    · apply padicNormE.add_le
-    · rw [← add_thirds ε]
-      apply _root_.add_lt_add
-      · suffices padicNormE (limSeq f j - f j + (f j - f (max N N2)) : ℚ_[p]) < ε / 3 + ε / 3 by
-          simpa only [sub_add_sub_cancel]
-        apply lt_of_le_of_lt
-        · apply padicNormE.add_le
-        · apply _root_.add_lt_add
-          · rw [padicNormE.map_sub]
-            apply mod_cast hN j
-            exact le_of_max_le_left hj
-          · exact hN2 _ (le_of_max_le_right hj) _ (le_max_right _ _)
-      · apply mod_cast hN (max N N2)
-        apply le_max_left
+  apply lt_of_le_of_lt
+  · apply padicNormE.add_le
+  · rw [← add_thirds ε]
+    apply _root_.add_lt_add
+    · suffices padicNormE (limSeq f j - f j + (f j - f (max N N2)) : ℚ_[p]) < ε / 3 + ε / 3 by
+        simpa only [sub_add_sub_cancel]
+      apply lt_of_le_of_lt
+      · apply padicNormE.add_le
+      · apply _root_.add_lt_add
+        · rw [padicNormE.map_sub]
+          apply mod_cast hN j
+          exact le_of_max_le_left hj
+        · exact hN2 _ (le_of_max_le_right hj) _ (le_max_right _ _)
+    · apply mod_cast hN (max N N2)
+      apply le_max_left
 #align padic.exi_rat_seq_conv_cauchy Padic.exi_rat_seq_conv_cauchy
 
 private def lim' : PadicSeq p :=
@@ -905,9 +903,9 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
       rw [padicNorm.eq_zpow_of_nonzero hnz', padicValRat, neg_sub,
         padicValNat.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_natCast]
       apply inv_le_one
-      · norm_cast
-        apply one_le_pow
-        exact hp.1.pos
+      norm_cast
+      apply one_le_pow
+      exact hp.1.pos
 #align padic_norm_e.norm_rat_le_one padicNormE.norm_rat_le_one
 
 theorem norm_int_le_one (z : ℤ) : ‖(z : ℚ_[p])‖ ≤ 1 :=
@@ -923,7 +921,7 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
     rw [eq_comm]
     calc
       ‖(k : ℚ_[p])‖ = ‖((k : ℚ) : ℚ_[p])‖ := by norm_cast
-      _ = padicNorm p k := (padicNormE.eq_padicNorm _)
+      _ = padicNorm p k := padicNormE.eq_padicNorm _
       _ = 1 := mod_cast (int_eq_one_iff k).mpr h
   · rintro ⟨x, rfl⟩
     push_cast
@@ -1090,7 +1088,7 @@ theorem valuation_map_mul {x y : ℚ_[p]} (hx : x ≠ 0) (hy : y ≠ 0) :
     valuation (x * y : ℚ_[p]) = valuation x + valuation y := by
   have h_norm : ‖x * y‖ = ‖x‖ * ‖y‖ := norm_mul x y
   have hp_ne_one : (p : ℝ) ≠ 1 := by
-    rw [← Nat.cast_one, Ne.def, Nat.cast_inj]
+    rw [← Nat.cast_one, Ne, Nat.cast_inj]
     exact Nat.Prime.ne_one hp.elim
   have hp_pos : (0 : ℝ) < p := by
     rw [← Nat.cast_zero, Nat.cast_lt]

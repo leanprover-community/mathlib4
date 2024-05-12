@@ -216,7 +216,7 @@ protected theorem comp {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} (hf : L
     (hg : LipschitzWith Kg g) : LipschitzWith (Kf * Kg) (f ∘ g) := fun x y =>
   calc
     edist (f (g x)) (f (g y)) ≤ Kf * edist (g x) (g y) := hf _ _
-    _ ≤ Kf * (Kg * edist x y) := (ENNReal.mul_left_mono (hg _ _))
+    _ ≤ Kf * (Kg * edist x y) := ENNReal.mul_left_mono (hg _ _)
     _ = (Kf * Kg : ℝ≥0) * edist x y := by rw [← mul_assoc, ENNReal.coe_mul]
 #align lipschitz_with.comp LipschitzWith.comp
 
@@ -262,7 +262,7 @@ protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ 
 /-- Iterates of a Lipschitz function are Lipschitz. -/
 protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, LipschitzWith (K ^ n) f^[n]
   | 0 => by simpa only [pow_zero] using LipschitzWith.id
-  | n + 1 => by rw [pow_succ']; exact (LipschitzWith.iterate hf n).comp hf
+  | n + 1 => by rw [pow_succ]; exact (LipschitzWith.iterate hf n).comp hf
 #align lipschitz_with.iterate LipschitzWith.iterate
 
 theorem edist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
@@ -291,7 +291,7 @@ protected theorem pow_end {f : Function.End α} {K} (h : LipschitzWith K f) :
   | 0 => by simpa only [pow_zero] using LipschitzWith.id
   | n + 1 => by
     rw [pow_succ, pow_succ]
-    exact h.mul_end (LipschitzWith.pow_end h n)
+    exact (LipschitzWith.pow_end h n).mul_end h
 #align lipschitz_with.pow LipschitzWith.pow_end
 
 end LipschitzWith
@@ -407,7 +407,7 @@ protected theorem pow_end {f : Function.End α} (h : LocallyLipschitz f) :
   | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
   | n + 1 => by
     rw [pow_succ]
-    exact h.mul_end (h.pow_end n)
+    exact (h.pow_end n).mul_end h
 
 end LocallyLipschitz
 

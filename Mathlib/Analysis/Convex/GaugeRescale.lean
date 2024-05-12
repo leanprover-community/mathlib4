@@ -58,7 +58,7 @@ theorem gaugeRescale_self {s : Set E} (hsa : Absorbent ℝ s) (hsb : IsVonNBound
 theorem gauge_gaugeRescale' (s : Set E) {t : Set E} {x : E} (hx : gauge t x ≠ 0) :
     gauge t (gaugeRescale s t x) = gauge s x := by
   rw [gaugeRescale, gauge_smul_of_nonneg (div_nonneg (gauge_nonneg _) (gauge_nonneg _)),
-    smul_eq_mul, div_mul_cancel _ hx]
+    smul_eq_mul, div_mul_cancel₀ _ hx]
 
 theorem gauge_gaugeRescale (s : Set E) {t : Set E} (hta : Absorbent ℝ t) (htb : IsVonNBounded ℝ t)
     (x : E) : gauge t (gaugeRescale s t x) = gauge s x := by

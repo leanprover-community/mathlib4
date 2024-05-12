@@ -49,7 +49,7 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
       rintro - ⟨r, r_in, s, s_in, rfl⟩
       calc
         (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
-        _ < γ₀ * γ₀ := (mul_lt_mul₀ r_in s_in)
+        _ < γ₀ * γ₀ := mul_lt_mul₀ r_in s_in
         _ ≤ γ := mod_cast h
     leftMul := by
       rintro x γ
@@ -96,7 +96,7 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x : R | v x < γ } ⊆ s
 #align valued Valued
 
--- Porting note: removed
+-- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
 --attribute [nolint dangerous_instance] Valued.toUniformSpace
 
 namespace Valued

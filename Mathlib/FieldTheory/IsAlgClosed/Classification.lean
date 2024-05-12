@@ -3,11 +3,11 @@ Copyright (c) 2022 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.RingTheory.AlgebraicIndependent
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.Data.Polynomial.Cardinal
-import Mathlib.Data.MvPolynomial.Cardinal
+import Mathlib.Algebra.Polynomial.Cardinal
+import Mathlib.Algebra.MvPolynomial.Cardinal
 import Mathlib.Data.ZMod.Algebra
+import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.RingTheory.AlgebraicIndependent
 
 #align_import field_theory.is_alg_closed.classification from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
@@ -46,7 +46,7 @@ theorem cardinal_mk_le_sigma_polynomial :
       ⟨p.1, x, by
         dsimp
         have h : p.1.map (algebraMap R L) ≠ 0 := by
-          rw [Ne.def, ← Polynomial.degree_eq_bot,
+          rw [Ne, ← Polynomial.degree_eq_bot,
             Polynomial.degree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective R L),
             Polynomial.degree_eq_bot]
           exact p.2.1
@@ -69,8 +69,8 @@ theorem cardinal_mk_le_max : #L ≤ max #R ℵ₀ :=
       rw [← mk_sigma]; rfl
     _ ≤ Cardinal.sum.{u, u} fun _ : R[X] => ℵ₀ :=
       (sum_le_sum _ _ fun p => (Multiset.finite_toSet _).lt_aleph0.le)
-    _ = #(R[X]) * ℵ₀ := (sum_const' _ _)
-    _ ≤ max (max #(R[X]) ℵ₀) ℵ₀ := (mul_le_max _ _)
+    _ = #(R[X]) * ℵ₀ := sum_const' _ _
+    _ ≤ max (max #(R[X]) ℵ₀) ℵ₀ := mul_le_max _ _
     _ ≤ max (max (max #R ℵ₀) ℵ₀) ℵ₀ :=
       (max_le_max (max_le_max Polynomial.cardinal_mk_le_max le_rfl) le_rfl)
     _ = max #R ℵ₀ := by simp only [max_assoc, max_comm ℵ₀, max_left_comm ℵ₀, max_self]
@@ -137,7 +137,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
       letI := isAlgClosure_of_transcendence_basis v hv
       Algebra.IsAlgebraic.cardinal_mk_le_max _ _ IsAlgClosure.algebraic
     _ = max #(MvPolynomial ι R) ℵ₀ := by rw [Cardinal.eq.2 ⟨hv.1.aevalEquiv.toEquiv⟩]
-    _ ≤ max (max (max #R #ι) ℵ₀) ℵ₀ := (max_le_max MvPolynomial.cardinal_mk_le_max le_rfl)
+    _ ≤ max (max (max #R #ι) ℵ₀) ℵ₀ := max_le_max MvPolynomial.cardinal_mk_le_max le_rfl
     _ = _ := by simp [max_assoc]
 #align is_alg_closed.cardinal_le_max_transcendence_basis IsAlgClosed.cardinal_le_max_transcendence_basis
 

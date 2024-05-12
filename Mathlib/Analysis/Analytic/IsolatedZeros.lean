@@ -74,10 +74,10 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
   refine hp.mono fun x hx => ?_
   by_cases h : x = 0
   · convert hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
-  · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by field_simp [h, _root_.pow_succ']
+  · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by field_simp [h, _root_.pow_succ]
     suffices HasSum (fun n => x⁻¹ • x ^ (n + 1) • p.coeff (n + 1)) (x⁻¹ • (f (z₀ + x) - f z₀)) by
       simpa [dslope, slope, h, smul_smul, hxx] using this
-    · simpa [hp0] using ((hasSum_nat_add_iff' 1).mpr hx).const_smul x⁻¹
+    simpa [hp0] using ((hasSum_nat_add_iff' 1).mpr hx).const_smul x⁻¹
 #align has_fpower_series_at.has_fpower_series_dslope_fslope HasFPowerSeriesAt.has_fpower_series_dslope_fslope
 
 theorem has_fpower_series_iterate_dslope_fslope (n : ℕ) (hp : HasFPowerSeriesAt f p z₀) :
@@ -165,11 +165,11 @@ lemma unique_eventuallyEq_zpow_smul_nonzero {m n : ℤ}
     apply Filter.Eventually.frequently
     rw [eventually_nhdsWithin_iff] at hg_eq hj_eq ⊢
     filter_upwards [hg_eq, hj_eq] with z hfz hfz' hz
-    rw [← add_sub_cancel' n m, add_sub_assoc, zpow_add₀ <| sub_ne_zero.mpr hz, mul_smul,
+    rw [← add_sub_cancel_left n m, add_sub_assoc, zpow_add₀ <| sub_ne_zero.mpr hz, mul_smul,
       hfz' hz, smul_right_inj <| zpow_ne_zero _ <| sub_ne_zero.mpr hz] at hfz
     exact hfz hz
   rw [frequently_eq_iff_eventually_eq hj_an] at this
-  rw [EventuallyEq.eq_of_nhds this, sub_self, zero_zpow _ (sub_ne_zero.mpr hj_ne), zero_smul]
+  · rw [EventuallyEq.eq_of_nhds this, sub_self, zero_zpow _ (sub_ne_zero.mpr hj_ne), zero_smul]
   conv => enter [2, z, 1]; rw [← Int.toNat_sub_of_le h_le, zpow_natCast]
   exact (((analyticAt_id _ _).sub analyticAt_const).pow _).smul hg_an
 

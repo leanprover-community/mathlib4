@@ -7,7 +7,7 @@ import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Data.IsROrC.Basic
+import Mathlib.Analysis.RCLike.Basic
 
 #align_import analysis.convex.gauge from "leanprover-community/mathlib"@"373b03b5b9d0486534edbe94747f23cb3712f93d"
 
@@ -318,17 +318,17 @@ theorem gauge_smul_left [Module α E] [SMulCommClass α ℝ ℝ] [IsScalarTower 
 
 end LinearOrderedField
 
-section IsROrC
+section RCLike
 
-variable [IsROrC 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
 theorem gauge_norm_smul (hs : Balanced 𝕜 s) (r : 𝕜) (x : E) :
     gauge s (‖r‖ • x) = gauge s (r • x) := by
   unfold gauge
   congr with θ
-  rw [@IsROrC.real_smul_eq_coe_smul 𝕜]
+  rw [@RCLike.real_smul_eq_coe_smul 𝕜]
   refine' and_congr_right fun hθ => (hs.smul _).smul_mem_iff _
-  rw [IsROrC.norm_ofReal, abs_norm]
+  rw [RCLike.norm_ofReal, abs_norm]
 #align gauge_norm_smul gauge_norm_smul
 
 /-- If `s` is balanced, then the Minkowski functional is ℂ-homogeneous. -/
@@ -336,7 +336,7 @@ theorem gauge_smul (hs : Balanced 𝕜 s) (r : 𝕜) (x : E) : gauge s (r • x)
   rw [← smul_eq_mul, ← gauge_smul_of_nonneg (norm_nonneg r), gauge_norm_smul hs]
 #align gauge_smul gauge_smul
 
-end IsROrC
+end RCLike
 
 open Filter
 
@@ -365,7 +365,7 @@ theorem gauge_eq_zero (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s
 
 theorem gauge_pos (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
     0 < gauge s x ↔ x ≠ 0 := by
-  simp only [(gauge_nonneg _).gt_iff_ne, Ne.def, gauge_eq_zero hs hb]
+  simp only [(gauge_nonneg _).gt_iff_ne, Ne, gauge_eq_zero hs hb]
 
 end TopologicalSpace
 
@@ -504,9 +504,9 @@ theorem gauge_eq_one_iff_mem_frontier (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
 
 end TopologicalVectorSpace
 
-section IsROrC
+section RCLike
 
-variable [IsROrC 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
 /-- `gauge s` as a seminorm when `s` is balanced, convex and absorbent. -/
 @[simps!]
@@ -527,7 +527,7 @@ theorem gaugeSeminorm_ball_one (hs : IsOpen s) : (gaugeSeminorm hs₀ hs₁ hs�
   exact gauge_lt_one_eq_self_of_isOpen hs₁ hs₂.zero_mem hs
 #align gauge_seminorm_ball_one gaugeSeminorm_ball_one
 
-end IsROrC
+end RCLike
 
 /-- Any seminorm arises as the gauge of its unit ball. -/
 @[simp]
@@ -581,7 +581,7 @@ theorem gauge_ball (hr : 0 ≤ r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ /
     simp_rw [mem_ball_zero_iff, norm_neg]
     exact fun _ => id
 
-@[deprecated gauge_ball]
+@[deprecated gauge_ball] -- 2023-07-24
 theorem gauge_ball' (hr : 0 < r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ / r :=
   gauge_ball hr.le x
 #align gauge_ball gauge_ball'
@@ -609,7 +609,7 @@ theorem gauge_closedBall (hr : 0 ≤ r) (x : E) : gauge (closedBall (0 : E) r) x
       filter_upwards [self_mem_nhdsWithin] with R hR
       rw [← gauge_ball (hr.trans hR.out.le)]
       refine gauge_mono ?_ (closedBall_subset_ball hR) _
-      exact (absorbent_ball_zero hr').subset ball_subset_closedBall
+      exact (absorbent_ball_zero hr').mono ball_subset_closedBall
 
 theorem mul_gauge_le_norm (hs : Metric.ball (0 : E) r ⊆ s) : r * gauge s x ≤ ‖x‖ := by
   obtain hr | hr := le_or_lt r 0
@@ -624,7 +624,7 @@ theorem Convex.lipschitzWith_gauge {r : ℝ≥0} (hc : Convex ℝ s) (hr : 0 < r
   LipschitzWith.of_le_add_mul _ fun x y =>
     calc
       gauge s x = gauge s (y + (x - y)) := by simp
-      _ ≤ gauge s y + gauge s (x - y) := gauge_add_le hc (this.subset hs) _ _
+      _ ≤ gauge s y + gauge s (x - y) := gauge_add_le hc (this.mono hs) _ _
       _ ≤ gauge s y + ‖x - y‖ / r :=
         add_le_add_left ((gauge_mono this hs (x - y)).trans_eq (gauge_ball hr.le _)) _
       _ = gauge s y + r⁻¹ * dist x y := by rw [dist_eq_norm, div_eq_inv_mul, NNReal.coe_inv]

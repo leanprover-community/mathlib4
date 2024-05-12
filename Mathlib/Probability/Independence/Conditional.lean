@@ -82,6 +82,7 @@ def CondIndepSets (s1 s2 : Set (Set Ω)) (μ : Measure Ω := by volume_tac) [IsF
     Prop :=
   kernel.IndepSets s1 s2 (condexpKernel μ m') (μ.trim hm')
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- A family of measurable space structures (i.e. of σ-algebras) is conditionally independent given
 `m'` with respect to a measure `μ` (typically defined on a finer σ-algebra) if the family of sets of
 measurable sets they define is independent. `m : ι → MeasurableSpace Ω` is conditionally independent
@@ -212,7 +213,7 @@ lemma condIndepSets_iff (s1 s2 : Set (Set Ω)) (hs1 : ∀ s ∈ s1, MeasurableSe
       · exact measurable_condexpKernel (hs1 s hs)
       · exact measurable_condexpKernel (hs2 t ht)
     filter_upwards [hs1_eq s hs, hs2_eq t ht, hs12_eq s hs t ht, h] with ω hs_eq ht_eq hst_eq h
-    have h_ne_top : condexpKernel μ m' ω (s ∩ t) ≠ ∞ := (measure_ne_top (condexpKernel μ m' ω) _)
+    have h_ne_top : condexpKernel μ m' ω (s ∩ t) ≠ ∞ := measure_ne_top (condexpKernel μ m' ω) _
     rw [← ENNReal.ofReal_toReal h_ne_top, hst_eq, h, Pi.mul_apply, ← hs_eq, ← ht_eq,
       ← ENNReal.toReal_mul, ENNReal.ofReal_toReal]
     exact ENNReal.mul_ne_top (measure_ne_top (condexpKernel μ m' ω) s)
@@ -248,11 +249,13 @@ theorem condIndepSets_singleton_iff {μ : Measure Ω} [IsFiniteMeasure μ]
     rw [Set.mem_singleton_iff] at hs'
     rwa [hs']
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 lemma iCondIndep_iff_iCondIndepSets (m : ι → MeasurableSpace Ω)
     (μ : Measure Ω) [IsFiniteMeasure μ] :
     iCondIndep m' hm' m μ ↔ iCondIndepSets m' hm' (fun x ↦ {s | MeasurableSet[m x] s}) μ := by
   simp only [iCondIndep, iCondIndepSets, kernel.iIndep]
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 lemma iCondIndep_iff (m : ι → MeasurableSpace Ω) (hm : ∀ i, m i ≤ mΩ)
     (μ : Measure Ω) [IsFiniteMeasure μ] :
     iCondIndep m' hm' m μ
@@ -472,6 +475,7 @@ theorem iCondIndepSets.condIndepSets {s : ι → Set (Set Ω)}
     CondIndepSets m' hm' (s i) (s j) μ :=
   kernel.iIndepSets.indepSets h_indep hij
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem iCondIndep.condIndep {m : ι → MeasurableSpace Ω}
     (h_indep : iCondIndep m' hm' m μ) {i j : ι} (hij : i ≠ j) :
       CondIndep m' (m i) (m j) hm' μ :=
@@ -502,6 +506,7 @@ variable {m' : MeasurableSpace Ω}
   [mΩ : MeasurableSpace Ω] [StandardBorelSpace Ω] [Nonempty Ω]
   {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem iCondIndep.iCondIndepSets {m : ι → MeasurableSpace Ω}
     {s : ι → Set (Set Ω)} (hms : ∀ n, m n = generateFrom (s n))
     (h_indep : iCondIndep m' hm' m μ) :
@@ -549,11 +554,13 @@ theorem iCondIndepSet.condIndep_generateFrom_of_disjoint {s : ι → Set Ω}
       (generateFrom { t | ∃ k ∈ T, s k = t }) hm' μ :=
   kernel.iIndepSet.indep_generateFrom_of_disjoint hsm hs S T hST
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem condIndep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
     (h_le : ∀ i, m i ≤ mΩ) (h_indep : iCondIndep m' hm' m μ) {S T : Set ι} (hST : Disjoint S T) :
     CondIndep m' (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) hm' μ :=
   kernel.indep_iSup_of_disjoint h_le h_indep hST
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem condIndep_iSup_of_directed_le {m : ι → MeasurableSpace Ω}
     (h_indep : ∀ i, CondIndep m' (m i) m₁ hm' μ)
     (h_le : ∀ i, m i ≤ mΩ) (h_le' : m₁ ≤ mΩ) (hm : Directed (· ≤ ·) m) :
@@ -575,12 +582,14 @@ theorem iCondIndepSet.condIndep_generateFrom_le_nat {s : ℕ → Set Ω}
     CondIndep m' (generateFrom {s (n + 1)}) (generateFrom { t | ∃ k ≤ n, s k = t }) hm' μ :=
   kernel.iIndepSet.indep_generateFrom_le_nat hsm hs n
 
-theorem condIndep_iSup_of_monotone [SemilatticeSup ι]{m : ι → MeasurableSpace Ω}
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
+theorem condIndep_iSup_of_monotone [SemilatticeSup ι] {m : ι → MeasurableSpace Ω}
     (h_indep : ∀ i, CondIndep m' (m i) m₁ hm' μ) (h_le : ∀ i, m i ≤ mΩ) (h_le' : m₁ ≤ mΩ)
     (hm : Monotone m) :
     CondIndep m' (⨆ i, m i) m₁ hm' μ :=
   kernel.indep_iSup_of_monotone h_indep h_le h_le' hm
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem condIndep_iSup_of_antitone [SemilatticeInf ι] {m : ι → MeasurableSpace Ω}
     (h_indep : ∀ i, CondIndep m' (m i) m₁ hm' μ) (h_le : ∀ i, m i ≤ mΩ) (h_le' : m₁ ≤ mΩ)
     (hm : Antitone m) :
@@ -592,6 +601,7 @@ theorem iCondIndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : 
     CondIndepSets m' hm' (piiUnionInter π S) (π a) μ :=
   kernel.iIndepSets.piiUnionInter_of_not_mem hp_ind haS
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- The σ-algebras generated by conditionally independent pi-systems are conditionally independent.
 -/
 theorem iCondIndepSets.iCondIndep (m : ι → MeasurableSpace Ω)
@@ -648,10 +658,10 @@ theorem condIndepFun_iff_condexp_inter_preimage_eq_mul {mβ : MeasurableSpace β
       ∀ s t, MeasurableSet s → MeasurableSet t
         → (μ⟦f ⁻¹' s ∩ g ⁻¹' t | m'⟧) =ᵐ[μ] fun ω ↦ (μ⟦f ⁻¹' s | m'⟧) ω * (μ⟦g ⁻¹' t | m'⟧) ω := by
   rw [condIndepFun_iff _ _ _ _ hf hg]
-  · refine ⟨fun h s t hs ht ↦ ?_, fun h s t ↦ ?_⟩
-    · exact h (f ⁻¹' s) (g ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
-    · rintro ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
-      exact h s t hs ht
+  refine ⟨fun h s t hs ht ↦ ?_, fun h s t ↦ ?_⟩
+  · exact h (f ⁻¹' s) (g ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
+  · rintro ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
+    exact h s t hs ht
 
 theorem iCondIndepFun_iff_condexp_inter_preimage_eq_mul {β : ι → Type*}
     (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) (hf : ∀ i, Measurable (f i)) :

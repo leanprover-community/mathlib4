@@ -78,7 +78,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
       exact ⟨_, hx⟩
     rintro a ⟨xn, hxn, rfl⟩ b ⟨xp, hxp, rfl⟩
     have := s.add_mem hxp hxn
-    rw [add_assoc, add_sub_cancel'_right, ← sub_eq_add_neg, ← AddSubgroupClass.coe_sub] at this
+    rw [add_assoc, add_sub_cancel, ← sub_eq_add_neg, ← AddSubgroupClass.coe_sub] at this
     replace := nonneg _ this
     rwa [f.map_sub, sub_nonneg] at this
   -- Porting note: removed an unused `have`

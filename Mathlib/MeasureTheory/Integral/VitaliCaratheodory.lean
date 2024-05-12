@@ -118,7 +118,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
       simpa [f, hs, hc, lt_top_iff_ne_top, true_and_iff, SimpleFunc.coe_const,
         Function.const_apply, lintegral_const, ENNReal.coe_indicator, Set.univ_inter,
         ENNReal.coe_ne_top, MeasurableSet.univ, ENNReal.mul_eq_top, SimpleFunc.const_zero,
-        or_false_iff, lintegral_indicator, ENNReal.coe_eq_zero, Ne.def, not_false_iff,
+        or_false_iff, lintegral_indicator, ENNReal.coe_eq_zero, Ne, not_false_iff,
         SimpleFunc.coe_zero, Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, false_and_iff,
         restrict_apply] using h
     obtain ⟨u, su, u_open, μu⟩ : ∃ (u : _), u ⊇ s ∧ IsOpen u ∧ μ u < μ s + ε / c :=
@@ -186,7 +186,7 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
   · calc
       ∫⁻ x, ∑' n : ℕ, g n x ∂μ = ∑' n, ∫⁻ x, g n x ∂μ := by
         rw [lintegral_tsum fun n => (gcont n).measurable.coe_nnreal_ennreal.aemeasurable]
-      _ ≤ ∑' n, ((∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ) + δ n) := (ENNReal.tsum_le_tsum hg)
+      _ ≤ ∑' n, ((∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ) + δ n) := ENNReal.tsum_le_tsum hg
       _ = ∑' n, ∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ + ∑' n, δ n := ENNReal.tsum_add
       _ ≤ (∫⁻ x : α, f x ∂μ) + ε := by
         refine' add_le_add _ hδ.le
@@ -219,7 +219,7 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge [SigmaFinite μ] (f : α → 
       (∫⁻ x : α, g x ∂μ) ≤ (∫⁻ x : α, f x + w x ∂μ) + ε / 2 := gint
       _ = ((∫⁻ x : α, f x ∂μ) + ∫⁻ x : α, w x ∂μ) + ε / 2 := by
         rw [lintegral_add_right _ wmeas.coe_nnreal_ennreal]
-      _ ≤ (∫⁻ x : α, f x ∂μ) + ε / 2 + ε / 2 := (add_le_add_right (add_le_add_left wint.le _) _)
+      _ ≤ (∫⁻ x : α, f x ∂μ) + ε / 2 + ε / 2 := add_le_add_right (add_le_add_left wint.le _) _
       _ = (∫⁻ x : α, f x ∂μ) + ε := by rw [add_assoc, ENNReal.add_halves]
 
 #align measure_theory.exists_lt_lower_semicontinuous_lintegral_ge MeasureTheory.exists_lt_lowerSemicontinuous_lintegral_ge
@@ -289,7 +289,7 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
   have Ig : (∫⁻ a : α, ENNReal.ofReal (g a).toReal ∂μ) = ∫⁻ a : α, g a ∂μ := by
     apply lintegral_congr_ae
     filter_upwards [g_lt_top] with _ hx
-    simp only [hx.ne, ENNReal.ofReal_toReal, Ne.def, not_false_iff]
+    simp only [hx.ne, ENNReal.ofReal_toReal, Ne, not_false_iff]
   refine' ⟨g, f_lt_g, gcont, g_lt_top, _, _⟩
   · refine' ⟨gcont.measurable.ennreal_toReal.aemeasurable.aestronglyMeasurable, _⟩
     simp only [hasFiniteIntegral_iff_norm, Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
@@ -304,7 +304,7 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
           simpa using int_f_ne_top
         _ = ENNReal.toReal (∫⁻ a : α, f a ∂μ) + δ := by
           rw [ENNReal.toReal_add int_f_ne_top ENNReal.coe_ne_top, ENNReal.coe_toReal]
-        _ < ENNReal.toReal (∫⁻ a : α, f a ∂μ) + ε := (add_lt_add_left hδε _)
+        _ < ENNReal.toReal (∫⁻ a : α, f a ∂μ) + ε := add_lt_add_left hδε _
         _ = (∫⁻ a : α, ENNReal.ofReal ↑(f a) ∂μ).toReal + ε := by simp
 
     · apply Filter.eventually_of_forall fun x => _; simp
@@ -340,7 +340,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
       simpa only [hs, hc, lt_top_iff_ne_top, true_and_iff, SimpleFunc.coe_const, or_false_iff,
         lintegral_const, ENNReal.coe_indicator, Set.univ_inter, ENNReal.coe_ne_top,
         Measure.restrict_apply MeasurableSet.univ, ENNReal.mul_eq_top, SimpleFunc.const_zero,
-        Function.const_apply, lintegral_indicator, ENNReal.coe_eq_zero, Ne.def, not_false_iff,
+        Function.const_apply, lintegral_indicator, ENNReal.coe_eq_zero, Ne, not_false_iff,
         SimpleFunc.coe_zero, Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise,
         false_and_iff] using int_f
     have : (0 : ℝ≥0∞) < ε / c := ENNReal.div_pos_iff.2 ⟨ε0, ENNReal.coe_ne_top⟩
@@ -410,7 +410,7 @@ theorem exists_upperSemicontinuous_le_lintegral_le (f : α → ℝ≥0) (int_f :
   refine' ⟨g, fun x => (g_le_fs x).trans (fs_le_f x), gcont, _⟩
   calc
     (∫⁻ x, f x ∂μ) ≤ (∫⁻ x, fs x ∂μ) + ε / 2 := int_fs
-    _ ≤ (∫⁻ x, g x ∂μ) + ε / 2 + ε / 2 := (add_le_add gint le_rfl)
+    _ ≤ (∫⁻ x, g x ∂μ) + ε / 2 + ε / 2 := add_le_add gint le_rfl
     _ = (∫⁻ x, g x ∂μ) + ε := by rw [add_assoc, ENNReal.add_halves]
 
 #align measure_theory.exists_upper_semicontinuous_le_lintegral_le MeasureTheory.exists_upperSemicontinuous_le_lintegral_le
@@ -494,14 +494,14 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
           apply sub_lt_sub_right
           convert gpint
           simp only [EReal.toReal_coe_ennreal]
-        _ ≤ (∫ x : α, ↑(fp x) ∂μ) + ↑δ - ((∫ x : α, ↑(fm x) ∂μ) - δ) := (sub_le_sub_left gmint _)
+        _ ≤ (∫ x : α, ↑(fp x) ∂μ) + ↑δ - ((∫ x : α, ↑(fm x) ∂μ) - δ) := sub_le_sub_left gmint _
         _ = (∫ x : α, f x ∂μ) + 2 * δ := by
           simp_rw [integral_eq_integral_pos_part_sub_integral_neg_part hf]; ring
         _ = (∫ x : α, f x ∂μ) + ε := by congr 1; field_simp [δ, mul_comm]
   case aelt =>
     show ∀ᵐ x : α ∂μ, g x < ⊤
     filter_upwards [gp_lt_top] with ?_ hx
-    simp only [g, sub_eq_add_neg, Ne.def, (EReal.add_lt_top _ _).ne, lt_top_iff_ne_top,
+    simp only [g, sub_eq_add_neg, Ne, (EReal.add_lt_top _ _).ne, lt_top_iff_ne_top,
       lt_top_iff_ne_top.1 hx, EReal.coe_ennreal_eq_top_iff, not_false_iff, EReal.neg_eq_top_iff,
       EReal.coe_ennreal_ne_bot]
   case lt =>
@@ -512,8 +512,8 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
     · simp only [EReal.coe_ennreal_lt_coe_ennreal_iff]; exact fp_lt_gp x
     · simp only [ENNReal.coe_le_coe, EReal.coe_ennreal_le_coe_ennreal_iff]
       exact gm_le_fm x
-    · simp only [EReal.coe_ennreal_ne_bot, Ne.def, not_false_iff]
-    · simp only [EReal.coe_nnreal_ne_top, Ne.def, not_false_iff]
+    · simp only [EReal.coe_ennreal_ne_bot, Ne, not_false_iff]
+    · simp only [EReal.coe_nnreal_ne_top, Ne, not_false_iff]
   case lsc =>
     show LowerSemicontinuous g
     apply LowerSemicontinuous.add'

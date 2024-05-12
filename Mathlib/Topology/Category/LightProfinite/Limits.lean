@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
@@ -21,7 +21,7 @@ which may be useful due to their definitional properties.
 
 -/
 
-universe u
+universe u w
 
 open CategoryTheory Profinite TopologicalSpace Limits
 
@@ -44,16 +44,16 @@ The "explicit" pullback of two morphisms `f, g` in `LightProfinite`, whose under
 is the set of pairs `(x, y)` such that `f x = g y`, with the topology induced by the product.
 -/
 noncomputable def pullback : LightProfinite.{u} :=
-  ofIsLight.{u} (Profinite.pullback.{u} (lightToProfinite.{u}.map f) (lightToProfinite.{u}.map g))
+  ofIsLight (Profinite.pullback (lightToProfinite.map f) (lightToProfinite.map g))
 
 /-- The projection from the pullback to the first component. -/
 def pullback.fst : pullback f g ⟶ X where
-  toFun := fun ⟨⟨x, _⟩, _⟩ => x
+  toFun := fun ⟨⟨x, _⟩, _⟩ ↦ x
   continuous_toFun := Continuous.comp continuous_fst continuous_subtype_val
 
 /-- The projection from the pullback to the second component. -/
 def pullback.snd : pullback f g ⟶ Y where
-  toFun := fun ⟨⟨_, y⟩, _⟩ => y
+  toFun := fun ⟨⟨_, y⟩, _⟩ ↦ y
   continuous_toFun := Continuous.comp continuous_snd continuous_subtype_val
 
 @[reassoc]
@@ -68,7 +68,7 @@ This is essentially the universal property of the pullback.
 -/
 def pullback.lift {Z : LightProfinite.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
     Z ⟶ pullback f g where
-  toFun := fun z => ⟨⟨a z, b z⟩, by apply_fun (· z) at w; exact w⟩
+  toFun := fun z ↦ ⟨⟨a z, b z⟩, by apply_fun (· z) at w; exact w⟩
   continuous_toFun := by
     apply Continuous.subtype_mk
     rw [continuous_prod_mk]
@@ -101,16 +101,16 @@ noncomputable def pullback.cone : Limits.PullbackCone f g :=
 @[simps! lift]
 def pullback.isLimit : Limits.IsLimit (pullback.cone f g) :=
   Limits.PullbackCone.isLimitAux _
-    (fun s => pullback.lift f g s.fst s.snd s.condition)
-    (fun _ => pullback.lift_fst _ _ _ _ _)
-    (fun _ => pullback.lift_snd _ _ _ _ _)
-    (fun _ _ hm => pullback.hom_ext _ _ _ _ (hm .left) (hm .right))
+    (fun s ↦ pullback.lift f g s.fst s.snd s.condition)
+    (fun _ ↦ pullback.lift_fst _ _ _ _ _)
+    (fun _ ↦ pullback.lift_snd _ _ _ _ _)
+    (fun _ _ hm ↦ pullback.hom_ext _ _ _ _ (hm .left) (hm .right))
 
 end Pullback
 
 section FiniteCoproduct
 
-instance {α : Type} [Fintype α] (X : α → Profinite.{u}) [∀ a, (X a).IsLight] :
+instance {α : Type w} [Finite α] (X : α → Profinite.{max u w}) [∀ a, (X a).IsLight] :
     (Profinite.finiteCoproduct X).IsLight where
   countable_clopens := by
     refine @Function.Surjective.countable ((a : α) → Clopens (X a)) _ inferInstance
@@ -131,7 +131,7 @@ instance {α : Type} [Fintype α] (X : α → Profinite.{u}) [∀ a, (X a).IsLig
       · simp only [Clopens.coe_mk, Set.mem_iUnion]
         refine ⟨i, xi, (by simpa using hx), rfl⟩
 
-variable {α : Type} [Fintype α] (X : α → LightProfinite.{u})
+variable {α : Type w} [Finite α] (X : α → LightProfinite.{max u w})
 
 /--
 The "explicit" coproduct of a finite family of objects in `LightProfinite`, whose underlying
@@ -139,30 +139,30 @@ profinite set is the disjoint union with its usual topology.
 -/
 noncomputable
 def finiteCoproduct : LightProfinite :=
-  ofIsLight (Profinite.finiteCoproduct fun a ↦ (X a).toProfinite)
+  ofIsLight (Profinite.finiteCoproduct.{u, w} fun a ↦ (X a).toProfinite)
 
 /-- The inclusion of one of the factors into the explicit finite coproduct. -/
 def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
   toFun := (⟨a, ·⟩)
-  continuous_toFun := continuous_sigmaMk (σ := fun a => (X a).toProfinite)
+  continuous_toFun := continuous_sigmaMk (σ := fun a ↦ (X a).toProfinite)
 
 /--
 To construct a morphism from the explicit finite coproduct, it suffices to
 specify a morphism from each of its factors. This is the universal property of the coproduct.
 -/
-def finiteCoproduct.desc {B : LightProfinite.{u}} (e : (a : α) → (X a ⟶ B)) :
+def finiteCoproduct.desc {B : LightProfinite.{max u w}} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
-  toFun := fun ⟨a, x⟩ => e a x
+  toFun := fun ⟨a, x⟩ ↦ e a x
   continuous_toFun := by
     apply continuous_sigma
     intro a
     exact (e a).continuous
 
 @[reassoc (attr := simp)]
-lemma finiteCoproduct.ι_desc {B : LightProfinite.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
+lemma finiteCoproduct.ι_desc {B : LightProfinite.{max u w}} (e : (a : α) → (X a ⟶ B)) (a : α) :
     finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
 
-lemma finiteCoproduct.hom_ext {B : LightProfinite.{u}} (f g : finiteCoproduct X ⟶ B)
+lemma finiteCoproduct.hom_ext {B : LightProfinite.{max u w}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
   ext ⟨a, x⟩
   specialize h a
@@ -170,21 +170,16 @@ lemma finiteCoproduct.hom_ext {B : LightProfinite.{u}} (f g : finiteCoproduct X 
   exact h
 
 /-- The coproduct cocone associated to the explicit finite coproduct. -/
-@[simps]
-noncomputable def finiteCoproduct.cofan : Limits.Cofan X where
-  pt := finiteCoproduct X
-  ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
+noncomputable abbrev finiteCoproduct.cofan : Limits.Cofan X :=
+  Cofan.mk (finiteCoproduct X) (finiteCoproduct.ι X)
 
 /-- The explicit finite coproduct cocone is a colimit cocone. -/
-@[simps]
-def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cofan X) where
-  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
-  fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
-  uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
-    specialize hm ⟨a⟩
-    ext t
-    apply_fun (· t) at hm
-    exact hm
+def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cofan X) :=
+  mkCofanColimit _
+    (fun s ↦ desc _ fun a ↦ s.inj a)
+    (fun s a ↦ ι_desc _ _ _)
+    fun s m hm ↦ finiteCoproduct.hom_ext _ _ _ fun a ↦
+      (by ext t; exact congrFun (congrArg DFunLike.coe (hm a)) t)
 
 end FiniteCoproduct
 
@@ -213,18 +208,35 @@ instance : PreservesFiniteCoproducts lightToProfinite := by
 
 noncomputable
 instance : PreservesLimitsOfShape WalkingCospan lightToProfinite := by
-  refine ⟨fun {F} ↦ ?_⟩
-  suffices ∀ {X Y B} (f : X ⟶ B) (g : Y ⟶ B), PreservesLimit (cospan f g) lightToProfinite by
-    exact preservesLimitOfIsoDiagram _ (diagramIsoCospan F).symm
+  suffices ∀ {X Y B} (f : X ⟶ B) (g : Y ⟶ B), PreservesLimit (cospan f g) lightToProfinite from
+    ⟨fun {F} ↦ preservesLimitOfIsoDiagram _ (diagramIsoCospan F).symm⟩
   intro _ _ _ f g
   apply preservesLimitOfPreservesLimitCone (pullback.isLimit f g)
   exact (isLimitMapConePullbackConeEquiv lightToProfinite (pullback.condition f g)).symm
     (Profinite.pullback.isLimit _ _)
 
+instance (X : LightProfinite) : Unique (X ⟶ (FintypeCat.of PUnit.{u+1}).toLightProfinite) :=
+  ⟨⟨⟨fun _ ↦ PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩
+
+/-- A one-element space is terminal in `LightProfinite` -/
+def isTerminalPUnit : IsTerminal ((FintypeCat.of PUnit.{u+1}).toLightProfinite) :=
+  Limits.IsTerminal.ofUnique _
+
 instance : HasTerminal LightProfinite.{u} :=
-  haveI : ∀ X, Unique (X ⟶ (FintypeCat.of PUnit.{u+1}).toLightProfinite) := fun X =>
-    ⟨⟨⟨fun _ => PUnit.unit, by continuity⟩⟩, fun f => by ext; aesop⟩
   Limits.hasTerminal_of_unique (FintypeCat.of PUnit.{u+1}).toLightProfinite
+
+/-- The isomorphism from an arbitrary terminal object of `LightProfinite` to a one-element space. -/
+noncomputable def terminalIsoPUnit :
+    ⊤_ LightProfinite.{u} ≅ (FintypeCat.of PUnit.{u+1}).toLightProfinite :=
+  terminalIsTerminal.uniqueUpToIso LightProfinite.isTerminalPUnit
+
+noncomputable instance : PreservesFiniteCoproducts LightProfinite.toTopCat.{u} where
+  preserves _ _ := (inferInstance :
+    PreservesColimitsOfShape _ (LightProfinite.lightToProfinite.{u} ⋙ Profinite.toTopCat.{u}))
+
+noncomputable instance : PreservesLimitsOfShape WalkingCospan LightProfinite.toTopCat.{u} :=
+  (inferInstance : PreservesLimitsOfShape WalkingCospan
+    (LightProfinite.lightToProfinite.{u} ⋙ Profinite.toTopCat.{u}))
 
 end HasPreserves
 

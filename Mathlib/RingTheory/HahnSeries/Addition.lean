@@ -27,7 +27,6 @@ set_option linter.uppercaseLean3 false
 open Finset Function
 
 open scoped Classical
-open BigOperators
 
 noncomputable section
 

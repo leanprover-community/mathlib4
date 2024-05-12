@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Grade
-import Mathlib.Data.Finset.LocallyFinite.Basic
+import Mathlib.Order.Interval.Finset.Basic
 
 #align_import data.finset.interval from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 

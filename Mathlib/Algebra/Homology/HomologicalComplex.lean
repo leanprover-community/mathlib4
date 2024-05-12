@@ -332,6 +332,20 @@ theorem congr_hom {C D : HomologicalComplex V c} {f g : C ⟶ D} (w : f = g) (i 
   congr_fun (congr_arg Hom.f w) i
 #align homological_complex.congr_hom HomologicalComplex.congr_hom
 
+lemma mono_of_mono_f {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    (hφ : ∀ i, Mono (φ.f i)) : Mono φ where
+  right_cancellation g h eq := by
+    ext i
+    rw [← cancel_mono (φ.f i)]
+    exact congr_hom eq i
+
+lemma epi_of_epi_f {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    (hφ : ∀ i, Epi (φ.f i)) : Epi φ where
+  left_cancellation g h eq := by
+    ext i
+    rw [← cancel_epi (φ.f i)]
+    exact congr_hom eq i
+
 section
 
 variable (V c)
@@ -350,7 +364,7 @@ def forget : HomologicalComplex V c ⥤ GradedObject ι V where
   map f := f.f
 #align homological_complex.forget HomologicalComplex.forget
 
-instance : Faithful (forget V c) where
+instance : (forget V c).Faithful where
   map_injective h := by
     ext i
     exact congr_fun h i

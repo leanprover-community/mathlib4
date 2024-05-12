@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.MonoidAlgebra.Ideal
-import Mathlib.Data.MvPolynomial.Division
+import Mathlib.Algebra.MvPolynomial.Division
 
 #align_import ring_theory.mv_polynomial.ideal from "leanprover-community/mathlib"@"72c366d0475675f1309d3027d3d7d47ee4423951"
 
