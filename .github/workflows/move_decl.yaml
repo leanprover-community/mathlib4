@@ -8,7 +8,7 @@ jobs:
     if: github.event.label.name == 'move-decls'
     runs-on: ubuntu-latest
     permissions:
-      issues: write
+      pull_request: write
     steps:
       - name: Add comment
         run: gh pr comment "$NUMBER" --body "$BODY"
