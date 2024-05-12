@@ -69,7 +69,7 @@ jobs:
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
           currTag="$(git tag | tail -1)"
-          echo "$currTag"
+          printf $'Tag: `%s`\n' "$currTag"
           git checkout "${currTag}"
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
