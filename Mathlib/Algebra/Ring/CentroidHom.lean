@@ -760,36 +760,6 @@ instance : StarRing (Subsemiring.center (CentroidHom α)) where
       _ = (star g * star f).val a := rfl
     exact e1
 
---variable (z : ↥(NonUnitalStarSubsemiring.center α))
-
---#check (star z)
-
-#check NonUnitalStarRingHom (NonUnitalStarSubsemiring.center α) (Subsemiring.center (CentroidHom α))
-
-/-
-@[simp]
-theorem inr_star [AddMonoid R] [StarAddMonoid R] [Star A] (a : A) :
-    ↑(star a) = star (a : Unitization R A) :=
-  ext (by simp only [fst_star, star_zero, fst_inr]) rfl
--/
-
-variable  (z : NonUnitalStarSubsemiring.center α) (a : α)
-
-#check z.val
-#check z.property
-
-#check ((star z) : NonUnitalStarSubsemiring.center α)
-#check (star z).val
-#check (star z).property
-
-#check (centerToCentroidCenter z)
-#check (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)).val a
-
-#check (star (centerToCentroidCenter z)) a
-
-
-#check (centerToCentroidCenter z) a
-
 theorem inr_star (z : NonUnitalStarSubsemiring.center α) :
     (star (centerToCentroidCenter z))  =
     (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) := by
