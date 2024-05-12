@@ -6,8 +6,8 @@ Authors: Christian Merten
 import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.CategoryTheory.Galois.Decomposition
 import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.IndYoneda
 import Mathlib.Algebra.Category.GroupCat.Limits
-import Mathlib.ProCoyoneda
 
 /-!
 # Pro-Representability of fiber functors
@@ -322,7 +322,7 @@ noncomputable def endIsoLimitFibers : End F ≅ limit (incl F ⋙ F' ⋙ uliftFu
   let i2 : End F' ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F') :=
     (yoneda.obj (F ⋙ FintypeCat.incl)).mapIso (colimit.isoColimitCocone ⟨cocone F, isColimit F⟩).op
   let i3 : (colimit ((incl F).op ⋙ coyoneda) ⟶ F') ≅ limit (incl F ⋙ F' ⋙ uliftFunctor.{u₁}) :=
-    procoyonedaIso' (incl F) F'
+    colimitCoyonedaHomIsoLimit' (incl F) F'
   i1 ≪≫ i2 ≪≫ i3
 
 @[simp]
