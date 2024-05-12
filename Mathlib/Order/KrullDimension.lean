@@ -120,7 +120,7 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), height α a :=
       i.step⟩, rfl⟩) <|
     iSup_le fun a ↦ krullDim_le_of_strictMono Subtype.val fun _ _ h ↦ h
 
-lemma krullDim_eq_orderDual : krullDim α = krullDim αᵒᵈ :=
+@[simp] lemma krullDim_orderDual : krullDim αᵒᵈ = krullDim α :=
   le_antisymm (iSup_le fun i ↦ le_sSup ⟨i.reverse, rfl⟩) <|
     iSup_le fun i ↦ le_sSup ⟨i.reverse, rfl⟩
 
