@@ -130,7 +130,7 @@ section TODO
 
 variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 
--- TODO: move to suitable file
+-- TODO: remove once #12846 is merged
 /-- The ordered set of subalgebras of the opposite algebra is isomorphic to the
 ordered set of subalgebras. -/
 def _root_.Subalgebra.equivOpposite : Subalgebra R Aᵐᵒᵖ ≃o Subalgebra R A where
@@ -145,13 +145,13 @@ def _root_.Subalgebra.equivOpposite : Subalgebra R Aᵐᵒᵖ ≃o Subalgebra R 
   map_rel_iff' {_} {_} :=
     Submodule.comap_le_comap_iff_of_surjective (MulOpposite.opLinearEquiv R).surjective _ _
 
--- TODO: move to suitable file
+-- TODO: remove once #12846 is merged
 /-- There is a natural linear isomorphism from a subalgebra `S` to
 its `Subalgebra.equivOpposite`. -/
 def _root_.Subalgebra.opLinearEquiv (S : Subalgebra R A) : S ≃ₗ[R] equivOpposite.symm S :=
   ((MulOpposite.opLinearEquiv R).symm.ofSubmodule' (toSubmodule S)).symm
 
--- TODO: move to suitable file
+-- TODO: remove once #12846 is merged
 /-- There is a natural algebra isomorphism from a subalgebra `S` to
 the opposite of its `Subalgebra.equivOpposite`. -/
 def _root_.Subalgebra.opAlgEquiv (S : Subalgebra R A) : S ≃ₐ[R] (equivOpposite.symm S)ᵐᵒᵖ where
@@ -159,7 +159,7 @@ def _root_.Subalgebra.opAlgEquiv (S : Subalgebra R A) : S ≃ₐ[R] (equivOpposi
   map_mul' _ _ := rfl
   commutes' _ := rfl
 
--- TODO: move to suitable file
+-- TODO: remove once #12846 is merged
 /-- There is a natural algebra isomorphism from the opposite of a subalgebra `S` to
 the its `Subalgebra.equivOpposite`. -/
 def _root_.Subalgebra.opAlgEquiv' (S : Subalgebra R A) : Sᵐᵒᵖ ≃ₐ[R] equivOpposite.symm S where
@@ -370,32 +370,6 @@ theorem rank_inf_eq_one_of_flat_right_of_inj [Module.Flat R B]
 theorem rank_eq_one_of_flat_of_self_of_inj (H : A.LinearDisjoint A) [Module.Flat R A]
     (hinj : Function.Injective (algebraMap R S)) : Module.rank R A = 1 :=
   H.rank_eq_one_of_commute_of_flat_of_self_of_inj (fun _ _ ↦ mul_comm _ _) hinj
-
--- TODO: move to suitable place
-variable (A B) in
-theorem _root_.Subalgebra.rank_sup_le_of_free [Module.Free R A] [Module.Free R B] :
-    Module.rank R ↥(A ⊔ B) ≤ Module.rank R A * Module.rank R B := by
-  nontriviality R
-  rw [← rank_tensorProduct', ← mulMap_range]
-  exact rank_range_le (A.mulMap B).toLinearMap
-
--- TODO: move to suitable place
-variable (A B) in
-theorem _root_.Subalgebra.finrank_sup_le_of_free [Module.Free R A] [Module.Free R B] :
-    finrank R ↥(A ⊔ B) ≤ finrank R A * finrank R B := by
-  nontriviality R using finrank
-  by_cases h : Module.Finite R A ∧ Module.Finite R B
-  · obtain ⟨_, _⟩ := h
-    rw [← finrank_tensorProduct, ← mulMap_range]
-    exact (A.mulMap B).toLinearMap.finrank_range_le
-  wlog hA : ¬ Module.Finite R A generalizing A B
-  · have := this B A H.symm (fun h' ↦ h h'.symm) (not_and.1 h (of_not_not hA))
-    rwa [sup_comm, mul_comm] at this
-  rw [← Module.rank_lt_alpeh0_iff, not_lt] at hA
-  have := LinearMap.rank_le_of_injective _ <| Submodule.inclusion_injective <|
-    show toSubmodule A ≤ toSubmodule (A ⊔ B) by simp
-  rw [show finrank R A = 0 from Cardinal.toNat_apply_of_aleph0_le hA,
-    show finrank R ↥(A ⊔ B) = 0 from Cardinal.toNat_apply_of_aleph0_le (hA.trans this), zero_mul]
 
 theorem rank_sup_of_free [Module.Free R A] [Module.Free R B] :
     Module.rank R ↥(A ⊔ B) = Module.rank R A * Module.rank R B := by

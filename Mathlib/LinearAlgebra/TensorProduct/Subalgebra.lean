@@ -5,6 +5,7 @@ Authors: Jz Pan
 -/
 import Mathlib.LinearAlgebra.TensorProduct.Submodule
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 
@@ -27,17 +28,19 @@ mainly used in the definition of linearly disjointness.
 
 open scoped Classical TensorProduct
 
+open FiniteDimensional
+
 noncomputable section
 
 universe u v w
 
 namespace Subalgebra
 
-variable {R : Type u} {S : Type v} [CommSemiring R]
+variable {R : Type u} {S : Type v}
 
 section Semiring
 
-variable [Semiring S] [Algebra R S]
+variable [CommSemiring R] [Semiring S] [Algebra R S]
 
 variable (A : Subalgebra R S)
 
@@ -113,7 +116,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring S] [Algebra R S]
+variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 
 variable (A B : Subalgebra R S)
 
@@ -153,5 +156,35 @@ theorem mulMap'_surjective : Function.Surjective (mulMap' A B) := by
     EquivLike.comp_surjective, AlgHom.rangeRestrict_surjective]
 
 end CommSemiring
+
+section CommRing
+
+variable [CommRing R] [CommRing S] [Algebra R S]
+
+variable (A B : Subalgebra R S)
+
+theorem rank_sup_le_of_free [Module.Free R A] [Module.Free R B] :
+    Module.rank R ↥(A ⊔ B) ≤ Module.rank R A * Module.rank R B := by
+  nontriviality R
+  rw [← rank_tensorProduct', ← mulMap_range]
+  exact rank_range_le (A.mulMap B).toLinearMap
+
+theorem finrank_sup_le_of_free [Module.Free R A] [Module.Free R B] :
+    finrank R ↥(A ⊔ B) ≤ finrank R A * finrank R B := by
+  nontriviality R using finrank
+  by_cases h : Module.Finite R A ∧ Module.Finite R B
+  · obtain ⟨_, _⟩ := h
+    rw [← finrank_tensorProduct, ← mulMap_range]
+    exact (A.mulMap B).toLinearMap.finrank_range_le
+  wlog hA : ¬ Module.Finite R A generalizing A B
+  · have := this B A (fun h' ↦ h h'.symm) (not_and.1 h (of_not_not hA))
+    rwa [sup_comm, mul_comm] at this
+  rw [← Module.rank_lt_alpeh0_iff, not_lt] at hA
+  have := LinearMap.rank_le_of_injective _ <| Submodule.inclusion_injective <|
+    show toSubmodule A ≤ toSubmodule (A ⊔ B) by simp
+  rw [show finrank R A = 0 from Cardinal.toNat_apply_of_aleph0_le hA,
+    show finrank R ↥(A ⊔ B) = 0 from Cardinal.toNat_apply_of_aleph0_le (hA.trans this), zero_mul]
+
+end CommRing
 
 end Subalgebra
