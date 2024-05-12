@@ -164,7 +164,8 @@ set_option linter.uppercaseLean3 false in
 example {R S : GroupCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
 
 /-- Universe lift functor for groups. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+  "Universe lift functor for additive groups."]
 def uliftFunctor : GroupCat.{u} ⥤ GroupCat.{max u v} where
   obj X := GroupCat.of (ULift.{v, u} X)
   map {X Y} f := GroupCat.ofHom <|
@@ -340,7 +341,8 @@ set_option linter.uppercaseLean3 false in
 example {R S : CommGroupCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
 
 /-- Universe lift functor for commutative groups. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+  "Universe lift functor for additive commutative groups."]
 def uliftFunctor : CommGroupCat.{u} ⥤ CommGroupCat.{max u v} where
   obj X := CommGroupCat.of (ULift.{v, u} X)
   map {X Y} f := CommGroupCat.ofHom <|

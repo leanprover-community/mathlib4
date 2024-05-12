@@ -171,7 +171,8 @@ lemma mul_of {A : Type*} [Monoid A] (a b : A) :
 instance {G : Type*} [Group G] : Group (MonCat.of G) := by assumption
 
 /-- Universe lift functor for monoids. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+  "Universe lift functor for additive monoids."]
 def uliftFunctor : MonCat.{u} ⥤ MonCat.{max u v} where
   obj X := MonCat.of (ULift.{v, u} X)
   map {X Y} f := MonCat.ofHom <|
@@ -293,7 +294,8 @@ lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x
     (ofHom f) x = f x := rfl
 
 /-- Universe lift functor for commutative monoids. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+  "Universe lift functor for additive commutative monoids."]
 def uliftFunctor : CommMonCat.{u} ⥤ CommMonCat.{max u v} where
   obj X := CommMonCat.of (ULift.{v, u} X)
   map {X Y} f := CommMonCat.ofHom <|
