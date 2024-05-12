@@ -191,11 +191,10 @@ noncomputable instance : BoundedSub ℝ≥0 where
     simp only [NNReal.ball_zero_eq_Ico, ← z_eq, Set.mem_Ico, zero_le, true_and, gt_iff_lt] at *
     exact tsub_lt_of_lt key
 
-#check IsCompact.image
-
-#check ClosedEmbedding.isCompact_preimage
-
-instance : ProperSpace ℝ≥0 := sorry
+instance : ProperSpace ℝ≥0 where
+  isCompact_closedBall x r := by
+    have emb : ClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometry.closedEmbedding fun _ ↦ congrFun rfl
+    exact emb.isCompact_preimage (K := Metric.closedBall x r) (isCompact_closedBall _ _)
 
 open Metric in
 instance : BoundedMul ℝ≥0 where
@@ -212,31 +211,4 @@ instance : BoundedMul ℝ≥0 where
     simp only [Set.mem_prod]
     refine ⟨⟨hAf x_in_s, hAg y_in_t⟩, xy_eq_z⟩
 
-/-
-    intro s t hs ht
-    obtain ⟨Af, hAf⟩ := (Metric.isBounded_iff_subset_closedBall 0).mp hs
-    obtain ⟨Ag, hAg⟩ := (Metric.isBounded_iff_subset_closedBall 0).mp ht
-    rw [Metric.isBounded_iff]
-    use 2 * Af * Ag
-    intro z hz w hw
-    obtain ⟨x₁, hx₁, y₁, hy₁, z_eq⟩ := Set.mem_mul.mp hz
-    obtain ⟨x₂, hx₂, y₂, hy₂, w_eq⟩ := Set.mem_mul.mp hw
-    rw [← w_eq, ← z_eq]
-    by_cases absurd_Af : Af < 0
-    · simpa [Metric.closedBall_eq_empty.mpr absurd_Af] using hAf hx₁
-    simp only [not_lt] at absurd_Af
-    have aux : ∀ {x y}, x ∈ s → y ∈ t → dist (x * y) 0 ≤ Af * Ag := by
-      intro x y x_in_s y_in_t
-      have x_mem_ball := hAf x_in_s
-      have y_mem_ball := hAg y_in_t
-      simp only [Metric.mem_closedBall, NNReal.dist_eq, NNReal.coe_zero, sub_zero, NNReal.abs_eq,
-                 NNReal.coe_mul, ge_iff_le, abs_mul] at x_mem_ball y_mem_ball ⊢
-      apply mul_le_mul (by simpa using x_mem_ball) (by simpa using y_mem_ball) ?_ absurd_Af
-      simp only [NNReal.zero_le_coe]
-    calc dist (x₁ * y₁) (x₂ * y₂)
-     _ ≤ dist (x₁ * y₁) 0 + dist 0 (x₂ * y₂)    := dist_triangle _ _ _
-     _ ≤ dist (x₁ * y₁) 0 + dist (x₂ * y₂) 0    := by rw [dist_comm 0]
-     _ ≤ Af * Ag + Af * Ag                      := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
-     _ = 2 * Af * Ag                            := by simp [← two_mul, mul_assoc]
- -/
 end NNReal
