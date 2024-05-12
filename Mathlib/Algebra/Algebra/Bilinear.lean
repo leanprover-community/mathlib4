@@ -273,3 +273,23 @@ theorem mul_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) : Function.Injec
 end Ring
 
 end LinearMap
+
+/-- If `E` is an `F`-algebra which is also a free `F`-module of rank one,
+then the algebra map from `F` to `E` is an isomorphism. -/
+theorem bijective_algebraMap_of_linearEquiv
+    {F E : Type*} [CommRing F] [Ring E] [Algebra F E]
+    (b : F ≃ₗ[F] E) : Function.Bijective (algebraMap F E) := by
+  have h : b.symm (b 1 * b (b.symm 1)) = b.symm 1 * b.symm (b 1 * b 1) := by
+    let j := b.symm.toLinearMap ∘ₗ .mulLeft F (b 1) ∘ₗ b.toLinearMap
+    change j (b.symm 1) = (b.symm 1) • j 1
+    rw [← map_smul, smul_eq_mul, mul_one]
+  replace h : b 1 = (algebraMap F E) (b.symm (b 1 * b 1)) := by
+    apply_fun b at h
+    rwa [b.apply_symm_apply, b.apply_symm_apply, mul_one, mul_comm (b.symm 1),
+      ← smul_eq_mul, map_smul, b.apply_symm_apply, Algebra.smul_def, mul_one] at h
+  refine Function.bijective_iff_has_inverse.2 ⟨fun y ↦ b.symm y * b.symm (b 1 * b 1),
+    fun x ↦ b.injective ?_, fun y ↦ ?_⟩
+  · dsimp only; rw [mul_comm, ← smul_eq_mul, map_smul, Algebra.smul_def, ← h, b.apply_symm_apply,
+      ← Algebra.commutes x (b 1), ← Algebra.smul_def, ← map_smul, smul_eq_mul, mul_one]
+  · dsimp only; rw [_root_.map_mul, ← h, ← Algebra.smul_def, ← map_smul, smul_eq_mul, mul_one,
+      b.apply_symm_apply]

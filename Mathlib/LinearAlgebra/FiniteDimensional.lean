@@ -1179,11 +1179,13 @@ theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F
   exact h.trans_eq Subalgebra.rank_bot.symm
 #align subalgebra.eq_bot_of_rank_le_one Subalgebra.eq_bot_of_rank_le_one
 
-theorem Subalgebra.eq_bot_of_finrank_one {S : Subalgebra F E} (h : finrank F S = 1) : S = ⊥ :=
-  Subalgebra.eq_bot_of_rank_le_one <| by
-    -- Porting note: fails without explicit type
-    haveI : FiniteDimensional F S := .of_finrank_eq_succ h
-    rw [← finrank_eq_rank, h, Nat.cast_one]
+theorem Subalgebra.eq_bot_of_finrank_one
+    {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E] [Algebra F E]
+    {S : Subalgebra F E} (h : finrank F S = 1) [Module.Free F S] : S = ⊥ := by
+  refine bot_unique fun x hx ↦ Algebra.mem_bot.2 ?_
+  obtain ⟨y, hy⟩ := (bijective_algebraMap_of_linearEquiv ((basisUnique Unit h).repr ≪≫ₗ
+    Finsupp.LinearEquiv.finsuppUnique _ _ _).symm).surjective ⟨x, hx⟩
+  exact ⟨y, congr(Subtype.val $(hy))⟩
 #align subalgebra.eq_bot_of_finrank_one Subalgebra.eq_bot_of_finrank_one
 
 @[simp]
