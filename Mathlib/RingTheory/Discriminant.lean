@@ -135,7 +135,7 @@ variable [Module.Finite K L] [IsAlgClosed E]
 /-- If `b` is a basis of a finite separable field extension `L/K`, then `Algebra.discr K b ≠ 0`. -/
 theorem discr_not_zero_of_basis [IsSeparable K L] (b : Basis ι K L) :
     discr K b ≠ 0 := by
-  rw [discr_def, traceMatrix_of_basis, ← BilinForm.nondegenerate_iff_det_ne_zero]
+  rw [discr_def, traceMatrix_of_basis, ← LinearMap.BilinForm.nondegenerate_iff_det_ne_zero]
   exact traceForm_nondegenerate _ _
 #align algebra.discr_not_zero_of_basis Algebra.discr_not_zero_of_basis
 
@@ -224,7 +224,7 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
     nodup_roots (Separable.map (IsSeparable.separable K pb.gen))
   have hroots : ∀ σ : L →ₐ[K] E, σ pb.gen ∈ (minpoly K pb.gen).aroots E := by
     intro σ
-    rw [mem_roots, IsRoot.definition, eval_map, ← aeval_def, aeval_algHom_apply]
+    rw [mem_roots, IsRoot.def, eval_map, ← aeval_def, aeval_algHom_apply]
     repeat' simp [minpoly.ne_zero (IsSeparable.isIntegral K pb.gen)]
   apply (algebraMap K E).injective
   rw [RingHom.map_mul, RingHom.map_pow, RingHom.map_neg, RingHom.map_one,
@@ -243,7 +243,7 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
   refine prod_bij' (fun i _ ↦ ⟨e i.2, e i.1 pb.gen⟩)
     (fun σ hσ ↦ ⟨e.symm (PowerBasis.lift pb σ.2 ?_), e.symm σ.1⟩) ?_ ?_ ?_ ?_ (fun i _ ↦ by simp)
   -- Porting note: `@mem_compl` was not necessary.
-    <;> simp only [mem_sigma, mem_univ, Finset.mem_mk, hnodup.mem_erase_iff, IsRoot.definition,
+    <;> simp only [mem_sigma, mem_univ, Finset.mem_mk, hnodup.mem_erase_iff, IsRoot.def,
       mem_roots', minpoly.ne_zero (IsSeparable.isIntegral K pb.gen), not_false_eq_true,
       mem_singleton, true_and, @mem_compl _ _ _ (_), Sigma.forall, Equiv.apply_symm_apply,
       PowerBasis.lift_gen, and_imp, implies_true, forall_const, Equiv.symm_apply_apply,

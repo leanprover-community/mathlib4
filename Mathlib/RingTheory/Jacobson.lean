@@ -454,7 +454,7 @@ theorem isJacobson_polynomial_of_isJacobson (hR : IsJacobson R) : IsJacobson R[X
     refine le_antisymm ?_ le_jacobson
     exact le_trans (le_sup_of_le_left le_rfl) (le_trans (le_of_eq h) (sup_le le_rfl hi'))
   apply isJacobson_polynomial_of_domain R' J
-  exact (eq_zero_of_polynomial_mem_map_range I)
+  exact eq_zero_of_polynomial_mem_map_range I
 #align ideal.polynomial.is_jacobson_polynomial_of_is_jacobson Ideal.Polynomial.isJacobson_polynomial_of_isJacobson
 
 theorem isJacobson_polynomial_iff_isJacobson : IsJacobson R[X] ↔ IsJacobson R := by
@@ -576,8 +576,8 @@ theorem quotient_mk_comp_C_isIntegral_of_jacobson :
       (fun h => absurd (_root_.trans (h ▸ hPJ : P = comap f ⊤) comap_top : P = ⊤) hP.ne_top) id
   apply quotient_mk_comp_C_isIntegral_of_jacobson' _ ?_ (fun x hx => ?_)
   any_goals exact Ideal.isJacobson_quotient
-  · obtain ⟨z, rfl⟩ := Quotient.mk_surjective x
-    rwa [Quotient.eq_zero_iff_mem, mem_comap, hPJ, mem_comap, coe_mapRingHom, map_C]
+  obtain ⟨z, rfl⟩ := Quotient.mk_surjective x
+  rwa [Quotient.eq_zero_iff_mem, mem_comap, hPJ, mem_comap, coe_mapRingHom, map_C]
 set_option linter.uppercaseLean3 false in
 #align ideal.polynomial.quotient_mk_comp_C_is_integral_of_jacobson Ideal.Polynomial.quotient_mk_comp_C_isIntegral_of_jacobson
 

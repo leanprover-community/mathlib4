@@ -187,10 +187,8 @@ theorem convex_segment (x y : E) : Convex 𝕜 [x -[𝕜] y] := by
 #align convex_segment convex_segment
 
 theorem Convex.linear_image (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f '' s) := by
-  intro x hx y hy a b ha hb hab
-  obtain ⟨x', hx', rfl⟩ := mem_image_iff_bex.1 hx
-  obtain ⟨y', hy', rfl⟩ := mem_image_iff_bex.1 hy
-  exact ⟨a • x' + b • y', hs hx' hy' ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
+  exact ⟨a • x + b • y, hs hx hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
 #align convex.linear_image Convex.linear_image
 
 theorem Convex.is_linear_image (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
@@ -712,12 +710,16 @@ theorem ite_eq_mem_stdSimplex (i : ι) : (if i = · then (1 : 𝕜) else 0) ∈ 
   simpa only [@eq_comm _ i, ← Pi.single_apply] using single_mem_stdSimplex 𝕜 i
 #align ite_eq_mem_std_simplex ite_eq_mem_stdSimplex
 
+-- Adaptation note: as of `nightly-2024-03-11`, we need a type annotation on the segment in the
+-- following two lemmas.
+
 /-- The edges are contained in the simplex. -/
 lemma segment_single_subset_stdSimplex (i j : ι) :
-    [Pi.single i 1 -[𝕜] Pi.single j 1] ⊆ stdSimplex 𝕜 ι :=
+    ([Pi.single i 1 -[𝕜] Pi.single j 1] : Set (ι → 𝕜)) ⊆ stdSimplex 𝕜 ι :=
   (convex_stdSimplex 𝕜 ι).segment_subset (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
 
-lemma stdSimplex_fin_two : stdSimplex 𝕜 (Fin 2) = [Pi.single 0 1 -[𝕜] Pi.single 1 1] := by
+lemma stdSimplex_fin_two :
+    stdSimplex 𝕜 (Fin 2) = ([Pi.single 0 1 -[𝕜] Pi.single 1 1] : Set (Fin 2 → 𝕜)) := by
   refine Subset.antisymm ?_ (segment_single_subset_stdSimplex 𝕜 (0 : Fin 2) 1)
   rintro f ⟨hf₀, hf₁⟩
   rw [Fin.sum_univ_two] at hf₁
