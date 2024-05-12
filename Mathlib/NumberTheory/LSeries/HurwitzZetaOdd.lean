@@ -275,7 +275,7 @@ lemma isBigO_atTop_oddKernel (a : UnitAddCircle) :
   filter_upwards [eventually_gt_atTop 0] with t ht
   simpa only [← (hasSum_int_oddKernel b ht).tsum_eq, Real.norm_eq_abs, HurwitzKernelBounds.F_int,
     HurwitzKernelBounds.f_int, pow_one, norm_mul, abs_of_nonneg (exp_pos _).le] using
-    (norm_tsum_le_tsum_norm (hasSum_int_oddKernel b ht).summable.norm)
+    norm_tsum_le_tsum_norm (hasSum_int_oddKernel b ht).summable.norm
 
 /-- The function `sinKernel a` has exponential decay at `+∞`, for any `a`. -/
 lemma isBigO_atTop_sinKernel (a : UnitAddCircle) :
