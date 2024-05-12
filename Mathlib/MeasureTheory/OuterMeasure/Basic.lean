@@ -697,7 +697,10 @@ theorem ofFunction_le (s : Set α) : OuterMeasure.ofFunction m m_empty s ≤ m s
   let f : ℕ → Set α := fun i => Nat.casesOn i s fun _ => ∅
   iInf_le_of_le f <|
     iInf_le_of_le (subset_iUnion f 0) <|
-      le_of_eq <| tsum_eq_single 0 <| by rintro (_ | i); simp; simp [m_empty]
+      le_of_eq <| tsum_eq_single 0 <| by
+        rintro (_ | i)
+        · simp
+        · simp [m_empty]
 #align measure_theory.outer_measure.of_function_le MeasureTheory.OuterMeasure.ofFunction_le
 
 theorem ofFunction_eq (s : Set α) (m_mono : ∀ ⦃t : Set α⦄, s ⊆ t → m s ≤ m t)
@@ -1588,9 +1591,9 @@ def trim : OuterMeasure α :=
 
 theorem le_trim : m ≤ m.trim := by
   apply le_ofFunction.mpr
-  intro s
-  apply le_iInf
-  simp only [le_refl, implies_true]
+  · intro s
+    apply le_iInf
+    simp only [le_refl, implies_true]
   apply extend_empty <;> simp
 #align measure_theory.outer_measure.le_trim MeasureTheory.OuterMeasure.le_trim
 
@@ -1616,7 +1619,7 @@ theorem trim_mono : Monotone (trim : OuterMeasure α → OuterMeasure α) := fun
 theorem le_trim_iff {m₁ m₂ : OuterMeasure α} :
     m₁ ≤ m₂.trim ↔ ∀ s, MeasurableSet s → m₁ s ≤ m₂ s := by
   let me := extend (fun s (_p : MeasurableSet s) => measureOf m₂ s)
-  have me_empty : me ∅ = 0 := by apply extend_empty; simp; simp
+  have me_empty : me ∅ = 0 := by apply extend_empty <;> simp
   have : m₁ ≤ OuterMeasure.ofFunction me me_empty ↔
           (∀ (s : Set α), measureOf m₁ s ≤ me s) := le_ofFunction
   apply this.trans
