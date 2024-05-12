@@ -202,13 +202,36 @@ noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
   · exact Types.equalizerIso (F.map f) (F.map g)
 
 /-- The fiber of the pullback is the fiber product of the fibers. -/
-@[simp]
 noncomputable def fiberPullbackEquiv {X A B : C} (f : A ⟶ X) (g : B ⟶ X) :
     F.obj (pullback f g) ≃ { p : F.obj A × F.obj B // F.map f p.1 = F.map g p.2 } := by
   apply Iso.toEquiv
   apply Iso.trans
   · exact PreservesPullback.iso (F ⋙ FintypeCat.incl) f g
   · exact Types.pullbackIsoPullback (F.map f) (F.map g)
+
+/-- The fiber of the binary product is the binary product of the fibers. -/
+noncomputable def fiberBinaryProductEquiv (X Y : C) :
+    F.obj (X ⨯ Y) ≃ F.obj X × F.obj Y := by
+  apply Iso.toEquiv
+  apply Iso.trans
+  · exact PreservesLimitPair.iso (F ⋙ FintypeCat.incl) X Y
+  · exact Types.binaryProductIso (F.obj X) (F.obj Y)
+
+@[simp]
+lemma fiberBinaryProductEquiv_symm_fst_apply {X Y : C} (x : F.obj X) (y : F.obj Y) :
+    F.map prod.fst ((fiberBinaryProductEquiv F X Y).symm (x, y)) = x := by
+  simp only [fiberBinaryProductEquiv, comp_obj, FintypeCat.incl_obj, Iso.toEquiv_comp,
+    Equiv.symm_trans_apply, Iso.toEquiv_symm_fun]
+  change ((Types.binaryProductIso _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map prod.fst) _ = _
+  erw [PreservesLimitPair.inv_fst, Types.binaryProductIso_inv_comp_fst]
+
+@[simp]
+lemma fiberBinaryProductEquiv_symm_snd_apply {X Y : C} (x : F.obj X) (y : F.obj Y) :
+    F.map prod.snd ((fiberBinaryProductEquiv F X Y).symm (x, y)) = y := by
+  simp only [fiberBinaryProductEquiv, comp_obj, FintypeCat.incl_obj, Iso.toEquiv_comp,
+    Equiv.symm_trans_apply, Iso.toEquiv_symm_fun]
+  change ((Types.binaryProductIso _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map prod.snd) _ = _
+  erw [PreservesLimitPair.inv_snd, Types.binaryProductIso_inv_comp_snd]
 
 /-- The evaluation map is injective for connected objects. -/
 lemma evaluationInjective_of_isConnected (A X : C) [IsConnected A] (a : F.obj A) :
@@ -226,6 +249,28 @@ lemma evaluation_aut_injective_of_isConnected (A : C) [IsConnected A] (a : F.obj
   apply Function.Injective.comp
   · exact evaluationInjective_of_isConnected F A A a
   · exact @Aut.ext _ _ A
+
+/-- A morphism from an object `X` with non-empty fiber to a connected object `A` is an
+epimorphism. -/
+lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.obj X)]
+    (f : X ⟶ A) : Epi f := Epi.mk <| fun {Z} u v huv ↦ by
+  obtain ⟨x⟩ := h
+  apply evaluationInjective_of_isConnected F A Z (F.map f x)
+  convert_to F.map (f ≫ u) x = F.map (f ≫ v) x
+  rw [F.map_comp]; rfl
+  rw [F.map_comp]; rfl
+  rw [huv]
+
+/-- An epimorphism induces a surjective map on fibers. -/
+lemma surjective_on_fiber_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : Function.Surjective (F.map f) :=
+  surjective_of_epi (FintypeCat.incl.map (F.map f))
+
+/- A morphism from an object with non-empty fiber to a connected object is surjective on fibers. -/
+lemma surjective_of_nonempty_fiber_of_isConnected {X A : C} [Nonempty (F.obj X)]
+    [IsConnected A] (f : X ⟶ A) :
+    Function.Surjective (F.map f) := by
+  have : Epi f := epi_of_nonempty_of_isConnected F f
+  exact surjective_on_fiber_of_epi F f
 
 section CardFiber
 
@@ -272,6 +317,24 @@ lemma cardFiber_coprod_eq_sum (X Y : C) :
 lemma cardFiber_eq_of_iso {X Y : C} (i : X ≅ Y) : Nat.card (F.obj X) = Nat.card (F.obj Y) := by
   have e : F.obj X ≃ F.obj Y := Iso.toEquiv (mapIso (F ⋙ FintypeCat.incl) i)
   exact Nat.card_eq_of_bijective e (Equiv.bijective e)
+
+/-- The cardinality of morphisms `A ⟶ X` is smaller than the cardinality of
+the fiber of the target if the source is connected. -/
+lemma cardHom_le_cardFiber_of_connected (A X : C) [IsConnected A] :
+    Nat.card (A ⟶ X) ≤ Nat.card (F.obj X) := by
+  have h : Nonempty (F.obj A) := inferInstance
+  obtain ⟨a⟩ := h
+  apply Nat.card_le_card_of_injective
+  exact evaluationInjective_of_isConnected _ _ _ a
+
+/-- If `A` is connected, the cardinality of `Aut A` is smaller than the cardinality of the
+fiber of `A`. -/
+lemma cardAut_le_cardFiber_of_connected (A : C) [IsConnected A] :
+    Nat.card (Aut A) ≤ Nat.card (F.obj A) := by
+  have h : Nonempty (F.obj A) := inferInstance
+  obtain ⟨a⟩ := h
+  apply Nat.card_le_card_of_injective
+  exact evaluation_aut_injective_of_isConnected _ _ a
 
 end CardFiber
 
