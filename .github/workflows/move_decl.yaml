@@ -5,13 +5,13 @@ on:
       - labeled
 jobs:
   add-comment:
-    if: github.event.label.name == 'help wanted'
+    if: github.event.label.name == 'move-decls'
     runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:
       - name: Add comment
-        run: gh pull-request comment "$NUMBER" --body "$BODY"
+        run: gh issue comment "$NUMBER" --body "$BODY"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
