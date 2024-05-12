@@ -10,13 +10,13 @@ jobs:
     permissions:
       pull-requests: write
     steps:
+      - message:
+        id: message
+        run: ./scripts/no_lost_declarations.sh
       - name: Add comment
         run: gh pr comment "$NUMBER" --body "$BODY"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.pull_request.number }}
-          BODY: >
-            This issue is available for anyone to work on.
-            **Make sure to reference this issue in your pull request.**
-            :sparkles: Thank you for your contribution! :sparkles:
+          BODY: ${{ steps.message.outcome }}
