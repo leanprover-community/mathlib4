@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Control.Functor
-import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.Common
 
 #align_import control.bifunctor from "leanprover-community/mathlib"@"dc1525fb3ef6eb4348fb1749c302d8abc303d34a"
@@ -60,14 +59,12 @@ variable {F : Type u₀ → Type u₁ → Type u₂} [Bifunctor F]
 namespace Bifunctor
 
 /-- Left map of a bifunctor. -/
-@[reducible]
-def fst {α α' β} (f : α → α') : F α β → F α' β :=
+abbrev fst {α α' β} (f : α → α') : F α β → F α' β :=
   bimap f id
 #align bifunctor.fst Bifunctor.fst
 
 /-- Right map of a bifunctor. -/
-@[reducible]
-def snd {α β β'} (f : β → β') : F α β → F α β' :=
+abbrev snd {α β β'} (f : β → β') : F α β → F α β' :=
   bimap id f
 #align bifunctor.snd Bifunctor.snd
 

@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Sylow
+import Mathlib.GroupTheory.Subgroup.Center
 
 #align_import group_theory.transfer from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
@@ -79,14 +80,9 @@ theorem diff_inv : (diff ϕ S T)⁻¹ = diff ϕ T S :=
 @[to_additive]
 theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
   let _ := H.fintypeQuotientOfFiniteIndex
-  prod_bij' (fun q _ => g⁻¹ • q) (fun _ _ => mem_univ _)
-    (fun _ _ =>
-      congr_arg ϕ
-        (by
-          simp_rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
-            inv_mul_cancel_left]))
-    (fun q _ => g • q) (fun _ _ => mem_univ _) (fun q _ => smul_inv_smul g q) fun q _ =>
-    inv_smul_smul g q
+  Fintype.prod_equiv (MulAction.toPerm g).symm _ _ fun _ ↦ by
+    simp only [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
+      inv_mul_cancel_left, toPerm_symm_apply]
 #align subgroup.left_transversals.smul_diff_smul Subgroup.leftTransversals.smul_diff_smul
 #align add_subgroup.left_transversals.vadd_diff_vadd AddSubgroup.leftTransversals.vadd_diff_vadd
 
@@ -105,7 +101,9 @@ the transfer homomorphism is `transfer ϕ : G →+ A`."]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : leftTransversals (H : Set G) := Inhabited.default
   { toFun := fun g => diff ϕ T (g • T)
-    map_one' := by simp only; rw [one_smul, diff_self] -- porting note: added `simp only`
+    -- Porting note(#12129): additional beta reduction needed
+    map_one' := by beta_reduce; rw [one_smul, diff_self]
+    -- Porting note: added `simp only` (not just beta reduction)
     map_mul' := fun g h => by simp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
 #align monoid_hom.transfer MonoidHom.transfer
 #align add_monoid_hom.transfer AddMonoidHom.transfer
@@ -131,7 +129,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
     calc
       transfer ϕ g = ∏ q : G ⧸ H, _ := transfer_def ϕ (transferTransversal H g) g
       _ = _ := ((quotientEquivSigmaZMod H g).symm.prod_comp _).symm
-      _ = _ := (Finset.prod_sigma _ _ _)
+      _ = _ := Finset.prod_sigma _ _ _
       _ = _ := by
         refine' Fintype.prod_congr _ _ (fun q => _)
         simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
@@ -162,7 +160,7 @@ theorem transfer_eq_pow_aux (g : G)
     have hf : ∀ q, f q ∈ H.subgroupOf (zpowers g) := fun q => key q.out'
     replace key :=
       Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
-    simpa only [minimalPeriod_eq_card, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,
+    simpa only [f, minimalPeriod_eq_card, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,
       Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)), index_eq_card] using key
 #align monoid_hom.transfer_eq_pow_aux MonoidHom.transfer_eq_pow_aux
 
@@ -173,9 +171,9 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
     letI := H.fintypeQuotientOfFiniteIndex
     change ∀ (k g₀) (hk : g₀⁻¹ * g ^ k * g₀ ∈ H), ↑(⟨g₀⁻¹ * g ^ k * g₀, hk⟩ : H) = g ^ k at key
     rw [transfer_eq_prod_quotient_orbitRel_zpowers_quot, ← Finset.prod_to_list]
-    refine' (List.prod_map_hom _ _ _).trans _ -- porting note: this used to be in the `rw`
+    refine' (List.prod_map_hom _ _ _).trans _ -- Porting note: this used to be in the `rw`
     refine' congrArg ϕ (Subtype.coe_injective _)
-    simp only -- porting note: added `simp only`
+    simp only -- Porting note: added `simp only`
     rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow,
       index_eq_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
       Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_to_list]
@@ -239,7 +237,7 @@ theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
       ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
   @transfer_eq_pow G _ P P (@Subgroup.IsCommutative.commGroup G _ P
     ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩) _ _ g
-      (transferSylow_eq_pow_aux P hP g hg) -- porting note: apply used to do this automatically
+      (transferSylow_eq_pow_aux P hP g hg) -- Porting note: apply used to do this automatically
 #align monoid_hom.transfer_sylow_eq_pow MonoidHom.transferSylow_eq_pow
 
 theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =

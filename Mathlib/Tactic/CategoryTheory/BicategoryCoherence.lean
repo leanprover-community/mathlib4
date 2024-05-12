@@ -3,7 +3,7 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Coherence
+import Mathlib.CategoryTheory.Bicategory.Free
 
 #align_import category_theory.bicategory.coherence_tactic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
@@ -122,11 +122,10 @@ namespace BicategoricalCoherence
 
 attribute [instance] isIso
 
--- porting note: the field `BicategoricalCoherence.hom'` was named `hom` in mathlib3, but in Lean4
+-- Porting note: the field `BicategoricalCoherence.hom'` was named `hom` in mathlib3, but in Lean4
 -- `f` and `g` are not explicit parameters, so that we have to redefine `hom` as follows
 /-- The chosen structural isomorphism between to 1-morphisms. -/
-@[reducible]
-def hom (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] : f ⟶ g := hom'
+abbrev hom (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] : f ⟶ g := hom'
 
 attribute [simp] hom hom'
 

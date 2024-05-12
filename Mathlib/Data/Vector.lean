@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
-import Std.Data.List.Basic
-import Std.Data.List.Lemmas
-import Mathlib.Init.Data.List.Basic
+import Batteries.Data.List.Basic
+import Batteries.Data.List.Lemmas
 import Mathlib.Init.Data.List.Lemmas
-import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import data.vector from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
@@ -26,7 +24,6 @@ def Vector (α : Type u) (n : ℕ) :=
 namespace Vector
 
 variable {α : Type u} {β : Type v} {φ : Type w}
-
 variable {n : ℕ}
 
 instance [DecidableEq α] : DecidableEq (Vector α n) :=
@@ -56,7 +53,6 @@ open Nat
 
 /-- The first element of a vector with length at least `1`. -/
 def head : Vector α (Nat.succ n) → α
-  | ⟨[], h⟩ => by contradiction
   | ⟨a :: _, _⟩ => a
 #align vector.head Vector.head
 
@@ -88,10 +84,9 @@ def toList (v : Vector α n) : List α :=
   v.1
 #align vector.to_list Vector.toList
 
--- porting notes: align to `List` API
 /-- nth element of a vector, indexed by a `Fin` type. -/
-def get : ∀ _ : Vector α n, Fin n → α
-  | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h]; exact i.2)
+def get (l : Vector α n) (i : Fin n) : α :=
+  l.1.get <| i.cast l.2.symm
 #align vector.nth Vector.get
 
 /-- Appending a vector to another. -/
@@ -162,9 +157,11 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 #align vector.take Vector.take
 
 /-- Remove the element at position `i` from a vector of length `n`. -/
-def removeNth (i : Fin n) : Vector α n → Vector α (n - 1)
-  | ⟨l, p⟩ => ⟨List.removeNth l i.1, by rw [l.length_removeNth] <;> rw [p]; exact i.2⟩
-#align vector.remove_nth Vector.removeNth
+def eraseIdx (i : Fin n) : Vector α n → Vector α (n - 1)
+  | ⟨l, p⟩ => ⟨List.eraseIdx l i.1, by rw [l.length_eraseIdx] <;> rw [p]; exact i.2⟩
+#align vector.remove_nth Vector.eraseIdx
+
+@[deprecated (since := "2024-05-04")] alias removeNth := eraseIdx
 
 /-- Vector of length `n` from a function on `Fin n`. -/
 def ofFn : ∀ {n}, (Fin n → α) → Vector α n
@@ -189,7 +186,7 @@ final result.
 def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector β n
   | ⟨x, px⟩, c =>
     let res := List.mapAccumr f x c
-    ⟨res.1, res.2, by simp [*]⟩
+    ⟨res.1, res.2, by simp [*, res]⟩
 #align vector.map_accumr Vector.mapAccumr
 
 /-- Runs a function over a pair of vectors returning the intermediate results and a
@@ -199,7 +196,7 @@ def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
     Vector α n → Vector β n → σ → σ × Vector φ n
   | ⟨x, px⟩, ⟨y, py⟩, c =>
     let res := List.mapAccumr₂ f x y c
-    ⟨res.1, res.2, by simp [*]⟩
+    ⟨res.1, res.2, by simp [*, res]⟩
 #align vector.map_accumr₂ Vector.mapAccumr₂
 
 end Accum
@@ -247,7 +244,7 @@ theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P
 #align vector.to_list_mk Vector.toList_mk
 
 /-- A nil vector maps to a nil list. -/
-@[simp, nolint simpNF] -- Porting note: simp can prove this in the future
+@[simp, nolint simpNF] -- Porting note (#10618): simp can prove this in the future
 theorem toList_nil : toList nil = @List.nil α :=
   rfl
 #align vector.to_list_nil Vector.toList_nil

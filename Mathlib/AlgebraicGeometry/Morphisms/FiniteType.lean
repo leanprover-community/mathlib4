@@ -43,7 +43,7 @@ class LocallyOfFiniteType (f : X ⟶ Y) : Prop where
 
 theorem locallyOfFiniteType_eq : @LocallyOfFiniteType = affineLocally @RingHom.FiniteType := by
   ext X Y f
-  rw [LocallyOfFiniteType_iff, affineLocally_iff_affineOpens_le]
+  rw [locallyOfFiniteType_iff, affineLocally_iff_affineOpens_le]
   exact RingHom.finiteType_respectsIso
 #align algebraic_geometry.locally_of_finite_type_eq AlgebraicGeometry.locallyOfFiniteType_eq
 
@@ -52,14 +52,14 @@ instance (priority := 900) locallyOfFiniteTypeOfIsOpenImmersion {X Y : Scheme} (
   locallyOfFiniteType_eq.symm ▸ RingHom.finiteType_is_local.affineLocally_of_isOpenImmersion f
 #align algebraic_geometry.locally_of_finite_type_of_is_open_immersion AlgebraicGeometry.locallyOfFiniteTypeOfIsOpenImmersion
 
-theorem locallyOfFiniteType_stableUnderComposition :
-    MorphismProperty.StableUnderComposition @LocallyOfFiniteType :=
-  locallyOfFiniteType_eq.symm ▸ RingHom.finiteType_is_local.affineLocally_stableUnderComposition
-#align algebraic_geometry.locally_of_finite_type_stable_under_composition AlgebraicGeometry.locallyOfFiniteType_stableUnderComposition
+instance locallyOfFiniteType_isStableUnderComposition :
+    MorphismProperty.IsStableUnderComposition @LocallyOfFiniteType :=
+  locallyOfFiniteType_eq.symm ▸ RingHom.finiteType_is_local.affineLocally_isStableUnderComposition
+#align algebraic_geometry.locally_of_finite_type_stable_under_composition AlgebraicGeometry.locallyOfFiniteType_isStableUnderComposition
 
 instance locallyOfFiniteTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : LocallyOfFiniteType f] [hg : LocallyOfFiniteType g] : LocallyOfFiniteType (f ≫ g) :=
-  locallyOfFiniteType_stableUnderComposition f g hf hg
+  MorphismProperty.comp_mem _ f g hf hg
 #align algebraic_geometry.locally_of_finite_type_comp AlgebraicGeometry.locallyOfFiniteTypeComp
 
 theorem locallyOfFiniteTypeOfComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
@@ -95,4 +95,3 @@ theorem locallyOfFiniteType_respectsIso : MorphismProperty.RespectsIso @LocallyO
 #align algebraic_geometry.locally_of_finite_type_respects_iso AlgebraicGeometry.locallyOfFiniteType_respectsIso
 
 end AlgebraicGeometry
-

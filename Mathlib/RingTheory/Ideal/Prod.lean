@@ -3,7 +3,7 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 
 #align_import ring_theory.ideal.prod from "leanprover-community/mathlib"@"052f6013363326d50cb99c6939814a4b8eb7b301"
 
@@ -121,9 +121,10 @@ theorem isPrime_of_isPrime_prod_top {I : Ideal R} (h : (Ideal.prod I (⊤ : Idea
 
 theorem isPrime_of_isPrime_prod_top' {I : Ideal S} (h : (Ideal.prod (⊤ : Ideal R) I).IsPrime) :
     I.IsPrime := by
-  apply @isPrime_of_isPrime_prod_top _ R
+  apply isPrime_of_isPrime_prod_top (S := R)
   rw [← map_prodComm_prod]
-  exact map_isPrime_of_equiv _
+  -- Note: couldn't synthesize the right instances without the `R` and `S` hints
+  exact map_isPrime_of_equiv (RingEquiv.prodComm (R := R) (S := S))
 #align ideal.is_prime_of_is_prime_prod_top' Ideal.isPrime_of_isPrime_prod_top'
 
 theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Ideal S)).IsPrime := by
@@ -141,7 +142,8 @@ theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Id
 theorem isPrime_ideal_prod_top' {I : Ideal S} [h : I.IsPrime] : (prod (⊤ : Ideal R) I).IsPrime := by
   letI : IsPrime (prod I (⊤ : Ideal R)) := isPrime_ideal_prod_top
   rw [← map_prodComm_prod]
-  apply map_isPrime_of_equiv _
+  -- Note: couldn't synthesize the right instances without the `R` and `S` hints
+  exact map_isPrime_of_equiv (RingEquiv.prodComm (R := S) (S := R))
 #align ideal.is_prime_ideal_prod_top' Ideal.isPrime_ideal_prod_top'
 
 theorem ideal_prod_prime_aux {I : Ideal R} {J : Ideal S} :

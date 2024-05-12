@@ -22,7 +22,7 @@ open scoped Real Topology
 namespace Complex
 
 theorem isOpenMap_exp : IsOpenMap exp :=
-  open_map_of_strict_deriv hasStrictDerivAt_exp exp_ne_zero
+  isOpenMap_of_hasStrictDerivAt hasStrictDerivAt_exp exp_ne_zero
 #align complex.is_open_map_exp Complex.isOpenMap_exp
 
 /-- `Complex.exp` as a `PartialHomeomorph` with `source = {z | -π < im z < π}` and
@@ -55,6 +55,12 @@ theorem hasStrictDerivAt_log {x : ℂ} (h : x ∈ slitPlane) : HasStrictDerivAt 
   expPartialHomeomorph.hasStrictDerivAt_symm h h0 <| by
     simpa [exp_log h0] using hasStrictDerivAt_exp (log x)
 #align complex.has_strict_deriv_at_log Complex.hasStrictDerivAt_log
+
+lemma hasDerivAt_log {z : ℂ} (hz : z ∈ slitPlane) : HasDerivAt log z⁻¹ z :=
+  HasStrictDerivAt.hasDerivAt <| hasStrictDerivAt_log hz
+
+lemma differentiableAt_log {z : ℂ} (hz : z ∈ slitPlane) : DifferentiableAt ℂ log z :=
+  (hasDerivAt_log hz).differentiableAt
 
 theorem hasStrictFDerivAt_log_real {x : ℂ} (h : x ∈ slitPlane) :
     HasStrictFDerivAt log (x⁻¹ • (1 : ℂ →L[ℝ] ℂ)) x :=

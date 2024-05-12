@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Data.Rat.Order
-import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Tactic.Positivity.Core
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -30,7 +30,7 @@ variable {K : Type*} [LinearOrderedField K]
 
 theorem cast_pos_of_pos {r : ℚ} (hr : 0 < r) : (0 : K) < r := by
   rw [Rat.cast_def]
-  exact div_pos (Int.cast_pos.2 <| num_pos_iff_pos.2 hr) (Nat.cast_pos.2 r.pos)
+  exact div_pos (Int.cast_pos.2 <| num_pos.2 hr) (Nat.cast_pos.2 r.pos)
 #align rat.cast_pos_of_pos Rat.cast_pos_of_pos
 
 @[mono]
@@ -98,51 +98,77 @@ theorem cast_abs {q : ℚ} : ((|q| : ℚ) : K) = |(q : K)| := by simp [abs_eq_ma
 open Set
 
 @[simp]
-theorem preimage_cast_Icc (a b : ℚ) : (↑) ⁻¹' Icc (a : K) b = Icc a b := by
-  ext x
-  simp
+theorem preimage_cast_Icc (a b : ℚ) : (↑) ⁻¹' Icc (a : K) b = Icc a b :=
+  castOrderEmbedding.preimage_Icc ..
 #align rat.preimage_cast_Icc Rat.preimage_cast_Icc
 
 @[simp]
-theorem preimage_cast_Ico (a b : ℚ) : (↑) ⁻¹' Ico (a : K) b = Ico a b := by
-  ext x
-  simp
+theorem preimage_cast_Ico (a b : ℚ) : (↑) ⁻¹' Ico (a : K) b = Ico a b :=
+  castOrderEmbedding.preimage_Ico ..
 #align rat.preimage_cast_Ico Rat.preimage_cast_Ico
 
 @[simp]
-theorem preimage_cast_Ioc (a b : ℚ) : (↑) ⁻¹' Ioc (a : K) b = Ioc a b := by
-  ext x
-  simp
+theorem preimage_cast_Ioc (a b : ℚ) : (↑) ⁻¹' Ioc (a : K) b = Ioc a b :=
+  castOrderEmbedding.preimage_Ioc a b
 #align rat.preimage_cast_Ioc Rat.preimage_cast_Ioc
 
 @[simp]
-theorem preimage_cast_Ioo (a b : ℚ) : (↑) ⁻¹' Ioo (a : K) b = Ioo a b := by
-  ext x
-  simp
+theorem preimage_cast_Ioo (a b : ℚ) : (↑) ⁻¹' Ioo (a : K) b = Ioo a b :=
+  castOrderEmbedding.preimage_Ioo a b
 #align rat.preimage_cast_Ioo Rat.preimage_cast_Ioo
 
 @[simp]
-theorem preimage_cast_Ici (a : ℚ) : (↑) ⁻¹' Ici (a : K) = Ici a := by
-  ext x
-  simp
+theorem preimage_cast_Ici (a : ℚ) : (↑) ⁻¹' Ici (a : K) = Ici a :=
+  castOrderEmbedding.preimage_Ici a
 #align rat.preimage_cast_Ici Rat.preimage_cast_Ici
 
 @[simp]
-theorem preimage_cast_Iic (a : ℚ) : (↑) ⁻¹' Iic (a : K) = Iic a := by
-  ext x
-  simp
+theorem preimage_cast_Iic (a : ℚ) : (↑) ⁻¹' Iic (a : K) = Iic a :=
+  castOrderEmbedding.preimage_Iic a
 #align rat.preimage_cast_Iic Rat.preimage_cast_Iic
 
 @[simp]
-theorem preimage_cast_Ioi (a : ℚ) : (↑) ⁻¹' Ioi (a : K) = Ioi a := by
-  ext x
-  simp
+theorem preimage_cast_Ioi (a : ℚ) : (↑) ⁻¹' Ioi (a : K) = Ioi a :=
+  castOrderEmbedding.preimage_Ioi a
 #align rat.preimage_cast_Ioi Rat.preimage_cast_Ioi
 
 @[simp]
-theorem preimage_cast_Iio (a : ℚ) : (↑) ⁻¹' Iio (a : K) = Iio a := by
-  ext x
-  simp
+theorem preimage_cast_Iio (a : ℚ) : (↑) ⁻¹' Iio (a : K) = Iio a :=
+  castOrderEmbedding.preimage_Iio a
 #align rat.preimage_cast_Iio Rat.preimage_cast_Iio
 
+@[simp]
+theorem preimage_cast_uIcc (a b : ℚ) : (↑) ⁻¹' uIcc (a : K) b = uIcc a b :=
+  (castOrderEmbedding (K := K)).preimage_uIcc a b
+
+@[simp]
+theorem preimage_cast_uIoc (a b : ℚ) : (↑) ⁻¹' uIoc (a : K) b = uIoc a b :=
+  (castOrderEmbedding (K := K)).preimage_uIoc a b
+
 end LinearOrderedField
+end Rat
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq Function
+
+/-- Extension for Rat.cast. -/
+@[positivity Rat.cast _]
+def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
+  let ~q(@Rat.cast _ (_) ($a : ℚ)) := e | throwError "not Rat.cast"
+  match ← core q(inferInstance) q(inferInstance) a with
+  | .positive pa =>
+    let _oα ← synthInstanceQ q(LinearOrderedField $α)
+    assumeInstancesCommute
+    return .positive q((Rat.cast_pos (K := $α)).mpr $pa)
+  | .nonnegative pa =>
+    let _oα ← synthInstanceQ q(LinearOrderedField $α)
+    assumeInstancesCommute
+    return .nonnegative q((Rat.cast_nonneg (K := $α)).mpr $pa)
+  | .nonzero pa =>
+    let _oα ← synthInstanceQ q(DivisionRing $α)
+    let _cα ← synthInstanceQ q(CharZero $α)
+    assumeInstancesCommute
+    return .nonzero q((Rat.cast_ne_zero (α := $α)).mpr $pa)
+  | .none => pure .none
+
+end Mathlib.Meta.Positivity

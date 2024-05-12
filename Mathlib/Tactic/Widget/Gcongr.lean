@@ -46,8 +46,8 @@ def GCongrSelectionPanel : Component SelectInsertParams :=
 
 open scoped Json in
 /-- Display a widget panel allowing to generate a `gcongr` call with holes specified by selecting
-subexpressions in the goal.-/
+subexpressions in the goal. -/
 elab stx:"gcongr?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo GCongrSelectionPanel.javascriptHash
-    (pure $ json% { replaceRange: $(replaceRange) }) stx
+    (pure <| json% { replaceRange: $(replaceRange) }) stx

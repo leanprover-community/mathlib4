@@ -3,9 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Finset.Pi
+import Mathlib.Data.Fintype.Basic
 
 #align_import data.fintype.pi from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -20,7 +19,7 @@ open Finset
 
 namespace Fintype
 
-variable [DecidableEq α] [Fintype α] {δ : α → Type*}
+variable [DecidableEq α] [Fintype α] {γ δ : α → Type*} {s : ∀ a, Finset (γ a)}
 
 /-- Given for all `a : α` a finset `t a` of `δ a`, then one can define the
 finset `Fintype.piFinset t` of all functions taking values in `t a` for all `a`. This is the
@@ -60,6 +59,14 @@ theorem piFinset_empty [Nonempty α] : piFinset (fun _ => ∅ : ∀ i, Finset (�
   eq_empty_of_forall_not_mem fun _ => by simp
 #align fintype.pi_finset_empty Fintype.piFinset_empty
 
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+lemma piFinset_nonempty : (piFinset s).Nonempty ↔ ∀ a, (s a).Nonempty := by
+  simp [Finset.Nonempty, Classical.skolem]
+
+@[simp]
+lemma piFinset_of_isEmpty [IsEmpty α] (s : ∀ a, Finset (γ a)) : piFinset s = univ :=
+  eq_univ_of_forall fun _ ↦ by simp
+
 @[simp]
 theorem piFinset_singleton (f : ∀ i, δ i) : piFinset (fun i => {f i} : ∀ i, Finset (δ i)) = {f} :=
   ext fun _ => by simp only [Function.funext_iff, Fintype.mem_piFinset, mem_singleton]
@@ -76,6 +83,52 @@ theorem piFinset_disjoint_of_disjoint (t₁ t₂ : ∀ a, Finset (δ a)) {a : α
     disjoint_iff_ne.1 h (f₁ a) (mem_piFinset.1 hf₁ a) (f₂ a) (mem_piFinset.1 hf₂ a)
       (congr_fun eq₁₂ a)
 #align fintype.pi_finset_disjoint_of_disjoint Fintype.piFinset_disjoint_of_disjoint
+
+lemma piFinset_image [∀ a, DecidableEq (δ a)] (f : ∀ a, γ a → δ a) (s : ∀ a, Finset (γ a)) :
+    piFinset (fun a ↦ (s a).image (f a)) = (piFinset s).image fun b a ↦ f _ (b a) := by
+  ext; simp only [mem_piFinset, mem_image, Classical.skolem, forall_and, Function.funext_iff]
+
+lemma eval_image_piFinset_subset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a)] :
+    ((piFinset t).image fun f ↦ f a) ⊆ t a := image_subset_iff.2 fun _x hx ↦ mem_piFinset.1 hx _
+
+lemma eval_image_piFinset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a)]
+    (ht : ∀ b, a ≠ b → (t b).Nonempty) : ((piFinset t).image fun f ↦ f a) = t a := by
+  refine (eval_image_piFinset_subset _ _).antisymm fun x h ↦ mem_image.2 ?_
+  choose f hf using ht
+  exact ⟨fun b ↦ if h : a = b then h ▸ x else f _ h, by aesop, by simp⟩
+
+lemma eval_image_piFinset_const {β} [DecidableEq β] (t : Finset β) (a : α) :
+    ((piFinset fun _i : α ↦ t).image fun f ↦ f a) = t := by
+  obtain rfl | ht := t.eq_empty_or_nonempty
+  · haveI : Nonempty α := ⟨a⟩
+    simp
+  · exact eval_image_piFinset (fun _ ↦ t) a fun _ _ ↦ ht
+
+variable [∀ a, DecidableEq (δ a)]
+
+lemma filter_piFinset_of_not_mem (t : ∀ a, Finset (δ a)) (a : α) (x : δ a) (hx : x ∉ t a) :
+    (piFinset t).filter (· a = x) = ∅ := by
+  simp only [filter_eq_empty_iff, mem_piFinset]; rintro f hf rfl; exact hx (hf _)
+
+-- TODO: This proof looks like a good example of something that `aesop` can't do but should
+lemma piFinset_update_eq_filter_piFinset_mem (s : ∀ i, Finset (δ i)) (i : α) {t : Finset (δ i)}
+    (hts : t ⊆ s i) : piFinset (Function.update s i t) = (piFinset s).filter (fun f ↦ f i ∈ t) := by
+  ext f
+  simp only [mem_piFinset, mem_filter]
+  refine ⟨fun h ↦ ?_, fun h j ↦ ?_⟩
+  · have := by simpa using h i
+    refine ⟨fun j ↦ ?_, this⟩
+    obtain rfl | hji := eq_or_ne j i
+    · exact hts this
+    · simpa [hji] using h j
+  · obtain rfl | hji := eq_or_ne j i
+    · simpa using h.2
+    · simpa [hji] using h.1 j
+
+lemma piFinset_update_singleton_eq_filter_piFinset_eq (s : ∀ i, Finset (δ i)) (i : α) {a : δ i}
+    (ha : a ∈ s i) :
+    piFinset (Function.update s i {a}) = (piFinset s).filter (fun f ↦ f i = a) := by
+  simp [piFinset_update_eq_filter_piFinset_mem, ha]
 
 end Fintype
 
@@ -95,13 +148,13 @@ theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] 
   rfl
 #align fintype.pi_finset_univ Fintype.piFinset_univ
 
--- porting note: this instance used to be computable in Lean3 and used `decidable_eq`, but
+-- Porting note: this instance used to be computable in Lean3 and used `decidable_eq`, but
 -- it makes things a lot harder to work with here. in some ways that was because in Lean3
 -- we could make this instance irreducible when needed and in the worst case use `congr/convert`,
 -- but those don't work with subsingletons in lean4 as-is so we cannot do this here.
 noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β] :
   Fintype (α ↪ β) :=
-  by classical. exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
+  by classical exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 #align function.embedding.fintype Function.Embedding.fintype
 
 @[simp]
@@ -110,26 +163,3 @@ theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [F
     (Finset.univ.pi fun a : α => (Finset.univ : Finset (β a))) = Finset.univ := by
   ext; simp
 #align finset.univ_pi_univ Finset.univ_pi_univ
-
-lemma Fin.mem_piFinset_succ_iff {n : ℕ} {α : Fin (n + 1) → Type*} (p : (i : Fin (n + 1)) → α i)
-    (S : (i : Fin (n + 1)) → Finset (α i)) :
-    p ∈ Fintype.piFinset S ↔ p 0 ∈ S 0 ∧ Fin.tail p ∈ Fintype.piFinset (Fin.tail S) := by
-  simp only [Fintype.mem_piFinset, forall_fin_succ, Fin.tail]
-
-lemma Fin.cons_mem_piFinset_cons_iff {n : ℕ} {α : Fin (n + 1) → Type*}
-    (x : α 0) (xs : (i : Fin n) → α i.succ)
-    (S₀ : Finset (α 0)) (Sᵢ : (i : Fin n) → Finset (α i.succ)) :
-    Fin.cons x xs ∈ Fintype.piFinset (Fin.cons S₀ Sᵢ) ↔ x ∈ S₀ ∧ xs ∈ Fintype.piFinset Sᵢ := by
-  simp_rw [Fin.mem_piFinset_succ_iff, cons_zero, tail_cons]
-
-lemma Fin.mem_piFinset_succ_iff' {n : ℕ} {α : Fin (n + 1) → Type*} (p : (i : Fin (n + 1)) → α i)
-    (S : (i : Fin (n + 1)) → Finset (α i)) :
-    p ∈ Fintype.piFinset S ↔
-      Fin.init p ∈ Fintype.piFinset (Fin.init S) ∧ p (Fin.last n) ∈ S (Fin.last n) := by
-  simp only [Fintype.mem_piFinset, forall_fin_succ', Fin.init]
-
-lemma Fin.snoc_mem_piFinset_snoc_iff {n : ℕ} {α : Fin (n + 1) → Type*}
-    (xs : (i : Fin n) → α i.castSucc) (x : α (.last n))
-    (Sᵢ : (i : Fin n) → Finset (α i.castSucc)) (Sₙ : Finset (α <| .last n)) :
-    Fin.snoc xs x ∈ Fintype.piFinset (Fin.snoc Sᵢ Sₙ) ↔ xs ∈ Fintype.piFinset Sᵢ ∧ x ∈ Sₙ := by
-  simp_rw [Fin.mem_piFinset_succ_iff', init_snoc, snoc_last]

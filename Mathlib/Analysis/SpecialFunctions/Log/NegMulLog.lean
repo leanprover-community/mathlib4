@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.Analysis.Convex.Deriv
 
 /-!
 # The function `x ↦ - x * log x`
@@ -52,8 +53,7 @@ lemma hasDerivAt_mul_log {x : ℝ} (hx : x ≠ 0) : HasDerivAt (fun x ↦ x * lo
   simp [hx]
 
 lemma deriv2_mul_log {x : ℝ} (hx : x ≠ 0) : deriv^[2] (fun x ↦ x * log x) x = x⁻¹ := by
-  simp only [Function.iterate_succ, Function.iterate_zero, Function.comp.left_id,
-    Function.comp_apply]
+  simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp, Function.comp_apply]
   suffices ∀ᶠ y in (𝓝 x), deriv (fun x ↦ x * log x) y = log y + 1 by
     refine (Filter.EventuallyEq.deriv_eq this).trans ?_
     rw [deriv_add_const, deriv_log x]
@@ -118,7 +118,7 @@ lemma hasDerivAt_negMulLog {x : ℝ} (hx : x ≠ 0) : HasDerivAt negMulLog (- lo
 lemma deriv2_negMulLog {x : ℝ} (hx : x ≠ 0) : deriv^[2] negMulLog x = - x⁻¹ := by
   rw [negMulLog_eq_neg]
   have h := deriv2_mul_log hx
-  simp only [Function.iterate_succ, Function.iterate_zero, Function.comp.left_id,
+  simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp,
     Function.comp_apply, deriv.neg', differentiableAt_id', differentiableAt_log_iff, ne_eq] at h ⊢
   rw [h]
 

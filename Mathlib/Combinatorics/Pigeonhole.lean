@@ -3,11 +3,11 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Yury Kudryashov
 -/
+import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Set.Finite
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Module.BigOperators
 
 #align_import combinatorics.pigeonhole from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -461,7 +461,7 @@ open Set
 that are equal mod `k`. -/
 theorem exists_lt_modEq_of_infinite {s : Set ℕ} (hs : s.Infinite) {k : ℕ} (hk : 0 < k) :
     ∃ m ∈ s, ∃ n ∈ s, m < n ∧ m ≡ n [MOD k] :=
-  (hs.exists_lt_map_eq_of_mapsTo $ fun n _ => show n % k ∈ Iio k from Nat.mod_lt n hk) <|
+  (hs.exists_lt_map_eq_of_mapsTo fun n _ => show n % k ∈ Iio k from Nat.mod_lt n hk) <|
     finite_lt_nat k
 #align nat.exists_lt_modeq_of_infinite Nat.exists_lt_modEq_of_infinite
 

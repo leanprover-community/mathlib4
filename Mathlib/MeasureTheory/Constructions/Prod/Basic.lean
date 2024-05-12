@@ -56,7 +56,8 @@ product measure, Tonelli's theorem, Fubini-Tonelli theorem
 
 noncomputable section
 
-open Classical Topology ENNReal MeasureTheory
+open scoped Classical
+open Topology ENNReal MeasureTheory
 
 open Set Function Real ENNReal
 
@@ -71,7 +72,7 @@ variable {α α' β β' γ E : Type*}
 /-- Rectangles formed by π-systems form a π-system. -/
 theorem IsPiSystem.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsPiSystem C)
     (hD : IsPiSystem D) : IsPiSystem (image2 (· ×ˢ ·) C D) := by
-  rintro _ ⟨s₁, t₁, hs₁, ht₁, rfl⟩ _ ⟨s₂, t₂, hs₂, ht₂, rfl⟩ hst
+  rintro _ ⟨s₁, hs₁, t₁, ht₁, rfl⟩ _ ⟨s₂, hs₂, t₂, ht₂, rfl⟩ hst
   rw [prod_inter_prod] at hst ⊢; rw [prod_nonempty_iff] at hst
   exact mem_image2_of_mem (hC _ hs₁ _ hs₂ hst.1) (hD _ ht₁ _ ht₂ hst.2)
 #align is_pi_system.prod IsPiSystem.prod
@@ -85,11 +86,8 @@ theorem IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsC
 #align is_countably_spanning.prod IsCountablySpanning.prod
 
 variable [MeasurableSpace α] [MeasurableSpace α'] [MeasurableSpace β] [MeasurableSpace β']
-
 variable [MeasurableSpace γ]
-
 variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
-
 variable [NormedAddCommGroup E]
 
 /-! ### Measurability
@@ -113,7 +111,7 @@ theorem generateFrom_prod_eq {α β} {C : Set (Set α)} {D : Set (Set β)} (hC :
       apply MeasurableSet.iUnion
       intro n
       apply measurableSet_generateFrom
-      exact ⟨s, t n, hs, h1t n, rfl⟩
+      exact ⟨s, hs, t n, h1t n, rfl⟩
     · rcases hC with ⟨t, h1t, h2t⟩
       rw [← univ_prod, ← h2t, iUnion_prod_const]
       apply MeasurableSet.iUnion
@@ -121,7 +119,7 @@ theorem generateFrom_prod_eq {α β} {C : Set (Set α)} {D : Set (Set β)} (hC :
       apply measurableSet_generateFrom
       exact mem_image2_of_mem (h1t n) hs
   · apply generateFrom_le
-    rintro _ ⟨s, t, hs, ht, rfl⟩
+    rintro _ ⟨s, hs, t, ht, rfl⟩
     dsimp only
     rw [prod_eq]
     apply (measurable_fst _).inter (measurable_snd _)
@@ -158,8 +156,8 @@ theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   refine' induction_on_inter (C := fun s => Measurable fun x => ν (Prod.mk x ⁻¹' s))
     generateFrom_prod.symm isPiSystem_prod _ _ _ _ hs
-  · simp [measurable_zero, const_def]
-  · rintro _ ⟨s, t, hs, _, rfl⟩
+  · simp
+  · rintro _ ⟨s, hs, t, _, rfl⟩
     simp only [mk_preimage_prod_right_eq_if, measure_if]
     exact measurable_const.indicator hs
   · intro t ht h2t
@@ -221,7 +219,7 @@ theorem MeasurableEmbedding.prod_mk {α β γ δ : Type*} {mα : MeasurableSpace
         (fun s => MeasurableSet ((fun x : γ × α => (g x.fst, f x.snd)) '' s)) _ _
         generateFrom_prod.symm isPiSystem_prod _ _ _ _ _ hs
     · simp only [Set.image_empty, MeasurableSet.empty]
-    · rintro t ⟨t₁, t₂, ht₁, ht₂, rfl⟩
+    · rintro t ⟨t₁, ht₁, t₂, ht₂, rfl⟩
       rw [← Set.prod_image_image_eq]
       exact (hg.measurableSet_image.mpr ht₁).prod (hf.measurableSet_image.mpr ht₂)
     · intro t _ ht_m
@@ -232,6 +230,44 @@ theorem MeasurableEmbedding.prod_mk {α β γ δ : Type*} {mα : MeasurableSpace
       simp_rw [Set.image_iUnion]
       exact MeasurableSet.iUnion hg
 #align measurable_embedding.prod_mk MeasurableEmbedding.prod_mk
+
+lemma MeasurableEmbedding.prod_mk_left {β γ : Type*} [MeasurableSingletonClass α]
+    {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+    (x : α) {f : γ → β} (hf : MeasurableEmbedding f) :
+    MeasurableEmbedding (fun y ↦ (x, f y)) where
+  injective := by
+    intro y y'
+    simp only [Prod.mk.injEq, true_and]
+    exact fun h ↦ hf.injective h
+  measurable := Measurable.prod_mk measurable_const hf.measurable
+  measurableSet_image' := by
+    intro s hs
+    convert (MeasurableSet.singleton x).prod (hf.measurableSet_image.mpr hs)
+    ext x
+    simp
+
+lemma measurableEmbedding_prod_mk_left [MeasurableSingletonClass α] (x : α) :
+    MeasurableEmbedding (Prod.mk x : β → α × β) :=
+  MeasurableEmbedding.prod_mk_left x MeasurableEmbedding.id
+
+lemma MeasurableEmbedding.prod_mk_right {β γ : Type*} [MeasurableSingletonClass α]
+    {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+    {f : γ → β} (hf : MeasurableEmbedding f) (x : α) :
+    MeasurableEmbedding (fun y ↦ (f y, x)) where
+  injective := by
+    intro y y'
+    simp only [Prod.mk.injEq, and_true]
+    exact fun h ↦ hf.injective h
+  measurable := Measurable.prod_mk hf.measurable measurable_const
+  measurableSet_image' := by
+    intro s hs
+    convert (hf.measurableSet_image.mpr hs).prod (MeasurableSet.singleton x)
+    ext x
+    simp
+
+lemma measurableEmbedding_prod_mk_right [MeasurableSingletonClass α] (x : α) :
+    MeasurableEmbedding (fun y ↦ (y, x) : β → β × α) :=
+  MeasurableEmbedding.prod_mk_right MeasurableEmbedding.id x
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   Tonelli's theorem is measurable. -/
@@ -321,7 +357,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
         measure_mono <| Set.prod_mono (subset_toMeasurable _ _) (subset_toMeasurable _ _)
       _ = μ (toMeasurable μ s) * ν (toMeasurable ν t) := by
         rw [prod_apply hSTm]
-        simp_rw [mk_preimage_prod_right_eq_if, measure_if,
+        simp_rw [ST, mk_preimage_prod_right_eq_if, measure_if,
           lintegral_indicator _ (measurableSet_toMeasurable _ _), lintegral_const,
           restrict_apply_univ, mul_comm]
       _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
@@ -336,8 +372,8 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
     calc
       μ s * ν t ≤ μ s' * ν t := mul_le_mul_right' (measure_mono hss') _
       _ = ∫⁻ _ in s', ν t ∂μ := by rw [set_lintegral_const, mul_comm]
-      _ ≤ ∫⁻ x in s', f x ∂μ := (set_lintegral_mono measurable_const hfm fun x => id)
-      _ ≤ ∫⁻ x, f x ∂μ := (lintegral_mono' restrict_le_self le_rfl)
+      _ ≤ ∫⁻ x in s', f x ∂μ := set_lintegral_mono measurable_const hfm fun x => id
+      _ ≤ ∫⁻ x, f x ∂μ := lintegral_mono' restrict_le_self le_rfl
       _ = μ.prod ν ST := (prod_apply hSTm).symm
       _ = μ.prod ν (s ×ˢ t) := measure_toMeasurable _
 #align measure_theory.measure.prod_prod MeasureTheory.Measure.prod_prod
@@ -400,7 +436,8 @@ instance prod.instIsFiniteMeasureOnCompacts {α β : Type*} [TopologicalSpace α
   set L := (Prod.fst '' K) ×ˢ (Prod.snd '' K) with hL
   have : K ⊆ L := by
     rintro ⟨x, y⟩ hxy
-    simp only [prod_mk_mem_set_prod_eq, mem_image, Prod.exists, exists_and_right, exists_eq_right]
+    simp only [L, prod_mk_mem_set_prod_eq, mem_image, Prod.exists, exists_and_right,
+      exists_eq_right]
     exact ⟨⟨y, hxy⟩, ⟨x, hxy⟩⟩
   apply lt_of_le_of_lt (measure_mono this)
   rw [hL, prod_prod]
@@ -428,7 +465,7 @@ instance prod.instNoAtoms_snd [NoAtoms ν] :
 theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ.prod ν) s ≠ ∞) :
     ∀ᵐ x ∂μ, ν (Prod.mk x ⁻¹' s) < ∞ := by
   rw [prod_apply hs] at h2s
-  refine' ae_lt_top (measurable_measure_prod_mk_left hs) h2s
+  exact ae_lt_top (measurable_measure_prod_mk_left hs) h2s
 #align measure_theory.measure.ae_measure_lt_top MeasureTheory.Measure.ae_measure_lt_top
 
 /-- Note: the assumption `hs` cannot be dropped. For a counterexample, see
@@ -600,9 +637,9 @@ theorem prod_eq_generateFrom {μ : Measure α} {ν : Measure β} {C : Set (Set �
     (h3C.prod h3D).ext
       (generateFrom_eq_prod hC hD h3C.isCountablySpanning h3D.isCountablySpanning).symm
       (h2C.prod h2D) _
-  · rintro _ ⟨s, t, hs, ht, rfl⟩
-    haveI := h3D.sigmaFinite
-    rw [h₁ s hs t ht, prod_prod]
+  rintro _ ⟨s, hs, t, ht, rfl⟩
+  haveI := h3D.sigmaFinite
+  rw [h₁ s hs t ht, prod_prod]
 #align measure_theory.measure.prod_eq_generate_from MeasureTheory.Measure.prod_eq_generateFrom
 
 /- Note that the next theorem is not true for s-finite measures: let `μ = ν = ∞ • Leb` on `[0,1]`
@@ -703,7 +740,7 @@ theorem prodAssoc_prod [SFinite τ] :
     isPiSystem_measurableSet isPiSystem_prod ((sFiniteSeq μ i.1.1)).toFiniteSpanningSetsIn
     ((sFiniteSeq ν i.1.2).toFiniteSpanningSetsIn.prod (sFiniteSeq τ i.2).toFiniteSpanningSetsIn)
       _).symm
-  rintro s hs _ ⟨t, u, ht, hu, rfl⟩; rw [mem_setOf_eq] at hs ht hu
+  rintro s hs _ ⟨t, ht, u, hu, rfl⟩; rw [mem_setOf_eq] at hs ht hu
   simp_rw [map_apply (MeasurableEquiv.measurable _) (hs.prod (ht.prod hu)),
     MeasurableEquiv.prodAssoc, MeasurableEquiv.coe_mk, Equiv.prod_assoc_preimage, prod_prod,
     mul_assoc]

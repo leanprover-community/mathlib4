@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.SuccPred
 
 #align_import data.int.succ_pred from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
@@ -20,13 +20,11 @@ open Function Order
 namespace Int
 
 -- so that Lean reads `Int.succ` through `SuccOrder.succ`
-@[reducible]
-instance : SuccOrder ℤ :=
+@[instance] abbrev instSuccOrder : SuccOrder ℤ :=
   { SuccOrder.ofSuccLeIff succ fun {_ _} => Iff.rfl with succ := succ }
 
 -- so that Lean reads `Int.pred` through `PredOrder.pred`
-@[reducible]
-instance : PredOrder ℤ where
+@[instance] abbrev instPredOrder : PredOrder ℤ where
   pred := pred
   pred_le _ := (sub_one_lt_of_le le_rfl).le
   min_of_le_pred ha := ((sub_one_lt_of_le le_rfl).not_le ha).elim
@@ -64,7 +62,7 @@ theorem pred_iterate (a : ℤ) : ∀ n, pred^[n] a = a - n
 instance : IsSuccArchimedean ℤ :=
   ⟨fun {a b} h =>
     ⟨(b - a).toNat, by
-      rw [succ_eq_succ, succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel']⟩⟩
+      rw [succ_eq_succ, succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel_left]⟩⟩
 
 instance : IsPredArchimedean ℤ :=
   ⟨fun {a b} h =>
@@ -73,26 +71,26 @@ instance : IsPredArchimedean ℤ :=
 /-! ### Covering relation -/
 
 
-protected theorem covby_iff_succ_eq {m n : ℤ} : m ⋖ n ↔ m + 1 = n :=
-  succ_eq_iff_covby.symm
-#align int.covby_iff_succ_eq Int.covby_iff_succ_eq
+protected theorem covBy_iff_succ_eq {m n : ℤ} : m ⋖ n ↔ m + 1 = n :=
+  succ_eq_iff_covBy.symm
+#align int.covby_iff_succ_eq Int.covBy_iff_succ_eq
 
 @[simp]
-theorem sub_one_covby (z : ℤ) : z - 1 ⋖ z := by rw [Int.covby_iff_succ_eq, sub_add_cancel]
-#align int.sub_one_covby Int.sub_one_covby
+theorem sub_one_covBy (z : ℤ) : z - 1 ⋖ z := by rw [Int.covBy_iff_succ_eq, sub_add_cancel]
+#align int.sub_one_covby Int.sub_one_covBy
 
 @[simp]
-theorem covby_add_one (z : ℤ) : z ⋖ z + 1 :=
-  Int.covby_iff_succ_eq.mpr rfl
-#align int.covby_add_one Int.covby_add_one
+theorem covBy_add_one (z : ℤ) : z ⋖ z + 1 :=
+  Int.covBy_iff_succ_eq.mpr rfl
+#align int.covby_add_one Int.covBy_add_one
 
 end Int
 
 @[simp, norm_cast]
-theorem Nat.cast_int_covby_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
-  rw [Nat.covby_iff_succ_eq, Int.covby_iff_succ_eq]
-  exact Int.coe_nat_inj'
-#align nat.cast_int_covby_iff Nat.cast_int_covby_iff
+theorem Nat.cast_int_covBy_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
+  rw [Nat.covBy_iff_succ_eq, Int.covBy_iff_succ_eq]
+  exact Int.natCast_inj
+#align nat.cast_int_covby_iff Nat.cast_int_covBy_iff
 
-alias ⟨_, Covby.cast_int⟩ := Nat.cast_int_covby_iff
-#align covby.cast_int Covby.cast_int
+alias ⟨_, CovBy.cast_int⟩ := Nat.cast_int_covBy_iff
+#align covby.cast_int CovBy.cast_int

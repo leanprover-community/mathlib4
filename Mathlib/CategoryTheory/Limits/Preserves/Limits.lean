@@ -29,13 +29,9 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (G : C ⥤ D)
-
 variable {J : Type w} [Category.{w'} J]
-
 variable (F : J ⥤ C)
 
 section
@@ -48,7 +44,7 @@ theorem preserves_lift_mapCone (c₁ c₂ : Cone F) (t : IsLimit c₁) :
   ((PreservesLimit.preserves t).uniq (G.mapCone c₂) _ (by simp [← G.map_comp])).symm
 #align category_theory.preserves_lift_map_cone CategoryTheory.preserves_lift_mapCone
 
-variable [HasLimit F] [HasLimit (F ⋙ G)]
+variable [HasLimit F]
 
 /-- If `G` preserves limits, we have an isomorphism from the image of the limit of a functor `F`
 to the limit of the functor `F ⋙ G`.
@@ -77,6 +73,9 @@ theorem lift_comp_preservesLimitsIso_hom (t : Cone F) :
   simp [← G.map_comp]
 #align category_theory.lift_comp_preserves_limits_iso_hom CategoryTheory.lift_comp_preservesLimitsIso_hom
 
+instance : IsIso (limit.post F G) :=
+  show IsIso (preservesLimitIso G F).hom from inferInstance
+
 variable [PreservesLimitsOfShape J G] [HasLimitsOfShape J D] [HasLimitsOfShape J C]
 
 /-- If `C, D` has all limits of shape `J`, and `G` preserves them, then `preservesLimitsIso` is
@@ -96,6 +95,19 @@ end
 
 section
 
+variable [HasLimit F] [HasLimit (F ⋙ G)]
+
+/-- If the comparison morphism `G.obj (limit F) ⟶ limit (F ⋙ G)` is an isomorphism, then `G`
+    preserves limits of `F`. -/
+def preservesLimitOfIsIsoPost [IsIso (limit.post F G)] : PreservesLimit F G :=
+  preservesLimitOfPreservesLimitCone (limit.isLimit F) (by
+    convert IsLimit.ofPointIso (limit.isLimit (F ⋙ G))
+    assumption)
+
+end
+
+section
+
 variable [PreservesColimit F G]
 
 @[simp]
@@ -104,7 +116,7 @@ theorem preserves_desc_mapCocone (c₁ c₂ : Cocone F) (t : IsColimit c₁) :
   ((PreservesColimit.preserves t).uniq (G.mapCocone _) _ (by simp [← G.map_comp])).symm
 #align category_theory.preserves_desc_map_cocone CategoryTheory.preserves_desc_mapCocone
 
-variable [HasColimit F] [HasColimit (F ⋙ G)]
+variable [HasColimit F]
 
 -- TODO: think about swapping the order here
 /-- If `G` preserves colimits, we have an isomorphism from the image of the colimit of a functor `F`
@@ -134,6 +146,9 @@ theorem preservesColimitsIso_inv_comp_desc (t : Cocone F) :
   simp [← G.map_comp]
 #align category_theory.preserves_colimits_iso_inv_comp_desc CategoryTheory.preservesColimitsIso_inv_comp_desc
 
+instance : IsIso (colimit.post F G) :=
+  show IsIso (preservesColimitIso G F).inv from inferInstance
+
 variable [PreservesColimitsOfShape J G] [HasColimitsOfShape J D] [HasColimitsOfShape J C]
 
 /-- If `C, D` has all colimits of shape `J`, and `G` preserves them, then `preservesColimitIso`
@@ -151,6 +166,19 @@ def preservesColimitNatIso : colim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ c
         ι_preservesColimitsIso_inv_assoc, ← G.map_comp]
       erw [ι_colimMap])
 #align category_theory.preserves_colimit_nat_iso CategoryTheory.preservesColimitNatIso
+
+end
+
+section
+
+variable [HasColimit F] [HasColimit (F ⋙ G)]
+
+/-- If the comparison morphism `colimit (F ⋙ G) ⟶ G.obj (colimit F)` is an isomorphism, then `G`
+    preserves colimits of `F`. -/
+def preservesColimitOfIsIsoPost [IsIso (colimit.post F G)] : PreservesColimit F G :=
+  preservesColimitOfPreservesColimitCocone (colimit.isColimit F) (by
+    convert IsColimit.ofPointIso (colimit.isColimit (F ⋙ G))
+    assumption)
 
 end
 

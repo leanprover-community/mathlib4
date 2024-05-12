@@ -20,6 +20,7 @@ that were not available in `Algebra/Group/WithOne/Defs`.
 * `WithOne.map`, `WithZero.map`
 -/
 
+assert_not_exists MonoidWithZero
 
 universe u v w
 
@@ -35,7 +36,7 @@ instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) :=
 
 section
 
--- porting note: the workaround described below doesn't seem to be a problem even with
+-- Porting note: the workaround described below doesn't seem to be a problem even with
 -- semireducible transparency
 -- workaround: we make `WithOne`/`WithZero` irreducible for this definition, otherwise `simps`
 -- will unfold it in the statement of the lemma it generates.
@@ -53,13 +54,13 @@ end
 
 section lift
 
--- porting note: these were never marked with `irreducible` when they were defined.
+-- Porting note: these were never marked with `irreducible` when they were defined.
 -- attribute [local semireducible] WithOne WithZero
 
 variable [Mul α] [MulOneClass β]
 
-/-- Lift a semigroup homomorphism `f` to a bundled monoid homorphism. -/
-@[to_additive "Lift an add semigroup homomorphism `f` to a bundled add monoid homorphism."]
+/-- Lift a semigroup homomorphism `f` to a bundled monoid homomorphism. -/
+@[to_additive "Lift an add semigroup homomorphism `f` to a bundled add monoid homomorphism."]
 def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   toFun f :=
     { toFun := fun x => Option.casesOn x 1 f, map_one' := rfl,
@@ -69,7 +70,7 @@ def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   invFun F := F.toMulHom.comp coeMulHom
   left_inv f := MulHom.ext fun x => rfl
   right_inv F := MonoidHom.ext fun x => WithOne.cases_on x F.map_one.symm (fun x => rfl)
--- porting note: the above proofs were broken because they were parenthesized wrong by mathport?
+-- Porting note: the above proofs were broken because they were parenthesized wrong by mathport?
 #align with_one.lift WithOne.lift
 #align with_zero.lift WithZero.lift
 
@@ -81,7 +82,7 @@ theorem lift_coe (x : α) : lift f x = f x :=
 #align with_one.lift_coe WithOne.lift_coe
 #align with_zero.lift_coe WithZero.lift_coe
 
--- porting note: removed `simp` attribute to appease `simpNF` linter.
+-- Porting note (#11119): removed `simp` attribute to appease `simpNF` linter.
 @[to_additive]
 theorem lift_one : lift f 1 = 1 :=
   rfl
@@ -134,7 +135,7 @@ theorem map_comp (f : α →ₙ* β) (g : β →ₙ* γ) : map (g.comp f) = (map
 #align with_one.map_comp WithOne.map_comp
 #align with_zero.map_comp WithZero.map_comp
 
--- porting note: this used to have `@[simps apply]` but it was generating lemmas which
+-- Porting note: this used to have `@[simps apply]` but it was generating lemmas which
 -- weren't in simp normal form.
 /-- A version of `Equiv.optionCongr` for `WithOne`. -/
 @[to_additive (attr := simps apply) "A version of `Equiv.optionCongr` for `WithZero`."]
@@ -148,7 +149,7 @@ def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :
 #align mul_equiv.with_one_congr_apply MulEquiv.withOneCongr_apply
 #align add_equiv.with_zero_congr_apply AddEquiv.withZeroCongr_apply
 
--- porting note: for this declaration and the two below I added the `to_additive` attribute because
+-- Porting note: for this declaration and the two below I added the `to_additive` attribute because
 -- it seemed to be missing from mathlib3, hence the lack of additive `#align`s.
 @[to_additive (attr := simp)]
 theorem _root_.MulEquiv.withOneCongr_refl : (MulEquiv.refl α).withOneCongr = MulEquiv.refl _ :=
@@ -170,31 +171,3 @@ theorem _root_.MulEquiv.withOneCongr_trans (e₁ : α ≃* β) (e₂ : β ≃* �
 end Map
 
 end WithOne
-
-namespace WithZero
-
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) :=
-  { WithZero.inv with
-    inv_inv := fun a =>
-      (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
-
-instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) :=
-  { WithZero.divInvMonoid, WithZero.involutiveInv with
-    mul_inv_rev := fun a b =>
-      match a, b with
-      | none, none => rfl
-      | none, some b => rfl
-      | some a, none => rfl
-      | some a, some b => congr_arg some <| mul_inv_rev _ _,
-    inv_eq_of_mul := fun a b ↦
-      match a, b with
-      | none, none => fun _ ↦ rfl
-      | none, some b => fun _ ↦ by contradiction
-      | some a, none => fun _ ↦ by contradiction
-      | some a, some b => fun h ↦
-        congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h }
-
-instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) :=
-  { WithZero.divisionMonoid, WithZero.commSemigroup with }
-
-end WithZero

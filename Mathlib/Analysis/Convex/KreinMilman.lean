@@ -69,7 +69,7 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
     by_contra hyx
     obtain ⟨l, hl⟩ := geometric_hahn_banach_point_point hyx
     obtain ⟨z, hzt, hz⟩ :=
-      (hscomp.of_isClosed_subset htclos hst.1).exists_forall_ge ⟨x, hxt⟩
+      (hscomp.of_isClosed_subset htclos hst.1).exists_isMaxOn ⟨x, hxt⟩
         l.continuous.continuousOn
     have h : IsExposed ℝ t ({ z ∈ t | ∀ w ∈ t, l w ≤ l z }) := fun _ => ⟨l, rfl⟩
     rw [← hBmin ({ z ∈ t | ∀ w ∈ t, l w ≤ l z })
@@ -82,7 +82,7 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
     isExtreme_sInter hFnemp fun t ht => (hFS ht).2.2⟩, fun t ht => sInter_subset_of_mem ht⟩
   haveI : Nonempty (↥F) := hFnemp.to_subtype
   rw [sInter_eq_iInter]
-  refine' IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _ (fun t u => _)
+  refine' IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ (fun t u => _)
     (fun t => (hFS t.mem).1)
     (fun t => hscomp.of_isClosed_subset (hFS t.mem).2.1 (hFS t.mem).2.2.1) fun t =>
       (hFS t.mem).2.1
@@ -100,7 +100,7 @@ theorem closure_convexHull_extremePoints (hscomp : IsCompact s) (hAconv : Convex
   obtain ⟨l, r, hlr, hrx⟩ :=
     geometric_hahn_banach_closed_point (convex_convexHull _ _).closure isClosed_closure hxt
   have h : IsExposed ℝ s ({ y ∈ s | ∀ z ∈ s, l z ≤ l y }) := fun _ => ⟨l, rfl⟩
-  obtain ⟨z, hzA, hz⟩ := hscomp.exists_forall_ge ⟨x, hxA⟩ l.continuous.continuousOn
+  obtain ⟨z, hzA, hz⟩ := hscomp.exists_isMaxOn ⟨x, hxA⟩ l.continuous.continuousOn
   obtain ⟨y, hy⟩ := (h.isCompact hscomp).extremePoints_nonempty ⟨z, hzA, hz⟩
   linarith [hlr _ (subset_closure <| subset_convexHull _ _ <|
     h.isExtreme.extremePoints_subset_extremePoints hy), hy.1.2 x hxA]
@@ -112,13 +112,14 @@ lemma surjOn_extremePoints_image (f : E →A[ℝ] F) (hs : IsCompact s) :
     SurjOn f (extremePoints ℝ s) (extremePoints ℝ (f '' s)) := by
   rintro w hw
   -- The fiber of `w` is nonempty and compact
-  have ht : IsCompact {x ∈ s | f x = w} := hs.inter_right $ isClosed_singleton.preimage f.continuous
+  have ht : IsCompact {x ∈ s | f x = w} :=
+    hs.inter_right <| isClosed_singleton.preimage f.continuous
   have ht₀ : {x ∈ s | f x = w}.Nonempty := by simpa using extremePoints_subset hw
   -- Hence by the Krein-Milman lemma it has an extreme point `x`
   obtain ⟨x, ⟨hx, rfl⟩, hyt⟩ := ht.extremePoints_nonempty ht₀
   -- `f x = w` and `x` is an extreme point of `s`, so we're done
   refine mem_image_of_mem _ ⟨hx, fun y hy z hz hxyz ↦ ?_⟩
   have := by simpa using image_openSegment _ f.toAffineMap y z
-  have := hw.2 (mem_image_of_mem _ hy) (mem_image_of_mem _ hz) $ by
+  have := hw.2 (mem_image_of_mem _ hy) (mem_image_of_mem _ hz) <| by
     rw [← this]; exact mem_image_of_mem _ hxyz
   exact hyt ⟨hy, this.1⟩ ⟨hz, this.2⟩ hxyz

@@ -34,7 +34,7 @@ open Matrix Kronecker
 
 /-- `A.IsDiag` means square matrix `A` is a diagonal matrix. -/
 def IsDiag [Zero α] (A : Matrix n n α) : Prop :=
-  ∀ ⦃i j⦄, i ≠ j → A i j = 0
+  Pairwise fun i j => A i j = 0
 #align matrix.is_diag Matrix.IsDiag
 
 @[simp]
@@ -143,7 +143,7 @@ theorem IsDiag.submatrix [Zero α] {A : Matrix n n α} (ha : A.IsDiag) {f : m �
 theorem IsDiag.kronecker [MulZeroClass α] {A : Matrix m m α} {B : Matrix n n α} (hA : A.IsDiag)
     (hB : B.IsDiag) : (A ⊗ₖ B).IsDiag := by
   rintro ⟨a, b⟩ ⟨c, d⟩ h
-  simp only [Prod.mk.inj_iff, Ne.def, not_and_or] at h
+  simp only [Prod.mk.inj_iff, Ne, not_and_or] at h
   cases' h with hac hbd
   · simp [hA hac]
   · simp [hB hbd]

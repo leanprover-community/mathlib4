@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.BoundedOrder
 import Mathlib.Mathport.Notation
+import Mathlib.Data.Sigma.Basic
 
 #align_import data.sigma.order from "leanprover-community/mathlib"@"1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a"
 
@@ -48,7 +49,7 @@ variable {ι : Type*} {α : ι → Type*}
 
 /-! ### Disjoint sum of orders on `Sigma` -/
 
--- porting note: I made this `le` instead of `LE` because the output type is `Prop`
+-- Porting note: I made this `le` instead of `LE` because the output type is `Prop`
 /-- Disjoint sum of orders. `⟨i, a⟩ ≤ ⟨j, b⟩` iff `i = j` and `a ≤ b`. -/
 protected inductive le [∀ i, LE (α i)] : ∀ _a _b : Σ i, α i, Prop
   | fiber (i : ι) (a b : α i) : a ≤ b → Sigma.le ⟨i, a⟩ ⟨i, b⟩
@@ -125,7 +126,6 @@ instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdere
 
 
 namespace Lex
--- mathport name: «exprΣₗ , »
 /-- The notation `Σₗ i, α i` refers to a sigma type equipped with the lexicographic order. -/
 notation3 "Σₗ "(...)", "r:(scoped p => _root_.Lex (Sigma p)) => r
 
@@ -252,7 +252,7 @@ instance noMaxOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMaxOrd
     exact ⟨⟨j, b⟩, left _ _ h⟩
 #align sigma.lex.no_max_order_of_nonempty Sigma.Lex.noMaxOrder_of_nonempty
 
--- porting note: this statement was incorrect in mathlib3, hence the `#noalign`.
+-- Porting note: this statement was incorrect in mathlib3, hence the `#noalign`.
 instance noMinOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMinOrder ι]
     [∀ i, Nonempty (α i)] : NoMinOrder (Σₗ i, α i) where
   exists_lt := by

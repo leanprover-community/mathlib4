@@ -3,7 +3,9 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.GroupWithZero.Pi
+import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import algebra.ring.pi from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
@@ -14,7 +16,7 @@ import Mathlib.Algebra.Ring.Hom.Defs
 This file defines instances for ring, semiring and related structures on Pi Types
 -/
 
--- Porting notes: used to import `tactic.pi_instances`
+-- Porting note: used to import `tactic.pi_instances`
 
 namespace Pi
 
@@ -40,6 +42,18 @@ instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
 instance hasDistribNeg [∀ i, Mul (f i)] [∀ i, HasDistribNeg (f i)] : HasDistribNeg (∀ i, f i) where
   neg_mul _ _ := funext fun _ ↦ neg_mul _ _
   mul_neg _ _ := funext fun _ ↦ mul_neg _ _
+
+instance addMonoidWithOne [∀ i, AddMonoidWithOne (f i)] : AddMonoidWithOne (∀ i, f i) where
+  natCast n _ := n
+  natCast_zero := funext fun _ ↦ AddMonoidWithOne.natCast_zero
+  natCast_succ n := funext fun _ ↦ AddMonoidWithOne.natCast_succ n
+
+instance addGroupWithOne [∀ i, AddGroupWithOne (f i)] : AddGroupWithOne (∀ i, f i) where
+  __ := addGroup
+  __ := addMonoidWithOne
+  intCast n _ := n
+  intCast_ofNat n := funext fun _ ↦ AddGroupWithOne.intCast_ofNat n
+  intCast_negSucc n := funext fun _ ↦ AddGroupWithOne.intCast_negSucc n
 
 instance nonUnitalNonAssocSemiring [∀ i, NonUnitalNonAssocSemiring <| f i] :
     NonUnitalNonAssocSemiring (∀ i : I, f i) :=
@@ -134,7 +148,7 @@ variable {I : Type u}
 
 /-- Evaluation of functions into an indexed collection of non-unital rings at a point is a
 non-unital ring homomorphism. This is `Function.eval` as a `NonUnitalRingHom`. -/
-@[simps]
+@[simps!]
 def Pi.evalNonUnitalRingHom (f : I → Type v) [∀ i, NonUnitalNonAssocSemiring (f i)] (i : I) :
     (∀ i, f i) →ₙ+* f i :=
   { Pi.evalMulHom f i, Pi.evalAddMonoidHom f i with }
@@ -169,6 +183,10 @@ def Pi.evalRingHom (f : I → Type v) [∀ i, NonAssocSemiring (f i)] (i : I) : 
   { Pi.evalMonoidHom f i, Pi.evalAddMonoidHom f i with }
 #align pi.eval_ring_hom Pi.evalRingHom
 #align pi.eval_ring_hom_apply Pi.evalRingHom_apply
+
+instance (f : I → Type*) [∀ i, Semiring (f i)] (i) :
+    RingHomSurjective (Pi.evalRingHom f i) where
+  is_surjective x := ⟨by classical exact (if h : · = i then h ▸ x else 0), by simp⟩
 
 /-- `Function.const` as a `RingHom`. -/
 @[simps]

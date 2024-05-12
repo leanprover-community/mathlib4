@@ -42,7 +42,8 @@ independence, convex position
 -/
 
 
-open Affine BigOperators Classical
+open scoped Classical
+open Affine BigOperators
 
 open Finset Function
 
@@ -64,7 +65,7 @@ variable {𝕜}
 theorem Subsingleton.convexIndependent [Subsingleton ι] (p : ι → E) : ConvexIndependent 𝕜 p := by
   intro s x hx
   have : (convexHull 𝕜 (p '' s)).Nonempty := ⟨p x, hx⟩
-  rw [convexHull_nonempty_iff, Set.nonempty_image_iff] at this
+  rw [convexHull_nonempty_iff, Set.image_nonempty] at this
   rwa [Subsingleton.mem_iff_nonempty]
 #align subsingleton.convex_independent Subsingleton.convexIndependent
 
@@ -191,7 +192,7 @@ theorem convexIndependent_iff_finset {p : ι → E} :
   suffices x ∈ t.preimage p (hp.injOn _) by rwa [mem_preimage, ← mem_coe] at this
   refine' h _ x _
   rwa [t.image_preimage p (hp.injOn _), filter_true_of_mem]
-  · exact fun y hy => s.image_subset_range p (ht <| mem_coe.2 hy)
+  exact fun y hy => s.image_subset_range p (ht <| mem_coe.2 hy)
 #align convex_independent_iff_finset convexIndependent_iff_finset
 
 /-! ### Extreme points -/

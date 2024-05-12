@@ -52,7 +52,6 @@ namespace ValuationRing
 section
 
 variable (A : Type u) [CommRing A]
-
 variable (K : Type v) [Field K] [Algebra A K]
 
 /-- The value group of the valuation ring `A`. Note: this is actually a group with zero. -/
@@ -71,11 +70,9 @@ instance : LE (ValueGroup A K) :=
           apply_fun fun t => c⁻¹ • t at he
           simpa [mul_smul] using he
         · rintro ⟨e, he⟩; dsimp
-          use (d⁻¹ : Aˣ) * c * e
-          erw [← he, ← mul_smul, ← mul_smul]
-          congr 1
-          rw [mul_comm]
-          simp only [← mul_assoc, ← Units.val_mul, mul_inv_self, one_mul])
+          use c * e * (d⁻¹ : Aˣ)
+          simp_rw [Units.smul_def, ← he, mul_smul]
+          rw [← mul_smul _ _ b, Units.inv_mul, one_smul])
 
 instance : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 
@@ -280,7 +277,6 @@ end
 section
 
 variable {R : Type*} [CommRing R] [IsDomain R] {K : Type*}
-
 variable [Field K] [Algebra R K] [IsFractionRing R K]
 
 theorem iff_dvd_total : ValuationRing R ↔ IsTotal R (· ∣ ·) := by
@@ -356,10 +352,8 @@ instance (priority := 100) [ValuationRing R] : IsBezout R := by
   · erw [sup_eq_right.mpr h]; exact ⟨⟨_, rfl⟩⟩
   · erw [sup_eq_left.mpr h]; exact ⟨⟨_, rfl⟩⟩
 
-theorem iff_local_bezout_domain : ValuationRing R ↔ LocalRing R ∧ IsBezout R := by
+instance (priority := 100) [LocalRing R] [IsBezout R] : ValuationRing R := by
   classical
-  refine ⟨fun H => ⟨inferInstance, inferInstance⟩, ?_⟩
-  rintro ⟨h₁, h₂⟩
   refine iff_dvd_total.mpr ⟨fun a b => ?_⟩
   obtain ⟨g, e : _ = Ideal.span _⟩ := IsBezout.span_pair_isPrincipal a b
   obtain ⟨a, rfl⟩ := Ideal.mem_span_singleton'.mp
@@ -377,6 +371,9 @@ theorem iff_local_bezout_domain : ValuationRing R ↔ LocalRing R ∧ IsBezout R
   swap
   right
   all_goals exact mul_dvd_mul_right (isUnit_iff_forall_dvd.mp (isUnit_of_mul_isUnit_right h') _) _
+
+theorem iff_local_bezout_domain : ValuationRing R ↔ LocalRing R ∧ IsBezout R :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ inferInstance⟩
 #align valuation_ring.iff_local_bezout_domain ValuationRing.iff_local_bezout_domain
 
 protected theorem tFAE (R : Type u) [CommRing R] [IsDomain R] :
@@ -431,7 +428,7 @@ instance (priority := 100) of_field : ValuationRing K := by
   intro a b
   by_cases h : b = 0
   · use 0; left; simp [h]
-  · use a * b⁻¹; right; field_simp; rw [mul_comm]
+  · use a * b⁻¹; right; field_simp
 #align valuation_ring.of_field ValuationRing.of_field
 
 end

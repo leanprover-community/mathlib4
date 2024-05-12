@@ -137,8 +137,9 @@ variable {X : TopCat} {ι : Type*}
 theorem coverDense_iff_isBasis [Category ι] (B : ι ⥤ Opens X) :
     B.IsCoverDense (Opens.grothendieckTopology X) ↔ Opens.IsBasis (Set.range B.obj) := by
   rw [Opens.isBasis_iff_nbhd]
-  constructor; intro hd U x hx; rcases hd.1 U x hx with ⟨V, f, ⟨i, f₁, f₂, _⟩, hV⟩
-  exact ⟨B.obj i, ⟨i, rfl⟩, f₁.le hV, f₂.le⟩
+  constructor
+  · intro hd U x hx; rcases hd.1 U x hx with ⟨V, f, ⟨i, f₁, f₂, _⟩, hV⟩
+    exact ⟨B.obj i, ⟨i, rfl⟩, f₁.le hV, f₂.le⟩
   intro hb; constructor; intro U x hx; rcases hb hx with ⟨_, ⟨i, rfl⟩, hx, hi⟩
   exact ⟨B.obj i, ⟨⟨hi⟩⟩, ⟨⟨i, 𝟙 _, ⟨⟨hi⟩⟩, rfl⟩⟩, hx⟩
 #align Top.opens.cover_dense_iff_is_basis TopCat.Opens.coverDense_iff_isBasis
@@ -155,7 +156,6 @@ section OpenEmbedding
 open TopCat.Presheaf Opposite
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
 theorem OpenEmbedding.compatiblePreserving (hf : OpenEmbedding f) :
@@ -198,11 +198,11 @@ instance : RepresentablyFlat (Opens.map f) := by
   refine @IsCofiltered.mk _ _ ?_ ?_
   · constructor
     · intro V W
-      exact ⟨⟨⟨PUnit.unit⟩, V.right ⊓ W.right, homOfLE $ le_inf V.hom.le W.hom.le⟩,
+      exact ⟨⟨⟨PUnit.unit⟩, V.right ⊓ W.right, homOfLE <| le_inf V.hom.le W.hom.le⟩,
         StructuredArrow.homMk (homOfLE inf_le_left),
         StructuredArrow.homMk (homOfLE inf_le_right), trivial⟩
     · exact fun _ _ _ _ ↦ ⟨_, 𝟙 _, by simp [eq_iff_true_of_subsingleton]⟩
-  · exact ⟨StructuredArrow.mk $ show U ⟶ (Opens.map f).obj ⊤ from homOfLE le_top⟩
+  · exact ⟨StructuredArrow.mk <| show U ⟶ (Opens.map f).obj ⊤ from homOfLE le_top⟩
 
 theorem compatiblePreserving_opens_map :
     CompatiblePreserving (Opens.grothendieckTopology X) (Opens.map f) :=
@@ -228,9 +228,7 @@ namespace TopCat.Sheaf
 open TopCat Opposite
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X : TopCat.{w}} {ι : Type*} {B : ι → Opens X}
-
 variable (F : X.Presheaf C) (F' : Sheaf C X) (h : Opens.IsBasis (Set.range B))
 
 /-- The empty component of a sheaf is terminal. -/

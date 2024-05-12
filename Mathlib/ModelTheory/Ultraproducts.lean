@@ -86,12 +86,9 @@ theorem term_realize_cast {β : Type*} (x : β → ∀ a, M a) (t : L.Term β) :
   convert @Term.realize_quotient_mk' L _ ((u : Filter α).productSetoid M)
       (Ultraproduct.setoidPrestructure M u) _ t x using 2
   ext a
-  induction t
-  case var =>
-    rfl
-  case func _ _ _ t_ih =>
-    simp only [Term.realize, t_ih]
-    rfl
+  induction t with
+  | var => rfl
+  | func _ _ t_ih => simp only [Term.realize, t_ih]; rfl
 #align first_order.language.ultraproduct.term_realize_cast FirstOrder.Language.Ultraproduct.term_realize_cast
 
 variable [∀ a : α, Nonempty (M a)]
@@ -165,7 +162,7 @@ theorem sentence_realize (φ : L.Sentence) :
 
 nonrec instance Product.instNonempty : Nonempty ((u : Filter α).Product M) :=
   letI : ∀ a, Inhabited (M a) := fun _ => Classical.inhabited_of_nonempty'
-  instNonempty
+  inferInstance
 #align first_order.language.ultraproduct.product.nonempty FirstOrder.Language.Ultraproduct.Product.instNonempty
 
 end Ultraproduct

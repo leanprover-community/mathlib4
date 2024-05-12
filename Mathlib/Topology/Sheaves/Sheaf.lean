@@ -37,7 +37,6 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace Opposite TopologicalS
 namespace TopCat
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X : TopCat.{w}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
 
 namespace Presheaf
@@ -117,7 +116,7 @@ nonrec def Sheaf : Type max u v w :=
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf TopCat.Sheaf
 
--- Porting Note : `deriving Cat` failed
+-- Porting note: `deriving Cat` failed
 instance SheafCat : Category (Sheaf C X) :=
   show Category (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C) from inferInstance
 
@@ -146,12 +145,12 @@ def forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X :=
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.forget TopCat.Sheaf.forget
 
--- Porting note : `deriving Full` failed
-instance forgetFull : Full (forget C X) where
-  preimage := Sheaf.Hom.mk
+-- Porting note: `deriving Full` failed
+instance forget_full : (forget C X).Full where
+  map_surjective f := ⟨Sheaf.Hom.mk f, rfl⟩
 
--- Porting note : `deriving Faithful` failed
-instance forgetFaithful : Faithful (forget C X) where
+-- Porting note: `deriving Faithful` failed
+instance forgetFaithful : (forget C X).Faithful where
   map_injective := Sheaf.Hom.ext _ _
 
 -- Note: These can be proved by simp.

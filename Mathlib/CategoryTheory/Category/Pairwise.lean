@@ -89,7 +89,7 @@ open Lean Elab Tactic in
 def pairwiseCases : TacticM Unit := do
   evalTactic (← `(tactic| casesm* (_ : Pairwise _) ⟶ (_ : Pairwise _)))
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])] pairwiseCases in
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] pairwiseCases in
 instance : Category (Pairwise ι) where
   Hom := Hom
   id := id
