@@ -789,6 +789,22 @@ theorem coe_sub : ⇑(f - g) = f - g := rfl
 
 end sub
 
+section casts
+
+variable [TopologicalSpace α] {β : Type*} [PseudoMetricSpace β]
+
+instance [NatCast β] : NatCast (α →ᵇ β) := ⟨fun n ↦ BoundedContinuousFunction.const _ n⟩
+
+@[simp]
+theorem natCast_apply [NatCast β] (n : ℕ) (x : α) : (n : α →ᵇ β) x = n := rfl
+
+instance [IntCast β] : IntCast (α →ᵇ β) := ⟨fun m ↦ BoundedContinuousFunction.const _ m⟩
+
+@[simp]
+theorem intCast_apply [IntCast β] (m : ℤ) (x : α) : (m : α →ᵇ β) x = m := rfl
+
+end casts
+
 section mul
 
 variable [TopologicalSpace α] {R : Type*} [PseudoMetricSpace R]
@@ -808,25 +824,50 @@ theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (
     (f * g) x = f x * g x := rfl
 #align bounded_continuous_function.mul_apply BoundedContinuousFunction.mul_apply
 
+open Pointwise in
+private lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set R}
+    (s_bdd : Bornology.IsBounded s) (n : ℕ) :
+    Bornology.IsBounded ((fun x ↦ x ^ n) '' s) := by
+  induction' n with n hn
+  · by_cases s_empty : s = ∅
+    · simp [s_empty]
+    simp_rw [← nonempty_iff_ne_empty] at s_empty
+    simp [s_empty]
+  · have obs : ((fun x ↦ x ^ (n + 1)) '' s) ⊆ ((fun x ↦ x ^ n) '' s) * s := by
+      intro x hx
+      simp only [mem_image] at hx
+      obtain ⟨y, y_in_s, ypow_eq_x⟩ := hx
+      rw [← ypow_eq_x, pow_succ y n]
+      apply Set.mul_mem_mul _ y_in_s
+      use y
+    exact (isBounded_mul hn s_bdd).subset obs
+
+instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where
+  pow f n := {
+    toFun := fun x ↦ (f x) ^ n
+    continuous_toFun := f.continuous.pow n
+    map_bounded' := by
+      obtain ⟨C, hC⟩ :=
+        Metric.isBounded_iff.mp <| @isBounded_pow R _ _ _ (Set.range f) (isBounded_range f) n
+      exact ⟨C, fun x y ↦ @hC ((f x)^n) (by simp) ((f y)^n) (by simp)⟩ }
+
+theorem coe_pow [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) :
+    ⇑(f ^ n) = (⇑f) ^ n := rfl
+#align bounded_continuous_function.coe_pow BoundedContinuousFunction.coe_pow
+
 instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
-    Monoid (α →ᵇ R) where
-  mul_assoc f g h := by ext x ; simp [mul_apply, mul_assoc]
-  one_mul f := by ext x ; simp [mul_apply]
-  mul_one f := by ext x ; simp [mul_apply]
+    Monoid (α →ᵇ R) :=
+  Injective.monoid (↑) DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
     CommMonoid (α →ᵇ R) where
+  __ := instMonoid
   mul_comm f g := by ext x ; simp [mul_apply, mul_comm]
 
 instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R] [LipschitzAdd R] :
-    Semiring (α →ᵇ R) where
-  left_distrib f g h := by ext x ; simp [mul_apply, left_distrib]
-  right_distrib f g h := by ext x ; simp [mul_apply, right_distrib]
-  zero_mul f := by ext x ; simp [mul_apply]
-  mul_zero f := by ext x ; simp [mul_apply]
-  mul_assoc f g h := by ext x ; simp [mul_apply, mul_assoc]
-  one_mul f := by ext x ; simp [mul_apply]
-  mul_one f := by ext x ; simp [mul_apply]
+    Semiring (α →ᵇ R) :=
+  Injective.semiring (↑) DFunLike.coe_injective'
+    rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
 
 end mul
 
@@ -1298,10 +1339,6 @@ instance hasNatPow : Pow (α →ᵇ R) ℕ where
 #align bounded_continuous_function.has_nat_pow BoundedContinuousFunction.hasNatPow
 
 @[simp]
-theorem coe_pow (n : ℕ) (f : α →ᵇ R) : ⇑(f ^ n) = (⇑f) ^ n := rfl
-#align bounded_continuous_function.coe_pow BoundedContinuousFunction.coe_pow
-
-@[simp]
 theorem pow_apply (n : ℕ) (f : α →ᵇ R) (v : α) : (f ^ n) v = f v ^ n := rfl
 #align bounded_continuous_function.pow_apply BoundedContinuousFunction.pow_apply
 
@@ -1408,9 +1445,22 @@ theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k 
   rfl
 #align bounded_continuous_function.algebra_map_apply BoundedContinuousFunction.algebraMap_apply
 
+/-
 instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where
   __ := instAlgebra
   __ := instNormedSpace
+ -/
+
+instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where
+  smul := by sorry
+  toFun := by sorry
+  map_one' := by sorry
+  map_mul' := by sorry
+  map_zero' := by sorry
+  map_add' := by sorry
+  commutes' := by sorry
+  smul_def' := by sorry
+  norm_smul_le := by sorry
 
 /-!
 ### Structure as normed module over scalar functions
