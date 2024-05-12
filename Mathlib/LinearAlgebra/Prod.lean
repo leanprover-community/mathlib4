@@ -455,7 +455,7 @@ theorem isCompl_range_inl_inr : IsCompl (range <| inl R M M₂) (range <| inr R 
   · rw [codisjoint_iff_le_sup]
     rintro ⟨x, y⟩ -
     simp only [mem_sup, mem_range, exists_prop]
-    refine' ⟨(x, 0), ⟨x, rfl⟩, (0, y), ⟨y, rfl⟩, _⟩
+    refine ⟨(x, 0), ⟨x, rfl⟩, (0, y), ⟨y, rfl⟩, ?_⟩
     simp
 #align linear_map.is_compl_range_inl_inr LinearMap.isCompl_range_inl_inr
 
@@ -469,7 +469,7 @@ theorem disjoint_inl_inr : Disjoint (range <| inl R M M₂) (range <| inr R M M�
 
 theorem map_coprod_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (p : Submodule R M)
     (q : Submodule R M₂) : map (coprod f g) (p.prod q) = map f p ⊔ map g q := by
-  refine' le_antisymm _ (sup_le (map_le_iff_le_comap.2 _) (map_le_iff_le_comap.2 _))
+  refine le_antisymm ?_ (sup_le (map_le_iff_le_comap.2 ?_) (map_le_iff_le_comap.2 ?_))
   · rw [SetLike.le_def]
     rintro _ ⟨x, ⟨h₁, h₂⟩, rfl⟩
     exact mem_sup.2 ⟨_, ⟨_, h₁, rfl⟩, _, ⟨_, h₂, rfl⟩, rfl⟩
@@ -869,7 +869,7 @@ variable [Module R M] [Module R M₂] [Module R M₃]
 `Prod f g` is equal to the product of `range f` and `range g`. -/
 theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f ⊔ ker g = ⊤) :
     range (prod f g) = (range f).prod (range g) := by
-  refine' le_antisymm (f.range_prod_le g) _
+  refine le_antisymm (f.range_prod_le g) ?_
   simp only [SetLike.le_def, prod_apply, mem_range, SetLike.mem_coe, mem_prod, exists_imp, and_imp,
     Prod.forall, Pi.prod]
   rintro _ _ x rfl y rfl
@@ -877,7 +877,7 @@ theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f �
   simp only [Prod.mk.inj_iff, ← sub_mem_ker_iff (f := f)]
   have : y - x ∈ ker f ⊔ ker g := by simp only [h, mem_top]
   rcases mem_sup.1 this with ⟨x', hx', y', hy', H⟩
-  refine' ⟨x' + x, _, _⟩
+  refine ⟨x' + x, ?_, ?_⟩
   · rwa [add_sub_cancel_right]
   · simp [← eq_sub_iff_add_eq.1 H, map_add, add_left_inj, self_eq_add_right, mem_ker.mp hy']
 #align linear_map.range_prod_eq LinearMap.range_prod_eq
@@ -1005,10 +1005,10 @@ theorem tailings_disjoint_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n :
   · simp only [tailings_zero]
     apply tailing_disjoint_tunnel_succ
   · simp only [tailings_succ]
-    refine' Disjoint.disjoint_sup_left_of_disjoint_sup_right _ _
-    apply tailing_disjoint_tunnel_succ
-    apply Disjoint.mono_right _ ih
-    apply tailing_sup_tunnel_succ_le_tunnel
+    refine Disjoint.disjoint_sup_left_of_disjoint_sup_right ?_ ?_
+    · apply tailing_disjoint_tunnel_succ
+    · apply Disjoint.mono_right _ ih
+      apply tailing_sup_tunnel_succ_le_tunnel
 #align linear_map.tailings_disjoint_tunnel LinearMap.tailings_disjoint_tunnel
 
 theorem tailings_disjoint_tailing (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
