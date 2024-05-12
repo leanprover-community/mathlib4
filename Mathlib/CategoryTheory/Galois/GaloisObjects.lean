@@ -103,6 +103,7 @@ theorem evaluation_aut_bijective_of_isGalois (A : C) [IsGalois A] (a : F.obj A) 
     Function.Bijective (fun f : Aut A ↦ F.map f.hom a) :=
   ⟨evaluation_aut_injective_of_isConnected F A a, evaluation_aut_surjective_of_isGalois F A a⟩
 
+/-- For Galois `A` and a point `a` of the fiber of `A`, the evaluation at `A` as an equivalence. -/
 noncomputable def evaluationEquivOfIsGalois (A : C) [IsGalois A] (a : F.obj A) : Aut A ≃ F.obj A :=
   Equiv.ofBijective _ (evaluation_aut_bijective_of_isGalois F A a)
 
