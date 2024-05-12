@@ -11,14 +11,7 @@ jobs:
       - name: Check if label is 'move-decls'
         id: check_label
         uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const label = 'move-decls';
-            const payload = github.context.payload;
-            const labels = payload.pull_request.labels.map(label => label.name);
-            const hasMoveDeclsLabel = labels.includes(label);
-            return hasMoveDeclsLabel;
+        if: github.event.label.name == 'move-decls'
 
       - name: Add comment if label is 'move-decls'
         if: steps.check_label.outputs.result == 'true'
