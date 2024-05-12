@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+import Mathlib.MeasureTheory.Measure.WithDensityFinite
 import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
@@ -13,7 +14,7 @@ The goal of this file is to give a sufficient condition on the measure space `(X
 `NormedAddCommGroup E` for the space `MeasureTheory.Lp E p μ` to have `SecondCountableTopology` when
 `1 ≤ p < ∞`. To do so we define the notion of a `MeasureTheory.MeasureDense` family and a
 separable measure (`MeasureTheory.IsSeparable`).
-We prove that if `X` is `MeasurableSpace.CountablyGenerated` and `μ` is `σ`-finite, then `μ`
+We prove that if `X` is `MeasurableSpace.CountablyGenerated` and `μ` is s-finite, then `μ`
 is separable. We then prove that if `μ` is separable and `E` is second-countable,
 then `Lp E p μ` is second-countable.
 
@@ -42,7 +43,7 @@ of separability in the metric space made by constant indicators equipped with th
 
 * `MeasureTheory.instSecondCountableLp`: If `μ` is separable, `E` is second-countable and
   `1 ≤ p < ∞` then `Lp E p μ` is second-countable. This is in particular true if `X` is countably
-  generated and `μ` is `σ`-finite.
+  generated and `μ` is s-finite.
 
 ## Implementation notes
 
@@ -53,10 +54,6 @@ a normed commutative group `E`. We also consider an extended non-negative real `
 
 Through the whole file, when we write that an extended non-negative real is finite, it is always
 written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch from one to the other.
-
-## TODO
-  * Weaken the `σ`-finite hypothesis in `instIsSeparableCountablyGeneratedSigmaFinite` to
-  s-finite.
 
 ## References
 
@@ -159,8 +156,8 @@ theorem measureDense_of_generateFrom_setAglebra_of_finite [IsFiniteMeasure μ] (
         calc
           (μ ((⋃ n, f n) ∆ (⋃ n ∈ (Finset.range (N + 1)), g n))).toReal
             ≤ (μ ((⋃ n, f n) \ ((⋃ n ∈ (Finset.range (N + 1)), f n)) ∪
-              ((⋃ n ∈ (Finset.range (N + 1)), f n)
-              ∆ (⋃ n ∈ (Finset.range (N + 1)), g ↑n)))).toReal :=
+              ((⋃ n ∈ (Finset.range (N + 1)), f n) ∆
+              (⋃ n ∈ (Finset.range (N + 1)), g ↑n)))).toReal :=
                 toReal_mono (measure_ne_top _ _)
                   (measure_mono <| symmDiff_of_ge (iUnion_subset <|
                   fun i ↦ iUnion_subset (fun _ ↦ subset_iUnion f i)) ▸ symmDiff_triangle ..)
@@ -288,11 +285,10 @@ theorem exists_countable_measureDense [IsSeparable μ] :
   IsSeparable.exists_countable_measureDense
 
 /-- If a measurable space is countably generated and equipped with a `σ`-finite measure, then the
-measure is separable.
-
-TODO: This remains true if `μ` is only assumed to be s-finite. -/
-instance instIsSeparableCountablyGeneratedSigmaFinite [CountablyGenerated X]
-    [SigmaFinite μ] : IsSeparable μ where
+measure is separable. This is not an instance because it is used below to prove the more
+general case where `μ` is s-finite. -/
+theorem isSeparable_of_sigmaFinite [CountablyGenerated X] [SigmaFinite μ] :
+    IsSeparable μ where
   exists_countable_measureDense := by
     have h := countable_countableGeneratingSet (α := X)
     have hgen := generateFrom_countableGeneratingSet (α := X)
@@ -320,6 +316,42 @@ instance instIsSeparableCountablyGeneratedSigmaFinite [CountablyGenerated X]
       | empty => exact MeasurableSet.empty
       | @compl t _ t_mem => exact MeasurableSet.compl t_mem
       | @union t u _ _ t_mem u_mem => exact MeasurableSet.union t_mem u_mem
+
+/-- If a measurable space is countably generated and equipped with an s-finite measure, then the
+measure is separable. -/
+instance instIsSeparableCountablyGeneratedSFinite [CountablyGenerated X] [SFinite μ] :
+    IsSeparable μ where
+  exists_countable_measureDense := by
+    have := isSeparable_of_sigmaFinite (μ := μ.restrict μ.sigmaFiniteSet)
+    rcases exists_countable_measureDense (μ := μ.restrict μ.sigmaFiniteSet) with ⟨𝒜, count_𝒜, h𝒜⟩
+    let ℬ := {s ∩ μ.sigmaFiniteSet | s ∈ 𝒜}
+    refine ⟨ℬ, count_𝒜.image (fun s ↦ s ∩ μ.sigmaFiniteSet), ?_⟩
+    constructor
+    · rintro - ⟨s, s_mem, rfl⟩
+      exact (h𝒜.measurable s s_mem).inter (measurableSet_sigmaFiniteSet μ)
+    · intro s ms hμs ε ε_pos
+      rcases restrict_compl_sigmaFiniteSet_eq_zero_or_top μ s with hs | hs
+      · have : (μ.restrict μ.sigmaFiniteSet) s ≠ ∞ :=
+          ne_top_of_le_ne_top hμs <| μ.restrict_le_self _
+        rcases h𝒜.approx s ms this ε ε_pos with ⟨t, t_mem, ht⟩
+        refine ⟨t ∩ μ.sigmaFiniteSet, ⟨t, t_mem, rfl⟩, ?_⟩
+        rw [← measure_inter_add_diff _ (measurableSet_sigmaFiniteSet μ)]
+        have : μ (s ∆ (t ∩ μ.sigmaFiniteSet) \ μ.sigmaFiniteSet) = 0 := by
+          rw [diff_eq_compl_inter, inter_symmDiff_distrib_left, ← ENNReal.bot_eq_zero, eq_bot_iff]
+          calc
+            μ ((μ.sigmaFiniteSetᶜ ∩ s) ∆ (μ.sigmaFiniteSetᶜ ∩ (t ∩ μ.sigmaFiniteSet)))
+              ≤ μ ((μ.sigmaFiniteSetᶜ ∩ s) ∪ (μ.sigmaFiniteSetᶜ ∩ (t ∩ μ.sigmaFiniteSet))) :=
+                measure_mono symmDiff_subset_union
+            _ ≤ μ (μ.sigmaFiniteSetᶜ ∩ s) + μ (μ.sigmaFiniteSetᶜ ∩ (t ∩ μ.sigmaFiniteSet)) :=
+                measure_union_le _ _
+            _ = 0 := by
+                rw [inter_comm, ← μ.restrict_apply ms, hs, ← inter_assoc, inter_comm, ← inter_assoc,
+                  inter_compl_self, empty_inter, measure_empty, zero_add]
+        rwa [this, add_zero, inter_symmDiff_distrib_right, inter_assoc, inter_self,
+          ← inter_symmDiff_distrib_right, ← μ.restrict_apply' (measurableSet_sigmaFiniteSet μ)]
+      · refine False.elim <| hμs ?_
+        rw [eq_top_iff, ← hs]
+        exact μ.restrict_le_self _
 
 end IsSeparable
 
