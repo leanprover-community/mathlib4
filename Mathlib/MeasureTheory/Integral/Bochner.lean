@@ -621,6 +621,7 @@ theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = �
     rw [← h₁, ← h₂]
     have := (toSimpleFunc f).posPart_sub_negPart
     conv_lhs => rw [← this]
+    rfl
   · exact (SimpleFunc.integrable f).pos_part.congr ae_eq₁
   · exact (SimpleFunc.integrable f).neg_part.congr ae_eq₂
 #align measure_theory.L1.simple_func.integral_eq_norm_pos_part_sub MeasureTheory.L1.SimpleFunc.integral_eq_norm_posPart_sub
@@ -1907,7 +1908,7 @@ theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set
   have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
   have hf' : Integrable (fun (x : s) => f x) (Measure.comap Subtype.val μ) := by
     rw [← map_comap_subtype_coe, integrable_map_measure] at hf
-    apply hf
+    · apply hf
     · exact Integrable.aestronglyMeasurable hf
     · exact Measurable.aemeasurable measurable_subtype_coe
     · exact Countable.measurableSet hs

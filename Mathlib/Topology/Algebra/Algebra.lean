@@ -148,8 +148,7 @@ variable [Algebra R A] [TopologicalRing A]
 
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 See note [reducible non-instances]. -/
-@[reducible]
-def Subalgebra.commRingTopologicalClosure [T2Space A] (s : Subalgebra R A)
+abbrev Subalgebra.commRingTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
   { s.topologicalClosure.toRing, s.toSubmonoid.commMonoidTopologicalClosure hs with }
 #align subalgebra.comm_ring_topological_closure Subalgebra.commRingTopologicalClosure

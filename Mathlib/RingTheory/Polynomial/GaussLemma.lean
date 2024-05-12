@@ -64,7 +64,7 @@ theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) 
     obtain ⟨p, hp, he⟩ := SetLike.mem_coe.mp (this n); use p, hp
     rw [IsScalarTower.algebraMap_eq R K, coeff_map, ← eval₂_map, eval₂_at_apply] at he
     rw [eval₂_eq_eval_map]; apply (injective_iff_map_eq_zero _).1 _ _ he
-    · apply RingHom.injective
+    apply RingHom.injective
   rw [aroots_def, IsScalarTower.algebraMap_eq R K _, ← map_map]
   refine' Multiset.mem_of_le (roots.le_of_dvd ((hf.map _).map _).ne_zero _) ha
   exact map_dvd (algebraMap K g.SplittingField) hd
@@ -91,7 +91,7 @@ theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]}
       (Algebra.botEquivOfInjective <| IsFractionRing.injective R <| K)
   have :
     (algebraMap R _).comp algeq.toAlgHom.toRingHom = (integralClosure R _).toSubring.subtype :=
-    by ext x; conv_rhs => rw [← algeq.symm_apply_apply x]; rfl
+    by ext x; (conv_rhs => rw [← algeq.symm_apply_apply x]); rfl
   have H :=
     (mem_lifts _).1
       (integralClosure.mem_lifts_of_monic_of_dvd_map K hf (monic_mul_leadingCoeff_inv g_ne_0)

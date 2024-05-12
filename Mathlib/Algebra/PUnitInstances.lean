@@ -148,7 +148,7 @@ instance : SMulCommClass R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
 @[to_additive]
-instance [SMul R S] : IsScalarTower R S PUnit :=
+instance instIsScalarTowerOfSMul [SMul R S] : IsScalarTower R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
 instance smulWithZero [Zero R] : SMulWithZero R PUnit := by

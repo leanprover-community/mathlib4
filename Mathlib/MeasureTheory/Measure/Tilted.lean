@@ -109,9 +109,8 @@ lemma tilted_apply_eq_ofReal_integral' {s : Set α} (f : α → ℝ) (hs : Measu
   · rw [tilted_apply' _ _ hs, ← ofReal_integral_eq_lintegral_ofReal]
     · exact hf.integrableOn.div_const _
     · exact ae_of_all _ (fun _ ↦ by positivity)
-  · simp only [hf, not_false_eq_true, tilted_of_not_integrable, Measure.zero_toOuterMeasure,
-      OuterMeasure.coe_zero, Pi.zero_apply, integral_undef hf, div_zero, integral_zero,
-      ENNReal.ofReal_zero]
+  · simp only [hf, not_false_eq_true, tilted_of_not_integrable, Measure.coe_zero,
+      Pi.zero_apply, integral_undef hf, div_zero, integral_zero, ENNReal.ofReal_zero]
 
 lemma tilted_apply_eq_ofReal_integral [SFinite μ] (f : α → ℝ) (s : Set α) :
     μ.tilted f s = ENNReal.ofReal (∫ a in s, exp (f a) / ∫ x, exp (f x) ∂μ ∂μ) := by
@@ -119,9 +118,7 @@ lemma tilted_apply_eq_ofReal_integral [SFinite μ] (f : α → ℝ) (s : Set α)
   · rw [tilted_apply _ _, ← ofReal_integral_eq_lintegral_ofReal]
     · exact hf.integrableOn.div_const _
     · exact ae_of_all _ (fun _ ↦ by positivity)
-  · simp only [hf, not_false_eq_true, tilted_of_not_integrable, Measure.zero_toOuterMeasure,
-      OuterMeasure.coe_zero, Pi.zero_apply, integral_undef hf, div_zero, integral_zero,
-      ENNReal.ofReal_zero]
+  · simp [tilted_of_not_integrable hf, integral_undef hf]
 
 instance isFiniteMeasure_tilted : IsFiniteMeasure (μ.tilted f) := by
   by_cases hf : Integrable (fun x ↦ exp (f x)) μ
@@ -139,8 +136,8 @@ lemma isProbabilityMeasure_tilted [NeZero μ] (hf : Integrable (fun x ↦ exp (f
   rw [lintegral_mul_const'' _ hf.1.aemeasurable.ennreal_ofReal,
     ← ofReal_integral_eq_lintegral_ofReal hf (ae_of_all _ fun _ ↦ (exp_pos _).le),
     ENNReal.mul_inv_cancel]
-  simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
-  · exact integral_exp_pos hf
+  · simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
+    exact integral_exp_pos hf
   · simp
 
 section lintegral

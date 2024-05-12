@@ -342,7 +342,7 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i]; rotate_left
     · intro b _ hb
       dsimp
-      simp only [Finset.sum_const, Finset.card_singleton, one_smul]
+      simp only [Finset.sum_singleton]
       rw [dif_neg hb.symm, zero_comp]
     · intro h
       simp at h
@@ -651,10 +651,11 @@ instance : (equivalenceSingleObjInverse R).EssSurj where
     ⟨{  ι := X
         X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
 
+instance : (equivalenceSingleObjInverse R).IsEquivalence where
+
 /-- The categorical equivalence between the category of matrices over a ring,
 and the category of matrices over that ring considered as a single-object category. -/
 def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
-  haveI := Functor.IsEquivalence.ofFullyFaithfullyEssSurj (equivalenceSingleObjInverse R)
   (equivalenceSingleObjInverse R).asEquivalence.symm
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj CategoryTheory.Mat.equivalenceSingleObj
