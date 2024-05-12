@@ -795,7 +795,6 @@ theorem InjOn.imageFactorization_injective (h : InjOn f s) :
 
 end injOn
 
-
 section graphOn
 
 @[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := image_empty _
@@ -1394,11 +1393,11 @@ theorem SurjOn.mapsTo_invFunOn [Nonempty α] (h : SurjOn f s t) : MapsTo (invFun
 #align set.surj_on.maps_to_inv_fun_on Set.SurjOn.mapsTo_invFunOn
 
 theorem SurjOn.image_invFunOn_image_subset [Nonempty α] {r : Set β} (hf : SurjOn f s t)
-    (hrt : r ⊆ t) : f '' ((Function.invFunOn f s) '' r) = r :=
+    (hrt : r ⊆ t) : f '' ((f.invFunOn s) '' r) = r :=
   hf.rightInvOn_invFunOn.image_image' hrt
 
 theorem SurjOn.image_invFunOn_image [Nonempty α] (hf : SurjOn f s t) :
-    f '' ((Function.invFunOn f s) '' t) = t :=
+    f '' ((f.invFunOn s) '' t) = t :=
   hf.rightInvOn_invFunOn.image_image
 
 theorem SurjOn.bijOn_subset [Nonempty α] (h : SurjOn f s t) : BijOn f (invFunOn f s '' t) t := by
