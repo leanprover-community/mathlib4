@@ -5,7 +5,6 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Topology.Algebra.ProperConstSMul
 
 /-!
 # Bounded operations
@@ -191,7 +190,7 @@ noncomputable instance : BoundedSub ℝ≥0 where
     simp only [NNReal.ball_zero_eq_Ico, ← z_eq, Set.mem_Ico, zero_le, true_and, gt_iff_lt] at *
     exact tsub_lt_of_lt key
 
-instance : ProperSpace ℝ≥0 where
+instance NNReal.instProperSpace : ProperSpace ℝ≥0 where
   isCompact_closedBall x r := by
     have emb : ClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometry.closedEmbedding fun _ ↦ congrFun rfl
     exact emb.isCompact_preimage (K := Metric.closedBall x r) (isCompact_closedBall _ _)
