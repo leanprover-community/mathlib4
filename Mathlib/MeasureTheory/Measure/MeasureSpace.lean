@@ -549,9 +549,9 @@ theorem measure_iInter_eq_iInf [Countable ι] {s : ι → Set α} (h : ∀ i, Me
       rw [← measure_diff hjk (h _) (this _ hjk)]
       exact measure_mono (diff_subset_diff_right hji)
     · rw [tsub_le_iff_right, ← measure_union, Set.union_comm]
-      · exact measure_mono (diff_subset_iff.1 <| Subset.refl _)
-      · apply disjoint_sdiff_left
-      · apply h i
+      exact measure_mono (diff_subset_iff.1 <| Subset.refl _)
+      apply disjoint_sdiff_left
+      apply h i
   · exact hd.mono_comp _ fun _ _ => diff_subset_diff_right
 #align measure_theory.measure_Inter_eq_infi MeasureTheory.measure_iInter_eq_iInf
 

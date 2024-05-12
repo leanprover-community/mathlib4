@@ -718,7 +718,7 @@ of `n`. -/
 theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ):
     (p - 1) * padicValNat p (n !) = n - (p.digits n).sum := by
   rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n)]
-  nth_rw 2 [← zero_add 1]
+  norm_cast; nth_rw 2 [← zero_add 1]
   rw [Nat.succ_eq_add_one, ← Finset.sum_Ico_add' _ 0 _ 1,
     Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits, Nat.succ_eq_add_one]
 
