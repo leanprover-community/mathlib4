@@ -71,7 +71,7 @@ end LimitOpColimit
 
 section HomCocontinuousCovariant
 
-variable (F : I ⥤ C) [HasColimit F] 
+variable (F : I ⥤ C) [HasColimit F]
 
 /-- Hom is functorially cocontinuous: coyoneda of a colimit is the limit
 over coyoneda of the diagram. -/
@@ -151,7 +151,8 @@ noncomputable def colimitCoyonedaHomIsoLimit :
 @[simp]
 lemma colimitCoyonedaHomIsoLimit_π (f : colimit (D.rightOp ⋙ coyoneda) ⟶ F) (i : I) :
     (limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) (op i)) ((colimitCoyonedaHomIsoLimit D F).hom f)
-      = ⟨(f.app (D.obj (op i)) ((colimit.ι (D.rightOp ⋙ coyoneda) i).app (D.obj (op i)) (𝟙 (D.obj (op i)))))⟩ := by
+      = ⟨(f.app (D.obj (op i)) ((colimit.ι (D.rightOp ⋙ coyoneda) i).app (D.obj (op i))
+          (𝟙 (D.obj (op i)))))⟩ := by
   change ((colimitCoyonedaHomIsoLimit D F).hom ≫ (limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) (op i))) f = _
   simp only [colimitCoyonedaHomIsoLimit, Iso.trans_hom, Category.assoc,
     HasLimit.isoOfNatIso_hom_π]
