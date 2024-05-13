@@ -347,9 +347,9 @@ theorem totient_gcd_mul_totient_mul (a b : ℕ) : φ (a.gcd b) * φ (a * b) = φ
   rw [shuffle, shuffle]
   rotate_left
   repeat' apply prod_primeFactors_dvd
-  · simp only [prod_primeFactors_gcd_mul_prod_primeFactors_mul]
-    rw [eq_comm, mul_comm, ← mul_assoc, ← Nat.mul_div_assoc]
-    exact mul_dvd_mul (prod_primeFactors_dvd a) (prod_primeFactors_dvd b)
+  simp only [prod_primeFactors_gcd_mul_prod_primeFactors_mul]
+  rw [eq_comm, mul_comm, ← mul_assoc, ← Nat.mul_div_assoc]
+  exact mul_dvd_mul (prod_primeFactors_dvd a) (prod_primeFactors_dvd b)
 #align nat.totient_gcd_mul_totient_mul Nat.totient_gcd_mul_totient_mul
 
 theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) := by

@@ -282,10 +282,10 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
       · refine'
           le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) _)
             (le_max_left _ _)
-        · by_cases h : ‖a‖₊ = 0
-          · simp only [h, zero_mul, zero_le', pow_succ']
-          · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
-            simpa only [← mul_pow, mul_comm] using pow_le_one' hr.le n.succ
+        by_cases h : ‖a‖₊ = 0
+        · simp only [h, zero_mul, zero_le', pow_succ']
+        · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
+          simpa only [← mul_pow, mul_comm] using pow_le_one' hr.le n.succ
     r_pos := ENNReal.inv_pos.mpr coe_ne_top
     hasSum := fun {y} hy => by
       have norm_lt : ‖y • a‖ < 1 := by

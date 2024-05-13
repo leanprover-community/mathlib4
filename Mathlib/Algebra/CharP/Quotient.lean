@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient
-import Mathlib.RingTheory.Ideal.Operations
 
 #align_import algebra.char_p.quotient from "leanprover-community/mathlib"@"85e3c05a94b27c84dc6f234cf88326d5e0096ec3"
 
