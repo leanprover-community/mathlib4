@@ -420,7 +420,7 @@ def psumMu {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
   muProduct σ R (psum σ R) μ
 
 lemma psumMu_def {n : ℕ} (μ : n.Partition) : psumMu σ R μ =
-    Multiset.prod (μ.parts.map (psum σ R)) := rfl
+    (μ.parts.map (psum σ R)).prod := rfl
 
 @[simp]
 theorem psum_zero : psum σ R 0 = Fintype.card σ := by simp [psum]; rfl
