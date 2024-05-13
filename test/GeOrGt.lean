@@ -29,3 +29,4 @@ lemma test6 (_h : ∀ n ≥ 42, n = 0) : ∃ m, m > 42 := sorry
 -- TODO: this should not be linted!
 def dummy (_r : ℕ → ℕ → Prop) : Bool := True
 lemma foo (_hf : dummy (· ≥ ·) ) : True := trivial
+-- another case in SuccPred/Basic.lean: h : `IsWellOrder α (· > ·)` should be fine

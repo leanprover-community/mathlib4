@@ -58,21 +58,12 @@ def getOrGtLinter : Linter where
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    -- content here
     match stx.findStack? (fun _ ↦ true) is_ge_or_gt with
     | some ((head, _n)::_chain) =>
-        Linter.logLint linter.geOrGt head m!"'errro message here theorem' requires a doc-string. "--\
-    --                                        Either add one to '{id}' or use 'lemma' instead."
+      -- XXX: exclude remaining case
+        Linter.logLint linter.geOrGt head m!"'≥ or > used in an illegal position\
+        please restate to use ≤ or < instead"
     | _ => return
-     --true--eturn
-/-    match contains_illegal_ge_gt stx with
-      | false => return
-      | true => return
-    -- | none => return
-    -- | some (thm, _id) =>
-    -- Linter.logLint linter.geOrGt thm m!"'theorem' requires a doc-string. \
-    --                                           Either add one to '{id}' or use 'lemma' instead."
-    --   logInfoAt thm "" -/
 
 initialize addLinter getOrGtLinter
 
