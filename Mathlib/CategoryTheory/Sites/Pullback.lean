@@ -56,7 +56,7 @@ instance {X : C} : IsCofiltered (J.Cover X) :=
 same direction as `G`. -/
 @[simps!]
 def Functor.sheafPullback : Sheaf J A ⥤ Sheaf K A :=
-  sheafToPresheaf J A ⋙ lan G.op ⋙ presheafToSheaf K A
+  sheafToPresheaf J A ⋙ G.op.lan ⋙ presheafToSheaf K A
 #align category_theory.sites.pushforward CategoryTheory.Functor.sheafPullback
 
 instance [RepresentablyFlat G] : PreservesFiniteLimits (G.sheafPullback A J K) := by

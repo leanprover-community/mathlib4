@@ -1172,6 +1172,7 @@ import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Adjunction.Over
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
+import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Adjunction.Whiskering
 import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Bicategory.Adjunction
@@ -2971,6 +2972,7 @@ import Mathlib.MeasureTheory.Order.Group.Lattice
 import Mathlib.MeasureTheory.Order.Lattice
 import Mathlib.MeasureTheory.OuterMeasure.Basic
 import Mathlib.MeasureTheory.PiSystem
+import Mathlib.MeasureTheory.SetAlgebra
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.MeasureTheory.Tactic
 import Mathlib.ModelTheory.Algebra.Field.Basic
@@ -3926,6 +3928,7 @@ import Mathlib.Topology.Category.CompHaus.Limits
 import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.Compactum
 import Mathlib.Topology.Category.LightProfinite.Basic
+import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 import Mathlib.Topology.Category.LightProfinite.IsLight
 import Mathlib.Topology.Category.LightProfinite.Limits
 import Mathlib.Topology.Category.Locale

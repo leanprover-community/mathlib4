@@ -5,6 +5,7 @@ Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.Topology.Sheaves.Init
 import Mathlib.Data.Set.Subsingleton
@@ -159,6 +160,7 @@ theorem map_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.map_restrict TopCat.Presheaf.map_restrict
 
+/-
 /-- Pushforward a presheaf on `X` along a continuous map `f : X ⟶ Y`, obtaining a presheaf
 on `Y`. -/
 def pushforwardObj {X Y : TopCat.{w}} (f : X ⟶ Y) (ℱ : X.Presheaf C) : Y.Presheaf C :=
@@ -313,9 +315,10 @@ def pushforwardMap {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : X.Presheaf C} (�
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_map TopCat.Presheaf.pushforwardMap
 
+-/
 open CategoryTheory.Limits
 
-noncomputable section Pullback
+/-noncomputable section Pullback
 
 variable [HasColimits C]
 
@@ -397,17 +400,17 @@ set_option linter.uppercaseLean3 false in
 
 end Pullback
 
-end Pullback
+end Pullback-/
 
 variable (C)
 
-/-- The pushforward functor.
--/
-def pushforward {X Y : TopCat.{w}} (f : X ⟶ Y) : X.Presheaf C ⥤ Y.Presheaf C where
-  obj := pushforwardObj f
-  map := @pushforwardMap _ _ X Y f
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pushforward TopCat.Presheaf.pushforward
+/-- The pushforward functor. -/
+def pushforward {X Y : TopCat.{w}} (f : X ⟶ Y) : X.Presheaf C ⥤ Y.Presheaf C :=
+  (whiskeringLeft _ _ _).obj (Opens.map f).op
+
+set_option quotPrecheck false in
+/-- push forward of a presheaf-/
+notation f:80 " _* " P:81 => (pushforward _ f).obj P
 
 @[simp]
 theorem pushforward_map_app' {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : X.Presheaf C} (α : ℱ ⟶ 𝒢)
@@ -416,14 +419,7 @@ theorem pushforward_map_app' {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : X.Pres
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_map_app' TopCat.Presheaf.pushforward_map_app'
 
-theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) := by
-  apply CategoryTheory.Functor.ext
-  · intros a b f
-    ext U
-    · erw [NatTrans.congr f (Opens.op_map_id_obj (op U))]
-      · simp only [Functor.op_obj, eqToHom_refl, CategoryTheory.Functor.map_id,
-          Category.comp_id, Category.id_comp, Functor.id_obj, Functor.id_map]
-      apply Pushforward.id_eq
+lemma id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.id_pushforward TopCat.Presheaf.id_pushforward
 
@@ -454,17 +450,8 @@ theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf
       ℱ.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) ≫
         H₂.app (op ((Opens.map H₁.inv).obj (unop U))) := by
   delta toPushforwardOfIso
-  -- Porting note: originally is a single invocation of `simp`
-  simp only [pushforwardObj_obj, Functor.op_obj, Equivalence.toAdjunction, Adjunction.homEquiv_unit,
-    Functor.id_obj, Functor.comp_obj, Adjunction.mkOfUnitCounit_unit, unop_op, eqToHom_map]
-  rw [NatTrans.comp_app, presheafEquivOfIso_inverse_map_app, Equivalence.Equivalence_mk'_unit]
-  congr 1
-  simp only [Equivalence.unit, Equivalence.op, CategoryTheory.Equivalence.symm, Opens.mapMapIso,
-    Functor.id_obj, Functor.comp_obj, Iso.symm_hom, NatIso.op_inv, Iso.symm_inv, NatTrans.op_app,
-    NatIso.ofComponents_hom_app, eqToIso.hom, eqToHom_op, Equivalence.Equivalence_mk'_unitInv,
-    Equivalence.Equivalence_mk'_counitInv, NatIso.op_hom, unop_op, op_unop, eqToIso.inv,
-    NatIso.ofComponents_inv_app, eqToHom_unop, ← ℱ.map_comp, eqToHom_trans, eqToHom_map,
-    presheafEquivOfIso_unitIso_hom_app_app]
+  simp [-Functor.map_comp, ← Functor.map_comp_assoc]
+  rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.to_pushforward_of_iso_app TopCat.Presheaf.toPushforwardOfIso_app
 
@@ -501,18 +488,18 @@ def pullback {X Y : TopCat.{v}} (f : X ⟶ Y) : Y.Presheaf C ⥤ X.Presheaf C :=
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback TopCat.Presheaf.pullback
 
-@[simp]
-theorem pullbackObj_eq_pullbackObj {C} [Category C] [HasColimits C] {X Y : TopCat.{w}} (f : X ⟶ Y)
-    (ℱ : Y.Presheaf C) : (pullback C f).obj ℱ = pullbackObj f ℱ :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.pullback_obj_eq_pullback_obj TopCat.Presheaf.pullbackObj_eq_pullbackObj
+--@[simp]
+--theorem pullbackObj_eq_pullbackObj {C} [Category C] [HasColimits C] {X Y : TopCat.{w}} (f : X ⟶ Y)
+--    (ℱ : Y.Presheaf C) : (pullback C f).obj ℱ = pullbackObj f ℱ :=
+--  rfl
+--set_option linter.uppercaseLean3 false in
+--#align Top.presheaf.pullback_obj_eq_pullback_obj TopCat.Presheaf.pullbackObj_eq_pullbackObj
 
 /-- The pullback and pushforward along a continuous map are adjoint to each other. -/
 --@[simps! unit_app_app counit_app_app]
 def pushforwardPullbackAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
     pullback C f ⊣ pushforward C f :=
-  Functor.Lan.adjunction _ _
+  Functor.lanAdjunction _ _
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_pullback_adjunction TopCat.Presheaf.pushforwardPullbackAdjunction
 
