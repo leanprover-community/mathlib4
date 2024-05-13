@@ -609,8 +609,9 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
       fun {p q p' q'} hq hq' h => by
       beta_reduce -- Porting note(#12129): force the function to be applied
       rw [dif_pos, dif_pos]
-      congr 1 -- Porting note: this was a `rw [ofFractionRing.inj_eq]` which was overkill anyway
-      rw [Localization.mk_eq_mk_iff]
+      on_goal 1 =>
+        congr 1 -- Porting note: this was a `rw [ofFractionRing.inj_eq]` which was overkill anyway
+        rw [Localization.mk_eq_mk_iff]
       rotate_left
       · exact hφ hq
       · exact hφ hq'
@@ -626,14 +627,14 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
     cases' x with x; cases' y with y
     -- Porting note: added `using Localization.rec` (`Localization.induction_on` didn't work)
     induction' x using Localization.rec with p q
-    induction' y using Localization.rec with p' q'
-    · have hq : φ q ∈ S[X]⁰ := hφ q.prop
-      have hq' : φ q' ∈ S[X]⁰ := hφ q'.prop
-      have hqq' : φ ↑(q * q') ∈ S[X]⁰ := by simpa using Submonoid.mul_mem _ hq hq'
-      simp_rw [← ofFractionRing_mul, Localization.mk_mul, liftOn_ofFractionRing_mk, dif_pos hq,
-        dif_pos hq', dif_pos hqq', ← ofFractionRing_mul, Submonoid.coe_mul, map_mul,
-        Localization.mk_mul, Submonoid.mk_mul_mk]
-    · rfl
+    · induction' y using Localization.rec with p' q'
+      · have hq : φ q ∈ S[X]⁰ := hφ q.prop
+        have hq' : φ q' ∈ S[X]⁰ := hφ q'.prop
+        have hqq' : φ ↑(q * q') ∈ S[X]⁰ := by simpa using Submonoid.mul_mem _ hq hq'
+        simp_rw [← ofFractionRing_mul, Localization.mk_mul, liftOn_ofFractionRing_mk, dif_pos hq,
+          dif_pos hq', dif_pos hqq', ← ofFractionRing_mul, Submonoid.coe_mul, map_mul,
+          Localization.mk_mul, Submonoid.mk_mul_mk]
+      · rfl
     · rfl
 #align ratfunc.map RatFunc.map
 
@@ -707,10 +708,10 @@ def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.co
     cases' x with x
     cases' y with y
     induction' x using Localization.rec with p q
-    induction' y using Localization.rec with p' q'
-    · rw [← ofFractionRing_mul, Localization.mk_mul]
-      simp only [liftOn_ofFractionRing_mk, div_mul_div_comm, map_mul, Submonoid.coe_mul]
-    · rfl
+    · induction' y using Localization.rec with p' q'
+      · rw [← ofFractionRing_mul, Localization.mk_mul]
+        simp only [liftOn_ofFractionRing_mk, div_mul_div_comm, map_mul, Submonoid.coe_mul]
+      · rfl
     · rfl
   map_zero' := by
     beta_reduce -- Porting note(#12129): force the function to be applied
@@ -730,13 +731,13 @@ theorem liftMonoidWithZeroHom_injective [Nontrivial R] (φ : R[X] →*₀ G₀) 
   rintro ⟨x⟩ ⟨y⟩
   induction' x using Localization.induction_on with a
   induction' y using Localization.induction_on with a'
-  · simp_rw [liftMonoidWithZeroHom_apply_ofFractionRing_mk]
-    intro h
-    congr 1
-    refine Localization.mk_eq_mk_iff.mpr (Localization.r_of_eq (M := R[X]) ?_)
-    have := mul_eq_mul_of_div_eq_div _ _ ?_ ?_ h
-    rwa [← map_mul, ← map_mul, hφ.eq_iff, mul_comm, mul_comm a'.fst] at this
-    all_goals exact map_ne_zero_of_mem_nonZeroDivisors _ hφ (SetLike.coe_mem _)
+  simp_rw [liftMonoidWithZeroHom_apply_ofFractionRing_mk]
+  intro h
+  congr 1
+  refine Localization.mk_eq_mk_iff.mpr (Localization.r_of_eq (M := R[X]) ?_)
+  have := mul_eq_mul_of_div_eq_div _ _ ?_ ?_ h
+  · rwa [← map_mul, ← map_mul, hφ.eq_iff, mul_comm, mul_comm a'.fst] at this
+  all_goals exact map_ne_zero_of_mem_nonZeroDivisors _ hφ (SetLike.coe_mem _)
 #align ratfunc.lift_monoid_with_zero_hom_injective RatFunc.liftMonoidWithZeroHom_injective
 
 /-- Lift an injective ring homomorphism `R[X] →+* L` to a `RatFunc R →+* L`
@@ -752,17 +753,17 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : RatFunc 
       cases' y with y
       -- Porting note: had to add the recursor explicitly below
       induction' x using Localization.rec with p q
-      induction' y using Localization.rec with p' q'
-      · rw [← ofFractionRing_add, Localization.add_mk]
-        simp only [RingHom.toMonoidWithZeroHom_eq_coe,
-          liftMonoidWithZeroHom_apply_ofFractionRing_mk]
-        rw [div_add_div, div_eq_div_iff]
-        · rw [mul_comm _ p, mul_comm _ p', mul_comm _ (φ p'), add_comm]
-          simp only [map_add, map_mul, Submonoid.coe_mul]
-        all_goals
-          try simp only [← map_mul, ← Submonoid.coe_mul]
-          exact nonZeroDivisors.ne_zero (hφ (SetLike.coe_mem _))
-      · rfl
+      · induction' y using Localization.rec with p' q'
+        · rw [← ofFractionRing_add, Localization.add_mk]
+          simp only [RingHom.toMonoidWithZeroHom_eq_coe,
+            liftMonoidWithZeroHom_apply_ofFractionRing_mk]
+          rw [div_add_div, div_eq_div_iff]
+          · rw [mul_comm _ p, mul_comm _ p', mul_comm _ (φ p'), add_comm]
+            simp only [map_add, map_mul, Submonoid.coe_mul]
+          all_goals
+            try simp only [← map_mul, ← Submonoid.coe_mul]
+            exact nonZeroDivisors.ne_zero (hφ (SetLike.coe_mem _))
+        · rfl
       · rfl }
 #align ratfunc.lift_ring_hom RatFunc.liftRingHom
 
@@ -809,9 +810,9 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) w
   smul_def' c x := by
     induction' x using RatFunc.induction_on' with p q hq
       -- Porting note: the first `rw [...]` was not needed
-    · rw [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-      rw [mk_one', ← mk_smul, mk_def_of_ne (c • p) hq, mk_def_of_ne p hq, ←
-        ofFractionRing_mul, IsLocalization.mul_mk'_eq_mk'_of_mul, Algebra.smul_def]
+    rw [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+    rw [mk_one', ← mk_smul, mk_def_of_ne (c • p) hq, mk_def_of_ne p hq, ←
+      ofFractionRing_mul, IsLocalization.mul_mk'_eq_mk'_of_mul, Algebra.smul_def]
   commutes' c x := mul_comm _ _
 
 variable {K}
@@ -1308,7 +1309,7 @@ theorem denom_dvd {x : RatFunc K} {q : K[X]} (hq : q ≠ 0) :
     obtain ⟨_hx, hp⟩ := mul_ne_zero_iff.mp hq
     use num x * p
     rw [RingHom.map_mul, RingHom.map_mul, ← div_mul_div_comm, div_self, mul_one, num_div_denom]
-    · exact algebraMap_ne_zero hp
+    exact algebraMap_ne_zero hp
   · rintro ⟨p, rfl⟩
     exact denom_div_dvd p q
 #align ratfunc.denom_dvd RatFunc.denom_dvd
