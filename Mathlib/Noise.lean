@@ -5,4 +5,4 @@ run_cmd
   for msg in ["", "hello"] do
     logInfo msg
     logWarning msg
-    logError msg
+--    logError msg
