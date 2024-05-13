@@ -6,9 +6,7 @@ Authors: Hanting Zhang, Johan Commelin
 
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Rename
 import Mathlib.Combinatorics.Enumerative.Partition
-import Mathlib.Data.Sym.Basic
 
 #align_import ring_theory.mv_polynomial.symmetric from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
