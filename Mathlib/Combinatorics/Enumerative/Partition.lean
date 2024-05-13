@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Combinatorics.Enumerative.Composition
-import Mathlib.Data.Multiset.Dedup
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.ApplyFun
 
