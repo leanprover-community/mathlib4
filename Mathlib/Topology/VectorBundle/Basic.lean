@@ -605,7 +605,7 @@ theorem coordChange_linear_comp (i j k : ι) :
 #align vector_bundle_core.coord_change_linear_comp VectorBundleCore.coordChange_linear_comp
 
 /-- The index set of a vector bundle core, as a convenience function for dot notation -/
-@[nolint unusedArguments] -- Porting note: was `nolint has_nonempty_instance`
+@[nolint unusedArguments] -- Porting note(#5171): was `nolint has_nonempty_instance`
 def Index := ι
 #align vector_bundle_core.index VectorBundleCore.Index
 
@@ -616,7 +616,7 @@ def Base := B
 
 /-- The fiber of a vector bundle core, as a convenience function for dot notation and
 typeclass inference -/
-@[nolint unusedArguments] -- Porting note: was `nolint has_nonempty_instance`
+@[nolint unusedArguments] -- Porting note(#5171): was `nolint has_nonempty_instance`
 def Fiber : B → Type _ :=
   Z.toFiberBundleCore.Fiber
 #align vector_bundle_core.fiber VectorBundleCore.Fiber
@@ -854,7 +854,7 @@ The field `exists_coordChange` is stated as an existential statement (instead of
 fields), since it depends on propositional information (namely `e e' ∈ pretrivializationAtlas`).
 This makes it inconvenient to explicitly define a `coordChange` function when constructing a
 `VectorPrebundle`. -/
--- Porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 structure VectorPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
   pretrivialization_linear' : ∀ e, e ∈ pretrivializationAtlas → e.IsLinear R

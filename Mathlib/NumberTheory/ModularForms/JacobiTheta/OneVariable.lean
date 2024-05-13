@@ -66,7 +66,7 @@ theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
         re_ofReal_mul, mul_I_re]
       ring
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (sq_nonneg n)
-    rw [this, exp_mul, ← Int.cast_pow, rpow_int_cast, hm, zpow_natCast]
+    rw [this, exp_mul, ← Int.cast_pow, rpow_intCast, hm, zpow_natCast]
   · have : n ^ 2 = (n.natAbs ^ 2 :) := by rw [Nat.cast_pow, Int.natAbs_sq]
     rw [this, zpow_natCast]
     exact pow_le_pow_of_le_one (exp_pos _).le h.le ((sq n.natAbs).symm ▸ n.natAbs.le_mul_self)
@@ -76,14 +76,14 @@ theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     HasSum (fun n : ℕ => cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)) ((jacobiTheta τ - 1) / 2) := by
   have := hasSum_jacobiTheta₂_term 0 hτ
   simp_rw [jacobiTheta₂_term, mul_zero, zero_add, ← jacobiTheta_eq_jacobiTheta₂] at this
-  have := this.sum_nat_of_sum_int
+  have := this.nat_add_neg
   rw [← hasSum_nat_add_iff' 1] at this
   simp_rw [Finset.sum_range_one, Int.cast_neg, Int.cast_natCast, Nat.cast_zero, neg_zero,
     Int.cast_zero, sq (0 : ℂ), mul_zero, zero_mul, neg_sq, ← mul_two,
     Complex.exp_zero, add_sub_assoc, (by norm_num : (1 : ℂ) - 1 * 2 = -1), ← sub_eq_add_neg,
     Nat.cast_add, Nat.cast_one] at this
   convert this.div_const 2 using 1
-  simp_rw [mul_div_cancel_right₀ (G₀ := ℂ) _ two_ne_zero]
+  simp_rw [mul_div_cancel_right₀ _ (two_ne_zero' ℂ)]
 #align has_sum_nat_jacobi_theta hasSum_nat_jacobiTheta
 
 theorem jacobiTheta_eq_tsum_nat {τ : ℂ} (hτ : 0 < im τ) :

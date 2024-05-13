@@ -35,9 +35,7 @@ variable {α β γ : Type*}
 
 namespace Prod.Lex
 
--- Porting note: `Prod.Lex` is not protected in core, hence the `_root_.` prefix
--- This will be fixed in nightly-2022-11-30
-@[inherit_doc] notation:35 α " ×ₗ " β:34 => _root_.Lex (Prod α β)
+@[inherit_doc] notation:35 α " ×ₗ " β:34 => Lex (Prod α β)
 
 instance decidableEq (α β : Type*) [DecidableEq α] [DecidableEq β] : DecidableEq (α ×ₗ β) :=
   instDecidableEqProd

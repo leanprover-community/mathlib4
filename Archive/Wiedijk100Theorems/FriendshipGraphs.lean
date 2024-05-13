@@ -206,7 +206,7 @@ end Nonempty
 theorem adjMatrix_sq_mul_const_one_of_regular (hd : G.IsRegularOfDegree d) :
     G.adjMatrix R * of (fun _ _ => 1) = of (fun _ _ => (d : R)) := by
   ext x
-  simp only [← hd x, degree, adjMatrix_mul_apply, sum_const, Nat.smul_one_eq_coe,
+  simp only [← hd x, degree, adjMatrix_mul_apply, sum_const, Nat.smul_one_eq_cast,
     of_apply]
 #align theorems_100.friendship.adj_matrix_sq_mul_const_one_of_regular Theorems100.Friendship.adjMatrix_sq_mul_const_one_of_regular
 
@@ -240,7 +240,7 @@ variable [Nonempty V]
 theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : False := by
   -- get a prime factor of d - 1
   let p : ℕ := (d - 1).minFac
-  have p_dvd_d_pred := (ZMod.nat_cast_zmod_eq_zero_iff_dvd _ _).mpr (d - 1).minFac_dvd
+  have p_dvd_d_pred := (ZMod.natCast_zmod_eq_zero_iff_dvd _ _).mpr (d - 1).minFac_dvd
   have dpos : 1 ≤ d := by linarith
   have d_cast : ↑(d - 1) = (d : ℤ) - 1 := by norm_cast
   haveI : Fact p.Prime := ⟨Nat.minFac_prime (by linarith)⟩
@@ -260,7 +260,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   dsimp only [Fintype.card] at Vmod
   simp only [Matrix.trace, Matrix.diag, mul_one, nsmul_eq_mul, LinearMap.coe_mk, sum_const,
     of_apply, Ne]
-  rw [Vmod, ← Nat.cast_one (R := ZMod (Nat.minFac (d - 1))), ZMod.nat_cast_zmod_eq_zero_iff_dvd,
+  rw [Vmod, ← Nat.cast_one (R := ZMod (Nat.minFac (d - 1))), ZMod.natCast_zmod_eq_zero_iff_dvd,
     Nat.dvd_one, Nat.minFac_eq_one_iff]
   linarith
 #align theorems_100.friendship.false_of_three_le_degree Theorems100.Friendship.false_of_three_le_degree

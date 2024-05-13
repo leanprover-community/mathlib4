@@ -88,6 +88,11 @@ theorem nfp_le_of_principal {op : Ordinal → Ordinal → Ordinal} {a o : Ordina
 
 /-! ### Principal ordinals are unbounded -/
 
+-- Adaptation note: 2024-04-23
+-- After https://github.com/leanprover/lean4/pull/3965,
+-- we need to write `lt_blsub₂.{u}` twice below,
+-- where previously the universe annotation was not necessary.
+-- This appears to be correct behaviour, as `lt_blsub₂.{0}` also works.
 theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     Principal op (nfp (fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b)) o) :=
   fun a b ha hb => by
@@ -99,10 +104,10 @@ theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordin
     ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[n] o) with h h
   · use n + 1
     rw [Function.iterate_succ']
-    exact lt_blsub₂ (@fun a _ b _ => op a b) (hm.trans_le h) hn
+    exact lt_blsub₂.{u} (@fun a _ b _ => op a b) (hm.trans_le h) hn
   · use m + 1
     rw [Function.iterate_succ']
-    exact lt_blsub₂ (@fun a _ b _ => op a b) hm (hn.trans_le h)
+    exact lt_blsub₂.{u} (@fun a _ b _ => op a b) hm (hn.trans_le h)
 #align ordinal.principal_nfp_blsub₂ Ordinal.principal_nfp_blsub₂
 
 theorem unbounded_principal (op : Ordinal → Ordinal → Ordinal) :
@@ -251,11 +256,11 @@ theorem mul_principal_add_is_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (
     · rw [← succ_le_iff, succ_zero] at hb₁'
       intro c d hc hd
       rw [lt_mul_of_limit (principal_add_isLimit (lt_of_le_of_ne hb₁' hb₁.symm) hb)] at *
-      · rcases hc with ⟨x, hx, hx'⟩
-        rcases hd with ⟨y, hy, hy'⟩
-        use x + y, hb hx hy
-        rw [mul_add]
-        exact Left.add_lt_add hx' hy'
+      rcases hc with ⟨x, hx, hx'⟩
+      rcases hd with ⟨y, hy, hy'⟩
+      use x + y, hb hx hy
+      rw [mul_add]
+      exact Left.add_lt_add hx' hy'
 #align ordinal.mul_principal_add_is_principal_add Ordinal.mul_principal_add_is_principal_add
 
 /-! #### Multiplicative principal ordinals -/
@@ -323,7 +328,7 @@ theorem principal_mul_iff_mul_left_eq {o : Ordinal} :
 theorem principal_mul_omega : Principal (· * ·) omega := fun a b ha hb =>
   match a, b, lt_omega.1 ha, lt_omega.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
-    dsimp only; rw [← nat_cast_mul]
+    dsimp only; rw [← natCast_mul]
     apply nat_lt_omega
 #align ordinal.principal_mul_omega Ordinal.principal_mul_omega
 
@@ -415,7 +420,7 @@ theorem mul_eq_opow_log_succ {a b : Ordinal.{u}} (ha : a ≠ 0) (hb : Principal 
 theorem principal_opow_omega : Principal (·^·) omega := fun a b ha hb =>
   match a, b, lt_omega.1 ha, lt_omega.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
-    simp_rw [← nat_cast_opow]
+    simp_rw [← natCast_opow]
     apply nat_lt_omega
 #align ordinal.principal_opow_omega Ordinal.principal_opow_omega
 

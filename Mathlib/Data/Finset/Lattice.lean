@@ -266,7 +266,7 @@ theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s 
       -- z ∈ s is above x and y
       obtain ⟨z, hzs, ⟨hxz, hyz⟩⟩ := hdir x hxs y hys
       use z, hzs
-      rw [sup_insert, id.def, sup_le_iff]
+      rw [sup_insert, id, sup_le_iff]
       exact ⟨le_trans hay hyz, le_trans hsx_sup hxz⟩
 #align finset.sup_le_of_le_directed Finset.sup_le_of_le_directed
 
@@ -608,7 +608,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   -- Porting note: `simpa` doesn't support placeholders in proof terms
   have := h (fun j hj => if hji : j = i then cast (congr_arg κ hji.symm) a
       else g _ <| mem_of_mem_insert_of_ne hj hji) (fun j hj => ?_)
-  simpa only [cast_eq, dif_pos, Function.comp, Subtype.coe_mk, dif_neg, aux] using this
+  · simpa only [cast_eq, dif_pos, Function.comp, Subtype.coe_mk, dif_neg, aux] using this
   rw [mem_insert] at hj
   obtain (rfl | hj) := hj
   · simpa
@@ -1241,7 +1241,7 @@ variable [DistribLattice α] {s : Finset ι} {t : Finset κ} (hs : s.Nonempty) (
 
 theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
     a ⊓ s.sup' hs f = s.sup' hs fun i ↦ a ⊓ f i := by
-  refine' hs.cons_induction (fun i ↦ ?_) fun i s hi hs ih ↦ ?_
+  refine hs.cons_induction (fun i ↦ ?_) fun i s hi hs ih ↦ ?_
   · simp
   · simp_rw [sup'_cons hs, inf_sup_left]
     rw [ih]
@@ -1768,13 +1768,13 @@ theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
   convert @max_erase_ne_self αᵒᵈ _ (toDual x) (s.map toDual.toEmbedding) using 1
   apply congr_arg -- Porting note: forces unfolding to see `Finset.min` is `Finset.max`
   congr!
-  · ext; simp only [mem_map_equiv]; exact Iff.rfl
+  ext; simp only [mem_map_equiv]; exact Iff.rfl
 #align finset.min_erase_ne_self Finset.min_erase_ne_self
 
 theorem exists_next_right {x : α} {s : Finset α} (h : ∃ y ∈ s, x < y) :
     ∃ y ∈ s, x < y ∧ ∀ z ∈ s, x < z → y ≤ z :=
   have Hne : (s.filter (x < ·)).Nonempty := h.imp fun y hy => mem_filter.2 (by simpa)
-  have aux := (mem_filter.1 (min'_mem _ Hne))
+  have aux := mem_filter.1 (min'_mem _ Hne)
   ⟨min' _ Hne, aux.1, by simp, fun z hzs hz => min'_le _ _ <| mem_filter.2 ⟨hzs, by simpa⟩⟩
 #align finset.exists_next_right Finset.exists_next_right
 

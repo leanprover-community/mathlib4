@@ -50,12 +50,12 @@ See <https://stacks.math.columbia.edu/tag/0073>.
 In fact we prove a stronger version with arbitrary target category.
 -/
 theorem isSheaf_iff_isSheaf_comp' {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-    (G : C ⥤ D) [ReflectsIsomorphisms G] [HasLimitsOfSize.{v, v} C] [PreservesLimitsOfSize.{v, v} G]
+    (G : C ⥤ D) [G.ReflectsIsomorphisms] [HasLimitsOfSize.{v, v} C] [PreservesLimitsOfSize.{v, v} G]
     {X : TopCat.{v}} (F : Presheaf C X) : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F ⋙ G) :=
   Presheaf.isSheaf_iff_isSheaf_comp _ F G
 
 theorem isSheaf_iff_isSheaf_comp {C : Type u₁} [Category.{v} C] {D : Type u₂} [Category.{v} D]
-    (G : C ⥤ D) [ReflectsIsomorphisms G] [HasLimits C] [PreservesLimits G]
+    (G : C ⥤ D) [G.ReflectsIsomorphisms] [HasLimits C] [PreservesLimits G]
     {X : TopCat.{v}} (F : Presheaf C X) : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F ⋙ G) :=
   isSheaf_iff_isSheaf_comp' G F
 set_option linter.uppercaseLean3 false in

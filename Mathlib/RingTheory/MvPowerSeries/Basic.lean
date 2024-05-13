@@ -414,7 +414,7 @@ set_option linter.uppercaseLean3 false in
 theorem X_pow_eq (s : σ) (n : ℕ) : (X s : MvPowerSeries σ R) ^ n = monomial R (single s n) 1 := by
   induction' n with n ih
   · simp
-  · rw [pow_succ, ih, Nat.succ_eq_add_one, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
+  · rw [pow_succ, ih, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
 set_option linter.uppercaseLean3 false in
 #align mv_power_series.X_pow_eq MvPowerSeries.X_pow_eq
 
@@ -701,17 +701,17 @@ theorem coeff_prod [DecidableEq σ]
   | @insert a s ha ih =>
     rw [piAntidiagonal_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
     · apply Finset.sum_congr rfl
-      · simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
-        rintro u v rfl
-        rw [ih, Finset.mul_sum, ← Finset.sum_attach]
-        apply Finset.sum_congr rfl
-        simp only [mem_attach, Finset.prod_insert ha, Function.update_same, forall_true_left,
-          Subtype.forall]
-        rintro x -
-        rw [Finset.prod_congr rfl]
-        intro i hi
-        rw [Function.update_noteq]
-        exact ne_of_mem_of_not_mem hi ha
+      simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
+      rintro u v rfl
+      rw [ih, Finset.mul_sum, ← Finset.sum_attach]
+      apply Finset.sum_congr rfl
+      simp only [mem_attach, Finset.prod_insert ha, Function.update_same, forall_true_left,
+        Subtype.forall]
+      rintro x -
+      rw [Finset.prod_congr rfl]
+      intro i hi
+      rw [Function.update_noteq]
+      exact ne_of_mem_of_not_mem hi ha
     · simp only [Set.PairwiseDisjoint, Set.Pairwise, mem_coe, mem_antidiagonal, ne_eq,
         disjoint_left, mem_map, mem_attach, Function.Embedding.coeFn_mk, true_and, Subtype.exists,
         exists_prop, not_exists, not_and, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,

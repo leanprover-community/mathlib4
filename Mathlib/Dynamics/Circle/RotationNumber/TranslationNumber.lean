@@ -483,7 +483,7 @@ theorem ceil_map_map_zero_le : ⌈f (g 0)⌉ ≤ ⌈f 0⌉ + ⌈g 0⌉ :=
 theorem map_map_zero_lt : f (g 0) < f 0 + g 0 + 1 :=
   calc
     f (g 0) ≤ f 0 + ⌈g 0⌉ := f.map_map_zero_le g
-    _ < f 0 + (g 0 + 1) := (add_lt_add_left (ceil_lt_add_one _) _)
+    _ < f 0 + (g 0 + 1) := add_lt_add_left (ceil_lt_add_one _) _
     _ = f 0 + g 0 + 1 := (add_assoc _ _ _).symm
 #align circle_deg1_lift.map_map_zero_lt CircleDeg1Lift.map_map_zero_lt
 
@@ -512,7 +512,7 @@ theorem le_ceil_map_map_zero : ⌈f 0⌉ + ⌊g 0⌋ ≤ ⌈(f * g) 0⌉ :=
 theorem lt_map_map_zero : f 0 + g 0 - 1 < f (g 0) :=
   calc
     f 0 + g 0 - 1 = f 0 + (g 0 - 1) := add_sub_assoc _ _ _
-    _ < f 0 + ⌊g 0⌋ := (add_lt_add_left (sub_one_lt_floor _) _)
+    _ < f 0 + ⌊g 0⌋ := add_lt_add_left (sub_one_lt_floor _) _
     _ ≤ f (g 0) := f.le_map_map_zero g
 #align circle_deg1_lift.lt_map_map_zero CircleDeg1Lift.lt_map_map_zero
 
@@ -810,7 +810,7 @@ theorem translationNumber_mono : Monotone τ := fun f g h =>
 theorem translationNumber_translate (x : ℝ) : τ (translate <| Multiplicative.ofAdd x) = x :=
   translationNumber_eq_of_tendsto₀' _ <| by
     simp only [translate_iterate, translate_apply, add_zero, Nat.cast_succ,
-      mul_div_cancel_left₀ (G₀ := ℝ) _ (Nat.cast_add_one_ne_zero _), tendsto_const_nhds]
+      mul_div_cancel_left₀ (M₀ := ℝ) _ (Nat.cast_add_one_ne_zero _), tendsto_const_nhds]
 #align circle_deg1_lift.translation_number_translate CircleDeg1Lift.translationNumber_translate
 
 theorem translationNumber_le_of_le_add {z : ℝ} (hz : ∀ x, f x ≤ x + z) : τ f ≤ z :=
@@ -906,7 +906,7 @@ theorem forall_map_sub_of_Icc (P : ℝ → Prop) (h : ∀ x ∈ Icc (0 : ℝ) 1,
 theorem translationNumber_lt_of_forall_lt_add (hf : Continuous f) {z : ℝ} (hz : ∀ x, f x < x + z) :
     τ f < z := by
   obtain ⟨x, -, hx⟩ : ∃ x ∈ Icc (0 : ℝ) 1, ∀ y ∈ Icc (0 : ℝ) 1, f y - y ≤ f x - x :=
-    isCompact_Icc.exists_forall_ge (nonempty_Icc.2 zero_le_one)
+    isCompact_Icc.exists_isMaxOn (nonempty_Icc.2 zero_le_one)
       (hf.sub continuous_id).continuousOn
   refine' lt_of_le_of_lt _ (sub_lt_iff_lt_add'.2 <| hz x)
   apply translationNumber_le_of_le_add
@@ -917,8 +917,8 @@ theorem translationNumber_lt_of_forall_lt_add (hf : Continuous f) {z : ℝ} (hz 
 theorem lt_translationNumber_of_forall_add_lt (hf : Continuous f) {z : ℝ} (hz : ∀ x, x + z < f x) :
     z < τ f := by
   obtain ⟨x, -, hx⟩ : ∃ x ∈ Icc (0 : ℝ) 1, ∀ y ∈ Icc (0 : ℝ) 1, f x - x ≤ f y - y
-  exact isCompact_Icc.exists_forall_le (nonempty_Icc.2 zero_le_one)
-    (hf.sub continuous_id).continuousOn
+  · exact isCompact_Icc.exists_isMinOn (nonempty_Icc.2 zero_le_one)
+      (hf.sub continuous_id).continuousOn
   refine' lt_of_lt_of_le (lt_sub_iff_add_lt'.2 <| hz x) _
   apply le_translationNumber_of_add_le
   simp only [← le_sub_iff_add_le']

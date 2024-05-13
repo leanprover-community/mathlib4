@@ -80,7 +80,7 @@ instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
 
 /-
 Porting note: the code below could replace the `notation3` command
-open Std.ExtendedBinder in
+open Batteries.ExtendedBinder in
 syntax "⨆ " extBinder ", " term:51 : term
 
 macro_rules
@@ -299,3 +299,5 @@ theorem iSup_eq_iUnion (s : ι → Set α) : iSup s = iUnion s :=
 theorem iInf_eq_iInter (s : ι → Set α) : iInf s = iInter s :=
   rfl
 #align set.infi_eq_Inter Set.iInf_eq_iInter
+
+end Set

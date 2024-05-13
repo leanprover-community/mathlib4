@@ -133,10 +133,10 @@ theorem exists_min (I : (Ideal S)⁰) :
     (by
       obtain ⟨b, b_mem, b_ne_zero⟩ := (I : Ideal S).ne_bot_iff.mp (nonZeroDivisors.coe_ne_zero I)
       exact ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩⟩)
-  · refine' ⟨b, b_mem, b_ne_zero, _⟩
-    intro c hc lt
-    contrapose! lt with c_ne_zero
-    exact min _ ⟨c, hc, c_ne_zero, rfl⟩
+  refine' ⟨b, b_mem, b_ne_zero, _⟩
+  intro c hc lt
+  contrapose! lt with c_ne_zero
+  exact min _ ⟨c, hc, c_ne_zero, rfl⟩
 #align class_group.exists_min ClassGroup.exists_min
 
 section IsAdmissible
@@ -210,7 +210,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     have := normBound_pos abv bS
     have := abv.nonneg b
     rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel₀, rpow_neg_one,
-      mul_left_comm, mul_inv_cancel, mul_one, rpow_nat_cast] <;>
+      mul_left_comm, mul_inv_cancel, mul_one, rpow_natCast] <;>
       try norm_cast; omega
     · exact Iff.mpr Int.cast_nonneg this
     · linarith
@@ -246,7 +246,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   refine' Int.cast_lt.mp ((norm_lt abv bS _ fun i => lt_of_le_of_lt _ (hjk' i)).trans_le _)
   · apply le_of_eq
     congr
-    simp_rw [map_sum, LinearEquiv.map_sub, LinearEquiv.map_smul, Finset.sum_apply',
+    simp_rw [map_sum, map_sub, map_smul, Finset.sum_apply',
       Finsupp.sub_apply, Finsupp.smul_apply, Finset.sum_sub_distrib, Basis.repr_self_apply,
       smul_eq_mul, mul_boole, Finset.sum_ite_eq', Finset.mem_univ, if_true]
   · exact mod_cast ε_le

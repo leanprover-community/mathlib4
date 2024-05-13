@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Scott Morrison
 -/
 import Mathlib.Algebra.Quotient
+import Mathlib.Algebra.Group.Subgroup.Actions
+import Mathlib.Algebra.Group.Subgroup.MulOpposite
 import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.Subgroup.MulOpposite
-import Mathlib.GroupTheory.Subgroup.Actions
-import Mathlib.Data.Set.Basic
 
 #align_import group_theory.coset from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -148,7 +148,7 @@ variable [Monoid α] (s : Submonoid α)
 
 @[to_additive mem_own_leftAddCoset]
 theorem mem_own_leftCoset (a : α) : a ∈ a • (s : Set α) :=
-  suffices a * 1 ∈ a • ↑s by simpa
+  suffices a * 1 ∈ a • (s : Set α) by simpa
   mem_leftCoset a (one_mem s : 1 ∈ s)
 #align mem_own_left_coset mem_own_leftCoset
 #align mem_own_left_add_coset mem_own_leftAddCoset
@@ -644,14 +644,14 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
       rwa [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
   left_inv := by
     refine' Quotient.ind' fun a => _
-    simp_rw [Quotient.map'_mk'', id.def, mul_inv_cancel_left]
+    simp_rw [Quotient.map'_mk'', id, mul_inv_cancel_left]
   right_inv := by
     refine' Prod.rec _
     refine' Quotient.ind' fun a => _
     refine' Quotient.ind' fun b => _
     have key : Quotient.mk'' (f (Quotient.mk'' a) * b) = Quotient.mk'' a :=
       (QuotientGroup.mk_mul_of_mem (f a) b.2).trans (hf a)
-    simp_rw [Quotient.map'_mk'', id.def, key, inv_mul_cancel_left]
+    simp_rw [Quotient.map'_mk'', id, key, inv_mul_cancel_left]
 #align subgroup.quotient_equiv_prod_of_le' Subgroup.quotientEquivProdOfLE'
 #align add_subgroup.quotient_equiv_sum_of_le' AddSubgroup.quotientEquivSumOfLE'
 
@@ -725,6 +725,7 @@ theorem quotientMapOfLE_apply_mk (h : s ≤ t) (g : α) :
 #align subgroup.quotient_map_of_le_apply_mk Subgroup.quotientMapOfLE_apply_mk
 #align add_subgroup.quotient_map_of_le_apply_mk AddSubgroup.quotientMapOfLE_apply_mk
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- The natural embedding `H ⧸ (⨅ i, f i).subgroupOf H ↪ Π i, H ⧸ (f i).subgroupOf H`. -/
 @[to_additive (attr := simps) "The natural embedding
  `H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`."]

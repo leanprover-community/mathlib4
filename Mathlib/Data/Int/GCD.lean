@@ -30,9 +30,6 @@ import Mathlib.Order.Bounds.Basic
 Bézout's lemma, Bezout's lemma
 -/
 
-set_option autoImplicit true
-
-
 /-! ### Extended Euclidean algorithm -/
 
 
@@ -42,17 +39,11 @@ namespace Nat
 def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
   | 0, _, _, r', s', t' => (r', s', t')
   | succ k, s, t, r', s', t' =>
-    have : r' % succ k < succ k := mod_lt _ <| (succ_pos _).gt
     let q := r' / succ k
     xgcdAux (r' % succ k) (s' - q * s) (t' - q * t) (succ k) s t
+termination_by k => k
+decreasing_by exact mod_lt _ <| (succ_pos _).gt
 #align nat.xgcd_aux Nat.xgcdAux
-
--- Porting note: these are not in mathlib3; these equation lemmas are to fix
--- complaints by the Lean 4 `unusedHavesSuffices` linter obtained when `simp [xgcdAux]` is used.
-theorem xgcdAux_zero : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
-
-theorem xgcdAux_succ : xgcdAux (succ k) s t r' s' t' =
-    xgcdAux (r' % succ k) (s' - (r' / succ k) * s) (t' - (r' / succ k) * t) (succ k) s t := rfl
 
 @[simp]
 theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by simp [xgcdAux]
@@ -61,7 +52,7 @@ theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') :=
 theorem xgcdAux_rec {r s t r' s' t'} (h : 0 < r) :
     xgcdAux r s t r' s' t' = xgcdAux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
   obtain ⟨r, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h.ne'
-  rfl
+  simp [xgcdAux]
 #align nat.xgcd_aux_rec Nat.xgcdAux_rec
 
 /-- Use the extended GCD algorithm to generate the `a` and `b` values
@@ -96,20 +87,16 @@ theorem gcdB_zero_left {s : ℕ} : gcdB 0 s = 1 := by
 theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
   unfold gcdA xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  -- Porting note (https://github.com/leanprover/lean4/issues/2330):
-  -- `simp [xgcdAux_succ]` crashes Lean here
-  rw [xgcdAux_succ]
-  rfl
+  rw [xgcdAux]
+  simp
 #align nat.gcd_a_zero_right Nat.gcdA_zero_right
 
 @[simp]
 theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
   unfold gcdB xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  -- Porting note (https://github.com/leanprover/lean4/issues/2330):
-  -- `simp [xgcdAux_succ]` crashes Lean here
-  rw [xgcdAux_succ]
-  rfl
+  rw [xgcdAux]
+  simp
 #align nat.gcd_b_zero_right Nat.gcdB_zero_right
 
 @[simp]
@@ -343,6 +330,17 @@ theorem gcd_dvd_gcd_mul_right_right (i j k : ℤ) : gcd i j ∣ gcd i (j * k) :=
   gcd_dvd_gcd_of_dvd_right _ (dvd_mul_right _ _)
 #align int.gcd_dvd_gcd_mul_right_right Int.gcd_dvd_gcd_mul_right_right
 
+/-- If `gcd a (m * n) = 1`, then `gcd a m = 1`. -/
+theorem gcd_eq_one_of_gcd_mul_right_eq_one_left {a : ℤ} {m n : ℕ} (h : a.gcd (m * n) = 1) :
+    a.gcd m = 1 :=
+  Nat.dvd_one.mp <| h ▸ gcd_dvd_gcd_mul_right_right a m n
+#align int.gcd_eq_one_of_gcd_mul_right_eq_one_left Int.gcd_eq_one_of_gcd_mul_right_eq_one_left
+
+/-- If `gcd a (m * n) = 1`, then `gcd a n = 1`. -/
+theorem gcd_eq_one_of_gcd_mul_right_eq_one_right {a : ℤ} {m n : ℕ} (h : a.gcd (m * n) = 1) :
+    a.gcd n = 1 :=
+  Nat.dvd_one.mp <| h ▸ gcd_dvd_gcd_mul_left_right a n m
+
 theorem gcd_eq_left {i j : ℤ} (H : i ∣ j) : gcd i j = natAbs i :=
   Nat.dvd_antisymm (Nat.gcd_dvd_left _ _) (Nat.dvd_gcd dvd_rfl (natAbs_dvd_natAbs.mpr H))
 #align int.gcd_eq_left Int.gcd_eq_left
@@ -367,7 +365,7 @@ theorem exists_gcd_one' {m n : ℤ} (H : 0 < gcd m n) :
   ⟨_, m', n', H, h⟩
 #align int.exists_gcd_one' Int.exists_gcd_one'
 
-theorem pow_dvd_pow_iff {m n : ℤ} {k : ℕ} (k0 : 0 < k) : m ^ k ∣ n ^ k ↔ m ∣ n := by
+theorem pow_dvd_pow_iff {m n : ℤ} {k : ℕ} (k0 : k ≠ 0) : m ^ k ∣ n ^ k ↔ m ∣ n := by
   refine' ⟨fun h => _, fun h => pow_dvd_pow_of_dvd h _⟩
   rwa [← natAbs_dvd_natAbs, ← Nat.pow_dvd_pow_iff k0, ← Int.natAbs_pow, ← Int.natAbs_pow,
     natAbs_dvd_natAbs]
@@ -482,9 +480,8 @@ theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 
     x ^ m.gcd n = 1 := by
   rcases m with (rfl | m); · simp [hn]
   obtain ⟨y, rfl⟩ := isUnit_ofPowEqOne hm m.succ_ne_zero
-  simp only [← Units.val_pow_eq_pow_val] at *
-  rw [← Units.val_one, ← zpow_natCast, ← Units.ext_iff] at *
-  simp only [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, hm, hn, one_zpow, one_mul]
+  rw [← Units.val_pow_eq_pow_val, ← Units.val_one (α := M), ← zpow_natCast, ← Units.ext_iff] at *
+  rw [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_mul, hn, hm, one_zpow, one_zpow, one_mul]
 #align pow_gcd_eq_one pow_gcd_eq_one
 #align gcd_nsmul_eq_zero gcd_nsmul_eq_zero
 
