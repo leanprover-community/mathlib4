@@ -44,12 +44,13 @@ Given a `List Nat`, return the minimum, maximum, and standard deviation.
 def variation (counts : List Nat) : List Nat :=
   let min := counts.minimum?.getD 0
   let max := counts.maximum?.getD 0
-  let μ := counts.foldl (· + ·) 0 / counts.length
-  -- We jump through some hoops here to get access to Float.sqrt, to avoid imports.
-  let stddev := (Float.sqrt <| UInt64.toFloat <| UInt64.ofNat
-    -- `i - μ + (μ - i)` really computes `|i - μ|` with non-truncated subtraction
-    (((counts.map fun i => (i - μ + (μ - i))^2).foldl (· + ·) 0) / counts.length)).toUInt64.toNat
-  [min, max, stddev]
+  let toFloat (n : Nat) := n.toUInt64.toFloat
+  let toNat (f : Float) := f.toUInt64.toNat
+  let counts' := counts.map toFloat
+  let μ : Float := counts'.foldl (· + ·) 0 / toFloat counts.length
+  let stddev : Float := Float.sqrt <|
+    ((counts'.map fun i => (i - μ)^2).foldl (· + ·) 0) / toFloat counts.length
+  [min, max, toNat stddev]
 
 /--
 Given a `List Nat`, log an info message with the minimum, maximum, and standard deviation.
@@ -65,7 +66,8 @@ elab "count_heartbeats " tac:tacticSeq : tactic => do
   logInfo s!"{← runTacForHeartbeats tac (revert := false)}"
 
 /--
-Run a tactic 10 times, counting the heartbeats used, and log the range and standard deviation.
+`count_heartbeats! in tac` runs a tactic 10 times, counting the heartbeats used, and logs the range and standard deviation.
+The tactic `count_heartbeats! n in tac` runs it `n` times instead.
 -/
 elab "count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
   let n := match n with
@@ -125,7 +127,8 @@ def elabForHeartbeats (cmd : TSyntax `command) (revert : Bool := true) : Command
   return (← IO.getNumHeartbeats) - start
 
 /--
-Run a command `10` times, reporting the range in heartbeats, and the standard deviation.
+`count_heartbeats! in cmd` runs a command `10` times, reporting the range in heartbeats, and the standard deviation.
+The command `count_heartbeats! n in cmd` runs it `n` times instead.
 
 Example usage:
 ```
