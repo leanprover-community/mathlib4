@@ -120,8 +120,7 @@ def restrict (M : Matroid α) (R : Set α) : Matroid α := (M.restrictIndepMatro
 /-- `M ↾ R` means `M.restrict R`. -/
 scoped infixl:65  " ↾ " => Matroid.restrict
 
-@[simp] theorem restrict_indep_iff : (M ↾ R).Indep I ↔ M.Indep I ∧ I ⊆ R := by
-  simp [Matroid.restrict]
+@[simp] theorem restrict_indep_iff : (M ↾ R).Indep I ↔ M.Indep I ∧ I ⊆ R := Iff.rfl
 
 theorem Indep.indep_restrict_of_subset (h : M.Indep I) (hIR : I ⊆ R) : (M ↾ R).Indep I :=
   restrict_indep_iff.mpr ⟨h,hIR⟩
