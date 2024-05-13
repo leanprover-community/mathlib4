@@ -181,6 +181,9 @@ section map
 
 variable {S} [CommRing S] (f : R →+* S)
 
+/-- Given a Weierstrass curve `W` over a ring `R`, a ring homomorphism `f : R →+* S` induces
+a homomorphism from the coordinate ring of `W` to the coordinate ring of the "base-changed"
+curve `W.map f`. -/
 noncomputable def map : W.CoordinateRing →+* CoordinateRing (W.map f) :=
   AdjoinRoot.lift ((AdjoinRoot.of _).comp <| mapRingHom f) (AdjoinRoot.root _) <| by
     simp [← eval₂_map, ← map_polynomial]
