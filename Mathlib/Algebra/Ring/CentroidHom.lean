@@ -700,14 +700,12 @@ instance : Star (CentroidHom α) where
 @[simp] lemma star_apply (f : CentroidHom α) (a : α) : (star f) a = star (f (star a)) := rfl
 
 instance instInvolutiveStar : InvolutiveStar (CentroidHom α) where
-  star_involutive _ := by
-    ext a
-    rw [star_apply, star_apply, star_star, star_star]
+  star_involutive _ := ext (fun _ => by
+    rw [star_apply, star_apply, star_star, star_star])
 
 instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
-  star_involutive f := by
-    ext
-    rw [star_apply, star_apply, star_star, star_star]
+  star_involutive f := ext (fun _ => by
+    rw [star_apply, star_apply, star_star, star_star])
   star_add f g := ext fun _ => star_add _ _
 
 instance : Star (Subsemiring.center (CentroidHom α)) where
@@ -716,13 +714,12 @@ instance : Star (Subsemiring.center (CentroidHom α)) where
     intro g
     ext a
     simp only [mul_apply]
-    have e1 : star (f.val (star (g a))) = g (star (f.val (star a))) := calc
-        star (f.val (star (g a))) = star (f.val (star g (star a))) := by rw [star_apply, star_star]
-        _ = star ((f.val * star g) (star a)) := by simp only [star_apply, star_star, mul_apply]
-        _ = star ((star g * f.val) (star a)) := by rw [f.property.comm]
-        _ = star (star g (f.val (star a))) := by simp only [mul_apply, star_apply, star_star]
-        _ = g (star (f.val (star a))) := by simp only [star_apply, star_star]
-    exact e1.symm⟩
+    calc
+      g (star (f.val (star a))) = star (star g (f.val (star a))) := by rw [star_apply, star_star]
+      _ = star ((star g * f.val) (star a)) := rfl
+      _ = star ((f.val * star g) (star a)) := by rw [f.property.comm]
+      _ = star (f.val (star g (star a))) := rfl
+      _ = star (f.val (star (g a))) := by rw [star_apply, star_star]⟩
 
 instance : InvolutiveStar (Subsemiring.center (CentroidHom α)) where
   star_involutive f := SetCoe.ext (instInvolutiveStar.star_involutive f.val)
