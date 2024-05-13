@@ -656,8 +656,8 @@ trivial inconvenience, but in any case there are no obvious applications of the 
 version.
 
 TODO: For consistency and possible generalizations, introduce `BoundedAdd`
-in `Mathlib.Topology.Bornology.BoundedOperation` and and use `BoundedAdd β` here instead
-of `LipschitzAdd β`. -/
+in `Mathlib.Topology.Bornology.BoundedOperation` and and use `BoundedAdd β` & `ContinuousAdd β`
+here instead of `LipschitzAdd β`. -/
 variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β]
 variable [LipschitzAdd β]
 variable (f g : α →ᵇ β) {x : α} {C : ℝ}
