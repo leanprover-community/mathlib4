@@ -23,7 +23,7 @@ namespace Mathlib.ThmLemma
 /-- `thmNoDoc cmd` checks whether the `cmd` is a `theorem` with no doc-string.
 If that is the case, then it returns two syntax nodes: the one for `theorem` and the one
 for the name of the theorem.
-Otherwise, it returns none.
+Otherwise, it returns `none`.
 -/
 def thmNoDoc : Syntax → Option (Syntax × Syntax)
   | .node _ ``Lean.Parser.Command.declaration #[
