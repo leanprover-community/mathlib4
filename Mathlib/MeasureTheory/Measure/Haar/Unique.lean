@@ -492,7 +492,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     · simpa using (u_mem n).2.le
   have I1 := I μ' (by infer_instance)
   simp_rw [M] at I1
-  have J1 : ∫ (x : G), indicator {1} (fun _ ↦ 1) (f x) ∂μ'
+  have J1 : ∫ (x : G), indicator {1} (fun _ ↦ (1 : ℝ)) (f x) ∂μ'
       = ∫ (x : G), indicator {1} (fun _ ↦ 1) (f x) ∂(haarScalarFactor μ' μ • μ) :=
     tendsto_nhds_unique I1 (I (haarScalarFactor μ' μ • μ) (by infer_instance))
   have J2 : ENNReal.toReal (μ' (f ⁻¹' {1}))
