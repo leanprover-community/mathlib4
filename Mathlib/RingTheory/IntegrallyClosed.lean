@@ -156,8 +156,8 @@ theorem integralClosure_eq_bot_iff (hRA : Function.Injective (algebraMap R A)) :
   constructor
   · intro h
     refine ⟨ hRA, fun hx => Set.mem_range.mp (Algebra.mem_bot.mp (h hx)), ?_⟩
-    · rintro ⟨y, rfl⟩
-      apply isIntegral_algebraMap
+    rintro ⟨y, rfl⟩
+    apply isIntegral_algebraMap
   · intro h x hx
     rw [Algebra.mem_bot, Set.mem_range]
     exact isIntegral_iff.mp hx

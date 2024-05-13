@@ -374,23 +374,30 @@ theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
   rw [← Units.finrank_eq_rank, Zlattice.rank ℝ]
 
+private theorem unitLatticeEquiv_aux1 :
+    (logEmbedding K).ker = (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))).ker := by
+  ext
+  rw [MonoidHom.coe_toAdditive_ker, QuotientGroup.ker_mk', AddMonoidHom.mem_ker,
+    logEmbedding_eq_zero_iff]
+  rfl
+
+private theorem unitLatticeEquiv_aux2 :
+    Function.Surjective (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))) := by
+  intro x
+  refine ⟨Additive.ofMul x.out', ?_⟩
+  simp only [MonoidHom.toAdditive_apply_apply, toMul_ofMul, QuotientGroup.mk'_apply,
+      QuotientGroup.out_eq']
+  rfl
+
 /-- The linear equivalence between `unitLattice` and `(𝓞 K)ˣ ⧸ (torsion K)` as an additive
 `ℤ`-module. -/
-def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (torsion K)) := by
-  refine AddEquiv.toIntLinearEquiv ?_
-  rw [unitLattice, ← AddMonoidHom.range_eq_map (logEmbedding K)]
-  refine (QuotientAddGroup.quotientKerEquivRange (logEmbedding K)).symm.trans ?_
-  refine (QuotientAddGroup.quotientAddEquivOfEq ?_).trans
-    (QuotientAddGroup.quotientKerEquivOfSurjective
-      (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))) (fun x => ?_))
-  · ext
-    rw [MonoidHom.coe_toAdditive_ker, QuotientGroup.ker_mk', AddMonoidHom.mem_ker,
-      logEmbedding_eq_zero_iff]
-    rfl
-  · refine ⟨Additive.ofMul x.out', ?_⟩
-    simp only [MonoidHom.toAdditive_apply_apply, toMul_ofMul, QuotientGroup.mk'_apply,
-      QuotientGroup.out_eq']
-    rfl
+def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (torsion K)) :=
+  AddEquiv.toIntLinearEquiv <|
+    (AddEquiv.addSubgroupCongr (AddMonoidHom.range_eq_map (logEmbedding K)).symm).trans <|
+      (QuotientAddGroup.quotientKerEquivRange (logEmbedding K)).symm.trans <|
+          (QuotientAddGroup.quotientAddEquivOfEq (unitLatticeEquiv_aux1  K)).trans <|
+            QuotientAddGroup.quotientKerEquivOfSurjective
+              (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))) (unitLatticeEquiv_aux2 K)
 
 instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Module.Free.of_equiv (unitLatticeEquiv K)
