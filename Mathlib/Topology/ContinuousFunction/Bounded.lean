@@ -811,10 +811,10 @@ variable [TopologicalSpace α] {R : Type*} [PseudoMetricSpace R]
 
 instance instMul [Mul R] [BoundedMul R] [ContinuousMul R] :
     Mul (α →ᵇ R) where
-  mul f g := {
-    toFun := fun x ↦ f x * g x
-    continuous_toFun := f.continuous.mul g.continuous
-    map_bounded' := mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
+  mul f g :=
+    { toFun := fun x ↦ f x * g x
+      continuous_toFun := f.continuous.mul g.continuous
+      map_bounded' := mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
 
 @[simp]
 theorem coe_mul [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
