@@ -156,7 +156,7 @@ instance UniquePartitionZero : Unique (Partition 0) where
 instance UniquePartitionOne : Unique (Partition 1) where
   uniq _ := Partition.ext _ _ <| by simp
 
-lemma ofSym_one (s : Sym σ 1) : Nat.Partition.ofSym s = Nat.Partition.indiscrete 1 := by
+lemma ofSym_one (s : Sym σ 1) : ofSym s = indiscrete 1 := by
   ext; simp
 
 /-- The equivalence between `σ` and `1`-tuples of elements of σ -/
