@@ -29,7 +29,6 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 -/
 
 -- Various pieces of algebra that have previously been spuriously imported here:
-assert_not_exists zero_zpow
 assert_not_exists map_ne_zero
 assert_not_exists Field
  -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but

@@ -154,7 +154,10 @@ set_option linter.uppercaseLean3 false in
 
 /-- Isomorphic presheaves have isomorphic sheaf condition diagrams. -/
 def diagram.isoOfIso (α : F ≅ G) : diagram F U ≅ diagram.{v'} G U :=
-  NatIso.ofComponents (by rintro ⟨⟩; exact piOpens.isoOfIso U α; exact piInters.isoOfIso U α)
+  NatIso.ofComponents (by
+    rintro ⟨⟩
+    · exact piOpens.isoOfIso U α
+    · exact piInters.isoOfIso U α)
     (by
       rintro ⟨⟩ ⟨⟩ ⟨⟩
       · simp

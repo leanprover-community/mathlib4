@@ -334,7 +334,7 @@ theorem Submartingale.condexp_sub_nonneg {f : ι → Ω → ℝ} (hf : Submartin
   refine' EventuallyLE.trans _ (condexp_sub (hf.integrable _) (hf.integrable _)).symm.le
   rw [eventually_sub_nonneg,
     condexp_of_stronglyMeasurable (ℱ.le _) (hf.adapted _) (hf.integrable _)]
-  · exact hf.2.1 i j hij
+  exact hf.2.1 i j hij
 #align measure_theory.submartingale.condexp_sub_nonneg MeasureTheory.Submartingale.condexp_sub_nonneg
 
 theorem submartingale_iff_condexp_sub_nonneg [IsFiniteMeasure μ] {f : ι → Ω → ℝ} :
