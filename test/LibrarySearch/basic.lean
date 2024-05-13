@@ -124,10 +124,10 @@ inductive P : ℕ → Prop
   | gt_in_head {n : ℕ} : n < 0 → P n
 
 -- This lemma with `>` as its head symbol should also be found for goals with head symbol `<`.
-theorem lemma_with_gt_in_head (a : ℕ) (h : P a) : 0 > a := by cases h; assumption
+lemma lemma_with_gt_in_head (a : ℕ) (h : P a) : 0 > a := by cases h; assumption
 
 -- This lemma with `false` as its head symbols should also be found for goals with head symbol `¬`.
-theorem lemma_with_false_in_head (a b : ℕ) (_h1 : a < b) (h2 : P a) : False := by
+lemma lemma_with_false_in_head (a b : ℕ) (_h1 : a < b) (h2 : P a) : False := by
   apply Nat.not_lt_zero; cases h2; assumption
 
 /-- info: Try this: exact lemma_with_gt_in_head a h -/
@@ -191,7 +191,7 @@ example (P Q : List ℕ) (_h : ℕ) : List ℕ := by apply? using P, Q
 -- Check that we don't use sorryAx:
 -- (see https://github.com/leanprover-community/mathlib4/issues/226)
 
-theorem Bool_eq_iff {A B : Bool} : (A = B) = (A ↔ B) :=
+lemma Bool_eq_iff {A B : Bool} : (A = B) = (A ↔ B) :=
   by (cases A <;> cases B <;> simp)
 
 /-- info: Try this: exact Bool_eq_iff -/

@@ -440,7 +440,7 @@ infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
     id   := fun _ ↦ id
     comp := fun f g ↦ g ∘ f }
 
-@[ext] theorem types.ext {X Y : Type u} {f g : X ⟶ Y} : (∀ x, f x = g x) → f = g := funext
+@[ext] lemma types.ext {X Y : Type u} {f g : X ⟶ Y} : (∀ x, f x = g x) → f = g := funext
 
 example (X : Type u) {x : Type u} (h : (X → X) = x) : (X ⟶ X) = x := by simp; rw [h]
 example (X : Type u) {f : X → X} (h : ∀ x, f x = x) : 𝟙 X = f := by ext; simp; rw [h]

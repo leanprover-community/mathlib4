@@ -47,13 +47,13 @@ example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 2 ∣ 4 := by
 def EmptyOrUniv {α : Type _} (s : Set α) : Prop :=
   s = ∅ ∨ s = Set.univ
 
-theorem Subsingleton.set_empty_or_univ {α} [Subsingleton α] (s : Set α) : s = ∅ ∨ s = Set.univ :=
+lemma Subsingleton.set_empty_or_univ {α} [Subsingleton α] (s : Set α) : s = ∅ ∨ s = Set.univ :=
 test_sorry
 
-theorem Subsingleton.set_empty_or_univ' {α} [Subsingleton α] (s : Set α) : EmptyOrUniv s :=
+lemma Subsingleton.set_empty_or_univ' {α} [Subsingleton α] (s : Set α) : EmptyOrUniv s :=
   Subsingleton.set_empty_or_univ s
 
-theorem Set.empty_union (a : Set α) : ∅ ∪ a = a := test_sorry
+lemma Set.empty_union (a : Set α) : ∅ ∪ a = a := test_sorry
 
 example {α : Type _} (s : Set α) (hs : s = ∅ ∪ Set.univ) : EmptyOrUniv s := by
   fail_if_success nontriviality α

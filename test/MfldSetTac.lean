@@ -34,7 +34,7 @@ def PartialHomeomorph.symm (_e : PartialHomeomorph α β) : PartialHomeomorph β
   e.symm (e x) = x :=
 test_sorry
 
-@[mfld_simps] theorem PartialHomeomorph.symm_to_PartialEquiv (e : PartialHomeomorph α β) :
+@[mfld_simps] lemma PartialHomeomorph.symm_to_PartialEquiv (e : PartialHomeomorph α β) :
   e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
 test_sorry
 

@@ -31,16 +31,16 @@ example {n} (y : ℝ) (hy : y≠0) :
   by unfold foo; fun_prop (disch:=aesop)
 
 
--- This theorem is meant to work together with `measurable_of_continuousOn_compl_singleton`
--- Unification of `(hf : ContinuousOn f {a}ᶜ)` with this theorem determines the point `a` to be `0`
+-- This lemma is meant to work together with `measurable_of_continuousOn_compl_singleton`
+-- Unification of `(hf : ContinuousOn f {a}ᶜ)` with this lemma determines the point `a` to be `0`
 @[fun_prop]
-theorem ContinuousOn.log' : ContinuousOn Real.log {0}ᶜ := ContinuousOn.log (by fun_prop) (by aesop)
+lemma ContinuousOn.log' : ContinuousOn Real.log {0}ᶜ := ContinuousOn.log (by fun_prop) (by aesop)
 
--- Notice that no theorems about measuability of log are used. It is infered from continuity.
+-- Notice that no lemmas about measuability of log are used. It is infered from continuity.
 example : Measurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) :=
   by fun_prop
 
--- Notice that no theorems about measuability of log are used. It is infered from continuity.
+-- Notice that no lemmas about measuability of log are used. It is infered from continuity.
 example : AEMeasurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) :=
   by fun_prop
 
@@ -74,7 +74,7 @@ example : AEMeasurable T := by
   fun_prop
 
 
-private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : ℕ∞) := by norm_cast
+private lemma t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : ℕ∞) := by norm_cast
 
 example {f : ℝ → ℝ} (hf : ContDiff ℝ 12 f) :
     Differentiable ℝ (iteratedDeriv 5 (fun x => f (2*(f (x + x))) + x)) :=
