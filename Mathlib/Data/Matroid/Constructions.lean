@@ -7,6 +7,7 @@ import Mathlib.Data.Matroid.Restrict
 
 /-!
 # Some constructions of matroids
+
 This file defines some very elementary examples of matroids, namely those with at most one base.
 
 ## Main definitions
@@ -37,27 +38,30 @@ open Set
 section EmptyOn
 
 /-- The `Matroid α` with empty ground set. -/
-def emptyOn (α : Type*) : Matroid α :=
-  Matroid.ofBaseOfFinite finite_empty (· = ∅) ⟨_, rfl⟩ (by rintro _ _ rfl; simp) (by simp)
+def emptyOn (α : Type*) : Matroid α where
+  E := ∅
+  Base := (· = ∅)
+  Indep := (· = ∅)
+  indep_iff' := by simp [subset_empty_iff]
+  exists_base := ⟨∅, rfl⟩
+  base_exchange := by rintro _ _ rfl; simp
+  maximality := by rintro _ _ _ rfl -; exact ⟨∅, by simp [mem_maximals_iff]⟩
+  subset_ground := by simp
 
 @[simp] theorem emptyOn_ground : (emptyOn α).E = ∅ := rfl
 
-@[simp] theorem emptyOn_base_iff : (emptyOn α).Base B ↔ B = ∅ := by
-  simp [emptyOn]
+@[simp] theorem emptyOn_base_iff : (emptyOn α).Base B ↔ B = ∅ := Iff.rfl
 
-@[simp] theorem emptyOn_indep_iff : (emptyOn α).Indep B ↔ B = ∅ := by
-  simp [indep_iff, subset_empty_iff]
+@[simp] theorem emptyOn_indep_iff : (emptyOn α).Indep I ↔ I = ∅ := Iff.rfl
 
 theorem ground_eq_empty_iff : (M.E = ∅) ↔ M = emptyOn α := by
-  refine' ⟨fun h ↦ eq_of_base_iff_base_forall (by simp [h]) _, fun h ↦ by simp [h]⟩
-  simp only [h, subset_empty_iff, emptyOn_base_iff, forall_eq, iff_true]
-  obtain ⟨B', hB'⟩ := M.exists_base
-  rwa [← eq_empty_of_subset_empty (hB'.subset_ground.trans_eq h)]
+  simp only [emptyOn, eq_iff_indep_iff_indep_forall, iff_self_and]
+  exact fun h ↦ by simp [h, subset_empty_iff]
 
 @[simp] theorem emptyOn_dual_eq : (emptyOn α)✶ = emptyOn α := by
   rw [← ground_eq_empty_iff]; rfl
 
-@[simp] theorem restrict_to_empty (M : Matroid α) : M ↾ (∅ : Set α) = emptyOn α := by
+@[simp] theorem restrict_empty (M : Matroid α) : M ↾ (∅ : Set α) = emptyOn α := by
   simp [← ground_eq_empty_iff]
 
 theorem eq_emptyOn_or_nonempty (M : Matroid α) : M = emptyOn α ∨ Matroid.Nonempty M := by
@@ -88,8 +92,7 @@ def loopyOn (E : Set α) : Matroid α := (emptyOn α ↾ E)
   rintro rfl; apply empty_subset
 
 theorem eq_loopyOn_iff : (M = loopyOn E) ↔ M.E = E ∧ ∀ X ⊆ M.E, M.Indep X → X = ∅ := by
-  simp_rw [eq_iff_indep_iff_indep_forall]
-  simp only [loopyOn_ground, loopyOn_indep_iff, and_congr_right_iff]
+  simp only [eq_iff_indep_iff_indep_forall, loopyOn_ground, loopyOn_indep_iff, and_congr_right_iff]
   rintro rfl
   refine ⟨fun h I hI ↦ (h I hI).1, fun h I hIE ↦ ⟨h I hIE, by rintro rfl; simp⟩⟩
 
@@ -113,14 +116,9 @@ theorem Finite.loopyOn_finite (hE : E.Finite) : Matroid.Finite (loopyOn E) :=
   exact fun _ h _ ↦ h
 
 theorem empty_base_iff : M.Base ∅ ↔ M = loopyOn M.E := by
-  simp_rw [eq_iff_indep_iff_indep_forall, and_iff_right (show M.E = (loopyOn M.E).E from rfl),
-    loopyOn_indep_iff]
-  refine ⟨fun h I hIE ↦ ⟨fun hI ↦ ?_, ?_⟩, fun h ↦ ?_⟩
-  · rw [h.eq_of_subset_indep hI <| empty_subset _]
-  · rintro rfl
-    exact h.indep.subset <| empty_subset _
-  refine base_iff_maximal_indep.2 ⟨M.empty_indep, fun I hI _ ↦ ?_⟩
-  rwa [eq_comm, ← h I hI.subset_ground]
+  simp only [eq_loopyOn_iff, indep_iff, forall_exists_index, and_imp, true_and]
+  refine ⟨fun h X _ B hB hXB ↦ (h.eq_of_subset_indep (hB.indep.subset hXB) (empty_subset X)).symm,
+    fun h ↦ by obtain ⟨B, hB⟩ := M.exists_base; rwa [← h B hB.subset_ground B hB Subset.rfl] ⟩
 
 theorem eq_loopyOn_or_rkPos (M : Matroid α) : M = loopyOn M.E ∨ RkPos M := by
   rw [← empty_base_iff, rkPos_iff_empty_not_base]; apply em
@@ -229,7 +227,7 @@ theorem uniqueBaseOn_inter_basis (hI : I ⊆ E) (hX : X ⊆ E) :
 @[simp] theorem uniqueBaseOn_empty (I : Set α) : uniqueBaseOn ∅ I = loopyOn I := by
   rw [← dual_inj, uniqueBaseOn_dual_eq, diff_empty, uniqueBaseOn_self, loopyOn_dual_eq]
 
-@[simp] theorem uniqueBaseOn_restrict' (I E R : Set α) :
+theorem uniqueBaseOn_restrict' (I E R : Set α) :
     (uniqueBaseOn I E) ↾ R = uniqueBaseOn (I ∩ R ∩ E) R := by
   simp_rw [eq_iff_indep_iff_indep_forall, restrict_ground_eq, uniqueBaseOn_ground, true_and,
     restrict_indep_iff, uniqueBaseOn_indep_iff', subset_inter_iff]
