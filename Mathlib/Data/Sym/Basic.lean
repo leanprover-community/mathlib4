@@ -542,8 +542,8 @@ def oneEquiv : α ≃ Sym α 1 where
   invFun s := (Equiv.subtypeQuotientEquivQuotientSubtype
       (·.length = 1) _ (fun l ↦ Iff.rfl) (fun l l' ↦ by rfl) s).liftOn
     (fun l ↦ l.1.head <| List.length_pos.mp <| by simp)
-    fun ⟨l, h⟩ ⟨l', h'⟩ _perm ↦ by
-      obtain ⟨a, rfl⟩ := List.length_eq_one.mp h'
+    fun ⟨_, _⟩ ⟨_, h⟩ _perm ↦ by
+      obtain ⟨a, rfl⟩ := List.length_eq_one.mp h
       exact List.eq_of_mem_singleton (_perm.mem_iff.mp <| List.head_mem _)
   left_inv a := by rfl
   right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one.mp h; rfl
