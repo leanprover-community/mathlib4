@@ -742,14 +742,12 @@ instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
 instance : StarRing (Subsemiring.center (CentroidHom α)) where
   __ := instStarAddMonoidCenter
   star_mul f g := by
-    apply SetCoe.ext
     ext a
-    have e1 : star (f * g) a = (star g * star f) a := calc
+    calc
       star (f * g) a = star (g * f) a := by rw [CommMonoid.mul_comm f g]
       _ = star (g (f (star a))) := rfl
       _ = star (g (star (star (f (star a))))) := by simp only [star_star]
       _ = (star g * star f).val a := rfl
-    exact e1
 
 theorem inr_star (z : NonUnitalStarSubsemiring.center α) :
     (star (centerToCentroidCenter z))  =
