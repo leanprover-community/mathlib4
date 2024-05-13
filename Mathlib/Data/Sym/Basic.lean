@@ -539,8 +539,8 @@ theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈
 @[simps apply]
 def oneEquiv : α ≃ Sym α 1 where
   toFun a := ⟨{a}, by simp⟩
-  invFun s := Quotient.liftOn (Equiv.subtypeQuotientEquivQuotientSubtype
-      (·.length = 1) _ (fun l ↦ Iff.rfl) (fun l l' ↦ by rfl) s)
+  invFun s := (Equiv.subtypeQuotientEquivQuotientSubtype
+      (·.length = 1) _ (fun l ↦ Iff.rfl) (fun l l' ↦ by rfl) s).liftOn
     (fun l ↦ l.1.head <| List.length_pos.mp <| by simp)
     fun ⟨l, h⟩ ⟨l', h'⟩ _perm ↦ by
       obtain ⟨a, rfl⟩ := List.length_eq_one.mp h'
