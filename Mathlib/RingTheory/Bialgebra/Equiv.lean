@@ -245,8 +245,7 @@ def Simps.symm_apply {R : Type*} [CommSemiring R]
 
 initialize_simps_projections BialgEquiv (invFun → symm_apply)
 
-@[simp]
-theorem invFun_eq_symm : e.invFun = e.symm := by
+theorem invFun_eq_symm : e.invFun = e.symm :=
   rfl
 
 @[simp]
