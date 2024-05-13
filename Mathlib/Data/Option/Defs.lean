@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.ThmLemma
 import Mathlib.Tactic.TypeStar
 
 #align_import data.option.defs from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"

@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.ThmLemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.ToAdditive

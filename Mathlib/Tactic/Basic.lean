@@ -8,6 +8,7 @@ import Batteries
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.ThmLemma
 import Mathlib.Tactic.TypeStar
 
 set_option autoImplicit true
