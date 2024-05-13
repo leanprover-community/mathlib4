@@ -1918,6 +1918,15 @@ theorem ofReal_le_ennnorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖₊ := by
 
 end Real
 
+namespace NNReal
+
+instance : NNNorm ℝ≥0 where
+  nnnorm x := x
+
+@[simp] lemma nnnorm_eq_self (x : ℝ≥0) : ‖x‖₊ = x := rfl
+
+end NNReal
+
 namespace Int
 
 instance instNormedAddCommGroup : NormedAddCommGroup ℤ where
