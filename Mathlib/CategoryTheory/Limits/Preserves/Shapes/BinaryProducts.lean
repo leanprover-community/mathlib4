@@ -97,13 +97,13 @@ theorem PreservesLimitPair.iso_hom : (PreservesLimitPair.iso G X Y).hom = prodCo
 #align category_theory.limits.preserves_limit_pair.iso_hom CategoryTheory.Limits.PreservesLimitPair.iso_hom
 
 @[simp]
-theorem PreservesLimitPair.inv_fst :
+theorem PreservesLimitPair.iso_inv_fst :
     (PreservesLimitPair.iso G X Y).inv ≫ G.map prod.fst = prod.fst := by
   rw [← Iso.cancel_iso_hom_left (PreservesLimitPair.iso G X Y), ← Category.assoc, Iso.hom_inv_id]
   simp
 
 @[simp]
-theorem PreservesLimitPair.inv_snd :
+theorem PreservesLimitPair.iso_inv_snd :
     (PreservesLimitPair.iso G X Y).inv ≫ G.map prod.snd = prod.snd := by
   rw [← Iso.cancel_iso_hom_left (PreservesLimitPair.iso G X Y), ← Category.assoc, Iso.hom_inv_id]
   simp
