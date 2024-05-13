@@ -266,7 +266,6 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.GroupWithZero.Pi
-import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
@@ -2971,6 +2970,7 @@ import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.Order.Group.Lattice
 import Mathlib.MeasureTheory.Order.Lattice
 import Mathlib.MeasureTheory.OuterMeasure.Basic
+import Mathlib.MeasureTheory.OuterMeasure.Defs
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.SetAlgebra
 import Mathlib.MeasureTheory.SetSemiring
