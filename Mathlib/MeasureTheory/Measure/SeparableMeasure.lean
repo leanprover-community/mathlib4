@@ -309,13 +309,13 @@ theorem isSeparable_of_sigmaFinite [CountablyGenerated X] [SigmaFinite μ] :
       exact generateFrom_mono <| le_trans self_subset_generateSetAlgebra <|
         generateSetAlgebra_mono <| subset_union_left ..
     · induction hs with
-      | @base t t_mem =>
+      | base t t_mem =>
         rcases t_mem with t_mem | ⟨n, rfl⟩
         · exact hgen ▸ measurableSet_generateFrom t_mem
         · exact μ.toFiniteSpanningSetsIn.set_mem n
       | empty => exact MeasurableSet.empty
-      | @compl t _ t_mem => exact MeasurableSet.compl t_mem
-      | @union t u _ _ t_mem u_mem => exact MeasurableSet.union t_mem u_mem
+      | compl t _ t_mem => exact MeasurableSet.compl t_mem
+      | union t u _ _ t_mem u_mem => exact MeasurableSet.union t_mem u_mem
 
 /-- If a measurable space is countably generated and equipped with an s-finite measure, then the
 measure is separable. -/
