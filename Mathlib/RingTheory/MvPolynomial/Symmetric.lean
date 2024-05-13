@@ -377,7 +377,6 @@ theorem hsymm_zero : hsymm σ R 0 = 1 := by simp [hsymm, eq_nil_of_card_zero]
 @[simp]
 theorem hsymm_one : hsymm σ R 1 = ∑ i, X i := by
   symm
-  rw [hsymm]
   apply Fintype.sum_equiv oneEquiv
   simp only [oneEquiv_apply, Multiset.map_singleton, Multiset.prod_singleton, implies_true]
 
@@ -417,7 +416,7 @@ lemma psumMu_def {n : ℕ} (μ : n.Partition) : psumMu σ R μ =
     (μ.parts.map (psum σ R)).prod := rfl
 
 @[simp]
-theorem psum_zero : psum σ R 0 = Fintype.card σ := by simp [psum]; rfl
+theorem psum_zero : psum σ R 0 = Fintype.card σ := by simp [psum]
 
 @[simp]
 theorem psum_one : psum σ R 1 = ∑ i, X i := by simp [psum]
@@ -428,8 +427,7 @@ theorem psumMu_zero : psumMu σ R (Nat.Partition.indiscrete 0) = 1 := by
 
 @[simp]
 theorem psumMu_onePart {n : ℕ} (npos : n > 0) :
-    psumMu σ R (Nat.Partition.indiscrete n) = psum σ R n := by
-  simp [psumMu, npos]
+    psumMu σ R (Nat.Partition.indiscrete n) = psum σ R n := by simp [psumMu, npos]
 
 @[simp]
 theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
@@ -466,7 +464,7 @@ theorem msymm_one : msymm σ R (indiscrete 1) = ∑ i, X i := by
 @[simp]
 theorem rename_msymm {n : ℕ} (μ : n.Partition) (e : σ ≃ τ) :
     rename e (msymm σ R μ) = msymm τ R μ := by
-  rw [msymm._eq_1, map_sum]
+  rw [msymm, map_sum]
   apply Fintype.sum_equiv (ofSym_shape_equiv μ e)
   intro
   rw [← Multiset.prod_hom, Multiset.map_map, ofSym_shape_equiv]
