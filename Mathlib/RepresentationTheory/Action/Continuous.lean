@@ -6,7 +6,6 @@ Authors: Christian Merten
 import Mathlib.RepresentationTheory.Action.Concrete
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 
