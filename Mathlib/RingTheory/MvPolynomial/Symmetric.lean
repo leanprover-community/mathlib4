@@ -197,7 +197,7 @@ variable {n : ℕ} (f : ℕ → MvPolynomial σ R)
 /-- Given a sequence of `MvPolynomial` functions `f` and a partition `μ` of size `n`,
 `muProduct` computes the product of applying each function in `f` to the parts of `μ`. -/
 def muProduct (μ : n.Partition) : MvPolynomial σ R :=
-  Multiset.prod (μ.parts.map f)
+  (μ.parts.map f).prod
 
 lemma muProduct_def (μ : n.Partition) :
     muProduct σ R f μ = Multiset.prod (μ.parts.map f) := rfl
