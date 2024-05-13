@@ -582,7 +582,7 @@ lemma inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
 -- the attributes are intentionally out of order. `smul_zero` proves `zsmul_zero`.
 @[to_additive zsmul_zero, simp]
 lemma one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
-  | (n : ℕ)       => by rw [zpow_natCast, one_pow]
+  | (n : ℕ)    => by rw [zpow_natCast, one_pow]
   | .negSucc n => by rw [zpow_negSucc, one_pow, inv_one]
 #align one_zpow one_zpow
 #align zsmul_zero zsmul_zero

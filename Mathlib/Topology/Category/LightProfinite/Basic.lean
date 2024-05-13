@@ -148,8 +148,7 @@ instance : LightProfinite'.toLightFunctor.{u}.EssSurj where
       Skeleton.equivalence.counitIso)) toProfinite)) ≪≫
       (limit.isLimit _).conePointUniqueUpToIso Y.isLimit)⟩⟩
 
-instance : LightProfinite'.toLightFunctor.IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance : LightProfinite'.toLightFunctor.IsEquivalence where
 
 /-- The equivalence beween `LightProfinite` and a small category. -/
 def LightProfinite.equivSmall : LightProfinite.{u} ≌ LightProfinite'.{u} :=
