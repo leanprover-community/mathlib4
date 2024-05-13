@@ -5,7 +5,6 @@ Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.GroupWithZero.Bitwise
 import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.Parity
 
