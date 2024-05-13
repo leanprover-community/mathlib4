@@ -171,9 +171,8 @@ theorem range_codRestrict {τ₂₁ : R₂ →+* R} [RingHomSurjective τ₂₁]
 #align linear_map.range_cod_restrict LinearMap.range_codRestrict
 
 theorem _root_.Submodule.map_comap_eq [RingHomSurjective τ₁₂] (f : F) (q : Submodule R₂ M₂) :
-    map f (comap f q) = range f ⊓ q :=
-  le_antisymm (le_inf map_le_range (map_comap_le _ _)) <| by
-    rintro _ ⟨⟨x, _, rfl⟩, hx⟩; exact ⟨x, hx, rfl⟩
+    map f (comap f q) = range f ⊓ q := by
+  rw [range_eq_map, map_inf_eq_map_inf_comap, top_inf_eq]
 #align submodule.map_comap_eq Submodule.map_comap_eq
 
 theorem _root_.Submodule.map_comap_eq_self [RingHomSurjective τ₁₂] {f : F} {q : Submodule R₂ M₂}
