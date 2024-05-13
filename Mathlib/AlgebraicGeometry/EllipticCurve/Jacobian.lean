@@ -298,9 +298,9 @@ lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nons
   have hQy : Q y ≠ 0 := fun h => by simp [h] at hQ; exact hQx <| pow_eq_zero hQ.left.symm
   use Units.mk0 _ <| mul_ne_zero (div_ne_zero hPy hPx) (div_ne_zero hQx hQy)
   simp? [smul_fin3, mul_pow, div_pow] says
-    simp only [Fin.isValue, Units.mk0_mul, smul_fin3, Units.val_mul, Units.val_mk0, mul_pow,
-      div_pow, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_two,
-      Matrix.tail_cons, mul_zero]
+    simp only [Fin.isValue, Units.mk0_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
+      smul_fin3, Units.val_mul, Units.val_mk0, mul_pow, div_pow, Matrix.cons_val_zero,
+      Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_two, Matrix.tail_cons, mul_zero]
   congr! 2
   · field_simp [hP.left, hQ.left]
     ring1

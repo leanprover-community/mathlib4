@@ -142,8 +142,8 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :
         obtain ⟨ijk, hijijk, hjkijk⟩ := directed_of (· ≤ ·) ij jk
         refine' ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, _⟩
         rw [← DirectedSystem.map_map, hij, DirectedSystem.map_map]
-        symm
-        rw [← DirectedSystem.map_map, ← hjk, DirectedSystem.map_map] <;> assumption⟩
+        · symm
+          rw [← DirectedSystem.map_map, ← hjk, DirectedSystem.map_map] <;> assumption⟩
 #align first_order.language.direct_limit.setoid FirstOrder.Language.DirectLimit.setoid
 
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.
@@ -351,7 +351,7 @@ theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (
   let ⟨A, A_closure⟩ := S_fg
   let ⟨i, y, eq_y⟩ := exists_quotient_mk'_sigma_mk'_eq G _ (fun a : A ↦ a.1)
   use i
-  use (Substructure.closure L (range y))
+  use Substructure.closure L (range y)
   rw [Substructure.map_closure]
   simp only [Embedding.coe_toHom, of_apply]
   rw [← image_univ, image_image, image_univ, ← eq_y,

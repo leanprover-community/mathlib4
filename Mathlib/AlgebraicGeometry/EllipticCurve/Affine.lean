@@ -79,7 +79,8 @@ elliptic curve, rational point, affine coordinates
 -/
 
 local macro "map_simp" : tactic =>
-  `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow, map_div₀])
+  `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow, map_div₀,
+   WeierstrassCurve.map])
 
 /-- The notation `Y` for `X` in the `PolynomialPolynomial` scope. -/
 scoped[PolynomialPolynomial] notation "Y" => Polynomial.X
@@ -787,7 +788,7 @@ variable {A : Type v} [CommRing A] (φ : R →+* A)
 lemma map_equation {φ : R →+* A} (hφ : Function.Injective φ) (x y : R) :
     (W.map φ).toAffine.equation (φ x) (φ y) ↔ W.equation x y := by
   simpa only [equation_iff] using
-    ⟨fun h => hφ <| by map_simp; exact h, fun h => by convert congr_arg φ h <;> map_simp <;> rfl⟩
+    ⟨fun h => hφ <| by map_simp; exact h, fun h => by convert congr_arg φ h <;> map_simp⟩
 #align weierstrass_curve.equation_iff_base_change WeierstrassCurve.Affine.map_equation
 
 lemma map_nonsingular {φ : R →+* A} (hφ : Function.Injective φ) (x y : R) :
@@ -796,13 +797,12 @@ lemma map_nonsingular {φ : R →+* A} (hφ : Function.Injective φ) (x y : R) :
   refine ⟨Or.imp (not_imp_not.mpr fun h => ?_) (not_imp_not.mpr fun h => ?_),
     Or.imp (not_imp_not.mpr fun h => ?_) (not_imp_not.mpr fun h => ?_)⟩
   any_goals apply hφ; map_simp; exact h
-  any_goals convert congr_arg φ h <;> map_simp <;> rfl
+  any_goals convert congr_arg φ h <;> map_simp
 #align weierstrass_curve.nonsingular_iff_base_change WeierstrassCurve.Affine.map_nonsingular
 
 lemma map_negY (x y : R) : (W.map φ).toAffine.negY (φ x) (φ y) = φ (W.negY x y) := by
   simp only [negY]
   map_simp
-  rfl
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_neg_Y WeierstrassCurve.Affine.map_negY
 
@@ -810,7 +810,6 @@ lemma map_addX (x₁ x₂ L : R) :
     (W.map φ).toAffine.addX (φ x₁) (φ x₂) (φ L) = φ (W.addX x₁ x₂ L) := by
   simp only [addX]
   map_simp
-  rfl
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_add_X WeierstrassCurve.Affine.map_addX
 
@@ -833,11 +832,10 @@ lemma map_slope {F : Type u} [Field F] (W : Affine F) {K : Type v} [Field K] (φ
   by_cases hx : x₁ = x₂
   · by_cases hy : y₁ = W.negY x₂ y₂
     · rw [slope_of_Yeq hx hy, slope_of_Yeq <| congr_arg _ hx, map_zero]
-      · rw [hy, map_negY]
+      rw [hy, map_negY]
     · rw [slope_of_Yne hx hy, slope_of_Yne <| congr_arg _ hx]
-      · map_simp
-        simp only [map_negY]
-        rfl
+      · simp only [negY]
+        map_simp
       · rw [map_negY]
         contrapose! hy
         exact φ.injective hy
@@ -927,7 +925,7 @@ def map : W⟮F⟯ →+ W⟮K⟯ where
     · by_cases hy : y₁ = (W.baseChange F).toAffine.negY x₂ y₂
       · simp only [some_add_some_of_Yeq hx hy, mapFun]
         rw [some_add_some_of_Yeq <| congr_arg _ hx]
-        · rw [hy, baseChange_negY]
+        rw [hy, baseChange_negY]
       · simp only [some_add_some_of_Yne hx hy, mapFun]
         rw [some_add_some_of_Yne <| congr_arg _ hx]
         · simp only [some.injEq, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope]
@@ -972,6 +970,7 @@ variable {F K}
 
 lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalarTower R F L]
     (χ : K →ₐ[F] L) (P : W⟮F⟯) : map W χ (baseChange W F K P) = baseChange W F L P := by
+  have : Subsingleton (F →ₐ[F] L) := inferInstance
   convert map_map W (Algebra.ofId F K) χ P
 
 end Point

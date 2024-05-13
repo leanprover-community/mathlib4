@@ -335,8 +335,7 @@ scoped[Uniformity] notation "𝓤" => uniformity
 
 /-- Construct a `UniformSpace` from a `u : UniformSpace.Core` and a `TopologicalSpace` structure
 that is equal to `u.toTopologicalSpace`. -/
-@[reducible]
-def UniformSpace.ofCoreEq {α : Type u} (u : UniformSpace.Core α) (t : TopologicalSpace α)
+abbrev UniformSpace.ofCoreEq {α : Type u} (u : UniformSpace.Core α) (t : TopologicalSpace α)
     (h : t = u.toTopologicalSpace) : UniformSpace α where
   __ := u
   toTopologicalSpace := t
@@ -344,14 +343,12 @@ def UniformSpace.ofCoreEq {α : Type u} (u : UniformSpace.Core α) (t : Topologi
 #align uniform_space.of_core_eq UniformSpace.ofCoreEq
 
 /-- Construct a `UniformSpace` from a `UniformSpace.Core`. -/
-@[reducible]
-def UniformSpace.ofCore {α : Type u} (u : UniformSpace.Core α) : UniformSpace α :=
+abbrev UniformSpace.ofCore {α : Type u} (u : UniformSpace.Core α) : UniformSpace α :=
   .ofCoreEq u _ rfl
 #align uniform_space.of_core UniformSpace.ofCore
 
 /-- Construct a `UniformSpace.Core` from a `UniformSpace`. -/
-@[reducible]
-def UniformSpace.toCore (u : UniformSpace α) : UniformSpace.Core α where
+abbrev UniformSpace.toCore (u : UniformSpace α) : UniformSpace.Core α where
   __ := u
   refl := by
     rintro U hU ⟨x, y⟩ (rfl : x = y)
@@ -399,8 +396,7 @@ theorem UniformSpace.ofCoreEq_toCore (u : UniformSpace α) (t : TopologicalSpace
 
 /-- Replace topology in a `UniformSpace` instance with a propositionally (but possibly not
 definitionally) equal one. -/
-@[reducible]
-def UniformSpace.replaceTopology {α : Type*} [i : TopologicalSpace α] (u : UniformSpace α)
+abbrev UniformSpace.replaceTopology {α : Type*} [i : TopologicalSpace α] (u : UniformSpace α)
     (h : i = u.toTopologicalSpace) : UniformSpace α where
   __ := u
   toTopologicalSpace := i
@@ -589,8 +585,8 @@ theorem uniformity_lift_le_comp {f : Set (α × α) → Filter β} (h : Monotone
   calc
     ((𝓤 α).lift fun s => f (s ○ s)) = ((𝓤 α).lift' fun s : Set (α × α) => s ○ s).lift f := by
       rw [lift_lift'_assoc]
-      exact monotone_id.compRel monotone_id
-      exact h
+      · exact monotone_id.compRel monotone_id
+      · exact h
     _ ≤ (𝓤 α).lift f := lift_mono comp_le_uniformity le_rfl
 #align uniformity_lift_le_comp uniformity_lift_le_comp
 
@@ -1079,7 +1075,7 @@ scoped[Uniformity] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformC
 /-- A function `f : α → β` is *uniformly continuous* on `s : Set α` if `(f x, f y)` tends to
 the diagonal as `(x, y)` tends to the diagonal while remaining in `s ×ˢ s`.
 In other words, if `x` is sufficiently close to `y`, then `f x` is close to
-`f y` no matter where `x` and `y` are located in `s`.-/
+`f y` no matter where `x` and `y` are located in `s`. -/
 def UniformContinuousOn [UniformSpace β] (f : α → β) (s : Set α) : Prop :=
   Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 β)
 #align uniform_continuous_on UniformContinuousOn
@@ -1131,7 +1127,7 @@ theorem Filter.HasBasis.uniformContinuousOn_iff {ι'} [UniformSpace β] {p : ι 
     UniformContinuousOn f S ↔
       ∀ i, q i → ∃ j, p j ∧ ∀ x, x ∈ S → ∀ y, y ∈ S → (x, y) ∈ s j → (f x, f y) ∈ t i :=
   ((ha.inf_principal (S ×ˢ S)).tendsto_iff hb).trans <| by
-    simp_rw [Prod.forall, Set.inter_comm (s _), ball_mem_comm, mem_inter_iff, mem_prod, and_imp]
+    simp_rw [Prod.forall, Set.inter_comm (s _), forall_mem_comm, mem_inter_iff, mem_prod, and_imp]
 #align filter.has_basis.uniform_continuous_on_iff Filter.HasBasis.uniformContinuousOn_iff
 
 end UniformSpace
@@ -1161,6 +1157,8 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
   show 𝓤[t] ≤ ⨅ u ∈ tt, 𝓤[u] from le_iInf₂ h
 
+set_option linter.deprecated false in
+-- TODO update this code to avoid the deprecation
 instance : Top (UniformSpace α) :=
   ⟨.ofNhdsEqComap ⟨⊤, le_top, le_top, le_top⟩ ⊤ fun x ↦ by simp only [nhds_top, comap_top]⟩
 
@@ -1230,8 +1228,7 @@ instance [Subsingleton α] : Unique (UniformSpace α) where
 /-- Given `f : α → β` and a uniformity `u` on `β`, the inverse image of `u` under `f`
   is the inverse image in the filter sense of the induced function `α × α → β × β`.
   See note [reducible non-instances]. -/
-@[reducible]
-def UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α where
+abbrev UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α where
   uniformity := 𝓤[u].comap fun p : α × α => (f p.1, f p.2)
   symm := by
     simp only [tendsto_comap_iff, Prod.swap, (· ∘ ·)]
@@ -1239,8 +1236,8 @@ def UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α w
   comp := le_trans
     (by
       rw [comap_lift'_eq, comap_lift'_eq2]
-      exact lift'_mono' fun s _ ⟨a₁, a₂⟩ ⟨x, h₁, h₂⟩ => ⟨f x, h₁, h₂⟩
-      exact monotone_id.compRel monotone_id)
+      · exact lift'_mono' fun s _ ⟨a₁, a₂⟩ ⟨x, h₁, h₂⟩ => ⟨f x, h₁, h₂⟩
+      · exact monotone_id.compRel monotone_id)
     (comap_mono u.comp)
   toTopologicalSpace := u.toTopologicalSpace.induced f
   nhds_eq_comap_uniformity x := by

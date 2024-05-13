@@ -68,8 +68,8 @@ noncomputable def quotientByAutTerminalEquivUniqueQuotient
     preservesColimitIso (F ⋙ FintypeCat.incl) J ≪≫
     (Equiv.toIso <| SingleObj.Types.colimitEquivQuotient (J ⋙ F ⋙ FintypeCat.incl))
   apply Equiv.trans
-  apply (IsTerminal.isTerminalIffObj (F ⋙ FintypeCat.incl) _).trans
-    (isLimitEmptyConeEquiv _ (asEmptyCone _) (asEmptyCone _) e)
+  · apply (IsTerminal.isTerminalIffObj (F ⋙ FintypeCat.incl) _).trans
+      (isLimitEmptyConeEquiv _ (asEmptyCone _) (asEmptyCone _) e)
   exact Types.isTerminalEquivUnique _
 
 lemma isGalois_iff_aux (X : C) [IsConnected X] :

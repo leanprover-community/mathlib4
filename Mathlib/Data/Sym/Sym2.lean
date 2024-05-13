@@ -3,6 +3,7 @@ Copyright (c) 2020 Kyle Miller All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2.Init
@@ -98,8 +99,7 @@ type of unordered pairs.
 It is equivalent in a natural way to multisets of cardinality 2 (see
 `Sym2.equivMultiset`).
 -/
-@[reducible]
-def Sym2 (α : Type u) := Quot (Sym2.Rel α)
+abbrev Sym2 (α : Type u) := Quot (Sym2.Rel α)
 #align sym2 Sym2
 
 /-- Constructor for `Sym2`. This is the quotient map `α × α → Sym2 α`. -/
@@ -616,16 +616,16 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
   left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
     refine' x.recOnSubsingleton fun x => _
-    · cases' x with x hx
-      cases' x with _ x
-      · simp at hx
-      cases' x with _ x
-      · simp at hx
-      cases' x with _ x
-      swap
-      · exfalso
-        simp at hx
-      rfl
+    cases' x with x hx
+    cases' x with _ x
+    · simp at hx
+    cases' x with _ x
+    · simp at hx
+    cases' x with _ x
+    swap
+    · exfalso
+      simp at hx
+    rfl
 #align sym2.sym2_equiv_sym' Sym2.sym2EquivSym'
 
 /-- The symmetric square is equivalent to the second symmetric power. -/

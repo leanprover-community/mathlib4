@@ -13,12 +13,6 @@ set_option autoImplicit true
 -- It may also be useful to enable
 -- set_option trace.Meta.Tactic.solveByElim true
 
--- Recall that `apply?` caches the discrimination tree on disk.
--- If you are modifying the way that `apply?` indexes lemmas,
--- while testing you will probably want to delete
--- `.lake/build/lib/MathlibExtras/LibrarySearch.extra`
--- so that the cache is rebuilt.
-
 -- We need to set this here, as the lakefile does not enable this during testing.
 -- https://github.com/leanprover-community/mathlib4/issues/6440
 set_option pp.unicode.fun true
@@ -43,7 +37,7 @@ example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by apply?
 
 /- info: Try this: exact Nat.mul_dvd_mul_left a w -/
 #guard_msgs (drop info) in
-example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
+example (_ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
 
 -- Could be any number of results (`Int.one`, `Int.zero`, etc)
 #guard_msgs (drop info) in
@@ -173,7 +167,7 @@ axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 #guard_msgs in
 example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by apply?
 
-/-- info: Try this: exact List.join L -/
+/-- info: Try this: exact L.join -/
 #guard_msgs in
 example (L _M : List (List ℕ)) : List ℕ := by apply? using L
 

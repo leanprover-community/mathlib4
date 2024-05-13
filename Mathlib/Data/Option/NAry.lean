@@ -27,15 +27,13 @@ We do not define `Option.map₃` as its only purpose so far would be to prove pr
 `Option.map₂` and casing already fulfills this task.
 -/
 
-set_option autoImplicit true
-
 universe u
 
 open Function
 
 namespace Option
 
-variable {f : α → β → γ} {a : Option α} {b : Option β} {c : Option γ}
+variable {α β γ δ : Type*} {f : α → β → γ} {a : Option α} {b : Option β} {c : Option γ}
 
 /-- The image of a binary function `f : α → β → γ` as a function `Option α → Option β → Option γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
@@ -120,6 +118,8 @@ to the associativity, commutativity, distributivity, ... of `Option.map₂` of t
 The proof pattern is `map₂_lemma operation_lemma`. For example, `map₂_comm mul_comm` proves that
 `map₂ (*) a b = map₂ (*) g f` in a `CommSemigroup`.
 -/
+
+variable {α' β' δ' ε ε' : Type*}
 
 theorem map₂_assoc {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε} {g' : β → γ → ε'}
     (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c)) :

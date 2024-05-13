@@ -60,12 +60,9 @@ theorem restrict_toOuterMeasure_eq_toOuterMeasure_restrict (h : MeasurableSet s)
     toMeasure_toOuterMeasure, OuterMeasure.restrict_trim h, μ.trimmed]
 #align measure_theory.measure.restrict_to_outer_measure_eq_to_outer_measure_restrict MeasureTheory.Measure.restrict_toOuterMeasure_eq_toOuterMeasure_restrict
 
-theorem restrict_apply₀ (ht : NullMeasurableSet t (μ.restrict s)) : μ.restrict s t = μ (t ∩ s) :=
-  (toMeasure_apply₀ _ (fun s' hs' t => by
-    suffices μ (s ∩ t) = μ (s ∩ t ∩ s') + μ ((s ∩ t) \ s') by
-      simpa [← Set.inter_assoc, Set.inter_comm _ s, ← inter_diff_assoc]
-    exact le_toOuterMeasure_caratheodory _ _ hs' _) ht).trans <| by
-    simp only [OuterMeasure.restrict_apply]
+theorem restrict_apply₀ (ht : NullMeasurableSet t (μ.restrict s)) : μ.restrict s t = μ (t ∩ s) := by
+  rw [← restrictₗ_apply, restrictₗ, liftLinear_apply₀ _ ht, OuterMeasure.restrict_apply,
+    coe_toOuterMeasure]
 #align measure_theory.measure.restrict_apply₀ MeasureTheory.Measure.restrict_apply₀
 
 /-- If `t` is a measurable set, then the measure of `t` with respect to the restriction of
@@ -82,7 +79,7 @@ theorem restrict_mono' {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄ ⦃μ ν :
   Measure.le_iff.2 fun t ht => calc
     μ.restrict s t = μ (t ∩ s) := restrict_apply ht
     _ ≤ μ (t ∩ s') := (measure_mono_ae <| hs.mono fun _x hx ⟨hxt, hxs⟩ => ⟨hxt, hx hxs⟩)
-    _ ≤ ν (t ∩ s') := (le_iff'.1 hμν (t ∩ s'))
+    _ ≤ ν (t ∩ s') := le_iff'.1 hμν (t ∩ s')
     _ = ν.restrict s' t := (restrict_apply ht).symm
 #align measure_theory.measure.restrict_mono' MeasureTheory.Measure.restrict_mono'
 
@@ -106,8 +103,9 @@ the measure to `s` equals the outer measure of `t ∩ s`. This is an alternate v
 `Measure.restrict_apply`, requiring that `s` is measurable instead of `t`. -/
 @[simp]
 theorem restrict_apply' (hs : MeasurableSet s) : μ.restrict s t = μ (t ∩ s) := by
-  rw [Measure.restrict_toOuterMeasure_eq_toOuterMeasure_restrict hs,
-    OuterMeasure.restrict_apply s t _]
+  rw [← toOuterMeasure_apply,
+    Measure.restrict_toOuterMeasure_eq_toOuterMeasure_restrict hs,
+    OuterMeasure.restrict_apply s t _, toOuterMeasure_apply]
 #align measure_theory.measure.restrict_apply' MeasureTheory.Measure.restrict_apply'
 
 theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
@@ -381,7 +379,7 @@ theorem restrict_union_congr :
     _ = restrict ν s u + restrict ν t (u \ US) := by rw [hs, ht]
     _ = ν US + ν ((u ∩ t) \ US) := by
       simp only [restrict_apply, hu, hu.diff hm, hν, ← inter_comm t, inter_diff_assoc]
-    _ = ν (US ∪ u ∩ t) := (measure_add_diff hm _)
+    _ = ν (US ∪ u ∩ t) := measure_add_diff hm _
     _ = ν (u ∩ s ∪ u ∩ t) := Eq.symm <| measure_union_congr_of_subset hsub hν.le Subset.rfl le_rfl
 #align measure_theory.measure.restrict_union_congr MeasureTheory.Measure.restrict_union_congr
 
@@ -672,7 +670,7 @@ theorem ae_of_ae_restrict_of_ae_restrict_compl (t : Set α) {p : α → Prop}
     calc
       μ { x | ¬p x } = μ ({ x | ¬p x } ∩ t ∪ { x | ¬p x } ∩ tᶜ) := by
         rw [← inter_union_distrib_left, union_compl_self, inter_univ]
-      _ ≤ μ ({ x | ¬p x } ∩ t) + μ ({ x | ¬p x } ∩ tᶜ) := (measure_union_le _ _)
+      _ ≤ μ ({ x | ¬p x } ∩ t) + μ ({ x | ¬p x } ∩ tᶜ) := measure_union_le _ _
       _ ≤ μ.restrict t { x | ¬p x } + μ.restrict tᶜ { x | ¬p x } :=
         (add_le_add (le_restrict_apply _ _) (le_restrict_apply _ _))
       _ = 0 := by rw [ae_iff.1 ht, ae_iff.1 htc, zero_add]
@@ -730,8 +728,8 @@ theorem le_ae_restrict : μ.ae ⊓ 𝓟 s ≤ (μ.restrict s).ae := fun _s hs =>
 @[simp]
 theorem ae_restrict_eq (hs : MeasurableSet s) : (μ.restrict s).ae = μ.ae ⊓ 𝓟 s := by
   ext t
-  simp only [mem_inf_principal, mem_ae_iff, restrict_apply_eq_zero' hs, compl_setOf, not_imp,
-    fun a => and_comm (a := a ∈ s) (b := ¬a ∈ t)]
+  simp only [mem_inf_principal, mem_ae_iff, restrict_apply_eq_zero' hs, compl_setOf,
+    Classical.not_imp, fun a => and_comm (a := a ∈ s) (b := ¬a ∈ t)]
   rfl
 #align measure_theory.ae_restrict_eq MeasureTheory.ae_restrict_eq
 

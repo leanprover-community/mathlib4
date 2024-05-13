@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Algebra.Ring.Commute
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Join
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
-import Mathlib.Data.Nat.Basic
 
 #align_import data.list.big_operators.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
 
@@ -106,7 +106,8 @@ theorem prod_cons : (a :: l).prod = a * l.prod :=
 lemma prod_induction
     (p : M → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ l, p x) :
     p l.prod := by
-  induction' l with a l ih; simpa
+  induction' l with a l ih
+  · simpa
   rw [List.prod_cons]
   simp only [Bool.not_eq_true, List.mem_cons, forall_eq_or_imp] at base
   exact hom _ _ (base.1) (ih base.2)
@@ -357,9 +358,10 @@ lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
 @[to_additive]
 lemma prod_erase_of_comm [DecidableEq M] (ha : a ∈ l) (comm : ∀ x ∈ l, ∀ y ∈ l, x * y = y * x) :
     a * (l.erase a).prod = l.prod := by
-  induction' l with b l ih; simp only [not_mem_nil] at ha
+  induction' l with b l ih
+  · simp only [not_mem_nil] at ha
   obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem ha
-  simp only [erase_cons_head, prod_cons]
+  · simp only [erase_cons_head, prod_cons]
   rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
     comm a ha b (l.mem_cons_self b), mul_assoc,
     ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]
@@ -442,8 +444,7 @@ lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
     conv =>
       lhs; rw [mul_assoc]; right; rw [mul_comm, mul_assoc]; right
       rw [mul_comm, prod_mul_prod_eq_prod_zipWith_mul_prod_drop xs ys]
-    simp only [Nat.add_eq, add_zero]
-    ac_rfl
+    simp [mul_assoc]
 #align list.prod_mul_prod_eq_prod_zip_with_mul_prod_drop List.prod_mul_prod_eq_prod_zipWith_mul_prod_drop
 #align list.sum_add_sum_eq_sum_zip_with_add_sum_drop List.sum_add_sum_eq_sum_zipWith_add_sum_drop
 
@@ -573,7 +574,7 @@ If desired, we could add a class stating that `default = 0`.
 
 /-- This relies on `default ℕ = 0`. -/
 theorem headI_add_tail_sum (L : List ℕ) : L.headI + L.tail.sum = L.sum := by
-  cases L <;> simp; rfl
+  cases L <;> simp
 #align list.head_add_tail_sum List.headI_add_tail_sum
 
 /-- This relies on `default ℕ = 0`. -/

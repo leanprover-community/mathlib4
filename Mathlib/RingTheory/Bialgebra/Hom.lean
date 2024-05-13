@@ -20,7 +20,7 @@ homomorphism.
 
 ## Notations
 
-* `A →ₐc[R] B` : `R`-algebra homomorphism from `A` to `B`.
+* `A →ₐc[R] B` : `R`-bialgebra homomorphism from `A` to `B`.
 
 -/
 
@@ -53,8 +53,11 @@ class BialgHomClass (F : Type*) (R A B : outParam Type*)
 
 namespace BialgHomClass
 
-variable {R A B F : Type*} [CommSemiring R]
-  [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable {R A B F : Type*}
+
+section
+
+variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
   [BialgHomClass F R A B]
 
@@ -69,23 +72,36 @@ instance (priority := 100) toAlgHomClass : AlgHomClass F R A B where
 /-- Turn an element of a type `F` satisfying `BialgHomClass F R A B` into an actual
 `BialgHom`. This is declared as the default coercion from `F` to `A →ₐc[R] B`. -/
 @[coe]
-def toBialgHom {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) : A →ₐc[R] B :=
+def toBialgHom (f : F) : A →ₐc[R] B :=
   { CoalgHomClass.toCoalgHom f, AlgHomClass.toAlgHom f with
     toFun := f }
 
-instance coeTC {F : Type*} [FunLike F A B] [BialgHomClass F R A B] : CoeTC F (A →ₐc[R] B) :=
+instance instCoeToBialgHom :
+    CoeHead F (A →ₐc[R] B) :=
   ⟨BialgHomClass.toBialgHom⟩
 
+end
+section
+variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Semiring B] [Bialgebra R B]
+  [FunLike F A B] [BialgHomClass F R A B]
+
+@[simp]
+theorem counitAlgHom_comp (f : F) :
+    (counitAlgHom R B).comp (f : A →ₐ[R] B) = counitAlgHom R A :=
+  AlgHom.toLinearMap_injective (CoalgHomClass.counit_comp f)
+
+@[simp]
+theorem map_comp_comulAlgHom (f : F) :
+    (Algebra.TensorProduct.map f f).comp (comulAlgHom R A) = (comulAlgHom R B).comp f :=
+  AlgHom.toLinearMap_injective (CoalgHomClass.map_comp_comul f)
+
+end
 end BialgHomClass
 
 namespace BialgHom
 
-variable {R A B C D : Type*}
-
-section Semiring
-
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-  [Semiring C] [Algebra R C] [Semiring D] [Algebra R D]
+variable {R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+  [Semiring B] [Algebra R B] [Semiring C] [Algebra R C] [Semiring D] [Algebra R D]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C] [CoalgebraStruct R D]
 
 instance funLike : FunLike (A →ₐc[R] B) A B where
@@ -116,9 +132,6 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f
     ⇑(f : A →ₐc[R] B) = f :=
   rfl
 
-theorem toFun_eq_coe (f : A →ₐc[R] B) : f.toFun = f :=
-  rfl
-
 @[simp]
 theorem coe_mk {f : A →ₗc[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A → B) = f :=
   rfl
@@ -129,13 +142,11 @@ theorem coe_mks {f : A → B} (h₀ h₁ h₂ h₃ h₄ h₅) :
   rfl
 
 @[simp, norm_cast]
-theorem coe_toCoalgHom_mk {f : A →ₗc[R] B} (h h₁) :
+theorem coe_coalgHom_mk {f : A →ₗc[R] B} (h h₁) :
     ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A →ₗc[R] B) = f := by
   rfl
 
-/- which of the next 3 should exist? 1st and 3rd can be proved by `simp` and `norm_cast`.
-For the 2nd, maybe the `LinearMap` version of e.g. `AlgHom.coe_coe` is missing. -/
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑(f : A →ₗc[R] B) = f :=
   rfl
 
@@ -143,7 +154,7 @@ theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑(f : A →ₗc[R] B) = f :=
 theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_toAlgHom (f : A →ₐc[R] B) : ⇑(f : A →ₐ[R] B) = f :=
   rfl
 
@@ -192,17 +203,19 @@ theorem mk_coe {f : A →ₐc[R] B} (h₀ h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨⟨⟨f, h₀⟩, h₁⟩, h₂, h₃⟩, h₄, h₅⟩ : A →ₐc[R] B) = f :=
   rfl
 
-@[simp]
-theorem counitAlgHom_comp {A B : Type*} [Semiring A]
-    [Semiring B] [Bialgebra R A] [Bialgebra R B] (φ : A →ₐc[R] B) :
-    (counitAlgHom R B).comp (φ : A →ₐ[R] B) = counitAlgHom R A :=
-  AlgHom.toLinearMap_injective φ.counit_comp
+/-- Copy of a `BialgHom` with a new `toFun` equal to the old one. Useful to fix definitional
+equalities. -/
+protected def copy (f : A →ₐc[R] B) (f' : A → B) (h : f' = ⇑f) : A →ₐc[R] B :=
+  { toCoalgHom := (f : A →ₗc[R] B).copy f' h
+    map_one' := by simp_all
+    map_mul' := by intros; simp_all }
 
 @[simp]
-theorem map_comp_comulAlgHom {A B : Type*} [Semiring A]
-    [Semiring B] [Bialgebra R A] [Bialgebra R B] (φ : A →ₐc[R] B) :
-    (Algebra.TensorProduct.map φ φ).comp (comulAlgHom R A) = (comulAlgHom R B).comp φ :=
-  AlgHom.toLinearMap_injective φ.map_comp_comul
+theorem coe_copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=
+  rfl
+
+theorem copy_eq (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : f.copy f' h = f :=
+  DFunLike.ext' h
 
 section
 
@@ -210,7 +223,7 @@ variable (R A)
 
 /-- Identity map as a `BialgHom`. -/
 @[simps!] protected def id : A →ₐc[R] A :=
-{ CoalgHom.id R A, AlgHom.id R A with }
+  { CoalgHom.id R A, AlgHom.id R A with }
 
 variable {R A}
 
@@ -220,6 +233,10 @@ theorem coe_id : ⇑(BialgHom.id R A) = id :=
 
 @[simp]
 theorem id_toCoalgHom : BialgHom.id R A = CoalgHom.id R A :=
+  rfl
+
+@[simp]
+theorem id_toAlgHom : BialgHom.id R A = AlgHom.id R A :=
   rfl
 
 end
@@ -235,6 +252,11 @@ theorem coe_comp (φ₁ : B →ₐc[R] C) (φ₂ : A →ₐc[R] B) : ⇑(φ₁.c
 @[simp]
 theorem comp_toCoalgHom (φ₁ : B →ₐc[R] C) (φ₂ : A →ₐc[R] B) :
     φ₁.comp φ₂ = (φ₁ : B →ₗc[R] C).comp (φ₂ : A →ₗc[R] B) :=
+  rfl
+
+@[simp]
+theorem comp_toAlgHom (φ₁ : B →ₐc[R] C) (φ₂ : A →ₐc[R] B) :
+    φ₁.comp φ₂ = (φ₁ : B →ₐ[R] C).comp (φ₂ : A →ₐ[R] B) :=
   rfl
 
 @[simp]
@@ -268,22 +290,6 @@ theorem one_apply (x : A) : (1 : A →ₐc[R] A) x = x :=
 @[simp]
 theorem mul_apply (φ ψ : A →ₐc[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
-
-end Semiring
-
-section Ring
-
-variable [CommSemiring R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
-
-variable [CoalgebraStruct R A] [CoalgebraStruct R B] (φ : A →ₐc[R] B)
-
-protected theorem map_neg (x) : φ (-x) = -φ x :=
-  map_neg _ _
-
-protected theorem map_sub (x y) : φ (x - y) = φ x - φ y :=
-  map_sub _ _ _
-
-end Ring
 
 end BialgHom
 

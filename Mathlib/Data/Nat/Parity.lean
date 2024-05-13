@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Benjamin Davidson
 import Mathlib.Algebra.Parity
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import data.nat.parity from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -41,6 +41,11 @@ theorem even_iff : Even n ↔ n % 2 = 0 :=
 #align nat.even_iff Nat.even_iff
 
 instance : DecidablePred (Even : ℕ → Prop) := fun _ => decidable_of_iff _ even_iff.symm
+
+/-- `IsSquare` can be decided on `ℕ` by checking against the square root. -/
+instance : DecidablePred (IsSquare : ℕ → Prop) :=
+  fun m ↦ decidable_of_iff' (Nat.sqrt m * Nat.sqrt m = m) <| by
+    simp_rw [← Nat.exists_mul_self m, IsSquare, eq_comm]
 
 theorem odd_iff : Odd n ↔ n % 2 = 1 :=
   ⟨fun ⟨m, hm⟩ => by norm_num [hm, add_mod],
@@ -225,8 +230,7 @@ theorem even_mul_pred_self : ∀ n : ℕ, Even (n * (n - 1))
   | (n + 1) => mul_comm (n + 1 - 1) (n + 1) ▸ even_mul_succ_self n
 #align nat.even_mul_self_pred Nat.even_mul_pred_self
 
-@[deprecated] -- 2024-01-20
-alias even_mul_self_pred := even_mul_pred_self
+@[deprecated] alias even_mul_self_pred := even_mul_pred_self -- 2024-01-20
 
 theorem two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h =>
   Nat.mul_div_cancel_left' (even_iff_two_dvd.mp h)

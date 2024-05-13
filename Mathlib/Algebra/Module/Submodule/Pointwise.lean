@@ -3,12 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.GroupTheory.Subgroup.Pointwise
-import Mathlib.LinearAlgebra.Span
-import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Order.Group.Action
+import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Span
+import Mathlib.RingTheory.Ideal.Basic
 
 #align_import algebra.module.submodule.pointwise from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
