@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Group.Fin
 import Mathlib.Order.SuccPred.Basic
+import Mathlib.Data.Fin.Basic
 
 #align_import data.nat.succ_pred from "leanprover-community/mathlib"@"a2d2e18906e2b62627646b5d5be856e6a642062f"
 
