@@ -53,51 +53,61 @@ local prefix:100 "s" => cs.simple
 local prefix:100 "π" => cs.wordProd
 local prefix:100 "ℓ" => cs.length
 
-/-- The proposition that `t` is a reflection of the Coxeter system `cs`; i.e., it is of the form
+/-- `t : W` is a *reflection* of the Coxeter system `cs` if it is of the form
 $w s_i w^{-1}$, where $w \in W$ and $s_i$ is a simple reflection. -/
 def IsReflection (t : W) : Prop := ∃ w i, t = w * s i * w⁻¹
 
 theorem isReflection_simple (i : B) : cs.IsReflection (s i) := by use 1, i; simp
 
-theorem pow_two_eq_one_of_isReflection {t : W} (ht : cs.IsReflection t) : t ^ 2 = 1 := by
+namespace IsReflection
+
+variable {cs}
+variable {t : W} (ht : cs.IsReflection t)
+
+theorem pow_two : t ^ 2 = 1 := by
   rcases ht with ⟨w, i, rfl⟩
   simp
 
-theorem mul_self_eq_one_of_isReflection {t : W} (ht : cs.IsReflection t) : t * t = 1 := by
+theorem mul_self : t * t = 1 := by
   rcases ht with ⟨w, i, rfl⟩
   simp
 
-theorem inv_eq_self_of_isReflection {t : W} (ht : cs.IsReflection t) : t⁻¹ = t := by
+theorem inv : t⁻¹ = t := by
   rcases ht with ⟨w, i, rfl⟩
   group
   simp
 
-theorem length_reflection_odd {t : W} (ht : cs.IsReflection t) : Odd (ℓ t) := by
+theorem length_odd : Odd (ℓ t) := by
   rcases ht with ⟨w, i, rfl⟩
   rw [Nat.odd_iff, length_mul_mod_two, Nat.add_mod, length_mul_mod_two, ← Nat.add_mod,
       length_simple, length_inv, add_comm, ← add_assoc, ← two_mul, Nat.mul_add_mod]
   norm_num
 
-alias odd_length_of_isReflection := length_reflection_odd
-
-theorem length_mul_reflection_ne (w : W) {t : W} (ht : cs.IsReflection t) : ℓ (w * t) ≠ ℓ w := by
+theorem length_mul_left_ne (w : W) : ℓ (w * t) ≠ ℓ w := by
   apply_fun (· % 2)
   dsimp only
   rw [length_mul_mod_two]
   intro h
-  have := h ▸ Nat.mod_two_add_add_odd_mod_two (ℓ w) (cs.length_reflection_odd ht)
+  have := h ▸ Nat.mod_two_add_add_odd_mod_two (ℓ w) ht.length_odd
   exact Nat.add_self_ne_one _ this
 
-theorem length_reflection_mul_ne (w : W) {t : W} (ht : cs.IsReflection t) : ℓ (t * w) ≠ ℓ w := by
+theorem length_mul_right_ne (w : W) : ℓ (t * w) ≠ ℓ w := by
   apply_fun (· % 2)
   dsimp only
   rw [length_mul_mod_two]
   intro h
-  have := h.symm ▸ Nat.mod_two_add_add_odd_mod_two (ℓ w) (cs.length_reflection_odd ht)
+  have := h.symm ▸ Nat.mod_two_add_add_odd_mod_two (ℓ w) ht.length_odd
   exact Nat.add_self_ne_one _ (add_comm (ℓ t) _ ▸ this)
 
+theorem conj (w : W) : cs.IsReflection (w * t * w⁻¹) := by
+  obtain ⟨u, i, rfl⟩ := ht
+  use w * u, i
+  group
+
+end IsReflection
+
 @[simp]
-theorem isReflection_conjugate_iff (w t : W) :
+theorem isReflection_conj_iff (w t : W) :
     cs.IsReflection (w * t * w⁻¹) ↔ cs.IsReflection t := by
   constructor
   · rintro ⟨u, i, hi⟩
@@ -106,9 +116,7 @@ theorem isReflection_conjugate_iff (w t : W) :
     apply mul_right_cancel (b := w⁻¹)
     rw [hi]
     group
-  · rintro ⟨u, i, rfl⟩
-    use w * u, i
-    group
+  · exact IsReflection.conj (w := w)
 
 /-- The proposition that `t` is a right inversion of `w`; i.e., `t` is a reflection and
 $\ell (w t) < \ell(w)$. -/
@@ -122,38 +130,44 @@ theorem isRightInversion_inv_iff {w t : W} :
     cs.IsRightInversion w⁻¹ t ↔ cs.IsLeftInversion w t := by
   apply and_congr_right
   intro ht
-  rw [← length_inv, mul_inv_rev, inv_inv, cs.inv_eq_self_of_isReflection ht, cs.length_inv w]
+  rw [← length_inv, mul_inv_rev, inv_inv, ht.inv, cs.length_inv w]
 
 theorem isLeftInversion_inv_iff {w t : W} :
     cs.IsLeftInversion w⁻¹ t ↔ cs.IsRightInversion w t := by
   convert cs.isRightInversion_inv_iff.symm
   simp
 
-theorem isRightInversion_mul_iff_of_isReflection {w t : W} (ht : cs.IsReflection t) :
+namespace IsReflection
+
+variable {cs}
+variable {t : W} (ht : cs.IsReflection t)
+
+theorem isRightInversion_mul_left_iff {w : W} :
     cs.IsRightInversion (w * t) t ↔ ¬cs.IsRightInversion w t := by
   unfold IsRightInversion
-  simp only [mul_assoc, cs.mul_self_eq_one_of_isReflection ht, mul_one, ht, true_and,
-    not_lt]
+  simp only [mul_assoc, ht.inv, ht.mul_self, mul_one, ht, true_and, not_lt]
   constructor
   · exact le_of_lt
-  · exact (lt_of_le_of_ne' · (cs.length_mul_reflection_ne w ht))
+  · exact (lt_of_le_of_ne' · (ht.length_mul_left_ne w))
 
-theorem not_isRightInversion_mul_iff_of_isReflection {w t : W} (ht : cs.IsReflection t) :
+theorem not_isRightInversion_mul_left_iff {w : W} :
     ¬cs.IsRightInversion (w * t) t ↔ cs.IsRightInversion w t :=
-  (iff_not_comm.mp (cs.isRightInversion_mul_iff_of_isReflection ht)).symm
+  (iff_not_comm.mp ht.isRightInversion_mul_left_iff).symm
 
-theorem isLeftInversion_mul_iff_of_isReflection {w t : W} (ht : cs.IsReflection t) :
+theorem isLeftInversion_mul_right_iff {w : W} :
     cs.IsLeftInversion (t * w) t ↔ ¬cs.IsLeftInversion w t := by
   unfold IsLeftInversion
-  simp only [← mul_assoc, cs.mul_self_eq_one_of_isReflection ht, one_mul, ht, true_and,
+  simp only [← mul_assoc, ht.mul_self, one_mul, ht, true_and,
     not_lt]
   constructor
   · exact le_of_lt
-  · exact (lt_of_le_of_ne' · (cs.length_reflection_mul_ne w ht))
+  · exact (lt_of_le_of_ne' · (ht.length_mul_right_ne w))
 
-theorem not_isLeftInversion_mul_iff_of_isReflection {w t : W} (ht : cs.IsReflection t) :
+theorem not_isLeftInversion_mul_right_iff {w : W}  :
     ¬cs.IsLeftInversion (t * w) t ↔ cs.IsLeftInversion w t :=
-  (iff_not_comm.mp (cs.isLeftInversion_mul_iff_of_isReflection ht)).symm
+  (iff_not_comm.mp ht.isLeftInversion_mul_right_iff).symm
+
+end IsReflection
 
 @[simp]
 theorem isRightInversion_simple_iff_isRightDescent (w : W) (i : B) :
@@ -386,7 +400,7 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
     _ = List.map id (ris ω.reverse)             := by
         apply List.map_congr
         intro t ht
-        exact cs.inv_eq_self_of_isReflection (cs.isReflection_of_mem_rightInvSeq _ ht)
+        exact (cs.isReflection_of_mem_rightInvSeq _ ht).inv
     _ = ris ω.reverse                           := map_id _
   rw [this]
   nth_rw 2 [← reverse_reverse ω]
