@@ -875,6 +875,32 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
     IsRegular (∏ n in s, X n : MvPolynomial σ R) :=
   IsRegular.prod fun _ _ ↦ isRegular_X
 
+/-- The finset of nonzero coefficients of a multivariate polynomial. -/
+def coeffs (p : MvPolynomial σ R) : Finset R :=
+  letI := Classical.decEq R
+  Finset.image p.coeff p.support
+
+lemma coeffs_zero : coeffs (0 : MvPolynomial σ R) = ∅ :=
+  rfl
+
+lemma coeffs_one : coeffs (1 : MvPolynomial σ R) ⊆ {1} := by
+  classical
+  simp only [coeffs]
+  rw [Finset.image_subset_iff]
+  simp only [mem_support_iff, ne_eq, mem_singleton, ← C_1, coeff_C]
+  intro n hn
+  simp only [exists_prop, ite_eq_right_iff, not_forall] at hn
+  simp [hn]
+
+lemma mem_coeffs_iff {p : MvPolynomial σ R} {c : R} :
+    c ∈ p.coeffs ↔ ∃ n ∈ p.support, c = p.coeff n := by
+  simp [coeffs, eq_comm, (Finset.mem_image)]
+
+lemma coeff_mem_coeffs {p : MvPolynomial σ R} (m : σ →₀ ℕ)
+    (h : p.coeff m ≠ 0) : p.coeff m ∈ p.coeffs :=
+  letI := Classical.decEq R
+  Finset.mem_image_of_mem p.coeff (mem_support_iff.mpr h)
+
 end Coeff
 
 section ConstantCoeff
