@@ -117,7 +117,9 @@ def cap' (k : Nat) (d : Dyck (n + 2)) : Dyck n :=
   let k' := min k n
   cast (by omega) (cap (n := n - k') k' (cast (by omega) d))
 
-theorem cap'_cap'_of_ge (h : k₁ ≥ k₂)
+theorem cap'_cap'_of_ge (h : k₁ ≥ k₂) (d : Dyck (n + 4)) : cap' k₁ (cap' k₂ d) = cap' k₂ (cap' (k₁ + 2) d) := by
+  unfold cap'
+  simp
 
 
 theorem cap_cap_of_ge (h : k₁ ≥ k₂) (w : m ≥ {d : Dyck m} : cap k₁ (cast sorry (cap k₂ d)) = cap k₂ (cap (k₁ + 2) d) := sorry
