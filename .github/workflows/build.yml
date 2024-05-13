@@ -273,7 +273,13 @@ jobs:
       - name: check for noisy stdout lines
         id: noisy
         run: |
-          buildMsgs="$(lake build Mathlib Archive Counterexamples |
+          buildMsgs="$(
+            ##  we exploit `lake`s replay feature: since the cache is present, running
+            ##  `lake build` will reproduce all the outputs without having to recompute
+            lake build Mathlib Archive Counterexamples |
+            ##  we filter out the output the lines that begin with `[xx/yy]`, where xx, yy
+            ##  are either numbers or ?
+            ##  we keep the rest, which are actual outputs of the files
             awk '!($1 ~ "^[[?0-9]*/[?0-9]*]"){ print $0 }')"
           if [ -n "${buildMsgs}" ]
           then
