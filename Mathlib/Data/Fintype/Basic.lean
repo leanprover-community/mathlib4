@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Ring.Hom.Defs -- FIXME: This import is bogus
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Fin.OrderHom
+import Mathlib.Data.List.FinRange
 
 #align_import data.fintype.basic from "leanprover-community/mathlib"@"d78597269638367c3863d40d45108f52207e03cf"
 
@@ -836,6 +837,18 @@ theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, L
 @[simp] theorem List.toFinset_finRange (n : ℕ) : (List.finRange n).toFinset = Finset.univ := by
   ext; simp
 
+@[simp] theorem Fin.univ_val_map {n : ℕ} (f : Fin n → α) :
+    Finset.univ.val.map f = List.ofFn f := by
+  simp [List.ofFn_eq_map, univ_def]
+
+theorem Fin.univ_image_def {n : ℕ} [DecidableEq α] (f : Fin n → α) :
+    Finset.univ.image f = (List.ofFn f).toFinset := by
+  simp [Finset.image]
+
+theorem Fin.univ_map_def {n : ℕ} (f : Fin n ↪ α) :
+    Finset.univ.map f = ⟨List.ofFn f, List.nodup_ofFn.mpr f.injective⟩ := by
+  simp [Finset.map]
+
 @[simp]
 theorem Fin.image_succAbove_univ {n : ℕ} (i : Fin (n + 1)) : univ.image i.succAbove = {i}ᶜ := by
   ext m
@@ -858,14 +871,14 @@ theorem Fin.image_castSucc (n : ℕ) :
 /-- Embed `Fin n` into `Fin (n + 1)` by prepending zero to the `univ` -/
 theorem Fin.univ_succ (n : ℕ) :
     (univ : Finset (Fin (n + 1))) =
-      cons 0 (univ.map ⟨Fin.succ, Fin.succ_injective _⟩) (by simp [map_eq_image]) :=
+      Finset.cons 0 (univ.map ⟨Fin.succ, Fin.succ_injective _⟩) (by simp [map_eq_image]) :=
   by simp [map_eq_image]
 #align fin.univ_succ Fin.univ_succ
 
 /-- Embed `Fin n` into `Fin (n + 1)` by appending a new `Fin.last n` to the `univ` -/
 theorem Fin.univ_castSuccEmb (n : ℕ) :
     (univ : Finset (Fin (n + 1))) =
-      cons (Fin.last n) (univ.map Fin.castSuccEmb.toEmbedding) (by simp [map_eq_image]) :=
+      Finset.cons (Fin.last n) (univ.map Fin.castSuccEmb.toEmbedding) (by simp [map_eq_image]) :=
   by simp [map_eq_image]
 #align fin.univ_cast_succ Fin.univ_castSuccEmb
 
@@ -873,9 +886,17 @@ theorem Fin.univ_castSuccEmb (n : ℕ) :
 around a specified pivot `p : Fin (n + 1)` into the `univ` -/
 theorem Fin.univ_succAbove (n : ℕ) (p : Fin (n + 1)) :
     (univ : Finset (Fin (n + 1))) =
-      cons p (univ.map <| (Fin.succAboveEmb p).toEmbedding) (by simp) :=
+      Finset.cons p (univ.map <| (Fin.succAboveEmb p).toEmbedding) (by simp) :=
   by simp [map_eq_image]
 #align fin.univ_succ_above Fin.univ_succAbove
+
+@[simp] theorem Fin.univ_image_get [DecidableEq α] (l : List α) :
+    Finset.univ.image l.get = l.toFinset := by
+  simp [univ_image_def]
+
+@[simp] theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
+    Finset.univ.image (f <| l.get ·) = (l.map f).toFinset := by
+  simp [univ_image_def]
 
 @[instance]
 def Unique.fintype {α : Type*} [Unique α] : Fintype α :=
@@ -1312,7 +1333,7 @@ theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : 
     exact hf' n m h
 #align exists_seq_of_forall_finset_exists' exists_seq_of_forall_finset_exists'
 
-open Std.ExtendedBinder Lean Meta
+open Batteries.ExtendedBinder Lean Meta
 
 /-- `finset% t` elaborates `t` as a `Finset`.
 If `t` is a `Set`, then inserts `Set.toFinset`.

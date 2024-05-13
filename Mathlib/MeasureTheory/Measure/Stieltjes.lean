@@ -346,7 +346,7 @@ protected irreducible_def measure : Measure ℝ :=
   { toOuterMeasure := f.outer
     m_iUnion := fun _s hs =>
       f.outer.iUnion_eq_of_caratheodory fun i => f.borel_le_measurable _ (hs i)
-    trimmed := f.outer_trim }
+    trim_le := f.outer_trim.le }
 #align stieltjes_function.measure StieltjesFunction.measure
 
 @[simp]

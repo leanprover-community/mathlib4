@@ -190,8 +190,8 @@ theorem exact_comp_hom_inv_comp_iff (i : B ≅ D) : Exact (f ≫ i.hom) (i.inv �
 theorem exact_epi_comp (hgh : Exact g h) [Epi f] : Exact (f ≫ g) h := by
   refine' ⟨by simp [hgh.w], _⟩
   rw [imageToKernel_comp_left]
-  haveI := hgh.epi
-  infer_instance
+  · haveI := hgh.epi
+    infer_instance
 #align category_theory.exact_epi_comp CategoryTheory.exact_epi_comp
 
 @[simp]

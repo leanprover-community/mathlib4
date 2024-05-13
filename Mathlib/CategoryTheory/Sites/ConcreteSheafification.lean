@@ -640,10 +640,10 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
         rw [Category.assoc] }
 #align category_theory.sheafification_adjunction CategoryTheory.plusPlusAdjunction
 
-noncomputable instance sheafToPresheafIsRightAdjoint : IsRightAdjoint (sheafToPresheaf J D) :=
-  ⟨_, plusPlusAdjunction J D⟩
+instance sheafToPresheaf_isRightAdjoint : (sheafToPresheaf J D).IsRightAdjoint  :=
+  (plusPlusAdjunction J D).isRightAdjoint
 set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf_to_presheaf_is_right_adjoint CategoryTheory.sheafToPresheafIsRightAdjoint
+#align category_theory.Sheaf_to_presheaf_is_right_adjoint CategoryTheory.sheafToPresheaf_isRightAdjoint
 
 instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=
   (sheafToPresheaf J D).map_mono _

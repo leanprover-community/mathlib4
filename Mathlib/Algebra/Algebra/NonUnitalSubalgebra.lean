@@ -476,8 +476,7 @@ theorem injective_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x 
 /-- Restrict the codomain of an `NonUnitalAlgHom` `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-@[reducible]
-def rangeRestrict (f : F) : A →ₙₐ[R] (NonUnitalAlgHom.range f : NonUnitalSubalgebra R B) :=
+abbrev rangeRestrict (f : F) : A →ₙₐ[R] (NonUnitalAlgHom.range f : NonUnitalSubalgebra R B) :=
   NonUnitalAlgHom.codRestrict f (NonUnitalAlgHom.range f) (NonUnitalAlgHom.mem_range_self f)
 
 /-- The equalizer of two non-unital `R`-algebra homomorphisms -/

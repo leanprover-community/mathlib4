@@ -5,6 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Tactic.AdaptationNote
 
 #align_import geometry.euclidean.inversion from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
@@ -42,7 +43,7 @@ def inversion (c : P) (R : ℝ) (x : P) : P :=
   (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c
 #align euclidean_geometry.inversion EuclideanGeometry.inversion
 
--- Adaptation note: nightly-2024-03-16: added to replace simp [inversion]
+#adaptation_note /-- nightly-2024-03-16: added to replace simp [inversion] -/
 theorem inversion_def :
     inversion = fun (c : P) (R : ℝ) (x : P) => (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c :=
   rfl

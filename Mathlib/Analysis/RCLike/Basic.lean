@@ -398,8 +398,10 @@ theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(r
   tfae_have 4 → 3
   · intro h
     conv_rhs => rw [← re_add_im z, h, ofReal_zero, zero_mul, add_zero]
-  tfae_have 3 → 2; exact fun h => ⟨_, h⟩
-  tfae_have 2 → 1; exact fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
+  tfae_have 3 → 2
+  · exact fun h => ⟨_, h⟩
+  tfae_have 2 → 1
+  · exact fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
   tfae_finish
 #align is_R_or_C.is_real_tfae RCLike.is_real_TFAE
 

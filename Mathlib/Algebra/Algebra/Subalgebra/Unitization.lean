@@ -14,7 +14,7 @@ import Mathlib.GroupTheory.GroupAction.Ring
 This file relates various algebraic structures and provides maps (generally algebra homomorphisms),
 from the unitization of a non-unital subobject into the full structure. The range of this map is
 the unital closure of the non-unital subobject (e.g., `Algebra.adjoin`, `Subring.closure`,
-`Subsemiring.closure` or `StarSubalgebra.adjoin`). When the underlying scalar ring is a field, for
+`Subsemiring.closure` or `StarAlgebra.adjoin`). When the underlying scalar ring is a field, for
 this map to be injective it suffices that the range omits `1`. In this setting we provide suitable
 `AlgEquiv` (or `StarAlgEquiv`) onto the range.
 
@@ -40,7 +40,7 @@ this map to be injective it suffices that the range omits `1`. In this setting w
 * `NonUnitalStarSubalgebra s : Unitization R s →⋆ₐ[R] A`: a version of
   `NonUnitalSubalgebra.unitization` for star algebras.
 * `NonUnitalStarSubalgebra.unitizationStarAlgEquiv s :`
-  `Unitization R s ≃⋆ₐ[R] StarSubalgebra.adjoin R (s : Set A)`:
+  `Unitization R s ≃⋆ₐ[R] StarAlgebra.adjoin R (s : Set A)`:
   a version of `NonUnitalSubalgebra.unitizationAlgEquiv` for star algebras.
 -/
 
@@ -343,7 +343,7 @@ variable {R S A : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
   [StarModule R A] [SetLike S A] [hSA : NonUnitalSubsemiringClass S A] [hSRA : SMulMemClass S R A]
   [StarMemClass S A] (s : S)
 /-- The natural star `R`-algebra homomorphism from the unitization of a non-unital star subalgebra
-to its `StarSubalgebra.adjoin`. -/
+to its `StarAlgebra.adjoin`. -/
 def unitization : Unitization R s →⋆ₐ[R] A :=
   Unitization.starLift <| NonUnitalStarSubalgebraClass.subtype s
 
@@ -369,7 +369,7 @@ theorem unitization_injective (h1 : (1 : A) ∉ s) : Function.Injective (unitiza
   AlgHomClass.unitization_injective s h1 (unitization s) fun _ ↦ by simp
 
 /-- If a `NonUnitalStarSubalgebra` over a field does not contain `1`, then its unitization is
-isomorphic to its `StarSubalgebra.adjoin`. -/
+isomorphic to its `StarAlgebra.adjoin`. -/
 @[simps! apply_coe]
 noncomputable def unitizationStarAlgEquiv (h1 : (1 : A) ∉ s) :
     Unitization R s ≃⋆ₐ[R] StarAlgebra.adjoin R (s : Set A) :=

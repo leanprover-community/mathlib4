@@ -147,7 +147,7 @@ theorem ramificationIdx_eq_normalizedFactors_count (hp0 : map f p ≠ ⊥) (hP :
     rw [dvd_iff_normalizedFactors_le_normalizedFactors (pow_ne_zero _ hP0) hp0,
       normalizedFactors_pow, normalizedFactors_irreducible hPirr, normalize_eq,
       Multiset.nsmul_singleton, ← Multiset.le_count_iff_replicate_le]
-  · exact (Nat.lt_succ_self _).not_le
+  exact (Nat.lt_succ_self _).not_le
 #align ideal.is_dedekind_domain.ramification_idx_eq_normalized_factors_count Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count
 
 theorem ramificationIdx_eq_factors_count (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (hP0 : P ≠ ⊥) :

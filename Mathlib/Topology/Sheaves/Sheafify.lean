@@ -91,10 +91,10 @@ theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x)
   apply TopCat.stalkToFiber_surjective
   intro t
   obtain ⟨U, m, s, rfl⟩ := F.germ_exist _ t
-  · use ⟨U, m⟩
-    fconstructor
-    · exact fun y => F.germ y s
-    · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ => rfl⟩, rfl⟩
+  use ⟨U, m⟩
+  fconstructor
+  · exact fun y => F.germ y s
+  · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ => rfl⟩, rfl⟩
 #align Top.presheaf.stalk_to_fiber_surjective TopCat.Presheaf.stalkToFiber_surjective
 
 theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) := by
