@@ -76,18 +76,11 @@ open Order
 
 /-- A complete distributive lattice is a complete lattice whose `⊔` and `⊓` respectively
 distribute over `⨅` and `⨆`. -/
-class CompleteDistribLattice (α : Type*) extends Frame α where
-  iInf_sup_le_sup_sInf : ∀ a s, ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
+class CompleteDistribLattice (α : Type*) extends Frame α, Coframe α
 #align complete_distrib_lattice CompleteDistribLattice
 
 /-- In a complete distributive lattice, `⊔` distributes over `⨅`. -/
 add_decl_doc CompleteDistribLattice.iInf_sup_le_sup_sInf
-
--- See note [lower instance priority]
-instance (priority := 100) CompleteDistribLattice.toCoframe [CompleteDistribLattice α] :
-    Coframe α :=
-  { ‹CompleteDistribLattice α› with }
-#align complete_distrib_lattice.to_coframe CompleteDistribLattice.toCoframe
 
 /-- A completely distributive lattice is a complete lattice whose `⨅` and `⨆`
 distribute over each other. -/

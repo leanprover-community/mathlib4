@@ -146,15 +146,15 @@ theorem exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (
     le_antisymm (lift_le.1 (lift_card_closure_le.trans _))
       (mk_le_mk_of_subset ((Set.subset_union_right _ _).trans subset_closure))
   rw [max_le_iff, aleph0_le_lift, ← aleph0_le_lift.{_, w'}, h, add_eq_max, max_le_iff, lift_le]
-  refine' ⟨h1, (mk_union_le _ _).trans _, (lift_le.2 card_functions_sum_skolem₁_le).trans _⟩
-  · rw [← lift_le, lift_add, h, add_comm, add_eq_max h1]
-    exact max_le le_rfl h2
-  · rw [lift_max, lift_aleph0, max_le_iff, aleph0_le_lift, and_comm, ← lift_le.{w'},
-      lift_lift, lift_lift, ← aleph0_le_lift, h]
-    refine' ⟨_, h1⟩
-    rw [← lift_lift.{w', w}]
-    refine' _root_.trans (lift_le.{w}.2 h3) _
-    rw [lift_lift, ← lift_lift.{w, max u v}, ← hs', ← h, lift_lift]
+  · refine' ⟨h1, (mk_union_le _ _).trans _, (lift_le.2 card_functions_sum_skolem₁_le).trans _⟩
+    · rw [← lift_le, lift_add, h, add_comm, add_eq_max h1]
+      exact max_le le_rfl h2
+    · rw [lift_max, lift_aleph0, max_le_iff, aleph0_le_lift, and_comm, ← lift_le.{w'},
+        lift_lift, lift_lift, ← aleph0_le_lift, h]
+      refine' ⟨_, h1⟩
+      rw [← lift_lift.{w', w}]
+      refine' _root_.trans (lift_le.{w}.2 h3) _
+      rw [lift_lift, ← lift_lift.{w, max u v}, ← hs', ← h, lift_lift]
   · refine' _root_.trans _ (lift_le.2 (mk_le_mk_of_subset (Set.subset_union_right _ _)))
     rw [aleph0_le_lift, ← aleph0_le_lift, h]
     exact h1
