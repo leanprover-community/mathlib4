@@ -692,7 +692,10 @@ theorem ofFunction_le (s : Set α) : OuterMeasure.ofFunction m m_empty s ≤ m s
   let f : ℕ → Set α := fun i => Nat.casesOn i s fun _ => ∅
   iInf_le_of_le f <|
     iInf_le_of_le (subset_iUnion f 0) <|
-      le_of_eq <| tsum_eq_single 0 <| by rintro (_ | i); simp; simp [m_empty]
+      le_of_eq <| tsum_eq_single 0 <| by
+        rintro (_ | i)
+        · simp
+        · simp [m_empty]
 #align measure_theory.outer_measure.of_function_le MeasureTheory.OuterMeasure.ofFunction_le
 
 theorem ofFunction_eq (s : Set α) (m_mono : ∀ ⦃t : Set α⦄, s ⊆ t → m s ≤ m t)

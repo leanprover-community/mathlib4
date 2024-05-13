@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.Comparison
-import Mathlib.CategoryTheory.Sites.InducedTopology
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
+import Mathlib.CategoryTheory.Sites.InducedTopology
 /-!
 
 # Categories of coherent sheaves
@@ -29,7 +30,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits Functor regularTopology
 
 variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
 
@@ -219,3 +220,25 @@ def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (St
 end SheafEquiv
 
 end regularTopology
+
+namespace Presheaf
+
+variable {A : Type u₃} [Category.{v₃} A] (F : Cᵒᵖ ⥤ A)
+
+theorem isSheaf_coherent_iff_regular_and_extensive [Preregular C] [FinitaryPreExtensive C] :
+    IsSheaf (coherentTopology C) F ↔
+    IsSheaf (extensiveTopology C) F ∧ IsSheaf (regularTopology C) F := by
+  rw [← extensive_regular_generate_coherent]
+  exact isSheaf_sup (extensiveCoverage C) (regularCoverage C) F
+
+theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition_general
+    [Preregular C] [FinitaryExtensive C]
+    [h : ∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f] :
+    IsSheaf (coherentTopology C) F ↔ Nonempty (PreservesFiniteProducts F) ∧
+      EqualizerCondition F := by
+  rw [isSheaf_coherent_iff_regular_and_extensive]
+  apply and_congr
+  · exact isSheaf_iff_preservesFiniteProducts _
+  · exact (@equalizerCondition_iff_isSheaf _ _ _ _ F _ h).symm
+
+end CategoryTheory.Presheaf
