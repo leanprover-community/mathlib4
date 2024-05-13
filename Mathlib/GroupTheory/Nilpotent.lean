@@ -240,7 +240,7 @@ theorem is_decending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : �
   · push_neg at hm
     apply hH
     convert hx using 1
-    rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_sub_succ]
+    rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
 #align is_decending_rev_series_of_is_ascending is_decending_rev_series_of_is_ascending
 
 theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : ℕ} (hn : H n = ⊥)
@@ -254,7 +254,7 @@ theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : �
     exact mem_top _
   · push_neg at hm
     convert hH x _ hx g using 1
-    rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_sub_succ]
+    rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
 #align is_ascending_rev_series_of_is_descending is_ascending_rev_series_of_is_descending
 
 /-- A group `G` is nilpotent iff there exists a descending central series which reaches the
@@ -323,7 +323,8 @@ theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
 /-- The lower central series of a group is a descending central series. -/
 theorem lowerCentralSeries_isDescendingCentralSeries :
     IsDescendingCentralSeries (lowerCentralSeries G) := by
-  constructor; rfl
+  constructor
+  · rfl
   intro x n hxn g
   exact commutator_mem_commutator hxn (mem_top g)
 #align lower_central_series_is_descending_central_series lowerCentralSeries_isDescendingCentralSeries
@@ -476,7 +477,7 @@ theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
 
 instance (priority := 100) Group.isNilpotent_of_subsingleton [Subsingleton G] : IsNilpotent G :=
   nilpotent_iff_lowerCentralSeries.2 ⟨0, Subsingleton.elim ⊤ ⊥⟩
-#align is_nilpotent_of_subsingleton isNilpotent_of_subsingleton
+#align is_nilpotent_of_subsingleton Group.isNilpotent_of_subsingleton
 
 theorem upperCentralSeries.map {H : Type*} [Group H] {f : G →* H} (h : Function.Surjective f)
     (n : ℕ) : Subgroup.map f (upperCentralSeries G n) ≤ upperCentralSeries H n := by
@@ -623,12 +624,11 @@ theorem nilpotencyClass_quotient_center [hH : IsNilpotent G] :
     apply le_antisymm
     · apply upperCentralSeries_eq_top_iff_nilpotencyClass_le.mp
       apply comap_injective (f := (mk' (center G))) (surjective_quot_mk _)
-      rw [comap_upperCentralSeries_quotient_center, comap_top, ← hn]
+      rw [comap_upperCentralSeries_quotient_center, comap_top, Nat.succ_eq_add_one, ← hn]
       exact upperCentralSeries_nilpotencyClass
     · apply le_of_add_le_add_right
       calc
-        n + 1 = n.succ := rfl
-        _ = Group.nilpotencyClass G := symm hn
+        n + 1 = Group.nilpotencyClass G := hn.symm
         _ ≤ Group.nilpotencyClass (G ⧸ center G) + 1 :=
           nilpotencyClass_le_of_ker_le_center _ (le_of_eq (ker_mk' _)) _
 

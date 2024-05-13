@@ -79,7 +79,8 @@ theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : �
 
 theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b :=
   and_congr Iff.rfl <|
-    forall_congr' fun b => by simp only [Ne, @not_imp_comm (b = ⊥), not_imp, lt_iff_le_not_le]
+    forall_congr' fun b => by
+      simp only [Ne, @not_imp_comm (b = ⊥), Classical.not_imp, lt_iff_le_not_le]
 #align is_atom_iff isAtom_iff_le_of_ge
 
 end Preorder
@@ -986,7 +987,7 @@ namespace «Prop»
   simp [IsCoatom, show ⊤ = True from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]; tauto
 
 instance : IsSimpleOrder Prop where
-  eq_bot_or_eq_top p := by by_cases h : p <;> simp [h] <;> tauto
+  eq_bot_or_eq_top p := by simp [em']
 
 end «Prop»
 

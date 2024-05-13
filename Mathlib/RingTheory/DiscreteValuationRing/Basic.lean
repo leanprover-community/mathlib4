@@ -6,7 +6,7 @@ Authors: Kevin Buzzard
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Valuation.PrimeMultiplicity
-import Mathlib.LinearAlgebra.AdicCompletion
+import Mathlib.RingTheory.AdicCompletion.Basic
 
 #align_import ring_theory.discrete_valuation_ring.basic from "leanprover-community/mathlib"@"c163ec99dfc664628ca15d215fce0a5b9c265b68"
 
@@ -121,10 +121,10 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
   · intro RDVR
     rcases id RDVR with ⟨Rlocal⟩
     constructor
-    assumption
+    · assumption
     use LocalRing.maximalIdeal R
     constructor
-    exact ⟨Rlocal, inferInstance⟩
+    · exact ⟨Rlocal, inferInstance⟩
     · rintro Q ⟨hQ1, hQ2⟩
       obtain ⟨q, rfl⟩ := (IsPrincipalIdealRing.principal Q).1
       have hq : q ≠ 0 := by

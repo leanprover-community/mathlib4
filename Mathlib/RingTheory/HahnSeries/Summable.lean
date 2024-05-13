@@ -3,9 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.RingTheory.HahnSeries.Multiplication
+import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Algebra.Order.Group.WithTop
+import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.Valuation.Basic
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
@@ -544,7 +545,7 @@ theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.coeff x.order = 1) :
     rw [addVal_apply_of_ne x0, addVal_apply_of_ne (single_ne_zero h10), addVal_apply_of_ne _,
       order_C, order_single h10, WithTop.coe_zero, zero_add, ← WithTop.coe_add, neg_add_self,
       WithTop.coe_zero]
-    · exact C_ne_zero (left_ne_zero_of_mul_eq_one hr)
+    exact C_ne_zero (left_ne_zero_of_mul_eq_one hr)
   · rw [addVal_apply, ← WithTop.coe_zero]
     split_ifs with h
     · apply WithTop.coe_ne_top
@@ -573,23 +574,22 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.coeff x.order)
 
 end IsDomain
 
-instance [Field R] : Field (HahnSeries Γ R) :=
-  { inferInstanceAs (IsDomain (HahnSeries Γ R)),
-    inferInstanceAs (CommRing (HahnSeries Γ R)) with
-    inv := fun x =>
-      if x0 : x = 0 then 0
-      else
-        C (x.coeff x.order)⁻¹ * (single (-x.order)) 1 *
-          (SummableFamily.powers _ (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))).hsum
-    inv_zero := dif_pos rfl
-    mul_inv_cancel := fun x x0 => by
-      refine' (congr rfl (dif_neg x0)).trans _
-      have h :=
-        SummableFamily.one_sub_self_mul_hsum_powers
-          (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))
-      rw [sub_sub_cancel] at h
-      rw [← mul_assoc, mul_comm x, h]
-    qsmul := qsmulRec _ }
+instance instField [Field R] : Field (HahnSeries Γ R) where
+  __ : IsDomain (HahnSeries Γ R) := inferInstance
+  inv x :=
+    if x0 : x = 0 then 0
+    else
+      C (x.coeff x.order)⁻¹ * (single (-x.order)) 1 *
+        (SummableFamily.powers _ (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))).hsum
+  inv_zero := dif_pos rfl
+  mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans $ by
+    have h :=
+      SummableFamily.one_sub_self_mul_hsum_powers
+        (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))
+    rw [sub_sub_cancel] at h
+    rw [← mul_assoc, mul_comm x, h]
+  nnqsmul := _
+  qsmul := _
 
 end Inversion
 

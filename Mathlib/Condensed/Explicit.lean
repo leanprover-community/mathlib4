@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson, Riccardo Brasca, Filippo A. E. Nuccio
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
-import Mathlib.Condensed.Abelian
+import Mathlib.Condensed.Module
 import Mathlib.Condensed.Equivalence
 /-!
 
@@ -27,7 +27,7 @@ continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of th
 `F(X) ⇉ F(X ×_B X)`
 -/
 
-universe v u
+universe v u w
 
 open CategoryTheory Limits Opposite Functor Presheaf regularTopology
 
@@ -46,7 +46,7 @@ end CategoryTheory
 namespace CompHaus
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
-    (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) :
+    (F : CompHaus.{u}ᵒᵖ ⥤ Type w) :
     IsSheaf (coherentTopology CompHaus) F ↔
     Nonempty (PreservesFiniteProducts F) ∧ EqualizerCondition F := by
   rw [isSheaf_coherent_iff_regular_and_extensive]
@@ -55,11 +55,12 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
   · rw [equalizerCondition_iff_isSheaf, isSheaf_iff_isSheaf_of_type]
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
-    {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
-    [HasLimits A] [PreservesLimits G] [G.ReflectsIsomorphisms] (F : CompHaus.{u}ᵒᵖ ⥤ A) :
+    {A : Type*} [Category A] (G : A ⥤ Type w)
+    [HasLimitsOfSize.{u, u+1} A] [PreservesLimitsOfSize.{u, u+1} G]
+    [G.ReflectsIsomorphisms] (F : CompHaus.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology CompHaus) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) ∧ EqualizerCondition (F ⋙ G) := by
-  rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology CompHaus) F G,
+  rw [Presheaf.isSheaf_iff_isSheaf_comp (coherentTopology CompHaus) F G,
     isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
 
 end CompHaus
@@ -67,7 +68,7 @@ end CompHaus
 namespace Profinite
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
-    (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) :
+    (F : Profinite.{u}ᵒᵖ ⥤ Type w) :
     IsSheaf (coherentTopology Profinite) F ↔
     Nonempty (PreservesFiniteProducts F) ∧ EqualizerCondition F := by
   rw [isSheaf_coherent_iff_regular_and_extensive]
@@ -76,11 +77,12 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
   · rw [equalizerCondition_iff_isSheaf, isSheaf_iff_isSheaf_of_type]
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
-    {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
-    [HasLimits A] [PreservesLimits G] [G.ReflectsIsomorphisms] (F : Profinite.{u}ᵒᵖ ⥤ A) :
+    {A : Type*} [Category A] (G : A ⥤ Type w)
+    [HasLimitsOfSize.{u, u+1} A] [PreservesLimitsOfSize.{u, u+1} G]
+    [G.ReflectsIsomorphisms] (F : Profinite.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology Profinite) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) ∧ EqualizerCondition (F ⋙ G) := by
-  rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology Profinite) F G,
+  rw [Presheaf.isSheaf_iff_isSheaf_comp (coherentTopology Profinite) F G,
     isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
 
 end Profinite
@@ -88,7 +90,7 @@ end Profinite
 namespace Stonean
 
 theorem isSheaf_iff_preservesFiniteProducts
-    (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) :
+    (F : Stonean.{u}ᵒᵖ ⥤ Type w) :
     IsSheaf (coherentTopology Stonean) F ↔ Nonempty (PreservesFiniteProducts F) := by
   rw [isSheaf_coherent_iff_regular_and_extensive, and_iff_left ?_]
   · rw [isSheaf_iff_isSheaf_of_type, extensiveTopology,
@@ -99,19 +101,24 @@ theorem isSheaf_iff_preservesFiniteProducts
     exact isSheafFor_regular_of_projective R F
 
 theorem isSheaf_iff_preservesFiniteProducts'
-    {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
-    [HasLimits A] [PreservesLimits G] [G.ReflectsIsomorphisms] (F : Stonean.{u}ᵒᵖ ⥤ A) :
+    {A : Type*} [Category A] (G : A ⥤ Type w)
+    [HasLimitsOfSize.{u, u+1} A] [PreservesLimitsOfSize.{u, u+1} G]
+    [G.ReflectsIsomorphisms] (F : Stonean.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology Stonean) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) := by
-  rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology Stonean) F G,
+  rw [Presheaf.isSheaf_iff_isSheaf_comp (coherentTopology Stonean) F G,
     isSheaf_iff_preservesFiniteProducts]
 
 end Stonean
 
 namespace Condensed
 
-variable {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1)) [HasLimits A] [PreservesLimits G]
+variable {A : Type*} [Category A] (G : A ⥤ Type w)
+    [HasLimitsOfSize.{u, u+1} A] [PreservesLimitsOfSize.{u, u+1} G]
     [G.ReflectsIsomorphisms]
+
+noncomputable instance : PreservesLimitsOfSize.{0, 0} G :=
+  preservesLimitsOfSizeShrink.{0, u+1, 0, u} _
 
 /-- The condensed set associated to a finite-product-preserving presheaf on `Stonean`. -/
 noncomputable def ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F] :
@@ -173,23 +180,39 @@ noncomputable instance (X : CondensedSet) : PreservesFiniteProducts X.val :=
   CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) X.val |>.mp
     X.cond |>.1.some
 
+/-- A condensed set regarded as a sheaf on `Profinite` preserves finite products. -/
+noncomputable instance (Y : Sheaf (coherentTopology Profinite.{u}) (Type (u+1))) :
+    PreservesFiniteProducts Y.val :=
+  Profinite.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) Y.val |>.mp
+    Y.cond |>.1.some
+
+/-- A condensed set regarded as a sheaf on `Stonean` preserves finite products. -/
+noncomputable instance (Y : Sheaf (coherentTopology Stonean.{u}) (Type (u+1))) :
+    PreservesFiniteProducts Y.val :=
+  Stonean.isSheaf_iff_preservesFiniteProducts Y.val |>.mp Y.cond |>.some
+
 end CondensedSet
 
-namespace CondensedAb
+namespace CondensedMod
 
-/-- A `CondensedAb` version of `Condensed.ofSheafStonean`. -/
-noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ AddCommGroupCat.{u+1})
-    [PreservesFiniteProducts F] : CondensedAb :=
+variable (R : Type (u+1)) [Ring R]
+
+/-- A `CondensedMod` version of `Condensed.ofSheafStonean`. -/
+noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ ModuleCat.{u+1} R)
+    [PreservesFiniteProducts F] : CondensedMod R :=
+  haveI : HasLimitsOfSize.{u, u+1} (ModuleCat R) := hasLimitsOfSizeShrink.{u, u+1, u+1, u+1} _
   Condensed.ofSheafStonean (forget _) F
 
-/-- A `CondensedAb` version of `Condensed.ofSheafProfinite`. -/
-noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ AddCommGroupCat.{u+1})
-    [PreservesFiniteProducts F] (hF : EqualizerCondition (F ⋙ forget _)) : CondensedAb :=
+/-- A `CondensedMod` version of `Condensed.ofSheafProfinite`. -/
+noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ ModuleCat.{u+1} R)
+    [PreservesFiniteProducts F] (hF : EqualizerCondition (F ⋙ forget _)) : CondensedMod R :=
+  haveI : HasLimitsOfSize.{u, u+1} (ModuleCat R) := hasLimitsOfSizeShrink.{u, u+1, u+1, u+1} _
   Condensed.ofSheafProfinite (forget _) F hF
 
-/-- A `CondensedAb` version of `Condensed.ofSheafCompHaus`. -/
-noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ AddCommGroupCat.{u+1})
-    [PreservesFiniteProducts F] (hF : EqualizerCondition (F ⋙ forget _)) : CondensedAb :=
+/-- A `CondensedMod` version of `Condensed.ofSheafCompHaus`. -/
+noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ ModuleCat.{u+1} R)
+    [PreservesFiniteProducts F] (hF : EqualizerCondition (F ⋙ forget _)) : CondensedMod R :=
+  haveI : HasLimitsOfSize.{u, u+1} (ModuleCat R) := hasLimitsOfSizeShrink.{u, u+1, u+1, u+1} _
   Condensed.ofSheafCompHaus (forget _) F hF
 
-end CondensedAb
+end CondensedMod

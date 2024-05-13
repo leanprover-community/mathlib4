@@ -111,6 +111,7 @@ theorem prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
     rw [← insert_erase (mem_univ (-1 : Kˣ)), prod_insert (not_mem_erase _ _), this, mul_one]
 #align finite_field.prod_univ_units_id_eq_neg_one FiniteField.prod_univ_units_id_eq_neg_one
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial K]
     (G : Subgroup Kˣ) [Fintype G] : (Fintype.card G : K) ≠ 0 := by
   let n := Fintype.card G
@@ -427,7 +428,7 @@ theorem Nat.sq_add_sq_zmodEq (p : ℕ) [Fact p.Prime] (x : ℤ) :
     ZMod.natAbs_valMinAbs_le _, ?_⟩
   rw [← a.coe_valMinAbs, ← b.coe_valMinAbs] at hx
   push_cast
-  rw [sq_abs, sq_abs, ← ZMod.int_cast_eq_int_cast_iff]
+  rw [sq_abs, sq_abs, ← ZMod.intCast_eq_intCast_iff]
   exact mod_cast hx
 
 /-- If `p` is a prime natural number and `x` is a natural number, then there exist natural numbers
@@ -476,7 +477,7 @@ theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.Coprime x n) : x ^ φ n ≡ 1
 /-- For each `n ≥ 0`, the unit group of `ZMod n` is finite. -/
 instance instFiniteZModUnits : (n : ℕ) → Finite (ZMod n)ˣ
 | 0     => Finite.of_fintype ℤˣ
-| _ + 1 => instFiniteUnits
+| _ + 1 => inferInstance
 
 section
 
@@ -555,9 +556,9 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
     n ^ (p - 1) ≡ 1 [ZMOD p] := by
   haveI : Fact p.Prime := ⟨hp⟩
   have : ¬(n : ZMod p) = 0 := by
-    rw [CharP.int_cast_eq_zero_iff _ p, ← (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd]
+    rw [CharP.intCast_eq_zero_iff _ p, ← (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd]
     · exact hpn.symm
-  simpa [← ZMod.int_cast_eq_int_cast_iff] using ZMod.pow_card_sub_one_eq_one this
+  simpa [← ZMod.intCast_eq_intCast_iff] using ZMod.pow_card_sub_one_eq_one this
 #align int.modeq.pow_card_sub_one_eq_one Int.ModEq.pow_card_sub_one_eq_one
 
 section
@@ -624,8 +625,8 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
     · rintro ⟨y, rfl⟩
       rw [← pow_two, ← pow_mul, hodd]
       apply_fun Units.val using Units.ext
-      · push_cast
-        exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
+      push_cast
+      exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
     · subst a; intro h
       have key : 2 * (Fintype.card F / 2) ∣ n * (Fintype.card F / 2) := by
         rw [← pow_mul] at h

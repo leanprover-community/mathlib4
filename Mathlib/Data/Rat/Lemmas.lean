@@ -60,15 +60,20 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
 #noalign rat.mk_pnat_denom
 
 theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
+  have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
+    rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
   rcases d with ((_ | _) | _) <;>
   rw [← Int.div_eq_ediv_of_dvd] <;>
-  simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd, -Nat.cast_succ,
-    Int.zero_ediv, Int.ofNat_dvd_left, Nat.gcd_dvd_left]
+  simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd,
+    Int.zero_ediv, Int.ofNat_dvd_left, Nat.gcd_dvd_left, this]
 #align rat.num_mk Rat.num_mk
 
 theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d := by
+  have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
+    rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
   rcases d with ((_ | _) | _) <;>
-    simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd, -Nat.cast_succ]
+    simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd,
+      if_neg (Nat.cast_add_one_ne_zero _), this]
 #align rat.denom_mk Rat.den_mk
 
 #noalign rat.mk_pnat_denom_dvd
@@ -130,7 +135,7 @@ theorem mul_num_den' (q r : ℚ) :
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.num) hs
   rw [c_mul_num, mul_assoc, mul_comm]
   nth_rw 1 [c_mul_den]
-  repeat' rw [Int.mul_assoc]
+  repeat rw [Int.mul_assoc]
   apply mul_eq_mul_left_iff.2
   rw [or_iff_not_imp_right]
   intro
@@ -147,7 +152,7 @@ theorem add_num_den' (q r : ℚ) :
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.den + r.num * q.den) hs
   rw [c_mul_num, mul_assoc, mul_comm]
   nth_rw 1 [c_mul_den]
-  repeat' rw [Int.mul_assoc]
+  repeat rw [Int.mul_assoc]
   apply mul_eq_mul_left_iff.2
   rw [or_iff_not_imp_right]
   intro
@@ -172,15 +177,6 @@ protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
   simp only [Rat.neg_divInt, Rat.inv_divInt', eq_self_iff_true, Rat.divInt_neg]
 #align rat.inv_neg Rat.inv_neg
 
-@[simp]
-theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
-  suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
-    conv => pattern (occs := 1) q; (rw [← num_divInt_den q])
-    simp only [intCast_eq_divInt, natCast_eq_divInt, num_divInt_den] at this ⊢; assumption
-  have : (q.den : ℤ) ≠ 0 := ne_of_gt (mod_cast q.pos)
-  rw [Rat.divInt_mul_divInt _ _ this one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
-#align rat.mul_denom_eq_num Rat.mul_den_eq_num
-
 theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m := by
   replace hn : (n : ℚ) ≠ 0 := by rwa [Ne, ← Int.cast_zero, coe_int_inj]
   constructor
@@ -191,7 +187,7 @@ theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den
     simp_rw [eq_div_iff_mul_eq hn, ← Int.cast_mul] at hk
     rwa [mul_comm, eq_comm, coe_int_inj] at hk
   · rintro ⟨d, rfl⟩
-    rw [Int.cast_mul, mul_comm, mul_div_cancel_right₀ _ hn, Rat.coe_int_den]
+    rw [Int.cast_mul, mul_comm, mul_div_cancel_right₀ _ hn, Rat.den_intCast]
 #align rat.denom_div_cast_eq_one_iff Rat.den_div_cast_eq_one_iff
 
 theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :

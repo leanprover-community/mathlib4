@@ -103,8 +103,7 @@ variable {M N}
 
 /-- Compose a `MulSemiringAction` with a `MonoidHom`, with action `f r' • m`.
 See note [reducible non-instances]. -/
-@[reducible]
-def MulSemiringAction.compHom (f : N →* M) [MulSemiringAction M R] : MulSemiringAction N R :=
+abbrev MulSemiringAction.compHom (f : N →* M) [MulSemiringAction M R] : MulSemiringAction N R :=
   { DistribMulAction.compHom R f, MulDistribMulAction.compHom R f with }
 #align mul_semiring_action.comp_hom MulSemiringAction.compHom
 

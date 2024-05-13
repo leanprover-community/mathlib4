@@ -10,7 +10,7 @@ import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Lean.Expr.ExtraRecognizers
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import linear_algebra.linear_independent from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -782,16 +782,16 @@ theorem linearIndependent_sum {v : Sum ι ι' → M} :
       refine Finset.disjoint_filter.2 fun x _ hx =>
         disjoint_left.1 ?_ hx
       exact IsCompl.disjoint isCompl_range_inl_range_inr
-  · rw [← eq_neg_iff_add_eq_zero] at this
-    rw [disjoint_def'] at hlr
-    have A := by
-      refine hlr _ (sum_mem fun i _ => ?_) _ (neg_mem <| sum_mem fun i _ => ?_) this
-      · exact smul_mem _ _ (subset_span ⟨Sum.inl i, mem_range_self _, rfl⟩)
-      · exact smul_mem _ _ (subset_span ⟨Sum.inr i, mem_range_self _, rfl⟩)
-    cases' i with i i
-    · exact hl _ _ A i (Finset.mem_preimage.2 hi)
-    · rw [this, neg_eq_zero] at A
-      exact hr _ _ A i (Finset.mem_preimage.2 hi)
+  rw [← eq_neg_iff_add_eq_zero] at this
+  rw [disjoint_def'] at hlr
+  have A := by
+    refine hlr _ (sum_mem fun i _ => ?_) _ (neg_mem <| sum_mem fun i _ => ?_) this
+    · exact smul_mem _ _ (subset_span ⟨Sum.inl i, mem_range_self _, rfl⟩)
+    · exact smul_mem _ _ (subset_span ⟨Sum.inr i, mem_range_self _, rfl⟩)
+  cases' i with i i
+  · exact hl _ _ A i (Finset.mem_preimage.2 hi)
+  · rw [this, neg_eq_zero] at A
+    exact hr _ _ A i (Finset.mem_preimage.2 hi)
 #align linear_independent_sum linearIndependent_sum
 
 theorem LinearIndependent.sum_type {v' : ι' → M} (hv : LinearIndependent R v)
@@ -835,8 +835,8 @@ theorem linearIndependent_iUnion_finite {η : Type*} {ιs : η → Type*} {f : �
   apply LinearIndependent.of_subtype_range
   · rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ hxy
     by_cases h_cases : x₁ = y₁
-    subst h_cases
-    · apply Sigma.eq
+    · subst h_cases
+      apply Sigma.eq
       rw [LinearIndependent.injective (hindep _) hxy]
       rfl
     · have h0 : f x₁ x₂ = 0 := by
@@ -866,7 +866,7 @@ def LinearIndependent.totalEquiv (hv : LinearIndependent R v) :
   apply LinearEquiv.ofBijective (LinearMap.codRestrict (span R (range v)) (Finsupp.total ι M R v) _)
   constructor
   · rw [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
-    apply hv
+    · apply hv
     · intro l
       rw [← Finsupp.range_total]
       rw [LinearMap.mem_range]
@@ -973,12 +973,14 @@ theorem LinearIndependent.independent_span_singleton (hv : LinearIndependent R v
   refine' CompleteLattice.independent_def.mp fun i => _
   rw [disjoint_iff_inf_le]
   intro m hm
-  simp only [mem_inf, mem_span_singleton, iSup_subtype', ← span_range_eq_iSup] at hm
+  simp only [mem_inf, mem_span_singleton, iSup_subtype'] at hm
+  rw [← span_range_eq_iSup] at hm
   obtain ⟨⟨r, rfl⟩, hm⟩ := hm
   suffices r = 0 by simp [this]
   apply linearIndependent_iff_not_smul_mem_span.mp hv i
   -- Porting note: The original proof was using `convert hm`.
-  suffices v '' (univ \ {i}) = range fun j : { j // j ≠ i } => v j by rwa [this]
+  suffices v '' (univ \ {i}) = range fun j : { j // j ≠ i } => v j by
+    rwa [this]
   ext
   simp
 #align linear_independent.independent_span_singleton LinearIndependent.independent_span_singleton
@@ -1076,11 +1078,11 @@ theorem eq_of_linearIndependent_of_span_subtype [Nontrivial R] {s t : Set M}
     apply surjective_of_linearIndependent_of_span hs f _
     convert hst <;> simp [f, comp]
   show s = t
-  · apply Subset.antisymm _ h
-    intro x hx
-    rcases h_surj ⟨x, hx⟩ with ⟨y, hy⟩
-    convert y.mem
-    rw [← Subtype.mk.inj hy]
+  apply Subset.antisymm _ h
+  intro x hx
+  rcases h_surj ⟨x, hx⟩ with ⟨y, hy⟩
+  convert y.mem
+  rw [← Subtype.mk.inj hy]
 #align eq_of_linear_independent_of_span_subtype eq_of_linearIndependent_of_span_subtype
 
 open LinearMap
@@ -1411,11 +1413,11 @@ theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s 
       · exact subset_sUnion_of_mem
   rcases this with
     ⟨b, ⟨bt, bi⟩, sb, h⟩
-  · refine' ⟨b, bt, sb, fun x xt => _, bi⟩
-    by_contra hn
-    apply hn
-    rw [← h _ ⟨insert_subset_iff.2 ⟨xt, bt⟩, bi.insert hn⟩ (subset_insert _ _)]
-    exact subset_span (mem_insert _ _)
+  refine' ⟨b, bt, sb, fun x xt => _, bi⟩
+  by_contra hn
+  apply hn
+  rw [← h _ ⟨insert_subset_iff.2 ⟨xt, bt⟩, bi.insert hn⟩ (subset_insert _ _)]
+  exact subset_span (mem_insert _ _)
 #align exists_linear_independent_extension exists_linearIndependent_extension
 
 variable (K t)

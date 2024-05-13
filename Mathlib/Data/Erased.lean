@@ -43,8 +43,7 @@ noncomputable def out {α} : Erased α → α
 
 Note: `(mk a).OutType` is not definitionally equal to `a`.
 -/
-@[reducible]
-def OutType (a : Erased (Sort u)) : Sort u :=
+abbrev OutType (a : Erased (Sort u)) : Sort u :=
   out a
 #align erased.out_type Erased.OutType
 

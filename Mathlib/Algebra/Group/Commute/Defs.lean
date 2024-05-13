@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Semiconj.Defs
-import Mathlib.Data.Nat.Defs
 import Mathlib.Init.Algebra.Classes
 
 #align_import algebra.group.commute from "leanprover-community/mathlib"@"05101c3df9d9cfe9430edc205860c79b6d660102"
@@ -254,40 +253,3 @@ theorem mul_inv_cancel_assoc (h : Commute a b) : a * (b * a⁻¹) = b := by
 end Group
 
 end Commute
-
-section Monoid
-variable {M : Type*} [Monoid M] {n : ℕ}
-
-@[to_additive succ_nsmul']
-lemma pow_succ' (a : M) (n : ℕ) : a ^ (n + 1) = a * a ^ n :=
-  (pow_succ a n).trans (Commute.self_pow _ _).symm
-#align pow_succ pow_succ'
-#align succ_nsmul succ_nsmul'
-
-@[to_additive]
-lemma mul_pow_sub_one (hn : n ≠ 0) (a : M) : a * a ^ (n - 1) = a ^ n := by
-  rw [← pow_succ', Nat.sub_add_cancel $ Nat.one_le_iff_ne_zero.2 hn]
-
-@[to_additive]
-lemma pow_sub_one_mul (hn : n ≠ 0) (a : M) : a ^ (n - 1) * a = a ^ n := by
-  rw [← pow_succ, Nat.sub_add_cancel $ Nat.one_le_iff_ne_zero.2 hn]
-
-end Monoid
-
-section CommGroup
-
-variable [CommGroup G] (a b : G)
-
-@[to_additive (attr := simp)]
-theorem mul_inv_cancel_comm : a * b * a⁻¹ = b :=
-  (Commute.all a b).mul_inv_cancel
-#align mul_inv_cancel_comm mul_inv_cancel_comm
-#align add_neg_cancel_comm add_neg_cancel_comm
-
-@[to_additive (attr := simp)]
-theorem mul_inv_cancel_comm_assoc : a * (b * a⁻¹) = b :=
-  (Commute.all a b).mul_inv_cancel_assoc
-#align mul_inv_cancel_comm_assoc mul_inv_cancel_comm_assoc
-#align add_neg_cancel_comm_assoc add_neg_cancel_comm_assoc
-
-end CommGroup

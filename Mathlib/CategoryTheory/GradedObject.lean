@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Group.Int
-import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import category_theory.graded_object from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -148,7 +147,6 @@ theorem comapEq_trans {β γ : Type w} {f g h : β → γ} (k : f = g) (l : g = 
     comapEq C (k.trans l) = comapEq C k ≪≫ comapEq C l := by aesop_cat
 #align category_theory.graded_object.comap_eq_trans CategoryTheory.GradedObject.comapEq_trans
 
-@[simp]
 theorem eqToHom_apply {β : Type w} {X Y : β → C} (h : X = Y) (b : β) :
     (eqToHom h : X ⟶ Y) b = eqToHom (by rw [h]) := by
   subst h

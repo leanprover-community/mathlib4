@@ -45,9 +45,12 @@ protected theorem tfae (f : X → Y) :
       ∀ x, IsOpen { x' | f x' = f x },
       ∀ y, IsOpen (f ⁻¹' {y}),
       ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x] := by
-  tfae_have 1 → 4; exact fun h y => h {y}
-  tfae_have 4 → 3; exact fun h x => h (f x)
-  tfae_have 3 → 2; exact fun h x => IsOpen.mem_nhds (h x) rfl
+  tfae_have 1 → 4
+  · exact fun h y => h {y}
+  tfae_have 4 → 3
+  · exact fun h x => h (f x)
+  tfae_have 3 → 2
+  · exact fun h x => IsOpen.mem_nhds (h x) rfl
   tfae_have 2 → 5
   · intro h x
     rcases mem_nhds_iff.1 (h x) with ⟨U, eq, hU, hx⟩
@@ -449,16 +452,10 @@ theorem flip_unflip {X α β : Type*} [Finite α] [TopologicalSpace X]
 
 section Comap
 
-open scoped Classical
-
 variable [TopologicalSpace Y]
 
-/-- Pull back of locally constant maps under any map, by pre-composition.
-
-This definition only makes sense if `f` is continuous,
-in which case it sends locally constant functions to their precomposition with `f`.
-See also `LocallyConstant.coe_comap`. -/
-noncomputable def comap (f : C(X, Y)) (g : LocallyConstant Y Z) : LocallyConstant X Z :=
+/-- Pull back of locally constant maps under a continuous map, by pre-composition. -/
+def comap (f : C(X, Y)) (g : LocallyConstant Y Z) : LocallyConstant X Z :=
   ⟨g ∘ f, g.isLocallyConstant.comp_continuous f.continuous⟩
 #align locally_constant.comap LocallyConstant.comap
 

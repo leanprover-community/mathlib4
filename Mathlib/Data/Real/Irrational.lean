@@ -59,7 +59,7 @@ theorem irrational_nrt_of_notint_nrt {x : ℝ} (n : ℕ) (m : ℤ) (hxr : x ^ n 
     ← Int.cast_pow, ← Int.cast_mul, Int.cast_inj] at hxr
   have hdivn : (D : ℤ) ^ n ∣ N ^ n := Dvd.intro_left m hxr
   rw [← Int.dvd_natAbs, ← Int.coe_nat_pow, Int.natCast_dvd_natCast, Int.natAbs_pow,
-    Nat.pow_dvd_pow_iff hnpos] at hdivn
+    Nat.pow_dvd_pow_iff hnpos.ne'] at hdivn
   obtain rfl : D = 1 := by rw [← Nat.gcd_eq_right hdivn, C.gcd_eq_one]
   refine' hv ⟨N, _⟩
   rw [mk'_eq_divInt, Int.ofNat_one, divInt_one, cast_intCast]
@@ -503,9 +503,9 @@ theorem one_lt_natDegree_of_irrational_root (hx : Irrational x) (p_nonzero : p �
   · obtain rfl : b = 0 := by simpa
     simp at p_nonzero
   · rw [mul_comm, ← eq_div_iff_mul_eq, eq_comm] at this
-    refine' hx ⟨-b / a, _⟩
-    assumption_mod_cast
-    assumption_mod_cast
+    · refine' hx ⟨-b / a, _⟩
+      assumption_mod_cast
+    · assumption_mod_cast
 #align one_lt_nat_degree_of_irrational_root one_lt_natDegree_of_irrational_root
 
 end Polynomial
