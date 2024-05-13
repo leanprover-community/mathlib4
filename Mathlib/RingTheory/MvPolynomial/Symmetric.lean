@@ -200,7 +200,7 @@ def muProduct (μ : n.Partition) : MvPolynomial σ R :=
   (μ.parts.map f).prod
 
 lemma muProduct_def (μ : n.Partition) :
-    muProduct σ R f μ = Multiset.prod (μ.parts.map f) := rfl
+    muProduct σ R f μ = (μ.parts.map f).prod := rfl
 
 @[simp]
 theorem muProduct_indiscrete_zero :
