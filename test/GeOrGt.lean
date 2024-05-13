@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Linter.ge_or_gt
+import Mathlib.Tactic.Linter.GeOrGt
 import Mathlib.Tactic.Common
 
 /- Tests for the `ge_or_gt` linter -/
