@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
-import Lean.Linter.Util
+-- once the replacement is done, uncomment the next import and restore the `logLint` below
+--import Lean.Linter.Util
 
 /-!
 #  The `theorem` vs `lemma` linter
