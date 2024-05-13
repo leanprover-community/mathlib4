@@ -7,7 +7,7 @@ on:
 
 jobs:
   check-lean4checker:
-    runs-on: ubuntu-latest
+    runs-on: pr
     steps:
 
       - name: cleanup
