@@ -205,8 +205,8 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
     let g : α → Set (Set α) := fun x => f x ∩ v.setsAt x
     have : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ (a : Set α), a ∈ g x ∧ a ⊆ closedBall x ε := by
       intro x hx ε εpos
-      obtain ⟨a, af, ha⟩ : ∃ a ∈ f x, a ⊆ closedBall x (min ε δ)
-      exact ffine x hx (min ε δ) (lt_min εpos δpos)
+      obtain ⟨a, af, ha⟩ : ∃ a ∈ f x, a ⊆ closedBall x (min ε δ) :=
+        ffine x hx (min ε δ) (lt_min εpos δpos)
       rcases fset x hx af with (h'a | h'a)
       · exact ⟨a, ⟨af, h'a⟩, ha.trans (closedBall_subset_closedBall (min_le_left _ _))⟩
       · refine' False.elim (h'a.2.2 _)
