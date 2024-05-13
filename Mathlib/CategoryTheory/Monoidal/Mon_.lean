@@ -530,6 +530,8 @@ instance monMonoidal : MonoidalCategory (Mon_ C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
 #align Mon_.Mon_monoidal Mon_.monMonoidal
 
+variable (C)
+
 /-- The forgetful functor from `Mon_ C` to `C` is monoidal when `C` is braided monoidal. -/
 def forgetMonoidal : MonoidalFunctor (Mon_ C) C :=
   { forget C with
