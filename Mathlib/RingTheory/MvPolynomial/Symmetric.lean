@@ -186,7 +186,6 @@ def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
     (AlgHom.ext <| fun p => Subtype.ext <| by simp)
 
 variable (σ R : Type*) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
-variable (n : ℕ)
 
 section Partitions
 
@@ -217,6 +216,8 @@ end Partitions
 section ElementarySymmetric
 
 open Finset
+
+variable (n : ℕ)
 
 /-- The `n`th elementary symmetric `MvPolynomial σ R`. -/
 def esymm: MvPolynomial σ R :=
