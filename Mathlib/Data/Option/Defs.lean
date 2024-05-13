@@ -88,8 +88,7 @@ instance decidableExistsMem {p : α → Prop} [DecidablePred p] :
   | some a => if h : p a then isTrue <| ⟨_, rfl, h⟩ else isFalse fun ⟨_, ⟨rfl, hn⟩⟩ ↦ h hn
 
 /-- Inhabited `get` function. Returns `a` if the input is `some a`, otherwise returns `default`. -/
-@[reducible]
-def iget [Inhabited α] : Option α → α
+abbrev iget [Inhabited α] : Option α → α
   | some x => x
   | none => default
 #align option.iget Option.iget

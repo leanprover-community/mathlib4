@@ -143,11 +143,11 @@ theorem comp_of_mono {f₁ : X ⟶ Y} {f₂ : Y ⟶ Z} [Mono f₂] (small_k : Is
       refine' PullbackCone.isLimitAux _
         (fun s => small_k.lift s.fst s.snd (by rw [← cancel_mono f₂, assoc, s.condition, assoc]))
         (by simp) (by simp) _
-      · intro s m hm
-        apply small_k.isLimit.hom_ext
-        apply PullbackCone.equalizer_ext small_k.cone _ _
-        · exact (hm WalkingCospan.left).trans (by simp)
-        · exact (hm WalkingCospan.right).trans (by simp)⟩ }
+      intro s m hm
+      apply small_k.isLimit.hom_ext
+      apply PullbackCone.equalizer_ext small_k.cone _ _
+      · exact (hm WalkingCospan.left).trans (by simp)
+      · exact (hm WalkingCospan.right).trans (by simp)⟩ }
 #align category_theory.is_kernel_pair.comp_of_mono CategoryTheory.IsKernelPair.comp_of_mono
 
 /--
@@ -184,9 +184,14 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
   · ext
     · simp [s.condition]
     · simp
-  · apply pullback.hom_ext
-    · simpa using hm WalkingCospan.left =≫ pullback.fst
-    · apply PullbackCone.IsLimit.hom_ext h.isLimit
+  · -- Adaptation note: nightly-2024-04-01
+    -- This `symm` (or the following ones that undo it) wasn't previously necessary.
+    symm
+    apply pullback.hom_ext
+    · symm
+      simpa using hm WalkingCospan.left =≫ pullback.fst
+    · symm
+      apply PullbackCone.IsLimit.hom_ext h.isLimit
       · simpa using hm WalkingCospan.left =≫ pullback.snd
       · simpa using hm WalkingCospan.right =≫ pullback.snd
 #align category_theory.is_kernel_pair.pullback CategoryTheory.IsKernelPair.pullback

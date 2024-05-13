@@ -209,9 +209,9 @@ def rootsOfUnityEquivNthRoots : rootsOfUnity k R ≃ { x // x ∈ nthRoots k (1 
     rcases x with ⟨x, hx⟩; rw [mem_nthRoots k.pos] at hx
     simp only [Subtype.coe_mk, ← pow_succ, ← pow_succ', hx,
       tsub_add_cancel_of_le (show 1 ≤ (k : ℕ) from k.one_le)]
-  · show (_ : Rˣ) ^ (k : ℕ) = 1
-    simp only [Units.ext_iff, hx, Units.val_mk, Units.val_one, Subtype.coe_mk,
-      Units.val_pow_eq_pow_val]
+  show (_ : Rˣ) ^ (k : ℕ) = 1
+  simp only [Units.ext_iff, hx, Units.val_mk, Units.val_one, Subtype.coe_mk,
+    Units.val_pow_eq_pow_val]
 #align roots_of_unity_equiv_nth_roots rootsOfUnityEquivNthRoots
 
 variable {k R}
@@ -670,8 +670,8 @@ theorem neZero' {n : ℕ+} (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R)
       rw [h] at H
       simp at H
     refine' hζ.pow_ne_one_of_pos_of_lt hpos _ (frobenius_inj R p this)
-    · rw [hm.1, hk, pow_succ', mul_assoc, mul_comm p]
-      exact lt_mul_of_one_lt_right hpos hpri.1.one_lt
+    rw [hm.1, hk, pow_succ', mul_assoc, mul_comm p]
+    exact lt_mul_of_one_lt_right hpos hpri.1.one_lt
   · exact NeZero.of_not_dvd R hp
 #align is_primitive_root.ne_zero' IsPrimitiveRoot.neZero'
 
