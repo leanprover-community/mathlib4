@@ -3,11 +3,11 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.NeZero
-import Mathlib.Order.RelIso.Basic
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Data.Nat.Defs
 import Mathlib.Order.Hom.Set
-import Batteries.Data.Fin.Lemmas
 
 #align_import data.fin.basic from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
@@ -71,6 +71,9 @@ This file expands on the development in the core library.
   by `i ↦ n-(i+1)`
 
 -/
+
+assert_not_exists OrderedCommMonoid
+assert_not_exists Ring
 
 universe u v
 
@@ -293,7 +296,7 @@ instance {n : ℕ} : WellFoundedRelation (Fin n) :=
 
 /-- Given a positive `n`, `Fin.ofNat' i` is `i % n` as an element of `Fin n`. -/
 def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
-  ⟨i % n, mod_lt _ <| NeZero.pos n⟩
+  ⟨i % n, mod_lt _ n.pos_of_neZero⟩
 #align fin.of_nat' Fin.ofNat''ₓ
 -- Porting note: `Fin.ofNat'` conflicts with something in core (there the hypothesis is `n > 0`),
 -- so for now we make this double-prime `''`. This is also the reason for the dubious translation.
@@ -331,7 +334,7 @@ The `Fin.pos_iff_ne_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
-  rw [← val_fin_lt, val_zero', _root_.pos_iff_ne_zero, Ne, Ne, ext_iff, val_zero']
+  rw [← val_fin_lt, val_zero', Nat.pos_iff_ne_zero, Ne, Ne, ext_iff, val_zero']
 #align fin.pos_iff_ne_zero Fin.pos_iff_ne_zero'
 
 #align fin.eq_zero_or_eq_succ Fin.eq_zero_or_eq_succ
@@ -342,8 +345,7 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
 theorem rev_involutive : Involutive (rev : Fin n → Fin n) := fun i =>
   ext <| by
     dsimp only [rev]
-    rw [← tsub_tsub, tsub_tsub_cancel_of_le (Nat.add_one_le_iff.2 i.is_lt),
-      add_tsub_cancel_right]
+    rw [← Nat.sub_sub, Nat.sub_sub_self (Nat.add_one_le_iff.2 i.is_lt), Nat.add_sub_cancel_right]
 #align fin.rev_involutive Fin.rev_involutive
 
 /-- `Fin.rev` as an `Equiv.Perm`, the antitone involution `Fin n → Fin n` given by
@@ -435,9 +437,9 @@ instance : Lattice (Fin (n + 1)) :=
 #align fin.last_pos Fin.last_pos
 #align fin.eq_last_of_not_lt Fin.eq_last_of_not_lt
 
-theorem last_pos' [NeZero n] : 0 < last n := NeZero.pos n
+theorem last_pos' [NeZero n] : 0 < last n := n.pos_of_neZero
 
-theorem one_lt_last [NeZero n] : 1 < last (n + 1) := (lt_add_iff_pos_left 1).mpr (NeZero.pos n)
+theorem one_lt_last [NeZero n] : 1 < last (n + 1) := Nat.lt_add_left_iff_pos.2 n.pos_of_neZero
 
 theorem top_eq_last (n : ℕ) : ⊤ = Fin.last n :=
   rfl
@@ -538,13 +540,13 @@ section Monoid
 
 instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
   add := (· + ·)
-  add_assoc := by simp [ext_iff, add_def, add_assoc]
-  add_comm := by simp [ext_iff, add_def, add_comm]
+  add_assoc := by simp [ext_iff, add_def, Nat.add_assoc]
+  add_comm := by simp [ext_iff, add_def, Nat.add_comm]
 #align fin.add_comm_semigroup Fin.addCommSemigroup
 
 -- Porting note (#10618): removing `simp`, `simp` can prove it with AddCommMonoid instance
 protected theorem add_zero [NeZero n] (k : Fin n) : k + 0 = k := by
-  simp only [add_def, val_zero', add_zero, mod_eq_of_lt (is_lt k)]
+  simp only [add_def, val_zero', Nat.add_zero, mod_eq_of_lt (is_lt k)]
 #align fin.add_zero Fin.add_zero
 
 -- Porting note (#10618): removing `simp`, `simp` can prove it with AddCommMonoid instance
@@ -553,7 +555,7 @@ protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
 #align fin.zero_add Fin.zero_add
 
 instance {a : ℕ} [NeZero n] : OfNat (Fin n) a where
-  ofNat := Fin.ofNat' a (NeZero.pos n)
+  ofNat := Fin.ofNat' a n.pos_of_neZero
 
 instance inhabited (n : ℕ) [NeZero n] : Inhabited (Fin n) :=
   ⟨0⟩
@@ -575,7 +577,7 @@ section from_ad_hoc
 end from_ad_hoc
 
 instance (n) : AddCommSemigroup (Fin n) where
-  add_assoc := by simp [ext_iff, add_def, add_assoc]
+  add_assoc := by simp [ext_iff, add_def, Nat.add_assoc]
   add_comm := by simp [ext_iff, add_def, add_comm]
 
 instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
@@ -619,7 +621,7 @@ theorem val_bit1 {n : ℕ} [NeZero n] (k : Fin n) :
   · cases' k with k h
     cases k
     · show _ % _ = _
-      simp
+      simp at h
     cases' h with _ h
   simp [bit1, Fin.val_bit0, Fin.val_add, Fin.val_one]
 #align fin.coe_bit1 Fin.val_bit1
@@ -1111,8 +1113,7 @@ theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin <| n + 1) < k ↔ 
 
 @[simp]
 theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
-    ({ i | (i : ℕ) < n } : Set (Fin n.succ)) :=
-  range_castLE le_self_add
+    ({ i | (i : ℕ) < n } : Set (Fin n.succ)) := range_castLE (by omega)
 #align fin.range_cast_succ Fin.range_castSucc
 
 @[simp]
@@ -1125,7 +1126,7 @@ theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :
 #align fin.succ_cast_succ Fin.succ_castSucc
 
 theorem strictMono_addNat (m) : StrictMono ((addNat · m) : Fin n → Fin (n + m)) :=
-  fun i j h => add_lt_add_right (show i.val < j.val from h) _
+  fun i j h ↦ Nat.add_lt_add_right (show i.val < j.val from h) _
 
 /-- `Fin.addNat` as an `OrderEmbedding`, `addNatEmb m i` adds `m` to `i`, generalizes
 `Fin.succ`. -/
@@ -1148,7 +1149,7 @@ def addNatEmb (m) : Fin n ↪o Fin (n + m) :=
 #align fin.cast_add_nat_right Fin.cast_addNat_rightₓ
 
 theorem strictMono_natAdd (n) {m} : StrictMono (natAdd n : Fin m → Fin (n + m)) :=
-  fun i j h => add_lt_add_left (show i.val < j.val from h) _
+  fun i j h ↦ Nat.add_lt_add_left (show i.val < j.val from h) _
 
 /-- `Fin.natAdd` as an `OrderEmbedding`, `natAddEmb n i` adds `n` to `i` "on the left". -/
 @[simps! apply toEmbedding]
@@ -1221,7 +1222,7 @@ theorem monotone_pred_comp {α : Type*} [Preorder α] {f : α → Fin (n + 1)} (
 
 theorem pred_one' [NeZero n] (h := (zero_ne_one' (n := n)).symm) :
     Fin.pred (1 : Fin (n + 1)) h = 0 := by
-  simp_rw [Fin.ext_iff, coe_pred, val_one', val_zero', tsub_eq_zero_iff_le, Nat.mod_le]
+  simp_rw [Fin.ext_iff, coe_pred, val_one', val_zero', Nat.sub_eq_zero_iff_le, Nat.mod_le]
 
 theorem pred_last (h := last_pos'.ne') :
     pred (last (n + 1)) h = last n := by simp_rw [← succ_last, pred_succ]
@@ -1413,7 +1414,7 @@ section DivMod
 
 /-- Compute `i / n`, where `n` is a `Nat` and inferred the type of `i`. -/
 def divNat (i : Fin (m * n)) : Fin m :=
-  ⟨i / n, Nat.div_lt_of_lt_mul <| mul_comm m n ▸ i.prop⟩
+  ⟨i / n, Nat.div_lt_of_lt_mul <| Nat.mul_comm m n ▸ i.prop⟩
 #align fin.div_nat Fin.divNat
 
 @[simp]
@@ -1422,8 +1423,7 @@ theorem coe_divNat (i : Fin (m * n)) : (i.divNat : ℕ) = i / n :=
 #align fin.coe_div_nat Fin.coe_divNat
 
 /-- Compute `i % n`, where `n` is a `Nat` and inferred the type of `i`. -/
-def modNat (i : Fin (m * n)) : Fin n :=
-  ⟨i % n, Nat.mod_lt _ <| pos_of_mul_pos_right i.pos m.zero_le⟩
+def modNat (i : Fin (m * n)) : Fin n := ⟨i % n, Nat.mod_lt _ <| Nat.pos_of_mul_pos_left i.pos⟩
 #align fin.mod_nat Fin.modNat
 
 @[simp]
@@ -1439,10 +1439,11 @@ theorem modNat_rev (i : Fin (m * n)) : i.rev.modNat = i.modNat.rev := by
   calc
     (m * n - (i + 1)) % n = (m * n - ((i / n) * n + i % n + 1)) % n := by rw [Nat.div_add_mod']
     _ = ((m - i / n - 1) * n + (n - (i % n + 1))) % n := by
-      rw [tsub_mul, one_mul, tsub_add_tsub_cancel _ H₁, tsub_mul, tsub_tsub, add_assoc]
-      exact le_mul_of_one_le_left' <| le_tsub_of_add_le_left H₂
+      rw [Nat.mul_sub_right_distrib, Nat.one_mul, Nat.sub_add_sub_cancel _ H₁,
+        Nat.mul_sub_right_distrib, Nat.sub_sub, Nat.add_assoc]
+      exact Nat.le_mul_of_pos_left _ <| Nat.le_sub_of_add_le' H₂
     _ = n - (i % n + 1) := by
-      rw [mul_comm, Nat.mul_add_mod, Nat.mod_eq_of_lt]; exact i.modNat.rev.is_lt
+      rw [Nat.mul_comm, Nat.mul_add_mod, Nat.mod_eq_of_lt]; exact i.modNat.rev.is_lt
 
 end DivMod
 
@@ -1598,9 +1599,9 @@ theorem coe_sub_one {n} (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a 
   · simp
   split_ifs with h
   · simp [h]
-  rw [sub_eq_add_neg, val_add_eq_ite, coe_neg_one, if_pos, add_comm, Nat.add_sub_add_left]
-  conv_rhs => rw [add_comm]
-  rw [add_le_add_iff_left, Nat.one_le_iff_ne_zero]
+  rw [sub_eq_add_neg, val_add_eq_ite, coe_neg_one, if_pos, Nat.add_comm, Nat.add_sub_add_left]
+  conv_rhs => rw [Nat.add_comm]
+  rw [Nat.add_le_add_iff_left, Nat.one_le_iff_ne_zero]
   rwa [Fin.ext_iff] at h
 #align fin.coe_sub_one Fin.coe_sub_one
 #align fin.coe_sub_iff_le Fin.coe_sub_iff_le
@@ -1609,10 +1610,9 @@ theorem coe_sub_one {n} (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a 
 @[simp]
 theorem lt_sub_one_iff {n : ℕ} {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   rcases k with ⟨_ | k, hk⟩
-  · simp only [zero_eq, zero_eta, zero_sub, lt_iff_val_lt_val, val_zero, coe_neg_one, add_pos_iff,
-      _root_.zero_lt_one, or_true]
+  · simp only [zero_eta, zero_sub, lt_iff_val_lt_val, val_zero, coe_neg_one, zero_lt_succ]
   have : (k + 1 + (n + 1)) % (n + 2) = k % (n + 2) := by
-    rw [add_right_comm, add_assoc, add_assoc, one_add_one_eq_two, add_mod_right]
+    rw [Nat.add_right_comm, Nat.add_assoc, Nat.add_assoc, add_mod_right]
   simp [lt_iff_val_lt_val, ext_iff, Fin.coe_sub, succ_eq_add_one, this,
     mod_eq_of_lt ((lt_succ_self _).trans hk)]
 #align fin.lt_sub_one_iff Fin.lt_sub_one_iff
@@ -1638,7 +1638,7 @@ theorem add_one_le_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) : a + 1 ≤ b
   cases' a with a ha
   cases' b with b hb
   cases n
-  · simp only [Nat.zero_eq, zero_add, Nat.lt_one_iff] at ha hb
+  · simp only [Nat.zero_eq, Nat.zero_add, Nat.lt_one_iff] at ha hb
     simp [ha, hb]
   simp only [le_iff_val_le_val, val_add, lt_iff_val_lt_val, val_mk, val_one] at h ⊢
   rwa [Nat.mod_eq_of_lt, Nat.succ_le_iff]
@@ -1647,7 +1647,7 @@ theorem add_one_le_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) : a + 1 ≤ b
 
 theorem exists_eq_add_of_le {n : ℕ} {a b : Fin n} (h : a ≤ b) : ∃ k ≤ b, b = a + k := by
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k := Nat.exists_eq_add_of_le h
-  have hkb : k ≤ b := le_add_self.trans hk.ge
+  have hkb : k ≤ b := by omega
   refine' ⟨⟨k, hkb.trans_lt b.is_lt⟩, hkb, _⟩
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
 
@@ -1656,12 +1656,10 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
   cases n
   · cases' a with a ha
     cases' b with b hb
-    simp only [Nat.zero_eq, zero_add, Nat.lt_one_iff] at ha hb
+    simp only [Nat.zero_eq, Nat.zero_add, Nat.lt_one_iff] at ha hb
     simp [ha, hb] at h
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k + 1 := Nat.exists_eq_add_of_lt h
-  have hkb : k < b := by
-    rw [hk, add_comm _ k, Nat.lt_succ_iff]
-    exact le_self_add
+  have hkb : k < b := by omega
   refine' ⟨⟨k, hkb.trans b.is_lt⟩, hkb, _, _⟩
   · rw [Fin.le_iff_val_le_val, Fin.val_add_one]
     split_ifs <;> simp [Nat.succ_le_iff, hkb]
