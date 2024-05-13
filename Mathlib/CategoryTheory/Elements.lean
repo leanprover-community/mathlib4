@@ -69,6 +69,12 @@ instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
 
 namespace CategoryOfElements
 
+/-- Constructor for morphisms in the category of elements of a functor to types. -/
+@[simps]
+def homMk {F : C ⥤ Type w} (x y : F.Elements) (f : x.1 ⟶ y.1) (hf : F.map f x.snd = y.snd) :
+    x ⟶ y :=
+  ⟨f, hf⟩
+
 @[ext]
 theorem ext (F : C ⥤ Type w) {x y : F.Elements} (f g : x ⟶ y) (w : f.val = g.val) : f = g :=
   Subtype.ext_val w

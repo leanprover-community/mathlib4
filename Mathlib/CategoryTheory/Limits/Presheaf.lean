@@ -455,7 +455,13 @@ noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
     IsColimit (coconeOfRepresentable P) where
   desc s :=
     { app := fun X x => (s.ι.app (Opposite.op (Functor.elementsMk P X x))).app X (𝟙 _)
-      naturality := sorry }
+      naturality := fun X Y f => by
+        ext (x : P.obj X)
+        have eq₁ := congr_fun (congr_app (s.w (CategoryOfElements.homMk (P.elementsMk X x)
+          (P.elementsMk Y (P.map f x)) f rfl).op) Y) (𝟙 _)
+        dsimp at eq₁ ⊢
+        rw [← eq₁, id_comp]
+        simpa using congr_fun ((s.ι.app (Opposite.op (P.elementsMk X x))).naturality f) (𝟙 _) }
   fac s j := by
     ext X x
     dsimp
@@ -471,7 +477,12 @@ noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
 #align category_theory.colimit_of_representable CategoryTheory.Presheaf.colimitOfRepresentable
 
 variable {A : C ⥤ ℰ}
-variable [yoneda.HasPointwiseLeftKanExtension A] -- follows from  `[HasColimits ℰ]`
+
+example [HasColimitsOfSize.{v₁, max u₁ v₁} ℰ] :
+    yoneda.HasPointwiseLeftKanExtension A :=
+  inferInstance
+
+variable [yoneda.HasPointwiseLeftKanExtension A]
 
 section
 
@@ -573,26 +584,68 @@ section
 
 variable {X : C} {G : (Cᵒᵖ ⥤ Type v₁) ⥤ Dᵒᵖ ⥤ Type v₁} (φ : F ⋙ yoneda ⟶ yoneda ⋙ G)
 
-def coconeApp' {P : Cᵒᵖ ⥤ Type v₁} (x : P.Elements) :
-    (G.obj P).obj (F.op.obj x.1) :=
-  (G.map (yonedaEquiv.symm x.2)).app _ ((φ.app x.1.unop).app _ (𝟙 _))
+def coconeApp {P : Cᵒᵖ ⥤ Type v₁} (x : P.Elements) :
+    yoneda.obj x.1.unop ⟶ F.op ⋙ G.obj P := yonedaEquiv.symm
+      ((G.map (yonedaEquiv.symm x.2)).app _ ((φ.app x.1.unop).app _ (𝟙 _)))
+
+@[reassoc (attr := simp)]
+lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type v₁} {x y : P.Elements} (f : x ⟶ y) :
+    yoneda.map f.1.unop ≫ coconeApp φ x = coconeApp φ y := by
+  have eq₁ : yoneda.map f.1.unop ≫ yonedaEquiv.symm x.2 = yonedaEquiv.symm y.2 :=
+    yonedaEquiv.injective
+      (by simpa only [Equiv.apply_symm_apply, ← yonedaEquiv_naturality] using f.2)
+  have eq₂ := congr_fun ((G.map (yonedaEquiv.symm x.2)).naturality (F.map f.1.unop).op)
+    ((φ.app x.1.unop).app _ (𝟙 _))
+  have eq₃ := congr_fun (congr_app (φ.naturality f.1.unop) _) (𝟙 _)
+  have eq₄ := congr_fun ((φ.app x.1.unop).naturality (F.map f.1.unop).op)
+  dsimp at eq₂ eq₃ eq₄
+  apply yonedaEquiv.injective
+  dsimp only [coconeApp]
+  rw [Equiv.apply_symm_apply, ← yonedaEquiv_naturality, Equiv.apply_symm_apply]
+  simp [← eq₁, ← eq₂, ← eq₃, ← eq₄, Functor.map_comp, FunctorToTypes.comp, id_comp, comp_id]
 
 noncomputable def presheafHom (P : Cᵒᵖ ⥤ Type v₁) : P ⟶ F.op ⋙ G.obj P :=
   (colimitOfRepresentable P).desc (Cocone.mk _
-    { app := fun x => yonedaEquiv.symm (by exact coconeApp' φ x.unop)
-      naturality := by
-        dsimp
-        simp
-        sorry })
+    { app := fun x => coconeApp φ x.unop })
+
+lemma yonedaEquiv_ι_presheafHom (P : Cᵒᵖ ⥤ Type v₁) {X : C} (f : yoneda.obj X ⟶ P) :
+    yonedaEquiv (f ≫ presheafHom φ P) =
+      (G.map f).app (Opposite.op (F.obj X)) ((φ.app X).app _ (𝟙 _)) := by
+  obtain ⟨x, rfl⟩ := yonedaEquiv.symm.surjective f
+  erw [(colimitOfRepresentable P).fac _ (Opposite.op (P.elementsMk _ x))]
+  dsimp only [coconeApp]
+  apply Equiv.apply_symm_apply
 
 lemma yonedaEquiv_presheafHom_yoneda_obj (X : C) :
     yonedaEquiv (presheafHom φ (yoneda.obj X)) =
       ((φ.app X).app (F.op.obj (Opposite.op X)) (𝟙 _)) := by
-  sorry
+  simpa using yonedaEquiv_ι_presheafHom φ (yoneda.obj X) (𝟙 _)
+
+-- should be moved
+lemma hom_ext_yoneda {P Q : Cᵒᵖ ⥤ Type v₁} {f g : P ⟶ Q}
+    (h : ∀ (X : C) (p : yoneda.obj X ⟶ P), p ≫ f = p ≫ g) :
+    f = g := by
+  ext X x
+  simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
+    using congr_arg (yonedaEquiv) (h _ (yonedaEquiv.symm x))
+
+@[reassoc (attr := simp)]
+lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type v₁} (f : P ⟶ Q) :
+    presheafHom φ P ≫ whiskerLeft F.op (G.map f) = f ≫ presheafHom φ Q :=
+  hom_ext_yoneda (fun X p => yonedaEquiv.injective (by
+    rw [← assoc p f, yonedaEquiv_ι_presheafHom, ← assoc,
+      yonedaEquiv_comp, yonedaEquiv_ι_presheafHom,
+      whiskerLeft_app, Functor.map_comp, FunctorToTypes.comp]
+    dsimp))
 
 noncomputable def natTrans : F.op.lan ⟶ G where
   app P := (F.op.lan.obj P).descOfIsLeftKanExtension (F.op.lanUnit.app P) _ (presheafHom φ P)
-  naturality := sorry
+  naturality {P Q} f := by
+    apply (F.op.lan.obj P).hom_ext_of_isLeftKanExtension (F.op.lanUnit.app P)
+    have eq := F.op.lanUnit.naturality f
+    dsimp at eq ⊢
+    rw [Functor.descOfIsLeftKanExtension_fac_assoc, ← reassoc_of% eq,
+      Functor.descOfIsLeftKanExtension_fac, presheafHom_naturality]
 
 lemma natTrans_app_yoneda_obj (X : C) : (natTrans φ).app (yoneda.obj X) =
     (compYonedaIsoYonedaCompLan F).inv.app X ≫ φ.app X := by
