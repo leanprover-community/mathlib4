@@ -161,7 +161,7 @@ lemma ofSym_one (s : Sym σ 1) : ofSym s = indiscrete 1 := by
 
 /-- The equivalence between `σ` and `1`-tuples of elements of σ -/
 def ofSym_equiv_onePart (σ : Type*) [DecidableEq σ] : σ ≃
-    { a : Sym σ 1 // Nat.Partition.ofSym a = Nat.Partition.indiscrete 1 } where
+    { a : Sym σ 1 // ofSym a = indiscrete 1 } where
   toFun := fun a => ⟨Sym.oneEquiv a, by ext; simp⟩
   invFun := fun a => Sym.oneEquiv.symm a.1
   left_inv := by intro a; simp only [Sym.oneEquiv_apply]; rfl
