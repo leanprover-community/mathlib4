@@ -1,13 +1,23 @@
-import Lean
-import Mathlib.Tactic.Lemma
-import Mathlib.adomaniLeanUtils.inspect_syntax
+/-
+Copyright (c) 2024 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+import Lean.Elab.Command
+import Lean.Linter.Util
+
+/-!
+#  The `theorem` vs `lemma` linter
+
+The usage of `theorem` in `Mathlib` comes with the expectation that the result is "more important"
+than a `lemma`.
+This linter is a step in the direction of enforcing this expectation: if a `theorem`
+does not have a doc-string, then the linter raises a warning.
+-/
 
 open Lean Elab Command
 
-inspect
-/-- docs -/
-@[simp]
-theorem hi_ : True := .intro
+namespace Mathlib.ThmLemma
 
 /-- `thmNoDoc cmd` checks whether the `cmd` is a `theorem` with no doc-string.
 If that is the case, then it returns two syntax nodes: the one for `theorem` and the one
@@ -23,65 +33,29 @@ def thmNoDoc : Syntax → Option (Syntax × Syntax)
       .node _ ``Lean.Parser.Command.declId #[id, _],
       _,
       _]
-  ] => some (thm, id)
+    ] => some (thm, id)
   | _ => none
 
-elab "tt " cmd:command : command => do
-  match thmNoDoc cmd with
+/-- The `theorem` vs `lemma` linter emits a warning on a `theorem` without a doc-string. -/
+register_option linter.ThmLemma : Bool := {
+  defValue := true
+  descr := "enable the `theorem` vs `lemma` linter"
+}
+
+/-- Gets the value of the `linter.ThmLemma` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.ThmLemma o
+
+/-- The main implementation of the `theorem` vs `lemma` linter. -/
+def thmLemmaLinter : Linter where
+  run := withSetOptionIn fun stx => do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    match thmNoDoc stx with
     | none => return
     | some (thm, id) =>
-      logInfoAt thm m!"'theorem' requires a doc-string. \
-                       Either add one to '{id}' or use 'lemma' instead."
---  logInfo m!"{thmNoDoc cmd}"
+      Linter.logLint linter.ThmLemma thm m!"'theorem' requires a doc-string. \
+                                             Either add one to '{id}' or use 'lemma' instead."
 
-tt
-/- docs -/
-@[simp]
-theorem hi__ : True := sorry --.intro
-
-tt
-/- docs -/
-@[simp]
-example : True := .intro
-
-tt
-instance : Add Unit := sorry
-
-tt
-/- docs -/
-@[simp]
-lemma hi__ : True := .intro
-
-
---node Lean.Parser.Command.declaration, none
---|-node Lean.Parser.Command.declModifiers, none
---|   |-node null, none
---|   |   |-node Lean.Parser.Command.docComment, none
---|   |   |   |-atom original: ⟨⟩⟨ ⟩-- '/--'
---|   |   |   |-atom original: ⟨⟩⟨\n⟩-- 'docs -/'
---|   |-node null, none
---|   |   |-node Lean.Parser.Term.attributes, none
---|   |   |   |-atom original: ⟨⟩⟨⟩-- '@['
---|   |   |   |-node null, none
---|   |   |   |   |-node Lean.Parser.Term.attrInstance, none
---|   |   |   |   |   |-node Lean.Parser.Term.attrKind, none
---|   |   |   |   |   |   |-node null, none
---|   |   |   |   |   |-node Lean.Parser.Attr.simp, none
---|   |   |   |   |   |   |-atom original: ⟨⟩⟨⟩-- 'simp'
---|   |   |   |   |   |   |-node null, none
---|   |   |   |   |   |   |-node null, none
---|   |   |   |-atom original: ⟨⟩⟨\n⟩-- ']'
---|   |-node null, none
---|   |-node null, none
---|   |-node null, none
---|   |-node null, none
---|-node Lean.Parser.Command.theorem, none
---|   |-atom original: ⟨⟩⟨ ⟩-- 'theorem'
---|   |-node Lean.Parser.Command.declId, none
---|   |   |-ident original: ⟨⟩⟨ ⟩-- (hi_,hi_)
---|   |   |-node null, none
---|   |-node Lean.Parser.Command.declSig, none
---|   |   |-node null, none
---|   |   |-node Lean.Parser.Term.typeSpec, none
---|   |   |   |-atom original: ⟨⟩⟨ ⟩-- ':'
---|   |   |   |-ident original: ⟨⟩⟨ ⟩-- (True,True)
+initialize addLinter thmLemmaLinter
