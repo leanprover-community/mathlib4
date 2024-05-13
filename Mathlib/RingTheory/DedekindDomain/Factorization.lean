@@ -3,7 +3,6 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.RingTheory.DedekindDomain.Ideal
 
 #align_import ring_theory.dedekind_domain.factorization from "leanprover-community/mathlib"@"2f588be38bb5bec02f218ba14f82fc82eb663f87"
@@ -304,26 +303,26 @@ theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
   have h_a_ne_zero : Ideal.span {a} ≠ 0 := constant_factor_ne_zero hI h_aJ
   have h_J_ne_zero : J ≠ 0 := ideal_factor_ne_zero hI h_aJ
   have h_a₁' : spanSingleton R⁰ ((algebraMap R K) a₁) ≠ 0 := by
-    rw [Ne.def, spanSingleton_eq_zero_iff, ← (algebraMap R K).map_zero,
+    rw [ne_eq, spanSingleton_eq_zero_iff, ← (algebraMap R K).map_zero,
       Injective.eq_iff (IsLocalization.injective K (le_refl R⁰))]
     exact h_a₁_ne_zero
   have h_a' : spanSingleton R⁰ ((algebraMap R K) a) ≠ 0 := by
-    rw [Ne.def, spanSingleton_eq_zero_iff, ← (algebraMap R K).map_zero,
+    rw [ne_eq, spanSingleton_eq_zero_iff, ← (algebraMap R K).map_zero,
       Injective.eq_iff (IsLocalization.injective K (le_refl R⁰))]
-    rw [Ne.def, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot] at h_a_ne_zero
+    rw [ne_eq, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot] at h_a_ne_zero
     exact h_a_ne_zero
   have hv : Irreducible (Associates.mk v.asIdeal) := by
-    exact (Associates.irreducible_mk _).mpr v.irreducible
+    exact Associates.irreducible_mk.mpr v.irreducible
   rw [h_a₁J₁, ← div_spanSingleton, ← div_spanSingleton, div_eq_div_iff h_a₁' h_a',
     ← coeIdeal_span_singleton, ← coeIdeal_span_singleton, ← coeIdeal_mul, ← coeIdeal_mul] at h_aJ
   rw [count, dif_neg hI, sub_eq_sub_iff_add_eq_add, ← ofNat_add, ← ofNat_add, natCast_inj,
     ← Associates.count_mul _ _ hv, ← Associates.count_mul _ _ hv, Associates.mk_mul_mk,
     Associates.mk_mul_mk, coeIdeal_injective h_aJ]
-  · rw [Ne.def, Associates.mk_eq_zero]; exact h_J_ne_zero
-  · rw [Ne.def, Associates.mk_eq_zero, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
+  · rw [ne_eq, Associates.mk_eq_zero]; exact h_J_ne_zero
+  · rw [ne_eq, Associates.mk_eq_zero, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
     exact h_a₁_ne_zero
-  · rw [Ne.def, Associates.mk_eq_zero]; exact h_J₁_ne_zero
-  · rw [Ne.def, Associates.mk_eq_zero]; exact h_a_ne_zero
+  · rw [ne_eq, Associates.mk_eq_zero]; exact h_J₁_ne_zero
+  · rw [ne_eq, Associates.mk_eq_zero]; exact h_a_ne_zero
 
 /-- For nonzero `I, I'`, `val_v(I*I') = val_v(I) + val_v(I')`. -/
 theorem count_mul {I I' : FractionalIdeal R⁰ K} (hI : I ≠ 0) (hI' : I' ≠ 0) :
@@ -331,11 +330,11 @@ theorem count_mul {I I' : FractionalIdeal R⁰ K} (hI : I ≠ 0) (hI' : I' ≠ 0
   have hv : Irreducible (Associates.mk v.asIdeal) := by apply v.associates_irreducible
   obtain ⟨a, J, ha, haJ⟩ := exists_eq_spanSingleton_mul I
   have ha_ne_zero : Associates.mk (Ideal.span {a} : Ideal R) ≠ 0 := by
-    rw [Ne.def, Associates.mk_eq_zero, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]; exact ha
+    rw [ne_eq, Associates.mk_eq_zero, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]; exact ha
   have hJ_ne_zero : Associates.mk J ≠ 0 := Associates.mk_ne_zero.mpr (ideal_factor_ne_zero hI haJ)
   obtain ⟨a', J', ha', haJ'⟩ := exists_eq_spanSingleton_mul I'
   have ha'_ne_zero : Associates.mk (Ideal.span {a'} : Ideal R) ≠ 0 := by
-    rw [Ne.def, Associates.mk_eq_zero, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]; exact ha'
+    rw [ne_eq, Associates.mk_eq_zero, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]; exact ha'
   have hJ'_ne_zero : Associates.mk J' ≠ 0 :=
     Associates.mk_ne_zero.mpr (ideal_factor_ne_zero hI' haJ')
   have h_prod : I * I' = spanSingleton R⁰ ((algebraMap R K) (a * a'))⁻¹ * ↑(J * J') := by
@@ -385,11 +384,11 @@ theorem count_pow (n : ℕ) (I : FractionalIdeal R⁰ K) :
   · rw [pow_succ, count_mul']
     by_cases hI : I = 0
     · have h_neg : ¬(I ^ n ≠ 0 ∧ I ≠ 0) := by
-        rw [not_and', not_not, Ne.def]
+        rw [not_and', not_not, ne_eq]
         intro h
         exact absurd hI h
       rw [if_neg h_neg, hI, count_zero, MulZeroClass.mul_zero]
-    · rw [if_pos (And.intro (pow_ne_zero n hI) hI), h, Nat.succ_eq_add_one, Nat.cast_add,
+    · rw [if_pos (And.intro (pow_ne_zero n hI) hI), h, Nat.cast_add,
         Nat.cast_one]
       ring
 
