@@ -29,18 +29,6 @@ def is_ge_or_gt : Syntax → Bool
   | `($_ > $_) => true
   | _ => false
 
-/- /- places where this is allowed:
-- under binders, like `∀ ε > 0, ∃ i, ∀ j ≥ i, abv (f j - f i) < ε` (with `∀` or `∃`)
-- just check in theorem statements for now - this is important for rewrites!
-in proofs, we ignore this! -/
-def contains_illegal_ge_gt : Syntax → Bool
-  | `($_:ident) => false
-  | `(Exists $_x:ident > $_y:term) => false -- allow
-  | `(Forall $_x:ident > $_y:term) => false -- allow
-  -- | `($_:missing) => false
-  | _ => true
--/
-
 /-- The `ge_or_gt` linter emits a warning if a declaration contains `≥` or `>`
   in illegal places. -/
 register_option linter.geOrGt : Bool := {
@@ -61,6 +49,9 @@ def getOrGtLinter : Linter where
       return
     match stx.findStack? (fun _ ↦ true) is_ge_or_gt with
     | some ((head, _n)::_chain) =>
+      -- remaining case is "(· ≥ ·)" or for >...
+      -- can I use Stack.matches?
+      --if Stack.matches _chain [SyntaxNode.]
       -- XXX: exclude remaining case
         Linter.logLint linter.geOrGt head m!"'≥ or > is used in an illegal position\n\
         please change the statement to use ≤ or < instead"
