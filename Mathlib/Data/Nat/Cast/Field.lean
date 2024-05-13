@@ -50,8 +50,8 @@ theorem cast_div_eq_sub [DivisionRing α] [CharZero α] {a b : ℕ} :
       Nat.cast_div (Nat.dvd_sub_mod a) (Nat.cast_ne_zero.mpr hb),
       Nat.cast_sub (Nat.mod_le a b), sub_div]
 
-theorem cast_gt [LinearOrderedField α] [ZeroLEOneClass α] {a b : ℕ} (hb : 0 < b):
-    ((a / b : ℕ) : α) > (a : α) / (b : α) - 1 := by
+theorem div_sub_one_lt_cast_div [LinearOrderedField α] [ZeroLEOneClass α] {a b : ℕ} (hb : 0 < b) :
+    (a : α) / b - 1 < (a / b : ℕ) := by
   rw [cast_div_eq_sub]
   apply sub_lt_sub_left
   rw [div_lt_one (Nat.cast_pos.mpr hb), Nat.cast_lt]

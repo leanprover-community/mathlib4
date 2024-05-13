@@ -591,12 +591,12 @@ theorem pow_sub_pow_le [OrderedCommRing α]
     {a b : α} (n : ℕ) (hb : 0 ≤ b) (hba : b ≤ a) :
     a ^ n - b ^ n ≤ n * a ^ (n - 1) * (a - b) := by
   rw [← geom_sum₂_mul]
-  apply mul_le_mul_of_nonneg_right _ (sub_nonneg.mpr ha)
-  rw [← @geom_sum₂_self]
-  apply Finset.sum_le_sum
-  intros
-  apply mul_le_mul_of_nonneg_left _ (pow_nonneg (le_trans hb ha) _)
-  apply pow_le_pow_left hb ha
+  gcongr
+  · exact sub_nonneg.mpr hba
+  · rw [← @geom_sum₂_self]
+    gcongr
+    · exact pow_nonneg (le_trans hb hba) _
+    · assumption
 
 variable {m n : ℕ} {s : Finset ℕ}
 
