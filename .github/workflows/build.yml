@@ -274,7 +274,7 @@ jobs:
         id: new_noisy
         run: |
           lake build Mathlib Archive Counterexamples |
-            awk '!($2 == "Building"){ print $0 }'
+            awk '!($1 ~ "^[[?0-9]*/[?0-9]*]"){ print $0 }'
           grep --after-context=1 "stdout" stdout.log && ret=0
           grep --after-context=1 "stderr" stdout.log && new=0
           if [ "${ret}" == "0" ] || [ "${new}"  == "0" ]; then exit 1; fi
