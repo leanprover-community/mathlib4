@@ -131,7 +131,7 @@ def delabTensorUnit : Delab := whenPPOption getPPNotation <| withOverApp 3 do
   let C ← withNaryArg 0 delab
   `(𝟙_ $C)
 
-/-- Notation for the monoidal `associator`: `(X ⊗ Y) ⊗ Z) ≃ X ⊗ (Y ⊗ Z)` -/
+/-- Notation for the monoidal `associator`: `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
 scoped notation "α_" => MonoidalCategoryStruct.associator
 
 /-- Notation for the `leftUnitor`: `𝟙_C ⊗ X ≃ X` -/
