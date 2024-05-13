@@ -89,7 +89,7 @@ lemma egauge_le_of_smul_mem (h : c • x ∈ s) : egauge 𝕜 s x ≤ (↑‖c�
 lemma mem_of_egauge_lt_one (hs : Balanced 𝕜 s) (hx : egauge 𝕜 s x < 1) : x ∈ s :=
   let ⟨c, hxc, hc⟩ := egauge_lt_iff.1 hx
   hs c (mod_cast hc.le) hxc
-  
+
 variable (𝕜)
 
 lemma egauge_zero_right (hs : s.Nonempty) : egauge 𝕜 s 0 = 0 := by
