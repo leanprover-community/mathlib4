@@ -279,7 +279,7 @@ theorem tensorObj_comul (A B : Comon_ C) :
 
 end Comon_
 
-namespace CategoryTheory.LaxMonoidalFunctor
+namespace CategoryTheory.OplaxMonoidalFunctor
 
 variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
@@ -321,4 +321,4 @@ variable (C D)
 -- and so can't state `mapComonFunctor : OplaxMonoidalFunctor C D ⥤ Comon_ C ⥤ Comon_ D`.
 
 
-end CategoryTheory.LaxMonoidalFunctor
+end CategoryTheory.OplaxMonoidalFunctor
