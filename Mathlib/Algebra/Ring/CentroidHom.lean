@@ -519,8 +519,16 @@ def centerToCentroidCenter :
     ext a
     exact (((Set.mem_center_iff _).mp z₁.prop).left_assoc z₂ a).symm
 
+instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
+  coe f := f.val.toFun
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr with x
+    exact congrFun h x
+
 lemma centerToCentroidCenter_apply (z : NonUnitalSubsemiring.center α) (a : α) :
-    (centerToCentroidCenter z).val a = z * a := rfl
+    (centerToCentroidCenter z) a = z * a := rfl
 
 /-- The canonical homomorphism from the center into the centroid -/
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α :=
@@ -711,25 +719,17 @@ instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
 instance : Star (Subsemiring.center (CentroidHom α)) where
   star f := ⟨star (f : CentroidHom α), Subsemiring.mem_center_iff.mpr (fun g => ext (fun a => by
     calc
-      g (star (f.val (star a))) = star (star g (f.val (star a))) := by rw [star_apply, star_star]
-      _ = star ((star g * f.val) (star a)) := rfl
-      _ = star ((f.val * star g) (star a)) := by rw [f.property.comm]
-      _ = star (f.val (star g (star a))) := rfl
-      _ = star (f.val (star (g a))) := by rw [star_apply, star_star]))⟩
+      g (star (f (star a))) = star (star g (f (star a))) := by rw [star_apply, star_star]
+      _ = star ((star g * f) (star a)) := rfl
+      _ = star ((f * star g) (star a)) := by rw [f.property.comm]
+      _ = star (f (star g (star a))) := rfl
+      _ = star (f (star (g a))) := by rw [star_apply, star_star]))⟩
 
 instance : InvolutiveStar (Subsemiring.center (CentroidHom α)) where
   star_involutive f := SetCoe.ext (instInvolutiveStar.star_involutive f.val)
 
 instance instStarAddMonoidCenter : StarAddMonoid (Subsemiring.center (CentroidHom α)) where
   star_add f g := SetCoe.ext (instStarAddMonoid.star_add f.val g.val)
-
-instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
-  coe f := f.val.toFun
-  coe_injective' f g h := by
-    cases f
-    cases g
-    congr with x
-    exact congrFun h x
 
 instance : StarRing (Subsemiring.center (CentroidHom α)) where
   __ := instStarAddMonoidCenter
@@ -739,7 +739,7 @@ instance : StarRing (Subsemiring.center (CentroidHom α)) where
       star (f * g) a = star (g * f) a := by rw [CommMonoid.mul_comm f g]
       _ = star (g (f (star a))) := rfl
       _ = star (g (star (star (f (star a))))) := by simp only [star_star]
-      _ = (star g * star f).val a := rfl
+      _ = (star g * star f) a := rfl
 
 theorem inr_star (z : NonUnitalStarSubsemiring.center α) :
     (star (centerToCentroidCenter z))  =
