@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Order
 import Mathlib.Algebra.Order.Hom.Ring
 
 /-!

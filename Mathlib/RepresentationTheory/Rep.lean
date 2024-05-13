@@ -241,8 +241,6 @@ theorem linearization_ε_hom : (linearization k G).ε.hom = Finsupp.lsingle PUni
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_ε_hom Rep.linearization_ε_hom
 
--- This was always a bad simp lemma, but the linter did not notice until lean4#2644
-@[simp, nolint simpNF]
 theorem linearization_ε_inv_hom_apply (r : k) :
     (inv (linearization k G).ε).hom (Finsupp.single PUnit.unit r) = r :=
   IsIso.hom_inv_id_apply (linearization k G).ε r
@@ -545,16 +543,12 @@ theorem MonoidalClosed.linearHomEquivComm_hom (f : A ⊗ B ⟶ C) :
 set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_closed.linear_hom_equiv_comm_hom Rep.MonoidalClosed.linearHomEquivComm_hom
 
--- This was always a bad simp lemma, but the linter did not notice until lean4#2644
-@[simp, nolint simpNF]
 theorem MonoidalClosed.linearHomEquiv_symm_hom (f : B ⟶ A ⟶[Rep k G] C) :
     ((MonoidalClosed.linearHomEquiv A B C).symm f).hom = TensorProduct.uncurry k A B C f.hom.flip :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_closed.linear_hom_equiv_symm_hom Rep.MonoidalClosed.linearHomEquiv_symm_hom
 
--- This was always a bad simp lemma, but the linter did not notice until lean4#2644
-@[simp, nolint simpNF]
 theorem MonoidalClosed.linearHomEquivComm_symm_hom (f : A ⟶ B ⟶[Rep k G] C) :
     ((MonoidalClosed.linearHomEquivComm A B C).symm f).hom
       = TensorProduct.uncurry k A B C f.hom :=
