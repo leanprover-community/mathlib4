@@ -94,6 +94,11 @@ instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α
 
 #noalign measure_theory.measure.has_coe_to_fun
 
+instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
+  measure_empty m := m.empty'
+  measure_iUnion_nat_le m := m.iUnion
+  measure_mono m := m.mono
+
 section
 
 variable [MeasurableSpace α] {μ μ₁ μ₂ : Measure α} {s s₁ s₂ t : Set α}
