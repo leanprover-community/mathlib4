@@ -137,8 +137,9 @@ variable {X : TopCat} {ι : Type*}
 theorem coverDense_iff_isBasis [Category ι] (B : ι ⥤ Opens X) :
     B.IsCoverDense (Opens.grothendieckTopology X) ↔ Opens.IsBasis (Set.range B.obj) := by
   rw [Opens.isBasis_iff_nbhd]
-  constructor; intro hd U x hx; rcases hd.1 U x hx with ⟨V, f, ⟨i, f₁, f₂, _⟩, hV⟩
-  exact ⟨B.obj i, ⟨i, rfl⟩, f₁.le hV, f₂.le⟩
+  constructor
+  · intro hd U x hx; rcases hd.1 U x hx with ⟨V, f, ⟨i, f₁, f₂, _⟩, hV⟩
+    exact ⟨B.obj i, ⟨i, rfl⟩, f₁.le hV, f₂.le⟩
   intro hb; constructor; intro U x hx; rcases hb hx with ⟨_, ⟨i, rfl⟩, hx, hi⟩
   exact ⟨B.obj i, ⟨⟨hi⟩⟩, ⟨⟨i, 𝟙 _, ⟨⟨hi⟩⟩, rfl⟩⟩, hx⟩
 #align Top.opens.cover_dense_iff_is_basis TopCat.Opens.coverDense_iff_isBasis

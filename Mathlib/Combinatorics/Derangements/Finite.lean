@@ -103,8 +103,7 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
   · rfl
   -- now we have n ≥ 2. rewrite everything in terms of card_derangements, so that we can use
   -- `card_derangements_fin_add_two`
-  rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add,
-    hyp _ (Nat.lt_add_of_pos_right zero_lt_two), hyp _ (lt_add_one _)]
+  rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add, hyp, hyp] <;> omega
 #align card_derangements_fin_eq_num_derangements card_derangements_fin_eq_numDerangements
 
 theorem card_derangements_eq_numDerangements (α : Type*) [Fintype α] [DecidableEq α] :
@@ -124,5 +123,5 @@ theorem numDerangements_sum (n : ℕ) :
   intro x hx
   have h_le : x ≤ n := Finset.mem_range_succ_iff.mp hx
   rw [Nat.succ_sub h_le, Nat.ascFactorial_succ, add_right_comm, add_tsub_cancel_of_le h_le,
-    Int.ofNat_mul, Int.ofNat_succ, mul_left_comm]
+    Int.ofNat_mul, Int.ofNat_add, mul_left_comm, Nat.cast_one]
 #align num_derangements_sum numDerangements_sum

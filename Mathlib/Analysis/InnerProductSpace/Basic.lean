@@ -1590,7 +1590,8 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
       sub_eq_zero] at h
     rw [div_eq_inv_mul, mul_smul, h, inv_smul_smul₀]
     rwa [inner_self_ne_zero]
-  tfae_have 2 → 3; exact fun h => h.imp_right fun h' => ⟨_, h'⟩
+  tfae_have 2 → 3
+  · exact fun h => h.imp_right fun h' => ⟨_, h'⟩
   tfae_have 3 → 1
   · rintro (rfl | ⟨r, rfl⟩) <;>
     simp [inner_smul_right, norm_smul, inner_self_eq_norm_sq_to_K, inner_self_eq_norm_mul_norm,

@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.GaloisConnection
 import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.AdaptationNote
 
 #align_import data.rel from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
 
@@ -147,14 +148,12 @@ theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv
 
 @[simp]
 theorem inv_bot : (⊥ : Rel α β).inv = (⊥ : Rel β α) := by
-  -- Adaptation note: nightly-2024-03-16: simp was
-  -- simp [Bot.bot, inv, flip]
+  #adaptation_note /-- nightly-2024-03-16: simp was `simp [Bot.bot, inv, flip]` -/
   simp [Bot.bot, inv, Function.flip_def]
 
 @[simp]
 theorem inv_top : (⊤ : Rel α β).inv = (⊤ : Rel β α) := by
-  -- Adaptation note: nightly-2024-03-16: simp was
-  -- simp [Top.top, inv, flip]
+  #adaptation_note /-- nightly-2024-03-16: simp was `simp [Top.top, inv, flip]` -/
   simp [Top.top, inv, Function.flip_def]
 
 /-- Image of a set under a relation -/
@@ -366,6 +365,15 @@ def graph (f : α → β) : Rel α β := fun x y => f x = y
 #align function.graph Function.graph
 
 @[simp] lemma graph_def (f : α → β) (x y) : f.graph x y ↔ (f x = y) := Iff.rfl
+
+theorem graph_injective : Injective (graph : (α → β) → Rel α β) := by
+  intro _ g h
+  ext x
+  have h2 := congr_fun₂ h x (g x)
+  simp only [graph_def, eq_iff_iff, iff_true] at h2
+  exact h2
+
+@[simp] lemma graph_inj {f g : α → β} : f.graph = g.graph ↔ f = g := graph_injective.eq_iff
 
 theorem graph_id : graph id = @Eq α := by simp  (config := { unfoldPartialApp := true }) [graph]
 

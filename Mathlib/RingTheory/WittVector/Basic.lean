@@ -253,12 +253,10 @@ private def comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
     ghostFun_pow ghostFun_natCast ghostFun_intCast
 
 @[local instance]
-private def comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
+private abbrev comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
   (mapFun.injective _ <| map_injective (Int.castRingHom ℚ) Int.cast_injective).commRing _
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
     (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
-
-attribute [reducible] comm_ring_aux₂
 
 /-- The commutative ring structure on `𝕎 R`. -/
 instance : CommRing (𝕎 R) :=

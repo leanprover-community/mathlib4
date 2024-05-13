@@ -236,8 +236,7 @@ theorem star_div [CommGroup R] [StarMul R] (x y : R) : star (x / y) = star x / s
 
 See note [reducible non-instances].
 -/
-@[reducible]
-def starMulOfComm {R : Type*} [CommMonoid R] : StarMul R where
+abbrev starMulOfComm {R : Type*} [CommMonoid R] : StarMul R where
   star := id
   star_involutive _ := rfl
   star_mul := mul_comm
@@ -472,8 +471,7 @@ end
 
 See note [reducible non-instances].
 -/
-@[reducible]
-def starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
+abbrev starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
   { starMulOfComm with
     star_add := fun _ _ => rfl }
 #align star_ring_of_comm starRingOfComm

@@ -347,6 +347,11 @@ theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.
   Quot.exists_rep
 #align surjective_quot_mk surjective_quot_mk
 
+/-- `Quotient.mk` is a surjective function. -/
+theorem surjective_quotient_mk {α : Sort*} (s : Setoid α) :
+    Function.Surjective (Quotient.mk s) :=
+  Quot.exists_rep
+
 /-- `Quotient.mk'` is a surjective function. -/
 theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=

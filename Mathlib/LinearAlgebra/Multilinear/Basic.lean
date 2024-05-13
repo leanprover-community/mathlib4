@@ -3,12 +3,13 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.List.FinRange
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.Logic.Equiv.Fintype
 
 #align_import linear_algebra.multilinear.basic from "leanprover-community/mathlib"@"78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea"
 
@@ -780,6 +781,13 @@ lemma domDomRestrict_aux [DecidableEq ι] (P : ι → Prop) [DecidablePred P]
       rw [Function.update_noteq h'']
     · simp only [h', ne_eq, Subtype.mk.injEq, dite_false]
 
+lemma domDomRestrict_aux_right [DecidableEq ι] (P : ι → Prop) [DecidablePred P]
+    [DecidableEq {a // ¬ P a}]
+    (x : (i : {a // P a}) → M₁ i) (z : (i : {a // ¬ P a}) → M₁ i) (i : {a : ι // ¬ P a})
+    (c : M₁ i) : (fun j ↦ if h : P j then x ⟨j, h⟩ else Function.update z i c ⟨j, h⟩) =
+    Function.update (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by
+  simpa only [dite_not] using domDomRestrict_aux _ z (fun j ↦ x ⟨j.1, not_not.mp j.2⟩) i c
+
 /-- Given a multilinear map `f` on `(i : ι) → M i`, a (decidable) predicate `P` on `ι` and
 an element `z` of `(i : {a // ¬ P a}) → M₁ i`, construct a multilinear map on
 `(i : {a // P a}) → M₁ i)` whose value at `x` is `f` evaluated at the vector with `i`th coordinate
@@ -787,6 +795,8 @@ an element `z` of `(i : {a // ¬ P a}) → M₁ i`, construct a multilinear map 
 
 The naming is similar to `MultilinearMap.domDomCongr`: here we are applying the restriction to the
 domain of the domain.
+
+For a linear map version, see `MultilinearMap.domDomRestrictₗ`.
 -/
 def domDomRestrict (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P]
     (z : (i : {a : ι // ¬ P a}) → M₁ i) :
@@ -1004,6 +1014,67 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid 
 section
 variable {M₁' : ι → Type*} [Π i, AddCommMonoid (M₁' i)] [Π i, Module R (M₁' i)]
 
+/-- Given a predicate `P`, one may associate to a multilinear map `f` a multilinear map
+from the elements satisfying `P` to the multilinear maps on elements not satisfying `P`.
+In other words, splitting the variables into two subsets one gets a multilinear map into
+multilinear maps.
+This is a linear map version of the function `MultilinearMap.domDomRestrict`. -/
+def domDomRestrictₗ (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P] :
+    MultilinearMap R (fun (i : {a : ι // ¬ P a}) => M₁ i)
+      (MultilinearMap R (fun (i : {a : ι // P a}) => M₁ i) M₂) where
+  toFun := fun z ↦ domDomRestrict f P z
+  map_add' := by
+    intro h m i x y
+    classical
+    ext v
+    simp [domDomRestrict_aux_right]
+  map_smul' := by
+    intro h m i c x
+    classical
+    ext v
+    simp [domDomRestrict_aux_right]
+
+lemma iteratedFDeriv_aux {α : Type*} [DecidableEq α]
+    (s : Set ι) [DecidableEq { x // x ∈ s }] (e : α ≃ s)
+    (m : α → ((i : ι) → M₁ i)) (a : α) (z : (i : ι) → M₁ i) :
+    (fun i ↦ update m a z (e.symm i) i) =
+      (fun i ↦ update (fun j ↦ m (e.symm j) j) (e a) (z (e a)) i) := by
+  ext i
+  rcases eq_or_ne a (e.symm i) with rfl | hne
+  · rw [Equiv.apply_symm_apply e i, update_same, update_same]
+  · rw [update_noteq hne.symm, update_noteq fun h ↦ (Equiv.symm_apply_apply .. ▸ h ▸ hne) rfl]
+
+/-- One of the components of the iterated derivative of a multilinear map. Given a bijection `e`
+between a type `α` (typically `Fin k`) and a subset `s` of `ι`, this component is a multilinear map
+of `k` vectors `v₁, ..., vₖ`, mapping them to `f (x₁, (v_{e.symm 2})₂, x₃, ...)`, where at
+indices `i` in `s` one uses the `i`-th coordinate of the vector `v_{e.symm i}` and otherwise one
+uses the `i`-th coordinate of a reference vector `x`.
+This is multilinear in the components of `x` outside of `s`, and in the `v_j`. -/
+noncomputable def iteratedFDerivComponent {α : Type*}
+    (f : MultilinearMap R M₁ M₂) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)] :
+    MultilinearMap R (fun (i : {a : ι // a ∉ s}) ↦ M₁ i)
+      (MultilinearMap R (fun (_ : α) ↦ (∀ i, M₁ i)) M₂) where
+  toFun := fun z ↦
+    { toFun := fun v ↦ domDomRestrictₗ f (fun i ↦ i ∈ s) z (fun i ↦ v (e.symm i) i)
+      map_add' := by classical simp [iteratedFDeriv_aux]
+      map_smul' := by classical simp [iteratedFDeriv_aux] }
+  map_add' := by intros; ext; simp
+  map_smul' := by intros; ext; simp
+
+open Classical in
+/-- The `k`-th iterated derivative of a multilinear map `f` at the point `x`. It is a multilinear
+map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
+to `∑ f (x₁, (v_{i₁})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
+of the `(vᵢ)ⱼ`, and each `vᵢ` has to be used exactly once.
+The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or, equivalently,
+by the subsets `s` of `ι` of cardinality `k` and then the bijections between `Fin k` and `s`).
+
+For the continuous version, see `ContinuousMultilinearMap.iteratedFDeriv`. -/
+protected noncomputable def iteratedFDeriv [Fintype ι]
+    (f : MultilinearMap R M₁ M₂) (k : ℕ) (x : (i : ι) → M₁ i) :
+    MultilinearMap R (fun (_ : Fin k) ↦ (∀ i, M₁ i)) M₂ :=
+  ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (fun i ↦ x i)
+
 /-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g`. -/
 @[simps] def compLinearMapₗ (f : Π (i : ι), M₁ i →ₗ[R] M₁' i) :
@@ -1191,6 +1262,7 @@ theorem mkPiRing_apply_one_eq_self [Fintype ι] (f : MultilinearMap R (fun _ : �
     ext j
     simp
   conv_rhs => rw [this, f.map_smul_univ]
+  rfl
 #align multilinear_map.mk_pi_ring_apply_one_eq_self MultilinearMap.mkPiRing_apply_one_eq_self
 
 theorem mkPiRing_eq_iff [Fintype ι] {z₁ z₂ : M₂} :
@@ -1308,7 +1380,7 @@ lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M�
   by_cases hjs : j ∈ s
   · rw [if_pos hjs]; by_cases hji : j < i
     · rw [if_pos fun _ ↦ hji, if_pos hji, s.piecewise_eq_of_mem _ _ hjs]
-    rw [if_neg (not_imp.mpr ⟨hjs, hji⟩), if_neg hji]
+    rw [if_neg (Classical.not_imp.mpr ⟨hjs, hji⟩), if_neg hji]
     obtain rfl | hij := eq_or_ne i j
     · rw [if_pos rfl, if_pos rfl, s.piecewise_eq_of_mem _ _ hi]
     · rw [if_neg hij, if_neg hij.symm]

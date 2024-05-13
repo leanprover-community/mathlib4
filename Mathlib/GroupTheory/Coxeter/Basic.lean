@@ -125,9 +125,8 @@ def reindexGroupEquiv : (M.reindex e).Group ≃* M.Group :=
     (Subgroup.normalClosure (M.reindex e).relationsSet)
     (FreeGroup.freeGroupCongr e) (by
       rw [reindex_relationsSet,
-        Subgroup.map_normalClosure _ _ (FreeGroup.freeGroupCongr e).surjective,
-        ← MulEquiv.coe_toMonoidHom]
-      rfl)).symm
+        Subgroup.map_normalClosure _ _ (by simpa using (FreeGroup.freeGroupCongr e).surjective),
+        MonoidHom.coe_coe])).symm
 
 theorem reindexGroupEquiv_apply_simple (i : B') :
     (M.reindexGroupEquiv e) ((M.reindex e).simple i) = M.simple (e.symm i) := rfl
@@ -409,7 +408,7 @@ theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
     π (alternatingWord i i' m) = (if Even m then 1 else s i') * (s i * s i') ^ (m / 2) := by
   induction' m with m ih
   · simp [alternatingWord]
-  · rw [alternatingWord_succ', wordProd_cons, ih, Nat.succ_eq_add_one]
+  · rw [alternatingWord_succ', wordProd_cons, ih]
     rcases Nat.even_or_odd m with even | odd
     · rcases even with ⟨k, rfl⟩
       ring_nf

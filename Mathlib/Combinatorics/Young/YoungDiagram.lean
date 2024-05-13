@@ -174,10 +174,10 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
 @[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
   refine' Set.eq_of_subset_of_subset _ _
-  intros x h
-  simp? [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h says
-    simp only [cells_bot, Finset.coe_empty, Set.mem_empty_iff_false] at h
-  simp only [cells_bot, Finset.coe_empty, Set.empty_subset]
+  · intros x h
+    simp? [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h says
+      simp only [cells_bot, Finset.coe_empty, Set.mem_empty_iff_false] at h
+  · simp only [cells_bot, Finset.coe_empty, Set.empty_subset]
 #align young_diagram.coe_bot YoungDiagram.coe_bot
 
 @[simp]
@@ -195,8 +195,7 @@ instance : DistribLattice YoungDiagram :=
 end DistribLattice
 
 /-- Cardinality of a Young diagram -/
-@[reducible]
-protected def card (μ : YoungDiagram) : ℕ :=
+protected abbrev card (μ : YoungDiagram) : ℕ :=
   μ.cells.card
 #align young_diagram.card YoungDiagram.card
 
