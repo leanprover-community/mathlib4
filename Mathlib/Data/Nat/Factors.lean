@@ -36,8 +36,8 @@ def factors : ℕ → List ℕ
   | 1 => []
   | k + 2 =>
     let m := minFac (k + 2)
-    have : (k + 2) / m < (k + 2) := factors_lemma
     m :: factors ((k + 2) / m)
+decreasing_by show (k + 2) / m < (k + 2); exact factors_lemma
 #align nat.factors Nat.factors
 
 @[simp]
