@@ -420,9 +420,7 @@ theorem eq_of_length_eq_zero {u v : V} : ∀ {p : G.Walk u v}, p.length = 0 → 
 theorem adj_of_length_eq_one {u v : V} : ∀ {p : G.Walk u v}, p.length = 1 → G.Adj u v
   | nil => by simp
   | cons h nil => fun _ => h
-  | cons h _ => fun l => by
-    rw [length_cons, add_left_eq_self] at l
-    exact eq_of_length_eq_zero l ▸ h
+  | cons h _ => fun l => (eq_of_length_eq_zero <| add_left_eq_self.mp <| length_cons _ _ ▸ l) ▸ h
 
 @[simp]
 theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0) ↔ u = v := by
