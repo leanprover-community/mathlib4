@@ -1063,13 +1063,13 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
     clear hp p
     induction' n with n hn
     · use Path.refl (p' 0)
-      · constructor
-        · rintro i hi
-          rw [Nat.le_zero.mp hi]
-          exact ⟨0, rfl⟩
-        · rw [range_subset_iff]
-          rintro _x
-          exact hp' 0 le_rfl
+      constructor
+      · rintro i hi
+        rw [Nat.le_zero.mp hi]
+        exact ⟨0, rfl⟩
+      · rw [range_subset_iff]
+        rintro _x
+        exact hp' 0 le_rfl
     · rcases hn fun i hi => hp' i <| Nat.le_succ_of_le hi with ⟨γ₀, hγ₀⟩
       rcases h.joinedIn (p' n) (hp' n n.le_succ) (p' <| n + 1) (hp' (n + 1) <| le_rfl) with
         ⟨γ₁, hγ₁⟩

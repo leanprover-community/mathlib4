@@ -216,7 +216,7 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
     intro hH'
     rw [comap_injective this hH', isComplement'_top_right, map_eq_bot_iff,
       QuotientGroup.ker_mk'] at hH
-    · exact h4.2 (le_antisymm hK hH)
+    exact h4.2 (le_antisymm hK hH)
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ K = ⊤ := by

@@ -240,9 +240,9 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     simp only [mem_iUnion, mem_Ici, mem_preimage]
     exact ⟨n, hn.le⟩
   show Monotone F
-  · intro m n hmn x hx
-    simp only [F, mem_Ici, mem_preimage] at hx ⊢
-    apply le_trans (pow_le_pow_right_of_le_one' a_lt_one.le hmn) hx
+  intro m n hmn x hx
+  simp only [F, mem_Ici, mem_preimage] at hx ⊢
+  apply le_trans (pow_le_pow_right_of_le_one' a_lt_one.le hmn) hx
 #align is_open.exists_Union_is_closed IsOpen.exists_iUnion_isClosed
 
 theorem _root_.IsCompact.exists_infEdist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :

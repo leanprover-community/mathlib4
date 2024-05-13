@@ -182,10 +182,10 @@ lemma mappingConeCompTriangleh_distinguished :
   refine' ⟨_, _, (CochainComplex.mappingConeCompTriangle f g).mor₁, ⟨_⟩⟩
   refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (isoOfHomotopyEquiv
     (CochainComplex.mappingConeCompHomotopyEquiv f g)) (by aesop_cat) (by simp) _
-  · dsimp [CochainComplex.mappingConeCompTriangleh]
-    rw [CategoryTheory.Functor.map_id, comp_id, ← Functor.map_comp_assoc]
-    congr 2
-    exact (CochainComplex.mappingConeCompHomotopyEquiv_comm₂ f g).symm
+  dsimp [CochainComplex.mappingConeCompTriangleh]
+  rw [CategoryTheory.Functor.map_id, comp_id, ← Functor.map_comp_assoc]
+  congr 2
+  exact (CochainComplex.mappingConeCompHomotopyEquiv_comm₂ f g).symm
 
 noncomputable instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) :=
   IsTriangulated.mk' (by
