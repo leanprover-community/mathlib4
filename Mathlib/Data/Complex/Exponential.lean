@@ -73,6 +73,10 @@ def tan (z : ℂ) : ℂ :=
   sin z / cos z
 #align complex.tan Complex.tan
 
+/-- The complex cotangent function, defined as `cos z / sin z` -/
+def cot (z : ℂ) : ℂ :=
+  cos z / sin z
+
 /-- The complex hyperbolic sine function, defined via `exp` -/
 -- Porting note (#11180): removed `@[pp_nodot]`
 def sinh (z : ℂ) : ℂ :=
@@ -127,6 +131,10 @@ nonrec def cos (x : ℝ) : ℝ :=
 nonrec def tan (x : ℝ) : ℝ :=
   (tan x).re
 #align real.tan Real.tan
+
+/-- The real cotangent function, defined as the real part of the complex cotangent -/
+nonrec def cot (x : ℝ) : ℝ :=
+  (cot x).re
 
 /-- The real hypebolic sine function, defined as the real part of the complex hyperbolic sine -/
 -- Porting note (#11180): removed `@[pp_nodot]`
