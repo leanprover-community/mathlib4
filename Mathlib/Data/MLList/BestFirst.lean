@@ -128,7 +128,7 @@ def insertAndEject
     if q.size < max then
       q.insert n l
     else
-      match q.max with
+      match q.max? with
       | none => RBMap.empty
       | some m => q.insert n l |>.erase m.1
 
@@ -172,7 +172,7 @@ This may require improving estimates of priorities and shuffling the queue.
 partial def popWithBound (q : BestFirstQueue prio ε m β maxSize) :
     m (Option (((a : α) × (ε a) × β) × BestFirstQueue prio ε m β maxSize)) := do
   let q' ← ensureFirstIsBest q
-  match q'.min with
+  match q'.min? with
   | none =>
     -- The queue is empty, nothing to return.
     return none
