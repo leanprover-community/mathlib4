@@ -124,15 +124,6 @@ instance instNonUnitalSubsemiringClass : NonUnitalSubsemiringClass (NonUnitalSta
   mul_mem {s} := s.mul_mem'
   zero_mem {s} := s.zero_mem'
 
-/-
-instance instNonUnitalSubringClass {A : Type v} [NonUnitalNonAssocRing A]
-    [Star A] : NonUnitalSubringClass (NonUnitalStarSubsemiring A) A :=
-  { NonUnitalStarSubsemiring.instNonUnitalSubsemiringClass A with
-    neg_mem := sorry
-    --fun _S {x} hx => neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx
-    }
--/
-
 instance instStarMemClass : StarMemClass (NonUnitalStarSubsemiring R) R where
   star_mem {s} := s.star_mem'
 
