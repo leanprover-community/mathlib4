@@ -437,8 +437,7 @@ instance : Lattice (Fin (n + 1)) :=
 
 theorem last_pos' [NeZero n] : 0 < last n := NeZero.pos n
 
-theorem one_lt_last [NeZero n] : 1 < last (n + 1) :=
-  (lt_add_iff_pos_left 1).mpr (NeZero.pos n)
+theorem one_lt_last [NeZero n] : 1 < last (n + 1) := (lt_add_iff_pos_left 1).mpr (NeZero.pos n)
 
 theorem top_eq_last (n : ℕ) : ⊤ = Fin.last n :=
   rfl

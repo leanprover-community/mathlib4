@@ -328,7 +328,8 @@ theorem ιMulti_apply {n : ℕ} (v : Fin n → M) : ιMulti R n v = (List.ofFn f
 #align exterior_algebra.ι_multi_apply ExteriorAlgebra.ιMulti_apply
 
 @[simp]
-theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 := rfl
+theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 :=
+  rfl
 #align exterior_algebra.ι_multi_zero_apply ExteriorAlgebra.ιMulti_zero_apply
 
 @[simp]

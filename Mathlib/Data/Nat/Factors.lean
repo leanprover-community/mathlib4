@@ -41,11 +41,11 @@ decreasing_by show (k + 2) / m < (k + 2); exact factors_lemma
 #align nat.factors Nat.factors
 
 @[simp]
-theorem factors_zero : factors 0 = [] := factors.eq_1
+theorem factors_zero : factors 0 = [] := by rw [factors]
 #align nat.factors_zero Nat.factors_zero
 
 @[simp]
-theorem factors_one : factors 1 = [] := factors.eq_2
+theorem factors_one : factors 1 = [] := by rw [factors]
 #align nat.factors_one Nat.factors_one
 
 theorem prime_of_mem_factors {n : ℕ} : ∀ {p : ℕ}, (h : p ∈ factors n) → Prime p := by
