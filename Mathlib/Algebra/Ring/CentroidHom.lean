@@ -753,25 +753,20 @@ theorem inr_star (z : NonUnitalStarSubsemiring.center α) :
     (star (centerToCentroidCenter z))  =
     (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) := by
   ext a
-  have e1 : (star (centerToCentroidCenter z)) a =
-    (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) a := calc
+  calc
       (star (centerToCentroidCenter z)) a = star (z * star a) := rfl
       _ = star (star a) * star z := by simp only [star_mul, star_star, StarMemClass.coe_star]
       _ = a * star z := by rw [star_star]
       _ = (star z) * a := by rw [(star z).property.comm]
       _ = (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) a := rfl
-  exact e1
-
 
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
 def starcenterToCentroidCenter :
-    NonUnitalStarSubsemiring.center α →⋆ₙ+* Subsemiring.center (CentroidHom α) :=
-  { toNonUnitalRingHom := centerToCentroidCenter
-    map_star' := by
-      intro z
-      simp only [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom]
-      exact (inr_star z).symm
-  }
+    NonUnitalStarSubsemiring.center α →⋆ₙ+* Subsemiring.center (CentroidHom α) where
+  toNonUnitalRingHom := centerToCentroidCenter
+  map_star' _ := by
+    simp only [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom]
+    exact (inr_star _).symm
 
 /--
 Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
@@ -780,9 +775,8 @@ Let `α` be a star ring with commutative centroid. Then the centroid is a star r
 def starRingOfCommCentroidHom (mul_comm : Std.Commutative (α := CentroidHom α) (· * ·)) :
     StarRing (CentroidHom α) where
   __ := instStarAddMonoid
-  star_mul f g := by
-    ext
-    rw [mul_comm.comm, star_apply, mul_apply, mul_apply, star_apply, star_apply, star_star]
+  star_mul _ _ := ext (fun _ => by
+    rw [mul_comm.comm, star_apply, mul_apply, mul_apply, star_apply, star_apply, star_star])
 
 end StarRing
 
