@@ -213,6 +213,7 @@ theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     · rw [not_ne_iff.1 h, Function.update_same]
 #align multiset.multinomial_filter_ne Multiset.multinomial_filter_ne
 
+unseal Nat.div in
 @[simp]
 theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := rfl
 
@@ -224,6 +225,7 @@ namespace Finset
 
 variable {α : Type*} [DecidableEq α] (s : Finset α) {R : Type*}
 
+unseal Nat.div in
 /-- The multinomial theorem
 
   Proof is by induction on the number of summands.
@@ -247,7 +249,6 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       · have : Zero (Sym α 0) := Sym.instZeroSym
         exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
-      dsimp only
       convert @Nat.cast_one R _
     · rw [_root_.pow_succ, mul_zero]
       -- Porting note: Lean cannot infer this instance by itself

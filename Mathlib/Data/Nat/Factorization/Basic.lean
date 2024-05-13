@@ -114,10 +114,12 @@ theorem factorization_inj : Set.InjOn factorization { x : ℕ | x ≠ 0 } := fun
   eq_of_factorization_eq ha hb fun p => by simp [h]
 #align nat.factorization_inj Nat.factorization_inj
 
+unseal Nat.factors in
 @[simp]
 theorem factorization_zero : factorization 0 = 0 := by decide
 #align nat.factorization_zero Nat.factorization_zero
 
+unseal Nat.factors in
 @[simp]
 theorem factorization_one : factorization 1 = 0 := by decide
 #align nat.factorization_one Nat.factorization_one

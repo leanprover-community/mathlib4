@@ -940,7 +940,7 @@ decreasing_by
 @[simp]
 theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
-    reverseRecOn [] nil append_singleton = nil := by unfold reverseRecOn; rfl
+    reverseRecOn [] nil append_singleton = nil := reverseRecOn.eq_1 ..
 
 -- `unusedHavesSuffices` is getting confused by the unfolding of `reverseRecOn`
 @[simp, nolint unusedHavesSuffices]
@@ -986,8 +986,7 @@ termination_by l => l.length
 theorem bidirectionalRec_nil {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) :
-    bidirectionalRec nil singleton cons_append [] = nil := by
-  unfold bidirectionalRec; rfl
+    bidirectionalRec nil singleton cons_append [] = nil := bidirectionalRec.eq_1 ..
 
 
 @[simp]
