@@ -139,7 +139,7 @@ def of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat R :=
 #align Module.of ModuleCat.of
 
 @[simp]
-theorem forget₂_obj (X : ModuleCat R) :
+lemma forget₂_obj (X : ModuleCat R) :
     (forget₂ (ModuleCat R) AddCommGroupCat).obj X = AddCommGroupCat.of X :=
   rfl
 #align Module.forget₂_obj ModuleCat.forget₂_obj
@@ -149,13 +149,13 @@ theorem forget₂_obj (X : ModuleCat R) :
 -- If it is really needed, better might be a simp lemma that says
 -- `AddCommGroupCat.of (ModuleCat.of R X) = AddCommGroupCat.of X`.
 -- @[simp 900]
-theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommGroup X] [Module R X] :
+lemma forget₂_obj_moduleCat_of (X : Type v) [AddCommGroup X] [Module R X] :
     (forget₂ (ModuleCat R) AddCommGroupCat).obj (of R X) = AddCommGroupCat.of X :=
   rfl
 #align Module.forget₂_obj_Module_of ModuleCat.forget₂_obj_moduleCat_of
 
 @[simp]
-theorem forget₂_map (X Y : ModuleCat R) (f : X ⟶ Y) :
+lemma forget₂_map (X Y : ModuleCat R) (f : X ⟶ Y) :
     (forget₂ (ModuleCat R) AddCommGroupCat).map f = LinearMap.toAddMonoidHom f :=
   rfl
 #align Module.forget₂_map ModuleCat.forget₂_map
@@ -169,7 +169,7 @@ def ofHom {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X] [Ad
 #align Module.of_hom ModuleCat.ofHom
 
 @[simp 1100]
-theorem ofHom_apply {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X]
+lemma ofHom_apply {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X]
     [AddCommGroup Y] [Module R Y] (f : X →ₗ[R] Y) (x : X) : ofHom f x = f x :=
   rfl
 #align Module.of_hom_apply ModuleCat.ofHom_apply
@@ -181,11 +181,11 @@ instance ofUnique {X : Type v} [AddCommGroup X] [Module R X] [i : Unique X] : Un
   i
 #align Module.of_unique ModuleCat.ofUnique
 
-@[simp] theorem of_coe (X : ModuleCat R) : of R X = X := rfl
+@[simp] lemma of_coe (X : ModuleCat R) : of R X = X := rfl
 
 -- Porting note: the simpNF linter complains, but we really need this?!
 -- @[simp, nolint simpNF]
-theorem coe_of (X : Type v) [AddCommGroup X] [Module R X] : (of R X : Type v) = X :=
+lemma coe_of (X : Type v) [AddCommGroup X] [Module R X] : (of R X : Type v) = X :=
   rfl
 #align Module.coe_of ModuleCat.coe_of
 
@@ -199,7 +199,7 @@ def ofSelfIso (M : ModuleCat R) : ModuleCat.of R M ≅ M where
   inv := 𝟙 M
 #align Module.of_self_iso ModuleCat.ofSelfIso
 
-theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M where
+lemma isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M where
   unique_to X := ⟨⟨⟨(0 : M →ₗ[R] X)⟩, fun f => by
     ext x
     rw [Subsingleton.elim x (0 : M)]
@@ -216,16 +216,16 @@ instance : HasZeroObject (ModuleCat.{v} R) :=
 variable {M N U : ModuleCat.{v} R}
 
 @[simp]
-theorem id_apply (m : M) : (𝟙 M : M → M) m = m :=
+lemma id_apply (m : M) : (𝟙 M : M → M) m = m :=
   rfl
 #align Module.id_apply ModuleCat.id_apply
 
 @[simp]
-theorem coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
+lemma coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
   rfl
 #align Module.coe_comp ModuleCat.coe_comp
 
-theorem comp_def (f : M ⟶ N) (g : N ⟶ U) : f ≫ g = g.comp f :=
+lemma comp_def (f : M ⟶ N) (g : N ⟶ U) : f ≫ g = g.comp f :=
   rfl
 #align Module.comp_def ModuleCat.comp_def
 
@@ -343,12 +343,12 @@ instance : Linear S (ModuleCat.{v} S) where
 
 variable {X Y X' Y' : ModuleCat.{v} S}
 
-theorem Iso.homCongr_eq_arrowCongr (i : X ≅ X') (j : Y ≅ Y') (f : X ⟶ Y) :
+lemma Iso.homCongr_eq_arrowCongr (i : X ≅ X') (j : Y ≅ Y') (f : X ⟶ Y) :
     Iso.homCongr i j f = LinearEquiv.arrowCongr i.toLinearEquiv j.toLinearEquiv f :=
   rfl
 #align Module.iso.hom_congr_eq_arrow_congr ModuleCat.Iso.homCongr_eq_arrowCongr
 
-theorem Iso.conj_eq_conj (i : X ≅ X') (f : End X) :
+lemma Iso.conj_eq_conj (i : X ≅ X') (f : End X) :
     Iso.conj i f = LinearEquiv.conj i.toLinearEquiv f :=
   rfl
 #align Module.iso.conj_eq_conj ModuleCat.Iso.conj_eq_conj

@@ -24,11 +24,11 @@ section Semigroup
 
 variable [Semigroup α] [Semigroup β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β] (f : F)
 
-theorem map_dvd_iff {a b} : f a ∣ f b ↔ a ∣ b :=
+lemma map_dvd_iff {a b} : f a ∣ f b ↔ a ∣ b :=
   let f := MulEquivClass.toMulEquiv f
   ⟨fun h ↦ by rw [← f.left_inv a, ← f.left_inv b]; exact map_dvd f.symm h, map_dvd f⟩
 
-theorem MulEquiv.decompositionMonoid [DecompositionMonoid β] : DecompositionMonoid α where
+lemma MulEquiv.decompositionMonoid [DecompositionMonoid β] : DecompositionMonoid α where
   primal a b c h := by
     rw [← map_dvd_iff f, map_mul] at h
     obtain ⟨a₁, a₂, h⟩ := DecompositionMonoid.primal _ h
@@ -43,7 +43,7 @@ section DistribSemigroup
 
 variable [Add α] [Semigroup α]
 
-theorem dvd_add [LeftDistribClass α] {a b c : α} (h₁ : a ∣ b) (h₂ : a ∣ c) : a ∣ b + c :=
+lemma dvd_add [LeftDistribClass α] {a b c : α} (h₁ : a ∣ b) (h₂ : a ∣ c) : a ∣ b + c :=
   Dvd.elim h₁ fun d hd => Dvd.elim h₂ fun e he => Dvd.intro (d + e) (by simp [left_distrib, hd, he])
 #align dvd_add dvd_add
 
@@ -54,7 +54,7 @@ end DistribSemigroup
 
 set_option linter.deprecated false in
 @[simp]
-theorem two_dvd_bit0 [Semiring α] {a : α} : 2 ∣ bit0 a :=
+lemma two_dvd_bit0 [Semiring α] {a : α} : 2 ∣ bit0 a :=
   ⟨a, bit0_eq_two_mul _⟩
 #align two_dvd_bit0 two_dvd_bit0
 
@@ -62,7 +62,7 @@ section NonUnitalCommSemiring
 
 variable [NonUnitalCommSemiring α] [NonUnitalCommSemiring β] {a b c : α}
 
-theorem Dvd.dvd.linear_comb {d x y : α} (hdx : d ∣ x) (hdy : d ∣ y) (a b : α) : d ∣ a * x + b * y :=
+lemma Dvd.dvd.linear_comb {d x y : α} (hdx : d ∣ x) (hdy : d ∣ y) (a b : α) : d ∣ a * x + b * y :=
   dvd_add (hdx.mul_left a) (hdy.mul_left b)
 #align has_dvd.dvd.linear_comb Dvd.dvd.linear_comb
 
@@ -104,7 +104,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing α] {a b c : α}
 
-theorem dvd_sub (h₁ : a ∣ b) (h₂ : a ∣ c) : a ∣ b - c := by
+lemma dvd_sub (h₁ : a ∣ b) (h₂ : a ∣ c) : a ∣ b - c := by
   simpa only [← sub_eq_add_neg] using h₁.add h₂.neg_right
 #align dvd_sub dvd_sub
 
@@ -136,12 +136,12 @@ theorem dvd_sub_right (h : a ∣ b) : a ∣ b - c ↔ a ∣ c := by
   rw [sub_eq_add_neg, dvd_add_right h, dvd_neg (α := α)]
 #align dvd_sub_right dvd_sub_right
 
-theorem dvd_iff_dvd_of_dvd_sub (h : a ∣ b - c) : a ∣ b ↔ a ∣ c := by
+lemma dvd_iff_dvd_of_dvd_sub (h : a ∣ b - c) : a ∣ b ↔ a ∣ c := by
   rw [← sub_add_cancel b c, dvd_add_right h]
 #align dvd_iff_dvd_of_dvd_sub dvd_iff_dvd_of_dvd_sub
 
 -- Porting note: Needed to give `α` explicitly
-theorem dvd_sub_comm : a ∣ b - c ↔ a ∣ c - b := by rw [← dvd_neg (α := α), neg_sub]
+lemma dvd_sub_comm : a ∣ b - c ↔ a ∣ c - b := by rw [← dvd_neg (α := α), neg_sub]
 #align dvd_sub_comm dvd_sub_comm
 
 end NonUnitalRing
@@ -151,7 +151,7 @@ section Ring
 variable [Ring α] {a b c : α}
 
 set_option linter.deprecated false in
-theorem two_dvd_bit1 : 2 ∣ bit1 a ↔ (2 : α) ∣ 1 :=
+lemma two_dvd_bit1 : 2 ∣ bit1 a ↔ (2 : α) ∣ 1 :=
   dvd_add_right two_dvd_bit0
 #align two_dvd_bit1 two_dvd_bit1
 
@@ -185,7 +185,7 @@ section NonUnitalCommRing
 
 variable [NonUnitalCommRing α] {a b c : α}
 
-theorem dvd_mul_sub_mul {k a b x y : α} (hab : k ∣ a - b) (hxy : k ∣ x - y) :
+lemma dvd_mul_sub_mul {k a b x y : α} (hab : k ∣ a - b) (hxy : k ∣ x - y) :
     k ∣ a * x - b * y := by
   convert dvd_add (hxy.mul_left a) (hab.mul_right y) using 1
   rw [mul_sub_left_distrib, mul_sub_right_distrib]

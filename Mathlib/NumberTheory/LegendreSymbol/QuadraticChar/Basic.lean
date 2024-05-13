@@ -72,12 +72,12 @@ theorem quadraticCharFun_eq_zero_iff {a : F} : quadraticCharFun F a = 0 ↔ a = 
 #align quadratic_char_fun_eq_zero_iff quadraticCharFun_eq_zero_iff
 
 @[simp]
-theorem quadraticCharFun_zero : quadraticCharFun F 0 = 0 := by
+lemma quadraticCharFun_zero : quadraticCharFun F 0 = 0 := by
   simp only [quadraticCharFun, eq_self_iff_true, if_true, id]
 #align quadratic_char_fun_zero quadraticCharFun_zero
 
 @[simp]
-theorem quadraticCharFun_one : quadraticCharFun F 1 = 1 := by
+lemma quadraticCharFun_one : quadraticCharFun F 1 = 1 := by
   simp only [quadraticCharFun, one_ne_zero, isSquare_one, if_true, if_false, id]
 #align quadratic_char_fun_one quadraticCharFun_one
 
@@ -141,7 +141,7 @@ theorem quadraticChar_eq_zero_iff {a : F} : quadraticChar F a = 0 ↔ a = 0 :=
 #align quadratic_char_eq_zero_iff quadraticChar_eq_zero_iff
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem quadraticChar_zero : quadraticChar F 0 = 0 := by
+lemma quadraticChar_zero : quadraticChar F 0 = 0 := by
   simp only [quadraticChar_apply, quadraticCharFun_zero]
 #align quadratic_char_zero quadraticChar_zero
 
@@ -205,7 +205,7 @@ theorem quadraticChar_eq_pow_of_char_ne_two (hF : ringChar F ≠ 2) {a : F} (ha 
   quadraticCharFun_eq_pow_of_char_ne_two hF ha
 #align quadratic_char_eq_pow_of_char_ne_two quadraticChar_eq_pow_of_char_ne_two
 
-theorem quadraticChar_eq_pow_of_char_ne_two' (hF : ringChar F ≠ 2) (a : F) :
+lemma quadraticChar_eq_pow_of_char_ne_two' (hF : ringChar F ≠ 2) (a : F) :
     (quadraticChar F a : F) = a ^ (Fintype.card F / 2) := by
   by_cases ha : a = 0
   · have : 0 < Fintype.card F / 2 := Nat.div_pos Fintype.one_lt_card two_pos

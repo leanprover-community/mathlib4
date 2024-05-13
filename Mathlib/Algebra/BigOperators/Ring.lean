@@ -248,7 +248,7 @@ lemma _root_.Fintype.sum_pow_mul_eq_add_pow (ι : Type*) [Fintype ι] (a b : α)
 #align fintype.sum_pow_mul_eq_add_pow Fintype.sum_pow_mul_eq_add_pow
 
 @[norm_cast]
-theorem prod_natCast (s : Finset ι) (f : ι → ℕ) : ↑(∏ i in s, f i : ℕ) = ∏ i in s, (f i : α) :=
+lemma prod_natCast (s : Finset ι) (f : ι → ℕ) : ↑(∏ i in s, f i : ℕ) = ∏ i in s, (f i : α) :=
   map_prod (Nat.castRingHom α) f s
 #align finset.prod_nat_cast Finset.prod_natCast
 
@@ -276,7 +276,7 @@ theorem prod_one_sub_ordered [LinearOrder ι] (s : Finset ι) (f : ι → α) :
   simp
 #align finset.prod_one_sub_ordered Finset.prod_one_sub_ordered
 
-theorem prod_range_cast_nat_sub (n k : ℕ) :
+lemma prod_range_cast_nat_sub (n k : ℕ) :
     ∏ i in range k, (n - i : α) = (∏ i in range k, (n - i) : ℕ) := by
   rw [prod_natCast]
   rcases le_or_lt k n with hkn | hnk

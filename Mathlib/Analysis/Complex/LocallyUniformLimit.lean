@@ -42,12 +42,12 @@ noncomputable def cderiv (r : ℝ) (f : ℂ → E) (z : ℂ) : E :=
   (2 * π * I : ℂ)⁻¹ • ∮ w in C(z, r), ((w - z) ^ 2)⁻¹ • f w
 #align complex.cderiv Complex.cderiv
 
-theorem cderiv_eq_deriv (hU : IsOpen U) (hf : DifferentiableOn ℂ f U) (hr : 0 < r)
+lemma cderiv_eq_deriv (hU : IsOpen U) (hf : DifferentiableOn ℂ f U) (hr : 0 < r)
     (hzr : closedBall z r ⊆ U) : cderiv r f z = deriv f z :=
   two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable hU hzr hf (mem_ball_self hr)
 #align complex.cderiv_eq_deriv Complex.cderiv_eq_deriv
 
-theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M) :
+lemma norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M) :
     ‖cderiv r f z‖ ≤ M / r := by
   have hM : 0 ≤ M := by
     obtain ⟨w, hw⟩ : (sphere z r).Nonempty := NormedSpace.sphere_nonempty.mpr hr.le
@@ -64,7 +64,7 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
   ring
 #align complex.norm_cderiv_le Complex.norm_cderiv_le
 
-theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
+lemma cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
     (hg : ContinuousOn g (sphere z r)) : cderiv r (f - g) z = cderiv r f z - cderiv r g z := by
   have h1 : ContinuousOn (fun w : ℂ => ((w - z) ^ 2)⁻¹) (sphere z r) := by
     refine' ((continuous_id'.sub continuous_const).pow 2).continuousOn.inv₀ fun w hw h => hr.ne _
@@ -76,7 +76,7 @@ theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
       ((h1.smul hg).circleIntegrable hr.le)
 #align complex.cderiv_sub Complex.cderiv_sub
 
-theorem norm_cderiv_lt (hr : 0 < r) (hfM : ∀ w ∈ sphere z r, ‖f w‖ < M)
+lemma norm_cderiv_lt (hr : 0 < r) (hfM : ∀ w ∈ sphere z r, ‖f w‖ < M)
     (hf : ContinuousOn f (sphere z r)) : ‖cderiv r f z‖ < M / r := by
   obtain ⟨L, hL1, hL2⟩ : ∃ L < M, ∀ w ∈ sphere z r, ‖f w‖ ≤ L := by
     have e1 : (sphere z r).Nonempty := NormedSpace.sphere_nonempty.mpr hr.le
@@ -86,13 +86,13 @@ theorem norm_cderiv_lt (hr : 0 < r) (hfM : ∀ w ∈ sphere z r, ‖f w‖ < M)
   exact (norm_cderiv_le hr hL2).trans_lt ((div_lt_div_right hr).mpr hL1)
 #align complex.norm_cderiv_lt Complex.norm_cderiv_lt
 
-theorem norm_cderiv_sub_lt (hr : 0 < r) (hfg : ∀ w ∈ sphere z r, ‖f w - g w‖ < M)
+lemma norm_cderiv_sub_lt (hr : 0 < r) (hfg : ∀ w ∈ sphere z r, ‖f w - g w‖ < M)
     (hf : ContinuousOn f (sphere z r)) (hg : ContinuousOn g (sphere z r)) :
     ‖cderiv r f z - cderiv r g z‖ < M / r :=
   cderiv_sub hr hf hg ▸ norm_cderiv_lt hr hfg (hf.sub hg)
 #align complex.norm_cderiv_sub_lt Complex.norm_cderiv_sub_lt
 
-theorem _root_.TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthickening δ K))
+lemma _root_.TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthickening δ K))
     (hδ : 0 < δ) (hFn : ∀ᶠ n in φ, ContinuousOn (F n) (cthickening δ K)) :
     TendstoUniformlyOn (cderiv δ ∘ F) (cderiv δ f) φ K := by
   rcases φ.eq_or_neBot with rfl | hne
@@ -114,7 +114,7 @@ end Cderiv
 
 section Weierstrass
 
-theorem tendstoUniformlyOn_deriv_of_cthickening_subset (hf : TendstoLocallyUniformlyOn F f φ U)
+lemma tendstoUniformlyOn_deriv_of_cthickening_subset (hf : TendstoLocallyUniformlyOn F f φ U)
     (hF : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) U) {δ : ℝ} (hδ : 0 < δ) (hK : IsCompact K)
     (hU : IsOpen U) (hKU : cthickening δ K ⊆ U) :
     TendstoUniformlyOn (deriv ∘ F) (cderiv δ f) φ K := by
@@ -128,7 +128,7 @@ theorem tendstoUniformlyOn_deriv_of_cthickening_subset (hf : TendstoLocallyUnifo
   exact cderiv_eq_deriv hU h hδ ((closedBall_subset_cthickening hz δ).trans hKU)
 #align complex.tendsto_uniformly_on_deriv_of_cthickening_subset Complex.tendstoUniformlyOn_deriv_of_cthickening_subset
 
-theorem exists_cthickening_tendstoUniformlyOn (hf : TendstoLocallyUniformlyOn F f φ U)
+lemma exists_cthickening_tendstoUniformlyOn (hf : TendstoLocallyUniformlyOn F f φ U)
     (hF : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) U) (hK : IsCompact K) (hU : IsOpen U) (hKU : K ⊆ U) :
     ∃ δ > 0, cthickening δ K ⊆ U ∧ TendstoUniformlyOn (deriv ∘ F) (cderiv δ f) φ K := by
   obtain ⟨δ, hδ, hKδ⟩ := hK.exists_cthickening_subset_open hU hKU
@@ -157,7 +157,7 @@ theorem _root_.TendstoLocallyUniformlyOn.differentiableOn [φ.NeBot]
   exact (h7.differentiableAt (interior_mem_nhds.mpr hKx)).differentiableWithinAt
 #align tendsto_locally_uniformly_on.differentiable_on TendstoLocallyUniformlyOn.differentiableOn
 
-theorem _root_.TendstoLocallyUniformlyOn.deriv (hf : TendstoLocallyUniformlyOn F f φ U)
+lemma _root_.TendstoLocallyUniformlyOn.deriv (hf : TendstoLocallyUniformlyOn F f φ U)
     (hF : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) U) (hU : IsOpen U) :
     TendstoLocallyUniformlyOn (deriv ∘ F) (deriv f) φ U := by
   rw [tendstoLocallyUniformlyOn_iff_forall_isCompact hU]

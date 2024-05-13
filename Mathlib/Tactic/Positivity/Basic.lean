@@ -173,19 +173,19 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     pure (.nonnegative q(add_nonneg $pa $pb))
   | _, _ => failure
 
-private theorem mul_nonneg_of_pos_of_nonneg [OrderedSemiring α] {a b : α}
+private lemma mul_nonneg_of_pos_of_nonneg [OrderedSemiring α] {a b : α}
     (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b :=
   mul_nonneg ha.le hb
 
-private theorem mul_nonneg_of_nonneg_of_pos [OrderedSemiring α] {a b : α}
+private lemma mul_nonneg_of_nonneg_of_pos [OrderedSemiring α] {a b : α}
     (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a * b :=
   mul_nonneg ha hb.le
 
-private theorem mul_ne_zero_of_ne_zero_of_pos [OrderedSemiring α] [NoZeroDivisors α]
+private lemma mul_ne_zero_of_ne_zero_of_pos [OrderedSemiring α] [NoZeroDivisors α]
     {a b : α} (ha : a ≠ 0) (hb : 0 < b) : a * b ≠ 0 :=
   mul_ne_zero ha (ne_of_gt hb)
 
-private theorem mul_ne_zero_of_pos_of_ne_zero [OrderedSemiring α] [NoZeroDivisors α]
+private lemma mul_ne_zero_of_pos_of_ne_zero [OrderedSemiring α] [NoZeroDivisors α]
     {a b : α} (ha : 0 < a) (hb : b ≠ 0) : a * b ≠ 0 :=
   mul_ne_zero (ne_of_gt ha) hb
 
@@ -251,7 +251,7 @@ where `a` and `b` are integers. -/
     | _, _ => pure .none
   | _, _, _ => throwError "not /"
 
-private theorem pow_zero_pos [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 :=
+private lemma pow_zero_pos [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 :=
   zero_lt_one.trans_le (pow_zero a).ge
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℕ)`.
@@ -305,7 +305,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
     | .none => pure .none
 
-private theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
+private lemma abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
     [CovariantClass α α (·+·) (·≤·)] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
 
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/
@@ -325,7 +325,7 @@ def evalAbs : PositivityExt where eval {u} (α : Q(Type u)) zα pα (e : Q($α))
     let pa' ← mkAppM ``abs_nonneg #[a]
     pure (.nonnegative pa')
 
-private theorem int_natAbs_pos {n : ℤ} (hn : 0 < n) : 0 < n.natAbs :=
+private lemma int_natAbs_pos {n : ℤ} (hn : 0 < n) : 0 < n.natAbs :=
   Int.natAbs_pos.mpr hn.ne'
 
 /-- Extension for the `positivity` tactic: `Int.natAbs` is positive when its input is.

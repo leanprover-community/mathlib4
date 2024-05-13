@@ -39,11 +39,11 @@ section
 
 variable {α F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup F]
 
-theorem Memℒp.integrable_sq {f : α → ℝ} (h : Memℒp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
+lemma Memℒp.integrable_sq {f : α → ℝ} (h : Memℒp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
   simpa [← memℒp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.two_ne_top
 #align measure_theory.mem_ℒp.integrable_sq MeasureTheory.Memℒp.integrable_sq
 
-theorem memℒp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurable f μ) :
+lemma memℒp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurable f μ) :
     Memℒp f 2 μ ↔ Integrable (fun x => ‖f x‖ ^ 2) μ := by
   rw [← memℒp_one_iff_integrable]
   convert (memℒp_norm_rpow_iff hf two_ne_zero ENNReal.two_ne_top).symm
@@ -51,7 +51,7 @@ theorem memℒp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasur
   · rw [div_eq_mul_inv, ENNReal.mul_inv_cancel two_ne_zero ENNReal.two_ne_top]
 #align measure_theory.mem_ℒp_two_iff_integrable_sq_norm MeasureTheory.memℒp_two_iff_integrable_sq_norm
 
-theorem memℒp_two_iff_integrable_sq {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
+lemma memℒp_two_iff_integrable_sq {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
     Memℒp f 2 μ ↔ Integrable (fun x => f x ^ 2) μ := by
   convert memℒp_two_iff_integrable_sq_norm hf using 3
   simp
@@ -66,29 +66,29 @@ variable {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpac
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
-theorem Memℒp.const_inner (c : E) {f : α → E} (hf : Memℒp f p μ) : Memℒp (fun a => ⟪c, f a⟫) p μ :=
+lemma Memℒp.const_inner (c : E) {f : α → E} (hf : Memℒp f p μ) : Memℒp (fun a => ⟪c, f a⟫) p μ :=
   hf.of_le_mul (AEStronglyMeasurable.inner aestronglyMeasurable_const hf.1)
     (eventually_of_forall fun _ => norm_inner_le_norm _ _)
 #align measure_theory.mem_ℒp.const_inner MeasureTheory.Memℒp.const_inner
 
-theorem Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Memℒp (fun a => ⟪f a, c⟫) p μ :=
+lemma Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Memℒp (fun a => ⟪f a, c⟫) p μ :=
   hf.of_le_mul (AEStronglyMeasurable.inner hf.1 aestronglyMeasurable_const)
     (eventually_of_forall fun x => by rw [mul_comm]; exact norm_inner_le_norm _ _)
 #align measure_theory.mem_ℒp.inner_const MeasureTheory.Memℒp.inner_const
 
 variable {f : α → E}
 
-theorem Integrable.const_inner (c : E) (hf : Integrable f μ) : Integrable (fun x => ⟪c, f x⟫) μ :=
+lemma Integrable.const_inner (c : E) (hf : Integrable f μ) : Integrable (fun x => ⟪c, f x⟫) μ :=
   by rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.const_inner c
 #align measure_theory.integrable.const_inner MeasureTheory.Integrable.const_inner
 
-theorem Integrable.inner_const (hf : Integrable f μ) (c : E) : Integrable (fun x => ⟪f x, c⟫) μ :=
+lemma Integrable.inner_const (hf : Integrable f μ) (c : E) : Integrable (fun x => ⟪f x, c⟫) μ :=
   by rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.inner_const c
 #align measure_theory.integrable.inner_const MeasureTheory.Integrable.inner_const
 
 variable [CompleteSpace E] [NormedSpace ℝ E]
 
-theorem _root_.integral_inner {f : α → E} (hf : Integrable f μ) (c : E) :
+lemma _root_.integral_inner {f : α → E} (hf : Integrable f μ) (c : E) :
     ∫ x, ⟪c, f x⟫ ∂μ = ⟪c, ∫ x, f x ∂μ⟫ :=
   ((innerSL 𝕜 c).restrictScalars ℝ).integral_comp_comm hf
 #align integral_inner integral_inner
@@ -99,7 +99,7 @@ variable (𝕜)
 -- Porting note: removed because it causes ambiguity in the lemma below
 -- local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
-theorem _root_.integral_eq_zero_of_forall_integral_inner_eq_zero (f : α → E) (hf : Integrable f μ)
+lemma _root_.integral_eq_zero_of_forall_integral_inner_eq_zero (f : α → E) (hf : Integrable f μ)
     (hf_int : ∀ c : E, ∫ x, ⟪c, f x⟫ ∂μ = 0) : ∫ x, f x ∂μ = 0 := by
   specialize hf_int (∫ x, f x ∂μ); rwa [integral_inner hf, inner_self_eq_zero] at hf_int
 #align integral_eq_zero_of_forall_integral_inner_eq_zero integral_eq_zero_of_forall_integral_inner_eq_zero
@@ -113,13 +113,13 @@ variable {α E F 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α] {μ : Measure 
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
-theorem snorm_rpow_two_norm_lt_top (f : Lp F 2 μ) : snorm (fun x => ‖f x‖ ^ (2 : ℝ)) 1 μ < ∞ := by
+lemma snorm_rpow_two_norm_lt_top (f : Lp F 2 μ) : snorm (fun x => ‖f x‖ ^ (2 : ℝ)) 1 μ < ∞ := by
   have h_two : ENNReal.ofReal (2 : ℝ) = 2 := by simp [zero_le_one]
   rw [snorm_norm_rpow f zero_lt_two, one_mul, h_two]
   exact ENNReal.rpow_lt_top_of_nonneg zero_le_two (Lp.snorm_ne_top f)
 #align measure_theory.L2.snorm_rpow_two_norm_lt_top MeasureTheory.L2.snorm_rpow_two_norm_lt_top
 
-theorem snorm_inner_lt_top (f g : α →₂[μ] E) : snorm (fun x : α => ⟪f x, g x⟫) 1 μ < ∞ := by
+lemma snorm_inner_lt_top (f g : α →₂[μ] E) : snorm (fun x : α => ⟪f x, g x⟫) 1 μ < ∞ := by
   have h : ∀ x, ‖⟪f x, g x⟫‖ ≤ ‖‖f x‖ ^ (2 : ℝ) + ‖g x‖ ^ (2 : ℝ)‖ := by
     intro x
     rw [← @Nat.cast_two ℝ, Real.rpow_natCast, Real.rpow_natCast]
@@ -145,11 +145,11 @@ open scoped ComplexConjugate
 instance : Inner 𝕜 (α →₂[μ] E) :=
   ⟨fun f g => ∫ a, ⟪f a, g a⟫ ∂μ⟩
 
-theorem inner_def (f g : α →₂[μ] E) : ⟪f, g⟫ = ∫ a : α, ⟪f a, g a⟫ ∂μ :=
+lemma inner_def (f g : α →₂[μ] E) : ⟪f, g⟫ = ∫ a : α, ⟪f a, g a⟫ ∂μ :=
   rfl
 #align measure_theory.L2.inner_def MeasureTheory.L2.inner_def
 
-theorem integral_inner_eq_sq_snorm (f : α →₂[μ] E) :
+lemma integral_inner_eq_sq_snorm (f : α →₂[μ] E) :
     ∫ a, ⟪f a, f a⟫ ∂μ = ENNReal.toReal (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ (2 : ℝ) ∂μ) := by
   simp_rw [inner_self_eq_norm_sq_to_K]
   norm_cast
@@ -165,7 +165,7 @@ theorem integral_inner_eq_sq_snorm (f : α →₂[μ] E) :
   norm_cast
 #align measure_theory.L2.integral_inner_eq_sq_snorm MeasureTheory.L2.integral_inner_eq_sq_snorm
 
-private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.re ⟪f, f⟫ := by
+private lemma norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.re ⟪f, f⟫ := by
   have h_two : (2 : ℝ≥0∞).toReal = 2 := by simp
   rw [inner_def, integral_inner_eq_sq_snorm, norm_def, ← ENNReal.toReal_pow, RCLike.ofReal_re,
     ENNReal.toReal_eq_toReal (ENNReal.pow_ne_top (Lp.snorm_ne_top f)) _]
@@ -176,21 +176,21 @@ private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.r
     rw [← h_two, ← snorm_eq_snorm' two_ne_zero ENNReal.two_ne_top]
     exact Lp.snorm_lt_top f
 
-theorem mem_L1_inner (f g : α →₂[μ] E) :
+lemma mem_L1_inner (f g : α →₂[μ] E) :
     AEEqFun.mk (fun x => ⟪f x, g x⟫)
         ((Lp.aestronglyMeasurable f).inner (Lp.aestronglyMeasurable g)) ∈
       Lp 𝕜 1 μ :=
   by simp_rw [mem_Lp_iff_snorm_lt_top, snorm_aeeqFun]; exact snorm_inner_lt_top f g
 #align measure_theory.L2.mem_L1_inner MeasureTheory.L2.mem_L1_inner
 
-theorem integrable_inner (f g : α →₂[μ] E) : Integrable (fun x : α => ⟪f x, g x⟫) μ :=
+lemma integrable_inner (f g : α →₂[μ] E) : Integrable (fun x : α => ⟪f x, g x⟫) μ :=
   (integrable_congr
         (AEEqFun.coeFn_mk (fun x => ⟪f x, g x⟫)
           ((Lp.aestronglyMeasurable f).inner (Lp.aestronglyMeasurable g)))).mp
     (AEEqFun.integrable_iff_mem_L1.mpr (mem_L1_inner f g))
 #align measure_theory.L2.integrable_inner MeasureTheory.L2.integrable_inner
 
-private theorem add_left' (f f' g : α →₂[μ] E) : ⟪f + f', g⟫ = inner f g + inner f' g := by
+private lemma add_left' (f f' g : α →₂[μ] E) : ⟪f + f', g⟫ = inner f g + inner f' g := by
   simp_rw [inner_def, ← integral_add (integrable_inner f g) (integrable_inner f' g), ←
     inner_add_left]
   refine' integral_congr_ae ((coeFn_add f f').mono fun x hx => _)
@@ -201,7 +201,7 @@ private theorem add_left' (f f' g : α →₂[μ] E) : ⟪f + f', g⟫ = inner f
   rw [hx, Pi.add_apply]
 
 
-private theorem smul_left' (f g : α →₂[μ] E) (r : 𝕜) : ⟪r • f, g⟫ = conj r * inner f g := by
+private lemma smul_left' (f g : α →₂[μ] E) (r : 𝕜) : ⟪r • f, g⟫ = conj r * inner f g := by
   rw [inner_def, inner_def, ← smul_eq_mul, ← integral_smul]
   refine' integral_congr_ae ((coeFn_smul r f).mono fun x hx => _)
   simp only

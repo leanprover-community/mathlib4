@@ -35,7 +35,7 @@ variable (d : α)
 #align list.nthd_cons_zero List.getD_cons_zeroₓ -- argument order
 #align list.nthd_cons_succ List.getD_cons_succₓ -- argument order
 
-theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn⟩ := by
+lemma getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn⟩ := by
   induction l generalizing n with
   | nil => simp at hn
   | cons head tail ih =>
@@ -44,7 +44,7 @@ theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn�
     · exact ih _
 
 @[simp]
-theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by
+lemma getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by
   induction l generalizing n with
   | nil => rfl
   | cons head tail ih =>
@@ -54,7 +54,7 @@ theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD 
 
 #align list.nthd_eq_nth_le List.getD_eq_get
 
-theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
+lemma getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
   induction l generalizing n with
   | nil => exact getD_nil
   | cons head tail ih =>
@@ -70,23 +70,23 @@ def decidableGetDNilNe {α} (a : α) : DecidablePred fun i : ℕ => getD ([] : L
 #align list.decidable_nthd_nil_ne List.decidableGetDNilNeₓ -- argument order
 
 @[simp]
-theorem getD_singleton_default_eq (n : ℕ) : [d].getD n d = d := by cases n <;> simp
+lemma getD_singleton_default_eq (n : ℕ) : [d].getD n d = d := by cases n <;> simp
 #align list.nthd_singleton_default_eq List.getD_singleton_default_eqₓ -- argument order
 
 @[simp]
-theorem getD_replicate_default_eq (r n : ℕ) : (replicate r d).getD n d = d := by
+lemma getD_replicate_default_eq (r n : ℕ) : (replicate r d).getD n d = d := by
   induction r generalizing n with
   | zero => simp
   | succ n ih => cases n <;> simp [ih]
 #align list.nthd_replicate_default_eq List.getD_replicate_default_eqₓ -- argument order
 
-theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :
+lemma getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :
     (l ++ l').getD n d = l.getD n d := by
   rw [getD_eq_get _ _ (Nat.lt_of_lt_of_le h (length_append _ _ ▸ Nat.le_add_right _ _)),
     get_append _ h, getD_eq_get]
 #align list.nthd_append List.getD_appendₓ -- argument order
 
-theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
+lemma getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
   cases Nat.lt_or_ge n (l ++ l').length with
   | inl h' =>
@@ -99,7 +99,7 @@ theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ 
     rwa [Nat.le_sub_iff_add_le' h, ← length_append]
 #align list.nthd_append_right List.getD_append_rightₓ -- argument order
 
-theorem getD_eq_getD_get? (n : ℕ) : l.getD n d = (l.get? n).getD d := by
+lemma getD_eq_getD_get? (n : ℕ) : l.getD n d = (l.get? n).getD d := by
   cases Nat.lt_or_ge n l.length with
   | inl h => rw [getD_eq_get _ _ h, get?_eq_get h, Option.getD_some]
   | inr h => rw [getD_eq_default _ _ h, get?_eq_none.mpr h, Option.getD_none]
@@ -112,46 +112,46 @@ section getI
 variable [Inhabited α]
 
 @[simp]
-theorem getI_nil : getI ([] : List α) n = default :=
+lemma getI_nil : getI ([] : List α) n = default :=
   rfl
 #align list.inth_nil List.getI_nil
 
 @[simp]
-theorem getI_cons_zero : getI (x :: xs) 0 = x :=
+lemma getI_cons_zero : getI (x :: xs) 0 = x :=
   rfl
 #align list.inth_cons_zero List.getI_cons_zero
 
 @[simp]
-theorem getI_cons_succ : getI (x :: xs) (n + 1) = getI xs n :=
+lemma getI_cons_succ : getI (x :: xs) (n + 1) = getI xs n :=
   rfl
 #align list.inth_cons_succ List.getI_cons_succ
 
-theorem getI_eq_get {n : ℕ} (hn : n < l.length) : l.getI n = l.get ⟨n, hn⟩ :=
+lemma getI_eq_get {n : ℕ} (hn : n < l.length) : l.getI n = l.get ⟨n, hn⟩ :=
   getD_eq_get ..
 #align list.inth_eq_nth_le List.getI_eq_get
 
-theorem getI_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getI n = default :=
+lemma getI_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getI n = default :=
   getD_eq_default _ _ hn
 #align list.inth_eq_default List.getI_eq_default
 
-theorem getD_default_eq_getI {n : ℕ} : l.getD n default = l.getI n :=
+lemma getD_default_eq_getI {n : ℕ} : l.getD n default = l.getI n :=
   rfl
 #align list.nthd_default_eq_inth List.getD_default_eq_getIₓ -- new argument `n`
 
-theorem getI_append (l l' : List α) (n : ℕ) (h : n < l.length) :
+lemma getI_append (l l' : List α) (n : ℕ) (h : n < l.length) :
     (l ++ l').getI n = l.getI n := getD_append _ _ _ _ h
 #align list.inth_append List.getI_append
 
-theorem getI_append_right (l l' : List α) (n : ℕ) (h : l.length ≤ n) :
+lemma getI_append_right (l l' : List α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getI n = l'.getI (n - l.length) :=
   getD_append_right _ _ _ _ h
 #align list.inth_append_right List.getI_append_right
 
-theorem getI_eq_iget_get? (n : ℕ) : l.getI n = (l.get? n).iget := by
+lemma getI_eq_iget_get? (n : ℕ) : l.getI n = (l.get? n).iget := by
   rw [← getD_default_eq_getI, getD_eq_getD_get?, Option.getD_default_eq_iget]
 #align list.inth_eq_iget_nth List.getI_eq_iget_get?
 
-theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
+lemma getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 #align list.inth_zero_eq_head List.getI_zero_eq_headI
 
 end getI

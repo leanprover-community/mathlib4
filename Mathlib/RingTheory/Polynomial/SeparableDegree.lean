@@ -82,7 +82,7 @@ theorem IsSeparableContraction.dvd_degree' {g} (hf : IsSeparableContraction q f 
   rw [natDegree_expand]
 #align polynomial.is_separable_contraction.dvd_degree' Polynomial.IsSeparableContraction.dvd_degree'
 
-theorem HasSeparableContraction.dvd_degree' : ∃ m : ℕ, hf.degree * q ^ m = f.natDegree :=
+lemma HasSeparableContraction.dvd_degree' : ∃ m : ℕ, hf.degree * q ^ m = f.natDegree :=
   (Classical.choose_spec hf).dvd_degree' hf
 #align polynomial.has_separable_contraction.dvd_degree' Polynomial.HasSeparableContraction.dvd_degree'
 

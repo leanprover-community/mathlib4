@@ -52,30 +52,30 @@ def IsOrtho (B : BilinForm R M) (x y : M) : Prop :=
   B x y = 0
 #align bilin_form.is_ortho LinearMap.BilinForm.IsOrtho
 
-theorem isOrtho_def {B : BilinForm R M} {x y : M} : B.IsOrtho x y ↔ B x y = 0 :=
+lemma isOrtho_def {B : BilinForm R M} {x y : M} : B.IsOrtho x y ↔ B x y = 0 :=
   Iff.rfl
 #align bilin_form.is_ortho_def LinearMap.BilinForm.isOrtho_def
 
-theorem isOrtho_zero_left (x : M) : IsOrtho B (0 : M) x := LinearMap.isOrtho_zero_left B x
+lemma isOrtho_zero_left (x : M) : IsOrtho B (0 : M) x := LinearMap.isOrtho_zero_left B x
 #align bilin_form.is_ortho_zero_left LinearMap.BilinForm.isOrtho_zero_left
 
-theorem isOrtho_zero_right (x : M) : IsOrtho B x (0 : M) :=
+lemma isOrtho_zero_right (x : M) : IsOrtho B x (0 : M) :=
   zero_right x
 #align bilin_form.is_ortho_zero_right LinearMap.BilinForm.isOrtho_zero_right
 
-theorem ne_zero_of_not_isOrtho_self {B : BilinForm K V} (x : V) (hx₁ : ¬B.IsOrtho x x) : x ≠ 0 :=
+lemma ne_zero_of_not_isOrtho_self {B : BilinForm K V} (x : V) (hx₁ : ¬B.IsOrtho x x) : x ≠ 0 :=
   fun hx₂ => hx₁ (hx₂.symm ▸ isOrtho_zero_left _)
 #align bilin_form.ne_zero_of_not_is_ortho_self LinearMap.BilinForm.ne_zero_of_not_isOrtho_self
 
-theorem IsRefl.ortho_comm (H : B.IsRefl) {x y : M} : IsOrtho B x y ↔ IsOrtho B y x :=
+lemma IsRefl.ortho_comm (H : B.IsRefl) {x y : M} : IsOrtho B x y ↔ IsOrtho B y x :=
   ⟨eq_zero H, eq_zero H⟩
 #align bilin_form.is_refl.ortho_comm LinearMap.BilinForm.IsRefl.ortho_comm
 
-theorem IsAlt.ortho_comm (H : B₁.IsAlt) {x y : M₁} : IsOrtho B₁ x y ↔ IsOrtho B₁ y x :=
+lemma IsAlt.ortho_comm (H : B₁.IsAlt) {x y : M₁} : IsOrtho B₁ x y ↔ IsOrtho B₁ y x :=
   H.isRefl.ortho_comm
 #align bilin_form.is_alt.ortho_comm LinearMap.BilinForm.IsAlt.ortho_comm
 
-theorem IsSymm.ortho_comm (H : B.IsSymm) {x y : M} : IsOrtho B x y ↔ IsOrtho B y x :=
+lemma IsSymm.ortho_comm (H : B.IsSymm) {x y : M} : IsOrtho B x y ↔ IsOrtho B y x :=
   H.isRefl.ortho_comm
 #align bilin_form.is_symm.ortho_comm LinearMap.BilinForm.IsSymm.ortho_comm
 
@@ -87,7 +87,7 @@ def iIsOrtho {n : Type w} (B : BilinForm R M) (v : n → M) : Prop :=
 set_option linter.uppercaseLean3 false in
 #align bilin_form.is_Ortho LinearMap.BilinForm.iIsOrtho
 
-theorem iIsOrtho_def {n : Type w} {B : BilinForm R M} {v : n → M} :
+lemma iIsOrtho_def {n : Type w} {B : BilinForm R M} {v : n → M} :
     B.iIsOrtho v ↔ ∀ i j : n, i ≠ j → B (v i) (v j) = 0 :=
   Iff.rfl
 set_option linter.uppercaseLean3 false in
@@ -99,7 +99,7 @@ variable {R₄ M₄ : Type*} [CommRing R₄] [IsDomain R₄]
 variable [AddCommGroup M₄] [Module R₄ M₄] {G : BilinForm R₄ M₄}
 
 @[simp]
-theorem isOrtho_smul_left {x y : M₄} {a : R₄} (ha : a ≠ 0) :
+lemma isOrtho_smul_left {x y : M₄} {a : R₄} (ha : a ≠ 0) :
     IsOrtho G (a • x) y ↔ IsOrtho G x y := by
   dsimp only [IsOrtho]
   rw [map_smul]
@@ -108,7 +108,7 @@ theorem isOrtho_smul_left {x y : M₄} {a : R₄} (ha : a ≠ 0) :
 #align bilin_form.is_ortho_smul_left LinearMap.BilinForm.isOrtho_smul_left
 
 @[simp]
-theorem isOrtho_smul_right {x y : M₄} {a : R₄} (ha : a ≠ 0) :
+lemma isOrtho_smul_right {x y : M₄} {a : R₄} (ha : a ≠ 0) :
     IsOrtho G x (a • y) ↔ IsOrtho G x y := by
   dsimp only [IsOrtho]
   rw [map_smul]
@@ -156,22 +156,22 @@ def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M where
 variable {N L : Submodule R M}
 
 @[simp]
-theorem mem_orthogonal_iff {N : Submodule R M} {m : M} :
+lemma mem_orthogonal_iff {N : Submodule R M} {m : M} :
     m ∈ B.orthogonal N ↔ ∀ n ∈ N, IsOrtho B n m :=
   Iff.rfl
 #align bilin_form.mem_orthogonal_iff LinearMap.BilinForm.mem_orthogonal_iff
 
 @[simp] lemma orthogonal_bot : B.orthogonal ⊥ = ⊤ := by ext; simp [IsOrtho]
 
-theorem orthogonal_le (h : N ≤ L) : B.orthogonal L ≤ B.orthogonal N := fun _ hn l hl => hn l (h hl)
+lemma orthogonal_le (h : N ≤ L) : B.orthogonal L ≤ B.orthogonal N := fun _ hn l hl => hn l (h hl)
 #align bilin_form.orthogonal_le LinearMap.BilinForm.orthogonal_le
 
-theorem le_orthogonal_orthogonal (b : B.IsRefl) : N ≤ B.orthogonal (B.orthogonal N) :=
+lemma le_orthogonal_orthogonal (b : B.IsRefl) : N ≤ B.orthogonal (B.orthogonal N) :=
   fun n hn _ hm => b _ _ (hm n hn)
 #align bilin_form.le_orthogonal_orthogonal LinearMap.BilinForm.le_orthogonal_orthogonal
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
-theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
+lemma span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
     (K ∙ x) ⊓ B.orthogonal (K ∙ x) = ⊥ := by
   rw [← Finset.coe_singleton]
   refine' eq_bot_iff.2 fun y h => _
@@ -187,7 +187,7 @@ theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : �
 #align bilin_form.span_singleton_inf_orthogonal_eq_bot LinearMap.BilinForm.span_singleton_inf_orthogonal_eq_bot
 
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
-theorem orthogonal_span_singleton_eq_toLin_ker {B : BilinForm K V} (x : V) :
+lemma orthogonal_span_singleton_eq_toLin_ker {B : BilinForm K V} (x : V) :
     B.orthogonal (K ∙ x) = LinearMap.ker (LinearMap.BilinForm.toLinHomAux₁ B x) := by
   ext y
   simp_rw [mem_orthogonal_iff, LinearMap.mem_ker, Submodule.mem_span_singleton]
@@ -198,7 +198,7 @@ theorem orthogonal_span_singleton_eq_toLin_ker {B : BilinForm K V} (x : V) :
     exact Or.intro_right _ h
 #align bilin_form.orthogonal_span_singleton_eq_to_lin_ker LinearMap.BilinForm.orthogonal_span_singleton_eq_toLin_ker
 
-theorem span_singleton_sup_orthogonal_eq_top {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
+lemma span_singleton_sup_orthogonal_eq_top {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
     (K ∙ x) ⊔ B.orthogonal (K ∙ x) = ⊤ := by
   rw [orthogonal_span_singleton_eq_toLin_ker]
   exact LinearMap.span_singleton_sup_ker_eq_top _ hx
@@ -273,7 +273,7 @@ set_option linter.uppercaseLean3 false in
 
 section
 
-theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K V) (b : B.IsRefl) :
+lemma toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K V) (b : B.IsRefl) :
     (B.domRestrict W).ker.map W.subtype = (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
   ext x; constructor <;> intro hx
   · rcases hx with ⟨⟨x, hx⟩, hker, rfl⟩
@@ -293,7 +293,7 @@ theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K
     exact hx.2 _ Submodule.mem_top
 #align bilin_form.to_lin_restrict_ker_eq_inf_orthogonal LinearMap.BilinForm.toLin_restrict_ker_eq_inf_orthogonal
 
-theorem toLin_restrict_range_dualCoannihilator_eq_orthogonal (B : BilinForm K V)
+lemma toLin_restrict_range_dualCoannihilator_eq_orthogonal (B : BilinForm K V)
     (W : Subspace K V) : (B.domRestrict W).range.dualCoannihilator = B.orthogonal W := by
   ext x; constructor <;> rw [mem_orthogonal_iff] <;> intro hx
   · intro y hy
@@ -322,7 +322,7 @@ open FiniteDimensional Submodule
 
 variable {B : BilinForm K V} {W : Subspace K V}
 
-theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) :
+lemma finrank_add_finrank_orthogonal (b₁ : B.IsRefl) :
     finrank K W + finrank K (B.orthogonal W) =
       finrank K V + finrank K (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
   rw [← toLin_restrict_ker_eq_inf_orthogonal _ _ b₁, ←

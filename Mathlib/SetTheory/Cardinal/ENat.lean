@@ -170,7 +170,7 @@ lemma toENatAux_gc : GaloisConnection (↑) toENatAux := fun n x ↦ by
   | inl hx => lift x to ℕ using hx; simp
   | inr hx => simp [toENatAux_eq_top hx, (ofENat_le_aleph0 n).trans hx]
 
-theorem toENatAux_le_nat {x : Cardinal} {n : ℕ} : toENatAux x ≤ n ↔ x ≤ n := by
+lemma toENatAux_le_nat {x : Cardinal} {n : ℕ} : toENatAux x ≤ n ↔ x ≤ n := by
   cases lt_or_le x ℵ₀ with
   | inl hx => lift x to ℕ using hx; simp
   | inr hx => simp [toENatAux_eq_top hx, (nat_lt_aleph0 n).trans_le hx]
@@ -255,7 +255,7 @@ lemma toENat_nat (n : ℕ) : toENat n = n := map_natCast _ n
 @[simp] lemma toENat_eq_top {a : Cardinal} : toENat a = ⊤ ↔ ℵ₀ ≤ a := enat_gc.u_eq_top
 
 @[simp]
-theorem toENat_lift {a : Cardinal.{v}} : toENat (lift.{u} a) = toENat a := by
+lemma toENat_lift {a : Cardinal.{v}} : toENat (lift.{u} a) = toENat a := by
   cases le_total a ℵ₀ with
   | inl ha => lift a to ℕ∞ using ha; simp
   | inr ha => simp [toENat_eq_top.2, ha]

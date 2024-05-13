@@ -91,7 +91,7 @@ def idealOfSet (s : Set X) : Ideal C(X, R) where
   smul_mem' c f hf x hx := mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
 #align continuous_map.ideal_of_set ContinuousMap.idealOfSet
 
-theorem idealOfSet_closed [T2Space R] (s : Set X) :
+lemma idealOfSet_closed [T2Space R] (s : Set X) :
     IsClosed (idealOfSet R s : Set C(X, R)) := by
   simp only [idealOfSet, Submodule.coe_set_mk, Set.setOf_forall]
   exact isClosed_iInter fun x => isClosed_iInter fun _ =>
@@ -100,12 +100,12 @@ theorem idealOfSet_closed [T2Space R] (s : Set X) :
 
 variable {R}
 
-theorem mem_idealOfSet {s : Set X} {f : C(X, R)} :
+lemma mem_idealOfSet {s : Set X} {f : C(X, R)} :
     f ∈ idealOfSet R s ↔ ∀ ⦃x : X⦄, x ∈ sᶜ → f x = 0 := by
   convert Iff.rfl
 #align continuous_map.mem_ideal_of_set ContinuousMap.mem_idealOfSet
 
-theorem not_mem_idealOfSet {s : Set X} {f : C(X, R)} : f ∉ idealOfSet R s ↔ ∃ x ∈ sᶜ, f x ≠ 0 := by
+lemma not_mem_idealOfSet {s : Set X} {f : C(X, R)} : f ∉ idealOfSet R s ↔ ∃ x ∈ sᶜ, f x ≠ 0 := by
   simp_rw [mem_idealOfSet]; push_neg; rfl
 #align continuous_map.not_mem_ideal_of_set ContinuousMap.not_mem_idealOfSet
 
@@ -115,17 +115,17 @@ def setOfIdeal (I : Ideal C(X, R)) : Set X :=
   {x : X | ∀ f ∈ I, (f : C(X, R)) x = 0}ᶜ
 #align continuous_map.set_of_ideal ContinuousMap.setOfIdeal
 
-theorem not_mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
+lemma not_mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∉ setOfIdeal I ↔ ∀ ⦃f : C(X, R)⦄, f ∈ I → f x = 0 := by
   rw [← Set.mem_compl_iff, setOfIdeal, compl_compl, Set.mem_setOf]
 #align continuous_map.not_mem_set_of_ideal ContinuousMap.not_mem_setOfIdeal
 
-theorem mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
+lemma mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∈ setOfIdeal I ↔ ∃ f ∈ I, (f : C(X, R)) x ≠ 0 := by
   simp_rw [setOfIdeal, Set.mem_compl_iff, Set.mem_setOf]; push_neg; rfl
 #align continuous_map.mem_set_of_ideal ContinuousMap.mem_setOfIdeal
 
-theorem setOfIdeal_open [T2Space R] (I : Ideal C(X, R)) : IsOpen (setOfIdeal I) := by
+lemma setOfIdeal_open [T2Space R] (I : Ideal C(X, R)) : IsOpen (setOfIdeal I) := by
   simp only [setOfIdeal, Set.setOf_forall, isOpen_compl_iff]
   exact
     isClosed_iInter fun f =>
@@ -139,26 +139,26 @@ def opensOfIdeal [T2Space R] (I : Ideal C(X, R)) : Opens X :=
 #align continuous_map.opens_of_ideal ContinuousMap.opensOfIdeal
 
 @[simp]
-theorem setOfTop_eq_univ [Nontrivial R] : setOfIdeal (⊤ : Ideal C(X, R)) = Set.univ :=
+lemma setOfTop_eq_univ [Nontrivial R] : setOfIdeal (⊤ : Ideal C(X, R)) = Set.univ :=
   Set.univ_subset_iff.mp fun _ _ => mem_setOfIdeal.mpr ⟨1, Submodule.mem_top, one_ne_zero⟩
 #align continuous_map.set_of_top_eq_univ ContinuousMap.setOfTop_eq_univ
 
 @[simp]
-theorem idealOfEmpty_eq_bot : idealOfSet R (∅ : Set X) = ⊥ :=
+lemma idealOfEmpty_eq_bot : idealOfSet R (∅ : Set X) = ⊥ :=
   Ideal.ext fun f => by
     simp only [mem_idealOfSet, Set.compl_empty, Set.mem_univ, forall_true_left, Ideal.mem_bot,
       DFunLike.ext_iff, zero_apply]
 #align continuous_map.ideal_of_empty_eq_bot ContinuousMap.idealOfEmpty_eq_bot
 
 @[simp]
-theorem mem_idealOfSet_compl_singleton (x : X) (f : C(X, R)) :
+lemma mem_idealOfSet_compl_singleton (x : X) (f : C(X, R)) :
     f ∈ idealOfSet R ({x}ᶜ : Set X) ↔ f x = 0 := by
   simp only [mem_idealOfSet, compl_compl, Set.mem_singleton_iff, forall_eq]
 #align continuous_map.mem_ideal_of_set_compl_singleton ContinuousMap.mem_idealOfSet_compl_singleton
 
 variable (X R)
 
-theorem ideal_gc : GaloisConnection (setOfIdeal : Ideal C(X, R) → Set X) (idealOfSet R) := by
+lemma ideal_gc : GaloisConnection (setOfIdeal : Ideal C(X, R) → Set X) (idealOfSet R) := by
   refine' fun I s => ⟨fun h f hf => _, fun h x hx => _⟩
   · by_contra h'
     rcases not_mem_idealOfSet.mp h' with ⟨x, hx, hfx⟩
@@ -194,7 +194,7 @@ theorem exists_mul_le_one_eqOn_ge (f : C(X, ℝ≥0)) {c : ℝ≥0} (hc : 0 < c)
 variable [CompactSpace X] [T2Space X]
 
 @[simp]
-theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
+lemma idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     idealOfSet 𝕜 (setOfIdeal I) = I.closure := by
   /- Since `idealOfSet 𝕜 (setOfIdeal I)` is closed and contains `I`, it contains `I.closure`.
     For the reverse inclusion, given `f ∈ idealOfSet 𝕜 (setOfIdeal I)` and `(ε : ℝ≥0) > 0` it
@@ -301,7 +301,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   simp only [algebraMapCLM_coe, comp_apply, mul_apply, ContinuousMap.coe_coe, map_mul]
 #align continuous_map.ideal_of_set_of_ideal_eq_closure ContinuousMap.idealOfSet_ofIdeal_eq_closure
 
-theorem idealOfSet_ofIdeal_isClosed {I : Ideal C(X, 𝕜)} (hI : IsClosed (I : Set C(X, 𝕜))) :
+lemma idealOfSet_ofIdeal_isClosed {I : Ideal C(X, 𝕜)} (hI : IsClosed (I : Set C(X, 𝕜))) :
     idealOfSet 𝕜 (setOfIdeal I) = I :=
   (idealOfSet_ofIdeal_eq_closure I).trans (Ideal.ext <| Set.ext_iff.mp hI.closure_eq)
 #align continuous_map.ideal_of_set_of_ideal_is_closed ContinuousMap.idealOfSet_ofIdeal_isClosed
@@ -309,7 +309,7 @@ theorem idealOfSet_ofIdeal_isClosed {I : Ideal C(X, 𝕜)} (hI : IsClosed (I : S
 variable (𝕜)
 
 @[simp]
-theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s) = interior s := by
+lemma setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s) = interior s := by
   refine'
     Set.Subset.antisymm
       ((setOfIdeal_open (idealOfSet 𝕜 s)).subset_interior_iff.mpr fun x hx =>
@@ -331,7 +331,7 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
         one_ne_zero⟩
 #align continuous_map.set_of_ideal_of_set_eq_interior ContinuousMap.setOfIdeal_ofSet_eq_interior
 
-theorem setOfIdeal_ofSet_of_isOpen {s : Set X} (hs : IsOpen s) : setOfIdeal (idealOfSet 𝕜 s) = s :=
+lemma setOfIdeal_ofSet_of_isOpen {s : Set X} (hs : IsOpen s) : setOfIdeal (idealOfSet 𝕜 s) = s :=
   (setOfIdeal_ofSet_eq_interior 𝕜 s).trans hs.interior_eq
 #align continuous_map.set_of_ideal_of_set_of_is_open ContinuousMap.setOfIdeal_ofSet_of_isOpen
 
@@ -355,7 +355,7 @@ def idealOpensGI : GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X)
 
 variable {X}
 
-theorem idealOfSet_isMaximal_iff (s : Opens X) :
+lemma idealOfSet_isMaximal_iff (s : Opens X) :
     (idealOfSet 𝕜 (s : Set X)).IsMaximal ↔ IsCoatom s := by
   rw [Ideal.isMaximal_def]
   refine' (idealOpensGI X 𝕜).isCoatom_iff (fun I hI => _) s
@@ -363,13 +363,13 @@ theorem idealOfSet_isMaximal_iff (s : Opens X) :
   exact idealOfSet_ofIdeal_isClosed inferInstance
 #align continuous_map.ideal_of_set_is_maximal_iff ContinuousMap.idealOfSet_isMaximal_iff
 
-theorem idealOf_compl_singleton_isMaximal (x : X) : (idealOfSet 𝕜 ({x}ᶜ : Set X)).IsMaximal :=
+lemma idealOf_compl_singleton_isMaximal (x : X) : (idealOfSet 𝕜 ({x}ᶜ : Set X)).IsMaximal :=
   (idealOfSet_isMaximal_iff 𝕜 (Closeds.singleton x).compl).mpr <| Opens.isCoatom_iff.mpr ⟨x, rfl⟩
 #align continuous_map.ideal_of_compl_singleton_is_maximal ContinuousMap.idealOf_compl_singleton_isMaximal
 
 variable {𝕜}
 
-theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] :
+lemma setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] :
     ∃ x : X, setOfIdeal I = {x}ᶜ := by
   have h : (idealOfSet 𝕜 (setOfIdeal I)).IsMaximal :=
     (idealOfSet_ofIdeal_isClosed (inferInstance : IsClosed (I : Set C(X, 𝕜)))).symm ▸ hI
@@ -377,7 +377,7 @@ theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] 
   exact ⟨x, congr_arg (fun (s : Opens X) => (s : Set X)) hx⟩
 #align continuous_map.set_of_ideal_eq_compl_singleton ContinuousMap.setOfIdeal_eq_compl_singleton
 
-theorem ideal_isMaximal_iff (I : Ideal C(X, 𝕜)) [hI : IsClosed (I : Set C(X, 𝕜))] :
+lemma ideal_isMaximal_iff (I : Ideal C(X, 𝕜)) [hI : IsClosed (I : Set C(X, 𝕜))] :
     I.IsMaximal ↔ ∃ x : X, idealOfSet 𝕜 {x}ᶜ = I := by
   refine'
     ⟨_, fun h =>
@@ -421,7 +421,7 @@ def continuousMapEval : C(X, characterSpace 𝕜 C(X, 𝕜)) where
 #align weak_dual.character_space.continuous_map_eval WeakDual.CharacterSpace.continuousMapEval
 
 @[simp]
-theorem continuousMapEval_apply_apply (x : X) (f : C(X, 𝕜)) : continuousMapEval X 𝕜 x f = f x :=
+lemma continuousMapEval_apply_apply (x : X) (f : C(X, 𝕜)) : continuousMapEval X 𝕜 x f = f x :=
   rfl
 #align weak_dual.character_space.continuous_map_eval_apply_apply WeakDual.CharacterSpace.continuousMapEval_apply_apply
 
@@ -429,7 +429,7 @@ end ContinuousMapEval
 
 variable [CompactSpace X] [T2Space X] [RCLike 𝕜]
 
-theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
+lemma continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
   refine' ⟨fun x y hxy => _, fun φ => _⟩
   · contrapose! hxy
     rcases exists_continuous_zero_one_of_isClosed (isClosed_singleton : _root_.IsClosed {x})

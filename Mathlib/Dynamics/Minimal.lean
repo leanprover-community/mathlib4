@@ -48,13 +48,13 @@ variable (M G : Type*) {α : Type*} [Monoid M] [Group G] [TopologicalSpace α] [
   [MulAction G α]
 
 @[to_additive]
-theorem MulAction.dense_orbit [IsMinimal M α] (x : α) : Dense (orbit M x) :=
+lemma MulAction.dense_orbit [IsMinimal M α] (x : α) : Dense (orbit M x) :=
   MulAction.IsMinimal.dense_orbit x
 #align mul_action.dense_orbit MulAction.dense_orbit
 #align add_action.dense_orbit AddAction.dense_orbit
 
 @[to_additive]
-theorem denseRange_smul [IsMinimal M α] (x : α) : DenseRange fun c : M ↦ c • x :=
+lemma denseRange_smul [IsMinimal M α] (x : α) : DenseRange fun c : M ↦ c • x :=
   MulAction.dense_orbit M x
 #align dense_range_smul denseRange_smul
 #align dense_range_vadd denseRange_vadd
@@ -67,21 +67,21 @@ instance (priority := 100) MulAction.isMinimal_of_pretransitive [IsPretransitive
 #align add_action.is_minimal_of_pretransitive AddAction.isMinimal_of_pretransitive
 
 @[to_additive]
-theorem IsOpen.exists_smul_mem [IsMinimal M α] (x : α) {U : Set α} (hUo : IsOpen U)
+lemma IsOpen.exists_smul_mem [IsMinimal M α] (x : α) {U : Set α} (hUo : IsOpen U)
     (hne : U.Nonempty) : ∃ c : M, c • x ∈ U :=
   (denseRange_smul M x).exists_mem_open hUo hne
 #align is_open.exists_smul_mem IsOpen.exists_smul_mem
 #align is_open.exists_vadd_mem IsOpen.exists_vadd_mem
 
 @[to_additive]
-theorem IsOpen.iUnion_preimage_smul [IsMinimal M α] {U : Set α} (hUo : IsOpen U)
+lemma IsOpen.iUnion_preimage_smul [IsMinimal M α] {U : Set α} (hUo : IsOpen U)
     (hne : U.Nonempty) : ⋃ c : M, (c • ·) ⁻¹' U = univ :=
   iUnion_eq_univ_iff.2 fun x ↦ hUo.exists_smul_mem M x hne
 #align is_open.Union_preimage_smul IsOpen.iUnion_preimage_smul
 #align is_open.Union_preimage_vadd IsOpen.iUnion_preimage_vadd
 
 @[to_additive]
-theorem IsOpen.iUnion_smul [IsMinimal G α] {U : Set α} (hUo : IsOpen U) (hne : U.Nonempty) :
+lemma IsOpen.iUnion_smul [IsMinimal G α] {U : Set α} (hUo : IsOpen U) (hne : U.Nonempty) :
     ⋃ g : G, g • U = univ :=
   iUnion_eq_univ_iff.2 fun x ↦
     let ⟨g, hg⟩ := hUo.exists_smul_mem G x hne
@@ -90,7 +90,7 @@ theorem IsOpen.iUnion_smul [IsMinimal G α] {U : Set α} (hUo : IsOpen U) (hne :
 #align is_open.Union_vadd IsOpen.iUnion_vadd
 
 @[to_additive]
-theorem IsCompact.exists_finite_cover_smul [IsMinimal G α] [ContinuousConstSMul G α]
+lemma IsCompact.exists_finite_cover_smul [IsMinimal G α] [ContinuousConstSMul G α]
     {K U : Set α} (hK : IsCompact K) (hUo : IsOpen U) (hne : U.Nonempty) :
     ∃ I : Finset G, K ⊆ ⋃ g ∈ I, g • U :=
   (hK.elim_finite_subcover (fun g ↦ g • U) fun _ ↦ hUo.smul _) <| calc
@@ -100,7 +100,7 @@ theorem IsCompact.exists_finite_cover_smul [IsMinimal G α] [ContinuousConstSMul
 #align is_compact.exists_finite_cover_vadd IsCompact.exists_finite_cover_vadd
 
 @[to_additive]
-theorem dense_of_nonempty_smul_invariant [IsMinimal M α] {s : Set α} (hne : s.Nonempty)
+lemma dense_of_nonempty_smul_invariant [IsMinimal M α] {s : Set α} (hne : s.Nonempty)
     (hsmul : ∀ c : M, c • s ⊆ s) : Dense s :=
   let ⟨x, hx⟩ := hne
   (MulAction.dense_orbit M x).mono (range_subset_iff.2 fun c ↦ hsmul c ⟨x, hx, rfl⟩)
@@ -108,7 +108,7 @@ theorem dense_of_nonempty_smul_invariant [IsMinimal M α] {s : Set α} (hne : s.
 #align dense_of_nonempty_vadd_invariant dense_of_nonempty_vadd_invariant
 
 @[to_additive]
-theorem eq_empty_or_univ_of_smul_invariant_closed [IsMinimal M α] {s : Set α} (hs : IsClosed s)
+lemma eq_empty_or_univ_of_smul_invariant_closed [IsMinimal M α] {s : Set α} (hs : IsClosed s)
     (hsmul : ∀ c : M, c • s ⊆ s) : s = ∅ ∨ s = univ :=
   s.eq_empty_or_nonempty.imp_right fun hne ↦
     hs.closure_eq ▸ (dense_of_nonempty_smul_invariant M hne hsmul).closure_eq
@@ -116,7 +116,7 @@ theorem eq_empty_or_univ_of_smul_invariant_closed [IsMinimal M α] {s : Set α} 
 #align eq_empty_or_univ_of_vadd_invariant_closed eq_empty_or_univ_of_vadd_invariant_closed
 
 @[to_additive]
-theorem isMinimal_iff_closed_smul_invariant [ContinuousConstSMul M α] :
+lemma isMinimal_iff_closed_smul_invariant [ContinuousConstSMul M α] :
     IsMinimal M α ↔ ∀ s : Set α, IsClosed s → (∀ c : M, c • s ⊆ s) → s = ∅ ∨ s = univ := by
   constructor
   · intro _ _

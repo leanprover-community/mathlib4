@@ -90,20 +90,20 @@ instance [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M] :
   smul x y := smulAddMonoidHom A M x y
 
 @[simp]
-theorem smul_def [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
+lemma smul_def [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
     (x : ⨁ i, A i) (y : ⨁ i, M i) :
     x • y = smulAddMonoidHom _ _ x y := rfl
 #align direct_sum.gmodule.smul_def DirectSum.Gmodule.smul_def
 
 @[simp]
-theorem smulAddMonoidHom_apply_of_of [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
+lemma smulAddMonoidHom_apply_of_of [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
     {i j} (x : A i) (y : M j) :
     smulAddMonoidHom A M (DirectSum.of A i x) (of M j y) = of M (i +ᵥ j) (GSMul.smul x y) := by
   simp [smulAddMonoidHom]
 #align direct_sum.gmodule.smul_add_monoid_hom_apply_of_of DirectSum.Gmodule.smulAddMonoidHom_apply_of_of
 
 -- @[simp] -- Porting note: simpNF lint
-theorem of_smul_of [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
+lemma of_smul_of [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
     {i j} (x : A i) (y : M j) :
     DirectSum.of A i x • of M j y = of M (i +ᵥ j) (GSMul.smul x y) :=
   smulAddMonoidHom_apply_of_of _ _ _ _
@@ -113,7 +113,7 @@ open AddMonoidHom
 
 -- Porting note: renamed to one_smul' since DirectSum.Gmodule.one_smul already exists
 -- Almost identical to the proof of `direct_sum.one_mul`
-private theorem one_smul' [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
+private lemma one_smul' [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
     (x : ⨁ i, M i) :
     (1 : ⨁ i, A i) • x = x := by
   suffices smulAddMonoidHom A M 1 = AddMonoidHom.id (⨁ i, M i) from DFunLike.congr_fun this x
@@ -124,7 +124,7 @@ private theorem one_smul' [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodu
 
 -- Porting note: renamed to mul_smul' since DirectSum.Gmodule.mul_smul already exists
 -- Almost identical to the proof of `direct_sum.mul_assoc`
-private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmodule A M]
+private lemma mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmodule A M]
     (a b : ⨁ i, A i)
     (c : ⨁ i, M i) : (a * b) • c = a • b • c := by
   suffices

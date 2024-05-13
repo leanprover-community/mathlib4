@@ -82,20 +82,20 @@ section TangentCone
 -- This section is devoted to the properties of the tangent cone.
 open NormedField
 
-theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
+lemma mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
     (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) : y ∈ tangentConeAt 𝕜 s x := by
   refine ⟨fun n ↦ (r ^ n)⁻¹, fun n ↦ r ^ n • y, hs, ?_, ?_⟩
   · simp only [norm_inv, norm_pow, ← inv_pow]
     exact tendsto_pow_atTop_atTop_of_one_lt <| one_lt_inv (norm_pos_iff.2 hr₀) hr
   · simp only [inv_smul_smul₀ (pow_ne_zero _ hr₀), tendsto_const_nhds]
 
-theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
+lemma tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
   let ⟨_r, hr₀, hr⟩ := exists_norm_lt_one 𝕜
   eq_univ_of_forall fun _ ↦ mem_tangentConeAt_of_pow_smul (norm_pos_iff.1 hr₀) hr <|
     eventually_of_forall fun _ ↦ mem_univ _
 #align tangent_cone_univ tangentCone_univ
 
-theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
+lemma tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   exact ⟨c, d, mem_of_superset ds fun n hn => h hn, ctop, clim⟩
 #align tangent_cone_mono tangentCone_mono
@@ -118,7 +118,7 @@ theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d
   exact D
 #align tangent_cone_at.lim_zero tangentConeAt.lim_zero
 
-theorem tangentCone_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
+lemma tangentCone_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   refine' ⟨c, d, _, ctop, clim⟩
@@ -231,77 +231,77 @@ section UniqueDiff
 This section is devoted to properties of the predicates `UniqueDiffWithinAt` and `UniqueDiffOn`. -/
 
 
-theorem UniqueDiffOn.uniqueDiffWithinAt {s : Set E} {x} (hs : UniqueDiffOn 𝕜 s) (h : x ∈ s) :
+lemma UniqueDiffOn.uniqueDiffWithinAt {s : Set E} {x} (hs : UniqueDiffOn 𝕜 s) (h : x ∈ s) :
     UniqueDiffWithinAt 𝕜 s x :=
   hs x h
 #align unique_diff_on.unique_diff_within_at UniqueDiffOn.uniqueDiffWithinAt
 
-theorem uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 univ x := by
+lemma uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 univ x := by
   rw [uniqueDiffWithinAt_iff, tangentCone_univ]
   simp
 #align unique_diff_within_at_univ uniqueDiffWithinAt_univ
 
-theorem uniqueDiffOn_univ : UniqueDiffOn 𝕜 (univ : Set E) :=
+lemma uniqueDiffOn_univ : UniqueDiffOn 𝕜 (univ : Set E) :=
   fun _ _ => uniqueDiffWithinAt_univ
 #align unique_diff_on_univ uniqueDiffOn_univ
 
-theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
+lemma uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
   fun _ hx => hx.elim
 #align unique_diff_on_empty uniqueDiffOn_empty
 
-theorem UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = y) :
+lemma UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = y) :
     UniqueDiffWithinAt 𝕜 s y := hy ▸ h
 
-theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : 𝓝[s] x ≤ 𝓝[t] x) :
+lemma UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : 𝓝[s] x ≤ 𝓝[t] x) :
     UniqueDiffWithinAt 𝕜 t x := by
   simp only [uniqueDiffWithinAt_iff] at *
   rw [mem_closure_iff_nhdsWithin_neBot] at h ⊢
   exact ⟨h.1.mono <| Submodule.span_mono <| tangentCone_mono_nhds st, h.2.mono st⟩
 #align unique_diff_within_at.mono_nhds UniqueDiffWithinAt.mono_nhds
 
-theorem UniqueDiffWithinAt.mono (h : UniqueDiffWithinAt 𝕜 s x) (st : s ⊆ t) :
+lemma UniqueDiffWithinAt.mono (h : UniqueDiffWithinAt 𝕜 s x) (st : s ⊆ t) :
     UniqueDiffWithinAt 𝕜 t x :=
   h.mono_nhds <| nhdsWithin_mono _ st
 #align unique_diff_within_at.mono UniqueDiffWithinAt.mono
 
-theorem uniqueDiffWithinAt_congr (st : 𝓝[s] x = 𝓝[t] x) :
+lemma uniqueDiffWithinAt_congr (st : 𝓝[s] x = 𝓝[t] x) :
     UniqueDiffWithinAt 𝕜 s x ↔ UniqueDiffWithinAt 𝕜 t x :=
   ⟨fun h => h.mono_nhds <| le_of_eq st, fun h => h.mono_nhds <| le_of_eq st.symm⟩
 #align unique_diff_within_at_congr uniqueDiffWithinAt_congr
 
-theorem uniqueDiffWithinAt_inter (ht : t ∈ 𝓝 x) :
+lemma uniqueDiffWithinAt_inter (ht : t ∈ 𝓝 x) :
     UniqueDiffWithinAt 𝕜 (s ∩ t) x ↔ UniqueDiffWithinAt 𝕜 s x :=
   uniqueDiffWithinAt_congr <| (nhdsWithin_restrict' _ ht).symm
 #align unique_diff_within_at_inter uniqueDiffWithinAt_inter
 
-theorem UniqueDiffWithinAt.inter (hs : UniqueDiffWithinAt 𝕜 s x) (ht : t ∈ 𝓝 x) :
+lemma UniqueDiffWithinAt.inter (hs : UniqueDiffWithinAt 𝕜 s x) (ht : t ∈ 𝓝 x) :
     UniqueDiffWithinAt 𝕜 (s ∩ t) x :=
   (uniqueDiffWithinAt_inter ht).2 hs
 #align unique_diff_within_at.inter UniqueDiffWithinAt.inter
 
-theorem uniqueDiffWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
+lemma uniqueDiffWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
     UniqueDiffWithinAt 𝕜 (s ∩ t) x ↔ UniqueDiffWithinAt 𝕜 s x :=
   uniqueDiffWithinAt_congr <| (nhdsWithin_restrict'' _ ht).symm
 #align unique_diff_within_at_inter' uniqueDiffWithinAt_inter'
 
-theorem UniqueDiffWithinAt.inter' (hs : UniqueDiffWithinAt 𝕜 s x) (ht : t ∈ 𝓝[s] x) :
+lemma UniqueDiffWithinAt.inter' (hs : UniqueDiffWithinAt 𝕜 s x) (ht : t ∈ 𝓝[s] x) :
     UniqueDiffWithinAt 𝕜 (s ∩ t) x :=
   (uniqueDiffWithinAt_inter' ht).2 hs
 #align unique_diff_within_at.inter' UniqueDiffWithinAt.inter'
 
-theorem uniqueDiffWithinAt_of_mem_nhds (h : s ∈ 𝓝 x) : UniqueDiffWithinAt 𝕜 s x := by
+lemma uniqueDiffWithinAt_of_mem_nhds (h : s ∈ 𝓝 x) : UniqueDiffWithinAt 𝕜 s x := by
   simpa only [univ_inter] using uniqueDiffWithinAt_univ.inter h
 #align unique_diff_within_at_of_mem_nhds uniqueDiffWithinAt_of_mem_nhds
 
-theorem IsOpen.uniqueDiffWithinAt (hs : IsOpen s) (xs : x ∈ s) : UniqueDiffWithinAt 𝕜 s x :=
+lemma IsOpen.uniqueDiffWithinAt (hs : IsOpen s) (xs : x ∈ s) : UniqueDiffWithinAt 𝕜 s x :=
   uniqueDiffWithinAt_of_mem_nhds (IsOpen.mem_nhds hs xs)
 #align is_open.unique_diff_within_at IsOpen.uniqueDiffWithinAt
 
-theorem UniqueDiffOn.inter (hs : UniqueDiffOn 𝕜 s) (ht : IsOpen t) : UniqueDiffOn 𝕜 (s ∩ t) :=
+lemma UniqueDiffOn.inter (hs : UniqueDiffOn 𝕜 s) (ht : IsOpen t) : UniqueDiffOn 𝕜 (s ∩ t) :=
   fun x hx => (hs x hx.1).inter (IsOpen.mem_nhds ht hx.2)
 #align unique_diff_on.inter UniqueDiffOn.inter
 
-theorem IsOpen.uniqueDiffOn (hs : IsOpen s) : UniqueDiffOn 𝕜 s :=
+lemma IsOpen.uniqueDiffOn (hs : IsOpen s) : UniqueDiffOn 𝕜 s :=
   fun _ hx => IsOpen.uniqueDiffWithinAt hs hx
 #align is_open.unique_diff_on IsOpen.uniqueDiffOn
 
@@ -318,7 +318,7 @@ theorem UniqueDiffWithinAt.prod {t : Set F} {y : F} (hs : UniqueDiffWithinAt �
   exact (hs.1.prod ht.1).mono this
 #align unique_diff_within_at.prod UniqueDiffWithinAt.prod
 
-theorem UniqueDiffWithinAt.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
+lemma UniqueDiffWithinAt.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (x : ∀ i, E i)
     (h : ∀ i, UniqueDiffWithinAt 𝕜 (s i) (x i)) : UniqueDiffWithinAt 𝕜 (Set.pi univ s) x := by
   classical
@@ -330,7 +330,7 @@ theorem UniqueDiffWithinAt.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
   exact fun i => (mapsTo_tangentCone_pi fun j _ => (h j).2).mono Subset.rfl Submodule.subset_span
 #align unique_diff_within_at.univ_pi UniqueDiffWithinAt.univ_pi
 
-theorem UniqueDiffWithinAt.pi (ι : Type*) [Finite ι] (E : ι → Type*)
+lemma UniqueDiffWithinAt.pi (ι : Type*) [Finite ι] (E : ι → Type*)
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (x : ∀ i, E i)
     (I : Set ι) (h : ∀ i ∈ I, UniqueDiffWithinAt 𝕜 (s i) (x i)) :
     UniqueDiffWithinAt 𝕜 (Set.pi I s) x := by
@@ -386,39 +386,39 @@ theorem uniqueDiffOn_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s)
   fun _ xs => uniqueDiffWithinAt_convex conv hs (subset_closure xs)
 #align unique_diff_on_convex uniqueDiffOn_convex
 
-theorem uniqueDiffOn_Ici (a : ℝ) : UniqueDiffOn ℝ (Ici a) :=
+lemma uniqueDiffOn_Ici (a : ℝ) : UniqueDiffOn ℝ (Ici a) :=
   uniqueDiffOn_convex (convex_Ici a) <| by simp only [interior_Ici, nonempty_Ioi]
 #align unique_diff_on_Ici uniqueDiffOn_Ici
 
-theorem uniqueDiffOn_Iic (a : ℝ) : UniqueDiffOn ℝ (Iic a) :=
+lemma uniqueDiffOn_Iic (a : ℝ) : UniqueDiffOn ℝ (Iic a) :=
   uniqueDiffOn_convex (convex_Iic a) <| by simp only [interior_Iic, nonempty_Iio]
 #align unique_diff_on_Iic uniqueDiffOn_Iic
 
-theorem uniqueDiffOn_Ioi (a : ℝ) : UniqueDiffOn ℝ (Ioi a) :=
+lemma uniqueDiffOn_Ioi (a : ℝ) : UniqueDiffOn ℝ (Ioi a) :=
   isOpen_Ioi.uniqueDiffOn
 #align unique_diff_on_Ioi uniqueDiffOn_Ioi
 
-theorem uniqueDiffOn_Iio (a : ℝ) : UniqueDiffOn ℝ (Iio a) :=
+lemma uniqueDiffOn_Iio (a : ℝ) : UniqueDiffOn ℝ (Iio a) :=
   isOpen_Iio.uniqueDiffOn
 #align unique_diff_on_Iio uniqueDiffOn_Iio
 
-theorem uniqueDiffOn_Icc {a b : ℝ} (hab : a < b) : UniqueDiffOn ℝ (Icc a b) :=
+lemma uniqueDiffOn_Icc {a b : ℝ} (hab : a < b) : UniqueDiffOn ℝ (Icc a b) :=
   uniqueDiffOn_convex (convex_Icc a b) <| by simp only [interior_Icc, nonempty_Ioo, hab]
 #align unique_diff_on_Icc uniqueDiffOn_Icc
 
-theorem uniqueDiffOn_Ico (a b : ℝ) : UniqueDiffOn ℝ (Ico a b) :=
+lemma uniqueDiffOn_Ico (a b : ℝ) : UniqueDiffOn ℝ (Ico a b) :=
   if hab : a < b then
     uniqueDiffOn_convex (convex_Ico a b) <| by simp only [interior_Ico, nonempty_Ioo, hab]
   else by simp only [Ico_eq_empty hab, uniqueDiffOn_empty]
 #align unique_diff_on_Ico uniqueDiffOn_Ico
 
-theorem uniqueDiffOn_Ioc (a b : ℝ) : UniqueDiffOn ℝ (Ioc a b) :=
+lemma uniqueDiffOn_Ioc (a b : ℝ) : UniqueDiffOn ℝ (Ioc a b) :=
   if hab : a < b then
     uniqueDiffOn_convex (convex_Ioc a b) <| by simp only [interior_Ioc, nonempty_Ioo, hab]
   else by simp only [Ioc_eq_empty hab, uniqueDiffOn_empty]
 #align unique_diff_on_Ioc uniqueDiffOn_Ioc
 
-theorem uniqueDiffOn_Ioo (a b : ℝ) : UniqueDiffOn ℝ (Ioo a b) :=
+lemma uniqueDiffOn_Ioo (a b : ℝ) : UniqueDiffOn ℝ (Ioo a b) :=
   isOpen_Ioo.uniqueDiffOn
 #align unique_diff_on_Ioo uniqueDiffOn_Ioo
 
@@ -427,16 +427,16 @@ theorem uniqueDiffOn_Icc_zero_one : UniqueDiffOn ℝ (Icc (0 : ℝ) 1) :=
   uniqueDiffOn_Icc zero_lt_one
 #align unique_diff_on_Icc_zero_one uniqueDiffOn_Icc_zero_one
 
-theorem uniqueDiffWithinAt_Ioo {a b t : ℝ} (ht : t ∈ Set.Ioo a b) :
+lemma uniqueDiffWithinAt_Ioo {a b t : ℝ} (ht : t ∈ Set.Ioo a b) :
     UniqueDiffWithinAt ℝ (Set.Ioo a b) t :=
   IsOpen.uniqueDiffWithinAt isOpen_Ioo ht
 #align unique_diff_within_at_Ioo uniqueDiffWithinAt_Ioo
 
-theorem uniqueDiffWithinAt_Ioi (a : ℝ) : UniqueDiffWithinAt ℝ (Ioi a) a :=
+lemma uniqueDiffWithinAt_Ioi (a : ℝ) : UniqueDiffWithinAt ℝ (Ioi a) a :=
   uniqueDiffWithinAt_convex (convex_Ioi a) (by simp) (by simp)
 #align unique_diff_within_at_Ioi uniqueDiffWithinAt_Ioi
 
-theorem uniqueDiffWithinAt_Iio (a : ℝ) : UniqueDiffWithinAt ℝ (Iio a) a :=
+lemma uniqueDiffWithinAt_Iio (a : ℝ) : UniqueDiffWithinAt ℝ (Iio a) a :=
   uniqueDiffWithinAt_convex (convex_Iio a) (by simp) (by simp)
 #align unique_diff_within_at_Iio uniqueDiffWithinAt_Iio
 

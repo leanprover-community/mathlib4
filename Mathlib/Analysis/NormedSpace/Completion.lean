@@ -53,7 +53,7 @@ def toComplₗᵢ : E →ₗᵢ[𝕜] Completion E :=
 #align uniform_space.completion.to_complₗᵢ UniformSpace.Completion.toComplₗᵢ
 
 @[simp]
-theorem coe_toComplₗᵢ : ⇑(toComplₗᵢ : E →ₗᵢ[𝕜] Completion E) = ((↑) : E → Completion E) :=
+lemma coe_toComplₗᵢ : ⇑(toComplₗᵢ : E →ₗᵢ[𝕜] Completion E) = ((↑) : E → Completion E) :=
   rfl
 #align uniform_space.completion.coe_to_complₗᵢ UniformSpace.Completion.coe_toComplₗᵢ
 
@@ -64,13 +64,13 @@ set_option linter.uppercaseLean3 false in
 #align uniform_space.completion.to_complL UniformSpace.Completion.toComplL
 
 @[simp]
-theorem coe_toComplL : ⇑(toComplL : E →L[𝕜] Completion E) = ((↑) : E → Completion E) :=
+lemma coe_toComplL : ⇑(toComplL : E →L[𝕜] Completion E) = ((↑) : E → Completion E) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align uniform_space.completion.coe_to_complL UniformSpace.Completion.coe_toComplL
 
 @[simp]
-theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+lemma norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] [Nontrivial E] : ‖(toComplL : E →L[𝕜] Completion E)‖ = 1 :=
   (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).norm_toContinuousLinearMap
 set_option linter.uppercaseLean3 false in

@@ -69,7 +69,7 @@ def hatInv : hat K → hat K :=
   denseInducing_coe.extend fun x : K => (↑x⁻¹ : hat K)
 #align uniform_space.completion.hat_inv UniformSpace.Completion.hatInv
 
-theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
+lemma continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
     ContinuousAt hatInv x := by
   refine' denseInducing_coe.continuousAt_extend _
   apply mem_of_superset (compl_singleton_mem_nhds h)
@@ -102,14 +102,14 @@ instance instInvCompletion : Inv (hat K) :=
 
 variable [TopologicalDivisionRing K]
 
-theorem hatInv_extends {x : K} (h : x ≠ 0) : hatInv (x : hat K) = ↑(x⁻¹ : K) :=
+lemma hatInv_extends {x : K} (h : x ≠ 0) : hatInv (x : hat K) = ↑(x⁻¹ : K) :=
   denseInducing_coe.extend_eq_at ((continuous_coe K).continuousAt.comp (continuousAt_inv₀ h))
 #align uniform_space.completion.hat_inv_extends UniformSpace.Completion.hatInv_extends
 
 variable [CompletableTopField K]
 
 @[norm_cast]
-theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
+lemma coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
   by_cases h : x = 0
   · rw [h, inv_zero]
     dsimp [Inv.inv]
@@ -123,7 +123,7 @@ theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
 
 variable [UniformAddGroup K]
 
-theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
+lemma mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   haveI : T1Space (hat K) := T2Space.t1Space
   let f := fun x : hat K => x * hatInv x
   let c := (fun (x : K) => (x : hat K))

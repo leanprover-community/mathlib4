@@ -73,12 +73,12 @@ abbrev _root_.LE.le.hom := @homOfLE
 #align has_le.le.hom LE.le.hom
 
 @[simp]
-theorem homOfLE_refl {x : X} (h : x ≤ x) : h.hom = 𝟙 x :=
+lemma homOfLE_refl {x : X} (h : x ≤ x) : h.hom = 𝟙 x :=
   rfl
 #align category_theory.hom_of_le_refl CategoryTheory.homOfLE_refl
 
 @[simp]
-theorem homOfLE_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
+lemma homOfLE_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
     homOfLE h ≫ homOfLE k = homOfLE (h.trans k) :=
   rfl
 #align category_theory.hom_of_le_comp CategoryTheory.homOfLE_comp
@@ -95,14 +95,14 @@ abbrev _root_.Quiver.Hom.le := @leOfHom
 
 -- Porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
 -- @[simp]
-theorem leOfHom_homOfLE {x y : X} (h : x ≤ y) : h.hom.le = h :=
+lemma leOfHom_homOfLE {x y : X} (h : x ≤ y) : h.hom.le = h :=
   rfl
 #align category_theory.le_of_hom_hom_of_le CategoryTheory.leOfHom_homOfLE
 
 -- Porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
 -- itself. This usually means that it will never apply." removing simp? It doesn't fire
 -- @[simp]
-theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
+lemma homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
   rfl
 #align category_theory.hom_of_le_le_of_hom CategoryTheory.homOfLE_leOfHom
 
@@ -111,7 +111,7 @@ def opHomOfLE {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
   (homOfLE h).op
 #align category_theory.op_hom_of_le CategoryTheory.opHomOfLE
 
-theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
+lemma le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
   h.unop.le
 #align category_theory.le_of_op_hom CategoryTheory.le_of_op_hom
 
@@ -141,7 +141,7 @@ def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
 #align monotone.functor Monotone.functor
 
 @[simp]
-theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f :=
+lemma Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f :=
   rfl
 #align monotone.functor_obj Monotone.functor_obj
 
@@ -169,7 +169,7 @@ section PartialOrder
 
 variable {X : Type u} {Y : Type v} [PartialOrder X] [PartialOrder Y]
 
-theorem Iso.to_eq {x y : X} (f : x ≅ y) : x = y :=
+lemma Iso.to_eq {x y : X} (f : x ≅ y) : x = y :=
   le_antisymm f.hom.le f.inv.le
 #align category_theory.iso.to_eq CategoryTheory.Iso.to_eq
 
@@ -189,12 +189,12 @@ def Equivalence.toOrderIso (e : X ≌ Y) : X ≃o Y where
 -- `@[simps]` on `Equivalence.toOrderIso` produces lemmas that fail the `simpNF` linter,
 -- so we provide them by hand:
 @[simp]
-theorem Equivalence.toOrderIso_apply (e : X ≌ Y) (x : X) : e.toOrderIso x = e.functor.obj x :=
+lemma Equivalence.toOrderIso_apply (e : X ≌ Y) (x : X) : e.toOrderIso x = e.functor.obj x :=
   rfl
 #align category_theory.equivalence.to_order_iso_apply CategoryTheory.Equivalence.toOrderIso_apply
 
 @[simp]
-theorem Equivalence.toOrderIso_symm_apply (e : X ≌ Y) (y : Y) :
+lemma Equivalence.toOrderIso_symm_apply (e : X ≌ Y) (y : Y) :
     e.toOrderIso.symm y = e.inverse.obj y :=
   rfl
 #align category_theory.equivalence.to_order_iso_symm_apply CategoryTheory.Equivalence.toOrderIso_symm_apply

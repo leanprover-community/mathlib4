@@ -341,12 +341,12 @@ theorem coe_injective : Function.Injective ((↑) : AffineSubspace k P → Set P
 #align affine_subspace.coe_injective AffineSubspace.coe_injective
 
 @[ext]
-theorem ext {p q : AffineSubspace k P} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
+lemma ext {p q : AffineSubspace k P} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 #align affine_subspace.ext AffineSubspace.ext
 
 -- Porting note: removed `simp`, proof is `simp only [SetLike.ext'_iff]`
-theorem ext_iff (s₁ s₂ : AffineSubspace k P) : (s₁ : Set P) = s₂ ↔ s₁ = s₂ :=
+lemma ext_iff (s₁ s₂ : AffineSubspace k P) : (s₁ : Set P) = s₂ ↔ s₁ = s₂ :=
   SetLike.ext'_iff.symm
 #align affine_subspace.ext_iff AffineSubspace.ext_iff
 
@@ -391,12 +391,12 @@ abbrev toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction
 attribute [local instance] toAddTorsor
 
 @[simp, norm_cast]
-theorem coe_vsub (s : AffineSubspace k P) [Nonempty s] (a b : s) : ↑(a -ᵥ b) = (a : P) -ᵥ (b : P) :=
+lemma coe_vsub (s : AffineSubspace k P) [Nonempty s] (a b : s) : ↑(a -ᵥ b) = (a : P) -ᵥ (b : P) :=
   rfl
 #align affine_subspace.coe_vsub AffineSubspace.coe_vsub
 
 @[simp, norm_cast]
-theorem coe_vadd (s : AffineSubspace k P) [Nonempty s] (a : s.direction) (b : s) :
+lemma coe_vadd (s : AffineSubspace k P) [Nonempty s] (a : s.direction) (b : s) :
     ↑(a +ᵥ b) = (a : V) +ᵥ (b : P) :=
   rfl
 #align affine_subspace.coe_vadd AffineSubspace.coe_vadd
@@ -409,20 +409,20 @@ protected def subtype (s : AffineSubspace k P) [Nonempty s] : s →ᵃ[k] P wher
 #align affine_subspace.subtype AffineSubspace.subtype
 
 @[simp]
-theorem subtype_linear (s : AffineSubspace k P) [Nonempty s] :
+lemma subtype_linear (s : AffineSubspace k P) [Nonempty s] :
     s.subtype.linear = s.direction.subtype := rfl
 #align affine_subspace.subtype_linear AffineSubspace.subtype_linear
 
-theorem subtype_apply (s : AffineSubspace k P) [Nonempty s] (p : s) : s.subtype p = p :=
+lemma subtype_apply (s : AffineSubspace k P) [Nonempty s] (p : s) : s.subtype p = p :=
   rfl
 #align affine_subspace.subtype_apply AffineSubspace.subtype_apply
 
 @[simp]
-theorem coeSubtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P) = ((↑) : s → P) :=
+lemma coeSubtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P) = ((↑) : s → P) :=
   rfl
 #align affine_subspace.coe_subtype AffineSubspace.coeSubtype
 
-theorem injective_subtype (s : AffineSubspace k P) [Nonempty s] : Function.Injective s.subtype :=
+lemma injective_subtype (s : AffineSubspace k P) [Nonempty s] : Function.Injective s.subtype :=
   Subtype.coe_injective
 #align affine_subspace.injective_subtype AffineSubspace.injective_subtype
 
@@ -512,17 +512,17 @@ namespace Submodule
 variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
 
 @[simp]
-theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
+lemma mem_toAffineSubspace {p : Submodule k V} {x : V} :
     x ∈ p.toAffineSubspace ↔ x ∈ p :=
   Iff.rfl
 
 @[simp]
-theorem toAffineSubspace_direction (s : Submodule k V) : s.toAffineSubspace.direction = s := by
+lemma toAffineSubspace_direction (s : Submodule k V) : s.toAffineSubspace.direction = s := by
   ext x; simp [← s.toAffineSubspace.vadd_mem_iff_mem_direction _ s.zero_mem]
 
 end Submodule
 
-theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+lemma AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
     [AddTorsor V P] {Q : AffineSubspace k P} {p₀ p₁ : P} (c : k) (h₀ : p₀ ∈ Q) (h₁ : p₁ ∈ Q) :
     AffineMap.lineMap p₀ p₁ c ∈ Q := by
   rw [AffineMap.lineMap_apply]
@@ -696,7 +696,7 @@ theorem span_univ : affineSpan k (Set.univ : Set P) = ⊤ :=
 
 variable {k V P}
 
-theorem _root_.affineSpan_le {s : Set P} {Q : AffineSubspace k P} :
+lemma _root_.affineSpan_le {s : Set P} {Q : AffineSubspace k P} :
     affineSpan k s ≤ Q ↔ s ⊆ (Q : Set P) :=
   (AffineSubspace.gi k V P).gc _ _
 #align affine_span_le affineSpan_le
@@ -719,7 +719,7 @@ theorem mem_affineSpan_singleton : p₁ ∈ affineSpan k ({p₂} : Set P) ↔ p�
 #align affine_subspace.mem_affine_span_singleton AffineSubspace.mem_affineSpan_singleton
 
 @[simp]
-theorem preimage_coe_affineSpan_singleton (x : P) :
+lemma preimage_coe_affineSpan_singleton (x : P) :
     ((↑) : affineSpan k ({x} : Set P) → P) ⁻¹' {x} = univ :=
   eq_univ_of_forall fun y => (AffineSubspace.mem_affineSpan_singleton _ _).1 y.2
 #align affine_subspace.preimage_coe_affine_span_singleton AffineSubspace.preimage_coe_affineSpan_singleton
@@ -770,7 +770,7 @@ theorem bot_coe : ((⊥ : AffineSubspace k P) : Set P) = ∅ :=
   rfl
 #align affine_subspace.bot_coe AffineSubspace.bot_coe
 
-theorem bot_ne_top : (⊥ : AffineSubspace k P) ≠ ⊤ := by
+lemma bot_ne_top : (⊥ : AffineSubspace k P) ≠ ⊤ := by
   intro contra
   rw [← ext_iff, bot_coe, top_coe] at contra
   exact Set.empty_ne_univ contra
@@ -779,7 +779,7 @@ theorem bot_ne_top : (⊥ : AffineSubspace k P) ≠ ⊤ := by
 instance : Nontrivial (AffineSubspace k P) :=
   ⟨⟨⊥, ⊤, bot_ne_top k V P⟩⟩
 
-theorem nonempty_of_affineSpan_eq_top {s : Set P} (h : affineSpan k s = ⊤) : s.Nonempty := by
+lemma nonempty_of_affineSpan_eq_top {s : Set P} (h : affineSpan k s = ⊤) : s.Nonempty := by
   rw [Set.nonempty_iff_ne_empty]
   rintro rfl
   rw [AffineSubspace.span_empty] at h
@@ -811,7 +811,7 @@ theorem affineSpan_eq_top_iff_vectorSpan_eq_top_of_nontrivial {s : Set P} [Nontr
   · rw [affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty k V P hs]
 #align affine_subspace.affine_span_eq_top_iff_vector_span_eq_top_of_nontrivial AffineSubspace.affineSpan_eq_top_iff_vectorSpan_eq_top_of_nontrivial
 
-theorem card_pos_of_affineSpan_eq_top {ι : Type*} [Fintype ι] {p : ι → P}
+lemma card_pos_of_affineSpan_eq_top {ι : Type*} [Fintype ι] {p : ι → P}
     (h : affineSpan k (range p) = ⊤) : 0 < Fintype.card ι := by
   obtain ⟨-, ⟨i, -⟩⟩ := nonempty_of_affineSpan_eq_top k V P h
   exact Fintype.card_pos_iff.mpr ⟨i⟩
@@ -846,26 +846,26 @@ theorem direction_bot : (⊥ : AffineSubspace k P).direction = ⊥ := by
 variable {k V P}
 
 @[simp]
-theorem coe_eq_bot_iff (Q : AffineSubspace k P) : (Q : Set P) = ∅ ↔ Q = ⊥ :=
+lemma coe_eq_bot_iff (Q : AffineSubspace k P) : (Q : Set P) = ∅ ↔ Q = ⊥ :=
   coe_injective.eq_iff' (bot_coe _ _ _)
 #align affine_subspace.coe_eq_bot_iff AffineSubspace.coe_eq_bot_iff
 
 @[simp]
-theorem coe_eq_univ_iff (Q : AffineSubspace k P) : (Q : Set P) = univ ↔ Q = ⊤ :=
+lemma coe_eq_univ_iff (Q : AffineSubspace k P) : (Q : Set P) = univ ↔ Q = ⊤ :=
   coe_injective.eq_iff' (top_coe _ _ _)
 #align affine_subspace.coe_eq_univ_iff AffineSubspace.coe_eq_univ_iff
 
-theorem nonempty_iff_ne_bot (Q : AffineSubspace k P) : (Q : Set P).Nonempty ↔ Q ≠ ⊥ := by
+lemma nonempty_iff_ne_bot (Q : AffineSubspace k P) : (Q : Set P).Nonempty ↔ Q ≠ ⊥ := by
   rw [nonempty_iff_ne_empty]
   exact not_congr Q.coe_eq_bot_iff
 #align affine_subspace.nonempty_iff_ne_bot AffineSubspace.nonempty_iff_ne_bot
 
-theorem eq_bot_or_nonempty (Q : AffineSubspace k P) : Q = ⊥ ∨ (Q : Set P).Nonempty := by
+lemma eq_bot_or_nonempty (Q : AffineSubspace k P) : Q = ⊥ ∨ (Q : Set P).Nonempty := by
   rw [nonempty_iff_ne_bot]
   apply eq_or_ne
 #align affine_subspace.eq_bot_or_nonempty AffineSubspace.eq_bot_or_nonempty
 
-theorem subsingleton_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingleton)
+lemma subsingleton_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingleton)
     (h₂ : affineSpan k s = ⊤) : Subsingleton P := by
   obtain ⟨p, hp⟩ := AffineSubspace.nonempty_of_affineSpan_eq_top k V P h₂
   have : s = {p} := Subset.antisymm (fun q hq => h₁ hq hp) (by simp [hp])
@@ -874,7 +874,7 @@ theorem subsingleton_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingle
   exact subsingleton_of_univ_subsingleton h₂
 #align affine_subspace.subsingleton_of_subsingleton_span_eq_top AffineSubspace.subsingleton_of_subsingleton_span_eq_top
 
-theorem eq_univ_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingleton)
+lemma eq_univ_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingleton)
     (h₂ : affineSpan k s = ⊤) : s = (univ : Set P) := by
   obtain ⟨p, hp⟩ := AffineSubspace.nonempty_of_affineSpan_eq_top k V P h₂
   have : s = {p} := Subset.antisymm (fun q hq => h₁ hq hp) (by simp [hp])
@@ -1180,7 +1180,7 @@ theorem affineSpan_eq_bot : affineSpan k s = ⊥ ↔ s = ∅ := by
 #align affine_span_eq_bot affineSpan_eq_bot
 
 @[simp]
-theorem bot_lt_affineSpan : ⊥ < affineSpan k s ↔ s.Nonempty := by
+lemma bot_lt_affineSpan : ⊥ < affineSpan k s ↔ s.Nonempty := by
   rw [bot_lt_iff_ne_bot, nonempty_iff_ne_empty]
   exact (affineSpan_eq_bot _).not
 #align bot_lt_affine_span bot_lt_affineSpan
@@ -1519,7 +1519,7 @@ section
 variable (f : P₁ →ᵃ[k] P₂)
 
 @[simp]
-theorem AffineMap.vectorSpan_image_eq_submodule_map {s : Set P₁} :
+lemma AffineMap.vectorSpan_image_eq_submodule_map {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
   rw [vectorSpan_def, vectorSpan_def, f.image_vsub_image, Submodule.span_image]
   -- Porting note: Lean unfolds things too far with `simp` here.
@@ -1540,17 +1540,17 @@ def map (s : AffineSubspace k P₁) : AffineSubspace k P₂ where
 #align affine_subspace.map AffineSubspace.map
 
 @[simp]
-theorem coe_map (s : AffineSubspace k P₁) : (s.map f : Set P₂) = f '' s :=
+lemma coe_map (s : AffineSubspace k P₁) : (s.map f : Set P₂) = f '' s :=
   rfl
 #align affine_subspace.coe_map AffineSubspace.coe_map
 
 @[simp]
-theorem mem_map {f : P₁ →ᵃ[k] P₂} {x : P₂} {s : AffineSubspace k P₁} :
+lemma mem_map {f : P₁ →ᵃ[k] P₂} {x : P₂} {s : AffineSubspace k P₁} :
     x ∈ s.map f ↔ ∃ y ∈ s, f y = x :=
   Iff.rfl
 #align affine_subspace.mem_map AffineSubspace.mem_map
 
-theorem mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f x ∈ s.map f :=
+lemma mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f x ∈ s.map f :=
   Set.mem_image_of_mem _ h
 #align affine_subspace.mem_map_of_mem AffineSubspace.mem_map_of_mem
 
@@ -1558,41 +1558,41 @@ theorem mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f 
 -- However this is a higher priority lemma.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
-theorem mem_map_iff_mem_of_injective {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₁}
+lemma mem_map_iff_mem_of_injective {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₁}
     (hf : Function.Injective f) : f x ∈ s.map f ↔ x ∈ s :=
   hf.mem_set_image
 #align affine_subspace.mem_map_iff_mem_of_injective AffineSubspace.mem_map_iff_mem_of_injective
 
 @[simp]
-theorem map_bot : (⊥ : AffineSubspace k P₁).map f = ⊥ :=
+lemma map_bot : (⊥ : AffineSubspace k P₁).map f = ⊥ :=
   coe_injective <| image_empty f
 #align affine_subspace.map_bot AffineSubspace.map_bot
 
 @[simp]
-theorem map_eq_bot_iff {s : AffineSubspace k P₁} : s.map f = ⊥ ↔ s = ⊥ := by
+lemma map_eq_bot_iff {s : AffineSubspace k P₁} : s.map f = ⊥ ↔ s = ⊥ := by
   refine' ⟨fun h => _, fun h => _⟩
   · rwa [← coe_eq_bot_iff, coe_map, image_eq_empty, coe_eq_bot_iff] at h
   · rw [h, map_bot]
 #align affine_subspace.map_eq_bot_iff AffineSubspace.map_eq_bot_iff
 
 @[simp]
-theorem map_id (s : AffineSubspace k P₁) : s.map (AffineMap.id k P₁) = s :=
+lemma map_id (s : AffineSubspace k P₁) : s.map (AffineMap.id k P₁) = s :=
   coe_injective <| image_id _
 #align affine_subspace.map_id AffineSubspace.map_id
 
-theorem map_map (s : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) (g : P₂ →ᵃ[k] P₃) :
+lemma map_map (s : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) (g : P₂ →ᵃ[k] P₃) :
     (s.map f).map g = s.map (g.comp f) :=
   coe_injective <| image_image _ _ _
 #align affine_subspace.map_map AffineSubspace.map_map
 
 @[simp]
-theorem map_direction (s : AffineSubspace k P₁) : (s.map f).direction = s.direction.map f.linear :=
+lemma map_direction (s : AffineSubspace k P₁) : (s.map f).direction = s.direction.map f.linear :=
   by rw [direction_eq_vectorSpan, direction_eq_vectorSpan, coe_map,
     AffineMap.vectorSpan_image_eq_submodule_map]
   -- Porting note: again, Lean unfolds too aggressively with `simp`
 #align affine_subspace.map_direction AffineSubspace.map_direction
 
-theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s) := by
+lemma map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s) := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩);
   · rw [image_empty, span_empty, span_empty, map_bot]
     -- Porting note: I don't know exactly why this `simp` was broken.
@@ -1618,11 +1618,11 @@ def inclusion (h : S₁ ≤ S₂) : S₁ →ᵃ[k] S₂ where
   map_vadd' _ _ := rfl
 
 @[simp]
-theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=
+lemma coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=
   rfl
 
 @[simp]
-theorem inclusion_rfl : inclusion (le_refl S₁) = AffineMap.id k S₁ := rfl
+lemma inclusion_rfl : inclusion (le_refl S₁) = AffineMap.id k S₁ := rfl
 
 end inclusion
 
@@ -1631,12 +1631,12 @@ end AffineSubspace
 namespace AffineMap
 
 @[simp]
-theorem map_top_of_surjective (hf : Function.Surjective f) : AffineSubspace.map f ⊤ = ⊤ := by
+lemma map_top_of_surjective (hf : Function.Surjective f) : AffineSubspace.map f ⊤ = ⊤ := by
   rw [← AffineSubspace.ext_iff]
   exact image_univ_of_surjective hf
 #align affine_map.map_top_of_surjective AffineMap.map_top_of_surjective
 
-theorem span_eq_top_of_surjective {s : Set P₁} (hf : Function.Surjective f)
+lemma span_eq_top_of_surjective {s : Set P₁} (hf : Function.Surjective f)
     (h : affineSpan k s = ⊤) : affineSpan k (f '' s) = ⊤ := by
   rw [← AffineSubspace.map_span, h, map_top_of_surjective f hf]
 #align affine_map.span_eq_top_of_surjective AffineMap.span_eq_top_of_surjective
@@ -1660,19 +1660,19 @@ def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
   map_vadd' _ _ := rfl
 
 @[simp]
-theorem coe_ofEq_apply (h : S₁ = S₂) (x : S₁) : (ofEq S₁ S₂ h x : P₁) = x :=
+lemma coe_ofEq_apply (h : S₁ = S₂) (x : S₁) : (ofEq S₁ S₂ h x : P₁) = x :=
   rfl
 
 @[simp]
-theorem ofEq_symm (h : S₁ = S₂) : (ofEq S₁ S₂ h).symm = ofEq S₂ S₁ h.symm :=
+lemma ofEq_symm (h : S₁ = S₂) : (ofEq S₁ S₂ h).symm = ofEq S₂ S₁ h.symm :=
   rfl
 
 @[simp]
-theorem ofEq_rfl : ofEq S₁ S₁ rfl = AffineEquiv.refl k S₁ := rfl
+lemma ofEq_rfl : ofEq S₁ S₁ rfl = AffineEquiv.refl k S₁ := rfl
 
 end ofEq
 
-theorem span_eq_top_iff {s : Set P₁} (e : P₁ ≃ᵃ[k] P₂) :
+lemma span_eq_top_iff {s : Set P₁} (e : P₁ ≃ᵃ[k] P₂) :
     affineSpan k s = ⊤ ↔ affineSpan k (e '' s) = ⊤ := by
   refine' ⟨(e : P₁ →ᵃ[k] P₂).span_eq_top_of_surjective e.surjective, _⟩
   intro h
@@ -1697,87 +1697,87 @@ def comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : AffineSubspace
 #align affine_subspace.comap AffineSubspace.comap
 
 @[simp]
-theorem coe_comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : (s.comap f : Set P₁) = f ⁻¹' ↑s :=
+lemma coe_comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : (s.comap f : Set P₁) = f ⁻¹' ↑s :=
   rfl
 #align affine_subspace.coe_comap AffineSubspace.coe_comap
 
 @[simp]
-theorem mem_comap {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₂} : x ∈ s.comap f ↔ f x ∈ s :=
+lemma mem_comap {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₂} : x ∈ s.comap f ↔ f x ∈ s :=
   Iff.rfl
 #align affine_subspace.mem_comap AffineSubspace.mem_comap
 
-theorem comap_mono {f : P₁ →ᵃ[k] P₂} {s t : AffineSubspace k P₂} : s ≤ t → s.comap f ≤ t.comap f :=
+lemma comap_mono {f : P₁ →ᵃ[k] P₂} {s t : AffineSubspace k P₂} : s ≤ t → s.comap f ≤ t.comap f :=
   preimage_mono
 #align affine_subspace.comap_mono AffineSubspace.comap_mono
 
 @[simp]
-theorem comap_top {f : P₁ →ᵃ[k] P₂} : (⊤ : AffineSubspace k P₂).comap f = ⊤ := by
+lemma comap_top {f : P₁ →ᵃ[k] P₂} : (⊤ : AffineSubspace k P₂).comap f = ⊤ := by
   rw [← ext_iff]
   exact preimage_univ (f := f)
 #align affine_subspace.comap_top AffineSubspace.comap_top
 
-@[simp] theorem comap_bot (f : P₁ →ᵃ[k] P₂) : comap f ⊥ = ⊥ := rfl
+@[simp] lemma comap_bot (f : P₁ →ᵃ[k] P₂) : comap f ⊥ = ⊥ := rfl
 
 @[simp]
-theorem comap_id (s : AffineSubspace k P₁) : s.comap (AffineMap.id k P₁) = s :=
+lemma comap_id (s : AffineSubspace k P₁) : s.comap (AffineMap.id k P₁) = s :=
   rfl
 #align affine_subspace.comap_id AffineSubspace.comap_id
 
-theorem comap_comap (s : AffineSubspace k P₃) (f : P₁ →ᵃ[k] P₂) (g : P₂ →ᵃ[k] P₃) :
+lemma comap_comap (s : AffineSubspace k P₃) (f : P₁ →ᵃ[k] P₂) (g : P₂ →ᵃ[k] P₃) :
     (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
 #align affine_subspace.comap_comap AffineSubspace.comap_comap
 
 -- lemmas about map and comap derived from the galois connection
-theorem map_le_iff_le_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₁} {t : AffineSubspace k P₂} :
+lemma map_le_iff_le_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₁} {t : AffineSubspace k P₂} :
     s.map f ≤ t ↔ s ≤ t.comap f :=
   image_subset_iff
 #align affine_subspace.map_le_iff_le_comap AffineSubspace.map_le_iff_le_comap
 
-theorem gc_map_comap (f : P₁ →ᵃ[k] P₂) : GaloisConnection (map f) (comap f) := fun _ _ =>
+lemma gc_map_comap (f : P₁ →ᵃ[k] P₂) : GaloisConnection (map f) (comap f) := fun _ _ =>
   map_le_iff_le_comap
 #align affine_subspace.gc_map_comap AffineSubspace.gc_map_comap
 
-theorem map_comap_le (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : (s.comap f).map f ≤ s :=
+lemma map_comap_le (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : (s.comap f).map f ≤ s :=
   (gc_map_comap f).l_u_le _
 #align affine_subspace.map_comap_le AffineSubspace.map_comap_le
 
-theorem le_comap_map (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₁) : s ≤ (s.map f).comap f :=
+lemma le_comap_map (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₁) : s ≤ (s.map f).comap f :=
   (gc_map_comap f).le_u_l _
 #align affine_subspace.le_comap_map AffineSubspace.le_comap_map
 
-theorem map_sup (s t : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) : (s ⊔ t).map f = s.map f ⊔ t.map f :=
+lemma map_sup (s t : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) : (s ⊔ t).map f = s.map f ⊔ t.map f :=
   (gc_map_comap f).l_sup
 #align affine_subspace.map_sup AffineSubspace.map_sup
 
-theorem map_iSup {ι : Sort*} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₁) :
+lemma map_iSup {ι : Sort*} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₁) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 #align affine_subspace.map_supr AffineSubspace.map_iSup
 
-theorem comap_inf (s t : AffineSubspace k P₂) (f : P₁ →ᵃ[k] P₂) :
+lemma comap_inf (s t : AffineSubspace k P₂) (f : P₁ →ᵃ[k] P₂) :
     (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf
 #align affine_subspace.comap_inf AffineSubspace.comap_inf
 
-theorem comap_supr {ι : Sort*} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₂) :
+lemma comap_supr {ι : Sort*} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₂) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 #align affine_subspace.comap_supr AffineSubspace.comap_supr
 
 @[simp]
-theorem comap_symm (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₁) :
+lemma comap_symm (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₁) :
     s.comap (e.symm : P₂ →ᵃ[k] P₁) = s.map e :=
   coe_injective <| e.preimage_symm _
 #align affine_subspace.comap_symm AffineSubspace.comap_symm
 
 @[simp]
-theorem map_symm (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₂) :
+lemma map_symm (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₂) :
     s.map (e.symm : P₂ →ᵃ[k] P₁) = s.comap e :=
   coe_injective <| e.image_symm _
 #align affine_subspace.map_symm AffineSubspace.map_symm
 
-theorem comap_span (f : P₁ ≃ᵃ[k] P₂) (s : Set P₂) :
+lemma comap_span (f : P₁ ≃ᵃ[k] P₂) (s : Set P₂) :
     (affineSpan k s).comap (f : P₁ →ᵃ[k] P₂) = affineSpan k (f ⁻¹' s) := by
   rw [← map_symm, map_span, AffineEquiv.coe_coe, f.image_symm]
 #align affine_subspace.comap_span AffineSubspace.comap_span
@@ -1803,24 +1803,24 @@ def Parallel (s₁ s₂ : AffineSubspace k P) : Prop :=
 scoped[Affine] infixl:50 " ∥ " => AffineSubspace.Parallel
 
 @[symm]
-theorem Parallel.symm {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s₂) : s₂ ∥ s₁ := by
+lemma Parallel.symm {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s₂) : s₂ ∥ s₁ := by
   rcases h with ⟨v, rfl⟩
   refine' ⟨-v, _⟩
   rw [map_map, ← coe_trans_to_affineMap, ← constVAdd_add, neg_add_self, constVAdd_zero,
     coe_refl_to_affineMap, map_id]
 #align affine_subspace.parallel.symm AffineSubspace.Parallel.symm
 
-theorem parallel_comm {s₁ s₂ : AffineSubspace k P} : s₁ ∥ s₂ ↔ s₂ ∥ s₁ :=
+lemma parallel_comm {s₁ s₂ : AffineSubspace k P} : s₁ ∥ s₂ ↔ s₂ ∥ s₁ :=
   ⟨Parallel.symm, Parallel.symm⟩
 #align affine_subspace.parallel_comm AffineSubspace.parallel_comm
 
 @[refl]
-theorem Parallel.refl (s : AffineSubspace k P) : s ∥ s :=
+lemma Parallel.refl (s : AffineSubspace k P) : s ∥ s :=
   ⟨0, by simp⟩
 #align affine_subspace.parallel.refl AffineSubspace.Parallel.refl
 
 @[trans]
-theorem Parallel.trans {s₁ s₂ s₃ : AffineSubspace k P} (h₁₂ : s₁ ∥ s₂) (h₂₃ : s₂ ∥ s₃) :
+lemma Parallel.trans {s₁ s₂ s₃ : AffineSubspace k P} (h₁₂ : s₁ ∥ s₂) (h₂₃ : s₂ ∥ s₃) :
     s₁ ∥ s₃ := by
   rcases h₁₂ with ⟨v₁₂, rfl⟩
   rcases h₂₃ with ⟨v₂₃, rfl⟩
@@ -1828,25 +1828,25 @@ theorem Parallel.trans {s₁ s₂ s₃ : AffineSubspace k P} (h₁₂ : s₁ ∥
   rw [map_map, ← coe_trans_to_affineMap, ← constVAdd_add]
 #align affine_subspace.parallel.trans AffineSubspace.Parallel.trans
 
-theorem Parallel.direction_eq {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s₂) :
+lemma Parallel.direction_eq {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s₂) :
     s₁.direction = s₂.direction := by
   rcases h with ⟨v, rfl⟩
   simp
 #align affine_subspace.parallel.direction_eq AffineSubspace.Parallel.direction_eq
 
 @[simp]
-theorem parallel_bot_iff_eq_bot {s : AffineSubspace k P} : s ∥ ⊥ ↔ s = ⊥ := by
+lemma parallel_bot_iff_eq_bot {s : AffineSubspace k P} : s ∥ ⊥ ↔ s = ⊥ := by
   refine' ⟨fun h => _, fun h => h ▸ Parallel.refl _⟩
   rcases h with ⟨v, h⟩
   rwa [eq_comm, map_eq_bot_iff] at h
 #align affine_subspace.parallel_bot_iff_eq_bot AffineSubspace.parallel_bot_iff_eq_bot
 
 @[simp]
-theorem bot_parallel_iff_eq_bot {s : AffineSubspace k P} : ⊥ ∥ s ↔ s = ⊥ := by
+lemma bot_parallel_iff_eq_bot {s : AffineSubspace k P} : ⊥ ∥ s ↔ s = ⊥ := by
   rw [parallel_comm, parallel_bot_iff_eq_bot]
 #align affine_subspace.bot_parallel_iff_eq_bot AffineSubspace.bot_parallel_iff_eq_bot
 
-theorem parallel_iff_direction_eq_and_eq_bot_iff_eq_bot {s₁ s₂ : AffineSubspace k P} :
+lemma parallel_iff_direction_eq_and_eq_bot_iff_eq_bot {s₁ s₂ : AffineSubspace k P} :
     s₁ ∥ s₂ ↔ s₁.direction = s₂.direction ∧ (s₁ = ⊥ ↔ s₂ = ⊥) := by
   refine' ⟨fun h => ⟨h.direction_eq, _, _⟩, fun h => _⟩
   · rintro rfl
@@ -1867,20 +1867,20 @@ theorem parallel_iff_direction_eq_and_eq_bot_iff_eq_bot {s₁ s₂ : AffineSubsp
       · simpa using hd.symm
 #align affine_subspace.parallel_iff_direction_eq_and_eq_bot_iff_eq_bot AffineSubspace.parallel_iff_direction_eq_and_eq_bot_iff_eq_bot
 
-theorem Parallel.vectorSpan_eq {s₁ s₂ : Set P} (h : affineSpan k s₁ ∥ affineSpan k s₂) :
+lemma Parallel.vectorSpan_eq {s₁ s₂ : Set P} (h : affineSpan k s₁ ∥ affineSpan k s₂) :
     vectorSpan k s₁ = vectorSpan k s₂ := by
   simp_rw [← direction_affineSpan]
   exact h.direction_eq
 #align affine_subspace.parallel.vector_span_eq AffineSubspace.Parallel.vectorSpan_eq
 
-theorem affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty {s₁ s₂ : Set P} :
+lemma affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty {s₁ s₂ : Set P} :
     affineSpan k s₁ ∥ affineSpan k s₂ ↔ vectorSpan k s₁ = vectorSpan k s₂ ∧ (s₁ = ∅ ↔ s₂ = ∅) := by
   repeat rw [← direction_affineSpan, ← affineSpan_eq_bot k]
   -- Porting note: more issues with `simp`
   exact parallel_iff_direction_eq_and_eq_bot_iff_eq_bot
 #align affine_subspace.affine_span_parallel_iff_vector_span_eq_and_eq_empty_iff_eq_empty AffineSubspace.affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty
 
-theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
+lemma affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
     line[k, p₁, p₂] ∥ line[k, p₃, p₄] ↔
       vectorSpan k ({p₁, p₂} : Set P) = vectorSpan k ({p₃, p₄} : Set P) := by
   simp [affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty, ←

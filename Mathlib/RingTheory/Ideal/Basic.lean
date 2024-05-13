@@ -55,33 +55,33 @@ namespace Ideal
 
 variable [Semiring α] (I : Ideal α) {a b : α}
 
-protected theorem zero_mem : (0 : α) ∈ I :=
+protected lemma zero_mem : (0 : α) ∈ I :=
   Submodule.zero_mem I
 #align ideal.zero_mem Ideal.zero_mem
 
-protected theorem add_mem : a ∈ I → b ∈ I → a + b ∈ I :=
+protected lemma add_mem : a ∈ I → b ∈ I → a + b ∈ I :=
   Submodule.add_mem I
 #align ideal.add_mem Ideal.add_mem
 
 variable (a)
 
-theorem mul_mem_left : b ∈ I → a * b ∈ I :=
+lemma mul_mem_left : b ∈ I → a * b ∈ I :=
   Submodule.smul_mem I a
 #align ideal.mul_mem_left Ideal.mul_mem_left
 
 variable {a}
 
 @[ext]
-theorem ext {I J : Ideal α} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
+lemma ext {I J : Ideal α} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
   Submodule.ext h
 #align ideal.ext Ideal.ext
 
-theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
+lemma sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
     (∀ c ∈ t, f c ∈ I) → (∑ i in t, f i) ∈ I :=
   Submodule.sum_mem I
 #align ideal.sum_mem Ideal.sum_mem
 
-theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :=
+lemma eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :=
   eq_top_iff.2 fun z _ =>
     calc
       z = z * (y * x) := by simp [h]
@@ -89,21 +89,21 @@ theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :
       _ ∈ I := I.mul_mem_left _ hx
 #align ideal.eq_top_of_unit_mem Ideal.eq_top_of_unit_mem
 
-theorem eq_top_of_isUnit_mem {x} (hx : x ∈ I) (h : IsUnit x) : I = ⊤ :=
+lemma eq_top_of_isUnit_mem {x} (hx : x ∈ I) (h : IsUnit x) : I = ⊤ :=
   let ⟨y, hy⟩ := h.exists_left_inv
   eq_top_of_unit_mem I x y hx hy
 #align ideal.eq_top_of_is_unit_mem Ideal.eq_top_of_isUnit_mem
 
-theorem eq_top_iff_one : I = ⊤ ↔ (1 : α) ∈ I :=
+lemma eq_top_iff_one : I = ⊤ ↔ (1 : α) ∈ I :=
   ⟨by rintro rfl; trivial, fun h => eq_top_of_unit_mem _ _ 1 h (by simp)⟩
 #align ideal.eq_top_iff_one Ideal.eq_top_iff_one
 
-theorem ne_top_iff_one : I ≠ ⊤ ↔ (1 : α) ∉ I :=
+lemma ne_top_iff_one : I ≠ ⊤ ↔ (1 : α) ∉ I :=
   not_congr I.eq_top_iff_one
 #align ideal.ne_top_iff_one Ideal.ne_top_iff_one
 
 @[simp]
-theorem unit_mul_mem_iff_mem {x y : α} (hy : IsUnit y) : y * x ∈ I ↔ x ∈ I := by
+lemma unit_mul_mem_iff_mem {x y : α} (hy : IsUnit y) : y * x ∈ I ↔ x ∈ I := by
   refine' ⟨fun h => _, fun h => I.mul_mem_left y h⟩
   obtain ⟨y', hy'⟩ := hy.exists_left_inv
   have := I.mul_mem_left y' h
@@ -116,90 +116,90 @@ def span (s : Set α) : Ideal α :=
 #align ideal.span Ideal.span
 
 @[simp]
-theorem submodule_span_eq {s : Set α} : Submodule.span α s = Ideal.span s :=
+lemma submodule_span_eq {s : Set α} : Submodule.span α s = Ideal.span s :=
   rfl
 #align ideal.submodule_span_eq Ideal.submodule_span_eq
 
 @[simp]
-theorem span_empty : span (∅ : Set α) = ⊥ :=
+lemma span_empty : span (∅ : Set α) = ⊥ :=
   Submodule.span_empty
 #align ideal.span_empty Ideal.span_empty
 
 @[simp]
-theorem span_univ : span (Set.univ : Set α) = ⊤ :=
+lemma span_univ : span (Set.univ : Set α) = ⊤ :=
   Submodule.span_univ
 #align ideal.span_univ Ideal.span_univ
 
-theorem span_union (s t : Set α) : span (s ∪ t) = span s ⊔ span t :=
+lemma span_union (s t : Set α) : span (s ∪ t) = span s ⊔ span t :=
   Submodule.span_union _ _
 #align ideal.span_union Ideal.span_union
 
-theorem span_iUnion {ι} (s : ι → Set α) : span (⋃ i, s i) = ⨆ i, span (s i) :=
+lemma span_iUnion {ι} (s : ι → Set α) : span (⋃ i, s i) = ⨆ i, span (s i) :=
   Submodule.span_iUnion _
 #align ideal.span_Union Ideal.span_iUnion
 
-theorem mem_span {s : Set α} (x) : x ∈ span s ↔ ∀ p : Ideal α, s ⊆ p → x ∈ p :=
+lemma mem_span {s : Set α} (x) : x ∈ span s ↔ ∀ p : Ideal α, s ⊆ p → x ∈ p :=
   mem_iInter₂
 #align ideal.mem_span Ideal.mem_span
 
-theorem subset_span {s : Set α} : s ⊆ span s :=
+lemma subset_span {s : Set α} : s ⊆ span s :=
   Submodule.subset_span
 #align ideal.subset_span Ideal.subset_span
 
-theorem span_le {s : Set α} {I} : span s ≤ I ↔ s ⊆ I :=
+lemma span_le {s : Set α} {I} : span s ≤ I ↔ s ⊆ I :=
   Submodule.span_le
 #align ideal.span_le Ideal.span_le
 
-theorem span_mono {s t : Set α} : s ⊆ t → span s ≤ span t :=
+lemma span_mono {s t : Set α} : s ⊆ t → span s ≤ span t :=
   Submodule.span_mono
 #align ideal.span_mono Ideal.span_mono
 
 @[simp]
-theorem span_eq : span (I : Set α) = I :=
+lemma span_eq : span (I : Set α) = I :=
   Submodule.span_eq _
 #align ideal.span_eq Ideal.span_eq
 
 @[simp]
-theorem span_singleton_one : span ({1} : Set α) = ⊤ :=
+lemma span_singleton_one : span ({1} : Set α) = ⊤ :=
   (eq_top_iff_one _).2 <| subset_span <| mem_singleton _
 #align ideal.span_singleton_one Ideal.span_singleton_one
 
-theorem isCompactElement_top : CompleteLattice.IsCompactElement (⊤ : Ideal α) := by
+lemma isCompactElement_top : CompleteLattice.IsCompactElement (⊤ : Ideal α) := by
   simpa only [← span_singleton_one] using Submodule.singleton_span_isCompactElement 1
 
-theorem mem_span_insert {s : Set α} {x y} :
+lemma mem_span_insert {s : Set α} {x y} :
     x ∈ span (insert y s) ↔ ∃ a, ∃ z ∈ span s, x = a * y + z :=
   Submodule.mem_span_insert
 #align ideal.mem_span_insert Ideal.mem_span_insert
 
-theorem mem_span_singleton' {x y : α} : x ∈ span ({y} : Set α) ↔ ∃ a, a * y = x :=
+lemma mem_span_singleton' {x y : α} : x ∈ span ({y} : Set α) ↔ ∃ a, a * y = x :=
   Submodule.mem_span_singleton
 #align ideal.mem_span_singleton' Ideal.mem_span_singleton'
 
-theorem span_singleton_le_iff_mem {x : α} : span {x} ≤ I ↔ x ∈ I :=
+lemma span_singleton_le_iff_mem {x : α} : span {x} ≤ I ↔ x ∈ I :=
   Submodule.span_singleton_le_iff_mem _ _
 #align ideal.span_singleton_le_iff_mem Ideal.span_singleton_le_iff_mem
 
-theorem span_singleton_mul_left_unit {a : α} (h2 : IsUnit a) (x : α) :
+lemma span_singleton_mul_left_unit {a : α} (h2 : IsUnit a) (x : α) :
     span ({a * x} : Set α) = span {x} := by
   apply le_antisymm <;> rw [span_singleton_le_iff_mem, mem_span_singleton']
   exacts [⟨a, rfl⟩, ⟨_, h2.unit.inv_mul_cancel_left x⟩]
 #align ideal.span_singleton_mul_left_unit Ideal.span_singleton_mul_left_unit
 
-theorem span_insert (x) (s : Set α) : span (insert x s) = span ({x} : Set α) ⊔ span s :=
+lemma span_insert (x) (s : Set α) : span (insert x s) = span ({x} : Set α) ⊔ span s :=
   Submodule.span_insert x s
 #align ideal.span_insert Ideal.span_insert
 
-theorem span_eq_bot {s : Set α} : span s = ⊥ ↔ ∀ x ∈ s, (x : α) = 0 :=
+lemma span_eq_bot {s : Set α} : span s = ⊥ ↔ ∀ x ∈ s, (x : α) = 0 :=
   Submodule.span_eq_bot
 #align ideal.span_eq_bot Ideal.span_eq_bot
 
 @[simp]
-theorem span_singleton_eq_bot {x} : span ({x} : Set α) = ⊥ ↔ x = 0 :=
+lemma span_singleton_eq_bot {x} : span ({x} : Set α) = ⊥ ↔ x = 0 :=
   Submodule.span_singleton_eq_bot
 #align ideal.span_singleton_eq_bot Ideal.span_singleton_eq_bot
 
-theorem span_singleton_ne_top {α : Type*} [CommSemiring α] {x : α} (hx : ¬IsUnit x) :
+lemma span_singleton_ne_top {α : Type*} [CommSemiring α] {x : α} (hx : ¬IsUnit x) :
     Ideal.span ({x} : Set α) ≠ ⊤ :=
   (Ideal.ne_top_iff_one _).mpr fun h1 =>
     let ⟨y, hy⟩ := Ideal.mem_span_singleton'.mp h1
@@ -207,20 +207,20 @@ theorem span_singleton_ne_top {α : Type*} [CommSemiring α] {x : α} (hx : ¬Is
 #align ideal.span_singleton_ne_top Ideal.span_singleton_ne_top
 
 @[simp]
-theorem span_zero : span (0 : Set α) = ⊥ := by rw [← Set.singleton_zero, span_singleton_eq_bot]
+lemma span_zero : span (0 : Set α) = ⊥ := by rw [← Set.singleton_zero, span_singleton_eq_bot]
 #align ideal.span_zero Ideal.span_zero
 
 @[simp]
-theorem span_one : span (1 : Set α) = ⊤ := by rw [← Set.singleton_one, span_singleton_one]
+lemma span_one : span (1 : Set α) = ⊤ := by rw [← Set.singleton_one, span_singleton_one]
 #align ideal.span_one Ideal.span_one
 
-theorem span_eq_top_iff_finite (s : Set α) :
+lemma span_eq_top_iff_finite (s : Set α) :
     span s = ⊤ ↔ ∃ s' : Finset α, ↑s' ⊆ s ∧ span (s' : Set α) = ⊤ := by
   simp_rw [eq_top_iff_one]
   exact ⟨Submodule.mem_span_finite_of_mem_span, fun ⟨s', h₁, h₂⟩ => span_mono h₁ h₂⟩
 #align ideal.span_eq_top_iff_finite Ideal.span_eq_top_iff_finite
 
-theorem mem_span_singleton_sup {S : Type*} [CommSemiring S] {x y : S} {I : Ideal S} :
+lemma mem_span_singleton_sup {S : Type*} [CommSemiring S] {x y : S} {I : Ideal S} :
     x ∈ Ideal.span {y} ⊔ I ↔ ∃ a : S, ∃ b ∈ I, a * y + b = x := by
   rw [Submodule.mem_sup]
   constructor
@@ -245,24 +245,24 @@ class IsPrime (I : Ideal α) : Prop where
   mem_or_mem' : ∀ {x y : α}, x * y ∈ I → x ∈ I ∨ y ∈ I
 #align ideal.is_prime Ideal.IsPrime
 
-theorem isPrime_iff {I : Ideal α} : IsPrime I ↔ I ≠ ⊤ ∧ ∀ {x y : α}, x * y ∈ I → x ∈ I ∨ y ∈ I :=
+lemma isPrime_iff {I : Ideal α} : IsPrime I ↔ I ≠ ⊤ ∧ ∀ {x y : α}, x * y ∈ I → x ∈ I ∨ y ∈ I :=
   ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
 #align ideal.is_prime_iff Ideal.isPrime_iff
 
-theorem IsPrime.ne_top {I : Ideal α} (hI : I.IsPrime) : I ≠ ⊤ :=
+lemma IsPrime.ne_top {I : Ideal α} (hI : I.IsPrime) : I ≠ ⊤ :=
   hI.1
 #align ideal.is_prime.ne_top Ideal.IsPrime.ne_top
 
-theorem IsPrime.mem_or_mem {I : Ideal α} (hI : I.IsPrime) {x y : α} : x * y ∈ I → x ∈ I ∨ y ∈ I :=
+lemma IsPrime.mem_or_mem {I : Ideal α} (hI : I.IsPrime) {x y : α} : x * y ∈ I → x ∈ I ∨ y ∈ I :=
   hI.2
 #align ideal.is_prime.mem_or_mem Ideal.IsPrime.mem_or_mem
 
-theorem IsPrime.mem_or_mem_of_mul_eq_zero {I : Ideal α} (hI : I.IsPrime) {x y : α} (h : x * y = 0) :
+lemma IsPrime.mem_or_mem_of_mul_eq_zero {I : Ideal α} (hI : I.IsPrime) {x y : α} (h : x * y = 0) :
     x ∈ I ∨ y ∈ I :=
   hI.mem_or_mem (h.symm ▸ I.zero_mem)
 #align ideal.is_prime.mem_or_mem_of_mul_eq_zero Ideal.IsPrime.mem_or_mem_of_mul_eq_zero
 
-theorem IsPrime.mem_of_pow_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ) (H : r ^ n ∈ I) :
+lemma IsPrime.mem_of_pow_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ) (H : r ^ n ∈ I) :
     r ∈ I := by
   induction' n with n ih
   · rw [pow_zero] at H
@@ -271,7 +271,7 @@ theorem IsPrime.mem_of_pow_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ
     exact Or.casesOn (hI.mem_or_mem H) ih id
 #align ideal.is_prime.mem_of_pow_mem Ideal.IsPrime.mem_of_pow_mem
 
-theorem not_isPrime_iff {I : Ideal α} :
+lemma not_isPrime_iff {I : Ideal α} :
     ¬I.IsPrime ↔ I = ⊤ ∨ ∃ (x : α) (_hx : x ∉ I) (y : α) (_hy : y ∉ I), x * y ∈ I := by
   simp_rw [Ideal.isPrime_iff, not_and_or, Ne, Classical.not_not, not_forall, not_or]
   exact
@@ -280,11 +280,11 @@ theorem not_isPrime_iff {I : Ideal α} :
         ⟨x, y, hxy, hx, hy⟩⟩
 #align ideal.not_is_prime_iff Ideal.not_isPrime_iff
 
-theorem zero_ne_one_of_proper {I : Ideal α} (h : I ≠ ⊤) : (0 : α) ≠ 1 := fun hz =>
+lemma zero_ne_one_of_proper {I : Ideal α} (h : I ≠ ⊤) : (0 : α) ≠ 1 := fun hz =>
   I.ne_top_iff_one.1 h <| hz ▸ I.zero_mem
 #align ideal.zero_ne_one_of_proper Ideal.zero_ne_one_of_proper
 
-theorem bot_prime [IsDomain α] : (⊥ : Ideal α).IsPrime :=
+lemma bot_prime [IsDomain α] : (⊥ : Ideal α).IsPrime :=
   ⟨fun h => one_ne_zero (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 #align ideal.bot_prime Ideal.bot_prime
@@ -296,15 +296,15 @@ class IsMaximal (I : Ideal α) : Prop where
   out : IsCoatom I
 #align ideal.is_maximal Ideal.IsMaximal
 
-theorem isMaximal_def {I : Ideal α} : I.IsMaximal ↔ IsCoatom I :=
+lemma isMaximal_def {I : Ideal α} : I.IsMaximal ↔ IsCoatom I :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 #align ideal.is_maximal_def Ideal.isMaximal_def
 
-theorem IsMaximal.ne_top {I : Ideal α} (h : I.IsMaximal) : I ≠ ⊤ :=
+lemma IsMaximal.ne_top {I : Ideal α} (h : I.IsMaximal) : I ≠ ⊤ :=
   (isMaximal_def.1 h).1
 #align ideal.is_maximal.ne_top Ideal.IsMaximal.ne_top
 
-theorem isMaximal_iff {I : Ideal α} :
+lemma isMaximal_iff {I : Ideal α} :
     I.IsMaximal ↔ (1 : α) ∉ I ∧ ∀ (J : Ideal α) (x), I ≤ J → x ∉ I → x ∈ J → (1 : α) ∈ J :=
   isMaximal_def.trans <|
     and_congr I.ne_top_iff_one <|
@@ -317,7 +317,7 @@ theorem isMaximal_iff {I : Ideal α} :
               J.eq_top_iff_one.2 <| H x h₁ xI xJ⟩
 #align ideal.is_maximal_iff Ideal.isMaximal_iff
 
-theorem IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) (IJ : I ≤ J) : I = J :=
+lemma IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) (IJ : I ≤ J) : I = J :=
   eq_iff_le_not_lt.2 ⟨IJ, fun h => hJ (hI.1.2 _ h)⟩
 #align ideal.is_maximal.eq_of_le Ideal.IsMaximal.eq_of_le
 
@@ -326,7 +326,7 @@ instance : IsCoatomic (Ideal α) := by
   rw [← span_singleton_one]
   exact Submodule.singleton_span_isCompactElement 1
 
-theorem IsMaximal.coprime_of_ne {M M' : Ideal α} (hM : M.IsMaximal) (hM' : M'.IsMaximal)
+lemma IsMaximal.coprime_of_ne {M M' : Ideal α} (hM : M.IsMaximal) (hM' : M'.IsMaximal)
     (hne : M ≠ M') : M ⊔ M' = ⊤ := by
   contrapose! hne with h
   exact hM.eq_of_le hM'.ne_top (le_sup_left.trans_eq (hM'.eq_of_le h le_sup_right).symm)
@@ -362,16 +362,16 @@ theorem maximal_of_no_maximal {P : Ideal α}
   exact hmax M (lt_of_lt_of_le hPJ hM2) hM1
 #align ideal.maximal_of_no_maximal Ideal.maximal_of_no_maximal
 
-theorem span_pair_comm {x y : α} : (span {x, y} : Ideal α) = span {y, x} := by
+lemma span_pair_comm {x y : α} : (span {x, y} : Ideal α) = span {y, x} := by
   simp only [span_insert, sup_comm]
 #align ideal.span_pair_comm Ideal.span_pair_comm
 
-theorem mem_span_pair {x y z : α} : z ∈ span ({x, y} : Set α) ↔ ∃ a b, a * x + b * y = z :=
+lemma mem_span_pair {x y z : α} : z ∈ span ({x, y} : Set α) ↔ ∃ a b, a * x + b * y = z :=
   Submodule.mem_span_pair
 #align ideal.mem_span_pair Ideal.mem_span_pair
 
 @[simp]
-theorem span_pair_add_mul_left {R : Type u} [CommRing R] {x y : R} (z : R) :
+lemma span_pair_add_mul_left {R : Type u} [CommRing R] {x y : R} (z : R) :
     (span {x + y * z, y} : Ideal R) = span {x, y} := by
   ext
   rw [mem_span_pair, mem_span_pair]
@@ -387,12 +387,12 @@ theorem span_pair_add_mul_left {R : Type u} [CommRing R] {x y : R} (z : R) :
 #align ideal.span_pair_add_mul_left Ideal.span_pair_add_mul_left
 
 @[simp]
-theorem span_pair_add_mul_right {R : Type u} [CommRing R] {x y : R} (z : R) :
+lemma span_pair_add_mul_right {R : Type u} [CommRing R] {x y : R} (z : R) :
     (span {x, y + x * z} : Ideal R) = span {x, y} := by
   rw [span_pair_comm, span_pair_add_mul_left, span_pair_comm]
 #align ideal.span_pair_add_mul_right Ideal.span_pair_add_mul_right
 
-theorem IsMaximal.exists_inv {I : Ideal α} (hI : I.IsMaximal) {x} (hx : x ∉ I) :
+lemma IsMaximal.exists_inv {I : Ideal α} (hI : I.IsMaximal) {x} (hx : x ∉ I) :
     ∃ y, ∃ i ∈ I, y * x + i = 1 := by
   cases' isMaximal_iff.1 hI with H₁ H₂
   rcases mem_span_insert.1
@@ -408,39 +408,39 @@ section Lattice
 variable {R : Type u} [Semiring R]
 
 -- Porting note: is this the right approach? or is there a better way to prove? (next 4 decls)
-theorem mem_sup_left {S T : Ideal R} : ∀ {x : R}, x ∈ S → x ∈ S ⊔ T :=
+lemma mem_sup_left {S T : Ideal R} : ∀ {x : R}, x ∈ S → x ∈ S ⊔ T :=
   @le_sup_left _ _ S T
 #align ideal.mem_sup_left Ideal.mem_sup_left
 
-theorem mem_sup_right {S T : Ideal R} : ∀ {x : R}, x ∈ T → x ∈ S ⊔ T :=
+lemma mem_sup_right {S T : Ideal R} : ∀ {x : R}, x ∈ T → x ∈ S ⊔ T :=
   @le_sup_right _ _ S T
 #align ideal.mem_sup_right Ideal.mem_sup_right
 
-theorem mem_iSup_of_mem {ι : Sort*} {S : ι → Ideal R} (i : ι) : ∀ {x : R}, x ∈ S i → x ∈ iSup S :=
+lemma mem_iSup_of_mem {ι : Sort*} {S : ι → Ideal R} (i : ι) : ∀ {x : R}, x ∈ S i → x ∈ iSup S :=
   @le_iSup _ _ _ S _
 #align ideal.mem_supr_of_mem Ideal.mem_iSup_of_mem
 
-theorem mem_sSup_of_mem {S : Set (Ideal R)} {s : Ideal R} (hs : s ∈ S) :
+lemma mem_sSup_of_mem {S : Set (Ideal R)} {s : Ideal R} (hs : s ∈ S) :
     ∀ {x : R}, x ∈ s → x ∈ sSup S :=
   @le_sSup _ _ _ _ hs
 #align ideal.mem_Sup_of_mem Ideal.mem_sSup_of_mem
 
-theorem mem_sInf {s : Set (Ideal R)} {x : R} : x ∈ sInf s ↔ ∀ ⦃I⦄, I ∈ s → x ∈ I :=
+lemma mem_sInf {s : Set (Ideal R)} {x : R} : x ∈ sInf s ↔ ∀ ⦃I⦄, I ∈ s → x ∈ I :=
   ⟨fun hx I his => hx I ⟨I, iInf_pos his⟩, fun H _I ⟨_J, hij⟩ => hij ▸ fun _S ⟨hj, hS⟩ => hS ▸ H hj⟩
 #align ideal.mem_Inf Ideal.mem_sInf
 
 @[simp 1001] -- Porting note: increased priority to appease `simpNF`
-theorem mem_inf {I J : Ideal R} {x : R} : x ∈ I ⊓ J ↔ x ∈ I ∧ x ∈ J :=
+lemma mem_inf {I J : Ideal R} {x : R} : x ∈ I ⊓ J ↔ x ∈ I ∧ x ∈ J :=
   Iff.rfl
 #align ideal.mem_inf Ideal.mem_inf
 
 @[simp 1001] -- Porting note: increased priority to appease `simpNF`
-theorem mem_iInf {ι : Sort*} {I : ι → Ideal R} {x : R} : x ∈ iInf I ↔ ∀ i, x ∈ I i :=
+lemma mem_iInf {ι : Sort*} {I : ι → Ideal R} {x : R} : x ∈ iInf I ↔ ∀ i, x ∈ I i :=
   Submodule.mem_iInf _
 #align ideal.mem_infi Ideal.mem_iInf
 
 @[simp 1001] -- Porting note: increased priority to appease `simpNF`
-theorem mem_bot {x : R} : x ∈ (⊥ : Ideal R) ↔ x = 0 :=
+lemma mem_bot {x : R} : x ∈ (⊥ : Ideal R) ↔ x = 0 :=
   Submodule.mem_bot _
 #align ideal.mem_bot Ideal.mem_bot
 
@@ -458,13 +458,13 @@ def pi : Ideal (ι → α) where
   smul_mem' a _b hb i := I.mul_mem_left (a i) (hb i)
 #align ideal.pi Ideal.pi
 
-theorem mem_pi (x : ι → α) : x ∈ I.pi ι ↔ ∀ i, x i ∈ I :=
+lemma mem_pi (x : ι → α) : x ∈ I.pi ι ↔ ∀ i, x i ∈ I :=
   Iff.rfl
 #align ideal.mem_pi Ideal.mem_pi
 
 end Pi
 
-theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : IsChain (· ≤ ·) s)
+lemma sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : IsChain (· ≤ ·) s)
     (H : ∀ p ∈ s, Ideal.IsPrime p) : (sInf s).IsPrime :=
   ⟨fun e =>
     let ⟨x, hx⟩ := hs
@@ -495,24 +495,24 @@ namespace Ideal
 variable [CommSemiring α] (I : Ideal α)
 
 @[simp]
-theorem mul_unit_mem_iff_mem {x y : α} (hy : IsUnit y) : x * y ∈ I ↔ x ∈ I :=
+lemma mul_unit_mem_iff_mem {x y : α} (hy : IsUnit y) : x * y ∈ I ↔ x ∈ I :=
   mul_comm y x ▸ unit_mul_mem_iff_mem I hy
 #align ideal.mul_unit_mem_iff_mem Ideal.mul_unit_mem_iff_mem
 
-theorem mem_span_singleton {x y : α} : x ∈ span ({y} : Set α) ↔ y ∣ x :=
+lemma mem_span_singleton {x y : α} : x ∈ span ({y} : Set α) ↔ y ∣ x :=
   mem_span_singleton'.trans <| exists_congr fun _ => by rw [eq_comm, mul_comm]
 #align ideal.mem_span_singleton Ideal.mem_span_singleton
 
-theorem mem_span_singleton_self (x : α) : x ∈ span ({x} : Set α) :=
+lemma mem_span_singleton_self (x : α) : x ∈ span ({x} : Set α) :=
   mem_span_singleton.mpr dvd_rfl
 #align ideal.mem_span_singleton_self Ideal.mem_span_singleton_self
 
-theorem span_singleton_le_span_singleton {x y : α} :
+lemma span_singleton_le_span_singleton {x y : α} :
     span ({x} : Set α) ≤ span ({y} : Set α) ↔ y ∣ x :=
   span_le.trans <| singleton_subset_iff.trans mem_span_singleton
 #align ideal.span_singleton_le_span_singleton Ideal.span_singleton_le_span_singleton
 
-theorem span_singleton_eq_span_singleton {α : Type u} [CommRing α] [IsDomain α] {x y : α} :
+lemma span_singleton_eq_span_singleton {α : Type u} [CommRing α] [IsDomain α] {x y : α} :
     span ({x} : Set α) = span ({y} : Set α) ↔ Associated x y := by
   rw [← dvd_dvd_iff_associated, le_antisymm_iff, and_comm]
   apply and_congr <;> rw [span_singleton_le_span_singleton]
@@ -532,25 +532,25 @@ noncomputable def associatesEquivIsPrincipal (R : Type*) [CommRing R] [IsDomain 
     exact Associates.mk_quot_out x
 
 @[simp]
-theorem associatesEquivIsPrincipal_apply (R : Type*) [CommRing R] [IsDomain R] (x : R) :
+lemma associatesEquivIsPrincipal_apply (R : Type*) [CommRing R] [IsDomain R] (x : R) :
     associatesEquivIsPrincipal R ⟦x⟧ = Ideal.span {x} := by
   rw [associatesEquivIsPrincipal, Equiv.ofBijective_apply, span_singleton_eq_span_singleton]
   exact Associates.mk_quot_out x
 
-theorem span_singleton_mul_right_unit {a : α} (h2 : IsUnit a) (x : α) :
+lemma span_singleton_mul_right_unit {a : α} (h2 : IsUnit a) (x : α) :
     span ({x * a} : Set α) = span {x} := by rw [mul_comm, span_singleton_mul_left_unit h2]
 #align ideal.span_singleton_mul_right_unit Ideal.span_singleton_mul_right_unit
 
 @[simp]
-theorem span_singleton_eq_top {x} : span ({x} : Set α) = ⊤ ↔ IsUnit x := by
+lemma span_singleton_eq_top {x} : span ({x} : Set α) = ⊤ ↔ IsUnit x := by
   rw [isUnit_iff_dvd_one, ← span_singleton_le_span_singleton, span_singleton_one, eq_top_iff]
 #align ideal.span_singleton_eq_top Ideal.span_singleton_eq_top
 
-theorem span_singleton_prime {p : α} (hp : p ≠ 0) : IsPrime (span ({p} : Set α)) ↔ Prime p := by
+lemma span_singleton_prime {p : α} (hp : p ≠ 0) : IsPrime (span ({p} : Set α)) ↔ Prime p := by
   simp [isPrime_iff, Prime, span_singleton_eq_top, hp, mem_span_singleton]
 #align ideal.span_singleton_prime Ideal.span_singleton_prime
 
-theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
+lemma IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
   ⟨H.1.1, @fun x y hxy =>
     or_iff_not_imp_left.2 fun hx => by
       let J : Ideal α := Submodule.span α (insert x ↑I)
@@ -570,13 +570,13 @@ instance (priority := 100) IsMaximal.isPrime' (I : Ideal α) : ∀ [_H : I.IsMax
   @IsMaximal.isPrime _ _ _
 #align ideal.is_maximal.is_prime' Ideal.IsMaximal.isPrime'
 
-theorem span_singleton_lt_span_singleton [IsDomain α] {x y : α} :
+lemma span_singleton_lt_span_singleton [IsDomain α] {x y : α} :
     span ({x} : Set α) < span ({y} : Set α) ↔ DvdNotUnit y x := by
   rw [lt_iff_le_not_le, span_singleton_le_span_singleton, span_singleton_le_span_singleton,
     dvd_and_not_dvd_iff]
 #align ideal.span_singleton_lt_span_singleton Ideal.span_singleton_lt_span_singleton
 
-theorem factors_decreasing [IsDomain α] (b₁ b₂ : α) (h₁ : b₁ ≠ 0) (h₂ : ¬IsUnit b₂) :
+lemma factors_decreasing [IsDomain α] (b₁ b₂ : α) (h₁ : b₁ ≠ 0) (h₂ : ¬IsUnit b₂) :
     span ({b₁ * b₂} : Set α) < span {b₁} :=
   lt_of_le_not_le
     (Ideal.span_le.2 <| singleton_subset_iff.2 <| Ideal.mem_span_singleton.2 ⟨b₂, rfl⟩) fun h =>
@@ -586,22 +586,22 @@ theorem factors_decreasing [IsDomain α] (b₁ b₂ : α) (h₁ : b₁ ≠ 0) (h
 
 variable (b)
 
-theorem mul_mem_right (h : a ∈ I) : a * b ∈ I :=
+lemma mul_mem_right (h : a ∈ I) : a * b ∈ I :=
   mul_comm b a ▸ I.mul_mem_left b h
 #align ideal.mul_mem_right Ideal.mul_mem_right
 
 variable {b}
 
-theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
+lemma pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
   Nat.casesOn n (Not.elim (by decide))
     (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_left (a ^ m) ha) hn
 #align ideal.pow_mem_of_mem Ideal.pow_mem_of_mem
 
-theorem pow_mem_of_pow_mem {m n : ℕ} (ha : a ^ m ∈ I) (h : m ≤ n) : a ^ n ∈ I := by
+lemma pow_mem_of_pow_mem {m n : ℕ} (ha : a ^ m ∈ I) (h : m ≤ n) : a ^ n ∈ I := by
   rw [← Nat.add_sub_of_le h, pow_add]
   exact I.mul_mem_right _ ha
 
-theorem add_pow_mem_of_pow_mem_of_le {m n k : ℕ}
+lemma add_pow_mem_of_pow_mem_of_le {m n k : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hk : m + n ≤ k + 1) :
     (a + b) ^ k ∈ I := by
   rw [add_pow]
@@ -618,24 +618,24 @@ theorem add_pow_mem_of_pow_mem_of_le {m n k : ℕ}
     rw [Nat.le_sub_iff_add_le hck, ← add_le_add_iff_right 1]
     exact le_trans (by rwa [add_comm _ n, add_assoc, add_le_add_iff_left]) hk
 
-theorem add_pow_add_pred_mem_of_pow_mem  {m n : ℕ}
+lemma add_pow_add_pred_mem_of_pow_mem  {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) :
     (a + b) ^ (m + n - 1) ∈ I :=
   I.add_pow_mem_of_pow_mem_of_le ha hb <| by rw [← Nat.sub_le_iff_le_add]
 
-theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} (hI : I.IsPrime) :
+lemma IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} (hI : I.IsPrime) :
     ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y =>
   ⟨hI.mem_or_mem, by
     rintro (h | h)
     exacts [I.mul_mem_right y h, I.mul_mem_left x h]⟩
 #align ideal.is_prime.mul_mem_iff_mem_or_mem Ideal.IsPrime.mul_mem_iff_mem_or_mem
 
-theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ) (hn : 0 < n) :
+lemma IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ) (hn : 0 < n) :
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
 #align ideal.is_prime.pow_mem_iff_mem Ideal.IsPrime.pow_mem_iff_mem
 
-theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : ℕ) :
+lemma pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : ℕ) :
     s.sum ^ (Multiset.card s * n + 1) ∈
     span ((s.map fun (x:α) ↦ x ^ (n + 1)).toFinset : Set α) := by
   induction' s using Multiset.induction_on with a s hs
@@ -662,14 +662,14 @@ theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : �
     exact mul_mem_left _ _ hs
 #align ideal.pow_multiset_sum_mem_span_pow Ideal.pow_multiset_sum_mem_span_pow
 
-theorem sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
+lemma sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
     (∑ i in s, f i) ^ (s.card * n + 1) ∈ span ((fun i => f i ^ (n + 1)) '' s) := by
   classical
   simpa only [Multiset.card_map, Multiset.map_map, comp_apply, Multiset.toFinset_map,
     Finset.coe_image, Finset.val_toFinset] using pow_multiset_sum_mem_span_pow (s.1.map f) n
 #align ideal.sum_pow_mem_span_pow Ideal.sum_pow_mem_span_pow
 
-theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
+lemma span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     span ((fun (x : α) => x ^ n) '' s) = ⊤ := by
   rw [eq_top_iff_one]
   cases' n with n
@@ -728,28 +728,28 @@ namespace Ideal
 
 variable [Ring α] (I : Ideal α) {a b : α}
 
-protected theorem neg_mem_iff : -a ∈ I ↔ a ∈ I :=
+protected lemma neg_mem_iff : -a ∈ I ↔ a ∈ I :=
   Submodule.neg_mem_iff I
 #align ideal.neg_mem_iff Ideal.neg_mem_iff
 
-protected theorem add_mem_iff_left : b ∈ I → (a + b ∈ I ↔ a ∈ I) :=
+protected lemma add_mem_iff_left : b ∈ I → (a + b ∈ I ↔ a ∈ I) :=
   Submodule.add_mem_iff_left I
 #align ideal.add_mem_iff_left Ideal.add_mem_iff_left
 
-protected theorem add_mem_iff_right : a ∈ I → (a + b ∈ I ↔ b ∈ I) :=
+protected lemma add_mem_iff_right : a ∈ I → (a + b ∈ I ↔ b ∈ I) :=
   Submodule.add_mem_iff_right I
 #align ideal.add_mem_iff_right Ideal.add_mem_iff_right
 
-protected theorem sub_mem : a ∈ I → b ∈ I → a - b ∈ I :=
+protected lemma sub_mem : a ∈ I → b ∈ I → a - b ∈ I :=
   Submodule.sub_mem I
 #align ideal.sub_mem Ideal.sub_mem
 
-theorem mem_span_insert' {s : Set α} {x y} : x ∈ span (insert y s) ↔ ∃ a, x + a * y ∈ span s :=
+lemma mem_span_insert' {s : Set α} {x y} : x ∈ span (insert y s) ↔ ∃ a, x + a * y ∈ span s :=
   Submodule.mem_span_insert'
 #align ideal.mem_span_insert' Ideal.mem_span_insert'
 
 @[simp]
-theorem span_singleton_neg (x : α) : (span {-x} : Ideal α) = span {x} := by
+lemma span_singleton_neg (x : α) : (span {-x} : Ideal α) = span {x} := by
   ext
   simp only [mem_span_singleton']
   exact ⟨fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_comm y x⟩, fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_neg y x⟩⟩
@@ -794,11 +794,11 @@ instance isSimpleOrder : IsSimpleOrder (Ideal K) :=
   ⟨eq_bot_or_top⟩
 #align ideal.is_simple_order Ideal.isSimpleOrder
 
-theorem eq_bot_of_prime [h : I.IsPrime] : I = ⊥ :=
+lemma eq_bot_of_prime [h : I.IsPrime] : I = ⊥ :=
   or_iff_not_imp_right.mp I.eq_bot_or_top h.1
 #align ideal.eq_bot_of_prime Ideal.eq_bot_of_prime
 
-theorem bot_isMaximal : IsMaximal (⊥ : Ideal K) :=
+lemma bot_isMaximal : IsMaximal (⊥ : Ideal K) :=
   ⟨⟨fun h => absurd ((eq_top_iff_one (⊤ : Ideal K)).mp rfl) (by rw [← h]; simp), fun I hI =>
       or_iff_not_imp_left.mp (eq_bot_or_top I) (ne_of_gt hI)⟩⟩
 #align ideal.bot_is_maximal Ideal.bot_isMaximal
@@ -811,7 +811,7 @@ section CommRing
 
 namespace Ideal
 
-theorem mul_sub_mul_mem {R : Type*} [CommRing R] (I : Ideal R) {a b c d : R} (h1 : a - b ∈ I)
+lemma mul_sub_mul_mem {R : Type*} [CommRing R] (I : Ideal R) {a b c d : R} (h1 : a - b ∈ I)
     (h2 : c - d ∈ I) : a * c - b * d ∈ I := by
   rw [show a * c - b * d = (a - b) * c + b * (c - d) by rw [sub_mul, mul_sub]; abel]
   exact I.add_mem (I.mul_mem_right _ h1) (I.mul_mem_left _ h2)
@@ -827,7 +827,7 @@ namespace Ring
 
 variable {R : Type*} [CommSemiring R]
 
-theorem exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
+lemma exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
     ∃ (x : R) (_hx : x ≠ (0 : R)), ¬IsUnit x := by
   have : ¬_ := fun h => hf ⟨exists_pair_ne R, mul_comm, h⟩
   simp_rw [isUnit_iff_exists_inv]
@@ -836,7 +836,7 @@ theorem exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
   exact ⟨x, hx, not_unit⟩
 #align ring.exists_not_is_unit_of_not_is_field Ring.exists_not_isUnit_of_not_isField
 
-theorem not_isField_iff_exists_ideal_bot_lt_and_lt_top [Nontrivial R] :
+lemma not_isField_iff_exists_ideal_bot_lt_and_lt_top [Nontrivial R] :
     ¬IsField R ↔ ∃ I : Ideal R, ⊥ < I ∧ I < ⊤ := by
   constructor
   · intro h
@@ -852,7 +852,7 @@ theorem not_isField_iff_exists_ideal_bot_lt_and_lt_top [Nontrivial R] :
     exact lt_top (I.mul_mem_right _ mem)
 #align ring.not_is_field_iff_exists_ideal_bot_lt_and_lt_top Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top
 
-theorem not_isField_iff_exists_prime [Nontrivial R] :
+lemma not_isField_iff_exists_prime [Nontrivial R] :
     ¬IsField R ↔ ∃ p : Ideal R, p ≠ ⊥ ∧ p.IsPrime :=
   not_isField_iff_exists_ideal_bot_lt_and_lt_top.trans
     ⟨fun ⟨I, bot_lt, lt_top⟩ =>
@@ -892,7 +892,7 @@ namespace Ideal
 
 variable {R : Type u} [CommSemiring R] [Nontrivial R]
 
-theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M := by
+lemma bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M := by
   rcases Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top.1 non_field with ⟨I, Ibot, Itop⟩
   constructor; · simp
   intro mle
@@ -912,32 +912,32 @@ def nonunits (α : Type u) [Monoid α] : Set α :=
 #align nonunits nonunits
 
 @[simp]
-theorem mem_nonunits_iff [Monoid α] : a ∈ nonunits α ↔ ¬IsUnit a :=
+lemma mem_nonunits_iff [Monoid α] : a ∈ nonunits α ↔ ¬IsUnit a :=
   Iff.rfl
 #align mem_nonunits_iff mem_nonunits_iff
 
-theorem mul_mem_nonunits_right [CommMonoid α] : b ∈ nonunits α → a * b ∈ nonunits α :=
+lemma mul_mem_nonunits_right [CommMonoid α] : b ∈ nonunits α → a * b ∈ nonunits α :=
   mt isUnit_of_mul_isUnit_right
 #align mul_mem_nonunits_right mul_mem_nonunits_right
 
-theorem mul_mem_nonunits_left [CommMonoid α] : a ∈ nonunits α → a * b ∈ nonunits α :=
+lemma mul_mem_nonunits_left [CommMonoid α] : a ∈ nonunits α → a * b ∈ nonunits α :=
   mt isUnit_of_mul_isUnit_left
 #align mul_mem_nonunits_left mul_mem_nonunits_left
 
-theorem zero_mem_nonunits [Semiring α] : 0 ∈ nonunits α ↔ (0 : α) ≠ 1 :=
+lemma zero_mem_nonunits [Semiring α] : 0 ∈ nonunits α ↔ (0 : α) ≠ 1 :=
   not_congr isUnit_zero_iff
 #align zero_mem_nonunits zero_mem_nonunits
 
 @[simp 1001] -- increased priority to appease `simpNF`
-theorem one_not_mem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
+lemma one_not_mem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
   not_not_intro isUnit_one
 #align one_not_mem_nonunits one_not_mem_nonunits
 
-theorem coe_subset_nonunits [Semiring α] {I : Ideal α} (h : I ≠ ⊤) : (I : Set α) ⊆ nonunits α :=
+lemma coe_subset_nonunits [Semiring α] {I : Ideal α} (h : I ≠ ⊤) : (I : Set α) ⊆ nonunits α :=
   fun _x hx hu => h <| I.eq_top_of_isUnit_mem hx hu
 #align coe_subset_nonunits coe_subset_nonunits
 
-theorem exists_max_ideal_of_mem_nonunits [CommSemiring α] (h : a ∈ nonunits α) :
+lemma exists_max_ideal_of_mem_nonunits [CommSemiring α] (h : a ∈ nonunits α) :
     ∃ I : Ideal α, I.IsMaximal ∧ a ∈ I := by
   have : Ideal.span ({a} : Set α) ≠ ⊤ := by
     intro H

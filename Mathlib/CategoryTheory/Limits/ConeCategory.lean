@@ -171,13 +171,13 @@ def Cone.isLimitEquivIsTerminal {F : J ⥤ C} (c : Cone F) : IsLimit c ≃ IsTer
       right_inv := by aesop_cat }
 #align category_theory.limits.cone.is_limit_equiv_is_terminal CategoryTheory.Limits.Cone.isLimitEquivIsTerminal
 
-theorem hasLimit_iff_hasTerminal_cone (F : J ⥤ C) : HasLimit F ↔ HasTerminal (Cone F) :=
+lemma hasLimit_iff_hasTerminal_cone (F : J ⥤ C) : HasLimit F ↔ HasTerminal (Cone F) :=
   ⟨fun _ => (Cone.isLimitEquivIsTerminal _ (limit.isLimit F)).hasTerminal, fun h =>
     haveI : HasTerminal (Cone F) := h
     ⟨⟨⟨⊤_ _, (Cone.isLimitEquivIsTerminal _).symm terminalIsTerminal⟩⟩⟩⟩
 #align category_theory.limits.has_limit_iff_has_terminal_cone CategoryTheory.Limits.hasLimit_iff_hasTerminal_cone
 
-theorem hasLimitsOfShape_iff_isLeftAdjoint_const :
+lemma hasLimitsOfShape_iff_isLeftAdjoint_const :
     HasLimitsOfShape J C ↔ IsLeftAdjoint (const J : C ⥤ _) :=
   calc
     HasLimitsOfShape J C ↔ ∀ F : J ⥤ C, HasLimit F :=
@@ -189,12 +189,12 @@ theorem hasLimitsOfShape_iff_isLeftAdjoint_const :
       isLeftAdjoint_iff_hasTerminal_costructuredArrow.symm
 #align category_theory.limits.has_limits_of_shape_iff_is_left_adjoint_const CategoryTheory.Limits.hasLimitsOfShape_iff_isLeftAdjoint_const
 
-theorem IsLimit.liftConeMorphism_eq_isTerminal_from {F : J ⥤ C} {c : Cone F} (hc : IsLimit c)
+lemma IsLimit.liftConeMorphism_eq_isTerminal_from {F : J ⥤ C} {c : Cone F} (hc : IsLimit c)
     (s : Cone F) : hc.liftConeMorphism s = IsTerminal.from (Cone.isLimitEquivIsTerminal _ hc) _ :=
   rfl
 #align category_theory.limits.is_limit.lift_cone_morphism_eq_is_terminal_from CategoryTheory.Limits.IsLimit.liftConeMorphism_eq_isTerminal_from
 
-theorem IsTerminal.from_eq_liftConeMorphism {F : J ⥤ C} {c : Cone F} (hc : IsTerminal c)
+lemma IsTerminal.from_eq_liftConeMorphism {F : J ⥤ C} {c : Cone F} (hc : IsTerminal c)
     (s : Cone F) :
     IsTerminal.from hc s = ((Cone.isLimitEquivIsTerminal _).symm hc).liftConeMorphism s :=
   (IsLimit.liftConeMorphism_eq_isTerminal_from (c.isLimitEquivIsTerminal.symm hc) s).symm
@@ -341,13 +341,13 @@ def Cocone.isColimitEquivIsInitial {F : J ⥤ C} (c : Cocone F) : IsColimit c �
       right_inv := by aesop_cat }
 #align category_theory.limits.cocone.is_colimit_equiv_is_initial CategoryTheory.Limits.Cocone.isColimitEquivIsInitial
 
-theorem hasColimit_iff_hasInitial_cocone (F : J ⥤ C) : HasColimit F ↔ HasInitial (Cocone F) :=
+lemma hasColimit_iff_hasInitial_cocone (F : J ⥤ C) : HasColimit F ↔ HasInitial (Cocone F) :=
   ⟨fun _ => (Cocone.isColimitEquivIsInitial _ (colimit.isColimit F)).hasInitial, fun h =>
     haveI : HasInitial (Cocone F) := h
     ⟨⟨⟨⊥_ _, (Cocone.isColimitEquivIsInitial _).symm initialIsInitial⟩⟩⟩⟩
 #align category_theory.limits.has_colimit_iff_has_initial_cocone CategoryTheory.Limits.hasColimit_iff_hasInitial_cocone
 
-theorem hasColimitsOfShape_iff_isRightAdjoint_const :
+lemma hasColimitsOfShape_iff_isRightAdjoint_const :
     HasColimitsOfShape J C ↔ IsRightAdjoint (const J : C ⥤ _) :=
   calc
     HasColimitsOfShape J C ↔ ∀ F : J ⥤ C, HasColimit F :=
@@ -359,13 +359,13 @@ theorem hasColimitsOfShape_iff_isRightAdjoint_const :
       isRightAdjoint_iff_hasInitial_structuredArrow.symm
 #align category_theory.limits.has_colimits_of_shape_iff_is_right_adjoint_const CategoryTheory.Limits.hasColimitsOfShape_iff_isRightAdjoint_const
 
-theorem IsColimit.descCoconeMorphism_eq_isInitial_to {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c)
+lemma IsColimit.descCoconeMorphism_eq_isInitial_to {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c)
     (s : Cocone F) :
     hc.descCoconeMorphism s = IsInitial.to (Cocone.isColimitEquivIsInitial _ hc) _ :=
   rfl
 #align category_theory.limits.is_colimit.desc_cocone_morphism_eq_is_initial_to CategoryTheory.Limits.IsColimit.descCoconeMorphism_eq_isInitial_to
 
-theorem IsInitial.to_eq_descCoconeMorphism {F : J ⥤ C} {c : Cocone F} (hc : IsInitial c)
+lemma IsInitial.to_eq_descCoconeMorphism {F : J ⥤ C} {c : Cocone F} (hc : IsInitial c)
     (s : Cocone F) :
     IsInitial.to hc s = ((Cocone.isColimitEquivIsInitial _).symm hc).descCoconeMorphism s :=
   (IsColimit.descCoconeMorphism_eq_isInitial_to (c.isColimitEquivIsInitial.symm hc) s).symm

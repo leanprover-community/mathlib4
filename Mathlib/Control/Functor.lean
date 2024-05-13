@@ -36,16 +36,16 @@ variable {F : Type u → Type v}
 variable {α β γ : Type u}
 variable [Functor F] [LawfulFunctor F]
 
-theorem Functor.map_id : (id <$> ·) = (id : F α → F α) := funext id_map
+lemma Functor.map_id : (id <$> ·) = (id : F α → F α) := funext id_map
 #align functor.map_id Functor.map_id
 
-theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
+lemma Functor.map_comp_map (f : α → β) (g : β → γ) :
     ((g <$> ·) ∘ (f <$> ·) : F α → F γ) = ((g ∘ f) <$> ·) :=
   funext fun _ => (comp_map _ _ _).symm
   -- Porting note: was `apply funext <;> intro <;> rw [comp_map]` but `rw` failed?
 #align functor.map_comp_map Functor.map_comp_map
 
-theorem Functor.ext {F} :
+lemma Functor.ext {F} :
     ∀ {F1 : Functor F} {F2 : Functor F} [@LawfulFunctor F F1] [@LawfulFunctor F F2],
     (∀ (α β) (f : α → β) (x : F α), @Functor.map _ F1 _ _ f x = @Functor.map _ F2 _ _ f x) →
     F1 = F2
@@ -96,7 +96,7 @@ def Const.run {α β} (x : Const α β) : α :=
 
 namespace Const
 
-protected theorem ext {α β} {x y : Const α β} (h : x.run = y.run) : x = y :=
+protected lemma ext {α β} {x y : Const α β} (h : x.run = y.run) : x = y :=
   h
 #align functor.const.ext Functor.Const.ext
 
@@ -169,7 +169,7 @@ namespace Comp
 
 variable {F : Type u → Type w} {G : Type v → Type u}
 
-protected theorem ext {α} {x y : Comp F G α} : x.run = y.run → x = y :=
+protected lemma ext {α} {x y : Comp F G α} : x.run = y.run → x = y :=
   id
 #align functor.comp.ext Functor.Comp.ext
 
@@ -186,12 +186,12 @@ protected def map {α β : Type v} (h : α → β) : Comp F G α → Comp F G β
 instance functor : Functor (Comp F G) where map := @Comp.map F G _ _
 
 @[functor_norm]
-theorem map_mk {α β} (h : α → β) (x : F (G α)) : h <$> Comp.mk x = Comp.mk ((h <$> ·) <$> x) :=
+lemma map_mk {α β} (h : α → β) (x : F (G α)) : h <$> Comp.mk x = Comp.mk ((h <$> ·) <$> x) :=
   rfl
 #align functor.comp.map_mk Functor.Comp.map_mk
 
 @[simp]
-protected theorem run_map {α β} (h : α → β) (x : Comp F G α) :
+protected lemma run_map {α β} (h : α → β) (x : Comp F G α) :
     (h <$> x).run = (h <$> ·) <$> x.run :=
   rfl
 #align functor.comp.run_map Functor.Comp.run_map
@@ -199,12 +199,12 @@ protected theorem run_map {α β} (h : α → β) (x : Comp F G α) :
 variable [LawfulFunctor F] [LawfulFunctor G]
 variable {α β γ : Type v}
 
-protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
+protected lemma id_map : ∀ x : Comp F G α, Comp.map id x = x
   | Comp.mk x => by simp only [Comp.map, id_map, id_map']; rfl
   -- Porting note: `rfl` wasn't needed in mathlib3
 #align functor.comp.id_map Functor.Comp.id_map
 
-protected theorem comp_map (g' : α → β) (h : β → γ) :
+protected lemma comp_map (g' : α → β) (h : β → γ) :
     ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
   | Comp.mk x => by simp [Comp.map, Comp.mk, Functor.map_comp_map, functor_norm]
   -- Porting note: `Comp.mk` wasn't needed in mathlib3
@@ -216,13 +216,13 @@ instance lawfulFunctor : LawfulFunctor (Comp F G) where
   comp_map := @Comp.comp_map F G _ _ _ _
 
 -- Porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
-theorem functor_comp_id {F} [AF : Functor F] [LawfulFunctor F] :
+lemma functor_comp_id {F} [AF : Functor F] [LawfulFunctor F] :
     @Comp.functor F Id _ _ = AF :=
   @Functor.ext F _ AF (@Comp.lawfulFunctor F Id _ _ _ _) _ fun _ _ _ _ => rfl
 #align functor.comp.functor_comp_id Functor.Comp.functor_comp_id
 
 -- Porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
-theorem functor_id_comp {F} [AF : Functor F] [LawfulFunctor F] : @Comp.functor Id F _ _ = AF :=
+lemma functor_id_comp {F} [AF : Functor F] [LawfulFunctor F] : @Comp.functor Id F _ _ = AF :=
   @Functor.ext F _ AF (@Comp.lawfulFunctor Id F _ _ _ _) _ fun _ _ _ _ => rfl
 #align functor.comp.functor_id_comp Functor.Comp.functor_id_comp
 
@@ -251,12 +251,12 @@ instance : Seq (Comp F G) :=
   ⟨fun f x => Comp.seq f x⟩
 
 @[simp]
-protected theorem run_pure {α : Type v} : ∀ x : α, (pure x : Comp F G α).run = pure (pure x)
+protected lemma run_pure {α : Type v} : ∀ x : α, (pure x : Comp F G α).run = pure (pure x)
   | _ => rfl
 #align functor.comp.run_pure Functor.Comp.run_pure
 
 @[simp]
-protected theorem run_seq {α β : Type v} (f : Comp F G (α → β)) (x : Comp F G α) :
+protected lemma run_seq {α β : Type v} (f : Comp F G (α → β)) (x : Comp F G α) :
     (f <*> x).run = (· <*> ·) <$> f.run <*> x.run :=
   rfl
 #align functor.comp.run_seq Functor.Comp.run_seq
@@ -289,7 +289,7 @@ def supp {α : Type u} (x : F α) : Set α :=
   { y : α | ∀ ⦃p⦄, Liftp p x → p y }
 #align functor.supp Functor.supp
 
-theorem of_mem_supp {α : Type u} {x : F α} {p : α → Prop} (h : Liftp p x) : ∀ y ∈ supp x, p y :=
+lemma of_mem_supp {α : Type u} {x : F α} {p : α → Prop} (h : Liftp p x) : ∀ y ∈ supp x, p y :=
   fun _ hy => hy h
 #align functor.of_mem_supp Functor.of_mem_supp
 

@@ -17,7 +17,7 @@ universe u
 
 variable {α : Type u}
 
-theorem nonzero_of_invertible [MulZeroOneClass α] (a : α) [Nontrivial α] [Invertible a] : a ≠ 0 :=
+lemma nonzero_of_invertible [MulZeroOneClass α] (a : α) [Nontrivial α] [Invertible a] : a ≠ 0 :=
   fun ha =>
   zero_ne_one <|
     calc
@@ -40,17 +40,17 @@ def invertibleOfNonzero {a : α} (h : a ≠ 0) : Invertible a :=
 #align invertible_of_nonzero invertibleOfNonzero
 
 @[simp]
-theorem invOf_eq_inv (a : α) [Invertible a] : ⅟ a = a⁻¹ :=
+lemma invOf_eq_inv (a : α) [Invertible a] : ⅟ a = a⁻¹ :=
   invOf_eq_right_inv (mul_inv_cancel (nonzero_of_invertible a))
 #align inv_of_eq_inv invOf_eq_inv
 
 @[simp]
-theorem inv_mul_cancel_of_invertible (a : α) [Invertible a] : a⁻¹ * a = 1 :=
+lemma inv_mul_cancel_of_invertible (a : α) [Invertible a] : a⁻¹ * a = 1 :=
   inv_mul_cancel (nonzero_of_invertible a)
 #align inv_mul_cancel_of_invertible inv_mul_cancel_of_invertible
 
 @[simp]
-theorem mul_inv_cancel_of_invertible (a : α) [Invertible a] : a * a⁻¹ = 1 :=
+lemma mul_inv_cancel_of_invertible (a : α) [Invertible a] : a * a⁻¹ = 1 :=
   mul_inv_cancel (nonzero_of_invertible a)
 #align mul_inv_cancel_of_invertible mul_inv_cancel_of_invertible
 

@@ -36,11 +36,11 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E
 notation3 "⨍ "(...)" in "a".."b",
   "r:60:(scoped f => average (Measure.restrict volume (uIoc a b)) f) => r
 
-theorem interval_average_symm (f : ℝ → E) (a b : ℝ) : (⨍ x in a..b, f x) = ⨍ x in b..a, f x := by
+lemma interval_average_symm (f : ℝ → E) (a b : ℝ) : (⨍ x in a..b, f x) = ⨍ x in b..a, f x := by
   rw [setAverage_eq, setAverage_eq, uIoc_comm]
 #align interval_average_symm interval_average_symm
 
-theorem interval_average_eq (f : ℝ → E) (a b : ℝ) :
+lemma interval_average_eq (f : ℝ → E) (a b : ℝ) :
     (⨍ x in a..b, f x) = (b - a)⁻¹ • ∫ x in a..b, f x := by
   rcases le_or_lt a b with h | h
   · rw [setAverage_eq, uIoc_of_le h, Real.volume_Ioc, intervalIntegral.integral_of_le h,
@@ -49,7 +49,7 @@ theorem interval_average_eq (f : ℝ → E) (a b : ℝ) :
       ENNReal.toReal_ofReal (sub_nonneg.2 h.le), smul_neg, ← neg_smul, ← inv_neg, neg_sub]
 #align interval_average_eq interval_average_eq
 
-theorem interval_average_eq_div (f : ℝ → ℝ) (a b : ℝ) :
+lemma interval_average_eq_div (f : ℝ → ℝ) (a b : ℝ) :
     (⨍ x in a..b, f x) = (∫ x in a..b, f x) / (b - a) := by
   rw [interval_average_eq, smul_eq_mul, div_eq_inv_mul]
 #align interval_average_eq_div interval_average_eq_div

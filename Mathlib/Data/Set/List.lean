@@ -21,7 +21,7 @@ variable {α β : Type*} (l : List α)
 
 namespace Set
 
-theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x ∈ range f } := by
+lemma range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x ∈ range f } := by
   refine antisymm (range_subset_iff.2 fun l => forall_mem_map_iff.2 fun y _ => mem_range_self _)
       fun l hl => ?_
   induction' l with a l ihl; · exact ⟨[], rfl⟩
@@ -30,18 +30,18 @@ theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x �
   exact ⟨a :: l, map_cons _ _ _⟩
 #align set.range_list_map Set.range_list_map
 
-theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l | ∀ x ∈ l, x ∈ s } := by
+lemma range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l | ∀ x ∈ l, x ∈ s } := by
   rw [range_list_map, Subtype.range_coe]
 #align set.range_list_map_coe Set.range_list_map_coe
 
 @[simp]
-theorem range_list_get : range l.get = { x | x ∈ l } := by
+lemma range_list_get : range l.get = { x | x ∈ l } := by
   ext x
   rw [mem_setOf_eq, mem_iff_get, mem_range]
 #align set.range_list_nth_le Set.range_list_get
 @[deprecated] alias range_list_nthLe := range_list_get -- 2024-04-22
 
-theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
+lemma range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
   rw [← range_list_get, ← range_comp]
   refine' (range_subset_iff.2 fun n => _).antisymm (insert_subset_iff.2 ⟨_, _⟩)
   exacts [(le_or_lt l.length n).imp get?_eq_none.2 (fun hlt => ⟨⟨_, hlt⟩, (get?_eq_get hlt).symm⟩),
@@ -49,7 +49,7 @@ theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) :
 #align set.range_list_nth Set.range_list_get?
 
 @[simp]
-theorem range_list_getD (d : α) : (range fun n => l.getD n d) = insert d { x | x ∈ l } :=
+lemma range_list_getD (d : α) : (range fun n => l.getD n d) = insert d { x | x ∈ l } :=
   calc
     (range fun n => l.getD n d) = (fun o : Option α => o.getD d) '' range l.get? := by
       simp only [← range_comp, (· ∘ ·), getD_eq_getD_get?]
@@ -58,7 +58,7 @@ theorem range_list_getD (d : α) : (range fun n => l.getD n d) = insert d { x | 
 #align set.range_list_nthd Set.range_list_getD
 
 @[simp]
-theorem range_list_getI [Inhabited α] (l : List α) : range l.getI = insert default { x | x ∈ l } :=
+lemma range_list_getI [Inhabited α] (l : List α) : range l.getI = insert default { x | x ∈ l } :=
   range_list_getD l default
 #align set.range_list_inth Set.range_list_getI
 

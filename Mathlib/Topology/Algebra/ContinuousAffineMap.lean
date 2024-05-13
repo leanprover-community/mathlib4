@@ -49,7 +49,7 @@ variable [AddCommGroup W] [Module R W] [TopologicalSpace Q] [AddTorsor W Q]
 instance : Coe (P →A[R] Q) (P →ᵃ[R] Q) :=
   ⟨toAffineMap⟩
 
-theorem to_affineMap_injective {f g : P →A[R] Q} (h : (f : P →ᵃ[R] Q) = (g : P →ᵃ[R] Q)) :
+lemma to_affineMap_injective {f g : P →A[R] Q} (h : (f : P →ᵃ[R] Q) = (g : P →ᵃ[R] Q)) :
     f = g := by
   cases f
   cases g
@@ -63,23 +63,23 @@ instance : FunLike (P →A[R] Q) P Q where
 instance : ContinuousMapClass (P →A[R] Q) P Q where
   map_continuous := cont
 
-theorem toFun_eq_coe (f : P →A[R] Q) : f.toFun = ⇑f := rfl
+lemma toFun_eq_coe (f : P →A[R] Q) : f.toFun = ⇑f := rfl
 #align continuous_affine_map.to_fun_eq_coe ContinuousAffineMap.toFun_eq_coe
 
-theorem coe_injective : @Function.Injective (P →A[R] Q) (P → Q) (⇑) :=
+lemma coe_injective : @Function.Injective (P →A[R] Q) (P → Q) (⇑) :=
   DFunLike.coe_injective
 #align continuous_affine_map.coe_injective ContinuousAffineMap.coe_injective
 
 @[ext]
-theorem ext {f g : P →A[R] Q} (h : ∀ x, f x = g x) : f = g :=
+lemma ext {f g : P →A[R] Q} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 #align continuous_affine_map.ext ContinuousAffineMap.ext
 
-theorem ext_iff {f g : P →A[R] Q} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : P →A[R] Q} : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 #align continuous_affine_map.ext_iff ContinuousAffineMap.ext_iff
 
-theorem congr_fun {f g : P →A[R] Q} (h : f = g) (x : P) : f x = g x :=
+lemma congr_fun {f g : P →A[R] Q} (h : f = g) (x : P) : f x = g x :=
   DFunLike.congr_fun h _
 #align continuous_affine_map.congr_fun ContinuousAffineMap.congr_fun
 
@@ -93,43 +93,43 @@ instance : CoeHead (P →A[R] Q) C(P, Q) :=
   ⟨toContinuousMap⟩
 
 @[simp]
-theorem toContinuousMap_coe (f : P →A[R] Q) : f.toContinuousMap = ↑f := rfl
+lemma toContinuousMap_coe (f : P →A[R] Q) : f.toContinuousMap = ↑f := rfl
 #align continuous_affine_map.to_continuous_map_coe ContinuousAffineMap.toContinuousMap_coe
 
 @[simp] -- Porting note: removed `norm_cast`
-theorem coe_to_affineMap (f : P →A[R] Q) : ((f : P →ᵃ[R] Q) : P → Q) = f := rfl
+lemma coe_to_affineMap (f : P →A[R] Q) : ((f : P →ᵃ[R] Q) : P → Q) = f := rfl
 #align continuous_affine_map.coe_to_affine_map ContinuousAffineMap.coe_to_affineMap
 
 -- Porting note: removed `norm_cast` and `simp` since proof is `simp only [ContinuousMap.coe_mk]`
-theorem coe_to_continuousMap (f : P →A[R] Q) : ((f : C(P, Q)) : P → Q) = f := rfl
+lemma coe_to_continuousMap (f : P →A[R] Q) : ((f : C(P, Q)) : P → Q) = f := rfl
 #align continuous_affine_map.coe_to_continuous_map ContinuousAffineMap.coe_to_continuousMap
 
-theorem to_continuousMap_injective {f g : P →A[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
+lemma to_continuousMap_injective {f g : P →A[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
     f = g := by
   ext a
   exact ContinuousMap.congr_fun h a
 #align continuous_affine_map.to_continuous_map_injective ContinuousAffineMap.to_continuousMap_injective
 
 -- Porting note: removed `norm_cast`
-theorem coe_affineMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →A[R] Q) : P →ᵃ[R] Q) = f := rfl
+lemma coe_affineMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →A[R] Q) : P →ᵃ[R] Q) = f := rfl
 #align continuous_affine_map.coe_affine_map_mk ContinuousAffineMap.coe_affineMap_mk
 
 @[norm_cast]
-theorem coe_continuousMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →A[R] Q) : C(P, Q)) = ⟨f, h⟩ := rfl
+lemma coe_continuousMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →A[R] Q) : C(P, Q)) = ⟨f, h⟩ := rfl
 #align continuous_affine_map.coe_continuous_map_mk ContinuousAffineMap.coe_continuousMap_mk
 
 @[simp]
-theorem coe_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →A[R] Q) : P → Q) = f := rfl
+lemma coe_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →A[R] Q) : P → Q) = f := rfl
 #align continuous_affine_map.coe_mk ContinuousAffineMap.coe_mk
 
 @[simp]
-theorem mk_coe (f : P →A[R] Q) (h) : (⟨(f : P →ᵃ[R] Q), h⟩ : P →A[R] Q) = f := by
+lemma mk_coe (f : P →A[R] Q) (h) : (⟨(f : P →ᵃ[R] Q), h⟩ : P →A[R] Q) = f := by
   ext
   rfl
 #align continuous_affine_map.mk_coe ContinuousAffineMap.mk_coe
 
 @[continuity]
-protected theorem continuous (f : P →A[R] Q) : Continuous f := f.2
+protected lemma continuous (f : P →A[R] Q) : Continuous f := f.2
 #align continuous_affine_map.continuous ContinuousAffineMap.continuous
 
 variable (R P)
@@ -142,7 +142,7 @@ def const (q : Q) : P →A[R] Q :=
 #align continuous_affine_map.const ContinuousAffineMap.const
 
 @[simp]
-theorem coe_const (q : Q) : (const R P q : P → Q) = Function.const P q := rfl
+lemma coe_const (q : Q) : (const R P q : P → Q) = Function.const P q := rfl
 #align continuous_affine_map.coe_const ContinuousAffineMap.coe_const
 
 noncomputable instance : Inhabited (P →A[R] Q) :=
@@ -157,11 +157,11 @@ def comp (f : Q →A[R] Q₂) (g : P →A[R] Q) : P →A[R] Q₂ :=
 #align continuous_affine_map.comp ContinuousAffineMap.comp
 
 @[simp, norm_cast]
-theorem coe_comp (f : Q →A[R] Q₂) (g : P →A[R] Q) :
+lemma coe_comp (f : Q →A[R] Q₂) (g : P →A[R] Q) :
     (f.comp g : P → Q₂) = (f : Q → Q₂) ∘ (g : P → Q) := rfl
 #align continuous_affine_map.coe_comp ContinuousAffineMap.coe_comp
 
-theorem comp_apply (f : Q →A[R] Q₂) (g : P →A[R] Q) (x : P) : f.comp g x = f (g x) := rfl
+lemma comp_apply (f : Q →A[R] Q₂) (g : P →A[R] Q) (x : P) : f.comp g x = f (g x) := rfl
 #align continuous_affine_map.comp_apply ContinuousAffineMap.comp_apply
 
 section ModuleValuedMaps
@@ -173,10 +173,10 @@ instance : Zero (P →A[R] W) :=
   ⟨ContinuousAffineMap.const R P 0⟩
 
 @[norm_cast, simp]
-theorem coe_zero : ((0 : P →A[R] W) : P → W) = 0 := rfl
+lemma coe_zero : ((0 : P →A[R] W) : P → W) = 0 := rfl
 #align continuous_affine_map.coe_zero ContinuousAffineMap.coe_zero
 
-theorem zero_apply (x : P) : (0 : P →A[R] W) x = 0 := rfl
+lemma zero_apply (x : P) : (0 : P →A[R] W) x = 0 := rfl
 #align continuous_affine_map.zero_apply ContinuousAffineMap.zero_apply
 
 section MulAction
@@ -188,10 +188,10 @@ instance : SMul S (P →A[R] W) where
   smul t f := { t • (f : P →ᵃ[R] W) with cont := f.continuous.const_smul t }
 
 @[norm_cast, simp]
-theorem coe_smul (t : S) (f : P →A[R] W) : ⇑(t • f) = t • ⇑f := rfl
+lemma coe_smul (t : S) (f : P →A[R] W) : ⇑(t • f) = t • ⇑f := rfl
 #align continuous_affine_map.coe_smul ContinuousAffineMap.coe_smul
 
-theorem smul_apply (t : S) (f : P →A[R] W) (x : P) : (t • f) x = t • f x := rfl
+lemma smul_apply (t : S) (f : P →A[R] W) (x : P) : (t • f) x = t • f x := rfl
 #align continuous_affine_map.smul_apply ContinuousAffineMap.smul_apply
 
 instance [DistribMulAction Sᵐᵒᵖ W] [IsCentralScalar S W] : IsCentralScalar S (P →A[R] W) where
@@ -208,30 +208,30 @@ instance : Add (P →A[R] W) where
   add f g := { (f : P →ᵃ[R] W) + (g : P →ᵃ[R] W) with cont := f.continuous.add g.continuous }
 
 @[norm_cast, simp]
-theorem coe_add (f g : P →A[R] W) : ⇑(f + g) = f + g := rfl
+lemma coe_add (f g : P →A[R] W) : ⇑(f + g) = f + g := rfl
 #align continuous_affine_map.coe_add ContinuousAffineMap.coe_add
 
-theorem add_apply (f g : P →A[R] W) (x : P) : (f + g) x = f x + g x := rfl
+lemma add_apply (f g : P →A[R] W) (x : P) : (f + g) x = f x + g x := rfl
 #align continuous_affine_map.add_apply ContinuousAffineMap.add_apply
 
 instance : Sub (P →A[R] W) where
   sub f g := { (f : P →ᵃ[R] W) - (g : P →ᵃ[R] W) with cont := f.continuous.sub g.continuous }
 
 @[norm_cast, simp]
-theorem coe_sub (f g : P →A[R] W) : ⇑(f - g) = f - g := rfl
+lemma coe_sub (f g : P →A[R] W) : ⇑(f - g) = f - g := rfl
 #align continuous_affine_map.coe_sub ContinuousAffineMap.coe_sub
 
-theorem sub_apply (f g : P →A[R] W) (x : P) : (f - g) x = f x - g x := rfl
+lemma sub_apply (f g : P →A[R] W) (x : P) : (f - g) x = f x - g x := rfl
 #align continuous_affine_map.sub_apply ContinuousAffineMap.sub_apply
 
 instance : Neg (P →A[R] W) :=
   { neg := fun f => { -(f : P →ᵃ[R] W) with cont := f.continuous.neg } }
 
 @[norm_cast, simp]
-theorem coe_neg (f : P →A[R] W) : ⇑(-f) = -f := rfl
+lemma coe_neg (f : P →A[R] W) : ⇑(-f) = -f := rfl
 #align continuous_affine_map.coe_neg ContinuousAffineMap.coe_neg
 
-theorem neg_apply (f : P →A[R] W) (x : P) : (-f) x = -f x := rfl
+lemma neg_apply (f : P →A[R] W) (x : P) : (-f) x = -f x := rfl
 #align continuous_affine_map.neg_apply ContinuousAffineMap.neg_apply
 
 instance : AddCommGroup (P →A[R] W) :=
@@ -266,11 +266,11 @@ def toContinuousAffineMap (f : V →L[R] W) : V →A[R] W where
 #align continuous_linear_map.to_continuous_affine_map ContinuousLinearMap.toContinuousAffineMap
 
 @[simp]
-theorem coe_toContinuousAffineMap (f : V →L[R] W) : ⇑f.toContinuousAffineMap = f := rfl
+lemma coe_toContinuousAffineMap (f : V →L[R] W) : ⇑f.toContinuousAffineMap = f := rfl
 #align continuous_linear_map.coe_to_continuous_affine_map ContinuousLinearMap.coe_toContinuousAffineMap
 
 @[simp]
-theorem toContinuousAffineMap_map_zero (f : V →L[R] W) : f.toContinuousAffineMap 0 = 0 := by simp
+lemma toContinuousAffineMap_map_zero (f : V →L[R] W) : f.toContinuousAffineMap 0 = 0 := by simp
 #align continuous_linear_map.to_continuous_affine_map_map_zero ContinuousLinearMap.toContinuousAffineMap_map_zero
 
 end ContinuousLinearMap

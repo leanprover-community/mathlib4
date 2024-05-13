@@ -70,10 +70,10 @@ def chineseRemainderOfList : (l : List ι) → l.Pairwise (Coprime on s) →
     intro j hj
     exact ((modEq_list_prod_iff' co.of_cons).mp k.prop.2 j hj).trans (ih.prop j hj)
 
-@[simp] theorem chineseRemainderOfList_nil :
+@[simp] lemma chineseRemainderOfList_nil :
     (chineseRemainderOfList a s [] List.Pairwise.nil : ℕ) = 0 := rfl
 
-theorem chineseRemainderOfList_lt_prod (l : List ι)
+lemma chineseRemainderOfList_lt_prod (l : List ι)
     (co : l.Pairwise (Coprime on s)) (hs : ∀ i ∈ l, s i ≠ 0) :
     chineseRemainderOfList a s l co < (l.map s).prod := by
   cases l with
@@ -91,7 +91,7 @@ theorem chineseRemainderOfList_lt_prod (l : List ι)
     intro j hj
     exact hs j (List.mem_cons_of_mem _ hj)
 
-theorem chineseRemainderOfList_modEq_unique (l : List ι)
+lemma chineseRemainderOfList_modEq_unique (l : List ι)
     (co : l.Pairwise (Coprime on s)) {z} (hz : ∀ i ∈ l, z ≡ a i [MOD s i]) :
     z ≡ chineseRemainderOfList a s l co [MOD (l.map s).prod] := by
   induction' l with i l ih
@@ -105,7 +105,7 @@ theorem chineseRemainderOfList_modEq_unique (l : List ι)
     exact chineseRemainder_modEq_unique this
       (hz i (List.mem_cons_self _ _)) (ih co.of_cons (fun j hj => hz j (List.mem_cons_of_mem _ hj)))
 
-theorem chineseRemainderOfList_perm {l l' : List ι} (hl : l.Perm l')
+lemma chineseRemainderOfList_perm {l l' : List ι} (hl : l.Perm l')
     (hs : ∀ i ∈ l, s i ≠ 0) (co : l.Pairwise (Coprime on s)) :
     (chineseRemainderOfList a s l co : ℕ) =
     chineseRemainderOfList a s l' (co.perm hl coprime_comm.mpr) := by
@@ -143,7 +143,7 @@ def chineseRemainderOfMultiset {m : Multiset ι} :
           rintro _ rfl _ _ _; rfl
       by ext; exact this.trans <| chineseRemainderOfList_perm a s pp hs lco)
 
-theorem chineseRemainderOfMultiset_lt_prod {m : Multiset ι}
+lemma chineseRemainderOfMultiset_lt_prod {m : Multiset ι}
     (nod : m.Nodup) (hs : ∀ i ∈ m, s i ≠ 0) (pp : Set.Pairwise {x | x ∈ m} (Coprime on s)) :
     chineseRemainderOfMultiset a s nod hs pp < (m.map s).prod := by
   induction' m using Quot.ind with l
@@ -158,7 +158,7 @@ def chineseRemainderOfFinset (t : Finset ι)
     { k // ∀ i ∈ t, k ≡ a i [MOD s i] } := by
   simpa using chineseRemainderOfMultiset a s t.nodup (by simpa using hs) (by simpa using pp)
 
-theorem chineseRemainderOfFinset_lt_prod {t : Finset ι}
+lemma chineseRemainderOfFinset_lt_prod {t : Finset ι}
     (hs : ∀ i ∈ t, s i ≠ 0) (pp : Set.Pairwise t (Coprime on s)) :
     chineseRemainderOfFinset a s t hs pp < ∏ i in t, s i := by
   simpa [chineseRemainderOfFinset] using

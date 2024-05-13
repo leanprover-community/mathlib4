@@ -36,17 +36,17 @@ def derivative' : Derivation R R[X] R[X] where
 variable [AddCommMonoid A] [Module R A] [Module (Polynomial R) A]
 
 @[simp]
-theorem derivation_C (D : Derivation R R[X] A) (a : R) : D (C a) = 0 :=
+lemma derivation_C (D : Derivation R R[X] A) (a : R) : D (C a) = 0 :=
   D.map_algebraMap a
 
 @[simp]
-theorem C_smul_derivation_apply (D : Derivation R R[X] A) (a : R) (f : R[X]) :
+lemma C_smul_derivation_apply (D : Derivation R R[X] A) (a : R) (f : R[X]) :
     C a • D f = a • D f := by
   have : C a • D f = D (C a * f) := by simp
   rw [this, C_mul', D.map_smul]
 
 @[ext]
-theorem derivation_ext {D₁ D₂ : Derivation R R[X] A} (h : D₁ X = D₂ X) : D₁ = D₂ :=
+lemma derivation_ext {D₁ D₂ : Derivation R R[X] A} (h : D₁ X = D₂ X) : D₁ = D₂ :=
   Derivation.ext fun f => Derivation.eqOn_adjoin (Set.eqOn_singleton.2 h) <| by
     simp only [adjoin_X, Algebra.coe_top, Set.mem_univ]
 
@@ -64,7 +64,7 @@ lemma mkDerivation_apply (a : A) (f : R[X]) :
   rfl
 
 @[simp]
-theorem mkDerivation_X (a : A) : mkDerivation R a X = a := by simp [mkDerivation_apply]
+lemma mkDerivation_X (a : A) : mkDerivation R a X = a := by simp [mkDerivation_apply]
 
 lemma mkDerivation_one_eq_derivative' : mkDerivation R (1 : R[X]) = derivative' := by
   ext : 1

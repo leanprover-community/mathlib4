@@ -94,7 +94,7 @@ theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X c.inj =
     ext ⟨i⟩
     exact i.elim
 
-theorem piComparison_fac :
+lemma piComparison_fac :
     have : HasCoproduct X := ⟨⟨c, hc⟩⟩
     piComparison F (fun x ↦ op (X x)) = F.map (opCoproductIsoProduct' hc (productIsProduct _)).inv ≫
     Equalizer.Presieve.Arrows.forkMap F X c.inj := by
@@ -144,7 +144,7 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
   congr
   simp [Iso.eq_inv_comp, ← Category.assoc, ← op_comp, eq_comm, ← Iso.eq_comp_inv]
 
-theorem isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔
+lemma isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔
     Nonempty (PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F) := by
   refine ⟨fun hF' ↦ ⟨preservesProductOfIsSheafFor _ hF hI c hc hd hF'⟩, fun hF' ↦ ?_⟩
   let _ := hF'.some

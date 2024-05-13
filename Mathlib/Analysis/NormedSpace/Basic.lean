@@ -70,20 +70,20 @@ theorem norm_zsmul [NormedSpace 𝕜 E] (n : ℤ) (x : E) : ‖n • x‖ = ‖(
   rw [← norm_smul, ← Int.smul_one_eq_cast, smul_assoc, one_smul]
 #align norm_zsmul norm_zsmul
 
-theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
+lemma eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
   have : Tendsto (fun y ↦ ‖c • (y - x)‖) (𝓝 x) (𝓝 0) :=
     Continuous.tendsto' (by fun_prop) _ _ (by simp)
   this.eventually (gt_mem_nhds h)
 #align eventually_nhds_norm_smul_sub_lt eventually_nhds_norm_smul_sub_lt
 
-theorem Filter.Tendsto.zero_smul_isBoundedUnder_le {f : α → 𝕜} {g : α → E} {l : Filter α}
+lemma Filter.Tendsto.zero_smul_isBoundedUnder_le {f : α → 𝕜} {g : α → E} {l : Filter α}
     (hf : Tendsto f l (𝓝 0)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) :
     Tendsto (fun x => f x • g x) l (𝓝 0) :=
   hf.op_zero_isBoundedUnder_le hg (· • ·) norm_smul_le
 #align filter.tendsto.zero_smul_is_bounded_under_le Filter.Tendsto.zero_smul_isBoundedUnder_le
 
-theorem Filter.IsBoundedUnder.smul_tendsto_zero {f : α → 𝕜} {g : α → E} {l : Filter α}
+lemma Filter.IsBoundedUnder.smul_tendsto_zero {f : α → 𝕜} {g : α → E} {l : Filter α}
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
     Tendsto (fun x => f x • g x) l (𝓝 0) :=
   hg.op_zero_isBoundedUnder_le hf (flip (· • ·)) fun x y =>
@@ -195,7 +195,7 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   rwa [norm_pos_iff]
 #align normed_space.exists_lt_norm NormedSpace.exists_lt_norm
 
-protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
+protected lemma NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
   let ⟨R, hR⟩ := isBounded_iff_forall_norm_le.1 h
   let ⟨x, hx⟩ := NormedSpace.exists_lt_norm 𝕜 E R
   hx.not_le (hR x trivial)
@@ -291,22 +291,22 @@ instance (priority := 100) NormedAlgebra.toNormedSpace' {𝕜'} [NormedRing 𝕜
     NormedSpace 𝕜 𝕜' := by infer_instance
 #align normed_algebra.to_normed_space' NormedAlgebra.toNormedSpace'
 
-theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * ‖(1 : 𝕜')‖ := by
+lemma norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * ‖(1 : 𝕜')‖ := by
   rw [Algebra.algebraMap_eq_smul_one]
   exact norm_smul _ _
 #align norm_algebra_map norm_algebraMap
 
-theorem nnnorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ * ‖(1 : 𝕜')‖₊ :=
+lemma nnnorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ * ‖(1 : 𝕜')‖₊ :=
   Subtype.ext <| norm_algebraMap 𝕜' x
 #align nnnorm_algebra_map nnnorm_algebraMap
 
 @[simp]
-theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
+lemma norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
   rw [norm_algebraMap, norm_one, mul_one]
 #align norm_algebra_map' norm_algebraMap'
 
 @[simp]
-theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
+lemma nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_algebraMap' _ _
 #align nnnorm_algebra_map' nnnorm_algebraMap'
 
@@ -315,12 +315,12 @@ section NNReal
 variable [NormOneClass 𝕜'] [NormedAlgebra ℝ 𝕜']
 
 @[simp]
-theorem norm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
+lemma norm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
   (norm_algebraMap' 𝕜' (x : ℝ)).symm ▸ Real.norm_of_nonneg x.prop
 #align norm_algebra_map_nnreal norm_algebraMap_nnreal
 
 @[simp]
-theorem nnnorm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
+lemma nnnorm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
   Subtype.ext <| norm_algebraMap_nnreal 𝕜' x
 #align nnnorm_algebra_map_nnreal nnnorm_algebraMap_nnreal
 

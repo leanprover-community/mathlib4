@@ -125,36 +125,36 @@ def NormalExpr.zero' : M NormalExpr := return NormalExpr.zero (← read).α0
 
 open NormalExpr
 
-theorem const_add_term {α} [AddCommMonoid α] (k n x a a') (h : k + a = a') :
+lemma const_add_term {α} [AddCommMonoid α] (k n x a a') (h : k + a = a') :
     k + @term α _ n x a = term n x a' := by
   simp [h.symm, term, add_comm, add_assoc]
 
-theorem const_add_termg {α} [AddCommGroup α] (k n x a a') (h : k + a = a') :
+lemma const_add_termg {α} [AddCommGroup α] (k n x a a') (h : k + a = a') :
     k + @termg α _ n x a = termg n x a' := by
   simp [h.symm, termg, add_comm, add_assoc]
 
-theorem term_add_const {α} [AddCommMonoid α] (n x a k a') (h : a + k = a') :
+lemma term_add_const {α} [AddCommMonoid α] (n x a k a') (h : a + k = a') :
     @term α _ n x a + k = term n x a' := by
   simp [h.symm, term, add_assoc]
 
-theorem term_add_constg {α} [AddCommGroup α] (n x a k a') (h : a + k = a') :
+lemma term_add_constg {α} [AddCommGroup α] (n x a k a') (h : a + k = a') :
     @termg α _ n x a + k = termg n x a' := by
   simp [h.symm, termg, add_assoc]
 
-theorem term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h₁ : n₁ + n₂ = n')
+lemma term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h₁ : n₁ + n₂ = n')
     (h₂ : a₁ + a₂ = a') : @term α _ n₁ x a₁ + @term α _ n₂ x a₂ = term n' x a' := by
   simp [h₁.symm, h₂.symm, term, add_nsmul, add_assoc, add_left_comm]
 
-theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
+lemma term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
     (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
     @termg α _ n₁ x a₁ + @termg α _ n₂ x a₂ = termg n' x a' := by
   simp only [termg, h₁.symm, add_zsmul, h₂.symm]
   exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
-theorem zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
+lemma zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
   simp [term, zero_nsmul, one_nsmul]
 
-theorem zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
+lemma zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
   simp [termg, zero_zsmul]
 
 /--
@@ -185,7 +185,7 @@ partial def evalAdd : NormalExpr → NormalExpr → M (NormalExpr × Expr)
       let (a', h) ← evalAdd he₁ a₂
       return (← term' n₂ x₂ a', ← iapp ``const_add_term #[e₁, n₂.1, x₂.2, a₂, a', h])
 
-theorem term_neg {α} [AddCommGroup α] (n x a n' a')
+lemma term_neg {α} [AddCommGroup α] (n x a n' a')
     (h₁ : -n = n') (h₂ : -a = a') : -@termg α _ n x a = termg n' x a' := by
   simpa [h₂.symm, h₁.symm, termg] using add_comm _ _
 
@@ -207,18 +207,18 @@ def smul {α} [AddCommMonoid α] (n : ℕ) (x : α) : α := n • x
 /-- A synonym for `•`, used internally in `abel`. -/
 def smulg {α} [AddCommGroup α] (n : ℤ) (x : α) : α := n • x
 
-theorem zero_smul {α} [AddCommMonoid α] (c) : smul c (0 : α) = 0 := by
+lemma zero_smul {α} [AddCommMonoid α] (c) : smul c (0 : α) = 0 := by
   simp [smul, nsmul_zero]
 
-theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
+lemma zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
   simp [smulg, zsmul_zero]
 
-theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
+lemma term_smul {α} [AddCommMonoid α] (c n x a n' a')
     (h₁ : c * n = n') (h₂ : smul c a = a') :
     smul c (@term α _ n x a) = term n' x a' := by
   simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
 
-theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
+lemma term_smulg {α} [AddCommGroup α] (c n x a n' a')
     (h₁ : c * n = n') (h₂ : smulg c a = a') :
     smulg c (@termg α _ n x a) = termg n' x a' := by
   simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
@@ -234,11 +234,11 @@ def evalSMul (k : Expr × ℤ) : NormalExpr → M (NormalExpr × Expr)
     return (← term' (n'.expr, k.2 * n.2) x a',
       ← iapp ``term_smul #[k.1, n.1, x.2, a, n'.expr, a', ← n'.getProof, h₂])
 
-theorem term_atom {α} [AddCommMonoid α] (x : α) : x = term 1 x 0 := by simp [term]
-theorem term_atomg {α} [AddCommGroup α] (x : α) : x = termg 1 x 0 := by simp [termg]
-theorem term_atom_pf {α} [AddCommMonoid α] (x x' : α) (h : x = x') : x = term 1 x' 0 := by
+lemma term_atom {α} [AddCommMonoid α] (x : α) : x = term 1 x 0 := by simp [term]
+lemma term_atomg {α} [AddCommGroup α] (x : α) : x = termg 1 x 0 := by simp [termg]
+lemma term_atom_pf {α} [AddCommMonoid α] (x x' : α) (h : x = x') : x = term 1 x' 0 := by
   simp [term, h]
-theorem term_atom_pfg {α} [AddCommGroup α] (x x' : α) (h : x = x') : x = termg 1 x' 0 := by
+lemma term_atom_pfg {α} [AddCommGroup α] (x x' : α) (h : x = x') : x = termg 1 x' 0 := by
   simp [termg, h]
 
 /-- Interpret an expression as an atom for `abel`'s normal form. -/
@@ -250,16 +250,16 @@ def evalAtom (e : Expr) : M (NormalExpr × Expr) := do
   | some p => iapp ``term_atom_pf #[e, e', p]
   return (← term' (← intToExpr 1, 1) (i, e') (← zero'), p)
 
-theorem unfold_sub {α} [SubtractionMonoid α] (a b c : α) (h : a + -b = c) : a - b = c := by
+lemma unfold_sub {α} [SubtractionMonoid α] (a b c : α) (h : a + -b = c) : a - b = c := by
   rw [sub_eq_add_neg, h]
 
-theorem unfold_smul {α} [AddCommMonoid α] (n) (x y : α)
+lemma unfold_smul {α} [AddCommMonoid α] (n) (x y : α)
     (h : smul n x = y) : n • x = y := h
 
-theorem unfold_smulg {α} [AddCommGroup α] (n : ℕ) (x y : α)
+lemma unfold_smulg {α} [AddCommGroup α] (n : ℕ) (x y : α)
     (h : smulg (Int.ofNat n) x = y) : (n : ℤ) • x = y := h
 
-theorem unfold_zsmul {α} [AddCommGroup α] (n : ℤ) (x y : α)
+lemma unfold_zsmul {α} [AddCommGroup α] (n : ℤ) (x y : α)
     (h : smulg n x = y) : n • x = y := h
 
 lemma subst_into_smul {α} [AddCommMonoid α]
@@ -395,7 +395,7 @@ elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => withMainContext do
 
 @[inherit_doc abel1] macro (name := abel1!) "abel1!" : tactic => `(tactic| abel1 !)
 
-theorem term_eq [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := rfl
+lemma term_eq [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := rfl
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
 theorem termg_eq [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := rfl
 

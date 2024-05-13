@@ -51,7 +51,7 @@ lemma turanGraph_zero : turanGraph n 0 = ⊤ := by
   ext a b; simp_rw [turanGraph, top_adj, Nat.mod_zero, not_iff_not, Fin.val_inj]
 
 @[simp]
-theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
+lemma turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
   simp_rw [SimpleGraph.ext_iff, Function.funext_iff, turanGraph, top_adj, eq_iff_iff, not_iff_not]
   refine' ⟨fun h ↦ _, _⟩
   · contrapose! h
@@ -63,7 +63,7 @@ theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
 
 variable (hr : 0 < r)
 
-theorem turanGraph_cliqueFree : (turanGraph n r).CliqueFree (r + 1) := by
+lemma turanGraph_cliqueFree : (turanGraph n r).CliqueFree (r + 1) := by
   rw [cliqueFree_iff]
   by_contra h
   rw [not_isEmpty_iff] at h

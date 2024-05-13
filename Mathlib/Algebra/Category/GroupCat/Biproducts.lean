@@ -55,13 +55,13 @@ def binaryProductLimitCone (G H : AddCommGroupCat.{u}) : Limits.LimitCone (pair 
 #align AddCommGroup.binary_product_limit_cone AddCommGroupCat.binaryProductLimitCone
 
 @[simp]
-theorem binaryProductLimitCone_cone_π_app_left (G H : AddCommGroupCat.{u}) :
+lemma binaryProductLimitCone_cone_π_app_left (G H : AddCommGroupCat.{u}) :
     (binaryProductLimitCone G H).cone.π.app ⟨WalkingPair.left⟩ = AddMonoidHom.fst G H :=
   rfl
 #align AddCommGroup.binary_product_limit_cone_cone_π_app_left AddCommGroupCat.binaryProductLimitCone_cone_π_app_left
 
 @[simp]
-theorem binaryProductLimitCone_cone_π_app_right (G H : AddCommGroupCat.{u}) :
+lemma binaryProductLimitCone_cone_π_app_right (G H : AddCommGroupCat.{u}) :
     (binaryProductLimitCone G H).cone.π.app ⟨WalkingPair.right⟩ = AddMonoidHom.snd G H :=
   rfl
 #align AddCommGroup.binary_product_limit_cone_cone_π_app_right AddCommGroupCat.binaryProductLimitCone_cone_π_app_right
@@ -79,13 +79,13 @@ noncomputable def biprodIsoProd (G H : AddCommGroupCat.{u}) :
 attribute [nolint simpNF] AddCommGroupCat.biprodIsoProd_hom_apply
 
 @[simp, elementwise]
-theorem biprodIsoProd_inv_comp_fst (G H : AddCommGroupCat.{u}) :
+lemma biprodIsoProd_inv_comp_fst (G H : AddCommGroupCat.{u}) :
     (biprodIsoProd G H).inv ≫ biprod.fst = AddMonoidHom.fst G H :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk WalkingPair.left)
 #align AddCommGroup.biprod_iso_prod_inv_comp_fst AddCommGroupCat.biprodIsoProd_inv_comp_fst
 
 @[simp, elementwise]
-theorem biprodIsoProd_inv_comp_snd (G H : AddCommGroupCat.{u}) :
+lemma biprodIsoProd_inv_comp_snd (G H : AddCommGroupCat.{u}) :
     (biprodIsoProd G H).inv ≫ biprod.snd = AddMonoidHom.snd G H :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk WalkingPair.right)
 #align AddCommGroup.biprod_iso_prod_inv_comp_snd AddCommGroupCat.biprodIsoProd_inv_comp_snd
@@ -144,7 +144,7 @@ noncomputable def biproductIsoPi (f : J → AddCommGroupCat.{u}) :
 attribute [nolint simpNF] AddCommGroupCat.biproductIsoPi_hom_apply
 
 @[simp, elementwise]
-theorem biproductIsoPi_inv_comp_π (f : J → AddCommGroupCat.{u}) (j : J) :
+lemma biproductIsoPi_inv_comp_π (f : J → AddCommGroupCat.{u}) (j : J) :
     (biproductIsoPi f).inv ≫ biproduct.π f j = Pi.evalAddMonoidHom (fun j => f j) j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk j)
 #align AddCommGroup.biproduct_iso_pi_inv_comp_π AddCommGroupCat.biproductIsoPi_inv_comp_π

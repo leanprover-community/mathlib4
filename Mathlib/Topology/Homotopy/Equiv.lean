@@ -58,12 +58,12 @@ Porting note (#11215): TODO: drop this definition. -/
 instance : CoeFun (X ≃ₕ Y) fun _ => X → Y := ⟨toFun'⟩
 
 @[simp]
-theorem toFun_eq_coe (h : HomotopyEquiv X Y) : (h.toFun : X → Y) = h :=
+lemma toFun_eq_coe (h : HomotopyEquiv X Y) : (h.toFun : X → Y) = h :=
   rfl
 #align continuous_map.homotopy_equiv.to_fun_eq_coe ContinuousMap.HomotopyEquiv.toFun_eq_coe
 
 @[continuity]
-theorem continuous (h : HomotopyEquiv X Y) : Continuous h :=
+lemma continuous (h : HomotopyEquiv X Y) : Continuous h :=
   h.toFun.continuous
 #align continuous_map.homotopy_equiv.continuous ContinuousMap.HomotopyEquiv.continuous
 
@@ -85,7 +85,7 @@ def toHomotopyEquiv (h : X ≃ₜ Y) : X ≃ₕ Y where
 #align homeomorph.to_homotopy_equiv Homeomorph.toHomotopyEquiv
 
 @[simp]
-theorem coe_toHomotopyEquiv (h : X ≃ₜ Y) : (h.toHomotopyEquiv : X → Y) = h :=
+lemma coe_toHomotopyEquiv (h : X ≃ₜ Y) : (h.toHomotopyEquiv : X → Y) = h :=
   rfl
 #align homeomorph.coe_to_homotopy_equiv Homeomorph.coe_toHomotopyEquiv
 
@@ -105,7 +105,7 @@ def symm (h : X ≃ₕ Y) : Y ≃ₕ X where
 #align continuous_map.homotopy_equiv.symm ContinuousMap.HomotopyEquiv.symm
 
 @[simp]
-theorem coe_invFun (h : HomotopyEquiv X Y) : (⇑h.invFun : Y → X) = ⇑h.symm :=
+lemma coe_invFun (h : HomotopyEquiv X Y) : (⇑h.invFun : Y → X) = ⇑h.symm :=
   rfl
 #align continuous_map.homotopy_equiv.coe_inv_fun ContinuousMap.HomotopyEquiv.coe_invFun
 
@@ -154,7 +154,7 @@ def trans (h₁ : X ≃ₕ Y) (h₂ : Y ≃ₕ Z) : X ≃ₕ Z where
 #align continuous_map.homotopy_equiv.trans_apply ContinuousMap.HomotopyEquiv.trans_apply
 #align continuous_map.homotopy_equiv.trans_symm_apply ContinuousMap.HomotopyEquiv.trans_symm_apply
 
-theorem symm_trans (h₁ : X ≃ₕ Y) (h₂ : Y ≃ₕ Z) : (h₁.trans h₂).symm = h₂.symm.trans h₁.symm := rfl
+lemma symm_trans (h₁ : X ≃ₕ Y) (h₂ : Y ≃ₕ Z) : (h₁.trans h₂).symm = h₂.symm.trans h₁.symm := rfl
 #align continuous_map.homotopy_equiv.symm_trans ContinuousMap.HomotopyEquiv.symm_trans
 
 /-- If `X` is homotopy equivalent to `Y` and `Z` is homotopy equivalent to `Z'`, then `X × Z` is
@@ -184,18 +184,18 @@ open ContinuousMap
 namespace Homeomorph
 
 @[simp]
-theorem refl_toHomotopyEquiv (X : Type u) [TopologicalSpace X] :
+lemma refl_toHomotopyEquiv (X : Type u) [TopologicalSpace X] :
     (Homeomorph.refl X).toHomotopyEquiv = HomotopyEquiv.refl X :=
   rfl
 #align homeomorph.refl_to_homotopy_equiv Homeomorph.refl_toHomotopyEquiv
 
 @[simp]
-theorem symm_toHomotopyEquiv (h : X ≃ₜ Y) : h.symm.toHomotopyEquiv = h.toHomotopyEquiv.symm :=
+lemma symm_toHomotopyEquiv (h : X ≃ₜ Y) : h.symm.toHomotopyEquiv = h.toHomotopyEquiv.symm :=
   rfl
 #align homeomorph.symm_to_homotopy_equiv Homeomorph.symm_toHomotopyEquiv
 
 @[simp]
-theorem trans_toHomotopyEquiv (h₀ : X ≃ₜ Y) (h₁ : Y ≃ₜ Z) :
+lemma trans_toHomotopyEquiv (h₀ : X ≃ₜ Y) (h₁ : Y ≃ₜ Z) :
     (h₀.trans h₁).toHomotopyEquiv = h₀.toHomotopyEquiv.trans h₁.toHomotopyEquiv :=
   rfl
 #align homeomorph.trans_to_homotopy_equiv Homeomorph.trans_toHomotopyEquiv

@@ -120,7 +120,7 @@ def Scheme.restrictFunctor : Opens X ⥤ Over X where
 
 -- Porting note: the `by ...` used to be automatically done by unification magic
 @[reassoc]
-theorem Scheme.restrictFunctor_map_ofRestrict {U V : Opens X} (i : U ⟶ V) :
+lemma Scheme.restrictFunctor_map_ofRestrict {U V : Opens X} (i : U ⟶ V) :
     (X.restrictFunctor.map i).1 ≫ ιOpens V = ιOpens U :=
   IsOpenImmersion.lift_fac _ _ (by
     dsimp [restrict, ofRestrict, LocallyRingedSpace.ofRestrict]
@@ -128,14 +128,14 @@ theorem Scheme.restrictFunctor_map_ofRestrict {U V : Opens X} (i : U ⟶ V) :
     exact i.le)
 #align algebraic_geometry.Scheme.restrict_functor_map_ofRestrict AlgebraicGeometry.Scheme.restrictFunctor_map_ofRestrict
 
-theorem Scheme.restrictFunctor_map_base {U V : Opens X} (i : U ⟶ V) :
+lemma Scheme.restrictFunctor_map_base {U V : Opens X} (i : U ⟶ V) :
     (X.restrictFunctor.map i).1.1.base = (Opens.toTopCat _).map i := by
   ext a; refine Subtype.ext ?_ -- Porting note: `ext` did not pick up `Subtype.ext`
   exact (congr_arg (fun f : X.restrict U.openEmbedding ⟶ X => f.1.base a)
         (X.restrictFunctor_map_ofRestrict i))
 #align algebraic_geometry.Scheme.restrict_functor_map_base AlgebraicGeometry.Scheme.restrictFunctor_map_base
 
-theorem Scheme.restrictFunctor_map_app_aux {U V : Opens X} (i : U ⟶ V) (W : Opens V) :
+lemma Scheme.restrictFunctor_map_app_aux {U V : Opens X} (i : U ⟶ V) (W : Opens V) :
     U.openEmbedding.isOpenMap.functor.obj ((X.restrictFunctor.map i).1 ⁻¹ᵁ W) ≤
       V.openEmbedding.isOpenMap.functor.obj W := by
   simp only [← SetLike.coe_subset_coe, IsOpenMap.functor_obj_coe, Set.image_subset_iff,
@@ -144,7 +144,7 @@ theorem Scheme.restrictFunctor_map_app_aux {U V : Opens X} (i : U ⟶ V) (W : Op
   exact ⟨_, h, rfl⟩
 #align algebraic_geometry.Scheme.restrict_functor_map_app_aux AlgebraicGeometry.Scheme.restrictFunctor_map_app_aux
 
-theorem Scheme.restrictFunctor_map_app {U V : Opens X} (i : U ⟶ V) (W : Opens V) :
+lemma Scheme.restrictFunctor_map_app {U V : Opens X} (i : U ⟶ V) (W : Opens V) :
     (X.restrictFunctor.map i).1.1.c.app (op W) =
       X.presheaf.map (homOfLE <| X.restrictFunctor_map_app_aux i W).op := by
   have e₁ :=
@@ -244,13 +244,13 @@ def pullbackRestrictIsoRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
 #align algebraic_geometry.pullback_restrict_iso_restrict AlgebraicGeometry.pullbackRestrictIsoRestrict
 
 @[simp, reassoc]
-theorem pullbackRestrictIsoRestrict_inv_fst {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
+lemma pullbackRestrictIsoRestrict_inv_fst {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
     (pullbackRestrictIsoRestrict f U).inv ≫ pullback.fst = X.ofRestrict _ := by
   delta pullbackRestrictIsoRestrict; simp
 #align algebraic_geometry.pullback_restrict_iso_restrict_inv_fst AlgebraicGeometry.pullbackRestrictIsoRestrict_inv_fst
 
 @[simp, reassoc]
-theorem pullbackRestrictIsoRestrict_hom_restrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
+lemma pullbackRestrictIsoRestrict_hom_restrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
     (pullbackRestrictIsoRestrict f U).hom ≫ Scheme.ιOpens (f ⁻¹ᵁ U) = pullback.fst := by
   delta pullbackRestrictIsoRestrict; simp
 #align algebraic_geometry.pullback_restrict_iso_restrict_hom_restrict AlgebraicGeometry.pullbackRestrictIsoRestrict_hom_restrict
@@ -264,19 +264,19 @@ def morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) : X ∣_ᵤ 
 infixl:85 " ∣_ " => morphismRestrict
 
 @[simp, reassoc]
-theorem pullbackRestrictIsoRestrict_hom_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y)
+lemma pullbackRestrictIsoRestrict_hom_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y)
     (U : Opens Y) : (pullbackRestrictIsoRestrict f U).hom ≫ f ∣_ U = pullback.snd :=
   Iso.hom_inv_id_assoc _ _
 #align algebraic_geometry.pullback_restrict_iso_restrict_hom_morphism_restrict AlgebraicGeometry.pullbackRestrictIsoRestrict_hom_morphismRestrict
 
 @[simp, reassoc]
-theorem morphismRestrict_ι {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
+lemma morphismRestrict_ι {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
     (f ∣_ U) ≫ Scheme.ιOpens U = Scheme.ιOpens (f ⁻¹ᵁ U) ≫ f := by
   delta morphismRestrict
   rw [Category.assoc, pullback.condition.symm, pullbackRestrictIsoRestrict_inv_fst_assoc]
 #align algebraic_geometry.morphism_restrict_ι AlgebraicGeometry.morphismRestrict_ι
 
-theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
+lemma isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
     IsPullback (f ∣_ U) (Scheme.ιOpens (f ⁻¹ᵁ U)) (Scheme.ιOpens U) f := by
   delta morphismRestrict
   rw [← Category.id_comp f]
@@ -287,7 +287,7 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens 
   erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
 #align algebraic_geometry.is_pullback_morphism_restrict AlgebraicGeometry.isPullback_morphismRestrict
 
-theorem morphismRestrict_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U : Opens Z) :
+lemma morphismRestrict_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U : Opens Z) :
     (f ≫ g) ∣_ U = f ∣_ g ⁻¹ᵁ U ≫ g ∣_ U := by
   delta morphismRestrict
   rw [← pullbackRightPullbackFstIso_inv_snd_snd]
@@ -303,18 +303,18 @@ theorem morphismRestrict_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U : Opens Y) : IsIso (f ∣_ U) := by
   delta morphismRestrict; infer_instance
 
-theorem morphismRestrict_base_coe {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (x) :
+lemma morphismRestrict_base_coe {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (x) :
     @Coe.coe U Y (⟨fun x => x.1⟩) ((f ∣_ U).1.base x) = f.1.base x.1 :=
   congr_arg (fun f => PresheafedSpace.Hom.base (LocallyRingedSpace.Hom.val f) x)
     (morphismRestrict_ι f U)
 #align algebraic_geometry.morphism_restrict_base_coe AlgebraicGeometry.morphismRestrict_base_coe
 
-theorem morphismRestrict_val_base {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
+lemma morphismRestrict_val_base {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
     ⇑(f ∣_ U).1.base = U.1.restrictPreimage f.1.base :=
   funext fun x => Subtype.ext (morphismRestrict_base_coe f U x)
 #align algebraic_geometry.morphism_restrict_val_base AlgebraicGeometry.morphismRestrict_val_base
 
-theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
+lemma image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
     (f ⁻¹ᵁ U).openEmbedding.isOpenMap.functor.obj ((f ∣_ U) ⁻¹ᵁ V) =
       f ⁻¹ᵁ (U.openEmbedding.isOpenMap.functor.obj V) := by
   ext1
@@ -336,7 +336,7 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Op
     exact morphismRestrict_base_coe f U ⟨x, hx⟩
 #align algebraic_geometry.image_morphism_restrict_preimage AlgebraicGeometry.image_morphismRestrict_preimage
 
-theorem morphismRestrict_c_app {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
+lemma morphismRestrict_c_app {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
     (f ∣_ U).1.c.app (op V) =
       f.1.c.app (op (U.openEmbedding.isOpenMap.functor.obj V)) ≫
         X.presheaf.map (eqToHom (image_morphismRestrict_preimage f U V)).op := by
@@ -356,7 +356,7 @@ theorem morphismRestrict_c_app {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V
     congr 1
 #align algebraic_geometry.morphism_restrict_c_app AlgebraicGeometry.morphismRestrict_c_app
 
-theorem Γ_map_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
+lemma Γ_map_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
     Scheme.Γ.map (f ∣_ U).op =
       Y.presheaf.map (eqToHom <| U.openEmbedding_obj_top.symm).op ≫
         f.1.c.app (op U) ≫ X.presheaf.map (eqToHom <| (f ⁻¹ᵁ U).openEmbedding_obj_top).op := by

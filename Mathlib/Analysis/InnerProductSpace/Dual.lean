@@ -68,18 +68,18 @@ def toDualMap : E →ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
 variable {E}
 
 @[simp]
-theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
+lemma toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 #align inner_product_space.to_dual_map_apply InnerProductSpace.toDualMap_apply
 
-theorem innerSL_norm [Nontrivial E] : ‖(innerSL 𝕜 : E →L⋆[𝕜] E →L[𝕜] 𝕜)‖ = 1 :=
+lemma innerSL_norm [Nontrivial E] : ‖(innerSL 𝕜 : E →L⋆[𝕜] E →L[𝕜] 𝕜)‖ = 1 :=
   show ‖(toDualMap 𝕜 E).toContinuousLinearMap‖ = 1 from LinearIsometry.norm_toContinuousLinearMap _
 set_option linter.uppercaseLean3 false in
 #align inner_product_space.innerSL_norm InnerProductSpace.innerSL_norm
 
 variable {𝕜}
 
-theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
+lemma ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪b i, x⟫ = ⟪b i, y⟫) : x = y := by
   apply (toDualMap 𝕜 E).map_eq_iff.mp
   refine' (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (Basis.ext b _)
@@ -91,7 +91,7 @@ theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
   exact congr_arg conj (h i)
 #align inner_product_space.ext_inner_left_basis InnerProductSpace.ext_inner_left_basis
 
-theorem ext_inner_right_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
+lemma ext_inner_right_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪x, b i⟫ = ⟪y, b i⟫) : x = y := by
   refine' ext_inner_left_basis b fun i => _
   rw [← inner_conj_symm]
@@ -149,12 +149,12 @@ def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
 variable {𝕜} {E}
 
 @[simp]
-theorem toDual_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ :=
+lemma toDual_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 #align inner_product_space.to_dual_apply InnerProductSpace.toDual_apply
 
 @[simp]
-theorem toDual_symm_apply {x : E} {y : NormedSpace.Dual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
+lemma toDual_symm_apply {x : E} {y : NormedSpace.Dual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
   rw [← toDual_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
 #align inner_product_space.to_dual_symm_apply InnerProductSpace.toDual_symm_apply
@@ -172,12 +172,12 @@ local postfix:1024 "♯" => continuousLinearMapOfBilin
 variable (B : E →L⋆[𝕜] E →L[𝕜] 𝕜)
 
 @[simp]
-theorem continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := by
+lemma continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := by
   rw [continuousLinearMapOfBilin, coe_comp', ContinuousLinearEquiv.coe_coe,
     LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply, toDual_symm_apply]
 #align inner_product_space.continuous_linear_map_of_bilin_apply InnerProductSpace.continuousLinearMapOfBilin_apply
 
-theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪f, w⟫ = B v w) :
+lemma unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪f, w⟫ = B v w) :
     f = B♯ v := by
   refine' ext_inner_right 𝕜 _
   intro w

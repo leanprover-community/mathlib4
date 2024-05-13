@@ -40,7 +40,7 @@ def of (α : Type*) [BooleanAlgebra α] : BoolAlg :=
 #align BoolAlg.of BoolAlg.of
 
 @[simp]
-theorem coe_of (α : Type*) [BooleanAlgebra α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [BooleanAlgebra α] : ↥(of α) = α :=
   rfl
 #align BoolAlg.coe_of BoolAlg.coe_of
 
@@ -53,7 +53,7 @@ def toBddDistLat (X : BoolAlg) : BddDistLat :=
 #align BoolAlg.to_BddDistLat BoolAlg.toBddDistLat
 
 @[simp]
-theorem coe_toBddDistLat (X : BoolAlg) : ↥X.toBddDistLat = ↥X :=
+lemma coe_toBddDistLat (X : BoolAlg) : ↥X.toBddDistLat = ↥X :=
   rfl
 #align BoolAlg.coe_to_BddDistLat BoolAlg.coe_toBddDistLat
 
@@ -110,7 +110,7 @@ def dualEquiv : BoolAlg ≌ BoolAlg where
 
 end BoolAlg
 
-theorem boolAlg_dual_comp_forget_to_bddDistLat :
+lemma boolAlg_dual_comp_forget_to_bddDistLat :
     BoolAlg.dual ⋙ forget₂ BoolAlg BddDistLat =
     forget₂ BoolAlg BddDistLat ⋙ BddDistLat.dual :=
   rfl

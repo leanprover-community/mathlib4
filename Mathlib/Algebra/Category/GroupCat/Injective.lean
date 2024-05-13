@@ -44,7 +44,7 @@ variable (A : Type u) [AddCommGroup A]
 
 set_option linter.uppercaseLean3 false
 
-theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun I g ↦ by
+lemma Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun I g ↦ by
   rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩
   obtain rfl | h0 := eq_or_ne m 0
   · refine ⟨0, fun n hn ↦ ?_⟩
@@ -59,7 +59,7 @@ theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun 
 
 namespace AddCommGroupCat
 
-theorem injective_as_module_iff : Injective (⟨A⟩ : ModuleCat ℤ) ↔
+lemma injective_as_module_iff : Injective (⟨A⟩ : ModuleCat ℤ) ↔
     Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
   ((forget₂ (ModuleCat ℤ) AddCommGroupCat).asEquivalence.map_injective_iff ⟨A⟩).symm
 #noalign AddCommGroup.injective_of_injective_as_module

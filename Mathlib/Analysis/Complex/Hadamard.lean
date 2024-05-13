@@ -199,7 +199,7 @@ lemma F_edge_le_one (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
     apply le_of_lt (norm_lt_sSupNormIm_eps f ε hε _ _ hB)
     simp only [verticalClosedStrip, mem_preimage, zero_le_one, hz1, right_mem_Icc]
 
-theorem norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip (f : ℂ → E) (ε : ℝ) (hε : 0 < ε)
+lemma norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip (f : ℂ → E) (ε : ℝ) (hε : 0 < ε)
     (z : ℂ) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) (hz : z ∈ verticalClosedStrip 0 1) :
     ‖F f ε z‖ ≤ 1 := by

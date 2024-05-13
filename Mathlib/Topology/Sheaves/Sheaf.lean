@@ -92,7 +92,7 @@ theorem isSheaf_unit (F : Presheaf (CategoryTheory.Discrete Unit) X) : F.IsSheaf
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_unit TopCat.Presheaf.isSheaf_unit
 
-theorem isSheaf_iso_iff {F G : Presheaf C X} (α : F ≅ G) : F.IsSheaf ↔ G.IsSheaf :=
+lemma isSheaf_iso_iff {F G : Presheaf C X} (α : F ≅ G) : F.IsSheaf ↔ G.IsSheaf :=
   Presheaf.isSheaf_of_iso_iff α
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_iso_iff TopCat.Presheaf.isSheaf_iso_iff
@@ -154,12 +154,12 @@ instance forgetFaithful : (forget C X).Faithful where
   map_injective := Sheaf.Hom.ext _ _
 
 -- Note: These can be proved by simp.
-theorem id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).1.app t = 𝟙 _ :=
+lemma id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).1.app t = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.id_app TopCat.Sheaf.id_app
 
-theorem comp_app {F G H : Sheaf C X} (f : F ⟶ G) (g : G ⟶ H) (t) :
+lemma comp_app {F G H : Sheaf C X} (f : F ⟶ G) (g : G ⟶ H) (t) :
     (f ≫ g).1.app t = f.1.app t ≫ g.1.app t :=
   rfl
 set_option linter.uppercaseLean3 false in

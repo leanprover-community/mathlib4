@@ -27,13 +27,13 @@ instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (Sum α
   complete := by rintro (_ | _) <;> simp
 
 @[simp]
-theorem Finset.univ_disjSum_univ {α β : Type*} [Fintype α] [Fintype β] :
+lemma Finset.univ_disjSum_univ {α β : Type*} [Fintype α] [Fintype β] :
     univ.disjSum univ = (univ : Finset (Sum α β)) :=
   rfl
 #align finset.univ_disj_sum_univ Finset.univ_disjSum_univ
 
 @[simp]
-theorem Fintype.card_sum [Fintype α] [Fintype β] :
+lemma Fintype.card_sum [Fintype α] [Fintype β] :
     Fintype.card (Sum α β) = Fintype.card α + Fintype.card β :=
   card_disjSum _ _
 #align fintype.card_sum Fintype.card_sum
@@ -44,7 +44,7 @@ def fintypeOfFintypeNe (a : α) (h : Fintype { b // b ≠ a }) : Fintype α :=
     classical exact (Equiv.sumCompl (· = a)).bijective
 #align fintype_of_fintype_ne fintypeOfFintypeNe
 
-theorem image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : β) (b : α → β) :
+lemma image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : β) (b : α → β) :
     image (fun i : { a // b a ≠ k } => b ↑i) univ = (image b univ).erase k := by
   apply subset_antisymm
   · rw [image_subset_iff]
@@ -57,7 +57,7 @@ theorem image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : 
     exact ⟨⟨a, ne_of_mem_erase hi⟩, mem_univ _, rfl⟩
 #align image_subtype_ne_univ_eq_image_erase image_subtype_ne_univ_eq_image_erase
 
-theorem image_subtype_univ_ssubset_image_univ [Fintype α] [DecidableEq β] (k : β) (b : α → β)
+lemma image_subtype_univ_ssubset_image_univ [Fintype α] [DecidableEq β] (k : β) (b : α → β)
     (hk : k ∈ Finset.image b univ) (p : β → Prop) [DecidablePred p] (hp : ¬p k) :
     image (fun i : { a // p (b a) } => b ↑i) univ ⊂ image b univ := by
   constructor
@@ -115,7 +115,7 @@ theorem Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
     simpa [s'] using hi
 #align set.maps_to.exists_equiv_extend_of_card_eq Set.MapsTo.exists_equiv_extend_of_card_eq
 
-theorem Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fintype { x // q x }]
+lemma Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fintype { x // q x }]
     [Fintype { x // p x ∨ q x }] :
     Fintype.card { x // p x ∨ q x } ≤ Fintype.card { x // p x } + Fintype.card { x // q x } := by
   classical
@@ -123,7 +123,7 @@ theorem Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fint
     rw [Fintype.card_sum]
 #align fintype.card_subtype_or Fintype.card_subtype_or
 
-theorem Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) [Fintype { x // p x }]
+lemma Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) [Fintype { x // p x }]
     [Fintype { x // q x }] [Fintype { x // p x ∨ q x }] :
     Fintype.card { x // p x ∨ q x } = Fintype.card { x // p x } + Fintype.card { x // q x } := by
   classical
@@ -136,7 +136,7 @@ section
 open scoped Classical
 
 @[simp]
-theorem infinite_sum : Infinite (Sum α β) ↔ Infinite α ∨ Infinite β := by
+lemma infinite_sum : Infinite (Sum α β) ↔ Infinite α ∨ Infinite β := by
   refine' ⟨fun H => _, fun H => H.elim (@Sum.infinite_of_left α β) (@Sum.infinite_of_right α β)⟩
   contrapose! H; haveI := fintypeOfNotInfinite H.1; haveI := fintypeOfNotInfinite H.2
   exact Infinite.false

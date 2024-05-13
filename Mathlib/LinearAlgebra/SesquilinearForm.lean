@@ -59,20 +59,20 @@ def IsOrtho (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x : M₁) (y : M�
   B x y = 0
 #align linear_map.is_ortho LinearMap.IsOrtho
 
-theorem isOrtho_def {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} {x y} : B.IsOrtho x y ↔ B x y = 0 :=
+lemma isOrtho_def {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} {x y} : B.IsOrtho x y ↔ B x y = 0 :=
   Iff.rfl
 #align linear_map.is_ortho_def LinearMap.isOrtho_def
 
-theorem isOrtho_zero_left (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B (0 : M₁) x := by
+lemma isOrtho_zero_left (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B (0 : M₁) x := by
   dsimp only [IsOrtho]
   rw [map_zero B, zero_apply]
 #align linear_map.is_ortho_zero_left LinearMap.isOrtho_zero_left
 
-theorem isOrtho_zero_right (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B x (0 : M₂) :=
+lemma isOrtho_zero_right (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B x (0 : M₂) :=
   map_zero (B x)
 #align linear_map.is_ortho_zero_right LinearMap.isOrtho_zero_right
 
-theorem isOrtho_flip {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {x y} : B.IsOrtho x y ↔ B.flip.IsOrtho y x := by
+lemma isOrtho_flip {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {x y} : B.IsOrtho x y ↔ B.flip.IsOrtho y x := by
   simp_rw [isOrtho_def, flip_apply]
 #align linear_map.is_ortho_flip LinearMap.isOrtho_flip
 
@@ -84,13 +84,13 @@ def IsOrthoᵢ (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M) (v : n → M�
 set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho LinearMap.IsOrthoᵢ
 
-theorem isOrthoᵢ_def {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {v : n → M₁} :
+lemma isOrthoᵢ_def {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {v : n → M₁} :
     B.IsOrthoᵢ v ↔ ∀ i j : n, i ≠ j → B (v i) (v j) = 0 :=
   Iff.rfl
 set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho_def LinearMap.isOrthoᵢ_def
 
-theorem isOrthoᵢ_flip (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M) {v : n → M₁} :
+lemma isOrthoᵢ_flip (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M) {v : n → M₁} :
     B.IsOrthoᵢ v ↔ B.flip.IsOrthoᵢ v := by
   simp_rw [isOrthoᵢ_def]
   constructor <;> intro h i j hij
@@ -110,7 +110,7 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
   {I₁ : K₁ →+* K} {I₂ : K₂ →+* K} {I₁' : K₁ →+* K} {J₁ : K →+* K} {J₂ : K →+* K}
 
 -- todo: this also holds for [CommRing R] [IsDomain R] when J₁ is invertible
-theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₁} (ha : a ≠ 0) :
+lemma ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₁} (ha : a ≠ 0) :
     IsOrtho B x y ↔ IsOrtho B (a • x) y := by
   dsimp only [IsOrtho]
   constructor <;> intro H
@@ -123,7 +123,7 @@ theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} 
 #align linear_map.ortho_smul_left LinearMap.ortho_smul_left
 
 -- todo: this also holds for [CommRing R] [IsDomain R] when J₂ is invertible
-theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₂} {ha : a ≠ 0} :
+lemma ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₂} {ha : a ≠ 0} :
     IsOrtho B x y ↔ IsOrtho B x (a • y) := by
   dsimp only [IsOrtho]
   constructor <;> intro H
@@ -173,31 +173,31 @@ namespace IsRefl
 
 variable (H : B.IsRefl)
 
-theorem eq_zero : ∀ {x y}, B x y = 0 → B y x = 0 := fun {x y} ↦ H x y
+lemma eq_zero : ∀ {x y}, B x y = 0 → B y x = 0 := fun {x y} ↦ H x y
 #align linear_map.is_refl.eq_zero LinearMap.IsRefl.eq_zero
 
-theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
+lemma ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   ⟨eq_zero H, eq_zero H⟩
 #align linear_map.is_refl.ortho_comm LinearMap.IsRefl.ortho_comm
 
-theorem domRestrict (H : B.IsRefl) (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
+lemma domRestrict (H : B.IsRefl) (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
   fun _ _ ↦ by
   simp_rw [domRestrict₁₂_apply]
   exact H _ _
 #align linear_map.is_refl.dom_restrict_refl LinearMap.IsRefl.domRestrict
 
 @[simp]
-theorem flip_isRefl_iff : B.flip.IsRefl ↔ B.IsRefl :=
+lemma flip_isRefl_iff : B.flip.IsRefl ↔ B.IsRefl :=
   ⟨fun h x y H ↦ h y x ((B.flip_apply _ _).trans H), fun h x y ↦ h y x⟩
 #align linear_map.is_refl.flip_is_refl_iff LinearMap.IsRefl.flip_isRefl_iff
 
-theorem ker_flip_eq_bot (H : B.IsRefl) (h : LinearMap.ker B = ⊥) : LinearMap.ker B.flip = ⊥ := by
+lemma ker_flip_eq_bot (H : B.IsRefl) (h : LinearMap.ker B = ⊥) : LinearMap.ker B.flip = ⊥ := by
   refine' ker_eq_bot'.mpr fun _ hx ↦ ker_eq_bot'.mp h _ _
   ext
   exact H _ _ (LinearMap.congr_fun hx _)
 #align linear_map.is_refl.ker_flip_eq_bot LinearMap.IsRefl.ker_flip_eq_bot
 
-theorem ker_eq_bot_iff_ker_flip_eq_bot (H : B.IsRefl) :
+lemma ker_eq_bot_iff_ker_flip_eq_bot (H : B.IsRefl) :
     LinearMap.ker B = ⊥ ↔ LinearMap.ker B.flip = ⊥ := by
   refine' ⟨ker_flip_eq_bot H, fun h ↦ _⟩
   exact (congr_arg _ B.flip_flip.symm).trans (ker_flip_eq_bot (flip_isRefl_iff.mpr H) h)
@@ -221,20 +221,20 @@ def IsSymm (B : M →ₛₗ[I] M →ₗ[R] R) : Prop :=
 
 namespace IsSymm
 
-protected theorem eq (H : B.IsSymm) (x y) : I (B x y) = B y x :=
+protected lemma eq (H : B.IsSymm) (x y) : I (B x y) = B y x :=
   H x y
 #align linear_map.is_symm.eq LinearMap.IsSymm.eq
 
-theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 ↦ by
+lemma isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 ↦ by
   rw [← H.eq]
   simp [H1]
 #align linear_map.is_symm.is_refl LinearMap.IsSymm.isRefl
 
-theorem ortho_comm (H : B.IsSymm) {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
+lemma ortho_comm (H : B.IsSymm) {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   H.isRefl.ortho_comm
 #align linear_map.is_symm.ortho_comm LinearMap.IsSymm.ortho_comm
 
-theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p p).IsSymm :=
+lemma domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p p).IsSymm :=
   fun _ _ ↦ by
   simp_rw [domRestrict₁₂_apply]
   exact H _ _
@@ -243,9 +243,9 @@ theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p 
 end IsSymm
 
 @[simp]
-theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := fun _ _ => map_zero _
+lemma isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := fun _ _ => map_zero _
 
-theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip := by
+lemma isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip := by
   constructor <;> intro h
   · ext
     rw [← h, flip_apply, RingHom.id_apply]
@@ -275,7 +275,7 @@ def IsAlt (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Prop :=
 
 variable (H : B.IsAlt)
 
-theorem IsAlt.self_eq_zero (x : M₁) : B x x = 0 :=
+lemma IsAlt.self_eq_zero (x : M₁) : B x x = 0 :=
   H x
 #align linear_map.is_alt.self_eq_zero LinearMap.IsAlt.self_eq_zero
 
@@ -290,7 +290,7 @@ variable [CommSemiring R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [Add
 
 variable (H : B.IsAlt)
 
-theorem neg (x y : M₁) : -B x y = B y x := by
+lemma neg (x y : M₁) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
   simp? [map_add, self_eq_zero H] at H1 says
     simp only [map_add, add_apply, self_eq_zero H, zero_add, add_zero] at H1
@@ -298,12 +298,12 @@ theorem neg (x y : M₁) : -B x y = B y x := by
   exact H1
 #align linear_map.is_alt.neg LinearMap.IsAlt.neg
 
-theorem isRefl : B.IsRefl := by
+lemma isRefl : B.IsRefl := by
   intro x y h
   rw [← neg H, h, neg_zero]
 #align linear_map.is_alt.is_refl LinearMap.IsAlt.isRefl
 
-theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
+lemma ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   H.isRefl.ortho_comm
 #align linear_map.is_alt.ortho_comm LinearMap.IsAlt.ortho_comm
 
@@ -318,7 +318,7 @@ section Semiring
 variable [CommRing R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
   [Module R₁ M₁] {I : R₁ →+* R}
 
-theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛₗ[I] M₁ →ₛₗ[I] R} :
+lemma isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛₗ[I] M₁ →ₛₗ[I] R} :
     B.IsAlt ↔ B = -B.flip := by
   constructor <;> intro h
   · ext
@@ -364,15 +364,15 @@ def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →
 variable {N L : Submodule R₁ M₁}
 
 @[simp]
-theorem mem_orthogonalBilin_iff {m : M₁} : m ∈ N.orthogonalBilin B ↔ ∀ n ∈ N, B.IsOrtho n m :=
+lemma mem_orthogonalBilin_iff {m : M₁} : m ∈ N.orthogonalBilin B ↔ ∀ n ∈ N, B.IsOrtho n m :=
   Iff.rfl
 #align submodule.mem_orthogonal_bilin_iff Submodule.mem_orthogonalBilin_iff
 
-theorem orthogonalBilin_le (h : N ≤ L) : L.orthogonalBilin B ≤ N.orthogonalBilin B :=
+lemma orthogonalBilin_le (h : N ≤ L) : L.orthogonalBilin B ≤ N.orthogonalBilin B :=
   fun _ hn l hl ↦ hn l (h hl)
 #align submodule.orthogonal_bilin_le Submodule.orthogonalBilin_le
 
-theorem le_orthogonalBilin_orthogonalBilin (b : B.IsRefl) :
+lemma le_orthogonalBilin_orthogonalBilin (b : B.IsRefl) :
     N ≤ (N.orthogonalBilin B).orthogonalBilin B := fun n hn _m hm ↦ b _ _ (hm n hn)
 #align submodule.le_orthogonal_bilin_orthogonal_bilin Submodule.le_orthogonalBilin_orthogonalBilin
 
@@ -386,7 +386,7 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
   [AddCommGroup V₂] [Module K V₂] {J : K →+* K} {J₁ : K₁ →+* K} {J₁' : K₁ →+* K}
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
-theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] V₂) (x : V₁)
+lemma span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] V₂) (x : V₁)
     (hx : ¬B.IsOrtho x x) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin (K₁ ∙ x) B = ⊥ := by
   rw [← Finset.coe_singleton]
   refine' eq_bot_iff.2 fun y h ↦ _
@@ -401,7 +401,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
 #align linear_map.span_singleton_inf_orthogonal_eq_bot LinearMap.span_singleton_inf_orthogonal_eq_bot
 
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
-theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] V₂} (x : V) :
+lemma orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] V₂} (x : V) :
     Submodule.orthogonalBilin (K ∙ x) B = LinearMap.ker (B x) := by
   ext y
   simp_rw [Submodule.mem_orthogonalBilin_iff, LinearMap.mem_ker, Submodule.mem_span_singleton]
@@ -413,7 +413,7 @@ theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] 
 #align linear_map.orthogonal_span_singleton_eq_to_lin_ker LinearMap.orthogonal_span_singleton_eq_to_lin_ker
 
 -- todo: Generalize this to sesquilinear maps
-theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
+lemma span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
     (K ∙ x) ⊔ Submodule.orthogonalBilin (N := K ∙ x) (B := B) = ⊤ := by
   rw [orthogonal_span_singleton_eq_to_lin_ker]
   exact (B x).span_singleton_sup_ker_eq_top hx
@@ -455,7 +455,7 @@ def IsAdjointPair :=
 
 variable {B B' f g}
 
-theorem isAdjointPair_iff_comp_eq_compl₂ : IsAdjointPair B B' f g ↔ B'.comp f = B.compl₂ g := by
+lemma isAdjointPair_iff_comp_eq_compl₂ : IsAdjointPair B B' f g ↔ B'.comp f = B.compl₂ g := by
   constructor <;> intro h
   · ext x y
     rw [comp_apply, compl₂_apply]
@@ -464,23 +464,23 @@ theorem isAdjointPair_iff_comp_eq_compl₂ : IsAdjointPair B B' f g ↔ B'.comp 
     rw [← compl₂_apply, ← comp_apply, h]
 #align linear_map.is_adjoint_pair_iff_comp_eq_compl₂ LinearMap.isAdjointPair_iff_comp_eq_compl₂
 
-theorem isAdjointPair_zero : IsAdjointPair B B' 0 0 := fun _ _ ↦ by simp only [zero_apply, map_zero]
+lemma isAdjointPair_zero : IsAdjointPair B B' 0 0 := fun _ _ ↦ by simp only [zero_apply, map_zero]
 #align linear_map.is_adjoint_pair_zero LinearMap.isAdjointPair_zero
 
-theorem isAdjointPair_id : IsAdjointPair B B 1 1 := fun _ _ ↦ rfl
+lemma isAdjointPair_id : IsAdjointPair B B 1 1 := fun _ _ ↦ rfl
 #align linear_map.is_adjoint_pair_id LinearMap.isAdjointPair_id
 
-theorem IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
+lemma IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
     IsAdjointPair B B' (f + f') (g + g') := fun x _ ↦ by
   rw [f.add_apply, g.add_apply, B'.map_add₂, (B x).map_add, h, h']
 #align linear_map.is_adjoint_pair.add LinearMap.IsAdjointPair.add
 
-theorem IsAdjointPair.comp {f' : M₁ →ₗ[R] M₂} {g' : M₂ →ₗ[R] M₁} (h : IsAdjointPair B B' f g)
+lemma IsAdjointPair.comp {f' : M₁ →ₗ[R] M₂} {g' : M₂ →ₗ[R] M₁} (h : IsAdjointPair B B' f g)
     (h' : IsAdjointPair B' B'' f' g') : IsAdjointPair B B'' (f'.comp f) (g.comp g') := fun _ _ ↦ by
   rw [LinearMap.comp_apply, LinearMap.comp_apply, h', h]
 #align linear_map.is_adjoint_pair.comp LinearMap.IsAdjointPair.comp
 
-theorem IsAdjointPair.mul {f g f' g' : Module.End R M} (h : IsAdjointPair B B f g)
+lemma IsAdjointPair.mul {f g f' g' : Module.End R M} (h : IsAdjointPair B B f g)
     (h' : IsAdjointPair B B f' g') : IsAdjointPair B B (f * f') (g' * g) :=
   h'.comp h
 #align linear_map.is_adjoint_pair.mul LinearMap.IsAdjointPair.mul
@@ -496,12 +496,12 @@ variable [AddCommGroup M₂] [Module R M₂]
 variable {B F : M →ₗ[R] M →ₗ[R] M₂} {B' : M₁ →ₗ[R] M₁ →ₗ[R] M₂}
 variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
 
-theorem IsAdjointPair.sub (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
+lemma IsAdjointPair.sub (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
     IsAdjointPair B B' (f - f') (g - g') := fun x _ ↦ by
   rw [f.sub_apply, g.sub_apply, B'.map_sub₂, (B x).map_sub, h, h']
 #align linear_map.is_adjoint_pair.sub LinearMap.IsAdjointPair.sub
 
-theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B' f g) :
+lemma IsAdjointPair.smul (c : R) (h : IsAdjointPair B B' f g) :
     IsAdjointPair B B' (c • f) (c • g) := fun _ _ ↦ by
   simp [h _]
 #align linear_map.is_adjoint_pair.smul LinearMap.IsAdjointPair.smul
@@ -574,12 +574,12 @@ def skewAdjointSubmodule :=
 variable {B F}
 
 @[simp]
-theorem mem_isPairSelfAdjointSubmodule (f : Module.End R M) :
+lemma mem_isPairSelfAdjointSubmodule (f : Module.End R M) :
     f ∈ isPairSelfAdjointSubmodule B F ↔ IsPairSelfAdjoint B F f :=
   Iff.rfl
 #align linear_map.mem_is_pair_self_adjoint_submodule LinearMap.mem_isPairSelfAdjointSubmodule
 
-theorem isPairSelfAdjoint_equiv (e : M₁ ≃ₗ[R] M) (f : Module.End R M) :
+lemma isPairSelfAdjoint_equiv (e : M₁ ≃ₗ[R] M) (f : Module.End R M) :
     IsPairSelfAdjoint B F f ↔
       IsPairSelfAdjoint (B.compl₁₂ ↑e ↑e) (F.compl₁₂ ↑e ↑e) (e.symm.conj f) := by
   have hₗ :
@@ -598,19 +598,19 @@ theorem isPairSelfAdjoint_equiv (e : M₁ ≃ₗ[R] M) (f : Module.End R M) :
   simp_rw [IsPairSelfAdjoint, isAdjointPair_iff_comp_eq_compl₂, hₗ, hᵣ, compl₁₂_inj he he]
 #align linear_map.is_pair_self_adjoint_equiv LinearMap.isPairSelfAdjoint_equiv
 
-theorem isSkewAdjoint_iff_neg_self_adjoint (f : Module.End R M) :
+lemma isSkewAdjoint_iff_neg_self_adjoint (f : Module.End R M) :
     B.IsSkewAdjoint f ↔ IsAdjointPair (-B) B f f :=
   show (∀ x y, B (f x) y = B x ((-f) y)) ↔ ∀ x y, B (f x) y = (-B) x (f y) by simp
 #align linear_map.is_skew_adjoint_iff_neg_self_adjoint LinearMap.isSkewAdjoint_iff_neg_self_adjoint
 
 @[simp]
-theorem mem_selfAdjointSubmodule (f : Module.End R M) :
+lemma mem_selfAdjointSubmodule (f : Module.End R M) :
     f ∈ B.selfAdjointSubmodule ↔ B.IsSelfAdjoint f :=
   Iff.rfl
 #align linear_map.mem_self_adjoint_submodule LinearMap.mem_selfAdjointSubmodule
 
 @[simp]
-theorem mem_skewAdjointSubmodule (f : Module.End R M) :
+lemma mem_skewAdjointSubmodule (f : Module.End R M) :
     f ∈ B.skewAdjointSubmodule ↔ B.IsSkewAdjoint f := by
   rw [isSkewAdjoint_iff_neg_self_adjoint]
   exact Iff.rfl
@@ -648,7 +648,7 @@ theorem not_separatingLeft_zero [Nontrivial M₁] : ¬(0 : M₁ →ₛₗ[I₁] 
 
 variable {M₁ M₂ I₁ I₂}
 
-theorem SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
+lemma SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
     (h : B.SeparatingLeft) : B ≠ 0 := fun h0 ↦ not_separatingLeft_zero M₁ M₂ I₁ I₂ <| h0 ▸ h
 #align linear_map.separating_left.ne_zero LinearMap.SeparatingLeft.ne_zero
 
@@ -659,7 +659,7 @@ variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'
 variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂']
 variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] M} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
 
-theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
+lemma SeparatingLeft.congr (h : B.SeparatingLeft) :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft := by
   intro x hx
   rw [← e₁.symm.map_eq_zero_iff]
@@ -671,7 +671,7 @@ theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
 #align linear_map.separating_left.congr LinearMap.SeparatingLeft.congr
 
 @[simp]
-theorem separatingLeft_congr_iff :
+lemma separatingLeft_congr_iff :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
   ⟨fun h ↦ by
     convert h.congr e₁.symm e₂.symm
@@ -695,22 +695,22 @@ def Nondegenerate (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
 #align linear_map.nondegenerate LinearMap.Nondegenerate
 
 @[simp]
-theorem flip_separatingRight {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
+lemma flip_separatingRight {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
     B.flip.SeparatingRight ↔ B.SeparatingLeft :=
   ⟨fun hB x hy ↦ hB x hy, fun hB x hy ↦ hB x hy⟩
 #align linear_map.flip_separating_right LinearMap.flip_separatingRight
 
 @[simp]
-theorem flip_separatingLeft {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
+lemma flip_separatingLeft {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
     B.flip.SeparatingLeft ↔ SeparatingRight B := by rw [← flip_separatingRight, flip_flip]
 #align linear_map.flip_separating_left LinearMap.flip_separatingLeft
 
 @[simp]
-theorem flip_nondegenerate {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} : B.flip.Nondegenerate ↔ B.Nondegenerate :=
+lemma flip_nondegenerate {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} : B.flip.Nondegenerate ↔ B.Nondegenerate :=
   Iff.trans and_comm (and_congr flip_separatingRight flip_separatingLeft)
 #align linear_map.flip_nondegenerate LinearMap.flip_nondegenerate
 
-theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
+lemma separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
     B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
   constructor <;> intro h x hB
   · simpa only [hB, zero_apply, eq_self_iff_true, forall_const] using h x
@@ -721,7 +721,7 @@ theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →�
   exact h x h'
 #align linear_map.separating_left_iff_linear_nontrivial LinearMap.separatingLeft_iff_linear_nontrivial
 
-theorem separatingRight_iff_linear_flip_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
+lemma separatingRight_iff_linear_flip_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
     B.SeparatingRight ↔ ∀ y : M₂, B.flip y = 0 → y = 0 := by
   rw [← flip_separatingLeft, separatingLeft_iff_linear_nontrivial]
 #align linear_map.separating_right_iff_linear_flip_nontrivial LinearMap.separatingRight_iff_linear_flip_nontrivial
@@ -744,14 +744,14 @@ section CommRing
 
 variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module R M₁] {I I' : R →+* R}
 
-theorem IsRefl.nondegenerate_of_separatingLeft {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
+lemma IsRefl.nondegenerate_of_separatingLeft {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     (hB' : B.SeparatingLeft) : B.Nondegenerate := by
   refine' ⟨hB', _⟩
   rw [separatingRight_iff_flip_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mp]
   rwa [← separatingLeft_iff_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_left LinearMap.IsRefl.nondegenerate_of_separatingLeft
 
-theorem IsRefl.nondegenerate_of_separatingRight {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
+lemma IsRefl.nondegenerate_of_separatingRight {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     (hB' : B.SeparatingRight) : B.Nondegenerate := by
   refine' ⟨_, hB'⟩
   rw [separatingLeft_iff_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mpr]

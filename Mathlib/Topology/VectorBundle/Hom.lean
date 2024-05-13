@@ -89,7 +89,7 @@ variable {σ e₁ e₁' e₂ e₂'}
 variable [∀ x, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁]
 variable [∀ x, TopologicalSpace (E₂ x)] [ita : ∀ x, TopologicalAddGroup (E₂ x)] [FiberBundle F₂ E₂]
 
-theorem continuousOn_continuousLinearMapCoordChange [VectorBundle 𝕜₁ F₁ E₁] [VectorBundle 𝕜₂ F₂ E₂]
+lemma continuousOn_continuousLinearMapCoordChange [VectorBundle 𝕜₁ F₁ E₁] [VectorBundle 𝕜₂ F₂ E₂]
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₁'] [MemTrivializationAtlas e₂]
     [MemTrivializationAtlas e₂'] :
     ContinuousOn (continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂')
@@ -162,26 +162,26 @@ instance continuousLinearMap.isLinear [∀ x, ContinuousAdd (E₂ x)] [∀ x, Co
           rfl }
 #align pretrivialization.continuous_linear_map.is_linear Pretrivialization.continuousLinearMap.isLinear
 
-theorem continuousLinearMap_apply (p : TotalSpace (F₁ →SL[σ] F₂) fun x => E₁ x →SL[σ] E₂ x) :
+lemma continuousLinearMap_apply (p : TotalSpace (F₁ →SL[σ] F₂) fun x => E₁ x →SL[σ] E₂ x) :
     (continuousLinearMap σ e₁ e₂) p =
       ⟨p.1, .comp (e₂.continuousLinearMapAt 𝕜₂ p.1) (p.2.comp (e₁.symmL 𝕜₁ p.1))⟩ :=
   rfl
 #align pretrivialization.continuous_linear_map_apply Pretrivialization.continuousLinearMap_apply
 
-theorem continuousLinearMap_symm_apply (p : B × (F₁ →SL[σ] F₂)) :
+lemma continuousLinearMap_symm_apply (p : B × (F₁ →SL[σ] F₂)) :
     (continuousLinearMap σ e₁ e₂).toPartialEquiv.symm p =
       ⟨p.1, .comp (e₂.symmL 𝕜₂ p.1) (p.2.comp (e₁.continuousLinearMapAt 𝕜₁ p.1))⟩ :=
   rfl
 #align pretrivialization.continuous_linear_map_symm_apply Pretrivialization.continuousLinearMap_symm_apply
 
-theorem continuousLinearMap_symm_apply' {b : B} (hb : b ∈ e₁.baseSet ∩ e₂.baseSet)
+lemma continuousLinearMap_symm_apply' {b : B} (hb : b ∈ e₁.baseSet ∩ e₂.baseSet)
     (L : F₁ →SL[σ] F₂) :
     (continuousLinearMap σ e₁ e₂).symm b L =
       (e₂.symmL 𝕜₂ b).comp (L.comp <| e₁.continuousLinearMapAt 𝕜₁ b) := by
   rw [symm_apply]; rfl; exact hb
 #align pretrivialization.continuous_linear_map_symm_apply' Pretrivialization.continuousLinearMap_symm_apply'
 
-theorem continuousLinearMapCoordChange_apply (b : B)
+lemma continuousLinearMapCoordChange_apply (b : B)
     (hb : b ∈ e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)) (L : F₁ →SL[σ] F₂) :
     continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂' b L =
       (continuousLinearMap σ e₁' e₂' ⟨b, (continuousLinearMap σ e₁ e₂).symm b L⟩).2 := by
@@ -285,12 +285,12 @@ instance Bundle.ContinuousLinearMap.memTrivializationAtlas :
 variable {e₁ e₂}
 
 @[simp]
-theorem Trivialization.baseSet_continuousLinearMap :
+lemma Trivialization.baseSet_continuousLinearMap :
     (e₁.continuousLinearMap σ e₂).baseSet = e₁.baseSet ∩ e₂.baseSet :=
   rfl
 #align trivialization.base_set_continuous_linear_map Trivialization.baseSet_continuousLinearMap
 
-theorem Trivialization.continuousLinearMap_apply
+lemma Trivialization.continuousLinearMap_apply
     (p : TotalSpace (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂)) :
     e₁.continuousLinearMap σ e₂ p =
       ⟨p.1, (e₂.continuousLinearMapAt 𝕜₂ p.1 : _ →L[𝕜₂] _).comp
@@ -298,7 +298,7 @@ theorem Trivialization.continuousLinearMap_apply
   rfl
 #align trivialization.continuous_linear_map_apply Trivialization.continuousLinearMap_apply
 
-theorem hom_trivializationAt_apply (x₀ : B)
+lemma hom_trivializationAt_apply (x₀ : B)
     (x : TotalSpace (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂)) :
     trivializationAt (F₁ →SL[σ] F₂) (fun x => E₁ x →SL[σ] E₂ x) x₀ x =
       ⟨x.1, inCoordinates F₁ E₁ F₂ E₂ x₀ x.1 x₀ x.1 x.2⟩ :=
@@ -306,7 +306,7 @@ theorem hom_trivializationAt_apply (x₀ : B)
 #align hom_trivialization_at_apply hom_trivializationAt_apply
 
 @[simp, mfld_simps]
-theorem hom_trivializationAt_source (x₀ : B) :
+lemma hom_trivializationAt_source (x₀ : B) :
     (trivializationAt (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂) x₀).source =
       π (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂) ⁻¹'
         ((trivializationAt F₁ E₁ x₀).baseSet ∩ (trivializationAt F₂ E₂ x₀).baseSet) :=
@@ -314,7 +314,7 @@ theorem hom_trivializationAt_source (x₀ : B) :
 #align hom_trivialization_at_source hom_trivializationAt_source
 
 @[simp, mfld_simps]
-theorem hom_trivializationAt_target (x₀ : B) :
+lemma hom_trivializationAt_target (x₀ : B) :
     (trivializationAt (F₁ →SL[σ] F₂) (fun x => E₁ x →SL[σ] E₂ x) x₀).target =
       ((trivializationAt F₁ E₁ x₀).baseSet ∩ (trivializationAt F₂ E₂ x₀).baseSet) ×ˢ Set.univ :=
   rfl

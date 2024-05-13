@@ -23,13 +23,13 @@ variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀} {m n : ℕ}
 open Int
 
 set_option linter.deprecated false in
-theorem zpow_bit1₀ (a : G₀) (n : ℤ) : a ^ bit1 n = a ^ n * a ^ n * a := by
+lemma zpow_bit1₀ (a : G₀) (n : ℤ) : a ^ bit1 n = a ^ n * a ^ n * a := by
   rw [← zpow_bit0, bit1, zpow_add', zpow_one]
   right; left
   apply bit1_ne_zero
 #align zpow_bit1₀ zpow_bit1₀
 
 set_option linter.deprecated false in
-theorem zpow_bit1' (a : G₀) (n : ℤ) : a ^ bit1 n = (a * a) ^ n * a := by
+lemma zpow_bit1' (a : G₀) (n : ℤ) : a ^ bit1 n = (a * a) ^ n * a := by
   rw [zpow_bit1₀, (Commute.refl a).mul_zpow]
 #align zpow_bit1' zpow_bit1'

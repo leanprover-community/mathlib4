@@ -122,13 +122,13 @@ def of {f : M → N} (h : IsMonoidHom f) : M →* N
 #align add_monoid_hom.of AddMonoidHom.of
 
 @[to_additive (attr := simp)]
-theorem coe_of {f : M → N} (hf : IsMonoidHom f) : ⇑(MonoidHom.of hf) = f :=
+lemma coe_of {f : M → N} (hf : IsMonoidHom f) : ⇑(MonoidHom.of hf) = f :=
   rfl
 #align monoid_hom.coe_of MonoidHom.coe_of
 #align add_monoid_hom.coe_of AddMonoidHom.coe_of
 
 @[to_additive]
-theorem isMonoidHom_coe (f : M →* N) : IsMonoidHom (f : M → N) :=
+lemma isMonoidHom_coe (f : M →* N) : IsMonoidHom (f : M → N) :=
   { map_mul := f.map_mul
     map_one := f.map_one }
 #align monoid_hom.is_monoid_hom_coe MonoidHom.isMonoidHom_coe
@@ -248,14 +248,14 @@ structure IsGroupHom [Group α] [Group β] (f : α → β) extends IsMulHom f : 
 #align is_group_hom IsGroupHom
 
 @[to_additive]
-theorem MonoidHom.isGroupHom {G H : Type*} {_ : Group G} {_ : Group H} (f : G →* H) :
+lemma MonoidHom.isGroupHom {G H : Type*} {_ : Group G} {_ : Group H} (f : G →* H) :
     IsGroupHom (f : G → H) :=
   { map_mul := f.map_mul }
 #align monoid_hom.is_group_hom MonoidHom.isGroupHom
 #align add_monoid_hom.is_add_group_hom AddMonoidHom.isAddGroupHom
 
 @[to_additive]
-theorem MulEquiv.isGroupHom {G H : Type*} {_ : Group G} {_ : Group H} (h : G ≃* H) :
+lemma MulEquiv.isGroupHom {G H : Type*} {_ : Group G} {_ : Group H} (h : G ≃* H) :
     IsGroupHom h :=
   { map_mul := h.map_mul }
 #align mul_equiv.is_group_hom MulEquiv.isGroupHom
@@ -275,7 +275,7 @@ variable [Group α] [Group β] {f : α → β} (hf : IsGroupHom f)
 
 open IsMulHom (map_mul)
 
-theorem map_mul' : ∀ x y, f (x * y) = f x * f y :=
+lemma map_mul' : ∀ x y, f (x * y) = f x * f y :=
   hf.toIsMulHom.map_mul
 #align is_group_hom.map_mul IsGroupHom.map_mul'
 
@@ -301,7 +301,7 @@ theorem map_inv (hf : IsGroupHom f) (a : α) : f a⁻¹ = (f a)⁻¹ :=
 #align is_add_group_hom.map_neg IsAddGroupHom.map_neg
 
 @[to_additive]
-theorem map_div (hf : IsGroupHom f) (a b : α) : f (a / b) = f a / f b := by
+lemma map_div (hf : IsGroupHom f) (a b : α) : f (a / b) = f a / f b := by
   simp_rw [div_eq_mul_inv, hf.map_mul, hf.map_inv]
 #align is_group_hom.map_div IsGroupHom.map_div
 #align is_add_group_hom.map_sub IsAddGroupHom.map_sub
@@ -368,12 +368,12 @@ section
 
 variable [NonAssocSemiring R] [NonAssocSemiring S]
 
-theorem to_isMonoidHom (f : R →+* S) : IsMonoidHom f :=
+lemma to_isMonoidHom (f : R →+* S) : IsMonoidHom f :=
   { map_one := f.map_one
     map_mul := f.map_mul }
 #align ring_hom.to_is_monoid_hom RingHom.to_isMonoidHom
 
-theorem to_isAddMonoidHom (f : R →+* S) : IsAddMonoidHom f :=
+lemma to_isAddMonoidHom (f : R →+* S) : IsAddMonoidHom f :=
   { map_zero := f.map_zero
     map_add := f.map_add }
 #align ring_hom.to_is_add_monoid_hom RingHom.to_isAddMonoidHom
@@ -384,7 +384,7 @@ section
 
 variable [Ring R] [Ring S]
 
-theorem to_isAddGroupHom (f : R →+* S) : IsAddGroupHom f :=
+lemma to_isAddGroupHom (f : R →+* S) : IsAddGroupHom f :=
   { map_add := f.map_add }
 #align ring_hom.to_is_add_group_hom RingHom.to_isAddGroupHom
 
@@ -417,11 +417,11 @@ abbrev map' {f : M → N} (hf : IsMonoidHom f) : Mˣ →* Nˣ :=
 #align units.map' Units.map'
 
 @[simp]
-theorem coe_map' {f : M → N} (hf : IsMonoidHom f) (x : Mˣ) : ↑((map' hf : Mˣ → Nˣ) x) = f x :=
+lemma coe_map' {f : M → N} (hf : IsMonoidHom f) (x : Mˣ) : ↑((map' hf : Mˣ → Nˣ) x) = f x :=
   rfl
 #align units.coe_map' Units.coe_map'
 
-theorem coe_isMonoidHom : IsMonoidHom (↑· : Mˣ → M) :=
+lemma coe_isMonoidHom : IsMonoidHom (↑· : Mˣ → M) :=
   (coeHom M).isMonoidHom_coe
 #align units.coe_is_monoid_hom Units.coe_isMonoidHom
 
@@ -431,39 +431,39 @@ namespace IsUnit
 
 variable {M : Type*} {N : Type*} [Monoid M] [Monoid N] {x : M}
 
-theorem map' {f : M → N} (hf : IsMonoidHom f) {x : M} (h : IsUnit x) : IsUnit (f x) :=
+lemma map' {f : M → N} (hf : IsMonoidHom f) {x : M} (h : IsUnit x) : IsUnit (f x) :=
   h.map (MonoidHom.of hf)
 #align is_unit.map' IsUnit.map'
 
 end IsUnit
 
-theorem Additive.isAddHom [Mul α] [Mul β] {f : α → β} (hf : IsMulHom f) :
+lemma Additive.isAddHom [Mul α] [Mul β] {f : α → β} (hf : IsMulHom f) :
     @IsAddHom (Additive α) (Additive β) _ _ f :=
   { map_add := hf.map_mul }
 #align additive.is_add_hom Additive.isAddHom
 
-theorem Multiplicative.isMulHom [Add α] [Add β] {f : α → β} (hf : IsAddHom f) :
+lemma Multiplicative.isMulHom [Add α] [Add β] {f : α → β} (hf : IsAddHom f) :
     @IsMulHom (Multiplicative α) (Multiplicative β) _ _ f :=
   { map_mul := hf.map_add }
 #align multiplicative.is_mul_hom Multiplicative.isMulHom
 
 -- defeq abuse
-theorem Additive.isAddMonoidHom [MulOneClass α] [MulOneClass β] {f : α → β}
+lemma Additive.isAddMonoidHom [MulOneClass α] [MulOneClass β] {f : α → β}
     (hf : IsMonoidHom f) : @IsAddMonoidHom (Additive α) (Additive β) _ _ f :=
   { Additive.isAddHom hf.toIsMulHom with map_zero := hf.map_one }
 #align additive.is_add_monoid_hom Additive.isAddMonoidHom
 
-theorem Multiplicative.isMonoidHom [AddZeroClass α] [AddZeroClass β] {f : α → β}
+lemma Multiplicative.isMonoidHom [AddZeroClass α] [AddZeroClass β] {f : α → β}
     (hf : IsAddMonoidHom f) : @IsMonoidHom (Multiplicative α) (Multiplicative β) _ _ f :=
   { Multiplicative.isMulHom hf.toIsAddHom with map_one := hf.map_zero }
 #align multiplicative.is_monoid_hom Multiplicative.isMonoidHom
 
-theorem Additive.isAddGroupHom [Group α] [Group β] {f : α → β} (hf : IsGroupHom f) :
+lemma Additive.isAddGroupHom [Group α] [Group β] {f : α → β} (hf : IsGroupHom f) :
     @IsAddGroupHom (Additive α) (Additive β) _ _ f :=
   { map_add := hf.toIsMulHom.map_mul }
 #align additive.is_add_group_hom Additive.isAddGroupHom
 
-theorem Multiplicative.isGroupHom [AddGroup α] [AddGroup β] {f : α → β} (hf : IsAddGroupHom f) :
+lemma Multiplicative.isGroupHom [AddGroup α] [AddGroup β] {f : α → β} (hf : IsAddGroupHom f) :
     @IsGroupHom (Multiplicative α) (Multiplicative β) _ _ f :=
   { map_mul := hf.toIsAddHom.map_add }
 #align multiplicative.is_group_hom Multiplicative.isGroupHom

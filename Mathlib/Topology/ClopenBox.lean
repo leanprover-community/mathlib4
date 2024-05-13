@@ -33,7 +33,7 @@ open scoped Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [CompactSpace Y]
 
-theorem TopologicalSpace.Clopens.exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
+lemma TopologicalSpace.Clopens.exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
     ∃ U : Clopens X, a.1 ∈ U ∧ ∃ V : Clopens Y, a.2 ∈ V ∧ U ×ˢ V ≤ W := by
   have hp : Continuous (fun y : Y ↦ (a.1, y)) := Continuous.Prod.mk _
   let V : Set Y := {y | (a.1, y) ∈ W}

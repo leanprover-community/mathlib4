@@ -45,7 +45,7 @@ def IsSubterminal (A : C) : Prop :=
   ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g
 #align category_theory.is_subterminal CategoryTheory.IsSubterminal
 
-theorem IsSubterminal.def : IsSubterminal A ↔ ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g :=
+lemma IsSubterminal.def : IsSubterminal A ↔ ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g :=
   Iff.rfl
 #align category_theory.is_subterminal.def CategoryTheory.IsSubterminal.def
 
@@ -83,11 +83,11 @@ theorem isSubterminal_of_mono_terminal_from [HasTerminal C] [Mono (terminal.from
   apply Subsingleton.elim
 #align category_theory.is_subterminal_of_mono_terminal_from CategoryTheory.isSubterminal_of_mono_terminal_from
 
-theorem isSubterminal_of_isTerminal {T : C} (hT : IsTerminal T) : IsSubterminal T := fun _ _ _ =>
+lemma isSubterminal_of_isTerminal {T : C} (hT : IsTerminal T) : IsSubterminal T := fun _ _ _ =>
   hT.hom_ext _ _
 #align category_theory.is_subterminal_of_is_terminal CategoryTheory.isSubterminal_of_isTerminal
 
-theorem isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fun _ _ _ =>
+lemma isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fun _ _ _ =>
   Subsingleton.elim _ _
 #align category_theory.is_subterminal_of_terminal CategoryTheory.isSubterminal_of_terminal
 
@@ -179,14 +179,14 @@ def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoO
 #align category_theory.subterminals_equiv_mono_over_terminal CategoryTheory.subterminalsEquivMonoOverTerminal
 
 @[simp]
-theorem subterminals_to_monoOver_terminal_comp_forget [HasTerminal C] :
+lemma subterminals_to_monoOver_terminal_comp_forget [HasTerminal C] :
     (subterminalsEquivMonoOverTerminal C).functor ⋙ MonoOver.forget _ ⋙ Over.forget _ =
       subterminalInclusion C :=
   rfl
 #align category_theory.subterminals_to_mono_over_terminal_comp_forget CategoryTheory.subterminals_to_monoOver_terminal_comp_forget
 
 @[simp]
-theorem monoOver_terminal_to_subterminals_comp [HasTerminal C] :
+lemma monoOver_terminal_to_subterminals_comp [HasTerminal C] :
     (subterminalsEquivMonoOverTerminal C).inverse ⋙ subterminalInclusion C =
       MonoOver.forget _ ⋙ Over.forget _ :=
   rfl

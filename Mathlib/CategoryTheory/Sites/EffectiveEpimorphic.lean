@@ -129,7 +129,7 @@ def effectiveEpiStructOfIsColimit {X Y : C} (f : Y ⟶ X)
       generalize_proofs hh
       rwa [hh.choose_spec] }
 
-theorem Sieve.effectiveEpimorphic_singleton {X Y : C} (f : Y ⟶ X) :
+lemma Sieve.effectiveEpimorphic_singleton {X Y : C} (f : Y ⟶ X) :
     (Presieve.singleton f).EffectiveEpimorphic ↔ (EffectiveEpi f) := by
   constructor
   · intro (h : Nonempty _)
@@ -241,7 +241,7 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type*}
       generalize_proofs h1 h2
       rwa [h2.choose_spec] }
 
-theorem Sieve.effectiveEpimorphic_family {B : C} {α : Type*}
+lemma Sieve.effectiveEpimorphic_family {B : C} {α : Type*}
     (X : α → C) (π : (a : α) → (X a ⟶ B)) :
     (Presieve.ofArrows X π).EffectiveEpimorphic ↔ EffectiveEpiFamily X π := by
   constructor

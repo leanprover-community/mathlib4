@@ -41,7 +41,7 @@ def ComponentCompl.supp (C : G.ComponentCompl K) : Set V :=
 #align simple_graph.component_compl.supp SimpleGraph.ComponentCompl.supp
 
 @[ext]
-theorem ComponentCompl.supp_injective :
+lemma ComponentCompl.supp_injective :
     Function.Injective (ComponentCompl.supp : G.ComponentCompl K → Set V) := by
   refine' ConnectedComponent.ind₂ _
   rintro ⟨v, hv⟩ ⟨w, hw⟩ h
@@ -49,7 +49,7 @@ theorem ComponentCompl.supp_injective :
   exact ((h v).mp ⟨hv, Reachable.refl _⟩).choose_spec
 #align simple_graph.component_compl.supp_injective SimpleGraph.ComponentCompl.supp_injective
 
-theorem ComponentCompl.supp_inj {C D : G.ComponentCompl K} : C.supp = D.supp ↔ C = D :=
+lemma ComponentCompl.supp_inj {C D : G.ComponentCompl K} : C.supp = D.supp ↔ C = D :=
   ComponentCompl.supp_injective.eq_iff
 #align simple_graph.component_compl.supp_inj SimpleGraph.ComponentCompl.supp_inj
 
@@ -59,16 +59,16 @@ instance ComponentCompl.setLike : SetLike (G.ComponentCompl K) V where
 #align simple_graph.component_compl.set_like SimpleGraph.ComponentCompl.setLike
 
 @[simp]
-theorem ComponentCompl.mem_supp_iff {v : V} {C : ComponentCompl G K} :
+lemma ComponentCompl.mem_supp_iff {v : V} {C : ComponentCompl G K} :
     v ∈ C ↔ ∃ vK : v ∉ K, G.componentComplMk vK = C :=
   Iff.rfl
 #align simple_graph.component_compl.mem_supp_iff SimpleGraph.ComponentCompl.mem_supp_iff
 
-theorem componentComplMk_mem (G : SimpleGraph V) {v : V} (vK : v ∉ K) : v ∈ G.componentComplMk vK :=
+lemma componentComplMk_mem (G : SimpleGraph V) {v : V} (vK : v ∉ K) : v ∈ G.componentComplMk vK :=
   ⟨vK, rfl⟩
 #align simple_graph.component_compl_mk_mem SimpleGraph.componentComplMk_mem
 
-theorem componentComplMk_eq_of_adj (G : SimpleGraph V) {v w : V} (vK : v ∉ K) (wK : w ∉ K)
+lemma componentComplMk_eq_of_adj (G : SimpleGraph V) {v w : V} (vK : v ∉ K) (wK : w ∉ K)
     (a : G.Adj v w) : G.componentComplMk vK = G.componentComplMk wK := by
   rw [ConnectedComponent.eq]
   apply Adj.reachable
@@ -97,7 +97,7 @@ protected def lift {β : Sort*} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
 #align simple_graph.component_compl.lift SimpleGraph.ComponentCompl.lift
 
 @[elab_as_elim] -- Porting note: added
-protected theorem ind {β : G.ComponentCompl K → Prop}
+protected lemma ind {β : G.ComponentCompl K → Prop}
     (f : ∀ ⦃v⦄ (hv : v ∉ K), β (G.componentComplMk hv)) : ∀ C : G.ComponentCompl K, β C := by
   apply ConnectedComponent.ind
   exact fun ⟨v, vnK⟩ => f vnK
@@ -108,30 +108,30 @@ protected abbrev coeGraph (C : ComponentCompl G K) : SimpleGraph C :=
   G.induce (C : Set V)
 #align simple_graph.component_compl.coe_graph SimpleGraph.ComponentCompl.coeGraph
 
-theorem coe_inj {C D : G.ComponentCompl K} : (C : Set V) = (D : Set V) ↔ C = D :=
+lemma coe_inj {C D : G.ComponentCompl K} : (C : Set V) = (D : Set V) ↔ C = D :=
   SetLike.coe_set_eq
 #align simple_graph.component_compl.coe_inj SimpleGraph.ComponentCompl.coe_inj
 
 @[simp]
-protected theorem nonempty (C : G.ComponentCompl K) : (C : Set V).Nonempty :=
+protected lemma nonempty (C : G.ComponentCompl K) : (C : Set V).Nonempty :=
   C.ind fun v vnK => ⟨v, vnK, rfl⟩
 #align simple_graph.component_compl.nonempty SimpleGraph.ComponentCompl.nonempty
 
-protected theorem exists_eq_mk (C : G.ComponentCompl K) :
+protected lemma exists_eq_mk (C : G.ComponentCompl K) :
     ∃ (v : _) (h : v ∉ K), G.componentComplMk h = C :=
   C.nonempty
 #align simple_graph.component_compl.exists_eq_mk SimpleGraph.ComponentCompl.exists_eq_mk
 
-protected theorem disjoint_right (C : G.ComponentCompl K) : Disjoint K C := by
+protected lemma disjoint_right (C : G.ComponentCompl K) : Disjoint K C := by
   rw [Set.disjoint_iff]
   exact fun v ⟨vK, vC⟩ => vC.choose vK
 #align simple_graph.component_compl.disjoint_right SimpleGraph.ComponentCompl.disjoint_right
 
-theorem not_mem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K := fun cK =>
+lemma not_mem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K := fun cK =>
   Set.disjoint_iff.mp C.disjoint_right ⟨cK, cC⟩
 #align simple_graph.component_compl.not_mem_of_mem SimpleGraph.ComponentCompl.not_mem_of_mem
 
-protected theorem pairwise_disjoint :
+protected lemma pairwise_disjoint :
     Pairwise fun C D : G.ComponentCompl K => Disjoint (C : Set V) (D : Set V) := by
   rintro C D ne
   rw [Set.disjoint_iff]
@@ -175,23 +175,23 @@ abbrev hom (h : K ⊆ L) (C : G.ComponentCompl L) : G.ComponentCompl K :=
   C.map <| induceHom Hom.id <| Set.compl_subset_compl.2 h
 #align simple_graph.component_compl.hom SimpleGraph.ComponentCompl.hom
 
-theorem subset_hom (C : G.ComponentCompl L) (h : K ⊆ L) : (C : Set V) ⊆ (C.hom h : Set V) := by
+lemma subset_hom (C : G.ComponentCompl L) (h : K ⊆ L) : (C : Set V) ⊆ (C.hom h : Set V) := by
   rintro c ⟨cL, rfl⟩
   exact ⟨fun h' => cL (h h'), rfl⟩
 #align simple_graph.component_compl.subset_hom SimpleGraph.ComponentCompl.subset_hom
 
-theorem _root_.SimpleGraph.componentComplMk_mem_hom
+lemma _root_.SimpleGraph.componentComplMk_mem_hom
     (G : SimpleGraph V) {v : V} (vK : v ∉ K) (h : L ⊆ K) :
     v ∈ (G.componentComplMk vK).hom h :=
   subset_hom (G.componentComplMk vK) h (G.componentComplMk_mem vK)
 #align simple_graph.component_compl_mk_mem_hom SimpleGraph.componentComplMk_mem_hom
 
-theorem hom_eq_iff_le (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.ComponentCompl K) :
+lemma hom_eq_iff_le (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.ComponentCompl K) :
     C.hom h = D ↔ (C : Set V) ⊆ (D : Set V) :=
   ⟨fun h' => h' ▸ C.subset_hom h, C.ind fun _ vnL vD => (vD ⟨vnL, rfl⟩).choose_spec⟩
 #align simple_graph.component_compl.hom_eq_iff_le SimpleGraph.ComponentCompl.hom_eq_iff_le
 
-theorem hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.ComponentCompl K) :
+lemma hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.ComponentCompl K) :
     C.hom h = D ↔ ¬Disjoint (C : Set V) (D : Set V) := by
   rw [Set.not_disjoint_iff]
   constructor
@@ -204,29 +204,29 @@ theorem hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.Co
     rfl
 #align simple_graph.component_compl.hom_eq_iff_not_disjoint SimpleGraph.ComponentCompl.hom_eq_iff_not_disjoint
 
-theorem hom_refl (C : G.ComponentCompl L) : C.hom (subset_refl L) = C := by
+lemma hom_refl (C : G.ComponentCompl L) : C.hom (subset_refl L) = C := by
   change C.map _ = C
   erw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
 #align simple_graph.component_compl.hom_refl SimpleGraph.ComponentCompl.hom_refl
 
-theorem hom_trans (C : G.ComponentCompl L) (h : K ⊆ L) (h' : M ⊆ K) :
+lemma hom_trans (C : G.ComponentCompl L) (h : K ⊆ L) (h' : M ⊆ K) :
     C.hom (h'.trans h) = (C.hom h).hom h' := by
   change C.map _ = (C.map _).map _
   erw [ConnectedComponent.map_comp, induceHom_comp]
   rfl
 #align simple_graph.component_compl.hom_trans SimpleGraph.ComponentCompl.hom_trans
 
-theorem hom_mk {v : V} (vnL : v ∉ L) (h : K ⊆ L) :
+lemma hom_mk {v : V} (vnL : v ∉ L) (h : K ⊆ L) :
     (G.componentComplMk vnL).hom h = G.componentComplMk (Set.not_mem_subset h vnL) :=
   rfl
 #align simple_graph.component_compl.hom_mk SimpleGraph.ComponentCompl.hom_mk
 
-theorem hom_infinite (C : G.ComponentCompl L) (h : K ⊆ L) (Cinf : (C : Set V).Infinite) :
+lemma hom_infinite (C : G.ComponentCompl L) (h : K ⊆ L) (Cinf : (C : Set V).Infinite) :
     (C.hom h : Set V).Infinite :=
   Set.Infinite.mono (C.subset_hom h) Cinf
 #align simple_graph.component_compl.hom_infinite SimpleGraph.ComponentCompl.hom_infinite
 
-theorem infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
+lemma infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
     C.supp.Infinite ↔ ∀ (L) (h : K ⊆ L), ∃ D : G.ComponentCompl L, D.hom h = C := by
   classical
     constructor
@@ -295,14 +295,14 @@ protected def «end» :=
   (componentComplFunctor G).sections
 #align simple_graph.end SimpleGraph.end
 
-theorem end_hom_mk_of_mk {s} (sec : s ∈ G.end) {K L : (Finset V)ᵒᵖ} (h : L ⟶ K) {v : V}
+lemma end_hom_mk_of_mk {s} (sec : s ∈ G.end) {K L : (Finset V)ᵒᵖ} (h : L ⟶ K) {v : V}
     (vnL : v ∉ L.unop) (hs : s L = G.componentComplMk vnL) :
     s K = G.componentComplMk (Set.not_mem_subset (le_of_op_hom h : _ ⊆ _) vnL) := by
   rw [← sec h, hs]
   apply ComponentCompl.hom_mk _ (le_of_op_hom h : _ ⊆ _)
 #align simple_graph.end_hom_mk_of_mk SimpleGraph.end_hom_mk_of_mk
 
-theorem infinite_iff_in_eventualRange {K : (Finset V)ᵒᵖ} (C : G.componentComplFunctor.obj K) :
+lemma infinite_iff_in_eventualRange {K : (Finset V)ᵒᵖ} (C : G.componentComplFunctor.obj K) :
     C.supp.Infinite ↔ C ∈ G.componentComplFunctor.eventualRange K := by
   simp only [C.infinite_iff_in_all_ranges, CategoryTheory.Functor.eventualRange, Set.mem_iInter,
     Set.mem_range, componentComplFunctor_map]

@@ -82,12 +82,12 @@ noncomputable def Basis.algebraMapCoeffs : Basis ι A M :=
 #align basis.algebra_map_coeffs Basis.algebraMapCoeffs
 #noalign Basis.algebraMapCoeffs_repr_symm_apply -- failed simpNF linter
 
-theorem Basis.algebraMapCoeffs_apply (i : ι) : b.algebraMapCoeffs A h i = b i :=
+lemma Basis.algebraMapCoeffs_apply (i : ι) : b.algebraMapCoeffs A h i = b i :=
   b.mapCoeffs_apply _ _ _
 #align basis.algebra_map_coeffs_apply Basis.algebraMapCoeffs_apply
 
 @[simp]
-theorem Basis.coe_algebraMapCoeffs : (b.algebraMapCoeffs A h : ι → M) = b :=
+lemma Basis.coe_algebraMapCoeffs : (b.algebraMapCoeffs A h : ι → M) = b :=
   b.coe_mapCoeffs _ _
 #align basis.coe_algebra_map_coeffs Basis.coe_algebraMapCoeffs
 
@@ -106,7 +106,7 @@ variable {R S A}
 variable [Semiring R] [Semiring S] [AddCommMonoid A]
 variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
-theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁} {c : ι' → A}
+lemma linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁} {c : ι' → A}
     (hb : LinearIndependent R b) (hc : LinearIndependent S c) :
     LinearIndependent R fun p : ι × ι' => b p.1 • c p.2 := by
   rw [linearIndependent_iff'] at hb hc; rw [linearIndependent_iff'']; rintro s g hg hsg ⟨i, k⟩
@@ -125,11 +125,11 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
 variable (R)
 
 -- LinearIndependent is enough if S is a ring rather than semiring.
-theorem Basis.isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : IsScalarTower R S S :=
+lemma Basis.isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : IsScalarTower R S S :=
   (b.repr.symm.comp <| lsingle <| Classical.arbitrary ι).isScalarTower_of_injective R
     (b.repr.symm.injective.comp <| single_injective _)
 
-theorem Basis.isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S (ι →₀ S) :=
+lemma Basis.isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S (ι →₀ S) :=
   b.repr.symm.isScalarTower_of_injective R b.repr.symm.injective
 
 variable {R}
@@ -147,18 +147,18 @@ noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R 
 #align basis.smul Basis.smul
 
 @[simp]
-theorem Basis.smul_repr {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
+lemma Basis.smul_repr {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
     (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
   simp [Basis.smul]
 #align basis.smul_repr Basis.smul_repr
 
-theorem Basis.smul_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)
+lemma Basis.smul_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)
     (x i j) : (b.smul c).repr x (i, j) = b.repr (c.repr x j) i :=
   b.smul_repr c x (i, j)
 #align basis.smul_repr_mk Basis.smul_repr_mk
 
 @[simp]
-theorem Basis.smul_apply {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (ij) :
+lemma Basis.smul_apply {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (ij) :
     (b.smul c) ij = b ij.1 • c ij.2 := by
   obtain ⟨i, j⟩ := ij
   rw [Basis.apply_eq_iff]
@@ -179,7 +179,7 @@ variable {R S}
 variable [CommRing R] [Ring S] [Algebra R S]
 
 -- Porting note: Needed to add Algebra.toModule below
-theorem Basis.algebraMap_injective {ι : Type*} [NoZeroDivisors R] [Nontrivial S]
+lemma Basis.algebraMap_injective {ι : Type*} [NoZeroDivisors R] [Nontrivial S]
     (b : @Basis ι R S _ _ Algebra.toModule) : Function.Injective (algebraMap R S) :=
   have : NoZeroSMulDivisors R S := b.noZeroSMulDivisors
   NoZeroSMulDivisors.algebraMap_injective R S

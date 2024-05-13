@@ -200,7 +200,7 @@ def MDifferentiableWithinAt (f : M → M') (s : Set M) (x : M) :=
   LiftPropWithinAt (DifferentiableWithinAtProp I I') f s x
 #align mdifferentiable_within_at MDifferentiableWithinAt
 
-theorem mdifferentiableWithinAt_iff' (f : M → M') (s : Set M) (x : M) :
+lemma mdifferentiableWithinAt_iff' (f : M → M') (s : Set M) (x : M) :
     MDifferentiableWithinAt I I' f s x ↔ ContinuousWithinAt f s x ∧
     DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f)
       ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x) := by
@@ -236,7 +236,7 @@ def MDifferentiableAt (f : M → M') (x : M) :=
   LiftPropAt (DifferentiableWithinAtProp I I') f x
 #align mdifferentiable_at MDifferentiableAt
 
-theorem mdifferentiableAt_iff (f : M → M') (x : M) :
+lemma mdifferentiableAt_iff (f : M → M') (x : M) :
     MDifferentiableAt I I' f x ↔ ContinuousAt f x ∧
     DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) := by
   rw [MDifferentiableAt, liftPropAt_iff]

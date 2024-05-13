@@ -60,17 +60,17 @@ instance final_fromFinalModel [FinallySmall.{w} J] : Final (fromFinalModel J) :=
   Classical.choose_spec (Classical.choose_spec (Classical.choose_spec
     (@FinallySmall.final_smallCategory J _ _)))
 
-theorem finallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : FinallySmall.{w} J :=
+lemma finallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : FinallySmall.{w} J :=
   FinallySmall.mk' (equivSmallModel.{w} J).inverse
 
 variable {J}
 variable {K : Type u₁} [Category.{v₁} K] (F : K ⥤ J) [Final F]
 
-theorem finallySmall_of_final_of_finallySmall [FinallySmall.{w} K] : FinallySmall.{w} J :=
+lemma finallySmall_of_final_of_finallySmall [FinallySmall.{w} K] : FinallySmall.{w} J :=
   suffices Final ((fromFinalModel K) ⋙ F) from .mk' ((fromFinalModel K) ⋙ F)
   final_comp _ _
 
-theorem finallySmall_of_final_of_essentiallySmall [EssentiallySmall.{w} K] : FinallySmall.{w} J :=
+lemma finallySmall_of_final_of_essentiallySmall [EssentiallySmall.{w} K] : FinallySmall.{w} J :=
   have := finallySmall_of_essentiallySmall K
   finallySmall_of_final_of_finallySmall F
 
@@ -107,17 +107,17 @@ instance initial_fromInitialModel [InitiallySmall.{w} J] : Initial (fromInitialM
   Classical.choose_spec (Classical.choose_spec (Classical.choose_spec
     (@InitiallySmall.initial_smallCategory J _ _)))
 
-theorem initiallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : InitiallySmall.{w} J :=
+lemma initiallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : InitiallySmall.{w} J :=
   InitiallySmall.mk' (equivSmallModel.{w} J).inverse
 
 variable {J}
 variable {K : Type u₁} [Category.{v₁} K] (F : K ⥤ J) [Initial F]
 
-theorem initiallySmall_of_initial_of_initiallySmall [InitiallySmall.{w} K] : InitiallySmall.{w} J :=
+lemma initiallySmall_of_initial_of_initiallySmall [InitiallySmall.{w} K] : InitiallySmall.{w} J :=
   suffices Initial ((fromInitialModel K) ⋙ F) from .mk' ((fromInitialModel K) ⋙ F)
   initial_comp _ _
 
-theorem initiallySmall_of_initial_of_essentiallySmall [EssentiallySmall.{w} K] :
+lemma initiallySmall_of_initial_of_essentiallySmall [EssentiallySmall.{w} K] :
     InitiallySmall.{w} J :=
   have := initiallySmall_of_essentiallySmall K
   initiallySmall_of_initial_of_initiallySmall F
@@ -144,7 +144,7 @@ theorem finallySmall_of_small_weakly_terminal_set [IsFilteredOrEmpty J] (s : Set
   obtain ⟨j, hj₁, hj₂⟩ := hs i
   exact ⟨⟨j, hj₁⟩, hj₂⟩
 
-theorem finallySmall_iff_exists_small_weakly_terminal_set [IsFilteredOrEmpty J] :
+lemma finallySmall_iff_exists_small_weakly_terminal_set [IsFilteredOrEmpty J] :
     FinallySmall.{v} J ↔ ∃ (s : Set J) (_ : Small.{v} s), ∀ i, ∃ j ∈ s, Nonempty (i ⟶ j) := by
   refine ⟨fun _ => FinallySmall.exists_small_weakly_terminal_set _, fun h => ?_⟩
   rcases h with ⟨s, hs, hs'⟩
@@ -172,7 +172,7 @@ theorem initiallySmall_of_small_weakly_initial_set [IsCofilteredOrEmpty J] (s : 
   obtain ⟨j, hj₁, hj₂⟩ := hs i
   exact ⟨⟨j, hj₁⟩, hj₂⟩
 
-theorem initiallySmall_iff_exists_small_weakly_initial_set [IsCofilteredOrEmpty J] :
+lemma initiallySmall_iff_exists_small_weakly_initial_set [IsCofilteredOrEmpty J] :
     InitiallySmall.{v} J ↔ ∃ (s : Set J) (_ : Small.{v} s), ∀ i, ∃ j ∈ s, Nonempty (j ⟶ i) := by
   refine ⟨fun _ => InitiallySmall.exists_small_weakly_initial_set _, fun h => ?_⟩
   rcases h with ⟨s, hs, hs'⟩
@@ -182,11 +182,11 @@ end WeaklyInitial
 
 namespace Limits
 
-theorem hasColimitsOfShape_of_finallySmall (J : Type u) [Category.{v} J] [FinallySmall.{w} J]
+lemma hasColimitsOfShape_of_finallySmall (J : Type u) [Category.{v} J] [FinallySmall.{w} J]
     (C : Type u₁) [Category.{v₁} C] [HasColimitsOfSize.{w, w} C] : HasColimitsOfShape J C :=
   Final.hasColimitsOfShape_of_final (fromFinalModel J)
 
-theorem hasLimitsOfShape_of_initiallySmall (J : Type u) [Category.{v} J] [InitiallySmall.{w} J]
+lemma hasLimitsOfShape_of_initiallySmall (J : Type u) [Category.{v} J] [InitiallySmall.{w} J]
     (C : Type u₁) [Category.{v₁} C] [HasLimitsOfSize.{w, w} C] : HasLimitsOfShape J C :=
   Initial.hasLimitsOfShape_of_initial (fromInitialModel J)
 

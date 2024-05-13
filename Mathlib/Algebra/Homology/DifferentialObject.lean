@@ -44,21 +44,21 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.differential_object.X_eq_to_hom CategoryTheory.DifferentialObject.objEqToHom
 
 @[simp]
-theorem objEqToHom_refl (i : β) : X.objEqToHom (refl i) = 𝟙 _ :=
+lemma objEqToHom_refl (i : β) : X.objEqToHom (refl i) = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.differential_object.X_eq_to_hom_refl CategoryTheory.DifferentialObject.objEqToHom_refl
 
 @[reassoc (attr := simp)]
-theorem objEqToHom_d {x y : β} (h : x = y) :
+lemma objEqToHom_d {x y : β} (h : x = y) :
     X.objEqToHom h ≫ X.d y = X.d x ≫ X.objEqToHom (by cases h; rfl) := by cases h; dsimp; simp
 #align homological_complex.eq_to_hom_d CategoryTheory.DifferentialObject.objEqToHom_d
 
 @[reassoc (attr := simp)]
-theorem d_squared_apply {x : β} : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared _
+lemma d_squared_apply {x : β} : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared _
 
 @[reassoc (attr := simp)]
-theorem eqToHom_f' {X Y : DifferentialObject ℤ (GradedObjectWithShift b V)} (f : X ⟶ Y) {x y : β}
+lemma eqToHom_f' {X Y : DifferentialObject ℤ (GradedObjectWithShift b V)} (f : X ⟶ Y) {x y : β}
     (h : x = y) : X.objEqToHom h ≫ f.f y = f.f x ≫ Y.objEqToHom h := by cases h; simp
 #align homological_complex.eq_to_hom_f' CategoryTheory.DifferentialObject.eqToHom_f'
 
@@ -75,7 +75,7 @@ variable (V : Type*) [Category V] [HasZeroMorphisms V]
 -- Porting note: simpNF linter silenced, both `d_eqToHom` and its `_assoc` version
 -- do not simplify under themselves
 @[reassoc (attr := simp, nolint simpNF)]
-theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
+lemma d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
 #align homological_complex.d_eq_to_hom HomologicalComplex.d_eqToHom
 

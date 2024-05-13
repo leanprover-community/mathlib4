@@ -72,12 +72,12 @@ def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
     rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 #align hahn_series.to_power_series HahnSeries.toPowerSeries
 
-theorem coeff_toPowerSeries {f : HahnSeries ℕ R} {n : ℕ} :
+lemma coeff_toPowerSeries {f : HahnSeries ℕ R} {n : ℕ} :
     PowerSeries.coeff R n (toPowerSeries f) = f.coeff n :=
   PowerSeries.coeff_mk _ _
 #align hahn_series.coeff_to_power_series HahnSeries.coeff_toPowerSeries
 
-theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
+lemma coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
     (HahnSeries.toPowerSeries.symm f).coeff n = PowerSeries.coeff R n f :=
   rfl
 #align hahn_series.coeff_to_power_series_symm HahnSeries.coeff_toPowerSeries_symm
@@ -93,13 +93,13 @@ def ofPowerSeries : PowerSeries R →+* HahnSeries Γ R :=
 
 variable {Γ} {R}
 
-theorem ofPowerSeries_injective : Function.Injective (ofPowerSeries Γ R) :=
+lemma ofPowerSeries_injective : Function.Injective (ofPowerSeries Γ R) :=
   embDomain_injective.comp toPowerSeries.symm.injective
 #align hahn_series.of_power_series_injective HahnSeries.ofPowerSeries_injective
 
 /-@[simp] Porting note: removing simp. RHS is more complicated and it makes linter
 failures elsewhere-/
-theorem ofPowerSeries_apply (x : PowerSeries R) :
+lemma ofPowerSeries_apply (x : PowerSeries R) :
     ofPowerSeries Γ R x =
       HahnSeries.embDomain
         ⟨⟨((↑) : ℕ → Γ), Nat.strictMono_cast.injective⟩, by
@@ -109,12 +109,12 @@ theorem ofPowerSeries_apply (x : PowerSeries R) :
   rfl
 #align hahn_series.of_power_series_apply HahnSeries.ofPowerSeries_apply
 
-theorem ofPowerSeries_apply_coeff (x : PowerSeries R) (n : ℕ) :
+lemma ofPowerSeries_apply_coeff (x : PowerSeries R) (n : ℕ) :
     (ofPowerSeries Γ R x).coeff n = PowerSeries.coeff R n x := by simp [ofPowerSeries_apply]
 #align hahn_series.of_power_series_apply_coeff HahnSeries.ofPowerSeries_apply_coeff
 
 @[simp]
-theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C R r) = HahnSeries.C r := by
+lemma ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C R r) = HahnSeries.C r := by
   ext n
   simp only [ofPowerSeries_apply, C, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, ne_eq,
     single_coeff]
@@ -129,7 +129,7 @@ theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C R r) = HahnS
 #align hahn_series.of_power_series_C HahnSeries.ofPowerSeries_C
 
 @[simp]
-theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
+lemma ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
   ext n
   simp only [single_coeff, ofPowerSeries_apply, RingHom.coe_mk]
   split_ifs with hn
@@ -142,7 +142,7 @@ theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
     simp (config := { contextual := true }) [Ne.symm hn]
 #align hahn_series.of_power_series_X HahnSeries.ofPowerSeries_X
 
-theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
+lemma ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
     ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by
   simp
 #align hahn_series.of_power_series_X_pow HahnSeries.ofPowerSeries_X_pow
@@ -183,12 +183,12 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+
 
 variable {σ : Type*} [Finite σ]
 
-theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
+lemma coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
     MvPowerSeries.coeff R n (toMvPowerSeries f) = f.coeff n :=
   rfl
 #align hahn_series.coeff_to_mv_power_series HahnSeries.coeff_toMvPowerSeries
 
-theorem coeff_toMvPowerSeries_symm {f : MvPowerSeries σ R} {n : σ →₀ ℕ} :
+lemma coeff_toMvPowerSeries_symm {f : MvPowerSeries σ R} {n : σ →₀ ℕ} :
     (HahnSeries.toMvPowerSeries.symm f).coeff n = MvPowerSeries.coeff R n f :=
   rfl
 #align hahn_series.coeff_to_mv_power_series_symm HahnSeries.coeff_toMvPowerSeries_symm
@@ -227,18 +227,18 @@ instance powerSeriesAlgebra {S : Type*} [CommSemiring S] [Algebra S (PowerSeries
 variable {R}
 variable {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)]
 
-theorem algebraMap_apply' (x : S) :
+lemma algebraMap_apply' (x : S) :
     algebraMap S (HahnSeries Γ R) x = ofPowerSeries Γ R (algebraMap S (PowerSeries R) x) :=
   rfl
 #align hahn_series.algebra_map_apply' HahnSeries.algebraMap_apply'
 
 @[simp]
-theorem _root_.Polynomial.algebraMap_hahnSeries_apply (f : R[X]) :
+lemma _root_.Polynomial.algebraMap_hahnSeries_apply (f : R[X]) :
     algebraMap R[X] (HahnSeries Γ R) f = ofPowerSeries Γ R f :=
   rfl
 #align polynomial.algebra_map_hahn_series_apply Polynomial.algebraMap_hahnSeries_apply
 
-theorem _root_.Polynomial.algebraMap_hahnSeries_injective :
+lemma _root_.Polynomial.algebraMap_hahnSeries_injective :
     Function.Injective (algebraMap R[X] (HahnSeries Γ R)) :=
   ofPowerSeries_injective.comp (Polynomial.coe_injective R)
 #align polynomial.algebra_map_hahn_series_injective Polynomial.algebraMap_hahnSeries_injective

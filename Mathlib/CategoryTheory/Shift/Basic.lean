@@ -377,7 +377,7 @@ section AddMonoid
 variable [AddMonoid A] [HasShift C A] (X Y : C) (f : X ⟶ Y)
 
 @[simp]
-theorem HasShift.shift_obj_obj (n : A) (X : C) : (HasShift.shift.obj ⟨n⟩).obj X = X⟦n⟧ :=
+lemma HasShift.shift_obj_obj (n : A) (X : C) : (HasShift.shift.obj ⟨n⟩).obj X = X⟦n⟧ :=
   rfl
 #align category_theory.has_shift.shift_obj_obj CategoryTheory.HasShift.shift_obj_obj
 
@@ -386,7 +386,7 @@ abbrev shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
   (shiftFunctorAdd C i j).app _
 #align category_theory.shift_add CategoryTheory.shiftAdd
 
-theorem shift_shift' (i j : A) :
+lemma shift_shift' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftAdd X i j).inv ≫ f⟦i + j⟧' ≫ (shiftAdd Y i j).hom := by
   symm
   rw [← Functor.comp_map, NatIso.app_inv]
@@ -400,7 +400,7 @@ abbrev shiftZero : X⟦(0 : A)⟧ ≅ X :=
   (shiftFunctorZero C A).app _
 #align category_theory.shift_zero CategoryTheory.shiftZero
 
-theorem shiftZero' : f⟦(0 : A)⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero A Y).inv := by
+lemma shiftZero' : f⟦(0 : A)⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero A Y).inv := by
   symm
   rw [NatIso.app_inv, NatIso.app_hom]
   apply NatIso.naturality_2
@@ -466,26 +466,26 @@ abbrev shiftNegShift (i : A) : X⟦-i⟧⟦i⟧ ≅ X :=
 
 variable {X Y}
 
-theorem shift_shift_neg' (i : A) :
+lemma shift_shift_neg' (i : A) :
     f⟦i⟧'⟦-i⟧' = (shiftFunctorCompIsoId C i (-i) (add_neg_self i)).hom.app X ≫
       f ≫ (shiftFunctorCompIsoId C i (-i) (add_neg_self i)).inv.app Y :=
   (NatIso.naturality_2 (shiftFunctorCompIsoId C i (-i) (add_neg_self i)) f).symm
 #align category_theory.shift_shift_neg' CategoryTheory.shift_shift_neg'
 
-theorem shift_neg_shift' (i : A) :
+lemma shift_neg_shift' (i : A) :
     f⟦-i⟧'⟦i⟧' = (shiftFunctorCompIsoId C (-i) i (neg_add_self i)).hom.app X ≫ f ≫
       (shiftFunctorCompIsoId C (-i) i (neg_add_self i)).inv.app Y :=
   (NatIso.naturality_2 (shiftFunctorCompIsoId C (-i) i (neg_add_self i)) f).symm
 #align category_theory.shift_neg_shift' CategoryTheory.shift_neg_shift'
 
-theorem shift_equiv_triangle (n : A) (X : C) :
+lemma shift_equiv_triangle (n : A) (X : C) :
     (shiftShiftNeg X n).inv⟦n⟧' ≫ (shiftNegShift (X⟦n⟧) n).hom = 𝟙 (X⟦n⟧) :=
   (shiftEquiv C n).functor_unitIso_comp X
 #align category_theory.shift_equiv_triangle CategoryTheory.shift_equiv_triangle
 
 section
 
-theorem shift_shiftFunctorCompIsoId_hom_app (n m : A) (h : n + m = 0) (X : C) :
+lemma shift_shiftFunctorCompIsoId_hom_app (n m : A) (h : n + m = 0) (X : C) :
     ((shiftFunctorCompIsoId C n m h).hom.app X)⟦n⟧' =
     (shiftFunctorCompIsoId C m n
       (by rw [← neg_eq_of_add_eq_zero_left h, add_right_neg])).hom.app (X⟦n⟧) := by
@@ -496,7 +496,7 @@ theorem shift_shiftFunctorCompIsoId_hom_app (n m : A) (h : n + m = 0) (X : C) :
       (by rw [← neg_eq_of_add_eq_zero_left h, add_right_neg]) (by rw [h, zero_add]) X
 #align category_theory.shift_shift_functor_comp_iso_id_hom_app CategoryTheory.shift_shiftFunctorCompIsoId_hom_app
 
-theorem shift_shiftFunctorCompIsoId_inv_app (n m : A) (h : n + m = 0) (X : C) :
+lemma shift_shiftFunctorCompIsoId_inv_app (n m : A) (h : n + m = 0) (X : C) :
     ((shiftFunctorCompIsoId C n m h).inv.app X)⟦n⟧' =
     ((shiftFunctorCompIsoId C m n
       (by rw [← neg_eq_of_add_eq_zero_left h, add_right_neg])).inv.app (X⟦n⟧)) := by
@@ -506,25 +506,25 @@ theorem shift_shiftFunctorCompIsoId_inv_app (n m : A) (h : n + m = 0) (X : C) :
   rfl
 #align category_theory.shift_shift_functor_comp_iso_id_inv_app CategoryTheory.shift_shiftFunctorCompIsoId_inv_app
 
-theorem shift_shiftFunctorCompIsoId_add_neg_self_hom_app (n : A) (X : C) :
+lemma shift_shiftFunctorCompIsoId_add_neg_self_hom_app (n : A) (X : C) :
     ((shiftFunctorCompIsoId C n (-n) (add_neg_self n)).hom.app X)⟦n⟧' =
     (shiftFunctorCompIsoId C (-n) n (neg_add_self n)).hom.app (X⟦n⟧) :=
   by apply shift_shiftFunctorCompIsoId_hom_app
 #align category_theory.shift_shift_functor_comp_iso_id_add_neg_self_hom_app CategoryTheory.shift_shiftFunctorCompIsoId_add_neg_self_hom_app
 
-theorem shift_shiftFunctorCompIsoId_add_neg_self_inv_app (n : A) (X : C) :
+lemma shift_shiftFunctorCompIsoId_add_neg_self_inv_app (n : A) (X : C) :
     ((shiftFunctorCompIsoId C n (-n) (add_neg_self n)).inv.app X)⟦n⟧' =
     (shiftFunctorCompIsoId C (-n) n (neg_add_self n)).inv.app (X⟦n⟧) :=
   by apply shift_shiftFunctorCompIsoId_inv_app
 #align category_theory.shift_shift_functor_comp_iso_id_add_neg_self_inv_app CategoryTheory.shift_shiftFunctorCompIsoId_add_neg_self_inv_app
 
-theorem shift_shiftFunctorCompIsoId_neg_add_self_hom_app (n : A) (X : C) :
+lemma shift_shiftFunctorCompIsoId_neg_add_self_hom_app (n : A) (X : C) :
     ((shiftFunctorCompIsoId C (-n) n (neg_add_self n)).hom.app X)⟦-n⟧' =
     (shiftFunctorCompIsoId C n (-n) (add_neg_self n)).hom.app (X⟦-n⟧) :=
   by apply shift_shiftFunctorCompIsoId_hom_app
 #align category_theory.shift_shift_functor_comp_iso_id_neg_add_self_hom_app CategoryTheory.shift_shiftFunctorCompIsoId_neg_add_self_hom_app
 
-theorem shift_shiftFunctorCompIsoId_neg_add_self_inv_app (n : A) (X : C) :
+lemma shift_shiftFunctorCompIsoId_neg_add_self_inv_app (n : A) (X : C) :
     ((shiftFunctorCompIsoId C (-n) n (neg_add_self n)).inv.app X)⟦-n⟧' =
     (shiftFunctorCompIsoId C n (-n) (add_neg_self n)).inv.app (X⟦-n⟧) :=
   by apply shift_shiftFunctorCompIsoId_inv_app
@@ -536,7 +536,7 @@ open CategoryTheory.Limits
 
 variable [HasZeroMorphisms C]
 
-theorem shift_zero_eq_zero (X Y : C) (n : A) : (0 : X ⟶ Y)⟦n⟧' = (0 : X⟦n⟧ ⟶ Y⟦n⟧) :=
+lemma shift_zero_eq_zero (X Y : C) (n : A) : (0 : X ⟶ Y)⟦n⟧' = (0 : X⟦n⟧ ⟶ Y⟦n⟧) :=
   CategoryTheory.Functor.map_zero _ _ _
 #align category_theory.shift_zero_eq_zero CategoryTheory.shift_zero_eq_zero
 
@@ -584,7 +584,7 @@ abbrev shiftComm (i j : A) : X⟦i⟧⟦j⟧ ≅ X⟦j⟧⟦i⟧ :=
 #align category_theory.shift_comm CategoryTheory.shiftComm
 
 @[simp]
-theorem shiftComm_symm (i j : A) : (shiftComm X i j).symm = shiftComm X j i := by
+lemma shiftComm_symm (i j : A) : (shiftComm X i j).symm = shiftComm X j i := by
   ext
   exact NatTrans.congr_app (congr_arg Iso.hom (shiftFunctorComm_symm C i j)) X
 #align category_theory.shift_comm_symm CategoryTheory.shiftComm_symm
@@ -600,7 +600,7 @@ theorem shiftComm' (i j : A) :
 #align category_theory.shift_comm' CategoryTheory.shiftComm'
 
 @[reassoc]
-theorem shiftComm_hom_comp (i j : A) :
+lemma shiftComm_hom_comp (i j : A) :
     (shiftComm X i j).hom ≫ f⟦j⟧'⟦i⟧' = f⟦i⟧'⟦j⟧' ≫ (shiftComm Y i j).hom := by
   rw [shiftComm', ← shiftComm_symm, Iso.symm_hom, Iso.inv_hom_id_assoc]
 #align category_theory.shift_comm_hom_comp CategoryTheory.shiftComm_hom_comp

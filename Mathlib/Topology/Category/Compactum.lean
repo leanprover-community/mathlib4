@@ -140,14 +140,14 @@ def incl (X : Compactum) : X → Ultrafilter X :=
 #align Compactum.incl Compactum.incl
 
 @[simp]
-theorem str_incl (X : Compactum) (x : X) : X.str (X.incl x) = x := by
+lemma str_incl (X : Compactum) (x : X) : X.str (X.incl x) = x := by
   change ((β ).η.app _ ≫ X.a) _ = _
   rw [Monad.Algebra.unit]
   rfl
 #align Compactum.str_incl Compactum.str_incl
 
 @[simp]
-theorem str_hom_commute (X Y : Compactum) (f : X ⟶ Y) (xs : Ultrafilter X) :
+lemma str_hom_commute (X Y : Compactum) (f : X ⟶ Y) (xs : Ultrafilter X) :
     f (X.str xs) = Y.str (map f xs) := by
   change (X.a ≫ f.f) _ = _
   rw [← f.h]
@@ -155,7 +155,7 @@ theorem str_hom_commute (X Y : Compactum) (f : X ⟶ Y) (xs : Ultrafilter X) :
 #align Compactum.str_hom_commute Compactum.str_hom_commute
 
 @[simp]
-theorem join_distrib (X : Compactum) (uux : Ultrafilter (Ultrafilter X)) :
+lemma join_distrib (X : Compactum) (uux : Ultrafilter (Ultrafilter X)) :
     X.str (X.join uux) = X.str (map X.str uux) := by
   change ((β ).μ.app _ ≫ X.a) _ = _
   rw [Monad.Algebra.assoc]
@@ -170,7 +170,7 @@ instance {X : Compactum} : TopologicalSpace X.A where
   isOpen_sUnion := fun _ h1 _ ⟨T, hT, h2⟩ =>
     mem_of_superset (h1 T hT _ h2) (Set.subset_sUnion_of_mem hT)
 
-theorem isClosed_iff {X : Compactum} (S : Set X) :
+lemma isClosed_iff {X : Compactum} (S : Set X) :
     IsClosed S ↔ ∀ F : Ultrafilter X, S ∈ F → X.str F ∈ S := by
   rw [← isOpen_compl_iff]
   constructor
@@ -202,7 +202,7 @@ private def basic {X : Compactum} (A : Set X) : Set (Ultrafilter X) :=
 private def cl {X : Compactum} (A : Set X) : Set X :=
   X.str '' basic A
 
-private theorem basic_inter {X : Compactum} (A B : Set X) : basic (A ∩ B) = basic A ∩ basic B := by
+private lemma basic_inter {X : Compactum} (A B : Set X) : basic (A ∩ B) = basic A ∩ basic B := by
   ext G
   constructor
   · intro hG
@@ -211,10 +211,10 @@ private theorem basic_inter {X : Compactum} (A B : Set X) : basic (A ∩ B) = ba
   · rintro ⟨h1, h2⟩
     exact inter_mem h1 h2
 
-private theorem subset_cl {X : Compactum} (A : Set X) : A ⊆ cl A := fun a ha =>
+private lemma subset_cl {X : Compactum} (A : Set X) : A ⊆ cl A := fun a ha =>
   ⟨X.incl a, ha, by simp⟩
 
-private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
+private lemma cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   rintro _ ⟨F, hF, rfl⟩
   -- Notation to be used in this proof.
   let fsu := Finset (Set (Ultrafilter X))
@@ -273,13 +273,13 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   intro t ht
   exact finiteInterClosure.basic (@hT t ht)
 
-theorem isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
+lemma isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
   rw [isClosed_iff]
   intro F hF
   exact cl_cl _ ⟨F, hF, rfl⟩
 #align Compactum.is_closed_cl Compactum.isClosed_cl
 
-theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤ 𝓝 x → X.str F = x := by
+lemma str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤ 𝓝 x → X.str F = x := by
   -- Notation to be used in this proof.
   let fsu := Finset (Set (Ultrafilter X))
   let ssu := Set (Set (Ultrafilter X))
@@ -350,7 +350,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
   exact finiteInterClosure.basic (@hT t ht)
 #align Compactum.str_eq_of_le_nhds Compactum.str_eq_of_le_nhds
 
-theorem le_nhds_of_str_eq {X : Compactum} (F : Ultrafilter X) (x : X) : X.str F = x → ↑F ≤ 𝓝 x :=
+lemma le_nhds_of_str_eq {X : Compactum} (F : Ultrafilter X) (x : X) : X.str F = x → ↑F ≤ 𝓝 x :=
   fun h => le_nhds_iff.mpr fun s hx hs => hs _ <| by rwa [h]
 #align Compactum.le_nhds_of_str_eq Compactum.le_nhds_of_str_eq
 
@@ -366,7 +366,7 @@ theorem lim_eq_str {X : Compactum} (F : Ultrafilter X) : F.lim = X.str F := by
   tauto
 #align Compactum.Lim_eq_str Compactum.lim_eq_str
 
-theorem cl_eq_closure {X : Compactum} (A : Set X) : cl A = closure A := by
+lemma cl_eq_closure {X : Compactum} (A : Set X) : cl A = closure A := by
   ext
   rw [mem_closure_iff_ultrafilter]
   constructor

@@ -151,13 +151,13 @@ set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex.shift_fun SSet.Augmented.StandardSimplex.shiftFun
 
 @[simp]
-theorem shiftFun_0 {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) : shiftFun f 0 = 0 :=
+lemma shiftFun_0 {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) : shiftFun f 0 = 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex.shift_fun_0 SSet.Augmented.StandardSimplex.shiftFun_0
 
 @[simp]
-theorem shiftFun_succ {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin n) :
+lemma shiftFun_succ {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin n) :
     shiftFun f i.succ = f i := by
   dsimp [shiftFun]
   split_ifs with h
@@ -285,7 +285,7 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s
 
 -- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
-theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
+lemma ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 =
       @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ ≫
         S.section_ := by
@@ -294,7 +294,7 @@ theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
   rfl
 
 -- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
-theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
+lemma ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ =
       @WidePullback.π _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ i := by
   dsimp [ExtraDegeneracy.s]
@@ -305,7 +305,7 @@ theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s_comp_π_succ CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s_comp_π_succ
 
 -- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
-theorem ExtraDegeneracy.s_comp_base (n : ℕ) :
+lemma ExtraDegeneracy.s_comp_base (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.base _ = WidePullback.base _ := by
   apply WidePullback.lift_base
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s_comp_base CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s_comp_base

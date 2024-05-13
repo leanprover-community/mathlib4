@@ -16,7 +16,7 @@ This file proves $\log(n+1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$
 
 open BigOperators
 
-theorem log_add_one_le_harmonic (n : ℕ) :
+lemma log_add_one_le_harmonic (n : ℕ) :
     Real.log ↑(n+1) ≤ harmonic n := by
   calc _ = ∫ x in (1:ℕ)..↑(n+1), x⁻¹ := ?_
        _ ≤ ∑ d in Finset.Icc 1 n, (d:ℝ)⁻¹ := ?_
@@ -25,7 +25,7 @@ theorem log_add_one_le_harmonic (n : ℕ) :
   · exact (inv_antitoneOn_Icc_right <| by norm_num).integral_le_sum_Ico (Nat.le_add_left 1 n)
   · simp only [harmonic_eq_sum_Icc, Rat.cast_sum, Rat.cast_inv, Rat.cast_natCast]
 
-theorem harmonic_le_one_add_log (n : ℕ) :
+lemma harmonic_le_one_add_log (n : ℕ) :
     harmonic n ≤ 1 + Real.log n := by
   by_cases hn0 : n = 0
   · simp [hn0]
@@ -51,7 +51,7 @@ theorem harmonic_le_one_add_log (n : ℕ) :
     · simp only [Nat.one_le_cast, hn, Set.uIcc_of_le, Set.mem_Icc, Nat.cast_nonneg,
         and_true, not_le, zero_lt_one]
 
-theorem log_le_harmonic_floor (y : ℝ) (hy : 0 ≤ y) :
+lemma log_le_harmonic_floor (y : ℝ) (hy : 0 ≤ y) :
     Real.log y ≤ harmonic ⌊y⌋₊ := by
   by_cases h0 : y = 0
   · simp [h0]
@@ -63,7 +63,7 @@ theorem log_le_harmonic_floor (y : ℝ) (hy : 0 ≤ y) :
     norm_cast
     exact Nat.ceil_le_floor_add_one y
 
-theorem harmonic_floor_le_one_add_log (y : ℝ) (hy : 1 ≤ y) :
+lemma harmonic_floor_le_one_add_log (y : ℝ) (hy : 1 ≤ y) :
     harmonic ⌊y⌋₊ ≤ 1 + Real.log y := by
   refine (harmonic_le_one_add_log _).trans ?_
   gcongr

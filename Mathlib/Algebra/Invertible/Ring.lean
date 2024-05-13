@@ -22,21 +22,21 @@ def invertibleNeg [Mul α] [One α] [HasDistribNeg α] (a : α) [Invertible a] :
 #align invertible_neg invertibleNeg
 
 @[simp]
-theorem invOf_neg [Monoid α] [HasDistribNeg α] (a : α) [Invertible a] [Invertible (-a)] :
+lemma invOf_neg [Monoid α] [HasDistribNeg α] (a : α) [Invertible a] [Invertible (-a)] :
     ⅟ (-a) = -⅟ a :=
   invOf_eq_right_inv (by simp)
 #align inv_of_neg invOf_neg
 
 @[simp]
-theorem one_sub_invOf_two [Ring α] [Invertible (2 : α)] : 1 - (⅟ 2 : α) = ⅟ 2 :=
+lemma one_sub_invOf_two [Ring α] [Invertible (2 : α)] : 1 - (⅟ 2 : α) = ⅟ 2 :=
   (isUnit_of_invertible (2 : α)).mul_right_inj.1 <| by
     rw [mul_sub, mul_invOf_self, mul_one, ← one_add_one_eq_two, add_sub_cancel_right]
 #align one_sub_inv_of_two one_sub_invOf_two
 
 @[simp]
-theorem invOf_two_add_invOf_two [NonAssocSemiring α] [Invertible (2 : α)] :
+lemma invOf_two_add_invOf_two [NonAssocSemiring α] [Invertible (2 : α)] :
     (⅟ 2 : α) + (⅟ 2 : α) = 1 := by rw [← two_mul, mul_invOf_self]
 #align inv_of_two_add_inv_of_two invOf_two_add_invOf_two
 
-theorem pos_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ) [Invertible (n : α)] : 0 < n :=
+lemma pos_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ) [Invertible (n : α)] : 0 < n :=
   Nat.zero_lt_of_ne_zero fun h => nonzero_of_invertible (n : α) (h ▸ Nat.cast_zero)

@@ -61,7 +61,7 @@ protected theorem multiset_prod_mem {G} [CommGroup G] (K : Subgroup G) (g : Mult
 #align add_subgroup.multiset_sum_mem AddSubgroup.multiset_sum_mem
 
 @[to_additive]
-theorem multiset_noncommProd_mem (K : Subgroup G) (g : Multiset G) (comm) :
+lemma multiset_noncommProd_mem (K : Subgroup G) (g : Multiset G) (comm) :
     (∀ a ∈ g, a ∈ K) → g.noncommProd comm ∈ K :=
   K.toSubmonoid.multiset_noncommProd_mem g comm
 #align subgroup.multiset_noncomm_prod_mem Subgroup.multiset_noncommProd_mem
@@ -78,7 +78,7 @@ protected theorem prod_mem {G : Type*} [CommGroup G] (K : Subgroup G) {ι : Type
 #align add_subgroup.sum_mem AddSubgroup.sum_mem
 
 @[to_additive]
-theorem noncommProd_mem (K : Subgroup G) {ι : Type*} {t : Finset ι} {f : ι → G} (comm) :
+lemma noncommProd_mem (K : Subgroup G) {ι : Type*} {t : Finset ι} {f : ι → G} (comm) :
     (∀ c ∈ t, f c ∈ K) → t.noncommProd f comm ∈ K :=
   K.toSubmonoid.noncommProd_mem t f comm
 #align subgroup.noncomm_prod_mem Subgroup.noncommProd_mem
@@ -86,14 +86,14 @@ theorem noncommProd_mem (K : Subgroup G) {ι : Type*} {t : Finset ι} {f : ι �
 
 -- Porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
 @[to_additive (attr := simp 1100, norm_cast)]
-theorem val_list_prod (l : List H) : (l.prod : G) = (l.map Subtype.val).prod :=
+lemma val_list_prod (l : List H) : (l.prod : G) = (l.map Subtype.val).prod :=
   SubmonoidClass.coe_list_prod l
 #align subgroup.coe_list_prod Subgroup.val_list_prod
 #align add_subgroup.coe_list_sum AddSubgroup.val_list_sum
 
 -- Porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
 @[to_additive (attr := simp 1100, norm_cast)]
-theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
+lemma val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
     (m.prod : G) = (m.map Subtype.val).prod :=
   SubmonoidClass.coe_multiset_prod m
 #align subgroup.coe_multiset_prod Subgroup.val_multiset_prod
@@ -101,7 +101,7 @@ theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
 
 -- Porting note: increased priority to appease `simpNF`, otherwise `simp` can prove it.
 @[to_additive (attr := simp 1100, norm_cast)]
-theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
+lemma val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
     ↑(∏ i in s, f i) = (∏ i in s, f i : G) :=
   SubmonoidClass.coe_finset_prod f s
 #align subgroup.coe_finset_prod Subgroup.val_finset_prod
@@ -118,19 +118,19 @@ instance fintypeBot : Fintype (⊥ : Subgroup G) :=
 /- curly brackets `{}` are used here instead of instance brackets `[]` because
   the instance in a goal is often not the same as the one inferred by type class inference.  -/
 @[to_additive] -- Porting note: removed `simp` because `simpNF` says it can prove it.
-theorem card_bot {_ : Fintype (⊥ : Subgroup G)} : Fintype.card (⊥ : Subgroup G) = 1 :=
+lemma card_bot {_ : Fintype (⊥ : Subgroup G)} : Fintype.card (⊥ : Subgroup G) = 1 :=
   Fintype.card_eq_one_iff.2
     ⟨⟨(1 : G), Set.mem_singleton 1⟩, fun ⟨_y, hy⟩ => Subtype.eq <| Subgroup.mem_bot.1 hy⟩
 #align subgroup.card_bot Subgroup.card_bot
 #align add_subgroup.card_bot AddSubgroup.card_bot
 
 @[to_additive]
-theorem card_top [Fintype G] : Fintype.card (⊤ : Subgroup G) = Fintype.card G := by
+lemma card_top [Fintype G] : Fintype.card (⊤ : Subgroup G) = Fintype.card G := by
   rw [Fintype.card_eq]
   exact Nonempty.intro Subgroup.topEquiv.toEquiv
 
 @[to_additive]
-theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.card G) :
+lemma eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.card G) :
     H = ⊤ := by
   letI : Fintype (H : Set G) := ‹Fintype H›
   rw [SetLike.ext'_iff, coe_top, ← Finset.coe_univ, ← (H : Set G).coe_toFinset, Finset.coe_inj, ←
@@ -140,31 +140,31 @@ theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.
 #align add_subgroup.eq_top_of_card_eq AddSubgroup.eq_top_of_card_eq
 
 @[to_additive (attr := simp)]
-theorem card_eq_iff_eq_top [Fintype H] [Fintype G] : Fintype.card H = Fintype.card G ↔ H = ⊤ :=
+lemma card_eq_iff_eq_top [Fintype H] [Fintype G] : Fintype.card H = Fintype.card G ↔ H = ⊤ :=
   Iff.intro (eq_top_of_card_eq H) (fun h ↦ by simpa only [h] using card_top)
 
 @[to_additive]
-theorem eq_top_of_le_card [Fintype H] [Fintype G] (h : Fintype.card G ≤ Fintype.card H) : H = ⊤ :=
+lemma eq_top_of_le_card [Fintype H] [Fintype G] (h : Fintype.card G ≤ Fintype.card H) : H = ⊤ :=
   eq_top_of_card_eq H
     (le_antisymm (Fintype.card_le_of_injective Subtype.val Subtype.coe_injective) h)
 #align subgroup.eq_top_of_le_card Subgroup.eq_top_of_le_card
 #align add_subgroup.eq_top_of_le_card AddSubgroup.eq_top_of_le_card
 
 @[to_additive]
-theorem eq_bot_of_card_le [Fintype H] (h : Fintype.card H ≤ 1) : H = ⊥ :=
+lemma eq_bot_of_card_le [Fintype H] (h : Fintype.card H ≤ 1) : H = ⊥ :=
   let _ := Fintype.card_le_one_iff_subsingleton.mp h
   eq_bot_of_subsingleton H
 #align subgroup.eq_bot_of_card_le Subgroup.eq_bot_of_card_le
 #align add_subgroup.eq_bot_of_card_le AddSubgroup.eq_bot_of_card_le
 
 @[to_additive]
-theorem eq_bot_of_card_eq [Fintype H] (h : Fintype.card H = 1) : H = ⊥ :=
+lemma eq_bot_of_card_eq [Fintype H] (h : Fintype.card H = 1) : H = ⊥ :=
   H.eq_bot_of_card_le (le_of_eq h)
 #align subgroup.eq_bot_of_card_eq Subgroup.eq_bot_of_card_eq
 #align add_subgroup.eq_bot_of_card_eq AddSubgroup.eq_bot_of_card_eq
 
 @[to_additive card_le_one_iff_eq_bot]
-theorem card_le_one_iff_eq_bot [Fintype H] : Fintype.card H ≤ 1 ↔ H = ⊥ :=
+lemma card_le_one_iff_eq_bot [Fintype H] : Fintype.card H ≤ 1 ↔ H = ⊥ :=
   ⟨fun h =>
     (eq_bot_iff_forall _).2 fun x hx => by
       simpa [Subtype.ext_iff] using Fintype.card_le_one_iff.1 h ⟨x, hx⟩ 1,
@@ -176,13 +176,13 @@ theorem card_le_one_iff_eq_bot [Fintype H] : Fintype.card H ≤ 1 ↔ H = ⊥ :=
   ⟨by rintro rfl; exact card_bot, eq_bot_of_card_eq _⟩
 
 @[to_additive one_lt_card_iff_ne_bot]
-theorem one_lt_card_iff_ne_bot [Fintype H] : 1 < Fintype.card H ↔ H ≠ ⊥ :=
+lemma one_lt_card_iff_ne_bot [Fintype H] : 1 < Fintype.card H ↔ H ≠ ⊥ :=
   lt_iff_not_le.trans H.card_le_one_iff_eq_bot.not
 #align subgroup.one_lt_card_iff_ne_bot Subgroup.one_lt_card_iff_ne_bot
 #align add_subgroup.pos_card_iff_ne_bot AddSubgroup.one_lt_card_iff_ne_bot
 
 @[to_additive]
-theorem card_le_card_group [Fintype G] [Fintype H] : Fintype.card H ≤ Fintype.card G :=
+lemma card_le_card_group [Fintype G] [Fintype H] : Fintype.card H ≤ Fintype.card G :=
   Fintype.card_le_of_injective _ Subtype.coe_injective
 
 end Subgroup
@@ -196,7 +196,7 @@ open Set
 variable {η : Type*} {f : η → Type*} [∀ i, Group (f i)]
 
 @[to_additive]
-theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgroup (∀ i, f i)}
+lemma pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgroup (∀ i, f i)}
     (x : ∀ i, f i) (h1 : ∀ i, i ∉ I → x i = 1) (h2 : ∀ i, i ∈ I → Pi.mulSingle i (x i) ∈ H) :
     x ∈ H := by
   induction' I using Finset.induction_on with i I hnmem ih generalizing x
@@ -232,7 +232,7 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
 #align add_subgroup.pi_mem_of_single_mem_aux AddSubgroup.pi_mem_of_single_mem_aux
 
 @[to_additive]
-theorem pi_mem_of_mulSingle_mem [Finite η] [DecidableEq η] {H : Subgroup (∀ i, f i)} (x : ∀ i, f i)
+lemma pi_mem_of_mulSingle_mem [Finite η] [DecidableEq η] {H : Subgroup (∀ i, f i)} (x : ∀ i, f i)
     (h : ∀ i, Pi.mulSingle i (x i) ∈ H) : x ∈ H := by
   cases nonempty_fintype η
   exact pi_mem_of_mulSingle_mem_aux Finset.univ x (by simp) fun i _ => h i
@@ -260,7 +260,7 @@ namespace Subgroup
 
 section Normalizer
 
-theorem mem_normalizer_fintype {S : Set G} [Finite S] {x : G} (h : ∀ n, n ∈ S → x * n * x⁻¹ ∈ S) :
+lemma mem_normalizer_fintype {S : Set G} [Finite S] {x : G} (h : ∀ n, n ∈ S → x * n * x⁻¹ ∈ S) :
     x ∈ Subgroup.setNormalizer S := by
   haveI := Classical.propDecidable; cases nonempty_fintype S;
       haveI := Set.fintypeImage S fun n => x * n * x⁻¹;

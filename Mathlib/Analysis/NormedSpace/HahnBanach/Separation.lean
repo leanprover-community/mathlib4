@@ -112,20 +112,20 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
   · exact csInf_le ⟨f a₀, forall_mem_image.2 <| forall_le _ ha₀⟩ (mem_image_of_mem _ hb)
 #align geometric_hahn_banach_open geometric_hahn_banach_open
 
-theorem geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (disj : x ∉ s) :
+lemma geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (disj : x ∉ s) :
     ∃ f : E →L[ℝ] ℝ, ∀ a ∈ s, f a < f x :=
   let ⟨f, _s, hs, hx⟩ :=
     geometric_hahn_banach_open hs₁ hs₂ (convex_singleton x) (disjoint_singleton_right.2 disj)
   ⟨f, fun a ha => lt_of_lt_of_le (hs a ha) (hx x (mem_singleton _))⟩
 #align geometric_hahn_banach_open_point geometric_hahn_banach_open_point
 
-theorem geometric_hahn_banach_point_open (ht₁ : Convex ℝ t) (ht₂ : IsOpen t) (disj : x ∉ t) :
+lemma geometric_hahn_banach_point_open (ht₁ : Convex ℝ t) (ht₂ : IsOpen t) (disj : x ∉ t) :
     ∃ f : E →L[ℝ] ℝ, ∀ b ∈ t, f x < f b :=
   let ⟨f, hf⟩ := geometric_hahn_banach_open_point ht₁ ht₂ disj
   ⟨-f, by simpa⟩
 #align geometric_hahn_banach_point_open geometric_hahn_banach_point_open
 
-theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht₁ : Convex ℝ t)
+lemma geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht₁ : Convex ℝ t)
     (ht₃ : IsOpen t) (disj : Disjoint s t) :
     ∃ (f : E →L[ℝ] ℝ) (u : ℝ), (∀ a ∈ s, f a < u) ∧ ∀ b ∈ t, u < f b := by
   obtain rfl | ⟨a₀, ha₀⟩ := s.eq_empty_or_nonempty
@@ -178,7 +178,7 @@ theorem geometric_hahn_banach_closed_compact (hs₁ : Convex ℝ s) (hs₂ : IsC
   ⟨-f, -t, -s, by simpa using ht, by simpa using st, by simpa using hs⟩
 #align geometric_hahn_banach_closed_compact geometric_hahn_banach_closed_compact
 
-theorem geometric_hahn_banach_point_closed (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : x ∉ t) :
+lemma geometric_hahn_banach_point_closed (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : x ∉ t) :
     ∃ (f : E →L[ℝ] ℝ) (u : ℝ), f x < u ∧ ∀ b ∈ t, u < f b :=
   let ⟨f, _u, v, ha, hst, hb⟩ :=
     geometric_hahn_banach_compact_closed (convex_singleton x) isCompact_singleton ht₁ ht₂
@@ -186,7 +186,7 @@ theorem geometric_hahn_banach_point_closed (ht₁ : Convex ℝ t) (ht₂ : IsClo
   ⟨f, v, hst.trans' <| ha x <| mem_singleton _, hb⟩
 #align geometric_hahn_banach_point_closed geometric_hahn_banach_point_closed
 
-theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (disj : x ∉ s) :
+lemma geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (disj : x ∉ s) :
     ∃ (f : E →L[ℝ] ℝ) (u : ℝ), (∀ a ∈ s, f a < u) ∧ u < f x :=
   let ⟨f, s, _t, ha, hst, hb⟩ :=
     geometric_hahn_banach_closed_compact hs₁ hs₂ (convex_singleton x) isCompact_singleton

@@ -67,40 +67,40 @@ instance smulMemClass : SMulMemClass (Submodule R M) R M where
 #align submodule.smul_mem_class Submodule.smulMemClass
 
 @[simp]
-theorem mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid ↔ x ∈ p :=
+lemma mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid ↔ x ∈ p :=
   Iff.rfl
 #align submodule.mem_to_add_submonoid Submodule.mem_toAddSubmonoid
 
 variable {p q : Submodule R M}
 
 @[simp]
-theorem mem_mk {S : AddSubmonoid M} {x : M} (h) : x ∈ (⟨S, h⟩ : Submodule R M) ↔ x ∈ S :=
+lemma mem_mk {S : AddSubmonoid M} {x : M} (h) : x ∈ (⟨S, h⟩ : Submodule R M) ↔ x ∈ S :=
   Iff.rfl
 #align submodule.mem_mk Submodule.mem_mk
 
 @[simp]
-theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Set M) = S :=
+lemma coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Set M) = S :=
   rfl
 #align submodule.coe_set_mk Submodule.coe_set_mk
 
-@[simp] theorem eta (h) : ({p with smul_mem' := h} : Submodule R M) = p :=
+@[simp] lemma eta (h) : ({p with smul_mem' := h} : Submodule R M) = p :=
   rfl
 
 -- Porting note: replaced `S ⊆ S' : Set` with `S ≤ S'`
 @[simp]
-theorem mk_le_mk {S S' : AddSubmonoid M} (h h') :
+lemma mk_le_mk {S S' : AddSubmonoid M} (h h') :
     (⟨S, h⟩ : Submodule R M) ≤ (⟨S', h'⟩ : Submodule R M) ↔ S ≤ S' :=
   Iff.rfl
 #align submodule.mk_le_mk Submodule.mk_le_mk
 
 @[ext]
-theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
+lemma ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 #align submodule.ext Submodule.ext
 
 -- Porting note: adding this as the `simp`-normal form of `toSubMulAction_eq`
 @[simp]
-theorem carrier_inj : p.carrier = q.carrier ↔ p = q :=
+lemma carrier_inj : p.carrier = q.carrier ↔ p = q :=
   (SetLike.coe_injective (A := Submodule R M)).eq_iff
 
 /-- Copy of a submodule with a new `carrier` equal to the old one. Useful to fix definitional
@@ -113,62 +113,62 @@ protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R
 #align submodule.copy Submodule.copy
 
 @[simp]
-theorem coe_copy (S : Submodule R M) (s : Set M) (hs : s = ↑S) : (S.copy s hs : Set M) = s :=
+lemma coe_copy (S : Submodule R M) (s : Set M) (hs : s = ↑S) : (S.copy s hs : Set M) = s :=
   rfl
 #align submodule.coe_copy Submodule.coe_copy
 
-theorem copy_eq (S : Submodule R M) (s : Set M) (hs : s = ↑S) : S.copy s hs = S :=
+lemma copy_eq (S : Submodule R M) (s : Set M) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
 #align submodule.copy_eq Submodule.copy_eq
 
-theorem toAddSubmonoid_injective : Injective (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
+lemma toAddSubmonoid_injective : Injective (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
   fun p q h => SetLike.ext'_iff.2 (show (p.toAddSubmonoid : Set M) = q from SetLike.ext'_iff.1 h)
 #align submodule.to_add_submonoid_injective Submodule.toAddSubmonoid_injective
 
 @[simp]
-theorem toAddSubmonoid_eq : p.toAddSubmonoid = q.toAddSubmonoid ↔ p = q :=
+lemma toAddSubmonoid_eq : p.toAddSubmonoid = q.toAddSubmonoid ↔ p = q :=
   toAddSubmonoid_injective.eq_iff
 #align submodule.to_add_submonoid_eq Submodule.toAddSubmonoid_eq
 
 @[mono]
-theorem toAddSubmonoid_strictMono : StrictMono (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
+lemma toAddSubmonoid_strictMono : StrictMono (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
   fun _ _ => id
 #align submodule.to_add_submonoid_strict_mono Submodule.toAddSubmonoid_strictMono
 
-theorem toAddSubmonoid_le : p.toAddSubmonoid ≤ q.toAddSubmonoid ↔ p ≤ q :=
+lemma toAddSubmonoid_le : p.toAddSubmonoid ≤ q.toAddSubmonoid ↔ p ≤ q :=
   Iff.rfl
 #align submodule.to_add_submonoid_le Submodule.toAddSubmonoid_le
 
 @[mono]
-theorem toAddSubmonoid_mono : Monotone (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
+lemma toAddSubmonoid_mono : Monotone (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
   toAddSubmonoid_strictMono.monotone
 #align submodule.to_add_submonoid_mono Submodule.toAddSubmonoid_mono
 
 @[simp]
-theorem coe_toAddSubmonoid (p : Submodule R M) : (p.toAddSubmonoid : Set M) = p :=
+lemma coe_toAddSubmonoid (p : Submodule R M) : (p.toAddSubmonoid : Set M) = p :=
   rfl
 #align submodule.coe_to_add_submonoid Submodule.coe_toAddSubmonoid
 
-theorem toSubMulAction_injective : Injective (toSubMulAction : Submodule R M → SubMulAction R M) :=
+lemma toSubMulAction_injective : Injective (toSubMulAction : Submodule R M → SubMulAction R M) :=
   fun p q h => SetLike.ext'_iff.2 (show (p.toSubMulAction : Set M) = q from SetLike.ext'_iff.1 h)
 #align submodule.to_sub_mul_action_injective Submodule.toSubMulAction_injective
 
-theorem toSubMulAction_eq : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
+lemma toSubMulAction_eq : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
   toSubMulAction_injective.eq_iff
 #align submodule.to_sub_mul_action_eq Submodule.toSubMulAction_eq
 
 @[mono]
-theorem toSubMulAction_strictMono :
+lemma toSubMulAction_strictMono :
     StrictMono (toSubMulAction : Submodule R M → SubMulAction R M) := fun _ _ => id
 #align submodule.to_sub_mul_action_strict_mono Submodule.toSubMulAction_strictMono
 
 @[mono]
-theorem toSubMulAction_mono : Monotone (toSubMulAction : Submodule R M → SubMulAction R M) :=
+lemma toSubMulAction_mono : Monotone (toSubMulAction : Submodule R M → SubMulAction R M) :=
   toSubMulAction_strictMono.monotone
 #align submodule.to_sub_mul_action_mono Submodule.toSubMulAction_mono
 
 @[simp]
-theorem coe_toSubMulAction (p : Submodule R M) : (p.toSubMulAction : Set M) = p :=
+lemma coe_toSubMulAction (p : Submodule R M) : (p.toSubMulAction : Set M) = p :=
   rfl
 #align submodule.coe_to_sub_mul_action Submodule.coe_toSubMulAction
 
@@ -210,39 +210,39 @@ variable {r : R} {x y : M}
 variable (p)
 
 -- Porting note: removing `@[simp]` since it can already be proven
-theorem mem_carrier : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
+lemma mem_carrier : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 #align submodule.mem_carrier Submodule.mem_carrier
 
 @[simp]
-protected theorem zero_mem : (0 : M) ∈ p :=
+protected lemma zero_mem : (0 : M) ∈ p :=
   zero_mem _
 #align submodule.zero_mem Submodule.zero_mem
 
-protected theorem add_mem (h₁ : x ∈ p) (h₂ : y ∈ p) : x + y ∈ p :=
+protected lemma add_mem (h₁ : x ∈ p) (h₂ : y ∈ p) : x + y ∈ p :=
   add_mem h₁ h₂
 #align submodule.add_mem Submodule.add_mem
 
-theorem smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
+lemma smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
   p.smul_mem' r h
 #align submodule.smul_mem Submodule.smul_mem
 
-theorem smul_of_tower_mem [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (h : x ∈ p) :
+lemma smul_of_tower_mem [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (h : x ∈ p) :
     r • x ∈ p :=
   p.toSubMulAction.smul_of_tower_mem r h
 #align submodule.smul_of_tower_mem Submodule.smul_of_tower_mem
 
-protected theorem sum_mem {t : Finset ι} {f : ι → M} : (∀ c ∈ t, f c ∈ p) → (∑ i in t, f i) ∈ p :=
+protected lemma sum_mem {t : Finset ι} {f : ι → M} : (∀ c ∈ t, f c ∈ p) → (∑ i in t, f i) ∈ p :=
   sum_mem
 #align submodule.sum_mem Submodule.sum_mem
 
-theorem sum_smul_mem {t : Finset ι} {f : ι → M} (r : ι → R) (hyp : ∀ c ∈ t, f c ∈ p) :
+lemma sum_smul_mem {t : Finset ι} {f : ι → M} (r : ι → R) (hyp : ∀ c ∈ t, f c ∈ p) :
     (∑ i in t, r i • f i) ∈ p :=
   sum_mem fun i hi => smul_mem _ _ (hyp i hi)
 #align submodule.sum_smul_mem Submodule.sum_smul_mem
 
 @[simp]
-theorem smul_mem_iff' [Group G] [MulAction G M] [SMul G R] [IsScalarTower G R M] (g : G) :
+lemma smul_mem_iff' [Group G] [MulAction G M] [SMul G R] [IsScalarTower G R M] (g : G) :
     g • x ∈ p ↔ x ∈ p :=
   p.toSubMulAction.smul_mem_iff' g
 #align submodule.smul_mem_iff' Submodule.smul_mem_iff'
@@ -277,49 +277,49 @@ instance isCentralScalar [SMul S R] [SMul S M] [IsScalarTower S R M] [SMul Sᵐ�
   p.toSubMulAction.isCentralScalar
 #align submodule.is_central_scalar Submodule.isCentralScalar
 
-protected theorem nonempty : (p : Set M).Nonempty :=
+protected lemma nonempty : (p : Set M).Nonempty :=
   ⟨0, p.zero_mem⟩
 #align submodule.nonempty Submodule.nonempty
 
-theorem mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
+lemma mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
   Subtype.ext_iff_val
 #align submodule.mk_eq_zero Submodule.mk_eq_zero
 
 variable {p}
 
 @[norm_cast] -- Porting note: removed `@[simp]` because this follows from `ZeroMemClass.coe_zero`
-theorem coe_eq_zero {x : p} : (x : M) = 0 ↔ x = 0 :=
+lemma coe_eq_zero {x : p} : (x : M) = 0 ↔ x = 0 :=
   (SetLike.coe_eq_coe : (x : M) = (0 : p) ↔ x = 0)
 #align submodule.coe_eq_zero Submodule.coe_eq_zero
 
 @[simp, norm_cast]
-theorem coe_add (x y : p) : (↑(x + y) : M) = ↑x + ↑y :=
+lemma coe_add (x y : p) : (↑(x + y) : M) = ↑x + ↑y :=
   rfl
 #align submodule.coe_add Submodule.coe_add
 
 @[simp, norm_cast]
-theorem coe_zero : ((0 : p) : M) = 0 :=
+lemma coe_zero : ((0 : p) : M) = 0 :=
   rfl
 #align submodule.coe_zero Submodule.coe_zero
 
 @[norm_cast]
-theorem coe_smul (r : R) (x : p) : ((r • x : p) : M) = r • (x : M) :=
+lemma coe_smul (r : R) (x : p) : ((r • x : p) : M) = r • (x : M) :=
   rfl
 #align submodule.coe_smul Submodule.coe_smul
 
 @[simp, norm_cast]
-theorem coe_smul_of_tower [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (x : p) :
+lemma coe_smul_of_tower [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (x : p) :
     ((r • x : p) : M) = r • (x : M) :=
   rfl
 #align submodule.coe_smul_of_tower Submodule.coe_smul_of_tower
 
 @[norm_cast] -- Porting note: removed `@[simp]` because this is now structure eta
-theorem coe_mk (x : M) (hx : x ∈ p) : ((⟨x, hx⟩ : p) : M) = x :=
+lemma coe_mk (x : M) (hx : x ∈ p) : ((⟨x, hx⟩ : p) : M) = x :=
   rfl
 #align submodule.coe_mk Submodule.coe_mk
 
 -- Porting note: removed `@[simp]` because this is exactly `SetLike.coe_mem`
-theorem coe_mem (x : p) : (x : M) ∈ p :=
+lemma coe_mem (x : p) : (x : M) ∈ p :=
   x.2
 #align submodule.coe_mem Submodule.coe_mem
 
@@ -372,7 +372,7 @@ instance [VAdd M α] [FaithfulVAdd M α] : FaithfulVAdd p α :=
 
 variable {p}
 
-theorem vadd_def [VAdd M α] (g : p) (m : α) : g +ᵥ m = (g : M) +ᵥ m :=
+lemma vadd_def [VAdd M α] (g : p) (m : α) : g +ᵥ m = (g : M) +ᵥ m :=
   rfl
 #align submodule.vadd_def Submodule.vadd_def
 
@@ -391,7 +391,7 @@ instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
   { Submodule.addSubmonoidClass with neg_mem := fun p {_} => p.toSubMulAction.neg_mem }
 #align submodule.add_subgroup_class Submodule.addSubgroupClass
 
-protected theorem neg_mem (hx : x ∈ p) : -x ∈ p :=
+protected lemma neg_mem (hx : x ∈ p) : -x ∈ p :=
   neg_mem hx
 #align submodule.neg_mem Submodule.neg_mem
 
@@ -401,67 +401,67 @@ def toAddSubgroup : AddSubgroup M :=
 #align submodule.to_add_subgroup Submodule.toAddSubgroup
 
 @[simp]
-theorem coe_toAddSubgroup : (p.toAddSubgroup : Set M) = p :=
+lemma coe_toAddSubgroup : (p.toAddSubgroup : Set M) = p :=
   rfl
 #align submodule.coe_to_add_subgroup Submodule.coe_toAddSubgroup
 
 @[simp]
-theorem mem_toAddSubgroup : x ∈ p.toAddSubgroup ↔ x ∈ p :=
+lemma mem_toAddSubgroup : x ∈ p.toAddSubgroup ↔ x ∈ p :=
   Iff.rfl
 #align submodule.mem_to_add_subgroup Submodule.mem_toAddSubgroup
 
-theorem toAddSubgroup_injective : Injective (toAddSubgroup : Submodule R M → AddSubgroup M)
+lemma toAddSubgroup_injective : Injective (toAddSubgroup : Submodule R M → AddSubgroup M)
   | _, _, h => SetLike.ext (SetLike.ext_iff.1 h : _)
 #align submodule.to_add_subgroup_injective Submodule.toAddSubgroup_injective
 
 @[simp]
-theorem toAddSubgroup_eq : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
+lemma toAddSubgroup_eq : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
   toAddSubgroup_injective.eq_iff
 #align submodule.to_add_subgroup_eq Submodule.toAddSubgroup_eq
 
 @[mono]
-theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Submodule R M → AddSubgroup M) :=
+lemma toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   fun _ _ => id
 #align submodule.to_add_subgroup_strict_mono Submodule.toAddSubgroup_strictMono
 
-theorem toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
+lemma toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
   Iff.rfl
 #align submodule.to_add_subgroup_le Submodule.toAddSubgroup_le
 
 @[mono]
-theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Submodule R M → AddSubgroup M) :=
+lemma toAddSubgroup_mono : Monotone (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   toAddSubgroup_strictMono.monotone
 #align submodule.to_add_subgroup_mono Submodule.toAddSubgroup_mono
 
-protected theorem sub_mem : x ∈ p → y ∈ p → x - y ∈ p :=
+protected lemma sub_mem : x ∈ p → y ∈ p → x - y ∈ p :=
   sub_mem
 #align submodule.sub_mem Submodule.sub_mem
 
-protected theorem neg_mem_iff : -x ∈ p ↔ x ∈ p :=
+protected lemma neg_mem_iff : -x ∈ p ↔ x ∈ p :=
   neg_mem_iff
 #align submodule.neg_mem_iff Submodule.neg_mem_iff
 
-protected theorem add_mem_iff_left : y ∈ p → (x + y ∈ p ↔ x ∈ p) :=
+protected lemma add_mem_iff_left : y ∈ p → (x + y ∈ p ↔ x ∈ p) :=
   add_mem_cancel_right
 #align submodule.add_mem_iff_left Submodule.add_mem_iff_left
 
-protected theorem add_mem_iff_right : x ∈ p → (x + y ∈ p ↔ y ∈ p) :=
+protected lemma add_mem_iff_right : x ∈ p → (x + y ∈ p ↔ y ∈ p) :=
   add_mem_cancel_left
 #align submodule.add_mem_iff_right Submodule.add_mem_iff_right
 
-protected theorem coe_neg (x : p) : ((-x : p) : M) = -x :=
+protected lemma coe_neg (x : p) : ((-x : p) : M) = -x :=
   NegMemClass.coe_neg _
 #align submodule.coe_neg Submodule.coe_neg
 
-protected theorem coe_sub (x y : p) : (↑(x - y) : M) = ↑x - ↑y :=
+protected lemma coe_sub (x y : p) : (↑(x - y) : M) = ↑x - ↑y :=
   AddSubgroupClass.coe_sub _ _
 #align submodule.coe_sub Submodule.coe_sub
 
-theorem sub_mem_iff_left (hy : y ∈ p) : x - y ∈ p ↔ x ∈ p := by
+lemma sub_mem_iff_left (hy : y ∈ p) : x - y ∈ p ↔ x ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_left (p.neg_mem hy)]
 #align submodule.sub_mem_iff_left Submodule.sub_mem_iff_left
 
-theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
+lemma sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_right hx, p.neg_mem_iff]
 #align submodule.sub_mem_iff_right Submodule.sub_mem_iff_right
 
@@ -470,7 +470,7 @@ instance addCommGroup : AddCommGroup p :=
 #align submodule.add_comm_group Submodule.addCommGroup
 
 -- See `neg_coe_set`
-theorem neg_coe : -(p : Set M) = p :=
+lemma neg_coe : -(p : Set M) = p :=
   Set.ext fun _ => p.neg_mem_iff
 #align submodule.neg_coe Submodule.neg_coe
 
@@ -481,13 +481,13 @@ section IsDomain
 variable [Ring R] [IsDomain R]
 variable [AddCommGroup M] [Module R M] {b : ι → M}
 
-theorem not_mem_of_ortho {x : M} {N : Submodule R M}
+lemma not_mem_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ∉ N := by
   intro hx
   simpa using ortho (-1) x hx
 #align submodule.not_mem_of_ortho Submodule.not_mem_of_ortho
 
-theorem ne_zero_of_ortho {x : M} {N : Submodule R M}
+lemma ne_zero_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ≠ 0 :=
   mt (fun h => show x ∈ N from h.symm ▸ N.zero_mem) (not_mem_of_ortho ortho)
 #align submodule.ne_zero_of_ortho Submodule.ne_zero_of_ortho
@@ -502,7 +502,7 @@ variable [DivisionSemiring S] [Semiring R] [AddCommMonoid M] [Module R M]
 variable [SMul S R] [Module S M] [IsScalarTower S R M]
 variable (p : Submodule R M) {s : S} {x y : M}
 
-theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=
+lemma smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=
   p.toSubMulAction.smul_mem_iff s0
 #align submodule.smul_mem_iff Submodule.smul_mem_iff
 

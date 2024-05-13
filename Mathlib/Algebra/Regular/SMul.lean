@@ -36,7 +36,7 @@ def IsSMulRegular [SMul R M] (c : R) :=
   Function.Injective ((c • ·) : M → M)
 #align is_smul_regular IsSMulRegular
 
-theorem IsLeftRegular.isSMulRegular [Mul R] {c : R} (h : IsLeftRegular c) : IsSMulRegular R c :=
+lemma IsLeftRegular.isSMulRegular [Mul R] {c : R} (h : IsLeftRegular c) : IsSMulRegular R c :=
   h
 #align is_left_regular.is_smul_regular IsLeftRegular.isSMulRegular
 
@@ -45,7 +45,7 @@ theorem isLeftRegular_iff [Mul R] {a : R} : IsLeftRegular a ↔ IsSMulRegular R 
   Iff.rfl
 #align is_left_regular_iff isLeftRegular_iff
 
-theorem IsRightRegular.isSMulRegular [Mul R] {c : R} (h : IsRightRegular c) :
+lemma IsRightRegular.isSMulRegular [Mul R] {c : R} (h : IsRightRegular c) :
     IsSMulRegular R (MulOpposite.op c) :=
   h
 #align is_right_regular.is_smul_regular IsRightRegular.isSMulRegular
@@ -85,28 +85,28 @@ theorem smul_iff (b : S) (ha : IsSMulRegular M a) : IsSMulRegular M (a • b) �
   ⟨of_smul _, ha.smul⟩
 #align is_smul_regular.smul_iff IsSMulRegular.smul_iff
 
-theorem isLeftRegular [Mul R] {a : R} (h : IsSMulRegular R a) : IsLeftRegular a :=
+lemma isLeftRegular [Mul R] {a : R} (h : IsSMulRegular R a) : IsLeftRegular a :=
   h
 #align is_smul_regular.is_left_regular IsSMulRegular.isLeftRegular
 
-theorem isRightRegular [Mul R] {a : R} (h : IsSMulRegular R (MulOpposite.op a)) :
+lemma isRightRegular [Mul R] {a : R} (h : IsSMulRegular R (MulOpposite.op a)) :
     IsRightRegular a :=
   h
 #align is_smul_regular.is_right_regular IsSMulRegular.isRightRegular
 
-theorem mul [Mul R] [IsScalarTower R R M] (ra : IsSMulRegular M a) (rb : IsSMulRegular M b) :
+lemma mul [Mul R] [IsScalarTower R R M] (ra : IsSMulRegular M a) (rb : IsSMulRegular M b) :
     IsSMulRegular M (a * b) :=
   ra.smul rb
 #align is_smul_regular.mul IsSMulRegular.mul
 
-theorem of_mul [Mul R] [IsScalarTower R R M] (ab : IsSMulRegular M (a * b)) :
+lemma of_mul [Mul R] [IsScalarTower R R M] (ab : IsSMulRegular M (a * b)) :
     IsSMulRegular M b := by
   rw [← smul_eq_mul] at ab
   exact ab.of_smul _
 #align is_smul_regular.of_mul IsSMulRegular.of_mul
 
 @[simp]
-theorem mul_iff_right [Mul R] [IsScalarTower R R M] (ha : IsSMulRegular M a) :
+lemma mul_iff_right [Mul R] [IsScalarTower R R M] (ha : IsSMulRegular M a) :
     IsSMulRegular M (a * b) ↔ IsSMulRegular M b :=
   ⟨of_mul, ha.mul⟩
 #align is_smul_regular.mul_iff_right IsSMulRegular.mul_iff_right

@@ -28,7 +28,7 @@ variable (S : Subalgebra R A)
 
 variable {ι : Type*} [Nonempty ι] {K : ι → Subalgebra R A} (dir : Directed (· ≤ ·) K)
 
-theorem coe_iSup_of_directed : ↑(iSup K) = ⋃ i, (K i : Set A) :=
+lemma coe_iSup_of_directed : ↑(iSup K) = ⋃ i, (K i : Set A) :=
   let s : Subalgebra R A :=
     { __ := Subsemiring.copy _ _ (Subsemiring.coe_iSup_of_directed dir).symm
       algebraMap_mem' := fun _ ↦ Set.mem_iUnion.2
@@ -75,25 +75,25 @@ noncomputable def iSupLift : ↥T →ₐ[R] B :=
 variable {K dir f hf T hT}
 
 @[simp]
-theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
+lemma iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
   dsimp [iSupLift, inclusion]
   rw [Set.iUnionLift_inclusion]
 #align subalgebra.supr_lift_inclusion Subalgebra.iSupLift_inclusion
 
 @[simp]
-theorem iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
+lemma iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
     (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
 #align subalgebra.supr_lift_comp_inclusion Subalgebra.iSupLift_comp_inclusion
 
 @[simp]
-theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
+lemma iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
     iSupLift K dir f hf T hT ⟨x, hx⟩ = f i x := by
   dsimp [iSupLift, inclusion]
   rw [Set.iUnionLift_mk]
 #align subalgebra.supr_lift_mk Subalgebra.iSupLift_mk
 
-theorem iSupLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
+lemma iSupLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
     iSupLift K dir f hf T hT x = f i ⟨x, hx⟩ := by
   dsimp [iSupLift, inclusion]
   rw [Set.iUnionLift_of_mem]

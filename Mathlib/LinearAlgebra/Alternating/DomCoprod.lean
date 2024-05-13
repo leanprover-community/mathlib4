@@ -65,7 +65,7 @@ def domCoprod.summand (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→
     erw [← a.map_congr_perm fun i => v (σ₁ _), ← b.map_congr_perm fun i => v (σ₁ _)]
 #align alternating_map.dom_coprod.summand AlternatingMap.domCoprod.summand
 
-theorem domCoprod.summand_mk'' (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂)
+lemma domCoprod.summand_mk'' (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂)
     (σ : Equiv.Perm (Sum ιa ιb)) :
     domCoprod.summand a b (Quotient.mk'' σ) =
       Equiv.Perm.sign σ •
@@ -169,7 +169,7 @@ def domCoprod (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] 
 #align alternating_map.dom_coprod AlternatingMap.domCoprod
 #align alternating_map.dom_coprod_apply AlternatingMap.domCoprod_apply
 
-theorem domCoprod_coe (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂) :
+lemma domCoprod_coe (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂) :
     (↑(a.domCoprod b) : MultilinearMap R' (fun _ => Mᵢ) _) =
       ∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ :=
   MultilinearMap.ext fun _ => rfl
@@ -199,7 +199,7 @@ def domCoprod' :
 #align alternating_map.dom_coprod' AlternatingMap.domCoprod'
 
 @[simp]
-theorem domCoprod'_apply (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂) :
+lemma domCoprod'_apply (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂) :
     domCoprod' (a ⊗ₜ[R'] b) = domCoprod a b :=
   rfl
 #align alternating_map.dom_coprod'_apply AlternatingMap.domCoprod'_apply

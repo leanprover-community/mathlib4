@@ -40,19 +40,19 @@ noncomputable def toMatrix {ι' : Type*} (q : ι' → P) : Matrix ι' ι k :=
 #align affine_basis.to_matrix AffineBasis.toMatrix
 
 @[simp]
-theorem toMatrix_apply {ι' : Type*} (q : ι' → P) (i : ι') (j : ι) :
+lemma toMatrix_apply {ι' : Type*} (q : ι' → P) (i : ι') (j : ι) :
     b.toMatrix q i j = b.coord j (q i) := rfl
 #align affine_basis.to_matrix_apply AffineBasis.toMatrix_apply
 
 @[simp]
-theorem toMatrix_self [DecidableEq ι] : b.toMatrix b = (1 : Matrix ι ι k) := by
+lemma toMatrix_self [DecidableEq ι] : b.toMatrix b = (1 : Matrix ι ι k) := by
   ext i j
   rw [toMatrix_apply, coord_apply, Matrix.one_eq_pi_single, Pi.single_apply]
 #align affine_basis.to_matrix_self AffineBasis.toMatrix_self
 
 variable {ι' : Type*}
 
-theorem toMatrix_row_sum_one [Fintype ι] (q : ι' → P) (i : ι') : ∑ j, b.toMatrix q i j = 1 := by
+lemma toMatrix_row_sum_one [Fintype ι] (q : ι' → P) (i : ι') : ∑ j, b.toMatrix q i j = 1 := by
   simp
 #align affine_basis.to_matrix_row_sum_one AffineBasis.toMatrix_row_sum_one
 
@@ -121,20 +121,20 @@ theorem toMatrix_vecMul_coords (x : P) : b₂.coords x ᵥ* b.toMatrix b₂ = b.
 
 variable [DecidableEq ι]
 
-theorem toMatrix_mul_toMatrix : b.toMatrix b₂ * b₂.toMatrix b = 1 := by
+lemma toMatrix_mul_toMatrix : b.toMatrix b₂ * b₂.toMatrix b = 1 := by
   ext l m
   change (b.coords (b₂ l) ᵥ* b₂.toMatrix b) m = _
   rw [toMatrix_vecMul_coords, coords_apply, ← toMatrix_apply, toMatrix_self]
 #align affine_basis.to_matrix_mul_to_matrix AffineBasis.toMatrix_mul_toMatrix
 
-theorem isUnit_toMatrix : IsUnit (b.toMatrix b₂) :=
+lemma isUnit_toMatrix : IsUnit (b.toMatrix b₂) :=
   ⟨{  val := b.toMatrix b₂
       inv := b₂.toMatrix b
       val_inv := b.toMatrix_mul_toMatrix b₂
       inv_val := b₂.toMatrix_mul_toMatrix b }, rfl⟩
 #align affine_basis.is_unit_to_matrix AffineBasis.isUnit_toMatrix
 
-theorem isUnit_toMatrix_iff [Nontrivial k] (p : ι → P) :
+lemma isUnit_toMatrix_iff [Nontrivial k] (p : ι → P) :
     IsUnit (b.toMatrix p) ↔ AffineIndependent k p ∧ affineSpan k (range p) = ⊤ := by
   constructor
   · rintro ⟨⟨B, A, hA, hA'⟩, rfl : B = b.toMatrix p⟩

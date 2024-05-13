@@ -93,7 +93,7 @@ namespace FiniteIntegralAdeles
 
 noncomputable instance : Coe (R_hat R K) (K_hat R K) where coe x v := x v
 
-theorem coe_apply (x : R_hat R K) (v : HeightOneSpectrum R) : (x : K_hat R K) v = ↑(x v) :=
+lemma coe_apply (x : R_hat R K) (v : HeightOneSpectrum R) : (x : K_hat R K) v = ↑(x v) :=
   rfl
 #align dedekind_domain.finite_integral_adeles.coe_apply DedekindDomain.FiniteIntegralAdeles.coe_apply
 
@@ -162,7 +162,7 @@ def Coe.algHom : AlgHom R (R_hat R K) (K_hat R K) :=
     commutes' := fun _ => rfl }
 #align dedekind_domain.finite_integral_adeles.coe.alg_hom DedekindDomain.FiniteIntegralAdeles.Coe.algHom
 
-theorem Coe.algHom_apply (x : R_hat R K) (v : HeightOneSpectrum R) : (Coe.algHom R K) x v = x v :=
+lemma Coe.algHom_apply (x : R_hat R K) (v : HeightOneSpectrum R) : (Coe.algHom R K) x v = x v :=
   rfl
 #align dedekind_domain.finite_integral_adeles.coe.alg_hom_apply DedekindDomain.FiniteIntegralAdeles.Coe.algHom_apply
 
@@ -283,7 +283,7 @@ noncomputable def finiteAdeleRing : Subring (K_hat R K) where
 variable {R K}
 
 @[simp]
-theorem mem_finiteAdeleRing_iff (x : K_hat R K) : x ∈ finiteAdeleRing R K ↔ x.IsFiniteAdele :=
+lemma mem_finiteAdeleRing_iff (x : K_hat R K) : x ∈ finiteAdeleRing R K ↔ x.IsFiniteAdele :=
   Iff.rfl
 #align dedekind_domain.mem_finite_adele_ring_iff DedekindDomain.mem_finiteAdeleRing_iff
 

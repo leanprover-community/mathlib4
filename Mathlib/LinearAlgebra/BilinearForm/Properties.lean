@@ -63,21 +63,21 @@ namespace IsRefl
 
 variable (H : B.IsRefl)
 
-theorem eq_zero : ∀ {x y : M}, B x y = 0 → B y x = 0 := fun {x y} => H x y
+lemma eq_zero : ∀ {x y : M}, B x y = 0 → B y x = 0 := fun {x y} => H x y
 #align bilin_form.is_refl.eq_zero LinearMap.BilinForm.IsRefl.eq_zero
 
-protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl := fun x y =>
+protected lemma neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl := fun x y =>
   neg_eq_zero.mpr ∘ hB x y ∘ neg_eq_zero.mp
 #align bilin_form.is_refl.neg LinearMap.BilinForm.IsRefl.neg
 
-protected theorem smul {α} [CommSemiring α] [Module α R] [SMulCommClass R α R]
+protected lemma smul {α} [CommSemiring α] [Module α R] [SMulCommClass R α R]
     [NoZeroSMulDivisors α R] (a : α) {B : BilinForm R M} (hB : B.IsRefl) :
     (a • B).IsRefl := fun _ _ h =>
   (smul_eq_zero.mp h).elim (fun ha => smul_eq_zero_of_left ha _) fun hBz =>
     smul_eq_zero_of_right _ (hB _ _ hBz)
 #align bilin_form.is_refl.smul LinearMap.BilinForm.IsRefl.smul
 
-protected theorem groupSMul {α} [Group α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
+protected lemma groupSMul {α} [Group α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
     {B : BilinForm R M} (hB : B.IsRefl) : (a • B).IsRefl := fun x y =>
   (smul_eq_zero_iff_eq _).mpr ∘ hB x y ∘ (smul_eq_zero_iff_eq _).mp
 #align bilin_form.is_refl.group_smul LinearMap.BilinForm.IsRefl.groupSMul
@@ -85,11 +85,11 @@ protected theorem groupSMul {α} [Group α] [DistribMulAction α R] [SMulCommCla
 end IsRefl
 
 @[simp]
-theorem isRefl_zero : (0 : BilinForm R M).IsRefl := fun _ _ _ => rfl
+lemma isRefl_zero : (0 : BilinForm R M).IsRefl := fun _ _ _ => rfl
 #align bilin_form.is_refl_zero LinearMap.BilinForm.isRefl_zero
 
 @[simp]
-theorem isRefl_neg {B : BilinForm R₁ M₁} : (-B).IsRefl ↔ B.IsRefl :=
+lemma isRefl_neg {B : BilinForm R₁ M₁} : (-B).IsRefl ↔ B.IsRefl :=
   ⟨fun h => neg_neg B ▸ h.neg, IsRefl.neg⟩
 #align bilin_form.is_refl_neg LinearMap.BilinForm.isRefl_neg
 
@@ -102,26 +102,26 @@ namespace IsSymm
 
 variable (H : B.IsSymm)
 
-protected theorem eq (x y : M) : B x y = B y x :=
+protected lemma eq (x y : M) : B x y = B y x :=
   H x y
 #align bilin_form.is_symm.eq LinearMap.BilinForm.IsSymm.eq
 
-theorem isRefl : B.IsRefl := fun x y H1 => H x y ▸ H1
+lemma isRefl : B.IsRefl := fun x y H1 => H x y ▸ H1
 #align bilin_form.is_symm.is_refl LinearMap.BilinForm.IsSymm.isRefl
 
-protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
+protected lemma add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
     (B₁ + B₂).IsSymm := fun x y => (congr_arg₂ (· + ·) (hB₁ x y) (hB₂ x y) : _)
 #align bilin_form.is_symm.add LinearMap.BilinForm.IsSymm.add
 
-protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
+protected lemma sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
     (B₁ - B₂).IsSymm := fun x y => (congr_arg₂ Sub.sub (hB₁ x y) (hB₂ x y) : _)
 #align bilin_form.is_symm.sub LinearMap.BilinForm.IsSymm.sub
 
-protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm := fun x y =>
+protected lemma neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm := fun x y =>
   congr_arg Neg.neg (hB x y)
 #align bilin_form.is_symm.neg LinearMap.BilinForm.IsSymm.neg
 
-protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
+protected lemma smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
     {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := fun x y =>
   congr_arg (a • ·) (hB x y)
 #align bilin_form.is_symm.smul LinearMap.BilinForm.IsSymm.smul
@@ -134,11 +134,11 @@ theorem restrict {B : BilinForm R M} (b : B.IsSymm) (W : Submodule R M) :
 end IsSymm
 
 @[simp]
-theorem isSymm_zero : (0 : BilinForm R M).IsSymm := fun _ _ => rfl
+lemma isSymm_zero : (0 : BilinForm R M).IsSymm := fun _ _ => rfl
 #align bilin_form.is_symm_zero LinearMap.BilinForm.isSymm_zero
 
 @[simp]
-theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
+lemma isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
   ⟨fun h => neg_neg B ▸ h.neg, IsSymm.neg⟩
 #align bilin_form.is_symm_neg LinearMap.BilinForm.isSymm_neg
 
@@ -154,35 +154,35 @@ def IsAlt (B : BilinForm R M) : Prop :=
 
 namespace IsAlt
 
-theorem self_eq_zero (H : B.IsAlt) (x : M) : B x x = 0 :=
+lemma self_eq_zero (H : B.IsAlt) (x : M) : B x x = 0 :=
   H x
 #align bilin_form.is_alt.self_eq_zero LinearMap.BilinForm.IsAlt.self_eq_zero
 
-theorem neg_eq (H : B₁.IsAlt) (x y : M₁) : -B₁ x y = B₁ y x := by
+lemma neg_eq (H : B₁.IsAlt) (x y : M₁) : -B₁ x y = B₁ y x := by
   have H1 : B₁ (x + y) (x + y) = 0 := self_eq_zero H (x + y)
   rw [add_left, add_right, add_right, self_eq_zero H, self_eq_zero H, zero_add, add_zero,
     add_eq_zero_iff_neg_eq] at H1
   exact H1
 #align bilin_form.is_alt.neg_eq LinearMap.BilinForm.IsAlt.neg_eq
 
-theorem isRefl (H : B₁.IsAlt) : B₁.IsRefl := by
+lemma isRefl (H : B₁.IsAlt) : B₁.IsRefl := by
   intro x y h
   rw [← neg_eq H, h, neg_zero]
 #align bilin_form.is_alt.is_refl LinearMap.BilinForm.IsAlt.isRefl
 
-protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=
+protected lemma add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=
   fun x => (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) : _).trans <| add_zero _
 #align bilin_form.is_alt.add LinearMap.BilinForm.IsAlt.add
 
-protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) :
+protected lemma sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) :
     (B₁ - B₂).IsAlt := fun x => (congr_arg₂ Sub.sub (hB₁ x) (hB₂ x)).trans <| sub_zero _
 #align bilin_form.is_alt.sub LinearMap.BilinForm.IsAlt.sub
 
-protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsAlt) : (-B).IsAlt := fun x =>
+protected lemma neg {B : BilinForm R₁ M₁} (hB : B.IsAlt) : (-B).IsAlt := fun x =>
   neg_eq_zero.mpr <| hB x
 #align bilin_form.is_alt.neg LinearMap.BilinForm.IsAlt.neg
 
-protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
+protected lemma smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
     {B : BilinForm R M} (hB : B.IsAlt) : (a • B).IsAlt := fun x =>
   (congr_arg (a • ·) (hB x)).trans <| smul_zero _
 #align bilin_form.is_alt.smul LinearMap.BilinForm.IsAlt.smul
@@ -190,11 +190,11 @@ protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R
 end IsAlt
 
 @[simp]
-theorem isAlt_zero : (0 : BilinForm R M).IsAlt := fun _ => rfl
+lemma isAlt_zero : (0 : BilinForm R M).IsAlt := fun _ => rfl
 #align bilin_form.is_alt_zero LinearMap.BilinForm.isAlt_zero
 
 @[simp]
-theorem isAlt_neg {B : BilinForm R₁ M₁} : (-B).IsAlt ↔ B.IsAlt :=
+lemma isAlt_neg {B : BilinForm R₁ M₁} : (-B).IsAlt ↔ B.IsAlt :=
   ⟨fun h => neg_neg B ▸ h.neg, IsAlt.neg⟩
 #align bilin_form.is_alt_neg LinearMap.BilinForm.isAlt_neg
 
@@ -215,11 +215,11 @@ def IsAdjointPair :=
 
 variable {B B' f f' g g'}
 
-theorem IsAdjointPair.eq (h : IsAdjointPair B B' f g) : ∀ {x y}, B' (f x) y = B x (g y) :=
+lemma IsAdjointPair.eq (h : IsAdjointPair B B' f g) : ∀ {x y}, B' (f x) y = B x (g y) :=
   @h
 #align bilin_form.is_adjoint_pair.eq LinearMap.BilinForm.IsAdjointPair.eq
 
-theorem isAdjointPair_iff_compLeft_eq_compRight (f g : Module.End R M) :
+lemma isAdjointPair_iff_compLeft_eq_compRight (f g : Module.End R M) :
     IsAdjointPair B F f g ↔ F.compLeft f = B.compRight g := by
   constructor <;> intro h
   · ext x
@@ -230,14 +230,14 @@ theorem isAdjointPair_iff_compLeft_eq_compRight (f g : Module.End R M) :
     rw [h]
 #align bilin_form.is_adjoint_pair_iff_comp_left_eq_comp_right LinearMap.BilinForm.isAdjointPair_iff_compLeft_eq_compRight
 
-theorem isAdjointPair_zero : IsAdjointPair B B' 0 0 := fun x y => by
+lemma isAdjointPair_zero : IsAdjointPair B B' 0 0 := fun x y => by
   simp only [BilinForm.zero_left, BilinForm.zero_right, LinearMap.zero_apply]
 #align bilin_form.is_adjoint_pair_zero LinearMap.BilinForm.isAdjointPair_zero
 
-theorem isAdjointPair_id : IsAdjointPair B B 1 1 := fun _ _ => rfl
+lemma isAdjointPair_id : IsAdjointPair B B 1 1 := fun _ _ => rfl
 #align bilin_form.is_adjoint_pair_id LinearMap.BilinForm.isAdjointPair_id
 
-theorem IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
+lemma IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
     IsAdjointPair B B' (f + f') (g + g') := fun x y => by
   rw [LinearMap.add_apply, LinearMap.add_apply, add_left, add_right, h, h']
 #align bilin_form.is_adjoint_pair.add LinearMap.BilinForm.IsAdjointPair.add
@@ -245,14 +245,14 @@ theorem IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' 
 variable {M₁' : Type*} [AddCommGroup M₁'] [Module R₁ M₁']
 variable {B₁' : BilinForm R₁ M₁'} {f₁ f₁' : M₁ →ₗ[R₁] M₁'} {g₁ g₁' : M₁' →ₗ[R₁] M₁}
 
-theorem IsAdjointPair.sub (h : IsAdjointPair B₁ B₁' f₁ g₁) (h' : IsAdjointPair B₁ B₁' f₁' g₁') :
+lemma IsAdjointPair.sub (h : IsAdjointPair B₁ B₁' f₁ g₁) (h' : IsAdjointPair B₁ B₁' f₁' g₁') :
     IsAdjointPair B₁ B₁' (f₁ - f₁') (g₁ - g₁') := fun x y => by
   rw [LinearMap.sub_apply, LinearMap.sub_apply, sub_left, sub_right, h, h']
 #align bilin_form.is_adjoint_pair.sub LinearMap.BilinForm.IsAdjointPair.sub
 
 variable {B₂' : BilinForm R M'} {f₂ f₂' : M →ₗ[R] M'} {g₂ g₂' : M' →ₗ[R] M}
 
-theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B₂' f₂ g₂) :
+lemma IsAdjointPair.smul (c : R) (h : IsAdjointPair B B₂' f₂ g₂) :
     IsAdjointPair B B₂' (c • f₂) (c • g₂) := fun x y => by
   rw [LinearMap.smul_apply, LinearMap.smul_apply, smul_left, smul_right, h]
 #align bilin_form.is_adjoint_pair.smul LinearMap.BilinForm.IsAdjointPair.smul
@@ -260,12 +260,12 @@ theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B₂' f₂ g₂) :
 variable {M'' : Type*} [AddCommMonoid M''] [Module R M'']
 variable (B'' : BilinForm R M'')
 
-theorem IsAdjointPair.comp {f' : M' →ₗ[R] M''} {g' : M'' →ₗ[R] M'} (h : IsAdjointPair B B' f g)
+lemma IsAdjointPair.comp {f' : M' →ₗ[R] M''} {g' : M'' →ₗ[R] M'} (h : IsAdjointPair B B' f g)
     (h' : IsAdjointPair B' B'' f' g') : IsAdjointPair B B'' (f'.comp f) (g.comp g') := fun x y => by
   rw [LinearMap.comp_apply, LinearMap.comp_apply, h', h]
 #align bilin_form.is_adjoint_pair.comp LinearMap.BilinForm.IsAdjointPair.comp
 
-theorem IsAdjointPair.mul {f g f' g' : Module.End R M} (h : IsAdjointPair B B f g)
+lemma IsAdjointPair.mul {f g f' g' : Module.End R M} (h : IsAdjointPair B B f g)
     (h' : IsAdjointPair B B f' g') : IsAdjointPair B B (f * f') (g' * g) := fun x y => by
   rw [LinearMap.mul_apply, LinearMap.mul_apply, h, h']
 #align bilin_form.is_adjoint_pair.mul LinearMap.BilinForm.IsAdjointPair.mul
@@ -289,11 +289,11 @@ def isPairSelfAdjointSubmodule : Submodule R (Module.End R M) where
 #align bilin_form.is_pair_self_adjoint_submodule LinearMap.BilinForm.isPairSelfAdjointSubmodule
 
 @[simp]
-theorem mem_isPairSelfAdjointSubmodule (f : Module.End R M) :
+lemma mem_isPairSelfAdjointSubmodule (f : Module.End R M) :
     f ∈ isPairSelfAdjointSubmodule B₂ F₂ ↔ IsPairSelfAdjoint B₂ F₂ f := Iff.rfl
 #align bilin_form.mem_is_pair_self_adjoint_submodule LinearMap.BilinForm.mem_isPairSelfAdjointSubmodule
 
-theorem isPairSelfAdjoint_equiv (e : M' ≃ₗ[R] M) (f : Module.End R M) :
+lemma isPairSelfAdjoint_equiv (e : M' ≃ₗ[R] M) (f : Module.End R M) :
     IsPairSelfAdjoint B₂ F₂ f ↔
       IsPairSelfAdjoint (B₂.comp ↑e ↑e) (F₂.comp ↑e ↑e) (e.symm.conj f) := by
   have hₗ : (F₂.comp ↑e ↑e).compLeft (e.symm.conj f) = (F₂.compLeft f).comp ↑e ↑e := by
@@ -320,7 +320,7 @@ def IsSkewAdjoint (f : Module.End R₁ M₁) :=
   IsAdjointPair B₁ B₁ f (-f)
 #align bilin_form.is_skew_adjoint LinearMap.BilinForm.IsSkewAdjoint
 
-theorem isSkewAdjoint_iff_neg_self_adjoint (f : Module.End R₁ M₁) :
+lemma isSkewAdjoint_iff_neg_self_adjoint (f : Module.End R₁ M₁) :
     B₁.IsSkewAdjoint f ↔ IsAdjointPair (-B₁) B₁ f f :=
   show (∀ x y, B₁ (f x) y = B₁ x ((-f) y)) ↔ ∀ x y, B₁ (f x) y = (-B₁) x (f y) by
     simp only [LinearMap.neg_apply, BilinForm.neg_apply, BilinForm.neg_right]
@@ -333,7 +333,7 @@ def selfAdjointSubmodule :=
 #align bilin_form.self_adjoint_submodule LinearMap.BilinForm.selfAdjointSubmodule
 
 @[simp]
-theorem mem_selfAdjointSubmodule (f : Module.End R M) :
+lemma mem_selfAdjointSubmodule (f : Module.End R M) :
     f ∈ B.selfAdjointSubmodule ↔ B.IsSelfAdjoint f :=
   Iff.rfl
 #align bilin_form.mem_self_adjoint_submodule LinearMap.BilinForm.mem_selfAdjointSubmodule
@@ -345,7 +345,7 @@ def skewAdjointSubmodule :=
 #align bilin_form.skew_adjoint_submodule LinearMap.BilinForm.skewAdjointSubmodule
 
 @[simp]
-theorem mem_skewAdjointSubmodule (f : Module.End R₁ M₁) :
+lemma mem_skewAdjointSubmodule (f : Module.End R₁ M₁) :
     f ∈ B₁.skewAdjointSubmodule ↔ B₁.IsSkewAdjoint f := by
   rw [isSkewAdjoint_iff_neg_self_adjoint]
   exact Iff.rfl
@@ -384,18 +384,18 @@ end
 variable {M' : Type*}
 variable [AddCommMonoid M'] [Module R M']
 
-theorem Nondegenerate.ne_zero [Nontrivial M] {B : BilinForm R M} (h : B.Nondegenerate) : B ≠ 0 :=
+lemma Nondegenerate.ne_zero [Nontrivial M] {B : BilinForm R M} (h : B.Nondegenerate) : B ≠ 0 :=
   fun h0 => not_nondegenerate_zero R M <| h0 ▸ h
 #align bilin_form.nondegenerate.ne_zero LinearMap.BilinForm.Nondegenerate.ne_zero
 
-theorem Nondegenerate.congr {B : BilinForm R M} (e : M ≃ₗ[R] M') (h : B.Nondegenerate) :
+lemma Nondegenerate.congr {B : BilinForm R M} (e : M ≃ₗ[R] M') (h : B.Nondegenerate) :
     (congr e B).Nondegenerate := fun m hm =>
   e.symm.map_eq_zero_iff.1 <|
     h (e.symm m) fun n => (congr_arg _ (e.symm_apply_apply n).symm).trans (hm (e n))
 #align bilin_form.nondegenerate.congr LinearMap.BilinForm.Nondegenerate.congr
 
 @[simp]
-theorem nondegenerate_congr_iff {B : BilinForm R M} (e : M ≃ₗ[R] M') :
+lemma nondegenerate_congr_iff {B : BilinForm R M} (e : M ≃ₗ[R] M') :
     (congr e B).Nondegenerate ↔ B.Nondegenerate :=
   ⟨fun h => by
     convert h.congr e.symm
@@ -416,12 +416,12 @@ theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R M} :
     exact hm x
 #align bilin_form.nondegenerate_iff_ker_eq_bot LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot
 
-theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
+lemma Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
     LinearMap.ker B = ⊥ :=
   nondegenerate_iff_ker_eq_bot.mp h
 #align bilin_form.nondegenerate.ker_eq_bot LinearMap.BilinForm.Nondegenerate.ker_eq_bot
 
-theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.Nondegenerate) :
+lemma compLeft_injective (B : BilinForm R₁ M₁) (b : B.Nondegenerate) :
     Function.Injective B.compLeft := fun φ ψ h => by
   ext w
   refine' eq_of_sub_eq_zero (b _ _)
@@ -429,7 +429,7 @@ theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.Nondegenerate) :
   rw [sub_left, ← compLeft_apply, ← compLeft_apply, ← h, sub_self]
 #align bilin_form.comp_left_injective LinearMap.BilinForm.compLeft_injective
 
-theorem isAdjointPair_unique_of_nondegenerate (B : BilinForm R₁ M₁) (b : B.Nondegenerate)
+lemma isAdjointPair_unique_of_nondegenerate (B : BilinForm R₁ M₁) (b : B.Nondegenerate)
     (φ ψ₁ ψ₂ : M₁ →ₗ[R₁] M₁) (hψ₁ : IsAdjointPair B B ψ₁ φ) (hψ₂ : IsAdjointPair B B ψ₂ φ) :
     ψ₁ = ψ₂ :=
   B.compLeft_injective b <| ext fun v w => by rw [compLeft_apply, compLeft_apply, hψ₁, hψ₂]
@@ -447,7 +447,7 @@ noncomputable def toDual (B : BilinForm K V) (b : B.Nondegenerate) : V ≃ₗ[K]
     Subspace.dual_finrank_eq.symm
 #align bilin_form.to_dual LinearMap.BilinForm.toDual
 
-theorem toDual_def {B : BilinForm K V} (b : B.SeparatingLeft) {m n : V} : B.toDual b m n = B m n :=
+lemma toDual_def {B : BilinForm K V} (b : B.SeparatingLeft) {m n : V} : B.toDual b m n = B m n :=
   rfl
 #align bilin_form.to_dual_def LinearMap.BilinForm.toDual_def
 
@@ -483,20 +483,20 @@ noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basi
 #align bilin_form.dual_basis LinearMap.BilinForm.dualBasis
 
 @[simp]
-theorem dualBasis_repr_apply (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
+lemma dualBasis_repr_apply (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
     (B.dualBasis hB b).repr x i = B x (b i) := by
   rw [dualBasis, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
     Basis.dualBasis_repr, toDual_def]
 #align bilin_form.dual_basis_repr_apply LinearMap.BilinForm.dualBasis_repr_apply
 
-theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
+lemma apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
     B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 := by
   have := FiniteDimensional.of_fintype_basis b
   rw [dualBasis, Basis.map_apply, Basis.coe_dualBasis, ← toDual_def hB,
     LinearEquiv.apply_symm_apply, Basis.coord_apply, Basis.repr_self, Finsupp.single_apply]
 #align bilin_form.apply_dual_basis_left LinearMap.BilinForm.apply_dualBasis_left
 
-theorem apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : B.IsSymm)
+lemma apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : B.IsSymm)
     (b : Basis ι K V) (i j) : B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0 := by
   rw [sym, apply_dualBasis_left]
 #align bilin_form.apply_dual_basis_right LinearMap.BilinForm.apply_dualBasis_right
@@ -533,7 +533,7 @@ noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B�
   (B₂.toDual b₂).symm.toLinearMap.comp B₁
 #align bilin_form.symm_comp_of_nondegenerate LinearMap.BilinForm.symmCompOfNondegenerate
 
-theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
+lemma comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
     (b₂ : B₂.Nondegenerate) (v : V) :
     B₂ (B₁.symmCompOfNondegenerate B₂ b₂ v) = B₁ v := by
   erw [symmCompOfNondegenerate]
@@ -542,7 +542,7 @@ theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinF
 #align bilin_form.comp_symm_comp_of_nondegenerate_apply LinearMap.BilinForm.comp_symmCompOfNondegenerate_apply
 
 @[simp]
-theorem symmCompOfNondegenerate_left_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
+lemma symmCompOfNondegenerate_left_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
     (b₂ : B₂.Nondegenerate) (v w : V) : B₂ (symmCompOfNondegenerate B₁ B₂ b₂ w) v = B₁ w v := by
   conv_lhs => rw [comp_symmCompOfNondegenerate_apply]
 #align bilin_form.symm_comp_of_nondegenerate_left_apply LinearMap.BilinForm.symmCompOfNondegenerate_left_apply
@@ -555,7 +555,7 @@ noncomputable def leftAdjointOfNondegenerate (B : BilinForm K V) (b : B.Nondegen
   symmCompOfNondegenerate (B.compRight φ) B b
 #align bilin_form.left_adjoint_of_nondegenerate LinearMap.BilinForm.leftAdjointOfNondegenerate
 
-theorem isAdjointPairLeftAdjointOfNondegenerate (B : BilinForm K V) (b : B.Nondegenerate)
+lemma isAdjointPairLeftAdjointOfNondegenerate (B : BilinForm K V) (b : B.Nondegenerate)
     (φ : V →ₗ[K] V) : IsAdjointPair B B (B.leftAdjointOfNondegenerate b φ) φ := fun x y =>
   (B.compRight φ).symmCompOfNondegenerate_left_apply b y x
 #align bilin_form.is_adjoint_pair_left_adjoint_of_nondegenerate LinearMap.BilinForm.isAdjointPairLeftAdjointOfNondegenerate

@@ -222,19 +222,19 @@ abbrev Hom₂.mk {f g : a ⟶ b} (η : Hom₂ f g) : f ⟶ g :=
   Quot.mk Rel η
 
 @[simp]
-theorem mk_vcomp {f g h : a ⟶ b} (η : Hom₂ f g) (θ : Hom₂ g h) :
+lemma mk_vcomp {f g h : a ⟶ b} (η : Hom₂ f g) (θ : Hom₂ g h) :
     (η.vcomp θ).mk = (η.mk ≫ θ.mk : f ⟶ h) :=
   rfl
 #align category_theory.free_bicategory.mk_vcomp CategoryTheory.FreeBicategory.mk_vcomp
 
 @[simp]
-theorem mk_whisker_left (f : a ⟶ b) {g h : b ⟶ c} (η : Hom₂ g h) :
+lemma mk_whisker_left (f : a ⟶ b) {g h : b ⟶ c} (η : Hom₂ g h) :
     (Hom₂.whisker_left f η).mk = (f ◁ η.mk : f ≫ g ⟶ f ≫ h) :=
   rfl
 #align category_theory.free_bicategory.mk_whisker_left CategoryTheory.FreeBicategory.mk_whisker_left
 
 @[simp]
-theorem mk_whisker_right {f g : a ⟶ b} (η : Hom₂ f g) (h : b ⟶ c) :
+lemma mk_whisker_right {f g : a ⟶ b} (η : Hom₂ f g) (h : b ⟶ c) :
     (Hom₂.whisker_right h η).mk = (η.mk ▷ h : f ≫ h ⟶ g ≫ h) :=
   rfl
 #align category_theory.free_bicategory.mk_whisker_right CategoryTheory.FreeBicategory.mk_whisker_right
@@ -247,42 +247,42 @@ variable (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
 -- #align category_theory.free_bicategory.id_def CategoryTheory.FreeBicategory.id_def
 #noalign category_theory.free_bicategory.id_def
 
-theorem comp_def : Hom.comp f g = f ≫ g :=
+lemma comp_def : Hom.comp f g = f ≫ g :=
   rfl
 #align category_theory.free_bicategory.comp_def CategoryTheory.FreeBicategory.comp_def
 
 @[simp]
-theorem mk_id : Quot.mk _ (Hom₂.id f) = 𝟙 f :=
+lemma mk_id : Quot.mk _ (Hom₂.id f) = 𝟙 f :=
   rfl
 #align category_theory.free_bicategory.mk_id CategoryTheory.FreeBicategory.mk_id
 
 @[simp]
-theorem mk_associator_hom : Quot.mk _ (Hom₂.associator f g h) = (α_ f g h).hom :=
+lemma mk_associator_hom : Quot.mk _ (Hom₂.associator f g h) = (α_ f g h).hom :=
   rfl
 #align category_theory.free_bicategory.mk_associator_hom CategoryTheory.FreeBicategory.mk_associator_hom
 
 @[simp]
-theorem mk_associator_inv : Quot.mk _ (Hom₂.associator_inv f g h) = (α_ f g h).inv :=
+lemma mk_associator_inv : Quot.mk _ (Hom₂.associator_inv f g h) = (α_ f g h).inv :=
   rfl
 #align category_theory.free_bicategory.mk_associator_inv CategoryTheory.FreeBicategory.mk_associator_inv
 
 @[simp]
-theorem mk_left_unitor_hom : Quot.mk _ (Hom₂.left_unitor f) = (λ_ f).hom :=
+lemma mk_left_unitor_hom : Quot.mk _ (Hom₂.left_unitor f) = (λ_ f).hom :=
   rfl
 #align category_theory.free_bicategory.mk_left_unitor_hom CategoryTheory.FreeBicategory.mk_left_unitor_hom
 
 @[simp]
-theorem mk_left_unitor_inv : Quot.mk _ (Hom₂.left_unitor_inv f) = (λ_ f).inv :=
+lemma mk_left_unitor_inv : Quot.mk _ (Hom₂.left_unitor_inv f) = (λ_ f).inv :=
   rfl
 #align category_theory.free_bicategory.mk_left_unitor_inv CategoryTheory.FreeBicategory.mk_left_unitor_inv
 
 @[simp]
-theorem mk_right_unitor_hom : Quot.mk _ (Hom₂.right_unitor f) = (ρ_ f).hom :=
+lemma mk_right_unitor_hom : Quot.mk _ (Hom₂.right_unitor f) = (ρ_ f).hom :=
   rfl
 #align category_theory.free_bicategory.mk_right_unitor_hom CategoryTheory.FreeBicategory.mk_right_unitor_hom
 
 @[simp]
-theorem mk_right_unitor_inv : Quot.mk _ (Hom₂.right_unitor_inv f) = (ρ_ f).inv :=
+lemma mk_right_unitor_inv : Quot.mk _ (Hom₂.right_unitor_inv f) = (ρ_ f).inv :=
   rfl
 #align category_theory.free_bicategory.mk_right_unitor_inv CategoryTheory.FreeBicategory.mk_right_unitor_inv
 
@@ -309,12 +309,12 @@ def liftHom : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (F.obj a ⟶ F.obj b)
 #align category_theory.free_bicategory.lift_hom CategoryTheory.FreeBicategory.liftHom
 
 @[simp]
-theorem liftHom_id (a : FreeBicategory B) : liftHom F (𝟙 a) = 𝟙 (F.obj a) :=
+lemma liftHom_id (a : FreeBicategory B) : liftHom F (𝟙 a) = 𝟙 (F.obj a) :=
   rfl
 #align category_theory.free_bicategory.lift_hom_id CategoryTheory.FreeBicategory.liftHom_id
 
 @[simp]
-theorem liftHom_comp {a b c : FreeBicategory B} (f : a ⟶ b) (g : b ⟶ c) :
+lemma liftHom_comp {a b c : FreeBicategory B} (f : a ⟶ b) (g : b ⟶ c) :
     liftHom F (f ≫ g) = liftHom F f ≫ liftHom F g :=
   rfl
 #align category_theory.free_bicategory.lift_hom_comp CategoryTheory.FreeBicategory.liftHom_comp
@@ -343,7 +343,7 @@ def liftHom₂ : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → (l
 
 attribute [local simp] whisker_exchange
 
-theorem liftHom₂_congr {a b : FreeBicategory B} {f g : a ⟶ b} {η θ : Hom₂ f g} (H : Rel η θ) :
+lemma liftHom₂_congr {a b : FreeBicategory B} {f g : a ⟶ b} {η θ : Hom₂ f g} (H : Rel η θ) :
     liftHom₂ F η = liftHom₂ F θ := by induction H <;> (dsimp [liftHom₂]; aesop_cat)
 #align category_theory.free_bicategory.lift_hom₂_congr CategoryTheory.FreeBicategory.liftHom₂_congr
 

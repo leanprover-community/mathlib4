@@ -35,13 +35,13 @@ def center : Subgroup G :=
 #align add_subgroup.center AddSubgroup.center
 
 @[to_additive]
-theorem coe_center : ↑(center G) = Set.center G :=
+lemma coe_center : ↑(center G) = Set.center G :=
   rfl
 #align subgroup.coe_center Subgroup.coe_center
 #align add_subgroup.coe_center AddSubgroup.coe_center
 
 @[to_additive (attr := simp)]
-theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
+lemma center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
   rfl
 #align subgroup.center_to_submonoid Subgroup.center_toSubmonoid
 #align add_subgroup.center_to_add_submonoid AddSubgroup.center_toAddSubmonoid
@@ -70,7 +70,7 @@ def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
 variable {G}
 
 @[to_additive]
-theorem mem_center_iff {z : G} : z ∈ center G ↔ ∀ g, g * z = z * g := by
+lemma mem_center_iff {z : G} : z ∈ center G ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]
   exact Iff.rfl
 #align subgroup.mem_center_iff Subgroup.mem_center_iff
@@ -90,7 +90,7 @@ instance centerCharacteristic : (center G).Characteristic := by
 #align subgroup.center_characteristic Subgroup.centerCharacteristic
 #align add_subgroup.center_characteristic AddSubgroup.centerCharacteristic
 
-theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = ⊤ := by
+lemma _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = ⊤ := by
   rw [eq_top_iff']
   intro x
   rw [Subgroup.mem_center_iff]
@@ -114,7 +114,7 @@ variable {H : Subgroup G}
 section Normalizer
 
 @[to_additive]
-theorem center_le_normalizer : center G ≤ H.normalizer := fun x hx y => by
+lemma center_le_normalizer : center G ≤ H.normalizer := fun x hx y => by
   simp [← mem_center_iff.mp hx y, mul_assoc]
 #align subgroup.center_le_normalizer Subgroup.center_le_normalizer
 #align add_subgroup.center_le_normalizer AddSubgroup.center_le_normalizer
@@ -127,11 +127,11 @@ namespace IsConj
 
 variable {M : Type*} [Monoid M]
 
-theorem eq_of_left_mem_center {g h : M} (H : IsConj g h) (Hg : g ∈ Set.center M) : g = h := by
+lemma eq_of_left_mem_center {g h : M} (H : IsConj g h) (Hg : g ∈ Set.center M) : g = h := by
   rcases H with ⟨u, hu⟩; rwa [← u.mul_left_inj, Hg.comm u]
 #align is_conj.eq_of_left_mem_center IsConj.eq_of_left_mem_center
 
-theorem eq_of_right_mem_center {g h : M} (H : IsConj g h) (Hh : h ∈ Set.center M) : g = h :=
+lemma eq_of_right_mem_center {g h : M} (H : IsConj g h) (Hh : h ∈ Set.center M) : g = h :=
   (H.symm.eq_of_left_mem_center Hh).symm
 #align is_conj.eq_of_right_mem_center IsConj.eq_of_right_mem_center
 
@@ -139,7 +139,7 @@ end IsConj
 
 namespace ConjClasses
 
-theorem mk_bijOn (G : Type*) [Group G] :
+lemma mk_bijOn (G : Type*) [Group G] :
     Set.BijOn ConjClasses.mk (↑(Subgroup.center G)) (noncenter G)ᶜ := by
   refine ⟨fun g hg ↦ ?_, fun x hx y _ H ↦ ?_, ?_⟩
   · simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff]

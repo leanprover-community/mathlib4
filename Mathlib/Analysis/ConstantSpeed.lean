@@ -56,19 +56,19 @@ def HasConstantSpeedOnWith :=
 
 variable {f s l}
 
-theorem HasConstantSpeedOnWith.hasLocallyBoundedVariationOn (h : HasConstantSpeedOnWith f s l) :
+lemma HasConstantSpeedOnWith.hasLocallyBoundedVariationOn (h : HasConstantSpeedOnWith f s l) :
     LocallyBoundedVariationOn f s := fun x y hx hy => by
   simp only [BoundedVariationOn, h hx hy, Ne, ENNReal.ofReal_ne_top, not_false_iff]
 #align has_constant_speed_on_with.has_locally_bounded_variation_on HasConstantSpeedOnWith.hasLocallyBoundedVariationOn
 
-theorem hasConstantSpeedOnWith_of_subsingleton (f : ℝ → E) {s : Set ℝ} (hs : s.Subsingleton)
+lemma hasConstantSpeedOnWith_of_subsingleton (f : ℝ → E) {s : Set ℝ} (hs : s.Subsingleton)
     (l : ℝ≥0) : HasConstantSpeedOnWith f s l := by
   rintro x hx y hy; cases hs hx hy
   rw [eVariationOn.subsingleton f (fun y hy z hz => hs hy.1 hz.1 : (s ∩ Icc x x).Subsingleton)]
   simp only [sub_self, mul_zero, ENNReal.ofReal_zero]
 #align has_constant_speed_on_with_of_subsingleton hasConstantSpeedOnWith_of_subsingleton
 
-theorem hasConstantSpeedOnWith_iff_ordered :
+lemma hasConstantSpeedOnWith_iff_ordered :
     HasConstantSpeedOnWith f s l ↔ ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s),
       x ≤ y → eVariationOn f (s ∩ Icc x y) = ENNReal.ofReal (l * (y - x)) := by
   refine' ⟨fun h x xs y ys _ => h xs ys, fun h x xs y ys => _⟩
@@ -82,7 +82,7 @@ theorem hasConstantSpeedOnWith_iff_ordered :
       rfl
 #align has_constant_speed_on_with_iff_ordered hasConstantSpeedOnWith_iff_ordered
 
-theorem hasConstantSpeedOnWith_iff_variationOnFromTo_eq :
+lemma hasConstantSpeedOnWith_iff_variationOnFromTo_eq :
     HasConstantSpeedOnWith f s l ↔ LocallyBoundedVariationOn f s ∧
       ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s), variationOnFromTo f s x y = l * (y - x) := by
   constructor
@@ -99,7 +99,7 @@ theorem hasConstantSpeedOnWith_iff_variationOnFromTo_eq :
     rw [← h.2 xs ys, variationOnFromTo.eq_of_le f s xy, ENNReal.ofReal_toReal (h.1 x y xs ys)]
 #align has_constant_speed_on_with_iff_variation_on_from_to_eq hasConstantSpeedOnWith_iff_variationOnFromTo_eq
 
-theorem HasConstantSpeedOnWith.union {t : Set ℝ} (hfs : HasConstantSpeedOnWith f s l)
+lemma HasConstantSpeedOnWith.union {t : Set ℝ} (hfs : HasConstantSpeedOnWith f s l)
     (hft : HasConstantSpeedOnWith f t l) {x : ℝ} (hs : IsGreatest s x) (ht : IsLeast t x) :
     HasConstantSpeedOnWith f (s ∪ t) l := by
   rw [hasConstantSpeedOnWith_iff_ordered] at hfs hft ⊢
@@ -137,7 +137,7 @@ theorem HasConstantSpeedOnWith.union {t : Set ℝ} (hfs : HasConstantSpeedOnWith
     rw [this, hft zt yt zy]
 #align has_constant_speed_on_with.union HasConstantSpeedOnWith.union
 
-theorem HasConstantSpeedOnWith.Icc_Icc {x y z : ℝ} (hfs : HasConstantSpeedOnWith f (Icc x y) l)
+lemma HasConstantSpeedOnWith.Icc_Icc {x y z : ℝ} (hfs : HasConstantSpeedOnWith f (Icc x y) l)
     (hft : HasConstantSpeedOnWith f (Icc y z) l) : HasConstantSpeedOnWith f (Icc x z) l := by
   rcases le_total x y with (xy | yx)
   · rcases le_total y z with (yz | zy)
@@ -153,7 +153,7 @@ theorem HasConstantSpeedOnWith.Icc_Icc {x y z : ℝ} (hfs : HasConstantSpeedOnWi
       inf_of_le_right vz]
 #align has_constant_speed_on_with.Icc_Icc HasConstantSpeedOnWith.Icc_Icc
 
-theorem hasConstantSpeedOnWith_zero_iff :
+lemma hasConstantSpeedOnWith_zero_iff :
     HasConstantSpeedOnWith f s 0 ↔ ∀ᵉ (x ∈ s) (y ∈ s), edist (f x) (f y) = 0 := by
   dsimp [HasConstantSpeedOnWith]
   simp only [zero_mul, ENNReal.ofReal_zero, ← eVariationOn.eq_zero_iff]
@@ -173,7 +173,7 @@ theorem hasConstantSpeedOnWith_zero_iff :
     exact eVariationOn.mono f (inter_subset_left s (Icc x y))
 #align has_constant_speed_on_with_zero_iff hasConstantSpeedOnWith_zero_iff
 
-theorem HasConstantSpeedOnWith.ratio {l' : ℝ≥0} (hl' : l' ≠ 0) {φ : ℝ → ℝ} (φm : MonotoneOn φ s)
+lemma HasConstantSpeedOnWith.ratio {l' : ℝ≥0} (hl' : l' ≠ 0) {φ : ℝ → ℝ} (φm : MonotoneOn φ s)
     (hfφ : HasConstantSpeedOnWith (f ∘ φ) s l) (hf : HasConstantSpeedOnWith f (φ '' s) l') ⦃x : ℝ⦄
     (xs : x ∈ s) : EqOn φ (fun y => l / l' * (y - x) + φ x) s := by
   rintro y ys
@@ -195,13 +195,13 @@ def HasUnitSpeedOn (f : ℝ → E) (s : Set ℝ) :=
   HasConstantSpeedOnWith f s 1
 #align has_unit_speed_on HasUnitSpeedOn
 
-theorem HasUnitSpeedOn.union {t : Set ℝ} {x : ℝ} (hfs : HasUnitSpeedOn f s)
+lemma HasUnitSpeedOn.union {t : Set ℝ} {x : ℝ} (hfs : HasUnitSpeedOn f s)
     (hft : HasUnitSpeedOn f t) (hs : IsGreatest s x) (ht : IsLeast t x) :
     HasUnitSpeedOn f (s ∪ t) :=
   HasConstantSpeedOnWith.union hfs hft hs ht
 #align has_unit_speed_on.union HasUnitSpeedOn.union
 
-theorem HasUnitSpeedOn.Icc_Icc {x y z : ℝ} (hfs : HasUnitSpeedOn f (Icc x y))
+lemma HasUnitSpeedOn.Icc_Icc {x y z : ℝ} (hfs : HasUnitSpeedOn f (Icc x y))
     (hft : HasUnitSpeedOn f (Icc y z)) : HasUnitSpeedOn f (Icc x z) :=
   HasConstantSpeedOnWith.Icc_Icc hfs hft
 #align has_unit_speed_on.Icc_Icc HasUnitSpeedOn.Icc_Icc
@@ -244,7 +244,7 @@ noncomputable def naturalParameterization (f : α → E) (s : Set α) (a : α) :
   f ∘ @Function.invFunOn _ _ ⟨a⟩ (variationOnFromTo f s a) s
 #align natural_parameterization naturalParameterization
 
-theorem edist_naturalParameterization_eq_zero {f : α → E} {s : Set α}
+lemma edist_naturalParameterization_eq_zero {f : α → E} {s : Set α}
     (hf : LocallyBoundedVariationOn f s) {a : α} (as : a ∈ s) {b : α} (bs : b ∈ s) :
     edist (naturalParameterization f s a (variationOnFromTo f s a b)) (f b) = 0 := by
   dsimp only [naturalParameterization]
@@ -256,7 +256,7 @@ theorem edist_naturalParameterization_eq_zero {f : α → E} {s : Set α}
   apply variationOnFromTo.edist_zero_of_eq_zero hf cs bs hc
 #align edist_natural_parameterization_eq_zero edist_naturalParameterization_eq_zero
 
-theorem has_unit_speed_naturalParameterization (f : α → E) {s : Set α}
+lemma has_unit_speed_naturalParameterization (f : α → E) {s : Set α}
     (hf : LocallyBoundedVariationOn f s) {a : α} (as : a ∈ s) :
     HasUnitSpeedOn (naturalParameterization f s a) (variationOnFromTo f s a '' s) := by
   dsimp only [HasUnitSpeedOn]

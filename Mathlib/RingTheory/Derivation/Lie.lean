@@ -36,11 +36,11 @@ instance : Bracket (Derivation R A A) (Derivation R A A) :=
       ring⟩
 
 @[simp]
-theorem commutator_coe_linear_map : ↑⁅D1, D2⁆ = ⁅(D1 : Module.End R A), (D2 : Module.End R A)⁆ :=
+lemma commutator_coe_linear_map : ↑⁅D1, D2⁆ = ⁅(D1 : Module.End R A), (D2 : Module.End R A)⁆ :=
   rfl
 #align derivation.commutator_coe_linear_map Derivation.commutator_coe_linear_map
 
-theorem commutator_apply : ⁅D1, D2⁆ a = D1 (D2 a) - D2 (D1 a) :=
+lemma commutator_apply : ⁅D1, D2⁆ a = D1 (D2 a) - D2 (D1 a) :=
   rfl
 #align derivation.commutator_apply Derivation.commutator_apply
 

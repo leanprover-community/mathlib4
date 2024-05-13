@@ -116,12 +116,12 @@ def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bi
       mem_univ_val univ.2
 #align fintype.trunc_fin_bijection Fintype.truncFinBijection
 
-theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
+lemma subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
     @card { x // p x } (Fintype.subtype s H) = s.card :=
   Multiset.card_pmap _ _ _
 #align fintype.subtype_card Fintype.subtype_card
 
-theorem card_of_subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x)
+lemma card_of_subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x)
     [Fintype { x // p x }] : card { x // p x } = s.card := by
   rw [← subtype_card s H]
   congr
@@ -129,12 +129,12 @@ theorem card_of_subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈
 #align fintype.card_of_subtype Fintype.card_of_subtype
 
 @[simp]
-theorem card_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) :
+lemma card_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) :
     @Fintype.card p (ofFinset s H) = s.card :=
   Fintype.subtype_card s H
 #align fintype.card_of_finset Fintype.card_ofFinset
 
-theorem card_of_finset' {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) [Fintype p] :
+lemma card_of_finset' {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) [Fintype p] :
     Fintype.card p = s.card := by rw [← card_ofFinset s H]; congr; apply Subsingleton.elim
 #align fintype.card_of_finset' Fintype.card_of_finset'
 
@@ -142,16 +142,16 @@ end Fintype
 
 namespace Fintype
 
-theorem ofEquiv_card [Fintype α] (f : α ≃ β) : @card β (ofEquiv α f) = card α :=
+lemma ofEquiv_card [Fintype α] (f : α ≃ β) : @card β (ofEquiv α f) = card α :=
   Multiset.card_map _ _
 #align fintype.of_equiv_card Fintype.ofEquiv_card
 
-theorem card_congr {α β} [Fintype α] [Fintype β] (f : α ≃ β) : card α = card β := by
+lemma card_congr {α β} [Fintype α] [Fintype β] (f : α ≃ β) : card α = card β := by
   rw [← ofEquiv_card f]; congr; apply Subsingleton.elim
 #align fintype.card_congr Fintype.card_congr
 
 @[congr]
-theorem card_congr' {α β} [Fintype α] [Fintype β] (h : α = β) : card α = card β :=
+lemma card_congr' {α β} [Fintype α] [Fintype β] (h : α = β) : card α = card β :=
   card_congr (by rw [h])
 #align fintype.card_congr' Fintype.card_congr'
 
@@ -202,7 +202,7 @@ noncomputable def equivOfCardEq (h : card α = card β) : α ≃ β := by
 
 end
 
-theorem card_eq {α β} [_F : Fintype α] [_G : Fintype β] : card α = card β ↔ Nonempty (α ≃ β) :=
+lemma card_eq {α β} [_F : Fintype α] [_G : Fintype β] : card α = card β ↔ Nonempty (α ≃ β) :=
   ⟨fun h =>
     haveI := Classical.propDecidable
     (truncEquivOfCardEq h).nonempty,
@@ -218,7 +218,7 @@ theorem card_ofSubsingleton (a : α) [Subsingleton α] : @Fintype.card _ (ofSubs
 #align fintype.card_of_subsingleton Fintype.card_ofSubsingleton
 
 @[simp]
-theorem card_unique [Unique α] [h : Fintype α] : Fintype.card α = 1 :=
+lemma card_unique [Unique α] [h : Fintype α] : Fintype.card α = 1 :=
   Subsingleton.elim (ofSubsingleton default) h ▸ card_ofSubsingleton _
 #align fintype.card_unique Fintype.card_unique
 
@@ -238,79 +238,79 @@ variable {s t : Set α}
 -- We use an arbitrary `[Fintype s]` instance here,
 -- not necessarily coming from a `[Fintype α]`.
 @[simp]
-theorem toFinset_card {α : Type*} (s : Set α) [Fintype s] : s.toFinset.card = Fintype.card s :=
+lemma toFinset_card {α : Type*} (s : Set α) [Fintype s] : s.toFinset.card = Fintype.card s :=
   Multiset.card_map Subtype.val Finset.univ.val
 #align set.to_finset_card Set.toFinset_card
 
 end Set
 
 @[simp]
-theorem Finset.card_univ [Fintype α] : (Finset.univ : Finset α).card = Fintype.card α :=
+lemma Finset.card_univ [Fintype α] : (Finset.univ : Finset α).card = Fintype.card α :=
   rfl
 #align finset.card_univ Finset.card_univ
 
-theorem Finset.eq_univ_of_card [Fintype α] (s : Finset α) (hs : s.card = Fintype.card α) :
+lemma Finset.eq_univ_of_card [Fintype α] (s : Finset α) (hs : s.card = Fintype.card α) :
     s = univ :=
   eq_of_subset_of_card_le (subset_univ _) <| by rw [hs, Finset.card_univ]
 #align finset.eq_univ_of_card Finset.eq_univ_of_card
 
-theorem Finset.card_eq_iff_eq_univ [Fintype α] (s : Finset α) :
+lemma Finset.card_eq_iff_eq_univ [Fintype α] (s : Finset α) :
     s.card = Fintype.card α ↔ s = Finset.univ :=
   ⟨s.eq_univ_of_card, by
     rintro rfl
     exact Finset.card_univ⟩
 #align finset.card_eq_iff_eq_univ Finset.card_eq_iff_eq_univ
 
-theorem Finset.card_le_univ [Fintype α] (s : Finset α) : s.card ≤ Fintype.card α :=
+lemma Finset.card_le_univ [Fintype α] (s : Finset α) : s.card ≤ Fintype.card α :=
   card_le_card (subset_univ s)
 #align finset.card_le_univ Finset.card_le_univ
 
-theorem Finset.card_lt_univ_of_not_mem [Fintype α] {s : Finset α} {x : α} (hx : x ∉ s) :
+lemma Finset.card_lt_univ_of_not_mem [Fintype α] {s : Finset α} {x : α} (hx : x ∉ s) :
     s.card < Fintype.card α :=
   card_lt_card ⟨subset_univ s, not_forall.2 ⟨x, fun hx' => hx (hx' <| mem_univ x)⟩⟩
 #align finset.card_lt_univ_of_not_mem Finset.card_lt_univ_of_not_mem
 
-theorem Finset.card_lt_iff_ne_univ [Fintype α] (s : Finset α) :
+lemma Finset.card_lt_iff_ne_univ [Fintype α] (s : Finset α) :
     s.card < Fintype.card α ↔ s ≠ Finset.univ :=
   s.card_le_univ.lt_iff_ne.trans (not_congr s.card_eq_iff_eq_univ)
 #align finset.card_lt_iff_ne_univ Finset.card_lt_iff_ne_univ
 
-theorem Finset.card_compl_lt_iff_nonempty [Fintype α] [DecidableEq α] (s : Finset α) :
+lemma Finset.card_compl_lt_iff_nonempty [Fintype α] [DecidableEq α] (s : Finset α) :
     sᶜ.card < Fintype.card α ↔ s.Nonempty :=
   sᶜ.card_lt_iff_ne_univ.trans s.compl_ne_univ_iff_nonempty
 #align finset.card_compl_lt_iff_nonempty Finset.card_compl_lt_iff_nonempty
 
-theorem Finset.card_univ_diff [DecidableEq α] [Fintype α] (s : Finset α) :
+lemma Finset.card_univ_diff [DecidableEq α] [Fintype α] (s : Finset α) :
     (Finset.univ \ s).card = Fintype.card α - s.card :=
   Finset.card_sdiff (subset_univ s)
 #align finset.card_univ_diff Finset.card_univ_diff
 
-theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
+lemma Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
     sᶜ.card = Fintype.card α - s.card :=
   Finset.card_univ_diff s
 #align finset.card_compl Finset.card_compl
 
 @[simp]
-theorem Finset.card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
+lemma Finset.card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
     s.card + sᶜ.card = Fintype.card α := by
   rw [Finset.card_compl, ← Nat.add_sub_assoc (card_le_univ s), Nat.add_sub_cancel_left]
 
 @[simp]
-theorem Finset.card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α) :
+lemma Finset.card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α) :
     sᶜ.card + s.card = Fintype.card α := by
   rw [add_comm, card_add_card_compl]
 
-theorem Fintype.card_compl_set [Fintype α] (s : Set α) [Fintype s] [Fintype (↥sᶜ : Sort _)] :
+lemma Fintype.card_compl_set [Fintype α] (s : Set α) [Fintype s] [Fintype (↥sᶜ : Sort _)] :
     Fintype.card (↥sᶜ : Sort _) = Fintype.card α - Fintype.card s := by
   classical rw [← Set.toFinset_card, ← Set.toFinset_card, ← Finset.card_compl, Set.toFinset_compl]
 #align fintype.card_compl_set Fintype.card_compl_set
 
 @[simp]
-theorem Fintype.card_fin (n : ℕ) : Fintype.card (Fin n) = n :=
+lemma Fintype.card_fin (n : ℕ) : Fintype.card (Fin n) = n :=
   List.length_finRange n
 #align fintype.card_fin Fintype.card_fin
 
-theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
+lemma Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
     Fintype.card {i : Fin n // i < m} = m := by
   conv_rhs => rw [← Fintype.card_fin m]
   apply Fintype.card_congr
@@ -319,7 +319,7 @@ theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
           left_inv := fun i ↦ rfl
           right_inv := fun i ↦ rfl }
 
-theorem Finset.card_fin (n : ℕ) : Finset.card (Finset.univ : Finset (Fin n)) = n := by simp
+lemma Finset.card_fin (n : ℕ) : Finset.card (Finset.univ : Finset (Fin n)) = n := by simp
 #align finset.card_fin Finset.card_fin
 
 /-- `Fin` as a map from `ℕ` to `Type` is injective. Note that since this is a statement about
@@ -335,61 +335,61 @@ theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
   rfl
 #align fin.cast_eq_cast' Fin.cast_eq_cast'
 
-theorem card_finset_fin_le {n : ℕ} (s : Finset (Fin n)) : s.card ≤ n := by
+lemma card_finset_fin_le {n : ℕ} (s : Finset (Fin n)) : s.card ≤ n := by
   simpa only [Fintype.card_fin] using s.card_le_univ
 #align card_finset_fin_le card_finset_fin_le
 
 --@[simp] Porting note (#10618): simp can prove it
-theorem Fintype.card_subtype_eq (y : α) [Fintype { x // x = y }] :
+lemma Fintype.card_subtype_eq (y : α) [Fintype { x // x = y }] :
     Fintype.card { x // x = y } = 1 :=
   Fintype.card_unique
 #align fintype.card_subtype_eq Fintype.card_subtype_eq
 
 --@[simp] Porting note (#10618): simp can prove it
-theorem Fintype.card_subtype_eq' (y : α) [Fintype { x // y = x }] :
+lemma Fintype.card_subtype_eq' (y : α) [Fintype { x // y = x }] :
     Fintype.card { x // y = x } = 1 :=
   Fintype.card_unique
 #align fintype.card_subtype_eq' Fintype.card_subtype_eq'
 
-theorem Fintype.card_empty : Fintype.card Empty = 0 :=
+lemma Fintype.card_empty : Fintype.card Empty = 0 :=
   rfl
 #align fintype.card_empty Fintype.card_empty
 
-theorem Fintype.card_pempty : Fintype.card PEmpty = 0 :=
+lemma Fintype.card_pempty : Fintype.card PEmpty = 0 :=
   rfl
 #align fintype.card_pempty Fintype.card_pempty
 
-theorem Fintype.card_unit : Fintype.card Unit = 1 :=
+lemma Fintype.card_unit : Fintype.card Unit = 1 :=
   rfl
 #align fintype.card_unit Fintype.card_unit
 
 @[simp]
-theorem Fintype.card_punit : Fintype.card PUnit = 1 :=
+lemma Fintype.card_punit : Fintype.card PUnit = 1 :=
   rfl
 #align fintype.card_punit Fintype.card_punit
 
 @[simp]
-theorem Fintype.card_bool : Fintype.card Bool = 2 :=
+lemma Fintype.card_bool : Fintype.card Bool = 2 :=
   rfl
 #align fintype.card_bool Fintype.card_bool
 
 @[simp]
-theorem Fintype.card_ulift (α : Type*) [Fintype α] : Fintype.card (ULift α) = Fintype.card α :=
+lemma Fintype.card_ulift (α : Type*) [Fintype α] : Fintype.card (ULift α) = Fintype.card α :=
   Fintype.ofEquiv_card _
 #align fintype.card_ulift Fintype.card_ulift
 
 @[simp]
-theorem Fintype.card_plift (α : Type*) [Fintype α] : Fintype.card (PLift α) = Fintype.card α :=
+lemma Fintype.card_plift (α : Type*) [Fintype α] : Fintype.card (PLift α) = Fintype.card α :=
   Fintype.ofEquiv_card _
 #align fintype.card_plift Fintype.card_plift
 
 @[simp]
-theorem Fintype.card_orderDual (α : Type*) [Fintype α] : Fintype.card αᵒᵈ = Fintype.card α :=
+lemma Fintype.card_orderDual (α : Type*) [Fintype α] : Fintype.card αᵒᵈ = Fintype.card α :=
   rfl
 #align fintype.card_order_dual Fintype.card_orderDual
 
 @[simp]
-theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fintype.card α :=
+lemma Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fintype.card α :=
   rfl
 #align fintype.card_lex Fintype.card_lex
 
@@ -419,7 +419,7 @@ In this section we prove that `α : Type*` is `Finite` if and only if `Fintype �
 
 
 -- @[nolint fintype_finite] -- Porting note: do we need this
-protected theorem Fintype.finite {α : Type*} (_inst : Fintype α) : Finite α :=
+protected lemma Fintype.finite {α : Type*} (_inst : Fintype α) : Finite α :=
   ⟨Fintype.equivFin α⟩
 #align fintype.finite Fintype.finite
 
@@ -430,7 +430,7 @@ instance (priority := 900) Finite.of_fintype (α : Type*) [Fintype α] : Finite 
   Fintype.finite ‹_›
 #align finite.of_fintype Finite.of_fintype
 
-theorem finite_iff_nonempty_fintype (α : Type*) : Finite α ↔ Nonempty (Fintype α) :=
+lemma finite_iff_nonempty_fintype (α : Type*) : Finite α ↔ Nonempty (Fintype α) :=
   ⟨fun h =>
     let ⟨_k, ⟨e⟩⟩ := @Finite.exists_equiv_fin α h
     ⟨Fintype.ofEquiv _ e.symm⟩,
@@ -448,7 +448,7 @@ noncomputable def Fintype.ofFinite (α : Type*) [Finite α] : Fintype α :=
   (nonempty_fintype α).some
 #align fintype.of_finite Fintype.ofFinite
 
-theorem Finite.of_injective {α β : Sort*} [Finite β] (f : α → β) (H : Injective f) : Finite α := by
+lemma Finite.of_injective {α β : Sort*} [Finite β] (f : α → β) (H : Injective f) : Finite α := by
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e⟩⟩
   classical exact .of_equiv (Set.range (e ∘ f)) (Equiv.ofInjective _ (e.injective.comp H)).symm
 #align finite.of_injective Finite.of_injective
@@ -458,18 +458,18 @@ instance Subtype.finite {α : Sort*} [Finite α] {p : α → Prop} : Finite { x 
   Finite.of_injective (↑) Subtype.coe_injective
 #align subtype.finite Subtype.finite
 
-theorem Finite.of_surjective {α β : Sort*} [Finite α] (f : α → β) (H : Surjective f) : Finite β :=
+lemma Finite.of_surjective {α β : Sort*} [Finite α] (f : α → β) (H : Surjective f) : Finite β :=
   Finite.of_injective _ <| injective_surjInv H
 #align finite.of_surjective Finite.of_surjective
 
-theorem Finite.exists_univ_list (α) [Finite α] : ∃ l : List α, l.Nodup ∧ ∀ x : α, x ∈ l := by
+lemma Finite.exists_univ_list (α) [Finite α] : ∃ l : List α, l.Nodup ∧ ∀ x : α, x ∈ l := by
   cases nonempty_fintype α
   obtain ⟨l, e⟩ := Quotient.exists_rep (@univ α _).1
   have := And.intro (@univ α _).2 (@mem_univ_val α _)
   exact ⟨_, by rwa [← e] at this⟩
 #align finite.exists_univ_list Finite.exists_univ_list
 
-theorem List.Nodup.length_le_card {α : Type*} [Fintype α] {l : List α} (h : l.Nodup) :
+lemma List.Nodup.length_le_card {α : Type*} [Fintype α] {l : List α} (h : l.Nodup) :
     l.length ≤ Fintype.card α := by
   classical exact List.toFinset_card_of_nodup h ▸ l.toFinset.card_le_univ
 #align list.nodup.length_le_card List.Nodup.length_le_card
@@ -478,15 +478,15 @@ namespace Fintype
 
 variable [Fintype α] [Fintype β]
 
-theorem card_le_of_injective (f : α → β) (hf : Function.Injective f) : card α ≤ card β :=
+lemma card_le_of_injective (f : α → β) (hf : Function.Injective f) : card α ≤ card β :=
   Finset.card_le_card_of_inj_on f (fun _ _ => Finset.mem_univ _) fun _ _ _ _ h => hf h
 #align fintype.card_le_of_injective Fintype.card_le_of_injective
 
-theorem card_le_of_embedding (f : α ↪ β) : card α ≤ card β :=
+lemma card_le_of_embedding (f : α ↪ β) : card α ≤ card β :=
   card_le_of_injective f f.2
 #align fintype.card_le_of_embedding Fintype.card_le_of_embedding
 
-theorem card_lt_of_injective_of_not_mem (f : α → β) (h : Function.Injective f) {b : β}
+lemma card_lt_of_injective_of_not_mem (f : α → β) (h : Function.Injective f) {b : β}
     (w : b ∉ Set.range f) : card α < card β :=
   calc
     card α = (univ.map ⟨f, h⟩).card := (card_map _).symm
@@ -494,22 +494,22 @@ theorem card_lt_of_injective_of_not_mem (f : α → β) (h : Function.Injective 
       Finset.card_lt_univ_of_not_mem <| by rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
 #align fintype.card_lt_of_injective_of_not_mem Fintype.card_lt_of_injective_of_not_mem
 
-theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
+lemma card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
   let ⟨_y, hy⟩ := not_forall.1 h'
   card_lt_of_injective_of_not_mem f h hy
 #align fintype.card_lt_of_injective_not_surjective Fintype.card_lt_of_injective_not_surjective
 
-theorem card_le_of_surjective (f : α → β) (h : Function.Surjective f) : card β ≤ card α :=
+lemma card_le_of_surjective (f : α → β) (h : Function.Surjective f) : card β ≤ card α :=
   card_le_of_injective _ (Function.injective_surjInv h)
 #align fintype.card_le_of_surjective Fintype.card_le_of_surjective
 
-theorem card_range_le {α β : Type*} (f : α → β) [Fintype α] [Fintype (Set.range f)] :
+lemma card_range_le {α β : Type*} (f : α → β) [Fintype α] [Fintype (Set.range f)] :
     Fintype.card (Set.range f) ≤ Fintype.card α :=
   Fintype.card_le_of_surjective (fun a => ⟨f a, by simp⟩) fun ⟨_, a, ha⟩ => ⟨a, by simpa using ha⟩
 #align fintype.card_range_le Fintype.card_range_le
 
-theorem card_range {α β F : Type*} [FunLike F α β] [EmbeddingLike F α β] (f : F) [Fintype α]
+lemma card_range {α β F : Type*} [FunLike F α β] [EmbeddingLike F α β] (f : F) [Fintype α]
     [Fintype (Set.range f)] : Fintype.card (Set.range f) = Fintype.card α :=
   Eq.symm <| Fintype.card_congr <| Equiv.ofInjective _ <| EmbeddingLike.injective f
 #align fintype.card_range Fintype.card_range
@@ -523,7 +523,7 @@ theorem exists_ne_map_eq_of_card_lt (f : α → β) (h : Fintype.card β < Finty
   ⟨x, y, h⟩
 #align fintype.exists_ne_map_eq_of_card_lt Fintype.exists_ne_map_eq_of_card_lt
 
-theorem card_eq_one_iff : card α = 1 ↔ ∃ x : α, ∀ y, y = x := by
+lemma card_eq_one_iff : card α = 1 ↔ ∃ x : α, ∀ y, y = x := by
   rw [← card_unit, card_eq]
   exact
     ⟨fun ⟨a⟩ => ⟨a.symm (), fun y => a.injective (Subsingleton.elim _ _)⟩,
@@ -532,17 +532,17 @@ theorem card_eq_one_iff : card α = 1 ↔ ∃ x : α, ∀ y, y = x := by
           Subsingleton.elim _ _⟩⟩⟩
 #align fintype.card_eq_one_iff Fintype.card_eq_one_iff
 
-theorem card_eq_zero_iff : card α = 0 ↔ IsEmpty α := by
+lemma card_eq_zero_iff : card α = 0 ↔ IsEmpty α := by
   rw [card, Finset.card_eq_zero, univ_eq_empty_iff]
 #align fintype.card_eq_zero_iff Fintype.card_eq_zero_iff
 
-@[simp] theorem card_eq_zero [IsEmpty α] : card α = 0 :=
+@[simp] lemma card_eq_zero [IsEmpty α] : card α = 0 :=
   card_eq_zero_iff.2 ‹_›
 #align fintype.card_eq_zero Fintype.card_eq_zero
 
 alias card_of_isEmpty := card_eq_zero
 
-theorem card_eq_one_iff_nonempty_unique : card α = 1 ↔ Nonempty (Unique α) :=
+lemma card_eq_one_iff_nonempty_unique : card α = 1 ↔ Nonempty (Unique α) :=
   ⟨fun h =>
     let ⟨d, h⟩ := Fintype.card_eq_one_iff.mp h
     ⟨{  default := d
@@ -555,22 +555,22 @@ def cardEqZeroEquivEquivEmpty : card α = 0 ≃ (α ≃ Empty) :=
   (Equiv.ofIff card_eq_zero_iff).trans (Equiv.equivEmptyEquiv α).symm
 #align fintype.card_eq_zero_equiv_equiv_empty Fintype.cardEqZeroEquivEquivEmpty
 
-theorem card_pos_iff : 0 < card α ↔ Nonempty α :=
+lemma card_pos_iff : 0 < card α ↔ Nonempty α :=
   pos_iff_ne_zero.trans <| not_iff_comm.mp <| not_nonempty_iff.trans card_eq_zero_iff.symm
 #align fintype.card_pos_iff Fintype.card_pos_iff
 
-theorem card_pos [h : Nonempty α] : 0 < card α :=
+lemma card_pos [h : Nonempty α] : 0 < card α :=
   card_pos_iff.mpr h
 #align fintype.card_pos Fintype.card_pos
 
 @[simp]
-theorem card_ne_zero [Nonempty α] : card α ≠ 0 :=
+lemma card_ne_zero [Nonempty α] : card α ≠ 0 :=
   _root_.ne_of_gt card_pos
 #align fintype.card_ne_zero Fintype.card_ne_zero
 
 instance [Nonempty α] : NeZero (card α) := ⟨card_ne_zero⟩
 
-theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
+lemma card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
   let n := card α
   have hn : n = card α := rfl
   match n, hn with
@@ -585,48 +585,48 @@ theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
       card_unit ▸ card_le_of_injective (fun _ => ()) fun _ _ _ => h _ _⟩
 #align fintype.card_le_one_iff Fintype.card_le_one_iff
 
-theorem card_le_one_iff_subsingleton : card α ≤ 1 ↔ Subsingleton α :=
+lemma card_le_one_iff_subsingleton : card α ≤ 1 ↔ Subsingleton α :=
   card_le_one_iff.trans subsingleton_iff.symm
 #align fintype.card_le_one_iff_subsingleton Fintype.card_le_one_iff_subsingleton
 
-theorem one_lt_card_iff_nontrivial : 1 < card α ↔ Nontrivial α := by
+lemma one_lt_card_iff_nontrivial : 1 < card α ↔ Nontrivial α := by
   rw [← not_iff_not, not_lt, not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton]
 #align fintype.one_lt_card_iff_nontrivial Fintype.one_lt_card_iff_nontrivial
 
-theorem exists_ne_of_one_lt_card (h : 1 < card α) (a : α) : ∃ b : α, b ≠ a :=
+lemma exists_ne_of_one_lt_card (h : 1 < card α) (a : α) : ∃ b : α, b ≠ a :=
   haveI : Nontrivial α := one_lt_card_iff_nontrivial.1 h
   exists_ne a
 #align fintype.exists_ne_of_one_lt_card Fintype.exists_ne_of_one_lt_card
 
-theorem exists_pair_of_one_lt_card (h : 1 < card α) : ∃ a b : α, a ≠ b :=
+lemma exists_pair_of_one_lt_card (h : 1 < card α) : ∃ a b : α, a ≠ b :=
   haveI : Nontrivial α := one_lt_card_iff_nontrivial.1 h
   exists_pair_ne α
 #align fintype.exists_pair_of_one_lt_card Fintype.exists_pair_of_one_lt_card
 
-theorem card_eq_one_of_forall_eq {i : α} (h : ∀ j, j = i) : card α = 1 :=
+lemma card_eq_one_of_forall_eq {i : α} (h : ∀ j, j = i) : card α = 1 :=
   Fintype.card_eq_one_iff.2 ⟨i, h⟩
 #align fintype.card_eq_one_of_forall_eq Fintype.card_eq_one_of_forall_eq
 
-theorem exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
+lemma exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
     (∃! a : α, p a) ↔ (Finset.univ.filter p).card = 1 := by
   rw [Finset.card_eq_one]
   refine' exists_congr fun x => _
   simp only [forall_true_left, Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff,
       true_and, and_comm, mem_univ, mem_filter]
 
-theorem one_lt_card [h : Nontrivial α] : 1 < Fintype.card α :=
+lemma one_lt_card [h : Nontrivial α] : 1 < Fintype.card α :=
   Fintype.one_lt_card_iff_nontrivial.mpr h
 #align fintype.one_lt_card Fintype.one_lt_card
 
-theorem one_lt_card_iff : 1 < card α ↔ ∃ a b : α, a ≠ b :=
+lemma one_lt_card_iff : 1 < card α ↔ ∃ a b : α, a ≠ b :=
   one_lt_card_iff_nontrivial.trans nontrivial_iff
 #align fintype.one_lt_card_iff Fintype.one_lt_card_iff
 
-nonrec theorem two_lt_card_iff : 2 < card α ↔ ∃ a b c : α, a ≠ b ∧ a ≠ c ∧ b ≠ c := by
+nonrec lemma two_lt_card_iff : 2 < card α ↔ ∃ a b c : α, a ≠ b ∧ a ≠ c ∧ b ≠ c := by
   simp_rw [← Finset.card_univ, two_lt_card_iff, mem_univ, true_and_iff]
 #align fintype.two_lt_card_iff Fintype.two_lt_card_iff
 
-theorem card_of_bijective {f : α → β} (hf : Bijective f) : card α = card β :=
+lemma card_of_bijective {f : α → β} (hf : Bijective f) : card α = card β :=
   card_congr (Equiv.ofBijective f hf)
 #align fintype.card_of_bijective Fintype.card_of_bijective
 
@@ -637,7 +637,7 @@ namespace Finite
 variable [Finite α]
 
 -- Porting note (#10756): new theorem
-theorem surjective_of_injective {f : α → α} (hinj : Injective f) : Surjective f := by
+lemma surjective_of_injective {f : α → α} (hinj : Injective f) : Surjective f := by
   intro x
   have := Classical.propDecidable
   cases nonempty_fintype α
@@ -648,22 +648,22 @@ theorem surjective_of_injective {f : α → α} (hinj : Injective f) : Surjectiv
   obtain ⟨y, h⟩ := mem_image.1 h₂
   exact ⟨y, h.2⟩
 
-theorem injective_iff_surjective {f : α → α} : Injective f ↔ Surjective f :=
+lemma injective_iff_surjective {f : α → α} : Injective f ↔ Surjective f :=
   ⟨surjective_of_injective, fun hsurj =>
     HasLeftInverse.injective ⟨surjInv hsurj, leftInverse_of_surjective_of_rightInverse
       (surjective_of_injective (injective_surjInv _))
       (rightInverse_surjInv _)⟩⟩
 #align finite.injective_iff_surjective Finite.injective_iff_surjective
 
-theorem injective_iff_bijective {f : α → α} : Injective f ↔ Bijective f := by
+lemma injective_iff_bijective {f : α → α} : Injective f ↔ Bijective f := by
   simp [Bijective, injective_iff_surjective]
 #align finite.injective_iff_bijective Finite.injective_iff_bijective
 
-theorem surjective_iff_bijective {f : α → α} : Surjective f ↔ Bijective f := by
+lemma surjective_iff_bijective {f : α → α} : Surjective f ↔ Bijective f := by
   simp [Bijective, injective_iff_surjective]
 #align finite.surjective_iff_bijective Finite.surjective_iff_bijective
 
-theorem injective_iff_surjective_of_equiv {f : α → β} (e : α ≃ β) : Injective f ↔ Surjective f :=
+lemma injective_iff_surjective_of_equiv {f : α → β} (e : α ≃ β) : Injective f ↔ Surjective f :=
   have : Injective (e.symm ∘ f) ↔ Surjective (e.symm ∘ f) := injective_iff_surjective
   ⟨fun hinj => by
     simpa [Function.comp] using e.surjective.comp (this.1 (e.symm.injective.comp hinj)),
@@ -689,19 +689,19 @@ namespace Fintype
 
 variable [Fintype α] [Fintype β]
 
-theorem bijective_iff_injective_and_card (f : α → β) :
+lemma bijective_iff_injective_and_card (f : α → β) :
     Bijective f ↔ Injective f ∧ card α = card β :=
   ⟨fun h => ⟨h.1, card_of_bijective h⟩, fun h =>
     ⟨h.1, h.1.surjective_of_fintype <| equivOfCardEq h.2⟩⟩
 #align fintype.bijective_iff_injective_and_card Fintype.bijective_iff_injective_and_card
 
-theorem bijective_iff_surjective_and_card (f : α → β) :
+lemma bijective_iff_surjective_and_card (f : α → β) :
     Bijective f ↔ Surjective f ∧ card α = card β :=
   ⟨fun h => ⟨h.2, card_of_bijective h⟩, fun h =>
     ⟨h.1.injective_of_fintype <| equivOfCardEq h.2, h.1⟩⟩
 #align fintype.bijective_iff_surjective_and_card Fintype.bijective_iff_surjective_and_card
 
-theorem _root_.Function.LeftInverse.rightInverse_of_card_le {f : α → β} {g : β → α}
+lemma _root_.Function.LeftInverse.rightInverse_of_card_le {f : α → β} {g : β → α}
     (hfg : LeftInverse f g) (hcard : card α ≤ card β) : RightInverse f g :=
   have hsurj : Surjective f := surjective_iff_hasRightInverse.2 ⟨g, hfg⟩
   rightInverse_of_injective_of_leftInverse
@@ -710,7 +710,7 @@ theorem _root_.Function.LeftInverse.rightInverse_of_card_le {f : α → β} {g :
     hfg
 #align function.left_inverse.right_inverse_of_card_le Function.LeftInverse.rightInverse_of_card_le
 
-theorem _root_.Function.RightInverse.leftInverse_of_card_le {f : α → β} {g : β → α}
+lemma _root_.Function.RightInverse.leftInverse_of_card_le {f : α → β} {g : β → α}
     (hfg : RightInverse f g) (hcard : card β ≤ card α) : LeftInverse f g :=
   Function.LeftInverse.rightInverse_of_card_le hfg hcard
 #align function.right_inverse.left_inverse_of_card_le Function.RightInverse.leftInverse_of_card_le
@@ -750,7 +750,7 @@ def ofRightInverseOfCardLE (hαβ : card α ≤ card β) (f : α → β) (g : β
 end Equiv
 
 @[simp]
-theorem Fintype.card_coe (s : Finset α) [Fintype s] : Fintype.card s = s.card :=
+lemma Fintype.card_coe (s : Finset α) [Fintype s] : Fintype.card s = s.card :=
   @Fintype.card_of_finset' _ _ _ (fun _ => Iff.rfl) (id _)
 #align fintype.card_coe Fintype.card_coe
 
@@ -765,10 +765,10 @@ noncomputable def Finset.equivFinOfCardEq {s : Finset α} {n : ℕ} (h : s.card 
   Fintype.equivFinOfCardEq ((Fintype.card_coe _).trans h)
 #align finset.equiv_fin_of_card_eq Finset.equivFinOfCardEq
 
-theorem Finset.card_eq_of_equiv_fin {s : Finset α} {n : ℕ} (i : s ≃ Fin n) : s.card = n :=
+lemma Finset.card_eq_of_equiv_fin {s : Finset α} {n : ℕ} (i : s ≃ Fin n) : s.card = n :=
   Fin.equiv_iff_eq.1 ⟨s.equivFin.symm.trans i⟩
 
-theorem Finset.card_eq_of_equiv_fintype {s : Finset α} [Fintype β] (i : s ≃ β) :
+lemma Finset.card_eq_of_equiv_fintype {s : Finset α} [Fintype β] (i : s ≃ β) :
     s.card = Fintype.card β := card_eq_of_equiv_fin <| i.trans <| Fintype.equivFin β
 
 /-- Noncomputable equivalence between two finsets `s` and `t` as fintypes when there is a proof
@@ -777,20 +777,20 @@ noncomputable def Finset.equivOfCardEq {s : Finset α} {t : Finset β} (h : s.ca
     s ≃ t := Fintype.equivOfCardEq ((Fintype.card_coe _).trans (h.trans (Fintype.card_coe _).symm))
 #align finset.equiv_of_card_eq Finset.equivOfCardEq
 
-theorem Finset.card_eq_of_equiv {s : Finset α} {t : Finset β} (i : s ≃ t) : s.card = t.card :=
+lemma Finset.card_eq_of_equiv {s : Finset α} {t : Finset β} (i : s ≃ t) : s.card = t.card :=
   (card_eq_of_equiv_fintype i).trans (Fintype.card_coe _)
 
 @[simp]
-theorem Fintype.card_prop : Fintype.card Prop = 2 :=
+lemma Fintype.card_prop : Fintype.card Prop = 2 :=
   rfl
 #align fintype.card_Prop Fintype.card_prop
 
-theorem set_fintype_card_le_univ [Fintype α] (s : Set α) [Fintype s] :
+lemma set_fintype_card_le_univ [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s ≤ Fintype.card α :=
   Fintype.card_le_of_embedding (Function.Embedding.subtype s)
 #align set_fintype_card_le_univ set_fintype_card_le_univ
 
-theorem set_fintype_card_eq_univ_iff [Fintype α] (s : Set α) [Fintype s] :
+lemma set_fintype_card_eq_univ_iff [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s = Fintype.card α ↔ s = Set.univ := by
   rw [← Set.toFinset_card, Finset.card_eq_iff_eq_univ, ← Set.toFinset_univ, Set.toFinset_inj]
 #align set_fintype_card_eq_univ_iff set_fintype_card_eq_univ_iff
@@ -803,7 +803,7 @@ noncomputable def equivOfFintypeSelfEmbedding [Finite α] (e : α ↪ α) : α �
 #align function.embedding.equiv_of_fintype_self_embedding Function.Embedding.equivOfFintypeSelfEmbedding
 
 @[simp]
-theorem equiv_of_fintype_self_embedding_to_embedding [Finite α] (e : α ↪ α) :
+lemma equiv_of_fintype_self_embedding_to_embedding [Finite α] (e : α ↪ α) :
     e.equivOfFintypeSelfEmbedding.toEmbedding = e := by
   ext
   rfl
@@ -829,16 +829,16 @@ def truncOfCardLE [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
       ea.toEmbedding.trans ((Fin.castLEEmb h).toEmbedding.trans eb.symm.toEmbedding)
 #align function.embedding.trunc_of_card_le Function.Embedding.truncOfCardLE
 
-theorem nonempty_of_card_le [Fintype α] [Fintype β] (h : Fintype.card α ≤ Fintype.card β) :
+lemma nonempty_of_card_le [Fintype α] [Fintype β] (h : Fintype.card α ≤ Fintype.card β) :
     Nonempty (α ↪ β) := by classical exact (truncOfCardLE h).nonempty
 #align function.embedding.nonempty_of_card_le Function.Embedding.nonempty_of_card_le
 
-theorem nonempty_iff_card_le [Fintype α] [Fintype β] :
+lemma nonempty_iff_card_le [Fintype α] [Fintype β] :
     Nonempty (α ↪ β) ↔ Fintype.card α ≤ Fintype.card β :=
   ⟨fun ⟨e⟩ => Fintype.card_le_of_embedding e, nonempty_of_card_le⟩
 #align function.embedding.nonempty_iff_card_le Function.Embedding.nonempty_iff_card_le
 
-theorem exists_of_card_le_finset [Fintype α] {s : Finset β} (h : Fintype.card α ≤ s.card) :
+lemma exists_of_card_le_finset [Fintype α] {s : Finset β} (h : Fintype.card α ≤ s.card) :
     ∃ f : α ↪ β, Set.range f ⊆ s := by
   rw [← Fintype.card_coe] at h
   rcases nonempty_of_card_le h with ⟨f⟩
@@ -848,13 +848,13 @@ theorem exists_of_card_le_finset [Fintype α] {s : Finset β} (h : Fintype.card 
 end Function.Embedding
 
 @[simp]
-theorem Finset.univ_map_embedding {α : Type*} [Fintype α] (e : α ↪ α) : univ.map e = univ := by
+lemma Finset.univ_map_embedding {α : Type*} [Fintype α] (e : α ↪ α) : univ.map e = univ := by
   rw [← e.equiv_of_fintype_self_embedding_to_embedding, univ_map_equiv_to_embedding]
 #align finset.univ_map_embedding Finset.univ_map_embedding
 
 namespace Fintype
 
-theorem card_lt_of_surjective_not_injective [Fintype α] [Fintype β] (f : α → β)
+lemma card_lt_of_surjective_not_injective [Fintype α] [Fintype β] (f : α → β)
     (h : Function.Surjective f) (h' : ¬Function.Injective f) : card β < card α :=
   card_lt_of_injective_not_surjective _ (Function.injective_surjInv h) fun hg =>
     have w : Function.Bijective (Function.surjInv h) := ⟨Function.injective_surjInv h, hg⟩
@@ -863,25 +863,25 @@ theorem card_lt_of_surjective_not_injective [Fintype α] [Fintype β] (f : α �
 
 end Fintype
 
-theorem Fintype.card_subtype_le [Fintype α] (p : α → Prop) [DecidablePred p] :
+lemma Fintype.card_subtype_le [Fintype α] (p : α → Prop) [DecidablePred p] :
     Fintype.card { x // p x } ≤ Fintype.card α :=
   Fintype.card_le_of_embedding (Function.Embedding.subtype _)
 #align fintype.card_subtype_le Fintype.card_subtype_le
 
-theorem Fintype.card_subtype_lt [Fintype α] {p : α → Prop} [DecidablePred p] {x : α} (hx : ¬p x) :
+lemma Fintype.card_subtype_lt [Fintype α] {p : α → Prop} [DecidablePred p] {x : α} (hx : ¬p x) :
     Fintype.card { x // p x } < Fintype.card α :=
   Fintype.card_lt_of_injective_of_not_mem (↑) Subtype.coe_injective <| by
     rwa [Subtype.range_coe_subtype]
 #align fintype.card_subtype_lt Fintype.card_subtype_lt
 
-theorem Fintype.card_subtype [Fintype α] (p : α → Prop) [DecidablePred p] :
+lemma Fintype.card_subtype [Fintype α] (p : α → Prop) [DecidablePred p] :
     Fintype.card { x // p x } = ((Finset.univ : Finset α).filter p).card := by
   refine' Fintype.card_of_subtype _ _
   simp
 #align fintype.card_subtype Fintype.card_subtype
 
 @[simp]
-theorem Fintype.card_subtype_compl [Fintype α] (p : α → Prop) [Fintype { x // p x }]
+lemma Fintype.card_subtype_compl [Fintype α] (p : α → Prop) [Fintype { x // p x }]
     [Fintype { x // ¬p x }] :
     Fintype.card { x // ¬p x } = Fintype.card α - Fintype.card { x // p x } := by
   classical
@@ -891,7 +891,7 @@ theorem Fintype.card_subtype_compl [Fintype α] (p : α → Prop) [Fintype { x /
       simp only [Set.mem_toFinset, Set.mem_compl_iff, Set.mem_setOf]
 #align fintype.card_subtype_compl Fintype.card_subtype_compl
 
-theorem Fintype.card_subtype_mono (p q : α → Prop) (h : p ≤ q) [Fintype { x // p x }]
+lemma Fintype.card_subtype_mono (p q : α → Prop) (h : p ≤ q) [Fintype { x // p x }]
     [Fintype { x // q x }] : Fintype.card { x // p x } ≤ Fintype.card { x // q x } :=
   Fintype.card_le_of_embedding (Subtype.impEmbedding _ _ h)
 #align fintype.card_subtype_mono Fintype.card_subtype_mono
@@ -905,18 +905,18 @@ theorem Fintype.card_compl_eq_card_compl [Finite α] (p q : α → Prop) [Fintyp
   simp only [Fintype.card_subtype_compl, h]
 #align fintype.card_compl_eq_card_compl Fintype.card_compl_eq_card_compl
 
-theorem Fintype.card_quotient_le [Fintype α] (s : Setoid α)
+lemma Fintype.card_quotient_le [Fintype α] (s : Setoid α)
     [DecidableRel ((· ≈ ·) : α → α → Prop)] : Fintype.card (Quotient s) ≤ Fintype.card α :=
   Fintype.card_le_of_surjective _ (surjective_quotient_mk' _)
 #align fintype.card_quotient_le Fintype.card_quotient_le
 
-theorem Fintype.card_quotient_lt [Fintype α] {s : Setoid α} [DecidableRel ((· ≈ ·) : α → α → Prop)]
+lemma Fintype.card_quotient_lt [Fintype α] {s : Setoid α} [DecidableRel ((· ≈ ·) : α → α → Prop)]
     {x y : α} (h1 : x ≠ y) (h2 : x ≈ y) : Fintype.card (Quotient s) < Fintype.card α :=
   Fintype.card_lt_of_surjective_not_injective _ (surjective_quotient_mk' _) fun w =>
     h1 (w <| Quotient.eq.mpr h2)
 #align fintype.card_quotient_lt Fintype.card_quotient_lt
 
-theorem univ_eq_singleton_of_card_one {α} [Fintype α] (x : α) (h : Fintype.card α = 1) :
+lemma univ_eq_singleton_of_card_one {α} [Fintype α] (x : α) (h : Fintype.card α = 1) :
     (univ : Finset α) = {x} := by
   symm
   apply eq_of_subset_of_card_le (subset_univ {x})
@@ -928,7 +928,7 @@ namespace Finite
 
 variable [Finite α]
 
-theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [IsIrrefl α r] :
+lemma wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [IsIrrefl α r] :
     WellFounded r := by
   classical
   cases nonempty_fintype α
@@ -963,12 +963,12 @@ instance (priority := 10) LinearOrder.isWellOrder_gt [LinearOrder α] : IsWellOr
 end Finite
 
 -- @[nolint fintype_finite] -- Porting note: do we need this?
-protected theorem Fintype.false [Infinite α] (_h : Fintype α) : False :=
+protected lemma Fintype.false [Infinite α] (_h : Fintype α) : False :=
   not_finite α
 #align fintype.false Fintype.false
 
 @[simp]
-theorem isEmpty_fintype {α : Type*} : IsEmpty (Fintype α) ↔ Infinite α :=
+lemma isEmpty_fintype {α : Type*} : IsEmpty (Fintype α) ↔ Infinite α :=
   ⟨fun ⟨h⟩ => ⟨fun h' => (@nonempty_fintype α h').elim h⟩, fun ⟨h⟩ => ⟨fun h' => h h'.finite⟩⟩
 #align is_empty_fintype isEmpty_fintype
 
@@ -991,7 +991,7 @@ noncomputable def fintypeOrInfinite (α : Type*) : PSum (Fintype α) (Infinite �
 
 end
 
-theorem Finset.exists_minimal {α : Type*} [Preorder α] (s : Finset α) (h : s.Nonempty) :
+lemma Finset.exists_minimal {α : Type*} [Preorder α] (s : Finset α) (h : s.Nonempty) :
     ∃ m ∈ s, ∀ x ∈ s, ¬x < m := by
   obtain ⟨c, hcs : c ∈ s⟩ := h
   have : WellFounded (@LT.lt { x // x ∈ s } _) := Finite.wellFounded_of_trans_of_irrefl _
@@ -999,14 +999,14 @@ theorem Finset.exists_minimal {α : Type*} [Preorder α] (s : Finset α) (h : s.
   exact ⟨m, hms, fun x hx hxm => H ⟨x, hx⟩ trivial hxm⟩
 #align finset.exists_minimal Finset.exists_minimal
 
-theorem Finset.exists_maximal {α : Type*} [Preorder α] (s : Finset α) (h : s.Nonempty) :
+lemma Finset.exists_maximal {α : Type*} [Preorder α] (s : Finset α) (h : s.Nonempty) :
     ∃ m ∈ s, ∀ x ∈ s, ¬m < x :=
   @Finset.exists_minimal αᵒᵈ _ s h
 #align finset.exists_maximal Finset.exists_maximal
 
 namespace Infinite
 
-theorem of_not_fintype (h : Fintype α → False) : Infinite α :=
+lemma of_not_fintype (h : Fintype α → False) : Infinite α :=
   isEmpty_fintype.mp ⟨h⟩
 #align infinite.of_not_fintype Infinite.of_not_fintype
 
@@ -1029,7 +1029,7 @@ theorem of_surjective_from_set {s : Set α} (hs : s ≠ Set.univ) {f : s → α}
   of_injective_to_set hs (injective_surjInv hf)
 #align infinite.of_surjective_from_set Infinite.of_surjective_from_set
 
-theorem exists_not_mem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
+lemma exists_not_mem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
   not_forall.1 fun h => Fintype.false ⟨s, h⟩
 #align infinite.exists_not_mem_finset Infinite.exists_not_mem_finset
 
@@ -1039,14 +1039,14 @@ instance (priority := 100) (α : Type*) [H : Infinite α] : Nontrivial α :=
     let ⟨y, hy⟩ := exists_not_mem_finset ({x} : Finset α)
     ⟨y, x, by simpa only [mem_singleton] using hy⟩⟩
 
-protected theorem nonempty (α : Type*) [Infinite α] : Nonempty α := by infer_instance
+protected lemma nonempty (α : Type*) [Infinite α] : Nonempty α := by infer_instance
 #align infinite.nonempty Infinite.nonempty
 
-theorem of_injective {α β} [Infinite β] (f : β → α) (hf : Injective f) : Infinite α :=
+lemma of_injective {α β} [Infinite β] (f : β → α) (hf : Injective f) : Infinite α :=
   ⟨fun _I => (Finite.of_injective f hf).false⟩
 #align infinite.of_injective Infinite.of_injective
 
-theorem of_surjective {α β} [Infinite β] (f : α → β) (hf : Surjective f) : Infinite α :=
+lemma of_surjective {α β} [Infinite β] (f : α → β) (hf : Surjective f) : Infinite α :=
   ⟨fun _I => (Finite.of_surjective f hf).false⟩
 #align infinite.of_surjective Infinite.of_surjective
 
@@ -1113,7 +1113,7 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
         ((Multiset.range n).pmap (fun m (hm : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
-private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
+private lemma natEmbeddingAux_injective (α : Type*) [Infinite α] :
     Function.Injective (natEmbeddingAux α) := by
   rintro m n h
   letI := Classical.decEq α
@@ -1165,7 +1165,7 @@ noncomputable def fintypeOfFinsetCardLe {ι : Type*} (n : ℕ) (w : ∀ s : Fins
   exact Nat.not_succ_le_self n w
 #align fintype_of_finset_card_le fintypeOfFinsetCardLe
 
-theorem not_injective_infinite_finite {α β} [Infinite α] [Finite β] (f : α → β) : ¬Injective f :=
+lemma not_injective_infinite_finite {α β} [Infinite α] [Finite β] (f : α → β) : ¬Injective f :=
   fun hf => (Finite.of_injective f hf).false
 #align not_injective_infinite_finite not_injective_infinite_finite
 
@@ -1203,7 +1203,7 @@ theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
     exact key.false
 #align finite.exists_infinite_fiber Finite.exists_infinite_fiber
 
-theorem not_surjective_finite_infinite {α β} [Finite α] [Infinite β] (f : α → β) : ¬Surjective f :=
+lemma not_surjective_finite_infinite {α β} [Finite α] [Infinite β] (f : α → β) : ¬Surjective f :=
   fun hf => (Infinite.of_surjective f hf).not_finite ‹_›
 #align not_surjective_finite_infinite not_surjective_finite_infinite
 

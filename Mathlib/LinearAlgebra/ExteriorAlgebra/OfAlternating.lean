@@ -65,7 +65,7 @@ def liftAlternating : (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R] ExteriorAlgebr
 #align exterior_algebra.lift_alternating ExteriorAlgebra.liftAlternating
 
 @[simp]
-theorem liftAlternating_ι (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M) :
+lemma liftAlternating_ι (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M) :
     liftAlternating (R := R) (M := M) (N := N) f (ι R m) = f 1 ![m] := by
   dsimp [liftAlternating]
   rw [foldl_ι, LinearMap.mk₂_apply, AlternatingMap.curryLeft_apply_apply]
@@ -76,7 +76,7 @@ theorem liftAlternating_ι (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M) :
   rw [Matrix.zero_empty]
 #align exterior_algebra.lift_alternating_ι ExteriorAlgebra.liftAlternating_ι
 
-theorem liftAlternating_ι_mul (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M)
+lemma liftAlternating_ι_mul (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M)
     (x : ExteriorAlgebra R M) :
     liftAlternating (R := R) (M := M) (N := N) f (ι R m * x) =
     liftAlternating (R := R) (M := M) (N := N) (fun i => (f i.succ).curryLeft m) x := by
@@ -86,21 +86,21 @@ theorem liftAlternating_ι_mul (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M)
 #align exterior_algebra.lift_alternating_ι_mul ExteriorAlgebra.liftAlternating_ι_mul
 
 @[simp]
-theorem liftAlternating_one (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) :
+lemma liftAlternating_one (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) :
     liftAlternating (R := R) (M := M) (N := N) f (1 : ExteriorAlgebra R M) = f 0 0 := by
   dsimp [liftAlternating]
   rw [foldl_one]
 #align exterior_algebra.lift_alternating_one ExteriorAlgebra.liftAlternating_one
 
 @[simp]
-theorem liftAlternating_algebraMap (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (r : R) :
+lemma liftAlternating_algebraMap (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (r : R) :
     liftAlternating (R := R) (M := M) (N := N) f (algebraMap _ (ExteriorAlgebra R M) r) =
     r • f 0 0 := by
   rw [Algebra.algebraMap_eq_smul_one, map_smul, liftAlternating_one]
 #align exterior_algebra.lift_alternating_algebra_map ExteriorAlgebra.liftAlternating_algebraMap
 
 @[simp]
-theorem liftAlternating_apply_ιMulti {n : ℕ} (f : ∀ i, M [⋀^Fin i]→ₗ[R] N)
+lemma liftAlternating_apply_ιMulti {n : ℕ} (f : ∀ i, M [⋀^Fin i]→ₗ[R] N)
     (v : Fin n → M) : liftAlternating (R := R) (M := M) (N := N) f (ιMulti R n v) = f n v := by
   rw [ιMulti_apply]
   -- Porting note: `v` is generalized automatically so it was removed from the next line
@@ -116,13 +116,13 @@ theorem liftAlternating_apply_ιMulti {n : ℕ} (f : ∀ i, M [⋀^Fin i]→ₗ[
 #align exterior_algebra.lift_alternating_apply_ι_multi ExteriorAlgebra.liftAlternating_apply_ιMulti
 
 @[simp]
-theorem liftAlternating_comp_ιMulti {n : ℕ} (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) :
+lemma liftAlternating_comp_ιMulti {n : ℕ} (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) :
     (liftAlternating (R := R) (M := M) (N := N) f).compAlternatingMap (ιMulti R n) = f n :=
   AlternatingMap.ext <| liftAlternating_apply_ιMulti f
 #align exterior_algebra.lift_alternating_comp_ι_multi ExteriorAlgebra.liftAlternating_comp_ιMulti
 
 @[simp]
-theorem liftAlternating_comp (g : N →ₗ[R] N') (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) :
+lemma liftAlternating_comp (g : N →ₗ[R] N') (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) :
     (liftAlternating (R := R) (M := M) (N := N') fun i => g.compAlternatingMap (f i)) =
     g ∘ₗ liftAlternating (R := R) (M := M) (N := N) f := by
   ext v
@@ -136,7 +136,7 @@ theorem liftAlternating_comp (g : N →ₗ[R] N') (f : ∀ i, M [⋀^Fin i]→�
 #align exterior_algebra.lift_alternating_comp ExteriorAlgebra.liftAlternating_comp
 
 @[simp]
-theorem liftAlternating_ιMulti :
+lemma liftAlternating_ιMulti :
     liftAlternating (R := R) (M := M) (N := ExteriorAlgebra R M) (ιMulti R) =
     (LinearMap.id : ExteriorAlgebra R M →ₗ[R] ExteriorAlgebra R M) := by
   ext v

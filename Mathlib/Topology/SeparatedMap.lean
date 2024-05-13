@@ -38,7 +38,7 @@ open scoped Topology
 
 variable {X Y A} [TopologicalSpace X] [TopologicalSpace A]
 
-theorem embedding_toPullbackDiag (f : X → Y) : Embedding (toPullbackDiag f) :=
+lemma embedding_toPullbackDiag (f : X → Y) : Embedding (toPullbackDiag f) :=
   Embedding.mk' _ (injective_toPullbackDiag f) fun x ↦ by
     rw [toPullbackDiag, nhds_induced, Filter.comap_comap, nhds_prod_eq, Filter.comap_prod]
     erw [Filter.comap_id, inf_idem]
@@ -86,12 +86,12 @@ theorem isSeparatedMap_iff_isClosed_diagonal {f : X → Y} :
   · obtain ⟨s₁, h₁, s₂, h₂, s_sub⟩ := mem_prod_iff.mp ht
     exact ⟨s₁, h₁, s₂, h₂, disjoint_left.2 fun x h₁ h₂ ↦ @t_sub ⟨(x, x), rfl⟩ (s_sub ⟨h₁, h₂⟩) rfl⟩
 
-theorem isSeparatedMap_iff_closedEmbedding {f : X → Y} :
+lemma isSeparatedMap_iff_closedEmbedding {f : X → Y} :
     IsSeparatedMap f ↔ ClosedEmbedding (toPullbackDiag f) := by
   rw [isSeparatedMap_iff_isClosed_diagonal, ← range_toPullbackDiag]
   exact ⟨fun h ↦ ⟨embedding_toPullbackDiag f, h⟩, fun h ↦ h.isClosed_range⟩
 
-theorem isSeparatedMap_iff_isClosedMap {f : X → Y} :
+lemma isSeparatedMap_iff_isClosedMap {f : X → Y} :
     IsSeparatedMap f ↔ IsClosedMap (toPullbackDiag f) :=
   isSeparatedMap_iff_closedEmbedding.trans
     ⟨ClosedEmbedding.isClosedMap, closedEmbedding_of_continuous_injective_closed
@@ -105,10 +105,10 @@ theorem IsSeparatedMap.pullback {f : X → Y} (sep : IsSeparatedMap f) (g : A �
   refine sep.preimage (Continuous.mapPullback ?_ ?_) <;>
   apply_rules [continuous_fst, continuous_subtype_val, Continuous.comp]
 
-theorem IsSeparatedMap.comp_left {f : X → Y} (sep : IsSeparatedMap f) {g : Y → A}
+lemma IsSeparatedMap.comp_left {f : X → Y} (sep : IsSeparatedMap f) {g : Y → A}
     (inj : g.Injective) : IsSeparatedMap (g ∘ f) := fun x₁ x₂ he ↦ sep x₁ x₂ (inj he)
 
-theorem IsSeparatedMap.comp_right {f : X → Y} (sep : IsSeparatedMap f) {g : A → X}
+lemma IsSeparatedMap.comp_right {f : X → Y} (sep : IsSeparatedMap f) {g : A → X}
     (cont : Continuous g) (inj : g.Injective) : IsSeparatedMap (f ∘ g) := by
   rw [isSeparatedMap_iff_isClosed_diagonal] at sep ⊢
   rw [← inj.preimage_pullbackDiagonal]
@@ -128,7 +128,7 @@ lemma isLocallyInjective_iff_nhds {f : X → Y} :
   · obtain ⟨U, hn, hi⟩ := h x
     exact ⟨interior U, isOpen_interior, mem_interior_iff_mem_nhds.mpr hn, hi.mono interior_subset⟩
 
-theorem isLocallyInjective_iff_isOpen_diagonal {f : X → Y} :
+lemma isLocallyInjective_iff_isOpen_diagonal {f : X → Y} :
     IsLocallyInjective f ↔ IsOpen f.pullbackDiagonal := by
   simp_rw [isLocallyInjective_iff_nhds, isOpen_iff_mem_nhds,
     Subtype.forall, Prod.forall, nhds_induced, nhds_prod_eq, Filter.mem_comap]
@@ -141,29 +141,29 @@ theorem isLocallyInjective_iff_isOpen_diagonal {f : X → Y} :
     exact ⟨t₁ ∩ t₂, Filter.inter_mem h₁ h₂,
       fun x₁ h₁ x₂ h₂ he ↦ @t_sub ⟨(x₁, x₂), he⟩ (prod_sub ⟨h₁.1, h₂.2⟩)⟩
 
-theorem IsLocallyInjective_iff_openEmbedding {f : X → Y} :
+lemma IsLocallyInjective_iff_openEmbedding {f : X → Y} :
     IsLocallyInjective f ↔ OpenEmbedding (toPullbackDiag f) := by
   rw [isLocallyInjective_iff_isOpen_diagonal, ← range_toPullbackDiag]
   exact ⟨fun h ↦ ⟨embedding_toPullbackDiag f, h⟩, fun h ↦ h.isOpen_range⟩
 
-theorem isLocallyInjective_iff_isOpenMap {f : X → Y} :
+lemma isLocallyInjective_iff_isOpenMap {f : X → Y} :
     IsLocallyInjective f ↔ IsOpenMap (toPullbackDiag f) :=
   IsLocallyInjective_iff_openEmbedding.trans
     ⟨OpenEmbedding.isOpenMap, openEmbedding_of_continuous_injective_open
       (embedding_toPullbackDiag f).continuous (injective_toPullbackDiag f)⟩
 
-theorem discreteTopology_iff_locallyInjective (y : Y) :
+lemma discreteTopology_iff_locallyInjective (y : Y) :
     DiscreteTopology X ↔ IsLocallyInjective fun _ : X ↦ y := by
   rw [discreteTopology_iff_singleton_mem_nhds, isLocallyInjective_iff_nhds]
   refine forall_congr' fun x ↦ ⟨fun h ↦ ⟨{x}, h, Set.injOn_singleton _ _⟩, fun ⟨U, hU, inj⟩ ↦ ?_⟩
   convert hU; ext x'; refine ⟨?_, fun h ↦ inj h (mem_of_mem_nhds hU) rfl⟩
   rintro rfl; exact mem_of_mem_nhds hU
 
-theorem IsLocallyInjective.comp_left {f : X → Y} (hf : IsLocallyInjective f) {g : Y → A}
+lemma IsLocallyInjective.comp_left {f : X → Y} (hf : IsLocallyInjective f) {g : Y → A}
     (hg : g.Injective) : IsLocallyInjective (g ∘ f) :=
   fun x ↦ let ⟨U, hU, hx, inj⟩ := hf x; ⟨U, hU, hx, hg.comp_injOn inj⟩
 
-theorem IsLocallyInjective.comp_right {f : X → Y} (hf : IsLocallyInjective f) {g : A → X}
+lemma IsLocallyInjective.comp_right {f : X → Y} (hf : IsLocallyInjective f) {g : A → X}
     (cont : Continuous g) (hg : g.Injective) : IsLocallyInjective (f ∘ g) := by
   rw [isLocallyInjective_iff_isOpen_diagonal] at hf ⊢
   rw [← hg.preimage_pullbackDiagonal]
@@ -174,11 +174,11 @@ section eqLocus
 variable {f : X → Y} (sep : IsSeparatedMap f) (inj : IsLocallyInjective f)
   {g₁ g₂ : A → X} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
 
-theorem IsSeparatedMap.isClosed_eqLocus (he : f ∘ g₁ = f ∘ g₂) : IsClosed {a | g₁ a = g₂ a} :=
+lemma IsSeparatedMap.isClosed_eqLocus (he : f ∘ g₁ = f ∘ g₂) : IsClosed {a | g₁ a = g₂ a} :=
   let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩
   (isSeparatedMap_iff_isClosed_diagonal.mp sep).preimage (by continuity : Continuous g)
 
-theorem IsLocallyInjective.isOpen_eqLocus (he : f ∘ g₁ = f ∘ g₂) : IsOpen {a | g₁ a = g₂ a} :=
+lemma IsLocallyInjective.isOpen_eqLocus (he : f ∘ g₁ = f ∘ g₂) : IsOpen {a | g₁ a = g₂ a} :=
   let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩
   (isLocallyInjective_iff_isOpen_diagonal.mp inj).preimage (by continuity : Continuous g)
 
@@ -198,18 +198,18 @@ theorem eq_of_comp_eq [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Con
   apply (IsClopen.eq_univ ⟨sep.isClosed_eqLocus h₁ h₂ he, inj.isOpen_eqLocus h₁ h₂ he⟩ ⟨a, ha⟩).symm
     ▸ Set.mem_univ a'
 
-theorem eqOn_of_comp_eqOn (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
+lemma eqOn_of_comp_eqOn (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
     (he : s.EqOn (p ∘ g₁) (p ∘ g₂)) {a : A} (has : a ∈ s) (ha : g₁ a = g₂ a) : s.EqOn g₁ g₂ := by
   rw [← Set.restrict_eq_restrict_iff] at he ⊢
   rw [continuousOn_iff_continuous_restrict] at h₁ h₂
   rw [isPreconnected_iff_preconnectedSpace] at hs
   exact sep.eq_of_comp_eq inj h₁ h₂ he ⟨a, has⟩ ha
 
-theorem const_of_comp [PreconnectedSpace A] (cont : Continuous g)
+lemma const_of_comp [PreconnectedSpace A] (cont : Continuous g)
     (he : ∀ a a', p (g a) = p (g a')) (a a') : g a = g a' :=
   congr_fun (sep.eq_of_comp_eq inj cont continuous_const (funext fun a ↦ he a a') a' rfl) a
 
-theorem constOn_of_comp (cont : ContinuousOn g s)
+lemma constOn_of_comp (cont : ContinuousOn g s)
     (he : ∀ a ∈ s, ∀ a' ∈ s, p (g a) = p (g a'))
     {a a'} (ha : a ∈ s) (ha' : a' ∈ s) : g a = g a' :=
   sep.eqOn_of_comp_eqOn inj hs cont continuous_const.continuousOn

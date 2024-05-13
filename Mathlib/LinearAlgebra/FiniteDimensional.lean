@@ -119,7 +119,7 @@ noncomputable def fintypeOfFintype [Fintype K] [FiniteDimensional K V] : Fintype
   Module.fintypeOfFintype (@finsetBasis K V _ _ _ (iff_fg.2 inferInstance))
 #align finite_dimensional.fintype_of_fintype FiniteDimensional.fintypeOfFintype
 
-theorem finite_of_finite [Finite K] [FiniteDimensional K V] : Finite V := by
+lemma finite_of_finite [Finite K] [FiniteDimensional K V] : Finite V := by
   cases nonempty_fintype K
   haveI := fintypeOfFintype K V
   infer_instance
@@ -179,15 +179,15 @@ theorem finrank_eq_rank' [FiniteDimensional K V] : (finrank K V : Cardinal.{v}) 
 
 variable {K V}
 
-theorem finrank_of_infinite_dimensional (h : ¬FiniteDimensional K V) : finrank K V = 0 :=
+lemma finrank_of_infinite_dimensional (h : ¬FiniteDimensional K V) : finrank K V = 0 :=
   FiniteDimensional.finrank_of_not_finite h
 #align finite_dimensional.finrank_of_infinite_dimensional FiniteDimensional.finrank_of_infinite_dimensional
 
-theorem of_finrank_pos (h : 0 < finrank K V) : FiniteDimensional K V :=
+lemma of_finrank_pos (h : 0 < finrank K V) : FiniteDimensional K V :=
   Module.finite_of_finrank_pos h
 #align finite_dimensional.finite_dimensional_of_finrank FiniteDimensional.of_finrank_pos
 
-theorem of_finrank_eq_succ {n : ℕ} (hn : finrank K V = n.succ) :
+lemma of_finrank_eq_succ {n : ℕ} (hn : finrank K V = n.succ) :
     FiniteDimensional K V :=
   Module.finite_of_finrank_eq_succ hn
 #align finite_dimensional.finite_dimensional_of_finrank_eq_succ FiniteDimensional.of_finrank_eq_succ
@@ -199,7 +199,7 @@ theorem of_fact_finrank_eq_succ (n : ℕ) [hn : Fact (finrank K V = n + 1)] :
   of_finrank_eq_succ hn.out
 #align finite_dimensional.fact_finite_dimensional_of_finrank_eq_succ FiniteDimensional.of_fact_finrank_eq_succ
 
-theorem finiteDimensional_iff_of_rank_eq_nsmul {W} [AddCommGroup W] [Module K W] {n : ℕ}
+lemma finiteDimensional_iff_of_rank_eq_nsmul {W} [AddCommGroup W] [Module K W] {n : ℕ}
     (hn : n ≠ 0) (hVW : Module.rank K V = n • Module.rank K W) :
     FiniteDimensional K V ↔ FiniteDimensional K W :=
   Module.finite_iff_of_rank_eq_nsmul hn hVW
@@ -212,7 +212,7 @@ theorem finrank_eq_card_basis' [FiniteDimensional K V] {ι : Type w} (h : Basis 
   Module.mk_finrank_eq_card_basis h
 #align finite_dimensional.finrank_eq_card_basis' FiniteDimensional.finrank_eq_card_basis'
 
-theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [FiniteDimensional K V]
+lemma _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [FiniteDimensional K V]
     {v : ι → V} (h : LinearIndependent K v) : #ι < ℵ₀ :=
   h.lt_aleph0_of_finite
 #align finite_dimensional.lt_aleph_0_of_linear_independent LinearIndependent.lt_aleph0_of_finiteDimensional
@@ -330,14 +330,14 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
 #align finite_dimensional.basis_singleton FiniteDimensional.basisSingleton
 
 @[simp]
-theorem basisSingleton_apply (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V) (hv : v ≠ 0)
+lemma basisSingleton_apply (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V) (hv : v ≠ 0)
     (i : ι) : basisSingleton ι h v hv i = v := by
   cases Unique.uniq ‹Unique ι› i
   simp [basisSingleton]
 #align finite_dimensional.basis_singleton_apply FiniteDimensional.basisSingleton_apply
 
 @[simp]
-theorem range_basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V) (hv : v ≠ 0) :
+lemma range_basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V) (hv : v ≠ 0) :
     Set.range (basisSingleton ι h v hv) = {v} := by rw [Set.range_unique, basisSingleton_apply]
 #align finite_dimensional.range_basis_singleton FiniteDimensional.range_basisSingleton
 
@@ -348,7 +348,7 @@ section Tower
 variable (F K A : Type*) [DivisionRing F] [DivisionRing K] [AddCommGroup A]
 variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
 
-theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional F A :=
+lemma trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional F A :=
   Module.Finite.trans K A
 #align finite_dimensional.trans FiniteDimensional.trans
 
@@ -362,7 +362,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 open FiniteDimensional
 
-theorem FiniteDimensional.of_rank_eq_nat {n : ℕ} (h : Module.rank K V = n) :
+lemma FiniteDimensional.of_rank_eq_nat {n : ℕ} (h : Module.rank K V = n) :
     FiniteDimensional K V :=
   Module.finite_of_rank_eq_nat h
 #align finite_dimensional_of_rank_eq_nat FiniteDimensional.of_rank_eq_nat
@@ -370,14 +370,14 @@ theorem FiniteDimensional.of_rank_eq_nat {n : ℕ} (h : Module.rank K V = n) :
 @[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_rank_eq_nat := FiniteDimensional.of_rank_eq_nat
 
-theorem FiniteDimensional.of_rank_eq_zero (h : Module.rank K V = 0) : FiniteDimensional K V :=
+lemma FiniteDimensional.of_rank_eq_zero (h : Module.rank K V = 0) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_zero h
 #align finite_dimensional_of_rank_eq_zero FiniteDimensional.of_rank_eq_zero
 
 @[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_rank_eq_zero := FiniteDimensional.of_rank_eq_zero
 
-theorem FiniteDimensional.of_rank_eq_one (h : Module.rank K V = 1) : FiniteDimensional K V :=
+lemma FiniteDimensional.of_rank_eq_one (h : Module.rank K V = 1) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_one h
 #align finite_dimensional_of_rank_eq_one FiniteDimensional.of_rank_eq_one
 
@@ -490,13 +490,13 @@ theorem finrank_sup_add_finrank_inf_eq (s t : Submodule K V) [FiniteDimensional 
   norm_cast at key
 #align submodule.finrank_sup_add_finrank_inf_eq Submodule.finrank_sup_add_finrank_inf_eq
 
-theorem finrank_add_le_finrank_add_finrank (s t : Submodule K V) [FiniteDimensional K s]
+lemma finrank_add_le_finrank_add_finrank (s t : Submodule K V) [FiniteDimensional K s]
     [FiniteDimensional K t] : finrank K (s ⊔ t : Submodule K V) ≤ finrank K s + finrank K t := by
   rw [← finrank_sup_add_finrank_inf_eq]
   exact self_le_add_right _ _
 #align submodule.finrank_add_le_finrank_add_finrank Submodule.finrank_add_le_finrank_add_finrank
 
-theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
+lemma eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
     (hdim : finrank K s + finrank K t = finrank K V) (hdisjoint : Disjoint s t) : s ⊔ t = ⊤ := by
   have h_finrank_inf : finrank K ↑(s ⊓ t) = 0 := by
     rw [disjoint_iff_inf_le, le_bot_iff] at hdisjoint
@@ -508,7 +508,7 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
   rfl
 #align submodule.eq_top_of_disjoint Submodule.eq_top_of_disjoint
 
-theorem finrank_add_finrank_le_of_disjoint [FiniteDimensional K V]
+lemma finrank_add_finrank_le_of_disjoint [FiniteDimensional K V]
     {s t : Submodule K V} (hdisjoint : Disjoint s t) :
     finrank K s + finrank K t ≤ finrank K V := by
   rw [← Submodule.finrank_sup_add_finrank_inf_eq s t, hdisjoint.eq_bot, finrank_bot, add_zero]
@@ -661,7 +661,7 @@ lemma injOn_iff_surjOn {p : Submodule K V} [FiniteDimensional K p]
   change Injective (f.domRestrict p) ↔ Surjective (f.restrict h)
   simp [disjoint_iff, ← injective_iff_surjective]
 
-theorem ker_eq_bot_iff_range_eq_top [FiniteDimensional K V] {f : V →ₗ[K] V} :
+lemma ker_eq_bot_iff_range_eq_top [FiniteDimensional K V] {f : V →ₗ[K] V} :
     LinearMap.ker f = ⊥ ↔ LinearMap.range f = ⊤ := by
   rw [range_eq_top, ker_eq_bot, injective_iff_surjective]
 #align linear_map.ker_eq_bot_iff_range_eq_top LinearMap.ker_eq_bot_iff_range_eq_top
@@ -698,7 +698,7 @@ theorem finrank_range_add_finrank_ker [FiniteDimensional K V] (f : V →ₗ[K] V
   exact Submodule.finrank_quotient_add_finrank _
 #align linear_map.finrank_range_add_finrank_ker LinearMap.finrank_range_add_finrank_ker
 
-theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p] {f : V →ₗ[K] V}
+lemma comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p] {f : V →ₗ[K] V}
     (h : ∀ x ∈ p, f x ∈ p) (h' : Disjoint p (ker f)) :
     p.comap f = p ⊔ ker f := by
   refine le_antisymm (fun x hx ↦ ?_) (sup_le_iff.mpr ⟨h, ker_le_comap _⟩)
@@ -707,14 +707,14 @@ theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p]
   replace hxy : f y = f x := by simpa [Subtype.ext_iff] using hxy
   exact Submodule.mem_sup.mpr ⟨y, hy, x - y, by simp [hxy], add_sub_cancel y x⟩
 
-theorem ker_comp_eq_of_commute_of_disjoint_ker [FiniteDimensional K V] {f g : V →ₗ[K] V}
+lemma ker_comp_eq_of_commute_of_disjoint_ker [FiniteDimensional K V] {f g : V →ₗ[K] V}
     (h : Commute f g) (h' : Disjoint (ker f) (ker g)) :
     ker (f ∘ₗ g) = ker f ⊔ ker g := by
   suffices ∀ x, f x = 0 → f (g x) = 0 by rw [ker_comp, comap_eq_sup_ker_of_disjoint _ h']; simpa
   intro x hx
   rw [← comp_apply, ← mul_eq_comp, h.eq, mul_apply, hx, _root_.map_zero]
 
-theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} {f : ι → V →ₗ[K] V}
+lemma ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} {f : ι → V →ₗ[K] V}
     (s : Finset ι) (comm) (h : s.SupIndep fun i ↦ ker (f i)) :
     ker (s.noncommProd f comm) = ⨆ i ∈ s, ker (f i) := by
   classical
@@ -748,19 +748,19 @@ noncomputable def ofInjectiveEndo (f : V →ₗ[K] V) (h_inj : Injective f) : V 
 #align linear_equiv.of_injective_endo LinearEquiv.ofInjectiveEndo
 
 @[simp]
-theorem coe_ofInjectiveEndo (f : V →ₗ[K] V) (h_inj : Injective f) :
+lemma coe_ofInjectiveEndo (f : V →ₗ[K] V) (h_inj : Injective f) :
     ⇑(ofInjectiveEndo f h_inj) = f :=
   rfl
 #align linear_equiv.coe_of_injective_endo LinearEquiv.coe_ofInjectiveEndo
 
 @[simp]
-theorem ofInjectiveEndo_right_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
+lemma ofInjectiveEndo_right_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
     f * (ofInjectiveEndo f h_inj).symm = 1 :=
   LinearMap.ext <| (ofInjectiveEndo f h_inj).apply_symm_apply
 #align linear_equiv.of_injective_endo_right_inv LinearEquiv.ofInjectiveEndo_right_inv
 
 @[simp]
-theorem ofInjectiveEndo_left_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
+lemma ofInjectiveEndo_left_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
     ((ofInjectiveEndo f h_inj).symm : V →ₗ[K] V) * f = 1 :=
   LinearMap.ext <| (ofInjectiveEndo f h_inj).symm_apply_apply
 #align linear_equiv.of_injective_endo_left_inv LinearEquiv.ofInjectiveEndo_left_inv
@@ -771,7 +771,7 @@ namespace LinearMap
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
-theorem isUnit_iff_ker_eq_bot [FiniteDimensional K V] (f : V →ₗ[K] V) :
+lemma isUnit_iff_ker_eq_bot [FiniteDimensional K V] (f : V →ₗ[K] V) :
     IsUnit f ↔ (LinearMap.ker f) = ⊥ := by
   constructor
   · rintro ⟨u, rfl⟩
@@ -783,7 +783,7 @@ theorem isUnit_iff_ker_eq_bot [FiniteDimensional K V] (f : V →ₗ[K] V) :
       rfl⟩
 #align linear_map.is_unit_iff_ker_eq_bot LinearMap.isUnit_iff_ker_eq_bot
 
-theorem isUnit_iff_range_eq_top [FiniteDimensional K V] (f : V →ₗ[K] V) :
+lemma isUnit_iff_range_eq_top [FiniteDimensional K V] (f : V →ₗ[K] V) :
     IsUnit f ↔ (LinearMap.range f) = ⊤ :=
   by rw [isUnit_iff_ker_eq_bot, ker_eq_bot_iff_range_eq_top]
 #align linear_map.is_unit_iff_range_eq_top LinearMap.isUnit_iff_range_eq_top
@@ -796,7 +796,7 @@ section
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
-theorem finrank_zero_iff_forall_zero [FiniteDimensional K V] : finrank K V = 0 ↔ ∀ x : V, x = 0 :=
+lemma finrank_zero_iff_forall_zero [FiniteDimensional K V] : finrank K V = 0 ↔ ∀ x : V, x = 0 :=
   FiniteDimensional.finrank_zero_iff.trans (subsingleton_iff_forall_eq 0)
 #align finrank_zero_iff_forall_zero finrank_zero_iff_forall_zero
 
@@ -814,7 +814,7 @@ namespace LinearMap
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
-theorem injective_iff_surjective_of_finrank_eq_finrank [FiniteDimensional K V]
+lemma injective_iff_surjective_of_finrank_eq_finrank [FiniteDimensional K V]
     [FiniteDimensional K V₂] (H : finrank K V = finrank K V₂) {f : V →ₗ[K] V₂} :
     Function.Injective f ↔ Function.Surjective f := by
   have := finrank_range_add_finrank_ker f
@@ -825,7 +825,7 @@ theorem injective_iff_surjective_of_finrank_eq_finrank [FiniteDimensional K V]
     exact Submodule.finrank_eq_zero.1 (add_right_injective _ this)
 #align linear_map.injective_iff_surjective_of_finrank_eq_finrank LinearMap.injective_iff_surjective_of_finrank_eq_finrank
 
-theorem ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank [FiniteDimensional K V]
+lemma ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank [FiniteDimensional K V]
     [FiniteDimensional K V₂] (H : finrank K V = finrank K V₂) {f : V →ₗ[K] V₂} :
     LinearMap.ker f = ⊥ ↔ LinearMap.range f = ⊤ := by
   rw [range_eq_top, ker_eq_bot, injective_iff_surjective_of_finrank_eq_finrank H]
@@ -841,7 +841,7 @@ noncomputable def linearEquivOfInjective [FiniteDimensional K V] [FiniteDimensio
 #align linear_map.linear_equiv_of_injective LinearMap.linearEquivOfInjective
 
 @[simp]
-theorem linearEquivOfInjective_apply [FiniteDimensional K V] [FiniteDimensional K V₂]
+lemma linearEquivOfInjective_apply [FiniteDimensional K V] [FiniteDimensional K V₂]
     {f : V →ₗ[K] V₂} (hf : Injective f) (hdim : finrank K V = finrank K V₂) (x : V) :
     f.linearEquivOfInjective hf hdim x = f x :=
   rfl
@@ -887,21 +887,21 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
-theorem finrank_mono [FiniteDimensional K V] : Monotone fun s : Submodule K V => finrank K s :=
+lemma finrank_mono [FiniteDimensional K V] : Monotone fun s : Submodule K V => finrank K s :=
   fun _ _ => finrank_le_finrank_of_le
 #align submodule.finrank_mono Submodule.finrank_mono
 
-theorem finrank_lt_finrank_of_lt {s t : Submodule K V} [FiniteDimensional K t] (hst : s < t) :
+lemma finrank_lt_finrank_of_lt {s t : Submodule K V} [FiniteDimensional K t] (hst : s < t) :
     finrank K s < finrank K t :=
   (comapSubtypeEquivOfLe hst.le).finrank_eq.symm.trans_lt <|
     finrank_lt (le_top.lt_of_ne <| hst.not_le ∘ comap_subtype_eq_top.1)
 #align submodule.finrank_lt_finrank_of_lt Submodule.finrank_lt_finrank_of_lt
 
-theorem finrank_strictMono [FiniteDimensional K V] :
+lemma finrank_strictMono [FiniteDimensional K V] :
     StrictMono fun s : Submodule K V => finrank K s := fun _ _ => finrank_lt_finrank_of_lt
 #align submodule.finrank_strict_mono Submodule.finrank_strictMono
 
-theorem finrank_add_eq_of_isCompl [FiniteDimensional K V] {U W : Submodule K V} (h : IsCompl U W) :
+lemma finrank_add_eq_of_isCompl [FiniteDimensional K V] {U W : Submodule K V} (h : IsCompl U W) :
     finrank K U + finrank K W = finrank K V := by
   rw [← finrank_sup_add_finrank_inf_eq, h.codisjoint.eq_top, h.disjoint.eq_bot, finrank_bot,
     add_zero]
@@ -920,7 +920,7 @@ section Span
 
 open Submodule
 
-theorem finrank_span_singleton {v : V} (hv : v ≠ 0) : finrank K (K ∙ v) = 1 := by
+lemma finrank_span_singleton {v : V} (hv : v ≠ 0) : finrank K (K ∙ v) = 1 := by
   apply le_antisymm
   · exact finrank_span_le_card ({v} : Set V)
   · rw [Nat.succ_le_iff, finrank_pos_iff]
@@ -940,7 +940,7 @@ lemma exists_smul_eq_of_finrank_eq_one
   have : y ∈ Submodule.span K {x} := by rw [this]; exact mem_top
   exact mem_span_singleton.1 this
 
-theorem Set.finrank_mono [FiniteDimensional K V] {s t : Set V} (h : s ⊆ t) :
+lemma Set.finrank_mono [FiniteDimensional K V] {s t : Set V} (h : s ⊆ t) :
     s.finrank K ≤ t.finrank K :=
   Submodule.finrank_mono (span_mono h)
 #align set.finrank_mono Set.finrank_mono
@@ -949,14 +949,14 @@ end Span
 
 section Basis
 
-theorem LinearIndependent.span_eq_top_of_card_eq_finrank' {ι : Type*}
+lemma LinearIndependent.span_eq_top_of_card_eq_finrank' {ι : Type*}
     [Fintype ι] [FiniteDimensional K V] {b : ι → V} (lin_ind : LinearIndependent K b)
     (card_eq : Fintype.card ι = finrank K V) : span K (Set.range b) = ⊤ := by
   by_contra ne_top
   rw [← finrank_span_eq_card lin_ind] at card_eq
   exact ne_of_lt (Submodule.finrank_lt <| lt_top_iff_ne_top.2 ne_top) card_eq
 
-theorem LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty ι]
+lemma LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty ι]
     [Fintype ι] {b : ι → V} (lin_ind : LinearIndependent K b)
     (card_eq : Fintype.card ι = finrank K V) : span K (Set.range b) = ⊤ :=
   have : FiniteDimensional K V := .of_finrank_pos <| card_eq ▸ Fintype.card_pos
@@ -976,7 +976,7 @@ noncomputable def basisOfLinearIndependentOfCardEqFinrank {ι : Type*} [Nonempty
 #align basis_of_linear_independent_of_card_eq_finrank basisOfLinearIndependentOfCardEqFinrank
 
 @[simp]
-theorem coe_basisOfLinearIndependentOfCardEqFinrank {ι : Type*} [Nonempty ι] [Fintype ι]
+lemma coe_basisOfLinearIndependentOfCardEqFinrank {ι : Type*} [Nonempty ι] [Fintype ι]
     {b : ι → V} (lin_ind : LinearIndependent K b) (card_eq : Fintype.card ι = finrank K V) :
     ⇑(basisOfLinearIndependentOfCardEqFinrank lin_ind card_eq) = b :=
   Basis.coe_mk _ _
@@ -991,7 +991,7 @@ noncomputable def finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (
 #align finset_basis_of_linear_independent_of_card_eq_finrank finsetBasisOfLinearIndependentOfCardEqFinrank
 
 @[simp]
-theorem coe_finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (hs : s.Nonempty)
+lemma coe_finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (hs : s.Nonempty)
     (lin_ind : LinearIndependent K ((↑) : s → V)) (card_eq : s.card = finrank K V) :
     ⇑(finsetBasisOfLinearIndependentOfCardEqFinrank hs lin_ind card_eq) = ((↑) : s → V) := by
   -- Porting note: added to make the next line unify the `_`s
@@ -1008,7 +1008,7 @@ noncomputable def setBasisOfLinearIndependentOfCardEqFinrank {s : Set V} [Nonemp
 #align set_basis_of_linear_independent_of_card_eq_finrank setBasisOfLinearIndependentOfCardEqFinrank
 
 @[simp]
-theorem coe_setBasisOfLinearIndependentOfCardEqFinrank {s : Set V} [Nonempty s] [Fintype s]
+lemma coe_setBasisOfLinearIndependentOfCardEqFinrank {s : Set V} [Nonempty s] [Fintype s]
     (lin_ind : LinearIndependent K ((↑) : s → V)) (card_eq : s.toFinset.card = finrank K V) :
     ⇑(setBasisOfLinearIndependentOfCardEqFinrank lin_ind card_eq) = ((↑) : s → V) := by
   -- Porting note: added to make the next line unify the `_`s
@@ -1086,12 +1086,12 @@ theorem finrank_le_one_iff [FiniteDimensional K V] :
     exact finrank_le_one v p
 #align finrank_le_one_iff finrank_le_one_iff
 
-theorem Submodule.finrank_le_one_iff_isPrincipal (W : Submodule K V) [FiniteDimensional K W] :
+lemma Submodule.finrank_le_one_iff_isPrincipal (W : Submodule K V) [FiniteDimensional K W] :
     finrank K W ≤ 1 ↔ W.IsPrincipal := by
   rw [← W.rank_le_one_iff_isPrincipal, ← finrank_eq_rank, ← Cardinal.natCast_le, Nat.cast_one]
 #align submodule.finrank_le_one_iff_is_principal Submodule.finrank_le_one_iff_isPrincipal
 
-theorem Module.finrank_le_one_iff_top_isPrincipal [FiniteDimensional K V] :
+lemma Module.finrank_le_one_iff_top_isPrincipal [FiniteDimensional K V] :
     finrank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by
   rw [← Module.rank_le_one_iff_top_isPrincipal, ← finrank_eq_rank, ← Cardinal.natCast_le,
     Nat.cast_one]
@@ -1100,7 +1100,7 @@ theorem Module.finrank_le_one_iff_top_isPrincipal [FiniteDimensional K V] :
 -- We use the `LinearMap.CompatibleSMul` typeclass here, to encompass two situations:
 -- * `A = K`
 -- * `[Field K] [Algebra K A] [IsScalarTower K A V] [IsScalarTower K A W]`
-theorem surjective_of_nonzero_of_finrank_eq_one {W A : Type*} [Semiring A] [Module A V]
+lemma surjective_of_nonzero_of_finrank_eq_one {W A : Type*} [Semiring A] [Module A V]
     [AddCommGroup W] [Module K W] [Module A W] [LinearMap.CompatibleSMul V W K A]
     (h : finrank K W = 1) {f : V →ₗ[A] W} (w : f ≠ 0) : Surjective f := by
   change Surjective (f.restrictScalars K)
@@ -1159,11 +1159,11 @@ instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
 #align finite_dimensional.finite_dimensional_subalgebra FiniteDimensional.finiteDimensional_subalgebra
 
 @[deprecated Subalgebra.finite_bot] -- 2024-04-11
-theorem Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) :=
+lemma Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) :=
   Subalgebra.finite_bot
 #align subalgebra.finite_dimensional_bot Subalgebra.finiteDimensional_bot
 
-theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F S ≤ 1) :
+lemma Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F S ≤ 1) :
     S = ⊥ := by
   nontriviality E
   obtain ⟨m, _, he⟩ := Cardinal.exists_nat_eq_of_le_nat (h.trans_eq Nat.cast_one.symm)
@@ -1178,7 +1178,7 @@ theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F
   exact h.trans_eq Subalgebra.rank_bot.symm
 #align subalgebra.eq_bot_of_rank_le_one Subalgebra.eq_bot_of_rank_le_one
 
-theorem Subalgebra.eq_bot_of_finrank_one {S : Subalgebra F E} (h : finrank F S = 1) : S = ⊥ :=
+lemma Subalgebra.eq_bot_of_finrank_one {S : Subalgebra F E} (h : finrank F S = 1) : S = ⊥ :=
   Subalgebra.eq_bot_of_rank_le_one <| by
     -- Porting note: fails without explicit type
     haveI : FiniteDimensional F S := .of_finrank_eq_succ h
@@ -1186,24 +1186,24 @@ theorem Subalgebra.eq_bot_of_finrank_one {S : Subalgebra F E} (h : finrank F S =
 #align subalgebra.eq_bot_of_finrank_one Subalgebra.eq_bot_of_finrank_one
 
 @[simp]
-theorem Subalgebra.rank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
+lemma Subalgebra.rank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
     Module.rank F S = 1 ↔ S = ⊥ :=
   ⟨fun h => Subalgebra.eq_bot_of_rank_le_one h.le, fun h => h.symm ▸ Subalgebra.rank_bot⟩
 #align subalgebra.rank_eq_one_iff Subalgebra.rank_eq_one_iff
 
 @[simp]
-theorem Subalgebra.finrank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
+lemma Subalgebra.finrank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
     finrank F S = 1 ↔ S = ⊥ :=
   ⟨Subalgebra.eq_bot_of_finrank_one, fun h => h.symm ▸ Subalgebra.finrank_bot⟩
 #align subalgebra.finrank_eq_one_iff Subalgebra.finrank_eq_one_iff
 
-theorem Subalgebra.bot_eq_top_iff_rank_eq_one [Nontrivial E] :
+lemma Subalgebra.bot_eq_top_iff_rank_eq_one [Nontrivial E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
   -- Porting note: removed `subalgebra_top_rank_eq_submodule_top_rank`
   rw [← rank_top, Subalgebra.rank_eq_one_iff, eq_comm]
 #align subalgebra.bot_eq_top_iff_rank_eq_one Subalgebra.bot_eq_top_iff_rank_eq_one
 
-theorem Subalgebra.bot_eq_top_iff_finrank_eq_one [Nontrivial E] :
+lemma Subalgebra.bot_eq_top_iff_finrank_eq_one [Nontrivial E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ finrank F E = 1 := by
   rw [← finrank_top, ← subalgebra_top_finrank_eq_submodule_top_finrank,
     Subalgebra.finrank_eq_one_iff, eq_comm]
@@ -1217,7 +1217,7 @@ alias ⟨_, Subalgebra.bot_eq_top_of_finrank_eq_one⟩ := Subalgebra.bot_eq_top_
 
 attribute [simp] Subalgebra.bot_eq_top_of_finrank_eq_one Subalgebra.bot_eq_top_of_rank_eq_one
 
-theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
+lemma Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
     IsSimpleOrder (Subalgebra F E) :=
   let i := nontrivial_of_finrank_pos (zero_lt_two.trans_eq hr.symm)
   { toNontrivial :=
@@ -1246,7 +1246,7 @@ namespace End
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
-theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
+lemma exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
     ∃ k : ℕ, k ≤ finrank K V ∧ LinearMap.ker (f ^ k) = LinearMap.ker (f ^ k.succ) := by
   classical
     by_contra h_contra
@@ -1273,7 +1273,7 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
     exact Nat.not_succ_le_self _ (h_any_n_lt (finrank K V).succ (finrank K V).succ.le_refl)
 #align module.End.exists_ker_pow_eq_ker_pow_succ Module.End.exists_ker_pow_eq_ker_pow_succ
 
-theorem ker_pow_constant {f : End K V} {k : ℕ}
+lemma ker_pow_constant {f : End K V} {k : ℕ}
     (h : LinearMap.ker (f ^ k) = LinearMap.ker (f ^ k.succ)) :
     ∀ m, LinearMap.ker (f ^ k) = LinearMap.ker (f ^ (k + m))
   | 0 => by simp
@@ -1286,7 +1286,7 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
         Nat.add_one]
 #align module.End.ker_pow_constant Module.End.ker_pow_constant
 
-theorem ker_pow_eq_ker_pow_finrank_of_le [FiniteDimensional K V] {f : End K V} {m : ℕ}
+lemma ker_pow_eq_ker_pow_finrank_of_le [FiniteDimensional K V] {f : End K V} {m : ℕ}
     (hm : finrank K V ≤ m) : LinearMap.ker (f ^ m) = LinearMap.ker (f ^ finrank K V) := by
   obtain ⟨k, h_k_le, hk⟩ :
     ∃ k, k ≤ finrank K V ∧ LinearMap.ker (f ^ k) = LinearMap.ker (f ^ k.succ) :=
@@ -1299,7 +1299,7 @@ theorem ker_pow_eq_ker_pow_finrank_of_le [FiniteDimensional K V] {f : End K V} {
     _ = LinearMap.ker (f ^ finrank K V) := by rw [add_tsub_cancel_of_le h_k_le]
 #align module.End.ker_pow_eq_ker_pow_finrank_of_le Module.End.ker_pow_eq_ker_pow_finrank_of_le
 
-theorem ker_pow_le_ker_pow_finrank [FiniteDimensional K V] (f : End K V) (m : ℕ) :
+lemma ker_pow_le_ker_pow_finrank [FiniteDimensional K V] (f : End K V) (m : ℕ) :
     LinearMap.ker (f ^ m) ≤ LinearMap.ker (f ^ finrank K V) := by
   by_cases h_cases : m < finrank K V
   · rw [← add_tsub_cancel_of_le (Nat.le_of_lt h_cases), add_comm, pow_add]
@@ -1317,7 +1317,7 @@ open Module
 
 open Cardinal
 
-theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [DivisionRing K] [AddCommGroup V]
+lemma cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [DivisionRing K] [AddCommGroup V]
     [Module K V] [FiniteDimensional K V] : #V = #K ^ Module.rank K V := by
   let s := Basis.ofVectorSpaceIndex K V
   let hs := Basis.ofVectorSpace K V
@@ -1327,7 +1327,7 @@ theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [DivisionRing K
     _ = _ := by rw [← Cardinal.lift_inj.1 hs.mk_eq_rank, Cardinal.power_def]
 #align cardinal_mk_eq_cardinal_mk_field_pow_rank cardinal_mk_eq_cardinal_mk_field_pow_rank
 
-theorem cardinal_lt_aleph0_of_finiteDimensional (K V : Type u) [DivisionRing K] [AddCommGroup V]
+lemma cardinal_lt_aleph0_of_finiteDimensional (K V : Type u) [DivisionRing K] [AddCommGroup V]
     [Module K V] [Finite K] [FiniteDimensional K V] : #V < ℵ₀ := by
   letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
   rw [cardinal_mk_eq_cardinal_mk_field_pow_rank K V]

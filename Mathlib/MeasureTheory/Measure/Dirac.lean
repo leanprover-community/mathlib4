@@ -31,17 +31,17 @@ def dirac (a : α) : Measure α := (OuterMeasure.dirac a).toMeasure (by simp)
 instance : MeasureSpace PUnit :=
   ⟨dirac PUnit.unit⟩
 
-theorem le_dirac_apply {a} : s.indicator 1 a ≤ dirac a s :=
+lemma le_dirac_apply {a} : s.indicator 1 a ≤ dirac a s :=
   OuterMeasure.dirac_apply a s ▸ le_toMeasure_apply _ _ _
 #align measure_theory.measure.le_dirac_apply MeasureTheory.Measure.le_dirac_apply
 
 @[simp]
-theorem dirac_apply' (a : α) (hs : MeasurableSet s) : dirac a s = s.indicator 1 a :=
+lemma dirac_apply' (a : α) (hs : MeasurableSet s) : dirac a s = s.indicator 1 a :=
   toMeasure_apply _ _ hs
 #align measure_theory.measure.dirac_apply' MeasureTheory.Measure.dirac_apply'
 
 @[simp]
-theorem dirac_apply_of_mem {a : α} (h : a ∈ s) : dirac a s = 1 := by
+lemma dirac_apply_of_mem {a : α} (h : a ∈ s) : dirac a s = 1 := by
   have : ∀ t : Set α, a ∈ t → t.indicator (1 : α → ℝ≥0∞) a = 1 := fun t ht => indicator_of_mem ht 1
   refine' le_antisymm (this univ trivial ▸ _) (this s h ▸ le_dirac_apply)
   rw [← dirac_apply' a MeasurableSet.univ]
@@ -49,7 +49,7 @@ theorem dirac_apply_of_mem {a : α} (h : a ∈ s) : dirac a s = 1 := by
 #align measure_theory.measure.dirac_apply_of_mem MeasureTheory.Measure.dirac_apply_of_mem
 
 @[simp]
-theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
+lemma dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
     dirac a s = s.indicator 1 a := by
   by_cases h : a ∈ s; · rw [dirac_apply_of_mem h, indicator_of_mem h, Pi.one_apply]
   rw [indicator_of_not_mem h, ← nonpos_iff_eq_zero]
@@ -58,7 +58,7 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
     _ = 0 := by simp [dirac_apply' _ (measurableSet_singleton _).compl]
 #align measure_theory.measure.dirac_apply MeasureTheory.Measure.dirac_apply
 
-theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) :=
+lemma map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) :=
   ext fun s hs => by simp [hs, map_apply hf hs, hf hs, indicator_apply]
 #align measure_theory.measure.map_dirac MeasureTheory.Measure.map_dirac
 
@@ -73,7 +73,7 @@ lemma map_const (μ : Measure α) (c : β) : μ.map (fun _ ↦ c) = (μ Set.univ
   · rw [if_neg hsc, (Set.indicator_eq_zero_iff_not_mem _).mpr hsc, measure_empty, mul_zero]
 
 @[simp]
-theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a} • dirac a := by
+lemma restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a} • dirac a := by
   ext1 s hs
   by_cases ha : a ∈ s
   · have : s ∩ {a} = {a} := by simpa
@@ -113,27 +113,27 @@ end Measure
 
 open Measure
 
-theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ (dirac a).ae ↔ a ∈ s := by
+lemma mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ (dirac a).ae ↔ a ∈ s := by
   by_cases a ∈ s <;> simp [mem_ae_iff, dirac_apply', hs.compl, indicator_apply, *]
 #align measure_theory.mem_ae_dirac_iff MeasureTheory.mem_ae_dirac_iff
 
-theorem ae_dirac_iff {a : α} {p : α → Prop} (hp : MeasurableSet { x | p x }) :
+lemma ae_dirac_iff {a : α} {p : α → Prop} (hp : MeasurableSet { x | p x }) :
     (∀ᵐ x ∂dirac a, p x) ↔ p a :=
   mem_ae_dirac_iff hp
 #align measure_theory.ae_dirac_iff MeasureTheory.ae_dirac_iff
 
 @[simp]
-theorem ae_dirac_eq [MeasurableSingletonClass α] (a : α) : (dirac a).ae = pure a := by
+lemma ae_dirac_eq [MeasurableSingletonClass α] (a : α) : (dirac a).ae = pure a := by
   ext s
   simp [mem_ae_iff, imp_false]
 #align measure_theory.ae_dirac_eq MeasureTheory.ae_dirac_eq
 
-theorem ae_eq_dirac' [MeasurableSingletonClass β] {a : α} {f : α → β} (hf : Measurable f) :
+lemma ae_eq_dirac' [MeasurableSingletonClass β] {a : α} {f : α → β} (hf : Measurable f) :
     f =ᵐ[dirac a] const α (f a) :=
   (ae_dirac_iff <| show MeasurableSet (f ⁻¹' {f a}) from hf <| measurableSet_singleton _).2 rfl
 #align measure_theory.ae_eq_dirac' MeasureTheory.ae_eq_dirac'
 
-theorem ae_eq_dirac [MeasurableSingletonClass α] {a : α} (f : α → δ) :
+lemma ae_eq_dirac [MeasurableSingletonClass α] {a : α} (f : α → δ) :
     f =ᵐ[dirac a] const α (f a) := by simp [Filter.EventuallyEq]
 #align measure_theory.ae_eq_dirac MeasureTheory.ae_eq_dirac
 
@@ -146,7 +146,7 @@ instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dir
 instance Measure.dirac.instIsFiniteMeasure {a : α} : IsFiniteMeasure (dirac a) := inferInstance
 instance Measure.dirac.instSigmaFinite {a : α} : SigmaFinite (dirac a) := inferInstance
 
-theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
+lemma restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
     (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by
   split_ifs with has
   · apply restrict_eq_self_of_ae_mem
@@ -154,7 +154,7 @@ theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
   · rw [restrict_eq_zero, dirac_apply' _ hs, indicator_of_not_mem has]
 #align measure_theory.restrict_dirac' MeasureTheory.restrict_dirac'
 
-theorem restrict_dirac [MeasurableSingletonClass α] [Decidable (a ∈ s)] :
+lemma restrict_dirac [MeasurableSingletonClass α] [Decidable (a ∈ s)] :
     (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by
   split_ifs with has
   · apply restrict_eq_self_of_ae_mem

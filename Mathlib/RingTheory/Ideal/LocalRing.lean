@@ -51,7 +51,7 @@ variable [CommSemiring R]
 
 namespace LocalRing
 
-theorem of_isUnit_or_isUnit_of_isUnit_add [Nontrivial R]
+lemma of_isUnit_or_isUnit_of_isUnit_add [Nontrivial R]
     (h : ∀ a b : R, IsUnit (a + b) → IsUnit a ∨ IsUnit b) : LocalRing R :=
   ⟨fun {a b} hab => h a b <| hab.symm ▸ isUnit_one⟩
 #align local_ring.of_is_unit_or_is_unit_of_is_unit_add LocalRing.of_isUnit_or_isUnit_of_isUnit_add
@@ -77,7 +77,7 @@ theorem of_unique_max_ideal (h : ∃! I : Ideal R, I.IsMaximal) : LocalRing R :=
     Imax.1.1 <| I.eq_top_of_isUnit_mem (I.add_mem xmemI ymemI) H
 #align local_ring.of_unique_max_ideal LocalRing.of_unique_max_ideal
 
-theorem of_unique_nonzero_prime (h : ∃! P : Ideal R, P ≠ ⊥ ∧ Ideal.IsPrime P) : LocalRing R :=
+lemma of_unique_nonzero_prime (h : ∃! P : Ideal R, P ≠ ⊥ ∧ Ideal.IsPrime P) : LocalRing R :=
   of_unique_max_ideal
     (by
       rcases h with ⟨P, ⟨hPnonzero, hPnot_top, _⟩, hPunique⟩
@@ -90,13 +90,13 @@ theorem of_unique_nonzero_prime (h : ∃! P : Ideal R, P ≠ ⊥ ∧ Ideal.IsPri
 
 variable [LocalRing R]
 
-theorem isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a ∨ IsUnit b := by
+lemma isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a ∨ IsUnit b := by
   rcases h with ⟨u, hu⟩
   rw [← Units.inv_mul_eq_one, mul_add] at hu
   apply Or.imp _ _ (isUnit_or_isUnit_of_add_one hu) <;> exact isUnit_of_mul_isUnit_right
 #align local_ring.is_unit_or_is_unit_of_is_unit_add LocalRing.isUnit_or_isUnit_of_isUnit_add
 
-theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
+lemma nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
   fun H => not_or_of_not ha hb (isUnit_or_isUnit_of_isUnit_add H)
 #align local_ring.nonunits_add LocalRing.nonunits_add
 
@@ -122,28 +122,28 @@ instance maximalIdeal.isMaximal : (maximalIdeal R).IsMaximal := by
     simpa using I.mul_mem_left (↑u⁻¹) H
 #align local_ring.maximal_ideal.is_maximal LocalRing.maximalIdeal.isMaximal
 
-theorem maximal_ideal_unique : ∃! I : Ideal R, I.IsMaximal :=
+lemma maximal_ideal_unique : ∃! I : Ideal R, I.IsMaximal :=
   ⟨maximalIdeal R, maximalIdeal.isMaximal R, fun I hI =>
     hI.eq_of_le (maximalIdeal.isMaximal R).1.1 fun _ hx => hI.1.1 ∘ I.eq_top_of_isUnit_mem hx⟩
 #align local_ring.maximal_ideal_unique LocalRing.maximal_ideal_unique
 
 variable {R}
 
-theorem eq_maximalIdeal {I : Ideal R} (hI : I.IsMaximal) : I = maximalIdeal R :=
+lemma eq_maximalIdeal {I : Ideal R} (hI : I.IsMaximal) : I = maximalIdeal R :=
   ExistsUnique.unique (maximal_ideal_unique R) hI <| maximalIdeal.isMaximal R
 #align local_ring.eq_maximal_ideal LocalRing.eq_maximalIdeal
 
-theorem le_maximalIdeal {J : Ideal R} (hJ : J ≠ ⊤) : J ≤ maximalIdeal R := by
+lemma le_maximalIdeal {J : Ideal R} (hJ : J ≠ ⊤) : J ≤ maximalIdeal R := by
   rcases Ideal.exists_le_maximal J hJ with ⟨M, hM1, hM2⟩
   rwa [← eq_maximalIdeal hM1]
 #align local_ring.le_maximal_ideal LocalRing.le_maximalIdeal
 
 @[simp]
-theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
+lemma mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
   Iff.rfl
 #align local_ring.mem_maximal_ideal LocalRing.mem_maximalIdeal
 
-theorem isField_iff_maximalIdeal_eq : IsField R ↔ maximalIdeal R = ⊥ :=
+lemma isField_iff_maximalIdeal_eq : IsField R ↔ maximalIdeal R = ⊥ :=
   not_iff_not.mp
     ⟨Ring.ne_bot_of_isMaximal_of_not_isField inferInstance, fun h =>
       Ring.not_isField_iff_exists_prime.mpr ⟨_, h, Ideal.IsMaximal.isPrime' _⟩⟩
@@ -159,26 +159,26 @@ variable [CommRing R]
 
 namespace LocalRing
 
-theorem of_isUnit_or_isUnit_one_sub_self [Nontrivial R] (h : ∀ a : R, IsUnit a ∨ IsUnit (1 - a)) :
+lemma of_isUnit_or_isUnit_one_sub_self [Nontrivial R] (h : ∀ a : R, IsUnit a ∨ IsUnit (1 - a)) :
     LocalRing R :=
   ⟨fun {a b} hab => add_sub_cancel_left a b ▸ hab.symm ▸ h a⟩
 #align local_ring.of_is_unit_or_is_unit_one_sub_self LocalRing.of_isUnit_or_isUnit_one_sub_self
 
 variable [LocalRing R]
 
-theorem isUnit_or_isUnit_one_sub_self (a : R) : IsUnit a ∨ IsUnit (1 - a) :=
+lemma isUnit_or_isUnit_one_sub_self (a : R) : IsUnit a ∨ IsUnit (1 - a) :=
   isUnit_or_isUnit_of_isUnit_add <| (add_sub_cancel a 1).symm ▸ isUnit_one
 #align local_ring.is_unit_or_is_unit_one_sub_self LocalRing.isUnit_or_isUnit_one_sub_self
 
-theorem isUnit_of_mem_nonunits_one_sub_self (a : R) (h : 1 - a ∈ nonunits R) : IsUnit a :=
+lemma isUnit_of_mem_nonunits_one_sub_self (a : R) (h : 1 - a ∈ nonunits R) : IsUnit a :=
   or_iff_not_imp_right.1 (isUnit_or_isUnit_one_sub_self a) h
 #align local_ring.is_unit_of_mem_nonunits_one_sub_self LocalRing.isUnit_of_mem_nonunits_one_sub_self
 
-theorem isUnit_one_sub_self_of_mem_nonunits (a : R) (h : a ∈ nonunits R) : IsUnit (1 - a) :=
+lemma isUnit_one_sub_self_of_mem_nonunits (a : R) (h : a ∈ nonunits R) : IsUnit (1 - a) :=
   or_iff_not_imp_left.1 (isUnit_or_isUnit_one_sub_self a) h
 #align local_ring.is_unit_one_sub_self_of_mem_nonunits LocalRing.isUnit_one_sub_self_of_mem_nonunits
 
-theorem of_surjective' [CommRing S] [Nontrivial S] (f : R →+* S) (hf : Function.Surjective f) :
+lemma of_surjective' [CommRing S] [Nontrivial S] (f : R →+* S) (hf : Function.Surjective f) :
     LocalRing S :=
   of_isUnit_or_isUnit_one_sub_self (by
     intro b
@@ -188,7 +188,7 @@ theorem of_surjective' [CommRing S] [Nontrivial S] (f : R →+* S) (hf : Functio
     apply f.isUnit_map)
 #align local_ring.of_surjective' LocalRing.of_surjective'
 
-theorem jacobson_eq_maximalIdeal (I : Ideal R) (h : I ≠ ⊤) :
+lemma jacobson_eq_maximalIdeal (I : Ideal R) (h : I ≠ ⊤) :
     I.jacobson = LocalRing.maximalIdeal R := by
   apply le_antisymm
   · exact sInf_le ⟨LocalRing.le_maximalIdeal h, LocalRing.maximalIdeal.isMaximal R⟩
@@ -216,13 +216,13 @@ instance isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id
 #align is_local_ring_hom_id isLocalRingHom_id
 
 @[simp]
-theorem isUnit_map_iff (f : R →+* S) [IsLocalRingHom f] (a) : IsUnit (f a) ↔ IsUnit a :=
+lemma isUnit_map_iff (f : R →+* S) [IsLocalRingHom f] (a) : IsUnit (f a) ↔ IsUnit a :=
   ⟨IsLocalRingHom.map_nonunit a, f.isUnit_map⟩
 #align is_unit_map_iff isUnit_map_iff
 
 -- Porting note: as this can be proved by other `simp` lemmas, this is marked as high priority.
 @[simp (high)]
-theorem map_mem_nonunits_iff (f : R →+* S) [IsLocalRingHom f] (a) :
+lemma map_mem_nonunits_iff (f : R →+* S) [IsLocalRingHom f] (a) :
     f a ∈ nonunits S ↔ a ∈ nonunits R :=
   ⟨fun h ha => h <| (isUnit_map_iff f a).mpr ha, fun h ha => h <| (isUnit_map_iff f a).mp ha⟩
 #align map_mem_nonunits_iff map_mem_nonunits_iff
@@ -239,18 +239,18 @@ instance isLocalRingHom_equiv (f : R ≃+* S) : IsLocalRingHom (f : R →+* S) w
 #align is_local_ring_hom_equiv isLocalRingHom_equiv
 
 @[simp]
-theorem isUnit_of_map_unit (f : R →+* S) [IsLocalRingHom f] (a) (h : IsUnit (f a)) : IsUnit a :=
+lemma isUnit_of_map_unit (f : R →+* S) [IsLocalRingHom f] (a) (h : IsUnit (f a)) : IsUnit a :=
   IsLocalRingHom.map_nonunit a h
 #align is_unit_of_map_unit isUnit_of_map_unit
 
-theorem of_irreducible_map (f : R →+* S) [h : IsLocalRingHom f] {x} (hfx : Irreducible (f x)) :
+lemma of_irreducible_map (f : R →+* S) [h : IsLocalRingHom f] {x} (hfx : Irreducible (f x)) :
     Irreducible x :=
   ⟨fun h => hfx.not_unit <| IsUnit.map f h, fun p q hx =>
     let ⟨H⟩ := h
     Or.imp (H p) (H q) <| hfx.isUnit_or_isUnit <| f.map_mul p q ▸ congr_arg f hx⟩
 #align of_irreducible_map of_irreducible_map
 
-theorem isLocalRingHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalRingHom (g.comp f)] :
+lemma isLocalRingHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalRingHom (g.comp f)] :
     IsLocalRingHom f :=
   ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (g.isUnit_map ha)⟩
 #align is_local_ring_hom_of_comp isLocalRingHom_of_comp
@@ -318,7 +318,7 @@ theorem local_hom_TFAE (f : R →+* S) :
 
 end
 
-theorem of_surjective [CommSemiring R] [LocalRing R] [CommSemiring S] [Nontrivial S] (f : R →+* S)
+lemma of_surjective [CommSemiring R] [LocalRing R] [CommSemiring S] [Nontrivial S] (f : R →+* S)
     [IsLocalRingHom f] (hf : Function.Surjective f) : LocalRing S :=
   of_isUnit_or_isUnit_of_isUnit_add (by
     intro a b hab
@@ -370,7 +370,7 @@ instance ResidueField.algebra : Algebra R (ResidueField R) :=
   Ideal.Quotient.algebra _
 #align local_ring.residue_field.algebra LocalRing.ResidueField.algebra
 
-theorem ResidueField.algebraMap_eq : algebraMap R (ResidueField R) = residue R :=
+lemma ResidueField.algebraMap_eq : algebraMap R (ResidueField R) = residue R :=
   rfl
 #align local_ring.residue_field.algebra_map_eq LocalRing.ResidueField.algebraMap_eq
 
@@ -389,13 +389,13 @@ def lift {R S : Type*} [CommRing R] [LocalRing R] [Field S] (f : R →+* S) [IsL
     by_contradiction fun h => ha (isUnit_of_map_unit f a (isUnit_iff_ne_zero.mpr h))
 #align local_ring.residue_field.lift LocalRing.ResidueField.lift
 
-theorem lift_comp_residue {R S : Type*} [CommRing R] [LocalRing R] [Field S] (f : R →+* S)
+lemma lift_comp_residue {R S : Type*} [CommRing R] [LocalRing R] [Field S] (f : R →+* S)
     [IsLocalRingHom f] : (lift f).comp (residue R) = f :=
   RingHom.ext fun _ => rfl
 #align local_ring.residue_field.lift_comp_residue LocalRing.ResidueField.lift_comp_residue
 
 @[simp]
-theorem lift_residue_apply {R S : Type*} [CommRing R] [LocalRing R] [Field S] (f : R →+* S)
+lemma lift_residue_apply {R S : Type*} [CommRing R] [LocalRing R] [Field S] (f : R →+* S)
     [IsLocalRingHom f] (x) : lift f (residue R x) = f x :=
   rfl
 #align local_ring.residue_field.lift_residue_apply LocalRing.ResidueField.lift_residue_apply
@@ -423,22 +423,22 @@ theorem map_comp (f : T →+* R) (g : R →+* S) [IsLocalRingHom f] [IsLocalRing
   Ideal.Quotient.ringHom_ext <| RingHom.ext fun _ => rfl
 #align local_ring.residue_field.map_comp LocalRing.ResidueField.map_comp
 
-theorem map_comp_residue (f : R →+* S) [IsLocalRingHom f] :
+lemma map_comp_residue (f : R →+* S) [IsLocalRingHom f] :
     (ResidueField.map f).comp (residue R) = (residue S).comp f :=
   rfl
 #align local_ring.residue_field.map_comp_residue LocalRing.ResidueField.map_comp_residue
 
-theorem map_residue (f : R →+* S) [IsLocalRingHom f] (r : R) :
+lemma map_residue (f : R →+* S) [IsLocalRingHom f] (r : R) :
     ResidueField.map f (residue R r) = residue S (f r) :=
   rfl
 #align local_ring.residue_field.map_residue LocalRing.ResidueField.map_residue
 
-theorem map_id_apply (x : ResidueField R) : map (RingHom.id R) x = x :=
+lemma map_id_apply (x : ResidueField R) : map (RingHom.id R) x = x :=
   DFunLike.congr_fun map_id x
 #align local_ring.residue_field.map_id_apply LocalRing.ResidueField.map_id_apply
 
 @[simp]
-theorem map_map (f : R →+* S) (g : S →+* T) (x : ResidueField R) [IsLocalRingHom f]
+lemma map_map (f : R →+* S) (g : S →+* T) (x : ResidueField R) [IsLocalRingHom f]
     [IsLocalRingHom g] : map g (map f x) = map (g.comp f) x :=
   DFunLike.congr_fun (map_comp f g).symm x
 #align local_ring.residue_field.map_map LocalRing.ResidueField.map_map
@@ -455,18 +455,18 @@ def mapEquiv (f : R ≃+* S) : LocalRing.ResidueField R ≃+* LocalRing.ResidueF
 #align local_ring.residue_field.map_equiv LocalRing.ResidueField.mapEquiv
 
 @[simp]
-theorem mapEquiv.symm (f : R ≃+* S) : (mapEquiv f).symm = mapEquiv f.symm :=
+lemma mapEquiv.symm (f : R ≃+* S) : (mapEquiv f).symm = mapEquiv f.symm :=
   rfl
 #align local_ring.residue_field.map_equiv.symm LocalRing.ResidueField.mapEquiv.symm
 
 @[simp]
-theorem mapEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* T) :
+lemma mapEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* T) :
     mapEquiv (e₁.trans e₂) = (mapEquiv e₁).trans (mapEquiv e₂) :=
   RingEquiv.toRingHom_injective <| map_comp (e₁ : R →+* S) (e₂ : S →+* T)
 #align local_ring.residue_field.map_equiv_trans LocalRing.ResidueField.mapEquiv_trans
 
 @[simp]
-theorem mapEquiv_refl : mapEquiv (RingEquiv.refl R) = RingEquiv.refl _ :=
+lemma mapEquiv_refl : mapEquiv (RingEquiv.refl R) = RingEquiv.refl _ :=
   RingEquiv.toRingHom_injective map_id
 #align local_ring.residue_field.map_equiv_refl LocalRing.ResidueField.mapEquiv_refl
 
@@ -488,7 +488,7 @@ instance : MulSemiringAction G (LocalRing.ResidueField R) :=
   MulSemiringAction.compHom _ <| mapAut.comp (MulSemiringAction.toRingAut G R)
 
 @[simp]
-theorem residue_smul (g : G) (r : R) : residue R (g • r) = g • residue R r :=
+lemma residue_smul (g : G) (r : R) : residue R (g • r) = g • residue R r :=
   rfl
 #align local_ring.residue_field.residue_smul LocalRing.ResidueField.residue_smul
 
@@ -496,12 +496,12 @@ end MulSemiringAction
 
 end ResidueField
 
-theorem ker_eq_maximalIdeal [Field K] (φ : R →+* K) (hφ : Function.Surjective φ) :
+lemma ker_eq_maximalIdeal [Field K] (φ : R →+* K) (hφ : Function.Surjective φ) :
     RingHom.ker φ = maximalIdeal R :=
   LocalRing.eq_maximalIdeal <| (RingHom.ker_isMaximal_of_surjective φ) hφ
 #align local_ring.ker_eq_maximal_ideal LocalRing.ker_eq_maximalIdeal
 
-theorem isLocalRingHom_residue : IsLocalRingHom (LocalRing.residue R) := by
+lemma isLocalRingHom_residue : IsLocalRingHom (LocalRing.residue R) := by
   constructor
   intro a ha
   by_contra h
@@ -527,13 +527,13 @@ instance (priority := 100) : LocalRing K :=
 
 end Field
 
-theorem LocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : LocalRing.maximalIdeal R = ⊥ :=
+lemma LocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : LocalRing.maximalIdeal R = ⊥ :=
   LocalRing.isField_iff_maximalIdeal_eq.mp (Field.toIsField R)
 #align local_ring.maximal_ideal_eq_bot LocalRing.maximalIdeal_eq_bot
 
 namespace RingEquiv
 
-protected theorem localRing {A B : Type*} [CommSemiring A] [LocalRing A] [CommSemiring B]
+protected lemma localRing {A B : Type*} [CommSemiring A] [LocalRing A] [CommSemiring B]
     (e : A ≃+* B) : LocalRing B :=
   haveI := e.symm.toEquiv.nontrivial
   LocalRing.of_surjective (e : A →+* B) e.surjective

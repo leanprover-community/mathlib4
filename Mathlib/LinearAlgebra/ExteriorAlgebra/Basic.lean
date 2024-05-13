@@ -94,7 +94,7 @@ theorem ι_sq_zero (m : M) : ι R m * ι R m = 0 :=
 variable {A : Type*} [Semiring A] [Algebra R A]
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem comp_ι_sq_zero (g : ExteriorAlgebra R M →ₐ[R] A) (m : M) : g (ι R m) * g (ι R m) = 0 := by
+lemma comp_ι_sq_zero (g : ExteriorAlgebra R M →ₐ[R] A) (m : M) : g (ι R m) * g (ι R m) = 0 := by
   rw [← AlgHom.map_mul, ι_sq_zero, AlgHom.map_zero]
 #align exterior_algebra.comp_ι_sq_zero ExteriorAlgebra.comp_ι_sq_zero
 
@@ -110,19 +110,19 @@ def lift : { f : M →ₗ[R] A // ∀ m, f m * f m = 0 } ≃ (ExteriorAlgebra R 
 #align exterior_algebra.lift ExteriorAlgebra.lift
 
 @[simp]
-theorem ι_comp_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) :
+lemma ι_comp_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) :
     (lift R ⟨f, cond⟩).toLinearMap.comp (ι R) = f :=
   CliffordAlgebra.ι_comp_lift f _
 #align exterior_algebra.ι_comp_lift ExteriorAlgebra.ι_comp_lift
 
 @[simp]
-theorem lift_ι_apply (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (x) :
+lemma lift_ι_apply (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (x) :
     lift R ⟨f, cond⟩ (ι R x) = f x :=
   CliffordAlgebra.lift_ι_apply f _ x
 #align exterior_algebra.lift_ι_apply ExteriorAlgebra.lift_ι_apply
 
 @[simp]
-theorem lift_unique (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (g : ExteriorAlgebra R M →ₐ[R] A) :
+lemma lift_unique (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (g : ExteriorAlgebra R M →ₐ[R] A) :
     g.toLinearMap.comp (ι R) = f ↔ g = lift R ⟨f, cond⟩ :=
   CliffordAlgebra.lift_unique f _ _
 #align exterior_algebra.lift_unique ExteriorAlgebra.lift_unique
@@ -130,7 +130,7 @@ theorem lift_unique (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (g : Exter
 variable {R}
 
 @[simp]
-theorem lift_comp_ι (g : ExteriorAlgebra R M →ₐ[R] A) :
+lemma lift_comp_ι (g : ExteriorAlgebra R M →ₐ[R] A) :
     lift R ⟨g.toLinearMap.comp (ι R), comp_ι_sq_zero _⟩ = g :=
   CliffordAlgebra.lift_comp_ι g
 #align exterior_algebra.lift_comp_ι ExteriorAlgebra.lift_comp_ι
@@ -160,28 +160,28 @@ def algebraMapInv : ExteriorAlgebra R M →ₐ[R] R :=
 
 variable (M)
 
-theorem algebraMap_leftInverse :
+lemma algebraMap_leftInverse :
     Function.LeftInverse algebraMapInv (algebraMap R <| ExteriorAlgebra R M) := fun x => by
   simp [algebraMapInv]
 #align exterior_algebra.algebra_map_left_inverse ExteriorAlgebra.algebraMap_leftInverse
 
 @[simp]
-theorem algebraMap_inj (x y : R) :
+lemma algebraMap_inj (x y : R) :
     algebraMap R (ExteriorAlgebra R M) x = algebraMap R (ExteriorAlgebra R M) y ↔ x = y :=
   (algebraMap_leftInverse M).injective.eq_iff
 #align exterior_algebra.algebra_map_inj ExteriorAlgebra.algebraMap_inj
 
 @[simp]
-theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 0 ↔ x = 0 :=
+lemma algebraMap_eq_zero_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 0 ↔ x = 0 :=
   map_eq_zero_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 #align exterior_algebra.algebra_map_eq_zero_iff ExteriorAlgebra.algebraMap_eq_zero_iff
 
 @[simp]
-theorem algebraMap_eq_one_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 1 ↔ x = 1 :=
+lemma algebraMap_eq_one_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 #align exterior_algebra.algebra_map_eq_one_iff ExteriorAlgebra.algebraMap_eq_one_iff
 
-theorem isUnit_algebraMap (r : R) : IsUnit (algebraMap R (ExteriorAlgebra R M) r) ↔ IsUnit r :=
+lemma isUnit_algebraMap (r : R) : IsUnit (algebraMap R (ExteriorAlgebra R M) r) ↔ IsUnit r :=
   isUnit_map_of_leftInverse _ (algebraMap_leftInverse M)
 #align exterior_algebra.is_unit_algebra_map ExteriorAlgebra.isUnit_algebraMap
 
@@ -202,7 +202,7 @@ def toTrivSqZeroExt [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
 #align exterior_algebra.to_triv_sq_zero_ext ExteriorAlgebra.toTrivSqZeroExt
 
 @[simp]
-theorem toTrivSqZeroExt_ι [Module Rᵐᵒᵖ M] [IsCentralScalar R M] (x : M) :
+lemma toTrivSqZeroExt_ι [Module Rᵐᵒᵖ M] [IsCentralScalar R M] (x : M) :
     toTrivSqZeroExt (ι R x) = TrivSqZeroExt.inr x :=
   lift_ι_apply _ _ _ _
 #align exterior_algebra.to_triv_sq_zero_ext_ι ExteriorAlgebra.toTrivSqZeroExt_ι
@@ -217,7 +217,7 @@ def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 #align exterior_algebra.ι_inv ExteriorAlgebra.ιInv
 
-theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebra R M) := fun x => by
+lemma ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebra R M) := fun x => by
   -- Porting note: Original proof didn't have `letI` and `haveI`
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
@@ -227,18 +227,18 @@ theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebr
 variable (R)
 
 @[simp]
-theorem ι_inj (x y : M) : ι R x = ι R y ↔ x = y :=
+lemma ι_inj (x y : M) : ι R x = ι R y ↔ x = y :=
   ι_leftInverse.injective.eq_iff
 #align exterior_algebra.ι_inj ExteriorAlgebra.ι_inj
 
 variable {R}
 
 @[simp]
-theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, LinearMap.map_zero]
+lemma ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, LinearMap.map_zero]
 #align exterior_algebra.ι_eq_zero_iff ExteriorAlgebra.ι_eq_zero_iff
 
 @[simp]
-theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
+lemma ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
   refine' ⟨fun h => _, _⟩
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
@@ -251,7 +251,7 @@ theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x =
 #align exterior_algebra.ι_eq_algebra_map_iff ExteriorAlgebra.ι_eq_algebraMap_iff
 
 @[simp]
-theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
+lemma ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
   rw [← (algebraMap R (ExteriorAlgebra R M)).map_one, Ne, ι_eq_algebraMap_iff]
   exact one_ne_zero ∘ And.right
 #align exterior_algebra.ι_ne_one ExteriorAlgebra.ι_ne_one
@@ -267,11 +267,11 @@ theorem ι_range_disjoint_one :
 #align exterior_algebra.ι_range_disjoint_one ExteriorAlgebra.ι_range_disjoint_one
 
 @[simp]
-theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
+lemma ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
   CliffordAlgebra.ι_mul_ι_add_swap_of_isOrtho <| .all _ _
 #align exterior_algebra.ι_add_mul_swap ExteriorAlgebra.ι_add_mul_swap
 
-theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
+lemma ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
     (ι R <| f i) * (List.ofFn fun i => ι R <| f i).prod = 0 := by
   induction' n with n hn
   · exact i.elim0
@@ -323,22 +323,22 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
 
 variable {R}
 
-theorem ιMulti_apply {n : ℕ} (v : Fin n → M) : ιMulti R n v = (List.ofFn fun i => ι R (v i)).prod :=
+lemma ιMulti_apply {n : ℕ} (v : Fin n → M) : ιMulti R n v = (List.ofFn fun i => ι R (v i)).prod :=
   rfl
 #align exterior_algebra.ι_multi_apply ExteriorAlgebra.ιMulti_apply
 
 @[simp]
-theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 :=
+lemma ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 :=
   rfl
 #align exterior_algebra.ι_multi_zero_apply ExteriorAlgebra.ιMulti_zero_apply
 
 @[simp]
-theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :
+lemma ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :
     ιMulti R _ v = ι R (v 0) * ιMulti R _ (Matrix.vecTail v) := by
   simp [ιMulti, Matrix.vecTail]
 #align exterior_algebra.ι_multi_succ_apply ExteriorAlgebra.ιMulti_succ_apply
 
-theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
+lemma ιMulti_succ_curryLeft {n : ℕ} (m : M) :
     (ιMulti R n.succ).curryLeft m = (LinearMap.mulLeft R (ι R m)).compAlternatingMap (ιMulti R n) :=
   AlternatingMap.ext fun v =>
     (ιMulti_succ_apply _).trans <| by
@@ -393,43 +393,43 @@ def map (f : M →ₗ[R] N) : ExteriorAlgebra R M →ₐ[R] ExteriorAlgebra R N 
   CliffordAlgebra.map { f with map_app' := fun _ => rfl }
 
 @[simp]
-theorem map_comp_ι (f : M →ₗ[R] N) : (map f).toLinearMap ∘ₗ ι R = ι R ∘ₗ f :=
+lemma map_comp_ι (f : M →ₗ[R] N) : (map f).toLinearMap ∘ₗ ι R = ι R ∘ₗ f :=
   CliffordAlgebra.map_comp_ι _
 
 @[simp]
-theorem map_apply_ι (f : M →ₗ[R] N) (m : M) : map f (ι R m) = ι R (f m) :=
+lemma map_apply_ι (f : M →ₗ[R] N) (m : M) : map f (ι R m) = ι R (f m) :=
   CliffordAlgebra.map_apply_ι _ m
 
 @[simp]
-theorem map_apply_ιMulti {n : ℕ} (f : M →ₗ[R] N) (m : Fin n → M) :
+lemma map_apply_ιMulti {n : ℕ} (f : M →ₗ[R] N) (m : Fin n → M) :
     map f (ιMulti R n m) = ιMulti R n (f ∘ m) := by
   rw [ιMulti_apply, ιMulti_apply, map_list_prod]
   simp only [List.map_ofFn, Function.comp, map_apply_ι]
 
 @[simp]
-theorem map_comp_ιMulti {n : ℕ} (f : M →ₗ[R] N) :
+lemma map_comp_ιMulti {n : ℕ} (f : M →ₗ[R] N) :
     (map f).toLinearMap.compAlternatingMap (ιMulti R n (M := M)) =
     (ιMulti R n (M := N)).compLinearMap f := by
   ext m
   exact map_apply_ιMulti _ _
 
 @[simp]
-theorem map_id :
+lemma map_id :
     map LinearMap.id = AlgHom.id R (ExteriorAlgebra R M) :=
   CliffordAlgebra.map_id 0
 
 @[simp]
-theorem map_comp_map (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
+lemma map_comp_map (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     AlgHom.comp (map g) (map f) = map (LinearMap.comp g f) :=
   CliffordAlgebra.map_comp_map _ _
 
 @[simp]
-theorem ι_range_map_map (f : M →ₗ[R] N) :
+lemma ι_range_map_map (f : M →ₗ[R] N) :
     Submodule.map (AlgHom.toLinearMap (map f)) (LinearMap.range (ι R (M := M))) =
     Submodule.map (ι R) (LinearMap.range f) :=
   CliffordAlgebra.ι_range_map_map _
 
-theorem toTrivSqZeroExt_comp_map [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Module Rᵐᵒᵖ N]
+lemma toTrivSqZeroExt_comp_map [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Module Rᵐᵒᵖ N]
     [IsCentralScalar R N] (f : M →ₗ[R] N) :
     toTrivSqZeroExt.comp (map f) = (TrivSqZeroExt.map f).comp toTrivSqZeroExt := by
   apply hom_ext
@@ -437,7 +437,7 @@ theorem toTrivSqZeroExt_comp_map [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Mo
   simp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, Function.comp_apply,
     AlgHom.toLinearMap_apply, map_apply_ι, toTrivSqZeroExt_ι, TrivSqZeroExt.map_inr, forall_const]
 
-theorem ιInv_comp_map (f : M →ₗ[R] N) :
+lemma ιInv_comp_map (f : M →ₗ[R] N) :
     ιInv.comp (map f).toLinearMap = f.comp ιInv := by
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
@@ -496,7 +496,7 @@ def toExterior : TensorAlgebra R M →ₐ[R] ExteriorAlgebra R M :=
 #align tensor_algebra.to_exterior TensorAlgebra.toExterior
 
 @[simp]
-theorem toExterior_ι (m : M) :
+lemma toExterior_ι (m : M) :
     TensorAlgebra.toExterior (TensorAlgebra.ι R m) = ExteriorAlgebra.ι R m := by
   simp [toExterior]
 #align tensor_algebra.to_exterior_ι TensorAlgebra.toExterior_ι

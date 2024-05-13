@@ -56,7 +56,7 @@ instance : CoeFun (CFilter α σ) fun _ ↦ σ → α :=
 symbol (simpnf linter problem). Replacing it with a DFunLike instance would not be mathematically
 meaningful here, since the coercion to f cannot be injective, hence need to remove @[simp]. -/
 -- @[simp]
-theorem coe_mk (f pt inf h₁ h₂ a) : (@CFilter.mk α σ _ f pt inf h₁ h₂) a = f a :=
+lemma coe_mk (f pt inf h₁ h₂ a) : (@CFilter.mk α σ _ f pt inf h₁ h₂) a = f a :=
   rfl
 #align cfilter.coe_mk CFilter.coe_mk
 
@@ -71,7 +71,7 @@ def ofEquiv (E : σ ≃ τ) : CFilter α σ → CFilter α τ
 #align cfilter.of_equiv CFilter.ofEquiv
 
 @[simp]
-theorem ofEquiv_val (E : σ ≃ τ) (F : CFilter α σ) (a : τ) : F.ofEquiv E a = F (E.symm a) := by
+lemma ofEquiv_val (E : σ ≃ τ) (F : CFilter α σ) (a : τ) : F.ofEquiv E a = F (E.symm a) := by
   cases F; rfl
 #align cfilter.of_equiv_val CFilter.ofEquiv_val
 
@@ -88,7 +88,7 @@ def toFilter (F : CFilter (Set α) σ) : Filter α where
 #align cfilter.to_filter CFilter.toFilter
 
 @[simp]
-theorem mem_toFilter_sets (F : CFilter (Set α) σ) {a : Set α} : a ∈ F.toFilter ↔ ∃ b, F b ⊆ a :=
+lemma mem_toFilter_sets (F : CFilter (Set α) σ) {a : Set α} : a ∈ F.toFilter ↔ ∃ b, F b ⊆ a :=
   Iff.rfl
 #align cfilter.mem_to_filter_sets CFilter.mem_toFilter_sets
 
@@ -109,7 +109,7 @@ protected def CFilter.toRealizer (F : CFilter (Set α) σ) : F.toFilter.Realizer
 
 namespace Filter.Realizer
 
-theorem mem_sets {f : Filter α} (F : f.Realizer) {a : Set α} : a ∈ f ↔ ∃ b, F.F b ⊆ a := by
+lemma mem_sets {f : Filter α} (F : f.Realizer) {a : Set α} : a ∈ f ↔ ∃ b, F.F b ⊆ a := by
   cases F; subst f; rfl
 #align filter.realizer.mem_sets Filter.Realizer.mem_sets
 
@@ -139,12 +139,12 @@ def ofEquiv {f : Filter α} (F : f.Realizer) (E : F.σ ≃ τ) : f.Realizer :=
 #align filter.realizer.of_equiv Filter.Realizer.ofEquiv
 
 @[simp]
-theorem ofEquiv_σ {f : Filter α} (F : f.Realizer) (E : F.σ ≃ τ) : (F.ofEquiv E).σ = τ :=
+lemma ofEquiv_σ {f : Filter α} (F : f.Realizer) (E : F.σ ≃ τ) : (F.ofEquiv E).σ = τ :=
   rfl
 #align filter.realizer.of_equiv_σ Filter.Realizer.ofEquiv_σ
 
 @[simp]
-theorem ofEquiv_F {f : Filter α} (F : f.Realizer) (E : F.σ ≃ τ) (s : τ) :
+lemma ofEquiv_F {f : Filter α} (F : f.Realizer) (E : F.σ ≃ τ) (s : τ) :
     (F.ofEquiv E).F s = F.F (E.symm s) := rfl
 set_option linter.uppercaseLean3 false in
 #align filter.realizer.of_equiv_F Filter.Realizer.ofEquiv_F
@@ -161,12 +161,12 @@ protected def principal (s : Set α) : (principal s).Realizer :=
 #align filter.realizer.principal Filter.Realizer.principal
 
 @[simp]
-theorem principal_σ (s : Set α) : (Realizer.principal s).σ = Unit :=
+lemma principal_σ (s : Set α) : (Realizer.principal s).σ = Unit :=
   rfl
 #align filter.realizer.principal_σ Filter.Realizer.principal_σ
 
 @[simp]
-theorem principal_F (s : Set α) (u : Unit) : (Realizer.principal s).F u = s :=
+lemma principal_F (s : Set α) (u : Unit) : (Realizer.principal s).F u = s :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align filter.realizer.principal_F Filter.Realizer.principal_F
@@ -180,12 +180,12 @@ protected def top : (⊤ : Filter α).Realizer :=
 #align filter.realizer.top Filter.Realizer.top
 
 @[simp]
-theorem top_σ : (@Realizer.top α).σ = Unit :=
+lemma top_σ : (@Realizer.top α).σ = Unit :=
   rfl
 #align filter.realizer.top_σ Filter.Realizer.top_σ
 
 @[simp]
-theorem top_F (u : Unit) : (@Realizer.top α).F u = univ :=
+lemma top_F (u : Unit) : (@Realizer.top α).F u = univ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align filter.realizer.top_F Filter.Realizer.top_F
@@ -196,12 +196,12 @@ protected def bot : (⊥ : Filter α).Realizer :=
 #align filter.realizer.bot Filter.Realizer.bot
 
 @[simp]
-theorem bot_σ : (@Realizer.bot α).σ = Unit :=
+lemma bot_σ : (@Realizer.bot α).σ = Unit :=
   rfl
 #align filter.realizer.bot_σ Filter.Realizer.bot_σ
 
 @[simp]
-theorem bot_F (u : Unit) : (@Realizer.bot α).F u = ∅ :=
+lemma bot_F (u : Unit) : (@Realizer.bot α).F u = ∅ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align filter.realizer.bot_F Filter.Realizer.bot_F
@@ -220,12 +220,12 @@ protected def map (m : α → β) {f : Filter α} (F : f.Realizer) : (map m f).R
 #align filter.realizer.map Filter.Realizer.map
 
 @[simp]
-theorem map_σ (m : α → β) {f : Filter α} (F : f.Realizer) : (F.map m).σ = F.σ :=
+lemma map_σ (m : α → β) {f : Filter α} (F : f.Realizer) : (F.map m).σ = F.σ :=
   rfl
 #align filter.realizer.map_σ Filter.Realizer.map_σ
 
 @[simp]
-theorem map_F (m : α → β) {f : Filter α} (F : f.Realizer) (s) : (F.map m).F s = image m (F.F s) :=
+lemma map_F (m : α → β) {f : Filter α} (F : f.Realizer) (s) : (F.map m).F s = image m (F.F s) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align filter.realizer.map_F Filter.Realizer.map_F
@@ -330,7 +330,7 @@ protected def prod {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f.prod
   (F.comap _).inf (G.comap _)
 #align filter.realizer.prod Filter.Realizer.prod
 
-theorem le_iff {f g : Filter α} (F : f.Realizer) (G : g.Realizer) :
+lemma le_iff {f g : Filter α} (F : f.Realizer) (G : g.Realizer) :
     f ≤ g ↔ ∀ b : G.σ, ∃ a : F.σ, F.F a ≤ G.F b :=
   ⟨fun H t ↦ F.mem_sets.1 (H (G.mem_sets.2 ⟨t, Subset.refl _⟩)), fun H _ h ↦
     F.mem_sets.2 <|
@@ -339,12 +339,12 @@ theorem le_iff {f g : Filter α} (F : f.Realizer) (G : g.Realizer) :
       ⟨t, Subset.trans h₂ h₁⟩⟩
 #align filter.realizer.le_iff Filter.Realizer.le_iff
 
-theorem tendsto_iff (f : α → β) {l₁ : Filter α} {l₂ : Filter β} (L₁ : l₁.Realizer)
+lemma tendsto_iff (f : α → β) {l₁ : Filter α} {l₂ : Filter β} (L₁ : l₁.Realizer)
     (L₂ : l₂.Realizer) : Tendsto f l₁ l₂ ↔ ∀ b, ∃ a, ∀ x ∈ L₁.F a, f x ∈ L₂.F b :=
   (le_iff (L₁.map f) L₂).trans <| forall_congr' fun _ ↦ exists_congr fun _ ↦ image_subset_iff
 #align filter.realizer.tendsto_iff Filter.Realizer.tendsto_iff
 
-theorem ne_bot_iff {f : Filter α} (F : f.Realizer) : f ≠ ⊥ ↔ ∀ a : F.σ, (F.F a).Nonempty := by
+lemma ne_bot_iff {f : Filter α} (F : f.Realizer) : f ≠ ⊥ ↔ ∀ a : F.σ, (F.F a).Nonempty := by
   rw [not_iff_comm, ← le_bot_iff, F.le_iff Realizer.bot, not_forall]
   simp only [Set.not_nonempty_iff_eq_empty]
   exact ⟨fun ⟨x, e⟩ _ ↦ ⟨x, le_of_eq e⟩, fun h ↦

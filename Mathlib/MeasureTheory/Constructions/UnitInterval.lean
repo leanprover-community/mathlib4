@@ -21,7 +21,7 @@ namespace unitInterval
 
 noncomputable instance : MeasureSpace I := Measure.Subtype.measureSpace
 
-theorem volume_def : (volume : Measure I) = volume.comap Subtype.val := rfl
+lemma volume_def : (volume : Measure I) = volume.comap Subtype.val := rfl
 
 instance : IsProbabilityMeasure (volume : Measure I) where
   measure_univ := by
@@ -29,6 +29,6 @@ instance : IsProbabilityMeasure (volume : Measure I) where
       ENNReal.ofReal_one]
 
 @[measurability]
-theorem measurable_symm : Measurable symm := continuous_symm.measurable
+lemma measurable_symm : Measurable symm := continuous_symm.measurable
 
 end unitInterval

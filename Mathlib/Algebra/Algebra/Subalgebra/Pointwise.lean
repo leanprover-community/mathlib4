@@ -24,7 +24,7 @@ section Pointwise
 
 variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
-theorem mul_toSubmodule_le (S T : Subalgebra R A) :
+lemma mul_toSubmodule_le (S T : Subalgebra R A) :
     (Subalgebra.toSubmodule S)* (Subalgebra.toSubmodule T) ≤ Subalgebra.toSubmodule (S ⊔ T) := by
   rw [Submodule.mul_le]
   intro y hy z hz
@@ -83,30 +83,30 @@ scoped[Pointwise] attribute [instance] Subalgebra.pointwiseMulAction
 open Pointwise
 
 @[simp]
-theorem coe_pointwise_smul (m : R') (S : Subalgebra R A) : ↑(m • S) = m • (S : Set A) :=
+lemma coe_pointwise_smul (m : R') (S : Subalgebra R A) : ↑(m • S) = m • (S : Set A) :=
   rfl
 #align subalgebra.coe_pointwise_smul Subalgebra.coe_pointwise_smul
 
 @[simp]
-theorem pointwise_smul_toSubsemiring (m : R') (S : Subalgebra R A) :
+lemma pointwise_smul_toSubsemiring (m : R') (S : Subalgebra R A) :
     (m • S).toSubsemiring = m • S.toSubsemiring :=
   rfl
 #align subalgebra.pointwise_smul_to_subsemiring Subalgebra.pointwise_smul_toSubsemiring
 
 @[simp]
-theorem pointwise_smul_toSubmodule (m : R') (S : Subalgebra R A) :
+lemma pointwise_smul_toSubmodule (m : R') (S : Subalgebra R A) :
     Subalgebra.toSubmodule (m • S) = m • Subalgebra.toSubmodule S :=
   rfl
 #align subalgebra.pointwise_smul_to_submodule Subalgebra.pointwise_smul_toSubmodule
 
 @[simp]
-theorem pointwise_smul_toSubring {R' R A : Type*} [Semiring R'] [CommRing R] [Ring A]
+lemma pointwise_smul_toSubring {R' R A : Type*} [Semiring R'] [CommRing R] [Ring A]
     [MulSemiringAction R' A] [Algebra R A] [SMulCommClass R' R A] (m : R') (S : Subalgebra R A) :
     (m • S).toSubring = m • S.toSubring :=
   rfl
 #align subalgebra.pointwise_smul_to_subring Subalgebra.pointwise_smul_toSubring
 
-theorem smul_mem_pointwise_smul (m : R') (r : A) (S : Subalgebra R A) : r ∈ S → m • r ∈ m • S :=
+lemma smul_mem_pointwise_smul (m : R') (r : A) (S : Subalgebra R A) : r ∈ S → m • r ∈ m • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set A))
 #align subalgebra.smul_mem_pointwise_smul Subalgebra.smul_mem_pointwise_smul
 

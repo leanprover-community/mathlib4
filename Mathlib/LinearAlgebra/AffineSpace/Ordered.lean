@@ -49,56 +49,56 @@ section OrderedRing
 variable [OrderedRing k] [OrderedAddCommGroup E] [Module k E] [OrderedSMul k E]
 variable {a a' b b' : E} {r r' : k}
 
-theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lineMap a' b r := by
+lemma lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lineMap a' b r := by
   simp only [lineMap_apply_module]
   exact add_le_add_right (smul_le_smul_of_nonneg_left ha (sub_nonneg.2 hr)) _
 #align line_map_mono_left lineMap_mono_left
 
-theorem lineMap_strict_mono_left (ha : a < a') (hr : r < 1) : lineMap a b r < lineMap a' b r := by
+lemma lineMap_strict_mono_left (ha : a < a') (hr : r < 1) : lineMap a b r < lineMap a' b r := by
   simp only [lineMap_apply_module]
   exact add_lt_add_right (smul_lt_smul_of_pos_left ha (sub_pos.2 hr)) _
 #align line_map_strict_mono_left lineMap_strict_mono_left
 
-theorem lineMap_mono_right (hb : b ≤ b') (hr : 0 ≤ r) : lineMap a b r ≤ lineMap a b' r := by
+lemma lineMap_mono_right (hb : b ≤ b') (hr : 0 ≤ r) : lineMap a b r ≤ lineMap a b' r := by
   simp only [lineMap_apply_module]
   exact add_le_add_left (smul_le_smul_of_nonneg_left hb hr) _
 #align line_map_mono_right lineMap_mono_right
 
-theorem lineMap_strict_mono_right (hb : b < b') (hr : 0 < r) : lineMap a b r < lineMap a b' r := by
+lemma lineMap_strict_mono_right (hb : b < b') (hr : 0 < r) : lineMap a b r < lineMap a b' r := by
   simp only [lineMap_apply_module]
   exact add_lt_add_left (smul_lt_smul_of_pos_left hb hr) _
 #align line_map_strict_mono_right lineMap_strict_mono_right
 
-theorem lineMap_mono_endpoints (ha : a ≤ a') (hb : b ≤ b') (h₀ : 0 ≤ r) (h₁ : r ≤ 1) :
+lemma lineMap_mono_endpoints (ha : a ≤ a') (hb : b ≤ b') (h₀ : 0 ≤ r) (h₁ : r ≤ 1) :
     lineMap a b r ≤ lineMap a' b' r :=
   (lineMap_mono_left ha h₁).trans (lineMap_mono_right hb h₀)
 #align line_map_mono_endpoints lineMap_mono_endpoints
 
-theorem lineMap_strict_mono_endpoints (ha : a < a') (hb : b < b') (h₀ : 0 ≤ r) (h₁ : r ≤ 1) :
+lemma lineMap_strict_mono_endpoints (ha : a < a') (hb : b < b') (h₀ : 0 ≤ r) (h₁ : r ≤ 1) :
     lineMap a b r < lineMap a' b' r := by
   rcases h₀.eq_or_lt with (rfl | h₀); · simpa
   exact (lineMap_mono_left ha.le h₁).trans_lt (lineMap_strict_mono_right hb h₀)
 #align line_map_strict_mono_endpoints lineMap_strict_mono_endpoints
 
-theorem lineMap_lt_lineMap_iff_of_lt (h : r < r') : lineMap a b r < lineMap a b r' ↔ a < b := by
+lemma lineMap_lt_lineMap_iff_of_lt (h : r < r') : lineMap a b r < lineMap a b r' ↔ a < b := by
   simp only [lineMap_apply_module]
   rw [← lt_sub_iff_add_lt, add_sub_assoc, ← sub_lt_iff_lt_add', ← sub_smul, ← sub_smul,
     sub_sub_sub_cancel_left, smul_lt_smul_iff_of_pos_left (sub_pos.2 h)]
 #align line_map_lt_line_map_iff_of_lt lineMap_lt_lineMap_iff_of_lt
 
-theorem left_lt_lineMap_iff_lt (h : 0 < r) : a < lineMap a b r ↔ a < b :=
+lemma left_lt_lineMap_iff_lt (h : 0 < r) : a < lineMap a b r ↔ a < b :=
   Iff.trans (by rw [lineMap_apply_zero]) (lineMap_lt_lineMap_iff_of_lt h)
 #align left_lt_line_map_iff_lt left_lt_lineMap_iff_lt
 
-theorem lineMap_lt_left_iff_lt (h : 0 < r) : lineMap a b r < a ↔ b < a :=
+lemma lineMap_lt_left_iff_lt (h : 0 < r) : lineMap a b r < a ↔ b < a :=
   left_lt_lineMap_iff_lt (E := Eᵒᵈ) h
 #align line_map_lt_left_iff_lt lineMap_lt_left_iff_lt
 
-theorem lineMap_lt_right_iff_lt (h : r < 1) : lineMap a b r < b ↔ a < b :=
+lemma lineMap_lt_right_iff_lt (h : r < 1) : lineMap a b r < b ↔ a < b :=
   Iff.trans (by rw [lineMap_apply_one]) (lineMap_lt_lineMap_iff_of_lt h)
 #align line_map_lt_right_iff_lt lineMap_lt_right_iff_lt
 
-theorem right_lt_lineMap_iff_lt (h : r < 1) : b < lineMap a b r ↔ b < a :=
+lemma right_lt_lineMap_iff_lt (h : r < 1) : b < lineMap a b r ↔ b < a :=
   lineMap_lt_right_iff_lt (E := Eᵒᵈ) h
 #align right_lt_line_map_iff_lt right_lt_lineMap_iff_lt
 
@@ -109,7 +109,7 @@ section LinearOrderedRing
 variable [LinearOrderedRing k] [OrderedAddCommGroup E] [Module k E] [OrderedSMul k E]
   [Invertible (2 : k)] {a a' b b' : E} {r r' : k}
 
-theorem midpoint_le_midpoint (ha : a ≤ a') (hb : b ≤ b') : midpoint k a b ≤ midpoint k a' b' :=
+lemma midpoint_le_midpoint (ha : a ≤ a') (hb : b ≤ b') : midpoint k a b ≤ midpoint k a' b' :=
   lineMap_mono_endpoints ha hb (invOf_nonneg.2 zero_le_two) <| invOf_le_one one_le_two
 #align midpoint_le_midpoint midpoint_le_midpoint
 
@@ -124,45 +124,45 @@ section
 
 variable {a b : E} {r r' : k}
 
-theorem lineMap_le_lineMap_iff_of_lt (h : r < r') : lineMap a b r ≤ lineMap a b r' ↔ a ≤ b := by
+lemma lineMap_le_lineMap_iff_of_lt (h : r < r') : lineMap a b r ≤ lineMap a b r' ↔ a ≤ b := by
   simp only [lineMap_apply_module]
   rw [← le_sub_iff_add_le, add_sub_assoc, ← sub_le_iff_le_add', ← sub_smul, ← sub_smul,
     sub_sub_sub_cancel_left, smul_le_smul_iff_of_pos_left (sub_pos.2 h)]
 #align line_map_le_line_map_iff_of_lt lineMap_le_lineMap_iff_of_lt
 
-theorem left_le_lineMap_iff_le (h : 0 < r) : a ≤ lineMap a b r ↔ a ≤ b :=
+lemma left_le_lineMap_iff_le (h : 0 < r) : a ≤ lineMap a b r ↔ a ≤ b :=
   Iff.trans (by rw [lineMap_apply_zero]) (lineMap_le_lineMap_iff_of_lt h)
 #align left_le_line_map_iff_le left_le_lineMap_iff_le
 
 @[simp]
-theorem left_le_midpoint : a ≤ midpoint k a b ↔ a ≤ b :=
+lemma left_le_midpoint : a ≤ midpoint k a b ↔ a ≤ b :=
   left_le_lineMap_iff_le <| inv_pos.2 zero_lt_two
 #align left_le_midpoint left_le_midpoint
 
-theorem lineMap_le_left_iff_le (h : 0 < r) : lineMap a b r ≤ a ↔ b ≤ a :=
+lemma lineMap_le_left_iff_le (h : 0 < r) : lineMap a b r ≤ a ↔ b ≤ a :=
   left_le_lineMap_iff_le (E := Eᵒᵈ) h
 #align line_map_le_left_iff_le lineMap_le_left_iff_le
 
 @[simp]
-theorem midpoint_le_left : midpoint k a b ≤ a ↔ b ≤ a :=
+lemma midpoint_le_left : midpoint k a b ≤ a ↔ b ≤ a :=
   lineMap_le_left_iff_le <| inv_pos.2 zero_lt_two
 #align midpoint_le_left midpoint_le_left
 
-theorem lineMap_le_right_iff_le (h : r < 1) : lineMap a b r ≤ b ↔ a ≤ b :=
+lemma lineMap_le_right_iff_le (h : r < 1) : lineMap a b r ≤ b ↔ a ≤ b :=
   Iff.trans (by rw [lineMap_apply_one]) (lineMap_le_lineMap_iff_of_lt h)
 #align line_map_le_right_iff_le lineMap_le_right_iff_le
 
 @[simp]
-theorem midpoint_le_right : midpoint k a b ≤ b ↔ a ≤ b :=
+lemma midpoint_le_right : midpoint k a b ≤ b ↔ a ≤ b :=
   lineMap_le_right_iff_le <| inv_lt_one one_lt_two
 #align midpoint_le_right midpoint_le_right
 
-theorem right_le_lineMap_iff_le (h : r < 1) : b ≤ lineMap a b r ↔ b ≤ a :=
+lemma right_le_lineMap_iff_le (h : r < 1) : b ≤ lineMap a b r ↔ b ≤ a :=
   lineMap_le_right_iff_le (E := Eᵒᵈ) h
 #align right_le_line_map_iff_le right_le_lineMap_iff_le
 
 @[simp]
-theorem right_le_midpoint : b ≤ midpoint k a b ↔ b ≤ a :=
+lemma right_le_midpoint : b ≤ midpoint k a b ↔ b ≤ a :=
   right_le_lineMap_iff_le <| inv_lt_one one_lt_two
 #align right_le_midpoint right_le_midpoint
 

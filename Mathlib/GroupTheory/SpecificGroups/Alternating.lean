@@ -63,37 +63,37 @@ instance [Subsingleton α] : Unique (alternatingGroup α) :=
 
 variable {α}
 
-theorem alternatingGroup_eq_sign_ker : alternatingGroup α = sign.ker :=
+lemma alternatingGroup_eq_sign_ker : alternatingGroup α = sign.ker :=
   rfl
 #align alternating_group_eq_sign_ker alternatingGroup_eq_sign_ker
 
 namespace Equiv.Perm
 
 @[simp]
-theorem mem_alternatingGroup {f : Perm α} : f ∈ alternatingGroup α ↔ sign f = 1 :=
+lemma mem_alternatingGroup {f : Perm α} : f ∈ alternatingGroup α ↔ sign f = 1 :=
   sign.mem_ker
 #align equiv.perm.mem_alternating_group Equiv.Perm.mem_alternatingGroup
 
-theorem prod_list_swap_mem_alternatingGroup_iff_even_length {l : List (Perm α)}
+lemma prod_list_swap_mem_alternatingGroup_iff_even_length {l : List (Perm α)}
     (hl : ∀ g ∈ l, IsSwap g) : l.prod ∈ alternatingGroup α ↔ Even l.length := by
   rw [mem_alternatingGroup, sign_prod_list_swap hl, neg_one_pow_eq_one_iff_even]
   decide
 #align equiv.perm.prod_list_swap_mem_alternating_group_iff_even_length Equiv.Perm.prod_list_swap_mem_alternatingGroup_iff_even_length
 
-theorem IsThreeCycle.mem_alternatingGroup {f : Perm α} (h : IsThreeCycle f) :
+lemma IsThreeCycle.mem_alternatingGroup {f : Perm α} (h : IsThreeCycle f) :
     f ∈ alternatingGroup α :=
   mem_alternatingGroup.mpr h.sign
 #align equiv.perm.is_three_cycle.mem_alternating_group Equiv.Perm.IsThreeCycle.mem_alternatingGroup
 
 set_option linter.deprecated false in
-theorem finRotate_bit1_mem_alternatingGroup {n : ℕ} :
+lemma finRotate_bit1_mem_alternatingGroup {n : ℕ} :
     finRotate (bit1 n) ∈ alternatingGroup (Fin (bit1 n)) := by
   rw [mem_alternatingGroup, bit1, sign_finRotate, pow_bit0', Int.units_mul_self, one_pow]
 #align equiv.perm.fin_rotate_bit1_mem_alternating_group Equiv.Perm.finRotate_bit1_mem_alternatingGroup
 
 end Equiv.Perm
 
-theorem two_mul_card_alternatingGroup [Nontrivial α] :
+lemma two_mul_card_alternatingGroup [Nontrivial α] :
     2 * card (alternatingGroup α) = card (Perm α) := by
   let this := (QuotientGroup.quotientKerEquivOfSurjective _ (sign_surjective α)).toEquiv
   rw [← Fintype.card_units_int, ← Fintype.card_congr this]
@@ -108,7 +108,7 @@ instance normal : (alternatingGroup α).Normal :=
   sign.normal_ker
 #align alternating_group.normal alternatingGroup.normal
 
-theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ : Perm α))
+lemma isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ : Perm α))
     (hσ : (σ : Perm α).support.card + 2 ≤ Fintype.card α) : IsConj σ τ := by
   obtain ⟨σ, hσ⟩ := σ
   obtain ⟨τ, hτ⟩ := τ
@@ -133,7 +133,7 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
       simp [mul_assoc]
 #align alternating_group.is_conj_of alternatingGroup.isConj_of
 
-theorem isThreeCycle_isConj (h5 : 5 ≤ Fintype.card α) {σ τ : alternatingGroup α}
+lemma isThreeCycle_isConj (h5 : 5 ≤ Fintype.card α) {σ τ : alternatingGroup α}
     (hσ : IsThreeCycle (σ : Perm α)) (hτ : IsThreeCycle (τ : Perm α)) : IsConj σ τ :=
   alternatingGroup.isConj_of (isConj_iff_cycleType_eq.2 (hσ.trans hτ.symm))
     (by rwa [hσ.card_support])
@@ -146,7 +146,7 @@ namespace Equiv.Perm
 open alternatingGroup
 
 @[simp]
-theorem closure_three_cycles_eq_alternating :
+lemma closure_three_cycles_eq_alternating :
     closure { σ : Perm α | IsThreeCycle σ } = alternatingGroup α :=
   closure_eq_of_le _ (fun σ hσ => mem_alternatingGroup.2 hσ.sign) fun σ hσ => by
     suffices hind :
@@ -215,7 +215,7 @@ namespace alternatingGroup
 
 open Equiv.Perm
 
-theorem nontrivial_of_three_le_card (h3 : 3 ≤ card α) : Nontrivial (alternatingGroup α) := by
+lemma nontrivial_of_three_le_card (h3 : 3 ≤ card α) : Nontrivial (alternatingGroup α) := by
   haveI := Fintype.one_lt_card_iff_nontrivial.1 (lt_trans (by decide) h3)
   rw [← Fintype.one_lt_card_iff_nontrivial]
   refine' lt_of_mul_lt_mul_left _ (le_of_lt Nat.prime_two.pos)

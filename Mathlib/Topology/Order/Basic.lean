@@ -88,42 +88,42 @@ instance : OrderTopology αᵒᵈ :=
     convert OrderTopology.topology_eq_generate_intervals (α := α) using 6
     apply or_comm⟩
 
-theorem isOpen_iff_generate_intervals {s : Set α} :
+lemma isOpen_iff_generate_intervals {s : Set α} :
     IsOpen s ↔ GenerateOpen { s | ∃ a, s = Ioi a ∨ s = Iio a } s := by
   rw [t.topology_eq_generate_intervals]; rfl
 #align is_open_iff_generate_intervals isOpen_iff_generate_intervals
 
-theorem isOpen_lt' (a : α) : IsOpen { b : α | a < b } :=
+lemma isOpen_lt' (a : α) : IsOpen { b : α | a < b } :=
   isOpen_iff_generate_intervals.2 <| .basic _ ⟨a, .inl rfl⟩
 #align is_open_lt' isOpen_lt'
 
-theorem isOpen_gt' (a : α) : IsOpen { b : α | b < a } :=
+lemma isOpen_gt' (a : α) : IsOpen { b : α | b < a } :=
   isOpen_iff_generate_intervals.2 <| .basic _ ⟨a, .inr rfl⟩
 #align is_open_gt' isOpen_gt'
 
-theorem lt_mem_nhds {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 b, a < x :=
+lemma lt_mem_nhds {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 b, a < x :=
   (isOpen_lt' _).mem_nhds h
 #align lt_mem_nhds lt_mem_nhds
 
-theorem le_mem_nhds {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 b, a ≤ x :=
+lemma le_mem_nhds {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 b, a ≤ x :=
   (lt_mem_nhds h).mono fun _ => le_of_lt
 #align le_mem_nhds le_mem_nhds
 
-theorem gt_mem_nhds {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 a, x < b :=
+lemma gt_mem_nhds {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 a, x < b :=
   (isOpen_gt' _).mem_nhds h
 #align gt_mem_nhds gt_mem_nhds
 
-theorem ge_mem_nhds {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 a, x ≤ b :=
+lemma ge_mem_nhds {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 a, x ≤ b :=
   (gt_mem_nhds h).mono fun _ => le_of_lt
 #align ge_mem_nhds ge_mem_nhds
 
-theorem nhds_eq_order (a : α) : 𝓝 a = (⨅ b ∈ Iio a, 𝓟 (Ioi b)) ⊓ ⨅ b ∈ Ioi a, 𝓟 (Iio b) := by
+lemma nhds_eq_order (a : α) : 𝓝 a = (⨅ b ∈ Iio a, 𝓟 (Ioi b)) ⊓ ⨅ b ∈ Ioi a, 𝓟 (Iio b) := by
   rw [t.topology_eq_generate_intervals, nhds_generateFrom]
   simp_rw [mem_setOf_eq, @and_comm (a ∈ _), exists_or, or_and_right, iInf_or, iInf_and, iInf_exists,
     iInf_inf_eq, iInf_comm (ι := Set α), iInf_iInf_eq_left, mem_Ioi, mem_Iio]
 #align nhds_eq_order nhds_eq_order
 
-theorem tendsto_order {f : β → α} {a : α} {x : Filter β} :
+lemma tendsto_order {f : β → α} {a : α} {x : Filter β} :
     Tendsto f x (𝓝 a) ↔ (∀ a' < a, ∀ᶠ b in x, a' < f b) ∧ ∀ a' > a, ∀ᶠ b in x, f b < a' := by
   simp only [nhds_eq_order a, tendsto_inf, tendsto_iInf, tendsto_principal]; rfl
 #align tendsto_order tendsto_order
@@ -166,12 +166,12 @@ theorem tendsto_of_tendsto_of_tendsto_of_le_of_le {f g h : β → α} {b : Filte
     (eventually_of_forall hfh)
 #align tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_of_tendsto_of_tendsto_of_le_of_le
 
-theorem nhds_order_unbounded {a : α} (hu : ∃ u, a < u) (hl : ∃ l, l < a) :
+lemma nhds_order_unbounded {a : α} (hu : ∃ u, a < u) (hl : ∃ l, l < a) :
     𝓝 a = ⨅ (l) (_ : l < a) (u) (_ : a < u), 𝓟 (Ioo l u) := by
   simp only [nhds_eq_order, ← inf_biInf, ← biInf_inf, *, ← inf_principal, ← Ioi_inter_Iio]; rfl
 #align nhds_order_unbounded nhds_order_unbounded
 
-theorem tendsto_order_unbounded {f : β → α} {a : α} {x : Filter β} (hu : ∃ u, a < u)
+lemma tendsto_order_unbounded {f : β → α} {a : α} {x : Filter β} (hu : ∃ u, a < u)
     (hl : ∃ l, l < a) (h : ∀ l u, l < a → a < u → ∀ᶠ b in x, l < f b ∧ f b < u) :
     Tendsto f x (𝓝 a) := by
   simp only [nhds_order_unbounded hu hl, tendsto_iInf, tendsto_principal]
@@ -200,7 +200,7 @@ instance tendstoIccClassNhdsPi {ι : Type*} {α : ι → Type*} [∀ i, Preorder
 #align tendsto_Icc_class_nhds_pi tendstoIccClassNhdsPi
 
 -- Porting note (#10756): new lemma
-theorem induced_topology_le_preorder [Preorder α] [Preorder β] [TopologicalSpace β]
+lemma induced_topology_le_preorder [Preorder α] [Preorder β] [TopologicalSpace β]
     [OrderTopology β] {f : α → β} (hf : ∀ {x y}, f x < f y ↔ x < y) :
     induced f ‹TopologicalSpace β› ≤ Preorder.topology α := by
   let _ := Preorder.topology α; have : OrderTopology α := ⟨rfl⟩
@@ -210,7 +210,7 @@ theorem induced_topology_le_preorder [Preorder α] [Preorder β] [TopologicalSpa
   exacts [iInf₂_le (f a) ha, iInf₂_le (f a) ha]
 
 -- Porting note (#10756): new lemma
-theorem induced_topology_eq_preorder [Preorder α] [Preorder β] [TopologicalSpace β]
+lemma induced_topology_eq_preorder [Preorder α] [Preorder β] [TopologicalSpace β]
     [OrderTopology β] {f : α → β} (hf : ∀ {x y}, f x < f y ↔ x < y)
     (H₁ : ∀ {a b x}, b < f a → ¬(b < f x) → ∃ y, y < a ∧ b ≤ f y)
     (H₂ : ∀ {a b x}, f a < b → ¬(f x < b) → ∃ y, a < y ∧ f y ≤ b) :
@@ -231,7 +231,7 @@ theorem induced_topology_eq_preorder [Preorder α] [Preorder β] [TopologicalSpa
     · push_neg at hb
       exact le_principal_iff.2 (univ_mem' hb)
 
-theorem induced_orderTopology' {α : Type u} {β : Type v} [Preorder α] [ta : TopologicalSpace β]
+lemma induced_orderTopology' {α : Type u} {β : Type v} [Preorder α] [ta : TopologicalSpace β]
     [Preorder β] [OrderTopology β] (f : α → β) (hf : ∀ {x y}, f x < f y ↔ x < y)
     (H₁ : ∀ {a x}, x < f a → ∃ b < a, x ≤ f b) (H₂ : ∀ {a x}, f a < x → ∃ b > a, f b ≤ x) :
     @OrderTopology _ (induced f ta) _ :=
@@ -239,7 +239,7 @@ theorem induced_orderTopology' {α : Type u} {β : Type v} [Preorder α] [ta : T
   ⟨induced_topology_eq_preorder hf (fun h _ => H₁ h) (fun h _ => H₂ h)⟩
 #align induced_order_topology' induced_orderTopology'
 
-theorem induced_orderTopology {α : Type u} {β : Type v} [Preorder α] [ta : TopologicalSpace β]
+lemma induced_orderTopology {α : Type u} {β : Type v} [Preorder α] [ta : TopologicalSpace β]
     [Preorder β] [OrderTopology β] (f : α → β) (hf : ∀ {x y}, f x < f y ↔ x < y)
     (H : ∀ {x y}, x < y → ∃ a, x < f a ∧ f a < y) : @OrderTopology _ (induced f ta) _ :=
   induced_orderTopology' f (hf)
@@ -273,29 +273,29 @@ instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [Line
     rwa [← @Subtype.range_val _ t] at ht⟩
 #align order_topology_of_ord_connected orderTopology_of_ordConnected
 
-theorem nhdsWithin_Ici_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
+lemma nhdsWithin_Ici_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
     𝓝[≥] a = (⨅ (u) (_ : a < u), 𝓟 (Iio u)) ⊓ 𝓟 (Ici a) := by
   rw [nhdsWithin, nhds_eq_order]
   refine' le_antisymm (inf_le_inf_right _ inf_le_right) (le_inf (le_inf _ inf_le_left) inf_le_right)
   exact inf_le_right.trans (le_iInf₂ fun l hl => principal_mono.2 <| Ici_subset_Ioi.2 hl)
 #align nhds_within_Ici_eq'' nhdsWithin_Ici_eq''
 
-theorem nhdsWithin_Iic_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
+lemma nhdsWithin_Iic_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
     𝓝[≤] a = (⨅ l < a, 𝓟 (Ioi l)) ⊓ 𝓟 (Iic a) :=
   nhdsWithin_Ici_eq'' (toDual a)
 #align nhds_within_Iic_eq'' nhdsWithin_Iic_eq''
 
-theorem nhdsWithin_Ici_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
+lemma nhdsWithin_Ici_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
     (ha : ∃ u, a < u) : 𝓝[≥] a = ⨅ (u) (_ : a < u), 𝓟 (Ico a u) := by
   simp only [nhdsWithin_Ici_eq'', biInf_inf ha, inf_principal, Iio_inter_Ici]
 #align nhds_within_Ici_eq' nhdsWithin_Ici_eq'
 
-theorem nhdsWithin_Iic_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
+lemma nhdsWithin_Iic_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : 𝓝[≤] a = ⨅ l < a, 𝓟 (Ioc l a) := by
   simp only [nhdsWithin_Iic_eq'', biInf_inf ha, inf_principal, Ioi_inter_Iic]
 #align nhds_within_Iic_eq' nhdsWithin_Iic_eq'
 
-theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
+lemma nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ u, a < u) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
   (nhdsWithin_Ici_eq' ha).symm ▸
     hasBasis_biInf_principal
@@ -304,71 +304,71 @@ theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopol
       ha
 #align nhds_within_Ici_basis' nhdsWithin_Ici_basis'
 
-theorem nhdsWithin_Iic_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
+lemma nhdsWithin_Iic_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
   convert nhdsWithin_Ici_basis' (α := αᵒᵈ) ha using 2
   exact dual_Ico.symm
 #align nhds_within_Iic_basis' nhdsWithin_Iic_basis'
 
-theorem nhdsWithin_Ici_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMaxOrder α]
+lemma nhdsWithin_Ici_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMaxOrder α]
     (a : α) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
   nhdsWithin_Ici_basis' (exists_gt a)
 #align nhds_within_Ici_basis nhdsWithin_Ici_basis
 
-theorem nhdsWithin_Iic_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMinOrder α]
+lemma nhdsWithin_Iic_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMinOrder α]
     (a : α) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a :=
   nhdsWithin_Iic_basis' (exists_lt a)
 #align nhds_within_Iic_basis nhdsWithin_Iic_basis
 
-theorem nhds_top_order [TopologicalSpace α] [Preorder α] [OrderTop α] [OrderTopology α] :
+lemma nhds_top_order [TopologicalSpace α] [Preorder α] [OrderTop α] [OrderTopology α] :
     𝓝 (⊤ : α) = ⨅ (l) (h₂ : l < ⊤), 𝓟 (Ioi l) := by simp [nhds_eq_order (⊤ : α)]
 #align nhds_top_order nhds_top_order
 
-theorem nhds_bot_order [TopologicalSpace α] [Preorder α] [OrderBot α] [OrderTopology α] :
+lemma nhds_bot_order [TopologicalSpace α] [Preorder α] [OrderBot α] [OrderTopology α] :
     𝓝 (⊥ : α) = ⨅ (l) (h₂ : ⊥ < l), 𝓟 (Iio l) := by simp [nhds_eq_order (⊥ : α)]
 #align nhds_bot_order nhds_bot_order
 
-theorem nhds_top_basis [TopologicalSpace α] [LinearOrder α] [OrderTop α] [OrderTopology α]
+lemma nhds_top_basis [TopologicalSpace α] [LinearOrder α] [OrderTop α] [OrderTopology α]
     [Nontrivial α] : (𝓝 ⊤).HasBasis (fun a : α => a < ⊤) fun a : α => Ioi a := by
   have : ∃ x : α, x < ⊤ := (exists_ne ⊤).imp fun x hx => hx.lt_top
   simpa only [Iic_top, nhdsWithin_univ, Ioc_top] using nhdsWithin_Iic_basis' this
 #align nhds_top_basis nhds_top_basis
 
-theorem nhds_bot_basis [TopologicalSpace α] [LinearOrder α] [OrderBot α] [OrderTopology α]
+lemma nhds_bot_basis [TopologicalSpace α] [LinearOrder α] [OrderBot α] [OrderTopology α]
     [Nontrivial α] : (𝓝 ⊥).HasBasis (fun a : α => ⊥ < a) fun a : α => Iio a :=
   nhds_top_basis (α := αᵒᵈ)
 #align nhds_bot_basis nhds_bot_basis
 
-theorem nhds_top_basis_Ici [TopologicalSpace α] [LinearOrder α] [OrderTop α] [OrderTopology α]
+lemma nhds_top_basis_Ici [TopologicalSpace α] [LinearOrder α] [OrderTop α] [OrderTopology α]
     [Nontrivial α] [DenselyOrdered α] : (𝓝 ⊤).HasBasis (fun a : α => a < ⊤) Ici :=
   nhds_top_basis.to_hasBasis
     (fun _a ha => let ⟨b, hab, hb⟩ := exists_between ha; ⟨b, hb, Ici_subset_Ioi.mpr hab⟩)
     fun a ha => ⟨a, ha, Ioi_subset_Ici_self⟩
 #align nhds_top_basis_Ici nhds_top_basis_Ici
 
-theorem nhds_bot_basis_Iic [TopologicalSpace α] [LinearOrder α] [OrderBot α] [OrderTopology α]
+lemma nhds_bot_basis_Iic [TopologicalSpace α] [LinearOrder α] [OrderBot α] [OrderTopology α]
     [Nontrivial α] [DenselyOrdered α] : (𝓝 ⊥).HasBasis (fun a : α => ⊥ < a) Iic :=
   nhds_top_basis_Ici (α := αᵒᵈ)
 #align nhds_bot_basis_Iic nhds_bot_basis_Iic
 
-theorem tendsto_nhds_top_mono [TopologicalSpace β] [Preorder β] [OrderTop β] [OrderTopology β]
+lemma tendsto_nhds_top_mono [TopologicalSpace β] [Preorder β] [OrderTop β] [OrderTopology β]
     {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊤)) (hg : f ≤ᶠ[l] g) : Tendsto g l (𝓝 ⊤) := by
   simp only [nhds_top_order, tendsto_iInf, tendsto_principal] at hf ⊢
   intro x hx
   filter_upwards [hf x hx, hg] with _ using lt_of_lt_of_le
 #align tendsto_nhds_top_mono tendsto_nhds_top_mono
 
-theorem tendsto_nhds_bot_mono [TopologicalSpace β] [Preorder β] [OrderBot β] [OrderTopology β]
+lemma tendsto_nhds_bot_mono [TopologicalSpace β] [Preorder β] [OrderBot β] [OrderTopology β]
     {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊥)) (hg : g ≤ᶠ[l] f) : Tendsto g l (𝓝 ⊥) :=
   tendsto_nhds_top_mono (β := βᵒᵈ) hf hg
 #align tendsto_nhds_bot_mono tendsto_nhds_bot_mono
 
-theorem tendsto_nhds_top_mono' [TopologicalSpace β] [Preorder β] [OrderTop β] [OrderTopology β]
+lemma tendsto_nhds_top_mono' [TopologicalSpace β] [Preorder β] [OrderTop β] [OrderTopology β]
     {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊤)) (hg : f ≤ g) : Tendsto g l (𝓝 ⊤) :=
   tendsto_nhds_top_mono hf (eventually_of_forall hg)
 #align tendsto_nhds_top_mono' tendsto_nhds_top_mono'
 
-theorem tendsto_nhds_bot_mono' [TopologicalSpace β] [Preorder β] [OrderBot β] [OrderTopology β]
+lemma tendsto_nhds_bot_mono' [TopologicalSpace β] [Preorder β] [OrderBot β] [OrderTopology β]
     {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊥)) (hg : g ≤ f) : Tendsto g l (𝓝 ⊥) :=
   tendsto_nhds_bot_mono hf (eventually_of_forall hg)
 #align tendsto_nhds_bot_mono' tendsto_nhds_bot_mono'
@@ -381,7 +381,7 @@ section OrderTopology
 
 variable [OrderTopology α]
 
-theorem order_separated {a₁ a₂ : α} (h : a₁ < a₂) :
+lemma order_separated {a₁ a₂ : α} (h : a₁ < a₂) :
     ∃ u v : Set α, IsOpen u ∧ IsOpen v ∧ a₁ ∈ u ∧ a₂ ∈ v ∧ ∀ b₁ ∈ u, ∀ b₂ ∈ v, b₁ < b₂ :=
   let ⟨x, hx, y, hy, h⟩ := h.exists_disjoint_Iio_Ioi
   ⟨Iio x, Ioi y, isOpen_gt' _, isOpen_lt' _, hx, hy, h⟩
@@ -395,32 +395,32 @@ instance (priority := 100) OrderTopology.to_orderClosedTopology : OrderClosedTop
     ⟨v, u, hv, hu, ha₂, ha₁, fun ⟨b₁, b₂⟩ ⟨h₁, h₂⟩ => not_le_of_gt <| h b₂ h₂ b₁ h₁⟩
 #align order_topology.to_order_closed_topology OrderTopology.to_orderClosedTopology
 
-theorem exists_Ioc_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) (h : ∃ l, l < a) :
+lemma exists_Ioc_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) (h : ∃ l, l < a) :
     ∃ l < a, Ioc l a ⊆ s :=
   (nhdsWithin_Iic_basis' h).mem_iff.mp (nhdsWithin_le_nhds hs)
 #align exists_Ioc_subset_of_mem_nhds exists_Ioc_subset_of_mem_nhds
 
-theorem exists_Ioc_subset_of_mem_nhds' {a : α} {s : Set α} (hs : s ∈ 𝓝 a) {l : α} (hl : l < a) :
+lemma exists_Ioc_subset_of_mem_nhds' {a : α} {s : Set α} (hs : s ∈ 𝓝 a) {l : α} (hl : l < a) :
     ∃ l' ∈ Ico l a, Ioc l' a ⊆ s :=
   let ⟨l', hl'a, hl's⟩ := exists_Ioc_subset_of_mem_nhds hs ⟨l, hl⟩
   ⟨max l l', ⟨le_max_left _ _, max_lt hl hl'a⟩,
     (Ioc_subset_Ioc_left <| le_max_right _ _).trans hl's⟩
 #align exists_Ioc_subset_of_mem_nhds' exists_Ioc_subset_of_mem_nhds'
 
-theorem exists_Ico_subset_of_mem_nhds' {a : α} {s : Set α} (hs : s ∈ 𝓝 a) {u : α} (hu : a < u) :
+lemma exists_Ico_subset_of_mem_nhds' {a : α} {s : Set α} (hs : s ∈ 𝓝 a) {u : α} (hu : a < u) :
     ∃ u' ∈ Ioc a u, Ico a u' ⊆ s := by
   simpa only [OrderDual.exists, exists_prop, dual_Ico, dual_Ioc] using
     exists_Ioc_subset_of_mem_nhds' (show ofDual ⁻¹' s ∈ 𝓝 (toDual a) from hs) hu.dual
 #align exists_Ico_subset_of_mem_nhds' exists_Ico_subset_of_mem_nhds'
 
-theorem exists_Ico_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) (h : ∃ u, a < u) :
+lemma exists_Ico_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) (h : ∃ u, a < u) :
     ∃ u, a < u ∧ Ico a u ⊆ s :=
   let ⟨_l', hl'⟩ := h;
   let ⟨l, hl⟩ := exists_Ico_subset_of_mem_nhds' hs hl'
   ⟨l, hl.1.1, hl.2⟩
 #align exists_Ico_subset_of_mem_nhds exists_Ico_subset_of_mem_nhds
 
-theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Ici {a : α} {s : Set α} (hs : s ∈ 𝓝[≥] a) :
+lemma exists_Icc_mem_subset_of_mem_nhdsWithin_Ici {a : α} {s : Set α} (hs : s ∈ 𝓝[≥] a) :
     ∃ b, a ≤ b ∧ Icc a b ∈ 𝓝[≥] a ∧ Icc a b ⊆ s := by
   rcases (em (IsMax a)).imp_right not_isMax_iff.mp with (ha | ha)
   · use a
@@ -433,13 +433,13 @@ theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Ici {a : α} {s : Set α} (hs : 
       exact (Icc_subset_Ico_right hcb).trans hbs
 #align exists_Icc_mem_subset_of_mem_nhds_within_Ici exists_Icc_mem_subset_of_mem_nhdsWithin_Ici
 
-theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Iic {a : α} {s : Set α} (hs : s ∈ 𝓝[≤] a) :
+lemma exists_Icc_mem_subset_of_mem_nhdsWithin_Iic {a : α} {s : Set α} (hs : s ∈ 𝓝[≤] a) :
     ∃ b ≤ a, Icc b a ∈ 𝓝[≤] a ∧ Icc b a ⊆ s := by
   simpa only [dual_Icc, toDual.surjective.exists] using
     exists_Icc_mem_subset_of_mem_nhdsWithin_Ici (α := αᵒᵈ) (a := toDual a) hs
 #align exists_Icc_mem_subset_of_mem_nhds_within_Iic exists_Icc_mem_subset_of_mem_nhdsWithin_Iic
 
-theorem exists_Icc_mem_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) :
+lemma exists_Icc_mem_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) :
     ∃ b c, a ∈ Icc b c ∧ Icc b c ∈ 𝓝 a ∧ Icc b c ⊆ s := by
   rcases exists_Icc_mem_subset_of_mem_nhdsWithin_Iic (nhdsWithin_le_nhds hs) with
     ⟨b, hba, hb_nhds, hbs⟩
@@ -450,7 +450,7 @@ theorem exists_Icc_mem_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝
   exact ⟨union_mem_sup hb_nhds hc_nhds, union_subset hbs hcs⟩
 #align exists_Icc_mem_subset_of_mem_nhds exists_Icc_mem_subset_of_mem_nhds
 
-theorem IsOpen.exists_Ioo_subset [Nontrivial α] {s : Set α} (hs : IsOpen s) (h : s.Nonempty) :
+lemma IsOpen.exists_Ioo_subset [Nontrivial α] {s : Set α} (hs : IsOpen s) (h : s.Nonempty) :
     ∃ a b, a < b ∧ Ioo a b ⊆ s := by
   obtain ⟨x, hx⟩ : ∃ x, x ∈ s := h
   obtain ⟨y, hy⟩ : ∃ y, y ≠ x := exists_ne x
@@ -464,7 +464,7 @@ theorem IsOpen.exists_Ioo_subset [Nontrivial α] {s : Set α} (hs : IsOpen s) (h
     exact ⟨l, x, lx, Ioo_subset_Ioc_self.trans hl⟩
 #align is_open.exists_Ioo_subset IsOpen.exists_Ioo_subset
 
-theorem dense_of_exists_between [Nontrivial α] {s : Set α}
+lemma dense_of_exists_between [Nontrivial α] {s : Set α}
     (h : ∀ ⦃a b⦄, a < b → ∃ c ∈ s, a < c ∧ c < b) : Dense s := by
   refine dense_iff_inter_open.2 fun U U_open U_nonempty => ?_
   obtain ⟨a, b, hab, H⟩ : ∃ a b : α, a < b ∧ Ioo a b ⊆ U := U_open.exists_Ioo_subset U_nonempty
@@ -500,22 +500,22 @@ theorem mem_nhds_iff_exists_Ioo_subset [NoMaxOrder α] [NoMinOrder α] {a : α} 
   mem_nhds_iff_exists_Ioo_subset' (exists_lt a) (exists_gt a)
 #align mem_nhds_iff_exists_Ioo_subset mem_nhds_iff_exists_Ioo_subset
 
-theorem nhds_basis_Ioo' {a : α} (hl : ∃ l, l < a) (hu : ∃ u, a < u) :
+lemma nhds_basis_Ioo' {a : α} (hl : ∃ l, l < a) (hu : ∃ u, a < u) :
     (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b => Ioo b.1 b.2 :=
   ⟨fun s => (mem_nhds_iff_exists_Ioo_subset' hl hu).trans <| by simp⟩
 #align nhds_basis_Ioo' nhds_basis_Ioo'
 
-theorem nhds_basis_Ioo [NoMaxOrder α] [NoMinOrder α] (a : α) :
+lemma nhds_basis_Ioo [NoMaxOrder α] [NoMinOrder α] (a : α) :
     (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b => Ioo b.1 b.2 :=
   nhds_basis_Ioo' (exists_lt a) (exists_gt a)
 #align nhds_basis_Ioo nhds_basis_Ioo
 
-theorem Filter.Eventually.exists_Ioo_subset [NoMaxOrder α] [NoMinOrder α] {a : α} {p : α → Prop}
+lemma Filter.Eventually.exists_Ioo_subset [NoMaxOrder α] [NoMinOrder α] {a : α} {p : α → Prop}
     (hp : ∀ᶠ x in 𝓝 a, p x) : ∃ l u, a ∈ Ioo l u ∧ Ioo l u ⊆ { x | p x } :=
   mem_nhds_iff_exists_Ioo_subset.1 hp
 #align filter.eventually.exists_Ioo_subset Filter.Eventually.exists_Ioo_subset
 
-theorem Dense.topology_eq_generateFrom [DenselyOrdered α] {s : Set α} (hs : Dense s) :
+lemma Dense.topology_eq_generateFrom [DenselyOrdered α] {s : Set α} (hs : Dense s) :
     ‹TopologicalSpace α› = .generateFrom (Ioi '' s ∪ Iio '' s) := by
   refine (OrderTopology.topology_eq_generate_intervals (α := α)).trans ?_
   refine le_antisymm (generateFrom_anti ?_) (le_generateFrom ?_)
@@ -530,13 +530,13 @@ theorem Dense.topology_eq_generateFrom [DenselyOrdered α] {s : Set α} (hs : De
       exact isOpen_iUnion fun x ↦ isOpen_iUnion fun h ↦ .basic _ <| .inr <| mem_image_of_mem _ h.1
 
 @[deprecated OrderBot.atBot_eq] -- 2024-02-14
-theorem atBot_le_nhds_bot [OrderBot α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
+lemma atBot_le_nhds_bot [OrderBot α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
   rw [OrderBot.atBot_eq]
   apply pure_le_nhds
 #align at_bot_le_nhds_bot atBot_le_nhds_bot
 
 @[deprecated OrderTop.atTop_eq] -- 2024-02-14
-theorem atTop_le_nhds_top [OrderTop α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
+lemma atTop_le_nhds_top [OrderTop α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
   set_option linter.deprecated false in @atBot_le_nhds_bot αᵒᵈ _ _ _
 #align at_top_le_nhds_top atTop_le_nhds_top
 
@@ -731,73 +731,73 @@ e.g., `ι → ℝ`.
 variable {ι : Type*} {π : ι → Type*} [Finite ι] [∀ i, LinearOrder (π i)]
   [∀ i, TopologicalSpace (π i)] [∀ i, OrderTopology (π i)] {a b x : ∀ i, π i} {a' b' x' : ι → α}
 
-theorem pi_Iic_mem_nhds (ha : ∀ i, x i < a i) : Iic a ∈ 𝓝 x :=
+lemma pi_Iic_mem_nhds (ha : ∀ i, x i < a i) : Iic a ∈ 𝓝 x :=
   pi_univ_Iic a ▸ set_pi_mem_nhds (Set.toFinite _) fun _ _ => Iic_mem_nhds (ha _)
 #align pi_Iic_mem_nhds pi_Iic_mem_nhds
 
-theorem pi_Iic_mem_nhds' (ha : ∀ i, x' i < a' i) : Iic a' ∈ 𝓝 x' :=
+lemma pi_Iic_mem_nhds' (ha : ∀ i, x' i < a' i) : Iic a' ∈ 𝓝 x' :=
   pi_Iic_mem_nhds ha
 #align pi_Iic_mem_nhds' pi_Iic_mem_nhds'
 
-theorem pi_Ici_mem_nhds (ha : ∀ i, a i < x i) : Ici a ∈ 𝓝 x :=
+lemma pi_Ici_mem_nhds (ha : ∀ i, a i < x i) : Ici a ∈ 𝓝 x :=
   pi_univ_Ici a ▸ set_pi_mem_nhds (Set.toFinite _) fun _ _ => Ici_mem_nhds (ha _)
 #align pi_Ici_mem_nhds pi_Ici_mem_nhds
 
-theorem pi_Ici_mem_nhds' (ha : ∀ i, a' i < x' i) : Ici a' ∈ 𝓝 x' :=
+lemma pi_Ici_mem_nhds' (ha : ∀ i, a' i < x' i) : Ici a' ∈ 𝓝 x' :=
   pi_Ici_mem_nhds ha
 #align pi_Ici_mem_nhds' pi_Ici_mem_nhds'
 
-theorem pi_Icc_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Icc a b ∈ 𝓝 x :=
+lemma pi_Icc_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Icc a b ∈ 𝓝 x :=
   pi_univ_Icc a b ▸ set_pi_mem_nhds finite_univ fun _ _ => Icc_mem_nhds (ha _) (hb _)
 #align pi_Icc_mem_nhds pi_Icc_mem_nhds
 
-theorem pi_Icc_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : Icc a' b' ∈ 𝓝 x' :=
+lemma pi_Icc_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : Icc a' b' ∈ 𝓝 x' :=
   pi_Icc_mem_nhds ha hb
 #align pi_Icc_mem_nhds' pi_Icc_mem_nhds'
 
 variable [Nonempty ι]
 
-theorem pi_Iio_mem_nhds (ha : ∀ i, x i < a i) : Iio a ∈ 𝓝 x := by
+lemma pi_Iio_mem_nhds (ha : ∀ i, x i < a i) : Iio a ∈ 𝓝 x := by
   refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Iio_subset a)
   exact Iio_mem_nhds (ha i)
 #align pi_Iio_mem_nhds pi_Iio_mem_nhds
 
-theorem pi_Iio_mem_nhds' (ha : ∀ i, x' i < a' i) : Iio a' ∈ 𝓝 x' :=
+lemma pi_Iio_mem_nhds' (ha : ∀ i, x' i < a' i) : Iio a' ∈ 𝓝 x' :=
   pi_Iio_mem_nhds ha
 #align pi_Iio_mem_nhds' pi_Iio_mem_nhds'
 
-theorem pi_Ioi_mem_nhds (ha : ∀ i, a i < x i) : Ioi a ∈ 𝓝 x :=
+lemma pi_Ioi_mem_nhds (ha : ∀ i, a i < x i) : Ioi a ∈ 𝓝 x :=
   @pi_Iio_mem_nhds ι (fun i => (π i)ᵒᵈ) _ _ _ _ _ _ _ ha
 #align pi_Ioi_mem_nhds pi_Ioi_mem_nhds
 
-theorem pi_Ioi_mem_nhds' (ha : ∀ i, a' i < x' i) : Ioi a' ∈ 𝓝 x' :=
+lemma pi_Ioi_mem_nhds' (ha : ∀ i, a' i < x' i) : Ioi a' ∈ 𝓝 x' :=
   pi_Ioi_mem_nhds ha
 #align pi_Ioi_mem_nhds' pi_Ioi_mem_nhds'
 
-theorem pi_Ioc_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ioc a b ∈ 𝓝 x := by
+lemma pi_Ioc_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ioc a b ∈ 𝓝 x := by
   refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Ioc_subset a b)
   exact Ioc_mem_nhds (ha i) (hb i)
 #align pi_Ioc_mem_nhds pi_Ioc_mem_nhds
 
-theorem pi_Ioc_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : Ioc a' b' ∈ 𝓝 x' :=
+lemma pi_Ioc_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : Ioc a' b' ∈ 𝓝 x' :=
   pi_Ioc_mem_nhds ha hb
 #align pi_Ioc_mem_nhds' pi_Ioc_mem_nhds'
 
-theorem pi_Ico_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ico a b ∈ 𝓝 x := by
+lemma pi_Ico_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ico a b ∈ 𝓝 x := by
   refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Ico_subset a b)
   exact Ico_mem_nhds (ha i) (hb i)
 #align pi_Ico_mem_nhds pi_Ico_mem_nhds
 
-theorem pi_Ico_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : Ico a' b' ∈ 𝓝 x' :=
+lemma pi_Ico_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : Ico a' b' ∈ 𝓝 x' :=
   pi_Ico_mem_nhds ha hb
 #align pi_Ico_mem_nhds' pi_Ico_mem_nhds'
 
-theorem pi_Ioo_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ioo a b ∈ 𝓝 x := by
+lemma pi_Ioo_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ioo a b ∈ 𝓝 x := by
   refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Ioo_subset a b)
   exact Ioo_mem_nhds (ha i) (hb i)
 #align pi_Ioo_mem_nhds pi_Ioo_mem_nhds
 
-theorem pi_Ioo_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : Ioo a' b' ∈ 𝓝 x' :=
+lemma pi_Ioo_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : Ioo a' b' ∈ 𝓝 x' :=
   pi_Ioo_mem_nhds ha hb
 #align pi_Ioo_mem_nhds' pi_Ioo_mem_nhds'
 

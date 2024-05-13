@@ -55,7 +55,7 @@ def TendstoInMeasure [Dist E] {_ : MeasurableSpace α} (μ : Measure α) (f : ι
   ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ dist (f i x) (g x) }) l (𝓝 0)
 #align measure_theory.tendsto_in_measure MeasureTheory.TendstoInMeasure
 
-theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
+lemma tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
     {g : α → E} :
     TendstoInMeasure μ f l g ↔
       ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ }) l (𝓝 0) := by
@@ -66,7 +66,7 @@ namespace TendstoInMeasure
 
 variable [Dist E] {l : Filter ι} {f f' : ι → α → E} {g g' : α → E}
 
-protected theorem congr' (h_left : ∀ᶠ i in l, f i =ᵐ[μ] f' i) (h_right : g =ᵐ[μ] g')
+protected lemma congr' (h_left : ∀ᶠ i in l, f i =ᵐ[μ] f' i) (h_right : g =ᵐ[μ] g')
     (h_tendsto : TendstoInMeasure μ f l g) : TendstoInMeasure μ f' l g' := by
   intro ε hε
   suffices
@@ -81,17 +81,17 @@ protected theorem congr' (h_left : ∀ᶠ i in l, f i =ᵐ[μ] f' i) (h_right : 
   rw [hxg, hxf]
 #align measure_theory.tendsto_in_measure.congr' MeasureTheory.TendstoInMeasure.congr'
 
-protected theorem congr (h_left : ∀ i, f i =ᵐ[μ] f' i) (h_right : g =ᵐ[μ] g')
+protected lemma congr (h_left : ∀ i, f i =ᵐ[μ] f' i) (h_right : g =ᵐ[μ] g')
     (h_tendsto : TendstoInMeasure μ f l g) : TendstoInMeasure μ f' l g' :=
   TendstoInMeasure.congr' (eventually_of_forall h_left) h_right h_tendsto
 #align measure_theory.tendsto_in_measure.congr MeasureTheory.TendstoInMeasure.congr
 
-theorem congr_left (h : ∀ i, f i =ᵐ[μ] f' i) (h_tendsto : TendstoInMeasure μ f l g) :
+lemma congr_left (h : ∀ i, f i =ᵐ[μ] f' i) (h_tendsto : TendstoInMeasure μ f l g) :
     TendstoInMeasure μ f' l g :=
   h_tendsto.congr h EventuallyEq.rfl
 #align measure_theory.tendsto_in_measure.congr_left MeasureTheory.TendstoInMeasure.congr_left
 
-theorem congr_right (h : g =ᵐ[μ] g') (h_tendsto : TendstoInMeasure μ f l g) :
+lemma congr_right (h : g =ᵐ[μ] g') (h_tendsto : TendstoInMeasure μ f l g) :
     TendstoInMeasure μ f l g' :=
   h_tendsto.congr (fun _ => EventuallyEq.rfl) h
 #align measure_theory.tendsto_in_measure.congr_right MeasureTheory.TendstoInMeasure.congr_right
@@ -140,7 +140,7 @@ theorem tendstoInMeasure_of_tendsto_ae [IsFiniteMeasure μ] (hf : ∀ n, AEStron
 
 namespace ExistsSeqTendstoAe
 
-theorem exists_nat_measure_lt_two_inv (hfg : TendstoInMeasure μ f atTop g) (n : ℕ) :
+lemma exists_nat_measure_lt_two_inv (hfg : TendstoInMeasure μ f atTop g) (n : ℕ) :
     ∃ N, ∀ m ≥ N, μ { x | (2 : ℝ)⁻¹ ^ n ≤ dist (f m x) (g x) } ≤ (2⁻¹ : ℝ≥0∞) ^ n := by
   specialize hfg ((2⁻¹ : ℝ) ^ n) (by simp only [Real.rpow_natCast, inv_pos, zero_lt_two, pow_pos])
   rw [ENNReal.tendsto_atTop_zero] at hfg
@@ -160,13 +160,13 @@ noncomputable def seqTendstoAeSeq (hfg : TendstoInMeasure μ f atTop g) : ℕ �
   | n + 1 => max (seqTendstoAeSeqAux hfg (n + 1)) (seqTendstoAeSeq hfg n + 1)
 #align measure_theory.exists_seq_tendsto_ae.seq_tendsto_ae_seq MeasureTheory.ExistsSeqTendstoAe.seqTendstoAeSeq
 
-theorem seqTendstoAeSeq_succ (hfg : TendstoInMeasure μ f atTop g) {n : ℕ} :
+lemma seqTendstoAeSeq_succ (hfg : TendstoInMeasure μ f atTop g) {n : ℕ} :
     seqTendstoAeSeq hfg (n + 1) =
       max (seqTendstoAeSeqAux hfg (n + 1)) (seqTendstoAeSeq hfg n + 1) := by
   rw [seqTendstoAeSeq]
 #align measure_theory.exists_seq_tendsto_ae.seq_tendsto_ae_seq_succ MeasureTheory.ExistsSeqTendstoAe.seqTendstoAeSeq_succ
 
-theorem seqTendstoAeSeq_spec (hfg : TendstoInMeasure μ f atTop g) (n k : ℕ)
+lemma seqTendstoAeSeq_spec (hfg : TendstoInMeasure μ f atTop g) (n k : ℕ)
     (hn : seqTendstoAeSeq hfg n ≤ k) :
     μ { x | (2 : ℝ)⁻¹ ^ n ≤ dist (f k x) (g x) } ≤ (2 : ℝ≥0∞)⁻¹ ^ n := by
   cases n
@@ -175,7 +175,7 @@ theorem seqTendstoAeSeq_spec (hfg : TendstoInMeasure μ f atTop g) (n k : ℕ)
       (exists_nat_measure_lt_two_inv hfg _) _ (le_trans (le_max_left _ _) hn)
 #align measure_theory.exists_seq_tendsto_ae.seq_tendsto_ae_seq_spec MeasureTheory.ExistsSeqTendstoAe.seqTendstoAeSeq_spec
 
-theorem seqTendstoAeSeq_strictMono (hfg : TendstoInMeasure μ f atTop g) :
+lemma seqTendstoAeSeq_strictMono (hfg : TendstoInMeasure μ f atTop g) :
     StrictMono (seqTendstoAeSeq hfg) := by
   refine' strictMono_nat_of_lt_succ fun n => _
   rw [seqTendstoAeSeq_succ]
@@ -234,14 +234,14 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
   exact h_tendsto x
 #align measure_theory.tendsto_in_measure.exists_seq_tendsto_ae MeasureTheory.TendstoInMeasure.exists_seq_tendsto_ae
 
-theorem TendstoInMeasure.exists_seq_tendstoInMeasure_atTop {u : Filter ι} [NeBot u]
+lemma TendstoInMeasure.exists_seq_tendstoInMeasure_atTop {u : Filter ι} [NeBot u]
     [IsCountablyGenerated u] {f : ι → α → E} {g : α → E} (hfg : TendstoInMeasure μ f u g) :
     ∃ ns : ℕ → ι, TendstoInMeasure μ (fun n => f (ns n)) atTop g := by
   obtain ⟨ns, h_tendsto_ns⟩ : ∃ ns : ℕ → ι, Tendsto ns atTop u := exists_seq_tendsto u
   exact ⟨ns, fun ε hε => (hfg ε hε).comp h_tendsto_ns⟩
 #align measure_theory.tendsto_in_measure.exists_seq_tendsto_in_measure_at_top MeasureTheory.TendstoInMeasure.exists_seq_tendstoInMeasure_atTop
 
-theorem TendstoInMeasure.exists_seq_tendsto_ae' {u : Filter ι} [NeBot u] [IsCountablyGenerated u]
+lemma TendstoInMeasure.exists_seq_tendsto_ae' {u : Filter ι} [NeBot u] [IsCountablyGenerated u]
     {f : ι → α → E} {g : α → E} (hfg : TendstoInMeasure μ f u g) :
     ∃ ns : ℕ → ι, ∀ᵐ x ∂μ, Tendsto (fun i => f (ns i) x) atTop (𝓝 (g x)) := by
   obtain ⟨ms, hms⟩ := hfg.exists_seq_tendstoInMeasure_atTop
@@ -255,7 +255,7 @@ section AEMeasurableOf
 
 variable [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
 
-theorem TendstoInMeasure.aemeasurable {u : Filter ι} [NeBot u] [IsCountablyGenerated u]
+lemma TendstoInMeasure.aemeasurable {u : Filter ι} [NeBot u] [IsCountablyGenerated u]
     {f : ι → α → E} {g : α → E} (hf : ∀ n, AEMeasurable (f n) μ)
     (h_tendsto : TendstoInMeasure μ f u g) : AEMeasurable g μ := by
   obtain ⟨ns, hns⟩ := h_tendsto.exists_seq_tendsto_ae'

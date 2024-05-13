@@ -86,12 +86,12 @@ def preinclusion (B : Type u) [Quiver.{v + 1} B] :
 #align category_theory.free_bicategory.preinclusion CategoryTheory.FreeBicategory.preinclusion
 
 @[simp]
-theorem preinclusion_obj (a : B) : (preinclusion B).obj ⟨a⟩ = a :=
+lemma preinclusion_obj (a : B) : (preinclusion B).obj ⟨a⟩ = a :=
   rfl
 #align category_theory.free_bicategory.preinclusion_obj CategoryTheory.FreeBicategory.preinclusion_obj
 
 @[simp]
-theorem preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v + 1} a b)) (η : f ⟶ g) :
+lemma preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v + 1} a b)) (η : f ⟶ g) :
     (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext _ _ (Discrete.eq_of_hom η))) := by
   rcases η with ⟨⟨⟩⟩
   cases Discrete.ext _ _ (by assumption)
@@ -185,7 +185,7 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
 
 -- Porting note: the left-hand side is not in simp-normal form.
 -- @[simp]
-theorem normalizeAux_nil_comp {a b c : B} (f : Hom a b) (g : Hom b c) :
+lemma normalizeAux_nil_comp {a b c : B} (f : Hom a b) (g : Hom b c) :
     normalizeAux nil (f.comp g) = (normalizeAux nil f).comp (normalizeAux nil g) := by
   induction g generalizing a with
   | id => rfl

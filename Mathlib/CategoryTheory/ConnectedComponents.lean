@@ -122,7 +122,7 @@ def decomposedTo (J : Type u₁) [Category.{v₁} J] : Decomposed J ⥤ J :=
 #align category_theory.decomposed_to CategoryTheory.decomposedTo
 
 @[simp]
-theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
+lemma inclusion_comp_decomposedTo (j : ConnectedComponents J) :
     inclusion j ⋙ decomposedTo J = Component.ι j :=
   rfl
 #align category_theory.inclusion_comp_decomposed_to CategoryTheory.inclusion_comp_decomposedTo

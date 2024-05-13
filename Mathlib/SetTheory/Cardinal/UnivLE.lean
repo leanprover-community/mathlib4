@@ -16,7 +16,7 @@ noncomputable section
 
 open Cardinal
 
-theorem univLE_iff_cardinal_le : UnivLE.{u, v} ↔ univ.{u, v+1} ≤ univ.{v, u+1} := by
+lemma univLE_iff_cardinal_le : UnivLE.{u, v} ↔ univ.{u, v+1} ≤ univ.{v, u+1} := by
   rw [← not_iff_not, UnivLE]; simp_rw [small_iff_lift_mk_lt_univ]; push_neg
   -- strange: simp_rw [univ_umax.{v,u}] doesn't work
   refine ⟨fun ⟨α, le⟩ ↦ ?_, fun h ↦ ?_⟩

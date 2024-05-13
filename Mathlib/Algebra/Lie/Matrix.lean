@@ -49,13 +49,13 @@ def lieEquivMatrix' : Module.End R (n → R) ≃ₗ⁅R⁆ Matrix n n R :=
 #align lie_equiv_matrix' lieEquivMatrix'
 
 @[simp]
-theorem lieEquivMatrix'_apply (f : Module.End R (n → R)) :
+lemma lieEquivMatrix'_apply (f : Module.End R (n → R)) :
     lieEquivMatrix' f = LinearMap.toMatrix' f :=
   rfl
 #align lie_equiv_matrix'_apply lieEquivMatrix'_apply
 
 @[simp]
-theorem lieEquivMatrix'_symm_apply (A : Matrix n n R) :
+lemma lieEquivMatrix'_symm_apply (A : Matrix n n R) :
     (@lieEquivMatrix' R _ n _ _).symm A = Matrix.toLin' A :=
   rfl
 #align lie_equiv_matrix'_symm_apply lieEquivMatrix'_symm_apply
@@ -66,14 +66,14 @@ def Matrix.lieConj (P : Matrix n n R) (h : Invertible P) : Matrix n n R ≃ₗ�
 #align matrix.lie_conj Matrix.lieConj
 
 @[simp]
-theorem Matrix.lieConj_apply (P A : Matrix n n R) (h : Invertible P) :
+lemma Matrix.lieConj_apply (P A : Matrix n n R) (h : Invertible P) :
     P.lieConj h A = P * A * P⁻¹ := by
   simp [LinearEquiv.conj_apply, Matrix.lieConj, LinearMap.toMatrix'_comp,
     LinearMap.toMatrix'_toLin']
 #align matrix.lie_conj_apply Matrix.lieConj_apply
 
 @[simp]
-theorem Matrix.lieConj_symm_apply (P A : Matrix n n R) (h : Invertible P) :
+lemma Matrix.lieConj_symm_apply (P A : Matrix n n R) (h : Invertible P) :
     (P.lieConj h).symm A = P⁻¹ * A * P := by
   simp [LinearEquiv.symm_conj_apply, Matrix.lieConj, LinearMap.toMatrix'_comp,
     LinearMap.toMatrix'_toLin']
@@ -92,13 +92,13 @@ def Matrix.reindexLieEquiv : Matrix n n R ≃ₗ⁅R⁆ Matrix m m R :=
 #align matrix.reindex_lie_equiv Matrix.reindexLieEquiv
 
 @[simp]
-theorem Matrix.reindexLieEquiv_apply (M : Matrix n n R) :
+lemma Matrix.reindexLieEquiv_apply (M : Matrix n n R) :
     Matrix.reindexLieEquiv e M = Matrix.reindex e e M :=
   rfl
 #align matrix.reindex_lie_equiv_apply Matrix.reindexLieEquiv_apply
 
 @[simp]
-theorem Matrix.reindexLieEquiv_symm :
+lemma Matrix.reindexLieEquiv_symm :
     (Matrix.reindexLieEquiv e : _ ≃ₗ⁅R⁆ _).symm = Matrix.reindexLieEquiv e.symm :=
   rfl
 #align matrix.reindex_lie_equiv_symm Matrix.reindexLieEquiv_symm

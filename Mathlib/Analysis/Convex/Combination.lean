@@ -47,18 +47,18 @@ variable (i j : ι) (c : R) (t : Finset ι) (w : ι → R) (z : ι → E)
 
 open Finset
 
-theorem Finset.centerMass_empty : (∅ : Finset ι).centerMass w z = 0 := by
+lemma Finset.centerMass_empty : (∅ : Finset ι).centerMass w z = 0 := by
   simp only [centerMass, sum_empty, smul_zero]
 #align finset.center_mass_empty Finset.centerMass_empty
 
-theorem Finset.centerMass_pair (hne : i ≠ j) :
+lemma Finset.centerMass_pair (hne : i ≠ j) :
     ({i, j} : Finset ι).centerMass w z = (w i / (w i + w j)) • z i + (w j / (w i + w j)) • z j := by
   simp only [centerMass, sum_pair hne, smul_add, (mul_smul _ _ _).symm, div_eq_inv_mul]
 #align finset.center_mass_pair Finset.centerMass_pair
 
 variable {w}
 
-theorem Finset.centerMass_insert (ha : i ∉ t) (hw : ∑ j in t, w j ≠ 0) :
+lemma Finset.centerMass_insert (ha : i ∉ t) (hw : ∑ j in t, w j ≠ 0) :
     (insert i t).centerMass w z =
       (w i / (w i + ∑ j in t, w j)) • z i +
         ((∑ j in t, w j) / (w i + ∑ j in t, w j)) • t.centerMass w z := by
@@ -67,7 +67,7 @@ theorem Finset.centerMass_insert (ha : i ∉ t) (hw : ∑ j in t, w j ≠ 0) :
   rw [div_mul_eq_mul_div, mul_inv_cancel hw, one_div]
 #align finset.center_mass_insert Finset.centerMass_insert
 
-theorem Finset.centerMass_singleton (hw : w i ≠ 0) : ({i} : Finset ι).centerMass w z = z i := by
+lemma Finset.centerMass_singleton (hw : w i ≠ 0) : ({i} : Finset ι).centerMass w z = z i := by
   rw [centerMass, sum_singleton, sum_singleton, ← mul_smul, inv_mul_cancel hw, one_smul]
 #align finset.center_mass_singleton Finset.centerMass_singleton
 
@@ -79,12 +79,12 @@ lemma Finset.centerMass_smul_left {c : R'} [Module R' R] [Module R' E] [SMulComm
     t.centerMass (c • w) z = t.centerMass w z := by
   simp [centerMass, -smul_assoc, smul_assoc c, ← smul_sum, smul_inv₀, smul_smul_smul_comm, hc]
 
-theorem Finset.centerMass_eq_of_sum_1 (hw : ∑ i in t, w i = 1) :
+lemma Finset.centerMass_eq_of_sum_1 (hw : ∑ i in t, w i = 1) :
     t.centerMass w z = ∑ i in t, w i • z i := by
   simp only [Finset.centerMass, hw, inv_one, one_smul]
 #align finset.center_mass_eq_of_sum_1 Finset.centerMass_eq_of_sum_1
 
-theorem Finset.centerMass_smul : (t.centerMass w fun i => c • z i) = c • t.centerMass w z := by
+lemma Finset.centerMass_smul : (t.centerMass w fun i => c • z i) = c • t.centerMass w z := by
   simp only [Finset.centerMass, Finset.smul_sum, (mul_smul _ _ _).symm, mul_comm c, mul_assoc]
 #align finset.center_mass_smul Finset.centerMass_smul
 
@@ -112,7 +112,7 @@ theorem Finset.centerMass_segment (s : Finset ι) (w₁ w₂ : ι → R) (z : ι
     smul_sum, sum_add_distrib, add_smul, mul_smul, *]
 #align finset.center_mass_segment Finset.centerMass_segment
 
-theorem Finset.centerMass_ite_eq (hi : i ∈ t) :
+lemma Finset.centerMass_ite_eq (hi : i ∈ t) :
     t.centerMass (fun j => if i = j then (1 : R) else 0) z = z i := by
   rw [Finset.centerMass_eq_of_sum_1]
   · trans ∑ j in t, if i = j then z i else 0
@@ -125,7 +125,7 @@ theorem Finset.centerMass_ite_eq (hi : i ∈ t) :
 
 variable {t}
 
-theorem Finset.centerMass_subset {t' : Finset ι} (ht : t ⊆ t') (h : ∀ i ∈ t', i ∉ t → w i = 0) :
+lemma Finset.centerMass_subset {t' : Finset ι} (ht : t ⊆ t') (h : ∀ i ∈ t', i ∉ t → w i = 0) :
     t.centerMass w z = t'.centerMass w z := by
   rw [centerMass, sum_subset ht h, smul_sum, centerMass, smul_sum]
   apply sum_subset ht
@@ -133,7 +133,7 @@ theorem Finset.centerMass_subset {t' : Finset ι} (ht : t ⊆ t') (h : ∀ i ∈
   rw [h i hit' hit, zero_smul, smul_zero]
 #align finset.center_mass_subset Finset.centerMass_subset
 
-theorem Finset.centerMass_filter_ne_zero :
+lemma Finset.centerMass_filter_ne_zero :
     (t.filter fun i => w i ≠ 0).centerMass w z = t.centerMass w z :=
   Finset.centerMass_subset z (filter_subset _ _) fun i hit hit' => by
     simpa only [hit, mem_filter, true_and_iff, Ne, Classical.not_not] using hit'
@@ -141,14 +141,14 @@ theorem Finset.centerMass_filter_ne_zero :
 
 namespace Finset
 
-theorem centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
+lemma centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
     (hw₁ : 0 < ∑ i in s, w i) :
     s.centerMass w f ≤ s.sup' (nonempty_of_ne_empty <| by rintro rfl; simp at hw₁) f := by
   rw [centerMass, inv_smul_le_iff_of_pos hw₁, sum_smul]
   exact sum_le_sum fun i hi => smul_le_smul_of_nonneg_left (le_sup' _ hi) <| hw₀ i hi
 #align finset.center_mass_le_sup Finset.centerMass_le_sup
 
-theorem inf_le_centerMass {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
+lemma inf_le_centerMass {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
     (hw₁ : 0 < ∑ i in s, w i) :
     s.inf' (nonempty_of_ne_empty <| by rintro rfl; simp at hw₁) f ≤ s.centerMass w f :=
   @centerMass_le_sup R _ αᵒᵈ _ _ _ _ _ _ _ hw₀ hw₁
@@ -188,7 +188,7 @@ theorem Convex.centerMass_mem (hs : Convex R s) :
     · exact h₀ _ (mem_insert_self _ _)
 #align convex.center_mass_mem Convex.centerMass_mem
 
-theorem Convex.sum_mem (hs : Convex R s) (h₀ : ∀ i ∈ t, 0 ≤ w i) (h₁ : ∑ i in t, w i = 1)
+lemma Convex.sum_mem (hs : Convex R s) (h₀ : ∀ i ∈ t, 0 ≤ w i) (h₁ : ∑ i in t, w i = 1)
     (hz : ∀ i ∈ t, z i ∈ s) : (∑ i in t, w i • z i) ∈ s := by
   simpa only [h₁, centerMass, inv_one, one_smul] using
     hs.centerMass_mem h₀ (h₁.symm ▸ zero_lt_one) hz
@@ -213,7 +213,7 @@ theorem Convex.finsum_mem {ι : Sort*} {w : ι → R} {z : ι → E} {s : Set E}
   · rwa [hfin_w.mem_toFinset] at hi
 #align convex.finsum_mem Convex.finsum_mem
 
-theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
+lemma convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
     (∀ i ∈ t, 0 ≤ w i) → ∑ i in t, w i = 1 → (∀ x ∈ t, x ∈ s) → (∑ x in t, w x • x) ∈ s := by
   refine' ⟨fun hs t w hw₀ hw₁ hts => hs.sum_mem hw₀ hw₁ hts, _⟩
   intro h x hx y hy a b ha hb hab
@@ -232,7 +232,7 @@ theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
       cases hi <;> subst i <;> assumption
 #align convex_iff_sum_mem convex_iff_sum_mem
 
-theorem Finset.centerMass_mem_convexHull (t : Finset ι) {w : ι → R} (hw₀ : ∀ i ∈ t, 0 ≤ w i)
+lemma Finset.centerMass_mem_convexHull (t : Finset ι) {w : ι → R} (hw₀ : ∀ i ∈ t, 0 ≤ w i)
     (hws : 0 < ∑ i in t, w i) {z : ι → E} (hz : ∀ i ∈ t, z i ∈ s) :
     t.centerMass w z ∈ convexHull R s :=
   (convex_convexHull R s).centerMass_mem hw₀ hws fun i hi => subset_convexHull R s <| hz i hi
@@ -257,14 +257,14 @@ lemma Finset.centerMass_id_mem_convexHull_of_nonpos (t : Finset E) {w : E → R}
     t.centerMass w id ∈ convexHull R (t : Set E) :=
   t.centerMass_mem_convexHull_of_nonpos hw₀ hws fun _ ↦ mem_coe.2
 
-theorem affineCombination_eq_centerMass {ι : Type*} {t : Finset ι} {p : ι → E} {w : ι → R}
+lemma affineCombination_eq_centerMass {ι : Type*} {t : Finset ι} {p : ι → E} {w : ι → R}
     (hw₂ : ∑ i in t, w i = 1) : t.affineCombination R p w = centerMass t w p := by
   rw [affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ w _ hw₂ (0 : E),
     Finset.weightedVSubOfPoint_apply, vadd_eq_add, add_zero, t.centerMass_eq_of_sum_1 _ hw₂]
   simp_rw [vsub_eq_sub, sub_zero]
 #align affine_combination_eq_center_mass affineCombination_eq_centerMass
 
-theorem affineCombination_mem_convexHull {s : Finset ι} {v : ι → E} {w : ι → R}
+lemma affineCombination_mem_convexHull {s : Finset ι} {v : ι → E} {w : ι → R}
     (hw₀ : ∀ i ∈ s, 0 ≤ w i) (hw₁ : s.sum w = 1) :
     s.affineCombination R v w ∈ convexHull R (range v) := by
   rw [affineCombination_eq_centerMass hw₁]
@@ -280,7 +280,7 @@ theorem Finset.centroid_eq_centerMass (s : Finset ι) (hs : s.Nonempty) (p : ι 
   affineCombination_eq_centerMass (s.sum_centroidWeights_eq_one_of_nonempty R hs)
 #align finset.centroid_eq_center_mass Finset.centroid_eq_centerMass
 
-theorem Finset.centroid_mem_convexHull (s : Finset E) (hs : s.Nonempty) :
+lemma Finset.centroid_mem_convexHull (s : Finset E) (hs : s.Nonempty) :
     s.centroid R id ∈ convexHull R (s : Set E) := by
   rw [s.centroid_eq_centerMass hs]
   apply s.centerMass_id_mem_convexHull
@@ -290,7 +290,7 @@ theorem Finset.centroid_mem_convexHull (s : Finset E) (hs : s.Nonempty) :
       Finset.centroidWeights_apply, zero_lt_one]
 #align finset.centroid_mem_convex_hull Finset.centroid_mem_convexHull
 
-theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull R (range v) =
+lemma convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull R (range v) =
     { x | ∃ (s : Finset ι) (w : ι → R), (∀ i ∈ s, 0 ≤ w i) ∧ s.sum w = 1 ∧
       s.affineCombination R v w = x } := by
   refine' Subset.antisymm (convexHull_min _ _) _
@@ -350,7 +350,7 @@ theorem convexHull_eq (s : Set E) : convexHull R s =
     exact t.centerMass_mem_convexHull hw₀ (hw₁.symm ▸ zero_lt_one) hz
 #align convex_hull_eq convexHull_eq
 
-theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
+lemma Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
     { x : E | ∃ w : E → R, (∀ y ∈ s, 0 ≤ w y) ∧ ∑ y in s, w y = 1 ∧ s.centerMass w id = x } := by
   refine' Set.Subset.antisymm (convexHull_min _ _) _
   · intro x hx
@@ -371,7 +371,7 @@ theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
       s.centerMass_mem_convexHull (fun x hx => hw₀ _ hx) (hw₁.symm ▸ zero_lt_one) fun x hx => hx
 #align finset.convex_hull_eq Finset.convexHull_eq
 
-theorem Finset.mem_convexHull {s : Finset E} {x : E} : x ∈ convexHull R (s : Set E) ↔
+lemma Finset.mem_convexHull {s : Finset E} {x : E} : x ∈ convexHull R (s : Set E) ↔
     ∃ w : E → R, (∀ y ∈ s, 0 ≤ w y) ∧ ∑ y in s, w y = 1 ∧ s.centerMass w id = x := by
   rw [Finset.convexHull_eq, Set.mem_setOf_eq]
 #align finset.mem_convex_hull Finset.mem_convexHull
@@ -384,7 +384,7 @@ lemma Finset.mem_convexHull' {s : Finset E} {x : E} :
   refine exists_congr fun w ↦ and_congr_right' $ and_congr_right fun hw ↦ ?_
   simp_rw [centerMass_eq_of_sum_1 _ _ hw, id_eq]
 
-theorem Set.Finite.convexHull_eq {s : Set E} (hs : s.Finite) : convexHull R s =
+lemma Set.Finite.convexHull_eq {s : Set E} (hs : s.Finite) : convexHull R s =
     { x : E | ∃ w : E → R, (∀ y ∈ s, 0 ≤ w y) ∧ ∑ y in hs.toFinset, w y = 1 ∧
       hs.toFinset.centerMass w id = x } := by
   simpa only [Set.Finite.coe_toFinset, Set.Finite.mem_toFinset, exists_prop] using
@@ -407,7 +407,7 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
   · exact iUnion_subset fun i => iUnion_subset convexHull_mono
 #align convex_hull_eq_union_convex_hull_finite_subsets convexHull_eq_union_convexHull_finite_subsets
 
-theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHull R s)
+lemma mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHull R s)
     (hy : y ∈ convexHull R t) : (x, y) ∈ convexHull R (s ×ˢ t) := by
   rw [_root_.convexHull_eq] at hx hy ⊢
   obtain ⟨ι, a, w, S, hw, hw', hS, hSp⟩ := hx
@@ -450,7 +450,7 @@ theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHul
 #align mk_mem_convex_hull_prod mk_mem_convexHull_prod
 
 @[simp]
-theorem convexHull_prod (s : Set E) (t : Set F) :
+lemma convexHull_prod (s : Set E) (t : Set F) :
     convexHull R (s ×ˢ t) = convexHull R s ×ˢ convexHull R t :=
   Subset.antisymm
       (convexHull_min (prod_mono (subset_convexHull _ _) <| subset_convexHull _ _) <|
@@ -458,7 +458,7 @@ theorem convexHull_prod (s : Set E) (t : Set F) :
     prod_subset_iff.2 fun _ hx _ => mk_mem_convexHull_prod hx
 #align convex_hull_prod convexHull_prod
 
-theorem convexHull_add (s t : Set E) : convexHull R (s + t) = convexHull R s + convexHull R t := by
+lemma convexHull_add (s t : Set E) : convexHull R (s + t) = convexHull R s + convexHull R t := by
   simp_rw [← image2_add, ← image_prod, ← IsLinearMap.isLinearMap_add.image_convexHull,
     convexHull_prod]
 #align convex_hull_add convexHull_add
@@ -475,20 +475,20 @@ def convexHullAddMonoidHom : Set E →+ Set E where
 
 variable {R E}
 
-theorem convexHull_sub (s t : Set E) : convexHull R (s - t) = convexHull R s - convexHull R t := by
+lemma convexHull_sub (s t : Set E) : convexHull R (s - t) = convexHull R s - convexHull R t := by
   simp_rw [sub_eq_add_neg, convexHull_add, ← convexHull_neg]
 #align convex_hull_sub convexHull_sub
 
-theorem convexHull_list_sum (l : List (Set E)) : convexHull R l.sum = (l.map <| convexHull R).sum :=
+lemma convexHull_list_sum (l : List (Set E)) : convexHull R l.sum = (l.map <| convexHull R).sum :=
   map_list_sum (convexHullAddMonoidHom R E) l
 #align convex_hull_list_sum convexHull_list_sum
 
-theorem convexHull_multiset_sum (s : Multiset (Set E)) :
+lemma convexHull_multiset_sum (s : Multiset (Set E)) :
     convexHull R s.sum = (s.map <| convexHull R).sum :=
   map_multiset_sum (convexHullAddMonoidHom R E) s
 #align convex_hull_multiset_sum convexHull_multiset_sum
 
-theorem convexHull_sum {ι} (s : Finset ι) (t : ι → Set E) :
+lemma convexHull_sum {ι} (s : Finset ι) (t : ι → Set E) :
     convexHull R (∑ i in s, t i) = ∑ i in s, convexHull R (t i) :=
   map_sum (convexHullAddMonoidHom R E) _ _
 #align convex_hull_sum convexHull_sum

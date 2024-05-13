@@ -30,11 +30,11 @@ noncomputable def jacobiTheta (τ : ℂ) : ℂ := ∑' n : ℤ, cexp (π * I * (
 lemma jacobiTheta_eq_jacobiTheta₂ (τ : ℂ) : jacobiTheta τ = jacobiTheta₂ 0 τ :=
   tsum_congr (by simp [jacobiTheta₂_term])
 
-theorem jacobiTheta_two_add (τ : ℂ) : jacobiTheta (2 + τ) = jacobiTheta τ := by
+lemma jacobiTheta_two_add (τ : ℂ) : jacobiTheta (2 + τ) = jacobiTheta τ := by
   simp_rw [jacobiTheta_eq_jacobiTheta₂, add_comm, jacobiTheta₂_add_right]
 #align jacobi_theta_two_add jacobiTheta_two_add
 
-theorem jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta (ModularGroup.T ^ 2 • τ :) = jacobiTheta τ := by
+lemma jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta (ModularGroup.T ^ 2 • τ :) = jacobiTheta τ := by
   suffices (ModularGroup.T ^ 2 • τ :) = (2 : ℂ) + ↑τ by simp_rw [this, jacobiTheta_two_add]
   have : ModularGroup.T ^ (2 : ℕ) = ModularGroup.T ^ (2 : ℤ) := rfl
   simp_rw [this, UpperHalfPlane.modular_T_zpow_smul, UpperHalfPlane.coe_vadd]
@@ -42,7 +42,7 @@ theorem jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta (ModularGroup.T ^ 2 • �
 set_option linter.uppercaseLean3 false in
 #align jacobi_theta_T_sq_smul jacobiTheta_T_sq_smul
 
-theorem jacobiTheta_S_smul (τ : ℍ) :
+lemma jacobiTheta_S_smul (τ : ℍ) :
     jacobiTheta ↑(ModularGroup.S • τ) = (-I * τ) ^ (1 / 2 : ℂ) * jacobiTheta τ := by
   have h0 : (τ : ℂ) ≠ 0 := ne_of_apply_ne im (zero_im.symm ▸ ne_of_gt τ.2)
   have h1 : (-I * τ) ^ (1 / 2 : ℂ) ≠ 0 := by
@@ -55,7 +55,7 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
 set_option linter.uppercaseLean3 false in
 #align jacobi_theta_S_smul jacobiTheta_S_smul
 
-theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
+lemma norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
     ‖cexp (π * I * (n : ℂ) ^ 2 * τ)‖ ≤ rexp (-π * τ.im) ^ n.natAbs := by
   let y := rexp (-π * τ.im)
   have h : y < 1 := exp_lt_one_iff.mpr (mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hτ)
@@ -72,7 +72,7 @@ theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
     exact pow_le_pow_of_le_one (exp_pos _).le h.le ((sq n.natAbs).symm ▸ n.natAbs.le_mul_self)
 #align norm_exp_mul_sq_le norm_exp_mul_sq_le
 
-theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
+lemma hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     HasSum (fun n : ℕ => cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)) ((jacobiTheta τ - 1) / 2) := by
   have := hasSum_jacobiTheta₂_term 0 hτ
   simp_rw [jacobiTheta₂_term, mul_zero, zero_add, ← jacobiTheta_eq_jacobiTheta₂] at this
@@ -86,7 +86,7 @@ theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
   simp_rw [mul_div_cancel_right₀ _ (two_ne_zero' ℂ)]
 #align has_sum_nat_jacobi_theta hasSum_nat_jacobiTheta
 
-theorem jacobiTheta_eq_tsum_nat {τ : ℂ} (hτ : 0 < im τ) :
+lemma jacobiTheta_eq_tsum_nat {τ : ℂ} (hτ : 0 < im τ) :
     jacobiTheta τ = ↑1 + ↑2 * ∑' n : ℕ, cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ) := by
   rw [(hasSum_nat_jacobiTheta hτ).tsum_eq, mul_div_cancel₀ _ (two_ne_zero' ℂ), ← add_sub_assoc,
     add_sub_cancel_left]
@@ -132,12 +132,12 @@ theorem isBigO_at_im_infty_jacobiTheta_sub_one :
 set_option linter.uppercaseLean3 false in
 #align is_O_at_im_infty_jacobi_theta_sub_one isBigO_at_im_infty_jacobiTheta_sub_one
 
-theorem differentiableAt_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
+lemma differentiableAt_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     DifferentiableAt ℂ jacobiTheta τ := by
   simp_rw [funext jacobiTheta_eq_jacobiTheta₂]
   exact differentiableAt_jacobiTheta₂_snd 0 hτ
 #align differentiable_at_jacobi_theta differentiableAt_jacobiTheta
 
-theorem continuousAt_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) : ContinuousAt jacobiTheta τ :=
+lemma continuousAt_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) : ContinuousAt jacobiTheta τ :=
   (differentiableAt_jacobiTheta hτ).continuousAt
 #align continuous_at_jacobi_theta continuousAt_jacobiTheta

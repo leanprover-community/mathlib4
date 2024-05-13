@@ -140,14 +140,14 @@ instance : Monad LazyList where
   bind := @LazyList.bind
 
 -- Porting note: Added `Thunk.pure` to definition.
-theorem append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
+lemma append_nil {α} (xs : LazyList α) : xs.append (Thunk.pure LazyList.nil) = xs := by
   induction' xs using LazyList.rec with _ _ _ _ ih
   · simp only [Thunk.pure, append, Thunk.get]
   · simpa only [append, cons.injEq, true_and]
   · ext; apply ih
 #align lazy_list.append_nil LazyList.append_nil
 
-theorem append_assoc {α} (xs ys zs : LazyList α) :
+lemma append_assoc {α} (xs ys zs : LazyList α) :
     (xs.append ys).append zs = xs.append (ys.append zs) := by
   induction' xs using LazyList.rec with _ _ _ _ ih
   · simp only [append, Thunk.get]
@@ -156,7 +156,7 @@ theorem append_assoc {α} (xs ys zs : LazyList α) :
 #align lazy_list.append_assoc LazyList.append_assoc
 
 -- Porting note: Rewrote proof of `append_bind`.
-theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : α → LazyList β) :
+lemma append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : α → LazyList β) :
     (xs.append ys).bind f = (xs.bind f).append (ys.get.bind f) := by
   match xs with
   | LazyList.nil =>
@@ -229,17 +229,17 @@ instance Mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, De
 #align lazy_list.mem.decidable LazyList.Mem.decidable
 
 @[simp]
-theorem mem_nil {α} (x : α) : x ∈ @LazyList.nil α ↔ False := by
+lemma mem_nil {α} (x : α) : x ∈ @LazyList.nil α ↔ False := by
   simp [Membership.mem, LazyList.Mem]
 #align lazy_list.mem_nil LazyList.mem_nil
 
 @[simp]
-theorem mem_cons {α} (x y : α) (ys : Thunk (LazyList α)) :
+lemma mem_cons {α} (x y : α) (ys : Thunk (LazyList α)) :
     x ∈ @LazyList.cons α y ys ↔ x = y ∨ x ∈ ys.get := by
   simp [Membership.mem, LazyList.Mem]
 #align lazy_list.mem_cons LazyList.mem_cons
 
-theorem forall_mem_cons {α} {p : α → Prop} {a : α} {l : Thunk (LazyList α)} :
+lemma forall_mem_cons {α} {p : α → Prop} {a : α} {l : Thunk (LazyList α)} :
     (∀ x ∈ @LazyList.cons _ a l, p x) ↔ p a ∧ ∀ x ∈ l.get, p x := by
   simp only [Membership.mem, LazyList.Mem, or_imp, forall_and, forall_eq]
 #align lazy_list.forall_mem_cons LazyList.forall_mem_cons

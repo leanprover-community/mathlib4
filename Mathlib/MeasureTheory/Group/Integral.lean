@@ -30,14 +30,14 @@ section MeasurableInv
 variable [Group G] [MeasurableInv G]
 
 @[to_additive]
-theorem Integrable.comp_inv [IsInvInvariant μ] {f : G → F} (hf : Integrable f μ) :
+lemma Integrable.comp_inv [IsInvInvariant μ] {f : G → F} (hf : Integrable f μ) :
     Integrable (fun t => f t⁻¹) μ :=
   (hf.mono_measure (map_inv_eq_self μ).le).comp_measurable measurable_inv
 #align measure_theory.integrable.comp_inv MeasureTheory.Integrable.comp_inv
 #align measure_theory.integrable.comp_neg MeasureTheory.Integrable.comp_neg
 
 @[to_additive]
-theorem integral_inv_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ] :
+lemma integral_inv_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ] :
     ∫ x, f x⁻¹ ∂μ = ∫ x, f x ∂μ := by
   have h : MeasurableEmbedding fun x : G => x⁻¹ := (MeasurableEquiv.inv G).measurableEmbedding
   rw [← h.integral_map, map_inv_eq_self]
@@ -76,7 +76,7 @@ theorem integral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → E) (g : G
 #align measure_theory.integral_add_right_eq_self MeasureTheory.integral_add_right_eq_self
 
 @[to_additive] -- Porting note: was `@[simp]`
-theorem integral_div_right_eq_self [IsMulRightInvariant μ] (f : G → E) (g : G) :
+lemma integral_div_right_eq_self [IsMulRightInvariant μ] (f : G → E) (g : G) :
     (∫ x, f (x / g) ∂μ) = ∫ x, f x ∂μ := by
   simp_rw [div_eq_mul_inv]
   -- Porting note: was `simp_rw`
@@ -107,21 +107,21 @@ theorem integral_eq_zero_of_mul_right_eq_neg [IsMulRightInvariant μ] (hf' : ∀
 #align measure_theory.integral_eq_zero_of_add_right_eq_neg MeasureTheory.integral_eq_zero_of_add_right_eq_neg
 
 @[to_additive]
-theorem Integrable.comp_mul_left {f : G → F} [IsMulLeftInvariant μ] (hf : Integrable f μ) (g : G) :
+lemma Integrable.comp_mul_left {f : G → F} [IsMulLeftInvariant μ] (hf : Integrable f μ) (g : G) :
     Integrable (fun t => f (g * t)) μ :=
   (hf.mono_measure (map_mul_left_eq_self μ g).le).comp_measurable <| measurable_const_mul g
 #align measure_theory.integrable.comp_mul_left MeasureTheory.Integrable.comp_mul_left
 #align measure_theory.integrable.comp_add_left MeasureTheory.Integrable.comp_add_left
 
 @[to_additive]
-theorem Integrable.comp_mul_right {f : G → F} [IsMulRightInvariant μ] (hf : Integrable f μ)
+lemma Integrable.comp_mul_right {f : G → F} [IsMulRightInvariant μ] (hf : Integrable f μ)
     (g : G) : Integrable (fun t => f (t * g)) μ :=
   (hf.mono_measure (map_mul_right_eq_self μ g).le).comp_measurable <| measurable_mul_const g
 #align measure_theory.integrable.comp_mul_right MeasureTheory.Integrable.comp_mul_right
 #align measure_theory.integrable.comp_add_right MeasureTheory.Integrable.comp_add_right
 
 @[to_additive]
-theorem Integrable.comp_div_right {f : G → F} [IsMulRightInvariant μ] (hf : Integrable f μ)
+lemma Integrable.comp_div_right {f : G → F} [IsMulRightInvariant μ] (hf : Integrable f μ)
     (g : G) : Integrable (fun t => f (t / g)) μ := by
   simp_rw [div_eq_mul_inv]
   exact hf.comp_mul_right g⁻¹
@@ -131,14 +131,14 @@ theorem Integrable.comp_div_right {f : G → F} [IsMulRightInvariant μ] (hf : I
 variable [MeasurableInv G]
 
 @[to_additive]
-theorem Integrable.comp_div_left {f : G → F} [IsInvInvariant μ] [IsMulLeftInvariant μ]
+lemma Integrable.comp_div_left {f : G → F} [IsInvInvariant μ] [IsMulLeftInvariant μ]
     (hf : Integrable f μ) (g : G) : Integrable (fun t => f (g / t)) μ :=
   ((measurePreserving_div_left μ g).integrable_comp hf.aestronglyMeasurable).mpr hf
 #align measure_theory.integrable.comp_div_left MeasureTheory.Integrable.comp_div_left
 #align measure_theory.integrable.comp_sub_left MeasureTheory.Integrable.comp_sub_left
 
 @[to_additive] -- Porting note: was `@[simp]`
-theorem integrable_comp_div_left (f : G → F) [IsInvInvariant μ] [IsMulLeftInvariant μ] (g : G) :
+lemma integrable_comp_div_left (f : G → F) [IsInvInvariant μ] [IsMulLeftInvariant μ] (g : G) :
     Integrable (fun t => f (g / t)) μ ↔ Integrable f μ := by
   refine' ⟨fun h => _, fun h => h.comp_div_left g⟩
   convert h.comp_inv.comp_mul_left g⁻¹
@@ -147,7 +147,7 @@ theorem integrable_comp_div_left (f : G → F) [IsInvInvariant μ] [IsMulLeftInv
 #align measure_theory.integrable_comp_sub_left MeasureTheory.integrable_comp_sub_left
 
 @[to_additive] -- Porting note: was `@[simp]`
-theorem integral_div_left_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ]
+lemma integral_div_left_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ]
     [IsMulLeftInvariant μ] (x' : G) : (∫ x, f (x' / x) ∂μ) = ∫ x, f x ∂μ := by
   simp_rw [div_eq_mul_inv]
   -- Porting note: was `simp_rw`
@@ -162,7 +162,7 @@ section SMul
 variable [Group G] [MeasurableSpace α] [MulAction G α] [MeasurableSMul G α]
 
 @[to_additive] -- Porting note: was `@[simp]`
-theorem integral_smul_eq_self {μ : Measure α} [SMulInvariantMeasure G α μ] (f : α → E) {g : G} :
+lemma integral_smul_eq_self {μ : Measure α} [SMulInvariantMeasure G α μ] (f : α → E) {g : G} :
     (∫ x, f (g • x) ∂μ) = ∫ x, f x ∂μ := by
   have h : MeasurableEmbedding fun x : α => g • x := (MeasurableEquiv.smul g).measurableEmbedding
   rw [← h.integral_map, map_smul]

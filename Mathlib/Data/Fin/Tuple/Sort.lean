@@ -47,7 +47,7 @@ def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1
 #align tuple.graph.proj Tuple.graph.proj
 
 @[simp]
-theorem graph.card (f : Fin n → α) : (graph f).card = n := by
+lemma graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
   · exact Finset.card_fin _
   · intro _ _
@@ -72,7 +72,7 @@ def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
 #align tuple.graph_equiv₁ Tuple.graphEquiv₁
 
 @[simp]
-theorem proj_equiv₁' (f : Fin n → α) : graph.proj ∘ graphEquiv₁ f = f :=
+lemma proj_equiv₁' (f : Fin n → α) : graph.proj ∘ graphEquiv₁ f = f :=
   rfl
 #align tuple.proj_equiv₁' Tuple.proj_equiv₁'
 
@@ -87,22 +87,22 @@ def sort (f : Fin n → α) : Equiv.Perm (Fin n) :=
   (graphEquiv₂ f).toEquiv.trans (graphEquiv₁ f).symm
 #align tuple.sort Tuple.sort
 
-theorem graphEquiv₂_apply (f : Fin n → α) (i : Fin n) :
+lemma graphEquiv₂_apply (f : Fin n → α) (i : Fin n) :
     graphEquiv₂ f i = graphEquiv₁ f (sort f i) :=
   ((graphEquiv₁ f).apply_symm_apply _).symm
 #align tuple.graph_equiv₂_apply Tuple.graphEquiv₂_apply
 
-theorem self_comp_sort (f : Fin n → α) : f ∘ sort f = graph.proj ∘ graphEquiv₂ f :=
+lemma self_comp_sort (f : Fin n → α) : f ∘ sort f = graph.proj ∘ graphEquiv₂ f :=
   show graph.proj ∘ (graphEquiv₁ f ∘ (graphEquiv₁ f).symm) ∘ (graphEquiv₂ f).toEquiv = _ by simp
 #align tuple.self_comp_sort Tuple.self_comp_sort
 
-theorem monotone_proj (f : Fin n → α) : Monotone (graph.proj : graph f → α) := by
+lemma monotone_proj (f : Fin n → α) : Monotone (graph.proj : graph f → α) := by
   rintro ⟨⟨x, i⟩, hx⟩ ⟨⟨y, j⟩, hy⟩ (_ | h)
   · exact le_of_lt ‹_›
   · simp [graph.proj]
 #align tuple.monotone_proj Tuple.monotone_proj
 
-theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
+lemma monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
   rw [self_comp_sort]
   exact (monotone_proj f).comp (graphEquiv₂ f).monotone
 #align tuple.monotone_sort Tuple.monotone_sort
@@ -144,7 +144,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α 
   apply h
   exact (h_sorted (le_of_not_lt hij)).trans hia
 
-theorem lt_card_ge_iff_apply_ge_of_antitone [PartialOrder α] [DecidableRel (α := α) LE.le]
+lemma lt_card_ge_iff_apply_ge_of_antitone [PartialOrder α] [DecidableRel (α := α) LE.le]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Antitone f) (j : Fin m) :
     j < Fintype.card {i // a ≤ f i} ↔ a ≤ f j :=
   lt_card_le_iff_apply_le_of_monotone _ (OrderDual.toDual a) h_sorted.dual_right j

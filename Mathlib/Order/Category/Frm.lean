@@ -46,7 +46,7 @@ def of (α : Type*) [Frame α] : Frm :=
 #align Frm.of Frm.of
 
 @[simp]
-theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α := rfl
+lemma coe_of (α : Type*) [Frame α] : ↥(of α) = α := rfl
 #align Frm.coe_of Frm.coe_of
 
 instance : Inhabited Frm :=

@@ -29,19 +29,19 @@ def toTensorAlgebra {n} : ⨂[R]^n M →ₗ[R] TensorAlgebra R M :=
 #align tensor_power.to_tensor_algebra TensorPower.toTensorAlgebra
 
 @[simp]
-theorem toTensorAlgebra_tprod {n} (x : Fin n → M) :
+lemma toTensorAlgebra_tprod {n} (x : Fin n → M) :
     TensorPower.toTensorAlgebra (PiTensorProduct.tprod R x) = TensorAlgebra.tprod R M n x :=
   PiTensorProduct.lift.tprod _
 #align tensor_power.to_tensor_algebra_tprod TensorPower.toTensorAlgebra_tprod
 
 @[simp]
-theorem toTensorAlgebra_gOne :
+lemma toTensorAlgebra_gOne :
     TensorPower.toTensorAlgebra (@GradedMonoid.GOne.one _ (fun n => ⨂[R]^n M) _ _) = 1 :=
   TensorPower.toTensorAlgebra_tprod _
 #align tensor_power.to_tensor_algebra_ghas_one TensorPower.toTensorAlgebra_gOne
 
 @[simp]
-theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
+lemma toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
     TensorPower.toTensorAlgebra (@GradedMonoid.GMul.mul _ (fun n => ⨂[R]^n M) _ _ _ _ a b) =
       TensorPower.toTensorAlgebra a * TensorPower.toTensorAlgebra b := by
   -- change `a` and `b` to `tprod R a` and `tprod R b`
@@ -65,7 +65,7 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
 #align tensor_power.to_tensor_algebra_ghas_mul TensorPower.toTensorAlgebra_gMul
 
 @[simp]
-theorem toTensorAlgebra_galgebra_toFun (r : R) :
+lemma toTensorAlgebra_galgebra_toFun (r : R) :
     TensorPower.toTensorAlgebra (DirectSum.GAlgebra.toFun (R := R) (A := fun n => ⨂[R]^n M) r) =
       algebraMap _ _ r := by
   rw [TensorPower.galgebra_toFun_def, TensorPower.algebraMap₀_eq_smul_one, LinearMap.map_smul,
@@ -83,7 +83,7 @@ def ofDirectSum : (⨁ n, ⨂[R]^n M) →ₐ[R] TensorAlgebra R M :=
 #align tensor_algebra.of_direct_sum TensorAlgebra.ofDirectSum
 
 @[simp]
-theorem ofDirectSum_of_tprod {n} (x : Fin n → M) :
+lemma ofDirectSum_of_tprod {n} (x : Fin n → M) :
     ofDirectSum (DirectSum.of _ n (PiTensorProduct.tprod R x)) = tprod R M n x :=
   (DirectSum.toAddMonoid_of
     (fun _ ↦ LinearMap.toAddMonoidHom TensorPower.toTensorAlgebra) _ _).trans
@@ -98,26 +98,26 @@ def toDirectSum : TensorAlgebra R M →ₐ[R] ⨁ n, ⨂[R]^n M :=
 #align tensor_algebra.to_direct_sum TensorAlgebra.toDirectSum
 
 @[simp]
-theorem toDirectSum_ι (x : M) :
+lemma toDirectSum_ι (x : M) :
     toDirectSum (ι R x) =
       DirectSum.of (fun n => ⨂[R]^n M) _ (PiTensorProduct.tprod R fun _ : Fin 1 => x) :=
   TensorAlgebra.lift_ι_apply _ _
 #align tensor_algebra.to_direct_sum_ι TensorAlgebra.toDirectSum_ι
 
-theorem ofDirectSum_comp_toDirectSum :
+lemma ofDirectSum_comp_toDirectSum :
     ofDirectSum.comp toDirectSum = AlgHom.id R (TensorAlgebra R M) := by
   ext
   simp [DirectSum.lof_eq_of, tprod_apply]
 #align tensor_algebra.of_direct_sum_comp_to_direct_sum TensorAlgebra.ofDirectSum_comp_toDirectSum
 
 @[simp]
-theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
+lemma ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
     ofDirectSum (TensorAlgebra.toDirectSum x) = x :=
   AlgHom.congr_fun ofDirectSum_comp_toDirectSum x
 #align tensor_algebra.of_direct_sum_to_direct_sum TensorAlgebra.ofDirectSum_toDirectSum
 
 @[simp, nolint simpNF] -- see std4#365 for the simpNF issue
-theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
+lemma mk_reindex_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
     (PiTensorProduct.reindex R (fun _ ↦ M) (Equiv.cast <| congr_arg Fin h) x) =
     GradedMonoid.mk n x :=
@@ -125,7 +125,7 @@ theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
 #align tensor_algebra.mk_reindex_cast TensorAlgebra.mk_reindex_cast
 
 @[simp]
-theorem mk_reindex_fin_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
+lemma mk_reindex_fin_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
     (PiTensorProduct.reindex R (fun _ ↦ M) (Fin.castIso h).toEquiv x) = GradedMonoid.mk n x := by
   rw [Fin.castIso_to_equiv, mk_reindex_cast h]
@@ -152,7 +152,7 @@ theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n
     congr 1 with i
 #align tensor_power.list_prod_graded_monoid_mk_single TensorPower.list_prod_gradedMonoid_mk_single
 
-theorem toDirectSum_tensorPower_tprod {n} (x : Fin n → M) :
+lemma toDirectSum_tensorPower_tprod {n} (x : Fin n → M) :
     toDirectSum (tprod R M n x) = DirectSum.of _ n (PiTensorProduct.tprod R x) := by
   rw [tprod_apply, AlgHom.map_list_prod, List.map_ofFn]
   simp_rw [Function.comp, toDirectSum_ι]
@@ -162,14 +162,14 @@ theorem toDirectSum_tensorPower_tprod {n} (x : Fin n → M) :
   rw [TensorPower.list_prod_gradedMonoid_mk_single]
 #align tensor_algebra.to_direct_sum_tensor_power_tprod TensorAlgebra.toDirectSum_tensorPower_tprod
 
-theorem toDirectSum_comp_ofDirectSum :
+lemma toDirectSum_comp_ofDirectSum :
     toDirectSum.comp ofDirectSum = AlgHom.id R (⨁ n, ⨂[R]^n M) := by
   ext
   simp [DirectSum.lof_eq_of, -tprod_apply, toDirectSum_tensorPower_tprod]
 #align tensor_algebra.to_direct_sum_comp_of_direct_sum TensorAlgebra.toDirectSum_comp_ofDirectSum
 
 @[simp]
-theorem toDirectSum_ofDirectSum (x : ⨁ n, ⨂[R]^n M) :
+lemma toDirectSum_ofDirectSum (x : ⨁ n, ⨂[R]^n M) :
     TensorAlgebra.toDirectSum (ofDirectSum x) = x :=
   AlgHom.congr_fun toDirectSum_comp_ofDirectSum x
 #align tensor_algebra.to_direct_sum_of_direct_sum TensorAlgebra.toDirectSum_ofDirectSum

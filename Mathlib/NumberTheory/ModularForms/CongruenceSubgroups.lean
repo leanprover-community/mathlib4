@@ -37,7 +37,7 @@ local notation "SLMOD(" N ")" =>
 set_option linter.uppercaseLean3 false
 
 @[simp]
-theorem SL_reduction_mod_hom_val (N : ℕ) (γ : SL(2, ℤ)) :
+lemma SL_reduction_mod_hom_val (N : ℕ) (γ : SL(2, ℤ)) :
     ∀ i j : Fin 2, (SLMOD(N) γ : Matrix (Fin 2) (Fin 2) (ZMod N)) i j = ((↑ₘγ i j : ℤ) : ZMod N) :=
   fun _ _ => rfl
 #align SL_reduction_mod_hom_val SL_reduction_mod_hom_val
@@ -48,12 +48,12 @@ def Gamma (N : ℕ) : Subgroup SL(2, ℤ) :=
   SLMOD(N).ker
 #align Gamma Gamma
 
-theorem Gamma_mem' (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ SLMOD(N) γ = 1 :=
+lemma Gamma_mem' (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ SLMOD(N) γ = 1 :=
   Iff.rfl
 #align Gamma_mem' Gamma_mem'
 
 @[simp]
-theorem Gamma_mem (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ ((↑ₘγ 0 0 : ℤ) : ZMod N) = 1 ∧
+lemma Gamma_mem (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ ((↑ₘγ 0 0 : ℤ) : ZMod N) = 1 ∧
     ((↑ₘγ 0 1 : ℤ) : ZMod N) = 0 ∧ ((↑ₘγ 1 0 : ℤ) : ZMod N) = 0 ∧ ((↑ₘγ 1 1 : ℤ) : ZMod N) = 1 := by
   rw [Gamma_mem']
   constructor
@@ -66,16 +66,16 @@ theorem Gamma_mem (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ ((↑ₘγ 0 
     exacts [h.1, h.2.1, h.2.2.1, h.2.2.2]
 #align Gamma_mem Gamma_mem
 
-theorem Gamma_normal (N : ℕ) : Subgroup.Normal (Gamma N) :=
+lemma Gamma_normal (N : ℕ) : Subgroup.Normal (Gamma N) :=
   SLMOD(N).normal_ker
 #align Gamma_normal Gamma_normal
 
-theorem Gamma_one_top : Gamma 1 = ⊤ := by
+lemma Gamma_one_top : Gamma 1 = ⊤ := by
   ext
   simp [eq_iff_true_of_subsingleton]
 #align Gamma_one_top Gamma_one_top
 
-theorem Gamma_zero_bot : Gamma 0 = ⊥ := by
+lemma Gamma_zero_bot : Gamma 0 = ⊥ := by
   ext
   simp only [Gamma_mem, coe_matrix_coe, Int.coe_castRingHom, map_apply, Int.cast_id,
     Subgroup.mem_bot]
@@ -110,11 +110,11 @@ def Gamma0 (N : ℕ) : Subgroup SL(2, ℤ) where
 #align Gamma0 Gamma0
 
 @[simp]
-theorem Gamma0_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma0 N ↔ ((↑ₘA 1 0 : ℤ) : ZMod N) = 0 :=
+lemma Gamma0_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma0 N ↔ ((↑ₘA 1 0 : ℤ) : ZMod N) = 0 :=
   Iff.rfl
 #align Gamma0_mem Gamma0_mem
 
-theorem Gamma0_det (N : ℕ) (A : Gamma0 N) : (A.1.1.det : ZMod N) = 1 := by simp [A.1.property]
+lemma Gamma0_det (N : ℕ) (A : Gamma0 N) : (A.1.1.det : ZMod N) = 1 := by simp [A.1.property]
 #align Gamma0_det Gamma0_det
 
 /-- The group homomorphism from `Gamma0` to `ZMod N` given by mapping a matrix to its lower
@@ -141,11 +141,11 @@ def Gamma1' (N : ℕ) : Subgroup (Gamma0 N) :=
 #align Gamma1' Gamma1'
 
 @[simp, nolint simpNF] -- Porting note: linter failed to synth `CommMonoid { x // x ∈ Gamma0 N }`
-theorem Gamma1_mem' (N : ℕ) (γ : Gamma0 N) : γ ∈ Gamma1' N ↔ (Gamma0Map N) γ = 1 :=
+lemma Gamma1_mem' (N : ℕ) (γ : Gamma0 N) : γ ∈ Gamma1' N ↔ (Gamma0Map N) γ = 1 :=
   Iff.rfl
 #align Gamma1_mem' Gamma1_mem'
 
-theorem Gamma1_to_Gamma0_mem (N : ℕ) (A : Gamma0 N) : A ∈ Gamma1' N ↔
+lemma Gamma1_to_Gamma0_mem (N : ℕ) (A : Gamma0 N) : A ∈ Gamma1' N ↔
     ((↑ₘA 0 0 : ℤ) : ZMod N) = 1 ∧ ((↑ₘA 1 1 : ℤ) : ZMod N) = 1 ∧ ((↑ₘA 1 0 : ℤ) : ZMod N) = 0 := by
   constructor
   · intro ha
@@ -171,7 +171,7 @@ def Gamma1 (N : ℕ) : Subgroup SL(2, ℤ) :=
 #align Gamma1 Gamma1
 
 @[simp]
-theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
+lemma Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
     ((↑ₘA 0 0 : ℤ) : ZMod N) = 1 ∧ ((↑ₘA 1 1 : ℤ) : ZMod N) = 1 ∧ ((↑ₘA 1 0 : ℤ) : ZMod N) = 0 := by
   constructor
   · intro ha
@@ -192,7 +192,7 @@ theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
     simp
 #align Gamma1_mem Gamma1_mem
 
-theorem Gamma1_in_Gamma0 (N : ℕ) : Gamma1 N ≤ Gamma0 N := by
+lemma Gamma1_in_Gamma0 (N : ℕ) : Gamma1 N ≤ Gamma0 N := by
   intro x HA
   simp only [Gamma0_mem, Gamma1_mem, coe_matrix_coe, Int.coe_castRingHom, map_apply] at *
   exact HA.2.2
@@ -206,24 +206,24 @@ def IsCongruenceSubgroup (Γ : Subgroup SL(2, ℤ)) : Prop :=
   ∃ N : ℕ+, Gamma N ≤ Γ
 #align is_congruence_subgroup IsCongruenceSubgroup
 
-theorem isCongruenceSubgroup_trans (H K : Subgroup SL(2, ℤ)) (h : H ≤ K)
+lemma isCongruenceSubgroup_trans (H K : Subgroup SL(2, ℤ)) (h : H ≤ K)
     (h2 : IsCongruenceSubgroup H) : IsCongruenceSubgroup K := by
   obtain ⟨N, hN⟩ := h2
   exact ⟨N, le_trans hN h⟩
 #align is_congruence_subgroup_trans isCongruenceSubgroup_trans
 
-theorem Gamma_is_cong_sub (N : ℕ+) : IsCongruenceSubgroup (Gamma N) :=
+lemma Gamma_is_cong_sub (N : ℕ+) : IsCongruenceSubgroup (Gamma N) :=
   ⟨N, by simp only [le_refl]⟩
 #align Gamma_is_cong_sub Gamma_is_cong_sub
 
-theorem Gamma1_is_congruence (N : ℕ+) : IsCongruenceSubgroup (Gamma1 N) := by
+lemma Gamma1_is_congruence (N : ℕ+) : IsCongruenceSubgroup (Gamma1 N) := by
   refine' ⟨N, _⟩
   intro A hA
   simp only [Gamma1_mem, Gamma_mem] at *
   simp only [hA, eq_self_iff_true, and_self_iff]
 #align Gamma1_is_congruence Gamma1_is_congruence
 
-theorem Gamma0_is_congruence (N : ℕ+) : IsCongruenceSubgroup (Gamma0 N) :=
+lemma Gamma0_is_congruence (N : ℕ+) : IsCongruenceSubgroup (Gamma0 N) :=
   isCongruenceSubgroup_trans _ _ (Gamma1_in_Gamma0 N) (Gamma1_is_congruence N)
 #align Gamma0_is_congruence Gamma0_is_congruence
 
@@ -233,11 +233,11 @@ section Conjugation
 
 open Pointwise
 
-theorem Gamma_cong_eq_self (N : ℕ) (g : ConjAct SL(2, ℤ)) : g • Gamma N = Gamma N := by
+lemma Gamma_cong_eq_self (N : ℕ) (g : ConjAct SL(2, ℤ)) : g • Gamma N = Gamma N := by
   apply Subgroup.Normal.conjAct (Gamma_normal N)
 #align Gamma_cong_eq_self Gamma_cong_eq_self
 
-theorem conj_cong_is_cong (g : ConjAct SL(2, ℤ)) (Γ : Subgroup SL(2, ℤ))
+lemma conj_cong_is_cong (g : ConjAct SL(2, ℤ)) (Γ : Subgroup SL(2, ℤ))
     (h : IsCongruenceSubgroup Γ) : IsCongruenceSubgroup (g • Γ) := by
   obtain ⟨N, HN⟩ := h
   refine' ⟨N, _⟩

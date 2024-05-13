@@ -69,12 +69,12 @@ instance : CoeOut (Q₁.IsometryEquiv Q₂) (M₁ ≃ₗ[R] M₂) :=
 #noalign quadratic_form.isometry.to_linear_equiv_eq_coe
 
 @[simp]
-theorem coe_toLinearEquiv (f : Q₁.IsometryEquiv Q₂) : ⇑(f : M₁ ≃ₗ[R] M₂) = f :=
+lemma coe_toLinearEquiv (f : Q₁.IsometryEquiv Q₂) : ⇑(f : M₁ ≃ₗ[R] M₂) = f :=
   rfl
 #align quadratic_form.isometry.coe_to_linear_equiv QuadraticForm.IsometryEquiv.coe_toLinearEquiv
 
 @[simp]
-theorem map_app (f : Q₁.IsometryEquiv Q₂) (m : M₁) : Q₂ (f m) = Q₁ m :=
+lemma map_app (f : Q₁.IsometryEquiv Q₂) (m : M₁) : Q₂ (f m) = Q₁ m :=
   f.map_app' m
 #align quadratic_form.isometry.map_app QuadraticForm.IsometryEquiv.map_app
 
@@ -111,17 +111,17 @@ namespace Equivalent
 variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} {Q₃ : QuadraticForm R M₃}
 
 @[refl]
-theorem refl (Q : QuadraticForm R M) : Q.Equivalent Q :=
+lemma refl (Q : QuadraticForm R M) : Q.Equivalent Q :=
   ⟨IsometryEquiv.refl Q⟩
 #align quadratic_form.equivalent.refl QuadraticForm.Equivalent.refl
 
 @[symm]
-theorem symm (h : Q₁.Equivalent Q₂) : Q₂.Equivalent Q₁ :=
+lemma symm (h : Q₁.Equivalent Q₂) : Q₂.Equivalent Q₁ :=
   h.elim fun f => ⟨f.symm⟩
 #align quadratic_form.equivalent.symm QuadraticForm.Equivalent.symm
 
 @[trans]
-theorem trans (h : Q₁.Equivalent Q₂) (h' : Q₂.Equivalent Q₃) : Q₁.Equivalent Q₃ :=
+lemma trans (h : Q₁.Equivalent Q₂) (h' : Q₂.Equivalent Q₃) : Q₁.Equivalent Q₃ :=
   h'.elim <| h.elim fun f g => ⟨f.trans g⟩
 #align quadratic_form.equivalent.trans QuadraticForm.Equivalent.trans
 
@@ -163,13 +163,13 @@ variable [FiniteDimensional K V]
 
 open LinearMap.BilinForm
 
-theorem equivalent_weightedSumSquares (Q : QuadraticForm K V) :
+lemma equivalent_weightedSumSquares (Q : QuadraticForm K V) :
     ∃ w : Fin (FiniteDimensional.finrank K V) → K, Equivalent Q (weightedSumSquares K w) :=
   let ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm _ Q)
   ⟨_, ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
 #align quadratic_form.equivalent_weighted_sum_squares QuadraticForm.equivalent_weightedSumSquares
 
-theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm K V)
+lemma equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm K V)
     (hQ : (associated (R := K) Q).SeparatingLeft) :
     ∃ w : Fin (FiniteDimensional.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) := by
   obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm K Q)

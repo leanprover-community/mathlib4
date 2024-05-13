@@ -107,7 +107,7 @@ instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=
           Subtype.ext <| (congr_arg Subtype.val <| (congr_fun (congr_app e U) x : _) : _)⟩
 
 @[reassoc (attr := simp)]
-theorem Subpresheaf.homOfLe_ι {G G' : Subpresheaf F} (h : G ≤ G') :
+lemma Subpresheaf.homOfLe_ι {G G' : Subpresheaf F} (h : G ≤ G') :
     Subpresheaf.homOfLe h ≫ G'.ι = G.ι := by
   ext
   rfl
@@ -119,7 +119,7 @@ instance : IsIso (Subpresheaf.ι (⊤ : Subpresheaf F)) := by
   rw [isIso_iff_bijective]
   exact ⟨Subtype.coe_injective, fun x => ⟨⟨x, _root_.trivial⟩, rfl⟩⟩
 
-theorem Subpresheaf.eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
+lemma Subpresheaf.eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
   constructor
   · rintro rfl
     infer_instance
@@ -143,7 +143,7 @@ def Subpresheaf.lift (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) : F' �
 #align category_theory.grothendieck_topology.subpresheaf.lift CategoryTheory.GrothendieckTopology.Subpresheaf.lift
 
 @[reassoc (attr := simp)]
-theorem Subpresheaf.lift_ι (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) :
+lemma Subpresheaf.lift_ι (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) :
     G.lift f hf ≫ G.ι = f := by
   ext
   rfl
@@ -165,7 +165,7 @@ def Subpresheaf.familyOfElementsOfSection {U : Cᵒᵖ} (s : F.obj U) :
     (G.sieveOfSection s).1.FamilyOfElements G.toPresheaf := fun _ i hi => ⟨F.map i.op s, hi⟩
 #align category_theory.grothendieck_topology.subpresheaf.family_of_elements_of_section CategoryTheory.GrothendieckTopology.Subpresheaf.familyOfElementsOfSection
 
-theorem Subpresheaf.family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
+lemma Subpresheaf.family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
     (G.familyOfElementsOfSection s).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ e
   refine Subtype.ext ?_ -- Porting note: `ext1` does not work here
@@ -173,7 +173,7 @@ theorem Subpresheaf.family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
   rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← op_comp, e]
 #align category_theory.grothendieck_topology.subpresheaf.family_of_elements_compatible CategoryTheory.GrothendieckTopology.Subpresheaf.family_of_elements_compatible
 
-theorem Subpresheaf.nat_trans_naturality (f : F' ⟶ G.toPresheaf) {U V : Cᵒᵖ} (i : U ⟶ V)
+lemma Subpresheaf.nat_trans_naturality (f : F' ⟶ G.toPresheaf) {U V : Cᵒᵖ} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
   congr_arg Subtype.val (FunctorToTypes.naturality _ _ f i x)
 #align category_theory.grothendieck_topology.subpresheaf.nat_trans_naturality CategoryTheory.GrothendieckTopology.Subpresheaf.nat_trans_naturality
@@ -190,7 +190,7 @@ def Subpresheaf.sheafify : Subpresheaf F where
     rwa [← FunctorToTypes.map_comp_apply]
 #align category_theory.grothendieck_topology.subpresheaf.sheafify CategoryTheory.GrothendieckTopology.Subpresheaf.sheafify
 
-theorem Subpresheaf.le_sheafify : G ≤ G.sheafify J := by
+lemma Subpresheaf.le_sheafify : G ≤ G.sheafify J := by
   intro U s hs
   change _ ∈ J _
   convert J.top_mem U.unop -- Porting note: `U.unop` can not be inferred now
@@ -201,7 +201,7 @@ theorem Subpresheaf.le_sheafify : G ≤ G.sheafify J := by
 
 variable {J}
 
-theorem Subpresheaf.eq_sheafify (h : Presieve.IsSheaf J F) (hG : Presieve.IsSheaf J G.toPresheaf) :
+lemma Subpresheaf.eq_sheafify (h : Presieve.IsSheaf J F) (hG : Presieve.IsSheaf J G.toPresheaf) :
     G = G.sheafify J := by
   apply (G.le_sheafify J).antisymm
   intro U s hs
@@ -213,7 +213,7 @@ theorem Subpresheaf.eq_sheafify (h : Presieve.IsSheaf J F) (hG : Presieve.IsShea
   exact (congr_arg Subtype.val ((hG _ hs).valid_glue (G.family_of_elements_compatible s) _ hi) : _)
 #align category_theory.grothendieck_topology.subpresheaf.eq_sheafify CategoryTheory.GrothendieckTopology.Subpresheaf.eq_sheafify
 
-theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
+lemma Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
     Presieve.IsSheaf J (G.sheafify J).toPresheaf := by
   intro U S hS x hx
   let S' := Sieve.bind S fun Y f hf => G.sieveOfSection (x f hf).1
@@ -255,12 +255,12 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
   exact h₁ _ _ hi
 #align category_theory.grothendieck_topology.subpresheaf.sheafify_is_sheaf CategoryTheory.GrothendieckTopology.Subpresheaf.sheafify_isSheaf
 
-theorem Subpresheaf.eq_sheafify_iff (h : Presieve.IsSheaf J F) :
+lemma Subpresheaf.eq_sheafify_iff (h : Presieve.IsSheaf J F) :
     G = G.sheafify J ↔ Presieve.IsSheaf J G.toPresheaf :=
   ⟨fun e => e.symm ▸ G.sheafify_isSheaf h, G.eq_sheafify h⟩
 #align category_theory.grothendieck_topology.subpresheaf.eq_sheafify_iff CategoryTheory.GrothendieckTopology.Subpresheaf.eq_sheafify_iff
 
-theorem Subpresheaf.isSheaf_iff (h : Presieve.IsSheaf J F) :
+lemma Subpresheaf.isSheaf_iff (h : Presieve.IsSheaf J F) :
     Presieve.IsSheaf J G.toPresheaf ↔
       ∀ (U) (s : F.obj U), G.sieveOfSection s ∈ J (unop U) → s ∈ G.obj U := by
   rw [← G.eq_sheafify_iff h]
@@ -268,7 +268,7 @@ theorem Subpresheaf.isSheaf_iff (h : Presieve.IsSheaf J F) :
   exact ⟨Eq.ge, (G.le_sheafify J).antisymm⟩
 #align category_theory.grothendieck_topology.subpresheaf.is_sheaf_iff CategoryTheory.GrothendieckTopology.Subpresheaf.isSheaf_iff
 
-theorem Subpresheaf.sheafify_sheafify (h : Presieve.IsSheaf J F) :
+lemma Subpresheaf.sheafify_sheafify (h : Presieve.IsSheaf J F) :
     (G.sheafify J).sheafify J = G.sheafify J :=
   ((Subpresheaf.eq_sheafify_iff _ h).mpr <| G.sheafify_isSheaf h).symm
 #align category_theory.grothendieck_topology.subpresheaf.sheafify_sheafify CategoryTheory.GrothendieckTopology.Subpresheaf.sheafify_sheafify
@@ -298,7 +298,7 @@ noncomputable def Subpresheaf.sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presie
       exact congr_arg _ (Subtype.ext (FunctorToTypes.map_comp_apply _ _ _ _).symm)
 #align category_theory.grothendieck_topology.subpresheaf.sheafify_lift CategoryTheory.GrothendieckTopology.Subpresheaf.sheafifyLift
 
-theorem Subpresheaf.to_sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSheaf J F') :
+lemma Subpresheaf.to_sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSheaf J F') :
     Subpresheaf.homOfLe (G.le_sheafify J) ≫ G.sheafifyLift f h = f := by
   ext U s
   apply (h _ ((Subpresheaf.homOfLe (G.le_sheafify J)).app U s).prop).isSeparatedFor.ext
@@ -309,7 +309,7 @@ theorem Subpresheaf.to_sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSh
     ((G.family_of_elements_compatible _).compPresheafMap _) _ hi).trans (this _ _)
 #align category_theory.grothendieck_topology.subpresheaf.to_sheafify_lift CategoryTheory.GrothendieckTopology.Subpresheaf.to_sheafifyLift
 
-theorem Subpresheaf.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
+lemma Subpresheaf.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
     (l₁ l₂ : (G.sheafify J).toPresheaf ⟶ F')
     (e : Subpresheaf.homOfLe (G.le_sheafify J) ≫ l₁ = Subpresheaf.homOfLe (G.le_sheafify J) ≫ l₂) :
     l₁ = l₂ := by
@@ -321,7 +321,7 @@ theorem Subpresheaf.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
   exact (congr_fun (congr_app e <| op V) ⟨_, hi⟩ : _)
 #align category_theory.grothendieck_topology.subpresheaf.to_sheafify_lift_unique CategoryTheory.GrothendieckTopology.Subpresheaf.to_sheafify_lift_unique
 
-theorem Subpresheaf.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)
+lemma Subpresheaf.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)
     (hG' : Presieve.IsSheaf J G'.toPresheaf) : G.sheafify J ≤ G' := by
   intro U x hx
   convert ((G.sheafifyLift (Subpresheaf.homOfLe h) hG').app U ⟨x, hx⟩).2
@@ -348,12 +348,12 @@ def imagePresheaf (f : F' ⟶ F) : Subpresheaf F where
 #align category_theory.grothendieck_topology.image_presheaf CategoryTheory.GrothendieckTopology.imagePresheaf
 
 @[simp]
-theorem top_subpresheaf_obj (U) : (⊤ : Subpresheaf F).obj U = ⊤ :=
+lemma top_subpresheaf_obj (U) : (⊤ : Subpresheaf F).obj U = ⊤ :=
   rfl
 #align category_theory.grothendieck_topology.top_subpresheaf_obj CategoryTheory.GrothendieckTopology.top_subpresheaf_obj
 
 @[simp]
-theorem imagePresheaf_id : imagePresheaf (𝟙 F) = ⊤ := by
+lemma imagePresheaf_id : imagePresheaf (𝟙 F) = ⊤ := by
   ext
   simp
 #align category_theory.grothendieck_topology.image_presheaf_id CategoryTheory.GrothendieckTopology.imagePresheaf_id
@@ -375,11 +375,11 @@ def toImagePresheafSheafify (f : F' ⟶ F) : F' ⟶ ((imagePresheaf f).sheafify 
 variable {J}
 
 @[reassoc (attr := simp)]
-theorem toImagePresheaf_ι (f : F' ⟶ F) : toImagePresheaf f ≫ (imagePresheaf f).ι = f :=
+lemma toImagePresheaf_ι (f : F' ⟶ F) : toImagePresheaf f ≫ (imagePresheaf f).ι = f :=
   (imagePresheaf f).lift_ι _ _
 #align category_theory.grothendieck_topology.to_image_presheaf_ι CategoryTheory.GrothendieckTopology.toImagePresheaf_ι
 
-theorem imagePresheaf_comp_le (f₁ : F ⟶ F') (f₂ : F' ⟶ F'') :
+lemma imagePresheaf_comp_le (f₁ : F ⟶ F') (f₂ : F' ⟶ F'') :
     imagePresheaf (f₁ ≫ f₂) ≤ imagePresheaf f₂ := fun U _ hx => ⟨f₁.app U hx.choose, hx.choose_spec⟩
 #align category_theory.grothendieck_topology.image_presheaf_comp_le CategoryTheory.GrothendieckTopology.imagePresheaf_comp_le
 
@@ -421,7 +421,7 @@ def imageSheafι {F F' : Sheaf J (Type w)} (f : F ⟶ F') : imageSheaf f ⟶ F' 
 #align category_theory.grothendieck_topology.image_sheaf_ι CategoryTheory.GrothendieckTopology.imageSheafι
 
 @[reassoc (attr := simp)]
-theorem toImageSheaf_ι {F F' : Sheaf J (Type w)} (f : F ⟶ F') :
+lemma toImageSheaf_ι {F F' : Sheaf J (Type w)} (f : F ⟶ F') :
     toImageSheaf f ≫ imageSheafι f = f := by
   ext1
   simp [toImagePresheafSheafify]

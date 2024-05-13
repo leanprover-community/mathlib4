@@ -25,34 +25,34 @@ namespace ModuleCat
 variable {R : Type u} [Ring R] {X Y : ModuleCat.{v} R} (f : X ⟶ Y)
 variable {M : Type v} [AddCommGroup M] [Module R M]
 
-theorem ker_eq_bot_of_mono [Mono f] : LinearMap.ker f = ⊥ :=
+lemma ker_eq_bot_of_mono [Mono f] : LinearMap.ker f = ⊥ :=
   LinearMap.ker_eq_bot_of_cancel fun u v => (@cancel_mono _ _ _ _ _ f _ (↟u) (↟v)).1
 set_option linter.uppercaseLean3 false in
 #align Module.ker_eq_bot_of_mono ModuleCat.ker_eq_bot_of_mono
 
-theorem range_eq_top_of_epi [Epi f] : LinearMap.range f = ⊤ :=
+lemma range_eq_top_of_epi [Epi f] : LinearMap.range f = ⊤ :=
   LinearMap.range_eq_top_of_cancel fun u v => (@cancel_epi _ _ _ _ _ f _ (↟u) (↟v)).1
 set_option linter.uppercaseLean3 false in
 #align Module.range_eq_top_of_epi ModuleCat.range_eq_top_of_epi
 
-theorem mono_iff_ker_eq_bot : Mono f ↔ LinearMap.ker f = ⊥ :=
+lemma mono_iff_ker_eq_bot : Mono f ↔ LinearMap.ker f = ⊥ :=
   ⟨fun hf => ker_eq_bot_of_mono _, fun hf =>
     ConcreteCategory.mono_of_injective _ <| by convert LinearMap.ker_eq_bot.1 hf⟩
 set_option linter.uppercaseLean3 false in
 #align Module.mono_iff_ker_eq_bot ModuleCat.mono_iff_ker_eq_bot
 
-theorem mono_iff_injective : Mono f ↔ Function.Injective f := by
+lemma mono_iff_injective : Mono f ↔ Function.Injective f := by
   rw [mono_iff_ker_eq_bot, LinearMap.ker_eq_bot]
 set_option linter.uppercaseLean3 false in
 #align Module.mono_iff_injective ModuleCat.mono_iff_injective
 
-theorem epi_iff_range_eq_top : Epi f ↔ LinearMap.range f = ⊤ :=
+lemma epi_iff_range_eq_top : Epi f ↔ LinearMap.range f = ⊤ :=
   ⟨fun _ => range_eq_top_of_epi _, fun hf =>
     ConcreteCategory.epi_of_surjective _ <| LinearMap.range_eq_top.1 hf⟩
 set_option linter.uppercaseLean3 false in
 #align Module.epi_iff_range_eq_top ModuleCat.epi_iff_range_eq_top
 
-theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
+lemma epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   rw [epi_iff_range_eq_top, LinearMap.range_eq_top]
 set_option linter.uppercaseLean3 false in
 #align Module.epi_iff_surjective ModuleCat.epi_iff_surjective

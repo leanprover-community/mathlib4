@@ -132,7 +132,7 @@ theorem to_isSemiringHom (hf : IsRingHom f) : IsSemiringHom f :=
   { ‹IsRingHom f› with map_zero := map_zero hf }
 #align is_ring_hom.to_is_semiring_hom IsRingHom.to_isSemiringHom
 
-theorem to_isAddGroupHom (hf : IsRingHom f) : IsAddGroupHom f :=
+lemma to_isAddGroupHom (hf : IsRingHom f) : IsAddGroupHom f :=
   { map_add := hf.map_add }
 #align is_ring_hom.to_is_add_group_hom IsRingHom.to_isAddGroupHom
 
@@ -150,11 +150,11 @@ def of {f : α → β} (hf : IsSemiringHom f) : α →+* β :=
 #align ring_hom.of RingHom.of
 
 @[simp]
-theorem coe_of {f : α → β} (hf : IsSemiringHom f) : ⇑(of hf) = f :=
+lemma coe_of {f : α → β} (hf : IsSemiringHom f) : ⇑(of hf) = f :=
   rfl
 #align ring_hom.coe_of RingHom.coe_of
 
-theorem to_isSemiringHom (f : α →+* β) : IsSemiringHom f :=
+lemma to_isSemiringHom (f : α →+* β) : IsSemiringHom f :=
   { map_zero := f.map_zero
     map_one := f.map_one
     map_add := f.map_add
@@ -163,7 +163,7 @@ theorem to_isSemiringHom (f : α →+* β) : IsSemiringHom f :=
 
 end
 
-theorem to_isRingHom {α γ} [Ring α] [Ring γ] (g : α →+* γ) : IsRingHom g :=
+lemma to_isRingHom {α γ} [Ring α] [Ring γ] (g : α →+* γ) : IsRingHom g :=
   IsRingHom.of_semiring g.to_isSemiringHom
 #align ring_hom.to_is_ring_hom RingHom.to_isRingHom
 

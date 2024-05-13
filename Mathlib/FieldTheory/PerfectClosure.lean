@@ -85,13 +85,13 @@ def mk (x : ℕ × K) : PerfectClosure K p :=
   Quot.mk (R K p) x
 #align perfect_closure.mk PerfectClosure.mk
 
-theorem mk_surjective : Function.Surjective (mk K p) := surjective_quot_mk _
+lemma mk_surjective : Function.Surjective (mk K p) := surjective_quot_mk _
 
-@[simp] theorem mk_succ_pow (m : ℕ) (x : K) : mk K p ⟨m + 1, x ^ p⟩ = mk K p ⟨m, x⟩ :=
+@[simp] lemma mk_succ_pow (m : ℕ) (x : K) : mk K p ⟨m + 1, x ^ p⟩ = mk K p ⟨m, x⟩ :=
   Eq.symm <| Quot.sound (R.intro m x)
 
 @[simp]
-theorem quot_mk_eq_mk (x : ℕ × K) : (Quot.mk (R K p) x : PerfectClosure K p) = mk K p x :=
+lemma quot_mk_eq_mk (x : ℕ × K) : (Quot.mk (R K p) x : PerfectClosure K p) = mk K p x :=
   rfl
 #align perfect_closure.quot_mk_eq_mk PerfectClosure.quot_mk_eq_mk
 
@@ -105,20 +105,20 @@ def liftOn {L : Type*} (x : PerfectClosure K p) (f : ℕ × K → L)
 #align perfect_closure.lift_on PerfectClosure.liftOn
 
 @[simp]
-theorem liftOn_mk {L : Sort _} (f : ℕ × K → L) (hf : ∀ x y, R K p x y → f x = f y) (x : ℕ × K) :
+lemma liftOn_mk {L : Sort _} (f : ℕ × K → L) (hf : ∀ x y, R K p x y → f x = f y) (x : ℕ × K) :
     (mk K p x).liftOn f hf = f x :=
   rfl
 #align perfect_closure.lift_on_mk PerfectClosure.liftOn_mk
 
 @[elab_as_elim]
-theorem induction_on (x : PerfectClosure K p) {q : PerfectClosure K p → Prop}
+lemma induction_on (x : PerfectClosure K p) {q : PerfectClosure K p → Prop}
     (h : ∀ x, q (mk K p x)) : q x :=
   Quot.inductionOn x h
 #align perfect_closure.induction_on PerfectClosure.induction_on
 
 variable (K p)
 
-private theorem mul_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
+private lemma mul_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
     mk K p (x1.1 + y.1, (frobenius K p)^[y.1] x1.2 * (frobenius K p)^[x1.1] y.2) =
       mk K p (x2.1 + y.1, (frobenius K p)^[y.1] x2.2 * (frobenius K p)^[x2.1] y.2) :=
   match x1, x2, H with
@@ -128,7 +128,7 @@ private theorem mul_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
         Nat.succ_add]
       apply R.intro
 
-private theorem mul_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
+private lemma mul_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
     mk K p (x.1 + y1.1, (frobenius K p)^[y1.1] x.2 * (frobenius K p)^[x.1] y1.2) =
       mk K p (x.1 + y2.1, (frobenius K p)^[y2.1] x.2 * (frobenius K p)^[x.1] y2.2) :=
   match y1, y2, H with
@@ -148,7 +148,7 @@ instance instMul : Mul (PerfectClosure K p) :=
       funext fun e => Quot.inductionOn e fun y => mul_aux_left K p x1 x2 y H⟩
 
 @[simp]
-theorem mk_mul_mk (x y : ℕ × K) :
+lemma mk_mul_mk (x y : ℕ × K) :
     mk K p x * mk K p y =
       mk K p (x.1 + y.1, (frobenius K p)^[y.1] x.2 * (frobenius K p)^[x.1] y.2) :=
   rfl
@@ -178,14 +178,14 @@ instance instCommMonoid : CommMonoid (PerfectClosure K p) :=
         Quot.inductionOn f fun ⟨n, y⟩ =>
           congr_arg (Quot.mk _) <| by simp only [add_comm, mul_comm] }
 
-theorem one_def : (1 : PerfectClosure K p) = mk K p (0, 1) :=
+lemma one_def : (1 : PerfectClosure K p) = mk K p (0, 1) :=
   rfl
 #align perfect_closure.one_def PerfectClosure.one_def
 
 instance instInhabited : Inhabited (PerfectClosure K p) :=
   ⟨1⟩
 
-private theorem add_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
+private lemma add_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
     mk K p (x1.1 + y.1, (frobenius K p)^[y.1] x1.2 + (frobenius K p)^[x1.1] y.2) =
       mk K p (x2.1 + y.1, (frobenius K p)^[y.1] x2.2 + (frobenius K p)^[x2.1] y.2) :=
   match x1, x2, H with
@@ -195,7 +195,7 @@ private theorem add_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
         Nat.succ_add]
       apply R.intro
 
-private theorem add_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
+private lemma add_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
     mk K p (x.1 + y1.1, (frobenius K p)^[y1.1] x.2 + (frobenius K p)^[x.1] y1.2) =
       mk K p (x.1 + y2.1, (frobenius K p)^[y2.1] x.2 + (frobenius K p)^[x.1] y2.2) :=
   match y1, y2, H with
@@ -215,7 +215,7 @@ instance instAdd : Add (PerfectClosure K p) :=
       funext fun e => Quot.inductionOn e fun y => add_aux_left K p x1 x2 y H⟩
 
 @[simp]
-theorem mk_add_mk (x y : ℕ × K) :
+lemma mk_add_mk (x y : ℕ × K) :
     mk K p x + mk K p y =
       mk K p (x.1 + y.1, (frobenius K p)^[y.1] x.2 + (frobenius K p)^[x.1] y.2) :=
   rfl
@@ -227,24 +227,24 @@ instance instNeg : Neg (PerfectClosure K p) :=
       | _, _, R.intro n x => Quot.sound <| by rw [← frobenius_neg]; apply R.intro⟩
 
 @[simp]
-theorem neg_mk (x : ℕ × K) : -mk K p x = mk K p (x.1, -x.2) :=
+lemma neg_mk (x : ℕ × K) : -mk K p x = mk K p (x.1, -x.2) :=
   rfl
 #align perfect_closure.neg_mk PerfectClosure.neg_mk
 
 instance instZero : Zero (PerfectClosure K p) :=
   ⟨mk K p (0, 0)⟩
 
-theorem zero_def : (0 : PerfectClosure K p) = mk K p (0, 0) :=
+lemma zero_def : (0 : PerfectClosure K p) = mk K p (0, 0) :=
   rfl
 #align perfect_closure.zero_def PerfectClosure.zero_def
 
 @[simp]
-theorem mk_zero_zero : mk K p (0, 0) = 0 :=
+lemma mk_zero_zero : mk K p (0, 0) = 0 :=
   rfl
 #align perfect_closure.mk_zero_zero PerfectClosure.mk_zero_zero
 
 -- Porting note: improved proof structure
-theorem mk_zero (n : ℕ) : mk K p (n, 0) = 0 := by
+lemma mk_zero (n : ℕ) : mk K p (n, 0) = 0 := by
   induction' n with n ih
   · rfl
   rw [← ih]
@@ -255,7 +255,7 @@ theorem mk_zero (n : ℕ) : mk K p (n, 0) = 0 := by
 #align perfect_closure.mk_zero PerfectClosure.mk_zero
 
 -- Porting note: improved proof structure
-theorem R.sound (m n : ℕ) (x y : K) (H : (frobenius K p)^[m] x = y) :
+lemma R.sound (m n : ℕ) (x y : K) (H : (frobenius K p)^[m] x = y) :
     mk K p (n, x) = mk K p (m + n, y) := by
   subst H
   induction' m with m ih
@@ -325,7 +325,7 @@ instance instCommRing : CommRing (PerfectClosure K p) :=
             simp only [iterate_map_mul, iterate_map_add, ← iterate_add_apply,
               add_mul, add_comm, add_left_comm] }
 
-theorem mk_eq_iff (x y : ℕ × K) :
+lemma mk_eq_iff (x y : ℕ × K) :
     mk K p x = mk K p y ↔ ∃ z, (frobenius K p)^[y.1 + z] x.2 = (frobenius K p)^[x.1 + z] y.2 := by
   constructor
   · intro H
@@ -351,7 +351,7 @@ theorem mk_eq_iff (x y : ℕ × K) :
 #align perfect_closure.eq_iff' PerfectClosure.mk_eq_iff
 
 @[simp]
-theorem mk_pow (x : ℕ × K) (n : ℕ) : mk K p x ^ n = mk K p (x.1, x.2 ^ n) := by
+lemma mk_pow (x : ℕ × K) (n : ℕ) : mk K p x ^ n = mk K p (x.1, x.2 ^ n) := by
   induction n with
   | zero =>
     rw [pow_zero, pow_zero, one_def, mk_eq_iff]
@@ -361,7 +361,7 @@ theorem mk_pow (x : ℕ × K) (n : ℕ) : mk K p x ^ n = mk K p (x.1, x.2 ^ n) :
     exact ⟨0, by simp_rw [iterate_frobenius, add_zero, mul_pow, ← pow_mul,
       ← pow_add, mul_assoc, ← pow_add]⟩
 
-theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
+lemma natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   induction' n with n ih
   · induction' x with x ih
     · simp
@@ -374,12 +374,12 @@ theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   apply R.intro
 #align perfect_closure.nat_cast PerfectClosure.natCast
 
-theorem intCast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
+lemma intCast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
   induction x <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, Int.cast_negSucc, natCast K p 0]
   rfl
 #align perfect_closure.int_cast PerfectClosure.intCast
 
-theorem natCast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = y := by
+lemma natCast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = y := by
   constructor <;> intro H
   · rw [natCast K p 0, natCast K p 0, mk_eq_iff] at H
     cases' H with z H
@@ -391,7 +391,7 @@ instance instCharP : CharP (PerfectClosure K p) p := by
   constructor; intro x; rw [← CharP.cast_eq_zero_iff K]
   rw [← Nat.cast_zero, natCast_eq_iff, Nat.cast_zero]
 
-theorem frobenius_mk (x : ℕ × K) :
+lemma frobenius_mk (x : ℕ × K) :
     (frobenius (PerfectClosure K p) p : PerfectClosure K p → PerfectClosure K p) (mk K p x) =
       mk _ _ (x.1, x.2 ^ p) := by
   simp only [frobenius_def]
@@ -407,7 +407,7 @@ def of : K →+* PerfectClosure K p where
   map_add' _ _ := rfl
 #align perfect_closure.of PerfectClosure.of
 
-theorem of_apply (x : K) : of K p x = mk _ _ (0, x) :=
+lemma of_apply (x : K) : of K p x = mk _ _ (0, x) :=
   rfl
 #align perfect_closure.of_apply PerfectClosure.of_apply
 
@@ -431,7 +431,7 @@ instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
       simp only [f, liftOn_mk, frobenius_mk, mk_succ_pow]
 
 @[simp]
-theorem iterate_frobenius_mk (n : ℕ) (x : K) :
+lemma iterate_frobenius_mk (n : ℕ) (x : K) :
     (frobenius (PerfectClosure K p) p)^[n] (mk K p ⟨n, x⟩) = of K p x := by
   induction' n with n ih
   · rfl
@@ -473,7 +473,7 @@ noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L 
 
 end Ring
 
-theorem eq_iff [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
+lemma eq_iff [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
     mk K p x = mk K p y ↔ (frobenius K p)^[y.1] x.2 = (frobenius K p)^[x.1] y.2 :=
   (mk_eq_iff K p x y).trans
     ⟨fun ⟨z, H⟩ => (frobenius_inj K p).iterate z <| by simpa only [add_comm, iterate_add] using H,
@@ -495,7 +495,7 @@ instance instInv : Inv (PerfectClosure K p) :=
 
 -- Porting note (#10756): added theorem
 @[simp]
-theorem mk_inv (x : ℕ × K) : (mk K p x)⁻¹ = mk K p (x.1, x.2⁻¹) :=
+lemma mk_inv (x : ℕ × K) : (mk K p x)⁻¹ = mk K p (x.1, x.2⁻¹) :=
   rfl
 
 -- Porting note: added to avoid "unknown free variable" error

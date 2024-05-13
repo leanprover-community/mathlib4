@@ -123,7 +123,7 @@ class ContravariantClass : Prop where
   protected elim : Contravariant M N μ r
 #align contravariant_class ContravariantClass
 
-theorem rel_iff_cov [CovariantClass M N μ r] [ContravariantClass M N μ r] (m : M) {a b : N} :
+lemma rel_iff_cov [CovariantClass M N μ r] [ContravariantClass M N μ r] (m : M) {a b : N} :
     r (μ m a) (μ m b) ↔ r a b :=
   ⟨ContravariantClass.elim _, CovariantClass.elim _⟩
 #align rel_iff_cov rel_iff_cov
@@ -132,11 +132,11 @@ section flip
 
 variable {M N μ r}
 
-theorem Covariant.flip (h : Covariant M N μ r) : Covariant M N μ (flip r) :=
+lemma Covariant.flip (h : Covariant M N μ r) : Covariant M N μ (flip r) :=
   fun a _ _ ↦ h a
 #align covariant.flip Covariant.flip
 
-theorem Contravariant.flip (h : Contravariant M N μ r) : Contravariant M N μ (flip r) :=
+lemma Contravariant.flip (h : Contravariant M N μ r) : Contravariant M N μ (flip r) :=
   fun a _ _ ↦ h a
 #align contravariant.flip Contravariant.flip
 
@@ -146,12 +146,12 @@ section Covariant
 
 variable {M N μ r} [CovariantClass M N μ r]
 
-theorem act_rel_act_of_rel (m : M) {a b : N} (ab : r a b) : r (μ m a) (μ m b) :=
+lemma act_rel_act_of_rel (m : M) {a b : N} (ab : r a b) : r (μ m a) (μ m b) :=
   CovariantClass.elim _ ab
 #align act_rel_act_of_rel act_rel_act_of_rel
 
 @[to_additive]
-theorem Group.covariant_iff_contravariant [Group N] :
+lemma Group.covariant_iff_contravariant [Group N] :
     Covariant N N (· * ·) r ↔ Contravariant N N (· * ·) r := by
   refine ⟨fun h a b c bc ↦ ?_, fun h a b c bc ↦ ?_⟩
   · rw [← inv_mul_cancel_left a b, ← inv_mul_cancel_left a c]
@@ -167,7 +167,7 @@ instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·)
   ⟨Group.covariant_iff_contravariant.mp CovariantClass.elim⟩
 
 @[to_additive]
-theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
+lemma Group.covariant_swap_iff_contravariant_swap [Group N] :
     Covariant N N (swap (· * ·)) r ↔ Contravariant N N (swap (· * ·)) r := by
   refine ⟨fun h a b c bc ↦ ?_, fun h a b c bc ↦ ?_⟩
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a]
@@ -189,11 +189,11 @@ section Trans
 variable [IsTrans N r] (m n : M) {a b c d : N}
 
 --  Lemmas with 3 elements.
-theorem act_rel_of_rel_of_act_rel (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
+lemma act_rel_of_rel_of_act_rel (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
   _root_.trans (act_rel_act_of_rel m ab) rl
 #align act_rel_of_rel_of_act_rel act_rel_of_rel_of_act_rel
 
-theorem rel_act_of_rel_of_rel_act (ab : r a b) (rr : r c (μ m a)) : r c (μ m b) :=
+lemma rel_act_of_rel_of_rel_act (ab : r a b) (rr : r c (μ m a)) : r c (μ m b) :=
   _root_.trans rr (act_rel_act_of_rel _ ab)
 #align rel_act_of_rel_of_rel_act rel_act_of_rel_of_rel_act
 
@@ -207,7 +207,7 @@ section MEqN
 variable {M N μ r} {mu : N → N → N} [IsTrans N r] [i : CovariantClass N N mu r]
   [i' : CovariantClass N N (swap mu) r] {a b c d : N}
 
-theorem act_rel_act_of_rel_of_rel (ab : r a b) (cd : r c d) : r (mu a c) (mu b d) :=
+lemma act_rel_act_of_rel_of_rel (ab : r a b) (cd : r c d) : r (mu a c) (mu b d) :=
   _root_.trans (@act_rel_act_of_rel _ _ (swap mu) r _ c _ _ ab) (act_rel_act_of_rel b cd)
 #align act_rel_act_of_rel_of_rel act_rel_act_of_rel_of_rel
 
@@ -217,7 +217,7 @@ section Contravariant
 
 variable {M N μ r} [ContravariantClass M N μ r]
 
-theorem rel_of_act_rel_act (m : M) {a b : N} (ab : r (μ m a) (μ m b)) : r a b :=
+lemma rel_of_act_rel_act (m : M) {a b : N} (ab : r (μ m a) (μ m b)) : r a b :=
   ContravariantClass.elim _ ab
 #align rel_of_act_rel_act rel_of_act_rel_act
 
@@ -226,12 +226,12 @@ section Trans
 variable [IsTrans N r] (m n : M) {a b c d : N}
 
 --  Lemmas with 3 elements.
-theorem act_rel_of_act_rel_of_rel_act_rel (ab : r (μ m a) b) (rl : r (μ m b) (μ m c)) :
+lemma act_rel_of_act_rel_of_rel_act_rel (ab : r (μ m a) b) (rl : r (μ m b) (μ m c)) :
     r (μ m a) c :=
   _root_.trans ab (rel_of_act_rel_act m rl)
 #align act_rel_of_act_rel_of_rel_act_rel act_rel_of_act_rel_of_rel_act_rel
 
-theorem rel_act_of_act_rel_act_of_rel_act (ab : r (μ m a) (μ m b)) (rr : r b (μ m c)) :
+lemma rel_act_of_act_rel_act_of_rel_act (ab : r (μ m a) (μ m b)) (rr : r b (μ m c)) :
     r a (μ m c) :=
   _root_.trans (rel_of_act_rel_act m ab) rr
 #align rel_act_of_act_rel_act_of_rel_act rel_act_of_act_rel_act_of_rel_act
@@ -278,7 +278,7 @@ theorem Antitone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (s
 
 end Monotone
 
-theorem covariant_le_of_covariant_lt [PartialOrder N] :
+lemma covariant_le_of_covariant_lt [PartialOrder N] :
     Covariant M N μ (· < ·) → Covariant M N μ (· ≤ ·) := by
   intro h a b c bc
   rcases bc.eq_or_lt with (rfl | bc)
@@ -286,28 +286,28 @@ theorem covariant_le_of_covariant_lt [PartialOrder N] :
   · exact (h _ bc).le
 #align covariant_le_of_covariant_lt covariant_le_of_covariant_lt
 
-theorem covariantClass_le_of_lt [PartialOrder N] [CovariantClass M N μ (· < ·)] :
+lemma covariantClass_le_of_lt [PartialOrder N] [CovariantClass M N μ (· < ·)] :
     CovariantClass M N μ (· ≤ ·) := ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
 
-theorem contravariant_le_iff_contravariant_lt_and_eq [PartialOrder N] :
+lemma contravariant_le_iff_contravariant_lt_and_eq [PartialOrder N] :
     Contravariant M N μ (· ≤ ·) ↔ Contravariant M N μ (· < ·) ∧ Contravariant M N μ (· = ·) := by
   refine ⟨fun h ↦ ⟨fun a b c bc ↦ ?_, fun a b c bc ↦ ?_⟩, fun h ↦ fun a b c bc ↦ ?_⟩
   · exact (h a bc.le).lt_of_ne (by rintro rfl; exact lt_irrefl _ bc)
   · exact (h a bc.le).antisymm (h a bc.ge)
   · exact bc.lt_or_eq.elim (fun bc ↦ (h.1 a bc).le) (fun bc ↦ (h.2 a bc).le)
 
-theorem contravariant_lt_of_contravariant_le [PartialOrder N] :
+lemma contravariant_lt_of_contravariant_le [PartialOrder N] :
     Contravariant M N μ (· ≤ ·) → Contravariant M N μ (· < ·) :=
   And.left ∘ (contravariant_le_iff_contravariant_lt_and_eq M N μ).mp
 #align contravariant_lt_of_contravariant_le contravariant_lt_of_contravariant_le
 
-theorem covariant_le_iff_contravariant_lt [LinearOrder N] :
+lemma covariant_le_iff_contravariant_lt [LinearOrder N] :
     Covariant M N μ (· ≤ ·) ↔ Contravariant M N μ (· < ·) :=
   ⟨fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_le (h _ k),
    fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_lt (h _ k)⟩
 #align covariant_le_iff_contravariant_lt covariant_le_iff_contravariant_lt
 
-theorem covariant_lt_iff_contravariant_le [LinearOrder N] :
+lemma covariant_lt_iff_contravariant_le [LinearOrder N] :
     Covariant M N μ (· < ·) ↔ Contravariant M N μ (· ≤ ·) :=
   ⟨fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_lt (h _ k),
    fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_le (h _ k)⟩
@@ -315,12 +315,12 @@ theorem covariant_lt_iff_contravariant_le [LinearOrder N] :
 
 variable (mu : N → N → N)
 
-theorem covariant_flip_iff [IsSymmOp N N mu] :
+lemma covariant_flip_iff [IsSymmOp N N mu] :
     Covariant N N (flip mu) r ↔ Covariant N N mu r := by rw [IsSymmOp.flip_eq]
 #noalign covariant_flip_mul_iff
 #noalign covariant_flip_add_iff
 
-theorem contravariant_flip_iff [IsSymmOp N N mu] :
+lemma contravariant_flip_iff [IsSymmOp N N mu] :
     Contravariant N N (flip mu) r ↔ Contravariant N N mu r := by rw [IsSymmOp.flip_eq]
 #noalign contravariant_flip_mul_iff
 #noalign contravariant_flip_add_iff
@@ -343,11 +343,11 @@ instance contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
     [ContravariantClass N N (· * ·) r] : ContravariantClass N N (swap (· * ·)) r where
   elim := (contravariant_flip_iff N r (· * ·)).mpr ContravariantClass.elim
 
-theorem covariant_lt_of_covariant_le_of_contravariant_eq [ContravariantClass M N μ (· = ·)]
+lemma covariant_lt_of_covariant_le_of_contravariant_eq [ContravariantClass M N μ (· = ·)]
     [PartialOrder N] [CovariantClass M N μ (· ≤ ·)] : CovariantClass M N μ (· < ·) where
   elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne (bc.ne ∘ ContravariantClass.elim _)
 
-theorem contravariant_le_of_contravariant_eq_and_lt [PartialOrder N]
+lemma contravariant_le_of_contravariant_eq_and_lt [PartialOrder N]
     [ContravariantClass M N μ (· = ·)] [ContravariantClass M N μ (· < ·)] :
     ContravariantClass M N μ (· ≤ ·) where
   elim := (contravariant_le_iff_contravariant_lt_and_eq M N μ).mpr

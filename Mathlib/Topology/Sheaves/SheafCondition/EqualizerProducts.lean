@@ -77,13 +77,13 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_equalizer_products.res TopCat.Presheaf.SheafConditionEqualizerProducts.res
 
 @[simp, elementwise]
-theorem res_π (i : ι) : res F U ≫ limit.π _ ⟨i⟩ = F.map (Opens.leSupr U i).op := by
+lemma res_π (i : ι) : res F U ≫ limit.π _ ⟨i⟩ = F.map (Opens.leSupr U i).op := by
   rw [res, limit.lift_π, Fan.mk_π_app]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_equalizer_products.res_π TopCat.Presheaf.SheafConditionEqualizerProducts.res_π
 
 @[elementwise]
-theorem w : res F U ≫ leftRes F U = res F U ≫ rightRes F U := by
+lemma w : res F U ≫ leftRes F U = res F U ≫ rightRes F U := by
   dsimp [res, leftRes, rightRes]
   -- Porting note: `ext` can't see `limit.hom_ext` applies here:
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
@@ -111,26 +111,26 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_equalizer_products.fork TopCat.Presheaf.SheafConditionEqualizerProducts.fork
 
 @[simp]
-theorem fork_pt : (fork F U).pt = F.obj (op (iSup U)) :=
+lemma fork_pt : (fork F U).pt = F.obj (op (iSup U)) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_equalizer_products.fork_X TopCat.Presheaf.SheafConditionEqualizerProducts.fork_pt
 
 @[simp]
-theorem fork_ι : (fork F U).ι = res F U :=
+lemma fork_ι : (fork F U).ι = res F U :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_equalizer_products.fork_ι TopCat.Presheaf.SheafConditionEqualizerProducts.fork_ι
 
 @[simp]
-theorem fork_π_app_walkingParallelPair_zero : (fork F U).π.app WalkingParallelPair.zero = res F U :=
+lemma fork_π_app_walkingParallelPair_zero : (fork F U).π.app WalkingParallelPair.zero = res F U :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_equalizer_products.fork_π_app_walking_parallel_pair_zero TopCat.Presheaf.SheafConditionEqualizerProducts.fork_π_app_walkingParallelPair_zero
 
 -- Porting note: Shortcut simplifier
 @[simp (high)]
-theorem fork_π_app_walkingParallelPair_one :
+lemma fork_π_app_walkingParallelPair_one :
     (fork F U).π.app WalkingParallelPair.one = res F U ≫ leftRes F U :=
   rfl
 set_option linter.uppercaseLean3 false in

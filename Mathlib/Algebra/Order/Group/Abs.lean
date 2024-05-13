@@ -373,22 +373,22 @@ variable [LinearOrderedAddCommGroup α] {a b c d : α}
 -- but in the rewrites below it is going looking for it without having fixed `α`.
 example : CovariantClass α α (swap fun x y ↦ x + y) fun x y ↦ x ≤ y := inferInstance
 
-theorem abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, @neg_le α]
+lemma abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, @neg_le α]
 #align abs_le abs_le
 
-theorem le_abs' : a ≤ |b| ↔ b ≤ -a ∨ a ≤ b := by rw [le_abs, or_comm, @le_neg α]
+lemma le_abs' : a ≤ |b| ↔ b ≤ -a ∨ a ≤ b := by rw [le_abs, or_comm, @le_neg α]
 #align le_abs' le_abs'
 
-theorem neg_le_of_abs_le (h : |a| ≤ b) : -b ≤ a :=
+lemma neg_le_of_abs_le (h : |a| ≤ b) : -b ≤ a :=
   (abs_le.mp h).1
 #align neg_le_of_abs_le neg_le_of_abs_le
 
-theorem le_of_abs_le (h : |a| ≤ b) : a ≤ b :=
+lemma le_of_abs_le (h : |a| ≤ b) : a ≤ b :=
   (abs_le.mp h).2
 #align le_of_abs_le le_of_abs_le
 
 @[to_additive]
-theorem apply_abs_le_mul_of_one_le' {β : Type*} [MulOneClass β] [Preorder β]
+lemma apply_abs_le_mul_of_one_le' {β : Type*} [MulOneClass β] [Preorder β]
     [CovariantClass β β (· * ·) (· ≤ ·)] [CovariantClass β β (swap (· * ·)) (· ≤ ·)] {f : α → β}
     {a : α} (h₁ : 1 ≤ f a) (h₂ : 1 ≤ f (-a)) : f |a| ≤ f a * f (-a) :=
   (le_total a 0).rec (fun ha => (abs_of_nonpos ha).symm ▸ le_mul_of_one_le_left' h₁) fun ha =>
@@ -397,7 +397,7 @@ theorem apply_abs_le_mul_of_one_le' {β : Type*} [MulOneClass β] [Preorder β]
 #align apply_abs_le_add_of_nonneg' apply_abs_le_add_of_nonneg'
 
 @[to_additive]
-theorem apply_abs_le_mul_of_one_le {β : Type*} [MulOneClass β] [Preorder β]
+lemma apply_abs_le_mul_of_one_le {β : Type*} [MulOneClass β] [Preorder β]
     [CovariantClass β β (· * ·) (· ≤ ·)] [CovariantClass β β (swap (· * ·)) (· ≤ ·)] {f : α → β}
     (h : ∀ x, 1 ≤ f x) (a : α) : f |a| ≤ f a * f (-a) :=
   apply_abs_le_mul_of_one_le' (h _) (h _)
@@ -412,46 +412,46 @@ theorem abs_add (a b : α) : |a + b| ≤ |a| + |b| :=
       add_le_add (le_abs_self _) (le_abs_self _)⟩
 #align abs_add abs_add
 
-theorem abs_add' (a b : α) : |a| ≤ |b| + |b + a| := by simpa using abs_add (-b) (b + a)
+lemma abs_add' (a b : α) : |a| ≤ |b| + |b + a| := by simpa using abs_add (-b) (b + a)
 #align abs_add' abs_add'
 
-theorem abs_sub (a b : α) : |a - b| ≤ |a| + |b| := by
+lemma abs_sub (a b : α) : |a - b| ≤ |a| + |b| := by
   rw [sub_eq_add_neg, ← abs_neg b]
   exact abs_add a _
 #align abs_sub abs_sub
 
-theorem abs_sub_le_iff : |a - b| ≤ c ↔ a - b ≤ c ∧ b - a ≤ c := by
+lemma abs_sub_le_iff : |a - b| ≤ c ↔ a - b ≤ c ∧ b - a ≤ c := by
   rw [abs_le, neg_le_sub_iff_le_add, sub_le_iff_le_add', and_comm, sub_le_iff_le_add']
 #align abs_sub_le_iff abs_sub_le_iff
 
-theorem abs_sub_lt_iff : |a - b| < c ↔ a - b < c ∧ b - a < c := by
+lemma abs_sub_lt_iff : |a - b| < c ↔ a - b < c ∧ b - a < c := by
   rw [@abs_lt α, neg_lt_sub_iff_lt_add', sub_lt_iff_lt_add', and_comm, sub_lt_iff_lt_add']
 #align abs_sub_lt_iff abs_sub_lt_iff
 
-theorem sub_le_of_abs_sub_le_left (h : |a - b| ≤ c) : b - c ≤ a :=
+lemma sub_le_of_abs_sub_le_left (h : |a - b| ≤ c) : b - c ≤ a :=
   sub_le_comm.1 <| (abs_sub_le_iff.1 h).2
 #align sub_le_of_abs_sub_le_left sub_le_of_abs_sub_le_left
 
-theorem sub_le_of_abs_sub_le_right (h : |a - b| ≤ c) : a - c ≤ b :=
+lemma sub_le_of_abs_sub_le_right (h : |a - b| ≤ c) : a - c ≤ b :=
   sub_le_of_abs_sub_le_left (abs_sub_comm a b ▸ h)
 #align sub_le_of_abs_sub_le_right sub_le_of_abs_sub_le_right
 
-theorem sub_lt_of_abs_sub_lt_left (h : |a - b| < c) : b - c < a :=
+lemma sub_lt_of_abs_sub_lt_left (h : |a - b| < c) : b - c < a :=
   sub_lt_comm.1 <| (abs_sub_lt_iff.1 h).2
 #align sub_lt_of_abs_sub_lt_left sub_lt_of_abs_sub_lt_left
 
-theorem sub_lt_of_abs_sub_lt_right (h : |a - b| < c) : a - c < b :=
+lemma sub_lt_of_abs_sub_lt_right (h : |a - b| < c) : a - c < b :=
   sub_lt_of_abs_sub_lt_left (abs_sub_comm a b ▸ h)
 #align sub_lt_of_abs_sub_lt_right sub_lt_of_abs_sub_lt_right
 
-theorem abs_sub_abs_le_abs_sub (a b : α) : |a| - |b| ≤ |a - b| :=
+lemma abs_sub_abs_le_abs_sub (a b : α) : |a| - |b| ≤ |a - b| :=
   (@sub_le_iff_le_add α ..).2 <|
     calc
       |a| = |a - b + b| := by rw [sub_add_cancel]
       _ ≤ |a - b| + |b| := abs_add _ _
 #align abs_sub_abs_le_abs_sub abs_sub_abs_le_abs_sub
 
-theorem abs_abs_sub_abs_le_abs_sub (a b : α) : |(|a| - |b|)| ≤ |a - b| :=
+lemma abs_abs_sub_abs_le_abs_sub (a b : α) : |(|a| - |b|)| ≤ |a - b| :=
   abs_sub_le_iff.2
     ⟨abs_sub_abs_le_abs_sub _ _, by rw [abs_sub_comm]; apply abs_sub_abs_le_abs_sub⟩
 #align abs_abs_sub_abs_le_abs_sub abs_abs_sub_abs_le_abs_sub
@@ -468,73 +468,73 @@ theorem abs_sub_lt_of_nonneg_of_lt {a b n : α} (a_nonneg : 0 ≤ a) (a_lt_n : a
   rw [abs_sub_lt_iff, sub_lt_iff_lt_add, sub_lt_iff_lt_add]
   exact ⟨lt_add_of_lt_of_nonneg a_lt_n b_nonneg, lt_add_of_lt_of_nonneg b_lt_n a_nonneg⟩
 
-theorem abs_eq (hb : 0 ≤ b) : |a| = b ↔ a = b ∨ a = -b := by
+lemma abs_eq (hb : 0 ≤ b) : |a| = b ↔ a = b ∨ a = -b := by
   refine' ⟨eq_or_eq_neg_of_abs_eq, _⟩
   rintro (rfl | rfl) <;> simp only [abs_neg, abs_of_nonneg hb]
 #align abs_eq abs_eq
 
-theorem abs_le_max_abs_abs (hab : a ≤ b) (hbc : b ≤ c) : |b| ≤ max |a| |c| :=
+lemma abs_le_max_abs_abs (hab : a ≤ b) (hbc : b ≤ c) : |b| ≤ max |a| |c| :=
   abs_le'.2
     ⟨by simp [hbc.trans (le_abs_self c)], by
       simp [((@neg_le_neg_iff α ..).mpr hab).trans (neg_le_abs a)]⟩
 #align abs_le_max_abs_abs abs_le_max_abs_abs
 
-theorem min_abs_abs_le_abs_max : min |a| |b| ≤ |max a b| :=
+lemma min_abs_abs_le_abs_max : min |a| |b| ≤ |max a b| :=
   (le_total a b).elim (fun h => (min_le_right _ _).trans_eq <| congr_arg _ (max_eq_right h).symm)
     fun h => (min_le_left _ _).trans_eq <| congr_arg _ (max_eq_left h).symm
 #align min_abs_abs_le_abs_max min_abs_abs_le_abs_max
 
-theorem min_abs_abs_le_abs_min : min |a| |b| ≤ |min a b| :=
+lemma min_abs_abs_le_abs_min : min |a| |b| ≤ |min a b| :=
   (le_total a b).elim (fun h => (min_le_left _ _).trans_eq <| congr_arg _ (min_eq_left h).symm)
     fun h => (min_le_right _ _).trans_eq <| congr_arg _ (min_eq_right h).symm
 #align min_abs_abs_le_abs_min min_abs_abs_le_abs_min
 
-theorem abs_max_le_max_abs_abs : |max a b| ≤ max |a| |b| :=
+lemma abs_max_le_max_abs_abs : |max a b| ≤ max |a| |b| :=
   (le_total a b).elim (fun h => (congr_arg _ <| max_eq_right h).trans_le <| le_max_right _ _)
     fun h => (congr_arg _ <| max_eq_left h).trans_le <| le_max_left _ _
 #align abs_max_le_max_abs_abs abs_max_le_max_abs_abs
 
-theorem abs_min_le_max_abs_abs : |min a b| ≤ max |a| |b| :=
+lemma abs_min_le_max_abs_abs : |min a b| ≤ max |a| |b| :=
   (le_total a b).elim (fun h => (congr_arg _ <| min_eq_left h).trans_le <| le_max_left _ _) fun h =>
     (congr_arg _ <| min_eq_right h).trans_le <| le_max_right _ _
 #align abs_min_le_max_abs_abs abs_min_le_max_abs_abs
 
-theorem eq_of_abs_sub_eq_zero {a b : α} (h : |a - b| = 0) : a = b :=
+lemma eq_of_abs_sub_eq_zero {a b : α} (h : |a - b| = 0) : a = b :=
   sub_eq_zero.1 <| (abs_eq_zero (α := α)).1 h
 #align eq_of_abs_sub_eq_zero eq_of_abs_sub_eq_zero
 
-theorem abs_sub_le (a b c : α) : |a - c| ≤ |a - b| + |b - c| :=
+lemma abs_sub_le (a b c : α) : |a - c| ≤ |a - b| + |b - c| :=
   calc
     |a - c| = |a - b + (b - c)| := by rw [sub_add_sub_cancel]
     _ ≤ |a - b| + |b - c| := abs_add _ _
 #align abs_sub_le abs_sub_le
 
-theorem abs_add_three (a b c : α) : |a + b + c| ≤ |a| + |b| + |c| :=
+lemma abs_add_three (a b c : α) : |a + b + c| ≤ |a| + |b| + |c| :=
   (abs_add _ _).trans (add_le_add_right (abs_add _ _) _)
 #align abs_add_three abs_add_three
 
-theorem dist_bdd_within_interval {a b lb ub : α} (hal : lb ≤ a) (hau : a ≤ ub) (hbl : lb ≤ b)
+lemma dist_bdd_within_interval {a b lb ub : α} (hal : lb ≤ a) (hau : a ≤ ub) (hbl : lb ≤ b)
     (hbu : b ≤ ub) : |a - b| ≤ ub - lb :=
   abs_sub_le_iff.2 ⟨sub_le_sub hau hbl, sub_le_sub hbu hal⟩
 #align dist_bdd_within_interval dist_bdd_within_interval
 
-theorem eq_of_abs_sub_nonpos (h : |a - b| ≤ 0) : a = b :=
+lemma eq_of_abs_sub_nonpos (h : |a - b| ≤ 0) : a = b :=
   eq_of_abs_sub_eq_zero (le_antisymm h (abs_nonneg (a - b)))
 #align eq_of_abs_sub_nonpos eq_of_abs_sub_nonpos
 
-theorem abs_sub_nonpos : |a - b| ≤ 0 ↔ a = b :=
+lemma abs_sub_nonpos : |a - b| ≤ 0 ↔ a = b :=
   ⟨eq_of_abs_sub_nonpos, by rintro rfl; rw [sub_self, abs_zero]⟩
 
-theorem abs_sub_pos : 0 < |a - b| ↔ a ≠ b :=
+lemma abs_sub_pos : 0 < |a - b| ↔ a ≠ b :=
   not_le.symm.trans abs_sub_nonpos.not
 
 @[simp]
-theorem abs_eq_self : |a| = a ↔ 0 ≤ a := by
+lemma abs_eq_self : |a| = a ↔ 0 ≤ a := by
   rw [abs_eq_max_neg, max_eq_left_iff, neg_le_self_iff]
 #align abs_eq_self abs_eq_self
 
 @[simp]
-theorem abs_eq_neg_self : |a| = -a ↔ a ≤ 0 := by
+lemma abs_eq_neg_self : |a| = -a ↔ a ≤ 0 := by
   rw [abs_eq_max_neg, max_eq_right_iff, le_neg_self_iff]
 #align abs_eq_neg_self abs_eq_neg_self
 
@@ -551,7 +551,7 @@ theorem abs_cases (a : α) : |a| = a ∧ 0 ≤ a ∨ |a| = -a ∧ a < 0 := by
 #align abs_cases abs_cases
 
 @[simp]
-theorem max_zero_add_max_neg_zero_eq_abs_self (a : α) : max a 0 + max (-a) 0 = |a| := by
+lemma max_zero_add_max_neg_zero_eq_abs_self (a : α) : max a 0 + max (-a) 0 = |a| := by
   symm
   rcases le_total 0 a with (ha | ha) <;> simp [ha]
 #align max_zero_add_max_neg_zero_eq_abs_self max_zero_add_max_neg_zero_eq_abs_self

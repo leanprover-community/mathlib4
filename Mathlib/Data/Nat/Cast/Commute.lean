@@ -21,24 +21,24 @@ section Commute
 
 variable [NonAssocSemiring α]
 
-theorem cast_commute (n : ℕ) (x : α) : Commute (n : α) x := by
+lemma cast_commute (n : ℕ) (x : α) : Commute (n : α) x := by
   induction n with
   | zero => rw [Nat.cast_zero]; exact Commute.zero_left x
   | succ n ihn => rw [Nat.cast_succ]; exact ihn.add_left (Commute.one_left x)
 #align nat.cast_commute Nat.cast_commute
 
-theorem _root_.Commute.ofNat_left (n : ℕ) [n.AtLeastTwo] (x : α) : Commute (OfNat.ofNat n) x :=
+lemma _root_.Commute.ofNat_left (n : ℕ) [n.AtLeastTwo] (x : α) : Commute (OfNat.ofNat n) x :=
   n.cast_commute x
 
-theorem cast_comm (n : ℕ) (x : α) : (n : α) * x = x * n :=
+lemma cast_comm (n : ℕ) (x : α) : (n : α) * x = x * n :=
   (cast_commute n x).eq
 #align nat.cast_comm Nat.cast_comm
 
-theorem commute_cast (x : α) (n : ℕ) : Commute x n :=
+lemma commute_cast (x : α) (n : ℕ) : Commute x n :=
   (n.cast_commute x).symm
 #align nat.commute_cast Nat.commute_cast
 
-theorem _root_.Commute.ofNat_right (x : α) (n : ℕ) [n.AtLeastTwo] : Commute x (OfNat.ofNat n) :=
+lemma _root_.Commute.ofNat_right (x : α) (n : ℕ) [n.AtLeastTwo] : Commute x (OfNat.ofNat n) :=
   n.commute_cast x
 
 end Commute

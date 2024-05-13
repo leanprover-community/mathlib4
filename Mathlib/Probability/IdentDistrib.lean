@@ -79,26 +79,26 @@ open TopologicalSpace
 
 variable {μ : Measure α} {ν : Measure β} {f : α → γ} {g : β → γ}
 
-protected theorem refl (hf : AEMeasurable f μ) : IdentDistrib f f μ μ :=
+protected lemma refl (hf : AEMeasurable f μ) : IdentDistrib f f μ μ :=
   { aemeasurable_fst := hf
     aemeasurable_snd := hf
     map_eq := rfl }
 #align probability_theory.ident_distrib.refl ProbabilityTheory.IdentDistrib.refl
 
-protected theorem symm (h : IdentDistrib f g μ ν) : IdentDistrib g f ν μ :=
+protected lemma symm (h : IdentDistrib f g μ ν) : IdentDistrib g f ν μ :=
   { aemeasurable_fst := h.aemeasurable_snd
     aemeasurable_snd := h.aemeasurable_fst
     map_eq := h.map_eq.symm }
 #align probability_theory.ident_distrib.symm ProbabilityTheory.IdentDistrib.symm
 
-protected theorem trans {ρ : Measure δ} {h : δ → γ} (h₁ : IdentDistrib f g μ ν)
+protected lemma trans {ρ : Measure δ} {h : δ → γ} (h₁ : IdentDistrib f g μ ν)
     (h₂ : IdentDistrib g h ν ρ) : IdentDistrib f h μ ρ :=
   { aemeasurable_fst := h₁.aemeasurable_fst
     aemeasurable_snd := h₂.aemeasurable_snd
     map_eq := h₁.map_eq.trans h₂.map_eq }
 #align probability_theory.ident_distrib.trans ProbabilityTheory.IdentDistrib.trans
 
-protected theorem comp_of_aemeasurable {u : γ → δ} (h : IdentDistrib f g μ ν)
+protected lemma comp_of_aemeasurable {u : γ → δ} (h : IdentDistrib f g μ ν)
     (hu : AEMeasurable u (Measure.map f μ)) : IdentDistrib (u ∘ f) (u ∘ g) μ ν :=
   { aemeasurable_fst := hu.comp_aemeasurable h.aemeasurable_fst
     aemeasurable_snd := by rw [h.map_eq] at hu; exact hu.comp_aemeasurable h.aemeasurable_snd
@@ -108,12 +108,12 @@ protected theorem comp_of_aemeasurable {u : γ → δ} (h : IdentDistrib f g μ 
       rwa [← h.map_eq] }
 #align probability_theory.ident_distrib.comp_of_ae_measurable ProbabilityTheory.IdentDistrib.comp_of_aemeasurable
 
-protected theorem comp {u : γ → δ} (h : IdentDistrib f g μ ν) (hu : Measurable u) :
+protected lemma comp {u : γ → δ} (h : IdentDistrib f g μ ν) (hu : Measurable u) :
     IdentDistrib (u ∘ f) (u ∘ g) μ ν :=
   h.comp_of_aemeasurable hu.aemeasurable
 #align probability_theory.ident_distrib.comp ProbabilityTheory.IdentDistrib.comp
 
-protected theorem of_ae_eq {g : α → γ} (hf : AEMeasurable f μ) (heq : f =ᵐ[μ] g) :
+protected lemma of_ae_eq {g : α → γ} (hf : AEMeasurable f μ) (heq : f =ᵐ[μ] g) :
     IdentDistrib f g μ μ :=
   { aemeasurable_fst := hf
     aemeasurable_snd := hf.congr heq
@@ -129,7 +129,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.identDistrib_mk
     (hf : AEStronglyMeasurable f μ) : IdentDistrib f (hf.mk f) μ μ :=
   IdentDistrib.of_ae_eq hf.aemeasurable hf.ae_eq_mk
 
-theorem measure_mem_eq (h : IdentDistrib f g μ ν) {s : Set γ} (hs : MeasurableSet s) :
+lemma measure_mem_eq (h : IdentDistrib f g μ ν) {s : Set γ} (hs : MeasurableSet s) :
     μ (f ⁻¹' s) = ν (g ⁻¹' s) := by
   rw [← Measure.map_apply_of_aemeasurable h.aemeasurable_fst hs, ←
     Measure.map_apply_of_aemeasurable h.aemeasurable_snd hs, h.map_eq]
@@ -138,14 +138,14 @@ theorem measure_mem_eq (h : IdentDistrib f g μ ν) {s : Set γ} (hs : Measurabl
 alias measure_preimage_eq := measure_mem_eq
 #align probability_theory.ident_distrib.measure_preimage_eq ProbabilityTheory.IdentDistrib.measure_preimage_eq
 
-theorem ae_snd (h : IdentDistrib f g μ ν) {p : γ → Prop} (pmeas : MeasurableSet {x | p x})
+lemma ae_snd (h : IdentDistrib f g μ ν) {p : γ → Prop} (pmeas : MeasurableSet {x | p x})
     (hp : ∀ᵐ x ∂μ, p (f x)) : ∀ᵐ x ∂ν, p (g x) := by
   apply (ae_map_iff h.aemeasurable_snd pmeas).1
   rw [← h.map_eq]
   exact (ae_map_iff h.aemeasurable_fst pmeas).2 hp
 #align probability_theory.ident_distrib.ae_snd ProbabilityTheory.IdentDistrib.ae_snd
 
-theorem ae_mem_snd (h : IdentDistrib f g μ ν) {t : Set γ} (tmeas : MeasurableSet t)
+lemma ae_mem_snd (h : IdentDistrib f g μ ν) {t : Set γ} (tmeas : MeasurableSet t)
     (ht : ∀ᵐ x ∂μ, f x ∈ t) : ∀ᵐ x ∂ν, g x ∈ t :=
   h.ae_snd tmeas ht
 #align probability_theory.ident_distrib.ae_mem_snd ProbabilityTheory.IdentDistrib.ae_mem_snd
@@ -168,26 +168,26 @@ theorem aestronglyMeasurable_snd [TopologicalSpace γ] [MetrizableSpace γ] [Bor
   filter_upwards [ht] with x hx using subset_closure hx
 #align probability_theory.ident_distrib.ae_strongly_measurable_snd ProbabilityTheory.IdentDistrib.aestronglyMeasurable_snd
 
-theorem aestronglyMeasurable_iff [TopologicalSpace γ] [MetrizableSpace γ] [BorelSpace γ]
+lemma aestronglyMeasurable_iff [TopologicalSpace γ] [MetrizableSpace γ] [BorelSpace γ]
     (h : IdentDistrib f g μ ν) : AEStronglyMeasurable f μ ↔ AEStronglyMeasurable g ν :=
   ⟨fun hf => h.aestronglyMeasurable_snd hf, fun hg => h.symm.aestronglyMeasurable_snd hg⟩
 #align probability_theory.ident_distrib.ae_strongly_measurable_iff ProbabilityTheory.IdentDistrib.aestronglyMeasurable_iff
 
-theorem essSup_eq [ConditionallyCompleteLinearOrder γ] [TopologicalSpace γ] [OpensMeasurableSpace γ]
+lemma essSup_eq [ConditionallyCompleteLinearOrder γ] [TopologicalSpace γ] [OpensMeasurableSpace γ]
     [OrderClosedTopology γ] (h : IdentDistrib f g μ ν) : essSup f μ = essSup g ν := by
   have I : ∀ a, μ {x : α | a < f x} = ν {x : β | a < g x} := fun a =>
     h.measure_mem_eq measurableSet_Ioi
   simp_rw [essSup_eq_sInf, I]
 #align probability_theory.ident_distrib.ess_sup_eq ProbabilityTheory.IdentDistrib.essSup_eq
 
-theorem lintegral_eq {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (h : IdentDistrib f g μ ν) :
+lemma lintegral_eq {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (h : IdentDistrib f g μ ν) :
     ∫⁻ x, f x ∂μ = ∫⁻ x, g x ∂ν := by
   change ∫⁻ x, id (f x) ∂μ = ∫⁻ x, id (g x) ∂ν
   rw [← lintegral_map' aemeasurable_id h.aemeasurable_fst, ←
     lintegral_map' aemeasurable_id h.aemeasurable_snd, h.map_eq]
 #align probability_theory.ident_distrib.lintegral_eq ProbabilityTheory.IdentDistrib.lintegral_eq
 
-theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
+lemma integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
     (h : IdentDistrib f g μ ν) : ∫ x, f x ∂μ = ∫ x, g x ∂ν := by
   by_cases hf : AEStronglyMeasurable f μ
   · have A : AEStronglyMeasurable id (Measure.map f μ) := by
@@ -206,7 +206,7 @@ theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
     rw [integral_non_aestronglyMeasurable hf]
 #align probability_theory.ident_distrib.integral_eq ProbabilityTheory.IdentDistrib.integral_eq
 
-theorem snorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDistrib f g μ ν)
+lemma snorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDistrib f g μ ν)
     (p : ℝ≥0∞) : snorm f p μ = snorm g p ν := by
   by_cases h0 : p = 0
   · simp [h0]
@@ -221,90 +221,90 @@ theorem snorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDis
     p.toReal)
 #align probability_theory.ident_distrib.snorm_eq ProbabilityTheory.IdentDistrib.snorm_eq
 
-theorem memℒp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
+lemma memℒp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
     (hf : Memℒp f p μ) : Memℒp g p ν := by
   refine' ⟨h.aestronglyMeasurable_snd hf.aestronglyMeasurable, _⟩
   rw [← h.snorm_eq]
   exact hf.2
 #align probability_theory.ident_distrib.mem_ℒp_snd ProbabilityTheory.IdentDistrib.memℒp_snd
 
-theorem memℒp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
+lemma memℒp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
     Memℒp f p μ ↔ Memℒp g p ν :=
   ⟨fun hf => h.memℒp_snd hf, fun hg => h.symm.memℒp_snd hg⟩
 #align probability_theory.ident_distrib.mem_ℒp_iff ProbabilityTheory.IdentDistrib.memℒp_iff
 
-theorem integrable_snd [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν)
+lemma integrable_snd [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν)
     (hf : Integrable f μ) : Integrable g ν := by
   rw [← memℒp_one_iff_integrable] at hf ⊢
   exact h.memℒp_snd hf
 #align probability_theory.ident_distrib.integrable_snd ProbabilityTheory.IdentDistrib.integrable_snd
 
-theorem integrable_iff [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
+lemma integrable_iff [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
     Integrable f μ ↔ Integrable g ν :=
   ⟨fun hf => h.integrable_snd hf, fun hg => h.symm.integrable_snd hg⟩
 #align probability_theory.ident_distrib.integrable_iff ProbabilityTheory.IdentDistrib.integrable_iff
 
-protected theorem norm [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
+protected lemma norm [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
     IdentDistrib (fun x => ‖f x‖) (fun x => ‖g x‖) μ ν :=
   h.comp measurable_norm
 #align probability_theory.ident_distrib.norm ProbabilityTheory.IdentDistrib.norm
 
-protected theorem nnnorm [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
+protected lemma nnnorm [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
     IdentDistrib (fun x => ‖f x‖₊) (fun x => ‖g x‖₊) μ ν :=
   h.comp measurable_nnnorm
 #align probability_theory.ident_distrib.nnnorm ProbabilityTheory.IdentDistrib.nnnorm
 
-protected theorem pow [Pow γ ℕ] [MeasurablePow γ ℕ] (h : IdentDistrib f g μ ν) {n : ℕ} :
+protected lemma pow [Pow γ ℕ] [MeasurablePow γ ℕ] (h : IdentDistrib f g μ ν) {n : ℕ} :
     IdentDistrib (fun x => f x ^ n) (fun x => g x ^ n) μ ν :=
   h.comp (measurable_id.pow_const n)
 #align probability_theory.ident_distrib.pow ProbabilityTheory.IdentDistrib.pow
 
-protected theorem sq [Pow γ ℕ] [MeasurablePow γ ℕ] (h : IdentDistrib f g μ ν) :
+protected lemma sq [Pow γ ℕ] [MeasurablePow γ ℕ] (h : IdentDistrib f g μ ν) :
     IdentDistrib (fun x => f x ^ 2) (fun x => g x ^ 2) μ ν :=
   h.comp (measurable_id.pow_const 2)
 #align probability_theory.ident_distrib.sq ProbabilityTheory.IdentDistrib.sq
 
-protected theorem coe_nnreal_ennreal {f : α → ℝ≥0} {g : β → ℝ≥0} (h : IdentDistrib f g μ ν) :
+protected lemma coe_nnreal_ennreal {f : α → ℝ≥0} {g : β → ℝ≥0} (h : IdentDistrib f g μ ν) :
     IdentDistrib (fun x => (f x : ℝ≥0∞)) (fun x => (g x : ℝ≥0∞)) μ ν :=
   h.comp measurable_coe_nnreal_ennreal
 #align probability_theory.ident_distrib.coe_nnreal_ennreal ProbabilityTheory.IdentDistrib.coe_nnreal_ennreal
 
 @[to_additive]
-theorem mul_const [Mul γ] [MeasurableMul γ] (h : IdentDistrib f g μ ν) (c : γ) :
+lemma mul_const [Mul γ] [MeasurableMul γ] (h : IdentDistrib f g μ ν) (c : γ) :
     IdentDistrib (fun x => f x * c) (fun x => g x * c) μ ν :=
   h.comp (measurable_mul_const c)
 #align probability_theory.ident_distrib.mul_const ProbabilityTheory.IdentDistrib.mul_const
 #align probability_theory.ident_distrib.add_const ProbabilityTheory.IdentDistrib.add_const
 
 @[to_additive]
-theorem const_mul [Mul γ] [MeasurableMul γ] (h : IdentDistrib f g μ ν) (c : γ) :
+lemma const_mul [Mul γ] [MeasurableMul γ] (h : IdentDistrib f g μ ν) (c : γ) :
     IdentDistrib (fun x => c * f x) (fun x => c * g x) μ ν :=
   h.comp (measurable_const_mul c)
 #align probability_theory.ident_distrib.const_mul ProbabilityTheory.IdentDistrib.const_mul
 #align probability_theory.ident_distrib.const_add ProbabilityTheory.IdentDistrib.const_add
 
 @[to_additive]
-theorem div_const [Div γ] [MeasurableDiv γ] (h : IdentDistrib f g μ ν) (c : γ) :
+lemma div_const [Div γ] [MeasurableDiv γ] (h : IdentDistrib f g μ ν) (c : γ) :
     IdentDistrib (fun x => f x / c) (fun x => g x / c) μ ν :=
   h.comp (MeasurableDiv.measurable_div_const c)
 #align probability_theory.ident_distrib.div_const ProbabilityTheory.IdentDistrib.div_const
 #align probability_theory.ident_distrib.sub_const ProbabilityTheory.IdentDistrib.sub_const
 
 @[to_additive]
-theorem const_div [Div γ] [MeasurableDiv γ] (h : IdentDistrib f g μ ν) (c : γ) :
+lemma const_div [Div γ] [MeasurableDiv γ] (h : IdentDistrib f g μ ν) (c : γ) :
     IdentDistrib (fun x => c / f x) (fun x => c / g x) μ ν :=
   h.comp (MeasurableDiv.measurable_const_div c)
 #align probability_theory.ident_distrib.const_div ProbabilityTheory.IdentDistrib.const_div
 #align probability_theory.ident_distrib.const_sub ProbabilityTheory.IdentDistrib.const_sub
 
-theorem evariance_eq {f : α → ℝ} {g : β → ℝ} (h : IdentDistrib f g μ ν) :
+lemma evariance_eq {f : α → ℝ} {g : β → ℝ} (h : IdentDistrib f g μ ν) :
     evariance f μ = evariance g ν := by
   convert (h.sub_const (∫ x, f x ∂μ)).nnnorm.coe_nnreal_ennreal.sq.lintegral_eq
   rw [h.integral_eq]
   rfl
 #align probability_theory.ident_distrib.evariance_eq ProbabilityTheory.IdentDistrib.evariance_eq
 
-theorem variance_eq {f : α → ℝ} {g : β → ℝ} (h : IdentDistrib f g μ ν) :
+lemma variance_eq {f : α → ℝ} {g : β → ℝ} (h : IdentDistrib f g μ ν) :
     variance f μ = variance g ν := by rw [variance, h.evariance_eq]; rfl
 #align probability_theory.ident_distrib.variance_eq ProbabilityTheory.IdentDistrib.variance_eq
 

@@ -92,7 +92,7 @@ set_option linter.uppercaseLean3 false in
 #align CompHaus.of CompHaus.of
 
 @[simp]
-theorem coe_of : (CompHaus.of X : Type _) = X :=
+lemma coe_of : (CompHaus.of X : Type _) = X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_of CompHaus.coe_of
@@ -250,7 +250,7 @@ noncomputable def topToCompHaus : TopCat.{u} ⥤ CompHaus.{u} :=
 set_option linter.uppercaseLean3 false in
 #align Top_to_CompHaus topToCompHaus
 
-theorem topToCompHaus_obj (X : TopCat) : ↥(topToCompHaus.obj X) = StoneCech X :=
+lemma topToCompHaus_obj (X : TopCat) : ↥(topToCompHaus.obj X) = StoneCech X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top_to_CompHaus_obj topToCompHaus_obj
@@ -328,7 +328,7 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u
 set_option linter.uppercaseLean3 false in
 #align CompHaus.limit_cone_is_limit CompHaus.limitConeIsLimit
 
-theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
+lemma epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · dsimp [Function.Surjective]
     contrapose!
@@ -373,7 +373,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
 set_option linter.uppercaseLean3 false in
 #align CompHaus.epi_iff_surjective CompHaus.epi_iff_surjective
 
-theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
+lemma mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro hf x₁ x₂ h
     let g₁ : of PUnit ⟶ X := ⟨fun _ => x₁, continuous_const⟩

@@ -49,7 +49,7 @@ class PreservesZeroMorphisms (F : C ⥤ D) : Prop where
 #align category_theory.functor.preserves_zero_morphisms CategoryTheory.Functor.PreservesZeroMorphisms
 
 @[simp]
-protected theorem map_zero (F : C ⥤ D) [PreservesZeroMorphisms F] (X Y : C) :
+protected lemma map_zero (F : C ⥤ D) [PreservesZeroMorphisms F] (X Y : C) :
     F.map (0 : X ⟶ Y) = 0 :=
   PreservesZeroMorphisms.map_zero _ _
 #align category_theory.functor.map_zero CategoryTheory.Functor.map_zero
@@ -59,12 +59,12 @@ lemma map_isZero (F : C ⥤ D) [PreservesZeroMorphisms F] {X : C} (hX : IsZero X
   simp only [IsZero.iff_id_eq_zero] at hX ⊢
   rw [← F.map_id, hX, F.map_zero]
 
-theorem zero_of_map_zero (F : C ⥤ D) [PreservesZeroMorphisms F] [Faithful F] {X Y : C} (f : X ⟶ Y)
+lemma zero_of_map_zero (F : C ⥤ D) [PreservesZeroMorphisms F] [Faithful F] {X Y : C} (f : X ⟶ Y)
     (h : F.map f = 0) : f = 0 :=
   F.map_injective <| h.trans <| Eq.symm <| F.map_zero _ _
 #align category_theory.functor.zero_of_map_zero CategoryTheory.Functor.zero_of_map_zero
 
-theorem map_eq_zero_iff (F : C ⥤ D) [PreservesZeroMorphisms F] [Faithful F] {X Y : C} {f : X ⟶ Y} :
+lemma map_eq_zero_iff (F : C ⥤ D) [PreservesZeroMorphisms F] [Faithful F] {X Y : C} {f : X ⟶ Y} :
     F.map f = 0 ↔ f = 0 :=
   ⟨F.zero_of_map_zero _, by
     rintro rfl
@@ -139,7 +139,7 @@ def mapZeroObject [PreservesZeroMorphisms F] : F.obj 0 ≅ 0 where
 
 variable {F}
 
-theorem preservesZeroMorphisms_of_map_zero_object (i : F.obj 0 ≅ 0) : PreservesZeroMorphisms F where
+lemma preservesZeroMorphisms_of_map_zero_object (i : F.obj 0 ≅ 0) : PreservesZeroMorphisms F where
   map_zero X Y :=
     calc
       F.map (0 : X ⟶ Y) = F.map (0 : X ⟶ 0) ≫ F.map 0 := by rw [← Functor.map_comp, comp_zero]

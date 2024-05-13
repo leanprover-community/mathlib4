@@ -52,11 +52,11 @@ instance : Membership (Box ι) (TaggedPrepartition I) :=
   ⟨fun J π => J ∈ π.boxes⟩
 
 @[simp]
-theorem mem_toPrepartition {π : TaggedPrepartition I} : J ∈ π.toPrepartition ↔ J ∈ π := Iff.rfl
+lemma mem_toPrepartition {π : TaggedPrepartition I} : J ∈ π.toPrepartition ↔ J ∈ π := Iff.rfl
 #align box_integral.tagged_prepartition.mem_to_prepartition BoxIntegral.TaggedPrepartition.mem_toPrepartition
 
 @[simp]
-theorem mem_mk (π : Prepartition I) (f h) : J ∈ mk π f h ↔ J ∈ π := Iff.rfl
+lemma mem_mk (π : Prepartition I) (f h) : J ∈ mk π f h ↔ J ∈ π := Iff.rfl
 #align box_integral.tagged_prepartition.mem_mk BoxIntegral.TaggedPrepartition.mem_mk
 
 /-- Union of all boxes of a tagged prepartition. -/
@@ -64,29 +64,29 @@ def iUnion : Set (ι → ℝ) :=
   π.toPrepartition.iUnion
 #align box_integral.tagged_prepartition.Union BoxIntegral.TaggedPrepartition.iUnion
 
-theorem iUnion_def : π.iUnion = ⋃ J ∈ π, ↑J := rfl
+lemma iUnion_def : π.iUnion = ⋃ J ∈ π, ↑J := rfl
 #align box_integral.tagged_prepartition.Union_def BoxIntegral.TaggedPrepartition.iUnion_def
 
 @[simp]
-theorem iUnion_mk (π : Prepartition I) (f h) : (mk π f h).iUnion = π.iUnion := rfl
+lemma iUnion_mk (π : Prepartition I) (f h) : (mk π f h).iUnion = π.iUnion := rfl
 #align box_integral.tagged_prepartition.Union_mk BoxIntegral.TaggedPrepartition.iUnion_mk
 
 @[simp]
-theorem iUnion_toPrepartition : π.toPrepartition.iUnion = π.iUnion := rfl
+lemma iUnion_toPrepartition : π.toPrepartition.iUnion = π.iUnion := rfl
 #align box_integral.tagged_prepartition.Union_to_prepartition BoxIntegral.TaggedPrepartition.iUnion_toPrepartition
 
 -- Porting note: Previous proof was `:= Set.mem_iUnion₂`
 @[simp]
-theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
+lemma mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
   convert Set.mem_iUnion₂
   rw [Box.mem_coe, mem_toPrepartition, exists_prop]
 #align box_integral.tagged_prepartition.mem_Union BoxIntegral.TaggedPrepartition.mem_iUnion
 
-theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=
+lemma subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=
   subset_biUnion_of_mem h
 #align box_integral.tagged_prepartition.subset_Union BoxIntegral.TaggedPrepartition.subset_iUnion
 
-theorem iUnion_subset : π.iUnion ⊆ I :=
+lemma iUnion_subset : π.iUnion ⊆ I :=
   iUnion₂_subset π.le_of_mem'
 #align box_integral.tagged_prepartition.Union_subset BoxIntegral.TaggedPrepartition.iUnion_subset
 
@@ -95,7 +95,7 @@ def IsPartition :=
   π.toPrepartition.IsPartition
 #align box_integral.tagged_prepartition.is_partition BoxIntegral.TaggedPrepartition.IsPartition
 
-theorem isPartition_iff_iUnion_eq : IsPartition π ↔ π.iUnion = I :=
+lemma isPartition_iff_iUnion_eq : IsPartition π ↔ π.iUnion = I :=
   Prepartition.isPartition_iff_iUnion_eq
 #align box_integral.tagged_prepartition.is_partition_iff_Union_eq BoxIntegral.TaggedPrepartition.isPartition_iff_iUnion_eq
 
@@ -106,12 +106,12 @@ def filter (p : Box ι → Prop) : TaggedPrepartition I :=
 #align box_integral.tagged_prepartition.filter BoxIntegral.TaggedPrepartition.filter
 
 @[simp]
-theorem mem_filter {p : Box ι → Prop} : J ∈ π.filter p ↔ J ∈ π ∧ p J :=
+lemma mem_filter {p : Box ι → Prop} : J ∈ π.filter p ↔ J ∈ π ∧ p J :=
   Finset.mem_filter
 #align box_integral.tagged_prepartition.mem_filter BoxIntegral.TaggedPrepartition.mem_filter
 
 @[simp]
-theorem iUnion_filter_not (π : TaggedPrepartition I) (p : Box ι → Prop) :
+lemma iUnion_filter_not (π : TaggedPrepartition I) (p : Box ι → Prop) :
     (π.filter fun J => ¬p J).iUnion = π.iUnion \ (π.filter p).iUnion :=
   π.toPrepartition.iUnion_filter_not p
 #align box_integral.tagged_prepartition.Union_filter_not BoxIntegral.TaggedPrepartition.iUnion_filter_not
@@ -133,24 +133,24 @@ def biUnionTagged (π : Prepartition I) (πi : ∀ J : Box ι, TaggedPrepartitio
 #align box_integral.prepartition.bUnion_tagged BoxIntegral.Prepartition.biUnionTagged
 
 @[simp]
-theorem mem_biUnionTagged (π : Prepartition I) {πi : ∀ J, TaggedPrepartition J} :
+lemma mem_biUnionTagged (π : Prepartition I) {πi : ∀ J, TaggedPrepartition J} :
     J ∈ π.biUnionTagged πi ↔ ∃ J' ∈ π, J ∈ πi J' :=
   π.mem_biUnion
 #align box_integral.prepartition.mem_bUnion_tagged BoxIntegral.Prepartition.mem_biUnionTagged
 
-theorem tag_biUnionTagged (π : Prepartition I) {πi : ∀ J, TaggedPrepartition J} (hJ : J ∈ π) {J'}
+lemma tag_biUnionTagged (π : Prepartition I) {πi : ∀ J, TaggedPrepartition J} (hJ : J ∈ π) {J'}
     (hJ' : J' ∈ πi J) : (π.biUnionTagged πi).tag J' = (πi J).tag J' := by
   rw [← π.biUnionIndex_of_mem (πi := fun J => (πi J).toPrepartition) hJ hJ']
   rfl
 #align box_integral.prepartition.tag_bUnion_tagged BoxIntegral.Prepartition.tag_biUnionTagged
 
 @[simp]
-theorem iUnion_biUnionTagged (π : Prepartition I) (πi : ∀ J, TaggedPrepartition J) :
+lemma iUnion_biUnionTagged (π : Prepartition I) (πi : ∀ J, TaggedPrepartition J) :
     (π.biUnionTagged πi).iUnion = ⋃ J ∈ π, (πi J).iUnion :=
   iUnion_biUnion _ _
 #align box_integral.prepartition.Union_bUnion_tagged BoxIntegral.Prepartition.iUnion_biUnionTagged
 
-theorem forall_biUnionTagged (p : (ι → ℝ) → Box ι → Prop) (π : Prepartition I)
+lemma forall_biUnionTagged (p : (ι → ℝ) → Box ι → Prop) (π : Prepartition I)
     (πi : ∀ J, TaggedPrepartition J) :
     (∀ J ∈ π.biUnionTagged πi, p ((π.biUnionTagged πi).tag J) J) ↔
       ∀ J ∈ π, ∀ J' ∈ πi J, p ((πi J).tag J') J' := by
@@ -162,7 +162,7 @@ theorem forall_biUnionTagged (p : (ι → ℝ) → Box ι → Prop) (π : Prepar
     exact H J hJ J' hJ'
 #align box_integral.prepartition.forall_bUnion_tagged BoxIntegral.Prepartition.forall_biUnionTagged
 
-theorem IsPartition.biUnionTagged {π : Prepartition I} (h : IsPartition π)
+lemma IsPartition.biUnionTagged {π : Prepartition I} (h : IsPartition π)
     {πi : ∀ J, TaggedPrepartition J} (hi : ∀ J ∈ π, (πi J).IsPartition) :
     (π.biUnionTagged πi).IsPartition :=
   h.biUnion hi
@@ -187,7 +187,7 @@ def biUnionPrepartition (π : TaggedPrepartition I) (πi : ∀ J : Box ι, Prepa
   tag_mem_Icc _ := π.tag_mem_Icc _
 #align box_integral.tagged_prepartition.bUnion_prepartition BoxIntegral.TaggedPrepartition.biUnionPrepartition
 
-theorem IsPartition.biUnionPrepartition {π : TaggedPrepartition I} (h : IsPartition π)
+lemma IsPartition.biUnionPrepartition {π : TaggedPrepartition I} (h : IsPartition π)
     {πi : ∀ J, Prepartition J} (hi : ∀ J ∈ π, (πi J).IsPartition) :
     (π.biUnionPrepartition πi).IsPartition :=
   h.biUnion hi
@@ -202,16 +202,16 @@ def infPrepartition (π : TaggedPrepartition I) (π' : Prepartition I) : TaggedP
 #align box_integral.tagged_prepartition.inf_prepartition BoxIntegral.TaggedPrepartition.infPrepartition
 
 @[simp]
-theorem infPrepartition_toPrepartition (π : TaggedPrepartition I) (π' : Prepartition I) :
+lemma infPrepartition_toPrepartition (π : TaggedPrepartition I) (π' : Prepartition I) :
     (π.infPrepartition π').toPrepartition = π.toPrepartition ⊓ π' := rfl
 #align box_integral.tagged_prepartition.inf_prepartition_to_prepartition BoxIntegral.TaggedPrepartition.infPrepartition_toPrepartition
 
-theorem mem_infPrepartition_comm :
+lemma mem_infPrepartition_comm :
     J ∈ π₁.infPrepartition π₂.toPrepartition ↔ J ∈ π₂.infPrepartition π₁.toPrepartition := by
   simp only [← mem_toPrepartition, infPrepartition_toPrepartition, inf_comm]
 #align box_integral.tagged_prepartition.mem_inf_prepartition_comm BoxIntegral.TaggedPrepartition.mem_infPrepartition_comm
 
-theorem IsPartition.infPrepartition (h₁ : π₁.IsPartition) {π₂ : Prepartition I}
+lemma IsPartition.infPrepartition (h₁ : π₁.IsPartition) {π₂ : Prepartition I}
     (h₂ : π₂.IsPartition) : (π₁.infPrepartition π₂).IsPartition :=
   h₁.inf h₂
 #align box_integral.tagged_prepartition.is_partition.inf_prepartition BoxIntegral.TaggedPrepartition.IsPartition.infPrepartition
@@ -226,7 +226,7 @@ set_option linter.uppercaseLean3 false in
 #align box_integral.tagged_prepartition.is_Henstock BoxIntegral.TaggedPrepartition.IsHenstock
 
 @[simp]
-theorem isHenstock_biUnionTagged {π : Prepartition I} {πi : ∀ J, TaggedPrepartition J} :
+lemma isHenstock_biUnionTagged {π : Prepartition I} {πi : ∀ J, TaggedPrepartition J} :
     IsHenstock (π.biUnionTagged πi) ↔ ∀ J ∈ π, (πi J).IsHenstock :=
   π.forall_biUnionTagged (fun x J => x ∈ Box.Icc J) πi
 set_option linter.uppercaseLean3 false in
@@ -254,34 +254,34 @@ def IsSubordinate [Fintype ι] (π : TaggedPrepartition I) (r : (ι → ℝ) →
 variable {r r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)}
 
 @[simp]
-theorem isSubordinate_biUnionTagged [Fintype ι] {π : Prepartition I}
+lemma isSubordinate_biUnionTagged [Fintype ι] {π : Prepartition I}
     {πi : ∀ J, TaggedPrepartition J} :
     IsSubordinate (π.biUnionTagged πi) r ↔ ∀ J ∈ π, (πi J).IsSubordinate r :=
   π.forall_biUnionTagged (fun x J => Box.Icc J ⊆ closedBall x (r x)) πi
 #align box_integral.tagged_prepartition.is_subordinate_bUnion_tagged BoxIntegral.TaggedPrepartition.isSubordinate_biUnionTagged
 
-theorem IsSubordinate.biUnionPrepartition [Fintype ι] (h : IsSubordinate π r)
+lemma IsSubordinate.biUnionPrepartition [Fintype ι] (h : IsSubordinate π r)
     (πi : ∀ J, Prepartition J) : IsSubordinate (π.biUnionPrepartition πi) r :=
   fun _ hJ => Subset.trans (Box.le_iff_Icc.1 <| π.toPrepartition.le_biUnionIndex hJ) <|
     h _ <| π.toPrepartition.biUnionIndex_mem hJ
 #align box_integral.tagged_prepartition.is_subordinate.bUnion_prepartition BoxIntegral.TaggedPrepartition.IsSubordinate.biUnionPrepartition
 
-theorem IsSubordinate.infPrepartition [Fintype ι] (h : IsSubordinate π r) (π' : Prepartition I) :
+lemma IsSubordinate.infPrepartition [Fintype ι] (h : IsSubordinate π r) (π' : Prepartition I) :
     IsSubordinate (π.infPrepartition π') r :=
   h.biUnionPrepartition _
 #align box_integral.tagged_prepartition.is_subordinate.inf_prepartition BoxIntegral.TaggedPrepartition.IsSubordinate.infPrepartition
 
-theorem IsSubordinate.mono' [Fintype ι] {π : TaggedPrepartition I} (hr₁ : π.IsSubordinate r₁)
+lemma IsSubordinate.mono' [Fintype ι] {π : TaggedPrepartition I} (hr₁ : π.IsSubordinate r₁)
     (h : ∀ J ∈ π, r₁ (π.tag J) ≤ r₂ (π.tag J)) : π.IsSubordinate r₂ :=
   fun _ hJ _ hx => closedBall_subset_closedBall (h _ hJ) (hr₁ _ hJ hx)
 #align box_integral.tagged_prepartition.is_subordinate.mono' BoxIntegral.TaggedPrepartition.IsSubordinate.mono'
 
-theorem IsSubordinate.mono [Fintype ι] {π : TaggedPrepartition I} (hr₁ : π.IsSubordinate r₁)
+lemma IsSubordinate.mono [Fintype ι] {π : TaggedPrepartition I} (hr₁ : π.IsSubordinate r₁)
     (h : ∀ x ∈ Box.Icc I, r₁ x ≤ r₂ x) : π.IsSubordinate r₂ :=
   hr₁.mono' fun J _ => h _ <| π.tag_mem_Icc J
 #align box_integral.tagged_prepartition.is_subordinate.mono BoxIntegral.TaggedPrepartition.IsSubordinate.mono
 
-theorem IsSubordinate.diam_le [Fintype ι] {π : TaggedPrepartition I} (h : π.IsSubordinate r)
+lemma IsSubordinate.diam_le [Fintype ι] {π : TaggedPrepartition I} (h : π.IsSubordinate r)
     (hJ : J ∈ π.boxes) : diam (Box.Icc J) ≤ 2 * r (π.tag J) :=
   calc
     diam (Box.Icc J) ≤ diam (closedBall (π.tag J) (r <| π.tag J)) :=
@@ -296,47 +296,47 @@ def single (I J : Box ι) (hJ : J ≤ I) (x : ι → ℝ) (h : x ∈ Box.Icc I) 
 #align box_integral.tagged_prepartition.single BoxIntegral.TaggedPrepartition.single
 
 @[simp]
-theorem mem_single {J'} (hJ : J ≤ I) (h : x ∈ Box.Icc I) : J' ∈ single I J hJ x h ↔ J' = J :=
+lemma mem_single {J'} (hJ : J ≤ I) (h : x ∈ Box.Icc I) : J' ∈ single I J hJ x h ↔ J' = J :=
   Finset.mem_singleton
 #align box_integral.tagged_prepartition.mem_single BoxIntegral.TaggedPrepartition.mem_single
 
 instance (I : Box ι) : Inhabited (TaggedPrepartition I) :=
   ⟨single I I le_rfl I.upper I.upper_mem_Icc⟩
 
-theorem isPartition_single_iff (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
+lemma isPartition_single_iff (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
     (single I J hJ x h).IsPartition ↔ J = I :=
   Prepartition.isPartition_single_iff hJ
 #align box_integral.tagged_prepartition.is_partition_single_iff BoxIntegral.TaggedPrepartition.isPartition_single_iff
 
-theorem isPartition_single (h : x ∈ Box.Icc I) : (single I I le_rfl x h).IsPartition :=
+lemma isPartition_single (h : x ∈ Box.Icc I) : (single I I le_rfl x h).IsPartition :=
   Prepartition.isPartitionTop I
 #align box_integral.tagged_prepartition.is_partition_single BoxIntegral.TaggedPrepartition.isPartition_single
 
-theorem forall_mem_single (p : (ι → ℝ) → Box ι → Prop) (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
+lemma forall_mem_single (p : (ι → ℝ) → Box ι → Prop) (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
     (∀ J' ∈ single I J hJ x h, p ((single I J hJ x h).tag J') J') ↔ p x J := by simp
 #align box_integral.tagged_prepartition.forall_mem_single BoxIntegral.TaggedPrepartition.forall_mem_single
 
 @[simp]
-theorem isHenstock_single_iff (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
+lemma isHenstock_single_iff (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
     IsHenstock (single I J hJ x h) ↔ x ∈ Box.Icc J :=
   forall_mem_single (fun x J => x ∈ Box.Icc J) hJ h
 set_option linter.uppercaseLean3 false in
 #align box_integral.tagged_prepartition.is_Henstock_single_iff BoxIntegral.TaggedPrepartition.isHenstock_single_iff
 
 --@[simp] -- Porting note: Commented out, because `simp only [isHenstock_single_iff]` simplifies it
-theorem isHenstock_single (h : x ∈ Box.Icc I) : IsHenstock (single I I le_rfl x h) :=
+lemma isHenstock_single (h : x ∈ Box.Icc I) : IsHenstock (single I I le_rfl x h) :=
   (isHenstock_single_iff (le_refl I) h).2 h
 set_option linter.uppercaseLean3 false in
 #align box_integral.tagged_prepartition.is_Henstock_single BoxIntegral.TaggedPrepartition.isHenstock_single
 
 @[simp]
-theorem isSubordinate_single [Fintype ι] (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
+lemma isSubordinate_single [Fintype ι] (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
     IsSubordinate (single I J hJ x h) r ↔ Box.Icc J ⊆ closedBall x (r x) :=
   forall_mem_single (fun x J => Box.Icc J ⊆ closedBall x (r x)) hJ h
 #align box_integral.tagged_prepartition.is_subordinate_single BoxIntegral.TaggedPrepartition.isSubordinate_single
 
 @[simp]
-theorem iUnion_single (hJ : J ≤ I) (h : x ∈ Box.Icc I) : (single I J hJ x h).iUnion = J :=
+lemma iUnion_single (hJ : J ≤ I) (h : x ∈ Box.Icc I) : (single I J hJ x h).iUnion = J :=
   Prepartition.iUnion_single hJ
 #align box_integral.tagged_prepartition.Union_single BoxIntegral.TaggedPrepartition.iUnion_single
 
@@ -352,33 +352,33 @@ def disjUnion (π₁ π₂ : TaggedPrepartition I) (h : Disjoint π₁.iUnion π
 #align box_integral.tagged_prepartition.disj_union BoxIntegral.TaggedPrepartition.disjUnion
 
 @[simp]
-theorem disjUnion_boxes (h : Disjoint π₁.iUnion π₂.iUnion) :
+lemma disjUnion_boxes (h : Disjoint π₁.iUnion π₂.iUnion) :
     (π₁.disjUnion π₂ h).boxes = π₁.boxes ∪ π₂.boxes := rfl
 #align box_integral.tagged_prepartition.disj_union_boxes BoxIntegral.TaggedPrepartition.disjUnion_boxes
 
 @[simp]
-theorem mem_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
+lemma mem_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
     J ∈ π₁.disjUnion π₂ h ↔ J ∈ π₁ ∨ J ∈ π₂ :=
   Finset.mem_union
 #align box_integral.tagged_prepartition.mem_disj_union BoxIntegral.TaggedPrepartition.mem_disjUnion
 
 @[simp]
-theorem iUnion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
+lemma iUnion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
     (π₁.disjUnion π₂ h).iUnion = π₁.iUnion ∪ π₂.iUnion :=
   Prepartition.iUnion_disjUnion h
 #align box_integral.tagged_prepartition.Union_disj_union BoxIntegral.TaggedPrepartition.iUnion_disjUnion
 
-theorem disjUnion_tag_of_mem_left (h : Disjoint π₁.iUnion π₂.iUnion) (hJ : J ∈ π₁) :
+lemma disjUnion_tag_of_mem_left (h : Disjoint π₁.iUnion π₂.iUnion) (hJ : J ∈ π₁) :
     (π₁.disjUnion π₂ h).tag J = π₁.tag J :=
   dif_pos hJ
 #align box_integral.tagged_prepartition.disj_union_tag_of_mem_left BoxIntegral.TaggedPrepartition.disjUnion_tag_of_mem_left
 
-theorem disjUnion_tag_of_mem_right (h : Disjoint π₁.iUnion π₂.iUnion) (hJ : J ∈ π₂) :
+lemma disjUnion_tag_of_mem_right (h : Disjoint π₁.iUnion π₂.iUnion) (hJ : J ∈ π₂) :
     (π₁.disjUnion π₂ h).tag J = π₂.tag J :=
   dif_neg fun h₁ => h.le_bot ⟨π₁.subset_iUnion h₁ J.upper_mem, π₂.subset_iUnion hJ J.upper_mem⟩
 #align box_integral.tagged_prepartition.disj_union_tag_of_mem_right BoxIntegral.TaggedPrepartition.disjUnion_tag_of_mem_right
 
-theorem IsSubordinate.disjUnion [Fintype ι] (h₁ : IsSubordinate π₁ r) (h₂ : IsSubordinate π₂ r)
+lemma IsSubordinate.disjUnion [Fintype ι] (h₁ : IsSubordinate π₁ r) (h₂ : IsSubordinate π₂ r)
     (h : Disjoint π₁.iUnion π₂.iUnion) : IsSubordinate (π₁.disjUnion π₂ h) r := by
   refine' fun J hJ => (Finset.mem_union.1 hJ).elim (fun hJ => _) fun hJ => _
   · rw [disjUnion_tag_of_mem_left _ hJ]
@@ -387,7 +387,7 @@ theorem IsSubordinate.disjUnion [Fintype ι] (h₁ : IsSubordinate π₁ r) (h�
     exact h₂ _ hJ
 #align box_integral.tagged_prepartition.is_subordinate.disj_union BoxIntegral.TaggedPrepartition.IsSubordinate.disjUnion
 
-theorem IsHenstock.disjUnion (h₁ : IsHenstock π₁) (h₂ : IsHenstock π₂)
+lemma IsHenstock.disjUnion (h₁ : IsHenstock π₁) (h₂ : IsHenstock π₂)
     (h : Disjoint π₁.iUnion π₂.iUnion) : IsHenstock (π₁.disjUnion π₂ h) := by
   refine' fun J hJ => (Finset.mem_union.1 hJ).elim (fun hJ => _) fun hJ => _
   · rw [disjUnion_tag_of_mem_left _ hJ]
@@ -419,45 +419,45 @@ def distortion : ℝ≥0 :=
   π.toPrepartition.distortion
 #align box_integral.tagged_prepartition.distortion BoxIntegral.TaggedPrepartition.distortion
 
-theorem distortion_le_of_mem (h : J ∈ π) : J.distortion ≤ π.distortion :=
+lemma distortion_le_of_mem (h : J ∈ π) : J.distortion ≤ π.distortion :=
   le_sup h
 #align box_integral.tagged_prepartition.distortion_le_of_mem BoxIntegral.TaggedPrepartition.distortion_le_of_mem
 
-theorem distortion_le_iff {c : ℝ≥0} : π.distortion ≤ c ↔ ∀ J ∈ π, Box.distortion J ≤ c :=
+lemma distortion_le_iff {c : ℝ≥0} : π.distortion ≤ c ↔ ∀ J ∈ π, Box.distortion J ≤ c :=
   Finset.sup_le_iff
 #align box_integral.tagged_prepartition.distortion_le_iff BoxIntegral.TaggedPrepartition.distortion_le_iff
 
 @[simp]
-theorem _root_.BoxIntegral.Prepartition.distortion_biUnionTagged (π : Prepartition I)
+lemma _root_.BoxIntegral.Prepartition.distortion_biUnionTagged (π : Prepartition I)
     (πi : ∀ J, TaggedPrepartition J) :
     (π.biUnionTagged πi).distortion = π.boxes.sup fun J => (πi J).distortion :=
   sup_biUnion _ _
 #align box_integral.prepartition.distortion_bUnion_tagged BoxIntegral.Prepartition.distortion_biUnionTagged
 
 @[simp]
-theorem distortion_biUnionPrepartition (π : TaggedPrepartition I) (πi : ∀ J, Prepartition J) :
+lemma distortion_biUnionPrepartition (π : TaggedPrepartition I) (πi : ∀ J, Prepartition J) :
     (π.biUnionPrepartition πi).distortion = π.boxes.sup fun J => (πi J).distortion :=
   sup_biUnion _ _
 #align box_integral.tagged_prepartition.distortion_bUnion_prepartition BoxIntegral.TaggedPrepartition.distortion_biUnionPrepartition
 
 @[simp]
-theorem distortion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
+lemma distortion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
     (π₁.disjUnion π₂ h).distortion = max π₁.distortion π₂.distortion :=
   sup_union
 #align box_integral.tagged_prepartition.distortion_disj_union BoxIntegral.TaggedPrepartition.distortion_disjUnion
 
-theorem distortion_of_const {c} (h₁ : π.boxes.Nonempty) (h₂ : ∀ J ∈ π, Box.distortion J = c) :
+lemma distortion_of_const {c} (h₁ : π.boxes.Nonempty) (h₂ : ∀ J ∈ π, Box.distortion J = c) :
     π.distortion = c :=
   (sup_congr rfl h₂).trans (sup_const h₁ _)
 #align box_integral.tagged_prepartition.distortion_of_const BoxIntegral.TaggedPrepartition.distortion_of_const
 
 @[simp]
-theorem distortion_single (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
+lemma distortion_single (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
     distortion (single I J hJ x h) = J.distortion :=
   sup_singleton
 #align box_integral.tagged_prepartition.distortion_single BoxIntegral.TaggedPrepartition.distortion_single
 
-theorem distortion_filter_le (p : Box ι → Prop) : (π.filter p).distortion ≤ π.distortion :=
+lemma distortion_filter_le (p : Box ι → Prop) : (π.filter p).distortion ≤ π.distortion :=
   sup_mono (filter_subset _ _)
 #align box_integral.tagged_prepartition.distortion_filter_le BoxIntegral.TaggedPrepartition.distortion_filter_le
 

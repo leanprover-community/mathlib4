@@ -63,7 +63,7 @@ lemma hom_ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right
   CommaMorphism.ext _ _ (Subsingleton.elim _ _) h
 
 @[simp]
-theorem hom_eq_iff {X Y : StructuredArrow S T} (f g : X ⟶ Y) : f = g ↔ f.right = g.right :=
+lemma hom_eq_iff {X Y : StructuredArrow S T} (f g : X ⟶ Y) : f = g ↔ f.right = g.right :=
   ⟨fun h ↦ by rw [h], hom_ext _ _⟩
 
 /-- Construct a structured arrow from a morphism. -/
@@ -72,40 +72,40 @@ def mk (f : S ⟶ T.obj Y) : StructuredArrow S T :=
 #align category_theory.structured_arrow.mk CategoryTheory.StructuredArrow.mk
 
 @[simp]
-theorem mk_left (f : S ⟶ T.obj Y) : (mk f).left = ⟨⟨⟩⟩ :=
+lemma mk_left (f : S ⟶ T.obj Y) : (mk f).left = ⟨⟨⟩⟩ :=
   rfl
 #align category_theory.structured_arrow.mk_left CategoryTheory.StructuredArrow.mk_left
 
 @[simp]
-theorem mk_right (f : S ⟶ T.obj Y) : (mk f).right = Y :=
+lemma mk_right (f : S ⟶ T.obj Y) : (mk f).right = Y :=
   rfl
 #align category_theory.structured_arrow.mk_right CategoryTheory.StructuredArrow.mk_right
 
 @[simp]
-theorem mk_hom_eq_self (f : S ⟶ T.obj Y) : (mk f).hom = f :=
+lemma mk_hom_eq_self (f : S ⟶ T.obj Y) : (mk f).hom = f :=
   rfl
 #align category_theory.structured_arrow.mk_hom_eq_self CategoryTheory.StructuredArrow.mk_hom_eq_self
 
 @[reassoc (attr := simp)]
-theorem w {A B : StructuredArrow S T} (f : A ⟶ B) : A.hom ≫ T.map f.right = B.hom := by
+lemma w {A B : StructuredArrow S T} (f : A ⟶ B) : A.hom ≫ T.map f.right = B.hom := by
   have := f.w; aesop_cat
 #align category_theory.structured_arrow.w CategoryTheory.StructuredArrow.w
 
 @[simp]
-theorem comp_right {X Y Z : StructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma comp_right {X Y Z : StructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).right = f.right ≫ g.right := rfl
 
 @[simp]
-theorem id_right (X : StructuredArrow S T) : (𝟙 X : X ⟶ X).right = 𝟙 X.right := rfl
+lemma id_right (X : StructuredArrow S T) : (𝟙 X : X ⟶ X).right = 𝟙 X.right := rfl
 
 @[simp]
-theorem eqToHom_right {X Y : StructuredArrow S T} (h : X = Y) :
+lemma eqToHom_right {X Y : StructuredArrow S T} (h : X = Y) :
     (eqToHom h).right = eqToHom (by rw [h]) := by
   subst h
   simp only [eqToHom_refl, id_right]
 
 @[simp]
-theorem left_eq_id {X Y : StructuredArrow S T} (f : X ⟶ Y) : f.left = 𝟙 _ := rfl
+lemma left_eq_id {X Y : StructuredArrow S T} (f : X ⟶ Y) : f.left = 𝟙 _ := rfl
 
 /-- To construct a morphism of structured arrows,
 we need a morphism of the objects underlying the target,
@@ -175,11 +175,11 @@ def isoMk {f f' : StructuredArrow S T} (g : f.right ≅ f'.right)
 picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] isoMk_hom_left_down_down isoMk_inv_left_down_down
 
-theorem ext {A B : StructuredArrow S T} (f g : A ⟶ B) : f.right = g.right → f = g :=
+lemma ext {A B : StructuredArrow S T} (f g : A ⟶ B) : f.right = g.right → f = g :=
   CommaMorphism.ext _ _ (Subsingleton.elim _ _)
 #align category_theory.structured_arrow.ext CategoryTheory.StructuredArrow.ext
 
-theorem ext_iff {A B : StructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.right = g.right :=
+lemma ext_iff {A B : StructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.right = g.right :=
   ⟨fun h => h ▸ rfl, ext f g⟩
 #align category_theory.structured_arrow.ext_iff CategoryTheory.StructuredArrow.ext_iff
 
@@ -192,7 +192,7 @@ theorem mono_of_mono_right {A B : StructuredArrow S T} (f : A ⟶ B) [h : Mono f
   (proj S T).mono_of_mono_map h
 #align category_theory.structured_arrow.mono_of_mono_right CategoryTheory.StructuredArrow.mono_of_mono_right
 
-theorem epi_of_epi_right {A B : StructuredArrow S T} (f : A ⟶ B) [h : Epi f.right] : Epi f :=
+lemma epi_of_epi_right {A B : StructuredArrow S T} (f : A ⟶ B) [h : Epi f.right] : Epi f :=
   (proj S T).epi_of_epi_map h
 #align category_theory.structured_arrow.epi_of_epi_right CategoryTheory.StructuredArrow.epi_of_epi_right
 
@@ -236,18 +236,18 @@ def map (f : S ⟶ S') : StructuredArrow S' T ⥤ StructuredArrow S T :=
 #align category_theory.structured_arrow.map CategoryTheory.StructuredArrow.map
 
 @[simp]
-theorem map_mk {f : S' ⟶ T.obj Y} (g : S ⟶ S') : (map g).obj (mk f) = mk (g ≫ f) :=
+lemma map_mk {f : S' ⟶ T.obj Y} (g : S ⟶ S') : (map g).obj (mk f) = mk (g ≫ f) :=
   rfl
 #align category_theory.structured_arrow.map_mk CategoryTheory.StructuredArrow.map_mk
 
 @[simp]
-theorem map_id {f : StructuredArrow S T} : (map (𝟙 S)).obj f = f := by
+lemma map_id {f : StructuredArrow S T} : (map (𝟙 S)).obj f = f := by
   rw [eq_mk f]
   simp
 #align category_theory.structured_arrow.map_id CategoryTheory.StructuredArrow.map_id
 
 @[simp]
-theorem map_comp {f : S ⟶ S'} {f' : S' ⟶ S''} {h : StructuredArrow S'' T} :
+lemma map_comp {f : S ⟶ S'} {f' : S' ⟶ S''} {h : StructuredArrow S'' T} :
     (map (f ≫ f')).obj h = (map f).obj ((map f').obj h) := by
   rw [eq_mk h]
   simp
@@ -369,7 +369,7 @@ namespace IsUniversal
 
 variable {f g : StructuredArrow S T}
 
-theorem uniq (h : IsUniversal f) (η : f ⟶ g) : η = h.to g :=
+lemma uniq (h : IsUniversal f) (η : f ⟶ g) : η = h.to g :=
   h.hom_ext η (h.to g)
 
 /-- The family of morphisms out of a universal arrow. -/
@@ -382,7 +382,7 @@ theorem fac (h : IsUniversal f) (g : StructuredArrow S T) :
     f.hom ≫ T.map (h.desc g) = g.hom :=
   Category.id_comp g.hom ▸ (h.to g).w.symm
 
-theorem hom_desc (h : IsUniversal f) {c : C} (η : f.right ⟶ c) :
+lemma hom_desc (h : IsUniversal f) {c : C} (η : f.right ⟶ c) :
     η = h.desc (mk <| f.hom ≫ T.map η) :=
   let g := mk <| f.hom ≫ T.map η
   congrArg CommaMorphism.right (h.hom_ext (homMk η rfl : f ⟶ g) (h.to g))
@@ -393,7 +393,7 @@ theorem hom_ext (h : IsUniversal f) {c : C} {η η' : f.right ⟶ c}
     (w : f.hom ≫ T.map η = f.hom ≫ T.map η') : η = η' := by
   rw [h.hom_desc η, h.hom_desc η', w]
 
-theorem existsUnique (h : IsUniversal f) (g : StructuredArrow S T) :
+lemma existsUnique (h : IsUniversal f) (g : StructuredArrow S T) :
     ∃! η : f.right ⟶ g.right, f.hom ≫ T.map η = g.hom :=
   ⟨h.desc g, h.fac g, fun f w ↦ h.hom_ext <| by simp [w]⟩
 
@@ -432,7 +432,7 @@ lemma hom_ext {X Y : CostructuredArrow S T} (f g : X ⟶ Y) (h : f.left = g.left
   CommaMorphism.ext _ _ h (Subsingleton.elim _ _)
 
 @[simp]
-theorem hom_eq_iff {X Y : CostructuredArrow S T} (f g : X ⟶ Y) : f = g ↔ f.left = g.left :=
+lemma hom_eq_iff {X Y : CostructuredArrow S T} (f g : X ⟶ Y) : f = g ↔ f.left = g.left :=
   ⟨fun h ↦ by rw [h], hom_ext _ _⟩
 
 /-- Construct a costructured arrow from a morphism. -/
@@ -441,40 +441,40 @@ def mk (f : S.obj Y ⟶ T) : CostructuredArrow S T :=
 #align category_theory.costructured_arrow.mk CategoryTheory.CostructuredArrow.mk
 
 @[simp]
-theorem mk_left (f : S.obj Y ⟶ T) : (mk f).left = Y :=
+lemma mk_left (f : S.obj Y ⟶ T) : (mk f).left = Y :=
   rfl
 #align category_theory.costructured_arrow.mk_left CategoryTheory.CostructuredArrow.mk_left
 
 @[simp]
-theorem mk_right (f : S.obj Y ⟶ T) : (mk f).right = ⟨⟨⟩⟩ :=
+lemma mk_right (f : S.obj Y ⟶ T) : (mk f).right = ⟨⟨⟩⟩ :=
   rfl
 #align category_theory.costructured_arrow.mk_right CategoryTheory.CostructuredArrow.mk_right
 
 @[simp]
-theorem mk_hom_eq_self (f : S.obj Y ⟶ T) : (mk f).hom = f :=
+lemma mk_hom_eq_self (f : S.obj Y ⟶ T) : (mk f).hom = f :=
   rfl
 #align category_theory.costructured_arrow.mk_hom_eq_self CategoryTheory.CostructuredArrow.mk_hom_eq_self
 
 -- @[reassoc (attr := simp)] Porting note: simp can solve these
 @[reassoc]
-theorem w {A B : CostructuredArrow S T} (f : A ⟶ B) : S.map f.left ≫ B.hom = A.hom := by simp
+lemma w {A B : CostructuredArrow S T} (f : A ⟶ B) : S.map f.left ≫ B.hom = A.hom := by simp
 #align category_theory.costructured_arrow.w CategoryTheory.CostructuredArrow.w
 
 @[simp]
-theorem comp_left {X Y Z : CostructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma comp_left {X Y Z : CostructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).left = f.left ≫ g.left := rfl
 
 @[simp]
-theorem id_left (X : CostructuredArrow S T) : (𝟙 X : X ⟶ X).left = 𝟙 X.left := rfl
+lemma id_left (X : CostructuredArrow S T) : (𝟙 X : X ⟶ X).left = 𝟙 X.left := rfl
 
 @[simp]
-theorem eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
+lemma eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
     (eqToHom h).left = eqToHom (by rw [h]) := by
   subst h
   simp only [eqToHom_refl, id_left]
 
 @[simp]
-theorem right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) : f.right = 𝟙 _ := rfl
+lemma right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) : f.right = 𝟙 _ := rfl
 
 /-- To construct a morphism of costructured arrows,
 we need a morphism of the objects underlying the source,
@@ -539,18 +539,18 @@ def isoMk {f f' : CostructuredArrow S T} (g : f.left ≅ f'.left)
 picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] isoMk_hom_right_down_down isoMk_inv_right_down_down
 
-theorem ext {A B : CostructuredArrow S T} (f g : A ⟶ B) (h : f.left = g.left) : f = g :=
+lemma ext {A B : CostructuredArrow S T} (f g : A ⟶ B) (h : f.left = g.left) : f = g :=
   CommaMorphism.ext _ _ h (Subsingleton.elim _ _)
 #align category_theory.costructured_arrow.ext CategoryTheory.CostructuredArrow.ext
 
-theorem ext_iff {A B : CostructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.left = g.left :=
+lemma ext_iff {A B : CostructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.left = g.left :=
   ⟨fun h => h ▸ rfl, ext f g⟩
 #align category_theory.costructured_arrow.ext_iff CategoryTheory.CostructuredArrow.ext_iff
 
 instance proj_faithful : (proj S T).Faithful where map_injective {_ _} := ext
 #align category_theory.costructured_arrow.proj_faithful CategoryTheory.CostructuredArrow.proj_faithful
 
-theorem mono_of_mono_left {A B : CostructuredArrow S T} (f : A ⟶ B) [h : Mono f.left] : Mono f :=
+lemma mono_of_mono_left {A B : CostructuredArrow S T} (f : A ⟶ B) [h : Mono f.left] : Mono f :=
   (proj S T).mono_of_mono_map h
 #align category_theory.costructured_arrow.mono_of_mono_left CategoryTheory.CostructuredArrow.mono_of_mono_left
 
@@ -599,18 +599,18 @@ def map (f : T ⟶ T') : CostructuredArrow S T ⥤ CostructuredArrow S T' :=
 #align category_theory.costructured_arrow.map CategoryTheory.CostructuredArrow.map
 
 @[simp]
-theorem map_mk {f : S.obj Y ⟶ T} (g : T ⟶ T') : (map g).obj (mk f) = mk (f ≫ g) :=
+lemma map_mk {f : S.obj Y ⟶ T} (g : T ⟶ T') : (map g).obj (mk f) = mk (f ≫ g) :=
   rfl
 #align category_theory.costructured_arrow.map_mk CategoryTheory.CostructuredArrow.map_mk
 
 @[simp]
-theorem map_id {f : CostructuredArrow S T} : (map (𝟙 T)).obj f = f := by
+lemma map_id {f : CostructuredArrow S T} : (map (𝟙 T)).obj f = f := by
   rw [eq_mk f]
   simp
 #align category_theory.costructured_arrow.map_id CategoryTheory.CostructuredArrow.map_id
 
 @[simp]
-theorem map_comp {f : T ⟶ T'} {f' : T' ⟶ T''} {h : CostructuredArrow S T} :
+lemma map_comp {f : T ⟶ T'} {f' : T' ⟶ T''} {h : CostructuredArrow S T} :
     (map (f ≫ f')).obj h = (map f').obj ((map f).obj h) := by
   rw [eq_mk h]
   simp
@@ -733,7 +733,7 @@ namespace IsUniversal
 
 variable {f g : CostructuredArrow S T}
 
-theorem uniq (h : IsUniversal f) (η : g ⟶ f) : η = h.from g :=
+lemma uniq (h : IsUniversal f) (η : g ⟶ f) : η = h.from g :=
   h.hom_ext η (h.from g)
 
 /-- The family of morphisms into a universal arrow. -/
@@ -746,7 +746,7 @@ theorem fac (h : IsUniversal f) (g : CostructuredArrow S T) :
     S.map (h.lift g) ≫ f.hom = g.hom :=
   Category.comp_id g.hom ▸ (h.from g).w
 
-theorem hom_desc (h : IsUniversal f) {c : C} (η : c ⟶ f.left) :
+lemma hom_desc (h : IsUniversal f) {c : C} (η : c ⟶ f.left) :
     η = h.lift (mk <| S.map η ≫ f.hom) :=
   let g := mk <| S.map η ≫ f.hom
   congrArg CommaMorphism.left (h.hom_ext (homMk η rfl : g ⟶ f) (h.from g))
@@ -757,7 +757,7 @@ theorem hom_ext (h : IsUniversal f) {c : C} {η η' : c ⟶ f.left}
     (w : S.map η ≫ f.hom = S.map η' ≫ f.hom) : η = η' := by
   rw [h.hom_desc η, h.hom_desc η', w]
 
-theorem existsUnique (h : IsUniversal f) (g : CostructuredArrow S T) :
+lemma existsUnique (h : IsUniversal f) (g : CostructuredArrow S T) :
     ∃! η : g.left ⟶ f.left, S.map η ≫ f.hom = g.hom :=
   ⟨h.lift g, h.fac g, fun f w ↦ h.hom_ext <| by simp [w]⟩
 

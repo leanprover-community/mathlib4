@@ -63,10 +63,10 @@ def objX : ∀ n : ℕ, Subobject (X.obj (op (SimplexCategory.mk n)))
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.normalized_Moore_complex.obj_X AlgebraicTopology.NormalizedMooreComplex.objX
 
-theorem objX_zero : objX X 0 = ⊤ :=
+lemma objX_zero : objX X 0 = ⊤ :=
   rfl
 
-theorem objX_add_one (n) :
+lemma objX_add_one (n) :
     objX X (n + 1) = Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ) :=
   rfl
 
@@ -97,7 +97,7 @@ def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.normalized_Moore_complex.obj_d AlgebraicTopology.NormalizedMooreComplex.objD
 
-theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
+lemma d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- It's a pity we need to do a case split here;
     -- after the first erw the proofs are almost identical
   rcases n with _ | n <;> dsimp [objD]
@@ -168,7 +168,7 @@ set_option linter.uppercaseLean3 false in
 variable {C}
 
 -- Porting note: removed @[simp] as it is not in normal form
-theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
+lemma normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
     ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n :=
 -- Porting note: in mathlib, `apply ChainComplex.of_d` was enough
   ChainComplex.of_d _ _ (d_squared X) n

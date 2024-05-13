@@ -23,14 +23,14 @@ open BigOperators
 namespace Pi
 
 @[to_additive]
-theorem list_prod_apply {α : Type*} {β : α → Type*} [∀ a, Monoid (β a)] (a : α)
+lemma list_prod_apply {α : Type*} {β : α → Type*} [∀ a, Monoid (β a)] (a : α)
     (l : List (∀ a, β a)) : l.prod a = (l.map fun f : ∀ a, β a ↦ f a).prod :=
   (evalMonoidHom β a).map_list_prod _
 #align pi.list_prod_apply Pi.list_prod_apply
 #align pi.list_sum_apply Pi.list_sum_apply
 
 @[to_additive]
-theorem multiset_prod_apply {α : Type*} {β : α → Type*} [∀ a, CommMonoid (β a)] (a : α)
+lemma multiset_prod_apply {α : Type*} {β : α → Type*} [∀ a, CommMonoid (β a)] (a : α)
     (s : Multiset (∀ a, β a)) : s.prod a = (s.map fun f : ∀ a, β a ↦ f a).prod :=
   (evalMonoidHom β a).map_multiset_prod _
 #align pi.multiset_prod_apply Pi.multiset_prod_apply
@@ -39,7 +39,7 @@ theorem multiset_prod_apply {α : Type*} {β : α → Type*} [∀ a, CommMonoid 
 end Pi
 
 @[to_additive (attr := simp)]
-theorem Finset.prod_apply {α : Type*} {β : α → Type*} {γ} [∀ a, CommMonoid (β a)] (a : α)
+lemma Finset.prod_apply {α : Type*} {β : α → Type*} {γ} [∀ a, CommMonoid (β a)] (a : α)
     (s : Finset γ) (g : γ → ∀ a, β a) : (∏ c in s, g c) a = ∏ c in s, g c a :=
   map_prod (Pi.evalMonoidHom β a) _ _
 #align finset.prod_apply Finset.prod_apply
@@ -54,14 +54,14 @@ theorem Finset.prod_fn {α : Type*} {β : α → Type*} {γ} [∀ a, CommMonoid 
 #align finset.sum_fn Finset.sum_fn
 
 @[to_additive]
-theorem Fintype.prod_apply {α : Type*} {β : α → Type*} {γ : Type*} [Fintype γ]
+lemma Fintype.prod_apply {α : Type*} {β : α → Type*} {γ : Type*} [Fintype γ]
     [∀ a, CommMonoid (β a)] (a : α) (g : γ → ∀ a, β a) : (∏ c, g c) a = ∏ c, g c a :=
   Finset.prod_apply a Finset.univ g
 #align fintype.prod_apply Fintype.prod_apply
 #align fintype.sum_apply Fintype.sum_apply
 
 @[to_additive prod_mk_sum]
-theorem prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Finset γ) (f : γ → α)
+lemma prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Finset γ) (f : γ → α)
     (g : γ → β) : (∏ x in s, f x, ∏ x in s, g x) = ∏ x in s, (f x, g x) :=
   haveI := Classical.decEq γ
   Finset.induction_on s rfl (by simp (config := { contextual := true }) [Prod.ext_iff])
@@ -81,7 +81,7 @@ variable {I : Type*} [DecidableEq I] {Z : I → Type*}
 variable [∀ i, CommMonoid (Z i)]
 
 @[to_additive]
-theorem Finset.univ_prod_mulSingle [Fintype I] (f : ∀ i, Z i) :
+lemma Finset.univ_prod_mulSingle [Fintype I] (f : ∀ i, Z i) :
     (∏ i, Pi.mulSingle i (f i)) = f := by
   ext a
   simp
@@ -89,7 +89,7 @@ theorem Finset.univ_prod_mulSingle [Fintype I] (f : ∀ i, Z i) :
 #align finset.univ_sum_single Finset.univ_sum_single
 
 @[to_additive]
-theorem MonoidHom.functions_ext [Finite I] (G : Type*) [CommMonoid G] (g h : (∀ i, Z i) →* G)
+lemma MonoidHom.functions_ext [Finite I] (G : Type*) [CommMonoid G] (g h : (∀ i, Z i) →* G)
     (H : ∀ i x, g (Pi.mulSingle i x) = h (Pi.mulSingle i x)) : g = h := by
   cases nonempty_fintype I
   ext k
@@ -119,7 +119,7 @@ variable {I : Type*} [DecidableEq I] {f : I → Type*}
 variable [∀ i, NonAssocSemiring (f i)]
 
 @[ext]
-theorem RingHom.functions_ext [Finite I] (G : Type*) [NonAssocSemiring G] (g h : (∀ i, f i) →+* G)
+lemma RingHom.functions_ext [Finite I] (G : Type*) [NonAssocSemiring G] (g h : (∀ i, f i) →+* G)
     (H : ∀ (i : I) (x : f i), g (single i x) = h (single i x)) : g = h :=
   RingHom.coe_addMonoidHom_injective <|
     @AddMonoidHom.functions_ext I _ f _ _ G _ (g : (∀ i, f i) →+ G) h H
@@ -132,13 +132,13 @@ namespace Prod
 variable {α β γ : Type*} [CommMonoid α] [CommMonoid β] {s : Finset γ} {f : γ → α × β}
 
 @[to_additive]
-theorem fst_prod : (∏ c in s, f c).1 = ∏ c in s, (f c).1 :=
+lemma fst_prod : (∏ c in s, f c).1 = ∏ c in s, (f c).1 :=
   map_prod (MonoidHom.fst α β) f s
 #align prod.fst_prod Prod.fst_prod
 #align prod.fst_sum Prod.fst_sum
 
 @[to_additive]
-theorem snd_prod : (∏ c in s, f c).2 = ∏ c in s, (f c).2 :=
+lemma snd_prod : (∏ c in s, f c).2 = ∏ c in s, (f c).2 :=
   map_prod (MonoidHom.snd α β) f s
 #align prod.snd_prod Prod.snd_prod
 #align prod.snd_sum Prod.snd_sum

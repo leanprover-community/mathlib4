@@ -70,7 +70,7 @@ class InnerProductSpaceable : Prop where
 
 variable (𝕜) {E}
 
-theorem InnerProductSpace.toInnerProductSpaceable [InnerProductSpace 𝕜 E] :
+lemma InnerProductSpace.toInnerProductSpaceable [InnerProductSpace 𝕜 E] :
     InnerProductSpaceable E :=
   ⟨parallelogram_law_with_norm 𝕜⟩
 #align inner_product_space.to_inner_product_spaceable InnerProductSpace.toInnerProductSpaceable
@@ -102,7 +102,7 @@ private def innerProp' (r : 𝕜) : Prop :=
 
 variable {E}
 
-theorem innerProp_neg_one : innerProp' E ((-1 : ℤ) : 𝕜) := by
+lemma innerProp_neg_one : innerProp' E ((-1 : ℤ) : 𝕜) := by
   intro x y
   simp only [inner_, neg_mul_eq_neg_mul, one_mul, Int.cast_one, one_smul, RingHom.map_one, map_neg,
     Int.cast_neg, neg_smul, neg_one_mul]
@@ -117,14 +117,14 @@ theorem innerProp_neg_one : innerProp' E ((-1 : ℤ) : 𝕜) := by
   ring
 #align inner_product_spaceable.inner_prop_neg_one InnerProductSpaceable.innerProp_neg_one
 
-theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Continuous g) :
+lemma _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => inner_ 𝕜 (f x) (g x) := by
   unfold inner_
   have := Continuous.const_smul (M := 𝕜) hf I
   continuity
 #align inner_product_spaceable.continuous.inner_ Continuous.inner_
 
-theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
+lemma inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   simp only [inner_]
   have h₁ : RCLike.normSq (4 : 𝕜) = 16 := by
     have : ((4 : ℝ) : 𝕜) = (4 : 𝕜) := by norm_cast
@@ -136,7 +136,7 @@ theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   ring
 #align inner_product_spaceable.inner_.norm_sq InnerProductSpaceable.inner_.norm_sq
 
-theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y := by
+lemma inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y := by
   simp only [inner_]
   have h4 : conj (4⁻¹ : 𝕜) = 4⁻¹ := by norm_num
   rw [map_mul, h4]
@@ -163,40 +163,40 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
 
 variable [InnerProductSpaceable E]
 
-private theorem add_left_aux1 (x y z : E) : ‖x + y + z‖ * ‖x + y + z‖ =
+private lemma add_left_aux1 (x y z : E) : ‖x + y + z‖ * ‖x + y + z‖ =
     (‖2 • x + y‖ * ‖2 • x + y‖ + ‖2 • z + y‖ * ‖2 • z + y‖) / 2 - ‖x - z‖ * ‖x - z‖ := by
   rw [eq_sub_iff_add_eq, eq_div_iff (two_ne_zero' ℝ), mul_comm _ (2 : ℝ), eq_comm]
   convert parallelogram_identity (x + y + z) (x - z) using 4 <;> · rw [two_smul]; abel
 
-private theorem add_left_aux2 (x y z : E) : ‖x + y - z‖ * ‖x + y - z‖ =
+private lemma add_left_aux2 (x y z : E) : ‖x + y - z‖ * ‖x + y - z‖ =
     (‖2 • x + y‖ * ‖2 • x + y‖ + ‖y - 2 • z‖ * ‖y - 2 • z‖) / 2 - ‖x + z‖ * ‖x + z‖ := by
   rw [eq_sub_iff_add_eq, eq_div_iff (two_ne_zero' ℝ), mul_comm _ (2 : ℝ), eq_comm]
   have h₀ := parallelogram_identity (x + y - z) (x + z)
   convert h₀ using 4 <;> · rw [two_smul]; abel
 
-private theorem add_left_aux2' (x y z : E) :
+private lemma add_left_aux2' (x y z : E) :
     ‖x + y + z‖ * ‖x + y + z‖ - ‖x + y - z‖ * ‖x + y - z‖ =
     ‖x + z‖ * ‖x + z‖ - ‖x - z‖ * ‖x - z‖ +
     (‖2 • z + y‖ * ‖2 • z + y‖ - ‖y - 2 • z‖ * ‖y - 2 • z‖) / 2 := by
   rw [add_left_aux1, add_left_aux2]; ring
 
-private theorem add_left_aux3 (y z : E) :
+private lemma add_left_aux3 (y z : E) :
     ‖2 • z + y‖ * ‖2 • z + y‖ = 2 * (‖y + z‖ * ‖y + z‖ + ‖z‖ * ‖z‖) - ‖y‖ * ‖y‖ := by
   apply eq_sub_of_add_eq
   convert parallelogram_identity (y + z) z using 4 <;> (try rw [two_smul]) <;> abel
 
-private theorem add_left_aux4 (y z : E) :
+private lemma add_left_aux4 (y z : E) :
     ‖y - 2 • z‖ * ‖y - 2 • z‖ = 2 * (‖y - z‖ * ‖y - z‖ + ‖z‖ * ‖z‖) - ‖y‖ * ‖y‖ := by
   apply eq_sub_of_add_eq'
   have h₀ := parallelogram_identity (y - z) z
   convert h₀ using 4 <;> (try rw [two_smul]) <;> abel
 
-private theorem add_left_aux4' (y z : E) :
+private lemma add_left_aux4' (y z : E) :
     (‖2 • z + y‖ * ‖2 • z + y‖ - ‖y - 2 • z‖ * ‖y - 2 • z‖) / 2 =
     ‖y + z‖ * ‖y + z‖ - ‖y - z‖ * ‖y - z‖ := by
   rw [add_left_aux3, add_left_aux4]; ring
 
-private theorem add_left_aux5 (x y z : E) :
+private lemma add_left_aux5 (x y z : E) :
     ‖(I : 𝕜) • (x + y) + z‖ * ‖(I : 𝕜) • (x + y) + z‖ =
     (‖(I : 𝕜) • (2 • x + y)‖ * ‖(I : 𝕜) • (2 • x + y)‖ +
     ‖(I : 𝕜) • y + 2 • z‖ * ‖(I : 𝕜) • y + 2 • z‖) / 2 -
@@ -205,7 +205,7 @@ private theorem add_left_aux5 (x y z : E) :
   have h₀ := parallelogram_identity ((I : 𝕜) • (x + y) + z) ((I : 𝕜) • x - z)
   convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
 
-private theorem add_left_aux6 (x y z : E) :
+private lemma add_left_aux6 (x y z : E) :
     ‖(I : 𝕜) • (x + y) - z‖ * ‖(I : 𝕜) • (x + y) - z‖ =
     (‖(I : 𝕜) • (2 • x + y)‖ * ‖(I : 𝕜) • (2 • x + y)‖ +
     ‖(I : 𝕜) • y - 2 • z‖ * ‖(I : 𝕜) • y - 2 • z‖) / 2 -
@@ -214,21 +214,21 @@ private theorem add_left_aux6 (x y z : E) :
   have h₀ := parallelogram_identity ((I : 𝕜) • (x + y) - z) ((I : 𝕜) • x + z)
   convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
 
-private theorem add_left_aux7 (y z : E) :
+private lemma add_left_aux7 (y z : E) :
     ‖(I : 𝕜) • y + 2 • z‖ * ‖(I : 𝕜) • y + 2 • z‖ =
     2 * (‖(I : 𝕜) • y + z‖ * ‖(I : 𝕜) • y + z‖ + ‖z‖ * ‖z‖) - ‖(I : 𝕜) • y‖ * ‖(I : 𝕜) • y‖ := by
   apply eq_sub_of_add_eq
   have h₀ := parallelogram_identity ((I : 𝕜) • y + z) z
   convert h₀ using 4 <;> · (try simp only [two_smul, smul_add]); abel
 
-private theorem add_left_aux8 (y z : E) :
+private lemma add_left_aux8 (y z : E) :
     ‖(I : 𝕜) • y - 2 • z‖ * ‖(I : 𝕜) • y - 2 • z‖ =
     2 * (‖(I : 𝕜) • y - z‖ * ‖(I : 𝕜) • y - z‖ + ‖z‖ * ‖z‖) - ‖(I : 𝕜) • y‖ * ‖(I : 𝕜) • y‖ := by
   apply eq_sub_of_add_eq'
   have h₀ := parallelogram_identity ((I : 𝕜) • y - z) z
   convert h₀ using 4 <;> · (try simp only [two_smul, smul_add]); abel
 
-theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 𝕜 y z := by
+lemma add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 𝕜 y z := by
   simp only [inner_, ← mul_add]
   congr
   simp only [mul_assoc, ← map_mul, add_sub_assoc, ← mul_sub, ← map_sub]
@@ -241,7 +241,7 @@ theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 
     ring
 #align inner_product_spaceable.add_left InnerProductSpaceable.add_left
 
-theorem nat (n : ℕ) (x y : E) : inner_ 𝕜 ((n : 𝕜) • x) y = (n : 𝕜) * inner_ 𝕜 x y := by
+lemma nat (n : ℕ) (x y : E) : inner_ 𝕜 ((n : 𝕜) • x) y = (n : 𝕜) * inner_ 𝕜 x y := by
   induction' n with n ih
   · simp only [inner_, Nat.zero_eq, zero_sub, Nat.cast_zero, zero_mul,
       eq_self_iff_true, zero_smul, zero_add, mul_zero, sub_self, norm_neg, smul_zero]
@@ -249,10 +249,10 @@ theorem nat (n : ℕ) (x y : E) : inner_ 𝕜 ((n : 𝕜) • x) y = (n : 𝕜) 
     rw [add_left, ih, add_mul, one_mul]
 #align inner_product_spaceable.nat InnerProductSpaceable.nat
 
-private theorem nat_prop (r : ℕ) : innerProp' E (r : 𝕜) := fun x y => by
+private lemma nat_prop (r : ℕ) : innerProp' E (r : 𝕜) := fun x y => by
   simp only [map_natCast]; exact nat r x y
 
-private theorem int_prop (n : ℤ) : innerProp' E (n : 𝕜) := by
+private lemma int_prop (n : ℤ) : innerProp' E (n : 𝕜) := by
   intro x y
   rw [← n.sign_mul_natAbs]
   simp only [Int.cast_natCast, map_natCast, map_intCast, Int.cast_mul, map_mul, mul_smul]
@@ -267,7 +267,7 @@ private theorem int_prop (n : ℤ) : innerProp' E (n : 𝕜) := by
     simp only [one_mul, mul_eq_mul_left_iff, true_or_iff, Int.natAbs_eq_zero, eq_self_iff_true,
       Int.cast_one, one_smul, Nat.cast_eq_zero, nat]
 
-private theorem rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
+private lemma rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
   intro x y
   have : (r.den : 𝕜) ≠ 0 := by
     haveI : CharZero 𝕜 := RCLike.charZero_rclike
@@ -276,7 +276,7 @@ private theorem rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
   simp only [map_natCast, Rat.cast_natCast, map_intCast, Rat.cast_intCast, map_div₀]
   rw [← mul_assoc, mul_div_cancel₀ _ this, int_prop _ x, map_intCast]
 
-private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
+private lemma real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
   intro x y
   revert r
   rw [← Function.funext_iff]
@@ -285,7 +285,7 @@ private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
   · exact (continuous_conj.comp continuous_ofReal).mul continuous_const
   · simp only [Function.comp_apply, RCLike.ofReal_ratCast, rat_prop _ _]
 
-private theorem I_prop : innerProp' E (I : 𝕜) := by
+private lemma I_prop : innerProp' E (I : 𝕜) := by
   by_cases hI : (I : 𝕜) = 0
   · rw [hI, ← Nat.cast_zero]; exact nat_prop _
   intro x y
@@ -302,7 +302,7 @@ private theorem I_prop : innerProp' E (I : 𝕜) := by
   rw [← neg_mul_eq_neg_mul, ← neg_mul_eq_neg_mul]
   abel
 
-theorem innerProp (r : 𝕜) : innerProp' E r := by
+lemma innerProp (r : 𝕜) : innerProp' E r := by
   intro x y
   rw [← re_add_im r, add_smul, add_left, real_prop _ x, ← smul_smul, real_prop _ _ y, I_prop,
     map_add, map_mul, conj_ofReal, conj_ofReal, conj_I]

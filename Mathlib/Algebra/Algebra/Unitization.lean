@@ -93,7 +93,7 @@ def snd (x : Unitization R A) : A :=
 #align unitization.snd Unitization.snd
 
 @[ext]
-theorem ext {x y : Unitization R A} (h1 : x.fst = y.fst) (h2 : x.snd = y.snd) : x = y :=
+lemma ext {x y : Unitization R A} (h1 : x.fst = y.fst) (h2 : x.snd = y.snd) : x = y :=
   Prod.ext h1 h2
 #align unitization.ext Unitization.ext
 
@@ -102,12 +102,12 @@ section
 variable (A)
 
 @[simp]
-theorem fst_inl [Zero A] (r : R) : (inl r : Unitization R A).fst = r :=
+lemma fst_inl [Zero A] (r : R) : (inl r : Unitization R A).fst = r :=
   rfl
 #align unitization.fst_inl Unitization.fst_inl
 
 @[simp]
-theorem snd_inl [Zero A] (r : R) : (inl r : Unitization R A).snd = 0 :=
+lemma snd_inl [Zero A] (r : R) : (inl r : Unitization R A).snd = 0 :=
   rfl
 #align unitization.snd_inl Unitization.snd_inl
 
@@ -118,22 +118,22 @@ section
 variable (R)
 
 @[simp]
-theorem fst_inr [Zero R] (a : A) : (a : Unitization R A).fst = 0 :=
+lemma fst_inr [Zero R] (a : A) : (a : Unitization R A).fst = 0 :=
   rfl
 #align unitization.fst_coe Unitization.fst_inr
 
 @[simp]
-theorem snd_inr [Zero R] (a : A) : (a : Unitization R A).snd = a :=
+lemma snd_inr [Zero R] (a : A) : (a : Unitization R A).snd = a :=
   rfl
 #align unitization.snd_coe Unitization.snd_inr
 
 end
 
-theorem inl_injective [Zero A] : Function.Injective (inl : R → Unitization R A) :=
+lemma inl_injective [Zero A] : Function.Injective (inl : R → Unitization R A) :=
   Function.LeftInverse.injective <| fst_inl _
 #align unitization.inl_injective Unitization.inl_injective
 
-theorem inr_injective [Zero R] : Function.Injective ((↑) : A → Unitization R A) :=
+lemma inr_injective [Zero R] : Function.Injective ((↑) : A → Unitization R A) :=
   Function.LeftInverse.injective <| snd_inr _
 #align unitization.coe_injective Unitization.inr_injective
 
@@ -225,42 +225,42 @@ def addEquiv [Add R] [Add A] : Unitization R A ≃+ R × A :=
   AddEquiv.refl _
 
 @[simp]
-theorem fst_zero [Zero R] [Zero A] : (0 : Unitization R A).fst = 0 :=
+lemma fst_zero [Zero R] [Zero A] : (0 : Unitization R A).fst = 0 :=
   rfl
 #align unitization.fst_zero Unitization.fst_zero
 
 @[simp]
-theorem snd_zero [Zero R] [Zero A] : (0 : Unitization R A).snd = 0 :=
+lemma snd_zero [Zero R] [Zero A] : (0 : Unitization R A).snd = 0 :=
   rfl
 #align unitization.snd_zero Unitization.snd_zero
 
 @[simp]
-theorem fst_add [Add R] [Add A] (x₁ x₂ : Unitization R A) : (x₁ + x₂).fst = x₁.fst + x₂.fst :=
+lemma fst_add [Add R] [Add A] (x₁ x₂ : Unitization R A) : (x₁ + x₂).fst = x₁.fst + x₂.fst :=
   rfl
 #align unitization.fst_add Unitization.fst_add
 
 @[simp]
-theorem snd_add [Add R] [Add A] (x₁ x₂ : Unitization R A) : (x₁ + x₂).snd = x₁.snd + x₂.snd :=
+lemma snd_add [Add R] [Add A] (x₁ x₂ : Unitization R A) : (x₁ + x₂).snd = x₁.snd + x₂.snd :=
   rfl
 #align unitization.snd_add Unitization.snd_add
 
 @[simp]
-theorem fst_neg [Neg R] [Neg A] (x : Unitization R A) : (-x).fst = -x.fst :=
+lemma fst_neg [Neg R] [Neg A] (x : Unitization R A) : (-x).fst = -x.fst :=
   rfl
 #align unitization.fst_neg Unitization.fst_neg
 
 @[simp]
-theorem snd_neg [Neg R] [Neg A] (x : Unitization R A) : (-x).snd = -x.snd :=
+lemma snd_neg [Neg R] [Neg A] (x : Unitization R A) : (-x).snd = -x.snd :=
   rfl
 #align unitization.snd_neg Unitization.snd_neg
 
 @[simp]
-theorem fst_smul [SMul S R] [SMul S A] (s : S) (x : Unitization R A) : (s • x).fst = s • x.fst :=
+lemma fst_smul [SMul S R] [SMul S A] (s : S) (x : Unitization R A) : (s • x).fst = s • x.fst :=
   rfl
 #align unitization.fst_smul Unitization.fst_smul
 
 @[simp]
-theorem snd_smul [SMul S R] [SMul S A] (s : S) (x : Unitization R A) : (s • x).snd = s • x.snd :=
+lemma snd_smul [SMul S R] [SMul S A] (s : S) (x : Unitization R A) : (s • x).snd = s • x.snd :=
   rfl
 #align unitization.snd_smul Unitization.snd_smul
 
@@ -269,23 +269,23 @@ section
 variable (A)
 
 @[simp]
-theorem inl_zero [Zero R] [Zero A] : (inl 0 : Unitization R A) = 0 :=
+lemma inl_zero [Zero R] [Zero A] : (inl 0 : Unitization R A) = 0 :=
   rfl
 #align unitization.inl_zero Unitization.inl_zero
 
 @[simp]
-theorem inl_add [Add R] [AddZeroClass A] (r₁ r₂ : R) :
+lemma inl_add [Add R] [AddZeroClass A] (r₁ r₂ : R) :
     (inl (r₁ + r₂) : Unitization R A) = inl r₁ + inl r₂ :=
   ext rfl (add_zero 0).symm
 #align unitization.inl_add Unitization.inl_add
 
 @[simp]
-theorem inl_neg [Neg R] [AddGroup A] (r : R) : (inl (-r) : Unitization R A) = -inl r :=
+lemma inl_neg [Neg R] [AddGroup A] (r : R) : (inl (-r) : Unitization R A) = -inl r :=
   ext rfl neg_zero.symm
 #align unitization.inl_neg Unitization.inl_neg
 
 @[simp]
-theorem inl_smul [Monoid S] [AddMonoid A] [SMul S R] [DistribMulAction S A] (s : S) (r : R) :
+lemma inl_smul [Monoid S] [AddMonoid A] [SMul S R] [DistribMulAction S A] (s : S) (r : R) :
     (inl (s • r) : Unitization R A) = s • inl r :=
   ext rfl (smul_zero s).symm
 #align unitization.inl_smul Unitization.inl_smul
@@ -297,29 +297,29 @@ section
 variable (R)
 
 @[simp]
-theorem inr_zero [Zero R] [Zero A] : ↑(0 : A) = (0 : Unitization R A) :=
+lemma inr_zero [Zero R] [Zero A] : ↑(0 : A) = (0 : Unitization R A) :=
   rfl
 #align unitization.coe_zero Unitization.inr_zero
 
 @[simp]
-theorem inr_add [AddZeroClass R] [Add A] (m₁ m₂ : A) : (↑(m₁ + m₂) : Unitization R A) = m₁ + m₂ :=
+lemma inr_add [AddZeroClass R] [Add A] (m₁ m₂ : A) : (↑(m₁ + m₂) : Unitization R A) = m₁ + m₂ :=
   ext (add_zero 0).symm rfl
 #align unitization.coe_add Unitization.inr_add
 
 @[simp]
-theorem inr_neg [AddGroup R] [Neg A] (m : A) : (↑(-m) : Unitization R A) = -m :=
+lemma inr_neg [AddGroup R] [Neg A] (m : A) : (↑(-m) : Unitization R A) = -m :=
   ext neg_zero.symm rfl
 #align unitization.coe_neg Unitization.inr_neg
 
 @[simp]
-theorem inr_smul [Zero R] [Zero S] [SMulWithZero S R] [SMul S A] (r : S) (m : A) :
+lemma inr_smul [Zero R] [Zero S] [SMulWithZero S R] [SMul S A] (r : S) (m : A) :
     (↑(r • m) : Unitization R A) = r • (m : Unitization R A) :=
   ext (smul_zero _).symm rfl
 #align unitization.coe_smul Unitization.inr_smul
 
 end
 
-theorem inl_fst_add_inr_snd_eq [AddZeroClass R] [AddZeroClass A] (x : Unitization R A) :
+lemma inl_fst_add_inr_snd_eq [AddZeroClass R] [AddZeroClass A] (x : Unitization R A) :
     inl x.fst + (x.snd : Unitization R A) = x :=
   ext (add_zero x.1) (zero_add x.2)
 #align unitization.inl_fst_add_coe_snd_eq Unitization.inl_fst_add_inr_snd_eq
@@ -371,23 +371,23 @@ instance instMul [Mul R] [Add A] [Mul A] [SMul R A] : Mul (Unitization R A) :=
   ⟨fun x y => (x.1 * y.1, x.1 • y.2 + y.1 • x.2 + x.2 * y.2)⟩
 
 @[simp]
-theorem fst_one [One R] [Zero A] : (1 : Unitization R A).fst = 1 :=
+lemma fst_one [One R] [Zero A] : (1 : Unitization R A).fst = 1 :=
   rfl
 #align unitization.fst_one Unitization.fst_one
 
 @[simp]
-theorem snd_one [One R] [Zero A] : (1 : Unitization R A).snd = 0 :=
+lemma snd_one [One R] [Zero A] : (1 : Unitization R A).snd = 0 :=
   rfl
 #align unitization.snd_one Unitization.snd_one
 
 @[simp]
-theorem fst_mul [Mul R] [Add A] [Mul A] [SMul R A] (x₁ x₂ : Unitization R A) :
+lemma fst_mul [Mul R] [Add A] [Mul A] [SMul R A] (x₁ x₂ : Unitization R A) :
     (x₁ * x₂).fst = x₁.fst * x₂.fst :=
   rfl
 #align unitization.fst_mul Unitization.fst_mul
 
 @[simp]
-theorem snd_mul [Mul R] [Add A] [Mul A] [SMul R A] (x₁ x₂ : Unitization R A) :
+lemma snd_mul [Mul R] [Add A] [Mul A] [SMul R A] (x₁ x₂ : Unitization R A) :
     (x₁ * x₂).snd = x₁.fst • x₂.snd + x₂.fst • x₁.snd + x₁.snd * x₂.snd :=
   rfl
 #align unitization.snd_mul Unitization.snd_mul
@@ -397,19 +397,19 @@ section
 variable (A)
 
 @[simp]
-theorem inl_one [One R] [Zero A] : (inl 1 : Unitization R A) = 1 :=
+lemma inl_one [One R] [Zero A] : (inl 1 : Unitization R A) = 1 :=
   rfl
 #align unitization.inl_one Unitization.inl_one
 
 @[simp]
-theorem inl_mul [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r₁ r₂ : R) :
+lemma inl_mul [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r₁ r₂ : R) :
     (inl (r₁ * r₂) : Unitization R A) = inl r₁ * inl r₂ :=
   ext rfl <|
     show (0 : A) = r₁ • (0 : A) + r₂ • (0 : A) + 0 * 0 by
       simp only [smul_zero, add_zero, mul_zero]
 #align unitization.inl_mul Unitization.inl_mul
 
-theorem inl_mul_inl [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r₁ r₂ : R) :
+lemma inl_mul_inl [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r₁ r₂ : R) :
     (inl r₁ * inl r₂ : Unitization R A) = inl (r₁ * r₂) :=
   (inl_mul A r₁ r₂).symm
 #align unitization.inl_mul_inl Unitization.inl_mul_inl
@@ -421,7 +421,7 @@ section
 variable (R)
 
 @[simp]
-theorem inr_mul [Semiring R] [AddCommMonoid A] [Mul A] [SMulWithZero R A] (a₁ a₂ : A) :
+lemma inr_mul [Semiring R] [AddCommMonoid A] [Mul A] [SMulWithZero R A] (a₁ a₂ : A) :
     (↑(a₁ * a₂) : Unitization R A) = a₁ * a₂ :=
   ext (mul_zero _).symm <|
     show a₁ * a₂ = (0 : R) • a₂ + (0 : R) • a₁ + a₁ * a₂ by simp only [zero_smul, zero_add]
@@ -429,14 +429,14 @@ theorem inr_mul [Semiring R] [AddCommMonoid A] [Mul A] [SMulWithZero R A] (a₁ 
 
 end
 
-theorem inl_mul_inr [Semiring R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r : R)
+lemma inl_mul_inr [Semiring R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r : R)
     (a : A) : ((inl r : Unitization R A) * a) = ↑(r • a) :=
   ext (mul_zero r) <|
     show r • a + (0 : R) • (0 : A) + 0 * a = r • a by
       rw [smul_zero, add_zero, zero_mul, add_zero]
 #align unitization.inl_mul_coe Unitization.inl_mul_inr
 
-theorem inr_mul_inl [Semiring R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r : R)
+lemma inr_mul_inl [Semiring R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r : R)
     (a : A) : a * (inl r : Unitization R A) = ↑(r • a) :=
   ext (zero_mul r) <|
     show (0 : R) • (0 : A) + r • a + a * 0 = r • a by
@@ -550,23 +550,23 @@ instance instStar [Star R] [Star A] : Star (Unitization R A) :=
   ⟨fun ra => (star ra.fst, star ra.snd)⟩
 
 @[simp]
-theorem fst_star [Star R] [Star A] (x : Unitization R A) : (star x).fst = star x.fst :=
+lemma fst_star [Star R] [Star A] (x : Unitization R A) : (star x).fst = star x.fst :=
   rfl
 #align unitization.fst_star Unitization.fst_star
 
 @[simp]
-theorem snd_star [Star R] [Star A] (x : Unitization R A) : (star x).snd = star x.snd :=
+lemma snd_star [Star R] [Star A] (x : Unitization R A) : (star x).snd = star x.snd :=
   rfl
 #align unitization.snd_star Unitization.snd_star
 
 @[simp]
-theorem inl_star [Star R] [AddMonoid A] [StarAddMonoid A] (r : R) :
+lemma inl_star [Star R] [AddMonoid A] [StarAddMonoid A] (r : R) :
     inl (star r) = star (inl r : Unitization R A) :=
   ext rfl (by simp only [snd_star, star_zero, snd_inl])
 #align unitization.inl_star Unitization.inl_star
 
 @[simp]
-theorem inr_star [AddMonoid R] [StarAddMonoid R] [Star A] (a : A) :
+lemma inr_star [AddMonoid R] [StarAddMonoid R] [Star A] (a : A) :
     ↑(star a) = star (a : Unitization R A) :=
   ext (by simp only [fst_star, star_zero, fst_inr]) rfl
 #align unitization.coe_star Unitization.inr_star
@@ -612,20 +612,20 @@ instance instAlgebra : Algebra S (Unitization R A) :=
         inl_smul, inr_smul, smul_one_smul] }
 #align unitization.algebra Unitization.instAlgebra
 
-theorem algebraMap_eq_inl_comp : ⇑(algebraMap S (Unitization R A)) = inl ∘ algebraMap S R :=
+lemma algebraMap_eq_inl_comp : ⇑(algebraMap S (Unitization R A)) = inl ∘ algebraMap S R :=
   rfl
 #align unitization.algebra_map_eq_inl_comp Unitization.algebraMap_eq_inl_comp
 
-theorem algebraMap_eq_inlRingHom_comp :
+lemma algebraMap_eq_inlRingHom_comp :
     algebraMap S (Unitization R A) = (inlRingHom R A).comp (algebraMap S R) :=
   rfl
 #align unitization.algebra_map_eq_inl_ring_hom_comp Unitization.algebraMap_eq_inlRingHom_comp
 
-theorem algebraMap_eq_inl : ⇑(algebraMap R (Unitization R A)) = inl :=
+lemma algebraMap_eq_inl : ⇑(algebraMap R (Unitization R A)) = inl :=
   rfl
 #align unitization.algebra_map_eq_inl Unitization.algebraMap_eq_inl
 
-theorem algebraMap_eq_inlRingHom : algebraMap R (Unitization R A) = inlRingHom R A :=
+lemma algebraMap_eq_inlRingHom : algebraMap R (Unitization R A) = inlRingHom R A :=
   rfl
 #align unitization.algebra_map_eq_inl_hom Unitization.algebraMap_eq_inlRingHom
 
@@ -673,7 +673,7 @@ variable {S R A : Type*} [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
   [SMulCommClass R A A] [IsScalarTower R A A] {B : Type*} [Semiring B] [Algebra S B] [Algebra S R]
   [DistribMulAction S A] [IsScalarTower S R A] {C : Type*} [Semiring C] [Algebra R C]
 
-theorem algHom_ext {F : Type*}
+lemma algHom_ext {F : Type*}
     [FunLike F (Unitization R A) B] [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a)
     (h' : ∀ r, φ (algebraMap R (Unitization R A) r) = ψ (algebraMap R (Unitization R A) r)) :
@@ -739,7 +739,7 @@ def lift : (A →ₙₐ[R] C) ≃ (Unitization R A →ₐ[R] C) where
   right_inv φ := by ext; simp [NonUnitalAlgHomClass.toNonUnitalAlgHom]
 #align unitization.lift Unitization.lift
 
-theorem lift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
+lemma lift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
     Unitization.lift.symm φ a = φ a :=
   rfl
 #align unitization.lift_symm_apply Unitization.lift_symm_apply
@@ -782,7 +782,7 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
 
 -- Note (#6057) : tagging simpNF because linter complains
 @[simp high, nolint simpNF]
-theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
+lemma starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
     Unitization.lift.symm φ a = φ a :=
   rfl
 

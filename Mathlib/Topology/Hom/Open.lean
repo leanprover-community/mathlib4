@@ -74,15 +74,15 @@ instance : ContinuousOpenMapClass (α →CO β) α β where
   map_continuous f := f.continuous_toFun
   map_open f := f.map_open'
 
-theorem toFun_eq_coe {f : α →CO β} : f.toFun = (f : α → β) :=
+lemma toFun_eq_coe {f : α →CO β} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_open_map.to_fun_eq_coe ContinuousOpenMap.toFun_eq_coe
 
 @[simp] -- Porting note: new, simpNF of `toFun_eq_coe`
-theorem coe_toContinuousMap (f : α →CO β) : (f.toContinuousMap : α → β) = f := rfl
+lemma coe_toContinuousMap (f : α →CO β) : (f.toContinuousMap : α → β) = f := rfl
 
 @[ext]
-theorem ext {f g : α →CO β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : α →CO β} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 #align continuous_open_map.ext ContinuousOpenMap.ext
 
@@ -93,11 +93,11 @@ protected def copy (f : α →CO β) (f' : α → β) (h : f' = f) : α →CO β
 #align continuous_open_map.copy ContinuousOpenMap.copy
 
 @[simp]
-theorem coe_copy (f : α →CO β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+lemma coe_copy (f : α →CO β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 #align continuous_open_map.coe_copy ContinuousOpenMap.coe_copy
 
-theorem copy_eq (f : α →CO β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
+lemma copy_eq (f : α →CO β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 #align continuous_open_map.copy_eq ContinuousOpenMap.copy_eq
 
@@ -112,14 +112,14 @@ instance : Inhabited (α →CO α) :=
   ⟨ContinuousOpenMap.id _⟩
 
 @[simp]
-theorem coe_id : ⇑(ContinuousOpenMap.id α) = id :=
+lemma coe_id : ⇑(ContinuousOpenMap.id α) = id :=
   rfl
 #align continuous_open_map.coe_id ContinuousOpenMap.coe_id
 
 variable {α}
 
 @[simp]
-theorem id_apply (a : α) : ContinuousOpenMap.id α a = a :=
+lemma id_apply (a : α) : ContinuousOpenMap.id α a = a :=
   rfl
 #align continuous_open_map.id_apply ContinuousOpenMap.id_apply
 
@@ -129,39 +129,39 @@ def comp (f : β →CO γ) (g : α →CO β) : ContinuousOpenMap α γ :=
 #align continuous_open_map.comp ContinuousOpenMap.comp
 
 @[simp]
-theorem coe_comp (f : β →CO γ) (g : α →CO β) : (f.comp g : α → γ) = f ∘ g :=
+lemma coe_comp (f : β →CO γ) (g : α →CO β) : (f.comp g : α → γ) = f ∘ g :=
   rfl
 #align continuous_open_map.coe_comp ContinuousOpenMap.coe_comp
 
 @[simp]
-theorem comp_apply (f : β →CO γ) (g : α →CO β) (a : α) : (f.comp g) a = f (g a) :=
+lemma comp_apply (f : β →CO γ) (g : α →CO β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 #align continuous_open_map.comp_apply ContinuousOpenMap.comp_apply
 
 @[simp]
-theorem comp_assoc (f : γ →CO δ) (g : β →CO γ) (h : α →CO β) :
+lemma comp_assoc (f : γ →CO δ) (g : β →CO γ) (h : α →CO β) :
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 #align continuous_open_map.comp_assoc ContinuousOpenMap.comp_assoc
 
 @[simp]
-theorem comp_id (f : α →CO β) : f.comp (ContinuousOpenMap.id α) = f :=
+lemma comp_id (f : α →CO β) : f.comp (ContinuousOpenMap.id α) = f :=
   ext fun _ => rfl
 #align continuous_open_map.comp_id ContinuousOpenMap.comp_id
 
 @[simp]
-theorem id_comp (f : α →CO β) : (ContinuousOpenMap.id β).comp f = f :=
+lemma id_comp (f : α →CO β) : (ContinuousOpenMap.id β).comp f = f :=
   ext fun _ => rfl
 #align continuous_open_map.id_comp ContinuousOpenMap.id_comp
 
 @[simp]
-theorem cancel_right {g₁ g₂ : β →CO γ} {f : α →CO β} (hf : Surjective f) :
+lemma cancel_right {g₁ g₂ : β →CO γ} {f : α →CO β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align continuous_open_map.cancel_right ContinuousOpenMap.cancel_right
 
 @[simp]
-theorem cancel_left {g : β →CO γ} {f₁ f₂ : α →CO β} (hg : Injective g) :
+lemma cancel_left {g : β →CO γ} {f₁ f₂ : α →CO β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align continuous_open_map.cancel_left ContinuousOpenMap.cancel_left

@@ -22,11 +22,11 @@ instance UnitsInt.fintype : Fintype ℤˣ :=
 #align units_int.fintype UnitsInt.fintype
 
 @[simp]
-theorem UnitsInt.univ : (Finset.univ : Finset ℤˣ) = {1, -1} := rfl
+lemma UnitsInt.univ : (Finset.univ : Finset ℤˣ) = {1, -1} := rfl
 #align units_int.univ UnitsInt.univ
 
 @[simp]
-theorem Fintype.card_units_int : Fintype.card ℤˣ = 2 := rfl
+lemma Fintype.card_units_int : Fintype.card ℤˣ = 2 := rfl
 #align fintype.card_units_int Fintype.card_units_int
 
 instance [Monoid α] [Fintype α] [DecidableEq α] : Fintype αˣ :=
@@ -34,19 +34,19 @@ instance [Monoid α] [Fintype α] [DecidableEq α] : Fintype αˣ :=
 
 instance [Monoid α] [Finite α] : Finite αˣ := Finite.of_injective _ Units.ext
 
-theorem Fintype.card_eq_card_units_add_one [GroupWithZero α] [Fintype α] [DecidableEq α] :
+lemma Fintype.card_eq_card_units_add_one [GroupWithZero α] [Fintype α] [DecidableEq α] :
     Fintype.card α = Fintype.card αˣ + 1 := by
   rw [eq_comm, Fintype.card_congr (unitsEquivNeZero α)]
   have := Fintype.card_congr (Equiv.sumCompl (· = (0 : α)))
   rwa [Fintype.card_sum, add_comm, Fintype.card_subtype_eq] at this
 
-theorem Nat.card_eq_card_units_add_one [GroupWithZero α] [Finite α] :
+lemma Nat.card_eq_card_units_add_one [GroupWithZero α] [Finite α] :
     Nat.card α = Nat.card αˣ + 1 := by
   have : Fintype α := Fintype.ofFinite α
   classical
     rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card, Fintype.card_eq_card_units_add_one]
 
-theorem Fintype.card_units [GroupWithZero α] [Fintype α] [DecidableEq α] :
+lemma Fintype.card_units [GroupWithZero α] [Fintype α] [DecidableEq α] :
     Fintype.card αˣ = Fintype.card α - 1 := by
   rw [@Fintype.card_eq_card_units_add_one α, Nat.add_sub_cancel]
 #align fintype.card_units Fintype.card_units

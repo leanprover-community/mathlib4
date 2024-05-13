@@ -54,7 +54,7 @@ noncomputable def tensorDistrib :
 -- TODO: make the RHS `MulOpposite.op (Q₂ m₂) • Q₁ m₁` so that this has a nicer defeq for
 -- `R = A` of `Q₁ m₁ * Q₂ m₂`.
 @[simp]
-theorem tensorDistrib_tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) (m₁ : M₁) (m₂ : M₂) :
+lemma tensorDistrib_tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) (m₁ : M₁) (m₂ : M₂) :
     tensorDistrib R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₂ m₂ • Q₁ m₁ :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   (BilinForm.tensorDistrib_tmul _ _ _ _ _ _).trans <| congr_arg₂ _
@@ -66,7 +66,7 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : Quadra
     QuadraticForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
-theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
+lemma associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     associated (R := A) (Q₁.tmul Q₂)
       = (associated (R := A) Q₁).tmul (associated (R := R) Q₂) := by
   rw [QuadraticForm.tmul, tensorDistrib, BilinForm.tmul]
@@ -74,7 +74,7 @@ theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
   have : Subsingleton (Invertible (2 : A)) := inferInstance
   convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
 
-theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
+lemma polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     polarBilin (Q₁.tmul Q₂) = ⅟(2 : A) • (polarBilin Q₁).tmul (polarBilin Q₂) := by
   simp_rw [← two_nsmul_associated A, ← two_nsmul_associated R, BilinForm.tmul, tmul_smul,
     ← smul_tmul', map_nsmul, associated_tmul]
@@ -88,17 +88,17 @@ protected noncomputable def baseChange (Q : QuadraticForm R M₂) : QuadraticFor
   QuadraticForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (QuadraticForm.sq (R := A)) Q
 
 @[simp]
-theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
+lemma baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
     Q.baseChange A (a ⊗ₜ m₂) = Q m₂ • (a * a) :=
   tensorDistrib_tmul _ _ _ _
 
-theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
+lemma associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     associated (R := A) (Q.baseChange A) = (associated (R := R) Q).baseChange A := by
   dsimp only [QuadraticForm.baseChange, LinearMap.baseChange]
   rw [associated_tmul (QuadraticForm.sq (R := A)) Q, associated_sq]
   exact rfl
 
-theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
+lemma polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     polarBilin (Q.baseChange A) = (polarBilin Q).baseChange A := by
   rw [QuadraticForm.baseChange, BilinForm.baseChange, polarBilin_tmul, BilinForm.tmul,
     ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R, coe_associatedHom, associated_sq,

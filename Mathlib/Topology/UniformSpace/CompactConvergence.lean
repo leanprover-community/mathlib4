@@ -149,7 +149,7 @@ def toUniformOnFunIsCompact (f : C(α, β)) : α →ᵤ[{K | IsCompact K}] β :=
   UniformOnFun.ofFun {K | IsCompact K} f
 
 @[simp]
-theorem toUniformOnFun_toFun (f : C(α, β)) :
+lemma toUniformOnFun_toFun (f : C(α, β)) :
     UniformOnFun.toFun _ f.toUniformOnFunIsCompact = f := rfl
 
 open UniformSpace in
@@ -169,7 +169,7 @@ instance compactConvergenceUniformSpace : UniformSpace C(α, β) :=
     rfl
 #align continuous_map.compact_convergence_uniform_space ContinuousMap.compactConvergenceUniformSpace
 
-theorem uniformEmbedding_toUniformOnFunIsCompact :
+lemma uniformEmbedding_toUniformOnFunIsCompact :
     UniformEmbedding (toUniformOnFunIsCompact : C(α, β) → α →ᵤ[{K | IsCompact K}] β) where
   comap_uniformity := rfl
   inj := DFunLike.coe_injective
@@ -198,7 +198,7 @@ theorem uniformEmbedding_toUniformOnFunIsCompact :
 #noalign continuous_map.has_basis_compact_convergence_uniformity_aux
 #noalign continuous_map.mem_compact_convergence_uniformity
 
-theorem _root_.Filter.HasBasis.compactConvergenceUniformity {ι : Type*} {pi : ι → Prop}
+lemma _root_.Filter.HasBasis.compactConvergenceUniformity {ι : Type*} {pi : ι → Prop}
     {s : ι → Set (β × β)} (h : (𝓤 β).HasBasis pi s) :
     HasBasis (𝓤 C(α, β)) (fun p : Set α × ι => IsCompact p.1 ∧ pi p.2) fun p =>
       { fg : C(α, β) × C(α, β) | ∀ x ∈ p.1, (fg.1 x, fg.2 x) ∈ s p.2 } := by
@@ -207,13 +207,13 @@ theorem _root_.Filter.HasBasis.compactConvergenceUniformity {ι : Type*} {pi : �
     ⟨∅, isCompact_empty⟩ (directedOn_of_sup_mem fun _ _ ↦ IsCompact.union) h
 #align filter.has_basis.compact_convergence_uniformity Filter.HasBasis.compactConvergenceUniformity
 
-theorem hasBasis_compactConvergenceUniformity :
+lemma hasBasis_compactConvergenceUniformity :
     HasBasis (𝓤 C(α, β)) (fun p : Set α × Set (β × β) => IsCompact p.1 ∧ p.2 ∈ 𝓤 β) fun p =>
       { fg : C(α, β) × C(α, β) | ∀ x ∈ p.1, (fg.1 x, fg.2 x) ∈ p.2 } :=
   (basis_sets _).compactConvergenceUniformity
 #align continuous_map.has_basis_compact_convergence_uniformity ContinuousMap.hasBasis_compactConvergenceUniformity
 
-theorem mem_compactConvergence_entourage_iff (X : Set (C(α, β) × C(α, β))) :
+lemma mem_compactConvergence_entourage_iff (X : Set (C(α, β) × C(α, β))) :
     X ∈ 𝓤 C(α, β) ↔
       ∃ (K : Set α) (V : Set (β × β)), IsCompact K ∧ V ∈ 𝓤 β ∧
         { fg : C(α, β) × C(α, β) | ∀ x ∈ K, (fg.1 x, fg.2 x) ∈ V } ⊆ X := by
@@ -231,7 +231,7 @@ theorem _root_.CompactExhaustion.hasBasis_compactConvergenceUniformity {ι : Typ
   (UniformOnFun.hasBasis_uniformity_of_covering_of_basis {K | IsCompact K} K.isCompact
     (Monotone.directed_le K.subset) (fun _ ↦ K.exists_superset_of_isCompact) hb).comap _
 
-theorem _root_.CompactExhaustion.hasAntitoneBasis_compactConvergenceUniformity
+lemma _root_.CompactExhaustion.hasAntitoneBasis_compactConvergenceUniformity
     {V : ℕ → Set (β × β)} (K : CompactExhaustion α) (hb : (𝓤 β).HasAntitoneBasis V) :
     HasAntitoneBasis (𝓤 C(α, β)) fun n ↦ {fg | ∀ x ∈ K n, (fg.1 x, fg.2 x) ∈ V n} :=
   (UniformOnFun.hasAntitoneBasis_uniformity {K | IsCompact K} K.isCompact
@@ -273,7 +273,7 @@ theorem tendsto_iff_tendstoLocallyUniformly [WeaklyLocallyCompactSpace α] :
 #align continuous_map.tendsto_iff_tendsto_locally_uniformly ContinuousMap.tendsto_iff_tendstoLocallyUniformly
 
 @[deprecated tendsto_iff_tendstoLocallyUniformly]
-theorem tendstoLocallyUniformly_of_tendsto [WeaklyLocallyCompactSpace α] (h : Tendsto F p (𝓝 f)) :
+lemma tendstoLocallyUniformly_of_tendsto [WeaklyLocallyCompactSpace α] (h : Tendsto F p (𝓝 f)) :
     TendstoLocallyUniformly (fun i a => F i a) f p :=
   tendsto_iff_tendstoLocallyUniformly.1 h
 #align continuous_map.tendsto_locally_uniformly_of_tendsto ContinuousMap.tendstoLocallyUniformly_of_tendsto
@@ -282,7 +282,7 @@ section CompactDomain
 
 variable [CompactSpace α]
 
-theorem hasBasis_compactConvergenceUniformity_of_compact :
+lemma hasBasis_compactConvergenceUniformity_of_compact :
     HasBasis (𝓤 C(α, β)) (fun V : Set (β × β) => V ∈ 𝓤 β) fun V =>
       { fg : C(α, β) × C(α, β) | ∀ x, (fg.1 x, fg.2 x) ∈ V } :=
   hasBasis_compactConvergenceUniformity.to_hasBasis

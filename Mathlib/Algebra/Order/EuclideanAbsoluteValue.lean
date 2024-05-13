@@ -47,13 +47,13 @@ namespace IsEuclidean
 variable {abv}
 
 -- Rearrange the parameters to `map_lt_map_iff'` so it elaborates better.
-theorem map_lt_map_iff {x y : R} (h : abv.IsEuclidean) : abv x < abv y ↔ x ≺ y :=
+lemma map_lt_map_iff {x y : R} (h : abv.IsEuclidean) : abv x < abv y ↔ x ≺ y :=
   map_lt_map_iff' h
 #align absolute_value.is_euclidean.map_lt_map_iff AbsoluteValue.IsEuclidean.map_lt_map_iff
 
 attribute [simp] map_lt_map_iff
 
-theorem sub_mod_lt (h : abv.IsEuclidean) (a : R) {b : R} (hb : b ≠ 0) : abv (a % b) < abv b :=
+lemma sub_mod_lt (h : abv.IsEuclidean) (a : R) {b : R} (hb : b ≠ 0) : abv (a % b) < abv b :=
   h.map_lt_map_iff.mpr (EuclideanDomain.mod_lt a hb)
 #align absolute_value.is_euclidean.sub_mod_lt AbsoluteValue.IsEuclidean.sub_mod_lt
 

@@ -120,7 +120,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.adjunction_to_types CategoryTheory.Sheaf.adjunctionToTypes
 
 @[simp]
-theorem adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
+lemma adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
     (Y : SheafOfTypes J) :
     ((adjunctionToTypes J adj).unit.app Y).val =
       (adj.whiskerRight _).unit.app ((sheafOfTypesToPresheaf J).obj Y) ≫
@@ -132,7 +132,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.adjunction_to_types_unit_app_val CategoryTheory.Sheaf.adjunctionToTypes_unit_app_val
 
 @[simp]
-theorem adjunctionToTypes_counit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
+lemma adjunctionToTypes_counit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
     (X : Sheaf J D) :
     ((adjunctionToTypes J adj).counit.app X).val =
       sheafifyLift J ((Functor.associator _ _ _).hom ≫ (adj.whiskerRight _).counit.app _) X.2 := by

@@ -110,7 +110,7 @@ def ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring 
 #align Algebra.of_hom AlgebraCat.ofHom
 
 @[simp]
-theorem ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
+lemma ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
     [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x :=
   rfl
 #align Algebra.of_hom_apply AlgebraCat.ofHom_apply
@@ -119,7 +119,7 @@ instance : Inhabited (AlgebraCat R) :=
   ⟨of R R⟩
 
 @[simp]
-theorem coe_of (X : Type u) [Ring X] [Algebra R X] : (of R X : Type u) = X :=
+lemma coe_of (X : Type u) [Ring X] [Algebra R X] : (of R X : Type u) = X :=
   rfl
 #align Algebra.coe_of AlgebraCat.coe_of
 
@@ -136,12 +136,12 @@ def ofSelfIso (M : AlgebraCat.{v} R) : AlgebraCat.of R M ≅ M where
 variable {M N U : ModuleCat.{v} R}
 
 @[simp]
-theorem id_apply (m : M) : (𝟙 M : M → M) m = m :=
+lemma id_apply (m : M) : (𝟙 M : M → M) m = m :=
   rfl
 #align Algebra.id_apply AlgebraCat.id_apply
 
 @[simp]
-theorem coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
+lemma coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
   rfl
 #align Algebra.coe_comp AlgebraCat.coe_comp
 

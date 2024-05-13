@@ -82,7 +82,7 @@ variable {α : Type*}
 
 open Filter Finset
 
-theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
+lemma _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 #align continuous_real_to_nnreal continuous_real_toNNReal
 
@@ -91,7 +91,7 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
 noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
   .mk Real.toNNReal continuous_real_toNNReal
 
-theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
+lemma continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
   continuous_subtype_val
 #align nnreal.continuous_coe NNReal.continuous_coe
 
@@ -108,43 +108,43 @@ instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
 #align nnreal.continuous_map.can_lift NNReal.ContinuousMap.canLift
 
 @[simp, norm_cast]
-theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
+lemma tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
     Tendsto (fun a => (m a : ℝ)) f (𝓝 (x : ℝ)) ↔ Tendsto m f (𝓝 x) :=
   tendsto_subtype_rng.symm
 #align nnreal.tendsto_coe NNReal.tendsto_coe
 
-theorem tendsto_coe' {f : Filter α} [NeBot f] {m : α → ℝ≥0} {x : ℝ} :
+lemma tendsto_coe' {f : Filter α} [NeBot f] {m : α → ℝ≥0} {x : ℝ} :
     Tendsto (fun a => m a : α → ℝ) f (𝓝 x) ↔ ∃ hx : 0 ≤ x, Tendsto m f (𝓝 ⟨x, hx⟩) :=
   ⟨fun h => ⟨ge_of_tendsto' h fun c => (m c).2, tendsto_coe.1 h⟩, fun ⟨_, hm⟩ => tendsto_coe.2 hm⟩
 #align nnreal.tendsto_coe' NNReal.tendsto_coe'
 
-@[simp] theorem map_coe_atTop : map toReal atTop = atTop := map_val_Ici_atTop 0
+@[simp] lemma map_coe_atTop : map toReal atTop = atTop := map_val_Ici_atTop 0
 #align nnreal.map_coe_at_top NNReal.map_coe_atTop
 
-theorem comap_coe_atTop : comap toReal atTop = atTop := (atTop_Ici_eq 0).symm
+lemma comap_coe_atTop : comap toReal atTop = atTop := (atTop_Ici_eq 0).symm
 #align nnreal.comap_coe_at_top NNReal.comap_coe_atTop
 
 @[simp, norm_cast]
-theorem tendsto_coe_atTop {f : Filter α} {m : α → ℝ≥0} :
+lemma tendsto_coe_atTop {f : Filter α} {m : α → ℝ≥0} :
     Tendsto (fun a => (m a : ℝ)) f atTop ↔ Tendsto m f atTop :=
   tendsto_Ici_atTop.symm
 #align nnreal.tendsto_coe_at_top NNReal.tendsto_coe_atTop
 
-theorem _root_.tendsto_real_toNNReal {f : Filter α} {m : α → ℝ} {x : ℝ} (h : Tendsto m f (𝓝 x)) :
+lemma _root_.tendsto_real_toNNReal {f : Filter α} {m : α → ℝ} {x : ℝ} (h : Tendsto m f (𝓝 x)) :
     Tendsto (fun a => Real.toNNReal (m a)) f (𝓝 (Real.toNNReal x)) :=
   (continuous_real_toNNReal.tendsto _).comp h
 #align tendsto_real_to_nnreal tendsto_real_toNNReal
 
-theorem _root_.tendsto_real_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop := by
+lemma _root_.tendsto_real_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop := by
   rw [← tendsto_coe_atTop]
   exact tendsto_atTop_mono Real.le_coe_toNNReal tendsto_id
 #align tendsto_real_to_nnreal_at_top tendsto_real_toNNReal_atTop
 
-theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_ : a ≠ 0), 𝓟 (Iio a) :=
+lemma nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_ : a ≠ 0), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp only [bot_lt_iff_ne_bot]; rfl
 #align nnreal.nhds_zero NNReal.nhds_zero
 
-theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0)).HasBasis (fun a : ℝ≥0 => 0 < a) fun a => Iio a :=
+lemma nhds_zero_basis : (𝓝 (0 : ℝ≥0)).HasBasis (fun a : ℝ≥0 => 0 < a) fun a => Iio a :=
   nhds_bot_basis
 #align nnreal.nhds_zero_basis NNReal.nhds_zero_basis
 
@@ -158,29 +158,29 @@ instance [TopologicalSpace α] [MulAction ℝ α] [ContinuousSMul ℝ α] :
   continuous_smul := continuous_induced_dom.fst'.smul continuous_snd
 
 @[norm_cast]
-theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} : HasSum (fun a => (f a : ℝ)) (r : ℝ) ↔ HasSum f r := by
+lemma hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} : HasSum (fun a => (f a : ℝ)) (r : ℝ) ↔ HasSum f r := by
   simp only [HasSum, ← coe_sum, tendsto_coe]
 #align nnreal.has_sum_coe NNReal.hasSum_coe
 
-protected theorem _root_.HasSum.toNNReal {f : α → ℝ} {y : ℝ} (hf₀ : ∀ n, 0 ≤ f n)
+protected lemma _root_.HasSum.toNNReal {f : α → ℝ} {y : ℝ} (hf₀ : ∀ n, 0 ≤ f n)
     (hy : HasSum f y) : HasSum (fun x => Real.toNNReal (f x)) y.toNNReal := by
   lift y to ℝ≥0 using hy.nonneg hf₀
   lift f to α → ℝ≥0 using hf₀
   simpa [hasSum_coe] using hy
 
-theorem hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤ f n) (hf : Summable f) :
+lemma hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤ f n) (hf : Summable f) :
     HasSum (fun n => Real.toNNReal (f n)) (Real.toNNReal (∑' n, f n)) :=
   hf.hasSum.toNNReal hf_nonneg
 #align nnreal.has_sum_real_to_nnreal_of_nonneg NNReal.hasSum_real_toNNReal_of_nonneg
 
 @[norm_cast]
-theorem summable_coe {f : α → ℝ≥0} : (Summable fun a => (f a : ℝ)) ↔ Summable f := by
+lemma summable_coe {f : α → ℝ≥0} : (Summable fun a => (f a : ℝ)) ↔ Summable f := by
   constructor
   · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
   · exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
 #align nnreal.summable_coe NNReal.summable_coe
 
-theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
+lemma summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
     (@Summable ℝ≥0 _ _ _ fun n => ⟨f n, hf n⟩) ↔ Summable f :=
   Iff.symm <| summable_coe (f := fun x => ⟨f x, hf x⟩)
 #align nnreal.summable_coe_of_nonneg NNReal.summable_mk
@@ -188,64 +188,64 @@ theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
 open scoped Classical
 
 @[norm_cast]
-theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) :=
+lemma coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) :=
   if hf : Summable f then Eq.symm <| (hasSum_coe.2 <| hf.hasSum).tsum_eq
   else by simp [tsum_def, hf, mt summable_coe.1 hf]
 #align nnreal.coe_tsum NNReal.coe_tsum
 
-theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
+lemma coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
     (⟨∑' n, f n, tsum_nonneg hf₁⟩ : ℝ≥0) = (∑' n, ⟨f n, hf₁ n⟩ : ℝ≥0) :=
   NNReal.eq <| Eq.symm <| coe_tsum (f := fun x => ⟨f x, hf₁ x⟩)
 #align nnreal.coe_tsum_of_nonneg NNReal.coe_tsum_of_nonneg
 
-nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) : ∑' x, a * f x = a * ∑' x, f x :=
+nonrec lemma tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) : ∑' x, a * f x = a * ∑' x, f x :=
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_left]
 #align nnreal.tsum_mul_left NNReal.tsum_mul_left
 
-nonrec theorem tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) : ∑' x, f x * a = (∑' x, f x) * a :=
+nonrec lemma tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) : ∑' x, f x * a = (∑' x, f x) * a :=
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_right]
 #align nnreal.tsum_mul_right NNReal.tsum_mul_right
 
-theorem summable_comp_injective {β : Type*} {f : α → ℝ≥0} (hf : Summable f) {i : β → α}
+lemma summable_comp_injective {β : Type*} {f : α → ℝ≥0} (hf : Summable f) {i : β → α}
     (hi : Function.Injective i) : Summable (f ∘ i) := by
   rw [← summable_coe] at hf ⊢
   exact hf.comp_injective hi
 #align nnreal.summable_comp_injective NNReal.summable_comp_injective
 
-theorem summable_nat_add (f : ℕ → ℝ≥0) (hf : Summable f) (k : ℕ) : Summable fun i => f (i + k) :=
+lemma summable_nat_add (f : ℕ → ℝ≥0) (hf : Summable f) (k : ℕ) : Summable fun i => f (i + k) :=
   summable_comp_injective hf <| add_left_injective k
 #align nnreal.summable_nat_add NNReal.summable_nat_add
 
-nonrec theorem summable_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) :
+nonrec lemma summable_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) :
     (Summable fun i => f (i + k)) ↔ Summable f := by
   rw [← summable_coe, ← summable_coe]
   exact @summable_nat_add_iff ℝ _ _ _ (fun i => (f i : ℝ)) k
 #align nnreal.summable_nat_add_iff NNReal.summable_nat_add_iff
 
-nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} :
+nonrec lemma hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} :
     HasSum (fun n => f (n + k)) a ↔ HasSum f (a + ∑ i in range k, f i) := by
   rw [← hasSum_coe, hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; norm_cast
 #align nnreal.has_sum_nat_add_iff NNReal.hasSum_nat_add_iff
 
-theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
+lemma sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
     ∑' i, f i = (∑ i in range k, f i) + ∑' i, f (i + k) :=
   (sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 hf).symm
 #align nnreal.sum_add_tsum_nat_add NNReal.sum_add_tsum_nat_add
 
-theorem iInf_real_pos_eq_iInf_nnreal_pos [CompleteLattice α] {f : ℝ → α} :
+lemma iInf_real_pos_eq_iInf_nnreal_pos [CompleteLattice α] {f : ℝ → α} :
     ⨅ (n : ℝ) (_ : 0 < n), f n = ⨅ (n : ℝ≥0) (_ : 0 < n), f n :=
   le_antisymm (iInf_mono' fun r => ⟨r, le_rfl⟩) (iInf₂_mono' fun r hr => ⟨⟨r, hr.le⟩, hr, le_rfl⟩)
 #align nnreal.infi_real_pos_eq_infi_nnreal_pos NNReal.iInf_real_pos_eq_iInf_nnreal_pos
 
 end coe
 
-theorem tendsto_cofinite_zero_of_summable {α} {f : α → ℝ≥0} (hf : Summable f) :
+lemma tendsto_cofinite_zero_of_summable {α} {f : α → ℝ≥0} (hf : Summable f) :
     Tendsto f cofinite (𝓝 0) := by
   simp only [← summable_coe, ← tendsto_coe] at hf ⊢
   exact hf.tendsto_cofinite_zero
 #align nnreal.tendsto_cofinite_zero_of_summable NNReal.tendsto_cofinite_zero_of_summable
 
-theorem tendsto_atTop_zero_of_summable {f : ℕ → ℝ≥0} (hf : Summable f) : Tendsto f atTop (𝓝 0) := by
+lemma tendsto_atTop_zero_of_summable {f : ℕ → ℝ≥0} (hf : Summable f) : Tendsto f atTop (𝓝 0) := by
   rw [← Nat.cofinite_eq_atTop]
   exact tendsto_cofinite_zero_of_summable hf
 #align nnreal.tendsto_at_top_zero_of_summable NNReal.tendsto_atTop_zero_of_summable

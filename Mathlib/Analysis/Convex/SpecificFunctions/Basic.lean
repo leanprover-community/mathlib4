@@ -203,13 +203,13 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
       exact ((one_lt_div hy).mpr hyz).ne'
 #align strict_convex_on_rpow strictConvexOn_rpow
 
-theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
+lemma convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
   rcases eq_or_lt_of_le hp with (rfl | hp)
   · simpa using convexOn_id (convex_Ici _)
   exact (strictConvexOn_rpow hp).convexOn
 #align convex_on_rpow convexOn_rpow
 
-theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
+lemma strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   refine' ⟨convex_Iio _, _⟩
   intro x (hx : x < 0) y (hy : y < 0) hxy a b ha hb hab
   have hx' : 0 < -x := by linarith

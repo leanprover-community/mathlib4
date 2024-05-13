@@ -86,11 +86,11 @@ theorem map_mem (x : (inducedMap A).1) (n : ℕ) : (inducedMap A).2 x ∈ A (res
   exact this n
 #align cantor_scheme.map_mem CantorScheme.map_mem
 
-protected theorem ClosureAntitone.antitone [TopologicalSpace α] (hA : ClosureAntitone A) :
+protected lemma ClosureAntitone.antitone [TopologicalSpace α] (hA : ClosureAntitone A) :
     CantorScheme.Antitone A := fun l a => subset_closure.trans (hA l a)
 #align cantor_scheme.closure_antitone.antitone CantorScheme.ClosureAntitone.antitone
 
-protected theorem Antitone.closureAntitone [TopologicalSpace α] (hanti : CantorScheme.Antitone A)
+protected lemma Antitone.closureAntitone [TopologicalSpace α] (hanti : CantorScheme.Antitone A)
     (hclosed : ∀ l, IsClosed (A l)) : ClosureAntitone A := fun _ _ =>
   (hclosed _).closure_eq.subset.trans (hanti _ _)
 #align cantor_scheme.antitone.closure_antitone CantorScheme.Antitone.closureAntitone
@@ -128,7 +128,7 @@ def VanishingDiam : Prop :=
 
 variable {A}
 
-theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε) (x : ℕ → β) :
+lemma VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε) (x : ℕ → β) :
     ∃ n : ℕ, ∀ (y) (_ : y ∈ A (res x n)) (z) (_ : z ∈ A (res x n)), dist y z < ε := by
   specialize hA x
   rw [ENNReal.tendsto_atTop_zero] at hA

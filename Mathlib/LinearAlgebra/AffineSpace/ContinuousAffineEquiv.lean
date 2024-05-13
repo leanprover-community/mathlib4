@@ -62,7 +62,7 @@ section Basic
 def toHomeomorph (e : P₁ ≃ᵃL[k] P₂) : P₁ ≃ₜ P₂ where
   __ := e
 
-theorem toAffineEquiv_injective : Injective (toAffineEquiv : (P₁ ≃ᵃL[k] P₂) → P₁ ≃ᵃ[k] P₂) := by
+lemma toAffineEquiv_injective : Injective (toAffineEquiv : (P₁ ≃ᵃL[k] P₂) → P₁ ≃ᵃ[k] P₂) := by
   rintro ⟨e, econt, einv_cont⟩ ⟨e', e'cont, e'inv_cont⟩ H
   congr
 
@@ -81,7 +81,7 @@ attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 /-- Coerce continuous affine equivalences to affine equivalences. -/
 instance coe : Coe (P₁ ≃ᵃL[k] P₂) (P₁ ≃ᵃ[k] P₂) := ⟨toAffineEquiv⟩
 
-theorem coe_injective : Function.Injective ((↑) : (P₁ ≃ᵃL[k] P₂) → P₁ ≃ᵃ[k] P₂) := by
+lemma coe_injective : Function.Injective ((↑) : (P₁ ≃ᵃL[k] P₂) → P₁ ≃ᵃ[k] P₂) := by
   intro e e' H
   cases e
   congr
@@ -91,11 +91,11 @@ instance instFunLike : FunLike (P₁ ≃ᵃL[k] P₂) P₁ P₂ where
   coe_injective' _ _ h := coe_injective (DFunLike.coe_injective h)
 
 @[simp, norm_cast]
-theorem coe_coe (e : P₁ ≃ᵃL[k] P₂) : ⇑(e : P₁ ≃ᵃ[k] P₂) = e :=
+lemma coe_coe (e : P₁ ≃ᵃL[k] P₂) : ⇑(e : P₁ ≃ᵃ[k] P₂) = e :=
   rfl
 
 @[simp]
-theorem coe_toEquiv (e : P₁ ≃ᵃL[k] P₂) : ⇑e.toEquiv = e :=
+lemma coe_toEquiv (e : P₁ ≃ᵃL[k] P₂) : ⇑e.toEquiv = e :=
   rfl
 
 /-- See Note [custom simps projection].
@@ -111,14 +111,14 @@ def Simps.coe (e: P₁ ≃ᵃL[k] P₂) : P₁ ≃ᵃ[k] P₂ :=
 initialize_simps_projections ContinuousLinearMap (toAffineEquiv_toFun → apply, toAffineEquiv → coe)
 
 @[ext]
-theorem ext {e e' : P₁ ≃ᵃL[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
+lemma ext {e e' : P₁ ≃ᵃL[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
 
-theorem ext_iff {e e' : P₁ ≃ᵃL[k] P₂} : e = e' ↔ ∀ x, e x = e' x :=
+lemma ext_iff {e e' : P₁ ≃ᵃL[k] P₂} : e = e' ↔ ∀ x, e x = e' x :=
   DFunLike.ext_iff
 
 @[continuity]
-protected theorem continuous (e : P₁ ≃ᵃL[k] P₂) : Continuous e :=
+protected lemma continuous (e : P₁ ≃ᵃL[k] P₂) : Continuous e :=
   e.2
 
 end Basic
@@ -133,19 +133,19 @@ def refl : P₁ ≃ᵃL[k] P₁ where
   map_vadd' _ _ := rfl
 
 @[simp]
-theorem coe_refl : ⇑(refl k P₁) = id :=
+lemma coe_refl : ⇑(refl k P₁) = id :=
   rfl
 
 @[simp]
-theorem refl_apply (x : P₁) : refl k P₁ x = x :=
+lemma refl_apply (x : P₁) : refl k P₁ x = x :=
   rfl
 
 @[simp]
-theorem toAffineEquiv_refl : (refl k P₁).toAffineEquiv = AffineEquiv.refl k P₁ :=
+lemma toAffineEquiv_refl : (refl k P₁).toAffineEquiv = AffineEquiv.refl k P₁ :=
   rfl
 
 @[simp]
-theorem toEquiv_refl : (refl k P₁).toEquiv = Equiv.refl P₁ :=
+lemma toEquiv_refl : (refl k P₁).toEquiv = Equiv.refl P₁ :=
   rfl
 
 /-- Inverse of a continuous affine equivalence as a continuous affine equivalence. -/
@@ -156,84 +156,84 @@ def symm (e : P₁ ≃ᵃL[k] P₂) : P₂ ≃ᵃL[k] P₁ where
   continuous_invFun := e.continuous_toFun
 
 @[simp]
-theorem symm_toAffineEquiv (e : P₁ ≃ᵃL[k] P₂) : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
+lemma symm_toAffineEquiv (e : P₁ ≃ᵃL[k] P₂) : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
   rfl
 
 @[simp]
-theorem symm_toEquiv (e : P₁ ≃ᵃL[k] P₂) : e.toEquiv.symm = e.symm.toEquiv := rfl
+lemma symm_toEquiv (e : P₁ ≃ᵃL[k] P₂) : e.toEquiv.symm = e.symm.toEquiv := rfl
 
 @[simp]
-theorem apply_symm_apply (e : P₁ ≃ᵃL[k] P₂) (p : P₂) : e (e.symm p) = p :=
+lemma apply_symm_apply (e : P₁ ≃ᵃL[k] P₂) (p : P₂) : e (e.symm p) = p :=
   e.toEquiv.apply_symm_apply p
 
 @[simp]
-theorem symm_apply_apply (e : P₁ ≃ᵃL[k] P₂) (p : P₁) : e.symm (e p) = p :=
+lemma symm_apply_apply (e : P₁ ≃ᵃL[k] P₂) (p : P₁) : e.symm (e p) = p :=
   e.toEquiv.symm_apply_apply p
 
-theorem apply_eq_iff_eq_symm_apply (e : P₁ ≃ᵃL[k] P₂) {p₁ p₂} : e p₁ = p₂ ↔ p₁ = e.symm p₂ :=
+lemma apply_eq_iff_eq_symm_apply (e : P₁ ≃ᵃL[k] P₂) {p₁ p₂} : e p₁ = p₂ ↔ p₁ = e.symm p₂ :=
   e.toEquiv.apply_eq_iff_eq_symm_apply
 
-theorem apply_eq_iff_eq (e : P₁ ≃ᵃL[k] P₂) {p₁ p₂ : P₁} : e p₁ = e p₂ ↔ p₁ = p₂ :=
+lemma apply_eq_iff_eq (e : P₁ ≃ᵃL[k] P₂) {p₁ p₂ : P₁} : e p₁ = e p₂ ↔ p₁ = p₂ :=
   e.toEquiv.apply_eq_iff_eq
 
 @[simp]
-theorem symm_symm (e : P₁ ≃ᵃL[k] P₂) : e.symm.symm = e := by
+lemma symm_symm (e : P₁ ≃ᵃL[k] P₂) : e.symm.symm = e := by
   ext x
   rfl
 
-theorem symm_symm_apply (e : P₁ ≃ᵃL[k] P₂) (x : P₁) : e.symm.symm x = e x :=
+lemma symm_symm_apply (e : P₁ ≃ᵃL[k] P₂) (x : P₁) : e.symm.symm x = e x :=
   rfl
 
-theorem symm_apply_eq (e : P₁ ≃ᵃL[k] P₂)  {x y} : e.symm x = y ↔ x = e y :=
+lemma symm_apply_eq (e : P₁ ≃ᵃL[k] P₂)  {x y} : e.symm x = y ↔ x = e y :=
   e.toAffineEquiv.symm_apply_eq
 
-theorem eq_symm_apply (e : P₁ ≃ᵃL[k] P₂) {x y} : y = e.symm x ↔ e y = x :=
+lemma eq_symm_apply (e : P₁ ≃ᵃL[k] P₂) {x y} : y = e.symm x ↔ e y = x :=
   e.toAffineEquiv.eq_symm_apply
 
 @[simp]
-theorem image_symm (f : P₁ ≃ᵃL[k] P₂) (s : Set P₂) : f.symm '' s = f ⁻¹' s :=
+lemma image_symm (f : P₁ ≃ᵃL[k] P₂) (s : Set P₂) : f.symm '' s = f ⁻¹' s :=
   f.symm.toEquiv.image_eq_preimage _
 
 @[simp]
-theorem preimage_symm (f : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : f.symm ⁻¹' s = f '' s :=
+lemma preimage_symm (f : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : f.symm ⁻¹' s = f '' s :=
   (f.symm.image_symm _).symm
 
-protected theorem bijective (e : P₁ ≃ᵃL[k] P₂) : Bijective e :=
+protected lemma bijective (e : P₁ ≃ᵃL[k] P₂) : Bijective e :=
   e.toEquiv.bijective
 
-protected theorem surjective (e : P₁ ≃ᵃL[k] P₂) : Surjective e :=
+protected lemma surjective (e : P₁ ≃ᵃL[k] P₂) : Surjective e :=
   e.toEquiv.surjective
 
-protected theorem injective (e : P₁ ≃ᵃL[k] P₂) : Injective e :=
+protected lemma injective (e : P₁ ≃ᵃL[k] P₂) : Injective e :=
   e.toEquiv.injective
 
-protected theorem image_eq_preimage (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e '' s = e.symm ⁻¹' s :=
+protected lemma image_eq_preimage (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage s
 
-protected theorem image_symm_eq_preimage (e : P₁ ≃ᵃL[k] P₂) (s : Set P₂) :
+protected lemma image_symm_eq_preimage (e : P₁ ≃ᵃL[k] P₂) (s : Set P₂) :
     e.symm '' s = e ⁻¹' s := by
   rw [e.symm.image_eq_preimage, e.symm_symm]
 
 @[simp]
-theorem image_preimage (e : P₁ ≃ᵃL[k] P₂) (s : Set P₂) : e '' (e ⁻¹' s) = s :=
+lemma image_preimage (e : P₁ ≃ᵃL[k] P₂) (s : Set P₂) : e '' (e ⁻¹' s) = s :=
   e.surjective.image_preimage s
 
 @[simp]
-theorem preimage_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e ⁻¹' (e '' s) = s :=
+lemma preimage_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e ⁻¹' (e '' s) = s :=
   e.injective.preimage_image s
 
-theorem symm_image_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e.symm '' (e '' s) = s :=
+lemma symm_image_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e.symm '' (e '' s) = s :=
   e.toEquiv.symm_image_image s
 
-theorem image_symm_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₂) : e '' (e.symm '' s) = s :=
+lemma image_symm_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₂) : e '' (e.symm '' s) = s :=
   e.symm.symm_image_image s
 
 @[simp]
-theorem refl_symm : (refl k P₁).symm = refl k P₁ :=
+lemma refl_symm : (refl k P₁).symm = refl k P₁ :=
   rfl
 
 @[simp]
-theorem symm_refl : (refl k P₁).symm = refl k P₁ :=
+lemma symm_refl : (refl k P₁).symm = refl k P₁ :=
   rfl
 
 /-- Composition of two `ContinuousAffineEquiv`alences, applied left to right. -/
@@ -244,31 +244,31 @@ def trans (e : P₁ ≃ᵃL[k] P₂) (e' : P₂ ≃ᵃL[k] P₃) : P₁ ≃ᵃL[
   continuous_invFun := e.continuous_invFun.comp (e'.continuous_invFun)
 
 @[simp]
-theorem coe_trans (e : P₁ ≃ᵃL[k] P₂) (e' : P₂ ≃ᵃL[k] P₃) : ⇑(e.trans e') = e' ∘ e :=
+lemma coe_trans (e : P₁ ≃ᵃL[k] P₂) (e' : P₂ ≃ᵃL[k] P₃) : ⇑(e.trans e') = e' ∘ e :=
   rfl
 
 @[simp]
-theorem trans_apply (e : P₁ ≃ᵃL[k] P₂) (e' : P₂ ≃ᵃL[k] P₃) (p : P₁) : e.trans e' p = e' (e p) :=
+lemma trans_apply (e : P₁ ≃ᵃL[k] P₂) (e' : P₂ ≃ᵃL[k] P₃) (p : P₁) : e.trans e' p = e' (e p) :=
   rfl
 
-theorem trans_assoc (e₁ : P₁ ≃ᵃL[k] P₂) (e₂ : P₂ ≃ᵃL[k] P₃) (e₃ : P₃ ≃ᵃL[k] P₄) :
+lemma trans_assoc (e₁ : P₁ ≃ᵃL[k] P₂) (e₂ : P₂ ≃ᵃL[k] P₃) (e₃ : P₃ ≃ᵃL[k] P₄) :
     (e₁.trans e₂).trans e₃ = e₁.trans (e₂.trans e₃) :=
   ext fun _ ↦ rfl
 
 @[simp]
-theorem trans_refl (e : P₁ ≃ᵃL[k] P₂) : e.trans (refl k P₂) = e :=
+lemma trans_refl (e : P₁ ≃ᵃL[k] P₂) : e.trans (refl k P₂) = e :=
   ext fun _ ↦ rfl
 
 @[simp]
-theorem refl_trans (e : P₁ ≃ᵃL[k] P₂) : (refl k P₁).trans e = e :=
+lemma refl_trans (e : P₁ ≃ᵃL[k] P₂) : (refl k P₁).trans e = e :=
   ext fun _ ↦ rfl
 
 @[simp]
-theorem self_trans_symm (e : P₁ ≃ᵃL[k] P₂) : e.trans e.symm = refl k P₁ :=
+lemma self_trans_symm (e : P₁ ≃ᵃL[k] P₂) : e.trans e.symm = refl k P₁ :=
   ext e.symm_apply_apply
 
 @[simp]
-theorem symm_trans_self (e : P₁ ≃ᵃL[k] P₂) : e.symm.trans e = refl k P₂ :=
+lemma symm_trans_self (e : P₁ ≃ᵃL[k] P₂) : e.symm.trans e = refl k P₂ :=
   ext e.apply_symm_apply
 
 end ReflSymmTrans
@@ -286,7 +286,7 @@ def _root_.ContinuousLinearEquiv.toContinuousAffineEquiv (L : E ≃L[k] F) : E �
   continuous_invFun := L.continuous_invFun
 
 @[simp]
-theorem _root_.ContinuousLinearEquiv.coe_toContinuousAffineEquiv (e : E ≃L[k] F) :
+lemma _root_.ContinuousLinearEquiv.coe_toContinuousAffineEquiv (e : E ≃L[k] F) :
     ⇑e.toContinuousAffineEquiv = e :=
   rfl
 

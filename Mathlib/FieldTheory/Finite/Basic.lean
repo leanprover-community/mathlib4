@@ -101,7 +101,7 @@ theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) 
 
 end Polynomial
 
-theorem prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
+lemma prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
     ∏ x : Kˣ, x = (-1 : Kˣ) := by
   classical
     have : (∏ x in (@univ Kˣ _).erase (-1), x) = 1 :=
@@ -112,7 +112,7 @@ theorem prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
 #align finite_field.prod_univ_units_id_eq_neg_one FiniteField.prod_univ_units_id_eq_neg_one
 
 set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
-theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial K]
+lemma card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial K]
     (G : Subgroup Kˣ) [Fintype G] : (Fintype.card G : K) ≠ 0 := by
   let n := Fintype.card G
   intro nzero
@@ -176,7 +176,7 @@ theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
     exact sum_subgroup_units_eq_zero G_bot
 
 @[simp]
-theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
+lemma sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
     {G : Subgroup Kˣ} [Fintype G] {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Fintype.card G) :
     ∑ x : G, ((x : Kˣ) : K) ^ k = 0 := by
   nontriviality K
@@ -213,7 +213,7 @@ section
 
 variable [GroupWithZero K] [Fintype K]
 
-theorem pow_card_sub_one_eq_one (a : K) (ha : a ≠ 0) : a ^ (q - 1) = 1 := by
+lemma pow_card_sub_one_eq_one (a : K) (ha : a ≠ 0) : a ^ (q - 1) = 1 := by
   calc
     a ^ (Fintype.card K - 1) = (Units.mk0 a ha ^ (Fintype.card K - 1) : Kˣ).1 := by
       rw [Units.val_pow_eq_pow_val, Units.val_mk0]
@@ -223,13 +223,13 @@ theorem pow_card_sub_one_eq_one (a : K) (ha : a ≠ 0) : a ^ (q - 1) = 1 := by
         rfl
 #align finite_field.pow_card_sub_one_eq_one FiniteField.pow_card_sub_one_eq_one
 
-theorem pow_card (a : K) : a ^ q = a := by
+lemma pow_card (a : K) : a ^ q = a := by
   by_cases h : a = 0; · rw [h]; apply zero_pow Fintype.card_ne_zero
   rw [← Nat.succ_pred_eq_of_pos Fintype.card_pos, pow_succ, Nat.pred_eq_sub_one,
     pow_card_sub_one_eq_one a h, one_mul]
 #align finite_field.pow_card FiniteField.pow_card
 
-theorem pow_card_pow (n : ℕ) (a : K) : a ^ q ^ n = a := by
+lemma pow_card_pow (n : ℕ) (a : K) : a ^ q ^ n = a := by
   induction' n with n ih
   · simp
   · simp [pow_succ, pow_mul, ih, pow_card]
@@ -239,7 +239,7 @@ end
 
 variable (K) [Field K] [Fintype K]
 
-theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : ℕ) := by
+lemma card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : ℕ) := by
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime K p⟩
   letI : Module (ZMod p) K := { (ZMod.castHom dvd_rfl K : ZMod p →+* _).toModule with }
   obtain ⟨n, h⟩ := VectorSpace.card_fintype (ZMod p) K
@@ -253,17 +253,17 @@ theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : 
 #align finite_field.card FiniteField.card
 
 -- this statement doesn't use `q` because we want `K` to be an explicit parameter
-theorem card' : ∃ (p : ℕ) (n : ℕ+), Nat.Prime p ∧ Fintype.card K = p ^ (n : ℕ) :=
+lemma card' : ∃ (p : ℕ) (n : ℕ+), Nat.Prime p ∧ Fintype.card K = p ^ (n : ℕ) :=
   let ⟨p, hc⟩ := CharP.exists K
   ⟨p, @FiniteField.card K _ _ p hc⟩
 #align finite_field.card' FiniteField.card'
 
 -- Porting note: this was a `simp` lemma with a 5 lines proof.
-theorem cast_card_eq_zero : (q : K) = 0 := by
+lemma cast_card_eq_zero : (q : K) = 0 := by
   simp
 #align finite_field.cast_card_eq_zero FiniteField.cast_card_eq_zero
 
-theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣ i := by
+lemma forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣ i := by
   classical
     obtain ⟨x, hx⟩ := IsCyclic.exists_generator (α := Kˣ)
     rw [← Fintype.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hx,
@@ -323,7 +323,7 @@ section
 
 variable (K' : Type*) [Field K'] {p n : ℕ}
 
-theorem X_pow_card_sub_X_natDegree_eq (hp : 1 < p) : (X ^ p - X : K'[X]).natDegree = p := by
+lemma X_pow_card_sub_X_natDegree_eq (hp : 1 < p) : (X ^ p - X : K'[X]).natDegree = p := by
   have h1 : (X : K'[X]).degree < (X ^ p : K'[X]).degree := by
     rw [degree_X_pow, degree_X]
     exact mod_cast hp
@@ -331,13 +331,13 @@ theorem X_pow_card_sub_X_natDegree_eq (hp : 1 < p) : (X ^ p - X : K'[X]).natDegr
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_sub_X_nat_degree_eq FiniteField.X_pow_card_sub_X_natDegree_eq
 
-theorem X_pow_card_pow_sub_X_natDegree_eq (hn : n ≠ 0) (hp : 1 < p) :
+lemma X_pow_card_pow_sub_X_natDegree_eq (hn : n ≠ 0) (hp : 1 < p) :
     (X ^ p ^ n - X : K'[X]).natDegree = p ^ n :=
   X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow hn hp
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_pow_sub_X_nat_degree_eq FiniteField.X_pow_card_pow_sub_X_natDegree_eq
 
-theorem X_pow_card_sub_X_ne_zero (hp : 1 < p) : (X ^ p - X : K'[X]) ≠ 0 :=
+lemma X_pow_card_sub_X_ne_zero (hp : 1 < p) : (X ^ p - X : K'[X]) ≠ 0 :=
   ne_zero_of_natDegree_gt <|
     calc
       1 < _ := hp
@@ -345,7 +345,7 @@ theorem X_pow_card_sub_X_ne_zero (hp : 1 < p) : (X ^ p - X : K'[X]) ≠ 0 :=
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_sub_X_ne_zero FiniteField.X_pow_card_sub_X_ne_zero
 
-theorem X_pow_card_pow_sub_X_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - X : K'[X]) ≠ 0 :=
+lemma X_pow_card_pow_sub_X_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - X : K'[X]) ≠ 0 :=
   X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow hn hp
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_pow_sub_X_ne_zero FiniteField.X_pow_card_pow_sub_X_ne_zero
@@ -354,7 +354,7 @@ end
 
 variable (p : ℕ) [Fact p.Prime] [Algebra (ZMod p) K]
 
-theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := by
+lemma roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := by
   classical
     have aux : (X ^ q - X : K[X]) ≠ 0 := X_pow_card_sub_X_ne_zero K Fintype.one_lt_card
     have : (roots (X ^ q - X : K[X])).toFinset = Finset.univ := by
@@ -373,7 +373,7 @@ set_option linter.uppercaseLean3 false in
 
 variable {K}
 
-theorem frobenius_pow {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ} (hcard : q = p ^ n) :
+lemma frobenius_pow {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ} (hcard : q = p ^ n) :
     frobenius K p ^ n = 1 := by
   ext x; conv_rhs => rw [RingHom.one_def, RingHom.id_apply, ← pow_card x, hcard]
   clear hcard
@@ -384,7 +384,7 @@ theorem frobenius_pow {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ} (hcard : q 
 
 open Polynomial
 
-theorem expand_card (f : K[X]) : expand K q f = f ^ q := by
+lemma expand_card (f : K[X]) : expand K q f = f ^ q := by
   cases' CharP.exists K with p hp
   letI := hp
   rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
@@ -399,7 +399,7 @@ namespace ZMod
 
 open FiniteField Polynomial
 
-theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
+lemma sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
   cases' hp.1.eq_two_or_odd with hp2 hp_odd
   · subst p
     change Fin 2 at x
@@ -440,7 +440,7 @@ theorem Nat.sq_add_sq_modEq (p : ℕ) [Fact p.Prime] (x : ℕ) :
 
 namespace CharP
 
-theorem sq_add_sq (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
+lemma sq_add_sq (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
     ∃ a b : ℕ, ((a : R) ^ 2 + (b : R) ^ 2) = x := by
   haveI := char_is_prime_of_pos R p
   obtain ⟨a, b, hab⟩ := ZMod.sq_add_sq p x
@@ -486,7 +486,7 @@ variable {V : Type*} [Fintype K] [DivisionRing K] [AddCommGroup V] [Module K V]
 -- should this go in a namespace?
 -- finite_dimensional would be natural,
 -- but we don't assume it...
-theorem card_eq_pow_finrank [Fintype V] : Fintype.card V = q ^ FiniteDimensional.finrank K V := by
+lemma card_eq_pow_finrank [Fintype V] : Fintype.card V = q ^ FiniteDimensional.finrank K V := by
   let b := IsNoetherian.finsetBasis K V
   rw [Module.card_fintype b, ← FiniteDimensional.finrank_eq_card_basis b]
 #align card_eq_pow_finrank card_eq_pow_finrank
@@ -504,20 +504,20 @@ theorem pow_card {p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p = x := by
 #align zmod.pow_card ZMod.pow_card
 
 @[simp]
-theorem pow_card_pow {n p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p ^ n = x := by
+lemma pow_card_pow {n p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p ^ n = x := by
   induction' n with n ih
   · simp
   · simp [pow_succ, pow_mul, ih, pow_card]
 #align zmod.pow_card_pow ZMod.pow_card_pow
 
 @[simp]
-theorem frobenius_zmod (p : ℕ) [Fact p.Prime] : frobenius (ZMod p) p = RingHom.id _ := by
+lemma frobenius_zmod (p : ℕ) [Fact p.Prime] : frobenius (ZMod p) p = RingHom.id _ := by
   ext a
   rw [frobenius_def, ZMod.pow_card, RingHom.id_apply]
 #align zmod.frobenius_zmod ZMod.frobenius_zmod
 
 -- Porting note: this was a `simp` lemma, but now the LHS simplify to `φ p`.
-theorem card_units (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p)ˣ = p - 1 := by
+lemma card_units (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p)ˣ = p - 1 := by
   rw [Fintype.card_units, card]
 #align zmod.card_units ZMod.card_units
 
@@ -533,18 +533,18 @@ theorem pow_card_sub_one_eq_one {p : ℕ} [Fact p.Prime] {a : ZMod p} (ha : a �
     rwa [ZMod.card p] at h
 #align zmod.pow_card_sub_one_eq_one ZMod.pow_card_sub_one_eq_one
 
-theorem orderOf_units_dvd_card_sub_one {p : ℕ} [Fact p.Prime] (u : (ZMod p)ˣ) : orderOf u ∣ p - 1 :=
+lemma orderOf_units_dvd_card_sub_one {p : ℕ} [Fact p.Prime] (u : (ZMod p)ˣ) : orderOf u ∣ p - 1 :=
   orderOf_dvd_of_pow_eq_one <| units_pow_card_sub_one_eq_one _ _
 #align zmod.order_of_units_dvd_card_sub_one ZMod.orderOf_units_dvd_card_sub_one
 
-theorem orderOf_dvd_card_sub_one {p : ℕ} [Fact p.Prime] {a : ZMod p} (ha : a ≠ 0) :
+lemma orderOf_dvd_card_sub_one {p : ℕ} [Fact p.Prime] {a : ZMod p} (ha : a ≠ 0) :
     orderOf a ∣ p - 1 :=
   orderOf_dvd_of_pow_eq_one <| pow_card_sub_one_eq_one ha
 #align zmod.order_of_dvd_card_sub_one ZMod.orderOf_dvd_card_sub_one
 
 open Polynomial
 
-theorem expand_card {p : ℕ} [Fact p.Prime] (f : Polynomial (ZMod p)) :
+lemma expand_card {p : ℕ} [Fact p.Prime] (f : Polynomial (ZMod p)) :
     expand (ZMod p) p f = f ^ p := by have h := FiniteField.expand_card f; rwa [ZMod.card p] at h
 #align zmod.expand_card ZMod.expand_card
 
@@ -596,11 +596,11 @@ theorem even_card_iff_char_two : ringChar F = 2 ↔ Fintype.card F % 2 = 0 := by
   simp
 #align finite_field.even_card_iff_char_two FiniteField.even_card_iff_char_two
 
-theorem even_card_of_char_two (hF : ringChar F = 2) : Fintype.card F % 2 = 0 :=
+lemma even_card_of_char_two (hF : ringChar F = 2) : Fintype.card F % 2 = 0 :=
   even_card_iff_char_two.mp hF
 #align finite_field.even_card_of_char_two FiniteField.even_card_of_char_two
 
-theorem odd_card_of_char_ne_two (hF : ringChar F ≠ 2) : Fintype.card F % 2 = 1 :=
+lemma odd_card_of_char_ne_two (hF : ringChar F ≠ 2) : Fintype.card F % 2 = 1 :=
   Nat.mod_two_ne_zero.mp (mt even_card_iff_char_two.mpr hF)
 #align finite_field.odd_card_of_char_ne_two FiniteField.odd_card_of_char_ne_two
 

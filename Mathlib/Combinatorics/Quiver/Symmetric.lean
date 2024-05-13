@@ -58,12 +58,12 @@ class HasInvolutiveReverse extends HasReverse V where
 variable {U V W}
 
 @[simp]
-theorem reverse_reverse [h : HasInvolutiveReverse V] {a b : V} (f : a ⟶ b) :
+lemma reverse_reverse [h : HasInvolutiveReverse V] {a b : V} (f : a ⟶ b) :
     reverse (reverse f) = f := by apply h.inv'
 #align quiver.reverse_reverse Quiver.reverse_reverse
 
 @[simp]
-theorem reverse_inj [h : HasInvolutiveReverse V] {a b : V}
+lemma reverse_inj [h : HasInvolutiveReverse V] {a b : V}
     (f g : a ⟶ b) : reverse f = reverse g ↔ f = g := by
   constructor
   · rintro h
@@ -72,7 +72,7 @@ theorem reverse_inj [h : HasInvolutiveReverse V] {a b : V}
     congr
 #align quiver.reverse_inj Quiver.reverse_inj
 
-theorem eq_reverse_iff [h : HasInvolutiveReverse V] {a b : V} (f : a ⟶ b)
+lemma eq_reverse_iff [h : HasInvolutiveReverse V] {a b : V} (f : a ⟶ b)
     (g : b ⟶ a) : f = reverse g ↔ reverse f = g := by
   rw [← reverse_inj, reverse_reverse]
 #align quiver.eq_reverse_iff Quiver.eq_reverse_iff
@@ -88,7 +88,7 @@ class _root_.Prefunctor.MapReverse (φ : U ⥤q V) : Prop where
 #align prefunctor.map_reverse Prefunctor.MapReverse
 
 @[simp]
-theorem _root_.Prefunctor.map_reverse (φ : U ⥤q V) [φ.MapReverse]
+lemma _root_.Prefunctor.map_reverse (φ : U ⥤q V) [φ.MapReverse]
     {u v : U} (e : u ⟶ v) : φ.map (reverse e) = reverse (φ.map e) :=
   Prefunctor.MapReverse.map_reverse' e
 #align prefunctor.map_reverse' Prefunctor.map_reverse
@@ -117,7 +117,7 @@ instance :
   inv' e := congr_fun Sum.swap_swap_eq e
 
 @[simp]
-theorem symmetrify_reverse {a b : Symmetrify V} (e : a ⟶ b) : reverse e = e.swap :=
+lemma symmetrify_reverse {a b : Symmetrify V} (e : a ⟶ b) : reverse e = e.swap :=
   rfl
 #align quiver.symmetrify_reverse Quiver.symmetrify_reverse
 
@@ -141,13 +141,13 @@ def Path.reverse [HasReverse V] {a : V} : ∀ {b}, Path a b → Path b a
 #align quiver.path.reverse Quiver.Path.reverse
 
 @[simp]
-theorem Path.reverse_toPath [HasReverse V] {a b : V} (f : a ⟶ b) :
+lemma Path.reverse_toPath [HasReverse V] {a b : V} (f : a ⟶ b) :
     f.toPath.reverse = (Quiver.reverse f).toPath :=
   rfl
 #align quiver.path.reverse_to_path Quiver.Path.reverse_toPath
 
 @[simp]
-theorem Path.reverse_comp [HasReverse V] {a b c : V} (p : Path a b) (q : Path b c) :
+lemma Path.reverse_comp [HasReverse V] {a b c : V} (p : Path a b) (q : Path b c) :
     (p.comp q).reverse = q.reverse.comp p.reverse := by
   induction' q with _ _ _ _ h
   · simp
@@ -155,7 +155,7 @@ theorem Path.reverse_comp [HasReverse V] {a b c : V} (p : Path a b) (q : Path b 
 #align quiver.path.reverse_comp Quiver.Path.reverse_comp
 
 @[simp]
-theorem Path.reverse_reverse [h : HasInvolutiveReverse V] {a b : V} (p : Path a b) :
+lemma Path.reverse_reverse [h : HasInvolutiveReverse V] {a b : V} (p : Path a b) :
     p.reverse.reverse = p := by
   induction' p with _ _ _ _ h
   · simp
@@ -185,7 +185,7 @@ def lift [HasReverse V'] (φ : Prefunctor V V') :
   | Sum.inr g => reverse (φ.map g)
 #align quiver.symmetrify.lift Quiver.Symmetrify.lift
 
-theorem lift_spec [HasReverse V'] (φ : Prefunctor V V') :
+lemma lift_spec [HasReverse V'] (φ : Prefunctor V V') :
     Symmetrify.of.comp (Symmetrify.lift φ) = φ := by
   fapply Prefunctor.ext
   · rintro X
@@ -194,7 +194,7 @@ theorem lift_spec [HasReverse V'] (φ : Prefunctor V V') :
     rfl
 #align quiver.symmetrify.lift_spec Quiver.Symmetrify.lift_spec
 
-theorem lift_reverse [h : HasInvolutiveReverse V']
+lemma lift_reverse [h : HasInvolutiveReverse V']
     (φ : Prefunctor V V') {X Y : Symmetrify V} (f : X ⟶ Y) :
     (Symmetrify.lift φ).map (Quiver.reverse f) = Quiver.reverse ((Symmetrify.lift φ).map f) := by
   dsimp [Symmetrify.lift]; cases f
@@ -249,7 +249,7 @@ instance [h : HasInvolutiveReverse V] :
   inv' := fun
   | PushQuiver.arrow f => by dsimp [reverse]; congr; apply h.inv'
 
-theorem of_reverse [HasInvolutiveReverse V] (X Y : V) (f : X ⟶ Y) :
+lemma of_reverse [HasInvolutiveReverse V] (X Y : V) (f : X ⟶ Y) :
     (reverse <| (Push.of σ).map f) = (Push.of σ).map (reverse f) :=
   rfl
 #align quiver.push.of_reverse Quiver.Push.of_reverse

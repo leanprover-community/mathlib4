@@ -61,14 +61,14 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
 #align category_theory.iso.app_inv CategoryTheory.Iso.app_inv
 
 @[reassoc (attr := simp)]
-theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
+lemma hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.hom.app X ≫ α.inv.app X = 𝟙 (F.obj X) :=
   congr_fun (congr_arg NatTrans.app α.hom_inv_id) X
 #align category_theory.iso.hom_inv_id_app CategoryTheory.Iso.hom_inv_id_app
 #align category_theory.iso.hom_inv_id_app_assoc CategoryTheory.Iso.hom_inv_id_app_assoc
 
 @[reassoc (attr := simp)]
-theorem inv_hom_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
+lemma inv_hom_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.inv.app X ≫ α.hom.app X = 𝟙 (G.obj X) :=
   congr_fun (congr_arg NatTrans.app α.inv_hom_id) X
 #align category_theory.iso.inv_hom_id_app CategoryTheory.Iso.inv_hom_id_app
@@ -81,16 +81,16 @@ namespace NatIso
 open CategoryTheory.Category CategoryTheory.Functor
 
 @[simp]
-theorem trans_app {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) (X : C) :
+lemma trans_app {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) (X : C) :
     (α ≪≫ β).app X = α.app X ≪≫ β.app X :=
   rfl
 #align category_theory.nat_iso.trans_app CategoryTheory.NatIso.trans_app
 
-theorem app_hom {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).hom = α.hom.app X :=
+lemma app_hom {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).hom = α.hom.app X :=
   rfl
 #align category_theory.nat_iso.app_hom CategoryTheory.NatIso.app_hom
 
-theorem app_inv {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).inv = α.inv.app X :=
+lemma app_inv {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).inv = α.inv.app X :=
   rfl
 #align category_theory.nat_iso.app_inv CategoryTheory.NatIso.app_inv
 
@@ -123,41 +123,41 @@ but for now it breaks too many proofs.
 variable (α : F ≅ G)
 
 @[simp]
-theorem cancel_natIso_hom_left {X : C} {Z : D} (g g' : G.obj X ⟶ Z) :
+lemma cancel_natIso_hom_left {X : C} {Z : D} (g g' : G.obj X ⟶ Z) :
     α.hom.app X ≫ g = α.hom.app X ≫ g' ↔ g = g' := by simp only [cancel_epi, refl]
 #align category_theory.nat_iso.cancel_nat_iso_hom_left CategoryTheory.NatIso.cancel_natIso_hom_left
 
 @[simp]
-theorem cancel_natIso_inv_left {X : C} {Z : D} (g g' : F.obj X ⟶ Z) :
+lemma cancel_natIso_inv_left {X : C} {Z : D} (g g' : F.obj X ⟶ Z) :
     α.inv.app X ≫ g = α.inv.app X ≫ g' ↔ g = g' := by simp only [cancel_epi, refl]
 #align category_theory.nat_iso.cancel_nat_iso_inv_left CategoryTheory.NatIso.cancel_natIso_inv_left
 
 @[simp]
-theorem cancel_natIso_hom_right {X : D} {Y : C} (f f' : X ⟶ F.obj Y) :
+lemma cancel_natIso_hom_right {X : D} {Y : C} (f f' : X ⟶ F.obj Y) :
     f ≫ α.hom.app Y = f' ≫ α.hom.app Y ↔ f = f' := by simp only [cancel_mono, refl]
 #align category_theory.nat_iso.cancel_nat_iso_hom_right CategoryTheory.NatIso.cancel_natIso_hom_right
 
 @[simp]
-theorem cancel_natIso_inv_right {X : D} {Y : C} (f f' : X ⟶ G.obj Y) :
+lemma cancel_natIso_inv_right {X : D} {Y : C} (f f' : X ⟶ G.obj Y) :
     f ≫ α.inv.app Y = f' ≫ α.inv.app Y ↔ f = f' := by simp only [cancel_mono, refl]
 #align category_theory.nat_iso.cancel_nat_iso_inv_right CategoryTheory.NatIso.cancel_natIso_inv_right
 
 @[simp]
-theorem cancel_natIso_hom_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X ⟶ F.obj Y)
+lemma cancel_natIso_hom_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X ⟶ F.obj Y)
     (f' : W ⟶ X') (g' : X' ⟶ F.obj Y) :
     f ≫ g ≫ α.hom.app Y = f' ≫ g' ≫ α.hom.app Y ↔ f ≫ g = f' ≫ g' := by
   simp only [← Category.assoc, cancel_mono, refl]
 #align category_theory.nat_iso.cancel_nat_iso_hom_right_assoc CategoryTheory.NatIso.cancel_natIso_hom_right_assoc
 
 @[simp]
-theorem cancel_natIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X ⟶ G.obj Y)
+lemma cancel_natIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X ⟶ G.obj Y)
     (f' : W ⟶ X') (g' : X' ⟶ G.obj Y) :
     f ≫ g ≫ α.inv.app Y = f' ≫ g' ≫ α.inv.app Y ↔ f ≫ g = f' ≫ g' := by
   simp only [← Category.assoc, cancel_mono, refl]
 #align category_theory.nat_iso.cancel_nat_iso_inv_right_assoc CategoryTheory.NatIso.cancel_natIso_inv_right_assoc
 
 @[simp]
-theorem inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by
+lemma inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by
   aesop_cat
 #align category_theory.nat_iso.inv_inv_app CategoryTheory.NatIso.inv_inv_app
 
@@ -165,20 +165,20 @@ end
 
 variable {X Y : C}
 
-theorem naturality_1 (α : F ≅ G) (f : X ⟶ Y) : α.inv.app X ≫ F.map f ≫ α.hom.app Y = G.map f := by
+lemma naturality_1 (α : F ≅ G) (f : X ⟶ Y) : α.inv.app X ≫ F.map f ≫ α.hom.app Y = G.map f := by
   simp
 #align category_theory.nat_iso.naturality_1 CategoryTheory.NatIso.naturality_1
 
-theorem naturality_2 (α : F ≅ G) (f : X ⟶ Y) : α.hom.app X ≫ G.map f ≫ α.inv.app Y = F.map f := by
+lemma naturality_2 (α : F ≅ G) (f : X ⟶ Y) : α.hom.app X ≫ G.map f ≫ α.inv.app Y = F.map f := by
   simp
 #align category_theory.nat_iso.naturality_2 CategoryTheory.NatIso.naturality_2
 
-theorem naturality_1' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app X)} :
+lemma naturality_1' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app X)} :
     inv (α.app X) ≫ F.map f ≫ α.app Y = G.map f := by simp
 #align category_theory.nat_iso.naturality_1' CategoryTheory.NatIso.naturality_1'
 
 @[reassoc (attr := simp)]
-theorem naturality_2' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app Y)} :
+lemma naturality_2' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app Y)} :
     α.app X ≫ G.map f ≫ inv (α.app Y) = F.map f := by
   rw [← Category.assoc, ← naturality, Category.assoc, IsIso.hom_inv_id, Category.comp_id]
 #align category_theory.nat_iso.naturality_2' CategoryTheory.NatIso.naturality_2'
@@ -193,7 +193,7 @@ instance isIso_app_of_isIso (α : F ⟶ G) [IsIso α] (X) : IsIso (α.app X) :=
 #align category_theory.nat_iso.is_iso_app_of_is_iso CategoryTheory.NatIso.isIso_app_of_isIso
 
 @[simp]
-theorem isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (α.app X) := by
+lemma isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (α.app X) := by
   -- Porting note: the next lemma used to be in `ext`, but that is no longer allowed.
   -- We've added an aesop apply rule;
   -- it would be nice to have a hook to run those without aesop warning it didn't close the goal.
@@ -203,7 +203,7 @@ theorem isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (
 #align category_theory.nat_iso.is_iso_inv_app CategoryTheory.NatIso.isIso_inv_app
 
 @[simp]
-theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
+lemma inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     inv ((F.map e.inv).app Z) = (F.map e.hom).app Z := by
   aesop_cat
 #align category_theory.nat_iso.inv_map_inv_app CategoryTheory.NatIso.inv_map_inv_app
@@ -228,7 +228,7 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
 #align category_theory.nat_iso.of_components_inv_app CategoryTheory.NatIso.ofComponents_inv_app
 
 @[simp]
-theorem ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X) :
+lemma ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X) :
     (ofComponents app' naturality).app X = app' X := by aesop
 #align category_theory.nat_iso.of_components.app CategoryTheory.NatIso.ofComponents.app
 
@@ -251,7 +251,7 @@ def hcomp {F G : C ⥤ D} {H I : D ⥤ E} (α : F ≅ G) (β : H ≅ I) : F ⋙ 
 #align category_theory.nat_iso.hcomp_inv CategoryTheory.NatIso.hcomp_inv
 #align category_theory.nat_iso.hcomp_hom CategoryTheory.NatIso.hcomp_hom
 
-theorem isIso_map_iff {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) {X Y : C} (f : X ⟶ Y) :
+lemma isIso_map_iff {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) {X Y : C} (f : X ⟶ Y) :
     IsIso (F₁.map f) ↔ IsIso (F₂.map f) := by
   revert F₁ F₂
   suffices ∀ {F₁ F₂ : C ⥤ D} (_ : F₁ ≅ F₂) (_ : IsIso (F₁.map f)), IsIso (F₂.map f) by

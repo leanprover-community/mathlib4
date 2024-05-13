@@ -94,7 +94,7 @@ def of (M : Type u) [Mul M] : MagmaCat :=
 add_decl_doc AddMagmaCat.of
 
 @[to_additive (attr := simp)]
-theorem coe_of (R : Type u) [Mul R] : (MagmaCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [Mul R] : (MagmaCat.of R : Type u) = R :=
   rfl
 #align Magma.coe_of MagmaCat.coe_of
 #align AddMagma.coe_of AddMagmaCat.coe_of
@@ -115,7 +115,7 @@ def ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y := f
 add_decl_doc AddMagmaCat.ofHom
 
 @[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself
-theorem ofHom_apply {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) (x : X) : ofHom f x = f x :=
+lemma ofHom_apply {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) (x : X) : ofHom f x = f x :=
   rfl
 #align Magma.of_hom_apply MagmaCat.ofHom_apply
 #align AddMagma.of_hom_apply AddMagmaCat.ofHom_apply
@@ -183,7 +183,7 @@ def of (M : Type u) [Semigroup M] : SemigroupCat :=
 add_decl_doc AddSemigroupCat.of
 
 @[to_additive (attr := simp)]
-theorem coe_of (R : Type u) [Semigroup R] : (SemigroupCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [Semigroup R] : (SemigroupCat.of R : Type u) = R :=
   rfl
 #align Semigroup.coe_of SemigroupCat.coe_of
 #align AddSemigroup.coe_of AddSemigroupCat.coe_of
@@ -205,7 +205,7 @@ def ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : of X �
 add_decl_doc AddSemigroupCat.ofHom
 
 @[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself
-theorem ofHom_apply {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) (x : X) :
+lemma ofHom_apply {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) (x : X) :
     ofHom f x = f x :=
   rfl
 #align Semigroup.of_hom_apply SemigroupCat.ofHom_apply

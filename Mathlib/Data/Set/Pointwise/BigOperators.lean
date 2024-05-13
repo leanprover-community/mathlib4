@@ -26,7 +26,7 @@ section Monoid
 variable [Monoid α] [Monoid β] [MonoidHomClass F α β]
 
 @[to_additive]
-theorem image_list_prod (f : F) :
+lemma image_list_prod (f : F) :
     ∀ l : List (Set α), (f : α → β) '' l.prod = (l.map fun s => f '' s).prod
   | [] => image_one.trans <| congr_arg singleton (map_one f)
   | a :: as => by rw [List.map_cons, List.prod_cons, List.prod_cons, image_mul, image_list_prod _ _]
@@ -40,7 +40,7 @@ section CommMonoid
 variable [CommMonoid α] [CommMonoid β] [MonoidHomClass F α β]
 
 @[to_additive]
-theorem image_multiset_prod (f : F) :
+lemma image_multiset_prod (f : F) :
     ∀ m : Multiset (Set α), (f : α → β) '' m.prod = (m.map fun s => f '' s).prod :=
   Quotient.ind <| by
     simpa only [Multiset.quot_mk_to_coe, Multiset.prod_coe, Multiset.map_coe] using
@@ -49,7 +49,7 @@ theorem image_multiset_prod (f : F) :
 #align set.image_multiset_sum Set.image_multiset_sum
 
 @[to_additive]
-theorem image_finset_prod (f : F) (m : Finset ι) (s : ι → Set α) :
+lemma image_finset_prod (f : F) (m : Finset ι) (s : ι → Set α) :
     ((f : α → β) '' ∏ i in m, s i) = ∏ i in m, f '' s i :=
   (image_multiset_prod f _).trans <| congr_arg Multiset.prod <| Multiset.map_map _ _ _
 #align set.image_finset_prod Set.image_finset_prod
@@ -116,7 +116,7 @@ theorem list_prod_subset_list_prod (t : List ι) (f₁ f₂ : ι → Set α) (hf
 #align set.list_sum_subset_list_sum Set.list_sum_subset_list_sum
 
 @[to_additive]
-theorem list_prod_singleton {M : Type*} [CommMonoid M] (s : List M) :
+lemma list_prod_singleton {M : Type*} [CommMonoid M] (s : List M) :
     (s.map fun i ↦ ({i} : Set M)).prod = {s.prod} :=
   (map_list_prod (singletonMonoidHom : M →* Set M) _).symm
 #align set.list_prod_singleton Set.list_prod_singleton
@@ -143,7 +143,7 @@ theorem multiset_prod_subset_multiset_prod (t : Multiset ι) (f₁ f₂ : ι →
 #align set.multiset_sum_subset_multiset_sum Set.multiset_sum_subset_multiset_sum
 
 @[to_additive]
-theorem multiset_prod_singleton {M : Type*} [CommMonoid M] (s : Multiset M) :
+lemma multiset_prod_singleton {M : Type*} [CommMonoid M] (s : Multiset M) :
     (s.map fun i ↦ ({i} : Set M)).prod = {s.prod} :=
   (map_multiset_prod (singletonMonoidHom : M →* Set M) _).symm
 #align set.multiset_prod_singleton Set.multiset_prod_singleton
@@ -166,7 +166,7 @@ theorem finset_prod_subset_finset_prod (t : Finset ι) (f₁ f₂ : ι → Set �
 #align set.finset_sum_subset_finset_sum Set.finset_sum_subset_finset_sum
 
 @[to_additive]
-theorem finset_prod_singleton {M ι : Type*} [CommMonoid M] (s : Finset ι) (I : ι → M) :
+lemma finset_prod_singleton {M ι : Type*} [CommMonoid M] (s : Finset ι) (I : ι → M) :
     (∏ i : ι in s, ({I i} : Set M)) = {∏ i : ι in s, I i} :=
   (map_prod (singletonMonoidHom : M →* Set M) _ _).symm
 #align set.finset_prod_singleton Set.finset_prod_singleton

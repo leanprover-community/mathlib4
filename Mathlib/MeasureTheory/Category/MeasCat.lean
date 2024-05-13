@@ -58,7 +58,7 @@ def of (α : Type u) [ms : MeasurableSpace α] : MeasCat :=
 #align Meas.of MeasCat.of
 
 @[simp]
-theorem coe_of (X : Type u) [MeasurableSpace X] : (of X : Type u) = X :=
+lemma coe_of (X : Type u) [MeasurableSpace X] : (of X : Type u) = X :=
   rfl
 #align Meas.coe_of MeasCat.coe_of
 

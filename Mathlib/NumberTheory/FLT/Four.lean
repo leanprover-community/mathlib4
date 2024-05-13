@@ -29,13 +29,13 @@ def Fermat42 (a b c : ℤ) : Prop :=
 
 namespace Fermat42
 
-theorem comm {a b c : ℤ} : Fermat42 a b c ↔ Fermat42 b a c := by
+lemma comm {a b c : ℤ} : Fermat42 a b c ↔ Fermat42 b a c := by
   delta Fermat42
   rw [add_comm]
   tauto
 #align fermat_42.comm Fermat42.comm
 
-theorem mul {a b c k : ℤ} (hk0 : k ≠ 0) :
+lemma mul {a b c k : ℤ} (hk0 : k ≠ 0) :
     Fermat42 a b c ↔ Fermat42 (k * a) (k * b) (k ^ 2 * c) := by
   delta Fermat42
   constructor
@@ -55,7 +55,7 @@ theorem mul {a b c k : ℤ} (hk0 : k ≠ 0) :
     linear_combination f42.2.2
 #align fermat_42.mul Fermat42.mul
 
-theorem ne_zero {a b c : ℤ} (h : Fermat42 a b c) : c ≠ 0 := by
+lemma ne_zero {a b c : ℤ} (h : Fermat42 a b c) : c ≠ 0 := by
   apply ne_zero_pow two_ne_zero _; apply ne_of_gt
   rw [← h.2.2, (by ring : a ^ 4 + b ^ 4 = (a ^ 2) ^ 2 + (b ^ 2) ^ 2)]
   exact
@@ -151,12 +151,12 @@ theorem exists_pos_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
 
 end Fermat42
 
-theorem Int.coprime_of_sq_sum {r s : ℤ} (h2 : IsCoprime s r) : IsCoprime (r ^ 2 + s ^ 2) r := by
+lemma Int.coprime_of_sq_sum {r s : ℤ} (h2 : IsCoprime s r) : IsCoprime (r ^ 2 + s ^ 2) r := by
   rw [sq, sq]
   exact (IsCoprime.mul_left h2 h2).mul_add_left_left r
 #align int.coprime_of_sq_sum Int.coprime_of_sq_sum
 
-theorem Int.coprime_of_sq_sum' {r s : ℤ} (h : IsCoprime r s) :
+lemma Int.coprime_of_sq_sum' {r s : ℤ} (h : IsCoprime r s) :
     IsCoprime (r ^ 2 + s ^ 2) (r * s) := by
   apply IsCoprime.mul_right (Int.coprime_of_sq_sum (isCoprime_comm.mp h))
   rw [add_comm]; apply Int.coprime_of_sq_sum h
@@ -166,7 +166,7 @@ namespace Fermat42
 
 -- If we have a solution to a ^ 4 + b ^ 4 = c ^ 2, we can construct a smaller one. This
 -- implies there can't be a smallest solution.
-theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 < c) : False := by
+lemma not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 < c) : False := by
   -- Use the fact that a ^ 2, b ^ 2, c form a pythagorean triple to obtain m and n such that
   -- a ^ 2 = m ^ 2 - n ^ 2, b ^ 2 = 2 * m * n and c = m ^ 2 + n ^ 2
   -- first the formula:
@@ -295,7 +295,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
 
 end Fermat42
 
-theorem not_fermat_42 {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) : a ^ 4 + b ^ 4 ≠ c ^ 2 := by
+lemma not_fermat_42 {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) : a ^ 4 + b ^ 4 ≠ c ^ 2 := by
   intro h
   obtain ⟨a0, b0, c0, ⟨hf, h2, hp⟩⟩ :=
     Fermat42.exists_pos_odd_minimal (And.intro ha (And.intro hb h))

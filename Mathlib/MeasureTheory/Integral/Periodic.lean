@@ -31,12 +31,12 @@ open Set Function MeasureTheory MeasureTheory.Measure TopologicalSpace AddSubgro
 open scoped MeasureTheory NNReal ENNReal
 
 @[measurability]
-protected theorem AddCircle.measurable_mk' {a : ℝ} :
+protected lemma AddCircle.measurable_mk' {a : ℝ} :
     Measurable (β := AddCircle a) ((↑) : ℝ → AddCircle a) :=
   Continuous.measurable <| AddCircle.continuous_mk' a
 #align add_circle.measurable_mk' AddCircle.measurable_mk'
 
-theorem isAddFundamentalDomain_Ioc {T : ℝ} (hT : 0 < T) (t : ℝ)
+lemma isAddFundamentalDomain_Ioc {T : ℝ} (hT : 0 < T) (t : ℝ)
     (μ : Measure ℝ := by volume_tac) :
     IsAddFundamentalDomain (AddSubgroup.zmultiples T) (Ioc t (t + T)) μ := by
   refine' IsAddFundamentalDomain.mk' measurableSet_Ioc.nullMeasurableSet fun x => _
@@ -46,7 +46,7 @@ theorem isAddFundamentalDomain_Ioc {T : ℝ} (hT : 0 < T) (t : ℝ)
   simpa only [add_comm x] using existsUnique_add_zsmul_mem_Ioc hT x t
 #align is_add_fundamental_domain_Ioc isAddFundamentalDomain_Ioc
 
-theorem isAddFundamentalDomain_Ioc' {T : ℝ} (hT : 0 < T) (t : ℝ) (μ : Measure ℝ := by volume_tac) :
+lemma isAddFundamentalDomain_Ioc' {T : ℝ} (hT : 0 < T) (t : ℝ) (μ : Measure ℝ := by volume_tac) :
     IsAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) (Ioc t (t + T)) μ := by
   refine' IsAddFundamentalDomain.mk' measurableSet_Ioc.nullMeasurableSet fun x => _
   have : Bijective (codRestrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
@@ -68,7 +68,7 @@ noncomputable instance measureSpace : MeasureSpace (AddCircle T) :=
 -- Adaptation note: nightly-2024-04-01
 -- The simpNF linter now times out on this lemma.
 @[simp, nolint simpNF]
-protected theorem measure_univ : volume (Set.univ : Set (AddCircle T)) = ENNReal.ofReal T := by
+protected lemma measure_univ : volume (Set.univ : Set (AddCircle T)) = ENNReal.ofReal T := by
   dsimp [volume]
   rw [← PositiveCompacts.coe_top]
   simp [addHaarMeasure_self (G := AddCircle T), -PositiveCompacts.coe_top]
@@ -104,7 +104,7 @@ lemma add_projection_respects_measure (t : ℝ) {U : Set (AddCircle T)} (meas_U 
   (isAddFundamentalDomain_Ioc' hT.out _).addProjection_respects_measure_apply
     (volume : Measure (AddCircle T)) meas_U
 
-theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
+lemma volume_closedBall {x : AddCircle T} (ε : ℝ) :
     volume (Metric.closedBall x ε) = ENNReal.ofReal (min T (2 * ε)) := by
   have hT' : |T| = T := abs_eq_self.mpr hT.out.le
   let I := Ioc (-(T / 2)) (T / 2)
@@ -206,7 +206,7 @@ namespace UnitAddCircle
 
 attribute [local instance] Real.fact_zero_lt_one
 
-protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by simp
+protected lemma measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by simp
 #align unit_add_circle.measure_univ UnitAddCircle.measure_univ
 
 /-- The covering map from `ℝ` to the "unit additive circle" `ℝ ⧸ ℤ` is measure-preserving,

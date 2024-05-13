@@ -70,7 +70,7 @@ def liftFOne {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : Projectiv
 #align category_theory.ProjectiveResolution.lift_f_one CategoryTheory.ProjectiveResolution.liftFOne
 
 @[simp]
-theorem liftFOne_zero_comm {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
+lemma liftFOne_zero_comm {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
     (Q : ProjectiveResolution Z) :
     liftFOne f P Q ≫ Q.complex.d 1 0 = P.complex.d 1 0 ≫ liftFZero f P Q := by
   apply Q.exact₀.liftFromProjective_comp
@@ -195,12 +195,12 @@ def homotopyEquiv {X : C} (P Q : ProjectiveResolution X) :
 #align category_theory.ProjectiveResolution.homotopy_equiv CategoryTheory.ProjectiveResolution.homotopyEquiv
 
 @[reassoc (attr := simp)]
-theorem homotopyEquiv_hom_π {X : C} (P Q : ProjectiveResolution X) :
+lemma homotopyEquiv_hom_π {X : C} (P Q : ProjectiveResolution X) :
     (homotopyEquiv P Q).hom ≫ Q.π = P.π := by simp [homotopyEquiv]
 #align category_theory.ProjectiveResolution.homotopy_equiv_hom_π CategoryTheory.ProjectiveResolution.homotopyEquiv_hom_π
 
 @[reassoc (attr := simp)]
-theorem homotopyEquiv_inv_π {X : C} (P Q : ProjectiveResolution X) :
+lemma homotopyEquiv_inv_π {X : C} (P Q : ProjectiveResolution X) :
     (homotopyEquiv P Q).inv ≫ P.π = Q.π := by simp [homotopyEquiv]
 #align category_theory.ProjectiveResolution.homotopy_equiv_inv_π CategoryTheory.ProjectiveResolution.homotopyEquiv_inv_π
 
@@ -265,7 +265,7 @@ lemma ProjectiveResolution.iso_hom_naturality {X Y : C} (f : X ⟶ Y)
 
 variable [EnoughProjectives C]
 
-theorem exact_d_f {X Y : C} (f : X ⟶ Y) :
+lemma exact_d_f {X Y : C} (f : X ⟶ Y) :
     (ShortComplex.mk (d f) f (by simp)).Exact := by
   let α : ShortComplex.mk (d f) f (by simp) ⟶ ShortComplex.mk (kernel.ι f) f (by simp) :=
     { τ₁ := Projective.π _

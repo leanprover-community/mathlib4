@@ -128,25 +128,25 @@ def falling : Finset (Finset α) :=
 
 variable {𝒜 k} {s : Finset α}
 
-theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
+lemma mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
   simp_rw [falling, mem_sup, mem_powersetCard]
   aesop
 #align finset.mem_falling Finset.mem_falling
 
 variable (𝒜 k)
 
-theorem sized_falling : (falling k 𝒜 : Set (Finset α)).Sized k := fun _ hs => (mem_falling.1 hs).2
+lemma sized_falling : (falling k 𝒜 : Set (Finset α)).Sized k := fun _ hs => (mem_falling.1 hs).2
 #align finset.sized_falling Finset.sized_falling
 
-theorem slice_subset_falling : 𝒜 # k ⊆ falling k 𝒜 := fun s hs =>
+lemma slice_subset_falling : 𝒜 # k ⊆ falling k 𝒜 := fun s hs =>
   mem_falling.2 <| (mem_slice.1 hs).imp_left fun h => ⟨s, h, Subset.refl _⟩
 #align finset.slice_subset_falling Finset.slice_subset_falling
 
-theorem falling_zero_subset : falling 0 𝒜 ⊆ {∅} :=
+lemma falling_zero_subset : falling 0 𝒜 ⊆ {∅} :=
   subset_singleton_iff'.2 fun _ ht => card_eq_zero.1 <| sized_falling _ _ ht
 #align finset.falling_zero_subset Finset.falling_zero_subset
 
-theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ ∂ (falling (k + 1) 𝒜) = falling k 𝒜 := by
+lemma slice_union_shadow_falling_succ : 𝒜 # k ∪ ∂ (falling (k + 1) 𝒜) = falling k 𝒜 := by
   ext s
   simp_rw [mem_union, mem_slice, mem_shadow_iff, mem_falling]
   constructor

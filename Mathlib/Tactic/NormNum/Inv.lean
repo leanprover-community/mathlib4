@@ -53,7 +53,7 @@ def inferCharZeroOfDivisionRing? {α : Q(Type u)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM (Option Q(CharZero $α)) :=
   return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
 
-theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat b nb →
+lemma isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat b nb →
     IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d
   | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [Rat.mkRat_eq_div]; exact ⟨_, h⟩
 
@@ -70,15 +70,15 @@ def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := 
   let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.instDivisionRing)
   return .isRat' _ q n d q(isRat_mkRat $pa $pb $p)
 
-theorem isNat_ratCast [DivisionRing R] : {q : ℚ} → {n : ℕ} →
+lemma isNat_ratCast [DivisionRing R] : {q : ℚ} → {n : ℕ} →
     IsNat q n → IsNat (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isInt_ratCast [DivisionRing R] : {q : ℚ} → {n : ℤ} →
+lemma isInt_ratCast [DivisionRing R] : {q : ℚ} → {n : ℤ} →
     IsInt q n → IsInt (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isRat_ratCast [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} → {d : ℕ} →
+lemma isRat_ratCast [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} → {d : ℕ} →
     IsRat q n d → IsRat (q : R) n d
   | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only []; norm_cast⟩
 
@@ -103,25 +103,25 @@ recognizes `q`, returning the cast of `q`. -/
     return .isRat dα qa na da q(isRat_ratCast $pa)
   | _ => failure
 
-theorem isRat_inv_pos {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
+lemma isRat_inv_pos {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
     IsRat a (.ofNat (Nat.succ n)) d → IsRat a⁻¹ (.ofNat d) (Nat.succ n) := by
   rintro ⟨_, rfl⟩
   have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
   exact ⟨this, by simp⟩
 
-theorem isRat_inv_one {α} [DivisionRing α] : {a : α} →
+lemma isRat_inv_one {α} [DivisionRing α] : {a : α} →
     IsNat a (nat_lit 1) → IsNat a⁻¹ (nat_lit 1)
   | _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isRat_inv_zero {α} [DivisionRing α] : {a : α} →
+lemma isRat_inv_zero {α} [DivisionRing α] : {a : α} →
     IsNat a (nat_lit 0) → IsNat a⁻¹ (nat_lit 0)
   | _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isRat_inv_neg_one {α} [DivisionRing α] : {a : α} →
+lemma isRat_inv_neg_one {α} [DivisionRing α] : {a : α} →
     IsInt a (.negOfNat (nat_lit 1)) → IsInt a⁻¹ (.negOfNat (nat_lit 1))
   | _, ⟨rfl⟩ => ⟨by simp [inv_neg_one]⟩
 
-theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
+lemma isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
     IsRat a (.negOfNat (Nat.succ n)) d → IsRat a⁻¹ (.negOfNat d) (Nat.succ n) := by
   rintro ⟨_, rfl⟩
   simp only [Int.negOfNat_eq]

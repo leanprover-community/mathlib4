@@ -50,23 +50,23 @@ infixl:70 " □ " => boxProd
 
 set_option autoImplicit true in
 @[simp]
-theorem boxProd_adj : (G □ H).Adj x y ↔ G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1 :=
+lemma boxProd_adj : (G □ H).Adj x y ↔ G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1 :=
   Iff.rfl
 #align simple_graph.box_prod_adj SimpleGraph.boxProd_adj
 
 set_option autoImplicit true in
 --@[simp] Porting note (#10618): `simp` can prove
-theorem boxProd_adj_left : (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
+lemma boxProd_adj_left : (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
   simp only [boxProd_adj, and_true, SimpleGraph.irrefl, false_and, or_false]
 #align simple_graph.box_prod_adj_left SimpleGraph.boxProd_adj_left
 
 set_option autoImplicit true in
 --@[simp] Porting note (#10618): `simp` can prove
-theorem boxProd_adj_right : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
+lemma boxProd_adj_right : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
   simp only [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
 #align simple_graph.box_prod_adj_right SimpleGraph.boxProd_adj_right
 
-theorem boxProd_neighborSet (x : α × β) :
+lemma boxProd_neighborSet (x : α × β) :
     (G □ H).neighborSet x = G.neighborSet x.1 ×ˢ {x.2} ∪ {x.1} ×ˢ H.neighborSet x.2 := by
   ext ⟨a', b'⟩
   simp only [mem_neighborSet, Set.mem_union, boxProd_adj, Set.mem_prod, Set.mem_singleton_iff]
@@ -146,7 +146,7 @@ def ofBoxProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
 
 set_option autoImplicit true in
 @[simp]
-theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a₂ : α} :
+lemma ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a₂ : α} :
     ∀ (w : G.Walk a₁ a₂), (w.boxProdLeft H b).ofBoxProdLeft = w
   | nil => rfl
   | cons' x y z h w => by
@@ -157,7 +157,7 @@ theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a�
 
 set_option autoImplicit true in
 @[simp]
-theorem ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {b₁ b₂ : α} :
+lemma ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {b₁ b₂ : α} :
     ∀ (w : G.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
   | nil => rfl
   | cons' x y z h w => by
@@ -171,7 +171,7 @@ end Walk
 
 variable {G H}
 
-protected theorem Preconnected.boxProd (hG : G.Preconnected) (hH : H.Preconnected) :
+protected lemma Preconnected.boxProd (hG : G.Preconnected) (hH : H.Preconnected) :
     (G □ H).Preconnected := by
   rintro x y
   obtain ⟨w₁⟩ := hG x.1 y.1
@@ -179,7 +179,7 @@ protected theorem Preconnected.boxProd (hG : G.Preconnected) (hH : H.Preconnecte
   exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 #align simple_graph.preconnected.box_prod SimpleGraph.Preconnected.boxProd
 
-protected theorem Preconnected.ofBoxProdLeft [Nonempty β] (h : (G □ H).Preconnected) :
+protected lemma Preconnected.ofBoxProdLeft [Nonempty β] (h : (G □ H).Preconnected) :
     G.Preconnected := by
   classical
   rintro a₁ a₂
@@ -187,7 +187,7 @@ protected theorem Preconnected.ofBoxProdLeft [Nonempty β] (h : (G □ H).Precon
   exact ⟨w.ofBoxProdLeft⟩
 #align simple_graph.preconnected.of_box_prod_left SimpleGraph.Preconnected.ofBoxProdLeft
 
-protected theorem Preconnected.ofBoxProdRight [Nonempty α] (h : (G □ H).Preconnected) :
+protected lemma Preconnected.ofBoxProdRight [Nonempty α] (h : (G □ H).Preconnected) :
     H.Preconnected := by
   classical
   rintro b₁ b₂
@@ -195,26 +195,26 @@ protected theorem Preconnected.ofBoxProdRight [Nonempty α] (h : (G □ H).Preco
   exact ⟨w.ofBoxProdRight⟩
 #align simple_graph.preconnected.of_box_prod_right SimpleGraph.Preconnected.ofBoxProdRight
 
-protected theorem Connected.boxProd (hG : G.Connected) (hH : H.Connected) : (G □ H).Connected := by
+protected lemma Connected.boxProd (hG : G.Connected) (hH : H.Connected) : (G □ H).Connected := by
   haveI := hG.nonempty
   haveI := hH.nonempty
   exact ⟨hG.preconnected.boxProd hH.preconnected⟩
 #align simple_graph.connected.box_prod SimpleGraph.Connected.boxProd
 
-protected theorem Connected.ofBoxProdLeft (h : (G □ H).Connected) : G.Connected := by
+protected lemma Connected.ofBoxProdLeft (h : (G □ H).Connected) : G.Connected := by
   haveI := (nonempty_prod.1 h.nonempty).1
   haveI := (nonempty_prod.1 h.nonempty).2
   exact ⟨h.preconnected.ofBoxProdLeft⟩
 #align simple_graph.connected.of_box_prod_left SimpleGraph.Connected.ofBoxProdLeft
 
-protected theorem Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connected := by
+protected lemma Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connected := by
   haveI := (nonempty_prod.1 h.nonempty).1
   haveI := (nonempty_prod.1 h.nonempty).2
   exact ⟨h.preconnected.ofBoxProdRight⟩
 #align simple_graph.connected.of_box_prod_right SimpleGraph.Connected.ofBoxProdRight
 
 @[simp]
-theorem boxProd_connected : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
+lemma boxProd_connected : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
   ⟨fun h => ⟨h.ofBoxProdLeft, h.ofBoxProdRight⟩, fun h => h.1.boxProd h.2⟩
 #align simple_graph.box_prod_connected SimpleGraph.boxProd_connected
 
@@ -230,7 +230,7 @@ instance boxProdFintypeNeighborSet (x : α × β)
       simp only [eq_comm, and_comm])
 #align simple_graph.box_prod_fintype_neighbor_set SimpleGraph.boxProdFintypeNeighborSet
 
-theorem boxProd_neighborFinset (x : α × β)
+lemma boxProd_neighborFinset (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).neighborFinset x =
       (G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2)
@@ -241,7 +241,7 @@ theorem boxProd_neighborFinset (x : α × β)
   exact Eq.trans (Finset.map_map _ _ _) Finset.attach_map_val
 #align simple_graph.box_prod_neighbor_finset SimpleGraph.boxProd_neighborFinset
 
-theorem boxProd_degree (x : α × β)
+lemma boxProd_degree (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).degree x = G.degree x.1 + H.degree x.2 := by
   rw [degree, degree, degree, boxProd_neighborFinset, Finset.card_disjUnion]

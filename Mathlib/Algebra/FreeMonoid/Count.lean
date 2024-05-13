@@ -28,11 +28,11 @@ def countP : FreeAddMonoid α →+ ℕ where
   map_add' := List.countP_append _
 #align free_add_monoid.countp FreeAddMonoid.countP
 
-theorem countP_of (x : α) : countP p (of x) = if p x = true then 1 else 0 := by
+lemma countP_of (x : α) : countP p (of x) = if p x = true then 1 else 0 := by
   simp [countP, List.countP, List.countP.go]
 #align free_add_monoid.countp_of FreeAddMonoid.countP_of
 
-theorem countP_apply (l : FreeAddMonoid α) : countP p l = List.countP p l := rfl
+lemma countP_apply (l : FreeAddMonoid α) : countP p l = List.countP p l := rfl
 #align free_add_monoid.countp_apply FreeAddMonoid.countP_apply
 
 /-- `List.count` as a bundled additive monoid homomorphism. -/
@@ -40,12 +40,12 @@ theorem countP_apply (l : FreeAddMonoid α) : countP p l = List.countP p l := rf
 def count [DecidableEq α] (x : α) : FreeAddMonoid α →+ ℕ := countP (· = x)
 #align free_add_monoid.count FreeAddMonoid.count
 
-theorem count_of [DecidableEq α] (x y : α) : count x (of y) = (Pi.single x 1 : α → ℕ) y := by
+lemma count_of [DecidableEq α] (x y : α) : count x (of y) = (Pi.single x 1 : α → ℕ) y := by
   simp [Pi.single, Function.update, count, countP, List.countP, List.countP.go,
     Bool.beq_eq_decide_eq]
 #align free_add_monoid.count_of FreeAddMonoid.count_of
 
-theorem count_apply [DecidableEq α] (x : α) (l : FreeAddMonoid α) : count x l = List.count x l :=
+lemma count_apply [DecidableEq α] (x : α) (l : FreeAddMonoid α) : count x l = List.count x l :=
   rfl
 #align free_add_monoid.count_apply FreeAddMonoid.count_apply
 
@@ -58,18 +58,18 @@ def countP : FreeMonoid α →* Multiplicative ℕ :=
     AddMonoidHom.toMultiplicative (FreeAddMonoid.countP p)
 #align free_monoid.countp FreeMonoid.countP
 
-theorem countP_of' (x : α) :
+lemma countP_of' (x : α) :
     countP p (of x) = if p x then Multiplicative.ofAdd 1 else Multiplicative.ofAdd 0 := by
     erw [FreeAddMonoid.countP_of]
     simp only [eq_iff_iff, iff_true, ofAdd_zero]; rfl
 #align free_monoid.countp_of' FreeMonoid.countP_of'
 
-theorem countP_of (x : α) : countP p (of x) = if p x then Multiplicative.ofAdd 1 else 1 := by
+lemma countP_of (x : α) : countP p (of x) = if p x then Multiplicative.ofAdd 1 else 1 := by
   rw [countP_of', ofAdd_zero]
 #align free_monoid.countp_of FreeMonoid.countP_of
 
 -- `rfl` is not transitive
-theorem countP_apply (l : FreeAddMonoid α) : countP p l = Multiplicative.ofAdd (List.countP p l) :=
+lemma countP_apply (l : FreeAddMonoid α) : countP p l = Multiplicative.ofAdd (List.countP p l) :=
   rfl
 #align free_monoid.countp_apply FreeMonoid.countP_apply
 
@@ -77,11 +77,11 @@ theorem countP_apply (l : FreeAddMonoid α) : countP p l = Multiplicative.ofAdd 
 def count [DecidableEq α] (x : α) : FreeMonoid α →* Multiplicative ℕ := countP (· = x)
 #align free_monoid.count FreeMonoid.count
 
-theorem count_apply [DecidableEq α] (x : α) (l : FreeAddMonoid α) :
+lemma count_apply [DecidableEq α] (x : α) (l : FreeAddMonoid α) :
     count x l = Multiplicative.ofAdd (List.count x l) := rfl
 #align free_monoid.count_apply FreeMonoid.count_apply
 
-theorem count_of [DecidableEq α] (x y : α) :
+lemma count_of [DecidableEq α] (x y : α) :
     count x (of y) = @Pi.mulSingle α (fun _ => Multiplicative ℕ) _ _ x (Multiplicative.ofAdd 1) y :=
   by simp [count, countP_of, Pi.mulSingle_apply, eq_comm, Bool.beq_eq_decide_eq]
 #align free_monoid.count_of FreeMonoid.count_of

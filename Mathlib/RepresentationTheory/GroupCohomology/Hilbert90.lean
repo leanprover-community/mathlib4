@@ -58,7 +58,7 @@ noncomputable def aux (f : (L ≃ₐ[K] L) → Lˣ) : L → L :=
   Finsupp.total (L ≃ₐ[K] L) (L → L) L (fun φ => φ)
     (Finsupp.equivFunOnFinite.symm (fun φ => (f φ : L)))
 
-theorem aux_ne_zero (f : (L ≃ₐ[K] L) → Lˣ) : aux f ≠ 0 :=
+lemma aux_ne_zero (f : (L ≃ₐ[K] L) → Lˣ) : aux f ≠ 0 :=
 /- the set `Aut_K(L)` is linearly independent in the `L`-vector space `L → L`, by Dedekind's
 linear independence of characters -/
   have : LinearIndependent L (fun (f : L ≃ₐ[K] L) => (f : L → L)) :=

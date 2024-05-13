@@ -74,7 +74,7 @@ protected def mk (f : σ → m (α × σ)) : StateT σ m α := f
 #align state_t.mk StateT.mk
 
 @[simp]
-theorem run_mk (f : σ → m (α × σ)) (st : σ) : StateT.run (StateT.mk f) st = f st :=
+lemma run_mk (f : σ → m (α × σ)) (st : σ) : StateT.run (StateT.mk f) st = f st :=
   rfl
 
 #align state_t.ext StateTₓ.ext
@@ -108,7 +108,7 @@ variable {α β ε : Type u} {m : Type u → Type v} (x : ExceptT ε m α)
 
 -- Porting note: This is proven by proj reduction in Lean 3.
 @[simp]
-theorem run_mk (x : m (Except ε α)) : ExceptT.run (ExceptT.mk x) = x :=
+lemma run_mk (x : m (Except ε α)) : ExceptT.run (ExceptT.mk x) = x :=
   rfl
 
 variable [Monad m]
@@ -121,13 +121,13 @@ attribute [simp] run_bind
 #align except_t.run_map ExceptTₓ.run_map
 
 @[simp]
-theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
+lemma run_monadLift {n} [MonadLiftT n m] (x : n α) :
     (monadLift x : ExceptT ε m α).run = Except.ok <$> (monadLift x : m α) :=
   rfl
 #align except_t.run_monad_lift ExceptTₓ.run_monadLift
 
 @[simp]
-theorem run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
+lemma run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
     (monadMap (@f) x : ExceptT ε m α).run = monadMap (@f) x.run :=
   rfl
 #align except_t.run_monad_map ExceptTₓ.run_monadMap
@@ -160,7 +160,7 @@ protected def mk (f : σ → m α) : ReaderT σ m α := f
 #align reader_t.mk ReaderT.mk
 
 @[simp]
-theorem run_mk (f : σ → m α) (r : σ) : ReaderT.run (ReaderT.mk f) r = f r :=
+lemma run_mk (f : σ → m α) (r : σ) : ReaderT.run (ReaderT.mk f) r = f r :=
   rfl
 
 #align reader_t.ext ReaderTₓ.ext
@@ -185,24 +185,24 @@ namespace OptionT
 
 variable {α β : Type u} {m : Type u → Type v} (x : OptionT m α)
 
-@[ext] theorem ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' :=
+@[ext] lemma ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' :=
   h
 #align option_t.ext OptionTₓ.ext
 
 -- Porting note: This is proven by proj reduction in Lean 3.
 @[simp]
-theorem run_mk (x : m (Option α)) : OptionT.run (OptionT.mk x) = x :=
+lemma run_mk (x : m (Option α)) : OptionT.run (OptionT.mk x) = x :=
   rfl
 
 variable [Monad m]
 
 @[simp]
-theorem run_pure (a) : (pure a : OptionT m α).run = pure (some a) :=
+lemma run_pure (a) : (pure a : OptionT m α).run = pure (some a) :=
   rfl
 #align option_t.run_pure OptionTₓ.run_pure
 
 @[simp]
-theorem run_bind (f : α → OptionT m β) :
+lemma run_bind (f : α → OptionT m β) :
     (x >>= f).run = x.run >>= fun
                               | some a => OptionT.run (f a)
                               | none   => pure none :=
@@ -210,7 +210,7 @@ theorem run_bind (f : α → OptionT m β) :
 #align option_t.run_bind OptionTₓ.run_bind
 
 @[simp]
-theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <$> x.run := by
+lemma run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <$> x.run := by
   rw [← bind_pure_comp _ x.run]
   change x.run >>= (fun
                      | some a => OptionT.run (pure (f a))
@@ -220,13 +220,13 @@ theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <
 #align option_t.run_map OptionTₓ.run_map
 
 @[simp]
-theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
+lemma run_monadLift {n} [MonadLiftT n m] (x : n α) :
     (monadLift x : OptionT m α).run = (monadLift x : m α) >>= fun a => pure (some a) :=
   rfl
 #align option_t.run_monad_lift OptionTₓ.run_monadLift
 
 @[simp]
-theorem run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
+lemma run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
     (monadMap (@f) x : OptionT m α).run = monadMap (@f) x.run :=
   rfl
 #align option_t.run_monad_map OptionTₓ.run_monadMap

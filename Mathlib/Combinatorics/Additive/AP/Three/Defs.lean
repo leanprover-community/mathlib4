@@ -76,37 +76,37 @@ instance ThreeGPFree.instDecidable [DecidableEq α] {s : Finset α} :
 variable {s t}
 
 @[to_additive]
-theorem ThreeGPFree.mono (h : t ⊆ s) (hs : ThreeGPFree s) : ThreeGPFree t :=
+lemma ThreeGPFree.mono (h : t ⊆ s) (hs : ThreeGPFree s) : ThreeGPFree t :=
   fun _ ha _ hb _ hc ↦ hs (h ha) (h hb) (h hc)
 #align mul_salem_spencer.mono ThreeGPFree.mono
 #align add_salem_spencer.mono ThreeAPFree.mono
 
 @[to_additive (attr := simp)]
-theorem threeGPFree_empty : ThreeGPFree (∅ : Set α) := fun _ _ _ ha => ha.elim
+lemma threeGPFree_empty : ThreeGPFree (∅ : Set α) := fun _ _ _ ha => ha.elim
 #align mul_salem_spencer_empty threeGPFree_empty
 #align add_salem_spencer_empty threeAPFree_empty
 
 @[to_additive]
-theorem Set.Subsingleton.threeGPFree (hs : s.Subsingleton) : ThreeGPFree s :=
+lemma Set.Subsingleton.threeGPFree (hs : s.Subsingleton) : ThreeGPFree s :=
   fun _ ha _ hb _ _ _ ↦ hs ha hb
 #align set.subsingleton.mul_salem_spencer Set.Subsingleton.threeGPFree
 #align set.subsingleton.add_salem_spencer Set.Subsingleton.threeAPFree
 
 @[to_additive (attr := simp)]
-theorem threeGPFree_singleton (a : α) : ThreeGPFree ({a} : Set α) :=
+lemma threeGPFree_singleton (a : α) : ThreeGPFree ({a} : Set α) :=
   subsingleton_singleton.threeGPFree
 #align mul_salem_spencer_singleton threeGPFree_singleton
 #align add_salem_spencer_singleton threeAPFree_singleton
 
 @[to_additive ThreeAPFree.prod]
-theorem ThreeGPFree.prod {t : Set β} (hs : ThreeGPFree s) (ht : ThreeGPFree t) :
+lemma ThreeGPFree.prod {t : Set β} (hs : ThreeGPFree s) (ht : ThreeGPFree t) :
     ThreeGPFree (s ×ˢ t) := fun _ ha _ hb _ hc h ↦
   Prod.ext (hs ha.1 hb.1 hc.1 (Prod.ext_iff.1 h).1) (ht ha.2 hb.2 hc.2 (Prod.ext_iff.1 h).2)
 #align mul_salem_spencer.prod ThreeGPFree.prod
 #align add_salem_spencer.prod ThreeAPFree.prod
 
 @[to_additive]
-theorem threeGPFree_pi {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {s : ∀ i, Set (α i)}
+lemma threeGPFree_pi {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {s : ∀ i, Set (α i)}
     (hs : ∀ i, ThreeGPFree (s i)) : ThreeGPFree ((univ : Set ι).pi s) :=
   fun _ ha _ hb _ hc h ↦
   funext fun i => hs i (ha i trivial) (hb i trivial) (hc i trivial) <| congr_fun h i
@@ -163,7 +163,7 @@ lemma IsMulFreimanIso.threeGPFree_congr (hf : IsMulFreimanIso 2 s t f) :
     exact congr_arg f $ hs ha hb hc $ (hf.mul_eq_mul ha hc hb hb).1 habc
 
 @[to_additive]
-theorem ThreeGPFree.image' [FunLike F α β] [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
+lemma ThreeGPFree.image' [FunLike F α β] [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
     (h : ThreeGPFree s) : ThreeGPFree (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ habc
   rw [h ha hb hc (hf (mul_mem_mul ha hc) (mul_mem_mul hb hb) <| by rwa [map_mul, map_mul])]
@@ -203,7 +203,7 @@ lemma ThreeGPFree.eq_right (hs : ThreeGPFree s) :
 #align add_salem_spencer_insert threeAPFree_insert
 
 @[to_additive]
-theorem ThreeGPFree.smul_set (hs : ThreeGPFree s) : ThreeGPFree (a • s) := by
+lemma ThreeGPFree.smul_set (hs : ThreeGPFree s) : ThreeGPFree (a • s) := by
   rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩ h
   exact congr_arg (a • ·) $ hs hb hc hd $ by simpa [mul_mul_mul_comm _ _ a] using h
 #align mul_salem_spencer.mul_left ThreeGPFree.smul_set
@@ -230,7 +230,7 @@ section OrderedCancelCommMonoid
 variable [OrderedCancelCommMonoid α] {s : Set α} {a : α}
 
 @[to_additive]
-theorem threeGPFree_insert_of_lt (hs : ∀ i ∈ s, i < a) :
+lemma threeGPFree_insert_of_lt (hs : ∀ i ∈ s, i < a) :
     ThreeGPFree (insert a s) ↔
       ThreeGPFree s ∧ ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a * c = b * b → a = b := by
   refine' threeGPFree_insert.trans _
@@ -252,7 +252,7 @@ lemma ThreeGPFree.smul_set₀ (hs : ThreeGPFree s) (ha : a ≠ 0) : ThreeGPFree 
 
 #noalign mul_salem_spencer.mul_right₀.mul_right₀
 
-theorem threeGPFree_smul_set₀ (ha : a ≠ 0) : ThreeGPFree (a • s) ↔ ThreeGPFree s :=
+lemma threeGPFree_smul_set₀ (ha : a ≠ 0) : ThreeGPFree (a • s) ↔ ThreeGPFree s :=
   ⟨fun hs b hb c hc d hd h ↦
     mul_left_cancel₀ ha
       (hs (Set.mem_image_of_mem _ hb) (Set.mem_image_of_mem _ hc) (Set.mem_image_of_mem _ hd) <| by
@@ -266,7 +266,7 @@ end CancelCommMonoidWithZero
 
 section Nat
 
-theorem threeAPFree_iff_eq_right {s : Set ℕ} :
+lemma threeAPFree_iff_eq_right {s : Set ℕ} :
     ThreeAPFree s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a + c = b + b → a = c := by
   refine' forall₄_congr fun a _ha b hb => forall₃_congr fun c hc habc => ⟨_, _⟩
   · rintro rfl
@@ -304,12 +304,12 @@ def mulRothNumber : Finset α →o ℕ :=
 #align add_roth_number addRothNumber
 
 @[to_additive]
-theorem mulRothNumber_le : mulRothNumber s ≤ s.card := Nat.findGreatest_le s.card
+lemma mulRothNumber_le : mulRothNumber s ≤ s.card := Nat.findGreatest_le s.card
 #align mul_roth_number_le mulRothNumber_le
 #align add_roth_number_le addRothNumber_le
 
 @[to_additive]
-theorem mulRothNumber_spec :
+lemma mulRothNumber_spec :
     ∃ t ⊆ s, t.card = mulRothNumber s ∧ ThreeGPFree (t : Set α) :=
   Nat.findGreatest_spec (P := fun m ↦ ∃ t ⊆ s, t.card = m ∧ ThreeGPFree (t : Set α))
     (Nat.zero_le _) ⟨∅, empty_subset _, card_empty, by norm_cast; exact threeGPFree_empty⟩
@@ -319,27 +319,27 @@ theorem mulRothNumber_spec :
 variable {s t} {n : ℕ}
 
 @[to_additive]
-theorem ThreeGPFree.le_mulRothNumber (hs : ThreeGPFree (s : Set α)) (h : s ⊆ t) :
+lemma ThreeGPFree.le_mulRothNumber (hs : ThreeGPFree (s : Set α)) (h : s ⊆ t) :
     s.card ≤ mulRothNumber t :=
   le_findGreatest (card_le_card h) ⟨s, h, rfl, hs⟩
 #align mul_salem_spencer.le_mul_roth_number ThreeGPFree.le_mulRothNumber
 #align add_salem_spencer.le_add_roth_number ThreeAPFree.le_addRothNumber
 
 @[to_additive]
-theorem ThreeGPFree.mulRothNumber_eq (hs : ThreeGPFree (s : Set α)) :
+lemma ThreeGPFree.mulRothNumber_eq (hs : ThreeGPFree (s : Set α)) :
     mulRothNumber s = s.card :=
   (mulRothNumber_le _).antisymm <| hs.le_mulRothNumber <| Subset.refl _
 #align mul_salem_spencer.roth_number_eq ThreeGPFree.mulRothNumber_eq
 #align add_salem_spencer.roth_number_eq ThreeAPFree.addRothNumber_eq
 
 @[to_additive (attr := simp)]
-theorem mulRothNumber_empty : mulRothNumber (∅ : Finset α) = 0 :=
+lemma mulRothNumber_empty : mulRothNumber (∅ : Finset α) = 0 :=
   Nat.eq_zero_of_le_zero <| (mulRothNumber_le _).trans card_empty.le
 #align mul_roth_number_empty mulRothNumber_empty
 #align add_roth_number_empty addRothNumber_empty
 
 @[to_additive (attr := simp)]
-theorem mulRothNumber_singleton (a : α) : mulRothNumber ({a} : Finset α) = 1 := by
+lemma mulRothNumber_singleton (a : α) : mulRothNumber ({a} : Finset α) = 1 := by
   refine' ThreeGPFree.mulRothNumber_eq _
   rw [coe_singleton]
   exact threeGPFree_singleton a
@@ -347,7 +347,7 @@ theorem mulRothNumber_singleton (a : α) : mulRothNumber ({a} : Finset α) = 1 :
 #align add_roth_number_singleton addRothNumber_singleton
 
 @[to_additive]
-theorem mulRothNumber_union_le (s t : Finset α) :
+lemma mulRothNumber_union_le (s t : Finset α) :
     mulRothNumber (s ∪ t) ≤ mulRothNumber s + mulRothNumber t :=
   let ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s ∪ t)
   calc
@@ -361,7 +361,7 @@ theorem mulRothNumber_union_le (s t : Finset α) :
 #align add_roth_number_union_le addRothNumber_union_le
 
 @[to_additive]
-theorem le_mulRothNumber_product (s : Finset α) (t : Finset β) :
+lemma le_mulRothNumber_product (s : Finset α) (t : Finset β) :
     mulRothNumber s * mulRothNumber t ≤ mulRothNumber (s ×ˢ t) := by
   obtain ⟨u, hus, hucard, hu⟩ := mulRothNumber_spec s
   obtain ⟨v, hvt, hvcard, hv⟩ := mulRothNumber_spec t
@@ -373,7 +373,7 @@ theorem le_mulRothNumber_product (s : Finset α) (t : Finset β) :
 #align le_add_roth_number_product le_addRothNumber_product
 
 @[to_additive]
-theorem mulRothNumber_lt_of_forall_not_threeGPFree
+lemma mulRothNumber_lt_of_forall_not_threeGPFree
     (h : ∀ t ∈ powersetCard n s, ¬ThreeGPFree ((t : Finset α) : Set α)) :
     mulRothNumber s < n := by
   obtain ⟨t, hts, hcard, ht⟩ := mulRothNumber_spec s
@@ -425,7 +425,7 @@ section CancelCommMonoid
 variable [CancelCommMonoid α] (s : Finset α) (a : α)
 
 @[to_additive (attr := simp)]
-theorem mulRothNumber_map_mul_left :
+lemma mulRothNumber_map_mul_left :
     mulRothNumber (s.map <| mulLeftEmbedding a) = mulRothNumber s := by
   refine' le_antisymm _ _
   · obtain ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s.map <| mulLeftEmbedding a)
@@ -442,7 +442,7 @@ theorem mulRothNumber_map_mul_left :
 #align add_roth_number_map_add_left addRothNumber_map_add_left
 
 @[to_additive (attr := simp)]
-theorem mulRothNumber_map_mul_right :
+lemma mulRothNumber_map_mul_right :
     mulRothNumber (s.map <| mulRightEmbedding a) = mulRothNumber s := by
   rw [← mulLeftEmbedding_eq_mulRightEmbedding, mulRothNumber_map_mul_left s a]
 #align mul_roth_number_map_mul_right mulRothNumber_map_mul_right
@@ -467,15 +467,15 @@ def rothNumberNat : ℕ →o ℕ :=
   ⟨fun n => addRothNumber (range n), addRothNumber.mono.comp range_mono⟩
 #align roth_number_nat rothNumberNat
 
-theorem rothNumberNat_def (n : ℕ) : rothNumberNat n = addRothNumber (range n) :=
+lemma rothNumberNat_def (n : ℕ) : rothNumberNat n = addRothNumber (range n) :=
   rfl
 #align roth_number_nat_def rothNumberNat_def
 
-theorem rothNumberNat_le (N : ℕ) : rothNumberNat N ≤ N :=
+lemma rothNumberNat_le (N : ℕ) : rothNumberNat N ≤ N :=
   (addRothNumber_le _).trans (card_range _).le
 #align roth_number_nat_le rothNumberNat_le
 
-theorem rothNumberNat_spec (n : ℕ) :
+lemma rothNumberNat_spec (n : ℕ) :
     ∃ t ⊆ range n, t.card = rothNumberNat n ∧ ThreeAPFree (t : Set ℕ) :=
   addRothNumber_spec _
 #align roth_number_nat_spec rothNumberNat_spec
@@ -498,11 +498,11 @@ theorem rothNumberNat_add_le (M N : ℕ) :
 #align roth_number_nat_add_le rothNumberNat_add_le
 
 @[simp]
-theorem rothNumberNat_zero : rothNumberNat 0 = 0 :=
+lemma rothNumberNat_zero : rothNumberNat 0 = 0 :=
   rfl
 #align roth_number_nat_zero rothNumberNat_zero
 
-theorem addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat (b - a) := by
+lemma addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat (b - a) := by
   obtain h | h := le_total b a
   · rw [tsub_eq_zero_of_le h, Ico_eq_empty_of_le h, rothNumberNat_zero, addRothNumber_empty]
   convert addRothNumber_map_add_left _ a

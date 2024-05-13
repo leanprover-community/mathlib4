@@ -97,7 +97,7 @@ theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F
 
 section
 
-private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
+private lemma exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
     (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
     ∃ φ : adjoin L S →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L _) = f := by
   obtain ⟨φ, hfφ, hφ⟩ := zorn_nonempty_Ici₀ _
@@ -114,7 +114,7 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
 variable {L : Type*} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
   (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom)
 
-theorem exists_algHom_adjoin_of_splits' :
+lemma exists_algHom_adjoin_of_splits' :
     ∃ φ : adjoin L S →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L _) = f := by
   let L' := (IsScalarTower.toAlgHom F L E).fieldRange
   let f' : L' →ₐ[F] K := f.comp (AlgEquiv.ofInjectiveField _).symm.toAlgHom
@@ -131,12 +131,12 @@ theorem exists_algHom_adjoin_of_splits' :
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
   convert (hK s hs).2; ext; exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
 
-theorem exists_algHom_of_adjoin_splits' (hS : adjoin L S = ⊤) :
+lemma exists_algHom_of_adjoin_splits' (hS : adjoin L S = ⊤) :
     ∃ φ : E →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L E) = f :=
   have ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits' f hK
   ⟨φ.comp (((equivOfEq hS).trans topEquiv).symm.toAlgHom.restrictScalars F), hφ⟩
 
-theorem exists_algHom_of_splits' (hK : ∀ s : E, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
+lemma exists_algHom_of_splits' (hK : ∀ s : E, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
     ∃ φ : E →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L E) = f :=
   exists_algHom_of_adjoin_splits' f (fun x _ ↦ hK x) (adjoin_univ L E)
 
@@ -148,7 +148,7 @@ variable (hK : ∀ s ∈ S, IsIntegral F s ∧ (minpoly F s).Splits (algebraMap 
 
 -- The following uses the hypothesis `hK`.
 
-theorem exists_algHom_adjoin_of_splits : ∃ φ : adjoin F S →ₐ[F] K, φ.comp (inclusion hL) = f := by
+lemma exists_algHom_adjoin_of_splits : ∃ φ : adjoin F S →ₐ[F] K, φ.comp (inclusion hL) = f := by
   obtain ⟨φ, hfφ, hφ⟩ := zorn_nonempty_Ici₀ _
     (fun c _ hc _ _ ↦ Lifts.exists_upper_bound c hc) ⟨L, f⟩ le_rfl
   refine ⟨φ.emb.comp (inclusion <| adjoin_le_iff.mpr fun s hs ↦ ?_), ?_⟩
@@ -156,23 +156,23 @@ theorem exists_algHom_adjoin_of_splits : ∃ φ : adjoin F S →ₐ[F] K, φ.com
     exact (hφ y h1).1 h2
   · ext; apply hfφ.2
 
-theorem nonempty_algHom_adjoin_of_splits : Nonempty (adjoin F S →ₐ[F] K) :=
+lemma nonempty_algHom_adjoin_of_splits : Nonempty (adjoin F S →ₐ[F] K) :=
   have ⟨φ, _⟩ := exists_algHom_adjoin_of_splits hK (⊥ : Lifts F E K).emb bot_le; ⟨φ⟩
 #align intermediate_field.alg_hom_mk_adjoin_splits IntermediateField.nonempty_algHom_adjoin_of_splits
 
 variable (hS : adjoin F S = ⊤)
 
-theorem exists_algHom_of_adjoin_splits : ∃ φ : E →ₐ[F] K, φ.comp L.val = f :=
+lemma exists_algHom_of_adjoin_splits : ∃ φ : E →ₐ[F] K, φ.comp L.val = f :=
   have ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits hK f (hS.symm ▸ le_top)
   ⟨φ.comp ((equivOfEq hS).trans topEquiv).symm.toAlgHom, hφ⟩
 
-theorem nonempty_algHom_of_adjoin_splits : Nonempty (E →ₐ[F] K) :=
+lemma nonempty_algHom_of_adjoin_splits : Nonempty (E →ₐ[F] K) :=
   have ⟨φ, _⟩ := exists_algHom_of_adjoin_splits hK (⊥ : Lifts F E K).emb hS; ⟨φ⟩
 #align intermediate_field.alg_hom_mk_adjoin_splits' IntermediateField.nonempty_algHom_of_adjoin_splits
 
 variable {x : E} (hx : x ∈ adjoin F S) {y : K} (hy : aeval y (minpoly F x) = 0)
 
-theorem exists_algHom_adjoin_of_splits_of_aeval : ∃ φ : adjoin F S →ₐ[F] K, φ ⟨x, hx⟩ = y := by
+lemma exists_algHom_adjoin_of_splits_of_aeval : ∃ φ : adjoin F S →ₐ[F] K, φ ⟨x, hx⟩ = y := by
   have ix := isAlgebraic_adjoin (fun s hs ↦ (hK s hs).1) ⟨x, hx⟩
   rw [isAlgebraic_iff_isIntegral, isIntegral_iff] at ix
   obtain ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits hK ((algHomAdjoinIntegralEquiv F ix).symm
@@ -180,20 +180,20 @@ theorem exists_algHom_adjoin_of_splits_of_aeval : ∃ φ : adjoin F S →ₐ[F] 
   exact ⟨φ, (DFunLike.congr_fun hφ <| AdjoinSimple.gen F x).trans <|
     algHomAdjoinIntegralEquiv_symm_apply_gen F ix _⟩
 
-theorem exists_algHom_of_adjoin_splits_of_aeval : ∃ φ : E →ₐ[F] K, φ x = y :=
+lemma exists_algHom_of_adjoin_splits_of_aeval : ∃ φ : E →ₐ[F] K, φ x = y :=
   have ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits_of_aeval hK (hS ▸ mem_top) hy
   ⟨φ.comp ((equivOfEq hS).trans topEquiv).symm.toAlgHom, hφ⟩
 
 /- The following uses the hypothesis
    (hK' : ∀ s : E, IsIntegral F s ∧ (minpoly F s).Splits (algebraMap F K)) -/
 
-theorem exists_algHom_of_splits : ∃ φ : E →ₐ[F] K, φ.comp L.val = f :=
+lemma exists_algHom_of_splits : ∃ φ : E →ₐ[F] K, φ.comp L.val = f :=
   exists_algHom_of_adjoin_splits (fun x _ ↦ hK' x) f (adjoin_univ F E)
 
-theorem nonempty_algHom_of_splits : Nonempty (E →ₐ[F] K) :=
+lemma nonempty_algHom_of_splits : Nonempty (E →ₐ[F] K) :=
   nonempty_algHom_of_adjoin_splits (fun x _ ↦ hK' x) (adjoin_univ F E)
 
-theorem exists_algHom_of_splits_of_aeval : ∃ φ : E →ₐ[F] K, φ x = y :=
+lemma exists_algHom_of_splits_of_aeval : ∃ φ : E →ₐ[F] K, φ x = y :=
   exists_algHom_of_adjoin_splits_of_aeval (fun x _ ↦ hK' x) (adjoin_univ F E) hy
 
 end IntermediateField

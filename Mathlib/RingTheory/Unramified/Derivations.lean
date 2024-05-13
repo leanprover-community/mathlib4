@@ -32,7 +32,7 @@ instance FormallyUnramified.subsingleton_kaehlerDifferential [FormallyUnramified
   exact ⟨_, Ideal.cotangentIdeal_square _⟩
 #align algebra.formally_unramified.subsingleton_kaehler_differential Algebra.FormallyUnramified.subsingleton_kaehlerDifferential
 
-theorem FormallyUnramified.iff_subsingleton_kaehlerDifferential :
+lemma FormallyUnramified.iff_subsingleton_kaehlerDifferential :
     FormallyUnramified R S ↔ Subsingleton (Ω[S⁄R]) := by
   constructor
   · intros; infer_instance

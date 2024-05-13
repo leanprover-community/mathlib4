@@ -53,11 +53,11 @@ noncomputable def withDensity (κ : kernel α β) [IsSFiniteKernel κ] (f : α �
         exact hf.set_lintegral_kernel_prod_right hs⟩ : kernel α β)) fun _ => 0
 #align probability_theory.kernel.with_density ProbabilityTheory.kernel.withDensity
 
-theorem withDensity_of_not_measurable (κ : kernel α β) [IsSFiniteKernel κ]
+lemma withDensity_of_not_measurable (κ : kernel α β) [IsSFiniteKernel κ]
     (hf : ¬Measurable (Function.uncurry f)) : withDensity κ f = 0 := by classical exact dif_neg hf
 #align probability_theory.kernel.with_density_of_not_measurable ProbabilityTheory.kernel.withDensity_of_not_measurable
 
-protected theorem withDensity_apply (κ : kernel α β) [IsSFiniteKernel κ]
+protected lemma withDensity_apply (κ : kernel α β) [IsSFiniteKernel κ]
     (hf : Measurable (Function.uncurry f)) (a : α) :
     withDensity κ f a = (κ a).withDensity (f a) := by
   classical
@@ -65,7 +65,7 @@ protected theorem withDensity_apply (κ : kernel α β) [IsSFiniteKernel κ]
   rfl
 #align probability_theory.kernel.with_density_apply ProbabilityTheory.kernel.withDensity_apply
 
-protected theorem withDensity_apply' (κ : kernel α β) [IsSFiniteKernel κ]
+protected lemma withDensity_apply' (κ : kernel α β) [IsSFiniteKernel κ]
     (hf : Measurable (Function.uncurry f)) (a : α) (s : Set β) :
     withDensity κ f a s = ∫⁻ b in s, f a b ∂κ a := by
   rw [kernel.withDensity_apply κ hf, withDensity_apply' _ s]
@@ -105,7 +105,7 @@ lemma withDensity_zero (κ : kernel α β) [IsSFiniteKernel κ] :
 lemma withDensity_zero' (κ : kernel α β) [IsSFiniteKernel κ] :
     kernel.withDensity κ (fun _ _ ↦ 0) = 0 := kernel.withDensity_zero _
 
-theorem lintegral_withDensity (κ : kernel α β) [IsSFiniteKernel κ]
+lemma lintegral_withDensity (κ : kernel α β) [IsSFiniteKernel κ]
     (hf : Measurable (Function.uncurry f)) (a : α) {g : β → ℝ≥0∞} (hg : Measurable g) :
     ∫⁻ b, g b ∂withDensity κ f a = ∫⁻ b, f a b * g b ∂κ a := by
   rw [kernel.withDensity_apply _ hf,
@@ -113,7 +113,7 @@ theorem lintegral_withDensity (κ : kernel α β) [IsSFiniteKernel κ]
   simp_rw [Pi.mul_apply]
 #align probability_theory.kernel.lintegral_with_density ProbabilityTheory.kernel.lintegral_withDensity
 
-theorem integral_withDensity {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma integral_withDensity {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : β → E} [IsSFiniteKernel κ] {a : α} {g : α → β → ℝ≥0}
     (hg : Measurable (Function.uncurry g)) :
     ∫ b, f b ∂withDensity κ (fun a b => g a b) a = ∫ b, g a b • f b ∂κ a := by
@@ -122,7 +122,7 @@ theorem integral_withDensity {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ
   · exact measurable_coe_nnreal_ennreal.comp hg
 #align probability_theory.kernel.integral_with_density ProbabilityTheory.kernel.integral_withDensity
 
-theorem withDensity_add_left (κ η : kernel α β) [IsSFiniteKernel κ] [IsSFiniteKernel η]
+lemma withDensity_add_left (κ η : kernel α β) [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (f : α → β → ℝ≥0∞) : withDensity (κ + η) f = withDensity κ f + withDensity η f := by
   by_cases hf : Measurable (Function.uncurry f)
   · ext a s
@@ -132,7 +132,7 @@ theorem withDensity_add_left (κ η : kernel α β) [IsSFiniteKernel κ] [IsSFin
     rw [zero_add]
 #align probability_theory.kernel.with_density_add_left ProbabilityTheory.kernel.withDensity_add_left
 
-theorem withDensity_kernel_sum [Countable ι] (κ : ι → kernel α β) (hκ : ∀ i, IsSFiniteKernel (κ i))
+lemma withDensity_kernel_sum [Countable ι] (κ : ι → kernel α β) (hκ : ∀ i, IsSFiniteKernel (κ i))
     (f : α → β → ℝ≥0∞) :
     @withDensity _ _ _ _ (kernel.sum κ) (isSFiniteKernel_sum hκ) f =
       kernel.sum fun i => withDensity (κ i) f := by
@@ -163,7 +163,7 @@ lemma withDensity_sub_add_cancel [IsSFiniteKernel κ] {f g : α → β → ℝ�
   filter_upwards [hfg a] with x hx
   rwa [Pi.add_apply, Pi.add_apply, tsub_add_cancel_iff_le]
 
-theorem withDensity_tsum [Countable ι] (κ : kernel α β) [IsSFiniteKernel κ] {f : ι → α → β → ℝ≥0∞}
+lemma withDensity_tsum [Countable ι] (κ : kernel α β) [IsSFiniteKernel κ] {f : ι → α → β → ℝ≥0∞}
     (hf : ∀ i, Measurable (Function.uncurry (f i))) :
     withDensity κ (∑' n, f n) = kernel.sum fun n => withDensity κ (f n) := by
   have h_sum_a : ∀ a, Summable fun n => f n a := fun a => Pi.summable.mpr fun b => ENNReal.summable

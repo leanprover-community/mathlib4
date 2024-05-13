@@ -178,7 +178,7 @@ initialize_simps_projections PartialEquiv (toFun → apply, invFun → symm_appl
 #noalign local_equiv.coe_mk
 
 @[simp, mfld_simps]
-theorem coe_symm_mk (f : α → β) (g s t ml mr il ir) :
+lemma coe_symm_mk (f : α → β) (g s t ml mr il ir) :
     ((PartialEquiv.mk f g s t ml mr il ir).symm : β → α) = g :=
   rfl
 #align local_equiv.coe_symm_mk PartialEquiv.coe_symm_mk
@@ -190,12 +190,12 @@ theorem coe_symm_mk (f : α → β) (g s t ml mr il ir) :
 #noalign local_equiv.to_fun_as_coe
 
 @[simp, mfld_simps]
-theorem invFun_as_coe : e.invFun = e.symm :=
+lemma invFun_as_coe : e.invFun = e.symm :=
   rfl
 #align local_equiv.inv_fun_as_coe PartialEquiv.invFun_as_coe
 
 @[simp, mfld_simps]
-theorem map_source {x : α} (h : x ∈ e.source) : e x ∈ e.target :=
+lemma map_source {x : α} (h : x ∈ e.source) : e x ∈ e.target :=
   e.map_source' h
 #align local_equiv.map_source PartialEquiv.map_source
 
@@ -204,51 +204,51 @@ lemma map_source'' : e '' e.source ⊆ e.target :=
   fun _ ⟨_, hx, hex⟩ ↦ mem_of_eq_of_mem (id hex.symm) (e.map_source' hx)
 
 @[simp, mfld_simps]
-theorem map_target {x : β} (h : x ∈ e.target) : e.symm x ∈ e.source :=
+lemma map_target {x : β} (h : x ∈ e.target) : e.symm x ∈ e.source :=
   e.map_target' h
 #align local_equiv.map_target PartialEquiv.map_target
 
 @[simp, mfld_simps]
-theorem left_inv {x : α} (h : x ∈ e.source) : e.symm (e x) = x :=
+lemma left_inv {x : α} (h : x ∈ e.source) : e.symm (e x) = x :=
   e.left_inv' h
 #align local_equiv.left_inv PartialEquiv.left_inv
 
 @[simp, mfld_simps]
-theorem right_inv {x : β} (h : x ∈ e.target) : e (e.symm x) = x :=
+lemma right_inv {x : β} (h : x ∈ e.target) : e (e.symm x) = x :=
   e.right_inv' h
 #align local_equiv.right_inv PartialEquiv.right_inv
 
-theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
+lemma eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
     x = e.symm y ↔ e x = y :=
   ⟨fun h => by rw [← e.right_inv hy, h], fun h => by rw [← e.left_inv hx, h]⟩
 #align local_equiv.eq_symm_apply PartialEquiv.eq_symm_apply
 
-protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
+protected lemma mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
 #align local_equiv.maps_to PartialEquiv.mapsTo
 
-theorem symm_mapsTo : MapsTo e.symm e.target e.source :=
+lemma symm_mapsTo : MapsTo e.symm e.target e.source :=
   e.symm.mapsTo
 #align local_equiv.symm_maps_to PartialEquiv.symm_mapsTo
 
-protected theorem leftInvOn : LeftInvOn e.symm e e.source := fun _ => e.left_inv
+protected lemma leftInvOn : LeftInvOn e.symm e e.source := fun _ => e.left_inv
 #align local_equiv.left_inv_on PartialEquiv.leftInvOn
 
-protected theorem rightInvOn : RightInvOn e.symm e e.target := fun _ => e.right_inv
+protected lemma rightInvOn : RightInvOn e.symm e e.target := fun _ => e.right_inv
 #align local_equiv.right_inv_on PartialEquiv.rightInvOn
 
-protected theorem invOn : InvOn e.symm e e.source e.target :=
+protected lemma invOn : InvOn e.symm e e.source e.target :=
   ⟨e.leftInvOn, e.rightInvOn⟩
 #align local_equiv.inv_on PartialEquiv.invOn
 
-protected theorem injOn : InjOn e e.source :=
+protected lemma injOn : InjOn e e.source :=
   e.leftInvOn.injOn
 #align local_equiv.inj_on PartialEquiv.injOn
 
-protected theorem bijOn : BijOn e e.source e.target :=
+protected lemma bijOn : BijOn e e.source e.target :=
   e.invOn.bijOn e.mapsTo e.symm_mapsTo
 #align local_equiv.bij_on PartialEquiv.bijOn
 
-protected theorem surjOn : SurjOn e e.source e.target :=
+protected lemma surjOn : SurjOn e e.source e.target :=
   e.bijOn.surjOn
 #align local_equiv.surj_on PartialEquiv.surjOn
 
@@ -302,7 +302,7 @@ def copy (e : PartialEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β → α
 #align local_equiv.copy_symm_apply PartialEquiv.copy_symm_apply
 #align local_equiv.copy_target PartialEquiv.copy_target
 
-theorem copy_eq (e : PartialEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β → α) (hg : ⇑e.symm = g)
+lemma copy_eq (e : PartialEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β → α) (hg : ⇑e.symm = g)
     (s : Set α) (hs : e.source = s) (t : Set β) (ht : e.target = t) :
     e.copy f hf g hg s hs t ht = e := by
   substs f g s t
@@ -319,34 +319,34 @@ protected def toEquiv : e.source ≃ e.target where
 #align local_equiv.to_equiv PartialEquiv.toEquiv
 
 @[simp, mfld_simps]
-theorem symm_source : e.symm.source = e.target :=
+lemma symm_source : e.symm.source = e.target :=
   rfl
 #align local_equiv.symm_source PartialEquiv.symm_source
 
 @[simp, mfld_simps]
-theorem symm_target : e.symm.target = e.source :=
+lemma symm_target : e.symm.target = e.source :=
   rfl
 #align local_equiv.symm_target PartialEquiv.symm_target
 
 @[simp, mfld_simps]
-theorem symm_symm : e.symm.symm = e := by
+lemma symm_symm : e.symm.symm = e := by
   cases e
   rfl
 #align local_equiv.symm_symm PartialEquiv.symm_symm
 
-theorem symm_bijective :
+lemma symm_bijective :
     Function.Bijective (PartialEquiv.symm : PartialEquiv α β → PartialEquiv β α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
-theorem image_source_eq_target : e '' e.source = e.target :=
+lemma image_source_eq_target : e '' e.source = e.target :=
   e.bijOn.image_eq
 #align local_equiv.image_source_eq_target PartialEquiv.image_source_eq_target
 
-theorem forall_mem_target {p : β → Prop} : (∀ y ∈ e.target, p y) ↔ ∀ x ∈ e.source, p (e x) := by
+lemma forall_mem_target {p : β → Prop} : (∀ y ∈ e.target, p y) ↔ ∀ x ∈ e.source, p (e x) := by
   rw [← image_source_eq_target, forall_mem_image]
 #align local_equiv.forall_mem_target PartialEquiv.forall_mem_target
 
-theorem exists_mem_target {p : β → Prop} : (∃ y ∈ e.target, p y) ↔ ∃ x ∈ e.source, p (e x) := by
+lemma exists_mem_target {p : β → Prop} : (∃ y ∈ e.target, p y) ↔ ∃ x ∈ e.source, p (e x) := by
   rw [← image_source_eq_target, exists_mem_image]
 #align local_equiv.exists_mem_target PartialEquiv.exists_mem_target
 
@@ -365,28 +365,28 @@ namespace IsImage
 
 variable {e} {s : Set α} {t : Set β} {x : α} {y : β}
 
-theorem apply_mem_iff (h : e.IsImage s t) (hx : x ∈ e.source) : e x ∈ t ↔ x ∈ s :=
+lemma apply_mem_iff (h : e.IsImage s t) (hx : x ∈ e.source) : e x ∈ t ↔ x ∈ s :=
   h hx
 #align local_equiv.is_image.apply_mem_iff PartialEquiv.IsImage.apply_mem_iff
 
-theorem symm_apply_mem_iff (h : e.IsImage s t) : ∀ ⦃y⦄, y ∈ e.target → (e.symm y ∈ s ↔ y ∈ t) :=
+lemma symm_apply_mem_iff (h : e.IsImage s t) : ∀ ⦃y⦄, y ∈ e.target → (e.symm y ∈ s ↔ y ∈ t) :=
   e.forall_mem_target.mpr fun x hx => by rw [e.left_inv hx, h hx]
 #align local_equiv.is_image.symm_apply_mem_iff PartialEquiv.IsImage.symm_apply_mem_iff
 
-protected theorem symm (h : e.IsImage s t) : e.symm.IsImage t s :=
+protected lemma symm (h : e.IsImage s t) : e.symm.IsImage t s :=
   h.symm_apply_mem_iff
 #align local_equiv.is_image.symm PartialEquiv.IsImage.symm
 
 @[simp]
-theorem symm_iff : e.symm.IsImage t s ↔ e.IsImage s t :=
+lemma symm_iff : e.symm.IsImage t s ↔ e.IsImage s t :=
   ⟨fun h => h.symm, fun h => h.symm⟩
 #align local_equiv.is_image.symm_iff PartialEquiv.IsImage.symm_iff
 
-protected theorem mapsTo (h : e.IsImage s t) : MapsTo e (e.source ∩ s) (e.target ∩ t) :=
+protected lemma mapsTo (h : e.IsImage s t) : MapsTo e (e.source ∩ s) (e.target ∩ t) :=
   fun _ hx => ⟨e.mapsTo hx.1, (h hx.1).2 hx.2⟩
 #align local_equiv.is_image.maps_to PartialEquiv.IsImage.mapsTo
 
-theorem symm_mapsTo (h : e.IsImage s t) : MapsTo e.symm (e.target ∩ t) (e.source ∩ s) :=
+lemma symm_mapsTo (h : e.IsImage s t) : MapsTo e.symm (e.target ∩ t) (e.source ∩ s) :=
   h.symm.mapsTo
 #align local_equiv.is_image.symm_maps_to PartialEquiv.IsImage.symm_mapsTo
 
@@ -407,15 +407,15 @@ def restr (h : e.IsImage s t) : PartialEquiv α β where
 #align local_equiv.is_image.restr_target PartialEquiv.IsImage.restr_target
 #align local_equiv.is_image.restr_symm_apply PartialEquiv.IsImage.restr_symm_apply
 
-theorem image_eq (h : e.IsImage s t) : e '' (e.source ∩ s) = e.target ∩ t :=
+lemma image_eq (h : e.IsImage s t) : e '' (e.source ∩ s) = e.target ∩ t :=
   h.restr.image_source_eq_target
 #align local_equiv.is_image.image_eq PartialEquiv.IsImage.image_eq
 
-theorem symm_image_eq (h : e.IsImage s t) : e.symm '' (e.target ∩ t) = e.source ∩ s :=
+lemma symm_image_eq (h : e.IsImage s t) : e.symm '' (e.target ∩ t) = e.source ∩ s :=
   h.symm.image_eq
 #align local_equiv.is_image.symm_image_eq PartialEquiv.IsImage.symm_image_eq
 
-theorem iff_preimage_eq : e.IsImage s t ↔ e.source ∩ e ⁻¹' t = e.source ∩ s := by
+lemma iff_preimage_eq : e.IsImage s t ↔ e.source ∩ e ⁻¹' t = e.source ∩ s := by
   simp only [IsImage, ext_iff, mem_inter_iff, mem_preimage, and_congr_right_iff]
 #align local_equiv.is_image.iff_preimage_eq PartialEquiv.IsImage.iff_preimage_eq
 
@@ -423,7 +423,7 @@ alias ⟨preimage_eq, of_preimage_eq⟩ := iff_preimage_eq
 #align local_equiv.is_image.of_preimage_eq PartialEquiv.IsImage.of_preimage_eq
 #align local_equiv.is_image.preimage_eq PartialEquiv.IsImage.preimage_eq
 
-theorem iff_symm_preimage_eq : e.IsImage s t ↔ e.target ∩ e.symm ⁻¹' s = e.target ∩ t :=
+lemma iff_symm_preimage_eq : e.IsImage s t ↔ e.target ∩ e.symm ⁻¹' s = e.target ∩ t :=
   symm_iff.symm.trans iff_preimage_eq
 #align local_equiv.is_image.iff_symm_preimage_eq PartialEquiv.IsImage.iff_symm_preimage_eq
 
@@ -431,31 +431,31 @@ alias ⟨symm_preimage_eq, of_symm_preimage_eq⟩ := iff_symm_preimage_eq
 #align local_equiv.is_image.of_symm_preimage_eq PartialEquiv.IsImage.of_symm_preimage_eq
 #align local_equiv.is_image.symm_preimage_eq PartialEquiv.IsImage.symm_preimage_eq
 
-theorem of_image_eq (h : e '' (e.source ∩ s) = e.target ∩ t) : e.IsImage s t :=
+lemma of_image_eq (h : e '' (e.source ∩ s) = e.target ∩ t) : e.IsImage s t :=
   of_symm_preimage_eq <| Eq.trans (of_symm_preimage_eq rfl).image_eq.symm h
 #align local_equiv.is_image.of_image_eq PartialEquiv.IsImage.of_image_eq
 
-theorem of_symm_image_eq (h : e.symm '' (e.target ∩ t) = e.source ∩ s) : e.IsImage s t :=
+lemma of_symm_image_eq (h : e.symm '' (e.target ∩ t) = e.source ∩ s) : e.IsImage s t :=
   of_preimage_eq <| Eq.trans (iff_preimage_eq.2 rfl).symm_image_eq.symm h
 #align local_equiv.is_image.of_symm_image_eq PartialEquiv.IsImage.of_symm_image_eq
 
-protected theorem compl (h : e.IsImage s t) : e.IsImage sᶜ tᶜ := fun _ hx => not_congr (h hx)
+protected lemma compl (h : e.IsImage s t) : e.IsImage sᶜ tᶜ := fun _ hx => not_congr (h hx)
 #align local_equiv.is_image.compl PartialEquiv.IsImage.compl
 
-protected theorem inter {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :
+protected lemma inter {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :
     e.IsImage (s ∩ s') (t ∩ t') := fun _ hx => and_congr (h hx) (h' hx)
 #align local_equiv.is_image.inter PartialEquiv.IsImage.inter
 
-protected theorem union {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :
+protected lemma union {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :
     e.IsImage (s ∪ s') (t ∪ t') := fun _ hx => or_congr (h hx) (h' hx)
 #align local_equiv.is_image.union PartialEquiv.IsImage.union
 
-protected theorem diff {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :
+protected lemma diff {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :
     e.IsImage (s \ s') (t \ t') :=
   h.inter h'.compl
 #align local_equiv.is_image.diff PartialEquiv.IsImage.diff
 
-theorem leftInvOn_piecewise {e' : PartialEquiv α β} [∀ i, Decidable (i ∈ s)]
+lemma leftInvOn_piecewise {e' : PartialEquiv α β} [∀ i, Decidable (i ∈ s)]
     [∀ i, Decidable (i ∈ t)] (h : e.IsImage s t) (h' : e'.IsImage s t) :
     LeftInvOn (t.piecewise e.symm e'.symm) (s.piecewise e e') (s.ite e.source e'.source) := by
   rintro x (⟨he, hs⟩ | ⟨he, hs : x ∉ s⟩)
@@ -464,12 +464,12 @@ theorem leftInvOn_piecewise {e' : PartialEquiv α β} [∀ i, Decidable (i ∈ s
       e'.left_inv he]
 #align local_equiv.is_image.left_inv_on_piecewise PartialEquiv.IsImage.leftInvOn_piecewise
 
-theorem inter_eq_of_inter_eq_of_eqOn {e' : PartialEquiv α β} (h : e.IsImage s t)
+lemma inter_eq_of_inter_eq_of_eqOn {e' : PartialEquiv α β} (h : e.IsImage s t)
     (h' : e'.IsImage s t) (hs : e.source ∩ s = e'.source ∩ s) (heq : EqOn e e' (e.source ∩ s)) :
     e.target ∩ t = e'.target ∩ t := by rw [← h.image_eq, ← h'.image_eq, ← hs, heq.image_eq]
 #align local_equiv.is_image.inter_eq_of_inter_eq_of_eq_on PartialEquiv.IsImage.inter_eq_of_inter_eq_of_eqOn
 
-theorem symm_eq_on_of_inter_eq_of_eqOn {e' : PartialEquiv α β} (h : e.IsImage s t)
+lemma symm_eq_on_of_inter_eq_of_eqOn {e' : PartialEquiv α β} (h : e.IsImage s t)
     (hs : e.source ∩ s = e'.source ∩ s) (heq : EqOn e e' (e.source ∩ s)) :
     EqOn e.symm e'.symm (e.target ∩ t) := by
   rw [← h.image_eq]
@@ -480,75 +480,75 @@ theorem symm_eq_on_of_inter_eq_of_eqOn {e' : PartialEquiv α β} (h : e.IsImage 
 
 end IsImage
 
-theorem isImage_source_target : e.IsImage e.source e.target := fun x hx => by simp [hx]
+lemma isImage_source_target : e.IsImage e.source e.target := fun x hx => by simp [hx]
 #align local_equiv.is_image_source_target PartialEquiv.isImage_source_target
 
-theorem isImage_source_target_of_disjoint (e' : PartialEquiv α β) (hs : Disjoint e.source e'.source)
+lemma isImage_source_target_of_disjoint (e' : PartialEquiv α β) (hs : Disjoint e.source e'.source)
     (ht : Disjoint e.target e'.target) : e.IsImage e'.source e'.target :=
   IsImage.of_image_eq <| by rw [hs.inter_eq, ht.inter_eq, image_empty]
 #align local_equiv.is_image_source_target_of_disjoint PartialEquiv.isImage_source_target_of_disjoint
 
-theorem image_source_inter_eq' (s : Set α) : e '' (e.source ∩ s) = e.target ∩ e.symm ⁻¹' s := by
+lemma image_source_inter_eq' (s : Set α) : e '' (e.source ∩ s) = e.target ∩ e.symm ⁻¹' s := by
   rw [inter_comm, e.leftInvOn.image_inter', image_source_eq_target, inter_comm]
 #align local_equiv.image_source_inter_eq' PartialEquiv.image_source_inter_eq'
 
-theorem image_source_inter_eq (s : Set α) :
+lemma image_source_inter_eq (s : Set α) :
     e '' (e.source ∩ s) = e.target ∩ e.symm ⁻¹' (e.source ∩ s) := by
   rw [inter_comm, e.leftInvOn.image_inter, image_source_eq_target, inter_comm]
 #align local_equiv.image_source_inter_eq PartialEquiv.image_source_inter_eq
 
-theorem image_eq_target_inter_inv_preimage {s : Set α} (h : s ⊆ e.source) :
+lemma image_eq_target_inter_inv_preimage {s : Set α} (h : s ⊆ e.source) :
     e '' s = e.target ∩ e.symm ⁻¹' s := by
   rw [← e.image_source_inter_eq', inter_eq_self_of_subset_right h]
 #align local_equiv.image_eq_target_inter_inv_preimage PartialEquiv.image_eq_target_inter_inv_preimage
 
-theorem symm_image_eq_source_inter_preimage {s : Set β} (h : s ⊆ e.target) :
+lemma symm_image_eq_source_inter_preimage {s : Set β} (h : s ⊆ e.target) :
     e.symm '' s = e.source ∩ e ⁻¹' s :=
   e.symm.image_eq_target_inter_inv_preimage h
 #align local_equiv.symm_image_eq_source_inter_preimage PartialEquiv.symm_image_eq_source_inter_preimage
 
-theorem symm_image_target_inter_eq (s : Set β) :
+lemma symm_image_target_inter_eq (s : Set β) :
     e.symm '' (e.target ∩ s) = e.source ∩ e ⁻¹' (e.target ∩ s) :=
   e.symm.image_source_inter_eq _
 #align local_equiv.symm_image_target_inter_eq PartialEquiv.symm_image_target_inter_eq
 
-theorem symm_image_target_inter_eq' (s : Set β) : e.symm '' (e.target ∩ s) = e.source ∩ e ⁻¹' s :=
+lemma symm_image_target_inter_eq' (s : Set β) : e.symm '' (e.target ∩ s) = e.source ∩ e ⁻¹' s :=
   e.symm.image_source_inter_eq' _
 #align local_equiv.symm_image_target_inter_eq' PartialEquiv.symm_image_target_inter_eq'
 
-theorem source_inter_preimage_inv_preimage (s : Set α) :
+lemma source_inter_preimage_inv_preimage (s : Set α) :
     e.source ∩ e ⁻¹' (e.symm ⁻¹' s) = e.source ∩ s :=
   Set.ext fun x => and_congr_right_iff.2 fun hx =>
     by simp only [mem_preimage, e.left_inv hx]
 #align local_equiv.source_inter_preimage_inv_preimage PartialEquiv.source_inter_preimage_inv_preimage
 
-theorem source_inter_preimage_target_inter (s : Set β) :
+lemma source_inter_preimage_target_inter (s : Set β) :
     e.source ∩ e ⁻¹' (e.target ∩ s) = e.source ∩ e ⁻¹' s :=
   ext fun _ => ⟨fun hx => ⟨hx.1, hx.2.2⟩, fun hx => ⟨hx.1, e.map_source hx.1, hx.2⟩⟩
 #align local_equiv.source_inter_preimage_target_inter PartialEquiv.source_inter_preimage_target_inter
 
-theorem target_inter_inv_preimage_preimage (s : Set β) :
+lemma target_inter_inv_preimage_preimage (s : Set β) :
     e.target ∩ e.symm ⁻¹' (e ⁻¹' s) = e.target ∩ s :=
   e.symm.source_inter_preimage_inv_preimage _
 #align local_equiv.target_inter_inv_preimage_preimage PartialEquiv.target_inter_inv_preimage_preimage
 
-theorem symm_image_image_of_subset_source {s : Set α} (h : s ⊆ e.source) : e.symm '' (e '' s) = s :=
+lemma symm_image_image_of_subset_source {s : Set α} (h : s ⊆ e.source) : e.symm '' (e '' s) = s :=
   (e.leftInvOn.mono h).image_image
 #align local_equiv.symm_image_image_of_subset_source PartialEquiv.symm_image_image_of_subset_source
 
-theorem image_symm_image_of_subset_target {s : Set β} (h : s ⊆ e.target) : e '' (e.symm '' s) = s :=
+lemma image_symm_image_of_subset_target {s : Set β} (h : s ⊆ e.target) : e '' (e.symm '' s) = s :=
   e.symm.symm_image_image_of_subset_source h
 #align local_equiv.image_symm_image_of_subset_target PartialEquiv.image_symm_image_of_subset_target
 
-theorem source_subset_preimage_target : e.source ⊆ e ⁻¹' e.target :=
+lemma source_subset_preimage_target : e.source ⊆ e ⁻¹' e.target :=
   e.mapsTo
 #align local_equiv.source_subset_preimage_target PartialEquiv.source_subset_preimage_target
 
-theorem symm_image_target_eq_source : e.symm '' e.target = e.source :=
+lemma symm_image_target_eq_source : e.symm '' e.target = e.source :=
   e.symm.image_source_eq_target
 #align local_equiv.symm_image_target_eq_source PartialEquiv.symm_image_target_eq_source
 
-theorem target_subset_preimage_source : e.target ⊆ e.symm ⁻¹' e.source :=
+lemma target_subset_preimage_source : e.target ⊆ e.symm ⁻¹' e.source :=
   e.symm_mapsTo
 #align local_equiv.target_subset_preimage_source PartialEquiv.target_subset_preimage_source
 
@@ -575,32 +575,32 @@ protected def restr (s : Set α) : PartialEquiv α β :=
 #align local_equiv.restr PartialEquiv.restr
 
 @[simp, mfld_simps]
-theorem restr_coe (s : Set α) : (e.restr s : α → β) = e :=
+lemma restr_coe (s : Set α) : (e.restr s : α → β) = e :=
   rfl
 #align local_equiv.restr_coe PartialEquiv.restr_coe
 
 @[simp, mfld_simps]
-theorem restr_coe_symm (s : Set α) : ((e.restr s).symm : β → α) = e.symm :=
+lemma restr_coe_symm (s : Set α) : ((e.restr s).symm : β → α) = e.symm :=
   rfl
 #align local_equiv.restr_coe_symm PartialEquiv.restr_coe_symm
 
 @[simp, mfld_simps]
-theorem restr_source (s : Set α) : (e.restr s).source = e.source ∩ s :=
+lemma restr_source (s : Set α) : (e.restr s).source = e.source ∩ s :=
   rfl
 #align local_equiv.restr_source PartialEquiv.restr_source
 
 @[simp, mfld_simps]
-theorem restr_target (s : Set α) : (e.restr s).target = e.target ∩ e.symm ⁻¹' s :=
+lemma restr_target (s : Set α) : (e.restr s).target = e.target ∩ e.symm ⁻¹' s :=
   rfl
 #align local_equiv.restr_target PartialEquiv.restr_target
 
-theorem restr_eq_of_source_subset {e : PartialEquiv α β} {s : Set α} (h : e.source ⊆ s) :
+lemma restr_eq_of_source_subset {e : PartialEquiv α β} {s : Set α} (h : e.source ⊆ s) :
     e.restr s = e :=
   PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) (by simp [inter_eq_self_of_subset_left h])
 #align local_equiv.restr_eq_of_source_subset PartialEquiv.restr_eq_of_source_subset
 
 @[simp, mfld_simps]
-theorem restr_univ {e : PartialEquiv α β} : e.restr univ = e :=
+lemma restr_univ {e : PartialEquiv α β} : e.restr univ = e :=
   restr_eq_of_source_subset (subset_univ _)
 #align local_equiv.restr_univ PartialEquiv.restr_univ
 
@@ -610,33 +610,33 @@ protected def refl (α : Type*) : PartialEquiv α α :=
 #align local_equiv.refl PartialEquiv.refl
 
 @[simp, mfld_simps]
-theorem refl_source : (PartialEquiv.refl α).source = univ :=
+lemma refl_source : (PartialEquiv.refl α).source = univ :=
   rfl
 #align local_equiv.refl_source PartialEquiv.refl_source
 
 @[simp, mfld_simps]
-theorem refl_target : (PartialEquiv.refl α).target = univ :=
+lemma refl_target : (PartialEquiv.refl α).target = univ :=
   rfl
 #align local_equiv.refl_target PartialEquiv.refl_target
 
 @[simp, mfld_simps]
-theorem refl_coe : (PartialEquiv.refl α : α → α) = id :=
+lemma refl_coe : (PartialEquiv.refl α : α → α) = id :=
   rfl
 #align local_equiv.refl_coe PartialEquiv.refl_coe
 
 @[simp, mfld_simps]
-theorem refl_symm : (PartialEquiv.refl α).symm = PartialEquiv.refl α :=
+lemma refl_symm : (PartialEquiv.refl α).symm = PartialEquiv.refl α :=
   rfl
 #align local_equiv.refl_symm PartialEquiv.refl_symm
 
 -- Porting note: removed `simp` because `simp` can prove this
 @[mfld_simps]
-theorem refl_restr_source (s : Set α) : ((PartialEquiv.refl α).restr s).source = s := by simp
+lemma refl_restr_source (s : Set α) : ((PartialEquiv.refl α).restr s).source = s := by simp
 #align local_equiv.refl_restr_source PartialEquiv.refl_restr_source
 
 -- Porting note: removed `simp` because `simp` can prove this
 @[mfld_simps]
-theorem refl_restr_target (s : Set α) : ((PartialEquiv.refl α).restr s).target = s := by
+lemma refl_restr_target (s : Set α) : ((PartialEquiv.refl α).restr s).target = s := by
   change univ ∩ id ⁻¹' s = s
   simp
 #align local_equiv.refl_restr_target PartialEquiv.refl_restr_target
@@ -654,22 +654,22 @@ def ofSet (s : Set α) : PartialEquiv α α where
 #align local_equiv.of_set PartialEquiv.ofSet
 
 @[simp, mfld_simps]
-theorem ofSet_source (s : Set α) : (PartialEquiv.ofSet s).source = s :=
+lemma ofSet_source (s : Set α) : (PartialEquiv.ofSet s).source = s :=
   rfl
 #align local_equiv.of_set_source PartialEquiv.ofSet_source
 
 @[simp, mfld_simps]
-theorem ofSet_target (s : Set α) : (PartialEquiv.ofSet s).target = s :=
+lemma ofSet_target (s : Set α) : (PartialEquiv.ofSet s).target = s :=
   rfl
 #align local_equiv.of_set_target PartialEquiv.ofSet_target
 
 @[simp, mfld_simps]
-theorem ofSet_coe (s : Set α) : (PartialEquiv.ofSet s : α → α) = id :=
+lemma ofSet_coe (s : Set α) : (PartialEquiv.ofSet s : α → α) = id :=
   rfl
 #align local_equiv.of_set_coe PartialEquiv.ofSet_coe
 
 @[simp, mfld_simps]
-theorem ofSet_symm (s : Set α) : (PartialEquiv.ofSet s).symm = PartialEquiv.ofSet s :=
+lemma ofSet_symm (s : Set α) : (PartialEquiv.ofSet s).symm = PartialEquiv.ofSet s :=
   rfl
 #align local_equiv.of_set_symm PartialEquiv.ofSet_symm
 
@@ -695,88 +695,88 @@ protected def trans : PartialEquiv α γ :=
 #align local_equiv.trans PartialEquiv.trans
 
 @[simp, mfld_simps]
-theorem coe_trans : (e.trans e' : α → γ) = e' ∘ e :=
+lemma coe_trans : (e.trans e' : α → γ) = e' ∘ e :=
   rfl
 #align local_equiv.coe_trans PartialEquiv.coe_trans
 
 @[simp, mfld_simps]
-theorem coe_trans_symm : ((e.trans e').symm : γ → α) = e.symm ∘ e'.symm :=
+lemma coe_trans_symm : ((e.trans e').symm : γ → α) = e.symm ∘ e'.symm :=
   rfl
 #align local_equiv.coe_trans_symm PartialEquiv.coe_trans_symm
 
-theorem trans_apply {x : α} : (e.trans e') x = e' (e x) :=
+lemma trans_apply {x : α} : (e.trans e') x = e' (e x) :=
   rfl
 #align local_equiv.trans_apply PartialEquiv.trans_apply
 
-theorem trans_symm_eq_symm_trans_symm : (e.trans e').symm = e'.symm.trans e.symm := by
+lemma trans_symm_eq_symm_trans_symm : (e.trans e').symm = e'.symm.trans e.symm := by
   cases e; cases e'; rfl
 #align local_equiv.trans_symm_eq_symm_trans_symm PartialEquiv.trans_symm_eq_symm_trans_symm
 
 @[simp, mfld_simps]
-theorem trans_source : (e.trans e').source = e.source ∩ e ⁻¹' e'.source :=
+lemma trans_source : (e.trans e').source = e.source ∩ e ⁻¹' e'.source :=
   rfl
 #align local_equiv.trans_source PartialEquiv.trans_source
 
-theorem trans_source' : (e.trans e').source = e.source ∩ e ⁻¹' (e.target ∩ e'.source) := by
+lemma trans_source' : (e.trans e').source = e.source ∩ e ⁻¹' (e.target ∩ e'.source) := by
   mfld_set_tac
 #align local_equiv.trans_source' PartialEquiv.trans_source'
 
-theorem trans_source'' : (e.trans e').source = e.symm '' (e.target ∩ e'.source) := by
+lemma trans_source'' : (e.trans e').source = e.symm '' (e.target ∩ e'.source) := by
   rw [e.trans_source', e.symm_image_target_inter_eq]
 #align local_equiv.trans_source'' PartialEquiv.trans_source''
 
-theorem image_trans_source : e '' (e.trans e').source = e.target ∩ e'.source :=
+lemma image_trans_source : e '' (e.trans e').source = e.target ∩ e'.source :=
   (e.symm.restr e'.source).symm.image_source_eq_target
 #align local_equiv.image_trans_source PartialEquiv.image_trans_source
 
 @[simp, mfld_simps]
-theorem trans_target : (e.trans e').target = e'.target ∩ e'.symm ⁻¹' e.target :=
+lemma trans_target : (e.trans e').target = e'.target ∩ e'.symm ⁻¹' e.target :=
   rfl
 #align local_equiv.trans_target PartialEquiv.trans_target
 
-theorem trans_target' : (e.trans e').target = e'.target ∩ e'.symm ⁻¹' (e'.source ∩ e.target) :=
+lemma trans_target' : (e.trans e').target = e'.target ∩ e'.symm ⁻¹' (e'.source ∩ e.target) :=
   trans_source' e'.symm e.symm
 #align local_equiv.trans_target' PartialEquiv.trans_target'
 
-theorem trans_target'' : (e.trans e').target = e' '' (e'.source ∩ e.target) :=
+lemma trans_target'' : (e.trans e').target = e' '' (e'.source ∩ e.target) :=
   trans_source'' e'.symm e.symm
 #align local_equiv.trans_target'' PartialEquiv.trans_target''
 
-theorem inv_image_trans_target : e'.symm '' (e.trans e').target = e'.source ∩ e.target :=
+lemma inv_image_trans_target : e'.symm '' (e.trans e').target = e'.source ∩ e.target :=
   image_trans_source e'.symm e.symm
 #align local_equiv.inv_image_trans_target PartialEquiv.inv_image_trans_target
 
-theorem trans_assoc (e'' : PartialEquiv γ δ) : (e.trans e').trans e'' = e.trans (e'.trans e'') :=
+lemma trans_assoc (e'' : PartialEquiv γ δ) : (e.trans e').trans e'' = e.trans (e'.trans e'') :=
   PartialEquiv.ext (fun x => rfl) (fun x => rfl)
     (by simp [trans_source, @preimage_comp α β γ, inter_assoc])
 #align local_equiv.trans_assoc PartialEquiv.trans_assoc
 
 @[simp, mfld_simps]
-theorem trans_refl : e.trans (PartialEquiv.refl β) = e :=
+lemma trans_refl : e.trans (PartialEquiv.refl β) = e :=
   PartialEquiv.ext (fun x => rfl) (fun x => rfl) (by simp [trans_source])
 #align local_equiv.trans_refl PartialEquiv.trans_refl
 
 @[simp, mfld_simps]
-theorem refl_trans : (PartialEquiv.refl α).trans e = e :=
+lemma refl_trans : (PartialEquiv.refl α).trans e = e :=
   PartialEquiv.ext (fun x => rfl) (fun x => rfl) (by simp [trans_source, preimage_id])
 #align local_equiv.refl_trans PartialEquiv.refl_trans
 
-theorem trans_ofSet (s : Set β) : e.trans (ofSet s) = e.restr (e ⁻¹' s) :=
+lemma trans_ofSet (s : Set β) : e.trans (ofSet s) = e.restr (e ⁻¹' s) :=
   PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) rfl
 
-theorem trans_refl_restr (s : Set β) :
+lemma trans_refl_restr (s : Set β) :
     e.trans ((PartialEquiv.refl β).restr s) = e.restr (e ⁻¹' s) :=
   PartialEquiv.ext (fun x => rfl) (fun x => rfl) (by simp [trans_source])
 #align local_equiv.trans_refl_restr PartialEquiv.trans_refl_restr
 
-theorem trans_refl_restr' (s : Set β) :
+lemma trans_refl_restr' (s : Set β) :
     e.trans ((PartialEquiv.refl β).restr s) = e.restr (e.source ∩ e ⁻¹' s) :=
   PartialEquiv.ext (fun x => rfl) (fun x => rfl) <| by
     simp only [trans_source, restr_source, refl_source, univ_inter]
     rw [← inter_assoc, inter_self]
 #align local_equiv.trans_refl_restr' PartialEquiv.trans_refl_restr'
 
-theorem restr_trans (s : Set α) : (e.restr s).trans e' = (e.trans e').restr s :=
+lemma restr_trans (s : Set α) : (e.restr s).trans e' = (e.trans e').restr s :=
   PartialEquiv.ext (fun x => rfl) (fun x => rfl) <| by
     simp [trans_source, inter_comm, inter_assoc]
 #align local_equiv.restr_trans PartialEquiv.restr_trans
@@ -800,7 +800,7 @@ instance eqOnSourceSetoid : Setoid (PartialEquiv α β) where
   iseqv := by constructor <;> simp only [Equivalence, EqOnSource, EqOn] <;> aesop
 #align local_equiv.eq_on_source_setoid PartialEquiv.eqOnSourceSetoid
 
-theorem eqOnSource_refl : e ≈ e :=
+lemma eqOnSource_refl : e ≈ e :=
   Setoid.refl _
 #align local_equiv.eq_on_source_refl PartialEquiv.eqOnSource_refl
 
@@ -904,43 +904,43 @@ def prod (e : PartialEquiv α β) (e' : PartialEquiv γ δ) : PartialEquiv (α �
 #align local_equiv.prod PartialEquiv.prod
 
 @[simp, mfld_simps]
-theorem prod_source (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
+lemma prod_source (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
     (e.prod e').source = e.source ×ˢ e'.source :=
   rfl
 #align local_equiv.prod_source PartialEquiv.prod_source
 
 @[simp, mfld_simps]
-theorem prod_target (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
+lemma prod_target (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
     (e.prod e').target = e.target ×ˢ e'.target :=
   rfl
 #align local_equiv.prod_target PartialEquiv.prod_target
 
 @[simp, mfld_simps]
-theorem prod_coe (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
+lemma prod_coe (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
     (e.prod e' : α × γ → β × δ) = fun p => (e p.1, e' p.2) :=
   rfl
 #align local_equiv.prod_coe PartialEquiv.prod_coe
 
-theorem prod_coe_symm (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
+lemma prod_coe_symm (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
     ((e.prod e').symm : β × δ → α × γ) = fun p => (e.symm p.1, e'.symm p.2) :=
   rfl
 #align local_equiv.prod_coe_symm PartialEquiv.prod_coe_symm
 
 @[simp, mfld_simps]
-theorem prod_symm (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
+lemma prod_symm (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
     (e.prod e').symm = e.symm.prod e'.symm := by
   ext x <;> simp [prod_coe_symm]
 #align local_equiv.prod_symm PartialEquiv.prod_symm
 
 @[simp, mfld_simps]
-theorem refl_prod_refl :
+lemma refl_prod_refl :
     (PartialEquiv.refl α).prod (PartialEquiv.refl β) = PartialEquiv.refl (α × β) := by
   -- Porting note: `ext1 ⟨x, y⟩` insufficient number of binders
   ext ⟨x, y⟩ <;> simp
 #align local_equiv.refl_prod_refl PartialEquiv.refl_prod_refl
 
 @[simp, mfld_simps]
-theorem prod_trans {η : Type*} {ε : Type*} (e : PartialEquiv α β) (f : PartialEquiv β γ)
+lemma prod_trans {η : Type*} {ε : Type*} (e : PartialEquiv α β) (f : PartialEquiv β γ)
     (e' : PartialEquiv δ η) (f' : PartialEquiv η ε) :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') := by
   ext ⟨x, y⟩ <;> simp [ext_iff]; tauto
@@ -971,7 +971,7 @@ def piecewise (e e' : PartialEquiv α β) (s : Set α) (t : Set β) [∀ x, Deci
 #align local_equiv.piecewise_symm_apply PartialEquiv.piecewise_symm_apply
 #align local_equiv.piecewise_apply PartialEquiv.piecewise_apply
 
-theorem symm_piecewise (e e' : PartialEquiv α β) {s : Set α} {t : Set β} [∀ x, Decidable (x ∈ s)]
+lemma symm_piecewise (e e' : PartialEquiv α β) {s : Set α} {t : Set β} [∀ x, Decidable (x ∈ s)]
     [∀ y, Decidable (y ∈ t)] (H : e.IsImage s t) (H' : e'.IsImage s t) :
     (e.piecewise e' s t H H').symm = e.symm.piecewise e'.symm t s H.symm H'.symm :=
   rfl
@@ -993,7 +993,7 @@ def disjointUnion (e e' : PartialEquiv α β) (hs : Disjoint e.source e'.source)
 #align local_equiv.disjoint_union_symm_apply PartialEquiv.disjointUnion_symm_apply
 #align local_equiv.disjoint_union_apply PartialEquiv.disjointUnion_apply
 
-theorem disjointUnion_eq_piecewise (e e' : PartialEquiv α β) (hs : Disjoint e.source e'.source)
+lemma disjointUnion_eq_piecewise (e e' : PartialEquiv α β) (hs : Disjoint e.source e'.source)
     (ht : Disjoint e.target e'.target) [∀ x, Decidable (x ∈ e.source)]
     [∀ y, Decidable (y ∈ e.target)] :
     e.disjointUnion e' hs ht =
@@ -1023,21 +1023,21 @@ protected def pi (ei : ∀ i, PartialEquiv (αi i) (βi i)) : PartialEquiv (∀ 
 #align local_equiv.pi_target PartialEquiv.pi_target
 
 @[simp, mfld_simps]
-theorem pi_symm (ei : ∀ i, PartialEquiv (αi i) (βi i)) :
+lemma pi_symm (ei : ∀ i, PartialEquiv (αi i) (βi i)) :
     (PartialEquiv.pi ei).symm = .pi fun i ↦ (ei i).symm :=
   rfl
 
-theorem pi_symm_apply (ei : ∀ i, PartialEquiv (αi i) (βi i)) :
+lemma pi_symm_apply (ei : ∀ i, PartialEquiv (αi i) (βi i)) :
     ⇑(PartialEquiv.pi ei).symm = fun f i ↦ (ei i).symm (f i) :=
   rfl
 #align local_equiv.pi_symm_apply PartialEquiv.pi_symm_apply
 
 @[simp, mfld_simps]
-theorem pi_refl : (PartialEquiv.pi fun i ↦ PartialEquiv.refl (αi i)) = .refl (∀ i, αi i) := by
+lemma pi_refl : (PartialEquiv.pi fun i ↦ PartialEquiv.refl (αi i)) = .refl (∀ i, αi i) := by
   ext <;> simp
 
 @[simp, mfld_simps]
-theorem pi_trans (ei : ∀ i, PartialEquiv (αi i) (βi i)) (ei' : ∀ i, PartialEquiv (βi i) (γi i)) :
+lemma pi_trans (ei : ∀ i, PartialEquiv (αi i) (βi i)) (ei' : ∀ i, PartialEquiv (βi i) (γi i)) :
     (PartialEquiv.pi ei).trans (PartialEquiv.pi ei') = .pi fun i ↦ (ei i).trans (ei' i) := by
   ext <;> simp [forall_and]
 
@@ -1083,17 +1083,17 @@ namespace Equiv
 variable (e : α ≃ β) (e' : β ≃ γ)
 
 @[simp, mfld_simps]
-theorem refl_toPartialEquiv : (Equiv.refl α).toPartialEquiv = PartialEquiv.refl α :=
+lemma refl_toPartialEquiv : (Equiv.refl α).toPartialEquiv = PartialEquiv.refl α :=
   rfl
 #align equiv.refl_to_local_equiv Equiv.refl_toPartialEquiv
 
 @[simp, mfld_simps]
-theorem symm_toPartialEquiv : e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
+lemma symm_toPartialEquiv : e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
   rfl
 #align equiv.symm_to_local_equiv Equiv.symm_toPartialEquiv
 
 @[simp, mfld_simps]
-theorem trans_toPartialEquiv :
+lemma trans_toPartialEquiv :
     (e.trans e').toPartialEquiv = e.toPartialEquiv.trans e'.toPartialEquiv :=
   PartialEquiv.ext (fun x => rfl) (fun x => rfl)
     (by simp [PartialEquiv.trans_source, Equiv.toPartialEquiv])
@@ -1111,18 +1111,18 @@ def transPartialEquiv (e : α ≃ β) (f' : PartialEquiv β γ) : PartialEquiv �
 #align equiv.trans_local_equiv_source Equiv.transPartialEquiv_source
 #align equiv.trans_local_equiv_symm_apply Equiv.transPartialEquiv_symm_apply
 
-theorem transPartialEquiv_eq_trans (e : α ≃ β) (f' : PartialEquiv β γ) :
+lemma transPartialEquiv_eq_trans (e : α ≃ β) (f' : PartialEquiv β γ) :
     e.transPartialEquiv f' = e.toPartialEquiv.trans f' :=
   PartialEquiv.copy_eq ..
 #align equiv.trans_local_equiv_eq_trans Equiv.transPartialEquiv_eq_trans
 
 @[simp, mfld_simps]
-theorem transPartialEquiv_trans (e : α ≃ β) (f' : PartialEquiv β γ) (f'' : PartialEquiv γ δ) :
+lemma transPartialEquiv_trans (e : α ≃ β) (f' : PartialEquiv β γ) (f'' : PartialEquiv γ δ) :
     (e.transPartialEquiv f').trans f'' = e.transPartialEquiv (f'.trans f'') := by
   simp only [transPartialEquiv_eq_trans, PartialEquiv.trans_assoc]
 
 @[simp, mfld_simps]
-theorem trans_transPartialEquiv (e : α ≃ β) (e' : β ≃ γ) (f'' : PartialEquiv γ δ) :
+lemma trans_transPartialEquiv (e : α ≃ β) (e' : β ≃ γ) (f'' : PartialEquiv γ δ) :
     (e.trans e').transPartialEquiv f'' = e.transPartialEquiv (e'.transPartialEquiv f'') := by
   simp only [transPartialEquiv_eq_trans, PartialEquiv.trans_assoc, trans_toPartialEquiv]
 
@@ -1142,18 +1142,18 @@ def transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) : PartialEquiv α γ :=
 #align local_equiv.trans_equiv_target PartialEquiv.transEquiv_target
 #align local_equiv.trans_equiv_symm_apply PartialEquiv.transEquiv_symm_apply
 
-theorem transEquiv_eq_trans (e : PartialEquiv α β) (e' : β ≃ γ) :
+lemma transEquiv_eq_trans (e : PartialEquiv α β) (e' : β ≃ γ) :
     e.transEquiv e' = e.trans e'.toPartialEquiv :=
   copy_eq ..
 #align local_equiv.trans_equiv_eq_trans PartialEquiv.transEquiv_eq_trans
 
 @[simp, mfld_simps]
-theorem transEquiv_transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) (f'' : γ ≃ δ) :
+lemma transEquiv_transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) (f'' : γ ≃ δ) :
     (e.transEquiv f').transEquiv f'' = e.transEquiv (f'.trans f'') := by
   simp only [transEquiv_eq_trans, trans_assoc, Equiv.trans_toPartialEquiv]
 
 @[simp, mfld_simps]
-theorem trans_transEquiv (e : PartialEquiv α β) (e' : PartialEquiv β γ) (f'' : γ ≃ δ) :
+lemma trans_transEquiv (e : PartialEquiv α β) (e' : PartialEquiv β γ) (f'' : γ ≃ δ) :
     (e.trans e').transEquiv f'' = e.trans (e'.transEquiv f'') := by
   simp only [transEquiv_eq_trans, trans_assoc, Equiv.trans_toPartialEquiv]
 

@@ -48,7 +48,7 @@ instance algebra : Algebra R (A × B) :=
 variable {R A B}
 
 @[simp]
-theorem algebraMap_apply (r : R) : algebraMap R (A × B) r = (algebraMap R A r, algebraMap R B r) :=
+lemma algebraMap_apply (r : R) : algebraMap R (A × B) r = (algebraMap R A r, algebraMap R B r) :=
   rfl
 #align prod.algebra_map_apply Prod.algebraMap_apply
 
@@ -79,20 +79,20 @@ def prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : A →ₐ[R] B × C :=
         commutes, Prod.algebraMap_apply] }
 #align alg_hom.prod AlgHom.prod
 
-theorem coe_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
+lemma coe_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
   rfl
 #align alg_hom.coe_prod AlgHom.coe_prod
 
 @[simp]
-theorem fst_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (fst R B C).comp (prod f g) = f := by ext; rfl
+lemma fst_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (fst R B C).comp (prod f g) = f := by ext; rfl
 #align alg_hom.fst_prod AlgHom.fst_prod
 
 @[simp]
-theorem snd_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (snd R B C).comp (prod f g) = g := by ext; rfl
+lemma snd_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (snd R B C).comp (prod f g) = g := by ext; rfl
 #align alg_hom.snd_prod AlgHom.snd_prod
 
 @[simp]
-theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
+lemma prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
   DFunLike.coe_injective Pi.prod_fst_snd
 #align alg_hom.prod_fst_snd AlgHom.prod_fst_snd
 

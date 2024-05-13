@@ -61,7 +61,7 @@ def imageObjIso : (Abelian.image α).obj X ≅ Abelian.image (α.app X) :=
         exact (π_comp_cokernelComparison _ ((evaluation C D).obj X)).symm)
 #align category_theory.abelian.functor_category.image_obj_iso CategoryTheory.Abelian.FunctorCategory.imageObjIso
 
-theorem coimageImageComparison_app :
+lemma coimageImageComparison_app :
     coimageImageComparison (α.app X) =
       (coimageObjIso α X).inv ≫ (coimageImageComparison α).app X ≫ (imageObjIso α X).hom := by
   ext
@@ -76,7 +76,7 @@ theorem coimageImageComparison_app :
   rfl
 #align category_theory.abelian.functor_category.coimage_image_comparison_app CategoryTheory.Abelian.FunctorCategory.coimageImageComparison_app
 
-theorem coimageImageComparison_app' :
+lemma coimageImageComparison_app' :
     (coimageImageComparison α).app X =
       (coimageObjIso α X).hom ≫ coimageImageComparison (α.app X) ≫ (imageObjIso α X).inv := by
   simp only [coimageImageComparison_app, Iso.hom_inv_id_assoc, Iso.hom_inv_id, Category.assoc,

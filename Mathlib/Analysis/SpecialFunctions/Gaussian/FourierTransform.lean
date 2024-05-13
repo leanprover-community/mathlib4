@@ -56,7 +56,7 @@ theorem norm_cexp_neg_mul_sq_add_mul_I (b : ℂ) (c T : ℝ) :
 set_option linter.uppercaseLean3 false in
 #align gaussian_fourier.norm_cexp_neg_mul_sq_add_mul_I GaussianFourier.norm_cexp_neg_mul_sq_add_mul_I
 
-theorem norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
+lemma norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
     ‖cexp (-b * (T + c * I) ^ 2)‖ =
       exp (-(b.re * (T - b.im * c / b.re) ^ 2 - c ^ 2 * (b.im ^ 2 / b.re + b.re))) := by
   have :
@@ -67,7 +67,7 @@ theorem norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
 set_option linter.uppercaseLean3 false in
 #align gaussian_fourier.norm_cexp_neg_mul_sq_add_mul_I' GaussianFourier.norm_cexp_neg_mul_sq_add_mul_I'
 
-theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤ T) :
+lemma verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤ T) :
     ‖verticalIntegral b c T‖ ≤
       (2 : ℝ) * |c| * exp (-(b.re * T ^ 2 - (2 : ℝ) * |b.im| * |c| * T - b.re * c ^ 2)) := by
   -- first get uniform bound for integrand
@@ -112,7 +112,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
     simpa only [neg_mul, ofReal_neg] using vert_norm_bound hT absy
 #align gaussian_fourier.vertical_integral_norm_le GaussianFourier.verticalIntegral_norm_le
 
-theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
+lemma tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
     Tendsto (verticalIntegral b c) atTop (𝓝 0) := by
   -- complete proof using squeeze theorem:
   rw [tendsto_zero_iff_norm_tendsto_zero]
@@ -129,7 +129,7 @@ theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
   exact (tendsto_const_mul_atTop_of_pos hb).mpr tendsto_id
 #align gaussian_fourier.tendsto_vertical_integral GaussianFourier.tendsto_verticalIntegral
 
-theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
+lemma integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     Integrable fun x : ℝ => cexp (-b * (x + c * I) ^ 2) := by
   refine'
     ⟨(Complex.continuous_exp.comp
@@ -146,7 +146,7 @@ theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
 set_option linter.uppercaseLean3 false in
 #align gaussian_fourier.integrable_cexp_neg_mul_sq_add_real_mul_I GaussianFourier.integrable_cexp_neg_mul_sq_add_real_mul_I
 
-theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
+lemma integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     ∫ x : ℝ, cexp (-b * (x + c * I) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
   refine'
     tendsto_nhds_unique
@@ -188,7 +188,7 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
 set_option linter.uppercaseLean3 false in
 #align gaussian_fourier.integral_cexp_neg_mul_sq_add_real_mul_I GaussianFourier.integral_cexp_neg_mul_sq_add_real_mul_I
 
-theorem _root_.integral_cexp_quadratic (hb : b.re < 0) (c d : ℂ) :
+lemma _root_.integral_cexp_quadratic (hb : b.re < 0) (c d : ℂ) :
     ∫ x : ℝ, cexp (b * x ^ 2 + c * x + d) = (π / -b) ^ (1 / 2 : ℂ) * cexp (d - c^2 / (4 * b)) := by
   have hb' : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
   have h (x : ℝ) : cexp (b * x ^ 2 + c * x + d) =
@@ -215,7 +215,7 @@ lemma _root_.integrable_cexp_quadratic (hb : 0 < b.re) (c d : ℂ) :
   have : (-b).re < 0 := by simpa using hb
   exact integrable_cexp_quadratic' this c d
 
-theorem _root_.fourierIntegral_gaussian (hb : 0 < b.re) (t : ℂ) :
+lemma _root_.fourierIntegral_gaussian (hb : 0 < b.re) (t : ℂ) :
     ∫ x : ℝ, cexp (I * t * x) * cexp (-b * x ^ 2) =
     (π / b) ^ (1 / 2 : ℂ) * cexp (-t ^ 2 / (4 * b)) := by
   conv => enter [1, 2, x]; rw [← Complex.exp_add, add_comm, ← add_zero (-b * x ^ 2 + I * t * x)]
@@ -225,7 +225,7 @@ theorem _root_.fourierIntegral_gaussian (hb : 0 < b.re) (t : ℂ) :
 
 @[deprecated] alias _root_.fourier_transform_gaussian := fourierIntegral_gaussian -- 2024-02-21
 
-theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
+lemma _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     (𝓕 fun x : ℝ => cexp (-π * b * x ^ 2 + 2 * π * c * x)) = fun t : ℝ =>
     1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * (t + I * c) ^ 2) := by
   haveI : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
@@ -248,7 +248,7 @@ theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
 @[deprecated] -- deprecated on 2024-02-21
 alias _root_.fourier_transform_gaussian_pi' := _root_.fourierIntegral_gaussian_pi'
 
-theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
+lemma _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
     (𝓕 fun (x : ℝ) ↦ cexp (-π * b * x ^ 2)) =
     fun t : ℝ ↦ 1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * t ^ 2) := by
   simpa only [mul_zero, zero_mul, add_zero] using fourierIntegral_gaussian_pi' hb 0
@@ -264,7 +264,7 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDim
 
 open scoped BigOperators
 
-theorem integrable_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
+lemma integrable_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
     (hb : ∀ i, 0 < (b i).re) (c : ι → ℂ) :
     Integrable (fun (v : ι → ℝ) ↦ cexp (- ∑ i, b i * (v i : ℂ) ^ 2 + ∑ i, c i * v i)) := by
   simp_rw [← Finset.sum_neg_distrib, ← Finset.sum_add_distrib, Complex.exp_sum, ← neg_mul]
@@ -272,12 +272,12 @@ theorem integrable_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → �
   convert integrable_cexp_quadratic (hb i) (c i) 0 using 3 with x
   simp only [add_zero]
 
-theorem integrable_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
+lemma integrable_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
     Integrable (fun (v : ι → ℝ) ↦ cexp (- b * ∑ i, (v i : ℂ) ^ 2 + ∑ i, c i * v i)) := by
   simp_rw [neg_mul, Finset.mul_sum]
   exact integrable_cexp_neg_sum_mul_add (fun _ ↦ hb) c
 
-theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
+lemma integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
     Integrable (fun (v : EuclideanSpace ℝ ι) ↦ cexp (- b * ‖v‖^2 + c * ⟪w, v⟫)) := by
   have := EuclideanSpace.volume_preserving_measurableEquiv ι
@@ -305,7 +305,7 @@ theorem integrable_cexp_neg_mul_sq_norm_add (hb : 0 < b.re) (c : ℂ) (w : V) :
     LinearIsometryEquiv.symm_symm, conj_trivial, ofReal_sum,
     ofReal_mul, LinearIsometryEquiv.inner_map_eq_flip]
 
-theorem integral_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
+lemma integral_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
     (hb : ∀ i, 0 < (b i).re) (c : ι → ℂ) :
     ∫ v : ι → ℝ, cexp (- ∑ i, b i * (v i : ℂ) ^ 2 + ∑ i, c i * v i)
       = ∏ i, (π / b i) ^ (1 / 2 : ℂ) * cexp (c i ^ 2 / (4 * b i)) := by
@@ -315,7 +315,7 @@ theorem integral_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
   have : (-b i).re < 0 := by simpa using hb i
   convert integral_cexp_quadratic this (c i) 0 using 1 <;> simp [div_neg]
 
-theorem integral_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
+lemma integral_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
     ∫ v : ι → ℝ, cexp (- b * ∑ i, (v i : ℂ) ^ 2 + ∑ i, c i * v i)
       = (π / b) ^ (Fintype.card ι / 2 : ℂ) * cexp ((∑ i, c i ^ 2) / (4 * b)) := by
   simp_rw [neg_mul, Finset.mul_sum, integral_cexp_neg_sum_mul_add (fun _ ↦ hb) c]
@@ -323,7 +323,7 @@ theorem integral_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) 
     Fintype.card, Finset.sum_div]
   rfl
 
-theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
+lemma integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
     ∫ v : EuclideanSpace ℝ ι, cexp (- b * ‖v‖^2 + c * ⟪w, v⟫) =
       (π / b) ^ (Fintype.card ι / 2 : ℂ) * cexp (c ^ 2 * ‖w‖^2 / (4 * b)) := by
@@ -345,7 +345,7 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     rw [sq_sqrt]
     exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
 
-theorem integral_cexp_neg_mul_sq_norm_add
+lemma integral_cexp_neg_mul_sq_norm_add
     (hb : 0 < b.re) (c : ℂ) (w : V) :
     ∫ v : V, cexp (- b * ‖v‖^2 + c * ⟪w, v⟫) =
       (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℂ) * cexp (c ^ 2 * ‖w‖^2 / (4 * b)) := by
@@ -354,11 +354,11 @@ theorem integral_cexp_neg_mul_sq_norm_add
   convert integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     hb c (e.symm w) <;> simp [LinearIsometryEquiv.inner_map_eq_flip]
 
-theorem integral_cexp_neg_mul_sq_norm (hb : 0 < b.re) :
+lemma integral_cexp_neg_mul_sq_norm (hb : 0 < b.re) :
     ∫ v : V, cexp (- b * ‖v‖^2) = (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℂ) := by
   simpa using integral_cexp_neg_mul_sq_norm_add hb 0 (0 : V)
 
-theorem integral_rexp_neg_mul_sq_norm {b : ℝ} (hb : 0 < b) :
+lemma integral_rexp_neg_mul_sq_norm {b : ℝ} (hb : 0 < b) :
     ∫ v : V, rexp (- b * ‖v‖^2) = (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℝ) := by
   rw [← ofReal_inj]
   convert integral_cexp_neg_mul_sq_norm (show 0 < (b : ℂ).re from hb) (V := V)
@@ -368,7 +368,7 @@ theorem integral_rexp_neg_mul_sq_norm {b : ℝ} (hb : 0 < b) :
   · rw [← ofReal_div, ofReal_cpow (by positivity)]
     simp
 
-theorem _root_.fourierIntegral_gaussian_innerProductSpace' (hb : 0 < b.re) (x w : V) :
+lemma _root_.fourierIntegral_gaussian_innerProductSpace' (hb : 0 < b.re) (x w : V) :
     𝓕 (fun v ↦ cexp (- b * ‖v‖^2 + 2 * π * Complex.I * ⟪x, v⟫)) w =
       (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * ‖x - w‖ ^ 2 / b) := by
   simp only [neg_mul, fourierIntegral_eq', ofReal_neg, ofReal_mul, ofReal_ofNat,
@@ -381,7 +381,7 @@ theorem _root_.fourierIntegral_gaussian_innerProductSpace' (hb : 0 < b.re) (x w 
     field_simp [mul_pow]
     ring
 
-theorem _root_.fourierIntegral_gaussian_innerProductSpace (hb : 0 < b.re) (w : V) :
+lemma _root_.fourierIntegral_gaussian_innerProductSpace (hb : 0 < b.re) (w : V) :
     𝓕 (fun v ↦ cexp (- b * ‖v‖^2)) w =
       (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * ‖w‖^2 / b) := by
   simpa using fourierIntegral_gaussian_innerProductSpace' hb 0 w

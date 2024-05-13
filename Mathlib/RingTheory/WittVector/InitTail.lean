@@ -69,7 +69,7 @@ def selectPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
   if P n then X n else 0
 #align witt_vector.select_poly WittVector.selectPoly
 
-theorem coeff_select (x : 𝕎 R) (n : ℕ) :
+lemma coeff_select (x : 𝕎 R) (n : ℕ) :
     (select P x).coeff n = aeval x.coeff (selectPoly P n) := by
   dsimp [select, selectPoly]
   split_ifs with hi
@@ -85,7 +85,7 @@ instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ x => select P x := 
   apply coeff_select
 #align witt_vector.select_is_poly WittVector.select_isPoly
 
-theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬P i) x = x := by
+lemma select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬P i) x = x := by
   -- Porting note: TC search was insufficient to find this instance, even though all required
   -- instances exist. See zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/WittVector.20saga/near/370073526]
   have : IsPoly p fun {R} [CommRing R] x ↦ select P x + select (fun i ↦ ¬P i) x :=
@@ -109,7 +109,7 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
   · rwa [if_neg Pm, if_pos, zero_add]
 #align witt_vector.select_add_select_not WittVector.select_add_select_not
 
-theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coeff n = 0) :
+lemma coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coeff n = 0) :
     (x + y).coeff n = x.coeff n + y.coeff n := by
   let P : ℕ → Prop := fun n => y.coeff n = 0
   haveI : DecidablePred P := Classical.decPred P
@@ -151,7 +151,7 @@ def tail (n : ℕ) : 𝕎 R → 𝕎 R :=
 #align witt_vector.tail WittVector.tail
 
 @[simp]
-theorem init_add_tail (x : 𝕎 R) (n : ℕ) : init n x + tail n x = x := by
+lemma init_add_tail (x : 𝕎 R) (n : ℕ) : init n x + tail n x = x := by
   simp only [init, tail, ← not_lt, select_add_select_not]
 #align witt_vector.init_add_tail WittVector.init_add_tail
 
@@ -191,38 +191,38 @@ elab_rules : tactic
 -- Porting note: `by init_ring` should suffice; this patches over an issue with `split_ifs`.
 -- See zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60split_ifs.60.20boxes.20itself.20into.20a.20corner]
 @[simp]
-theorem init_init (x : 𝕎 R) (n : ℕ) : init n (init n x) = init n x := by
+lemma init_init (x : 𝕎 R) (n : ℕ) : init n (init n x) = init n x := by
   rw [ext_iff]
   intro i
   simp only [WittVector.init, WittVector.select, WittVector.coeff_mk]
   by_cases hi : i < n <;> simp [hi]
 #align witt_vector.init_init WittVector.init_init
 
-theorem init_add (x y : 𝕎 R) (n : ℕ) : init n (x + y) = init n (init n x + init n y) := by
+lemma init_add (x y : 𝕎 R) (n : ℕ) : init n (x + y) = init n (init n x + init n y) := by
   init_ring using wittAdd_vars
 #align witt_vector.init_add WittVector.init_add
 
-theorem init_mul (x y : 𝕎 R) (n : ℕ) : init n (x * y) = init n (init n x * init n y) := by
+lemma init_mul (x y : 𝕎 R) (n : ℕ) : init n (x * y) = init n (init n x * init n y) := by
   init_ring using wittMul_vars
 #align witt_vector.init_mul WittVector.init_mul
 
-theorem init_neg (x : 𝕎 R) (n : ℕ) : init n (-x) = init n (-init n x) := by
+lemma init_neg (x : 𝕎 R) (n : ℕ) : init n (-x) = init n (-init n x) := by
   init_ring using wittNeg_vars
 #align witt_vector.init_neg WittVector.init_neg
 
-theorem init_sub (x y : 𝕎 R) (n : ℕ) : init n (x - y) = init n (init n x - init n y) := by
+lemma init_sub (x y : 𝕎 R) (n : ℕ) : init n (x - y) = init n (init n x - init n y) := by
   init_ring using wittSub_vars
 #align witt_vector.init_sub WittVector.init_sub
 
-theorem init_nsmul (m : ℕ) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n (m • init n x) := by
+lemma init_nsmul (m : ℕ) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n (m • init n x) := by
   init_ring using fun p [Fact (Nat.Prime p)] n => wittNSMul_vars p m n
 #align witt_vector.init_nsmul WittVector.init_nsmul
 
-theorem init_zsmul (m : ℤ) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n (m • init n x) := by
+lemma init_zsmul (m : ℤ) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n (m • init n x) := by
   init_ring using fun p [Fact (Nat.Prime p)] n => wittZSMul_vars p m n
 #align witt_vector.init_zsmul WittVector.init_zsmul
 
-theorem init_pow (m : ℕ) (x : 𝕎 R) (n : ℕ) : init n (x ^ m) = init n (init n x ^ m) := by
+lemma init_pow (m : ℕ) (x : 𝕎 R) (n : ℕ) : init n (x ^ m) = init n (init n x ^ m) := by
   init_ring using fun p [Fact (Nat.Prime p)] n => wittPow_vars p m n
 #align witt_vector.init_pow WittVector.init_pow
 

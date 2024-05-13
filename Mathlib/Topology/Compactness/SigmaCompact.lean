@@ -173,7 +173,7 @@ instance (priority := 200) CompactSpace.sigma_compact [CompactSpace X] : SigmaCo
   ⟨⟨fun _ => univ, fun _ => isCompact_univ, iUnion_const _⟩⟩
 #align compact_space.sigma_compact CompactSpace.sigma_compact
 
-theorem SigmaCompactSpace.of_countable (S : Set (Set X)) (Hc : S.Countable)
+lemma SigmaCompactSpace.of_countable (S : Set (Set X)) (Hc : S.Countable)
     (Hcomp : ∀ s ∈ S, IsCompact s) (HU : ⋃₀ S = univ) : SigmaCompactSpace X :=
   ⟨(exists_seq_cover_iff_countable ⟨_, isCompact_empty⟩).2 ⟨S, Hc, Hcomp, HU⟩⟩
 #align sigma_compact_space.of_countable SigmaCompactSpace.of_countable
@@ -198,23 +198,23 @@ def compactCovering : ℕ → Set X :=
   Accumulate exists_compact_covering.choose
 #align compact_covering compactCovering
 
-theorem isCompact_compactCovering (n : ℕ) : IsCompact (compactCovering X n) :=
+lemma isCompact_compactCovering (n : ℕ) : IsCompact (compactCovering X n) :=
   isCompact_accumulate (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).1 n
 #align is_compact_compact_covering isCompact_compactCovering
 
-theorem iUnion_compactCovering : ⋃ n, compactCovering X n = univ := by
+lemma iUnion_compactCovering : ⋃ n, compactCovering X n = univ := by
   rw [compactCovering, iUnion_accumulate]
   exact (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).2
 #align Union_compact_covering iUnion_compactCovering
 
 @[mono]
-theorem compactCovering_subset ⦃m n : ℕ⦄ (h : m ≤ n) : compactCovering X m ⊆ compactCovering X n :=
+lemma compactCovering_subset ⦃m n : ℕ⦄ (h : m ≤ n) : compactCovering X m ⊆ compactCovering X n :=
   monotone_accumulate h
 #align compact_covering_subset compactCovering_subset
 
 variable {X}
 
-theorem exists_mem_compactCovering (x : X) : ∃ n, x ∈ compactCovering X n :=
+lemma exists_mem_compactCovering (x : X) : ∃ n, x ∈ compactCovering X n :=
   iUnion_eq_univ_iff.mp (iUnion_compactCovering X) x
 #align exists_mem_compact_covering exists_mem_compactCovering
 
@@ -253,7 +253,7 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
       refine' ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ _⟩
       exact compactCovering_subset _ (le_max_right _ _) hn
 
-protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEmbedding e) :
+protected lemma ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEmbedding e) :
     SigmaCompactSpace Y :=
   ⟨⟨fun n => e ⁻¹' compactCovering X n, fun n =>
       he.isCompact_preimage (isCompact_compactCovering _ _), by
@@ -261,7 +261,7 @@ protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEm
 #align closed_embedding.sigma_compact_space ClosedEmbedding.sigmaCompactSpace
 
 -- Porting note (#10756): new lemma
-theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
+lemma IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
   (closedEmbedding_subtype_val hs).sigmaCompactSpace
 
 instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
@@ -347,33 +347,33 @@ instance : RelHomClass (CompactExhaustion X) LE.le HasSubset.Subset where
 variable (K : CompactExhaustion X)
 
 @[simp]
-theorem toFun_eq_coe : K.toFun = K := rfl
+lemma toFun_eq_coe : K.toFun = K := rfl
 
-protected theorem isCompact (n : ℕ) : IsCompact (K n) :=
+protected lemma isCompact (n : ℕ) : IsCompact (K n) :=
   K.isCompact' n
 #align compact_exhaustion.is_compact CompactExhaustion.isCompact
 
-theorem subset_interior_succ (n : ℕ) : K n ⊆ interior (K (n + 1)) :=
+lemma subset_interior_succ (n : ℕ) : K n ⊆ interior (K (n + 1)) :=
   K.subset_interior_succ' n
 #align compact_exhaustion.subset_interior_succ CompactExhaustion.subset_interior_succ
 
 @[mono]
-protected theorem subset ⦃m n : ℕ⦄ (h : m ≤ n) : K m ⊆ K n :=
+protected lemma subset ⦃m n : ℕ⦄ (h : m ≤ n) : K m ⊆ K n :=
   OrderHomClass.mono K h
 #align compact_exhaustion.subset CompactExhaustion.subset
 
-theorem subset_succ (n : ℕ) : K n ⊆ K (n + 1) := K.subset n.le_succ
+lemma subset_succ (n : ℕ) : K n ⊆ K (n + 1) := K.subset n.le_succ
 #align compact_exhaustion.subset_succ CompactExhaustion.subset_succ
 
-theorem subset_interior ⦃m n : ℕ⦄ (h : m < n) : K m ⊆ interior (K n) :=
+lemma subset_interior ⦃m n : ℕ⦄ (h : m < n) : K m ⊆ interior (K n) :=
   Subset.trans (K.subset_interior_succ m) <| interior_mono <| K.subset h
 #align compact_exhaustion.subset_interior CompactExhaustion.subset_interior
 
-theorem iUnion_eq : ⋃ n, K n = univ :=
+lemma iUnion_eq : ⋃ n, K n = univ :=
   K.iUnion_eq'
 #align compact_exhaustion.Union_eq CompactExhaustion.iUnion_eq
 
-theorem exists_mem (x : X) : ∃ n, x ∈ K n :=
+lemma exists_mem (x : X) : ∃ n, x ∈ K n :=
   iUnion_eq_univ_iff.1 K.iUnion_eq x
 #align compact_exhaustion.exists_mem CompactExhaustion.exists_mem
 
@@ -391,11 +391,11 @@ protected noncomputable def find (x : X) : ℕ :=
   Nat.find (K.exists_mem x)
 #align compact_exhaustion.find CompactExhaustion.find
 
-theorem mem_find (x : X) : x ∈ K (K.find x) :=
+lemma mem_find (x : X) : x ∈ K (K.find x) :=
   Nat.find_spec (K.exists_mem x)
 #align compact_exhaustion.mem_find CompactExhaustion.mem_find
 
-theorem mem_iff_find_le {x : X} {n : ℕ} : x ∈ K n ↔ K.find x ≤ n :=
+lemma mem_iff_find_le {x : X} {n : ℕ} : x ∈ K n ↔ K.find x ≤ n :=
   ⟨fun h => Nat.find_min' (K.exists_mem x) h, fun h => K.subset h <| K.mem_find x⟩
 #align compact_exhaustion.mem_iff_find_le CompactExhaustion.mem_iff_find_le
 
@@ -408,11 +408,11 @@ def shiftr : CompactExhaustion X where
 #align compact_exhaustion.shiftr CompactExhaustion.shiftr
 
 @[simp]
-theorem find_shiftr (x : X) : K.shiftr.find x = K.find x + 1 :=
+lemma find_shiftr (x : X) : K.shiftr.find x = K.find x + 1 :=
   Nat.find_comp_succ _ _ (not_mem_empty _)
 #align compact_exhaustion.find_shiftr CompactExhaustion.find_shiftr
 
-theorem mem_diff_shiftr_find (x : X) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr (K.find x) :=
+lemma mem_diff_shiftr_find (x : X) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr (K.find x) :=
   ⟨K.mem_find _,
     mt K.shiftr.mem_iff_find_le.1 <| by simp only [find_shiftr, not_le, Nat.lt_succ_self]⟩
 #align compact_exhaustion.mem_diff_shiftr_find CompactExhaustion.mem_diff_shiftr_find

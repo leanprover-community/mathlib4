@@ -58,19 +58,19 @@ def lifts (f : R →+* S) : Subsemiring S[X] :=
   RingHom.rangeS (mapRingHom f)
 #align polynomial.lifts Polynomial.lifts
 
-theorem mem_lifts (p : S[X]) : p ∈ lifts f ↔ ∃ q : R[X], map f q = p := by
+lemma mem_lifts (p : S[X]) : p ∈ lifts f ↔ ∃ q : R[X], map f q = p := by
   simp only [coe_mapRingHom, lifts, RingHom.mem_rangeS]
 #align polynomial.mem_lifts Polynomial.mem_lifts
 
-theorem lifts_iff_set_range (p : S[X]) : p ∈ lifts f ↔ p ∈ Set.range (map f) := by
+lemma lifts_iff_set_range (p : S[X]) : p ∈ lifts f ↔ p ∈ Set.range (map f) := by
   simp only [coe_mapRingHom, lifts, Set.mem_range, RingHom.mem_rangeS]
 #align polynomial.lifts_iff_set_range Polynomial.lifts_iff_set_range
 
-theorem lifts_iff_ringHom_rangeS (p : S[X]) : p ∈ lifts f ↔ p ∈ (mapRingHom f).rangeS := by
+lemma lifts_iff_ringHom_rangeS (p : S[X]) : p ∈ lifts f ↔ p ∈ (mapRingHom f).rangeS := by
   simp only [coe_mapRingHom, lifts, Set.mem_range, RingHom.mem_rangeS]
 #align polynomial.lifts_iff_ring_hom_srange Polynomial.lifts_iff_ringHom_rangeS
 
-theorem lifts_iff_coeff_lifts (p : S[X]) : p ∈ lifts f ↔ ∀ n : ℕ, p.coeff n ∈ Set.range f := by
+lemma lifts_iff_coeff_lifts (p : S[X]) : p ∈ lifts f ↔ ∀ n : ℕ, p.coeff n ∈ Set.range f := by
   rw [lifts_iff_ringHom_rangeS, mem_map_rangeS f]
   rfl
 #align polynomial.lifts_iff_coeff_lifts Polynomial.lifts_iff_coeff_lifts
@@ -138,7 +138,7 @@ theorem erase_mem_lifts {p : S[X]} (n : ℕ) (h : p ∈ lifts f) : p.erase n ∈
 
 section LiftDeg
 
-theorem monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s ∈ lifts f) :
+lemma monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s ∈ lifts f) :
     ∃ q : R[X], map f q = monomial n s ∧ q.degree = (monomial n s).degree := by
   by_cases hzero : s = 0
   · use 0
@@ -230,7 +230,7 @@ theorem lifts_and_degree_eq_and_monic [Nontrivial S] {p : S[X]} (hlifts : p ∈ 
   · rw [degree_add_eq_right_of_degree_lt hdeg, degree_X_pow, degree_eq_natDegree hp.ne_zero]
 #align polynomial.lifts_and_degree_eq_and_monic Polynomial.lifts_and_degree_eq_and_monic
 
-theorem lifts_and_natDegree_eq_and_monic {p : S[X]} (hlifts : p ∈ lifts f) (hp : p.Monic) :
+lemma lifts_and_natDegree_eq_and_monic {p : S[X]} (hlifts : p ∈ lifts f) (hp : p.Monic) :
     ∃ q : R[X], map f q = p ∧ q.natDegree = p.natDegree ∧ q.Monic := by
   cases' subsingleton_or_nontrivial S with hR hR
   · obtain rfl : p = 1 := Subsingleton.elim _ _

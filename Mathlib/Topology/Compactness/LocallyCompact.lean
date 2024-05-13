@@ -52,17 +52,17 @@ theorem disjoint_nhds_cocompact [WeaklyLocallyCompactSpace X] (x : X) :
   let ⟨_, hc, hx⟩ := exists_compact_mem_nhds x
   disjoint_of_disjoint_of_mem disjoint_compl_right hx hc.compl_mem_cocompact
 
-theorem compact_basis_nhds [LocallyCompactSpace X] (x : X) :
+lemma compact_basis_nhds [LocallyCompactSpace X] (x : X) :
     (𝓝 x).HasBasis (fun s => s ∈ 𝓝 x ∧ IsCompact s) fun s => s :=
   hasBasis_self.2 <| by simpa only [and_comm] using LocallyCompactSpace.local_compact_nhds x
 #align compact_basis_nhds compact_basis_nhds
 
-theorem local_compact_nhds [LocallyCompactSpace X] {x : X} {n : Set X} (h : n ∈ 𝓝 x) :
+lemma local_compact_nhds [LocallyCompactSpace X] {x : X} {n : Set X} (h : n ∈ 𝓝 x) :
     ∃ s ∈ 𝓝 x, s ⊆ n ∧ IsCompact s :=
   LocallyCompactSpace.local_compact_nhds _ _ h
 #align local_compact_nhds local_compact_nhds
 
-theorem LocallyCompactSpace.of_hasBasis {ι : X → Type*} {p : ∀ x, ι x → Prop}
+lemma LocallyCompactSpace.of_hasBasis {ι : X → Type*} {p : ∀ x, ι x → Prop}
     {s : ∀ x, ι x → Set X} (h : ∀ x, (𝓝 x).HasBasis (p x) (s x))
     (hc : ∀ x i, p x i → IsCompact (s x i)) : LocallyCompactSpace X :=
   ⟨fun x _t ht =>
@@ -169,7 +169,7 @@ theorem exists_compact_between [LocallyCompactSpace X] {K U : Set X} (hK : IsCom
   ⟨L, hL, subset_interior_iff_mem_nhdsSet.2 hKL, hLU⟩
 #align exists_compact_between exists_compact_between
 
-protected theorem ClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
+protected lemma ClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : ClosedEmbedding f) : LocallyCompactSpace X :=
   haveI : ∀ x : X, (𝓝 x).HasBasis (fun s => s ∈ 𝓝 (f x) ∧ IsCompact s) (f ⁻¹' ·) := fun x ↦ by
     rw [hf.toInducing.nhds_eq_comap]
@@ -177,12 +177,12 @@ protected theorem ClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f
   .of_hasBasis this fun x s hs => hf.isCompact_preimage hs.2
 #align closed_embedding.locally_compact_space ClosedEmbedding.locallyCompactSpace
 
-protected theorem IsClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
+protected lemma IsClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     (hs : IsClosed s) : LocallyCompactSpace s :=
   (closedEmbedding_subtype_val hs).locallyCompactSpace
 #align is_closed.locally_compact_space IsClosed.locallyCompactSpace
 
-protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
+protected lemma OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : OpenEmbedding f) : LocallyCompactSpace X := by
   have : ∀ x : X,
       (𝓝 x).HasBasis (fun s ↦ (s ∈ 𝓝 (f x) ∧ IsCompact s) ∧ s ⊆ range f) (f ⁻¹' ·) := fun x ↦ by
@@ -194,7 +194,7 @@ protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f :
   exact hs.1.2
 #align open_embedding.locally_compact_space OpenEmbedding.locallyCompactSpace
 
-protected theorem IsOpen.locallyCompactSpace [LocallyCompactSpace X] {s : Set X} (hs : IsOpen s) :
+protected lemma IsOpen.locallyCompactSpace [LocallyCompactSpace X] {s : Set X} (hs : IsOpen s) :
     LocallyCompactSpace s :=
   hs.openEmbedding_subtype_val.locallyCompactSpace
 #align is_open.locally_compact_space IsOpen.locallyCompactSpace

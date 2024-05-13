@@ -28,7 +28,7 @@ section UnitarySpectrum
 variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [NormedRing E] [StarRing E] [CstarRing E]
   [NormedAlgebra 𝕜 E] [CompleteSpace E]
 
-theorem unitary.spectrum_subset_circle (u : unitary E) :
+lemma unitary.spectrum_subset_circle (u : unitary E) :
     spectrum 𝕜 (u : E) ⊆ Metric.sphere 0 1 := by
   nontriviality E
   refine' fun k hk => mem_sphere_zero_iff_norm.mpr (le_antisymm _ _)
@@ -41,7 +41,7 @@ theorem unitary.spectrum_subset_circle (u : unitary E) :
     simpa using inv_le_of_inv_le (norm_pos_iff.mpr hnk) this
 #align unitary.spectrum_subset_circle unitary.spectrum_subset_circle
 
-theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
+lemma spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
     spectrum 𝕜 u ⊆ Metric.sphere 0 1 :=
   unitary.spectrum_subset_circle ⟨u, h⟩
 #align spectrum.subset_circle_of_unitary spectrum.subset_circle_of_unitary
@@ -57,7 +57,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [Sta
 
 local notation "↑ₐ" => algebraMap ℂ A
 
-theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
+lemma IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
     spectralRadius ℂ a = ‖a‖₊ := by
   have hconst : Tendsto (fun _n : ℕ => (‖a‖₊ : ℝ≥0∞)) atTop _ := tendsto_const_nhds
   refine' tendsto_nhds_unique _ hconst
@@ -69,7 +69,7 @@ theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
   simp
 #align is_self_adjoint.spectral_radius_eq_nnnorm IsSelfAdjoint.spectralRadius_eq_nnnorm
 
-theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
+lemma IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     spectralRadius ℂ a = ‖a‖₊ := by
   refine' (ENNReal.pow_strictMono two_ne_zero).injective _
   have heq :

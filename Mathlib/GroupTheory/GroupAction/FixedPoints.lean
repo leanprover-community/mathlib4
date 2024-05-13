@@ -61,18 +61,18 @@ theorem fixedBy_inv (g : G) : fixedBy α g⁻¹ = fixedBy α g := by
   rw [mem_fixedBy, mem_fixedBy, inv_smul_eq_iff, eq_comm]
 
 @[to_additive]
-theorem smul_mem_fixedBy_iff_mem_fixedBy {a : α} {g : G} :
+lemma smul_mem_fixedBy_iff_mem_fixedBy {a : α} {g : G} :
     g • a ∈ fixedBy α g ↔ a ∈ fixedBy α g := by
   rw [mem_fixedBy, smul_left_cancel_iff]
   rfl
 
 @[to_additive]
-theorem smul_inv_mem_fixedBy_iff_mem_fixedBy {a : α} {g : G} :
+lemma smul_inv_mem_fixedBy_iff_mem_fixedBy {a : α} {g : G} :
     g⁻¹ • a ∈ fixedBy α g ↔ a ∈ fixedBy α g := by
   rw [← fixedBy_inv, smul_mem_fixedBy_iff_mem_fixedBy, fixedBy_inv]
 
 @[to_additive minimalPeriod_eq_one_iff_fixedBy]
-theorem minimalPeriod_eq_one_iff_fixedBy {a : α} {g : G} :
+lemma minimalPeriod_eq_one_iff_fixedBy {a : α} {g : G} :
     Function.minimalPeriod (fun x => g • x) a = 1 ↔ a ∈ fixedBy α g :=
   Function.minimalPeriod_eq_one_iff_isFixedPt
 
@@ -124,7 +124,7 @@ theorem set_mem_fixedBy_iff (s : Set α) (g : G) :
     s ∈ fixedBy (Set α) g ↔ ∀ x, g • x ∈ s ↔ x ∈ s := by
   simp_rw [mem_fixedBy, ← eq_inv_smul_iff, Set.ext_iff, Set.mem_inv_smul_set_iff, Iff.comm]
 
-theorem smul_mem_of_set_mem_fixedBy {s : Set α} {g : G} (s_in_fixedBy : s ∈ fixedBy (Set α) g)
+lemma smul_mem_of_set_mem_fixedBy {s : Set α} {g : G} (s_in_fixedBy : s ∈ fixedBy (Set α) g)
     {x : α} : g • x ∈ s ↔ x ∈ s := (set_mem_fixedBy_iff s g).mp s_in_fixedBy x
 
 /--
@@ -146,7 +146,7 @@ theorem set_mem_fixedBy_of_subset_fixedBy {s : Set α} {g : G} (s_ss_fixedBy : s
   rw [← fixedBy_inv] at s_ss_fixedBy
   rwa [← s_ss_fixedBy gxs, inv_smul_smul] at gxs
 
-theorem smul_subset_of_set_mem_fixedBy {s t : Set α} {g : G} (t_ss_s : t ⊆ s)
+lemma smul_subset_of_set_mem_fixedBy {s t : Set α} {g : G} (t_ss_s : t ⊆ s)
     (s_in_fixedBy : s ∈ fixedBy (Set α) g) : g • t ⊆ s :=
   (Set.set_smul_subset_set_smul_iff.mpr t_ss_s).trans s_in_fixedBy.subset
 

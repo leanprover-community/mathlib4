@@ -16,7 +16,7 @@ open scoped Topology
 
 variable (𝕜 : Type*) [RCLike 𝕜]
 
-theorem RCLike.tendsto_inverse_atTop_nhds_zero_nat :
+lemma RCLike.tendsto_inverse_atTop_nhds_zero_nat :
     Tendsto (fun n : ℕ => (n : 𝕜)⁻¹) atTop (𝓝 0) := by
   convert tendsto_algebraMap_inverse_atTop_nhds_zero_nat 𝕜
   simp

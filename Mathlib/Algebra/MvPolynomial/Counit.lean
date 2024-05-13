@@ -43,7 +43,7 @@ noncomputable def ACounit : MvPolynomial B A →ₐ[A] B :=
 variable {B}
 
 @[simp]
-theorem ACounit_X (b : B) : ACounit A B (X b) = b :=
+lemma ACounit_X (b : B) : ACounit A B (X b) = b :=
   aeval_X _ b
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.acounit_X MvPolynomial.ACounit_X
@@ -51,14 +51,14 @@ set_option linter.uppercaseLean3 false in
 variable {A} (B)
 
 @[simp]
-theorem ACounit_C (a : A) : ACounit A B (C a) = algebraMap A B a :=
+lemma ACounit_C (a : A) : ACounit A B (C a) = algebraMap A B a :=
   aeval_C _ a
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.acounit_C MvPolynomial.ACounit_C
 
 variable (A)
 
-theorem ACounit_surjective : Surjective (ACounit A B) := fun b => ⟨X b, ACounit_X A b⟩
+lemma ACounit_surjective : Surjective (ACounit A B) := fun b => ⟨X b, ACounit_X A b⟩
 #align mv_polynomial.acounit_surjective MvPolynomial.ACounit_surjective
 
 /-- `MvPolynomial.counit R` is the natural surjective ring homomorphism
@@ -79,20 +79,20 @@ noncomputable def counitNat : MvPolynomial A ℕ →+* A :=
   ACounit ℕ A
 #align mv_polynomial.counit_nat MvPolynomial.counitNat
 
-theorem counit_surjective : Surjective (counit R) :=
+lemma counit_surjective : Surjective (counit R) :=
   ACounit_surjective ℤ R
 #align mv_polynomial.counit_surjective MvPolynomial.counit_surjective
 
-theorem counitNat_surjective : Surjective (counitNat A) :=
+lemma counitNat_surjective : Surjective (counitNat A) :=
   ACounit_surjective ℕ A
 #align mv_polynomial.counit_nat_surjective MvPolynomial.counitNat_surjective
 
-theorem counit_C (n : ℤ) : counit R (C n) = n :=
+lemma counit_C (n : ℤ) : counit R (C n) = n :=
   ACounit_C _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.counit_C MvPolynomial.counit_C
 
-theorem counitNat_C (n : ℕ) : counitNat A (C n) = n :=
+lemma counitNat_C (n : ℕ) : counitNat A (C n) = n :=
   ACounit_C _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.counit_nat_C MvPolynomial.counitNat_C
@@ -100,13 +100,13 @@ set_option linter.uppercaseLean3 false in
 variable {R A}
 
 @[simp]
-theorem counit_X (r : R) : counit R (X r) = r :=
+lemma counit_X (r : R) : counit R (X r) = r :=
   ACounit_X _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.counit_X MvPolynomial.counit_X
 
 @[simp]
-theorem counitNat_X (a : A) : counitNat A (X a) = a :=
+lemma counitNat_X (a : A) : counitNat A (X a) = a :=
   ACounit_X _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.counit_nat_X MvPolynomial.counitNat_X

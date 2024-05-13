@@ -21,7 +21,7 @@ section Equiv
 variable {α : Sort u} {β : Sort v} (f : α ≃ β)
 
 @[simp]
-theorem Equiv.asEmbedding_range {α β : Sort _} {p : β → Prop} (e : α ≃ Subtype p) :
+lemma Equiv.asEmbedding_range {α β : Sort _} {p : β → Prop} (e : α ≃ Subtype p) :
     Set.range e.asEmbedding = setOf p :=
   Set.ext fun x ↦ ⟨fun ⟨y, h⟩ ↦ h ▸ Subtype.coe_prop (e y), fun hs ↦ ⟨e.symm ⟨x, hs⟩, by simp⟩⟩
 #align equiv.as_embedding_range Equiv.asEmbedding_range
@@ -65,7 +65,7 @@ def codRestrict {α β} (p : Set β) (f : α ↪ β) (H : ∀ a, f a ∈ p) : α
 #align function.embedding.cod_restrict Function.Embedding.codRestrict
 
 @[simp]
-theorem codRestrict_apply {α β} (p) (f : α ↪ β) (H a) : codRestrict p f H a = ⟨f a, H a⟩ :=
+lemma codRestrict_apply {α β} (p) (f : α ↪ β) (H a) : codRestrict p f H a = ⟨f a, H a⟩ :=
   rfl
 #align function.embedding.cod_restrict_apply Function.Embedding.codRestrict_apply
 
@@ -135,13 +135,13 @@ def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
 #align subtype_or_equiv_apply subtypeOrEquiv_apply
 
 @[simp]
-theorem subtypeOrEquiv_symm_inl (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)
+lemma subtypeOrEquiv_symm_inl (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)
     (x : { x // p x }) : (subtypeOrEquiv p q h).symm (Sum.inl x) = ⟨x, Or.inl x.prop⟩ :=
   rfl
 #align subtype_or_equiv_symm_inl subtypeOrEquiv_symm_inl
 
 @[simp]
-theorem subtypeOrEquiv_symm_inr (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)
+lemma subtypeOrEquiv_symm_inr (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)
     (x : { x // q x }) : (subtypeOrEquiv p q h).symm (Sum.inr x) = ⟨x, Or.inr x.prop⟩ :=
   rfl
 #align subtype_or_equiv_symm_inr subtypeOrEquiv_symm_inr

@@ -28,7 +28,7 @@ open Metric Bornology Set Pointwise Convex
 
 variable {ι 𝕜 E : Type*}
 
-theorem Real.convex_iff_isPreconnected {s : Set ℝ} : Convex ℝ s ↔ IsPreconnected s :=
+lemma Real.convex_iff_isPreconnected {s : Set ℝ} : Convex ℝ s ↔ IsPreconnected s :=
   convex_iff_ordConnected.trans isPreconnected_iff_ordConnected.symm
 #align real.convex_iff_is_preconnected Real.convex_iff_isPreconnected
 
@@ -92,7 +92,7 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [TopologicalSpace 𝕜] 
   [AddCommGroup E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
   {x y : E}
 
-theorem segment_subset_closure_openSegment : [x -[𝕜] y] ⊆ closure (openSegment 𝕜 x y) := by
+lemma segment_subset_closure_openSegment : [x -[𝕜] y] ⊆ closure (openSegment 𝕜 x y) := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
   exact image_closure_subset_closure_image (by continuity)
 #align segment_subset_closure_open_segment segment_subset_closure_openSegment
@@ -106,7 +106,7 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [PseudoMetricSpace 𝕜]
   [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
 @[simp]
-theorem closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] := by
+lemma closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
   exact (image_closure_of_isCompact (isBounded_Ioo _ _).isCompact_closure <|
     Continuous.continuousOn <| by continuity).symm
@@ -160,50 +160,50 @@ theorem Convex.combo_self_interior_subset_interior {s : Set E} (hs : Convex 𝕜
   exact hs.combo_interior_self_subset_interior hb ha (add_comm a b ▸ hab)
 #align convex.combo_self_interior_subset_interior Convex.combo_self_interior_subset_interior
 
-theorem Convex.combo_interior_closure_mem_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
+lemma Convex.combo_interior_closure_mem_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
     (hx : x ∈ interior s) (hy : y ∈ closure s) {a b : 𝕜} (ha : 0 < a) (hb : 0 ≤ b)
     (hab : a + b = 1) : a • x + b • y ∈ interior s :=
   hs.combo_interior_closure_subset_interior ha hb hab <|
     add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hy)
 #align convex.combo_interior_closure_mem_interior Convex.combo_interior_closure_mem_interior
 
-theorem Convex.combo_interior_self_mem_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
+lemma Convex.combo_interior_self_mem_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
     (hx : x ∈ interior s) (hy : y ∈ s) {a b : 𝕜} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) :
     a • x + b • y ∈ interior s :=
   hs.combo_interior_closure_mem_interior hx (subset_closure hy) ha hb hab
 #align convex.combo_interior_self_mem_interior Convex.combo_interior_self_mem_interior
 
-theorem Convex.combo_closure_interior_mem_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
+lemma Convex.combo_closure_interior_mem_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
     (hx : x ∈ closure s) (hy : y ∈ interior s) {a b : 𝕜} (ha : 0 ≤ a) (hb : 0 < b)
     (hab : a + b = 1) : a • x + b • y ∈ interior s :=
   hs.combo_closure_interior_subset_interior ha hb hab <|
     add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hy)
 #align convex.combo_closure_interior_mem_interior Convex.combo_closure_interior_mem_interior
 
-theorem Convex.combo_self_interior_mem_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E} (hx : x ∈ s)
+lemma Convex.combo_self_interior_mem_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E} (hx : x ∈ s)
     (hy : y ∈ interior s) {a b : 𝕜} (ha : 0 ≤ a) (hb : 0 < b) (hab : a + b = 1) :
     a • x + b • y ∈ interior s :=
   hs.combo_closure_interior_mem_interior (subset_closure hx) hy ha hb hab
 #align convex.combo_self_interior_mem_interior Convex.combo_self_interior_mem_interior
 
-theorem Convex.openSegment_interior_closure_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
+lemma Convex.openSegment_interior_closure_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
     (hx : x ∈ interior s) (hy : y ∈ closure s) : openSegment 𝕜 x y ⊆ interior s := by
   rintro _ ⟨a, b, ha, hb, hab, rfl⟩
   exact hs.combo_interior_closure_mem_interior hx hy ha hb.le hab
 #align convex.open_segment_interior_closure_subset_interior Convex.openSegment_interior_closure_subset_interior
 
-theorem Convex.openSegment_interior_self_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
+lemma Convex.openSegment_interior_self_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
     (hx : x ∈ interior s) (hy : y ∈ s) : openSegment 𝕜 x y ⊆ interior s :=
   hs.openSegment_interior_closure_subset_interior hx (subset_closure hy)
 #align convex.open_segment_interior_self_subset_interior Convex.openSegment_interior_self_subset_interior
 
-theorem Convex.openSegment_closure_interior_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
+lemma Convex.openSegment_closure_interior_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
     (hx : x ∈ closure s) (hy : y ∈ interior s) : openSegment 𝕜 x y ⊆ interior s := by
   rintro _ ⟨a, b, ha, hb, hab, rfl⟩
   exact hs.combo_closure_interior_mem_interior hx hy ha.le hb hab
 #align convex.open_segment_closure_interior_subset_interior Convex.openSegment_closure_interior_subset_interior
 
-theorem Convex.openSegment_self_interior_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
+lemma Convex.openSegment_self_interior_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
     (hx : x ∈ s) (hy : y ∈ interior s) : openSegment 𝕜 x y ⊆ interior s :=
   hs.openSegment_closure_interior_subset_interior (subset_closure hx) hy
 #align convex.open_segment_self_interior_subset_interior Convex.openSegment_self_interior_subset_interior
@@ -345,7 +345,7 @@ theorem Convex.subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Conve
   subset_closure.trans <| hs.closure_subset_interior_image_homothety_of_one_lt hx t ht
 #align convex.subset_interior_image_homothety_of_one_lt Convex.subset_interior_image_homothety_of_one_lt
 
-theorem JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
+lemma JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
     {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s) : JoinedIn s x y := by
   have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by continuity

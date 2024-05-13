@@ -73,19 +73,19 @@ lemma ext {M N : SemiNormedGroupCat} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f�
   DFunLike.ext _ _ h
 
 @[simp]
-theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat.of V : Type u) = V :=
+lemma coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat.of V : Type u) = V :=
   rfl
 #align SemiNormedGroup.coe_of SemiNormedGroupCat.coe_of
 
 -- Porting note: marked with high priority to short circuit simplifier's path
 @[simp (high)]
-theorem coe_id (V : SemiNormedGroupCat) : (𝟙 V : V → V) = id :=
+lemma coe_id (V : SemiNormedGroupCat) : (𝟙 V : V → V) = id :=
   rfl
 #align SemiNormedGroup.coe_id SemiNormedGroupCat.coe_id
 
 -- Porting note: marked with high priority to short circuit simplifier's path
 @[simp (high)]
-theorem coe_comp {M N K : SemiNormedGroupCat} (f : M ⟶ N) (g : N ⟶ K) :
+lemma coe_comp {M N K : SemiNormedGroupCat} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : M → K) = g ∘ f :=
   rfl
 #align SemiNormedGroup.coe_comp SemiNormedGroupCat.coe_comp
@@ -102,13 +102,13 @@ instance {M N : SemiNormedGroupCat} : Zero (M ⟶ N) :=
   NormedAddGroupHom.zero
 
 @[simp]
-theorem zero_apply {V W : SemiNormedGroupCat} (x : V) : (0 : V ⟶ W) x = 0 :=
+lemma zero_apply {V W : SemiNormedGroupCat} (x : V) : (0 : V ⟶ W) x = 0 :=
   rfl
 #align SemiNormedGroup.zero_apply SemiNormedGroupCat.zero_apply
 
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat where
 
-theorem isZero_of_subsingleton (V : SemiNormedGroupCat) [Subsingleton V] : Limits.IsZero V := by
+lemma isZero_of_subsingleton (V : SemiNormedGroupCat) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim
@@ -118,7 +118,7 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat.{u} :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 #align SemiNormedGroup.has_zero_object SemiNormedGroupCat.hasZeroObject
 
-theorem iso_isometry_of_normNoninc {V W : SemiNormedGroupCat} (i : V ≅ W) (h1 : i.hom.NormNoninc)
+lemma iso_isometry_of_normNoninc {V W : SemiNormedGroupCat} (i : V ≅ W) (h1 : i.hom.NormNoninc)
     (h2 : i.inv.NormNoninc) : Isometry i.hom := by
   apply AddMonoidHomClass.isometry_of_norm
   intro v
@@ -154,7 +154,7 @@ instance instFunLike (X Y : SemiNormedGroupCat₁) : FunLike (X ⟶ Y) X Y where
   coe_injective' _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
 
 @[ext]
-theorem hom_ext {M N : SemiNormedGroupCat₁} (f g : M ⟶ N) (w : (f : M → N) = (g : M → N)) :
+lemma hom_ext {M N : SemiNormedGroupCat₁} (f g : M ⟶ N) (w : (f : M → N) = (g : M → N)) :
     f = g :=
   Subtype.eq (NormedAddGroupHom.ext (congr_fun w))
 #align SemiNormedGroup₁.hom_ext SemiNormedGroupCat₁.hom_ext
@@ -185,7 +185,7 @@ def mkHom {M N : SemiNormedGroupCat} (f : M ⟶ N) (i : f.NormNoninc) :
 #align SemiNormedGroup₁.mk_hom SemiNormedGroupCat₁.mkHom
 
 -- @[simp] -- Porting note: simpNF linter claims LHS simplifies with `SemiNormedGroupCat₁.coe_of`
-theorem mkHom_apply {M N : SemiNormedGroupCat} (f : M ⟶ N) (i : f.NormNoninc) (x) :
+lemma mkHom_apply {M N : SemiNormedGroupCat} (f : M ⟶ N) (i : f.NormNoninc) (x) :
     mkHom f i x = f x :=
   rfl
 #align SemiNormedGroup₁.mk_hom_apply SemiNormedGroupCat₁.mkHom_apply
@@ -206,19 +206,19 @@ instance : HasForget₂ SemiNormedGroupCat₁ SemiNormedGroupCat where
       map := fun f => f.1 }
 
 @[simp]
-theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat₁.of V : Type u) = V :=
+lemma coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat₁.of V : Type u) = V :=
   rfl
 #align SemiNormedGroup₁.coe_of SemiNormedGroupCat₁.coe_of
 
 -- Porting note: marked with high priority to short circuit simplifier's path
 @[simp (high)]
-theorem coe_id (V : SemiNormedGroupCat₁) : ⇑(𝟙 V) = id :=
+lemma coe_id (V : SemiNormedGroupCat₁) : ⇑(𝟙 V) = id :=
   rfl
 #align SemiNormedGroup₁.coe_id SemiNormedGroupCat₁.coe_id
 
 -- Porting note: marked with high priority to short circuit simplifier's path
 @[simp (high)]
-theorem coe_comp {M N K : SemiNormedGroupCat₁} (f : M ⟶ N) (g : N ⟶ K) :
+lemma coe_comp {M N K : SemiNormedGroupCat₁} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : M → K) = g ∘ f :=
   rfl
 #align SemiNormedGroup₁.coe_comp SemiNormedGroupCat₁.coe_comp
@@ -239,13 +239,13 @@ instance (X Y : SemiNormedGroupCat₁) : Zero (X ⟶ Y) where
   zero := ⟨0, NormedAddGroupHom.NormNoninc.zero⟩
 
 @[simp]
-theorem zero_apply {V W : SemiNormedGroupCat₁} (x : V) : (0 : V ⟶ W) x = 0 :=
+lemma zero_apply {V W : SemiNormedGroupCat₁} (x : V) : (0 : V ⟶ W) x = 0 :=
   rfl
 #align SemiNormedGroup₁.zero_apply SemiNormedGroupCat₁.zero_apply
 
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat₁ where
 
-theorem isZero_of_subsingleton (V : SemiNormedGroupCat₁) [Subsingleton V] : Limits.IsZero V := by
+lemma isZero_of_subsingleton (V : SemiNormedGroupCat₁) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim
@@ -255,7 +255,7 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat₁.{u} :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 #align SemiNormedGroup₁.has_zero_object SemiNormedGroupCat₁.hasZeroObject
 
-theorem iso_isometry {V W : SemiNormedGroupCat₁} (i : V ≅ W) : Isometry i.hom := by
+lemma iso_isometry {V W : SemiNormedGroupCat₁} (i : V ≅ W) : Isometry i.hom := by
   change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)
   refine' AddMonoidHomClass.isometry_of_norm _ _
   intro v

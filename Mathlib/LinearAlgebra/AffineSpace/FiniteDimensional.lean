@@ -337,7 +337,7 @@ theorem AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one [FiniteD
     exact hi.affineSpan_eq_of_le_of_card_eq_finrank_add_one le_top hc
 #align affine_independent.affine_span_eq_top_iff_card_eq_finrank_add_one AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one
 
-theorem Affine.Simplex.span_eq_top [FiniteDimensional k V] {n : ℕ} (T : Affine.Simplex k V n)
+lemma Affine.Simplex.span_eq_top [FiniteDimensional k V] {n : ℕ} (T : Affine.Simplex k V n)
     (hrank : finrank k V = n) : affineSpan k (Set.range T.points) = ⊤ := by
   rw [AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one T.independent,
     Fintype.card_fin, hrank]
@@ -828,27 +828,27 @@ section DivisionRing
 
 variable [DivisionRing k] [Module k V]
 
-protected theorem finiteDimensional [Finite ι] (b : AffineBasis ι k P) : FiniteDimensional k V :=
+protected lemma finiteDimensional [Finite ι] (b : AffineBasis ι k P) : FiniteDimensional k V :=
   let ⟨i⟩ := b.nonempty
   FiniteDimensional.of_fintype_basis (b.basisOf i)
 #align affine_basis.finite_dimensional AffineBasis.finiteDimensional
 
-protected theorem finite [FiniteDimensional k V] (b : AffineBasis ι k P) : Finite ι :=
+protected lemma finite [FiniteDimensional k V] (b : AffineBasis ι k P) : Finite ι :=
   finite_of_fin_dim_affineIndependent k b.ind
 #align affine_basis.finite AffineBasis.finite
 
-protected theorem finite_set [FiniteDimensional k V] {s : Set ι} (b : AffineBasis s k P) :
+protected lemma finite_set [FiniteDimensional k V] {s : Set ι} (b : AffineBasis s k P) :
     s.Finite :=
   finite_set_of_fin_dim_affineIndependent k b.ind
 #align affine_basis.finite_set AffineBasis.finite_set
 
-theorem card_eq_finrank_add_one [Fintype ι] (b : AffineBasis ι k P) :
+lemma card_eq_finrank_add_one [Fintype ι] (b : AffineBasis ι k P) :
     Fintype.card ι = FiniteDimensional.finrank k V + 1 :=
   have : FiniteDimensional k V := b.finiteDimensional
   b.ind.affineSpan_eq_top_iff_card_eq_finrank_add_one.mp b.tot
 #align affine_basis.card_eq_finrank_add_one AffineBasis.card_eq_finrank_add_one
 
-theorem exists_affineBasis_of_finiteDimensional [Fintype ι] [FiniteDimensional k V]
+lemma exists_affineBasis_of_finiteDimensional [Fintype ι] [FiniteDimensional k V]
     (h : Fintype.card ι = FiniteDimensional.finrank k V + 1) : Nonempty (AffineBasis ι k P) := by
   obtain ⟨s, b, hb⟩ := AffineBasis.exists_affineBasis k V P
   lift s to Finset P using b.finite_set

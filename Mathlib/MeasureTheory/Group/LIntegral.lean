@@ -51,7 +51,7 @@ theorem lintegral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0�
 #align measure_theory.lintegral_add_right_eq_self MeasureTheory.lintegral_add_right_eq_self
 
 @[to_additive] -- Porting note: was `@[simp]`
-theorem lintegral_div_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
+lemma lintegral_div_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (x / g) ∂μ) = ∫⁻ x, f x ∂μ := by
   simp_rw [div_eq_mul_inv, lintegral_mul_right_eq_self f g⁻¹]
 #align measure_theory.lintegral_div_right_eq_self MeasureTheory.lintegral_div_right_eq_self

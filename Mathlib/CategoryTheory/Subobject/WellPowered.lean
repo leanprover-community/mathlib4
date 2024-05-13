@@ -53,12 +53,12 @@ instance (priority := 100) wellPowered_of_smallCategory (C : Type u₁) [SmallCa
 
 variable {C}
 
-theorem essentiallySmall_monoOver_iff_small_subobject (X : C) :
+lemma essentiallySmall_monoOver_iff_small_subobject (X : C) :
     EssentiallySmall.{v} (MonoOver X) ↔ Small.{v} (Subobject X) :=
   essentiallySmall_iff_of_thin
 #align category_theory.essentially_small_mono_over_iff_small_subobject CategoryTheory.essentiallySmall_monoOver_iff_small_subobject
 
-theorem wellPowered_of_essentiallySmall_monoOver (h : ∀ X : C, EssentiallySmall.{v} (MonoOver X)) :
+lemma wellPowered_of_essentiallySmall_monoOver (h : ∀ X : C, EssentiallySmall.{v} (MonoOver X)) :
     WellPowered C :=
   { subobject_small := fun X => (essentiallySmall_monoOver_iff_small_subobject X).mp (h X) }
 #align category_theory.well_powered_of_essentially_small_mono_over CategoryTheory.wellPowered_of_essentiallySmall_monoOver
@@ -77,7 +77,7 @@ section Equivalence
 
 variable {D : Type u₂} [Category.{v} D]
 
-theorem wellPowered_of_equiv (e : C ≌ D) [WellPowered C] : WellPowered D :=
+lemma wellPowered_of_equiv (e : C ≌ D) [WellPowered C] : WellPowered D :=
   wellPowered_of_essentiallySmall_monoOver fun X =>
     (essentiallySmall_congr (MonoOver.congr X e.symm)).2 <| by infer_instance
 #align category_theory.well_powered_of_equiv CategoryTheory.wellPowered_of_equiv

@@ -388,10 +388,10 @@ theorem of_cocone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory 
       simp_all
   apply IsFiltered.mk
 
-theorem of_hasFiniteColimits [HasFiniteColimits C] : IsFiltered C :=
+lemma of_hasFiniteColimits [HasFiniteColimits C] : IsFiltered C :=
   of_cocone_nonempty.{v} C fun F => ⟨colimit.cocone F⟩
 
-theorem of_isTerminal {X : C} (h : IsTerminal X) : IsFiltered C :=
+lemma of_isTerminal {X : C} (h : IsTerminal X) : IsFiltered C :=
   of_cocone_nonempty.{v} _ fun {_} _ _ _ => ⟨⟨X, ⟨fun _ => h.from _, fun _ _ _ => h.hom_ext _ _⟩⟩⟩
 
 instance (priority := 100) of_hasTerminal [HasTerminal C] : IsFiltered C :=
@@ -459,11 +459,11 @@ noncomputable def coeq₃Hom {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : j₂ ⟶ 
         (coeqHom g h ≫ rightToMax (coeq f g) (coeq g h))
 #align category_theory.is_filtered.coeq₃_hom CategoryTheory.IsFiltered.coeq₃Hom
 
-theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h :=
+lemma coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h :=
   by simp only [coeq₃Hom, ← Category.assoc, coeq_condition f g]
 #align category_theory.is_filtered.coeq₃_condition₁ CategoryTheory.IsFiltered.coeq₃_condition₁
 
-theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
+lemma coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
     g ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h := by
   dsimp [coeq₃Hom]
   slice_lhs 2 4 => rw [← Category.assoc, coeq_condition _ _]
@@ -472,7 +472,7 @@ theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
   simp only [Category.assoc]
 #align category_theory.is_filtered.coeq₃_condition₂ CategoryTheory.IsFiltered.coeq₃_condition₂
 
-theorem coeq₃_condition₃ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h :=
+lemma coeq₃_condition₃ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h :=
   Eq.trans (coeq₃_condition₁ f g h) (coeq₃_condition₂ f g h)
 #align category_theory.is_filtered.coeq₃_condition₃ CategoryTheory.IsFiltered.coeq₃_condition₃
 
@@ -675,7 +675,7 @@ theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
   ⟨k, e ≫ G, e ≫ G', by simpa only [Category.assoc] using he⟩
 #align category_theory.is_cofiltered.cospan CategoryTheory.IsCofiltered.cospan
 
-theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :
+lemma _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :
     Directed (· ⊇ ·) fun f : Σ'i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine' ⟨⟨l, lk ≫ kj⟩, e ▸ _, _⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
@@ -875,11 +875,11 @@ theorem of_cone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J]
       simp_all
   apply IsCofiltered.mk
 
-theorem of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
+lemma of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
   of_cone_nonempty.{v} C fun F => ⟨limit.cone F⟩
 #align category_theory.cofiltered_of_has_finite_limits CategoryTheory.IsCofiltered.of_hasFiniteLimits
 
-theorem of_isInitial {X : C} (h : IsInitial X) : IsCofiltered C :=
+lemma of_isInitial {X : C} (h : IsInitial X) : IsCofiltered C :=
   of_cone_nonempty.{v} _ fun {_} _ _ _ => ⟨⟨X, ⟨fun _ => h.to _, fun _ _ _ => h.hom_ext _ _⟩⟩⟩
 
 instance (priority := 100) of_hasInitial [HasInitial C] : IsCofiltered C :=

@@ -35,7 +35,7 @@ theorem isIdempotentElem_iff_of_fg {R : Type*} [CommRing R] (I : Ideal R) (h : I
     simp [IsIdempotentElem, Ideal.span_singleton_mul_span_singleton, he.eq]
 #align ideal.is_idempotent_elem_iff_of_fg Ideal.isIdempotentElem_iff_of_fg
 
-theorem isIdempotentElem_iff_eq_bot_or_top {R : Type*} [CommRing R] [IsDomain R] (I : Ideal R)
+lemma isIdempotentElem_iff_eq_bot_or_top {R : Type*} [CommRing R] [IsDomain R] (I : Ideal R)
     (h : I.FG) : IsIdempotentElem I ↔ I = ⊥ ∨ I = ⊤ := by
   constructor
   · intro H

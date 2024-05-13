@@ -20,7 +20,7 @@ namespace MeasureTheory
 variable {α E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E]
   {p : ℝ≥0∞} (μ : Measure α) {f : α → E}
 
-theorem pow_mul_meas_ge_le_snorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
+lemma pow_mul_meas_ge_le_snorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) (ε : ℝ≥0∞) :
     (ε * μ { x | ε ≤ (‖f x‖₊ : ℝ≥0∞) ^ p.toReal }) ^ (1 / p.toReal) ≤ snorm f p μ := by
   rw [snorm_eq_lintegral_rpow_nnnorm hp_ne_zero hp_ne_top]
@@ -28,7 +28,7 @@ theorem pow_mul_meas_ge_le_snorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
   exact mul_meas_ge_le_lintegral₀ (hf.ennnorm.pow_const _) ε
 #align measure_theory.pow_mul_meas_ge_le_snorm MeasureTheory.pow_mul_meas_ge_le_snorm
 
-theorem mul_meas_ge_le_pow_snorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
+lemma mul_meas_ge_le_pow_snorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) (ε : ℝ≥0∞) :
     ε * μ { x | ε ≤ (‖f x‖₊ : ℝ≥0∞) ^ p.toReal } ≤ snorm f p μ ^ p.toReal := by
   have : 1 / p.toReal * p.toReal = 1 := by
@@ -49,7 +49,7 @@ theorem mul_meas_ge_le_pow_snorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
   rw [ENNReal.rpow_le_rpow_iff (ENNReal.toReal_pos hp_ne_zero hp_ne_top)]
 #align measure_theory.mul_meas_ge_le_pow_snorm' MeasureTheory.mul_meas_ge_le_pow_snorm'
 
-theorem meas_ge_le_mul_pow_snorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
+lemma meas_ge_le_mul_pow_snorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     μ { x | ε ≤ ‖f x‖₊ } ≤ ε⁻¹ ^ p.toReal * snorm f p μ ^ p.toReal := by
   by_cases h : ε = ∞

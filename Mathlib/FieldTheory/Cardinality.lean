@@ -57,7 +57,7 @@ theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ I
   exact ⟨(Fintype.equivOfCardEq ((GaloisField.card p n hn.ne').trans hα)).symm.field⟩
 #align fintype.nonempty_field_iff Fintype.nonempty_field_iff
 
-theorem Fintype.not_isField_of_card_not_prime_pow {α} [Fintype α] [Ring α] :
+lemma Fintype.not_isField_of_card_not_prime_pow {α} [Fintype α] [Ring α] :
     ¬IsPrimePow ‖α‖ → ¬IsField α :=
   mt fun h => Fintype.nonempty_field_iff.mp ⟨h.toField⟩
 #align fintype.not_is_field_of_card_not_prime_pow Fintype.not_isField_of_card_not_prime_pow

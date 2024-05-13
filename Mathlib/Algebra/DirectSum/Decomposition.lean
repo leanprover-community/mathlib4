@@ -83,7 +83,7 @@ noncomputable def IsInternal.chooseDecomposition (h : IsInternal ℳ) :
 
 variable [Decomposition ℳ]
 
-protected theorem Decomposition.isInternal : DirectSum.IsInternal ℳ :=
+protected lemma Decomposition.isInternal : DirectSum.IsInternal ℳ :=
   ⟨Decomposition.right_inv.injective, Decomposition.left_inv.surjective⟩
 #align direct_sum.decomposition.is_internal DirectSum.Decomposition.isInternal
 
@@ -96,7 +96,7 @@ def decompose : M ≃ ⨁ i, ℳ i where
   right_inv := Decomposition.right_inv
 #align direct_sum.decompose DirectSum.decompose
 
-protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
+protected lemma Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
     (h_homogeneous : ∀ {i} (m : ℳ i), p (m : M)) (h_add : ∀ m m' : M, p m → p m' → p (m + m')) :
     ∀ m, p m := by
   let ℳ' : ι → AddSubmonoid M := fun i ↦
@@ -115,34 +115,34 @@ protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
 #align direct_sum.decomposition.induction_on DirectSum.Decomposition.inductionOn
 
 @[simp]
-theorem Decomposition.decompose'_eq : Decomposition.decompose' = decompose ℳ := rfl
+lemma Decomposition.decompose'_eq : Decomposition.decompose' = decompose ℳ := rfl
 #align direct_sum.decomposition.decompose'_eq DirectSum.Decomposition.decompose'_eq
 
 @[simp]
-theorem decompose_symm_of {i : ι} (x : ℳ i) : (decompose ℳ).symm (DirectSum.of _ i x) = x :=
+lemma decompose_symm_of {i : ι} (x : ℳ i) : (decompose ℳ).symm (DirectSum.of _ i x) = x :=
   DirectSum.coeAddMonoidHom_of ℳ _ _
 #align direct_sum.decompose_symm_of DirectSum.decompose_symm_of
 
 @[simp]
-theorem decompose_coe {i : ι} (x : ℳ i) : decompose ℳ (x : M) = DirectSum.of _ i x := by
+lemma decompose_coe {i : ι} (x : ℳ i) : decompose ℳ (x : M) = DirectSum.of _ i x := by
   rw [← decompose_symm_of _, Equiv.apply_symm_apply]
 #align direct_sum.decompose_coe DirectSum.decompose_coe
 
-theorem decompose_of_mem {x : M} {i : ι} (hx : x ∈ ℳ i) :
+lemma decompose_of_mem {x : M} {i : ι} (hx : x ∈ ℳ i) :
     decompose ℳ x = DirectSum.of (fun i ↦ ℳ i) i ⟨x, hx⟩ :=
   decompose_coe _ ⟨x, hx⟩
 #align direct_sum.decompose_of_mem DirectSum.decompose_of_mem
 
-theorem decompose_of_mem_same {x : M} {i : ι} (hx : x ∈ ℳ i) : (decompose ℳ x i : M) = x := by
+lemma decompose_of_mem_same {x : M} {i : ι} (hx : x ∈ ℳ i) : (decompose ℳ x i : M) = x := by
   rw [decompose_of_mem _ hx, DirectSum.of_eq_same, Subtype.coe_mk]
 #align direct_sum.decompose_of_mem_same DirectSum.decompose_of_mem_same
 
-theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j) :
+lemma decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j) :
     (decompose ℳ x j : M) = 0 := by
   rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ _ hij, ZeroMemClass.coe_zero]
 #align direct_sum.decompose_of_mem_ne DirectSum.decompose_of_mem_ne
 
-theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈ ℳ j) (hx : x ≠ 0) :
+lemma degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈ ℳ j) (hx : x ≠ 0) :
     i = j := by
   contrapose! hx; rw [← decompose_of_mem_same ℳ hxj, decompose_of_mem_ne ℳ hxi hx]
 
@@ -162,39 +162,39 @@ lemma decomposeAddEquiv_symm_apply (a : ⨁ i, ℳ i) :
     (decomposeAddEquiv ℳ).symm a = (decompose ℳ).symm a := rfl
 
 @[simp]
-theorem decompose_zero : decompose ℳ (0 : M) = 0 :=
+lemma decompose_zero : decompose ℳ (0 : M) = 0 :=
   map_zero (decomposeAddEquiv ℳ)
 #align direct_sum.decompose_zero DirectSum.decompose_zero
 
 @[simp]
-theorem decompose_symm_zero : (decompose ℳ).symm 0 = (0 : M) :=
+lemma decompose_symm_zero : (decompose ℳ).symm 0 = (0 : M) :=
   map_zero (decomposeAddEquiv ℳ).symm
 #align direct_sum.decompose_symm_zero DirectSum.decompose_symm_zero
 
 @[simp]
-theorem decompose_add (x y : M) : decompose ℳ (x + y) = decompose ℳ x + decompose ℳ y :=
+lemma decompose_add (x y : M) : decompose ℳ (x + y) = decompose ℳ x + decompose ℳ y :=
   map_add (decomposeAddEquiv ℳ) x y
 #align direct_sum.decompose_add DirectSum.decompose_add
 
 @[simp]
-theorem decompose_symm_add (x y : ⨁ i, ℳ i) :
+lemma decompose_symm_add (x y : ⨁ i, ℳ i) :
     (decompose ℳ).symm (x + y) = (decompose ℳ).symm x + (decompose ℳ).symm y :=
   map_add (decomposeAddEquiv ℳ).symm x y
 #align direct_sum.decompose_symm_add DirectSum.decompose_symm_add
 
 @[simp]
-theorem decompose_sum {ι'} (s : Finset ι') (f : ι' → M) :
+lemma decompose_sum {ι'} (s : Finset ι') (f : ι' → M) :
     decompose ℳ (∑ i in s, f i) = ∑ i in s, decompose ℳ (f i) :=
   map_sum (decomposeAddEquiv ℳ) f s
 #align direct_sum.decompose_sum DirectSum.decompose_sum
 
 @[simp]
-theorem decompose_symm_sum {ι'} (s : Finset ι') (f : ι' → ⨁ i, ℳ i) :
+lemma decompose_symm_sum {ι'} (s : Finset ι') (f : ι' → ⨁ i, ℳ i) :
     (decompose ℳ).symm (∑ i in s, f i) = ∑ i in s, (decompose ℳ).symm (f i) :=
   map_sum (decomposeAddEquiv ℳ).symm f s
 #align direct_sum.decompose_symm_sum DirectSum.decompose_symm_sum
 
-theorem sum_support_decompose [∀ (i) (x : ℳ i), Decidable (x ≠ 0)] (r : M) :
+lemma sum_support_decompose [∀ (i) (x : ℳ i), Decidable (x ≠ 0)] (r : M) :
     (∑ i in (decompose ℳ r).support, (decompose ℳ r i : M)) = r := by
   conv_rhs =>
     rw [← (decompose ℳ).symm_apply_apply r, ← sum_support_of (fun i ↦ ℳ i) (decompose ℳ r)]
@@ -222,22 +222,22 @@ variable [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ)
 variable [Decomposition ℳ]
 
 @[simp]
-theorem decompose_neg (x : M) : decompose ℳ (-x) = -decompose ℳ x :=
+lemma decompose_neg (x : M) : decompose ℳ (-x) = -decompose ℳ x :=
   map_neg (decomposeAddEquiv ℳ) x
 #align direct_sum.decompose_neg DirectSum.decompose_neg
 
 @[simp]
-theorem decompose_symm_neg (x : ⨁ i, ℳ i) : (decompose ℳ).symm (-x) = -(decompose ℳ).symm x :=
+lemma decompose_symm_neg (x : ⨁ i, ℳ i) : (decompose ℳ).symm (-x) = -(decompose ℳ).symm x :=
   map_neg (decomposeAddEquiv ℳ).symm x
 #align direct_sum.decompose_symm_neg DirectSum.decompose_symm_neg
 
 @[simp]
-theorem decompose_sub (x y : M) : decompose ℳ (x - y) = decompose ℳ x - decompose ℳ y :=
+lemma decompose_sub (x y : M) : decompose ℳ (x - y) = decompose ℳ x - decompose ℳ y :=
   map_sub (decomposeAddEquiv ℳ) x y
 #align direct_sum.decompose_sub DirectSum.decompose_sub
 
 @[simp]
-theorem decompose_symm_sub (x y : ⨁ i, ℳ i) :
+lemma decompose_symm_sub (x y : ⨁ i, ℳ i) :
     (decompose ℳ).symm (x - y) = (decompose ℳ).symm x - (decompose ℳ).symm y :=
   map_sub (decomposeAddEquiv ℳ).symm x y
 #align direct_sum.decompose_symm_sub DirectSum.decompose_symm_sub
@@ -267,18 +267,18 @@ def decomposeLinearEquiv : M ≃ₗ[R] ⨁ i, ℳ i :=
     { (decomposeAddEquiv ℳ).symm with map_smul' := map_smul (DirectSum.coeLinearMap ℳ) }
 #align direct_sum.decompose_linear_equiv DirectSum.decomposeLinearEquiv
 
-@[simp] theorem decomposeLinearEquiv_apply (m : M) :
+@[simp] lemma decomposeLinearEquiv_apply (m : M) :
     decomposeLinearEquiv ℳ m = decompose ℳ m := rfl
 
-@[simp] theorem decomposeLinearEquiv_symm_apply (m : ⨁ i, ℳ i) :
+@[simp] lemma decomposeLinearEquiv_symm_apply (m : ⨁ i, ℳ i) :
     (decomposeLinearEquiv ℳ).symm m = (decompose ℳ).symm m := rfl
 
 @[simp]
-theorem decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompose ℳ x :=
+lemma decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompose ℳ x :=
   map_smul (decomposeLinearEquiv ℳ) r x
 #align direct_sum.decompose_smul DirectSum.decompose_smul
 
-@[simp] theorem decomposeLinearEquiv_symm_comp_lof (i : ι) :
+@[simp] lemma decomposeLinearEquiv_symm_comp_lof (i : ι) :
     (decomposeLinearEquiv ℳ).symm ∘ₗ lof R ι (ℳ ·) i = (ℳ i).subtype :=
   LinearMap.ext <| decompose_symm_of _
 

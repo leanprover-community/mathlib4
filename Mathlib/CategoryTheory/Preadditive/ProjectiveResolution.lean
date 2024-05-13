@@ -86,20 +86,20 @@ lemma exact_succ (n : ℕ):
     (by simp)).1 (P.complex_exactAt_succ n)
 
 @[simp]
-theorem π_f_succ (n : ℕ) : P.π.f (n + 1) = 0 :=
+lemma π_f_succ (n : ℕ) : P.π.f (n + 1) = 0 :=
   (isZero_single_obj_X _ _ _ _ (by simp)).eq_of_tgt _ _
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.π_f_succ CategoryTheory.ProjectiveResolution.π_f_succ
 
 @[reassoc (attr := simp)]
-theorem complex_d_comp_π_f_zero :
+lemma complex_d_comp_π_f_zero :
     P.complex.d 1 0 ≫ P.π.f 0 = 0 := by
   rw [← P.π.comm 1 0, single_obj_d, comp_zero]
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.complex_d_comp_π_f_zero CategoryTheory.ProjectiveResolution.complex_d_comp_π_f_zero
 
 -- Porting note (#10618): removed @[simp] simp can prove this
-theorem complex_d_succ_comp (n : ℕ) :
+lemma complex_d_succ_comp (n : ℕ) :
     P.complex.d n (n + 1) ≫ P.complex.d (n + 1) (n + 2) = 0 := by
   simp
 set_option linter.uppercaseLean3 false in

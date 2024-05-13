@@ -144,7 +144,7 @@ def imageMonoFactorisation {X Y : C} (f : X ⟶ Y) : MonoFactorisation f where
   fac := kernel.lift_ι _ _ _
 #align category_theory.abelian.of_coimage_image_comparison_is_iso.image_mono_factorisation CategoryTheory.Abelian.OfCoimageImageComparisonIsIso.imageMonoFactorisation
 
-theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
+lemma imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   dsimp
   ext
@@ -325,11 +325,11 @@ variable {P Q : C} (f : P ⟶ Q)
 
 section
 
-theorem mono_of_kernel_ι_eq_zero (h : kernel.ι f = 0) : Mono f :=
+lemma mono_of_kernel_ι_eq_zero (h : kernel.ι f = 0) : Mono f :=
   mono_of_kernel_zero h
 #align category_theory.abelian.mono_of_kernel_ι_eq_zero CategoryTheory.Abelian.mono_of_kernel_ι_eq_zero
 
-theorem epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f := by
+lemma epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f := by
   apply NormalMonoCategory.epi_of_zero_cokernel _ (cokernel f)
   simp_rw [← h]
   exact IsColimit.ofIsoColimit (colimit.isColimit (parallelPair f 0)) (isoOfπ _)
@@ -341,11 +341,11 @@ section
 
 variable {f}
 
-theorem image_ι_comp_eq_zero {R : C} {g : Q ⟶ R} (h : f ≫ g = 0) : Abelian.image.ι f ≫ g = 0 :=
+lemma image_ι_comp_eq_zero {R : C} {g : Q ⟶ R} (h : f ≫ g = 0) : Abelian.image.ι f ≫ g = 0 :=
   zero_of_epi_comp (Abelian.factorThruImage f) <| by simp [h]
 #align category_theory.abelian.image_ι_comp_eq_zero CategoryTheory.Abelian.image_ι_comp_eq_zero
 
-theorem comp_coimage_π_eq_zero {R : C} {g : Q ⟶ R} (h : f ≫ g = 0) : f ≫ Abelian.coimage.π g = 0 :=
+lemma comp_coimage_π_eq_zero {R : C} {g : Q ⟶ R} (h : f ≫ g = 0) : f ≫ Abelian.coimage.π g = 0 :=
   zero_of_comp_mono (Abelian.factorThruCoimage g) <| by simp [h]
 #align category_theory.abelian.comp_coimage_π_eq_zero CategoryTheory.Abelian.comp_coimage_π_eq_zero
 
@@ -414,7 +414,7 @@ abbrev coimageIsoImage' : Abelian.coimage f ≅ image f :=
   IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage (Image.isImage f)
 #align category_theory.abelian.coimage_iso_image' CategoryTheory.Abelian.coimageIsoImage'
 
-theorem coimageIsoImage'_hom :
+lemma coimageIsoImage'_hom :
     (coimageIsoImage' f).hom =
       cokernel.desc _ (factorThruImage f) (by simp [← cancel_mono (Limits.image.ι f)]) := by
   ext
@@ -423,7 +423,7 @@ theorem coimageIsoImage'_hom :
     Limits.image.fac]
 #align category_theory.abelian.coimage_iso_image'_hom CategoryTheory.Abelian.coimageIsoImage'_hom
 
-theorem factorThruImage_comp_coimageIsoImage'_inv :
+lemma factorThruImage_comp_coimageIsoImage'_inv :
     factorThruImage f ≫ (coimageIsoImage' f).inv = cokernel.π _ := by
   simp only [IsImage.isoExt_inv, image.isImage_lift, image.fac_lift,
     coimageStrongEpiMonoFactorisation_e]
@@ -435,11 +435,11 @@ abbrev imageIsoImage : Abelian.image f ≅ image f :=
   IsImage.isoExt (imageStrongEpiMonoFactorisation f).toMonoIsImage (Image.isImage f)
 #align category_theory.abelian.image_iso_image CategoryTheory.Abelian.imageIsoImage
 
-theorem imageIsoImage_hom_comp_image_ι : (imageIsoImage f).hom ≫ Limits.image.ι _ = kernel.ι _ := by
+lemma imageIsoImage_hom_comp_image_ι : (imageIsoImage f).hom ≫ Limits.image.ι _ = kernel.ι _ := by
   simp only [IsImage.isoExt_hom, IsImage.lift_ι, imageStrongEpiMonoFactorisation_m]
 #align category_theory.abelian.image_iso_image_hom_comp_image_ι CategoryTheory.Abelian.imageIsoImage_hom_comp_image_ι
 
-theorem imageIsoImage_inv :
+lemma imageIsoImage_inv :
     (imageIsoImage f).inv =
       kernel.lift _ (Limits.image.ι f) (by simp [← cancel_epi (factorThruImage f)]) := by
   ext
@@ -481,7 +481,7 @@ def epiDesc [Epi f] {T : C} (g : X ⟶ T) (hg : kernel.ι f ≫ g = 0) : Y ⟶ T
 #align category_theory.abelian.epi_desc CategoryTheory.Abelian.epiDesc
 
 @[reassoc (attr := simp)]
-theorem comp_epiDesc [Epi f] {T : C} (g : X ⟶ T) (hg : kernel.ι f ≫ g = 0) :
+lemma comp_epiDesc [Epi f] {T : C} (g : X ⟶ T) (hg : kernel.ι f ≫ g = 0) :
     f ≫ epiDesc f g hg = g :=
   (epiIsCokernelOfKernel _ (limit.isLimit _)).fac (CokernelCofork.ofπ _ hg) WalkingParallelPair.one
 #align category_theory.abelian.comp_epi_desc CategoryTheory.Abelian.comp_epiDesc
@@ -493,7 +493,7 @@ def monoLift [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f = 0) : T �
 #align category_theory.abelian.mono_lift CategoryTheory.Abelian.monoLift
 
 @[reassoc (attr := simp)]
-theorem monoLift_comp [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f = 0) :
+lemma monoLift_comp [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f = 0) :
     monoLift f g hg ≫ f = g :=
   (monoIsKernelOfCokernel _ (colimit.isColimit _)).fac (KernelFork.ofι _ hg)
     WalkingParallelPair.zero
@@ -715,13 +715,13 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X)
       _ = 0 := HasZeroMorphisms.comp_zero _ _
 #align category_theory.abelian.epi_pullback_of_epi_g CategoryTheory.Abelian.epi_pullback_of_epi_g
 
-theorem epi_snd_of_isLimit [Epi f] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.snd := by
+lemma epi_snd_of_isLimit [Epi f] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.snd := by
   haveI : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.right) :=
     Abelian.epi_pullback_of_epi_f f g
   apply epi_of_epi_fac (IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) hs _)
 #align category_theory.abelian.epi_snd_of_is_limit CategoryTheory.Abelian.epi_snd_of_isLimit
 
-theorem epi_fst_of_isLimit [Epi g] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.fst := by
+lemma epi_fst_of_isLimit [Epi g] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.fst := by
   haveI : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.left) :=
     Abelian.epi_pullback_of_epi_g f g
   apply epi_of_epi_fac (IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) hs _)
@@ -788,14 +788,14 @@ instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g
       _ = 0 := zero_comp
 #align category_theory.abelian.mono_pushout_of_mono_g CategoryTheory.Abelian.mono_pushout_of_mono_g
 
-theorem mono_inr_of_isColimit [Mono f] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inr := by
+lemma mono_inr_of_isColimit [Mono f] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inr := by
   haveI : Mono (NatTrans.app (colimit.cocone (span f g)).ι WalkingCospan.right) :=
     Abelian.mono_pushout_of_mono_f f g
   apply
     mono_of_mono_fac (IsColimit.comp_coconePointUniqueUpToIso_hom hs (colimit.isColimit _) _)
 #align category_theory.abelian.mono_inr_of_is_colimit CategoryTheory.Abelian.mono_inr_of_isColimit
 
-theorem mono_inl_of_isColimit [Mono g] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inl := by
+lemma mono_inl_of_isColimit [Mono g] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inl := by
   haveI : Mono (NatTrans.app (colimit.cocone (span f g)).ι WalkingCospan.left) :=
     Abelian.mono_pushout_of_mono_g f g
   apply

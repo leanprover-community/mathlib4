@@ -35,7 +35,7 @@ lemma unitsMap_self (n : ℕ) : unitsMap (dvd_refl n) = MonoidHom.id _ := by
 lemma IsUnit_cast_of_dvd (hm : n ∣ m) (a : Units (ZMod m)) : IsUnit (cast (a : ZMod m) : ZMod n) :=
   Units.isUnit (unitsMap hm a)
 
-theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
+lemma unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     Function.Surjective (unitsMap h) := by
   suffices ∀ x : ℕ, x.Coprime n → ∃ k : ℕ, (x + k * n).Coprime m by
     intro x

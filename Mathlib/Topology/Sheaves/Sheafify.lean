@@ -87,7 +87,7 @@ def stalkToFiber (x : X) : F.sheafify.presheaf.stalk x ⟶ F.stalk x :=
   TopCat.stalkToFiber (Sheafify.isLocallyGerm F) x
 #align Top.presheaf.stalk_to_fiber TopCat.Presheaf.stalkToFiber
 
-theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x) := by
+lemma stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x) := by
   apply TopCat.stalkToFiber_surjective
   intro t
   obtain ⟨U, m, s, rfl⟩ := F.germ_exist _ t
@@ -97,7 +97,7 @@ theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x)
   · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ => rfl⟩, rfl⟩
 #align Top.presheaf.stalk_to_fiber_surjective TopCat.Presheaf.stalkToFiber_surjective
 
-theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) := by
+lemma stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) := by
   apply TopCat.stalkToFiber_injective
   intro U V fU hU fV hV e
   rcases hU ⟨x, U.2⟩ with ⟨U', mU, iU, gU, wU⟩

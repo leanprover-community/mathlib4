@@ -20,10 +20,10 @@ open Meta
 namespace Meta.NormNum
 open Qq
 
-theorem natPow_zero : Nat.pow a (nat_lit 0) = nat_lit 1 := rfl
-theorem natPow_one : Nat.pow a (nat_lit 1) = a := Nat.pow_one _
-theorem zero_natPow : Nat.pow (nat_lit 0) (Nat.succ b) = nat_lit 0 := rfl
-theorem one_natPow : Nat.pow (nat_lit 1) b = nat_lit 1 := Nat.one_pow _
+lemma natPow_zero : Nat.pow a (nat_lit 0) = nat_lit 1 := rfl
+lemma natPow_one : Nat.pow a (nat_lit 1) = a := Nat.pow_one _
+lemma zero_natPow : Nat.pow (nat_lit 0) (Nat.succ b) = nat_lit 0 := rfl
+lemma one_natPow : Nat.pow (nat_lit 1) b = nat_lit 1 := Nat.one_pow _
 
 /-- This is an opaque wrapper around `Nat.pow` to prevent lean from unfolding the definition of
 `Nat.pow` on numerals. The arbitrary precondition `p` is actually a formula of the form
@@ -33,7 +33,7 @@ structure IsNatPowT (p : Prop) (a b c : Nat) : Prop where
   /-- Unfolds the assertion. -/
   run' : p → Nat.pow a b = c
 
-theorem IsNatPowT.run
+lemma IsNatPowT.run
     (p : IsNatPowT (Nat.pow a (nat_lit 1) = a) a b c) : Nat.pow a b = c := p.run' (Nat.pow_one _)
 
 /-- This is the key to making the proof proceed as a balanced tree of applications instead of
@@ -41,9 +41,9 @@ a linear sequence. It is just modus ponens after unwrapping the definitions. -/
 theorem IsNatPowT.trans (h1 : IsNatPowT p a b c) (h2 : IsNatPowT (Nat.pow a b = c) a b' c') :
     IsNatPowT p a b' c' := ⟨h2.run' ∘ h1.run'⟩
 
-theorem IsNatPowT.bit0 : IsNatPowT (Nat.pow a b = c) a (nat_lit 2 * b) (Nat.mul c c) :=
+lemma IsNatPowT.bit0 : IsNatPowT (Nat.pow a b = c) a (nat_lit 2 * b) (Nat.mul c c) :=
   ⟨fun h1 => by simp [two_mul, pow_add, ← h1]⟩
-theorem IsNatPowT.bit1 :
+lemma IsNatPowT.bit1 :
     IsNatPowT (Nat.pow a b = c) a (nat_lit 2 * b + nat_lit 1) (Nat.mul c (Nat.mul c a)) :=
   ⟨fun h1 => by simp [two_mul, pow_add, mul_assoc, ← h1]⟩
 
@@ -100,17 +100,17 @@ where
       let ⟨c2, p2⟩ := go d a hi c1 b q(Nat.pow $a $hi = $c1) ⟨⟩
       ⟨c2, q(($p1).trans $p2)⟩
 
-theorem intPow_ofNat (h1 : Nat.pow a b = c) :
+lemma intPow_ofNat (h1 : Nat.pow a b = c) :
     Int.pow (Int.ofNat a) b = Int.ofNat c := by simp [← h1]
 
-theorem intPow_negOfNat_bit0 (h1 : Nat.pow a b' = c')
+lemma intPow_negOfNat_bit0 (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' = b) (hc : c' * c' = c) :
     Int.pow (Int.negOfNat a) b = Int.ofNat c := by
   rw [← hb, Int.negOfNat_eq, Int.pow_eq, pow_mul, neg_pow_two, ← pow_mul, two_mul, pow_add, ← hc,
     ← h1]
   simp
 
-theorem intPow_negOfNat_bit1 (h1 : Nat.pow a b' = c')
+lemma intPow_negOfNat_bit1 (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' + nat_lit 1 = b) (hc : c' * (c' * a) = c) :
     Int.pow (Int.negOfNat a) b = Int.negOfNat c := by
   rw [← hb, Int.negOfNat_eq, Int.negOfNat_eq, Int.pow_eq, pow_succ, pow_mul, neg_pow_two, ← pow_mul,
@@ -142,17 +142,17 @@ partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) : ℤ × (c : Q(ℤ)
       ⟨-c.natLit!, q(.negOfNat $c), q(intPow_negOfNat_bit1 $p $pb $pc)⟩
 
 -- see note [norm_num lemma function equality]
-theorem isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} {b a' b' c : ℕ},
+lemma isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} {b a' b' c : ℕ},
     f = HPow.hPow → IsNat a a' → IsNat b b' → Nat.pow a' b' = c → IsNat (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
 
 -- see note [norm_num lemma function equality]
-theorem isInt_pow {α} [Ring α] : ∀ {f : α → ℕ → α} {a : α} {b : ℕ} {a' : ℤ} {b' : ℕ} {c : ℤ},
+lemma isInt_pow {α} [Ring α] : ∀ {f : α → ℕ → α} {a : α} {b : ℕ} {a' : ℤ} {b' : ℕ} {c : ℤ},
     f = HPow.hPow → IsInt a a' → IsNat b b' → Int.pow a' b' = c → IsInt (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
 
 -- see note [norm_num lemma function equality]
-theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} {ad b b' cd : ℕ} :
+lemma isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} {ad b b' cd : ℕ} :
     f = HPow.hPow → IsRat a an ad → IsNat b b' →
     Int.pow an b' = cn → Nat.pow ad b' = cd →
     IsRat (f a b) cn cd := by
@@ -194,33 +194,33 @@ def evalPow : NormNumExt where eval {u α} e := do
       return .isRat' dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
   core
 
-theorem isNat_zpow_pos {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb ne : ℕ}
+lemma isNat_zpow_pos {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb ne : ℕ}
     (pb : IsNat b nb) (pe' : IsNat (a ^ nb) ne) :
     IsNat (a ^ b) ne := by
   rwa [pb.out, zpow_natCast]
 
-theorem isNat_zpow_neg {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb ne : ℕ}
+lemma isNat_zpow_neg {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb ne : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNat (a ^ nb)⁻¹ ne) :
     IsNat (a ^ b) ne := by
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
-theorem isInt_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne : ℕ}
+lemma isInt_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne : ℕ}
     (pb : IsNat b nb) (pe' : IsInt (a ^ nb) (Int.negOfNat ne)) :
     IsInt (a ^ b) (Int.negOfNat ne) := by
   rwa [pb.out, zpow_natCast]
 
-theorem isInt_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne : ℕ}
+lemma isInt_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsInt (a ^ nb)⁻¹ (Int.negOfNat ne)) :
     IsInt (a ^ b) (Int.negOfNat ne) := by
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
-theorem isRat_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
+lemma isRat_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
     (pb : IsNat b nb) (pe' : IsRat (a^nb) num den) :
     IsRat (a^b) num den := by
   rwa [pb.out, zpow_natCast]
 
-theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
+lemma isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat ((a^nb)⁻¹) num den) :
     IsRat (a^b) num den := by

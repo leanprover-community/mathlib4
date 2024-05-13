@@ -54,7 +54,7 @@ noncomputable def LDL.lowerInv : Matrix n n 𝕜 :=
     (Pi.basisFun 𝕜 n)
 #align LDL.lower_inv LDL.lowerInv
 
-theorem LDL.lowerInv_eq_gramSchmidtBasis :
+lemma LDL.lowerInv_eq_gramSchmidtBasis :
     LDL.lowerInv hS =
       ((Pi.basisFun 𝕜 n).toMatrix
           (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
@@ -75,7 +75,7 @@ noncomputable instance LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := 
   infer_instance
 #align LDL.invertible_lower_inv LDL.invertibleLowerInv
 
-theorem LDL.lowerInv_orthogonal {i j : n} (h₀ : i ≠ j) :
+lemma LDL.lowerInv_orthogonal {i j : n} (h₀ : i ≠ j) :
     ⟪LDL.lowerInv hS i, Sᵀ *ᵥ LDL.lowerInv hS j⟫ₑ = 0 :=
   @gramSchmidt_orthogonal 𝕜 _ _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) _ _ _ _ _ _ _ h₀
 #align LDL.lower_inv_orthogonal LDL.lowerInv_orthogonal
@@ -90,7 +90,7 @@ noncomputable def LDL.diag : Matrix n n 𝕜 :=
   Matrix.diagonal (LDL.diagEntries hS)
 #align LDL.diag LDL.diag
 
-theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 0 := by
+lemma LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 0 := by
   rw [←
     @gramSchmidt_triangular 𝕜 (n → 𝕜) _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
       i j hij (Pi.basisFun 𝕜 n),

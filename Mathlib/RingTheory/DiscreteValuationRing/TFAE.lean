@@ -34,7 +34,7 @@ open scoped DiscreteValuation BigOperators
 
 open LocalRing FiniteDimensional
 
-theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [LocalRing R] [IsDomain R]
+lemma exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [LocalRing R] [IsDomain R]
     (h' : (maximalIdeal R).IsPrincipal) (I : Ideal R) (hI : I ≠ ⊥) :
     ∃ n : ℕ, I = maximalIdeal R ^ n := by
   by_cases h : IsField R;
@@ -89,7 +89,7 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [LocalRing 
     exact Nat.find_spec this
 #align exists_maximal_ideal_pow_eq_of_principal exists_maximalIdeal_pow_eq_of_principal
 
-theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
+lemma maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     [IsDedekindDomain R] : (maximalIdeal R).IsPrincipal := by
   classical
   by_cases ne_bot : maximalIdeal R = ⊥

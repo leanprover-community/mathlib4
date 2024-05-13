@@ -65,7 +65,7 @@ def mk' (v : { v : V // v ≠ 0 }) : ℙ K V :=
 #align projectivization.mk' Projectivization.mk'
 
 @[simp]
-theorem mk'_eq_mk (v : { v : V // v ≠ 0 }) : mk' K v = mk K ↑v v.2 := rfl
+lemma mk'_eq_mk (v : { v : V // v ≠ 0 }) : mk' K v = mk K ↑v v.2 := rfl
 #align projectivization.mk'_eq_mk Projectivization.mk'_eq_mk
 
 instance [Nontrivial V] : Nonempty (ℙ K V) :=
@@ -79,12 +79,12 @@ protected noncomputable def rep (v : ℙ K V) : V :=
   v.out'
 #align projectivization.rep Projectivization.rep
 
-theorem rep_nonzero (v : ℙ K V) : v.rep ≠ 0 :=
+lemma rep_nonzero (v : ℙ K V) : v.rep ≠ 0 :=
   v.out'.2
 #align projectivization.rep_nonzero Projectivization.rep_nonzero
 
 @[simp]
-theorem mk_rep (v : ℙ K V) : mk K v.rep v.rep_nonzero = v := Quotient.out_eq' _
+lemma mk_rep (v : ℙ K V) : mk K v.rep v.rep_nonzero = v := Quotient.out_eq' _
 #align projectivization.mk_rep Projectivization.mk_rep
 
 open FiniteDimensional
@@ -98,7 +98,7 @@ protected def submodule (v : ℙ K V) : Submodule K V :=
 
 variable (K)
 
-theorem mk_eq_mk_iff (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
+lemma mk_eq_mk_iff (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
     mk K v hv = mk K w hw ↔ ∃ a : Kˣ, a • w = v :=
   Quotient.eq''
 #align projectivization.mk_eq_mk_iff Projectivization.mk_eq_mk_iff
@@ -116,7 +116,7 @@ theorem mk_eq_mk_iff' (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
     rwa [c, zero_smul] at ha
 #align projectivization.mk_eq_mk_iff' Projectivization.mk_eq_mk_iff'
 
-theorem exists_smul_eq_mk_rep (v : V) (hv : v ≠ 0) : ∃ a : Kˣ, a • v = (mk K v hv).rep :=
+lemma exists_smul_eq_mk_rep (v : V) (hv : v ≠ 0) : ∃ a : Kˣ, a • v = (mk K v hv).rep :=
   (mk_eq_mk_iff K _ _ (rep_nonzero _) hv).1 (mk_rep _)
 #align projectivization.exists_smul_eq_mk_rep Projectivization.exists_smul_eq_mk_rep
 
@@ -130,16 +130,16 @@ theorem ind {P : ℙ K V → Prop} (h : ∀ (v : V) (h : v ≠ 0), P (mk K v h))
 #align projectivization.ind Projectivization.ind
 
 @[simp]
-theorem submodule_mk (v : V) (hv : v ≠ 0) : (mk K v hv).submodule = K ∙ v :=
+lemma submodule_mk (v : V) (hv : v ≠ 0) : (mk K v hv).submodule = K ∙ v :=
   rfl
 #align projectivization.submodule_mk Projectivization.submodule_mk
 
-theorem submodule_eq (v : ℙ K V) : v.submodule = K ∙ v.rep := by
+lemma submodule_eq (v : ℙ K V) : v.submodule = K ∙ v.rep := by
   conv_lhs => rw [← v.mk_rep]
   rfl
 #align projectivization.submodule_eq Projectivization.submodule_eq
 
-theorem finrank_submodule (v : ℙ K V) : finrank K v.submodule = 1 := by
+lemma finrank_submodule (v : ℙ K V) : finrank K v.submodule = 1 := by
   rw [submodule_eq]
   exact finrank_span_singleton v.rep_nonzero
 #align projectivization.finrank_submodule Projectivization.finrank_submodule
@@ -149,7 +149,7 @@ instance (v : ℙ K V) : FiniteDimensional K v.submodule := by
   change FiniteDimensional K (K ∙ v.rep)
   infer_instance
 
-theorem submodule_injective :
+lemma submodule_injective :
     Function.Injective (Projectivization.submodule : ℙ K V → Submodule K V) := fun u v h ↦ by
   induction' u using ind with u hu
   induction' v using ind with v hv
@@ -180,12 +180,12 @@ noncomputable def mk'' (H : Submodule K V) (h : finrank K H = 1) : ℙ K V :=
 #align projectivization.mk'' Projectivization.mk''
 
 @[simp]
-theorem submodule_mk'' (H : Submodule K V) (h : finrank K H = 1) : (mk'' H h).submodule = H :=
+lemma submodule_mk'' (H : Submodule K V) (h : finrank K H = 1) : (mk'' H h).submodule = H :=
   congr_arg Subtype.val <| (equivSubmodule K V).apply_symm_apply ⟨H, h⟩
 #align projectivization.submodule_mk'' Projectivization.submodule_mk''
 
 @[simp]
-theorem mk''_submodule (v : ℙ K V) : mk'' v.submodule v.finrank_submodule = v :=
+lemma mk''_submodule (v : ℙ K V) : mk'' v.submodule v.finrank_submodule = v :=
   (equivSubmodule K V).symm_apply_apply v
 #align projectivization.mk''_submodule Projectivization.mk''_submodule
 
@@ -203,7 +203,7 @@ def map {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) : �
       erw [← f.map_smulₛₗ, ha])
 #align projectivization.map Projectivization.map
 
-theorem map_mk {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) (v : V) (hv : v ≠ 0) :
+lemma map_mk {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) (v : V) (hv : v ≠ 0) :
     map f hf (mk K v hv) = mk L (f v) (map_zero f ▸ hf.ne hv) :=
   rfl
 
@@ -219,13 +219,13 @@ theorem map_injective {σ : K →+* L} {τ : L →+* K} [RingHomInvPair σ τ] (
 #align projectivization.map_injective Projectivization.map_injective
 
 @[simp]
-theorem map_id : map (LinearMap.id : V →ₗ[K] V) (LinearEquiv.refl K V).injective = id := by
+lemma map_id : map (LinearMap.id : V →ₗ[K] V) (LinearEquiv.refl K V).injective = id := by
   ext ⟨v⟩
   rfl
 #align projectivization.map_id Projectivization.map_id
 
 -- Porting note: removed `@[simp]` because of unusable `hg.comp hf` in the LHS
-theorem map_comp {F U : Type*} [Field F] [AddCommGroup U] [Module F U] {σ : K →+* L} {τ : L →+* F}
+lemma map_comp {F U : Type*} [Field F] [AddCommGroup U] [Module F U] {σ : K →+* L} {τ : L →+* F}
     {γ : K →+* F} [RingHomCompTriple σ τ γ] (f : V →ₛₗ[σ] W) (hf : Function.Injective f)
     (g : W →ₛₗ[τ] U) (hg : Function.Injective g) :
     map (g.comp f) (hg.comp hf) = map g hg ∘ map f hf := by

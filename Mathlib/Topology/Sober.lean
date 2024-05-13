@@ -35,48 +35,48 @@ def IsGenericPoint (x : α) (S : Set α) : Prop :=
   closure ({x} : Set α) = S
 #align is_generic_point IsGenericPoint
 
-theorem isGenericPoint_def {x : α} {S : Set α} : IsGenericPoint x S ↔ closure ({x} : Set α) = S :=
+lemma isGenericPoint_def {x : α} {S : Set α} : IsGenericPoint x S ↔ closure ({x} : Set α) = S :=
   Iff.rfl
 #align is_generic_point_def isGenericPoint_def
 
-theorem IsGenericPoint.def {x : α} {S : Set α} (h : IsGenericPoint x S) :
+lemma IsGenericPoint.def {x : α} {S : Set α} (h : IsGenericPoint x S) :
     closure ({x} : Set α) = S :=
   h
 #align is_generic_point.def IsGenericPoint.def
 
-theorem isGenericPoint_closure {x : α} : IsGenericPoint x (closure ({x} : Set α)) :=
+lemma isGenericPoint_closure {x : α} : IsGenericPoint x (closure ({x} : Set α)) :=
   refl _
 #align is_generic_point_closure isGenericPoint_closure
 
 variable {x y : α} {S U Z : Set α}
 
-theorem isGenericPoint_iff_specializes : IsGenericPoint x S ↔ ∀ y, x ⤳ y ↔ y ∈ S := by
+lemma isGenericPoint_iff_specializes : IsGenericPoint x S ↔ ∀ y, x ⤳ y ↔ y ∈ S := by
   simp only [specializes_iff_mem_closure, IsGenericPoint, Set.ext_iff]
 #align is_generic_point_iff_specializes isGenericPoint_iff_specializes
 
 namespace IsGenericPoint
 
-theorem specializes_iff_mem (h : IsGenericPoint x S) : x ⤳ y ↔ y ∈ S :=
+lemma specializes_iff_mem (h : IsGenericPoint x S) : x ⤳ y ↔ y ∈ S :=
   isGenericPoint_iff_specializes.1 h y
 #align is_generic_point.specializes_iff_mem IsGenericPoint.specializes_iff_mem
 
-protected theorem specializes (h : IsGenericPoint x S) (h' : y ∈ S) : x ⤳ y :=
+protected lemma specializes (h : IsGenericPoint x S) (h' : y ∈ S) : x ⤳ y :=
   h.specializes_iff_mem.2 h'
 #align is_generic_point.specializes IsGenericPoint.specializes
 
-protected theorem mem (h : IsGenericPoint x S) : x ∈ S :=
+protected lemma mem (h : IsGenericPoint x S) : x ∈ S :=
   h.specializes_iff_mem.1 specializes_rfl
 #align is_generic_point.mem IsGenericPoint.mem
 
-protected theorem isClosed (h : IsGenericPoint x S) : IsClosed S :=
+protected lemma isClosed (h : IsGenericPoint x S) : IsClosed S :=
   h.def ▸ isClosed_closure
 #align is_generic_point.is_closed IsGenericPoint.isClosed
 
-protected theorem isIrreducible (h : IsGenericPoint x S) : IsIrreducible S :=
+protected lemma isIrreducible (h : IsGenericPoint x S) : IsIrreducible S :=
   h.def ▸ isIrreducible_singleton.closure
 #align is_generic_point.is_irreducible IsGenericPoint.isIrreducible
 
-protected theorem inseparable (h : IsGenericPoint x S) (h' : IsGenericPoint y S) :
+protected lemma inseparable (h : IsGenericPoint x S) (h' : IsGenericPoint y S) :
     Inseparable x y :=
   (h.specializes h'.mem).antisymm (h'.specializes h.mem)
 
@@ -85,26 +85,26 @@ protected theorem eq [T0Space α] (h : IsGenericPoint x S) (h' : IsGenericPoint 
   (h.inseparable h').eq
 #align is_generic_point.eq IsGenericPoint.eq
 
-theorem mem_open_set_iff (h : IsGenericPoint x S) (hU : IsOpen U) : x ∈ U ↔ (S ∩ U).Nonempty :=
+lemma mem_open_set_iff (h : IsGenericPoint x S) (hU : IsOpen U) : x ∈ U ↔ (S ∩ U).Nonempty :=
   ⟨fun h' => ⟨x, h.mem, h'⟩, fun ⟨_y, hyS, hyU⟩ => (h.specializes hyS).mem_open hU hyU⟩
 #align is_generic_point.mem_open_set_iff IsGenericPoint.mem_open_set_iff
 
-theorem disjoint_iff (h : IsGenericPoint x S) (hU : IsOpen U) : Disjoint S U ↔ x ∉ U := by
+lemma disjoint_iff (h : IsGenericPoint x S) (hU : IsOpen U) : Disjoint S U ↔ x ∉ U := by
   rw [h.mem_open_set_iff hU, ← not_disjoint_iff_nonempty_inter, Classical.not_not]
 #align is_generic_point.disjoint_iff IsGenericPoint.disjoint_iff
 
-theorem mem_closed_set_iff (h : IsGenericPoint x S) (hZ : IsClosed Z) : x ∈ Z ↔ S ⊆ Z := by
+lemma mem_closed_set_iff (h : IsGenericPoint x S) (hZ : IsClosed Z) : x ∈ Z ↔ S ⊆ Z := by
   rw [← h.def, hZ.closure_subset_iff, singleton_subset_iff]
 #align is_generic_point.mem_closed_set_iff IsGenericPoint.mem_closed_set_iff
 
-protected theorem image (h : IsGenericPoint x S) {f : α → β} (hf : Continuous f) :
+protected lemma image (h : IsGenericPoint x S) {f : α → β} (hf : Continuous f) :
     IsGenericPoint (f x) (closure (f '' S)) := by
   rw [isGenericPoint_def, ← h.def, ← image_singleton, closure_image_closure hf]
 #align is_generic_point.image IsGenericPoint.image
 
 end IsGenericPoint
 
-theorem isGenericPoint_iff_forall_closed (hS : IsClosed S) (hxS : x ∈ S) :
+lemma isGenericPoint_iff_forall_closed (hS : IsClosed S) (hxS : x ∈ S) :
     IsGenericPoint x S ↔ ∀ Z : Set α, IsClosed Z → x ∈ Z → S ⊆ Z := by
   have : closure {x} ⊆ S := closure_minimal (singleton_subset_iff.2 hxS) hS
   simp_rw [IsGenericPoint, subset_antisymm_iff, this, true_and_iff, closure, subset_sInter_iff,
@@ -127,13 +127,13 @@ noncomputable def IsIrreducible.genericPoint [QuasiSober α] {S : Set α} (hS : 
   (QuasiSober.sober hS.closure isClosed_closure).choose
 #align is_irreducible.generic_point IsIrreducible.genericPoint
 
-theorem IsIrreducible.genericPoint_spec [QuasiSober α] {S : Set α} (hS : IsIrreducible S) :
+lemma IsIrreducible.genericPoint_spec [QuasiSober α] {S : Set α} (hS : IsIrreducible S) :
     IsGenericPoint hS.genericPoint (closure S) :=
   (QuasiSober.sober hS.closure isClosed_closure).choose_spec
 #align is_irreducible.generic_point_spec IsIrreducible.genericPoint_spec
 
 @[simp]
-theorem IsIrreducible.genericPoint_closure_eq [QuasiSober α] {S : Set α} (hS : IsIrreducible S) :
+lemma IsIrreducible.genericPoint_closure_eq [QuasiSober α] {S : Set α} (hS : IsIrreducible S) :
     closure ({hS.genericPoint} : Set α) = closure S :=
   hS.genericPoint_spec
 #align is_irreducible.generic_point_closure_eq IsIrreducible.genericPoint_closure_eq
@@ -145,20 +145,20 @@ noncomputable def genericPoint [QuasiSober α] [IrreducibleSpace α] : α :=
   (IrreducibleSpace.isIrreducible_univ α).genericPoint
 #align generic_point genericPoint
 
-theorem genericPoint_spec [QuasiSober α] [IrreducibleSpace α] :
+lemma genericPoint_spec [QuasiSober α] [IrreducibleSpace α] :
     IsGenericPoint (genericPoint α) ⊤ := by
   simpa using (IrreducibleSpace.isIrreducible_univ α).genericPoint_spec
 #align generic_point_spec genericPoint_spec
 
 @[simp]
-theorem genericPoint_closure [QuasiSober α] [IrreducibleSpace α] :
+lemma genericPoint_closure [QuasiSober α] [IrreducibleSpace α] :
     closure ({genericPoint α} : Set α) = ⊤ :=
   genericPoint_spec α
 #align generic_point_closure genericPoint_closure
 
 variable {α}
 
-theorem genericPoint_specializes [QuasiSober α] [IrreducibleSpace α] (x : α) : genericPoint α ⤳ x :=
+lemma genericPoint_specializes [QuasiSober α] [IrreducibleSpace α] (x : α) : genericPoint α ⤳ x :=
   (IsIrreducible.genericPoint_spec _).specializes (by simp)
 #align generic_point_specializes genericPoint_specializes
 
@@ -179,7 +179,7 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     simp [hs.2.closure_eq, ht.2.closure_eq]
 #align irreducible_set_equiv_points irreducibleSetEquivPoints
 
-theorem ClosedEmbedding.quasiSober {f : α → β} (hf : ClosedEmbedding f) [QuasiSober β] :
+lemma ClosedEmbedding.quasiSober {f : α → β} (hf : ClosedEmbedding f) [QuasiSober β] :
     QuasiSober α where
   sober hS hS' := by
     have hS'' := hS.image f hf.continuous.continuousOn
@@ -190,7 +190,7 @@ theorem ClosedEmbedding.quasiSober {f : α → β} (hf : ClosedEmbedding f) [Qua
     rw [← hx.def, ← hf.closure_image_eq, image_singleton]
 #align closed_embedding.quasi_sober ClosedEmbedding.quasiSober
 
-theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSober β] :
+lemma OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSober β] :
     QuasiSober α where
   sober hS hS' := by
     have hS'' := hS.image f hf.continuous.continuousOn

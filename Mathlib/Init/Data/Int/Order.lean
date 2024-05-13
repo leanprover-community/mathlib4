@@ -22,7 +22,7 @@ export private decNonneg from Init.Data.Int.Basic
 #align int.decidable_le Int.decLe
 #align int.decidable_lt Int.decLt
 
-theorem le.elim {a b : ℤ} (h : a ≤ b) {P : Prop} (h' : ∀ n : ℕ, a + ↑n = b → P) : P :=
+lemma le.elim {a b : ℤ} (h : a ≤ b) {P : Prop} (h' : ∀ n : ℕ, a + ↑n = b → P) : P :=
   Exists.elim (le.dest h) h'
 #align int.le.elim Int.le.elim
 
@@ -34,7 +34,7 @@ alias ⟨le_of_ofNat_le_ofNat, ofNat_le_ofNat_of_le⟩ := ofNat_le
 #align int.coe_zero_le Int.ofNat_zero_le
 #align int.eq_coe_of_zero_le Int.eq_ofNat_of_zero_le
 
-theorem lt.elim {a b : ℤ} (h : a < b) {P : Prop} (h' : ∀ n : ℕ, a + ↑(Nat.succ n) = b → P) : P :=
+lemma lt.elim {a b : ℤ} (h : a < b) {P : Prop} (h' : ∀ n : ℕ, a + ↑(Nat.succ n) = b → P) : P :=
   Exists.elim (lt.dest h) h'
 #align int.lt.elim Int.lt.elim
 
@@ -60,10 +60,10 @@ instance instLinearOrder : LinearOrder ℤ where
 #align int.eq_neg_succ_of_lt_zero Int.eq_negSucc_of_lt_zero
 #align int.sub_eq_zero_iff_eq Int.sub_eq_zero
 
-theorem neg_mul_eq_neg_mul_symm (a b : ℤ) : -a * b = -(a * b) := (Int.neg_mul_eq_neg_mul a b).symm
+lemma neg_mul_eq_neg_mul_symm (a b : ℤ) : -a * b = -(a * b) := (Int.neg_mul_eq_neg_mul a b).symm
 #align int.neg_mul_eq_neg_mul_symm Int.neg_mul_eq_neg_mul_symm
 
-theorem mul_neg_eq_neg_mul_symm (a b : ℤ) : a * -b = -(a * b) := (Int.neg_mul_eq_mul_neg a b).symm
+lemma mul_neg_eq_neg_mul_symm (a b : ℤ) : a * -b = -(a * b) := (Int.neg_mul_eq_mul_neg a b).symm
 #align int.mul_neg_eq_neg_mul_symm Int.mul_neg_eq_neg_mul_symm
 
 #align int.of_nat_nonneg Int.ofNat_nonneg
@@ -72,7 +72,7 @@ theorem mul_neg_eq_neg_mul_symm (a b : ℤ) : a * -b = -(a * b) := (Int.neg_mul_
 #align int.nat_abs_of_nonneg Int.natAbs_of_nonneg
 #align int.of_nat_nat_abs_of_nonpos Int.ofNat_natAbs_of_nonpos
 
-protected theorem eq_zero_or_eq_zero_of_mul_eq_zero {a b : ℤ} (h : a * b = 0) : a = 0 ∨ b = 0 :=
+protected lemma eq_zero_or_eq_zero_of_mul_eq_zero {a b : ℤ} (h : a * b = 0) : a = 0 ∨ b = 0 :=
   match lt_trichotomy 0 a with
   | Or.inl hlt₁ =>
     match lt_trichotomy 0 b with

@@ -35,7 +35,7 @@ def imageOfDf (f : R[X]) : Set (PrimeSpectrum R) :=
   { p : PrimeSpectrum R | ∃ i : ℕ, coeff f i ∉ p.asIdeal }
 #align algebraic_geometry.polynomial.image_of_Df AlgebraicGeometry.Polynomial.imageOfDf
 
-theorem isOpen_imageOfDf : IsOpen (imageOfDf f) := by
+lemma isOpen_imageOfDf : IsOpen (imageOfDf f) := by
   rw [imageOfDf, setOf_exists fun i (x : PrimeSpectrum R) => coeff f i ∉ x.asIdeal]
   exact isOpen_iUnion fun i => isOpen_basicOpen
 #align algebraic_geometry.polynomial.is_open_image_of_Df AlgebraicGeometry.Polynomial.isOpen_imageOfDf

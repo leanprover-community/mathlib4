@@ -118,40 +118,40 @@ instance : Category.{v₁} (Mat_ C) where
 -- Porting note: added because `DMatrix.ext` is not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
-theorem hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
+lemma hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
   DMatrix.ext_iff.mp H
 
-theorem id_def (M : Mat_ C) :
+lemma id_def (M : Mat_ C) :
     (𝟙 M : Hom M M) = fun i j => if h : i = j then eqToHom (congr_arg M.X h) else 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.id_def CategoryTheory.Mat_.id_def
 
-theorem id_apply (M : Mat_ C) (i j : M.ι) :
+lemma id_apply (M : Mat_ C) (i j : M.ι) :
     (𝟙 M : Hom M M) i j = if h : i = j then eqToHom (congr_arg M.X h) else 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.id_apply CategoryTheory.Mat_.id_apply
 
 @[simp]
-theorem id_apply_self (M : Mat_ C) (i : M.ι) : (𝟙 M : Hom M M) i i = 𝟙 _ := by simp [id_apply]
+lemma id_apply_self (M : Mat_ C) (i : M.ι) : (𝟙 M : Hom M M) i i = 𝟙 _ := by simp [id_apply]
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.id_apply_self CategoryTheory.Mat_.id_apply_self
 
 @[simp]
-theorem id_apply_of_ne (M : Mat_ C) (i j : M.ι) (h : i ≠ j) : (𝟙 M : Hom M M) i j = 0 := by
+lemma id_apply_of_ne (M : Mat_ C) (i j : M.ι) (h : i ≠ j) : (𝟙 M : Hom M M) i j = 0 := by
   simp [id_apply, h]
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.id_apply_of_ne CategoryTheory.Mat_.id_apply_of_ne
 
-theorem comp_def {M N K : Mat_ C} (f : M ⟶ N) (g : N ⟶ K) :
+lemma comp_def {M N K : Mat_ C} (f : M ⟶ N) (g : N ⟶ K) :
     f ≫ g = fun i k => ∑ j : N.ι, f i j ≫ g j k :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.comp_def CategoryTheory.Mat_.comp_def
 
 @[simp]
-theorem comp_apply {M N K : Mat_ C} (f : M ⟶ N) (g : N ⟶ K) (i k) :
+lemma comp_apply {M N K : Mat_ C} (f : M ⟶ N) (g : N ⟶ K) (i k) :
     (f ≫ g) i k = ∑ j : N.ι, f i j ≫ g j k :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -169,7 +169,7 @@ instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) := by
   infer_instance
 
 @[simp]
-theorem add_apply {M N : Mat_ C} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
+lemma add_apply {M N : Mat_ C} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.add_apply CategoryTheory.Mat_.add_apply
@@ -400,7 +400,7 @@ lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
 variable [HasFiniteBiproducts D]
 
 @[reassoc]
-theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive F] {M N : Mat_ C}
+lemma additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive F] {M N : Mat_ C}
     (f : M ⟶ N) :
     F.map f ≫ (additiveObjIsoBiproduct F N).hom =
       (additiveObjIsoBiproduct F M).hom ≫
@@ -419,7 +419,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.additive_obj_iso_biproduct_naturality CategoryTheory.Mat_.additiveObjIsoBiproduct_naturality
 
 @[reassoc]
-theorem additiveObjIsoBiproduct_naturality' (F : Mat_ C ⥤ D) [Functor.Additive F] {M N : Mat_ C}
+lemma additiveObjIsoBiproduct_naturality' (F : Mat_ C ⥤ D) [Functor.Additive F] {M N : Mat_ C}
     (f : M ⟶ N) :
     (additiveObjIsoBiproduct F M).inv ≫ F.map f =
       biproduct.matrix (fun i j => F.map ((embedding C).map (f i j)) : _) ≫
@@ -521,7 +521,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.equivalence_self_of_has_finite_biproducts CategoryTheory.Mat_.equivalenceSelfOfHasFiniteBiproducts
 
 @[simp]
-theorem equivalenceSelfOfHasFiniteBiproducts_functor {C : Type (u₁ + 1)} [LargeCategory C]
+lemma equivalenceSelfOfHasFiniteBiproducts_functor {C : Type (u₁ + 1)} [LargeCategory C]
     [Preadditive C] [HasFiniteBiproducts C] :
     (equivalenceSelfOfHasFiniteBiproducts C).functor = lift (𝟭 C) :=
   rfl
@@ -529,7 +529,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.equivalence_self_of_has_finite_biproducts_functor CategoryTheory.Mat_.equivalenceSelfOfHasFiniteBiproducts_functor
 
 @[simp]
-theorem equivalenceSelfOfHasFiniteBiproducts_inverse {C : Type (u₁ + 1)} [LargeCategory C]
+lemma equivalenceSelfOfHasFiniteBiproducts_inverse {C : Type (u₁ + 1)} [LargeCategory C]
     [Preadditive C] [HasFiniteBiproducts C] :
     (equivalenceSelfOfHasFiniteBiproducts C).inverse = embedding C :=
   rfl
@@ -572,40 +572,40 @@ variable {R : Type u} [Semiring R]
 -- Porting note: added because `Matrix.ext` is not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
-theorem hom_ext {X Y : Mat R} (f g : X ⟶ Y) (h : ∀ i j, f i j = g i j) : f = g :=
+lemma hom_ext {X Y : Mat R} (f g : X ⟶ Y) (h : ∀ i j, f i j = g i j) : f = g :=
   Matrix.ext_iff.mp h
 
 variable (R)
 
-theorem id_def (M : Mat R) : 𝟙 M = fun i j => if i = j then 1 else 0 :=
+lemma id_def (M : Mat R) : 𝟙 M = fun i j => if i = j then 1 else 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.id_def CategoryTheory.Mat.id_def
 
-theorem id_apply (M : Mat R) (i j : M) : (𝟙 M : Matrix M M R) i j = if i = j then 1 else 0 :=
+lemma id_apply (M : Mat R) (i j : M) : (𝟙 M : Matrix M M R) i j = if i = j then 1 else 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.id_apply CategoryTheory.Mat.id_apply
 
 @[simp]
-theorem id_apply_self (M : Mat R) (i : M) : (𝟙 M : Matrix M M R) i i = 1 := by simp [id_apply]
+lemma id_apply_self (M : Mat R) (i : M) : (𝟙 M : Matrix M M R) i i = 1 := by simp [id_apply]
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.id_apply_self CategoryTheory.Mat.id_apply_self
 
 @[simp]
-theorem id_apply_of_ne (M : Mat R) (i j : M) (h : i ≠ j) : (𝟙 M : Matrix M M R) i j = 0 := by
+lemma id_apply_of_ne (M : Mat R) (i j : M) (h : i ≠ j) : (𝟙 M : Matrix M M R) i j = 0 := by
   simp [id_apply, h]
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.id_apply_of_ne CategoryTheory.Mat.id_apply_of_ne
 
-theorem comp_def {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) :
+lemma comp_def {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) :
     f ≫ g = fun i k => ∑ j : N, f i j * g j k :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.comp_def CategoryTheory.Mat.comp_def
 
 @[simp]
-theorem comp_apply {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) (i k) :
+lemma comp_apply {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) (i k) :
     (f ≫ g) i k = ∑ j : N, f i j * g j k :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -669,7 +669,7 @@ variable {R}
 
 -- Porting note (#10688): added to ease automation
 @[simp]
-theorem add_apply {M N : Mat R} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
+lemma add_apply {M N : Mat R} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
   rfl
 
 attribute [local simp] add_mul mul_add Finset.sum_add_distrib

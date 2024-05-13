@@ -39,7 +39,7 @@ protected theorem uniformAddGroup : @UniformAddGroup G B.uniformSpace _ :=
   @comm_topologicalAddGroup_is_uniform G _ B.topology B.isTopologicalAddGroup
 #align add_group_filter_basis.uniform_add_group AddGroupFilterBasis.uniformAddGroup
 
-theorem cauchy_iff {F : Filter G} :
+lemma cauchy_iff {F : Filter G} :
     @Cauchy G B.uniformSpace F ↔
       F.NeBot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), y - x ∈ U := by
   letI := B.uniformSpace

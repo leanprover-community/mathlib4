@@ -244,7 +244,7 @@ instance mono_right_of_mono [HasPullbacks A] [PreservesLimitsOfShape WalkingCosp
   show Mono ((proj X G).map f) from inferInstance
 #align category_theory.structured_arrow.mono_right_of_mono CategoryTheory.StructuredArrow.mono_right_of_mono
 
-theorem mono_iff_mono_right [HasPullbacks A] [PreservesLimitsOfShape WalkingCospan G]
+lemma mono_iff_mono_right [HasPullbacks A] [PreservesLimitsOfShape WalkingCospan G]
     {Y Z : StructuredArrow X G} (f : Y ⟶ Z) : Mono f ↔ Mono f.right :=
   ⟨fun _ => inferInstance, fun _ => mono_of_mono_right f⟩
 #align category_theory.structured_arrow.mono_iff_mono_right CategoryTheory.StructuredArrow.mono_iff_mono_right
@@ -293,7 +293,7 @@ instance epi_left_of_epi [HasPushouts A] [PreservesColimitsOfShape WalkingSpan G
   show Epi ((proj G X).map f) from inferInstance
 #align category_theory.costructured_arrow.epi_left_of_epi CategoryTheory.CostructuredArrow.epi_left_of_epi
 
-theorem epi_iff_epi_left [HasPushouts A] [PreservesColimitsOfShape WalkingSpan G]
+lemma epi_iff_epi_left [HasPushouts A] [PreservesColimitsOfShape WalkingSpan G]
     {Y Z : CostructuredArrow G X} (f : Y ⟶ Z) : Epi f ↔ Epi f.left :=
   ⟨fun _ => inferInstance, fun _ => epi_of_epi_left f⟩
 #align category_theory.costructured_arrow.epi_iff_epi_left CategoryTheory.CostructuredArrow.epi_iff_epi_left

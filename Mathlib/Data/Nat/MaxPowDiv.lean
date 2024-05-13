@@ -43,7 +43,7 @@ end Nat
 
 namespace Nat.maxPowDiv
 
-theorem go_succ {k p n : ℕ} : go (k+1) p n = go k p n + 1 := by
+lemma go_succ {k p n : ℕ} : go (k+1) p n = go k p n + 1 := by
   induction k, p, n using go.induct
   case case1 h ih =>
     unfold go
@@ -54,18 +54,18 @@ theorem go_succ {k p n : ℕ} : go (k+1) p n = go k p n + 1 := by
     simp only [if_neg h]
 
 @[simp]
-theorem zero_base {n : ℕ} : maxPowDiv 0 n = 0 := by
+lemma zero_base {n : ℕ} : maxPowDiv 0 n = 0 := by
   dsimp [maxPowDiv]
   rw [maxPowDiv.go]
   simp
 
 @[simp]
-theorem zero {p : ℕ} : maxPowDiv p 0 = 0 := by
+lemma zero {p : ℕ} : maxPowDiv p 0 = 0 := by
   dsimp [maxPowDiv]
   rw [maxPowDiv.go]
   simp
 
-theorem base_mul_eq_succ {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
+lemma base_mul_eq_succ {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
     p.maxPowDiv (p*n) = p.maxPowDiv n + 1 := by
   have : 0 < p := lt_trans (b := 1) (by simp) hp
   dsimp [maxPowDiv]
@@ -74,7 +74,7 @@ theorem base_mul_eq_succ {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
   · refine ⟨hp, ?_, by simp⟩
     apply Nat.mul_pos this hn
 
-theorem base_pow_mul {p n exp : ℕ} (hp : 1 < p) (hn : 0 < n) :
+lemma base_pow_mul {p n exp : ℕ} (hp : 1 < p) (hn : 0 < n) :
     p.maxPowDiv (p ^ exp * n) = p.maxPowDiv n + exp := by
   match exp with
   | 0 => simp
@@ -84,7 +84,7 @@ theorem base_pow_mul {p n exp : ℕ} (hp : 1 < p) (hn : 0 < n) :
     · ac_rfl
     · apply Nat.mul_pos hn <| pow_pos (pos_of_gt hp) e
 
-theorem pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
+lemma pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
   dsimp [maxPowDiv]
   rw [go]
   by_cases h : (1 < p ∧ 0 < n ∧ n % p = 0)
@@ -98,7 +98,7 @@ theorem pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
   · rw [if_neg h]
     simp
 
-theorem le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : 0 < n) (h : p ^ pow ∣ n) :
+lemma le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : 0 < n) (h : p ^ pow ∣ n) :
     pow ≤ p.maxPowDiv n := by
   have ⟨c, hc⟩ := h
   have : 0 < c := by

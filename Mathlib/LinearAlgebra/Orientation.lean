@@ -66,19 +66,19 @@ def Orientation.map (e : M ≃ₗ[R] N) : Orientation R M ι ≃ Orientation R N
 #align orientation.map Orientation.map
 
 @[simp]
-theorem Orientation.map_apply (e : M ≃ₗ[R] N) (v : M [⋀^ι]→ₗ[R] R) (hv : v ≠ 0) :
+lemma Orientation.map_apply (e : M ≃ₗ[R] N) (v : M [⋀^ι]→ₗ[R] R) (hv : v ≠ 0) :
     Orientation.map ι e (rayOfNeZero _ v hv) =
       rayOfNeZero _ (v.compLinearMap e.symm) (mt (v.compLinearEquiv_eq_zero_iff e.symm).mp hv) :=
   rfl
 #align orientation.map_apply Orientation.map_apply
 
 @[simp]
-theorem Orientation.map_refl : (Orientation.map ι <| LinearEquiv.refl R M) = Equiv.refl _ := by
+lemma Orientation.map_refl : (Orientation.map ι <| LinearEquiv.refl R M) = Equiv.refl _ := by
   rw [Orientation.map, AlternatingMap.domLCongr_refl, Module.Ray.map_refl]
 #align orientation.map_refl Orientation.map_refl
 
 @[simp]
-theorem Orientation.map_symm (e : M ≃ₗ[R] N) :
+lemma Orientation.map_symm (e : M ≃ₗ[R] N) :
     (Orientation.map ι e).symm = Orientation.map ι e.symm := rfl
 #align orientation.map_symm Orientation.map_symm
 
@@ -92,19 +92,19 @@ def Orientation.reindex (e : ι ≃ ι') : Orientation R M ι ≃ Orientation R 
 #align orientation.reindex Orientation.reindex
 
 @[simp]
-theorem Orientation.reindex_apply (e : ι ≃ ι') (v : M [⋀^ι]→ₗ[R] R) (hv : v ≠ 0) :
+lemma Orientation.reindex_apply (e : ι ≃ ι') (v : M [⋀^ι]→ₗ[R] R) (hv : v ≠ 0) :
     Orientation.reindex R M e (rayOfNeZero _ v hv) =
       rayOfNeZero _ (v.domDomCongr e) (mt (v.domDomCongr_eq_zero_iff e).mp hv) :=
   rfl
 #align orientation.reindex_apply Orientation.reindex_apply
 
 @[simp]
-theorem Orientation.reindex_refl : (Orientation.reindex R M <| Equiv.refl ι) = Equiv.refl _ := by
+lemma Orientation.reindex_refl : (Orientation.reindex R M <| Equiv.refl ι) = Equiv.refl _ := by
   rw [Orientation.reindex, AlternatingMap.domDomCongrₗ_refl, Module.Ray.map_refl]
 #align orientation.reindex_refl Orientation.reindex_refl
 
 @[simp]
-theorem Orientation.reindex_symm (e : ι ≃ ι') :
+lemma Orientation.reindex_symm (e : ι ≃ ι') :
     (Orientation.reindex R M e).symm = Orientation.reindex R M e.symm :=
   rfl
 #align orientation.reindex_symm Orientation.reindex_symm
@@ -119,12 +119,12 @@ instance (priority := 100) IsEmpty.oriented [IsEmpty ι] : Module.Oriented R M �
 #align is_empty.oriented IsEmpty.oriented
 
 @[simp]
-theorem Orientation.map_positiveOrientation_of_isEmpty [IsEmpty ι] (f : M ≃ₗ[R] N) :
+lemma Orientation.map_positiveOrientation_of_isEmpty [IsEmpty ι] (f : M ≃ₗ[R] N) :
     Orientation.map ι f positiveOrientation = positiveOrientation := rfl
 #align orientation.map_positive_orientation_of_is_empty Orientation.map_positiveOrientation_of_isEmpty
 
 @[simp]
-theorem Orientation.map_of_isEmpty [IsEmpty ι] (x : Orientation R M ι) (f : M ≃ₗ[R] M) :
+lemma Orientation.map_of_isEmpty [IsEmpty ι] (x : Orientation R M ι) (f : M ≃ₗ[R] M) :
     Orientation.map ι f x = x := by
   induction' x using Module.Ray.ind with g hg
   rw [Orientation.map_apply]
@@ -143,13 +143,13 @@ variable {R : Type*} [StrictOrderedCommRing R]
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 @[simp]
-protected theorem Orientation.map_neg {ι : Type*} (f : M ≃ₗ[R] N) (x : Orientation R M ι) :
+protected lemma Orientation.map_neg {ι : Type*} (f : M ≃ₗ[R] N) (x : Orientation R M ι) :
     Orientation.map ι f (-x) = -Orientation.map ι f x :=
   Module.Ray.map_neg _ x
 #align orientation.map_neg Orientation.map_neg
 
 @[simp]
-protected theorem Orientation.reindex_neg {ι ι' : Type*} (e : ι ≃ ι') (x : Orientation R M ι) :
+protected lemma Orientation.reindex_neg {ι ι' : Type*} (e : ι ≃ ι') (x : Orientation R M ι) :
     Orientation.reindex R M e (-x) = -Orientation.reindex R M e x :=
   Module.Ray.map_neg _ x
 #align orientation.reindex_neg Orientation.reindex_neg
@@ -180,12 +180,12 @@ protected def orientation (e : Basis ι R M) : Orientation R M ι :=
   rayOfNeZero R _ e.det_ne_zero
 #align basis.orientation Basis.orientation
 
-theorem orientation_map (e : Basis ι R M) (f : M ≃ₗ[R] N) :
+lemma orientation_map (e : Basis ι R M) (f : M ≃ₗ[R] N) :
     (e.map f).orientation = Orientation.map ι f e.orientation := by
   simp_rw [Basis.orientation, Orientation.map_apply, Basis.det_map']
 #align basis.orientation_map Basis.orientation_map
 
-theorem orientation_reindex (e : Basis ι R M) (eι : ι ≃ ι') :
+lemma orientation_reindex (e : Basis ι R M) (eι : ι ≃ ι') :
     (e.reindex eι).orientation = Orientation.reindex R M eι e.orientation := by
   simp_rw [Basis.orientation, Orientation.reindex_apply, Basis.det_reindex']
 #align basis.orientation_reindex Basis.orientation_reindex
@@ -202,7 +202,7 @@ theorem orientation_unitsSMul (e : Basis ι R M) (w : ι → Units R) :
 #align basis.orientation_units_smul Basis.orientation_unitsSMul
 
 @[simp]
-theorem orientation_isEmpty [IsEmpty ι] (b : Basis ι R M) :
+lemma orientation_isEmpty [IsEmpty ι] (b : Basis ι R M) :
     b.orientation = positiveOrientation := by
   rw [Basis.orientation]
   congr
@@ -330,7 +330,7 @@ theorem adjustToOrientation_apply_eq_or_eq_neg [Nonempty ι] (e : Basis ι R M)
   · by_cases hi : i = Classical.arbitrary ι <;> simp [unitsSMul_apply, hi]
 #align basis.adjust_to_orientation_apply_eq_or_eq_neg Basis.adjustToOrientation_apply_eq_or_eq_neg
 
-theorem det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
+lemma det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
     (x : Orientation R M ι) :
     (e.adjustToOrientation x).det = e.det ∨ (e.adjustToOrientation x).det = -e.det := by
   dsimp [Basis.adjustToOrientation]
@@ -345,7 +345,7 @@ theorem det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
 #align basis.det_adjust_to_orientation Basis.det_adjustToOrientation
 
 @[simp]
-theorem abs_det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
+lemma abs_det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
     (x : Orientation R M ι) (v : ι → M) : |(e.adjustToOrientation x).det v| = |e.det v| := by
   cases' e.det_adjustToOrientation x with h h <;> simp [h]
 #align basis.abs_det_adjust_to_orientation Basis.abs_det_adjustToOrientation

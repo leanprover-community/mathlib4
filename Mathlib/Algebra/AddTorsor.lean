@@ -102,7 +102,7 @@ theorem vadd_right_cancel {g₁ g₂ : G} (p : P) (h : g₁ +ᵥ p = g₂ +ᵥ p
 #align vadd_right_cancel vadd_right_cancel
 
 @[simp]
-theorem vadd_right_cancel_iff {g₁ g₂ : G} (p : P) : g₁ +ᵥ p = g₂ +ᵥ p ↔ g₁ = g₂ :=
+lemma vadd_right_cancel_iff {g₁ g₂ : G} (p : P) : g₁ +ᵥ p = g₂ +ᵥ p ↔ g₁ = g₂ :=
   ⟨vadd_right_cancel p, fun h => h ▸ rfl⟩
 #align vadd_right_cancel_iff vadd_right_cancel_iff
 
@@ -138,7 +138,7 @@ theorem vsub_eq_zero_iff_eq {p₁ p₂ : P} : p₁ -ᵥ p₂ = (0 : G) ↔ p₁ 
   Iff.intro eq_of_vsub_eq_zero fun h => h ▸ vsub_self _
 #align vsub_eq_zero_iff_eq vsub_eq_zero_iff_eq
 
-theorem vsub_ne_zero {p q : P} : p -ᵥ q ≠ (0 : G) ↔ p ≠ q :=
+lemma vsub_ne_zero {p q : P} : p -ᵥ q ≠ (0 : G) ↔ p ≠ q :=
   not_congr vsub_eq_zero_iff_eq
 #align vsub_ne_zero vsub_ne_zero
 
@@ -157,7 +157,7 @@ theorem neg_vsub_eq_vsub_rev (p₁ p₂ : P) : -(p₁ -ᵥ p₂) = p₂ -ᵥ p�
   rw [vsub_add_vsub_cancel, vsub_self]
 #align neg_vsub_eq_vsub_rev neg_vsub_eq_vsub_rev
 
-theorem vadd_vsub_eq_sub_vsub (g : G) (p q : P) : g +ᵥ p -ᵥ q = g - (q -ᵥ p) := by
+lemma vadd_vsub_eq_sub_vsub (g : G) (p q : P) : g +ᵥ p -ᵥ q = g - (q -ᵥ p) := by
   rw [vadd_vsub_assoc, sub_eq_add_neg, neg_vsub_eq_vsub_rev]
 #align vadd_vsub_eq_sub_vsub vadd_vsub_eq_sub_vsub
 
@@ -181,7 +181,7 @@ theorem eq_vadd_iff_vsub_eq (p₁ : P) (g : G) (p₂ : P) : p₁ = g +ᵥ p₂ �
   ⟨fun h => h.symm ▸ vadd_vsub _ _, fun h => h ▸ (vsub_vadd _ _).symm⟩
 #align eq_vadd_iff_vsub_eq eq_vadd_iff_vsub_eq
 
-theorem vadd_eq_vadd_iff_neg_add_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
+lemma vadd_eq_vadd_iff_neg_add_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
     v₁ +ᵥ p₁ = v₂ +ᵥ p₂ ↔ -v₁ + v₂ = p₁ -ᵥ p₂ := by
   rw [eq_vadd_iff_vsub_eq, vadd_vsub_assoc, ← add_right_inj (-v₁), neg_add_cancel_left, eq_comm]
 #align vadd_eq_vadd_iff_neg_add_eq_vsub vadd_eq_vadd_iff_neg_add_eq_vsub
@@ -192,14 +192,14 @@ open Pointwise
 
 -- porting note (#10618): simp can prove this
 --@[simp]
-theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
+lemma singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]
 #align set.singleton_vsub_self Set.singleton_vsub_self
 
 end Set
 
 @[simp]
-theorem vadd_vsub_vadd_cancel_right (v₁ v₂ : G) (p : P) : v₁ +ᵥ p -ᵥ (v₂ +ᵥ p) = v₁ - v₂ := by
+lemma vadd_vsub_vadd_cancel_right (v₁ v₂ : G) (p : P) : v₁ +ᵥ p -ᵥ (v₂ +ᵥ p) = v₁ - v₂ := by
   rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, vsub_self, add_zero]
 #align vadd_vsub_vadd_cancel_right vadd_vsub_vadd_cancel_right
 
@@ -254,21 +254,21 @@ theorem vsub_sub_vsub_cancel_left (p₁ p₂ p₃ : P) : p₃ -ᵥ p₂ - (p₃ 
 #align vsub_sub_vsub_cancel_left vsub_sub_vsub_cancel_left
 
 @[simp]
-theorem vadd_vsub_vadd_cancel_left (v : G) (p₁ p₂ : P) : v +ᵥ p₁ -ᵥ (v +ᵥ p₂) = p₁ -ᵥ p₂ := by
+lemma vadd_vsub_vadd_cancel_left (v : G) (p₁ p₂ : P) : v +ᵥ p₁ -ᵥ (v +ᵥ p₂) = p₁ -ᵥ p₂ := by
   rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_cancel_left]
 #align vadd_vsub_vadd_cancel_left vadd_vsub_vadd_cancel_left
 
-theorem vsub_vadd_comm (p₁ p₂ p₃ : P) : (p₁ -ᵥ p₂ : G) +ᵥ p₃ = p₃ -ᵥ p₂ +ᵥ p₁ := by
+lemma vsub_vadd_comm (p₁ p₂ p₃ : P) : (p₁ -ᵥ p₂ : G) +ᵥ p₃ = p₃ -ᵥ p₂ +ᵥ p₁ := by
   rw [← @vsub_eq_zero_iff_eq G, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub]
   simp
 #align vsub_vadd_comm vsub_vadd_comm
 
-theorem vadd_eq_vadd_iff_sub_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
+lemma vadd_eq_vadd_iff_sub_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
     v₁ +ᵥ p₁ = v₂ +ᵥ p₂ ↔ v₂ - v₁ = p₁ -ᵥ p₂ := by
   rw [vadd_eq_vadd_iff_neg_add_eq_vsub, neg_add_eq_sub]
 #align vadd_eq_vadd_iff_sub_eq_vsub vadd_eq_vadd_iff_sub_eq_vsub
 
-theorem vsub_sub_vsub_comm (p₁ p₂ p₃ p₄ : P) : p₁ -ᵥ p₂ - (p₃ -ᵥ p₄) = p₁ -ᵥ p₃ - (p₂ -ᵥ p₄) := by
+lemma vsub_sub_vsub_comm (p₁ p₂ p₃ p₄ : P) : p₁ -ᵥ p₂ - (p₃ -ᵥ p₄) = p₁ -ᵥ p₃ - (p₂ -ᵥ p₄) := by
   rw [← vsub_vadd_eq_vsub_sub, vsub_vadd_comm, vsub_vadd_eq_vsub_sub]
 #align vsub_sub_vsub_comm vsub_sub_vsub_comm
 
@@ -297,32 +297,32 @@ instance instAddTorsor : AddTorsor (G × G') (P × P') where
 --   ⊢ (v.fst +ᵥ p.fst -ᵥ p.fst, v.snd) = v
 
 @[simp]
-theorem fst_vadd (v : G × G') (p : P × P') : (v +ᵥ p).1 = v.1 +ᵥ p.1 :=
+lemma fst_vadd (v : G × G') (p : P × P') : (v +ᵥ p).1 = v.1 +ᵥ p.1 :=
   rfl
 #align prod.fst_vadd Prod.fst_vadd
 
 @[simp]
-theorem snd_vadd (v : G × G') (p : P × P') : (v +ᵥ p).2 = v.2 +ᵥ p.2 :=
+lemma snd_vadd (v : G × G') (p : P × P') : (v +ᵥ p).2 = v.2 +ᵥ p.2 :=
   rfl
 #align prod.snd_vadd Prod.snd_vadd
 
 @[simp]
-theorem mk_vadd_mk (v : G) (v' : G') (p : P) (p' : P') : (v, v') +ᵥ (p, p') = (v +ᵥ p, v' +ᵥ p') :=
+lemma mk_vadd_mk (v : G) (v' : G') (p : P) (p' : P') : (v, v') +ᵥ (p, p') = (v +ᵥ p, v' +ᵥ p') :=
   rfl
 #align prod.mk_vadd_mk Prod.mk_vadd_mk
 
 @[simp]
-theorem fst_vsub (p₁ p₂ : P × P') : (p₁ -ᵥ p₂ : G × G').1 = p₁.1 -ᵥ p₂.1 :=
+lemma fst_vsub (p₁ p₂ : P × P') : (p₁ -ᵥ p₂ : G × G').1 = p₁.1 -ᵥ p₂.1 :=
   rfl
 #align prod.fst_vsub Prod.fst_vsub
 
 @[simp]
-theorem snd_vsub (p₁ p₂ : P × P') : (p₁ -ᵥ p₂ : G × G').2 = p₁.2 -ᵥ p₂.2 :=
+lemma snd_vsub (p₁ p₂ : P × P') : (p₁ -ᵥ p₂ : G × G').2 = p₁.2 -ᵥ p₂.2 :=
   rfl
 #align prod.snd_vsub Prod.snd_vsub
 
 @[simp]
-theorem mk_vsub_mk (p₁ p₂ : P) (p₁' p₂' : P') :
+lemma mk_vsub_mk (p₁ p₂ : P) (p₁' p₂' : P') :
     ((p₁, p₁') -ᵥ (p₂, p₂') : G × G') = (p₁ -ᵥ p₂, p₁' -ᵥ p₂') :=
   rfl
 #align prod.mk_vsub_mk Prod.mk_vsub_mk
@@ -361,12 +361,12 @@ def vaddConst (p : P) : G ≃ P where
 #align equiv.vadd_const Equiv.vaddConst
 
 @[simp]
-theorem coe_vaddConst (p : P) : ⇑(vaddConst p) = fun v => v +ᵥ p :=
+lemma coe_vaddConst (p : P) : ⇑(vaddConst p) = fun v => v +ᵥ p :=
   rfl
 #align equiv.coe_vadd_const Equiv.coe_vaddConst
 
 @[simp]
-theorem coe_vaddConst_symm (p : P) : ⇑(vaddConst p).symm = fun p' => p' -ᵥ p :=
+lemma coe_vaddConst_symm (p : P) : ⇑(vaddConst p).symm = fun p' => p' -ᵥ p :=
   rfl
 #align equiv.coe_vadd_const_symm Equiv.coe_vaddConst_symm
 
@@ -382,7 +382,7 @@ def constVSub (p : P) : P ≃ G where
 #align equiv.coe_const_vsub Equiv.coe_constVSub
 
 @[simp]
-theorem coe_constVSub_symm (p : P) : ⇑(constVSub p).symm = fun (v : G) => -v +ᵥ p :=
+lemma coe_constVSub_symm (p : P) : ⇑(constVSub p).symm = fun (v : G) => -v +ᵥ p :=
   rfl
 #align equiv.coe_const_vsub_symm Equiv.coe_constVSub_symm
 
@@ -402,14 +402,14 @@ def constVAdd (v : G) : Equiv.Perm P where
 variable (G)
 
 @[simp]
-theorem constVAdd_zero : constVAdd P (0 : G) = 1 :=
+lemma constVAdd_zero : constVAdd P (0 : G) = 1 :=
   ext <| zero_vadd G
 #align equiv.const_vadd_zero Equiv.constVAdd_zero
 
 variable {G}
 
 @[simp]
-theorem constVAdd_add (v₁ v₂ : G) : constVAdd P (v₁ + v₂) = constVAdd P v₁ * constVAdd P v₂ :=
+lemma constVAdd_add (v₁ v₂ : G) : constVAdd P (v₁ + v₂) = constVAdd P v₁ * constVAdd P v₂ :=
   ext <| add_vadd v₁ v₂
 #align equiv.const_vadd_add Equiv.constVAdd_add
 
@@ -431,37 +431,37 @@ def pointReflection (x : P) : Perm P :=
   (constVSub x).trans (vaddConst x)
 #align equiv.point_reflection Equiv.pointReflection
 
-theorem pointReflection_apply (x y : P) : pointReflection x y = x -ᵥ y +ᵥ x :=
+lemma pointReflection_apply (x y : P) : pointReflection x y = x -ᵥ y +ᵥ x :=
   rfl
 #align equiv.point_reflection_apply Equiv.pointReflection_apply
 
 @[simp]
-theorem pointReflection_vsub_left (x y : P) : pointReflection x y -ᵥ x = x -ᵥ y :=
+lemma pointReflection_vsub_left (x y : P) : pointReflection x y -ᵥ x = x -ᵥ y :=
   vadd_vsub ..
 
 @[simp]
-theorem left_vsub_pointReflection (x y : P) : x -ᵥ pointReflection x y = y -ᵥ x :=
+lemma left_vsub_pointReflection (x y : P) : x -ᵥ pointReflection x y = y -ᵥ x :=
   neg_injective <| by simp
 
 @[simp]
-theorem pointReflection_vsub_right (x y : P) : pointReflection x y -ᵥ y = 2 • (x -ᵥ y) := by
+lemma pointReflection_vsub_right (x y : P) : pointReflection x y -ᵥ y = 2 • (x -ᵥ y) := by
   simp [pointReflection, two_nsmul, vadd_vsub_assoc]
 
 @[simp]
-theorem right_vsub_pointReflection (x y : P) : y -ᵥ pointReflection x y = 2 • (y -ᵥ x) :=
+lemma right_vsub_pointReflection (x y : P) : y -ᵥ pointReflection x y = 2 • (y -ᵥ x) :=
   neg_injective <| by simp [← neg_nsmul]
 
 @[simp]
-theorem pointReflection_symm (x : P) : (pointReflection x).symm = pointReflection x :=
+lemma pointReflection_symm (x : P) : (pointReflection x).symm = pointReflection x :=
   ext <| by simp [pointReflection]
 #align equiv.point_reflection_symm Equiv.pointReflection_symm
 
 @[simp]
-theorem pointReflection_self (x : P) : pointReflection x x = x :=
+lemma pointReflection_self (x : P) : pointReflection x x = x :=
   vsub_vadd _ _
 #align equiv.point_reflection_self Equiv.pointReflection_self
 
-theorem pointReflection_involutive (x : P) : Involutive (pointReflection x : P → P) := fun y =>
+lemma pointReflection_involutive (x : P) : Involutive (pointReflection x : P → P) := fun y =>
   (Equiv.apply_eq_iff_eq_symm_apply _).2 <| by rw [pointReflection_symm]
 #align equiv.point_reflection_involutive Equiv.pointReflection_involutive
 
@@ -475,7 +475,7 @@ theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (bi
 #align equiv.point_reflection_fixed_iff_of_injective_bit0 Equiv.pointReflection_fixed_iff_of_injective_bit0
 
 -- Porting note: need this to calm down CI
-theorem injective_pointReflection_left_of_injective_bit0 {G P : Type*} [AddCommGroup G]
+lemma injective_pointReflection_left_of_injective_bit0 {G P : Type*} [AddCommGroup G]
     [AddTorsor G P] (h : Injective (bit0 : G → G)) (y : P) :
     Injective fun x : P => pointReflection x y :=
   fun x₁ x₂ (hy : pointReflection x₁ y = pointReflection x₂ y) => by
@@ -486,7 +486,7 @@ theorem injective_pointReflection_left_of_injective_bit0 {G P : Type*} [AddCommG
 
 end Equiv
 
-theorem AddTorsor.subsingleton_iff (G P : Type*) [AddGroup G] [AddTorsor G P] :
+lemma AddTorsor.subsingleton_iff (G P : Type*) [AddGroup G] [AddTorsor G P] :
     Subsingleton G ↔ Subsingleton P := by
   inhabit P
   exact (Equiv.vaddConst default).subsingleton_congr

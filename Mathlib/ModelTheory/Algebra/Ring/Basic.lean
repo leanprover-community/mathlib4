@@ -95,29 +95,29 @@ abbrev oneFunc : Language.ring.Functions 0 := one
 instance (α : Type*) : Zero (Language.ring.Term α) :=
 { zero := Constants.term zeroFunc }
 
-theorem zero_def (α : Type*) : (0 : Language.ring.Term α) = Constants.term zeroFunc := rfl
+lemma zero_def (α : Type*) : (0 : Language.ring.Term α) = Constants.term zeroFunc := rfl
 
 instance (α : Type*) : One (Language.ring.Term α) :=
 { one := Constants.term oneFunc }
 
-theorem one_def (α : Type*) : (1 : Language.ring.Term α) = Constants.term oneFunc := rfl
+lemma one_def (α : Type*) : (1 : Language.ring.Term α) = Constants.term oneFunc := rfl
 
 instance (α : Type*) : Add (Language.ring.Term α) :=
 { add := addFunc.apply₂ }
 
-theorem add_def (α : Type*) (t₁ t₂ : Language.ring.Term α) :
+lemma add_def (α : Type*) (t₁ t₂ : Language.ring.Term α) :
     t₁ + t₂ = addFunc.apply₂ t₁ t₂ := rfl
 
 instance (α : Type*) : Mul (Language.ring.Term α) :=
 { mul := mulFunc.apply₂ }
 
-theorem mul_def (α : Type*) (t₁ t₂ : Language.ring.Term α) :
+lemma mul_def (α : Type*) (t₁ t₂ : Language.ring.Term α) :
     t₁ * t₂ = mulFunc.apply₂ t₁ t₂ := rfl
 
 instance (α : Type*) : Neg (Language.ring.Term α) :=
 { neg := negFunc.apply₁ }
 
-theorem neg_def (α : Type*) (t : Language.ring.Term α) :
+lemma neg_def (α : Type*) (t : Language.ring.Term α) :
     -t = negFunc.apply₁ t := rfl
 
 instance : Fintype Language.ring.Symbols :=
@@ -135,7 +135,7 @@ instance : Fintype Language.ring.Symbols :=
     · cases f ⟩
 
 @[simp]
-theorem card_ring : card Language.ring = 5 := by
+lemma card_ring : card Language.ring = 5 := by
   have : Fintype.card Language.ring.Symbols = 5 := rfl
   simp [Language.card, this]
 
@@ -177,26 +177,26 @@ section
 variable {R : Type*} [Add R] [Mul R] [Neg R] [One R] [Zero R] [CompatibleRing R]
 
 @[simp]
-theorem realize_add (x y : ring.Term α) (v : α → R) :
+lemma realize_add (x y : ring.Term α) (v : α → R) :
     Term.realize v (x + y) = Term.realize v x + Term.realize v y := by
   simp [add_def, funMap_add]
 
 @[simp]
-theorem realize_mul (x y : ring.Term α) (v : α → R) :
+lemma realize_mul (x y : ring.Term α) (v : α → R) :
     Term.realize v (x * y) = Term.realize v x * Term.realize v y := by
   simp [mul_def, funMap_mul]
 
 @[simp]
-theorem realize_neg (x : ring.Term α) (v : α → R) :
+lemma realize_neg (x : ring.Term α) (v : α → R) :
     Term.realize v (-x) = -Term.realize v x := by
   simp [neg_def, funMap_neg]
 
 @[simp]
-theorem realize_zero (v : α → R) : Term.realize v (0 : ring.Term α) = 0 := by
+lemma realize_zero (v : α → R) : Term.realize v (0 : ring.Term α) = 0 := by
   simp [zero_def, funMap_zero, constantMap]
 
 @[simp]
-theorem realize_one (v : α → R) : Term.realize v (1 : ring.Term α) = 1 := by
+lemma realize_one (v : α → R) : Term.realize v (1 : ring.Term α) = 1 := by
   simp [one_def, funMap_one, constantMap]
 
 end

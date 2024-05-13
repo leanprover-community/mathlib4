@@ -23,17 +23,17 @@ open TensorProduct Algebra.TensorProduct
 local notation "surjective" => fun {X Y : Type _} [CommRing X] [CommRing Y] => fun f : X →+* Y =>
   Function.Surjective f
 
-theorem surjective_stableUnderComposition : StableUnderComposition surjective := by
+lemma surjective_stableUnderComposition : StableUnderComposition surjective := by
   introv R hf hg; exact hg.comp hf
 #align ring_hom.surjective_stable_under_composition RingHom.surjective_stableUnderComposition
 
-theorem surjective_respectsIso : RespectsIso surjective := by
+lemma surjective_respectsIso : RespectsIso surjective := by
   apply surjective_stableUnderComposition.respectsIso
   intros _ _ _ _ e
   exact e.surjective
 #align ring_hom.surjective_respects_iso RingHom.surjective_respectsIso
 
-theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := by
+lemma surjective_stableUnderBaseChange : StableUnderBaseChange surjective := by
   refine' StableUnderBaseChange.mk _ surjective_respectsIso _
   classical
   introv h x
@@ -47,7 +47,7 @@ theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := b
 
 open scoped BigOperators
 
-theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
+lemma surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R hs H
   letI := f.toAlgebra
   show Function.Surjective (Algebra.ofId R S)

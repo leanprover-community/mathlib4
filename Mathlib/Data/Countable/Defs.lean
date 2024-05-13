@@ -49,31 +49,31 @@ instance : Countable ℕ :=
 
 export Countable (exists_injective_nat)
 
-protected theorem Function.Injective.countable [Countable β] {f : α → β} (hf : Injective f) :
+protected lemma Function.Injective.countable [Countable β] {f : α → β} (hf : Injective f) :
     Countable α :=
   let ⟨g, hg⟩ := exists_injective_nat β
   ⟨⟨g ∘ f, hg.comp hf⟩⟩
 #align function.injective.countable Function.Injective.countable
 
-protected theorem Function.Surjective.countable [Countable α] {f : α → β} (hf : Surjective f) :
+protected lemma Function.Surjective.countable [Countable α] {f : α → β} (hf : Surjective f) :
     Countable β :=
   (injective_surjInv hf).countable
 #align function.surjective.countable Function.Surjective.countable
 
-theorem exists_surjective_nat (α : Sort u) [Nonempty α] [Countable α] : ∃ f : ℕ → α, Surjective f :=
+lemma exists_surjective_nat (α : Sort u) [Nonempty α] [Countable α] : ∃ f : ℕ → α, Surjective f :=
   let ⟨f, hf⟩ := exists_injective_nat α
   ⟨invFun f, invFun_surjective hf⟩
 #align exists_surjective_nat exists_surjective_nat
 
-theorem countable_iff_exists_surjective [Nonempty α] : Countable α ↔ ∃ f : ℕ → α, Surjective f :=
+lemma countable_iff_exists_surjective [Nonempty α] : Countable α ↔ ∃ f : ℕ → α, Surjective f :=
   ⟨@exists_surjective_nat _ _, fun ⟨_, hf⟩ ↦ hf.countable⟩
 #align countable_iff_exists_surjective countable_iff_exists_surjective
 
-theorem Countable.of_equiv (α : Sort*) [Countable α] (e : α ≃ β) : Countable β :=
+lemma Countable.of_equiv (α : Sort*) [Countable α] (e : α ≃ β) : Countable β :=
   e.symm.injective.countable
 #align countable.of_equiv Countable.of_equiv
 
-theorem Equiv.countable_iff (e : α ≃ β) : Countable α ↔ Countable β :=
+lemma Equiv.countable_iff (e : α ≃ β) : Countable α ↔ Countable β :=
   ⟨fun h => @Countable.of_equiv _ _ h e, fun h => @Countable.of_equiv _ _ h e.symm⟩
 #align equiv.countable_iff Equiv.countable_iff
 
@@ -142,11 +142,11 @@ lemma not_uncountable [Countable α] : ¬Uncountable α := not_uncountable_iff.2
 @[simp]
 lemma not_countable [Uncountable α] : ¬Countable α := Uncountable.not_countable
 
-protected theorem Function.Injective.uncountable [Uncountable α] {f : α → β} (hf : Injective f) :
+protected lemma Function.Injective.uncountable [Uncountable α] {f : α → β} (hf : Injective f) :
     Uncountable β :=
   ⟨fun _ ↦ not_countable hf.countable⟩
 
-protected theorem Function.Surjective.uncountable [Uncountable β] {f : α → β} (hf : Surjective f) :
+protected lemma Function.Surjective.uncountable [Uncountable β] {f : α → β} (hf : Surjective f) :
     Uncountable α := (injective_surjInv hf).uncountable
 
 lemma not_injective_uncountable_countable [Uncountable α] [Countable β] (f : α → β) :
@@ -156,14 +156,14 @@ lemma not_surjective_countable_uncountable [Countable α] [Uncountable β] (f : 
     ¬Surjective f := fun hf ↦
   not_countable hf.countable
 
-theorem uncountable_iff_forall_not_surjective [Nonempty α] :
+lemma uncountable_iff_forall_not_surjective [Nonempty α] :
     Uncountable α ↔ ∀ f : ℕ → α, ¬Surjective f := by
   rw [← not_countable_iff, countable_iff_exists_surjective, not_exists]
 
-theorem Uncountable.of_equiv (α : Sort*) [Uncountable α] (e : α ≃ β) : Uncountable β :=
+lemma Uncountable.of_equiv (α : Sort*) [Uncountable α] (e : α ≃ β) : Uncountable β :=
   e.injective.uncountable
 
-theorem Equiv.uncountable_iff (e : α ≃ β) : Uncountable α ↔ Uncountable β :=
+lemma Equiv.uncountable_iff (e : α ≃ β) : Uncountable α ↔ Uncountable β :=
   ⟨fun h => @Uncountable.of_equiv _ _ h e, fun h => @Uncountable.of_equiv _ _ h e.symm⟩
 
 instance {β : Type v} [Uncountable β] : Uncountable (ULift.{u} β) :=

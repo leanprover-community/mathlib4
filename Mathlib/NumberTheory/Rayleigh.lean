@@ -123,7 +123,7 @@ theorem compl_beattySeq {r s : ℝ} (hrs : r.IsConjExponent s) :
     have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss' hrs.symm.pos).resolve_left h₂
     exact (Beatty.no_anticollision hrs ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
 
-theorem compl_beattySeq' {r s : ℝ} (hrs : r.IsConjExponent s) :
+lemma compl_beattySeq' {r s : ℝ} (hrs : r.IsConjExponent s) :
     {beattySeq' r k | k}ᶜ = {beattySeq s k | k} := by
   rw [← compl_beattySeq hrs.symm, compl_compl]
 
@@ -154,7 +154,7 @@ theorem beattySeq_symmDiff_beattySeq'_pos {r s : ℝ} (hrs : r.IsConjExponent s)
     Set.not_mem_compl_iff, Set.mem_compl_iff, and_self, and_self]
   exact or_not
 
-theorem beattySeq'_symmDiff_beattySeq_pos {r s : ℝ} (hrs : r.IsConjExponent s) :
+lemma beattySeq'_symmDiff_beattySeq_pos {r s : ℝ} (hrs : r.IsConjExponent s) :
     {beattySeq' r k | k > 0} ∆ {beattySeq s k | k > 0} = {n | 0 < n} := by
   rw [symmDiff_comm, beattySeq_symmDiff_beattySeq'_pos hrs.symm]
 

@@ -111,11 +111,11 @@ def centerAndRescale : SatelliteConfig E N τ where
     abel
 #align besicovitch.satellite_config.center_and_rescale Besicovitch.SatelliteConfig.centerAndRescale
 
-theorem centerAndRescale_center : a.centerAndRescale.c (last N) = 0 := by
+lemma centerAndRescale_center : a.centerAndRescale.c (last N) = 0 := by
   simp [SatelliteConfig.centerAndRescale]
 #align besicovitch.satellite_config.center_and_rescale_center Besicovitch.SatelliteConfig.centerAndRescale_center
 
-theorem centerAndRescale_radius {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) :
+lemma centerAndRescale_radius {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) :
     a.centerAndRescale.r (last N) = 1 := by
   simp [SatelliteConfig.centerAndRescale, inv_mul_cancel (a.rpos _).ne']
 #align besicovitch.satellite_config.center_and_rescale_radius Besicovitch.SatelliteConfig.centerAndRescale_radius
@@ -181,14 +181,14 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
   exact mod_cast K
 #align besicovitch.card_le_of_separated Besicovitch.card_le_of_separated
 
-theorem multiplicity_le : multiplicity E ≤ 5 ^ finrank ℝ E := by
+lemma multiplicity_le : multiplicity E ≤ 5 ^ finrank ℝ E := by
   apply csSup_le
   · refine' ⟨0, ⟨∅, by simp⟩⟩
   · rintro _ ⟨s, ⟨rfl, h⟩⟩
     exact Besicovitch.card_le_of_separated s h.1 h.2
 #align besicovitch.multiplicity_le Besicovitch.multiplicity_le
 
-theorem card_le_multiplicity {s : Finset E} (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
+lemma card_le_multiplicity {s : Finset E} (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     (h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖) : s.card ≤ multiplicity E := by
   apply le_csSup
   · refine' ⟨5 ^ finrank ℝ E, _⟩
@@ -283,7 +283,7 @@ def goodδ : ℝ :=
   (exists_goodδ E).choose
 #align besicovitch.good_δ Besicovitch.goodδ
 
-theorem goodδ_lt_one : goodδ E < 1 :=
+lemma goodδ_lt_one : goodδ E < 1 :=
   (exists_goodδ E).choose_spec.2.1
 #align besicovitch.good_δ_lt_one Besicovitch.goodδ_lt_one
 
@@ -294,18 +294,18 @@ def goodτ : ℝ :=
   1 + goodδ E / 4
 #align besicovitch.good_τ Besicovitch.goodτ
 
-theorem one_lt_goodτ : 1 < goodτ E := by
+lemma one_lt_goodτ : 1 < goodτ E := by
   dsimp [goodτ, goodδ]; linarith [(exists_goodδ E).choose_spec.1]
 #align besicovitch.one_lt_good_τ Besicovitch.one_lt_goodτ
 
 variable {E}
 
-theorem card_le_multiplicity_of_δ {s : Finset E} (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
+lemma card_le_multiplicity_of_δ {s : Finset E} (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     (h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 - goodδ E ≤ ‖c - d‖) : s.card ≤ multiplicity E :=
   (Classical.choose_spec (exists_goodδ E)).2.2 s hs h's
 #align besicovitch.card_le_multiplicity_of_δ Besicovitch.card_le_multiplicity_of_δ
 
-theorem le_multiplicity_of_δ_of_fin {n : ℕ} (f : Fin n → E) (h : ∀ i, ‖f i‖ ≤ 2)
+lemma le_multiplicity_of_δ_of_fin {n : ℕ} (f : Fin n → E) (h : ∀ i, ‖f i‖ ≤ 2)
     (h' : Pairwise fun i j => 1 - goodδ E ≤ ‖f i - f j‖) : n ≤ multiplicity E := by
   classical
   have finj : Function.Injective f := by
@@ -350,7 +350,7 @@ where both of them are `> 2`.
 -/
 
 
-theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
+lemma exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4) (hδ2 : δ ≤ 1)
     (i j : Fin N.succ) (inej : i ≠ j) : 1 - δ ≤ ‖a.c i - a.c j‖ := by
   have ah :
@@ -386,7 +386,7 @@ variable [NormedSpace ℝ E]
 (Part of the code was ignoring the `maxDischargeDepth` setting:
  now that we have to increase it, other paths becomes slow.) -/
 set_option maxHeartbeats 400000 in
-theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
+lemma exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastc : a.c (last N) = 0) (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4)
     (hδ2 : δ ≤ 1) (i j : Fin N.succ) (inej : i ≠ j) (hi : ‖a.c i‖ ≤ 2) (hj : 2 < ‖a.c j‖) :
     1 - δ ≤ ‖a.c i - (2 / ‖a.c j‖) • a.c j‖ := by
@@ -442,7 +442,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
   linarith only [this]
 #align besicovitch.satellite_config.exists_normalized_aux2 Besicovitch.SatelliteConfig.exists_normalized_aux2
 
-theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
+lemma exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastc : a.c (last N) = 0) (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4)
     (i j : Fin N.succ) (inej : i ≠ j) (hi : 2 < ‖a.c i‖) (hij : ‖a.c i‖ ≤ ‖a.c j‖) :
     1 - δ ≤ ‖(2 / ‖a.c i‖) • a.c i - (2 / ‖a.c j‖) • a.c j‖ := by
@@ -499,7 +499,7 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       field_simp [spos.ne']
 #align besicovitch.satellite_config.exists_normalized_aux3 Besicovitch.SatelliteConfig.exists_normalized_aux3
 
-theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (lastc : a.c (last N) = 0)
+lemma exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (lastc : a.c (last N) = 0)
     (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4) (hδ2 : δ ≤ 1) :
     ∃ c' : Fin N.succ → E, (∀ n, ‖c' n‖ ≤ 2) ∧ Pairwise fun i j => 1 - δ ≤ ‖c' i - c' j‖ := by
   let c' : Fin N.succ → E := fun i => if ‖a.c i‖ ≤ 2 then a.c i else (2 / ‖a.c i‖) • a.c i

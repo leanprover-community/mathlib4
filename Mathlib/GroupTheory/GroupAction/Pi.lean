@@ -42,7 +42,7 @@ instance smul' {g : I → Type*} [∀ i, SMul (f i) (g i)] : SMul (∀ i, f i) (
 #align pi.has_vadd' Pi.vadd'
 
 @[to_additive (attr := simp)]
-theorem smul_apply' {g : I → Type*} [∀ i, SMul (f i) (g i)] (s : ∀ i, f i) (x : ∀ i, g i) :
+lemma smul_apply' {g : I → Type*} [∀ i, SMul (f i) (g i)] (s : ∀ i, f i) (x : ∀ i, g i) :
     (s • x) i = s i • x i :=
   rfl
 #align pi.smul_apply' Pi.smul_apply'
@@ -178,7 +178,7 @@ instance distribMulAction' {g : I → Type*} {m : ∀ i, Monoid (f i)} {n : ∀ 
   { Pi.mulAction', Pi.distribSMul' with }
 #align pi.distrib_mul_action' Pi.distribMulAction'
 
-theorem single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMulAction α <| f i]
+lemma single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMulAction α <| f i]
     [DecidableEq I] (i : I) (r : α) (x : f i) : single i (r • x) = r • single i x :=
   single_op (fun i : I => (r • · : f i → f i)) (fun _ => smul_zero _) _ _
 #align pi.single_smul Pi.single_smul
@@ -191,7 +191,7 @@ theorem single_smul' {α β} [Monoid α] [AddMonoid β] [DistribMulAction α β]
   single_smul (f := fun _ => β) i r x
 #align pi.single_smul' Pi.single_smul'
 
-theorem single_smul₀ {g : I → Type*} [∀ i, MonoidWithZero (f i)] [∀ i, AddMonoid (g i)]
+lemma single_smul₀ {g : I → Type*} [∀ i, MonoidWithZero (f i)] [∀ i, AddMonoid (g i)]
     [∀ i, DistribMulAction (f i) (g i)] [DecidableEq I] (i : I) (r : f i) (x : g i) :
     single i (r • x) = single i r • single i x :=
   single_op₂ (fun i : I => ((· • ·) : f i → g i → g i)) (fun _ => smul_zero _) _ _ _
@@ -244,7 +244,7 @@ instance smulCommClass {ι α β M : Type*} [SMul α M] [SMul β M] [SMulCommCla
 #align function.vadd_comm_class Function.vaddCommClass
 
 @[to_additive]
-theorem update_smul {α : Type*} [∀ i, SMul α (f i)] [DecidableEq I] (c : α) (f₁ : ∀ i, f i)
+lemma update_smul {α : Type*} [∀ i, SMul α (f i)] [DecidableEq I] (c : α) (f₁ : ∀ i, f i)
     (i : I) (x₁ : f i) : update (c • f₁) i (c • x₁) = c • update f₁ i x₁ :=
   funext fun j => (apply_update (β := f) (fun _ => (c • ·)) f₁ i x₁ j).symm
 #align function.update_smul Function.update_smul
@@ -255,7 +255,7 @@ end Function
 namespace Set
 
 @[to_additive]
-theorem piecewise_smul {α : Type*} [∀ i, SMul α (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
+lemma piecewise_smul {α : Type*} [∀ i, SMul α (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (c : α) (f₁ g₁ : ∀ i, f i) : s.piecewise (c • f₁) (c • g₁) = c • s.piecewise f₁ g₁ :=
   s.piecewise_op (δ' := f) f₁ _ fun _ => (c • ·)
 #align set.piecewise_smul Set.piecewise_smul
@@ -266,7 +266,7 @@ end Set
 section Extend
 
 @[to_additive]
-theorem Function.extend_smul {R α β γ : Type*} [SMul R γ] (r : R) (f : α → β) (g : α → γ)
+lemma Function.extend_smul {R α β γ : Type*} [SMul R γ] (r : R) (f : α → β) (g : α → γ)
     (e : β → γ) : Function.extend f (r • g) (r • e) = r • Function.extend f g e :=
   funext fun x => by
   -- Porting note: Lean4 is unable to automatically call `Classical.propDecidable`

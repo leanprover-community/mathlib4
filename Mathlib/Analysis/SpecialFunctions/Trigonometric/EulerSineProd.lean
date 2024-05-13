@@ -36,7 +36,7 @@ We evaluate the integral of `cos (2 * z * x) * cos x ^ n`, for any complex `z` a
 
 variable {z : ℂ} {n : ℕ}
 
-theorem antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
+lemma antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => Complex.sin (2 * z * y) / (2 * z)) (Complex.cos (2 * z * x)) x := by
   have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
   have b : HasDerivAt (fun y : ℂ => Complex.sin (y * (2 * z))) _ x :=
@@ -46,7 +46,7 @@ theorem antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
   exact c
 #align euler_sine.antideriv_cos_comp_const_mul EulerSine.antideriv_cos_comp_const_mul
 
-theorem antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
+lemma antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => -Complex.cos (2 * z * y) / (2 * z)) (Complex.sin (2 * z * x)) x := by
   have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
   have b : HasDerivAt (fun y : ℂ => Complex.cos (y * (2 * z))) _ x :=
@@ -56,7 +56,7 @@ theorem antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
   exact c
 #align euler_sine.antideriv_sin_comp_const_mul EulerSine.antideriv_sin_comp_const_mul
 
-theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
+lemma integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
     (∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) =
       n / (2 * z) *
         ∫ x in (0 : ℝ)..π / 2, Complex.sin (2 * z * x) * sin x * (cos x : ℂ) ^ (n - 1) := by
@@ -85,7 +85,7 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
     exact Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)
 #align euler_sine.integral_cos_mul_cos_pow_aux EulerSine.integral_cos_mul_cos_pow_aux
 
-theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
+lemma integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
     (∫ x in (0 : ℝ)..π / 2, Complex.sin (2 * z * x) * sin x * (cos x : ℂ) ^ (n - 1)) =
       (n / (2 * z) * ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) -
         (n - 1) / (2 * z) *
@@ -199,7 +199,7 @@ theorem integral_cos_pow_eq (n : ℕ) :
     rw [sin_add_pi_div_two]
 #align euler_sine.integral_cos_pow_eq EulerSine.integral_cos_pow_eq
 
-theorem integral_cos_pow_pos (n : ℕ) : 0 < ∫ x in (0 : ℝ)..π / 2, cos x ^ n :=
+lemma integral_cos_pow_pos (n : ℕ) : 0 < ∫ x in (0 : ℝ)..π / 2, cos x ^ n :=
   (integral_cos_pow_eq n).symm ▸ mul_pos one_half_pos (integral_sin_pow_pos _)
 #align euler_sine.integral_cos_pow_pos EulerSine.integral_cos_pow_pos
 
@@ -275,7 +275,7 @@ stating that the sequence of measures on `[0, π/2]` given by integration agains
 `tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`. -/
 
 
-theorem tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f (Icc 0 (π / 2))) :
+lemma tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f (Icc 0 (π / 2))) :
     Tendsto
       (fun n : ℕ => (∫ x in (0 : ℝ)..π / 2, (cos x : ℂ) ^ n * f x) /
         (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ))

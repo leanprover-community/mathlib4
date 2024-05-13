@@ -40,7 +40,7 @@ instance Ultrafilter.topologicalSpace : TopologicalSpace (Ultrafilter α) :=
   TopologicalSpace.generateFrom (ultrafilterBasis α)
 #align ultrafilter.topological_space Ultrafilter.topologicalSpace
 
-theorem ultrafilterBasis_is_basis : TopologicalSpace.IsTopologicalBasis (ultrafilterBasis α) :=
+lemma ultrafilterBasis_is_basis : TopologicalSpace.IsTopologicalBasis (ultrafilterBasis α) :=
   ⟨by
     rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ u ⟨ua, ub⟩
     refine' ⟨_, ⟨a ∩ b, rfl⟩, inter_mem ua ub, fun v hv => ⟨_, _⟩⟩ <;> apply mem_of_superset hv <;>
@@ -101,13 +101,13 @@ instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   have hZ : IsClopen Z := ⟨ultrafilter_isClosed_basic s, ultrafilter_isOpen_basic s⟩
   exact hB ⟨Z, hZ, hs⟩
 
-@[simp] theorem Ultrafilter.tendsto_pure_self (b : Ultrafilter α) : Tendsto pure b (𝓝 b) := by
+@[simp] lemma Ultrafilter.tendsto_pure_self (b : Ultrafilter α) : Tendsto pure b (𝓝 b) := by
   rw [Tendsto, ← coe_map, ultrafilter_converges_iff]
   ext s
   change s ∈ b ↔ {t | s ∈ t} ∈ map pure b
   simp_rw [mem_map, preimage_setOf_eq, mem_pure, setOf_mem_eq]
 
-theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) ≤ b := by
+lemma ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) ≤ b := by
   rw [TopologicalSpace.nhds_generateFrom]
   simp only [comap_iInf, comap_principal]
   intro s hs
@@ -119,7 +119,7 @@ theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) �
 
 section Embedding
 
-theorem ultrafilter_pure_injective : Function.Injective (pure : α → Ultrafilter α) := by
+lemma ultrafilter_pure_injective : Function.Injective (pure : α → Ultrafilter α) := by
   intro x y h
   have : {x} ∈ (pure x : Ultrafilter α) := singleton_mem_pure
   rw [h] at this
@@ -176,7 +176,7 @@ def Ultrafilter.extend (f : α → γ) : Ultrafilter α → γ :=
 
 variable [T2Space γ]
 
-theorem ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pure = f := by
+lemma ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pure = f := by
   letI : TopologicalSpace α := ⊥
   haveI : DiscreteTopology α := ⟨rfl⟩
   exact funext (denseInducing_pure.extend_eq continuous_of_discreteTopology)
@@ -184,7 +184,7 @@ theorem ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pu
 
 variable [CompactSpace γ]
 
-theorem continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.extend f) := by
+lemma continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.extend f) := by
   have h : ∀ b : Ultrafilter α, ∃ c, Tendsto f (comap pure (𝓝 b)) (𝓝 c) := fun b =>
     -- b.map f is an ultrafilter on γ, which is compact, so it converges to some c in γ.
     let ⟨c, _, h'⟩ :=
@@ -276,15 +276,15 @@ def stoneCechExtend : StoneCech α → γ :=
   Quotient.lift (Ultrafilter.extend f) fun _ _ xy => xy γ f hf
 #align stone_cech_extend stoneCechExtend
 
-theorem stoneCechExtend_extends : stoneCechExtend hf ∘ stoneCechUnit = f :=
+lemma stoneCechExtend_extends : stoneCechExtend hf ∘ stoneCechUnit = f :=
   ultrafilter_extend_extends f
 #align stone_cech_extend_extends stoneCechExtend_extends
 
-theorem continuous_stoneCechExtend : Continuous (stoneCechExtend hf) :=
+lemma continuous_stoneCechExtend : Continuous (stoneCechExtend hf) :=
   continuous_quot_lift _ (continuous_ultrafilter_extend f)
 #align continuous_stone_cech_extend continuous_stoneCechExtend
 
-theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → γ'} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
+lemma stoneCech_hom_ext {g₁ g₂ : StoneCech α → γ'} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (h : g₁ ∘ stoneCechUnit = g₂ ∘ stoneCechUnit) : g₁ = g₂ := by
   apply Continuous.ext_on denseRange_stoneCechUnit h₁ h₂
   rintro x ⟨x, rfl⟩
@@ -293,7 +293,7 @@ theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → γ'} (h₁ : Continuous 
 
 end Extension
 
-theorem convergent_eqv_pure {u : Ultrafilter α} {x : α} (ux : ↑u ≤ 𝓝 x) : u ≈ pure x :=
+lemma convergent_eqv_pure {u : Ultrafilter α} {x : α} (ux : ↑u ≤ 𝓝 x) : u ≈ pure x :=
   fun γ tγ h₁ h₂ f hf => by
   trans f x; swap; on_goal 1 => symm
   all_goals refine' ultrafilter_extend_eq_iff.mpr (le_trans (map_mono _) (hf.tendsto _))
@@ -301,7 +301,7 @@ theorem convergent_eqv_pure {u : Ultrafilter α} {x : α} (ux : ↑u ≤ 𝓝 x)
   · exact ux
 #align convergent_eqv_pure convergent_eqv_pure
 
-theorem continuous_stoneCechUnit : Continuous (stoneCechUnit : α → StoneCech α) :=
+lemma continuous_stoneCechUnit : Continuous (stoneCechUnit : α → StoneCech α) :=
   continuous_iff_ultrafilter.mpr fun x g gx => by
     have : (g.map pure).toFilter ≤ 𝓝 g := by
       rw [ultrafilter_converges_iff]

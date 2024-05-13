@@ -80,52 +80,52 @@ theorem closure_Ico {a b : α} (hab : a ≠ b) : closure (Ico a b) = Icc a b := 
 #align closure_Ico closure_Ico
 
 @[simp]
-theorem interior_Ici' {a : α} (ha : (Iio a).Nonempty) : interior (Ici a) = Ioi a := by
+lemma interior_Ici' {a : α} (ha : (Iio a).Nonempty) : interior (Ici a) = Ioi a := by
   rw [← compl_Iio, interior_compl, closure_Iio' ha, compl_Iic]
 #align interior_Ici' interior_Ici'
 
-theorem interior_Ici [NoMinOrder α] {a : α} : interior (Ici a) = Ioi a :=
+lemma interior_Ici [NoMinOrder α] {a : α} : interior (Ici a) = Ioi a :=
   interior_Ici' nonempty_Iio
 #align interior_Ici interior_Ici
 
 @[simp]
-theorem interior_Iic' {a : α} (ha : (Ioi a).Nonempty) : interior (Iic a) = Iio a :=
+lemma interior_Iic' {a : α} (ha : (Ioi a).Nonempty) : interior (Iic a) = Iio a :=
   interior_Ici' (α := αᵒᵈ) ha
 #align interior_Iic' interior_Iic'
 
-theorem interior_Iic [NoMaxOrder α] {a : α} : interior (Iic a) = Iio a :=
+lemma interior_Iic [NoMaxOrder α] {a : α} : interior (Iic a) = Iio a :=
   interior_Iic' nonempty_Ioi
 #align interior_Iic interior_Iic
 
 @[simp]
-theorem interior_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} : interior (Icc a b) = Ioo a b := by
+lemma interior_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} : interior (Icc a b) = Ioo a b := by
   rw [← Ici_inter_Iic, interior_inter, interior_Ici, interior_Iic, Ioi_inter_Iio]
 #align interior_Icc interior_Icc
 
 @[simp]
-theorem Icc_mem_nhds_iff [NoMinOrder α] [NoMaxOrder α] {a b x : α} :
+lemma Icc_mem_nhds_iff [NoMinOrder α] [NoMaxOrder α] {a b x : α} :
     Icc a b ∈ 𝓝 x ↔ x ∈ Ioo a b := by
   rw [← interior_Icc, mem_interior_iff_mem_nhds]
 
 @[simp]
-theorem interior_Ico [NoMinOrder α] {a b : α} : interior (Ico a b) = Ioo a b := by
+lemma interior_Ico [NoMinOrder α] {a b : α} : interior (Ico a b) = Ioo a b := by
   rw [← Ici_inter_Iio, interior_inter, interior_Ici, interior_Iio, Ioi_inter_Iio]
 #align interior_Ico interior_Ico
 
 @[simp]
-theorem Ico_mem_nhds_iff [NoMinOrder α] {a b x : α} : Ico a b ∈ 𝓝 x ↔ x ∈ Ioo a b := by
+lemma Ico_mem_nhds_iff [NoMinOrder α] {a b x : α} : Ico a b ∈ 𝓝 x ↔ x ∈ Ioo a b := by
   rw [← interior_Ico, mem_interior_iff_mem_nhds]
 
 @[simp]
-theorem interior_Ioc [NoMaxOrder α] {a b : α} : interior (Ioc a b) = Ioo a b := by
+lemma interior_Ioc [NoMaxOrder α] {a b : α} : interior (Ioc a b) = Ioo a b := by
   rw [← Ioi_inter_Iic, interior_inter, interior_Ioi, interior_Iic, Ioi_inter_Iio]
 #align interior_Ioc interior_Ioc
 
 @[simp]
-theorem Ioc_mem_nhds_iff [NoMaxOrder α] {a b x : α} : Ioc a b ∈ 𝓝 x ↔ x ∈ Ioo a b := by
+lemma Ioc_mem_nhds_iff [NoMaxOrder α] {a b x : α} : Ioc a b ∈ 𝓝 x ↔ x ∈ Ioo a b := by
   rw [← interior_Ioc, mem_interior_iff_mem_nhds]
 
-theorem closure_interior_Icc {a b : α} (h : a ≠ b) : closure (interior (Icc a b)) = Icc a b :=
+lemma closure_interior_Icc {a b : α} (h : a ≠ b) : closure (interior (Icc a b)) = Icc a b :=
   (closure_minimal interior_subset isClosed_Icc).antisymm <|
     calc
       Icc a b = closure (Ioo a b) := (closure_Ioo h).symm
@@ -133,7 +133,7 @@ theorem closure_interior_Icc {a b : α} (h : a ≠ b) : closure (interior (Icc a
         closure_mono (interior_maximal Ioo_subset_Icc_self isOpen_Ioo)
 #align closure_interior_Icc closure_interior_Icc
 
-theorem Ioc_subset_closure_interior (a b : α) : Ioc a b ⊆ closure (interior (Ioc a b)) := by
+lemma Ioc_subset_closure_interior (a b : α) : Ioc a b ⊆ closure (interior (Ioc a b)) := by
   rcases eq_or_ne a b with (rfl | h)
   · simp
   · calc
@@ -143,76 +143,76 @@ theorem Ioc_subset_closure_interior (a b : α) : Ioc a b ⊆ closure (interior (
         closure_mono (interior_maximal Ioo_subset_Ioc_self isOpen_Ioo)
 #align Ioc_subset_closure_interior Ioc_subset_closure_interior
 
-theorem Ico_subset_closure_interior (a b : α) : Ico a b ⊆ closure (interior (Ico a b)) := by
+lemma Ico_subset_closure_interior (a b : α) : Ico a b ⊆ closure (interior (Ico a b)) := by
   simpa only [dual_Ioc] using Ioc_subset_closure_interior (OrderDual.toDual b) (OrderDual.toDual a)
 #align Ico_subset_closure_interior Ico_subset_closure_interior
 
 @[simp]
-theorem frontier_Ici' {a : α} (ha : (Iio a).Nonempty) : frontier (Ici a) = {a} := by
+lemma frontier_Ici' {a : α} (ha : (Iio a).Nonempty) : frontier (Ici a) = {a} := by
   simp [frontier, ha]
 #align frontier_Ici' frontier_Ici'
 
-theorem frontier_Ici [NoMinOrder α] {a : α} : frontier (Ici a) = {a} :=
+lemma frontier_Ici [NoMinOrder α] {a : α} : frontier (Ici a) = {a} :=
   frontier_Ici' nonempty_Iio
 #align frontier_Ici frontier_Ici
 
 @[simp]
-theorem frontier_Iic' {a : α} (ha : (Ioi a).Nonempty) : frontier (Iic a) = {a} := by
+lemma frontier_Iic' {a : α} (ha : (Ioi a).Nonempty) : frontier (Iic a) = {a} := by
   simp [frontier, ha]
 #align frontier_Iic' frontier_Iic'
 
-theorem frontier_Iic [NoMaxOrder α] {a : α} : frontier (Iic a) = {a} :=
+lemma frontier_Iic [NoMaxOrder α] {a : α} : frontier (Iic a) = {a} :=
   frontier_Iic' nonempty_Ioi
 #align frontier_Iic frontier_Iic
 
 @[simp]
-theorem frontier_Ioi' {a : α} (ha : (Ioi a).Nonempty) : frontier (Ioi a) = {a} := by
+lemma frontier_Ioi' {a : α} (ha : (Ioi a).Nonempty) : frontier (Ioi a) = {a} := by
   simp [frontier, closure_Ioi' ha, Iic_diff_Iio, Icc_self]
 #align frontier_Ioi' frontier_Ioi'
 
-theorem frontier_Ioi [NoMaxOrder α] {a : α} : frontier (Ioi a) = {a} :=
+lemma frontier_Ioi [NoMaxOrder α] {a : α} : frontier (Ioi a) = {a} :=
   frontier_Ioi' nonempty_Ioi
 #align frontier_Ioi frontier_Ioi
 
 @[simp]
-theorem frontier_Iio' {a : α} (ha : (Iio a).Nonempty) : frontier (Iio a) = {a} := by
+lemma frontier_Iio' {a : α} (ha : (Iio a).Nonempty) : frontier (Iio a) = {a} := by
   simp [frontier, closure_Iio' ha, Iic_diff_Iio, Icc_self]
 #align frontier_Iio' frontier_Iio'
 
-theorem frontier_Iio [NoMinOrder α] {a : α} : frontier (Iio a) = {a} :=
+lemma frontier_Iio [NoMinOrder α] {a : α} : frontier (Iio a) = {a} :=
   frontier_Iio' nonempty_Iio
 #align frontier_Iio frontier_Iio
 
 @[simp]
-theorem frontier_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} (h : a ≤ b) :
+lemma frontier_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} (h : a ≤ b) :
     frontier (Icc a b) = {a, b} := by simp [frontier, h, Icc_diff_Ioo_same]
 #align frontier_Icc frontier_Icc
 
 @[simp]
-theorem frontier_Ioo {a b : α} (h : a < b) : frontier (Ioo a b) = {a, b} := by
+lemma frontier_Ioo {a b : α} (h : a < b) : frontier (Ioo a b) = {a, b} := by
   rw [frontier, closure_Ioo h.ne, interior_Ioo, Icc_diff_Ioo_same h.le]
 #align frontier_Ioo frontier_Ioo
 
 @[simp]
-theorem frontier_Ico [NoMinOrder α] {a b : α} (h : a < b) : frontier (Ico a b) = {a, b} := by
+lemma frontier_Ico [NoMinOrder α] {a b : α} (h : a < b) : frontier (Ico a b) = {a, b} := by
   rw [frontier, closure_Ico h.ne, interior_Ico, Icc_diff_Ioo_same h.le]
 #align frontier_Ico frontier_Ico
 
 @[simp]
-theorem frontier_Ioc [NoMaxOrder α] {a b : α} (h : a < b) : frontier (Ioc a b) = {a, b} := by
+lemma frontier_Ioc [NoMaxOrder α] {a b : α} (h : a < b) : frontier (Ioc a b) = {a, b} := by
   rw [frontier, closure_Ioc h.ne, interior_Ioc, Icc_diff_Ioo_same h.le]
 #align frontier_Ioc frontier_Ioc
 
-theorem nhdsWithin_Ioi_neBot' {a b : α} (H₁ : (Ioi a).Nonempty) (H₂ : a ≤ b) :
+lemma nhdsWithin_Ioi_neBot' {a b : α} (H₁ : (Ioi a).Nonempty) (H₂ : a ≤ b) :
     NeBot (𝓝[Ioi a] b) :=
   mem_closure_iff_nhdsWithin_neBot.1 <| by rwa [closure_Ioi' H₁]
 #align nhds_within_Ioi_ne_bot' nhdsWithin_Ioi_neBot'
 
-theorem nhdsWithin_Ioi_neBot [NoMaxOrder α] {a b : α} (H : a ≤ b) : NeBot (𝓝[Ioi a] b) :=
+lemma nhdsWithin_Ioi_neBot [NoMaxOrder α] {a b : α} (H : a ≤ b) : NeBot (𝓝[Ioi a] b) :=
   nhdsWithin_Ioi_neBot' nonempty_Ioi H
 #align nhds_within_Ioi_ne_bot nhdsWithin_Ioi_neBot
 
-theorem nhdsWithin_Ioi_self_neBot' {a : α} (H : (Ioi a).Nonempty) : NeBot (𝓝[>] a) :=
+lemma nhdsWithin_Ioi_self_neBot' {a : α} (H : (Ioi a).Nonempty) : NeBot (𝓝[>] a) :=
   nhdsWithin_Ioi_neBot' H (le_refl a)
 #align nhds_within_Ioi_self_ne_bot' nhdsWithin_Ioi_self_neBot'
 
@@ -220,16 +220,16 @@ instance nhdsWithin_Ioi_self_neBot [NoMaxOrder α] (a : α) : NeBot (𝓝[>] a) 
   nhdsWithin_Ioi_neBot (le_refl a)
 #align nhds_within_Ioi_self_ne_bot nhdsWithin_Ioi_self_neBot
 
-theorem nhdsWithin_Iio_neBot' {b c : α} (H₁ : (Iio c).Nonempty) (H₂ : b ≤ c) :
+lemma nhdsWithin_Iio_neBot' {b c : α} (H₁ : (Iio c).Nonempty) (H₂ : b ≤ c) :
     NeBot (𝓝[Iio c] b) :=
   mem_closure_iff_nhdsWithin_neBot.1 <| by rwa [closure_Iio' H₁]
 #align nhds_within_Iio_ne_bot' nhdsWithin_Iio_neBot'
 
-theorem nhdsWithin_Iio_neBot [NoMinOrder α] {a b : α} (H : a ≤ b) : NeBot (𝓝[Iio b] a) :=
+lemma nhdsWithin_Iio_neBot [NoMinOrder α] {a b : α} (H : a ≤ b) : NeBot (𝓝[Iio b] a) :=
   nhdsWithin_Iio_neBot' nonempty_Iio H
 #align nhds_within_Iio_ne_bot nhdsWithin_Iio_neBot
 
-theorem nhdsWithin_Iio_self_neBot' {b : α} (H : (Iio b).Nonempty) : NeBot (𝓝[<] b) :=
+lemma nhdsWithin_Iio_self_neBot' {b : α} (H : (Iio b).Nonempty) : NeBot (𝓝[<] b) :=
   nhdsWithin_Iio_neBot' H (le_refl b)
 #align nhds_within_Iio_self_ne_bot' nhdsWithin_Iio_self_neBot'
 
@@ -237,23 +237,23 @@ instance nhdsWithin_Iio_self_neBot [NoMinOrder α] (a : α) : NeBot (𝓝[<] a) 
   nhdsWithin_Iio_neBot (le_refl a)
 #align nhds_within_Iio_self_ne_bot nhdsWithin_Iio_self_neBot
 
-theorem right_nhdsWithin_Ico_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ico a b] b) :=
+lemma right_nhdsWithin_Ico_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ico a b] b) :=
   (isLUB_Ico H).nhdsWithin_neBot (nonempty_Ico.2 H)
 #align right_nhds_within_Ico_ne_bot right_nhdsWithin_Ico_neBot
 
-theorem left_nhdsWithin_Ioc_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ioc a b] a) :=
+lemma left_nhdsWithin_Ioc_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ioc a b] a) :=
   (isGLB_Ioc H).nhdsWithin_neBot (nonempty_Ioc.2 H)
 #align left_nhds_within_Ioc_ne_bot left_nhdsWithin_Ioc_neBot
 
-theorem left_nhdsWithin_Ioo_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ioo a b] a) :=
+lemma left_nhdsWithin_Ioo_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ioo a b] a) :=
   (isGLB_Ioo H).nhdsWithin_neBot (nonempty_Ioo.2 H)
 #align left_nhds_within_Ioo_ne_bot left_nhdsWithin_Ioo_neBot
 
-theorem right_nhdsWithin_Ioo_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ioo a b] b) :=
+lemma right_nhdsWithin_Ioo_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ioo a b] b) :=
   (isLUB_Ioo H).nhdsWithin_neBot (nonempty_Ioo.2 H)
 #align right_nhds_within_Ioo_ne_bot right_nhdsWithin_Ioo_neBot
 
-theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
+lemma comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
     (hs : s.Nonempty → ∃ a < b, Ioo a b ⊆ s) : comap ((↑) : s → α) (𝓝[<] b) = atTop := by
   nontriviality
   haveI : Nonempty s := nontrivial_iff_nonempty.1 ‹_›
@@ -272,13 +272,13 @@ theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
 #align comap_coe_nhds_within_Iio_of_Ioo_subset comap_coe_nhdsWithin_Iio_of_Ioo_subset
 
 set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
-theorem comap_coe_nhdsWithin_Ioi_of_Ioo_subset (ha : s ⊆ Ioi a)
+lemma comap_coe_nhdsWithin_Ioi_of_Ioo_subset (ha : s ⊆ Ioi a)
     (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s) : comap ((↑) : s → α) (𝓝[>] a) = atBot :=
   comap_coe_nhdsWithin_Iio_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha) fun h => by
     simpa only [OrderDual.exists, dual_Ioo] using hs h
 #align comap_coe_nhds_within_Ioi_of_Ioo_subset comap_coe_nhdsWithin_Ioi_of_Ioo_subset
 
-theorem map_coe_atTop_of_Ioo_subset (hb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a < b, Ioo a b ⊆ s) :
+lemma map_coe_atTop_of_Ioo_subset (hb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a < b, Ioo a b ⊆ s) :
     map ((↑) : s → α) atTop = 𝓝[<] b := by
   rcases eq_empty_or_nonempty (Iio b) with (hb' | ⟨a, ha⟩)
   · have : IsEmpty s := ⟨fun x => hb'.subset (hb x.2)⟩
@@ -288,7 +288,7 @@ theorem map_coe_atTop_of_Ioo_subset (hb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a <
     exact (mem_nhdsWithin_Iio_iff_exists_Ioo_subset' ha).2 (hs a ha)
 #align map_coe_at_top_of_Ioo_subset map_coe_atTop_of_Ioo_subset
 
-theorem map_coe_atBot_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b > a, Ioo a b ⊆ s) :
+lemma map_coe_atBot_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b > a, Ioo a b ⊆ s) :
     map ((↑) : s → α) atBot = 𝓝[>] a := by
   -- the elaborator gets stuck without `(... : _)`
   refine' (map_coe_atTop_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
@@ -310,44 +310,44 @@ theorem comap_coe_Ioo_nhdsWithin_Ioi (a b : α) : comap ((↑) : Ioo a b → α)
     ⟨b, nonempty_Ioo.1 h, Subset.refl _⟩
 #align comap_coe_Ioo_nhds_within_Ioi comap_coe_Ioo_nhdsWithin_Ioi
 
-theorem comap_coe_Ioi_nhdsWithin_Ioi (a : α) : comap ((↑) : Ioi a → α) (𝓝[>] a) = atBot :=
+lemma comap_coe_Ioi_nhdsWithin_Ioi (a : α) : comap ((↑) : Ioi a → α) (𝓝[>] a) = atBot :=
   comap_coe_nhdsWithin_Ioi_of_Ioo_subset (Subset.refl _) fun ⟨x, hx⟩ => ⟨x, hx, Ioo_subset_Ioi_self⟩
 #align comap_coe_Ioi_nhds_within_Ioi comap_coe_Ioi_nhdsWithin_Ioi
 
-theorem comap_coe_Iio_nhdsWithin_Iio (a : α) : comap ((↑) : Iio a → α) (𝓝[<] a) = atTop :=
+lemma comap_coe_Iio_nhdsWithin_Iio (a : α) : comap ((↑) : Iio a → α) (𝓝[<] a) = atTop :=
   comap_coe_Ioi_nhdsWithin_Ioi (α := αᵒᵈ) a
 #align comap_coe_Iio_nhds_within_Iio comap_coe_Iio_nhdsWithin_Iio
 
 @[simp]
-theorem map_coe_Ioo_atTop {a b : α} (h : a < b) : map ((↑) : Ioo a b → α) atTop = 𝓝[<] b :=
+lemma map_coe_Ioo_atTop {a b : α} (h : a < b) : map ((↑) : Ioo a b → α) atTop = 𝓝[<] b :=
   map_coe_atTop_of_Ioo_subset Ioo_subset_Iio_self fun _ _ => ⟨_, h, Subset.refl _⟩
 #align map_coe_Ioo_at_top map_coe_Ioo_atTop
 
 @[simp]
-theorem map_coe_Ioo_atBot {a b : α} (h : a < b) : map ((↑) : Ioo a b → α) atBot = 𝓝[>] a :=
+lemma map_coe_Ioo_atBot {a b : α} (h : a < b) : map ((↑) : Ioo a b → α) atBot = 𝓝[>] a :=
   map_coe_atBot_of_Ioo_subset Ioo_subset_Ioi_self fun _ _ => ⟨_, h, Subset.refl _⟩
 #align map_coe_Ioo_at_bot map_coe_Ioo_atBot
 
 @[simp]
-theorem map_coe_Ioi_atBot (a : α) : map ((↑) : Ioi a → α) atBot = 𝓝[>] a :=
+lemma map_coe_Ioi_atBot (a : α) : map ((↑) : Ioi a → α) atBot = 𝓝[>] a :=
   map_coe_atBot_of_Ioo_subset (Subset.refl _) fun b hb => ⟨b, hb, Ioo_subset_Ioi_self⟩
 #align map_coe_Ioi_at_bot map_coe_Ioi_atBot
 
 @[simp]
-theorem map_coe_Iio_atTop (a : α) : map ((↑) : Iio a → α) atTop = 𝓝[<] a :=
+lemma map_coe_Iio_atTop (a : α) : map ((↑) : Iio a → α) atTop = 𝓝[<] a :=
   map_coe_Ioi_atBot (α := αᵒᵈ) _
 #align map_coe_Iio_at_top map_coe_Iio_atTop
 
 variable {l : Filter β} {f : α → β}
 
 @[simp]
-theorem tendsto_comp_coe_Ioo_atTop (h : a < b) :
+lemma tendsto_comp_coe_Ioo_atTop (h : a < b) :
     Tendsto (fun x : Ioo a b => f x) atTop l ↔ Tendsto f (𝓝[<] b) l := by
   rw [← map_coe_Ioo_atTop h, tendsto_map'_iff]; rfl
 #align tendsto_comp_coe_Ioo_at_top tendsto_comp_coe_Ioo_atTop
 
 @[simp]
-theorem tendsto_comp_coe_Ioo_atBot (h : a < b) :
+lemma tendsto_comp_coe_Ioo_atBot (h : a < b) :
     Tendsto (fun x : Ioo a b => f x) atBot l ↔ Tendsto f (𝓝[>] a) l := by
   rw [← map_coe_Ioo_atBot h, tendsto_map'_iff]; rfl
 #align tendsto_comp_coe_Ioo_at_bot tendsto_comp_coe_Ioo_atBot
@@ -355,7 +355,7 @@ theorem tendsto_comp_coe_Ioo_atBot (h : a < b) :
 -- Porting note (#11215): TODO: `simpNF` claims that `simp` can't use
 -- this lemma to simplify LHS but it can
 @[simp, nolint simpNF]
-theorem tendsto_comp_coe_Ioi_atBot :
+lemma tendsto_comp_coe_Ioi_atBot :
     Tendsto (fun x : Ioi a => f x) atBot l ↔ Tendsto f (𝓝[>] a) l := by
   rw [← map_coe_Ioi_atBot, tendsto_map'_iff]; rfl
 #align tendsto_comp_coe_Ioi_at_bot tendsto_comp_coe_Ioi_atBot
@@ -363,31 +363,31 @@ theorem tendsto_comp_coe_Ioi_atBot :
 -- Porting note (#11215): TODO: `simpNF` claims that `simp` can't use
 -- this lemma to simplify LHS but it can
 @[simp, nolint simpNF]
-theorem tendsto_comp_coe_Iio_atTop :
+lemma tendsto_comp_coe_Iio_atTop :
     Tendsto (fun x : Iio a => f x) atTop l ↔ Tendsto f (𝓝[<] a) l := by
   rw [← map_coe_Iio_atTop, tendsto_map'_iff]; rfl
 #align tendsto_comp_coe_Iio_at_top tendsto_comp_coe_Iio_atTop
 
 @[simp]
-theorem tendsto_Ioo_atTop {f : β → Ioo a b} :
+lemma tendsto_Ioo_atTop {f : β → Ioo a b} :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l (𝓝[<] b) := by
   rw [← comap_coe_Ioo_nhdsWithin_Iio, tendsto_comap_iff]; rfl
 #align tendsto_Ioo_at_top tendsto_Ioo_atTop
 
 @[simp]
-theorem tendsto_Ioo_atBot {f : β → Ioo a b} :
+lemma tendsto_Ioo_atBot {f : β → Ioo a b} :
     Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l (𝓝[>] a) := by
   rw [← comap_coe_Ioo_nhdsWithin_Ioi, tendsto_comap_iff]; rfl
 #align tendsto_Ioo_at_bot tendsto_Ioo_atBot
 
 @[simp]
-theorem tendsto_Ioi_atBot {f : β → Ioi a} :
+lemma tendsto_Ioi_atBot {f : β → Ioi a} :
     Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l (𝓝[>] a) := by
   rw [← comap_coe_Ioi_nhdsWithin_Ioi, tendsto_comap_iff]; rfl
 #align tendsto_Ioi_at_bot tendsto_Ioi_atBot
 
 @[simp]
-theorem tendsto_Iio_atTop {f : β → Iio a} :
+lemma tendsto_Iio_atTop {f : β → Iio a} :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l (𝓝[<] a) := by
   rw [← comap_coe_Iio_nhdsWithin_Iio, tendsto_comap_iff]; rfl
 #align tendsto_Iio_at_top tendsto_Iio_atTop

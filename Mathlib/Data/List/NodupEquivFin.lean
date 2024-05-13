@@ -78,10 +78,10 @@ namespace Sorted
 
 variable [Preorder α] {l : List α}
 
-theorem get_mono (h : l.Sorted (· ≤ ·)) : Monotone l.get := fun _ _ => h.rel_get_of_le
+lemma get_mono (h : l.Sorted (· ≤ ·)) : Monotone l.get := fun _ _ => h.rel_get_of_le
 #align list.sorted.nth_le_mono List.Sorted.get_mono
 
-theorem get_strictMono (h : l.Sorted (· < ·)) : StrictMono l.get := fun _ _ => h.rel_get_of_lt
+lemma get_strictMono (h : l.Sorted (· < ·)) : StrictMono l.get := fun _ _ => h.rel_get_of_lt
 #align list.sorted.nth_le_strict_mono List.Sorted.get_strictMono
 
 variable [DecidableEq α]
@@ -96,12 +96,12 @@ def getIso (l : List α) (H : Sorted (· < ·) l) : Fin (length l) ≃o { x // x
 variable (H : Sorted (· < ·) l) {x : { x // x ∈ l }} {i : Fin l.length}
 
 @[simp]
-theorem coe_getIso_apply : (H.getIso l i : α) = get l i :=
+lemma coe_getIso_apply : (H.getIso l i : α) = get l i :=
   rfl
 #align list.sorted.coe_nth_le_iso_apply List.Sorted.coe_getIso_apply
 
 @[simp]
-theorem coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = indexOf (↑x) l :=
+lemma coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = indexOf (↑x) l :=
   rfl
 #align list.sorted.coe_nth_le_iso_symm_apply List.Sorted.coe_getIso_symm_apply
 

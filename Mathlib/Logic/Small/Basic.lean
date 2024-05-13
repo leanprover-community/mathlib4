@@ -24,12 +24,12 @@ instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w
   small_map (equivShrink α).subtypeEquivOfSubtype'
 #align small_subtype small_subtype
 
-theorem small_of_injective {α : Type v} {β : Type w} [Small.{u} β] {f : α → β}
+lemma small_of_injective {α : Type v} {β : Type w} [Small.{u} β] {f : α → β}
     (hf : Function.Injective f) : Small.{u} α :=
   small_map (Equiv.ofInjective f hf)
 #align small_of_injective small_of_injective
 
-theorem small_of_surjective {α : Type v} {β : Type w} [Small.{u} α] {f : α → β}
+lemma small_of_surjective {α : Type v} {β : Type w} [Small.{u} α] {f : α → β}
     (hf : Function.Surjective f) : Small.{u} β :=
   small_of_injective (Function.injective_surjInv hf)
 #align small_of_surjective small_of_surjective

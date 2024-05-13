@@ -40,7 +40,7 @@ structure Encoding (α : Type u) where
   decode_encode : ∀ x, decode (encode x) = some x
 #align computability.encoding Computability.Encoding
 
-theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode := by
+lemma Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode := by
   refine' fun _ _ h => Option.some_injective _ _
   rw [← e.decode_encode, ← e.decode_encode, h]
 #align computability.encoding.encode_injective Computability.Encoding.encode_injective
@@ -85,11 +85,11 @@ def sectionΓ'Bool : Γ' → Bool
   | _ => Inhabited.default
 #align computability.section_Γ'_bool Computability.sectionΓ'Bool
 
-theorem leftInverse_section_inclusion : Function.LeftInverse sectionΓ'Bool inclusionBoolΓ' :=
+lemma leftInverse_section_inclusion : Function.LeftInverse sectionΓ'Bool inclusionBoolΓ' :=
   fun x => Bool.casesOn x rfl rfl
 #align computability.left_inverse_section_inclusion Computability.leftInverse_section_inclusion
 
-theorem inclusionBoolΓ'_injective : Function.Injective inclusionBoolΓ' :=
+lemma inclusionBoolΓ'_injective : Function.Injective inclusionBoolΓ' :=
   Function.HasLeftInverse.injective (Exists.intro sectionΓ'Bool leftInverse_section_inclusion)
 #align computability.inclusion_bool_Γ'_injective Computability.inclusionBoolΓ'_injective
 
@@ -126,12 +126,12 @@ def decodeNum : List Bool → Num := fun l => ite (l = []) Num.zero <| decodePos
 def decodeNat : List Bool → Nat := fun l => decodeNum l
 #align computability.decode_nat Computability.decodeNat
 
-theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
+lemma encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   PosNum.casesOn n (List.cons_ne_nil _ _) (fun _m => List.cons_ne_nil _ _) fun _m =>
     List.cons_ne_nil _ _
 #align computability.encode_pos_num_nonempty Computability.encodePosNum_nonempty
 
-theorem decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n := by
+lemma decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n := by
   intro n
   induction' n with m hm m hm <;> unfold encodePosNum decodePosNum
   · rfl
@@ -140,7 +140,7 @@ theorem decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n := by
   · exact congr_arg PosNum.bit0 hm
 #align computability.decode_encode_pos_num Computability.decode_encodePosNum
 
-theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n := by
+lemma decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n := by
   intro n
   cases' n with n <;> unfold encodeNum decodeNum
   · rfl
@@ -149,7 +149,7 @@ theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n := by
   exact if_neg (encodePosNum_nonempty n)
 #align computability.decode_encode_num Computability.decode_encodeNum
 
-theorem decode_encodeNat : ∀ n, decodeNat (encodeNat n) = n := by
+lemma decode_encodeNat : ∀ n, decodeNat (encodeNat n) = n := by
   intro n
   conv_rhs => rw [← Num.to_of_nat n]
   exact congr_arg ((↑) : Num → ℕ) (decode_encodeNum n)
@@ -196,7 +196,7 @@ def unaryDecodeNat : List Bool → Nat :=
   List.length
 #align computability.unary_decode_nat Computability.unaryDecodeNat
 
-theorem unary_decode_encode_nat : ∀ n, unaryDecodeNat (unaryEncodeNat n) = n := fun n =>
+lemma unary_decode_encode_nat : ∀ n, unaryDecodeNat (unaryEncodeNat n) = n := fun n =>
   Nat.rec rfl (fun (_m : ℕ) hm => (congr_arg Nat.succ hm.symm).symm) n
 #align computability.unary_decode_encode_nat Computability.unary_decode_encode_nat
 
@@ -219,7 +219,7 @@ def decodeBool : List Bool → Bool
   | _ => Inhabited.default
 #align computability.decode_bool Computability.decodeBool
 
-theorem decode_encodeBool (b : Bool) : decodeBool (encodeBool b) = b := rfl
+lemma decode_encodeBool (b : Bool) : decodeBool (encodeBool b) = b := rfl
 #align computability.decode_encode_bool Computability.decode_encodeBool
 
 /-- A fin_encoding of bool in bool. -/
@@ -239,18 +239,18 @@ instance inhabitedEncoding : Inhabited (Encoding Bool) :=
   ⟨finEncodingBoolBool.toEncoding⟩
 #align computability.inhabited_encoding Computability.inhabitedEncoding
 
-theorem Encoding.card_le_card_list {α : Type u} (e : Encoding.{u, v} α) :
+lemma Encoding.card_le_card_list {α : Type u} (e : Encoding.{u, v} α) :
     Cardinal.lift.{v} #α ≤ Cardinal.lift.{u} #(List e.Γ) :=
   Cardinal.lift_mk_le'.2 ⟨⟨e.encode, e.encode_injective⟩⟩
 #align computability.encoding.card_le_card_list Computability.Encoding.card_le_card_list
 
-theorem Encoding.card_le_aleph0 {α : Type u} (e : Encoding.{u, v} α) [Countable e.Γ] :
+lemma Encoding.card_le_aleph0 {α : Type u} (e : Encoding.{u, v} α) [Countable e.Γ] :
     #α ≤ ℵ₀ :=
   haveI : Countable α := e.encode_injective.countable
   Cardinal.mk_le_aleph0
 #align computability.encoding.card_le_aleph_0 Computability.Encoding.card_le_aleph0
 
-theorem FinEncoding.card_le_aleph0 {α : Type u} (e : FinEncoding α) : #α ≤ ℵ₀ :=
+lemma FinEncoding.card_le_aleph0 {α : Type u} (e : FinEncoding α) : #α ≤ ℵ₀ :=
   e.toEncoding.card_le_aleph0
 #align computability.fin_encoding.card_le_aleph_0 Computability.FinEncoding.card_le_aleph0
 

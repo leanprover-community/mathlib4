@@ -14,7 +14,7 @@ This is in a separate file to avoiding need to import `Field` in `Mathlib.Algebr
 
 namespace MulEquiv
 
-protected theorem isField {A : Type*} (B : Type*) [Semiring A] [Semiring B] (hB : IsField B)
+protected lemma isField {A : Type*} (B : Type*) [Semiring A] [Semiring B] (hB : IsField B)
     (e : A ≃* B) : IsField A where
   exists_pair_ne := have ⟨x, y, h⟩ := hB.exists_pair_ne; ⟨e.symm x, e.symm y, e.symm.injective.ne h⟩
   mul_comm := fun x y => e.injective <| by rw [map_mul, map_mul, hB.mul_comm]

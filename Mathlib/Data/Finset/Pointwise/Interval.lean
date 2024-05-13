@@ -34,16 +34,16 @@ variable [Mul α] [Preorder α] [DecidableEq α]
 variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap HMul.hMul) LE.le]
 
 @[to_additive Icc_add_Icc_subset]
-theorem Icc_mul_Icc_subset' [LocallyFiniteOrder α] (a b c d : α) :
+lemma Icc_mul_Icc_subset' [LocallyFiniteOrder α] (a b c d : α) :
     Icc a b * Icc c d ⊆ Icc (a * c) (b * d) :=
   Finset.coe_subset.mp <| by simpa using Set.Icc_mul_Icc_subset' _ _ _ _
 
 @[to_additive Iic_add_Iic_subset]
-theorem Iic_mul_Iic_subset' [LocallyFiniteOrderBot α] (a b : α) : Iic a * Iic b ⊆ Iic (a * b) :=
+lemma Iic_mul_Iic_subset' [LocallyFiniteOrderBot α] (a b : α) : Iic a * Iic b ⊆ Iic (a * b) :=
   Finset.coe_subset.mp <| by simpa using Set.Iic_mul_Iic_subset' _ _
 
 @[to_additive Ici_add_Ici_subset]
-theorem Ici_mul_Ici_subset' [LocallyFiniteOrderTop α] (a b : α) : Ici a * Ici b ⊆ Ici (a * b) :=
+lemma Ici_mul_Ici_subset' [LocallyFiniteOrderTop α] (a b : α) : Ici a * Ici b ⊆ Ici (a * b) :=
   Finset.coe_subset.mp <| by simpa using Set.Ici_mul_Ici_subset' _ _
 
 end ContravariantLE
@@ -54,39 +54,39 @@ variable [Mul α] [PartialOrder α] [DecidableEq α]
 variable [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (Function.swap HMul.hMul) LT.lt]
 
 @[to_additive Icc_add_Ico_subset]
-theorem Icc_mul_Ico_subset' [LocallyFiniteOrder α] (a b c d : α) :
+lemma Icc_mul_Ico_subset' [LocallyFiniteOrder α] (a b c d : α) :
     Icc a b * Ico c d ⊆ Ico (a * c) (b * d) :=
   Finset.coe_subset.mp <| by simpa using Set.Icc_mul_Ico_subset' _ _ _ _
 
 @[to_additive Ico_add_Icc_subset]
-theorem Ico_mul_Icc_subset' [LocallyFiniteOrder α] (a b c d : α) :
+lemma Ico_mul_Icc_subset' [LocallyFiniteOrder α] (a b c d : α) :
     Ico a b * Icc c d ⊆ Ico (a * c) (b * d) :=
   Finset.coe_subset.mp <| by simpa using Set.Ico_mul_Icc_subset' _ _ _ _
 
 @[to_additive Ioc_add_Ico_subset]
-theorem Ioc_mul_Ico_subset' [LocallyFiniteOrder α] (a b c d : α) :
+lemma Ioc_mul_Ico_subset' [LocallyFiniteOrder α] (a b c d : α) :
     Ioc a b * Ico c d ⊆ Ioo (a * c) (b * d) :=
   Finset.coe_subset.mp <| by simpa using Set.Ioc_mul_Ico_subset' _ _ _ _
 
 @[to_additive Ico_add_Ioc_subset]
-theorem Ico_mul_Ioc_subset' [LocallyFiniteOrder α] (a b c d : α) :
+lemma Ico_mul_Ioc_subset' [LocallyFiniteOrder α] (a b c d : α) :
     Ico a b * Ioc c d ⊆ Ioo (a * c) (b * d) :=
   Finset.coe_subset.mp <| by simpa using Set.Ico_mul_Ioc_subset' _ _ _ _
 
 @[to_additive Iic_add_Iio_subset]
-theorem Iic_mul_Iio_subset' [LocallyFiniteOrderBot α] (a b : α) : Iic a * Iio b ⊆ Iio (a * b) :=
+lemma Iic_mul_Iio_subset' [LocallyFiniteOrderBot α] (a b : α) : Iic a * Iio b ⊆ Iio (a * b) :=
   Finset.coe_subset.mp <| by simpa using Set.Iic_mul_Iio_subset' _ _
 
 @[to_additive Iio_add_Iic_subset]
-theorem Iio_mul_Iic_subset' [LocallyFiniteOrderBot α] (a b : α) : Iio a * Iic b ⊆ Iio (a * b) :=
+lemma Iio_mul_Iic_subset' [LocallyFiniteOrderBot α] (a b : α) : Iio a * Iic b ⊆ Iio (a * b) :=
   Finset.coe_subset.mp <| by simpa using Set.Iio_mul_Iic_subset' _ _
 
 @[to_additive Ioi_add_Ici_subset]
-theorem Ioi_mul_Ici_subset' [LocallyFiniteOrderTop α] (a b : α) : Ioi a * Ici b ⊆ Ioi (a * b) :=
+lemma Ioi_mul_Ici_subset' [LocallyFiniteOrderTop α] (a b : α) : Ioi a * Ici b ⊆ Ioi (a * b) :=
   Finset.coe_subset.mp <| by simpa using Set.Ioi_mul_Ici_subset' _ _
 
 @[to_additive Ici_add_Ioi_subset]
-theorem Ici_mul_Ioi_subset' [LocallyFiniteOrderTop α] (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) :=
+lemma Ici_mul_Ioi_subset' [LocallyFiniteOrderTop α] (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) :=
   Finset.coe_subset.mp <| by simpa using Set.Ici_mul_Ioi_subset' _ _
 
 end ContravariantLT

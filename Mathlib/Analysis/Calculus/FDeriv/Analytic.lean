@@ -36,7 +36,7 @@ section fderiv
 variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞}
 variable {f : E → F} {x : E} {s : Set E}
 
-theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
+lemma HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
     HasStrictFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) x := by
   refine' h.isBigO_image_sub_norm_mul_norm_sub.trans_isLittleO (IsLittleO.of_norm_right _)
   refine' isLittleO_iff_exists_eq_mul.2 ⟨fun y => ‖y - (x, x)‖, _, EventuallyEq.rfl⟩
@@ -44,44 +44,44 @@ theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
   rw [_root_.id, sub_self, norm_zero]
 #align has_fpower_series_at.has_strict_fderiv_at HasFPowerSeriesAt.hasStrictFDerivAt
 
-theorem HasFPowerSeriesAt.hasFDerivAt (h : HasFPowerSeriesAt f p x) :
+lemma HasFPowerSeriesAt.hasFDerivAt (h : HasFPowerSeriesAt f p x) :
     HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) x :=
   h.hasStrictFDerivAt.hasFDerivAt
 #align has_fpower_series_at.has_fderiv_at HasFPowerSeriesAt.hasFDerivAt
 
-theorem HasFPowerSeriesAt.differentiableAt (h : HasFPowerSeriesAt f p x) : DifferentiableAt 𝕜 f x :=
+lemma HasFPowerSeriesAt.differentiableAt (h : HasFPowerSeriesAt f p x) : DifferentiableAt 𝕜 f x :=
   h.hasFDerivAt.differentiableAt
 #align has_fpower_series_at.differentiable_at HasFPowerSeriesAt.differentiableAt
 
-theorem AnalyticAt.differentiableAt : AnalyticAt 𝕜 f x → DifferentiableAt 𝕜 f x
+lemma AnalyticAt.differentiableAt : AnalyticAt 𝕜 f x → DifferentiableAt 𝕜 f x
   | ⟨_, hp⟩ => hp.differentiableAt
 #align analytic_at.differentiable_at AnalyticAt.differentiableAt
 
-theorem AnalyticAt.differentiableWithinAt (h : AnalyticAt 𝕜 f x) : DifferentiableWithinAt 𝕜 f s x :=
+lemma AnalyticAt.differentiableWithinAt (h : AnalyticAt 𝕜 f x) : DifferentiableWithinAt 𝕜 f s x :=
   h.differentiableAt.differentiableWithinAt
 #align analytic_at.differentiable_within_at AnalyticAt.differentiableWithinAt
 
-theorem HasFPowerSeriesAt.fderiv_eq (h : HasFPowerSeriesAt f p x) :
+lemma HasFPowerSeriesAt.fderiv_eq (h : HasFPowerSeriesAt f p x) :
     fderiv 𝕜 f x = continuousMultilinearCurryFin1 𝕜 E F (p 1) :=
   h.hasFDerivAt.fderiv
 #align has_fpower_series_at.fderiv_eq HasFPowerSeriesAt.fderiv_eq
 
-theorem HasFPowerSeriesOnBall.differentiableOn [CompleteSpace F]
+lemma HasFPowerSeriesOnBall.differentiableOn [CompleteSpace F]
     (h : HasFPowerSeriesOnBall f p x r) : DifferentiableOn 𝕜 f (EMetric.ball x r) := fun _ hy =>
   (h.analyticAt_of_mem hy).differentiableWithinAt
 #align has_fpower_series_on_ball.differentiable_on HasFPowerSeriesOnBall.differentiableOn
 
-theorem AnalyticOn.differentiableOn (h : AnalyticOn 𝕜 f s) : DifferentiableOn 𝕜 f s := fun y hy =>
+lemma AnalyticOn.differentiableOn (h : AnalyticOn 𝕜 f s) : DifferentiableOn 𝕜 f s := fun y hy =>
   (h y hy).differentiableWithinAt
 #align analytic_on.differentiable_on AnalyticOn.differentiableOn
 
-theorem HasFPowerSeriesOnBall.hasFDerivAt [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r)
+lemma HasFPowerSeriesOnBall.hasFDerivAt [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
     HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1)) (x + y) :=
   (h.changeOrigin hy).hasFPowerSeriesAt.hasFDerivAt
 #align has_fpower_series_on_ball.has_fderiv_at HasFPowerSeriesOnBall.hasFDerivAt
 
-theorem HasFPowerSeriesOnBall.fderiv_eq [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r)
+lemma HasFPowerSeriesOnBall.fderiv_eq [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
     fderiv 𝕜 f (x + y) = continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1) :=
   (h.hasFDerivAt hy).fderiv
@@ -136,7 +136,7 @@ theorem AnalyticOn.contDiffOn [CompleteSpace F] (h : AnalyticOn 𝕜 f s) {n : �
       fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
 #align analytic_on.cont_diff_on AnalyticOn.contDiffOn
 
-theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : ℕ∞} :
+lemma AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : ℕ∞} :
     ContDiffAt 𝕜 n f x := by
   obtain ⟨s, hs, hf⟩ := h.exists_mem_nhds_analyticOn
   exact hf.contDiffOn.contDiffAt hs
@@ -148,17 +148,17 @@ section deriv
 variable {p : FormalMultilinearSeries 𝕜 𝕜 F} {r : ℝ≥0∞}
 variable {f : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
 
-protected theorem HasFPowerSeriesAt.hasStrictDerivAt (h : HasFPowerSeriesAt f p x) :
+protected lemma HasFPowerSeriesAt.hasStrictDerivAt (h : HasFPowerSeriesAt f p x) :
     HasStrictDerivAt f (p 1 fun _ => 1) x :=
   h.hasStrictFDerivAt.hasStrictDerivAt
 #align has_fpower_series_at.has_strict_deriv_at HasFPowerSeriesAt.hasStrictDerivAt
 
-protected theorem HasFPowerSeriesAt.hasDerivAt (h : HasFPowerSeriesAt f p x) :
+protected lemma HasFPowerSeriesAt.hasDerivAt (h : HasFPowerSeriesAt f p x) :
     HasDerivAt f (p 1 fun _ => 1) x :=
   h.hasStrictDerivAt.hasDerivAt
 #align has_fpower_series_at.has_deriv_at HasFPowerSeriesAt.hasDerivAt
 
-protected theorem HasFPowerSeriesAt.deriv (h : HasFPowerSeriesAt f p x) :
+protected lemma HasFPowerSeriesAt.deriv (h : HasFPowerSeriesAt f p x) :
     deriv f x = p 1 fun _ => 1 :=
   h.hasDerivAt.deriv
 #align has_fpower_series_at.deriv HasFPowerSeriesAt.deriv
@@ -185,16 +185,16 @@ variable {f : E → F} {x : E} {s : Set E}
 /-! The case of continuously polynomial functions. We get the same differentiability
 results as for analytic functions, but without the assumptions that `F` is complete. -/
 
-theorem HasFiniteFPowerSeriesOnBall.differentiableOn
+lemma HasFiniteFPowerSeriesOnBall.differentiableOn
     (h : HasFiniteFPowerSeriesOnBall f p x n r) : DifferentiableOn 𝕜 f (EMetric.ball x r) :=
   fun _ hy ↦ (h.cPolynomialAt_of_mem hy).analyticAt.differentiableWithinAt
 
-theorem HasFiniteFPowerSeriesOnBall.hasFDerivAt (h : HasFiniteFPowerSeriesOnBall f p x n r)
+lemma HasFiniteFPowerSeriesOnBall.hasFDerivAt (h : HasFiniteFPowerSeriesOnBall f p x n r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
     HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1)) (x + y) :=
   (h.changeOrigin hy).toHasFPowerSeriesOnBall.hasFPowerSeriesAt.hasFDerivAt
 
-theorem HasFiniteFPowerSeriesOnBall.fderiv_eq (h : HasFiniteFPowerSeriesOnBall f p x n r)
+lemma HasFiniteFPowerSeriesOnBall.fderiv_eq (h : HasFiniteFPowerSeriesOnBall f p x n r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
     fderiv 𝕜 f (x + y) = continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1) :=
   (h.hasFDerivAt hy).fderiv
@@ -263,7 +263,7 @@ theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : ℕ∞} :
     (fun m _ ↦ (H.iteratedFDeriv m).analyticOn.differentiableOn.congr
       fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
 
-theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : ℕ∞} :
+lemma CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : ℕ∞} :
     ContDiffAt 𝕜 n f x :=
   let ⟨_, hs, hf⟩ := h.exists_mem_nhds_cPolynomialOn
   hf.contDiffOn.contDiffAt hs
@@ -295,14 +295,14 @@ variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ 
 
 open FormalMultilinearSeries
 
-protected theorem hasFiniteFPowerSeriesOnBall :
+protected lemma hasFiniteFPowerSeriesOnBall :
     HasFiniteFPowerSeriesOnBall f f.toFormalMultilinearSeries 0 (Fintype.card ι + 1) ⊤ :=
   .mk' (fun m hm ↦ dif_neg (Nat.succ_le_iff.mp hm).ne) ENNReal.zero_lt_top fun y _ ↦ by
     rw [Finset.sum_eq_single_of_mem _ (Finset.self_mem_range_succ _), zero_add]
     · rw [toFormalMultilinearSeries, dif_pos rfl]; rfl
     · intro m _ ne; rw [toFormalMultilinearSeries, dif_neg ne.symm]; rfl
 
-theorem changeOriginSeries_support {k l : ℕ} (h : k + l ≠ Fintype.card ι) :
+lemma changeOriginSeries_support {k l : ℕ} (h : k + l ≠ Fintype.card ι) :
     f.toFormalMultilinearSeries.changeOriginSeries k l = 0 :=
   Finset.sum_eq_zero fun _ _ ↦ by
     simp_rw [FormalMultilinearSeries.changeOriginSeriesTerm,
@@ -345,7 +345,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
   · rw [Function.update_same, if_pos rfl]
   · rw [Function.update_noteq hj, if_neg hj]
 
-protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x) x := by
+protected lemma hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x) x := by
   rw [← changeOrigin_toFormalMultilinearSeries]
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
@@ -419,11 +419,11 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
     apply continuous_finset_sum _ (fun e _ ↦ ?_)
     exact (ContinuousMultilinearMap.coe_continuous _).comp (ContinuousLinearMap.continuous _)
 
-theorem iteratedFDeriv_eq (n : ℕ) :
+lemma iteratedFDeriv_eq (n : ℕ) :
     iteratedFDeriv 𝕜 n f = f.iteratedFDeriv n :=
   funext fun x ↦ (f.hasFTaylorSeriesUpTo_iteratedFDeriv.eq_iteratedFDeriv (m := n) le_top x).symm
 
-theorem norm_iteratedFDeriv_le (n : ℕ) (x : (i : ι) → E i) :
+lemma norm_iteratedFDeriv_le (n : ℕ) (x : (i : ι) → E i) :
     ‖iteratedFDeriv 𝕜 n f x‖
       ≤ Nat.descFactorial (Fintype.card ι) n * ‖f‖ * ‖x‖ ^ (Fintype.card ι - n) := by
   rw [f.iteratedFDeriv_eq]
@@ -466,7 +466,7 @@ open FormalMultilinearSeries ENNReal Nat
 variable {p : FormalMultilinearSeries 𝕜 E F} {f : E → F} {x : E} {r : ℝ≥0∞}
   (h : HasFPowerSeriesOnBall f p x r) (y : E)
 
-theorem iteratedFDeriv_zero_apply_diag : iteratedFDeriv 𝕜 0 f x = p 0 := by
+lemma iteratedFDeriv_zero_apply_diag : iteratedFDeriv 𝕜 0 f x = p 0 := by
   ext
   convert (h.hasSum <| EMetric.mem_ball_self h.r_pos).tsum_eq.symm
   · rw [iteratedFDeriv_zero_apply, add_zero]
@@ -475,7 +475,7 @@ theorem iteratedFDeriv_zero_apply_diag : iteratedFDeriv 𝕜 0 f x = p 0 := by
 
 open ContinuousLinearMap
 
-private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCommGroup F]
+private lemma factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] {p : FormalMultilinearSeries 𝕜 E F}
     {f : E → F}, HasFPowerSeriesOnBall f p x r →
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
@@ -487,7 +487,7 @@ private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCom
 
 variable [CompleteSpace F]
 
-theorem factorial_smul (n : ℕ) :
+lemma factorial_smul (n : ℕ) :
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
   cases n
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
@@ -495,7 +495,7 @@ theorem factorial_smul (n : ℕ) :
       factorial_smul'.{_,u,v} _ h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 
-theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ EMetric.ball 0 r) :
+lemma hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ EMetric.ball 0 r) :
     HasSum (fun n ↦ (n ! : 𝕜)⁻¹ • iteratedFDeriv 𝕜 n f x fun _ ↦ y) (f (x + y)) := by
   convert h.hasSum hy with n
   rw [← h.factorial_smul y n, smul_comm, ← smul_assoc, nsmul_eq_mul,

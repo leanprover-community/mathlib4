@@ -34,7 +34,7 @@ variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃] [AddCommGro
 variable [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄] [Invertible (2 : R)]
 
 @[simp]
-theorem tmul_comp_tensorMap
+lemma tmul_comp_tensorMap
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
     (f : Q₁ →qᵢ Q₂) (g : Q₃ →qᵢ Q₄) :
@@ -46,7 +46,7 @@ theorem tmul_comp_tensorMap
   simp [-associated_apply, h₁, h₃, associated_tmul]
 
 @[simp]
-theorem tmul_tensorMap_apply
+lemma tmul_tensorMap_apply
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
     (f : Q₁ →qᵢ Q₂) (g : Q₃ →qᵢ Q₄) (x : M₁ ⊗[R] M₃) :
@@ -64,7 +64,7 @@ def tmul
   map_app' := tmul_tensorMap_apply f g
 
 @[simp]
-theorem tmul_apply
+lemma tmul_apply
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
     (f : Q₁ →qᵢ Q₂) (g : Q₃ →qᵢ Q₄) (x : M₁ ⊗[R] M₃) :
@@ -76,7 +76,7 @@ end Isometry
 section tensorComm
 
 @[simp]
-theorem tmul_comp_tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
+lemma tmul_comp_tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     (Q₂.tmul Q₁).comp (TensorProduct.comm R M₁ M₂) = Q₁.tmul Q₂ := by
   refine (QuadraticForm.associated_rightInverse R).injective ?_
   ext m₁ m₂ m₁' m₂'
@@ -85,7 +85,7 @@ theorem tmul_comp_tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm
   exact mul_comm _ _
 
 @[simp]
-theorem tmul_tensorComm_apply
+lemma tmul_tensorComm_apply
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (x : M₁ ⊗[R] M₂) :
     Q₂.tmul Q₁ (TensorProduct.comm R M₁ M₂ x) = Q₁.tmul Q₂ x :=
   DFunLike.congr_fun (tmul_comp_tensorComm Q₁ Q₂) x
@@ -111,7 +111,7 @@ end tensorComm
 section tensorAssoc
 
 @[simp]
-theorem tmul_comp_tensorAssoc
+lemma tmul_comp_tensorAssoc
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃) :
     (Q₁.tmul (Q₂.tmul Q₃)).comp (TensorProduct.assoc R M₁ M₂ M₃) = (Q₁.tmul Q₂).tmul Q₃ := by
   refine (QuadraticForm.associated_rightInverse R).injective ?_
@@ -121,7 +121,7 @@ theorem tmul_comp_tensorAssoc
   exact mul_assoc _ _ _
 
 @[simp]
-theorem tmul_tensorAssoc_apply
+lemma tmul_tensorAssoc_apply
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃)
     (x : (M₁ ⊗[R] M₂) ⊗[R] M₃):
     Q₁.tmul (Q₂.tmul Q₃) (TensorProduct.assoc R M₁ M₂ M₃ x) = (Q₁.tmul Q₂).tmul Q₃ x :=
@@ -150,7 +150,7 @@ end tensorAssoc
 
 section tensorRId
 
-theorem comp_tensorRId_eq (Q₁ : QuadraticForm R M₁) :
+lemma comp_tensorRId_eq (Q₁ : QuadraticForm R M₁) :
     Q₁.comp (TensorProduct.rid R M₁) = Q₁.tmul (sq (R := R)) := by
   refine (QuadraticForm.associated_rightInverse R).injective ?_
   ext m₁ m₁'
@@ -159,7 +159,7 @@ theorem comp_tensorRId_eq (Q₁ : QuadraticForm R M₁) :
   simp [-associated_apply, one_mul]
 
 @[simp]
-theorem tmul_tensorRId_apply
+lemma tmul_tensorRId_apply
     (Q₁ : QuadraticForm R M₁) (x : M₁ ⊗[R] R) :
     Q₁ (TensorProduct.rid R M₁ x) = Q₁.tmul (sq (R := R)) x :=
   DFunLike.congr_fun (comp_tensorRId_eq Q₁) x
@@ -183,7 +183,7 @@ end tensorRId
 
 section tensorLId
 
-theorem comp_tensorLId_eq (Q₂ : QuadraticForm R M₂) :
+lemma comp_tensorLId_eq (Q₂ : QuadraticForm R M₂) :
     Q₂.comp (TensorProduct.lid R M₂) = (sq (R := R)).tmul Q₂ := by
   refine (QuadraticForm.associated_rightInverse R).injective ?_
   ext m₂ m₂'
@@ -192,7 +192,7 @@ theorem comp_tensorLId_eq (Q₂ : QuadraticForm R M₂) :
   simp [-associated_apply, mul_one]
 
 @[simp]
-theorem tmul_tensorLId_apply
+lemma tmul_tensorLId_apply
     (Q₂ : QuadraticForm R M₂) (x : R ⊗[R] M₂) :
     Q₂ (TensorProduct.lid R M₂ x) = (sq (R := R)).tmul Q₂ x :=
   DFunLike.congr_fun (comp_tensorLId_eq Q₂) x

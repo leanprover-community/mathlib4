@@ -59,13 +59,13 @@ namespace HopfAlgebra
 variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 
 @[simp]
-theorem mul_antipode_rTensor_comul_apply (a : A) :
+lemma mul_antipode_rTensor_comul_apply (a : A) :
     LinearMap.mul' R A (antipode.rTensor A (Coalgebra.comul a)) =
     algebraMap R A (Coalgebra.counit a) :=
   LinearMap.congr_fun mul_antipode_rTensor_comul a
 
 @[simp]
-theorem mul_antipode_lTensor_comul_apply (a : A) :
+lemma mul_antipode_lTensor_comul_apply (a : A) :
     LinearMap.mul' R A (antipode.lTensor A (Coalgebra.comul a)) =
     algebraMap R A (Coalgebra.counit a) :=
   LinearMap.congr_fun mul_antipode_lTensor_comul a
@@ -87,6 +87,6 @@ instance toHopfAlgebra : HopfAlgebra R R where
   mul_antipode_lTensor_comul := by ext; simp
 
 @[simp]
-theorem antipode_eq_id : antipode (R := R) (A := R) = .id := rfl
+lemma antipode_eq_id : antipode (R := R) (A := R) = .id := rfl
 
 end CommSemiring

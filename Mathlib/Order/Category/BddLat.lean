@@ -49,7 +49,7 @@ def of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat :=
 #align BddLat.of BddLat.of
 
 @[simp]
-theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 #align BddLat.coe_of BddLat.coe_of
 
@@ -100,40 +100,40 @@ instance hasForgetToSemilatInf : HasForget₂ BddLat SemilatInfCat where
 #align BddLat.has_forget_to_SemilatInf BddLat.hasForgetToSemilatInf
 
 @[simp]
-theorem coe_forget_to_bddOrd (X : BddLat) : ↥((forget₂ BddLat BddOrd).obj X) = ↥X :=
+lemma coe_forget_to_bddOrd (X : BddLat) : ↥((forget₂ BddLat BddOrd).obj X) = ↥X :=
   rfl
 #align BddLat.coe_forget_to_BddOrd BddLat.coe_forget_to_bddOrd
 
 @[simp]
-theorem coe_forget_to_lat (X : BddLat) : ↥((forget₂ BddLat Lat).obj X) = ↥X :=
+lemma coe_forget_to_lat (X : BddLat) : ↥((forget₂ BddLat Lat).obj X) = ↥X :=
   rfl
 #align BddLat.coe_forget_to_Lat BddLat.coe_forget_to_lat
 
 @[simp]
-theorem coe_forget_to_semilatSup (X : BddLat) :
+lemma coe_forget_to_semilatSup (X : BddLat) :
     ↥((forget₂ BddLat SemilatSupCat).obj X) = ↥X :=
   rfl
 #align BddLat.coe_forget_to_SemilatSup BddLat.coe_forget_to_semilatSup
 
 @[simp]
-theorem coe_forget_to_semilatInf (X : BddLat) :
+lemma coe_forget_to_semilatInf (X : BddLat) :
     ↥((forget₂ BddLat SemilatInfCat).obj X) = ↥X :=
   rfl
 #align BddLat.coe_forget_to_SemilatInf BddLat.coe_forget_to_semilatInf
 
-theorem forget_lat_partOrd_eq_forget_bddOrd_partOrd :
+lemma forget_lat_partOrd_eq_forget_bddOrd_partOrd :
     forget₂ BddLat Lat ⋙ forget₂ Lat PartOrd =
       forget₂ BddLat BddOrd ⋙ forget₂ BddOrd PartOrd :=
   rfl
 #align BddLat.forget_Lat_PartOrd_eq_forget_BddOrd_PartOrd BddLat.forget_lat_partOrd_eq_forget_bddOrd_partOrd
 
-theorem forget_semilatSup_partOrd_eq_forget_bddOrd_partOrd :
+lemma forget_semilatSup_partOrd_eq_forget_bddOrd_partOrd :
     forget₂ BddLat SemilatSupCat ⋙ forget₂ SemilatSupCat PartOrd =
       forget₂ BddLat BddOrd ⋙ forget₂ BddOrd PartOrd :=
   rfl
 #align BddLat.forget_SemilatSup_PartOrd_eq_forget_BddOrd_PartOrd BddLat.forget_semilatSup_partOrd_eq_forget_bddOrd_partOrd
 
-theorem forget_semilatInf_partOrd_eq_forget_bddOrd_partOrd :
+lemma forget_semilatInf_partOrd_eq_forget_bddOrd_partOrd :
     forget₂ BddLat SemilatInfCat ⋙ forget₂ SemilatInfCat PartOrd =
       forget₂ BddLat BddOrd ⋙ forget₂ BddOrd PartOrd :=
   rfl
@@ -167,24 +167,24 @@ def dualEquiv : BddLat ≌ BddLat where
 
 end BddLat
 
-theorem bddLat_dual_comp_forget_to_bddOrd :
+lemma bddLat_dual_comp_forget_to_bddOrd :
     BddLat.dual ⋙ forget₂ BddLat BddOrd =
     forget₂ BddLat BddOrd ⋙ BddOrd.dual :=
   rfl
 #align BddLat_dual_comp_forget_to_BddOrd bddLat_dual_comp_forget_to_bddOrd
 
-theorem bddLat_dual_comp_forget_to_lat :
+lemma bddLat_dual_comp_forget_to_lat :
     BddLat.dual ⋙ forget₂ BddLat Lat = forget₂ BddLat Lat ⋙ Lat.dual :=
   rfl
 #align BddLat_dual_comp_forget_to_Lat bddLat_dual_comp_forget_to_lat
 
-theorem bddLat_dual_comp_forget_to_semilatSupCat :
+lemma bddLat_dual_comp_forget_to_semilatSupCat :
     BddLat.dual ⋙ forget₂ BddLat SemilatSupCat =
     forget₂ BddLat SemilatInfCat ⋙ SemilatInfCat.dual :=
   rfl
 #align BddLat_dual_comp_forget_to_SemilatSup bddLat_dual_comp_forget_to_semilatSupCat
 
-theorem bddLat_dual_comp_forget_to_semilatInfCat :
+lemma bddLat_dual_comp_forget_to_semilatInfCat :
     BddLat.dual ⋙ forget₂ BddLat SemilatInfCat =
     forget₂ BddLat SemilatSupCat ⋙ SemilatSupCat.dual :=
   rfl

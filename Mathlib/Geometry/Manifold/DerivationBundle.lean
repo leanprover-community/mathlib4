@@ -82,7 +82,7 @@ def eval (x : M) : C^∞⟮I, M; 𝕜⟯ →ₐ[C^∞⟮I, M; 𝕜⟯⟨x⟩] �
   Algebra.ofId C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜
 #align pointed_smooth_map.eval PointedSmoothMap.eval
 
-theorem smul_def (x : M) (f : C^∞⟮I, M; 𝕜⟯⟨x⟩) (k : 𝕜) : f • k = f x * k :=
+lemma smul_def (x : M) (f : C^∞⟮I, M; 𝕜⟯⟨x⟩) (k : 𝕜) : f • k = f x * k :=
   rfl
 #align pointed_smooth_map.smul_def PointedSmoothMap.smul_def
 
@@ -121,7 +121,7 @@ def evalAt (x : M) : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯
   (SmoothFunction.evalAt I x).compDer
 #align derivation.eval_at Derivation.evalAt
 
-theorem evalAt_apply (x : M) : evalAt x X f = (X f) x :=
+lemma evalAt_apply (x : M) : evalAt x X f = (X f) x :=
   rfl
 #align derivation.eval_at_apply Derivation.evalAt_apply
 
@@ -165,13 +165,13 @@ scoped[Manifold] notation "𝒅" => fdifferential
 scoped[Manifold] notation "𝒅ₕ" => hfdifferential
 
 @[simp]
-theorem apply_fdifferential (f : C^∞⟮I, M; I', M'⟯) {x : M} (v : PointDerivation I x)
+lemma apply_fdifferential (f : C^∞⟮I, M; I', M'⟯) {x : M} (v : PointDerivation I x)
     (g : C^∞⟮I', M'; 𝕜⟯) : 𝒅 f x v g = v (g.comp f) :=
   rfl
 #align apply_fdifferential apply_fdifferential
 
 @[simp]
-theorem apply_hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y)
+lemma apply_hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y)
     (v : PointDerivation I x) (g : C^∞⟮I', M'; 𝕜⟯) : 𝒅ₕ h v g = 𝒅 f x v g :=
   rfl
 #align apply_hfdifferential apply_hfdifferential
@@ -181,7 +181,7 @@ variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Ty
   [ChartedSpace H'' M'']
 
 @[simp]
-theorem fdifferential_comp (g : C^∞⟮I', M'; I'', M''⟯) (f : C^∞⟮I, M; I', M'⟯) (x : M) :
+lemma fdifferential_comp (g : C^∞⟮I', M'; I'', M''⟯) (f : C^∞⟮I, M; I', M'⟯) (x : M) :
     𝒅 (g.comp f) x = (𝒅 g (f x)).comp (𝒅 f x) :=
   rfl
 #align fdifferential_comp fdifferential_comp

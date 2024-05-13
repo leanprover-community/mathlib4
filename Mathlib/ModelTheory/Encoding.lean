@@ -64,7 +64,7 @@ def listDecode : List (Sum α (Σi, L.Functions i)) → List (Option (L.Term α)
     else [none]
 #align first_order.language.term.list_decode FirstOrder.Language.Term.listDecode
 
-theorem listDecode_encode_list (l : List (L.Term α)) :
+lemma listDecode_encode_list (l : List (L.Term α)) :
     listDecode (l.bind listEncode) = l.map Option.some := by
   suffices h : ∀ (t : L.Term α) (l : List (Sum α (Σi, L.Functions i))),
       listDecode (t.listEncode ++ l) = some t::listDecode l by
@@ -110,16 +110,16 @@ protected def encoding : Encoding (L.Term α) where
     simp only [h, Option.join, head?, List.map, Option.some_bind, id]
 #align first_order.language.term.encoding FirstOrder.Language.Term.encoding
 
-theorem listEncode_injective :
+lemma listEncode_injective :
     Function.Injective (listEncode : L.Term α → List (Sum α (Σi, L.Functions i))) :=
   Term.encoding.encode_injective
 #align first_order.language.term.list_encode_injective FirstOrder.Language.Term.listEncode_injective
 
-theorem card_le : #(L.Term α) ≤ max ℵ₀ #(Sum α (Σi, L.Functions i)) :=
+lemma card_le : #(L.Term α) ≤ max ℵ₀ #(Sum α (Σi, L.Functions i)) :=
   lift_le.1 (_root_.trans Term.encoding.card_le_card_list (lift_le.2 (mk_list_le_max _)))
 #align first_order.language.term.card_le FirstOrder.Language.Term.card_le
 
-theorem card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi, L.Functions i)) := by
+lemma card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi, L.Functions i)) := by
   refine' le_antisymm _ _
   · rw [mk_sigma]
     refine' (sum_le_iSup_lift _).trans _
@@ -232,7 +232,7 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
 #align first_order.language.bounded_formula.list_decode FirstOrder.Language.BoundedFormula.listDecode
 
 @[simp]
-theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
+lemma listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
     (listDecode (l.bind fun φ => φ.2.listEncode)).1 = l.headI := by
   suffices h : ∀ (φ : Σn, L.BoundedFormula α n) (l),
       (listDecode (listEncode φ.2 ++ l)).1 = φ ∧ (listDecode (listEncode φ.2 ++ l)).2.1 = l by
@@ -301,12 +301,12 @@ protected def encoding : Encoding (Σn, L.BoundedFormula α n) where
     rfl
 #align first_order.language.bounded_formula.encoding FirstOrder.Language.BoundedFormula.encoding
 
-theorem listEncode_sigma_injective :
+lemma listEncode_sigma_injective :
     Function.Injective fun φ : Σn, L.BoundedFormula α n => φ.2.listEncode :=
   BoundedFormula.encoding.encode_injective
 #align first_order.language.bounded_formula.list_encode_sigma_injective FirstOrder.Language.BoundedFormula.listEncode_sigma_injective
 
-theorem card_le : #(Σn, L.BoundedFormula α n) ≤
+lemma card_le : #(Σn, L.BoundedFormula α n) ≤
     max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card) := by
   refine' lift_le.1 (BoundedFormula.encoding.card_le_card_list.trans _)
   rw [encoding_Γ, mk_list_eq_max_mk_aleph0, lift_max, lift_aleph0, lift_max, lift_aleph0,

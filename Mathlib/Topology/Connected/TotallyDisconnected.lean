@@ -33,11 +33,11 @@ def IsTotallyDisconnected (s : Set α) : Prop :=
   ∀ t, t ⊆ s → IsPreconnected t → t.Subsingleton
 #align is_totally_disconnected IsTotallyDisconnected
 
-theorem isTotallyDisconnected_empty : IsTotallyDisconnected (∅ : Set α) := fun _ ht _ _ x_in _ _ =>
+lemma isTotallyDisconnected_empty : IsTotallyDisconnected (∅ : Set α) := fun _ ht _ _ x_in _ _ =>
   (ht x_in).elim
 #align is_totally_disconnected_empty isTotallyDisconnected_empty
 
-theorem isTotallyDisconnected_singleton {x} : IsTotallyDisconnected ({x} : Set α) := fun _ ht _ =>
+lemma isTotallyDisconnected_singleton {x} : IsTotallyDisconnected ({x} : Set α) := fun _ ht _ =>
   subsingleton_singleton.anti ht
 #align is_totally_disconnected_singleton isTotallyDisconnected_singleton
 
@@ -48,7 +48,7 @@ class TotallyDisconnectedSpace (α : Type u) [TopologicalSpace α] : Prop where
   isTotallyDisconnected_univ : IsTotallyDisconnected (univ : Set α)
 #align totally_disconnected_space TotallyDisconnectedSpace
 
-theorem IsPreconnected.subsingleton [TotallyDisconnectedSpace α] {s : Set α}
+lemma IsPreconnected.subsingleton [TotallyDisconnectedSpace α] {s : Set α}
     (h : IsPreconnected s) : s.Subsingleton :=
   TotallyDisconnectedSpace.isTotallyDisconnected_univ s (subset_univ s) h
 #align is_preconnected.subsingleton IsPreconnected.subsingleton
@@ -128,7 +128,7 @@ theorem totallyDisconnectedSpace_iff_connectedComponent_singleton :
   exact mem_connectedComponent
 #align totally_disconnected_space_iff_connected_component_singleton totallyDisconnectedSpace_iff_connectedComponent_singleton
 
-@[simp] theorem connectedComponent_eq_singleton [TotallyDisconnectedSpace α] (x : α) :
+@[simp] lemma connectedComponent_eq_singleton [TotallyDisconnectedSpace α] (x : α) :
     connectedComponent x = {x} :=
   totallyDisconnectedSpace_iff_connectedComponent_singleton.1 ‹_› x
 #align connected_component_eq_singleton connectedComponent_eq_singleton
@@ -142,12 +142,12 @@ theorem Continuous.image_connectedComponent_eq_singleton {β : Type*} [Topologic
     (isPreconnected_connectedComponent.image f h.continuousOn).subsingleton
 #align continuous.image_connected_component_eq_singleton Continuous.image_connectedComponent_eq_singleton
 
-theorem isTotallyDisconnected_of_totallyDisconnectedSpace [TotallyDisconnectedSpace α] (s : Set α) :
+lemma isTotallyDisconnected_of_totallyDisconnectedSpace [TotallyDisconnectedSpace α] (s : Set α) :
     IsTotallyDisconnected s := fun t _ ht =>
   TotallyDisconnectedSpace.isTotallyDisconnected_univ _ t.subset_univ ht
 #align is_totally_disconnected_of_totally_disconnected_space isTotallyDisconnected_of_totallyDisconnectedSpace
 
-theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)
+lemma isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)
     (hf' : Injective f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
   fun _t hts ht _x x_in _y y_in =>
   hf' <|
@@ -155,7 +155,7 @@ theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf
       (mem_image_of_mem f y_in)
 #align is_totally_disconnected_of_image isTotallyDisconnected_of_image
 
-theorem Embedding.isTotallyDisconnected [TopologicalSpace β] {f : α → β} (hf : Embedding f)
+lemma Embedding.isTotallyDisconnected [TopologicalSpace β] {f : α → β} (hf : Embedding f)
     {s : Set α} (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
   isTotallyDisconnected_of_image hf.continuous.continuousOn hf.inj h
 #align embedding.is_totally_disconnected Embedding.isTotallyDisconnected
@@ -192,14 +192,14 @@ def IsTotallySeparated (s : Set α) : Prop :=
   ∃ u v : Set α, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ s ⊆ u ∪ v ∧ Disjoint u v
 #align is_totally_separated IsTotallySeparated
 
-theorem isTotallySeparated_empty : IsTotallySeparated (∅ : Set α) := fun _ => False.elim
+lemma isTotallySeparated_empty : IsTotallySeparated (∅ : Set α) := fun _ => False.elim
 #align is_totally_separated_empty isTotallySeparated_empty
 
-theorem isTotallySeparated_singleton {x} : IsTotallySeparated ({x} : Set α) := fun _ hp _ hq hpq =>
+lemma isTotallySeparated_singleton {x} : IsTotallySeparated ({x} : Set α) := fun _ hp _ hq hpq =>
   (hpq <| (eq_of_mem_singleton hp).symm ▸ (eq_of_mem_singleton hq).symm).elim
 #align is_totally_separated_singleton isTotallySeparated_singleton
 
-theorem isTotallyDisconnected_of_isTotallySeparated {s : Set α} (H : IsTotallySeparated s) :
+lemma isTotallyDisconnected_of_isTotallySeparated {s : Set α} (H : IsTotallySeparated s) :
     IsTotallyDisconnected s := by
   intro t hts ht x x_in y y_in
   by_contra h
@@ -234,7 +234,7 @@ instance (priority := 100) TotallySeparatedSpace.of_discrete (α : Type*) [Topol
     (compl_union_self _).symm.subset, disjoint_compl_left⟩⟩
 #align totally_separated_space.of_discrete TotallySeparatedSpace.of_discrete
 
-theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
+lemma exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
     [TotallySeparatedSpace α] {x y : α} (hxy : x ≠ y) :
     ∃ U : Set α, IsClopen U ∧ x ∈ U ∧ y ∈ Uᶜ := by
   obtain ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ :=
@@ -250,7 +250,7 @@ end TotallySeparated
 
 variable [TopologicalSpace β] [TotallyDisconnectedSpace β] {f : α → β}
 
-theorem Continuous.image_eq_of_connectedComponent_eq (h : Continuous f) (a b : α)
+lemma Continuous.image_eq_of_connectedComponent_eq (h : Continuous f) (a b : α)
     (hab : connectedComponent a = connectedComponent b) : f a = f b :=
   singleton_eq_singleton_iff.1 <|
     h.image_connectedComponent_eq_singleton a ▸
@@ -265,29 +265,29 @@ def Continuous.connectedComponentsLift (h : Continuous f) : ConnectedComponents 
 #align continuous.connected_components_lift Continuous.connectedComponentsLift
 
 @[continuity]
-theorem Continuous.connectedComponentsLift_continuous (h : Continuous f) :
+lemma Continuous.connectedComponentsLift_continuous (h : Continuous f) :
     Continuous h.connectedComponentsLift :=
   h.quotient_liftOn' <| by convert h.image_eq_of_connectedComponent_eq
 #align continuous.connected_components_lift_continuous Continuous.connectedComponentsLift_continuous
 
 @[simp]
-theorem Continuous.connectedComponentsLift_apply_coe (h : Continuous f) (x : α) :
+lemma Continuous.connectedComponentsLift_apply_coe (h : Continuous f) (x : α) :
     h.connectedComponentsLift x = f x :=
   rfl
 #align continuous.connected_components_lift_apply_coe Continuous.connectedComponentsLift_apply_coe
 
 @[simp]
-theorem Continuous.connectedComponentsLift_comp_coe (h : Continuous f) :
+lemma Continuous.connectedComponentsLift_comp_coe (h : Continuous f) :
     h.connectedComponentsLift ∘ (↑) = f :=
   rfl
 #align continuous.connected_components_lift_comp_coe Continuous.connectedComponentsLift_comp_coe
 
-theorem connectedComponents_lift_unique' {β : Sort*} {g₁ g₂ : ConnectedComponents α → β}
+lemma connectedComponents_lift_unique' {β : Sort*} {g₁ g₂ : ConnectedComponents α → β}
     (hg : g₁ ∘ ((↑) : α → ConnectedComponents α) = g₂ ∘ (↑)) : g₁ = g₂ :=
   ConnectedComponents.surjective_coe.injective_comp_right hg
 #align connected_components_lift_unique' connectedComponents_lift_unique'
 
-theorem Continuous.connectedComponentsLift_unique (h : Continuous f) (g : ConnectedComponents α → β)
+lemma Continuous.connectedComponentsLift_unique (h : Continuous f) (g : ConnectedComponents α → β)
     (hg : g ∘ (↑) = f) : g = h.connectedComponentsLift :=
   connectedComponents_lift_unique' <| hg.trans h.connectedComponentsLift_comp_coe.symm
 #align continuous.connected_components_lift_unique Continuous.connectedComponentsLift_unique
@@ -310,7 +310,7 @@ def Continuous.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α
   Continuous.connectedComponentsLift (ConnectedComponents.continuous_coe.comp h)
 #align continuous.connected_components_map Continuous.connectedComponentsMap
 
-theorem Continuous.connectedComponentsMap_continuous {β : Type*} [TopologicalSpace β] {f : α → β}
+lemma Continuous.connectedComponentsMap_continuous {β : Type*} [TopologicalSpace β] {f : α → β}
     (h : Continuous f) : Continuous h.connectedComponentsMap :=
   Continuous.connectedComponentsLift_continuous (ConnectedComponents.continuous_coe.comp h)
 #align continuous.connected_components_map_continuous Continuous.connectedComponentsMap_continuous

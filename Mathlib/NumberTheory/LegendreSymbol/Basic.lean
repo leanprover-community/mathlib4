@@ -136,7 +136,7 @@ theorem eq_one_or_neg_one {a : ℤ} (ha : (a : ZMod p) ≠ 0) :
   quadraticChar_dichotomy ha
 #align legendre_sym.eq_one_or_neg_one legendreSym.eq_one_or_neg_one
 
-theorem eq_neg_one_iff_not_one {a : ℤ} (ha : (a : ZMod p) ≠ 0) :
+lemma eq_neg_one_iff_not_one {a : ℤ} (ha : (a : ZMod p) ≠ 0) :
     legendreSym p a = -1 ↔ ¬legendreSym p a = 1 :=
   quadraticChar_eq_neg_one_iff_not_one ha
 #align legendre_sym.eq_neg_one_iff_not_one legendreSym.eq_neg_one_iff_not_one
@@ -147,11 +147,11 @@ theorem eq_zero_iff (a : ℤ) : legendreSym p a = 0 ↔ (a : ZMod p) = 0 :=
 #align legendre_sym.eq_zero_iff legendreSym.eq_zero_iff
 
 @[simp]
-theorem at_zero : legendreSym p 0 = 0 := by rw [legendreSym, Int.cast_zero, MulChar.map_zero]
+lemma at_zero : legendreSym p 0 = 0 := by rw [legendreSym, Int.cast_zero, MulChar.map_zero]
 #align legendre_sym.at_zero legendreSym.at_zero
 
 @[simp]
-theorem at_one : legendreSym p 1 = 1 := by rw [legendreSym, Int.cast_one, MulChar.map_one]
+lemma at_one : legendreSym p 1 = 1 := by rw [legendreSym, Int.cast_one, MulChar.map_one]
 #align legendre_sym.at_one legendreSym.at_one
 
 /-- The Legendre symbol is multiplicative in `a` for `p` fixed. -/
@@ -190,7 +190,7 @@ theorem eq_one_iff {a : ℤ} (ha0 : (a : ZMod p) ≠ 0) : legendreSym p a = 1 �
   quadraticChar_one_iff_isSquare ha0
 #align legendre_sym.eq_one_iff legendreSym.eq_one_iff
 
-theorem eq_one_iff' {a : ℕ} (ha0 : (a : ZMod p) ≠ 0) :
+lemma eq_one_iff' {a : ℕ} (ha0 : (a : ZMod p) ≠ 0) :
     legendreSym p a = 1 ↔ IsSquare (a : ZMod p) := by rw [eq_one_iff]; norm_cast; exact mod_cast ha0
 #align legendre_sym.eq_one_iff' legendreSym.eq_one_iff'
 
@@ -199,7 +199,7 @@ theorem eq_neg_one_iff {a : ℤ} : legendreSym p a = -1 ↔ ¬IsSquare (a : ZMod
   quadraticChar_neg_one_iff_not_isSquare
 #align legendre_sym.eq_neg_one_iff legendreSym.eq_neg_one_iff
 
-theorem eq_neg_one_iff' {a : ℕ} : legendreSym p a = -1 ↔ ¬IsSquare (a : ZMod p) := by
+lemma eq_neg_one_iff' {a : ℕ} : legendreSym p a = -1 ↔ ¬IsSquare (a : ZMod p) := by
   rw [eq_neg_one_iff]; norm_cast
 #align legendre_sym.eq_neg_one_iff' legendreSym.eq_neg_one_iff'
 
@@ -298,7 +298,7 @@ theorem exists_sq_eq_neg_one_iff : IsSquare (-1 : ZMod p) ↔ p % 4 ≠ 3 := by
   rw [FiniteField.isSquare_neg_one_iff, card p]
 #align zmod.exists_sq_eq_neg_one_iff ZMod.exists_sq_eq_neg_one_iff
 
-theorem mod_four_ne_three_of_sq_eq_neg_one {y : ZMod p} (hy : y ^ 2 = -1) : p % 4 ≠ 3 :=
+lemma mod_four_ne_three_of_sq_eq_neg_one {y : ZMod p} (hy : y ^ 2 = -1) : p % 4 ≠ 3 :=
   exists_sq_eq_neg_one_iff.1 ⟨y, hy ▸ pow_two y⟩
 #align zmod.mod_four_ne_three_of_sq_eq_neg_one ZMod.mod_four_ne_three_of_sq_eq_neg_one
 
@@ -311,7 +311,7 @@ theorem mod_four_ne_three_of_sq_eq_neg_sq' {x y : ZMod p} (hy : y ≠ 0) (hxy : 
       rwa [neg_div, ← div_pow, ← div_pow, div_self hy, one_pow] at hxy)
 #align zmod.mod_four_ne_three_of_sq_eq_neg_sq' ZMod.mod_four_ne_three_of_sq_eq_neg_sq'
 
-theorem mod_four_ne_three_of_sq_eq_neg_sq {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 = -y ^ 2) :
+lemma mod_four_ne_three_of_sq_eq_neg_sq {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 = -y ^ 2) :
     p % 4 ≠ 3 :=
   mod_four_ne_three_of_sq_eq_neg_sq' hx (neg_eq_iff_eq_neg.mpr hxy).symm
 #align zmod.mod_four_ne_three_of_sq_eq_neg_sq ZMod.mod_four_ne_three_of_sq_eq_neg_sq

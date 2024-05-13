@@ -95,11 +95,11 @@ def equivalence : SimplicialObject C ≌ ChainComplex C ℕ :=
   Compatibility.equivalence isoN₁ isoΓ₀
 #align category_theory.idempotents.dold_kan.equivalence CategoryTheory.Idempotents.DoldKan.equivalence
 
-theorem equivalence_functor : (equivalence : SimplicialObject C ≌ _).functor = N :=
+lemma equivalence_functor : (equivalence : SimplicialObject C ≌ _).functor = N :=
   rfl
 #align category_theory.idempotents.dold_kan.equivalence_functor CategoryTheory.Idempotents.DoldKan.equivalence_functor
 
-theorem equivalence_inverse : (equivalence : SimplicialObject C ≌ _).inverse = Γ :=
+lemma equivalence_inverse : (equivalence : SimplicialObject C ≌ _).inverse = Γ :=
   rfl
 #align category_theory.idempotents.dold_kan.equivalence_inverse CategoryTheory.Idempotents.DoldKan.equivalence_inverse
 
@@ -121,12 +121,12 @@ def η : Γ ⋙ N ≅ 𝟭 (ChainComplex C ℕ) :=
     (N₁Γ₀ : (Γ : ChainComplex C ℕ ⥤ _) ⋙ N₁ ≅ (toKaroubiEquivalence _).functor)
 #align category_theory.idempotents.dold_kan.η CategoryTheory.Idempotents.DoldKan.η
 
-theorem equivalence_counitIso :
+lemma equivalence_counitIso :
     DoldKan.equivalence.counitIso = (η : Γ ⋙ N ≅ 𝟭 (ChainComplex C ℕ)) :=
   Compatibility.equivalenceCounitIso_eq hη
 #align category_theory.idempotents.dold_kan.equivalence_counit_iso CategoryTheory.Idempotents.DoldKan.equivalence_counitIso
 
-theorem hε :
+lemma hε :
     Compatibility.υ (isoN₁) =
       (Γ₂N₁ : (toKaroubiEquivalence _).functor ≅
           (N₁ : SimplicialObject C ⥤ _) ⋙ Preadditive.DoldKan.equivalence.inverse) := by
@@ -149,7 +149,7 @@ def ε : 𝟭 (SimplicialObject C) ≅ N ⋙ Γ :=
   Compatibility.equivalenceUnitIso isoΓ₀ Γ₂N₁
 #align category_theory.idempotents.dold_kan.ε CategoryTheory.Idempotents.DoldKan.ε
 
-theorem equivalence_unitIso :
+lemma equivalence_unitIso :
     DoldKan.equivalence.unitIso = (ε : 𝟭 (SimplicialObject C) ≅ N ⋙ Γ) :=
   Compatibility.equivalenceUnitIso_eq hε
 #align category_theory.idempotents.dold_kan.equivalence_unit_iso CategoryTheory.Idempotents.DoldKan.equivalence_unitIso

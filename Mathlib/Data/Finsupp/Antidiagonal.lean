@@ -48,11 +48,11 @@ instance instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) where
 
 -- nolint as this is for dsimp
 @[simp, nolint simpNF]
-theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) := rfl
+lemma antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) := rfl
 #align finsupp.antidiagonal_zero Finsupp.antidiagonal_zero
 
 @[to_additive]
-theorem prod_antidiagonal_swap {M : Type*} [CommMonoid M] (n : α →₀ ℕ)
+lemma prod_antidiagonal_swap {M : Type*} [CommMonoid M] (n : α →₀ ℕ)
     (f : (α →₀ ℕ) → (α →₀ ℕ) → M) :
     ∏ p in antidiagonal n, f p.1 p.2 = ∏ p in antidiagonal n, f p.2 p.1 :=
   prod_equiv (Equiv.prodComm _ _) (by simp [add_comm]) (by simp)
@@ -60,7 +60,7 @@ theorem prod_antidiagonal_swap {M : Type*} [CommMonoid M] (n : α →₀ ℕ)
 #align finsupp.sum_antidiagonal_swap Finsupp.sum_antidiagonal_swap
 
 @[simp]
-theorem antidiagonal_single (a : α) (n : ℕ) :
+lemma antidiagonal_single (a : α) (n : ℕ) :
     antidiagonal (single a n) = (antidiagonal n).map
       (Function.Embedding.prodMap ⟨_, single_injective a⟩ ⟨_, single_injective a⟩) := by
   ext ⟨x, y⟩

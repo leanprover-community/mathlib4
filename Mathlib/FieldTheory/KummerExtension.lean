@@ -72,7 +72,7 @@ lemma root_X_pow_sub_C_ne_zero' {n : ℕ} {a : K} (hn : 0 < n) (ha : a ≠ 0) :
     · rw [map_sub, mk_self, sub_zero, mk_X, e]
   · exact root_X_pow_sub_C_ne_zero hn a
 
-theorem X_pow_sub_C_splits_of_isPrimitiveRoot
+lemma X_pow_sub_C_splits_of_isPrimitiveRoot
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (e : α ^ n = a) :
     (X ^ n - C a).Splits (RingHom.id _) := by
   cases n.eq_zero_or_pos with
@@ -84,7 +84,7 @@ theorem X_pow_sub_C_splits_of_isPrimitiveRoot
 
 open BigOperators
 
-theorem X_pow_sub_C_eq_prod
+lemma X_pow_sub_C_eq_prod
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (hn : 0 < n) (e : α ^ n = a) :
     (X ^ n - C a) = ∏ i in Finset.range n, (X - C (ζ ^ i * α)) := by
   rw [eq_prod_roots_of_monic_of_splits_id (monic_X_pow_sub_C _ (Nat.pos_iff_ne_zero.mp hn))
@@ -119,7 +119,7 @@ lemma root_X_pow_sub_C_ne_zero_iff {n : ℕ} {a : K} (H : Irreducible (X ^ n - C
     (AdjoinRoot.root (X ^ n - C a)) ≠ 0 ↔ a ≠ 0 :=
   (root_X_pow_sub_C_eq_zero_iff H).not
 
-theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
+lemma pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
     (H : Irreducible (X ^ n - C a)) {m : ℕ} (hm : m ∣ n) (hm' : m ≠ 1) (b : K) : b ^ m ≠ a := by
   have hn : n ≠ 0 := fun e ↦ not_irreducible_C
     (1 - a) (by simpa only [e, pow_zero, ← C.map_one, ← map_sub] using H)
@@ -136,7 +136,7 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
     Nat.cast_injective.eq_iff] at hq
   exact hm' ((mul_eq_right₀ (mul_ne_zero_iff.mp hn).2).mp hq)
 
-theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
+lemma X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ p - C a) := by
   -- First of all, We may find an irreducible factor `g` of `X ^ p - C a`.
   have : ¬ IsUnit (X ^ p - C a) := by
@@ -166,11 +166,11 @@ theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : 
       (natDegree_pos_iff_degree_pos.mpr <| Polynomial.degree_pos_of_irreducible hg) e)))
   exact ha _ ((pow_mem_range_pow_of_coprime this.symm a).mp ⟨_, key⟩).choose_spec
 
-theorem X_pow_sub_C_irreducible_iff_of_prime {p : ℕ} (hp : p.Prime) {a : K} :
+lemma X_pow_sub_C_irreducible_iff_of_prime {p : ℕ} (hp : p.Prime) {a : K} :
     Irreducible (X ^ p - C a) ↔ ∀ b, b ^ p ≠ a :=
   ⟨(pow_ne_of_irreducible_X_pow_sub_C · dvd_rfl hp.ne_one), X_pow_sub_C_irreducible_of_prime hp⟩
 
-theorem X_pow_mul_sub_C_irreducible
+lemma X_pow_mul_sub_C_irreducible
     {n m : ℕ} {a : K} (hm : Irreducible (X ^ m - C a))
     (hn : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (hx : minpoly K x = X ^ m - C a),
       Irreducible (X ^ n - C (AdjoinSimple.gen K x))) :
@@ -183,7 +183,7 @@ theorem X_pow_mul_sub_C_irreducible
     (by simpa only [Polynomial.map_pow, map_X] using hn)
 
 -- TODO: generalize to even `n`
-theorem X_pow_sub_C_irreducible_of_odd
+lemma X_pow_sub_C_irreducible_of_odd
     {n : ℕ} (hn : Odd n) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ n - C a) := by
   induction n using induction_on_primes generalizing K a with
@@ -204,25 +204,25 @@ theorem X_pow_sub_C_irreducible_of_odd
       Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly]
     simp [minpoly_gen, hx, hp.ne_zero.symm, (Nat.odd_mul.mp hn).1.neg_pow]
 
-theorem X_pow_sub_C_irreducible_iff_forall_prime_of_odd {n : ℕ} (hn : Odd n) {a : K} :
+lemma X_pow_sub_C_irreducible_iff_forall_prime_of_odd {n : ℕ} (hn : Odd n) {a : K} :
     Irreducible (X ^ n - C a) ↔ (∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :=
   ⟨fun e _ hp hpn ↦ pow_ne_of_irreducible_X_pow_sub_C e hpn hp.ne_one,
     X_pow_sub_C_irreducible_of_odd hn⟩
 
-theorem X_pow_sub_C_irreducible_iff_of_odd {n : ℕ} (hn : Odd n) {a : K} :
+lemma X_pow_sub_C_irreducible_iff_of_odd {n : ℕ} (hn : Odd n) {a : K} :
     Irreducible (X ^ n - C a) ↔ (∀ d, d ∣ n → d ≠ 1 → ∀ b : K, b ^ d ≠ a) :=
   ⟨fun e _ ↦ pow_ne_of_irreducible_X_pow_sub_C e,
     fun H ↦ X_pow_sub_C_irreducible_of_odd hn fun p hp hpn ↦ (H p hpn hp.ne_one)⟩
 
 -- TODO: generalize to `p = 2`
-theorem X_pow_sub_C_irreducible_of_prime_pow
+lemma X_pow_sub_C_irreducible_of_prime_pow
     {p : ℕ} (hp : p.Prime) (hp' : p ≠ 2) (n : ℕ) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ (p ^ n) - C a) := by
   apply X_pow_sub_C_irreducible_of_odd (hp.odd_of_ne_two hp').pow
   intros q hq hq'
   simpa [(Nat.prime_dvd_prime_iff_eq hq hp).mp (hq.dvd_of_dvd_pow hq')] using ha
 
-theorem X_pow_sub_C_irreducible_iff_of_prime_pow
+lemma X_pow_sub_C_irreducible_iff_of_prime_pow
     {p : ℕ} (hp : p.Prime) (hp' : p ≠ 2) {n} (hn : n ≠ 0) {a : K} :
     Irreducible (X ^ p ^ n - C a) ↔ ∀ b, b ^ p ≠ a :=
   ⟨(pow_ne_of_irreducible_X_pow_sub_C · (dvd_pow dvd_rfl hn) hp.ne_one),

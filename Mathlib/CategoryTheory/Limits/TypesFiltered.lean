@@ -42,12 +42,12 @@ protected def Rel (x y : Σ j, F.obj j) : Prop :=
   ∃ (k : _) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2
 #align category_theory.limits.types.filtered_colimit.rel CategoryTheory.Limits.Types.FilteredColimit.Rel
 
-theorem rel_of_quot_rel (x y : Σ j, F.obj j) :
+lemma rel_of_quot_rel (x y : Σ j, F.obj j) :
     Quot.Rel F x y → FilteredColimit.Rel.{v, u} F x y :=
   fun ⟨f, h⟩ => ⟨y.1, f, 𝟙 y.1, by rw [← h, FunctorToTypes.map_id_apply]⟩
 #align category_theory.limits.types.filtered_colimit.rel_of_quot_rel CategoryTheory.Limits.Types.FilteredColimit.rel_of_quot_rel
 
-theorem eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
+lemma eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
     FilteredColimit.Rel.{v, u} F x y → EqvGen (Quot.Rel F) x y := fun ⟨k, f, g, h⟩ => by
   refine' EqvGen.trans _ ⟨k, F.map f x.2⟩ _ _ _
   · exact (EqvGen.rel _ _ ⟨f, rfl⟩)
@@ -83,7 +83,7 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
 
 variable [IsFilteredOrEmpty J]
 
-protected theorem rel_equiv : _root_.Equivalence (FilteredColimit.Rel.{v, u} F) where
+protected lemma rel_equiv : _root_.Equivalence (FilteredColimit.Rel.{v, u} F) where
   refl x := ⟨x.1, 𝟙 x.1, 𝟙 x.1, rfl⟩
   symm := fun ⟨k, f, g, h⟩ => ⟨k, g, f, h.symm⟩
   trans {x y z} := fun ⟨k, f, g, h⟩ ⟨k', f', g', h'⟩ =>
@@ -100,7 +100,7 @@ protected theorem rel_equiv : _root_.Equivalence (FilteredColimit.Rel.{v, u} F) 
         _ = F.map (g' ≫ gl ≫ n) z.2 := by simp⟩
 #align category_theory.limits.types.filtered_colimit.rel_equiv CategoryTheory.Limits.Types.FilteredColimit.rel_equiv
 
-protected theorem rel_eq_eqvGen_quot_rel :
+protected lemma rel_eq_eqvGen_quot_rel :
     FilteredColimit.Rel.{v, u} F = EqvGen (Quot.Rel F) := by
   ext ⟨j, x⟩ ⟨j', y⟩
   constructor
@@ -109,7 +109,7 @@ protected theorem rel_eq_eqvGen_quot_rel :
     exact EqvGen.mono (rel_of_quot_rel F)
 #align category_theory.limits.types.filtered_colimit.rel_eq_eqv_gen_quot_rel CategoryTheory.Limits.Types.FilteredColimit.rel_eq_eqvGen_quot_rel
 
-theorem colimit_eq_iff_aux {i j : J} {xi : F.obj i} {xj : F.obj j} :
+lemma colimit_eq_iff_aux {i j : J} {xi : F.obj i} {xj : F.obj j} :
     (colimitCocone F).ι.app i xi = (colimitCocone F).ι.app j xj ↔
       FilteredColimit.Rel.{v, u} F ⟨i, xi⟩ ⟨j, xj⟩ := by
   dsimp
@@ -117,7 +117,7 @@ theorem colimit_eq_iff_aux {i j : J} {xi : F.obj i} {xj : F.obj j} :
     Quot.eq, FilteredColimit.rel_eq_eqvGen_quot_rel]
 #align category_theory.limits.types.filtered_colimit.colimit_eq_iff_aux CategoryTheory.Limits.Types.FilteredColimit.colimit_eq_iff_aux
 
-theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj i} {xj : F.obj j} :
+lemma isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj i} {xj : F.obj j} :
     t.ι.app i xi = t.ι.app j xj ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj := by
   refine' Iff.trans _ (colimit_eq_iff_aux F)
   rw [← (IsColimit.coconePointUniqueUpToIso ht (colimitCoconeIsColimit F)).toEquiv.injective.eq_iff]
@@ -128,7 +128,7 @@ theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj
       (IsColimit.comp_coconePointUniqueUpToIso_hom ht (colimitCoconeIsColimit F) _) xj).symm
 #align category_theory.limits.types.filtered_colimit.is_colimit_eq_iff CategoryTheory.Limits.Types.FilteredColimit.isColimit_eq_iff
 
-theorem colimit_eq_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
+lemma colimit_eq_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
     colimit.ι F i xi = colimit.ι F j xj ↔
       ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj :=
   isColimit_eq_iff _ (colimit.isColimit F)

@@ -85,7 +85,7 @@ instance : AddCommGroup (DirectSum ι β) :=
 variable {β}
 
 @[simp]
-theorem sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
+lemma sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
   rfl
 #align direct_sum.sub_apply DirectSum.sub_apply
 
@@ -94,14 +94,14 @@ end AddCommGroup
 variable [∀ i, AddCommMonoid (β i)]
 
 @[simp]
-theorem zero_apply (i : ι) : (0 : ⨁ i, β i) i = 0 :=
+lemma zero_apply (i : ι) : (0 : ⨁ i, β i) i = 0 :=
   rfl
 #align direct_sum.zero_apply DirectSum.zero_apply
 
 variable {β}
 
 @[simp]
-theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i + g₂ i :=
+lemma add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i + g₂ i :=
   rfl
 #align direct_sum.add_apply DirectSum.add_apply
 
@@ -122,47 +122,47 @@ def of (i : ι) : β i →+ ⨁ i, β i :=
 #align direct_sum.of DirectSum.of
 
 @[simp]
-theorem of_eq_same (i : ι) (x : β i) : (of _ i x) i = x :=
+lemma of_eq_same (i : ι) (x : β i) : (of _ i x) i = x :=
   DFinsupp.single_eq_same
 #align direct_sum.of_eq_same DirectSum.of_eq_same
 
-theorem of_eq_of_ne (i j : ι) (x : β i) (h : i ≠ j) : (of _ i x) j = 0 :=
+lemma of_eq_of_ne (i j : ι) (x : β i) (h : i ≠ j) : (of _ i x) j = 0 :=
   DFinsupp.single_eq_of_ne h
 #align direct_sum.of_eq_of_ne DirectSum.of_eq_of_ne
 
 @[simp]
-theorem support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i, β i).support = ∅ :=
+lemma support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i, β i).support = ∅ :=
   DFinsupp.support_zero
 #align direct_sum.support_zero DirectSum.support_zero
 
 @[simp]
-theorem support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (i : ι) (x : β i) (h : x ≠ 0) :
+lemma support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (i : ι) (x : β i) (h : x ≠ 0) :
     (of _ i x).support = {i} :=
   DFinsupp.support_single_ne_zero h
 #align direct_sum.support_of DirectSum.support_of
 
-theorem support_of_subset [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] {i : ι} {b : β i} :
+lemma support_of_subset [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] {i : ι} {b : β i} :
     (of _ i b).support ⊆ {i} :=
   DFinsupp.support_single_subset
 #align direct_sum.support_of_subset DirectSum.support_of_subset
 
-theorem sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i, β i) :
+lemma sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i, β i) :
     (∑ i in x.support, of β i (x i)) = x :=
   DFinsupp.sum_single
 #align direct_sum.sum_support_of DirectSum.sum_support_of
 
 variable {β}
 
-theorem mk_injective (s : Finset ι) : Function.Injective (mk β s) :=
+lemma mk_injective (s : Finset ι) : Function.Injective (mk β s) :=
   DFinsupp.mk_injective s
 #align direct_sum.mk_injective DirectSum.mk_injective
 
-theorem of_injective (i : ι) : Function.Injective (of β i) :=
+lemma of_injective (i : ι) : Function.Injective (of β i) :=
   DFinsupp.single_injective
 #align direct_sum.of_injective DirectSum.of_injective
 
 @[elab_as_elim]
-protected theorem induction_on {C : (⨁ i, β i) → Prop} (x : ⨁ i, β i) (H_zero : C 0)
+protected lemma induction_on {C : (⨁ i, β i) → Prop} (x : ⨁ i, β i) (H_zero : C 0)
     (H_basic : ∀ (i : ι) (x : β i), C (of β i x))
     (H_plus : ∀ x y, C x → C y → C (x + y)) : C x := by
   apply DFinsupp.induction x H_zero
@@ -203,11 +203,11 @@ def toAddMonoid : (⨁ i, β i) →+ γ :=
 #align direct_sum.to_add_monoid DirectSum.toAddMonoid
 
 @[simp]
-theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
+lemma toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
   DFinsupp.liftAddHom_apply_single φ i x
 #align direct_sum.to_add_monoid_of DirectSum.toAddMonoid_of
 
-theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
+lemma toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
   -- Porting note: ext applies addHom_ext' here, which isn't what we want.
   apply DFinsupp.addHom_ext'
@@ -233,12 +233,12 @@ def fromAddMonoid : (⨁ i, γ →+ β i) →+ γ →+ ⨁ i, β i :=
 #align direct_sum.from_add_monoid DirectSum.fromAddMonoid
 
 @[simp]
-theorem fromAddMonoid_of (i : ι) (f : γ →+ β i) : fromAddMonoid (of _ i f) = (of _ i).comp f := by
+lemma fromAddMonoid_of (i : ι) (f : γ →+ β i) : fromAddMonoid (of _ i f) = (of _ i).comp f := by
   rw [fromAddMonoid, toAddMonoid_of]
   rfl
 #align direct_sum.from_add_monoid_of DirectSum.fromAddMonoid_of
 
-theorem fromAddMonoid_of_apply (i : ι) (f : γ →+ β i) (x : γ) :
+lemma fromAddMonoid_of_apply (i : ι) (f : γ →+ β i) (x : γ) :
     fromAddMonoid (of _ i f) x = of _ i (f x) := by
       rw [fromAddMonoid_of, AddMonoidHom.coe_comp, Function.comp]
 #align direct_sum.from_add_monoid_of_apply DirectSum.fromAddMonoid_of_apply
@@ -291,7 +291,7 @@ def equivCongrLeft (h : ι ≃ κ) : (⨁ i, β i) ≃+ ⨁ k, β (h.symm k) :=
 #align direct_sum.equiv_congr_left DirectSum.equivCongrLeft
 
 @[simp]
-theorem equivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, β i) (k : κ) :
+lemma equivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, β i) (k : κ) :
     equivCongrLeft h f k = f (h.symm k) := by
   exact DFinsupp.comapDomain'_apply _ h.right_inv _ _
 #align direct_sum.equiv_congr_left_apply DirectSum.equivCongrLeft_apply
@@ -323,7 +323,7 @@ def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j
 #align direct_sum.sigma_curry DirectSum.sigmaCurry
 
 @[simp]
-theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) :
+lemma sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) :
     sigmaCurry f i j = f ⟨i, j⟩ :=
   DFinsupp.sigmaCurry_apply (δ := δ) _ i j
 #align direct_sum.sigma_curry_apply DirectSum.sigmaCurry_apply
@@ -339,7 +339,7 @@ def sigmaUncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
 #align direct_sum.sigma_uncurry DirectSum.sigmaUncurry
 
 @[simp]
-theorem sigmaUncurry_apply [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)]
+lemma sigmaUncurry_apply [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)]
     (f : ⨁ (i) (j), δ i j) (i : ι) (j : α i) : sigmaUncurry f ⟨i, j⟩ = f i j :=
   DFinsupp.sigmaUncurry_apply f i j
 #align direct_sum.sigma_uncurry_apply DirectSum.sigmaUncurry_apply
@@ -362,13 +362,13 @@ protected def coeAddMonoidHom {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [
 #align direct_sum.coe_add_monoid_hom DirectSum.coeAddMonoidHom
 
 @[simp]
-theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
+lemma coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) (i : ι) (x : A i) :
     DirectSum.coeAddMonoidHom A (of (fun i => A i) i x) = x :=
   toAddMonoid_of _ _ _
 #align direct_sum.coe_add_monoid_hom_of DirectSum.coeAddMonoidHom_of
 
-theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
+lemma coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] {A : ι → S} (i j : ι) (x : A i) :
     (of (fun i ↦ {x // x ∈ A i}) i x j : M) = if i = j then x else 0 := by
   obtain rfl | h := Decidable.eq_or_ne i j
@@ -387,7 +387,7 @@ def IsInternal {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
   Function.Bijective (DirectSum.coeAddMonoidHom A)
 #align direct_sum.is_internal DirectSum.IsInternal
 
-theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCommMonoid M]
+lemma IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCommMonoid M]
     (A : ι → AddSubmonoid M) (h : IsInternal A) : iSup A = ⊤ := by
   rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
   exact Function.Bijective.surjective h

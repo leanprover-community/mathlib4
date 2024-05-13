@@ -119,12 +119,12 @@ def snd : R × S →ₙ+* S :=
 variable {R S}
 
 @[simp]
-theorem coe_fst : ⇑(fst R S) = Prod.fst :=
+lemma coe_fst : ⇑(fst R S) = Prod.fst :=
   rfl
 #align non_unital_ring_hom.coe_fst NonUnitalRingHom.coe_fst
 
 @[simp]
-theorem coe_snd : ⇑(snd R S) = Prod.snd :=
+lemma coe_snd : ⇑(snd R S) = Prod.snd :=
   rfl
 #align non_unital_ring_hom.coe_snd NonUnitalRingHom.coe_snd
 
@@ -140,21 +140,21 @@ protected def prod (f : R →ₙ+* S) (g : R →ₙ+* T) : R →ₙ+* S × T :=
 #align non_unital_ring_hom.prod NonUnitalRingHom.prod
 
 @[simp]
-theorem prod_apply (x) : f.prod g x = (f x, g x) :=
+lemma prod_apply (x) : f.prod g x = (f x, g x) :=
   rfl
 #align non_unital_ring_hom.prod_apply NonUnitalRingHom.prod_apply
 
 @[simp]
-theorem fst_comp_prod : (fst S T).comp (f.prod g) = f :=
+lemma fst_comp_prod : (fst S T).comp (f.prod g) = f :=
   ext fun _ => rfl
 #align non_unital_ring_hom.fst_comp_prod NonUnitalRingHom.fst_comp_prod
 
 @[simp]
-theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
+lemma snd_comp_prod : (snd S T).comp (f.prod g) = g :=
   ext fun _ => rfl
 #align non_unital_ring_hom.snd_comp_prod NonUnitalRingHom.snd_comp_prod
 
-theorem prod_unique (f : R →ₙ+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
+lemma prod_unique (f : R →ₙ+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
   ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align non_unital_ring_hom.prod_unique NonUnitalRingHom.prod_unique
 
@@ -170,16 +170,16 @@ def prodMap : R × S →ₙ+* R' × S' :=
   (f.comp (fst R S)).prod (g.comp (snd R S))
 #align non_unital_ring_hom.prod_map NonUnitalRingHom.prodMap
 
-theorem prodMap_def : prodMap f g = (f.comp (fst R S)).prod (g.comp (snd R S)) :=
+lemma prodMap_def : prodMap f g = (f.comp (fst R S)).prod (g.comp (snd R S)) :=
   rfl
 #align non_unital_ring_hom.prod_map_def NonUnitalRingHom.prodMap_def
 
 @[simp]
-theorem coe_prodMap : ⇑(prodMap f g) = Prod.map f g :=
+lemma coe_prodMap : ⇑(prodMap f g) = Prod.map f g :=
   rfl
 #align non_unital_ring_hom.coe_prod_map NonUnitalRingHom.coe_prodMap
 
-theorem prod_comp_prodMap (f : T →ₙ+* R) (g : T →ₙ+* S) (f' : R →ₙ+* R') (g' : S →ₙ+* S') :
+lemma prod_comp_prodMap (f : T →ₙ+* R) (g : T →ₙ+* S) (f' : R →ₙ+* R') (g' : S →ₙ+* S') :
     (f'.prodMap g').comp (f.prod g) = (f'.comp f).prod (g'.comp g) :=
   rfl
 #align non_unital_ring_hom.prod_comp_prod_map NonUnitalRingHom.prod_comp_prodMap
@@ -208,12 +208,12 @@ instance (R S) [Semiring R] [Semiring S] : RingHomSurjective (snd R S) := ⟨(�
 variable {R S}
 
 @[simp]
-theorem coe_fst : ⇑(fst R S) = Prod.fst :=
+lemma coe_fst : ⇑(fst R S) = Prod.fst :=
   rfl
 #align ring_hom.coe_fst RingHom.coe_fst
 
 @[simp]
-theorem coe_snd : ⇑(snd R S) = Prod.snd :=
+lemma coe_snd : ⇑(snd R S) = Prod.snd :=
   rfl
 #align ring_hom.coe_snd RingHom.coe_snd
 
@@ -229,21 +229,21 @@ protected def prod (f : R →+* S) (g : R →+* T) : R →+* S × T :=
 #align ring_hom.prod RingHom.prod
 
 @[simp]
-theorem prod_apply (x) : f.prod g x = (f x, g x) :=
+lemma prod_apply (x) : f.prod g x = (f x, g x) :=
   rfl
 #align ring_hom.prod_apply RingHom.prod_apply
 
 @[simp]
-theorem fst_comp_prod : (fst S T).comp (f.prod g) = f :=
+lemma fst_comp_prod : (fst S T).comp (f.prod g) = f :=
   ext fun _ => rfl
 #align ring_hom.fst_comp_prod RingHom.fst_comp_prod
 
 @[simp]
-theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
+lemma snd_comp_prod : (snd S T).comp (f.prod g) = g :=
   ext fun _ => rfl
 #align ring_hom.snd_comp_prod RingHom.snd_comp_prod
 
-theorem prod_unique (f : R →+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
+lemma prod_unique (f : R →+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
   ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align ring_hom.prod_unique RingHom.prod_unique
 
@@ -259,16 +259,16 @@ def prodMap : R × S →+* R' × S' :=
   (f.comp (fst R S)).prod (g.comp (snd R S))
 #align ring_hom.prod_map RingHom.prodMap
 
-theorem prodMap_def : prodMap f g = (f.comp (fst R S)).prod (g.comp (snd R S)) :=
+lemma prodMap_def : prodMap f g = (f.comp (fst R S)).prod (g.comp (snd R S)) :=
   rfl
 #align ring_hom.prod_map_def RingHom.prodMap_def
 
 @[simp]
-theorem coe_prodMap : ⇑(prodMap f g) = Prod.map f g :=
+lemma coe_prodMap : ⇑(prodMap f g) = Prod.map f g :=
   rfl
 #align ring_hom.coe_prod_map RingHom.coe_prodMap
 
-theorem prod_comp_prodMap (f : T →+* R) (g : T →+* S) (f' : R →+* R') (g' : S →+* S') :
+lemma prod_comp_prodMap (f : T →+* R) (g : T →+* S) (f' : R →+* R') (g' : S →+* S') :
     (f'.prodMap g').comp (f.prod g) = (f'.comp f).prod (g'.comp g) :=
   rfl
 #align ring_hom.prod_comp_prod_map RingHom.prod_comp_prodMap
@@ -287,23 +287,23 @@ def prodComm : R × S ≃+* S × R :=
 #align ring_equiv.prod_comm RingEquiv.prodComm
 
 @[simp]
-theorem coe_prodComm : ⇑(prodComm : R × S ≃+* S × R) = Prod.swap :=
+lemma coe_prodComm : ⇑(prodComm : R × S ≃+* S × R) = Prod.swap :=
   rfl
 #align ring_equiv.coe_prod_comm RingEquiv.coe_prodComm
 
 @[simp]
-theorem coe_prodComm_symm : ⇑(prodComm : R × S ≃+* S × R).symm = Prod.swap :=
+lemma coe_prodComm_symm : ⇑(prodComm : R × S ≃+* S × R).symm = Prod.swap :=
   rfl
 #align ring_equiv.coe_prod_comm_symm RingEquiv.coe_prodComm_symm
 
 @[simp]
-theorem fst_comp_coe_prodComm :
+lemma fst_comp_coe_prodComm :
     (RingHom.fst S R).comp ↑(prodComm : R × S ≃+* S × R) = RingHom.snd R S :=
   RingHom.ext fun _ => rfl
 #align ring_equiv.fst_comp_coe_prod_comm RingEquiv.fst_comp_coe_prodComm
 
 @[simp]
-theorem snd_comp_coe_prodComm :
+lemma snd_comp_coe_prodComm :
     (RingHom.snd S R).comp ↑(prodComm : R × S ≃+* S × R) = RingHom.fst R S :=
   RingHom.ext fun _ => rfl
 #align ring_equiv.snd_comp_coe_prod_comm RingEquiv.snd_comp_coe_prodComm
@@ -321,24 +321,24 @@ def prodProdProdComm : (R × R') × S × S' ≃+* (R × S) × R' × S' :=
 #align ring_equiv.prod_prod_prod_comm RingEquiv.prodProdProdComm
 
 @[simp]
-theorem prodProdProdComm_symm : (prodProdProdComm R R' S S').symm = prodProdProdComm R S R' S' :=
+lemma prodProdProdComm_symm : (prodProdProdComm R R' S S').symm = prodProdProdComm R S R' S' :=
   rfl
 #align ring_equiv.prod_prod_prod_comm_symm RingEquiv.prodProdProdComm_symm
 
 @[simp]
-theorem prodProdProdComm_toAddEquiv :
+lemma prodProdProdComm_toAddEquiv :
     (prodProdProdComm R R' S S' : _ ≃+ _) = AddEquiv.prodProdProdComm R R' S S' :=
   rfl
 #align ring_equiv.prod_prod_prod_comm_to_add_equiv RingEquiv.prodProdProdComm_toAddEquiv
 
 @[simp]
-theorem prodProdProdComm_toMulEquiv :
+lemma prodProdProdComm_toMulEquiv :
     (prodProdProdComm R R' S S' : _ ≃* _) = MulEquiv.prodProdProdComm R R' S S' :=
   rfl
 #align ring_equiv.prod_prod_prod_comm_to_mul_equiv RingEquiv.prodProdProdComm_toMulEquiv
 
 @[simp]
-theorem prodProdProdComm_toEquiv :
+lemma prodProdProdComm_toEquiv :
     (prodProdProdComm R R' S S' : _ ≃ _) = Equiv.prodProdProdComm R R' S S' :=
   rfl
 #align ring_equiv.prod_prod_prod_comm_to_equiv RingEquiv.prodProdProdComm_toEquiv

@@ -69,7 +69,7 @@ variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M₁ i
   [∀ i, TopologicalSpace (M₁' i)] [TopologicalSpace M₂] [TopologicalSpace M₃] [TopologicalSpace M₄]
   (f f' : ContinuousMultilinearMap R M₁ M₂)
 
-theorem toMultilinearMap_injective :
+lemma toMultilinearMap_injective :
     Function.Injective
       (ContinuousMultilinearMap.toMultilinearMap :
         ContinuousMultilinearMap R M₁ M₂ → MultilinearMap R M₁ M₂)
@@ -98,42 +98,42 @@ initialize_simps_projections ContinuousMultilinearMap (-toMultilinearMap,
   toMultilinearMap_toFun → apply)
 
 @[continuity]
-theorem coe_continuous : Continuous (f : (∀ i, M₁ i) → M₂) :=
+lemma coe_continuous : Continuous (f : (∀ i, M₁ i) → M₂) :=
   f.cont
 #align continuous_multilinear_map.coe_continuous ContinuousMultilinearMap.coe_continuous
 
 @[simp]
-theorem coe_coe : (f.toMultilinearMap : (∀ i, M₁ i) → M₂) = f :=
+lemma coe_coe : (f.toMultilinearMap : (∀ i, M₁ i) → M₂) = f :=
   rfl
 #align continuous_multilinear_map.coe_coe ContinuousMultilinearMap.coe_coe
 
 @[ext]
-theorem ext {f f' : ContinuousMultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x) : f = f' :=
+lemma ext {f f' : ContinuousMultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x) : f = f' :=
   DFunLike.ext _ _ H
 #align continuous_multilinear_map.ext ContinuousMultilinearMap.ext
 
-theorem ext_iff {f f' : ContinuousMultilinearMap R M₁ M₂} : f = f' ↔ ∀ x, f x = f' x := by
+lemma ext_iff {f f' : ContinuousMultilinearMap R M₁ M₂} : f = f' ↔ ∀ x, f x = f' x := by
   rw [← toMultilinearMap_injective.eq_iff, MultilinearMap.ext_iff]; rfl
 #align continuous_multilinear_map.ext_iff ContinuousMultilinearMap.ext_iff
 
 @[simp]
-theorem map_add [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
+lemma map_add [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
     f (update m i (x + y)) = f (update m i x) + f (update m i y) :=
   f.map_add' m i x y
 #align continuous_multilinear_map.map_add ContinuousMultilinearMap.map_add
 
 @[simp]
-theorem map_smul [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i) :
+lemma map_smul [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i) :
     f (update m i (c • x)) = c • f (update m i x) :=
   f.map_smul' m i c x
 #align continuous_multilinear_map.map_smul ContinuousMultilinearMap.map_smul
 
-theorem map_coord_zero {m : ∀ i, M₁ i} (i : ι) (h : m i = 0) : f m = 0 :=
+lemma map_coord_zero {m : ∀ i, M₁ i} (i : ι) (h : m i = 0) : f m = 0 :=
   f.toMultilinearMap.map_coord_zero i h
 #align continuous_multilinear_map.map_coord_zero ContinuousMultilinearMap.map_coord_zero
 
 @[simp]
-theorem map_zero [Nonempty ι] : f 0 = 0 :=
+lemma map_zero [Nonempty ι] : f 0 = 0 :=
   f.toMultilinearMap.map_zero
 #align continuous_multilinear_map.map_zero ContinuousMultilinearMap.map_zero
 
@@ -144,12 +144,12 @@ instance : Inhabited (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨0⟩
 
 @[simp]
-theorem zero_apply (m : ∀ i, M₁ i) : (0 : ContinuousMultilinearMap R M₁ M₂) m = 0 :=
+lemma zero_apply (m : ∀ i, M₁ i) : (0 : ContinuousMultilinearMap R M₁ M₂) m = 0 :=
   rfl
 #align continuous_multilinear_map.zero_apply ContinuousMultilinearMap.zero_apply
 
 @[simp]
-theorem toMultilinearMap_zero : (0 : ContinuousMultilinearMap R M₁ M₂).toMultilinearMap = 0 :=
+lemma toMultilinearMap_zero : (0 : ContinuousMultilinearMap R M₁ M₂).toMultilinearMap = 0 :=
   rfl
 #align continuous_multilinear_map.to_multilinear_map_zero ContinuousMultilinearMap.toMultilinearMap_zero
 
@@ -163,13 +163,13 @@ instance : SMul R' (ContinuousMultilinearMap A M₁ M₂) :=
   ⟨fun c f => { c • f.toMultilinearMap with cont := f.cont.const_smul c }⟩
 
 @[simp]
-theorem smul_apply (f : ContinuousMultilinearMap A M₁ M₂) (c : R') (m : ∀ i, M₁ i) :
+lemma smul_apply (f : ContinuousMultilinearMap A M₁ M₂) (c : R') (m : ∀ i, M₁ i) :
     (c • f) m = c • f m :=
   rfl
 #align continuous_multilinear_map.smul_apply ContinuousMultilinearMap.smul_apply
 
 @[simp]
-theorem toMultilinearMap_smul (c : R') (f : ContinuousMultilinearMap A M₁ M₂) :
+lemma toMultilinearMap_smul (c : R') (f : ContinuousMultilinearMap A M₁ M₂) :
     (c • f).toMultilinearMap = c • f.toMultilinearMap :=
   rfl
 #align continuous_multilinear_map.to_multilinear_map_smul ContinuousMultilinearMap.toMultilinearMap_smul
@@ -198,12 +198,12 @@ instance : Add (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f f' => ⟨f.toMultilinearMap + f'.toMultilinearMap, f.cont.add f'.cont⟩⟩
 
 @[simp]
-theorem add_apply (m : ∀ i, M₁ i) : (f + f') m = f m + f' m :=
+lemma add_apply (m : ∀ i, M₁ i) : (f + f') m = f m + f' m :=
   rfl
 #align continuous_multilinear_map.add_apply ContinuousMultilinearMap.add_apply
 
 @[simp]
-theorem toMultilinearMap_add (f g : ContinuousMultilinearMap R M₁ M₂) :
+lemma toMultilinearMap_add (f g : ContinuousMultilinearMap R M₁ M₂) :
     (f + g).toMultilinearMap = f.toMultilinearMap + g.toMultilinearMap :=
   rfl
 #align continuous_multilinear_map.to_multilinear_map_add ContinuousMultilinearMap.toMultilinearMap_add
@@ -220,7 +220,7 @@ def applyAddHom (m : ∀ i, M₁ i) : ContinuousMultilinearMap R M₁ M₂ →+ 
 #align continuous_multilinear_map.apply_add_hom ContinuousMultilinearMap.applyAddHom
 
 @[simp]
-theorem sum_apply {α : Type*} (f : α → ContinuousMultilinearMap R M₁ M₂) (m : ∀ i, M₁ i)
+lemma sum_apply {α : Type*} (f : α → ContinuousMultilinearMap R M₁ M₂) (m : ∀ i, M₁ i)
     {s : Finset α} : (∑ a in s, f a) m = ∑ a in s, f a m :=
   map_sum (applyAddHom m) f s
 #align continuous_multilinear_map.sum_apply ContinuousMultilinearMap.sum_apply
@@ -242,7 +242,7 @@ def prod (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMa
 #align continuous_multilinear_map.prod ContinuousMultilinearMap.prod
 
 @[simp]
-theorem prod_apply (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃)
+lemma prod_apply (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃)
     (m : ∀ i, M₁ i) : (f.prod g) m = (f m, g m) :=
   rfl
 #align continuous_multilinear_map.prod_apply ContinuousMultilinearMap.prod_apply
@@ -257,13 +257,13 @@ def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)] [∀ i, 
 #align continuous_multilinear_map.pi ContinuousMultilinearMap.pi
 
 @[simp]
-theorem coe_pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
+lemma coe_pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)]
     (f : ∀ i, ContinuousMultilinearMap R M₁ (M' i)) : ⇑(pi f) = fun m j => f j m :=
   rfl
 #align continuous_multilinear_map.coe_pi ContinuousMultilinearMap.coe_pi
 
-theorem pi_apply {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
+lemma pi_apply {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)]
     (f : ∀ i, ContinuousMultilinearMap R M₁ (M' i)) (m : ∀ i, M₁ i) (j : ι') : pi f m j = f j m :=
   rfl
@@ -317,7 +317,7 @@ def compContinuousLinearMap (g : ContinuousMultilinearMap R M₁' M₄)
 #align continuous_multilinear_map.comp_continuous_linear_map ContinuousMultilinearMap.compContinuousLinearMap
 
 @[simp]
-theorem compContinuousLinearMap_apply (g : ContinuousMultilinearMap R M₁' M₄)
+lemma compContinuousLinearMap_apply (g : ContinuousMultilinearMap R M₁' M₄)
     (f : ∀ i : ι, M₁ i →L[R] M₁' i) (m : ∀ i, M₁ i) :
     g.compContinuousLinearMap f m = g fun i => f i <| m i :=
   rfl
@@ -331,7 +331,7 @@ def _root_.ContinuousLinearMap.compContinuousMultilinearMap (g : M₂ →L[R] M�
 #align continuous_linear_map.comp_continuous_multilinear_map ContinuousLinearMap.compContinuousMultilinearMap
 
 @[simp]
-theorem _root_.ContinuousLinearMap.compContinuousMultilinearMap_coe (g : M₂ →L[R] M₃)
+lemma _root_.ContinuousLinearMap.compContinuousMultilinearMap_coe (g : M₂ →L[R] M₃)
     (f : ContinuousMultilinearMap R M₁ M₂) :
     (g.compContinuousMultilinearMap f : (∀ i, M₁ i) → M₃) =
       (g : M₂ → M₃) ∘ (f : (∀ i, M₁ i) → M₂) := by
@@ -414,7 +414,7 @@ theorem cons_smul (f : ContinuousMultilinearMap R M M₂) (m : ∀ i : Fin n, M 
   f.toMultilinearMap.cons_smul m c x
 #align continuous_multilinear_map.cons_smul ContinuousMultilinearMap.cons_smul
 
-theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι) :
+lemma map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι) :
     f (t.piecewise (m + m') m') = ∑ s in t.powerset, f (s.piecewise m m') :=
   f.toMultilinearMap.map_piecewise_add _ _ _
 #align continuous_multilinear_map.map_piecewise_add ContinuousMultilinearMap.map_piecewise_add
@@ -465,7 +465,7 @@ def restrictScalars (f : ContinuousMultilinearMap A M₁ M₂) : ContinuousMulti
 #align continuous_multilinear_map.restrict_scalars ContinuousMultilinearMap.restrictScalars
 
 @[simp]
-theorem coe_restrictScalars (f : ContinuousMultilinearMap A M₁ M₂) : ⇑(f.restrictScalars R) = f :=
+lemma coe_restrictScalars (f : ContinuousMultilinearMap A M₁ M₂) : ⇑(f.restrictScalars R) = f :=
   rfl
 #align continuous_multilinear_map.coe_restrict_scalars ContinuousMultilinearMap.coe_restrictScalars
 
@@ -479,7 +479,7 @@ variable [Ring R] [∀ i, AddCommGroup (M₁ i)] [AddCommGroup M₂] [∀ i, Mod
   [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] (f f' : ContinuousMultilinearMap R M₁ M₂)
 
 @[simp]
-theorem map_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
+lemma map_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) :=
   f.toMultilinearMap.map_sub _ _ _ _
 #align continuous_multilinear_map.map_sub ContinuousMultilinearMap.map_sub
@@ -492,7 +492,7 @@ instance : Neg (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f => { -f.toMultilinearMap with cont := f.cont.neg }⟩
 
 @[simp]
-theorem neg_apply (m : ∀ i, M₁ i) : (-f) m = -f m :=
+lemma neg_apply (m : ∀ i, M₁ i) : (-f) m = -f m :=
   rfl
 #align continuous_multilinear_map.neg_apply ContinuousMultilinearMap.neg_apply
 
@@ -500,7 +500,7 @@ instance : Sub (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f g => { f.toMultilinearMap - g.toMultilinearMap with cont := f.cont.sub g.cont }⟩
 
 @[simp]
-theorem sub_apply (m : ∀ i, M₁ i) : (f - f') m = f m - f' m :=
+lemma sub_apply (m : ∀ i, M₁ i) : (f - f') m = f m - f' m :=
   rfl
 #align continuous_multilinear_map.sub_apply ContinuousMultilinearMap.sub_apply
 
@@ -518,7 +518,7 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [
   [Module R M₂] [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂]
   (f : ContinuousMultilinearMap R M₁ M₂)
 
-theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ∀ i, M₁ i) (s : Finset ι) :
+lemma map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ∀ i, M₁ i) (s : Finset ι) :
     f (s.piecewise (fun i => c i • m i) m) = (∏ i in s, c i) • f m :=
   f.toMultilinearMap.map_piecewise_smul _ _ _
 #align continuous_multilinear_map.map_piecewise_smul ContinuousMultilinearMap.map_piecewise_smul
@@ -601,7 +601,7 @@ protected def mkPiAlgebra : ContinuousMultilinearMap R (fun _ : ι => A) A where
 #align continuous_multilinear_map.mk_pi_algebra ContinuousMultilinearMap.mkPiAlgebra
 
 @[simp]
-theorem mkPiAlgebra_apply (m : ι → A) : ContinuousMultilinearMap.mkPiAlgebra R ι A m = ∏ i, m i :=
+lemma mkPiAlgebra_apply (m : ι → A) : ContinuousMultilinearMap.mkPiAlgebra R ι A m = ∏ i, m i :=
   rfl
 #align continuous_multilinear_map.mk_pi_algebra_apply ContinuousMultilinearMap.mkPiAlgebra_apply
 
@@ -627,7 +627,7 @@ protected def mkPiAlgebraFin : A[×n]→L[R] A where
 variable {R n A}
 
 @[simp]
-theorem mkPiAlgebraFin_apply (m : Fin n → A) :
+lemma mkPiAlgebraFin_apply (m : Fin n → A) :
     ContinuousMultilinearMap.mkPiAlgebraFin R n A m = (List.ofFn m).prod :=
   rfl
 #align continuous_multilinear_map.mk_pi_algebra_fin_apply ContinuousMultilinearMap.mkPiAlgebraFin_apply
@@ -665,28 +665,28 @@ protected def mkPiRing (z : M) : ContinuousMultilinearMap R (fun _ : ι => R) M 
 
 
 @[simp]
-theorem mkPiRing_apply (z : M) (m : ι → R) :
+lemma mkPiRing_apply (z : M) (m : ι → R) :
     (ContinuousMultilinearMap.mkPiRing R ι z : (ι → R) → M) m = (∏ i, m i) • z :=
   rfl
 #align continuous_multilinear_map.mk_pi_field_apply ContinuousMultilinearMap.mkPiRing_apply
 
-theorem mkPiRing_apply_one_eq_self (f : ContinuousMultilinearMap R (fun _ : ι => R) M) :
+lemma mkPiRing_apply_one_eq_self (f : ContinuousMultilinearMap R (fun _ : ι => R) M) :
     ContinuousMultilinearMap.mkPiRing R ι (f fun _ => 1) = f :=
   toMultilinearMap_injective f.toMultilinearMap.mkPiRing_apply_one_eq_self
 #align continuous_multilinear_map.mk_pi_field_apply_one_eq_self ContinuousMultilinearMap.mkPiRing_apply_one_eq_self
 
-theorem mkPiRing_eq_iff {z₁ z₂ : M} :
+lemma mkPiRing_eq_iff {z₁ z₂ : M} :
     ContinuousMultilinearMap.mkPiRing R ι z₁ = ContinuousMultilinearMap.mkPiRing R ι z₂ ↔
       z₁ = z₂ := by
   rw [← toMultilinearMap_injective.eq_iff]
   exact MultilinearMap.mkPiRing_eq_iff
 #align continuous_multilinear_map.mk_pi_field_eq_iff ContinuousMultilinearMap.mkPiRing_eq_iff
 
-theorem mkPiRing_zero : ContinuousMultilinearMap.mkPiRing R ι (0 : M) = 0 := by
+lemma mkPiRing_zero : ContinuousMultilinearMap.mkPiRing R ι (0 : M) = 0 := by
   ext; rw [mkPiRing_apply, smul_zero, ContinuousMultilinearMap.zero_apply]
 #align continuous_multilinear_map.mk_pi_field_zero ContinuousMultilinearMap.mkPiRing_zero
 
-theorem mkPiRing_eq_zero_iff (z : M) : ContinuousMultilinearMap.mkPiRing R ι z = 0 ↔ z = 0 := by
+lemma mkPiRing_eq_zero_iff (z : M) : ContinuousMultilinearMap.mkPiRing R ι z = 0 ↔ z = 0 := by
   rw [← mkPiRing_zero, mkPiRing_eq_iff]
 #align continuous_multilinear_map.mk_pi_field_eq_zero_iff ContinuousMultilinearMap.mkPiRing_eq_zero_iff
 

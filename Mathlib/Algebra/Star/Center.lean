@@ -11,7 +11,7 @@ import Mathlib.Algebra.Group.Centralizer
 
 variable {R : Type*} [Mul R] [StarMul R] {a : R} {s : Set R}
 
-theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R where
+lemma Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R where
   comm := by simpa only [star_mul, star_star] using fun g =>
     congr_arg star (((Set.mem_center_iff R).mp ha).comm <| star g).symm
   left_assoc b c := calc
@@ -33,12 +33,12 @@ theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R 
     _ = b * star (a * star c) := by rw [star_mul, star_star]
     _ = b * (c * star a) := by rw [star_mul, star_star]
 
-theorem Set.star_mem_centralizer' (h : ∀ a : R, a ∈ s → star a ∈ s) (ha : a ∈ Set.centralizer s) :
+lemma Set.star_mem_centralizer' (h : ∀ a : R, a ∈ s → star a ∈ s) (ha : a ∈ Set.centralizer s) :
     star a ∈ Set.centralizer s := fun y hy => by simpa using congr_arg star (ha _ (h _ hy)).symm
 
 open scoped Pointwise
 
-theorem Set.star_mem_centralizer (ha : a ∈ Set.centralizer (s ∪ star s)) :
+lemma Set.star_mem_centralizer (ha : a ∈ Set.centralizer (s ∪ star s)) :
     star a ∈ Set.centralizer (s ∪ star s) :=
   Set.star_mem_centralizer'
     (fun _x hx => hx.elim (fun hx => Or.inr <| Set.star_mem_star.mpr hx) Or.inl) ha

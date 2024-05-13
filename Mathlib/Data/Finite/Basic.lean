@@ -70,11 +70,11 @@ instance [Finite α] [Finite β] : Finite (α × β) := by
 instance {α β : Sort*} [Finite α] [Finite β] : Finite (PProd α β) :=
   of_equiv _ Equiv.pprodEquivProdPLift.symm
 
-theorem prod_left (β) [Finite (α × β)] [Nonempty β] : Finite α :=
+lemma prod_left (β) [Finite (α × β)] [Nonempty β] : Finite α :=
   of_surjective (Prod.fst : α × β → α) Prod.fst_surjective
 #align finite.prod_left Finite.prod_left
 
-theorem prod_right (α) [Finite (α × β)] [Nonempty α] : Finite β :=
+lemma prod_right (α) [Finite (α × β)] [Nonempty α] : Finite β :=
   of_surjective (Prod.snd : α × β → β) Prod.snd_surjective
 #align finite.prod_right Finite.prod_right
 
@@ -83,11 +83,11 @@ instance [Finite α] [Finite β] : Finite (Sum α β) := by
   haveI := Fintype.ofFinite β
   infer_instance
 
-theorem sum_left (β) [Finite (Sum α β)] : Finite α :=
+lemma sum_left (β) [Finite (Sum α β)] : Finite α :=
   of_injective (Sum.inl : α → Sum α β) Sum.inl_injective
 #align finite.sum_left Finite.sum_left
 
-theorem sum_right (α) [Finite (Sum α β)] : Finite β :=
+lemma sum_right (α) [Finite (Sum α β)] : Finite β :=
   of_injective (Sum.inr : β → Sum α β) Sum.inr_injective
 #align finite.sum_right Finite.sum_right
 

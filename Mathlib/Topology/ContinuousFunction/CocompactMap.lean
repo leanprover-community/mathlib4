@@ -87,12 +87,12 @@ instance : CocompactMapClass (CocompactMap α β) α β where
   cocompact_tendsto f := f.cocompact_tendsto'
 
 @[simp]
-theorem coe_toContinuousMap {f : CocompactMap α β} : (f.toContinuousMap : α → β) = f :=
+lemma coe_toContinuousMap {f : CocompactMap α β} : (f.toContinuousMap : α → β) = f :=
   rfl
 #align cocompact_map.coe_to_continuous_fun CocompactMap.coe_toContinuousMap
 
 @[ext]
-theorem ext {f g : CocompactMap α β} (h : ∀ x, f x = g x) : f = g :=
+lemma ext {f g : CocompactMap α β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 #align cocompact_map.ext CocompactMap.ext
 
@@ -109,16 +109,16 @@ protected def copy (f : CocompactMap α β) (f' : α → β) (h : f' = f) : Coco
 #align cocompact_map.copy CocompactMap.copy
 
 @[simp]
-theorem coe_copy (f : CocompactMap α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+lemma coe_copy (f : CocompactMap α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 #align cocompact_map.coe_copy CocompactMap.coe_copy
 
-theorem copy_eq (f : CocompactMap α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
+lemma copy_eq (f : CocompactMap α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 #align cocompact_map.copy_eq CocompactMap.copy_eq
 
 @[simp]
-theorem coe_mk (f : C(α, β)) (h : Tendsto f (cocompact α) (cocompact β)) :
+lemma coe_mk (f : C(α, β)) (h : Tendsto f (cocompact α) (cocompact β)) :
     ⇑(⟨f, h⟩ : CocompactMap α β) = f :=
   rfl
 #align cocompact_map.coe_mk CocompactMap.coe_mk
@@ -133,7 +133,7 @@ protected def id : CocompactMap α α :=
 #align cocompact_map.id CocompactMap.id
 
 @[simp]
-theorem coe_id : ⇑(CocompactMap.id α) = id :=
+lemma coe_id : ⇑(CocompactMap.id α) = id :=
   rfl
 #align cocompact_map.coe_id CocompactMap.coe_id
 
@@ -148,32 +148,32 @@ def comp (f : CocompactMap β γ) (g : CocompactMap α β) : CocompactMap α γ 
 #align cocompact_map.comp CocompactMap.comp
 
 @[simp]
-theorem coe_comp (f : CocompactMap β γ) (g : CocompactMap α β) : ⇑(comp f g) = f ∘ g :=
+lemma coe_comp (f : CocompactMap β γ) (g : CocompactMap α β) : ⇑(comp f g) = f ∘ g :=
   rfl
 #align cocompact_map.coe_comp CocompactMap.coe_comp
 
 @[simp]
-theorem comp_apply (f : CocompactMap β γ) (g : CocompactMap α β) (a : α) : comp f g a = f (g a) :=
+lemma comp_apply (f : CocompactMap β γ) (g : CocompactMap α β) (a : α) : comp f g a = f (g a) :=
   rfl
 #align cocompact_map.comp_apply CocompactMap.comp_apply
 
 @[simp]
-theorem comp_assoc (f : CocompactMap γ δ) (g : CocompactMap β γ) (h : CocompactMap α β) :
+lemma comp_assoc (f : CocompactMap γ δ) (g : CocompactMap β γ) (h : CocompactMap α β) :
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 #align cocompact_map.comp_assoc CocompactMap.comp_assoc
 
 @[simp]
-theorem id_comp (f : CocompactMap α β) : (CocompactMap.id _).comp f = f :=
+lemma id_comp (f : CocompactMap α β) : (CocompactMap.id _).comp f = f :=
   ext fun _ => rfl
 #align cocompact_map.id_comp CocompactMap.id_comp
 
 @[simp]
-theorem comp_id (f : CocompactMap α β) : f.comp (CocompactMap.id _) = f :=
+lemma comp_id (f : CocompactMap α β) : f.comp (CocompactMap.id _) = f :=
   ext fun _ => rfl
 #align cocompact_map.comp_id CocompactMap.comp_id
 
-theorem tendsto_of_forall_preimage {f : α → β} (h : ∀ s, IsCompact s → IsCompact (f ⁻¹' s)) :
+lemma tendsto_of_forall_preimage {f : α → β} (h : ∀ s, IsCompact s → IsCompact (f ⁻¹' s)) :
     Tendsto f (cocompact α) (cocompact β) := fun s hs =>
   match mem_cocompact.mp hs with
   | ⟨t, ht, hts⟩ =>

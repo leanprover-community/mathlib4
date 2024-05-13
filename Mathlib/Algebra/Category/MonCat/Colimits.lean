@@ -142,13 +142,13 @@ set_option linter.uppercaseLean3 false in
 #align Mon.colimits.monoid_colimit_type MonCat.Colimits.monoidColimitType
 
 @[simp]
-theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
+lemma quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.quot_one MonCat.Colimits.quot_one
 
 @[simp]
-theorem quot_mul (x y : Prequotient F) : Quot.mk Setoid.r (mul x y) =
+lemma quot_mul (x y : Prequotient F) : Quot.mk Setoid.r (mul x y) =
     @HMul.hMul (ColimitType F) (ColimitType F) (ColimitType F) _
       (Quot.mk Setoid.r x) (Quot.mk Setoid.r y) :=
   rfl
@@ -176,7 +176,7 @@ set_option linter.uppercaseLean3 false in
 #align Mon.colimits.cocone_morphism MonCat.Colimits.coconeMorphism
 
 @[simp]
-theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
+lemma cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism F j' = coconeMorphism F j := by
   ext
   apply Quot.sound
@@ -185,7 +185,7 @@ set_option linter.uppercaseLean3 false in
 #align Mon.colimits.cocone_naturality MonCat.Colimits.cocone_naturality
 
 @[simp]
-theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
+lemma cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f]
   rfl

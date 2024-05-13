@@ -47,7 +47,7 @@ section Fintype
 
 variable [Fintype ι]
 
-theorem hall_cond_of_erase {x : ι} (a : α)
+lemma hall_cond_of_erase {x : ι} (a : α)
     (ha : ∀ s : Finset ι, s.Nonempty → s ≠ univ → s.card < (s.biUnion t).card)
     (s' : Finset { x' : ι | x' ≠ x }) : s'.card ≤ (s'.biUnion fun x' => (t x').erase a).card := by
   haveI := Classical.decEq ι
@@ -122,7 +122,7 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
 set_option linter.uppercaseLean3 false in
 #align hall_marriage_theorem.hall_hard_inductive_step_A HallMarriageTheorem.hall_hard_inductive_step_A
 
-theorem hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset ι}
+lemma hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).card) (s' : Finset (s : Set ι)) :
     s'.card ≤ (s'.biUnion fun a' => t a').card := by
   classical
@@ -133,7 +133,7 @@ theorem hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset �
     simp
 #align hall_marriage_theorem.hall_cond_of_restrict HallMarriageTheorem.hall_cond_of_restrict
 
-theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
+lemma hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     (hus : s.card = (s.biUnion t).card) (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).card)
     (s' : Finset (sᶜ : Set ι)) : s'.card ≤ (s'.biUnion fun x' => t x' \ s.biUnion t).card := by
   haveI := Classical.decEq ι

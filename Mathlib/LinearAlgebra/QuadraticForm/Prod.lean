@@ -111,7 +111,7 @@ lemma Isometry.fst_comp_inr (Q₁ : QuadraticForm R M₁) :
     (fst M₂ Q₁).comp (inr Q₁ (0 : QuadraticForm R M₂)) = 0 :=
   ext fun _ => rfl
 
-theorem Equivalent.prod {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+lemma Equivalent.prod {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₁' : QuadraticForm R N₁} {Q₂' : QuadraticForm R N₂} (e₁ : Q₁.Equivalent Q₁')
     (e₂ : Q₂.Equivalent Q₂') : (Q₁.prod Q₂).Equivalent (Q₁'.prod Q₂') :=
   Nonempty.map2 IsometryEquiv.prod e₁ e₂
@@ -147,7 +147,7 @@ theorem anisotropic_of_prod {R} [OrderedCommRing R] [Module R M₁] [Module R M�
     rw [hx, add_zero, map_zero]
 #align quadratic_form.anisotropic_of_prod QuadraticForm.anisotropic_of_prod
 
-theorem nonneg_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
+lemma nonneg_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} :
     (∀ x, 0 ≤ (Q₁.prod Q₂) x) ↔ (∀ x, 0 ≤ Q₁ x) ∧ ∀ x, 0 ≤ Q₂ x := by
   simp_rw [Prod.forall, prod_apply]
@@ -160,7 +160,7 @@ theorem nonneg_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
     exact add_nonneg (h₁ x₁) (h₂ x₂)
 #align quadratic_form.nonneg_prod_iff QuadraticForm.nonneg_prod_iff
 
-theorem posDef_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
+lemma posDef_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} :
     (Q₁.prod Q₂).PosDef ↔ Q₁.PosDef ∧ Q₂.PosDef := by
   simp_rw [posDef_iff_nonneg, nonneg_prod_iff]
@@ -175,31 +175,31 @@ theorem posDef_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
     rwa [Prod.mk_eq_zero]
 #align quadratic_form.pos_def_prod_iff QuadraticForm.posDef_prod_iff
 
-theorem PosDef.prod {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
+lemma PosDef.prod {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (h₁ : Q₁.PosDef) (h₂ : Q₂.PosDef) :
     (Q₁.prod Q₂).PosDef :=
   posDef_prod_iff.mpr ⟨h₁, h₂⟩
 #align quadratic_form.pos_def.prod QuadraticForm.PosDef.prod
 
-theorem IsOrtho.prod {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+lemma IsOrtho.prod {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {v w : M₁ × M₂} (h₁ : Q₁.IsOrtho v.1 w.1) (h₂ : Q₂.IsOrtho v.2 w.2) :
     (Q₁.prod Q₂).IsOrtho v w :=
   (congr_arg₂ HAdd.hAdd h₁ h₂).trans <| add_add_add_comm _ _ _ _
 
-@[simp] theorem IsOrtho.inl_inr {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+@[simp] lemma IsOrtho.inl_inr {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     (m₁ : M₁) (m₂ : M₂) :
     (Q₁.prod Q₂).IsOrtho (m₁, 0) (0, m₂) := .prod (.zero_right _) (.zero_left _)
 
-@[simp] theorem IsOrtho.inr_inl {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+@[simp] lemma IsOrtho.inr_inl {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     (m₁ : M₁) (m₂ : M₂) :
     (Q₁.prod Q₂).IsOrtho (0, m₂) (m₁, 0) := (IsOrtho.inl_inr _ _).symm
 
-@[simp] theorem isOrtho_inl_inl_iff {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+@[simp] lemma isOrtho_inl_inl_iff {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     (m₁ m₁' : M₁) :
     (Q₁.prod Q₂).IsOrtho (m₁, 0) (m₁', 0) ↔ Q₁.IsOrtho m₁ m₁' := by
   simp [isOrtho_def]
 
-@[simp] theorem isOrtho_inr_inr_iff {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+@[simp] lemma isOrtho_inr_inr_iff {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     (m₂ m₂' : M₂) :
     (Q₁.prod Q₂).IsOrtho (0, m₂) (0, m₂') ↔ Q₂.IsOrtho m₂ m₂' := by
   simp [isOrtho_def]
@@ -212,18 +212,18 @@ variable [CommRing R]
 variable [AddCommGroup M₁] [AddCommGroup M₂]
 variable [Module R M₁] [Module R M₂]
 
-@[simp] theorem polar_prod (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (x y : M₁ × M₂) :
+@[simp] lemma polar_prod (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (x y : M₁ × M₂) :
     polar (Q₁.prod Q₂) x y = polar Q₁ x.1 y.1 + polar Q₂ x.2 y.2 := by
   dsimp [polar]
   abel
 
-@[simp] theorem polarBilin_prod (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
+@[simp] lemma polarBilin_prod (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     (Q₁.prod Q₂).polarBilin =
       Q₁.polarBilin.compl₁₂ (.fst R M₁ M₂) (.fst R M₁ M₂) +
       Q₂.polarBilin.compl₁₂ (.snd R M₁ M₂) (.snd R M₁ M₂) :=
   LinearMap.ext₂ <| polar_prod _ _
 
-@[simp] theorem associated_prod [Invertible (2 : R)]
+@[simp] lemma associated_prod [Invertible (2 : R)]
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     associated (Q₁.prod Q₂) =
       (associated Q₁).compl₁₂ (.fst R M₁ M₂) (.fst R M₁ M₂) +
@@ -251,12 +251,12 @@ def pi [Fintype ι] (Q : ∀ i, QuadraticForm R (Mᵢ i)) : QuadraticForm R (∀
 #align quadratic_form.pi QuadraticForm.pi
 
 @[simp]
-theorem pi_apply [Fintype ι] (Q : ∀ i, QuadraticForm R (Mᵢ i)) (x : ∀ i, Mᵢ i) :
+lemma pi_apply [Fintype ι] (Q : ∀ i, QuadraticForm R (Mᵢ i)) (x : ∀ i, Mᵢ i) :
     pi Q x = ∑ i, Q i (x i) :=
   sum_apply _ _ _
 #align quadratic_form.pi_apply QuadraticForm.pi_apply
 
-theorem pi_apply_single [Fintype ι] [DecidableEq ι]
+lemma pi_apply_single [Fintype ι] [DecidableEq ι]
     (Q : ∀ i, QuadraticForm R (Mᵢ i)) (i : ι) (m : Mᵢ i) :
     pi Q (Pi.single i m) = Q i m := by
   rw [pi_apply, Fintype.sum_eq_single i fun j hj => ?_, Pi.single_eq_same]
@@ -305,7 +305,7 @@ theorem Isometry.proj_comp_single_of_ne [Fintype ι] [DecidableEq ι]
     (proj i Q).comp (single _ j) = (0 : 0 →qᵢ Q).comp (ofEq (Pi.single_eq_of_ne h.symm _)) :=
   ext fun _ => Pi.single_eq_of_ne h _
 
-theorem Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticForm R (Mᵢ i)}
+lemma Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticForm R (Mᵢ i)}
     {Q' : ∀ i, QuadraticForm R (Nᵢ i)} (e : ∀ i, (Q i).Equivalent (Q' i)) :
     (pi Q).Equivalent (pi Q') :=
   ⟨IsometryEquiv.pi fun i => Classical.choice (e i)⟩
@@ -327,7 +327,7 @@ theorem anisotropic_of_pi [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R 
   · rw [Pi.single_eq_of_ne hji, map_zero]
 #align quadratic_form.anisotropic_of_pi QuadraticForm.anisotropic_of_pi
 
-theorem nonneg_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
+lemma nonneg_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} : (∀ x, 0 ≤ pi Q x) ↔ ∀ i x, 0 ≤ Q i x := by
   simp_rw [pi, sum_apply, comp_apply, LinearMap.proj_apply]
   constructor
@@ -341,7 +341,7 @@ theorem nonneg_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (M�
     exact Finset.sum_nonneg fun i _ => h i (x i)
 #align quadratic_form.nonneg_pi_iff QuadraticForm.nonneg_pi_iff
 
-theorem posDef_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
+lemma posDef_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} : (pi Q).PosDef ↔ ∀ i, (Q i).PosDef := by
   simp_rw [posDef_iff_nonneg, nonneg_pi_iff]
   constructor
@@ -364,16 +364,16 @@ variable [∀ i, AddCommGroup (Mᵢ i)] [∀ i, AddCommGroup (Nᵢ i)]
 variable [∀ i, Module R (Mᵢ i)] [∀ i, Module R (Nᵢ i)]
 variable [Fintype ι]
 
-@[simp] theorem polar_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) (x y : ∀ i, Mᵢ i) :
+@[simp] lemma polar_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) (x y : ∀ i, Mᵢ i) :
     polar (pi Q) x y = ∑ i, polar (Q i) (x i) (y i) := by
   dsimp [polar]
   simp_rw [Finset.sum_sub_distrib, pi_apply, Pi.add_apply]
 
-@[simp] theorem polarBilin_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
+@[simp] lemma polarBilin_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
     (pi Q).polarBilin = ∑ i, (Q i).polarBilin.compl₁₂ (.proj i) (.proj i) :=
   LinearMap.ext₂ fun x y => (polar_pi _ _ _).trans <| by simp
 
-@[simp] theorem associated_pi [Invertible (2 : R)] (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
+@[simp] lemma associated_pi [Invertible (2 : R)] (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
     associated (pi Q) = ∑ i, (Q i).associated.compl₁₂ (.proj i) (.proj i) := by
   dsimp [associated, associatedHom]
   rw [polarBilin_pi, Finset.smul_sum]

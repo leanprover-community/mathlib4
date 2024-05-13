@@ -155,7 +155,7 @@ lemma densityToFinite_def (μ : Measure α) [SFinite μ] :
 lemma measurable_densityToFinite (μ : Measure α) [SFinite μ] : Measurable μ.densityToFinite :=
   Measurable.ennreal_tsum fun _ ↦ Measure.measurable_rnDeriv _ _
 
-theorem withDensity_densitytoFinite (μ : Measure α) [SFinite μ] :
+lemma withDensity_densitytoFinite (μ : Measure α) [SFinite μ] :
     μ.toFinite.withDensity μ.densityToFinite = μ := by
   have : (μ.toFinite.withDensity fun a ↦ ∑' n, (sFiniteSeq μ n).rnDeriv μ.toFinite a)
       = μ.toFinite.withDensity (∑' n, (sFiniteSeq μ n).rnDeriv μ.toFinite) := by

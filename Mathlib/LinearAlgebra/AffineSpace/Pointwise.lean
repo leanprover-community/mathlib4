@@ -42,36 +42,36 @@ scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseAddAction
 open Pointwise
 
 -- Porting note (#10756): new theorem
-theorem pointwise_vadd_eq_map (v : V) (s : AffineSubspace k P) :
+lemma pointwise_vadd_eq_map (v : V) (s : AffineSubspace k P) :
     v +ᵥ s = s.map (AffineEquiv.constVAdd k P v) :=
   rfl
 
 @[simp]
-theorem coe_pointwise_vadd (v : V) (s : AffineSubspace k P) :
+lemma coe_pointwise_vadd (v : V) (s : AffineSubspace k P) :
     ((v +ᵥ s : AffineSubspace k P) : Set P) = v +ᵥ (s : Set P) :=
   rfl
 #align affine_subspace.coe_pointwise_vadd AffineSubspace.coe_pointwise_vadd
 
-theorem vadd_mem_pointwise_vadd_iff {v : V} {s : AffineSubspace k P} {p : P} :
+lemma vadd_mem_pointwise_vadd_iff {v : V} {s : AffineSubspace k P} {p : P} :
     v +ᵥ p ∈ v +ᵥ s ↔ p ∈ s :=
   vadd_mem_vadd_set_iff
 #align affine_subspace.vadd_mem_pointwise_vadd_iff AffineSubspace.vadd_mem_pointwise_vadd_iff
 
-theorem pointwise_vadd_bot (v : V) : v +ᵥ (⊥ : AffineSubspace k P) = ⊥ := by
+lemma pointwise_vadd_bot (v : V) : v +ᵥ (⊥ : AffineSubspace k P) = ⊥ := by
   ext; simp [pointwise_vadd_eq_map, map_bot]
 #align affine_subspace.pointwise_vadd_bot AffineSubspace.pointwise_vadd_bot
 
-theorem pointwise_vadd_direction (v : V) (s : AffineSubspace k P) :
+lemma pointwise_vadd_direction (v : V) (s : AffineSubspace k P) :
     (v +ᵥ s).direction = s.direction := by
   rw [pointwise_vadd_eq_map, map_direction]
   exact Submodule.map_id _
 #align affine_subspace.pointwise_vadd_direction AffineSubspace.pointwise_vadd_direction
 
-theorem pointwise_vadd_span (v : V) (s : Set P) : v +ᵥ affineSpan k s = affineSpan k (v +ᵥ s) :=
+lemma pointwise_vadd_span (v : V) (s : Set P) : v +ᵥ affineSpan k s = affineSpan k (v +ᵥ s) :=
   map_span _ s
 #align affine_subspace.pointwise_vadd_span AffineSubspace.pointwise_vadd_span
 
-theorem map_pointwise_vadd (f : P₁ →ᵃ[k] P₂) (v : V₁) (s : AffineSubspace k P₁) :
+lemma map_pointwise_vadd (f : P₁ →ᵃ[k] P₂) (v : V₁) (s : AffineSubspace k P₁) :
     (v +ᵥ s).map f = f.linear v +ᵥ s.map f := by
   erw [pointwise_vadd_eq_map, pointwise_vadd_eq_map, map_map, map_map]
   congr 1

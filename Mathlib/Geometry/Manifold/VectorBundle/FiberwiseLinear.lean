@@ -298,7 +298,7 @@ private theorem mem_aux {e : PartialHomeomorph (B × F) (B × F)} :
   simp only [mem_iUnion, mem_setOf_eq]
 
 @[simp]
-theorem mem_smoothFiberwiseLinear_iff (e : PartialHomeomorph (B × F) (B × F)) :
+lemma mem_smoothFiberwiseLinear_iff (e : PartialHomeomorph (B × F) (B × F)) :
     e ∈ smoothFiberwiseLinear B F IB ↔
       ∃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U) (hφ :
         SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => φ x : B → F →L[𝕜] F) U) (h2φ :

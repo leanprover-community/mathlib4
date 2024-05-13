@@ -48,7 +48,7 @@ def of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat :=
 #align BddDistLat.of BddDistLat.of
 
 @[simp]
-theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 #align BddDistLat.coe_of BddDistLat.coe_of
 
@@ -61,7 +61,7 @@ def toBddLat (X : BddDistLat) : BddLat :=
 #align BddDistLat.to_BddLat BddDistLat.toBddLat
 
 @[simp]
-theorem coe_toBddLat (X : BddDistLat) : ↥X.toBddLat = ↥X :=
+lemma coe_toBddLat (X : BddDistLat) : ↥X.toBddLat = ↥X :=
   rfl
 #align BddDistLat.coe_to_BddLat BddDistLat.coe_toBddLat
 
@@ -83,7 +83,7 @@ instance hasForgetToBddLat : HasForget₂ BddDistLat BddLat :=
   InducedCategory.hasForget₂ toBddLat
 #align BddDistLat.has_forget_to_BddLat BddDistLat.hasForgetToBddLat
 
-theorem forget_bddLat_lat_eq_forget_distLat_lat :
+lemma forget_bddLat_lat_eq_forget_distLat_lat :
     forget₂ BddDistLat BddLat ⋙ forget₂ BddLat Lat =
       forget₂ BddDistLat DistLat ⋙ forget₂ DistLat Lat :=
   rfl
@@ -117,7 +117,7 @@ def dualEquiv : BddDistLat ≌ BddDistLat where
 
 end BddDistLat
 
-theorem bddDistLat_dual_comp_forget_to_distLat :
+lemma bddDistLat_dual_comp_forget_to_distLat :
     BddDistLat.dual ⋙ forget₂ BddDistLat DistLat =
       forget₂ BddDistLat DistLat ⋙ DistLat.dual :=
   rfl

@@ -31,11 +31,11 @@ open Topology Nat BigOperators uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
-theorem tendsto_norm_atTop_atTop : Tendsto (norm : ℝ → ℝ) atTop atTop :=
+lemma tendsto_norm_atTop_atTop : Tendsto (norm : ℝ → ℝ) atTop atTop :=
   tendsto_abs_atTop_atTop
 #align tendsto_norm_at_top_at_top tendsto_norm_atTop_atTop
 
-theorem summable_of_absolute_convergence_real {f : ℕ → ℝ} :
+lemma summable_of_absolute_convergence_real {f : ℕ → ℝ} :
     (∃ r, Tendsto (fun n ↦ ∑ i in range n, |f i|) atTop (𝓝 r)) → Summable f
   | ⟨r, hr⟩ => by
     refine .of_norm ⟨r, (hasSum_iff_tendsto_nat_of_nonneg ?_ _).2 ?_⟩
@@ -46,19 +46,19 @@ theorem summable_of_absolute_convergence_real {f : ℕ → ℝ} :
 /-! ### Powers -/
 
 
-theorem tendsto_norm_zero' {𝕜 : Type*} [NormedAddCommGroup 𝕜] :
+lemma tendsto_norm_zero' {𝕜 : Type*} [NormedAddCommGroup 𝕜] :
     Tendsto (norm : 𝕜 → ℝ) (𝓝[≠] 0) (𝓝[>] 0) :=
   tendsto_norm_zero.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff.2 hx
 #align tendsto_norm_zero' tendsto_norm_zero'
 
 namespace NormedField
 
-theorem tendsto_norm_inverse_nhdsWithin_0_atTop {𝕜 : Type*} [NormedDivisionRing 𝕜] :
+lemma tendsto_norm_inverse_nhdsWithin_0_atTop {𝕜 : Type*} [NormedDivisionRing 𝕜] :
     Tendsto (fun x : 𝕜 ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
   (tendsto_inv_zero_atTop.comp tendsto_norm_zero').congr fun x ↦ (norm_inv x).symm
 #align normed_field.tendsto_norm_inverse_nhds_within_0_at_top NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop
 
-theorem tendsto_norm_zpow_nhdsWithin_0_atTop {𝕜 : Type*} [NormedDivisionRing 𝕜] {m : ℤ}
+lemma tendsto_norm_zpow_nhdsWithin_0_atTop {𝕜 : Type*} [NormedDivisionRing 𝕜] {m : ℤ}
     (hm : m < 0) :
     Tendsto (fun x : 𝕜 ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
   rcases neg_surjective m with ⟨m, rfl⟩
@@ -77,7 +77,7 @@ theorem tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 𝔸 : Type*} [Nor
 #align normed_field.tendsto_zero_smul_of_tendsto_zero_of_bounded NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded
 
 @[simp]
-theorem continuousAt_zpow {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m : ℤ} {x : 𝕜} :
+lemma continuousAt_zpow {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m : ℤ} {x : 𝕜} :
     ContinuousAt (fun x ↦ x ^ m) x ↔ x ≠ 0 ∨ 0 ≤ m := by
   refine' ⟨_, continuousAt_zpow₀ _ _⟩
   contrapose!; rintro ⟨rfl, hm⟩ hc
@@ -86,14 +86,14 @@ theorem continuousAt_zpow {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m : ℤ
 #align normed_field.continuous_at_zpow NormedField.continuousAt_zpow
 
 @[simp]
-theorem continuousAt_inv {𝕜 : Type*} [NontriviallyNormedField 𝕜] {x : 𝕜} :
+lemma continuousAt_inv {𝕜 : Type*} [NontriviallyNormedField 𝕜] {x : 𝕜} :
     ContinuousAt Inv.inv x ↔ x ≠ 0 := by
   simpa [(zero_lt_one' ℤ).not_le] using @continuousAt_zpow _ _ (-1) x
 #align normed_field.continuous_at_inv NormedField.continuousAt_inv
 
 end NormedField
 
-theorem isLittleO_pow_pow_of_lt_left {r₁ r₂ : ℝ} (h₁ : 0 ≤ r₁) (h₂ : r₁ < r₂) :
+lemma isLittleO_pow_pow_of_lt_left {r₁ r₂ : ℝ} (h₁ : 0 ≤ r₁) (h₂ : r₁ < r₂) :
     (fun n : ℕ ↦ r₁ ^ n) =o[atTop] fun n ↦ r₂ ^ n :=
   have H : 0 < r₂ := h₁.trans_lt h₂
   (isLittleO_of_tendsto fun _ hn ↦ False.elim <| H.ne' <| pow_eq_zero hn) <|
@@ -101,13 +101,13 @@ theorem isLittleO_pow_pow_of_lt_left {r₁ r₂ : ℝ} (h₁ : 0 ≤ r₁) (h₂
       (div_nonneg h₁ (h₁.trans h₂.le)) ((div_lt_one H).2 h₂)).congr fun _ ↦ div_pow _ _ _
 #align is_o_pow_pow_of_lt_left isLittleO_pow_pow_of_lt_left
 
-theorem isBigO_pow_pow_of_le_left {r₁ r₂ : ℝ} (h₁ : 0 ≤ r₁) (h₂ : r₁ ≤ r₂) :
+lemma isBigO_pow_pow_of_le_left {r₁ r₂ : ℝ} (h₁ : 0 ≤ r₁) (h₂ : r₁ ≤ r₂) :
     (fun n : ℕ ↦ r₁ ^ n) =O[atTop] fun n ↦ r₂ ^ n :=
   h₂.eq_or_lt.elim (fun h ↦ h ▸ isBigO_refl _ _) fun h ↦ (isLittleO_pow_pow_of_lt_left h₁ h).isBigO
 set_option linter.uppercaseLean3 false in
 #align is_O_pow_pow_of_le_left isBigO_pow_pow_of_le_left
 
-theorem isLittleO_pow_pow_of_abs_lt_left {r₁ r₂ : ℝ} (h : |r₁| < |r₂|) :
+lemma isLittleO_pow_pow_of_abs_lt_left {r₁ r₂ : ℝ} (h : |r₁| < |r₂|) :
     (fun n : ℕ ↦ r₁ ^ n) =o[atTop] fun n ↦ r₂ ^ n := by
   refine' (IsLittleO.of_norm_left _).of_norm_right
   exact (isLittleO_pow_pow_of_lt_left (abs_nonneg r₁) h).congr (pow_abs r₁) (pow_abs r₂)
@@ -228,7 +228,7 @@ theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [Norm
   exact IsBigO.of_bound 1 (by simpa using eventually_norm_pow_le r₁)
 #align is_o_pow_const_mul_const_pow_const_pow_of_norm_lt isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt
 
-theorem tendsto_pow_const_div_const_pow_of_one_lt (k : ℕ) {r : ℝ} (hr : 1 < r) :
+lemma tendsto_pow_const_div_const_pow_of_one_lt (k : ℕ) {r : ℝ} (hr : 1 < r) :
     Tendsto (fun n ↦ (n : ℝ) ^ k / r ^ n : ℕ → ℝ) atTop (𝓝 0) :=
   (isLittleO_pow_const_const_pow_of_one_lt k hr).tendsto_div_nhds_zero
 #align tendsto_pow_const_div_const_pow_of_one_lt tendsto_pow_const_div_const_pow_of_one_lt
@@ -275,7 +275,7 @@ theorem tendsto_pow_atTop_nhds_zero_of_norm_lt_one {R : Type*} [NormedRing R] {x
 @[deprecated] -- 2024-01-31
 alias tendsto_pow_atTop_nhds_0_of_norm_lt_1 := tendsto_pow_atTop_nhds_zero_of_norm_lt_one
 
-theorem tendsto_pow_atTop_nhds_zero_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
+lemma tendsto_pow_atTop_nhds_zero_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) :=
   tendsto_pow_atTop_nhds_zero_of_norm_lt_one h
 #align tendsto_pow_at_top_nhds_0_of_abs_lt_1 tendsto_pow_atTop_nhds_zero_of_abs_lt_one
@@ -289,7 +289,7 @@ section Geometric
 
 variable {K : Type*} [NormedDivisionRing K] {ξ : K}
 
-theorem hasSum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : HasSum (fun n : ℕ ↦ ξ ^ n) (1 - ξ)⁻¹ := by
+lemma hasSum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : HasSum (fun n : ℕ ↦ ξ ^ n) (1 - ξ)⁻¹ := by
   have xi_ne_one : ξ ≠ 1 := by
     contrapose! h
     simp [h]
@@ -301,30 +301,30 @@ theorem hasSum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : HasSum (fun n : ℕ
 #align has_sum_geometric_of_norm_lt_1 hasSum_geometric_of_norm_lt_one
 @[deprecated] alias hasSum_geometric_of_norm_lt_1 := hasSum_geometric_of_norm_lt_one -- 2024-01-31
 
-theorem summable_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : Summable fun n : ℕ ↦ ξ ^ n :=
+lemma summable_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : Summable fun n : ℕ ↦ ξ ^ n :=
   ⟨_, hasSum_geometric_of_norm_lt_one h⟩
 #align summable_geometric_of_norm_lt_1 summable_geometric_of_norm_lt_one
 @[deprecated] -- 2024-01-31
 alias summable_geometric_of_norm_lt_1 := summable_geometric_of_norm_lt_one
 
-theorem tsum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : ∑' n : ℕ, ξ ^ n = (1 - ξ)⁻¹ :=
+lemma tsum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : ∑' n : ℕ, ξ ^ n = (1 - ξ)⁻¹ :=
   (hasSum_geometric_of_norm_lt_one h).tsum_eq
 #align tsum_geometric_of_norm_lt_1 tsum_geometric_of_norm_lt_one
 @[deprecated] alias tsum_geometric_of_norm_lt_1 := tsum_geometric_of_norm_lt_one -- 2024-01-31
 
-theorem hasSum_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
+lemma hasSum_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
     HasSum (fun n : ℕ ↦ r ^ n) (1 - r)⁻¹ :=
   hasSum_geometric_of_norm_lt_one h
 #align has_sum_geometric_of_abs_lt_1 hasSum_geometric_of_abs_lt_one
 @[deprecated] alias hasSum_geometric_of_abs_lt_1 := hasSum_geometric_of_abs_lt_one -- 2024-01-31
 
-theorem summable_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) : Summable fun n : ℕ ↦ r ^ n :=
+lemma summable_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) : Summable fun n : ℕ ↦ r ^ n :=
   summable_geometric_of_norm_lt_one h
 #align summable_geometric_of_abs_lt_1 summable_geometric_of_abs_lt_one
 @[deprecated] -- 2024-01-31
 alias summable_geometric_of_abs_lt_1 := summable_geometric_of_abs_lt_one
 
-theorem tsum_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
+lemma tsum_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   tsum_geometric_of_norm_lt_one h
 #align tsum_geometric_of_abs_lt_1 tsum_geometric_of_abs_lt_one
 @[deprecated] alias tsum_geometric_of_abs_lt_1 := tsum_geometric_of_abs_lt_one -- 2024-01-31
@@ -347,7 +347,7 @@ end Geometric
 
 section MulGeometric
 
-theorem summable_norm_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] (k : ℕ) {r : R}
+lemma summable_norm_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] (k : ℕ) {r : R}
     (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖((n : R) ^ k * r ^ n : R)‖ := by
   rcases exists_between hr with ⟨r', hrr', h⟩
   exact summable_of_isBigO_nat (summable_geometric_of_lt_one ((norm_nonneg _).trans hrr'.le) h)
@@ -356,7 +356,7 @@ theorem summable_norm_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R
 @[deprecated] -- 2024-01-31
 alias summable_norm_pow_mul_geometric_of_norm_lt_1 := summable_norm_pow_mul_geometric_of_norm_lt_one
 
-theorem summable_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] [CompleteSpace R]
+lemma summable_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] [CompleteSpace R]
     (k : ℕ) {r : R} (hr : ‖r‖ < 1) : Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) :=
   .of_norm <| summable_norm_pow_mul_geometric_of_norm_lt_one _ hr
 #align summable_pow_mul_geometric_of_norm_lt_1 summable_pow_mul_geometric_of_norm_lt_one
@@ -407,12 +407,12 @@ section SummableLeGeometric
 
 variable [SeminormedAddCommGroup α] {r C : ℝ} {f : ℕ → α}
 
-nonrec theorem SeminormedAddCommGroup.cauchySeq_of_le_geometric {C : ℝ} {r : ℝ} (hr : r < 1)
+nonrec lemma SeminormedAddCommGroup.cauchySeq_of_le_geometric {C : ℝ} {r : ℝ} (hr : r < 1)
     {u : ℕ → α} (h : ∀ n, ‖u n - u (n + 1)‖ ≤ C * r ^ n) : CauchySeq u :=
   cauchySeq_of_le_geometric r C hr (by simpa [dist_eq_norm] using h)
 #align seminormed_add_comm_group.cauchy_seq_of_le_geometric SeminormedAddCommGroup.cauchySeq_of_le_geometric
 
-theorem dist_partial_sum_le_of_le_geometric (hf : ∀ n, ‖f n‖ ≤ C * r ^ n) (n : ℕ) :
+lemma dist_partial_sum_le_of_le_geometric (hf : ∀ n, ‖f n‖ ≤ C * r ^ n) (n : ℕ) :
     dist (∑ i in range n, f i) (∑ i in range (n + 1), f i) ≤ C * r ^ n := by
   rw [sum_range_succ, dist_eq_norm, ← norm_neg, neg_sub, add_sub_cancel_left]
   exact hf n
@@ -437,28 +437,28 @@ theorem norm_sub_le_of_geometric_bound_of_hasSum (hr : r < 1) (hf : ∀ n, ‖f 
 #align norm_sub_le_of_geometric_bound_of_has_sum norm_sub_le_of_geometric_bound_of_hasSum
 
 @[simp]
-theorem dist_partial_sum (u : ℕ → α) (n : ℕ) :
+lemma dist_partial_sum (u : ℕ → α) (n : ℕ) :
     dist (∑ k in range (n + 1), u k) (∑ k in range n, u k) = ‖u n‖ := by
   simp [dist_eq_norm, sum_range_succ]
 #align dist_partial_sum dist_partial_sum
 
 @[simp]
-theorem dist_partial_sum' (u : ℕ → α) (n : ℕ) :
+lemma dist_partial_sum' (u : ℕ → α) (n : ℕ) :
     dist (∑ k in range n, u k) (∑ k in range (n + 1), u k) = ‖u n‖ := by
   simp [dist_eq_norm', sum_range_succ]
 #align dist_partial_sum' dist_partial_sum'
 
-theorem cauchy_series_of_le_geometric {C : ℝ} {u : ℕ → α} {r : ℝ} (hr : r < 1)
+lemma cauchy_series_of_le_geometric {C : ℝ} {u : ℕ → α} {r : ℝ} (hr : r < 1)
     (h : ∀ n, ‖u n‖ ≤ C * r ^ n) : CauchySeq fun n ↦ ∑ k in range n, u k :=
   cauchySeq_of_le_geometric r C hr (by simp [h])
 #align cauchy_series_of_le_geometric cauchy_series_of_le_geometric
 
-theorem NormedAddCommGroup.cauchy_series_of_le_geometric' {C : ℝ} {u : ℕ → α} {r : ℝ} (hr : r < 1)
+lemma NormedAddCommGroup.cauchy_series_of_le_geometric' {C : ℝ} {u : ℕ → α} {r : ℝ} (hr : r < 1)
     (h : ∀ n, ‖u n‖ ≤ C * r ^ n) : CauchySeq fun n ↦ ∑ k in range (n + 1), u k :=
   (cauchy_series_of_le_geometric hr h).comp_tendsto <| tendsto_add_atTop_nat 1
 #align normed_add_comm_group.cauchy_series_of_le_geometric' NormedAddCommGroup.cauchy_series_of_le_geometric'
 
-theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ → α} {N : ℕ} {r : ℝ}
+lemma NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ → α} {N : ℕ} {r : ℝ}
     (hr₀ : 0 < r) (hr₁ : r < 1) (h : ∀ n ≥ N, ‖u n‖ ≤ C * r ^ n) :
     CauchySeq fun n ↦ ∑ k in range (n + 1), u k := by
   set v : ℕ → α := fun n ↦ if n < N then 0 else u n
@@ -520,7 +520,7 @@ theorem NormedRing.tsum_geometric_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
 @[deprecated] -- 2024-01-31
 alias NormedRing.tsum_geometric_of_norm_lt_1 := NormedRing.tsum_geometric_of_norm_lt_one
 
-theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * (1 - x) = 1 := by
+lemma geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * (1 - x) = 1 := by
   have := (NormedRing.summable_geometric_of_norm_lt_one x h).hasSum.mul_right (1 - x)
   refine' tendsto_nhds_unique this.tendsto_sum_nat _
   have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (𝓝 1) := by
@@ -529,7 +529,7 @@ theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * 
   rw [← geom_sum_mul_neg, Finset.sum_mul]
 #align geom_series_mul_neg geom_series_mul_neg
 
-theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : ((1 - x) * ∑' i : ℕ, x ^ i) = 1 := by
+lemma mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : ((1 - x) * ∑' i : ℕ, x ^ i) = 1 := by
   have := (NormedRing.summable_geometric_of_norm_lt_one x h).hasSum.mul_left (1 - x)
   refine' tendsto_nhds_unique this.tendsto_sum_nat _
   have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (𝓝 1) := by
@@ -542,7 +542,7 @@ end NormedRingGeometric
 
 /-! ### Summability tests based on comparison with geometric series -/
 
-theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGroup α]
+lemma summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGroup α]
     [CompleteSpace α] {f : ℕ → α} {r : ℝ} (hr₁ : r < 1)
     (h : ∀ᶠ n in atTop, ‖f (n + 1)‖ ≤ r * ‖f n‖) : Summable f := by
   by_cases hr₀ : 0 ≤ r
@@ -563,7 +563,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
     exact not_lt.mpr (norm_nonneg _) (lt_of_le_of_lt hn <| mul_neg_of_neg_of_pos hr₀ h)
 #align summable_of_ratio_norm_eventually_le summable_of_ratio_norm_eventually_le
 
-theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [NormedAddCommGroup α] [CompleteSpace α]
+lemma summable_of_ratio_test_tendsto_lt_one {α : Type*} [NormedAddCommGroup α] [CompleteSpace α]
     {f : ℕ → α} {l : ℝ} (hl₁ : l < 1) (hf : ∀ᶠ n in atTop, f n ≠ 0)
     (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) : Summable f := by
   rcases exists_between hl₁ with ⟨r, hr₀, hr₁⟩
@@ -572,7 +572,7 @@ theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [NormedAddCommGroup �
   rwa [← div_le_iff (norm_pos_iff.mpr h₁)]
 #align summable_of_ratio_test_tendsto_lt_one summable_of_ratio_test_tendsto_lt_one
 
-theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddCommGroup α] {f : ℕ → α}
+lemma not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddCommGroup α] {f : ℕ → α}
     {r : ℝ} (hr : 1 < r) (hf : ∃ᶠ n in atTop, ‖f n‖ ≠ 0)
     (h : ∀ᶠ n in atTop, r * ‖f n‖ ≤ ‖f (n + 1)‖) : ¬Summable f := by
   rw [eventually_atTop] at h
@@ -594,7 +594,7 @@ theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddComm
     ac_rfl
 #align not_summable_of_ratio_norm_eventually_ge not_summable_of_ratio_norm_eventually_ge
 
-theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCommGroup α]
+lemma not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCommGroup α]
     {f : ℕ → α} {l : ℝ} (hl : 1 < l) (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) :
     ¬Summable f := by
   have key : ∀ᶠ n in atTop, ‖f n‖ ≠ 0 := by
@@ -672,7 +672,7 @@ theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone
   simp
 #align antitone.cauchy_seq_series_mul_of_tendsto_zero_of_bounded Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded
 
-theorem norm_sum_neg_one_pow_le (n : ℕ) : ‖∑ i in range n, (-1 : ℝ) ^ i‖ ≤ 1 := by
+lemma norm_sum_neg_one_pow_le (n : ℕ) : ‖∑ i in range n, (-1 : ℝ) ^ i‖ ≤ 1 := by
   rw [neg_one_geom_sum]
   split_ifs <;> set_option tactic.skipAssignedInstances false in norm_num
 #align norm_sum_neg_one_pow_le norm_sum_neg_one_pow_le
@@ -803,7 +803,7 @@ theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n ↦ x ^ n / 
         (norm_nonneg (x ^ n / n !))
 #align real.summable_pow_div_factorial Real.summable_pow_div_factorial
 
-theorem Real.tendsto_pow_div_factorial_atTop (x : ℝ) :
+lemma Real.tendsto_pow_div_factorial_atTop (x : ℝ) :
     Tendsto (fun n ↦ x ^ n / n ! : ℕ → ℝ) atTop (𝓝 0) :=
   (Real.summable_pow_div_factorial x).tendsto_atTop_zero
 #align real.tendsto_pow_div_factorial_at_top Real.tendsto_pow_div_factorial_atTop

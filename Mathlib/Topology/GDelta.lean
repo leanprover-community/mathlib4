@@ -66,27 +66,27 @@ theorem IsOpen.isGδ {s : Set X} (h : IsOpen s) : IsGδ s :=
 #align is_open.is_Gδ IsOpen.isGδ
 
 @[simp]
-protected theorem IsGδ.empty : IsGδ (∅ : Set X) :=
+protected lemma IsGδ.empty : IsGδ (∅ : Set X) :=
   isOpen_empty.isGδ
 #align is_Gδ_empty IsGδ.empty
 
 @[deprecated] alias isGδ_empty := IsGδ.empty -- 2024-02-15
 
 @[simp]
-protected theorem IsGδ.univ : IsGδ (univ : Set X) :=
+protected lemma IsGδ.univ : IsGδ (univ : Set X) :=
   isOpen_univ.isGδ
 #align is_Gδ_univ IsGδ.univ
 
 @[deprecated] alias isGδ_univ := IsGδ.univ -- 2024-02-15
 
-theorem IsGδ.biInter_of_isOpen {I : Set ι} (hI : I.Countable) {f : ι → Set X}
+lemma IsGδ.biInter_of_isOpen {I : Set ι} (hI : I.Countable) {f : ι → Set X}
     (hf : ∀ i ∈ I, IsOpen (f i)) : IsGδ (⋂ i ∈ I, f i) :=
   ⟨f '' I, by rwa [forall_mem_image], hI.image _, by rw [sInter_image]⟩
 #align is_Gδ_bInter_of_open IsGδ.biInter_of_isOpen
 
 @[deprecated] alias isGδ_biInter_of_isOpen := IsGδ.biInter_of_isOpen -- 2024-02-15
 
-theorem IsGδ.iInter_of_isOpen [Countable ι'] {f : ι' → Set X} (hf : ∀ i, IsOpen (f i)) :
+lemma IsGδ.iInter_of_isOpen [Countable ι'] {f : ι' → Set X} (hf : ∀ i, IsOpen (f i)) :
     IsGδ (⋂ i, f i) :=
   ⟨range f, by rwa [forall_mem_range], countable_range _, by rw [sInter_range]⟩
 #align is_Gδ_Inter_of_open IsGδ.iInter_of_isOpen
@@ -117,7 +117,7 @@ protected theorem IsGδ.iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, 
 
 @[deprecated] alias isGδ_iInter := IsGδ.iInter
 
-theorem IsGδ.biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
+lemma IsGδ.biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
     (ht : ∀ (i) (hi : i ∈ s), IsGδ (t i hi)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
   rw [biInter_eq_iInter]
   haveI := hs.to_subtype
@@ -134,7 +134,7 @@ theorem IsGδ.sInter {S : Set (Set X)} (h : ∀ s ∈ S, IsGδ s) (hS : S.Counta
 @[deprecated] -- 2024-02-15
 alias isGδ_sInter := IsGδ.sInter
 
-theorem IsGδ.inter {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∩ t) := by
+lemma IsGδ.inter {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∩ t) := by
   rw [inter_eq_iInter]
   exact .iInter (Bool.forall_bool.2 ⟨ht, hs⟩)
 #align is_Gδ.inter IsGδ.inter
@@ -171,7 +171,7 @@ alias isGδ_biUnion := IsGδ.biUnion
 theorem IsGδ.iUnion [Finite ι'] {f : ι' → Set X} (h : ∀ i, IsGδ (f i)) : IsGδ (⋃ i, f i) :=
   .sUnion (finite_range _) <| forall_mem_range.2 h
 
-theorem IsClosed.isGδ {X : Type*} [UniformSpace X] [IsCountablyGenerated (𝓤 X)] {s : Set X}
+lemma IsClosed.isGδ {X : Type*} [UniformSpace X] [IsCountablyGenerated (𝓤 X)] {s : Set X}
     (hs : IsClosed s) : IsGδ s := by
   rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
   rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
@@ -183,32 +183,32 @@ section T1Space
 
 variable [T1Space X]
 
-theorem IsGδ.compl_singleton (x : X) : IsGδ ({x}ᶜ : Set X) :=
+lemma IsGδ.compl_singleton (x : X) : IsGδ ({x}ᶜ : Set X) :=
   isOpen_compl_singleton.isGδ
 #align is_Gδ_compl_singleton IsGδ.compl_singleton
 
 @[deprecated] alias isGδ_compl_singleton := IsGδ.compl_singleton -- 2024-02-15
 
-theorem Set.Countable.isGδ_compl {s : Set X} (hs : s.Countable) : IsGδ sᶜ := by
+lemma Set.Countable.isGδ_compl {s : Set X} (hs : s.Countable) : IsGδ sᶜ := by
   rw [← biUnion_of_singleton s, compl_iUnion₂]
   exact .biInter hs fun x _ => .compl_singleton x
 #align set.countable.is_Gδ_compl Set.Countable.isGδ_compl
 
-theorem Set.Finite.isGδ_compl {s : Set X} (hs : s.Finite) : IsGδ sᶜ :=
+lemma Set.Finite.isGδ_compl {s : Set X} (hs : s.Finite) : IsGδ sᶜ :=
   hs.countable.isGδ_compl
 #align set.finite.is_Gδ_compl Set.Finite.isGδ_compl
 
-theorem Set.Subsingleton.isGδ_compl {s : Set X} (hs : s.Subsingleton) : IsGδ sᶜ :=
+lemma Set.Subsingleton.isGδ_compl {s : Set X} (hs : s.Subsingleton) : IsGδ sᶜ :=
   hs.finite.isGδ_compl
 #align set.subsingleton.is_Gδ_compl Set.Subsingleton.isGδ_compl
 
-theorem Finset.isGδ_compl (s : Finset X) : IsGδ (sᶜ : Set X) :=
+lemma Finset.isGδ_compl (s : Finset X) : IsGδ (sᶜ : Set X) :=
   s.finite_toSet.isGδ_compl
 #align finset.is_Gδ_compl Finset.isGδ_compl
 
 variable [FirstCountableTopology X]
 
-protected theorem IsGδ.singleton (x : X) : IsGδ ({x} : Set X) := by
+protected lemma IsGδ.singleton (x : X) : IsGδ ({x} : Set X) := by
   rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← biInter_basis_nhds h_basis.toHasBasis]
   exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
@@ -216,7 +216,7 @@ protected theorem IsGδ.singleton (x : X) : IsGδ ({x} : Set X) := by
 
 @[deprecated] alias isGδ_singleton := IsGδ.singleton -- 2024-02-15
 
-theorem Set.Finite.isGδ {s : Set X} (hs : s.Finite) : IsGδ s :=
+lemma Set.Finite.isGδ {s : Set X} (hs : s.Finite) : IsGδ s :=
   Finite.induction_on hs .empty fun _ _ ↦ .union (.singleton _)
 #align set.finite.is_Gδ Set.Finite.isGδ
 

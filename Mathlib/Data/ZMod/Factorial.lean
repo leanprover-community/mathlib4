@@ -27,7 +27,7 @@ open Finset Nat
 
 namespace ZMod
 
-theorem cast_descFactorial {n p : ℕ} (h : n ≤ p) :
+lemma cast_descFactorial {n p : ℕ} (h : n ≤ p) :
     (descFactorial (p - 1) n : ZMod p) = (-1) ^ n * n ! := by
   rw [descFactorial_eq_prod_range, ← prod_range_add_one_eq_factorial]
   simp only [cast_prod]

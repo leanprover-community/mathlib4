@@ -110,7 +110,7 @@ instance : FunLike (MulActionHom φ X Y) X Y where
   coe_injective' f g h := by cases f; cases g; congr
 
 @[simp]
-theorem map_smul {F M X Y : Type*} [SMul M X] [SMul M Y]
+lemma map_smul {F M X Y : Type*} [SMul M X] [SMul M Y]
     [FunLike F X Y] [MulActionHomClass F M X Y]
     (f : F) (c : M) (x : X) : f (c • x) = c • f x :=
   map_smulₛₗ f c x
@@ -154,22 +154,22 @@ theorem _root_.IsScalarTower.smulHomClass [MulOneClass X] [SMul X Y] [IsScalarTo
     rw [← mul_one (m • x), ← smul_eq_mul, map_smul, smul_assoc, ← map_smul,
       smul_eq_mul, mul_one, id_eq]
 
-protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m • f x :=
+protected lemma map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m • f x :=
   map_smul f m x
 #align mul_action_hom.map_smul MulActionHom.map_smul
 
 @[ext]
-theorem ext {f g : X →ₑ[φ] Y} :
+lemma ext {f g : X →ₑ[φ] Y} :
     (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
 #align mul_action_hom.ext MulActionHom.ext
 
-theorem ext_iff  {f g : X →ₑ[φ] Y} :
+lemma ext_iff  {f g : X →ₑ[φ] Y} :
     f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 #align mul_action_hom.ext_iff MulActionHom.ext_iff
 
-protected theorem congr_fun {f g : X →ₑ[φ] Y} (h : f = g) (x : X) :
+protected lemma congr_fun {f g : X →ₑ[φ] Y} (h : f = g) (x : X) :
     f x = g x :=
   DFunLike.congr_fun h _
 #align mul_action_hom.congr_fun MulActionHom.congr_fun
@@ -182,12 +182,12 @@ def ofEq {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) : X →ₑ[φ'] Y
 #align equivariant_map.of_eq MulActionHom.ofEq
 
 @[simp]
-theorem ofEq_coe {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) :
+lemma ofEq_coe {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) :
     (f.ofEq h).toFun = f.toFun := rfl
 #align equivariant_map.of_eq_coe MulActionHom.ofEq_coe
 
 @[simp]
-theorem ofEq_apply {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) (a : X) :
+lemma ofEq_apply {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) (a : X) :
     (f.ofEq h) a = f a :=
   rfl
 #align equivariant_map.of_eq_apply MulActionHom.ofEq_apply
@@ -203,7 +203,7 @@ protected def id : X →[M] X :=
 variable {M N Z}
 
 @[simp]
-theorem id_apply (x : X) :
+lemma id_apply (x : X) :
     MulActionHom.id M x = x :=
   rfl
 #align mul_action_hom.id_apply MulActionHom.id_apply
@@ -229,25 +229,25 @@ def comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [κ : CompTriple φ ψ χ] :
 #align mul_action_hom.comp MulActionHom.comp
 
 @[simp]
-theorem comp_apply
+lemma comp_apply
     (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [CompTriple φ ψ χ] (x : X) :
     g.comp f x = g (f x) := rfl
 #align mul_action_hom.comp_apply MulActionHom.comp_apply
 
 @[simp]
-theorem id_comp (f : X →ₑ[φ] Y) :
+lemma id_comp (f : X →ₑ[φ] Y) :
     (MulActionHom.id N).comp f = f :=
   ext fun x => by rw [comp_apply, id_apply]
 #align mul_action_hom.id_comp MulActionHom.id_comp
 
 @[simp]
-theorem comp_id (f : X →ₑ[φ] Y) :
+lemma comp_id (f : X →ₑ[φ] Y) :
     f.comp (MulActionHom.id M) = f :=
   ext fun x => by rw [comp_apply, id_apply]
 #align mul_action_hom.comp_id MulActionHom.comp_id
 
 @[simp]
-theorem comp_assoc {Q T : Type*} [SMul Q T]
+lemma comp_assoc {Q T : Type*} [SMul Q T]
     {η : P → Q} {θ : M → Q} {ζ : N → Q}
     (h : Z →ₑ[η] T) (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y)
     [CompTriple φ ψ χ] [CompTriple χ η θ]
@@ -290,14 +290,14 @@ lemma inverse_eq_inverse' (f : X →[M] Y₁) (g : Y₁ → X)
   inverse f g h₁ h₂ =  inverse' f g (congrFun rfl) h₁ h₂ := by
   rfl
 
-theorem inverse'_inverse'
+lemma inverse'_inverse'
     {f : X →ₑ[φ] Y} {g : Y → X}
     {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     inverse' (inverse' f g k₂ h₁ h₂) f k₁ h₂ h₁ = f :=
   ext fun _ => rfl
 
-theorem comp_inverse' {f : X →ₑ[φ] Y } {g : Y → X}
+lemma comp_inverse' {f : X →ₑ[φ] Y } {g : Y → X}
     {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     (inverse' f g k₂ h₁ h₂).comp f (κ := CompTriple.comp_inv k₁)
@@ -307,7 +307,7 @@ theorem comp_inverse' {f : X →ₑ[φ] Y } {g : Y → X}
   simp only [comp_apply, inverse_apply, id_apply]
   exact h₁ x
 
-theorem inverse'_comp {f : X →ₑ[φ] Y } {g : Y → X}
+lemma inverse'_comp {f : X →ₑ[φ] Y } {g : Y → X}
     {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     f.comp (inverse' f g k₂ h₁ h₂) (κ := CompTriple.comp_inv k₂) = MulActionHom.id N := by
@@ -448,60 +448,60 @@ def _root_.SMulCommClass.toDistribMulActionHom {M} (N A : Type*) [Monoid N] [Add
     toFun := (c • ·) }
 
 @[simp]
-theorem toFun_eq_coe (f : A →ₑ+[φ] B) : f.toFun = f := rfl
+lemma toFun_eq_coe (f : A →ₑ+[φ] B) : f.toFun = f := rfl
 #align distrib_mul_action_hom.to_fun_eq_coe DistribMulActionHom.toFun_eq_coe
 
 @[norm_cast]
-theorem coe_fn_coe (f : A →ₑ+[φ] B) : ⇑(f : A →+ B) = f :=
+lemma coe_fn_coe (f : A →ₑ+[φ] B) : ⇑(f : A →+ B) = f :=
   rfl
 #align distrib_mul_action_hom.coe_fn_coe DistribMulActionHom.coe_fn_coe
 
 @[norm_cast]
-theorem coe_fn_coe' (f : A →ₑ+[φ] B) : ⇑(f : A →ₑ[φ] B) = f :=
+lemma coe_fn_coe' (f : A →ₑ+[φ] B) : ⇑(f : A →ₑ[φ] B) = f :=
   rfl
 #align distrib_mul_action_hom.coe_fn_coe' DistribMulActionHom.coe_fn_coe'
 
 @[ext]
-theorem ext {f g : A →ₑ+[φ] B} : (∀ x, f x = g x) → f = g :=
+lemma ext {f g : A →ₑ+[φ] B} : (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
 #align distrib_mul_action_hom.ext DistribMulActionHom.ext
 
-theorem ext_iff {f g : A →ₑ+[φ] B} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : A →ₑ+[φ] B} : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 #align distrib_mul_action_hom.ext_iff DistribMulActionHom.ext_iff
 
-protected theorem congr_fun {f g : A →ₑ+[φ] B} (h : f = g) (x : A) : f x = g x :=
+protected lemma congr_fun {f g : A →ₑ+[φ] B} (h : f = g) (x : A) : f x = g x :=
   DFunLike.congr_fun h _
 #align distrib_mul_action_hom.congr_fun DistribMulActionHom.congr_fun
 
-theorem toMulActionHom_injective {f g : A →ₑ+[φ] B} (h : (f : A →ₑ[φ] B) = (g : A →ₑ[φ] B)) :
+lemma toMulActionHom_injective {f g : A →ₑ+[φ] B} (h : (f : A →ₑ[φ] B) = (g : A →ₑ[φ] B)) :
     f = g := by
   ext a
   exact MulActionHom.congr_fun h a
 #align distrib_mul_action_hom.to_mul_action_hom_injective DistribMulActionHom.toMulActionHom_injective
 
-theorem toAddMonoidHom_injective {f g : A →ₑ+[φ] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g := by
+lemma toAddMonoidHom_injective {f g : A →ₑ+[φ] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g := by
   ext a
   exact DFunLike.congr_fun h a
 #align distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.toAddMonoidHom_injective
 
-protected theorem map_zero (f : A →ₑ+[φ] B) : f 0 = 0 :=
+protected lemma map_zero (f : A →ₑ+[φ] B) : f 0 = 0 :=
   map_zero f
 #align distrib_mul_action_hom.map_zero DistribMulActionHom.map_zero
 
-protected theorem map_add (f : A →ₑ+[φ] B) (x y : A) : f (x + y) = f x + f y :=
+protected lemma map_add (f : A →ₑ+[φ] B) (x y : A) : f (x + y) = f x + f y :=
   map_add f x y
 #align distrib_mul_action_hom.map_add DistribMulActionHom.map_add
 
-protected theorem map_neg (f : A' →ₑ+[φ] B') (x : A') : f (-x) = -f x :=
+protected lemma map_neg (f : A' →ₑ+[φ] B') (x : A') : f (-x) = -f x :=
   map_neg f x
 #align distrib_mul_action_hom.map_neg DistribMulActionHom.map_neg
 
-protected theorem map_sub (f : A' →ₑ+[φ] B') (x y : A') : f (x - y) = f x - f y :=
+protected lemma map_sub (f : A' →ₑ+[φ] B') (x y : A') : f (x - y) = f x - f y :=
   map_sub f x y
 #align distrib_mul_action_hom.map_sub DistribMulActionHom.map_sub
 
-protected theorem map_smulₑ (f : A →ₑ+[φ] B) (m : M) (x : A) : f (m • x) = (φ m) • f x :=
+protected lemma map_smulₑ (f : A →ₑ+[φ] B) (m : M) (x : A) : f (m • x) = (φ m) • f x :=
   map_smulₛₗ f m x
 #align distrib_mul_action_hom.map_smul DistribMulActionHom.map_smulₑ
 
@@ -513,7 +513,7 @@ protected def id : A →+[M] A :=
 #align distrib_mul_action_hom.id DistribMulActionHom.id
 
 @[simp]
-theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
+lemma id_apply (x : A) : DistribMulActionHom.id M x = x := by
   rfl
 #align distrib_mul_action_hom.id_apply DistribMulActionHom.id_apply
 
@@ -527,20 +527,20 @@ instance : One (A →+[M] A) :=
   ⟨DistribMulActionHom.id M⟩
 
 @[simp]
-theorem coe_zero : ⇑(0 : A →ₑ+[φ] B) = 0 :=
+lemma coe_zero : ⇑(0 : A →ₑ+[φ] B) = 0 :=
   rfl
 #align distrib_mul_action_hom.coe_zero DistribMulActionHom.coe_zero
 
 @[simp]
-theorem coe_one : ⇑(1 : A →+[M] A) = id :=
+lemma coe_one : ⇑(1 : A →+[M] A) = id :=
   rfl
 #align distrib_mul_action_hom.coe_one DistribMulActionHom.coe_one
 
-theorem zero_apply (a : A) : (0 : A →ₑ+[φ] B) a = 0 :=
+lemma zero_apply (a : A) : (0 : A →ₑ+[φ] B) a = 0 :=
   rfl
 #align distrib_mul_action_hom.zero_apply DistribMulActionHom.zero_apply
 
-theorem one_apply (a : A) : (1 : A →+[M] A) a = a :=
+lemma one_apply (a : A) : (1 : A →+[M] A) a = a :=
   rfl
 #align distrib_mul_action_hom.one_apply DistribMulActionHom.one_apply
 
@@ -556,23 +556,23 @@ def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [κ : MonoidHom.CompTriple 
 #align distrib_mul_action_hom.comp DistribMulActionHom.comp
 
 @[simp]
-theorem comp_apply
+lemma comp_apply
     (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [MonoidHom.CompTriple φ ψ χ] (x : A) : g.comp f x = g (f x) :=
   rfl
 #align distrib_mul_action_hom.comp_apply DistribMulActionHom.comp_apply
 
 @[simp]
-theorem id_comp (f : A →ₑ+[φ] B) : comp (DistribMulActionHom.id N) f = f :=
+lemma id_comp (f : A →ₑ+[φ] B) : comp (DistribMulActionHom.id N) f = f :=
   ext fun x => by rw [comp_apply, id_apply]
 #align distrib_mul_action_hom.id_comp DistribMulActionHom.id_comp
 
 @[simp]
-theorem comp_id (f : A →ₑ+[φ] B) : f.comp (DistribMulActionHom.id M) = f :=
+lemma comp_id (f : A →ₑ+[φ] B) : f.comp (DistribMulActionHom.id M) = f :=
   ext fun x => by rw [comp_apply, id_apply]
 #align distrib_mul_action_hom.comp_id DistribMulActionHom.comp_id
 
 @[simp]
-theorem comp_assoc {Q D : Type*} [Monoid Q] [AddMonoid D] [DistribMulAction Q D]
+lemma comp_assoc {Q D : Type*} [Monoid Q] [AddMonoid D] [DistribMulAction Q D]
     {η : P →* Q} {θ : M →* Q} {ζ : N →* Q}
     (h : C →ₑ+[η] D) (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B)
     [MonoidHom.CompTriple φ ψ χ] [MonoidHom.CompTriple χ η θ]
@@ -601,13 +601,13 @@ variable [AddMonoid N'] [DistribMulAction S N']
 
 variable {σ : R →* S}
 @[ext]
-theorem ext_ring {f g : R →ₑ+[σ] N'} (h : f 1 = g 1) : f = g := by
+lemma ext_ring {f g : R →ₑ+[σ] N'} (h : f 1 = g 1) : f = g := by
   ext x
   rw [← mul_one x, ← smul_eq_mul R, f.map_smulₑ, g.map_smulₑ, h]
 
 #align distrib_mul_action_hom.ext_ring DistribMulActionHom.ext_ring
 
-theorem ext_ring_iff {f g : R →ₑ+[σ] N'} : f = g ↔ f 1 = g 1 :=
+lemma ext_ring_iff {f g : R →ₑ+[σ] N'} : f = g ↔ f 1 = g 1 :=
   ⟨fun h => h ▸ rfl, ext_ring⟩
 #align distrib_mul_action_hom.ext_ring_iff DistribMulActionHom.ext_ring_iff
 
@@ -736,53 +736,53 @@ instance [MulSemiringActionSemiHomClass F φ R S] :
   ⟨MulSemiringActionHomClass.toMulSemiringActionHom⟩
 
 @[norm_cast]
-theorem coe_fn_coe (f : R →ₑ+*[φ] S) : ⇑(f : R →+* S) = f :=
+lemma coe_fn_coe (f : R →ₑ+*[φ] S) : ⇑(f : R →+* S) = f :=
   rfl
 #align mul_semiring_action_hom.coe_fn_coe MulSemiringActionHom.coe_fn_coe
 
 @[norm_cast]
-theorem coe_fn_coe' (f : R →ₑ+*[φ] S) : ⇑(f : R →ₑ+[φ] S) = f :=
+lemma coe_fn_coe' (f : R →ₑ+*[φ] S) : ⇑(f : R →ₑ+[φ] S) = f :=
   rfl
 #align mul_semiring_action_hom.coe_fn_coe' MulSemiringActionHom.coe_fn_coe'
 
 @[ext]
-theorem ext {f g : R →ₑ+*[φ] S} : (∀ x, f x = g x) → f = g :=
+lemma ext {f g : R →ₑ+*[φ] S} : (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
 #align mul_semiring_action_hom.ext MulSemiringActionHom.ext
 
-theorem ext_iff {f g : R →ₑ+*[φ] S} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : R →ₑ+*[φ] S} : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 #align mul_semiring_action_hom.ext_iff MulSemiringActionHom.ext_iff
 
-protected theorem map_zero (f : R →ₑ+*[φ] S) : f 0 = 0 :=
+protected lemma map_zero (f : R →ₑ+*[φ] S) : f 0 = 0 :=
   map_zero f
 #align mul_semiring_action_hom.map_zero MulSemiringActionHom.map_zero
 
-protected theorem map_add (f : R →ₑ+*[φ] S) (x y : R) : f (x + y) = f x + f y :=
+protected lemma map_add (f : R →ₑ+*[φ] S) (x y : R) : f (x + y) = f x + f y :=
   map_add f x y
 #align mul_semiring_action_hom.map_add MulSemiringActionHom.map_add
 
-protected theorem map_neg (f : R' →ₑ+*[φ] S') (x : R') : f (-x) = -f x :=
+protected lemma map_neg (f : R' →ₑ+*[φ] S') (x : R') : f (-x) = -f x :=
   map_neg f x
 #align mul_semiring_action_hom.map_neg MulSemiringActionHom.map_neg
 
-protected theorem map_sub (f : R' →ₑ+*[φ] S') (x y : R') : f (x - y) = f x - f y :=
+protected lemma map_sub (f : R' →ₑ+*[φ] S') (x y : R') : f (x - y) = f x - f y :=
   map_sub f x y
 #align mul_semiring_action_hom.map_sub MulSemiringActionHom.map_sub
 
-protected theorem map_one (f : R →ₑ+*[φ] S) : f 1 = 1 :=
+protected lemma map_one (f : R →ₑ+*[φ] S) : f 1 = 1 :=
   map_one f
 #align mul_semiring_action_hom.map_one MulSemiringActionHom.map_one
 
-protected theorem map_mul (f : R →ₑ+*[φ] S) (x y : R) : f (x * y) = f x * f y :=
+protected lemma map_mul (f : R →ₑ+*[φ] S) (x y : R) : f (x * y) = f x * f y :=
   map_mul f x y
 #align mul_semiring_action_hom.map_mul MulSemiringActionHom.map_mul
 
-protected theorem map_smulₛₗ (f : R →ₑ+*[φ] S) (m : M) (x : R) : f (m • x) = φ m • f x :=
+protected lemma map_smulₛₗ (f : R →ₑ+*[φ] S) (m : M) (x : R) : f (m • x) = φ m • f x :=
   map_smulₛₗ f m x
 #align mul_semiring_action_hom.map_smulₛₗ MulSemiringActionHom.map_smulₛₗ
 
-protected theorem map_smul [MulSemiringAction M S] (f : R →+*[M] S) (m : M) (x : R) :
+protected lemma map_smul [MulSemiringAction M S] (f : R →+*[M] S) (m : M) (x : R) :
     f (m • x) = m • f x :=
   map_smulₛₗ f m x
 #align mul_semiring_action_hom.map_smul MulSemiringActionHom.map_smul
@@ -799,7 +799,7 @@ protected def id : R →+*[M] R :=
 #align mul_semiring_action_hom.id MulSemiringActionHom.id
 
 @[simp]
-theorem id_apply (x : R) : MulSemiringActionHom.id M x = x :=
+lemma id_apply (x : R) : MulSemiringActionHom.id M x = x :=
   rfl
 #align mul_semiring_action_hom.id_apply MulSemiringActionHom.id_apply
 
@@ -820,15 +820,15 @@ def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [κ : MonoidHom.CompTripl
     RingHom.comp (g : S →+* T) (f : R →+* S) with }
 
 @[simp]
-theorem comp_apply (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [MonoidHom.CompTriple φ ψ χ] (x : R) :
+lemma comp_apply (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [MonoidHom.CompTriple φ ψ χ] (x : R) :
     g.comp f x = g (f x) := rfl
 
 @[simp]
-theorem id_comp (f : R →ₑ+*[φ] S) : (MulSemiringActionHom.id N).comp f = f :=
+lemma id_comp (f : R →ₑ+*[φ] S) : (MulSemiringActionHom.id N).comp f = f :=
   ext fun x => by rw [comp_apply, id_apply]
 
 @[simp]
-theorem comp_id (f : R →ₑ+*[φ] S) : f.comp (MulSemiringActionHom.id M) = f :=
+lemma comp_id (f : R →ₑ+*[φ] S) : f.comp (MulSemiringActionHom.id M) = f :=
   ext fun x => by rw [comp_apply, id_apply]
 #align mul_semiring_action_hom.comp_id MulSemiringActionHom.comp_id
 

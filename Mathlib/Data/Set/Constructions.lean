@@ -44,14 +44,14 @@ inductive finiteInterClosure : Set (Set α)
   | inter {s t} : finiteInterClosure s → finiteInterClosure t → finiteInterClosure (s ∩ t)
 #align has_finite_inter.finite_inter_closure FiniteInter.finiteInterClosure
 
-theorem finiteInterClosure_finiteInter : FiniteInter (finiteInterClosure S) :=
+lemma finiteInterClosure_finiteInter : FiniteInter (finiteInterClosure S) :=
   { univ_mem := finiteInterClosure.univ
     inter_mem := fun _ h _ => finiteInterClosure.inter h }
 #align has_finite_inter.finite_inter_closure_has_finite_inter FiniteInter.finiteInterClosure_finiteInter
 
 variable {S}
 
-theorem finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
+lemma finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
     ↑F ⊆ S → ⋂₀ (↑F : Set (Set α)) ∈ S := by
   classical
     refine' Finset.induction_on F (fun _ => _) _
@@ -63,7 +63,7 @@ theorem finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
           (h1 fun x hx => h2 <| Finset.mem_insert_of_mem hx)
 #align has_finite_inter.finite_inter_mem FiniteInter.finiteInter_mem
 
-theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
+lemma finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
     (H : P ∈ finiteInterClosure (insert A S)) : P ∈ S ∨ ∃ Q ∈ S, P = A ∩ Q := by
   induction' H with S h T1 T2 _ _ h1 h2
   · cases h

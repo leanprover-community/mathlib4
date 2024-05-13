@@ -58,7 +58,7 @@ theorem isIso_of_mono_of_nonzero {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f] (w 
   (Simple.mono_isIso_iff_nonzero f).mpr w
 #align category_theory.is_iso_of_mono_of_nonzero CategoryTheory.isIso_of_mono_of_nonzero
 
-theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
+lemma Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
   { mono_isIso_iff_nonzero := fun f m => by
       haveI : Mono (f ≫ i.hom) := mono_comp _ _
       constructor
@@ -77,11 +77,11 @@ theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
         infer_instance }
 #align category_theory.simple.of_iso CategoryTheory.Simple.of_iso
 
-theorem Simple.iff_of_iso {X Y : C} (i : X ≅ Y) : Simple X ↔ Simple Y :=
+lemma Simple.iff_of_iso {X Y : C} (i : X ≅ Y) : Simple X ↔ Simple Y :=
   ⟨fun _ => Simple.of_iso i.symm, fun _ => Simple.of_iso i⟩
 #align category_theory.simple.iff_of_iso CategoryTheory.Simple.iff_of_iso
 
-theorem kernel_zero_of_nonzero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [HasKernel f]
+lemma kernel_zero_of_nonzero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [HasKernel f]
     (w : f ≠ 0) : kernel.ι f = 0 := by
   classical
     by_contra h
@@ -100,14 +100,14 @@ theorem epi_of_nonzero_to_simple [HasEqualizers C] {X Y : C} [Simple Y] {f : X �
   apply epi_comp
 #align category_theory.epi_of_nonzero_to_simple CategoryTheory.epi_of_nonzero_to_simple
 
-theorem mono_to_simple_zero_of_not_iso {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f]
+lemma mono_to_simple_zero_of_not_iso {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f]
     (w : IsIso f → False) : f = 0 := by
   classical
     by_contra h
     exact w (isIso_of_mono_of_nonzero h)
 #align category_theory.mono_to_simple_zero_of_not_iso CategoryTheory.mono_to_simple_zero_of_not_iso
 
-theorem id_nonzero (X : C) [Simple.{v} X] : 𝟙 X ≠ 0 :=
+lemma id_nonzero (X : C) [Simple.{v} X] : 𝟙 X ≠ 0 :=
   (Simple.mono_isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
 #align category_theory.id_nonzero CategoryTheory.id_nonzero
 
@@ -116,7 +116,7 @@ instance (X : C) [Simple.{v} X] : Nontrivial (End X) :=
 
 section
 
-theorem Simple.not_isZero (X : C) [Simple X] : ¬IsZero X := by
+lemma Simple.not_isZero (X : C) [Simple X] : ¬IsZero X := by
   simpa [Limits.IsZero.iff_id_eq_zero] using id_nonzero X
 #align category_theory.simple.not_is_zero CategoryTheory.Simple.not_isZero
 
@@ -167,7 +167,7 @@ theorem isIso_of_epi_of_nonzero {X Y : C} [Simple X] {f : X ⟶ Y} [Epi f] (w : 
   isIso_of_mono_of_epi f
 #align category_theory.is_iso_of_epi_of_nonzero CategoryTheory.isIso_of_epi_of_nonzero
 
-theorem cokernel_zero_of_nonzero_to_simple {X Y : C} [Simple Y] {f : X ⟶ Y} (w : f ≠ 0) :
+lemma cokernel_zero_of_nonzero_to_simple {X Y : C} [Simple Y] {f : X ⟶ Y} (w : f ≠ 0) :
     cokernel.π f = 0 := by
   classical
     by_contra h
@@ -175,7 +175,7 @@ theorem cokernel_zero_of_nonzero_to_simple {X Y : C} [Simple Y] {f : X ⟶ Y} (w
     exact w (eq_zero_of_mono_cokernel f)
 #align category_theory.cokernel_zero_of_nonzero_to_simple CategoryTheory.cokernel_zero_of_nonzero_to_simple
 
-theorem epi_from_simple_zero_of_not_iso {X Y : C} [Simple X] {f : X ⟶ Y} [Epi f]
+lemma epi_from_simple_zero_of_not_iso {X Y : C} [Simple X] {f : X ⟶ Y} [Epi f]
     (w : IsIso f → False) : f = 0 := by
   classical
     by_contra h
@@ -190,7 +190,7 @@ variable [Preadditive C] [HasBinaryBiproducts C]
 
 -- There are another three potential variations of this lemma,
 -- but as any one suffices to prove `indecomposable_of_simple` we will not give them all.
-theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ Y) ↔ IsZero Y := by
+lemma Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ Y) ↔ IsZero Y := by
   rw [biprod.isIso_inl_iff_id_eq_fst_comp_inl, ← biprod.total, add_right_eq_self]
   constructor
   · intro h

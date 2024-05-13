@@ -16,12 +16,12 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]
 
-theorem IsFilteredOrEmpty.isPreconnected [IsFilteredOrEmpty C] : IsPreconnected C :=
+lemma IsFilteredOrEmpty.isPreconnected [IsFilteredOrEmpty C] : IsPreconnected C :=
   zigzag_isPreconnected fun j j' => .trans
     (.single <| .inl <| .intro <| IsFiltered.leftToMax j j')
     (.single <| .inr <| .intro <| IsFiltered.rightToMax j j')
 
-theorem IsCofilteredOrEmpty.isPreconnected [IsCofilteredOrEmpty C] : IsPreconnected C :=
+lemma IsCofilteredOrEmpty.isPreconnected [IsCofilteredOrEmpty C] : IsPreconnected C :=
   zigzag_isPreconnected fun j j' => .trans
     (.single <| .inr <| .intro <| IsCofiltered.minToLeft j j')
     (.single <| .inl <| .intro <| IsCofiltered.minToRight j j')

@@ -52,12 +52,12 @@ instance instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := P
 instance instLT (α β : Type*) [LT α] [LT β] : LT (α ×ₗ β) where lt := Prod.Lex (· < ·) (· < ·)
 #align prod.lex.has_lt Prod.Lex.instLT
 
-theorem le_iff [LT α] [LE β] (a b : α × β) :
+lemma le_iff [LT α] [LE β] (a b : α × β) :
     toLex a ≤ toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 ≤ b.2 :=
   Prod.lex_def (· < ·) (· ≤ ·)
 #align prod.lex.le_iff Prod.Lex.le_iff
 
-theorem lt_iff [LT α] [LT β] (a b : α × β) :
+lemma lt_iff [LT α] [LT β] (a b : α × β) :
     toLex a < toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 < b.2 :=
   Prod.lex_def (· < ·) (· < ·)
 #align prod.lex.lt_iff Prod.Lex.lt_iff
@@ -106,14 +106,14 @@ section Preorder
 
 variable [PartialOrder α] [Preorder β]
 
-theorem toLex_mono : Monotone (toLex : α × β → α ×ₗ β) := by
+lemma toLex_mono : Monotone (toLex : α × β → α ×ₗ β) := by
   rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ ⟨ha, hb⟩
   obtain rfl | ha : a₁ = a₂ ∨ _ := ha.eq_or_lt
   · exact right _ hb
   · exact left _ _ ha
 #align prod.lex.to_lex_mono Prod.Lex.toLex_mono
 
-theorem toLex_strictMono : StrictMono (toLex : α × β → α ×ₗ β) := by
+lemma toLex_strictMono : StrictMono (toLex : α × β → α ×ₗ β) := by
   rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ h
   obtain rfl | ha : a₁ = a₂ ∨ _ := h.le.1.eq_or_lt
   · exact right _ (Prod.mk_lt_mk_iff_right.1 h)

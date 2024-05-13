@@ -91,23 +91,23 @@ def coev : 𝟭 C ⟶ tensorLeft A ⋙ ihom A :=
 #align category_theory.ihom.coev CategoryTheory.ihom.coev
 
 @[simp]
-theorem ihom_adjunction_counit : (ihom.adjunction A).counit = ev A :=
+lemma ihom_adjunction_counit : (ihom.adjunction A).counit = ev A :=
   rfl
 #align category_theory.ihom.ihom_adjunction_counit CategoryTheory.ihom.ihom_adjunction_counit
 
 @[simp]
-theorem ihom_adjunction_unit : (ihom.adjunction A).unit = coev A :=
+lemma ihom_adjunction_unit : (ihom.adjunction A).unit = coev A :=
   rfl
 #align category_theory.ihom.ihom_adjunction_unit CategoryTheory.ihom.ihom_adjunction_unit
 
 @[reassoc (attr := simp)]
-theorem ev_naturality {X Y : C} (f : X ⟶ Y) :
+lemma ev_naturality {X Y : C} (f : X ⟶ Y) :
     A ◁ (ihom A).map f ≫ (ev A).app Y = (ev A).app X ≫ f :=
   (ev A).naturality f
 #align category_theory.ihom.ev_naturality CategoryTheory.ihom.ev_naturality
 
 @[reassoc (attr := simp)]
-theorem coev_naturality {X Y : C} (f : X ⟶ Y) :
+lemma coev_naturality {X Y : C} (f : X ⟶ Y) :
     f ≫ (coev A).app Y = (coev A).app X ≫ (ihom A).map (A ◁ f) :=
   (coev A).naturality f
 #align category_theory.ihom.coev_naturality CategoryTheory.ihom.coev_naturality
@@ -117,12 +117,12 @@ set_option quotPrecheck false in
 notation A " ⟶[" C "] " B:10 => (@ihom C _ _ A _).obj B
 
 @[reassoc (attr := simp)]
-theorem ev_coev : (A ◁ (coev A).app B) ≫ (ev A).app (A ⊗ B) = 𝟙 (A ⊗ B) :=
+lemma ev_coev : (A ◁ (coev A).app B) ≫ (ev A).app (A ⊗ B) = 𝟙 (A ⊗ B) :=
   (ihom.adjunction A).left_triangle_components _
 #align category_theory.ihom.ev_coev CategoryTheory.ihom.ev_coev
 
 @[reassoc (attr := simp)]
-theorem coev_ev : (coev A).app (A ⟶[C] B) ≫ (ihom A).map ((ev A).app B) = 𝟙 (A ⟶[C] B) :=
+lemma coev_ev : (coev A).app (A ⟶[C] B) ≫ (ihom A).map ((ev A).app B) = 𝟙 (A ⟶[C] B) :=
   Adjunction.right_triangle_components (ihom.adjunction A) _
 #align category_theory.ihom.coev_ev CategoryTheory.ihom.coev_ev
 
@@ -150,82 +150,82 @@ def uncurry : (Y ⟶ A ⟶[C] X) → (A ⊗ Y ⟶ X) :=
 
 -- This lemma has always been bad, but the linter only noticed after lean4#2644.
 @[simp, nolint simpNF]
-theorem homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (ihom.adjunction A).homEquiv _ _ f = curry f :=
+lemma homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (ihom.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 #align category_theory.monoidal_closed.hom_equiv_apply_eq CategoryTheory.MonoidalClosed.homEquiv_apply_eq
 
 -- This lemma has always been bad, but the linter only noticed after lean4#2644.
 @[simp, nolint simpNF]
-theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟶[C] X) :
+lemma homEquiv_symm_apply_eq (f : Y ⟶ A ⟶[C] X) :
     ((ihom.adjunction A).homEquiv _ _).symm f = uncurry f :=
   rfl
 #align category_theory.monoidal_closed.hom_equiv_symm_apply_eq CategoryTheory.MonoidalClosed.homEquiv_symm_apply_eq
 
 @[reassoc]
-theorem curry_natural_left (f : X ⟶ X') (g : A ⊗ X' ⟶ Y) : curry (_ ◁ f ≫ g) = f ≫ curry g :=
+lemma curry_natural_left (f : X ⟶ X') (g : A ⊗ X' ⟶ Y) : curry (_ ◁ f ≫ g) = f ≫ curry g :=
   Adjunction.homEquiv_naturality_left _ _ _
 #align category_theory.monoidal_closed.curry_natural_left CategoryTheory.MonoidalClosed.curry_natural_left
 
 @[reassoc]
-theorem curry_natural_right (f : A ⊗ X ⟶ Y) (g : Y ⟶ Y') :
+lemma curry_natural_right (f : A ⊗ X ⟶ Y) (g : Y ⟶ Y') :
     curry (f ≫ g) = curry f ≫ (ihom _).map g :=
   Adjunction.homEquiv_naturality_right _ _ _
 #align category_theory.monoidal_closed.curry_natural_right CategoryTheory.MonoidalClosed.curry_natural_right
 
 @[reassoc]
-theorem uncurry_natural_right (f : X ⟶ A ⟶[C] Y) (g : Y ⟶ Y') :
+lemma uncurry_natural_right (f : X ⟶ A ⟶[C] Y) (g : Y ⟶ Y') :
     uncurry (f ≫ (ihom _).map g) = uncurry f ≫ g :=
   Adjunction.homEquiv_naturality_right_symm _ _ _
 #align category_theory.monoidal_closed.uncurry_natural_right CategoryTheory.MonoidalClosed.uncurry_natural_right
 
 @[reassoc]
-theorem uncurry_natural_left (f : X ⟶ X') (g : X' ⟶ A ⟶[C] Y) :
+lemma uncurry_natural_left (f : X ⟶ X') (g : X' ⟶ A ⟶[C] Y) :
     uncurry (f ≫ g) = _ ◁ f ≫ uncurry g :=
   Adjunction.homEquiv_naturality_left_symm _ _ _
 #align category_theory.monoidal_closed.uncurry_natural_left CategoryTheory.MonoidalClosed.uncurry_natural_left
 
 @[simp]
-theorem uncurry_curry (f : A ⊗ X ⟶ Y) : uncurry (curry f) = f :=
+lemma uncurry_curry (f : A ⊗ X ⟶ Y) : uncurry (curry f) = f :=
   (Closed.adj.homEquiv _ _).left_inv f
 #align category_theory.monoidal_closed.uncurry_curry CategoryTheory.MonoidalClosed.uncurry_curry
 
 @[simp]
-theorem curry_uncurry (f : X ⟶ A ⟶[C] Y) : curry (uncurry f) = f :=
+lemma curry_uncurry (f : X ⟶ A ⟶[C] Y) : curry (uncurry f) = f :=
   (Closed.adj.homEquiv _ _).right_inv f
 #align category_theory.monoidal_closed.curry_uncurry CategoryTheory.MonoidalClosed.curry_uncurry
 
-theorem curry_eq_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟶[C] X) : curry f = g ↔ f = uncurry g :=
+lemma curry_eq_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟶[C] X) : curry f = g ↔ f = uncurry g :=
   Adjunction.homEquiv_apply_eq (ihom.adjunction A) f g
 #align category_theory.monoidal_closed.curry_eq_iff CategoryTheory.MonoidalClosed.curry_eq_iff
 
-theorem eq_curry_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟶[C] X) : g = curry f ↔ uncurry g = f :=
+lemma eq_curry_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟶[C] X) : g = curry f ↔ uncurry g = f :=
   Adjunction.eq_homEquiv_apply (ihom.adjunction A) f g
 #align category_theory.monoidal_closed.eq_curry_iff CategoryTheory.MonoidalClosed.eq_curry_iff
 
 -- I don't think these two should be simp.
-theorem uncurry_eq (g : Y ⟶ A ⟶[C] X) : uncurry g = (A ◁ g) ≫ (ihom.ev A).app X :=
+lemma uncurry_eq (g : Y ⟶ A ⟶[C] X) : uncurry g = (A ◁ g) ≫ (ihom.ev A).app X :=
   Adjunction.homEquiv_counit _
 #align category_theory.monoidal_closed.uncurry_eq CategoryTheory.MonoidalClosed.uncurry_eq
 
-theorem curry_eq (g : A ⊗ Y ⟶ X) : curry g = (ihom.coev A).app Y ≫ (ihom A).map g :=
+lemma curry_eq (g : A ⊗ Y ⟶ X) : curry g = (ihom.coev A).app Y ≫ (ihom A).map g :=
   Adjunction.homEquiv_unit _
 #align category_theory.monoidal_closed.curry_eq CategoryTheory.MonoidalClosed.curry_eq
 
-theorem curry_injective : Function.Injective (curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟶[C] X)) :=
+lemma curry_injective : Function.Injective (curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟶[C] X)) :=
   (Closed.adj.homEquiv _ _).injective
 #align category_theory.monoidal_closed.curry_injective CategoryTheory.MonoidalClosed.curry_injective
 
-theorem uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟶[C] X) → (A ⊗ Y ⟶ X)) :=
+lemma uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟶[C] X) → (A ⊗ Y ⟶ X)) :=
   (Closed.adj.homEquiv _ _).symm.injective
 #align category_theory.monoidal_closed.uncurry_injective CategoryTheory.MonoidalClosed.uncurry_injective
 
 variable (A X)
 
-theorem uncurry_id_eq_ev : uncurry (𝟙 (A ⟶[C] X)) = (ihom.ev A).app X := by
+lemma uncurry_id_eq_ev : uncurry (𝟙 (A ⟶[C] X)) = (ihom.ev A).app X := by
   simp [uncurry_eq]
 #align category_theory.monoidal_closed.uncurry_id_eq_ev CategoryTheory.MonoidalClosed.uncurry_id_eq_ev
 
-theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
+lemma curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
   rw [curry_eq, (ihom A).map_id (A ⊗ _)]
   apply comp_id
 #align category_theory.monoidal_closed.curry_id_eq_coev CategoryTheory.MonoidalClosed.curry_id_eq_coev
@@ -240,37 +240,37 @@ def pre (f : B ⟶ A) : ihom A ⟶ ihom B :=
 #align category_theory.monoidal_closed.pre CategoryTheory.MonoidalClosed.pre
 
 @[reassoc (attr := simp)]
-theorem id_tensor_pre_app_comp_ev (f : B ⟶ A) (X : C) :
+lemma id_tensor_pre_app_comp_ev (f : B ⟶ A) (X : C) :
     B ◁ (pre f).app X ≫ (ihom.ev B).app X = f ▷ (A ⟶[C] X) ≫ (ihom.ev A).app X :=
   transferNatTransSelf_counit _ _ ((tensoringLeft C).map f) X
 #align category_theory.monoidal_closed.id_tensor_pre_app_comp_ev CategoryTheory.MonoidalClosed.id_tensor_pre_app_comp_ev
 
 @[simp]
-theorem uncurry_pre (f : B ⟶ A) (X : C) :
+lemma uncurry_pre (f : B ⟶ A) (X : C) :
     MonoidalClosed.uncurry ((pre f).app X) = f ▷ _ ≫ (ihom.ev A).app X := by
   simp [uncurry_eq]
 #align category_theory.monoidal_closed.uncurry_pre CategoryTheory.MonoidalClosed.uncurry_pre
 
 @[reassoc (attr := simp)]
-theorem coev_app_comp_pre_app (f : B ⟶ A) :
+lemma coev_app_comp_pre_app (f : B ⟶ A) :
     (ihom.coev A).app X ≫ (pre f).app (A ⊗ X) = (ihom.coev B).app X ≫ (ihom B).map (f ▷ _) :=
   unit_transferNatTransSelf _ _ ((tensoringLeft C).map f) X
 #align category_theory.monoidal_closed.coev_app_comp_pre_app CategoryTheory.MonoidalClosed.coev_app_comp_pre_app
 
 @[simp]
-theorem pre_id (A : C) [Closed A] : pre (𝟙 A) = 𝟙 _ := by
+lemma pre_id (A : C) [Closed A] : pre (𝟙 A) = 𝟙 _ := by
   simp only [pre, Functor.map_id]
   dsimp
   simp
 #align category_theory.monoidal_closed.pre_id CategoryTheory.MonoidalClosed.pre_id
 
 @[simp]
-theorem pre_map {A₁ A₂ A₃ : C} [Closed A₁] [Closed A₂] [Closed A₃] (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
+lemma pre_map {A₁ A₂ A₃ : C} [Closed A₁] [Closed A₂] [Closed A₃] (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
     pre (f ≫ g) = pre g ≫ pre f := by
   rw [pre, pre, pre, transferNatTransSelf_comp, (tensoringLeft C).map_comp]
 #align category_theory.monoidal_closed.pre_map CategoryTheory.MonoidalClosed.pre_map
 
-theorem pre_comm_ihom_map {W X Y Z : C} [Closed W] [Closed X] (f : W ⟶ X) (g : Y ⟶ Z) :
+lemma pre_comm_ihom_map {W X Y Z : C} [Closed W] [Closed X] (f : W ⟶ X) (g : Y ⟶ Z) :
     (pre f).app Y ≫ (ihom W).map g = (ihom X).map g ≫ (pre f).app Z := by simp
 #align category_theory.monoidal_closed.pre_comm_ihom_map CategoryTheory.MonoidalClosed.pre_comm_ihom_map
 

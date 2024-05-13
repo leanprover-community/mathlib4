@@ -50,11 +50,11 @@ protected def get (x : Const n A α) : A := x
 #align mvqpf.const.get MvQPF.Const.get
 
 @[simp]
-protected theorem mk_get (x : Const n A α) : Const.mk (Const.get x) = x := rfl
+protected lemma mk_get (x : Const n A α) : Const.mk (Const.get x) = x := rfl
 #align mvqpf.const.mk_get MvQPF.Const.mk_get
 
 @[simp]
-protected theorem get_mk (x : A) : Const.get (Const.mk x : Const n A α) = x := rfl
+protected lemma get_mk (x : A) : Const.get (Const.mk x : Const n A α) = x := rfl
 #align mvqpf.const.get_mk MvQPF.Const.get_mk
 
 /-- `map` for constant functor -/
@@ -63,10 +63,10 @@ protected def map : Const n A α → Const n A β := fun x => x
 
 instance MvFunctor : MvFunctor (Const n A) where map _f := Const.map
 
-theorem map_mk (x : A) : f <$$> Const.mk x = Const.mk x := rfl
+lemma map_mk (x : A) : f <$$> Const.mk x = Const.mk x := rfl
 #align mvqpf.const.map_mk MvQPF.Const.map_mk
 
-theorem get_map (x : (Const n A) α) : Const.get (f <$$> x) = Const.get x := rfl
+lemma get_map (x : (Const n A) α) : Const.get (f <$$> x) = Const.get x := rfl
 #align mvqpf.const.get_map MvQPF.Const.get_map
 
 instance mvqpf : @MvQPF _ (Const n A) MvQPF.Const.MvFunctor where

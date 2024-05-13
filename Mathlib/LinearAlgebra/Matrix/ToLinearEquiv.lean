@@ -57,13 +57,13 @@ def toLinearEquiv' (P : Matrix n n R) (_ : Invertible P) : (n → R) ≃ₗ[R] n
 #align matrix.to_linear_equiv' Matrix.toLinearEquiv'
 
 @[simp]
-theorem toLinearEquiv'_apply (P : Matrix n n R) (h : Invertible P) :
+lemma toLinearEquiv'_apply (P : Matrix n n R) (h : Invertible P) :
     (P.toLinearEquiv' h : Module.End R (n → R)) = Matrix.toLin' P :=
   rfl
 #align matrix.to_linear_equiv'_apply Matrix.toLinearEquiv'_apply
 
 @[simp]
-theorem toLinearEquiv'_symm_apply (P : Matrix n n R) (h : Invertible P) :
+lemma toLinearEquiv'_symm_apply (P : Matrix n n R) (h : Invertible P) :
     (↑(P.toLinearEquiv' h).symm : Module.End R (n → R)) = Matrix.toLin' (⅟ P) :=
   rfl
 #align matrix.to_linear_equiv'_symm_apply Matrix.toLinearEquiv'_symm_apply
@@ -94,12 +94,12 @@ noncomputable def toLinearEquiv [DecidableEq n] (A : Matrix n n R) (hA : IsUnit 
       toLin_one, LinearMap.id_apply]
 #align matrix.to_linear_equiv Matrix.toLinearEquiv
 
-theorem ker_toLin_eq_bot [DecidableEq n] (A : Matrix n n R) (hA : IsUnit A.det) :
+lemma ker_toLin_eq_bot [DecidableEq n] (A : Matrix n n R) (hA : IsUnit A.det) :
     LinearMap.ker (toLin b b A) = ⊥ :=
   ker_eq_bot.mpr (toLinearEquiv b A hA).injective
 #align matrix.ker_to_lin_eq_bot Matrix.ker_toLin_eq_bot
 
-theorem range_toLin_eq_top [DecidableEq n] (A : Matrix n n R) (hA : IsUnit A.det) :
+lemma range_toLin_eq_top [DecidableEq n] (A : Matrix n n R) (hA : IsUnit A.det) :
     LinearMap.range (toLin b b A) = ⊤ :=
   range_eq_top.mpr (toLinearEquiv b A hA).surjective
 #align matrix.range_to_lin_eq_top Matrix.range_toLin_eq_top
@@ -133,7 +133,7 @@ theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field K] {M :
     exact Matrix.det_ne_zero_of_right_inverse this
 #align matrix.exists_mul_vec_eq_zero_iff_aux Matrix.exists_mulVec_eq_zero_iff_aux
 
-theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [CommRing A]
+lemma exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [CommRing A]
     [Nontrivial A] [Field K] [Algebra A K] [IsFractionRing A K] {M : Matrix n n A} :
     (∃ v ≠ 0, M *ᵥ v = 0) ↔ M.det = 0 := by
   have : (∃ v ≠ 0, (algebraMap A K).mapMatrix M *ᵥ v = 0) ↔ _ :=
@@ -168,17 +168,17 @@ theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [Comm
       · rw [mulVec_smul, mul_eq, Pi.smul_apply, Pi.zero_apply, smul_zero]
 #align matrix.exists_mul_vec_eq_zero_iff' Matrix.exists_mulVec_eq_zero_iff'
 
-theorem exists_mulVec_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
+lemma exists_mulVec_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
     {M : Matrix n n A} : (∃ v ≠ 0, M *ᵥ v = 0) ↔ M.det = 0 :=
   exists_mulVec_eq_zero_iff' (FractionRing A)
 #align matrix.exists_mul_vec_eq_zero_iff Matrix.exists_mulVec_eq_zero_iff
 
-theorem exists_vecMul_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
+lemma exists_vecMul_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
     {M : Matrix n n A} : (∃ v ≠ 0, v ᵥ* M = 0) ↔ M.det = 0 := by
   simpa only [← M.det_transpose, ← mulVec_transpose] using exists_mulVec_eq_zero_iff
 #align matrix.exists_vec_mul_eq_zero_iff Matrix.exists_vecMul_eq_zero_iff
 
-theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
+lemma nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
     {M : Matrix n n A} : Nondegenerate M ↔ M.det ≠ 0 := by
   rw [ne_eq, ← exists_vecMul_eq_zero_iff]
   push_neg

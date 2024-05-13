@@ -67,7 +67,7 @@ instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass R] : SMulWithZero R�
 variable {M} [Zero R] [Zero M] [SMulWithZero R M]
 
 @[simp]
-theorem zero_smul (m : M) : (0 : R) • m = 0 :=
+lemma zero_smul (m : M) : (0 : R) • m = 0 :=
   SMulWithZero.zero_smul m
 #align zero_smul zero_smul
 
@@ -206,7 +206,7 @@ section GroupWithZero
 
 variable {α β : Type*} [GroupWithZero α] [GroupWithZero β] [MulActionWithZero α β]
 
-theorem smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) :
+lemma smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) :
     (c • x)⁻¹ = c⁻¹ • x⁻¹ := by
   obtain rfl | hc := eq_or_ne c 0
   · simp only [inv_zero, zero_smul]

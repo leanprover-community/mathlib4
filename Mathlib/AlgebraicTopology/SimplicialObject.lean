@@ -97,7 +97,7 @@ def eqToIso {n m : ℕ} (h : n = m) : X _[n] ≅ X _[m] :=
 #align category_theory.simplicial_object.eq_to_iso CategoryTheory.SimplicialObject.eqToIso
 
 @[simp]
-theorem eqToIso_refl {n : ℕ} (h : n = n) : X.eqToIso h = Iso.refl _ := by
+lemma eqToIso_refl {n : ℕ} (h : n = n) : X.eqToIso h = Iso.refl _ := by
   ext
   simp [eqToIso]
 #align category_theory.simplicial_object.eq_to_iso_refl CategoryTheory.SimplicialObject.eqToIso_refl
@@ -111,7 +111,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 #align category_theory.simplicial_object.δ_comp_δ CategoryTheory.SimplicialObject.δ_comp_δ
 
 @[reassoc]
-theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
+lemma δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     X.δ j ≫ X.δ i =
       X.δ (Fin.castSucc i) ≫
         X.δ (j.pred fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) := by
@@ -119,7 +119,7 @@ theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i 
   simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ' H]
 #align category_theory.simplicial_object.δ_comp_δ' CategoryTheory.SimplicialObject.δ_comp_δ'
 @[reassoc]
-theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j) :
+lemma δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j) :
     X.δ j.succ ≫ X.δ (i.castLT (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) =
       X.δ i ≫ X.δ j := by
   dsimp [δ]
@@ -135,7 +135,7 @@ theorem δ_comp_δ_self {n} {i : Fin (n + 2)} :
 #align category_theory.simplicial_object.δ_comp_δ_self CategoryTheory.SimplicialObject.δ_comp_δ_self
 
 @[reassoc]
-theorem δ_comp_δ_self' {n} {j : Fin (n + 3)} {i : Fin (n + 2)} (H : j = Fin.castSucc i) :
+lemma δ_comp_δ_self' {n} {j : Fin (n + 3)} {i : Fin (n + 2)} (H : j = Fin.castSucc i) :
     X.δ j ≫ X.δ i = X.δ i.succ ≫ X.δ i := by
   subst H
   rw [δ_comp_δ_self]
@@ -157,7 +157,7 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} : X.σ i ≫ X.δ (Fin.castSucc i)
 #align category_theory.simplicial_object.δ_comp_σ_self CategoryTheory.SimplicialObject.δ_comp_σ_self
 
 @[reassoc]
-theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = Fin.castSucc i) :
+lemma δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = Fin.castSucc i) :
     X.σ i ≫ X.δ j = 𝟙 _ := by
   subst H
   rw [δ_comp_σ_self]
@@ -171,7 +171,7 @@ theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : X.σ i ≫ X.δ i.succ = 𝟙 _ 
 #align category_theory.simplicial_object.δ_comp_σ_succ CategoryTheory.SimplicialObject.δ_comp_σ_succ
 
 @[reassoc]
-theorem δ_comp_σ_succ' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ) :
+lemma δ_comp_σ_succ' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ) :
     X.σ i ≫ X.δ j = 𝟙 _ := by
   subst H
   rw [δ_comp_σ_succ]
@@ -186,7 +186,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 #align category_theory.simplicial_object.δ_comp_σ_of_gt CategoryTheory.SimplicialObject.δ_comp_σ_of_gt
 
 @[reassoc]
-theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
+lemma δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     X.σ j ≫ X.δ i =
       X.δ (i.pred fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) ≫
         X.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) := by
@@ -205,13 +205,13 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
 open Simplicial
 
 @[reassoc (attr := simp)]
-theorem δ_naturality {X' X : SimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 2)) :
+lemma δ_naturality {X' X : SimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 2)) :
     X.δ i ≫ f.app (op [n]) = f.app (op [n + 1]) ≫ X'.δ i :=
   f.naturality _
 #align category_theory.simplicial_object.δ_naturality CategoryTheory.SimplicialObject.δ_naturality
 
 @[reassoc (attr := simp)]
-theorem σ_naturality {X' X : SimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 1)) :
+lemma σ_naturality {X' X : SimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 1)) :
     X.σ i ≫ f.app (op [n + 1]) = f.app (op [n]) ≫ X'.σ i :=
   f.naturality _
 #align category_theory.simplicial_object.σ_naturality CategoryTheory.SimplicialObject.σ_naturality
@@ -397,7 +397,7 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀)
 #align category_theory.simplicial_object.augment CategoryTheory.SimplicialObject.augment
 
 -- Porting note: removed @[simp] as the linter complains
-theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀) (w) :
+lemma augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀) (w) :
     (X.augment X₀ f w).hom.app (op [0]) = f := by simp
 #align category_theory.simplicial_object.augment_hom_zero CategoryTheory.SimplicialObject.augment_hom_zero
 
@@ -466,7 +466,7 @@ def eqToIso {n m : ℕ} (h : n = m) : X _[n] ≅ X _[m] :=
 #align category_theory.cosimplicial_object.eq_to_iso CategoryTheory.CosimplicialObject.eqToIso
 
 @[simp]
-theorem eqToIso_refl {n : ℕ} (h : n = n) : X.eqToIso h = Iso.refl _ := by
+lemma eqToIso_refl {n : ℕ} (h : n = n) : X.eqToIso h = Iso.refl _ := by
   ext
   simp [eqToIso]
 #align category_theory.cosimplicial_object.eq_to_iso_refl CategoryTheory.CosimplicialObject.eqToIso_refl
@@ -480,7 +480,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 #align category_theory.cosimplicial_object.δ_comp_δ CategoryTheory.CosimplicialObject.δ_comp_δ
 
 @[reassoc]
-theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
+lemma δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     X.δ i ≫ X.δ j =
       X.δ (j.pred fun (hj : j = 0) => by simp only [hj, Fin.not_lt_zero] at H) ≫
         X.δ (Fin.castSucc i) := by
@@ -489,7 +489,7 @@ theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i 
 #align category_theory.cosimplicial_object.δ_comp_δ' CategoryTheory.CosimplicialObject.δ_comp_δ'
 
 @[reassoc]
-theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j) :
+lemma δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j) :
     X.δ (i.castLT (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) ≫ X.δ j.succ =
       X.δ j ≫ X.δ i := by
   dsimp [δ]
@@ -505,7 +505,7 @@ theorem δ_comp_δ_self {n} {i : Fin (n + 2)} :
 #align category_theory.cosimplicial_object.δ_comp_δ_self CategoryTheory.CosimplicialObject.δ_comp_δ_self
 
 @[reassoc]
-theorem δ_comp_δ_self' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : j = Fin.castSucc i) :
+lemma δ_comp_δ_self' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : j = Fin.castSucc i) :
     X.δ i ≫ X.δ j = X.δ i ≫ X.δ i.succ := by
   subst H
   rw [δ_comp_δ_self]
@@ -527,7 +527,7 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} : X.δ (Fin.castSucc i) ≫ X.σ i
 #align category_theory.cosimplicial_object.δ_comp_σ_self CategoryTheory.CosimplicialObject.δ_comp_σ_self
 
 @[reassoc]
-theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = Fin.castSucc i) :
+lemma δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = Fin.castSucc i) :
     X.δ j ≫ X.σ i = 𝟙 _ := by
   subst H
   rw [δ_comp_σ_self]
@@ -541,7 +541,7 @@ theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : X.δ i.succ ≫ X.σ i = 𝟙 _ 
 #align category_theory.cosimplicial_object.δ_comp_σ_succ CategoryTheory.CosimplicialObject.δ_comp_σ_succ
 
 @[reassoc]
-theorem δ_comp_σ_succ' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ) :
+lemma δ_comp_σ_succ' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ) :
     X.δ j ≫ X.σ i = 𝟙 _ := by
   subst H
   rw [δ_comp_σ_succ]
@@ -556,7 +556,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 #align category_theory.cosimplicial_object.δ_comp_σ_of_gt CategoryTheory.CosimplicialObject.δ_comp_σ_of_gt
 
 @[reassoc]
-theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
+lemma δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     X.δ i ≫ X.σ j =
       X.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
         X.δ (i.pred <|
@@ -574,13 +574,13 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
 #align category_theory.cosimplicial_object.σ_comp_σ CategoryTheory.CosimplicialObject.σ_comp_σ
 
 @[reassoc (attr := simp)]
-theorem δ_naturality {X' X : CosimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 2)) :
+lemma δ_naturality {X' X : CosimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 2)) :
     X.δ i ≫ f.app (SimplexCategory.mk (n + 1)) = f.app (SimplexCategory.mk n) ≫ X'.δ i :=
   f.naturality _
 #align category_theory.cosimplicial_object.δ_naturality CategoryTheory.CosimplicialObject.δ_naturality
 
 @[reassoc (attr := simp)]
-theorem σ_naturality {X' X : CosimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 1)) :
+lemma σ_naturality {X' X : CosimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 1)) :
     X.σ i ≫ f.app (SimplexCategory.mk n) = f.app (SimplexCategory.mk (n + 1)) ≫ X'.σ i :=
   f.naturality _
 #align category_theory.cosimplicial_object.σ_naturality CategoryTheory.CosimplicialObject.σ_naturality
@@ -758,7 +758,7 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0])
 #align category_theory.cosimplicial_object.augment CategoryTheory.CosimplicialObject.augment
 
 -- Porting note: removed @[simp] as the linter complains
-theorem augment_hom_zero (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0]) (w) :
+lemma augment_hom_zero (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0]) (w) :
     (X.augment X₀ f w).hom.app [0] = f := by simp
 #align category_theory.cosimplicial_object.augment_hom_zero CategoryTheory.CosimplicialObject.augment_hom_zero
 

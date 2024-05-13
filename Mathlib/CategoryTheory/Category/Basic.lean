@@ -220,50 +220,50 @@ If `g h : Y ⟶ Z` and `w : g = h` and `h : X ⟶ Y`, then `f ≫= w : f ≫ g =
 -/
 scoped infixr:80 " ≫= " => whisker_eq
 
-theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) :
+lemma eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) :
     f = g := by
   convert w (𝟙 Y) <;> simp
 #align category_theory.eq_of_comp_left_eq CategoryTheory.eq_of_comp_left_eq
 
-theorem eq_of_comp_right_eq {f g : Y ⟶ Z} (w : ∀ {X : C} (h : X ⟶ Y), h ≫ f = h ≫ g) :
+lemma eq_of_comp_right_eq {f g : Y ⟶ Z} (w : ∀ {X : C} (h : X ⟶ Y), h ≫ f = h ≫ g) :
     f = g := by
   convert w (𝟙 Y) <;> simp
 #align category_theory.eq_of_comp_right_eq CategoryTheory.eq_of_comp_right_eq
 
-theorem eq_of_comp_left_eq' (f g : X ⟶ Y)
+lemma eq_of_comp_left_eq' (f g : X ⟶ Y)
     (w : (fun {Z} (h : Y ⟶ Z) => f ≫ h) = fun {Z} (h : Y ⟶ Z) => g ≫ h) : f = g :=
   eq_of_comp_left_eq @fun Z h => by convert congr_fun (congr_fun w Z) h
 #align category_theory.eq_of_comp_left_eq' CategoryTheory.eq_of_comp_left_eq'
 
-theorem eq_of_comp_right_eq' (f g : Y ⟶ Z)
+lemma eq_of_comp_right_eq' (f g : Y ⟶ Z)
     (w : (fun {X} (h : X ⟶ Y) => h ≫ f) = fun {X} (h : X ⟶ Y) => h ≫ g) : f = g :=
   eq_of_comp_right_eq @fun X h => by convert congr_fun (congr_fun w X) h
 #align category_theory.eq_of_comp_right_eq' CategoryTheory.eq_of_comp_right_eq'
 
-theorem id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by
+lemma id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by
   convert w (𝟙 X)
   simp
 #align category_theory.id_of_comp_left_id CategoryTheory.id_of_comp_left_id
 
-theorem id_of_comp_right_id (f : X ⟶ X) (w : ∀ {Y : C} (g : Y ⟶ X), g ≫ f = g) : f = 𝟙 X := by
+lemma id_of_comp_right_id (f : X ⟶ X) (w : ∀ {Y : C} (g : Y ⟶ X), g ≫ f = g) : f = 𝟙 X := by
   convert w (𝟙 X)
   simp
 #align category_theory.id_of_comp_right_id CategoryTheory.id_of_comp_right_id
 
-theorem comp_ite {P : Prop} [Decidable P] {X Y Z : C} (f : X ⟶ Y) (g g' : Y ⟶ Z) :
+lemma comp_ite {P : Prop} [Decidable P] {X Y Z : C} (f : X ⟶ Y) (g g' : Y ⟶ Z) :
     (f ≫ if P then g else g') = if P then f ≫ g else f ≫ g' := by aesop
 #align category_theory.comp_ite CategoryTheory.comp_ite
 
-theorem ite_comp {P : Prop} [Decidable P] {X Y Z : C} (f f' : X ⟶ Y) (g : Y ⟶ Z) :
+lemma ite_comp {P : Prop} [Decidable P] {X Y Z : C} (f f' : X ⟶ Y) (g : Y ⟶ Z) :
     (if P then f else f') ≫ g = if P then f ≫ g else f' ≫ g := by aesop
 #align category_theory.ite_comp CategoryTheory.ite_comp
 
-theorem comp_dite {P : Prop} [Decidable P]
+lemma comp_dite {P : Prop} [Decidable P]
     {X Y Z : C} (f : X ⟶ Y) (g : P → (Y ⟶ Z)) (g' : ¬P → (Y ⟶ Z)) :
     (f ≫ if h : P then g h else g' h) = if h : P then f ≫ g h else f ≫ g' h := by aesop
 #align category_theory.comp_dite CategoryTheory.comp_dite
 
-theorem dite_comp {P : Prop} [Decidable P]
+lemma dite_comp {P : Prop} [Decidable P]
     {X Y Z : C} (f : P → (X ⟶ Y)) (f' : ¬P → (X ⟶ Y)) (g : Y ⟶ Z) :
     (if h : P then f h else f' h) ≫ g = if h : P then f h ≫ g else f' h ≫ g := by aesop
 #align category_theory.dite_comp CategoryTheory.dite_comp
@@ -294,26 +294,26 @@ instance (X : C) : Epi (𝟙 X) :=
 instance (X : C) : Mono (𝟙 X) :=
   ⟨fun g h w => by aesop⟩
 
-theorem cancel_epi (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} : f ≫ g = f ≫ h ↔ g = h :=
+lemma cancel_epi (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} : f ≫ g = f ≫ h ↔ g = h :=
   ⟨fun p => Epi.left_cancellation g h p, congr_arg _⟩
 #align category_theory.cancel_epi CategoryTheory.cancel_epi
 
-theorem cancel_mono (f : X ⟶ Y) [Mono f] {g h : Z ⟶ X} : g ≫ f = h ≫ f ↔ g = h :=
+lemma cancel_mono (f : X ⟶ Y) [Mono f] {g h : Z ⟶ X} : g ≫ f = h ≫ f ↔ g = h :=
   -- Porting note: in Lean 3 we could just write `congr_arg _` here.
   ⟨fun p => Mono.right_cancellation g h p, congr_arg (fun k => k ≫ f)⟩
 #align category_theory.cancel_mono CategoryTheory.cancel_mono
 
-theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 𝟙 Y := by
+lemma cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 𝟙 Y := by
   convert cancel_epi f
   simp
 #align category_theory.cancel_epi_id CategoryTheory.cancel_epi_id
 
-theorem cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g = 𝟙 X := by
+lemma cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g = 𝟙 X := by
   convert cancel_mono f
   simp
 #align category_theory.cancel_mono_id CategoryTheory.cancel_mono_id
 
-theorem epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (f ≫ g) := by
+lemma epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (f ≫ g) := by
   constructor
   intro Z a b w
   apply (cancel_epi g).1
@@ -321,7 +321,7 @@ theorem epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (
   simpa using w
 #align category_theory.epi_comp CategoryTheory.epi_comp
 
-theorem mono_comp {X Y Z : C} (f : X ⟶ Y) [Mono f] (g : Y ⟶ Z) [Mono g] : Mono (f ≫ g) := by
+lemma mono_comp {X Y Z : C} (f : X ⟶ Y) [Mono f] (g : Y ⟶ Z) [Mono g] : Mono (f ≫ g) := by
   constructor
   intro Z a b w
   apply (cancel_mono f).1
@@ -329,7 +329,7 @@ theorem mono_comp {X Y Z : C} (f : X ⟶ Y) [Mono f] (g : Y ⟶ Z) [Mono g] : Mo
   simpa using w
 #align category_theory.mono_comp CategoryTheory.mono_comp
 
-theorem mono_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono (f ≫ g)] : Mono f := by
+lemma mono_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono (f ≫ g)] : Mono f := by
   constructor
   intro Z a b w
   replace w := congr_arg (fun k => k ≫ g) w
@@ -338,13 +338,13 @@ theorem mono_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono (f ≫ g)] : 
   exact (cancel_mono _).1 w
 #align category_theory.mono_of_mono CategoryTheory.mono_of_mono
 
-theorem mono_of_mono_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Mono h]
+lemma mono_of_mono_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Mono h]
     (w : f ≫ g = h) : Mono f := by
   subst h
   exact mono_of_mono f g
 #align category_theory.mono_of_mono_fac CategoryTheory.mono_of_mono_fac
 
-theorem epi_of_epi {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi g := by
+lemma epi_of_epi {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi g := by
   constructor
   intro Z a b w
   replace w := congr_arg (fun k => f ≫ k) w
@@ -353,7 +353,7 @@ theorem epi_of_epi {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi
   exact (cancel_epi _).1 w
 #align category_theory.epi_of_epi CategoryTheory.epi_of_epi
 
-theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Epi h]
+lemma epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Epi h]
     (w : f ≫ g = h) : Epi g := by
   subst h; exact epi_of_epi f g
 #align category_theory.epi_of_epi_fac CategoryTheory.epi_of_epi_fac

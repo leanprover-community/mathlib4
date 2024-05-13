@@ -45,11 +45,11 @@ def cancelLeads : R[X] :=
 variable {p q}
 
 @[simp]
-theorem neg_cancelLeads : -p.cancelLeads q = q.cancelLeads p :=
+lemma neg_cancelLeads : -p.cancelLeads q = q.cancelLeads p :=
   neg_sub _ _
 #align polynomial.neg_cancel_leads Polynomial.neg_cancelLeads
 
-theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
+lemma natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
     (comm : p.leadingCoeff * q.leadingCoeff = q.leadingCoeff * p.leadingCoeff)
     (h : p.natDegree ≤ q.natDegree) (hq : 0 < q.natDegree) :
     (p.cancelLeads q).natDegree < q.natDegree := by
@@ -77,11 +77,11 @@ section CommRing
 
 variable [CommRing R] {p q : R[X]}
 
-theorem dvd_cancelLeads_of_dvd_of_dvd {r : R[X]} (pq : p ∣ q) (pr : p ∣ r) : p ∣ q.cancelLeads r :=
+lemma dvd_cancelLeads_of_dvd_of_dvd {r : R[X]} (pq : p ∣ q) (pr : p ∣ r) : p ∣ q.cancelLeads r :=
   dvd_sub (pr.trans (Dvd.intro_left _ rfl)) (pq.trans (Dvd.intro_left _ rfl))
 #align polynomial.dvd_cancel_leads_of_dvd_of_dvd Polynomial.dvd_cancelLeads_of_dvd_of_dvd
 
-theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree (h : p.natDegree ≤ q.natDegree)
+lemma natDegree_cancelLeads_lt_of_natDegree_le_natDegree (h : p.natDegree ≤ q.natDegree)
     (hq : 0 < q.natDegree) : (p.cancelLeads q).natDegree < q.natDegree :=
   natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm (mul_comm _ _) h hq
 #align polynomial.nat_degree_cancel_leads_lt_of_nat_degree_le_nat_degree Polynomial.natDegree_cancelLeads_lt_of_natDegree_le_natDegree

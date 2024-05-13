@@ -143,7 +143,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (W)
 
-theorem _root_.CategoryTheory.MorphismProperty.Q_inverts : W.IsInvertedBy W.Q := fun _ _ w hw =>
+lemma _root_.CategoryTheory.MorphismProperty.Q_inverts : W.IsInvertedBy W.Q := fun _ _ w hw =>
   IsIso.of_iso (Localization.Construction.wIso w hw)
 set_option linter.uppercaseLean3 false in
 #align category_theory.morphism_property.Q_inverts CategoryTheory.MorphismProperty.Q_inverts
@@ -181,7 +181,7 @@ def lift : W.Localization ⥤ D :=
 #align category_theory.localization.construction.lift CategoryTheory.Localization.Construction.lift
 
 @[simp]
-theorem fac : W.Q ⋙ lift G hG = G :=
+lemma fac : W.Q ⋙ lift G hG = G :=
   Functor.ext (fun X => rfl)
     (by
       intro X Y f
@@ -190,7 +190,7 @@ theorem fac : W.Q ⋙ lift G hG = G :=
       rw [composePath_toPath])
 #align category_theory.localization.construction.fac CategoryTheory.Localization.Construction.fac
 
-theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂) : G₁ = G₂ := by
+lemma uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂) : G₁ = G₂ := by
   suffices h' : Quotient.functor _ ⋙ G₁ = Quotient.functor _ ⋙ G₂ by
     refine' Functor.ext _ _
     · rintro ⟨⟨X⟩⟩
@@ -280,7 +280,7 @@ def app (X : W.Localization) : F₁.obj X ⟶ F₂.obj X :=
 #align category_theory.localization.construction.nat_trans_extension.app CategoryTheory.Localization.Construction.NatTransExtension.app
 
 @[simp]
-theorem app_eq (X : C) : (app τ) (W.Q.obj X) = τ.app X := by
+lemma app_eq (X : C) : (app τ) (W.Q.obj X) = τ.app X := by
   simp only [app, eqToHom_refl, comp_id, id_comp]
   rfl
 #align category_theory.localization.construction.nat_trans_extension.app_eq CategoryTheory.Localization.Construction.NatTransExtension.app_eq
@@ -306,11 +306,11 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
 #align category_theory.localization.construction.nat_trans_extension CategoryTheory.Localization.Construction.natTransExtension
 
 @[simp]
-theorem natTransExtension_hcomp {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
+lemma natTransExtension_hcomp {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
     𝟙 W.Q ◫ natTransExtension τ = τ := by aesop_cat
 #align category_theory.localization.construction.nat_trans_extension_hcomp CategoryTheory.Localization.Construction.natTransExtension_hcomp
 
-theorem natTrans_hcomp_injective {F G : W.Localization ⥤ D} {τ₁ τ₂ : F ⟶ G}
+lemma natTrans_hcomp_injective {F G : W.Localization ⥤ D} {τ₁ τ₂ : F ⟶ G}
     (h : 𝟙 W.Q ◫ τ₁ = 𝟙 W.Q ◫ τ₂) : τ₁ = τ₂ := by
   ext X
   have eq := (objEquiv W).right_inv X

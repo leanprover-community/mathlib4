@@ -50,71 +50,71 @@ theorem mem_perpBisector_iff_inner_eq_zero :
     c ∈ perpBisector p₁ p₂ ↔ ⟪c -ᵥ midpoint ℝ p₁ p₂, p₂ -ᵥ p₁⟫ = 0 :=
   inner_eq_zero_symm
 
-theorem mem_perpBisector_iff_inner_pointReflection_vsub_eq_zero :
+lemma mem_perpBisector_iff_inner_pointReflection_vsub_eq_zero :
     c ∈ perpBisector p₁ p₂ ↔ ⟪Equiv.pointReflection c p₁ -ᵥ p₂, p₂ -ᵥ p₁⟫ = 0 := by
   rw [mem_perpBisector_iff_inner_eq_zero, Equiv.pointReflection_apply,
     vsub_midpoint, invOf_eq_inv, ← smul_add, real_inner_smul_left, vadd_vsub_assoc]
   simp
 
-theorem mem_perpBisector_pointReflection_iff_inner_eq_zero :
+lemma mem_perpBisector_pointReflection_iff_inner_eq_zero :
     c ∈ perpBisector p₁ (Equiv.pointReflection p₂ p₁) ↔ ⟪c -ᵥ p₂, p₁ -ᵥ p₂⟫ = 0 := by
   rw [mem_perpBisector_iff_inner_eq_zero, midpoint_pointReflection_right,
     Equiv.pointReflection_apply, vadd_vsub_assoc, inner_add_right, add_self_eq_zero,
     ← neg_eq_zero, ← inner_neg_right, neg_vsub_eq_vsub_rev]
 
-theorem midpoint_mem_perpBisector (p₁ p₂ : P) :
+lemma midpoint_mem_perpBisector (p₁ p₂ : P) :
     midpoint ℝ p₁ p₂ ∈ perpBisector p₁ p₂ := by
   simp [mem_perpBisector_iff_inner_eq_zero]
 
-theorem perpBisector_nonempty : (perpBisector p₁ p₂ : Set P).Nonempty :=
+lemma perpBisector_nonempty : (perpBisector p₁ p₂ : Set P).Nonempty :=
   ⟨_, midpoint_mem_perpBisector _ _⟩
 
 @[simp]
-theorem direction_perpBisector (p₁ p₂ : P) :
+lemma direction_perpBisector (p₁ p₂ : P) :
     (perpBisector p₁ p₂).direction = (ℝ ∙ (p₂ -ᵥ p₁))ᗮ := by
   erw [perpBisector, comap_symm, map_direction, Submodule.map_id,
     Submodule.toAffineSubspace_direction]
   ext x
   exact Submodule.mem_orthogonal_singleton_iff_inner_right.symm
 
-theorem mem_perpBisector_iff_inner_eq_inner :
+lemma mem_perpBisector_iff_inner_eq_inner :
     c ∈ perpBisector p₁ p₂ ↔ ⟪c -ᵥ p₁, p₂ -ᵥ p₁⟫ = ⟪c -ᵥ p₂, p₁ -ᵥ p₂⟫ := by
   rw [Iff.comm, mem_perpBisector_iff_inner_eq_zero, ← add_neg_eq_zero, ← inner_neg_right,
     neg_vsub_eq_vsub_rev, ← inner_add_left, vsub_midpoint, invOf_eq_inv, ← smul_add,
     real_inner_smul_left]; simp
 
-theorem mem_perpBisector_iff_inner_eq :
+lemma mem_perpBisector_iff_inner_eq :
     c ∈ perpBisector p₁ p₂ ↔ ⟪c -ᵥ p₁, p₂ -ᵥ p₁⟫ = (dist p₁ p₂) ^ 2 / 2 := by
   rw [mem_perpBisector_iff_inner_eq_zero, ← vsub_sub_vsub_cancel_right _ _ p₁, inner_sub_left,
     sub_eq_zero, midpoint_vsub_left, invOf_eq_inv, real_inner_smul_left, real_inner_self_eq_norm_sq,
     dist_eq_norm_vsub' V, div_eq_inv_mul]
 
-theorem mem_perpBisector_iff_dist_eq : c ∈ perpBisector p₁ p₂ ↔ dist c p₁ = dist c p₂ := by
+lemma mem_perpBisector_iff_dist_eq : c ∈ perpBisector p₁ p₂ ↔ dist c p₁ = dist c p₂ := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, ← real_inner_add_sub_eq_zero_iff,
     vsub_sub_vsub_cancel_left, inner_add_left, add_eq_zero_iff_eq_neg, ← inner_neg_right,
     neg_vsub_eq_vsub_rev, mem_perpBisector_iff_inner_eq_inner]
 
-theorem mem_perpBisector_iff_dist_eq' : c ∈ perpBisector p₁ p₂ ↔ dist p₁ c = dist p₂ c := by
+lemma mem_perpBisector_iff_dist_eq' : c ∈ perpBisector p₁ p₂ ↔ dist p₁ c = dist p₂ c := by
   simp only [mem_perpBisector_iff_dist_eq, dist_comm]
 
-theorem perpBisector_comm (p₁ p₂ : P) : perpBisector p₁ p₂ = perpBisector p₂ p₁ := by
+lemma perpBisector_comm (p₁ p₂ : P) : perpBisector p₁ p₂ = perpBisector p₂ p₁ := by
   ext c; simp only [mem_perpBisector_iff_dist_eq, eq_comm]
 
-@[simp] theorem right_mem_perpBisector : p₂ ∈ perpBisector p₁ p₂ ↔ p₁ = p₂ := by
+@[simp] lemma right_mem_perpBisector : p₂ ∈ perpBisector p₁ p₂ ↔ p₁ = p₂ := by
   simpa [mem_perpBisector_iff_inner_eq_inner] using eq_comm
 
-@[simp] theorem left_mem_perpBisector : p₁ ∈ perpBisector p₁ p₂ ↔ p₁ = p₂ := by
+@[simp] lemma left_mem_perpBisector : p₁ ∈ perpBisector p₁ p₂ ↔ p₁ = p₂ := by
   rw [perpBisector_comm, right_mem_perpBisector, eq_comm]
 
-@[simp] theorem perpBisector_self (p : P) : perpBisector p p = ⊤ :=
+@[simp] lemma perpBisector_self (p : P) : perpBisector p p = ⊤ :=
   top_unique fun _ ↦ by simp [mem_perpBisector_iff_inner_eq_inner]
 
-@[simp] theorem perpBisector_eq_top : perpBisector p₁ p₂ = ⊤ ↔ p₁ = p₂ := by
+@[simp] lemma perpBisector_eq_top : perpBisector p₁ p₂ = ⊤ ↔ p₁ = p₂ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ perpBisector_self _⟩
   rw [← left_mem_perpBisector, h]
   trivial
 
-@[simp] theorem perpBisector_ne_bot : perpBisector p₁ p₂ ≠ ⊥ := by
+@[simp] lemma perpBisector_ne_bot : perpBisector p₁ p₂ ≠ ⊥ := by
   rw [← nonempty_iff_ne_bot]; exact perpBisector_nonempty
 
 end AffineSubspace
@@ -137,10 +137,10 @@ end EuclideanGeometry
 variable {V' P' : Type*} [NormedAddCommGroup V'] [InnerProductSpace ℝ V'] [MetricSpace P']
 variable [NormedAddTorsor V' P']
 
-theorem Isometry.preimage_perpBisector {f : P → P'} (h : Isometry f) (p₁ p₂ : P) :
+lemma Isometry.preimage_perpBisector {f : P → P'} (h : Isometry f) (p₁ p₂ : P) :
     f ⁻¹' (perpBisector (f p₁) (f p₂)) = perpBisector p₁ p₂ := by
   ext x; simp [mem_perpBisector_iff_dist_eq, h.dist_eq]
 
-theorem Isometry.mapsTo_perpBisector {f : P → P'} (h : Isometry f) (p₁ p₂ : P) :
+lemma Isometry.mapsTo_perpBisector {f : P → P'} (h : Isometry f) (p₁ p₂ : P) :
     MapsTo f (perpBisector p₁ p₂) (perpBisector (f p₁) (f p₂)) :=
   (h.preimage_perpBisector p₁ p₂).ge

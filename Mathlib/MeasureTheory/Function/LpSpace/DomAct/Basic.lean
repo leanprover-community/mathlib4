@@ -35,20 +35,20 @@ instance : SMul Mᵈᵐᵃ (Lp E p μ) where
   smul c f := Lp.compMeasurePreserving (mk.symm c • ·) (measurePreserving_smul _ _) f
 
 @[to_additive (attr := simp)]
-theorem smul_Lp_val (c : Mᵈᵐᵃ) (f : Lp E p μ) : (c • f).1 = c • f.1 := rfl
+lemma smul_Lp_val (c : Mᵈᵐᵃ) (f : Lp E p μ) : (c • f).1 = c • f.1 := rfl
 
 @[to_additive]
-theorem smul_Lp_ae_eq (c : Mᵈᵐᵃ) (f : Lp E p μ) : c • f =ᵐ[μ] (f <| mk.symm c • ·) :=
+lemma smul_Lp_ae_eq (c : Mᵈᵐᵃ) (f : Lp E p μ) : c • f =ᵐ[μ] (f <| mk.symm c • ·) :=
   Lp.coeFn_compMeasurePreserving _ _
 
 @[to_additive]
-theorem mk_smul_toLp (c : M) {f : α → E} (hf : Memℒp f p μ) :
+lemma mk_smul_toLp (c : M) {f : α → E} (hf : Memℒp f p μ) :
     mk c • hf.toLp f =
       (hf.comp_measurePreserving <| measurePreserving_smul c μ).toLp (f <| c • ·) :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem smul_Lp_const [IsFiniteMeasure μ] (c : Mᵈᵐᵃ) (a : E) :
+lemma smul_Lp_const [IsFiniteMeasure μ] (c : Mᵈᵐᵃ) (a : E) :
     c • Lp.const p μ a = Lp.const p μ a :=
   rfl
 
@@ -67,19 +67,19 @@ instance [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] : SMulCommClass 
 -- and `DistribMulAction`?
 
 @[to_additive]
-theorem smul_Lp_add (c : Mᵈᵐᵃ) : ∀ f g : Lp E p μ, c • (f + g) = c • f + c • g := by
+lemma smul_Lp_add (c : Mᵈᵐᵃ) : ∀ f g : Lp E p μ, c • (f + g) = c • f + c • g := by
   rintro ⟨⟨⟩, _⟩ ⟨⟨⟩, _⟩; rfl
 attribute [simp] DomAddAct.vadd_Lp_add
 
 @[to_additive (attr := simp 1001)]
-theorem smul_Lp_zero (c : Mᵈᵐᵃ) : c • (0 : Lp E p μ) = 0 := rfl
+lemma smul_Lp_zero (c : Mᵈᵐᵃ) : c • (0 : Lp E p μ) = 0 := rfl
 
 @[to_additive]
-theorem smul_Lp_neg (c : Mᵈᵐᵃ) (f : Lp E p μ) : c • (-f) = -(c • f) := by
+lemma smul_Lp_neg (c : Mᵈᵐᵃ) (f : Lp E p μ) : c • (-f) = -(c • f) := by
   rcases f with ⟨⟨_⟩, _⟩; rfl
 
 @[to_additive]
-theorem smul_Lp_sub (c : Mᵈᵐᵃ) : ∀ f g : Lp E p μ, c • (f - g) = c • f - c • g := by
+lemma smul_Lp_sub (c : Mᵈᵐᵃ) : ∀ f g : Lp E p μ, c • (f - g) = c • f - c • g := by
   rintro ⟨⟨⟩, _⟩ ⟨⟨⟩, _⟩; rfl
 
 instance : DistribSMul Mᵈᵐᵃ (Lp E p μ) where
@@ -88,19 +88,19 @@ instance : DistribSMul Mᵈᵐᵃ (Lp E p μ) where
 
 -- The next few lemmas follow from the `IsometricSMul` instance if `1 ≤ p`
 @[to_additive (attr := simp)]
-theorem norm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖ = ‖f‖ :=
+lemma norm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖ = ‖f‖ :=
   Lp.norm_compMeasurePreserving _ _
 
 @[to_additive (attr := simp)]
-theorem nnnorm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖₊ = ‖f‖₊ :=
+lemma nnnorm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖₊ = ‖f‖₊ :=
   NNReal.eq <| Lp.norm_compMeasurePreserving _ _
 
 @[to_additive (attr := simp)]
-theorem dist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : dist (c • f) (c • g) = dist f g := by
+lemma dist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : dist (c • f) (c • g) = dist f g := by
   simp only [dist, ← smul_Lp_sub, norm_smul_Lp]
 
 @[to_additive (attr := simp)]
-theorem edist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : edist (c • f) (c • g) = edist f g := by
+lemma edist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : edist (c • f) (c • g) = edist f g := by
   simp only [Lp.edist_dist, dist_smul_Lp]
 
 variable [Fact (1 ≤ p)]

@@ -35,13 +35,13 @@ instance floorSemiring [OrderedSemiring α] [FloorSemiring α] :
 #align nonneg.floor_semiring Nonneg.floorSemiring
 
 @[norm_cast]
-theorem nat_floor_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 ≤ r }) :
+lemma nat_floor_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 ≤ r }) :
     ⌊(a : α)⌋₊ = ⌊a⌋₊ :=
   rfl
 #align nonneg.nat_floor_coe Nonneg.nat_floor_coe
 
 @[norm_cast]
-theorem nat_ceil_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 ≤ r }) :
+lemma nat_ceil_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 ≤ r }) :
     ⌈(a : α)⌉₊ = ⌈a⌉₊ :=
   rfl
 #align nonneg.nat_ceil_coe Nonneg.nat_ceil_coe

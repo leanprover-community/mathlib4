@@ -31,7 +31,7 @@ def unitOfInvertible [Monoid α] (a : α) [Invertible a] : αˣ where
 #align coe_unit_of_invertible val_unitOfInvertible
 #align coe_inv_unit_of_invertible val_inv_unitOfInvertible
 
-theorem isUnit_of_invertible [Monoid α] (a : α) [Invertible a] : IsUnit a :=
+lemma isUnit_of_invertible [Monoid α] (a : α) [Invertible a] : IsUnit a :=
   ⟨unitOfInvertible a, rfl⟩
 #align is_unit_of_invertible isUnit_of_invertible
 
@@ -44,11 +44,11 @@ def Units.invertible [Monoid α] (u : αˣ) :
 #align units.invertible Units.invertible
 
 @[simp]
-theorem invOf_units [Monoid α] (u : αˣ) [Invertible (u : α)] : ⅟ (u : α) = ↑u⁻¹ :=
+lemma invOf_units [Monoid α] (u : αˣ) [Invertible (u : α)] : ⅟ (u : α) = ↑u⁻¹ :=
   invOf_eq_right_inv u.mul_inv
 #align inv_of_units invOf_units
 
-theorem IsUnit.nonempty_invertible [Monoid α] {a : α} (h : IsUnit a) : Nonempty (Invertible a) :=
+lemma IsUnit.nonempty_invertible [Monoid α] {a : α} (h : IsUnit a) : Nonempty (Invertible a) :=
   let ⟨x, hx⟩ := h
   ⟨x.invertible.copy _ hx.symm⟩
 #align is_unit.nonempty_invertible IsUnit.nonempty_invertible
@@ -61,11 +61,11 @@ noncomputable def IsUnit.invertible [Monoid α] {a : α} (h : IsUnit a) : Invert
 #align is_unit.invertible IsUnit.invertible
 
 @[simp]
-theorem nonempty_invertible_iff_isUnit [Monoid α] (a : α) : Nonempty (Invertible a) ↔ IsUnit a :=
+lemma nonempty_invertible_iff_isUnit [Monoid α] (a : α) : Nonempty (Invertible a) ↔ IsUnit a :=
   ⟨Nonempty.rec <| @isUnit_of_invertible _ _ _, IsUnit.nonempty_invertible⟩
 #align nonempty_invertible_iff_is_unit nonempty_invertible_iff_isUnit
 
-theorem Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a b) :
+lemma Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a b) :
     Commute a (⅟ b) :=
   calc
     a * ⅟ b = ⅟ b * (b * a * ⅟ b) := by simp [mul_assoc]
@@ -73,7 +73,7 @@ theorem Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a
     _ = ⅟ b * a := by simp [mul_assoc]
 #align commute.inv_of_right Commute.invOf_right
 
-theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b a) :
+lemma Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b a) :
     Commute (⅟ b) a :=
   calc
     ⅟ b * a = ⅟ b * (a * b * ⅟ b) := by simp [mul_assoc]
@@ -81,7 +81,7 @@ theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b 
     _ = a * ⅟ b := by simp [mul_assoc]
 #align commute.inv_of_left Commute.invOf_left
 
-theorem commute_invOf {M : Type*} [One M] [Mul M] (m : M) [Invertible m] : Commute m (⅟ m) :=
+lemma commute_invOf {M : Type*} [One M] [Mul M] (m : M) [Invertible m] : Commute m (⅟ m) :=
   calc
     m * ⅟ m = 1 := mul_invOf_self m
     _ = ⅟ m * m := (invOf_mul_self m).symm
@@ -165,17 +165,17 @@ section GroupWithZero
 variable [GroupWithZero α]
 
 @[simp]
-theorem div_mul_cancel_of_invertible (a b : α) [Invertible b] : a / b * b = a :=
+lemma div_mul_cancel_of_invertible (a b : α) [Invertible b] : a / b * b = a :=
   div_mul_cancel₀ a (nonzero_of_invertible b)
 #align div_mul_cancel_of_invertible div_mul_cancel_of_invertible
 
 @[simp]
-theorem mul_div_cancel_of_invertible (a b : α) [Invertible b] : a * b / b = a :=
+lemma mul_div_cancel_of_invertible (a b : α) [Invertible b] : a * b / b = a :=
   mul_div_cancel_right₀ a (nonzero_of_invertible b)
 #align mul_div_cancel_of_invertible mul_div_cancel_of_invertible
 
 @[simp]
-theorem div_self_of_invertible (a : α) [Invertible a] : a / a = 1 :=
+lemma div_self_of_invertible (a : α) [Invertible a] : a / a = 1 :=
   div_self (nonzero_of_invertible a)
 #align div_self_of_invertible div_self_of_invertible
 
@@ -185,7 +185,7 @@ def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) 
 #align invertible_div invertibleDiv
 
 -- Porting note (#10618): removed `simp` attribute as `simp` can prove it
-theorem invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
+lemma invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
     ⅟ (a / b) = b / a :=
   invOf_eq_right_inv (by simp [← mul_div_assoc])
 #align inv_of_div invOf_div

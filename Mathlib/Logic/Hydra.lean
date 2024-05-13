@@ -59,7 +59,7 @@ def CutExpand (r : α → α → Prop) (s' s : Multiset α) : Prop :=
 
 variable {r : α → α → Prop}
 
-theorem cutExpand_le_invImage_lex [DecidableEq α] [IsIrrefl α r] :
+lemma cutExpand_le_invImage_lex [DecidableEq α] [IsIrrefl α r] :
     CutExpand r ≤ InvImage (Finsupp.Lex (rᶜ ⊓ (· ≠ ·)) (· < ·)) toFinsupp := by
   rintro s t ⟨u, a, hr, he⟩
   replace hr := fun a' ↦ mt (hr a')
@@ -74,19 +74,19 @@ theorem cutExpand_le_invImage_lex [DecidableEq α] [IsIrrefl α r] :
     exact he ▸ Nat.lt_succ_self _
 #align relation.cut_expand_le_inv_image_lex Relation.cutExpand_le_invImage_lex
 
-theorem cutExpand_singleton {s x} (h : ∀ x' ∈ s, r x' x) : CutExpand r s {x} :=
+lemma cutExpand_singleton {s x} (h : ∀ x' ∈ s, r x' x) : CutExpand r s {x} :=
   ⟨s, x, h, add_comm s _⟩
 #align relation.cut_expand_singleton Relation.cutExpand_singleton
 
-theorem cutExpand_singleton_singleton {x' x} (h : r x' x) : CutExpand r {x'} {x} :=
+lemma cutExpand_singleton_singleton {x' x} (h : r x' x) : CutExpand r {x'} {x} :=
   cutExpand_singleton fun a h ↦ by rwa [mem_singleton.1 h]
 #align relation.cut_expand_singleton_singleton Relation.cutExpand_singleton_singleton
 
-theorem cutExpand_add_left {t u} (s) : CutExpand r (s + t) (s + u) ↔ CutExpand r t u :=
+lemma cutExpand_add_left {t u} (s) : CutExpand r (s + t) (s + u) ↔ CutExpand r t u :=
   exists₂_congr fun _ _ ↦ and_congr Iff.rfl <| by rw [add_assoc, add_assoc, add_left_cancel_iff]
 #align relation.cut_expand_add_left Relation.cutExpand_add_left
 
-theorem cutExpand_iff [DecidableEq α] [IsIrrefl α r] {s' s : Multiset α} :
+lemma cutExpand_iff [DecidableEq α] [IsIrrefl α r] {s' s : Multiset α} :
     CutExpand r s' s ↔
       ∃ (t : Multiset α) (a : α), (∀ a' ∈ t, r a' a) ∧ a ∈ s ∧ s' = s.erase a + t := by
   simp_rw [CutExpand, add_singleton_eq_iff]
@@ -98,7 +98,7 @@ theorem cutExpand_iff [DecidableEq α] [IsIrrefl α r] {s' s : Multiset α} :
     exact ⟨ht, mem_add.2 (Or.inl h), (erase_add_left_pos t h).symm⟩
 #align relation.cut_expand_iff Relation.cutExpand_iff
 
-theorem not_cutExpand_zero [IsIrrefl α r] (s) : ¬CutExpand r s 0 := by
+lemma not_cutExpand_zero [IsIrrefl α r] (s) : ¬CutExpand r s 0 := by
   classical
   rw [cutExpand_iff]
   rintro ⟨_, _, _, ⟨⟩, _⟩

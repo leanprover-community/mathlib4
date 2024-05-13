@@ -56,12 +56,12 @@ lemma uniformEmbedding_toUniformOnFun :
 lemma embedding_toUniformOnFun : Embedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
   uniformEmbedding_toUniformOnFun.embedding
 
-theorem uniformContinuous_coe_fun [∀ i, ContinuousSMul 𝕜 (E i)] :
+lemma uniformContinuous_coe_fun [∀ i, ContinuousSMul 𝕜 (E i)] :
     UniformContinuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (Π i, E i) → F) :=
   (UniformOnFun.uniformContinuous_toFun isVonNBounded_covers).comp
     uniformEmbedding_toUniformOnFun.uniformContinuous
 
-theorem uniformContinuous_eval_const [∀ i, ContinuousSMul 𝕜 (E i)] (x : Π i, E i) :
+lemma uniformContinuous_eval_const [∀ i, ContinuousSMul 𝕜 (E i)] (x : Π i, E i) :
     UniformContinuous fun f : ContinuousMultilinearMap 𝕜 E F ↦ f x :=
   uniformContinuous_pi.1 uniformContinuous_coe_fun x
 
@@ -96,7 +96,7 @@ instance instContinuousSMul [ContinuousSMul 𝕜 F] :
   UniformOnFun.continuousSMul_induced_of_image_bounded _ _ _ _ φ
     embedding_toUniformOnFun.toInducing fun _ _ hu ↦ hu.image_multilinear _
 
-theorem hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → Set F}
+lemma hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → Set F}
     (h : (𝓝 (0 : F)).HasBasis p b) :
     (𝓝 (0 : ContinuousMultilinearMap 𝕜 E F)).HasBasis
       (fun Si : Set (Π i, E i) × ι => IsVonNBounded 𝕜 Si.1 ∧ p Si.2)
@@ -108,7 +108,7 @@ theorem hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → S
   · exact ⟨∅, isVonNBounded_empty _ _⟩
   · exact directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union
 
-theorem hasBasis_nhds_zero :
+lemma hasBasis_nhds_zero :
     (𝓝 (0 : ContinuousMultilinearMap 𝕜 E F)).HasBasis
       (fun SV : Set (Π i, E i) × Set F => IsVonNBounded 𝕜 SV.1 ∧ SV.2 ∈ 𝓝 0) fun SV =>
       { f | MapsTo f SV.1 SV.2 } :=
@@ -116,7 +116,7 @@ theorem hasBasis_nhds_zero :
 
 variable [∀ i, ContinuousSMul 𝕜 (E i)]
 
-theorem continuous_eval_const (x : Π i, E i) :
+lemma continuous_eval_const (x : Π i, E i) :
     Continuous fun p : ContinuousMultilinearMap 𝕜 E F ↦ p x := by
   letI := TopologicalAddGroup.toUniformSpace F
   haveI := comm_topologicalAddGroup_is_uniform (G := F)
@@ -125,7 +125,7 @@ theorem continuous_eval_const (x : Π i, E i) :
 
 @[deprecated] alias continuous_eval_left := continuous_eval_const
 
-theorem continuous_coe_fun :
+lemma continuous_coe_fun :
     Continuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (Π i, E i) → F) :=
   continuous_pi continuous_eval_const
 
@@ -147,13 +147,13 @@ variable {𝕜 E F}
 lemma apply_apply [ContinuousConstSMul 𝕜 F] {m : Π i, E i} {c : ContinuousMultilinearMap 𝕜 E F} :
     apply 𝕜 E F m c = c m := rfl
 
-theorem hasSum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F}
+lemma hasSum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F}
     {q : ContinuousMultilinearMap 𝕜 E F} (h : HasSum p q) (m : Π i, E i) :
     HasSum (fun a => p a m) (q m) :=
   h.map (applyAddHom m) (continuous_eval_const m)
 #align continuous_multilinear_map.has_sum_eval ContinuousMultilinearMap.hasSum_eval
 
-theorem tsum_eval [T2Space F] {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F} (hp : Summable p)
+lemma tsum_eval [T2Space F] {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F} (hp : Summable p)
     (m : Π i, E i) : (∑' a, p a) m = ∑' a, p a m :=
   (hasSum_eval hp.hasSum m).tsum_eq.symm
 #align continuous_multilinear_map.tsum_eval ContinuousMultilinearMap.tsum_eval

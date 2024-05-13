@@ -45,7 +45,7 @@ def of (α : Type*) [PartialOrder α] [BoundedOrder α] : BddOrd :=
 #align BddOrd.of BddOrd.of
 
 @[simp]
-theorem coe_of (α : Type*) [PartialOrder α] [BoundedOrder α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [PartialOrder α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 #align BddOrd.coe_of BddOrd.coe_of
 
@@ -113,13 +113,13 @@ def dualEquiv : BddOrd ≌ BddOrd where
 
 end BddOrd
 
-theorem bddOrd_dual_comp_forget_to_partOrd :
+lemma bddOrd_dual_comp_forget_to_partOrd :
     BddOrd.dual ⋙ forget₂ BddOrd PartOrd =
     forget₂ BddOrd PartOrd ⋙ PartOrd.dual :=
   rfl
 #align BddOrd_dual_comp_forget_to_PartOrd bddOrd_dual_comp_forget_to_partOrd
 
-theorem bddOrd_dual_comp_forget_to_bipointed :
+lemma bddOrd_dual_comp_forget_to_bipointed :
     BddOrd.dual ⋙ forget₂ BddOrd Bipointed =
     forget₂ BddOrd Bipointed ⋙ Bipointed.swap :=
   rfl

@@ -170,11 +170,11 @@ export NormOneClass (norm_one)
 attribute [simp] norm_one
 
 @[simp]
-theorem nnnorm_one [SeminormedAddCommGroup α] [One α] [NormOneClass α] : ‖(1 : α)‖₊ = 1 :=
+lemma nnnorm_one [SeminormedAddCommGroup α] [One α] [NormOneClass α] : ‖(1 : α)‖₊ = 1 :=
   NNReal.eq norm_one
 #align nnnorm_one nnnorm_one
 
-theorem NormOneClass.nontrivial (α : Type*) [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
+lemma NormOneClass.nontrivial (α : Type*) [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
     Nontrivial α :=
   nontrivial_of_ne 0 1 <| ne_of_apply_ne norm <| by simp
 #align norm_one_class.nontrivial NormOneClass.nontrivial
@@ -225,31 +225,31 @@ section NonUnitalSeminormedRing
 
 variable [NonUnitalSeminormedRing α]
 
-theorem norm_mul_le (a b : α) : ‖a * b‖ ≤ ‖a‖ * ‖b‖ :=
+lemma norm_mul_le (a b : α) : ‖a * b‖ ≤ ‖a‖ * ‖b‖ :=
   NonUnitalSeminormedRing.norm_mul _ _
 #align norm_mul_le norm_mul_le
 
-theorem nnnorm_mul_le (a b : α) : ‖a * b‖₊ ≤ ‖a‖₊ * ‖b‖₊ := by
+lemma nnnorm_mul_le (a b : α) : ‖a * b‖₊ ≤ ‖a‖₊ * ‖b‖₊ := by
   simpa only [← norm_toNNReal, ← Real.toNNReal_mul (norm_nonneg _)] using
     Real.toNNReal_mono (norm_mul_le _ _)
 #align nnnorm_mul_le nnnorm_mul_le
 
-theorem one_le_norm_one (β) [NormedRing β] [Nontrivial β] : 1 ≤ ‖(1 : β)‖ :=
+lemma one_le_norm_one (β) [NormedRing β] [Nontrivial β] : 1 ≤ ‖(1 : β)‖ :=
   (le_mul_iff_one_le_left <| norm_pos_iff.mpr (one_ne_zero : (1 : β) ≠ 0)).mp
     (by simpa only [mul_one] using norm_mul_le (1 : β) 1)
 #align one_le_norm_one one_le_norm_one
 
-theorem one_le_nnnorm_one (β) [NormedRing β] [Nontrivial β] : 1 ≤ ‖(1 : β)‖₊ :=
+lemma one_le_nnnorm_one (β) [NormedRing β] [Nontrivial β] : 1 ≤ ‖(1 : β)‖₊ :=
   one_le_norm_one β
 #align one_le_nnnorm_one one_le_nnnorm_one
 
-theorem Filter.Tendsto.zero_mul_isBoundedUnder_le {f g : ι → α} {l : Filter ι}
+lemma Filter.Tendsto.zero_mul_isBoundedUnder_le {f g : ι → α} {l : Filter ι}
     (hf : Tendsto f l (𝓝 0)) (hg : IsBoundedUnder (· ≤ ·) l ((‖·‖) ∘ g)) :
     Tendsto (fun x => f x * g x) l (𝓝 0) :=
   hf.op_zero_isBoundedUnder_le hg (· * ·) norm_mul_le
 #align filter.tendsto.zero_mul_is_bounded_under_le Filter.Tendsto.zero_mul_isBoundedUnder_le
 
-theorem Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter ι}
+lemma Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter ι}
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
     Tendsto (fun x => f x * g x) l (𝓝 0) :=
   hg.op_zero_isBoundedUnder_le hf (flip (· * ·)) fun x y =>
@@ -349,14 +349,14 @@ instance Subalgebra.normedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [Norme
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 #align subalgebra.normed_ring Subalgebra.normedRing
 
-theorem Nat.norm_cast_le : ∀ n : ℕ, ‖(n : α)‖ ≤ n * ‖(1 : α)‖
+lemma Nat.norm_cast_le : ∀ n : ℕ, ‖(n : α)‖ ≤ n * ‖(1 : α)‖
   | 0 => by simp
   | n + 1 => by
     rw [n.cast_succ, n.cast_succ, add_mul, one_mul]
     exact norm_add_le_of_le (Nat.norm_cast_le n) le_rfl
 #align nat.norm_cast_le Nat.norm_cast_le
 
-theorem List.norm_prod_le' : ∀ {l : List α}, l ≠ [] → ‖l.prod‖ ≤ (l.map norm).prod
+lemma List.norm_prod_le' : ∀ {l : List α}, l ≠ [] → ‖l.prod‖ ≤ (l.map norm).prod
   | [], h => (h rfl).elim
   | [a], _ => by simp
   | a::b::l, _ => by
@@ -365,38 +365,38 @@ theorem List.norm_prod_le' : ∀ {l : List α}, l ≠ [] → ‖l.prod‖ ≤ (l
     exact List.norm_prod_le' (List.cons_ne_nil b l)
 #align list.norm_prod_le' List.norm_prod_le'
 
-theorem List.nnnorm_prod_le' {l : List α} (hl : l ≠ []) : ‖l.prod‖₊ ≤ (l.map nnnorm).prod :=
+lemma List.nnnorm_prod_le' {l : List α} (hl : l ≠ []) : ‖l.prod‖₊ ≤ (l.map nnnorm).prod :=
   (List.norm_prod_le' hl).trans_eq <| by simp [NNReal.coe_list_prod, List.map_map]
 #align list.nnnorm_prod_le' List.nnnorm_prod_le'
 
-theorem List.norm_prod_le [NormOneClass α] : ∀ l : List α, ‖l.prod‖ ≤ (l.map norm).prod
+lemma List.norm_prod_le [NormOneClass α] : ∀ l : List α, ‖l.prod‖ ≤ (l.map norm).prod
   | [] => by simp
   | a::l => List.norm_prod_le' (List.cons_ne_nil a l)
 #align list.norm_prod_le List.norm_prod_le
 
-theorem List.nnnorm_prod_le [NormOneClass α] (l : List α) : ‖l.prod‖₊ ≤ (l.map nnnorm).prod :=
+lemma List.nnnorm_prod_le [NormOneClass α] (l : List α) : ‖l.prod‖₊ ≤ (l.map nnnorm).prod :=
   l.norm_prod_le.trans_eq <| by simp [NNReal.coe_list_prod, List.map_map]
 #align list.nnnorm_prod_le List.nnnorm_prod_le
 
-theorem Finset.norm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) (hs : s.Nonempty)
+lemma Finset.norm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) (hs : s.Nonempty)
     (f : ι → α) : ‖∏ i in s, f i‖ ≤ ∏ i in s, ‖f i‖ := by
   rcases s with ⟨⟨l⟩, hl⟩
   have : l.map f ≠ [] := by simpa using hs
   simpa using List.norm_prod_le' this
 #align finset.norm_prod_le' Finset.norm_prod_le'
 
-theorem Finset.nnnorm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) (hs : s.Nonempty)
+lemma Finset.nnnorm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) (hs : s.Nonempty)
     (f : ι → α) : ‖∏ i in s, f i‖₊ ≤ ∏ i in s, ‖f i‖₊ :=
   (s.norm_prod_le' hs f).trans_eq <| by simp [NNReal.coe_prod]
 #align finset.nnnorm_prod_le' Finset.nnnorm_prod_le'
 
-theorem Finset.norm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (s : Finset ι)
+lemma Finset.norm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (s : Finset ι)
     (f : ι → α) : ‖∏ i in s, f i‖ ≤ ∏ i in s, ‖f i‖ := by
   rcases s with ⟨⟨l⟩, hl⟩
   simpa using (l.map f).norm_prod_le
 #align finset.norm_prod_le Finset.norm_prod_le
 
-theorem Finset.nnnorm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (s : Finset ι)
+lemma Finset.nnnorm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (s : Finset ι)
     (f : ι → α) : ‖∏ i in s, f i‖₊ ≤ ∏ i in s, ‖f i‖₊ :=
   (s.norm_prod_le f).trans_eq <| by simp [NNReal.coe_prod]
 #align finset.nnnorm_prod_le Finset.nnnorm_prod_le
@@ -429,7 +429,7 @@ theorem norm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖ ≤ ‖a�
     fun n _hn => norm_pow_le' a n.succ_pos
 #align norm_pow_le norm_pow_le
 
-theorem eventually_norm_pow_le (a : α) : ∀ᶠ n : ℕ in atTop, ‖a ^ n‖ ≤ ‖a‖ ^ n :=
+lemma eventually_norm_pow_le (a : α) : ∀ᶠ n : ℕ in atTop, ‖a ^ n‖ ≤ ‖a‖ ^ n :=
   eventually_atTop.mpr ⟨1, fun _b h => norm_pow_le' a (Nat.succ_le_iff.mp h)⟩
 #align eventually_norm_pow_le eventually_norm_pow_le
 
@@ -488,11 +488,11 @@ section NormedRing
 
 variable [NormedRing α]
 
-theorem Units.norm_pos [Nontrivial α] (x : αˣ) : 0 < ‖(x : α)‖ :=
+lemma Units.norm_pos [Nontrivial α] (x : αˣ) : 0 < ‖(x : α)‖ :=
   norm_pos_iff.mpr (Units.ne_zero x)
 #align units.norm_pos Units.norm_pos
 
-theorem Units.nnnorm_pos [Nontrivial α] (x : αˣ) : 0 < ‖(x : α)‖₊ :=
+lemma Units.nnnorm_pos [Nontrivial α] (x : αˣ) : 0 < ‖(x : α)‖₊ :=
   x.norm_pos
 #align units.nnnorm_pos Units.nnnorm_pos
 
@@ -679,7 +679,7 @@ section NormedDivisionRing
 variable [NormedDivisionRing α] {a : α}
 
 @[simp]
-theorem norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ :=
+lemma norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ :=
   NormedDivisionRing.norm_mul' a b
 #align norm_mul norm_mul
 
@@ -696,7 +696,7 @@ instance isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ)
 #align is_absolute_value_norm isAbsoluteValue_norm
 
 @[simp]
-theorem nnnorm_mul (a b : α) : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ :=
+lemma nnnorm_mul (a b : α) : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ :=
   NNReal.eq <| norm_mul a b
 #align nnnorm_mul nnnorm_mul
 
@@ -719,60 +719,60 @@ def nnnormHom : α →*₀ ℝ≥0 where
 #align nnnorm_hom nnnormHom
 
 @[simp]
-theorem norm_pow (a : α) : ∀ n : ℕ, ‖a ^ n‖ = ‖a‖ ^ n :=
+lemma norm_pow (a : α) : ∀ n : ℕ, ‖a ^ n‖ = ‖a‖ ^ n :=
   (normHom.toMonoidHom : α →* ℝ).map_pow a
 #align norm_pow norm_pow
 
 @[simp]
-theorem nnnorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
+lemma nnnorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
   (nnnormHom.toMonoidHom : α →* ℝ≥0).map_pow a n
 #align nnnorm_pow nnnorm_pow
 
-protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
+protected lemma List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
   (normHom.toMonoidHom : α →* ℝ).map_list_prod _
 #align list.norm_prod List.norm_prod
 
-protected theorem List.nnnorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnnorm).prod :=
+protected lemma List.nnnorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnnorm).prod :=
   (nnnormHom.toMonoidHom : α →* ℝ≥0).map_list_prod _
 #align list.nnnorm_prod List.nnnorm_prod
 
 @[simp]
-theorem norm_div (a b : α) : ‖a / b‖ = ‖a‖ / ‖b‖ :=
+lemma norm_div (a b : α) : ‖a / b‖ = ‖a‖ / ‖b‖ :=
   map_div₀ (normHom : α →*₀ ℝ) a b
 #align norm_div norm_div
 
 @[simp]
-theorem nnnorm_div (a b : α) : ‖a / b‖₊ = ‖a‖₊ / ‖b‖₊ :=
+lemma nnnorm_div (a b : α) : ‖a / b‖₊ = ‖a‖₊ / ‖b‖₊ :=
   map_div₀ (nnnormHom : α →*₀ ℝ≥0) a b
 #align nnnorm_div nnnorm_div
 
 @[simp]
-theorem norm_inv (a : α) : ‖a⁻¹‖ = ‖a‖⁻¹ :=
+lemma norm_inv (a : α) : ‖a⁻¹‖ = ‖a‖⁻¹ :=
   map_inv₀ (normHom : α →*₀ ℝ) a
 #align norm_inv norm_inv
 
 @[simp]
-theorem nnnorm_inv (a : α) : ‖a⁻¹‖₊ = ‖a‖₊⁻¹ :=
+lemma nnnorm_inv (a : α) : ‖a⁻¹‖₊ = ‖a‖₊⁻¹ :=
   NNReal.eq <| by simp
 #align nnnorm_inv nnnorm_inv
 
 @[simp]
-theorem norm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖ = ‖a‖ ^ n :=
+lemma norm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖ = ‖a‖ ^ n :=
   map_zpow₀ (normHom : α →*₀ ℝ)
 #align norm_zpow norm_zpow
 
 @[simp]
-theorem nnnorm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
+lemma nnnorm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
   map_zpow₀ (nnnormHom : α →*₀ ℝ≥0)
 #align nnnorm_zpow nnnorm_zpow
 
-theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
+lemma dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
     dist z⁻¹ w⁻¹ = dist z w / (‖z‖ * ‖w‖) := by
   rw [dist_eq_norm, inv_sub_inv' hz hw, norm_mul, norm_mul, norm_inv, norm_inv, mul_comm ‖z‖⁻¹,
     mul_assoc, dist_eq_norm', div_eq_mul_inv, mul_inv]
 #align dist_inv_inv₀ dist_inv_inv₀
 
-theorem nndist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
+lemma nndist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
     nndist z⁻¹ w⁻¹ = nndist z w / (‖z‖₊ * ‖w‖₊) :=
   NNReal.eq <| dist_inv_inv₀ hz hw
 #align nndist_inv_inv₀ nndist_inv_inv₀
@@ -849,7 +849,7 @@ lemma inv_nhdsWithin_ne_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
 lemma tendsto_inv₀_cobounded' : Tendsto Inv.inv (cobounded α) (𝓝[≠] 0) :=
   inv_cobounded₀.le
 
-theorem tendsto_inv₀_cobounded : Tendsto Inv.inv (cobounded α) (𝓝 0) :=
+lemma tendsto_inv₀_cobounded : Tendsto Inv.inv (cobounded α) (𝓝 0) :=
   tendsto_inv₀_cobounded'.mono_right inf_le_left
 
 lemma tendsto_inv₀_nhdsWithin_ne_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobounded α) :=
@@ -941,12 +941,12 @@ instance (priority := 100) NormedField.toNormedCommRing : NormedCommRing α :=
 #align normed_field.to_normed_comm_ring NormedField.toNormedCommRing
 
 @[simp]
-theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b in s, f b‖ = ∏ b in s, ‖f b‖ :=
+lemma norm_prod (s : Finset β) (f : β → α) : ‖∏ b in s, f b‖ = ∏ b in s, ‖f b‖ :=
   map_prod normHom.toMonoidHom f s
 #align norm_prod norm_prod
 
 @[simp]
-theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b in s, f b‖₊ = ∏ b in s, ‖f b‖₊ :=
+lemma nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b in s, f b‖₊ = ∏ b in s, ‖f b‖₊ :=
   map_prod nnnormHom.toMonoidHom f s
 #align nnnorm_prod nnnorm_prod
 
@@ -958,29 +958,29 @@ section Nontrivially
 
 variable (α) [NontriviallyNormedField α]
 
-theorem exists_one_lt_norm : ∃ x : α, 1 < ‖x‖ :=
+lemma exists_one_lt_norm : ∃ x : α, 1 < ‖x‖ :=
   ‹NontriviallyNormedField α›.non_trivial
 #align normed_field.exists_one_lt_norm NormedField.exists_one_lt_norm
 
-theorem exists_lt_norm (r : ℝ) : ∃ x : α, r < ‖x‖ :=
+lemma exists_lt_norm (r : ℝ) : ∃ x : α, r < ‖x‖ :=
   let ⟨w, hw⟩ := exists_one_lt_norm α
   let ⟨n, hn⟩ := pow_unbounded_of_one_lt r hw
   ⟨w ^ n, by rwa [norm_pow]⟩
 #align normed_field.exists_lt_norm NormedField.exists_lt_norm
 
-theorem exists_norm_lt {r : ℝ} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < r :=
+lemma exists_norm_lt {r : ℝ} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < r :=
   let ⟨w, hw⟩ := exists_lt_norm α r⁻¹
   ⟨w⁻¹, by rwa [← Set.mem_Ioo, norm_inv, ← Set.mem_inv, Set.inv_Ioo_0_left hr]⟩
 #align normed_field.exists_norm_lt NormedField.exists_norm_lt
 
-theorem exists_norm_lt_one : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < 1 :=
+lemma exists_norm_lt_one : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < 1 :=
   exists_norm_lt α one_pos
 #align normed_field.exists_norm_lt_one NormedField.exists_norm_lt_one
 
 variable {α}
 
 @[instance]
-theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
+lemma punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
   rw [← mem_closure_iff_nhdsWithin_neBot, Metric.mem_closure_iff]
   rintro ε ε0
   rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
@@ -989,7 +989,7 @@ theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
 #align normed_field.punctured_nhds_ne_bot NormedField.punctured_nhds_neBot
 
 @[instance]
-theorem nhdsWithin_isUnit_neBot : NeBot (𝓝[{ x : α | IsUnit x }] 0) := by
+lemma nhdsWithin_isUnit_neBot : NeBot (𝓝[{ x : α | IsUnit x }] 0) := by
   simpa only [isUnit_iff_ne_zero] using punctured_nhds_neBot (0 : α)
 #align normed_field.nhds_within_is_unit_ne_bot NormedField.nhdsWithin_isUnit_neBot
 
@@ -999,11 +999,11 @@ section Densely
 
 variable (α) [DenselyNormedField α]
 
-theorem exists_lt_norm_lt {r₁ r₂ : ℝ} (h₀ : 0 ≤ r₁) (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖ ∧ ‖x‖ < r₂ :=
+lemma exists_lt_norm_lt {r₁ r₂ : ℝ} (h₀ : 0 ≤ r₁) (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖ ∧ ‖x‖ < r₂ :=
   DenselyNormedField.lt_norm_lt r₁ r₂ h₀ h
 #align normed_field.exists_lt_norm_lt NormedField.exists_lt_norm_lt
 
-theorem exists_lt_nnnorm_lt {r₁ r₂ : ℝ≥0} (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖₊ ∧ ‖x‖₊ < r₂ :=
+lemma exists_lt_nnnorm_lt {r₁ r₂ : ℝ≥0} (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖₊ ∧ ‖x‖₊ < r₂ :=
   mod_cast exists_lt_norm_lt α r₁.prop h
 #align normed_field.exists_lt_nnnorm_lt NormedField.exists_lt_nnnorm_lt
 
@@ -1021,7 +1021,7 @@ instance denselyOrdered_range_nnnorm : DenselyOrdered (Set.range (nnnorm : α �
     exact ⟨⟨‖z‖₊, z, rfl⟩, h⟩
 #align normed_field.densely_ordered_range_nnnorm NormedField.denselyOrdered_range_nnnorm
 
-theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
+lemma denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
   dense_of_exists_between fun _ _ hr =>
     let ⟨x, h⟩ := exists_lt_nnnorm_lt α hr
     ⟨‖x‖₊, ⟨x, rfl⟩, h⟩
@@ -1058,13 +1058,13 @@ noncomputable instance Real.denselyNormedField : DenselyNormedField ℝ where
 
 namespace Real
 
-theorem toNNReal_mul_nnnorm {x : ℝ} (y : ℝ) (hx : 0 ≤ x) : x.toNNReal * ‖y‖₊ = ‖x * y‖₊ := by
+lemma toNNReal_mul_nnnorm {x : ℝ} (y : ℝ) (hx : 0 ≤ x) : x.toNNReal * ‖y‖₊ = ‖x * y‖₊ := by
   ext
   simp only [NNReal.coe_mul, nnnorm_mul, coe_nnnorm, Real.toNNReal_of_nonneg, norm_of_nonneg, hx,
     NNReal.coe_mk]
 #align real.to_nnreal_mul_nnnorm Real.toNNReal_mul_nnnorm
 
-theorem nnnorm_mul_toNNReal (x : ℝ) {y : ℝ} (hy : 0 ≤ y) : ‖x‖₊ * y.toNNReal = ‖x * y‖₊ := by
+lemma nnnorm_mul_toNNReal (x : ℝ) {y : ℝ} (hy : 0 ≤ y) : ‖x‖₊ * y.toNNReal = ‖x * y‖₊ := by
   rw [mul_comm, mul_comm x, toNNReal_mul_nnnorm x hy]
 #align real.nnnorm_mul_to_nnreal Real.nnnorm_mul_toNNReal
 
@@ -1075,23 +1075,23 @@ namespace NNReal
 open NNReal
 
 -- porting note (#10618): removed `@[simp]` because `simp` can prove this
-theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
+lemma norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
 #align nnreal.norm_eq NNReal.norm_eq
 
 @[simp]
-theorem nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x :=
+lemma nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x :=
   NNReal.eq <| Real.norm_of_nonneg x.2
 #align nnreal.nnnorm_eq NNReal.nnnorm_eq
 
 end NNReal
 
 @[simp 1001] -- Porting note: increase priority so that the LHS doesn't simplify
-theorem norm_norm [SeminormedAddCommGroup α] (x : α) : ‖‖x‖‖ = ‖x‖ :=
+lemma norm_norm [SeminormedAddCommGroup α] (x : α) : ‖‖x‖‖ = ‖x‖ :=
   Real.norm_of_nonneg (norm_nonneg _)
 #align norm_norm norm_norm
 
 @[simp]
-theorem nnnorm_norm [SeminormedAddCommGroup α] (a : α) : ‖‖a‖‖₊ = ‖a‖₊ := by
+lemma nnnorm_norm [SeminormedAddCommGroup α] (a : α) : ‖‖a‖‖₊ = ‖a‖₊ := by
   rw [Real.nnnorm_of_nonneg (norm_nonneg a)]; rfl
 #align nnnorm_norm nnnorm_norm
 

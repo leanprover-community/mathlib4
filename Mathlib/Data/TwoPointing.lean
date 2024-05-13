@@ -44,7 +44,7 @@ namespace TwoPointing
 
 variable (p : TwoPointing α) (q : TwoPointing β)
 
-theorem snd_ne_fst : p.snd ≠ p.fst :=
+lemma snd_ne_fst : p.snd ≠ p.fst :=
   p.fst_ne_snd.symm
 #align two_pointing.snd_ne_fst TwoPointing.snd_ne_fst
 
@@ -55,17 +55,17 @@ def swap : TwoPointing α :=
 #align two_pointing.swap TwoPointing.swap
 #align two_pointing.swap_to_prod TwoPointing.swap_toProd
 
-theorem swap_fst : p.swap.fst = p.snd := rfl
+lemma swap_fst : p.swap.fst = p.snd := rfl
 #align two_pointing.swap_fst TwoPointing.swap_fst
 
-theorem swap_snd : p.swap.snd = p.fst := rfl
+lemma swap_snd : p.swap.snd = p.fst := rfl
 #align two_pointing.swap_snd TwoPointing.swap_snd
 
 @[simp]
-theorem swap_swap : p.swap.swap = p := rfl
+lemma swap_swap : p.swap.swap = p := rfl
 #align two_pointing.swap_swap TwoPointing.swap_swap
 
-theorem to_nontrivial : Nontrivial α :=
+lemma to_nontrivial : Nontrivial α :=
   ⟨⟨p.fst, p.snd, p.fst_ne_snd⟩⟩
 #align two_pointing.to_nontrivial TwoPointing.to_nontrivial
 
@@ -74,7 +74,7 @@ instance [Nontrivial α] : Nonempty (TwoPointing α) :=
   ⟨⟨(a, b), h⟩⟩
 
 @[simp]
-theorem nonempty_two_pointing_iff : Nonempty (TwoPointing α) ↔ Nontrivial α :=
+lemma nonempty_two_pointing_iff : Nonempty (TwoPointing α) ↔ Nontrivial α :=
   ⟨fun ⟨p⟩ ↦ p.to_nontrivial, fun _ => inferInstance⟩
 #align two_pointing.nonempty_two_pointing_iff TwoPointing.nonempty_two_pointing_iff
 
@@ -90,12 +90,12 @@ def pi : TwoPointing (α → β) where
 #align two_pointing.pi TwoPointing.pi
 
 @[simp]
-theorem pi_fst : (q.pi α).fst = const α q.fst :=
+lemma pi_fst : (q.pi α).fst = const α q.fst :=
   rfl
 #align two_pointing.pi_fst TwoPointing.pi_fst
 
 @[simp]
-theorem pi_snd : (q.pi α).snd = const α q.snd :=
+lemma pi_snd : (q.pi α).snd = const α q.snd :=
   rfl
 #align two_pointing.pi_snd TwoPointing.pi_snd
 
@@ -109,12 +109,12 @@ def prod : TwoPointing (α × β) where
 #align two_pointing.prod TwoPointing.prod
 
 @[simp]
-theorem prod_fst : (p.prod q).fst = (p.fst, q.fst) :=
+lemma prod_fst : (p.prod q).fst = (p.fst, q.fst) :=
   rfl
 #align two_pointing.prod_fst TwoPointing.prod_fst
 
 @[simp]
-theorem prod_snd : (p.prod q).snd = (p.snd, q.snd) :=
+lemma prod_snd : (p.prod q).snd = (p.snd, q.snd) :=
   rfl
 #align two_pointing.prod_snd TwoPointing.prod_snd
 
@@ -125,12 +125,12 @@ protected def sum : TwoPointing (Sum α β) :=
 #align two_pointing.sum TwoPointing.sum
 
 @[simp]
-theorem sum_fst : (p.sum q).fst = Sum.inl p.fst :=
+lemma sum_fst : (p.sum q).fst = Sum.inl p.fst :=
   rfl
 #align two_pointing.sum_fst TwoPointing.sum_fst
 
 @[simp]
-theorem sum_snd : (p.sum q).snd = Sum.inr q.snd :=
+lemma sum_snd : (p.sum q).snd = Sum.inr q.snd :=
   rfl
 #align two_pointing.sum_snd TwoPointing.sum_snd
 
@@ -140,11 +140,11 @@ protected def bool : TwoPointing Bool :=
 #align two_pointing.bool TwoPointing.bool
 
 @[simp]
-theorem bool_fst : TwoPointing.bool.fst = false := rfl
+lemma bool_fst : TwoPointing.bool.fst = false := rfl
 #align two_pointing.bool_fst TwoPointing.bool_fst
 
 @[simp]
-theorem bool_snd : TwoPointing.bool.snd = true := rfl
+lemma bool_snd : TwoPointing.bool.snd = true := rfl
 #align two_pointing.bool_snd TwoPointing.bool_snd
 
 instance : Inhabited (TwoPointing Bool) :=
@@ -156,12 +156,12 @@ protected def prop : TwoPointing Prop :=
 #align two_pointing.Prop TwoPointing.prop
 
 @[simp]
-theorem prop_fst : TwoPointing.prop.fst = False :=
+lemma prop_fst : TwoPointing.prop.fst = False :=
   rfl
 #align two_pointing.Prop_fst TwoPointing.prop_fst
 
 @[simp]
-theorem prop_snd : TwoPointing.prop.snd = True :=
+lemma prop_snd : TwoPointing.prop.snd = True :=
   rfl
 #align two_pointing.Prop_snd TwoPointing.prop_snd
 

@@ -66,11 +66,11 @@ def Equiv.lpPiLp : lp E p ≃ PiLp p E where
   right_inv _f := rfl
 #align equiv.lp_pi_Lp Equiv.lpPiLp
 
-theorem coe_equiv_lpPiLp (f : lp E p) : Equiv.lpPiLp f = ⇑f :=
+lemma coe_equiv_lpPiLp (f : lp E p) : Equiv.lpPiLp f = ⇑f :=
   rfl
 #align coe_equiv_lp_pi_Lp coe_equiv_lpPiLp
 
-theorem coe_equiv_lpPiLp_symm (f : PiLp p E) : (Equiv.lpPiLp.symm f : ∀ i, E i) = f :=
+lemma coe_equiv_lpPiLp_symm (f : PiLp p E) : (Equiv.lpPiLp.symm f : ∀ i, E i) = f :=
   rfl
 #align coe_equiv_lp_pi_Lp_symm coe_equiv_lpPiLp_symm
 
@@ -80,18 +80,18 @@ def AddEquiv.lpPiLp : lp E p ≃+ PiLp p E :=
   { Equiv.lpPiLp with map_add' := fun _f _g ↦ rfl }
 #align add_equiv.lp_pi_Lp AddEquiv.lpPiLp
 
-theorem coe_addEquiv_lpPiLp  (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
+lemma coe_addEquiv_lpPiLp  (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
   rfl
 #align coe_add_equiv_lp_pi_Lp coe_addEquiv_lpPiLp
 
-theorem coe_addEquiv_lpPiLp_symm (f : PiLp p E) :
+lemma coe_addEquiv_lpPiLp_symm (f : PiLp p E) :
     (AddEquiv.lpPiLp.symm f : ∀ i, E i) = f :=
   rfl
 #align coe_add_equiv_lp_pi_Lp_symm coe_addEquiv_lpPiLp_symm
 
 end Finite
 
-theorem equiv_lpPiLp_norm [Fintype α] (f : lp E p) : ‖Equiv.lpPiLp f‖ = ‖f‖ := by
+lemma equiv_lpPiLp_norm [Fintype α] (f : lp E p) : ‖Equiv.lpPiLp f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | h)
   · simp [Equiv.lpPiLp, PiLp.norm_eq_card, lp.norm_eq_card_dsupport]
   · rw [PiLp.norm_eq_ciSup, lp.norm_eq_ciSup]; rfl
@@ -117,11 +117,11 @@ noncomputable def lpPiLpₗᵢ [Fact (1 ≤ p)] : lp E p ≃ₗᵢ[𝕜] PiLp p 
 
 variable {𝕜 E}
 
-theorem coe_lpPiLpₗᵢ [Fact (1 ≤ p)] (f : lp E p) : (lpPiLpₗᵢ E 𝕜 f : ∀ i, E i) = ⇑f :=
+lemma coe_lpPiLpₗᵢ [Fact (1 ≤ p)] (f : lp E p) : (lpPiLpₗᵢ E 𝕜 f : ∀ i, E i) = ⇑f :=
   rfl
 #align coe_lp_pi_Lpₗᵢ coe_lpPiLpₗᵢ
 
-theorem coe_lpPiLpₗᵢ_symm [Fact (1 ≤ p)] (f : PiLp p E) :
+lemma coe_lpPiLpₗᵢ_symm [Fact (1 ≤ p)] (f : PiLp p E) :
     ((lpPiLpₗᵢ E 𝕜).symm f : ∀ i, E i) = f :=
   rfl
 #align coe_lp_pi_Lpₗᵢ_symm coe_lpPiLpₗᵢ_symm
@@ -154,11 +154,11 @@ noncomputable def AddEquiv.lpBCF : lp (fun _ : α ↦ E) ∞ ≃+ (α →ᵇ E) 
 
 @[deprecated] alias AddEquiv.lpBcf := AddEquiv.lpBCF -- 2024-03-16
 
-theorem coe_addEquiv_lpBCF (f : lp (fun _ : α ↦ E) ∞) : (AddEquiv.lpBCF f : α → E) = f :=
+lemma coe_addEquiv_lpBCF (f : lp (fun _ : α ↦ E) ∞) : (AddEquiv.lpBCF f : α → E) = f :=
   rfl
 #align coe_add_equiv_lp_bcf coe_addEquiv_lpBCF
 
-theorem coe_addEquiv_lpBCF_symm (f : α →ᵇ E) : (AddEquiv.lpBCF.symm f : α → E) = f :=
+lemma coe_addEquiv_lpBCF_symm (f : α →ᵇ E) : (AddEquiv.lpBCF.symm f : α → E) = f :=
   rfl
 #align coe_add_equiv_lp_bcf_symm coe_addEquiv_lpBCF_symm
 
@@ -179,11 +179,11 @@ noncomputable def lpBCFₗᵢ : lp (fun _ : α ↦ E) ∞ ≃ₗᵢ[𝕜] α →
 
 variable {𝕜 E}
 
-theorem coe_lpBCFₗᵢ (f : lp (fun _ : α ↦ E) ∞) : (lpBCFₗᵢ E 𝕜 f : α → E) = f :=
+lemma coe_lpBCFₗᵢ (f : lp (fun _ : α ↦ E) ∞) : (lpBCFₗᵢ E 𝕜 f : α → E) = f :=
   rfl
 #align coe_lp_bcfₗᵢ coe_lpBCFₗᵢ
 
-theorem coe_lpBCFₗᵢ_symm (f : α →ᵇ E) : ((lpBCFₗᵢ E 𝕜).symm f : α → E) = f :=
+lemma coe_lpBCFₗᵢ_symm (f : α →ᵇ E) : ((lpBCFₗᵢ E 𝕜).symm f : α → E) = f :=
   rfl
 #align coe_lp_bcfₗᵢ_symm coe_lpBCFₗᵢ_symm
 
@@ -201,11 +201,11 @@ noncomputable def RingEquiv.lpBCF : lp (fun _ : α ↦ R) ∞ ≃+* (α →ᵇ R
 
 variable {R}
 
-theorem coe_ringEquiv_lpBCF (f : lp (fun _ : α ↦ R) ∞) : (RingEquiv.lpBCF R f : α → R) = f :=
+lemma coe_ringEquiv_lpBCF (f : lp (fun _ : α ↦ R) ∞) : (RingEquiv.lpBCF R f : α → R) = f :=
   rfl
 #align coe_ring_equiv_lp_bcf coe_ringEquiv_lpBCF
 
-theorem coe_ringEquiv_lpBCF_symm (f : α →ᵇ R) : ((RingEquiv.lpBCF R).symm f : α → R) = f :=
+lemma coe_ringEquiv_lpBCF_symm (f : α →ᵇ R) : ((RingEquiv.lpBCF R).symm f : α → R) = f :=
   rfl
 #align coe_ring_equiv_lp_bcf_symm coe_ringEquiv_lpBCF_symm
 
@@ -223,11 +223,11 @@ noncomputable def AlgEquiv.lpBCF : lp (fun _ : α ↦ A) ∞ ≃ₐ[𝕜] α →
 
 variable {α A 𝕜}
 
-theorem coe_algEquiv_lpBCF (f : lp (fun _ : α ↦ A) ∞) : (AlgEquiv.lpBCF α A 𝕜 f : α → A) = f :=
+lemma coe_algEquiv_lpBCF (f : lp (fun _ : α ↦ A) ∞) : (AlgEquiv.lpBCF α A 𝕜 f : α → A) = f :=
   rfl
 #align coe_alg_equiv_lp_bcf coe_algEquiv_lpBCF
 
-theorem coe_algEquiv_lpBCF_symm (f : α →ᵇ A) : ((AlgEquiv.lpBCF α A 𝕜).symm f : α → A) = f :=
+lemma coe_algEquiv_lpBCF_symm (f : α →ᵇ A) : ((AlgEquiv.lpBCF α A 𝕜).symm f : α → A) = f :=
   rfl
 #align coe_alg_equiv_lp_bcf_symm coe_algEquiv_lpBCF_symm
 

@@ -37,11 +37,11 @@ variable {R : Type*} [NormedRing R] [CompleteSpace R]
 instance : ChartedSpace R Rˣ :=
   openEmbedding_val.singletonChartedSpace
 
-theorem chartAt_apply {a : Rˣ} {b : Rˣ} : chartAt R a b = b :=
+lemma chartAt_apply {a : Rˣ} {b : Rˣ} : chartAt R a b = b :=
   rfl
 #align units.chart_at_apply Units.chartAt_apply
 
-theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
+lemma chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
   rfl
 #align units.chart_at_source Units.chartAt_source
 

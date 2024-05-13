@@ -45,11 +45,11 @@ section Semiring
 
 variable [Semiring α] [Semiring β]
 
-theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
+lemma isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
   IsUnit.map f
 #align ring_hom.is_unit_map RingHom.isUnit_map
 
-protected theorem map_dvd (f : α →+* β) {a b : α} : a ∣ b → f a ∣ f b :=
+protected lemma map_dvd (f : α →+* β) {a b : α} : a ∣ b → f a ∣ f b :=
   map_dvd f
 #align ring_hom.map_dvd RingHom.map_dvd
 

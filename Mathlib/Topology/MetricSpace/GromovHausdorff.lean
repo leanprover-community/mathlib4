@@ -100,7 +100,7 @@ def GHSpace.Rep (p : GHSpace) : Type :=
   (Quotient.out p : NonemptyCompacts ℓ_infty_ℝ)
 #align Gromov_Hausdorff.GH_space.rep GromovHausdorff.GHSpace.Rep
 
-theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty X]
+lemma eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty X]
     {p : NonemptyCompacts ℓ_infty_ℝ} :
     ⟦p⟧ = toGHSpace X ↔ ∃ Ψ : X → ℓ_infty_ℝ, Isometry Ψ ∧ range Ψ = p := by
   simp only [toGHSpace, Quotient.eq]
@@ -119,7 +119,7 @@ theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty
     exact ⟨cast E f⟩
 #align Gromov_Hausdorff.eq_to_GH_space_iff GromovHausdorff.eq_toGHSpace_iff
 
-theorem eq_toGHSpace {p : NonemptyCompacts ℓ_infty_ℝ} : ⟦p⟧ = toGHSpace p :=
+lemma eq_toGHSpace {p : NonemptyCompacts ℓ_infty_ℝ} : ⟦p⟧ = toGHSpace p :=
   eq_toGHSpace_iff.2 ⟨fun x => x, isometry_subtype_coe, Subtype.range_coe⟩
 #align Gromov_Hausdorff.eq_to_GH_space GromovHausdorff.eq_toGHSpace
 
@@ -139,7 +139,7 @@ instance rep_gHSpace_nonempty {p : GHSpace} : Nonempty p.Rep :=
 
 end
 
-theorem GHSpace.toGHSpace_rep (p : GHSpace) : toGHSpace p.Rep = p := by
+lemma GHSpace.toGHSpace_rep (p : GHSpace) : toGHSpace p.Rep = p := by
   change toGHSpace (Quot.out p : NonemptyCompacts ℓ_infty_ℝ) = p
   rw [← eq_toGHSpace]
   exact Quot.out_eq p
@@ -187,7 +187,7 @@ def ghDist (X : Type u) (Y : Type v) [MetricSpace X] [Nonempty X] [CompactSpace 
   dist (toGHSpace X) (toGHSpace Y)
 #align Gromov_Hausdorff.GH_dist GromovHausdorff.ghDist
 
-theorem dist_ghDist (p q : GHSpace) : dist p q = ghDist p.Rep q.Rep := by
+lemma dist_ghDist (p q : GHSpace) : dist p q = ghDist p.Rep q.Rep := by
   rw [ghDist, p.toGHSpace_rep, q.toGHSpace_rep]
 #align Gromov_Hausdorff.dist_GH_dist GromovHausdorff.dist_ghDist
 
@@ -538,7 +538,7 @@ section NonemptyCompacts
 
 variable {X : Type u} [MetricSpace X]
 
-theorem ghDist_le_nonemptyCompacts_dist (p q : NonemptyCompacts X) :
+lemma ghDist_le_nonemptyCompacts_dist (p q : NonemptyCompacts X) :
     dist p.toGHSpace q.toGHSpace ≤ dist p q := by
   have ha : Isometry ((↑) : p → X) := isometry_subtype_coe
   have hb : Isometry ((↑) : q → X) := isometry_subtype_coe
@@ -549,12 +549,12 @@ theorem ghDist_le_nonemptyCompacts_dist (p q : NonemptyCompacts X) :
   exact ghDist_le_hausdorffDist ha hb
 #align Gromov_Hausdorff.GH_dist_le_nonempty_compacts_dist GromovHausdorff.ghDist_le_nonemptyCompacts_dist
 
-theorem toGHSpace_lipschitz :
+lemma toGHSpace_lipschitz :
     LipschitzWith 1 (NonemptyCompacts.toGHSpace : NonemptyCompacts X → GHSpace) :=
   LipschitzWith.mk_one ghDist_le_nonemptyCompacts_dist
 #align Gromov_Hausdorff.to_GH_space_lipschitz GromovHausdorff.toGHSpace_lipschitz
 
-theorem toGHSpace_continuous :
+lemma toGHSpace_continuous :
     Continuous (NonemptyCompacts.toGHSpace : NonemptyCompacts X → GHSpace) :=
   toGHSpace_lipschitz.continuous
 #align Gromov_Hausdorff.to_GH_space_continuous GromovHausdorff.toGHSpace_continuous

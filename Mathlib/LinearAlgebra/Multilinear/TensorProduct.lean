@@ -76,7 +76,7 @@ def domCoprod' :
 #align multilinear_map.dom_coprod' MultilinearMap.domCoprod'
 
 @[simp]
-theorem domCoprod'_apply (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
+lemma domCoprod'_apply (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
     (b : MultilinearMap R (fun _ : ι₂ => N) N₂) : domCoprod' (a ⊗ₜ[R] b) = domCoprod a b :=
   rfl
 #align multilinear_map.dom_coprod'_apply MultilinearMap.domCoprod'_apply

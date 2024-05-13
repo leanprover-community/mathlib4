@@ -83,7 +83,7 @@ theorem IsIntegralClosure.isLocalization (hKL : Algebra.IsAlgebraic K L) :
       smul_def]
   · simp only [IsIntegralClosure.algebraMap_injective C A L h]
 
-theorem IsIntegralClosure.isLocalization_of_isSeparable [IsSeparable K L] :
+lemma IsIntegralClosure.isLocalization_of_isSeparable [IsSeparable K L] :
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
   IsIntegralClosure.isLocalization A K L C (IsSeparable.isAlgebraic _ _)
 #align is_integral_closure.is_localization IsIntegralClosure.isLocalization_of_isSeparable
@@ -91,7 +91,7 @@ theorem IsIntegralClosure.isLocalization_of_isSeparable [IsSeparable K L] :
 variable [FiniteDimensional K L]
 variable {A K L}
 
-theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι]
+lemma IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι]
     [DecidableEq ι] (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
     LinearMap.range ((Algebra.linearMap C L).restrictScalars A) ≤
     Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by
@@ -104,7 +104,7 @@ theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*}
   exact isIntegral_trace ((IsIntegralClosure.isIntegral A L y).algebraMap.mul (hb_int i))
 #align is_integral_closure.range_le_span_dual_basis IsIntegralClosure.range_le_span_dualBasis
 
-theorem integralClosure_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι] [DecidableEq ι]
+lemma integralClosure_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
     Subalgebra.toSubmodule (integralClosure A L) ≤
     Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by

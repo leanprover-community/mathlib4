@@ -36,7 +36,7 @@ variable {M : Submonoid A} [Algebra A S] [IsLocalization M S] [Algebra A K] [IsF
 
 open Finsupp IsFractionRing IsLocalization Polynomial
 
-theorem scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
+lemma scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
     (hr : aeval (mk' S r s) p = 0) : aeval (algebraMap A S r) (scaleRoots p s) = 0 := by
   convert scaleRoots_eval₂_eq_zero (algebraMap A S) hr
   -- Porting note: added
@@ -46,7 +46,7 @@ theorem scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
 
 variable [IsDomain A]
 
-theorem num_isRoot_scaleRoots_of_aeval_eq_zero [UniqueFactorizationMonoid A] {p : A[X]} {x : K}
+lemma num_isRoot_scaleRoots_of_aeval_eq_zero [UniqueFactorizationMonoid A] {p : A[X]} {x : K}
     (hr : aeval x p = 0) : IsRoot (scaleRoots p (den A x)) (num A x) := by
   apply isRoot_of_eval₂_map_eq_zero (IsFractionRing.injective A K)
   refine' scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero _
@@ -123,7 +123,7 @@ theorem isInteger_of_is_root_of_monic {p : A[X]} (hp : Monic p) {r : K} (hr : ae
 
 namespace UniqueFactorizationMonoid
 
-theorem integer_of_integral {x : K} : IsIntegral A x → IsInteger A x := fun ⟨_, hp, hx⟩ =>
+lemma integer_of_integral {x : K} : IsIntegral A x → IsInteger A x := fun ⟨_, hp, hx⟩ =>
   isInteger_of_is_root_of_monic hp hx
 #align unique_factorization_monoid.integer_of_integral UniqueFactorizationMonoid.integer_of_integral
 

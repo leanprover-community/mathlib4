@@ -103,7 +103,7 @@ The lemmas with names `*_auxₙ` are considered to be private and should not be 
 file.
 -/
 
-theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
+lemma norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     (hd : DiffContOnCl ℂ f (ball z (dist w z)))
     (hz : IsMaxOn (norm ∘ f) (closedBall z (dist w z)) z) : ‖f w‖ = ‖f z‖ := by
   -- Consider a circle of radius `r = dist w z`.
@@ -141,7 +141,7 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
 Now we drop the assumption `CompleteSpace F` by embedding `F` into its completion.
 -/
 
-theorem norm_max_aux₂ {f : ℂ → F} {z w : ℂ} (hd : DiffContOnCl ℂ f (ball z (dist w z)))
+lemma norm_max_aux₂ {f : ℂ → F} {z w : ℂ} (hd : DiffContOnCl ℂ f (ball z (dist w z)))
     (hz : IsMaxOn (norm ∘ f) (closedBall z (dist w z)) z) : ‖f w‖ = ‖f z‖ := by
   set e : F →L[ℂ] F̂ := UniformSpace.Completion.toComplL
   have he : ∀ x, ‖e x‖ = ‖x‖ := UniformSpace.Completion.norm_coe
@@ -156,7 +156,7 @@ Then we replace the assumption `IsMaxOn (norm ∘ f) (Metric.closedBall z r) z` 
 weaker assumption `IsMaxOn (norm ∘ f) (Metric.ball z r) z`.
 -/
 
-theorem norm_max_aux₃ {f : ℂ → F} {z w : ℂ} {r : ℝ} (hr : dist w z = r)
+lemma norm_max_aux₃ {f : ℂ → F} {z w : ℂ} {r : ℝ} (hr : dist w z = r)
     (hd : DiffContOnCl ℂ f (ball z r)) (hz : IsMaxOn (norm ∘ f) (ball z r) z) : ‖f w‖ = ‖f z‖ := by
   subst r
   rcases eq_or_ne w z with (rfl | hne); · rfl
@@ -218,7 +218,7 @@ theorem norm_eventually_eq_of_isLocalMax {f : E → F} {c : E}
       (hr <| ball_subset_closedBall hx).2⟩
 #align complex.norm_eventually_eq_of_is_local_max Complex.norm_eventually_eq_of_isLocalMax
 
-theorem isOpen_setOf_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
+lemma isOpen_setOf_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
     (hd : DifferentiableOn ℂ f s) : IsOpen {z | s ∈ 𝓝 z ∧ IsMaxOn (norm ∘ f) s z} := by
   refine' isOpen_iff_mem_nhds.2 fun z hz => (eventually_eventually_nhds.2 hz.1).and _
   replace hd : ∀ᶠ w in 𝓝 z, DifferentiableAt ℂ f w := hd.eventually_differentiableAt hz.1
@@ -340,7 +340,7 @@ theorem eventually_eq_of_isLocalMax_norm {f : E → F} {c : E}
       (hr <| ball_subset_closedBall hx).2⟩
 #align complex.eventually_eq_of_is_local_max_norm Complex.eventually_eq_of_isLocalMax_norm
 
-theorem eventually_eq_or_eq_zero_of_isLocalMin_norm {f : E → ℂ} {c : E}
+lemma eventually_eq_or_eq_zero_of_isLocalMin_norm {f : E → ℂ} {c : E}
     (hf : ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f z) (hc : IsLocalMin (norm ∘ f) c) :
     (∀ᶠ z in 𝓝 c, f z = f c) ∨ f c = 0 := by
   refine' or_iff_not_imp_right.mpr fun h => _

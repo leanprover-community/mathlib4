@@ -79,14 +79,14 @@ open LieModule
 
 variable {I : LieIdeal R L} {x : L} (hxI : (R ∙ x) ⊔ I = ⊤)
 
-theorem exists_smul_add_of_span_sup_eq_top (y : L) : ∃ t : R, ∃ z ∈ I, y = t • x + z := by
+lemma exists_smul_add_of_span_sup_eq_top (y : L) : ∃ t : R, ∃ z ∈ I, y = t • x + z := by
   have hy : y ∈ (⊤ : Submodule R L) := Submodule.mem_top
   simp only [← hxI, Submodule.mem_sup, Submodule.mem_span_singleton] at hy
   obtain ⟨-, ⟨t, rfl⟩, z, hz, rfl⟩ := hy
   exact ⟨t, z, hz, rfl⟩
 #align lie_submodule.exists_smul_add_of_span_sup_eq_top LieSubmodule.exists_smul_add_of_span_sup_eq_top
 
-theorem lie_top_eq_of_span_sup_eq_top (N : LieSubmodule R L M) :
+lemma lie_top_eq_of_span_sup_eq_top (N : LieSubmodule R L M) :
     (↑⁅(⊤ : LieIdeal R L), N⁆ : Submodule R M) =
       (N : Submodule R M).map (toEndomorphism R L M x) ⊔ (↑⁅I, N⁆ : Submodule R M) := by
   simp only [lieIdeal_oper_eq_linear_span', Submodule.sup_span, mem_top, exists_prop,
@@ -102,7 +102,7 @@ theorem lie_top_eq_of_span_sup_eq_top (N : LieSubmodule R L M) :
     exacts [⟨x, m, hm, rfl⟩, ⟨y, m, hm, rfl⟩]
 #align lie_submodule.lie_top_eq_of_span_sup_eq_top LieSubmodule.lie_top_eq_of_span_sup_eq_top
 
-theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
+lemma lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
     (hxn : toEndomorphism R L M x ^ n = 0) (hIM : lowerCentralSeries R L M i ≤ I.lcs M j) :
     lowerCentralSeries R L M (i + n) ≤ I.lcs M (j + 1) := by
   suffices
@@ -125,7 +125,7 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
       exact antitone_lowerCentralSeries R L M le_self_add
 #align lie_submodule.lcs_le_lcs_of_is_nilpotent_span_sup_eq_top LieSubmodule.lcs_le_lcs_of_is_nilpotent_span_sup_eq_top
 
-theorem isNilpotentOfIsNilpotentSpanSupEqTop (hnp : IsNilpotent <| toEndomorphism R L M x)
+lemma isNilpotentOfIsNilpotentSpanSupEqTop (hnp : IsNilpotent <| toEndomorphism R L M x)
     (hIM : IsNilpotent R I M) : IsNilpotent R L M := by
   obtain ⟨n, hn⟩ := hnp
   obtain ⟨k, hk⟩ := hIM
@@ -162,7 +162,7 @@ def LieAlgebra.IsEngelian : Prop :=
 
 variable {R L}
 
-theorem LieAlgebra.isEngelian_of_subsingleton [Subsingleton L] : LieAlgebra.IsEngelian R L := by
+lemma LieAlgebra.isEngelian_of_subsingleton [Subsingleton L] : LieAlgebra.IsEngelian R L := by
   intro M _i1 _i2 _i3 _i4 _h
   use 1
   suffices (⊤ : LieIdeal R L) = ⊥ by simp [this]
@@ -170,7 +170,7 @@ theorem LieAlgebra.isEngelian_of_subsingleton [Subsingleton L] : LieAlgebra.IsEn
   apply Subsingleton.elim
 #align lie_algebra.is_engelian_of_subsingleton LieAlgebra.isEngelian_of_subsingleton
 
-theorem Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function.Surjective f)
+lemma Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function.Surjective f)
     (h : LieAlgebra.IsEngelian.{u₁, u₂, u₄} R L) : LieAlgebra.IsEngelian.{u₁, u₃, u₄} R L₂ := by
   intro M _i1 _i2 _i3 _i4 h'
   letI : LieRingModule L M := LieRingModule.compLieHom M f
@@ -183,13 +183,13 @@ theorem Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function
   intros; simp only [LinearMap.id_coe, id_eq]; rfl
 #align function.surjective.is_engelian Function.Surjective.isEngelian
 
-theorem LieEquiv.isEngelian_iff (e : L ≃ₗ⁅R⁆ L₂) :
+lemma LieEquiv.isEngelian_iff (e : L ≃ₗ⁅R⁆ L₂) :
     LieAlgebra.IsEngelian.{u₁, u₂, u₄} R L ↔ LieAlgebra.IsEngelian.{u₁, u₃, u₄} R L₂ :=
   ⟨e.surjective.isEngelian, e.symm.surjective.isEngelian⟩
 #align lie_equiv.is_engelian_iff LieEquiv.isEngelian_iff
 
 -- Porting note: changed statement from `∃ ∃ ..` to `∃ .. ∧ ..`
-theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalgebra R L}
+lemma LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalgebra R L}
     (hK₁ : LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K) (hK₂ : K < K.normalizer) :
     ∃ (K' : LieSubalgebra R L), LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K' ∧ K < K' := by
   obtain ⟨x, hx₁, hx₂⟩ := SetLike.exists_of_lt hK₂

@@ -27,7 +27,7 @@ variable {R : Type u} [CommRing R]
 
 namespace IsBezout
 
-theorem iff_span_pair_isPrincipal :
+lemma iff_span_pair_isPrincipal :
     IsBezout R ↔ ∀ x y : R, (Ideal.span {x, y} : Ideal R).IsPrincipal := by
   classical
     constructor
@@ -39,7 +39,7 @@ theorem iff_span_pair_isPrincipal :
       · rintro _ _ ⟨⟨x, rfl⟩⟩ ⟨⟨y, rfl⟩⟩; rw [← Submodule.span_insert]; exact H _ _
 #align is_bezout.iff_span_pair_is_principal IsBezout.iff_span_pair_isPrincipal
 
-theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →+* S)
+lemma _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →+* S)
     (hf : Function.Surjective f) [IsBezout R] : IsBezout S := by
   rw [iff_span_pair_isPrincipal]
   intro x y
@@ -50,7 +50,7 @@ theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →
   · rw [Ideal.map_span, Set.image_singleton]; rfl
 #align function.surjective.is_bezout Function.Surjective.isBezout
 
-theorem TFAE [IsBezout R] [IsDomain R] :
+lemma TFAE [IsBezout R] [IsDomain R] :
     List.TFAE
     [IsNoetherianRing R, IsPrincipalIdealRing R, UniqueFactorizationMonoid R, WfDvdMonoid R] := by
   classical

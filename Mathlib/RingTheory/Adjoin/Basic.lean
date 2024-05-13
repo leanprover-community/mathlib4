@@ -43,45 +43,45 @@ variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower 
 variable {s t : Set A}
 
 @[aesop safe 20 apply (rule_sets := [SetLike])]
-theorem subset_adjoin : s ⊆ adjoin R s :=
+lemma subset_adjoin : s ⊆ adjoin R s :=
   Algebra.gc.le_u_l s
 #align algebra.subset_adjoin Algebra.subset_adjoin
 
-theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
+lemma adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
   Algebra.gc.l_le H
 #align algebra.adjoin_le Algebra.adjoin_le
 
-theorem adjoin_eq_sInf : adjoin R s = sInf { p : Subalgebra R A | s ⊆ p } :=
+lemma adjoin_eq_sInf : adjoin R s = sInf { p : Subalgebra R A | s ⊆ p } :=
   le_antisymm (le_sInf fun _ h => adjoin_le h) (sInf_le subset_adjoin)
 #align algebra.adjoin_eq_Inf Algebra.adjoin_eq_sInf
 
-theorem adjoin_le_iff {S : Subalgebra R A} : adjoin R s ≤ S ↔ s ⊆ S :=
+lemma adjoin_le_iff {S : Subalgebra R A} : adjoin R s ≤ S ↔ s ⊆ S :=
   Algebra.gc _ _
 #align algebra.adjoin_le_iff Algebra.adjoin_le_iff
 
-theorem adjoin_mono (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
+lemma adjoin_mono (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
   Algebra.gc.monotone_l H
 #align algebra.adjoin_mono Algebra.adjoin_mono
 
-theorem adjoin_eq_of_le (S : Subalgebra R A) (h₁ : s ⊆ S) (h₂ : S ≤ adjoin R s) : adjoin R s = S :=
+lemma adjoin_eq_of_le (S : Subalgebra R A) (h₁ : s ⊆ S) (h₂ : S ≤ adjoin R s) : adjoin R s = S :=
   le_antisymm (adjoin_le h₁) h₂
 #align algebra.adjoin_eq_of_le Algebra.adjoin_eq_of_le
 
-theorem adjoin_eq (S : Subalgebra R A) : adjoin R ↑S = S :=
+lemma adjoin_eq (S : Subalgebra R A) : adjoin R ↑S = S :=
   adjoin_eq_of_le _ (Set.Subset.refl _) subset_adjoin
 #align algebra.adjoin_eq Algebra.adjoin_eq
 
-theorem adjoin_iUnion {α : Type*} (s : α → Set A) :
+lemma adjoin_iUnion {α : Type*} (s : α → Set A) :
     adjoin R (Set.iUnion s) = ⨆ i : α, adjoin R (s i) :=
   (@Algebra.gc R A _ _ _).l_iSup
 #align algebra.adjoin_Union Algebra.adjoin_iUnion
 
-theorem adjoin_attach_biUnion [DecidableEq A] {α : Type*} {s : Finset α} (f : s → Finset A) :
+lemma adjoin_attach_biUnion [DecidableEq A] {α : Type*} {s : Finset α} (f : s → Finset A) :
     adjoin R (s.attach.biUnion f : Set A) = ⨆ x, adjoin R (f x) := by simp [adjoin_iUnion]
 #align algebra.adjoin_attach_bUnion Algebra.adjoin_attach_biUnion
 
 @[elab_as_elim]
-theorem adjoin_induction {p : A → Prop} {x : A} (h : x ∈ adjoin R s) (mem : ∀ x ∈ s, p x)
+lemma adjoin_induction {p : A → Prop} {x : A} (h : x ∈ adjoin R s) (mem : ∀ x ∈ s, p x)
     (algebraMap : ∀ r, p (algebraMap R A r)) (add : ∀ x y, p x → p y → p (x + y))
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
   let S : Subalgebra R A :=
@@ -131,7 +131,7 @@ theorem adjoin_induction' {p : adjoin R s → Prop} (mem : ∀ (x) (h : x ∈ s)
 #align algebra.adjoin_induction' Algebra.adjoin_induction'
 
 @[elab_as_elim]
-theorem adjoin_induction'' {x : A} (hx : x ∈ adjoin R s)
+lemma adjoin_induction'' {x : A} (hx : x ∈ adjoin R s)
     {p : (x : A) → x ∈ adjoin R s → Prop} (mem : ∀ x (h : x ∈ s), p x (subset_adjoin h))
     (algebraMap : ∀ (r : R), p (algebraMap R A r) (algebraMap_mem _ r))
     (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
@@ -141,7 +141,7 @@ theorem adjoin_induction'' {x : A} (hx : x ∈ adjoin R s)
   exacts [fun x y ↦ add x.1 x.2 y.1 y.2, fun x y ↦ mul x.1 x.2 y.1 y.2]
 
 @[simp]
-theorem adjoin_adjoin_coe_preimage {s : Set A} : adjoin R (((↑) : adjoin R s → A) ⁻¹' s) = ⊤ := by
+lemma adjoin_adjoin_coe_preimage {s : Set A} : adjoin R (((↑) : adjoin R s → A) ⁻¹' s) = ⊤ := by
   refine eq_top_iff.2 fun x ↦
       adjoin_induction' (fun a ha ↦ ?_) (fun r ↦ ?_) (fun _ _ ↦ ?_) (fun _ _ ↦ ?_) x
   · exact subset_adjoin ha
@@ -150,27 +150,27 @@ theorem adjoin_adjoin_coe_preimage {s : Set A} : adjoin R (((↑) : adjoin R s �
   · exact Subalgebra.mul_mem _
 #align algebra.adjoin_adjoin_coe_preimage Algebra.adjoin_adjoin_coe_preimage
 
-theorem adjoin_union (s t : Set A) : adjoin R (s ∪ t) = adjoin R s ⊔ adjoin R t :=
+lemma adjoin_union (s t : Set A) : adjoin R (s ∪ t) = adjoin R s ⊔ adjoin R t :=
   (Algebra.gc : GaloisConnection _ ((↑) : Subalgebra R A → Set A)).l_sup
 #align algebra.adjoin_union Algebra.adjoin_union
 
 variable (R A)
 
 @[simp]
-theorem adjoin_empty : adjoin R (∅ : Set A) = ⊥ :=
+lemma adjoin_empty : adjoin R (∅ : Set A) = ⊥ :=
   show adjoin R ⊥ = ⊥ by
     apply GaloisConnection.l_bot
     exact Algebra.gc
 #align algebra.adjoin_empty Algebra.adjoin_empty
 
 @[simp]
-theorem adjoin_univ : adjoin R (Set.univ : Set A) = ⊤ :=
+lemma adjoin_univ : adjoin R (Set.univ : Set A) = ⊤ :=
   eq_top_iff.2 fun _x => subset_adjoin <| Set.mem_univ _
 #align algebra.adjoin_univ Algebra.adjoin_univ
 
 variable {A} (s)
 
-theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid.closure s) := by
+lemma adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid.closure s) := by
   apply le_antisymm
   · intro r hr
     rcases Subsemiring.mem_closure_iff_exists_list.1 hr with ⟨L, HL, rfl⟩
@@ -202,26 +202,26 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
   exact Submonoid.closure_le.2 subset_adjoin
 #align algebra.adjoin_eq_span Algebra.adjoin_eq_span
 
-theorem span_le_adjoin (s : Set A) : span R s ≤ Subalgebra.toSubmodule (adjoin R s) :=
+lemma span_le_adjoin (s : Set A) : span R s ≤ Subalgebra.toSubmodule (adjoin R s) :=
   span_le.mpr subset_adjoin
 #align algebra.span_le_adjoin Algebra.span_le_adjoin
 
-theorem adjoin_toSubmodule_le {s : Set A} {t : Submodule R A} :
+lemma adjoin_toSubmodule_le {s : Set A} {t : Submodule R A} :
     Subalgebra.toSubmodule (adjoin R s) ≤ t ↔ ↑(Submonoid.closure s) ⊆ (t : Set A) := by
   rw [adjoin_eq_span, span_le]
 #align algebra.adjoin_to_submodule_le Algebra.adjoin_toSubmodule_le
 
-theorem adjoin_eq_span_of_subset {s : Set A} (hs : ↑(Submonoid.closure s) ⊆ (span R s : Set A)) :
+lemma adjoin_eq_span_of_subset {s : Set A} (hs : ↑(Submonoid.closure s) ⊆ (span R s : Set A)) :
     Subalgebra.toSubmodule (adjoin R s) = span R s :=
   le_antisymm ((adjoin_toSubmodule_le R).mpr hs) (span_le_adjoin R s)
 #align algebra.adjoin_eq_span_of_subset Algebra.adjoin_eq_span_of_subset
 
 @[simp]
-theorem adjoin_span {s : Set A} : adjoin R (Submodule.span R s : Set A) = adjoin R s :=
+lemma adjoin_span {s : Set A} : adjoin R (Submodule.span R s : Set A) = adjoin R s :=
   le_antisymm (adjoin_le (span_le_adjoin _ _)) (adjoin_mono Submodule.subset_span)
 #align algebra.adjoin_span Algebra.adjoin_span
 
-theorem adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjoin R s).map f :=
+lemma adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjoin R s).map f :=
   le_antisymm (adjoin_le <| Set.image_subset _ subset_adjoin) <|
     Subalgebra.map_le.2 <| adjoin_le <| Set.image_subset_iff.1 <| by
       -- Porting note: I don't understand how this worked in Lean 3 with just `subset_adjoin`
@@ -231,7 +231,7 @@ theorem adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjo
 #align algebra.adjoin_image Algebra.adjoin_image
 
 @[simp]
-theorem adjoin_insert_adjoin (x : A) : adjoin R (insert x ↑(adjoin R s)) = adjoin R (insert x s) :=
+lemma adjoin_insert_adjoin (x : A) : adjoin R (insert x ↑(adjoin R s)) = adjoin R (insert x s) :=
   le_antisymm
     (adjoin_le
       (Set.insert_subset_iff.mpr
@@ -239,12 +239,12 @@ theorem adjoin_insert_adjoin (x : A) : adjoin R (insert x ↑(adjoin R s)) = adj
     (Algebra.adjoin_mono (Set.insert_subset_insert Algebra.subset_adjoin))
 #align algebra.adjoin_insert_adjoin Algebra.adjoin_insert_adjoin
 
-theorem adjoin_prod_le (s : Set A) (t : Set B) :
+lemma adjoin_prod_le (s : Set A) (t : Set B) :
     adjoin R (s ×ˢ t) ≤ (adjoin R s).prod (adjoin R t) :=
   adjoin_le <| Set.prod_mono subset_adjoin subset_adjoin
 #align algebra.adjoin_prod_le Algebra.adjoin_prod_le
 
-theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a₂, f (a₁ * a₂) = f a₁ * f a₂)
+lemma mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a₂, f (a₁ * a₂) = f a₁ * f a₂)
     (h : x ∈ adjoin R s) : f x ∈ adjoin R (f '' (s ∪ {1})) := by
   refine'
     @adjoin_induction R A _ _ _ _ (fun a => f a ∈ adjoin R (f '' (s ∪ {1}))) x h
@@ -258,7 +258,7 @@ theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a�
   exact f.map_smul _ _
 #align algebra.mem_adjoin_of_map_mul Algebra.mem_adjoin_of_map_mul
 
-theorem adjoin_inl_union_inr_eq_prod (s) (t) :
+lemma adjoin_inl_union_inr_eq_prod (s) (t) :
     adjoin R (LinearMap.inl R A B '' (s ∪ {1}) ∪ LinearMap.inr R A B '' (t ∪ {1})) =
       (adjoin R s).prod (adjoin R t) := by
   apply le_antisymm
@@ -295,11 +295,11 @@ def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * 
         fun x₁ x₂ y₁ h₁ h₂ => by rw [mul_assoc x₂, ← h₂, ← mul_assoc x₂, ← h₁, ← mul_assoc] }
 #align algebra.adjoin_comm_semiring_of_comm Algebra.adjoinCommSemiringOfComm
 
-theorem adjoin_singleton_one : adjoin R ({1} : Set A) = ⊥ :=
+lemma adjoin_singleton_one : adjoin R ({1} : Set A) = ⊥ :=
   eq_bot_iff.2 <| adjoin_le <| Set.singleton_subset_iff.2 <| SetLike.mem_coe.2 <| one_mem _
 #align algebra.adjoin_singleton_one Algebra.adjoin_singleton_one
 
-theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
+lemma self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   Algebra.subset_adjoin (Set.mem_singleton_iff.mpr rfl)
 #align algebra.self_mem_adjoin_singleton Algebra.self_mem_adjoin_singleton
 
@@ -309,7 +309,7 @@ theorem adjoin_algebraMap (s : Set S) :
   adjoin_image R (IsScalarTower.toAlgHom R S A) s
 #align algebra.adjoin_algebra_map Algebra.adjoin_algebraMap
 
-theorem adjoin_algebraMap_image_union_eq_adjoin_adjoin (s : Set S) (t : Set A) :
+lemma adjoin_algebraMap_image_union_eq_adjoin_adjoin (s : Set S) (t : Set A) :
     adjoin R (algebraMap S A '' s ∪ t) = (adjoin (adjoin R s) t).restrictScalars R :=
   le_antisymm
     (closure_mono <|
@@ -321,7 +321,7 @@ theorem adjoin_algebraMap_image_union_eq_adjoin_adjoin (s : Set S) (t : Set A) :
         Algebra.adjoin_algebraMap R A s ▸ ⟨x, x.prop, rfl⟩)
         (Set.Subset.trans (Set.subset_union_right _ _) subset_adjoin))
 
-theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adjoin S s := by
+lemma adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adjoin S s := by
   apply le_antisymm (adjoin_le _)
   · exact adjoin_mono subset_adjoin
   · change adjoin R s ≤ (adjoin S s).restrictScalars R
@@ -333,7 +333,7 @@ theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adj
 #align algebra.adjoin_adjoin_of_tower Algebra.adjoin_adjoin_of_tower
 
 @[simp]
-theorem adjoin_top :
+lemma adjoin_top :
     adjoin (⊤ : Subalgebra R S) t = (adjoin S t).restrictScalars (⊤ : Subalgebra R S) :=
   let equivTop : Subalgebra (⊤ : Subalgebra R S) A ≃o Subalgebra S A :=
     { toFun := fun s => { s with algebraMap_mem' := fun r => s.algebraMap_mem ⟨r, trivial⟩ }
@@ -354,12 +354,12 @@ variable [CommSemiring R] [CommSemiring A]
 variable [Algebra R A] {s t : Set A}
 variable (R s t)
 
-theorem adjoin_union_eq_adjoin_adjoin :
+lemma adjoin_union_eq_adjoin_adjoin :
     adjoin R (s ∪ t) = (adjoin (adjoin R s) t).restrictScalars R := by
   simpa using adjoin_algebraMap_image_union_eq_adjoin_adjoin R s t
 #align algebra.adjoin_union_eq_adjoin_adjoin Algebra.adjoin_union_eq_adjoin_adjoin
 
-theorem adjoin_union_coe_submodule :
+lemma adjoin_union_coe_submodule :
     Subalgebra.toSubmodule (adjoin R (s ∪ t)) =
       Subalgebra.toSubmodule (adjoin R s) * Subalgebra.toSubmodule (adjoin R t) := by
   rw [adjoin_eq_span, adjoin_eq_span, adjoin_eq_span, span_mul_span]
@@ -368,7 +368,7 @@ theorem adjoin_union_coe_submodule :
 
 variable {R}
 
-theorem pow_smul_mem_of_smul_subset_of_mem_adjoin [CommSemiring B] [Algebra R B] [Algebra A B]
+lemma pow_smul_mem_of_smul_subset_of_mem_adjoin [CommSemiring B] [Algebra R B] [Algebra A B]
     [IsScalarTower R A B] (r : A) (s : Set B) (B' : Subalgebra R B) (hs : r • s ⊆ B') {x : B}
     (hx : x ∈ adjoin R s) (hr : algebraMap A B r ∈ B') : ∃ n₀ : ℕ, ∀ n ≥ n₀, r ^ n • x ∈ B' := by
   change x ∈ Subalgebra.toSubmodule (adjoin R s) at hx
@@ -392,7 +392,7 @@ theorem pow_smul_mem_of_smul_subset_of_mem_adjoin [CommSemiring B] [Algebra R B]
   apply Submonoid.closure_mono hs (n₂ a)
 #align algebra.pow_smul_mem_of_smul_subset_of_mem_adjoin Algebra.pow_smul_mem_of_smul_subset_of_mem_adjoin
 
-theorem pow_smul_mem_adjoin_smul (r : R) (s : Set A) {x : A} (hx : x ∈ adjoin R s) :
+lemma pow_smul_mem_adjoin_smul (r : R) (s : Set A) {x : A} (hx : x ∈ adjoin R s) :
     ∃ n₀ : ℕ, ∀ n ≥ n₀, r ^ n • x ∈ adjoin R (r • s) :=
   pow_smul_mem_of_smul_subset_of_mem_adjoin r s _ subset_adjoin hx (Subalgebra.algebraMap_mem _ _)
 #align algebra.pow_smul_mem_adjoin_smul Algebra.pow_smul_mem_adjoin_smul
@@ -404,7 +404,7 @@ section Ring
 variable [CommRing R] [Ring A]
 variable [Algebra R A] {s t : Set A}
 
-theorem mem_adjoin_iff {s : Set A} {x : A} :
+lemma mem_adjoin_iff {s : Set A} {x : A} :
     x ∈ adjoin R s ↔ x ∈ Subring.closure (Set.range (algebraMap R A) ∪ s) :=
   ⟨fun hx =>
     Subsemiring.closure_induction hx Subring.subset_closure (Subring.zero_mem _) (Subring.one_mem _)
@@ -416,7 +416,7 @@ theorem mem_adjoin_iff {s : Set A} {x : A} :
     Subring.closure_le.2 Subsemiring.subset_closure⟩
 #align algebra.mem_adjoin_iff Algebra.mem_adjoin_iff
 
-theorem adjoin_eq_ring_closure (s : Set A) :
+lemma adjoin_eq_ring_closure (s : Set A) :
     (adjoin R s).toSubring = Subring.closure (Set.range (algebraMap R A) ∪ s) :=
   Subring.ext fun _x => mem_adjoin_iff
 #align algebra.adjoin_eq_ring_closure Algebra.adjoin_eq_ring_closure
@@ -440,21 +440,21 @@ namespace AlgHom
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
-theorem map_adjoin (φ : A →ₐ[R] B) (s : Set A) : (adjoin R s).map φ = adjoin R (φ '' s) :=
+lemma map_adjoin (φ : A →ₐ[R] B) (s : Set A) : (adjoin R s).map φ = adjoin R (φ '' s) :=
   (adjoin_image _ _ _).symm
 #align alg_hom.map_adjoin AlgHom.map_adjoin
 
 @[simp]
-theorem map_adjoin_singleton (e : A →ₐ[R] B) (x : A) :
+lemma map_adjoin_singleton (e : A →ₐ[R] B) (x : A) :
     (adjoin R {x}).map e = adjoin R {e x} := by
   rw [map_adjoin, Set.image_singleton]
 
-theorem adjoin_le_equalizer (φ₁ φ₂ : A →ₐ[R] B) {s : Set A} (h : s.EqOn φ₁ φ₂) :
+lemma adjoin_le_equalizer (φ₁ φ₂ : A →ₐ[R] B) {s : Set A} (h : s.EqOn φ₁ φ₂) :
     adjoin R s ≤ φ₁.equalizer φ₂ :=
   adjoin_le h
 #align alg_hom.adjoin_le_equalizer AlgHom.adjoin_le_equalizer
 
-theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ : A →ₐ[R] B⦄
+lemma ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ : A →ₐ[R] B⦄
     (hs : s.EqOn φ₁ φ₂) : φ₁ = φ₂ :=
   ext fun _x => adjoin_le_equalizer φ₁ φ₂ hs <| h.symm ▸ trivial
 #align alg_hom.ext_of_adjoin_eq_top AlgHom.ext_of_adjoin_eq_top
@@ -463,12 +463,12 @@ end AlgHom
 
 section NatInt
 
-theorem Algebra.adjoin_nat {R : Type*} [Semiring R] (s : Set R) :
+lemma Algebra.adjoin_nat {R : Type*} [Semiring R] (s : Set R) :
     adjoin ℕ s = subalgebraOfSubsemiring (Subsemiring.closure s) :=
   le_antisymm (adjoin_le Subsemiring.subset_closure)
     (Subsemiring.closure_le.2 subset_adjoin : Subsemiring.closure s ≤ (adjoin ℕ s).toSubsemiring)
 
-theorem Algebra.adjoin_int {R : Type*} [Ring R] (s : Set R) :
+lemma Algebra.adjoin_int {R : Type*} [Ring R] (s : Set R) :
     adjoin ℤ s = subalgebraOfSubring (Subring.closure s) :=
   le_antisymm (adjoin_le Subring.subset_closure)
     (Subring.closure_le.2 subset_adjoin : Subring.closure s ≤ (adjoin ℤ s).toSubring)
@@ -516,7 +516,7 @@ theorem Subalgebra.adjoin_eq_span_basis {ι : Type*} (bL : Basis ι F L) :
     simpa only [← L.range_val, Submodule.map_span, Submodule.map_top, ← Set.range_comp]
       using congr_arg (Submodule.map L.val) bL.span_eq.symm
 
-theorem Algebra.restrictScalars_adjoin (F : Type*) [CommSemiring F] {E : Type*} [CommSemiring E]
+lemma Algebra.restrictScalars_adjoin (F : Type*) [CommSemiring F] {E : Type*} [CommSemiring E]
     [Algebra F E] (K : Subalgebra F E) (S : Set E) :
     (Algebra.adjoin K S).restrictScalars F = Algebra.adjoin F (K ∪ S) := by
   conv_lhs => rw [← Algebra.adjoin_eq K, ← Algebra.adjoin_union_eq_adjoin_adjoin]

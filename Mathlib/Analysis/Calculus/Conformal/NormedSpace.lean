@@ -56,16 +56,16 @@ def ConformalAt (f : X → Y) (x : X) :=
   ∃ f' : X →L[ℝ] Y, HasFDerivAt f f' x ∧ IsConformalMap f'
 #align conformal_at ConformalAt
 
-theorem conformalAt_id (x : X) : ConformalAt _root_.id x :=
+lemma conformalAt_id (x : X) : ConformalAt _root_.id x :=
   ⟨id ℝ X, hasFDerivAt_id _, isConformalMap_id⟩
 #align conformal_at_id conformalAt_id
 
-theorem conformalAt_const_smul {c : ℝ} (h : c ≠ 0) (x : X) : ConformalAt (fun x' : X => c • x') x :=
+lemma conformalAt_const_smul {c : ℝ} (h : c ≠ 0) (x : X) : ConformalAt (fun x' : X => c • x') x :=
   ⟨c • ContinuousLinearMap.id ℝ X, (hasFDerivAt_id x).const_smul c, isConformalMap_const_smul h⟩
 #align conformal_at_const_smul conformalAt_const_smul
 
 @[nontriviality]
-theorem Subsingleton.conformalAt [Subsingleton X] (f : X → Y) (x : X) : ConformalAt f x :=
+lemma Subsingleton.conformalAt [Subsingleton X] (f : X → Y) (x : X) : ConformalAt f x :=
   ⟨0, hasFDerivAt_of_subsingleton _ _, isConformalMap_of_subsingleton _⟩
 #align subsingleton.conformal_at Subsingleton.conformalAt
 
@@ -84,25 +84,25 @@ theorem conformalAt_iff_isConformalMap_fderiv {f : X → Y} {x : X} :
 
 namespace ConformalAt
 
-theorem differentiableAt {f : X → Y} {x : X} (h : ConformalAt f x) : DifferentiableAt ℝ f x :=
+lemma differentiableAt {f : X → Y} {x : X} (h : ConformalAt f x) : DifferentiableAt ℝ f x :=
   let ⟨_, h₁, _⟩ := h
   h₁.differentiableAt
 #align conformal_at.differentiable_at ConformalAt.differentiableAt
 
-theorem congr {f g : X → Y} {x : X} {u : Set X} (hx : x ∈ u) (hu : IsOpen u) (hf : ConformalAt f x)
+lemma congr {f g : X → Y} {x : X} {u : Set X} (hx : x ∈ u) (hu : IsOpen u) (hf : ConformalAt f x)
     (h : ∀ x : X, x ∈ u → g x = f x) : ConformalAt g x :=
   let ⟨f', hfderiv, hf'⟩ := hf
   ⟨f', hfderiv.congr_of_eventuallyEq ((hu.eventually_mem hx).mono h), hf'⟩
 #align conformal_at.congr ConformalAt.congr
 
-theorem comp {f : X → Y} {g : Y → Z} (x : X) (hg : ConformalAt g (f x)) (hf : ConformalAt f x) :
+lemma comp {f : X → Y} {g : Y → Z} (x : X) (hg : ConformalAt g (f x)) (hf : ConformalAt f x) :
     ConformalAt (g ∘ f) x := by
   rcases hf with ⟨f', hf₁, cf⟩
   rcases hg with ⟨g', hg₁, cg⟩
   exact ⟨g'.comp f', hg₁.comp x hf₁, cg.comp cf⟩
 #align conformal_at.comp ConformalAt.comp
 
-theorem const_smul {f : X → Y} {x : X} {c : ℝ} (hc : c ≠ 0) (hf : ConformalAt f x) :
+lemma const_smul {f : X → Y} {x : X} {c : ℝ} (hc : c ≠ 0) (hf : ConformalAt f x) :
     ConformalAt (c • f) x :=
   (conformalAt_const_smul hc <| f x).comp x hf
 #align conformal_at.const_smul ConformalAt.const_smul
@@ -118,28 +118,28 @@ def Conformal (f : X → Y) :=
   ∀ x : X, ConformalAt f x
 #align conformal Conformal
 
-theorem conformal_id : Conformal (id : X → X) := fun x => conformalAt_id x
+lemma conformal_id : Conformal (id : X → X) := fun x => conformalAt_id x
 #align conformal_id conformal_id
 
-theorem conformal_const_smul {c : ℝ} (h : c ≠ 0) : Conformal fun x : X => c • x := fun x =>
+lemma conformal_const_smul {c : ℝ} (h : c ≠ 0) : Conformal fun x : X => c • x := fun x =>
   conformalAt_const_smul h x
 #align conformal_const_smul conformal_const_smul
 
 namespace Conformal
 
-theorem conformalAt {f : X → Y} (h : Conformal f) (x : X) : ConformalAt f x :=
+lemma conformalAt {f : X → Y} (h : Conformal f) (x : X) : ConformalAt f x :=
   h x
 #align conformal.conformal_at Conformal.conformalAt
 
-theorem differentiable {f : X → Y} (h : Conformal f) : Differentiable ℝ f := fun x =>
+lemma differentiable {f : X → Y} (h : Conformal f) : Differentiable ℝ f := fun x =>
   (h x).differentiableAt
 #align conformal.differentiable Conformal.differentiable
 
-theorem comp {f : X → Y} {g : Y → Z} (hf : Conformal f) (hg : Conformal g) : Conformal (g ∘ f) :=
+lemma comp {f : X → Y} {g : Y → Z} (hf : Conformal f) (hg : Conformal g) : Conformal (g ∘ f) :=
   fun x => (hg <| f x).comp x (hf x)
 #align conformal.comp Conformal.comp
 
-theorem const_smul {f : X → Y} (hf : Conformal f) {c : ℝ} (hc : c ≠ 0) : Conformal (c • f) :=
+lemma const_smul {f : X → Y} (hf : Conformal f) {c : ℝ} (hc : c ≠ 0) : Conformal (c • f) :=
   fun x => (hf x).const_smul hc
 #align conformal.const_smul Conformal.const_smul
 

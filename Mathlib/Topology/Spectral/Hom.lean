@@ -41,20 +41,20 @@ structure IsSpectralMap (f : α → β) extends Continuous f : Prop where
   isCompact_preimage_of_isOpen ⦃s : Set β⦄ : IsOpen s → IsCompact s → IsCompact (f ⁻¹' s)
 #align is_spectral_map IsSpectralMap
 
-theorem IsCompact.preimage_of_isOpen (hf : IsSpectralMap f) (h₀ : IsCompact s) (h₁ : IsOpen s) :
+lemma IsCompact.preimage_of_isOpen (hf : IsSpectralMap f) (h₀ : IsCompact s) (h₁ : IsOpen s) :
     IsCompact (f ⁻¹' s) :=
   hf.isCompact_preimage_of_isOpen h₁ h₀
 #align is_compact.preimage_of_is_open IsCompact.preimage_of_isOpen
 
-theorem IsSpectralMap.continuous {f : α → β} (hf : IsSpectralMap f) : Continuous f :=
+lemma IsSpectralMap.continuous {f : α → β} (hf : IsSpectralMap f) : Continuous f :=
   hf.toContinuous
 #align is_spectral_map.continuous IsSpectralMap.continuous
 
-theorem isSpectralMap_id : IsSpectralMap (@id α) :=
+lemma isSpectralMap_id : IsSpectralMap (@id α) :=
   ⟨continuous_id, fun _s _ => id⟩
 #align is_spectral_map_id isSpectralMap_id
 
-theorem IsSpectralMap.comp {f : β → γ} {g : α → β} (hf : IsSpectralMap f) (hg : IsSpectralMap g) :
+lemma IsSpectralMap.comp {f : β → γ} {g : α → β} (hf : IsSpectralMap f) (hg : IsSpectralMap g) :
     IsSpectralMap (f ∘ g) :=
   ⟨hf.continuous.comp hg.continuous, fun _s hs₀ hs₁ =>
     ((hs₁.preimage_of_isOpen hf hs₀).preimage_of_isOpen hg) (hs₀.preimage hf.continuous)⟩
@@ -117,12 +117,12 @@ instance : SpectralMapClass (SpectralMap α β) α β where
   map_spectral f := f.spectral'
 
 @[simp]
-theorem toFun_eq_coe {f : SpectralMap α β} : f.toFun = (f : α → β) :=
+lemma toFun_eq_coe {f : SpectralMap α β} : f.toFun = (f : α → β) :=
   rfl
 #align spectral_map.to_fun_eq_coe SpectralMap.toFun_eq_coe
 
 @[ext]
-theorem ext {f g : SpectralMap α β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : SpectralMap α β} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 #align spectral_map.ext SpectralMap.ext
 
@@ -133,11 +133,11 @@ protected def copy (f : SpectralMap α β) (f' : α → β) (h : f' = f) : Spect
 #align spectral_map.copy SpectralMap.copy
 
 @[simp]
-theorem coe_copy (f : SpectralMap α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+lemma coe_copy (f : SpectralMap α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 #align spectral_map.coe_copy SpectralMap.coe_copy
 
-theorem copy_eq (f : SpectralMap α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
+lemma copy_eq (f : SpectralMap α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 #align spectral_map.copy_eq SpectralMap.copy_eq
 
@@ -152,14 +152,14 @@ instance : Inhabited (SpectralMap α α) :=
   ⟨SpectralMap.id α⟩
 
 @[simp]
-theorem coe_id : ⇑(SpectralMap.id α) = id :=
+lemma coe_id : ⇑(SpectralMap.id α) = id :=
   rfl
 #align spectral_map.coe_id SpectralMap.coe_id
 
 variable {α}
 
 @[simp]
-theorem id_apply (a : α) : SpectralMap.id α a = a :=
+lemma id_apply (a : α) : SpectralMap.id α a = a :=
   rfl
 #align spectral_map.id_apply SpectralMap.id_apply
 
@@ -169,51 +169,51 @@ def comp (f : SpectralMap β γ) (g : SpectralMap α β) : SpectralMap α γ :=
 #align spectral_map.comp SpectralMap.comp
 
 @[simp]
-theorem coe_comp (f : SpectralMap β γ) (g : SpectralMap α β) : (f.comp g : α → γ) = f ∘ g :=
+lemma coe_comp (f : SpectralMap β γ) (g : SpectralMap α β) : (f.comp g : α → γ) = f ∘ g :=
   rfl
 #align spectral_map.coe_comp SpectralMap.coe_comp
 
 @[simp]
-theorem comp_apply (f : SpectralMap β γ) (g : SpectralMap α β) (a : α) : (f.comp g) a = f (g a) :=
+lemma comp_apply (f : SpectralMap β γ) (g : SpectralMap α β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 #align spectral_map.comp_apply SpectralMap.comp_apply
 
 @[simp]
-theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
+lemma coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
     f ∘ g = (f : ContinuousMap β γ) ∘ (g: ContinuousMap α β) :=
    rfl
 
 -- Porting note: removed `simp` from this and added lemma above to address `simpNF` lint
-theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :
+lemma coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :
     (f.comp g : ContinuousMap α γ) = (f : ContinuousMap β γ).comp g :=
   rfl
 #align spectral_map.coe_comp_continuous_map SpectralMap.coe_comp_continuousMap'
 
 @[simp]
-theorem comp_assoc (f : SpectralMap γ δ) (g : SpectralMap β γ) (h : SpectralMap α β) :
+lemma comp_assoc (f : SpectralMap γ δ) (g : SpectralMap β γ) (h : SpectralMap α β) :
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 #align spectral_map.comp_assoc SpectralMap.comp_assoc
 
 @[simp]
-theorem comp_id (f : SpectralMap α β) : f.comp (SpectralMap.id α) = f :=
+lemma comp_id (f : SpectralMap α β) : f.comp (SpectralMap.id α) = f :=
   ext fun _a => rfl
 #align spectral_map.comp_id SpectralMap.comp_id
 
 @[simp]
-theorem id_comp (f : SpectralMap α β) : (SpectralMap.id β).comp f = f :=
+lemma id_comp (f : SpectralMap α β) : (SpectralMap.id β).comp f = f :=
   ext fun _a => rfl
 #align spectral_map.id_comp SpectralMap.id_comp
 
 @[simp]
-theorem cancel_right {g₁ g₂ : SpectralMap β γ} {f : SpectralMap α β} (hf : Surjective f) :
+lemma cancel_right {g₁ g₂ : SpectralMap β γ} {f : SpectralMap α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
    fun a => of_eq (congrFun (congrArg comp a) f)⟩
 #align spectral_map.cancel_right SpectralMap.cancel_right
 
 @[simp]
-theorem cancel_left {g : SpectralMap β γ} {f₁ f₂ : SpectralMap α β} (hg : Injective g) :
+lemma cancel_left {g : SpectralMap β γ} {f₁ f₂ : SpectralMap α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align spectral_map.cancel_left SpectralMap.cancel_left

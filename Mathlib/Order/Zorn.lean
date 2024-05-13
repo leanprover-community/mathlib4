@@ -101,17 +101,17 @@ section Preorder
 
 variable [Preorder α]
 
-theorem zorn_preorder (h : ∀ c : Set α, IsChain (· ≤ ·) c → BddAbove c) :
+lemma zorn_preorder (h : ∀ c : Set α, IsChain (· ≤ ·) c → BddAbove c) :
     ∃ m : α, ∀ a, m ≤ a → a ≤ m :=
   exists_maximal_of_chains_bounded h le_trans
 #align zorn_preorder zorn_preorder
 
-theorem zorn_nonempty_preorder [Nonempty α]
+lemma zorn_nonempty_preorder [Nonempty α]
     (h : ∀ c : Set α, IsChain (· ≤ ·) c → c.Nonempty → BddAbove c) : ∃ m : α, ∀ a, m ≤ a → a ≤ m :=
   exists_maximal_of_nonempty_chains_bounded h le_trans
 #align zorn_nonempty_preorder zorn_nonempty_preorder
 
-theorem zorn_preorder₀ (s : Set α)
+lemma zorn_preorder₀ (s : Set α)
     (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) :
     ∃ m ∈ s, ∀ z ∈ s, m ≤ z → z ≤ m :=
   let ⟨⟨m, hms⟩, h⟩ :=
@@ -125,7 +125,7 @@ theorem zorn_preorder₀ (s : Set α)
   ⟨m, hms, fun z hzs hmz => h ⟨z, hzs⟩ hmz⟩
 #align zorn_preorder₀ zorn_preorder₀
 
-theorem zorn_nonempty_preorder₀ (s : Set α)
+lemma zorn_nonempty_preorder₀ (s : Set α)
     (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) (x : α)
     (hxs : x ∈ s) : ∃ m ∈ s, x ≤ m ∧ ∀ z ∈ s, m ≤ z → z ≤ m := by
   -- Porting note: the first three lines replace the following two lines in mathlib3.
@@ -141,7 +141,7 @@ theorem zorn_nonempty_preorder₀ (s : Set α)
       exact ⟨z, ⟨hzs, (hcs hy).2.trans <| hz _ hy⟩, hz⟩
 #align zorn_nonempty_preorder₀ zorn_nonempty_preorder₀
 
-theorem zorn_nonempty_Ici₀ (a : α)
+lemma zorn_nonempty_Ici₀ (a : α)
     (ih : ∀ c ⊆ Ici a, IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub, ∀ z ∈ c, z ≤ ub)
     (x : α) (hax : a ≤ x) : ∃ m, x ≤ m ∧ ∀ z, m ≤ z → z ≤ m := by
   let ⟨m, _, hxm, hm⟩ := zorn_nonempty_preorder₀ (Ici a) (fun c hca hc y hy ↦ ?_) x hax
@@ -155,26 +155,26 @@ section PartialOrder
 
 variable [PartialOrder α]
 
-theorem zorn_partialOrder (h : ∀ c : Set α, IsChain (· ≤ ·) c → BddAbove c) :
+lemma zorn_partialOrder (h : ∀ c : Set α, IsChain (· ≤ ·) c → BddAbove c) :
     ∃ m : α, ∀ a, m ≤ a → a = m :=
   let ⟨m, hm⟩ := zorn_preorder h
   ⟨m, fun a ha => le_antisymm (hm a ha) ha⟩
 #align zorn_partial_order zorn_partialOrder
 
-theorem zorn_nonempty_partialOrder [Nonempty α]
+lemma zorn_nonempty_partialOrder [Nonempty α]
     (h : ∀ c : Set α, IsChain (· ≤ ·) c → c.Nonempty → BddAbove c) : ∃ m : α, ∀ a, m ≤ a → a = m :=
   let ⟨m, hm⟩ := zorn_nonempty_preorder h
   ⟨m, fun a ha => le_antisymm (hm a ha) ha⟩
 #align zorn_nonempty_partial_order zorn_nonempty_partialOrder
 
-theorem zorn_partialOrder₀ (s : Set α)
+lemma zorn_partialOrder₀ (s : Set α)
     (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) :
     ∃ m ∈ s, ∀ z ∈ s, m ≤ z → z = m :=
   let ⟨m, hms, hm⟩ := zorn_preorder₀ s ih
   ⟨m, hms, fun z hzs hmz => (hm z hzs hmz).antisymm hmz⟩
 #align zorn_partial_order₀ zorn_partialOrder₀
 
-theorem zorn_nonempty_partialOrder₀ (s : Set α)
+lemma zorn_nonempty_partialOrder₀ (s : Set α)
     (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) (x : α)
     (hxs : x ∈ s) : ∃ m ∈ s, x ≤ m ∧ ∀ z ∈ s, m ≤ z → z = m :=
   let ⟨m, hms, hxm, hm⟩ := zorn_nonempty_preorder₀ s ih x hxs
@@ -183,25 +183,25 @@ theorem zorn_nonempty_partialOrder₀ (s : Set α)
 
 end PartialOrder
 
-theorem zorn_subset (S : Set (Set α))
+lemma zorn_subset (S : Set (Set α))
     (h : ∀ c ⊆ S, IsChain (· ⊆ ·) c → ∃ ub ∈ S, ∀ s ∈ c, s ⊆ ub) :
     ∃ m ∈ S, ∀ a ∈ S, m ⊆ a → a = m :=
   zorn_partialOrder₀ S h
 #align zorn_subset zorn_subset
 
-theorem zorn_subset_nonempty (S : Set (Set α))
+lemma zorn_subset_nonempty (S : Set (Set α))
     (H : ∀ c ⊆ S, IsChain (· ⊆ ·) c → c.Nonempty → ∃ ub ∈ S, ∀ s ∈ c, s ⊆ ub) (x)
     (hx : x ∈ S) : ∃ m ∈ S, x ⊆ m ∧ ∀ a ∈ S, m ⊆ a → a = m :=
   zorn_nonempty_partialOrder₀ _ (fun _ cS hc y yc => H _ cS hc ⟨y, yc⟩) _ hx
 #align zorn_subset_nonempty zorn_subset_nonempty
 
-theorem zorn_superset (S : Set (Set α))
+lemma zorn_superset (S : Set (Set α))
     (h : ∀ c ⊆ S, IsChain (· ⊆ ·) c → ∃ lb ∈ S, ∀ s ∈ c, lb ⊆ s) :
     ∃ m ∈ S, ∀ a ∈ S, a ⊆ m → a = m :=
   (@zorn_partialOrder₀ (Set α)ᵒᵈ _ S) fun c cS hc => h c cS hc.symm
 #align zorn_superset zorn_superset
 
-theorem zorn_superset_nonempty (S : Set (Set α))
+lemma zorn_superset_nonempty (S : Set (Set α))
     (H : ∀ c ⊆ S, IsChain (· ⊆ ·) c → c.Nonempty → ∃ lb ∈ S, ∀ s ∈ c, lb ⊆ s) (x)
     (hx : x ∈ S) : ∃ m ∈ S, m ⊆ x ∧ ∀ a ∈ S, a ⊆ m → a = m :=
   @zorn_nonempty_partialOrder₀ (Set α)ᵒᵈ _ S (fun _ cS hc y yc => H _ cS hc.symm ⟨y, yc⟩) _ hx

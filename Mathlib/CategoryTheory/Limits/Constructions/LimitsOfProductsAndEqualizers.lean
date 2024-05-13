@@ -233,7 +233,7 @@ noncomputable def preservesLimitsOfPreservesEqualizersAndProducts [HasEqualizers
   preservesLimitsOfShape := preservesLimitOfPreservesEqualizersAndProduct G
 #align category_theory.limits.preserves_limits_of_preserves_equalizers_and_products CategoryTheory.Limits.preservesLimitsOfPreservesEqualizersAndProducts
 
-theorem hasFiniteLimits_of_hasTerminal_and_pullbacks [HasTerminal C] [HasPullbacks C] :
+lemma hasFiniteLimits_of_hasTerminal_and_pullbacks [HasTerminal C] [HasPullbacks C] :
     HasFiniteLimits C :=
   @hasFiniteLimits_of_hasEqualizers_and_finite_products C _
     (@hasFiniteProducts_of_has_binary_and_terminal C _
@@ -463,7 +463,7 @@ noncomputable def preservesColimitsOfPreservesCoequalizersAndCoproducts [HasCoeq
   preservesColimitsOfShape := preservesColimitOfPreservesCoequalizersAndCoproduct G
 #align category_theory.limits.preserves_colimits_of_preserves_coequalizers_and_coproducts CategoryTheory.Limits.preservesColimitsOfPreservesCoequalizersAndCoproducts
 
-theorem hasFiniteColimits_of_hasInitial_and_pushouts [HasInitial C] [HasPushouts C] :
+lemma hasFiniteColimits_of_hasInitial_and_pushouts [HasInitial C] [HasPushouts C] :
     HasFiniteColimits C :=
   @hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts C _
     (@hasFiniteCoproducts_of_has_binary_and_initial C _

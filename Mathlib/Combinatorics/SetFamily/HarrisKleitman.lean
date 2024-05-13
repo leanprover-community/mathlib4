@@ -31,20 +31,20 @@ open Finset
 
 variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α} {a : α}
 
-theorem IsLowerSet.nonMemberSubfamily (h : IsLowerSet (𝒜 : Set (Finset α))) :
+lemma IsLowerSet.nonMemberSubfamily (h : IsLowerSet (𝒜 : Set (Finset α))) :
     IsLowerSet (𝒜.nonMemberSubfamily a : Set (Finset α)) := fun s t hts => by
   simp_rw [mem_coe, mem_nonMemberSubfamily]
   exact And.imp (h hts) (mt <| @hts _)
 #align is_lower_set.non_member_subfamily IsLowerSet.nonMemberSubfamily
 
-theorem IsLowerSet.memberSubfamily (h : IsLowerSet (𝒜 : Set (Finset α))) :
+lemma IsLowerSet.memberSubfamily (h : IsLowerSet (𝒜 : Set (Finset α))) :
     IsLowerSet (𝒜.memberSubfamily a : Set (Finset α)) := by
   rintro s t hts
   simp_rw [mem_coe, mem_memberSubfamily]
   exact And.imp (h <| insert_subset_insert _ hts) (mt <| @hts _)
 #align is_lower_set.member_subfamily IsLowerSet.memberSubfamily
 
-theorem IsLowerSet.memberSubfamily_subset_nonMemberSubfamily (h : IsLowerSet (𝒜 : Set (Finset α))) :
+lemma IsLowerSet.memberSubfamily_subset_nonMemberSubfamily (h : IsLowerSet (𝒜 : Set (Finset α))) :
     𝒜.memberSubfamily a ⊆ 𝒜.nonMemberSubfamily a := fun s => by
   rw [mem_memberSubfamily, mem_nonMemberSubfamily]
   exact And.imp_left (h <| subset_insert _ _)

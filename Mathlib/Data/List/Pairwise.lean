@@ -73,12 +73,12 @@ mk_iff_of_inductive_prop List.Pairwise List.pairwise_iff
 
 #align list.pairwise.forall_of_forall_of_flip List.Pairwise.forall_of_forall_of_flip
 
-theorem Pairwise.forall_of_forall (H : Symmetric R) (H₁ : ∀ x ∈ l, R x x) (H₂ : l.Pairwise R) :
+lemma Pairwise.forall_of_forall (H : Symmetric R) (H₁ : ∀ x ∈ l, R x x) (H₂ : l.Pairwise R) :
     ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → R x y :=
   H₂.forall_of_forall_of_flip H₁ <| by rwa [H.flip_eq]
 #align list.pairwise.forall_of_forall List.Pairwise.forall_of_forall
 
-theorem Pairwise.forall (hR : Symmetric R) (hl : l.Pairwise R) :
+lemma Pairwise.forall (hR : Symmetric R) (hl : l.Pairwise R) :
     ∀ ⦃a⦄, a ∈ l → ∀ ⦃b⦄, b ∈ l → a ≠ b → R a b := by
   apply Pairwise.forall_of_forall
   · exact fun a b h hne => hR (h hne.symm)
@@ -86,7 +86,7 @@ theorem Pairwise.forall (hR : Symmetric R) (hl : l.Pairwise R) :
   · exact hl.imp (@fun a b h _ => by exact h)
 #align list.pairwise.forall List.Pairwise.forall
 
-theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x ∈ l }.Pairwise R :=
+lemma Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x ∈ l }.Pairwise R :=
   hl.forall hr
 #align list.pairwise.set_pairwise List.Pairwise.set_pairwise
 
@@ -101,7 +101,7 @@ theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x �
 #align list.pairwise_middle List.pairwise_middle
 
 -- Porting note: Duplicate of `pairwise_map` but with `f` explicit.
-@[deprecated] theorem pairwise_map' (f : β → α) : -- 2024-02-25
+@[deprecated] lemma pairwise_map' (f : β → α) : -- 2024-02-25
     ∀ {l : List β}, Pairwise R (map f l) ↔ Pairwise (fun a b : β => R (f a) (f b)) l
   | [] => by simp only [map, Pairwise.nil]
   | b :: l => by
@@ -121,7 +121,7 @@ theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x �
 
 #align list.pairwise.filter List.Pairwise.filterₓ
 
-theorem pairwise_pmap {p : β → Prop} {f : ∀ b, p b → α} {l : List β} (h : ∀ x ∈ l, p x) :
+lemma pairwise_pmap {p : β → Prop} {f : ∀ b, p b → α} {l : List β} (h : ∀ x ∈ l, p x) :
     Pairwise R (l.pmap f h) ↔
       Pairwise (fun b₁ b₂ => ∀ (h₁ : p b₁) (h₂ : p b₂), R (f b₁ h₁) (f b₂ h₂)) l := by
   induction' l with a l ihl
@@ -133,7 +133,7 @@ theorem pairwise_pmap {p : β → Prop} {f : ∀ b, p b → α} {l : List β} (h
   exact H b hb _ _
 #align list.pairwise_pmap List.pairwise_pmap
 
-theorem Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : ∀ a, p a → β}
+lemma Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : ∀ a, p a → β}
     (h : ∀ x ∈ l, p x) {S : β → β → Prop}
     (hS : ∀ ⦃x⦄ (hx : p x) ⦃y⦄ (hy : p y), R x y → S (f x hx) (f y hy)) :
     Pairwise S (l.pmap f h) := by
@@ -149,14 +149,14 @@ theorem Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : �
 
 #align list.pairwise_of_reflexive_on_dupl_of_forall_ne List.pairwise_of_reflexive_on_dupl_of_forall_ne
 
-theorem pairwise_of_forall_mem_list {l : List α} {r : α → α → Prop} (h : ∀ a ∈ l, ∀ b ∈ l, r a b) :
+lemma pairwise_of_forall_mem_list {l : List α} {r : α → α → Prop} (h : ∀ a ∈ l, ∀ b ∈ l, r a b) :
     l.Pairwise r := by
   rw [pairwise_iff_forall_sublist]
   intro a b hab
   apply h <;> (apply hab.subset; simp)
 #align list.pairwise_of_forall_mem_list List.pairwise_of_forall_mem_list
 
-theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop} (hr : Reflexive r)
+lemma pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop} (hr : Reflexive r)
     (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
   rw [pairwise_iff_forall_sublist]
   intro a b hab
@@ -169,7 +169,7 @@ theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop
 
 set_option linter.deprecated false in
 @[deprecated pairwise_iff_get] -- 2023-01-10
-theorem pairwise_iff_nthLe {R} {l : List α} : Pairwise R l ↔
+lemma pairwise_iff_nthLe {R} {l : List α} : Pairwise R l ↔
     ∀ (i j) (h₁ : j < length l) (h₂ : i < j), R (nthLe l i (lt_trans h₂ h₁)) (nthLe l j h₁) :=
   pairwise_iff_get.trans
     ⟨fun h i j _ h₂ => h ⟨i, _⟩ ⟨j, _⟩ h₂,

@@ -238,7 +238,7 @@ def IsSheaf.amalgamate {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : 
 #align category_theory.presheaf.is_sheaf.amalgamate CategoryTheory.Presheaf.IsSheaf.amalgamate
 
 @[reassoc (attr := simp)]
-theorem IsSheaf.amalgamate_map {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : Cᵒᵖ ⥤ A}
+lemma IsSheaf.amalgamate_map {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : Cᵒᵖ ⥤ A}
     (hP : Presheaf.IsSheaf J P) (S : J.Cover X) (x : ∀ I : S.Arrow, E ⟶ P.obj (op I.Y))
     (hx : ∀ I : S.Relation, x I.fst ≫ P.map I.g₁.op = x I.snd ≫ P.map I.g₂.op) (I : S.Arrow) :
     hP.amalgamate S x hx ≫ P.map I.f.op = x _ := by
@@ -248,13 +248,13 @@ theorem IsSheaf.amalgamate_map {A : Type u₂} [Category.{v₂} A] {E : A} {X : 
       (fun Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ w => hx ⟨Y₁, Y₂, Z, g₁, g₂, f₁, f₂, h₁, h₂, w⟩) f hf
 #align category_theory.presheaf.is_sheaf.amalgamate_map CategoryTheory.Presheaf.IsSheaf.amalgamate_map
 
-theorem IsSheaf.hom_ext {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : Cᵒᵖ ⥤ A}
+lemma IsSheaf.hom_ext {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : Cᵒᵖ ⥤ A}
     (hP : Presheaf.IsSheaf J P) (S : J.Cover X) (e₁ e₂ : E ⟶ P.obj (op X))
     (h : ∀ I : S.Arrow, e₁ ≫ P.map I.f.op = e₂ ≫ P.map I.f.op) : e₁ = e₂ :=
   (hP _ _ S.condition).isSeparatedFor.ext fun Y f hf => h ⟨Y, f, hf⟩
 #align category_theory.presheaf.is_sheaf.hom_ext CategoryTheory.Presheaf.IsSheaf.hom_ext
 
-theorem isSheaf_of_iso_iff {P P' : Cᵒᵖ ⥤ A} (e : P ≅ P') : IsSheaf J P ↔ IsSheaf J P' :=
+lemma isSheaf_of_iso_iff {P P' : Cᵒᵖ ⥤ A} (e : P ≅ P') : IsSheaf J P ↔ IsSheaf J P' :=
   forall_congr' fun _ =>
     ⟨Presieve.isSheaf_iso J (isoWhiskerRight e _),
       Presieve.isSheaf_iso J (isoWhiskerRight e.symm _)⟩
@@ -262,7 +262,7 @@ theorem isSheaf_of_iso_iff {P P' : Cᵒᵖ ⥤ A} (e : P ≅ P') : IsSheaf J P �
 
 variable (J)
 
-theorem isSheaf_of_isTerminal {X : A} (hX : IsTerminal X) :
+lemma isSheaf_of_isTerminal {X : A} (hX : IsTerminal X) :
     Presheaf.IsSheaf J ((CategoryTheory.Functor.const _).obj X) := fun _ _ _ _ _ _ =>
   ⟨hX.from _, fun _ _ _ => hX.hom_ext _ _, fun _ _ => hX.hom_ext _ _⟩
 #align category_theory.presheaf.is_sheaf_of_is_terminal CategoryTheory.Presheaf.isSheaf_of_isTerminal
@@ -358,7 +358,7 @@ def sheafOver {A : Type u₂} [Category.{v₂} A] {J : GrothendieckTopology C} (
   ⟨ℱ.val ⋙ coyoneda.obj (op E), ℱ.cond E⟩
 #align category_theory.sheaf_over CategoryTheory.sheafOver
 
-theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
+lemma isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
     Presheaf.IsSheaf J P ↔ Presieve.IsSheaf J P := by
   constructor
   · intro hP
@@ -450,7 +450,7 @@ instance : Zero (P ⟶ Q) where zero := Sheaf.Hom.mk 0
 instance : Add (P ⟶ Q) where add f g := Sheaf.Hom.mk <| f.1 + g.1
 
 @[simp]
-theorem Sheaf.Hom.add_app (f g : P ⟶ Q) (U) : (f + g).1.app U = f.1.app U + g.1.app U :=
+lemma Sheaf.Hom.add_app (f g : P ⟶ Q) (U) : (f + g).1.app U = f.1.app U + g.1.app U :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.hom.add_app CategoryTheory.Sheaf.Hom.add_app
@@ -512,7 +512,7 @@ def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.mul
     apply hP.amalgamate_map
 #align category_theory.presheaf.is_limit_of_is_sheaf CategoryTheory.Presheaf.isLimitOfIsSheaf
 
-theorem isSheaf_iff_multifork :
+lemma isSheaf_iff_multifork :
     IsSheaf J P ↔ ∀ (X : C) (S : J.Cover X), Nonempty (IsLimit (S.multifork P)) := by
   refine' ⟨fun hP X S => ⟨isLimitOfIsSheaf _ _ _ hP⟩, _⟩
   intro h E X S hS x hx
@@ -533,7 +533,7 @@ theorem isSheaf_iff_multifork :
       apply he
 #align category_theory.presheaf.is_sheaf_iff_multifork CategoryTheory.Presheaf.isSheaf_iff_multifork
 
-theorem isSheaf_iff_multiequalizer [∀ (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)] :
+lemma isSheaf_iff_multiequalizer [∀ (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)] :
     IsSheaf J P ↔ ∀ (X : C) (S : J.Cover X), IsIso (S.toMultiequalizer P) := by
   rw [isSheaf_iff_multifork]
   refine' forall₂_congr fun X S => ⟨_, _⟩
@@ -594,7 +594,7 @@ def secondMap : firstObj R P ⟶ secondObj R P :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.snd.op
 #align category_theory.presheaf.second_map CategoryTheory.Presheaf.secondMap
 
-theorem w : forkMap R P ≫ firstMap R P = forkMap R P ≫ secondMap R P := by
+lemma w : forkMap R P ≫ firstMap R P = forkMap R P ≫ secondMap R P := by
   apply limit.hom_ext
   rintro ⟨⟨Y, f, hf⟩, ⟨Z, g, hg⟩⟩
   simp only [firstMap, secondMap, forkMap, limit.lift_π, limit.lift_π_assoc, assoc, Fan.mk_π_app,
@@ -667,17 +667,17 @@ end
 
 section Concrete
 
-theorem isSheaf_of_isSheaf_comp (s : A ⥤ B) [ReflectsLimitsOfSize.{v₁, max v₁ u₁} s]
+lemma isSheaf_of_isSheaf_comp (s : A ⥤ B) [ReflectsLimitsOfSize.{v₁, max v₁ u₁} s]
     (h : IsSheaf J (P ⋙ s)) : IsSheaf J P := by
   rw [isSheaf_iff_isLimit] at h ⊢
   exact fun X S hS ↦ (h S hS).map fun t ↦ isLimitOfReflects s t
 
-theorem isSheaf_comp_of_isSheaf (s : A ⥤ B) [PreservesLimitsOfSize.{v₁, max v₁ u₁} s]
+lemma isSheaf_comp_of_isSheaf (s : A ⥤ B) [PreservesLimitsOfSize.{v₁, max v₁ u₁} s]
     (h : IsSheaf J P) : IsSheaf J (P ⋙ s) := by
   rw [isSheaf_iff_isLimit] at h ⊢
   apply fun X S hS ↦ (h S hS).map fun t ↦ isLimitOfPreserves s t
 
-theorem isSheaf_iff_isSheaf_comp (s : A ⥤ B) [HasLimitsOfSize.{v₁, max v₁ u₁} A]
+lemma isSheaf_iff_isSheaf_comp (s : A ⥤ B) [HasLimitsOfSize.{v₁, max v₁ u₁} A]
     [PreservesLimitsOfSize.{v₁, max v₁ u₁} s] [s.ReflectsIsomorphisms] :
     IsSheaf J P ↔ IsSheaf J (P ⋙ s) := by
   letI : ReflectsLimitsOfSize s := reflectsLimitsOfReflectsIsomorphisms

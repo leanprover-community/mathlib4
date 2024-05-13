@@ -83,7 +83,7 @@ a basis for the lawson topology. -/
 def lawsonBasis := { s : Set α | ∃ t : Set α, t.Finite ∧ ∃ u : Set α, IsOpen[scott α] u ∧
       u \ upperClosure t = s }
 
-protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (lawsonBasis α) := by
+protected lemma isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (lawsonBasis α) := by
   have lawsonBasis_image2 : lawsonBasis α =
       (image2 (fun x x_1 ↦ ⇑WithLower.toLower ⁻¹' x ∩ ⇑WithScott.toScott ⁻¹' x_1)
         (IsLower.lowerBasis (WithLower α)) {U | IsOpen[scott α] U}) := by
@@ -145,13 +145,13 @@ instance instIsLawson : IsLawson (WithLawson α) := ⟨rfl⟩
 def homeomorph [TopologicalSpace α] [IsLawson α] : WithLawson α ≃ₜ α :=
   ofLawson.toHomeomorphOfInducing ⟨by erw [@IsLawson.topology_eq_lawson α _ _, induced_id]; rfl⟩
 
-theorem isOpen_preimage_ofLawson {S : Set α} :
+lemma isOpen_preimage_ofLawson {S : Set α} :
     IsOpen (ofLawson ⁻¹' S) ↔ (lawson α).IsOpen S := Iff.rfl
 
-theorem isClosed_preimage_ofLawson {S : Set α} :
+lemma isClosed_preimage_ofLawson {S : Set α} :
     IsClosed (ofLawson ⁻¹' S) ↔ IsClosed[lawson α] S := Iff.rfl
 
-theorem isOpen_def {T : Set (WithLawson α)} :
+lemma isOpen_def {T : Set (WithLawson α)} :
     IsOpen T ↔ (lawson α).IsOpen (toLawson ⁻¹' T) := Iff.rfl
 
 end WithLawson

@@ -44,34 +44,34 @@ def associator : Sum (Sum C D) E ⥤ Sum C (Sum D E)
 #align category_theory.sum.associator CategoryTheory.sum.associator
 
 @[simp]
-theorem associator_obj_inl_inl (X) : (associator C D E).obj (inl (inl X)) = inl X :=
+lemma associator_obj_inl_inl (X) : (associator C D E).obj (inl (inl X)) = inl X :=
   rfl
 #align category_theory.sum.associator_obj_inl_inl CategoryTheory.sum.associator_obj_inl_inl
 
 @[simp]
-theorem associator_obj_inl_inr (X) : (associator C D E).obj (inl (inr X)) = inr (inl X) :=
+lemma associator_obj_inl_inr (X) : (associator C D E).obj (inl (inr X)) = inr (inl X) :=
   rfl
 #align category_theory.sum.associator_obj_inl_inr CategoryTheory.sum.associator_obj_inl_inr
 
 @[simp]
-theorem associator_obj_inr (X) : (associator C D E).obj (inr X) = inr (inr X) :=
+lemma associator_obj_inr (X) : (associator C D E).obj (inr X) = inr (inr X) :=
   rfl
 #align category_theory.sum.associator_obj_inr CategoryTheory.sum.associator_obj_inr
 
 @[simp]
-theorem associator_map_inl_inl {X Y : C} (f : inl (inl X) ⟶ inl (inl Y)) :
+lemma associator_map_inl_inl {X Y : C} (f : inl (inl X) ⟶ inl (inl Y)) :
     (associator C D E).map f = f :=
   rfl
 #align category_theory.sum.associator_map_inl_inl CategoryTheory.sum.associator_map_inl_inl
 
 @[simp]
-theorem associator_map_inl_inr {X Y : D} (f : inl (inr X) ⟶ inl (inr Y)) :
+lemma associator_map_inl_inr {X Y : D} (f : inl (inr X) ⟶ inl (inr Y)) :
     (associator C D E).map f = f :=
   rfl
 #align category_theory.sum.associator_map_inl_inr CategoryTheory.sum.associator_map_inl_inr
 
 @[simp]
-theorem associator_map_inr {X Y : E} (f : inr X ⟶ inr Y) : (associator C D E).map f = f :=
+lemma associator_map_inr {X Y : E} (f : inr X ⟶ inr Y) : (associator C D E).map f = f :=
   rfl
 #align category_theory.sum.associator_map_inr CategoryTheory.sum.associator_map_inr
 
@@ -95,35 +95,35 @@ def inverseAssociator : Sum C (Sum D E) ⥤ Sum (Sum C D) E
 #align category_theory.sum.inverse_associator CategoryTheory.sum.inverseAssociator
 
 @[simp]
-theorem inverseAssociator_obj_inl (X) : (inverseAssociator C D E).obj (inl X) = inl (inl X) :=
+lemma inverseAssociator_obj_inl (X) : (inverseAssociator C D E).obj (inl X) = inl (inl X) :=
   rfl
 #align category_theory.sum.inverse_associator_obj_inl CategoryTheory.sum.inverseAssociator_obj_inl
 
 @[simp]
-theorem inverseAssociator_obj_inr_inl (X) :
+lemma inverseAssociator_obj_inr_inl (X) :
     (inverseAssociator C D E).obj (inr (inl X)) = inl (inr X) :=
   rfl
 #align category_theory.sum.inverse_associator_obj_inr_inl CategoryTheory.sum.inverseAssociator_obj_inr_inl
 
 @[simp]
-theorem inverseAssociator_obj_inr_inr (X) : (inverseAssociator C D E).obj (inr (inr X)) = inr X :=
+lemma inverseAssociator_obj_inr_inr (X) : (inverseAssociator C D E).obj (inr (inr X)) = inr X :=
   rfl
 #align category_theory.sum.inverse_associator_obj_inr_inr CategoryTheory.sum.inverseAssociator_obj_inr_inr
 
 @[simp]
-theorem inverseAssociator_map_inl {X Y : C} (f : inl X ⟶ inl Y) :
+lemma inverseAssociator_map_inl {X Y : C} (f : inl X ⟶ inl Y) :
     (inverseAssociator C D E).map f = f :=
   rfl
 #align category_theory.sum.inverse_associator_map_inl CategoryTheory.sum.inverseAssociator_map_inl
 
 @[simp]
-theorem inverseAssociator_map_inr_inl {X Y : D} (f : inr (inl X) ⟶ inr (inl Y)) :
+lemma inverseAssociator_map_inr_inl {X Y : D} (f : inr (inl X) ⟶ inr (inl Y)) :
     (inverseAssociator C D E).map f = f :=
   rfl
 #align category_theory.sum.inverse_associator_map_inr_inl CategoryTheory.sum.inverseAssociator_map_inr_inl
 
 @[simp]
-theorem inverseAssociator_map_inr_inr {X Y : E} (f : inr (inr X) ⟶ inr (inr Y)) :
+lemma inverseAssociator_map_inr_inr {X Y : E} (f : inr (inr X) ⟶ inr (inr Y)) :
     (inverseAssociator C D E).map f = f :=
   rfl
 #align category_theory.sum.inverse_associator_map_inr_inr CategoryTheory.sum.inverseAssociator_map_inr_inr

@@ -50,14 +50,14 @@ theorem Module.free_def [Small.{w,v} M] :
     fun h => ⟨(nonempty_sigma.2 h).map fun ⟨_, b⟩ => ⟨Set.range b, b.reindexRange⟩⟩⟩
 #align module.free_def Module.free_def
 
-theorem Module.free_iff_set : Module.Free R M ↔ ∃ S : Set M, Nonempty (Basis S R M) :=
+lemma Module.free_iff_set : Module.Free R M ↔ ∃ S : Set M, Nonempty (Basis S R M) :=
   ⟨fun h => ⟨Set.range h.exists_basis.some.2, ⟨Basis.reindexRange h.exists_basis.some.2⟩⟩,
     fun ⟨S, hS⟩ => ⟨nonempty_sigma.2 ⟨S, hS⟩⟩⟩
 #align module.free_iff_set Module.free_iff_set
 
 variable {R M}
 
-theorem Module.Free.of_basis {ι : Type w} (b : Basis ι R M) : Module.Free R M :=
+lemma Module.Free.of_basis {ι : Type w} (b : Basis ι R M) : Module.Free R M :=
   (Module.free_def R M).2 ⟨Set.range b, ⟨b.reindexRange⟩⟩
 #align module.free.of_basis Module.Free.of_basis
 
@@ -112,12 +112,12 @@ instance (priority := 100) noZeroSMulDivisors [NoZeroDivisors R] : NoZeroSMulDiv
 instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
   (Module.Free.chooseBasis R M).index_nonempty
 
-theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
+lemma infinite [Infinite R] [Nontrivial M] : Infinite M :=
   (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 
 variable {R M N}
 
-theorem of_equiv (e : M ≃ₗ[R] N) : Module.Free R N :=
+lemma of_equiv (e : M ≃ₗ[R] N) : Module.Free R N :=
   of_basis <| (chooseBasis R M).map e
 #align module.free.of_equiv Module.Free.of_equiv
 

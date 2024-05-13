@@ -72,24 +72,24 @@ def Q (q : ℕ) : K[X] ⟶ K[X] :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Q AlgebraicTopology.DoldKan.Q
 
-theorem P_add_Q (q : ℕ) : P q + Q q = 𝟙 K[X] := by
+lemma P_add_Q (q : ℕ) : P q + Q q = 𝟙 K[X] := by
   rw [Q]
   abel
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_add_Q AlgebraicTopology.DoldKan.P_add_Q
 
-theorem P_add_Q_f (q n : ℕ) : (P q).f n + (Q q).f n = 𝟙 (X _[n]) :=
+lemma P_add_Q_f (q n : ℕ) : (P q).f n + (Q q).f n = 𝟙 (X _[n]) :=
   HomologicalComplex.congr_hom (P_add_Q q) n
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_add_Q_f AlgebraicTopology.DoldKan.P_add_Q_f
 
 @[simp]
-theorem Q_zero : (Q 0 : K[X] ⟶ _) = 0 :=
+lemma Q_zero : (Q 0 : K[X] ⟶ _) = 0 :=
   sub_self _
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Q_eq_zero AlgebraicTopology.DoldKan.Q_zero
 
-theorem Q_succ (q : ℕ) : (Q (q + 1) : K[X] ⟶ _) = Q q - P q ≫ Hσ q := by
+lemma Q_succ (q : ℕ) : (Q (q + 1) : K[X] ⟶ _) = Q q - P q ≫ Hσ q := by
   simp only [Q, P_succ, comp_add, comp_id]
   abel
 set_option linter.uppercaseLean3 false in
@@ -115,7 +115,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.higher_faces_vanish.of_P AlgebraicTopology.DoldKan.HigherFacesVanish.of_P
 
 @[reassoc]
-theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ) :
+lemma comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ) :
     φ ≫ (P q).f (n + 1) = φ := by
   induction' q with q hq
   · simp only [P_zero]
@@ -137,7 +137,7 @@ set_option linter.uppercaseLean3 false in
 
 end HigherFacesVanish
 
-theorem comp_P_eq_self_iff {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} :
+lemma comp_P_eq_self_iff {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} :
     φ ≫ (P q).f (n + 1) = φ ↔ HigherFacesVanish q φ := by
   constructor
   · intro hφ
@@ -149,7 +149,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.comp_P_eq_self_iff AlgebraicTopology.DoldKan.comp_P_eq_self_iff
 
 @[reassoc (attr := simp)]
-theorem P_f_idem (q n : ℕ) : ((P q).f n : X _[n] ⟶ _) ≫ (P q).f n = (P q).f n := by
+lemma P_f_idem (q n : ℕ) : ((P q).f n : X _[n] ⟶ _) ≫ (P q).f n = (P q).f n := by
   rcases n with (_|n)
   · rw [P_f_0_eq q, comp_id]
   · exact (HigherFacesVanish.of_P q n).comp_P_eq_self
@@ -157,20 +157,20 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_f_idem AlgebraicTopology.DoldKan.P_f_idem
 
 @[reassoc (attr := simp)]
-theorem Q_f_idem (q n : ℕ) : ((Q q).f n : X _[n] ⟶ _) ≫ (Q q).f n = (Q q).f n :=
+lemma Q_f_idem (q n : ℕ) : ((Q q).f n : X _[n] ⟶ _) ≫ (Q q).f n = (Q q).f n :=
   idem_of_id_sub_idem _ (P_f_idem q n)
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Q_f_idem AlgebraicTopology.DoldKan.Q_f_idem
 
 @[reassoc (attr := simp)]
-theorem P_idem (q : ℕ) : (P q : K[X] ⟶ K[X]) ≫ P q = P q := by
+lemma P_idem (q : ℕ) : (P q : K[X] ⟶ K[X]) ≫ P q = P q := by
   ext n
   exact P_f_idem q n
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_idem AlgebraicTopology.DoldKan.P_idem
 
 @[reassoc (attr := simp)]
-theorem Q_idem (q : ℕ) : (Q q : K[X] ⟶ K[X]) ≫ Q q = Q q := by
+lemma Q_idem (q : ℕ) : (Q q : K[X] ⟶ K[X]) ≫ Q q = Q q := by
   ext n
   exact Q_f_idem q n
 set_option linter.uppercaseLean3 false in
@@ -191,14 +191,14 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.nat_trans_P AlgebraicTopology.DoldKan.natTransP
 
 @[reassoc (attr := simp)]
-theorem P_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
+lemma P_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op [n]) ≫ (P q).f n = (P q).f n ≫ f.app (op [n]) :=
   HomologicalComplex.congr_hom ((natTransP q).naturality f) n
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_f_naturality AlgebraicTopology.DoldKan.P_f_naturality
 
 @[reassoc (attr := simp)]
-theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
+lemma Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op [n]) ≫ (Q q).f n = (Q q).f n ≫ f.app (op [n]) := by
   simp only [Q, HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, comp_sub, P_f_naturality,
     sub_comp, sub_left_inj]
@@ -214,7 +214,7 @@ def natTransQ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComp
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.nat_trans_Q AlgebraicTopology.DoldKan.natTransQ
 
-theorem map_P {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+lemma map_P {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     G.map ((P q : K[X] ⟶ _).f n) = (P q : K[((whiskering C D).obj G).obj X] ⟶ _).f n := by
   induction' q with q hq
@@ -225,7 +225,7 @@ theorem map_P {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.map_P AlgebraicTopology.DoldKan.map_P
 
-theorem map_Q {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+lemma map_Q {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     G.map ((Q q : K[X] ⟶ _).f n) = (Q q : K[((whiskering C D).obj G).obj X] ⟶ _).f n := by
   rw [← add_right_inj (G.map ((P q : K[X] ⟶ _).f n)), ← G.map_add, map_P G X q n, P_add_Q_f,

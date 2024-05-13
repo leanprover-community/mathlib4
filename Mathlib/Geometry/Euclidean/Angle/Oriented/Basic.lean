@@ -599,7 +599,7 @@ theorem oangle_map (x y : V') (f : V ≃ₗᵢ[ℝ] V') :
 #align orientation.oangle_map Orientation.oangle_map
 
 @[simp]
-protected theorem _root_.Complex.oangle (w z : ℂ) :
+protected lemma _root_.Complex.oangle (w z : ℂ) :
     Complex.orientation.oangle w z = Complex.arg (conj w * z) := by simp [oangle]
 #align complex.oangle Complex.oangle
 

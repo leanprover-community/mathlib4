@@ -53,19 +53,19 @@ theorem out_proof {p : Prop} (a : Erased p) : p :=
 #align erased.out_proof Erased.out_proof
 
 @[simp]
-theorem out_mk {α} (a : α) : (mk a).out = a := by
+lemma out_mk {α} (a : α) : (mk a).out = a := by
   let h := (mk a).2; show Classical.choose h = a
   have := Classical.choose_spec h
   exact cast (congr_fun this a).symm rfl
 #align erased.out_mk Erased.out_mk
 
 @[simp]
-theorem mk_out {α} : ∀ a : Erased α, mk (out a) = a
+lemma mk_out {α} : ∀ a : Erased α, mk (out a) = a
   | ⟨s, h⟩ => by simp only [mk]; congr; exact Classical.choose_spec h
 #align erased.mk_out Erased.mk_out
 
 @[ext]
-theorem out_inj {α} (a b : Erased α) (h : a.out = b.out) : a = b := by simpa using congr_arg mk h
+lemma out_inj {α} (a b : Erased α) (h : a.out = b.out) : a = b := by simpa using congr_arg mk h
 #align erased.out_inj Erased.out_inj
 
 /-- Equivalence between `Erased α` and `α`. -/
@@ -87,7 +87,7 @@ def choice {α} (h : Nonempty α) : Erased α :=
 #align erased.choice Erased.choice
 
 @[simp]
-theorem nonempty_iff {α} : Nonempty (Erased α) ↔ Nonempty α :=
+lemma nonempty_iff {α} : Nonempty (Erased α) ↔ Nonempty α :=
   ⟨fun ⟨a⟩ => ⟨a.out⟩, fun ⟨a⟩ => ⟨mk a⟩⟩
 #align erased.nonempty_iff Erased.nonempty_iff
 
@@ -104,7 +104,7 @@ def bind {α β} (a : Erased α) (f : α → Erased β) : Erased β :=
 #align erased.bind Erased.bind
 
 @[simp]
-theorem bind_eq_out {α β} (a f) : @bind α β a f = f a.out := rfl
+lemma bind_eq_out {α β} (a f) : @bind α β a f = f a.out := rfl
 #align erased.bind_eq_out Erased.bind_eq_out
 
 /-- Collapses two levels of erasure.
@@ -114,7 +114,7 @@ def join {α} (a : Erased (Erased α)) : Erased α :=
 #align erased.join Erased.join
 
 @[simp]
-theorem join_eq_out {α} (a) : @join α a = a.out :=
+lemma join_eq_out {α} (a) : @join α a = a.out :=
   bind_eq_out _ _
 #align erased.join_eq_out Erased.join_eq_out
 
@@ -128,7 +128,7 @@ def map {α β} (f : α → β) (a : Erased α) : Erased β :=
 #align erased.map Erased.map
 
 @[simp]
-theorem map_out {α β} {f : α → β} (a : Erased α) : (a.map f).out = f a.out := by simp [map]
+lemma map_out {α β} {f : α → β} (a : Erased α) : (a.map f).out = f a.out := by simp [map]
 #align erased.map_out Erased.map_out
 
 protected instance Monad : Monad Erased where
@@ -138,17 +138,17 @@ protected instance Monad : Monad Erased where
 #align erased.monad Erased.Monad
 
 @[simp]
-theorem pure_def {α} : (pure : α → Erased α) = @mk _ :=
+lemma pure_def {α} : (pure : α → Erased α) = @mk _ :=
   rfl
 #align erased.pure_def Erased.pure_def
 
 @[simp]
-theorem bind_def {α β} : ((· >>= ·) : Erased α → (α → Erased β) → Erased β) = @bind _ _ :=
+lemma bind_def {α β} : ((· >>= ·) : Erased α → (α → Erased β) → Erased β) = @bind _ _ :=
   rfl
 #align erased.bind_def Erased.bind_def
 
 @[simp]
-theorem map_def {α β} : ((· <$> ·) : (α → β) → Erased α → Erased β) = @map _ _ :=
+lemma map_def {α β} : ((· <$> ·) : (α → β) → Erased α → Erased β) = @map _ _ :=
   rfl
 #align erased.map_def Erased.map_def
 

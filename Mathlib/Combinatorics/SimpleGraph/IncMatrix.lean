@@ -60,7 +60,7 @@ noncomputable def incMatrix [Zero R] [One R] : Matrix α (Sym2 α) R := fun a =>
 
 variable {R}
 
-theorem incMatrix_apply [Zero R] [One R] {a : α} {e : Sym2 α} :
+lemma incMatrix_apply [Zero R] [One R] {a : α} {e : Sym2 α} :
     G.incMatrix R a e = (G.incidenceSet a).indicator 1 e :=
   rfl
 #align simple_graph.inc_matrix_apply SimpleGraph.incMatrix_apply
@@ -76,34 +76,34 @@ section MulZeroOneClass
 
 variable [MulZeroOneClass R] {a b : α} {e : Sym2 α}
 
-theorem incMatrix_apply_mul_incMatrix_apply : G.incMatrix R a e * G.incMatrix R b e =
+lemma incMatrix_apply_mul_incMatrix_apply : G.incMatrix R a e * G.incMatrix R b e =
     (G.incidenceSet a ∩ G.incidenceSet b).indicator 1 e := by
   classical simp only [incMatrix, Set.indicator_apply, ite_zero_mul_ite_zero, Pi.one_apply, mul_one,
     Set.mem_inter_iff]
 #align simple_graph.inc_matrix_apply_mul_inc_matrix_apply SimpleGraph.incMatrix_apply_mul_incMatrix_apply
 
-theorem incMatrix_apply_mul_incMatrix_apply_of_not_adj (hab : a ≠ b) (h : ¬G.Adj a b) :
+lemma incMatrix_apply_mul_incMatrix_apply_of_not_adj (hab : a ≠ b) (h : ¬G.Adj a b) :
     G.incMatrix R a e * G.incMatrix R b e = 0 := by
   rw [incMatrix_apply_mul_incMatrix_apply, Set.indicator_of_not_mem]
   rw [G.incidenceSet_inter_incidenceSet_of_not_adj h hab]
   exact Set.not_mem_empty e
 #align simple_graph.inc_matrix_apply_mul_inc_matrix_apply_of_not_adj SimpleGraph.incMatrix_apply_mul_incMatrix_apply_of_not_adj
 
-theorem incMatrix_of_not_mem_incidenceSet (h : e ∉ G.incidenceSet a) : G.incMatrix R a e = 0 := by
+lemma incMatrix_of_not_mem_incidenceSet (h : e ∉ G.incidenceSet a) : G.incMatrix R a e = 0 := by
   rw [incMatrix_apply, Set.indicator_of_not_mem h]
 #align simple_graph.inc_matrix_of_not_mem_incidence_set SimpleGraph.incMatrix_of_not_mem_incidenceSet
 
-theorem incMatrix_of_mem_incidenceSet (h : e ∈ G.incidenceSet a) : G.incMatrix R a e = 1 := by
+lemma incMatrix_of_mem_incidenceSet (h : e ∈ G.incidenceSet a) : G.incMatrix R a e = 1 := by
   rw [incMatrix_apply, Set.indicator_of_mem h, Pi.one_apply]
 #align simple_graph.inc_matrix_of_mem_incidence_set SimpleGraph.incMatrix_of_mem_incidenceSet
 
 variable [Nontrivial R]
 
-theorem incMatrix_apply_eq_zero_iff : G.incMatrix R a e = 0 ↔ e ∉ G.incidenceSet a := by
+lemma incMatrix_apply_eq_zero_iff : G.incMatrix R a e = 0 ↔ e ∉ G.incidenceSet a := by
   simp only [incMatrix_apply, Set.indicator_apply_eq_zero, Pi.one_apply, one_ne_zero]
 #align simple_graph.inc_matrix_apply_eq_zero_iff SimpleGraph.incMatrix_apply_eq_zero_iff
 
-theorem incMatrix_apply_eq_one_iff : G.incMatrix R a e = 1 ↔ e ∈ G.incidenceSet a := by
+lemma incMatrix_apply_eq_one_iff : G.incMatrix R a e = 1 ↔ e ∈ G.incidenceSet a := by
   -- Porting note: was `convert one_ne_zero.ite_eq_left_iff; infer_instance`
   unfold incMatrix Set.indicator
   simp only [Pi.one_apply]
@@ -118,12 +118,12 @@ section NonAssocSemiring
 
 variable [Fintype (Sym2 α)] [NonAssocSemiring R] {a b : α} {e : Sym2 α}
 
-theorem sum_incMatrix_apply [Fintype (neighborSet G a)] :
+lemma sum_incMatrix_apply [Fintype (neighborSet G a)] :
     ∑ e, G.incMatrix R a e = G.degree a := by
   classical simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset]
 #align simple_graph.sum_inc_matrix_apply SimpleGraph.sum_incMatrix_apply
 
-theorem incMatrix_mul_transpose_diag [Fintype (neighborSet G a)] :
+lemma incMatrix_mul_transpose_diag [Fintype (neighborSet G a)] :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a a = G.degree a := by
   classical
   rw [← sum_incMatrix_apply]
@@ -131,7 +131,7 @@ theorem incMatrix_mul_transpose_diag [Fintype (neighborSet G a)] :
   simp_all only [ite_true, sum_boole]
 #align simple_graph.inc_matrix_mul_transpose_diag SimpleGraph.incMatrix_mul_transpose_diag
 
-theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
+lemma sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
     e ∈ G.edgeSet → ∑ a, G.incMatrix R a e = 2 := by
   classical
     refine' e.ind _
@@ -144,12 +144,12 @@ theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
     simp only [mem_filter, mem_univ, true_and_iff, mem_insert, mem_singleton]
 #align simple_graph.sum_inc_matrix_apply_of_mem_edge_set SimpleGraph.sum_incMatrix_apply_of_mem_edgeSet
 
-theorem sum_incMatrix_apply_of_not_mem_edgeSet [Fintype α] (h : e ∉ G.edgeSet) :
+lemma sum_incMatrix_apply_of_not_mem_edgeSet [Fintype α] (h : e ∉ G.edgeSet) :
     ∑ a, G.incMatrix R a e = 0 :=
   sum_eq_zero fun _ _ => G.incMatrix_of_not_mem_incidenceSet fun he => h he.1
 #align simple_graph.sum_inc_matrix_apply_of_not_mem_edge_set SimpleGraph.sum_incMatrix_apply_of_not_mem_edgeSet
 
-theorem incMatrix_transpose_mul_diag [Fintype α] [Decidable (e ∈ G.edgeSet)] :
+lemma incMatrix_transpose_mul_diag [Fintype α] [Decidable (e ∈ G.edgeSet)] :
     ((G.incMatrix R)ᵀ * G.incMatrix R) e e = if e ∈ G.edgeSet then 2 else 0 := by
   classical
     simp only [Matrix.mul_apply, incMatrix_apply', transpose_apply, ite_zero_mul_ite_zero, one_mul,
@@ -176,7 +176,7 @@ section Semiring
 
 variable [Fintype (Sym2 α)] [Semiring R] {a b : α} {e : Sym2 α}
 
-theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
+lemma incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a b = (1 : R) := by
   classical
     simp_rw [Matrix.mul_apply, Matrix.transpose_apply, incMatrix_apply_mul_incMatrix_apply,
@@ -187,7 +187,7 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
     exact G.incidenceSet_inter_incidenceSet_of_adj h
 #align simple_graph.inc_matrix_mul_transpose_apply_of_adj SimpleGraph.incMatrix_mul_transpose_apply_of_adj
 
-theorem incMatrix_mul_transpose
+lemma incMatrix_mul_transpose
     [∀ a, Fintype (neighborSet G a)] [DecidableEq α] [DecidableRel G.Adj] :
     G.incMatrix R * (G.incMatrix R)ᵀ = fun a b =>
       if a = b then (G.degree a : R) else if G.Adj a b then 1 else 0 := by

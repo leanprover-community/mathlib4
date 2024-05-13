@@ -90,73 +90,73 @@ instance functorCategoryMonoidalStruct : MonoidalCategoryStruct (C ⥤ D) where
   associator F G H := NatIso.ofComponents fun X => α_ (F.obj X) (G.obj X) (H.obj X)
 
 @[simp]
-theorem tensorUnit_obj {X} : (𝟙_ (C ⥤ D)).obj X = 𝟙_ D :=
+lemma tensorUnit_obj {X} : (𝟙_ (C ⥤ D)).obj X = 𝟙_ D :=
   rfl
 #align category_theory.monoidal.tensor_unit_obj CategoryTheory.Monoidal.tensorUnit_obj
 
 @[simp]
-theorem tensorUnit_map {X Y} {f : X ⟶ Y} : (𝟙_ (C ⥤ D)).map f = 𝟙 (𝟙_ D) :=
+lemma tensorUnit_map {X Y} {f : X ⟶ Y} : (𝟙_ (C ⥤ D)).map f = 𝟙 (𝟙_ D) :=
   rfl
 #align category_theory.monoidal.tensor_unit_map CategoryTheory.Monoidal.tensorUnit_map
 
 @[simp]
-theorem tensorObj_obj {F G : C ⥤ D} {X} : (F ⊗ G).obj X = F.obj X ⊗ G.obj X :=
+lemma tensorObj_obj {F G : C ⥤ D} {X} : (F ⊗ G).obj X = F.obj X ⊗ G.obj X :=
   rfl
 #align category_theory.monoidal.tensor_obj_obj CategoryTheory.Monoidal.tensorObj_obj
 
 @[simp]
-theorem tensorObj_map {F G : C ⥤ D} {X Y} {f : X ⟶ Y} : (F ⊗ G).map f = F.map f ⊗ G.map f :=
+lemma tensorObj_map {F G : C ⥤ D} {X Y} {f : X ⟶ Y} : (F ⊗ G).map f = F.map f ⊗ G.map f :=
   rfl
 #align category_theory.monoidal.tensor_obj_map CategoryTheory.Monoidal.tensorObj_map
 
 @[simp]
-theorem tensorHom_app {F G F' G' : C ⥤ D} {α : F ⟶ G} {β : F' ⟶ G'} {X} :
+lemma tensorHom_app {F G F' G' : C ⥤ D} {α : F ⟶ G} {β : F' ⟶ G'} {X} :
     (α ⊗ β).app X = α.app X ⊗ β.app X :=
   rfl
 #align category_theory.monoidal.tensor_hom_app CategoryTheory.Monoidal.tensorHom_app
 
 @[simp]
-theorem whiskerLeft_app {F F' G' : C ⥤ D} {β : F' ⟶ G'} {X} :
+lemma whiskerLeft_app {F F' G' : C ⥤ D} {β : F' ⟶ G'} {X} :
     (F ◁ β).app X = F.obj X ◁ β.app X :=
   rfl
 
 @[simp]
-theorem whiskerRight_app {F G F' : C ⥤ D} {α : F ⟶ G} {X} :
+lemma whiskerRight_app {F G F' : C ⥤ D} {α : F ⟶ G} {X} :
     (α ▷ F').app X = α.app X ▷ F'.obj X :=
   rfl
 
 @[simp]
-theorem leftUnitor_hom_app {F : C ⥤ D} {X} :
+lemma leftUnitor_hom_app {F : C ⥤ D} {X} :
     ((λ_ F).hom : 𝟙_ _ ⊗ F ⟶ F).app X = (λ_ (F.obj X)).hom :=
   rfl
 #align category_theory.monoidal.left_unitor_hom_app CategoryTheory.Monoidal.leftUnitor_hom_app
 
 @[simp]
-theorem leftUnitor_inv_app {F : C ⥤ D} {X} :
+lemma leftUnitor_inv_app {F : C ⥤ D} {X} :
     ((λ_ F).inv : F ⟶ 𝟙_ _ ⊗ F).app X = (λ_ (F.obj X)).inv :=
   rfl
 #align category_theory.monoidal.left_unitor_inv_app CategoryTheory.Monoidal.leftUnitor_inv_app
 
 @[simp]
-theorem rightUnitor_hom_app {F : C ⥤ D} {X} :
+lemma rightUnitor_hom_app {F : C ⥤ D} {X} :
     ((ρ_ F).hom : F ⊗ 𝟙_ _ ⟶ F).app X = (ρ_ (F.obj X)).hom :=
   rfl
 #align category_theory.monoidal.right_unitor_hom_app CategoryTheory.Monoidal.rightUnitor_hom_app
 
 @[simp]
-theorem rightUnitor_inv_app {F : C ⥤ D} {X} :
+lemma rightUnitor_inv_app {F : C ⥤ D} {X} :
     ((ρ_ F).inv : F ⟶ F ⊗ 𝟙_ _).app X = (ρ_ (F.obj X)).inv :=
   rfl
 #align category_theory.monoidal.right_unitor_inv_app CategoryTheory.Monoidal.rightUnitor_inv_app
 
 @[simp]
-theorem associator_hom_app {F G H : C ⥤ D} {X} :
+lemma associator_hom_app {F G H : C ⥤ D} {X} :
     ((α_ F G H).hom : (F ⊗ G) ⊗ H ⟶ F ⊗ G ⊗ H).app X = (α_ (F.obj X) (G.obj X) (H.obj X)).hom :=
   rfl
 #align category_theory.monoidal.associator_hom_app CategoryTheory.Monoidal.associator_hom_app
 
 @[simp]
-theorem associator_inv_app {F G H : C ⥤ D} {X} :
+lemma associator_inv_app {F G H : C ⥤ D} {X} :
     ((α_ F G H).inv : F ⊗ G ⊗ H ⟶ (F ⊗ G) ⊗ H).app X = (α_ (F.obj X) (G.obj X) (H.obj X)).inv :=
   rfl
 #align category_theory.monoidal.associator_inv_app CategoryTheory.Monoidal.associator_inv_app

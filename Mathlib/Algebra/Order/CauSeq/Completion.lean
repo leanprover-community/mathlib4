@@ -39,11 +39,11 @@ def mk : CauSeq _ abv → Cauchy abv :=
 #align cau_seq.completion.mk CauSeq.Completion.mk
 
 @[simp]
-theorem mk_eq_mk (f : CauSeq _ abv) : @Eq (Cauchy abv) ⟦f⟧ (mk f) :=
+lemma mk_eq_mk (f : CauSeq _ abv) : @Eq (Cauchy abv) ⟦f⟧ (mk f) :=
   rfl
 #align cau_seq.completion.mk_eq_mk CauSeq.Completion.mk_eq_mk
 
-theorem mk_eq {f g : CauSeq _ abv} : mk f = mk g ↔ f ≈ g :=
+lemma mk_eq {f g : CauSeq _ abv} : mk f = mk g ↔ f ≈ g :=
   Quotient.eq
 #align cau_seq.completion.mk_eq CauSeq.Completion.mk_eq
 
@@ -61,16 +61,16 @@ instance : One (Cauchy abv) :=
 instance : Inhabited (Cauchy abv) :=
   ⟨0⟩
 
-theorem ofRat_zero : (ofRat 0 : Cauchy abv) = 0 :=
+lemma ofRat_zero : (ofRat 0 : Cauchy abv) = 0 :=
   rfl
 #align cau_seq.completion.of_rat_zero CauSeq.Completion.ofRat_zero
 
-theorem ofRat_one : (ofRat 1 : Cauchy abv) = 1 :=
+lemma ofRat_one : (ofRat 1 : Cauchy abv) = 1 :=
   rfl
 #align cau_seq.completion.of_rat_one CauSeq.Completion.ofRat_one
 
 @[simp]
-theorem mk_eq_zero {f : CauSeq _ abv} : mk f = 0 ↔ LimZero f := by
+lemma mk_eq_zero {f : CauSeq _ abv} : mk f = 0 ↔ LimZero f := by
   have : mk f = 0 ↔ LimZero (f - 0) := Quotient.eq
   rwa [sub_zero] at this
 #align cau_seq.completion.mk_eq_zero CauSeq.Completion.mk_eq_zero
@@ -79,7 +79,7 @@ instance : Add (Cauchy abv) :=
   ⟨(Quotient.map₂ (· + ·)) fun _ _ hf _ _ hg => add_equiv_add hf hg⟩
 
 @[simp]
-theorem mk_add (f g : CauSeq β abv) : mk f + mk g = mk (f + g) :=
+lemma mk_add (f g : CauSeq β abv) : mk f + mk g = mk (f + g) :=
   rfl
 #align cau_seq.completion.mk_add CauSeq.Completion.mk_add
 
@@ -87,7 +87,7 @@ instance : Neg (Cauchy abv) :=
   ⟨(Quotient.map Neg.neg) fun _ _ hf => neg_equiv_neg hf⟩
 
 @[simp]
-theorem mk_neg (f : CauSeq β abv) : -mk f = mk (-f) :=
+lemma mk_neg (f : CauSeq β abv) : -mk f = mk (-f) :=
   rfl
 #align cau_seq.completion.mk_neg CauSeq.Completion.mk_neg
 
@@ -95,7 +95,7 @@ instance : Mul (Cauchy abv) :=
   ⟨(Quotient.map₂ (· * ·)) fun _ _ hf _ _ hg => mul_equiv_mul hf hg⟩
 
 @[simp]
-theorem mk_mul (f g : CauSeq β abv) : mk f * mk g = mk (f * g) :=
+lemma mk_mul (f g : CauSeq β abv) : mk f * mk g = mk (f * g) :=
   rfl
 #align cau_seq.completion.mk_mul CauSeq.Completion.mk_mul
 
@@ -103,7 +103,7 @@ instance : Sub (Cauchy abv) :=
   ⟨(Quotient.map₂ Sub.sub) fun _ _ hf _ _ hg => sub_equiv_sub hf hg⟩
 
 @[simp]
-theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
+lemma mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
   rfl
 #align cau_seq.completion.mk_sub CauSeq.Completion.mk_sub
 
@@ -111,7 +111,7 @@ instance {γ : Type*} [SMul γ β] [IsScalarTower γ β β] : SMul γ (Cauchy ab
   ⟨fun c => (Quotient.map (c • ·)) fun _ _ hf => smul_equiv_smul _ hf⟩
 
 @[simp]
-theorem mk_smul {γ : Type*} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :
+lemma mk_smul {γ : Type*} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :
     c • mk f = mk (c • f) :=
   rfl
 #align cau_seq.completion.mk_smul CauSeq.Completion.mk_smul
@@ -120,7 +120,7 @@ instance : Pow (Cauchy abv) ℕ :=
   ⟨fun x n => Quotient.map (· ^ n) (fun _ _ hf => pow_equiv_pow hf _) x⟩
 
 @[simp]
-theorem mk_pow (n : ℕ) (f : CauSeq β abv) : mk f ^ n = mk (f ^ n) :=
+lemma mk_pow (n : ℕ) (f : CauSeq β abv) : mk f ^ n = mk (f ^ n) :=
   rfl
 #align cau_seq.completion.mk_pow CauSeq.Completion.mk_pow
 
@@ -131,33 +131,33 @@ instance : IntCast (Cauchy abv) :=
   ⟨fun n => mk n⟩
 
 @[simp]
-theorem ofRat_natCast (n : ℕ) : (ofRat n : Cauchy abv) = n :=
+lemma ofRat_natCast (n : ℕ) : (ofRat n : Cauchy abv) = n :=
   rfl
 #align cau_seq.completion.of_rat_nat_cast CauSeq.Completion.ofRat_natCast
 
 @[simp]
-theorem ofRat_intCast (z : ℤ) : (ofRat z : Cauchy abv) = z :=
+lemma ofRat_intCast (z : ℤ) : (ofRat z : Cauchy abv) = z :=
   rfl
 #align cau_seq.completion.of_rat_int_cast CauSeq.Completion.ofRat_intCast
 
-theorem ofRat_add (x y : β) :
+lemma ofRat_add (x y : β) :
     ofRat (x + y) = (ofRat x + ofRat y : Cauchy abv) :=
   congr_arg mk (const_add _ _)
 #align cau_seq.completion.of_rat_add CauSeq.Completion.ofRat_add
 
-theorem ofRat_neg (x : β) : ofRat (-x) = (-ofRat x : Cauchy abv) :=
+lemma ofRat_neg (x : β) : ofRat (-x) = (-ofRat x : Cauchy abv) :=
   congr_arg mk (const_neg _)
 #align cau_seq.completion.of_rat_neg CauSeq.Completion.ofRat_neg
 
-theorem ofRat_mul (x y : β) :
+lemma ofRat_mul (x y : β) :
     ofRat (x * y) = (ofRat x * ofRat y : Cauchy abv) :=
   congr_arg mk (const_mul _ _)
 #align cau_seq.completion.of_rat_mul CauSeq.Completion.ofRat_mul
 
-private theorem zero_def : 0 = @mk _ _ _ _ abv _ 0 :=
+private lemma zero_def : 0 = @mk _ _ _ _ abv _ 0 :=
   rfl
 
-private theorem one_def : 1 = @mk _ _ _ _ abv _ 1 :=
+private lemma one_def : 1 = @mk _ _ _ _ abv _ 1 :=
   rfl
 
 instance Cauchy.ring : Ring (Cauchy abv) :=
@@ -177,7 +177,7 @@ def ofRatRingHom : β →+* (Cauchy abv) where
 #align cau_seq.completion.of_rat_ring_hom CauSeq.Completion.ofRatRingHom
 #align cau_seq.completion.of_rat_ring_hom_apply CauSeq.Completion.ofRatRingHom_apply
 
-theorem ofRat_sub (x y : β) : ofRat (x - y) = (ofRat x - ofRat y : Cauchy abv) :=
+lemma ofRat_sub (x y : β) : ofRat (x - y) = (ofRat x - ofRat y : Cauchy abv) :=
   congr_arg mk (const_sub _ _)
 #align cau_seq.completion.of_rat_sub CauSeq.Completion.ofRat_sub
 
@@ -226,39 +226,39 @@ noncomputable instance : Inv (Cauchy abv) :=
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
-theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
+lemma inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
   congr_arg mk <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
 #align cau_seq.completion.inv_zero CauSeq.Completion.inv_zero
 
 @[simp]
-theorem inv_mk {f} (hf) : (@mk α _ β _ abv _ f)⁻¹ = mk (inv f hf) :=
+lemma inv_mk {f} (hf) : (@mk α _ β _ abv _ f)⁻¹ = mk (inv f hf) :=
   congr_arg mk <| by rw [dif_neg]
 #align cau_seq.completion.inv_mk CauSeq.Completion.inv_mk
 
-theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
+lemma cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
   have : LimZero (1 - 0 : CauSeq _ abv) := Setoid.symm h
   have : LimZero 1 := by simpa
   by apply one_ne_zero <| const_limZero.1 this
 #align cau_seq.completion.cau_seq_zero_ne_one CauSeq.Completion.cau_seq_zero_ne_one
 
-theorem zero_ne_one : (0 : (Cauchy abv)) ≠ 1 := fun h => cau_seq_zero_ne_one <| mk_eq.1 h
+lemma zero_ne_one : (0 : (Cauchy abv)) ≠ 1 := fun h => cau_seq_zero_ne_one <| mk_eq.1 h
 #align cau_seq.completion.zero_ne_one CauSeq.Completion.zero_ne_one
 
-protected theorem inv_mul_cancel {x : (Cauchy abv)} : x ≠ 0 → x⁻¹ * x = 1 :=
+protected lemma inv_mul_cancel {x : (Cauchy abv)} : x ≠ 0 → x⁻¹ * x = 1 :=
   Quotient.inductionOn x fun f hf => by
     simp only [mk_eq_mk, ne_eq, mk_eq_zero] at hf
     simp only [mk_eq_mk, hf, not_false_eq_true, inv_mk, mk_mul]
     exact Quotient.sound (CauSeq.inv_mul_cancel hf)
 #align cau_seq.completion.inv_mul_cancel CauSeq.Completion.inv_mul_cancel
 
-protected theorem mul_inv_cancel {x : (Cauchy abv)} : x ≠ 0 → x * x⁻¹ = 1 :=
+protected lemma mul_inv_cancel {x : (Cauchy abv)} : x ≠ 0 → x * x⁻¹ = 1 :=
   Quotient.inductionOn x fun f hf => by
     simp only [mk_eq_mk, ne_eq, mk_eq_zero] at hf
     simp only [mk_eq_mk, hf, not_false_eq_true, inv_mk, mk_mul]
     exact Quotient.sound (CauSeq.mul_inv_cancel hf)
 #align cau_seq.completion.mul_inv_cancel CauSeq.Completion.mul_inv_cancel
 
-theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
+lemma ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
   congr_arg mk <| by split_ifs with h <;>
     [simp only [const_limZero.1 h, GroupWithZero.inv_zero, const_zero]; rfl]
 #align cau_seq.completion.of_rat_inv CauSeq.Completion.ofRat_inv
@@ -330,7 +330,7 @@ section
 variable {β : Type*} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
 variable [IsComplete β abv]
 
-theorem complete : ∀ s : CauSeq β abv, ∃ b : β, s ≈ const abv b :=
+lemma complete : ∀ s : CauSeq β abv, ∃ b : β, s ≈ const abv b :=
   IsComplete.isComplete
 #align cau_seq.complete CauSeq.complete
 
@@ -339,35 +339,35 @@ noncomputable def lim (s : CauSeq β abv) : β :=
   Classical.choose (complete s)
 #align cau_seq.lim CauSeq.lim
 
-theorem equiv_lim (s : CauSeq β abv) : s ≈ const abv (lim s) :=
+lemma equiv_lim (s : CauSeq β abv) : s ≈ const abv (lim s) :=
   Classical.choose_spec (complete s)
 #align cau_seq.equiv_lim CauSeq.equiv_lim
 
-theorem eq_lim_of_const_equiv {f : CauSeq β abv} {x : β} (h : CauSeq.const abv x ≈ f) : x = lim f :=
+lemma eq_lim_of_const_equiv {f : CauSeq β abv} {x : β} (h : CauSeq.const abv x ≈ f) : x = lim f :=
   const_equiv.mp <| Setoid.trans h <| equiv_lim f
 #align cau_seq.eq_lim_of_const_equiv CauSeq.eq_lim_of_const_equiv
 
-theorem lim_eq_of_equiv_const {f : CauSeq β abv} {x : β} (h : f ≈ CauSeq.const abv x) : lim f = x :=
+lemma lim_eq_of_equiv_const {f : CauSeq β abv} {x : β} (h : f ≈ CauSeq.const abv x) : lim f = x :=
   (eq_lim_of_const_equiv <| Setoid.symm h).symm
 #align cau_seq.lim_eq_of_equiv_const CauSeq.lim_eq_of_equiv_const
 
-theorem lim_eq_lim_of_equiv {f g : CauSeq β abv} (h : f ≈ g) : lim f = lim g :=
+lemma lim_eq_lim_of_equiv {f g : CauSeq β abv} (h : f ≈ g) : lim f = lim g :=
   lim_eq_of_equiv_const <| Setoid.trans h <| equiv_lim g
 #align cau_seq.lim_eq_lim_of_equiv CauSeq.lim_eq_lim_of_equiv
 
 @[simp]
-theorem lim_const (x : β) : lim (const abv x) = x :=
+lemma lim_const (x : β) : lim (const abv x) = x :=
   lim_eq_of_equiv_const <| Setoid.refl _
 #align cau_seq.lim_const CauSeq.lim_const
 
-theorem lim_add (f g : CauSeq β abv) : lim f + lim g = lim (f + g) :=
+lemma lim_add (f g : CauSeq β abv) : lim f + lim g = lim (f + g) :=
   eq_lim_of_const_equiv <|
     show LimZero (const abv (lim f + lim g) - (f + g)) by
       rw [const_add, add_sub_add_comm]
       exact add_limZero (Setoid.symm (equiv_lim f)) (Setoid.symm (equiv_lim g))
 #align cau_seq.lim_add CauSeq.lim_add
 
-theorem lim_mul_lim (f g : CauSeq β abv) : lim f * lim g = lim (f * g) :=
+lemma lim_mul_lim (f g : CauSeq β abv) : lim f * lim g = lim (f * g) :=
   eq_lim_of_const_equiv <|
     show LimZero (const abv (lim f * lim g) - f * g) by
       have h :
@@ -382,18 +382,18 @@ theorem lim_mul_lim (f g : CauSeq β abv) : lim f * lim g = lim (f * g) :=
           (mul_limZero_right _ (Setoid.symm (equiv_lim _)))
 #align cau_seq.lim_mul_lim CauSeq.lim_mul_lim
 
-theorem lim_mul (f : CauSeq β abv) (x : β) : lim f * x = lim (f * const abv x) := by
+lemma lim_mul (f : CauSeq β abv) (x : β) : lim f * x = lim (f * const abv x) := by
   rw [← lim_mul_lim, lim_const]
 #align cau_seq.lim_mul CauSeq.lim_mul
 
-theorem lim_neg (f : CauSeq β abv) : lim (-f) = -lim f :=
+lemma lim_neg (f : CauSeq β abv) : lim (-f) = -lim f :=
   lim_eq_of_equiv_const
     (show LimZero (-f - const abv (-lim f)) by
       rw [const_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg]
       exact Setoid.symm (equiv_lim f))
 #align cau_seq.lim_neg CauSeq.lim_neg
 
-theorem lim_eq_zero_iff (f : CauSeq β abv) : lim f = 0 ↔ LimZero f :=
+lemma lim_eq_zero_iff (f : CauSeq β abv) : lim f = 0 ↔ LimZero f :=
   ⟨fun h => by
     have hf := equiv_lim f
     rw [h] at hf
@@ -410,7 +410,7 @@ section
 
 variable {β : Type*} [Field β] {abv : β → α} [IsAbsoluteValue abv] [IsComplete β abv]
 
-theorem lim_inv {f : CauSeq β abv} (hf : ¬LimZero f) : lim (inv f hf) = (lim f)⁻¹ :=
+lemma lim_inv {f : CauSeq β abv} (hf : ¬LimZero f) : lim (inv f hf) = (lim f)⁻¹ :=
   have hl : lim f ≠ 0 := by rwa [← lim_eq_zero_iff] at hf
   lim_eq_of_equiv_const <|
     show LimZero (inv f hf - const abv (lim f)⁻¹) from
@@ -442,19 +442,19 @@ section
 
 variable [IsComplete α abs]
 
-theorem lim_le {f : CauSeq α abs} {x : α} (h : f ≤ CauSeq.const abs x) : lim f ≤ x :=
+lemma lim_le {f : CauSeq α abs} {x : α} (h : f ≤ CauSeq.const abs x) : lim f ≤ x :=
   CauSeq.const_le.1 <| CauSeq.le_of_eq_of_le (Setoid.symm (equiv_lim f)) h
 #align cau_seq.lim_le CauSeq.lim_le
 
-theorem le_lim {f : CauSeq α abs} {x : α} (h : CauSeq.const abs x ≤ f) : x ≤ lim f :=
+lemma le_lim {f : CauSeq α abs} {x : α} (h : CauSeq.const abs x ≤ f) : x ≤ lim f :=
   CauSeq.const_le.1 <| CauSeq.le_of_le_of_eq h (equiv_lim f)
 #align cau_seq.le_lim CauSeq.le_lim
 
-theorem lt_lim {f : CauSeq α abs} {x : α} (h : CauSeq.const abs x < f) : x < lim f :=
+lemma lt_lim {f : CauSeq α abs} {x : α} (h : CauSeq.const abs x < f) : x < lim f :=
   CauSeq.const_lt.1 <| CauSeq.lt_of_lt_of_eq h (equiv_lim f)
 #align cau_seq.lt_lim CauSeq.lt_lim
 
-theorem lim_lt {f : CauSeq α abs} {x : α} (h : f < CauSeq.const abs x) : lim f < x :=
+lemma lim_lt {f : CauSeq α abs} {x : α} (h : f < CauSeq.const abs x) : lim f < x :=
   CauSeq.const_lt.1 <| CauSeq.lt_of_eq_of_lt (Setoid.symm (equiv_lim f)) h
 #align cau_seq.lim_lt CauSeq.lim_lt
 

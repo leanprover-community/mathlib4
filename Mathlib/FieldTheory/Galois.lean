@@ -52,7 +52,7 @@ class IsGalois : Prop where
 
 variable {F E}
 
-theorem isGalois_iff : IsGalois F E ↔ IsSeparable F E ∧ Normal F E :=
+lemma isGalois_iff : IsGalois F E ↔ IsSeparable F E ∧ Normal F E :=
   ⟨fun h => ⟨h.1, h.2⟩, fun h =>
     { to_isSeparable := h.1
       to_normal := h.2 }⟩
@@ -71,15 +71,15 @@ instance self : IsGalois F F :=
 
 variable {E}
 
-theorem integral [IsGalois F E] (x : E) : IsIntegral F x :=
+lemma integral [IsGalois F E] (x : E) : IsIntegral F x :=
   to_normal.isIntegral x
 #align is_galois.integral IsGalois.integral
 
-theorem separable [IsGalois F E] (x : E) : (minpoly F x).Separable :=
+lemma separable [IsGalois F E] (x : E) : (minpoly F x).Separable :=
   IsSeparable.separable F x
 #align is_galois.separable IsGalois.separable
 
-theorem splits [IsGalois F E] (x : E) : (minpoly F x).Splits (algebraMap F E) :=
+lemma splits [IsGalois F E] (x : E) : (minpoly F x).Splits (algebraMap F E) :=
   Normal.splits' x
 #align is_galois.splits IsGalois.splits
 
@@ -90,7 +90,7 @@ instance of_fixed_field (G : Type*) [Group G] [Finite G] [MulSemiringAction G E]
   ⟨⟩
 #align is_galois.of_fixed_field IsGalois.of_fixed_field
 
-theorem IntermediateField.AdjoinSimple.card_aut_eq_finrank [FiniteDimensional F E] {α : E}
+lemma IntermediateField.AdjoinSimple.card_aut_eq_finrank [FiniteDimensional F E] {α : E}
     (hα : IsIntegral F α) (h_sep : (minpoly F α).Separable)
     (h_splits : (minpoly F α).Splits (algebraMap F F⟮α⟯)) :
     Fintype.card (F⟮α⟯ ≃ₐ[F] F⟮α⟯) = finrank F F⟮α⟯ := by
@@ -100,7 +100,7 @@ theorem IntermediateField.AdjoinSimple.card_aut_eq_finrank [FiniteDimensional F 
   exact Fintype.card_congr (algEquivEquivAlgHom F F⟮α⟯)
 #align is_galois.intermediate_field.adjoin_simple.card_aut_eq_finrank IsGalois.IntermediateField.AdjoinSimple.card_aut_eq_finrank
 
-theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
+lemma card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
     Fintype.card (E ≃ₐ[F] E) = finrank F E := by
   cases' Field.exists_primitive_element F E with α hα
   let iso : F⟮α⟯ ≃ₐ[F] E :=
@@ -134,7 +134,7 @@ section IsGaloisTower
 variable (F K E : Type*) [Field F] [Field K] [Field E] {E' : Type*} [Field E'] [Algebra F E']
 variable [Algebra F K] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 
-theorem IsGalois.tower_top_of_isGalois [IsGalois F E] : IsGalois K E :=
+lemma IsGalois.tower_top_of_isGalois [IsGalois F E] : IsGalois K E :=
   { to_isSeparable := isSeparable_tower_top_of_isSeparable F K E
     to_normal := Normal.tower_top_of_normal F K E }
 #align is_galois.tower_top_of_is_galois IsGalois.tower_top_of_isGalois
@@ -147,23 +147,23 @@ instance (priority := 100) IsGalois.tower_top_intermediateField (K : Intermediat
   IsGalois.tower_top_of_isGalois F K E
 #align is_galois.tower_top_intermediate_field IsGalois.tower_top_intermediateField
 
-theorem isGalois_iff_isGalois_bot : IsGalois (⊥ : IntermediateField F E) E ↔ IsGalois F E := by
+lemma isGalois_iff_isGalois_bot : IsGalois (⊥ : IntermediateField F E) E ↔ IsGalois F E := by
   constructor
   · intro h
     exact IsGalois.tower_top_of_isGalois (⊥ : IntermediateField F E) F E
   · intro h; infer_instance
 #align is_galois_iff_is_galois_bot isGalois_iff_isGalois_bot
 
-theorem IsGalois.of_algEquiv [IsGalois F E] (f : E ≃ₐ[F] E') : IsGalois F E' :=
+lemma IsGalois.of_algEquiv [IsGalois F E] (f : E ≃ₐ[F] E') : IsGalois F E' :=
   { to_isSeparable := IsSeparable.of_algHom F E f.symm
     to_normal := Normal.of_algEquiv f }
 #align is_galois.of_alg_equiv IsGalois.of_algEquiv
 
-theorem AlgEquiv.transfer_galois (f : E ≃ₐ[F] E') : IsGalois F E ↔ IsGalois F E' :=
+lemma AlgEquiv.transfer_galois (f : E ≃ₐ[F] E') : IsGalois F E ↔ IsGalois F E' :=
   ⟨fun _ => IsGalois.of_algEquiv f, fun _ => IsGalois.of_algEquiv f.symm⟩
 #align alg_equiv.transfer_galois AlgEquiv.transfer_galois
 
-theorem isGalois_iff_isGalois_top : IsGalois F (⊤ : IntermediateField F E) ↔ IsGalois F E :=
+lemma isGalois_iff_isGalois_top : IsGalois F (⊤ : IntermediateField F E) ↔ IsGalois F E :=
   (IntermediateField.topEquiv : (⊤ : IntermediateField F E) ≃ₐ[F] E).transfer_galois
 #align is_galois_iff_is_galois_top isGalois_iff_isGalois_top
 
@@ -194,7 +194,7 @@ def fixedField : IntermediateField F E :=
   FixedPoints.intermediateField H
 #align intermediate_field.fixed_field IntermediateField.fixedField
 
-theorem finrank_fixedField_eq_card [FiniteDimensional F E] [DecidablePred (· ∈ H)] :
+lemma finrank_fixedField_eq_card [FiniteDimensional F E] [DecidablePred (· ∈ H)] :
     finrank (fixedField H) E = Fintype.card H :=
   FixedPoints.finrank_eq_card H E
 #align intermediate_field.finrank_fixed_field_eq_card IntermediateField.finrank_fixedField_eq_card
@@ -204,7 +204,7 @@ nonrec def fixingSubgroup : Subgroup (E ≃ₐ[F] E) :=
   fixingSubgroup (E ≃ₐ[F] E) (K : Set E)
 #align intermediate_field.fixing_subgroup IntermediateField.fixingSubgroup
 
-theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
+lemma le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
 #align intermediate_field.le_iff_le IntermediateField.le_iff_le
 
@@ -217,7 +217,7 @@ def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
   map_mul' _ _ := by ext; rfl
 #align intermediate_field.fixing_subgroup_equiv IntermediateField.fixingSubgroupEquiv
 
-theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
+lemma fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
   have H_le : H ≤ fixingSubgroup (fixedField H) := (le_iff_le _ _).mp le_rfl
   classical
   suffices Fintype.card H = Fintype.card (fixingSubgroup (fixedField H)) by
@@ -253,7 +253,7 @@ end IntermediateField
 
 namespace IsGalois
 
-theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
+lemma fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
     IntermediateField.fixedField (IntermediateField.fixingSubgroup K) = K := by
   have K_le : K ≤ IntermediateField.fixedField (IntermediateField.fixingSubgroup K) :=
     (IntermediateField.le_iff_le _ _).mpr le_rfl
@@ -266,7 +266,7 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
   exact (card_aut_eq_finrank K E).symm
 #align is_galois.fixed_field_fixing_subgroup IsGalois.fixedField_fixingSubgroup
 
-theorem card_fixingSubgroup_eq_finrank [DecidablePred (· ∈ IntermediateField.fixingSubgroup K)]
+lemma card_fixingSubgroup_eq_finrank [DecidablePred (· ∈ IntermediateField.fixingSubgroup K)]
     [FiniteDimensional F E] [IsGalois F E] :
     Fintype.card (IntermediateField.fixingSubgroup K) = finrank K E := by
   conv_rhs => rw [← fixedField_fixingSubgroup K, IntermediateField.finrank_fixedField_eq_card]
@@ -318,7 +318,7 @@ variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 
 namespace IsGalois
 
-theorem is_separable_splitting_field [FiniteDimensional F E] [IsGalois F E] :
+lemma is_separable_splitting_field [FiniteDimensional F E] [IsGalois F E] :
     ∃ p : F[X], p.Separable ∧ p.IsSplittingField F E := by
   cases' Field.exists_primitive_element F E with α h1
   use minpoly F α, separable F α, IsGalois.splits F α
@@ -329,13 +329,13 @@ theorem is_separable_splitting_field [FiniteDimensional F E] [IsGalois F E] :
   exact ⟨minpoly.ne_zero (integral F α), minpoly.aeval _ _⟩
 #align is_galois.is_separable_splitting_field IsGalois.is_separable_splitting_field
 
-theorem of_fixedField_eq_bot [FiniteDimensional F E]
+lemma of_fixedField_eq_bot [FiniteDimensional F E]
     (h : IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥) : IsGalois F E := by
   rw [← isGalois_iff_isGalois_bot, ← h]
   classical exact IsGalois.of_fixed_field E (⊤ : Subgroup (E ≃ₐ[F] E))
 #align is_galois.of_fixed_field_eq_bot IsGalois.of_fixedField_eq_bot
 
-theorem of_card_aut_eq_finrank [FiniteDimensional F E]
+lemma of_card_aut_eq_finrank [FiniteDimensional F E]
     (h : Fintype.card (E ≃ₐ[F] E) = finrank F E) : IsGalois F E := by
   apply of_fixedField_eq_bot
   have p : 0 < finrank (IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E))) E := finrank_pos
@@ -353,7 +353,7 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
 variable {F} {E}
 variable {p : F[X]}
 
-theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.IsSplittingField F E]
+lemma of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.IsSplittingField F E]
     (hp : p.Separable) (K : Type*) [Field K] [Algebra F K] [Algebra K E] [IsScalarTower F K E]
     {x : E} (hx : x ∈ p.aroots E)
     -- these are both implied by `hFE`, but as they carry data this makes the lemma more general
@@ -388,7 +388,7 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
     exact sp.splits
 #align is_galois.of_separable_splitting_field_aux IsGalois.of_separable_splitting_field_aux
 
-theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separable) :
+lemma of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separable) :
     IsGalois F E := by
   haveI hFE : FiniteDimensional F E := Polynomial.IsSplittingField.finiteDimensional E p
   letI := Classical.decEq E

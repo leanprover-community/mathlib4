@@ -29,7 +29,7 @@ open Polynomial Real
 
 open scoped Nat Real
 
-theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprime n) :
+lemma isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprime n) :
     IsPrimitiveRoot (exp (2 * π * I * (i / n))) n := by
   rw [IsPrimitiveRoot.iff_def]
   simp only [← exp_nat_mul, exp_eq_one_iff]
@@ -49,12 +49,12 @@ theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprim
     exact hi.symm.dvd_of_dvd_mul_left this
 #align complex.is_primitive_root_exp_of_coprime Complex.isPrimitiveRoot_exp_of_coprime
 
-theorem isPrimitiveRoot_exp (n : ℕ) (h0 : n ≠ 0) : IsPrimitiveRoot (exp (2 * π * I / n)) n := by
+lemma isPrimitiveRoot_exp (n : ℕ) (h0 : n ≠ 0) : IsPrimitiveRoot (exp (2 * π * I / n)) n := by
   simpa only [Nat.cast_one, one_div] using
     isPrimitiveRoot_exp_of_coprime 1 n h0 n.coprime_one_left
 #align complex.is_primitive_root_exp Complex.isPrimitiveRoot_exp
 
-theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
+lemma isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
     IsPrimitiveRoot ζ n ↔ ∃ i < (n : ℕ), ∃ _ : i.Coprime n, exp (2 * π * I * (i / n)) = ζ := by
   have hn0 : (n : ℂ) ≠ 0 := mod_cast hn
   constructor; swap
@@ -88,11 +88,11 @@ nonrec theorem mem_rootsOfUnity (n : ℕ+) (x : Units ℂ) :
     field_simp [hn0, mul_comm ((n : ℕ) : ℂ), mul_comm (i : ℂ)]
 #align complex.mem_roots_of_unity Complex.mem_rootsOfUnity
 
-theorem card_rootsOfUnity (n : ℕ+) : Fintype.card (rootsOfUnity n ℂ) = n :=
+lemma card_rootsOfUnity (n : ℕ+) : Fintype.card (rootsOfUnity n ℂ) = n :=
   (isPrimitiveRoot_exp n n.ne_zero).card_rootsOfUnity
 #align complex.card_roots_of_unity Complex.card_rootsOfUnity
 
-theorem card_primitiveRoots (k : ℕ) : (primitiveRoots k ℂ).card = φ k := by
+lemma card_primitiveRoots (k : ℕ) : (primitiveRoots k ℂ).card = φ k := by
   by_cases h : k = 0
   · simp [h]
   exact (isPrimitiveRoot_exp k h).card_primitiveRoots
@@ -100,28 +100,28 @@ theorem card_primitiveRoots (k : ℕ) : (primitiveRoots k ℂ).card = φ k := by
 
 end Complex
 
-theorem IsPrimitiveRoot.norm'_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
+lemma IsPrimitiveRoot.norm'_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ‖ζ‖ = 1 :=
   Complex.norm_eq_one_of_pow_eq_one h.pow_eq_one hn
 #align is_primitive_root.norm'_eq_one IsPrimitiveRoot.norm'_eq_one
 
-theorem IsPrimitiveRoot.nnnorm_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
+lemma IsPrimitiveRoot.nnnorm_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ‖ζ‖₊ = 1 :=
   Subtype.ext <| h.norm'_eq_one hn
 #align is_primitive_root.nnnorm_eq_one IsPrimitiveRoot.nnnorm_eq_one
 
-theorem IsPrimitiveRoot.arg_ext {n m : ℕ} {ζ μ : ℂ} (hζ : IsPrimitiveRoot ζ n)
+lemma IsPrimitiveRoot.arg_ext {n m : ℕ} {ζ μ : ℂ} (hζ : IsPrimitiveRoot ζ n)
     (hμ : IsPrimitiveRoot μ m) (hn : n ≠ 0) (hm : m ≠ 0) (h : ζ.arg = μ.arg) : ζ = μ :=
   Complex.ext_abs_arg ((hζ.norm'_eq_one hn).trans (hμ.norm'_eq_one hm).symm) h
 #align is_primitive_root.arg_ext IsPrimitiveRoot.arg_ext
 
-theorem IsPrimitiveRoot.arg_eq_zero_iff {n : ℕ} {ζ : ℂ} (hζ : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
+lemma IsPrimitiveRoot.arg_eq_zero_iff {n : ℕ} {ζ : ℂ} (hζ : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ζ.arg = 0 ↔ ζ = 1 :=
   ⟨fun h => hζ.arg_ext IsPrimitiveRoot.one hn one_ne_zero (h.trans Complex.arg_one.symm), fun h =>
     h.symm ▸ Complex.arg_one⟩
 #align is_primitive_root.arg_eq_zero_iff IsPrimitiveRoot.arg_eq_zero_iff
 
-theorem IsPrimitiveRoot.arg_eq_pi_iff {n : ℕ} {ζ : ℂ} (hζ : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
+lemma IsPrimitiveRoot.arg_eq_pi_iff {n : ℕ} {ζ : ℂ} (hζ : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ζ.arg = Real.pi ↔ ζ = -1 :=
   ⟨fun h =>
     hζ.arg_ext (IsPrimitiveRoot.neg_one 0 two_ne_zero.symm) hn two_ne_zero
@@ -130,7 +130,7 @@ theorem IsPrimitiveRoot.arg_eq_pi_iff {n : ℕ} {ζ : ℂ} (hζ : IsPrimitiveRoo
 #align is_primitive_root.arg_eq_pi_iff IsPrimitiveRoot.arg_eq_pi_iff
 
 set_option tactic.skipAssignedInstances false in
-theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
+lemma IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ∃ i : ℤ, ζ.arg = i / n * (2 * Real.pi) ∧ IsCoprime i n ∧ i.natAbs < n := by
   rw [Complex.isPrimitiveRoot_iff _ _ hn] at h
   obtain ⟨i, h, hin, rfl⟩ := h

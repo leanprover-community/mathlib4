@@ -53,7 +53,7 @@ namespace Homeomorph
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
   {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
-theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y)
+lemma toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 #align homeomorph.to_equiv_injective Homeomorph.toEquiv_injective
 
@@ -66,7 +66,7 @@ instance : EquivLike (X ≃ₜ Y) X Y where
 
 instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨DFunLike.coe⟩
 
-@[simp] theorem homeomorph_mk_coe (a : X ≃ Y) (b c) : (Homeomorph.mk a b c : X → Y) = a :=
+@[simp] lemma homeomorph_mk_coe (a : X ≃ Y) (b c) : (Homeomorph.mk a b c : X → Y) = a :=
   rfl
 #align homeomorph.homeomorph_mk_coe Homeomorph.homeomorph_mk_coe
 
@@ -82,10 +82,10 @@ protected def symm (h : X ≃ₜ Y) : Y ≃ₜ X where
   toEquiv := h.toEquiv.symm
 #align homeomorph.symm Homeomorph.symm
 
-@[simp] theorem symm_symm (h : X ≃ₜ Y) : h.symm.symm = h := rfl
+@[simp] lemma symm_symm (h : X ≃ₜ Y) : h.symm.symm = h := rfl
 #align homeomorph.symm_symm Homeomorph.symm_symm
 
-theorem symm_bijective : Function.Bijective (Homeomorph.symm : (X ≃ₜ Y) → Y ≃ₜ X) :=
+lemma symm_bijective : Function.Bijective (Homeomorph.symm : (X ≃ₜ Y) → Y ≃ₜ X) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /-- See Note [custom simps projection] -/
@@ -96,17 +96,17 @@ def Simps.symm_apply (h : X ≃ₜ Y) : Y → X :=
 initialize_simps_projections Homeomorph (toFun → apply, invFun → symm_apply)
 
 @[simp]
-theorem coe_toEquiv (h : X ≃ₜ Y) : ⇑h.toEquiv = h :=
+lemma coe_toEquiv (h : X ≃ₜ Y) : ⇑h.toEquiv = h :=
   rfl
 #align homeomorph.coe_to_equiv Homeomorph.coe_toEquiv
 
 @[simp]
-theorem coe_symm_toEquiv (h : X ≃ₜ Y) : ⇑h.toEquiv.symm = h.symm :=
+lemma coe_symm_toEquiv (h : X ≃ₜ Y) : ⇑h.toEquiv.symm = h.symm :=
   rfl
 #align homeomorph.coe_symm_to_equiv Homeomorph.coe_symm_toEquiv
 
 @[ext]
-theorem ext {h h' : X ≃ₜ Y} (H : ∀ x, h x = h' x) : h = h' :=
+lemma ext {h h' : X ≃ₜ Y} (H : ∀ x, h x = h' x) : h = h' :=
   DFunLike.ext _ _ H
 #align homeomorph.ext Homeomorph.ext
 
@@ -127,67 +127,67 @@ protected def trans (h₁ : X ≃ₜ Y) (h₂ : Y ≃ₜ Z) : X ≃ₜ Z where
 #align homeomorph.trans Homeomorph.trans
 
 @[simp]
-theorem trans_apply (h₁ : X ≃ₜ Y) (h₂ : Y ≃ₜ Z) (x : X) : h₁.trans h₂ x = h₂ (h₁ x) :=
+lemma trans_apply (h₁ : X ≃ₜ Y) (h₂ : Y ≃ₜ Z) (x : X) : h₁.trans h₂ x = h₂ (h₁ x) :=
   rfl
 #align homeomorph.trans_apply Homeomorph.trans_apply
 
 @[simp]
-theorem symm_trans_apply (f : X ≃ₜ Y) (g : Y ≃ₜ Z) (z : Z) :
+lemma symm_trans_apply (f : X ≃ₜ Y) (g : Y ≃ₜ Z) (z : Z) :
     (f.trans g).symm z = f.symm (g.symm z) := rfl
 
 @[simp]
-theorem homeomorph_mk_coe_symm (a : X ≃ Y) (b c) :
+lemma homeomorph_mk_coe_symm (a : X ≃ Y) (b c) :
     ((Homeomorph.mk a b c).symm : Y → X) = a.symm :=
   rfl
 #align homeomorph.homeomorph_mk_coe_symm Homeomorph.homeomorph_mk_coe_symm
 
 @[simp]
-theorem refl_symm : (Homeomorph.refl X).symm = Homeomorph.refl X :=
+lemma refl_symm : (Homeomorph.refl X).symm = Homeomorph.refl X :=
   rfl
 #align homeomorph.refl_symm Homeomorph.refl_symm
 
 @[continuity]
-protected theorem continuous (h : X ≃ₜ Y) : Continuous h :=
+protected lemma continuous (h : X ≃ₜ Y) : Continuous h :=
   h.continuous_toFun
 #align homeomorph.continuous Homeomorph.continuous
 
 -- otherwise `by continuity` can't prove continuity of `h.to_equiv.symm`
 @[continuity]
-protected theorem continuous_symm (h : X ≃ₜ Y) : Continuous h.symm :=
+protected lemma continuous_symm (h : X ≃ₜ Y) : Continuous h.symm :=
   h.continuous_invFun
 #align homeomorph.continuous_symm Homeomorph.continuous_symm
 
 @[simp]
-theorem apply_symm_apply (h : X ≃ₜ Y) (y : Y) : h (h.symm y) = y :=
+lemma apply_symm_apply (h : X ≃ₜ Y) (y : Y) : h (h.symm y) = y :=
   h.toEquiv.apply_symm_apply y
 #align homeomorph.apply_symm_apply Homeomorph.apply_symm_apply
 
 @[simp]
-theorem symm_apply_apply (h : X ≃ₜ Y) (x : X) : h.symm (h x) = x :=
+lemma symm_apply_apply (h : X ≃ₜ Y) (x : X) : h.symm (h x) = x :=
   h.toEquiv.symm_apply_apply x
 #align homeomorph.symm_apply_apply Homeomorph.symm_apply_apply
 
 @[simp]
-theorem self_trans_symm (h : X ≃ₜ Y) : h.trans h.symm = Homeomorph.refl X := by
+lemma self_trans_symm (h : X ≃ₜ Y) : h.trans h.symm = Homeomorph.refl X := by
   ext
   apply symm_apply_apply
 #align homeomorph.self_trans_symm Homeomorph.self_trans_symm
 
 @[simp]
-theorem symm_trans_self (h : X ≃ₜ Y) : h.symm.trans h = Homeomorph.refl Y := by
+lemma symm_trans_self (h : X ≃ₜ Y) : h.symm.trans h = Homeomorph.refl Y := by
   ext
   apply apply_symm_apply
 #align homeomorph.symm_trans_self Homeomorph.symm_trans_self
 
-protected theorem bijective (h : X ≃ₜ Y) : Function.Bijective h :=
+protected lemma bijective (h : X ≃ₜ Y) : Function.Bijective h :=
   h.toEquiv.bijective
 #align homeomorph.bijective Homeomorph.bijective
 
-protected theorem injective (h : X ≃ₜ Y) : Function.Injective h :=
+protected lemma injective (h : X ≃ₜ Y) : Function.Injective h :=
   h.toEquiv.injective
 #align homeomorph.injective Homeomorph.injective
 
-protected theorem surjective (h : X ≃ₜ Y) : Function.Surjective h :=
+protected lemma surjective (h : X ≃ₜ Y) : Function.Surjective h :=
   h.toEquiv.surjective
 #align homeomorph.surjective Homeomorph.surjective
 
@@ -203,60 +203,60 @@ def changeInv (f : X ≃ₜ Y) (g : Y → X) (hg : Function.RightInverse g f) : 
 #align homeomorph.change_inv Homeomorph.changeInv
 
 @[simp]
-theorem symm_comp_self (h : X ≃ₜ Y) : h.symm ∘ h = id :=
+lemma symm_comp_self (h : X ≃ₜ Y) : h.symm ∘ h = id :=
   funext h.symm_apply_apply
 #align homeomorph.symm_comp_self Homeomorph.symm_comp_self
 
 @[simp]
-theorem self_comp_symm (h : X ≃ₜ Y) : h ∘ h.symm = id :=
+lemma self_comp_symm (h : X ≃ₜ Y) : h ∘ h.symm = id :=
   funext h.apply_symm_apply
 #align homeomorph.self_comp_symm Homeomorph.self_comp_symm
 
 @[simp]
-theorem range_coe (h : X ≃ₜ Y) : range h = univ :=
+lemma range_coe (h : X ≃ₜ Y) : range h = univ :=
   h.surjective.range_eq
 #align homeomorph.range_coe Homeomorph.range_coe
 
-theorem image_symm (h : X ≃ₜ Y) : image h.symm = preimage h :=
+lemma image_symm (h : X ≃ₜ Y) : image h.symm = preimage h :=
   funext h.symm.toEquiv.image_eq_preimage
 #align homeomorph.image_symm Homeomorph.image_symm
 
-theorem preimage_symm (h : X ≃ₜ Y) : preimage h.symm = image h :=
+lemma preimage_symm (h : X ≃ₜ Y) : preimage h.symm = image h :=
   (funext h.toEquiv.image_eq_preimage).symm
 #align homeomorph.preimage_symm Homeomorph.preimage_symm
 
 @[simp]
-theorem image_preimage (h : X ≃ₜ Y) (s : Set Y) : h '' (h ⁻¹' s) = s :=
+lemma image_preimage (h : X ≃ₜ Y) (s : Set Y) : h '' (h ⁻¹' s) = s :=
   h.toEquiv.image_preimage s
 #align homeomorph.image_preimage Homeomorph.image_preimage
 
 @[simp]
-theorem preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' (h '' s) = s :=
+lemma preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 #align homeomorph.preimage_image Homeomorph.preimage_image
 
 lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
   h.toEquiv.image_compl s
 
-protected theorem inducing (h : X ≃ₜ Y) : Inducing h :=
+protected lemma inducing (h : X ≃ₜ Y) : Inducing h :=
   inducing_of_inducing_compose h.continuous h.symm.continuous <| by
     simp only [symm_comp_self, inducing_id]
 #align homeomorph.inducing Homeomorph.inducing
 
-theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› :=
+lemma induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› :=
   h.inducing.1.symm
 #align homeomorph.induced_eq Homeomorph.induced_eq
 
-protected theorem quotientMap (h : X ≃ₜ Y) : QuotientMap h :=
+protected lemma quotientMap (h : X ≃ₜ Y) : QuotientMap h :=
   QuotientMap.of_quotientMap_compose h.symm.continuous h.continuous <| by
     simp only [self_comp_symm, QuotientMap.id]
 #align homeomorph.quotient_map Homeomorph.quotientMap
 
-theorem coinduced_eq (h : X ≃ₜ Y) : TopologicalSpace.coinduced h ‹_› = ‹_› :=
+lemma coinduced_eq (h : X ≃ₜ Y) : TopologicalSpace.coinduced h ‹_› = ‹_› :=
   h.quotientMap.2.symm
 #align homeomorph.coinduced_eq Homeomorph.coinduced_eq
 
-protected theorem embedding (h : X ≃ₜ Y) : Embedding h :=
+protected lemma embedding (h : X ≃ₜ Y) : Embedding h :=
   ⟨h.inducing, h.injective⟩
 #align homeomorph.embedding Homeomorph.embedding
 
@@ -267,7 +267,7 @@ noncomputable def ofEmbedding (f : X → Y) (hf : Embedding f) : X ≃ₜ Set.ra
   toEquiv := Equiv.ofInjective f hf.inj
 #align homeomorph.of_embedding Homeomorph.ofEmbedding
 
-protected theorem secondCountableTopology [SecondCountableTopology Y]
+protected lemma secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
   h.inducing.secondCountableTopology
 #align homeomorph.second_countable_topology Homeomorph.secondCountableTopology
@@ -297,28 +297,28 @@ theorem isSigmaCompact_preimage {s : Set Y} (h : X ≃ₜ Y) :
   rw [← image_symm]; exact h.symm.isSigmaCompact_image
 
 @[simp]
-theorem isPreconnected_image {s : Set X} (h : X ≃ₜ Y) :
+lemma isPreconnected_image {s : Set X} (h : X ≃ₜ Y) :
     IsPreconnected (h '' s) ↔ IsPreconnected s :=
   ⟨fun hs ↦ by simpa only [image_symm, preimage_image]
     using hs.image _ h.symm.continuous.continuousOn,
     fun hs ↦ hs.image _ h.continuous.continuousOn⟩
 
 @[simp]
-theorem isPreconnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
+lemma isPreconnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
     IsPreconnected (h ⁻¹' s) ↔ IsPreconnected s := by
   rw [← image_symm, isPreconnected_image]
 
 @[simp]
-theorem isConnected_image {s : Set X} (h : X ≃ₜ Y) :
+lemma isConnected_image {s : Set X} (h : X ≃ₜ Y) :
     IsConnected (h '' s) ↔ IsConnected s :=
   image_nonempty.and h.isPreconnected_image
 
 @[simp]
-theorem isConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
+lemma isConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
     IsConnected (h ⁻¹' s) ↔ IsConnected s := by
   rw [← image_symm, isConnected_image]
 
-theorem image_connectedComponentIn {s : Set X} (h : X ≃ₜ Y) {x : X} (hx : x ∈ s) :
+lemma image_connectedComponentIn {s : Set X} (h : X ≃ₜ Y) {x : X} (hx : x ∈ s) :
     h '' connectedComponentIn s x = connectedComponentIn (h '' s) (h x) := by
   refine (h.continuous.image_connectedComponentIn_subset hx).antisymm ?_
   have := h.symm.continuous.image_connectedComponentIn_subset (mem_image_of_mem h hx)
@@ -326,133 +326,133 @@ theorem image_connectedComponentIn {s : Set X} (h : X ≃ₜ Y) {x : X} (hx : x 
     at this
 
 @[simp]
-theorem comap_cocompact (h : X ≃ₜ Y) : comap h (cocompact Y) = cocompact X :=
+lemma comap_cocompact (h : X ≃ₜ Y) : comap h (cocompact Y) = cocompact X :=
   (comap_cocompact_le h.continuous).antisymm <|
     (hasBasis_cocompact.le_basis_iff (hasBasis_cocompact.comap h)).2 fun K hK =>
       ⟨h ⁻¹' K, h.isCompact_preimage.2 hK, Subset.rfl⟩
 #align homeomorph.comap_cocompact Homeomorph.comap_cocompact
 
 @[simp]
-theorem map_cocompact (h : X ≃ₜ Y) : map h (cocompact X) = cocompact Y := by
+lemma map_cocompact (h : X ≃ₜ Y) : map h (cocompact X) = cocompact Y := by
   rw [← h.comap_cocompact, map_comap_of_surjective h.surjective]
 #align homeomorph.map_cocompact Homeomorph.map_cocompact
 
-protected theorem compactSpace [CompactSpace X] (h : X ≃ₜ Y) : CompactSpace Y where
+protected lemma compactSpace [CompactSpace X] (h : X ≃ₜ Y) : CompactSpace Y where
   isCompact_univ := h.symm.isCompact_preimage.2 isCompact_univ
 #align homeomorph.compact_space Homeomorph.compactSpace
 
-protected theorem t0Space [T0Space X] (h : X ≃ₜ Y) : T0Space Y :=
+protected lemma t0Space [T0Space X] (h : X ≃ₜ Y) : T0Space Y :=
   h.symm.embedding.t0Space
 #align homeomorph.t0_space Homeomorph.t0Space
 
-protected theorem t1Space [T1Space X] (h : X ≃ₜ Y) : T1Space Y :=
+protected lemma t1Space [T1Space X] (h : X ≃ₜ Y) : T1Space Y :=
   h.symm.embedding.t1Space
 #align homeomorph.t1_space Homeomorph.t1Space
 
-protected theorem t2Space [T2Space X] (h : X ≃ₜ Y) : T2Space Y :=
+protected lemma t2Space [T2Space X] (h : X ≃ₜ Y) : T2Space Y :=
   h.symm.embedding.t2Space
 #align homeomorph.t2_space Homeomorph.t2Space
 
-protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
+protected lemma t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
   h.symm.embedding.t3Space
 #align homeomorph.t3_space Homeomorph.t3Space
 
-protected theorem denseEmbedding (h : X ≃ₜ Y) : DenseEmbedding h :=
+protected lemma denseEmbedding (h : X ≃ₜ Y) : DenseEmbedding h :=
   { h.embedding with dense := h.surjective.denseRange }
 #align homeomorph.dense_embedding Homeomorph.denseEmbedding
 
 @[simp]
-theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
+lemma isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
   h.quotientMap.isOpen_preimage
 #align homeomorph.is_open_preimage Homeomorph.isOpen_preimage
 
 @[simp]
-theorem isOpen_image (h : X ≃ₜ Y) {s : Set X} : IsOpen (h '' s) ↔ IsOpen s := by
+lemma isOpen_image (h : X ≃ₜ Y) {s : Set X} : IsOpen (h '' s) ↔ IsOpen s := by
   rw [← preimage_symm, isOpen_preimage]
 #align homeomorph.is_open_image Homeomorph.isOpen_image
 
-protected theorem isOpenMap (h : X ≃ₜ Y) : IsOpenMap h := fun _ => h.isOpen_image.2
+protected lemma isOpenMap (h : X ≃ₜ Y) : IsOpenMap h := fun _ => h.isOpen_image.2
 #align homeomorph.is_open_map Homeomorph.isOpenMap
 
 @[simp]
-theorem isClosed_preimage (h : X ≃ₜ Y) {s : Set Y} : IsClosed (h ⁻¹' s) ↔ IsClosed s := by
+lemma isClosed_preimage (h : X ≃ₜ Y) {s : Set Y} : IsClosed (h ⁻¹' s) ↔ IsClosed s := by
   simp only [← isOpen_compl_iff, ← preimage_compl, isOpen_preimage]
 #align homeomorph.is_closed_preimage Homeomorph.isClosed_preimage
 
 @[simp]
-theorem isClosed_image (h : X ≃ₜ Y) {s : Set X} : IsClosed (h '' s) ↔ IsClosed s := by
+lemma isClosed_image (h : X ≃ₜ Y) {s : Set X} : IsClosed (h '' s) ↔ IsClosed s := by
   rw [← preimage_symm, isClosed_preimage]
 #align homeomorph.is_closed_image Homeomorph.isClosed_image
 
-protected theorem isClosedMap (h : X ≃ₜ Y) : IsClosedMap h := fun _ => h.isClosed_image.2
+protected lemma isClosedMap (h : X ≃ₜ Y) : IsClosedMap h := fun _ => h.isClosed_image.2
 #align homeomorph.is_closed_map Homeomorph.isClosedMap
 
-protected theorem openEmbedding (h : X ≃ₜ Y) : OpenEmbedding h :=
+protected lemma openEmbedding (h : X ≃ₜ Y) : OpenEmbedding h :=
   openEmbedding_of_embedding_open h.embedding h.isOpenMap
 #align homeomorph.open_embedding Homeomorph.openEmbedding
 
-protected theorem closedEmbedding (h : X ≃ₜ Y) : ClosedEmbedding h :=
+protected lemma closedEmbedding (h : X ≃ₜ Y) : ClosedEmbedding h :=
   closedEmbedding_of_embedding_closed h.embedding h.isClosedMap
 #align homeomorph.closed_embedding Homeomorph.closedEmbedding
 
-protected theorem normalSpace [NormalSpace X] (h : X ≃ₜ Y) : NormalSpace Y :=
+protected lemma normalSpace [NormalSpace X] (h : X ≃ₜ Y) : NormalSpace Y :=
   h.symm.closedEmbedding.normalSpace
 
-protected theorem t4Space [T4Space X] (h : X ≃ₜ Y) : T4Space Y :=
+protected lemma t4Space [T4Space X] (h : X ≃ₜ Y) : T4Space Y :=
   h.symm.closedEmbedding.t4Space
 #align homeomorph.normal_space Homeomorph.t4Space
 
-theorem preimage_closure (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' closure s = closure (h ⁻¹' s) :=
+lemma preimage_closure (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' closure s = closure (h ⁻¹' s) :=
   h.isOpenMap.preimage_closure_eq_closure_preimage h.continuous _
 #align homeomorph.preimage_closure Homeomorph.preimage_closure
 
-theorem image_closure (h : X ≃ₜ Y) (s : Set X) : h '' closure s = closure (h '' s) := by
+lemma image_closure (h : X ≃ₜ Y) (s : Set X) : h '' closure s = closure (h '' s) := by
   rw [← preimage_symm, preimage_closure]
 #align homeomorph.image_closure Homeomorph.image_closure
 
-theorem preimage_interior (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' interior s = interior (h ⁻¹' s) :=
+lemma preimage_interior (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' interior s = interior (h ⁻¹' s) :=
   h.isOpenMap.preimage_interior_eq_interior_preimage h.continuous _
 #align homeomorph.preimage_interior Homeomorph.preimage_interior
 
-theorem image_interior (h : X ≃ₜ Y) (s : Set X) : h '' interior s = interior (h '' s) := by
+lemma image_interior (h : X ≃ₜ Y) (s : Set X) : h '' interior s = interior (h '' s) := by
   rw [← preimage_symm, preimage_interior]
 #align homeomorph.image_interior Homeomorph.image_interior
 
-theorem preimage_frontier (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' frontier s = frontier (h ⁻¹' s) :=
+lemma preimage_frontier (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' frontier s = frontier (h ⁻¹' s) :=
   h.isOpenMap.preimage_frontier_eq_frontier_preimage h.continuous _
 #align homeomorph.preimage_frontier Homeomorph.preimage_frontier
 
-theorem image_frontier (h : X ≃ₜ Y) (s : Set X) : h '' frontier s = frontier (h '' s) := by
+lemma image_frontier (h : X ≃ₜ Y) (s : Set X) : h '' frontier s = frontier (h '' s) := by
   rw [← preimage_symm, preimage_frontier]
 #align homeomorph.image_frontier Homeomorph.image_frontier
 
 @[to_additive]
-theorem _root_.HasCompactMulSupport.comp_homeomorph {M} [One M] {f : Y → M}
+lemma _root_.HasCompactMulSupport.comp_homeomorph {M} [One M] {f : Y → M}
     (hf : HasCompactMulSupport f) (φ : X ≃ₜ Y) : HasCompactMulSupport (f ∘ φ) :=
   hf.comp_closedEmbedding φ.closedEmbedding
 #align has_compact_mul_support.comp_homeomorph HasCompactMulSupport.comp_homeomorph
 #align has_compact_support.comp_homeomorph HasCompactSupport.comp_homeomorph
 
 @[simp]
-theorem map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=
+lemma map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=
   h.embedding.map_nhds_of_mem _ (by simp)
 #align homeomorph.map_nhds_eq Homeomorph.map_nhds_eq
 
 @[simp]
-theorem map_punctured_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝[≠] x) = 𝓝[≠] (h x) := by
+lemma map_punctured_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝[≠] x) = 𝓝[≠] (h x) := by
   convert h.embedding.map_nhdsWithin_eq ({x}ᶜ) x
   rw [h.image_compl, Set.image_singleton]
 
-theorem symm_map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h.symm (𝓝 (h x)) = 𝓝 x := by
+lemma symm_map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h.symm (𝓝 (h x)) = 𝓝 x := by
   rw [h.symm.map_nhds_eq, h.symm_apply_apply]
 #align homeomorph.symm_map_nhds_eq Homeomorph.symm_map_nhds_eq
 
-theorem nhds_eq_comap (h : X ≃ₜ Y) (x : X) : 𝓝 x = comap h (𝓝 (h x)) :=
+lemma nhds_eq_comap (h : X ≃ₜ Y) (x : X) : 𝓝 x = comap h (𝓝 (h x)) :=
   h.inducing.nhds_eq_comap x
 #align homeomorph.nhds_eq_comap Homeomorph.nhds_eq_comap
 
 @[simp]
-theorem comap_nhds_eq (h : X ≃ₜ Y) (y : Y) : comap h (𝓝 y) = 𝓝 (h.symm y) := by
+lemma comap_nhds_eq (h : X ≃ₜ Y) (y : Y) : comap h (𝓝 y) = 𝓝 (h.symm y) := by
   rw [h.nhds_eq_comap, h.apply_symm_apply]
 #align homeomorph.comap_nhds_eq Homeomorph.comap_nhds_eq
 
@@ -486,38 +486,38 @@ def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpe
 #align homeomorph.homeomorph_of_continuous_open Homeomorph.homeomorphOfContinuousOpen
 
 @[simp]
-theorem comp_continuousOn_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) :
+lemma comp_continuousOn_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) :
     ContinuousOn (h ∘ f) s ↔ ContinuousOn f s :=
   h.inducing.continuousOn_iff.symm
 #align homeomorph.comp_continuous_on_iff Homeomorph.comp_continuousOn_iff
 
 @[simp]
-theorem comp_continuous_iff (h : X ≃ₜ Y) {f : Z → X} : Continuous (h ∘ f) ↔ Continuous f :=
+lemma comp_continuous_iff (h : X ≃ₜ Y) {f : Z → X} : Continuous (h ∘ f) ↔ Continuous f :=
   h.inducing.continuous_iff.symm
 #align homeomorph.comp_continuous_iff Homeomorph.comp_continuous_iff
 
 @[simp]
-theorem comp_continuous_iff' (h : X ≃ₜ Y) {f : Y → Z} : Continuous (f ∘ h) ↔ Continuous f :=
+lemma comp_continuous_iff' (h : X ≃ₜ Y) {f : Y → Z} : Continuous (f ∘ h) ↔ Continuous f :=
   h.quotientMap.continuous_iff.symm
 #align homeomorph.comp_continuous_iff' Homeomorph.comp_continuous_iff'
 
-theorem comp_continuousAt_iff (h : X ≃ₜ Y) (f : Z → X) (z : Z) :
+lemma comp_continuousAt_iff (h : X ≃ₜ Y) (f : Z → X) (z : Z) :
     ContinuousAt (h ∘ f) z ↔ ContinuousAt f z :=
   h.inducing.continuousAt_iff.symm
 #align homeomorph.comp_continuous_at_iff Homeomorph.comp_continuousAt_iff
 
-theorem comp_continuousAt_iff' (h : X ≃ₜ Y) (f : Y → Z) (x : X) :
+lemma comp_continuousAt_iff' (h : X ≃ₜ Y) (f : Y → Z) (x : X) :
     ContinuousAt (f ∘ h) x ↔ ContinuousAt f (h x) :=
   h.inducing.continuousAt_iff' (by simp)
 #align homeomorph.comp_continuous_at_iff' Homeomorph.comp_continuousAt_iff'
 
-theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (z : Z) :
+lemma comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (z : Z) :
     ContinuousWithinAt f s z ↔ ContinuousWithinAt (h ∘ f) s z :=
   h.inducing.continuousWithinAt_iff
 #align homeomorph.comp_continuous_within_at_iff Homeomorph.comp_continuousWithinAt_iff
 
 @[simp]
-theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
+lemma comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
   refine' ⟨_, fun hf => h.isOpenMap.comp hf⟩
   intro hf
   rw [← Function.id_comp f, ← h.symm_comp_self, Function.comp.assoc]
@@ -525,7 +525,7 @@ theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) 
 #align homeomorph.comp_is_open_map_iff Homeomorph.comp_isOpenMap_iff
 
 @[simp]
-theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
+lemma comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
   refine' ⟨_, fun hf => hf.comp h.isOpenMap⟩
   intro hf
   rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp.assoc]
@@ -574,13 +574,13 @@ def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y'
 #align homeomorph.prod_congr Homeomorph.prodCongr
 
 @[simp]
-theorem prodCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
+lemma prodCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
     (h₁.prodCongr h₂).symm = h₁.symm.prodCongr h₂.symm :=
   rfl
 #align homeomorph.prod_congr_symm Homeomorph.prodCongr_symm
 
 @[simp]
-theorem coe_prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
+lemma coe_prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
   rfl
 #align homeomorph.coe_prod_congr Homeomorph.coe_prodCongr
 
@@ -596,12 +596,12 @@ def prodComm : X × Y ≃ₜ Y × X where
 #align homeomorph.prod_comm Homeomorph.prodComm
 
 @[simp]
-theorem prodComm_symm : (prodComm X Y).symm = prodComm Y X :=
+lemma prodComm_symm : (prodComm X Y).symm = prodComm Y X :=
   rfl
 #align homeomorph.prod_comm_symm Homeomorph.prodComm_symm
 
 @[simp]
-theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
+lemma coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
   rfl
 #align homeomorph.coe_prod_comm Homeomorph.coe_prodComm
 
@@ -625,7 +625,7 @@ def punitProd : PUnit × X ≃ₜ X :=
   (prodComm _ _).trans (prodPUnit _)
 #align homeomorph.punit_prod Homeomorph.punitProd
 
-@[simp] theorem coe_punitProd : ⇑(punitProd X) = Prod.snd := rfl
+@[simp] lemma coe_punitProd : ⇑(punitProd X) = Prod.snd := rfl
 #align homeomorph.coe_punit_prod Homeomorph.coe_punitProd
 
 /-- If both `X` and `Y` have a unique element, then `X ≃ₜ Y`. -/
@@ -659,7 +659,7 @@ def piCongrRight {ι : Type*} {Y₁ Y₂ : ι → Type*} [∀ i, TopologicalSpac
 #align homeomorph.Pi_congr_right Homeomorph.piCongrRight
 
 @[simp]
-theorem piCongrRight_symm {ι : Type*} {Y₁ Y₂ : ι → Type*} [∀ i, TopologicalSpace (Y₁ i)]
+lemma piCongrRight_symm {ι : Type*} {Y₁ Y₂ : ι → Type*} [∀ i, TopologicalSpace (Y₁ i)]
     [∀ i, TopologicalSpace (Y₂ i)] (F : ∀ i, Y₁ i ≃ₜ Y₂ i) :
     (piCongrRight F).symm = piCongrRight fun i => (F i).symm :=
   rfl
@@ -848,7 +848,7 @@ namespace Continuous
 
 variable [TopologicalSpace X] [TopologicalSpace Y]
 
-theorem continuous_symm_of_equiv_compact_to_t2 [CompactSpace X] [T2Space Y] {f : X ≃ Y}
+lemma continuous_symm_of_equiv_compact_to_t2 [CompactSpace X] [T2Space Y] {f : X ≃ Y}
     (hf : Continuous f) : Continuous f.symm := by
   rw [continuous_iff_isClosed]
   intro C hC

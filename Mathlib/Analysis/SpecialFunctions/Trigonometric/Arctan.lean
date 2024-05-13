@@ -29,7 +29,7 @@ open Set Filter
 
 open scoped Topology Real
 
-theorem tan_add {x y : ℝ}
+lemma tan_add {x y : ℝ}
     (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
       (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
     tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) := by
@@ -38,22 +38,22 @@ theorem tan_add {x y : ℝ}
     @Complex.tan_add (x : ℂ) (y : ℂ) (by convert h <;> norm_cast)
 #align real.tan_add Real.tan_add
 
-theorem tan_add' {x y : ℝ}
+lemma tan_add' {x y : ℝ}
     (h : (∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) :
     tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) :=
   tan_add (Or.inl h)
 #align real.tan_add' Real.tan_add'
 
-theorem tan_two_mul {x : ℝ} : tan (2 * x) = 2 * tan x / (1 - tan x ^ 2) := by
+lemma tan_two_mul {x : ℝ} : tan (2 * x) = 2 * tan x / (1 - tan x ^ 2) := by
   have := @Complex.tan_two_mul x
   norm_cast at *
 #align real.tan_two_mul Real.tan_two_mul
 
-theorem tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
+lemma tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
   tan_eq_zero_iff.mpr (by use n)
 #align real.tan_int_mul_pi_div_two Real.tan_int_mul_pi_div_two
 
-theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} := by
+lemma continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} := by
   suffices ContinuousOn (fun x => sin x / cos x) {x | cos x ≠ 0} by
     have h_eq : (fun x => sin x / cos x) = tan := by ext1 x; rw [tan_eq_sin_div_cos]
     rwa [h_eq] at this
@@ -61,11 +61,11 @@ theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} := by
 #align real.continuous_on_tan Real.continuousOn_tan
 
 @[continuity]
-theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
+lemma continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
   continuousOn_iff_continuous_restrict.1 continuousOn_tan
 #align real.continuous_tan Real.continuous_tan
 
-theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
+lemma continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   refine' ContinuousOn.mono continuousOn_tan fun x => _
   simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne]
   rw [cos_eq_zero_iff]
@@ -86,17 +86,17 @@ theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
     · exact zero_lt_two
 #align real.continuous_on_tan_Ioo Real.continuousOn_tan_Ioo
 
-theorem surjOn_tan : SurjOn tan (Ioo (-(π / 2)) (π / 2)) univ :=
+lemma surjOn_tan : SurjOn tan (Ioo (-(π / 2)) (π / 2)) univ :=
   have := neg_lt_self pi_div_two_pos
   continuousOn_tan_Ioo.surjOn_of_tendsto (nonempty_Ioo.2 this)
     (by rw [tendsto_comp_coe_Ioo_atBot this]; exact tendsto_tan_neg_pi_div_two)
     (by rw [tendsto_comp_coe_Ioo_atTop this]; exact tendsto_tan_pi_div_two)
 #align real.surj_on_tan Real.surjOn_tan
 
-theorem tan_surjective : Function.Surjective tan := fun _ => surjOn_tan.subset_range trivial
+lemma tan_surjective : Function.Surjective tan := fun _ => surjOn_tan.subset_range trivial
 #align real.tan_surjective Real.tan_surjective
 
-theorem image_tan_Ioo : tan '' Ioo (-(π / 2)) (π / 2) = univ :=
+lemma image_tan_Ioo : tan '' Ioo (-(π / 2)) (π / 2) = univ :=
   univ_subset_iff.1 surjOn_tan
 #align real.image_tan_Ioo Real.image_tan_Ioo
 
@@ -114,91 +114,91 @@ noncomputable def arctan (x : ℝ) : ℝ :=
 #align real.arctan Real.arctan
 
 @[simp]
-theorem tan_arctan (x : ℝ) : tan (arctan x) = x :=
+lemma tan_arctan (x : ℝ) : tan (arctan x) = x :=
   tanOrderIso.apply_symm_apply x
 #align real.tan_arctan Real.tan_arctan
 
-theorem arctan_mem_Ioo (x : ℝ) : arctan x ∈ Ioo (-(π / 2)) (π / 2) :=
+lemma arctan_mem_Ioo (x : ℝ) : arctan x ∈ Ioo (-(π / 2)) (π / 2) :=
   Subtype.coe_prop _
 #align real.arctan_mem_Ioo Real.arctan_mem_Ioo
 
 @[simp]
-theorem range_arctan : range arctan = Ioo (-(π / 2)) (π / 2) :=
+lemma range_arctan : range arctan = Ioo (-(π / 2)) (π / 2) :=
   ((EquivLike.surjective _).range_comp _).trans Subtype.range_coe
 #align real.range_arctan Real.range_arctan
 
-theorem arctan_tan {x : ℝ} (hx₁ : -(π / 2) < x) (hx₂ : x < π / 2) : arctan (tan x) = x :=
+lemma arctan_tan {x : ℝ} (hx₁ : -(π / 2) < x) (hx₂ : x < π / 2) : arctan (tan x) = x :=
   Subtype.ext_iff.1 <| tanOrderIso.symm_apply_apply ⟨x, hx₁, hx₂⟩
 #align real.arctan_tan Real.arctan_tan
 
-theorem cos_arctan_pos (x : ℝ) : 0 < cos (arctan x) :=
+lemma cos_arctan_pos (x : ℝ) : 0 < cos (arctan x) :=
   cos_pos_of_mem_Ioo <| arctan_mem_Ioo x
 #align real.cos_arctan_pos Real.cos_arctan_pos
 
-theorem cos_sq_arctan (x : ℝ) : cos (arctan x) ^ 2 = 1 / (1 + x ^ 2) := by
+lemma cos_sq_arctan (x : ℝ) : cos (arctan x) ^ 2 = 1 / (1 + x ^ 2) := by
   rw_mod_cast [one_div, ← inv_one_add_tan_sq (cos_arctan_pos x).ne', tan_arctan]
 #align real.cos_sq_arctan Real.cos_sq_arctan
 
-theorem sin_arctan (x : ℝ) : sin (arctan x) = x / √(1 + x ^ 2) := by
+lemma sin_arctan (x : ℝ) : sin (arctan x) = x / √(1 + x ^ 2) := by
   rw_mod_cast [← tan_div_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
 #align real.sin_arctan Real.sin_arctan
 
-theorem cos_arctan (x : ℝ) : cos (arctan x) = 1 / √(1 + x ^ 2) := by
+lemma cos_arctan (x : ℝ) : cos (arctan x) = 1 / √(1 + x ^ 2) := by
   rw_mod_cast [one_div, ← inv_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
 #align real.cos_arctan Real.cos_arctan
 
-theorem arctan_lt_pi_div_two (x : ℝ) : arctan x < π / 2 :=
+lemma arctan_lt_pi_div_two (x : ℝ) : arctan x < π / 2 :=
   (arctan_mem_Ioo x).2
 #align real.arctan_lt_pi_div_two Real.arctan_lt_pi_div_two
 
-theorem neg_pi_div_two_lt_arctan (x : ℝ) : -(π / 2) < arctan x :=
+lemma neg_pi_div_two_lt_arctan (x : ℝ) : -(π / 2) < arctan x :=
   (arctan_mem_Ioo x).1
 #align real.neg_pi_div_two_lt_arctan Real.neg_pi_div_two_lt_arctan
 
-theorem arctan_eq_arcsin (x : ℝ) : arctan x = arcsin (x / √(1 + x ^ 2)) :=
+lemma arctan_eq_arcsin (x : ℝ) : arctan x = arcsin (x / √(1 + x ^ 2)) :=
   Eq.symm <| arcsin_eq_of_sin_eq (sin_arctan x) (mem_Icc_of_Ioo <| arctan_mem_Ioo x)
 #align real.arctan_eq_arcsin Real.arctan_eq_arcsin
 
-theorem arcsin_eq_arctan {x : ℝ} (h : x ∈ Ioo (-(1 : ℝ)) 1) :
+lemma arcsin_eq_arctan {x : ℝ} (h : x ∈ Ioo (-(1 : ℝ)) 1) :
     arcsin x = arctan (x / √(1 - x ^ 2)) := by
   rw_mod_cast [arctan_eq_arcsin, div_pow, sq_sqrt, one_add_div, div_div, ← sqrt_mul,
     mul_div_cancel₀, sub_add_cancel, sqrt_one, div_one] <;> simp at h <;> nlinarith [h.1, h.2]
 #align real.arcsin_eq_arctan Real.arcsin_eq_arctan
 
 @[simp]
-theorem arctan_zero : arctan 0 = 0 := by simp [arctan_eq_arcsin]
+lemma arctan_zero : arctan 0 = 0 := by simp [arctan_eq_arcsin]
 #align real.arctan_zero Real.arctan_zero
 
 @[mono]
-theorem arctan_strictMono : StrictMono arctan := tanOrderIso.symm.strictMono
+lemma arctan_strictMono : StrictMono arctan := tanOrderIso.symm.strictMono
 
-theorem arctan_injective : arctan.Injective := arctan_strictMono.injective
+lemma arctan_injective : arctan.Injective := arctan_strictMono.injective
 
 @[simp]
-theorem arctan_eq_zero_iff {x : ℝ} : arctan x = 0 ↔ x = 0 :=
+lemma arctan_eq_zero_iff {x : ℝ} : arctan x = 0 ↔ x = 0 :=
   .trans (by rw [arctan_zero]) arctan_injective.eq_iff
 
-theorem tendsto_arctan_atTop : Tendsto arctan atTop (𝓝[<] (π / 2)) :=
+lemma tendsto_arctan_atTop : Tendsto arctan atTop (𝓝[<] (π / 2)) :=
   tendsto_Ioo_atTop.mp tanOrderIso.symm.tendsto_atTop
 
-theorem tendsto_arctan_atBot : Tendsto arctan atBot (𝓝[>] (-(π / 2))) :=
+lemma tendsto_arctan_atBot : Tendsto arctan atBot (𝓝[>] (-(π / 2))) :=
   tendsto_Ioo_atBot.mp tanOrderIso.symm.tendsto_atBot
 
-theorem arctan_eq_of_tan_eq {x y : ℝ} (h : tan x = y) (hx : x ∈ Ioo (-(π / 2)) (π / 2)) :
+lemma arctan_eq_of_tan_eq {x y : ℝ} (h : tan x = y) (hx : x ∈ Ioo (-(π / 2)) (π / 2)) :
     arctan y = x :=
   injOn_tan (arctan_mem_Ioo _) hx (by rw [tan_arctan, h])
 #align real.arctan_eq_of_tan_eq Real.arctan_eq_of_tan_eq
 
 @[simp]
-theorem arctan_one : arctan 1 = π / 4 :=
+lemma arctan_one : arctan 1 = π / 4 :=
   arctan_eq_of_tan_eq tan_pi_div_four <| by constructor <;> linarith [pi_pos]
 #align real.arctan_one Real.arctan_one
 
 @[simp]
-theorem arctan_neg (x : ℝ) : arctan (-x) = -arctan x := by simp [arctan_eq_arcsin, neg_div]
+lemma arctan_neg (x : ℝ) : arctan (-x) = -arctan x := by simp [arctan_eq_arcsin, neg_div]
 #align real.arctan_neg Real.arctan_neg
 
-theorem arctan_eq_arccos {x : ℝ} (h : 0 ≤ x) : arctan x = arccos (√(1 + x ^ 2))⁻¹ := by
+lemma arctan_eq_arccos {x : ℝ} (h : 0 ≤ x) : arctan x = arccos (√(1 + x ^ 2))⁻¹ := by
   rw [arctan_eq_arcsin, arccos_eq_arcsin]; swap; · exact inv_nonneg.2 (sqrt_nonneg _)
   congr 1
   rw_mod_cast [← sqrt_inv, sq_sqrt, ← one_div, one_sub_div, add_sub_cancel_left, sqrt_div,
@@ -207,7 +207,7 @@ theorem arctan_eq_arccos {x : ℝ} (h : 0 ≤ x) : arctan x = arccos (√(1 + x 
 #align real.arctan_eq_arccos Real.arctan_eq_arccos
 
 -- The junk values for `arccos` and `sqrt` make this true even for `1 < x`.
-theorem arccos_eq_arctan {x : ℝ} (h : 0 < x) : arccos x = arctan (√(1 - x ^ 2) / x) := by
+lemma arccos_eq_arctan {x : ℝ} (h : 0 < x) : arccos x = arctan (√(1 - x ^ 2) / x) := by
   rw [arccos, eq_comm]
   refine' arctan_eq_of_tan_eq _ ⟨_, _⟩
   · rw_mod_cast [tan_pi_div_two_sub, tan_arcsin, inv_div]
@@ -215,14 +215,14 @@ theorem arccos_eq_arctan {x : ℝ} (h : 0 < x) : arccos x = arctan (√(1 - x ^ 
   · linarith only [arcsin_pos.2 h]
 #align real.arccos_eq_arctan Real.arccos_eq_arctan
 
-theorem arctan_inv_of_pos {x : ℝ} (h : 0 < x) : arctan x⁻¹ = π / 2 - arctan x := by
+lemma arctan_inv_of_pos {x : ℝ} (h : 0 < x) : arctan x⁻¹ = π / 2 - arctan x := by
   rw [← arctan_tan (x := _ - _), tan_pi_div_two_sub, tan_arctan]
   · norm_num
     exact (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
   · rw [sub_lt_self_iff, ← arctan_zero]
     exact tanOrderIso.symm.strictMono h
 
-theorem arctan_inv_of_neg {x : ℝ} (h : x < 0) : arctan x⁻¹ = -(π / 2) - arctan x := by
+lemma arctan_inv_of_neg {x : ℝ} (h : x < 0) : arctan x⁻¹ = -(π / 2) - arctan x := by
   have := arctan_inv_of_pos (neg_pos.mpr h)
   rwa [inv_neg, arctan_neg, neg_eq_iff_eq_neg, neg_sub', arctan_neg, neg_neg] at this
 
@@ -244,7 +244,7 @@ lemma arctan_add_arctan_lt_pi_div_two {x y : ℝ} (h : x * y < 1) : arctan x + a
     replace h : arctan x < arctan y⁻¹ := tanOrderIso.symm.strictMono h
     rwa [arctan_inv_of_pos hy, lt_tsub_iff_right] at h
 
-theorem arctan_add {x y : ℝ} (h : x * y < 1) :
+lemma arctan_add {x y : ℝ} (h : x * y < 1) :
     arctan x + arctan y = arctan ((x + y) / (1 - x * y)) := by
   rw [← arctan_tan (x := _ + _)]
   · congr
@@ -255,7 +255,7 @@ theorem arctan_add {x y : ℝ} (h : x * y < 1) :
     exact arctan_add_arctan_lt_pi_div_two h
   · exact arctan_add_arctan_lt_pi_div_two h
 
-theorem arctan_add_eq_add_pi {x y : ℝ} (h : 1 < x * y) (hx : 0 < x) :
+lemma arctan_add_eq_add_pi {x y : ℝ} (h : 1 < x * y) (hx : 0 < x) :
     arctan x + arctan y = arctan ((x + y) / (1 - x * y)) + π := by
   have hy : 0 < y := by
     have := mul_pos_iff.mp (zero_lt_one.trans h)
@@ -267,7 +267,7 @@ theorem arctan_add_eq_add_pi {x y : ℝ} (h : 1 < x * y) (hx : 0 < x) :
   field_simp
   rw [show -x + -y = -(x + y) by ring, show x * y - 1 = -(1 - x * y) by ring, neg_div_neg_eq]
 
-theorem arctan_add_eq_sub_pi {x y : ℝ} (h : 1 < x * y) (hx : x < 0) :
+lemma arctan_add_eq_sub_pi {x y : ℝ} (h : 1 < x * y) (hx : x < 0) :
     arctan x + arctan y = arctan ((x + y) / (1 - x * y)) - π := by
   rw [← neg_mul_neg] at h
   have k := arctan_add_eq_add_pi h (neg_pos.mpr hx)
@@ -275,25 +275,25 @@ theorem arctan_add_eq_sub_pi {x y : ℝ} (h : 1 < x * y) (hx : x < 0) :
   simp only [arctan_neg, neg_add, neg_neg, ← sub_eq_add_neg _ π] at k
   exact k
 
-theorem two_mul_arctan {x : ℝ} (h₁ : -1 < x) (h₂ : x < 1) :
+lemma two_mul_arctan {x : ℝ} (h₁ : -1 < x) (h₂ : x < 1) :
     2 * arctan x = arctan (2 * x / (1 - x ^ 2)) := by
   rw [two_mul, arctan_add (by nlinarith)]; congr 1; ring
 
-theorem two_mul_arctan_add_pi {x : ℝ} (h : 1 < x) :
+lemma two_mul_arctan_add_pi {x : ℝ} (h : 1 < x) :
     2 * arctan x = arctan (2 * x / (1 - x ^ 2)) + π := by
   rw [two_mul, arctan_add_eq_add_pi (by nlinarith) (by linarith)]; congr 2; ring
 
-theorem two_mul_arctan_sub_pi {x : ℝ} (h : x < -1) :
+lemma two_mul_arctan_sub_pi {x : ℝ} (h : x < -1) :
     2 * arctan x = arctan (2 * x / (1 - x ^ 2)) - π := by
   rw [two_mul, arctan_add_eq_sub_pi (by nlinarith) (by linarith)]; congr 2; ring
 
-theorem arctan_inv_2_add_arctan_inv_3 : arctan 2⁻¹ + arctan 3⁻¹ = π / 4 := by
+lemma arctan_inv_2_add_arctan_inv_3 : arctan 2⁻¹ + arctan 3⁻¹ = π / 4 := by
   rw [arctan_add] <;> norm_num
 
-theorem two_mul_arctan_inv_2_sub_arctan_inv_7 : 2 * arctan 2⁻¹ - arctan 7⁻¹ = π / 4 := by
+lemma two_mul_arctan_inv_2_sub_arctan_inv_7 : 2 * arctan 2⁻¹ - arctan 7⁻¹ = π / 4 := by
   rw [two_mul_arctan, ← arctan_one, sub_eq_iff_eq_add, arctan_add] <;> norm_num
 
-theorem two_mul_arctan_inv_3_add_arctan_inv_7 : 2 * arctan 3⁻¹ + arctan 7⁻¹ = π / 4 := by
+lemma two_mul_arctan_inv_3_add_arctan_inv_7 : 2 * arctan 3⁻¹ + arctan 7⁻¹ = π / 4 := by
   rw [two_mul_arctan, arctan_add] <;> norm_num
 
 /-- **John Machin's 1706 formula**, which he used to compute π to 100 decimal places. -/
@@ -304,11 +304,11 @@ theorem four_mul_arctan_inv_5_sub_arctan_inv_239 : 4 * arctan 5⁻¹ - arctan 23
 end ArctanAdd
 
 @[continuity]
-theorem continuous_arctan : Continuous arctan :=
+lemma continuous_arctan : Continuous arctan :=
   continuous_subtype_val.comp tanOrderIso.toHomeomorph.continuous_invFun
 #align real.continuous_arctan Real.continuous_arctan
 
-theorem continuousAt_arctan {x : ℝ} : ContinuousAt arctan x :=
+lemma continuousAt_arctan {x : ℝ} : ContinuousAt arctan x :=
   continuous_arctan.continuousAt
 #align real.continuous_at_arctan Real.continuousAt_arctan
 
@@ -329,12 +329,12 @@ def tanPartialHomeomorph : PartialHomeomorph ℝ ℝ where
 #align real.tan_local_homeomorph Real.tanPartialHomeomorph
 
 @[simp]
-theorem coe_tanPartialHomeomorph : ⇑tanPartialHomeomorph = tan :=
+lemma coe_tanPartialHomeomorph : ⇑tanPartialHomeomorph = tan :=
   rfl
 #align real.coe_tan_local_homeomorph Real.coe_tanPartialHomeomorph
 
 @[simp]
-theorem coe_tanPartialHomeomorph_symm : ⇑tanPartialHomeomorph.symm = arctan :=
+lemma coe_tanPartialHomeomorph_symm : ⇑tanPartialHomeomorph.symm = arctan :=
   rfl
 #align real.coe_tan_local_homeomorph_symm Real.coe_tanPartialHomeomorph_symm
 

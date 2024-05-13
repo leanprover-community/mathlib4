@@ -41,18 +41,18 @@ def map (F : C → D) [Functorial.{v₁, v₂} F] {X Y : C} (f : X ⟶ Y) : F X 
 #align category_theory.map CategoryTheory.map
 
 @[simp]
-theorem map'_as_map {F : C → D} [Functorial.{v₁, v₂} F] {X Y : C} {f : X ⟶ Y} :
+lemma map'_as_map {F : C → D} [Functorial.{v₁, v₂} F] {X Y : C} {f : X ⟶ Y} :
     Functorial.map'.{v₁, v₂} f = map F f :=
   rfl
 #align category_theory.map_as_map CategoryTheory.map'_as_map
 
 @[simp]
-theorem Functorial.map_id {F : C → D} [Functorial.{v₁, v₂} F] {X : C} : map F (𝟙 X) = 𝟙 (F X) :=
+lemma Functorial.map_id {F : C → D} [Functorial.{v₁, v₂} F] {X : C} : map F (𝟙 X) = 𝟙 (F X) :=
   Functorial.map_id' X
 #align category_theory.functorial.map_id CategoryTheory.Functorial.map_id
 
 @[simp]
-theorem Functorial.map_comp {F : C → D} [Functorial.{v₁, v₂} F] {X Y Z : C} {f : X ⟶ Y}
+lemma Functorial.map_comp {F : C → D} [Functorial.{v₁, v₂} F] {X Y Z : C} {f : X ⟶ Y}
     {g : Y ⟶ Z} : map F (f ≫ g) = map F f ≫ map F g :=
   Functorial.map_comp' f g
 #align category_theory.functorial.map_comp CategoryTheory.Functorial.map_comp
@@ -72,7 +72,7 @@ instance (F : C ⥤ D) : Functorial.{v₁, v₂} F.obj :=
   { F with map' := F.map }
 
 @[simp]
-theorem map_functorial_obj (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) : map F.obj f = F.map f :=
+lemma map_functorial_obj (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) : map F.obj f = F.map f :=
   rfl
 #align category_theory.map_functorial_obj CategoryTheory.map_functorial_obj
 

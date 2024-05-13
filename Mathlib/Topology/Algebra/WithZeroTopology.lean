@@ -44,7 +44,7 @@ scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
   nhdsAdjoint 0 <| ⨅ γ ≠ 0, 𝓟 (Iio γ)
 #align with_zero_topology.topological_space WithZeroTopology.topologicalSpace
 
-theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ ≠ 0, 𝓟 (Iio γ)) := by
+lemma nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ ≠ 0, 𝓟 (Iio γ)) := by
    rw [nhds_nhdsAdjoint, sup_of_le_right]
    exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 <| zero_lt_iff.2 hγ
  #align with_zero_topology.nhds_eq_update WithZeroTopology.nhds_eq_update
@@ -53,7 +53,7 @@ theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ
 ### Neighbourhoods of zero
 -/
 
-theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ γ ≠ 0, 𝓟 (Iio γ) := by
+lemma nhds_zero : 𝓝 (0 : Γ₀) = ⨅ γ ≠ 0, 𝓟 (Iio γ) := by
   rw [nhds_eq_update, update_same]
 #align with_zero_topology.nhds_zero WithZeroTopology.nhds_zero
 
@@ -65,7 +65,7 @@ theorem hasBasis_nhds_zero : (𝓝 (0 : Γ₀)).HasBasis (fun γ : Γ₀ => γ �
   exact directedOn_iff_directed.2 (Monotone.directed_ge fun a b hab => Iio_subset_Iio hab)
 #align with_zero_topology.has_basis_nhds_zero WithZeroTopology.hasBasis_nhds_zero
 
-theorem Iio_mem_nhds_zero (hγ : γ ≠ 0) : Iio γ ∈ 𝓝 (0 : Γ₀) :=
+lemma Iio_mem_nhds_zero (hγ : γ ≠ 0) : Iio γ ∈ 𝓝 (0 : Γ₀) :=
   hasBasis_nhds_zero.mem_of_mem hγ
 #align with_zero_topology.Iio_mem_nhds_zero WithZeroTopology.Iio_mem_nhds_zero
 
@@ -75,7 +75,7 @@ theorem nhds_zero_of_units (γ : Γ₀ˣ) : Iio ↑γ ∈ 𝓝 (0 : Γ₀) :=
   Iio_mem_nhds_zero γ.ne_zero
 #align with_zero_topology.nhds_zero_of_units WithZeroTopology.nhds_zero_of_units
 
-theorem tendsto_zero : Tendsto f l (𝓝 (0 : Γ₀)) ↔ ∀ (γ₀) (_ : γ₀ ≠ 0), ∀ᶠ x in l, f x < γ₀ := by
+lemma tendsto_zero : Tendsto f l (𝓝 (0 : Γ₀)) ↔ ∀ (γ₀) (_ : γ₀ ≠ 0), ∀ᶠ x in l, f x < γ₀ := by
   simp [nhds_zero]
 #align with_zero_topology.tendsto_zero WithZeroTopology.tendsto_zero
 
@@ -106,26 +106,26 @@ is a neighbourhood of `γ`. -/
 theorem singleton_mem_nhds_of_ne_zero (h : γ ≠ 0) : ({γ} : Set Γ₀) ∈ 𝓝 (γ : Γ₀) := by simp [h]
 #align with_zero_topology.singleton_mem_nhds_of_ne_zero WithZeroTopology.singleton_mem_nhds_of_ne_zero
 
-theorem hasBasis_nhds_of_ne_zero {x : Γ₀} (h : x ≠ 0) :
+lemma hasBasis_nhds_of_ne_zero {x : Γ₀} (h : x ≠ 0) :
     HasBasis (𝓝 x) (fun _ : Unit => True) fun _ => {x} := by
   rw [nhds_of_ne_zero h]
   exact hasBasis_pure _
 #align with_zero_topology.has_basis_nhds_of_ne_zero WithZeroTopology.hasBasis_nhds_of_ne_zero
 
-theorem hasBasis_nhds_units (γ : Γ₀ˣ) :
+lemma hasBasis_nhds_units (γ : Γ₀ˣ) :
     HasBasis (𝓝 (γ : Γ₀)) (fun _ : Unit => True) fun _ => {↑γ} :=
   hasBasis_nhds_of_ne_zero γ.ne_zero
 #align with_zero_topology.has_basis_nhds_units WithZeroTopology.hasBasis_nhds_units
 
-theorem tendsto_of_ne_zero {γ : Γ₀} (h : γ ≠ 0) : Tendsto f l (𝓝 γ) ↔ ∀ᶠ x in l, f x = γ := by
+lemma tendsto_of_ne_zero {γ : Γ₀} (h : γ ≠ 0) : Tendsto f l (𝓝 γ) ↔ ∀ᶠ x in l, f x = γ := by
   rw [nhds_of_ne_zero h, tendsto_pure]
 #align with_zero_topology.tendsto_of_ne_zero WithZeroTopology.tendsto_of_ne_zero
 
-theorem tendsto_units {γ₀ : Γ₀ˣ} : Tendsto f l (𝓝 (γ₀ : Γ₀)) ↔ ∀ᶠ x in l, f x = γ₀ :=
+lemma tendsto_units {γ₀ : Γ₀ˣ} : Tendsto f l (𝓝 (γ₀ : Γ₀)) ↔ ∀ᶠ x in l, f x = γ₀ :=
   tendsto_of_ne_zero γ₀.ne_zero
 #align with_zero_topology.tendsto_units WithZeroTopology.tendsto_units
 
-theorem Iio_mem_nhds (h : γ₁ < γ₂) : Iio γ₂ ∈ 𝓝 γ₁ := by
+lemma Iio_mem_nhds (h : γ₁ < γ₂) : Iio γ₂ ∈ 𝓝 γ₁ := by
   rcases eq_or_ne γ₁ 0 with (rfl | h₀) <;> simp [*, h.ne', Iio_mem_nhds_zero]
 #align with_zero_topology.Iio_mem_nhds WithZeroTopology.Iio_mem_nhds
 
@@ -133,18 +133,18 @@ theorem Iio_mem_nhds (h : γ₁ < γ₂) : Iio γ₂ ∈ 𝓝 γ₁ := by
 ### Open/closed sets
 -/
 
-theorem isOpen_iff {s : Set Γ₀} : IsOpen s ↔ (0 : Γ₀) ∉ s ∨ ∃ γ, γ ≠ 0 ∧ Iio γ ⊆ s := by
+lemma isOpen_iff {s : Set Γ₀} : IsOpen s ↔ (0 : Γ₀) ∉ s ∨ ∃ γ, γ ≠ 0 ∧ Iio γ ⊆ s := by
   rw [isOpen_iff_mem_nhds, ← and_forall_ne (0 : Γ₀)]
   simp (config := { contextual := true }) [nhds_of_ne_zero, imp_iff_not_or,
     hasBasis_nhds_zero.mem_iff]
 #align with_zero_topology.is_open_iff WithZeroTopology.isOpen_iff
 
-theorem isClosed_iff {s : Set Γ₀} : IsClosed s ↔ (0 : Γ₀) ∈ s ∨ ∃ γ, γ ≠ 0 ∧ s ⊆ Ici γ := by
+lemma isClosed_iff {s : Set Γ₀} : IsClosed s ↔ (0 : Γ₀) ∈ s ∨ ∃ γ, γ ≠ 0 ∧ s ⊆ Ici γ := by
   simp only [← isOpen_compl_iff, isOpen_iff, mem_compl_iff, not_not, ← compl_Ici,
     compl_subset_compl]
 #align with_zero_topology.is_closed_iff WithZeroTopology.isClosed_iff
 
-theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
+lemma isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
   isOpen_iff.mpr <| imp_iff_not_or.mp fun ha => ⟨a, ne_of_gt ha, Subset.rfl⟩
 #align with_zero_topology.is_open_Iio WithZeroTopology.isOpen_Iio
 

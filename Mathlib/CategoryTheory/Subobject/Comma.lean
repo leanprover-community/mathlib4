@@ -55,12 +55,12 @@ def projectSubobject [HasLimits C] [PreservesLimits T] {A : StructuredArrow S T}
 #align category_theory.structured_arrow.project_subobject CategoryTheory.StructuredArrow.projectSubobject
 
 @[simp]
-theorem projectSubobject_mk [HasLimits C] [PreservesLimits T] {A P : StructuredArrow S T}
+lemma projectSubobject_mk [HasLimits C] [PreservesLimits T] {A P : StructuredArrow S T}
     (f : P ⟶ A) [Mono f] : projectSubobject (Subobject.mk f) = Subobject.mk f.right :=
   rfl
 #align category_theory.structured_arrow.project_subobject_mk CategoryTheory.StructuredArrow.projectSubobject_mk
 
-theorem projectSubobject_factors [HasLimits C] [PreservesLimits T] {A : StructuredArrow S T} :
+lemma projectSubobject_factors [HasLimits C] [PreservesLimits T] {A : StructuredArrow S T} :
     ∀ P : Subobject A, ∃ q, q ≫ T.map (projectSubobject P).arrow = A.hom :=
   Subobject.ind _ fun P f hf =>
     ⟨P.hom ≫ T.map (Subobject.underlyingIso _).inv, by
@@ -143,13 +143,13 @@ def projectQuotient [HasColimits C] [PreservesColimits S] {A : CostructuredArrow
 #align category_theory.costructured_arrow.project_quotient CategoryTheory.CostructuredArrow.projectQuotient
 
 @[simp]
-theorem projectQuotient_mk [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T}
+lemma projectQuotient_mk [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T}
     {P : (CostructuredArrow S T)ᵒᵖ} (f : P ⟶ op A) [Mono f] :
     projectQuotient (Subobject.mk f) = Subobject.mk f.unop.left.op :=
   rfl
 #align category_theory.costructured_arrow.project_quotient_mk CategoryTheory.CostructuredArrow.projectQuotient_mk
 
-theorem projectQuotient_factors [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T} :
+lemma projectQuotient_factors [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T} :
     ∀ P : Subobject (op A), ∃ q, S.map (projectQuotient P).arrow.unop ≫ q = A.hom :=
   Subobject.ind _ fun P f hf =>
     ⟨S.map (Subobject.underlyingIso _).unop.inv ≫ P.unop.hom, by

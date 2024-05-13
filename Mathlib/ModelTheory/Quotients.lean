@@ -54,7 +54,7 @@ instance quotientStructure : L.Structure (Quotient s) where
 
 variable (s)
 
-theorem funMap_quotient_mk' {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
+lemma funMap_quotient_mk' {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
     (funMap f fun i => (⟦x i⟧ : Quotient s)) = ⟦@funMap _ _ ps.toStructure _ f x⟧ := by
   change
     Quotient.map (@funMap L M ps.toStructure n f) Prestructure.fun_equiv (Quotient.finChoice _) =
@@ -62,7 +62,7 @@ theorem funMap_quotient_mk' {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
   rw [Quotient.finChoice_eq, Quotient.map_mk]
 #align first_order.language.fun_map_quotient_mk FirstOrder.Language.funMap_quotient_mk'
 
-theorem relMap_quotient_mk' {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
+lemma relMap_quotient_mk' {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
     (RelMap r fun i => (⟦x i⟧ : Quotient s)) ↔ @RelMap _ _ ps.toStructure _ r x := by
   change
     Quotient.lift (@RelMap L M ps.toStructure n r) Prestructure.rel_equiv (Quotient.finChoice _) ↔
@@ -70,7 +70,7 @@ theorem relMap_quotient_mk' {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
   rw [Quotient.finChoice_eq, Quotient.lift_mk]
 #align first_order.language.rel_map_quotient_mk FirstOrder.Language.relMap_quotient_mk'
 
-theorem Term.realize_quotient_mk' {β : Type*} (t : L.Term β) (x : β → M) :
+lemma Term.realize_quotient_mk' {β : Type*} (t : L.Term β) (x : β → M) :
     (t.realize fun i => (⟦x i⟧ : Quotient s)) = ⟦@Term.realize _ _ ps.toStructure _ x t⟧ := by
   induction' t with _ _ _ _ ih
   · rfl

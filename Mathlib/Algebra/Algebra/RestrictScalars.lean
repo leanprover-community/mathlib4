@@ -154,32 +154,32 @@ def RestrictScalars.addEquiv : RestrictScalars R S M ≃+ M :=
 
 variable [CommSemiring R] [Semiring S] [Algebra R S] [Module S M]
 
-theorem RestrictScalars.smul_def (c : R) (x : RestrictScalars R S M) :
+lemma RestrictScalars.smul_def (c : R) (x : RestrictScalars R S M) :
     c • x = (RestrictScalars.addEquiv R S M).symm
       (algebraMap R S c • RestrictScalars.addEquiv R S M x) :=
   rfl
 #align restrict_scalars.smul_def RestrictScalars.smul_def
 
 @[simp]
-theorem RestrictScalars.addEquiv_map_smul (c : R) (x : RestrictScalars R S M) :
+lemma RestrictScalars.addEquiv_map_smul (c : R) (x : RestrictScalars R S M) :
     RestrictScalars.addEquiv R S M (c • x) = algebraMap R S c • RestrictScalars.addEquiv R S M x :=
   rfl
 #align restrict_scalars.add_equiv_map_smul RestrictScalars.addEquiv_map_smul
 
-theorem RestrictScalars.addEquiv_symm_map_algebraMap_smul (r : R) (x : M) :
+lemma RestrictScalars.addEquiv_symm_map_algebraMap_smul (r : R) (x : M) :
     (RestrictScalars.addEquiv R S M).symm (algebraMap R S r • x) =
       r • (RestrictScalars.addEquiv R S M).symm x :=
   rfl
 #align restrict_scalars.add_equiv_symm_map_algebra_map_smul RestrictScalars.addEquiv_symm_map_algebraMap_smul
 
-theorem RestrictScalars.addEquiv_symm_map_smul_smul (r : R) (s : S) (x : M) :
+lemma RestrictScalars.addEquiv_symm_map_smul_smul (r : R) (s : S) (x : M) :
     (RestrictScalars.addEquiv R S M).symm ((r • s) • x) =
       r • (RestrictScalars.addEquiv R S M).symm (s • x) := by
   rw [Algebra.smul_def, mul_smul]
   rfl
 #align restrict_scalars.add_equiv_symm_map_smul_smul RestrictScalars.addEquiv_symm_map_smul_smul
 
-theorem RestrictScalars.lsmul_apply_apply (s : S) (x : RestrictScalars R S M) :
+lemma RestrictScalars.lsmul_apply_apply (s : S) (x : RestrictScalars R S M) :
     RestrictScalars.lsmul R S M s x =
       (RestrictScalars.addEquiv R S M).symm (s • RestrictScalars.addEquiv R S M x) :=
   rfl
@@ -207,7 +207,7 @@ def RestrictScalars.ringEquiv : RestrictScalars R S A ≃+* A :=
 variable [CommSemiring S] [Algebra S A] [CommSemiring R] [Algebra R S]
 
 @[simp]
-theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
+lemma RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
     RestrictScalars.ringEquiv R S A (r • x) =
       algebraMap R S r • RestrictScalars.ringEquiv R S A x :=
   rfl
@@ -221,7 +221,7 @@ instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) :=
     smul_def' := fun _ _ ↦ Algebra.smul_def' (A := A) _ _ }
 
 @[simp]
-theorem RestrictScalars.ringEquiv_algebraMap (r : R) :
+lemma RestrictScalars.ringEquiv_algebraMap (r : R) :
     RestrictScalars.ringEquiv R S A (algebraMap R (RestrictScalars R S A) r) =
       algebraMap S A (algebraMap R S r) :=
   rfl

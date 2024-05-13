@@ -34,7 +34,7 @@ instance linearOrderedAddCommGroupWithTop : LinearOrderedAddCommGroupWithTop (Wi
 #align with_top.linear_ordered_add_comm_group_with_top WithTop.linearOrderedAddCommGroupWithTop
 
 @[simp, norm_cast]
-theorem coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
+lemma coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
   rfl
 #align with_top.coe_neg WithTop.coe_neg
 

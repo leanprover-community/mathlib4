@@ -46,7 +46,7 @@ set_option linter.uppercaseLean3 false in
 #align PartOrd.of PartOrd.of
 
 @[simp]
-theorem coe_of (α : Type*) [PartialOrder α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [PartialOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align PartOrd.coe_of PartOrd.coe_of
@@ -96,7 +96,7 @@ set_option linter.uppercaseLean3 false in
 
 end PartOrd
 
-theorem partOrd_dual_comp_forget_to_preord :
+lemma partOrd_dual_comp_forget_to_preord :
     PartOrd.dual ⋙ forget₂ PartOrd Preord =
       forget₂ PartOrd Preord ⋙ Preord.dual :=
   rfl

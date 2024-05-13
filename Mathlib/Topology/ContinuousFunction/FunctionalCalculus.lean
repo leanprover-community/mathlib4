@@ -240,7 +240,7 @@ lemma cfcHom_eq_of_continuous_of_map_id [UniqueContinuousFunctionalCalculus R A]
   (cfcHom ha).ext_continuousMap a φ (cfcHom_closedEmbedding ha).continuous hφ₁ <| by
     rw [cfcHom_id ha, hφ₂]
 
-theorem cfcHom_comp [UniqueContinuousFunctionalCalculus R A] (f : C(spectrum R a, R))
+lemma cfcHom_comp [UniqueContinuousFunctionalCalculus R A] (f : C(spectrum R a, R))
     (f' : C(spectrum R a, spectrum R (cfcHom ha f)))
     (hff' : ∀ x, f x = f' x) (g : C(spectrum R (cfcHom ha f), R)) :
     cfcHom ha (g.comp f') = cfcHom (cfcHom_predicate ha f) g := by

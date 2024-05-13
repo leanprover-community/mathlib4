@@ -60,7 +60,7 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     (inj_on_of_surj_on_of_card_le _ hmem hsurj le_rfl) hsurj (fun _ _ => rfl)
 #align zmod.Ico_map_val_min_abs_nat_abs_eq_Ico_map_id ZMod.Ico_map_valMinAbs_natAbs_eq_Ico_map_id
 
-private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
+private lemma gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
     (hap : (a : ZMod p) ≠ 0) : (a ^ (p / 2) * (p / 2)! : ZMod p) =
     (-1 : ZMod p) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ =>
       ¬(a * x : ZMod p).val ≤ p / 2).card * (p / 2)! :=
@@ -91,7 +91,7 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
         Ico_map_valMinAbs_natAbs_eq_Ico_map_id p a hap, ← Finset.prod_eq_multiset_prod,
         prod_Ico_id_eq_factorial]
 
-theorem gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] {a : ℤ}
+lemma gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] {a : ℤ}
     (hap : (a : ZMod p) ≠ 0) : (↑a ^ (p / 2) : ZMod p) =
     ((-1) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card :) :=
   (mul_left_inj' (show ((p / 2)! : ZMod p) ≠ 0 by
@@ -115,7 +115,7 @@ theorem gauss_lemma {p : ℕ} [h : Fact p.Prime] {a : ℤ} (hp : p ≠ 2) (ha0 :
   simp_all [ne_neg_self hp one_ne_zero, (ne_neg_self hp one_ne_zero).symm]
 #align zmod.gauss_lemma ZMod.gauss_lemma
 
-private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p % 2 = 1)] {a : ℕ}
+private lemma eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p % 2 = 1)] {a : ℕ}
     (hap : (a : ZMod p) ≠ 0) : ((∑ x in Ico 1 (p / 2).succ, a * x : ℕ) : ZMod 2) =
     ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card +
       ∑ x in Ico 1 (p / 2).succ, x + (∑ x in Ico 1 (p / 2).succ, a * x / p : ℕ) :=
@@ -143,7 +143,7 @@ private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p 
               Finset.sum_eq_multiset_sum])
         rfl
 
-theorem eisenstein_lemma_aux (p : ℕ) [Fact p.Prime] [Fact (p % 2 = 1)] {a : ℕ} (ha2 : a % 2 = 1)
+lemma eisenstein_lemma_aux (p : ℕ) [Fact p.Prime] [Fact (p % 2 = 1)] {a : ℕ} (ha2 : a % 2 = 1)
     (hap : (a : ZMod p) ≠ 0) :
     ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card ≡
       ∑ x in Ico 1 (p / 2).succ, x * a / p [MOD 2] :=
@@ -154,7 +154,7 @@ theorem eisenstein_lemma_aux (p : ℕ) [Fact p.Prime] [Fact (p % 2 = 1)] {a : �
       Eq.symm (eisenstein_lemma_aux₁ p hap)
 #align zmod.eisenstein_lemma_aux ZMod.eisenstein_lemma_aux
 
-theorem div_eq_filter_card {a b c : ℕ} (hb0 : 0 < b) (hc : a / b ≤ c) :
+lemma div_eq_filter_card {a b c : ℕ} (hb0 : 0 < b) (hc : a / b ≤ c) :
     a / b = ((Ico 1 c.succ).filter fun x => x * b ≤ a).card :=
   calc
     a / b = (Ico 1 (a / b).succ).card := by simp

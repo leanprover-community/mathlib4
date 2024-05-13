@@ -32,7 +32,7 @@ instance [UniformSpace E] [Norm E] : Norm (Completion E) where
   norm := Completion.extension Norm.norm
 
 @[simp]
-theorem norm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ = ‖x‖ :=
+lemma norm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ = ‖x‖ :=
   Completion.extension_coe uniformContinuous_norm x
 #align uniform_space.completion.norm_coe UniformSpace.Completion.norm_coe
 

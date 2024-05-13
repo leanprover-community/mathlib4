@@ -38,7 +38,7 @@ structure IsUnital (m : X → X → X) (e : X) extends Std.LawfulIdentity m e : 
 #align eckmann_hilton.is_unital EckmannHilton.IsUnital
 
 @[to_additive EckmannHilton.AddZeroClass.IsUnital]
-theorem MulOneClass.isUnital [_G : MulOneClass X] : IsUnital (· * ·) (1 : X) :=
+lemma MulOneClass.isUnital [_G : MulOneClass X] : IsUnital (· * ·) (1 : X) :=
   IsUnital.mk { left_id := MulOneClass.one_mul,
                 right_id := MulOneClass.mul_one }
 #align eckmann_hilton.mul_one_class.is_unital EckmannHilton.MulOneClass.isUnital

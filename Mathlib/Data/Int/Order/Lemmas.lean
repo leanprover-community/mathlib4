@@ -24,24 +24,24 @@ namespace Int
 
 variable {a b : ℤ} {n : ℕ}
 
-theorem natAbs_eq_iff_mul_self_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a * a = b * b := by
+lemma natAbs_eq_iff_mul_self_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a * a = b * b := by
   rw [← abs_eq_iff_mul_self_eq, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.natCast_inj.symm
 #align int.nat_abs_eq_iff_mul_self_eq Int.natAbs_eq_iff_mul_self_eq
 
 #align int.eq_nat_abs_iff_mul_eq_zero Int.eq_natAbs_iff_mul_eq_zero
 
-theorem natAbs_lt_iff_mul_self_lt {a b : ℤ} : a.natAbs < b.natAbs ↔ a * a < b * b := by
+lemma natAbs_lt_iff_mul_self_lt {a b : ℤ} : a.natAbs < b.natAbs ↔ a * a < b * b := by
   rw [← abs_lt_iff_mul_self_lt, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.ofNat_lt.symm
 #align int.nat_abs_lt_iff_mul_self_lt Int.natAbs_lt_iff_mul_self_lt
 
-theorem natAbs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a ≤ b * b := by
+lemma natAbs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a ≤ b * b := by
   rw [← abs_le_iff_mul_self_le, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.ofNat_le.symm
 #align int.nat_abs_le_iff_mul_self_le Int.natAbs_le_iff_mul_self_le
 
-theorem dvd_div_of_mul_dvd {a b c : ℤ} (h : a * b ∣ c) : b ∣ c / a := by
+lemma dvd_div_of_mul_dvd {a b c : ℤ} (h : a * b ∣ c) : b ∣ c / a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp only [Int.ediv_zero, dvd_zero]
   rcases h with ⟨d, rfl⟩
@@ -58,7 +58,7 @@ lemma pow_right_injective (h : 1 < a.natAbs) : Injective ((a ^ ·) : ℕ → ℤ
 /-! ### units -/
 
 
-theorem eq_zero_of_abs_lt_dvd {m x : ℤ} (h1 : m ∣ x) (h2 : |x| < m) : x = 0 := by
+lemma eq_zero_of_abs_lt_dvd {m x : ℤ} (h1 : m ∣ x) (h2 : |x| < m) : x = 0 := by
   by_cases hm : m = 0
   · subst m
     exact zero_dvd_iff.mp h1

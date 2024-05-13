@@ -91,11 +91,11 @@ def inclusion (x : X) : OpenNhds x ⥤ Opens X :=
 #align topological_space.open_nhds.inclusion TopologicalSpace.OpenNhds.inclusion
 
 @[simp]
-theorem inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=
+lemma inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=
   rfl
 #align topological_space.open_nhds.inclusion_obj TopologicalSpace.OpenNhds.inclusion_obj
 
-theorem openEmbedding {x : X} (U : OpenNhds x) : OpenEmbedding U.1.inclusion :=
+lemma openEmbedding {x : X} (U : OpenNhds x) : OpenEmbedding U.1.inclusion :=
   U.1.openEmbedding
 #align topological_space.open_nhds.open_embedding TopologicalSpace.OpenNhds.openEmbedding
 
@@ -107,26 +107,26 @@ def map (x : X) : OpenNhds (f x) ⥤ OpenNhds x where
 
 -- Porting note: Changed `⟨(Opens.map f).obj U, by tidy⟩` to `⟨(Opens.map f).obj U, q⟩`
 @[simp]
-theorem map_obj (x : X) (U) (q) : (map f x).obj ⟨U, q⟩ = ⟨(Opens.map f).obj U, q⟩ :=
+lemma map_obj (x : X) (U) (q) : (map f x).obj ⟨U, q⟩ = ⟨(Opens.map f).obj U, q⟩ :=
   rfl
 #align topological_space.open_nhds.map_obj TopologicalSpace.OpenNhds.map_obj
 
 @[simp]
-theorem map_id_obj (x : X) (U) : (map (𝟙 X) x).obj U = U := rfl
+lemma map_id_obj (x : X) (U) : (map (𝟙 X) x).obj U = U := rfl
 #align topological_space.open_nhds.map_id_obj TopologicalSpace.OpenNhds.map_id_obj
 
 @[simp]
-theorem map_id_obj' (x : X) (U) (p) (q) : (map (𝟙 X) x).obj ⟨⟨U, p⟩, q⟩ = ⟨⟨U, p⟩, q⟩ :=
+lemma map_id_obj' (x : X) (U) (p) (q) : (map (𝟙 X) x).obj ⟨⟨U, p⟩, q⟩ = ⟨⟨U, p⟩, q⟩ :=
   rfl
 #align topological_space.open_nhds.map_id_obj' TopologicalSpace.OpenNhds.map_id_obj'
 
 @[simp]
-theorem map_id_obj_unop (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).obj (unop U) = unop U := by
+lemma map_id_obj_unop (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).obj (unop U) = unop U := by
   simp
 #align topological_space.open_nhds.map_id_obj_unop TopologicalSpace.OpenNhds.map_id_obj_unop
 
 @[simp]
-theorem op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj U = U := by simp
+lemma op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj U = U := by simp
 #align topological_space.open_nhds.op_map_id_obj TopologicalSpace.OpenNhds.op_map_id_obj
 
 /-- `Opens.map f` and `OpenNhds.map f` form a commuting square (up to natural isomorphism)
@@ -141,12 +141,12 @@ def inclusionMapIso (x : X) : inclusion (f x) ⋙ Opens.map f ≅ map f x ⋙ in
 #align topological_space.open_nhds.inclusion_map_iso TopologicalSpace.OpenNhds.inclusionMapIso
 
 @[simp]
-theorem inclusionMapIso_hom (x : X) : (inclusionMapIso f x).hom = 𝟙 _ :=
+lemma inclusionMapIso_hom (x : X) : (inclusionMapIso f x).hom = 𝟙 _ :=
   rfl
 #align topological_space.open_nhds.inclusion_map_iso_hom TopologicalSpace.OpenNhds.inclusionMapIso_hom
 
 @[simp]
-theorem inclusionMapIso_inv (x : X) : (inclusionMapIso f x).inv = 𝟙 _ :=
+lemma inclusionMapIso_inv (x : X) : (inclusionMapIso f x).inv = 𝟙 _ :=
   rfl
 #align topological_space.open_nhds.inclusion_map_iso_inv TopologicalSpace.OpenNhds.inclusionMapIso_inv
 

@@ -44,16 +44,16 @@ def conformalFactorAt {f : E → F} {x : E} (h : ConformalAt f x) : ℝ :=
   Classical.choose (conformalAt_iff'.mp h)
 #align conformal_factor_at conformalFactorAt
 
-theorem conformalFactorAt_pos {f : E → F} {x : E} (h : ConformalAt f x) : 0 < conformalFactorAt h :=
+lemma conformalFactorAt_pos {f : E → F} {x : E} (h : ConformalAt f x) : 0 < conformalFactorAt h :=
   (Classical.choose_spec <| conformalAt_iff'.mp h).1
 #align conformal_factor_at_pos conformalFactorAt_pos
 
-theorem conformalFactorAt_inner_eq_mul_inner' {f : E → F} {x : E} (h : ConformalAt f x) (u v : E) :
+lemma conformalFactorAt_inner_eq_mul_inner' {f : E → F} {x : E} (h : ConformalAt f x) (u v : E) :
     ⟪(fderiv ℝ f x) u, (fderiv ℝ f x) v⟫ = (conformalFactorAt h : ℝ) * ⟪u, v⟫ :=
   (Classical.choose_spec <| conformalAt_iff'.mp h).2 u v
 #align conformal_factor_at_inner_eq_mul_inner' conformalFactorAt_inner_eq_mul_inner'
 
-theorem conformalFactorAt_inner_eq_mul_inner {f : E → F} {x : E} {f' : E →L[ℝ] F}
+lemma conformalFactorAt_inner_eq_mul_inner {f : E → F} {x : E} {f' : E →L[ℝ] F}
     (h : HasFDerivAt f f' x) (H : ConformalAt f x) (u v : E) :
     ⟪f' u, f' v⟫ = (conformalFactorAt H : ℝ) * ⟪u, v⟫ :=
   H.differentiableAt.hasFDerivAt.unique h ▸ conformalFactorAt_inner_eq_mul_inner' H u v

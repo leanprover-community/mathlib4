@@ -38,7 +38,7 @@ theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.prod �
   · exact fun ⟨a, ha1, ha2⟩ => dvd_trans ha2 (dvd_prod ha1)
 #align prime.dvd_prod_iff Prime.dvd_prod_iff
 
-theorem Prime.not_dvd_prod {p : M} {L : List M} (pp : Prime p) (hL : ∀ a ∈ L, ¬p ∣ a) :
+lemma Prime.not_dvd_prod {p : M} {L : List M} (pp : Prime p) (hL : ∀ a ∈ L, ¬p ∣ a) :
     ¬p ∣ L.prod :=
   mt (Prime.dvd_prod_iff pp).1 <| not_exists.2 fun a => not_and.2 (hL a)
 #align prime.not_dvd_prod Prime.not_dvd_prod
@@ -49,13 +49,13 @@ section CancelCommMonoidWithZero
 
 variable {M : Type*} [CancelCommMonoidWithZero M] [Unique (Units M)]
 
-theorem mem_list_primes_of_dvd_prod {p : M} (hp : Prime p) {L : List M} (hL : ∀ q ∈ L, Prime q)
+lemma mem_list_primes_of_dvd_prod {p : M} (hp : Prime p) {L : List M} (hL : ∀ q ∈ L, Prime q)
     (hpL : p ∣ L.prod) : p ∈ L := by
   obtain ⟨x, hx1, hx2⟩ := hp.dvd_prod_iff.mp hpL
   rwa [(prime_dvd_prime_iff_eq hp (hL x hx1)).mp hx2]
 #align mem_list_primes_of_dvd_prod mem_list_primes_of_dvd_prod
 
-theorem perm_of_prod_eq_prod :
+lemma perm_of_prod_eq_prod :
     ∀ {l₁ l₂ : List M}, l₁.prod = l₂.prod → (∀ p ∈ l₁, Prime p) → (∀ p ∈ l₂, Prime p) → Perm l₁ l₂
   | [], [], _, _, _ => Perm.nil
   | [], a :: l, h₁, _, h₃ =>

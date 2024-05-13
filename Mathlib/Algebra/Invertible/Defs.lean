@@ -95,62 +95,62 @@ prefix:max
   Invertible.invOf
 
 @[simp]
-theorem invOf_mul_self' [Mul α] [One α] (a : α) {_ : Invertible a} : ⅟ a * a = 1 :=
+lemma invOf_mul_self' [Mul α] [One α] (a : α) {_ : Invertible a} : ⅟ a * a = 1 :=
   Invertible.invOf_mul_self
 
-theorem invOf_mul_self [Mul α] [One α] (a : α) [Invertible a] : ⅟ a * a = 1 :=
+lemma invOf_mul_self [Mul α] [One α] (a : α) [Invertible a] : ⅟ a * a = 1 :=
   Invertible.invOf_mul_self
 #align inv_of_mul_self invOf_mul_self
 
 @[simp]
-theorem mul_invOf_self' [Mul α] [One α] (a : α) {_ : Invertible a} : a * ⅟ a = 1 :=
+lemma mul_invOf_self' [Mul α] [One α] (a : α) {_ : Invertible a} : a * ⅟ a = 1 :=
   Invertible.mul_invOf_self
 
-theorem mul_invOf_self [Mul α] [One α] (a : α) [Invertible a] : a * ⅟ a = 1 :=
+lemma mul_invOf_self [Mul α] [One α] (a : α) [Invertible a] : a * ⅟ a = 1 :=
   Invertible.mul_invOf_self
 #align mul_inv_of_self mul_invOf_self
 
 @[simp]
-theorem invOf_mul_self_assoc' [Monoid α] (a b : α) {_ : Invertible a} : ⅟ a * (a * b) = b := by
+lemma invOf_mul_self_assoc' [Monoid α] (a b : α) {_ : Invertible a} : ⅟ a * (a * b) = b := by
   rw [← mul_assoc, invOf_mul_self, one_mul]
 
-theorem invOf_mul_self_assoc [Monoid α] (a b : α) [Invertible a] : ⅟ a * (a * b) = b := by
+lemma invOf_mul_self_assoc [Monoid α] (a b : α) [Invertible a] : ⅟ a * (a * b) = b := by
   rw [← mul_assoc, invOf_mul_self, one_mul]
 #align inv_of_mul_self_assoc invOf_mul_self_assoc
 
 @[simp]
-theorem mul_invOf_self_assoc' [Monoid α] (a b : α) {_ : Invertible a} : a * (⅟ a * b) = b := by
+lemma mul_invOf_self_assoc' [Monoid α] (a b : α) {_ : Invertible a} : a * (⅟ a * b) = b := by
   rw [← mul_assoc, mul_invOf_self, one_mul]
 
-theorem mul_invOf_self_assoc [Monoid α] (a b : α) [Invertible a] : a * (⅟ a * b) = b := by
+lemma mul_invOf_self_assoc [Monoid α] (a b : α) [Invertible a] : a * (⅟ a * b) = b := by
   rw [← mul_assoc, mul_invOf_self, one_mul]
 #align mul_inv_of_self_assoc mul_invOf_self_assoc
 
 @[simp]
-theorem mul_invOf_mul_self_cancel' [Monoid α] (a b : α) {_ : Invertible b} : a * ⅟ b * b = a := by
+lemma mul_invOf_mul_self_cancel' [Monoid α] (a b : α) {_ : Invertible b} : a * ⅟ b * b = a := by
   simp [mul_assoc]
 
-theorem mul_invOf_mul_self_cancel [Monoid α] (a b : α) [Invertible b] : a * ⅟ b * b = a := by
+lemma mul_invOf_mul_self_cancel [Monoid α] (a b : α) [Invertible b] : a * ⅟ b * b = a := by
   simp [mul_assoc]
 #align mul_inv_of_mul_self_cancel mul_invOf_mul_self_cancel
 
 @[simp]
-theorem mul_mul_invOf_self_cancel' [Monoid α] (a b : α) {_ : Invertible b} : a * b * ⅟ b = a := by
+lemma mul_mul_invOf_self_cancel' [Monoid α] (a b : α) {_ : Invertible b} : a * b * ⅟ b = a := by
   simp [mul_assoc]
 
-theorem mul_mul_invOf_self_cancel [Monoid α] (a b : α) [Invertible b] : a * b * ⅟ b = a := by
+lemma mul_mul_invOf_self_cancel [Monoid α] (a b : α) [Invertible b] : a * b * ⅟ b = a := by
   simp [mul_assoc]
 #align mul_mul_inv_of_self_cancel mul_mul_invOf_self_cancel
 
-theorem invOf_eq_right_inv [Monoid α] {a b : α} [Invertible a] (hac : a * b = 1) : ⅟ a = b :=
+lemma invOf_eq_right_inv [Monoid α] {a b : α} [Invertible a] (hac : a * b = 1) : ⅟ a = b :=
   left_inv_eq_right_inv (invOf_mul_self _) hac
 #align inv_of_eq_right_inv invOf_eq_right_inv
 
-theorem invOf_eq_left_inv [Monoid α] {a b : α} [Invertible a] (hac : b * a = 1) : ⅟ a = b :=
+lemma invOf_eq_left_inv [Monoid α] {a b : α} [Invertible a] (hac : b * a = 1) : ⅟ a = b :=
   (left_inv_eq_right_inv hac (mul_invOf_self _)).symm
 #align inv_of_eq_left_inv invOf_eq_left_inv
 
-theorem invertible_unique {α : Type u} [Monoid α] (a b : α) [Invertible a] [Invertible b]
+lemma invertible_unique {α : Type u} [Monoid α] (a b : α) [Invertible a] [Invertible b]
     (h : a = b) : ⅟ a = ⅟ b := by
   apply invOf_eq_right_inv
   rw [h, mul_invOf_self]
@@ -187,7 +187,7 @@ def invertibleOfGroup [Group α] (a : α) : Invertible a :=
 #align invertible_of_group invertibleOfGroup
 
 @[simp]
-theorem invOf_eq_group_inv [Group α] (a : α) [Invertible a] : ⅟ a = a⁻¹ :=
+lemma invOf_eq_group_inv [Group α] (a : α) [Invertible a] : ⅟ a = a⁻¹ :=
   invOf_eq_right_inv (mul_inv_self a)
 #align inv_of_eq_group_inv invOf_eq_group_inv
 
@@ -197,10 +197,10 @@ def invertibleOne [Monoid α] : Invertible (1 : α) :=
 #align invertible_one invertibleOne
 
 @[simp]
-theorem invOf_one' [Monoid α] {_ : Invertible (1 : α)} : ⅟ (1 : α) = 1 :=
+lemma invOf_one' [Monoid α] {_ : Invertible (1 : α)} : ⅟ (1 : α) = 1 :=
   invOf_eq_right_inv (mul_one _)
 
-theorem invOf_one [Monoid α] [Invertible (1 : α)] : ⅟ (1 : α) = 1 :=
+lemma invOf_one [Monoid α] [Invertible (1 : α)] : ⅟ (1 : α) = 1 :=
   invOf_eq_right_inv (mul_one _)
 #align inv_of_one invOf_one
 
@@ -210,12 +210,12 @@ instance invertibleInvOf [One α] [Mul α] {a : α} [Invertible a] : Invertible 
 #align invertible_inv_of invertibleInvOf
 
 @[simp]
-theorem invOf_invOf [Monoid α] (a : α) [Invertible a] [Invertible (⅟ a)] : ⅟ (⅟ a) = a :=
+lemma invOf_invOf [Monoid α] (a : α) [Invertible a] [Invertible (⅟ a)] : ⅟ (⅟ a) = a :=
   invOf_eq_right_inv (invOf_mul_self _)
 #align inv_of_inv_of invOf_invOf
 
 @[simp]
-theorem invOf_inj [Monoid α] {a b : α} [Invertible a] [Invertible b] : ⅟ a = ⅟ b ↔ a = b :=
+lemma invOf_inj [Monoid α] {a b : α} [Invertible a] [Invertible b] : ⅟ a = ⅟ b ↔ a = b :=
   ⟨invertible_unique _ _, invertible_unique _ _⟩
 #align inv_of_inj invOf_inj
 
@@ -225,7 +225,7 @@ def invertibleMul [Monoid α] (a b : α) [Invertible a] [Invertible b] : Inverti
 #align invertible_mul invertibleMul
 
 @[simp]
-theorem invOf_mul [Monoid α] (a b : α) [Invertible a] [Invertible b] [Invertible (a * b)] :
+lemma invOf_mul [Monoid α] (a b : α) [Invertible a] [Invertible b] [Invertible (a * b)] :
     ⅟ (a * b) = ⅟ b * ⅟ a :=
   invOf_eq_right_inv (by simp [← mul_assoc])
 #align inv_of_mul invOf_mul
@@ -247,16 +247,16 @@ variable (c) in
 theorem mul_left_inj_of_invertible : c * a = c * b ↔ a = b :=
   ⟨fun h => by simpa using congr_arg (⅟c * ·) h, congr_arg (_ * ·)⟩
 
-theorem invOf_mul_eq_iff_eq_mul_left : ⅟c * a = b ↔ a = c * b := by
+lemma invOf_mul_eq_iff_eq_mul_left : ⅟c * a = b ↔ a = c * b := by
   rw [← mul_left_inj_of_invertible (c := c), mul_invOf_self_assoc]
 
-theorem mul_left_eq_iff_eq_invOf_mul : c * a = b ↔ a = ⅟c * b := by
+lemma mul_left_eq_iff_eq_invOf_mul : c * a = b ↔ a = ⅟c * b := by
   rw [← mul_left_inj_of_invertible (c := ⅟c), invOf_mul_self_assoc]
 
-theorem mul_invOf_eq_iff_eq_mul_right : a * ⅟c = b ↔ a = b * c := by
+lemma mul_invOf_eq_iff_eq_mul_right : a * ⅟c = b ↔ a = b * c := by
   rw [← mul_right_inj_of_invertible (c := c), mul_invOf_mul_self_cancel]
 
-theorem mul_right_eq_iff_eq_mul_invOf : a * c = b ↔ a = b * ⅟c := by
+lemma mul_right_eq_iff_eq_mul_invOf : a * c = b ↔ a = b * ⅟c := by
   rw [← mul_right_inj_of_invertible (c := ⅟c), mul_mul_invOf_self_cancel]
 
 end

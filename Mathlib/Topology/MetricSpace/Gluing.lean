@@ -69,11 +69,11 @@ def glueDist (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) : Sum X Y → Sum X Y → 
   | .inr x, .inl y => (⨅ p, dist y (Φ p) + dist x (Ψ p)) + ε
 #align metric.glue_dist Metric.glueDist
 
-private theorem glueDist_self (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) : ∀ x, glueDist Φ Ψ ε x x = 0
+private lemma glueDist_self (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) : ∀ x, glueDist Φ Ψ ε x x = 0
   | .inl _ => dist_self _
   | .inr _ => dist_self _
 
-theorem glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (p : Z) :
+lemma glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (p : Z) :
     glueDist Φ Ψ ε (.inl (Φ p)) (.inr (Ψ p)) = ε := by
   have : ⨅ q, dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) = 0 := by
     have A : ∀ q, 0 ≤ dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) := fun _ =>
@@ -85,31 +85,31 @@ theorem glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : �
   simp only [glueDist, this, zero_add]
 #align metric.glue_dist_glued_points Metric.glueDist_glued_points
 
-private theorem glueDist_comm (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) :
+private lemma glueDist_comm (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) :
     ∀ x y, glueDist Φ Ψ ε x y = glueDist Φ Ψ ε y x
   | .inl _, .inl _ => dist_comm _ _
   | .inr _, .inr _ => dist_comm _ _
   | .inl _, .inr _ => rfl
   | .inr _, .inl _ => rfl
 
-theorem glueDist_swap (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) :
+lemma glueDist_swap (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) :
     ∀ x y, glueDist Ψ Φ ε x.swap y.swap = glueDist Φ Ψ ε x y
   | .inl _, .inl _ => rfl
   | .inr _, .inr _ => rfl
   | .inl _, .inr _ => by simp only [glueDist, Sum.swap_inl, Sum.swap_inr, dist_comm, add_comm]
   | .inr _, .inl _ => by simp only [glueDist, Sum.swap_inl, Sum.swap_inr, dist_comm, add_comm]
 
-theorem le_glueDist_inl_inr (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
+lemma le_glueDist_inl_inr (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
     ε ≤ glueDist Φ Ψ ε (.inl x) (.inr y) :=
   le_add_of_nonneg_left <| Real.iInf_nonneg fun _ => add_nonneg dist_nonneg dist_nonneg
 
-theorem le_glueDist_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
+lemma le_glueDist_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
     ε ≤ glueDist Φ Ψ ε (.inr x) (.inl y) := by
   rw [glueDist_comm]; apply le_glueDist_inl_inr
 
 variable [Nonempty Z]
 
-private theorem glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x : X) (y z : Y) :
+private lemma glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x : X) (y z : Y) :
     glueDist Φ Ψ ε (.inl x) (.inr z) ≤
       glueDist Φ Ψ ε (.inl x) (.inr y) + glueDist Φ Ψ ε (.inr y) (.inr z) := by
   simp only [glueDist]
@@ -118,7 +118,7 @@ private theorem glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε 
   · exact forall_mem_range.2 fun _ => add_nonneg dist_nonneg dist_nonneg
   · linarith [dist_triangle_left z (Ψ p) y]
 
-private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
+private lemma glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
     (H : ∀ p q, |dist (Φ p) (Φ q) - dist (Ψ p) (Ψ q)| ≤ 2 * ε) (x : X) (y : Y) (z : X) :
     glueDist Φ Ψ ε (.inl x) (.inl z) ≤
       glueDist Φ Ψ ε (.inl x) (.inr y) + glueDist Φ Ψ ε (.inr y) (.inl z) := by
@@ -129,7 +129,7 @@ private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε 
   rw [dist_comm z]
   linarith [dist_triangle4 x (Φ p) (Φ q) z, dist_triangle_left (Ψ p) (Ψ q) y, (abs_le.1 (H p q)).2]
 
-private theorem glueDist_triangle (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
+private lemma glueDist_triangle (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
     (H : ∀ p q, |dist (Φ p) (Φ q) - dist (Ψ p) (Ψ q)| ≤ 2 * ε) :
     ∀ x y z, glueDist Φ Ψ ε x z ≤ glueDist Φ Ψ ε x y + glueDist Φ Ψ ε y z
   | .inl x, .inl y, .inl z => dist_triangle _ _ _
@@ -149,14 +149,14 @@ private theorem glueDist_triangle (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
     apply glueDist_triangle_inl_inr_inl
     simpa only [abs_sub_comm]
 
-private theorem eq_of_glueDist_eq_zero (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε) :
+private lemma eq_of_glueDist_eq_zero (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε) :
     ∀ p q : Sum X Y, glueDist Φ Ψ ε p q = 0 → p = q
   | .inl x, .inl y, h => by rw [eq_of_dist_eq_zero h]
   | .inl x, .inr y, h => by exfalso; linarith [le_glueDist_inl_inr Φ Ψ ε x y]
   | .inr x, .inl y, h => by exfalso; linarith [le_glueDist_inr_inl Φ Ψ ε x y]
   | .inr x, .inr y, h => by rw [eq_of_dist_eq_zero h]
 
-theorem Sum.mem_uniformity_iff_glueDist (hε : 0 < ε) (s : Set ((X ⊕ Y) × (X ⊕ Y))) :
+lemma Sum.mem_uniformity_iff_glueDist (hε : 0 < ε) (s : Set ((X ⊕ Y) × (X ⊕ Y))) :
     s ∈ 𝓤 (X ⊕ Y) ↔ ∃ δ > 0, ∀ a b, glueDist Φ Ψ ε a b < δ → (a, b) ∈ s := by
   simp only [Sum.uniformity, Filter.mem_sup, Filter.mem_map, mem_uniformity_dist, mem_preimage]
   constructor
@@ -218,26 +218,26 @@ protected def Sum.dist : Sum X Y → Sum X Y → ℝ
   | .inr b, .inl a => dist b (Nonempty.some ⟨b⟩) + 1 + dist (Nonempty.some ⟨a⟩) a
 #align metric.sum.dist Metric.Sum.dist
 
-theorem Sum.dist_eq_glueDist {p q : X ⊕ Y} (x : X) (y : Y) :
+lemma Sum.dist_eq_glueDist {p q : X ⊕ Y} (x : X) (y : Y) :
     Sum.dist p q =
       glueDist (fun _ : Unit => Nonempty.some ⟨x⟩) (fun _ : Unit => Nonempty.some ⟨y⟩) 1 p q := by
   cases p <;> cases q <;> first |rfl|simp [Sum.dist, glueDist, dist_comm, add_comm,
     add_left_comm, add_assoc]
 #align metric.sum.dist_eq_glue_dist Metric.Sum.dist_eq_glueDist
 
-private theorem Sum.dist_comm (x y : X ⊕ Y) : Sum.dist x y = Sum.dist y x := by
+private lemma Sum.dist_comm (x y : X ⊕ Y) : Sum.dist x y = Sum.dist y x := by
   cases x <;> cases y <;> simp [Sum.dist, _root_.dist_comm, add_comm, add_left_comm, add_assoc]
 
-theorem Sum.one_le_dist_inl_inr {x : X} {y : Y} : 1 ≤ Sum.dist (.inl x) (.inr y) :=
+lemma Sum.one_le_dist_inl_inr {x : X} {y : Y} : 1 ≤ Sum.dist (.inl x) (.inr y) :=
   le_trans (le_add_of_nonneg_right dist_nonneg) <|
     add_le_add_right (le_add_of_nonneg_left dist_nonneg) _
 #align metric.sum.one_dist_le Metric.Sum.one_le_dist_inl_inr
 
-theorem Sum.one_le_dist_inr_inl {x : X} {y : Y} : 1 ≤ Sum.dist (.inr y) (.inl x) := by
+lemma Sum.one_le_dist_inr_inl {x : X} {y : Y} : 1 ≤ Sum.dist (.inr y) (.inl x) := by
   rw [Sum.dist_comm]; exact Sum.one_le_dist_inl_inr
 #align metric.sum.one_dist_le' Metric.Sum.one_le_dist_inr_inl
 
-private theorem Sum.mem_uniformity (s : Set (Sum X Y × Sum X Y)) :
+private lemma Sum.mem_uniformity (s : Set (Sum X Y × Sum X Y)) :
     s ∈ 𝓤 (X ⊕ Y) ↔ ∃ ε > 0, ∀ a b, Sum.dist a b < ε → (a, b) ∈ s := by
   constructor
   · rintro ⟨hsX, hsY⟩
@@ -288,7 +288,7 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
 
 attribute [local instance] metricSpaceSum
 
-theorem Sum.dist_eq {x y : Sum X Y} : dist x y = Sum.dist x y := rfl
+lemma Sum.dist_eq {x y : Sum X Y} : dist x y = Sum.dist x y := rfl
 #align metric.sum.dist_eq Metric.Sum.dist_eq
 
 /-- The left injection of a space in a disjoint union is an isometry -/
@@ -339,29 +339,29 @@ def instDist : Dist (Σi, E i) :=
 attribute [local instance] Sigma.instDist
 
 @[simp]
-theorem dist_same (i : ι) (x y : E i) : dist (Sigma.mk i x) ⟨i, y⟩ = dist x y := by
+lemma dist_same (i : ι) (x y : E i) : dist (Sigma.mk i x) ⟨i, y⟩ = dist x y := by
   simp [Dist.dist, Sigma.dist]
 #align metric.sigma.dist_same Metric.Sigma.dist_same
 
 @[simp]
-theorem dist_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
+lemma dist_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
     dist (⟨i, x⟩ : Σk, E k) ⟨j, y⟩ = dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨y⟩) y :=
   dif_neg h
 #align metric.sigma.dist_ne Metric.Sigma.dist_ne
 
-theorem one_le_dist_of_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
+lemma one_le_dist_of_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
     1 ≤ dist (⟨i, x⟩ : Σk, E k) ⟨j, y⟩ := by
   rw [Sigma.dist_ne h x y]
   linarith [@dist_nonneg _ _ x (Nonempty.some ⟨x⟩), @dist_nonneg _ _ (Nonempty.some ⟨y⟩) y]
 #align metric.sigma.one_le_dist_of_ne Metric.Sigma.one_le_dist_of_ne
 
-theorem fst_eq_of_dist_lt_one (x y : Σi, E i) (h : dist x y < 1) : x.1 = y.1 := by
+lemma fst_eq_of_dist_lt_one (x y : Σi, E i) (h : dist x y < 1) : x.1 = y.1 := by
   cases x; cases y
   contrapose! h
   apply one_le_dist_of_ne h
 #align metric.sigma.fst_eq_of_dist_lt_one Metric.Sigma.fst_eq_of_dist_lt_one
 
-protected theorem dist_triangle (x y z : Σi, E i) : dist x z ≤ dist x y + dist y z := by
+protected lemma dist_triangle (x y z : Σi, E i) : dist x z ≤ dist x y + dist y z := by
   rcases x with ⟨i, x⟩; rcases y with ⟨j, y⟩; rcases z with ⟨k, z⟩
   rcases eq_or_ne i k with (rfl | hik)
   · rcases eq_or_ne i j with (rfl | hij)
@@ -393,7 +393,7 @@ protected theorem dist_triangle (x y z : Σi, E i) : dist x z ≤ dist x y + dis
           _ ≤ _ := by apply_rules [add_le_add, zero_le_one, dist_nonneg, le_rfl]
 #align metric.sigma.dist_triangle Metric.Sigma.dist_triangle
 
-protected theorem isOpen_iff (s : Set (Σi, E i)) :
+protected lemma isOpen_iff (s : Set (Σi, E i)) :
     IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ∀ y, dist x y < ε → y ∈ s := by
   constructor
   · rintro hs ⟨i, x⟩ hx
@@ -515,7 +515,7 @@ instance inhabitedRight (hΦ : Isometry Φ) (hΨ : Isometry Ψ) [Inhabited Y] :
   ⟨toGlueR _ _ default⟩
 #align metric.inhabited_right Metric.inhabitedRight
 
-theorem toGlue_commute (hΦ : Isometry Φ) (hΨ : Isometry Ψ) :
+lemma toGlue_commute (hΦ : Isometry Φ) (hΨ : Isometry Ψ) :
     toGlueL hΦ hΨ ∘ Φ = toGlueR hΦ hΨ ∘ Ψ := by
   let i : PseudoMetricSpace (X ⊕ Y) := gluePremetric hΦ hΨ
   let _ := i.toUniformSpace.toTopologicalSpace
@@ -525,11 +525,11 @@ theorem toGlue_commute (hΦ : Isometry Φ) (hΨ : Isometry Ψ) :
   exact glueDist_glued_points Φ Ψ 0 _
 #align metric.to_glue_commute Metric.toGlue_commute
 
-theorem toGlueL_isometry (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Isometry (toGlueL hΦ hΨ) :=
+lemma toGlueL_isometry (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Isometry (toGlueL hΦ hΨ) :=
   Isometry.of_dist_eq fun _ _ => rfl
 #align metric.to_glue_l_isometry Metric.toGlueL_isometry
 
-theorem toGlueR_isometry (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Isometry (toGlueR hΦ hΨ) :=
+lemma toGlueR_isometry (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Isometry (toGlueR hΦ hΨ) :=
   Isometry.of_dist_eq fun _ _ => rfl
 #align metric.to_glue_r_isometry Metric.toGlueR_isometry
 

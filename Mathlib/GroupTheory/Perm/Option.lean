@@ -19,12 +19,12 @@ import Mathlib.Logic.Equiv.Option
 open Equiv
 
 @[simp]
-theorem Equiv.optionCongr_one {α : Type*} : (1 : Perm α).optionCongr = 1 :=
+lemma Equiv.optionCongr_one {α : Type*} : (1 : Perm α).optionCongr = 1 :=
   Equiv.optionCongr_refl
 #align equiv.option_congr_one Equiv.optionCongr_one
 
 @[simp]
-theorem Equiv.optionCongr_swap {α : Type*} [DecidableEq α] (x y : α) :
+lemma Equiv.optionCongr_swap {α : Type*} [DecidableEq α] (x y : α) :
     optionCongr (swap x y) = swap (some x) (some y) := by
   ext (_ | i)
   · simp [swap_apply_of_ne_of_ne]
@@ -35,7 +35,7 @@ theorem Equiv.optionCongr_swap {α : Type*} [DecidableEq α] (x y : α) :
 #align equiv.option_congr_swap Equiv.optionCongr_swap
 
 @[simp]
-theorem Equiv.optionCongr_sign {α : Type*} [DecidableEq α] [Fintype α] (e : Perm α) :
+lemma Equiv.optionCongr_sign {α : Type*} [DecidableEq α] [Fintype α] (e : Perm α) :
     Perm.sign e.optionCongr = Perm.sign e := by
   refine Perm.swap_induction_on e ?_ ?_
   · simp [Perm.one_def]
@@ -44,7 +44,7 @@ theorem Equiv.optionCongr_sign {α : Type*} [DecidableEq α] [Fintype α] (e : P
 #align equiv.option_congr_sign Equiv.optionCongr_sign
 
 @[simp]
-theorem map_equiv_removeNone {α : Type*} [DecidableEq α] (σ : Perm (Option α)) :
+lemma map_equiv_removeNone {α : Type*} [DecidableEq α] (σ : Perm (Option α)) :
     (removeNone σ).optionCongr = swap none (σ none) * σ := by
   ext1 x
   have : Option.map (⇑(removeNone σ)) x = (swap none (σ none)) (σ x) := by
@@ -73,11 +73,11 @@ def Equiv.Perm.decomposeOption {α : Type*} [DecidableEq α] : Perm (Option α) 
     simp [← Perm.eq_inv_iff_eq, this]
 #align equiv.perm.decompose_option Equiv.Perm.decomposeOption
 
-theorem Equiv.Perm.decomposeOption_symm_of_none_apply {α : Type*} [DecidableEq α] (e : Perm α)
+lemma Equiv.Perm.decomposeOption_symm_of_none_apply {α : Type*} [DecidableEq α] (e : Perm α)
     (i : Option α) : Equiv.Perm.decomposeOption.symm (none, e) i = i.map e := by simp
 #align equiv.perm.decompose_option_symm_of_none_apply Equiv.Perm.decomposeOption_symm_of_none_apply
 
-theorem Equiv.Perm.decomposeOption_symm_sign {α : Type*} [DecidableEq α] [Fintype α] (e : Perm α) :
+lemma Equiv.Perm.decomposeOption_symm_sign {α : Type*} [DecidableEq α] [Fintype α] (e : Perm α) :
     Perm.sign (Equiv.Perm.decomposeOption.symm (none, e)) = Perm.sign e := by simp
 #align equiv.perm.decompose_option_symm_sign Equiv.Perm.decomposeOption_symm_sign
 

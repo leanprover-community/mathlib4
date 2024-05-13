@@ -73,13 +73,13 @@ set_option linter.uppercaseLean3 false in
 instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
 
 @[simp]
-theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
+lemma id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Fintype.id_apply FintypeCat.id_apply
 
 @[simp]
-theorem comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
+lemma comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Fintype.comp_apply FintypeCat.comp_apply
@@ -147,7 +147,7 @@ set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.len FintypeCat.Skeleton.len
 
 @[ext]
-theorem ext (X Y : Skeleton) : X.len = Y.len → X = Y :=
+lemma ext (X Y : Skeleton) : X.len = Y.len → X = Y :=
   ULift.ext _ _
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.ext FintypeCat.Skeleton.ext
@@ -157,7 +157,7 @@ instance : SmallCategory Skeleton.{u} where
   id _ := id
   comp f g := g ∘ f
 
-theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
+lemma is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
   ext _ _ <|
     Fin.equiv_iff_eq.mp <|
       Nonempty.intro <|
@@ -208,7 +208,7 @@ set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.equivalence FintypeCat.Skeleton.equivalence
 
 @[simp]
-theorem incl_mk_nat_card (n : ℕ) : Fintype.card (incl.obj (mk n)) = n := by
+lemma incl_mk_nat_card (n : ℕ) : Fintype.card (incl.obj (mk n)) = n := by
   convert Finset.card_fin n
   apply Fintype.ofEquiv_card
 set_option linter.uppercaseLean3 false in

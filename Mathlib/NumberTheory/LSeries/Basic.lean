@@ -159,13 +159,13 @@ lemma LSeriesSummable_congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g)
     LSeriesSummable f s ↔ LSeriesSummable g s :=
   ⟨fun H ↦ H.congr' s h, fun H ↦ H.congr' s h.symm⟩
 
-theorem LSeries.eq_zero_of_not_LSeriesSummable (f : ℕ → ℂ) (s : ℂ) :
+lemma LSeries.eq_zero_of_not_LSeriesSummable (f : ℕ → ℂ) (s : ℂ) :
     ¬ LSeriesSummable f s → LSeries f s = 0 :=
   tsum_eq_zero_of_not_summable
 #align nat.arithmetic_function.l_series_eq_zero_of_not_l_series_summable LSeries.eq_zero_of_not_LSeriesSummable
 
 @[simp]
-theorem LSeriesSummable_zero {s : ℂ} : LSeriesSummable 0 s := by
+lemma LSeriesSummable_zero {s : ℂ} : LSeriesSummable 0 s := by
   simp only [LSeriesSummable, funext (term_def 0 s), Pi.zero_apply, zero_div, ite_self,
     summable_zero]
 #align nat.arithmetic_function.l_series_summable_zero LSeriesSummable_zero
@@ -200,7 +200,7 @@ lemma LSeriesSummable.of_re_le_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re ≤ s
   rw [LSeriesSummable, ← summable_norm_iff] at hf ⊢
   exact hf.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (norm_term_le_of_re_le_re f h)
 
-theorem LSeriesSummable_iff_of_re_eq_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re = s'.re) :
+lemma LSeriesSummable_iff_of_re_eq_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re = s'.re) :
     LSeriesSummable f s ↔ LSeriesSummable f s' :=
   ⟨fun H ↦ H.of_re_le_re h.le, fun H ↦ H.of_re_le_re h.symm.le⟩
 #align nat.arithmetic_function.l_series_summable_iff_of_re_eq_re LSeriesSummable_iff_of_re_eq_re

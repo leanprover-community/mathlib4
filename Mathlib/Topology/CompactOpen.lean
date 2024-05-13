@@ -60,7 +60,7 @@ theorem compactOpen_eq : @compactOpen X Y _ _ =
     .generateFrom (image2 (fun K U ↦ {f | MapsTo f K U}) {K | IsCompact K} {t | IsOpen t}) :=
    rfl
 
-theorem isOpen_setOf_mapsTo (hK : IsCompact K) (hU : IsOpen U) :
+lemma isOpen_setOf_mapsTo (hK : IsCompact K) (hU : IsOpen U) :
     IsOpen {f : C(X, Y) | MapsTo f K U} :=
   isOpen_generateFrom_of_mem <| mem_image2_of_mem hK hU
 #align continuous_map.is_open_gen ContinuousMap.isOpen_setOf_mapsTo
@@ -249,7 +249,7 @@ theorem continuous_restrict (s : Set X) : Continuous fun F : C(X, Y) => F.restri
   continuous_comp_left <| restrict s <| .id X
 #align continuous_map.continuous_restrict ContinuousMap.continuous_restrict
 
-theorem compactOpen_le_induced (s : Set X) :
+lemma compactOpen_le_induced (s : Set X) :
     (ContinuousMap.compactOpen : TopologicalSpace C(X, Y)) ≤
       .induced (restrict s) ContinuousMap.compactOpen :=
   (continuous_restrict s).le_induced
@@ -272,7 +272,7 @@ theorem compactOpen_eq_iInf_induced :
 
 @[deprecated] alias compactOpen_eq_sInf_induced := compactOpen_eq_iInf_induced
 
-theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
+lemma nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
     𝓝 f = ⨅ (s) (hs : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
   rw [compactOpen_eq_iInf_induced]
   simp only [nhds_iInf, nhds_induced]
@@ -280,13 +280,13 @@ theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
 
 @[deprecated] alias nhds_compactOpen_eq_sInf_nhds_induced := nhds_compactOpen_eq_iInf_nhds_induced
 
-theorem tendsto_compactOpen_restrict {ι : Type*} {l : Filter ι} {F : ι → C(X, Y)} {f : C(X, Y)}
+lemma tendsto_compactOpen_restrict {ι : Type*} {l : Filter ι} {F : ι → C(X, Y)} {f : C(X, Y)}
     (hFf : Filter.Tendsto F l (𝓝 f)) (s : Set X) :
     Tendsto (fun i => (F i).restrict s) l (𝓝 (f.restrict s)) :=
   (continuous_restrict s).continuousAt.tendsto.comp hFf
 #align continuous_map.tendsto_compact_open_restrict ContinuousMap.tendsto_compactOpen_restrict
 
-theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → C(X, Y)) (f : C(X, Y)) :
+lemma tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → C(X, Y)) (f : C(X, Y)) :
     Tendsto F l (𝓝 f) ↔
       ∀ K, IsCompact K → Tendsto (fun i => (F i).restrict K) l (𝓝 (f.restrict K)) := by
   rw [compactOpen_eq_iInf_induced]
@@ -339,7 +339,7 @@ def coev (b : Y) : C(X, Y × X) :=
 
 variable {X Y}
 
-theorem image_coev {y : Y} (s : Set X) : coev X Y y '' s = {y} ×ˢ s := by simp
+lemma image_coev {y : Y} (s : Set X) : coev X Y y '' s = {y} ×ˢ s := by simp
 #align continuous_map.image_coev ContinuousMap.image_coev
 
 /-- The coevaluation map `Y → C(X, Y × X)` is continuous (always). -/
@@ -365,7 +365,7 @@ def curry (f : C(X × Y, Z)) : C(X, C(Y, Z)) where
 #align continuous_map.curry ContinuousMap.curry
 
 @[simp]
-theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) :=
+lemma curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) :=
   rfl
 #align continuous_map.curry_apply ContinuousMap.curry_apply
 
@@ -424,11 +424,11 @@ def const' : C(Y, C(X, Y)) :=
 #align continuous_map.const' ContinuousMap.const'
 
 @[simp]
-theorem coe_const' : (const' : Y → C(X, Y)) = const X :=
+lemma coe_const' : (const' : Y → C(X, Y)) = const X :=
   rfl
 #align continuous_map.coe_const' ContinuousMap.coe_const'
 
-theorem continuous_const' : Continuous (const X : Y → C(X, Y)) :=
+lemma continuous_const' : Continuous (const X : Y → C(X, Y)) :=
   const'.continuous
 #align continuous_map.continuous_const' ContinuousMap.continuous_const'
 
@@ -465,12 +465,12 @@ def continuousMapOfUnique [Unique X] : Y ≃ₜ C(X, Y) where
 #align homeomorph.continuous_map_of_unique Homeomorph.continuousMapOfUnique
 
 @[simp]
-theorem continuousMapOfUnique_apply [Unique X] (y : Y) (x : X) : continuousMapOfUnique y x = y :=
+lemma continuousMapOfUnique_apply [Unique X] (y : Y) (x : X) : continuousMapOfUnique y x = y :=
   rfl
 #align homeomorph.continuous_map_of_unique_apply Homeomorph.continuousMapOfUnique_apply
 
 @[simp]
-theorem continuousMapOfUnique_symm_apply [Unique X] (f : C(X, Y)) :
+lemma continuousMapOfUnique_symm_apply [Unique X] (f : C(X, Y)) :
     continuousMapOfUnique.symm f = f default :=
   rfl
 #align homeomorph.continuous_map_of_unique_symm_apply Homeomorph.continuousMapOfUnique_symm_apply
@@ -482,7 +482,7 @@ section QuotientMap
 variable {X₀ X Y Z : Type*} [TopologicalSpace X₀] [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [LocallyCompactSpace Y] {f : X₀ → X}
 
-theorem QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y → Z}
+lemma QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y → Z}
     (hg : Continuous fun p : X₀ × Y => g (f p.1, p.2)) : Continuous g := by
   let Gf : C(X₀, C(Y, Z)) := ContinuousMap.curry ⟨_, hg⟩
   have h : ∀ x : X, Continuous fun y => g (x, y) := by
@@ -496,7 +496,7 @@ theorem QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y �
   exact ContinuousMap.continuous_uncurry_of_continuous ⟨G, this⟩
 #align quotient_map.continuous_lift_prod_left QuotientMap.continuous_lift_prod_left
 
-theorem QuotientMap.continuous_lift_prod_right (hf : QuotientMap f) {g : Y × X → Z}
+lemma QuotientMap.continuous_lift_prod_right (hf : QuotientMap f) {g : Y × X → Z}
     (hg : Continuous fun p : Y × X₀ => g (p.1, f p.2)) : Continuous g := by
   have : Continuous fun p : X₀ × Y => g ((Prod.swap p).1, f (Prod.swap p).2) :=
     hg.comp continuous_swap

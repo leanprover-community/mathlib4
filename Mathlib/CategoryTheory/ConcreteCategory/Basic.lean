@@ -109,7 +109,7 @@ theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x =
   exact w x
 #align category_theory.concrete_category.hom_ext CategoryTheory.ConcreteCategory.hom_ext
 
-theorem forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl
+lemma forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl
 #align category_theory.forget_map_eq_coe CategoryTheory.forget_map_eq_coe
 
 /-- Analogue of `congr_fun h x`,
@@ -119,30 +119,30 @@ theorem congr_hom {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
   congrFun (congrArg (fun k : X ⟶ Y => (k : X → Y)) h) x
 #align category_theory.congr_hom CategoryTheory.congr_hom
 
-theorem coe_id {X : C} : (𝟙 X : X → X) = id :=
+lemma coe_id {X : C} : (𝟙 X : X → X) = id :=
   (forget _).map_id X
 #align category_theory.coe_id CategoryTheory.coe_id
 
-theorem coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) = g ∘ f :=
+lemma coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) = g ∘ f :=
   (forget _).map_comp f g
 #align category_theory.coe_comp CategoryTheory.coe_comp
 
-@[simp] theorem id_apply {X : C} (x : X) : (𝟙 X : X → X) x = x :=
+@[simp] lemma id_apply {X : C} (x : X) : (𝟙 X : X → X) x = x :=
   congr_fun ((forget _).map_id X) x
 #align category_theory.id_apply CategoryTheory.id_apply
 
-@[simp] theorem comp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
+@[simp] lemma comp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
   congr_fun ((forget _).map_comp _ _) x
 #align category_theory.comp_apply CategoryTheory.comp_apply
 
-theorem comp_apply' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+lemma comp_apply' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (forget C).map (f ≫ g) x = (forget C).map g ((forget C).map f x) := comp_apply f g x
 
-theorem ConcreteCategory.congr_hom {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
+lemma ConcreteCategory.congr_hom {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
   congr_fun (congr_arg (fun f : X ⟶ Y => (f : X → Y)) h) x
 #align category_theory.concrete_category.congr_hom CategoryTheory.ConcreteCategory.congr_hom
 
-theorem ConcreteCategory.congr_arg {X Y : C} (f : X ⟶ Y) {x x' : X} (h : x = x') : f x = f x' :=
+lemma ConcreteCategory.congr_arg {X Y : C} (f : X ⟶ Y) {x x' : X} (h : x = x') : f x = f x' :=
   congrArg (f : X → Y) h
 #align category_theory.concrete_category.congr_arg CategoryTheory.ConcreteCategory.congr_arg
 
@@ -152,12 +152,12 @@ theorem ConcreteCategory.mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function
   (forget C).mono_of_mono_map ((mono_iff_injective f).2 i)
 #align category_theory.concrete_category.mono_of_injective CategoryTheory.ConcreteCategory.mono_of_injective
 
-theorem ConcreteCategory.injective_of_mono_of_preservesPullback {X Y : C} (f : X ⟶ Y) [Mono f]
+lemma ConcreteCategory.injective_of_mono_of_preservesPullback {X Y : C} (f : X ⟶ Y) [Mono f]
     [PreservesLimitsOfShape WalkingCospan (forget C)] : Function.Injective f :=
   (mono_iff_injective ((forget C).map f)).mp inferInstance
 #align category_theory.concrete_category.injective_of_mono_of_preserves_pullback CategoryTheory.ConcreteCategory.injective_of_mono_of_preservesPullback
 
-theorem ConcreteCategory.mono_iff_injective_of_preservesPullback {X Y : C} (f : X ⟶ Y)
+lemma ConcreteCategory.mono_iff_injective_of_preservesPullback {X Y : C} (f : X ⟶ Y)
     [PreservesLimitsOfShape WalkingCospan (forget C)] : Mono f ↔ Function.Injective f :=
   ((forget C).mono_map_iff_mono _).symm.trans (mono_iff_injective _)
 #align category_theory.concrete_category.mono_iff_injective_of_preserves_pullback CategoryTheory.ConcreteCategory.mono_iff_injective_of_preservesPullback
@@ -168,17 +168,17 @@ theorem ConcreteCategory.epi_of_surjective {X Y : C} (f : X ⟶ Y) (s : Function
   (forget C).epi_of_epi_map ((epi_iff_surjective f).2 s)
 #align category_theory.concrete_category.epi_of_surjective CategoryTheory.ConcreteCategory.epi_of_surjective
 
-theorem ConcreteCategory.surjective_of_epi_of_preservesPushout {X Y : C} (f : X ⟶ Y) [Epi f]
+lemma ConcreteCategory.surjective_of_epi_of_preservesPushout {X Y : C} (f : X ⟶ Y) [Epi f]
     [PreservesColimitsOfShape WalkingSpan (forget C)] : Function.Surjective f :=
   (epi_iff_surjective ((forget C).map f)).mp inferInstance
 #align category_theory.concrete_category.surjective_of_epi_of_preserves_pushout CategoryTheory.ConcreteCategory.surjective_of_epi_of_preservesPushout
 
-theorem ConcreteCategory.epi_iff_surjective_of_preservesPushout {X Y : C} (f : X ⟶ Y)
+lemma ConcreteCategory.epi_iff_surjective_of_preservesPushout {X Y : C} (f : X ⟶ Y)
     [PreservesColimitsOfShape WalkingSpan (forget C)] : Epi f ↔ Function.Surjective f :=
   ((forget C).epi_map_iff_epi _).symm.trans (epi_iff_surjective _)
 #align category_theory.concrete_category.epi_iff_surjective_of_preserves_pushout CategoryTheory.ConcreteCategory.epi_iff_surjective_of_preservesPushout
 
-theorem ConcreteCategory.bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
+lemma ConcreteCategory.bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
     Function.Bijective ((forget C).map f) := by
   rw [← isIso_iff_bijective]
   infer_instance
@@ -192,7 +192,7 @@ theorem ConcreteCategory.isIso_iff_bijective [(forget C).ReflectsIsomorphisms]
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ isIso_of_reflects_iso f (forget C)⟩
 
 @[simp]
-theorem ConcreteCategory.hasCoeToFun_Type {X Y : Type u} (f : X ⟶ Y) : CoeFun.coe f = f := rfl
+lemma ConcreteCategory.hasCoeToFun_Type {X Y : Type u} (f : X ⟶ Y) : CoeFun.coe f = f := rfl
 #align category_theory.concrete_category.has_coe_to_fun_Type CategoryTheory.ConcreteCategory.hasCoeToFun_Type
 
 end

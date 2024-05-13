@@ -66,20 +66,20 @@ def map (f : m r → m r) (x : ContT r m α) : ContT r m α :=
   f ∘ x
 #align cont_t.map ContT.map
 
-theorem run_contT_map_contT (f : m r → m r) (x : ContT r m α) : run (map f x) = f ∘ run x :=
+lemma run_contT_map_contT (f : m r → m r) (x : ContT r m α) : run (map f x) = f ∘ run x :=
   rfl
 #align cont_t.run_cont_t_map_cont_t ContT.run_contT_map_contT
 
 def withContT (f : (β → m r) → α → m r) (x : ContT r m α) : ContT r m β := fun g => x <| f g
 #align cont_t.with_cont_t ContT.withContT
 
-theorem run_withContT (f : (β → m r) → α → m r) (x : ContT r m α) :
+lemma run_withContT (f : (β → m r) → α → m r) (x : ContT r m α) :
     run (withContT f x) = run x ∘ f :=
   rfl
 #align cont_t.run_with_cont_t ContT.run_withContT
 
 @[ext]
-protected theorem ext {x y : ContT r m α} (h : ∀ f, x.run f = y.run f) : x = y := by
+protected lemma ext {x y : ContT r m α} (h : ∀ f, x.run f = y.run f) : x = y := by
   unfold ContT; ext; apply h
 #align cont_t.ext ContT.ext
 
@@ -98,7 +98,7 @@ def monadLift [Monad m] {α} : m α → ContT r m α := fun x f => x >>= f
 instance [Monad m] : MonadLift m (ContT r m) where
   monadLift := ContT.monadLift
 
-theorem monadLift_bind [Monad m] [LawfulMonad m] {α β} (x : m α) (f : α → m β) :
+lemma monadLift_bind [Monad m] [LawfulMonad m] {α β} (x : m α) (f : α → m β) :
     (monadLift (x >>= f) : ContT r m β) = monadLift x >>= monadLift ∘ f := by
   ext
   simp only [monadLift, MonadLift.monadLift, (· ∘ ·), (· >>= ·), bind_assoc, id, run,
@@ -125,7 +125,7 @@ def ExceptT.mkLabel {α β ε} : Label (Except.{u, u} ε α) m β → Label α (
   | ⟨f⟩ => ⟨fun a => monadLift <| f (Except.ok a)⟩
 #align except_t.mk_label ExceptTₓ.mkLabel
 
-theorem ExceptT.goto_mkLabel {α β ε : Type _} (x : Label (Except.{u, u} ε α) m β) (i : α) :
+lemma ExceptT.goto_mkLabel {α β ε : Type _} (x : Label (Except.{u, u} ε α) m β) (i : α) :
     goto (ExceptT.mkLabel x) i = ExceptT.mk (Except.ok <$> goto x (Except.ok i)) := by
   cases x; rfl
 #align except_t.goto_mk_label ExceptTₓ.goto_mkLabel
@@ -154,7 +154,7 @@ def OptionT.mkLabel {α β} : Label (Option.{u} α) m β → Label α (OptionT m
   | ⟨f⟩ => ⟨fun a => monadLift <| f (some a)⟩
 #align option_t.mk_label OptionTₓ.mkLabel
 
-theorem OptionT.goto_mkLabel {α β : Type _} (x : Label (Option.{u} α) m β) (i : α) :
+lemma OptionT.goto_mkLabel {α β : Type _} (x : Label (Option.{u} α) m β) (i : α) :
     goto (OptionT.mkLabel x) i = OptionT.mk (goto x (some i) >>= fun a => pure (some a)) :=
   rfl
 #align option_t.goto_mk_label OptionTₓ.goto_mkLabel
@@ -190,10 +190,10 @@ def WriterT.mkLabel' {α β ω} [Monoid ω] : Label (α × ω) m β → Label α
   | ⟨f⟩ => ⟨fun a => monadLift <| f (a, 1)⟩
 #align writer_t.mk_label WriterTₓ.mkLabel'
 
-theorem WriterT.goto_mkLabel {α β ω : Type _} [EmptyCollection ω] (x : Label (α × ω) m β) (i : α) :
+lemma WriterT.goto_mkLabel {α β ω : Type _} [EmptyCollection ω] (x : Label (α × ω) m β) (i : α) :
     goto (WriterT.mkLabel x) i = monadLift (goto x (i, ∅)) := by cases x; rfl
 
-theorem WriterT.goto_mkLabel' {α β ω : Type _} [Monoid ω] (x : Label (α × ω) m β) (i : α) :
+lemma WriterT.goto_mkLabel' {α β ω : Type _} [Monoid ω] (x : Label (α × ω) m β) (i : α) :
     goto (WriterT.mkLabel' x) i = monadLift (goto x (i, 1)) := by cases x; rfl
 #align writer_t.goto_mk_label WriterTₓ.goto_mkLabel'
 
@@ -217,7 +217,7 @@ def StateT.mkLabel {α β σ : Type u} : Label (α × σ) m (β × σ) → Label
   | ⟨f⟩ => ⟨fun a => StateT.mk (fun s => f (a, s))⟩
 #align state_t.mk_label StateTₓ.mkLabel
 
-theorem StateT.goto_mkLabel {α β σ : Type u} (x : Label (α × σ) m (β × σ)) (i : α) :
+lemma StateT.goto_mkLabel {α β σ : Type u} (x : Label (α × σ) m (β × σ)) (i : α) :
     goto (StateT.mkLabel x) i = StateT.mk (fun s => goto x (i, s)) := by cases x; rfl
 #align state_t.goto_mk_label StateTₓ.goto_mkLabel
 
@@ -246,7 +246,7 @@ def ReaderT.mkLabel {α β} (ρ) : Label α m β → Label α (ReaderT ρ m) β
   | ⟨f⟩ => ⟨monadLift ∘ f⟩
 #align reader_t.mk_label ReaderTₓ.mkLabel
 
-theorem ReaderT.goto_mkLabel {α ρ β} (x : Label α m β) (i : α) :
+lemma ReaderT.goto_mkLabel {α ρ β} (x : Label α m β) (i : α) :
     goto (ReaderT.mkLabel ρ x) i = monadLift (goto x i) := by cases x; rfl
 #align reader_t.goto_mk_label ReaderTₓ.goto_mkLabel
 

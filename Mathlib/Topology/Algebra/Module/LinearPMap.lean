@@ -100,11 +100,11 @@ noncomputable def closure (f : E →ₗ.[R] F) : E →ₗ.[R] F :=
   if hf : f.IsClosable then hf.choose else f
 #align linear_pmap.closure LinearPMap.closure
 
-theorem closure_def {f : E →ₗ.[R] F} (hf : f.IsClosable) : f.closure = hf.choose := by
+lemma closure_def {f : E →ₗ.[R] F} (hf : f.IsClosable) : f.closure = hf.choose := by
   simp [closure, hf]
 #align linear_pmap.closure_def LinearPMap.closure_def
 
-theorem closure_def' {f : E →ₗ.[R] F} (hf : ¬f.IsClosable) : f.closure = f := by simp [closure, hf]
+lemma closure_def' {f : E →ₗ.[R] F} (hf : ¬f.IsClosable) : f.closure = f := by simp [closure, hf]
 #align linear_pmap.closure_def' LinearPMap.closure_def'
 
 /-- The closure (as a submodule) of the graph is equal to the graph of the closure
@@ -124,7 +124,7 @@ theorem le_closure (f : E →ₗ.[R] F) : f ≤ f.closure := by
   rw [closure_def' hf]
 #align linear_pmap.le_closure LinearPMap.le_closure
 
-theorem IsClosable.closure_mono {f g : E →ₗ.[R] F} (hg : g.IsClosable) (h : f ≤ g) :
+lemma IsClosable.closure_mono {f g : E →ₗ.[R] F} (hg : g.IsClosable) (h : f ≤ g) :
     f.closure ≤ g.closure := by
   refine' le_of_le_graph _
   rw [← (hg.leIsClosable h).graph_closure_eq_closure_graph]
@@ -143,7 +143,7 @@ theorem IsClosable.closureIsClosable {f : E →ₗ.[R] F} (hf : f.IsClosable) : 
   hf.closure_isClosed.isClosable
 #align linear_pmap.is_closable.closure_is_closable LinearPMap.IsClosable.closureIsClosable
 
-theorem isClosable_iff_exists_closed_extension {f : E →ₗ.[R] F} :
+lemma isClosable_iff_exists_closed_extension {f : E →ₗ.[R] F} :
     f.IsClosable ↔ ∃ g : E →ₗ.[R] F, g.IsClosed ∧ f ≤ g :=
   ⟨fun h => ⟨f.closure, h.closure_isClosed, f.le_closure⟩, fun ⟨_, hg, h⟩ =>
     hg.isClosable.leIsClosable h⟩
@@ -158,7 +158,7 @@ structure HasCore (f : E →ₗ.[R] F) (S : Submodule R E) : Prop where
   closure_eq : (f.domRestrict S).closure = f
 #align linear_pmap.has_core LinearPMap.HasCore
 
-theorem hasCore_def {f : E →ₗ.[R] F} {S : Submodule R E} (h : f.HasCore S) :
+lemma hasCore_def {f : E →ₗ.[R] F} {S : Submodule R E} (h : f.HasCore S) :
     (f.domRestrict S).closure = f :=
   h.2
 #align linear_pmap.has_core_def LinearPMap.hasCore_def

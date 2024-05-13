@@ -37,7 +37,7 @@ open NumberField Units
 
 section Rat
 
-theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
+lemma Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
   simp_rw [(isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x).symm, Int.isUnit_iff,
     RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
     Subtype.coe_injective.eq_iff]; rfl
@@ -51,7 +51,7 @@ section IsUnit
 
 variable {K}
 
-theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
+lemma NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
     IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
@@ -66,27 +66,27 @@ section coe
 instance : CoeHTC (𝓞 K)ˣ K :=
   ⟨fun x => algebraMap _ K (Units.val x)⟩
 
-theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
+lemma coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
   RingOfIntegers.coe_injective.comp Units.ext
 
 variable {K}
 
-theorem coe_coe (u : (𝓞 K)ˣ) : ((u : 𝓞 K) : K) = (u : K) := rfl
+lemma coe_coe (u : (𝓞 K)ˣ) : ((u : 𝓞 K) : K) = (u : K) := rfl
 
-theorem coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
+lemma coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
 
-theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : ((x ^ n : (𝓞 K)ˣ) : K) = (x : K) ^ n := by
+lemma coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : ((x ^ n : (𝓞 K)ˣ) : K) = (x : K) ^ n := by
   rw [← map_pow, ← val_pow_eq_pow_val]
 
-theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (↑(x ^ n) : K) = (x : K) ^ n := by
+lemma coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (↑(x ^ n) : K) = (x : K) ^ n := by
   change ((Units.coeHom K).comp (map (algebraMap (𝓞 K) K))) (x ^ n) = _
   exact map_zpow _ x n
 
-theorem coe_one : ((1 : (𝓞 K)ˣ) : K) = (1 : K) := rfl
+lemma coe_one : ((1 : (𝓞 K)ˣ) : K) = (1 : K) := rfl
 
-theorem coe_neg_one : ((-1 : (𝓞 K)ˣ) : K) = (-1 : K) := rfl
+lemma coe_neg_one : ((-1 : (𝓞 K)ˣ) : K) = (-1 : K) := rfl
 
-theorem coe_ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
+lemma coe_ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
   Subtype.coe_injective.ne_iff.mpr (_root_.Units.ne_zero x)
 
 end coe
@@ -98,7 +98,7 @@ section torsion
 /-- The torsion subgroup of the group of units. -/
 def torsion : Subgroup (𝓞 K)ˣ := CommGroup.torsion (𝓞 K)ˣ
 
-theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
+lemma mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
     x ∈ torsion K ↔ ∀ w : InfinitePlace K, w x = 1 := by
   rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion]
   refine ⟨fun hx φ ↦ (((φ.comp $ algebraMap (𝓞 K) K).toMonoidHom.comp $

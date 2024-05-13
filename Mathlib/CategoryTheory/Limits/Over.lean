@@ -61,11 +61,11 @@ example [HasColimits C] : PreservesColimits (forget X) :=
 example : ReflectsColimits (forget X) :=
   inferInstance
 
-theorem epi_left_of_epi [HasPushouts C] {f g : Over X} (h : f ⟶ g) [Epi h] : Epi h.left :=
+lemma epi_left_of_epi [HasPushouts C] {f g : Over X} (h : f ⟶ g) [Epi h] : Epi h.left :=
   CostructuredArrow.epi_left_of_epi _
 #align category_theory.over.epi_left_of_epi CategoryTheory.Over.epi_left_of_epi
 
-theorem epi_iff_epi_left [HasPushouts C] {f g : Over X} (h : f ⟶ g) : Epi h ↔ Epi h.left :=
+lemma epi_iff_epi_left [HasPushouts C] {f g : Over X} (h : f ⟶ g) : Epi h ↔ Epi h.left :=
   CostructuredArrow.epi_iff_epi_left _
 #align category_theory.over.epi_iff_epi_left CategoryTheory.Over.epi_iff_epi_left
 
@@ -162,11 +162,11 @@ instance [HasLimitsOfShape J C] : HasLimitsOfShape J (Under X) where
 instance [HasLimits C] : HasLimits (Under X) :=
   ⟨inferInstance⟩
 
-theorem mono_right_of_mono [HasPullbacks C] {f g : Under X} (h : f ⟶ g) [Mono h] : Mono h.right :=
+lemma mono_right_of_mono [HasPullbacks C] {f g : Under X} (h : f ⟶ g) [Mono h] : Mono h.right :=
   StructuredArrow.mono_right_of_mono _
 #align category_theory.under.mono_right_of_mono CategoryTheory.Under.mono_right_of_mono
 
-theorem mono_iff_mono_right [HasPullbacks C] {f g : Under X} (h : f ⟶ g) : Mono h ↔ Mono h.right :=
+lemma mono_iff_mono_right [HasPullbacks C] {f g : Under X} (h : f ⟶ g) : Mono h ↔ Mono h.right :=
   StructuredArrow.mono_iff_mono_right _
 #align category_theory.under.mono_iff_mono_right CategoryTheory.Under.mono_iff_mono_right
 

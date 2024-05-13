@@ -61,7 +61,7 @@ def corecF {α : TypeVec n} {β : Type u} (g : β → F (α.append1 β)) : β �
 set_option linter.uppercaseLean3 false in
 #align mvqpf.corecF MvQPF.corecF
 
-theorem corecF_eq {α : TypeVec n} {β : Type u} (g : β → F (α.append1 β)) (x : β) :
+lemma corecF_eq {α : TypeVec n} {β : Type u} (g : β → F (α.append1 β)) (x : β) :
     M.dest q.P (corecF g x) = appendFun id (corecF g) <$$> repr (g x) := by
   rw [corecF, M.dest_corec]
 set_option linter.uppercaseLean3 false in
@@ -181,7 +181,7 @@ def Cofix.corec₁ {α : TypeVec n} {β : Type u}
   Cofix.corec' (fun x => g Sum.inl Sum.inr x) x
 #align mvqpf.cofix.corec₁ MvQPF.Cofix.corec₁
 
-theorem Cofix.dest_corec {α : TypeVec n} {β : Type u} (g : β → F (α.append1 β)) (x : β) :
+lemma Cofix.dest_corec {α : TypeVec n} {β : Type u} (g : β → F (α.append1 β)) (x : β) :
     Cofix.dest (Cofix.corec g x) = appendFun id (Cofix.corec g) <$$> g x := by
   conv =>
     lhs
@@ -211,7 +211,7 @@ A bisimulation relation `R` for values `x y : Cofix F α`:
 -/
 
 
-private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop) (h' : ∀ x, r x x)
+private lemma Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop) (h' : ∀ x, r x x)
     (h : ∀ x y, r x y →
       appendFun id (Quot.mk r) <$$> Cofix.dest x = appendFun id (Quot.mk r) <$$> Cofix.dest y) :
     ∀ x y, r x y → x = y := by
@@ -332,7 +332,7 @@ theorem Cofix.bisim' {α : TypeVec n} {β : Type*} (Q : β → Prop) (u v : β �
     _ _ ⟨x, Qx, rfl, rfl⟩
 #align mvqpf.cofix.bisim' MvQPF.Cofix.bisim'
 
-theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x) = x := by
+lemma Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x) = x := by
   apply Cofix.bisim_rel (fun x y : Cofix F α => x = Cofix.mk (Cofix.dest y)) _ _ _ rfl;
   dsimp
   intro x y h
@@ -352,18 +352,18 @@ theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x
   rfl
 #align mvqpf.cofix.mk_dest MvQPF.Cofix.mk_dest
 
-theorem Cofix.dest_mk {α : TypeVec n} (x : F (α.append1 <| Cofix F α)) :
+lemma Cofix.dest_mk {α : TypeVec n} (x : F (α.append1 <| Cofix F α)) :
     Cofix.dest (Cofix.mk x) = x := by
   have : Cofix.mk ∘ Cofix.dest = @_root_.id (Cofix F α) := funext Cofix.mk_dest
   rw [Cofix.mk, Cofix.dest_corec, ← comp_map, ← Cofix.mk, ← appendFun_comp, this, id_comp,
     appendFun_id_id, MvFunctor.id_map]
 #align mvqpf.cofix.dest_mk MvQPF.Cofix.dest_mk
 
-theorem Cofix.ext {α : TypeVec n} (x y : Cofix F α) (h : x.dest = y.dest) : x = y := by
+lemma Cofix.ext {α : TypeVec n} (x y : Cofix F α) (h : x.dest = y.dest) : x = y := by
   rw [← Cofix.mk_dest x, h, Cofix.mk_dest]
 #align mvqpf.cofix.ext MvQPF.Cofix.ext
 
-theorem Cofix.ext_mk {α : TypeVec n} (x y : F (α ::: Cofix F α)) (h : Cofix.mk x = Cofix.mk y) :
+lemma Cofix.ext_mk {α : TypeVec n} (x y : F (α ::: Cofix F α)) (h : Cofix.mk x = Cofix.mk y) :
     x = y := by rw [← Cofix.dest_mk x, h, Cofix.dest_mk]
 #align mvqpf.cofix.ext_mk MvQPF.Cofix.ext_mk
 
@@ -375,7 +375,7 @@ the induction step in bisimulation proofs.
 
 section LiftRMap
 
-theorem liftR_map {α β : TypeVec n} {F' : TypeVec n → Type u} [MvFunctor F'] [LawfulMvFunctor F']
+lemma liftR_map {α β : TypeVec n} {F' : TypeVec n → Type u} [MvFunctor F'] [LawfulMvFunctor F']
     (R : β ⊗ β ⟹ «repeat» n Prop) (x : F' α) (f g : α ⟹ β) (h : α ⟹ Subtype_ R)
     (hh : subtypeVal _ ⊚ h = (f ⊗' g) ⊚ prod.diag) : LiftR' R (f <$$> x) (g <$$> x) := by
   rw [LiftR_def]
@@ -387,7 +387,7 @@ theorem liftR_map {α β : TypeVec n} {F' : TypeVec n → Type u} [MvFunctor F']
 
 open Function
 
-theorem liftR_map_last [lawful : LawfulMvFunctor F]
+lemma liftR_map_last [lawful : LawfulMvFunctor F]
     {α : TypeVec n} {ι ι'} (R : ι' → ι' → Prop)
     (x : F (α ::: ι)) (f g : ι → ι') (hh : ∀ x : ι, R (f x) (g x)) :
     LiftR' (RelLast' _ R) ((id ::: f) <$$> x) ((id ::: g) <$$> x) :=
@@ -419,7 +419,7 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
   liftR_map _ _ _ _ (toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b) hh
 #align mvqpf.liftr_map_last MvQPF.liftR_map_last
 
-theorem liftR_map_last' [LawfulMvFunctor F] {α : TypeVec n} {ι} (R : ι → ι → Prop) (x : F (α ::: ι))
+lemma liftR_map_last' [LawfulMvFunctor F] {α : TypeVec n} {ι} (R : ι → ι → Prop) (x : F (α ::: ι))
     (f : ι → ι) (hh : ∀ x : ι, R (f x) x) : LiftR' (RelLast' _ R) ((id ::: f) <$$> x) x := by
   have := liftR_map_last R x f id hh
   rwa [appendFun_id_id, MvFunctor.id_map] at this
@@ -429,7 +429,7 @@ end LiftRMap
 
 variable {F: TypeVec (n + 1) → Type u} [MvFunctor F] [q : MvQPF F]
 
-theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
+lemma Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
   let R := fun x y : Cofix F α => abs (repr y) = x
   refine' Cofix.bisim₂ R _ _ _ rfl
   clear x;
@@ -517,7 +517,7 @@ open MvFunctor (LiftP LiftR)
 
 variable {n : ℕ} {F : TypeVec.{u} (n + 1) → Type u} [mvf : MvFunctor F] [q : MvQPF F]
 
-theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F (α ::: X)) :
+lemma corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F (α ::: X)) :
     Cofix.corec (g ∘ f) x₀ = Cofix.corec (MvFunctor.map (id ::: f) ∘ g) (f x₀) := by
   mv_bisim x₀ with R a b x Ha Hb
   rw [Ha, Hb, Cofix.dest_corec, Cofix.dest_corec, Function.comp_apply, Function.comp_apply]
@@ -526,7 +526,7 @@ theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F 
   intro a; refine' ⟨a, rfl, rfl⟩
 #align mvqpf.corec_roll MvQPF.corec_roll
 
-theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u}
+lemma Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u}
     (g : β → F (α.append1 (Cofix F α ⊕ β))) (x : β) :
     Cofix.dest (Cofix.corec' g x) =
       appendFun id (Sum.elim _root_.id (Cofix.corec' g)) <$$> g x := by
@@ -545,7 +545,7 @@ theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u}
     simp [MvFunctor.id_map, Sum.elim]
 #align mvqpf.cofix.dest_corec' MvQPF.Cofix.dest_corec'
 
-theorem Cofix.dest_corec₁ {α : TypeVec n} {β : Type u}
+lemma Cofix.dest_corec₁ {α : TypeVec n} {β : Type u}
     (g : ∀ {X}, (Cofix F α → X) → (β → X) → β → F (α.append1 X)) (x : β)
     (h : ∀ (X Y) (f : Cofix F α → X) (f' : β → X) (k : X → Y),
       g (k ∘ f) (k ∘ f') x = (id ::: k) <$$> g f f' x) :

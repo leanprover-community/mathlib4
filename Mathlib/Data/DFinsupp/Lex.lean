@@ -33,13 +33,13 @@ protected def Lex (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) (
 #align dfinsupp.lex DFinsupp.Lex
 
 -- Porting note: Added `_root_` to match more closely with Lean 3. Also updated `s`'s type.
-theorem _root_.Pi.lex_eq_dfinsupp_lex {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop}
+lemma _root_.Pi.lex_eq_dfinsupp_lex {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop}
     (a b : Π₀ i, α i) : Pi.Lex r (s _) (a : ∀ i, α i) b = DFinsupp.Lex r s a b :=
   rfl
 #align pi.lex_eq_dfinsupp_lex Pi.lex_eq_dfinsupp_lex
 
 -- Porting note: Updated `s`'s type.
-theorem lex_def {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop} {a b : Π₀ i, α i} :
+lemma lex_def {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop} {a b : Π₀ i, α i} :
     DFinsupp.Lex r s a b ↔ ∃ j, (∀ d, r d j → a d = b d) ∧ s j (a j) (b j) :=
   Iff.rfl
 #align dfinsupp.lex_def DFinsupp.lex_def
@@ -47,7 +47,7 @@ theorem lex_def {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop} {a 
 instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
   ⟨fun f g ↦ DFinsupp.Lex (· < ·) (fun _ ↦ (· < ·)) (ofLex f) (ofLex g)⟩
 
-theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
+lemma lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i := by
   obtain ⟨hle, j, hlt⟩ := Pi.lt_def.1 hlt
   classical
@@ -57,7 +57,7 @@ theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι 
   exact of_not_not fun h ↦ hl ⟨k, mem_neLocus.2 (ne_of_not_le h).symm⟩ ((hle k).lt_of_not_le h) hk
 #align dfinsupp.lex_lt_of_lt_of_preorder DFinsupp.lex_lt_of_lt_of_preorder
 
-theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
+lemma lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
     (hlt : x < y) : Pi.Lex r (· < ·) x y := by
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder r hlt
@@ -129,7 +129,7 @@ end LinearOrder
 
 variable [∀ i, PartialOrder (α i)]
 
-theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
+lemma toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
   intro a b h
   refine' le_of_lt_or_eq (or_iff_not_imp_right.2 fun hne ↦ _)
   classical
@@ -138,7 +138,7 @@ theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
     (h _).lt_of_ne (mem_neLocus.1 <| Finset.min'_mem _ _)⟩
 #align dfinsupp.to_lex_monotone DFinsupp.toLex_monotone
 
-theorem lt_of_forall_lt_of_lt (a b : Lex (Π₀ i, α i)) (i : ι) :
+lemma lt_of_forall_lt_of_lt (a b : Lex (Π₀ i, α i)) (i : ι) :
     (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
   fun h1 h2 ↦ ⟨i, h1, h2⟩
 #align dfinsupp.lt_of_forall_lt_of_lt DFinsupp.lt_of_forall_lt_of_lt

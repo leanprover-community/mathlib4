@@ -46,27 +46,27 @@ def circle : Submonoid ℂ :=
 #align circle circle
 
 @[simp]
-theorem mem_circle_iff_abs {z : ℂ} : z ∈ circle ↔ abs z = 1 :=
+lemma mem_circle_iff_abs {z : ℂ} : z ∈ circle ↔ abs z = 1 :=
   mem_sphere_zero_iff_norm
 #align mem_circle_iff_abs mem_circle_iff_abs
 
-theorem circle_def : ↑circle = { z : ℂ | abs z = 1 } :=
+lemma circle_def : ↑circle = { z : ℂ | abs z = 1 } :=
   Set.ext fun _ => mem_circle_iff_abs
 #align circle_def circle_def
 
 @[simp]
-theorem abs_coe_circle (z : circle) : abs z = 1 :=
+lemma abs_coe_circle (z : circle) : abs z = 1 :=
   mem_circle_iff_abs.mp z.2
 #align abs_coe_circle abs_coe_circle
 
-theorem mem_circle_iff_normSq {z : ℂ} : z ∈ circle ↔ normSq z = 1 := by simp [Complex.abs]
+lemma mem_circle_iff_normSq {z : ℂ} : z ∈ circle ↔ normSq z = 1 := by simp [Complex.abs]
 #align mem_circle_iff_norm_sq mem_circle_iff_normSq
 
 @[simp]
-theorem normSq_eq_of_mem_circle (z : circle) : normSq z = 1 := by simp [normSq_eq_abs]
+lemma normSq_eq_of_mem_circle (z : circle) : normSq z = 1 := by simp [normSq_eq_abs]
 #align norm_sq_eq_of_mem_circle normSq_eq_of_mem_circle
 
-theorem ne_zero_of_mem_circle (z : circle) : (z : ℂ) ≠ 0 :=
+lemma ne_zero_of_mem_circle (z : circle) : (z : ℂ) ≠ 0 :=
   ne_zero_of_mem_unit_sphere z
 #align ne_zero_of_mem_circle ne_zero_of_mem_circle
 
@@ -74,16 +74,16 @@ instance commGroup : CommGroup circle :=
   Metric.sphere.commGroup
 
 @[simp]
-theorem coe_inv_circle (z : circle) : ↑z⁻¹ = (z : ℂ)⁻¹ :=
+lemma coe_inv_circle (z : circle) : ↑z⁻¹ = (z : ℂ)⁻¹ :=
   rfl
 #align coe_inv_circle coe_inv_circle
 
-theorem coe_inv_circle_eq_conj (z : circle) : ↑z⁻¹ = conj (z : ℂ) := by
+lemma coe_inv_circle_eq_conj (z : circle) : ↑z⁻¹ = conj (z : ℂ) := by
   rw [coe_inv_circle, inv_def, normSq_eq_of_mem_circle, inv_one, ofReal_one, mul_one]
 #align coe_inv_circle_eq_conj coe_inv_circle_eq_conj
 
 @[simp]
-theorem coe_div_circle (z w : circle) : ↑(z / w) = (z : ℂ) / w :=
+lemma coe_div_circle (z w : circle) : ↑(z / w) = (z : ℂ) / w :=
   circle.subtype.map_div z w
 #align coe_div_circle coe_div_circle
 
@@ -94,7 +94,7 @@ def circle.toUnits : circle →* Units ℂ :=
 
 -- written manually because `@[simps]` was slow and generated the wrong lemma
 @[simp]
-theorem circle.toUnits_apply (z : circle) :
+lemma circle.toUnits_apply (z : circle) :
     circle.toUnits z = Units.mk0 ↑z (ne_zero_of_mem_circle z) :=
   rfl
 #align circle.to_units_apply circle.toUnits_apply
@@ -122,18 +122,18 @@ def expMapCircle : C(ℝ, circle) where
 #align exp_map_circle expMapCircle
 
 @[simp]
-theorem expMapCircle_apply (t : ℝ) : ↑(expMapCircle t) = Complex.exp (t * Complex.I) :=
+lemma expMapCircle_apply (t : ℝ) : ↑(expMapCircle t) = Complex.exp (t * Complex.I) :=
   rfl
 #align exp_map_circle_apply expMapCircle_apply
 
 @[simp]
-theorem expMapCircle_zero : expMapCircle 0 = 1 :=
+lemma expMapCircle_zero : expMapCircle 0 = 1 :=
   Subtype.ext <| by
     rw [expMapCircle_apply, ofReal_zero, zero_mul, exp_zero, Submonoid.coe_one]
 #align exp_map_circle_zero expMapCircle_zero
 
 @[simp]
-theorem expMapCircle_add (x y : ℝ) : expMapCircle (x + y) = expMapCircle x * expMapCircle y :=
+lemma expMapCircle_add (x y : ℝ) : expMapCircle (x + y) = expMapCircle x * expMapCircle y :=
   Subtype.ext <| by
     simp only [expMapCircle_apply, Submonoid.coe_mul, ofReal_add, add_mul, Complex.exp_add]
 #align exp_map_circle_add expMapCircle_add
@@ -148,12 +148,12 @@ def expMapCircleHom : ℝ →+ Additive circle where
 #align exp_map_circle_hom expMapCircleHom
 
 @[simp]
-theorem expMapCircle_sub (x y : ℝ) : expMapCircle (x - y) = expMapCircle x / expMapCircle y :=
+lemma expMapCircle_sub (x y : ℝ) : expMapCircle (x - y) = expMapCircle x / expMapCircle y :=
   expMapCircleHom.map_sub x y
 #align exp_map_circle_sub expMapCircle_sub
 
 @[simp]
-theorem expMapCircle_neg (x : ℝ) : expMapCircle (-x) = (expMapCircle x)⁻¹ :=
+lemma expMapCircle_neg (x : ℝ) : expMapCircle (-x) = (expMapCircle x)⁻¹ :=
   expMapCircleHom.map_neg x
 #align exp_map_circle_neg expMapCircle_neg
 

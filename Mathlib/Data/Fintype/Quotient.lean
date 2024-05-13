@@ -41,7 +41,7 @@ def Quotient.finChoiceAux {ι : Type*} [DecidableEq ι] {α : ι → Type*} [S :
     · exact h₂ _ _
 #align quotient.fin_choice_aux Quotient.finChoiceAux
 
-theorem Quotient.finChoiceAux_eq {ι : Type*} [DecidableEq ι] {α : ι → Type*}
+lemma Quotient.finChoiceAux_eq {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [S : ∀ i, Setoid (α i)] :
     ∀ (l : List ι) (f : ∀ i ∈ l, α i), (Quotient.finChoiceAux l fun i h => ⟦f i h⟧) = ⟦f⟧
   | [], f => Quotient.sound fun i h => nomatch List.not_mem_nil _ h
@@ -74,7 +74,7 @@ def Quotient.finChoice {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → T
     (fun f => ⟦fun i => f i (Finset.mem_univ _)⟧) (fun a b h => Quotient.sound fun i => by apply h)
 #align quotient.fin_choice Quotient.finChoice
 
-theorem Quotient.finChoice_eq {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Type*}
+lemma Quotient.finChoice_eq {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Type*}
     [∀ i, Setoid (α i)] (f : ∀ i, α i) : (Quotient.finChoice fun i => ⟦f i⟧) = ⟦f⟧ := by
   dsimp only [Quotient.finChoice]
   conv_lhs =>

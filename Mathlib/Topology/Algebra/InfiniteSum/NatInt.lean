@@ -59,18 +59,18 @@ section ContinuousMul
 variable [ContinuousMul M]
 
 @[to_additive]
-theorem prod_range_mul {f : ℕ → M} {k : ℕ} (h : HasProd (fun n ↦ f (n + k)) m) :
+lemma prod_range_mul {f : ℕ → M} {k : ℕ} (h : HasProd (fun n ↦ f (n + k)) m) :
     HasProd f ((∏ i in range k, f i) * m) := by
   refine ((range k).hasProd f).mul_compl ?_
   rwa [← (notMemRangeEquiv k).symm.hasProd_iff]
 
 @[to_additive]
-theorem zero_mul {f : ℕ → M} (h : HasProd (fun n ↦ f (n + 1)) m) :
+lemma zero_mul {f : ℕ → M} (h : HasProd (fun n ↦ f (n + 1)) m) :
     HasProd f (f 0 * m) := by
   simpa only [prod_range_one] using h.prod_range_mul
 
 @[to_additive]
-theorem even_mul_odd {f : ℕ → M} (he : HasProd (fun k ↦ f (2 * k)) m)
+lemma even_mul_odd {f : ℕ → M} (he : HasProd (fun k ↦ f (2 * k)) m)
     (ho : HasProd (fun k ↦ f (2 * k + 1)) m') : HasProd f (m * m') := by
   have := mul_right_injective₀ (two_ne_zero' ℕ)
   replace ho := ((add_left_injective 1).comp this).hasProd_range_iff.2 ho
@@ -85,7 +85,7 @@ end HasProd
 namespace Multipliable
 
 @[to_additive]
-theorem hasProd_iff_tendsto_nat [T2Space M] {f : ℕ → M} (hf : Multipliable f) :
+lemma hasProd_iff_tendsto_nat [T2Space M] {f : ℕ → M} (hf : Multipliable f) :
     HasProd f m ↔ Tendsto (fun n : ℕ ↦ ∏ i in range n, f i) atTop (𝓝 m) := by
   refine ⟨fun h ↦ h.tendsto_prod_nat, fun h ↦ ?_⟩
   rw [tendsto_nhds_unique h hf.hasProd.tendsto_prod_nat]
@@ -97,11 +97,11 @@ section ContinuousMul
 variable [ContinuousMul M]
 
 @[to_additive]
-theorem comp_nat_add {f : ℕ → M} {k : ℕ} (h : Multipliable fun n ↦ f (n + k)) : Multipliable f :=
+lemma comp_nat_add {f : ℕ → M} {k : ℕ} (h : Multipliable fun n ↦ f (n + k)) : Multipliable f :=
   h.hasProd.prod_range_mul.multipliable
 
 @[to_additive]
-theorem even_mul_odd {f : ℕ → M} (he : Multipliable fun k ↦ f (2 * k))
+lemma even_mul_odd {f : ℕ → M} (he : Multipliable fun k ↦ f (2 * k))
     (ho : Multipliable fun k ↦ f (2 * k + 1)) : Multipliable f :=
   (he.hasProd.even_mul_odd ho.hasProd).multipliable
 
@@ -186,19 +186,19 @@ section ContinuousMul
 variable [ContinuousMul M]
 
 @[to_additive]
-theorem prod_mul_tprod_nat_mul'
+lemma prod_mul_tprod_nat_mul'
     {f : ℕ → M} {k : ℕ} (h : Multipliable (fun n ↦ f (n + k))) :
     ((∏ i in range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
   h.hasProd.prod_range_mul.tprod_eq.symm
 
 @[to_additive]
-theorem tprod_eq_zero_mul'
+lemma tprod_eq_zero_mul'
     {f : ℕ → M} (hf : Multipliable (fun n ↦ f (n + 1))) :
     ∏' b, f b = f 0 * ∏' b, f (b + 1) := by
   simpa only [prod_range_one] using (prod_mul_tprod_nat_mul' hf).symm
 
 @[to_additive]
-theorem tprod_even_mul_odd {f : ℕ → M} (he : Multipliable fun k ↦ f (2 * k))
+lemma tprod_even_mul_odd {f : ℕ → M} (he : Multipliable fun k ↦ f (2 * k))
     (ho : Multipliable fun k ↦ f (2 * k + 1)) :
     (∏' k, f (2 * k)) * ∏' k, f (2 * k + 1) = ∏' k, f k :=
   (he.hasProd.even_mul_odd ho.hasProd).tprod_eq.symm
@@ -215,14 +215,14 @@ section TopologicalGroup
 variable [TopologicalSpace G] [TopologicalGroup G]
 
 @[to_additive]
-theorem hasProd_nat_add_iff {f : ℕ → G} (k : ℕ) :
+lemma hasProd_nat_add_iff {f : ℕ → G} (k : ℕ) :
     HasProd (fun n ↦ f (n + k)) g ↔ HasProd f (g * ∏ i in range k, f i) := by
   refine Iff.trans ?_ (range k).hasProd_compl_iff
   rw [← (notMemRangeEquiv k).symm.hasProd_iff, Function.comp_def, coe_notMemRangeEquiv_symm]
 #align has_sum_nat_add_iff hasSum_nat_add_iff
 
 @[to_additive]
-theorem multipliable_nat_add_iff {f : ℕ → G} (k : ℕ) :
+lemma multipliable_nat_add_iff {f : ℕ → G} (k : ℕ) :
     (Multipliable fun n ↦ f (n + k)) ↔ Multipliable f :=
   Iff.symm <|
     (Equiv.mulRight (∏ i in range k, f i)).surjective.multipliable_iff_of_hasProd_iff
@@ -230,19 +230,19 @@ theorem multipliable_nat_add_iff {f : ℕ → G} (k : ℕ) :
 #align summable_nat_add_iff summable_nat_add_iff
 
 @[to_additive]
-theorem hasProd_nat_add_iff' {f : ℕ → G} (k : ℕ) :
+lemma hasProd_nat_add_iff' {f : ℕ → G} (k : ℕ) :
     HasProd (fun n ↦ f (n + k)) (g / ∏ i in range k, f i) ↔ HasProd f g := by
   simp [hasProd_nat_add_iff]
 #align has_sum_nat_add_iff' hasSum_nat_add_iff'
 
 @[to_additive]
-theorem prod_mul_tprod_nat_add [T2Space G] {f : ℕ → G} (k : ℕ) (h : Multipliable f) :
+lemma prod_mul_tprod_nat_add [T2Space G] {f : ℕ → G} (k : ℕ) (h : Multipliable f) :
     ((∏ i in range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
   prod_mul_tprod_nat_mul' <| (multipliable_nat_add_iff k).2 h
 #align sum_add_tsum_nat_add sum_add_tsum_nat_add
 
 @[to_additive]
-theorem tprod_eq_zero_mul [T2Space G] {f : ℕ → G} (hf : Multipliable f) :
+lemma tprod_eq_zero_mul [T2Space G] {f : ℕ → G} (hf : Multipliable f) :
     ∏' b, f b = f 0 * ∏' b, f (b + 1) :=
   tprod_eq_zero_mul' <| (multipliable_nat_add_iff 1).2 hf
 #align tsum_eq_zero_add tsum_eq_zero_add
@@ -270,7 +270,7 @@ section UniformGroup
 variable [UniformSpace G] [UniformGroup G]
 
 @[to_additive]
-theorem cauchySeq_finset_iff_nat_tprod_vanishing {f : ℕ → G} :
+lemma cauchySeq_finset_iff_nat_tprod_vanishing {f : ℕ → G} :
     (CauchySeq fun s : Finset ℕ ↦ ∏ n in s, f n) ↔
       ∀ e ∈ 𝓝 (1 : G), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e := by
   refine cauchySeq_finset_iff_tprod_vanishing.trans ⟨fun vanish e he ↦ ?_, fun vanish e he ↦ ?_⟩
@@ -287,7 +287,7 @@ theorem cauchySeq_finset_iff_nat_tprod_vanishing {f : ℕ → G} :
 variable [CompleteSpace G]
 
 @[to_additive]
-theorem multipliable_iff_nat_tprod_vanishing {f : ℕ → G} : Multipliable f ↔
+lemma multipliable_iff_nat_tprod_vanishing {f : ℕ → G} : Multipliable f ↔
     ∀ e ∈ 𝓝 1, ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e := by
   rw [multipliable_iff_cauchySeq_finset, cauchySeq_finset_iff_nat_tprod_vanishing]
 
@@ -298,14 +298,14 @@ section TopologicalGroup
 variable [TopologicalSpace G] [TopologicalGroup G]
 
 @[to_additive]
-theorem Multipliable.nat_tprod_vanishing {f : ℕ → G} (hf : Multipliable f) ⦃e : Set G⦄
+lemma Multipliable.nat_tprod_vanishing {f : ℕ → G} (hf : Multipliable f) ⦃e : Set G⦄
     (he : e ∈ 𝓝 1) : ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e :=
   letI : UniformSpace G := TopologicalGroup.toUniformSpace G
   have : UniformGroup G := comm_topologicalGroup_is_uniform
   cauchySeq_finset_iff_nat_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
 @[to_additive]
-theorem Multipliable.tendsto_atTop_one {f : ℕ → G} (hf : Multipliable f) :
+lemma Multipliable.tendsto_atTop_one {f : ℕ → G} (hf : Multipliable f) :
     Tendsto f atTop (𝓝 1) := by
   rw [← Nat.cofinite_eq_atTop]
   exact hf.tendsto_cofinite_one
@@ -416,7 +416,7 @@ lemma tprod_int_rec [T2Space M] {f g : ℕ → M} (hf : Multipliable f) (hg : Mu
   (hf.hasProd.int_rec hg.hasProd).tprod_eq
 
 @[to_additive]
-theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
+lemma HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
     HasProd (fun n : ℕ ↦ f n * f (-n)) (m * f 0) := by
   -- Note this is much easier to prove if you assume more about the target space, but we have to
   -- work hard to prove it under the very minimal assumptions here.
@@ -462,7 +462,7 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
   HasSum.nat_add_neg
 
 @[to_additive]
-theorem Multipliable.nat_mul_neg {f : ℤ → M} (hf : Multipliable f) :
+lemma Multipliable.nat_mul_neg {f : ℤ → M} (hf : Multipliable f) :
     Multipliable fun n : ℕ ↦ f n * f (-n) :=
   hf.hasProd.nat_mul_neg.multipliable
 
@@ -472,7 +472,7 @@ lemma tprod_nat_mul_neg [T2Space M] {f : ℤ → M} (hf : Multipliable f) :
   hf.hasProd.nat_mul_neg.tprod_eq
 
 @[to_additive HasSum.of_add_one_of_neg_add_one]
-theorem HasProd.of_add_one_of_neg_add_one {f : ℤ → M}
+lemma HasProd.of_add_one_of_neg_add_one {f : ℤ → M}
     (hf₁ : HasProd (fun n : ℕ ↦ f (n + 1)) m) (hf₂ : HasProd (fun n : ℕ ↦ f (-(n + 1))) m') :
     HasProd f (m * f 0 * m') :=
   HasProd.of_nat_of_neg_add_one (mul_comm _ m ▸ HasProd.zero_mul hf₁) hf₂

@@ -61,17 +61,17 @@ namespace IsAdjMatrix
 variable {A : Matrix V V α}
 
 @[simp]
-theorem apply_diag_ne [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i : V) : ¬A i i = 1 :=
+lemma apply_diag_ne [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i : V) : ¬A i i = 1 :=
   by simp [h.apply_diag i]
 #align matrix.is_adj_matrix.apply_diag_ne Matrix.IsAdjMatrix.apply_diag_ne
 
 @[simp]
-theorem apply_ne_one_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i j : V) :
+lemma apply_ne_one_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i j : V) :
     ¬A i j = 1 ↔ A i j = 0 := by obtain h | h := h.zero_or_one i j <;> simp [h]
 #align matrix.is_adj_matrix.apply_ne_one_iff Matrix.IsAdjMatrix.apply_ne_one_iff
 
 @[simp]
-theorem apply_ne_zero_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i j : V) :
+lemma apply_ne_zero_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i j : V) :
     ¬A i j = 0 ↔ A i j = 1 := by rw [← apply_ne_one_iff h, Classical.not_not]
 #align matrix.is_adj_matrix.apply_ne_zero_iff Matrix.IsAdjMatrix.apply_ne_zero_iff
 
@@ -102,23 +102,23 @@ section Compl
 variable [DecidableEq α] [DecidableEq V] (A : Matrix V V α)
 
 @[simp]
-theorem compl_apply_diag [Zero α] [One α] (i : V) : A.compl i i = 0 := by simp [compl]
+lemma compl_apply_diag [Zero α] [One α] (i : V) : A.compl i i = 0 := by simp [compl]
 #align matrix.compl_apply_diag Matrix.compl_apply_diag
 
 @[simp]
-theorem compl_apply [Zero α] [One α] (i j : V) : A.compl i j = 0 ∨ A.compl i j = 1 := by
+lemma compl_apply [Zero α] [One α] (i j : V) : A.compl i j = 0 ∨ A.compl i j = 1 := by
   unfold compl
   split_ifs <;> simp
 #align matrix.compl_apply Matrix.compl_apply
 
 @[simp]
-theorem isSymm_compl [Zero α] [One α] (h : A.IsSymm) : A.compl.IsSymm := by
+lemma isSymm_compl [Zero α] [One α] (h : A.IsSymm) : A.compl.IsSymm := by
   ext
   simp [compl, h.apply, eq_comm]
 #align matrix.is_symm_compl Matrix.isSymm_compl
 
 @[simp]
-theorem isAdjMatrix_compl [Zero α] [One α] (h : A.IsSymm) : IsAdjMatrix A.compl :=
+lemma isAdjMatrix_compl [Zero α] [One α] (h : A.IsSymm) : IsAdjMatrix A.compl :=
   { symm := by simp [h] }
 #align matrix.is_adj_matrix_compl Matrix.isAdjMatrix_compl
 
@@ -127,11 +127,11 @@ namespace IsAdjMatrix
 variable {A}
 
 @[simp]
-theorem compl [Zero α] [One α] (h : IsAdjMatrix A) : IsAdjMatrix A.compl :=
+lemma compl [Zero α] [One α] (h : IsAdjMatrix A) : IsAdjMatrix A.compl :=
   isAdjMatrix_compl A h.symm
 #align matrix.is_adj_matrix.compl Matrix.IsAdjMatrix.compl
 
-theorem toGraph_compl_eq [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) :
+lemma toGraph_compl_eq [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) :
     h.compl.toGraph = h.toGraphᶜ := by
   ext v w
   cases' h.zero_or_one v w with h h <;> by_cases hvw : v = w <;> simp [Matrix.compl, h, hvw]
@@ -160,19 +160,19 @@ variable {α}
 
 -- TODO: set as an equation lemma for `adjMatrix`, see mathlib4#3024
 @[simp]
-theorem adjMatrix_apply (v w : V) [Zero α] [One α] :
+lemma adjMatrix_apply (v w : V) [Zero α] [One α] :
     G.adjMatrix α v w = if G.Adj v w then 1 else 0 :=
   rfl
 #align simple_graph.adj_matrix_apply SimpleGraph.adjMatrix_apply
 
 @[simp]
-theorem transpose_adjMatrix [Zero α] [One α] : (G.adjMatrix α)ᵀ = G.adjMatrix α := by
+lemma transpose_adjMatrix [Zero α] [One α] : (G.adjMatrix α)ᵀ = G.adjMatrix α := by
   ext
   simp [adj_comm]
 #align simple_graph.transpose_adj_matrix SimpleGraph.transpose_adjMatrix
 
 @[simp]
-theorem isSymm_adjMatrix [Zero α] [One α] : (G.adjMatrix α).IsSymm :=
+lemma isSymm_adjMatrix [Zero α] [One α] : (G.adjMatrix α).IsSymm :=
   transpose_adjMatrix G
 #align simple_graph.is_symm_adj_matrix SimpleGraph.isSymm_adjMatrix
 
@@ -195,25 +195,25 @@ theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :
 variable {α} [Fintype V]
 
 @[simp]
-theorem adjMatrix_dotProduct [NonAssocSemiring α] (v : V) (vec : V → α) :
+lemma adjMatrix_dotProduct [NonAssocSemiring α] (v : V) (vec : V → α) :
     dotProduct (G.adjMatrix α v) vec = ∑ u in G.neighborFinset v, vec u := by
   simp [neighborFinset_eq_filter, dotProduct, sum_filter]
 #align simple_graph.adj_matrix_dot_product SimpleGraph.adjMatrix_dotProduct
 
 @[simp]
-theorem dotProduct_adjMatrix [NonAssocSemiring α] (v : V) (vec : V → α) :
+lemma dotProduct_adjMatrix [NonAssocSemiring α] (v : V) (vec : V → α) :
     dotProduct vec (G.adjMatrix α v) = ∑ u in G.neighborFinset v, vec u := by
   simp [neighborFinset_eq_filter, dotProduct, sum_filter, Finset.sum_apply]
 #align simple_graph.dot_product_adj_matrix SimpleGraph.dotProduct_adjMatrix
 
 @[simp]
-theorem adjMatrix_mulVec_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
+lemma adjMatrix_mulVec_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
     (G.adjMatrix α *ᵥ vec) v = ∑ u in G.neighborFinset v, vec u := by
   rw [mulVec, adjMatrix_dotProduct]
 #align simple_graph.adj_matrix_mul_vec_apply SimpleGraph.adjMatrix_mulVec_apply
 
 @[simp]
-theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
+lemma adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
     (vec ᵥ* G.adjMatrix α) v = ∑ u in G.neighborFinset v, vec u := by
   simp only [← dotProduct_adjMatrix, vecMul]
   refine' congr rfl _; ext x
@@ -221,13 +221,13 @@ theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
 #align simple_graph.adj_matrix_vec_mul_apply SimpleGraph.adjMatrix_vecMul_apply
 
 @[simp]
-theorem adjMatrix_mul_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
+lemma adjMatrix_mul_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
     (G.adjMatrix α * M) v w = ∑ u in G.neighborFinset v, M u w := by
   simp [mul_apply, neighborFinset_eq_filter, sum_filter]
 #align simple_graph.adj_matrix_mul_apply SimpleGraph.adjMatrix_mul_apply
 
 @[simp]
-theorem mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
+lemma mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
     (M * G.adjMatrix α) v w = ∑ u in G.neighborFinset w, M v u := by
   simp [mul_apply, neighborFinset_eq_filter, sum_filter, adj_comm]
 #align simple_graph.mul_adj_matrix_apply SimpleGraph.mul_adjMatrix_apply
@@ -235,29 +235,29 @@ theorem mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) 
 variable (α)
 
 @[simp]
-theorem trace_adjMatrix [AddCommMonoid α] [One α] : Matrix.trace (G.adjMatrix α) = 0 := by
+lemma trace_adjMatrix [AddCommMonoid α] [One α] : Matrix.trace (G.adjMatrix α) = 0 := by
   simp [Matrix.trace]
 #align simple_graph.trace_adj_matrix SimpleGraph.trace_adjMatrix
 
 variable {α}
 
-theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
+lemma adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
     (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp
 #align simple_graph.adj_matrix_mul_self_apply_self SimpleGraph.adjMatrix_mul_self_apply_self
 
 variable {G}
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem adjMatrix_mulVec_const_apply [NonAssocSemiring α] {a : α} {v : V} :
+lemma adjMatrix_mulVec_const_apply [NonAssocSemiring α] {a : α} {v : V} :
     (G.adjMatrix α *ᵥ Function.const _ a) v = G.degree v * a := by simp
 #align simple_graph.adj_matrix_mul_vec_const_apply SimpleGraph.adjMatrix_mulVec_const_apply
 
-theorem adjMatrix_mulVec_const_apply_of_regular [NonAssocSemiring α] {d : ℕ} {a : α}
+lemma adjMatrix_mulVec_const_apply_of_regular [NonAssocSemiring α] {d : ℕ} {a : α}
     (hd : G.IsRegularOfDegree d) {v : V} : (G.adjMatrix α *ᵥ Function.const _ a) v = d * a :=
   by simp [hd v]
 #align simple_graph.adj_matrix_mul_vec_const_apply_of_regular SimpleGraph.adjMatrix_mulVec_const_apply_of_regular
 
-theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ) (u v : V) :
+lemma adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ) (u v : V) :
     (G.adjMatrix α ^ n) u v = Fintype.card { p : G.Walk u v | p.length = n } := by
   rw [card_set_walk_length_eq]
   induction' n with n ih generalizing u v
@@ -290,7 +290,7 @@ theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] [Decida
     · repeat rw [if_pos heq, add_zero]
     · rw [if_neg heq, if_neg heq, zero_add, zero_add, if_pos (refl 0)]
 
-theorem dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (vec : V → α) :
+lemma dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (vec : V → α) :
     vec ⬝ᵥ (G.adjMatrix α).mulVec vec =
     ∑ i : V, ∑ j : V, if G.Adj i j then vec i * vec j else 0 := by
   simp only [dotProduct, mulVec, adjMatrix_apply, ite_mul, one_mul, zero_mul, mul_sum, mul_ite,

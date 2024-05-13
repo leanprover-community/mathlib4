@@ -174,7 +174,7 @@ protected theorem of_int (z : ℤ) : padicNorm p z ≤ 1 :=
     exact mod_cast hz
 #align padic_norm.of_int padicNorm.of_int
 
-private theorem nonarchimedean_aux {q r : ℚ} (h : padicValRat p q ≤ padicValRat p r) :
+private lemma nonarchimedean_aux {q r : ℚ} (h : padicValRat p q ≤ padicValRat p r) :
     padicNorm p (q + r) ≤ max (padicNorm p q) (padicNorm p r) :=
   have hnqp : padicNorm p q ≥ 0 := padicNorm.nonneg _
   have hnrp : padicNorm p r ≥ 0 := padicNorm.nonneg _
@@ -252,7 +252,7 @@ instance : IsAbsoluteValue (padicNorm p)
   abv_add' := padicNorm.triangle_ineq
   abv_mul' := padicNorm.mul
 
-theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z ≤ (p : ℚ) ^ (-n : ℤ) := by
+lemma dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z ≤ (p : ℚ) ^ (-n : ℤ) := by
   unfold padicNorm; split_ifs with hz
   · norm_cast at hz
     simp [hz]
@@ -286,12 +286,12 @@ theorem int_eq_one_iff (m : ℤ) : padicNorm p m = 1 ↔ ¬(p : ℤ) ∣ m := by
       rw [← zpow_zero (p : ℚ), zpow_inj] <;> linarith
 #align padic_norm.int_eq_one_iff padicNorm.int_eq_one_iff
 
-theorem int_lt_one_iff (m : ℤ) : padicNorm p m < 1 ↔ (p : ℤ) ∣ m := by
+lemma int_lt_one_iff (m : ℤ) : padicNorm p m < 1 ↔ (p : ℤ) ∣ m := by
   rw [← not_iff_not, ← int_eq_one_iff, eq_iff_le_not_lt]
   simp only [padicNorm.of_int, true_and_iff]
 #align padic_norm.int_lt_one_iff padicNorm.int_lt_one_iff
 
-theorem of_nat (m : ℕ) : padicNorm p m ≤ 1 :=
+lemma of_nat (m : ℕ) : padicNorm p m ≤ 1 :=
   padicNorm.of_int (m : ℤ)
 #align padic_norm.of_nat padicNorm.of_nat
 
@@ -300,7 +300,7 @@ theorem nat_eq_one_iff (m : ℕ) : padicNorm p m = 1 ↔ ¬p ∣ m := by
   rw [← Int.natCast_dvd_natCast, ← int_eq_one_iff, Int.cast_natCast]
 #align padic_norm.nat_eq_one_iff padicNorm.nat_eq_one_iff
 
-theorem nat_lt_one_iff (m : ℕ) : padicNorm p m < 1 ↔ p ∣ m := by
+lemma nat_lt_one_iff (m : ℕ) : padicNorm p m < 1 ↔ p ∣ m := by
   rw [← Int.natCast_dvd_natCast, ← int_lt_one_iff, Int.cast_natCast]
 #align padic_norm.nat_lt_one_iff padicNorm.nat_lt_one_iff
 
@@ -313,7 +313,7 @@ theorem not_int_of_not_padic_int (p : ℕ) {a : ℚ} [hp : Fact (Nat.Prime p)]
 
 open BigOperators
 
-theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
+lemma sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i in s, F i) < t := by
   classical
     refine' s.induction_on (by rintro ⟨-, ⟨⟩⟩) _
@@ -327,7 +327,7 @@ theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     · simp_all
 #align padic_norm.sum_lt padicNorm.sum_lt
 
-theorem sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
+lemma sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     s.Nonempty → (∀ i ∈ s, padicNorm p (F i) ≤ t) → padicNorm p (∑ i in s, F i) ≤ t := by
   classical
     refine' s.induction_on (by rintro ⟨-, ⟨⟩⟩) _
@@ -341,14 +341,14 @@ theorem sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     · simp_all
 #align padic_norm.sum_le padicNorm.sum_le
 
-theorem sum_lt' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
+lemma sum_lt' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
     (hF : ∀ i ∈ s, padicNorm p (F i) < t) (ht : 0 < t) : padicNorm p (∑ i in s, F i) < t := by
   obtain rfl | hs := Finset.eq_empty_or_nonempty s
   · simp [ht]
   · exact sum_lt hs hF
 #align padic_norm.sum_lt' padicNorm.sum_lt'
 
-theorem sum_le' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
+lemma sum_le' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
     (hF : ∀ i ∈ s, padicNorm p (F i) ≤ t) (ht : 0 ≤ t) : padicNorm p (∑ i in s, F i) ≤ t := by
   obtain rfl | hs := Finset.eq_empty_or_nonempty s
   · simp [ht]

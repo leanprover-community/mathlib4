@@ -66,15 +66,15 @@ scoped notation:max "π" F':max E':max => Bundle.TotalSpace.proj (F := F') (E :=
 
 abbrev TotalSpace.mk' (F : Type*) (x : B) (y : E x) : TotalSpace F E := ⟨x, y⟩
 
-theorem TotalSpace.mk_cast {x x' : B} (h : x = x') (b : E x) :
+lemma TotalSpace.mk_cast {x x' : B} (h : x = x') (b : E x) :
     .mk' F x' (cast (congr_arg E h) b) = TotalSpace.mk x b := by subst h; rfl
 #align bundle.total_space.mk_cast Bundle.TotalSpace.mk_cast
 
 @[simp 1001, mfld_simps 1001]
-theorem TotalSpace.mk_inj {b : B} {y y' : E b} : mk' F b y = mk' F b y' ↔ y = y' := by
+lemma TotalSpace.mk_inj {b : B} {y y' : E b} : mk' F b y = mk' F b y' ↔ y = y' := by
   simp [TotalSpace.ext_iff]
 
-theorem TotalSpace.mk_injective (b : B) : Injective (mk b : E b → TotalSpace F E) := fun _ _ ↦
+lemma TotalSpace.mk_injective (b : B) : Injective (mk b : E b → TotalSpace F E) := fun _ _ ↦
   mk_inj.1
 
 instance {x : B} : CoeTC (E x) (TotalSpace F E) :=
@@ -84,15 +84,15 @@ instance {x : B} : CoeTC (E x) (TotalSpace F E) :=
 #noalign bundle.total_space.coe_snd
 #noalign bundle.total_space.coe_eq_mk
 
-theorem TotalSpace.eta (z : TotalSpace F E) : TotalSpace.mk z.proj z.2 = z := rfl
+lemma TotalSpace.eta (z : TotalSpace F E) : TotalSpace.mk z.proj z.2 = z := rfl
 #align bundle.total_space.eta Bundle.TotalSpace.eta
 
 @[simp]
-theorem TotalSpace.exists {p : TotalSpace F E → Prop} : (∃ x, p x) ↔ ∃ b y, p ⟨b, y⟩ :=
+lemma TotalSpace.exists {p : TotalSpace F E → Prop} : (∃ x, p x) ↔ ∃ b y, p ⟨b, y⟩ :=
   ⟨fun ⟨x, hx⟩ ↦ ⟨x.1, x.2, hx⟩, fun ⟨b, y, h⟩ ↦ ⟨⟨b, y⟩, h⟩⟩
 
 @[simp]
-theorem TotalSpace.range_mk (b : B) : range ((↑) : E b → TotalSpace F E) = π F E ⁻¹' {b} := by
+lemma TotalSpace.range_mk (b : B) : range ((↑) : E b → TotalSpace F E) = π F E ⁻¹' {b} := by
   apply Subset.antisymm
   · rintro _ ⟨x, rfl⟩
     rfl
@@ -148,7 +148,7 @@ def Pullback.lift (f : B' → B) : TotalSpace F (f *ᵖ E) → TotalSpace F E :=
 #align bundle.pullback.lift Bundle.Pullback.lift
 
 @[simp, mfld_simps]
-theorem Pullback.lift_mk (f : B' → B) (x : B') (y : E (f x)) :
+lemma Pullback.lift_mk (f : B' → B) (x : B') (y : E (f x)) :
     Pullback.lift f (.mk' F x y) = ⟨f x, y⟩ :=
   rfl
 #align bundle.pullback.lift_mk Bundle.Pullback.lift_mk

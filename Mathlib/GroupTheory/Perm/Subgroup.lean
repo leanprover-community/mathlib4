@@ -35,7 +35,7 @@ instance sumCongrHom.decidableMemRange {α β : Type*} [DecidableEq α] [Decidab
 #align equiv.perm.sum_congr_hom.decidable_mem_range Equiv.Perm.sumCongrHom.decidableMemRange
 
 @[simp]
-theorem sumCongrHom.card_range {α β : Type*} [Fintype (sumCongrHom α β).range]
+lemma sumCongrHom.card_range {α β : Type*} [Fintype (sumCongrHom α β).range]
     [Fintype (Perm α × Perm β)] :
     Fintype.card (sumCongrHom α β).range = Fintype.card (Perm α × Perm β) :=
   Fintype.card_eq.mpr ⟨(ofInjective (sumCongrHom α β) sumCongrHom_injective).symm⟩
@@ -47,7 +47,7 @@ instance sigmaCongrRightHom.decidableMemRange {α : Type*} {β : α → Type*} [
 #align equiv.perm.sigma_congr_right_hom.decidable_mem_range Equiv.Perm.sigmaCongrRightHom.decidableMemRange
 
 @[simp]
-theorem sigmaCongrRightHom.card_range {α : Type*} {β : α → Type*}
+lemma sigmaCongrRightHom.card_range {α : Type*} {β : α → Type*}
     [Fintype (sigmaCongrRightHom β).range] [Fintype (∀ a, Perm (β a))] :
     Fintype.card (sigmaCongrRightHom β).range = Fintype.card (∀ a, Perm (β a)) :=
   Fintype.card_eq.mpr ⟨(ofInjective (sigmaCongrRightHom β) sigmaCongrRightHom_injective).symm⟩
@@ -59,7 +59,7 @@ instance subtypeCongrHom.decidableMemRange {α : Type*} (p : α → Prop) [Decid
 #align equiv.perm.subtype_congr_hom.decidable_mem_range Equiv.Perm.subtypeCongrHom.decidableMemRange
 
 @[simp]
-theorem subtypeCongrHom.card_range {α : Type*} (p : α → Prop) [DecidablePred p]
+lemma subtypeCongrHom.card_range {α : Type*} (p : α → Prop) [DecidablePred p]
     [Fintype (subtypeCongrHom p).range] [Fintype (Perm { a // p a } × Perm { a // ¬p a })] :
     Fintype.card (subtypeCongrHom p).range =
       Fintype.card (Perm { a // p a } × Perm { a // ¬p a }) :=

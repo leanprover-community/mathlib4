@@ -23,33 +23,33 @@ section DivisionMonoid
 variable [DivisionMonoid G] {a b c d: G}
 
 @[to_additive]
-protected theorem inv_inv : Commute a b → Commute a⁻¹ b⁻¹ :=
+protected lemma inv_inv : Commute a b → Commute a⁻¹ b⁻¹ :=
   SemiconjBy.inv_inv_symm
 #align commute.inv_inv Commute.inv_inv
 #align add_commute.neg_neg AddCommute.neg_neg
 
 @[to_additive (attr := simp)]
-theorem inv_inv_iff : Commute a⁻¹ b⁻¹ ↔ Commute a b :=
+lemma inv_inv_iff : Commute a⁻¹ b⁻¹ ↔ Commute a b :=
   SemiconjBy.inv_inv_symm_iff
 #align commute.inv_inv_iff Commute.inv_inv_iff
 #align add_commute.neg_neg_iff AddCommute.neg_neg_iff
 
 @[to_additive]
-protected theorem div_mul_div_comm (hbd : Commute b d) (hbc : Commute b⁻¹ c) :
+protected lemma div_mul_div_comm (hbd : Commute b d) (hbc : Commute b⁻¹ c) :
     a / b * (c / d) = a * c / (b * d) := by
   simp_rw [div_eq_mul_inv, mul_inv_rev, hbd.inv_inv.symm.eq, hbc.mul_mul_mul_comm]
 #align commute.div_mul_div_comm Commute.div_mul_div_comm
 #align add_commute.sub_add_sub_comm AddCommute.sub_add_sub_comm
 
 @[to_additive]
-protected theorem mul_div_mul_comm (hcd : Commute c d) (hbc : Commute b c⁻¹) :
+protected lemma mul_div_mul_comm (hcd : Commute c d) (hbc : Commute b c⁻¹) :
     a * b / (c * d) = a / c * (b / d) :=
   (hcd.div_mul_div_comm hbc.symm).symm
 #align commute.mul_div_mul_comm Commute.mul_div_mul_comm
 #align add_commute.add_sub_add_comm AddCommute.add_sub_add_comm
 
 @[to_additive]
-protected theorem div_div_div_comm (hbc : Commute b c) (hbd : Commute b⁻¹ d) (hcd : Commute c⁻¹ d) :
+protected lemma div_div_div_comm (hbc : Commute b c) (hbd : Commute b⁻¹ d) (hcd : Commute c⁻¹ d) :
     a / b / (c / d) = a / c / (b / d) := by
   simp_rw [div_eq_mul_inv, mul_inv_rev, inv_inv, hbd.symm.eq, hcd.symm.eq,
     hbc.inv_inv.mul_mul_mul_comm]
@@ -92,11 +92,11 @@ lemma inv_mul_cancel_assoc (h : Commute a b) : a⁻¹ * (b * a) = b := by
 #align add_commute.neg_add_cancel_assoc AddCommute.neg_add_cancel_assoc
 
 @[to_additive (attr := simp)]
-protected theorem conj_iff (h : G) : Commute (h * a * h⁻¹) (h * b * h⁻¹) ↔ Commute a b :=
+protected lemma conj_iff (h : G) : Commute (h * a * h⁻¹) (h * b * h⁻¹) ↔ Commute a b :=
   SemiconjBy.conj_iff
 
 @[to_additive]
-protected theorem conj (comm : Commute a b) (h : G) : Commute (h * a * h⁻¹) (h * b * h⁻¹) :=
+protected lemma conj (comm : Commute a b) (h : G) : Commute (h * a * h⁻¹) (h * b * h⁻¹) :=
   (Commute.conj_iff h).mpr comm
 
 end Group

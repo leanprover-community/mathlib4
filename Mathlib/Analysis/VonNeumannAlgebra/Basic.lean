@@ -100,29 +100,29 @@ instance instSubringClass : SubringClass (VonNeumannAlgebra H) (H →L[ℂ] H) w
   neg_mem {s} a ha := show -a ∈ s.toStarSubalgebra from neg_mem ha
 
 @[simp]
-theorem mem_carrier {S : VonNeumannAlgebra H} {x : H →L[ℂ] H} :
+lemma mem_carrier {S : VonNeumannAlgebra H} {x : H →L[ℂ] H} :
     x ∈ S.toStarSubalgebra ↔ x ∈ (S : Set (H →L[ℂ] H)) :=
   Iff.rfl
 #align von_neumann_algebra.mem_carrier VonNeumannAlgebra.mem_carrierₓ
 -- Porting note: changed the declaration because `simpNF` indicated the LHS simplifies to this.
 
 @[simp]
-theorem coe_toStarSubalgebra (S : VonNeumannAlgebra H) :
+lemma coe_toStarSubalgebra (S : VonNeumannAlgebra H) :
     (S.toStarSubalgebra : Set (H →L[ℂ] H)) = S :=
   rfl
 
 @[simp]
-theorem coe_mk (S : StarSubalgebra ℂ (H →L[ℂ] H)) (h) :
+lemma coe_mk (S : StarSubalgebra ℂ (H →L[ℂ] H)) (h) :
     ((⟨S, h⟩ : VonNeumannAlgebra H) : Set (H →L[ℂ] H)) = S :=
   rfl
 
 @[ext]
-theorem ext {S T : VonNeumannAlgebra H} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
+lemma ext {S T : VonNeumannAlgebra H} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 #align von_neumann_algebra.ext VonNeumannAlgebra.ext
 
 @[simp]
-theorem centralizer_centralizer (S : VonNeumannAlgebra H) :
+lemma centralizer_centralizer (S : VonNeumannAlgebra H) :
     Set.centralizer (Set.centralizer (S : Set (H →L[ℂ] H))) = S :=
   S.centralizer_centralizer'
 #align von_neumann_algebra.centralizer_centralizer VonNeumannAlgebra.centralizer_centralizer
@@ -134,21 +134,21 @@ def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H where
 #align von_neumann_algebra.commutant VonNeumannAlgebra.commutant
 
 @[simp]
-theorem coe_commutant (S : VonNeumannAlgebra H) :
+lemma coe_commutant (S : VonNeumannAlgebra H) :
     ↑S.commutant = Set.centralizer (S : Set (H →L[ℂ] H)) := by
   simp [commutant]
 
 #align von_neumann_algebra.coe_commutant VonNeumannAlgebra.coe_commutant
 
 @[simp]
-theorem mem_commutant_iff {S : VonNeumannAlgebra H} {z : H →L[ℂ] H} :
+lemma mem_commutant_iff {S : VonNeumannAlgebra H} {z : H →L[ℂ] H} :
     z ∈ S.commutant ↔ ∀ g ∈ S, g * z = z * g := by
   rw [← SetLike.mem_coe, coe_commutant]
   rfl
 #align von_neumann_algebra.mem_commutant_iff VonNeumannAlgebra.mem_commutant_iff
 
 @[simp]
-theorem commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = S :=
+lemma commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = S :=
   SetLike.coe_injective <| by simp
 #align von_neumann_algebra.commutant_commutant VonNeumannAlgebra.commutant_commutant
 

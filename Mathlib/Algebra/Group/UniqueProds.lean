@@ -64,25 +64,25 @@ namespace UniqueMul
 variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 
 @[to_additive (attr := nontriviality, simp)]
-theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by
+lemma of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by
   simp [UniqueMul, eq_iff_true_of_subsingleton]
 
 @[to_additive]
-theorem of_card_le_one (hA : A.Nonempty) (hB : B.Nonempty) (hA1 : A.card ≤ 1) (hB1 : B.card ≤ 1) :
+lemma of_card_le_one (hA : A.Nonempty) (hB : B.Nonempty) (hA1 : A.card ≤ 1) (hB1 : B.card ≤ 1) :
     ∃ a ∈ A, ∃ b ∈ B, UniqueMul A B a b := by
   rw [Finset.card_le_one_iff] at hA1 hB1
   obtain ⟨a, ha⟩ := hA; obtain ⟨b, hb⟩ := hB
   exact ⟨a, ha, b, hb, fun _ _ ha' hb' _ ↦ ⟨hA1 ha' ha, hB1 hb' hb⟩⟩
 
 @[to_additive]
-theorem mt (h : UniqueMul A B a0 b0) :
+lemma mt (h : UniqueMul A B a0 b0) :
     ∀ ⦃a b⦄, a ∈ A → b ∈ B → a ≠ a0 ∨ b ≠ b0 → a * b ≠ a0 * b0 := fun _ _ ha hb k ↦ by
   contrapose! k
   exact h ha hb k
 #align unique_mul.mt UniqueMul.mt
 
 @[to_additive]
-theorem subsingleton (h : UniqueMul A B a0 b0) :
+lemma subsingleton (h : UniqueMul A B a0 b0) :
     Subsingleton { ab : G × G // ab.1 ∈ A ∧ ab.2 ∈ B ∧ ab.1 * ab.2 = a0 * b0 } :=
   ⟨fun ⟨⟨_a, _b⟩, ha, hb, ab⟩ ⟨⟨_a', _b'⟩, ha', hb', ab'⟩ ↦
     Subtype.ext <|
@@ -92,7 +92,7 @@ theorem subsingleton (h : UniqueMul A B a0 b0) :
 #align unique_add.subsingleton UniqueAdd.subsingleton
 
 @[to_additive]
-theorem set_subsingleton (h : UniqueMul A B a0 b0) :
+lemma set_subsingleton (h : UniqueMul A B a0 b0) :
     Set.Subsingleton { ab : G × G | ab.1 ∈ A ∧ ab.2 ∈ B ∧ ab.1 * ab.2 = a0 * b0 } := by
   rintro ⟨x1, y1⟩ (hx : x1 ∈ A ∧ y1 ∈ B ∧ x1 * y1 = a0 * b0) ⟨x2, y2⟩
     (hy : x2 ∈ A ∧ y2 ∈ B ∧ x2 * y2 = a0 * b0)
@@ -105,7 +105,7 @@ theorem set_subsingleton (h : UniqueMul A B a0 b0) :
 -- Porting note: mathport warning: expanding binder collection
 --  (ab «expr ∈ » [finset.product/multiset.product/set.prod/list.product](A, B)) -/
 @[to_additive]
-theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
+lemma iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
     UniqueMul A B a0 b0 ↔ ∃! ab, ab ∈ A ×ˢ B ∧ ab.1 * ab.2 = a0 * b0 :=
   ⟨fun _ ↦ ⟨(a0, b0), ⟨Finset.mk_mem_product aA bB, rfl⟩, by simpa⟩,
     fun h ↦ h.elim
@@ -131,7 +131,7 @@ theorem iff_card_le_one [DecidableEq G] (ha0 : a0 ∈ A) (hb0 : b0 ∈ B) :
 -- Porting note: mathport warning: expanding binder collection
 --  (ab «expr ∈ » [finset.product/multiset.product/set.prod/list.product](A, B)) -/
 @[to_additive]
-theorem exists_iff_exists_existsUnique :
+lemma exists_iff_exists_existsUnique :
     (∃ a0 b0 : G, a0 ∈ A ∧ b0 ∈ B ∧ UniqueMul A B a0 b0) ↔
       ∃ g : G, ∃! ab, ab ∈ A ×ˢ B ∧ ab.1 * ab.2 = g :=
   ⟨fun ⟨a0, b0, hA, hB, h⟩ ↦ ⟨_, (iff_existsUnique hA hB).mp h⟩, fun ⟨g, h⟩ ↦ by
@@ -154,7 +154,7 @@ theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G
 #align unique_mul.mul_hom_preimage UniqueMul.mulHom_preimage
 #align unique_add.add_hom_preimage UniqueAdd.addHom_preimage
 
-@[to_additive] theorem of_mulHom_image [DecidableEq H] (f : G →ₙ* H)
+@[to_additive] lemma of_mulHom_image [DecidableEq H] (f : G →ₙ* H)
     (hf : ∀ ⦃a b c d : G⦄, a * b = c * d → f a = f c ∧ f b = f d → a = c ∧ b = d)
     (h : UniqueMul (A.image f) (B.image f) (f a0) (f b0)) : UniqueMul A B a0 b0 :=
   fun a b ha hb ab ↦ hf ab
@@ -194,18 +194,18 @@ section Opposites
 open Finset MulOpposite
 
 @[to_additive]
-theorem of_mulOpposite
+lemma of_mulOpposite
     (h : UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
     UniqueMul A B a0 b0 := fun a b aA bB ab ↦ by
   simpa [and_comm] using h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (congr_arg op ab)
 
 @[to_additive]
-theorem to_mulOpposite (h : UniqueMul A B a0 b0) :
+lemma to_mulOpposite (h : UniqueMul A B a0 b0) :
     UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) :=
   of_mulOpposite (by simp_rw [map_map]; exact (mulHom_map_iff _ fun _ _ ↦ by rfl).mpr h)
 
 @[to_additive]
-theorem iff_mulOpposite :
+lemma iff_mulOpposite :
     UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) ↔
       UniqueMul A B a0 b0 :=
   ⟨of_mulOpposite, to_mulOpposite⟩
@@ -322,7 +322,7 @@ namespace UniqueProds
 
 open Finset
 
-@[to_additive] theorem of_mulHom (f : H →ₙ* G)
+@[to_additive] lemma of_mulHom (f : H →ₙ* G)
     (hf : ∀ ⦃a b c d : H⦄, a * b = c * d → f a = f c ∧ f b = f d → a = c ∧ b = d)
     [UniqueProds G] : UniqueProds H where
   uniqueMul_of_nonempty {A B} A0 B0 := by
@@ -333,7 +333,7 @@ open Finset
     exact ⟨a', ha', b', hb', UniqueMul.of_mulHom_image f hf h⟩
 
 @[to_additive]
-theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f) (_ : UniqueProds G) :
+lemma of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f) (_ : UniqueProds G) :
     UniqueProds H := of_mulHom f (fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·))
 
 /-- `UniqueProd` is preserved under multiplicative equivalences. -/
@@ -352,7 +352,7 @@ theorem of_mulOpposite (h : UniqueProds Gᵐᵒᵖ) : UniqueProds G where
 @[to_additive] instance [h : UniqueProds G] : UniqueProds Gᵐᵒᵖ :=
   of_mulOpposite <| (MulEquiv.opOp G).uniqueProds_iff.mp h
 
-@[to_additive] private theorem toIsLeftCancelMul [UniqueProds G] : IsLeftCancelMul G where
+@[to_additive] private lemma toIsLeftCancelMul [UniqueProds G] : IsLeftCancelMul G where
   mul_left_cancel a b1 b2 he := by
     classical
     have := mem_insert_self b1 {b2}
@@ -491,7 +491,7 @@ namespace TwoUniqueProds
 
 open Finset
 
-@[to_additive] theorem of_mulHom (f : H →ₙ* G)
+@[to_additive] lemma of_mulHom (f : H →ₙ* G)
     (hf : ∀ ⦃a b c d : H⦄, a * b = c * d → f a = f c ∧ f b = f d → a = c ∧ b = d)
     [TwoUniqueProds G] : TwoUniqueProds H where
   uniqueMul_of_one_lt_card {A B} hc := by
@@ -512,7 +512,7 @@ open Finset
     apply mem_image_of_mem <;> assumption
 
 @[to_additive]
-theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f)
+lemma of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f)
     (_ : TwoUniqueProds G) : TwoUniqueProds H :=
   of_mulHom f (fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·))
 

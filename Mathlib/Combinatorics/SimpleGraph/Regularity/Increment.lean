@@ -79,7 +79,7 @@ theorem card_increment (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hP
 
 variable (hP G ε)
 
-theorem increment_isEquipartition : (increment hP G ε).IsEquipartition := by
+lemma increment_isEquipartition : (increment hP G ε).IsEquipartition := by
   simp_rw [IsEquipartition, Set.equitableOn_iff_exists_eq_eq_add_one]
   refine' ⟨m, fun A hA => _⟩
   rw [mem_coe, increment, mem_bind] at hA
@@ -94,7 +94,7 @@ private noncomputable def distinctPairs (x : {x // x ∈ P.parts.offDiag}) :
 
 variable {hP G ε}
 
-private theorem distinctPairs_increment :
+private lemma distinctPairs_increment :
     P.parts.offDiag.attach.biUnion (distinctPairs hP G ε) ⊆ (increment hP G ε).parts.offDiag := by
   rintro ⟨Ui, Vj⟩
   simp only [distinctPairs, increment, mem_offDiag, bind_parts, mem_biUnion, Prod.exists,

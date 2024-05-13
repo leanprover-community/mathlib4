@@ -63,7 +63,7 @@ set_option linter.uppercaseLean3 false in
 variable {β}
 
 @[to_additive]
-theorem lipschitzWith_lipschitz_const_mul_edist [_i : LipschitzMul β] :
+lemma lipschitzWith_lipschitz_const_mul_edist [_i : LipschitzMul β] :
     LipschitzWith (LipschitzMul.C β) fun p : β × β => p.1 * p.2 :=
   Classical.choose_spec _i.lipschitz_mul
 #align lipschitz_with_lipschitz_const_mul_edist lipschitzWith_lipschitz_const_mul_edist
@@ -72,7 +72,7 @@ theorem lipschitzWith_lipschitz_const_mul_edist [_i : LipschitzMul β] :
 variable [LipschitzMul β]
 
 @[to_additive]
-theorem lipschitz_with_lipschitz_const_mul :
+lemma lipschitz_with_lipschitz_const_mul :
     ∀ p q : β × β, dist (p.1 * p.2) (q.1 * q.2) ≤ LipschitzMul.C β * dist p q := by
   rw [← lipschitzWith_iff_dist_le_mul]
   exact lipschitzWith_lipschitz_const_mul_edist
@@ -138,11 +138,11 @@ class BoundedSMul : Prop where
 variable {α β}
 variable [BoundedSMul α β]
 
-theorem dist_smul_pair (x : α) (y₁ y₂ : β) : dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂ :=
+lemma dist_smul_pair (x : α) (y₁ y₂ : β) : dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂ :=
   BoundedSMul.dist_smul_pair' x y₁ y₂
 #align dist_smul_pair dist_smul_pair
 
-theorem dist_pair_smul (x₁ x₂ : α) (y : β) : dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0 :=
+lemma dist_pair_smul (x₁ x₂ : α) (y : β) : dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0 :=
   BoundedSMul.dist_pair_smul' x₁ x₂ y
 #align dist_pair_smul dist_pair_smul
 

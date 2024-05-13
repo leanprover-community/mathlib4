@@ -254,35 +254,35 @@ variable [Preorder α] {p : α → Prop}
 @[simp] lemma preimage_subtype_val_Ioc (a b : {x // p x}) : (↑) ⁻¹' (Ioc a.1 b) = Ioc a b := rfl
 @[simp] lemma preimage_subtype_val_Ioo (a b : {x // p x}) : (↑) ⁻¹' (Ioo a.1 b) = Ioo a b := rfl
 
-theorem image_subtype_val_Icc_subset (a b : {x // p x}) :
+lemma image_subtype_val_Icc_subset (a b : {x // p x}) :
     Subtype.val '' Icc a b ⊆ Icc a.val b.val :=
   image_subset_iff.mpr fun _ m => m
 
-theorem image_subtype_val_Ico_subset (a b : {x // p x}) :
+lemma image_subtype_val_Ico_subset (a b : {x // p x}) :
     Subtype.val '' Ico a b ⊆ Ico a.val b.val :=
   image_subset_iff.mpr fun _ m => m
 
-theorem image_subtype_val_Ioc_subset (a b : {x // p x}) :
+lemma image_subtype_val_Ioc_subset (a b : {x // p x}) :
     Subtype.val '' Ioc a b ⊆ Ioc a.val b.val :=
   image_subset_iff.mpr fun _ m => m
 
-theorem image_subtype_val_Ioo_subset (a b : {x // p x}) :
+lemma image_subtype_val_Ioo_subset (a b : {x // p x}) :
     Subtype.val '' Ioo a b ⊆ Ioo a.val b.val :=
   image_subset_iff.mpr fun _ m => m
 
-theorem image_subtype_val_Iic_subset (a : {x // p x}) :
+lemma image_subtype_val_Iic_subset (a : {x // p x}) :
     Subtype.val '' Iic a ⊆ Iic a.val :=
   image_subset_iff.mpr fun _ m => m
 
-theorem image_subtype_val_Iio_subset (a : {x // p x}) :
+lemma image_subtype_val_Iio_subset (a : {x // p x}) :
     Subtype.val '' Iio a ⊆ Iio a.val :=
   image_subset_iff.mpr fun _ m => m
 
-theorem image_subtype_val_Ici_subset (a : {x // p x}) :
+lemma image_subtype_val_Ici_subset (a : {x // p x}) :
     Subtype.val '' Ici a ⊆ Ici a.val :=
   image_subset_iff.mpr fun _ m => m
 
-theorem image_subtype_val_Ioi_subset (a : {x // p x}) :
+lemma image_subtype_val_Ioi_subset (a : {x // p x}) :
     Subtype.val '' Ioi a ⊆ Ioi a.val :=
   image_subset_iff.mpr fun _ m => m
 

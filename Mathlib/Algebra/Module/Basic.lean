@@ -21,7 +21,7 @@ universe u v
 
 variable {α R M M₂ : Type*}
 
-theorem map_inv_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
+lemma map_inv_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*)
     [DivisionSemiring R] [DivisionSemiring S] [Module R M]
     [Module S M₂] (n : ℕ) (x : M) : f ((n⁻¹ : R) • x) = (n⁻¹ : S) • f x := by
@@ -39,7 +39,7 @@ theorem map_inv_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} 
   · rw [← inv_smul_smul₀ hS (f _), ← map_natCast_smul f R S, smul_inv_smul₀ hR]
 #align map_inv_nat_cast_smul map_inv_natCast_smul
 
-theorem map_inv_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
+lemma map_inv_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
     [Module S M₂] (z : ℤ) (x : M) : f ((z⁻¹ : R) • x) = (z⁻¹ : S) • f x := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
@@ -48,7 +48,7 @@ theorem map_inv_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [F
       map_inv_natCast_smul _ R S]
 #align map_inv_int_cast_smul map_inv_intCast_smul
 
-theorem map_ratCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
+lemma map_ratCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
     [Module S M₂] (c : ℚ) (x : M) :
     f ((c : R) • x) = (c : S) • f x := by
@@ -56,7 +56,7 @@ theorem map_ratCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLi
     map_intCast_smul f R S, map_inv_natCast_smul f R S]
 #align map_rat_cast_smul map_ratCast_smul
 
-theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
+lemma map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
     [_instM : Module ℚ M] [_instM₂ : Module ℚ M₂]
     {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂]
     (f : F) (c : ℚ) (x : M) : f (c • x) = c • f x :=

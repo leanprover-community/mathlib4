@@ -32,7 +32,7 @@ namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
-theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG : IsSeparator G) :
+lemma has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG : IsSeparator G) :
     ∃ G : C, Injective G ∧ IsCoseparator G := by
   haveI : WellPowered C := wellPowered_of_isDetector G hG.isDetector
   haveI : HasProductsOfShape (Subobject (op G)) C := hasProductsOfShape_of_small _ _
@@ -52,7 +52,7 @@ theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG
       Category.assoc, hf, comp_zero])
 #align category_theory.abelian.has_injective_coseparator CategoryTheory.Abelian.has_injective_coseparator
 
-theorem has_projective_separator [HasColimits C] [EnoughProjectives C] (G : C)
+lemma has_projective_separator [HasColimits C] [EnoughProjectives C] (G : C)
     (hG : IsCoseparator G) : ∃ G : C, Projective G ∧ IsSeparator G := by
   obtain ⟨T, hT₁, hT₂⟩ := has_injective_coseparator (op G) ((isSeparator_op_iff _).2 hG)
   exact ⟨unop T, inferInstance, (isSeparator_unop_iff _).2 hT₂⟩

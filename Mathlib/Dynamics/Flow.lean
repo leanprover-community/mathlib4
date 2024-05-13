@@ -48,7 +48,7 @@ def IsInvariant (ϕ : τ → α → α) (s : Set α) : Prop :=
 
 variable (ϕ : τ → α → α) (s : Set α)
 
-theorem isInvariant_iff_image : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s ⊆ s := by
+lemma isInvariant_iff_image : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s ⊆ s := by
   simp_rw [IsInvariant, mapsTo']
 #align is_invariant_iff_image isInvariant_iff_image
 
@@ -58,7 +58,7 @@ def IsFwInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set α) :
   ∀ ⦃t⦄, 0 ≤ t → MapsTo (ϕ t) s s
 #align is_fw_invariant IsFwInvariant
 
-theorem IsInvariant.isFwInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α} {s : Set α}
+lemma IsInvariant.isFwInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α} {s : Set α}
     (h : IsInvariant ϕ s) : IsFwInvariant ϕ s := fun t _ht => h t
 #align is_invariant.is_fw_invariant IsInvariant.isFwInvariant
 
@@ -107,7 +107,7 @@ instance : Inhabited (Flow τ α) :=
 instance : CoeFun (Flow τ α) fun _ => τ → α → α := ⟨Flow.toFun⟩
 
 @[ext]
-theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) → ϕ₁ = ϕ₂
+lemma ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) → ϕ₁ = ϕ₂
   | ⟨f₁, _, _, _⟩, ⟨f₂, _, _, _⟩, h => by
     congr
     funext
@@ -115,7 +115,7 @@ theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) �
 #align flow.ext Flow.ext
 
 @[continuity]
-protected theorem continuous {β : Type*} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
+protected lemma continuous {β : Type*} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
     {f : β → α} (hf : Continuous f) : Continuous fun x => ϕ (t x) (f x) :=
   ϕ.cont'.comp (ht.prod_mk hf)
 #align flow.continuous Flow.continuous
@@ -123,14 +123,14 @@ protected theorem continuous {β : Type*} [TopologicalSpace β] {t : β → τ} 
 alias _root_.Continuous.flow := Flow.continuous
 #align continuous.flow Continuous.flow
 
-theorem map_add (t₁ t₂ : τ) (x : α) : ϕ (t₁ + t₂) x = ϕ t₁ (ϕ t₂ x) := ϕ.map_add' _ _ _
+lemma map_add (t₁ t₂ : τ) (x : α) : ϕ (t₁ + t₂) x = ϕ t₁ (ϕ t₂ x) := ϕ.map_add' _ _ _
 #align flow.map_add Flow.map_add
 
 @[simp]
-theorem map_zero : ϕ 0 = id := funext ϕ.map_zero'
+lemma map_zero : ϕ 0 = id := funext ϕ.map_zero'
 #align flow.map_zero Flow.map_zero
 
-theorem map_zero_apply (x : α) : ϕ 0 x = x := ϕ.map_zero' x
+lemma map_zero_apply (x : α) : ϕ 0 x = x := ϕ.map_zero' x
 #align flow.map_zero_apply Flow.map_zero_apply
 
 /-- Iterations of a continuous function from a topological space `α`
@@ -157,7 +157,7 @@ namespace Flow
 variable {τ : Type*} [AddCommGroup τ] [TopologicalSpace τ] [TopologicalAddGroup τ] {α : Type*}
   [TopologicalSpace α] (ϕ : Flow τ α)
 
-theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=
+lemma isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=
   (isInvariant_iff_image _ _).trans
     (Iff.intro
       (fun h t => Subset.antisymm (h t) fun _ hx => ⟨_, h (-t) ⟨_, hx, rfl⟩, by simp [← map_add]⟩)
@@ -177,7 +177,7 @@ def reverse : Flow τ α where
 -- Porting note: Homeomorphism.continuous_toFun  : Continuous toFun  := by continuity
 -- Porting note: Homeomorphism.continuous_invFun : Continuous invFun := by continuity
 @[continuity]
-theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
+lemma continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
   rw [← curry_uncurry ϕ.toFun]
   apply continuous_curry
   exact ϕ.cont'
@@ -190,7 +190,7 @@ def toHomeomorph (t : τ) : (α ≃ₜ α) where
   right_inv x := by rw [← map_add, add_neg_self, map_zero_apply]
 #align flow.to_homeomorph Flow.toHomeomorph
 
-theorem image_eq_preimage (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
+lemma image_eq_preimage (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
   (ϕ.toHomeomorph t).toEquiv.image_eq_preimage s
 #align flow.image_eq_preimage Flow.image_eq_preimage
 

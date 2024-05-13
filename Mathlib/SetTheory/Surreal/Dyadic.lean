@@ -44,27 +44,27 @@ def powHalf : ℕ → PGame
 #align pgame.pow_half SetTheory.PGame.powHalf
 
 @[simp]
-theorem powHalf_zero : powHalf 0 = 1 :=
+lemma powHalf_zero : powHalf 0 = 1 :=
   rfl
 #align pgame.pow_half_zero SetTheory.PGame.powHalf_zero
 
-theorem powHalf_leftMoves (n) : (powHalf n).LeftMoves = PUnit := by cases n <;> rfl
+lemma powHalf_leftMoves (n) : (powHalf n).LeftMoves = PUnit := by cases n <;> rfl
 #align pgame.pow_half_left_moves SetTheory.PGame.powHalf_leftMoves
 
-theorem powHalf_zero_rightMoves : (powHalf 0).RightMoves = PEmpty :=
+lemma powHalf_zero_rightMoves : (powHalf 0).RightMoves = PEmpty :=
   rfl
 #align pgame.pow_half_zero_right_moves SetTheory.PGame.powHalf_zero_rightMoves
 
-theorem powHalf_succ_rightMoves (n) : (powHalf (n + 1)).RightMoves = PUnit :=
+lemma powHalf_succ_rightMoves (n) : (powHalf (n + 1)).RightMoves = PUnit :=
   rfl
 #align pgame.pow_half_succ_right_moves SetTheory.PGame.powHalf_succ_rightMoves
 
 @[simp]
-theorem powHalf_moveLeft (n i) : (powHalf n).moveLeft i = 0 := by cases n <;> cases i <;> rfl
+lemma powHalf_moveLeft (n i) : (powHalf n).moveLeft i = 0 := by cases n <;> cases i <;> rfl
 #align pgame.pow_half_move_left SetTheory.PGame.powHalf_moveLeft
 
 @[simp]
-theorem powHalf_succ_moveRight (n i) : (powHalf (n + 1)).moveRight i = powHalf n :=
+lemma powHalf_succ_moveRight (n i) : (powHalf (n + 1)).moveRight i = powHalf n :=
   rfl
 #align pgame.pow_half_succ_move_right SetTheory.PGame.powHalf_succ_moveRight
 
@@ -81,7 +81,7 @@ instance uniquePowHalfSuccRightMoves (n) : Unique (powHalf (n + 1)).RightMoves :
 #align pgame.unique_pow_half_succ_right_moves SetTheory.PGame.uniquePowHalfSuccRightMoves
 
 @[simp]
-theorem birthday_half : birthday (powHalf 1) = 2 := by
+lemma birthday_half : birthday (powHalf 1) = 2 := by
   rw [birthday_def]; simp
 #align pgame.birthday_half SetTheory.PGame.birthday_half
 
@@ -94,33 +94,33 @@ theorem numeric_powHalf (n) : (powHalf n).Numeric := by
     · exact ⟨fun _ => numeric_zero, fun _ => hn⟩
 #align pgame.numeric_pow_half SetTheory.PGame.numeric_powHalf
 
-theorem powHalf_succ_lt_powHalf (n : ℕ) : powHalf (n + 1) < powHalf n :=
+lemma powHalf_succ_lt_powHalf (n : ℕ) : powHalf (n + 1) < powHalf n :=
   (numeric_powHalf (n + 1)).lt_moveRight default
 #align pgame.pow_half_succ_lt_pow_half SetTheory.PGame.powHalf_succ_lt_powHalf
 
-theorem powHalf_succ_le_powHalf (n : ℕ) : powHalf (n + 1) ≤ powHalf n :=
+lemma powHalf_succ_le_powHalf (n : ℕ) : powHalf (n + 1) ≤ powHalf n :=
   (powHalf_succ_lt_powHalf n).le
 #align pgame.pow_half_succ_le_pow_half SetTheory.PGame.powHalf_succ_le_powHalf
 
-theorem powHalf_le_one (n : ℕ) : powHalf n ≤ 1 := by
+lemma powHalf_le_one (n : ℕ) : powHalf n ≤ 1 := by
   induction' n with n hn
   · exact le_rfl
   · exact (powHalf_succ_le_powHalf n).trans hn
 #align pgame.pow_half_le_one SetTheory.PGame.powHalf_le_one
 
-theorem powHalf_succ_lt_one (n : ℕ) : powHalf (n + 1) < 1 :=
+lemma powHalf_succ_lt_one (n : ℕ) : powHalf (n + 1) < 1 :=
   (powHalf_succ_lt_powHalf n).trans_le <| powHalf_le_one n
 #align pgame.pow_half_succ_lt_one SetTheory.PGame.powHalf_succ_lt_one
 
-theorem powHalf_pos (n : ℕ) : 0 < powHalf n := by
+lemma powHalf_pos (n : ℕ) : 0 < powHalf n := by
   rw [← lf_iff_lt numeric_zero (numeric_powHalf n), zero_lf_le]; simp
 #align pgame.pow_half_pos SetTheory.PGame.powHalf_pos
 
-theorem zero_le_powHalf (n : ℕ) : 0 ≤ powHalf n :=
+lemma zero_le_powHalf (n : ℕ) : 0 ≤ powHalf n :=
   (powHalf_pos n).le
 #align pgame.zero_le_pow_half SetTheory.PGame.zero_le_powHalf
 
-theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1) ≈ powHalf n := by
+lemma add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1) ≈ powHalf n := by
   induction' n using Nat.strong_induction_on with n hn
   constructor <;> rw [le_iff_forall_lf] <;> constructor
   · rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> apply lf_of_lt
@@ -155,7 +155,7 @@ theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1)
         _ < powHalf n.succ + powHalf n := add_lt_add_right (powHalf_pos _) _
 #align pgame.add_pow_half_succ_self_eq_pow_half SetTheory.PGame.add_powHalf_succ_self_eq_powHalf
 
-theorem half_add_half_equiv_one : powHalf 1 + powHalf 1 ≈ 1 :=
+lemma half_add_half_equiv_one : powHalf 1 + powHalf 1 ≈ 1 :=
   add_powHalf_succ_self_eq_powHalf 0
 #align pgame.half_add_half_equiv_one SetTheory.PGame.half_add_half_equiv_one
 
@@ -173,17 +173,17 @@ def powHalf (n : ℕ) : Surreal :=
 #align surreal.pow_half Surreal.powHalf
 
 @[simp]
-theorem powHalf_zero : powHalf 0 = 1 :=
+lemma powHalf_zero : powHalf 0 = 1 :=
   rfl
 #align surreal.pow_half_zero Surreal.powHalf_zero
 
 @[simp]
-theorem double_powHalf_succ_eq_powHalf (n : ℕ) : 2 • powHalf n.succ = powHalf n := by
+lemma double_powHalf_succ_eq_powHalf (n : ℕ) : 2 • powHalf n.succ = powHalf n := by
   rw [two_nsmul]; exact Quotient.sound (PGame.add_powHalf_succ_self_eq_powHalf n)
 #align surreal.double_pow_half_succ_eq_pow_half Surreal.double_powHalf_succ_eq_powHalf
 
 @[simp]
-theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n • powHalf n = 1 := by
+lemma nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n • powHalf n = 1 := by
   induction' n with n hn
   · simp only [Nat.zero_eq, pow_zero, powHalf_zero, one_smul]
   · rw [← hn, ← double_powHalf_succ_eq_powHalf n, smul_smul (2 ^ n) 2 (powHalf n.succ), mul_comm,
@@ -191,7 +191,7 @@ theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n • powHalf n = 1 := by
 #align surreal.nsmul_pow_two_pow_half Surreal.nsmul_pow_two_powHalf
 
 @[simp]
-theorem nsmul_pow_two_powHalf' (n k : ℕ) : 2 ^ n • powHalf (n + k) = powHalf k := by
+lemma nsmul_pow_two_powHalf' (n k : ℕ) : 2 ^ n • powHalf (n + k) = powHalf k := by
   induction' k with k hk
   · simp only [add_zero, Surreal.nsmul_pow_two_powHalf, Nat.zero_eq, eq_self_iff_true,
       Surreal.powHalf_zero]
@@ -200,7 +200,7 @@ theorem nsmul_pow_two_powHalf' (n k : ℕ) : 2 ^ n • powHalf (n + k) = powHalf
     rwa [← zsmul_eq_zsmul_iff' two_ne_zero]
 #align surreal.nsmul_pow_two_pow_half' Surreal.nsmul_pow_two_powHalf'
 
-theorem zsmul_pow_two_powHalf (m : ℤ) (n k : ℕ) :
+lemma zsmul_pow_two_powHalf (m : ℤ) (n k : ℕ) :
     (m * 2 ^ n) • powHalf (n + k) = m • powHalf k := by
   rw [mul_zsmul]
   congr
@@ -208,7 +208,7 @@ theorem zsmul_pow_two_powHalf (m : ℤ) (n k : ℕ) :
   exact nsmul_pow_two_powHalf' n k
 #align surreal.zsmul_pow_two_pow_half Surreal.zsmul_pow_two_powHalf
 
-theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ = m₂ * 2 ^ y₂) :
+lemma dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ = m₂ * 2 ^ y₂) :
     m₁ • powHalf y₂ = m₂ • powHalf y₁ := by
   revert m₁ m₂
   wlog h : y₁ ≤ y₂
@@ -259,21 +259,21 @@ def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
 #align surreal.dyadic_map Surreal.dyadicMap
 
 @[simp]
-theorem dyadicMap_apply (m : ℤ) (p : Submonoid.powers (2 : ℤ)) :
+lemma dyadicMap_apply (m : ℤ) (p : Submonoid.powers (2 : ℤ)) :
     dyadicMap (IsLocalization.mk' (Localization (Submonoid.powers 2)) m p) =
       m • powHalf (Submonoid.log p) := by
   rw [← Localization.mk_eq_mk']; rfl
 #align surreal.dyadic_map_apply Surreal.dyadicMap_apply
 
 -- @[simp] -- Porting note: simp normal form is `dyadicMap_apply_pow'`
-theorem dyadicMap_apply_pow (m : ℤ) (n : ℕ) :
+lemma dyadicMap_apply_pow (m : ℤ) (n : ℕ) :
     dyadicMap (IsLocalization.mk' (Localization (Submonoid.powers 2)) m (Submonoid.pow 2 n)) =
       m • powHalf n := by
   rw [dyadicMap_apply, @Submonoid.log_pow_int_eq_self 2 one_lt_two]
 #align surreal.dyadic_map_apply_pow Surreal.dyadicMap_apply_pow
 
 @[simp]
-theorem dyadicMap_apply_pow' (m : ℤ) (n : ℕ) :
+lemma dyadicMap_apply_pow' (m : ℤ) (n : ℕ) :
     m • Surreal.powHalf (Submonoid.log (Submonoid.pow (2 : ℤ) n)) = m • powHalf n := by
   rw [@Submonoid.log_pow_int_eq_self 2 one_lt_two]
 

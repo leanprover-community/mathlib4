@@ -53,7 +53,7 @@ theorem Functor.initial_of_isCofiltered_costructuredArrow
     [∀ d, IsCofiltered (CostructuredArrow F d)] : Initial F where
   out _ := IsCofiltered.isConnected _
 
-theorem isFiltered_structuredArrow_of_isFiltered_of_exists [IsFilteredOrEmpty C]
+lemma isFiltered_structuredArrow_of_isFiltered_of_exists [IsFilteredOrEmpty C]
     (h₁ : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) (h₂ : ∀ {d : D} {c : C} (s s' : d ⟶ F.obj c),
       ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t) (d : D) :
     IsFiltered (StructuredArrow d F) := by
@@ -71,7 +71,7 @@ theorem isFiltered_structuredArrow_of_isFiltered_of_exists [IsFilteredOrEmpty C]
       StructuredArrow.homMk (IsFiltered.coeqHom η.right μ.right) (by simp), ?_⟩
     simpa using IsFiltered.coeq_condition _ _
 
-theorem isCofiltered_costructuredArrow_of_isCofiltered_of_exists [IsCofilteredOrEmpty C]
+lemma isCofiltered_costructuredArrow_of_isCofiltered_of_exists [IsCofilteredOrEmpty C]
     (h₁ : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) (h₂ : ∀ {d : D} {c : C} (s s' : F.obj c ⟶ d),
       ∃ (c' : C) (t : c' ⟶ c), F.map t ≫ s = F.map t ≫ s') (d : D) :
     IsCofiltered (CostructuredArrow F d) := by
@@ -204,11 +204,11 @@ theorem Functor.initial_iff_of_isCofiltered [IsCofilteredOrEmpty C] :
     obtain ⟨c', t, ht⟩ := h₂ (Quiver.Hom.op s) (Quiver.Hom.op s')
     exact ⟨c'.unop, t.unop, Quiver.Hom.op_inj ht⟩
 
-theorem Functor.Final.exists_coeq [IsFilteredOrEmpty C] [Final F] {d : D} {c : C}
+lemma Functor.Final.exists_coeq [IsFilteredOrEmpty C] [Final F] {d : D} {c : C}
     (s s' : d ⟶ F.obj c) : ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t :=
   ((final_iff_of_isFiltered F).1 inferInstance).2 s s'
 
-theorem Functor.Initial.exists_eq [IsCofilteredOrEmpty C] [Initial F] {d : D} {c : C}
+lemma Functor.Initial.exists_eq [IsCofilteredOrEmpty C] [Initial F] {d : D} {c : C}
     (s s' : F.obj c ⟶ d) : ∃ (c' : C) (t : c' ⟶ c), F.map t ≫ s = F.map t ≫ s' :=
   ((initial_iff_of_isCofiltered F).1 inferInstance).2 s s'
 

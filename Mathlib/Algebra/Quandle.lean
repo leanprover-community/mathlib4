@@ -198,45 +198,45 @@ def act' (x : R) : R ≃ R where
 #align rack.act Rack.act'
 
 @[simp]
-theorem act'_apply (x y : R) : act' x y = x ◃ y :=
+lemma act'_apply (x y : R) : act' x y = x ◃ y :=
   rfl
 #align rack.act_apply Rack.act'_apply
 
 @[simp]
-theorem act'_symm_apply (x y : R) : (act' x).symm y = x ◃⁻¹ y :=
+lemma act'_symm_apply (x y : R) : (act' x).symm y = x ◃⁻¹ y :=
   rfl
 #align rack.act_symm_apply Rack.act'_symm_apply
 
 @[simp]
-theorem invAct_apply (x y : R) : (act' x)⁻¹ y = x ◃⁻¹ y :=
+lemma invAct_apply (x y : R) : (act' x)⁻¹ y = x ◃⁻¹ y :=
   rfl
 #align rack.inv_act_apply Rack.invAct_apply
 
 @[simp]
-theorem invAct_act_eq (x y : R) : x ◃⁻¹ x ◃ y = y :=
+lemma invAct_act_eq (x y : R) : x ◃⁻¹ x ◃ y = y :=
   left_inv x y
 #align rack.inv_act_act_eq Rack.invAct_act_eq
 
 @[simp]
-theorem act_invAct_eq (x y : R) : x ◃ x ◃⁻¹ y = y :=
+lemma act_invAct_eq (x y : R) : x ◃ x ◃⁻¹ y = y :=
   right_inv x y
 #align rack.act_inv_act_eq Rack.act_invAct_eq
 
-theorem left_cancel (x : R) {y y' : R} : x ◃ y = x ◃ y' ↔ y = y' := by
+lemma left_cancel (x : R) {y y' : R} : x ◃ y = x ◃ y' ↔ y = y' := by
   constructor
   · apply (act' x).injective
   rintro rfl
   rfl
 #align rack.left_cancel Rack.left_cancel
 
-theorem left_cancel_inv (x : R) {y y' : R} : x ◃⁻¹ y = x ◃⁻¹ y' ↔ y = y' := by
+lemma left_cancel_inv (x : R) {y y' : R} : x ◃⁻¹ y = x ◃⁻¹ y' ↔ y = y' := by
   constructor
   · apply (act' x).symm.injective
   rintro rfl
   rfl
 #align rack.left_cancel_inv Rack.left_cancel_inv
 
-theorem self_distrib_inv {x y z : R} : x ◃⁻¹ y ◃⁻¹ z = (x ◃⁻¹ y) ◃⁻¹ x ◃⁻¹ z := by
+lemma self_distrib_inv {x y z : R} : x ◃⁻¹ y ◃⁻¹ z = (x ◃⁻¹ y) ◃⁻¹ x ◃⁻¹ z := by
   rw [← left_cancel (x ◃⁻¹ y), right_inv, ← left_cancel x, right_inv, self_distrib]
   repeat' rw [right_inv]
 #align rack.self_distrib_inv Rack.self_distrib_inv
@@ -271,27 +271,27 @@ instance oppositeRack : Rack Rᵐᵒᵖ
 #align rack.opposite_rack Rack.oppositeRack
 
 @[simp]
-theorem op_act_op_eq {x y : R} : op x ◃ op y = op (x ◃⁻¹ y) :=
+lemma op_act_op_eq {x y : R} : op x ◃ op y = op (x ◃⁻¹ y) :=
   rfl
 #align rack.op_act_op_eq Rack.op_act_op_eq
 
 @[simp]
-theorem op_invAct_op_eq {x y : R} : op x ◃⁻¹ op y = op (x ◃ y) :=
+lemma op_invAct_op_eq {x y : R} : op x ◃⁻¹ op y = op (x ◃ y) :=
   rfl
 #align rack.op_inv_act_op_eq Rack.op_invAct_op_eq
 
 @[simp]
-theorem self_act_act_eq {x y : R} : (x ◃ x) ◃ y = x ◃ y := by rw [← right_inv x y, ← self_distrib]
+lemma self_act_act_eq {x y : R} : (x ◃ x) ◃ y = x ◃ y := by rw [← right_inv x y, ← self_distrib]
 #align rack.self_act_act_eq Rack.self_act_act_eq
 
 @[simp]
-theorem self_invAct_invAct_eq {x y : R} : (x ◃⁻¹ x) ◃⁻¹ y = x ◃⁻¹ y := by
+lemma self_invAct_invAct_eq {x y : R} : (x ◃⁻¹ x) ◃⁻¹ y = x ◃⁻¹ y := by
   have h := @self_act_act_eq _ _ (op x) (op y)
   simpa using h
 #align rack.self_inv_act_inv_act_eq Rack.self_invAct_invAct_eq
 
 @[simp]
-theorem self_act_invAct_eq {x y : R} : (x ◃ x) ◃⁻¹ y = x ◃⁻¹ y := by
+lemma self_act_invAct_eq {x y : R} : (x ◃ x) ◃⁻¹ y = x ◃⁻¹ y := by
   rw [← left_cancel (x ◃ x)]
   rw [right_inv]
   rw [self_act_act_eq]
@@ -299,12 +299,12 @@ theorem self_act_invAct_eq {x y : R} : (x ◃ x) ◃⁻¹ y = x ◃⁻¹ y := by
 #align rack.self_act_inv_act_eq Rack.self_act_invAct_eq
 
 @[simp]
-theorem self_invAct_act_eq {x y : R} : (x ◃⁻¹ x) ◃ y = x ◃ y := by
+lemma self_invAct_act_eq {x y : R} : (x ◃⁻¹ x) ◃ y = x ◃ y := by
   have h := @self_act_invAct_eq _ _ (op x) (op y)
   simpa using h
 #align rack.self_inv_act_act_eq Rack.self_invAct_act_eq
 
-theorem self_act_eq_iff_eq {x y : R} : x ◃ x = y ◃ y ↔ x = y := by
+lemma self_act_eq_iff_eq {x y : R} : x ◃ x = y ◃ y ↔ x = y := by
   constructor; swap
   · rintro rfl; rfl
   intro h
@@ -313,7 +313,7 @@ theorem self_act_eq_iff_eq {x y : R} : x ◃ x = y ◃ y ↔ x = y := by
   · rw [h, ← left_cancel (y ◃ y), right_inv, self_act_act_eq]
 #align rack.self_act_eq_iff_eq Rack.self_act_eq_iff_eq
 
-theorem self_invAct_eq_iff_eq {x y : R} : x ◃⁻¹ x = y ◃⁻¹ y ↔ x = y := by
+lemma self_invAct_eq_iff_eq {x y : R} : x ◃⁻¹ x = y ◃⁻¹ y ↔ x = y := by
   have h := @self_act_eq_iff_eq _ _ (op x) (op y)
   simpa using h
 #align rack.self_inv_act_eq_iff_eq Rack.self_invAct_eq_iff_eq
@@ -335,7 +335,7 @@ def IsInvolutory (R : Type*) [Rack R] : Prop :=
   ∀ x : R, Function.Involutive (Shelf.act x)
 #align rack.is_involutory Rack.IsInvolutory
 
-theorem involutory_invAct_eq_act {R : Type*} [Rack R] (h : IsInvolutory R) (x y : R) :
+lemma involutory_invAct_eq_act {R : Type*} [Rack R] (h : IsInvolutory R) (x y : R) :
     x ◃⁻¹ y = x ◃ y := by
   rw [← left_cancel x, right_inv, h x]
 #align rack.involutory_inv_act_eq_act Rack.involutory_invAct_eq_act
@@ -363,11 +363,11 @@ instance : FunLike (S₁ →◃ S₂) S₁ S₂ where
   coe := toFun
   coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
-@[simp] theorem toFun_eq_coe (f : S₁ →◃ S₂) : f.toFun = f := rfl
+@[simp] lemma toFun_eq_coe (f : S₁ →◃ S₂) : f.toFun = f := rfl
 #align shelf_hom.to_fun_eq_coe ShelfHom.toFun_eq_coe
 
 @[simp]
-theorem map_act (f : S₁ →◃ S₂) {x y : S₁} : f (x ◃ y) = f x ◃ f y :=
+lemma map_act (f : S₁ →◃ S₂) {x y : S₁} : f (x ◃ y) = f x ◃ f y :=
   map_act' f
 #align shelf_hom.map_act ShelfHom.map_act
 
@@ -389,7 +389,7 @@ def comp (g : S₂ →◃ S₃) (f : S₁ →◃ S₂) : S₁ →◃ S₃
 #align shelf_hom.comp ShelfHom.comp
 
 @[simp]
-theorem comp_apply (g : S₂ →◃ S₃) (f : S₁ →◃ S₂) (x : S₁) : (g.comp f) x = g (f x) :=
+lemma comp_apply (g : S₂ →◃ S₃) (f : S₁ →◃ S₂) (x : S₁) : (g.comp f) x = g (f x) :=
   rfl
 #align shelf_hom.comp_apply ShelfHom.comp_apply
 
@@ -411,7 +411,7 @@ variable {Q : Type*} [Quandle Q]
 attribute [simp] fix
 
 @[simp]
-theorem fix_inv {x : Q} : x ◃⁻¹ x = x := by
+lemma fix_inv {x : Q} : x ◃⁻¹ x = x := by
   rw [← left_cancel x]
   simp
 #align quandle.fix_inv Quandle.fix_inv
@@ -446,12 +446,12 @@ instance Conj.quandle (G : Type*) [Group G] : Quandle (Conj G)
 #align quandle.conj.quandle Quandle.Conj.quandle
 
 @[simp]
-theorem conj_act_eq_conj {G : Type*} [Group G] (x y : Conj G) :
+lemma conj_act_eq_conj {G : Type*} [Group G] (x y : Conj G) :
     x ◃ y = ((x : G) * (y : G) * (x : G)⁻¹ : G) :=
   rfl
 #align quandle.conj_act_eq_conj Quandle.conj_act_eq_conj
 
-theorem conj_swap {G : Type*} [Group G] (x y : Conj G) : x ◃ y = y ↔ y ◃ x = x := by
+lemma conj_swap {G : Type*} [Group G] (x y : Conj G) : x ◃ y = y ↔ y ◃ x = x := by
   dsimp [Conj] at *; constructor
   repeat' intro h; conv_rhs => rw [eq_mul_inv_of_mul_eq (eq_mul_inv_of_mul_eq h)]; simp
 #align quandle.conj_swap Quandle.conj_swap
@@ -483,7 +483,7 @@ because it is an involution (see `dihedralAct.inv`).
 def dihedralAct (n : ℕ) (a : ZMod n) : ZMod n → ZMod n := fun b => 2 * a - b
 #align quandle.dihedral_act Quandle.dihedralAct
 
-theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAct n a) := by
+lemma dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAct n a) := by
   intro b
   dsimp only [dihedralAct]
   simp
@@ -636,19 +636,19 @@ theorem PreEnvelGroupRel'.rel {R : Type u} [Rack R] {a b : PreEnvelGroup R} :
 #align rack.pre_envel_group_rel'.rel Rack.PreEnvelGroupRel'.rel
 
 @[refl]
-theorem PreEnvelGroupRel.refl {R : Type u} [Rack R] {a : PreEnvelGroup R} :
+lemma PreEnvelGroupRel.refl {R : Type u} [Rack R] {a : PreEnvelGroup R} :
     PreEnvelGroupRel R a a :=
   PreEnvelGroupRel.rel PreEnvelGroupRel'.refl
 #align rack.pre_envel_group_rel.refl Rack.PreEnvelGroupRel.refl
 
 @[symm]
-theorem PreEnvelGroupRel.symm {R : Type u} [Rack R] {a b : PreEnvelGroup R} :
+lemma PreEnvelGroupRel.symm {R : Type u} [Rack R] {a b : PreEnvelGroup R} :
     PreEnvelGroupRel R a b → PreEnvelGroupRel R b a
   | ⟨r⟩ => r.symm.rel
 #align rack.pre_envel_group_rel.symm Rack.PreEnvelGroupRel.symm
 
 @[trans]
-theorem PreEnvelGroupRel.trans {R : Type u} [Rack R] {a b c : PreEnvelGroup R} :
+lemma PreEnvelGroupRel.trans {R : Type u} [Rack R] {a b c : PreEnvelGroup R} :
     PreEnvelGroupRel R a b → PreEnvelGroupRel R b c → PreEnvelGroupRel R a c
   | ⟨rab⟩, ⟨rbc⟩ => (rab.trans rbc).rel
 #align rack.pre_envel_group_rel.trans Rack.PreEnvelGroupRel.trans
@@ -798,7 +798,7 @@ def envelAction {R : Type*} [Rack R] : EnvelGroup R →* R ≃ R :=
 #align rack.envel_action Rack.envelAction
 
 @[simp]
-theorem envelAction_prop {R : Type*} [Rack R] (x y : R) :
+lemma envelAction_prop {R : Type*} [Rack R] (x y : R) :
     envelAction (toEnvelGroup R x) y = x ◃ y :=
   rfl
 #align rack.envel_action_prop Rack.envelAction_prop

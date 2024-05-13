@@ -43,40 +43,40 @@ instance instTopologicalSpace : TopologicalSpace (tsze R M) :=
 instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
   Prod.t2Space
 
-theorem nhds_def (x : tsze R M) : 𝓝 x = (𝓝 x.fst).prod (𝓝 x.snd) := by
+lemma nhds_def (x : tsze R M) : 𝓝 x = (𝓝 x.fst).prod (𝓝 x.snd) := by
   cases x
   exact nhds_prod_eq
 #align triv_sq_zero_ext.nhds_def TrivSqZeroExt.nhds_def
 
-theorem nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = (𝓝 x).prod (𝓝 0) :=
+lemma nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = (𝓝 x).prod (𝓝 0) :=
   nhds_def _
 #align triv_sq_zero_ext.nhds_inl TrivSqZeroExt.nhds_inl
 
-theorem nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = (𝓝 0).prod (𝓝 m) :=
+lemma nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = (𝓝 0).prod (𝓝 m) :=
   nhds_def _
 #align triv_sq_zero_ext.nhds_inr TrivSqZeroExt.nhds_inr
 
-nonrec theorem continuous_fst : Continuous (fst : tsze R M → R) :=
+nonrec lemma continuous_fst : Continuous (fst : tsze R M → R) :=
   continuous_fst
 #align triv_sq_zero_ext.continuous_fst TrivSqZeroExt.continuous_fst
 
-nonrec theorem continuous_snd : Continuous (snd : tsze R M → M) :=
+nonrec lemma continuous_snd : Continuous (snd : tsze R M → M) :=
   continuous_snd
 #align triv_sq_zero_ext.continuous_snd TrivSqZeroExt.continuous_snd
 
-theorem continuous_inl [Zero M] : Continuous (inl : R → tsze R M) :=
+lemma continuous_inl [Zero M] : Continuous (inl : R → tsze R M) :=
   continuous_id.prod_mk continuous_const
 #align triv_sq_zero_ext.continuous_inl TrivSqZeroExt.continuous_inl
 
-theorem continuous_inr [Zero R] : Continuous (inr : M → tsze R M) :=
+lemma continuous_inr [Zero R] : Continuous (inr : M → tsze R M) :=
   continuous_const.prod_mk continuous_id
 #align triv_sq_zero_ext.continuous_inr TrivSqZeroExt.continuous_inr
 
-theorem embedding_inl [Zero M] : Embedding (inl : R → tsze R M) :=
+lemma embedding_inl [Zero M] : Embedding (inl : R → tsze R M) :=
   embedding_of_embedding_compose continuous_inl continuous_fst embedding_id
 #align triv_sq_zero_ext.embedding_inl TrivSqZeroExt.embedding_inl
 
-theorem embedding_inr [Zero R] : Embedding (inr : M → tsze R M) :=
+lemma embedding_inr [Zero R] : Embedding (inr : M → tsze R M) :=
   embedding_of_embedding_compose continuous_inr continuous_snd embedding_id
 #align triv_sq_zero_ext.embedding_inr TrivSqZeroExt.embedding_inr
 
@@ -144,22 +144,22 @@ instance [TopologicalSpace S] [SMul S R] [SMul S M] [ContinuousSMul S R] [Contin
 
 variable (M)
 
-theorem hasSum_inl [AddCommMonoid R] [AddCommMonoid M] {f : α → R} {a : R} (h : HasSum f a) :
+lemma hasSum_inl [AddCommMonoid R] [AddCommMonoid M] {f : α → R} {a : R} (h : HasSum f a) :
     HasSum (fun x ↦ inl (f x)) (inl a : tsze R M) :=
   h.map (⟨⟨inl, inl_zero _⟩, inl_add _⟩ : R →+ tsze R M) continuous_inl
 #align triv_sq_zero_ext.has_sum_inl TrivSqZeroExt.hasSum_inl
 
-theorem hasSum_inr [AddCommMonoid R] [AddCommMonoid M] {f : α → M} {a : M} (h : HasSum f a) :
+lemma hasSum_inr [AddCommMonoid R] [AddCommMonoid M] {f : α → M} {a : M} (h : HasSum f a) :
     HasSum (fun x ↦ inr (f x)) (inr a : tsze R M) :=
   h.map (⟨⟨inr, inr_zero _⟩, inr_add _⟩ : M →+ tsze R M) continuous_inr
 #align triv_sq_zero_ext.has_sum_inr TrivSqZeroExt.hasSum_inr
 
-theorem hasSum_fst [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
+lemma hasSum_fst [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
     (h : HasSum f a) : HasSum (fun x ↦ fst (f x)) (fst a) :=
   h.map (⟨⟨fst, fst_zero⟩, fst_add⟩ : tsze R M →+ R) continuous_fst
 #align triv_sq_zero_ext.has_sum_fst TrivSqZeroExt.hasSum_fst
 
-theorem hasSum_snd [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
+lemma hasSum_snd [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
     (h : HasSum f a) : HasSum (fun x ↦ snd (f x)) (snd a) :=
   h.map (⟨⟨snd, snd_zero⟩, snd_add⟩ : tsze R M →+ M) continuous_snd
 #align triv_sq_zero_ext.has_sum_snd TrivSqZeroExt.hasSum_snd
@@ -182,21 +182,21 @@ instance [AddGroup R] [AddGroup M] [UniformAddGroup R] [UniformAddGroup M] :
 
 open Uniformity
 
-theorem uniformity_def :
+lemma uniformity_def :
     𝓤 (tsze R M) =
       ((𝓤 R).comap fun p => (p.1.fst, p.2.fst)) ⊓ ((𝓤 M).comap fun p => (p.1.snd, p.2.snd)) :=
   rfl
 
-nonrec theorem uniformContinuous_fst : UniformContinuous (fst : tsze R M → R) :=
+nonrec lemma uniformContinuous_fst : UniformContinuous (fst : tsze R M → R) :=
   uniformContinuous_fst
 
-nonrec theorem uniformContinuous_snd : UniformContinuous (snd : tsze R M → M) :=
+nonrec lemma uniformContinuous_snd : UniformContinuous (snd : tsze R M → M) :=
   uniformContinuous_snd
 
-theorem uniformContinuous_inl [Zero M] : UniformContinuous (inl : R → tsze R M) :=
+lemma uniformContinuous_inl [Zero M] : UniformContinuous (inl : R → tsze R M) :=
   uniformContinuous_id.prod_mk uniformContinuous_const
 
-theorem uniformContinuous_inr [Zero R] : UniformContinuous (inr : M → tsze R M) :=
+lemma uniformContinuous_inr [Zero R] : UniformContinuous (inr : M → tsze R M) :=
   uniformContinuous_const.prod_mk uniformContinuous_id
 
 end Uniformity

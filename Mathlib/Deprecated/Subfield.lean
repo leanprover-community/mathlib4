@@ -36,13 +36,13 @@ structure IsSubfield extends IsSubring S : Prop where
   inv_mem : ∀ {x : F}, x ∈ S → x⁻¹ ∈ S
 #align is_subfield IsSubfield
 
-theorem IsSubfield.div_mem {S : Set F} (hS : IsSubfield S) {x y : F} (hx : x ∈ S) (hy : y ∈ S) :
+lemma IsSubfield.div_mem {S : Set F} (hS : IsSubfield S) {x y : F} (hx : x ∈ S) (hy : y ∈ S) :
     x / y ∈ S := by
   rw [div_eq_mul_inv]
   exact hS.toIsSubring.toIsSubmonoid.mul_mem hx (hS.inv_mem hy)
 #align is_subfield.div_mem IsSubfield.div_mem
 
-theorem IsSubfield.pow_mem {a : F} {n : ℤ} {s : Set F} (hs : IsSubfield s) (h : a ∈ s) :
+lemma IsSubfield.pow_mem {a : F} {n : ℤ} {s : Set F} (hs : IsSubfield s) (h : a ∈ s) :
     a ^ n ∈ s := by
   cases' n with n n
   · suffices a ^ (n : ℤ) ∈ s by exact this
@@ -52,12 +52,12 @@ theorem IsSubfield.pow_mem {a : F} {n : ℤ} {s : Set F} (hs : IsSubfield s) (h 
     exact hs.inv_mem (hs.toIsSubring.toIsSubmonoid.pow_mem h)
 #align is_subfield.pow_mem IsSubfield.pow_mem
 
-theorem Univ.isSubfield : IsSubfield (@Set.univ F) :=
+lemma Univ.isSubfield : IsSubfield (@Set.univ F) :=
   { Univ.isSubmonoid, IsAddSubgroup.univ_addSubgroup with
     inv_mem := fun _ ↦ trivial }
 #align univ.is_subfield Univ.isSubfield
 
-theorem Preimage.isSubfield {K : Type*} [Field K] (f : F →+* K) {s : Set K} (hs : IsSubfield s) :
+lemma Preimage.isSubfield {K : Type*} [Field K] (f : F →+* K) {s : Set K} (hs : IsSubfield s) :
     IsSubfield (f ⁻¹' s) :=
   { f.isSubring_preimage hs.toIsSubring with
     inv_mem := fun {a} (ha : f a ∈ s) ↦ show f a⁻¹ ∈ s by
@@ -65,13 +65,13 @@ theorem Preimage.isSubfield {K : Type*} [Field K] (f : F →+* K) {s : Set K} (h
       exact hs.inv_mem ha }
 #align preimage.is_subfield Preimage.isSubfield
 
-theorem Image.isSubfield {K : Type*} [Field K] (f : F →+* K) {s : Set F} (hs : IsSubfield s) :
+lemma Image.isSubfield {K : Type*} [Field K] (f : F →+* K) {s : Set F} (hs : IsSubfield s) :
     IsSubfield (f '' s) :=
   { f.isSubring_image hs.toIsSubring with
     inv_mem := fun ⟨x, xmem, ha⟩ ↦ ⟨x⁻¹, hs.inv_mem xmem, ha ▸ map_inv₀ f x⟩ }
 #align image.is_subfield Image.isSubfield
 
-theorem Range.isSubfield {K : Type*} [Field K] (f : F →+* K) : IsSubfield (Set.range f) := by
+lemma Range.isSubfield {K : Type*} [Field K] (f : F →+* K) : IsSubfield (Set.range f) := by
   rw [← Set.image_univ]
   apply Image.isSubfield _ Univ.isSubfield
 #align range.is_subfield Range.isSubfield
@@ -85,11 +85,11 @@ def closure : Set F :=
 
 variable {S}
 
-theorem ring_closure_subset : Ring.closure S ⊆ closure S :=
+lemma ring_closure_subset : Ring.closure S ⊆ closure S :=
   fun x hx ↦ ⟨x, hx, 1, Ring.closure.isSubring.toIsSubmonoid.one_mem, div_one x⟩
 #align field.ring_closure_subset Field.ring_closure_subset
 
-theorem closure.isSubmonoid : IsSubmonoid (closure S) :=
+lemma closure.isSubmonoid : IsSubmonoid (closure S) :=
   { mul_mem := by
       rintro _ _ ⟨p, hp, q, hq, hq0, rfl⟩ ⟨r, hr, s, hs, hs0, rfl⟩
       exact ⟨p * r, IsSubmonoid.mul_mem Ring.closure.isSubring.toIsSubmonoid hp hr, q * s,
@@ -98,7 +98,7 @@ theorem closure.isSubmonoid : IsSubmonoid (closure S) :=
     one_mem := ring_closure_subset <| IsSubmonoid.one_mem Ring.closure.isSubring.toIsSubmonoid }
 #align field.closure.is_submonoid Field.closure.isSubmonoid
 
-theorem closure.isSubfield : IsSubfield (closure S) :=
+lemma closure.isSubfield : IsSubfield (closure S) :=
   { closure.isSubmonoid with
     add_mem := by
       intro a b ha hb
@@ -122,31 +122,31 @@ theorem closure.isSubfield : IsSubfield (closure S) :=
       exact ⟨q, hq, p, hp, (inv_div _ _).symm⟩ }
 #align field.closure.is_subfield Field.closure.isSubfield
 
-theorem mem_closure {a : F} (ha : a ∈ S) : a ∈ closure S :=
+lemma mem_closure {a : F} (ha : a ∈ S) : a ∈ closure S :=
   ring_closure_subset <| Ring.mem_closure ha
 #align field.mem_closure Field.mem_closure
 
-theorem subset_closure : S ⊆ closure S :=
+lemma subset_closure : S ⊆ closure S :=
   fun _ ↦ mem_closure
 #align field.subset_closure Field.subset_closure
 
-theorem closure_subset {T : Set F} (hT : IsSubfield T) (H : S ⊆ T) : closure S ⊆ T := by
+lemma closure_subset {T : Set F} (hT : IsSubfield T) (H : S ⊆ T) : closure S ⊆ T := by
   rintro _ ⟨p, hp, q, hq, hq0, rfl⟩
   exact hT.div_mem (Ring.closure_subset hT.toIsSubring H hp)
     (Ring.closure_subset hT.toIsSubring H hq)
 #align field.closure_subset Field.closure_subset
 
-theorem closure_subset_iff {s t : Set F} (ht : IsSubfield t) : closure s ⊆ t ↔ s ⊆ t :=
+lemma closure_subset_iff {s t : Set F} (ht : IsSubfield t) : closure s ⊆ t ↔ s ⊆ t :=
   ⟨Set.Subset.trans subset_closure, closure_subset ht⟩
 #align field.closure_subset_iff Field.closure_subset_iff
 
-theorem closure_mono {s t : Set F} (H : s ⊆ t) : closure s ⊆ closure t :=
+lemma closure_mono {s t : Set F} (H : s ⊆ t) : closure s ⊆ closure t :=
   closure_subset closure.isSubfield <| Set.Subset.trans H subset_closure
 #align field.closure_mono Field.closure_mono
 
 end Field
 
-theorem isSubfield_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set F}
+lemma isSubfield_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set F}
     (hs : ∀ i, IsSubfield (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubfield (⋃ i, s i) :=
   { inv_mem := fun hx ↦
@@ -155,13 +155,13 @@ theorem isSubfield_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set
     toIsSubring := isSubring_iUnion_of_directed (fun i ↦ (hs i).toIsSubring) directed }
 #align is_subfield_Union_of_directed isSubfield_iUnion_of_directed
 
-theorem IsSubfield.inter {S₁ S₂ : Set F} (hS₁ : IsSubfield S₁) (hS₂ : IsSubfield S₂) :
+lemma IsSubfield.inter {S₁ S₂ : Set F} (hS₁ : IsSubfield S₁) (hS₂ : IsSubfield S₂) :
     IsSubfield (S₁ ∩ S₂) :=
   { IsSubring.inter hS₁.toIsSubring hS₂.toIsSubring with
     inv_mem := fun hx ↦ ⟨hS₁.inv_mem hx.1, hS₂.inv_mem hx.2⟩ }
 #align is_subfield.inter IsSubfield.inter
 
-theorem IsSubfield.iInter {ι : Sort*} {S : ι → Set F} (h : ∀ y : ι, IsSubfield (S y)) :
+lemma IsSubfield.iInter {ι : Sort*} {S : ι → Set F} (h : ∀ y : ι, IsSubfield (S y)) :
     IsSubfield (Set.iInter S) :=
   { IsSubring.iInter fun y ↦ (h y).toIsSubring with
     inv_mem := fun hx ↦ Set.mem_iInter.2 fun y ↦ (h y).inv_mem <| Set.mem_iInter.1 hx y }

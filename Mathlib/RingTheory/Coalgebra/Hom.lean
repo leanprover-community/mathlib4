@@ -74,11 +74,11 @@ instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) :=
   ⟨CoalgHomClass.toCoalgHom⟩
 
 @[simp]
-theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
+lemma counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
   LinearMap.congr_fun (counit_comp f) _
 
 @[simp]
-theorem map_comp_comul_apply (f : F) (x : A) :
+lemma map_comp_comul_apply (f : F) (x : A) :
     TensorProduct.map f f (comul x) = comul (R := R) (f x) :=
   LinearMap.congr_fun (map_comp_comul f) _
 
@@ -116,66 +116,66 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
 initialize_simps_projections CoalgHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) :
+protected lemma coe_coe {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) :
     ⇑(f : A →ₗc[R] B) = f :=
   rfl
 
 @[simp]
-theorem coe_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A → B) = f :=
+lemma coe_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A → B) = f :=
   rfl
 
 @[norm_cast]
-theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
+lemma coe_mks {f : A → B} (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_linearMap_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A →ₗ[R] B) = f :=
+lemma coe_linearMap_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A →ₗ[R] B) = f :=
   rfl
 
 @[simp]
-theorem toLinearMap_eq_coe (f : A →ₗc[R] B) : f.toLinearMap = f :=
+lemma toLinearMap_eq_coe (f : A →ₗc[R] B) : f.toLinearMap = f :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_toLinearMap (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
+lemma coe_toLinearMap (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 
 @[norm_cast]
-theorem coe_toAddMonoidHom (f : A →ₗc[R] B) : ⇑(f : A →+ B) = f :=
+lemma coe_toAddMonoidHom (f : A →ₗc[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
-theorem coe_fn_injective : @Function.Injective (A →ₗc[R] B) (A → B) (↑) :=
+lemma coe_fn_injective : @Function.Injective (A →ₗc[R] B) (A → B) (↑) :=
   DFunLike.coe_injective
 
-theorem coe_fn_inj {φ₁ φ₂ : A →ₗc[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
+lemma coe_fn_inj {φ₁ φ₂ : A →ₗc[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
   DFunLike.coe_fn_eq
 
-theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →ₗ[R] B) :=
+lemma coe_linearMap_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →ₗ[R] B) :=
   fun φ₁ φ₂ H => coe_fn_injective <|
     show ((φ₁ : A →ₗ[R] B) : A → B) = ((φ₂ : A →ₗ[R] B) : A → B) from congr_arg _ H
 
-theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →+ B) :=
+lemma coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →+ B) :=
   LinearMap.toAddMonoidHom_injective.comp coe_linearMap_injective
 
-protected theorem congr_fun {φ₁ φ₂ : A →ₗc[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
+protected lemma congr_fun {φ₁ φ₂ : A →ₗc[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
   DFunLike.congr_fun H x
 
-protected theorem congr_arg (φ : A →ₗc[R] B) {x y : A} (h : x = y) : φ x = φ y :=
+protected lemma congr_arg (φ : A →ₗc[R] B) {x y : A} (h : x = y) : φ x = φ y :=
   DFunLike.congr_arg φ h
 
 @[ext]
-theorem ext {φ₁ φ₂ : A →ₗc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
+lemma ext {φ₁ φ₂ : A →ₗc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
   DFunLike.ext _ _ H
 
-theorem ext_iff {φ₁ φ₂ : A →ₗc[R] B} : φ₁ = φ₂ ↔ ∀ x, φ₁ x = φ₂ x :=
+lemma ext_iff {φ₁ φ₂ : A →ₗc[R] B} : φ₁ = φ₂ ↔ ∀ x, φ₁ x = φ₂ x :=
   DFunLike.ext_iff
 
 @[ext high]
-theorem ext_of_ring {f g : R →ₗc[R] A} (h : f 1 = g 1) : f = g :=
+lemma ext_of_ring {f g : R →ₗc[R] A} (h : f 1 = g 1) : f = g :=
   coe_linearMap_injective (by ext; assumption)
 
 @[simp]
-theorem mk_coe {f : A →ₗc[R] B} (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
+lemma mk_coe {f : A →ₗc[R] B} (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
   ext fun _ => rfl
 
 variable (R A)
@@ -189,11 +189,11 @@ variable (R A)
 variable {R A}
 
 @[simp]
-theorem coe_id : ⇑(CoalgHom.id R A) = id :=
+lemma coe_id : ⇑(CoalgHom.id R A) = id :=
   rfl
 
 @[simp]
-theorem id_toLinearMap : (CoalgHom.id R A : A →ₗ[R] A) = LinearMap.id := rfl
+lemma id_toLinearMap : (CoalgHom.id R A : A →ₗ[R] A) = LinearMap.id := rfl
 
 /-- Composition of coalgebra homomorphisms. -/
 @[simps!] def comp (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) : A →ₗc[R] C :=
@@ -202,27 +202,27 @@ theorem id_toLinearMap : (CoalgHom.id R A : A →ₗ[R] A) = LinearMap.id := rfl
     map_comp_comul := by ext; simp [map_comp] }
 
 @[simp]
-theorem coe_comp (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) : ⇑(φ₁.comp φ₂) = φ₁ ∘ φ₂ := rfl
+lemma coe_comp (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) : ⇑(φ₁.comp φ₂) = φ₁ ∘ φ₂ := rfl
 
 @[simp]
-theorem comp_toLinearMap (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) :
+lemma comp_toLinearMap (φ₁ : B →ₗc[R] C) (φ₂ : A →ₗc[R] B) :
     φ₁.comp φ₂ = (φ₁ : B →ₗ[R] C) ∘ₗ (φ₂ : A →ₗ[R] B) := rfl
 
 variable (φ : A →ₗc[R] B)
 
 @[simp]
-theorem comp_id : φ.comp (CoalgHom.id R A) = φ :=
+lemma comp_id : φ.comp (CoalgHom.id R A) = φ :=
   ext fun _x => rfl
 
 @[simp]
-theorem id_comp : (CoalgHom.id R B).comp φ = φ :=
+lemma id_comp : (CoalgHom.id R B).comp φ = φ :=
   ext fun _x => rfl
 
-theorem comp_assoc (φ₁ : C →ₗc[R] D) (φ₂ : B →ₗc[R] C) (φ₃ : A →ₗc[R] B) :
+lemma comp_assoc (φ₁ : C →ₗc[R] D) (φ₂ : B →ₗc[R] C) (φ₃ : A →ₗc[R] B) :
     (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) :=
   ext fun _x => rfl
 
-theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul A B R' R] (r : R')
+lemma map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul A B R' R] (r : R')
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
@@ -235,11 +235,11 @@ instance End : Monoid (A →ₗc[R] A) where
   mul_one ϕ := ext fun x => rfl
 
 @[simp]
-theorem one_apply (x : A) : (1 : A →ₗc[R] A) x = x :=
+lemma one_apply (x : A) : (1 : A →ₗc[R] A) x = x :=
   rfl
 
 @[simp]
-theorem mul_apply (φ ψ : A →ₗc[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
+lemma mul_apply (φ ψ : A →ₗc[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
 
 end
@@ -262,11 +262,11 @@ def counitCoalgHom : A →ₗc[R] R :=
         ← LinearMap.lTensor_comp_rTensor, rTensor_counit_comul, LinearMap.lTensor_tmul] }
 
 @[simp]
-theorem counitCoalgHom_apply (x : A) :
+lemma counitCoalgHom_apply (x : A) :
     counitCoalgHom R A x = counit x := rfl
 
 @[simp]
-theorem counitCoalgHom_toLinearMap :
+lemma counitCoalgHom_toLinearMap :
     counitCoalgHom R A = counit (R := R) (A := A) := rfl
 
 variable {R}
@@ -279,6 +279,6 @@ instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
       Function.comp_apply, CommSemiring.counit_apply]⟩
 
 @[ext high]
-theorem ext_to_ring (f g : A →ₗc[R] R) : f = g := Subsingleton.elim _ _
+lemma ext_to_ring (f g : A →ₗc[R] R) : f = g := Subsingleton.elim _ _
 
 end Coalgebra

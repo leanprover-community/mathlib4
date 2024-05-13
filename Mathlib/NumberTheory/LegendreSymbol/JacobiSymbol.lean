@@ -358,7 +358,7 @@ theorem at_neg_two {b : ℕ} (hb : Odd b) : J(-2 | b) = χ₈' b :=
   value_at (-2) χ₈'.toMonoidHom (fun p pp => @legendreSym.at_neg_two p ⟨pp⟩) hb
 #align jacobi_sym.at_neg_two jacobiSym.at_neg_two
 
-theorem div_four_left {a : ℤ} {b : ℕ} (ha4 : a % 4 = 0) (hb2 : b % 2 = 1) :
+lemma div_four_left {a : ℤ} {b : ℕ} (ha4 : a % 4 = 0) (hb2 : b % 2 = 1) :
     J(a / 4 | b) = J(a | b) := by
   obtain ⟨a, rfl⟩ := Int.dvd_of_emod_eq_zero ha4
   have : Int.gcd (2 : ℕ) b = 1 := by
@@ -366,7 +366,7 @@ theorem div_four_left {a : ℤ} {b : ℕ} (ha4 : a % 4 = 0) (hb2 : b % 2 = 1) :
   rw [Int.mul_ediv_cancel_left _ (by decide), jacobiSym.mul_left,
     (by decide : (4 : ℤ) = (2 : ℕ) ^ 2), jacobiSym.sq_one' this, one_mul]
 
-theorem even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
+lemma even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
     (if b % 8 = 3 ∨ b % 8 = 5 then -J(a / 2 | b) else J(a / 2 | b)) = J(a | b) := by
   obtain ⟨a, rfl⟩ := Int.dvd_of_emod_eq_zero ha2
   rw [Int.mul_ediv_cancel_left _ (by decide), jacobiSym.mul_left,
@@ -487,7 +487,7 @@ theorem quadratic_reciprocity_three_mod_four {a b : ℕ} (ha : a % 4 = 3) (hb : 
     rwa [odd_iff, odd_of_mod_four_eq_three]
 #align jacobi_sym.quadratic_reciprocity_three_mod_four jacobiSym.quadratic_reciprocity_three_mod_four
 
-theorem quadratic_reciprocity_if {a b : ℕ} (ha2 : a % 2 = 1) (hb2 : b % 2 = 1) :
+lemma quadratic_reciprocity_if {a b : ℕ} (ha2 : a % 2 = 1) (hb2 : b % 2 = 1) :
     (if a % 4 = 3 ∧ b % 4 = 3 then -J(b | a) else J(b | a)) = J(a | b) := by
   rcases Nat.odd_mod_four_iff.mp ha2 with ha1 | ha3
   · simpa [ha1] using jacobiSym.quadratic_reciprocity_one_mod_four' (Nat.odd_iff.mpr hb2) ha1
@@ -566,7 +566,7 @@ decreasing_by
   · exact a.div_lt_self ha0 (by decide)
   · exact b.mod_lt ha0
 
-private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a > 0}
+private lemma fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a > 0}
     (hb2 : b % 2 = 1) (hb1 : b > 1) :
     fastJacobiSymAux a b flip ha0 = if flip then -J(a | b) else J(a | b) := by
   induction' a using Nat.strongInductionOn with a IH generalizing b flip
@@ -607,7 +607,7 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   else
     fastJacobiSymAux (a % b).natAbs b false (Int.natAbs_pos.mpr hab)
 
-@[csimp] private theorem fastJacobiSym.eq : jacobiSym = fastJacobiSym := by
+@[csimp] private lemma fastJacobiSym.eq : jacobiSym = fastJacobiSym := by
   ext a b
   induction' b using Nat.strongInductionOn with b IH
   unfold fastJacobiSym
@@ -633,7 +633,7 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 @[inline, nolint unusedArguments]
 private def fastLegendreSym (p : ℕ) [Fact p.Prime] (a : ℤ) : ℤ := J(a | p)
 
-@[csimp] private theorem fastLegendreSym.eq : legendreSym = fastLegendreSym := by
+@[csimp] private lemma fastLegendreSym.eq : legendreSym = fastLegendreSym := by
   ext p _ a; rw [legendreSym.to_jacobiSym, fastLegendreSym]
 
 end FastJacobi

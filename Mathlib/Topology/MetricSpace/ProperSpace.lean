@@ -155,7 +155,7 @@ theorem exists_lt_subset_ball (hs : IsClosed s) (h : s ⊆ ball x r) : ∃ r' < 
 
 end ProperSpace
 
-theorem Metric.exists_isLocalMin_mem_ball [PseudoMetricSpace α] [ProperSpace α] [TopologicalSpace β]
+lemma Metric.exists_isLocalMin_mem_ball [PseudoMetricSpace α] [ProperSpace α] [TopologicalSpace β]
     [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} {a z : α} {r : ℝ}
     (hf : ContinuousOn f (closedBall a r)) (hz : z ∈ closedBall a r)
     (hf1 : ∀ z' ∈ sphere a r, f z < f z') : ∃ z ∈ ball a r, IsLocalMin f z := by

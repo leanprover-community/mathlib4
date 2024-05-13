@@ -43,19 +43,19 @@ def onQuot {J : Ideal R} (hJ : J ≤ supp v) : Valuation (R ⧸ J) Γ₀ where
 #align valuation.on_quot Valuation.onQuot
 
 @[simp]
-theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
+lemma onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
     (v.onQuot hJ).comap (Ideal.Quotient.mk J) = v :=
   ext fun _ => rfl
 #align valuation.on_quot_comap_eq Valuation.onQuot_comap_eq
 
-theorem self_le_supp_comap (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
+lemma self_le_supp_comap (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
     J ≤ (v.comap (Ideal.Quotient.mk J)).supp := by
   rw [comap_supp, ← Ideal.map_le_iff_le_comap]
   simp
 #align valuation.self_le_supp_comap Valuation.self_le_supp_comap
 
 @[simp]
-theorem comap_onQuot_eq (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
+lemma comap_onQuot_eq (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
     (v.comap (Ideal.Quotient.mk J)).onQuot (v.self_le_supp_comap J) = v :=
   ext <| by
     rintro ⟨x⟩
@@ -74,7 +74,7 @@ theorem supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
     exact hx
 #align valuation.supp_quot Valuation.supp_quot
 
-theorem supp_quot_supp : supp (v.onQuot le_rfl) = 0 := by
+lemma supp_quot_supp : supp (v.onQuot le_rfl) = 0 := by
   rw [supp_quot]
   exact Ideal.map_quotient_self _
 #align valuation.supp_quot_supp Valuation.supp_quot_supp
@@ -101,23 +101,23 @@ def onQuot {J : Ideal R} (hJ : J ≤ supp v) : AddValuation (R ⧸ J) Γ₀ :=
 #align add_valuation.on_quot AddValuation.onQuot
 
 @[simp]
-theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
+lemma onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
     (v.onQuot hJ).comap (Ideal.Quotient.mk J) = v :=
   Valuation.onQuot_comap_eq v hJ
 #align add_valuation.on_quot_comap_eq AddValuation.onQuot_comap_eq
 
-theorem comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
+lemma comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
   Valuation.comap_supp v f
 #align add_valuation.comap_supp AddValuation.comap_supp
 
-theorem self_le_supp_comap (J : Ideal R) (v : AddValuation (R ⧸ J) Γ₀) :
+lemma self_le_supp_comap (J : Ideal R) (v : AddValuation (R ⧸ J) Γ₀) :
     J ≤ (v.comap (Ideal.Quotient.mk J)).supp :=
   Valuation.self_le_supp_comap J v
 #align add_valuation.self_le_supp_comap AddValuation.self_le_supp_comap
 
 @[simp]
-theorem comap_onQuot_eq (J : Ideal R) (v : AddValuation (R ⧸ J) Γ₀) :
+lemma comap_onQuot_eq (J : Ideal R) (v : AddValuation (R ⧸ J) Γ₀) :
     (v.comap (Ideal.Quotient.mk J)).onQuot (v.self_le_supp_comap J) = v :=
   Valuation.comap_onQuot_eq J v
 #align add_valuation.comap_on_quot_eq AddValuation.comap_onQuot_eq
@@ -128,7 +128,7 @@ theorem supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
   Valuation.supp_quot v hJ
 #align add_valuation.supp_quot AddValuation.supp_quot
 
-theorem supp_quot_supp : supp ((Valuation.onQuot v) le_rfl) = 0 :=
+lemma supp_quot_supp : supp ((Valuation.onQuot v) le_rfl) = 0 :=
   Valuation.supp_quot_supp v
 #align add_valuation.supp_quot_supp AddValuation.supp_quot_supp
 

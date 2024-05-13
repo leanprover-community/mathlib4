@@ -95,7 +95,7 @@ def PreservesProduct.iso : G.obj (∏ f) ≅ ∏ fun j => G.obj (f j) :=
 #align category_theory.limits.preserves_product.iso CategoryTheory.Limits.PreservesProduct.iso
 
 @[simp]
-theorem PreservesProduct.iso_hom : (PreservesProduct.iso G f).hom = piComparison G f :=
+lemma PreservesProduct.iso_hom : (PreservesProduct.iso G f).hom = piComparison G f :=
   rfl
 #align category_theory.limits.preserves_product.iso_hom CategoryTheory.Limits.PreservesProduct.iso_hom
 
@@ -166,7 +166,7 @@ def PreservesCoproduct.iso : G.obj (∐ f) ≅ ∐ fun j => G.obj (f j) :=
 #align category_theory.limits.preserves_coproduct.iso CategoryTheory.Limits.PreservesCoproduct.iso
 
 @[simp]
-theorem PreservesCoproduct.inv_hom : (PreservesCoproduct.iso G f).inv = sigmaComparison G f := rfl
+lemma PreservesCoproduct.inv_hom : (PreservesCoproduct.iso G f).inv = sigmaComparison G f := rfl
 #align category_theory.limits.preserves_coproduct.inv_hom CategoryTheory.Limits.PreservesCoproduct.inv_hom
 
 instance : IsIso (sigmaComparison G f) := by

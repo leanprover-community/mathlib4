@@ -92,7 +92,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 #align polar_coord polarCoord
 
-theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
+lemma hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     HasFDerivAt polarCoord.symm
       (LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ) (Basis.finTwoProd ℝ)
         !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2])) p := by
@@ -107,7 +107,7 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
 instance : Measure.IsAddHaarMeasure volume (G := ℝ × ℝ) :=
   Measure.prod.instIsAddHaarMeasure _ _
 
-theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
+lemma polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
   have A : polarCoord.sourceᶜ ⊆ LinearMap.ker (LinearMap.snd ℝ ℝ ℝ) := by
     intro x hx
     simp only [polarCoord_source, compl_union, mem_inter_iff, mem_compl_iff, mem_setOf_eq, not_lt,
@@ -123,7 +123,7 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
   exact le_antisymm ((measure_mono A).trans (le_of_eq B)) bot_le
 #align polar_coord_source_ae_eq_univ polarCoord_source_ae_eq_univ
 
-theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : ℝ × ℝ → E) :
     (∫ p in polarCoord.target, p.1 • f (polarCoord.symm p)) = ∫ p, f p := by
   set B : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ := fun p =>
@@ -164,25 +164,25 @@ It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
 protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
   equivRealProdCLM.toHomeomorph.transPartialHomeomorph polarCoord
 
-protected theorem polarCoord_apply (a : ℂ) :
+protected lemma polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
   simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
   rfl
 
-protected theorem polarCoord_source : Complex.polarCoord.source = slitPlane := rfl
+protected lemma polarCoord_source : Complex.polarCoord.source = slitPlane := rfl
 
-protected theorem polarCoord_target :
+protected lemma polarCoord_target :
     Complex.polarCoord.target = Set.Ioi (0 : ℝ) ×ˢ Set.Ioo (-π) π := rfl
 
 @[simp]
-protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
+protected lemma polarCoord_symm_apply (p : ℝ × ℝ) :
     Complex.polarCoord.symm p = p.1 * (Real.cos p.2 + Real.sin p.2 * Complex.I) := by
   simp [Complex.polarCoord, equivRealProdCLM_symm_apply, mul_add, mul_assoc]
 
-theorem polardCoord_symm_abs (p : ℝ × ℝ) :
+lemma polardCoord_symm_abs (p : ℝ × ℝ) :
     Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
 
-protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
+protected lemma integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :
     (∫ p in polarCoord.target, p.1 • f (Complex.polarCoord.symm p)) = ∫ p, f p := by
   rw [← (Complex.volume_preserving_equiv_real_prod.symm).integral_comp

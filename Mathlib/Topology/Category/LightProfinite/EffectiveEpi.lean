@@ -45,7 +45,7 @@ def EffectiveEpi.struct {B X : LightProfinite.{u}} (π : X ⟶ B) (hπ : Functio
     simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
     rfl
 
-theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
+lemma epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
   constructor
   · dsimp [Function.Surjective]
@@ -81,7 +81,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget LightProfinite).epi_of_epi_map
 
-theorem effectiveEpi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
+lemma effectiveEpi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := by
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨⟨EffectiveEpi.struct f h⟩⟩⟩
   rw [← epi_iff_surjective]

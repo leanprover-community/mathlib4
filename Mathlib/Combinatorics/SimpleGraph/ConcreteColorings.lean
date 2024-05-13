@@ -40,7 +40,7 @@ def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph
     intro v w
     fin_cases v <;> fin_cases w <;> simp [pathGraph, ← Fin.coe_covBy_iff]
 
-theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
+lemma chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
     (pathGraph n).chromaticNumber = 2 := by
   have hc := (pathGraph.bicoloring n).colorable
   apply le_antisymm

@@ -31,7 +31,7 @@ section
 
 attribute [local instance] compatibleRingOfRing
 
-private theorem exists_term_realize_eq_freeCommRing (p : FreeCommRing α) :
+private lemma exists_term_realize_eq_freeCommRing (p : FreeCommRing α) :
     ∃ t : Language.ring.Term α,
       (t.realize FreeCommRing.of : FreeCommRing α) = p :=
   FreeCommRing.induction_on p
@@ -51,7 +51,7 @@ noncomputable def termOfFreeCommRing (p : FreeCommRing α) : Language.ring.Term 
 variable {R : Type*} [CommRing R] [CompatibleRing R]
 
 @[simp]
-theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → R) :
+lemma realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → R) :
     (termOfFreeCommRing p).realize v = FreeCommRing.lift v p := by
   let _ := compatibleRingOfRing (FreeCommRing α)
   rw [termOfFreeCommRing]

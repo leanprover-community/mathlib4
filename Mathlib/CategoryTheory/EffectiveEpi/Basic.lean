@@ -226,7 +226,7 @@ instance {B X : C} (f : X ⟶ B) [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ 
     EffectiveEpi f :=
   ⟨⟨effectiveEpiStructOfEffectiveEpiFamilySingleton f⟩⟩
 
-theorem effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
+lemma effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
     EffectiveEpi f ↔ EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 

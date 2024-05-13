@@ -41,11 +41,11 @@ def Simps.coe (s : ClopenUpperSet α) : Set α := s
 
 initialize_simps_projections ClopenUpperSet (carrier → coe)
 
-theorem upper (s : ClopenUpperSet α) : IsUpperSet (s : Set α) :=
+lemma upper (s : ClopenUpperSet α) : IsUpperSet (s : Set α) :=
   s.upper'
 #align clopen_upper_set.upper ClopenUpperSet.upper
 
-theorem isClopen (s : ClopenUpperSet α) : IsClopen (s : Set α) :=
+lemma isClopen (s : ClopenUpperSet α) : IsClopen (s : Set α) :=
   s.isClopen'
 #align clopen_upper_set.clopen ClopenUpperSet.isClopen
 
@@ -56,12 +56,12 @@ def toUpperSet (s : ClopenUpperSet α) : UpperSet α :=
 #align clopen_upper_set.to_upper_set ClopenUpperSet.toUpperSet
 
 @[ext]
-protected theorem ext {s t : ClopenUpperSet α} (h : (s : Set α) = t) : s = t :=
+protected lemma ext {s t : ClopenUpperSet α} (h : (s : Set α) = t) : s = t :=
   SetLike.ext' h
 #align clopen_upper_set.ext ClopenUpperSet.ext
 
 @[simp]
-theorem coe_mk (s : Clopens α) (h) : (mk s h : Set α) = s :=
+lemma coe_mk (s : Clopens α) (h) : (mk s h : Set α) = s :=
   rfl
 #align clopen_upper_set.coe_mk ClopenUpperSet.coe_mk
 
@@ -84,22 +84,22 @@ instance : BoundedOrder (ClopenUpperSet α) :=
   BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) rfl rfl
 
 @[simp]
-theorem coe_sup (s t : ClopenUpperSet α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
+lemma coe_sup (s t : ClopenUpperSet α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
   rfl
 #align clopen_upper_set.coe_sup ClopenUpperSet.coe_sup
 
 @[simp]
-theorem coe_inf (s t : ClopenUpperSet α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
+lemma coe_inf (s t : ClopenUpperSet α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
   rfl
 #align clopen_upper_set.coe_inf ClopenUpperSet.coe_inf
 
 @[simp]
-theorem coe_top : (↑(⊤ : ClopenUpperSet α) : Set α) = univ :=
+lemma coe_top : (↑(⊤ : ClopenUpperSet α) : Set α) = univ :=
   rfl
 #align clopen_upper_set.coe_top ClopenUpperSet.coe_top
 
 @[simp]
-theorem coe_bot : (↑(⊥ : ClopenUpperSet α) : Set α) = ∅ :=
+lemma coe_bot : (↑(⊥ : ClopenUpperSet α) : Set α) = ∅ :=
   rfl
 #align clopen_upper_set.coe_bot ClopenUpperSet.coe_bot
 

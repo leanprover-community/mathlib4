@@ -46,7 +46,7 @@ shared by all representatives at the given point. -/
 def value {X α : Type*} [TopologicalSpace X] {x : X} (φ : Germ (𝓝 x) α) : α :=
   Quotient.liftOn' φ (fun f ↦ f x) fun f g h ↦ by dsimp only; rw [Eventually.self_of_nhds h]
 
-theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
+lemma value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
     (ψ : Germ (𝓝 x) β) : (φ • ψ).value = φ.value • ψ.value :=
   Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
 
@@ -91,7 +91,7 @@ def RestrictGermPredicate (P : ∀ x : X, Germ (𝓝 x) Y → Prop)
       rwa [Germ.coe_eq.mpr (EventuallyEq.symm hy')]
     fun f f' hff' ↦ propext <| forall_congr' fun _ ↦ ⟨this f f' hff', this f' f hff'.symm⟩
 
-theorem Filter.Eventually.germ_congr_set
+lemma Filter.Eventually.germ_congr_set
     {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (hf : ∀ᶠ x in 𝓝ˢ A, P x f)
     (h : ∀ᶠ z in 𝓝ˢ A, g z = f z) : ∀ᶠ x in 𝓝ˢ A, P x g := by
   rw [eventually_nhdsSet_iff_forall] at *
@@ -101,7 +101,7 @@ theorem Filter.Eventually.germ_congr_set
   convert hy.1 using 1
   exact Germ.coe_eq.mpr hy.2
 
-theorem restrictGermPredicate_congr {P : ∀ x : X, Germ (𝓝 x) Y → Prop}
+lemma restrictGermPredicate_congr {P : ∀ x : X, Germ (𝓝 x) Y → Prop}
     (hf : RestrictGermPredicate P A x f) (h : ∀ᶠ z in 𝓝ˢ A, g z = f z) :
     RestrictGermPredicate P A x g := by
   intro hx
@@ -109,12 +109,12 @@ theorem restrictGermPredicate_congr {P : ∀ x : X, Germ (𝓝 x) Y → Prop}
   rintro y ⟨hy, h'y⟩
   rwa [Germ.coe_eq.mpr h'y]
 
-theorem forall_restrictGermPredicate_iff {P : ∀ x : X, Germ (𝓝 x) Y → Prop} :
+lemma forall_restrictGermPredicate_iff {P : ∀ x : X, Germ (𝓝 x) Y → Prop} :
     (∀ x, RestrictGermPredicate P A x f) ↔ ∀ᶠ x in 𝓝ˢ A, P x f := by
   rw [eventually_nhdsSet_iff_forall]
   rfl
 
-theorem forall_restrictGermPredicate_of_forall
+lemma forall_restrictGermPredicate_of_forall
     {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (h : ∀ x, P x f) :
     ∀ x, RestrictGermPredicate P A x f :=
   forall_restrictGermPredicate_iff.mpr (eventually_of_forall h)
@@ -127,7 +127,7 @@ def sliceLeft [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (�
   P.compTendsto (Prod.mk · p.2) (Continuous.Prod.mk_left p.2).continuousAt
 
 @[simp]
-theorem sliceLeft_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
+lemma sliceLeft_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
     (↑f : Germ (𝓝 (x, y)) Z).sliceLeft = fun x' ↦ f (x', y) :=
   rfl
 
@@ -137,7 +137,7 @@ def sliceRight [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (�
   P.compTendsto (Prod.mk p.1) (Continuous.Prod.mk p.1).continuousAt
 
 @[simp]
-theorem sliceRight_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
+lemma sliceRight_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
     (↑f : Germ (𝓝 (x, y)) Z).sliceRight = fun y' ↦ f (x, y') :=
   rfl
 
@@ -161,7 +161,7 @@ lemma IsLocallyConstant.of_germ_isConstant (h : ∀ x : X, (f : Germ (𝓝 x) Y)
   rw [mem_preimage, this]
   exact ha
 
-theorem eq_of_germ_isConstant [i : PreconnectedSpace X]
+lemma eq_of_germ_isConstant [i : PreconnectedSpace X]
     (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) (x x' : X) : f x = f x' :=
   (IsLocallyConstant.of_germ_isConstant h).apply_eq_of_isPreconnected
     (preconnectedSpace_iff_univ.mp i) (by trivial) (by trivial)

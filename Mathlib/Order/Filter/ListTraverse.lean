@@ -22,12 +22,12 @@ universe u
 
 variable {α β γ : Type u} {f : β → Filter α} {s : γ → Set α}
 
-theorem sequence_mono : ∀ as bs : List (Filter α), Forall₂ (· ≤ ·) as bs → sequence as ≤ sequence bs
+lemma sequence_mono : ∀ as bs : List (Filter α), Forall₂ (· ≤ ·) as bs → sequence as ≤ sequence bs
   | [], [], Forall₂.nil => le_rfl
   | _::as, _::bs, Forall₂.cons h hs => seq_mono (map_mono h) (sequence_mono as bs hs)
 #align filter.sequence_mono Filter.sequence_mono
 
-theorem mem_traverse :
+lemma mem_traverse :
     ∀ (fs : List β) (us : List γ),
       Forall₂ (fun b c => s c ∈ f b) fs us → traverse s us ∈ traverse f fs
   | [], [], Forall₂.nil => mem_pure.2 <| mem_singleton _
@@ -35,7 +35,7 @@ theorem mem_traverse :
 #align filter.mem_traverse Filter.mem_traverse
 
 -- TODO: add a `Filter.HasBasis` statement
-theorem mem_traverse_iff (fs : List β) (t : Set (List α)) :
+lemma mem_traverse_iff (fs : List β) (t : Set (List α)) :
     t ∈ traverse f fs ↔
       ∃ us : List (Set α), Forall₂ (fun b (s : Set α) => s ∈ f b) fs us ∧ sequence us ⊆ t := by
   constructor

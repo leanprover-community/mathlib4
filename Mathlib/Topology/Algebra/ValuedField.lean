@@ -48,7 +48,7 @@ variable (v : Valuation K Γ₀)
 -- in the topology induced by a valuation on a division ring (i.e. the next instance)
 -- and the fact that a valued field is completable
 -- [BouAC, VI.5.1 Lemme 1]
-theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
+lemma Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
     (h : v (x - y) < min (γ * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) < γ := by
   have hyp1 : v (x - y) < γ * (v y * v y) := lt_of_lt_of_le h (min_le_left _ _)
   have hyp1' : v (x - y) * (v y * v y)⁻¹ < γ := mul_inv_lt_of_lt_mul₀ hyp1
@@ -114,7 +114,7 @@ open WithZeroTopology
 
 open Valued
 
-theorem Valued.continuous_valuation [Valued K Γ₀] : Continuous (v : K → Γ₀) := by
+lemma Valued.continuous_valuation [Valued K Γ₀] : Continuous (v : K → Γ₀) := by
   rw [continuous_iff_continuousAt]
   intro x
   rcases eq_or_ne x 0 with (rfl | h)
@@ -197,7 +197,7 @@ noncomputable def extension : hat K → Γ₀ :=
   Completion.denseInducing_coe.extend (v : K → Γ₀)
 #align valued.extension Valued.extension
 
-theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) := by
+lemma continuous_extension : Continuous (Valued.extension : hat K → Γ₀) := by
   refine' Completion.denseInducing_coe.continuous_extend _
   intro x₀
   rcases eq_or_ne x₀ 0 with (rfl | h)
@@ -273,7 +273,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
 #align valued.continuous_extension Valued.continuous_extension
 
 @[simp, norm_cast]
-theorem extension_extends (x : K) : extension (x : hat K) = v x := by
+lemma extension_extends (x : K) : extension (x : hat K) = v x := by
   refine' Completion.denseInducing_coe.extend_eq_of_tendsto _
   rw [← Completion.denseInducing_coe.nhds_eq_comap]
   exact Valued.continuous_valuation.continuousAt
@@ -316,7 +316,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
 #align valued.extension_valuation Valued.extensionValuation
 
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
-theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
+lemma closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     closure ((↑) '' { x : K | v x < (γ : Γ₀) }) =
     { x : hat K | extensionValuation x < (γ : Γ₀) } := by
   ext x
@@ -357,7 +357,7 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
 -- Porting note: removed @[norm_cast] attribute due to error:
 -- norm_cast: badly shaped lemma, rhs can't start with coe
 @[simp]
-theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
+lemma valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x
 #align valued.valued_completion_apply Valued.valuedCompletion_apply
 

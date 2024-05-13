@@ -31,39 +31,39 @@ def toMulBot : WithZero (Multiplicative α) ≃* Multiplicative (WithBot α) :=
 #align with_zero.to_mul_bot WithZero.toMulBot
 
 @[simp]
-theorem toMulBot_zero : toMulBot (0 : WithZero (Multiplicative α)) = Multiplicative.ofAdd ⊥ :=
+lemma toMulBot_zero : toMulBot (0 : WithZero (Multiplicative α)) = Multiplicative.ofAdd ⊥ :=
   rfl
 #align with_zero.to_mul_bot_zero WithZero.toMulBot_zero
 
 @[simp]
-theorem toMulBot_coe (x : Multiplicative α) :
+lemma toMulBot_coe (x : Multiplicative α) :
     toMulBot ↑x = Multiplicative.ofAdd (↑(Multiplicative.toAdd x) : WithBot α) :=
   rfl
 #align with_zero.to_mul_bot_coe WithZero.toMulBot_coe
 
 @[simp]
-theorem toMulBot_symm_bot : toMulBot.symm (Multiplicative.ofAdd (⊥ : WithBot α)) = 0 :=
+lemma toMulBot_symm_bot : toMulBot.symm (Multiplicative.ofAdd (⊥ : WithBot α)) = 0 :=
   rfl
 #align with_zero.to_mul_bot_symm_bot WithZero.toMulBot_symm_bot
 
 @[simp]
-theorem toMulBot_coe_ofAdd (x : α) :
+lemma toMulBot_coe_ofAdd (x : α) :
     toMulBot.symm (Multiplicative.ofAdd (x : WithBot α)) = Multiplicative.ofAdd x :=
   rfl
 #align with_zero.to_mul_bot_coe_of_add WithZero.toMulBot_coe_ofAdd
 
 variable [Preorder α] (a b : WithZero (Multiplicative α))
 
-theorem toMulBot_strictMono : StrictMono (@toMulBot α _) := fun _ _ => id
+lemma toMulBot_strictMono : StrictMono (@toMulBot α _) := fun _ _ => id
 #align with_zero.to_mul_bot_strict_mono WithZero.toMulBot_strictMono
 
 @[simp]
-theorem toMulBot_le : toMulBot a ≤ toMulBot b ↔ a ≤ b :=
+lemma toMulBot_le : toMulBot a ≤ toMulBot b ↔ a ≤ b :=
   Iff.rfl
 #align with_zero.to_mul_bot_le WithZero.toMulBot_le
 
 @[simp]
-theorem toMulBot_lt : toMulBot a < toMulBot b ↔ a < b :=
+lemma toMulBot_lt : toMulBot a < toMulBot b ↔ a < b :=
   Iff.rfl
 #align with_zero.to_mul_bot_lt WithZero.toMulBot_lt
 

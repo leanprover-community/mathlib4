@@ -76,7 +76,7 @@ def splitMul : Unitization 𝕜 A →ₐ[𝕜] 𝕜 × (A →L[𝕜] A) :=
 variable {𝕜 A}
 
 @[simp]
-theorem splitMul_apply (x : Unitization 𝕜 A) :
+lemma splitMul_apply (x : Unitization 𝕜 A) :
     splitMul 𝕜 A x = (x.fst, algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd) :=
   show (x.fst + 0, _) = (x.fst, _) by rw [add_zero]; rfl
 
@@ -126,10 +126,10 @@ noncomputable abbrev normedAlgebraAux : NormedAlgebra 𝕜 (Unitization 𝕜 A) 
 
 attribute [local instance] Unitization.normedAlgebraAux
 
-theorem norm_def (x : Unitization 𝕜 A) : ‖x‖ = ‖splitMul 𝕜 A x‖ :=
+lemma norm_def (x : Unitization 𝕜 A) : ‖x‖ = ‖splitMul 𝕜 A x‖ :=
   rfl
 
-theorem nnnorm_def (x : Unitization 𝕜 A) : ‖x‖₊ = ‖splitMul 𝕜 A x‖₊ :=
+lemma nnnorm_def (x : Unitization 𝕜 A) : ‖x‖₊ = ‖splitMul 𝕜 A x‖₊ :=
   rfl
 
 /-- This is often the more useful lemma to rewrite the norm as opposed to `Unitization.norm_def`. -/
@@ -143,7 +143,7 @@ theorem nnnorm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖₊ = ‖x.fst‖₊ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖₊ :=
   NNReal.eq <| norm_eq_sup x
 
-theorem lipschitzWith_addEquiv :
+lemma lipschitzWith_addEquiv :
     LipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
   rw [← Real.toNNReal_ofNat]
   refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => ?_
@@ -161,7 +161,7 @@ theorem lipschitzWith_addEquiv :
           norm_le_add_norm_add (mul 𝕜 A x.snd) (algebraMap 𝕜 _ x.fst)
       _ ≤ _ := add_le_add le_sup_right le_sup_left
 
-theorem antilipschitzWith_addEquiv :
+lemma antilipschitzWith_addEquiv :
     AntilipschitzWith 2 (addEquiv 𝕜 A) := by
   refine AddMonoidHomClass.antilipschitz_of_bound (addEquiv 𝕜 A) fun x => ?_
   rw [norm_eq_sup, Prod.norm_def, NNReal.coe_two]
@@ -179,14 +179,14 @@ theorem antilipschitzWith_addEquiv :
 open Bornology Filter
 open scoped Uniformity Topology
 
-theorem uniformity_eq_aux :
+lemma uniformity_eq_aux :
     𝓤[instUniformSpaceProd.comap <| addEquiv 𝕜 A] = 𝓤 (Unitization 𝕜 A) := by
   have key : UniformInducing (addEquiv 𝕜 A) :=
     antilipschitzWith_addEquiv.uniformInducing lipschitzWith_addEquiv.uniformContinuous
   rw [← key.comap_uniformity]
   rfl
 
-theorem cobounded_eq_aux :
+lemma cobounded_eq_aux :
     @cobounded _ (Bornology.induced <| addEquiv 𝕜 A) = cobounded (Unitization 𝕜 A) :=
   le_antisymm lipschitzWith_addEquiv.comap_cobounded_le
     antilipschitzWith_addEquiv.tendsto_cobounded.le_comap
@@ -201,7 +201,7 @@ instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
 instance instBornology : Bornology (Unitization 𝕜 A) :=
   Bornology.induced <| addEquiv 𝕜 A
 
-theorem uniformEmbedding_addEquiv : UniformEmbedding (addEquiv 𝕜 A) where
+lemma uniformEmbedding_addEquiv : UniformEmbedding (addEquiv 𝕜 A) where
   comap_uniformity := rfl
   inj := (addEquiv 𝕜 A).injective
 

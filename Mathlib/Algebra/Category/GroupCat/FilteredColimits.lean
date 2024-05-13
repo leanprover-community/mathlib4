@@ -66,7 +66,7 @@ abbrev G.mk : (Σ j, F.obj j) → G.{v, u} F :=
 #align AddGroup.filtered_colimits.G.mk AddGroupCat.FilteredColimits.G.mk
 
 @[to_additive]
-theorem G.mk_eq (x y : Σ j, F.obj j)
+lemma G.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) :
     G.mk.{v, u} F x = G.mk F y :=
   Quot.EqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget GroupCat) x y h)
@@ -81,7 +81,7 @@ def colimitInvAux (x : Σ j, F.obj j) : G.{v, u} F :=
 #align AddGroup.filtered_colimits.colimit_neg_aux AddGroupCat.FilteredColimits.colimitNegAux
 
 @[to_additive]
-theorem colimitInvAux_eq_of_rel (x y : Σ j, F.obj j)
+lemma colimitInvAux_eq_of_rel (x y : Σ j, F.obj j)
     (h : Types.FilteredColimit.Rel (F ⋙ forget GroupCat) x y) :
     colimitInvAux.{v, u} F x = colimitInvAux F y := by
   apply G.mk_eq
@@ -105,7 +105,7 @@ instance colimitInv : Inv (G.{v, u} F) where
 #align AddGroup.filtered_colimits.colimit_has_neg AddGroupCat.FilteredColimits.colimitNeg
 
 @[to_additive (attr := simp)]
-theorem colimit_inv_mk_eq (x : Σ j, F.obj j) : (G.mk.{v, u} F x)⁻¹ = G.mk F ⟨x.1, x.2⁻¹⟩ :=
+lemma colimit_inv_mk_eq (x : Σ j, F.obj j) : (G.mk.{v, u} F x)⁻¹ = G.mk F ⟨x.1, x.2⁻¹⟩ :=
   rfl
 #align Group.filtered_colimits.colimit_inv_mk_eq GroupCat.FilteredColimits.colimit_inv_mk_eq
 #align AddGroup.filtered_colimits.colimit_neg_mk_eq AddGroupCat.FilteredColimits.colimit_neg_mk_eq

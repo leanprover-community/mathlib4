@@ -42,7 +42,7 @@ def castAddMonoidHom (α : Type*) [AddMonoidWithOne α] :
 #align nat.cast_add_monoid_hom Nat.castAddMonoidHom
 
 @[simp]
-theorem coe_castAddMonoidHom [AddMonoidWithOne α] : (castAddMonoidHom α : ℕ → α) = Nat.cast :=
+lemma coe_castAddMonoidHom [AddMonoidWithOne α] : (castAddMonoidHom α : ℕ → α) = Nat.cast :=
   rfl
 #align nat.coe_cast_add_monoid_hom Nat.coe_castAddMonoidHom
 
@@ -97,7 +97,7 @@ section AddMonoidHomClass
 
 variable {A B F : Type*} [AddMonoidWithOne B] [FunLike F ℕ A]
 
-theorem ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
+lemma ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
   DFunLike.ext f g <| by
     intro n
     induction n with
@@ -107,19 +107,19 @@ theorem ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = 
 #align ext_nat' ext_nat'
 
 @[ext]
-theorem AddMonoidHom.ext_nat [AddMonoid A] {f g : ℕ →+ A} : f 1 = g 1 → f = g :=
+lemma AddMonoidHom.ext_nat [AddMonoid A] {f g : ℕ →+ A} : f 1 = g 1 → f = g :=
   ext_nat' f g
 #align add_monoid_hom.ext_nat AddMonoidHom.ext_nat
 
 variable [AddMonoidWithOne A]
 
 -- these versions are primed so that the `RingHomClass` versions aren't
-theorem eq_natCast' [AddMonoidHomClass F ℕ A] (f : F) (h1 : f 1 = 1) : ∀ n : ℕ, f n = n
+lemma eq_natCast' [AddMonoidHomClass F ℕ A] (f : F) (h1 : f 1 = 1) : ∀ n : ℕ, f n = n
   | 0 => by simp [map_zero f]
   | n + 1 => by rw [map_add, h1, eq_natCast' f h1 n, Nat.cast_add_one]
 #align eq_nat_cast' eq_natCast'
 
-theorem map_natCast' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
+lemma map_natCast' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
     (f : F) (h : f 1 = 1) :
     ∀ n : ℕ, f n = n
   | 0 => by simp [map_zero f]
@@ -127,7 +127,7 @@ theorem map_natCast' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass
     rw [Nat.cast_add, map_add, Nat.cast_add, map_natCast' f h n, Nat.cast_one, h, Nat.cast_one]
 #align map_nat_cast' map_natCast'
 
-theorem map_ofNat' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
+lemma map_ofNat' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
     (f : F) (h : f 1 = 1) (n : ℕ) [n.AtLeastTwo] : f (OfNat.ofNat n) = OfNat.ofNat n :=
   map_natCast' f h n
 
@@ -155,7 +155,7 @@ theorem ext_nat'' [MonoidWithZeroHomClass F ℕ A] (f g : F) (h_pos : ∀ {n : �
 #align ext_nat'' ext_nat''
 
 @[ext]
-theorem MonoidWithZeroHom.ext_nat {f g : ℕ →*₀ A} : (∀ {n : ℕ}, 0 < n → f n = g n) → f = g :=
+lemma MonoidWithZeroHom.ext_nat {f g : ℕ →*₀ A} : (∀ {n : ℕ}, 0 < n → f n = g n) → f = g :=
   ext_nat'' f g
 #align monoid_with_zero_hom.ext_nat MonoidWithZeroHom.ext_nat
 
@@ -166,27 +166,27 @@ section RingHomClass
 variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
 @[simp]
-theorem eq_natCast [FunLike F ℕ R] [RingHomClass F ℕ R] (f : F) : ∀ n, f n = n :=
+lemma eq_natCast [FunLike F ℕ R] [RingHomClass F ℕ R] (f : F) : ∀ n, f n = n :=
   eq_natCast' f <| map_one f
 #align eq_nat_cast eq_natCast
 
 @[simp]
-theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
+lemma map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
   map_natCast' f <| map_one f
 #align map_nat_cast map_natCast
 
 -- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
+lemma map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
     (f (no_index (OfNat.ofNat n)) : S) = OfNat.ofNat n :=
   map_natCast f n
 
-theorem ext_nat [FunLike F ℕ R] [RingHomClass F ℕ R] (f g : F) : f = g :=
+lemma ext_nat [FunLike F ℕ R] [RingHomClass F ℕ R] (f g : F) : f = g :=
   ext_nat' f g <| by simp only [map_one f, map_one g]
 #align ext_nat ext_nat
 
-theorem NeZero.nat_of_neZero {R S} [Semiring R] [Semiring S]
+lemma NeZero.nat_of_neZero {R S} [Semiring R] [Semiring S]
     {F} [FunLike F R S] [RingHomClass F R S] (f : F)
     {n : ℕ} [hn : NeZero (n : S)] : NeZero (n : R) :=
   .of_map (f := f) (neZero := by simp only [map_natCast, hn])
@@ -204,12 +204,12 @@ theorem eq_natCast' {R} [NonAssocSemiring R] (f : ℕ →+* R) : f = Nat.castRin
 end RingHom
 
 @[simp, norm_cast]
-theorem Nat.cast_id (n : ℕ) : n.cast = n :=
+lemma Nat.cast_id (n : ℕ) : n.cast = n :=
   rfl
 #align nat.cast_id Nat.cast_id
 
 @[simp]
-theorem Nat.castRingHom_nat : Nat.castRingHom ℕ = RingHom.id ℕ :=
+lemma Nat.castRingHom_nat : Nat.castRingHom ℕ = RingHom.id ℕ :=
   rfl
 #align nat.cast_ring_hom_nat Nat.castRingHom_nat
 
@@ -313,12 +313,12 @@ variable {π : α → Type*} [∀ a, NatCast (π a)]
 Was `by refine_struct { .. } <;> pi_instance_derive_field` -/
 instance instNatCast : NatCast (∀ a, π a) where natCast n _ := n
 
-theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
+lemma natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl
 #align pi.nat_apply Pi.natCast_apply
 
 @[simp]
-theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
+lemma natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
 #align pi.coe_nat Pi.natCast_def
 
@@ -327,11 +327,11 @@ theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
 @[deprecated] alias coe_nat := natCast_def
 
 @[simp]
-theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
+lemma ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
 
 end Pi
 
-theorem Sum.elim_natCast_natCast {α β γ : Type*} [NatCast γ] (n : ℕ) :
+lemma Sum.elim_natCast_natCast {α β γ : Type*} [NatCast γ] (n : ℕ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
   Sum.elim_lam_const_lam_const (γ := γ) n
 #align sum.elim_nat_cast_nat_cast Sum.elim_natCast_natCast

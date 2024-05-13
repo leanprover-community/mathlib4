@@ -27,7 +27,7 @@ set_option linter.uppercaseLean3 false in
 #align Action.of_mul_action Action.ofMulAction
 
 @[simp]
-theorem ofMulAction_apply {G H : Type u} [Monoid G] [MulAction G H] (g : G) (x : H) :
+lemma ofMulAction_apply {G H : Type u} [Monoid G] [MulAction G H] (g : G) (x : H) :
     (ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -87,7 +87,7 @@ def ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
   ρ := @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
-theorem ofMulAction_apply {G : Type u} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
+lemma ofMulAction_apply {G : Type u} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
     (g : G) (x : H) : (FintypeCat.ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 

@@ -92,7 +92,7 @@ instance inhabited₂ [h : Inhabited a₂] : Inhabited (Sequence₂ a₀ a₁ a�
 instance {n : ℕ} : IsEmpty (Sequence₂ a₀ a₁ a₂ (n + 3)) := inferInstanceAs (IsEmpty PEmpty)
 
 @[simp]
-theorem lift_mk {i : ℕ} :
+lemma lift_mk {i : ℕ} :
     Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
       = #(Sequence₂ (ULift.{v,u} a₀) (ULift.{v,u} a₁) (ULift.{v,u} a₂) i) := by
   rcases i with (_ | _ | _ | i) <;>
@@ -101,7 +101,7 @@ theorem lift_mk {i : ℕ} :
 #align first_order.sequence₂.lift_mk FirstOrder.Sequence₂.lift_mk
 
 @[simp]
-theorem sum_card : Cardinal.sum (fun i => #(Sequence₂ a₀ a₁ a₂ i)) = #a₀ + #a₁ + #a₂ := by
+lemma sum_card : Cardinal.sum (fun i => #(Sequence₂ a₀ a₁ a₂ i)) = #a₀ + #a₁ + #a₂ := by
   rw [sum_nat_eq_add_sum_succ, sum_nat_eq_add_sum_succ, sum_nat_eq_add_sum_succ]
   simp [add_assoc, Sequence₂]
 #align first_order.sequence₂.sum_card FirstOrder.Sequence₂.sum_card
@@ -140,7 +140,7 @@ protected def Constants :=
 #align first_order.language.constants FirstOrder.Language.Constants
 
 @[simp]
-theorem constants_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
+lemma constants_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
     (Language.mk₂ c f₁ f₂ r₁ r₂).Constants = c :=
   rfl
 #align first_order.language.constants_mk₂ FirstOrder.Language.constants_mk₂
@@ -171,7 +171,7 @@ class IsAlgebraic : Prop where
 
 variable {L} {L' : Language.{u', v'}}
 
-theorem card_eq_card_functions_add_card_relations :
+lemma card_eq_card_functions_add_card_relations :
     L.card =
       (Cardinal.sum fun l => Cardinal.lift.{v} #(L.Functions l)) +
         Cardinal.sum fun l => Cardinal.lift.{u} #(L.Relations l) := by
@@ -237,7 +237,7 @@ instance subsingleton_mk₂_relations {c f₁ f₂ : Type u} {r₁ r₂ : Type v
 #align first_order.language.subsingleton_mk₂_relations FirstOrder.Language.subsingleton_mk₂_relations
 
 @[simp]
-theorem empty_card : Language.empty.card = 0 := by simp [card_eq_card_functions_add_card_relations]
+lemma empty_card : Language.empty.card = 0 := by simp [card_eq_card_functions_add_card_relations]
 #align first_order.language.empty_card FirstOrder.Language.empty_card
 
 instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
@@ -250,21 +250,21 @@ instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ
 #align first_order.language.countable.countable_functions FirstOrder.Language.Countable.countable_functions
 
 @[simp]
-theorem card_functions_sum (i : ℕ) :
+lemma card_functions_sum (i : ℕ) :
     #((L.sum L').Functions i)
       = (Cardinal.lift.{u'} #(L.Functions i) + Cardinal.lift.{u} #(L'.Functions i) : Cardinal) := by
   simp [Language.sum]
 #align first_order.language.card_functions_sum FirstOrder.Language.card_functions_sum
 
 @[simp]
-theorem card_relations_sum (i : ℕ) :
+lemma card_relations_sum (i : ℕ) :
     #((L.sum L').Relations i) =
       Cardinal.lift.{v'} #(L.Relations i) + Cardinal.lift.{v} #(L'.Relations i) := by
   simp [Language.sum]
 #align first_order.language.card_relations_sum FirstOrder.Language.card_relations_sum
 
 @[simp]
-theorem card_sum :
+lemma card_sum :
     (L.sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card := by
   simp only [card_eq_card_functions_add_card_relations, card_functions_sum, card_relations_sum,
     sum_add_distrib', lift_add, lift_sum, lift_lift]
@@ -272,7 +272,7 @@ theorem card_sum :
 #align first_order.language.card_sum FirstOrder.Language.card_sum
 
 @[simp]
-theorem card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
+lemma card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
     (Language.mk₂ c f₁ f₂ r₁ r₂).card =
       Cardinal.lift.{v} #c + Cardinal.lift.{v} #f₁ + Cardinal.lift.{v} #f₂ +
           Cardinal.lift.{u} #r₁ + Cardinal.lift.{u} #r₂ := by
@@ -373,7 +373,7 @@ def constantMap (c : L.Constants) : M := funMap c default
 instance : CoeTC L.Constants M :=
   ⟨constantMap⟩
 
-theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x = c :=
+lemma funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x = c :=
   congr rfl (funext finZeroElim)
 #align first_order.language.fun_map_eq_coe_constants FirstOrder.Language.funMap_eq_coe_constants
 
@@ -416,35 +416,35 @@ variable {c' : c → M} {f₁' : f₁ → M → M} {f₂' : f₂ → M → M →
 variable {r₁' : r₁ → Set M} {r₂' : r₂ → M → M → Prop}
 
 @[simp]
-theorem funMap_apply₀ (c₀ : c) {x : Fin 0 → M} :
+lemma funMap_apply₀ (c₀ : c) {x : Fin 0 → M} :
     @Structure.funMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 0 c₀ x = c' c₀ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.fun_map_apply₀ FirstOrder.Language.Structure.funMap_apply₀
 
 @[simp]
-theorem funMap_apply₁ (f : f₁) (x : M) :
+lemma funMap_apply₁ (f : f₁) (x : M) :
     @Structure.funMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 f ![x] = f₁' f x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.fun_map_apply₁ FirstOrder.Language.Structure.funMap_apply₁
 
 @[simp]
-theorem funMap_apply₂ (f : f₂) (x y : M) :
+lemma funMap_apply₂ (f : f₂) (x y : M) :
     @Structure.funMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 f ![x, y] = f₂' f x y :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.fun_map_apply₂ FirstOrder.Language.Structure.funMap_apply₂
 
 @[simp]
-theorem relMap_apply₁ (r : r₁) (x : M) :
+lemma relMap_apply₁ (r : r₁) (x : M) :
     @Structure.RelMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 r ![x] = (x ∈ r₁' r) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.rel_map_apply₁ FirstOrder.Language.Structure.relMap_apply₁
 
 @[simp]
-theorem relMap_apply₂ (r : r₂) (x y : M) :
+lemma relMap_apply₂ (r : r₂) (x y : M) :
     @Structure.RelMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 r ![x, y] = r₂' r x y :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -482,7 +482,7 @@ theorem HomClass.strongHomClassOfIsAlgebraic [L.IsAlgebraic] {F M N} [L.Structur
   map_rel _ n R _ := (IsAlgebraic.empty_relations n).elim R
 #align first_order.language.hom_class.strong_hom_class_of_is_algebraic FirstOrder.Language.HomClass.strongHomClassOfIsAlgebraic
 
-theorem HomClass.map_constants {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
+lemma HomClass.map_constants {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [HomClass L F M N] (φ : F) (c : L.Constants) : φ c = c :=
   (HomClass.map_fun φ c default).trans (congr rfl (funext default))
 #align first_order.language.hom_class.map_constants FirstOrder.Language.HomClass.map_constants
@@ -515,32 +515,32 @@ instance hasCoeToFun : CoeFun (M →[L] N) fun _ => M → N :=
 #align first_order.language.hom.has_coe_to_fun FirstOrder.Language.Hom.hasCoeToFun
 
 @[simp]
-theorem toFun_eq_coe {f : M →[L] N} : f.toFun = (f : M → N) :=
+lemma toFun_eq_coe {f : M →[L] N} : f.toFun = (f : M → N) :=
   rfl
 #align first_order.language.hom.to_fun_eq_coe FirstOrder.Language.Hom.toFun_eq_coe
 
 @[ext]
-theorem ext ⦃f g : M →[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : M →[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align first_order.language.hom.ext FirstOrder.Language.Hom.ext
 
-theorem ext_iff {f g : M →[L] N} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : M →[L] N} : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 #align first_order.language.hom.ext_iff FirstOrder.Language.Hom.ext_iff
 
 @[simp]
-theorem map_fun (φ : M →[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
+lemma map_fun (φ : M →[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
     φ (funMap f x) = funMap f (φ ∘ x) :=
   HomClass.map_fun φ f x
 #align first_order.language.hom.map_fun FirstOrder.Language.Hom.map_fun
 
 @[simp]
-theorem map_constants (φ : M →[L] N) (c : L.Constants) : φ c = c :=
+lemma map_constants (φ : M →[L] N) (c : L.Constants) : φ c = c :=
   HomClass.map_constants φ c
 #align first_order.language.hom.map_constants FirstOrder.Language.Hom.map_constants
 
 @[simp]
-theorem map_rel (φ : M →[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
+lemma map_rel (φ : M →[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
     RelMap r x → RelMap r (φ ∘ x) :=
   HomClass.map_rel φ r x
 #align first_order.language.hom.map_rel FirstOrder.Language.Hom.map_rel
@@ -559,7 +559,7 @@ instance : Inhabited (M →[L] M) :=
   ⟨id L M⟩
 
 @[simp]
-theorem id_apply (x : M) : id L M x = x :=
+lemma id_apply (x : M) : id L M x = x :=
   rfl
 #align first_order.language.hom.id_apply FirstOrder.Language.Hom.id_apply
 
@@ -574,7 +574,7 @@ def comp (hnp : N →[L] P) (hmn : M →[L] N) : M →[L] P where
 #align first_order.language.hom.comp FirstOrder.Language.Hom.comp
 
 @[simp]
-theorem comp_apply (g : N →[L] P) (f : M →[L] N) (x : M) : g.comp f x = g (f x) :=
+lemma comp_apply (g : N →[L] P) (f : M →[L] N) (x : M) : g.comp f x = g (f x) :=
   rfl
 #align first_order.language.hom.comp_apply FirstOrder.Language.Hom.comp_apply
 
@@ -585,11 +585,11 @@ theorem comp_assoc (f : M →[L] N) (g : N →[L] P) (h : P →[L] Q) :
 #align first_order.language.hom.comp_assoc FirstOrder.Language.Hom.comp_assoc
 
 @[simp]
-theorem comp_id (f : M →[L] N) : f.comp (id L M) = f :=
+lemma comp_id (f : M →[L] N) : f.comp (id L M) = f :=
   rfl
 
 @[simp]
-theorem id_comp (f : M →[L] N) : (id L N).comp f = f :=
+lemma id_comp (f : M →[L] N) : (id L N).comp f = f :=
   rfl
 
 end Hom
@@ -623,18 +623,18 @@ instance strongHomClass : StrongHomClass L (M ↪[L] N) M N where
 #noalign first_order.language.embedding.has_coe_to_fun -- Porting note: replaced by funLike instance
 
 @[simp]
-theorem map_fun (φ : M ↪[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
+lemma map_fun (φ : M ↪[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
     φ (funMap f x) = funMap f (φ ∘ x) :=
   HomClass.map_fun φ f x
 #align first_order.language.embedding.map_fun FirstOrder.Language.Embedding.map_fun
 
 @[simp]
-theorem map_constants (φ : M ↪[L] N) (c : L.Constants) : φ c = c :=
+lemma map_constants (φ : M ↪[L] N) (c : L.Constants) : φ c = c :=
   HomClass.map_constants φ c
 #align first_order.language.embedding.map_constants FirstOrder.Language.Embedding.map_constants
 
 @[simp]
-theorem map_rel (φ : M ↪[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
+lemma map_rel (φ : M ↪[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
     RelMap r (φ ∘ x) ↔ RelMap r x :=
   StrongHomClass.map_rel φ r x
 #align first_order.language.embedding.map_rel FirstOrder.Language.Embedding.map_rel
@@ -645,11 +645,11 @@ def toHom : (M ↪[L] N) → M →[L] N :=
 #align first_order.language.embedding.to_hom FirstOrder.Language.Embedding.toHom
 
 @[simp]
-theorem coe_toHom {f : M ↪[L] N} : (f.toHom : M → N) = f :=
+lemma coe_toHom {f : M ↪[L] N} : (f.toHom : M → N) = f :=
   rfl
 #align first_order.language.embedding.coe_to_hom FirstOrder.Language.Embedding.coe_toHom
 
-theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
+lemma coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
   | f, g, h => by
     cases f
     cases g
@@ -659,24 +659,24 @@ theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
 #align first_order.language.embedding.coe_injective FirstOrder.Language.Embedding.coe_injective
 
 @[ext]
-theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   coe_injective (funext h)
 #align first_order.language.embedding.ext FirstOrder.Language.Embedding.ext
 
-theorem ext_iff {f g : M ↪[L] N} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : M ↪[L] N} : f = g ↔ ∀ x, f x = g x :=
   ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 #align first_order.language.embedding.ext_iff FirstOrder.Language.Embedding.ext_iff
 
-theorem toHom_injective : @Function.Injective (M ↪[L] N) (M →[L] N) (·.toHom) := by
+lemma toHom_injective : @Function.Injective (M ↪[L] N) (M →[L] N) (·.toHom) := by
   intro f f' h
   ext
   exact congr_fun (congr_arg (↑) h) _
 
 @[simp]
-theorem toHom_inj {f g : M ↪[L] N} : f.toHom = g.toHom ↔ f = g :=
+lemma toHom_inj {f g : M ↪[L] N} : f.toHom = g.toHom ↔ f = g :=
   ⟨fun h ↦ toHom_injective h, fun h ↦ congr_arg (·.toHom) h⟩
 
-theorem injective (f : M ↪[L] N) : Function.Injective f :=
+lemma injective (f : M ↪[L] N) : Function.Injective f :=
   f.toEmbedding.injective
 #align first_order.language.embedding.injective FirstOrder.Language.Embedding.injective
 
@@ -689,13 +689,13 @@ def ofInjective [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) : M
 #align first_order.language.embedding.of_injective FirstOrder.Language.Embedding.ofInjective
 
 @[simp]
-theorem coeFn_ofInjective [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) :
+lemma coeFn_ofInjective [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) :
     (ofInjective hf : M → N) = f :=
   rfl
 #align first_order.language.embedding.coe_fn_of_injective FirstOrder.Language.Embedding.coeFn_ofInjective
 
 @[simp]
-theorem ofInjective_toHom [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) :
+lemma ofInjective_toHom [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) :
     (ofInjective hf).toHom = f := by
   ext; simp
 #align first_order.language.embedding.of_injective_to_hom FirstOrder.Language.Embedding.ofInjective_toHom
@@ -713,7 +713,7 @@ instance : Inhabited (M ↪[L] M) :=
   ⟨refl L M⟩
 
 @[simp]
-theorem refl_apply (x : M) : refl L M x = x :=
+lemma refl_apply (x : M) : refl L M x = x :=
   rfl
 #align first_order.language.embedding.refl_apply FirstOrder.Language.Embedding.refl_apply
 
@@ -729,7 +729,7 @@ def comp (hnp : N ↪[L] P) (hmn : M ↪[L] N) : M ↪[L] P where
 #align first_order.language.embedding.comp FirstOrder.Language.Embedding.comp
 
 @[simp]
-theorem comp_apply (g : N ↪[L] P) (f : M ↪[L] N) (x : M) : g.comp f x = g (f x) :=
+lemma comp_apply (g : N ↪[L] P) (f : M ↪[L] N) (x : M) : g.comp f x = g (f x) :=
   rfl
 #align first_order.language.embedding.comp_apply FirstOrder.Language.Embedding.comp_apply
 
@@ -739,38 +739,38 @@ theorem comp_assoc (f : M ↪[L] N) (g : N ↪[L] P) (h : P ↪[L] Q) :
   rfl
 #align first_order.language.embedding.comp_assoc FirstOrder.Language.Embedding.comp_assoc
 
-theorem comp_injective (h : N ↪[L] P) :
+lemma comp_injective (h : N ↪[L] P) :
     Function.Injective (h.comp : (M ↪[L] N) →  (M ↪[L] P)) := by
   intro f g hfg
   ext x; exact h.injective (DFunLike.congr_fun hfg x)
 
 @[simp]
-theorem comp_inj (h : N ↪[L] P) (f g : M ↪[L] N) : h.comp f = h.comp g ↔ f = g :=
+lemma comp_inj (h : N ↪[L] P) (f g : M ↪[L] N) : h.comp f = h.comp g ↔ f = g :=
   ⟨fun eq ↦ h.comp_injective eq, congr_arg h.comp⟩
 
-theorem toHom_comp_injective (h : N ↪[L] P) :
+lemma toHom_comp_injective (h : N ↪[L] P) :
     Function.Injective (h.toHom.comp : (M →[L] N) →  (M →[L] P)) := by
   intro f g hfg
   ext x; exact h.injective (DFunLike.congr_fun hfg x)
 
 @[simp]
-theorem toHom_comp_inj (h : N ↪[L] P) (f g : M →[L] N) : h.toHom.comp f = h.toHom.comp g ↔ f = g :=
+lemma toHom_comp_inj (h : N ↪[L] P) (f g : M →[L] N) : h.toHom.comp f = h.toHom.comp g ↔ f = g :=
   ⟨fun eq ↦ h.toHom_comp_injective eq, congr_arg h.toHom.comp⟩
 
 @[simp]
-theorem comp_toHom (hnp : N ↪[L] P) (hmn : M ↪[L] N) :
+lemma comp_toHom (hnp : N ↪[L] P) (hmn : M ↪[L] N) :
     (hnp.comp hmn).toHom = hnp.toHom.comp hmn.toHom :=
   rfl
 #align first_order.language.embedding.comp_to_hom FirstOrder.Language.Embedding.comp_toHom
 
 @[simp]
-theorem comp_refl (f : M ↪[L] N) : f.comp (refl L M) = f := DFunLike.coe_injective rfl
+lemma comp_refl (f : M ↪[L] N) : f.comp (refl L M) = f := DFunLike.coe_injective rfl
 
 @[simp]
-theorem refl_comp (f : M ↪[L] N) : (refl L N).comp f = f := DFunLike.coe_injective rfl
+lemma refl_comp (f : M ↪[L] N) : (refl L N).comp f = f := DFunLike.coe_injective rfl
 
 @[simp]
-theorem refl_toHom : (refl L M).toHom = Hom.id L M :=
+lemma refl_toHom : (refl L M).toHom = Hom.id L M :=
   rfl
 
 end Embedding
@@ -819,33 +819,33 @@ instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=
 #align first_order.language.equiv.has_coe_to_fun FirstOrder.Language.Equiv.hasCoeToFun
 
 @[simp]
-theorem symm_symm (f : M ≃[L] N) :
+lemma symm_symm (f : M ≃[L] N) :
     f.symm.symm = f :=
   rfl
 
 @[simp]
-theorem apply_symm_apply (f : M ≃[L] N) (a : N) : f (f.symm a) = a :=
+lemma apply_symm_apply (f : M ≃[L] N) (a : N) : f (f.symm a) = a :=
   f.toEquiv.apply_symm_apply a
 #align first_order.language.equiv.apply_symm_apply FirstOrder.Language.Equiv.apply_symm_apply
 
 @[simp]
-theorem symm_apply_apply (f : M ≃[L] N) (a : M) : f.symm (f a) = a :=
+lemma symm_apply_apply (f : M ≃[L] N) (a : M) : f.symm (f a) = a :=
   f.toEquiv.symm_apply_apply a
 #align first_order.language.equiv.symm_apply_apply FirstOrder.Language.Equiv.symm_apply_apply
 
 @[simp]
-theorem map_fun (φ : M ≃[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
+lemma map_fun (φ : M ≃[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
     φ (funMap f x) = funMap f (φ ∘ x) :=
   HomClass.map_fun φ f x
 #align first_order.language.equiv.map_fun FirstOrder.Language.Equiv.map_fun
 
 @[simp]
-theorem map_constants (φ : M ≃[L] N) (c : L.Constants) : φ c = c :=
+lemma map_constants (φ : M ≃[L] N) (c : L.Constants) : φ c = c :=
   HomClass.map_constants φ c
 #align first_order.language.equiv.map_constants FirstOrder.Language.Equiv.map_constants
 
 @[simp]
-theorem map_rel (φ : M ≃[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
+lemma map_rel (φ : M ≃[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
     RelMap r (φ ∘ x) ↔ RelMap r x :=
   StrongHomClass.map_rel φ r x
 #align first_order.language.equiv.map_rel FirstOrder.Language.Equiv.map_rel
@@ -861,45 +861,45 @@ def toHom : (M ≃[L] N) → M →[L] N :=
 #align first_order.language.equiv.to_hom FirstOrder.Language.Equiv.toHom
 
 @[simp]
-theorem toEmbedding_toHom (f : M ≃[L] N) : f.toEmbedding.toHom = f.toHom :=
+lemma toEmbedding_toHom (f : M ≃[L] N) : f.toEmbedding.toHom = f.toHom :=
   rfl
 #align first_order.language.equiv.to_embedding_to_hom FirstOrder.Language.Equiv.toEmbedding_toHom
 
 @[simp]
-theorem coe_toHom {f : M ≃[L] N} : (f.toHom : M → N) = (f : M → N) :=
+lemma coe_toHom {f : M ≃[L] N} : (f.toHom : M → N) = (f : M → N) :=
   rfl
 #align first_order.language.equiv.coe_to_hom FirstOrder.Language.Equiv.coe_toHom
 
 @[simp]
-theorem coe_toEmbedding (f : M ≃[L] N) : (f.toEmbedding : M → N) = (f : M → N) :=
+lemma coe_toEmbedding (f : M ≃[L] N) : (f.toEmbedding : M → N) = (f : M → N) :=
   rfl
 #align first_order.language.equiv.coe_to_embedding FirstOrder.Language.Equiv.coe_toEmbedding
 
-theorem injective_toEmbedding : Function.Injective (toEmbedding : (M ≃[L] N) → M ↪[L] N) := by
+lemma injective_toEmbedding : Function.Injective (toEmbedding : (M ≃[L] N) → M ↪[L] N) := by
   intro _ _ h; apply DFunLike.coe_injective; exact congr_arg (DFunLike.coe ∘ Embedding.toHom) h
 
-theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
+lemma coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
   DFunLike.coe_injective
 #align first_order.language.equiv.coe_injective FirstOrder.Language.Equiv.coe_injective
 
 @[ext]
-theorem ext ⦃f g : M ≃[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : M ≃[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   coe_injective (funext h)
 #align first_order.language.equiv.ext FirstOrder.Language.Equiv.ext
 
-theorem ext_iff {f g : M ≃[L] N} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : M ≃[L] N} : f = g ↔ ∀ x, f x = g x :=
   ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 #align first_order.language.equiv.ext_iff FirstOrder.Language.Equiv.ext_iff
 
-theorem bijective (f : M ≃[L] N) : Function.Bijective f :=
+lemma bijective (f : M ≃[L] N) : Function.Bijective f :=
   EquivLike.bijective f
 #align first_order.language.equiv.bijective FirstOrder.Language.Equiv.bijective
 
-theorem injective (f : M ≃[L] N) : Function.Injective f :=
+lemma injective (f : M ≃[L] N) : Function.Injective f :=
   EquivLike.injective f
 #align first_order.language.equiv.injective FirstOrder.Language.Equiv.injective
 
-theorem surjective (f : M ≃[L] N) : Function.Surjective f :=
+lemma surjective (f : M ≃[L] N) : Function.Surjective f :=
   EquivLike.surjective f
 #align first_order.language.equiv.surjective FirstOrder.Language.Equiv.surjective
 
@@ -916,7 +916,7 @@ instance : Inhabited (M ≃[L] M) :=
   ⟨refl L M⟩
 
 @[simp]
-theorem refl_apply (x : M) : refl L M x = x := by simp [refl]; rfl
+lemma refl_apply (x : M) : refl L M x = x := by simp [refl]; rfl
 #align first_order.language.equiv.refl_apply FirstOrder.Language.Equiv.refl_apply
 
 /-- Composition of first-order equivalences. -/
@@ -931,24 +931,24 @@ def comp (hnp : N ≃[L] P) (hmn : M ≃[L] N) : M ≃[L] P :=
 #align first_order.language.equiv.comp FirstOrder.Language.Equiv.comp
 
 @[simp]
-theorem comp_apply (g : N ≃[L] P) (f : M ≃[L] N) (x : M) : g.comp f x = g (f x) :=
+lemma comp_apply (g : N ≃[L] P) (f : M ≃[L] N) (x : M) : g.comp f x = g (f x) :=
   rfl
 #align first_order.language.equiv.comp_apply FirstOrder.Language.Equiv.comp_apply
 
 @[simp]
-theorem comp_refl (g : M ≃[L] N) : g.comp (refl L M) = g :=
+lemma comp_refl (g : M ≃[L] N) : g.comp (refl L M) = g :=
   rfl
 
 @[simp]
-theorem refl_comp (g : M ≃[L] N) : (refl L N).comp g = g :=
+lemma refl_comp (g : M ≃[L] N) : (refl L N).comp g = g :=
   rfl
 
 @[simp]
-theorem refl_toEmbedding : (refl L M).toEmbedding = Embedding.refl L M :=
+lemma refl_toEmbedding : (refl L M).toEmbedding = Embedding.refl L M :=
   rfl
 
 @[simp]
-theorem refl_toHom : (refl L M).toHom = Hom.id L M :=
+lemma refl_toHom : (refl L M).toHom = Hom.id L M :=
   rfl
 
 /-- Composition of first-order homomorphisms is associative. -/
@@ -957,61 +957,61 @@ theorem comp_assoc (f : M ≃[L] N) (g : N ≃[L] P) (h : P ≃[L] Q) :
   rfl
 #align first_order.language.equiv.comp_assoc FirstOrder.Language.Equiv.comp_assoc
 
-theorem injective_comp (h : N ≃[L] P) :
+lemma injective_comp (h : N ≃[L] P) :
     Function.Injective (h.comp : (M ≃[L] N) →  (M ≃[L] P)) := by
   intro f g hfg
   ext x; exact h.injective (congr_fun (congr_arg DFunLike.coe hfg) x)
 
 @[simp]
-theorem comp_toHom (hnp : N ≃[L] P) (hmn : M ≃[L] N) :
+lemma comp_toHom (hnp : N ≃[L] P) (hmn : M ≃[L] N) :
     (hnp.comp hmn).toHom = hnp.toHom.comp hmn.toHom :=
   rfl
 
 @[simp]
-theorem comp_toEmbedding (hnp : N ≃[L] P) (hmn : M ≃[L] N) :
+lemma comp_toEmbedding (hnp : N ≃[L] P) (hmn : M ≃[L] N) :
     (hnp.comp hmn).toEmbedding = hnp.toEmbedding.comp hmn.toEmbedding :=
   rfl
 
 @[simp]
-theorem self_comp_symm (f : M ≃[L] N) : f.comp f.symm = refl L N := by
+lemma self_comp_symm (f : M ≃[L] N) : f.comp f.symm = refl L N := by
   ext; rw [comp_apply, apply_symm_apply, refl_apply]
 
 @[simp]
-theorem symm_comp_self (f : M ≃[L] N) : f.symm.comp f = refl L M := by
+lemma symm_comp_self (f : M ≃[L] N) : f.symm.comp f = refl L M := by
   ext; rw [comp_apply, symm_apply_apply, refl_apply]
 
 @[simp]
-theorem symm_comp_self_toEmbedding (f : M ≃[L] N) :
+lemma symm_comp_self_toEmbedding (f : M ≃[L] N) :
     f.symm.toEmbedding.comp f.toEmbedding = Embedding.refl L M := by
   rw [← comp_toEmbedding, symm_comp_self, refl_toEmbedding]
 
 @[simp]
-theorem self_comp_symm_toEmbedding (f : M ≃[L] N) :
+lemma self_comp_symm_toEmbedding (f : M ≃[L] N) :
     f.toEmbedding.comp f.symm.toEmbedding = Embedding.refl L N := by
   rw [← comp_toEmbedding, self_comp_symm, refl_toEmbedding]
 
 @[simp]
-theorem symm_comp_self_toHom (f : M ≃[L] N) :
+lemma symm_comp_self_toHom (f : M ≃[L] N) :
     f.symm.toHom.comp f.toHom = Hom.id L M := by
   rw [← comp_toHom, symm_comp_self, refl_toHom]
 
 @[simp]
-theorem self_comp_symm_toHom (f : M ≃[L] N) :
+lemma self_comp_symm_toHom (f : M ≃[L] N) :
     f.toHom.comp f.symm.toHom = Hom.id L N := by
   rw [← comp_toHom, self_comp_symm, refl_toHom]
 
 @[simp]
-theorem comp_symm (f : M ≃[L] N) (g : N ≃[L] P) : (g.comp f).symm = f.symm.comp g.symm :=
+lemma comp_symm (f : M ≃[L] N) (g : N ≃[L] P) : (g.comp f).symm = f.symm.comp g.symm :=
   rfl
 
-theorem comp_right_injective (h : M ≃[L] N) :
+lemma comp_right_injective (h : M ≃[L] N) :
     Function.Injective (fun f ↦ f.comp h : (N ≃[L] P) → (M ≃[L] P)) := by
   intro f g hfg
   convert (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
     rw [comp_assoc, self_comp_symm, comp_refl]
 
 @[simp]
-theorem comp_right_inj (h : M ≃[L] N) (f g : N ≃[L] P) : f.comp h = g.comp h ↔ f = g :=
+lemma comp_right_inj (h : M ≃[L] N) (f g : N ≃[L] P) : f.comp h = g.comp h ↔ f = g :=
   ⟨fun eq ↦ h.comp_right_injective eq, congr_arg (fun (r : N ≃[L] P) ↦ r.comp h)⟩
 
 end Equiv
@@ -1036,25 +1036,25 @@ set_option linter.uppercaseLean3 false in
 variable {L₁ L₂ S}
 
 @[simp]
-theorem funMap_sum_inl {n : ℕ} (f : L₁.Functions n) :
+lemma funMap_sum_inl {n : ℕ} (f : L₁.Functions n) :
     @funMap (L₁.sum L₂) S _ n (Sum.inl f) = funMap f :=
   rfl
 #align first_order.language.fun_map_sum_inl FirstOrder.Language.funMap_sum_inl
 
 @[simp]
-theorem funMap_sum_inr {n : ℕ} (f : L₂.Functions n) :
+lemma funMap_sum_inr {n : ℕ} (f : L₂.Functions n) :
     @funMap (L₁.sum L₂) S _ n (Sum.inr f) = funMap f :=
   rfl
 #align first_order.language.fun_map_sum_inr FirstOrder.Language.funMap_sum_inr
 
 @[simp]
-theorem relMap_sum_inl {n : ℕ} (R : L₁.Relations n) :
+lemma relMap_sum_inl {n : ℕ} (R : L₁.Relations n) :
     @RelMap (L₁.sum L₂) S _ n (Sum.inl R) = RelMap R :=
   rfl
 #align first_order.language.rel_map_sum_inl FirstOrder.Language.relMap_sum_inl
 
 @[simp]
-theorem relMap_sum_inr {n : ℕ} (R : L₂.Relations n) :
+lemma relMap_sum_inr {n : ℕ} (R : L₂.Relations n) :
     @RelMap (L₁.sum L₂) S _ n (Sum.inr R) = RelMap R :=
   rfl
 #align first_order.language.rel_map_sum_inr FirstOrder.Language.relMap_sum_inr
@@ -1068,14 +1068,14 @@ section
 variable [Language.empty.Structure M] [Language.empty.Structure N]
 
 @[simp]
-theorem empty.nonempty_embedding_iff :
+lemma empty.nonempty_embedding_iff :
     Nonempty (M ↪[Language.empty] N) ↔ Cardinal.lift.{w'} #M ≤ Cardinal.lift.{w} #N :=
   _root_.trans ⟨Nonempty.map fun f => f.toEmbedding, Nonempty.map fun f => { toEmbedding := f }⟩
     Cardinal.lift_mk_le'.symm
 #align first_order.language.empty.nonempty_embedding_iff FirstOrder.Language.empty.nonempty_embedding_iff
 
 @[simp]
-theorem empty.nonempty_equiv_iff :
+lemma empty.nonempty_equiv_iff :
     Nonempty (M ≃[Language.empty] N) ↔ Cardinal.lift.{w'} #M = Cardinal.lift.{w} #N :=
   _root_.trans ⟨Nonempty.map fun f => f.toEquiv, Nonempty.map fun f => { toEquiv := f }⟩
     Cardinal.lift_mk_eq'.symm
@@ -1108,11 +1108,11 @@ def _root_.Embedding.empty (f : M ↪ N) : M ↪[Language.empty] N where toEmbed
 #align embedding.empty Embedding.empty
 
 @[simp]
-theorem toFun_embedding_empty (f : M ↪ N) : (Embedding.empty f : M → N) = f :=
+lemma toFun_embedding_empty (f : M ↪ N) : (Embedding.empty f : M → N) = f :=
   rfl
 
 @[simp]
-theorem toEmbedding_embedding_empty (f : M ↪ N) : (Embedding.empty f).toEmbedding = f :=
+lemma toEmbedding_embedding_empty (f : M ↪ N) : (Embedding.empty f).toEmbedding = f :=
   rfl
 
 /-- Makes a `Language.empty.Equiv` out of any function. -/
@@ -1121,11 +1121,11 @@ def _root_.Equiv.empty (f : M ≃ N) : M ≃[Language.empty] N where toEquiv := 
 #align equiv.empty Equiv.empty
 
 @[simp]
-theorem toFun_equiv_empty (f : M ≃ N) : (Equiv.empty f : M → N) = f :=
+lemma toFun_equiv_empty (f : M ≃ N) : (Equiv.empty f : M → N) = f :=
   rfl
 
 @[simp]
-theorem toEquiv_equiv_empty (f : M ≃ N) : (Equiv.empty f).toEquiv = f :=
+lemma toEquiv_equiv_empty (f : M ≃ N) : (Equiv.empty f).toEquiv = f :=
   rfl
 
 end Empty
@@ -1161,17 +1161,17 @@ set_option linter.uppercaseLean3 false in
 #align equiv.induced_Structure_equiv Equiv.inducedStructureEquiv
 
 @[simp]
-theorem toEquiv_inducedStructureEquiv (e : M ≃ N) :
+lemma toEquiv_inducedStructureEquiv (e : M ≃ N) :
     @Language.Equiv.toEquiv L M N _ (inducedStructure e) (inducedStructureEquiv e) = e :=
   rfl
 
 @[simp]
-theorem toFun_inducedStructureEquiv (e : M ≃ N) :
+lemma toFun_inducedStructureEquiv (e : M ≃ N) :
     DFunLike.coe (@inducedStructureEquiv L M N _ e) = e :=
   rfl
 
 @[simp]
-theorem toFun_inducedStructureEquiv_Symm (e : M ≃ N) :
+lemma toFun_inducedStructureEquiv_Symm (e : M ≃ N) :
     (by
     letI : L.Structure N := inducedStructure e
     exact DFunLike.coe (@inducedStructureEquiv L M N _ e).symm) = (e.symm : N → M) :=

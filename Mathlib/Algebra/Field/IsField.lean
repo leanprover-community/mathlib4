@@ -49,12 +49,12 @@ theorem Field.toIsField (R : Type u) [Field R] : IsField R :=
 #align field.to_is_field Field.toIsField
 
 @[simp]
-theorem IsField.nontrivial {R : Type u} [Semiring R] (h : IsField R) : Nontrivial R :=
+lemma IsField.nontrivial {R : Type u} [Semiring R] (h : IsField R) : Nontrivial R :=
   ⟨h.exists_pair_ne⟩
 #align is_field.nontrivial IsField.nontrivial
 
 @[simp]
-theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] : ¬IsField R :=
+lemma not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] : ¬IsField R :=
   fun h =>
   let ⟨_, _, h⟩ := h.exists_pair_ne
   h (Subsingleton.elim _ _)

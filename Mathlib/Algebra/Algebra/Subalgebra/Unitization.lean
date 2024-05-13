@@ -55,7 +55,7 @@ def Subalgebra.toNonUnitalSubalgebra (S : Subalgebra R A) : NonUnitalSubalgebra 
   { S with
     smul_mem' := fun r _x hx => S.smul_mem hx r }
 
-theorem Subalgebra.one_mem_toNonUnitalSubalgebra (S : Subalgebra R A) :
+lemma Subalgebra.one_mem_toNonUnitalSubalgebra (S : Subalgebra R A) :
     (1 : A) ∈ S.toNonUnitalSubalgebra :=
   S.one_mem
 
@@ -67,10 +67,10 @@ def NonUnitalSubalgebra.toSubalgebra (S : NonUnitalSubalgebra R A) (h1 : (1 : A)
     algebraMap_mem' := fun r =>
       (Algebra.algebraMap_eq_smul_one (R := R) (A := A) r).symm ▸ SMulMemClass.smul_mem r h1 }
 
-theorem Subalgebra.toNonUnitalSubalgebra_toSubalgebra (S : Subalgebra R A) :
+lemma Subalgebra.toNonUnitalSubalgebra_toSubalgebra (S : Subalgebra R A) :
     S.toNonUnitalSubalgebra.toSubalgebra S.one_mem = S := by cases S; rfl
 
-theorem NonUnitalSubalgebra.toSubalgebra_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A)
+lemma NonUnitalSubalgebra.toSubalgebra_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A)
     (h1 : (1 : A) ∈ S) : (NonUnitalSubalgebra.toSubalgebra S h1).toNonUnitalSubalgebra = S := by
   cases S; rfl
 
@@ -81,7 +81,7 @@ namespace Unitization
 variable {R A C : Type*} [CommSemiring R] [NonUnitalSemiring A]
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [Semiring C] [Algebra R C]
 
-theorem lift_range_le {f : A →ₙₐ[R] C} {S : Subalgebra R C} :
+lemma lift_range_le {f : A →ₙₐ[R] C} {S : Subalgebra R C} :
     (lift f).range ≤ S ↔ NonUnitalAlgHom.range f ≤ S.toNonUnitalSubalgebra := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rintro - ⟨x, rfl⟩
@@ -90,7 +90,7 @@ theorem lift_range_le {f : A →ₙₐ[R] C} {S : Subalgebra R C} :
     induction x using ind with
     | _ r a => simpa using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
 
-theorem lift_range (f : A →ₙₐ[R] C) :
+lemma lift_range (f : A →ₙₐ[R] C) :
     (lift f).range = Algebra.adjoin R (NonUnitalAlgHom.range f : Set C) :=
   eq_of_forall_ge_iff fun c ↦ by rw [lift_range_le, Algebra.adjoin_le_iff]; rfl
 
@@ -109,11 +109,11 @@ def unitization : Unitization R s →ₐ[R] A :=
   Unitization.lift (NonUnitalSubalgebraClass.subtype s)
 
 @[simp]
-theorem unitization_apply (x : Unitization R s) :
+lemma unitization_apply (x : Unitization R s) :
     unitization s x = algebraMap R A x.fst + x.snd :=
   rfl
 
-theorem unitization_range : (unitization s).range = Algebra.adjoin R (s : Set A) := by
+lemma unitization_range : (unitization s).range = Algebra.adjoin R (s : Set A) := by
   rw [unitization, Unitization.lift_range]
   simp only [NonUnitalAlgHom.coe_range, NonUnitalSubalgebraClass.coeSubtype,
     Subtype.range_coe_subtype, SetLike.mem_coe]
@@ -153,7 +153,7 @@ section Field
 variable {R S A : Type*} [Field R] [Ring A] [Algebra R A]
   [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A] (s : S)
 
-theorem unitization_injective (h1 : (1 : A) ∉ s) : Function.Injective (unitization s) :=
+lemma unitization_injective (h1 : (1 : A) ∉ s) : Function.Injective (unitization s) :=
   AlgHomClass.unitization_injective s h1 (unitization s) fun _ ↦ by simp
 
 /-- If a `NonUnitalSubalgebra` over a field does not contain `1`, then its unitization is
@@ -188,7 +188,7 @@ variable {R : Type*} [NonAssocSemiring R]
 def Subsemiring.toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R :=
   { S with }
 
-theorem Subsemiring.one_mem_toNonUnitalSubsemiring (S : Subsemiring R) :
+lemma Subsemiring.one_mem_toNonUnitalSubsemiring (S : Subsemiring R) :
     (1 : R) ∈ S.toNonUnitalSubsemiring :=
   S.one_mem
 
@@ -198,10 +198,10 @@ def NonUnitalSubsemiring.toSubsemiring (S : NonUnitalSubsemiring R) (h1 : (1 : R
   { S with
     one_mem' := h1 }
 
-theorem Subsemiring.toNonUnitalSubsemiring_toSubsemiring (S : Subsemiring R) :
+lemma Subsemiring.toNonUnitalSubsemiring_toSubsemiring (S : Subsemiring R) :
     S.toNonUnitalSubsemiring.toSubsemiring S.one_mem = S := by cases S; rfl
 
-theorem NonUnitalSubsemiring.toSubsemiring_toNonUnitalSubsemiring (S : NonUnitalSubsemiring R)
+lemma NonUnitalSubsemiring.toSubsemiring_toNonUnitalSubsemiring (S : NonUnitalSubsemiring R)
     (h1 : (1 : R) ∈ S) : (NonUnitalSubsemiring.toSubsemiring S h1).toNonUnitalSubsemiring = S := by
   cases S; rfl
 
@@ -217,10 +217,10 @@ def unitization : Unitization ℕ s →ₐ[ℕ] R :=
   NonUnitalSubalgebra.unitization (hSRA := AddSubmonoidClass.nsmulMemClass) s
 
 @[simp]
-theorem unitization_apply (x : Unitization ℕ s) : unitization s x = x.fst + x.snd :=
+lemma unitization_apply (x : Unitization ℕ s) : unitization s x = x.fst + x.snd :=
   rfl
 
-theorem unitization_range :
+lemma unitization_range :
     (unitization s).range = subalgebraOfSubsemiring (Subsemiring.closure s) := by
   have := AddSubmonoidClass.nsmulMemClass (S := S)
   rw [unitization, NonUnitalSubalgebra.unitization_range (hSRA := this), Algebra.adjoin_nat]
@@ -238,7 +238,7 @@ variable {R : Type*} [Ring R]
 def Subring.toNonUnitalSubring (S : Subring R) : NonUnitalSubring R :=
   { S with }
 
-theorem Subring.one_mem_toNonUnitalSubring (S : Subring R) : (1 : R) ∈ S.toNonUnitalSubring :=
+lemma Subring.one_mem_toNonUnitalSubring (S : Subring R) : (1 : R) ∈ S.toNonUnitalSubring :=
   S.one_mem
 
 /-- Turn a non-unital subring containing `1` into a subring. -/
@@ -246,10 +246,10 @@ def NonUnitalSubring.toSubring (S : NonUnitalSubring R) (h1 : (1 : R) ∈ S) : S
   { S with
     one_mem' := h1 }
 
-theorem Subring.toNonUnitalSubring_toSubring (S : Subring R) :
+lemma Subring.toNonUnitalSubring_toSubring (S : Subring R) :
     S.toNonUnitalSubring.toSubring S.one_mem = S := by cases S; rfl
 
-theorem NonUnitalSubring.toSubring_toNonUnitalSubring (S : NonUnitalSubring R) (h1 : (1 : R) ∈ S) :
+lemma NonUnitalSubring.toSubring_toNonUnitalSubring (S : NonUnitalSubring R) (h1 : (1 : R) ∈ S) :
     (NonUnitalSubring.toSubring S h1).toNonUnitalSubring = S := by cases S; rfl
 
 end Subring
@@ -264,10 +264,10 @@ def unitization : Unitization ℤ s →ₐ[ℤ] R :=
   NonUnitalSubalgebra.unitization (hSRA := AddSubgroupClass.zsmulMemClass) s
 
 @[simp]
-theorem unitization_apply (x : Unitization ℤ s) : unitization s x = x.fst + x.snd :=
+lemma unitization_apply (x : Unitization ℤ s) : unitization s x = x.fst + x.snd :=
   rfl
 
-theorem unitization_range :
+lemma unitization_range :
     (unitization s).range = subalgebraOfSubring (Subring.closure s) := by
   have := AddSubgroupClass.zsmulMemClass (S := S)
   rw [unitization, NonUnitalSubalgebra.unitization_range (hSRA := this), Algebra.adjoin_int]
@@ -288,7 +288,7 @@ def StarSubalgebra.toNonUnitalStarSubalgebra (S : StarSubalgebra R A) :
     carrier := S.carrier
     smul_mem' := fun r _x hx => S.smul_mem hx r }
 
-theorem StarSubalgebra.one_mem_toNonUnitalStarSubalgebra (S : StarSubalgebra R A) :
+lemma StarSubalgebra.one_mem_toNonUnitalStarSubalgebra (S : StarSubalgebra R A) :
     (1 : A) ∈ S.toNonUnitalStarSubalgebra :=
   S.one_mem'
 
@@ -301,10 +301,10 @@ def NonUnitalStarSubalgebra.toStarSubalgebra (S : NonUnitalStarSubalgebra R A) (
     algebraMap_mem' := fun r =>
       (Algebra.algebraMap_eq_smul_one (R := R) (A := A) r).symm ▸ SMulMemClass.smul_mem r h1 }
 
-theorem StarSubalgebra.toNonUnitalStarSubalgebra_toStarSubalgebra (S : StarSubalgebra R A) :
+lemma StarSubalgebra.toNonUnitalStarSubalgebra_toStarSubalgebra (S : StarSubalgebra R A) :
     S.toNonUnitalStarSubalgebra.toStarSubalgebra S.one_mem' = S := by cases S; rfl
 
-theorem NonUnitalStarSubalgebra.toStarSubalgebra_toNonUnitalStarSubalgebra
+lemma NonUnitalStarSubalgebra.toStarSubalgebra_toNonUnitalStarSubalgebra
     (S : NonUnitalStarSubalgebra R A) (h1 : (1 : A) ∈ S) :
     (S.toStarSubalgebra h1).toNonUnitalStarSubalgebra = S := by
   cases S; rfl
@@ -317,7 +317,7 @@ variable {R A C : Type*} [CommSemiring R] [NonUnitalSemiring A] [StarRing R] [St
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [StarModule R A]
 variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
 
-theorem starLift_range_le
+lemma starLift_range_le
     {f : A →⋆ₙₐ[R] C} {S : StarSubalgebra R C} :
     (starLift f).range ≤ S ↔ NonUnitalStarAlgHom.range f ≤ S.toNonUnitalStarSubalgebra := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -327,7 +327,7 @@ theorem starLift_range_le
     induction x using ind with
     | _ r a => simpa using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
 
-theorem starLift_range (f : A →⋆ₙₐ[R] C) :
+lemma starLift_range (f : A →⋆ₙₐ[R] C) :
     (starLift f).range = StarAlgebra.adjoin R (NonUnitalStarAlgHom.range f : Set C) :=
   eq_of_forall_ge_iff fun c ↦ by
     rw [starLift_range_le, StarAlgebra.adjoin_le_iff]
@@ -348,10 +348,10 @@ def unitization : Unitization R s →⋆ₐ[R] A :=
   Unitization.starLift <| NonUnitalStarSubalgebraClass.subtype s
 
 @[simp]
-theorem unitization_apply (x : Unitization R s) : unitization s x = algebraMap R A x.fst + x.snd :=
+lemma unitization_apply (x : Unitization R s) : unitization s x = algebraMap R A x.fst + x.snd :=
   rfl
 
-theorem unitization_range : (unitization s).range = StarAlgebra.adjoin R s := by
+lemma unitization_range : (unitization s).range = StarAlgebra.adjoin R s := by
   rw [unitization, Unitization.starLift_range]
   simp only [NonUnitalStarAlgHom.coe_range, NonUnitalStarSubalgebraClass.coeSubtype,
     Subtype.range_coe_subtype]
@@ -365,7 +365,7 @@ variable {R S A : Type*} [Field R] [StarRing R] [Ring A] [StarRing A] [Algebra R
   [StarModule R A] [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A]
   [StarMemClass S A] (s : S)
 
-theorem unitization_injective (h1 : (1 : A) ∉ s) : Function.Injective (unitization s) :=
+lemma unitization_injective (h1 : (1 : A) ∉ s) : Function.Injective (unitization s) :=
   AlgHomClass.unitization_injective s h1 (unitization s) fun _ ↦ by simp
 
 /-- If a `NonUnitalStarSubalgebra` over a field does not contain `1`, then its unitization is

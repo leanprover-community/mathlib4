@@ -38,7 +38,7 @@ variable (R : Type*) (A : Type u)
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 variable [TopologicalSpace R] [TopologicalSpace A] [TopologicalSemiring A]
 
-theorem continuous_algebraMap_iff_smul :
+lemma continuous_algebraMap_iff_smul :
     Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
   refine' ⟨fun h => _, fun h => _⟩
   · simp only [Algebra.smul_def]
@@ -48,11 +48,11 @@ theorem continuous_algebraMap_iff_smul :
 #align continuous_algebra_map_iff_smul continuous_algebraMap_iff_smul
 
 @[continuity]
-theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A) :=
+lemma continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A) :=
   (continuous_algebraMap_iff_smul R A).2 continuous_smul
 #align continuous_algebra_map continuous_algebraMap
 
-theorem continuousSMul_of_algebraMap (h : Continuous (algebraMap R A)) : ContinuousSMul R A :=
+lemma continuousSMul_of_algebraMap (h : Continuous (algebraMap R A)) : ContinuousSMul R A :=
   ⟨(continuous_algebraMap_iff_smul R A).1 h⟩
 #align has_continuous_smul_of_algebra_map continuousSMul_of_algebraMap
 
@@ -66,11 +66,11 @@ def algebraMapCLM : R →L[R] A :=
     cont := continuous_algebraMap R A }
 #align algebra_map_clm algebraMapCLM
 
-theorem algebraMapCLM_coe : ⇑(algebraMapCLM R A) = algebraMap R A :=
+lemma algebraMapCLM_coe : ⇑(algebraMapCLM R A) = algebraMap R A :=
   rfl
 #align algebra_map_clm_coe algebraMapCLM_coe
 
-theorem algebraMapCLM_toLinearMap : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
+lemma algebraMapCLM_toLinearMap : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
   rfl
 #align algebra_map_clm_to_linear_map algebraMapCLM_toLinearMap
 
@@ -94,7 +94,7 @@ def Subalgebra.topologicalClosure (s : Subalgebra R A) : Subalgebra R A :=
 #align subalgebra.topological_closure Subalgebra.topologicalClosure
 
 @[simp]
-theorem Subalgebra.topologicalClosure_coe (s : Subalgebra R A) :
+lemma Subalgebra.topologicalClosure_coe (s : Subalgebra R A) :
     (s.topologicalClosure : Set A) = closure (s : Set A) :=
   rfl
 #align subalgebra.topological_closure_coe Subalgebra.topologicalClosure_coe
@@ -103,15 +103,15 @@ instance Subalgebra.topologicalSemiring (s : Subalgebra R A) : TopologicalSemiri
   s.toSubsemiring.topologicalSemiring
 #align subalgebra.topological_semiring Subalgebra.topologicalSemiring
 
-theorem Subalgebra.le_topologicalClosure (s : Subalgebra R A) : s ≤ s.topologicalClosure :=
+lemma Subalgebra.le_topologicalClosure (s : Subalgebra R A) : s ≤ s.topologicalClosure :=
   subset_closure
 #align subalgebra.le_topological_closure Subalgebra.le_topologicalClosure
 
-theorem Subalgebra.isClosed_topologicalClosure (s : Subalgebra R A) :
+lemma Subalgebra.isClosed_topologicalClosure (s : Subalgebra R A) :
     IsClosed (s.topologicalClosure : Set A) := by convert @isClosed_closure A s _
 #align subalgebra.is_closed_topological_closure Subalgebra.isClosed_topologicalClosure
 
-theorem Subalgebra.topologicalClosure_minimal (s : Subalgebra R A) {t : Subalgebra R A} (h : s ≤ t)
+lemma Subalgebra.topologicalClosure_minimal (s : Subalgebra R A) {t : Subalgebra R A} (h : s ≤ t)
     (ht : IsClosed (t : Set A)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 #align subalgebra.topological_closure_minimal Subalgebra.topologicalClosure_minimal
@@ -161,7 +161,7 @@ def Algebra.elementalAlgebra (x : A) : Subalgebra R A :=
 #align algebra.elemental_algebra Algebra.elementalAlgebra
 
 @[aesop safe apply (rule_sets := [SetLike])]
-theorem Algebra.self_mem_elementalAlgebra (x : A) : x ∈ Algebra.elementalAlgebra R x :=
+lemma Algebra.self_mem_elementalAlgebra (x : A) : x ∈ Algebra.elementalAlgebra R x :=
   SetLike.le_def.mp (Subalgebra.le_topologicalClosure (Algebra.adjoin R ({x} : Set A))) <|
     Algebra.self_mem_adjoin_singleton R x
 #align algebra.self_mem_elemental_algebra Algebra.self_mem_elementalAlgebra

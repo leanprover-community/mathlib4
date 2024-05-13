@@ -65,38 +65,38 @@ namespace BilinForm
 #noalign bilin_form.coe_fn_mk
 
 @[deprecated (since := "2024-04-14")]
-theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
+lemma coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
   | _, _, _, _, rfl, rfl => rfl
 #align bilin_form.coe_fn_congr LinearMap.BilinForm.coeFn_congr
 
-theorem add_left (x y z : M) : B (x + y) z = B x z + B y z := map_add₂ _ _ _ _
+lemma add_left (x y z : M) : B (x + y) z = B x z + B y z := map_add₂ _ _ _ _
 #align bilin_form.add_left LinearMap.BilinForm.add_left
 
-theorem smul_left (a : R) (x y : M) : B (a • x) y = a * B x y := map_smul₂ _ _ _ _
+lemma smul_left (a : R) (x y : M) : B (a • x) y = a * B x y := map_smul₂ _ _ _ _
 #align bilin_form.smul_left LinearMap.BilinForm.smul_left
 
-theorem add_right (x y z : M) : B x (y + z) = B x y + B x z := map_add _ _ _
+lemma add_right (x y z : M) : B x (y + z) = B x y + B x z := map_add _ _ _
 #align bilin_form.add_right LinearMap.BilinForm.add_right
 
-theorem smul_right (a : R) (x y : M) : B x (a • y) = a * B x y := map_smul _ _ _
+lemma smul_right (a : R) (x y : M) : B x (a • y) = a * B x y := map_smul _ _ _
 #align bilin_form.smul_right LinearMap.BilinForm.smul_right
 
-theorem zero_left (x : M) : B 0 x = 0 := map_zero₂ _ _
+lemma zero_left (x : M) : B 0 x = 0 := map_zero₂ _ _
 #align bilin_form.zero_left LinearMap.BilinForm.zero_left
 
-theorem zero_right (x : M) : B x 0 = 0 := map_zero _
+lemma zero_right (x : M) : B x 0 = 0 := map_zero _
 #align bilin_form.zero_right LinearMap.BilinForm.zero_right
 
-theorem neg_left (x y : M₁) : B₁ (-x) y = -B₁ x y := map_neg₂ _ _ _
+lemma neg_left (x y : M₁) : B₁ (-x) y = -B₁ x y := map_neg₂ _ _ _
 #align bilin_form.neg_left LinearMap.BilinForm.neg_left
 
-theorem neg_right (x y : M₁) : B₁ x (-y) = -B₁ x y := map_neg _ _
+lemma neg_right (x y : M₁) : B₁ x (-y) = -B₁ x y := map_neg _ _
 #align bilin_form.neg_right LinearMap.BilinForm.neg_right
 
-theorem sub_left (x y z : M₁) : B₁ (x - y) z = B₁ x z - B₁ y z := map_sub₂ _ _ _ _
+lemma sub_left (x y z : M₁) : B₁ (x - y) z = B₁ x z - B₁ y z := map_sub₂ _ _ _ _
 #align bilin_form.sub_left LinearMap.BilinForm.sub_left
 
-theorem sub_right (x y z : M₁) : B₁ x (y - z) = B₁ x y - B₁ x z := map_sub _ _ _
+lemma sub_right (x y z : M₁) : B₁ x (y - z) = B₁ x y - B₁ x z := map_sub _ _ _
 #align bilin_form.sub_right LinearMap.BilinForm.sub_right
 
 lemma smul_left_of_tower (r : S) (x y : M) : B (r • x) y = r • B x y := by
@@ -108,41 +108,41 @@ lemma smul_right_of_tower (r : S) (x y : M) : B x (r • y) = r • B x y := by
 variable {D : BilinForm R M} {D₁ : BilinForm R₁ M₁}
 
 -- TODO: instantiate `FunLike`
-theorem coe_injective : Function.Injective ((fun B x y => B x y) : BilinForm R M → M → M → R) :=
+lemma coe_injective : Function.Injective ((fun B x y => B x y) : BilinForm R M → M → M → R) :=
   fun B D h => by
     ext x y
     apply congrFun₂ h
 #align bilin_form.coe_injective LinearMap.BilinForm.coe_injective
 
 @[ext]
-theorem ext (H : ∀ x y : M, B x y = D x y) : B = D := ext₂ H
+lemma ext (H : ∀ x y : M, B x y = D x y) : B = D := ext₂ H
 #align bilin_form.ext LinearMap.BilinForm.ext
 
-theorem congr_fun (h : B = D) (x y : M) : B x y = D x y := congr_fun₂ h _ _
+lemma congr_fun (h : B = D) (x y : M) : B x y = D x y := congr_fun₂ h _ _
 #align bilin_form.congr_fun LinearMap.BilinForm.congr_fun
 
-theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y := ext_iff₂
+lemma ext_iff : B = D ↔ ∀ x y, B x y = D x y := ext_iff₂
 #align bilin_form.ext_iff LinearMap.BilinForm.ext_iff
 
 @[deprecated (since := "2024-04-14")]
-theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=
+lemma coe_zero : ⇑(0 : BilinForm R M) = 0 :=
   rfl
 #align bilin_form.coe_zero LinearMap.BilinForm.coe_zero
 
 @[simp]
-theorem zero_apply (x y : M) : (0 : BilinForm R M) x y = 0 :=
+lemma zero_apply (x y : M) : (0 : BilinForm R M) x y = 0 :=
   rfl
 #align bilin_form.zero_apply LinearMap.BilinForm.zero_apply
 
 variable (B D B₁ D₁)
 
 @[deprecated (since := "2024-04-14")]
-theorem coe_add : ⇑(B + D) = B + D :=
+lemma coe_add : ⇑(B + D) = B + D :=
   rfl
 #align bilin_form.coe_add LinearMap.BilinForm.coe_add
 
 @[simp]
-theorem add_apply (x y : M) : (B + D) x y = B x y + D x y :=
+lemma add_apply (x y : M) : (B + D) x y = B x y + D x y :=
   rfl
 #align bilin_form.add_apply LinearMap.BilinForm.add_apply
 
@@ -150,22 +150,22 @@ theorem add_apply (x y : M) : (B + D) x y = B x y + D x y :=
 #noalign bilin_form.smul_apply
 
 @[deprecated (since := "2024-04-14")]
-theorem coe_neg : ⇑(-B₁) = -B₁ :=
+lemma coe_neg : ⇑(-B₁) = -B₁ :=
   rfl
 #align bilin_form.coe_neg LinearMap.BilinForm.coe_neg
 
 @[simp]
-theorem neg_apply (x y : M₁) : (-B₁) x y = -B₁ x y :=
+lemma neg_apply (x y : M₁) : (-B₁) x y = -B₁ x y :=
   rfl
 #align bilin_form.neg_apply LinearMap.BilinForm.neg_apply
 
 @[deprecated (since := "2024-04-14")]
-theorem coe_sub : ⇑(B₁ - D₁) = B₁ - D₁ :=
+lemma coe_sub : ⇑(B₁ - D₁) = B₁ - D₁ :=
   rfl
 #align bilin_form.coe_sub LinearMap.BilinForm.coe_sub
 
 @[simp]
-theorem sub_apply (x y : M₁) : (B₁ - D₁) x y = B₁ x y - D₁ x y :=
+lemma sub_apply (x y : M₁) : (B₁ - D₁) x y = B₁ x y - D₁ x y :=
   rfl
 #align bilin_form.sub_apply LinearMap.BilinForm.sub_apply
 
@@ -191,7 +191,7 @@ def flipHomAux : (BilinForm R M) →ₗ[R] (BilinForm R M) where
     simp only [LinearMap.flip_apply, LinearMap.smul_apply, RingHom.id_apply]
 #align bilin_form.flip_hom_aux LinearMap.BilinForm.flipHomAux
 
-theorem flip_flip_aux (A : BilinForm R M) :
+lemma flip_flip_aux (A : BilinForm R M) :
     flipHomAux (M := M) (flipHomAux (M := M) A) = A := by
   ext A
   simp [flipHomAux]
@@ -206,11 +206,11 @@ def flipHom : BilinForm R M ≃ₗ[R] BilinForm R M :=
 #align bilin_form.flip_hom LinearMap.BilinForm.flipHom
 
 @[simp]
-theorem flip_apply (A : BilinForm R M) (x y : M) : flipHom A x y = A y x :=
+lemma flip_apply (A : BilinForm R M) (x y : M) : flipHom A x y = A y x :=
   rfl
 #align bilin_form.flip_apply LinearMap.BilinForm.flip_apply
 
-theorem flip_flip :
+lemma flip_flip :
     flipHom.trans flipHom = LinearEquiv.refl R (BilinForm R M) := by
   ext A
   simp

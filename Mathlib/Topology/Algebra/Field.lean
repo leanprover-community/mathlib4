@@ -60,16 +60,16 @@ def Subfield.topologicalClosure (K : Subfield α) : Subfield α :=
         exact mem_closure_image (continuousAt_inv₀ h) hx }
 #align subfield.topological_closure Subfield.topologicalClosure
 
-theorem Subfield.le_topologicalClosure (s : Subfield α) : s ≤ s.topologicalClosure :=
+lemma Subfield.le_topologicalClosure (s : Subfield α) : s ≤ s.topologicalClosure :=
   _root_.subset_closure
 #align subfield.le_topological_closure Subfield.le_topologicalClosure
 
-theorem Subfield.isClosed_topologicalClosure (s : Subfield α) :
+lemma Subfield.isClosed_topologicalClosure (s : Subfield α) :
     IsClosed (s.topologicalClosure : Set α) :=
   isClosed_closure
 #align subfield.is_closed_topological_closure Subfield.isClosed_topologicalClosure
 
-theorem Subfield.topologicalClosure_minimal (s : Subfield α) {t : Subfield α} (h : s ≤ t)
+lemma Subfield.topologicalClosure_minimal (s : Subfield α) {t : Subfield α} (h : s ≤ t)
     (ht : IsClosed (t : Set α)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 #align subfield.topological_closure_minimal Subfield.topologicalClosure_minimal
@@ -109,7 +109,7 @@ variable {α β : Type*} [TopologicalSpace α] [LinearOrderedSemifield β] {a : 
 
 open Topology
 
-theorem IsLocalMin.inv {f : α → β} {a : α} (h1 : IsLocalMin f a) (h2 : ∀ᶠ z in 𝓝 a, 0 < f z) :
+lemma IsLocalMin.inv {f : α → β} {a : α} (h1 : IsLocalMin f a) (h2 : ∀ᶠ z in 𝓝 a, 0 < f z) :
     IsLocalMax f⁻¹ a := by
   filter_upwards [h1, h2] with z h3 h4 using(inv_le_inv h4 h2.self_of_nhds).mpr h3
 #align is_local_min.inv IsLocalMin.inv

@@ -80,23 +80,23 @@ instance (priority := 100) LinearOrder.topologicalLattice {L : Type*} [Topologic
 variable {L X : Type*} [TopologicalSpace L] [TopologicalSpace X]
 
 @[continuity]
-theorem continuous_inf [Inf L] [ContinuousInf L] : Continuous fun p : L × L => p.1 ⊓ p.2 :=
+lemma continuous_inf [Inf L] [ContinuousInf L] : Continuous fun p : L × L => p.1 ⊓ p.2 :=
   ContinuousInf.continuous_inf
 #align continuous_inf continuous_inf
 
 @[continuity, fun_prop]
-theorem Continuous.inf [Inf L] [ContinuousInf L] {f g : X → L} (hf : Continuous f)
+lemma Continuous.inf [Inf L] [ContinuousInf L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊓ g x :=
   continuous_inf.comp (hf.prod_mk hg : _)
 #align continuous.inf Continuous.inf
 
 @[continuity]
-theorem continuous_sup [Sup L] [ContinuousSup L] : Continuous fun p : L × L => p.1 ⊔ p.2 :=
+lemma continuous_sup [Sup L] [ContinuousSup L] : Continuous fun p : L × L => p.1 ⊔ p.2 :=
   ContinuousSup.continuous_sup
 #align continuous_sup continuous_sup
 
 @[continuity, fun_prop]
-theorem Continuous.sup [Sup L] [ContinuousSup L] {f g : X → L} (hf : Continuous f)
+lemma Continuous.sup [Sup L] [ContinuousSup L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊔ g x :=
   continuous_sup.comp (hf.prod_mk hg : _)
 #align continuous.sup Continuous.sup

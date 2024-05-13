@@ -40,19 +40,19 @@ variable (K : Type*) [Field K] [NumberField K]
 /-- The absolute discriminant of a number field. -/
 noncomputable abbrev discr : ℤ := Algebra.discr ℤ (RingOfIntegers.basis K)
 
-theorem coe_discr : (discr K : ℚ) = Algebra.discr ℚ (integralBasis K) :=
+lemma coe_discr : (discr K : ℚ) = Algebra.discr ℚ (integralBasis K) :=
   (Algebra.discr_localizationLocalization ℤ _ K (RingOfIntegers.basis K)).symm
 
-theorem discr_ne_zero : discr K ≠ 0 := by
+lemma discr_ne_zero : discr K ≠ 0 := by
   rw [← (Int.cast_injective (α := ℚ)).ne_iff, coe_discr]
   exact Algebra.discr_not_zero_of_basis ℚ (integralBasis K)
 
-theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ (𝓞 K)) :
+lemma discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ (𝓞 K)) :
     Algebra.discr ℤ b = discr K := by
   let b₀ := Basis.reindex (RingOfIntegers.basis K) (Basis.indexEquiv (RingOfIntegers.basis K) b)
   rw [Algebra.discr_eq_discr (𝓞 K) b b₀, Basis.coe_reindex, Algebra.discr_reindex]
 
-theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃ₐ[ℚ] L) :
+lemma discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃ₐ[ℚ] L) :
     discr K = discr L := by
   let f₀ : 𝓞 K ≃ₗ[ℤ] 𝓞 L := (f.restrictScalars ℤ).mapIntegralClosure.toLinearEquiv
   rw [← Rat.intCast_inj, coe_discr, Algebra.discr_eq_discr_of_algEquiv (integralBasis K) f,
@@ -68,7 +68,7 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
 open MeasureTheory MeasureTheory.Measure Zspan NumberField.mixedEmbedding
   NumberField.InfinitePlace ENNReal NNReal Complex
 
-theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
+lemma _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
     volume (fundamentalDomain (latticeBasis K)) =
       (2 : ℝ≥0∞)⁻¹ ^ NrComplexPlaces K * sqrt ‖discr K‖₊ := by
   let f : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →+* ℂ) :=
@@ -102,7 +102,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
     stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
   rfl
 
-theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
+lemma exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
       |Algebra.norm ℚ (a:K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K *
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
@@ -149,7 +149,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
         inv_eq_one_div, div_pow, one_pow, zpow_natCast]
       ring
 
-theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
+lemma exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
     ∃ (a : 𝓞 K), a ≠ 0 ∧
       |Algebra.norm ℚ (a : K)| ≤ (4 / π) ^ NrComplexPlaces K *
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
@@ -161,7 +161,7 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
 
 variable {K}
 
-theorem abs_discr_ge (h : 1 < finrank ℚ K) :
+lemma abs_discr_ge (h : 1 < finrank ℚ K) :
     (4 / 9 : ℝ) * (3 * π / 4) ^ finrank ℚ K ≤ |discr K| := by
   -- We use `exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr` to get a nonzero
   -- algebraic integer `x` of small norm and the fact that `1 ≤ |Norm x|` to get a lower bound
@@ -250,7 +250,7 @@ open scoped IntermediateField BigOperators
 
 variable (A : Type*) [Field A] [CharZero A]
 
-theorem finite_of_finite_generating_set {p : IntermediateField ℚ A → Prop}
+lemma finite_of_finite_generating_set {p : IntermediateField ℚ A → Prop}
     (S : Set {F : IntermediateField ℚ A // p F}) {T : Set A}
     (hT : T.Finite) (h : ∀ F ∈ S, ∃ x ∈ T, F = ℚ⟮x⟯) :
     S.Finite := by
@@ -316,7 +316,7 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
   · exact one_le_two
   · exact rank_le_rankOfDiscrBdd hK
 
-theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
+lemma natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
     natDegree (minpoly ℤ (a : K)) ≤ rankOfDiscrBdd N := by
   rw [Field.primitive_element_iff_minpoly_natDegree_eq,
     minpoly.isIntegrallyClosed_eq_field_fractions' ℚ a.isIntegral_coe,
@@ -325,7 +325,7 @@ theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
 
 variable (N)
 
-theorem finite_of_discr_bdd_of_isReal :
+lemma finite_of_discr_bdd_of_isReal :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
       {w : InfinitePlace K | IsReal w}.Nonempty ∧ |discr K| ≤ N }.Finite := by
@@ -368,7 +368,7 @@ theorem finite_of_discr_bdd_of_isReal :
     (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
   simp_rw [ENNReal.coe_one, one_mul]
 
-theorem finite_of_discr_bdd_of_isComplex :
+lemma finite_of_discr_bdd_of_isComplex :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
       {w : InfinitePlace K | IsComplex w}.Nonempty ∧ |discr K| ≤ N }.Finite := by

@@ -61,19 +61,19 @@ instance (priority := 100) OrderedCommGroup.to_hasUpperLowerClosure [OrderedComm
 
 variable [Preorder α] [HasUpperLowerClosure α] {s : Set α}
 
-protected theorem IsUpperSet.closure : IsUpperSet s → IsUpperSet (closure s) :=
+protected lemma IsUpperSet.closure : IsUpperSet s → IsUpperSet (closure s) :=
   HasUpperLowerClosure.isUpperSet_closure _
 #align is_upper_set.closure IsUpperSet.closure
 
-protected theorem IsLowerSet.closure : IsLowerSet s → IsLowerSet (closure s) :=
+protected lemma IsLowerSet.closure : IsLowerSet s → IsLowerSet (closure s) :=
   HasUpperLowerClosure.isLowerSet_closure _
 #align is_lower_set.closure IsLowerSet.closure
 
-protected theorem IsOpen.upperClosure : IsOpen s → IsOpen (upperClosure s : Set α) :=
+protected lemma IsOpen.upperClosure : IsOpen s → IsOpen (upperClosure s : Set α) :=
   HasUpperLowerClosure.isOpen_upperClosure _
 #align is_open.upper_closure IsOpen.upperClosure
 
-protected theorem IsOpen.lowerClosure : IsOpen s → IsOpen (lowerClosure s : Set α) :=
+protected lemma IsOpen.lowerClosure : IsOpen s → IsOpen (lowerClosure s : Set α) :=
   HasUpperLowerClosure.isOpen_lowerClosure _
 #align is_open.lower_closure IsOpen.lowerClosure
 
@@ -98,16 +98,16 @@ oooooxx
 oooooxx
 ```
 -/
-protected theorem IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior s) := by
+protected lemma IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior s) := by
   rw [← isLowerSet_compl, ← closure_compl]
   exact h.compl.closure
 #align is_upper_set.interior IsUpperSet.interior
 
-protected theorem IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior s) :=
+protected lemma IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior s) :=
   h.toDual.interior
 #align is_lower_set.interior IsLowerSet.interior
 
-protected theorem Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected := by
+protected lemma Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected := by
   rw [← h.upperClosure_inter_lowerClosure, interior_inter]
   exact
     (upperClosure s).upper.interior.ordConnected.inter (lowerClosure s).lower.interior.ordConnected

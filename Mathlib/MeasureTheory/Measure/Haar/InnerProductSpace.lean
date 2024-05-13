@@ -88,10 +88,10 @@ theorem OrthonormalBasis.measurePreserving_measurableEquiv (b : OrthonormalBasis
   erw [MeasurableEquiv.coe_toEquiv_symm, Basis.map_addHaar _ b.repr.symm.toContinuousLinearEquiv]
   exact b.addHaar_eq_volume.symm
 
-theorem OrthonormalBasis.measurePreserving_repr (b : OrthonormalBasis ι ℝ F) :
+lemma OrthonormalBasis.measurePreserving_repr (b : OrthonormalBasis ι ℝ F) :
     MeasurePreserving b.repr volume volume := b.measurePreserving_measurableEquiv
 
-theorem OrthonormalBasis.measurePreserving_repr_symm (b : OrthonormalBasis ι ℝ F) :
+lemma OrthonormalBasis.measurePreserving_repr_symm (b : OrthonormalBasis ι ℝ F) :
     MeasurePreserving b.repr.symm volume volume := b.measurePreserving_measurableEquiv.symm
 
 section PiLp
@@ -148,8 +148,8 @@ def toMeasureEquiv : E ≃ᵐ F where
   measurable_toFun := f.continuous.measurable
   measurable_invFun := f.symm.continuous.measurable
 
-@[simp] theorem coe_toMeasureEquiv : (f.toMeasureEquiv : E → F) = f := rfl
+@[simp] lemma coe_toMeasureEquiv : (f.toMeasureEquiv : E → F) = f := rfl
 
-theorem toMeasureEquiv_symm : f.toMeasureEquiv.symm = f.symm.toMeasureEquiv := rfl
+lemma toMeasureEquiv_symm : f.toMeasureEquiv.symm = f.symm.toMeasureEquiv := rfl
 
 end LinearIsometryEquiv

@@ -35,7 +35,7 @@ namespace DoldKan
 
 variable {C : Type*} [Category C] [Preadditive C]
 
-theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : SimplexCategory}
+lemma PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : SimplexCategory}
     (i : Δ' ⟶ [n]) [hi : Mono i] (h₁ : Δ'.len ≠ n) (h₂ : ¬Isδ₀ i) :
     PInfty.f n ≫ X.map i.op = 0 := by
   induction' Δ' using SimplexCategory.rec with m
@@ -80,7 +80,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_comp_map_mono_eq_zero AlgebraicTopology.DoldKan.PInfty_comp_map_mono_eq_zero
 
 @[reassoc]
-theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' : SimplexCategory}
+lemma Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' : SimplexCategory}
     (i : Δ ⟶ Δ') [Mono i] :
     Γ₀.Obj.Termwise.mapMono (AlternatingFaceMapComplex.obj X) i ≫ PInfty.f Δ.len =
       PInfty.f Δ'.len ≫ X.map i.op := by
@@ -199,7 +199,7 @@ def natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ Γ₂ ⟶ 𝟭 _ 
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Γ₂N₂.nat_trans AlgebraicTopology.DoldKan.Γ₂N₂.natTrans
 
-theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
+lemma natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
     Γ₂N₂.natTrans.app P =
       (N₂ ⋙ Γ₂).map P.decompId_i ≫
         (Γ₂N₂ToKaroubiIso.hom ≫ Γ₂N₁.natTrans).app P.X ≫ P.decompId_p := by
@@ -213,7 +213,7 @@ attribute [irreducible] natTrans
 
 end Γ₂N₂
 
-theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
+lemma compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
     Γ₂N₁.natTrans.app X =
       (Γ₂N₂ToKaroubiIso.app X).inv ≫
         Γ₂N₂.natTrans.app ((toKaroubi (SimplicialObject C)).obj X) := by
@@ -225,7 +225,7 @@ theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
   erw [id_comp]
   rw [comp_id, Iso.inv_hom_id_app_assoc]
 
-theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
+lemma identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
     (N₂Γ₂.inv.app (N₂.obj P) : N₂.obj P ⟶ N₂.obj (Γ₂.obj (N₂.obj P))) ≫
     N₂.map (Γ₂N₂.natTrans.app P) = 𝟙 (N₂.obj P) := by
   ext n
@@ -251,7 +251,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.identity_N₂_objectwise AlgebraicTopology.DoldKan.identity_N₂_objectwise
 
 -- Porting note: `Functor.associator` was added to the statement in order to prevent a timeout
-theorem identity_N₂ :
+lemma identity_N₂ :
     (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
     (Functor.associator _ _ _).inv ≫ Γ₂N₂.natTrans ◫ 𝟙 (@N₂ C _ _) = 𝟙 N₂ := by
   ext P : 2

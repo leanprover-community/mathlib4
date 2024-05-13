@@ -116,34 +116,34 @@ notation3 "∑' "(...)", "r:67:(scoped f => tsum f) => r
 variable {f g : β → α} {a b : α} {s : Finset β}
 
 @[to_additive]
-theorem HasProd.multipliable (h : HasProd f a) : Multipliable f :=
+lemma HasProd.multipliable (h : HasProd f a) : Multipliable f :=
   ⟨a, h⟩
 #align has_sum.summable HasSum.summable
 
 @[to_additive]
-theorem tprod_eq_one_of_not_multipliable (h : ¬Multipliable f) : ∏' b, f b = 1 := by
+lemma tprod_eq_one_of_not_multipliable (h : ¬Multipliable f) : ∏' b, f b = 1 := by
   simp [tprod_def, h]
 #align tsum_eq_zero_of_not_summable tsum_eq_zero_of_not_summable
 
 @[to_additive]
-theorem Function.Injective.hasProd_iff {g : γ → β} (hg : Injective g)
+lemma Function.Injective.hasProd_iff {g : γ → β} (hg : Injective g)
     (hf : ∀ x, x ∉ Set.range g → f x = 1) : HasProd (f ∘ g) a ↔ HasProd f a := by
   simp only [HasProd, Tendsto, comp_apply, hg.map_atTop_finset_prod_eq hf]
 #align function.injective.has_sum_iff Function.Injective.hasSum_iff
 
 @[to_additive]
-theorem hasProd_subtype_iff_of_mulSupport_subset {s : Set β} (hf : mulSupport f ⊆ s) :
+lemma hasProd_subtype_iff_of_mulSupport_subset {s : Set β} (hf : mulSupport f ⊆ s) :
     HasProd (f ∘ (↑) : s → α) a ↔ HasProd f a :=
   Subtype.coe_injective.hasProd_iff <| by simpa using mulSupport_subset_iff'.1 hf
 #align has_sum_subtype_iff_of_support_subset hasSum_subtype_iff_of_support_subset
 
 @[to_additive]
-theorem hasProd_fintype [Fintype β] (f : β → α) : HasProd f (∏ b, f b) :=
+lemma hasProd_fintype [Fintype β] (f : β → α) : HasProd f (∏ b, f b) :=
   OrderTop.tendsto_atTop_nhds _
 #align has_sum_fintype hasSum_fintype
 
 @[to_additive]
-protected theorem Finset.hasProd (s : Finset β) (f : β → α) :
+protected lemma Finset.hasProd (s : Finset β) (f : β → α) :
     HasProd (f ∘ (↑) : (↑s : Set β) → α) (∏ b in s, f b) := by
   rw [← prod_attach]
   exact hasProd_fintype _
@@ -158,12 +158,12 @@ theorem hasProd_prod_of_ne_finset_one (hf : ∀ (b) (_ : b ∉ s), f b = 1) :
 #align has_sum_sum_of_ne_finset_zero hasSum_sum_of_ne_finset_zero
 
 @[to_additive]
-theorem multipliable_of_ne_finset_one (hf : ∀ (b) (_ : b ∉ s), f b = 1) : Multipliable f :=
+lemma multipliable_of_ne_finset_one (hf : ∀ (b) (_ : b ∉ s), f b = 1) : Multipliable f :=
   (hasProd_prod_of_ne_finset_one hf).multipliable
 #align summable_of_ne_finset_zero summable_of_ne_finset_zero
 
 @[to_additive]
-theorem Multipliable.hasProd (ha : Multipliable f) : HasProd f (∏' b, f b) := by
+lemma Multipliable.hasProd (ha : Multipliable f) : HasProd f (∏' b, f b) := by
   simp only [tprod_def, ha, dite_true]
   by_cases H : (mulSupport f).Finite
   · simp [H, hasProd_prod_of_ne_finset_one, finprod_eq_prod]
@@ -171,19 +171,19 @@ theorem Multipliable.hasProd (ha : Multipliable f) : HasProd f (∏' b, f b) := 
 #align summable.has_sum Summable.hasSum
 
 @[to_additive]
-theorem HasProd.unique {a₁ a₂ : α} [T2Space α] : HasProd f a₁ → HasProd f a₂ → a₁ = a₂ := by
+lemma HasProd.unique {a₁ a₂ : α} [T2Space α] : HasProd f a₁ → HasProd f a₂ → a₁ = a₂ := by
   classical exact tendsto_nhds_unique
 #align has_sum.unique HasSum.unique
 
 variable [T2Space α]
 
 @[to_additive]
-theorem HasProd.tprod_eq (ha : HasProd f a) : ∏' b, f b = a :=
+lemma HasProd.tprod_eq (ha : HasProd f a) : ∏' b, f b = a :=
   (Multipliable.hasProd ⟨a, ha⟩).unique ha
 #align has_sum.tsum_eq HasSum.tsum_eq
 
 @[to_additive]
-theorem Multipliable.hasProd_iff (h : Multipliable f) : HasProd f a ↔ ∏' b, f b = a :=
+lemma Multipliable.hasProd_iff (h : Multipliable f) : HasProd f a ↔ ∏' b, f b = a :=
   Iff.intro HasProd.tprod_eq fun eq ↦ eq ▸ h.hasProd
 #align summable.has_sum_iff Summable.hasSum_iff
 

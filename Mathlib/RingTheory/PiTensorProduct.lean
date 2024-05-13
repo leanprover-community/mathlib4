@@ -65,12 +65,12 @@ lemma mul_def (x y : ⨂[R] i, A i) : x * y = mul x y := rfl
     tprod R x * tprod R y = tprod R (x * y) :=
   mul_tprod_tprod x y
 
-theorem _root_.SemiconjBy.tprod {a₁ a₂ a₃ : Π i, A i}
+lemma _root_.SemiconjBy.tprod {a₁ a₂ a₃ : Π i, A i}
     (ha : SemiconjBy a₁ a₂ a₃) :
     SemiconjBy (tprod R a₁) (tprod R a₂) (tprod R a₃) := by
   rw [SemiconjBy, tprod_mul_tprod, tprod_mul_tprod, ha]
 
-nonrec theorem _root_.Commute.tprod {a₁ a₂ : Π i, A i} (ha : Commute a₁ a₂) :
+nonrec lemma _root_.Commute.tprod {a₁ a₂ : Π i, A i} (ha : Commute a₁ a₂) :
     Commute (tprod R a₁) (tprod R a₂) :=
   ha.tprod
 
@@ -288,12 +288,12 @@ noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
 variable {R ι}
 
 @[simp]
-theorem constantBaseRingEquiv_tprod (x : ι → R) :
+lemma constantBaseRingEquiv_tprod (x : ι → R) :
     constantBaseRingEquiv ι R (tprod R x) = ∏ i, x i := by
   simp [constantBaseRingEquiv]
 
 @[simp]
-theorem constantBaseRingEquiv_symm (r : R) :
+lemma constantBaseRingEquiv_symm (r : R) :
     (constantBaseRingEquiv ι R).symm r = algebraMap _ _ r := rfl
 
 end

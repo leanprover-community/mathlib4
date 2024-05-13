@@ -25,26 +25,26 @@ namespace AbsTheory
 -- this is so there's not two versions of it hanging around.
 local notation "abs" z => Real.sqrt (normSq z)
 
-private theorem mul_self_abs (z : ℂ) : ((abs z) * abs z) = normSq z :=
+private lemma mul_self_abs (z : ℂ) : ((abs z) * abs z) = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
 
-private theorem abs_nonneg' (z : ℂ) : 0 ≤ abs z :=
+private lemma abs_nonneg' (z : ℂ) : 0 ≤ abs z :=
   Real.sqrt_nonneg _
 
-theorem abs_conj (z : ℂ) : (abs conj z) = abs z := by simp
+lemma abs_conj (z : ℂ) : (abs conj z) = abs z := by simp
 #align complex.abs_theory.abs_conj Complex.AbsTheory.abs_conj
 
-private theorem abs_re_le_abs (z : ℂ) : |z.re| ≤ abs z := by
+private lemma abs_re_le_abs (z : ℂ) : |z.re| ≤ abs z := by
   rw [mul_self_le_mul_self_iff (abs_nonneg z.re) (abs_nonneg' _), abs_mul_abs_self, mul_self_abs]
   apply re_sq_le_normSq
 
-private theorem re_le_abs (z : ℂ) : z.re ≤ abs z :=
+private lemma re_le_abs (z : ℂ) : z.re ≤ abs z :=
   (abs_le.1 (abs_re_le_abs _)).2
 
-private theorem abs_mul (z w : ℂ) : (abs z * w) = (abs z) * abs w := by
+private lemma abs_mul (z w : ℂ) : (abs z * w) = (abs z) * abs w := by
   rw [normSq_mul, Real.sqrt_mul (normSq_nonneg _)]
 
-private theorem abs_add (z w : ℂ) : (abs z + w) ≤ (abs z) + abs w :=
+private lemma abs_add (z w : ℂ) : (abs z + w) ≤ (abs z) + abs w :=
   (mul_self_le_mul_self_iff (abs_nonneg' (z + w))
       (add_nonneg (abs_nonneg' z) (abs_nonneg' w))).2 <| by
     rw [mul_self_abs, add_mul_self_eq, mul_self_abs, mul_self_abs, add_right_comm, normSq_add,
@@ -63,50 +63,50 @@ noncomputable def _root_.Complex.abs : AbsoluteValue ℂ ℝ where
 
 end AbsTheory
 
-theorem abs_def : (Complex.abs : ℂ → ℝ) = fun z => (normSq z).sqrt :=
+lemma abs_def : (Complex.abs : ℂ → ℝ) = fun z => (normSq z).sqrt :=
   rfl
 #align complex.abs_def Complex.abs_def
 
-theorem abs_apply {z : ℂ} : Complex.abs z = (normSq z).sqrt :=
+lemma abs_apply {z : ℂ} : Complex.abs z = (normSq z).sqrt :=
   rfl
 #align complex.abs_apply Complex.abs_apply
 
 @[simp, norm_cast]
-theorem abs_ofReal (r : ℝ) : Complex.abs r = |r| := by
+lemma abs_ofReal (r : ℝ) : Complex.abs r = |r| := by
   simp [Complex.abs, normSq_ofReal, Real.sqrt_mul_self_eq_abs]
 #align complex.abs_of_real Complex.abs_ofReal
 
-nonrec theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
+nonrec lemma abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
   (Complex.abs_ofReal _).trans (abs_of_nonneg h)
 #align complex.abs_of_nonneg Complex.abs_of_nonneg
 
 -- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`
 @[simp]
-theorem abs_natCast (n : ℕ) : Complex.abs n = n := Complex.abs_of_nonneg (Nat.cast_nonneg n)
+lemma abs_natCast (n : ℕ) : Complex.abs n = n := Complex.abs_of_nonneg (Nat.cast_nonneg n)
 #align complex.abs_of_nat Complex.abs_natCast
 #align complex.abs_cast_nat Complex.abs_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] :
+lemma abs_ofNat (n : ℕ) [n.AtLeastTwo] :
     Complex.abs (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
   abs_natCast n
 
-theorem mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
+lemma mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
 #align complex.mul_self_abs Complex.mul_self_abs
 
-theorem sq_abs (z : ℂ) : Complex.abs z ^ 2 = normSq z :=
+lemma sq_abs (z : ℂ) : Complex.abs z ^ 2 = normSq z :=
   Real.sq_sqrt (normSq_nonneg _)
 #align complex.sq_abs Complex.sq_abs
 
 @[simp]
-theorem sq_abs_sub_sq_re (z : ℂ) : Complex.abs z ^ 2 - z.re ^ 2 = z.im ^ 2 := by
+lemma sq_abs_sub_sq_re (z : ℂ) : Complex.abs z ^ 2 - z.re ^ 2 = z.im ^ 2 := by
   rw [sq_abs, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
 #align complex.sq_abs_sub_sq_re Complex.sq_abs_sub_sq_re
 
 @[simp]
-theorem sq_abs_sub_sq_im (z : ℂ) : Complex.abs z ^ 2 - z.im ^ 2 = z.re ^ 2 := by
+lemma sq_abs_sub_sq_im (z : ℂ) : Complex.abs z ^ 2 - z.im ^ 2 = z.re ^ 2 := by
   rw [← sq_abs_sub_sq_re, sub_sub_cancel]
 #align complex.sq_abs_sub_sq_im Complex.sq_abs_sub_sq_im
 
@@ -117,27 +117,27 @@ lemma abs_eq_sqrt_sq_add_sq (z : ℂ) : abs z = (z.re ^ 2 + z.im ^ 2).sqrt := by
   rw [abs_apply, normSq_apply, sq, sq]
 
 @[simp]
-theorem abs_I : Complex.abs I = 1 := by simp [Complex.abs]
+lemma abs_I : Complex.abs I = 1 := by simp [Complex.abs]
 set_option linter.uppercaseLean3 false in
 #align complex.abs_I Complex.abs_I
 
-theorem abs_two : Complex.abs 2 = 2 := abs_ofNat 2
+lemma abs_two : Complex.abs 2 = 2 := abs_ofNat 2
 #align complex.abs_two Complex.abs_two
 
 @[simp]
-theorem range_abs : range Complex.abs = Ici 0 :=
+lemma range_abs : range Complex.abs = Ici 0 :=
   Subset.antisymm
     (by simp only [range_subset_iff, Ici, mem_setOf_eq, apply_nonneg, forall_const])
     (fun x hx => ⟨x, Complex.abs_of_nonneg hx⟩)
 #align complex.range_abs Complex.range_abs
 
 @[simp]
-theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
+lemma abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
   AbsTheory.abs_conj z
 #align complex.abs_conj Complex.abs_conj
 
 -- Porting note (#10618): @[simp] can prove it now
-theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
+lemma abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     Complex.abs (s.prod f) = s.prod fun I => Complex.abs (f I) :=
   map_prod Complex.abs _ _
 #align complex.abs_prod Complex.abs_prod
@@ -145,45 +145,45 @@ theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
 -- @[simp]
 /- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_pow]` -/
-theorem abs_pow (z : ℂ) (n : ℕ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
+lemma abs_pow (z : ℂ) (n : ℕ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_pow Complex.abs z n
 #align complex.abs_pow Complex.abs_pow
 
 -- @[simp]
 /- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_zpow₀]` -/
-theorem abs_zpow (z : ℂ) (n : ℤ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
+lemma abs_zpow (z : ℂ) (n : ℤ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_zpow₀ Complex.abs z n
 #align complex.abs_zpow Complex.abs_zpow
 
-theorem abs_re_le_abs (z : ℂ) : |z.re| ≤ Complex.abs z :=
+lemma abs_re_le_abs (z : ℂ) : |z.re| ≤ Complex.abs z :=
   Real.abs_le_sqrt <| by
     rw [normSq_apply, ← sq]
     exact le_add_of_nonneg_right (mul_self_nonneg _)
 #align complex.abs_re_le_abs Complex.abs_re_le_abs
 
-theorem abs_im_le_abs (z : ℂ) : |z.im| ≤ Complex.abs z :=
+lemma abs_im_le_abs (z : ℂ) : |z.im| ≤ Complex.abs z :=
   Real.abs_le_sqrt <| by
     rw [normSq_apply, ← sq, ← sq]
     exact le_add_of_nonneg_left (sq_nonneg _)
 #align complex.abs_im_le_abs Complex.abs_im_le_abs
 
-theorem re_le_abs (z : ℂ) : z.re ≤ Complex.abs z :=
+lemma re_le_abs (z : ℂ) : z.re ≤ Complex.abs z :=
   (abs_le.1 (abs_re_le_abs _)).2
 #align complex.re_le_abs Complex.re_le_abs
 
-theorem im_le_abs (z : ℂ) : z.im ≤ Complex.abs z :=
+lemma im_le_abs (z : ℂ) : z.im ≤ Complex.abs z :=
   (abs_le.1 (abs_im_le_abs _)).2
 #align complex.im_le_abs Complex.im_le_abs
 
 @[simp]
-theorem abs_re_lt_abs {z : ℂ} : |z.re| < Complex.abs z ↔ z.im ≠ 0 := by
+lemma abs_re_lt_abs {z : ℂ} : |z.re| < Complex.abs z ↔ z.im ≠ 0 := by
   rw [Complex.abs, AbsoluteValue.coe_mk, MulHom.coe_mk, Real.lt_sqrt (abs_nonneg _), normSq_apply,
     _root_.sq_abs, ← sq, lt_add_iff_pos_right, mul_self_pos]
 #align complex.abs_re_lt_abs Complex.abs_re_lt_abs
 
 @[simp]
-theorem abs_im_lt_abs {z : ℂ} : |z.im| < Complex.abs z ↔ z.re ≠ 0 := by
+lemma abs_im_lt_abs {z : ℂ} : |z.im| < Complex.abs z ↔ z.re ≠ 0 := by
   simpa using @abs_re_lt_abs (z * I)
 #align complex.abs_im_lt_abs Complex.abs_im_lt_abs
 
@@ -196,12 +196,12 @@ lemma abs_im_eq_abs {z : ℂ} : |z.im| = abs z ↔ z.re = 0 :=
   not_iff_not.1 <| (abs_im_le_abs z).lt_iff_ne.symm.trans abs_im_lt_abs
 
 @[simp]
-theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
+lemma abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
   _root_.abs_of_nonneg (AbsoluteValue.nonneg _ z)
 #align complex.abs_abs Complex.abs_abs
 
 -- Porting note: probably should be golfed
-theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| := by
+lemma abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| := by
   simpa [re_add_im] using Complex.abs.add_le z.re (z.im * I)
 #align complex.abs_le_abs_re_add_abs_im Complex.abs_le_abs_re_add_abs_im
 
@@ -210,7 +210,7 @@ theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| :
 instance : NeZero (1 : ℝ) :=
  ⟨by apply one_ne_zero⟩
 
-theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max |z.re| |z.im| := by
+lemma abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max |z.re| |z.im| := by
   cases' z with x y
   simp only [abs_apply, normSq_mk, ← sq]
   by_cases hle : |x| ≤ |y|
@@ -228,13 +228,13 @@ theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max 
         rw [max_eq_left hle', ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
 #align complex.abs_le_sqrt_two_mul_max Complex.abs_le_sqrt_two_mul_max
 
-theorem abs_re_div_abs_le_one (z : ℂ) : |z.re / Complex.abs z| ≤ 1 :=
+lemma abs_re_div_abs_le_one (z : ℂ) : |z.re / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
   else by simp_rw [_root_.abs_div, abs_abs,
     div_le_iff (AbsoluteValue.pos Complex.abs hz), one_mul, abs_re_le_abs]
 #align complex.abs_re_div_abs_le_one Complex.abs_re_div_abs_le_one
 
-theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
+lemma abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
   else by simp_rw [_root_.abs_div, abs_abs,
     div_le_iff (AbsoluteValue.pos Complex.abs hz), one_mul, abs_im_le_abs]
@@ -246,12 +246,12 @@ theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
 @[deprecated] -- 2024-02-14
 lemma int_cast_abs (n : ℤ) : |↑n| = Complex.abs n := (abs_intCast _).symm
 
-theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
+lemma normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
   simp [abs, sq, abs_def, Real.mul_self_sqrt (normSq_nonneg _)]
 #align complex.norm_sq_eq_abs Complex.normSq_eq_abs
 
 @[simp]
-theorem range_normSq : range normSq = Ici 0 :=
+lemma range_normSq : range normSq = Ici 0 :=
   Subset.antisymm (range_subset_iff.2 normSq_nonneg) fun x hx =>
     ⟨Real.sqrt x, by rw [normSq_ofReal, Real.mul_self_sqrt hx]⟩
 #align complex.range_norm_sq Complex.range_normSq
@@ -260,12 +260,12 @@ theorem range_normSq : range normSq = Ici 0 :=
 
 local notation "abs'" => _root_.abs
 
-theorem isCauSeq_re (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).re := fun ε ε0 =>
+lemma isCauSeq_re (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).re := fun ε ε0 =>
   (f.cauchy ε0).imp fun i H j ij =>
     lt_of_le_of_lt (by simpa using abs_re_le_abs (f j - f i)) (H _ ij)
 #align complex.is_cau_seq_re Complex.isCauSeq_re
 
-theorem isCauSeq_im (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).im := fun ε ε0 =>
+lemma isCauSeq_im (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).im := fun ε ε0 =>
   (f.cauchy ε0).imp fun i H j ij ↦ by
     simpa only [← ofReal_sub, abs_ofReal, sub_re] using (abs_im_le_abs _).trans_lt $ H _ ij
 #align complex.is_cau_seq_im Complex.isCauSeq_im
@@ -280,7 +280,7 @@ noncomputable def cauSeqIm (f : CauSeq ℂ Complex.abs) : CauSeq ℝ abs' :=
   ⟨_, isCauSeq_im f⟩
 #align complex.cau_seq_im Complex.cauSeqIm
 
-theorem isCauSeq_abs {f : ℕ → ℂ} (hf : IsCauSeq Complex.abs f) :
+lemma isCauSeq_abs {f : ℕ → ℂ} (hf : IsCauSeq Complex.abs f) :
     IsCauSeq abs' (Complex.abs ∘ f) := fun ε ε0 =>
   let ⟨i, hi⟩ := hf ε ε0
   ⟨i, fun j hj => lt_of_le_of_lt
@@ -292,7 +292,7 @@ noncomputable def limAux (f : CauSeq ℂ Complex.abs) : ℂ :=
   ⟨CauSeq.lim (cauSeqRe f), CauSeq.lim (cauSeqIm f)⟩
 #align complex.lim_aux Complex.limAux
 
-theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
+lemma equiv_limAux (f : CauSeq ℂ Complex.abs) :
     f ≈ CauSeq.const Complex.abs (limAux f) := fun ε ε0 =>
   (exists_forall_ge_and
   (CauSeq.equiv_lim ⟨_, isCauSeq_re f⟩ _ (half_pos ε0))
@@ -310,7 +310,7 @@ instance instIsComplete : CauSeq.IsComplete ℂ Complex.abs :=
 
 open CauSeq
 
-theorem lim_eq_lim_im_add_lim_re (f : CauSeq ℂ Complex.abs) :
+lemma lim_eq_lim_im_add_lim_re (f : CauSeq ℂ Complex.abs) :
     lim f = ↑(lim (cauSeqRe f)) + ↑(lim (cauSeqIm f)) * I :=
   lim_eq_of_equiv_const <|
     calc
@@ -320,15 +320,15 @@ theorem lim_eq_lim_im_add_lim_re (f : CauSeq ℂ Complex.abs) :
           Complex.ext (by simp [limAux, cauSeqRe, ofReal']) (by simp [limAux, cauSeqIm, ofReal'])
 #align complex.lim_eq_lim_im_add_lim_re Complex.lim_eq_lim_im_add_lim_re
 
-theorem lim_re (f : CauSeq ℂ Complex.abs) : lim (cauSeqRe f) = (lim f).re := by
+lemma lim_re (f : CauSeq ℂ Complex.abs) : lim (cauSeqRe f) = (lim f).re := by
   rw [lim_eq_lim_im_add_lim_re]; simp [ofReal']
 #align complex.lim_re Complex.lim_re
 
-theorem lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := by
+lemma lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := by
   rw [lim_eq_lim_im_add_lim_re]; simp [ofReal']
 #align complex.lim_im Complex.lim_im
 
-theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) :
+lemma isCauSeq_conj (f : CauSeq ℂ Complex.abs) :
     IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
   let ⟨i, hi⟩ := f.2 ε ε0
   ⟨i, fun j hj => by
@@ -340,7 +340,7 @@ noncomputable def cauSeqConj (f : CauSeq ℂ Complex.abs) : CauSeq ℂ Complex.a
   ⟨_, isCauSeq_conj f⟩
 #align complex.cau_seq_conj Complex.cauSeqConj
 
-theorem lim_conj (f : CauSeq ℂ Complex.abs) : lim (cauSeqConj f) = conj (lim f) :=
+lemma lim_conj (f : CauSeq ℂ Complex.abs) : lim (cauSeqConj f) = conj (lim f) :=
   Complex.ext (by simp [cauSeqConj, (lim_re _).symm, cauSeqRe])
     (by simp [cauSeqConj, (lim_im _).symm, cauSeqIm, (lim_neg _).symm]; rfl)
 #align complex.lim_conj Complex.lim_conj
@@ -350,7 +350,7 @@ noncomputable def cauSeqAbs (f : CauSeq ℂ Complex.abs) : CauSeq ℝ abs' :=
   ⟨_, isCauSeq_abs f.2⟩
 #align complex.cau_seq_abs Complex.cauSeqAbs
 
-theorem lim_abs (f : CauSeq ℂ Complex.abs) : lim (cauSeqAbs f) = Complex.abs (lim f) :=
+lemma lim_abs (f : CauSeq ℂ Complex.abs) : lim (cauSeqAbs f) = Complex.abs (lim f) :=
   lim_eq_of_equiv_const fun ε ε0 =>
     let ⟨i, hi⟩ := equiv_lim f ε ε0
     ⟨i, fun j hj => lt_of_le_of_lt (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩

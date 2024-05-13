@@ -55,16 +55,16 @@ instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup : Topol
 #align linear_ordered_add_comm_group.topological_add_group LinearOrderedAddCommGroup.topologicalAddGroup
 
 @[continuity]
-theorem continuous_abs : Continuous (abs : G → G) :=
+lemma continuous_abs : Continuous (abs : G → G) :=
   continuous_id.max continuous_neg
 #align continuous_abs continuous_abs
 
-protected theorem Filter.Tendsto.abs {a : G} (h : Tendsto f l (𝓝 a)) :
+protected lemma Filter.Tendsto.abs {a : G} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun x => |f x|) l (𝓝 |a|) :=
   (continuous_abs.tendsto _).comp h
 #align filter.tendsto.abs Filter.Tendsto.abs
 
-theorem tendsto_zero_iff_abs_tendsto_zero (f : α → G) :
+lemma tendsto_zero_iff_abs_tendsto_zero (f : α → G) :
     Tendsto f l (𝓝 0) ↔ Tendsto (abs ∘ f) l (𝓝 0) := by
   refine' ⟨fun h => (abs_zero : |(0 : G)| = 0) ▸ h.abs, fun h => _⟩
   have : Tendsto (fun a => -|f a|) l (𝓝 0) := (neg_zero : -(0 : G) = 0) ▸ h.neg
@@ -76,26 +76,26 @@ theorem tendsto_zero_iff_abs_tendsto_zero (f : α → G) :
 variable [TopologicalSpace α] {a : α} {s : Set α}
 
 @[fun_prop]
-protected theorem Continuous.abs (h : Continuous f) : Continuous fun x => |f x| :=
+protected lemma Continuous.abs (h : Continuous f) : Continuous fun x => |f x| :=
   continuous_abs.comp h
 #align continuous.abs Continuous.abs
 
 @[fun_prop]
-protected theorem ContinuousAt.abs (h : ContinuousAt f a) : ContinuousAt (fun x => |f x|) a :=
+protected lemma ContinuousAt.abs (h : ContinuousAt f a) : ContinuousAt (fun x => |f x|) a :=
   Filter.Tendsto.abs h
 #align continuous_at.abs ContinuousAt.abs
 
-protected theorem ContinuousWithinAt.abs (h : ContinuousWithinAt f s a) :
+protected lemma ContinuousWithinAt.abs (h : ContinuousWithinAt f s a) :
     ContinuousWithinAt (fun x => |f x|) s a :=
   Filter.Tendsto.abs h
 #align continuous_within_at.abs ContinuousWithinAt.abs
 
 @[fun_prop]
-protected theorem ContinuousOn.abs (h : ContinuousOn f s) : ContinuousOn (fun x => |f x|) s :=
+protected lemma ContinuousOn.abs (h : ContinuousOn f s) : ContinuousOn (fun x => |f x|) s :=
   fun x hx => (h x hx).abs
 #align continuous_on.abs ContinuousOn.abs
 
-theorem tendsto_abs_nhdsWithin_zero : Tendsto (abs : G → G) (𝓝[≠] 0) (𝓝[>] 0) :=
+lemma tendsto_abs_nhdsWithin_zero : Tendsto (abs : G → G) (𝓝[≠] 0) (𝓝[>] 0) :=
   (continuous_abs.tendsto' (0 : G) 0 abs_zero).inf <|
     tendsto_principal_principal.2 fun _x => abs_pos.2
 #align tendsto_abs_nhds_within_zero tendsto_abs_nhdsWithin_zero

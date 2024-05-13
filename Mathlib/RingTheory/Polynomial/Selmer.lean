@@ -28,7 +28,7 @@ open scoped Polynomial
 
 variable {n : ℕ}
 
-theorem X_pow_sub_X_sub_one_irreducible_aux (z : ℂ) : ¬(z ^ n = z + 1 ∧ z ^ n + z ^ 2 = 0) := by
+lemma X_pow_sub_X_sub_one_irreducible_aux (z : ℂ) : ¬(z ^ n = z + 1 ∧ z ^ n + z ^ 2 = 0) := by
   rintro ⟨h1, h2⟩
   replace h3 : z ^ 3 = 1 := by
     linear_combination (1 - z - z ^ 2 - z ^ n) * h1 + (z ^ n - 2) * h2
@@ -46,7 +46,7 @@ theorem X_pow_sub_X_sub_one_irreducible_aux (z : ℂ) : ¬(z ^ n = z + 1 ∧ z ^
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_X_sub_one_irreducible_aux Polynomial.X_pow_sub_X_sub_one_irreducible_aux
 
-theorem X_pow_sub_X_sub_one_irreducible (hn1 : n ≠ 1) : Irreducible (X ^ n - X - 1 : ℤ[X]) := by
+lemma X_pow_sub_X_sub_one_irreducible (hn1 : n ≠ 1) : Irreducible (X ^ n - X - 1 : ℤ[X]) := by
   by_cases hn0 : n = 0
   · rw [hn0, pow_zero, sub_sub, add_comm, ← sub_sub, sub_self, zero_sub]
     exact Associated.irreducible ⟨-1, mul_neg_one X⟩ irreducible_X
@@ -68,7 +68,7 @@ theorem X_pow_sub_X_sub_one_irreducible (hn1 : n ≠ 1) : Irreducible (X ^ n - X
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_X_sub_one_irreducible Polynomial.X_pow_sub_X_sub_one_irreducible
 
-theorem X_pow_sub_X_sub_one_irreducible_rat (hn1 : n ≠ 1) : Irreducible (X ^ n - X - 1 : ℚ[X]) := by
+lemma X_pow_sub_X_sub_one_irreducible_rat (hn1 : n ≠ 1) : Irreducible (X ^ n - X - 1 : ℚ[X]) := by
   by_cases hn0 : n = 0
   · rw [hn0, pow_zero, sub_sub, add_comm, ← sub_sub, sub_self, zero_sub]
     exact Associated.irreducible ⟨-1, mul_neg_one X⟩ irreducible_X

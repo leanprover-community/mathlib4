@@ -31,7 +31,7 @@ instance : Add { x : M // 0 < x } :=
   ⟨fun x y => ⟨x + y, add_pos x.2 y.2⟩⟩
 
 @[simp, norm_cast]
-theorem coe_add (x y : { x : M // 0 < x }) : ↑(x + y) = (x + y : M) :=
+lemma coe_add (x y : { x : M // 0 < x }) : ↑(x + y) = (x + y : M) :=
   rfl
 #align positive.coe_add Positive.coe_add
 
@@ -100,7 +100,7 @@ instance : Mul { x : R // 0 < x } :=
   ⟨fun x y => ⟨x * y, mul_pos x.2 y.2⟩⟩
 
 @[simp]
-theorem val_mul (x y : { x : R // 0 < x }) : ↑(x * y) = (x * y : R) :=
+lemma val_mul (x y : { x : R // 0 < x }) : ↑(x * y) = (x * y : R) :=
   rfl
 #align positive.coe_mul Positive.val_mul
 
@@ -108,7 +108,7 @@ instance : Pow { x : R // 0 < x } ℕ :=
   ⟨fun x n => ⟨(x : R) ^ n , pow_pos x.2 n⟩⟩
 
 @[simp]
-theorem val_pow (x : { x : R // 0 < x }) (n : ℕ) :
+lemma val_pow (x : { x : R // 0 < x }) (n : ℕ) :
     ↑(x ^ n) = (x : R) ^ n :=
   rfl
 #align positive.coe_pow Positive.val_pow
@@ -123,7 +123,7 @@ instance [Nontrivial R] : One { x : R // 0 < x } :=
   ⟨⟨1, one_pos⟩⟩
 
 @[simp]
-theorem val_one [Nontrivial R] : ((1 : { x : R // 0 < x }) : R) = 1 :=
+lemma val_one [Nontrivial R] : ((1 : { x : R // 0 < x }) : R) = 1 :=
   rfl
 #align positive.coe_one Positive.val_one
 

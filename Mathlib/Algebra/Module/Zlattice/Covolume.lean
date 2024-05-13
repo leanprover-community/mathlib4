@@ -52,19 +52,19 @@ variable [MeasurableSpace E] [BorelSpace E]
 variable (L : AddSubgroup E) [DiscreteTopology L] [IsZlattice ℝ L]
 variable (μ : Measure E := by volume_tac) [Measure.IsAddHaarMeasure μ]
 
-theorem covolume_eq_measure_fundamentalDomain {F : Set E} (h : IsAddFundamentalDomain L F μ) :
+lemma covolume_eq_measure_fundamentalDomain {F : Set E} (h : IsAddFundamentalDomain L F μ) :
     covolume L μ = (μ F).toReal := congr_arg ENNReal.toReal (h.covolume_eq_volume μ)
 
-theorem covolume_ne_zero : covolume L μ ≠ 0 := by
+lemma covolume_ne_zero : covolume L μ ≠ 0 := by
   rw [covolume_eq_measure_fundamentalDomain L μ (isAddFundamentalDomain (Free.chooseBasis ℤ L) μ),
     ENNReal.toReal_ne_zero]
   refine ⟨Zspan.measure_fundamentalDomain_ne_zero _, ne_of_lt ?_⟩
   exact Bornology.IsBounded.measure_lt_top (Zspan.fundamentalDomain_isBounded _)
 
-theorem covolume_pos : 0 < covolume L μ :=
+lemma covolume_pos : 0 < covolume L μ :=
   lt_of_le_of_ne ENNReal.toReal_nonneg (covolume_ne_zero L μ).symm
 
-theorem covolume_eq_det_mul_measure {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ L)
+lemma covolume_eq_det_mul_measure {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ L)
     (b₀ : Basis ι ℝ E) :
     covolume L μ = |b₀.det ((↑) ∘ b)| * (μ (Zspan.fundamentalDomain b₀)).toReal := by
   rw [covolume_eq_measure_fundamentalDomain L μ (isAddFundamentalDomain b μ),
@@ -75,7 +75,7 @@ theorem covolume_eq_det_mul_measure {ι : Type*} [Fintype ι] [DecidableEq ι] (
   ext
   exact b.ofZlatticeBasis_apply ℝ L _
 
-theorem covolume_eq_det {ι : Type*} [Fintype ι] [DecidableEq ι] (L : AddSubgroup (ι → ℝ))
+lemma covolume_eq_det {ι : Type*} [Fintype ι] [DecidableEq ι] (L : AddSubgroup (ι → ℝ))
     [DiscreteTopology L] [IsZlattice ℝ L] (b : Basis ι ℤ L) :
     covolume L = |(Matrix.of ((↑) ∘ b)).det| := by
   rw [covolume_eq_measure_fundamentalDomain L volume (isAddFundamentalDomain b volume),

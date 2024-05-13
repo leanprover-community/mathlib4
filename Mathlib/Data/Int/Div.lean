@@ -17,7 +17,7 @@ open Nat
 
 namespace Int
 
-theorem eq_mul_div_of_mul_eq_mul_of_dvd_left {a b c d : ℤ} (hb : b ≠ 0) (hbc : b ∣ c)
+lemma eq_mul_div_of_mul_eq_mul_of_dvd_left {a b c d : ℤ} (hb : b ≠ 0) (hbc : b ∣ c)
     (h : b * a = c * d) : a = c / b * d := by
   cases' hbc with k hk
   subst hk
@@ -35,7 +35,7 @@ theorem eq_zero_of_dvd_of_natAbs_lt_natAbs {a b : ℤ} (w : a ∣ b) (h : natAbs
   exact eq_zero_of_dvd_of_lt w h
 #align int.eq_zero_of_dvd_of_nat_abs_lt_nat_abs Int.eq_zero_of_dvd_of_natAbs_lt_natAbs
 
-theorem eq_zero_of_dvd_of_nonneg_of_lt {a b : ℤ} (w₁ : 0 ≤ a) (w₂ : a < b) (h : b ∣ a) : a = 0 :=
+lemma eq_zero_of_dvd_of_nonneg_of_lt {a b : ℤ} (w₁ : 0 ≤ a) (w₂ : a < b) (h : b ∣ a) : a = 0 :=
   eq_zero_of_dvd_of_natAbs_lt_natAbs h (natAbs_lt_natAbs_of_nonneg_of_lt w₁ w₂)
 #align int.eq_zero_of_dvd_of_nonneg_of_lt Int.eq_zero_of_dvd_of_nonneg_of_lt
 
@@ -46,13 +46,13 @@ theorem eq_of_mod_eq_of_natAbs_sub_lt_natAbs {a b c : ℤ} (h1 : a % b = c)
   eq_of_sub_eq_zero (eq_zero_of_dvd_of_natAbs_lt_natAbs (dvd_sub_of_emod_eq h1) h2)
 #align int.eq_of_mod_eq_of_nat_abs_sub_lt_nat_abs Int.eq_of_mod_eq_of_natAbs_sub_lt_natAbs
 
-theorem ofNat_add_negSucc_of_ge {m n : ℕ} (h : n.succ ≤ m) :
+lemma ofNat_add_negSucc_of_ge {m n : ℕ} (h : n.succ ≤ m) :
     ofNat m + -[n+1] = ofNat (m - n.succ) := by
   rw [negSucc_eq, ofNat_eq_natCast, ofNat_eq_natCast, ← Nat.cast_one, ← Nat.cast_add,
     ← sub_eq_add_neg, ← Nat.cast_sub h]
 #align int.of_nat_add_neg_succ_of_nat_of_ge Int.ofNat_add_negSucc_of_ge
 
-theorem natAbs_le_of_dvd_ne_zero {s t : ℤ} (hst : s ∣ t) (ht : t ≠ 0) : natAbs s ≤ natAbs t :=
+lemma natAbs_le_of_dvd_ne_zero {s t : ℤ} (hst : s ∣ t) (ht : t ≠ 0) : natAbs s ≤ natAbs t :=
   not_lt.mp (mt (eq_zero_of_dvd_of_natAbs_lt_natAbs hst) ht)
 #align int.nat_abs_le_of_dvd_ne_zero Int.natAbs_le_of_dvd_ne_zero
 

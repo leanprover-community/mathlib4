@@ -150,58 +150,58 @@ def mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : Solution₁ d where
 #align pell.solution₁.mk Pell.Solution₁.mk
 
 @[simp]
-theorem x_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (mk x y prop).x = x :=
+lemma x_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (mk x y prop).x = x :=
   rfl
 #align pell.solution₁.x_mk Pell.Solution₁.x_mk
 
 @[simp]
-theorem y_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (mk x y prop).y = y :=
+lemma y_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (mk x y prop).y = y :=
   rfl
 #align pell.solution₁.y_mk Pell.Solution₁.y_mk
 
 @[simp]
-theorem coe_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (↑(mk x y prop) : ℤ√d) = ⟨x, y⟩ :=
+lemma coe_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (↑(mk x y prop) : ℤ√d) = ⟨x, y⟩ :=
   Zsqrtd.ext _ _ (x_mk x y prop) (y_mk x y prop)
 #align pell.solution₁.coe_mk Pell.Solution₁.coe_mk
 
 @[simp]
-theorem x_one : (1 : Solution₁ d).x = 1 :=
+lemma x_one : (1 : Solution₁ d).x = 1 :=
   rfl
 #align pell.solution₁.x_one Pell.Solution₁.x_one
 
 @[simp]
-theorem y_one : (1 : Solution₁ d).y = 0 :=
+lemma y_one : (1 : Solution₁ d).y = 0 :=
   rfl
 #align pell.solution₁.y_one Pell.Solution₁.y_one
 
 @[simp]
-theorem x_mul (a b : Solution₁ d) : (a * b).x = a.x * b.x + d * (a.y * b.y) := by
+lemma x_mul (a b : Solution₁ d) : (a * b).x = a.x * b.x + d * (a.y * b.y) := by
   rw [← mul_assoc]
   rfl
 #align pell.solution₁.x_mul Pell.Solution₁.x_mul
 
 @[simp]
-theorem y_mul (a b : Solution₁ d) : (a * b).y = a.x * b.y + a.y * b.x :=
+lemma y_mul (a b : Solution₁ d) : (a * b).y = a.x * b.y + a.y * b.x :=
   rfl
 #align pell.solution₁.y_mul Pell.Solution₁.y_mul
 
 @[simp]
-theorem x_inv (a : Solution₁ d) : a⁻¹.x = a.x :=
+lemma x_inv (a : Solution₁ d) : a⁻¹.x = a.x :=
   rfl
 #align pell.solution₁.x_inv Pell.Solution₁.x_inv
 
 @[simp]
-theorem y_inv (a : Solution₁ d) : a⁻¹.y = -a.y :=
+lemma y_inv (a : Solution₁ d) : a⁻¹.y = -a.y :=
   rfl
 #align pell.solution₁.y_inv Pell.Solution₁.y_inv
 
 @[simp]
-theorem x_neg (a : Solution₁ d) : (-a).x = -a.x :=
+lemma x_neg (a : Solution₁ d) : (-a).x = -a.x :=
   rfl
 #align pell.solution₁.x_neg Pell.Solution₁.x_neg
 
 @[simp]
-theorem y_neg (a : Solution₁ d) : (-a).y = -a.y :=
+lemma y_neg (a : Solution₁ d) : (-a).y = -a.y :=
   rfl
 #align pell.solution₁.y_neg Pell.Solution₁.y_neg
 
@@ -603,7 +603,7 @@ theorem y_le_y {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ 
 #align pell.is_fundamental.y_le_y Pell.IsFundamental.y_le_y
 
 -- helper lemma for the next three results
-theorem x_mul_y_le_y_mul_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d}
+lemma x_mul_y_le_y_mul_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d}
     (hax : 1 < a.x) (hay : 0 < a.y) : a.x * a₁.y ≤ a.y * a₁.x := by
   rw [← abs_of_pos <| zero_lt_one.trans hax, ← abs_of_pos hay, ← abs_of_pos h.x_pos, ←
     abs_of_pos h.2.1, ← abs_mul, ← abs_mul, ← sq_le_sq, mul_pow, mul_pow, a.prop_x, a₁.prop_x, ←

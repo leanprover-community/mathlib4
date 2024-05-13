@@ -41,7 +41,7 @@ noncomputable instance instProdInnerProductSpace :
 variable {E F}
 
 @[simp]
-theorem prod_inner_apply (x y : WithLp 2 (E × F)) :
+lemma prod_inner_apply (x y : WithLp 2 (E × F)) :
     inner (𝕜 := 𝕜) x y = inner x.fst y.fst + inner x.snd y.snd := rfl
 
 end WithLp
@@ -68,7 +68,7 @@ def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F)
         Sum.inr.injEq, true_and]
       exact ⟨v.orthonormal.2, w.orthonormal.2⟩)
 
-@[simp] theorem prod_apply (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F) :
+@[simp] lemma prod_apply (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F) :
     ∀ i : ι₁ ⊕ ι₂, v.prod w i =
       Sum.elim ((LinearMap.inl 𝕜 E F) ∘ v) ((LinearMap.inr 𝕜 E F) ∘ w) i := by
   rw [Sum.forall]

@@ -78,7 +78,7 @@ instance : CoeFun (PartialRefinement u s) fun _ => ι → Set X := ⟨toFun⟩
 #align shrinking_lemma.partial_refinement.apply_eq ShrinkingLemma.PartialRefinement.apply_eq
 #align shrinking_lemma.partial_refinement.is_open ShrinkingLemma.PartialRefinement.isOpen
 
-protected theorem subset (v : PartialRefinement u s) (i : ι) : v i ⊆ u i :=
+protected lemma subset (v : PartialRefinement u s) (i : ι) : v i ⊆ u i :=
   if h : i ∈ v.carrier then subset_closure.trans (v.closure_subset h) else (v.apply_eq h).le
 #align shrinking_lemma.partial_refinement.subset ShrinkingLemma.PartialRefinement.subset
 
@@ -115,13 +115,13 @@ def find (c : Set (PartialRefinement u s)) (ne : c.Nonempty) (i : ι) : PartialR
   if hi : ∃ v ∈ c, i ∈ carrier v then hi.choose else ne.some
 #align shrinking_lemma.partial_refinement.find ShrinkingLemma.PartialRefinement.find
 
-theorem find_mem {c : Set (PartialRefinement u s)} (i : ι) (ne : c.Nonempty) : find c ne i ∈ c := by
+lemma find_mem {c : Set (PartialRefinement u s)} (i : ι) (ne : c.Nonempty) : find c ne i ∈ c := by
   rw [find]
   split_ifs with h
   exacts [h.choose_spec.1, ne.some_mem]
 #align shrinking_lemma.partial_refinement.find_mem ShrinkingLemma.PartialRefinement.find_mem
 
-theorem mem_find_carrier_iff {c : Set (PartialRefinement u s)} {i : ι} (ne : c.Nonempty) :
+lemma mem_find_carrier_iff {c : Set (PartialRefinement u s)} {i : ι} (ne : c.Nonempty) :
     i ∈ (find c ne i).carrier ↔ i ∈ chainSupCarrier c := by
   rw [find]
   split_ifs with h
@@ -132,7 +132,7 @@ theorem mem_find_carrier_iff {c : Set (PartialRefinement u s)} {i : ι} (ne : c.
     simpa only [chainSupCarrier, mem_iUnion₂, not_exists]
 #align shrinking_lemma.partial_refinement.mem_find_carrier_iff ShrinkingLemma.PartialRefinement.mem_find_carrier_iff
 
-theorem find_apply_of_mem {c : Set (PartialRefinement u s)} (hc : IsChain (· ≤ ·) c)
+lemma find_apply_of_mem {c : Set (PartialRefinement u s)} (hc : IsChain (· ≤ ·) c)
     (ne : c.Nonempty) {i v} (hv : v ∈ c) (hi : i ∈ carrier v) : find c ne i i = v i :=
   apply_eq_of_chain hc (find_mem _ _) hv ((mem_find_carrier_iff _).2 <| mem_iUnion₂.2 ⟨v, hv, hi⟩)
     hi

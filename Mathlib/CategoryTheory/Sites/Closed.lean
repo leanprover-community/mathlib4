@@ -116,7 +116,7 @@ theorem isClosed_iff_close_eq_self {X : C} (S : Sieve X) : J₁.IsClosed S ↔ J
   (J₁.closureOperator _).isClosed_iff
 #align category_theory.grothendieck_topology.is_closed_iff_close_eq_self CategoryTheory.GrothendieckTopology.isClosed_iff_close_eq_self
 
-theorem close_eq_self_of_isClosed {X : C} {S : Sieve X} (hS : J₁.IsClosed S) : J₁.close S = S :=
+lemma close_eq_self_of_isClosed {X : C} {S : Sieve X} (hS : J₁.IsClosed S) : J₁.close S = S :=
   (J₁.isClosed_iff_close_eq_self S).1 hS
 #align category_theory.grothendieck_topology.close_eq_self_of_is_closed CategoryTheory.GrothendieckTopology.close_eq_self_of_isClosed
 
@@ -133,12 +133,12 @@ theorem pullback_close {X Y : C} (f : Y ⟶ X) (S : Sieve X) :
 #align category_theory.grothendieck_topology.pullback_close CategoryTheory.GrothendieckTopology.pullback_close
 
 @[mono]
-theorem monotone_close {X : C} : Monotone (J₁.close : Sieve X → Sieve X) :=
+lemma monotone_close {X : C} : Monotone (J₁.close : Sieve X → Sieve X) :=
   (J₁.closureOperator _).monotone
 #align category_theory.grothendieck_topology.monotone_close CategoryTheory.GrothendieckTopology.monotone_close
 
 @[simp]
-theorem close_close {X : C} (S : Sieve X) : J₁.close (J₁.close S) = J₁.close S :=
+lemma close_close {X : C} (S : Sieve X) : J₁.close (J₁.close S) = J₁.close S :=
   (J₁.closureOperator _).idempotent _
 #align category_theory.grothendieck_topology.close_close CategoryTheory.GrothendieckTopology.close_close
 
@@ -297,7 +297,7 @@ theorem topologyOfClosureOperator_self :
   apply GrothendieckTopology.close_eq_top_iff_mem
 #align category_theory.topology_of_closure_operator_self CategoryTheory.topologyOfClosureOperator_self
 
-theorem topologyOfClosureOperator_close (c : ∀ X : C, ClosureOperator (Sieve X))
+lemma topologyOfClosureOperator_close (c : ∀ X : C, ClosureOperator (Sieve X))
     (pb : ∀ ⦃X Y : C⦄ (f : Y ⟶ X) (S : Sieve X), c Y (S.pullback f) = (c X S).pullback f) (X : C)
     (S : Sieve X) : (topologyOfClosureOperator c pb).close S = c X S := by
   ext Y f

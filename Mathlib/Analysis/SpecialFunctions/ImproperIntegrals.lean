@@ -29,7 +29,7 @@ open Real Set Filter MeasureTheory intervalIntegral
 
 open scoped Topology
 
-theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
+lemma integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
   refine'
     integrableOn_Iic_of_intervalIntegral_norm_bounded (exp c) c
       (fun y => intervalIntegrable_exp.1) tendsto_id
@@ -38,7 +38,7 @@ theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
   exact (exp_pos _).le
 #align integrable_on_exp_Iic integrableOn_exp_Iic
 
-theorem integral_exp_Iic (c : ℝ) : ∫ x : ℝ in Iic c, exp x = exp c := by
+lemma integral_exp_Iic (c : ℝ) : ∫ x : ℝ in Iic c, exp x = exp c := by
   refine'
     tendsto_nhds_unique
       (intervalIntegral_tendsto_integral_Iic _ (integrableOn_exp_Iic _) tendsto_id) _
@@ -46,15 +46,15 @@ theorem integral_exp_Iic (c : ℝ) : ∫ x : ℝ in Iic c, exp x = exp c := by
   exact tendsto_exp_atBot.const_sub _
 #align integral_exp_Iic integral_exp_Iic
 
-theorem integral_exp_Iic_zero : ∫ x : ℝ in Iic 0, exp x = 1 :=
+lemma integral_exp_Iic_zero : ∫ x : ℝ in Iic 0, exp x = 1 :=
   exp_zero ▸ integral_exp_Iic 0
 #align integral_exp_Iic_zero integral_exp_Iic_zero
 
-theorem integral_exp_neg_Ioi (c : ℝ) : (∫ x : ℝ in Ioi c, exp (-x)) = exp (-c) := by
+lemma integral_exp_neg_Ioi (c : ℝ) : (∫ x : ℝ in Ioi c, exp (-x)) = exp (-c) := by
   simpa only [integral_comp_neg_Ioi] using integral_exp_Iic (-c)
 #align integral_exp_neg_Ioi integral_exp_neg_Ioi
 
-theorem integral_exp_neg_Ioi_zero : (∫ x : ℝ in Ioi 0, exp (-x)) = 1 := by
+lemma integral_exp_neg_Ioi_zero : (∫ x : ℝ in Ioi 0, exp (-x)) = 1 := by
   simpa only [neg_zero, exp_zero] using integral_exp_neg_Ioi 0
 #align integral_exp_neg_Ioi_zero integral_exp_neg_Ioi_zero
 
@@ -73,7 +73,7 @@ theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < 
     integrableOn_Ioi_deriv_of_nonneg' hd (fun t ht => rpow_nonneg (hc.trans ht).le a) ht
 #align integrable_on_Ioi_rpow_of_lt integrableOn_Ioi_rpow_of_lt
 
-theorem integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
+lemma integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x ↦ x ^ s) (Ioi t) ↔ s < -1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ integrableOn_Ioi_rpow_of_lt h ht⟩
   contrapose! h
@@ -100,10 +100,10 @@ theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) 
     rw [integrableOn_Ioi_rpow_iff zero_lt_one] at this
     exact hs.not_lt this
 
-theorem setIntegral_Ioi_zero_rpow (s : ℝ) : ∫ x in Ioi (0 : ℝ), x ^ s = 0 :=
+lemma setIntegral_Ioi_zero_rpow (s : ℝ) : ∫ x in Ioi (0 : ℝ), x ^ s = 0 :=
   MeasureTheory.integral_undef (not_integrableOn_Ioi_rpow s)
 
-theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
+lemma integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
     ∫ t : ℝ in Ioi c, t ^ a = -c ^ (a + 1) / (a + 1) := by
   have hd : ∀ x ∈ Ici c, HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
     intro x hx
@@ -116,7 +116,7 @@ theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
   simp only [neg_div, zero_div, zero_sub]
 #align integral_Ioi_rpow_of_lt integral_Ioi_rpow_of_lt
 
-theorem integrableOn_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
+lemma integrableOn_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
     IntegrableOn (fun t : ℝ => (t : ℂ) ^ a) (Ioi c) := by
   rw [IntegrableOn, ← integrable_norm_iff, ← IntegrableOn]
   · refine' (integrableOn_Ioi_rpow_of_lt ha hc).congr_fun (fun x hx => _) measurableSet_Ioi
@@ -127,7 +127,7 @@ theorem integrableOn_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0
       (Complex.continuousAt_ofReal_cpow_const _ _ (Or.inr (hc.trans ht).ne')).continuousWithinAt
 #align integrable_on_Ioi_cpow_of_lt integrableOn_Ioi_cpow_of_lt
 
-theorem integrableOn_Ioi_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
+lemma integrableOn_Ioi_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioi t) ↔ s.re < -1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ integrableOn_Ioi_cpow_of_lt h ht⟩
   have B : IntegrableOn (fun a ↦ a ^ s.re) (Ioi t) := by
@@ -151,10 +151,10 @@ theorem not_integrableOn_Ioi_cpow (s : ℂ) :
     rw [integrableOn_Ioi_cpow_iff zero_lt_one] at this
     exact hs.not_lt this
 
-theorem setIntegral_Ioi_zero_cpow (s : ℂ) : ∫ x in Ioi (0 : ℝ), (x : ℂ) ^ s = 0 :=
+lemma setIntegral_Ioi_zero_cpow (s : ℂ) : ∫ x in Ioi (0 : ℝ), (x : ℂ) ^ s = 0 :=
   MeasureTheory.integral_undef (not_integrableOn_Ioi_cpow s)
 
-theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
+lemma integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
     (∫ t : ℝ in Ioi c, (t : ℂ) ^ a) = -(c : ℂ) ^ (a + 1) / (a + 1) := by
   refine'
     tendsto_nhds_unique
@@ -179,25 +179,25 @@ theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c
     Complex.one_re]
 #align integral_Ioi_cpow_of_lt integral_Ioi_cpow_of_lt
 
-theorem integrable_inv_one_add_sq : Integrable fun (x : ℝ) ↦ (1 + x ^ 2)⁻¹ := by
+lemma integrable_inv_one_add_sq : Integrable fun (x : ℝ) ↦ (1 + x ^ 2)⁻¹ := by
   suffices Integrable fun (x : ℝ) ↦ (1 + ‖x‖ ^ 2) ^ ((-2 : ℝ) / 2) by simpa [rpow_neg_one]
   exact integrable_rpow_neg_one_add_norm_sq (by simp)
 
 @[simp]
-theorem integral_Iic_inv_one_add_sq {i : ℝ} :
+lemma integral_Iic_inv_one_add_sq {i : ℝ} :
     ∫ (x : ℝ) in Set.Iic i, (1 + x ^ 2)⁻¹ = arctan i + (π / 2) :=
   integral_Iic_of_hasDerivAt_of_tendsto' (fun x _ => hasDerivAt_arctan' x)
     integrable_inv_one_add_sq.integrableOn (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atBot)
     |>.trans (sub_neg_eq_add _ _)
 
 @[simp]
-theorem integral_Ioi_inv_one_add_sq {i : ℝ} :
+lemma integral_Ioi_inv_one_add_sq {i : ℝ} :
     ∫ (x : ℝ) in Set.Ioi i, (1 + x ^ 2)⁻¹ = (π / 2) - arctan i :=
   integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => hasDerivAt_arctan' x)
     integrable_inv_one_add_sq.integrableOn (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atTop)
 
 @[simp]
-theorem integral_univ_inv_one_add_sq : ∫ (x : ℝ), (1 + x ^ 2)⁻¹ = π :=
+lemma integral_univ_inv_one_add_sq : ∫ (x : ℝ), (1 + x ^ 2)⁻¹ = π :=
   (by ring : π = (π / 2) - (-(π / 2))) ▸ integral_of_hasDerivAt_of_tendsto hasDerivAt_arctan'
     integrable_inv_one_add_sq (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atBot)
     (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atTop)

@@ -290,37 +290,37 @@ def toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F' whe
 #align linear_map.to_continuous_linear_map LinearMap.toContinuousLinearMap
 
 @[simp]
-theorem coe_toContinuousLinearMap' (f : E →ₗ[𝕜] F') : ⇑(LinearMap.toContinuousLinearMap f) = f :=
+lemma coe_toContinuousLinearMap' (f : E →ₗ[𝕜] F') : ⇑(LinearMap.toContinuousLinearMap f) = f :=
   rfl
 #align linear_map.coe_to_continuous_linear_map' LinearMap.coe_toContinuousLinearMap'
 
 @[simp]
-theorem coe_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
+lemma coe_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
     ((LinearMap.toContinuousLinearMap f) : E →ₗ[𝕜] F') = f :=
   rfl
 #align linear_map.coe_to_continuous_linear_map LinearMap.coe_toContinuousLinearMap
 
 @[simp]
-theorem coe_toContinuousLinearMap_symm :
+lemma coe_toContinuousLinearMap_symm :
     ⇑(toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F').symm =
       ((↑) : (E →L[𝕜] F') → E →ₗ[𝕜] F') :=
   rfl
 #align linear_map.coe_to_continuous_linear_map_symm LinearMap.coe_toContinuousLinearMap_symm
 
 @[simp]
-theorem det_toContinuousLinearMap (f : E →ₗ[𝕜] E) :
+lemma det_toContinuousLinearMap (f : E →ₗ[𝕜] E) :
     (LinearMap.toContinuousLinearMap f).det = LinearMap.det f :=
   rfl
 #align linear_map.det_to_continuous_linear_map LinearMap.det_toContinuousLinearMap
 
 @[simp]
-theorem ker_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
+lemma ker_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
     ker (LinearMap.toContinuousLinearMap f) = ker f :=
   rfl
 #align linear_map.ker_to_continuous_linear_map LinearMap.ker_toContinuousLinearMap
 
 @[simp]
-theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
+lemma range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
     range (LinearMap.toContinuousLinearMap f) = range f :=
   rfl
 #align linear_map.range_to_continuous_linear_map LinearMap.range_toContinuousLinearMap
@@ -361,36 +361,36 @@ def toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) : E ≃L[𝕜] F :=
 #align linear_equiv.to_continuous_linear_equiv LinearEquiv.toContinuousLinearEquiv
 
 @[simp]
-theorem coe_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) : (e.toContinuousLinearEquiv : E →ₗ[𝕜] F) = e :=
+lemma coe_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) : (e.toContinuousLinearEquiv : E →ₗ[𝕜] F) = e :=
   rfl
 #align linear_equiv.coe_to_continuous_linear_equiv LinearEquiv.coe_toContinuousLinearEquiv
 
 @[simp]
-theorem coe_toContinuousLinearEquiv' (e : E ≃ₗ[𝕜] F) : (e.toContinuousLinearEquiv : E → F) = e :=
+lemma coe_toContinuousLinearEquiv' (e : E ≃ₗ[𝕜] F) : (e.toContinuousLinearEquiv : E → F) = e :=
   rfl
 #align linear_equiv.coe_to_continuous_linear_equiv' LinearEquiv.coe_toContinuousLinearEquiv'
 
 @[simp]
-theorem coe_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
+lemma coe_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     (e.toContinuousLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm :=
   rfl
 #align linear_equiv.coe_to_continuous_linear_equiv_symm LinearEquiv.coe_toContinuousLinearEquiv_symm
 
 @[simp]
-theorem coe_toContinuousLinearEquiv_symm' (e : E ≃ₗ[𝕜] F) :
+lemma coe_toContinuousLinearEquiv_symm' (e : E ≃ₗ[𝕜] F) :
     (e.toContinuousLinearEquiv.symm : F → E) = e.symm :=
   rfl
 #align linear_equiv.coe_to_continuous_linear_equiv_symm' LinearEquiv.coe_toContinuousLinearEquiv_symm'
 
 @[simp]
-theorem toLinearEquiv_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) :
+lemma toLinearEquiv_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.toLinearEquiv = e := by
   ext x
   rfl
 #align linear_equiv.to_linear_equiv_to_continuous_linear_equiv LinearEquiv.toLinearEquiv_toContinuousLinearEquiv
 
 -- Porting note (#10618): @[simp] can prove this
-theorem toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
+lemma toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.symm.toLinearEquiv = e.symm := by
   ext x
   rfl
@@ -441,7 +441,7 @@ def constrL (v : Basis ι 𝕜 E) (f : ι → F) : E →L[𝕜] F :=
 #align basis.constrL Basis.constrL
 
 @[simp] -- Porting note: removed `norm_cast`
-theorem coe_constrL (v : Basis ι 𝕜 E) (f : ι → F) : (v.constrL f : E →ₗ[𝕜] F) = v.constr 𝕜 f :=
+lemma coe_constrL (v : Basis ι 𝕜 E) (f : ι → F) : (v.constrL f : E →ₗ[𝕜] F) = v.constr 𝕜 f :=
   rfl
 #align basis.coe_constrL Basis.coe_constrL
 
@@ -464,13 +464,13 @@ lemma equivFunL_symm_apply_repr (v : Basis ι 𝕜 E) (x : E) :
   v.equivFunL.symm_apply_apply x
 
 @[simp]
-theorem constrL_apply {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) (f : ι → F) (e : E) :
+lemma constrL_apply {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) (f : ι → F) (e : E) :
     v.constrL f e = ∑ i, v.equivFun e i • f i :=
   v.constr_apply_fintype 𝕜 _ _
 #align basis.constrL_apply Basis.constrL_apply
 
 @[simp 1100]
-theorem constrL_basis (v : Basis ι 𝕜 E) (f : ι → F) (i : ι) : v.constrL f (v i) = f i :=
+lemma constrL_basis (v : Basis ι 𝕜 E) (f : ι → F) (i : ι) : v.constrL f (v i) = f i :=
   v.constr_basis 𝕜 _ _
 #align basis.constrL_basis Basis.constrL_basis
 
@@ -487,19 +487,19 @@ def toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) :
 #align continuous_linear_map.to_continuous_linear_equiv_of_det_ne_zero ContinuousLinearMap.toContinuousLinearEquivOfDetNeZero
 
 @[simp]
-theorem coe_toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) :
+lemma coe_toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) :
     (f.toContinuousLinearEquivOfDetNeZero hf : E →L[𝕜] E) = f := by
   ext x
   rfl
 #align continuous_linear_map.coe_to_continuous_linear_equiv_of_det_ne_zero ContinuousLinearMap.coe_toContinuousLinearEquivOfDetNeZero
 
 @[simp]
-theorem toContinuousLinearEquivOfDetNeZero_apply (f : E →L[𝕜] E) (hf : f.det ≠ 0) (x : E) :
+lemma toContinuousLinearEquivOfDetNeZero_apply (f : E →L[𝕜] E) (hf : f.det ≠ 0) (x : E) :
     f.toContinuousLinearEquivOfDetNeZero hf x = f x :=
   rfl
 #align continuous_linear_map.to_continuous_linear_equiv_of_det_ne_zero_apply ContinuousLinearMap.toContinuousLinearEquivOfDetNeZero_apply
 
-theorem _root_.Matrix.toLin_finTwoProd_toContinuousLinearMap (a b c d : 𝕜) :
+lemma _root_.Matrix.toLin_finTwoProd_toContinuousLinearMap (a b c d : 𝕜) :
     LinearMap.toContinuousLinearMap
       (Matrix.toLin (Basis.finTwoProd 𝕜) (Basis.finTwoProd 𝕜) !![a, b; c, d]) =
       (a • ContinuousLinearMap.fst 𝕜 𝕜 𝕜 + b • ContinuousLinearMap.snd 𝕜 𝕜 𝕜).prod
@@ -517,7 +517,7 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
   [CompleteSpace 𝕜] [AddCommGroup E] [UniformSpace E] [T2Space E] [UniformAddGroup E]
   [Module 𝕜 E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E]
 
-theorem FiniteDimensional.complete : CompleteSpace E := by
+lemma FiniteDimensional.complete : CompleteSpace E := by
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
   have : UniformEmbedding e.toLinearEquiv.toEquiv.symm := e.symm.uniformEmbedding
   exact (completeSpace_congr this).1 (by infer_instance)
@@ -558,19 +558,19 @@ theorem LinearMap.closedEmbedding_of_injective [FiniteDimensional 𝕜 E] {f : E
       simpa [LinearMap.range_coe f] using f.range.closed_of_finiteDimensional }
 #align linear_equiv.closed_embedding_of_injective LinearMap.closedEmbedding_of_injective
 
-theorem closedEmbedding_smul_left {c : E} (hc : c ≠ 0) : ClosedEmbedding fun x : 𝕜 => x • c :=
+lemma closedEmbedding_smul_left {c : E} (hc : c ≠ 0) : ClosedEmbedding fun x : 𝕜 => x • c :=
   LinearMap.closedEmbedding_of_injective (LinearMap.ker_toSpanSingleton 𝕜 E hc)
 #align closed_embedding_smul_left closedEmbedding_smul_left
 
 -- `smul` is a closed map in the first argument.
-theorem isClosedMap_smul_left (c : E) : IsClosedMap fun x : 𝕜 => x • c := by
+lemma isClosedMap_smul_left (c : E) : IsClosedMap fun x : 𝕜 => x • c := by
   by_cases hc : c = 0
   · simp_rw [hc, smul_zero]
     exact isClosedMap_const
   · exact (closedEmbedding_smul_left hc).isClosedMap
 #align is_closed_map_smul_left isClosedMap_smul_left
 
-theorem ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensional 𝕜 F]
+lemma ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensional 𝕜 F]
     (f : E →L[𝕜] F) (hf : LinearMap.range f = ⊤) :
     ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
   let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf

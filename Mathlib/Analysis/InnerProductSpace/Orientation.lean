@@ -112,7 +112,7 @@ def adjustToOrientation : OrthonormalBasis ι ℝ E :=
   (e.toBasis.adjustToOrientation x).toOrthonormalBasis (e.orthonormal_adjustToOrientation x)
 #align orthonormal_basis.adjust_to_orientation OrthonormalBasis.adjustToOrientation
 
-theorem toBasis_adjustToOrientation :
+lemma toBasis_adjustToOrientation :
     (e.adjustToOrientation x).toBasis = e.toBasis.adjustToOrientation x :=
   (e.toBasis.adjustToOrientation x).toBasis_toOrthonormalBasis _
 #align orthonormal_basis.to_basis_adjust_to_orientation OrthonormalBasis.toBasis_adjustToOrientation
@@ -132,13 +132,13 @@ theorem adjustToOrientation_apply_eq_or_eq_neg (i : ι) :
     e.toBasis.adjustToOrientation_apply_eq_or_eq_neg x i
 #align orthonormal_basis.adjust_to_orientation_apply_eq_or_eq_neg OrthonormalBasis.adjustToOrientation_apply_eq_or_eq_neg
 
-theorem det_adjustToOrientation :
+lemma det_adjustToOrientation :
     (e.adjustToOrientation x).toBasis.det = e.toBasis.det ∨
       (e.adjustToOrientation x).toBasis.det = -e.toBasis.det := by
   simpa using e.toBasis.det_adjustToOrientation x
 #align orthonormal_basis.det_adjust_to_orientation OrthonormalBasis.det_adjustToOrientation
 
-theorem abs_det_adjustToOrientation (v : ι → E) :
+lemma abs_det_adjustToOrientation (v : ι → E) :
     |(e.adjustToOrientation x).toBasis.det v| = |e.toBasis.det v| := by
   simp [toBasis_adjustToOrientation]
 #align orthonormal_basis.abs_det_adjust_to_orientation OrthonormalBasis.abs_det_adjustToOrientation
@@ -187,13 +187,13 @@ irreducible_def volumeForm : E [⋀^Fin n]→ₗ[ℝ] ℝ := by
 #align orientation.volume_form Orientation.volumeForm
 
 @[simp]
-theorem volumeForm_zero_pos [_i : Fact (finrank ℝ E = 0)] :
+lemma volumeForm_zero_pos [_i : Fact (finrank ℝ E = 0)] :
     Orientation.volumeForm (positiveOrientation : Orientation ℝ E (Fin 0)) =
       AlternatingMap.constLinearEquivOfIsEmpty 1 := by
   simp [volumeForm, Or.by_cases, if_pos]
 #align orientation.volume_form_zero_pos Orientation.volumeForm_zero_pos
 
-theorem volumeForm_zero_neg [_i : Fact (finrank ℝ E = 0)] :
+lemma volumeForm_zero_neg [_i : Fact (finrank ℝ E = 0)] :
     Orientation.volumeForm (-positiveOrientation : Orientation ℝ E (Fin 0)) =
       -AlternatingMap.constLinearEquivOfIsEmpty 1 := by
   simp_rw [volumeForm, Or.by_cases, positiveOrientation]
@@ -234,7 +234,7 @@ theorem volumeForm_robust_neg (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBas
 #align orientation.volume_form_robust_neg Orientation.volumeForm_robust_neg
 
 @[simp]
-theorem volumeForm_neg_orientation : (-o).volumeForm = -o.volumeForm := by
+lemma volumeForm_neg_orientation : (-o).volumeForm = -o.volumeForm := by
   cases' n with n
   · refine' o.eq_or_eq_neg_of_isEmpty.elim _ _ <;> rintro rfl
     · simp [volumeForm_zero_neg]
@@ -248,7 +248,7 @@ theorem volumeForm_neg_orientation : (-o).volumeForm = -o.volumeForm := by
   rw [o.volumeForm_robust e h₁, (-o).volumeForm_robust_neg e h₂]
 #align orientation.volume_form_neg_orientation Orientation.volumeForm_neg_orientation
 
-theorem volumeForm_robust' (b : OrthonormalBasis (Fin n) ℝ E) (v : Fin n → E) :
+lemma volumeForm_robust' (b : OrthonormalBasis (Fin n) ℝ E) (v : Fin n → E) :
     |o.volumeForm v| = |b.toBasis.det v| := by
   cases n
   · refine' o.eq_or_eq_neg_of_isEmpty.elim _ _ <;> rintro rfl <;> simp
@@ -275,7 +275,7 @@ theorem abs_volumeForm_apply_le (v : Fin n → E) : |o.volumeForm v| ≤ ∏ i :
   simp [b.orthonormal.1 i]
 #align orientation.abs_volume_form_apply_le Orientation.abs_volumeForm_apply_le
 
-theorem volumeForm_apply_le (v : Fin n → E) : o.volumeForm v ≤ ∏ i : Fin n, ‖v i‖ :=
+lemma volumeForm_apply_le (v : Fin n → E) : o.volumeForm v ≤ ∏ i : Fin n, ‖v i‖ :=
   (le_abs_self _).trans (o.abs_volumeForm_apply_le v)
 #align orientation.volume_form_apply_le Orientation.volumeForm_apply_le
 
@@ -312,7 +312,7 @@ theorem abs_volumeForm_apply_of_orthonormal (v : OrthonormalBasis (Fin n) ℝ E)
   simpa [o.volumeForm_robust' v v] using congr_arg abs v.toBasis.det_self
 #align orientation.abs_volume_form_apply_of_orthonormal Orientation.abs_volumeForm_apply_of_orthonormal
 
-theorem volumeForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+lemma volumeForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
     [Fact (finrank ℝ F = n)] (φ : E ≃ₗᵢ[ℝ] F) (x : Fin n → F) :
     (Orientation.map (Fin n) φ.toLinearEquiv o).volumeForm x = o.volumeForm (φ.symm ∘ x) := by
   cases' n with n

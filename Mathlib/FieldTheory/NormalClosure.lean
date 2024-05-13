@@ -137,7 +137,7 @@ instance isNormalClosure_normalClosure [ne : Nonempty (K →ₐ[F] L)] [h : Norm
   simp_rw [← minpoly.algHom_eq _ φ.injective]
   exact fun _ ↦ h.splits _
 
-theorem normalClosure_eq_iSup_adjoin' [ne : Nonempty (K →ₐ[F] L)] [h : Normal F L] :
+lemma normalClosure_eq_iSup_adjoin' [ne : Nonempty (K →ₐ[F] L)] [h : Normal F L] :
     normalClosure F K L = ⨆ x : K, adjoin F ((minpoly F x).rootSet L) := by
   have ⟨φ⟩ := ne
   refine h.isAlgebraic'.of_injective φ φ.injective
@@ -145,7 +145,7 @@ theorem normalClosure_eq_iSup_adjoin' [ne : Nonempty (K →ₐ[F] L)] [h : Norma
   rw [← minpoly.algHom_eq _ φ.injective]
   apply h.splits
 
-theorem normalClosure_eq_iSup_adjoin [Algebra K L] [IsScalarTower F K L] [Normal F L] :
+lemma normalClosure_eq_iSup_adjoin [Algebra K L] [IsScalarTower F K L] [Normal F L] :
     normalClosure F K L = ⨆ x : K, adjoin F ((minpoly F x).rootSet L) :=
   normalClosure_eq_iSup_adjoin' (ne := ⟨IsScalarTower.toAlgHom F K L⟩)
 #align normal_closure.restrict_scalars_eq_supr_adjoin normalClosure_eq_iSup_adjoin

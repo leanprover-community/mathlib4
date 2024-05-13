@@ -46,7 +46,7 @@ variable (g : Ordinal → α)
 
 open Cardinal Ordinal SuccOrder Function Set
 
-theorem not_injective_limitation_set : ¬ InjOn g (Iio (ord <| succ #α)) := by
+lemma not_injective_limitation_set : ¬ InjOn g (Iio (ord <| succ #α)) := by
   intro h_inj
   have h := lift_mk_le_lift_mk_of_injective <| injOn_iff_injective.1 h_inj
   have mk_initialSeg_subtype :
@@ -74,7 +74,7 @@ def lfpApprox (a : Ordinal.{u}) : α :=
 termination_by a
 decreasing_by exact h
 
-theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
+lemma lfpApprox_monotone : Monotone (lfpApprox f x) := by
   unfold Monotone; intros a b h; unfold lfpApprox
   refine sSup_le_sSup ?h
   apply sup_le_sup_right
@@ -84,12 +84,12 @@ theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
   use a'
   exact ⟨lt_of_lt_of_le h' h, rfl⟩
 
-theorem le_lfpApprox {a : Ordinal} : x ≤ lfpApprox f x a := by
+lemma le_lfpApprox {a : Ordinal} : x ≤ lfpApprox f x a := by
   unfold lfpApprox
   apply le_sSup
   simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, true_or]
 
-theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
+lemma lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     lfpApprox f x (a+1) = f (lfpApprox f x a) := by
   apply le_antisymm
   · conv => left; unfold lfpApprox
@@ -217,13 +217,13 @@ def gfpApprox (a : Ordinal.{u}) : α :=
 termination_by a
 decreasing_by exact h
 
-theorem gfpApprox_antitone : Antitone (gfpApprox f x) :=
+lemma gfpApprox_antitone : Antitone (gfpApprox f x) :=
   lfpApprox_monotone (OrderHom.dual f) x
 
-theorem gfpApprox_le {a : Ordinal}: gfpApprox f x a ≤ x :=
+lemma gfpApprox_le {a : Ordinal}: gfpApprox f x a ≤ x :=
   le_lfpApprox (OrderHom.dual f) x
 
-theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
+lemma gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (a+1) = f (gfpApprox f x a) :=
   lfpApprox_add_one (OrderHom.dual f) x h a
 

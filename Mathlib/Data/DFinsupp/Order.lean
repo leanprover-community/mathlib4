@@ -56,7 +56,7 @@ def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
 lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = DFunLike.coe := rfl
 
 -- Porting note: we added implicit arguments here in #3414.
-theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
+lemma orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
     (@orderEmbeddingToFun ι α _ _ f) i = f i :=
   rfl
 #align dfinsupp.order_embedding_to_fun_apply DFinsupp.orderEmbeddingToFun_apply
@@ -95,7 +95,7 @@ instance [∀ i, SemilatticeInf (α i)] : SemilatticeInf (Π₀ i, α i) :=
 @[simp, norm_cast]
 lemma coe_inf [∀ i, SemilatticeInf (α i)] (f g : Π₀ i, α i) : f ⊓ g = ⇑f ⊓ g := rfl
 
-theorem inf_apply [∀ i, SemilatticeInf (α i)] (f g : Π₀ i, α i) (i : ι) : (f ⊓ g) i = f i ⊓ g i :=
+lemma inf_apply [∀ i, SemilatticeInf (α i)] (f g : Π₀ i, α i) (i : ι) : (f ⊓ g) i = f i ⊓ g i :=
   zipWith_apply _ _ _ _ _
 #align dfinsupp.inf_apply DFinsupp.inf_apply
 
@@ -109,7 +109,7 @@ instance [∀ i, SemilatticeSup (α i)] : SemilatticeSup (Π₀ i, α i) :=
 @[simp, norm_cast]
 lemma coe_sup [∀ i, SemilatticeSup (α i)] (f g : Π₀ i, α i) : f ⊔ g = ⇑f ⊔ g := rfl
 
-theorem sup_apply [∀ i, SemilatticeSup (α i)] (f g : Π₀ i, α i) (i : ι) : (f ⊔ g) i = f i ⊔ g i :=
+lemma sup_apply [∀ i, SemilatticeSup (α i)] (f g : Π₀ i, α i) (i : ι) : (f ⊔ g) i = f i ⊔ g i :=
   zipWith_apply _ _ _ _ _
 #align dfinsupp.sup_apply DFinsupp.sup_apply
 
@@ -123,11 +123,11 @@ instance lattice : Lattice (Π₀ i, α i) :=
 
 variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)]
 
-theorem support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
+lemma support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
   coe_injective <| compl_injective <| by ext; simp [inf_eq_and_sup_eq_iff]
 #align dfinsupp.support_inf_union_support_sup DFinsupp.support_inf_union_support_sup
 
-theorem support_sup_union_support_inf : (f ⊔ g).support ∪ (f ⊓ g).support = f.support ∪ g.support :=
+lemma support_sup_union_support_inf : (f ⊔ g).support ∪ (f ⊓ g).support = f.support ∪ g.support :=
   (union_comm _ _).trans <| support_inf_union_support_sup _ _
 #align dfinsupp.support_sup_union_support_inf DFinsupp.support_sup_union_support_inf
 
@@ -199,12 +199,12 @@ instance : OrderBot (Π₀ i, α i) where
 
 variable {α}
 
-protected theorem bot_eq_zero : (⊥ : Π₀ i, α i) = 0 :=
+protected lemma bot_eq_zero : (⊥ : Π₀ i, α i) = 0 :=
   rfl
 #align dfinsupp.bot_eq_zero DFinsupp.bot_eq_zero
 
 @[simp]
-theorem add_eq_zero_iff (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
+lemma add_eq_zero_iff (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
   simp [DFunLike.ext_iff, forall_and]
 #align dfinsupp.add_eq_zero_iff DFinsupp.add_eq_zero_iff
 
@@ -216,12 +216,12 @@ section
 
 variable [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Finset ι}
 
-theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
+lemma le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
   ⟨fun h s _ ↦ h s, fun h s ↦
     if H : s ∈ f.support then h s (hf H) else (not_mem_support_iff.1 H).symm ▸ zero_le (g s)⟩
 #align dfinsupp.le_iff' DFinsupp.le_iff'
 
-theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
+lemma le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' <| Subset.refl _
 #align dfinsupp.le_iff DFinsupp.le_iff
 
@@ -241,7 +241,7 @@ variable {α}
 end
 
 @[simp]
-theorem single_le_iff {f : Π₀ i, α i} {i : ι} {a : α i} : single i a ≤ f ↔ a ≤ f i := by
+lemma single_le_iff {f : Π₀ i, α i} {i : ι} {a : α i} : single i a ≤ f ↔ a ≤ f i := by
   classical exact (le_iff' support_single_subset).trans <| by simp
 #align dfinsupp.single_le_iff DFinsupp.single_le_iff
 
@@ -259,12 +259,12 @@ instance tsub : Sub (Π₀ i, α i) :=
 
 variable {α}
 
-theorem tsub_apply (f g : Π₀ i, α i) (i : ι) : (f - g) i = f i - g i :=
+lemma tsub_apply (f g : Π₀ i, α i) (i : ι) : (f - g) i = f i - g i :=
   zipWith_apply _ _ _ _ _
 #align dfinsupp.tsub_apply DFinsupp.tsub_apply
 
 @[simp, norm_cast]
-theorem coe_tsub (f g : Π₀ i, α i) : ⇑(f - g) = f - g := by
+lemma coe_tsub (f g : Π₀ i, α i) : ⇑(f - g) = f - g := by
   ext i
   exact tsub_apply f g i
 #align dfinsupp.coe_tsub DFinsupp.coe_tsub
@@ -287,7 +287,7 @@ instance : CanonicallyOrderedAddCommMonoid (Π₀ i, α i) :=
 variable {α} [DecidableEq ι]
 
 @[simp]
-theorem single_tsub : single i (a - b) = single i a - single i b := by
+lemma single_tsub : single i (a - b) = single i a - single i b := by
   ext j
   obtain rfl | h := eq_or_ne i j
   · rw [tsub_apply, single_eq_same, single_eq_same, single_eq_same]
@@ -296,12 +296,12 @@ theorem single_tsub : single i (a - b) = single i a - single i b := by
 
 variable [∀ (i) (x : α i), Decidable (x ≠ 0)]
 
-theorem support_tsub : (f - g).support ⊆ f.support := by
+lemma support_tsub : (f - g).support ⊆ f.support := by
   simp (config := { contextual := true }) only [subset_iff, tsub_eq_zero_iff_le, mem_support_iff,
     Ne, coe_tsub, Pi.sub_apply, not_imp_not, zero_le, imp_true_iff]
 #align dfinsupp.support_tsub DFinsupp.support_tsub
 
-theorem subset_support_tsub : f.support \ g.support ⊆ (f - g).support := by
+lemma subset_support_tsub : f.support \ g.support ⊆ (f - g).support := by
   simp (config := { contextual := true }) [subset_iff]
 #align dfinsupp.subset_support_tsub DFinsupp.subset_support_tsub
 
@@ -312,20 +312,20 @@ section CanonicallyLinearOrderedAddCommMonoid
 variable [∀ i, CanonicallyLinearOrderedAddCommMonoid (α i)] [DecidableEq ι] {f g : Π₀ i, α i}
 
 @[simp]
-theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
+lemma support_inf : (f ⊓ g).support = f.support ∩ g.support := by
   ext
   simp only [inf_apply, mem_support_iff, Ne, Finset.mem_inter]
   simp only [inf_eq_min, ← nonpos_iff_eq_zero, min_le_iff, not_or]
 #align dfinsupp.support_inf DFinsupp.support_inf
 
 @[simp]
-theorem support_sup : (f ⊔ g).support = f.support ∪ g.support := by
+lemma support_sup : (f ⊔ g).support = f.support ∪ g.support := by
   ext
   simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← bot_eq_zero]
   rw [_root_.sup_eq_bot_iff, not_and_or]
 #align dfinsupp.support_sup DFinsupp.support_sup
 
-nonrec theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := by
+nonrec lemma disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := by
   rw [disjoint_iff, disjoint_iff, DFinsupp.bot_eq_zero, ← DFinsupp.support_eq_empty,
     DFinsupp.support_inf]
   rfl

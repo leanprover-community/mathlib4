@@ -47,7 +47,7 @@ nonrec def angle (p1 p2 p3 : P) : ℝ :=
 
 @[inherit_doc] scoped notation "∠" => EuclideanGeometry.angle
 
-theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
+lemma continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
     ContinuousAt (fun y : P × P × P => ∠ y.1 y.2.1 y.2.2) x := by
   let f : P × P × P → V × V := fun y => (y.1 -ᵥ y.2.1, y.2.2 -ᵥ y.2.1)
   have hf1 : (f x).1 ≠ 0 := by simp [hx12]
@@ -58,14 +58,14 @@ theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.
 #align euclidean_geometry.continuous_at_angle EuclideanGeometry.continuousAt_angle
 
 @[simp]
-theorem _root_.AffineIsometry.angle_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂]
+lemma _root_.AffineIsometry.angle_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂]
     [InnerProductSpace ℝ V₂] [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
     (f : P →ᵃⁱ[ℝ] P₂) (p₁ p₂ p₃ : P) : ∠ (f p₁) (f p₂) (f p₃) = ∠ p₁ p₂ p₃ := by
   simp_rw [angle, ← AffineIsometry.map_vsub, LinearIsometry.angle_map]
 #align affine_isometry.angle_map AffineIsometry.angle_map
 
 @[simp, norm_cast]
-theorem _root_.AffineSubspace.angle_coe {s : AffineSubspace ℝ P} (p₁ p₂ p₃ : s) :
+lemma _root_.AffineSubspace.angle_coe {s : AffineSubspace ℝ P} (p₁ p₂ p₃ : s) :
     haveI : Nonempty s := ⟨p₁⟩
     ∠ (p₁ : P) (p₂ : P) (p₃ : P) = ∠ p₁ p₂ p₃ :=
   haveI : Nonempty s := ⟨p₁⟩

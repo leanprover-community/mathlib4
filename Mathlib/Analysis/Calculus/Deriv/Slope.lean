@@ -63,22 +63,22 @@ theorem hasDerivAtFilter_iff_tendsto_slope {x : 𝕜} {L : Filter 𝕜} :
         by rw [← nhds_translation_sub f', tendsto_comap_iff]; rfl
 #align has_deriv_at_filter_iff_tendsto_slope hasDerivAtFilter_iff_tendsto_slope
 
-theorem hasDerivWithinAt_iff_tendsto_slope :
+lemma hasDerivWithinAt_iff_tendsto_slope :
     HasDerivWithinAt f f' s x ↔ Tendsto (slope f x) (𝓝[s \ {x}] x) (𝓝 f') := by
   simp only [HasDerivWithinAt, nhdsWithin, diff_eq, ← inf_assoc, inf_principal.symm]
   exact hasDerivAtFilter_iff_tendsto_slope
 #align has_deriv_within_at_iff_tendsto_slope hasDerivWithinAt_iff_tendsto_slope
 
-theorem hasDerivWithinAt_iff_tendsto_slope' (hs : x ∉ s) :
+lemma hasDerivWithinAt_iff_tendsto_slope' (hs : x ∉ s) :
     HasDerivWithinAt f f' s x ↔ Tendsto (slope f x) (𝓝[s] x) (𝓝 f') := by
   rw [hasDerivWithinAt_iff_tendsto_slope, diff_singleton_eq_self hs]
 #align has_deriv_within_at_iff_tendsto_slope' hasDerivWithinAt_iff_tendsto_slope'
 
-theorem hasDerivAt_iff_tendsto_slope : HasDerivAt f f' x ↔ Tendsto (slope f x) (𝓝[≠] x) (𝓝 f') :=
+lemma hasDerivAt_iff_tendsto_slope : HasDerivAt f f' x ↔ Tendsto (slope f x) (𝓝[≠] x) (𝓝 f') :=
   hasDerivAtFilter_iff_tendsto_slope
 #align has_deriv_at_iff_tendsto_slope hasDerivAt_iff_tendsto_slope
 
-theorem hasDerivAt_iff_tendsto_slope_zero :
+lemma hasDerivAt_iff_tendsto_slope_zero :
     HasDerivAt f f' x ↔ Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[≠] 0) (𝓝 f') := by
   have : 𝓝[≠] x = Filter.map (fun t ↦ x + t) (𝓝[≠] 0) := by
     simp [nhdsWithin, map_add_left_nhds_zero x, Filter.map_inf, add_right_injective x]
@@ -86,11 +86,11 @@ theorem hasDerivAt_iff_tendsto_slope_zero :
 
 alias ⟨HasDerivAt.tendsto_slope_zero, _⟩ := hasDerivAt_iff_tendsto_slope_zero
 
-theorem HasDerivAt.tendsto_slope_zero_right [PartialOrder 𝕜] (h : HasDerivAt f f' x) :
+lemma HasDerivAt.tendsto_slope_zero_right [PartialOrder 𝕜] (h : HasDerivAt f f' x) :
     Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[>] 0) (𝓝 f') :=
   h.tendsto_slope_zero.mono_left (nhds_right'_le_nhds_ne 0)
 
-theorem HasDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasDerivAt f f' x) :
+lemma HasDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasDerivAt f f' x) :
     Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[<] 0) (𝓝 f') :=
   h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
 
@@ -142,7 +142,7 @@ theorem range_deriv_subset_closure_span_image
   apply range_derivWithin_subset_closure_span_image
   simp [dense_iff_closure_eq.1 h]
 
-theorem isSeparable_range_derivWithin [SeparableSpace 𝕜] (f : 𝕜 → F) (s : Set 𝕜) :
+lemma isSeparable_range_derivWithin [SeparableSpace 𝕜] (f : 𝕜 → F) (s : Set 𝕜) :
     IsSeparable (range (derivWithin f s)) := by
   obtain ⟨t, ts, t_count, ht⟩ : ∃ t, t ⊆ s ∧ Set.Countable t ∧ s ⊆ closure t :=
     (IsSeparable.of_separableSpace s).exists_countable_dense_subset
@@ -150,7 +150,7 @@ theorem isSeparable_range_derivWithin [SeparableSpace 𝕜] (f : 𝕜 → F) (s 
   apply IsSeparable.mono _ (range_derivWithin_subset_closure_span_image f this)
   exact (Countable.image t_count f).isSeparable.span.closure
 
-theorem isSeparable_range_deriv [SeparableSpace 𝕜] (f : 𝕜 → F) :
+lemma isSeparable_range_deriv [SeparableSpace 𝕜] (f : 𝕜 → F) :
     IsSeparable (range (deriv f)) := by
   rw [← derivWithin_univ]
   exact isSeparable_range_derivWithin _ _
@@ -163,17 +163,17 @@ section Real
 
 variable {f : ℝ → ℝ} {f' : ℝ} {s : Set ℝ} {x : ℝ} {r : ℝ}
 
-theorem HasDerivWithinAt.limsup_slope_le (hf : HasDerivWithinAt f f' s x) (hr : f' < r) :
+lemma HasDerivWithinAt.limsup_slope_le (hf : HasDerivWithinAt f f' s x) (hr : f' < r) :
     ∀ᶠ z in 𝓝[s \ {x}] x, slope f x z < r :=
   hasDerivWithinAt_iff_tendsto_slope.1 hf (IsOpen.mem_nhds isOpen_Iio hr)
 #align has_deriv_within_at.limsup_slope_le HasDerivWithinAt.limsup_slope_le
 
-theorem HasDerivWithinAt.limsup_slope_le' (hf : HasDerivWithinAt f f' s x) (hs : x ∉ s)
+lemma HasDerivWithinAt.limsup_slope_le' (hf : HasDerivWithinAt f f' s x) (hs : x ∉ s)
     (hr : f' < r) : ∀ᶠ z in 𝓝[s] x, slope f x z < r :=
   (hasDerivWithinAt_iff_tendsto_slope' hs).1 hf (IsOpen.mem_nhds isOpen_Iio hr)
 #align has_deriv_within_at.limsup_slope_le' HasDerivWithinAt.limsup_slope_le'
 
-theorem HasDerivWithinAt.liminf_right_slope_le (hf : HasDerivWithinAt f f' (Ici x) x)
+lemma HasDerivWithinAt.liminf_right_slope_le (hf : HasDerivWithinAt f f' (Ici x) x)
     (hr : f' < r) : ∃ᶠ z in 𝓝[>] x, slope f x z < r :=
   (hf.Ioi_of_Ici.limsup_slope_le' (lt_irrefl x) hr).frequently
 #align has_deriv_within_at.liminf_right_slope_le HasDerivWithinAt.liminf_right_slope_le

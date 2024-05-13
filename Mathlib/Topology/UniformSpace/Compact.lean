@@ -66,7 +66,7 @@ theorem compactSpace_uniformity [CompactSpace α] : 𝓤 α = ⨆ x, 𝓝 (x, x)
   nhdsSet_diagonal_eq_uniformity.symm.trans (nhdsSet_diagonal _)
 #align compact_space_uniformity compactSpace_uniformity
 
-theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
+lemma unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
     {u u' : UniformSpace γ} (h : u.toTopologicalSpace = t) (h' : u'.toTopologicalSpace = t) :
     u = u' := by
   refine UniformSpace.ext ?_
@@ -194,7 +194,7 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
   exacts [mem_ball_self _ (hT a a.2), mem_iInter₂.1 h a ha]
 #align is_compact.uniform_continuous_at_of_continuous_at IsCompact.uniformContinuousAt_of_continuousAt
 
-theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : β}
+lemma Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : β}
     (h_cont : Continuous f) (hx : Tendsto f (cocompact α) (𝓝 x)) : UniformContinuous f :=
   uniformContinuous_def.2 fun r hr => by
     obtain ⟨t, ht, htsymm, htr⟩ := comp_symm_mem_uniformity_sets hr
@@ -227,7 +227,7 @@ theorem HasCompactMulSupport.is_one_at_infty {f : α → γ} [TopologicalSpace �
 #align has_compact_support.is_zero_at_infty HasCompactSupport.is_zero_at_infty
 
 @[to_additive]
-theorem HasCompactMulSupport.uniformContinuous_of_continuous {f : α → β} [One β]
+lemma HasCompactMulSupport.uniformContinuous_of_continuous {f : α → β} [One β]
     (h1 : HasCompactMulSupport f) (h2 : Continuous f) : UniformContinuous f :=
   h2.uniformContinuous_of_tendsto_cocompact h1.is_one_at_infty
 #align has_compact_mul_support.uniform_continuous_of_continuous HasCompactMulSupport.uniformContinuous_of_continuous

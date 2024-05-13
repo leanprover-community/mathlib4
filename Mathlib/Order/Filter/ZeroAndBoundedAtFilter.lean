@@ -33,22 +33,22 @@ def ZeroAtFilter [Zero β] [TopologicalSpace β] (l : Filter α) (f : α → β)
   Filter.Tendsto f l (𝓝 0)
 #align filter.zero_at_filter Filter.ZeroAtFilter
 
-theorem zero_zeroAtFilter [Zero β] [TopologicalSpace β] (l : Filter α) :
+lemma zero_zeroAtFilter [Zero β] [TopologicalSpace β] (l : Filter α) :
     ZeroAtFilter l (0 : α → β) :=
   tendsto_const_nhds
 #align filter.zero_zero_at_filter Filter.zero_zeroAtFilter
 
-nonrec theorem ZeroAtFilter.add [TopologicalSpace β] [AddZeroClass β] [ContinuousAdd β]
+nonrec lemma ZeroAtFilter.add [TopologicalSpace β] [AddZeroClass β] [ContinuousAdd β]
     {l : Filter α} {f g : α → β} (hf : ZeroAtFilter l f) (hg : ZeroAtFilter l g) :
     ZeroAtFilter l (f + g) := by
   simpa using hf.add hg
 #align filter.zero_at_filter.add Filter.ZeroAtFilter.add
 
-nonrec theorem ZeroAtFilter.neg [TopologicalSpace β] [AddGroup β] [ContinuousNeg β] {l : Filter α}
+nonrec lemma ZeroAtFilter.neg [TopologicalSpace β] [AddGroup β] [ContinuousNeg β] {l : Filter α}
     {f : α → β} (hf : ZeroAtFilter l f) : ZeroAtFilter l (-f) := by simpa using hf.neg
 #align filter.zero_at_filter.neg Filter.ZeroAtFilter.neg
 
-theorem ZeroAtFilter.smul [TopologicalSpace β] [Zero 𝕜] [Zero β]
+lemma ZeroAtFilter.smul [TopologicalSpace β] [Zero 𝕜] [Zero β]
     [SMulWithZero 𝕜 β] [ContinuousConstSMul 𝕜 β] {l : Filter α} {f : α → β} (c : 𝕜)
     (hf : ZeroAtFilter l f) : ZeroAtFilter l (c • f) := by simpa using hf.const_smul c
 #align filter.zero_at_filter.smul Filter.ZeroAtFilter.smul
@@ -81,34 +81,34 @@ def BoundedAtFilter [Norm β] (l : Filter α) (f : α → β) : Prop :=
   Asymptotics.IsBigO l f (1 : α → ℝ)
 #align filter.bounded_at_filter Filter.BoundedAtFilter
 
-theorem ZeroAtFilter.boundedAtFilter [NormedAddCommGroup β] {l : Filter α} {f : α → β}
+lemma ZeroAtFilter.boundedAtFilter [NormedAddCommGroup β] {l : Filter α} {f : α → β}
     (hf : ZeroAtFilter l f) : BoundedAtFilter l f := by
   rw [ZeroAtFilter, ← Asymptotics.isLittleO_const_iff (one_ne_zero' ℝ)] at hf
   exact hf.isBigO
 #align filter.zero_at_filter.bounded_at_filter Filter.ZeroAtFilter.boundedAtFilter
 
-theorem const_boundedAtFilter [Norm β] (l : Filter α) (c : β) :
+lemma const_boundedAtFilter [Norm β] (l : Filter α) (c : β) :
     BoundedAtFilter l (Function.const α c : α → β) :=
   Asymptotics.isBigO_const_const c one_ne_zero l
 #align filter.const_bounded_at_filter Filter.const_boundedAtFilter
 
-nonrec theorem BoundedAtFilter.add [SeminormedAddCommGroup β] {l : Filter α} {f g : α → β}
+nonrec lemma BoundedAtFilter.add [SeminormedAddCommGroup β] {l : Filter α} {f g : α → β}
     (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) : BoundedAtFilter l (f + g) := by
   simpa using hf.add hg
 #align filter.bounded_at_filter.add Filter.BoundedAtFilter.add
 
-theorem BoundedAtFilter.neg [SeminormedAddCommGroup β] {l : Filter α} {f : α → β}
+lemma BoundedAtFilter.neg [SeminormedAddCommGroup β] {l : Filter α} {f : α → β}
     (hf : BoundedAtFilter l f) : BoundedAtFilter l (-f) :=
   hf.neg_left
 #align filter.bounded_at_filter.neg Filter.BoundedAtFilter.neg
 
-theorem BoundedAtFilter.smul
+lemma BoundedAtFilter.smul
     [SeminormedRing 𝕜] [SeminormedAddCommGroup β] [Module 𝕜 β] [BoundedSMul 𝕜 β]
     {l : Filter α} {f : α → β} (c : 𝕜) (hf : BoundedAtFilter l f) : BoundedAtFilter l (c • f) :=
   hf.const_smul_left c
 #align filter.bounded_at_filter.smul Filter.BoundedAtFilter.smul
 
-nonrec theorem BoundedAtFilter.mul [SeminormedRing β] {l : Filter α} {f g : α → β}
+nonrec lemma BoundedAtFilter.mul [SeminormedRing β] {l : Filter α} {f g : α → β}
     (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) : BoundedAtFilter l (f * g) := by
   refine' (hf.mul hg).trans _
   convert Asymptotics.isBigO_refl (E := ℝ) _ l

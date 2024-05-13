@@ -57,7 +57,7 @@ inductive GameAdd : α × β → α × β → Prop
   | snd {a b₁ b₂} : rβ b₁ b₂ → GameAdd (a, b₁) (a, b₂)
 #align prod.game_add Prod.GameAdd
 
-theorem gameAdd_iff {rα rβ} {x y : α × β} :
+lemma gameAdd_iff {rα rβ} {x y : α × β} :
     GameAdd rα rβ x y ↔ rα x.1 y.1 ∧ x.2 = y.2 ∨ rβ x.2 y.2 ∧ x.1 = y.1 := by
   constructor
   · rintro (@⟨a₁, a₂, b, h⟩ | @⟨a, b₁, b₂, h⟩)
@@ -67,17 +67,17 @@ theorem gameAdd_iff {rα rβ} {x y : α × β} :
     exacts [GameAdd.fst h, GameAdd.snd h]
 #align prod.game_add_iff Prod.gameAdd_iff
 
-theorem gameAdd_mk_iff {rα rβ} {a₁ a₂ : α} {b₁ b₂ : β} :
+lemma gameAdd_mk_iff {rα rβ} {a₁ a₂ : α} {b₁ b₂ : β} :
     GameAdd rα rβ (a₁, b₁) (a₂, b₂) ↔ rα a₁ a₂ ∧ b₁ = b₂ ∨ rβ b₁ b₂ ∧ a₁ = a₂ :=
   gameAdd_iff
 #align prod.game_add_mk_iff Prod.gameAdd_mk_iff
 
 @[simp]
-theorem gameAdd_swap_swap : ∀ a b : α × β, GameAdd rβ rα a.swap b.swap ↔ GameAdd rα rβ a b :=
+lemma gameAdd_swap_swap : ∀ a b : α × β, GameAdd rβ rα a.swap b.swap ↔ GameAdd rα rβ a b :=
   fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ => by rw [Prod.swap, Prod.swap, gameAdd_mk_iff, gameAdd_mk_iff, or_comm]
 #align prod.game_add_swap_swap Prod.gameAdd_swap_swap
 
-theorem gameAdd_swap_swap_mk (a₁ a₂ : α) (b₁ b₂ : β) :
+lemma gameAdd_swap_swap_mk (a₁ a₂ : α) (b₁ b₂ : β) :
     GameAdd rα rβ (a₁, b₁) (a₂, b₂) ↔ GameAdd rβ rα (b₁, a₁) (b₂, a₂) :=
   gameAdd_swap_swap rβ rα (b₁, a₁) (b₂, a₂)
 #align prod.game_add_swap_swap_mk Prod.gameAdd_swap_swap_mk
@@ -127,7 +127,7 @@ def GameAdd.fix {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFou
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) ⟨a, b⟩
 #align prod.game_add.fix Prod.GameAdd.fix
 
-theorem GameAdd.fix_eq {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
+lemma GameAdd.fix_eq {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a : α) (b : β) :
     GameAdd.fix hα hβ IH a b = IH a b fun a' b' _ => GameAdd.fix hα hβ IH a' b' :=
   WellFounded.fix_eq _ _ _
@@ -161,44 +161,44 @@ def GameAdd (rα : α → α → Prop) : Sym2 α → Sym2 α → Prop :=
         simp [or_comm]⟩
 #align sym2.game_add Sym2.GameAdd
 
-theorem gameAdd_iff : ∀ {x y : α × α},
+lemma gameAdd_iff : ∀ {x y : α × α},
     GameAdd rα (Sym2.mk x) (Sym2.mk y) ↔ Prod.GameAdd rα rα x y ∨ Prod.GameAdd rα rα x.swap y := by
   rintro ⟨_, _⟩ ⟨_, _⟩
   rfl
 #align sym2.game_add_iff Sym2.gameAdd_iff
 
-theorem gameAdd_mk'_iff {a₁ a₂ b₁ b₂ : α} :
+lemma gameAdd_mk'_iff {a₁ a₂ b₁ b₂ : α} :
     GameAdd rα s(a₁, b₁) s(a₂, b₂) ↔
       Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂) ∨ Prod.GameAdd rα rα (b₁, a₁) (a₂, b₂) :=
   Iff.rfl
 #align sym2.game_add_mk_iff Sym2.gameAdd_mk'_iff
 
-theorem _root_.Prod.GameAdd.to_sym2 {a₁ a₂ b₁ b₂ : α} (h : Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂)) :
+lemma _root_.Prod.GameAdd.to_sym2 {a₁ a₂ b₁ b₂ : α} (h : Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂)) :
     Sym2.GameAdd rα s(a₁, b₁) s(a₂, b₂) :=
   gameAdd_mk'_iff.2 <| Or.inl <| h
 #align prod.game_add.to_sym2 Prod.GameAdd.to_sym2
 
-theorem GameAdd.fst {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα s(a₁, b) s(a₂, b) :=
+lemma GameAdd.fst {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα s(a₁, b) s(a₂, b) :=
   (Prod.GameAdd.fst h).to_sym2
 #align sym2.game_add.fst Sym2.GameAdd.fst
 
-theorem GameAdd.snd {a b₁ b₂ : α} (h : rα b₁ b₂) : GameAdd rα s(a, b₁) s(a, b₂) :=
+lemma GameAdd.snd {a b₁ b₂ : α} (h : rα b₁ b₂) : GameAdd rα s(a, b₁) s(a, b₂) :=
   (Prod.GameAdd.snd h).to_sym2
 #align sym2.game_add.snd Sym2.GameAdd.snd
 
-theorem GameAdd.fst_snd {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα s(a₁, b) s(b, a₂) := by
+lemma GameAdd.fst_snd {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα s(a₁, b) s(b, a₂) := by
   rw [Sym2.eq_swap]
   exact GameAdd.snd h
 #align sym2.game_add.fst_snd Sym2.GameAdd.fst_snd
 
-theorem GameAdd.snd_fst {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα s(b, a₁) s(a₂, b) := by
+lemma GameAdd.snd_fst {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα s(b, a₁) s(a₂, b) := by
   rw [Sym2.eq_swap]
   exact GameAdd.fst h
 #align sym2.game_add.snd_fst Sym2.GameAdd.snd_fst
 
 end Sym2
 
-theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
+lemma Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
     Acc (Sym2.GameAdd rα) s(a, b) := by
   induction' ha with a _ iha generalizing b
   induction' hb with b hb ihb
@@ -235,7 +235,7 @@ def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) (a, b)
 #align sym2.game_add.fix Sym2.GameAdd.fix
 
-theorem GameAdd.fix_eq {C : α → α → Sort*} (hr : WellFounded rα)
+lemma GameAdd.fix_eq {C : α → α → Sort*} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a b : α) :
     GameAdd.fix hr IH a b = IH a b fun a' b' _ => GameAdd.fix hr IH a' b' := by
   -- Porting note: this was refactored for #3414 (reenableeta), and could perhaps be cleaned up.

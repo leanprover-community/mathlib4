@@ -44,7 +44,7 @@ section OpNorm
 
 open Set Real
 
-theorem opNorm_ext [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) (g : E →SL[σ₁₃] G)
+lemma opNorm_ext [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) (g : E →SL[σ₁₃] G)
     (h : ∀ x, ‖f x‖ = ‖g x‖) : ‖f‖ = ‖g‖ :=
   opNorm_eq_of_bounds (norm_nonneg _)
     (fun x => by
@@ -60,14 +60,14 @@ theorem opNorm_ext [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) (g : E 
 
 variable [RingHomIsometric σ₂₃]
 
-theorem opNorm_le_bound₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {C : ℝ} (h0 : 0 ≤ C)
+lemma opNorm_le_bound₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {C : ℝ} (h0 : 0 ≤ C)
     (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : ‖f‖ ≤ C :=
   f.opNorm_le_bound h0 fun x => (f x).opNorm_le_bound (mul_nonneg h0 (norm_nonneg _)) <| hC x
 #align continuous_linear_map.op_norm_le_bound₂ ContinuousLinearMap.opNorm_le_bound₂
 
 @[deprecated] alias op_norm_le_bound₂ := opNorm_le_bound₂ -- deprecated on 2024-02-02
 
-theorem le_opNorm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) :
+lemma le_opNorm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) :
     ‖f x y‖ ≤ ‖f‖ * ‖x‖ * ‖y‖ :=
   (f x).le_of_opNorm_le (f.le_opNorm x) y
 #align continuous_linear_map.le_op_norm₂ ContinuousLinearMap.le_opNorm₂
@@ -75,7 +75,7 @@ theorem le_opNorm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[
 @[deprecated] alias le_op_norm₂ := le_opNorm₂ -- deprecated on 2024-02-02
 
 -- Porting note (#10756): new theorem
-theorem le_of_opNorm₂_le_of_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {x : E} {y : F}
+lemma le_of_opNorm₂_le_of_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {x : E} {y : F}
     {a b c : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) (hy : ‖y‖ ≤ c) :
     ‖f x y‖ ≤ a * b * c :=
   (f x).le_of_opNorm_le_of_le (f.le_of_opNorm_le_of_le hf hx) hy
@@ -124,17 +124,17 @@ def mkContinuous₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ
 #align linear_map.mk_continuous₂ LinearMap.mkContinuous₂
 
 @[simp]
-theorem mkContinuous₂_apply (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) {C : ℝ}
+lemma mkContinuous₂_apply (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) {C : ℝ}
     (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) (x : E) (y : F) : f.mkContinuous₂ C hC x y = f x y :=
   rfl
 #align linear_map.mk_continuous₂_apply LinearMap.mkContinuous₂_apply
 
-theorem mkContinuous₂_norm_le' (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) {C : ℝ}
+lemma mkContinuous₂_norm_le' (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) {C : ℝ}
     (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : ‖f.mkContinuous₂ C hC‖ ≤ max C 0 :=
   mkContinuous_norm_le _ (le_max_iff.2 <| Or.inr le_rfl) (norm_mkContinuous₂_aux f C hC)
 #align linear_map.mk_continuous₂_norm_le' LinearMap.mkContinuous₂_norm_le'
 
-theorem mkContinuous₂_norm_le (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) {C : ℝ} (h0 : 0 ≤ C)
+lemma mkContinuous₂_norm_le (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) {C : ℝ} (h0 : 0 ≤ C)
     (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : ‖f.mkContinuous₂ C hC‖ ≤ C :=
   (f.mkContinuous₂_norm_le' hC).trans_eq <| max_eq_left h0
 #align linear_map.mk_continuous₂_norm_le LinearMap.mkContinuous₂_norm_le
@@ -158,36 +158,36 @@ def flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : F →SL[σ₂₃] E →SL
     ‖f‖ fun y x => (f.le_opNorm₂ x y).trans_eq <| by simp only [mul_right_comm]
 #align continuous_linear_map.flip ContinuousLinearMap.flip
 
-private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
+private lemma le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
   f.opNorm_le_bound₂ (norm_nonneg _) fun x y => by
     rw [mul_right_comm]
     exact (flip f).le_opNorm₂ y x
 
 @[simp]
-theorem flip_apply (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) : f.flip y x = f x y :=
+lemma flip_apply (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) : f.flip y x = f x y :=
   rfl
 #align continuous_linear_map.flip_apply ContinuousLinearMap.flip_apply
 
 @[simp]
-theorem flip_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : f.flip.flip = f := by
+lemma flip_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : f.flip.flip = f := by
   ext
   rfl
 #align continuous_linear_map.flip_flip ContinuousLinearMap.flip_flip
 
 @[simp]
-theorem opNorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖ = ‖f‖ :=
+lemma opNorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖ = ‖f‖ :=
   le_antisymm (by simpa only [flip_flip] using le_norm_flip f.flip) (le_norm_flip f)
 #align continuous_linear_map.op_norm_flip ContinuousLinearMap.opNorm_flip
 
 @[deprecated] alias op_norm_flip := opNorm_flip -- deprecated on 2024-02-02
 
 @[simp]
-theorem flip_add (f g : E →SL[σ₁₃] F →SL[σ₂₃] G) : (f + g).flip = f.flip + g.flip :=
+lemma flip_add (f g : E →SL[σ₁₃] F →SL[σ₂₃] G) : (f + g).flip = f.flip + g.flip :=
   rfl
 #align continuous_linear_map.flip_add ContinuousLinearMap.flip_add
 
 @[simp]
-theorem flip_smul (c : 𝕜₃) (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : (c • f).flip = c • f.flip :=
+lemma flip_smul (c : 𝕜₃) (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : (c • f).flip = c • f.flip :=
   rfl
 #align continuous_linear_map.flip_smul ContinuousLinearMap.flip_smul
 
@@ -209,12 +209,12 @@ def flipₗᵢ' : (E →SL[σ₁₃] F →SL[σ₂₃] G) ≃ₗᵢ[𝕜₃] F �
 variable {E F G σ₁₃ σ₂₃}
 
 @[simp]
-theorem flipₗᵢ'_symm : (flipₗᵢ' E F G σ₂₃ σ₁₃).symm = flipₗᵢ' F E G σ₁₃ σ₂₃ :=
+lemma flipₗᵢ'_symm : (flipₗᵢ' E F G σ₂₃ σ₁₃).symm = flipₗᵢ' F E G σ₁₃ σ₂₃ :=
   rfl
 #align continuous_linear_map.flipₗᵢ'_symm ContinuousLinearMap.flipₗᵢ'_symm
 
 @[simp]
-theorem coe_flipₗᵢ' : ⇑(flipₗᵢ' E F G σ₂₃ σ₁₃) = flip :=
+lemma coe_flipₗᵢ' : ⇑(flipₗᵢ' E F G σ₂₃ σ₁₃) = flip :=
   rfl
 #align continuous_linear_map.coe_flipₗᵢ' ContinuousLinearMap.coe_flipₗᵢ'
 
@@ -236,12 +236,12 @@ def flipₗᵢ : (E →L[𝕜] Fₗ →L[𝕜] Gₗ) ≃ₗᵢ[𝕜] Fₗ →L[�
 variable {𝕜 E Fₗ Gₗ}
 
 @[simp]
-theorem flipₗᵢ_symm : (flipₗᵢ 𝕜 E Fₗ Gₗ).symm = flipₗᵢ 𝕜 Fₗ E Gₗ :=
+lemma flipₗᵢ_symm : (flipₗᵢ 𝕜 E Fₗ Gₗ).symm = flipₗᵢ 𝕜 Fₗ E Gₗ :=
   rfl
 #align continuous_linear_map.flipₗᵢ_symm ContinuousLinearMap.flipₗᵢ_symm
 
 @[simp]
-theorem coe_flipₗᵢ : ⇑(flipₗᵢ 𝕜 E Fₗ Gₗ) = flip :=
+lemma coe_flipₗᵢ : ⇑(flipₗᵢ 𝕜 E Fₗ Gₗ) = flip :=
   rfl
 #align continuous_linear_map.coe_flipₗᵢ ContinuousLinearMap.coe_flipₗᵢ
 
@@ -258,7 +258,7 @@ def apply' : E →SL[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F :=
 variable {F σ₁₂}
 
 @[simp]
-theorem apply_apply' (v : E) (f : E →SL[σ₁₂] F) : apply' F σ₁₂ v f = f v :=
+lemma apply_apply' (v : E) (f : E →SL[σ₁₂] F) : apply' F σ₁₂ v f = f v :=
   rfl
 #align continuous_linear_map.apply_apply' ContinuousLinearMap.apply_apply'
 
@@ -275,7 +275,7 @@ def apply : E →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] Fₗ :=
 variable {𝕜 Fₗ}
 
 @[simp]
-theorem apply_apply (v : E) (f : E →L[𝕜] Fₗ) : apply 𝕜 Fₗ v f = f v :=
+lemma apply_apply (v : E) (f : E →L[𝕜] Fₗ) : apply 𝕜 Fₗ v f = f v :=
   rfl
 #align continuous_linear_map.apply_apply ContinuousLinearMap.apply_apply
 
@@ -293,7 +293,7 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
     1 fun f g => by simpa only [one_mul] using opNorm_comp_le f g
 #align continuous_linear_map.compSL ContinuousLinearMap.compSL
 
-theorem norm_compSL_le :
+lemma norm_compSL_le :
     -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
     -- see leanprover/lean4#3927
     letI : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) :=
@@ -305,18 +305,18 @@ theorem norm_compSL_le :
 variable {σ₁₂ σ₂₃ E F G}
 
 @[simp]
-theorem compSL_apply (f : F →SL[σ₂₃] G) (g : E →SL[σ₁₂] F) : compSL E F G σ₁₂ σ₂₃ f g = f.comp g :=
+lemma compSL_apply (f : F →SL[σ₂₃] G) (g : E →SL[σ₁₂] F) : compSL E F G σ₁₂ σ₂₃ f g = f.comp g :=
   rfl
 #align continuous_linear_map.compSL_apply ContinuousLinearMap.compSL_apply
 
-theorem _root_.Continuous.const_clm_comp {X} [TopologicalSpace X] {f : X → E →SL[σ₁₂] F}
+lemma _root_.Continuous.const_clm_comp {X} [TopologicalSpace X] {f : X → E →SL[σ₁₂] F}
     (hf : Continuous f) (g : F →SL[σ₂₃] G) :
     Continuous (fun x => g.comp (f x) : X → E →SL[σ₁₃] G) :=
   (compSL E F G σ₁₂ σ₂₃ g).continuous.comp hf
 #align continuous.const_clm_comp Continuous.const_clm_comp
 
 -- Giving the implicit argument speeds up elaboration significantly
-theorem _root_.Continuous.clm_comp_const {X} [TopologicalSpace X] {g : X → F →SL[σ₂₃] G}
+lemma _root_.Continuous.clm_comp_const {X} [TopologicalSpace X] {g : X → F →SL[σ₂₃] G}
     (hg : Continuous g) (f : E →SL[σ₁₂] F) :
     Continuous (fun x => (g x).comp f : X → E →SL[σ₁₃] G) :=
   (@ContinuousLinearMap.flip _ _ _ _ _ (E →SL[σ₁₃] G) _ _ _ _ _ _ _ _ _ _ _ _ _
@@ -330,7 +330,7 @@ def compL : (Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E �
   compSL E Fₗ Gₗ (RingHom.id 𝕜) (RingHom.id 𝕜)
 #align continuous_linear_map.compL ContinuousLinearMap.compL
 
-theorem norm_compL_le :
+lemma norm_compL_le :
     -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
     -- see leanprover/lean4#3927
     letI : Norm ((Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) :=
@@ -340,7 +340,7 @@ theorem norm_compL_le :
 #align continuous_linear_map.norm_compL_le ContinuousLinearMap.norm_compL_le
 
 @[simp]
-theorem compL_apply (f : Fₗ →L[𝕜] Gₗ) (g : E →L[𝕜] Fₗ) : compL 𝕜 E Fₗ Gₗ f g = f.comp g :=
+lemma compL_apply (f : Fₗ →L[𝕜] Gₗ) (g : E →L[𝕜] Fₗ) : compL 𝕜 E Fₗ Gₗ f g = f.comp g :=
   rfl
 #align continuous_linear_map.compL_apply ContinuousLinearMap.compL_apply
 
@@ -360,7 +360,7 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
 @[simp] lemma precompL_apply (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (u : Eₗ →L[𝕜] E) (f : Fₗ) (g : Eₗ) :
     precompL Eₗ L u f g = L (u g) f := rfl
 
-theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
+lemma norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
     -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
     -- see leanprover/lean4#3927
     letI : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
@@ -372,7 +372,7 @@ theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
     _ = ‖L‖ := by rw [one_mul]
 #align continuous_linear_map.norm_precompR_le ContinuousLinearMap.norm_precompR_le
 
-theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
+lemma norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
     -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
     -- see leanprover/lean4#3927
     letI : Norm ((Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) :=
@@ -402,7 +402,7 @@ def bilinearComp (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (gE : E' →SL[σ�
 #align continuous_linear_map.bilinear_comp ContinuousLinearMap.bilinearComp
 
 @[simp]
-theorem bilinearComp_apply (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (gE : E' →SL[σ₁'] E) (gF : F' →SL[σ₂'] F)
+lemma bilinearComp_apply (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (gE : E' →SL[σ₁'] E) (gF : F' →SL[σ₂'] F)
     (x : E') (y : F') : f.bilinearComp gE gF x y = f (gE x) (gF y) :=
   rfl
 #align continuous_linear_map.bilinear_comp_apply ContinuousLinearMap.bilinearComp_apply
@@ -416,12 +416,12 @@ def deriv₂ (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : E × Fₗ →L[𝕜] E ×
 #align continuous_linear_map.deriv₂ ContinuousLinearMap.deriv₂
 
 @[simp]
-theorem coe_deriv₂ (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (p : E × Fₗ) :
+lemma coe_deriv₂ (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (p : E × Fₗ) :
     ⇑(f.deriv₂ p) = fun q : E × Fₗ => f p.1 q.2 + f q.1 p.2 :=
   rfl
 #align continuous_linear_map.coe_deriv₂ ContinuousLinearMap.coe_deriv₂
 
-theorem map_add_add (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (x x' : E) (y y' : Fₗ) :
+lemma map_add_add (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (x x' : E) (y y' : Fₗ) :
     f (x + x') (y + y') = f x y + f.deriv₂ (x, y) (x', y') + f x' y' := by
   simp only [map_add, add_apply, coe_deriv₂, add_assoc]
   abel

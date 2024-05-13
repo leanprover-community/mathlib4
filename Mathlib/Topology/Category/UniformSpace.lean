@@ -58,7 +58,7 @@ instance : Inhabited UniformSpaceCat :=
   ⟨UniformSpaceCat.of Empty⟩
 
 @[simp]
-theorem coe_of (X : Type u) [UniformSpace X] : (of X : Type u) = X :=
+lemma coe_of (X : Type u) [UniformSpace X] : (of X : Type u) = X :=
   rfl
 #align UniformSpace.coe_of UniformSpaceCat.coe_of
 
@@ -68,25 +68,25 @@ instance (X Y : UniformSpaceCat) : CoeFun (X ⟶ Y) fun _ => X → Y :=
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
 -- see https://github.com/leanprover/std4/issues/86
 @[simp, nolint simpNF]
-theorem coe_comp {X Y Z : UniformSpaceCat} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) = g ∘ f :=
+lemma coe_comp {X Y Z : UniformSpaceCat} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) = g ∘ f :=
   rfl
 #align UniformSpace.coe_comp UniformSpaceCat.coe_comp
 
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
 -- see https://github.com/leanprover/std4/issues/86
 @[simp, nolint simpNF]
-theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
+lemma coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl
 #align UniformSpace.coe_id UniformSpaceCat.coe_id
 
 -- Porting note (#11119): removed `simp` attribute
 -- due to `LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`
-theorem coe_mk {X Y : UniformSpaceCat} (f : X → Y) (hf : UniformContinuous f) :
+lemma coe_mk {X Y : UniformSpaceCat} (f : X → Y) (hf : UniformContinuous f) :
     ((⟨f, hf⟩ : X ⟶ Y) : X → Y) = f :=
   rfl
 #align UniformSpace.coe_mk UniformSpaceCat.coe_mk
 
-theorem hom_ext {X Y : UniformSpaceCat} {f g : X ⟶ Y} : (f : X → Y) = g → f = g :=
+lemma hom_ext {X Y : UniformSpaceCat} {f g : X ⟶ Y} : (f : X → Y) = g → f = g :=
   Subtype.eq
 #align UniformSpace.hom_ext UniformSpaceCat.hom_ext
 
@@ -136,7 +136,7 @@ def of (X : Type u) [UniformSpace X] [CompleteSpace X] [T0Space X] : CpltSepUnif
 #align CpltSepUniformSpace.of CpltSepUniformSpace.of
 
 @[simp]
-theorem coe_of (X : Type u) [UniformSpace X] [CompleteSpace X] [T0Space X] :
+lemma coe_of (X : Type u) [UniformSpace X] [CompleteSpace X] [T0Space X] :
     (of X : Type u) = X :=
   rfl
 #align CpltSepUniformSpace.coe_of CpltSepUniformSpace.coe_of
@@ -182,7 +182,7 @@ def completionHom (X : UniformSpaceCat) :
 #align UniformSpace.completion_hom UniformSpaceCat.completionHom
 
 @[simp]
-theorem completionHom_val (X : UniformSpaceCat) (x) : (completionHom X) x = (x : Completion X) :=
+lemma completionHom_val (X : UniformSpaceCat) (x) : (completionHom X) x = (x : Completion X) :=
   rfl
 #align UniformSpace.completion_hom_val UniformSpaceCat.completionHom_val
 
@@ -199,13 +199,13 @@ instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
   show UniformSpace X from inferInstance
 
 @[simp]
-theorem extensionHom_val {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
+lemma extensionHom_val {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : X ⟶ (forget₂ _ _).obj Y) (x) : (extensionHom f) x = Completion.extension f x :=
   rfl
 #align UniformSpace.extension_hom_val UniformSpaceCat.extensionHom_val
 
 @[simp]
-theorem extension_comp_coe {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
+lemma extension_comp_coe {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : toUniformSpace (CpltSepUniformSpace.of (Completion X)) ⟶ toUniformSpace Y) :
     extensionHom (completionHom X ≫ f) = f := by
   apply Subtype.eq

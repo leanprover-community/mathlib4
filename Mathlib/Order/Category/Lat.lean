@@ -47,7 +47,7 @@ def of (α : Type*) [Lattice α] : Lat :=
 #align Lat.of Lat.of
 
 @[simp]
-theorem coe_of (α : Type*) [Lattice α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [Lattice α] : ↥(of α) = α :=
   rfl
 #align Lat.coe_of Lat.coe_of
 
@@ -103,7 +103,7 @@ def dualEquiv : Lat ≌ Lat where
 
 end Lat
 
-theorem Lat_dual_comp_forget_to_partOrd :
+lemma Lat_dual_comp_forget_to_partOrd :
     Lat.dual ⋙ forget₂ Lat PartOrd = forget₂ Lat PartOrd ⋙ PartOrd.dual :=
   rfl
 #align Lat_dual_comp_forget_to_PartOrd Lat_dual_comp_forget_to_partOrd

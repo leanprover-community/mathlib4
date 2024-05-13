@@ -39,12 +39,12 @@ def DenomsClearable (a b : R) (N : ℕ) (f : R[X]) (i : R →+* K) : Prop :=
   ∃ (D : R) (bi : K), bi * i b = 1 ∧ i D = i b ^ N * eval (i a * bi) (f.map i)
 #align denoms_clearable DenomsClearable
 
-theorem denomsClearable_zero (N : ℕ) (a : R) (bu : bi * i b = 1) : DenomsClearable a b N 0 i :=
+lemma denomsClearable_zero (N : ℕ) (a : R) (bu : bi * i b = 1) : DenomsClearable a b N 0 i :=
   ⟨0, bi, bu, by
     simp only [eval_zero, RingHom.map_zero, mul_zero, Polynomial.map_zero]⟩
 #align denoms_clearable_zero denomsClearable_zero
 
-theorem denomsClearable_C_mul_X_pow {N : ℕ} (a : R) (bu : bi * i b = 1) {n : ℕ} (r : R)
+lemma denomsClearable_C_mul_X_pow {N : ℕ} (a : R) (bu : bi * i b = 1) {n : ℕ} (r : R)
     (nN : n ≤ N) : DenomsClearable a b N (C r * X ^ n) i := by
   refine' ⟨r * a ^ n * b ^ (N - n), bi, bu, _⟩
   rw [C_mul_X_pow_eq_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, eval_mul, eval_pow, eval_C]
@@ -55,7 +55,7 @@ theorem denomsClearable_C_mul_X_pow {N : ℕ} (a : R) (bu : bi * i b = 1) {n : �
 set_option linter.uppercaseLean3 false in
 #align denoms_clearable_C_mul_X_pow denomsClearable_C_mul_X_pow
 
-theorem DenomsClearable.add {N : ℕ} {f g : R[X]} :
+lemma DenomsClearable.add {N : ℕ} {f g : R[X]} :
     DenomsClearable a b N f i → DenomsClearable a b N g i → DenomsClearable a b N (f + g) i :=
   fun ⟨Df, bf, bfu, Hf⟩ ⟨Dg, bg, bgu, Hg⟩ =>
   ⟨Df + Dg, bf, bfu, by
@@ -64,7 +64,7 @@ theorem DenomsClearable.add {N : ℕ} {f g : R[X]} :
     refine' @inv_unique K _ (i b) bg bf _ _ <;> rwa [mul_comm]⟩
 #align denoms_clearable.add DenomsClearable.add
 
-theorem denomsClearable_of_natDegree_le (N : ℕ) (a : R) (bu : bi * i b = 1) :
+lemma denomsClearable_of_natDegree_le (N : ℕ) (a : R) (bu : bi * i b = 1) :
     ∀ f : R[X], f.natDegree ≤ N → DenomsClearable a b N f i :=
   induction_with_natDegree_le _ N (denomsClearable_zero N a bu)
     (fun _ r _ => denomsClearable_C_mul_X_pow a bu r) fun _ _ _ _ df dg => df.add dg

@@ -41,15 +41,15 @@ def doset (a : α) (s t : Set α) : Set α :=
 lemma doset_eq_image2 (a : α) (s t : Set α) : doset a s t = Set.image2 (· * a * ·) s t := by
   simp_rw [doset, Set.mul_singleton, ← Set.image2_mul, Set.image2_image_left]
 
-theorem mem_doset {s t : Set α} {a b : α} : b ∈ doset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, b = x * a * y := by
+lemma mem_doset {s t : Set α} {a b : α} : b ∈ doset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, b = x * a * y := by
   simp only [doset_eq_image2, Set.mem_image2, eq_comm]
 #align doset.mem_doset Doset.mem_doset
 
-theorem mem_doset_self (H K : Subgroup G) (a : G) : a ∈ doset a H K :=
+lemma mem_doset_self (H K : Subgroup G) (a : G) : a ∈ doset a H K :=
   mem_doset.mpr ⟨1, H.one_mem, 1, K.one_mem, (one_mul a).symm.trans (mul_one (1 * a)).symm⟩
 #align doset.mem_doset_self Doset.mem_doset_self
 
-theorem doset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doset a H K) :
+lemma doset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doset a H K) :
     doset b H K = doset a H K := by
   obtain ⟨h, hh, k, hk, rfl⟩ := mem_doset.1 hb
   rw [doset, doset, ← Set.singleton_mul_singleton, ← Set.singleton_mul_singleton, mul_assoc,
@@ -57,7 +57,7 @@ theorem doset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doset a H K) :
     Subgroup.subgroup_mul_singleton hh]
 #align doset.doset_eq_of_mem Doset.doset_eq_of_mem
 
-theorem mem_doset_of_not_disjoint {H K : Subgroup G} {a b : G}
+lemma mem_doset_of_not_disjoint {H K : Subgroup G} {a b : G}
     (h : ¬Disjoint (doset a H K) (doset b H K)) : b ∈ doset a H K := by
   rw [Set.not_disjoint_iff] at h
   simp only [mem_doset] at *
@@ -66,7 +66,7 @@ theorem mem_doset_of_not_disjoint {H K : Subgroup G} {a b : G}
   rwa [mul_assoc, mul_assoc, eq_inv_mul_iff_mul_eq, ← mul_assoc, ← mul_assoc, eq_mul_inv_iff_mul_eq]
 #align doset.mem_doset_of_not_disjoint Doset.mem_doset_of_not_disjoint
 
-theorem eq_of_not_disjoint {H K : Subgroup G} {a b : G}
+lemma eq_of_not_disjoint {H K : Subgroup G} {a b : G}
     (h : ¬Disjoint (doset a H K) (doset b H K)) : doset a H K = doset b H K := by
   rw [disjoint_comm] at h
   have ha : a ∈ doset b H K := mem_doset_of_not_disjoint h
@@ -83,14 +83,14 @@ def Quotient (H K : Set G) : Type _ :=
   _root_.Quotient (setoid H K)
 #align doset.quotient Doset.Quotient
 
-theorem rel_iff {H K : Subgroup G} {x y : G} :
+lemma rel_iff {H K : Subgroup G} {x y : G} :
     (setoid ↑H ↑K).Rel x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
   Iff.trans
     ⟨fun hxy => (congr_arg _ hxy).mpr (mem_doset_self H K y), fun hxy => (doset_eq_of_mem hxy).symm⟩
     mem_doset
 #align doset.rel_iff Doset.rel_iff
 
-theorem bot_rel_eq_leftRel (H : Subgroup G) :
+lemma bot_rel_eq_leftRel (H : Subgroup G) :
     (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
   ext a b
   rw [rel_iff, Setoid.Rel, QuotientGroup.leftRel_apply]
@@ -102,7 +102,7 @@ theorem bot_rel_eq_leftRel (H : Subgroup G) :
     exact ⟨1, rfl, a⁻¹ * b, h, by rw [one_mul, mul_inv_cancel_left]⟩
 #align doset.bot_rel_eq_left_rel Doset.bot_rel_eq_leftRel
 
-theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
+lemma rel_bot_eq_right_group_rel (H : Subgroup G) :
     (setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel := by
   ext a b
   rw [rel_iff, Setoid.Rel, QuotientGroup.rightRel_apply]
@@ -127,17 +127,17 @@ abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
 instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
   ⟨mk H K (1 : G)⟩
 
-theorem eq (H K : Subgroup G) (a b : G) :
+lemma eq (H K : Subgroup G) (a b : G) :
     mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k := by
   rw [Quotient.eq'']
   apply rel_iff
 #align doset.eq Doset.eq
 
-theorem out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out' = q :=
+lemma out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out' = q :=
   Quotient.out_eq' q
 #align doset.out_eq' Doset.out_eq'
 
-theorem mk_out'_eq_mul (H K : Subgroup G) (g : G) :
+lemma mk_out'_eq_mul (H K : Subgroup G) (g : G) :
     ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out' = h * g * k := by
   have := eq H K (mk H K g : Quotient ↑H ↑K).out' g
   rw [out_eq'] at this
@@ -146,20 +146,20 @@ theorem mk_out'_eq_mul (H K : Subgroup G) (g : G) :
   rw [← mul_assoc, ← T]
 #align doset.mk_out'_eq_mul Doset.mk_out'_eq_mul
 
-theorem mk_eq_of_doset_eq {H K : Subgroup G} {a b : G} (h : doset a H K = doset b H K) :
+lemma mk_eq_of_doset_eq {H K : Subgroup G} {a b : G} (h : doset a H K = doset b H K) :
     mk H K a = mk H K b := by
   rw [eq]
   exact mem_doset.mp (h.symm ▸ mem_doset_self H K b)
 #align doset.mk_eq_of_doset_eq Doset.mk_eq_of_doset_eq
 
-theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
+lemma disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
     a ≠ b → Disjoint (doset a.out' H K) (doset b.out' (H : Set G) K) := by
   contrapose!
   intro h
   simpa [out_eq'] using mk_eq_of_doset_eq (eq_of_not_disjoint h)
 #align doset.disjoint_out' Doset.disjoint_out'
 
-theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
+lemma union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
   ext x
   simp only [Set.mem_iUnion, quotToDoset, mem_doset, SetLike.mem_coe, exists_prop, Set.mem_univ,
     iff_true_iff]
@@ -169,7 +169,7 @@ theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.un
   simp only [h5, Subgroup.coe_mk, ← mul_assoc, one_mul, mul_left_inv, mul_inv_cancel_right]
 #align doset.union_quot_to_doset Doset.union_quotToDoset
 
-theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
+lemma doset_union_rightCoset (H K : Subgroup G) (a : G) :
     ⋃ k : K, op (a * k) • ↑H = doset a H K := by
   ext x
   simp only [mem_rightCoset_iff, exists_prop, mul_inv_rev, Set.mem_iUnion, mem_doset,
@@ -183,7 +183,7 @@ theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
     simp only [hxy, ← mul_assoc, hx, mul_inv_cancel_right, Subgroup.coe_mk]
 #align doset.doset_union_right_coset Doset.doset_union_rightCoset
 
-theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
+lemma doset_union_leftCoset (H K : Subgroup G) (a : G) :
     ⋃ h : H, (h * a : G) • ↑K = doset a H K := by
   ext x
   simp only [mem_leftCoset_iff, mul_inv_rev, Set.mem_iUnion, mem_doset]
@@ -196,7 +196,7 @@ theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
     simp only [hxy, ← mul_assoc, hy, one_mul, mul_left_inv, Subgroup.coe_mk, inv_mul_cancel_right]
 #align doset.doset_union_left_coset Doset.doset_union_leftCoset
 
-theorem left_bot_eq_left_quot (H : Subgroup G) :
+lemma left_bot_eq_left_quot (H : Subgroup G) :
     Quotient (⊥ : Subgroup G).1 (H : Set G) = (G ⧸ H) := by
   unfold Quotient
   congr
@@ -205,7 +205,7 @@ theorem left_bot_eq_left_quot (H : Subgroup G) :
   rfl
 #align doset.left_bot_eq_left_quot Doset.left_bot_eq_left_quot
 
-theorem right_bot_eq_right_quot (H : Subgroup G) :
+lemma right_bot_eq_right_quot (H : Subgroup G) :
     Quotient (H.1 : Set G) (⊥ : Subgroup G) = _root_.Quotient (QuotientGroup.rightRel H) := by
   unfold Quotient
   congr

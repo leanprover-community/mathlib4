@@ -69,27 +69,27 @@ def augment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ 
 #align chain_complex.augment ChainComplex.augment
 
 @[simp]
-theorem augment_X_zero (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
+lemma augment_X_zero (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
     (augment C f w).X 0 = X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align chain_complex.augment_X_zero ChainComplex.augment_X_zero
 
 @[simp]
-theorem augment_X_succ (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0)
+lemma augment_X_succ (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0)
     (i : ℕ) : (augment C f w).X (i + 1) = C.X i :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align chain_complex.augment_X_succ ChainComplex.augment_X_succ
 
 @[simp]
-theorem augment_d_one_zero (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
+lemma augment_d_one_zero (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
     (augment C f w).d 1 0 = f :=
   rfl
 #align chain_complex.augment_d_one_zero ChainComplex.augment_d_one_zero
 
 @[simp]
-theorem augment_d_succ_succ (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0)
+lemma augment_d_succ_succ (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0)
     (i j : ℕ) : (augment C f w).d (i + 1) (j + 1) = C.d i j := by
   cases i <;> rfl
 #align chain_complex.augment_d_succ_succ ChainComplex.augment_d_succ_succ
@@ -117,19 +117,19 @@ def truncateAugment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 
 #align chain_complex.truncate_augment ChainComplex.truncateAugment
 
 @[simp]
-theorem truncateAugment_hom_f (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0)
+lemma truncateAugment_hom_f (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0)
     (i : ℕ) : (truncateAugment C f w).hom.f i = 𝟙 (C.X i) :=
   rfl
 #align chain_complex.truncate_augment_hom_f ChainComplex.truncateAugment_hom_f
 
 @[simp]
-theorem truncateAugment_inv_f (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0)
+lemma truncateAugment_inv_f (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0)
     (i : ℕ) : (truncateAugment C f w).inv.f i = 𝟙 ((truncate.obj (augment C f w)).X i) :=
   rfl
 #align chain_complex.truncate_augment_inv_f ChainComplex.truncateAugment_inv_f
 
 @[simp]
-theorem chainComplex_d_succ_succ_zero (C : ChainComplex V ℕ) (i : ℕ) : C.d (i + 2) 0 = 0 := by
+lemma chainComplex_d_succ_succ_zero (C : ChainComplex V ℕ) (i : ℕ) : C.d (i + 2) 0 = 0 := by
   rw [C.shape]
   exact i.succ_succ_ne_one.symm
 #align chain_complex.chain_complex_d_succ_succ_zero ChainComplex.chainComplex_d_succ_succ_zero
@@ -168,25 +168,25 @@ def augmentTruncate (C : ChainComplex V ℕ) :
 #align chain_complex.augment_truncate ChainComplex.augmentTruncate
 
 @[simp]
-theorem augmentTruncate_hom_f_zero (C : ChainComplex V ℕ) :
+lemma augmentTruncate_hom_f_zero (C : ChainComplex V ℕ) :
     (augmentTruncate C).hom.f 0 = 𝟙 (C.X 0) :=
   rfl
 #align chain_complex.augment_truncate_hom_f_zero ChainComplex.augmentTruncate_hom_f_zero
 
 @[simp]
-theorem augmentTruncate_hom_f_succ (C : ChainComplex V ℕ) (i : ℕ) :
+lemma augmentTruncate_hom_f_succ (C : ChainComplex V ℕ) (i : ℕ) :
     (augmentTruncate C).hom.f (i + 1) = 𝟙 (C.X (i + 1)) :=
   rfl
 #align chain_complex.augment_truncate_hom_f_succ ChainComplex.augmentTruncate_hom_f_succ
 
 @[simp]
-theorem augmentTruncate_inv_f_zero (C : ChainComplex V ℕ) :
+lemma augmentTruncate_inv_f_zero (C : ChainComplex V ℕ) :
     (augmentTruncate C).inv.f 0 = 𝟙 (C.X 0) :=
   rfl
 #align chain_complex.augment_truncate_inv_f_zero ChainComplex.augmentTruncate_inv_f_zero
 
 @[simp]
-theorem augmentTruncate_inv_f_succ (C : ChainComplex V ℕ) (i : ℕ) :
+lemma augmentTruncate_inv_f_succ (C : ChainComplex V ℕ) (i : ℕ) :
     (augmentTruncate C).inv.f (i + 1) = 𝟙 (C.X (i + 1)) :=
   rfl
 #align chain_complex.augment_truncate_inv_f_succ ChainComplex.augmentTruncate_inv_f_succ
@@ -259,27 +259,27 @@ def augment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 
 #align cochain_complex.augment CochainComplex.augment
 
 @[simp]
-theorem augment_X_zero (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0) :
+lemma augment_X_zero (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0) :
     (augment C f w).X 0 = X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align cochain_complex.augment_X_zero CochainComplex.augment_X_zero
 
 @[simp]
-theorem augment_X_succ (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0)
+lemma augment_X_succ (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0)
     (i : ℕ) : (augment C f w).X (i + 1) = C.X i :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align cochain_complex.augment_X_succ CochainComplex.augment_X_succ
 
 @[simp]
-theorem augment_d_zero_one (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0) :
+lemma augment_d_zero_one (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0) :
     (augment C f w).d 0 1 = f :=
   rfl
 #align cochain_complex.augment_d_zero_one CochainComplex.augment_d_zero_one
 
 @[simp]
-theorem augment_d_succ_succ (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0)
+lemma augment_d_succ_succ (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0)
     (i j : ℕ) : (augment C f w).d (i + 1) (j + 1) = C.d i j :=
   rfl
 #align cochain_complex.augment_d_succ_succ CochainComplex.augment_d_succ_succ
@@ -309,20 +309,20 @@ def truncateAugment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f 
 #align cochain_complex.truncate_augment CochainComplex.truncateAugment
 
 @[simp]
-theorem truncateAugment_hom_f (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0)
+lemma truncateAugment_hom_f (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0)
     (w : f ≫ C.d 0 1 = 0) (i : ℕ) : (truncateAugment C f w).hom.f i = 𝟙 (C.X i) :=
   rfl
 #align cochain_complex.truncate_augment_hom_f CochainComplex.truncateAugment_hom_f
 
 @[simp]
-theorem truncateAugment_inv_f (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0)
+lemma truncateAugment_inv_f (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0)
     (w : f ≫ C.d 0 1 = 0) (i : ℕ) :
     (truncateAugment C f w).inv.f i = 𝟙 ((truncate.obj (augment C f w)).X i) :=
   rfl
 #align cochain_complex.truncate_augment_inv_f CochainComplex.truncateAugment_inv_f
 
 @[simp]
-theorem cochainComplex_d_succ_succ_zero (C : CochainComplex V ℕ) (i : ℕ) : C.d 0 (i + 2) = 0 := by
+lemma cochainComplex_d_succ_succ_zero (C : CochainComplex V ℕ) (i : ℕ) : C.d 0 (i + 2) = 0 := by
   rw [C.shape]
   simp only [ComplexShape.up_Rel, zero_add]
   exact (Nat.one_lt_succ_succ _).ne
@@ -360,25 +360,25 @@ def augmentTruncate (C : CochainComplex V ℕ) :
 #align cochain_complex.augment_truncate CochainComplex.augmentTruncate
 
 @[simp]
-theorem augmentTruncate_hom_f_zero (C : CochainComplex V ℕ) :
+lemma augmentTruncate_hom_f_zero (C : CochainComplex V ℕ) :
     (augmentTruncate C).hom.f 0 = 𝟙 (C.X 0) :=
   rfl
 #align cochain_complex.augment_truncate_hom_f_zero CochainComplex.augmentTruncate_hom_f_zero
 
 @[simp]
-theorem augmentTruncate_hom_f_succ (C : CochainComplex V ℕ) (i : ℕ) :
+lemma augmentTruncate_hom_f_succ (C : CochainComplex V ℕ) (i : ℕ) :
     (augmentTruncate C).hom.f (i + 1) = 𝟙 (C.X (i + 1)) :=
   rfl
 #align cochain_complex.augment_truncate_hom_f_succ CochainComplex.augmentTruncate_hom_f_succ
 
 @[simp]
-theorem augmentTruncate_inv_f_zero (C : CochainComplex V ℕ) :
+lemma augmentTruncate_inv_f_zero (C : CochainComplex V ℕ) :
     (augmentTruncate C).inv.f 0 = 𝟙 (C.X 0) :=
   rfl
 #align cochain_complex.augment_truncate_inv_f_zero CochainComplex.augmentTruncate_inv_f_zero
 
 @[simp]
-theorem augmentTruncate_inv_f_succ (C : CochainComplex V ℕ) (i : ℕ) :
+lemma augmentTruncate_inv_f_succ (C : CochainComplex V ℕ) (i : ℕ) :
     (augmentTruncate C).inv.f (i + 1) = 𝟙 (C.X (i + 1)) :=
   rfl
 #align cochain_complex.augment_truncate_inv_f_succ CochainComplex.augmentTruncate_inv_f_succ

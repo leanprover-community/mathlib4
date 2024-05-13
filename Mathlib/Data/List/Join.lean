@@ -25,27 +25,27 @@ attribute [simp] join
 
 -- Porting note (#10618): simp can prove this
 -- @[simp]
-theorem join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
+lemma join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
 #align list.join_singleton List.join_singleton
 
 @[simp]
-theorem join_eq_nil : ∀ {L : List (List α)}, join L = [] ↔ ∀ l ∈ L, l = []
+lemma join_eq_nil : ∀ {L : List (List α)}, join L = [] ↔ ∀ l ∈ L, l = []
   | [] => iff_of_true rfl (forall_mem_nil _)
   | l :: L => by simp only [join, append_eq_nil, join_eq_nil, forall_mem_cons]
 #align list.join_eq_nil List.join_eq_nil
 
 @[simp]
-theorem join_append (L₁ L₂ : List (List α)) : join (L₁ ++ L₂) = join L₁ ++ join L₂ := by
+lemma join_append (L₁ L₂ : List (List α)) : join (L₁ ++ L₂) = join L₁ ++ join L₂ := by
   induction L₁
   · rfl
   · simp [*]
 #align list.join_append List.join_append
 
-theorem join_concat (L : List (List α)) (l : List α) : join (L.concat l) = join L ++ l := by simp
+lemma join_concat (L : List (List α)) (l : List α) : join (L.concat l) = join L ++ l := by simp
 #align list.join_concat List.join_concat
 
 @[simp]
-theorem join_filter_not_isEmpty  :
+lemma join_filter_not_isEmpty  :
     ∀ {L : List (List α)}, join (L.filter fun l => !l.isEmpty) = L.join
   | [] => rfl
   | [] :: L => by
@@ -57,12 +57,12 @@ theorem join_filter_not_isEmpty  :
 @[deprecated] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty -- 2024-02-25
 
 @[simp]
-theorem join_filter_ne_nil [DecidablePred fun l : List α => l ≠ []] {L : List (List α)} :
+lemma join_filter_ne_nil [DecidablePred fun l : List α => l ≠ []] {L : List (List α)} :
     join (L.filter fun l => l ≠ []) = L.join := by
   simp [join_filter_not_isEmpty, ← isEmpty_iff_eq_nil]
 #align list.join_filter_ne_nil List.join_filter_ne_nil
 
-theorem join_join (l : List (List (List α))) : l.join.join = (l.map join).join := by
+lemma join_join (l : List (List (List α))) : l.join.join = (l.map join).join := by
   induction l <;> simp [*]
 #align list.join_join List.join_join
 
@@ -93,7 +93,7 @@ lemma count_bind' [BEq β] (l : List α) (f : α → List β) (x : β) :
     count x (l.bind f) = Nat.sum (map (count x ∘ f) l) := countP_bind' _ _ _
 
 @[simp]
-theorem bind_eq_nil {l : List α} {f : α → List β} : List.bind l f = [] ↔ ∀ x ∈ l, f x = [] :=
+lemma bind_eq_nil {l : List α} {f : α → List β} : List.bind l f = [] ↔ ∀ x ∈ l, f x = [] :=
   join_eq_nil.trans <| by
     simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 #align list.bind_eq_nil List.bind_eq_nil
@@ -176,7 +176,7 @@ theorem eq_iff_join_eq (L L' : List (List α)) :
     rw [← drop_take_succ_join_eq_get', ← drop_take_succ_join_eq_get', join_eq, length_eq]
 #align list.eq_iff_join_eq List.eq_iff_join_eq
 
-theorem join_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :
+lemma join_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :
     (L.drop (L.length - 1)).join = L.getLast h := by
   induction L using List.reverseRecOn
   · cases h rfl

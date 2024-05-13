@@ -92,22 +92,22 @@ def toPrefunctor : (α → β) ≃ SingleObj α ⥤q SingleObj β where
 
 #align quiver.single_obj.to_prefunctor Quiver.SingleObj.toPrefunctor
 
-theorem toPrefunctor_id : toPrefunctor id = 𝟭q (SingleObj α) :=
+lemma toPrefunctor_id : toPrefunctor id = 𝟭q (SingleObj α) :=
   rfl
 #align quiver.single_obj.to_prefunctor_id Quiver.SingleObj.toPrefunctor_id
 
 @[simp]
-theorem toPrefunctor_symm_id : toPrefunctor.symm (𝟭q (SingleObj α)) = id :=
+lemma toPrefunctor_symm_id : toPrefunctor.symm (𝟭q (SingleObj α)) = id :=
   rfl
 #align quiver.single_obj.to_prefunctor_symm_id Quiver.SingleObj.toPrefunctor_symm_id
 
-theorem toPrefunctor_comp (f : α → β) (g : β → γ) :
+lemma toPrefunctor_comp (f : α → β) (g : β → γ) :
     toPrefunctor (g ∘ f) = toPrefunctor f ⋙q toPrefunctor g :=
   rfl
 #align quiver.single_obj.to_prefunctor_comp Quiver.SingleObj.toPrefunctor_comp
 
 @[simp]
-theorem toPrefunctor_symm_comp (f : SingleObj α ⥤q SingleObj β) (g : SingleObj β ⥤q SingleObj γ) :
+lemma toPrefunctor_symm_comp (f : SingleObj α ⥤q SingleObj β) (g : SingleObj β ⥤q SingleObj γ) :
     toPrefunctor.symm (f ⋙q g) = toPrefunctor.symm g ∘ toPrefunctor.symm f := by
   simp only [Equiv.symm_apply_eq, toPrefunctor_comp, Equiv.apply_symm_apply]
 #align quiver.single_obj.to_prefunctor_symm_comp Quiver.SingleObj.toPrefunctor_symm_comp
@@ -129,14 +129,14 @@ def listToPath : List α → Path (star α) (star α)
   | a :: l => (listToPath l).cons a
 #align quiver.single_obj.list_to_path Quiver.SingleObj.listToPath
 
-theorem listToPath_pathToList {x : SingleObj α} (p : Path (star α) x) :
+lemma listToPath_pathToList {x : SingleObj α} (p : Path (star α) x) :
     listToPath (pathToList p) = p.cast rfl ext := by
   induction' p with y z p a ih
   · rfl
   · dsimp at *; rw [ih]
 #align quiver.single_obj.path_to_list_to_path Quiver.SingleObj.listToPath_pathToList
 
-theorem pathToList_listToPath (l : List α) : pathToList (listToPath l) = l := by
+lemma pathToList_listToPath (l : List α) : pathToList (listToPath l) = l := by
   induction' l with a l ih
   · rfl
   · change a :: pathToList (listToPath l) = a :: l; rw [ih]
@@ -148,23 +148,23 @@ def pathEquivList : Path (star α) (star α) ≃ List α :=
 #align quiver.single_obj.path_equiv_list Quiver.SingleObj.pathEquivList
 
 @[simp]
-theorem pathEquivList_nil : pathEquivList Path.nil = ([] : List α) :=
+lemma pathEquivList_nil : pathEquivList Path.nil = ([] : List α) :=
   rfl
 #align quiver.single_obj.path_equiv_list_nil Quiver.SingleObj.pathEquivList_nil
 
 @[simp]
-theorem pathEquivList_cons (p : Path (star α) (star α)) (a : star α ⟶ star α) :
+lemma pathEquivList_cons (p : Path (star α) (star α)) (a : star α ⟶ star α) :
     pathEquivList (Path.cons p a) = a :: pathToList p :=
   rfl
 #align quiver.single_obj.path_equiv_list_cons Quiver.SingleObj.pathEquivList_cons
 
 @[simp]
-theorem pathEquivList_symm_nil : pathEquivList.symm ([] : List α) = Path.nil :=
+lemma pathEquivList_symm_nil : pathEquivList.symm ([] : List α) = Path.nil :=
   rfl
 #align quiver.single_obj.path_equiv_list_symm_nil Quiver.SingleObj.pathEquivList_symm_nil
 
 @[simp]
-theorem pathEquivList_symm_cons (l : List α) (a : α) :
+lemma pathEquivList_symm_cons (l : List α) (a : α) :
     pathEquivList.symm (a :: l) = Path.cons (pathEquivList.symm l) a :=
   rfl
 #align quiver.single_obj.path_equiv_list_symm_cons Quiver.SingleObj.pathEquivList_symm_cons

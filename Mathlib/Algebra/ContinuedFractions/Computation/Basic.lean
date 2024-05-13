@@ -116,7 +116,7 @@ instance coe : Coe (IntFractPair K) (IntFractPair β) where
 #align generalized_continued_fraction.int_fract_pair.has_coe_to_int_fract_pair GeneralizedContinuedFraction.IntFractPair.coe
 
 @[simp, norm_cast]
-theorem coe_to_intFractPair {b : ℤ} {fr : K} :
+lemma coe_to_intFractPair {b : ℤ} {fr : K} :
     (↑(IntFractPair.mk b fr) : IntFractPair β) = IntFractPair.mk b (↑fr : β) :=
   rfl
 #align generalized_continued_fraction.int_fract_pair.coe_to_int_fract_pair GeneralizedContinuedFraction.IntFractPair.coe_to_intFractPair

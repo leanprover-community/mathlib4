@@ -43,7 +43,7 @@ theorem analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt {f : ℂ 
     (fun z hz => hRs (diff_subset_diff_left ball_subset_closedBall hz)) hR0).analyticAt
 #align complex.analytic_at_of_differentiable_on_punctured_nhds_of_continuous_at Complex.analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt
 
-theorem differentiableOn_compl_singleton_and_continuousAt_iff {f : ℂ → E} {s : Set ℂ} {c : ℂ}
+lemma differentiableOn_compl_singleton_and_continuousAt_iff {f : ℂ → E} {s : Set ℂ} {c : ℂ}
     (hs : s ∈ 𝓝 c) :
     DifferentiableOn ℂ f (s \ {c}) ∧ ContinuousAt f c ↔ DifferentiableOn ℂ f s := by
   refine' ⟨_, fun hd => ⟨hd.mono (diff_subset _ _), (hd.differentiableAt hs).continuousAt⟩⟩
@@ -57,7 +57,7 @@ theorem differentiableOn_compl_singleton_and_continuousAt_iff {f : ℂ → E} {s
       hd x ⟨hx, hne⟩
 #align complex.differentiable_on_compl_singleton_and_continuous_at_iff Complex.differentiableOn_compl_singleton_and_continuousAt_iff
 
-theorem differentiableOn_dslope {f : ℂ → E} {s : Set ℂ} {c : ℂ} (hc : s ∈ 𝓝 c) :
+lemma differentiableOn_dslope {f : ℂ → E} {s : Set ℂ} {c : ℂ} (hc : s ∈ 𝓝 c) :
     DifferentiableOn ℂ (dslope f c) s ↔ DifferentiableOn ℂ f s :=
   ⟨fun h => h.of_dslope, fun h =>
     (differentiableOn_compl_singleton_and_continuousAt_iff hc).mp <|

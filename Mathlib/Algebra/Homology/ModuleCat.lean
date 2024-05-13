@@ -58,7 +58,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.to_cycles ModuleCat.toCycles'
 
 @[ext]
-theorem cycles'_ext {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
+lemma cycles'_ext {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
     {x y : (C.cycles' i : Type u)}
     (w : (C.cycles' i).arrow x = (C.cycles' i).arrow y) : x = y := by
   apply_fun (C.cycles' i).arrow using (ModuleCat.mono_iff_injective _).mp (cycles' C i).arrow_mono
@@ -69,7 +69,7 @@ set_option linter.uppercaseLean3 false in
 -- Porting note: both proofs by `rw` were proofs by `simp` which no longer worked
 -- see https://github.com/leanprover-community/mathlib4/issues/5026
 @[simp]
-theorem cycles'Map_toCycles' (f : C ⟶ D) {i : ι} (x : LinearMap.ker (C.dFrom i)) :
+lemma cycles'Map_toCycles' (f : C ⟶ D) {i : ι} (x : LinearMap.ker (C.dFrom i)) :
     (cycles'Map f i) (toCycles' x) = toCycles' ⟨f.f i x.1, by
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       rw [LinearMap.mem_ker]; erw [Hom.comm_from_apply, x.2, map_zero]⟩ := by
@@ -88,7 +88,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.to_homology ModuleCat.toHomology'
 
 @[ext]
-theorem homology'_ext' {M : ModuleCat R} (i : ι) {h k : C.homology' i ⟶ M}
+lemma homology'_ext' {M : ModuleCat R} (i : ι) {h k : C.homology' i ⟶ M}
     (w : ∀ x : LinearMap.ker (C.dFrom i), h (toHomology' x) = k (toHomology' x)) : h = k := by
   apply homology'_ext _ w
 set_option linter.uppercaseLean3 false in

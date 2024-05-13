@@ -74,7 +74,7 @@ section TopologicalSpace
 
 variable [TopologicalSpace X] [TopologicalSpace Y]
 
-theorem subset_seqClosure {s : Set X} : s ⊆ seqClosure s := fun p hp =>
+lemma subset_seqClosure {s : Set X} : s ⊆ seqClosure s := fun p hp =>
   ⟨const ℕ p, fun _ => hp, tendsto_const_nhds⟩
 #align subset_seq_closure subset_seqClosure
 
@@ -104,7 +104,7 @@ protected theorem IsClosed.isSeqClosed {s : Set X} (hc : IsClosed s) : IsSeqClos
   fun _u _x hu hx => hc.mem_of_tendsto hx (eventually_of_forall hu)
 #align is_closed.is_seq_closed IsClosed.isSeqClosed
 
-theorem seqClosure_eq_closure [FrechetUrysohnSpace X] (s : Set X) : seqClosure s = closure s :=
+lemma seqClosure_eq_closure [FrechetUrysohnSpace X] (s : Set X) : seqClosure s = closure s :=
   seqClosure_subset_closure.antisymm <| FrechetUrysohnSpace.closure_subset_seqClosure s
 #align seq_closure_eq_closure seqClosure_eq_closure
 
@@ -177,7 +177,7 @@ theorem IsSeqClosed.preimage {f : X → Y} {s : Set Y} (hs : IsSeqClosed s) (hf 
 #align is_seq_closed.preimage IsSeqClosed.preimage
 
 -- A continuous function is sequentially continuous.
-protected theorem Continuous.seqContinuous {f : X → Y} (hf : Continuous f) : SeqContinuous f :=
+protected lemma Continuous.seqContinuous {f : X → Y} (hf : Continuous f) : SeqContinuous f :=
   fun _x p hx => (hf.tendsto p).comp hx
 #align continuous.seq_continuous Continuous.seqContinuous
 
@@ -194,7 +194,7 @@ theorem continuous_iff_seqContinuous [SequentialSpace X] {f : X → Y} :
   ⟨Continuous.seqContinuous, SeqContinuous.continuous⟩
 #align continuous_iff_seq_continuous continuous_iff_seqContinuous
 
-theorem QuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y} (hf : QuotientMap f) :
+lemma QuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y} (hf : QuotientMap f) :
     SequentialSpace Y :=
   ⟨fun _s hs => hf.isClosed_preimage.mp <| (hs.preimage <| hf.continuous.seqContinuous).isClosed⟩
 #align quotient_map.sequential_space QuotientMap.sequentialSpace
@@ -211,7 +211,7 @@ open TopologicalSpace FirstCountableTopology
 
 variable [TopologicalSpace X]
 
-theorem IsSeqCompact.subseq_of_frequently_in {s : Set X} (hs : IsSeqCompact s) {x : ℕ → X}
+lemma IsSeqCompact.subseq_of_frequently_in {s : Set X} (hs : IsSeqCompact s) {x : ℕ → X}
     (hx : ∃ᶠ n in atTop, x n ∈ s) :
     ∃ a ∈ s, ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   let ⟨ψ, hψ, huψ⟩ := extraction_of_frequently_atTop hx
@@ -219,7 +219,7 @@ theorem IsSeqCompact.subseq_of_frequently_in {s : Set X} (hs : IsSeqCompact s) {
   ⟨a, a_in, ψ ∘ φ, hψ.comp hφ, h⟩
 #align is_seq_compact.subseq_of_frequently_in IsSeqCompact.subseq_of_frequently_in
 
-theorem SeqCompactSpace.tendsto_subseq [SeqCompactSpace X] (x : ℕ → X) :
+lemma SeqCompactSpace.tendsto_subseq [SeqCompactSpace X] (x : ℕ → X) :
     ∃ (a : X) (φ : ℕ → ℕ), StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   let ⟨a, _, φ, mono, h⟩ := seq_compact_univ fun n => mem_univ (x n)
   ⟨a, φ, mono, h⟩
@@ -231,19 +231,19 @@ variable [FirstCountableTopology X]
 
 open FirstCountableTopology
 
-protected theorem IsCompact.isSeqCompact {s : Set X} (hs : IsCompact s) : IsSeqCompact s :=
+protected lemma IsCompact.isSeqCompact {s : Set X} (hs : IsCompact s) : IsSeqCompact s :=
   fun _x x_in =>
   let ⟨a, a_in, ha⟩ := hs (tendsto_principal.mpr (eventually_of_forall x_in))
   ⟨a, a_in, tendsto_subseq ha⟩
 #align is_compact.is_seq_compact IsCompact.isSeqCompact
 
-theorem IsCompact.tendsto_subseq' {s : Set X} {x : ℕ → X} (hs : IsCompact s)
+lemma IsCompact.tendsto_subseq' {s : Set X} {x : ℕ → X} (hs : IsCompact s)
     (hx : ∃ᶠ n in atTop, x n ∈ s) :
     ∃ a ∈ s, ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   hs.isSeqCompact.subseq_of_frequently_in hx
 #align is_compact.tendsto_subseq' IsCompact.tendsto_subseq'
 
-theorem IsCompact.tendsto_subseq {s : Set X} {x : ℕ → X} (hs : IsCompact s) (hx : ∀ n, x n ∈ s) :
+lemma IsCompact.tendsto_subseq {s : Set X} {x : ℕ → X} (hs : IsCompact s) (hx : ∀ n, x n ∈ s) :
     ∃ a ∈ s, ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   hs.isSeqCompact hx
 #align is_compact.tendsto_subseq IsCompact.tendsto_subseq
@@ -254,7 +254,7 @@ instance (priority := 100) FirstCountableTopology.seq_compact_of_compact [Compac
   ⟨isCompact_univ.isSeqCompact⟩
 #align first_countable_topology.seq_compact_of_compact FirstCountableTopology.seq_compact_of_compact
 
-theorem CompactSpace.tendsto_subseq [CompactSpace X] (x : ℕ → X) :
+lemma CompactSpace.tendsto_subseq [CompactSpace X] (x : ℕ → X) :
     ∃ (a : _) (φ : ℕ → ℕ), StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   SeqCompactSpace.tendsto_subseq x
 #align compact_space.tendsto_subseq CompactSpace.tendsto_subseq
@@ -271,13 +271,13 @@ open UniformSpace Prod
 
 variable [UniformSpace X] {s : Set X}
 
-theorem IsSeqCompact.exists_tendsto_of_frequently_mem (hs : IsSeqCompact s) {u : ℕ → X}
+lemma IsSeqCompact.exists_tendsto_of_frequently_mem (hs : IsSeqCompact s) {u : ℕ → X}
     (hu : ∃ᶠ n in atTop, u n ∈ s) (huc : CauchySeq u) : ∃ x ∈ s, Tendsto u atTop (𝓝 x) :=
   let ⟨x, hxs, _φ, φ_mono, hx⟩ := hs.subseq_of_frequently_in hu
   ⟨x, hxs, tendsto_nhds_of_cauchySeq_of_subseq huc φ_mono.tendsto_atTop hx⟩
 #align is_seq_compact.exists_tendsto_of_frequently_mem IsSeqCompact.exists_tendsto_of_frequently_mem
 
-theorem IsSeqCompact.exists_tendsto (hs : IsSeqCompact s) {u : ℕ → X} (hu : ∀ n, u n ∈ s)
+lemma IsSeqCompact.exists_tendsto (hs : IsSeqCompact s) {u : ℕ → X} (hu : ∀ n, u n ∈ s)
     (huc : CauchySeq u) : ∃ x ∈ s, Tendsto u atTop (𝓝 x) :=
   hs.exists_tendsto_of_frequently_mem (frequently_of_forall hu) huc
 #align is_seq_compact.exists_tendsto IsSeqCompact.exists_tendsto
@@ -341,7 +341,7 @@ protected theorem UniformSpace.isCompact_iff_isSeqCompact : IsCompact s ↔ IsSe
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 #align uniform_space.is_compact_iff_is_seq_compact UniformSpace.isCompact_iff_isSeqCompact
 
-theorem UniformSpace.compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
+lemma UniformSpace.compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
   simp only [← isCompact_univ_iff, seqCompactSpace_iff, UniformSpace.isCompact_iff_isSeqCompact]
 #align uniform_space.compact_space_iff_seq_compact_space UniformSpace.compactSpace_iff_seqCompactSpace
 

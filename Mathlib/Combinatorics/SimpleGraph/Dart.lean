@@ -30,19 +30,19 @@ attribute [simp] Dart.adj
 
 variable {G}
 
-theorem Dart.ext_iff (d₁ d₂ : G.Dart) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd := by
+lemma Dart.ext_iff (d₁ d₂ : G.Dart) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd := by
   cases d₁; cases d₂; simp
 #align simple_graph.dart.ext_iff SimpleGraph.Dart.ext_iff
 
 @[ext]
-theorem Dart.ext (d₁ d₂ : G.Dart) (h : d₁.toProd = d₂.toProd) : d₁ = d₂ :=
+lemma Dart.ext (d₁ d₂ : G.Dart) (h : d₁.toProd = d₂.toProd) : d₁ = d₂ :=
   (Dart.ext_iff d₁ d₂).mpr h
 #align simple_graph.dart.ext SimpleGraph.Dart.ext
 
 -- Porting note: deleted `Dart.fst` and `Dart.snd` since they are now invalid declaration names,
 -- even though there is not actually a `SimpleGraph.Dart.fst` or `SimpleGraph.Dart.snd`.
 
-theorem Dart.toProd_injective : Function.Injective (Dart.toProd : G.Dart → V × V) :=
+lemma Dart.toProd_injective : Function.Injective (Dart.toProd : G.Dart → V × V) :=
   Dart.ext
 #align simple_graph.dart.to_prod_injective SimpleGraph.Dart.toProd_injective
 
@@ -60,12 +60,12 @@ def Dart.edge (d : G.Dart) : Sym2 V :=
 #align simple_graph.dart.edge SimpleGraph.Dart.edge
 
 @[simp]
-theorem Dart.edge_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).edge = Sym2.mk p :=
+lemma Dart.edge_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).edge = Sym2.mk p :=
   rfl
 #align simple_graph.dart.edge_mk SimpleGraph.Dart.edge_mk
 
 @[simp]
-theorem Dart.edge_mem (d : G.Dart) : d.edge ∈ G.edgeSet :=
+lemma Dart.edge_mem (d : G.Dart) : d.edge ∈ G.edgeSet :=
   d.adj
 #align simple_graph.dart.edge_mem SimpleGraph.Dart.edge_mem
 
@@ -76,46 +76,46 @@ def Dart.symm (d : G.Dart) : G.Dart :=
 #align simple_graph.dart.symm SimpleGraph.Dart.symm
 
 @[simp]
-theorem Dart.symm_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).symm = Dart.mk p.swap h.symm :=
+lemma Dart.symm_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).symm = Dart.mk p.swap h.symm :=
   rfl
 #align simple_graph.dart.symm_mk SimpleGraph.Dart.symm_mk
 
 @[simp]
-theorem Dart.edge_symm (d : G.Dart) : d.symm.edge = d.edge :=
+lemma Dart.edge_symm (d : G.Dart) : d.symm.edge = d.edge :=
   Sym2.mk_prod_swap_eq
 #align simple_graph.dart.edge_symm SimpleGraph.Dart.edge_symm
 
 @[simp]
-theorem Dart.edge_comp_symm : Dart.edge ∘ Dart.symm = (Dart.edge : G.Dart → Sym2 V) :=
+lemma Dart.edge_comp_symm : Dart.edge ∘ Dart.symm = (Dart.edge : G.Dart → Sym2 V) :=
   funext Dart.edge_symm
 #align simple_graph.dart.edge_comp_symm SimpleGraph.Dart.edge_comp_symm
 
 @[simp]
-theorem Dart.symm_symm (d : G.Dart) : d.symm.symm = d :=
+lemma Dart.symm_symm (d : G.Dart) : d.symm.symm = d :=
   Dart.ext _ _ <| Prod.swap_swap _
 #align simple_graph.dart.symm_symm SimpleGraph.Dart.symm_symm
 
 @[simp]
-theorem Dart.symm_involutive : Function.Involutive (Dart.symm : G.Dart → G.Dart) :=
+lemma Dart.symm_involutive : Function.Involutive (Dart.symm : G.Dart → G.Dart) :=
   Dart.symm_symm
 #align simple_graph.dart.symm_involutive SimpleGraph.Dart.symm_involutive
 
-theorem Dart.symm_ne (d : G.Dart) : d.symm ≠ d :=
+lemma Dart.symm_ne (d : G.Dart) : d.symm ≠ d :=
   ne_of_apply_ne (Prod.snd ∘ Dart.toProd) d.adj.ne
 #align simple_graph.dart.symm_ne SimpleGraph.Dart.symm_ne
 
-theorem dart_edge_eq_iff : ∀ d₁ d₂ : G.Dart, d₁.edge = d₂.edge ↔ d₁ = d₂ ∨ d₁ = d₂.symm := by
+lemma dart_edge_eq_iff : ∀ d₁ d₂ : G.Dart, d₁.edge = d₂.edge ↔ d₁ = d₂ ∨ d₁ = d₂.symm := by
   rintro ⟨p, hp⟩ ⟨q, hq⟩
   simp
 #align simple_graph.dart_edge_eq_iff SimpleGraph.dart_edge_eq_iff
 
-theorem dart_edge_eq_mk'_iff :
+lemma dart_edge_eq_mk'_iff :
     ∀ {d : G.Dart} {p : V × V}, d.edge = Sym2.mk p ↔ d.toProd = p ∨ d.toProd = p.swap := by
   rintro ⟨p, h⟩
   apply Sym2.mk_eq_mk_iff
 #align simple_graph.dart_edge_eq_mk_iff SimpleGraph.dart_edge_eq_mk'_iff
 
-theorem dart_edge_eq_mk'_iff' :
+lemma dart_edge_eq_mk'_iff' :
     ∀ {d : G.Dart} {u v : V},
       d.edge = s(u, v) ↔ d.fst = u ∧ d.snd = v ∨ d.fst = v ∧ d.snd = u := by
   rintro ⟨⟨a, b⟩, h⟩ u v
@@ -139,7 +139,7 @@ def dartOfNeighborSet (v : V) (w : G.neighborSet v) : G.Dart :=
   ⟨(v, w), w.property⟩
 #align simple_graph.dart_of_neighbor_set SimpleGraph.dartOfNeighborSet
 
-theorem dartOfNeighborSet_injective (v : V) : Function.Injective (G.dartOfNeighborSet v) :=
+lemma dartOfNeighborSet_injective (v : V) : Function.Injective (G.dartOfNeighborSet v) :=
   fun e₁ e₂ h =>
   Subtype.ext <| by
     injection h with h'

@@ -48,7 +48,7 @@ def of : V ⥤q Push σ where
 #align quiver.push.of Quiver.Push.of
 
 @[simp]
-theorem of_obj : (of σ).obj = σ :=
+lemma of_obj : (of σ).obj = σ :=
   rfl
 #align quiver.push.of_obj Quiver.Push.of_obj
 
@@ -66,11 +66,11 @@ noncomputable def lift : Push σ ⥤q W' where
       exact φ.map f
 #align quiver.push.lift Quiver.Push.lift
 
-theorem lift_obj : (lift σ φ τ h).obj = τ :=
+lemma lift_obj : (lift σ φ τ h).obj = τ :=
   rfl
 #align quiver.push.lift_obj Quiver.Push.lift_obj
 
-theorem lift_comp : (of σ ⋙q lift σ φ τ h) = φ := by
+lemma lift_comp : (of σ ⋙q lift σ φ τ h) = φ := by
   fapply Prefunctor.ext
   · rintro X
     simp only [Prefunctor.comp_obj]
@@ -89,7 +89,7 @@ theorem lift_comp : (of σ ⋙q lift σ φ τ h) = φ := by
     apply this
 #align quiver.push.lift_comp Quiver.Push.lift_comp
 
-theorem lift_unique (Φ : Push σ ⥤q W') (Φ₀ : Φ.obj = τ) (Φcomp : (of σ ⋙q Φ) = φ) :
+lemma lift_unique (Φ : Push σ ⥤q W') (Φ₀ : Φ.obj = τ) (Φcomp : (of σ ⋙q Φ) = φ) :
     Φ = lift σ φ τ h := by
   dsimp only [of, lift]
   fapply Prefunctor.ext

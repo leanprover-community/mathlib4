@@ -138,7 +138,7 @@ def unone : ∀ {x : WithOne α}, x ≠ 1 → α | (x : α), _ => x
 #align with_zero.unzero WithZero.unzero
 
 @[to_additive (attr := simp) unzero_coe]
-theorem unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
+lemma unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
   rfl
 #align with_one.unone_coe WithOne.unone_coe
 #align with_zero.unzero_coe WithZero.unzero_coe
@@ -155,19 +155,19 @@ lemma coe_unone : ∀ {x : WithOne α} (hx : x ≠ 1), unone hx = x
 #noalign with_zero.some_eq_coe
 
 @[to_additive (attr := simp)]
-theorem coe_ne_one {a : α} : (a : WithOne α) ≠ (1 : WithOne α) :=
+lemma coe_ne_one {a : α} : (a : WithOne α) ≠ (1 : WithOne α) :=
   Option.some_ne_none a
 #align with_one.coe_ne_one WithOne.coe_ne_one
 #align with_zero.coe_ne_zero WithZero.coe_ne_zero
 
 @[to_additive (attr := simp)]
-theorem one_ne_coe {a : α} : (1 : WithOne α) ≠ a :=
+lemma one_ne_coe {a : α} : (1 : WithOne α) ≠ a :=
   coe_ne_one.symm
 #align with_one.one_ne_coe WithOne.one_ne_coe
 #align with_zero.zero_ne_coe WithZero.zero_ne_coe
 
 @[to_additive]
-theorem ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x :=
+lemma ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x :=
   Option.ne_none_iff_exists
 #align with_one.ne_one_iff_exists WithOne.ne_one_iff_exists
 #align with_zero.ne_zero_iff_exists WithZero.ne_zero_iff_exists
@@ -179,13 +179,13 @@ instance canLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
 #align with_zero.can_lift WithZero.canLift
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b :=
+lemma coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b :=
   Option.some_inj
 #align with_one.coe_inj WithOne.coe_inj
 #align with_zero.coe_inj WithZero.coe_inj
 
 @[to_additive (attr := elab_as_elim)]
-protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=
+protected lemma cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=
   Option.casesOn
 #align with_one.cases_on WithOne.cases_on
 #align with_zero.cases_on WithZero.cases_on
@@ -223,7 +223,7 @@ instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
     | 1, 1 => rfl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithOne α) = (a : WithOne α)⁻¹ :=
+lemma coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithOne α) = (a : WithOne α)⁻¹ :=
   rfl
 #align with_one.coe_inv WithOne.coe_inv
 #align with_zero.coe_neg WithZero.coe_neg

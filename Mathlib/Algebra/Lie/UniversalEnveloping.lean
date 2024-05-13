@@ -134,27 +134,27 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
 #align universal_enveloping_algebra.lift UniversalEnvelopingAlgebra.lift
 
 @[simp]
-theorem lift_symm_apply (F : UniversalEnvelopingAlgebra R L →ₐ[R] A) :
+lemma lift_symm_apply (F : UniversalEnvelopingAlgebra R L →ₐ[R] A) :
     (lift R).symm F = (F : UniversalEnvelopingAlgebra R L →ₗ⁅R⁆ A).comp (ι R) :=
   rfl
 #align universal_enveloping_algebra.lift_symm_apply UniversalEnvelopingAlgebra.lift_symm_apply
 
 @[simp]
-theorem ι_comp_lift : lift R f ∘ ι R = f :=
+lemma ι_comp_lift : lift R f ∘ ι R = f :=
   funext <| LieHom.ext_iff.mp <| (lift R).symm_apply_apply f
 #align universal_enveloping_algebra.ι_comp_lift UniversalEnvelopingAlgebra.ι_comp_lift
 
 -- Porting note: moved `@[simp]` to the next theorem (LHS simplifies)
-theorem lift_ι_apply (x : L) : lift R f (ι R x) = f x := by
+lemma lift_ι_apply (x : L) : lift R f (ι R x) = f x := by
   rw [← Function.comp_apply (f := lift R f) (g := ι R) (x := x), ι_comp_lift]
 #align universal_enveloping_algebra.lift_ι_apply UniversalEnvelopingAlgebra.lift_ι_apply
 
 @[simp]
-theorem lift_ι_apply' (x : L) :
+lemma lift_ι_apply' (x : L) :
     lift R f ((UniversalEnvelopingAlgebra.mkAlgHom R L) (ιₜ x)) = f x := by
   simpa using lift_ι_apply R f x
 
-theorem lift_unique (g : UniversalEnvelopingAlgebra R L →ₐ[R] A) : g ∘ ι R = f ↔ g = lift R f := by
+lemma lift_unique (g : UniversalEnvelopingAlgebra R L →ₐ[R] A) : g ∘ ι R = f ↔ g = lift R f := by
   refine' Iff.trans _ (lift R).symm_apply_eq
   constructor <;> · intro h; ext; simp [← h]
 #align universal_enveloping_algebra.lift_unique UniversalEnvelopingAlgebra.lift_unique

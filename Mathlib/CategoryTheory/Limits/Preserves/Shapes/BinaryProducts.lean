@@ -92,7 +92,7 @@ def PreservesLimitPair.iso : G.obj (X ⨯ Y) ≅ G.obj X ⨯ G.obj Y :=
 #align category_theory.limits.preserves_limit_pair.iso CategoryTheory.Limits.PreservesLimitPair.iso
 
 @[simp]
-theorem PreservesLimitPair.iso_hom : (PreservesLimitPair.iso G X Y).hom = prodComparison G X Y :=
+lemma PreservesLimitPair.iso_hom : (PreservesLimitPair.iso G X Y).hom = prodComparison G X Y :=
   rfl
 #align category_theory.limits.preserves_limit_pair.iso_hom CategoryTheory.Limits.PreservesLimitPair.iso_hom
 
@@ -167,7 +167,7 @@ def PreservesColimitPair.iso : G.obj X ⨿ G.obj Y ≅ G.obj (X ⨿ Y) :=
 #align category_theory.limits.preserves_colimit_pair.iso CategoryTheory.Limits.PreservesColimitPair.iso
 
 @[simp]
-theorem PreservesColimitPair.iso_hom :
+lemma PreservesColimitPair.iso_hom :
     (PreservesColimitPair.iso G X Y).hom = coprodComparison G X Y := rfl
 #align category_theory.limits.preserves_colimit_pair.iso_hom CategoryTheory.Limits.PreservesColimitPair.iso_hom
 

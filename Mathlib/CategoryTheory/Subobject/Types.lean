@@ -30,7 +30,7 @@ open CategoryTheory
 
 open CategoryTheory.Subobject
 
-theorem subtype_val_mono {α : Type u} (s : Set α) : Mono (↾(Subtype.val : s → α)) :=
+lemma subtype_val_mono {α : Type u} (s : Set α) : Mono (↾(Subtype.val : s → α)) :=
   (mono_iff_injective _).mpr Subtype.val_injective
 #align subtype_val_mono subtype_val_mono
 

@@ -15,7 +15,7 @@ variable {ι α : Type*} [CompleteLattice α]
 
 namespace Set.Iic
 
-theorem isCompactElement {a : α} {b : Iic a} (h : CompleteLattice.IsCompactElement (b : α)) :
+lemma isCompactElement {a : α} {b : Iic a} (h : CompleteLattice.IsCompactElement (b : α)) :
     CompleteLattice.IsCompactElement b := by
   simp only [CompleteLattice.isCompactElement_iff, Finset.sup_eq_iSup] at h ⊢
   intro ι s hb
@@ -42,7 +42,7 @@ end Set.Iic
 
 open Set (Iic)
 
-theorem complementedLattice_of_complementedLattice_Iic
+lemma complementedLattice_of_complementedLattice_Iic
     [IsModularLattice α] [IsCompactlyGenerated α]
     {s : Set ι} {f : ι → α}
     (h : ∀ i ∈ s, ComplementedLattice <| Iic (f i))

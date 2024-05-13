@@ -55,7 +55,7 @@ instance : MonoidalCategoryStruct (AlgebraCat.{u} R) where
   leftUnitor X := (Algebra.TensorProduct.lid R X).toAlgebraIso
   rightUnitor X := (Algebra.TensorProduct.rid R R X).toAlgebraIso
 
-theorem forget₂_map_associator_hom (X Y Z : AlgebraCat.{u} R) :
+lemma forget₂_map_associator_hom (X Y Z : AlgebraCat.{u} R) :
     (forget₂ (AlgebraCat R) (ModuleCat R)).map (α_ X Y Z).hom =
       (α_
         (forget₂ _ (ModuleCat R) |>.obj X)
@@ -63,7 +63,7 @@ theorem forget₂_map_associator_hom (X Y Z : AlgebraCat.{u} R) :
         (forget₂ _ (ModuleCat R) |>.obj Z)).hom := by
   rfl
 
-theorem forget₂_map_associator_inv (X Y Z : AlgebraCat.{u} R) :
+lemma forget₂_map_associator_inv (X Y Z : AlgebraCat.{u} R) :
     (forget₂ (AlgebraCat R) (ModuleCat R)).map (α_ X Y Z).inv =
       (α_
         (forget₂ _ (ModuleCat R) |>.obj X)

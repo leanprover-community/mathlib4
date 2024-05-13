@@ -141,12 +141,12 @@ set_option quotPrecheck false in
 notation:30 B " ^^ " A:30 => (exp A).obj B
 
 @[simp, reassoc]
-theorem ev_coev : Limits.prod.map (𝟙 A) ((coev A).app B) ≫ (ev A).app (A ⨯ B) = 𝟙 (A ⨯ B) :=
+lemma ev_coev : Limits.prod.map (𝟙 A) ((coev A).app B) ≫ (ev A).app (A ⨯ B) = 𝟙 (A ⨯ B) :=
   ihom.ev_coev A B
 #align category_theory.exp.ev_coev CategoryTheory.exp.ev_coev
 
 @[reassoc]
-theorem coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (A ⟹ B) :=
+lemma coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (A ⟹ B) :=
   ihom.coev_ev A B
 #align category_theory.exp.coev_ev CategoryTheory.exp.coev_ev
 
@@ -172,83 +172,83 @@ def uncurry : (Y ⟶ A ⟹ X) → (A ⨯ Y ⟶ X) :=
 
 -- This lemma has always been bad, but the linter only noticed after lean4#2644.
 @[simp, nolint simpNF]
-theorem homEquiv_apply_eq (f : A ⨯ Y ⟶ X) : (exp.adjunction A).homEquiv _ _ f = curry f :=
+lemma homEquiv_apply_eq (f : A ⨯ Y ⟶ X) : (exp.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 #align category_theory.cartesian_closed.hom_equiv_apply_eq CategoryTheory.CartesianClosed.homEquiv_apply_eq
 
 -- This lemma has always been bad, but the linter only noticed after lean4#2644.
 @[simp, nolint simpNF]
-theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟹ X) :
+lemma homEquiv_symm_apply_eq (f : Y ⟶ A ⟹ X) :
     ((exp.adjunction A).homEquiv _ _).symm f = uncurry f :=
   rfl
 #align category_theory.cartesian_closed.hom_equiv_symm_apply_eq CategoryTheory.CartesianClosed.homEquiv_symm_apply_eq
 
 @[reassoc]
-theorem curry_natural_left (f : X ⟶ X') (g : A ⨯ X' ⟶ Y) :
+lemma curry_natural_left (f : X ⟶ X') (g : A ⨯ X' ⟶ Y) :
     curry (Limits.prod.map (𝟙 _) f ≫ g) = f ≫ curry g :=
   Adjunction.homEquiv_naturality_left _ _ _
 #align category_theory.cartesian_closed.curry_natural_left CategoryTheory.CartesianClosed.curry_natural_left
 
 @[reassoc]
-theorem curry_natural_right (f : A ⨯ X ⟶ Y) (g : Y ⟶ Y') :
+lemma curry_natural_right (f : A ⨯ X ⟶ Y) (g : Y ⟶ Y') :
     curry (f ≫ g) = curry f ≫ (exp _).map g :=
   Adjunction.homEquiv_naturality_right _ _ _
 #align category_theory.cartesian_closed.curry_natural_right CategoryTheory.CartesianClosed.curry_natural_right
 
 @[reassoc]
-theorem uncurry_natural_right (f : X ⟶ A ⟹ Y) (g : Y ⟶ Y') :
+lemma uncurry_natural_right (f : X ⟶ A ⟹ Y) (g : Y ⟶ Y') :
     uncurry (f ≫ (exp _).map g) = uncurry f ≫ g :=
   Adjunction.homEquiv_naturality_right_symm _ _ _
 #align category_theory.cartesian_closed.uncurry_natural_right CategoryTheory.CartesianClosed.uncurry_natural_right
 
 @[reassoc]
-theorem uncurry_natural_left (f : X ⟶ X') (g : X' ⟶ A ⟹ Y) :
+lemma uncurry_natural_left (f : X ⟶ X') (g : X' ⟶ A ⟹ Y) :
     uncurry (f ≫ g) = Limits.prod.map (𝟙 _) f ≫ uncurry g :=
   Adjunction.homEquiv_naturality_left_symm _ _ _
 #align category_theory.cartesian_closed.uncurry_natural_left CategoryTheory.CartesianClosed.uncurry_natural_left
 
 @[simp]
-theorem uncurry_curry (f : A ⨯ X ⟶ Y) : uncurry (curry f) = f :=
+lemma uncurry_curry (f : A ⨯ X ⟶ Y) : uncurry (curry f) = f :=
   (Closed.adj.homEquiv _ _).left_inv f
 #align category_theory.cartesian_closed.uncurry_curry CategoryTheory.CartesianClosed.uncurry_curry
 
 @[simp]
-theorem curry_uncurry (f : X ⟶ A ⟹ Y) : curry (uncurry f) = f :=
+lemma curry_uncurry (f : X ⟶ A ⟹ Y) : curry (uncurry f) = f :=
   (Closed.adj.homEquiv _ _).right_inv f
 #align category_theory.cartesian_closed.curry_uncurry CategoryTheory.CartesianClosed.curry_uncurry
 
 -- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
-theorem curry_eq_iff (f : A ⨯ Y ⟶ X) (g : Y ⟶ A ⟹ X) : curry f = g ↔ f = uncurry g :=
+lemma curry_eq_iff (f : A ⨯ Y ⟶ X) (g : Y ⟶ A ⟹ X) : curry f = g ↔ f = uncurry g :=
   Adjunction.homEquiv_apply_eq (exp.adjunction A) f g
 #align category_theory.cartesian_closed.curry_eq_iff CategoryTheory.CartesianClosed.curry_eq_iff
 
 -- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
-theorem eq_curry_iff (f : A ⨯ Y ⟶ X) (g : Y ⟶ A ⟹ X) : g = curry f ↔ uncurry g = f :=
+lemma eq_curry_iff (f : A ⨯ Y ⟶ X) (g : Y ⟶ A ⟹ X) : g = curry f ↔ uncurry g = f :=
   Adjunction.eq_homEquiv_apply (exp.adjunction A) f g
 #align category_theory.cartesian_closed.eq_curry_iff CategoryTheory.CartesianClosed.eq_curry_iff
 
 -- I don't think these two should be simp.
-theorem uncurry_eq (g : Y ⟶ A ⟹ X) : uncurry g = Limits.prod.map (𝟙 A) g ≫ (exp.ev A).app X :=
+lemma uncurry_eq (g : Y ⟶ A ⟹ X) : uncurry g = Limits.prod.map (𝟙 A) g ≫ (exp.ev A).app X :=
   Adjunction.homEquiv_counit _
 #align category_theory.cartesian_closed.uncurry_eq CategoryTheory.CartesianClosed.uncurry_eq
 
-theorem curry_eq (g : A ⨯ Y ⟶ X) : curry g = (exp.coev A).app Y ≫ (exp A).map g :=
+lemma curry_eq (g : A ⨯ Y ⟶ X) : curry g = (exp.coev A).app Y ≫ (exp A).map g :=
   Adjunction.homEquiv_unit _
 #align category_theory.cartesian_closed.curry_eq CategoryTheory.CartesianClosed.curry_eq
 
-theorem uncurry_id_eq_ev (A X : C) [Exponentiable A] : uncurry (𝟙 (A ⟹ X)) = (exp.ev A).app X := by
+lemma uncurry_id_eq_ev (A X : C) [Exponentiable A] : uncurry (𝟙 (A ⟹ X)) = (exp.ev A).app X := by
   rw [uncurry_eq, prod.map_id_id, id_comp]
 #align category_theory.cartesian_closed.uncurry_id_eq_ev CategoryTheory.CartesianClosed.uncurry_id_eq_ev
 
-theorem curry_id_eq_coev (A X : C) [Exponentiable A] : curry (𝟙 _) = (exp.coev A).app X := by
+lemma curry_id_eq_coev (A X : C) [Exponentiable A] : curry (𝟙 _) = (exp.coev A).app X := by
   rw [curry_eq, (exp A).map_id (A ⨯ _)]; apply comp_id
 #align category_theory.cartesian_closed.curry_id_eq_coev CategoryTheory.CartesianClosed.curry_id_eq_coev
 
-theorem curry_injective : Function.Injective (curry : (A ⨯ Y ⟶ X) → (Y ⟶ A ⟹ X)) :=
+lemma curry_injective : Function.Injective (curry : (A ⨯ Y ⟶ X) → (Y ⟶ A ⟹ X)) :=
   (Closed.adj.homEquiv _ _).injective
 #align category_theory.cartesian_closed.curry_injective CategoryTheory.CartesianClosed.curry_injective
 
-theorem uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟹ X) → (A ⨯ Y ⟶ X)) :=
+lemma uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟹ X) → (A ⨯ Y ⟶ X)) :=
   (Closed.adj.homEquiv _ _).symm.injective
 #align category_theory.cartesian_closed.uncurry_injective CategoryTheory.CartesianClosed.uncurry_injective
 
@@ -287,29 +287,29 @@ def pre (f : B ⟶ A) [Exponentiable B] : exp A ⟶ exp B :=
   transferNatTransSelf (exp.adjunction _) (exp.adjunction _) (prod.functor.map f)
 #align category_theory.pre CategoryTheory.pre
 
-theorem prod_map_pre_app_comp_ev (f : B ⟶ A) [Exponentiable B] (X : C) :
+lemma prod_map_pre_app_comp_ev (f : B ⟶ A) [Exponentiable B] (X : C) :
     Limits.prod.map (𝟙 B) ((pre f).app X) ≫ (exp.ev B).app X =
       Limits.prod.map f (𝟙 (A ⟹ X)) ≫ (exp.ev A).app X :=
   transferNatTransSelf_counit _ _ (prod.functor.map f) X
 #align category_theory.prod_map_pre_app_comp_ev CategoryTheory.prod_map_pre_app_comp_ev
 
-theorem uncurry_pre (f : B ⟶ A) [Exponentiable B] (X : C) :
+lemma uncurry_pre (f : B ⟶ A) [Exponentiable B] (X : C) :
     CartesianClosed.uncurry ((pre f).app X) = Limits.prod.map f (𝟙 _) ≫ (exp.ev A).app X := by
   rw [uncurry_eq, prod_map_pre_app_comp_ev]
 #align category_theory.uncurry_pre CategoryTheory.uncurry_pre
 
-theorem coev_app_comp_pre_app (f : B ⟶ A) [Exponentiable B] :
+lemma coev_app_comp_pre_app (f : B ⟶ A) [Exponentiable B] :
     (exp.coev A).app X ≫ (pre f).app (A ⨯ X) =
       (exp.coev B).app X ≫ (exp B).map (Limits.prod.map f (𝟙 _)) :=
   unit_transferNatTransSelf _ _ (prod.functor.map f) X
 #align category_theory.coev_app_comp_pre_app CategoryTheory.coev_app_comp_pre_app
 
 @[simp]
-theorem pre_id (A : C) [Exponentiable A] : pre (𝟙 A) = 𝟙 _ := by simp [pre]
+lemma pre_id (A : C) [Exponentiable A] : pre (𝟙 A) = 𝟙 _ := by simp [pre]
 #align category_theory.pre_id CategoryTheory.pre_id
 
 @[simp]
-theorem pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [Exponentiable A₃]
+lemma pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [Exponentiable A₃]
     (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) : pre (f ≫ g) = pre g ≫ pre f := by
   rw [pre, pre, pre, transferNatTransSelf_comp, prod.functor.map_comp]
 #align category_theory.pre_map CategoryTheory.pre_map

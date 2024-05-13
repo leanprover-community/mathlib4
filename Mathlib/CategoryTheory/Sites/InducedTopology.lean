@@ -56,7 +56,7 @@ namespace LocallyCoverDense
 
 variable [G.Full] [G.Faithful] (Hld : LocallyCoverDense K G)
 
-theorem pushforward_cover_iff_cover_pullback {X : C} (S : Sieve X) :
+lemma pushforward_cover_iff_cover_pullback {X : C} (S : Sieve X) :
     K _ (S.functorPushforward G) ↔ ∃ T : K (G.obj X), T.val.functorPullback G = S := by
   constructor
   · intro hS
@@ -109,7 +109,7 @@ end LocallyCoverDense
 
 variable (G K)
 
-theorem Functor.locallyCoverDense_of_isCoverDense [Full G] [G.IsCoverDense K] :
+lemma Functor.locallyCoverDense_of_isCoverDense [Full G] [G.IsCoverDense K] :
     LocallyCoverDense K G := by
   intro X T
   refine' K.superset_covering _ (K.bind_covering T.property
@@ -130,7 +130,7 @@ abbrev Functor.inducedTopologyOfIsCoverDense [Full G] [Faithful G] [G.IsCoverDen
 
 variable (J)
 
-theorem over_forget_locallyCoverDense (X : C) : LocallyCoverDense J (Over.forget X) := by
+lemma over_forget_locallyCoverDense (X : C) : LocallyCoverDense J (Over.forget X) := by
   intro Y T
   convert T.property
   ext Z f

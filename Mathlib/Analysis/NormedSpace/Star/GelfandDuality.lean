@@ -85,7 +85,7 @@ noncomputable def Ideal.toCharacterSpace : characterSpace ℂ A :=
     Quotient.mkₐ ℂ I
 #align ideal.to_character_space Ideal.toCharacterSpace
 
-theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
+lemma Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
     I.toCharacterSpace a = 0 := by
   unfold Ideal.toCharacterSpace
   simp only [CharacterSpace.equivAlgHom_symm_coe, AlgHom.coe_comp, AlgHom.coe_coe,
@@ -105,7 +105,7 @@ theorem WeakDual.CharacterSpace.exists_apply_eq_zero {a : A} (ha : ¬IsUnit a) :
         (haM (mem_span_singleton.mpr ⟨1, (mul_one a).symm⟩))⟩
 #align weak_dual.character_space.exists_apply_eq_zero WeakDual.CharacterSpace.exists_apply_eq_zero
 
-theorem WeakDual.CharacterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
+lemma WeakDual.CharacterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
     z ∈ spectrum ℂ a ↔ ∃ f : characterSpace ℂ A, f a = z := by
   refine' ⟨fun hz => _, _⟩
   · obtain ⟨f, hf⟩ := WeakDual.CharacterSpace.exists_apply_eq_zero hz
@@ -134,7 +134,7 @@ section ComplexCstarAlgebra
 variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
 variable [StarRing A] [CstarRing A] [StarModule ℂ A]
 
-theorem gelfandTransform_map_star (a : A) :
+lemma gelfandTransform_map_star (a : A) :
     gelfandTransform ℂ A (star a) = star (gelfandTransform ℂ A a) :=
   ContinuousMap.ext fun φ => map_star φ a
 #align gelfand_transform_map_star gelfandTransform_map_star

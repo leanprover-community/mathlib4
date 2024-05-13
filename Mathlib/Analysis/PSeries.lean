@@ -45,7 +45,7 @@ open BigOperators
 
 variable {M : Type*} [OrderedAddCommMonoid M] {f : ℕ → M}
 
-theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
+lemma le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in Ico 1 (2 ^ n), f k) ≤ ∑ k in range n, 2 ^ k • f (2 ^ k) := by
   induction' n with n ihn
   · simp
@@ -59,13 +59,13 @@ theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m
   simp [pow_succ, mul_two]
 #align finset.le_sum_condensed' Finset.le_sum_condensed'
 
-theorem le_sum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
+lemma le_sum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in range (2 ^ n), f k) ≤ f 0 + ∑ k in range n, 2 ^ k • f (2 ^ k) := by
   convert add_le_add_left (le_sum_condensed' hf n) (f 0)
   rw [← sum_range_add_sum_Ico _ n.one_le_two_pow, sum_range_succ, sum_range_zero, zero_add]
 #align finset.le_sum_condensed Finset.le_sum_condensed
 
-theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
+lemma sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k in Ico 2 (2 ^ n + 1), f k := by
   induction' n with n ihn
   · simp
@@ -84,7 +84,7 @@ theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
   simp [pow_succ, mul_two]
 #align finset.sum_condensed_le' Finset.sum_condensed_le'
 
-theorem sum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
+lemma sum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in range (n + 1), 2 ^ k • f (2 ^ k)) ≤ f 1 + 2 • ∑ k in Ico 2 (2 ^ n + 1), f k := by
   convert add_le_add_left (nsmul_le_nsmul_right (sum_condensed_le' hf n) 2) (f 1)
   simp [sum_range_succ', add_comm, pow_succ', mul_nsmul', sum_nsmul]
@@ -98,7 +98,7 @@ open Filter BigOperators
 
 variable {f : ℕ → ℝ≥0∞}
 
-theorem le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
+lemma le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     ∑' k, f k ≤ f 0 + ∑' k : ℕ, 2 ^ k * f (2 ^ k) := by
   rw [ENNReal.tsum_eq_iSup_nat' (Nat.tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)]
   refine' iSup_le fun n => (Finset.le_sum_condensed hf n).trans (add_le_add_left _ _)
@@ -106,7 +106,7 @@ theorem le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m
   apply ENNReal.sum_le_tsum
 #align ennreal.le_tsum_condensed ENNReal.le_tsum_condensed
 
-theorem tsum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) :
+lemma tsum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) :
     (∑' k : ℕ, 2 ^ k * f (2 ^ k)) ≤ f 1 + 2 * ∑' k, f k := by
   rw [ENNReal.tsum_eq_iSup_nat' (tendsto_atTop_mono Nat.le_succ tendsto_id), two_mul, ← two_nsmul]
   refine'
@@ -198,7 +198,7 @@ theorem summable_nat_rpow_inv {p : ℝ} :
 #align real.summable_nat_rpow_inv Real.summable_nat_rpow_inv
 
 @[simp]
-theorem summable_nat_rpow {p : ℝ} : Summable (fun n => (n : ℝ) ^ p : ℕ → ℝ) ↔ p < -1 := by
+lemma summable_nat_rpow {p : ℝ} : Summable (fun n => (n : ℝ) ^ p : ℕ → ℝ) ↔ p < -1 := by
   rcases neg_surjective p with ⟨p, rfl⟩
   simp [rpow_neg]
 #align real.summable_nat_rpow Real.summable_nat_rpow
@@ -234,7 +234,7 @@ theorem summable_one_div_int_pow {p : ℕ} :
   rw [Int.cast_neg, Int.cast_natCast, neg_eq_neg_one_mul (n : ℝ), mul_pow, mul_one_div, div_div]
 #align real.summable_one_div_int_pow Real.summable_one_div_int_pow
 
-theorem summable_abs_int_rpow {b : ℝ} (hb : 1 < b) :
+lemma summable_abs_int_rpow {b : ℝ} (hb : 1 < b) :
     Summable fun n : ℤ => |(n : ℝ)| ^ (-b) := by
   apply Summable.of_nat_of_neg
   on_goal 2 => simp_rw [Int.cast_neg, abs_neg]
@@ -268,17 +268,17 @@ end Real
 namespace NNReal
 
 @[simp]
-theorem summable_rpow_inv {p : ℝ} :
+lemma summable_rpow_inv {p : ℝ} :
     Summable (fun n => ((n : ℝ≥0) ^ p)⁻¹ : ℕ → ℝ≥0) ↔ 1 < p := by
   simp [← NNReal.summable_coe]
 #align nnreal.summable_rpow_inv NNReal.summable_rpow_inv
 
 @[simp]
-theorem summable_rpow {p : ℝ} : Summable (fun n => (n : ℝ≥0) ^ p : ℕ → ℝ≥0) ↔ p < -1 := by
+lemma summable_rpow {p : ℝ} : Summable (fun n => (n : ℝ≥0) ^ p : ℕ → ℝ≥0) ↔ p < -1 := by
   simp [← NNReal.summable_coe]
 #align nnreal.summable_rpow NNReal.summable_rpow
 
-theorem summable_one_div_rpow {p : ℝ} :
+lemma summable_one_div_rpow {p : ℝ} :
     Summable (fun n => 1 / (n : ℝ≥0) ^ p : ℕ → ℝ≥0) ↔ 1 < p := by
   simp
 #align nnreal.summable_one_div_rpow NNReal.summable_one_div_rpow
@@ -294,7 +294,7 @@ open Finset BigOperators
 variable {α : Type*} [LinearOrderedField α]
 
 set_option tactic.skipAssignedInstances false in
-theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
+lemma sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
     (∑ i in Ioc k n, ((i : α) ^ 2)⁻¹) ≤ (k : α)⁻¹ - (n : α)⁻¹ := by
   refine' Nat.le_induction _ _ n h
   · simp only [Ioc_self, sum_empty, sub_self, le_refl]
@@ -314,7 +314,7 @@ theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
     positivity
 #align sum_Ioc_inv_sq_le_sub sum_Ioc_inv_sq_le_sub
 
-theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, (i ^ 2 : α)⁻¹) ≤ 2 / (k + 1) :=
+lemma sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, (i ^ 2 : α)⁻¹) ≤ 2 / (k + 1) :=
   calc
     (∑ i in Ioo k n, ((i : α) ^ 2)⁻¹) ≤ ∑ i in Ioc k (max (k + 1) n), ((i : α) ^ 2)⁻¹ := by
       apply sum_le_sum_of_subset_of_nonneg

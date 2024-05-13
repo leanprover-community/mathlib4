@@ -57,13 +57,13 @@ stream of integer and fractional parts of a value.
 -/
 
 
-theorem stream_zero (v : K) : IntFractPair.stream v 0 = some (IntFractPair.of v) :=
+lemma stream_zero (v : K) : IntFractPair.stream v 0 = some (IntFractPair.of v) :=
   rfl
 #align generalized_continued_fraction.int_fract_pair.stream_zero GeneralizedContinuedFraction.IntFractPair.stream_zero
 
 variable {n : ℕ}
 
-theorem stream_eq_none_of_fr_eq_zero {ifp_n : IntFractPair K}
+lemma stream_eq_none_of_fr_eq_zero {ifp_n : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp_n) (nth_fr_eq_zero : ifp_n.fr = 0) :
     IntFractPair.stream v (n + 1) = none := by
   cases' ifp_n with _ fr
@@ -109,7 +109,7 @@ theorem stream_succ_of_int (a : ℤ) (n : ℕ) : IntFractPair.stream (a : K) (n 
   · exact IntFractPair.succ_nth_stream_eq_none_iff.mpr (Or.inl ih)
 #align generalized_continued_fraction.int_fract_pair.stream_succ_of_int GeneralizedContinuedFraction.IntFractPair.stream_succ_of_int
 
-theorem exists_succ_nth_stream_of_fr_zero {ifp_succ_n : IntFractPair K}
+lemma exists_succ_nth_stream_of_fr_zero {ifp_succ_n : IntFractPair K}
     (stream_succ_nth_eq : IntFractPair.stream v (n + 1) = some ifp_succ_n)
     (succ_nth_fr_eq_zero : ifp_succ_n.fr = 0) :
     ∃ ifp_n : IntFractPair K, IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr⁻¹ = ⌊ifp_n.fr⁻¹⌋ := by
@@ -160,7 +160,7 @@ theorem IntFractPair.seq1_fst_eq_of : (IntFractPair.seq1 v).fst = IntFractPair.o
   rfl
 #align generalized_continued_fraction.int_fract_pair.seq1_fst_eq_of GeneralizedContinuedFraction.IntFractPair.seq1_fst_eq_of
 
-theorem of_h_eq_intFractPair_seq1_fst_b : (of v).h = (IntFractPair.seq1 v).fst.b := by
+lemma of_h_eq_intFractPair_seq1_fst_b : (of v).h = (IntFractPair.seq1 v).fst.b := by
   cases aux_seq_eq : IntFractPair.seq1 v
   simp [of, aux_seq_eq]
 #align generalized_continued_fraction.of_h_eq_int_fract_pair_seq1_fst_b GeneralizedContinuedFraction.of_h_eq_intFractPair_seq1_fst_b
@@ -187,7 +187,7 @@ sequence implies the termination of another sequence.
 
 variable {n : ℕ}
 
-theorem IntFractPair.get?_seq1_eq_succ_get?_stream :
+lemma IntFractPair.get?_seq1_eq_succ_get?_stream :
     (IntFractPair.seq1 v).snd.get? n = (IntFractPair.stream v) (n + 1) :=
   rfl
 #align generalized_continued_fraction.int_fract_pair.nth_seq1_eq_succ_nth_stream GeneralizedContinuedFraction.IntFractPair.get?_seq1_eq_succ_get?_stream
@@ -201,12 +201,12 @@ Let's first show how the termination of one sequence implies the termination of 
 -/
 
 
-theorem of_terminatedAt_iff_intFractPair_seq1_terminatedAt :
+lemma of_terminatedAt_iff_intFractPair_seq1_terminatedAt :
     (of v).TerminatedAt n ↔ (IntFractPair.seq1 v).snd.TerminatedAt n :=
   Option.map_eq_none
 #align generalized_continued_fraction.of_terminated_at_iff_int_fract_pair_seq1_terminated_at GeneralizedContinuedFraction.of_terminatedAt_iff_intFractPair_seq1_terminatedAt
 
-theorem of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none :
+lemma of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none :
     (of v).TerminatedAt n ↔ IntFractPair.stream v (n + 1) = none := by
   rw [of_terminatedAt_iff_intFractPair_seq1_terminatedAt, Stream'.Seq.TerminatedAt,
     IntFractPair.get?_seq1_eq_succ_get?_stream]
@@ -223,7 +223,7 @@ Now let's show how the values of the sequences correspond to one another.
 -/
 
 
-theorem IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some {gp_n : Pair K}
+lemma IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some {gp_n : Pair K}
     (s_nth_eq : (of v).s.get? n = some gp_n) :
     ∃ ifp : IntFractPair K, IntFractPair.stream v (n + 1) = some ifp ∧ (ifp.b : K) = gp_n.b := by
   obtain ⟨ifp, stream_succ_nth_eq, gp_n_eq⟩ :
@@ -260,7 +260,7 @@ theorem get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero {ifp_n : IntFract
 
 open Int IntFractPair
 
-theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind (some ∘ fun p =>
+lemma of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind (some ∘ fun p =>
     { a := 1
       b := p.b }) := by
   rw [of, IntFractPair.seq1]

@@ -412,13 +412,13 @@ theorem NonemptyCompacts.dist_eq {x y : NonemptyCompacts α} :
   rfl
 #align metric.nonempty_compacts.dist_eq Metric.NonemptyCompacts.dist_eq
 
-theorem lipschitz_infDist_set (x : α) : LipschitzWith 1 fun s : NonemptyCompacts α => infDist x s :=
+lemma lipschitz_infDist_set (x : α) : LipschitzWith 1 fun s : NonemptyCompacts α => infDist x s :=
   LipschitzWith.of_le_add fun s t => by
     rw [dist_comm]
     exact infDist_le_infDist_add_hausdorffDist (edist_ne_top t s)
 #align metric.lipschitz_inf_dist_set Metric.lipschitz_infDist_set
 
-theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α => infDist p.1 p.2 := by
+lemma lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α => infDist p.1 p.2 := by
   -- Porting note: Changed tactic from `exact` to `convert`, because Lean had trouble with 2 = 1 + 1
   convert @LipschitzWith.uncurry α (NonemptyCompacts α) ℝ _ _ _
     (fun (x : α) (s : NonemptyCompacts α) => infDist x s) 1 1
@@ -426,7 +426,7 @@ theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α =>
   norm_num
 #align metric.lipschitz_inf_dist Metric.lipschitz_infDist
 
-theorem uniformContinuous_infDist_Hausdorff_dist :
+lemma uniformContinuous_infDist_Hausdorff_dist :
     UniformContinuous fun p : α × NonemptyCompacts α => infDist p.1 p.2 :=
   lipschitz_infDist.uniformContinuous
 #align metric.uniform_continuous_inf_dist_Hausdorff_dist Metric.uniformContinuous_infDist_Hausdorff_dist

@@ -88,7 +88,7 @@ abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k
   (groupCohomology.resolution k G).linearYonedaObj k A
 #align group_cohomology.linear_yoneda_obj_resolution groupCohomology.linearYonedaObjResolution
 
-theorem linearYonedaObjResolution_d_apply {A : Rep k G} (i j : ℕ) (x : (resolution k G).X i ⟶ A) :
+lemma linearYonedaObjResolution_d_apply {A : Rep k G} (i j : ℕ) (x : (resolution k G).X i ⟶ A) :
     (linearYonedaObjResolution A).d i j x = (resolution k G).d j i ≫ x :=
   rfl
 #align group_cohomology.linear_yoneda_obj_resolution_d_apply groupCohomology.linearYonedaObjResolution_d_apply
@@ -204,7 +204,7 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
 #align group_cohomology.inhomogeneous_cochains groupCohomology.inhomogeneousCochains
 
 @[simp]
-theorem inhomogeneousCochains.d_def (n : ℕ) :
+lemma inhomogeneousCochains.d_def (n : ℕ) :
     (inhomogeneousCochains A).d n (n + 1) = inhomogeneousCochains.d n A :=
   CochainComplex.of_d _ _ _ _
 

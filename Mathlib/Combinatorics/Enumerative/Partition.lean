@@ -77,7 +77,7 @@ def ofComposition (n : ℕ) (c : Composition n) : Partition n where
   parts_sum := by rw [Multiset.sum_coe, c.blocks_sum]
 #align nat.partition.of_composition Nat.Partition.ofComposition
 
-theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := by
+lemma ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := by
   rintro ⟨b, hb₁, hb₂⟩
   induction b using Quotient.inductionOn with | _ b => ?_
   exact ⟨⟨b, hb₁, by simpa using hb₂⟩, Partition.ext _ _ rfl⟩
@@ -136,7 +136,7 @@ theorem count_ofSums_of_ne_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) {i
   count_filter_of_pos hi
 #align nat.partition.count_of_sums_of_ne_zero Nat.Partition.count_ofSums_of_ne_zero
 
-theorem count_ofSums_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) :
+lemma count_ofSums_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) :
     (ofSums n l hl).parts.count 0 = 0 :=
   count_filter_of_neg fun h => h rfl
 #align nat.partition.count_of_sums_zero Nat.Partition.count_ofSums_zero

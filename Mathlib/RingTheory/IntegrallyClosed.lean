@@ -133,24 +133,24 @@ namespace IsIntegrallyClosedIn
 
 variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] [iic : IsIntegrallyClosedIn R A]
 
-theorem algebraMap_eq_of_integral {x : A} : IsIntegral R x → ∃ y : R, algebraMap R A y = x :=
+lemma algebraMap_eq_of_integral {x : A} : IsIntegral R x → ∃ y : R, algebraMap R A y = x :=
   IsIntegralClosure.isIntegral_iff.mp
 
-theorem isIntegral_iff {x : A} : IsIntegral R x ↔ ∃ y : R, algebraMap R A y = x :=
+lemma isIntegral_iff {x : A} : IsIntegral R x ↔ ∃ y : R, algebraMap R A y = x :=
   IsIntegralClosure.isIntegral_iff
 
-theorem exists_algebraMap_eq_of_isIntegral_pow {x : A} {n : ℕ} (hn : 0 < n)
+lemma exists_algebraMap_eq_of_isIntegral_pow {x : A} {n : ℕ} (hn : 0 < n)
     (hx : IsIntegral R <| x ^ n) : ∃ y : R, algebraMap R A y = x :=
   isIntegral_iff.mp <| hx.of_pow hn
 
-theorem exists_algebraMap_eq_of_pow_mem_subalgebra {A : Type*} [CommRing A] [Algebra R A]
+lemma exists_algebraMap_eq_of_pow_mem_subalgebra {A : Type*} [CommRing A] [Algebra R A]
     {S : Subalgebra R A} [IsIntegrallyClosedIn S A] {x : A} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S A y = x :=
   exists_algebraMap_eq_of_isIntegral_pow hn <| isIntegral_iff.mpr ⟨⟨x ^ n, hx⟩, rfl⟩
 
 variable (A)
 
-theorem integralClosure_eq_bot_iff (hRA : Function.Injective (algebraMap R A)) :
+lemma integralClosure_eq_bot_iff (hRA : Function.Injective (algebraMap R A)) :
     integralClosure R A = ⊥ ↔ IsIntegrallyClosedIn R A := by
   refine eq_bot_iff.trans ?_
   constructor
@@ -165,7 +165,7 @@ theorem integralClosure_eq_bot_iff (hRA : Function.Injective (algebraMap R A)) :
 variable (R)
 
 @[simp]
-theorem integralClosure_eq_bot [NoZeroSMulDivisors R A] [Nontrivial A] : integralClosure R A = ⊥ :=
+lemma integralClosure_eq_bot [NoZeroSMulDivisors R A] [Nontrivial A] : integralClosure R A = ⊥ :=
   (integralClosure_eq_bot_iff A (NoZeroSMulDivisors.algebraMap_injective _ _)).mpr ‹_›
 
 variable {A} {B : Type*} [CommRing B]
@@ -199,19 +199,19 @@ as `IsIntegrallyClosed R R (FractionRing R)`. -/
 instance : IsIntegralClosure R R K :=
   (isIntegrallyClosed_iff_isIntegralClosure K).mp iic
 
-theorem algebraMap_eq_of_integral {x : K} : IsIntegral R x → ∃ y : R, algebraMap R K y = x :=
+lemma algebraMap_eq_of_integral {x : K} : IsIntegral R x → ∃ y : R, algebraMap R K y = x :=
   IsIntegralClosure.isIntegral_iff.mp
 
-theorem isIntegral_iff {x : K} : IsIntegral R x ↔ ∃ y : R, algebraMap R K y = x :=
+lemma isIntegral_iff {x : K} : IsIntegral R x ↔ ∃ y : R, algebraMap R K y = x :=
   IsIntegrallyClosedIn.isIntegral_iff
 #align is_integrally_closed.is_integral_iff IsIntegrallyClosed.isIntegral_iff
 
-theorem exists_algebraMap_eq_of_isIntegral_pow {x : K} {n : ℕ} (hn : 0 < n)
+lemma exists_algebraMap_eq_of_isIntegral_pow {x : K} {n : ℕ} (hn : 0 < n)
     (hx : IsIntegral R <| x ^ n) : ∃ y : R, algebraMap R K y = x :=
   IsIntegrallyClosedIn.exists_algebraMap_eq_of_isIntegral_pow hn hx
 #align is_integrally_closed.exists_algebra_map_eq_of_is_integral_pow IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow
 
-theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Algebra R K]
+lemma exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Algebra R K]
     {S : Subalgebra R K} [IsIntegrallyClosed S] [IsFractionRing S K] {x : K} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S K y = x :=
   IsIntegrallyClosedIn.exists_algebraMap_eq_of_pow_mem_subalgebra hn hx
@@ -226,13 +226,13 @@ lemma _root_.IsIntegralClosure.of_isIntegrallyClosed
 
 variable {R}
 
-theorem integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyClosed R :=
+lemma integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyClosed R :=
   (IsIntegrallyClosedIn.integralClosure_eq_bot_iff _ (IsFractionRing.injective _ _)).trans
     (isIntegrallyClosed_iff_isIntegrallyClosedIn _).symm
 #align is_integrally_closed.integral_closure_eq_bot_iff IsIntegrallyClosed.integralClosure_eq_bot_iff
 
 @[simp]
-theorem pow_dvd_pow_iff {n : ℕ} (hn : n ≠ 0) {a b : R} : a ^ n ∣ b ^ n ↔ a ∣ b  := by
+lemma pow_dvd_pow_iff {n : ℕ} (hn : n ≠ 0) {a b : R} : a ^ n ∣ b ^ n ↔ a ∣ b  := by
   refine ⟨fun ⟨x, hx⟩ ↦ ?_, fun h ↦ pow_dvd_pow_of_dvd h n⟩
   by_cases ha : a = 0
   · simpa [ha, hn] using hx
@@ -271,7 +271,7 @@ variable [IsFractionRing R K]
 variable {L : Type*} [Field L] [Algebra K L] [Algebra R L] [IsScalarTower R K L]
 
 -- Can't be an instance because you need to supply `K`.
-theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L] :
+lemma isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L] :
     IsIntegrallyClosed (integralClosure R L) :=
   letI : IsFractionRing (integralClosure R L) L := isFractionRing_of_finite_extension K L
   (integralClosure_eq_bot_iff L).mp integralClosure_idem

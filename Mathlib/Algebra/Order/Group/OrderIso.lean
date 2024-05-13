@@ -46,7 +46,7 @@ def OrderIso.inv : α ≃o αᵒᵈ where
 end
 
 @[to_additive neg_le]
-theorem inv_le' : a⁻¹ ≤ b ↔ b⁻¹ ≤ a :=
+lemma inv_le' : a⁻¹ ≤ b ↔ b⁻¹ ≤ a :=
   (OrderIso.inv α).symm_apply_le
 #align inv_le' inv_le'
 #align neg_le neg_le
@@ -58,7 +58,7 @@ attribute [to_additive neg_le_of_neg_le] inv_le_of_inv_le'
 #align neg_le_of_neg_le neg_le_of_neg_le
 
 @[to_additive le_neg]
-theorem le_inv' : a ≤ b⁻¹ ↔ b ≤ a⁻¹ :=
+lemma le_inv' : a ≤ b⁻¹ ↔ b ≤ a⁻¹ :=
   (OrderIso.inv α).le_symm_apply
 #align le_inv' le_inv'
 #align le_neg le_neg
@@ -101,7 +101,7 @@ def OrderIso.mulRight (a : α) : α ≃o α where
 #align order_iso.mul_right_to_equiv OrderIso.mulRight_toEquiv
 
 @[to_additive (attr := simp)]
-theorem OrderIso.mulRight_symm (a : α) : (OrderIso.mulRight a).symm = OrderIso.mulRight a⁻¹ := by
+lemma OrderIso.mulRight_symm (a : α) : (OrderIso.mulRight a).symm = OrderIso.mulRight a⁻¹ := by
   ext x
   rfl
 #align order_iso.mul_right_symm OrderIso.mulRight_symm
@@ -134,7 +134,7 @@ def OrderIso.mulLeft (a : α) : α ≃o α where
 #align order_iso.add_left_to_equiv OrderIso.addLeft_toEquiv
 
 @[to_additive (attr := simp)]
-theorem OrderIso.mulLeft_symm (a : α) : (OrderIso.mulLeft a).symm = OrderIso.mulLeft a⁻¹ := by
+lemma OrderIso.mulLeft_symm (a : α) : (OrderIso.mulLeft a).symm = OrderIso.mulLeft a⁻¹ := by
   ext x
   rfl
 #align order_iso.mul_left_symm OrderIso.mulLeft_symm

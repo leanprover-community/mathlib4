@@ -39,47 +39,47 @@ instance instMonoidalCategory : MonoidalCategory (Action V G) :=
   Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
 @[simp]
-theorem tensorUnit_v : (𝟙_ (Action V G)).V = 𝟙_ V :=
+lemma tensorUnit_v : (𝟙_ (Action V G)).V = 𝟙_ V :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.tensor_unit_V Action.tensorUnit_v
 
 -- Porting note: removed @[simp] as the simpNF linter complains
-theorem tensorUnit_rho {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
+lemma tensorUnit_rho {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.tensor_unit_rho Action.tensorUnit_rho
 
 @[simp]
-theorem tensor_v {X Y : Action V G} : (X ⊗ Y).V = X.V ⊗ Y.V :=
+lemma tensor_v {X Y : Action V G} : (X ⊗ Y).V = X.V ⊗ Y.V :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.tensor_V Action.tensor_v
 
 -- Porting note: removed @[simp] as the simpNF linter complains
-theorem tensor_rho {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
+lemma tensor_rho {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.tensor_rho Action.tensor_rho
 
 @[simp]
-theorem tensor_hom {W X Y Z : Action V G} (f : W ⟶ X) (g : Y ⟶ Z) : (f ⊗ g).hom = f.hom ⊗ g.hom :=
+lemma tensor_hom {W X Y Z : Action V G} (f : W ⟶ X) (g : Y ⟶ Z) : (f ⊗ g).hom = f.hom ⊗ g.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.tensor_hom Action.tensor_hom
 
 @[simp]
-theorem whiskerLeft_hom (X : Action V G) {Y Z : Action V G} (f : Y ⟶ Z) :
+lemma whiskerLeft_hom (X : Action V G) {Y Z : Action V G} (f : Y ⟶ Z) :
     (X ◁ f).hom = X.V ◁ f.hom :=
   rfl
 
 @[simp]
-theorem whiskerRight_hom {X Y : Action V G} (f : X ⟶ Y) (Z : Action V G) :
+lemma whiskerRight_hom {X Y : Action V G} (f : X ⟶ Y) (Z : Action V G) :
     (f ▷ Z).hom = f.hom ▷ Z.V :=
   rfl
 
 -- Porting note: removed @[simp] as the simpNF linter complains
-theorem associator_hom_hom {X Y Z : Action V G} :
+lemma associator_hom_hom {X Y Z : Action V G} :
     Hom.hom (α_ X Y Z).hom = (α_ X.V Y.V Z.V).hom := by
   dsimp
   simp
@@ -87,7 +87,7 @@ set_option linter.uppercaseLean3 false in
 #align Action.associator_hom_hom Action.associator_hom_hom
 
 -- Porting note: removed @[simp] as the simpNF linter complains
-theorem associator_inv_hom {X Y Z : Action V G} :
+lemma associator_inv_hom {X Y Z : Action V G} :
     Hom.hom (α_ X Y Z).inv = (α_ X.V Y.V Z.V).inv := by
   dsimp
   simp
@@ -95,28 +95,28 @@ set_option linter.uppercaseLean3 false in
 #align Action.associator_inv_hom Action.associator_inv_hom
 
 -- Porting note: removed @[simp] as the simpNF linter complains
-theorem leftUnitor_hom_hom {X : Action V G} : Hom.hom (λ_ X).hom = (λ_ X.V).hom := by
+lemma leftUnitor_hom_hom {X : Action V G} : Hom.hom (λ_ X).hom = (λ_ X.V).hom := by
   dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.left_unitor_hom_hom Action.leftUnitor_hom_hom
 
 -- Porting note: removed @[simp] as the simpNF linter complains
-theorem leftUnitor_inv_hom {X : Action V G} : Hom.hom (λ_ X).inv = (λ_ X.V).inv := by
+lemma leftUnitor_inv_hom {X : Action V G} : Hom.hom (λ_ X).inv = (λ_ X.V).inv := by
   dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.left_unitor_inv_hom Action.leftUnitor_inv_hom
 
 -- Porting note: removed @[simp] as the simpNF linter complains
-theorem rightUnitor_hom_hom {X : Action V G} : Hom.hom (ρ_ X).hom = (ρ_ X.V).hom := by
+lemma rightUnitor_hom_hom {X : Action V G} : Hom.hom (ρ_ X).hom = (ρ_ X.V).hom := by
   dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.right_unitor_hom_hom Action.rightUnitor_hom_hom
 
 -- Porting note: removed @[simp] as the simpNF linter complains
-theorem rightUnitor_inv_hom {X : Action V G} : Hom.hom (ρ_ X).inv = (ρ_ X.V).inv := by
+lemma rightUnitor_inv_hom {X : Action V G} : Hom.hom (ρ_ X).inv = (ρ_ X.V).inv := by
   dsimp
   simp
 set_option linter.uppercaseLean3 false in
@@ -209,14 +209,14 @@ instance : (functorCategoryMonoidalEquivalence V G).IsEquivalence := by
   change (Action.functorCategoryEquivalence _ _).functor.IsEquivalence; infer_instance
 
 @[simp]
-theorem functorCategoryMonoidalEquivalence.μ_app (A B : Action V G) :
+lemma functorCategoryMonoidalEquivalence.μ_app (A B : Action V G) :
     ((functorCategoryMonoidalEquivalence V G).μ A B).app PUnit.unit = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.μ_app Action.functorCategoryMonoidalEquivalence.μ_app
 
 @[simp]
-theorem functorCategoryMonoidalEquivalence.μIso_inv_app (A B : Action V G) :
+lemma functorCategoryMonoidalEquivalence.μIso_inv_app (A B : Action V G) :
     ((functorCategoryMonoidalEquivalence V G).μIso A B).inv.app PUnit.unit = 𝟙 _ := by
   rw [← NatIso.app_inv, ← IsIso.Iso.inv_hom]
   refine' IsIso.inv_eq_of_hom_inv_id _
@@ -226,7 +226,7 @@ set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.μ_iso_inv_app Action.functorCategoryMonoidalEquivalence.μIso_inv_app
 
 @[simp]
-theorem functorCategoryMonoidalEquivalence.ε_app :
+lemma functorCategoryMonoidalEquivalence.ε_app :
     (functorCategoryMonoidalEquivalence V G).ε.app PUnit.unit = 𝟙 _ := by
   dsimp only [functorCategoryMonoidalEquivalence]
   simp only [Monoidal.fromTransported_toLaxMonoidalFunctor_ε]
@@ -235,28 +235,28 @@ set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.ε_app Action.functorCategoryMonoidalEquivalence.ε_app
 
 @[simp]
-theorem functorCategoryMonoidalAdjunction.unit_app_hom (A : Action V G) :
+lemma functorCategoryMonoidalAdjunction.unit_app_hom (A : Action V G) :
     ((functorCategoryMonoidalAdjunction _ _).unit.app A).hom = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.inv_counit_app_hom Action.functorCategoryMonoidalAdjunction.unit_app_hom
 
 @[simp]
-theorem functorCategoryMonoidalAdjunction.counit_app_app (A : SingleObj G ⥤ V) :
+lemma functorCategoryMonoidalAdjunction.counit_app_app (A : SingleObj G ⥤ V) :
     ((functorCategoryMonoidalAdjunction _ _).counit.app A).app PUnit.unit = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.inv_unit_app_app Action.functorCategoryMonoidalAdjunction.counit_app_app
 
 @[simp]
-theorem functorCategoryMonoidalEquivalence.functor_map {A B : Action V G} (f : A ⟶ B) :
+lemma functorCategoryMonoidalEquivalence.functor_map {A B : Action V G} (f : A ⟶ B) :
     (functorCategoryMonoidalEquivalence _ _).map f = FunctorCategoryEquivalence.functor.map f :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.functor_map Action.functorCategoryMonoidalEquivalence.functor_map
 
 @[simp]
-theorem functorCategoryMonoidalEquivalence.inverse_map {A B : SingleObj G ⥤ V} (f : A ⟶ B) :
+lemma functorCategoryMonoidalEquivalence.inverse_map {A B : SingleObj G ⥤ V} (f : A ⟶ B) :
     (functorCategoryMonoidalEquivalenceInverse _ _).map f =
       FunctorCategoryEquivalence.inverse.map f :=
   rfl
@@ -290,27 +290,27 @@ variable {V H}
 variable (X : Action V H)
 
 @[simp]
-theorem rightDual_v [RightRigidCategory V] : Xᘁ.V = X.Vᘁ :=
+lemma rightDual_v [RightRigidCategory V] : Xᘁ.V = X.Vᘁ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.right_dual_V Action.rightDual_v
 
 @[simp]
-theorem leftDual_v [LeftRigidCategory V] : (ᘁX).V = ᘁX.V :=
+lemma leftDual_v [LeftRigidCategory V] : (ᘁX).V = ᘁX.V :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.left_dual_V Action.leftDual_v
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
 @[simp, nolint simpNF]
-theorem rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
+lemma rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
   rw [← SingleObj.inv_as_inv]; rfl
 set_option linter.uppercaseLean3 false in
 #align Action.right_dual_ρ Action.rightDual_ρ
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
 @[simp, nolint simpNF]
-theorem leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
+lemma leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
   rw [← SingleObj.inv_as_inv]; rfl
 set_option linter.uppercaseLean3 false in
 #align Action.left_dual_ρ Action.leftDual_ρ
@@ -410,14 +410,14 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal_functor.map_Action CategoryTheory.MonoidalFunctor.mapAction
 
 @[simp]
-theorem mapAction_ε_inv_hom : (inv (F.mapAction G).ε).hom = inv F.ε := by
+lemma mapAction_ε_inv_hom : (inv (F.mapAction G).ε).hom = inv F.ε := by
   rw [← cancel_mono F.ε, IsIso.inv_hom_id, ← F.mapAction_toLaxMonoidalFunctor_ε_hom G,
     ← Action.comp_hom, IsIso.inv_hom_id, Action.id_hom]
 set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal_functor.map_Action_ε_inv_hom CategoryTheory.MonoidalFunctor.mapAction_ε_inv_hom
 
 @[simp]
-theorem mapAction_μ_inv_hom (X Y : Action V G) :
+lemma mapAction_μ_inv_hom (X Y : Action V G) :
     (inv ((F.mapAction G).μ X Y)).hom = inv (F.μ X.V Y.V) := by
   rw [← cancel_mono (F.μ X.V Y.V), IsIso.inv_hom_id, ← F.mapAction_toLaxMonoidalFunctor_μ_hom G,
     ← Action.comp_hom, IsIso.inv_hom_id, Action.id_hom]

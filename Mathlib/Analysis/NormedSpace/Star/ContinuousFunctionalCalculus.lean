@@ -201,7 +201,7 @@ theorem StarSubalgebra.coe_isUnit {S : StarSubalgebra ℂ A} (hS : IsClosed (S :
   exacts [Subtype.coe_injective hx.mul_val_inv, Subtype.coe_injective hx.val_inv_mul]
 #align star_subalgebra.coe_is_unit StarSubalgebra.coe_isUnit
 
-theorem StarSubalgebra.mem_spectrum_iff {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A)) {x : S}
+lemma StarSubalgebra.mem_spectrum_iff {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A)) {x : S}
     {z : ℂ} : z ∈ spectrum ℂ x ↔ z ∈ spectrum ℂ (x : A) :=
   not_iff_not.2 (StarSubalgebra.coe_isUnit hS).symm
 #align star_subalgebra.mem_spectrum_iff StarSubalgebra.mem_spectrum_iff
@@ -234,13 +234,13 @@ noncomputable def elementalStarAlgebra.characterSpaceToSpectrum (x : A)
 -- See https://github.com/leanprover-community/mathlib4/issues/12227
 attribute [nolint simpNF] elementalStarAlgebra.characterSpaceToSpectrum_coe
 
-theorem elementalStarAlgebra.continuous_characterSpaceToSpectrum (x : A) :
+lemma elementalStarAlgebra.continuous_characterSpaceToSpectrum (x : A) :
     Continuous (elementalStarAlgebra.characterSpaceToSpectrum x) :=
   continuous_induced_rng.2
     (map_continuous <| gelfandTransform ℂ (elementalStarAlgebra ℂ x) ⟨x, self_mem ℂ x⟩)
 #align elemental_star_algebra.continuous_character_space_to_spectrum elementalStarAlgebra.continuous_characterSpaceToSpectrum
 
-theorem elementalStarAlgebra.bijective_characterSpaceToSpectrum :
+lemma elementalStarAlgebra.bijective_characterSpaceToSpectrum :
     Function.Bijective (elementalStarAlgebra.characterSpaceToSpectrum a) := by
   refine' ⟨fun φ ψ h => starAlgHomClass_ext ℂ _ _ _, _⟩
   · exact (map_continuous φ)
@@ -276,7 +276,7 @@ noncomputable def continuousFunctionalCalculus :
     (gelfandStarTransform (elementalStarAlgebra ℂ a)).symm
 #align continuous_functional_calculus continuousFunctionalCalculus
 
-theorem continuousFunctionalCalculus_map_id :
+lemma continuousFunctionalCalculus_map_id :
     continuousFunctionalCalculus a ((ContinuousMap.id ℂ).restrict (spectrum ℂ a)) =
       ⟨a, self_mem ℂ a⟩ :=
   (gelfandStarTransform (elementalStarAlgebra ℂ a)).symm_apply_apply _

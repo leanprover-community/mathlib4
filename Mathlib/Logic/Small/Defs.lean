@@ -53,7 +53,7 @@ noncomputable def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
 #align equiv_shrink equivShrink
 
 @[ext]
-theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
+lemma Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
     (w : (equivShrink _).symm x = (equivShrink _).symm y) : x = y := by
   simpa using w
 
@@ -70,12 +70,12 @@ instance (priority := 101) small_self (α : Type v) : Small.{v} α :=
   Small.mk' <| Equiv.refl α
 #align small_self small_self
 
-theorem small_map {α : Type*} {β : Type*} [hβ : Small.{w} β] (e : α ≃ β) : Small.{w} α :=
+lemma small_map {α : Type*} {β : Type*} [hβ : Small.{w} β] (e : α ≃ β) : Small.{w} α :=
   let ⟨_, ⟨f⟩⟩ := hβ.equiv_small
   Small.mk' (e.trans f)
 #align small_map small_map
 
-theorem small_lift (α : Type u) [hα : Small.{v} α] : Small.{max v w} α :=
+lemma small_lift (α : Type u) [hα : Small.{v} α] : Small.{max v w} α :=
   let ⟨⟨_, ⟨f⟩⟩⟩ := hα
   Small.mk' <| f.trans (Equiv.ulift.{w}).symm
 #align small_lift small_lift
@@ -94,7 +94,7 @@ instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
   small_map Equiv.ulift
 #align small_ulift small_ulift
 
-theorem small_type : Small.{max (u + 1) v} (Type u) :=
+lemma small_type : Small.{max (u + 1) v} (Type u) :=
   small_max.{max (u + 1) v} _
 #align small_type small_type
 
@@ -102,7 +102,7 @@ section
 
 open scoped Classical
 
-theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
+lemma small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
   ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩
 #align small_congr small_congr
 
@@ -112,7 +112,7 @@ instance small_sigma {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (
       ⟨Equiv.sigmaCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩
 #align small_sigma small_sigma
 
-theorem not_small_type : ¬Small.{u} (Type max u v)
+lemma not_small_type : ¬Small.{u} (Type max u v)
   | ⟨⟨S, ⟨e⟩⟩⟩ =>
     @Function.cantor_injective (Σα, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e => by
       dsimp at e

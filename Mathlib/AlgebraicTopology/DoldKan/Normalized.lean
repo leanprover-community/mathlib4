@@ -41,7 +41,7 @@ universe v
 
 variable {A : Type*} [Category A] [Abelian A] {X : SimplicialObject A}
 
-theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
+lemma HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
     HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ => by
   dsimp [AlgebraicTopology.inclusionOfMooreComplexMap, NormalizedMooreComplex.objX]
   rw [← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ j
@@ -49,7 +49,7 @@ theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.higher_faces_vanish.inclusion_of_Moore_complex_map AlgebraicTopology.DoldKan.HigherFacesVanish.inclusionOfMooreComplexMap
 
-theorem factors_normalizedMooreComplex_PInfty (n : ℕ) :
+lemma factors_normalizedMooreComplex_PInfty (n : ℕ) :
     Subobject.Factors (NormalizedMooreComplex.objX X n) (PInfty.f n) := by
   rcases n with _|n
   · apply top_factors
@@ -74,13 +74,13 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_to_normalized_Moore_complex AlgebraicTopology.DoldKan.PInftyToNormalizedMooreComplex
 
 @[reassoc (attr := simp)]
-theorem PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap (X : SimplicialObject A) :
+lemma PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap (X : SimplicialObject A) :
     PInftyToNormalizedMooreComplex X ≫ inclusionOfMooreComplexMap X = PInfty := by aesop_cat
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_to_normalized_Moore_complex_comp_inclusion_of_Moore_complex_map AlgebraicTopology.DoldKan.PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap
 
 @[reassoc (attr := simp)]
-theorem PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f : X ⟶ Y) :
+lemma PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f : X ⟶ Y) :
     AlternatingFaceMapComplex.map f ≫ PInftyToNormalizedMooreComplex Y =
       PInftyToNormalizedMooreComplex X ≫ NormalizedMooreComplex.map f :=
   by aesop_cat
@@ -88,13 +88,13 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_to_normalized_Moore_complex_naturality AlgebraicTopology.DoldKan.PInftyToNormalizedMooreComplex_naturality
 
 @[reassoc (attr := simp)]
-theorem PInfty_comp_PInftyToNormalizedMooreComplex (X : SimplicialObject A) :
+lemma PInfty_comp_PInftyToNormalizedMooreComplex (X : SimplicialObject A) :
     PInfty ≫ PInftyToNormalizedMooreComplex X = PInftyToNormalizedMooreComplex X := by aesop_cat
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_comp_P_infty_to_normalized_Moore_complex AlgebraicTopology.DoldKan.PInfty_comp_PInftyToNormalizedMooreComplex
 
 @[reassoc (attr := simp)]
-theorem inclusionOfMooreComplexMap_comp_PInfty (X : SimplicialObject A) :
+lemma inclusionOfMooreComplexMap_comp_PInfty (X : SimplicialObject A) :
     inclusionOfMooreComplexMap X ≫ PInfty = inclusionOfMooreComplexMap X := by
   ext (_|n)
   · dsimp

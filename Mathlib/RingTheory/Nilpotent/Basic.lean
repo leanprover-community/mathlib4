@@ -37,14 +37,14 @@ open BigOperators Function Set
 
 variable {R S : Type*} {x y : R}
 
-theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
+lemma IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   obtain ⟨n, hn⟩ := h
   use n
   rw [neg_pow, hn, mul_zero]
 #align is_nilpotent.neg IsNilpotent.neg
 
 @[simp]
-theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
+lemma isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
   ⟨fun h => neg_neg x ▸ h.neg, fun h => h.neg⟩
 #align is_nilpotent_neg_iff isNilpotent_neg_iff
 
@@ -55,24 +55,24 @@ lemma IsNilpotent.smul [MonoidWithZero R] [MonoidWithZero S] [MulActionWithZero 
   use k
   rw [smul_pow, ha, smul_zero]
 
-theorem IsNilpotent.isUnit_sub_one [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
+lemma IsNilpotent.isUnit_sub_one [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
   obtain ⟨n, hn⟩ := hnil
   refine ⟨⟨r - 1, -∑ i in Finset.range n, r ^ i, ?_, ?_⟩, rfl⟩
   · simp [mul_geom_sum, hn]
   · simp [geom_sum_mul, hn]
 
-theorem IsNilpotent.isUnit_one_sub [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (1 - r) := by
+lemma IsNilpotent.isUnit_one_sub [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (1 - r) := by
   rw [← IsUnit.neg_iff, neg_sub]
   exact isUnit_sub_one hnil
 
-theorem IsNilpotent.isUnit_add_one [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r + 1) := by
+lemma IsNilpotent.isUnit_add_one [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r + 1) := by
   rw [← IsUnit.neg_iff, neg_add']
   exact isUnit_sub_one hnil.neg
 
-theorem IsNilpotent.isUnit_one_add [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (1 + r) :=
+lemma IsNilpotent.isUnit_one_add [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (1 + r) :=
   add_comm r 1 ▸ isUnit_add_one hnil
 
-theorem IsNilpotent.isUnit_add_left_of_commute [Ring R] {r u : R}
+lemma IsNilpotent.isUnit_add_left_of_commute [Ring R] {r u : R}
     (hnil : IsNilpotent r) (hu : IsUnit u) (h_comm : Commute r u) :
     IsUnit (u + r) := by
   rw [← Units.isUnit_mul_units _ hu.unit⁻¹, add_mul, IsUnit.mul_val_inv]
@@ -80,7 +80,7 @@ theorem IsNilpotent.isUnit_add_left_of_commute [Ring R] {r u : R}
   refine IsNilpotent.isUnit_one_add ?_
   exact (hu.unit⁻¹.isUnit.isNilpotent_mul_unit_of_commute_iff h_comm).mpr hnil
 
-theorem IsNilpotent.isUnit_add_right_of_commute [Ring R] {r u : R}
+lemma IsNilpotent.isUnit_add_right_of_commute [Ring R] {r u : R}
     (hnil : IsNilpotent r) (hu : IsUnit u) (h_comm : Commute r u) :
     IsUnit (r + u) :=
   add_comm r u ▸ hnil.isUnit_add_left_of_commute hu h_comm
@@ -89,20 +89,20 @@ instance [Zero R] [Pow R ℕ] [Zero S] [Pow S ℕ] [IsReduced R] [IsReduced S] :
   eq_zero _ := fun ⟨n, hn⟩ ↦ have hn := Prod.ext_iff.1 hn
     Prod.ext (IsReduced.eq_zero _ ⟨n, hn.1⟩) (IsReduced.eq_zero _ ⟨n, hn.2⟩)
 
-theorem Prime.isRadical [CommMonoidWithZero R] {y : R} (hy : Prime y) : IsRadical y :=
+lemma Prime.isRadical [CommMonoidWithZero R] {y : R} (hy : Prime y) : IsRadical y :=
   fun _ _ ↦ hy.dvd_of_dvd_pow
 
-theorem zero_isRadical_iff [MonoidWithZero R] : IsRadical (0 : R) ↔ IsReduced R := by
+lemma zero_isRadical_iff [MonoidWithZero R] : IsRadical (0 : R) ↔ IsReduced R := by
   simp_rw [isReduced_iff, IsNilpotent, exists_imp, ← zero_dvd_iff]
   exact forall_swap
 #align zero_is_radical_iff zero_isRadical_iff
 
-theorem isReduced_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
+lemma isReduced_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
     IsReduced R ↔ ∀ x : R, x ^ k = 0 → x = 0 := by
   simp_rw [← zero_isRadical_iff, isRadical_iff_pow_one_lt k hk, zero_dvd_iff]
 #align is_reduced_iff_pow_one_lt isReduced_iff_pow_one_lt
 
-theorem IsRadical.of_dvd [CancelCommMonoidWithZero R] {x y : R} (hy : IsRadical y) (h0 : y ≠ 0)
+lemma IsRadical.of_dvd [CancelCommMonoidWithZero R] {x y : R} (hy : IsRadical y) (h0 : y ≠ 0)
     (hxy : x ∣ y) : IsRadical x := (isRadical_iff_pow_one_lt 2 one_lt_two).2 <| by
   obtain ⟨z, rfl⟩ := hxy
   refine fun w dvd ↦ ((mul_dvd_mul_iff_right <| right_ne_zero_of_mul h0).mp <| hy 2 _ ?_)
@@ -114,7 +114,7 @@ section Semiring
 
 variable [Semiring R] (h_comm : Commute x y)
 
-theorem add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero {m n k : ℕ}
+lemma add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero {m n k : ℕ}
     (hx : x ^ m = 0) (hy : y ^ n = 0) (h : m + n ≤ k + 1) :
     (x + y) ^ k = 0 := by
   rw [h_comm.add_pow']
@@ -126,12 +126,12 @@ theorem add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero {m n k : ℕ}
   rw [pow_eq_zero_of_le ?_ hy, mul_zero]
   linarith [Finset.mem_antidiagonal.mp hij]
 
-theorem add_pow_add_eq_zero_of_pow_eq_zero {m n : ℕ}
+lemma add_pow_add_eq_zero_of_pow_eq_zero {m n : ℕ}
     (hx : x ^ m = 0) (hy : y ^ n = 0) :
     (x + y) ^ (m + n - 1) = 0 :=
   h_comm.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero hx hy <| by rw [← Nat.sub_le_iff_le_add]
 
-theorem isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent (x + y) := by
+lemma isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent (x + y) := by
   obtain ⟨n, hn⟩ := hx
   obtain ⟨m, hm⟩ := hy
   exact ⟨_, add_pow_add_eq_zero_of_pow_eq_zero h_comm hn hm⟩
@@ -171,7 +171,7 @@ section Ring
 
 variable [Ring R] (h_comm : Commute x y)
 
-theorem isNilpotent_sub (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent (x - y) := by
+lemma isNilpotent_sub (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent (x - y) := by
   rw [← neg_right_iff] at h_comm
   rw [← isNilpotent_neg_iff] at hy
   rw [sub_eq_add_neg]

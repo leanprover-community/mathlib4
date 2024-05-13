@@ -172,7 +172,7 @@ section LinearOrderedCommRing
 
 variable [LinearOrderedCommRing α] {a b c d : α}
 
-theorem abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a * b := by
+lemma abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a * b := by
   rw [abs_mul_abs_self]
   simp only [mul_add, add_comm, add_left_comm, mul_comm, sub_eq_add_neg, mul_one, mul_neg,
     neg_add_rev, neg_neg, add_assoc]
@@ -185,24 +185,24 @@ section
 variable [Ring α] [LinearOrder α] {a b : α}
 
 @[simp]
-theorem abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by
+lemma abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by
   cases' abs_choice a with h h <;> simp only [h, neg_dvd]
 #align abs_dvd abs_dvd
 
-theorem abs_dvd_self (a : α) : |a| ∣ a :=
+lemma abs_dvd_self (a : α) : |a| ∣ a :=
   (abs_dvd a a).mpr (dvd_refl a)
 #align abs_dvd_self abs_dvd_self
 
 @[simp]
-theorem dvd_abs (a b : α) : a ∣ |b| ↔ a ∣ b := by
+lemma dvd_abs (a b : α) : a ∣ |b| ↔ a ∣ b := by
   cases' abs_choice b with h h <;> simp only [h, dvd_neg]
 #align dvd_abs dvd_abs
 
-theorem self_dvd_abs (a : α) : a ∣ |a| :=
+lemma self_dvd_abs (a : α) : a ∣ |a| :=
   (dvd_abs a a).mpr (dvd_refl a)
 #align self_dvd_abs self_dvd_abs
 
-theorem abs_dvd_abs (a b : α) : |a| ∣ |b| ↔ a ∣ b :=
+lemma abs_dvd_abs (a b : α) : |a| ∣ |b| ↔ a ∣ b :=
   (abs_dvd _ _).trans (dvd_abs _ _)
 #align abs_dvd_abs abs_dvd_abs
 

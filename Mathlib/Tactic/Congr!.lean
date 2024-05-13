@@ -425,7 +425,7 @@ def Lean.MVarId.congrImplies?' (mvarId : MVarId) : MetaM (Option (List MVarId)) 
       | throwError "unexpected number of goals"
     return [mvarId₁, mvarId₂]
 
-protected theorem FastSubsingleton.helim {α β : Sort u} [FastSubsingleton α]
+protected lemma FastSubsingleton.helim {α β : Sort u} [FastSubsingleton α]
     (h₂ : α = β) (a : α) (b : β) : HEq a b := by
   have : Subsingleton α := FastSubsingleton.inst
   exact Subsingleton.helim h₂ a b
@@ -499,12 +499,12 @@ def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rcasesPat)) := do
     else
       (none, s)
 
-private theorem heq_imp_of_eq_imp {p : HEq x y → Prop} (h : (he : x = y) → p (heq_of_eq he))
+private lemma heq_imp_of_eq_imp {p : HEq x y → Prop} (h : (he : x = y) → p (heq_of_eq he))
     (he : HEq x y) : p he := by
   cases he
   exact h rfl
 
-private theorem eq_imp_of_iff_imp {p : x = y → Prop} (h : (he : x ↔ y) → p (propext he))
+private lemma eq_imp_of_iff_imp {p : x = y → Prop} (h : (he : x ↔ y) → p (propext he))
     (he : x = y) : p he := by
   cases he
   exact h Iff.rfl

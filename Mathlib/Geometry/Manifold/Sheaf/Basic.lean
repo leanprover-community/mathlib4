@@ -89,7 +89,7 @@ instance StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun (hG : LocalInvari
   coe a := a.1
 #align structure_groupoid.local_invariant_prop.sheaf_has_coe_to_fun StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun
 
-theorem StructureGroupoid.LocalInvariantProp.section_spec (hG : LocalInvariantProp G G' P)
+lemma StructureGroupoid.LocalInvariantProp.section_spec (hG : LocalInvariantProp G G' P)
     (U : (Opens (TopCat.of M))ᵒᵖ) (f : (hG.sheaf M M').val.obj U) : ChartedSpace.LiftProp P f :=
   f.2
 #align structure_groupoid.local_invariant_prop.section_spec StructureGroupoid.LocalInvariantProp.section_spec

@@ -133,7 +133,7 @@ def succ₂ (t : ℕ × ℕ) : ℕ × ℕ :=
   ⟨t.1.succ, t.2.succ⟩
 #align pnat.xgcd_type.succ₂ PNat.XgcdType.succ₂
 
-theorem v_eq_succ_vp : u.v = succ₂ u.vp := by
+lemma v_eq_succ_vp : u.v = succ₂ u.vp := by
   ext <;> dsimp [v, vp, w, z, a, b, succ₂] <;> ring_nf
 #align pnat.xgcd_type.v_eq_succ_vp PNat.XgcdType.v_eq_succ_vp
 
@@ -147,7 +147,7 @@ def IsSpecial' : Prop :=
   u.w * u.z = succPNat (u.x * u.y)
 #align pnat.xgcd_type.is_special' PNat.XgcdType.IsSpecial'
 
-theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
+lemma isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   dsimp [IsSpecial, IsSpecial']
   let ⟨wp, x, y, zp, ap, bp⟩ := u
   constructor <;> intro h <;> simp [w, z, succPNat] at * <;>
@@ -170,7 +170,7 @@ def IsReduced' : Prop :=
   u.a = u.b
 #align pnat.xgcd_type.is_reduced' PNat.XgcdType.IsReduced'
 
-theorem isReduced_iff : u.IsReduced ↔ u.IsReduced' :=
+lemma isReduced_iff : u.IsReduced ↔ u.IsReduced' :=
   succPNat_inj.symm
 #align pnat.xgcd_type.is_reduced_iff PNat.XgcdType.isReduced_iff
 
@@ -185,46 +185,46 @@ def flip : XgcdType where
 #align pnat.xgcd_type.flip PNat.XgcdType.flip
 
 @[simp]
-theorem flip_w : (flip u).w = u.z :=
+lemma flip_w : (flip u).w = u.z :=
   rfl
 #align pnat.xgcd_type.flip_w PNat.XgcdType.flip_w
 
 @[simp]
-theorem flip_x : (flip u).x = u.y :=
+lemma flip_x : (flip u).x = u.y :=
   rfl
 #align pnat.xgcd_type.flip_x PNat.XgcdType.flip_x
 
 @[simp]
-theorem flip_y : (flip u).y = u.x :=
+lemma flip_y : (flip u).y = u.x :=
   rfl
 #align pnat.xgcd_type.flip_y PNat.XgcdType.flip_y
 
 @[simp]
-theorem flip_z : (flip u).z = u.w :=
+lemma flip_z : (flip u).z = u.w :=
   rfl
 #align pnat.xgcd_type.flip_z PNat.XgcdType.flip_z
 
 @[simp]
-theorem flip_a : (flip u).a = u.b :=
+lemma flip_a : (flip u).a = u.b :=
   rfl
 #align pnat.xgcd_type.flip_a PNat.XgcdType.flip_a
 
 @[simp]
-theorem flip_b : (flip u).b = u.a :=
+lemma flip_b : (flip u).b = u.a :=
   rfl
 #align pnat.xgcd_type.flip_b PNat.XgcdType.flip_b
 
-theorem flip_isReduced : (flip u).IsReduced ↔ u.IsReduced := by
+lemma flip_isReduced : (flip u).IsReduced ↔ u.IsReduced := by
   dsimp [IsReduced, flip]
   constructor <;> intro h <;> exact h.symm
 #align pnat.xgcd_type.flip_is_reduced PNat.XgcdType.flip_isReduced
 
-theorem flip_isSpecial : (flip u).IsSpecial ↔ u.IsSpecial := by
+lemma flip_isSpecial : (flip u).IsSpecial ↔ u.IsSpecial := by
   dsimp [IsSpecial, flip]
   rw [mul_comm u.x, mul_comm u.zp, add_comm u.zp]
 #align pnat.xgcd_type.flip_is_special PNat.XgcdType.flip_isSpecial
 
-theorem flip_v : (flip u).v = u.v.swap := by
+lemma flip_v : (flip u).v = u.v.swap := by
   dsimp [v]
   ext
   · simp only
@@ -238,7 +238,7 @@ theorem rq_eq : u.r + (u.bp + 1) * u.q = u.ap + 1 :=
   Nat.mod_add_div (u.ap + 1) (u.bp + 1)
 #align pnat.xgcd_type.rq_eq PNat.XgcdType.rq_eq
 
-theorem qp_eq (hr : u.r = 0) : u.q = u.qp + 1 := by
+lemma qp_eq (hr : u.r = 0) : u.q = u.qp + 1 := by
   by_cases hq : u.q = 0
   · let h := u.rq_eq
     rw [hr, hq, mul_zero, add_zero] at h
@@ -255,11 +255,11 @@ def start (a b : ℕ+) : XgcdType :=
   ⟨0, 0, 0, 0, a - 1, b - 1⟩
 #align pnat.xgcd_type.start PNat.XgcdType.start
 
-theorem start_isSpecial (a b : ℕ+) : (start a b).IsSpecial := by
+lemma start_isSpecial (a b : ℕ+) : (start a b).IsSpecial := by
   dsimp [start, IsSpecial]
 #align pnat.xgcd_type.start_is_special PNat.XgcdType.start_isSpecial
 
-theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
+lemma start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   dsimp [start, v, XgcdType.a, XgcdType.b, w, z]
   rw [one_mul, one_mul, zero_mul, zero_mul]
   have := a.pos
@@ -272,18 +272,18 @@ def finish : XgcdType :=
   XgcdType.mk u.wp ((u.wp + 1) * u.qp + u.x) u.y (u.y * u.qp + u.zp) u.bp u.bp
 #align pnat.xgcd_type.finish PNat.XgcdType.finish
 
-theorem finish_isReduced : u.finish.IsReduced := by
+lemma finish_isReduced : u.finish.IsReduced := by
   dsimp [IsReduced]
   rfl
 #align pnat.xgcd_type.finish_is_reduced PNat.XgcdType.finish_isReduced
 
-theorem finish_isSpecial (hs : u.IsSpecial) : u.finish.IsSpecial := by
+lemma finish_isSpecial (hs : u.IsSpecial) : u.finish.IsSpecial := by
   dsimp [IsSpecial, finish] at hs ⊢
   rw [add_mul _ _ u.y, add_comm _ (u.x * u.y), ← hs]
   ring
 #align pnat.xgcd_type.finish_is_special PNat.XgcdType.finish_isSpecial
 
-theorem finish_v (hr : u.r = 0) : u.finish.v = u.v := by
+lemma finish_v (hr : u.r = 0) : u.finish.v = u.v := by
   let ha : u.r + u.b * u.q = u.a := u.rq_eq
   rw [hr, zero_add] at ha
   ext
@@ -312,7 +312,7 @@ theorem step_wf (hr : u.r ≠ 0) : SizeOf.sizeOf u.step < SizeOf.sizeOf u := by
   exact lt_of_succ_lt_succ h₁
 #align pnat.xgcd_type.step_wf PNat.XgcdType.step_wf
 
-theorem step_isSpecial (hs : u.IsSpecial) : u.step.IsSpecial := by
+lemma step_isSpecial (hs : u.IsSpecial) : u.step.IsSpecial := by
   dsimp [IsSpecial, step] at hs ⊢
   rw [mul_add, mul_comm u.y u.x, ← hs]
   ring
@@ -345,17 +345,17 @@ def reduce (u : XgcdType) : XgcdType :=
 decreasing_by apply u.step_wf _h
 #align pnat.xgcd_type.reduce PNat.XgcdType.reduce
 
-theorem reduce_a {u : XgcdType} (h : u.r = 0) : u.reduce = u.finish := by
+lemma reduce_a {u : XgcdType} (h : u.r = 0) : u.reduce = u.finish := by
   rw [reduce]
   exact if_pos h
 #align pnat.xgcd_type.reduce_a PNat.XgcdType.reduce_a
 
-theorem reduce_b {u : XgcdType} (h : u.r ≠ 0) : u.reduce = u.step.reduce.flip := by
+lemma reduce_b {u : XgcdType} (h : u.r ≠ 0) : u.reduce = u.step.reduce.flip := by
   rw [reduce]
   exact if_neg h
 #align pnat.xgcd_type.reduce_b PNat.XgcdType.reduce_b
 
-theorem reduce_isReduced : ∀ u : XgcdType, u.reduce.IsReduced
+lemma reduce_isReduced : ∀ u : XgcdType, u.reduce.IsReduced
   | u =>
     dite (u.r = 0)
       (fun h => by
@@ -367,11 +367,11 @@ theorem reduce_isReduced : ∀ u : XgcdType, u.reduce.IsReduced
       apply reduce_isReduced
 #align pnat.xgcd_type.reduce_reduced PNat.XgcdType.reduce_isReduced
 
-theorem reduce_isReduced' (u : XgcdType) : u.reduce.IsReduced' :=
+lemma reduce_isReduced' (u : XgcdType) : u.reduce.IsReduced' :=
   (isReduced_iff _).mp u.reduce_isReduced
 #align pnat.xgcd_type.reduce_reduced' PNat.XgcdType.reduce_isReduced'
 
-theorem reduce_isSpecial : ∀ u : XgcdType, u.IsSpecial → u.reduce.IsSpecial
+lemma reduce_isSpecial : ∀ u : XgcdType, u.IsSpecial → u.reduce.IsSpecial
   | u =>
     dite (u.r = 0)
       (fun h hs => by
@@ -383,11 +383,11 @@ theorem reduce_isSpecial : ∀ u : XgcdType, u.IsSpecial → u.reduce.IsSpecial
       exact (flip_isSpecial _).mpr (reduce_isSpecial _ (u.step_isSpecial hs))
 #align pnat.xgcd_type.reduce_special PNat.XgcdType.reduce_isSpecial
 
-theorem reduce_isSpecial' (u : XgcdType) (hs : u.IsSpecial) : u.reduce.IsSpecial' :=
+lemma reduce_isSpecial' (u : XgcdType) (hs : u.IsSpecial) : u.reduce.IsSpecial' :=
   (isSpecial_iff _).mp (u.reduce_isSpecial hs)
 #align pnat.xgcd_type.reduce_special' PNat.XgcdType.reduce_isSpecial'
 
-theorem reduce_v : ∀ u : XgcdType, u.reduce.v = u.v
+lemma reduce_v : ∀ u : XgcdType, u.reduce.v = u.v
   | u =>
     dite (u.r = 0) (fun h => by rw [reduce_a h, finish_v u h]) fun h => by
       have : SizeOf.sizeOf u.step < SizeOf.sizeOf u := u.step_wf h
@@ -440,17 +440,17 @@ def gcdB' : ℕ+ :=
   succPNat ((xgcd a b).y + (xgcd a b).zp)
 #align pnat.gcd_b' PNat.gcdB'
 
-theorem gcdA'_coe : (gcdA' a b : ℕ) = gcdW a b + gcdX a b := by
+lemma gcdA'_coe : (gcdA' a b : ℕ) = gcdW a b + gcdX a b := by
   dsimp [gcdA', gcdX, gcdW, XgcdType.w]
   rw [add_right_comm]
 #align pnat.gcd_a'_coe PNat.gcdA'_coe
 
-theorem gcdB'_coe : (gcdB' a b : ℕ) = gcdY a b + gcdZ a b := by
+lemma gcdB'_coe : (gcdB' a b : ℕ) = gcdY a b + gcdZ a b := by
   dsimp [gcdB', gcdY, gcdZ, XgcdType.z]
   rw [add_assoc]
 #align pnat.gcd_b'_coe PNat.gcdB'_coe
 
-theorem gcd_props :
+lemma gcd_props :
     let d := gcdD a b
     let w := gcdW a b
     let x := gcdX a b
@@ -503,7 +503,7 @@ theorem gcd_props :
   constructor <;> ring
 #align pnat.gcd_props PNat.gcd_props
 
-theorem gcd_eq : gcdD a b = gcd a b := by
+lemma gcd_eq : gcdD a b = gcd a b := by
   rcases gcd_props a b with ⟨_, h₁, h₂, _, _, h₅, _⟩
   apply dvd_antisymm
   · apply dvd_gcd
@@ -516,31 +516,31 @@ theorem gcd_eq : gcdD a b = gcd a b := by
     exact (Nat.dvd_add_iff_right h₈).mpr h₇
 #align pnat.gcd_eq PNat.gcd_eq
 
-theorem gcd_det_eq : gcdW a b * gcdZ a b = succPNat (gcdX a b * gcdY a b) :=
+lemma gcd_det_eq : gcdW a b * gcdZ a b = succPNat (gcdX a b * gcdY a b) :=
   (gcd_props a b).1
 #align pnat.gcd_det_eq PNat.gcd_det_eq
 
-theorem gcd_a_eq : a = gcdA' a b * gcd a b :=
+lemma gcd_a_eq : a = gcdA' a b * gcd a b :=
   gcd_eq a b ▸ (gcd_props a b).2.1
 #align pnat.gcd_a_eq PNat.gcd_a_eq
 
-theorem gcd_b_eq : b = gcdB' a b * gcd a b :=
+lemma gcd_b_eq : b = gcdB' a b * gcd a b :=
   gcd_eq a b ▸ (gcd_props a b).2.2.1
 #align pnat.gcd_b_eq PNat.gcd_b_eq
 
-theorem gcd_rel_left' : gcdZ a b * gcdA' a b = succPNat (gcdX a b * gcdB' a b) :=
+lemma gcd_rel_left' : gcdZ a b * gcdA' a b = succPNat (gcdX a b * gcdB' a b) :=
   (gcd_props a b).2.2.2.1
 #align pnat.gcd_rel_left' PNat.gcd_rel_left'
 
-theorem gcd_rel_right' : gcdW a b * gcdB' a b = succPNat (gcdY a b * gcdA' a b) :=
+lemma gcd_rel_right' : gcdW a b * gcdB' a b = succPNat (gcdY a b * gcdA' a b) :=
   (gcd_props a b).2.2.2.2.1
 #align pnat.gcd_rel_right' PNat.gcd_rel_right'
 
-theorem gcd_rel_left : (gcdZ a b * a : ℕ) = gcdX a b * b + gcd a b :=
+lemma gcd_rel_left : (gcdZ a b * a : ℕ) = gcdX a b * b + gcd a b :=
   gcd_eq a b ▸ (gcd_props a b).2.2.2.2.2.1
 #align pnat.gcd_rel_left PNat.gcd_rel_left
 
-theorem gcd_rel_right : (gcdW a b * b : ℕ) = gcdY a b * a + gcd a b :=
+lemma gcd_rel_right : (gcdW a b * b : ℕ) = gcdY a b * a + gcd a b :=
   gcd_eq a b ▸ (gcd_props a b).2.2.2.2.2.2
 #align pnat.gcd_rel_right PNat.gcd_rel_right
 

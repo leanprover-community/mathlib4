@@ -118,7 +118,7 @@ def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫
         dsimp; simp }
 #align category_theory.limits.is_bilimit_of_total CategoryTheory.Limits.isBilimitOfTotal
 
-theorem IsBilimit.total {f : J → C} {b : Bicone f} (i : b.IsBilimit) :
+lemma IsBilimit.total {f : J → C} {b : Bicone f} (i : b.IsBilimit) :
     ∑ j : J, b.π j ≫ b.ι j = 𝟙 b.pt :=
   i.isLimit.hom_ext fun j => by
     cases j
@@ -223,34 +223,34 @@ theorem biproduct.total : ∑ j : J, biproduct.π f j ≫ biproduct.ι f j = �
   IsBilimit.total (biproduct.isBilimit _)
 #align category_theory.limits.biproduct.total CategoryTheory.Limits.biproduct.total
 
-theorem biproduct.lift_eq {T : C} {g : ∀ j, T ⟶ f j} :
+lemma biproduct.lift_eq {T : C} {g : ∀ j, T ⟶ f j} :
     biproduct.lift g = ∑ j, g j ≫ biproduct.ι f j := by
   ext j
   simp only [sum_comp, biproduct.ι_π, comp_dite, biproduct.lift_π, Category.assoc, comp_zero,
     Finset.sum_dite_eq', Finset.mem_univ, eqToHom_refl, Category.comp_id, if_true]
 #align category_theory.limits.biproduct.lift_eq CategoryTheory.Limits.biproduct.lift_eq
 
-theorem biproduct.desc_eq {T : C} {g : ∀ j, f j ⟶ T} :
+lemma biproduct.desc_eq {T : C} {g : ∀ j, f j ⟶ T} :
     biproduct.desc g = ∑ j, biproduct.π f j ≫ g j := by
   ext j
   simp [comp_sum, biproduct.ι_π_assoc, dite_comp]
 #align category_theory.limits.biproduct.desc_eq CategoryTheory.Limits.biproduct.desc_eq
 
 @[reassoc]
-theorem biproduct.lift_desc {T U : C} {g : ∀ j, T ⟶ f j} {h : ∀ j, f j ⟶ U} :
+lemma biproduct.lift_desc {T U : C} {g : ∀ j, T ⟶ f j} {h : ∀ j, f j ⟶ U} :
     biproduct.lift g ≫ biproduct.desc h = ∑ j : J, g j ≫ h j := by
   simp [biproduct.lift_eq, biproduct.desc_eq, comp_sum, sum_comp, biproduct.ι_π_assoc, comp_dite,
     dite_comp]
 #align category_theory.limits.biproduct.lift_desc CategoryTheory.Limits.biproduct.lift_desc
 
-theorem biproduct.map_eq [HasFiniteBiproducts C] {f g : J → C} {h : ∀ j, f j ⟶ g j} :
+lemma biproduct.map_eq [HasFiniteBiproducts C] {f g : J → C} {h : ∀ j, f j ⟶ g j} :
     biproduct.map h = ∑ j : J, biproduct.π f j ≫ h j ≫ biproduct.ι g j := by
   ext
   simp [biproduct.ι_π, biproduct.ι_π_assoc, comp_sum, sum_comp, comp_dite, dite_comp]
 #align category_theory.limits.biproduct.map_eq CategoryTheory.Limits.biproduct.map_eq
 
 @[reassoc]
-theorem biproduct.lift_matrix {K : Type} [Finite K] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
+lemma biproduct.lift_matrix {K : Type} [Finite K] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
     {P} (x : ∀ j, P ⟶ f j) (m : ∀ j k, f j ⟶ g k) :
     biproduct.lift x ≫ biproduct.matrix m = biproduct.lift fun k => ∑ j, x j ≫ m j k := by
   ext
@@ -264,7 +264,7 @@ section HasFiniteBiproducts
 variable {J K : Type} [Finite J] {f : J → C} [HasFiniteBiproducts C]
 
 @[reassoc]
-theorem biproduct.matrix_desc [Fintype K] {f : J → C} {g : K → C}
+lemma biproduct.matrix_desc [Fintype K] {f : J → C} {g : K → C}
     (m : ∀ j k, f j ⟶ g k) {P} (x : ∀ k, g k ⟶ P) :
     biproduct.matrix m ≫ biproduct.desc x = biproduct.desc fun j => ∑ k, m j k ≫ x k := by
   ext
@@ -274,7 +274,7 @@ theorem biproduct.matrix_desc [Fintype K] {f : J → C} {g : K → C}
 variable [Finite K]
 
 @[reassoc]
-theorem biproduct.matrix_map {f : J → C} {g : K → C} {h : K → C} (m : ∀ j k, f j ⟶ g k)
+lemma biproduct.matrix_map {f : J → C} {g : K → C} {h : K → C} (m : ∀ j k, f j ⟶ g k)
     (n : ∀ k, g k ⟶ h k) :
     biproduct.matrix m ≫ biproduct.map n = biproduct.matrix fun j k => m j k ≫ n k := by
   ext
@@ -282,7 +282,7 @@ theorem biproduct.matrix_map {f : J → C} {g : K → C} {h : K → C} (m : ∀ 
 #align category_theory.limits.biproduct.matrix_map CategoryTheory.Limits.biproduct.matrix_map
 
 @[reassoc]
-theorem biproduct.map_matrix {f : J → C} {g : J → C} {h : K → C} (m : ∀ k, f k ⟶ g k)
+lemma biproduct.map_matrix {f : J → C} {g : J → C} {h : K → C} (m : ∀ k, f k ⟶ g k)
     (n : ∀ j k, g j ⟶ h k) :
     biproduct.map m ≫ biproduct.matrix n = biproduct.matrix fun j k => m j ≫ n j k := by
   ext
@@ -338,7 +338,7 @@ def isBinaryBilimitOfTotal {X Y : C} (b : BinaryBicone X Y)
       fac := fun s j => by rcases j with ⟨⟨⟩⟩ <;> simp }
 #align category_theory.limits.is_binary_bilimit_of_total CategoryTheory.Limits.isBinaryBilimitOfTotal
 
-theorem IsBilimit.binary_total {X Y : C} {b : BinaryBicone X Y} (i : b.IsBilimit) :
+lemma IsBilimit.binary_total {X Y : C} {b : BinaryBicone X Y} (i : b.IsBilimit) :
     b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.pt :=
   i.isLimit.hom_ext fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
 #align category_theory.limits.is_bilimit.binary_total CategoryTheory.Limits.IsBilimit.binary_total
@@ -366,12 +366,12 @@ def BinaryBicone.ofLimitCone {X Y : C} {t : Cone (pair X Y)} (ht : IsLimit t) : 
   inr := ht.lift (BinaryFan.mk 0 (𝟙 Y))
 #align category_theory.limits.binary_bicone.of_limit_cone CategoryTheory.Limits.BinaryBicone.ofLimitCone
 
-theorem inl_of_isLimit {X Y : C} {t : BinaryBicone X Y} (ht : IsLimit t.toCone) :
+lemma inl_of_isLimit {X Y : C} {t : BinaryBicone X Y} (ht : IsLimit t.toCone) :
     t.inl = ht.lift (BinaryFan.mk (𝟙 X) 0) := by
   apply ht.uniq (BinaryFan.mk (𝟙 X) 0); rintro ⟨⟨⟩⟩ <;> dsimp <;> simp
 #align category_theory.limits.inl_of_is_limit CategoryTheory.Limits.inl_of_isLimit
 
-theorem inr_of_isLimit {X Y : C} {t : BinaryBicone X Y} (ht : IsLimit t.toCone) :
+lemma inr_of_isLimit {X Y : C} {t : BinaryBicone X Y} (ht : IsLimit t.toCone) :
     t.inr = ht.lift (BinaryFan.mk 0 (𝟙 Y)) := by
   apply ht.uniq (BinaryFan.mk 0 (𝟙 Y)); rintro ⟨⟨⟩⟩ <;> dsimp <;> simp
 #align category_theory.limits.inr_of_is_limit CategoryTheory.Limits.inr_of_isLimit
@@ -414,13 +414,13 @@ def BinaryBicone.ofColimitCocone {X Y : C} {t : Cocone (pair X Y)} (ht : IsColim
   inr := t.ι.app ⟨WalkingPair.right⟩
 #align category_theory.limits.binary_bicone.of_colimit_cocone CategoryTheory.Limits.BinaryBicone.ofColimitCocone
 
-theorem fst_of_isColimit {X Y : C} {t : BinaryBicone X Y} (ht : IsColimit t.toCocone) :
+lemma fst_of_isColimit {X Y : C} {t : BinaryBicone X Y} (ht : IsColimit t.toCocone) :
     t.fst = ht.desc (BinaryCofan.mk (𝟙 X) 0) := by
   apply ht.uniq (BinaryCofan.mk (𝟙 X) 0)
   rintro ⟨⟨⟩⟩ <;> dsimp <;> simp
 #align category_theory.limits.fst_of_is_colimit CategoryTheory.Limits.fst_of_isColimit
 
-theorem snd_of_isColimit {X Y : C} {t : BinaryBicone X Y} (ht : IsColimit t.toCocone) :
+lemma snd_of_isColimit {X Y : C} {t : BinaryBicone X Y} (ht : IsColimit t.toCocone) :
     t.snd = ht.desc (BinaryCofan.mk 0 (𝟙 Y)) := by
   apply ht.uniq (BinaryCofan.mk 0 (𝟙 Y))
   rintro ⟨⟨⟩⟩ <;> dsimp <;> simp
@@ -470,20 +470,20 @@ theorem biprod.total : biprod.fst ≫ biprod.inl + biprod.snd ≫ biprod.inr = �
   ext <;> simp [add_comp]
 #align category_theory.limits.biprod.total CategoryTheory.Limits.biprod.total
 
-theorem biprod.lift_eq {T : C} {f : T ⟶ X} {g : T ⟶ Y} :
+lemma biprod.lift_eq {T : C} {f : T ⟶ X} {g : T ⟶ Y} :
     biprod.lift f g = f ≫ biprod.inl + g ≫ biprod.inr := by ext <;> simp [add_comp]
 #align category_theory.limits.biprod.lift_eq CategoryTheory.Limits.biprod.lift_eq
 
-theorem biprod.desc_eq {T : C} {f : X ⟶ T} {g : Y ⟶ T} :
+lemma biprod.desc_eq {T : C} {f : X ⟶ T} {g : Y ⟶ T} :
     biprod.desc f g = biprod.fst ≫ f + biprod.snd ≫ g := by ext <;> simp [add_comp]
 #align category_theory.limits.biprod.desc_eq CategoryTheory.Limits.biprod.desc_eq
 
 @[reassoc (attr := simp)]
-theorem biprod.lift_desc {T U : C} {f : T ⟶ X} {g : T ⟶ Y} {h : X ⟶ U} {i : Y ⟶ U} :
+lemma biprod.lift_desc {T U : C} {f : T ⟶ X} {g : T ⟶ Y} {h : X ⟶ U} {i : Y ⟶ U} :
     biprod.lift f g ≫ biprod.desc h i = f ≫ h + g ≫ i := by simp [biprod.lift_eq, biprod.desc_eq]
 #align category_theory.limits.biprod.lift_desc CategoryTheory.Limits.biprod.lift_desc
 
-theorem biprod.map_eq [HasBinaryBiproducts C] {W X Y Z : C} {f : W ⟶ Y} {g : X ⟶ Z} :
+lemma biprod.map_eq [HasBinaryBiproducts C] {W X Y Z : C} {f : W ⟶ Y} {g : X ⟶ Z} :
     biprod.map f g = biprod.fst ≫ f ≫ biprod.inl + biprod.snd ≫ g ≫ biprod.inr := by
   ext <;> simp
 #align category_theory.limits.biprod.map_eq CategoryTheory.Limits.biprod.map_eq
@@ -694,31 +694,31 @@ def Biprod.ofComponents : X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂ :=
 #align category_theory.biprod.of_components CategoryTheory.Biprod.ofComponents
 
 @[simp]
-theorem Biprod.inl_ofComponents :
+lemma Biprod.inl_ofComponents :
     biprod.inl ≫ Biprod.ofComponents f₁₁ f₁₂ f₂₁ f₂₂ = f₁₁ ≫ biprod.inl + f₁₂ ≫ biprod.inr := by
   simp [Biprod.ofComponents]
 #align category_theory.biprod.inl_of_components CategoryTheory.Biprod.inl_ofComponents
 
 @[simp]
-theorem Biprod.inr_ofComponents :
+lemma Biprod.inr_ofComponents :
     biprod.inr ≫ Biprod.ofComponents f₁₁ f₁₂ f₂₁ f₂₂ = f₂₁ ≫ biprod.inl + f₂₂ ≫ biprod.inr := by
   simp [Biprod.ofComponents]
 #align category_theory.biprod.inr_of_components CategoryTheory.Biprod.inr_ofComponents
 
 @[simp]
-theorem Biprod.ofComponents_fst :
+lemma Biprod.ofComponents_fst :
     Biprod.ofComponents f₁₁ f₁₂ f₂₁ f₂₂ ≫ biprod.fst = biprod.fst ≫ f₁₁ + biprod.snd ≫ f₂₁ := by
   simp [Biprod.ofComponents]
 #align category_theory.biprod.of_components_fst CategoryTheory.Biprod.ofComponents_fst
 
 @[simp]
-theorem Biprod.ofComponents_snd :
+lemma Biprod.ofComponents_snd :
     Biprod.ofComponents f₁₁ f₁₂ f₂₁ f₂₂ ≫ biprod.snd = biprod.fst ≫ f₁₂ + biprod.snd ≫ f₂₂ := by
   simp [Biprod.ofComponents]
 #align category_theory.biprod.of_components_snd CategoryTheory.Biprod.ofComponents_snd
 
 @[simp]
-theorem Biprod.ofComponents_eq (f : X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂) :
+lemma Biprod.ofComponents_eq (f : X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂) :
     Biprod.ofComponents (biprod.inl ≫ f ≫ biprod.fst) (biprod.inl ≫ f ≫ biprod.snd)
         (biprod.inr ≫ f ≫ biprod.fst) (biprod.inr ≫ f ≫ biprod.snd) =
       f := by
@@ -729,7 +729,7 @@ theorem Biprod.ofComponents_eq (f : X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂) :
 #align category_theory.biprod.of_components_eq CategoryTheory.Biprod.ofComponents_eq
 
 @[simp]
-theorem Biprod.ofComponents_comp {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C} (f₁₁ : X₁ ⟶ Y₁) (f₁₂ : X₁ ⟶ Y₂)
+lemma Biprod.ofComponents_comp {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C} (f₁₁ : X₁ ⟶ Y₁) (f₁₂ : X₁ ⟶ Y₂)
     (f₂₁ : X₂ ⟶ Y₁) (f₂₂ : X₂ ⟶ Y₂) (g₁₁ : Y₁ ⟶ Z₁) (g₁₂ : Y₁ ⟶ Z₂) (g₂₁ : Y₂ ⟶ Z₁)
     (g₂₂ : Y₂ ⟶ Z₂) :
     Biprod.ofComponents f₁₁ f₁₂ f₂₁ f₂₂ ≫ Biprod.ofComponents g₁₁ g₁₂ g₂₁ g₂₂ =
@@ -822,7 +822,7 @@ def Biprod.isoElim (f : X₁ ⊞ X₂ ≅ Y₁ ⊞ Y₂) [IsIso (biprod.inl ≫ 
     (biprod.inr ≫ f.hom ≫ biprod.fst) (biprod.inr ≫ f.hom ≫ biprod.snd)
 #align category_theory.biprod.iso_elim CategoryTheory.Biprod.isoElim
 
-theorem Biprod.column_nonzero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [IsIso f] :
+lemma Biprod.column_nonzero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [IsIso f] :
     𝟙 W = 0 ∨ biprod.inl ≫ f ≫ biprod.fst ≠ 0 ∨ biprod.inl ≫ f ≫ biprod.snd ≠ 0 := by
   by_contra! h
   rcases h with ⟨nz, a₁, a₂⟩
@@ -851,7 +851,7 @@ theorem Biprod.column_nonzero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [Is
 
 end
 
-theorem Biproduct.column_nonzero_of_iso' {σ τ : Type} [Finite τ] {S : σ → C} [HasBiproduct S]
+lemma Biproduct.column_nonzero_of_iso' {σ τ : Type} [Finite τ] {S : σ → C} [HasBiproduct S]
     {T : τ → C} [HasBiproduct T] (s : σ) (f : ⨁ S ⟶ ⨁ T) [IsIso f] :
     (∀ t : τ, biproduct.ι S s ≫ f ≫ biproduct.π T t = 0) → 𝟙 (S s) = 0 := by
   cases nonempty_fintype τ

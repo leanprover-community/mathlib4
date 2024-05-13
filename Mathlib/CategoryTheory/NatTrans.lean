@@ -60,7 +60,7 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
 attribute [reassoc (attr := simp)] NatTrans.naturality
 #align category_theory.nat_trans.naturality_assoc CategoryTheory.NatTrans.naturality_assoc
 
-theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) : α.app X = β.app X := by
+lemma congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) : α.app X = β.app X := by
   aesop_cat
 #align category_theory.congr_app CategoryTheory.congr_app
 
@@ -71,7 +71,7 @@ protected def id (F : C ⥤ D) : NatTrans F F where app X := 𝟙 (F.obj X)
 #align category_theory.nat_trans.id CategoryTheory.NatTrans.id
 
 @[simp]
-theorem id_app' (F : C ⥤ D) (X : C) : (NatTrans.id F).app X = 𝟙 (F.obj X) := rfl
+lemma id_app' (F : C ⥤ D) (X : C) : (NatTrans.id F).app X = 𝟙 (F.obj X) := rfl
 #align category_theory.nat_trans.id_app' CategoryTheory.NatTrans.id_app'
 
 instance (F : C ⥤ D) : Inhabited (NatTrans F F) := ⟨NatTrans.id F⟩
@@ -91,7 +91,7 @@ def vcomp (α : NatTrans F G) (β : NatTrans G H) : NatTrans F H where
 
 -- functor_category will rewrite (vcomp α β) to (α ≫ β), so this is not a
 -- suitable simp lemma.  We will declare the variant vcomp_app' there.
-theorem vcomp_app (α : NatTrans F G) (β : NatTrans G H) (X : C) :
+lemma vcomp_app (α : NatTrans F G) (β : NatTrans G H) (X : C) :
     (vcomp α β).app X = α.app X ≫ β.app X := rfl
 #align category_theory.nat_trans.vcomp_app CategoryTheory.NatTrans.vcomp_app
 

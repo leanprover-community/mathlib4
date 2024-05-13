@@ -133,7 +133,7 @@ def pi (γ : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) : Path.Homotopic.Quot
     Nonempty.map (piHomotopy x y) (Classical.nonempty_pi.mpr hxy)) (Quotient.choice γ)
 #align path.homotopic.pi Path.Homotopic.pi
 
-theorem pi_lift (γ : ∀ i, Path (as i) (bs i)) :
+lemma pi_lift (γ : ∀ i, Path (as i) (bs i)) :
     (Path.Homotopic.pi fun i => ⟦γ i⟧) = ⟦Path.pi γ⟧ := by unfold pi; simp
 #align path.homotopic.pi_lift Path.Homotopic.pi_lift
 
@@ -166,7 +166,7 @@ theorem proj_pi (i : ι) (paths : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) 
 #align path.homotopic.proj_pi Path.Homotopic.proj_pi
 
 @[simp]
-theorem pi_proj (p : Path.Homotopic.Quotient as bs) : (pi fun i => proj i p) = p := by
+lemma pi_proj (p : Path.Homotopic.Quotient as bs) : (pi fun i => proj i p) = p := by
   apply Quotient.inductionOn (motive := _) p
   intro; unfold proj
   simp_rw [← Path.Homotopic.map_lift]
@@ -197,7 +197,7 @@ def prod (q₁ : Path.Homotopic.Quotient a₁ a₂) (q₂ : Path.Homotopic.Quoti
 
 variable (p₁ p₁' p₂ p₂')
 
-theorem prod_lift : prod ⟦p₁⟧ ⟦p₂⟧ = ⟦p₁.prod p₂⟧ :=
+lemma prod_lift : prod ⟦p₁⟧ ⟦p₂⟧ = ⟦p₁.prod p₂⟧ :=
   rfl
 #align path.homotopic.prod_lift Path.Homotopic.prod_lift
 
@@ -236,7 +236,7 @@ theorem projLeft_prod : projLeft (prod q₁ q₂) = q₁ := by
 #align path.homotopic.proj_left_prod Path.Homotopic.projLeft_prod
 
 @[simp]
-theorem projRight_prod : projRight (prod q₁ q₂) = q₂ := by
+lemma projRight_prod : projRight (prod q₁ q₂) = q₂ := by
   apply Quotient.inductionOn₂ (motive := _) q₁ q₂
   intro p₁ p₂
   unfold projRight
@@ -245,7 +245,7 @@ theorem projRight_prod : projRight (prod q₁ q₂) = q₂ := by
 #align path.homotopic.proj_right_prod Path.Homotopic.projRight_prod
 
 @[simp]
-theorem prod_projLeft_projRight (p : Path.Homotopic.Quotient (a₁, b₁) (a₂, b₂)) :
+lemma prod_projLeft_projRight (p : Path.Homotopic.Quotient (a₁, b₁) (a₂, b₂)) :
     prod (projLeft p) (projRight p) = p := by
   apply Quotient.inductionOn (motive := _) p
   intro p'

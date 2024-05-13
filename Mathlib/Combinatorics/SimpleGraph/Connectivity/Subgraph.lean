@@ -61,7 +61,7 @@ protected lemma Connected.preconnected {H : G.Subgraph} (h : H.Connected) : H.Pr
 protected lemma Connected.nonempty {H : G.Subgraph} (h : H.Connected) : H.verts.Nonempty := by
   rw [H.connected_iff] at h; exact h.2
 
-theorem singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected := by
+lemma singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected := by
   refine ⟨⟨?_⟩⟩
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   simp only [singletonSubgraph_verts, Set.mem_singleton_iff] at ha hb
@@ -70,7 +70,7 @@ theorem singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected 
 #align simple_graph.singleton_subgraph_connected SimpleGraph.Subgraph.singletonSubgraph_connected
 
 @[simp]
-theorem subgraphOfAdj_connected {v w : V} (hvw : G.Adj v w) : (G.subgraphOfAdj hvw).Connected := by
+lemma subgraphOfAdj_connected {v w : V} (hvw : G.Adj v w) : (G.subgraphOfAdj hvw).Connected := by
   refine ⟨⟨?_⟩⟩
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   simp only [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at ha hb

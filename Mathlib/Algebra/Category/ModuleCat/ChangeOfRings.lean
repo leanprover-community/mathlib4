@@ -105,18 +105,18 @@ instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
   inferInstanceAs <| Module S M
 
 @[simp]
-theorem restrictScalars.map_apply {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
+lemma restrictScalars.map_apply {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
     {M M' : ModuleCat.{v} S} (g : M ⟶ M') (x) : (restrictScalars f).map g x = g x :=
   rfl
 #align category_theory.Module.restrict_scalars.map_apply ModuleCat.restrictScalars.map_apply
 
 @[simp]
-theorem restrictScalars.smul_def {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
+lemma restrictScalars.smul_def {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
     {M : ModuleCat.{v} S} (r : R) (m : (restrictScalars f).obj M) : r • m = (f r • m : M) :=
   rfl
 #align category_theory.Module.restrict_scalars.smul_def ModuleCat.restrictScalars.smul_def
 
-theorem restrictScalars.smul_def' {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
+lemma restrictScalars.smul_def' {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
     {M : ModuleCat.{v} S} (r : R) (m : M) :
     -- Porting note: clumsy way to coerce
     let m' : (restrictScalars f).obj M := m
@@ -295,7 +295,7 @@ def map' {M1 M2 : ModuleCat.{v} R} (l : M1 ⟶ M2) : obj' f M1 ⟶ obj' f M2 :=
   apply @LinearMap.baseChange R S M1 M2 _ _ ((algebraMap S _).comp f).toAlgebra _ _ _ _ l
 #align category_theory.Module.extend_scalars.map' ModuleCat.ExtendScalars.map'
 
-theorem map'_id {M : ModuleCat.{v} R} : map' f (𝟙 M) = 𝟙 _ :=
+lemma map'_id {M : ModuleCat.{v} R} : map' f (𝟙 M) = 𝟙 _ :=
   LinearMap.ext fun x : obj' f M => by
     dsimp only [map']
     -- Porting note: this got put in the dsimp by mathport
@@ -307,7 +307,7 @@ theorem map'_id {M : ModuleCat.{v} R} : map' f (𝟙 M) = 𝟙 _ :=
     · rw [map_add, ihx, ihy]
 #align category_theory.Module.extend_scalars.map'_id ModuleCat.ExtendScalars.map'_id
 
-theorem map'_comp {M₁ M₂ M₃ : ModuleCat.{v} R} (l₁₂ : M₁ ⟶ M₂) (l₂₃ : M₂ ⟶ M₃) :
+lemma map'_comp {M₁ M₂ M₃ : ModuleCat.{v} R} (l₁₂ : M₁ ⟶ M₂) (l₂₃ : M₂ ⟶ M₃) :
     map' f (l₁₂ ≫ l₂₃) = map' f l₁₂ ≫ map' f l₂₃ :=
   LinearMap.ext fun x : obj' f M₁ => by
     dsimp only [map']
@@ -337,13 +337,13 @@ open ChangeOfRings
 variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S)
 
 @[simp]
-protected theorem smul_tmul {M : ModuleCat.{v} R} (s s' : S) (m : M) :
+protected lemma smul_tmul {M : ModuleCat.{v} R} (s s' : S) (m : M) :
     s • (s'⊗ₜ[R,f]m : (extendScalars f).obj M) = (s * s')⊗ₜ[R,f]m :=
   rfl
 #align category_theory.Module.extend_scalars.smul_tmul ModuleCat.ExtendScalars.smul_tmul
 
 @[simp]
-theorem map_tmul {M M' : ModuleCat.{v} R} (g : M ⟶ M') (s : S) (m : M) :
+lemma map_tmul {M M' : ModuleCat.{v} R} (g : M ⟶ M') (s : S) (m : M) :
     (extendScalars f).map g (s⊗ₜ[R,f]m) = s⊗ₜ[R,f]g m :=
   rfl
 #align category_theory.Module.extend_scalars.map_tmul ModuleCat.ExtendScalars.map_tmul
@@ -377,7 +377,7 @@ instance hasSMul : SMul S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M where
 #align category_theory.Module.coextend_scalars.has_smul ModuleCat.CoextendScalars.hasSMul
 
 @[simp]
-theorem smul_apply' (s : S) (g : (restrictScalars f).obj ⟨S⟩ →ₗ[R] M) (s' : S) :
+lemma smul_apply' (s : S) (g : (restrictScalars f).obj ⟨S⟩ →ₗ[R] M) (s' : S) :
     (s • g) s' = g (s' * s : S) :=
   rfl
 #align category_theory.Module.coextend_scalars.smul_apply' ModuleCat.CoextendScalars.smul_apply'
@@ -448,13 +448,13 @@ variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 instance (M : ModuleCat R) : CoeFun ((coextendScalars f).obj M) fun _ => S → M :=
   inferInstanceAs <| CoeFun (CoextendScalars.obj' f M) _
 
-theorem smul_apply (M : ModuleCat R) (g : (coextendScalars f).obj M) (s s' : S) :
+lemma smul_apply (M : ModuleCat R) (g : (coextendScalars f).obj M) (s s' : S) :
     (s • g) s' = g (s' * s) :=
   rfl
 #align category_theory.Module.coextend_scalars.smul_apply ModuleCat.CoextendScalars.smul_apply
 
 @[simp]
-theorem map_apply {M M' : ModuleCat R} (g : M ⟶ M') (x) (s : S) :
+lemma map_apply {M M' : ModuleCat R} (g : M ⟶ M') (x) (s : S) :
     (coextendScalars f).map g x s = g (x s) :=
   rfl
 #align category_theory.Module.coextend_scalars.map_apply ModuleCat.CoextendScalars.map_apply

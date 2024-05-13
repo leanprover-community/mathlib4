@@ -114,12 +114,12 @@ def pullbackHomeoPullback : (Profinite.pullback f g).toCompHaus ≃ₜ
     (Limits.pullback f g).toCompHaus :=
 Profinite.homeoOfIso (pullbackIsoPullback f g)
 
-theorem pullback_fst_eq :
+lemma pullback_fst_eq :
     Profinite.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst := by
   dsimp [pullbackIsoPullback]
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
 
-theorem pullback_snd_eq :
+lemma pullback_snd_eq :
     Profinite.pullback.snd f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.snd := by
   dsimp [pullbackIsoPullback]
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
@@ -186,7 +186,7 @@ noncomputable
 def coproductIsoCoproduct : finiteCoproduct X ≅ ∐ X :=
 Limits.IsColimit.coconePointUniqueUpToIso (finiteCoproduct.isColimit X) (Limits.colimit.isColimit _)
 
-theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
+lemma Sigma.ι_comp_toFiniteCoproduct (a : α) :
     (Limits.Sigma.ι X a) ≫ (coproductIsoCoproduct X).inv = finiteCoproduct.ι X a := by
   simp [coproductIsoCoproduct]
 

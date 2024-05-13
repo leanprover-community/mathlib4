@@ -76,16 +76,16 @@ def IsSheaf (P : Cᵒᵖ ⥤ Type w) : Prop :=
   ∀ ⦃X⦄ (S : Sieve X), S ∈ J X → IsSheafFor P (S : Presieve X)
 #align category_theory.presieve.is_sheaf CategoryTheory.Presieve.IsSheaf
 
-theorem IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hp : IsSheaf J P) (R : Presieve X)
+lemma IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hp : IsSheaf J P) (R : Presieve X)
     (hr : generate R ∈ J X) : IsSheafFor P R :=
   (isSheafFor_iff_generate R).2 <| hp _ hr
 #align category_theory.presieve.is_sheaf.is_sheaf_for CategoryTheory.Presieve.IsSheaf.isSheafFor
 
-theorem isSheaf_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
+lemma isSheaf_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
     J₁ ≤ J₂ → IsSheaf J₂ P → IsSheaf J₁ P := fun h t _ S hS => t S (h _ hS)
 #align category_theory.presieve.is_sheaf_of_le CategoryTheory.Presieve.isSheaf_of_le
 
-theorem isSeparated_of_isSheaf (P : Cᵒᵖ ⥤ Type w) (h : IsSheaf J P) : IsSeparated J P :=
+lemma isSeparated_of_isSheaf (P : Cᵒᵖ ⥤ Type w) (h : IsSheaf J P) : IsSeparated J P :=
   fun S hS => (h S hS).isSeparatedFor
 #align category_theory.presieve.is_separated_of_is_sheaf CategoryTheory.Presieve.isSeparated_of_isSheaf
 
@@ -94,7 +94,7 @@ theorem isSheaf_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (h : IsSheaf J P) :
   fun _ S hS => isSheafFor_iso i (h S hS)
 #align category_theory.presieve.is_sheaf_iso CategoryTheory.Presieve.isSheaf_iso
 
-theorem isSheaf_of_yoneda {P : Cᵒᵖ ⥤ Type v}
+lemma isSheaf_of_yoneda {P : Cᵒᵖ ⥤ Type v}
     (h : ∀ {X} (S : Sieve X), S ∈ J X → YonedaSheafCondition P S) : IsSheaf J P := fun _ _ hS =>
   isSheafFor_iff_yonedaSheafCondition.2 (h _ hS)
 #align category_theory.presieve.is_sheaf_of_yoneda CategoryTheory.Presieve.isSheaf_of_yoneda
@@ -158,7 +158,7 @@ open Presieve
 variable {C : Type u} [Category.{v} C]
 variable {X : C}
 
-theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.arrows)) :
+lemma yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.arrows)) :
     FamilyOfElements.Compatible <| yonedaFamilyOfElements_fromCocone S.arrows s := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ hgf
   have Hs := s.ι.naturality
@@ -246,7 +246,7 @@ instance : Category (SheafOfTypes J) where
 -- not just the underlying structure.
 -- It would be nice if this boilerplate weren't necessary.
 @[ext]
-theorem Hom.ext' {X Y : SheafOfTypes J} (f g : X ⟶ Y) (w : f.val = g.val) : f = g :=
+lemma Hom.ext' {X Y : SheafOfTypes J} (f g : X ⟶ Y) (w : f.val = g.val) : f = g :=
   Hom.ext f g w
 
 -- Let's make the inhabited linter happy...

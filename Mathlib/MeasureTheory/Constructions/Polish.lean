@@ -166,12 +166,12 @@ irreducible_def AnalyticSet (s : Set α) : Prop :=
   s = ∅ ∨ ∃ f : (ℕ → ℕ) → α, Continuous f ∧ range f = s
 #align measure_theory.analytic_set MeasureTheory.AnalyticSet
 
-theorem analyticSet_empty : AnalyticSet (∅ : Set α) := by
+lemma analyticSet_empty : AnalyticSet (∅ : Set α) := by
   rw [AnalyticSet]
   exact Or.inl rfl
 #align measure_theory.analytic_set_empty MeasureTheory.analyticSet_empty
 
-theorem analyticSet_range_of_polishSpace {β : Type*} [TopologicalSpace β] [PolishSpace β]
+lemma analyticSet_range_of_polishSpace {β : Type*} [TopologicalSpace β] [PolishSpace β]
     {f : β → α} (f_cont : Continuous f) : AnalyticSet (range f) := by
   cases isEmpty_or_nonempty β
   · rw [range_eq_empty]
@@ -221,7 +221,7 @@ theorem AnalyticSet.image_of_continuousOn {β : Type*} [TopologicalSpace β] {s 
   exact mem_range_self
 #align measure_theory.analytic_set.image_of_continuous_on MeasureTheory.AnalyticSet.image_of_continuousOn
 
-theorem AnalyticSet.image_of_continuous {β : Type*} [TopologicalSpace β] {s : Set α}
+lemma AnalyticSet.image_of_continuous {β : Type*} [TopologicalSpace β] {s : Set α}
     (hs : AnalyticSet s) {f : α → β} (hf : Continuous f) : AnalyticSet (f '' s) :=
   hs.image_of_continuousOn hf.continuousOn
 #align measure_theory.analytic_set.image_of_continuous MeasureTheory.AnalyticSet.image_of_continuous
@@ -285,7 +285,7 @@ theorem AnalyticSet.iUnion [Countable ι] {s : ι → Set α} (hs : ∀ n, Analy
   exact analyticSet_range_of_polishSpace F_cont
 #align measure_theory.analytic_set.Union MeasureTheory.AnalyticSet.iUnion
 
-theorem _root_.IsClosed.analyticSet [PolishSpace α] {s : Set α} (hs : IsClosed s) :
+lemma _root_.IsClosed.analyticSet [PolishSpace α] {s : Set α} (hs : IsClosed s) :
     AnalyticSet s := by
   haveI : PolishSpace s := hs.polishSpace
   rw [← @Subtype.range_val α s]
@@ -375,7 +375,7 @@ def MeasurablySeparable {α : Type*} [MeasurableSpace α] (s t : Set α) : Prop 
   ∃ u, s ⊆ u ∧ Disjoint t u ∧ MeasurableSet u
 #align measure_theory.measurably_separable MeasureTheory.MeasurablySeparable
 
-theorem MeasurablySeparable.iUnion [Countable ι] {α : Type*} [MeasurableSpace α] {s t : ι → Set α}
+lemma MeasurablySeparable.iUnion [Countable ι] {α : Type*} [MeasurableSpace α] {s t : ι → Set α}
     (h : ∀ m n, MeasurablySeparable (s m) (t n)) : MeasurablySeparable (⋃ n, s n) (⋃ m, t m) := by
   choose u hsu htu hu using h
   refine' ⟨⋃ m, ⋂ n, u m n, _, _, _⟩
@@ -558,20 +558,20 @@ theorem measurableSet_preimage_iff_of_surjective [CountablySeparated Z]
     exact h.compl.analyticSet_image hf
 #align measurable.measurable_set_preimage_iff_of_surjective Measurable.measurableSet_preimage_iff_of_surjective
 
-theorem map_measurableSpace_eq  [CountablySeparated Z]
+lemma map_measurableSpace_eq  [CountablySeparated Z]
     {f : X → Z} (hf : Measurable f)
     (hsurj : Surjective f) : MeasurableSpace.map f ‹MeasurableSpace X› = ‹MeasurableSpace Z› :=
   MeasurableSpace.ext fun _ => hf.measurableSet_preimage_iff_of_surjective hsurj
 #align measurable.map_measurable_space_eq Measurable.map_measurableSpace_eq
 
-theorem map_measurableSpace_eq_borel [SecondCountableTopology Y] {f : X → Y} (hf : Measurable f)
+lemma map_measurableSpace_eq_borel [SecondCountableTopology Y] {f : X → Y} (hf : Measurable f)
     (hsurj : Surjective f) : MeasurableSpace.map f ‹MeasurableSpace X› = borel Y := by
   have d := hf.mono le_rfl OpensMeasurableSpace.borel_le
   letI := borel Y; haveI : BorelSpace Y := ⟨rfl⟩
   exact d.map_measurableSpace_eq hsurj
 #align measurable.map_measurable_space_eq_borel Measurable.map_measurableSpace_eq_borel
 
-theorem borelSpace_codomain [SecondCountableTopology Y] {f : X → Y} (hf : Measurable f)
+lemma borelSpace_codomain [SecondCountableTopology Y] {f : X → Y} (hf : Measurable f)
     (hsurj : Surjective f) : BorelSpace Y :=
   ⟨(hf.map_measurableSpace_eq hsurj).symm.trans <| hf.map_measurableSpace_eq_borel hsurj⟩
 #align measurable.borel_space_codomain Measurable.borelSpace_codomain
@@ -619,7 +619,7 @@ theorem measurable_comp_iff_of_surjective [CountablySeparated Z]
 
 end Measurable
 
-theorem Continuous.map_eq_borel {X Y : Type*} [TopologicalSpace X] [PolishSpace X]
+lemma Continuous.map_eq_borel {X Y : Type*} [TopologicalSpace X] [PolishSpace X]
     [MeasurableSpace X] [BorelSpace X] [TopologicalSpace Y] [T0Space Y] [SecondCountableTopology Y]
     {f : X → Y} (hf : Continuous f) (hsurj : Surjective f) :
     MeasurableSpace.map f ‹MeasurableSpace X› = borel Y := by
@@ -627,7 +627,7 @@ theorem Continuous.map_eq_borel {X Y : Type*} [TopologicalSpace X] [PolishSpace 
   exact hf.measurable.map_measurableSpace_eq hsurj
 #align continuous.map_eq_borel Continuous.map_eq_borel
 
-theorem Continuous.map_borel_eq {X Y : Type*} [TopologicalSpace X] [PolishSpace X]
+lemma Continuous.map_borel_eq {X Y : Type*} [TopologicalSpace X] [PolishSpace X]
     [TopologicalSpace Y] [T0Space Y] [SecondCountableTopology Y] {f : X → Y} (hf : Continuous f)
     (hsurj : Surjective f) : MeasurableSpace.map f (borel X) = borel Y := by
   borelize X
@@ -820,7 +820,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
     exact disjoint_left.1 (hvw.closure_left w_open) this xw
 #align measure_theory.measurable_set_range_of_continuous_injective MeasureTheory.measurableSet_range_of_continuous_injective
 
-theorem _root_.IsClosed.measurableSet_image_of_continuousOn_injOn
+lemma _root_.IsClosed.measurableSet_image_of_continuousOn_injOn
     [TopologicalSpace γ] [PolishSpace γ] {β : Type*} [TopologicalSpace β] [T2Space β]
     [MeasurableSpace β] [OpensMeasurableSpace β] {s : Set γ} (hs : IsClosed s) {f : γ → β}
     (f_cont : ContinuousOn f s) (f_inj : InjOn f s) : MeasurableSet (f '' s) := by
@@ -1058,14 +1058,14 @@ namespace MeasureTheory
 variable (α)
 variable [MeasurableSpace α] [StandardBorelSpace α]
 
-theorem exists_nat_measurableEquiv_range_coe_fin_of_finite [Finite α] :
+lemma exists_nat_measurableEquiv_range_coe_fin_of_finite [Finite α] :
     ∃ n : ℕ, Nonempty (α ≃ᵐ range ((↑) : Fin n → ℝ)) := by
   obtain ⟨n, ⟨n_equiv⟩⟩ := Finite.exists_equiv_fin α
   refine' ⟨n, ⟨PolishSpace.Equiv.measurableEquiv (n_equiv.trans _)⟩⟩
   exact Equiv.ofInjective _ (Nat.cast_injective.comp Fin.val_injective)
 #align measure_theory.exists_nat_measurable_equiv_range_coe_fin_of_finite MeasureTheory.exists_nat_measurableEquiv_range_coe_fin_of_finite
 
-theorem measurableEquiv_range_coe_nat_of_infinite_of_countable [Infinite α] [Countable α] :
+lemma measurableEquiv_range_coe_nat_of_infinite_of_countable [Infinite α] [Countable α] :
     Nonempty (α ≃ᵐ range ((↑) : ℕ → ℝ)) := by
   have : PolishSpace (range ((↑) : ℕ → ℝ)) :=
     Nat.closedEmbedding_coe_real.isClosedMap.isClosed_range.polishSpace

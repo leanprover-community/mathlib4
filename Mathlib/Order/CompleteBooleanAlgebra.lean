@@ -88,11 +88,11 @@ class CompletelyDistribLattice (α : Type u) extends CompleteLattice α where
   protected iInf_iSup_eq {ι : Type u} {κ : ι → Type u} (f : ∀ a, κ a → α) :
     (⨅ a, ⨆ b, f a b) = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a)
 
-theorem le_iInf_iSup [CompleteLattice α] {f : ∀ a, κ a → α} :
+lemma le_iInf_iSup [CompleteLattice α] {f : ∀ a, κ a → α} :
     (⨆ g : ∀ a, κ a, ⨅ a, f a (g a)) ≤ ⨅ a, ⨆ b, f a b :=
   iSup_le fun _ => le_iInf fun a => le_trans (iInf_le _ a) (le_iSup _ _)
 
-theorem iInf_iSup_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
+lemma iInf_iSup_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
     (⨅ a, ⨆ b, f a b) = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a) :=
   (le_antisymm · le_iInf_iSup) <| calc
     _ = ⨅ a : range (range <| f ·), ⨆ b : a.1, b.1 := by
@@ -103,11 +103,11 @@ theorem iInf_iSup_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
       refine le_iInf fun a => le_trans (iInf_le _ ⟨range (f a), a, rfl⟩) ?_
       rw [← Classical.choose_spec (g ⟨_, a, rfl⟩).2]
 
-theorem iSup_iInf_le [CompleteLattice α] {f : ∀ a, κ a → α} :
+lemma iSup_iInf_le [CompleteLattice α] {f : ∀ a, κ a → α} :
     (⨆ a, ⨅ b, f a b) ≤ ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) :=
   le_iInf_iSup (α := αᵒᵈ)
 
-theorem iSup_iInf_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
+lemma iSup_iInf_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
     (⨆ a, ⨅ b, f a b) = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) := by
   refine le_antisymm iSup_iInf_le ?_
   rw [iInf_iSup_eq]
@@ -181,74 +181,74 @@ instance OrderDual.instCoframe : Coframe αᵒᵈ where
   iInf_sup_le_sup_sInf := @Frame.inf_sSup_le_iSup_inf α _
 #align order_dual.coframe OrderDual.instCoframe
 
-theorem inf_sSup_eq : a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
+lemma inf_sSup_eq : a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
   (Frame.inf_sSup_le_iSup_inf _ _).antisymm iSup_inf_le_inf_sSup
 #align inf_Sup_eq inf_sSup_eq
 
-theorem sSup_inf_eq : sSup s ⊓ b = ⨆ a ∈ s, a ⊓ b := by
+lemma sSup_inf_eq : sSup s ⊓ b = ⨆ a ∈ s, a ⊓ b := by
   simpa only [inf_comm] using @inf_sSup_eq α _ s b
 #align Sup_inf_eq sSup_inf_eq
 
-theorem iSup_inf_eq (f : ι → α) (a : α) : (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a := by
+lemma iSup_inf_eq (f : ι → α) (a : α) : (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a := by
   rw [iSup, sSup_inf_eq, iSup_range]
 #align supr_inf_eq iSup_inf_eq
 
-theorem inf_iSup_eq (a : α) (f : ι → α) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i := by
+lemma inf_iSup_eq (a : α) (f : ι → α) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i := by
   simpa only [inf_comm] using iSup_inf_eq f a
 #align inf_supr_eq inf_iSup_eq
 
-theorem iSup₂_inf_eq {f : ∀ i, κ i → α} (a : α) :
+lemma iSup₂_inf_eq {f : ∀ i, κ i → α} (a : α) :
     (⨆ (i) (j), f i j) ⊓ a = ⨆ (i) (j), f i j ⊓ a := by
   simp only [iSup_inf_eq]
 #align bsupr_inf_eq iSup₂_inf_eq
 
-theorem inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) :
+lemma inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) :
     (a ⊓ ⨆ (i) (j), f i j) = ⨆ (i) (j), a ⊓ f i j := by
   simp only [inf_iSup_eq]
 #align inf_bsupr_eq inf_iSup₂_eq
 
-theorem iSup_inf_iSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
+lemma iSup_inf_iSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
     ((⨆ i, f i) ⊓ ⨆ j, g j) = ⨆ i : ι × ι', f i.1 ⊓ g i.2 := by
   simp_rw [iSup_inf_eq, inf_iSup_eq, iSup_prod]
 #align supr_inf_supr iSup_inf_iSup
 
-theorem biSup_inf_biSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
+lemma biSup_inf_biSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
     ((⨆ i ∈ s, f i) ⊓ ⨆ j ∈ t, g j) = ⨆ p ∈ s ×ˢ t, f (p : ι × ι').1 ⊓ g p.2 := by
   simp only [iSup_subtype', iSup_inf_iSup]
   exact (Equiv.surjective _).iSup_congr (Equiv.Set.prod s t).symm fun x => rfl
 #align bsupr_inf_bsupr biSup_inf_biSup
 
-theorem sSup_inf_sSup : sSup s ⊓ sSup t = ⨆ p ∈ s ×ˢ t, (p : α × α).1 ⊓ p.2 := by
+lemma sSup_inf_sSup : sSup s ⊓ sSup t = ⨆ p ∈ s ×ˢ t, (p : α × α).1 ⊓ p.2 := by
   simp only [sSup_eq_iSup, biSup_inf_biSup]
 #align Sup_inf_Sup sSup_inf_sSup
 
-theorem iSup_disjoint_iff {f : ι → α} : Disjoint (⨆ i, f i) a ↔ ∀ i, Disjoint (f i) a := by
+lemma iSup_disjoint_iff {f : ι → α} : Disjoint (⨆ i, f i) a ↔ ∀ i, Disjoint (f i) a := by
   simp only [disjoint_iff, iSup_inf_eq, iSup_eq_bot]
 #align supr_disjoint_iff iSup_disjoint_iff
 
-theorem disjoint_iSup_iff {f : ι → α} : Disjoint a (⨆ i, f i) ↔ ∀ i, Disjoint a (f i) := by
+lemma disjoint_iSup_iff {f : ι → α} : Disjoint a (⨆ i, f i) ↔ ∀ i, Disjoint a (f i) := by
   simpa only [disjoint_comm] using @iSup_disjoint_iff
 #align disjoint_supr_iff disjoint_iSup_iff
 
-theorem iSup₂_disjoint_iff {f : ∀ i, κ i → α} :
+lemma iSup₂_disjoint_iff {f : ∀ i, κ i → α} :
     Disjoint (⨆ (i) (j), f i j) a ↔ ∀ i j, Disjoint (f i j) a := by
   simp_rw [iSup_disjoint_iff]
 #align supr₂_disjoint_iff iSup₂_disjoint_iff
 
-theorem disjoint_iSup₂_iff {f : ∀ i, κ i → α} :
+lemma disjoint_iSup₂_iff {f : ∀ i, κ i → α} :
     Disjoint a (⨆ (i) (j), f i j) ↔ ∀ i j, Disjoint a (f i j) := by
   simp_rw [disjoint_iSup_iff]
 #align disjoint_supr₂_iff disjoint_iSup₂_iff
 
-theorem sSup_disjoint_iff {s : Set α} : Disjoint (sSup s) a ↔ ∀ b ∈ s, Disjoint b a := by
+lemma sSup_disjoint_iff {s : Set α} : Disjoint (sSup s) a ↔ ∀ b ∈ s, Disjoint b a := by
   simp only [disjoint_iff, sSup_inf_eq, iSup_eq_bot]
 #align Sup_disjoint_iff sSup_disjoint_iff
 
-theorem disjoint_sSup_iff {s : Set α} : Disjoint a (sSup s) ↔ ∀ b ∈ s, Disjoint a b := by
+lemma disjoint_sSup_iff {s : Set α} : Disjoint a (sSup s) ↔ ∀ b ∈ s, Disjoint a b := by
   simpa only [disjoint_comm] using @sSup_disjoint_iff
 #align disjoint_Sup_iff disjoint_sSup_iff
 
-theorem iSup_inf_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → α}
+lemma iSup_inf_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → α}
     (hf : Monotone f) (hg : Monotone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i := by
   refine' (le_iSup_inf_iSup f g).antisymm _
   rw [iSup_inf_iSup]
@@ -257,7 +257,7 @@ theorem iSup_inf_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ �
   exact ⟨j, inf_le_inf (hf h₁) (hg h₂)⟩
 #align supr_inf_of_monotone iSup_inf_of_monotone
 
-theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (swap (· ≤ ·))] {f g : ι → α}
+lemma iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (swap (· ≤ ·))] {f g : ι → α}
     (hf : Antitone f) (hg : Antitone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i :=
   @iSup_inf_of_monotone α _ ιᵒᵈ _ _ f g hf.dual_left hg.dual_left
 #align supr_inf_of_antitone iSup_inf_of_antitone
@@ -290,50 +290,50 @@ instance OrderDual.instFrame : Frame αᵒᵈ where
   inf_sSup_le_iSup_inf := @Coframe.iInf_sup_le_sup_sInf α _
 #align order_dual.frame OrderDual.instFrame
 
-theorem sup_sInf_eq : a ⊔ sInf s = ⨅ b ∈ s, a ⊔ b :=
+lemma sup_sInf_eq : a ⊔ sInf s = ⨅ b ∈ s, a ⊔ b :=
   @inf_sSup_eq αᵒᵈ _ _ _
 #align sup_Inf_eq sup_sInf_eq
 
-theorem sInf_sup_eq : sInf s ⊔ b = ⨅ a ∈ s, a ⊔ b :=
+lemma sInf_sup_eq : sInf s ⊔ b = ⨅ a ∈ s, a ⊔ b :=
   @sSup_inf_eq αᵒᵈ _ _ _
 #align Inf_sup_eq sInf_sup_eq
 
-theorem iInf_sup_eq (f : ι → α) (a : α) : (⨅ i, f i) ⊔ a = ⨅ i, f i ⊔ a :=
+lemma iInf_sup_eq (f : ι → α) (a : α) : (⨅ i, f i) ⊔ a = ⨅ i, f i ⊔ a :=
   @iSup_inf_eq αᵒᵈ _ _ _ _
 #align infi_sup_eq iInf_sup_eq
 
-theorem sup_iInf_eq (a : α) (f : ι → α) : (a ⊔ ⨅ i, f i) = ⨅ i, a ⊔ f i :=
+lemma sup_iInf_eq (a : α) (f : ι → α) : (a ⊔ ⨅ i, f i) = ⨅ i, a ⊔ f i :=
   @inf_iSup_eq αᵒᵈ _ _ _ _
 #align sup_infi_eq sup_iInf_eq
 
-theorem iInf₂_sup_eq {f : ∀ i, κ i → α} (a : α) : (⨅ (i) (j), f i j) ⊔ a = ⨅ (i) (j), f i j ⊔ a :=
+lemma iInf₂_sup_eq {f : ∀ i, κ i → α} (a : α) : (⨅ (i) (j), f i j) ⊔ a = ⨅ (i) (j), f i j ⊔ a :=
   @iSup₂_inf_eq αᵒᵈ _ _ _ _ _
 #align binfi_sup_eq iInf₂_sup_eq
 
-theorem sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ (i) (j), f i j) = ⨅ (i) (j), a ⊔ f i j :=
+lemma sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ (i) (j), f i j) = ⨅ (i) (j), a ⊔ f i j :=
   @inf_iSup₂_eq αᵒᵈ _ _ _ _ _
 #align sup_binfi_eq sup_iInf₂_eq
 
-theorem iInf_sup_iInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
+lemma iInf_sup_iInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
     ((⨅ i, f i) ⊔ ⨅ i, g i) = ⨅ i : ι × ι', f i.1 ⊔ g i.2 :=
   @iSup_inf_iSup αᵒᵈ _ _ _ _ _
 #align infi_sup_infi iInf_sup_iInf
 
-theorem biInf_sup_biInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
+lemma biInf_sup_biInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
     ((⨅ i ∈ s, f i) ⊔ ⨅ j ∈ t, g j) = ⨅ p ∈ s ×ˢ t, f (p : ι × ι').1 ⊔ g p.2 :=
   @biSup_inf_biSup αᵒᵈ _ _ _ _ _ _ _
 #align binfi_sup_binfi biInf_sup_biInf
 
-theorem sInf_sup_sInf : sInf s ⊔ sInf t = ⨅ p ∈ s ×ˢ t, (p : α × α).1 ⊔ p.2 :=
+lemma sInf_sup_sInf : sInf s ⊔ sInf t = ⨅ p ∈ s ×ˢ t, (p : α × α).1 ⊔ p.2 :=
   @sSup_inf_sSup αᵒᵈ _ _ _
 #align Inf_sup_Inf sInf_sup_sInf
 
-theorem iInf_sup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (swap (· ≤ ·))] {f g : ι → α}
+lemma iInf_sup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (swap (· ≤ ·))] {f g : ι → α}
     (hf : Monotone f) (hg : Monotone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i :=
   @iSup_inf_of_antitone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
 #align infi_sup_of_monotone iInf_sup_of_monotone
 
-theorem iInf_sup_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → α}
+lemma iInf_sup_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → α}
     (hf : Antitone f) (hg : Antitone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i :=
   @iSup_inf_of_monotone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
 #align infi_sup_of_antitone iInf_sup_of_antitone
@@ -427,28 +427,28 @@ section CompleteBooleanAlgebra
 
 variable [CompleteBooleanAlgebra α] {a b : α} {s : Set α} {f : ι → α}
 
-theorem compl_iInf : (iInf f)ᶜ = ⨆ i, (f i)ᶜ :=
+lemma compl_iInf : (iInf f)ᶜ = ⨆ i, (f i)ᶜ :=
   le_antisymm
     (compl_le_of_compl_le <| le_iInf fun i => compl_le_of_compl_le <|
       le_iSup (HasCompl.compl ∘ f) i)
     (iSup_le fun _ => compl_le_compl <| iInf_le _ _)
 #align compl_infi compl_iInf
 
-theorem compl_iSup : (iSup f)ᶜ = ⨅ i, (f i)ᶜ :=
+lemma compl_iSup : (iSup f)ᶜ = ⨅ i, (f i)ᶜ :=
   compl_injective (by simp [compl_iInf])
 #align compl_supr compl_iSup
 
-theorem compl_sInf : (sInf s)ᶜ = ⨆ i ∈ s, iᶜ := by simp only [sInf_eq_iInf, compl_iInf]
+lemma compl_sInf : (sInf s)ᶜ = ⨆ i ∈ s, iᶜ := by simp only [sInf_eq_iInf, compl_iInf]
 #align compl_Inf compl_sInf
 
-theorem compl_sSup : (sSup s)ᶜ = ⨅ i ∈ s, iᶜ := by simp only [sSup_eq_iSup, compl_iSup]
+lemma compl_sSup : (sSup s)ᶜ = ⨅ i ∈ s, iᶜ := by simp only [sSup_eq_iSup, compl_iSup]
 #align compl_Sup compl_sSup
 
-theorem compl_sInf' : (sInf s)ᶜ = sSup (HasCompl.compl '' s) :=
+lemma compl_sInf' : (sInf s)ᶜ = sSup (HasCompl.compl '' s) :=
   compl_sInf.trans sSup_image.symm
 #align compl_Inf' compl_sInf'
 
-theorem compl_sSup' : (sSup s)ᶜ = sInf (HasCompl.compl '' s) :=
+lemma compl_sSup' : (sSup s)ᶜ = sInf (HasCompl.compl '' s) :=
   compl_sSup.trans sInf_image.symm
 #align compl_Sup' compl_sSup'
 
@@ -603,12 +603,12 @@ instance instCompleteLinearOrder : CompleteLinearOrder PUnit :=
   { PUnit.instCompleteBooleanAlgebra, PUnit.instLinearOrder with }
 
 @[simp]
-theorem sSup_eq : sSup s = unit :=
+lemma sSup_eq : sSup s = unit :=
   rfl
 #align punit.Sup_eq PUnit.sSup_eq
 
 @[simp]
-theorem sInf_eq : sInf s = unit :=
+lemma sInf_eq : sInf s = unit :=
   rfl
 #align punit.Inf_eq PUnit.sInf_eq
 

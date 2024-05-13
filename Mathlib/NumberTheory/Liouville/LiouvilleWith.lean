@@ -143,43 +143,43 @@ theorem rat_mul_iff (hr : r ≠ 0) : LiouvilleWith p (r * x) ↔ LiouvilleWith p
   rw [mul_comm, mul_rat_iff hr]
 #align liouville_with.rat_mul_iff LiouvilleWith.rat_mul_iff
 
-theorem rat_mul (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (r * x) :=
+lemma rat_mul (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (r * x) :=
   (rat_mul_iff hr).2 h
 #align liouville_with.rat_mul LiouvilleWith.rat_mul
 
-theorem mul_int_iff (hm : m ≠ 0) : LiouvilleWith p (x * m) ↔ LiouvilleWith p x := by
+lemma mul_int_iff (hm : m ≠ 0) : LiouvilleWith p (x * m) ↔ LiouvilleWith p x := by
   rw [← Rat.cast_intCast, mul_rat_iff (Int.cast_ne_zero.2 hm)]
 #align liouville_with.mul_int_iff LiouvilleWith.mul_int_iff
 
-theorem mul_int (h : LiouvilleWith p x) (hm : m ≠ 0) : LiouvilleWith p (x * m) :=
+lemma mul_int (h : LiouvilleWith p x) (hm : m ≠ 0) : LiouvilleWith p (x * m) :=
   (mul_int_iff hm).2 h
 #align liouville_with.mul_int LiouvilleWith.mul_int
 
-theorem int_mul_iff (hm : m ≠ 0) : LiouvilleWith p (m * x) ↔ LiouvilleWith p x := by
+lemma int_mul_iff (hm : m ≠ 0) : LiouvilleWith p (m * x) ↔ LiouvilleWith p x := by
   rw [mul_comm, mul_int_iff hm]
 #align liouville_with.int_mul_iff LiouvilleWith.int_mul_iff
 
-theorem int_mul (h : LiouvilleWith p x) (hm : m ≠ 0) : LiouvilleWith p (m * x) :=
+lemma int_mul (h : LiouvilleWith p x) (hm : m ≠ 0) : LiouvilleWith p (m * x) :=
   (int_mul_iff hm).2 h
 #align liouville_with.int_mul LiouvilleWith.int_mul
 
-theorem mul_nat_iff (hn : n ≠ 0) : LiouvilleWith p (x * n) ↔ LiouvilleWith p x := by
+lemma mul_nat_iff (hn : n ≠ 0) : LiouvilleWith p (x * n) ↔ LiouvilleWith p x := by
   rw [← Rat.cast_natCast, mul_rat_iff (Nat.cast_ne_zero.2 hn)]
 #align liouville_with.mul_nat_iff LiouvilleWith.mul_nat_iff
 
-theorem mul_nat (h : LiouvilleWith p x) (hn : n ≠ 0) : LiouvilleWith p (x * n) :=
+lemma mul_nat (h : LiouvilleWith p x) (hn : n ≠ 0) : LiouvilleWith p (x * n) :=
   (mul_nat_iff hn).2 h
 #align liouville_with.mul_nat LiouvilleWith.mul_nat
 
-theorem nat_mul_iff (hn : n ≠ 0) : LiouvilleWith p (n * x) ↔ LiouvilleWith p x := by
+lemma nat_mul_iff (hn : n ≠ 0) : LiouvilleWith p (n * x) ↔ LiouvilleWith p x := by
   rw [mul_comm, mul_nat_iff hn]
 #align liouville_with.nat_mul_iff LiouvilleWith.nat_mul_iff
 
-theorem nat_mul (h : LiouvilleWith p x) (hn : n ≠ 0) : LiouvilleWith p (n * x) := by
+lemma nat_mul (h : LiouvilleWith p x) (hn : n ≠ 0) : LiouvilleWith p (n * x) := by
   rw [mul_comm]; exact h.mul_nat hn
 #align liouville_with.nat_mul LiouvilleWith.nat_mul
 
-theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := by
+lemma add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := by
   rcases h.exists_pos with ⟨C, _hC₀, hC⟩
   refine ⟨r.den ^ p * C, (tendsto_id.nsmul_atTop r.pos).frequently (hC.mono ?_)⟩
   rintro n ⟨hn, m, hne, hlt⟩
@@ -195,53 +195,53 @@ theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := b
 #align liouville_with.add_rat LiouvilleWith.add_rat
 
 @[simp]
-theorem add_rat_iff : LiouvilleWith p (x + r) ↔ LiouvilleWith p x :=
+lemma add_rat_iff : LiouvilleWith p (x + r) ↔ LiouvilleWith p x :=
   ⟨fun h => by simpa using h.add_rat (-r), fun h => h.add_rat r⟩
 #align liouville_with.add_rat_iff LiouvilleWith.add_rat_iff
 
 @[simp]
-theorem rat_add_iff : LiouvilleWith p (r + x) ↔ LiouvilleWith p x := by rw [add_comm, add_rat_iff]
+lemma rat_add_iff : LiouvilleWith p (r + x) ↔ LiouvilleWith p x := by rw [add_comm, add_rat_iff]
 #align liouville_with.rat_add_iff LiouvilleWith.rat_add_iff
 
-theorem rat_add (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (r + x) :=
+lemma rat_add (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (r + x) :=
   add_comm x r ▸ h.add_rat r
 #align liouville_with.rat_add LiouvilleWith.rat_add
 
 @[simp]
-theorem add_int_iff : LiouvilleWith p (x + m) ↔ LiouvilleWith p x := by
+lemma add_int_iff : LiouvilleWith p (x + m) ↔ LiouvilleWith p x := by
   rw [← Rat.cast_intCast m, add_rat_iff]
 #align liouville_with.add_int_iff LiouvilleWith.add_int_iff
 
 @[simp]
-theorem int_add_iff : LiouvilleWith p (m + x) ↔ LiouvilleWith p x := by rw [add_comm, add_int_iff]
+lemma int_add_iff : LiouvilleWith p (m + x) ↔ LiouvilleWith p x := by rw [add_comm, add_int_iff]
 #align liouville_with.int_add_iff LiouvilleWith.int_add_iff
 
 @[simp]
-theorem add_nat_iff : LiouvilleWith p (x + n) ↔ LiouvilleWith p x := by
+lemma add_nat_iff : LiouvilleWith p (x + n) ↔ LiouvilleWith p x := by
   rw [← Rat.cast_natCast n, add_rat_iff]
 #align liouville_with.add_nat_iff LiouvilleWith.add_nat_iff
 
 @[simp]
-theorem nat_add_iff : LiouvilleWith p (n + x) ↔ LiouvilleWith p x := by rw [add_comm, add_nat_iff]
+lemma nat_add_iff : LiouvilleWith p (n + x) ↔ LiouvilleWith p x := by rw [add_comm, add_nat_iff]
 #align liouville_with.nat_add_iff LiouvilleWith.nat_add_iff
 
-theorem add_int (h : LiouvilleWith p x) (m : ℤ) : LiouvilleWith p (x + m) :=
+lemma add_int (h : LiouvilleWith p x) (m : ℤ) : LiouvilleWith p (x + m) :=
   add_int_iff.2 h
 #align liouville_with.add_int LiouvilleWith.add_int
 
-theorem int_add (h : LiouvilleWith p x) (m : ℤ) : LiouvilleWith p (m + x) :=
+lemma int_add (h : LiouvilleWith p x) (m : ℤ) : LiouvilleWith p (m + x) :=
   int_add_iff.2 h
 #align liouville_with.int_add LiouvilleWith.int_add
 
-theorem add_nat (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (x + n) :=
+lemma add_nat (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (x + n) :=
   h.add_int n
 #align liouville_with.add_nat LiouvilleWith.add_nat
 
-theorem nat_add (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (n + x) :=
+lemma nat_add (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (n + x) :=
   h.int_add n
 #align liouville_with.nat_add LiouvilleWith.nat_add
 
-protected theorem neg (h : LiouvilleWith p x) : LiouvilleWith p (-x) := by
+protected lemma neg (h : LiouvilleWith p x) : LiouvilleWith p (-x) := by
   rcases h with ⟨C, hC⟩
   refine ⟨C, hC.mono ?_⟩
   rintro n ⟨m, hne, hlt⟩
@@ -252,62 +252,62 @@ protected theorem neg (h : LiouvilleWith p x) : LiouvilleWith p (-x) := by
 #align liouville_with.neg LiouvilleWith.neg
 
 @[simp]
-theorem neg_iff : LiouvilleWith p (-x) ↔ LiouvilleWith p x :=
+lemma neg_iff : LiouvilleWith p (-x) ↔ LiouvilleWith p x :=
   ⟨fun h => neg_neg x ▸ h.neg, LiouvilleWith.neg⟩
 #align liouville_with.neg_iff LiouvilleWith.neg_iff
 
 @[simp]
-theorem sub_rat_iff : LiouvilleWith p (x - r) ↔ LiouvilleWith p x := by
+lemma sub_rat_iff : LiouvilleWith p (x - r) ↔ LiouvilleWith p x := by
   rw [sub_eq_add_neg, ← Rat.cast_neg, add_rat_iff]
 #align liouville_with.sub_rat_iff LiouvilleWith.sub_rat_iff
 
-theorem sub_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x - r) :=
+lemma sub_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x - r) :=
   sub_rat_iff.2 h
 #align liouville_with.sub_rat LiouvilleWith.sub_rat
 
 @[simp]
-theorem sub_int_iff : LiouvilleWith p (x - m) ↔ LiouvilleWith p x := by
+lemma sub_int_iff : LiouvilleWith p (x - m) ↔ LiouvilleWith p x := by
   rw [← Rat.cast_intCast, sub_rat_iff]
 #align liouville_with.sub_int_iff LiouvilleWith.sub_int_iff
 
-theorem sub_int (h : LiouvilleWith p x) (m : ℤ) : LiouvilleWith p (x - m) :=
+lemma sub_int (h : LiouvilleWith p x) (m : ℤ) : LiouvilleWith p (x - m) :=
   sub_int_iff.2 h
 #align liouville_with.sub_int LiouvilleWith.sub_int
 
 @[simp]
-theorem sub_nat_iff : LiouvilleWith p (x - n) ↔ LiouvilleWith p x := by
+lemma sub_nat_iff : LiouvilleWith p (x - n) ↔ LiouvilleWith p x := by
   rw [← Rat.cast_natCast, sub_rat_iff]
 #align liouville_with.sub_nat_iff LiouvilleWith.sub_nat_iff
 
-theorem sub_nat (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (x - n) :=
+lemma sub_nat (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (x - n) :=
   sub_nat_iff.2 h
 #align liouville_with.sub_nat LiouvilleWith.sub_nat
 
 @[simp]
-theorem rat_sub_iff : LiouvilleWith p (r - x) ↔ LiouvilleWith p x := by simp [sub_eq_add_neg]
+lemma rat_sub_iff : LiouvilleWith p (r - x) ↔ LiouvilleWith p x := by simp [sub_eq_add_neg]
 #align liouville_with.rat_sub_iff LiouvilleWith.rat_sub_iff
 
-theorem rat_sub (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (r - x) :=
+lemma rat_sub (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (r - x) :=
   rat_sub_iff.2 h
 #align liouville_with.rat_sub LiouvilleWith.rat_sub
 
 @[simp]
-theorem int_sub_iff : LiouvilleWith p (m - x) ↔ LiouvilleWith p x := by simp [sub_eq_add_neg]
+lemma int_sub_iff : LiouvilleWith p (m - x) ↔ LiouvilleWith p x := by simp [sub_eq_add_neg]
 #align liouville_with.int_sub_iff LiouvilleWith.int_sub_iff
 
-theorem int_sub (h : LiouvilleWith p x) (m : ℤ) : LiouvilleWith p (m - x) :=
+lemma int_sub (h : LiouvilleWith p x) (m : ℤ) : LiouvilleWith p (m - x) :=
   int_sub_iff.2 h
 #align liouville_with.int_sub LiouvilleWith.int_sub
 
 @[simp]
-theorem nat_sub_iff : LiouvilleWith p (n - x) ↔ LiouvilleWith p x := by simp [sub_eq_add_neg]
+lemma nat_sub_iff : LiouvilleWith p (n - x) ↔ LiouvilleWith p x := by simp [sub_eq_add_neg]
 #align liouville_with.nat_sub_iff LiouvilleWith.nat_sub_iff
 
-theorem nat_sub (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (n - x) :=
+lemma nat_sub (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (n - x) :=
   nat_sub_iff.2 h
 #align liouville_with.nat_sub LiouvilleWith.nat_sub
 
-theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := by
+lemma ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := by
   rintro rfl; rename' m => M
   rcases ((eventually_gt_atTop 0).and_frequently (h.frequently_lt_rpow_neg hp)).exists with
     ⟨n : ℕ, hn : 0 < n, m : ℤ, hne : (M : ℝ) ≠ m / n, hlt : |(M - m / n : ℝ)| < n ^ (-1 : ℝ)⟩

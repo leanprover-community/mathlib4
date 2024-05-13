@@ -121,7 +121,7 @@ theorem LinearMap.lTensor_surjective (hg : Function.Surjective g) :
     obtain ⟨y, rfl⟩ := hy
     exact ⟨x + y, map_add _ _ _⟩
 
-theorem LinearMap.lTensor_range :
+lemma LinearMap.lTensor_range :
     range (lTensor Q g) =
       range (lTensor Q (Submodule.subtype (range g))) := by
   have : g = (Submodule.subtype _).comp g.rangeRestrict := rfl
@@ -146,7 +146,7 @@ theorem LinearMap.rTensor_surjective (hg : Function.Surjective g) :
     obtain ⟨y, rfl⟩ := hy
     exact ⟨x + y, map_add _ _ _⟩
 
-theorem LinearMap.rTensor_range :
+lemma LinearMap.rTensor_range :
     range (rTensor Q g) =
       range (rTensor Q (Submodule.subtype (range g))) := by
   have : g = (Submodule.subtype _).comp g.rangeRestrict := rfl
@@ -397,7 +397,7 @@ variable {M' N' P' : Type*}
     {f' : M' →ₗ[R] N'} {g' : N' →ₗ[R] P'}
     (hfg' : Exact f' g') (hg' : Function.Surjective g')
 
-theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g g') := by
+lemma TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g g') := by
   rw [← lTensor_comp_rTensor, coe_comp]
   exact Function.Surjective.comp (lTensor_surjective _ hg') (rTensor_surjective _ hg)
 

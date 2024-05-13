@@ -87,12 +87,12 @@ lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithTop α) = b.
   rw [← coe_mul, untop'_coe, untop'_coe, untop'_coe]
 #align with_top.untop'_zero_mul WithTop.untop'_zero_mul
 
-theorem mul_lt_top' [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a * b < ⊤ := by
+lemma mul_lt_top' [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a * b < ⊤ := by
   rw [WithTop.lt_top_iff_ne_top] at *
   simp only [Ne, mul_eq_top_iff, *, and_false, false_and, or_self, not_false_eq_true]
 #align with_top.mul_lt_top' WithTop.mul_lt_top'
 
-theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ :=
+lemma mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ :=
   mul_lt_top' (WithTop.lt_top_iff_ne_top.2 ha) (WithTop.lt_top_iff_ne_top.2 hb)
 #align with_top.mul_lt_top WithTop.mul_lt_top
 
@@ -177,7 +177,7 @@ instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Non
 
 variable [CanonicallyOrderedCommSemiring α]
 
-private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := by
+private lemma distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := by
   induction' c using WithTop.recTopCoe with c
   · by_cases ha : a = 0 <;> simp [ha]
   · by_cases hc : c = 0
@@ -267,11 +267,11 @@ lemma unbot'_zero_mul (a b : WithBot α) : (a * b).unbot' 0 = a.unbot' 0 * b.unb
   rw [← coe_mul, unbot'_coe, unbot'_coe, unbot'_coe]
 #align with_bot.unbot'_zero_mul WithBot.unbot'_zero_mul
 
-theorem bot_lt_mul' [LT α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b :=
+lemma bot_lt_mul' [LT α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b :=
   WithTop.mul_lt_top' (α := αᵒᵈ) ha hb
 #align with_bot.bot_lt_mul' WithBot.bot_lt_mul'
 
-theorem bot_lt_mul [LT α] {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : ⊥ < a * b :=
+lemma bot_lt_mul [LT α] {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : ⊥ < a * b :=
   WithTop.mul_lt_top (α := αᵒᵈ) ha hb
 #align with_bot.bot_lt_mul WithBot.bot_lt_mul
 

@@ -34,7 +34,7 @@ namespace Mod_
 
 variable {A : Mon_ C} (M : Mod_ A)
 
-theorem assoc_flip :
+lemma assoc_flip :
     (A.X ◁ M.act) ≫ M.act = (α_ A.X A.X M.X).inv ≫ (A.mul ▷ M.X) ≫ M.act := by simp
 set_option linter.uppercaseLean3 false in
 #align Mod_.assoc_flip Mod_.assoc_flip
@@ -79,13 +79,13 @@ lemma hom_ext {M N : Mod_ A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f
   Hom.ext _ _ h
 
 @[simp]
-theorem id_hom' (M : Mod_ A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := by
+lemma id_hom' (M : Mod_ A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := by
   rfl
 set_option linter.uppercaseLean3 false in
 #align Mod_.id_hom' Mod_.id_hom'
 
 @[simp]
-theorem comp_hom' {M N K : Mod_ A} (f : M ⟶ N) (g : N ⟶ K) :
+lemma comp_hom' {M N K : Mod_ A} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
 set_option linter.uppercaseLean3 false in

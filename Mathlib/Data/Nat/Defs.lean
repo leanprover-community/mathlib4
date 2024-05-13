@@ -66,7 +66,7 @@ variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
 
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
-@[simp] theorem default_eq_zero : default = 0 := rfl
+@[simp] lemma default_eq_zero : default = 0 := rfl
 
 attribute [gcongr] Nat.succ_le_succ
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
@@ -328,7 +328,7 @@ lemma add_succ_lt_add (hab : a < b) (hcd : c < d) : a + c + 1 < b + d := by
   rw [Nat.add_assoc]; exact Nat.add_lt_add_of_lt_of_le hab (Nat.succ_le_iff.2 hcd)
 #align nat.add_succ_lt_add Nat.add_succ_lt_add
 
-theorem le_or_le_of_add_eq_add_pred (h : a + c = b + d - 1) : b ≤ a ∨ d ≤ c := by
+lemma le_or_le_of_add_eq_add_pred (h : a + c = b + d - 1) : b ≤ a ∨ d ≤ c := by
   rcases le_or_lt b a with h' | h' <;> [left; right]
   · exact h'
   · replace h' := Nat.add_lt_add_right h' c
@@ -1270,7 +1270,7 @@ lemma eq_zero_of_dvd_of_div_eq_zero (hab : a ∣ b) (h : b / a = 0) : b = 0 := b
 #align nat.eq_zero_of_dvd_of_div_eq_zero Nat.eq_zero_of_dvd_of_div_eq_zero
 
 @[gcongr]
-protected theorem div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 : d ≠ 0) : a / c ≤ b / d :=
+protected lemma div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 : d ≠ 0) : a / c ≤ b / d :=
   calc a / c ≤ b / c := Nat.div_le_div_right h1
     _ ≤ b / d := Nat.div_le_div_left h2 (Nat.pos_of_ne_zero h3)
 
@@ -1292,7 +1292,7 @@ lemma mul_add_mod_of_lt (h : c < b) : (a * b + c) % b = c := by
 
 set_option linter.deprecated false in
 @[simp]
-protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ bit1 n := by
+protected lemma not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ bit1 n := by
   rw [bit1, Nat.dvd_add_right, Nat.dvd_one]
   -- Porting note: was `cc`
   · decide
@@ -1852,11 +1852,11 @@ lemma findGreatest_mono [DecidablePred Q] (hPQ : ∀ n, P n → Q n) (hmn : m �
   le_trans (Nat.findGreatest_mono_right _ hmn) (findGreatest_mono_left hPQ _)
 #align nat.find_greatest_mono Nat.findGreatest_mono
 
-theorem findGreatest_is_greatest (hk : Nat.findGreatest P n < k) (hkb : k ≤ n) : ¬P k :=
+lemma findGreatest_is_greatest (hk : Nat.findGreatest P n < k) (hkb : k ≤ n) : ¬P k :=
   (findGreatest_eq_iff.1 rfl).2.2 hk hkb
 #align nat.find_greatest_is_greatest Nat.findGreatest_is_greatest
 
-theorem findGreatest_of_ne_zero (h : Nat.findGreatest P n = m) (h0 : m ≠ 0) : P m :=
+lemma findGreatest_of_ne_zero (h : Nat.findGreatest P n = m) (h0 : m ≠ 0) : P m :=
   (findGreatest_eq_iff.1 h).2.1 h0
 #align nat.find_greatest_of_ne_zero Nat.findGreatest_of_ne_zero
 

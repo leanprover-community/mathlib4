@@ -49,28 +49,28 @@ theorem inversion_mem_perpBisector_inversion_iff' (hR : R ≠ 0) (hy : y ≠ c) 
   · simp [*]
   · simp [inversion_mem_perpBisector_inversion_iff hR hx hy, hx]
 
-theorem preimage_inversion_perpBisector_inversion (hR : R ≠ 0) (hy : y ≠ c) :
+lemma preimage_inversion_perpBisector_inversion (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R ⁻¹' perpBisector c (inversion c R y) = sphere y (dist y c) \ {c} :=
   Set.ext fun _ ↦ inversion_mem_perpBisector_inversion_iff' hR hy
 
-theorem preimage_inversion_perpBisector (hR : R ≠ 0) (hy : y ≠ c) :
+lemma preimage_inversion_perpBisector (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R ⁻¹' perpBisector c y = sphere (inversion c R y) (R ^ 2 / dist y c) \ {c} := by
   rw [← dist_inversion_center, ← preimage_inversion_perpBisector_inversion hR,
     inversion_inversion] <;> simp [*]
 
-theorem image_inversion_perpBisector (hR : R ≠ 0) (hy : y ≠ c) :
+lemma image_inversion_perpBisector (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R '' perpBisector c y = sphere (inversion c R y) (R ^ 2 / dist y c) \ {c} := by
   rw [image_eq_preimage_of_inverse (inversion_involutive _ hR) (inversion_involutive _ hR),
     preimage_inversion_perpBisector hR hy]
 
-theorem preimage_inversion_sphere_dist_center (hR : R ≠ 0) (hy : y ≠ c) :
+lemma preimage_inversion_sphere_dist_center (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R ⁻¹' sphere y (dist y c) =
       insert c (perpBisector c (inversion c R y) : Set P) := by
   ext x
   rcases eq_or_ne x c with rfl | hx; · simp [dist_comm]
   rw [mem_preimage, mem_sphere, ← inversion_mem_perpBisector_inversion_iff hR] <;> simp [*]
 
-theorem image_inversion_sphere_dist_center (hR : R ≠ 0) (hy : y ≠ c) :
+lemma image_inversion_sphere_dist_center (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R '' sphere y (dist y c) = insert c (perpBisector c (inversion c R y) : Set P) := by
   rw [image_eq_preimage_of_inverse (inversion_involutive _ hR) (inversion_involutive _ hR),
     preimage_inversion_sphere_dist_center hR hy]

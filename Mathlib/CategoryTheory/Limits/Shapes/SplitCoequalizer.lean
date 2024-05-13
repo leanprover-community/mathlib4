@@ -111,7 +111,7 @@ def IsSplitCoequalizer.asCofork {Z : C} {h : Y ⟶ Z} (t : IsSplitCoequalizer f 
 #align category_theory.is_split_coequalizer.as_cofork CategoryTheory.IsSplitCoequalizer.asCofork
 
 @[simp]
-theorem IsSplitCoequalizer.asCofork_π {Z : C} {h : Y ⟶ Z} (t : IsSplitCoequalizer f g h) :
+lemma IsSplitCoequalizer.asCofork_π {Z : C} {h : Y ⟶ Z} (t : IsSplitCoequalizer f g h) :
     t.asCofork.π = h := rfl
 #align category_theory.is_split_coequalizer.as_cofork_π CategoryTheory.IsSplitCoequalizer.asCofork_π
 

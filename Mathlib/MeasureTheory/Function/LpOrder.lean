@@ -38,11 +38,11 @@ section Order
 
 variable [NormedLatticeAddCommGroup E]
 
-theorem coeFn_le (f g : Lp E p μ) : f ≤ᵐ[μ] g ↔ f ≤ g := by
+lemma coeFn_le (f g : Lp E p μ) : f ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← AEEqFun.coeFn_le]
 #align measure_theory.Lp.coe_fn_le MeasureTheory.Lp.coeFn_le
 
-theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
+lemma coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   rw [← coeFn_le]
   have h0 := Lp.coeFn_zero E p μ
   constructor <;> intro h <;> filter_upwards [h, h0] with _ _ h2
@@ -63,19 +63,19 @@ instance instOrderedAddCommGroup : OrderedAddCommGroup (Lp E p μ) :=
     add_le_add_left := fun _ _ => add_le_add_left }
 #align measure_theory.Lp.ordered_add_comm_group MeasureTheory.Lp.instOrderedAddCommGroup
 
-theorem _root_.MeasureTheory.Memℒp.sup {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
+lemma _root_.MeasureTheory.Memℒp.sup {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     Memℒp (f ⊔ g) p μ :=
   Memℒp.mono' (hf.norm.add hg.norm) (hf.1.sup hg.1)
     (Filter.eventually_of_forall fun x => norm_sup_le_add (f x) (g x))
 #align measure_theory.mem_ℒp.sup MeasureTheory.Memℒp.sup
 
-theorem _root_.MeasureTheory.Memℒp.inf {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
+lemma _root_.MeasureTheory.Memℒp.inf {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     Memℒp (f ⊓ g) p μ :=
   Memℒp.mono' (hf.norm.add hg.norm) (hf.1.inf hg.1)
     (Filter.eventually_of_forall fun x => norm_inf_le_add (f x) (g x))
 #align measure_theory.mem_ℒp.inf MeasureTheory.Memℒp.inf
 
-theorem _root_.MeasureTheory.Memℒp.abs {f : α → E} (hf : Memℒp f p μ) : Memℒp |f| p μ :=
+lemma _root_.MeasureTheory.Memℒp.abs {f : α → E} (hf : Memℒp f p μ) : Memℒp |f| p μ :=
   hf.sup hf.neg
 #align measure_theory.mem_ℒp.abs MeasureTheory.Memℒp.abs
 
@@ -89,15 +89,15 @@ instance instLattice : Lattice (Lp E p μ) :=
     exact (memℒp_congr_ae (AEEqFun.coeFn_inf _ _)).mpr (hf.inf hg)
 #align measure_theory.Lp.lattice MeasureTheory.Lp.instLattice
 
-theorem coeFn_sup (f g : Lp E p μ) : ⇑(f ⊔ g) =ᵐ[μ] ⇑f ⊔ ⇑g :=
+lemma coeFn_sup (f g : Lp E p μ) : ⇑(f ⊔ g) =ᵐ[μ] ⇑f ⊔ ⇑g :=
   AEEqFun.coeFn_sup _ _
 #align measure_theory.Lp.coe_fn_sup MeasureTheory.Lp.coeFn_sup
 
-theorem coeFn_inf (f g : Lp E p μ) : ⇑(f ⊓ g) =ᵐ[μ] ⇑f ⊓ ⇑g :=
+lemma coeFn_inf (f g : Lp E p μ) : ⇑(f ⊓ g) =ᵐ[μ] ⇑f ⊓ ⇑g :=
   AEEqFun.coeFn_inf _ _
 #align measure_theory.Lp.coe_fn_inf MeasureTheory.Lp.coeFn_inf
 
-theorem coeFn_abs (f : Lp E p μ) : ⇑|f| =ᵐ[μ] fun x => |f x| :=
+lemma coeFn_abs (f : Lp E p μ) : ⇑|f| =ᵐ[μ] fun x => |f x| :=
   AEEqFun.coeFn_abs _
 #align measure_theory.Lp.coe_fn_abs MeasureTheory.Lp.coeFn_abs
 

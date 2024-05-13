@@ -42,7 +42,7 @@ section general_case
 
 open MeasureTheory MeasureTheory.Measure FiniteDimensional ENNReal
 
-theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : ℝ}
+lemma MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : ℝ}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
     [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (hp : 0 < p) :
     μ (Metric.ball 0 1) =
@@ -70,7 +70,7 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E] [
   (h3 : ∀ x y, g (x + y) ≤ g x + g y) (h4 : ∀ {x}, g x = 0 → x = 0)
   (h5 :  ∀ r x, g (r • x) ≤ |r| * (g x))
 
-theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
+lemma MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
     μ {x : E | g x < 1} =
       .ofReal ((∫ (x : E), Real.exp (- (g x) ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
@@ -114,7 +114,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
     erw [← this.integral_comp']
     rfl
 
-theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
+lemma MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
     μ {x : E | g x ≤ r} = μ {x : E | g x < r} := by
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   letI F : Type _ := E
@@ -163,7 +163,7 @@ open BigOperators Real Fintype ENNReal FiniteDimensional MeasureTheory MeasureTh
 
 variable (ι : Type*) [Fintype ι] {p : ℝ} (hp : 1 ≤ p)
 
-theorem MeasureTheory.volume_sum_rpow_lt_one :
+lemma MeasureTheory.volume_sum_rpow_lt_one :
     volume {x : ι → ℝ | ∑ i, |x i| ^ p < 1} =
       .ofReal ((2 * Gamma (1 / p + 1)) ^ card ι / Gamma (card ι / p + 1)) := by
   have h₁ : 0 < p := by linarith
@@ -195,7 +195,7 @@ theorem MeasureTheory.volume_sum_rpow_lt_one :
       (f := fun x => exp (- x ^ p)), integral_exp_neg_rpow h₁]
   · rw [finrank_fintype_fun_eq_card]
 
-theorem MeasureTheory.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : ℝ) :
+lemma MeasureTheory.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : ℝ) :
     volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) < r} = (.ofReal r) ^ card ι *
       .ofReal ((2 * Gamma (1 / p + 1)) ^ card ι / Gamma (card ι / p + 1)) := by
   have h₁ : ∀ x : ι → ℝ, 0 ≤ ∑ i, |x i| ^ p := by
@@ -217,7 +217,7 @@ theorem MeasureTheory.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) 
       (rpow_nonneg (h₁ _) _) (le_of_lt hr) (by linarith : 0 < p), ← rpow_mul
       (h₁ _), div_mul_cancel₀ _ (ne_of_gt (by linarith) : p ≠ 0), Real.rpow_one]
 
-theorem MeasureTheory.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : ℝ) :
+lemma MeasureTheory.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : ℝ) :
     volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) ≤ r} = (.ofReal r) ^ card ι *
       .ofReal ((2 * Gamma (1 / p + 1)) ^ card ι / Gamma (card ι / p + 1)) := by
   have h₁ : 0 < p := by linarith
@@ -237,7 +237,7 @@ theorem MeasureTheory.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) 
   rw [measure_le_eq_lt _ nm_zero (fun x ↦ nm_neg x) (fun x y ↦ nm_add x y) (eq_zero _).mp
     (fun r x => nm_smul r x), volume_sum_rpow_lt _ hp]
 
-theorem Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
+lemma Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
     volume {x : ι → ℂ | ∑ i, ‖x i‖ ^ p < 1} =
       .ofReal ((π * Real.Gamma (2 / p + 1)) ^ card ι / Real.Gamma (2 * card ι / p + 1)) := by
   have h₁ : 0 < p := by linarith
@@ -270,7 +270,7 @@ theorem Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
   · rw [finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const, smul_eq_mul,
        Nat.cast_mul, Nat.cast_ofNat, Fintype.card, mul_comm]
 
-theorem Complex.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : ℝ) :
+lemma Complex.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : ℝ) :
     volume {x : ι → ℂ | (∑ i, ‖x i‖ ^ p) ^ (1 / p) < r} = (.ofReal r) ^ (2 * card ι) *
       .ofReal ((π * Real.Gamma (2 / p + 1)) ^ card ι / Real.Gamma (2 * card ι / p + 1)) := by
   have h₁ : ∀ x : ι → ℂ, 0 ≤ ∑ i, ‖x i‖ ^ p := by
@@ -293,7 +293,7 @@ theorem Complex.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
       (ne_of_gt (by linarith) : p ≠ 0), Real.rpow_one, finrank_pi_fintype ℝ,
       Complex.finrank_real_complex, Finset.sum_const, smul_eq_mul, mul_comm, Fintype.card]
 
-theorem Complex.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : ℝ) :
+lemma Complex.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : ℝ) :
     volume {x : ι → ℂ | (∑ i, ‖x i‖ ^ p) ^ (1 / p) ≤ r} = (.ofReal r) ^ (2 * card ι) *
       .ofReal ((π * Real.Gamma (2 / p + 1)) ^ card ι / Real.Gamma (2 * card ι / p + 1)) := by
   have h₁ : 0 < p := by linarith
@@ -321,7 +321,7 @@ variable (ι : Type*) [Nonempty ι] [Fintype ι]
 
 open Fintype Real MeasureTheory MeasureTheory.Measure ENNReal
 
-theorem EuclideanSpace.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
+lemma EuclideanSpace.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
     volume (Metric.ball x r) = (.ofReal r) ^ card ι *
       .ofReal (Real.sqrt π  ^ card ι / Gamma (card ι / 2 + 1)) := by
   obtain hr | hr := le_total r 0
@@ -338,7 +338,7 @@ theorem EuclideanSpace.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
     · rw [Gamma_add_one (by norm_num), Gamma_one_half_eq, ← mul_assoc, mul_div_cancel₀ _
         two_ne_zero, one_mul]
 
-theorem EuclideanSpace.volume_closedBall (x : EuclideanSpace ℝ ι) (r : ℝ) :
+lemma EuclideanSpace.volume_closedBall (x : EuclideanSpace ℝ ι) (r : ℝ) :
     volume (Metric.closedBall x r) = (.ofReal r) ^ card ι *
       .ofReal (sqrt π  ^ card ι / Gamma (card ι / 2 + 1)) := by
   rw [addHaar_closedBall_eq_addHaar_ball, EuclideanSpace.volume_ball]
@@ -356,7 +356,7 @@ open MeasureTheory MeasureTheory.Measure ENNReal Real FiniteDimensional
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E] [Nontrivial E]
 
-theorem InnerProductSpace.volume_ball (x : E) (r : ℝ) :
+lemma InnerProductSpace.volume_ball (x : E) (r : ℝ) :
     volume (Metric.ball x r) = (.ofReal r) ^ finrank ℝ E *
       .ofReal (sqrt π ^ finrank ℝ E / Gamma (finrank ℝ E / 2 + 1)) := by
   rw [← ((stdOrthonormalBasis ℝ E).measurePreserving_repr_symm).measure_preimage
@@ -367,7 +367,7 @@ theorem InnerProductSpace.volume_ball (x : E) (r : ℝ) :
   convert this
   simp only [LinearIsometryEquiv.preimage_ball, LinearIsometryEquiv.symm_symm, _root_.map_zero]
 
-theorem InnerProductSpace.volume_closedBall (x : E) (r : ℝ) :
+lemma InnerProductSpace.volume_closedBall (x : E) (r : ℝ) :
     volume (Metric.closedBall x r) = (.ofReal r) ^ finrank ℝ E *
       .ofReal (sqrt π  ^ finrank ℝ E / Gamma (finrank ℝ E / 2 + 1)) := by
   rw [addHaar_closedBall_eq_addHaar_ball, InnerProductSpace.volume_ball _]
@@ -379,14 +379,14 @@ section Complex
 open MeasureTheory MeasureTheory.Measure ENNReal
 
 @[simp]
-theorem Complex.volume_ball (a : ℂ) (r : ℝ) :
+lemma Complex.volume_ball (a : ℂ) (r : ℝ) :
     volume (Metric.ball a r) = .ofReal r ^ 2 * NNReal.pi := by
   rw [InnerProductSpace.volume_ball a r, finrank_real_complex, Nat.cast_ofNat, div_self two_ne_zero,
     one_add_one_eq_two, Real.Gamma_two, div_one, Real.sq_sqrt (by positivity),
     ← NNReal.coe_real_pi, ofReal_coe_nnreal]
 
 @[simp]
-theorem Complex.volume_closedBall (a : ℂ) (r : ℝ) :
+lemma Complex.volume_closedBall (a : ℂ) (r : ℝ) :
     volume (Metric.closedBall a r) = .ofReal r ^ 2 * NNReal.pi := by
   rw [addHaar_closedBall_eq_addHaar_ball, Complex.volume_ball]
 

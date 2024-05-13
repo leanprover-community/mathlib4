@@ -144,7 +144,7 @@ class GCommRing [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] extends GRing A, 
 
 end Defs
 
-theorem of_eq_of_gradedMonoid_eq {A : ι → Type*} [∀ i : ι, AddCommMonoid (A i)] {i j : ι} {a : A i}
+lemma of_eq_of_gradedMonoid_eq {A : ι → Type*} [∀ i : ι, AddCommMonoid (A i)] {i j : ι} {a : A i}
     {b : A j} (h : GradedMonoid.mk i a = GradedMonoid.mk j b) :
     DirectSum.of A i a = DirectSum.of A j b :=
   DFinsupp.single_eq_of_sigma_eq h
@@ -161,7 +161,7 @@ variable [Zero ι] [GradedMonoid.GOne A] [∀ i, AddCommMonoid (A i)]
 
 instance : One (⨁ i, A i) where one := DirectSum.of A 0 GradedMonoid.GOne.one
 
-theorem one_def : 1 = DirectSum.of A 0 GradedMonoid.GOne.one := rfl
+lemma one_def : 1 = DirectSum.of A 0 GradedMonoid.GOne.one := rfl
 
 end One
 
@@ -204,16 +204,16 @@ instance : NonUnitalNonAssocSemiring (⨁ i, A i) :=
 
 variable {A}
 
-theorem mulHom_apply (a b : ⨁ i, A i) : mulHom A a b = a * b := rfl
+lemma mulHom_apply (a b : ⨁ i, A i) : mulHom A a b = a * b := rfl
 
-theorem mulHom_of_of {i j} (a : A i) (b : A j) :
+lemma mulHom_of_of {i j} (a : A i) (b : A j) :
     mulHom A (of A i a) (of A j b) = of A (i + j) (GradedMonoid.GMul.mul a b) := by
   unfold mulHom
   simp only [toAddMonoid_of, flip_apply, coe_comp, Function.comp_apply]
   rfl
 #align direct_sum.mul_hom_of_of DirectSum.mulHom_of_of
 
-theorem of_mul_of {i j} (a : A i) (b : A j) :
+lemma of_mul_of {i j} (a : A i) (b : A j) :
     of A i a * of A j b = of _ (i + j) (GradedMonoid.GMul.mul a b) :=
   mulHom_of_of a b
 #align direct_sum.of_mul_of DirectSum.of_mul_of
@@ -226,7 +226,7 @@ variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 
 open AddMonoidHom (flipHom coe_comp compHom flip_apply)
 
-private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
+private nonrec lemma one_mul (x : ⨁ i, A i) : 1 * x = x := by
   suffices mulHom A One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
   apply addHom_ext; intro i xi
   simp only [One.one]
@@ -235,7 +235,7 @@ private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
 #noalign direct_sum.one_mul
 
 -- Porting note (#11083): `suffices` is very slow here.
-private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
+private nonrec lemma mul_one (x : ⨁ i, A i) : x * 1 = x := by
   suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
   apply addHom_ext; intro i xi
   simp only [One.one]
@@ -245,7 +245,7 @@ private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
 
 /- Porting note: Some auxiliary statements were needed in the proof of the `suffices`,
 otherwise would timeout -/
-private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
+private lemma mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
   suffices (mulHom A).compHom.comp (mulHom A) =
       (AddMonoidHom.compHom flipHom <| (mulHom A).flip.compHom.comp (mulHom A)).flip by
@@ -280,7 +280,7 @@ instance semiring : Semiring (⨁ i, A i) :=
       rfl }
 #align direct_sum.semiring DirectSum.semiring
 
-theorem ofPow {i} (a : A i) (n : ℕ) :
+lemma ofPow {i} (a : A i) (n : ℕ) :
     of _ i a ^ n = of _ (n • i) (GradedMonoid.GMonoid.gnpow _ a) := by
   induction' n with n n_ih
   · exact of_eq_of_gradedMonoid_eq (pow_zero <| GradedMonoid.mk _ a).symm
@@ -288,7 +288,7 @@ theorem ofPow {i} (a : A i) (n : ℕ) :
     exact of_eq_of_gradedMonoid_eq (pow_succ (GradedMonoid.mk _ a) n).symm
 #align direct_sum.of_pow DirectSum.ofPow
 
-theorem ofList_dProd {α} (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :
+lemma ofList_dProd {α} (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :
     of A _ (l.dProd fι fA) = (l.map fun a => of A (fι a) (fA a)).prod := by
   induction' l with head tail
   · simp only [List.map_nil, List.prod_nil, List.dProd_nil]
@@ -299,14 +299,14 @@ theorem ofList_dProd {α} (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)
     rfl
 #align direct_sum.of_list_dprod DirectSum.ofList_dProd
 
-theorem list_prod_ofFn_of_eq_dProd (n : ℕ) (fι : Fin n → ι) (fA : ∀ a, A (fι a)) :
+lemma list_prod_ofFn_of_eq_dProd (n : ℕ) (fι : Fin n → ι) (fA : ∀ a, A (fι a)) :
     (List.ofFn fun a => of A (fι a) (fA a)).prod = of A _ ((List.finRange n).dProd fι fA) := by
   rw [List.ofFn_eq_map, ofList_dProd]
 #align direct_sum.list_prod_of_fn_of_eq_dprod DirectSum.list_prod_ofFn_of_eq_dProd
 
 open BigOperators
 
-theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
+lemma mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a'
       = a.sum fun i ai => a'.sum fun j aj => DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj := by
   change mulHom _ a a' = _
@@ -339,7 +339,7 @@ section CommSemiring
 
 variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GCommSemiring A]
 
-private theorem mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
+private lemma mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
   suffices mulHom A = (mulHom A).flip by
     rw [← mulHom_apply, this, AddMonoidHom.flip_apply, mulHom_apply]
   apply addHom_ext; intro ai ax; apply addHom_ext; intro bi bx
@@ -410,7 +410,7 @@ section One
 variable [Zero ι] [GradedMonoid.GOne A] [∀ i, AddCommMonoid (A i)]
 
 @[simp]
-theorem of_zero_one : of _ 0 (1 : A 0) = 1 :=
+lemma of_zero_one : of _ 0 (1 : A 0) = 1 :=
   rfl
 #align direct_sum.of_zero_one DirectSum.of_zero_one
 
@@ -421,12 +421,12 @@ section Mul
 variable [AddZeroClass ι] [∀ i, AddCommMonoid (A i)] [GNonUnitalNonAssocSemiring A]
 
 @[simp]
-theorem of_zero_smul {i} (a : A 0) (b : A i) : of _ _ (a • b) = of _ _ a * of _ _ b :=
+lemma of_zero_smul {i} (a : A 0) (b : A i) : of _ _ (a • b) = of _ _ a * of _ _ b :=
   (of_eq_of_gradedMonoid_eq (GradedMonoid.mk_zero_smul a b)).trans (of_mul_of _ _).symm
 #align direct_sum.of_zero_smul DirectSum.of_zero_smul
 
 @[simp]
-theorem of_zero_mul (a b : A 0) : of _ 0 (a * b) = of _ 0 a * of _ 0 b :=
+lemma of_zero_mul (a b : A 0) : of _ 0 (a * b) = of _ 0 a * of _ 0 b :=
   of_zero_smul A a b
 #align direct_sum.of_zero_mul DirectSum.of_zero_mul
 
@@ -448,7 +448,7 @@ section Semiring
 variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 
 @[simp]
-theorem of_zero_pow (a : A 0) : ∀ n : ℕ, of A 0 (a ^ n) = of A 0 a ^ n
+lemma of_zero_pow (a : A 0) : ∀ n : ℕ, of A 0 (a ^ n) = of A 0 a ^ n
   | 0 => by rw [pow_zero, pow_zero, DirectSum.of_zero_one]
   -- Porting note: Lean doesn't think this terminates if we only use `of_zero_pow` alone
   | n + 1 => by rw [pow_succ, pow_succ, of_zero_mul, of_zero_pow _ n]
@@ -461,13 +461,13 @@ instance : NatCast (A 0) :=
 -- TODO: These could be replaced by the general lemmas for `AddMonoidHomClass` (`map_natCast'` and
 -- `map_ofNat'`) if those were marked `@[simp low]`.
 @[simp]
-theorem of_natCast (n : ℕ) : of A 0 n = n :=
+lemma of_natCast (n : ℕ) : of A 0 n = n :=
   rfl
 #align direct_sum.of_nat_cast DirectSum.of_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+lemma of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   of_natCast A n
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/
@@ -528,7 +528,7 @@ instance : IntCast (A 0) :=
   ⟨GRing.intCast⟩
 
 @[simp]
-theorem of_intCast (n : ℤ) : of A 0 n = n := by
+lemma of_intCast (n : ℤ) : of A 0 n = n := by
   rfl
 #align direct_sum.of_int_cast DirectSum.of_intCast
 
@@ -605,13 +605,13 @@ def toSemiring (f : ∀ i, A i →+ R) (hone : f _ GradedMonoid.GOne.one = 1)
 #align direct_sum.to_semiring DirectSum.toSemiring
 
 -- Porting note (#10618): removed @[simp] as simp can prove this
-theorem toSemiring_of (f : ∀ i, A i →+ R) (hone hmul) (i : ι) (x : A i) :
+lemma toSemiring_of (f : ∀ i, A i →+ R) (hone hmul) (i : ι) (x : A i) :
     toSemiring f hone hmul (of _ i x) = f _ x :=
   toAddMonoid_of f i x
 #align direct_sum.to_semiring_of DirectSum.toSemiring_of
 
 @[simp]
-theorem toSemiring_coe_addMonoidHom (f : ∀ i, A i →+ R) (hone hmul) :
+lemma toSemiring_coe_addMonoidHom (f : ∀ i, A i →+ R) (hone hmul) :
     (toSemiring f hone hmul : (⨁ i, A i) →+ R) = toAddMonoid f :=
   rfl
 #align direct_sum.to_semiring_coe_add_monoid_hom DirectSum.toSemiring_coe_addMonoidHom

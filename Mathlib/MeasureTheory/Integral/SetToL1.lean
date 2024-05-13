@@ -99,27 +99,27 @@ namespace FinMeasAdditive
 
 variable {β : Type*} [AddCommMonoid β] {T T' : Set α → β}
 
-theorem zero : FinMeasAdditive μ (0 : Set α → β) := fun s t _ _ _ _ _ => by simp
+lemma zero : FinMeasAdditive μ (0 : Set α → β) := fun s t _ _ _ _ _ => by simp
 #align measure_theory.fin_meas_additive.zero MeasureTheory.FinMeasAdditive.zero
 
-theorem add (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive μ T') :
+lemma add (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive μ T') :
     FinMeasAdditive μ (T + T') := by
   intro s t hs ht hμs hμt hst
   simp only [hT s t hs ht hμs hμt hst, hT' s t hs ht hμs hμt hst, Pi.add_apply]
   abel
 #align measure_theory.fin_meas_additive.add MeasureTheory.FinMeasAdditive.add
 
-theorem smul [Monoid 𝕜] [DistribMulAction 𝕜 β] (hT : FinMeasAdditive μ T) (c : 𝕜) :
+lemma smul [Monoid 𝕜] [DistribMulAction 𝕜 β] (hT : FinMeasAdditive μ T) (c : 𝕜) :
     FinMeasAdditive μ fun s => c • T s := fun s t hs ht hμs hμt hst => by
   simp [hT s t hs ht hμs hμt hst]
 #align measure_theory.fin_meas_additive.smul MeasureTheory.FinMeasAdditive.smul
 
-theorem of_eq_top_imp_eq_top {μ' : Measure α} (h : ∀ s, MeasurableSet s → μ s = ∞ → μ' s = ∞)
+lemma of_eq_top_imp_eq_top {μ' : Measure α} (h : ∀ s, MeasurableSet s → μ s = ∞ → μ' s = ∞)
     (hT : FinMeasAdditive μ T) : FinMeasAdditive μ' T := fun s t hs ht hμ's hμ't hst =>
   hT s t hs ht (mt (h s hs) hμ's) (mt (h t ht) hμ't) hst
 #align measure_theory.fin_meas_additive.of_eq_top_imp_eq_top MeasureTheory.FinMeasAdditive.of_eq_top_imp_eq_top
 
-theorem of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : FinMeasAdditive (c • μ) T) :
+lemma of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : FinMeasAdditive (c • μ) T) :
     FinMeasAdditive μ T := by
   refine' of_eq_top_imp_eq_top (fun s _ hμs => _) hT
   rw [Measure.smul_apply, smul_eq_mul, ENNReal.mul_eq_top] at hμs
@@ -127,7 +127,7 @@ theorem of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : FinMeasAd
   exact hμs.2
 #align measure_theory.fin_meas_additive.of_smul_measure MeasureTheory.FinMeasAdditive.of_smul_measure
 
-theorem smul_measure (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hT : FinMeasAdditive μ T) :
+lemma smul_measure (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hT : FinMeasAdditive μ T) :
     FinMeasAdditive (c • μ) T := by
   refine' of_eq_top_imp_eq_top (fun s _ hμs => _) hT
   rw [Measure.smul_apply, smul_eq_mul, ENNReal.mul_eq_top]
@@ -135,12 +135,12 @@ theorem smul_measure (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hT : FinMeasAdditi
   exact Or.inl hμs
 #align measure_theory.fin_meas_additive.smul_measure MeasureTheory.FinMeasAdditive.smul_measure
 
-theorem smul_measure_iff (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hc_ne_top : c ≠ ∞) :
+lemma smul_measure_iff (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hc_ne_top : c ≠ ∞) :
     FinMeasAdditive (c • μ) T ↔ FinMeasAdditive μ T :=
   ⟨fun hT => of_smul_measure c hc_ne_top hT, fun hT => smul_measure c hc_ne_zero hT⟩
 #align measure_theory.fin_meas_additive.smul_measure_iff MeasureTheory.FinMeasAdditive.smul_measure_iff
 
-theorem map_empty_eq_zero {β} [AddCancelMonoid β] {T : Set α → β} (hT : FinMeasAdditive μ T) :
+lemma map_empty_eq_zero {β} [AddCancelMonoid β] {T : Set α → β} (hT : FinMeasAdditive μ T) :
     T ∅ = 0 := by
   have h_empty : μ ∅ ≠ ∞ := (measure_empty.le.trans_lt ENNReal.coe_lt_top).ne
   specialize hT ∅ ∅ MeasurableSet.empty MeasurableSet.empty h_empty h_empty (Set.inter_empty ∅)
@@ -149,7 +149,7 @@ theorem map_empty_eq_zero {β} [AddCancelMonoid β] {T : Set α → β} (hT : Fi
   exact (add_left_cancel hT).symm
 #align measure_theory.fin_meas_additive.map_empty_eq_zero MeasureTheory.FinMeasAdditive.map_empty_eq_zero
 
-theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
+lemma map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
     (h_add : FinMeasAdditive μ T) {ι} (S : ι → Set α) (sι : Finset ι)
     (hS_meas : ∀ i, MeasurableSet (S i)) (hSp : ∀ i ∈ sι, μ (S i) ≠ ∞)
     (h_disj : ∀ᵉ (i ∈ sι) (j ∈ sι), i ≠ j → Disjoint (S i) (S j)) :
@@ -192,14 +192,14 @@ namespace DominatedFinMeasAdditive
 
 variable {β : Type*} [SeminormedAddCommGroup β] {T T' : Set α → β} {C C' : ℝ}
 
-theorem zero {m : MeasurableSpace α} (μ : Measure α) (hC : 0 ≤ C) :
+lemma zero {m : MeasurableSpace α} (μ : Measure α) (hC : 0 ≤ C) :
     DominatedFinMeasAdditive μ (0 : Set α → β) C := by
   refine' ⟨FinMeasAdditive.zero, fun s _ _ => _⟩
   rw [Pi.zero_apply, norm_zero]
   exact mul_nonneg hC toReal_nonneg
 #align measure_theory.dominated_fin_meas_additive.zero MeasureTheory.DominatedFinMeasAdditive.zero
 
-theorem eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ}
+lemma eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) {s : Set α} (hs : MeasurableSet s) (hs_zero : μ s = 0) :
     T s = 0 := by
   refine' norm_eq_zero.mp _
@@ -207,20 +207,20 @@ theorem eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α
   rw [hs_zero, ENNReal.zero_toReal, mul_zero]
 #align measure_theory.dominated_fin_meas_additive.eq_zero_of_measure_zero MeasureTheory.DominatedFinMeasAdditive.eq_zero_of_measure_zero
 
-theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {m : MeasurableSpace α}
+lemma eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {m : MeasurableSpace α}
     (hT : DominatedFinMeasAdditive (0 : Measure α) T C) {s : Set α} (hs : MeasurableSet s) :
     T s = 0 :=
   eq_zero_of_measure_zero hT hs (by simp only [Measure.coe_zero, Pi.zero_apply])
 #align measure_theory.dominated_fin_meas_additive.eq_zero MeasureTheory.DominatedFinMeasAdditive.eq_zero
 
-theorem add (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C') :
+lemma add (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C') :
     DominatedFinMeasAdditive μ (T + T') (C + C') := by
   refine' ⟨hT.1.add hT'.1, fun s hs hμs => _⟩
   rw [Pi.add_apply, add_mul]
   exact (norm_add_le _ _).trans (add_le_add (hT.2 s hs hμs) (hT'.2 s hs hμs))
 #align measure_theory.dominated_fin_meas_additive.add MeasureTheory.DominatedFinMeasAdditive.add
 
-theorem smul [NormedField 𝕜] [NormedSpace 𝕜 β] (hT : DominatedFinMeasAdditive μ T C) (c : 𝕜) :
+lemma smul [NormedField 𝕜] [NormedSpace 𝕜 β] (hT : DominatedFinMeasAdditive μ T C) (c : 𝕜) :
     DominatedFinMeasAdditive μ (fun s => c • T s) (‖c‖ * C) := by
   refine' ⟨hT.1.smul c, fun s hs hμs => _⟩
   dsimp only
@@ -228,7 +228,7 @@ theorem smul [NormedField 𝕜] [NormedSpace 𝕜 β] (hT : DominatedFinMeasAddi
   exact mul_le_mul le_rfl (hT.2 s hs hμs) (norm_nonneg _) (norm_nonneg _)
 #align measure_theory.dominated_fin_meas_additive.smul MeasureTheory.DominatedFinMeasAdditive.smul
 
-theorem of_measure_le {μ' : Measure α} (h : μ ≤ μ') (hT : DominatedFinMeasAdditive μ T C)
+lemma of_measure_le {μ' : Measure α} (h : μ ≤ μ') (hT : DominatedFinMeasAdditive μ T C)
     (hC : 0 ≤ C) : DominatedFinMeasAdditive μ' T C := by
   have h' : ∀ s, μ s = ∞ → μ' s = ∞ := fun s hs ↦ top_unique <| hs.symm.trans_le (h _)
   refine ⟨hT.1.of_eq_top_imp_eq_top fun s _ ↦ h' s, fun s hs hμ's ↦ ?_⟩
@@ -238,17 +238,17 @@ theorem of_measure_le {μ' : Measure α} (h : μ ≤ μ') (hT : DominatedFinMeas
     _ ≤ C * (μ' s).toReal := by gcongr; exacts [hμ's.ne, h _]
 #align measure_theory.dominated_fin_meas_additive.of_measure_le MeasureTheory.DominatedFinMeasAdditive.of_measure_le
 
-theorem add_measure_right {_ : MeasurableSpace α} (μ ν : Measure α)
+lemma add_measure_right {_ : MeasurableSpace α} (μ ν : Measure α)
     (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) : DominatedFinMeasAdditive (μ + ν) T C :=
   of_measure_le (Measure.le_add_right le_rfl) hT hC
 #align measure_theory.dominated_fin_meas_additive.add_measure_right MeasureTheory.DominatedFinMeasAdditive.add_measure_right
 
-theorem add_measure_left {_ : MeasurableSpace α} (μ ν : Measure α)
+lemma add_measure_left {_ : MeasurableSpace α} (μ ν : Measure α)
     (hT : DominatedFinMeasAdditive ν T C) (hC : 0 ≤ C) : DominatedFinMeasAdditive (μ + ν) T C :=
   of_measure_le (Measure.le_add_left le_rfl) hT hC
 #align measure_theory.dominated_fin_meas_additive.add_measure_left MeasureTheory.DominatedFinMeasAdditive.add_measure_left
 
-theorem of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : DominatedFinMeasAdditive (c • μ) T C) :
+lemma of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : DominatedFinMeasAdditive (c • μ) T C) :
     DominatedFinMeasAdditive μ T (c.toReal * C) := by
   have h : ∀ s, MeasurableSet s → c • μ s = ∞ → μ s = ∞ := by
     intro s _ hcμs
@@ -263,7 +263,7 @@ theorem of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : Dominated
   ring
 #align measure_theory.dominated_fin_meas_additive.of_smul_measure MeasureTheory.DominatedFinMeasAdditive.of_smul_measure
 
-theorem of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c ≠ ∞) (h : μ ≤ c • μ')
+lemma of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c ≠ ∞) (h : μ ≤ c • μ')
     (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) :
     DominatedFinMeasAdditive μ' T (c.toReal * C) :=
   (hT.of_measure_le h hC).of_smul_measure c hc
@@ -281,11 +281,11 @@ def setToSimpleFunc {_ : MeasurableSpace α} (T : Set α → F →L[ℝ] F') (f 
 #align measure_theory.simple_func.set_to_simple_func MeasureTheory.SimpleFunc.setToSimpleFunc
 
 @[simp]
-theorem setToSimpleFunc_zero {m : MeasurableSpace α} (f : α →ₛ F) :
+lemma setToSimpleFunc_zero {m : MeasurableSpace α} (f : α →ₛ F) :
     setToSimpleFunc (0 : Set α → F →L[ℝ] F') f = 0 := by simp [setToSimpleFunc]
 #align measure_theory.simple_func.set_to_simple_func_zero MeasureTheory.SimpleFunc.setToSimpleFunc_zero
 
-theorem setToSimpleFunc_zero' {T : Set α → E →L[ℝ] F'}
+lemma setToSimpleFunc_zero' {T : Set α → E →L[ℝ] F'}
     (h_zero : ∀ s, MeasurableSet s → μ s < ∞ → T s = 0) (f : α →ₛ E) (hf : Integrable f μ) :
     setToSimpleFunc T f = 0 := by
   simp_rw [setToSimpleFunc]
@@ -298,12 +298,12 @@ theorem setToSimpleFunc_zero' {T : Set α → E →L[ℝ] F'}
 #align measure_theory.simple_func.set_to_simple_func_zero' MeasureTheory.SimpleFunc.setToSimpleFunc_zero'
 
 @[simp]
-theorem setToSimpleFunc_zero_apply {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F') :
+lemma setToSimpleFunc_zero_apply {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F') :
     setToSimpleFunc T (0 : α →ₛ F) = 0 := by
   cases isEmpty_or_nonempty α <;> simp [setToSimpleFunc]
 #align measure_theory.simple_func.set_to_simple_func_zero_apply MeasureTheory.SimpleFunc.setToSimpleFunc_zero_apply
 
-theorem setToSimpleFunc_eq_sum_filter {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F')
+lemma setToSimpleFunc_eq_sum_filter {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F')
     (f : α →ₛ F) :
     setToSimpleFunc T f = ∑ x in f.range.filter fun x => x ≠ 0, (T (f ⁻¹' {x})) x := by
   symm
@@ -312,7 +312,7 @@ theorem setToSimpleFunc_eq_sum_filter {m : MeasurableSpace α} (T : Set α → F
   exact ContinuousLinearMap.map_zero _
 #align measure_theory.simple_func.set_to_simple_func_eq_sum_filter MeasureTheory.SimpleFunc.setToSimpleFunc_eq_sum_filter
 
-theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAdditive μ T) {f : α →ₛ G}
+lemma map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAdditive μ T) {f : α →ₛ G}
     (hf : Integrable f μ) {g : G → F} (hg : g 0 = 0) :
     (f.map g).setToSimpleFunc T = ∑ x in f.range, T (f ⁻¹' {x}) (g x) := by
   have T_empty : T ∅ = 0 := h_add.map_empty_eq_zero
@@ -356,7 +356,7 @@ theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAddi
     exact absurd rfl hij
 #align measure_theory.simple_func.map_set_to_simple_func MeasureTheory.SimpleFunc.map_setToSimpleFunc
 
-theorem setToSimpleFunc_congr' (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) {f g : α →ₛ E}
+lemma setToSimpleFunc_congr' (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) {f g : α →ₛ E}
     (hf : Integrable f μ) (hg : Integrable g μ)
     (h : Pairwise fun x y => T (f ⁻¹' {x} ∩ g ⁻¹' {y}) = 0) :
     f.setToSimpleFunc T = g.setToSimpleFunc T :=
@@ -376,7 +376,7 @@ theorem setToSimpleFunc_congr' (T : Set α → E →L[ℝ] F) (h_add : FinMeasAd
       simp only [this, ContinuousLinearMap.zero_apply, pair_apply]
 #align measure_theory.simple_func.set_to_simple_func_congr' MeasureTheory.SimpleFunc.setToSimpleFunc_congr'
 
-theorem setToSimpleFunc_congr (T : Set α → E →L[ℝ] F)
+lemma setToSimpleFunc_congr (T : Set α → E →L[ℝ] F)
     (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0) (h_add : FinMeasAdditive μ T) {f g : α →ₛ E}
     (hf : Integrable f μ) (h : f =ᵐ[μ] g) : f.setToSimpleFunc T = g.setToSimpleFunc T := by
   refine' setToSimpleFunc_congr' T h_add hf ((integrable_congr h).mp hf) _
@@ -388,7 +388,7 @@ theorem setToSimpleFunc_congr (T : Set α → E →L[ℝ] F)
   rwa [h.1, h.2]
 #align measure_theory.simple_func.set_to_simple_func_congr MeasureTheory.SimpleFunc.setToSimpleFunc_congr
 
-theorem setToSimpleFunc_congr_left (T T' : Set α → E →L[ℝ] F)
+lemma setToSimpleFunc_congr_left (T T' : Set α → E →L[ℝ] F)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → T s = T' s) (f : α →ₛ E) (hf : Integrable f μ) :
     setToSimpleFunc T f = setToSimpleFunc T' f := by
   simp_rw [setToSimpleFunc]
@@ -399,14 +399,14 @@ theorem setToSimpleFunc_congr_left (T T' : Set α → E →L[ℝ] F)
         (SimpleFunc.measure_preimage_lt_top_of_integrable _ hf hx0)]
 #align measure_theory.simple_func.set_to_simple_func_congr_left MeasureTheory.SimpleFunc.setToSimpleFunc_congr_left
 
-theorem setToSimpleFunc_add_left {m : MeasurableSpace α} (T T' : Set α → F →L[ℝ] F') {f : α →ₛ F} :
+lemma setToSimpleFunc_add_left {m : MeasurableSpace α} (T T' : Set α → F →L[ℝ] F') {f : α →ₛ F} :
     setToSimpleFunc (T + T') f = setToSimpleFunc T f + setToSimpleFunc T' f := by
   simp_rw [setToSimpleFunc, Pi.add_apply]
   push_cast
   simp_rw [Pi.add_apply, sum_add_distrib]
 #align measure_theory.simple_func.set_to_simple_func_add_left MeasureTheory.SimpleFunc.setToSimpleFunc_add_left
 
-theorem setToSimpleFunc_add_left' (T T' T'' : Set α → E →L[ℝ] F)
+lemma setToSimpleFunc_add_left' (T T' T'' : Set α → E →L[ℝ] F)
     (h_add : ∀ s, MeasurableSet s → μ s < ∞ → T'' s = T s + T' s) {f : α →ₛ E}
     (hf : Integrable f μ) : setToSimpleFunc T'' f = setToSimpleFunc T f + setToSimpleFunc T' f := by
   simp_rw [setToSimpleFunc_eq_sum_filter]
@@ -424,12 +424,12 @@ theorem setToSimpleFunc_add_left' (T T' T'' : Set α → E →L[ℝ] F)
   exact hx.2
 #align measure_theory.simple_func.set_to_simple_func_add_left' MeasureTheory.SimpleFunc.setToSimpleFunc_add_left'
 
-theorem setToSimpleFunc_smul_left {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F') (c : ℝ)
+lemma setToSimpleFunc_smul_left {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F') (c : ℝ)
     (f : α →ₛ F) : setToSimpleFunc (fun s => c • T s) f = c • setToSimpleFunc T f := by
   simp_rw [setToSimpleFunc, ContinuousLinearMap.smul_apply, smul_sum]
 #align measure_theory.simple_func.set_to_simple_func_smul_left MeasureTheory.SimpleFunc.setToSimpleFunc_smul_left
 
-theorem setToSimpleFunc_smul_left' (T T' : Set α → E →L[ℝ] F') (c : ℝ)
+lemma setToSimpleFunc_smul_left' (T T' : Set α → E →L[ℝ] F') (c : ℝ)
     (h_smul : ∀ s, MeasurableSet s → μ s < ∞ → T' s = c • T s) {f : α →ₛ E} (hf : Integrable f μ) :
     setToSimpleFunc T' f = c • setToSimpleFunc T f := by
   simp_rw [setToSimpleFunc_eq_sum_filter]
@@ -445,7 +445,7 @@ theorem setToSimpleFunc_smul_left' (T T' : Set α → E →L[ℝ] F') (c : ℝ)
   exact hx.2
 #align measure_theory.simple_func.set_to_simple_func_smul_left' MeasureTheory.SimpleFunc.setToSimpleFunc_smul_left'
 
-theorem setToSimpleFunc_add (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) {f g : α →ₛ E}
+lemma setToSimpleFunc_add (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) {f g : α →ₛ E}
     (hf : Integrable f μ) (hg : Integrable g μ) :
     setToSimpleFunc T (f + g) = setToSimpleFunc T f + setToSimpleFunc T g :=
   have hp_pair : Integrable (f.pair g) μ := integrable_pair hf hg
@@ -463,7 +463,7 @@ theorem setToSimpleFunc_add (T : Set α → E →L[ℝ] F) (h_add : FinMeasAddit
         map_setToSimpleFunc T h_add hp_pair Prod.fst_zero]
 #align measure_theory.simple_func.set_to_simple_func_add MeasureTheory.SimpleFunc.setToSimpleFunc_add
 
-theorem setToSimpleFunc_neg (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) {f : α →ₛ E}
+lemma setToSimpleFunc_neg (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) {f : α →ₛ E}
     (hf : Integrable f μ) : setToSimpleFunc T (-f) = -setToSimpleFunc T f :=
   calc
     setToSimpleFunc T (-f) = setToSimpleFunc T (f.map Neg.neg) := rfl
@@ -472,7 +472,7 @@ theorem setToSimpleFunc_neg (T : Set α → E →L[ℝ] F) (h_add : FinMeasAddit
       exact Finset.sum_congr rfl fun x _ => ContinuousLinearMap.map_neg _ _
 #align measure_theory.simple_func.set_to_simple_func_neg MeasureTheory.SimpleFunc.setToSimpleFunc_neg
 
-theorem setToSimpleFunc_sub (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) {f g : α →ₛ E}
+lemma setToSimpleFunc_sub (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) {f g : α →ₛ E}
     (hf : Integrable f μ) (hg : Integrable g μ) :
     setToSimpleFunc T (f - g) = setToSimpleFunc T f - setToSimpleFunc T g := by
   rw [sub_eq_add_neg, setToSimpleFunc_add T h_add hf, setToSimpleFunc_neg T h_add hg,
@@ -485,7 +485,7 @@ theorem setToSimpleFunc_sub (T : Set α → E →L[ℝ] F) (h_add : FinMeasAddit
   simp [hx_ne]
 #align measure_theory.simple_func.set_to_simple_func_sub MeasureTheory.SimpleFunc.setToSimpleFunc_sub
 
-theorem setToSimpleFunc_smul_real (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) (c : ℝ)
+lemma setToSimpleFunc_smul_real (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) (c : ℝ)
     {f : α →ₛ E} (hf : Integrable f μ) : setToSimpleFunc T (c • f) = c • setToSimpleFunc T f :=
   calc
     setToSimpleFunc T (c • f) = ∑ x in f.range, T (f ⁻¹' {x}) (c • x) := by
@@ -495,7 +495,7 @@ theorem setToSimpleFunc_smul_real (T : Set α → E →L[ℝ] F) (h_add : FinMea
     _ = c • setToSimpleFunc T f := by simp only [setToSimpleFunc, smul_sum, smul_smul, mul_comm]
 #align measure_theory.simple_func.set_to_simple_func_smul_real MeasureTheory.SimpleFunc.setToSimpleFunc_smul_real
 
-theorem setToSimpleFunc_smul {E} [NormedAddCommGroup E] [NormedField 𝕜] [NormedSpace 𝕜 E]
+lemma setToSimpleFunc_smul {E} [NormedAddCommGroup E] [NormedField 𝕜] [NormedSpace 𝕜 E]
     [NormedSpace ℝ E] [NormedSpace 𝕜 F] (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜) {f : α →ₛ E} (hf : Integrable f μ) :
     setToSimpleFunc T (c • f) = c • setToSimpleFunc T f :=
@@ -511,12 +511,12 @@ section Order
 variable {G' G'' : Type*} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G'']
   [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
 
-theorem setToSimpleFunc_mono_left {m : MeasurableSpace α} (T T' : Set α → F →L[ℝ] G'')
+lemma setToSimpleFunc_mono_left {m : MeasurableSpace α} (T T' : Set α → F →L[ℝ] G'')
     (hTT' : ∀ s x, T s x ≤ T' s x) (f : α →ₛ F) : setToSimpleFunc T f ≤ setToSimpleFunc T' f := by
   simp_rw [setToSimpleFunc]; exact sum_le_sum fun i _ => hTT' _ i
 #align measure_theory.simple_func.set_to_simple_func_mono_left MeasureTheory.SimpleFunc.setToSimpleFunc_mono_left
 
-theorem setToSimpleFunc_mono_left' (T T' : Set α → E →L[ℝ] G'')
+lemma setToSimpleFunc_mono_left' (T T' : Set α → E →L[ℝ] G'')
     (hTT' : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, T s x ≤ T' s x) (f : α →ₛ E)
     (hf : Integrable f μ) : setToSimpleFunc T f ≤ setToSimpleFunc T' f := by
   refine' sum_le_sum fun i _ => _
@@ -525,7 +525,7 @@ theorem setToSimpleFunc_mono_left' (T T' : Set α → E →L[ℝ] G'')
   · exact hTT' _ (measurableSet_fiber _ _) (measure_preimage_lt_top_of_integrable _ hf h0) i
 #align measure_theory.simple_func.set_to_simple_func_mono_left' MeasureTheory.SimpleFunc.setToSimpleFunc_mono_left'
 
-theorem setToSimpleFunc_nonneg {m : MeasurableSpace α} (T : Set α → G' →L[ℝ] G'')
+lemma setToSimpleFunc_nonneg {m : MeasurableSpace α} (T : Set α → G' →L[ℝ] G'')
     (hT_nonneg : ∀ s x, 0 ≤ x → 0 ≤ T s x) (f : α →ₛ G') (hf : 0 ≤ f) :
     0 ≤ setToSimpleFunc T f := by
   refine' sum_nonneg fun i hi => hT_nonneg _ i _
@@ -536,7 +536,7 @@ theorem setToSimpleFunc_nonneg {m : MeasurableSpace α} (T : Set α → G' →L[
   simp
 #align measure_theory.simple_func.set_to_simple_func_nonneg MeasureTheory.SimpleFunc.setToSimpleFunc_nonneg
 
-theorem setToSimpleFunc_nonneg' (T : Set α → G' →L[ℝ] G'')
+lemma setToSimpleFunc_nonneg' (T : Set α → G' →L[ℝ] G'')
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) (f : α →ₛ G') (hf : 0 ≤ f)
     (hfi : Integrable f μ) : 0 ≤ setToSimpleFunc T f := by
   refine' sum_nonneg fun i hi => _
@@ -550,7 +550,7 @@ theorem setToSimpleFunc_nonneg' (T : Set α → G' →L[ℝ] G'')
   convert hf y
 #align measure_theory.simple_func.set_to_simple_func_nonneg' MeasureTheory.SimpleFunc.setToSimpleFunc_nonneg'
 
-theorem setToSimpleFunc_mono {T : Set α → G' →L[ℝ] G''} (h_add : FinMeasAdditive μ T)
+lemma setToSimpleFunc_mono {T : Set α → G' →L[ℝ] G''} (h_add : FinMeasAdditive μ T)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f g : α →ₛ G'}
     (hfi : Integrable f μ) (hgi : Integrable g μ) (hfg : f ≤ g) :
     setToSimpleFunc T f ≤ setToSimpleFunc T g := by
@@ -563,7 +563,7 @@ theorem setToSimpleFunc_mono {T : Set α → G' →L[ℝ] G''} (h_add : FinMeasA
 
 end Order
 
-theorem norm_setToSimpleFunc_le_sum_opNorm {m : MeasurableSpace α} (T : Set α → F' →L[ℝ] F)
+lemma norm_setToSimpleFunc_le_sum_opNorm {m : MeasurableSpace α} (T : Set α → F' →L[ℝ] F)
     (f : α →ₛ F') : ‖f.setToSimpleFunc T‖ ≤ ∑ x in f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ :=
   calc
     ‖∑ x in f.range, T (f ⁻¹' {x}) x‖ ≤ ∑ x in f.range, ‖T (f ⁻¹' {x}) x‖ := norm_sum_le _ _
@@ -575,7 +575,7 @@ theorem norm_setToSimpleFunc_le_sum_opNorm {m : MeasurableSpace α} (T : Set α 
 alias norm_setToSimpleFunc_le_sum_op_norm :=
   norm_setToSimpleFunc_le_sum_opNorm -- deprecated on 2024-02-02
 
-theorem norm_setToSimpleFunc_le_sum_mul_norm (T : Set α → F →L[ℝ] F') {C : ℝ}
+lemma norm_setToSimpleFunc_le_sum_mul_norm (T : Set α → F →L[ℝ] F') {C : ℝ}
     (hT_norm : ∀ s, MeasurableSet s → ‖T s‖ ≤ C * (μ s).toReal) (f : α →ₛ F) :
     ‖f.setToSimpleFunc T‖ ≤ C * ∑ x in f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ :=
   calc
@@ -587,7 +587,7 @@ theorem norm_setToSimpleFunc_le_sum_mul_norm (T : Set α → F →L[ℝ] F') {C 
     _ ≤ C * ∑ x in f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ := by simp_rw [mul_sum, ← mul_assoc]; rfl
 #align measure_theory.simple_func.norm_set_to_simple_func_le_sum_mul_norm MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_mul_norm
 
-theorem norm_setToSimpleFunc_le_sum_mul_norm_of_integrable (T : Set α → E →L[ℝ] F') {C : ℝ}
+lemma norm_setToSimpleFunc_le_sum_mul_norm_of_integrable (T : Set α → E →L[ℝ] F') {C : ℝ}
     (hT_norm : ∀ s, MeasurableSet s → μ s < ∞ → ‖T s‖ ≤ C * (μ s).toReal) (f : α →ₛ E)
     (hf : Integrable f μ) :
     ‖f.setToSimpleFunc T‖ ≤ C * ∑ x in f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ :=
@@ -604,7 +604,7 @@ theorem norm_setToSimpleFunc_le_sum_mul_norm_of_integrable (T : Set α → E →
     _ ≤ C * ∑ x in f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ := by simp_rw [mul_sum, ← mul_assoc]; rfl
 #align measure_theory.simple_func.norm_set_to_simple_func_le_sum_mul_norm_of_integrable MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_mul_norm_of_integrable
 
-theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T ∅ = 0)
+lemma setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T ∅ = 0)
     {m : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s) (x : F) :
     SimpleFunc.setToSimpleFunc T
         (SimpleFunc.piecewise s hs (SimpleFunc.const α x) (SimpleFunc.const α 0)) =
@@ -632,13 +632,13 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
   simp
 #align measure_theory.simple_func.set_to_simple_func_indicator MeasureTheory.SimpleFunc.setToSimpleFunc_indicator
 
-theorem setToSimpleFunc_const' [Nonempty α] (T : Set α → F →L[ℝ] F') (x : F)
+lemma setToSimpleFunc_const' [Nonempty α] (T : Set α → F →L[ℝ] F') (x : F)
     {m : MeasurableSpace α} : SimpleFunc.setToSimpleFunc T (SimpleFunc.const α x) = T univ x := by
   simp only [setToSimpleFunc, range_const, Set.mem_singleton, preimage_const_of_mem,
     sum_singleton, ← Function.const_def, coe_const]
 #align measure_theory.simple_func.set_to_simple_func_const' MeasureTheory.SimpleFunc.setToSimpleFunc_const'
 
-theorem setToSimpleFunc_const (T : Set α → F →L[ℝ] F') (hT_empty : T ∅ = 0) (x : F)
+lemma setToSimpleFunc_const (T : Set α → F →L[ℝ] F') (hT_empty : T ∅ = 0) (x : F)
     {m : MeasurableSpace α} : SimpleFunc.setToSimpleFunc T (SimpleFunc.const α x) = T univ x := by
   cases isEmpty_or_nonempty α
   · have h_univ_empty : (univ : Set α) = ∅ := Subsingleton.elim _ _
@@ -658,7 +658,7 @@ open AEEqFun Lp.simpleFunc Lp
 
 namespace SimpleFunc
 
-theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
+lemma norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
     ‖f‖ = ∑ x in (toSimpleFunc f).range, (μ (toSimpleFunc f ⁻¹' {x})).toReal * ‖x‖ := by
   rw [norm_toSimpleFunc, snorm_one_eq_lintegral_nnnorm]
   have h_eq := SimpleFunc.map_apply (fun x => (‖x‖₊ : ℝ≥0∞)) (toSimpleFunc f)
@@ -689,28 +689,28 @@ def setToL1S (T : Set α → E →L[ℝ] F) (f : α →₁ₛ[μ] E) : F :=
   (toSimpleFunc f).setToSimpleFunc T
 #align measure_theory.L1.simple_func.set_to_L1s MeasureTheory.L1.SimpleFunc.setToL1S
 
-theorem setToL1S_eq_setToSimpleFunc (T : Set α → E →L[ℝ] F) (f : α →₁ₛ[μ] E) :
+lemma setToL1S_eq_setToSimpleFunc (T : Set α → E →L[ℝ] F) (f : α →₁ₛ[μ] E) :
     setToL1S T f = (toSimpleFunc f).setToSimpleFunc T :=
   rfl
 #align measure_theory.L1.simple_func.set_to_L1s_eq_set_to_simple_func MeasureTheory.L1.SimpleFunc.setToL1S_eq_setToSimpleFunc
 
 @[simp]
-theorem setToL1S_zero_left (f : α →₁ₛ[μ] E) : setToL1S (0 : Set α → E →L[ℝ] F) f = 0 :=
+lemma setToL1S_zero_left (f : α →₁ₛ[μ] E) : setToL1S (0 : Set α → E →L[ℝ] F) f = 0 :=
   SimpleFunc.setToSimpleFunc_zero _
 #align measure_theory.L1.simple_func.set_to_L1s_zero_left MeasureTheory.L1.SimpleFunc.setToL1S_zero_left
 
-theorem setToL1S_zero_left' {T : Set α → E →L[ℝ] F}
+lemma setToL1S_zero_left' {T : Set α → E →L[ℝ] F}
     (h_zero : ∀ s, MeasurableSet s → μ s < ∞ → T s = 0) (f : α →₁ₛ[μ] E) : setToL1S T f = 0 :=
   SimpleFunc.setToSimpleFunc_zero' h_zero _ (SimpleFunc.integrable f)
 #align measure_theory.L1.simple_func.set_to_L1s_zero_left' MeasureTheory.L1.SimpleFunc.setToL1S_zero_left'
 
-theorem setToL1S_congr (T : Set α → E →L[ℝ] F) (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
+lemma setToL1S_congr (T : Set α → E →L[ℝ] F) (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
     (h_add : FinMeasAdditive μ T) {f g : α →₁ₛ[μ] E} (h : toSimpleFunc f =ᵐ[μ] toSimpleFunc g) :
     setToL1S T f = setToL1S T g :=
   SimpleFunc.setToSimpleFunc_congr T h_zero h_add (SimpleFunc.integrable f) h
 #align measure_theory.L1.simple_func.set_to_L1s_congr MeasureTheory.L1.SimpleFunc.setToL1S_congr
 
-theorem setToL1S_congr_left (T T' : Set α → E →L[ℝ] F)
+lemma setToL1S_congr_left (T T' : Set α → E →L[ℝ] F)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → T s = T' s) (f : α →₁ₛ[μ] E) :
     setToL1S T f = setToL1S T' f :=
   SimpleFunc.setToSimpleFunc_congr_left T T' h (simpleFunc.toSimpleFunc f) (SimpleFunc.integrable f)
@@ -730,29 +730,29 @@ theorem setToL1S_congr_measure {μ' : Measure α} (T : Set α → E →L[ℝ] F)
   exact hμ.ae_eq goal'
 #align measure_theory.L1.simple_func.set_to_L1s_congr_measure MeasureTheory.L1.SimpleFunc.setToL1S_congr_measure
 
-theorem setToL1S_add_left (T T' : Set α → E →L[ℝ] F) (f : α →₁ₛ[μ] E) :
+lemma setToL1S_add_left (T T' : Set α → E →L[ℝ] F) (f : α →₁ₛ[μ] E) :
     setToL1S (T + T') f = setToL1S T f + setToL1S T' f :=
   SimpleFunc.setToSimpleFunc_add_left T T'
 #align measure_theory.L1.simple_func.set_to_L1s_add_left MeasureTheory.L1.SimpleFunc.setToL1S_add_left
 
-theorem setToL1S_add_left' (T T' T'' : Set α → E →L[ℝ] F)
+lemma setToL1S_add_left' (T T' T'' : Set α → E →L[ℝ] F)
     (h_add : ∀ s, MeasurableSet s → μ s < ∞ → T'' s = T s + T' s) (f : α →₁ₛ[μ] E) :
     setToL1S T'' f = setToL1S T f + setToL1S T' f :=
   SimpleFunc.setToSimpleFunc_add_left' T T' T'' h_add (SimpleFunc.integrable f)
 #align measure_theory.L1.simple_func.set_to_L1s_add_left' MeasureTheory.L1.SimpleFunc.setToL1S_add_left'
 
-theorem setToL1S_smul_left (T : Set α → E →L[ℝ] F) (c : ℝ) (f : α →₁ₛ[μ] E) :
+lemma setToL1S_smul_left (T : Set α → E →L[ℝ] F) (c : ℝ) (f : α →₁ₛ[μ] E) :
     setToL1S (fun s => c • T s) f = c • setToL1S T f :=
   SimpleFunc.setToSimpleFunc_smul_left T c _
 #align measure_theory.L1.simple_func.set_to_L1s_smul_left MeasureTheory.L1.SimpleFunc.setToL1S_smul_left
 
-theorem setToL1S_smul_left' (T T' : Set α → E →L[ℝ] F) (c : ℝ)
+lemma setToL1S_smul_left' (T T' : Set α → E →L[ℝ] F) (c : ℝ)
     (h_smul : ∀ s, MeasurableSet s → μ s < ∞ → T' s = c • T s) (f : α →₁ₛ[μ] E) :
     setToL1S T' f = c • setToL1S T f :=
   SimpleFunc.setToSimpleFunc_smul_left' T T' c h_smul (SimpleFunc.integrable f)
 #align measure_theory.L1.simple_func.set_to_L1s_smul_left' MeasureTheory.L1.SimpleFunc.setToL1S_smul_left'
 
-theorem setToL1S_add (T : Set α → E →L[ℝ] F) (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
+lemma setToL1S_add (T : Set α → E →L[ℝ] F) (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
     (h_add : FinMeasAdditive μ T) (f g : α →₁ₛ[μ] E) :
     setToL1S T (f + g) = setToL1S T f + setToL1S T g := by
   simp_rw [setToL1S]
@@ -763,7 +763,7 @@ theorem setToL1S_add (T : Set α → E →L[ℝ] F) (h_zero : ∀ s, MeasurableS
       (add_toSimpleFunc f g)
 #align measure_theory.L1.simple_func.set_to_L1s_add MeasureTheory.L1.SimpleFunc.setToL1S_add
 
-theorem setToL1S_neg {T : Set α → E →L[ℝ] F} (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
+lemma setToL1S_neg {T : Set α → E →L[ℝ] F} (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
     (h_add : FinMeasAdditive μ T) (f : α →₁ₛ[μ] E) : setToL1S T (-f) = -setToL1S T f := by
   simp_rw [setToL1S]
   have : simpleFunc.toSimpleFunc (-f) =ᵐ[μ] ⇑(-simpleFunc.toSimpleFunc f) :=
@@ -772,13 +772,13 @@ theorem setToL1S_neg {T : Set α → E →L[ℝ] F} (h_zero : ∀ s, MeasurableS
   exact SimpleFunc.setToSimpleFunc_neg T h_add (SimpleFunc.integrable f)
 #align measure_theory.L1.simple_func.set_to_L1s_neg MeasureTheory.L1.SimpleFunc.setToL1S_neg
 
-theorem setToL1S_sub {T : Set α → E →L[ℝ] F} (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
+lemma setToL1S_sub {T : Set α → E →L[ℝ] F} (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
     (h_add : FinMeasAdditive μ T) (f g : α →₁ₛ[μ] E) :
     setToL1S T (f - g) = setToL1S T f - setToL1S T g := by
   rw [sub_eq_add_neg, setToL1S_add T h_zero h_add, setToL1S_neg h_zero h_add, sub_eq_add_neg]
 #align measure_theory.L1.simple_func.set_to_L1s_sub MeasureTheory.L1.SimpleFunc.setToL1S_sub
 
-theorem setToL1S_smul_real (T : Set α → E →L[ℝ] F)
+lemma setToL1S_smul_real (T : Set α → E →L[ℝ] F)
     (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0) (h_add : FinMeasAdditive μ T) (c : ℝ)
     (f : α →₁ₛ[μ] E) : setToL1S T (c • f) = c • setToL1S T f := by
   simp_rw [setToL1S]
@@ -787,7 +787,7 @@ theorem setToL1S_smul_real (T : Set α → E →L[ℝ] F)
   exact smul_toSimpleFunc c f
 #align measure_theory.L1.simple_func.set_to_L1s_smul_real MeasureTheory.L1.SimpleFunc.setToL1S_smul_real
 
-theorem setToL1S_smul {E} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+lemma setToL1S_smul {E} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
     [NormedSpace 𝕜 F] (T : Set α → E →L[ℝ] F) (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
     (h_add : FinMeasAdditive μ T) (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜)
     (f : α →₁ₛ[μ] E) : setToL1S T (c • f) = c • setToL1S T f := by
@@ -797,7 +797,7 @@ theorem setToL1S_smul {E} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpac
   exact smul_toSimpleFunc c f
 #align measure_theory.L1.simple_func.set_to_L1s_smul MeasureTheory.L1.SimpleFunc.setToL1S_smul
 
-theorem norm_setToL1S_le (T : Set α → E →L[ℝ] F) {C : ℝ}
+lemma norm_setToL1S_le (T : Set α → E →L[ℝ] F) {C : ℝ}
     (hT_norm : ∀ s, MeasurableSet s → μ s < ∞ → ‖T s‖ ≤ C * (μ s).toReal) (f : α →₁ₛ[μ] E) :
     ‖setToL1S T f‖ ≤ C * ‖f‖ := by
   rw [setToL1S, norm_eq_sum_mul f]
@@ -806,7 +806,7 @@ theorem norm_setToL1S_le (T : Set α → E →L[ℝ] F) {C : ℝ}
       (SimpleFunc.integrable f)
 #align measure_theory.L1.simple_func.norm_set_to_L1s_le MeasureTheory.L1.SimpleFunc.norm_setToL1S_le
 
-theorem setToL1S_indicatorConst {T : Set α → E →L[ℝ] F} {s : Set α}
+lemma setToL1S_indicatorConst {T : Set α → E →L[ℝ] F} {s : Set α}
     (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0) (h_add : FinMeasAdditive μ T)
     (hs : MeasurableSet s) (hμs : μ s < ∞) (x : E) :
     setToL1S T (simpleFunc.indicatorConst 1 hs hμs.ne x) = T s x := by
@@ -817,7 +817,7 @@ theorem setToL1S_indicatorConst {T : Set α → E →L[ℝ] F} {s : Set α}
   exact toSimpleFunc_indicatorConst hs hμs.ne x
 #align measure_theory.L1.simple_func.set_to_L1s_indicator_const MeasureTheory.L1.SimpleFunc.setToL1S_indicatorConst
 
-theorem setToL1S_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F}
+lemma setToL1S_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F}
     (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0) (h_add : FinMeasAdditive μ T) (x : E) :
     setToL1S T (simpleFunc.indicatorConst 1 MeasurableSet.univ (measure_ne_top μ _) x) = T univ x :=
   setToL1S_indicatorConst h_zero h_add MeasurableSet.univ (measure_lt_top _ _) x
@@ -828,18 +828,18 @@ section Order
 variable {G'' G' : Type*} [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
   [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G''] {T : Set α → G'' →L[ℝ] G'}
 
-theorem setToL1S_mono_left {T T' : Set α → E →L[ℝ] G''} (hTT' : ∀ s x, T s x ≤ T' s x)
+lemma setToL1S_mono_left {T T' : Set α → E →L[ℝ] G''} (hTT' : ∀ s x, T s x ≤ T' s x)
     (f : α →₁ₛ[μ] E) : setToL1S T f ≤ setToL1S T' f :=
   SimpleFunc.setToSimpleFunc_mono_left T T' hTT' _
 #align measure_theory.L1.simple_func.set_to_L1s_mono_left MeasureTheory.L1.SimpleFunc.setToL1S_mono_left
 
-theorem setToL1S_mono_left' {T T' : Set α → E →L[ℝ] G''}
+lemma setToL1S_mono_left' {T T' : Set α → E →L[ℝ] G''}
     (hTT' : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, T s x ≤ T' s x) (f : α →₁ₛ[μ] E) :
     setToL1S T f ≤ setToL1S T' f :=
   SimpleFunc.setToSimpleFunc_mono_left' T T' hTT' _ (SimpleFunc.integrable f)
 #align measure_theory.L1.simple_func.set_to_L1s_mono_left' MeasureTheory.L1.SimpleFunc.setToL1S_mono_left'
 
-theorem setToL1S_nonneg (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
+lemma setToL1S_nonneg (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
     (h_add : FinMeasAdditive μ T)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f : α →₁ₛ[μ] G''}
     (hf : 0 ≤ f) : 0 ≤ setToL1S T f := by
@@ -852,7 +852,7 @@ theorem setToL1S_nonneg (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 
     SimpleFunc.setToSimpleFunc_nonneg' T hT_nonneg _ hf' ((SimpleFunc.integrable f).congr hff')
 #align measure_theory.L1.simple_func.set_to_L1s_nonneg MeasureTheory.L1.SimpleFunc.setToL1S_nonneg
 
-theorem setToL1S_mono (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
+lemma setToL1S_mono (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
     (h_add : FinMeasAdditive μ T)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f g : α →₁ₛ[μ] G''}
     (hfg : f ≤ g) : setToL1S T f ≤ setToL1S T g := by
@@ -888,71 +888,71 @@ variable {α E μ 𝕜}
 variable {T T' T'' : Set α → E →L[ℝ] F} {C C' C'' : ℝ}
 
 @[simp]
-theorem setToL1SCLM_zero_left (hT : DominatedFinMeasAdditive μ (0 : Set α → E →L[ℝ] F) C)
+lemma setToL1SCLM_zero_left (hT : DominatedFinMeasAdditive μ (0 : Set α → E →L[ℝ] F) C)
     (f : α →₁ₛ[μ] E) : setToL1SCLM α E μ hT f = 0 :=
   setToL1S_zero_left _
 #align measure_theory.L1.simple_func.set_to_L1s_clm_zero_left MeasureTheory.L1.SimpleFunc.setToL1SCLM_zero_left
 
-theorem setToL1SCLM_zero_left' (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1SCLM_zero_left' (hT : DominatedFinMeasAdditive μ T C)
     (h_zero : ∀ s, MeasurableSet s → μ s < ∞ → T s = 0) (f : α →₁ₛ[μ] E) :
     setToL1SCLM α E μ hT f = 0 :=
   setToL1S_zero_left' h_zero f
 #align measure_theory.L1.simple_func.set_to_L1s_clm_zero_left' MeasureTheory.L1.SimpleFunc.setToL1SCLM_zero_left'
 
-theorem setToL1SCLM_congr_left (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1SCLM_congr_left (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (h : T = T') (f : α →₁ₛ[μ] E) :
     setToL1SCLM α E μ hT f = setToL1SCLM α E μ hT' f :=
   setToL1S_congr_left T T' (fun _ _ _ => by rw [h]) f
 #align measure_theory.L1.simple_func.set_to_L1s_clm_congr_left MeasureTheory.L1.SimpleFunc.setToL1SCLM_congr_left
 
-theorem setToL1SCLM_congr_left' (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1SCLM_congr_left' (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (h : ∀ s, MeasurableSet s → μ s < ∞ → T s = T' s)
     (f : α →₁ₛ[μ] E) : setToL1SCLM α E μ hT f = setToL1SCLM α E μ hT' f :=
   setToL1S_congr_left T T' h f
 #align measure_theory.L1.simple_func.set_to_L1s_clm_congr_left' MeasureTheory.L1.SimpleFunc.setToL1SCLM_congr_left'
 
-theorem setToL1SCLM_congr_measure {μ' : Measure α} (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1SCLM_congr_measure {μ' : Measure α} (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ' T C') (hμ : μ ≪ μ') (f : α →₁ₛ[μ] E) (f' : α →₁ₛ[μ'] E)
     (h : (f : α → E) =ᵐ[μ] f') : setToL1SCLM α E μ hT f = setToL1SCLM α E μ' hT' f' :=
   setToL1S_congr_measure T (fun _ => hT.eq_zero_of_measure_zero) hT.1 hμ _ _ h
 #align measure_theory.L1.simple_func.set_to_L1s_clm_congr_measure MeasureTheory.L1.SimpleFunc.setToL1SCLM_congr_measure
 
-theorem setToL1SCLM_add_left (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1SCLM_add_left (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (f : α →₁ₛ[μ] E) :
     setToL1SCLM α E μ (hT.add hT') f = setToL1SCLM α E μ hT f + setToL1SCLM α E μ hT' f :=
   setToL1S_add_left T T' f
 #align measure_theory.L1.simple_func.set_to_L1s_clm_add_left MeasureTheory.L1.SimpleFunc.setToL1SCLM_add_left
 
-theorem setToL1SCLM_add_left' (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1SCLM_add_left' (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (hT'' : DominatedFinMeasAdditive μ T'' C'')
     (h_add : ∀ s, MeasurableSet s → μ s < ∞ → T'' s = T s + T' s) (f : α →₁ₛ[μ] E) :
     setToL1SCLM α E μ hT'' f = setToL1SCLM α E μ hT f + setToL1SCLM α E μ hT' f :=
   setToL1S_add_left' T T' T'' h_add f
 #align measure_theory.L1.simple_func.set_to_L1s_clm_add_left' MeasureTheory.L1.SimpleFunc.setToL1SCLM_add_left'
 
-theorem setToL1SCLM_smul_left (c : ℝ) (hT : DominatedFinMeasAdditive μ T C) (f : α →₁ₛ[μ] E) :
+lemma setToL1SCLM_smul_left (c : ℝ) (hT : DominatedFinMeasAdditive μ T C) (f : α →₁ₛ[μ] E) :
     setToL1SCLM α E μ (hT.smul c) f = c • setToL1SCLM α E μ hT f :=
   setToL1S_smul_left T c f
 #align measure_theory.L1.simple_func.set_to_L1s_clm_smul_left MeasureTheory.L1.SimpleFunc.setToL1SCLM_smul_left
 
-theorem setToL1SCLM_smul_left' (c : ℝ) (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1SCLM_smul_left' (c : ℝ) (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C')
     (h_smul : ∀ s, MeasurableSet s → μ s < ∞ → T' s = c • T s) (f : α →₁ₛ[μ] E) :
     setToL1SCLM α E μ hT' f = c • setToL1SCLM α E μ hT f :=
   setToL1S_smul_left' T T' c h_smul f
 #align measure_theory.L1.simple_func.set_to_L1s_clm_smul_left' MeasureTheory.L1.SimpleFunc.setToL1SCLM_smul_left'
 
-theorem norm_setToL1SCLM_le {T : Set α → E →L[ℝ] F} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
+lemma norm_setToL1SCLM_le {T : Set α → E →L[ℝ] F} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hC : 0 ≤ C) : ‖setToL1SCLM α E μ hT‖ ≤ C :=
   LinearMap.mkContinuous_norm_le _ hC _
 #align measure_theory.L1.simple_func.norm_set_to_L1s_clm_le MeasureTheory.L1.SimpleFunc.norm_setToL1SCLM_le
 
-theorem norm_setToL1SCLM_le' {T : Set α → E →L[ℝ] F} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C) :
+lemma norm_setToL1SCLM_le' {T : Set α → E →L[ℝ] F} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C) :
     ‖setToL1SCLM α E μ hT‖ ≤ max C 0 :=
   LinearMap.mkContinuous_norm_le' _ _
 #align measure_theory.L1.simple_func.norm_set_to_L1s_clm_le' MeasureTheory.L1.SimpleFunc.norm_setToL1SCLM_le'
 
-theorem setToL1SCLM_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F} {C : ℝ}
+lemma setToL1SCLM_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F} {C : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (x : E) :
     setToL1SCLM α E μ hT (simpleFunc.indicatorConst 1 MeasurableSet.univ (measure_ne_top μ _) x) =
       T univ x :=
@@ -964,27 +964,27 @@ section Order
 variable {G' G'' : Type*} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G'']
   [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
 
-theorem setToL1SCLM_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
+lemma setToL1SCLM_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
     (hTT' : ∀ s x, T s x ≤ T' s x) (f : α →₁ₛ[μ] E) :
     setToL1SCLM α E μ hT f ≤ setToL1SCLM α E μ hT' f :=
   SimpleFunc.setToSimpleFunc_mono_left T T' hTT' _
 #align measure_theory.L1.simple_func.set_to_L1s_clm_mono_left MeasureTheory.L1.SimpleFunc.setToL1SCLM_mono_left
 
-theorem setToL1SCLM_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
+lemma setToL1SCLM_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
     (hTT' : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, T s x ≤ T' s x) (f : α →₁ₛ[μ] E) :
     setToL1SCLM α E μ hT f ≤ setToL1SCLM α E μ hT' f :=
   SimpleFunc.setToSimpleFunc_mono_left' T T' hTT' _ (SimpleFunc.integrable f)
 #align measure_theory.L1.simple_func.set_to_L1s_clm_mono_left' MeasureTheory.L1.SimpleFunc.setToL1SCLM_mono_left'
 
-theorem setToL1SCLM_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1SCLM_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f : α →₁ₛ[μ] G'}
     (hf : 0 ≤ f) : 0 ≤ setToL1SCLM α G' μ hT f :=
   setToL1S_nonneg (fun _ => hT.eq_zero_of_measure_zero) hT.1 hT_nonneg hf
 #align measure_theory.L1.simple_func.set_to_L1s_clm_nonneg MeasureTheory.L1.SimpleFunc.setToL1SCLM_nonneg
 
-theorem setToL1SCLM_mono {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1SCLM_mono {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f g : α →₁ₛ[μ] G'}
     (hfg : f ≤ g) : setToL1SCLM α G' μ hT f ≤ setToL1SCLM α G' μ hT g :=
   setToL1S_mono (fun _ => hT.eq_zero_of_measure_zero) hT.1 hT_nonneg hfg
@@ -1022,20 +1022,20 @@ def setToL1 (hT : DominatedFinMeasAdditive μ T C) : (α →₁[μ] E) →L[ℝ]
     simpleFunc.uniformInducing
 #align measure_theory.L1.set_to_L1 MeasureTheory.L1.setToL1
 
-theorem setToL1_eq_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C) (f : α →₁ₛ[μ] E) :
+lemma setToL1_eq_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C) (f : α →₁ₛ[μ] E) :
     setToL1 hT f = setToL1SCLM α E μ hT f :=
   uniformly_extend_of_ind simpleFunc.uniformInducing (simpleFunc.denseRange one_ne_top)
     (setToL1SCLM α E μ hT).uniformContinuous _
 #align measure_theory.L1.set_to_L1_eq_set_to_L1s_clm MeasureTheory.L1.setToL1_eq_setToL1SCLM
 
-theorem setToL1_eq_setToL1' (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1_eq_setToL1' (hT : DominatedFinMeasAdditive μ T C)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (f : α →₁[μ] E) :
     setToL1 hT f = setToL1' 𝕜 hT h_smul f :=
   rfl
 #align measure_theory.L1.set_to_L1_eq_set_to_L1' MeasureTheory.L1.setToL1_eq_setToL1'
 
 @[simp]
-theorem setToL1_zero_left (hT : DominatedFinMeasAdditive μ (0 : Set α → E →L[ℝ] F) C)
+lemma setToL1_zero_left (hT : DominatedFinMeasAdditive μ (0 : Set α → E →L[ℝ] F) C)
     (f : α →₁[μ] E) : setToL1 hT f = 0 := by
   suffices setToL1 hT = 0 by rw [this]; simp
   refine' ContinuousLinearMap.extend_unique (setToL1SCLM α E μ hT) _ _ _ _ _
@@ -1043,7 +1043,7 @@ theorem setToL1_zero_left (hT : DominatedFinMeasAdditive μ (0 : Set α → E �
   rw [setToL1SCLM_zero_left hT f, ContinuousLinearMap.zero_comp, ContinuousLinearMap.zero_apply]
 #align measure_theory.L1.set_to_L1_zero_left MeasureTheory.L1.setToL1_zero_left
 
-theorem setToL1_zero_left' (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1_zero_left' (hT : DominatedFinMeasAdditive μ T C)
     (h_zero : ∀ s, MeasurableSet s → μ s < ∞ → T s = 0) (f : α →₁[μ] E) : setToL1 hT f = 0 := by
   suffices setToL1 hT = 0 by rw [this]; simp
   refine' ContinuousLinearMap.extend_unique (setToL1SCLM α E μ hT) _ _ _ _ _
@@ -1052,7 +1052,7 @@ theorem setToL1_zero_left' (hT : DominatedFinMeasAdditive μ T C)
     ContinuousLinearMap.zero_apply]
 #align measure_theory.L1.set_to_L1_zero_left' MeasureTheory.L1.setToL1_zero_left'
 
-theorem setToL1_congr_left (T T' : Set α → E →L[ℝ] F) {C C' : ℝ}
+lemma setToL1_congr_left (T T' : Set α → E →L[ℝ] F) {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C') (h : T = T')
     (f : α →₁[μ] E) : setToL1 hT f = setToL1 hT' f := by
   suffices setToL1 hT = setToL1 hT' by rw [this]
@@ -1063,7 +1063,7 @@ theorem setToL1_congr_left (T T' : Set α → E →L[ℝ] F) {C C' : ℝ}
   exact setToL1SCLM_congr_left hT' hT h.symm f
 #align measure_theory.L1.set_to_L1_congr_left MeasureTheory.L1.setToL1_congr_left
 
-theorem setToL1_congr_left' (T T' : Set α → E →L[ℝ] F) {C C' : ℝ}
+lemma setToL1_congr_left' (T T' : Set α → E →L[ℝ] F) {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
     (h : ∀ s, MeasurableSet s → μ s < ∞ → T s = T' s) (f : α →₁[μ] E) :
     setToL1 hT f = setToL1 hT' f := by
@@ -1075,7 +1075,7 @@ theorem setToL1_congr_left' (T T' : Set α → E →L[ℝ] F) {C C' : ℝ}
   exact (setToL1SCLM_congr_left' hT hT' h f).symm
 #align measure_theory.L1.set_to_L1_congr_left' MeasureTheory.L1.setToL1_congr_left'
 
-theorem setToL1_add_left (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1_add_left (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (f : α →₁[μ] E) :
     setToL1 (hT.add hT') f = setToL1 hT f + setToL1 hT' f := by
   suffices setToL1 (hT.add hT') = setToL1 hT + setToL1 hT' by
@@ -1087,7 +1087,7 @@ theorem setToL1_add_left (hT : DominatedFinMeasAdditive μ T C)
   rw [setToL1_eq_setToL1SCLM, setToL1_eq_setToL1SCLM, setToL1SCLM_add_left hT hT']
 #align measure_theory.L1.set_to_L1_add_left MeasureTheory.L1.setToL1_add_left
 
-theorem setToL1_add_left' (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1_add_left' (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (hT'' : DominatedFinMeasAdditive μ T'' C'')
     (h_add : ∀ s, MeasurableSet s → μ s < ∞ → T'' s = T s + T' s) (f : α →₁[μ] E) :
     setToL1 hT'' f = setToL1 hT f + setToL1 hT' f := by
@@ -1099,7 +1099,7 @@ theorem setToL1_add_left' (hT : DominatedFinMeasAdditive μ T C)
     setToL1SCLM_add_left' hT hT' hT'' h_add]
 #align measure_theory.L1.set_to_L1_add_left' MeasureTheory.L1.setToL1_add_left'
 
-theorem setToL1_smul_left (hT : DominatedFinMeasAdditive μ T C) (c : ℝ) (f : α →₁[μ] E) :
+lemma setToL1_smul_left (hT : DominatedFinMeasAdditive μ T C) (c : ℝ) (f : α →₁[μ] E) :
     setToL1 (hT.smul c) f = c • setToL1 hT f := by
   suffices setToL1 (hT.smul c) = c • setToL1 hT by rw [this, ContinuousLinearMap.smul_apply]
   refine' ContinuousLinearMap.extend_unique (setToL1SCLM α E μ (hT.smul c)) _ _ _ _ _
@@ -1108,7 +1108,7 @@ theorem setToL1_smul_left (hT : DominatedFinMeasAdditive μ T C) (c : ℝ) (f : 
   rw [setToL1_eq_setToL1SCLM, setToL1SCLM_smul_left c hT]
 #align measure_theory.L1.set_to_L1_smul_left MeasureTheory.L1.setToL1_smul_left
 
-theorem setToL1_smul_left' (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1_smul_left' (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (c : ℝ)
     (h_smul : ∀ s, MeasurableSet s → μ s < ∞ → T' s = c • T s) (f : α →₁[μ] E) :
     setToL1 hT' f = c • setToL1 hT f := by
@@ -1119,28 +1119,28 @@ theorem setToL1_smul_left' (hT : DominatedFinMeasAdditive μ T C)
   rw [setToL1_eq_setToL1SCLM, setToL1SCLM_smul_left' c hT hT' h_smul]
 #align measure_theory.L1.set_to_L1_smul_left' MeasureTheory.L1.setToL1_smul_left'
 
-theorem setToL1_smul (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1_smul (hT : DominatedFinMeasAdditive μ T C)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜) (f : α →₁[μ] E) :
     setToL1 hT (c • f) = c • setToL1 hT f := by
   rw [setToL1_eq_setToL1' hT h_smul, setToL1_eq_setToL1' hT h_smul]
   exact ContinuousLinearMap.map_smul _ _ _
 #align measure_theory.L1.set_to_L1_smul MeasureTheory.L1.setToL1_smul
 
-theorem setToL1_simpleFunc_indicatorConst (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
+lemma setToL1_simpleFunc_indicatorConst (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s < ∞) (x : E) :
     setToL1 hT (simpleFunc.indicatorConst 1 hs hμs.ne x) = T s x := by
   rw [setToL1_eq_setToL1SCLM]
   exact setToL1S_indicatorConst (fun s => hT.eq_zero_of_measure_zero) hT.1 hs hμs x
 #align measure_theory.L1.set_to_L1_simple_func_indicator_const MeasureTheory.L1.setToL1_simpleFunc_indicatorConst
 
-theorem setToL1_indicatorConstLp (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
+lemma setToL1_indicatorConstLp (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) :
     setToL1 hT (indicatorConstLp 1 hs hμs x) = T s x := by
   rw [← Lp.simpleFunc.coe_indicatorConst hs hμs x]
   exact setToL1_simpleFunc_indicatorConst hT hs hμs.lt_top x
 #align measure_theory.L1.set_to_L1_indicator_const_Lp MeasureTheory.L1.setToL1_indicatorConstLp
 
-theorem setToL1_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C) (x : E) :
+lemma setToL1_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C) (x : E) :
     setToL1 hT (indicatorConstLp 1 MeasurableSet.univ (measure_ne_top _ _) x) = T univ x :=
   setToL1_indicatorConstLp hT MeasurableSet.univ (measure_ne_top _ _) x
 #align measure_theory.L1.set_to_L1_const MeasureTheory.L1.setToL1_const
@@ -1150,7 +1150,7 @@ section Order
 variable {G' G'' : Type*} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G''] [CompleteSpace G'']
   [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
 
-theorem setToL1_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
+lemma setToL1_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
     (hTT' : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, T s x ≤ T' s x) (f : α →₁[μ] E) :
     setToL1 hT f ≤ setToL1 hT' f := by
@@ -1164,13 +1164,13 @@ theorem setToL1_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
   | h_closed => exact isClosed_le (setToL1 hT).continuous (setToL1 hT').continuous
 #align measure_theory.L1.set_to_L1_mono_left' MeasureTheory.L1.setToL1_mono_left'
 
-theorem setToL1_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
+lemma setToL1_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
     (hTT' : ∀ s x, T s x ≤ T' s x) (f : α →₁[μ] E) : setToL1 hT f ≤ setToL1 hT' f :=
   setToL1_mono_left' hT hT' (fun s _ _ x => hTT' s x) f
 #align measure_theory.L1.set_to_L1_mono_left MeasureTheory.L1.setToL1_mono_left
 
-theorem setToL1_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f : α →₁[μ] G'}
     (hf : 0 ≤ f) : 0 ≤ setToL1 hT f := by
   suffices ∀ f : { g : α →₁[μ] G' // 0 ≤ g }, 0 ≤ setToL1 hT f from
@@ -1186,7 +1186,7 @@ theorem setToL1_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : Dominat
     exact setToL1S_nonneg (fun s => hT.eq_zero_of_measure_zero) hT.1 hT_nonneg g.2
 #align measure_theory.L1.set_to_L1_nonneg MeasureTheory.L1.setToL1_nonneg
 
-theorem setToL1_mono {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
+lemma setToL1_mono {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f g : α →₁[μ] G'}
     (hfg : f ≤ g) : setToL1 hT f ≤ setToL1 hT g := by
   rw [← sub_nonneg] at hfg ⊢
@@ -1196,7 +1196,7 @@ theorem setToL1_mono {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : Dominated
 
 end Order
 
-theorem norm_setToL1_le_norm_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C) :
+lemma norm_setToL1_le_norm_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C) :
     ‖setToL1 hT‖ ≤ ‖setToL1SCLM α E μ hT‖ :=
   calc
     ‖setToL1 hT‖ ≤ (1 : ℝ≥0) * ‖setToL1SCLM α E μ hT‖ := by
@@ -1208,7 +1208,7 @@ theorem norm_setToL1_le_norm_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C) 
     _ = ‖setToL1SCLM α E μ hT‖ := by rw [NNReal.coe_one, one_mul]
 #align measure_theory.L1.norm_set_to_L1_le_norm_set_to_L1s_clm MeasureTheory.L1.norm_setToL1_le_norm_setToL1SCLM
 
-theorem norm_setToL1_le_mul_norm (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C)
+lemma norm_setToL1_le_mul_norm (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C)
     (f : α →₁[μ] E) : ‖setToL1 hT f‖ ≤ C * ‖f‖ :=
   calc
     ‖setToL1 hT f‖ ≤ ‖setToL1SCLM α E μ hT‖ * ‖f‖ :=
@@ -1216,7 +1216,7 @@ theorem norm_setToL1_le_mul_norm (hT : DominatedFinMeasAdditive μ T C) (hC : 0 
     _ ≤ C * ‖f‖ := mul_le_mul (norm_setToL1SCLM_le hT hC) le_rfl (norm_nonneg _) hC
 #align measure_theory.L1.norm_set_to_L1_le_mul_norm MeasureTheory.L1.norm_setToL1_le_mul_norm
 
-theorem norm_setToL1_le_mul_norm' (hT : DominatedFinMeasAdditive μ T C) (f : α →₁[μ] E) :
+lemma norm_setToL1_le_mul_norm' (hT : DominatedFinMeasAdditive μ T C) (f : α →₁[μ] E) :
     ‖setToL1 hT f‖ ≤ max C 0 * ‖f‖ :=
   calc
     ‖setToL1 hT f‖ ≤ ‖setToL1SCLM α E μ hT‖ * ‖f‖ :=
@@ -1225,15 +1225,15 @@ theorem norm_setToL1_le_mul_norm' (hT : DominatedFinMeasAdditive μ T C) (f : α
       mul_le_mul (norm_setToL1SCLM_le' hT) le_rfl (norm_nonneg _) (le_max_right _ _)
 #align measure_theory.L1.norm_set_to_L1_le_mul_norm' MeasureTheory.L1.norm_setToL1_le_mul_norm'
 
-theorem norm_setToL1_le (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) : ‖setToL1 hT‖ ≤ C :=
+lemma norm_setToL1_le (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) : ‖setToL1 hT‖ ≤ C :=
   ContinuousLinearMap.opNorm_le_bound _ hC (norm_setToL1_le_mul_norm hT hC)
 #align measure_theory.L1.norm_set_to_L1_le MeasureTheory.L1.norm_setToL1_le
 
-theorem norm_setToL1_le' (hT : DominatedFinMeasAdditive μ T C) : ‖setToL1 hT‖ ≤ max C 0 :=
+lemma norm_setToL1_le' (hT : DominatedFinMeasAdditive μ T C) : ‖setToL1 hT‖ ≤ max C 0 :=
   ContinuousLinearMap.opNorm_le_bound _ (le_max_right _ _) (norm_setToL1_le_mul_norm' hT)
 #align measure_theory.L1.norm_set_to_L1_le' MeasureTheory.L1.norm_setToL1_le'
 
-theorem setToL1_lipschitz (hT : DominatedFinMeasAdditive μ T C) :
+lemma setToL1_lipschitz (hT : DominatedFinMeasAdditive μ T C) :
     LipschitzWith (Real.toNNReal C) (setToL1 hT) :=
   (setToL1 hT).lipschitz.weaken (norm_setToL1_le' hT)
 #align measure_theory.L1.set_to_L1_lipschitz MeasureTheory.L1.setToL1_lipschitz
@@ -1264,27 +1264,27 @@ def setToFun (hT : DominatedFinMeasAdditive μ T C) (f : α → E) : F :=
 
 variable {μ T}
 
-theorem setToFun_eq (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ) :
+lemma setToFun_eq (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ) :
     setToFun μ T hT f = L1.setToL1 hT (hf.toL1 f) :=
   dif_pos hf
 #align measure_theory.set_to_fun_eq MeasureTheory.setToFun_eq
 
-theorem L1.setToFun_eq_setToL1 (hT : DominatedFinMeasAdditive μ T C) (f : α →₁[μ] E) :
+lemma L1.setToFun_eq_setToL1 (hT : DominatedFinMeasAdditive μ T C) (f : α →₁[μ] E) :
     setToFun μ T hT f = L1.setToL1 hT f := by
   rw [setToFun_eq hT (L1.integrable_coeFn f), Integrable.toL1_coeFn]
 #align measure_theory.L1.set_to_fun_eq_set_to_L1 MeasureTheory.L1.setToFun_eq_setToL1
 
-theorem setToFun_undef (hT : DominatedFinMeasAdditive μ T C) (hf : ¬Integrable f μ) :
+lemma setToFun_undef (hT : DominatedFinMeasAdditive μ T C) (hf : ¬Integrable f μ) :
     setToFun μ T hT f = 0 :=
   dif_neg hf
 #align measure_theory.set_to_fun_undef MeasureTheory.setToFun_undef
 
-theorem setToFun_non_aEStronglyMeasurable (hT : DominatedFinMeasAdditive μ T C)
+lemma setToFun_non_aEStronglyMeasurable (hT : DominatedFinMeasAdditive μ T C)
     (hf : ¬AEStronglyMeasurable f μ) : setToFun μ T hT f = 0 :=
   setToFun_undef hT (not_and_of_not_left _ hf)
 #align measure_theory.set_to_fun_non_ae_strongly_measurable MeasureTheory.setToFun_non_aEStronglyMeasurable
 
-theorem setToFun_congr_left (hT : DominatedFinMeasAdditive μ T C)
+lemma setToFun_congr_left (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (h : T = T') (f : α → E) :
     setToFun μ T hT f = setToFun μ T' hT' f := by
   by_cases hf : Integrable f μ
@@ -1292,7 +1292,7 @@ theorem setToFun_congr_left (hT : DominatedFinMeasAdditive μ T C)
   · simp_rw [setToFun_undef _ hf]
 #align measure_theory.set_to_fun_congr_left MeasureTheory.setToFun_congr_left
 
-theorem setToFun_congr_left' (hT : DominatedFinMeasAdditive μ T C)
+lemma setToFun_congr_left' (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (h : ∀ s, MeasurableSet s → μ s < ∞ → T s = T' s)
     (f : α → E) : setToFun μ T hT f = setToFun μ T' hT' f := by
   by_cases hf : Integrable f μ
@@ -1300,7 +1300,7 @@ theorem setToFun_congr_left' (hT : DominatedFinMeasAdditive μ T C)
   · simp_rw [setToFun_undef _ hf]
 #align measure_theory.set_to_fun_congr_left' MeasureTheory.setToFun_congr_left'
 
-theorem setToFun_add_left (hT : DominatedFinMeasAdditive μ T C)
+lemma setToFun_add_left (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (f : α → E) :
     setToFun μ (T + T') (hT.add hT') f = setToFun μ T hT f + setToFun μ T' hT' f := by
   by_cases hf : Integrable f μ
@@ -1308,7 +1308,7 @@ theorem setToFun_add_left (hT : DominatedFinMeasAdditive μ T C)
   · simp_rw [setToFun_undef _ hf, add_zero]
 #align measure_theory.set_to_fun_add_left MeasureTheory.setToFun_add_left
 
-theorem setToFun_add_left' (hT : DominatedFinMeasAdditive μ T C)
+lemma setToFun_add_left' (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (hT'' : DominatedFinMeasAdditive μ T'' C'')
     (h_add : ∀ s, MeasurableSet s → μ s < ∞ → T'' s = T s + T' s) (f : α → E) :
     setToFun μ T'' hT'' f = setToFun μ T hT f + setToFun μ T' hT' f := by
@@ -1317,14 +1317,14 @@ theorem setToFun_add_left' (hT : DominatedFinMeasAdditive μ T C)
   · simp_rw [setToFun_undef _ hf, add_zero]
 #align measure_theory.set_to_fun_add_left' MeasureTheory.setToFun_add_left'
 
-theorem setToFun_smul_left (hT : DominatedFinMeasAdditive μ T C) (c : ℝ) (f : α → E) :
+lemma setToFun_smul_left (hT : DominatedFinMeasAdditive μ T C) (c : ℝ) (f : α → E) :
     setToFun μ (fun s => c • T s) (hT.smul c) f = c • setToFun μ T hT f := by
   by_cases hf : Integrable f μ
   · simp_rw [setToFun_eq _ hf, L1.setToL1_smul_left hT c]
   · simp_rw [setToFun_undef _ hf, smul_zero]
 #align measure_theory.set_to_fun_smul_left MeasureTheory.setToFun_smul_left
 
-theorem setToFun_smul_left' (hT : DominatedFinMeasAdditive μ T C)
+lemma setToFun_smul_left' (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (c : ℝ)
     (h_smul : ∀ s, MeasurableSet s → μ s < ∞ → T' s = c • T s) (f : α → E) :
     setToFun μ T' hT' f = c • setToFun μ T hT f := by
@@ -1334,32 +1334,32 @@ theorem setToFun_smul_left' (hT : DominatedFinMeasAdditive μ T C)
 #align measure_theory.set_to_fun_smul_left' MeasureTheory.setToFun_smul_left'
 
 @[simp]
-theorem setToFun_zero (hT : DominatedFinMeasAdditive μ T C) : setToFun μ T hT (0 : α → E) = 0 := by
+lemma setToFun_zero (hT : DominatedFinMeasAdditive μ T C) : setToFun μ T hT (0 : α → E) = 0 := by
   erw [setToFun_eq hT (integrable_zero _ _ _), Integrable.toL1_zero, ContinuousLinearMap.map_zero]
 #align measure_theory.set_to_fun_zero MeasureTheory.setToFun_zero
 
 @[simp]
-theorem setToFun_zero_left {hT : DominatedFinMeasAdditive μ (0 : Set α → E →L[ℝ] F) C} :
+lemma setToFun_zero_left {hT : DominatedFinMeasAdditive μ (0 : Set α → E →L[ℝ] F) C} :
     setToFun μ 0 hT f = 0 := by
   by_cases hf : Integrable f μ
   · rw [setToFun_eq hT hf]; exact L1.setToL1_zero_left hT _
   · exact setToFun_undef hT hf
 #align measure_theory.set_to_fun_zero_left MeasureTheory.setToFun_zero_left
 
-theorem setToFun_zero_left' (hT : DominatedFinMeasAdditive μ T C)
+lemma setToFun_zero_left' (hT : DominatedFinMeasAdditive μ T C)
     (h_zero : ∀ s, MeasurableSet s → μ s < ∞ → T s = 0) : setToFun μ T hT f = 0 := by
   by_cases hf : Integrable f μ
   · rw [setToFun_eq hT hf]; exact L1.setToL1_zero_left' hT h_zero _
   · exact setToFun_undef hT hf
 #align measure_theory.set_to_fun_zero_left' MeasureTheory.setToFun_zero_left'
 
-theorem setToFun_add (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ)
+lemma setToFun_add (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ)
     (hg : Integrable g μ) : setToFun μ T hT (f + g) = setToFun μ T hT f + setToFun μ T hT g := by
   rw [setToFun_eq hT (hf.add hg), setToFun_eq hT hf, setToFun_eq hT hg, Integrable.toL1_add,
     (L1.setToL1 hT).map_add]
 #align measure_theory.set_to_fun_add MeasureTheory.setToFun_add
 
-theorem setToFun_finset_sum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι)
+lemma setToFun_finset_sum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι)
     {f : ι → α → E} (hf : ∀ i ∈ s, Integrable (f i) μ) :
     setToFun μ T hT (∑ i in s, f i) = ∑ i in s, setToFun μ T hT (f i) := by
   revert hf
@@ -1374,13 +1374,13 @@ theorem setToFun_finset_sum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Fi
       simp
 #align measure_theory.set_to_fun_finset_sum' MeasureTheory.setToFun_finset_sum'
 
-theorem setToFun_finset_sum (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι) {f : ι → α → E}
+lemma setToFun_finset_sum (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι) {f : ι → α → E}
     (hf : ∀ i ∈ s, Integrable (f i) μ) :
     (setToFun μ T hT fun a => ∑ i in s, f i a) = ∑ i in s, setToFun μ T hT (f i) := by
   convert setToFun_finset_sum' hT s hf with a; simp
 #align measure_theory.set_to_fun_finset_sum MeasureTheory.setToFun_finset_sum
 
-theorem setToFun_neg (hT : DominatedFinMeasAdditive μ T C) (f : α → E) :
+lemma setToFun_neg (hT : DominatedFinMeasAdditive μ T C) (f : α → E) :
     setToFun μ T hT (-f) = -setToFun μ T hT f := by
   by_cases hf : Integrable f μ
   · rw [setToFun_eq hT hf, setToFun_eq hT hf.neg, Integrable.toL1_neg,
@@ -1389,12 +1389,12 @@ theorem setToFun_neg (hT : DominatedFinMeasAdditive μ T C) (f : α → E) :
     rwa [← integrable_neg_iff] at hf
 #align measure_theory.set_to_fun_neg MeasureTheory.setToFun_neg
 
-theorem setToFun_sub (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ)
+lemma setToFun_sub (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ)
     (hg : Integrable g μ) : setToFun μ T hT (f - g) = setToFun μ T hT f - setToFun μ T hT g := by
   rw [sub_eq_add_neg, sub_eq_add_neg, setToFun_add hT hf hg.neg, setToFun_neg hT g]
 #align measure_theory.set_to_fun_sub MeasureTheory.setToFun_sub
 
-theorem setToFun_smul [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+lemma setToFun_smul [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
     (hT : DominatedFinMeasAdditive μ T C) (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜)
     (f : α → E) : setToFun μ T hT (c • f) = c • setToFun μ T hT f := by
   by_cases hf : Integrable f μ
@@ -1406,7 +1406,7 @@ theorem setToFun_smul [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [Norme
       rw [setToFun_undef hT hf, setToFun_undef hT hf', smul_zero]
 #align measure_theory.set_to_fun_smul MeasureTheory.setToFun_smul
 
-theorem setToFun_congr_ae (hT : DominatedFinMeasAdditive μ T C) (h : f =ᵐ[μ] g) :
+lemma setToFun_congr_ae (hT : DominatedFinMeasAdditive μ T C) (h : f =ᵐ[μ] g) :
     setToFun μ T hT f = setToFun μ T hT g := by
   by_cases hfi : Integrable f μ
   · have hgi : Integrable g μ := hfi.congr h
@@ -1415,23 +1415,23 @@ theorem setToFun_congr_ae (hT : DominatedFinMeasAdditive μ T C) (h : f =ᵐ[μ]
     rw [setToFun_undef hT hfi, setToFun_undef hT hgi]
 #align measure_theory.set_to_fun_congr_ae MeasureTheory.setToFun_congr_ae
 
-theorem setToFun_measure_zero (hT : DominatedFinMeasAdditive μ T C) (h : μ = 0) :
+lemma setToFun_measure_zero (hT : DominatedFinMeasAdditive μ T C) (h : μ = 0) :
     setToFun μ T hT f = 0 := by
   have : f =ᵐ[μ] 0 := by simp [h, EventuallyEq]
   rw [setToFun_congr_ae hT this, setToFun_zero]
 #align measure_theory.set_to_fun_measure_zero MeasureTheory.setToFun_measure_zero
 
-theorem setToFun_measure_zero' (hT : DominatedFinMeasAdditive μ T C)
+lemma setToFun_measure_zero' (hT : DominatedFinMeasAdditive μ T C)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → μ s = 0) : setToFun μ T hT f = 0 :=
   setToFun_zero_left' hT fun s hs hμs => hT.eq_zero_of_measure_zero hs (h s hs hμs)
 #align measure_theory.set_to_fun_measure_zero' MeasureTheory.setToFun_measure_zero'
 
-theorem setToFun_toL1 (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ) :
+lemma setToFun_toL1 (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ) :
     setToFun μ T hT (hf.toL1 f) = setToFun μ T hT f :=
   setToFun_congr_ae hT hf.coeFn_toL1
 #align measure_theory.set_to_fun_to_L1 MeasureTheory.setToFun_toL1
 
-theorem setToFun_indicator_const (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
+lemma setToFun_indicator_const (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) :
     setToFun μ T hT (s.indicator fun _ => x) = T s x := by
   rw [setToFun_congr_ae hT (@indicatorConstLp_coeFn _ _ _ 1 _ _ _ hs hμs x).symm]
@@ -1439,7 +1439,7 @@ theorem setToFun_indicator_const (hT : DominatedFinMeasAdditive μ T C) {s : Set
   exact L1.setToL1_indicatorConstLp hT hs hμs x
 #align measure_theory.set_to_fun_indicator_const MeasureTheory.setToFun_indicator_const
 
-theorem setToFun_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C) (x : E) :
+lemma setToFun_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C) (x : E) :
     (setToFun μ T hT fun _ => x) = T univ x := by
   have : (fun _ : α => x) = Set.indicator univ fun _ => x := (indicator_univ _).symm
   rw [this]
@@ -1451,7 +1451,7 @@ section Order
 variable {G' G'' : Type*} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G''] [CompleteSpace G'']
   [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
 
-theorem setToFun_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
+lemma setToFun_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
     (hTT' : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, T s x ≤ T' s x) (f : α → E) :
     setToFun μ T hT f ≤ setToFun μ T' hT' f := by
@@ -1460,13 +1460,13 @@ theorem setToFun_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
   · simp_rw [setToFun_undef _ hf]; rfl
 #align measure_theory.set_to_fun_mono_left' MeasureTheory.setToFun_mono_left'
 
-theorem setToFun_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
+lemma setToFun_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
     (hTT' : ∀ s x, T s x ≤ T' s x) (f : α →₁[μ] E) : setToFun μ T hT f ≤ setToFun μ T' hT' f :=
   setToFun_mono_left' hT hT' (fun s _ _ x => hTT' s x) f
 #align measure_theory.set_to_fun_mono_left MeasureTheory.setToFun_mono_left
 
-theorem setToFun_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
+lemma setToFun_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f : α → G'}
     (hf : 0 ≤ᵐ[μ] f) : 0 ≤ setToFun μ T hT f := by
   by_cases hfi : Integrable f μ
@@ -1481,7 +1481,7 @@ theorem setToFun_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : Domina
   · simp_rw [setToFun_undef _ hfi]; rfl
 #align measure_theory.set_to_fun_nonneg MeasureTheory.setToFun_nonneg
 
-theorem setToFun_mono {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
+lemma setToFun_mono {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f g : α → G'}
     (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     setToFun μ T hT f ≤ setToFun μ T hT g := by
@@ -1494,7 +1494,7 @@ theorem setToFun_mono {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : Dominate
 end Order
 
 @[continuity]
-theorem continuous_setToFun (hT : DominatedFinMeasAdditive μ T C) :
+lemma continuous_setToFun (hT : DominatedFinMeasAdditive μ T C) :
     Continuous fun f : α →₁[μ] E => setToFun μ T hT f := by
   simp_rw [L1.setToFun_eq_setToL1 hT]; exact ContinuousLinearMap.continuous _
 #align measure_theory.continuous_set_to_fun MeasureTheory.continuous_setToFun
@@ -1525,7 +1525,7 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
     exact ((continuous_setToFun hT).tendsto f_lp).comp tendsto_L1
 #align measure_theory.tendsto_set_to_fun_of_L1 MeasureTheory.tendsto_setToFun_of_L1
 
-theorem tendsto_setToFun_approxOn_of_measurable (hT : DominatedFinMeasAdditive μ T C)
+lemma tendsto_setToFun_approxOn_of_measurable (hT : DominatedFinMeasAdditive μ T C)
     [MeasurableSpace E] [BorelSpace E] {f : α → E} {s : Set E} [SeparableSpace s]
     (hfi : Integrable f μ) (hfm : Measurable f) (hs : ∀ᵐ x ∂μ, f x ∈ closure s) {y₀ : E}
     (h₀ : y₀ ∈ s) (h₀i : Integrable (fun _ => y₀) μ) :
@@ -1536,7 +1536,7 @@ theorem tendsto_setToFun_approxOn_of_measurable (hT : DominatedFinMeasAdditive �
     (SimpleFunc.tendsto_approxOn_L1_nnnorm hfm _ hs (hfi.sub h₀i).2)
 #align measure_theory.tendsto_set_to_fun_approx_on_of_measurable MeasureTheory.tendsto_setToFun_approxOn_of_measurable
 
-theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
+lemma tendsto_setToFun_approxOn_of_measurable_of_range_subset
     (hT : DominatedFinMeasAdditive μ T C) [MeasurableSpace E] [BorelSpace E] {f : α → E}
     (fmeas : Measurable f) (hf : Integrable f μ) (s : Set E) [SeparableSpace s]
     (hs : range f ∪ {0} ⊆ s) :
@@ -1593,7 +1593,7 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
     _ < ε := half_lt_self hε_pos
 #align measure_theory.continuous_L1_to_L1 MeasureTheory.continuous_L1_toL1
 
-theorem setToFun_congr_measure_of_integrable {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ ∞)
+lemma setToFun_congr_measure_of_integrable {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ ∞)
     (hμ'_le : μ' ≤ c' • μ) (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ' T C') (f : α → E) (hfμ : Integrable f μ) :
     setToFun μ T hT f = setToFun μ' T hT' f := by
@@ -1622,7 +1622,7 @@ theorem setToFun_congr_measure_of_integrable {μ' : Measure α} (c' : ℝ≥0∞
     rw [← setToFun_congr_ae hT hfg, hf_eq, setToFun_congr_ae hT' hfg']
 #align measure_theory.set_to_fun_congr_measure_of_integrable MeasureTheory.setToFun_congr_measure_of_integrable
 
-theorem setToFun_congr_measure {μ' : Measure α} (c c' : ℝ≥0∞) (hc : c ≠ ∞) (hc' : c' ≠ ∞)
+lemma setToFun_congr_measure {μ' : Measure α} (c c' : ℝ≥0∞) (hc : c ≠ ∞) (hc' : c' ≠ ∞)
     (hμ_le : μ ≤ c • μ') (hμ'_le : μ' ≤ c' • μ) (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ' T C') (f : α → E) :
     setToFun μ T hT f = setToFun μ' T hT' f := by
@@ -1634,7 +1634,7 @@ theorem setToFun_congr_measure {μ' : Measure α} (c c' : ℝ≥0∞) (hc : c �
     simp_rw [setToFun_undef _ hf, setToFun_undef _ (h_int f hf)]
 #align measure_theory.set_to_fun_congr_measure MeasureTheory.setToFun_congr_measure
 
-theorem setToFun_congr_measure_of_add_right {μ' : Measure α}
+lemma setToFun_congr_measure_of_add_right {μ' : Measure α}
     (hT_add : DominatedFinMeasAdditive (μ + μ') T C') (hT : DominatedFinMeasAdditive μ T C)
     (f : α → E) (hf : Integrable f (μ + μ')) :
     setToFun (μ + μ') T hT_add f = setToFun μ T hT f := by
@@ -1644,7 +1644,7 @@ theorem setToFun_congr_measure_of_add_right {μ' : Measure α}
   exact add_le_add le_rfl bot_le
 #align measure_theory.set_to_fun_congr_measure_of_add_right MeasureTheory.setToFun_congr_measure_of_add_right
 
-theorem setToFun_congr_measure_of_add_left {μ' : Measure α}
+lemma setToFun_congr_measure_of_add_left {μ' : Measure α}
     (hT_add : DominatedFinMeasAdditive (μ + μ') T C') (hT : DominatedFinMeasAdditive μ' T C)
     (f : α → E) (hf : Integrable f (μ + μ')) :
     setToFun (μ + μ') T hT_add f = setToFun μ' T hT f := by
@@ -1654,7 +1654,7 @@ theorem setToFun_congr_measure_of_add_left {μ' : Measure α}
   exact add_le_add bot_le le_rfl
 #align measure_theory.set_to_fun_congr_measure_of_add_left MeasureTheory.setToFun_congr_measure_of_add_left
 
-theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T C) (f : α → E) :
+lemma setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T C) (f : α → E) :
     setToFun (∞ • μ) T hT f = 0 := by
   refine' setToFun_measure_zero' hT fun s _ hμs => _
   rw [lt_top_iff_ne_top] at hμs
@@ -1663,7 +1663,7 @@ theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T 
   simp only [hμs.right, Measure.smul_apply, mul_zero, smul_eq_mul]
 #align measure_theory.set_to_fun_top_smul_measure MeasureTheory.setToFun_top_smul_measure
 
-theorem setToFun_congr_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞)
+lemma setToFun_congr_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞)
     (hT : DominatedFinMeasAdditive μ T C) (hT_smul : DominatedFinMeasAdditive (c • μ) T C')
     (f : α → E) : setToFun μ T hT f = setToFun (c • μ) T hT_smul f := by
   by_cases hc0 : c = 0
@@ -1676,22 +1676,22 @@ theorem setToFun_congr_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞)
   · rw [smul_smul, ENNReal.inv_mul_cancel hc0 hc_ne_top, one_smul]
 #align measure_theory.set_to_fun_congr_smul_measure MeasureTheory.setToFun_congr_smul_measure
 
-theorem norm_setToFun_le_mul_norm (hT : DominatedFinMeasAdditive μ T C) (f : α →₁[μ] E)
+lemma norm_setToFun_le_mul_norm (hT : DominatedFinMeasAdditive μ T C) (f : α →₁[μ] E)
     (hC : 0 ≤ C) : ‖setToFun μ T hT f‖ ≤ C * ‖f‖ := by
   rw [L1.setToFun_eq_setToL1]; exact L1.norm_setToL1_le_mul_norm hT hC f
 #align measure_theory.norm_set_to_fun_le_mul_norm MeasureTheory.norm_setToFun_le_mul_norm
 
-theorem norm_setToFun_le_mul_norm' (hT : DominatedFinMeasAdditive μ T C) (f : α →₁[μ] E) :
+lemma norm_setToFun_le_mul_norm' (hT : DominatedFinMeasAdditive μ T C) (f : α →₁[μ] E) :
     ‖setToFun μ T hT f‖ ≤ max C 0 * ‖f‖ := by
   rw [L1.setToFun_eq_setToL1]; exact L1.norm_setToL1_le_mul_norm' hT f
 #align measure_theory.norm_set_to_fun_le_mul_norm' MeasureTheory.norm_setToFun_le_mul_norm'
 
-theorem norm_setToFun_le (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ) (hC : 0 ≤ C) :
+lemma norm_setToFun_le (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ) (hC : 0 ≤ C) :
     ‖setToFun μ T hT f‖ ≤ C * ‖hf.toL1 f‖ := by
   rw [setToFun_eq hT hf]; exact L1.norm_setToL1_le_mul_norm hT hC _
 #align measure_theory.norm_set_to_fun_le MeasureTheory.norm_setToFun_le
 
-theorem norm_setToFun_le' (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ) :
+lemma norm_setToFun_le' (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ) :
     ‖setToFun μ T hT f‖ ≤ max C 0 * ‖hf.toL1 f‖ := by
   rw [setToFun_eq hT hf]; exact L1.norm_setToL1_le_mul_norm' hT _
 #align measure_theory.norm_set_to_fun_le' MeasureTheory.norm_setToFun_le'
@@ -1771,7 +1771,7 @@ theorem tendsto_setToFun_filter_of_dominated_convergence (hT : DominatedFinMeasA
 
 variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
-theorem continuousWithinAt_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C)
+lemma continuousWithinAt_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C)
     {fs : X → α → E} {x₀ : X} {bound : α → ℝ} {s : Set X}
     (hfs_meas : ∀ᶠ x in 𝓝[s] x₀, AEStronglyMeasurable (fs x) μ)
     (h_bound : ∀ᶠ x in 𝓝[s] x₀, ∀ᵐ a ∂μ, ‖fs x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
@@ -1780,7 +1780,7 @@ theorem continuousWithinAt_setToFun_of_dominated (hT : DominatedFinMeasAdditive 
   tendsto_setToFun_filter_of_dominated_convergence hT bound ‹_› ‹_› ‹_› ‹_›
 #align measure_theory.continuous_within_at_set_to_fun_of_dominated MeasureTheory.continuousWithinAt_setToFun_of_dominated
 
-theorem continuousAt_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) {fs : X → α → E}
+lemma continuousAt_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) {fs : X → α → E}
     {x₀ : X} {bound : α → ℝ} (hfs_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (fs x) μ)
     (h_bound : ∀ᶠ x in 𝓝 x₀, ∀ᵐ a ∂μ, ‖fs x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
     (h_cont : ∀ᵐ a ∂μ, ContinuousAt (fun x => fs x a) x₀) :
@@ -1788,7 +1788,7 @@ theorem continuousAt_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C
   tendsto_setToFun_filter_of_dominated_convergence hT bound ‹_› ‹_› ‹_› ‹_›
 #align measure_theory.continuous_at_set_to_fun_of_dominated MeasureTheory.continuousAt_setToFun_of_dominated
 
-theorem continuousOn_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) {fs : X → α → E}
+lemma continuousOn_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) {fs : X → α → E}
     {bound : α → ℝ} {s : Set X} (hfs_meas : ∀ x ∈ s, AEStronglyMeasurable (fs x) μ)
     (h_bound : ∀ x ∈ s, ∀ᵐ a ∂μ, ‖fs x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
     (h_cont : ∀ᵐ a ∂μ, ContinuousOn (fun x => fs x a) s) :
@@ -1800,7 +1800,7 @@ theorem continuousOn_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C
   · filter_upwards [h_cont] with a ha using ha x hx
 #align measure_theory.continuous_on_set_to_fun_of_dominated MeasureTheory.continuousOn_setToFun_of_dominated
 
-theorem continuous_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) {fs : X → α → E}
+lemma continuous_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) {fs : X → α → E}
     {bound : α → ℝ} (hfs_meas : ∀ x, AEStronglyMeasurable (fs x) μ)
     (h_bound : ∀ x, ∀ᵐ a ∂μ, ‖fs x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
     (h_cont : ∀ᵐ a ∂μ, Continuous fun x => fs x a) : Continuous fun x => setToFun μ T hT (fs x) :=

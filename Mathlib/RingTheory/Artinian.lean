@@ -74,12 +74,12 @@ open IsArtinian
 
 /- Porting note: added this version with `R` and `M` explicit because infer kinds are unsupported in
 Lean 4-/
-theorem IsArtinian.wellFounded_submodule_lt (R M) [Semiring R] [AddCommMonoid M] [Module R M]
+lemma IsArtinian.wellFounded_submodule_lt (R M) [Semiring R] [AddCommMonoid M] [Module R M]
     [IsArtinian R M] : WellFounded ((· < ·) : Submodule R M → Submodule R M → Prop) :=
   IsArtinian.wellFounded_submodule_lt'
 #align is_artinian.well_founded_submodule_lt IsArtinian.wellFounded_submodule_lt
 
-theorem isArtinian_of_injective (f : M →ₗ[R] P) (h : Function.Injective f) [IsArtinian R P] :
+lemma isArtinian_of_injective (f : M →ₗ[R] P) (h : Function.Injective f) [IsArtinian R P] :
     IsArtinian R M :=
   ⟨Subrelation.wf
     (fun {A B} hAB => show A.map f < B.map f from Submodule.map_strictMono_of_injective h hAB)
@@ -90,13 +90,13 @@ instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian
   isArtinian_of_injective N.subtype Subtype.val_injective
 #align is_artinian_submodule' isArtinian_submodule'
 
-theorem isArtinian_of_le {s t : Submodule R M} [IsArtinian R t] (h : s ≤ t) : IsArtinian R s :=
+lemma isArtinian_of_le {s t : Submodule R M} [IsArtinian R t] (h : s ≤ t) : IsArtinian R s :=
   isArtinian_of_injective (Submodule.inclusion h) (Submodule.inclusion_injective h)
 #align is_artinian_of_le isArtinian_of_le
 
 variable (M)
 
-theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f) [IsArtinian R M] :
+lemma isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f) [IsArtinian R M] :
     IsArtinian R P :=
   ⟨Subrelation.wf
     (fun {A B} hAB =>
@@ -106,11 +106,11 @@ theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f
 
 variable {M}
 
-theorem isArtinian_of_linearEquiv (f : M ≃ₗ[R] P) [IsArtinian R M] : IsArtinian R P :=
+lemma isArtinian_of_linearEquiv (f : M ≃ₗ[R] P) [IsArtinian R M] : IsArtinian R P :=
   isArtinian_of_surjective _ f.toLinearMap f.toEquiv.surjective
 #align is_artinian_of_linear_equiv isArtinian_of_linearEquiv
 
-theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
+lemma isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     (hf : Function.Injective f) (hg : Function.Surjective g)
     (h : LinearMap.range f = LinearMap.ker g) : IsArtinian R N :=
   ⟨wellFounded_lt_exact_sequence (IsArtinian.wellFounded_submodule_lt R M)
@@ -167,12 +167,12 @@ section Ring
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
-theorem isArtinian_iff_wellFounded :
+lemma isArtinian_iff_wellFounded :
     IsArtinian R M ↔ WellFounded ((· < ·) : Submodule R M → Submodule R M → Prop) :=
   ⟨fun h => h.1, IsArtinian.mk⟩
 #align is_artinian_iff_well_founded isArtinian_iff_wellFounded
 
-theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [IsArtinian R M] {s : Set M}
+lemma IsArtinian.finite_of_linearIndependent [Nontrivial R] [IsArtinian R M] {s : Set M}
     (hs : LinearIndependent R ((↑) : s → M)) : s.Finite := by
   refine' by_contradiction fun hf => (RelEmbedding.wellFounded_iff_no_descending_seq.1
     (wellFounded_submodule_lt (R := R) (M := M))).elim' _
@@ -201,7 +201,7 @@ theorem set_has_minimal_iff_artinian :
   rw [isArtinian_iff_wellFounded, WellFounded.wellFounded_iff_has_min]
 #align set_has_minimal_iff_artinian set_has_minimal_iff_artinian
 
-theorem IsArtinian.set_has_minimal [IsArtinian R M] (a : Set <| Submodule R M) (ha : a.Nonempty) :
+lemma IsArtinian.set_has_minimal [IsArtinian R M] (a : Set <| Submodule R M) (ha : a.Nonempty) :
     ∃ M' ∈ a, ∀ I ∈ a, ¬I < M' :=
   set_has_minimal_iff_artinian.mpr ‹_› a ha
 #align is_artinian.set_has_minimal IsArtinian.set_has_minimal
@@ -217,11 +217,11 @@ namespace IsArtinian
 
 variable [IsArtinian R M]
 
-theorem monotone_stabilizes (f : ℕ →o (Submodule R M)ᵒᵈ) : ∃ n, ∀ m, n ≤ m → f n = f m :=
+lemma monotone_stabilizes (f : ℕ →o (Submodule R M)ᵒᵈ) : ∃ n, ∀ m, n ≤ m → f n = f m :=
   monotone_stabilizes_iff_artinian.mpr ‹_› f
 #align is_artinian.monotone_stabilizes IsArtinian.monotone_stabilizes
 
-theorem eventuallyConst_of_isArtinian (f : ℕ →o (Submodule R M)ᵒᵈ) :
+lemma eventuallyConst_of_isArtinian (f : ℕ →o (Submodule R M)ᵒᵈ) :
     atTop.EventuallyConst f := by
   simp_rw [eventuallyConst_atTop, eq_comm]
   exact monotone_stabilizes f
@@ -331,7 +331,7 @@ variable {R : Type*} (M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [IsA
 
 namespace IsArtinian
 
-theorem range_smul_pow_stabilizes (r : R) :
+lemma range_smul_pow_stabilizes (r : R) :
     ∃ n : ℕ, ∀ m, n ≤ m →
       LinearMap.range (r ^ n • LinearMap.id : M →ₗ[R] M) =
       LinearMap.range (r ^ m • LinearMap.id : M →ₗ[R] M) :=
@@ -344,7 +344,7 @@ theorem range_smul_pow_stabilizes (r : R) :
 
 variable {M}
 
-theorem exists_pow_succ_smul_dvd (r : R) (x : M) :
+lemma exists_pow_succ_smul_dvd (r : R) (x : M) :
     ∃ (n : ℕ) (y : M), r ^ n.succ • y = r ^ n • x := by
   obtain ⟨n, hn⟩ := IsArtinian.range_smul_pow_stabilizes M r
   simp_rw [SetLike.ext_iff] at hn
@@ -363,18 +363,18 @@ abbrev IsArtinianRing (R) [Ring R] :=
   IsArtinian R R
 #align is_artinian_ring IsArtinianRing
 
-theorem isArtinianRing_iff {R} [Ring R] : IsArtinianRing R ↔ IsArtinian R R := Iff.rfl
+lemma isArtinianRing_iff {R} [Ring R] : IsArtinianRing R ↔ IsArtinian R R := Iff.rfl
 #align is_artinian_ring_iff isArtinianRing_iff
 
 instance DivisionRing.instIsArtinianRing {K : Type*} [DivisionRing K] : IsArtinianRing K :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
-theorem Ring.isArtinian_of_zero_eq_one {R} [Ring R] (h01 : (0 : R) = 1) : IsArtinianRing R :=
+lemma Ring.isArtinian_of_zero_eq_one {R} [Ring R] (h01 : (0 : R) = 1) : IsArtinianRing R :=
   have := subsingleton_of_zero_eq_one h01
   inferInstance
 #align ring.is_artinian_of_zero_eq_one Ring.isArtinian_of_zero_eq_one
 
-theorem isArtinian_of_submodule_of_artinian (R M) [Ring R] [AddCommGroup M] [Module R M]
+lemma isArtinian_of_submodule_of_artinian (R M) [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) (_ : IsArtinian R M) : IsArtinian R N := inferInstance
 #align is_artinian_of_submodule_of_artinian isArtinian_of_submodule_of_artinian
 
@@ -393,7 +393,7 @@ theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [Al
 instance (R) [CommRing R] [IsArtinianRing R] (I : Ideal R) : IsArtinianRing (R ⧸ I) :=
   isArtinian_of_tower R inferInstance
 
-theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M]
+lemma isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) [IsArtinianRing R] (hN : N.FG) : IsArtinian R N := by
   let ⟨s, hs⟩ := hN
   haveI := Classical.decEq M
@@ -417,7 +417,7 @@ instance isArtinian_of_fg_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R
   isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
 #align is_artinian_of_fg_of_artinian' isArtinian_of_fg_of_artinian'
 
-theorem IsArtinianRing.of_finite (R S) [CommRing R] [Ring S] [Algebra R S]
+lemma IsArtinianRing.of_finite (R S) [CommRing R] [Ring S] [Algebra R S]
     [IsArtinianRing R] [Module.Finite R S] : IsArtinianRing S :=
   isArtinian_of_tower R isArtinian_of_fg_of_artinian'
 
@@ -428,7 +428,7 @@ theorem isArtinian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R M]
   isArtinian_of_fg_of_artinian _ (Submodule.fg_def.mpr ⟨A, hA, rfl⟩)
 #align is_artinian_span_of_finite isArtinian_span_of_finite
 
-theorem Function.Surjective.isArtinianRing {R} [Ring R] {S} [Ring S] {F}
+lemma Function.Surjective.isArtinianRing {R} [Ring R] {S} [Ring S] {F}
     [FunLike F R S] [RingHomClass F R S]
     {f : F} (hf : Function.Surjective f) [H : IsArtinianRing R] : IsArtinianRing S := by
   rw [isArtinianRing_iff, isArtinian_iff_wellFounded] at H ⊢
@@ -446,7 +446,7 @@ open IsArtinian
 
 variable {R : Type*} [CommRing R] [IsArtinianRing R]
 
-theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) := by
+lemma isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) := by
   let Jac := Ideal.jacobson (⊥ : Ideal R)
   let f : ℕ →o (Ideal R)ᵒᵈ := ⟨fun n => Jac ^ n, fun _ _ h => Ideal.pow_le_pow_right h⟩
   obtain ⟨n, hn⟩ : ∃ n, ∀ m, n ≤ m → Jac ^ n = Jac ^ m := IsArtinian.monotone_stabilizes f
@@ -502,7 +502,7 @@ theorem localization_surjective : Function.Surjective (algebraMap R L) := by
     ← (IsLocalization.map_units L (s ^ n)).mul_left_cancel hr, map_mul]
 #align is_artinian_ring.localization_surjective IsArtinianRing.localization_surjective
 
-theorem localization_artinian : IsArtinianRing L :=
+lemma localization_artinian : IsArtinianRing L :=
   (localization_surjective S L).isArtinianRing
 #align is_artinian_ring.localization_artinian IsArtinianRing.localization_artinian
 
@@ -569,7 +569,7 @@ instance [IsReduced R] : DecompositionMonoid R := MulEquiv.decompositionMonoid (
 instance [IsReduced R] : DecompositionMonoid (Polynomial R) :=
   MulEquiv.decompositionMonoid <| (Polynomial.mapEquiv <| equivPi R).trans (Polynomial.piEquiv _)
 
-theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
+lemma isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing
 
 proof_wanted IsSemisimpleRing.isArtinianRing [IsSemisimpleRing R] : IsArtinianRing R

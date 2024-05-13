@@ -69,12 +69,12 @@ variable {L : Type u} [CommRing L] [IsDomain L]
 
 variable (n : ℕ+)
 
-theorem rootsOfUnity.integer_power_of_ringEquiv (g : L ≃+* L) :
+lemma rootsOfUnity.integer_power_of_ringEquiv (g : L ≃+* L) :
     ∃ m : ℤ, ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ m : Lˣ) := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic ((g : L ≃* L).restrictRootsOfUnity n).toMonoidHom
   exact ⟨m, fun t ↦ Units.ext_iff.1 <| SetCoe.ext_iff.2 <| hm t⟩
 
-theorem rootsOfUnity.integer_power_of_ringEquiv' (g : L ≃+* L) :
+lemma rootsOfUnity.integer_power_of_ringEquiv' (g : L ≃+* L) :
     ∃ m : ℤ, ∀ t ∈ rootsOfUnity n L, g (t : Lˣ) = (t ^ m : Lˣ) := by
   simpa using rootsOfUnity.integer_power_of_ringEquiv n g
 
@@ -85,7 +85,7 @@ noncomputable def ModularCyclotomicCharacter_aux (g : L ≃+* L) (n : ℕ+) : �
   (rootsOfUnity.integer_power_of_ringEquiv n g).choose
 
 -- the only thing we know about `ModularCyclotomicCharacter_aux g n`
-theorem ModularCyclotomicCharacter_aux_spec (g : L ≃+* L) (n : ℕ+) :
+lemma ModularCyclotomicCharacter_aux_spec (g : L ≃+* L) (n : ℕ+) :
     ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ (ModularCyclotomicCharacter_aux g n) : Lˣ) :=
   (rootsOfUnity.integer_power_of_ringEquiv n g).choose_spec
 
@@ -108,11 +108,11 @@ theorem toFun_spec (g : L ≃+* L) {n : ℕ+} (t : rootsOfUnity n L) :
     ZMod.val_intCast, ← Subgroup.coe_zpow]
   exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <| zpow_eq_zpow_emod _ pow_card_eq_one
 
-theorem toFun_spec' (g : L ≃+* L) {n : ℕ+} {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
+lemma toFun_spec' (g : L ≃+* L) {n : ℕ+} {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
     g t = t ^ (χ₀ n g).val :=
   toFun_spec g ⟨t, ht⟩
 
-theorem toFun_spec'' (g : L ≃+* L) {n : ℕ+} {t : L} (ht : IsPrimitiveRoot t n) :
+lemma toFun_spec'' (g : L ≃+* L) {n : ℕ+} {t : L} (ht : IsPrimitiveRoot t n) :
     g t = t ^ (χ₀ n g).val :=
   toFun_spec' g (SetLike.coe_mem ht.toRootsOfUnity)
 
@@ -124,7 +124,7 @@ theorem toFun_unique (g : L ≃+* L) (c : ZMod (Fintype.card (rootsOfUnity n L))
   suffices ((ζ ^ c.val : Lˣ) : L) = (ζ ^ (χ₀ n g).val : Lˣ) by exact_mod_cast this
   rw [← toFun_spec g ζ, hc]
 
-theorem toFun_unique' (g : L ≃+* L) (c : ZMod (Fintype.card (rootsOfUnity n L)))
+lemma toFun_unique' (g : L ≃+* L) (c : ZMod (Fintype.card (rootsOfUnity n L)))
     (hc : ∀ t ∈ rootsOfUnity n L, g t = t ^ c.val) : c = χ₀ n g :=
   toFun_unique n g c (fun ⟨_, ht⟩ ↦ hc _ ht)
 

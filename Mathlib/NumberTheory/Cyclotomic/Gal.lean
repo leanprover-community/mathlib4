@@ -146,7 +146,7 @@ noncomputable def fromZetaAut : L ≃ₐ[K] L :=
       ((zeta_spec n K L).pow_iff_coprime n.pos hζ.choose).mp <| hζ.choose_spec.2.symm ▸ hμ
 #align is_cyclotomic_extension.from_zeta_aut IsCyclotomicExtension.fromZetaAut
 
-theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
+lemma fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   simp_rw [fromZetaAut, autEquivPow_symm_apply]
   generalize_proofs hζ h _ hμ _
   nth_rewrite 4 [← hζ.powerBasis_gen K]

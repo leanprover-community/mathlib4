@@ -80,10 +80,10 @@ def logEmbedding : Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w�
 variable {K}
 
 @[simp]
-theorem logEmbedding_component (x : (𝓞 K)ˣ) (w : {w : InfinitePlace K // w ≠ w₀}) :
+lemma logEmbedding_component (x : (𝓞 K)ˣ) (w : {w : InfinitePlace K // w ≠ w₀}) :
     (logEmbedding K x) w = mult w.val * Real.log (w.val x) := rfl
 
-theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
+lemma sum_logEmbedding_component (x : (𝓞 K)ˣ) :
     ∑ w, logEmbedding K x w = - mult (w₀ : InfinitePlace K) * Real.log (w₀ (x : K)) := by
   have h := congr_arg Real.log (prod_eq_abs_norm (x : K))
   rw [show |(Algebra.norm ℚ) (x : K)| = 1 from isUnit_iff_norm.mp x.isUnit, Rat.cast_one,
@@ -97,7 +97,7 @@ theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
     · norm_num
   · exact fun w _ => pow_ne_zero _ (AbsoluteValue.ne_zero _ (coe_ne_zero x))
 
-theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
+lemma mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
     mult w * Real.log (w x) = 0 ↔ w x = 1 := by
   rw [mul_eq_zero, or_iff_right, Real.log_eq_zero, or_iff_right, or_iff_left]
   · linarith [(apply_nonneg _ _ : 0 ≤ w x)]
@@ -105,7 +105,7 @@ theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
   · refine (ne_of_gt ?_)
     rw [mult]; split_ifs <;> norm_num
 
-theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
+lemma logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
     logEmbedding K x = 0 ↔ x ∈ torsion K := by
   rw [mem_torsion]
   refine ⟨fun h w => ?_, fun h => ?_⟩
@@ -119,13 +119,13 @@ theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
   · ext w
     rw [logEmbedding_component, h w.val, Real.log_one, mul_zero, Pi.zero_apply]
 
-theorem logEmbedding_component_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖logEmbedding K x‖ ≤ r)
+lemma logEmbedding_component_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖logEmbedding K x‖ ≤ r)
     (w : {w : InfinitePlace K // w ≠ w₀}) : |logEmbedding K x w| ≤ r := by
   lift r to NNReal using hr
   simp_rw [Pi.norm_def, NNReal.coe_le_coe, Finset.sup_le_iff, ← NNReal.coe_le_coe] at h
   exact h w (mem_univ _)
 
-theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖logEmbedding K x‖ ≤ r)
+lemma log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖logEmbedding K x‖ ≤ r)
     (w : InfinitePlace K) : |Real.log (w x)| ≤ (Fintype.card (InfinitePlace K)) * r := by
   have tool : ∀ x : ℝ, 0 ≤ x → x ≤ mult w * x := fun x hx => by
     nth_rw 1 [← one_mul x]
@@ -157,7 +157,7 @@ noncomputable def _root_.NumberField.Units.unitLattice :
     AddSubgroup ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
   AddSubgroup.map (logEmbedding K) ⊤
 
-theorem unitLattice_inter_ball_finite (r : ℝ) :
+lemma unitLattice_inter_ball_finite (r : ℝ) :
     ((unitLattice K : Set ({ w : InfinitePlace K // w ≠ w₀} → ℝ)) ∩
       Metric.closedBall 0 r).Finite := by
   obtain hr | hr := lt_or_le r 0
@@ -307,7 +307,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
           (⋃ n ∈ Set.Icc 1 B, { I : Ideal (𝓞 K) | Ideal.absNorm I = n }) by ext; simp]
     exact Set.Finite.biUnion (Set.finite_Icc _ _) (fun n hn => Ideal.finite_setOf_absNorm_eq hn.1)
 
-theorem unitLattice_span_eq_top :
+lemma unitLattice_span_eq_top :
     Submodule.span ℝ (unitLattice K : Set ({w : InfinitePlace K // w ≠ w₀} → ℝ)) = ⊤ := by
   refine le_antisymm le_top ?_
   -- The standard basis
@@ -364,24 +364,24 @@ instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
 instance instZlattice_unitLattice : IsZlattice ℝ (unitLattice K) where
   span_top := unitLattice_span_eq_top K
 
-protected theorem finrank_eq_rank :
+protected lemma finrank_eq_rank :
     finrank ℝ ({w : InfinitePlace K // w ≠ w₀} → ℝ) = Units.rank K := by
   simp only [finrank_fintype_fun_eq_card, Fintype.card_subtype_compl,
     Fintype.card_ofSubsingleton, rank]
 
 @[simp]
-theorem unitLattice_rank :
+lemma unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
   rw [← Units.finrank_eq_rank, Zlattice.rank ℝ]
 
-private theorem unitLatticeEquiv_aux1 :
+private lemma unitLatticeEquiv_aux1 :
     (logEmbedding K).ker = (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))).ker := by
   ext
   rw [MonoidHom.coe_toAdditive_ker, QuotientGroup.ker_mk', AddMonoidHom.mem_ker,
     logEmbedding_eq_zero_iff]
   rfl
 
-private theorem unitLatticeEquiv_aux2 :
+private lemma unitLatticeEquiv_aux2 :
     Function.Surjective (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))) := by
   intro x
   refine ⟨Additive.ofMul x.out', ?_⟩
@@ -425,7 +425,7 @@ instance : Monoid.FG (𝓞 K)ˣ := by
   rw [Monoid.fg_iff_add_fg, ← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]
   infer_instance
 
-theorem rank_modTorsion :
+lemma rank_modTorsion :
     FiniteDimensional.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (unitLatticeEquiv K), unitLattice_rank]
 

@@ -48,19 +48,19 @@ section MulZeroClass
 
 variable [MulZeroClass M₀] {a b : M₀}
 
-theorem left_ne_zero_of_mul : a * b ≠ 0 → a ≠ 0 :=
+lemma left_ne_zero_of_mul : a * b ≠ 0 → a ≠ 0 :=
   mt fun h => mul_eq_zero_of_left h b
 #align left_ne_zero_of_mul left_ne_zero_of_mul
 
-theorem right_ne_zero_of_mul : a * b ≠ 0 → b ≠ 0 :=
+lemma right_ne_zero_of_mul : a * b ≠ 0 → b ≠ 0 :=
   mt (mul_eq_zero_of_right a)
 #align right_ne_zero_of_mul right_ne_zero_of_mul
 
-theorem ne_zero_and_ne_zero_of_mul (h : a * b ≠ 0) : a ≠ 0 ∧ b ≠ 0 :=
+lemma ne_zero_and_ne_zero_of_mul (h : a * b ≠ 0) : a ≠ 0 ∧ b ≠ 0 :=
   ⟨left_ne_zero_of_mul h, right_ne_zero_of_mul h⟩
 #align ne_zero_and_ne_zero_of_mul ne_zero_and_ne_zero_of_mul
 
-theorem mul_eq_zero_of_ne_zero_imp_eq_zero {a b : M₀} (h : a ≠ 0 → b = 0) : a * b = 0 :=
+lemma mul_eq_zero_of_ne_zero_imp_eq_zero {a b : M₀} (h : a ≠ 0 → b = 0) : a * b = 0 :=
   if ha : a = 0 then by rw [ha, zero_mul] else by rw [h ha, mul_zero]
 #align mul_eq_zero_of_ne_zero_imp_eq_zero mul_eq_zero_of_ne_zero_imp_eq_zero
 
@@ -80,12 +80,12 @@ section Mul
 
 variable [Mul M₀] [Zero M₀] [NoZeroDivisors M₀] {a b : M₀}
 
-theorem eq_zero_of_mul_self_eq_zero (h : a * a = 0) : a = 0 :=
+lemma eq_zero_of_mul_self_eq_zero (h : a * a = 0) : a = 0 :=
   (eq_zero_or_eq_zero_of_mul_eq_zero h).elim id id
 #align eq_zero_of_mul_self_eq_zero eq_zero_of_mul_self_eq_zero
 
 @[field_simps]
-theorem mul_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
+lemma mul_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
   mt eq_zero_or_eq_zero_of_mul_eq_zero <| not_or.mpr ⟨ha, hb⟩
 #align mul_ne_zero mul_ne_zero
 
@@ -128,7 +128,7 @@ theorem subsingleton_iff_zero_eq_one : (0 : M₀) = 1 ↔ Subsingleton M₀ :=
 alias ⟨subsingleton_of_zero_eq_one, _⟩ := subsingleton_iff_zero_eq_one
 #align subsingleton_of_zero_eq_one subsingleton_of_zero_eq_one
 
-theorem eq_of_zero_eq_one (h : (0 : M₀) = 1) (a b : M₀) : a = b :=
+lemma eq_of_zero_eq_one (h : (0 : M₀) = 1) (a b : M₀) : a = b :=
   @Subsingleton.elim _ (subsingleton_of_zero_eq_one h) a b
 #align eq_of_zero_eq_one eq_of_zero_eq_one
 
@@ -143,11 +143,11 @@ section
 
 variable [MulZeroOneClass M₀] [Nontrivial M₀] {a b : M₀}
 
-theorem left_ne_zero_of_mul_eq_one (h : a * b = 1) : a ≠ 0 :=
+lemma left_ne_zero_of_mul_eq_one (h : a * b = 1) : a ≠ 0 :=
   left_ne_zero_of_mul <| ne_zero_of_eq_one h
 #align left_ne_zero_of_mul_eq_one left_ne_zero_of_mul_eq_one
 
-theorem right_ne_zero_of_mul_eq_one (h : a * b = 1) : b ≠ 0 :=
+lemma right_ne_zero_of_mul_eq_one (h : a * b = 1) : b ≠ 0 :=
   right_ne_zero_of_mul <| ne_zero_of_eq_one h
 #align right_ne_zero_of_mul_eq_one right_ne_zero_of_mul_eq_one
 
@@ -222,43 +222,43 @@ instance (priority := 10) CancelMonoidWithZero.to_noZeroDivisors : NoZeroDivisor
 #align cancel_monoid_with_zero.to_no_zero_divisors CancelMonoidWithZero.to_noZeroDivisors
 
 @[simp]
-theorem mul_eq_mul_right_iff : a * c = b * c ↔ a = b ∨ c = 0 := by
+lemma mul_eq_mul_right_iff : a * c = b * c ↔ a = b ∨ c = 0 := by
   by_cases hc : c = 0 <;> [simp only [hc, mul_zero, or_true]; simp [mul_left_inj', hc]]
 #align mul_eq_mul_right_iff mul_eq_mul_right_iff
 
 @[simp]
-theorem mul_eq_mul_left_iff : a * b = a * c ↔ b = c ∨ a = 0 := by
+lemma mul_eq_mul_left_iff : a * b = a * c ↔ b = c ∨ a = 0 := by
   by_cases ha : a = 0 <;> [simp only [ha, zero_mul, or_true]; simp [mul_right_inj', ha]]
 #align mul_eq_mul_left_iff mul_eq_mul_left_iff
 
-theorem mul_right_eq_self₀ : a * b = a ↔ b = 1 ∨ a = 0 :=
+lemma mul_right_eq_self₀ : a * b = a ↔ b = 1 ∨ a = 0 :=
   calc
     a * b = a ↔ a * b = a * 1 := by rw [mul_one]
     _ ↔ b = 1 ∨ a = 0 := mul_eq_mul_left_iff
 #align mul_right_eq_self₀ mul_right_eq_self₀
 
-theorem mul_left_eq_self₀ : a * b = b ↔ a = 1 ∨ b = 0 :=
+lemma mul_left_eq_self₀ : a * b = b ↔ a = 1 ∨ b = 0 :=
   calc
     a * b = b ↔ a * b = 1 * b := by rw [one_mul]
     _ ↔ a = 1 ∨ b = 0 := mul_eq_mul_right_iff
 #align mul_left_eq_self₀ mul_left_eq_self₀
 
 @[simp]
-theorem mul_eq_left₀ (ha : a ≠ 0) : a * b = a ↔ b = 1 := by
+lemma mul_eq_left₀ (ha : a ≠ 0) : a * b = a ↔ b = 1 := by
   rw [Iff.comm, ← mul_right_inj' ha, mul_one]
 #align mul_eq_left₀ mul_eq_left₀
 
 @[simp]
-theorem mul_eq_right₀ (hb : b ≠ 0) : a * b = b ↔ a = 1 := by
+lemma mul_eq_right₀ (hb : b ≠ 0) : a * b = b ↔ a = 1 := by
   rw [Iff.comm, ← mul_left_inj' hb, one_mul]
 #align mul_eq_right₀ mul_eq_right₀
 
 @[simp]
-theorem left_eq_mul₀ (ha : a ≠ 0) : a = a * b ↔ b = 1 := by rw [eq_comm, mul_eq_left₀ ha]
+lemma left_eq_mul₀ (ha : a ≠ 0) : a = a * b ↔ b = 1 := by rw [eq_comm, mul_eq_left₀ ha]
 #align left_eq_mul₀ left_eq_mul₀
 
 @[simp]
-theorem right_eq_mul₀ (hb : b ≠ 0) : b = a * b ↔ a = 1 := by rw [eq_comm, mul_eq_right₀ hb]
+lemma right_eq_mul₀ (hb : b ≠ 0) : b = a * b ↔ a = 1 := by rw [eq_comm, mul_eq_right₀ hb]
 #align right_eq_mul₀ right_eq_mul₀
 
 /-- An element of a `CancelMonoidWithZero` fixed by right multiplication by an element other
@@ -279,18 +279,18 @@ section GroupWithZero
 
 variable [GroupWithZero G₀] {a b c g h x : G₀}
 
-theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
+lemma GroupWithZero.mul_left_injective (h : x ≠ 0) :
     Function.Injective fun y => x * y := fun y y' w => by
   simpa only [← mul_assoc, inv_mul_cancel h, one_mul] using congr_arg (fun y => x⁻¹ * y) w
 #align group_with_zero.mul_left_injective GroupWithZero.mul_left_injective
 
-theorem GroupWithZero.mul_right_injective (h : x ≠ 0) :
+lemma GroupWithZero.mul_right_injective (h : x ≠ 0) :
     Function.Injective fun y => y * x := fun y y' w => by
   simpa only [mul_assoc, mul_inv_cancel h, mul_one] using congr_arg (fun y => y * x⁻¹) w
 #align group_with_zero.mul_right_injective GroupWithZero.mul_right_injective
 
 @[simp]
-theorem inv_mul_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b⁻¹ * b = a :=
+lemma inv_mul_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b⁻¹ * b = a :=
   calc
     a * b⁻¹ * b = a * (b⁻¹ * b) := mul_assoc _ _ _
     _ = a := by simp [h]
@@ -298,14 +298,14 @@ theorem inv_mul_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b⁻¹ * b = a :=
 
 
 @[simp]
-theorem inv_mul_cancel_left₀ (h : a ≠ 0) (b : G₀) : a⁻¹ * (a * b) = b :=
+lemma inv_mul_cancel_left₀ (h : a ≠ 0) (b : G₀) : a⁻¹ * (a * b) = b :=
   calc
     a⁻¹ * (a * b) = a⁻¹ * a * b := (mul_assoc _ _ _).symm
     _ = b := by simp [h]
 #align inv_mul_cancel_left₀ inv_mul_cancel_left₀
 
 
-private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b := by
+private lemma inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b := by
   rw [← inv_mul_cancel_left₀ (left_ne_zero_of_mul_eq_one h) b, h, mul_one]
 
 -- See note [lower instance priority]
@@ -346,11 +346,11 @@ section GroupWithZero
 variable [GroupWithZero G₀] {a b c : G₀}
 
 @[simp]
-theorem zero_div (a : G₀) : 0 / a = 0 := by rw [div_eq_mul_inv, zero_mul]
+lemma zero_div (a : G₀) : 0 / a = 0 := by rw [div_eq_mul_inv, zero_mul]
 #align zero_div zero_div
 
 @[simp]
-theorem div_zero (a : G₀) : a / 0 = 0 := by rw [div_eq_mul_inv, inv_zero, mul_zero]
+lemma div_zero (a : G₀) : a / 0 = 0 := by rw [div_eq_mul_inv, inv_zero, mul_zero]
 #align div_zero div_zero
 
 /-- Multiplying `a` by itself and then by its inverse results in `a`
@@ -398,23 +398,23 @@ theorem div_self_mul_self (a : G₀) : a / a * a = a := by rw [div_eq_mul_inv, m
 attribute [local simp] div_eq_mul_inv mul_comm mul_assoc mul_left_comm
 
 @[simp]
-theorem div_self_mul_self' (a : G₀) : a / (a * a) = a⁻¹ :=
+lemma div_self_mul_self' (a : G₀) : a / (a * a) = a⁻¹ :=
   calc
     a / (a * a) = a⁻¹⁻¹ * a⁻¹ * a⁻¹ := by simp [mul_inv_rev]
     _ = a⁻¹ := inv_mul_mul_self _
 #align div_self_mul_self' div_self_mul_self'
 
 
-theorem one_div_ne_zero {a : G₀} (h : a ≠ 0) : 1 / a ≠ 0 := by
+lemma one_div_ne_zero {a : G₀} (h : a ≠ 0) : 1 / a ≠ 0 := by
   simpa only [one_div] using inv_ne_zero h
 #align one_div_ne_zero one_div_ne_zero
 
 @[simp]
-theorem inv_eq_zero {a : G₀} : a⁻¹ = 0 ↔ a = 0 := by rw [inv_eq_iff_eq_inv, inv_zero]
+lemma inv_eq_zero {a : G₀} : a⁻¹ = 0 ↔ a = 0 := by rw [inv_eq_iff_eq_inv, inv_zero]
 #align inv_eq_zero inv_eq_zero
 
 @[simp]
-theorem zero_eq_inv {a : G₀} : 0 = a⁻¹ ↔ 0 = a :=
+lemma zero_eq_inv {a : G₀} : 0 = a⁻¹ ↔ 0 = a :=
   eq_comm.trans <| inv_eq_zero.trans eq_comm
 #align zero_eq_inv zero_eq_inv
 
@@ -426,20 +426,20 @@ theorem div_div_self (a : G₀) : a / (a / a) = a := by
   exact mul_self_div_self a
 #align div_div_self div_div_self
 
-theorem ne_zero_of_one_div_ne_zero {a : G₀} (h : 1 / a ≠ 0) : a ≠ 0 := fun ha : a = 0 => by
+lemma ne_zero_of_one_div_ne_zero {a : G₀} (h : 1 / a ≠ 0) : a ≠ 0 := fun ha : a = 0 => by
   rw [ha, div_zero] at h
   contradiction
 #align ne_zero_of_one_div_ne_zero ne_zero_of_one_div_ne_zero
 
-theorem eq_zero_of_one_div_eq_zero {a : G₀} (h : 1 / a = 0) : a = 0 :=
+lemma eq_zero_of_one_div_eq_zero {a : G₀} (h : 1 / a = 0) : a = 0 :=
   Classical.byCases (fun ha => ha) fun ha => ((one_div_ne_zero ha) h).elim
 #align eq_zero_of_one_div_eq_zero eq_zero_of_one_div_eq_zero
 
-theorem mul_left_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => a * g := fun g =>
+lemma mul_left_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => a * g := fun g =>
   ⟨a⁻¹ * g, by simp [← mul_assoc, mul_inv_cancel h]⟩
 #align mul_left_surjective₀ mul_left_surjective₀
 
-theorem mul_right_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => g * a := fun g =>
+lemma mul_right_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => g * a := fun g =>
   ⟨g * a⁻¹, by simp [mul_assoc, inv_mul_cancel h]⟩
 #align mul_right_surjective₀ mul_right_surjective₀
 
@@ -449,7 +449,7 @@ section CommGroupWithZero
 
 variable [CommGroupWithZero G₀] {a b c d : G₀}
 
-theorem div_mul_eq_mul_div₀ (a b c : G₀) : a / c * b = a * b / c := by
+lemma div_mul_eq_mul_div₀ (a b c : G₀) : a / c * b = a * b / c := by
   simp_rw [div_eq_mul_inv, mul_assoc, mul_comm c⁻¹]
 #align div_mul_eq_mul_div₀ div_mul_eq_mul_div₀
 

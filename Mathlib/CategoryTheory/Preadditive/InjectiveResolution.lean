@@ -94,21 +94,21 @@ lemma exact_succ (n : ℕ):
     (by simp only [CochainComplex.next]; rfl)).1 (I.cocomplex_exactAt_succ n)
 
 @[simp]
-theorem ι_f_succ (n : ℕ) : I.ι.f (n + 1) = 0 :=
+lemma ι_f_succ (n : ℕ) : I.ι.f (n + 1) = 0 :=
   (isZero_single_obj_X _ _ _ _ (by simp)).eq_of_src _ _
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.ι_f_succ CategoryTheory.InjectiveResolution.ι_f_succ
 
 -- Porting note (#10618): removed @[simp] simp can prove this
 @[reassoc]
-theorem ι_f_zero_comp_complex_d :
+lemma ι_f_zero_comp_complex_d :
     I.ι.f 0 ≫ I.cocomplex.d 0 1 = 0 := by
   simp
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.ι_f_zero_comp_complex_d CategoryTheory.InjectiveResolution.ι_f_zero_comp_complex_d
 
 -- Porting note (#10618): removed @[simp] simp can prove this
-theorem complex_d_comp (n : ℕ) :
+lemma complex_d_comp (n : ℕ) :
     I.cocomplex.d n (n + 1) ≫ I.cocomplex.d (n + 1) (n + 2) = 0 := by
   simp
 set_option linter.uppercaseLean3 false in

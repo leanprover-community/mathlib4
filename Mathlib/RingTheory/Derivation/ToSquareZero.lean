@@ -36,7 +36,7 @@ def diffToIdealOfQuotientCompEq (f₁ f₂ : A →ₐ[R] B)
 #align diff_to_ideal_of_quotient_comp_eq diffToIdealOfQuotientCompEq
 
 @[simp]
-theorem diffToIdealOfQuotientCompEq_apply (f₁ f₂ : A →ₐ[R] B)
+lemma diffToIdealOfQuotientCompEq_apply (f₁ f₂ : A →ₐ[R] B)
     (e : (Ideal.Quotient.mkₐ R I).comp f₁ = (Ideal.Quotient.mkₐ R I).comp f₂) (x : A) :
     ((diffToIdealOfQuotientCompEq I f₁ f₂ e) x : B) = f₁ x - f₂ x :=
   rfl
@@ -71,7 +71,7 @@ def derivationToSquareZeroOfLift (f : A →ₐ[R] B)
     ring
 #align derivation_to_square_zero_of_lift derivationToSquareZeroOfLift
 
-theorem derivationToSquareZeroOfLift_apply (f : A →ₐ[R] B)
+lemma derivationToSquareZeroOfLift_apply (f : A →ₐ[R] B)
     (e : (Ideal.Quotient.mkₐ R I).comp f = IsScalarTower.toAlgHom R A (B ⧸ I)) (x : A) :
     (derivationToSquareZeroOfLift I hI f e x : B) = f x - algebraMap A B x :=
   rfl
@@ -103,7 +103,7 @@ def liftOfDerivationToSquareZero (f : Derivation R A I) : A →ₐ[R] B :=
 #align lift_of_derivation_to_square_zero liftOfDerivationToSquareZero
 
 -- @[simp] -- Porting note: simp normal form is `liftOfDerivationToSquareZero_mk_apply'`
-theorem liftOfDerivationToSquareZero_mk_apply (d : Derivation R A I) (x : A) :
+lemma liftOfDerivationToSquareZero_mk_apply (d : Derivation R A I) (x : A) :
     Ideal.Quotient.mk I (liftOfDerivationToSquareZero I hI d x) = algebraMap A (B ⧸ I) x := by
   rw [liftOfDerivationToSquareZero_apply, map_add, Ideal.Quotient.eq_zero_iff_mem.mpr (d x).prop,
     zero_add]
@@ -111,7 +111,7 @@ theorem liftOfDerivationToSquareZero_mk_apply (d : Derivation R A I) (x : A) :
 #align lift_of_derivation_to_square_zero_mk_apply liftOfDerivationToSquareZero_mk_apply
 
 @[simp]
-theorem liftOfDerivationToSquareZero_mk_apply' (d : Derivation R A I) (x : A) :
+lemma liftOfDerivationToSquareZero_mk_apply' (d : Derivation R A I) (x : A) :
     (Ideal.Quotient.mk I) (d x) + (algebraMap A (B ⧸ I)) x = algebraMap A (B ⧸ I) x := by
   simp only [Ideal.Quotient.eq_zero_iff_mem.mpr (d x).prop, zero_add]
 

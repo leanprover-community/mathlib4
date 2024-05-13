@@ -69,11 +69,11 @@ theorem jacobiSymNat.zero_right (a : ℕ) : jacobiSymNat a 0 = 1 := by
   rw [jacobiSymNat, jacobiSym.zero_right]
 #align norm_num.jacobi_sym_nat.zero_right Mathlib.Meta.NormNum.jacobiSymNat.zero_right
 
-theorem jacobiSymNat.one_right (a : ℕ) : jacobiSymNat a 1 = 1 := by
+lemma jacobiSymNat.one_right (a : ℕ) : jacobiSymNat a 1 = 1 := by
   rw [jacobiSymNat, jacobiSym.one_right]
 #align norm_num.jacobi_sym_nat.one_right Mathlib.Meta.NormNum.jacobiSymNat.one_right
 
-theorem jacobiSymNat.zero_left (b : ℕ) (hb : Nat.beq (b / 2) 0 = false) : jacobiSymNat 0 b = 0 := by
+lemma jacobiSymNat.zero_left (b : ℕ) (hb : Nat.beq (b / 2) 0 = false) : jacobiSymNat 0 b = 0 := by
   rw [jacobiSymNat, Nat.cast_zero, jacobiSym.zero_left ?_]
   calc
     1 < 2 * 1       := by decide
@@ -83,7 +83,7 @@ theorem jacobiSymNat.zero_left (b : ℕ) (hb : Nat.beq (b / 2) 0 = false) : jaco
 #align norm_num.jacobi_sym_nat.zero_left_even Mathlib.Meta.NormNum.jacobiSymNat.zero_left
 #align norm_num.jacobi_sym_nat.zero_left_odd Mathlib.Meta.NormNum.jacobiSymNat.zero_left
 
-theorem jacobiSymNat.one_left (b : ℕ) : jacobiSymNat 1 b = 1 := by
+lemma jacobiSymNat.one_left (b : ℕ) : jacobiSymNat 1 b = 1 := by
   rw [jacobiSymNat, Nat.cast_one, jacobiSym.one_left]
 #align norm_num.jacobi_sym_nat.one_left_even Mathlib.Meta.NormNum.jacobiSymNat.one_left
 #align norm_num.jacobi_sym_nat.one_left_odd Mathlib.Meta.NormNum.jacobiSymNat.one_left
@@ -100,7 +100,7 @@ theorem JacobiSym.mod_left (a : ℤ) (b ab' : ℕ) (ab r b' : ℤ) (hb' : (b : �
   rw [← hr, jacobiSymNat, jacobiSym.mod_left, hb', hab, ← h]
 #align norm_num.jacobi_sym.mod_left Mathlib.Meta.NormNum.JacobiSym.mod_left
 
-theorem jacobiSymNat.mod_left (a b ab : ℕ) (r : ℤ) (hab : a % b = ab) (hr : jacobiSymNat ab b = r) :
+lemma jacobiSymNat.mod_left (a b ab : ℕ) (r : ℤ) (hab : a % b = ab) (hr : jacobiSymNat ab b = r) :
     jacobiSymNat a b = r := by
   rw [← hr, jacobiSymNat, jacobiSymNat, _root_.jacobiSym.mod_left a b, ← hab]; rfl
 #align norm_num.jacobi_sym_nat.mod_left Mathlib.Meta.NormNum.jacobiSymNat.mod_left
@@ -148,21 +148,21 @@ theorem jacobiSymNat.even_odd₁ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : 
   rw [← Nat.mod_mod_of_dvd, hb]; norm_num
 #align norm_num.jacobi_sym_nat.even_odd₁ Mathlib.Meta.NormNum.jacobiSymNat.even_odd₁
 
-theorem jacobiSymNat.even_odd₇ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 7)
+lemma jacobiSymNat.even_odd₇ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 7)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_neg (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; norm_num
 #align norm_num.jacobi_sym_nat.even_odd₇ Mathlib.Meta.NormNum.jacobiSymNat.even_odd₇
 
-theorem jacobiSymNat.even_odd₃ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 3)
+lemma jacobiSymNat.even_odd₃ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 3)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; norm_num
 #align norm_num.jacobi_sym_nat.even_odd₃ Mathlib.Meta.NormNum.jacobiSymNat.even_odd₃
 
-theorem jacobiSymNat.even_odd₅ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 5)
+lemma jacobiSymNat.even_odd₅ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 5)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
@@ -175,36 +175,36 @@ theorem jacobiSymNat.qr₁ (a b : ℕ) (r : ℤ) (ha : a % 4 = 1) (hb : b % 2 = 
   rwa [jacobiSymNat, jacobiSym.quadratic_reciprocity_one_mod_four ha (Nat.odd_iff.mpr hb)]
 #align norm_num.jacobi_sym_nat.qr₁ Mathlib.Meta.NormNum.jacobiSymNat.qr₁
 
-theorem jacobiSymNat.qr₁_mod (a b ab : ℕ) (r : ℤ) (ha : a % 4 = 1) (hb : b % 2 = 1)
+lemma jacobiSymNat.qr₁_mod (a b ab : ℕ) (r : ℤ) (ha : a % 4 = 1) (hb : b % 2 = 1)
     (hab : b % a = ab) (hr : jacobiSymNat ab a = r) : jacobiSymNat a b = r :=
   jacobiSymNat.qr₁ _ _ _ ha hb <| jacobiSymNat.mod_left _ _ ab r hab hr
 #align norm_num.jacobi_sym_nat.qr₁_mod Mathlib.Meta.NormNum.jacobiSymNat.qr₁_mod
 
-theorem jacobiSymNat.qr₁' (a b : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b % 4 = 1)
+lemma jacobiSymNat.qr₁' (a b : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b % 4 = 1)
     (hr : jacobiSymNat b a = r) : jacobiSymNat a b = r := by
   rwa [jacobiSymNat, ← jacobiSym.quadratic_reciprocity_one_mod_four hb (Nat.odd_iff.mpr ha)]
 #align norm_num.jacobi_sym_nat.qr₁' Mathlib.Meta.NormNum.jacobiSymNat.qr₁'
 
-theorem jacobiSymNat.qr₁'_mod (a b ab : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b % 4 = 1)
+lemma jacobiSymNat.qr₁'_mod (a b ab : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b % 4 = 1)
     (hab : b % a = ab) (hr : jacobiSymNat ab a = r) : jacobiSymNat a b = r :=
   jacobiSymNat.qr₁' _ _ _ ha hb <| jacobiSymNat.mod_left _ _ ab r hab hr
 #align norm_num.jacobi_sym_nat.qr₁'_mod Mathlib.Meta.NormNum.jacobiSymNat.qr₁'_mod
 
-theorem jacobiSymNat.qr₃ (a b : ℕ) (r : ℤ) (ha : a % 4 = 3) (hb : b % 4 = 3)
+lemma jacobiSymNat.qr₃ (a b : ℕ) (r : ℤ) (ha : a % 4 = 3) (hb : b % 4 = 3)
     (hr : jacobiSymNat b a = r) : jacobiSymNat a b = -r := by
   rwa [jacobiSymNat, jacobiSym.quadratic_reciprocity_three_mod_four ha hb, neg_inj]
 #align norm_num.jacobi_sym_nat.qr₃ Mathlib.Meta.NormNum.jacobiSymNat.qr₃
 
-theorem jacobiSymNat.qr₃_mod (a b ab : ℕ) (r : ℤ) (ha : a % 4 = 3) (hb : b % 4 = 3)
+lemma jacobiSymNat.qr₃_mod (a b ab : ℕ) (r : ℤ) (ha : a % 4 = 3) (hb : b % 4 = 3)
     (hab : b % a = ab) (hr : jacobiSymNat ab a = r) : jacobiSymNat a b = -r :=
   jacobiSymNat.qr₃ _ _ _ ha hb <| jacobiSymNat.mod_left _ _ ab r hab hr
 #align norm_num.jacobi_sym_nat.qr₃_mod Mathlib.Meta.NormNum.jacobiSymNat.qr₃_mod
 
-theorem isInt_jacobiSym : {a na : ℤ} → {b nb : ℕ} → {r : ℤ} →
+lemma isInt_jacobiSym : {a na : ℤ} → {b nb : ℕ} → {r : ℤ} →
     IsInt a na → IsNat b nb → jacobiSym na nb = r → IsInt (jacobiSym a b) r
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
-theorem isInt_jacobiSymNat : {a na : ℕ} → {b nb : ℕ} → {r : ℤ} →
+lemma isInt_jacobiSymNat : {a na : ℕ} → {b nb : ℕ} → {r : ℤ} →
     IsNat a na → IsNat b nb → jacobiSymNat na nb = r → IsInt (jacobiSymNat a b) r
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 

@@ -31,7 +31,7 @@ open scoped Filter BigOperators ENNReal Topology NNReal
 
 open Filter Set Metric MeasureTheory Real
 
-theorem setOf_liouvilleWith_subset_aux :
+lemma setOf_liouvilleWith_subset_aux :
     { x : ℝ | ∃ p > 2, LiouvilleWith p x } ⊆
       ⋃ m : ℤ, (· + (m : ℝ)) ⁻¹' ⋃ n > (0 : ℕ),
         { x : ℝ | ∃ᶠ b : ℕ in atTop, ∃ a ∈ Finset.Icc (0 : ℤ) b,
@@ -106,12 +106,12 @@ theorem volume_iUnion_setOf_liouvilleWith :
   refine' (Summable.add _ _).mul_left _ <;> simp only [NNReal.summable_rpow] <;> linarith
 #align volume_Union_set_of_liouville_with volume_iUnion_setOf_liouvilleWith
 
-theorem ae_not_liouvilleWith : ∀ᵐ x, ∀ p > (2 : ℝ), ¬LiouvilleWith p x := by
+lemma ae_not_liouvilleWith : ∀ᵐ x, ∀ p > (2 : ℝ), ¬LiouvilleWith p x := by
   simpa only [ae_iff, not_forall, Classical.not_not, setOf_exists] using
     volume_iUnion_setOf_liouvilleWith
 #align ae_not_liouville_with ae_not_liouvilleWith
 
-theorem ae_not_liouville : ∀ᵐ x, ¬Liouville x :=
+lemma ae_not_liouville : ∀ᵐ x, ¬Liouville x :=
   ae_not_liouvilleWith.mono fun x h₁ h₂ => h₁ 3 (by norm_num) (h₂.liouvilleWith 3)
 #align ae_not_liouville ae_not_liouville
 

@@ -27,13 +27,13 @@ def evenOddRec {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ n, P n → P (2 * n)
 #align nat.even_odd_rec Nat.evenOddRec
 
 @[simp]
-theorem evenOddRec_zero (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
+lemma evenOddRec_zero (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) : @evenOddRec _ h0 h_even h_odd 0 = h0 :=
   binaryRec_zero _ _
 #align nat.even_odd_rec_zero Nat.evenOddRec_zero
 
 @[simp]
-theorem evenOddRec_even (n : ℕ) (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
+lemma evenOddRec_even (n : ℕ) (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) (H : h_even 0 h0 = h0) :
     (2 * n).evenOddRec h0 h_even h_odd = h_even n (evenOddRec h0 h_even h_odd n) :=
   have : ∀ a, bit false n = a →
@@ -46,7 +46,7 @@ theorem evenOddRec_even (n : ℕ) (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i
 #align nat.even_odd_rec_even Nat.evenOddRec_even
 
 @[simp]
-theorem evenOddRec_odd (n : ℕ) (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
+lemma evenOddRec_odd (n : ℕ) (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) (H : h_even 0 h0 = h0) :
     (2 * n + 1).evenOddRec h0 h_even h_odd = h_odd n (evenOddRec h0 h_even h_odd n) :=
   have : ∀ a, bit true n = a →

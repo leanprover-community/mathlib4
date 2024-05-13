@@ -80,7 +80,7 @@ def CompactT2.Projective : Prop :=
 
 variable {X}
 
-theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneCech X) := by
+lemma StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneCech X) := by
   intro Y Z _tsY _tsZ _csY _t2Y _csZ _csZ f g hf hg g_sur
   let s : Z → Y := fun z => Classical.choose <| g_sur z
   have hs : g ∘ s = id := funext fun z => Classical.choose_spec (g_sur z)
@@ -92,7 +92,7 @@ theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneC
   rw [comp.assoc, stoneCechExtend_extends ht, ← comp.assoc, hs, id_comp]
 #align stone_cech.projective StoneCech.projective
 
-protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [T2Space X]
+protected lemma CompactT2.Projective.extremallyDisconnected [CompactSpace X] [T2Space X]
     (h : CompactT2.Projective X) : ExtremallyDisconnected X := by
   refine' { open_closure := fun U hU => _ }
   let Z₁ : Set (X × Bool) := Uᶜ ×ˢ {true}
@@ -277,7 +277,7 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   ext x
   exact x.val.mem.symm
 
-protected theorem CompactT2.projective_iff_extremallyDisconnnected [CompactSpace A] [T2Space A] :
+protected lemma CompactT2.projective_iff_extremallyDisconnnected [CompactSpace A] [T2Space A] :
     Projective A ↔ ExtremallyDisconnected A :=
   ⟨Projective.extremallyDisconnected, fun _ => ExtremallyDisconnected.projective⟩
 

@@ -409,14 +409,14 @@ def ContfracLegendre.Ass (ξ : ℝ) (u v : ℤ) : Prop :=
 
 -- ### Auxiliary lemmas
 -- This saves a few lines below, as it is frequently needed.
-private theorem aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 * v - 1 :=
+private lemma aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 * v - 1 :=
   ⟨cast_pos.mpr hv, by norm_cast; omega⟩
 
 -- In the following, we assume that `ass ξ u v` holds and `v ≥ 2`.
 variable {ξ : ℝ} {u v : ℤ} (hv : 2 ≤ v) (h : ContfracLegendre.Ass ξ u v)
 
 -- The fractional part of `ξ` is positive.
-private theorem aux₁ : 0 < fract ξ := by
+private lemma aux₁ : 0 < fract ξ := by
   have hv₀ : (0 : ℝ) < v := cast_pos.mpr (zero_lt_two.trans_le hv)
   obtain ⟨hv₁, hv₂⟩ := aux₀ (zero_lt_two.trans_le hv)
   obtain ⟨hcop, _, h⟩ := h
@@ -435,7 +435,7 @@ private theorem aux₁ : 0 < fract ξ := by
   linarith only [hv, H]
 
 -- An auxiliary lemma for the inductive step.
-private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
+private lemma aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   obtain ⟨hcop, _, h⟩ := h
   obtain ⟨hv₀, hv₀'⟩ := aux₀ (zero_lt_two.trans_le hv)
   have hv₁ : 0 < 2 * v - 1 := by linarith only [hv]
@@ -472,7 +472,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
       cases' huv_cop with huv_cop huv_cop <;> linarith only [hv, huv_cop]
 
 -- The key step: the relevant inequality persists in the inductive step.
-private theorem aux₃ :
+private lemma aux₃ :
     |(fract ξ)⁻¹ - v / (u - ⌊ξ⌋ * v)| < (((u : ℝ) - ⌊ξ⌋ * v) * (2 * (u - ⌊ξ⌋ * v) - 1))⁻¹ := by
   obtain ⟨hu₀, huv⟩ := aux₂ hv h
   have hξ₀ := aux₁ hv h
@@ -511,7 +511,7 @@ private theorem aux₃ :
         mul_le_mul_left Hu]
 
 -- The conditions `ass ξ u v` persist in the inductive step.
-private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋ * v) := by
+private lemma invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋ * v) := by
   refine' ⟨_, fun huv => _, mod_cast aux₃ hv h⟩
   · rw [sub_eq_add_neg, ← neg_mul, isCoprime_comm, IsCoprime.add_mul_right_left_iff]
     exact h.1

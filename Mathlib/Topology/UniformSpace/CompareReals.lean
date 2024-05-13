@@ -114,11 +114,11 @@ noncomputable def compareEquiv : Bourbakiℝ ≃ᵤ ℝ :=
   bourbakiPkg.compareEquiv rationalCauSeqPkg
 #align compare_reals.compare_equiv CompareReals.compareEquiv
 
-theorem compare_uc : UniformContinuous compareEquiv :=
+lemma compare_uc : UniformContinuous compareEquiv :=
   bourbakiPkg.uniformContinuous_compareEquiv rationalCauSeqPkg
 #align compare_reals.compare_uc CompareReals.compare_uc
 
-theorem compare_uc_symm : UniformContinuous compareEquiv.symm :=
+lemma compare_uc_symm : UniformContinuous compareEquiv.symm :=
   bourbakiPkg.uniformContinuous_compareEquiv_symm rationalCauSeqPkg
 #align compare_reals.compare_uc_symm CompareReals.compare_uc_symm
 

@@ -49,7 +49,7 @@ def homotopyQToZero (q : ℕ) : Homotopy (Q q : K[X] ⟶ _) 0 :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.homotopy_Q_to_zero AlgebraicTopology.DoldKan.homotopyQToZero
 
-theorem homotopyPToId_eventually_constant {q n : ℕ} (hqn : n < q) :
+lemma homotopyPToId_eventually_constant {q n : ℕ} (hqn : n < q) :
     ((homotopyPToId X (q + 1)).hom n (n + 1) : X _[n] ⟶ X _[n + 1]) =
       (homotopyPToId X q).hom n (n + 1) := by
   simp only [homotopyHσToZero, AlternatingFaceMapComplex.obj_X, Nat.add_eq, Homotopy.trans_hom,

@@ -73,7 +73,7 @@ section
 
 variable {α R : Type*} [MeasurableSpace α] (μ : Measure α) [LinearOrder R]
 
-theorem countable_meas_le_ne_meas_lt (g : α → R) :
+lemma countable_meas_le_ne_meas_lt (g : α → R) :
     {t : R | μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}}.Countable := by
   -- the target set is contained in the set of points where the function `t ↦ μ {a : α | t ≤ g a}`
   -- jumps down on the right of `t`. This jump set is countable for any function.
@@ -84,7 +84,7 @@ theorem countable_meas_le_ne_meas_lt (g : α → R) :
     lt_of_le_of_ne (measure_mono (fun a ha ↦ le_of_lt ha)) (Ne.symm ht)
   exact ⟨μ {a | t < g a}, this, fun s hs ↦ measure_mono (fun a ha ↦ hs.trans_le ha)⟩
 
-theorem meas_le_ae_eq_meas_lt {R : Type*} [LinearOrder R] [MeasurableSpace R]
+lemma meas_le_ae_eq_meas_lt {R : Type*} [LinearOrder R] [MeasurableSpace R]
     (ν : Measure R) [NoAtoms ν] (g : α → R) :
     (fun t => μ {a : α | t ≤ g a}) =ᵐ[ν] fun t => μ {a : α | t < g a} :=
   Set.Countable.measure_zero (countable_meas_le_ne_meas_lt μ g) _
@@ -597,7 +597,7 @@ theorem Integrable.integral_eq_integral_meas_lt
       refine Measurable.ennreal_toReal ?_
       exact Antitone.measurable (fun _ _ hst ↦ measure_mono (fun _ h ↦ lt_of_le_of_lt hst h))
 
-theorem Integrable.integral_eq_integral_meas_le
+lemma Integrable.integral_eq_integral_meas_le
     (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
     ∫ ω, f ω ∂μ = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
   rw [Integrable.integral_eq_integral_meas_lt f_intble f_nn]

@@ -62,27 +62,27 @@ def of : G →* HNNExtension G A B φ :=
 def t : HNNExtension G A B φ :=
   (HNNExtension.con G A B φ).mk'.comp inr (ofAdd 1)
 
-theorem t_mul_of (a : A) :
+lemma t_mul_of (a : A) :
     t * (of (a : G) : HNNExtension G A B φ) = of (φ a : G) * t :=
   (Con.eq _).2 <| ConGen.Rel.of _ _ <| ⟨a, by simp⟩
 
-theorem of_mul_t (b : B) :
+lemma of_mul_t (b : B) :
     (of (b : G) : HNNExtension G A B φ) * t = t * of (φ.symm b : G) := by
   rw [t_mul_of]; simp
 
-theorem equiv_eq_conj (a : A) :
+lemma equiv_eq_conj (a : A) :
     (of (φ a : G) : HNNExtension G A B φ) = t * of (a : G) * t⁻¹ := by
   rw [t_mul_of]; simp
 
-theorem equiv_symm_eq_conj (b : B) :
+lemma equiv_symm_eq_conj (b : B) :
     (of (φ.symm b : G) : HNNExtension G A B φ) = t⁻¹ * of (b : G) * t := by
   rw [mul_assoc, of_mul_t]; simp
 
-theorem inv_t_mul_of (b : B) :
+lemma inv_t_mul_of (b : B) :
     t⁻¹ * (of (b : G) : HNNExtension G A B φ) = of (φ.symm b : G) * t⁻¹ := by
   rw [equiv_symm_eq_conj]; simp
 
-theorem of_mul_inv_t (a : A) :
+lemma of_mul_inv_t (a : A) :
     (of (a : G) : HNNExtension G A B φ) * t⁻¹ = t⁻¹ * of (φ a : G) := by
   rw [equiv_eq_conj]; simp [mul_assoc]
 
@@ -94,23 +94,23 @@ def lift (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) 
     simp [hx])
 
 @[simp]
-theorem lift_t (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) :
+lemma lift_t (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) :
     lift f x hx t = x := by
   delta HNNExtension; simp [lift, t]
 
 @[simp]
-theorem lift_of (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) (g : G) :
+lemma lift_of (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) (g : G) :
     lift f x hx (of g) = f g := by
   delta HNNExtension; simp [lift, of]
 
 @[ext high]
-theorem hom_ext {f g : HNNExtension G A B φ →* M}
+lemma hom_ext {f g : HNNExtension G A B φ →* M}
     (hg : f.comp of = g.comp of) (ht : f t = g t) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     Coprod.hom_ext hg (MonoidHom.ext_mint ht)
 
 @[elab_as_elim]
-theorem induction_on {motive : HNNExtension G A B φ → Prop}
+lemma induction_on {motive : HNNExtension G A B φ → Prop}
     (x : HNNExtension G A B φ) (of : ∀ g, motive (of g))
     (t : motive t) (mul : ∀ x y, motive x → motive y → motive (x * y))
     (inv : ∀ x, motive x → motive x⁻¹) : motive x := by
@@ -138,10 +138,10 @@ def toSubgroup (u : ℤˣ) : Subgroup G :=
   if u = 1 then A else B
 
 @[simp]
-theorem toSubgroup_one : toSubgroup A B 1 = A := rfl
+lemma toSubgroup_one : toSubgroup A B 1 = A := rfl
 
 @[simp]
-theorem toSubgroup_neg_one : toSubgroup A B (-1) = B := rfl
+lemma toSubgroup_neg_one : toSubgroup A B (-1) = B := rfl
 
 variable {A B}
 
@@ -155,13 +155,13 @@ def toSubgroupEquiv (u : ℤˣ) : toSubgroup A B u ≃* toSubgroup A B (-u) :=
     cases Int.units_eq_one_or u <;> simp_all
 
 @[simp]
-theorem toSubgroupEquiv_one : toSubgroupEquiv φ 1 = φ := rfl
+lemma toSubgroupEquiv_one : toSubgroupEquiv φ 1 = φ := rfl
 
 @[simp]
-theorem toSubgroupEquiv_neg_one : toSubgroupEquiv φ (-1) = φ.symm := rfl
+lemma toSubgroupEquiv_neg_one : toSubgroupEquiv φ (-1) = φ.symm := rfl
 
 @[simp]
-theorem toSubgroupEquiv_neg_apply (u : ℤˣ) (a : toSubgroup A B u) :
+lemma toSubgroupEquiv_neg_apply (u : ℤˣ) (a : toSubgroup A B u) :
     (toSubgroupEquiv φ (-u) (toSubgroupEquiv φ u a) : G) = a := by
   rcases Int.units_eq_one_or u with rfl | rfl
   · -- This used to be `simp` before leanprover/lean4#2644
@@ -222,7 +222,7 @@ structure _root_.HNNExtension.NormalWord (d : TransversalPair G A B)
 variable {d : TransversalPair G A B}
 
 @[ext]
-theorem ext {w w' : NormalWord d}
+lemma ext {w w' : NormalWord d}
     (h1 : w.head = w'.head) (h2 : w.toList = w'.toList): w = w' := by
   rcases w with ⟨⟨⟩, _⟩; cases w'; simp_all
 
@@ -250,14 +250,14 @@ instance : MulAction G (NormalWord d) :=
     one_smul := by simp [instHSMul]
     mul_smul := by simp [instHSMul, mul_assoc] }
 
-theorem group_smul_def (g : G) (w : NormalWord d) :
+lemma group_smul_def (g : G) (w : NormalWord d) :
     g • w = { w with head := g * w.head } := rfl
 
 @[simp]
-theorem group_smul_head (g : G) (w : NormalWord d) : (g • w).head = g * w.head := rfl
+lemma group_smul_head (g : G) (w : NormalWord d) : (g • w).head = g * w.head := rfl
 
 @[simp]
-theorem group_smul_toList (g : G) (w : NormalWord d) : (g • w).toList = w.toList := rfl
+lemma group_smul_toList (g : G) (w : NormalWord d) : (g • w).toList = w.toList := rfl
 
 instance : FaithfulSMul G (NormalWord d) := ⟨by simp [group_smul_def]⟩
 
@@ -303,7 +303,7 @@ def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
       (ih _ _ _)
 
 @[simp]
-theorem consRecOn_ofGroup {motive : NormalWord d → Sort*}
+lemma consRecOn_ofGroup {motive : NormalWord d → Sort*}
     (g : G) (ofGroup : ∀g, motive (ofGroup g))
     (cons : ∀ (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
       (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head
@@ -312,7 +312,7 @@ theorem consRecOn_ofGroup {motive : NormalWord d → Sort*}
     consRecOn (.ofGroup g) ofGroup cons = ofGroup g := rfl
 
 @[simp]
-theorem consRecOn_cons {motive : NormalWord d → Sort*}
+lemma consRecOn_cons {motive : NormalWord d → Sort*}
     (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
     (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head ∈ toSubgroup A B u → u = u')
     (ofGroup : ∀g, motive (ofGroup g))
@@ -324,13 +324,13 @@ theorem consRecOn_cons {motive : NormalWord d → Sort*}
       (consRecOn w ofGroup cons) := rfl
 
 @[simp]
-theorem smul_cons (g₁ g₂ : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
+lemma smul_cons (g₁ g₂ : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
     (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head ∈ toSubgroup A B u → u = u') :
     g₁ • cons g₂ u w h1 h2 = cons (g₁ * g₂) u w h1 h2 :=
   rfl
 
 @[simp]
-theorem smul_ofGroup (g₁ g₂ : G) :
+lemma smul_ofGroup (g₁ g₂ : G) :
     g₁ • (ofGroup g₂ : NormalWord d) = ofGroup (g₁ * g₂) := rfl
 
 variable (d)
@@ -341,7 +341,7 @@ noncomputable def unitsSMulGroup (u : ℤˣ) (g : G) :
   let g' := (d.compl u).equiv g
   (toSubgroupEquiv φ u g'.1, g'.2)
 
-theorem unitsSMulGroup_snd (u : ℤˣ) (g : G) :
+lemma unitsSMulGroup_snd (u : ℤˣ) (g : G) :
     (unitsSMulGroup φ d u g).2 = ((d.compl u).equiv g).2 := by
   rcases Int.units_eq_one_or u with rfl | rfl <;> rfl
 
@@ -392,7 +392,7 @@ theorem not_cancels_of_cons_hyp (u : ℤˣ) (w : NormalWord d)
   rw [hx] at h2
   simpa using h2 (-u) rfl hw
 
-theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
+lemma unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
     Cancels (-u) (unitsSMul φ u w) ↔ ¬ Cancels u w := by
   by_cases h : Cancels u w
   · simp only [unitsSMul, h, dite_true, not_true_eq_false, iff_false]
@@ -409,7 +409,7 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
   · simp only [unitsSMul, dif_neg h]
     simpa [Cancels] using h
 
-theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
+lemma unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     unitsSMul φ (-u) (unitsSMul φ u w) = w := by
   rw [unitsSMul]
   split_ifs with hcan
@@ -455,7 +455,7 @@ noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
     left_inv := fun _ => by rw [unitsSMul_neg]
     right_inv := fun w => by convert unitsSMul_neg _ _ w; simp }
 
-theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
+lemma unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     unitsSMul φ 1 ((g : G) • w) = (φ g : G) • (unitsSMul φ 1 w) := by
   unfold unitsSMul
   have : Cancels 1 ((g : G) • w) ↔ Cancels 1 w := by
@@ -487,31 +487,31 @@ noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
       simp [unitsSMul_one_group_smul])
 
 @[simp]
-theorem prod_group_smul (g : G) (w : NormalWord d) :
+lemma prod_group_smul (g : G) (w : NormalWord d) :
     (g • w).prod φ = of g * (w.prod φ) := by
   simp [ReducedWord.prod, smul_def, mul_assoc]
 
-theorem of_smul_eq_smul (g : G) (w : NormalWord d) :
+lemma of_smul_eq_smul (g : G) (w : NormalWord d) :
     (of g : HNNExtension G A B φ) • w = g • w := by
   simp [instHSMul, SMul.smul, MulAction.toEndHom]
 
-theorem t_smul_eq_unitsSMul (w : NormalWord d) :
+lemma t_smul_eq_unitsSMul (w : NormalWord d) :
     (t : HNNExtension G A B φ) • w = unitsSMul φ 1 w := by
   simp [instHSMul, SMul.smul, MulAction.toEndHom]
 
-theorem t_pow_smul_eq_unitsSMul (u : ℤˣ) (w : NormalWord d) :
+lemma t_pow_smul_eq_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (t ^ (u : ℤ) : HNNExtension G A B φ) • w = unitsSMul φ u w := by
   rcases Int.units_eq_one_or u with (rfl | rfl) <;>
     simp [instHSMul, SMul.smul, MulAction.toEndHom, Equiv.Perm.inv_def]
 
 @[simp]
-theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
+lemma prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
     (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?,
       w.head ∈ toSubgroup A B u → u = u') :
     (cons g u w h1 h2).prod φ = of g * (t ^ (u : ℤ) * w.prod φ) := by
   simp [ReducedWord.prod, cons, smul_def, mul_assoc]
 
-theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
+lemma prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (unitsSMul φ u w).prod φ = (t^(u : ℤ) * w.prod φ : HNNExtension G A B φ) := by
   rw [unitsSMul]
   split_ifs with hcan
@@ -537,11 +537,11 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
       simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
 
 @[simp]
-theorem prod_empty : (empty : NormalWord d).prod φ = 1 := by
+lemma prod_empty : (empty : NormalWord d).prod φ = 1 := by
   simp [ReducedWord.prod]
 
 @[simp]
-theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
+lemma prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
     (g • w).prod φ = g * w.prod φ := by
   induction g using induction_on generalizing w with
   | of => simp [of_smul_eq_smul]
@@ -552,7 +552,7 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
     simp
 
 @[simp]
-theorem prod_smul_empty (w : NormalWord d) :
+lemma prod_smul_empty (w : NormalWord d) :
     (w.prod φ) • empty = w := by
   induction w using consRecOn with
   | ofGroup => simp [ofGroup, ReducedWord.prod, of_smul_eq_smul, group_smul_def]
@@ -579,7 +579,7 @@ noncomputable def equiv : HNNExtension G A B φ ≃ NormalWord d :=
     left_inv := fun g => by simp [prod_smul]
     right_inv := fun w => by simp }
 
-theorem prod_injective : Injective
+lemma prod_injective : Injective
     (fun w => w.prod φ : NormalWord d → HNNExtension G A B φ) :=
   (equiv φ d).symm.injective
 
@@ -590,7 +590,7 @@ end NormalWord
 
 open NormalWord
 
-theorem of_injective : Function.Injective (of : G → HNNExtension G A B φ) := by
+lemma of_injective : Function.Injective (of : G → HNNExtension G A B φ) := by
   rcases TransversalPair.nonempty G A B with ⟨d⟩
   refine Function.Injective.of_comp
     (f := ((· • ·) : HNNExtension G A B φ → NormalWord d → NormalWord d)) ?_
@@ -600,7 +600,7 @@ theorem of_injective : Function.Injective (of : G → HNNExtension G A B φ) := 
 
 namespace ReducedWord
 
-theorem exists_normalWord_prod_eq
+lemma exists_normalWord_prod_eq
     (d : TransversalPair G A B) (w : ReducedWord G A B) :
     ∃ w' : NormalWord d, w'.prod φ = w.prod φ ∧
       w'.toList.map Prod.fst = w.toList.map Prod.fst ∧

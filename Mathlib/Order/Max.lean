@@ -141,16 +141,16 @@ instance {ι : Type u} {π : ι → Type*} [Nonempty ι] [∀ i, Preorder (π i)
       exact ⟨_, update_lt_self_iff.2 hb⟩⟩
 
 -- Porting note: mathlib3 proof uses `convert`
-theorem NoBotOrder.to_noMinOrder (α : Type*) [LinearOrder α] [NoBotOrder α] : NoMinOrder α :=
+lemma NoBotOrder.to_noMinOrder (α : Type*) [LinearOrder α] [NoBotOrder α] : NoMinOrder α :=
   { exists_lt := fun a => by simpa [not_le] using exists_not_ge a }
 #align no_bot_order.to_no_min_order NoBotOrder.to_noMinOrder
 
 -- Porting note: mathlib3 proof uses `convert`
-theorem NoTopOrder.to_noMaxOrder (α : Type*) [LinearOrder α] [NoTopOrder α] : NoMaxOrder α :=
+lemma NoTopOrder.to_noMaxOrder (α : Type*) [LinearOrder α] [NoTopOrder α] : NoMaxOrder α :=
   { exists_gt := fun a => by simpa [not_le] using exists_not_le a }
 #align no_top_order.to_no_max_order NoTopOrder.to_noMaxOrder
 
-theorem noBotOrder_iff_noMinOrder (α : Type*) [LinearOrder α] : NoBotOrder α ↔ NoMinOrder α :=
+lemma noBotOrder_iff_noMinOrder (α : Type*) [LinearOrder α] : NoBotOrder α ↔ NoMinOrder α :=
   ⟨fun h =>
     haveI := h
     NoBotOrder.to_noMinOrder α,
@@ -159,7 +159,7 @@ theorem noBotOrder_iff_noMinOrder (α : Type*) [LinearOrder α] : NoBotOrder α 
     inferInstance⟩
 #align no_bot_order_iff_no_min_order noBotOrder_iff_noMinOrder
 
-theorem noTopOrder_iff_noMaxOrder (α : Type*) [LinearOrder α] : NoTopOrder α ↔ NoMaxOrder α :=
+lemma noTopOrder_iff_noMaxOrder (α : Type*) [LinearOrder α] : NoTopOrder α ↔ NoMaxOrder α :=
   ⟨fun h =>
     haveI := h
     NoTopOrder.to_noMaxOrder α,
@@ -168,11 +168,11 @@ theorem noTopOrder_iff_noMaxOrder (α : Type*) [LinearOrder α] : NoTopOrder α 
     inferInstance⟩
 #align no_top_order_iff_no_max_order noTopOrder_iff_noMaxOrder
 
-theorem NoMinOrder.not_acc [LT α] [NoMinOrder α] (a : α) : ¬Acc (· < ·) a := fun h =>
+lemma NoMinOrder.not_acc [LT α] [NoMinOrder α] (a : α) : ¬Acc (· < ·) a := fun h =>
   Acc.recOn h fun x _ => (exists_lt x).recOn
 #align no_min_order.not_acc NoMinOrder.not_acc
 
-theorem NoMaxOrder.not_acc [LT α] [NoMaxOrder α] (a : α) : ¬Acc (· > ·) a := fun h =>
+lemma NoMaxOrder.not_acc [LT α] [NoMaxOrder α] (a : α) : ¬Acc (· > ·) a := fun h =>
   Acc.recOn h fun x _ => (exists_gt x).recOn
 #align no_max_order.not_acc NoMaxOrder.not_acc
 
@@ -211,60 +211,60 @@ def IsMax (a : α) : Prop :=
 #align is_max IsMax
 
 @[simp]
-theorem not_isBot [NoBotOrder α] (a : α) : ¬IsBot a := fun h =>
+lemma not_isBot [NoBotOrder α] (a : α) : ¬IsBot a := fun h =>
   let ⟨_, hb⟩ := exists_not_ge a
   hb <| h _
 #align not_is_bot not_isBot
 
 @[simp]
-theorem not_isTop [NoTopOrder α] (a : α) : ¬IsTop a := fun h =>
+lemma not_isTop [NoTopOrder α] (a : α) : ¬IsTop a := fun h =>
   let ⟨_, hb⟩ := exists_not_le a
   hb <| h _
 #align not_is_top not_isTop
 
-protected theorem IsBot.isMin (h : IsBot a) : IsMin a := fun b _ => h b
+protected lemma IsBot.isMin (h : IsBot a) : IsMin a := fun b _ => h b
 #align is_bot.is_min IsBot.isMin
 
-protected theorem IsTop.isMax (h : IsTop a) : IsMax a := fun b _ => h b
+protected lemma IsTop.isMax (h : IsTop a) : IsMax a := fun b _ => h b
 #align is_top.is_max IsTop.isMax
 
 @[simp]
-theorem isBot_toDual_iff : IsBot (toDual a) ↔ IsTop a :=
+lemma isBot_toDual_iff : IsBot (toDual a) ↔ IsTop a :=
   Iff.rfl
 #align is_bot_to_dual_iff isBot_toDual_iff
 
 @[simp]
-theorem isTop_toDual_iff : IsTop (toDual a) ↔ IsBot a :=
+lemma isTop_toDual_iff : IsTop (toDual a) ↔ IsBot a :=
   Iff.rfl
 #align is_top_to_dual_iff isTop_toDual_iff
 
 @[simp]
-theorem isMin_toDual_iff : IsMin (toDual a) ↔ IsMax a :=
+lemma isMin_toDual_iff : IsMin (toDual a) ↔ IsMax a :=
   Iff.rfl
 #align is_min_to_dual_iff isMin_toDual_iff
 
 @[simp]
-theorem isMax_toDual_iff : IsMax (toDual a) ↔ IsMin a :=
+lemma isMax_toDual_iff : IsMax (toDual a) ↔ IsMin a :=
   Iff.rfl
 #align is_max_to_dual_iff isMax_toDual_iff
 
 @[simp]
-theorem isBot_ofDual_iff {a : αᵒᵈ} : IsBot (ofDual a) ↔ IsTop a :=
+lemma isBot_ofDual_iff {a : αᵒᵈ} : IsBot (ofDual a) ↔ IsTop a :=
   Iff.rfl
 #align is_bot_of_dual_iff isBot_ofDual_iff
 
 @[simp]
-theorem isTop_ofDual_iff {a : αᵒᵈ} : IsTop (ofDual a) ↔ IsBot a :=
+lemma isTop_ofDual_iff {a : αᵒᵈ} : IsTop (ofDual a) ↔ IsBot a :=
   Iff.rfl
 #align is_top_of_dual_iff isTop_ofDual_iff
 
 @[simp]
-theorem isMin_ofDual_iff {a : αᵒᵈ} : IsMin (ofDual a) ↔ IsMax a :=
+lemma isMin_ofDual_iff {a : αᵒᵈ} : IsMin (ofDual a) ↔ IsMax a :=
   Iff.rfl
 #align is_min_of_dual_iff isMin_ofDual_iff
 
 @[simp]
-theorem isMax_ofDual_iff {a : αᵒᵈ} : IsMax (ofDual a) ↔ IsMin a :=
+lemma isMax_ofDual_iff {a : αᵒᵈ} : IsMax (ofDual a) ↔ IsMin a :=
   Iff.rfl
 #align is_max_of_dual_iff isMax_ofDual_iff
 
@@ -298,61 +298,61 @@ section Preorder
 
 variable [Preorder α] {a b : α}
 
-theorem IsBot.mono (ha : IsBot a) (h : b ≤ a) : IsBot b := fun _ => h.trans <| ha _
+lemma IsBot.mono (ha : IsBot a) (h : b ≤ a) : IsBot b := fun _ => h.trans <| ha _
 #align is_bot.mono IsBot.mono
 
-theorem IsTop.mono (ha : IsTop a) (h : a ≤ b) : IsTop b := fun _ => (ha _).trans h
+lemma IsTop.mono (ha : IsTop a) (h : a ≤ b) : IsTop b := fun _ => (ha _).trans h
 #align is_top.mono IsTop.mono
 
-theorem IsMin.mono (ha : IsMin a) (h : b ≤ a) : IsMin b := fun _ hc => h.trans <| ha <| hc.trans h
+lemma IsMin.mono (ha : IsMin a) (h : b ≤ a) : IsMin b := fun _ hc => h.trans <| ha <| hc.trans h
 #align is_min.mono IsMin.mono
 
-theorem IsMax.mono (ha : IsMax a) (h : a ≤ b) : IsMax b := fun _ hc => (ha <| h.trans hc).trans h
+lemma IsMax.mono (ha : IsMax a) (h : a ≤ b) : IsMax b := fun _ hc => (ha <| h.trans hc).trans h
 #align is_max.mono IsMax.mono
 
-theorem IsMin.not_lt (h : IsMin a) : ¬b < a := fun hb => hb.not_le <| h hb.le
+lemma IsMin.not_lt (h : IsMin a) : ¬b < a := fun hb => hb.not_le <| h hb.le
 #align is_min.not_lt IsMin.not_lt
 
-theorem IsMax.not_lt (h : IsMax a) : ¬a < b := fun hb => hb.not_le <| h hb.le
+lemma IsMax.not_lt (h : IsMax a) : ¬a < b := fun hb => hb.not_le <| h hb.le
 #align is_max.not_lt IsMax.not_lt
 
 @[simp]
-theorem not_isMin_of_lt (h : b < a) : ¬IsMin a := fun ha => ha.not_lt h
+lemma not_isMin_of_lt (h : b < a) : ¬IsMin a := fun ha => ha.not_lt h
 #align not_is_min_of_lt not_isMin_of_lt
 
 @[simp]
-theorem not_isMax_of_lt (h : a < b) : ¬IsMax a := fun ha => ha.not_lt h
+lemma not_isMax_of_lt (h : a < b) : ¬IsMax a := fun ha => ha.not_lt h
 #align not_is_max_of_lt not_isMax_of_lt
 
 alias LT.lt.not_isMin := not_isMin_of_lt
 
 alias LT.lt.not_isMax := not_isMax_of_lt
 
-theorem isMin_iff_forall_not_lt : IsMin a ↔ ∀ b, ¬b < a :=
+lemma isMin_iff_forall_not_lt : IsMin a ↔ ∀ b, ¬b < a :=
   ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.lt_of_not_le hab⟩
 #align is_min_iff_forall_not_lt isMin_iff_forall_not_lt
 
-theorem isMax_iff_forall_not_lt : IsMax a ↔ ∀ b, ¬a < b :=
+lemma isMax_iff_forall_not_lt : IsMax a ↔ ∀ b, ¬a < b :=
   ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.lt_of_not_le hab⟩
 #align is_max_iff_forall_not_lt isMax_iff_forall_not_lt
 
 @[simp]
-theorem not_isMin_iff : ¬IsMin a ↔ ∃ b, b < a := by
+lemma not_isMin_iff : ¬IsMin a ↔ ∃ b, b < a := by
   simp [lt_iff_le_not_le, IsMin, not_forall, exists_prop]
 #align not_is_min_iff not_isMin_iff
 
 @[simp]
-theorem not_isMax_iff : ¬IsMax a ↔ ∃ b, a < b := by
+lemma not_isMax_iff : ¬IsMax a ↔ ∃ b, a < b := by
   simp [lt_iff_le_not_le, IsMax, not_forall, exists_prop]
 #align not_is_max_iff not_isMax_iff
 
 @[simp]
-theorem not_isMin [NoMinOrder α] (a : α) : ¬IsMin a :=
+lemma not_isMin [NoMinOrder α] (a : α) : ¬IsMin a :=
   not_isMin_iff.2 <| exists_lt a
 #align not_is_min not_isMin
 
 @[simp]
-theorem not_isMax [NoMaxOrder α] (a : α) : ¬IsMax a :=
+lemma not_isMax [NoMaxOrder α] (a : α) : ¬IsMax a :=
   not_isMax_iff.2 <| exists_gt a
 #align not_is_max not_isMax
 
@@ -360,17 +360,17 @@ namespace Subsingleton
 
 variable [Subsingleton α]
 
-protected theorem isBot (a : α) : IsBot a := fun _ => (Subsingleton.elim _ _).le
+protected lemma isBot (a : α) : IsBot a := fun _ => (Subsingleton.elim _ _).le
 #align subsingleton.is_bot Subsingleton.isBot
 
-protected theorem isTop (a : α) : IsTop a := fun _ => (Subsingleton.elim _ _).le
+protected lemma isTop (a : α) : IsTop a := fun _ => (Subsingleton.elim _ _).le
 #align subsingleton.is_top Subsingleton.isTop
 
-protected theorem isMin (a : α) : IsMin a :=
+protected lemma isMin (a : α) : IsMin a :=
   (Subsingleton.isBot _).isMin
 #align subsingleton.is_min Subsingleton.isMin
 
-protected theorem isMax (a : α) : IsMax a :=
+protected lemma isMax (a : α) : IsMax a :=
   (Subsingleton.isTop _).isMax
 #align subsingleton.is_max Subsingleton.isMax
 
@@ -382,19 +382,19 @@ section PartialOrder
 
 variable [PartialOrder α] {a b : α}
 
-protected theorem IsMin.eq_of_le (ha : IsMin a) (h : b ≤ a) : b = a :=
+protected lemma IsMin.eq_of_le (ha : IsMin a) (h : b ≤ a) : b = a :=
   h.antisymm <| ha h
 #align is_min.eq_of_le IsMin.eq_of_le
 
-protected theorem IsMin.eq_of_ge (ha : IsMin a) (h : b ≤ a) : a = b :=
+protected lemma IsMin.eq_of_ge (ha : IsMin a) (h : b ≤ a) : a = b :=
   h.antisymm' <| ha h
 #align is_min.eq_of_ge IsMin.eq_of_ge
 
-protected theorem IsMax.eq_of_le (ha : IsMax a) (h : a ≤ b) : a = b :=
+protected lemma IsMax.eq_of_le (ha : IsMax a) (h : a ≤ b) : a = b :=
   h.antisymm <| ha h
 #align is_max.eq_of_le IsMax.eq_of_le
 
-protected theorem IsMax.eq_of_ge (ha : IsMax a) (h : a ≤ b) : b = a :=
+protected lemma IsMax.eq_of_ge (ha : IsMax a) (h : a ≤ b) : b = a :=
   h.antisymm' <| ha h
 #align is_max.eq_of_ge IsMax.eq_of_ge
 
@@ -404,59 +404,59 @@ section Prod
 
 variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}
 
-theorem IsBot.prod_mk (ha : IsBot a) (hb : IsBot b) : IsBot (a, b) := fun _ => ⟨ha _, hb _⟩
+lemma IsBot.prod_mk (ha : IsBot a) (hb : IsBot b) : IsBot (a, b) := fun _ => ⟨ha _, hb _⟩
 #align is_bot.prod_mk IsBot.prod_mk
 
-theorem IsTop.prod_mk (ha : IsTop a) (hb : IsTop b) : IsTop (a, b) := fun _ => ⟨ha _, hb _⟩
+lemma IsTop.prod_mk (ha : IsTop a) (hb : IsTop b) : IsTop (a, b) := fun _ => ⟨ha _, hb _⟩
 #align is_top.prod_mk IsTop.prod_mk
 
-theorem IsMin.prod_mk (ha : IsMin a) (hb : IsMin b) : IsMin (a, b) := fun _ hc => ⟨ha hc.1, hb hc.2⟩
+lemma IsMin.prod_mk (ha : IsMin a) (hb : IsMin b) : IsMin (a, b) := fun _ hc => ⟨ha hc.1, hb hc.2⟩
 #align is_min.prod_mk IsMin.prod_mk
 
-theorem IsMax.prod_mk (ha : IsMax a) (hb : IsMax b) : IsMax (a, b) := fun _ hc => ⟨ha hc.1, hb hc.2⟩
+lemma IsMax.prod_mk (ha : IsMax a) (hb : IsMax b) : IsMax (a, b) := fun _ hc => ⟨ha hc.1, hb hc.2⟩
 #align is_max.prod_mk IsMax.prod_mk
 
-theorem IsBot.fst (hx : IsBot x) : IsBot x.1 := fun c => (hx (c, x.2)).1
+lemma IsBot.fst (hx : IsBot x) : IsBot x.1 := fun c => (hx (c, x.2)).1
 #align is_bot.fst IsBot.fst
 
-theorem IsBot.snd (hx : IsBot x) : IsBot x.2 := fun c => (hx (x.1, c)).2
+lemma IsBot.snd (hx : IsBot x) : IsBot x.2 := fun c => (hx (x.1, c)).2
 #align is_bot.snd IsBot.snd
 
-theorem IsTop.fst (hx : IsTop x) : IsTop x.1 := fun c => (hx (c, x.2)).1
+lemma IsTop.fst (hx : IsTop x) : IsTop x.1 := fun c => (hx (c, x.2)).1
 #align is_top.fst IsTop.fst
 
-theorem IsTop.snd (hx : IsTop x) : IsTop x.2 := fun c => (hx (x.1, c)).2
+lemma IsTop.snd (hx : IsTop x) : IsTop x.2 := fun c => (hx (x.1, c)).2
 #align is_top.snd IsTop.snd
 
-theorem IsMin.fst (hx : IsMin x) : IsMin x.1 :=
+lemma IsMin.fst (hx : IsMin x) : IsMin x.1 :=
   fun c hc => (hx <| show (c, x.2) ≤ x from (and_iff_left le_rfl).2 hc).1
 #align is_min.fst IsMin.fst
 
-theorem IsMin.snd (hx : IsMin x) : IsMin x.2 :=
+lemma IsMin.snd (hx : IsMin x) : IsMin x.2 :=
   fun c hc => (hx <| show (x.1, c) ≤ x from (and_iff_right le_rfl).2 hc).2
 #align is_min.snd IsMin.snd
 
-theorem IsMax.fst (hx : IsMax x) : IsMax x.1 :=
+lemma IsMax.fst (hx : IsMax x) : IsMax x.1 :=
   fun c hc => (hx <| show x ≤ (c, x.2) from (and_iff_left le_rfl).2 hc).1
 #align is_max.fst IsMax.fst
 
-theorem IsMax.snd (hx : IsMax x) : IsMax x.2 :=
+lemma IsMax.snd (hx : IsMax x) : IsMax x.2 :=
   fun c hc => (hx <| show x ≤ (x.1, c) from (and_iff_right le_rfl).2 hc).2
 #align is_max.snd IsMax.snd
 
-theorem Prod.isBot_iff : IsBot x ↔ IsBot x.1 ∧ IsBot x.2 :=
+lemma Prod.isBot_iff : IsBot x ↔ IsBot x.1 ∧ IsBot x.2 :=
   ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prod_mk h.2⟩
 #align prod.is_bot_iff Prod.isBot_iff
 
-theorem Prod.isTop_iff : IsTop x ↔ IsTop x.1 ∧ IsTop x.2 :=
+lemma Prod.isTop_iff : IsTop x ↔ IsTop x.1 ∧ IsTop x.2 :=
   ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prod_mk h.2⟩
 #align prod.is_top_iff Prod.isTop_iff
 
-theorem Prod.isMin_iff : IsMin x ↔ IsMin x.1 ∧ IsMin x.2 :=
+lemma Prod.isMin_iff : IsMin x ↔ IsMin x.1 ∧ IsMin x.2 :=
   ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prod_mk h.2⟩
 #align prod.is_min_iff Prod.isMin_iff
 
-theorem Prod.isMax_iff : IsMax x ↔ IsMax x.1 ∧ IsMax x.2 :=
+lemma Prod.isMax_iff : IsMax x ↔ IsMax x.1 ∧ IsMax x.2 :=
   ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prod_mk h.2⟩
 #align prod.is_max_iff Prod.isMax_iff
 

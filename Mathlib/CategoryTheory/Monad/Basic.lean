@@ -140,37 +140,37 @@ initialize_simps_projections CategoryTheory.Comonad
 
 -- Porting note: investigate whether this can be a `simp` lemma?
 @[reassoc]
-theorem Monad.assoc (T : Monad C) (X : C) :
+lemma Monad.assoc (T : Monad C) (X : C) :
     (T : C ⥤ C).map (T.μ.app X) ≫ T.μ.app _ = T.μ.app _ ≫ T.μ.app _ :=
   T.assoc' X
 #align category_theory.monad.assoc CategoryTheory.Monad.assoc
 
 @[reassoc (attr := simp)]
-theorem Monad.left_unit (T : Monad C) (X : C) :
+lemma Monad.left_unit (T : Monad C) (X : C) :
     T.η.app ((T : C ⥤ C).obj X) ≫ T.μ.app X = 𝟙 ((T : C ⥤ C).obj X) :=
   T.left_unit' X
 #align category_theory.monad.left_unit CategoryTheory.Monad.left_unit
 
 @[reassoc (attr := simp)]
-theorem Monad.right_unit (T : Monad C) (X : C) :
+lemma Monad.right_unit (T : Monad C) (X : C) :
     (T : C ⥤ C).map (T.η.app X) ≫ T.μ.app X = 𝟙 ((T : C ⥤ C).obj X) :=
   T.right_unit' X
 #align category_theory.monad.right_unit CategoryTheory.Monad.right_unit
 
 @[reassoc (attr := simp)]
-theorem Comonad.coassoc (G : Comonad C) (X : C) :
+lemma Comonad.coassoc (G : Comonad C) (X : C) :
     G.δ.app _ ≫ (G : C ⥤ C).map (G.δ.app X) = G.δ.app _ ≫ G.δ.app _ :=
   G.coassoc' X
 #align category_theory.comonad.coassoc CategoryTheory.Comonad.coassoc
 
 @[reassoc (attr := simp)]
-theorem Comonad.left_counit (G : Comonad C) (X : C) :
+lemma Comonad.left_counit (G : Comonad C) (X : C) :
     G.δ.app X ≫ G.ε.app ((G : C ⥤ C).obj X) = 𝟙 ((G : C ⥤ C).obj X) :=
   G.left_counit' X
 #align category_theory.comonad.left_counit CategoryTheory.Comonad.left_counit
 
 @[reassoc (attr := simp)]
-theorem Comonad.right_counit (G : Comonad C) (X : C) :
+lemma Comonad.right_counit (G : Comonad C) (X : C) :
     G.δ.app X ≫ (G : C ⥤ C).map (G.ε.app X) = 𝟙 ((G : C ⥤ C).obj X) :=
   G.right_counit' X
 #align category_theory.comonad.right_counit CategoryTheory.Comonad.right_counit
@@ -239,12 +239,12 @@ instance {T : Monad C} : Inhabited (MonadHom T T) :=
   ⟨𝟙 T⟩
 
 @[simp]
-theorem MonadHom.id_toNatTrans (T : Monad C) : (𝟙 T : T ⟶ T).toNatTrans = 𝟙 (T : C ⥤ C) :=
+lemma MonadHom.id_toNatTrans (T : Monad C) : (𝟙 T : T ⟶ T).toNatTrans = 𝟙 (T : C ⥤ C) :=
   rfl
 #align category_theory.monad_hom.id_to_nat_trans CategoryTheory.MonadHom.id_toNatTrans
 
 @[simp]
-theorem MonadHom.comp_toNatTrans {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
+lemma MonadHom.comp_toNatTrans {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
     (f ≫ g).toNatTrans = ((f.toNatTrans : _ ⟶ (T₂ : C ⥤ C)) ≫ g.toNatTrans : (T₁ : C ⥤ C) ⟶ T₃) :=
   rfl
 #align category_theory.monad_hom.comp_to_nat_trans CategoryTheory.MonadHom.comp_toNatTrans
@@ -253,12 +253,12 @@ instance {G : Comonad C} : Inhabited (ComonadHom G G) :=
   ⟨𝟙 G⟩
 
 @[simp]
-theorem ComonadHom.id_toNatTrans (T : Comonad C) : (𝟙 T : T ⟶ T).toNatTrans = 𝟙 (T : C ⥤ C) :=
+lemma ComonadHom.id_toNatTrans (T : Comonad C) : (𝟙 T : T ⟶ T).toNatTrans = 𝟙 (T : C ⥤ C) :=
   rfl
 #align category_theory.comonad_hom.id_to_nat_trans CategoryTheory.ComonadHom.id_toNatTrans
 
 @[simp]
-theorem comp_toNatTrans {T₁ T₂ T₃ : Comonad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
+lemma comp_toNatTrans {T₁ T₂ T₃ : Comonad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
     (f ≫ g).toNatTrans = ((f.toNatTrans : _ ⟶ (T₂ : C ⥤ C)) ≫ g.toNatTrans : (T₁ : C ⥤ C) ⟶ T₃) :=
   rfl
 #align category_theory.comp_to_nat_trans CategoryTheory.comp_toNatTrans
@@ -317,7 +317,7 @@ def monadToFunctor : Monad C ⥤ C ⥤ C where
 
 instance : (monadToFunctor C).Faithful where
 
-theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N) (f_η f_μ) :
+lemma monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N) (f_η f_μ) :
     (monadToFunctor _).mapIso (MonadIso.mk f f_η f_μ) = f := by
   ext
   rfl
@@ -336,7 +336,7 @@ def comonadToFunctor : Comonad C ⥤ C ⥤ C where
 
 instance : (comonadToFunctor C).Faithful where
 
-theorem comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N) (f_ε f_δ) :
+lemma comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N) (f_ε f_δ) :
     (comonadToFunctor _).mapIso (ComonadIso.mk f f_ε f_δ) = f := by
   ext
   rfl

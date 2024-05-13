@@ -180,7 +180,7 @@ instance instMul : Mul (FreeAlgebra R X) where
   mul := Quot.map₂ HMul.hMul (fun _ _ _ ↦ Rel.mul_compat_right) fun _ _ _ ↦ Rel.mul_compat_left
 
 -- `Quot.mk` is an implementation detail of `FreeAlgebra`, so this lemma is private
-private theorem mk_mul (x y : Pre R X) :
+private lemma mk_mul (x y : Pre R X) :
     Quot.mk (Rel R X) (x * y) = (HMul.hMul (self := instHMul (α := FreeAlgebra R X))
     (Quot.mk (Rel R X) x) (Quot.mk (Rel R X) y)) :=
   rfl
@@ -300,7 +300,7 @@ irreducible_def ι : X → FreeAlgebra R X := fun m ↦ Quot.mk _ m
 #align free_algebra.ι FreeAlgebra.ι
 
 @[simp]
-theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by rw [ι_def]
+lemma quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by rw [ι_def]
 #align free_algebra.quot_mk_eq_ι FreeAlgebra.quot_mk_eq_ι
 
 variable {A : Type*} [Semiring A] [Algebra R A]
@@ -393,13 +393,13 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
 #align free_algebra.lift FreeAlgebra.lift
 
 @[simp]
-theorem liftAux_eq (f : X → A) : liftAux R f = lift R f := by
+lemma liftAux_eq (f : X → A) : liftAux R f = lift R f := by
   rw [lift]
   rfl
 #align free_algebra.lift_aux_eq FreeAlgebra.liftAux_eq
 
 @[simp]
-theorem lift_symm_apply (F : FreeAlgebra R X →ₐ[R] A) : (lift R).symm F = F ∘ ι R := by
+lemma lift_symm_apply (F : FreeAlgebra R X →ₐ[R] A) : (lift R).symm F = F ∘ ι R := by
   rw [lift]
   rfl
 #align free_algebra.lift_symm_apply FreeAlgebra.lift_symm_apply
@@ -407,20 +407,20 @@ theorem lift_symm_apply (F : FreeAlgebra R X →ₐ[R] A) : (lift R).symm F = F 
 variable {R}
 
 @[simp]
-theorem ι_comp_lift (f : X → A) : (lift R f : FreeAlgebra R X → A) ∘ ι R = f := by
+lemma ι_comp_lift (f : X → A) : (lift R f : FreeAlgebra R X → A) ∘ ι R = f := by
   ext
   rw [Function.comp_apply, ι_def, lift]
   rfl
 #align free_algebra.ι_comp_lift FreeAlgebra.ι_comp_lift
 
 @[simp]
-theorem lift_ι_apply (f : X → A) (x) : lift R f (ι R x) = f x := by
+lemma lift_ι_apply (f : X → A) (x) : lift R f (ι R x) = f x := by
   rw [ι_def, lift]
   rfl
 #align free_algebra.lift_ι_apply FreeAlgebra.lift_ι_apply
 
 @[simp]
-theorem lift_unique (f : X → A) (g : FreeAlgebra R X →ₐ[R] A) :
+lemma lift_unique (f : X → A) (g : FreeAlgebra R X →ₐ[R] A) :
     (g : FreeAlgebra R X → A) ∘ ι R = f ↔ g = lift R f := by
   rw [← (lift R).symm_apply_eq, lift]
   rfl
@@ -436,7 +436,7 @@ as a quotient of an inductive type as completely hidden. -/
 -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/algebra.2Esemiring_to_ring.20breaks.20semimodule.20typeclass.20lookup/near/212580241
 -- For now, we avoid this by not marking it irreducible.
 @[simp]
-theorem lift_comp_ι (g : FreeAlgebra R X →ₐ[R] A) :
+lemma lift_comp_ι (g : FreeAlgebra R X →ₐ[R] A) :
     lift R ((g : FreeAlgebra R X → A) ∘ ι R) = g := by
   rw [← lift_symm_apply]
   exact (lift R).apply_symm_apply g
@@ -491,29 +491,29 @@ def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
   lift R (0 : X → R)
 #align free_algebra.algebra_map_inv FreeAlgebra.algebraMapInv
 
-theorem algebraMap_leftInverse :
+lemma algebraMap_leftInverse :
     Function.LeftInverse algebraMapInv (algebraMap R <| FreeAlgebra R X) := fun x ↦ by
   simp [algebraMapInv]
 #align free_algebra.algebra_map_left_inverse FreeAlgebra.algebraMap_leftInverse
 
 @[simp]
-theorem algebraMap_inj (x y : R) :
+lemma algebraMap_inj (x y : R) :
     algebraMap R (FreeAlgebra R X) x = algebraMap R (FreeAlgebra R X) y ↔ x = y :=
   algebraMap_leftInverse.injective.eq_iff
 #align free_algebra.algebra_map_inj FreeAlgebra.algebraMap_inj
 
 @[simp]
-theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 0 ↔ x = 0 :=
+lemma algebraMap_eq_zero_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 0 ↔ x = 0 :=
   map_eq_zero_iff (algebraMap _ _) algebraMap_leftInverse.injective
 #align free_algebra.algebra_map_eq_zero_iff FreeAlgebra.algebraMap_eq_zero_iff
 
 @[simp]
-theorem algebraMap_eq_one_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 1 ↔ x = 1 :=
+lemma algebraMap_eq_one_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) algebraMap_leftInverse.injective
 #align free_algebra.algebra_map_eq_one_iff FreeAlgebra.algebraMap_eq_one_iff
 
 -- this proof is copied from the approach in `FreeAbelianGroup.of_injective`
-theorem ι_injective [Nontrivial R] : Function.Injective (ι R : X → FreeAlgebra R X) :=
+lemma ι_injective [Nontrivial R] : Function.Injective (ι R : X → FreeAlgebra R X) :=
   fun x y hoxy ↦
   by_contradiction <| by
     classical exact fun hxy : x ≠ y ↦
@@ -525,12 +525,12 @@ theorem ι_injective [Nontrivial R] : Function.Injective (ι R : X → FreeAlgeb
 #align free_algebra.ι_injective FreeAlgebra.ι_injective
 
 @[simp]
-theorem ι_inj [Nontrivial R] (x y : X) : ι R x = ι R y ↔ x = y :=
+lemma ι_inj [Nontrivial R] (x y : X) : ι R x = ι R y ↔ x = y :=
   ι_injective.eq_iff
 #align free_algebra.ι_inj FreeAlgebra.ι_inj
 
 @[simp]
-theorem ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap R _ r := fun h ↦ by
+lemma ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap R _ r := fun h ↦ by
   let f0 : FreeAlgebra R X →ₐ[R] R := lift R 0
   let f1 : FreeAlgebra R X →ₐ[R] R := lift R 1
   have hf0 : f0 (ι R x) = 0 := lift_ι_apply _ _
@@ -541,12 +541,12 @@ theorem ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap 
 #align free_algebra.ι_ne_algebra_map FreeAlgebra.ι_ne_algebraMap
 
 @[simp]
-theorem ι_ne_zero [Nontrivial R] (x : X) : ι R x ≠ 0 :=
+lemma ι_ne_zero [Nontrivial R] (x : X) : ι R x ≠ 0 :=
   ι_ne_algebraMap x 0
 #align free_algebra.ι_ne_zero FreeAlgebra.ι_ne_zero
 
 @[simp]
-theorem ι_ne_one [Nontrivial R] (x : X) : ι R x ≠ 1 :=
+lemma ι_ne_one [Nontrivial R] (x : X) : ι R x ≠ 1 :=
   ι_ne_algebraMap x 1
 #align free_algebra.ι_ne_one FreeAlgebra.ι_ne_one
 
@@ -588,7 +588,7 @@ theorem induction {C : FreeAlgebra R X → Prop}
 #align free_algebra.induction FreeAlgebra.induction
 
 @[simp]
-theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X)) = ⊤ := by
+lemma adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X)) = ⊤ := by
   set S := Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X))
   refine top_unique fun x hx => ?_; clear hx
   induction x using FreeAlgebra.induction with

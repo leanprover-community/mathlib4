@@ -45,7 +45,7 @@ protected def finsupp (s : Finset ι) (t : ι → Finset α) : Finset (ι →₀
   (s.pi t).map ⟨indicator s, indicator_injective s⟩
 #align finset.finsupp Finset.finsupp
 
-theorem mem_finsupp_iff {t : ι → Finset α} :
+lemma mem_finsupp_iff {t : ι → Finset α} :
     f ∈ s.finsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
   refine' mem_map.trans ⟨_, _⟩
   · rintro ⟨f, hf, rfl⟩
@@ -75,7 +75,7 @@ theorem mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.supp
 #align finset.mem_finsupp_iff_of_support_subset Finset.mem_finsupp_iff_of_support_subset
 
 @[simp]
-theorem card_finsupp (s : Finset ι) (t : ι → Finset α) :
+lemma card_finsupp (s : Finset ι) (t : ι → Finset α) :
     (s.finsupp t).card = ∏ i in s, (t i).card :=
   (card_map _).trans <| card_pi _ _
 #align finset.card_finsupp Finset.card_finsupp
@@ -93,12 +93,12 @@ def pi (f : ι →₀ Finset α) : Finset (ι →₀ α) :=
 #align finsupp.pi Finsupp.pi
 
 @[simp]
-theorem mem_pi {f : ι →₀ Finset α} {g : ι →₀ α} : g ∈ f.pi ↔ ∀ i, g i ∈ f i :=
+lemma mem_pi {f : ι →₀ Finset α} {g : ι →₀ α} : g ∈ f.pi ↔ ∀ i, g i ∈ f i :=
   mem_finsupp_iff_of_support_subset <| Subset.refl _
 #align finsupp.mem_pi Finsupp.mem_pi
 
 @[simp]
-theorem card_pi (f : ι →₀ Finset α) : f.pi.card = f.prod fun i => (f i).card := by
+lemma card_pi (f : ι →₀ Finset α) : f.pi.card = f.prod fun i => (f i).card := by
   rw [pi, card_finsupp]
   exact Finset.prod_congr rfl fun i _ => by simp only [Pi.natCast_apply, Nat.cast_id]
 #align finsupp.card_pi Finsupp.card_pi

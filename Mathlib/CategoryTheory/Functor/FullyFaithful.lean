@@ -59,7 +59,7 @@ class Faithful (F : C ⥤ D) : Prop where
 
 variable {X Y : C}
 
-theorem map_injective (F : C ⥤ D) [Faithful F] :
+lemma map_injective (F : C ⥤ D) [Faithful F] :
     Function.Injective <| (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   Faithful.map_injective
 #align category_theory.functor.map_injective CategoryTheory.Functor.map_injective
@@ -68,12 +68,12 @@ lemma map_injective_iff (F : C ⥤ D) [Faithful F] {X Y : C} (f g : X ⟶ Y) :
     F.map f = F.map g ↔ f = g :=
   ⟨fun h => F.map_injective h, fun h => by rw [h]⟩
 
-theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
+lemma mapIso_injective (F : C ⥤ D) [Faithful F] :
     Function.Injective <| (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y))  := fun _ _ h =>
   Iso.ext (map_injective F (congr_arg Iso.hom h : _))
 #align category_theory.functor.map_iso_injective CategoryTheory.Functor.mapIso_injective
 
-theorem map_surjective (F : C ⥤ D) [Full F] :
+lemma map_surjective (F : C ⥤ D) [Full F] :
     Function.Surjective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   Full.map_surjective
 #align category_theory.functor.map_surjective CategoryTheory.Functor.map_surjective
@@ -85,7 +85,7 @@ noncomputable def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X 
 #align category_theory.functor.preimage CategoryTheory.Functor.preimage
 
 @[simp]
-theorem map_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y) :
+lemma map_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y) :
     F.map (preimage F f) = f :=
   (F.map_surjective f).choose_spec
 #align category_theory.functor.image_preimage CategoryTheory.Functor.map_preimage
@@ -93,18 +93,18 @@ theorem map_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y) 
 variable {F : C ⥤ D} [Full F] [F.Faithful] {X Y Z : C}
 
 @[simp]
-theorem preimage_id : F.preimage (𝟙 (F.obj X)) = 𝟙 X :=
+lemma preimage_id : F.preimage (𝟙 (F.obj X)) = 𝟙 X :=
   F.map_injective (by simp)
 #align category_theory.preimage_id CategoryTheory.Functor.preimage_id
 
 @[simp]
-theorem preimage_comp (f : F.obj X ⟶ F.obj Y) (g : F.obj Y ⟶ F.obj Z) :
+lemma preimage_comp (f : F.obj X ⟶ F.obj Y) (g : F.obj Y ⟶ F.obj Z) :
     F.preimage (f ≫ g) = F.preimage f ≫ F.preimage g :=
   F.map_injective (by simp)
 #align category_theory.preimage_comp CategoryTheory.Functor.preimage_comp
 
 @[simp]
-theorem preimage_map (f : X ⟶ Y) : F.preimage (F.map f) = f :=
+lemma preimage_map (f : X ⟶ Y) : F.preimage (F.map f) = f :=
   F.map_injective (by simp)
 #align category_theory.preimage_map CategoryTheory.Functor.preimage_map
 
@@ -123,7 +123,7 @@ noncomputable def preimageIso (f : F.obj X ≅ F.obj Y) :
 #align category_theory.functor.preimage_iso_hom CategoryTheory.Functor.preimageIso_hom
 
 @[simp]
-theorem preimageIso_mapIso (f : X ≅ Y) : F.preimageIso (F.mapIso f) = f := by
+lemma preimageIso_mapIso (f : X ≅ Y) : F.preimageIso (F.mapIso f) = f := by
   ext
   simp
 #align category_theory.functor.preimage_iso_map_iso CategoryTheory.Functor.preimageIso_mapIso
@@ -198,13 +198,13 @@ noncomputable def natIsoOfCompFullyFaithful (i : F ⋙ H ≅ G ⋙ H) : F ≅ G 
 #align category_theory.nat_iso_of_comp_fully_faithful_hom_app CategoryTheory.natIsoOfCompFullyFaithful_hom_app
 #align category_theory.nat_iso_of_comp_fully_faithful_inv_app CategoryTheory.natIsoOfCompFullyFaithful_inv_app
 
-theorem natIsoOfCompFullyFaithful_hom (i : F ⋙ H ≅ G ⋙ H) :
+lemma natIsoOfCompFullyFaithful_hom (i : F ⋙ H ≅ G ⋙ H) :
     (natIsoOfCompFullyFaithful H i).hom = natTransOfCompFullyFaithful H i.hom := by
   ext
   simp [natIsoOfCompFullyFaithful]
 #align category_theory.nat_iso_of_comp_fully_faithful_hom CategoryTheory.natIsoOfCompFullyFaithful_hom
 
-theorem natIsoOfCompFullyFaithful_inv (i : F ⋙ H ≅ G ⋙ H) :
+lemma natIsoOfCompFullyFaithful_inv (i : F ⋙ H ≅ G ⋙ H) :
     (natIsoOfCompFullyFaithful H i).inv = natTransOfCompFullyFaithful H i.inv := by
   ext
   simp [← H.preimage_comp]
@@ -259,7 +259,7 @@ instance Faithful.comp [F.Faithful] [G.Faithful] :
     (F ⋙ G).Faithful  where map_injective p := F.map_injective (G.map_injective p)
 #align category_theory.faithful.comp CategoryTheory.Functor.Faithful.comp
 
-theorem Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful :=
+lemma Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful :=
   -- Porting note: (F ⋙ G).map_injective.of_comp has the incorrect type
   { map_injective := fun {_ _} => Function.Injective.of_comp (F ⋙ G).map_injective }
 #align category_theory.faithful.of_comp CategoryTheory.Functor.Faithful.of_comp
@@ -276,7 +276,7 @@ lemma Full.of_iso [Full F] (α : F ≅ F') : Full F' where
     ⟨F.preimage ((α.app X).hom ≫ f ≫ (α.app Y).inv), by simp [← NatIso.naturality_1 α]⟩
 #align category_theory.full.of_iso CategoryTheory.Functor.Full.of_iso
 
-theorem Faithful.of_iso [F.Faithful] (α : F ≅ F') : F'.Faithful :=
+lemma Faithful.of_iso [F.Faithful] (α : F ≅ F') : F'.Faithful :=
   { map_injective := fun h =>
       F.map_injective (by rw [← NatIso.naturality_1 α.symm, h, NatIso.naturality_1 α.symm]) }
 #align category_theory.faithful.of_iso CategoryTheory.Functor.Faithful.of_iso
@@ -285,7 +285,7 @@ end
 
 variable {F G}
 
-theorem Faithful.of_comp_iso {H : C ⥤ E} [H.Faithful] (h : F ⋙ G ≅ H) : F.Faithful :=
+lemma Faithful.of_comp_iso {H : C ⥤ E} [H.Faithful] (h : F ⋙ G ≅ H) : F.Faithful :=
   @Faithful.of_comp _ _ _ _ _ _ F G (Faithful.of_iso h.symm)
 #align category_theory.faithful.of_comp_iso CategoryTheory.Functor.Faithful.of_comp_iso
 
@@ -294,7 +294,7 @@ alias _root_.CategoryTheory.Iso.faithful_of_comp := Faithful.of_comp_iso
 
 -- We could prove this from `Faithful.of_comp_iso` using `eq_to_iso`,
 -- but that would introduce a cyclic import.
-theorem Faithful.of_comp_eq {H : C ⥤ E} [ℋ : H.Faithful] (h : F ⋙ G = H) : F.Faithful :=
+lemma Faithful.of_comp_eq {H : C ⥤ E} [ℋ : H.Faithful] (h : F ⋙ G = H) : F.Faithful :=
   @Faithful.of_comp _ _ _ _ _ _ F G (h.symm ▸ ℋ)
 #align category_theory.faithful.of_comp_eq CategoryTheory.Functor.Faithful.of_comp_eq
 
@@ -326,7 +326,7 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [G.Faithful] (obj : C →
 -- but importing `CategoryTheory.EqToHom` causes an import loop:
 -- CategoryTheory.EqToHom → CategoryTheory.Opposites →
 -- CategoryTheory.Equivalence → CategoryTheory.FullyFaithful
-theorem Faithful.div_comp (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] (obj : C → D)
+lemma Faithful.div_comp (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] (obj : C → D)
     (h_obj : ∀ X, G.obj (obj X) = F.obj X) (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq (G.map (map f)) (F.map f)) :
     Faithful.div F G obj @h_obj @map @h_map ⋙ G = F := by
@@ -344,7 +344,7 @@ theorem Faithful.div_comp (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] 
   exact h_map
 #align category_theory.faithful.div_comp CategoryTheory.Functor.Faithful.div_comp
 
-theorem Faithful.div_faithful (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] (obj : C → D)
+lemma Faithful.div_faithful (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] (obj : C → D)
     (h_obj : ∀ X, G.obj (obj X) = F.obj X) (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq (G.map (map f)) (F.map f)) :
     Functor.Faithful (Faithful.div F G obj @h_obj @map @h_map) :=
@@ -377,14 +377,14 @@ noncomputable def fullyFaithfulCancelRight {F G : C ⥤ D} (H : D ⥤ E) [Full H
 #align category_theory.fully_faithful_cancel_right CategoryTheory.Functor.fullyFaithfulCancelRight
 
 @[simp]
-theorem fullyFaithfulCancelRight_hom_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] [H.Faithful]
+lemma fullyFaithfulCancelRight_hom_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] [H.Faithful]
     (comp_iso : F ⋙ H ≅ G ⋙ H) (X : C) :
     (fullyFaithfulCancelRight H comp_iso).hom.app X = H.preimage (comp_iso.hom.app X) :=
   rfl
 #align category_theory.fully_faithful_cancel_right_hom_app CategoryTheory.Functor.fullyFaithfulCancelRight_hom_app
 
 @[simp]
-theorem fullyFaithfulCancelRight_inv_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] [H.Faithful]
+lemma fullyFaithfulCancelRight_inv_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] [H.Faithful]
     (comp_iso : F ⋙ H ≅ G ⋙ H) (X : C) :
     (fullyFaithfulCancelRight H comp_iso).inv.app X = H.preimage (comp_iso.inv.app X) :=
   rfl

@@ -70,7 +70,7 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
 #align zmod.wilsons_lemma ZMod.wilsons_lemma
 
 @[simp]
-theorem prod_Ico_one_prime : ∏ x in Ico 1 p, (x : ZMod p) = -1 := by
+lemma prod_Ico_one_prime : ∏ x in Ico 1 p, (x : ZMod p) = -1 := by
   -- Porting note: was `conv in Ico 1 p =>`
   conv =>
     congr

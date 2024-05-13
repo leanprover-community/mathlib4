@@ -33,7 +33,7 @@ protected def GradedAlgebra.ι :
     (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
 #align exterior_algebra.graded_algebra.ι ExteriorAlgebra.GradedAlgebra.ι
 
-theorem GradedAlgebra.ι_apply (m : M) :
+lemma GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
       DirectSum.of (fun i : ℕ => ⋀[R]^i M) 1
         ⟨ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
@@ -61,7 +61,7 @@ def GradedAlgebra.liftι :
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
 #align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
 
-theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
+lemma GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
     GradedAlgebra.liftι R M x = DirectSum.of (fun i => ⋀[R]^i M) i x := by
   cases' x with x hx
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]

@@ -37,7 +37,7 @@ def centralizer : Subsemigroup M where
 #align add_subsemigroup.centralizer AddSubsemigroup.centralizer
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_centralizer : ↑(centralizer S) = S.centralizer :=
+lemma coe_centralizer : ↑(centralizer S) = S.centralizer :=
   rfl
 #align subsemigroup.coe_centralizer Subsemigroup.coe_centralizer
 #align add_subsemigroup.coe_centralizer AddSubsemigroup.coe_centralizer
@@ -45,7 +45,7 @@ theorem coe_centralizer : ↑(centralizer S) = S.centralizer :=
 variable {S}
 
 @[to_additive]
-theorem mem_centralizer_iff {z : M} : z ∈ centralizer S ↔ ∀ g ∈ S, g * z = z * g :=
+lemma mem_centralizer_iff {z : M} : z ∈ centralizer S ↔ ∀ g ∈ S, g * z = z * g :=
   Iff.rfl
 #align subsemigroup.mem_centralizer_iff Subsemigroup.mem_centralizer_iff
 #align add_subsemigroup.mem_centralizer_iff AddSubsemigroup.mem_centralizer_iff
@@ -58,26 +58,26 @@ instance decidableMemCentralizer (a) [Decidable <| ∀ b ∈ S, b * a = a * b] :
 #align add_subsemigroup.decidable_mem_centralizer AddSubsemigroup.decidableMemCentralizer
 
 @[to_additive]
-theorem center_le_centralizer (S) : center M ≤ centralizer S :=
+lemma center_le_centralizer (S) : center M ≤ centralizer S :=
   S.center_subset_centralizer
 #align subsemigroup.center_le_centralizer Subsemigroup.center_le_centralizer
 #align add_subsemigroup.center_le_centralizer AddSubsemigroup.center_le_centralizer
 
 @[to_additive]
-theorem centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
+lemma centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
   Set.centralizer_subset h
 #align subsemigroup.centralizer_le Subsemigroup.centralizer_le
 #align add_subsemigroup.centralizer_le AddSubsemigroup.centralizer_le
 
 @[to_additive (attr := simp)]
-theorem centralizer_eq_top_iff_subset {s : Set M} : centralizer s = ⊤ ↔ s ⊆ center M :=
+lemma centralizer_eq_top_iff_subset {s : Set M} : centralizer s = ⊤ ↔ s ⊆ center M :=
   SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
 #align subsemigroup.centralizer_eq_top_iff_subset Subsemigroup.centralizer_eq_top_iff_subset
 #align add_subsemigroup.centralizer_eq_top_iff_subset AddSubsemigroup.centralizer_eq_top_iff_subset
 
 variable (M)
 @[to_additive (attr := simp)]
-theorem centralizer_univ : centralizer Set.univ = center M :=
+lemma centralizer_univ : centralizer Set.univ = center M :=
   SetLike.ext' (Set.centralizer_univ M)
 #align subsemigroup.centralizer_univ Subsemigroup.centralizer_univ
 #align add_subsemigroup.centralizer_univ AddSubsemigroup.centralizer_univ

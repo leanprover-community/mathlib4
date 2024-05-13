@@ -61,34 +61,34 @@ def MetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist : α �
 
 variable {γ : Type w} [MetricSpace γ]
 
-theorem eq_of_dist_eq_zero {x y : γ} : dist x y = 0 → x = y :=
+lemma eq_of_dist_eq_zero {x y : γ} : dist x y = 0 → x = y :=
   MetricSpace.eq_of_dist_eq_zero
 #align eq_of_dist_eq_zero eq_of_dist_eq_zero
 
 @[simp]
-theorem dist_eq_zero {x y : γ} : dist x y = 0 ↔ x = y :=
+lemma dist_eq_zero {x y : γ} : dist x y = 0 ↔ x = y :=
   Iff.intro eq_of_dist_eq_zero fun this => this ▸ dist_self _
 #align dist_eq_zero dist_eq_zero
 
 @[simp]
-theorem zero_eq_dist {x y : γ} : 0 = dist x y ↔ x = y := by rw [eq_comm, dist_eq_zero]
+lemma zero_eq_dist {x y : γ} : 0 = dist x y ↔ x = y := by rw [eq_comm, dist_eq_zero]
 #align zero_eq_dist zero_eq_dist
 
-theorem dist_ne_zero {x y : γ} : dist x y ≠ 0 ↔ x ≠ y := by
+lemma dist_ne_zero {x y : γ} : dist x y ≠ 0 ↔ x ≠ y := by
   simpa only [not_iff_not] using dist_eq_zero
 #align dist_ne_zero dist_ne_zero
 
 @[simp]
-theorem dist_le_zero {x y : γ} : dist x y ≤ 0 ↔ x = y := by
+lemma dist_le_zero {x y : γ} : dist x y ≤ 0 ↔ x = y := by
   simpa [le_antisymm_iff, dist_nonneg] using @dist_eq_zero _ _ x y
 #align dist_le_zero dist_le_zero
 
 @[simp]
-theorem dist_pos {x y : γ} : 0 < dist x y ↔ x ≠ y := by
+lemma dist_pos {x y : γ} : 0 < dist x y ↔ x ≠ y := by
   simpa only [not_le] using not_congr dist_le_zero
 #align dist_pos dist_pos
 
-theorem eq_of_forall_dist_le {x y : γ} (h : ∀ ε > 0, dist x y ≤ ε) : x = y :=
+lemma eq_of_forall_dist_le {x y : γ} (h : ∀ ε > 0, dist x y ≤ ε) : x = y :=
   eq_of_dist_eq_zero (eq_of_le_of_forall_le_of_dense dist_nonneg h)
 #align eq_of_forall_dist_le eq_of_forall_dist_le
 
@@ -104,7 +104,7 @@ theorem nndist_eq_zero {x y : γ} : nndist x y = 0 ↔ x = y := by
 #align nndist_eq_zero nndist_eq_zero
 
 @[simp]
-theorem zero_eq_nndist {x y : γ} : 0 = nndist x y ↔ x = y := by
+lemma zero_eq_nndist {x y : γ} : 0 = nndist x y ↔ x = y := by
   simp only [← NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, zero_eq_dist]
 #align zero_eq_nndist zero_eq_nndist
 
@@ -112,13 +112,13 @@ namespace Metric
 
 variable {x : γ} {s : Set γ}
 
-@[simp] theorem closedBall_zero : closedBall x 0 = {x} := Set.ext fun _ => dist_le_zero
+@[simp] lemma closedBall_zero : closedBall x 0 = {x} := Set.ext fun _ => dist_le_zero
 #align metric.closed_ball_zero Metric.closedBall_zero
 
-@[simp] theorem sphere_zero : sphere x 0 = {x} := Set.ext fun _ => dist_eq_zero
+@[simp] lemma sphere_zero : sphere x 0 = {x} := Set.ext fun _ => dist_eq_zero
 #align metric.sphere_zero Metric.sphere_zero
 
-theorem subsingleton_closedBall (x : γ) {r : ℝ} (hr : r ≤ 0) : (closedBall x r).Subsingleton := by
+lemma subsingleton_closedBall (x : γ) {r : ℝ} (hr : r ≤ 0) : (closedBall x r).Subsingleton := by
   rcases hr.lt_or_eq with (hr | rfl)
   · rw [closedBall_eq_empty.2 hr]
     exact subsingleton_empty
@@ -126,7 +126,7 @@ theorem subsingleton_closedBall (x : γ) {r : ℝ} (hr : r ≤ 0) : (closedBall 
     exact subsingleton_singleton
 #align metric.subsingleton_closed_ball Metric.subsingleton_closedBall
 
-theorem subsingleton_sphere (x : γ) {r : ℝ} (hr : r ≤ 0) : (sphere x r).Subsingleton :=
+lemma subsingleton_sphere (x : γ) {r : ℝ} (hr : r ≤ 0) : (sphere x r).Subsingleton :=
   (subsingleton_closedBall x hr).anti sphere_subset_closedBall
 #align metric.subsingleton_sphere Metric.subsingleton_sphere
 
@@ -157,12 +157,12 @@ instance (priority := 100) _root_.MetricSpace.toEMetricSpace : EMetricSpace γ :
   .ofT0PseudoEMetricSpace γ
 #align metric_space.to_emetric_space MetricSpace.toEMetricSpace
 
-theorem isClosed_of_pairwise_le_dist {s : Set γ} {ε : ℝ} (hε : 0 < ε)
+lemma isClosed_of_pairwise_le_dist {s : Set γ} {ε : ℝ} (hε : 0 < ε)
     (hs : s.Pairwise fun x y => ε ≤ dist x y) : IsClosed s :=
   isClosed_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hs
 #align metric.is_closed_of_pairwise_le_dist Metric.isClosed_of_pairwise_le_dist
 
-theorem closedEmbedding_of_pairwise_le_dist {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
+lemma closedEmbedding_of_pairwise_le_dist {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     {ε : ℝ} (hε : 0 < ε) {f : α → γ} (hf : Pairwise fun x y => ε ≤ dist (f x) (f y)) :
     ClosedEmbedding f :=
   closedEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
@@ -188,7 +188,7 @@ def MetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : MetricSpace γ
   eq_of_dist_eq_zero := @eq_of_dist_eq_zero _ _
 #align metric_space.replace_uniformity MetricSpace.replaceUniformity
 
-theorem MetricSpace.replaceUniformity_eq {γ} [U : UniformSpace γ] (m : MetricSpace γ)
+lemma MetricSpace.replaceUniformity_eq {γ} [U : UniformSpace γ] (m : MetricSpace γ)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : m.replaceUniformity H = m := by
   ext; rfl
 #align metric_space.replace_uniformity_eq MetricSpace.replaceUniformity_eq
@@ -202,7 +202,7 @@ abbrev MetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : MetricSpa
   @MetricSpace.replaceUniformity γ (m.toUniformSpace.replaceTopology H) m rfl
 #align metric_space.replace_topology MetricSpace.replaceTopology
 
-theorem MetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m : MetricSpace γ)
+lemma MetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m : MetricSpace γ)
     (H : U = m.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace) :
     m.replaceTopology H = m := by
   ext; rfl
@@ -237,7 +237,7 @@ def MetricSpace.replaceBornology {α} [B : Bornology α] (m : MetricSpace α)
   { PseudoMetricSpace.replaceBornology _ H, m with toBornology := B }
 #align metric_space.replace_bornology MetricSpace.replaceBornology
 
-theorem MetricSpace.replaceBornology_eq {α} [m : MetricSpace α] [B : Bornology α]
+lemma MetricSpace.replaceBornology_eq {α} [m : MetricSpace α] [B : Bornology α]
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :
     MetricSpace.replaceBornology _ H = m := by
   ext
@@ -369,7 +369,7 @@ instance SeparationQuotient.instDist {α : Type u} [PseudoMetricSpace α] :
   dist := lift₂ dist fun x y x' y' hx hy ↦ by rw [dist_edist, dist_edist, ← edist_mk x,
     ← edist_mk x', mk_eq_mk.2 hx, mk_eq_mk.2 hy]
 
-theorem SeparationQuotient.dist_mk {α : Type u} [PseudoMetricSpace α] (p q : α) :
+lemma SeparationQuotient.dist_mk {α : Type u} [PseudoMetricSpace α] (p q : α) :
     dist (mk p) (mk q) = dist p q :=
   rfl
 #align uniform_space.separation_quotient.dist_mk SeparationQuotient.dist_mk
@@ -397,16 +397,16 @@ variable [Dist X]
 instance : Dist (Additive X) := ‹Dist X›
 instance : Dist (Multiplicative X) := ‹Dist X›
 
-@[simp] theorem dist_ofMul (a b : X) : dist (ofMul a) (ofMul b) = dist a b := rfl
+@[simp] lemma dist_ofMul (a b : X) : dist (ofMul a) (ofMul b) = dist a b := rfl
 #align dist_of_mul dist_ofMul
 
-@[simp] theorem dist_ofAdd (a b : X) : dist (ofAdd a) (ofAdd b) = dist a b := rfl
+@[simp] lemma dist_ofAdd (a b : X) : dist (ofAdd a) (ofAdd b) = dist a b := rfl
 #align dist_of_add dist_ofAdd
 
-@[simp] theorem dist_toMul (a b : Additive X) : dist (toMul a) (toMul b) = dist a b := rfl
+@[simp] lemma dist_toMul (a b : Additive X) : dist (toMul a) (toMul b) = dist a b := rfl
 #align dist_to_mul dist_toMul
 
-@[simp] theorem dist_toAdd (a b : Multiplicative X) : dist (toAdd a) (toAdd b) = dist a b := rfl
+@[simp] lemma dist_toAdd (a b : Multiplicative X) : dist (toAdd a) (toAdd b) = dist a b := rfl
 #align dist_to_add dist_toAdd
 
 end
@@ -418,17 +418,17 @@ variable [PseudoMetricSpace X]
 instance : PseudoMetricSpace (Additive X) := ‹PseudoMetricSpace X›
 instance : PseudoMetricSpace (Multiplicative X) := ‹PseudoMetricSpace X›
 
-@[simp] theorem nndist_ofMul (a b : X) : nndist (ofMul a) (ofMul b) = nndist a b := rfl
+@[simp] lemma nndist_ofMul (a b : X) : nndist (ofMul a) (ofMul b) = nndist a b := rfl
 #align nndist_of_mul nndist_ofMul
 
-@[simp] theorem nndist_ofAdd (a b : X) : nndist (ofAdd a) (ofAdd b) = nndist a b := rfl
+@[simp] lemma nndist_ofAdd (a b : X) : nndist (ofAdd a) (ofAdd b) = nndist a b := rfl
 #align nndist_of_add nndist_ofAdd
 
-@[simp] theorem nndist_toMul (a b : Additive X) : nndist (toMul a) (toMul b) = nndist a b := rfl
+@[simp] lemma nndist_toMul (a b : Additive X) : nndist (toMul a) (toMul b) = nndist a b := rfl
 #align nndist_to_mul nndist_toMul
 
 @[simp]
-theorem nndist_toAdd (a b : Multiplicative X) : nndist (toAdd a) (toAdd b) = nndist a b := rfl
+lemma nndist_toAdd (a b : Multiplicative X) : nndist (toAdd a) (toAdd b) = nndist a b := rfl
 #align nndist_to_add nndist_toAdd
 
 end
@@ -456,10 +456,10 @@ variable [Dist X]
 
 instance : Dist Xᵒᵈ := ‹Dist X›
 
-@[simp] theorem dist_toDual (a b : X) : dist (toDual a) (toDual b) = dist a b := rfl
+@[simp] lemma dist_toDual (a b : X) : dist (toDual a) (toDual b) = dist a b := rfl
 #align dist_to_dual dist_toDual
 
-@[simp] theorem dist_ofDual (a b : Xᵒᵈ) : dist (ofDual a) (ofDual b) = dist a b := rfl
+@[simp] lemma dist_ofDual (a b : Xᵒᵈ) : dist (ofDual a) (ofDual b) = dist a b := rfl
 #align dist_of_dual dist_ofDual
 
 end
@@ -470,10 +470,10 @@ variable [PseudoMetricSpace X]
 
 instance : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
 
-@[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
+@[simp] lemma nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
 #align nndist_to_dual nndist_toDual
 
-@[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
+@[simp] lemma nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
 #align nndist_of_dual nndist_ofDual
 
 end

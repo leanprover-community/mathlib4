@@ -71,7 +71,7 @@ instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
 #align polynomial.gal.apply_mul_semiring_action Polynomial.Gal.applyMulSemiringAction
 
 @[ext]
-theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ x) : σ = τ := by
+lemma ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ x) : σ = τ := by
   refine'
     AlgEquiv.ext fun x =>
       (AlgHom.mem_equalizer σ.toAlgHom τ.toAlgHom x).mp
@@ -139,7 +139,7 @@ def restrict [Fact (p.Splits (algebraMap F E))] : (E ≃ₐ[F] E) →* p.Gal :=
   AlgEquiv.restrictNormalHom p.SplittingField
 #align polynomial.gal.restrict Polynomial.Gal.restrict
 
-theorem restrict_surjective [Fact (p.Splits (algebraMap F E))] [Normal F E] :
+lemma restrict_surjective [Fact (p.Splits (algebraMap F E))] [Normal F E] :
     Function.Surjective (restrict p E) :=
   AlgEquiv.restrictNormalHom_surjective E
 #align polynomial.gal.restrict_surjective Polynomial.Gal.restrict_surjective
@@ -152,7 +152,7 @@ def mapRoots [Fact (p.Splits (algebraMap F E))] : rootSet p p.SplittingField →
   Set.MapsTo.restrict (IsScalarTower.toAlgHom F p.SplittingField E) _ _ <| rootSet_mapsTo _
 #align polynomial.gal.map_roots Polynomial.Gal.mapRoots
 
-theorem mapRoots_bijective [h : Fact (p.Splits (algebraMap F E))] :
+lemma mapRoots_bijective [h : Fact (p.Splits (algebraMap F E))] :
     Function.Bijective (mapRoots p E) := by
   constructor
   · exact fun _ _ h => Subtype.ext (RingHom.injective _ (Subtype.ext_iff.mp h))
@@ -184,7 +184,7 @@ instance smul [Fact (p.Splits (algebraMap F E))] : SMul p.Gal (rootSet p E) wher
   smul ϕ x := rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm x)
 
 -- Porting note (#10756): new theorem
-theorem smul_def [Fact (p.Splits (algebraMap F E))] (ϕ : p.Gal) (x : rootSet p E) :
+lemma smul_def [Fact (p.Splits (algebraMap F E))] (ϕ : p.Gal) (x : rootSet p E) :
     ϕ • x = rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm x) :=
   rfl
 
@@ -223,7 +223,7 @@ def galActionHom [Fact (p.Splits (algebraMap F E))] : p.Gal →* Equiv.Perm (roo
   MulAction.toPermHom _ _
 #align polynomial.gal.gal_action_hom Polynomial.Gal.galActionHom
 
-theorem galActionHom_restrict [Fact (p.Splits (algebraMap F E))] (ϕ : E ≃ₐ[F] E) (x : rootSet p E) :
+lemma galActionHom_restrict [Fact (p.Splits (algebraMap F E))] (ϕ : E ≃ₐ[F] E) (x : rootSet p E) :
     ↑(galActionHom p E (restrict p E ϕ) x) = ϕ x :=
   restrict_smul ϕ x
 #align polynomial.gal.gal_action_hom_restrict Polynomial.Gal.galActionHom_restrict
@@ -256,7 +256,7 @@ def restrictDvd (hpq : p ∣ q) : q.Gal →* p.Gal :=
       ⟨splits_of_splits_of_dvd (algebraMap F q.SplittingField) hq (SplittingField.splits q) hpq⟩
 #align polynomial.gal.restrict_dvd Polynomial.Gal.restrictDvd
 
-theorem restrictDvd_def [Decidable (q = 0)] (hpq : p ∣ q) :
+lemma restrictDvd_def [Decidable (q = 0)] (hpq : p ∣ q) :
     restrictDvd hpq =
       if hq : q = 0 then 1
       else
@@ -268,7 +268,7 @@ theorem restrictDvd_def [Decidable (q = 0)] (hpq : p ∣ q) :
   convert rfl
 #align polynomial.gal.restrict_dvd_def Polynomial.Gal.restrictDvd_def
 
-theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) : Function.Surjective (restrictDvd hpq) :=
+lemma restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) : Function.Surjective (restrictDvd hpq) :=
   by classical
     -- Porting note: was `simp only [restrictDvd_def, dif_neg hq, restrict_surjective]`
     haveI := Fact.mk <|
@@ -318,7 +318,7 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
     exact congr_arg _ (AlgEquiv.ext_iff.mp hfg.2 _)
 #align polynomial.gal.restrict_prod_injective Polynomial.Gal.restrictProd_injective
 
-theorem mul_splits_in_splittingField_of_mul {p₁ q₁ p₂ q₂ : F[X]} (hq₁ : q₁ ≠ 0) (hq₂ : q₂ ≠ 0)
+lemma mul_splits_in_splittingField_of_mul {p₁ q₁ p₂ q₂ : F[X]} (hq₁ : q₁ ≠ 0) (hq₂ : q₂ ≠ 0)
     (h₁ : p₁.Splits (algebraMap F q₁.SplittingField))
     (h₂ : p₂.Splits (algebraMap F q₂.SplittingField)) :
     (p₁ * p₂).Splits (algebraMap F (q₁ * q₂).SplittingField) := by
@@ -388,7 +388,7 @@ def restrictComp (hq : q.natDegree ≠ 0) : (p.comp q).Gal →* p.Gal :=
   @restrict F _ p _ _ _ h
 #align polynomial.gal.restrict_comp Polynomial.Gal.restrictComp
 
-theorem restrictComp_surjective (hq : q.natDegree ≠ 0) :
+lemma restrictComp_surjective (hq : q.natDegree ≠ 0) :
     Function.Surjective (restrictComp p q hq) := by
   -- Porting note: was
   -- simp only [restrictComp, restrict_surjective]
@@ -409,7 +409,7 @@ theorem card_of_separable (hp : p.Separable) : Fintype.card p.Gal = finrank F p.
   IsGalois.card_aut_eq_finrank F p.SplittingField
 #align polynomial.gal.card_of_separable Polynomial.Gal.card_of_separable
 
-theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.natDegree.Prime) :
+lemma prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.natDegree.Prime) :
     p.natDegree ∣ Fintype.card p.Gal := by
   rw [Gal.card_of_separable p_irr.separable]
   have hp : p.degree ≠ 0 := fun h =>

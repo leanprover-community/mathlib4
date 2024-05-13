@@ -25,14 +25,14 @@ def updateFinset (x : ∀ i, π i) (s : Finset ι) (y : ∀ i : ↥s, π i) (i :
 
 open Finset Equiv
 
-theorem updateFinset_def {s : Finset ι} {y} :
+lemma updateFinset_def {s : Finset ι} {y} :
     updateFinset x s y = fun i ↦ if hi : i ∈ s then y ⟨i, hi⟩ else x i :=
   rfl
 
-@[simp] theorem updateFinset_empty {y} : updateFinset x ∅ y = x :=
+@[simp] lemma updateFinset_empty {y} : updateFinset x ∅ y = x :=
   rfl
 
-theorem updateFinset_singleton {i y} :
+lemma updateFinset_singleton {i y} :
     updateFinset x {i} y = Function.update x i (y ⟨i, mem_singleton_self i⟩) := by
   congr with j
   by_cases hj : j = i
@@ -40,7 +40,7 @@ theorem updateFinset_singleton {i y} :
     simp only [dif_pos, Finset.mem_singleton, update_same, updateFinset]
   · simp [hj, updateFinset]
 
-theorem update_eq_updateFinset {i y} :
+lemma update_eq_updateFinset {i y} :
     Function.update x i y = updateFinset x {i} (uniqueElim y) := by
   congr with j
   by_cases hj : j = i
@@ -49,7 +49,7 @@ theorem update_eq_updateFinset {i y} :
     exact uniqueElim_default (α := fun j : ({i} : Finset ι) => π j) y
   · simp [hj, updateFinset]
 
-theorem updateFinset_updateFinset {s t : Finset ι} (hst : Disjoint s t)
+lemma updateFinset_updateFinset {s t : Finset ι} (hst : Disjoint s t)
     {y : ∀ i : ↥s, π i} {z : ∀ i : ↥t, π i} :
     updateFinset (updateFinset x s y) t z =
     updateFinset x (s ∪ t) (Equiv.piFinsetUnion π hst ⟨y, z⟩) := by

@@ -41,11 +41,11 @@ def energy : ℚ :=
   ((∑ uv in P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2) : ℚ) / (P.parts.card : ℚ) ^ 2
 #align finpartition.energy Finpartition.energy
 
-theorem energy_nonneg : 0 ≤ P.energy G := by
+lemma energy_nonneg : 0 ≤ P.energy G := by
   exact div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| sq_nonneg _
 #align finpartition.energy_nonneg Finpartition.energy_nonneg
 
-theorem energy_le_one : P.energy G ≤ 1 :=
+lemma energy_le_one : P.energy G ≤ 1 :=
   div_le_of_nonneg_of_le_mul (sq_nonneg _) zero_le_one <|
     calc
       ∑ uv in P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2 ≤ P.parts.offDiag.card • (1 : ℚ) :=
@@ -60,7 +60,7 @@ theorem energy_le_one : P.energy G ≤ 1 :=
 #align finpartition.energy_le_one Finpartition.energy_le_one
 
 @[simp, norm_cast]
-theorem coe_energy {𝕜 : Type*} [LinearOrderedField 𝕜] : (P.energy G : 𝕜) =
+lemma coe_energy {𝕜 : Type*} [LinearOrderedField 𝕜] : (P.energy G : 𝕜) =
     (∑ uv in P.parts.offDiag, (G.edgeDensity uv.1 uv.2 : 𝕜) ^ 2) / (P.parts.card : 𝕜) ^ 2 := by
   rw [energy]; norm_cast
 #align finpartition.coe_energy Finpartition.coe_energy

@@ -48,12 +48,12 @@ instance instLinearMapClass : LinearMapClass (Q₁ →qᵢ Q₂) R M₁ M₂ whe
   map_add f := f.toLinearMap.map_add
   map_smulₛₗ f := f.toLinearMap.map_smul
 
-theorem toLinearMap_injective :
+lemma toLinearMap_injective :
     Function.Injective (Isometry.toLinearMap : (Q₁ →qᵢ Q₂) → M₁ →ₗ[R] M₂) := fun _f _g h =>
   DFunLike.coe_injective (congr_arg DFunLike.coe h : _)
 
 @[ext]
-theorem ext ⦃f g : Q₁ →qᵢ Q₂⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : Q₁ →qᵢ Q₂⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
 /-- See Note [custom simps projection]. -/
@@ -62,11 +62,11 @@ protected def Simps.apply (f : Q₁ →qᵢ Q₂) : M₁ → M₂ := f
 initialize_simps_projections Isometry (toFun → apply)
 
 @[simp]
-theorem map_app (f : Q₁ →qᵢ Q₂) (m : M₁) : Q₂ (f m) = Q₁ m :=
+lemma map_app (f : Q₁ →qᵢ Q₂) (m : M₁) : Q₂ (f m) = Q₁ m :=
   f.map_app' m
 
 @[simp]
-theorem coe_toLinearMap (f : Q₁ →qᵢ Q₂) : ⇑f.toLinearMap = f :=
+lemma coe_toLinearMap (f : Q₁ →qᵢ Q₂) : ⇑f.toLinearMap = f :=
   rfl
 
 /-- The identity isometry from a quadratic form to itself. -/
@@ -82,7 +82,7 @@ def ofEq {Q₁ Q₂ : QuadraticForm R M₁} (h : Q₁ = Q₂) : Q₁ →qᵢ Q�
   map_app' _ := h ▸ rfl
 
 @[simp]
-theorem ofEq_rfl {Q : QuadraticForm R M₁} : ofEq (rfl : Q = Q) = .id Q := rfl
+lemma ofEq_rfl {Q : QuadraticForm R M₁} : ofEq (rfl : Q = Q) = .id Q := rfl
 
 /-- The composition of two isometries between quadratic forms. -/
 @[simps]
@@ -92,19 +92,19 @@ def comp (g : Q₂ →qᵢ Q₃) (f : Q₁ →qᵢ Q₂) : Q₁ →qᵢ Q₃ whe
   __ := (g.toLinearMap : M₂ →ₗ[R] M₃) ∘ₗ (f.toLinearMap : M₁ →ₗ[R] M₂)
 
 @[simp]
-theorem toLinearMap_comp (g : Q₂ →qᵢ Q₃) (f : Q₁ →qᵢ Q₂) :
+lemma toLinearMap_comp (g : Q₂ →qᵢ Q₃) (f : Q₁ →qᵢ Q₂) :
     (g.comp f).toLinearMap = g.toLinearMap.comp f.toLinearMap :=
   rfl
 
 @[simp]
-theorem id_comp (f : Q₁ →qᵢ Q₂) : (id Q₂).comp f = f :=
+lemma id_comp (f : Q₁ →qᵢ Q₂) : (id Q₂).comp f = f :=
   ext fun _ => rfl
 
 @[simp]
-theorem comp_id (f : Q₁ →qᵢ Q₂) : f.comp (id Q₁) = f :=
+lemma comp_id (f : Q₁ →qᵢ Q₂) : f.comp (id Q₁) = f :=
   ext fun _ => rfl
 
-theorem comp_assoc (h : Q₃ →qᵢ Q₄) (g : Q₂ →qᵢ Q₃) (f : Q₁ →qᵢ Q₂) :
+lemma comp_assoc (h : Q₃ →qᵢ Q₄) (g : Q₂ →qᵢ Q₃) (f : Q₁ →qᵢ Q₂) :
     (h.comp g).comp f = h.comp (g.comp f) :=
   ext fun _ => rfl
 

@@ -32,14 +32,14 @@ def Saturated (H : Subgroup G) : Prop :=
 #align add_subgroup.saturated AddSubgroup.Saturated
 
 @[to_additive]
-theorem saturated_iff_npow {H : Subgroup G} :
+lemma saturated_iff_npow {H : Subgroup G} :
     Saturated H ↔ ∀ (n : ℕ) (g : G), g ^ n ∈ H → n = 0 ∨ g ∈ H :=
   Iff.rfl
 #align subgroup.saturated_iff_npow Subgroup.saturated_iff_npow
 #align add_subgroup.saturated_iff_nsmul AddSubgroup.saturated_iff_nsmul
 
 @[to_additive]
-theorem saturated_iff_zpow {H : Subgroup G} :
+lemma saturated_iff_zpow {H : Subgroup G} :
     Saturated H ↔ ∀ (n : ℤ) (g : G), g ^ n ∈ H → n = 0 ∨ g ∈ H := by
   constructor
   · intros hH n g hgn
@@ -61,7 +61,7 @@ end Subgroup
 
 namespace AddSubgroup
 
-theorem ker_saturated {A₁ A₂ : Type*} [AddCommGroup A₁] [AddCommGroup A₂] [NoZeroSMulDivisors ℕ A₂]
+lemma ker_saturated {A₁ A₂ : Type*} [AddCommGroup A₁] [AddCommGroup A₂] [NoZeroSMulDivisors ℕ A₂]
     (f : A₁ →+ A₂) : f.ker.Saturated := by
   intro n g hg
   simpa only [f.mem_ker, nsmul_eq_smul, f.map_nsmul, smul_eq_zero] using hg

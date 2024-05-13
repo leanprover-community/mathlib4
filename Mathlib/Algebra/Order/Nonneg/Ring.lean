@@ -50,7 +50,7 @@ instance orderBot [Preorder α] {a : α} : OrderBot { x : α // a ≤ x } :=
   { Set.Ici.orderBot with }
 #align nonneg.order_bot Nonneg.orderBot
 
-theorem bot_eq [Preorder α] {a : α} : (⊥ : { x : α // a ≤ x }) = ⟨a, le_rfl⟩ :=
+lemma bot_eq [Preorder α] {a : α} : (⊥ : { x : α // a ≤ x }) = ⟨a, le_rfl⟩ :=
   rfl
 #align nonneg.bot_eq Nonneg.bot_eq
 
@@ -103,12 +103,12 @@ instance zero [Zero α] [Preorder α] : Zero { x : α // 0 ≤ x } :=
 #align nonneg.has_zero Nonneg.zero
 
 @[simp, norm_cast]
-protected theorem coe_zero [Zero α] [Preorder α] : ((0 : { x : α // 0 ≤ x }) : α) = 0 :=
+protected lemma coe_zero [Zero α] [Preorder α] : ((0 : { x : α // 0 ≤ x }) : α) = 0 :=
   rfl
 #align nonneg.coe_zero Nonneg.coe_zero
 
 @[simp]
-theorem mk_eq_zero [Zero α] [Preorder α] {x : α} (hx : 0 ≤ x) :
+lemma mk_eq_zero [Zero α] [Preorder α] {x : α} (hx : 0 ≤ x) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) = 0 ↔ x = 0 :=
   Subtype.ext_iff
 #align nonneg.mk_eq_zero Nonneg.mk_eq_zero
@@ -119,14 +119,14 @@ instance add [AddZeroClass α] [Preorder α] [CovariantClass α α (· + ·) (·
 #align nonneg.has_add Nonneg.add
 
 @[simp]
-theorem mk_add_mk [AddZeroClass α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] {x y : α}
+lemma mk_add_mk [AddZeroClass α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] {x y : α}
     (hx : 0 ≤ x) (hy : 0 ≤ y) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) + ⟨y, hy⟩ = ⟨x + y, add_nonneg hx hy⟩ :=
   rfl
 #align nonneg.mk_add_mk Nonneg.mk_add_mk
 
 @[simp, norm_cast]
-protected theorem coe_add [AddZeroClass α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
+protected lemma coe_add [AddZeroClass α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
     (a b : { x : α // 0 ≤ x }) : ((a + b : { x : α // 0 ≤ x }) : α) = a + b :=
   rfl
 #align nonneg.coe_add Nonneg.coe_add
@@ -137,13 +137,13 @@ instance nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· 
 #align nonneg.has_nsmul Nonneg.nsmul
 
 @[simp]
-theorem nsmul_mk [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] (n : ℕ) {x : α}
+lemma nsmul_mk [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] (n : ℕ) {x : α}
     (hx : 0 ≤ x) : (n • (⟨x, hx⟩ : { x : α // 0 ≤ x })) = ⟨n • x, nsmul_nonneg hx n⟩ :=
   rfl
 #align nonneg.nsmul_mk Nonneg.nsmul_mk
 
 @[simp, norm_cast]
-protected theorem coe_nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
+protected lemma coe_nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
     (n : ℕ) (a : { x : α // 0 ≤ x }) : ((n • a : { x : α // 0 ≤ x }) : α) = n • (a : α) :=
   rfl
 #align nonneg.coe_nsmul Nonneg.coe_nsmul
@@ -179,7 +179,7 @@ def coeAddMonoidHom [OrderedAddCommMonoid α] : { x : α // 0 ≤ x } →+ α :=
 #align nonneg.coe_add_monoid_hom Nonneg.coeAddMonoidHom
 
 @[norm_cast]
-theorem nsmul_coe [OrderedAddCommMonoid α] (n : ℕ) (r : { x : α // 0 ≤ x }) :
+lemma nsmul_coe [OrderedAddCommMonoid α] (n : ℕ) (r : { x : α // 0 ≤ x }) :
     ↑(n • r) = n • (r : α) :=
   Nonneg.coeAddMonoidHom.map_nsmul _ _
 #align nonneg.nsmul_coe Nonneg.nsmul_coe
@@ -188,12 +188,12 @@ instance one [OrderedSemiring α] : One { x : α // 0 ≤ x } where one := ⟨1,
 #align nonneg.has_one Nonneg.one
 
 @[simp, norm_cast]
-protected theorem coe_one [OrderedSemiring α] : ((1 : { x : α // 0 ≤ x }) : α) = 1 :=
+protected lemma coe_one [OrderedSemiring α] : ((1 : { x : α // 0 ≤ x }) : α) = 1 :=
   rfl
 #align nonneg.coe_one Nonneg.coe_one
 
 @[simp]
-theorem mk_eq_one [OrderedSemiring α] {x : α} (hx : 0 ≤ x) :
+lemma mk_eq_one [OrderedSemiring α] {x : α} (hx : 0 ≤ x) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) = 1 ↔ x = 1 :=
   Subtype.ext_iff
 #align nonneg.mk_eq_one Nonneg.mk_eq_one
@@ -203,13 +203,13 @@ instance mul [OrderedSemiring α] : Mul { x : α // 0 ≤ x } where
 #align nonneg.has_mul Nonneg.mul
 
 @[simp, norm_cast]
-protected theorem coe_mul [OrderedSemiring α] (a b : { x : α // 0 ≤ x }) :
+protected lemma coe_mul [OrderedSemiring α] (a b : { x : α // 0 ≤ x }) :
     ((a * b : { x : α // 0 ≤ x }) : α) = a * b :=
   rfl
 #align nonneg.coe_mul Nonneg.coe_mul
 
 @[simp]
-theorem mk_mul_mk [OrderedSemiring α] {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) :
+lemma mk_mul_mk [OrderedSemiring α] {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) * ⟨y, hy⟩ = ⟨x * y, mul_nonneg hx hy⟩ :=
   rfl
 #align nonneg.mk_mul_mk Nonneg.mk_mul_mk
@@ -223,12 +223,12 @@ instance addMonoidWithOne [OrderedSemiring α] : AddMonoidWithOne { x : α // 0 
 #align nonneg.add_monoid_with_one Nonneg.addMonoidWithOne
 
 @[simp, norm_cast]
-protected theorem coe_natCast [OrderedSemiring α] (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
+protected lemma coe_natCast [OrderedSemiring α] (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
   rfl
 #align nonneg.coe_nat_cast Nonneg.coe_natCast
 
 @[simp]
-theorem mk_natCast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : { x : α // 0 ≤ x }) = n :=
+lemma mk_natCast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : { x : α // 0 ≤ x }) = n :=
   rfl
 #align nonneg.mk_nat_cast Nonneg.mk_natCast
 
@@ -237,13 +237,13 @@ instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ where
 #align nonneg.has_pow Nonneg.pow
 
 @[simp, norm_cast]
-protected theorem coe_pow [OrderedSemiring α] (a : { x : α // 0 ≤ x }) (n : ℕ) :
+protected lemma coe_pow [OrderedSemiring α] (a : { x : α // 0 ≤ x }) (n : ℕ) :
     (↑(a ^ n) : α) = (a : α) ^ n :=
   rfl
 #align nonneg.coe_pow Nonneg.coe_pow
 
 @[simp]
-theorem mk_pow [OrderedSemiring α] {x : α} (hx : 0 ≤ x) (n : ℕ) :
+lemma mk_pow [OrderedSemiring α] {x : α} (hx : 0 ≤ x) (n : ℕ) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) ^ n = ⟨x ^ n, pow_nonneg hx n⟩ :=
   rfl
 #align nonneg.mk_pow Nonneg.mk_pow
@@ -348,27 +348,27 @@ def toNonneg (a : α) : { x : α // 0 ≤ x } :=
 #align nonneg.to_nonneg Nonneg.toNonneg
 
 @[simp]
-theorem coe_toNonneg {a : α} : (toNonneg a : α) = max a 0 :=
+lemma coe_toNonneg {a : α} : (toNonneg a : α) = max a 0 :=
   rfl
 #align nonneg.coe_to_nonneg Nonneg.coe_toNonneg
 
 @[simp]
-theorem toNonneg_of_nonneg {a : α} (h : 0 ≤ a) : toNonneg a = ⟨a, h⟩ := by simp [toNonneg, h]
+lemma toNonneg_of_nonneg {a : α} (h : 0 ≤ a) : toNonneg a = ⟨a, h⟩ := by simp [toNonneg, h]
 #align nonneg.to_nonneg_of_nonneg Nonneg.toNonneg_of_nonneg
 
 @[simp]
-theorem toNonneg_coe {a : { x : α // 0 ≤ x }} : toNonneg (a : α) = a :=
+lemma toNonneg_coe {a : { x : α // 0 ≤ x }} : toNonneg (a : α) = a :=
   toNonneg_of_nonneg a.2
 #align nonneg.to_nonneg_coe Nonneg.toNonneg_coe
 
 @[simp]
-theorem toNonneg_le {a : α} {b : { x : α // 0 ≤ x }} : toNonneg a ≤ b ↔ a ≤ b := by
+lemma toNonneg_le {a : α} {b : { x : α // 0 ≤ x }} : toNonneg a ≤ b ↔ a ≤ b := by
   cases' b with b hb
   simp [toNonneg, hb]
 #align nonneg.to_nonneg_le Nonneg.toNonneg_le
 
 @[simp]
-theorem toNonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b := by
+lemma toNonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b := by
   cases' a with a ha
   simp [toNonneg, ha.not_lt]
 #align nonneg.to_nonneg_lt Nonneg.toNonneg_lt
@@ -378,7 +378,7 @@ instance sub [Sub α] : Sub { x : α // 0 ≤ x } :=
 #align nonneg.has_sub Nonneg.sub
 
 @[simp]
-theorem mk_sub_mk [Sub α] {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) :
+lemma mk_sub_mk [Sub α] {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) - ⟨y, hy⟩ = toNonneg (x - y) :=
   rfl
 #align nonneg.mk_sub_mk Nonneg.mk_sub_mk

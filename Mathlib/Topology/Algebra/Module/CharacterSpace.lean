@@ -68,12 +68,12 @@ instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace
 -- Porting note: moved because Lean 4 doesn't see the `DFunLike` instance on `characterSpace 𝕜 A`
 -- until the `ContinuousLinearMapClass` instance is declared
 @[simp, norm_cast]
-protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
+protected lemma coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
   rfl
 #align weak_dual.character_space.coe_coe WeakDual.CharacterSpace.coe_coe
 
 @[ext]
-theorem ext {φ ψ : characterSpace 𝕜 A} (h : ∀ x, φ x = ψ x) : φ = ψ :=
+lemma ext {φ ψ : characterSpace 𝕜 A} (h : ∀ x, φ x = ψ x) : φ = ψ :=
   DFunLike.ext _ _ h
 #align weak_dual.character_space.ext WeakDual.CharacterSpace.ext
 
@@ -83,7 +83,7 @@ def toCLM (φ : characterSpace 𝕜 A) : A →L[𝕜] 𝕜 :=
 #align weak_dual.character_space.to_clm WeakDual.CharacterSpace.toCLM
 
 @[simp]
-theorem coe_toCLM (φ : characterSpace 𝕜 A) : ⇑(toCLM φ) = φ :=
+lemma coe_toCLM (φ : characterSpace 𝕜 A) : ⇑(toCLM φ) = φ :=
   rfl
 #align weak_dual.character_space.coe_to_clm WeakDual.CharacterSpace.coe_toCLM
 
@@ -104,7 +104,7 @@ def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[𝕜] 𝕜 wher
 #align weak_dual.character_space.to_non_unital_alg_hom WeakDual.CharacterSpace.toNonUnitalAlgHom
 
 @[simp]
-theorem coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgHom φ) = φ :=
+lemma coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgHom φ) = φ :=
   rfl
 #align weak_dual.character_space.coe_to_non_unital_alg_hom WeakDual.CharacterSpace.coe_toNonUnitalAlgHom
 
@@ -115,7 +115,7 @@ instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
 
 variable (𝕜 A)
 
-theorem union_zero :
+lemma union_zero :
     characterSpace 𝕜 A ∪ {0} = {φ : WeakDual 𝕜 A | ∀ x y : A, φ (x * y) = φ x * φ y} :=
   le_antisymm (by
       rintro φ (hφ | rfl)
@@ -163,7 +163,7 @@ def toAlgHom (φ : characterSpace 𝕜 A) : A →ₐ[𝕜] 𝕜 :=
     commutes' := AlgHomClass.commutes φ }
 #align weak_dual.character_space.to_alg_hom WeakDual.CharacterSpace.toAlgHom
 
-theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
+lemma eq_set_map_one_map_mul [Nontrivial 𝕜] :
     characterSpace 𝕜 A = {φ : WeakDual 𝕜 A | φ 1 = 1 ∧ ∀ x y : A, φ (x * y) = φ x * φ y} := by
   ext φ
   refine' ⟨_, _⟩
@@ -192,11 +192,11 @@ section Ring
 variable [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
   [ContinuousConstSMul 𝕜 𝕜] [TopologicalSpace A] [Ring A] [Algebra 𝕜 A]
 
-theorem apply_mem_spectrum [Nontrivial 𝕜] (φ : characterSpace 𝕜 A) (a : A) : φ a ∈ spectrum 𝕜 a :=
+lemma apply_mem_spectrum [Nontrivial 𝕜] (φ : characterSpace 𝕜 A) (a : A) : φ a ∈ spectrum 𝕜 a :=
   AlgHom.apply_mem_spectrum φ a
 #align weak_dual.character_space.apply_mem_spectrum WeakDual.CharacterSpace.apply_mem_spectrum
 
-theorem ext_ker {φ ψ : characterSpace 𝕜 A} (h : RingHom.ker φ = RingHom.ker ψ) : φ = ψ := by
+lemma ext_ker {φ ψ : characterSpace 𝕜 A} (h : RingHom.ker φ = RingHom.ker ψ) : φ = ψ := by
   ext x
   have : x - algebraMap 𝕜 A (ψ x) ∈ RingHom.ker φ := by
     simpa only [h, RingHom.mem_ker, map_sub, AlgHomClass.commutes] using sub_self (ψ x)

@@ -91,11 +91,11 @@ instance : Inhabited (C ⥤ C) :=
 variable {C}
 
 @[simp]
-theorem id_obj (X : C) : (𝟭 C).obj X = X := rfl
+lemma id_obj (X : C) : (𝟭 C).obj X = X := rfl
 #align category_theory.functor.id_obj CategoryTheory.Functor.id_obj
 
 @[simp]
-theorem id_map {X Y : C} (f : X ⟶ Y) : (𝟭 C).map f = f := rfl
+lemma id_map {X Y : C} (f : X ⟶ Y) : (𝟭 C).map f = f := rfl
 #align category_theory.functor.id_map CategoryTheory.Functor.id_map
 
 end
@@ -119,21 +119,21 @@ def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
 scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp
 
 @[simp]
-theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
+lemma comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
     (F ⋙ G).map f = G.map (F.map f) := rfl
 #align category_theory.functor.comp_map CategoryTheory.Functor.comp_map
 
 -- These are not simp lemmas because rewriting along equalities between functors
 -- is not necessarily a good idea.
 -- Natural isomorphisms are also provided in `Whiskering.lean`.
-protected theorem comp_id (F : C ⥤ D) : F ⋙ 𝟭 D = F := by cases F; rfl
+protected lemma comp_id (F : C ⥤ D) : F ⋙ 𝟭 D = F := by cases F; rfl
 #align category_theory.functor.comp_id CategoryTheory.Functor.comp_id
 
-protected theorem id_comp (F : C ⥤ D) : 𝟭 C ⋙ F = F := by cases F; rfl
+protected lemma id_comp (F : C ⥤ D) : 𝟭 C ⋙ F = F := by cases F; rfl
 #align category_theory.functor.id_comp CategoryTheory.Functor.id_comp
 
 @[simp]
-theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
+lemma map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
     (f : P → (X ⟶ Y)) (g : ¬P → (X ⟶ Y)) :
     F.map (if h : P then f h else g h) = if h : P then F.map (f h) else F.map (g h) := by
   aesop_cat
@@ -143,7 +143,7 @@ theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
 -- so have not been ported.
 
 @[simp]
-theorem toPrefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :
+lemma toPrefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :
     F.toPrefunctor.comp G.toPrefunctor = (F ⋙ G).toPrefunctor := rfl
 #align category_theory.functor.to_prefunctor_comp CategoryTheory.Functor.toPrefunctor_comp
 

@@ -34,7 +34,7 @@ theorem invOf_ι (m : M) [Invertible (Q m)] [Invertible (ι Q m)] :
   convert (rfl : ⅟ (ι Q m) = _)
 #align clifford_algebra.inv_of_ι CliffordAlgebra.invOf_ι
 
-theorem isUnit_ι_of_isUnit {m : M} (h : IsUnit (Q m)) : IsUnit (ι Q m) := by
+lemma isUnit_ι_of_isUnit {m : M} (h : IsUnit (Q m)) : IsUnit (ι Q m) := by
   cases h.nonempty_invertible
   letI := invertibleιOfInvertible Q m
   exact isUnit_of_invertible (ι Q m)
@@ -63,12 +63,12 @@ def invertibleOfInvertibleι (m : M) [Invertible (ι Q m)] : Invertible (Q m) :=
     .algebraMapOfInvertibleAlgebraMap (equivExterior Q).toLinearMap (by simp) <|
       .copy (.mul ‹Invertible (ι Q m)› ‹Invertible (ι Q m)›) _ (ι_sq_scalar _ _).symm
 
-theorem isUnit_of_isUnit_ι {m : M} (h : IsUnit (ι Q m)) : IsUnit (Q m) := by
+lemma isUnit_of_isUnit_ι {m : M} (h : IsUnit (ι Q m)) : IsUnit (Q m) := by
   cases h.nonempty_invertible
   letI := invertibleOfInvertibleι Q m
   exact isUnit_of_invertible (Q m)
 
-@[simp] theorem isUnit_ι_iff {m : M} : IsUnit (ι Q m) ↔ IsUnit (Q m) :=
+@[simp] lemma isUnit_ι_iff {m : M} : IsUnit (ι Q m) ↔ IsUnit (Q m) :=
   ⟨isUnit_of_isUnit_ι Q, isUnit_ι_of_isUnit Q⟩
 
 end

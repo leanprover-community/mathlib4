@@ -426,7 +426,7 @@ def RiemannHypothesis : Prop :=
 -/
 
 
-theorem hasMellin_one_div_sqrt_Ioc {s : ℂ} (hs : 1 / 2 < re s) :
+lemma hasMellin_one_div_sqrt_Ioc {s : ℂ} (hs : 1 / 2 < re s) :
     HasMellin (indicator (Ioc 0 1) (fun t => 1 / ↑(√t) : ℝ → ℂ)) s (1 / (s - 1 / 2)) := by
   have h1 : EqOn (fun t => 1 / ↑(√t) : ℝ → ℂ) (fun t => (t : ℂ) ^ (-1 / 2 : ℂ)) (Ioc 0 1) := by
     intro t ht
@@ -458,7 +458,7 @@ theorem hasMellin_one_div_sqrt_sub_one_div_two_Ioc {s : ℂ} (hs : 1 / 2 < s.re)
   rw [mul_comm, sub_mul, div_mul_cancel₀ _ (two_ne_zero' ℂ), mul_comm s 2]
 #align has_mellin_one_div_sqrt_sub_one_div_two_Ioc hasMellin_one_div_sqrt_sub_one_div_two_Ioc
 
-theorem mellin_zetaKernel₂_eq_of_lt_re {s : ℂ} (hs : 1 / 2 < s.re) :
+lemma mellin_zetaKernel₂_eq_of_lt_re {s : ℂ} (hs : 1 / 2 < s.re) :
     mellin zetaKernel₂ s = mellin zetaKernel₁ s + 1 / (2 * s) - 1 / (2 * s - 1) := by
   have h :=
     mellinConvergent_of_isBigO_rpow_exp pi_pos locally_integrable_zetaKernel₁
@@ -467,7 +467,7 @@ theorem mellin_zetaKernel₂_eq_of_lt_re {s : ℂ} (hs : 1 / 2 < s.re) :
   simp_rw [zetaKernel₂, Pi.add_def, add_sub_assoc, (hasMellin_add h h'.1).2, h'.2]
 #align mellin_zeta_kernel₂_eq_of_lt_re mellin_zetaKernel₂_eq_of_lt_re
 
-theorem completed_zeta_eq_mellin_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
+lemma completed_zeta_eq_mellin_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
     riemannCompletedZeta s = mellin zetaKernel₁ (s / 2) := by
   have : 1 / 2 < (s / 2).re := by
     rw [show s / 2 = ↑(2⁻¹ : ℝ) * s by push_cast; rw [mul_comm]; rfl]
@@ -508,7 +508,7 @@ theorem integral_cpow_mul_exp_neg_pi_mul_sq {s : ℂ} (hs : 0 < s.re) (n : ℕ) 
   ring
 #align integral_cpow_mul_exp_neg_pi_mul_sq integral_cpow_mul_exp_neg_pi_mul_sq
 
-theorem mellin_zetaKernel₁_eq_tsum {s : ℂ} (hs : 1 / 2 < s.re) :
+lemma mellin_zetaKernel₁_eq_tsum {s : ℂ} (hs : 1 / 2 < s.re) :
     mellin zetaKernel₁ s = (π : ℂ) ^ (-s) * Gamma s * ∑' n : ℕ, 1 / ((n : ℂ) + 1) ^ (2 * s) := by
   let bd : ℕ → ℝ → ℝ := fun n t => t ^ (s.re - 1) * exp (-π * t * ((n : ℝ) + 1) ^ 2)
   let f : ℕ → ℝ → ℂ := fun n t => (t : ℂ) ^ (s - 1) * exp (-π * t * ((n : ℝ) + 1) ^ 2)
@@ -554,7 +554,7 @@ theorem mellin_zetaKernel₁_eq_tsum {s : ℂ} (hs : 1 / 2 < s.re) :
   rfl
 #align mellin_zeta_kernel₁_eq_tsum mellin_zetaKernel₁_eq_tsum
 
-theorem completed_zeta_eq_tsum_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
+lemma completed_zeta_eq_tsum_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
     riemannCompletedZeta s =
       (π : ℂ) ^ (-s / 2) * Gamma (s / 2) * ∑' n : ℕ, 1 / ((n : ℂ) + 1) ^ s := by
   rw [completed_zeta_eq_mellin_of_one_lt_re hs, mellin_zetaKernel₁_eq_tsum, neg_div,
@@ -620,14 +620,14 @@ theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :
   · set_option tactic.skipAssignedInstances false in norm_num
 #align riemann_zeta_two_mul_nat riemannZeta_two_mul_nat
 
-theorem riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
+lemma riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
   convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_two.tsum_eq
   · rw [← Nat.cast_two, zeta_nat_eq_tsum_of_gt_one one_lt_two, ofReal_tsum]
     norm_num
   · norm_num
 #align riemann_zeta_two riemannZeta_two
 
-theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
+lemma riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
   convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_four.tsum_eq
   · rw [← Nat.cast_one, show (4 : ℂ) = (4 : ℕ) by norm_num,
       zeta_nat_eq_tsum_of_gt_one (by norm_num : 1 < 4), ofReal_tsum]
@@ -727,7 +727,7 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
   ring
 #align riemann_zeta_one_sub riemannZeta_one_sub
 
-theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
+lemma riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
     riemannZeta (-k) = (-1 : ℂ) ^ k * bernoulli (k + 1) / (k + 1) := by
   rcases Nat.even_or_odd' k with ⟨m, rfl | rfl⟩
   · cases' m with m m

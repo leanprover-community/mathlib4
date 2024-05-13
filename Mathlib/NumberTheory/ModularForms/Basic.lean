@@ -100,28 +100,28 @@ instance (priority := 100) CuspFormClass.cuspForm : CuspFormClass (CuspForm Γ k
 
 variable {F Γ k}
 
-theorem ModularForm.toFun_eq_coe (f : ModularForm Γ k) : f.toFun = (f : ℍ → ℂ) :=
+lemma ModularForm.toFun_eq_coe (f : ModularForm Γ k) : f.toFun = (f : ℍ → ℂ) :=
   rfl
 #align modular_form_to_fun_eq_coe ModularForm.toFun_eq_coe
 
 @[simp]
-theorem ModularForm.toSlashInvariantForm_coe (f : ModularForm Γ k) : ⇑f.1 = f :=
+lemma ModularForm.toSlashInvariantForm_coe (f : ModularForm Γ k) : ⇑f.1 = f :=
   rfl
 
-theorem CuspForm.toFun_eq_coe {f : CuspForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
+lemma CuspForm.toFun_eq_coe {f : CuspForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
   rfl
 #align cusp_form_to_fun_eq_coe CuspForm.toFun_eq_coe
 
 @[simp]
-theorem CuspForm.toSlashInvariantForm_coe (f : CuspForm Γ k) : ⇑f.1 = f := rfl
+lemma CuspForm.toSlashInvariantForm_coe (f : CuspForm Γ k) : ⇑f.1 = f := rfl
 
 @[ext]
-theorem ModularForm.ext {f g : ModularForm Γ k} (h : ∀ x, f x = g x) : f = g :=
+lemma ModularForm.ext {f g : ModularForm Γ k} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align modular_form.ext ModularForm.ext
 
 @[ext]
-theorem CuspForm.ext {f g : CuspForm Γ k} (h : ∀ x, f x = g x) : f = g :=
+lemma CuspForm.ext {f g : CuspForm Γ k} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align cusp_form.ext CuspForm.ext
 
@@ -158,12 +158,12 @@ instance add : Add (ModularForm Γ k) :=
 #align modular_form.has_add ModularForm.add
 
 @[simp]
-theorem coe_add (f g : ModularForm Γ k) : ⇑(f + g) = f + g :=
+lemma coe_add (f g : ModularForm Γ k) : ⇑(f + g) = f + g :=
   rfl
 #align modular_form.coe_add ModularForm.coe_add
 
 @[simp]
-theorem add_apply (f g : ModularForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
+lemma add_apply (f g : ModularForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
   rfl
 #align modular_form.add_apply ModularForm.add_apply
 
@@ -174,12 +174,12 @@ instance instZero : Zero (ModularForm Γ k) :=
 #align modular_form.has_zero ModularForm.instZero
 
 @[simp]
-theorem coe_zero : ⇑(0 : ModularForm Γ k) = (0 : ℍ → ℂ) :=
+lemma coe_zero : ⇑(0 : ModularForm Γ k) = (0 : ℍ → ℂ) :=
   rfl
 #align modular_form.coe_zero ModularForm.coe_zero
 
 @[simp]
-theorem zero_apply (z : ℍ) : (0 : ModularForm Γ k) z = 0 :=
+lemma zero_apply (z : ℍ) : (0 : ModularForm Γ k) z = 0 :=
   rfl
 #align modular_form.zero_apply ModularForm.zero_apply
 
@@ -195,12 +195,12 @@ instance instSMul : SMul α (ModularForm Γ k) :=
 #align modular_form.has_smul ModularForm.instSMul
 
 @[simp]
-theorem coe_smul (f : ModularForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
+lemma coe_smul (f : ModularForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
   rfl
 #align modular_form.coe_smul ModularForm.coe_smul
 
 @[simp]
-theorem smul_apply (f : ModularForm Γ k) (n : α) (z : ℍ) : (n • f) z = n • f z :=
+lemma smul_apply (f : ModularForm Γ k) (n : α) (z : ℍ) : (n • f) z = n • f z :=
   rfl
 #align modular_form.smul_apply ModularForm.smul_apply
 
@@ -214,12 +214,12 @@ instance instNeg : Neg (ModularForm Γ k) :=
 #align modular_form.has_neg ModularForm.instNeg
 
 @[simp]
-theorem coe_neg (f : ModularForm Γ k) : ⇑(-f) = -f :=
+lemma coe_neg (f : ModularForm Γ k) : ⇑(-f) = -f :=
   rfl
 #align modular_form.coe_neg ModularForm.coe_neg
 
 @[simp]
-theorem neg_apply (f : ModularForm Γ k) (z : ℍ) : (-f) z = -f z :=
+lemma neg_apply (f : ModularForm Γ k) (z : ℍ) : (-f) z = -f z :=
   rfl
 #align modular_form.neg_apply ModularForm.neg_apply
 
@@ -228,12 +228,12 @@ instance instSub : Sub (ModularForm Γ k) :=
 #align modular_form.has_sub ModularForm.instSub
 
 @[simp]
-theorem coe_sub (f g : ModularForm Γ k) : ⇑(f - g) = f - g :=
+lemma coe_sub (f g : ModularForm Γ k) : ⇑(f - g) = f - g :=
   rfl
 #align modular_form.coe_sub ModularForm.coe_sub
 
 @[simp]
-theorem sub_apply (f g : ModularForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
+lemma sub_apply (f g : ModularForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
   rfl
 #align modular_form.sub_apply ModularForm.sub_apply
 
@@ -268,7 +268,7 @@ def mul {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1) (g :
 #align modular_form.mul ModularForm.mul
 
 @[simp]
-theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1)
+lemma mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1)
     (g : ModularForm Γ k_2) : (f.mul g : ℍ → ℂ) = f * g :=
   rfl
 #align modular_form.mul_coe ModularForm.mul_coe
@@ -286,7 +286,7 @@ instance : One (ModularForm Γ 0) where
   one := { const 1 with toSlashInvariantForm := 1 }
 
 @[simp]
-theorem one_coe_eq_one : ⇑(1 : ModularForm Γ 0) = 1 :=
+lemma one_coe_eq_one : ⇑(1 : ModularForm Γ 0) = 1 :=
   rfl
 #align modular_form.one_coe_eq_one ModularForm.one_coe_eq_one
 
@@ -326,12 +326,12 @@ instance hasAdd : Add (CuspForm Γ k) :=
 #align cusp_form.has_add CuspForm.hasAdd
 
 @[simp]
-theorem coe_add (f g : CuspForm Γ k) : ⇑(f + g) = f + g :=
+lemma coe_add (f g : CuspForm Γ k) : ⇑(f + g) = f + g :=
   rfl
 #align cusp_form.coe_add CuspForm.coe_add
 
 @[simp]
-theorem add_apply (f g : CuspForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
+lemma add_apply (f g : CuspForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
   rfl
 #align cusp_form.add_apply CuspForm.add_apply
 
@@ -342,12 +342,12 @@ instance instZero : Zero (CuspForm Γ k) :=
 #align cusp_form.has_zero CuspForm.instZero
 
 @[simp]
-theorem coe_zero : ⇑(0 : CuspForm Γ k) = (0 : ℍ → ℂ) :=
+lemma coe_zero : ⇑(0 : CuspForm Γ k) = (0 : ℍ → ℂ) :=
   rfl
 #align cusp_form.coe_zero CuspForm.coe_zero
 
 @[simp]
-theorem zero_apply (z : ℍ) : (0 : CuspForm Γ k) z = 0 :=
+lemma zero_apply (z : ℍ) : (0 : CuspForm Γ k) z = 0 :=
   rfl
 #align cusp_form.zero_apply CuspForm.zero_apply
 
@@ -363,12 +363,12 @@ instance instSMul : SMul α (CuspForm Γ k) :=
 #align cusp_form.has_smul CuspForm.instSMul
 
 @[simp]
-theorem coe_smul (f : CuspForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
+lemma coe_smul (f : CuspForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
   rfl
 #align cusp_form.coe_smul CuspForm.coe_smul
 
 @[simp]
-theorem smul_apply (f : CuspForm Γ k) (n : α) {z : ℍ} : (n • f) z = n • f z :=
+lemma smul_apply (f : CuspForm Γ k) (n : α) {z : ℍ} : (n • f) z = n • f z :=
   rfl
 #align cusp_form.smul_apply CuspForm.smul_apply
 
@@ -382,12 +382,12 @@ instance instNeg : Neg (CuspForm Γ k) :=
 #align cusp_form.has_neg CuspForm.instNeg
 
 @[simp]
-theorem coe_neg (f : CuspForm Γ k) : ⇑(-f) = -f :=
+lemma coe_neg (f : CuspForm Γ k) : ⇑(-f) = -f :=
   rfl
 #align cusp_form.coe_neg CuspForm.coe_neg
 
 @[simp]
-theorem neg_apply (f : CuspForm Γ k) (z : ℍ) : (-f) z = -f z :=
+lemma neg_apply (f : CuspForm Γ k) (z : ℍ) : (-f) z = -f z :=
   rfl
 #align cusp_form.neg_apply CuspForm.neg_apply
 
@@ -396,12 +396,12 @@ instance instSub : Sub (CuspForm Γ k) :=
 #align cusp_form.has_sub CuspForm.instSub
 
 @[simp]
-theorem coe_sub (f g : CuspForm Γ k) : ⇑(f - g) = f - g :=
+lemma coe_sub (f g : CuspForm Γ k) : ⇑(f - g) = f - g :=
   rfl
 #align cusp_form.coe_sub CuspForm.coe_sub
 
 @[simp]
-theorem sub_apply (f g : CuspForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
+lemma sub_apply (f g : CuspForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
   rfl
 #align cusp_form.sub_apply CuspForm.sub_apply
 
@@ -442,7 +442,7 @@ def mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ
   bdd_at_infty' A := h ▸ f.bdd_at_infty' A
 
 @[ext]
-theorem gradedMonoid_eq_of_cast {Γ : Subgroup SL(2, ℤ)} {a b : GradedMonoid (ModularForm Γ)}
+lemma gradedMonoid_eq_of_cast {Γ : Subgroup SL(2, ℤ)} {a b : GradedMonoid (ModularForm Γ)}
     (h : a.fst = b.fst) (h2 : mcast h a.snd = b.snd) : a = b := by
   obtain ⟨i, a⟩ := a
   obtain ⟨j, b⟩ := b

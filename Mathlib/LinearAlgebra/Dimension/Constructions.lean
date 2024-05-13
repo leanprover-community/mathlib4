@@ -44,7 +44,7 @@ variable [Module R M] [Module R M'] [Module R M₁]
 
 section Quotient
 
-theorem LinearIndependent.sum_elim_of_quotient
+lemma LinearIndependent.sum_elim_of_quotient
     {M' : Submodule R M} {ι₁ ι₂} {f : ι₁ → M'} (hf : LinearIndependent R f) (g : ι₂ → M)
     (hg : LinearIndependent R (Submodule.Quotient.mk (p := M') ∘ g)) :
       LinearIndependent R (Sum.elim (f · : ι₁ → M) g) := by
@@ -55,7 +55,7 @@ theorem LinearIndependent.sum_elim_of_quotient
   simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsupp_sum, map_smul, mkQ_apply] at this
   rw [linearIndependent_iff.mp hg _ this, Finsupp.sum_zero_index]
 
-theorem LinearIndependent.union_of_quotient
+lemma LinearIndependent.union_of_quotient
     {M' : Submodule R M} {s : Set M} (hs : s ⊆ M') (hs' : LinearIndependent (ι := s) R Subtype.val)
   {t : Set M} (ht : LinearIndependent (ι := t) R (Submodule.Quotient.mk (p := M') ∘ Subtype.val)) :
     LinearIndependent (ι := (s ∪ t : _)) R Subtype.val := by
@@ -63,7 +63,7 @@ theorem LinearIndependent.union_of_quotient
     (of_comp M'.subtype (by simpa using hs')) Subtype.val ht).to_subtype_range' ?_
   simp only [embeddingOfSubset_apply_coe, Sum.elim_range, Subtype.range_val]
 
-theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
+lemma rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' ≤ Module.rank R M := by
   conv_lhs => simp only [Module.rank_def]
   have := nonempty_linearIndependent_set R (M ⧸ M')
@@ -74,11 +74,11 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   simpa [add_comm] using (LinearIndependent.sum_elim_of_quotient ht (fun (i : s) ↦ f i)
     (by simpa [Function.comp, hf] using hs)).cardinal_le_rank
 
-theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
+lemma rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
   (mkQ p).rank_le_of_surjective (surjective_quot_mk _)
 #align rank_quotient_le rank_quotient_le
 
-theorem rank_quotient_eq_of_le_torsion {R M} [CommRing R] [AddCommGroup M] [Module R M]
+lemma rank_quotient_eq_of_le_torsion {R M} [CommRing R] [AddCommGroup M] [Module R M]
     {M' : Submodule R M} (hN : M' ≤ torsion R M) : Module.rank R (M ⧸ M') = Module.rank R M :=
   (rank_quotient_le M').antisymm <| by
     nontriviality R
@@ -97,11 +97,11 @@ end Quotient
 section ULift
 
 @[simp]
-theorem rank_ulift : Module.rank R (ULift.{w} M) = Cardinal.lift.{w} (Module.rank R M) :=
+lemma rank_ulift : Module.rank R (ULift.{w} M) = Cardinal.lift.{w} (Module.rank R M) :=
   Cardinal.lift_injective.{v} <| Eq.symm <| (lift_lift _).trans ULift.moduleEquiv.symm.lift_rank_eq
 
 @[simp]
-theorem finrank_ulift : finrank R (ULift M) = finrank R M := by
+lemma finrank_ulift : finrank R (ULift M) = finrank R M := by
   simp_rw [finrank, rank_ulift, toNat_lift]
 
 end ULift
@@ -121,7 +121,7 @@ theorem lift_rank_add_lift_rank_le_rank_prod [Nontrivial R] :
     rw [ker_fst, ← (LinearEquiv.ofInjective _ <| inr_injective (M := M) (M₂ := M')).lift_rank_eq,
         lift_umax.{v', v}]
 
-theorem rank_add_rank_le_rank_prod [Nontrivial R] :
+lemma rank_add_rank_le_rank_prod [Nontrivial R] :
     Module.rank R M + Module.rank R M₁ ≤ Module.rank R (M × M₁) := by
   convert ← lift_rank_add_lift_rank_le_rank_prod R M M₁ <;> apply lift_id
 
@@ -161,14 +161,14 @@ variable [StrongRankCondition R] [Module.Free R M] [Module.Free R M']
 open Module.Free BigOperators
 
 @[simp]
-theorem rank_finsupp (ι : Type w) :
+lemma rank_finsupp (ι : Type w) :
     Module.rank R (ι →₀ M) = Cardinal.lift.{v} #ι * Cardinal.lift.{w} (Module.rank R M) := by
   obtain ⟨⟨_, bs⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   rw [← bs.mk_eq_rank'', ← (Finsupp.basis fun _ : ι => bs).mk_eq_rank'', Cardinal.mk_sigma,
     Cardinal.sum_const]
 #align rank_finsupp rank_finsupp
 
-theorem rank_finsupp' (ι : Type v) : Module.rank R (ι →₀ M) = #ι * Module.rank R M := by
+lemma rank_finsupp' (ι : Type v) : Module.rank R (ι →₀ M) = #ι * Module.rank R M := by
   simp [rank_finsupp]
 #align rank_finsupp' rank_finsupp'
 
@@ -227,7 +227,7 @@ open Fintype
 namespace FiniteDimensional
 
 @[simp]
-theorem finrank_finsupp {ι : Type v} [Fintype ι] : finrank R (ι →₀ M) = card ι * finrank R M := by
+lemma finrank_finsupp {ι : Type v} [Fintype ι] : finrank R (ι →₀ M) = card ι * finrank R M := by
   rw [finrank, finrank, rank_finsupp, ← mk_toNat_eq_card, toNat_mul, toNat_lift, toNat_lift]
 
 /-- The finrank of `(ι →₀ R)` is `Fintype.card ι`. -/
@@ -298,21 +298,21 @@ theorem FiniteDimensional.finrank_pi_fintype
 variable {R}
 variable [Fintype η]
 
-theorem rank_fun {M η : Type u} [Fintype η] [AddCommGroup M] [Module R M] [Module.Free R M] :
+lemma rank_fun {M η : Type u} [Fintype η] [AddCommGroup M] [Module R M] [Module.Free R M] :
     Module.rank R (η → M) = Fintype.card η * Module.rank R M := by
   rw [rank_pi, Cardinal.sum_const', Cardinal.mk_fintype]
 #align rank_fun rank_fun
 
-theorem rank_fun_eq_lift_mul : Module.rank R (η → M) =
+lemma rank_fun_eq_lift_mul : Module.rank R (η → M) =
     (Fintype.card η : Cardinal.{max u₁' v}) * Cardinal.lift.{u₁'} (Module.rank R M) :=
   by rw [rank_pi, Cardinal.sum_const, Cardinal.mk_fintype, Cardinal.lift_natCast]
 #align rank_fun_eq_lift_mul rank_fun_eq_lift_mul
 
-theorem rank_fun' : Module.rank R (η → R) = Fintype.card η := by
+lemma rank_fun' : Module.rank R (η → R) = Fintype.card η := by
   rw [rank_fun_eq_lift_mul, rank_self, Cardinal.lift_one, mul_one]
 #align rank_fun' rank_fun'
 
-theorem rank_fin_fun (n : ℕ) : Module.rank R (Fin n → R) = n := by simp [rank_fun']
+lemma rank_fin_fun (n : ℕ) : Module.rank R (Fin n → R) = n := by simp [rank_fun']
 #align rank_fin_fun rank_fin_fun
 
 variable (R)
@@ -386,12 +386,12 @@ open FiniteDimensional
 
 namespace Submodule
 
-theorem lt_of_le_of_finrank_lt_finrank {s t : Submodule R M} (le : s ≤ t)
+lemma lt_of_le_of_finrank_lt_finrank {s t : Submodule R M} (le : s ≤ t)
     (lt : finrank R s < finrank R t) : s < t :=
   lt_of_le_of_ne le fun h => ne_of_lt lt (by rw [h])
 #align submodule.lt_of_le_of_finrank_lt_finrank Submodule.lt_of_le_of_finrank_lt_finrank
 
-theorem lt_top_of_finrank_lt_finrank {s : Submodule R M} (lt : finrank R s < finrank R M) :
+lemma lt_top_of_finrank_lt_finrank {s : Submodule R M} (lt : finrank R s < finrank R M) :
     s < ⊤ := by
   rw [← finrank_top R M] at lt
   exact lt_of_le_of_finrank_lt_finrank le_top lt
@@ -420,7 +420,7 @@ theorem Submodule.finrank_map_le (f : M →ₗ[R] M') (p : Submodule R M) [Modul
   finrank_le_finrank_of_rank_le_rank (lift_rank_map_le _ _) (rank_lt_aleph0 _ _)
 #align submodule.finrank_map_le Submodule.finrank_map_le
 
-theorem Submodule.finrank_le_finrank_of_le {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
+lemma Submodule.finrank_le_finrank_of_le {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
     finrank R s ≤ finrank R t :=
   calc
     finrank R s = finrank R (s.comap t.subtype) :=
@@ -436,17 +436,17 @@ section Span
 
 variable [StrongRankCondition R]
 
-theorem rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
+lemma rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
   rw [Finsupp.span_eq_range_total, ← lift_strictMono.le_iff_le]
   refine (lift_rank_range_le _).trans ?_
   rw [rank_finsupp_self]
   simp only [lift_lift, ge_iff_le, le_refl]
 #align rank_span_le rank_span_le
 
-theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) ≤ s.card := by
+lemma rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) ≤ s.card := by
   simpa using rank_span_le s.toSet
 
-theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) < ℵ₀ :=
+lemma rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) < ℵ₀ :=
   (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
 #align rank_span_of_finset rank_span_of_finset
 
@@ -461,17 +461,17 @@ protected noncomputable def Set.finrank (s : Set M) : ℕ :=
 
 variable {R}
 
-theorem finrank_span_le_card (s : Set M) [Fintype s] : finrank R (span R s) ≤ s.toFinset.card :=
+lemma finrank_span_le_card (s : Set M) [Fintype s] : finrank R (span R s) ≤ s.toFinset.card :=
   finrank_le_of_rank_le (by simpa using rank_span_le (R := R) s)
 #align finrank_span_le_card finrank_span_le_card
 
-theorem finrank_span_finset_le_card (s : Finset M) : (s : Set M).finrank R ≤ s.card :=
+lemma finrank_span_finset_le_card (s : Finset M) : (s : Set M).finrank R ≤ s.card :=
   calc
     (s : Set M).finrank R ≤ (s : Set M).toFinset.card := finrank_span_le_card (M := M) s
     _ = s.card := by simp
 #align finrank_span_finset_le_card finrank_span_finset_le_card
 
-theorem finrank_range_le_card {ι : Type*} [Fintype ι] (b : ι → M) :
+lemma finrank_range_le_card {ι : Type*} [Fintype ι] (b : ι → M) :
     (Set.range b).finrank R ≤ Fintype.card ι := by
   classical
   refine (finrank_span_le_card _).trans ?_
@@ -479,7 +479,7 @@ theorem finrank_range_le_card {ι : Type*} [Fintype ι] (b : ι → M) :
   exact Finset.card_image_le
 #align finrank_range_le_card finrank_range_le_card
 
-theorem finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι → M}
+lemma finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι → M}
     (hb : LinearIndependent R b) :
     finrank R (span R (Set.range b)) = Fintype.card ι :=
   finrank_eq_of_rank_eq
@@ -489,7 +489,7 @@ theorem finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι �
         lift_eq_nat_iff] at this)
 #align finrank_span_eq_card finrank_span_eq_card
 
-theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndependent R ((↑) : s → M)) :
+lemma finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndependent R ((↑) : s → M)) :
     finrank R (span R s) = s.toFinset.card :=
   finrank_eq_of_rank_eq
     (by
@@ -497,20 +497,20 @@ theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndependent
       rwa [Cardinal.mk_fintype, ← Set.toFinset_card] at this)
 #align finrank_span_set_eq_card finrank_span_set_eq_card
 
-theorem finrank_span_finset_eq_card {s : Finset M} (hs : LinearIndependent R ((↑) : s → M)) :
+lemma finrank_span_finset_eq_card {s : Finset M} (hs : LinearIndependent R ((↑) : s → M)) :
     finrank R (span R (s : Set M)) = s.card := by
   convert finrank_span_set_eq_card (s := (s : Set M)) hs
   ext
   simp
 #align finrank_span_finset_eq_card finrank_span_finset_eq_card
 
-theorem span_lt_of_subset_of_card_lt_finrank {s : Set M} [Fintype s] {t : Submodule R M}
+lemma span_lt_of_subset_of_card_lt_finrank {s : Set M} [Fintype s] {t : Submodule R M}
     (subset : s ⊆ t) (card_lt : s.toFinset.card < finrank R t) : span R s < t :=
   lt_of_le_of_finrank_lt_finrank (span_le.mpr subset)
     (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
 #align span_lt_of_subset_of_card_lt_finrank span_lt_of_subset_of_card_lt_finrank
 
-theorem span_lt_top_of_card_lt_finrank {s : Set M} [Fintype s]
+lemma span_lt_top_of_card_lt_finrank {s : Set M} [Fintype s]
     (card_lt : s.toFinset.card < finrank R M) : span R s < ⊤ :=
   lt_top_of_finrank_lt_finrank (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
 #align span_lt_top_of_card_lt_finrank span_lt_top_of_card_lt_finrank
@@ -524,30 +524,30 @@ open Module
 variable {F E : Type*} [CommRing F] [Ring E] [Algebra F E]
 
 @[simp]
-theorem Subalgebra.rank_toSubmodule (S : Subalgebra F E) :
+lemma Subalgebra.rank_toSubmodule (S : Subalgebra F E) :
     Module.rank F (Subalgebra.toSubmodule S) = Module.rank F S :=
   rfl
 #align subalgebra.rank_to_submodule Subalgebra.rank_toSubmodule
 
 @[simp]
-theorem Subalgebra.finrank_toSubmodule (S : Subalgebra F E) :
+lemma Subalgebra.finrank_toSubmodule (S : Subalgebra F E) :
     finrank F (Subalgebra.toSubmodule S) = finrank F S :=
   rfl
 #align subalgebra.finrank_to_submodule Subalgebra.finrank_toSubmodule
 
-theorem subalgebra_top_rank_eq_submodule_top_rank :
+lemma subalgebra_top_rank_eq_submodule_top_rank :
     Module.rank F (⊤ : Subalgebra F E) = Module.rank F (⊤ : Submodule F E) := by
   rw [← Algebra.top_toSubmodule]
   rfl
 #align subalgebra_top_rank_eq_submodule_top_rank subalgebra_top_rank_eq_submodule_top_rank
 
-theorem subalgebra_top_finrank_eq_submodule_top_finrank :
+lemma subalgebra_top_finrank_eq_submodule_top_finrank :
     finrank F (⊤ : Subalgebra F E) = finrank F (⊤ : Submodule F E) := by
   rw [← Algebra.top_toSubmodule]
   rfl
 #align subalgebra_top_finrank_eq_submodule_top_finrank subalgebra_top_finrank_eq_submodule_top_finrank
 
-theorem Subalgebra.rank_top : Module.rank F (⊤ : Subalgebra F E) = Module.rank F E := by
+lemma Subalgebra.rank_top : Module.rank F (⊤ : Subalgebra F E) = Module.rank F E := by
   rw [subalgebra_top_rank_eq_submodule_top_rank]
   exact _root_.rank_top F E
 #align subalgebra.rank_top Subalgebra.rank_top
@@ -557,7 +557,7 @@ section
 variable [StrongRankCondition F] [NoZeroSMulDivisors F E] [Nontrivial E]
 
 @[simp]
-theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
+lemma Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
   (Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.rank_eq.trans <| by
     rw [Algebra.toSubmodule_bot, one_eq_span, rank_span_set, mk_singleton _]
     letI := Module.nontrivial F E
@@ -565,7 +565,7 @@ theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
 #align subalgebra.rank_bot Subalgebra.rank_bot
 
 @[simp]
-theorem Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=
+lemma Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=
   finrank_eq_of_rank_eq (by simp)
 #align subalgebra.finrank_bot Subalgebra.finrank_bot
 

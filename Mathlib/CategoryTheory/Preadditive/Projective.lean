@@ -84,7 +84,7 @@ def factorThru {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] : 
 #align category_theory.projective.factor_thru CategoryTheory.Projective.factorThru
 
 @[reassoc (attr := simp)]
-theorem factorThru_comp {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] :
+lemma factorThru_comp {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] :
     factorThru f e ≫ e = f :=
   (Projective.factors f e).choose_spec
 #align category_theory.projective.factor_thru_comp CategoryTheory.Projective.factorThru_comp
@@ -99,13 +99,13 @@ instance zero_projective [HasZeroObject C] : Projective (0 : C) :=
 
 end
 
-theorem of_iso {P Q : C} (i : P ≅ Q) (hP : Projective P) : Projective Q where
+lemma of_iso {P Q : C} (i : P ≅ Q) (hP : Projective P) : Projective Q where
   factors f e e_epi :=
     let ⟨f', hf'⟩ := Projective.factors (i.hom ≫ f) e
     ⟨i.inv ≫ f', by simp [hf']⟩
 #align category_theory.projective.of_iso CategoryTheory.Projective.of_iso
 
-theorem iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=
+lemma iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=
   ⟨of_iso i, of_iso i.symm⟩
 #align category_theory.projective.iso_iff CategoryTheory.Projective.iso_iff
 
@@ -135,7 +135,7 @@ instance {β : Type v} (g : β → C) [HasZeroMorphisms C] [HasBiproduct g] [∀
     Projective (⨁ g) where
   factors f e epi := ⟨biproduct.desc fun b => factorThru (biproduct.ι g b ≫ f) e, by aesop_cat⟩
 
-theorem projective_iff_preservesEpimorphisms_coyoneda_obj (P : C) :
+lemma projective_iff_preservesEpimorphisms_coyoneda_obj (P : C) :
     Projective P ↔ (coyoneda.obj (op P)).PreservesEpimorphisms :=
   ⟨fun hP =>
     ⟨fun f _ =>
@@ -205,7 +205,7 @@ namespace Adjunction
 
 variable {D : Type u'} [Category.{v'} D] {F : C ⥤ D} {G : D ⥤ C}
 
-theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : Projective P) :
+lemma map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : Projective P) :
     Projective (F.obj P) where
   factors f g _ := by
     rcases hP.factors (adj.unit.app P ≫ G.map f) (G.map g) with ⟨f', hf'⟩
@@ -214,7 +214,7 @@ theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : P
     simp
 #align category_theory.adjunction.map_projective CategoryTheory.Adjunction.map_projective
 
-theorem projective_of_map_projective (adj : F ⊣ G) [F.Full] [F.Faithful] (P : C)
+lemma projective_of_map_projective (adj : F ⊣ G) [F.Full] [F.Faithful] (P : C)
     (hP : Projective (F.obj P)) : Projective P where
   factors f g _ := by
     haveI := Adjunction.leftAdjointPreservesColimits.{0, 0} adj
@@ -239,7 +239,7 @@ namespace Equivalence
 
 variable {D : Type u'} [Category.{v'} D] (F : C ≌ D)
 
-theorem map_projective_iff (P : C) : Projective (F.functor.obj P) ↔ Projective P :=
+lemma map_projective_iff (P : C) : Projective (F.functor.obj P) ↔ Projective P :=
   ⟨F.toAdjunction.projective_of_map_projective P, F.toAdjunction.map_projective P⟩
 
 /-- Given an equivalence of categories `F`, a projective presentation of `F(X)` induces a
@@ -252,7 +252,7 @@ def projectivePresentationOfMapProjectivePresentation (X : C)
   epi := epi_comp _ _
 #align category_theory.equivalence.projective_presentation_of_map_projective_presentation CategoryTheory.Equivalence.projectivePresentationOfMapProjectivePresentation
 
-theorem enoughProjectives_iff (F : C ≌ D) : EnoughProjectives C ↔ EnoughProjectives D := by
+lemma enoughProjectives_iff (F : C ≌ D) : EnoughProjectives C ↔ EnoughProjectives D := by
   constructor
   all_goals intro H; constructor; intro X; constructor
   · exact F.symm.projectivePresentationOfMapProjectivePresentation _
@@ -282,7 +282,7 @@ def Exact.lift {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R �
 #align category_theory.exact.lift CategoryTheory.Exact.lift
 
 @[simp]
-theorem Exact.lift_comp {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R ⟶ S)
+lemma Exact.lift_comp {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R ⟶ S)
     (hfg : Exact f g) (w : h ≫ g = 0) : Exact.lift h f g hfg w ≫ f = h := by
   simp only [Exact.lift]
   conv_lhs =>

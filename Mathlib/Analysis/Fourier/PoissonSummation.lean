@@ -158,7 +158,7 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
 set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_top isBigO_norm_Icc_restrict_atTop
 
-theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
+lemma isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     (hf : f =O[atBot] fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
     (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) =O[atBot] fun x : ℝ => |x| ^ (-b) := by
   have h1 : (f.comp (ContinuousMap.mk _ continuous_neg)) =O[atTop] fun x : ℝ => |x| ^ (-b) := by
@@ -180,7 +180,7 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
 set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_bot isBigO_norm_Icc_restrict_atBot
 
-theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
+lemma isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     (hf : f =O[cocompact ℝ] fun x : ℝ => |x| ^ (-b)) (K : Compacts ℝ) :
     (fun x => ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) =O[cocompact ℝ] (|·| ^ (-b)) := by
   obtain ⟨r, hr⟩ := K.isCompact.isBounded.subset_closedBall 0

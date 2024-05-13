@@ -52,7 +52,7 @@ instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     · rw [FiniteField.roots_X_pow_card_sub_X, val_toFinset, coe_univ, Algebra.adjoin_univ]
 #align finite_field.has_sub.sub.polynomial.is_splitting_field FiniteField.isSplittingField_sub
 
-theorem galois_poly_separable {K : Type*} [Field K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
+lemma galois_poly_separable {K : Type*} [Field K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
     Separable (X ^ q - X : K[X]) := by
   use 1, X ^ q - X - 1
   rw [← CharP.cast_eq_zero_iff K[X] p] at h
@@ -93,7 +93,7 @@ instance : Fintype (GaloisField p n) := by
   dsimp only [GaloisField]
   exact FiniteDimensional.fintypeOfFintype (ZMod p) (GaloisField p n)
 
-theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisField p n) = n := by
+lemma finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisField p n) = n := by
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
   have hp : 1 < p := h_prime.out.one_lt
   have aux : g_poly ≠ 0 := FiniteField.X_pow_card_pow_sub_X_ne_zero _ h hp
@@ -143,12 +143,12 @@ theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisFi
     rw [hx, hy]
 #align galois_field.finrank GaloisField.finrank
 
-theorem card (h : n ≠ 0) : Fintype.card (GaloisField p n) = p ^ n := by
+lemma card (h : n ≠ 0) : Fintype.card (GaloisField p n) = p ^ n := by
   let b := IsNoetherian.finsetBasis (ZMod p) (GaloisField p n)
   rw [Module.card_fintype b, ← FiniteDimensional.finrank_eq_card_basis b, ZMod.card, finrank p h]
 #align galois_field.card GaloisField.card
 
-theorem splits_zmod_X_pow_sub_X : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
+lemma splits_zmod_X_pow_sub_X : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
   have hp : 1 < p := h_prime.out.one_lt
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
     convert FiniteField.roots_X_pow_card_sub_X (ZMod p)
@@ -169,12 +169,12 @@ def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
 
 variable {K : Type*} [Field K] [Fintype K] [Algebra (ZMod p) K]
 
-theorem splits_X_pow_card_sub_X : Splits (algebraMap (ZMod p) K) (X ^ Fintype.card K - X) :=
+lemma splits_X_pow_card_sub_X : Splits (algebraMap (ZMod p) K) (X ^ Fintype.card K - X) :=
   (FiniteField.isSplittingField_sub K (ZMod p)).splits
 set_option linter.uppercaseLean3 false in
 #align galois_field.splits_X_pow_card_sub_X GaloisField.splits_X_pow_card_sub_X
 
-theorem isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
+lemma isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) :=
   h ▸ FiniteField.isSplittingField_sub K (ZMod p)
 #align galois_field.is_splitting_field_of_card_eq GaloisField.isSplittingField_of_card_eq

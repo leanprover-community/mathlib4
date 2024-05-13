@@ -32,12 +32,12 @@ def iciSupHom : SupHom α (UpperSet α) :=
 #align upper_set.Ici_sup_hom UpperSet.iciSupHom
 
 @[simp]
-theorem coe_iciSupHom : (iciSupHom : α → UpperSet α) = Ici :=
+lemma coe_iciSupHom : (iciSupHom : α → UpperSet α) = Ici :=
   rfl
 #align upper_set.coe_Ici_sup_hom UpperSet.coe_iciSupHom
 
 @[simp]
-theorem iciSupHom_apply (a : α) : iciSupHom a = Ici a :=
+lemma iciSupHom_apply (a : α) : iciSupHom a = Ici a :=
   rfl
 #align upper_set.Ici_sup_hom_apply UpperSet.iciSupHom_apply
 
@@ -52,13 +52,13 @@ def icisSupHom : sSupHom α (UpperSet α) :=
 #align upper_set.Ici_Sup_hom UpperSet.icisSupHomₓ
 
 @[simp]
-theorem coe_icisSupHom : (icisSupHom : α → UpperSet α) = Ici :=
+lemma coe_icisSupHom : (icisSupHom : α → UpperSet α) = Ici :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
 #align upper_set.coe_Ici_Sup_hom UpperSet.coe_icisSupHomₓ
 
 @[simp]
-theorem icisSupHom_apply (a : α) : icisSupHom a = Ici a :=
+lemma icisSupHom_apply (a : α) : icisSupHom a = Ici a :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
 #align upper_set.Ici_Sup_hom_apply UpperSet.icisSupHom_applyₓ
@@ -77,12 +77,12 @@ def iicInfHom : InfHom α (LowerSet α) :=
 #align lower_set.Iic_inf_hom LowerSet.iicInfHom
 
 @[simp]
-theorem coe_iicInfHom : (iicInfHom : α → LowerSet α) = Iic :=
+lemma coe_iicInfHom : (iicInfHom : α → LowerSet α) = Iic :=
   rfl
 #align lower_set.coe_Iic_inf_hom LowerSet.coe_iicInfHom
 
 @[simp]
-theorem iicInfHom_apply (a : α) : iicInfHom a = Iic a :=
+lemma iicInfHom_apply (a : α) : iicInfHom a = Iic a :=
   rfl
 #align lower_set.Iic_inf_hom_apply LowerSet.iicInfHom_apply
 
@@ -97,13 +97,13 @@ def iicsInfHom : sInfHom α (LowerSet α) :=
 #align lower_set.Iic_Inf_hom LowerSet.iicsInfHomₓ
 
 @[simp]
-theorem coe_iicsInfHom : (iicsInfHom : α → LowerSet α) = Iic :=
+lemma coe_iicsInfHom : (iicsInfHom : α → LowerSet α) = Iic :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
 #align lower_set.coe_Iic_Inf_hom LowerSet.coe_iicsInfHomₓ
 
 @[simp]
-theorem iicsInfHom_apply (a : α) : iicsInfHom a = Iic a :=
+lemma iicsInfHom_apply (a : α) : iicsInfHom a = Iic a :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
 #align lower_set.Iic_Inf_hom_apply LowerSet.iicsInfHom_applyₓ

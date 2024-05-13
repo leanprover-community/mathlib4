@@ -47,26 +47,26 @@ open State
 
 variable {S : Type u} [State S]
 
-theorem turnBound_ne_zero_of_left_move {s t : S} (m : t ∈ l s) : turnBound s ≠ 0 := by
+lemma turnBound_ne_zero_of_left_move {s t : S} (m : t ∈ l s) : turnBound s ≠ 0 := by
   intro h
   have t := left_bound m
   rw [h] at t
   exact Nat.not_succ_le_zero _ t
 #align pgame.turn_bound_ne_zero_of_left_move SetTheory.PGame.turnBound_ne_zero_of_left_move
 
-theorem turnBound_ne_zero_of_right_move {s t : S} (m : t ∈ r s) : turnBound s ≠ 0 := by
+lemma turnBound_ne_zero_of_right_move {s t : S} (m : t ∈ r s) : turnBound s ≠ 0 := by
   intro h
   have t := right_bound m
   rw [h] at t
   exact Nat.not_succ_le_zero _ t
 #align pgame.turn_bound_ne_zero_of_right_move SetTheory.PGame.turnBound_ne_zero_of_right_move
 
-theorem turnBound_of_left {s t : S} (m : t ∈ l s) (n : ℕ) (h : turnBound s ≤ n + 1) :
+lemma turnBound_of_left {s t : S} (m : t ∈ l s) (n : ℕ) (h : turnBound s ≤ n + 1) :
     turnBound t ≤ n :=
   Nat.le_of_lt_succ (Nat.lt_of_lt_of_le (left_bound m) h)
 #align pgame.turn_bound_of_left SetTheory.PGame.turnBound_of_left
 
-theorem turnBound_of_right {s t : S} (m : t ∈ r s) (n : ℕ) (h : turnBound s ≤ n + 1) :
+lemma turnBound_of_right {s t : S} (m : t ∈ r s) (n : ℕ) (h : turnBound s ≤ n + 1) :
     turnBound t ≤ n :=
   Nat.le_of_lt_succ (Nat.lt_of_lt_of_le (right_bound m) h)
 #align pgame.turn_bound_of_right SetTheory.PGame.turnBound_of_right

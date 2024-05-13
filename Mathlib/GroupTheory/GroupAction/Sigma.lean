@@ -33,13 +33,13 @@ instance : SMul M (Σi, α i) :=
   ⟨fun a => (Sigma.map id) fun _ => (a • ·)⟩
 
 @[to_additive]
-theorem smul_def : a • x = x.map id fun _ => (a • ·) :=
+lemma smul_def : a • x = x.map id fun _ => (a • ·) :=
   rfl
 #align sigma.smul_def Sigma.smul_def
 #align sigma.vadd_def Sigma.vadd_def
 
 @[to_additive (attr := simp)]
-theorem smul_mk : a • mk i b = ⟨i, a • b⟩ :=
+lemma smul_mk : a • mk i b = ⟨i, a • b⟩ :=
   rfl
 #align sigma.smul_mk Sigma.smul_mk
 #align sigma.vadd_mk Sigma.vadd_mk

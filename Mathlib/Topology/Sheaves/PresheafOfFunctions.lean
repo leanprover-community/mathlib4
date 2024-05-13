@@ -54,14 +54,14 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Types TopCat.presheafToTypes
 
 @[simp]
-theorem presheafToTypes_obj {T : X → Type v} {U : (Opens X)ᵒᵖ} :
+lemma presheafToTypes_obj {T : X → Type v} {U : (Opens X)ᵒᵖ} :
     (presheafToTypes X T).obj U = ∀ x : U.unop, T x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Types_obj TopCat.presheafToTypes_obj
 
 @[simp]
-theorem presheafToTypes_map {T : X → Type v} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
+lemma presheafToTypes_map {T : X → Type v} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
     (presheafToTypes X T).map i f = fun x => f (i.unop x) :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -87,14 +87,14 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Type TopCat.presheafToType
 
 @[simp]
-theorem presheafToType_obj {T : Type v} {U : (Opens X)ᵒᵖ} :
+lemma presheafToType_obj {T : Type v} {U : (Opens X)ᵒᵖ} :
     (presheafToType X T).obj U = (U.unop → T) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Type_obj TopCat.presheafToType_obj
 
 @[simp]
-theorem presheafToType_map {T : Type v} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
+lemma presheafToType_map {T : Type v} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
     (presheafToType X T).map i f = f ∘ i.unop :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -108,7 +108,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Top TopCat.presheafToTop
 
 @[simp]
-theorem presheafToTop_obj (T : TopCat.{v}) (U : (Opens X)ᵒᵖ) :
+lemma presheafToTop_obj (T : TopCat.{v}) (U : (Opens X)ᵒᵖ) :
     (presheafToTop X T).obj U = ((Opens.toTopCat X).obj (unop U) ⟶ T) :=
   rfl
 set_option linter.uppercaseLean3 false in

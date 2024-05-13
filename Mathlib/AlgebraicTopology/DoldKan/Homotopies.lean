@@ -101,14 +101,14 @@ def hσ' (q : ℕ) : ∀ n m, c.Rel m n → (K[X].X n ⟶ K[X].X m) := fun n m h
   hσ q n ≫ eqToHom (by congr)
 #align algebraic_topology.dold_kan.hσ' AlgebraicTopology.DoldKan.hσ'
 
-theorem hσ'_eq_zero {q n m : ℕ} (hnq : n < q) (hnm : c.Rel m n) :
+lemma hσ'_eq_zero {q n m : ℕ} (hnq : n < q) (hnm : c.Rel m n) :
     (hσ' q n m hnm : X _[n] ⟶ X _[m]) = 0 := by
   simp only [hσ', hσ]
   split_ifs
   exact zero_comp
 #align algebraic_topology.dold_kan.hσ'_eq_zero AlgebraicTopology.DoldKan.hσ'_eq_zero
 
-theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
+lemma hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
     (hσ' q n m hnm : X _[n] ⟶ X _[m]) =
       ((-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩) ≫
         eqToHom (by congr) := by
@@ -119,7 +119,7 @@ theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
     congr
 #align algebraic_topology.dold_kan.hσ'_eq AlgebraicTopology.DoldKan.hσ'_eq
 
-theorem hσ'_eq' {q n a : ℕ} (ha : n = a + q) :
+lemma hσ'_eq' {q n a : ℕ} (ha : n = a + q) :
     (hσ' q n (n + 1) rfl : X _[n] ⟶ X _[n + 1]) =
       (-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩ :=
   by rw [hσ'_eq ha rfl, eqToHom_refl, comp_id]

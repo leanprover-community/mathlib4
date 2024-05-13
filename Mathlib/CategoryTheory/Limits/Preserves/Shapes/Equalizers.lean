@@ -95,7 +95,7 @@ def PreservesEqualizer.iso : G.obj (equalizer f g) ≅ equalizer (G.map f) (G.ma
 #align category_theory.limits.preserves_equalizer.iso CategoryTheory.Limits.PreservesEqualizer.iso
 
 @[simp]
-theorem PreservesEqualizer.iso_hom :
+lemma PreservesEqualizer.iso_hom :
     (PreservesEqualizer.iso G f g).hom = equalizerComparison f g G :=
   rfl
 #align category_theory.limits.preserves_equalizer.iso_hom CategoryTheory.Limits.PreservesEqualizer.iso_hom
@@ -179,7 +179,7 @@ def PreservesCoequalizer.iso : coequalizer (G.map f) (G.map g) ≅ G.obj (coequa
 #align category_theory.limits.preserves_coequalizer.iso CategoryTheory.Limits.PreservesCoequalizer.iso
 
 @[simp]
-theorem PreservesCoequalizer.iso_hom :
+lemma PreservesCoequalizer.iso_hom :
     (PreservesCoequalizer.iso G f g).hom = coequalizerComparison f g G :=
   rfl
 #align category_theory.limits.preserves_coequalizer.iso_hom CategoryTheory.Limits.PreservesCoequalizer.iso_hom
@@ -197,7 +197,7 @@ instance map_π_epi : Epi (G.map (coequalizer.π f g)) :=
 #align category_theory.limits.map_π_epi CategoryTheory.Limits.map_π_epi
 
 @[reassoc]
-theorem map_π_preserves_coequalizer_inv :
+lemma map_π_preserves_coequalizer_inv :
     G.map (coequalizer.π f g) ≫ (PreservesCoequalizer.iso G f g).inv =
       coequalizer.π (G.map f) (G.map g) := by
   rw [← ι_comp_coequalizerComparison_assoc, ← PreservesCoequalizer.iso_hom, Iso.hom_inv_id,
@@ -205,14 +205,14 @@ theorem map_π_preserves_coequalizer_inv :
 #align category_theory.limits.map_π_preserves_coequalizer_inv CategoryTheory.Limits.map_π_preserves_coequalizer_inv
 
 @[reassoc]
-theorem map_π_preserves_coequalizer_inv_desc {W : D} (k : G.obj Y ⟶ W)
+lemma map_π_preserves_coequalizer_inv_desc {W : D} (k : G.obj Y ⟶ W)
     (wk : G.map f ≫ k = G.map g ≫ k) :
     G.map (coequalizer.π f g) ≫ (PreservesCoequalizer.iso G f g).inv ≫ coequalizer.desc k wk = k :=
   by rw [← Category.assoc, map_π_preserves_coequalizer_inv, coequalizer.π_desc]
 #align category_theory.limits.map_π_preserves_coequalizer_inv_desc CategoryTheory.Limits.map_π_preserves_coequalizer_inv_desc
 
 @[reassoc]
-theorem map_π_preserves_coequalizer_inv_colimMap {X' Y' : D} (f' g' : X' ⟶ Y')
+lemma map_π_preserves_coequalizer_inv_colimMap {X' Y' : D} (f' g' : X' ⟶ Y')
     [HasCoequalizer f' g'] (p : G.obj X ⟶ X') (q : G.obj Y ⟶ Y') (wf : G.map f ≫ q = p ≫ f')
     (wg : G.map g ≫ q = p ≫ g') :
     G.map (coequalizer.π f g) ≫
@@ -223,7 +223,7 @@ theorem map_π_preserves_coequalizer_inv_colimMap {X' Y' : D} (f' g' : X' ⟶ Y'
 #align category_theory.limits.map_π_preserves_coequalizer_inv_colim_map CategoryTheory.Limits.map_π_preserves_coequalizer_inv_colimMap
 
 @[reassoc]
-theorem map_π_preserves_coequalizer_inv_colimMap_desc {X' Y' : D} (f' g' : X' ⟶ Y')
+lemma map_π_preserves_coequalizer_inv_colimMap_desc {X' Y' : D} (f' g' : X' ⟶ Y')
     [HasCoequalizer f' g'] (p : G.obj X ⟶ X') (q : G.obj Y ⟶ Y') (wf : G.map f ≫ q = p ≫ f')
     (wg : G.map g ≫ q = p ≫ g') {Z' : D} (h : Y' ⟶ Z') (wh : f' ≫ h = g' ≫ h) :
     G.map (coequalizer.π f g) ≫

@@ -103,19 +103,19 @@ section CompleteLinearOrder
 variable [CompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] [CompleteLinearOrder β]
   [TopologicalSpace β] [OrderClosedTopology β] [Nonempty γ]
 
-theorem sSup_mem_closure {s : Set α} (hs : s.Nonempty) : sSup s ∈ closure s :=
+lemma sSup_mem_closure {s : Set α} (hs : s.Nonempty) : sSup s ∈ closure s :=
   (isLUB_sSup s).mem_closure hs
 #align Sup_mem_closure sSup_mem_closure
 
-theorem sInf_mem_closure {s : Set α} (hs : s.Nonempty) : sInf s ∈ closure s :=
+lemma sInf_mem_closure {s : Set α} (hs : s.Nonempty) : sInf s ∈ closure s :=
   (isGLB_sInf s).mem_closure hs
 #align Inf_mem_closure sInf_mem_closure
 
-theorem IsClosed.sSup_mem {s : Set α} (hs : s.Nonempty) (hc : IsClosed s) : sSup s ∈ s :=
+lemma IsClosed.sSup_mem {s : Set α} (hs : s.Nonempty) (hc : IsClosed s) : sSup s ∈ s :=
   (isLUB_sSup s).mem_of_isClosed hs hc
 #align is_closed.Sup_mem IsClosed.sSup_mem
 
-theorem IsClosed.sInf_mem {s : Set α} (hs : s.Nonempty) (hc : IsClosed s) : sInf s ∈ s :=
+lemma IsClosed.sInf_mem {s : Set α} (hs : s.Nonempty) (hc : IsClosed s) : sInf s ∈ s :=
   (isGLB_sInf s).mem_of_isClosed hs hc
 #align is_closed.Inf_mem IsClosed.sInf_mem
 
@@ -190,29 +190,29 @@ section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
   [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderClosedTopology β] [Nonempty γ]
 
-theorem csSup_mem_closure {s : Set α} (hs : s.Nonempty) (B : BddAbove s) : sSup s ∈ closure s :=
+lemma csSup_mem_closure {s : Set α} (hs : s.Nonempty) (B : BddAbove s) : sSup s ∈ closure s :=
   (isLUB_csSup hs B).mem_closure hs
 #align cSup_mem_closure csSup_mem_closure
 
-theorem csInf_mem_closure {s : Set α} (hs : s.Nonempty) (B : BddBelow s) : sInf s ∈ closure s :=
+lemma csInf_mem_closure {s : Set α} (hs : s.Nonempty) (B : BddBelow s) : sInf s ∈ closure s :=
   (isGLB_csInf hs B).mem_closure hs
 #align cInf_mem_closure csInf_mem_closure
 
-theorem IsClosed.csSup_mem {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddAbove s) :
+lemma IsClosed.csSup_mem {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddAbove s) :
     sSup s ∈ s :=
   (isLUB_csSup hs B).mem_of_isClosed hs hc
 #align is_closed.cSup_mem IsClosed.csSup_mem
 
-theorem IsClosed.csInf_mem {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddBelow s) :
+lemma IsClosed.csInf_mem {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddBelow s) :
     sInf s ∈ s :=
   (isGLB_csInf hs B).mem_of_isClosed hs hc
 #align is_closed.cInf_mem IsClosed.csInf_mem
 
-theorem IsClosed.isLeast_csInf {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddBelow s) :
+lemma IsClosed.isLeast_csInf {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddBelow s) :
     IsLeast s (sInf s) :=
   ⟨hc.csInf_mem hs B, (isGLB_csInf hs B).1⟩
 
-theorem IsClosed.isGreatest_csSup {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddAbove s) :
+lemma IsClosed.isGreatest_csSup {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddAbove s) :
     IsGreatest s (sSup s) :=
   IsClosed.isLeast_csInf (α := αᵒᵈ) hc hs B
 

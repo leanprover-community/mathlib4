@@ -47,12 +47,12 @@ namespace Palindrome
 
 variable {l : List α}
 
-theorem reverse_eq {l : List α} (p : Palindrome l) : reverse l = l := by
+lemma reverse_eq {l : List α} (p : Palindrome l) : reverse l = l := by
   induction p <;> try (exact rfl)
   simpa
 #align list.palindrome.reverse_eq List.Palindrome.reverse_eq
 
-theorem of_reverse_eq {l : List α} : reverse l = l → Palindrome l := by
+lemma of_reverse_eq {l : List α} : reverse l = l → Palindrome l := by
   refine' bidirectionalRecOn l (fun _ => Palindrome.nil) (fun a _ => Palindrome.singleton a) _
   intro x l y hp hr
   rw [reverse_cons, reverse_append] at hr
@@ -61,16 +61,16 @@ theorem of_reverse_eq {l : List α} : reverse l = l → Palindrome l := by
   exact Palindrome.cons_concat x this
 #align list.palindrome.of_reverse_eq List.Palindrome.of_reverse_eq
 
-theorem iff_reverse_eq {l : List α} : Palindrome l ↔ reverse l = l :=
+lemma iff_reverse_eq {l : List α} : Palindrome l ↔ reverse l = l :=
   Iff.intro reverse_eq of_reverse_eq
 #align list.palindrome.iff_reverse_eq List.Palindrome.iff_reverse_eq
 
-theorem append_reverse (l : List α) : Palindrome (l ++ reverse l) := by
+lemma append_reverse (l : List α) : Palindrome (l ++ reverse l) := by
   apply of_reverse_eq
   rw [reverse_append, reverse_reverse]
 #align list.palindrome.append_reverse List.Palindrome.append_reverse
 
-protected theorem map (f : α → β) (p : Palindrome l) : Palindrome (map f l) :=
+protected lemma map (f : α → β) (p : Palindrome l) : Palindrome (map f l) :=
   of_reverse_eq <| by rw [← map_reverse, p.reverse_eq]
 #align list.palindrome.map List.Palindrome.map
 

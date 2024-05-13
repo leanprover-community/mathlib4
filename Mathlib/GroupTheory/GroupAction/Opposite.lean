@@ -69,11 +69,11 @@ instance instIsCentralScalar [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M
     IsCentralScalar M αᵐᵒᵖ where
   op_smul_eq_smul _ _ := unop_injective <| op_smul_eq_smul _ _
 
-theorem op_smul_eq_op_smul_op [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] (r : M) (a : α) :
+lemma op_smul_eq_op_smul_op [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] (r : M) (a : α) :
     op (r • a) = op r • op a := (op_smul_eq_smul r (op a)).symm
 #align mul_opposite.op_smul_eq_op_smul_op MulOpposite.op_smul_eq_op_smul_op
 
-theorem unop_smul_eq_unop_smul_unop [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] (r : Mᵐᵒᵖ)
+lemma unop_smul_eq_unop_smul_unop [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] (r : Mᵐᵒᵖ)
     (a : αᵐᵒᵖ) : unop (r • a) = unop r • unop a := (unop_smul_eq_smul r (unop a)).symm
 #align mul_opposite.unop_smul_eq_unop_smul_unop MulOpposite.unop_smul_eq_unop_smul_unop
 
@@ -141,11 +141,11 @@ variable {α β : Type*}
 open scoped RightActions
 
 @[to_additive]
-theorem op_smul_op_smul [Monoid α] [MulAction αᵐᵒᵖ β] (b : β) (a₁ a₂ : α) :
+lemma op_smul_op_smul [Monoid α] [MulAction αᵐᵒᵖ β] (b : β) (a₁ a₂ : α) :
     b <• a₁ <• a₂ = b <• (a₁ * a₂) := smul_smul _ _ _
 
 @[to_additive]
-theorem op_smul_mul [Monoid α] [MulAction αᵐᵒᵖ β] (b : β) (a₁ a₂ : α) :
+lemma op_smul_mul [Monoid α] [MulAction αᵐᵒᵖ β] (b : β) (a₁ a₂ : α) :
     b <• (a₁ * a₂) = b <• a₁ <• a₂ := mul_smul _ _ _
 
 end section
@@ -171,13 +171,13 @@ instance Mul.toHasOppositeSMul [Mul α] : SMul αᵐᵒᵖ α :=
 #align has_add.to_has_opposite_vadd Add.toHasOppositeVAdd
 
 @[to_additive]
-theorem op_smul_eq_mul [Mul α] {a a' : α} : op a • a' = a' * a :=
+lemma op_smul_eq_mul [Mul α] {a a' : α} : op a • a' = a' * a :=
   rfl
 #align op_smul_eq_mul op_smul_eq_mul
 #align op_vadd_eq_add op_vadd_eq_add
 
 @[to_additive (attr := simp)]
-theorem MulOpposite.smul_eq_mul_unop [Mul α] {a : αᵐᵒᵖ} {a' : α} : a • a' = a' * a.unop :=
+lemma MulOpposite.smul_eq_mul_unop [Mul α] {a : αᵐᵒᵖ} {a' : α} : a • a' = a' * a.unop :=
   rfl
 #align mul_opposite.smul_eq_mul_unop MulOpposite.smul_eq_mul_unop
 #align add_opposite.vadd_eq_add_unop AddOpposite.vadd_eq_add_unop

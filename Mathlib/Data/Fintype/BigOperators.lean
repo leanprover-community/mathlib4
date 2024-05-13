@@ -35,11 +35,11 @@ open BigOperators
 namespace Fintype
 
 @[to_additive]
-theorem prod_bool [CommMonoid α] (f : Bool → α) : ∏ b, f b = f true * f false := by simp
+lemma prod_bool [CommMonoid α] (f : Bool → α) : ∏ b, f b = f true * f false := by simp
 #align fintype.prod_bool Fintype.prod_bool
 #align fintype.sum_bool Fintype.sum_bool
 
-theorem card_eq_sum_ones {α} [Fintype α] : Fintype.card α = ∑ _a : α, 1 :=
+lemma card_eq_sum_ones {α} [Fintype α] : Fintype.card α = ∑ _a : α, 1 :=
   Finset.card_eq_sum_ones _
 #align fintype.card_eq_sum_ones Fintype.card_eq_sum_ones
 
@@ -50,7 +50,7 @@ open Finset
 variable {ι : Type*} [DecidableEq ι] [Fintype ι]
 
 @[to_additive]
-theorem prod_extend_by_one [CommMonoid α] (s : Finset ι) (f : ι → α) :
+lemma prod_extend_by_one [CommMonoid α] (s : Finset ι) (f : ι → α) :
     ∏ i, (if i ∈ s then f i else 1) = ∏ i in s, f i := by
   rw [← prod_filter, filter_mem_eq_inter, univ_inter]
 #align fintype.prod_extend_by_one Fintype.prod_extend_by_one
@@ -63,25 +63,25 @@ section
 variable {M : Type*} [Fintype α] [CommMonoid M]
 
 @[to_additive]
-theorem prod_eq_one (f : α → M) (h : ∀ a, f a = 1) : ∏ a, f a = 1 :=
+lemma prod_eq_one (f : α → M) (h : ∀ a, f a = 1) : ∏ a, f a = 1 :=
   Finset.prod_eq_one fun a _ha => h a
 #align fintype.prod_eq_one Fintype.prod_eq_one
 #align fintype.sum_eq_zero Fintype.sum_eq_zero
 
 @[to_additive]
-theorem prod_congr (f g : α → M) (h : ∀ a, f a = g a) : ∏ a, f a = ∏ a, g a :=
+lemma prod_congr (f g : α → M) (h : ∀ a, f a = g a) : ∏ a, f a = ∏ a, g a :=
   Finset.prod_congr rfl fun a _ha => h a
 #align fintype.prod_congr Fintype.prod_congr
 #align fintype.sum_congr Fintype.sum_congr
 
 @[to_additive]
-theorem prod_eq_single {f : α → M} (a : α) (h : ∀ x ≠ a, f x = 1) : ∏ x, f x = f a :=
+lemma prod_eq_single {f : α → M} (a : α) (h : ∀ x ≠ a, f x = 1) : ∏ x, f x = f a :=
   Finset.prod_eq_single a (fun x _ hx => h x hx) fun ha => (ha (Finset.mem_univ a)).elim
 #align fintype.prod_eq_single Fintype.prod_eq_single
 #align fintype.sum_eq_single Fintype.sum_eq_single
 
 @[to_additive]
-theorem prod_eq_mul {f : α → M} (a b : α) (h₁ : a ≠ b) (h₂ : ∀ x, x ≠ a ∧ x ≠ b → f x = 1) :
+lemma prod_eq_mul {f : α → M} (a b : α) (h₁ : a ≠ b) (h₂ : ∀ x, x ≠ a ∧ x ≠ b → f x = 1) :
     ∏ x, f x = f a * f b := by
   apply Finset.prod_eq_mul a b h₁ fun x _ hx => h₂ x hx <;>
     exact fun hc => (hc (Finset.mem_univ _)).elim
@@ -109,7 +109,7 @@ section
 variable {M : Type*} [Fintype α] [CommMonoid M]
 
 @[to_additive (attr := simp)]
-theorem Fintype.prod_option (f : Option α → M) : ∏ i, f i = f none * ∏ i, f (some i) :=
+lemma Fintype.prod_option (f : Option α → M) : ∏ i, f i = f none * ∏ i, f (some i) :=
   Finset.prod_insertNone f univ
 #align fintype.prod_option Fintype.prod_option
 #align fintype.sum_option Fintype.sum_option
@@ -177,13 +177,13 @@ end Pi
 
 -- TODO: this is a basic thereom about `Fintype.card`,
 -- and ideally could be moved to `Mathlib.Data.Fintype.Card`.
-theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
+lemma Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
     Fintype.card (α → β) = Fintype.card β ^ Fintype.card α := by
   simp
 #align fintype.card_fun Fintype.card_fun
 
 @[simp]
-theorem card_vector [Fintype α] (n : ℕ) : Fintype.card (Vector α n) = Fintype.card α ^ n := by
+lemma card_vector [Fintype α] (n : ℕ) : Fintype.card (Vector α n) = Fintype.card α ^ n := by
   rw [Fintype.ofEquiv_card]; simp
 #align card_vector card_vector
 
@@ -199,7 +199,7 @@ theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
 #align fin.sum_univ_eq_sum_range Fin.sum_univ_eq_sum_range
 
 @[to_additive]
-theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → β) :
+lemma Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → β) :
     ∏ i, c i = ∏ i in Finset.range n, if h : i < n then c ⟨i, h⟩ else 1 := by
   rw [← Fin.prod_univ_eq_prod_range, Finset.prod_congr rfl]
   rintro ⟨i, hi⟩ _
@@ -208,14 +208,14 @@ theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → �
 #align finset.sum_fin_eq_sum_range Finset.sum_fin_eq_sum_range
 
 @[to_additive]
-theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] (p : α → Prop)
+lemma Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] (p : α → Prop)
     [DecidablePred p] (f : α → M) : ∏ a in { x | p x }.toFinset, f a = ∏ a : Subtype p, f a := by
   rw [← Finset.prod_subtype]
   simp_rw [Set.mem_toFinset]; intro; rfl
 #align finset.prod_to_finset_eq_subtype Finset.prod_toFinset_eq_subtype
 #align finset.sum_to_finset_eq_subtype Finset.sum_toFinset_eq_subtype
 
-nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p] [CommMonoid β]
+nonrec lemma Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p] [CommMonoid β]
     (f : ∀ a, p a → β) (g : ∀ a, ¬p a → β) :
     (∏ a, dite (p a) (f a) (g a)) =
     (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
@@ -232,21 +232,21 @@ open Finset
 variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α₂] [CommMonoid M]
 
 @[to_additive]
-theorem Fintype.prod_sum_elim (f : α₁ → M) (g : α₂ → M) :
+lemma Fintype.prod_sum_elim (f : α₁ → M) (g : α₂ → M) :
     ∏ x, Sum.elim f g x = (∏ a₁, f a₁) * ∏ a₂, g a₂ :=
   prod_disj_sum _ _ _
 #align fintype.prod_sum_elim Fintype.prod_sum_elim
 #align fintype.sum_sum_elim Fintype.sum_sum_elim
 
 @[to_additive (attr := simp)]
-theorem Fintype.prod_sum_type (f : Sum α₁ α₂ → M) :
+lemma Fintype.prod_sum_type (f : Sum α₁ α₂ → M) :
     ∏ x, f x = (∏ a₁, f (Sum.inl a₁)) * ∏ a₂, f (Sum.inr a₂) :=
   prod_disj_sum _ _ _
 #align fintype.prod_sum_type Fintype.prod_sum_type
 #align fintype.sum_sum_type Fintype.sum_sum_type
 
 @[to_additive (attr := simp) Fintype.sum_prod_type]
-theorem Fintype.prod_prod_type [CommMonoid γ] {f : α₁ × α₂ → γ} :
+lemma Fintype.prod_prod_type [CommMonoid γ] {f : α₁ × α₂ → γ} :
     ∏ x, f x = ∏ x, ∏ y, f (x, y) :=
   Finset.prod_product
 
@@ -257,7 +257,7 @@ theorem Fintype.prod_prod_type' [CommMonoid γ] {f : α₁ → α₂ → γ} :
   Finset.prod_product'
 
 @[to_additive Fintype.sum_prod_type_right]
-theorem Fintype.prod_prod_type_right [CommMonoid γ] {f : α₁ × α₂ → γ} :
+lemma Fintype.prod_prod_type_right [CommMonoid γ] {f : α₁ × α₂ → γ} :
     ∏ x, f x = ∏ y, ∏ x, f (x, y) :=
   Finset.prod_product_right
 

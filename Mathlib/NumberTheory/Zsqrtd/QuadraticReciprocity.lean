@@ -30,7 +30,7 @@ namespace GaussianInt
 
 open PrincipalIdealRing
 
-theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
+lemma mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
     (hpi : Prime (p : ℤ[i])) : p % 4 = 3 :=
   hp.1.eq_two_or_odd.elim
     (fun hp2 =>
@@ -83,7 +83,7 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
       tauto
 #align gaussian_int.mod_four_eq_three_of_nat_prime_of_prime GaussianInt.mod_four_eq_three_of_nat_prime_of_prime
 
-theorem prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [hp : Fact p.Prime] (hp3 : p % 4 = 3) :
+lemma prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [hp : Fact p.Prime] (hp3 : p % 4 = 3) :
     Prime (p : ℤ[i]) :=
   irreducible_iff_prime.1 <|
     by_contradiction fun hpi =>

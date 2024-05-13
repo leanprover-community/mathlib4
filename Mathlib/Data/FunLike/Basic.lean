@@ -178,43 +178,43 @@ run_cmd Lean.Elab.Command.liftTermElabM do
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
 -- @[simp] -- Porting note: this loops in lean 4
-theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
+lemma coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
 #align fun_like.coe_eq_coe_fn DFunLike.coe_eq_coe_fn
 
-theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
+lemma coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
   DFunLike.coe_injective'
 #align fun_like.coe_injective DFunLike.coe_injective
 
 @[simp]
-theorem coe_fn_eq {f g : F} : (f : ∀ a : α, β a) = (g : ∀ a : α, β a) ↔ f = g :=
+lemma coe_fn_eq {f g : F} : (f : ∀ a : α, β a) = (g : ∀ a : α, β a) ↔ f = g :=
   ⟨fun h ↦ DFunLike.coe_injective' h, fun h ↦ by cases h; rfl⟩
 #align fun_like.coe_fn_eq DFunLike.coe_fn_eq
 
-theorem ext' {f g : F} (h : (f : ∀ a : α, β a) = (g : ∀ a : α, β a)) : f = g :=
+lemma ext' {f g : F} (h : (f : ∀ a : α, β a) = (g : ∀ a : α, β a)) : f = g :=
   DFunLike.coe_injective' h
 #align fun_like.ext' DFunLike.ext'
 
-theorem ext'_iff {f g : F} : f = g ↔ (f : ∀ a : α, β a) = (g : ∀ a : α, β a) :=
+lemma ext'_iff {f g : F} : f = g ↔ (f : ∀ a : α, β a) = (g : ∀ a : α, β a) :=
   coe_fn_eq.symm
 #align fun_like.ext'_iff DFunLike.ext'_iff
 
-theorem ext (f g : F) (h : ∀ x : α, f x = g x) : f = g :=
+lemma ext (f g : F) (h : ∀ x : α, f x = g x) : f = g :=
   DFunLike.coe_injective' (funext h)
 #align fun_like.ext DFunLike.ext
 
-theorem ext_iff {f g : F} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : F} : f = g ↔ ∀ x, f x = g x :=
   coe_fn_eq.symm.trans Function.funext_iff
 #align fun_like.ext_iff DFunLike.ext_iff
 
-protected theorem congr_fun {f g : F} (h₁ : f = g) (x : α) : f x = g x :=
+protected lemma congr_fun {f g : F} (h₁ : f = g) (x : α) : f x = g x :=
   congr_fun (congr_arg _ h₁) x
 #align fun_like.congr_fun DFunLike.congr_fun
 
-theorem ne_iff {f g : F} : f ≠ g ↔ ∃ a, f a ≠ g a :=
+lemma ne_iff {f g : F} : f ≠ g ↔ ∃ a, f a ≠ g a :=
   ext_iff.not.trans not_forall
 #align fun_like.ne_iff DFunLike.ne_iff
 
-theorem exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
+lemma exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
   ne_iff.mp h
 #align fun_like.exists_ne DFunLike.exists_ne
 
@@ -235,11 +235,11 @@ variable {F α β : Sort*} [i : FunLike F α β]
 
 namespace DFunLike
 
-protected theorem congr {f g : F} {x y : α} (h₁ : f = g) (h₂ : x = y) : f x = g y :=
+protected lemma congr {f g : F} {x y : α} (h₁ : f = g) (h₂ : x = y) : f x = g y :=
   congr (congr_arg _ h₁) h₂
 #align fun_like.congr DFunLike.congr
 
-protected theorem congr_arg (f : F) {x y : α} (h₂ : x = y) : f x = f y :=
+protected lemma congr_arg (f : F) {x y : α} (h₂ : x = y) : f x = f y :=
   congr_arg _ h₂
 #align fun_like.congr_arg DFunLike.congr_arg
 

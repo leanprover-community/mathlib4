@@ -62,15 +62,15 @@ instance : AddMonoid (HahnSeries Γ R) where
     apply add_zero
 
 @[simp]
-theorem add_coeff' {x y : HahnSeries Γ R} : (x + y).coeff = x.coeff + y.coeff :=
+lemma add_coeff' {x y : HahnSeries Γ R} : (x + y).coeff = x.coeff + y.coeff :=
   rfl
 #align hahn_series.add_coeff' HahnSeries.add_coeff'
 
-theorem add_coeff {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a + y.coeff a :=
+lemma add_coeff {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a + y.coeff a :=
   rfl
 #align hahn_series.add_coeff HahnSeries.add_coeff
 
-theorem support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support x ∪ support y :=
+lemma support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support x ∪ support y :=
   fun a ha => by
   rw [mem_support, add_coeff] at ha
   rw [Set.mem_union, mem_support, mem_support]
@@ -78,7 +78,7 @@ theorem support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support
   rw [ha.1, ha.2, add_zero]
 #align hahn_series.support_add_subset HahnSeries.support_add_subset
 
-theorem min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries Γ R}
+lemma min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x + y ≠ 0) : min x.order y.order ≤ (x + y).order := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
@@ -108,7 +108,7 @@ section Domain
 
 variable {Γ' : Type*} [PartialOrder Γ']
 
-theorem embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
+lemma embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
     embDomain f (x + y) = embDomain f x + embDomain f y := by
   ext g
   by_cases hg : g ∈ Set.range f
@@ -146,32 +146,32 @@ instance : AddGroup (HahnSeries Γ R) :=
       apply add_left_neg }
 
 @[simp]
-theorem neg_coeff' {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
+lemma neg_coeff' {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
   rfl
 #align hahn_series.neg_coeff' HahnSeries.neg_coeff'
 
-theorem neg_coeff {x : HahnSeries Γ R} {a : Γ} : (-x).coeff a = -x.coeff a :=
+lemma neg_coeff {x : HahnSeries Γ R} {a : Γ} : (-x).coeff a = -x.coeff a :=
   rfl
 #align hahn_series.neg_coeff HahnSeries.neg_coeff
 
 @[simp]
-theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
+lemma support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
   ext
   simp
 #align hahn_series.support_neg HahnSeries.support_neg
 
 @[simp]
-theorem sub_coeff' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
+lemma sub_coeff' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
   ext
   simp [sub_eq_add_neg]
 #align hahn_series.sub_coeff' HahnSeries.sub_coeff'
 
-theorem sub_coeff {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a - y.coeff a := by
+lemma sub_coeff {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a - y.coeff a := by
   simp
 #align hahn_series.sub_coeff HahnSeries.sub_coeff
 
 @[simp]
-theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
+lemma order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
   by_cases hf : f = 0
   · simp only [hf, neg_zero]
   simp only [order, support_neg, neg_eq_zero]
@@ -195,7 +195,7 @@ instance : SMul R (HahnSeries Γ V) :=
       isPWO_support' := x.isPWO_support.mono (Function.support_const_smul_subset r x.coeff) }⟩
 
 @[simp]
-theorem smul_coeff {r : R} {x : HahnSeries Γ V} {a : Γ} : (r • x).coeff a = r • x.coeff a :=
+lemma smul_coeff {r : R} {x : HahnSeries Γ V} {a : Γ} : (r • x).coeff a = r • x.coeff a :=
   rfl
 #align hahn_series.smul_coeff HahnSeries.smul_coeff
 
@@ -214,13 +214,13 @@ instance : DistribMulAction R (HahnSeries Γ V) where
     ext
     simp [mul_smul]
 
-theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
+lemma order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     ¬ (r • x).order < x.order := by
   have hx : x ≠ 0 := right_ne_zero_of_smul h
   simp_all only [order, dite_false]
   exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right (fun _ => r) x.coeff)
 
-theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
+lemma le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     x.order ≤ (r • x).order := le_of_not_lt (order_smul_not_lt r x h)
 
 variable {S : Type*} [Monoid S] [DistribMulAction S V]
@@ -269,7 +269,7 @@ section Domain
 
 variable {Γ' : Type*} [PartialOrder Γ']
 
-theorem embDomain_smul (f : Γ ↪o Γ') (r : R) (x : HahnSeries Γ R) :
+lemma embDomain_smul (f : Γ ↪o Γ') (r : R) (x : HahnSeries Γ R) :
     embDomain f (r • x) = r • embDomain f x := by
   ext g
   by_cases hg : g ∈ Set.range f

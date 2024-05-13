@@ -62,7 +62,7 @@ lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ p
 
 lemma quarter_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n := (quarters_mem_preCantorSet n).1
 
-theorem quarter_mem_cantorSet : 1/4 ∈ cantorSet :=
+lemma quarter_mem_cantorSet : 1/4 ∈ cantorSet :=
   Set.mem_iInter.mpr quarter_mem_preCantorSet
 
 lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
@@ -72,7 +72,7 @@ lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
   | succ n ih =>
     exact Or.inl ⟨0, ih, by simp only [zero_div]⟩
 
-theorem zero_mem_cantorSet : 0 ∈ cantorSet := by simp [cantorSet, zero_mem_preCantorSet]
+lemma zero_mem_cantorSet : 0 ∈ cantorSet := by simp [cantorSet, zero_mem_preCantorSet]
 
 /-- The ternary Cantor set is a subset of [0,1]. -/
 lemma cantorSet_subset_unitInterval : cantorSet ⊆ Set.Icc 0 1 :=

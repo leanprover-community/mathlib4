@@ -32,7 +32,7 @@ namespace Iso
 
 variable {G} {W : Type*} {G' : SimpleGraph W} (f : G ≃g G')
 
-theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
+lemma card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
     G.edgeFinset.card = G'.edgeFinset.card := by
   apply Finset.card_eq_of_equiv
   simp only [Set.mem_toFinset]
@@ -73,13 +73,13 @@ lemma adj_replaceVertex_iff_of_ne {v w : V} (hv : v ≠ t) (hw : w ≠ t) :
 
 variable {s}
 
-theorem edgeSet_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeSet =
+lemma edgeSet_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeSet =
     G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s) := by
   ext e; refine' e.inductionOn _
   simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
   intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
 
-theorem edgeSet_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeSet =
+lemma edgeSet_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeSet =
     (G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s)) \ {s(t, t)} := by
   ext e; refine' e.inductionOn _
   simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
@@ -89,13 +89,13 @@ variable [Fintype V] [DecidableRel G.Adj]
 
 instance : DecidableRel (G.replaceVertex s t).Adj := by unfold replaceVertex; infer_instance
 
-theorem edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeFinset =
+lemma edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeFinset =
     G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t)) := by
   simp only [incidenceFinset, neighborFinset, ← Set.toFinset_diff, ← Set.toFinset_image,
     ← Set.toFinset_union]
   exact Set.toFinset_congr (G.edgeSet_replaceVertex_of_not_adj hn)
 
-theorem edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeFinset =
+lemma edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeFinset =
     (G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t))) \ {s(t, t)} := by
   simp only [incidenceFinset, neighborFinset, ← Set.toFinset_diff, ← Set.toFinset_image,
     ← Set.toFinset_union, ← Set.toFinset_singleton]
@@ -112,7 +112,7 @@ lemma disjoint_sdiff_neighborFinset_image :
     simp_all [incidenceSet]
   aesop
 
-theorem card_edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
+lemma card_edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
     (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_not_adj hn,
@@ -123,7 +123,7 @@ theorem card_edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
   unfold Function.Injective
   aesop
 
-theorem card_edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) :
+lemma card_edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) :
     (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t - 1 := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_adj ha, card_sdiff (by simp [ha]),
@@ -168,13 +168,13 @@ variable [Fintype V] [DecidableRel G.Adj]
 
 instance : Fintype (edge s t).edgeSet := by rw [edge]; infer_instance
 
-theorem edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
+lemma edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
     (G ⊔ edge s t).edgeFinset = G.edgeFinset.cons s(s, t) (by simp_all) := by
   letI := Classical.decEq V
   rw [edgeFinset_sup, cons_eq_insert, insert_eq, union_comm]
   simp_rw [edgeFinset, edge_edgeSet_of_ne h]; rfl
 
-theorem card_edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
+lemma card_edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
     (G ⊔ edge s t).edgeFinset.card = G.edgeFinset.card + 1 := by
   rw [G.edgeFinset_sup_edge hn h, card_cons]
 

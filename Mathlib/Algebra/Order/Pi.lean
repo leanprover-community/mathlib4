@@ -114,37 +114,37 @@ section const
 variable (β) [One α] [Preorder α] {a : α}
 
 @[to_additive const_nonneg_of_nonneg]
-theorem one_le_const_of_one_le (ha : 1 ≤ a) : 1 ≤ const β a := fun _ => ha
+lemma one_le_const_of_one_le (ha : 1 ≤ a) : 1 ≤ const β a := fun _ => ha
 #align function.one_le_const_of_one_le Function.one_le_const_of_one_le
 #align function.const_nonneg_of_nonneg Function.const_nonneg_of_nonneg
 
 @[to_additive]
-theorem const_le_one_of_le_one (ha : a ≤ 1) : const β a ≤ 1 := fun _ => ha
+lemma const_le_one_of_le_one (ha : a ≤ 1) : const β a ≤ 1 := fun _ => ha
 #align function.const_le_one_of_le_one Function.const_le_one_of_le_one
 #align function.const_nonpos_of_nonpos Function.const_nonpos_of_nonpos
 
 variable {β} [Nonempty β]
 
 @[to_additive (attr := simp) const_nonneg]
-theorem one_le_const : 1 ≤ const β a ↔ 1 ≤ a :=
+lemma one_le_const : 1 ≤ const β a ↔ 1 ≤ a :=
   @const_le_const _ _ _ _ 1 _
 #align function.one_le_const Function.one_le_const
 #align function.const_nonneg Function.const_nonneg
 
 @[to_additive (attr := simp) const_pos]
-theorem one_lt_const : 1 < const β a ↔ 1 < a :=
+lemma one_lt_const : 1 < const β a ↔ 1 < a :=
   @const_lt_const _ _ _ _ 1 a
 #align function.one_lt_const Function.one_lt_const
 #align function.const_pos Function.const_pos
 
 @[to_additive (attr := simp)]
-theorem const_le_one : const β a ≤ 1 ↔ a ≤ 1 :=
+lemma const_le_one : const β a ≤ 1 ↔ a ≤ 1 :=
   @const_le_const _ _ _ _ _ 1
 #align function.const_le_one Function.const_le_one
 #align function.const_nonpos Function.const_nonpos
 
 @[to_additive (attr := simp) const_neg']
-theorem const_lt_one : const β a < 1 ↔ a < 1 :=
+lemma const_lt_one : const β a < 1 ↔ a < 1 :=
   @const_lt_const _ _ _ _ _ 1
 #align function.const_lt_one Function.const_lt_one
 #align function.const_neg Function.const_neg'

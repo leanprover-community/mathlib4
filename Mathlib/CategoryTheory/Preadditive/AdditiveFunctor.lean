@@ -52,7 +52,7 @@ variable {C D E : Type*} [Category C] [Category D] [Category E]
   [Preadditive C] [Preadditive D] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
 
 @[simp]
-theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
+lemma map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
   Functor.Additive.map_add
 #align category_theory.functor.map_add CategoryTheory.Functor.map_add
 
@@ -63,7 +63,7 @@ def mapAddHom {X Y : C} : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y) :=
   AddMonoidHom.mk' (fun f => F.map f) fun _ _ => F.map_add
 #align category_theory.functor.map_add_hom CategoryTheory.Functor.mapAddHom
 
-theorem coe_mapAddHom {X Y : C} : ⇑(F.mapAddHom : (X ⟶ Y) →+ _) = F.map :=
+lemma coe_mapAddHom {X Y : C} : ⇑(F.mapAddHom : (X ⟶ Y) →+ _) = F.map :=
   rfl
 #align category_theory.functor.coe_map_add_hom CategoryTheory.Functor.coe_mapAddHom
 
@@ -77,28 +77,28 @@ instance {E : Type*} [Category E] [Preadditive E] (G : D ⥤ E) [Functor.Additiv
     Additive (F ⋙ G) where
 
 @[simp]
-theorem map_neg {X Y : C} {f : X ⟶ Y} : F.map (-f) = -F.map f :=
+lemma map_neg {X Y : C} {f : X ⟶ Y} : F.map (-f) = -F.map f :=
   (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_neg _
 #align category_theory.functor.map_neg CategoryTheory.Functor.map_neg
 
 @[simp]
-theorem map_sub {X Y : C} {f g : X ⟶ Y} : F.map (f - g) = F.map f - F.map g :=
+lemma map_sub {X Y : C} {f g : X ⟶ Y} : F.map (f - g) = F.map f - F.map g :=
   (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_sub _ _
 #align category_theory.functor.map_sub CategoryTheory.Functor.map_sub
 
-theorem map_nsmul {X Y : C} {f : X ⟶ Y} {n : ℕ} : F.map (n • f) = n • F.map f :=
+lemma map_nsmul {X Y : C} {f : X ⟶ Y} {n : ℕ} : F.map (n • f) = n • F.map f :=
   (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_nsmul _ _
 #align category_theory.functor.map_nsmul CategoryTheory.Functor.map_nsmul
 
 -- You can alternatively just use `Functor.map_smul` here, with an explicit `(r : ℤ)` argument.
-theorem map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.map f :=
+lemma map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.map f :=
   (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_zsmul _ _
 #align category_theory.functor.map_zsmul CategoryTheory.Functor.map_zsmul
 
 open BigOperators
 
 @[simp]
-nonrec theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
+nonrec lemma map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
     F.map (∑ a in s, f a) = ∑ a in s, F.map (f a) :=
   map_sum F.mapAddHom f s
 #align category_theory.functor.map_sum CategoryTheory.Functor.map_sum
@@ -170,7 +170,7 @@ instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
             erw [← F.map_sum, ← F.map_id, IsBilimit.total hb])} }
 #align category_theory.functor.preserves_finite_biproducts_of_additive CategoryTheory.Functor.preservesFiniteBiproductsOfAdditive
 
-theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [PreservesZeroMorphisms F]
+lemma additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [PreservesZeroMorphisms F]
     [PreservesBinaryBiproducts F] : Additive F where
   map_add {X Y f g} := by
     rw [biprod.add_eq_lift_id_desc, F.map_comp, ← biprod.lift_mapBiprod,
@@ -239,25 +239,25 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of CategoryTheory.AdditiveFunctor.of
 
 @[simp]
-theorem AdditiveFunctor.of_fst (F : C ⥤ D) [F.Additive] : (AdditiveFunctor.of F).1 = F :=
+lemma AdditiveFunctor.of_fst (F : C ⥤ D) [F.Additive] : (AdditiveFunctor.of F).1 = F :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of_fst CategoryTheory.AdditiveFunctor.of_fst
 
 @[simp]
-theorem AdditiveFunctor.forget_obj (F : C ⥤+ D) : (AdditiveFunctor.forget C D).obj F = F.1 :=
+lemma AdditiveFunctor.forget_obj (F : C ⥤+ D) : (AdditiveFunctor.forget C D).obj F = F.1 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.forget_obj CategoryTheory.AdditiveFunctor.forget_obj
 
-theorem AdditiveFunctor.forget_obj_of (F : C ⥤ D) [F.Additive] :
+lemma AdditiveFunctor.forget_obj_of (F : C ⥤ D) [F.Additive] :
     (AdditiveFunctor.forget C D).obj (AdditiveFunctor.of F) = F :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.forget_obj_of CategoryTheory.AdditiveFunctor.forget_obj_of
 
 @[simp]
-theorem AdditiveFunctor.forget_map (F G : C ⥤+ D) (α : F ⟶ G) :
+lemma AdditiveFunctor.forget_map (F G : C ⥤+ D) (α : F ⟶ G) :
     (AdditiveFunctor.forget C D).map α = α :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -318,42 +318,42 @@ end
 variable {C D}
 
 @[simp]
-theorem AdditiveFunctor.ofLeftExact_obj_fst (F : C ⥤ₗ D) :
+lemma AdditiveFunctor.ofLeftExact_obj_fst (F : C ⥤ₗ D) :
     ((AdditiveFunctor.ofLeftExact C D).obj F).obj = F.obj :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of_left_exact_obj_fst CategoryTheory.AdditiveFunctor.ofLeftExact_obj_fst
 
 @[simp]
-theorem AdditiveFunctor.ofRightExact_obj_fst (F : C ⥤ᵣ D) :
+lemma AdditiveFunctor.ofRightExact_obj_fst (F : C ⥤ᵣ D) :
     ((AdditiveFunctor.ofRightExact C D).obj F).obj = F.obj :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of_right_exact_obj_fst CategoryTheory.AdditiveFunctor.ofRightExact_obj_fst
 
 @[simp]
-theorem AdditiveFunctor.ofExact_obj_fst (F : C ⥤ₑ D) :
+lemma AdditiveFunctor.ofExact_obj_fst (F : C ⥤ₑ D) :
     ((AdditiveFunctor.ofExact C D).obj F).obj = F.obj :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of_exact_obj_fst CategoryTheory.AdditiveFunctor.ofExact_obj_fst
 
 @[simp]
-theorem AdditiveFunctor.ofLeftExact_map {F G : C ⥤ₗ D} (α : F ⟶ G) :
+lemma AdditiveFunctor.ofLeftExact_map {F G : C ⥤ₗ D} (α : F ⟶ G) :
     (AdditiveFunctor.ofLeftExact C D).map α = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Additive_Functor.of_left_exact_map CategoryTheory.AdditiveFunctor.ofLeftExact_map
 
 @[simp]
-theorem AdditiveFunctor.ofRightExact_map {F G : C ⥤ᵣ D} (α : F ⟶ G) :
+lemma AdditiveFunctor.ofRightExact_map {F G : C ⥤ᵣ D} (α : F ⟶ G) :
     (AdditiveFunctor.ofRightExact C D).map α = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Additive_Functor.of_right_exact_map CategoryTheory.AdditiveFunctor.ofRightExact_map
 
 @[simp]
-theorem AdditiveFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
+lemma AdditiveFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
     (AdditiveFunctor.ofExact C D).map α = α :=
   rfl
 set_option linter.uppercaseLean3 false in

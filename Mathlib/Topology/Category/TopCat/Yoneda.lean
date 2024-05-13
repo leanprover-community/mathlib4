@@ -43,9 +43,9 @@ def yonedaPresheaf' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
   obj X := C((unop X).1, Y)
   map f g := ContinuousMap.comp g f.unop
 
-theorem comp_yonedaPresheaf' : yonedaPresheaf F Y = F.op ⋙ yonedaPresheaf' Y := rfl
+lemma comp_yonedaPresheaf' : yonedaPresheaf F Y = F.op ⋙ yonedaPresheaf' Y := rfl
 
-theorem piComparison_fac {α : Type} (X : α → TopCat) :
+lemma piComparison_fac {α : Type} (X : α → TopCat) :
     piComparison (yonedaPresheaf'.{w, w'} Y) (fun x ↦ op (X x)) =
     (yonedaPresheaf' Y).map ((opCoproductIsoProduct X).inv ≫ (TopCat.sigmaIsoSigma X).inv.op) ≫
     (equivEquivIso (sigmaEquiv Y (fun x ↦ (X x).1))).inv ≫ (Types.productIso _).inv := by

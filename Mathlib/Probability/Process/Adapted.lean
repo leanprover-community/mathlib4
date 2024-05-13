@@ -53,50 +53,50 @@ def Adapted (f : Filtration ι m) (u : ι → Ω → β) : Prop :=
 namespace Adapted
 
 @[to_additive]
-protected theorem mul [Mul β] [ContinuousMul β] (hu : Adapted f u) (hv : Adapted f v) :
+protected lemma mul [Mul β] [ContinuousMul β] (hu : Adapted f u) (hv : Adapted f v) :
     Adapted f (u * v) := fun i => (hu i).mul (hv i)
 #align measure_theory.adapted.mul MeasureTheory.Adapted.mul
 #align measure_theory.adapted.add MeasureTheory.Adapted.add
 
 @[to_additive]
-protected theorem div [Div β] [ContinuousDiv β] (hu : Adapted f u) (hv : Adapted f v) :
+protected lemma div [Div β] [ContinuousDiv β] (hu : Adapted f u) (hv : Adapted f v) :
     Adapted f (u / v) := fun i => (hu i).div (hv i)
 #align measure_theory.adapted.div MeasureTheory.Adapted.div
 #align measure_theory.adapted.sub MeasureTheory.Adapted.sub
 
 @[to_additive]
-protected theorem inv [Group β] [TopologicalGroup β] (hu : Adapted f u) :
+protected lemma inv [Group β] [TopologicalGroup β] (hu : Adapted f u) :
     Adapted f u⁻¹ := fun i => (hu i).inv
 #align measure_theory.adapted.inv MeasureTheory.Adapted.inv
 #align measure_theory.adapted.neg MeasureTheory.Adapted.neg
 
-protected theorem smul [SMul ℝ β] [ContinuousSMul ℝ β] (c : ℝ) (hu : Adapted f u) :
+protected lemma smul [SMul ℝ β] [ContinuousSMul ℝ β] (c : ℝ) (hu : Adapted f u) :
     Adapted f (c • u) := fun i => (hu i).const_smul c
 #align measure_theory.adapted.smul MeasureTheory.Adapted.smul
 
-protected theorem stronglyMeasurable {i : ι} (hf : Adapted f u) : StronglyMeasurable[m] (u i) :=
+protected lemma stronglyMeasurable {i : ι} (hf : Adapted f u) : StronglyMeasurable[m] (u i) :=
   (hf i).mono (f.le i)
 #align measure_theory.adapted.strongly_measurable MeasureTheory.Adapted.stronglyMeasurable
 
-theorem stronglyMeasurable_le {i j : ι} (hf : Adapted f u) (hij : i ≤ j) :
+lemma stronglyMeasurable_le {i j : ι} (hf : Adapted f u) (hij : i ≤ j) :
     StronglyMeasurable[f j] (u i) := (hf i).mono (f.mono hij)
 #align measure_theory.adapted.strongly_measurable_le MeasureTheory.Adapted.stronglyMeasurable_le
 
 end Adapted
 
-theorem adapted_const (f : Filtration ι m) (x : β) : Adapted f fun _ _ => x := fun _ =>
+lemma adapted_const (f : Filtration ι m) (x : β) : Adapted f fun _ _ => x := fun _ =>
   stronglyMeasurable_const
 #align measure_theory.adapted_const MeasureTheory.adapted_const
 
 variable (β)
 
-theorem adapted_zero [Zero β] (f : Filtration ι m) : Adapted f (0 : ι → Ω → β) := fun i =>
+lemma adapted_zero [Zero β] (f : Filtration ι m) : Adapted f (0 : ι → Ω → β) := fun i =>
   @stronglyMeasurable_zero Ω β (f i) _ _
 #align measure_theory.adapted_zero MeasureTheory.adapted_zero
 
 variable {β}
 
-theorem Filtration.adapted_natural [MetrizableSpace β] [mβ : MeasurableSpace β] [BorelSpace β]
+lemma Filtration.adapted_natural [MetrizableSpace β] [mβ : MeasurableSpace β] [BorelSpace β]
     {u : ι → Ω → β} (hum : ∀ i, StronglyMeasurable[m] (u i)) :
     Adapted (Filtration.natural u hum) u := by
   intro i
@@ -115,7 +115,7 @@ def ProgMeasurable [MeasurableSpace ι] (f : Filtration ι m) (u : ι → Ω →
   ∀ i, StronglyMeasurable[Subtype.instMeasurableSpace.prod (f i)] fun p : Set.Iic i × Ω => u p.1 p.2
 #align measure_theory.prog_measurable MeasureTheory.ProgMeasurable
 
-theorem progMeasurable_const [MeasurableSpace ι] (f : Filtration ι m) (b : β) :
+lemma progMeasurable_const [MeasurableSpace ι] (f : Filtration ι m) (b : β) :
     ProgMeasurable f (fun _ _ => b : ι → Ω → β) := fun i =>
   @stronglyMeasurable_const _ _ (Subtype.instMeasurableSpace.prod (f i)) _ _
 #align measure_theory.prog_measurable_const MeasureTheory.progMeasurable_const
@@ -124,7 +124,7 @@ namespace ProgMeasurable
 
 variable [MeasurableSpace ι]
 
-protected theorem adapted (h : ProgMeasurable f u) : Adapted f u := by
+protected lemma adapted (h : ProgMeasurable f u) : Adapted f u := by
   intro i
   have : u i = (fun p : Set.Iic i × Ω => u p.1 p.2) ∘ fun x => (⟨i, Set.mem_Iic.mpr le_rfl⟩, x) :=
     rfl
@@ -132,7 +132,7 @@ protected theorem adapted (h : ProgMeasurable f u) : Adapted f u := by
   exact (h i).comp_measurable measurable_prod_mk_left
 #align measure_theory.prog_measurable.adapted MeasureTheory.ProgMeasurable.adapted
 
-protected theorem comp {t : ι → Ω → ι} [TopologicalSpace ι] [BorelSpace ι] [MetrizableSpace ι]
+protected lemma comp {t : ι → Ω → ι} [TopologicalSpace ι] [BorelSpace ι] [MetrizableSpace ι]
     (h : ProgMeasurable f u) (ht : ProgMeasurable f t) (ht_le : ∀ i ω, t i ω ≤ i) :
     ProgMeasurable f fun i ω => u (t i ω) ω := by
   intro i
@@ -146,14 +146,14 @@ protected theorem comp {t : ι → Ω → ι} [TopologicalSpace ι] [BorelSpace 
 section Arithmetic
 
 @[to_additive]
-protected theorem mul [Mul β] [ContinuousMul β] (hu : ProgMeasurable f u)
+protected lemma mul [Mul β] [ContinuousMul β] (hu : ProgMeasurable f u)
     (hv : ProgMeasurable f v) : ProgMeasurable f fun i ω => u i ω * v i ω := fun i =>
   (hu i).mul (hv i)
 #align measure_theory.prog_measurable.mul MeasureTheory.ProgMeasurable.mul
 #align measure_theory.prog_measurable.add MeasureTheory.ProgMeasurable.add
 
 @[to_additive]
-protected theorem finset_prod' {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
+protected lemma finset_prod' {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
     {s : Finset γ} (h : ∀ c ∈ s, ProgMeasurable f (U c)) : ProgMeasurable f (∏ c in s, U c) :=
   Finset.prod_induction U (ProgMeasurable f) (fun _ _ => ProgMeasurable.mul)
     (progMeasurable_const _ 1) h
@@ -161,7 +161,7 @@ protected theorem finset_prod' {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
 #align measure_theory.prog_measurable.finset_sum' MeasureTheory.ProgMeasurable.finset_sum'
 
 @[to_additive]
-protected theorem finset_prod {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
+protected lemma finset_prod {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
     {s : Finset γ} (h : ∀ c ∈ s, ProgMeasurable f (U c)) :
     ProgMeasurable f fun i a => ∏ c in s, U c i a := by
   convert ProgMeasurable.finset_prod' h using 1; ext (i a); simp only [Finset.prod_apply]
@@ -169,13 +169,13 @@ protected theorem finset_prod {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
 #align measure_theory.prog_measurable.finset_sum MeasureTheory.ProgMeasurable.finset_sum
 
 @[to_additive]
-protected theorem inv [Group β] [TopologicalGroup β] (hu : ProgMeasurable f u) :
+protected lemma inv [Group β] [TopologicalGroup β] (hu : ProgMeasurable f u) :
     ProgMeasurable f fun i ω => (u i ω)⁻¹ := fun i => (hu i).inv
 #align measure_theory.prog_measurable.inv MeasureTheory.ProgMeasurable.inv
 #align measure_theory.prog_measurable.neg MeasureTheory.ProgMeasurable.neg
 
 @[to_additive]
-protected theorem div [Group β] [TopologicalGroup β] (hu : ProgMeasurable f u)
+protected lemma div [Group β] [TopologicalGroup β] (hu : ProgMeasurable f u)
     (hv : ProgMeasurable f v) : ProgMeasurable f fun i ω => u i ω / v i ω := fun i =>
   (hu i).div (hv i)
 #align measure_theory.prog_measurable.div MeasureTheory.ProgMeasurable.div
@@ -185,7 +185,7 @@ end Arithmetic
 
 end ProgMeasurable
 
-theorem progMeasurable_of_tendsto' {γ} [MeasurableSpace ι] [PseudoMetrizableSpace β]
+lemma progMeasurable_of_tendsto' {γ} [MeasurableSpace ι] [PseudoMetrizableSpace β]
     (fltr : Filter γ) [fltr.NeBot] [fltr.IsCountablyGenerated] {U : γ → ι → Ω → β}
     (h : ∀ l, ProgMeasurable f (U l)) (h_tendsto : Tendsto U fltr (𝓝 u)) : ProgMeasurable f u := by
   intro i
@@ -198,7 +198,7 @@ theorem progMeasurable_of_tendsto' {γ} [MeasurableSpace ι] [PseudoMetrizableSp
   exact fun s hs h_mem => h_tendsto {g | g x.snd ∈ s} (hs.preimage (continuous_apply x.snd)) h_mem
 #align measure_theory.prog_measurable_of_tendsto' MeasureTheory.progMeasurable_of_tendsto'
 
-theorem progMeasurable_of_tendsto [MeasurableSpace ι] [PseudoMetrizableSpace β] {U : ℕ → ι → Ω → β}
+lemma progMeasurable_of_tendsto [MeasurableSpace ι] [PseudoMetrizableSpace β] {U : ℕ → ι → Ω → β}
     (h : ∀ l, ProgMeasurable f (U l)) (h_tendsto : Tendsto U atTop (𝓝 u)) : ProgMeasurable f u :=
   progMeasurable_of_tendsto' atTop h h_tendsto
 #align measure_theory.prog_measurable_of_tendsto MeasureTheory.progMeasurable_of_tendsto
@@ -222,7 +222,7 @@ theorem Adapted.progMeasurable_of_discrete [TopologicalSpace ι] [DiscreteTopolo
 #align measure_theory.adapted.prog_measurable_of_discrete MeasureTheory.Adapted.progMeasurable_of_discrete
 
 -- this dot notation will make more sense once we have a more general definition for predictable
-theorem Predictable.adapted {f : Filtration ℕ m} {u : ℕ → Ω → β} (hu : Adapted f fun n => u (n + 1))
+lemma Predictable.adapted {f : Filtration ℕ m} {u : ℕ → Ω → β} (hu : Adapted f fun n => u (n + 1))
     (hu0 : StronglyMeasurable[f 0] (u 0)) : Adapted f u := fun n =>
   match n with
   | 0 => hu0

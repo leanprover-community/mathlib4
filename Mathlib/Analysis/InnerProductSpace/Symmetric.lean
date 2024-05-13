@@ -68,24 +68,24 @@ theorem isSymmetric_iff_sesqForm (T : E →ₗ[𝕜] E) :
 
 end Real
 
-theorem IsSymmetric.conj_inner_sym {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) (x y : E) :
+lemma IsSymmetric.conj_inner_sym {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) (x y : E) :
     conj ⟪T x, y⟫ = ⟪T y, x⟫ := by rw [hT x y, inner_conj_symm]
 #align linear_map.is_symmetric.conj_inner_sym LinearMap.IsSymmetric.conj_inner_sym
 
 @[simp]
-theorem IsSymmetric.apply_clm {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →ₗ[𝕜] E)) (x y : E) :
+lemma IsSymmetric.apply_clm {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →ₗ[𝕜] E)) (x y : E) :
     ⟪T x, y⟫ = ⟪x, T y⟫ :=
   hT x y
 #align linear_map.is_symmetric.apply_clm LinearMap.IsSymmetric.apply_clm
 
-theorem isSymmetric_zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
+lemma isSymmetric_zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
   (inner_zero_right x : ⟪x, 0⟫ = 0).symm ▸ (inner_zero_left y : ⟪0, y⟫ = 0)
 #align linear_map.is_symmetric_zero LinearMap.isSymmetric_zero
 
-theorem isSymmetric_id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
+lemma isSymmetric_id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
 #align linear_map.is_symmetric_id LinearMap.isSymmetric_id
 
-theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
+lemma IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T + S).IsSymmetric := by
   intro x y
   rw [LinearMap.add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right]
@@ -126,7 +126,7 @@ theorem IsSymmetric.restrict_invariant {T : E →ₗ[𝕜] E} (hT : IsSymmetric 
     (hV : ∀ v ∈ V, T v ∈ V) : IsSymmetric (T.restrict hV) := fun v w => hT v w
 #align linear_map.is_symmetric.restrict_invariant LinearMap.IsSymmetric.restrict_invariant
 
-theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
+lemma IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
     @LinearMap.IsSymmetric ℝ E _ _ (InnerProductSpace.rclikeToReal 𝕜 E)
       (@LinearMap.restrictScalars ℝ 𝕜 _ _ _ _ _ _ (InnerProductSpace.rclikeToReal 𝕜 E).toModule
         (InnerProductSpace.rclikeToReal 𝕜 E).toModule _ _ _ T) :=

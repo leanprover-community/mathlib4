@@ -63,7 +63,7 @@ instance : Coe (ProperCone 𝕜 E) (PointedCone 𝕜 E) :=
 --   rfl
 #noalign proper_cone.to_convex_cone_eq_coe
 
-theorem toPointedCone_injective : Function.Injective ((↑) : ProperCone 𝕜 E → PointedCone 𝕜 E) :=
+lemma toPointedCone_injective : Function.Injective ((↑) : ProperCone 𝕜 E → PointedCone 𝕜 E) :=
   fun S T h => by cases S; cases T; congr
 #align proper_cone.ext' ProperCone.toPointedCone_injective
 
@@ -73,22 +73,22 @@ instance : SetLike (ProperCone 𝕜 E) E where
   coe_injective' _ _ h := ProperCone.toPointedCone_injective (SetLike.coe_injective h)
 
 @[ext]
-theorem ext {S T : ProperCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
+lemma ext {S T : ProperCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 #align proper_cone.ext ProperCone.ext
 
 @[simp]
-theorem mem_coe {x : E} {K : ProperCone 𝕜 E} : x ∈ (K : PointedCone 𝕜 E) ↔ x ∈ K :=
+lemma mem_coe {x : E} {K : ProperCone 𝕜 E} : x ∈ (K : PointedCone 𝕜 E) ↔ x ∈ K :=
   Iff.rfl
 #align proper_cone.mem_coe ProperCone.mem_coe
 
 instance instZero (K : ProperCone 𝕜 E) : Zero K := PointedCone.instZero (K.toSubmodule)
 
-protected theorem nonempty (K : ProperCone 𝕜 E) : (K : Set E).Nonempty :=
+protected lemma nonempty (K : ProperCone 𝕜 E) : (K : Set E).Nonempty :=
   ⟨0, by { simp_rw [SetLike.mem_coe, ← ProperCone.mem_coe, Submodule.zero_mem] }⟩
 #align proper_cone.nonempty ProperCone.nonempty
 
-protected theorem isClosed (K : ProperCone 𝕜 E) : IsClosed (K : Set E) :=
+protected lemma isClosed (K : ProperCone 𝕜 E) : IsClosed (K : Set E) :=
   K.isClosed'
 #align proper_cone.is_closed ProperCone.isClosed
 
@@ -107,11 +107,11 @@ def positive : ProperCone 𝕜 E where
   isClosed' := isClosed_Ici
 
 @[simp]
-theorem mem_positive {x : E} : x ∈ positive 𝕜 E ↔ 0 ≤ x :=
+lemma mem_positive {x : E} : x ∈ positive 𝕜 E ↔ 0 ≤ x :=
   Iff.rfl
 
 @[simp]
-theorem coe_positive : ↑(positive 𝕜 E) = ConvexCone.positive 𝕜 E :=
+lemma coe_positive : ↑(positive 𝕜 E) = ConvexCone.positive 𝕜 E :=
   rfl
 
 end PositiveCone
@@ -129,16 +129,16 @@ instance : Inhabited (ProperCone 𝕜 E) :=
   ⟨0⟩
 
 @[simp]
-theorem mem_zero (x : E) : x ∈ (0 : ProperCone 𝕜 E) ↔ x = 0 :=
+lemma mem_zero (x : E) : x ∈ (0 : ProperCone 𝕜 E) ↔ x = 0 :=
   Iff.rfl
 #align proper_cone.mem_zero ProperCone.mem_zero
 
 @[simp, norm_cast]
-theorem coe_zero : ↑(0 : ProperCone 𝕜 E) = (0 : ConvexCone 𝕜 E) :=
+lemma coe_zero : ↑(0 : ProperCone 𝕜 E) = (0 : ConvexCone 𝕜 E) :=
   rfl
 #align proper_cone.coe_zero ProperCone.coe_zero
 
-theorem pointed_zero : ((0 : ProperCone 𝕜 E) : ConvexCone 𝕜 E).Pointed := by
+lemma pointed_zero : ((0 : ProperCone 𝕜 E) : ConvexCone 𝕜 E).Pointed := by
   simp [ConvexCone.pointed_zero]
 #align proper_cone.pointed_zero ProperCone.pointed_zero
 
@@ -150,7 +150,7 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℝ G]
 
-protected theorem pointed (K : ProperCone ℝ E) : (K : ConvexCone ℝ E).Pointed :=
+protected lemma pointed (K : ProperCone ℝ E) : (K : ConvexCone ℝ E).Pointed :=
   (K : ConvexCone ℝ E).pointed_of_nonempty_of_isClosed K.nonempty K.isClosed
 #align proper_cone.pointed ProperCone.pointed
 
@@ -162,19 +162,19 @@ noncomputable def map (f : E →L[ℝ] F) (K : ProperCone ℝ E) : ProperCone �
 #align proper_cone.map ProperCone.map
 
 @[simp, norm_cast]
-theorem coe_map (f : E →L[ℝ] F) (K : ProperCone ℝ E) :
+lemma coe_map (f : E →L[ℝ] F) (K : ProperCone ℝ E) :
     ↑(K.map f) = (PointedCone.map (f : E →ₗ[ℝ] F) ↑K).closure :=
   rfl
 #align proper_cone.coe_map ProperCone.coe_map
 
 @[simp]
-theorem mem_map {f : E →L[ℝ] F} {K : ProperCone ℝ E} {y : F} :
+lemma mem_map {f : E →L[ℝ] F} {K : ProperCone ℝ E} {y : F} :
     y ∈ K.map f ↔ y ∈ (PointedCone.map (f : E →ₗ[ℝ] F) ↑K).closure :=
   Iff.rfl
 #align proper_cone.mem_map ProperCone.mem_map
 
 @[simp]
-theorem map_id (K : ProperCone ℝ E) : K.map (ContinuousLinearMap.id ℝ E) = K :=
+lemma map_id (K : ProperCone ℝ E) : K.map (ContinuousLinearMap.id ℝ E) = K :=
   ProperCone.toPointedCone_injective <| by simpa using IsClosed.closure_eq K.isClosed
 #align proper_cone.map_id ProperCone.map_id
 
@@ -185,12 +185,12 @@ def dual (K : ProperCone ℝ E) : ProperCone ℝ E where
 #align proper_cone.dual ProperCone.dual
 
 @[simp, norm_cast]
-theorem coe_dual (K : ProperCone ℝ E) : K.dual = (K : Set E).innerDualCone :=
+lemma coe_dual (K : ProperCone ℝ E) : K.dual = (K : Set E).innerDualCone :=
   rfl
 #align proper_cone.coe_dual ProperCone.coe_dual
 
 @[simp]
-theorem mem_dual {K : ProperCone ℝ E} {y : E} : y ∈ dual K ↔ ∀ ⦃x⦄, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ := by
+lemma mem_dual {K : ProperCone ℝ E} {y : E} : y ∈ dual K ↔ ∀ ⦃x⦄, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ := by
   aesop
 #align proper_cone.mem_dual ProperCone.mem_dual
 
@@ -203,22 +203,22 @@ noncomputable def comap (f : E →L[ℝ] F) (S : ProperCone ℝ F) : ProperCone 
 #align proper_cone.comap ProperCone.comap
 
 @[simp]
-theorem coe_comap (f : E →L[ℝ] F) (S : ProperCone ℝ F) : (S.comap f : Set E) = f ⁻¹' S :=
+lemma coe_comap (f : E →L[ℝ] F) (S : ProperCone ℝ F) : (S.comap f : Set E) = f ⁻¹' S :=
   rfl
 #align proper_cone.coe_comap ProperCone.coe_comap
 
 @[simp]
-theorem comap_id (S : ConvexCone ℝ E) : S.comap LinearMap.id = S :=
+lemma comap_id (S : ConvexCone ℝ E) : S.comap LinearMap.id = S :=
   SetLike.coe_injective preimage_id
 #align proper_cone.comap_id ProperCone.comap_id
 
-theorem comap_comap (g : F →L[ℝ] G) (f : E →L[ℝ] F) (S : ProperCone ℝ G) :
+lemma comap_comap (g : F →L[ℝ] G) (f : E →L[ℝ] F) (S : ProperCone ℝ G) :
     (S.comap g).comap f = S.comap (g.comp f) :=
   SetLike.coe_injective <| by congr
 #align proper_cone.comap_comap ProperCone.comap_comap
 
 @[simp]
-theorem mem_comap {f : E →L[ℝ] F} {S : ProperCone ℝ F} {x : E} : x ∈ S.comap f ↔ f x ∈ S :=
+lemma mem_comap {f : E →L[ℝ] F} {S : ProperCone ℝ F} {x : E} : x ∈ S.comap f ↔ f x ∈ S :=
   Iff.rfl
 #align proper_cone.mem_comap ProperCone.mem_comap
 
@@ -283,7 +283,7 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
       exact ⟨x, hxK, rfl⟩)
 #align proper_cone.hyperplane_separation ProperCone.hyperplane_separation
 
-theorem hyperplane_separation_of_nmem (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
+lemma hyperplane_separation_of_nmem (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
     (disj : b ∉ K.map f) : ∃ y : F, adjoint f y ∈ K.dual ∧ ⟪y, b⟫_ℝ < 0 := by
   contrapose! disj; rwa [K.hyperplane_separation]
 #align proper_cone.hyperplane_separation_of_nmem ProperCone.hyperplane_separation_of_nmem

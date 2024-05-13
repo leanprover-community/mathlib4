@@ -111,7 +111,7 @@ instance applyMulSemiringAction :
 #align ring_aut.apply_mul_semiring_action RingAut.applyMulSemiringAction
 
 @[simp]
-protected theorem smul_def (f : RingAut R) (r : R) : f • r = f r :=
+protected lemma smul_def (f : RingAut R) (r : R) : f • r = f r :=
   rfl
 #align ring_aut.smul_def RingAut.smul_def
 

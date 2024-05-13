@@ -33,7 +33,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section Atlas
 
-theorem contMDiff_model : ContMDiff I 𝓘(𝕜, E) n I := by
+lemma contMDiff_model : ContMDiff I 𝓘(𝕜, E) n I := by
   intro x
   refine' (contMDiffAt_iff _ _).mpr ⟨I.continuousAt, _⟩
   simp only [mfld_simps]
@@ -42,7 +42,7 @@ theorem contMDiff_model : ContMDiff I 𝓘(𝕜, E) n I := by
   simp_rw [Function.comp_apply, I.left_inv, Function.id_def]
 #align cont_mdiff_model contMDiff_model
 
-theorem contMDiffOn_model_symm : ContMDiffOn 𝓘(𝕜, E) I n I.symm (range I) := by
+lemma contMDiffOn_model_symm : ContMDiffOn 𝓘(𝕜, E) I n I.symm (range I) := by
   rw [contMDiffOn_iff]
   refine' ⟨I.continuousOn_symm, fun x y => _⟩
   simp only [mfld_simps]
@@ -66,43 +66,43 @@ theorem contMDiffOn_symm_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) :
     le_top
 #align cont_mdiff_on_symm_of_mem_maximal_atlas contMDiffOn_symm_of_mem_maximalAtlas
 
-theorem contMDiffAt_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) (hx : x ∈ e.source) :
+lemma contMDiffAt_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) (hx : x ∈ e.source) :
     ContMDiffAt I I n e x :=
   (contMDiffOn_of_mem_maximalAtlas h).contMDiffAt <| e.open_source.mem_nhds hx
 #align cont_mdiff_at_of_mem_maximal_atlas contMDiffAt_of_mem_maximalAtlas
 
-theorem contMDiffAt_symm_of_mem_maximalAtlas {x : H} (h : e ∈ maximalAtlas I M)
+lemma contMDiffAt_symm_of_mem_maximalAtlas {x : H} (h : e ∈ maximalAtlas I M)
     (hx : x ∈ e.target) : ContMDiffAt I I n e.symm x :=
   (contMDiffOn_symm_of_mem_maximalAtlas h).contMDiffAt <| e.open_target.mem_nhds hx
 #align cont_mdiff_at_symm_of_mem_maximal_atlas contMDiffAt_symm_of_mem_maximalAtlas
 
-theorem contMDiffOn_chart : ContMDiffOn I I n (chartAt H x) (chartAt H x).source :=
+lemma contMDiffOn_chart : ContMDiffOn I I n (chartAt H x) (chartAt H x).source :=
   contMDiffOn_of_mem_maximalAtlas <| chart_mem_maximalAtlas I x
 #align cont_mdiff_on_chart contMDiffOn_chart
 
-theorem contMDiffOn_chart_symm : ContMDiffOn I I n (chartAt H x).symm (chartAt H x).target :=
+lemma contMDiffOn_chart_symm : ContMDiffOn I I n (chartAt H x).symm (chartAt H x).target :=
   contMDiffOn_symm_of_mem_maximalAtlas <| chart_mem_maximalAtlas I x
 #align cont_mdiff_on_chart_symm contMDiffOn_chart_symm
 
-theorem contMDiffAt_extend {x : M} (he : e ∈ maximalAtlas I M) (hx : x ∈ e.source) :
+lemma contMDiffAt_extend {x : M} (he : e ∈ maximalAtlas I M) (hx : x ∈ e.source) :
     ContMDiffAt I 𝓘(𝕜, E) n (e.extend I) x :=
   (contMDiff_model _).comp x <| contMDiffAt_of_mem_maximalAtlas he hx
 #align cont_mdiff_at_extend contMDiffAt_extend
 
-theorem contMDiffAt_extChartAt' {x' : M} (h : x' ∈ (chartAt H x).source) :
+lemma contMDiffAt_extChartAt' {x' : M} (h : x' ∈ (chartAt H x).source) :
     ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x' :=
   contMDiffAt_extend (chart_mem_maximalAtlas I x) h
 #align cont_mdiff_at_ext_chart_at' contMDiffAt_extChartAt'
 
-theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x :=
+lemma contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x :=
   contMDiffAt_extChartAt' <| mem_chart_source H x
 #align cont_mdiff_at_ext_chart_at contMDiffAt_extChartAt
 
-theorem contMDiffOn_extChartAt : ContMDiffOn I 𝓘(𝕜, E) n (extChartAt I x) (chartAt H x).source :=
+lemma contMDiffOn_extChartAt : ContMDiffOn I 𝓘(𝕜, E) n (extChartAt I x) (chartAt H x).source :=
   fun _x' hx' => (contMDiffAt_extChartAt' hx').contMDiffWithinAt
 #align cont_mdiff_on_ext_chart_at contMDiffOn_extChartAt
 
-theorem contMDiffOn_extend_symm (he : e ∈ maximalAtlas I M) :
+lemma contMDiffOn_extend_symm (he : e ∈ maximalAtlas I M) :
     ContMDiffOn 𝓘(𝕜, E) I n (e.extend I).symm (I '' e.target) := by
   refine (contMDiffOn_symm_of_mem_maximalAtlas he).comp
     (contMDiffOn_model_symm.mono <| image_subset_range _ _) ?_
@@ -110,7 +110,7 @@ theorem contMDiffOn_extend_symm (he : e ∈ maximalAtlas I M) :
     preimage_preimage, I.left_inv, preimage_id']; rfl
 #align cont_mdiff_on_extend_symm contMDiffOn_extend_symm
 
-theorem contMDiffOn_extChartAt_symm (x : M) :
+lemma contMDiffOn_extChartAt_symm (x : M) :
     ContMDiffOn 𝓘(𝕜, E) I n (extChartAt I x).symm (extChartAt I x).target := by
   convert contMDiffOn_extend_symm (chart_mem_maximalAtlas I x)
   rw [extChartAt_target, I.image_eq]
@@ -131,7 +131,7 @@ section IsLocalStructomorph
 
 variable [ChartedSpace H M'] [IsM' : SmoothManifoldWithCorners I M']
 
-theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M M'}
+lemma isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M M'}
     (hf : LiftPropOn (contDiffGroupoid ⊤ I).IsLocalStructomorphWithinAt f f.source) :
     SmoothOn I I f f.source := by
   -- It suffices to show smoothness near each `x`

@@ -145,7 +145,7 @@ def comparisonAdjunction
 
 variable {adj}
 
-theorem comparisonAdjunction_unit_f_aux
+lemma comparisonAdjunction_unit_f_aux
     [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a)
       (adj.counit.app (F.obj A.A))]
     (A : adj.toMonad.Algebra) :
@@ -169,13 +169,13 @@ def unitCofork (A : adj.toMonad.Algebra)
 #align category_theory.monad.monadicity_internal.unit_cofork CategoryTheory.Monad.MonadicityInternal.unitCofork
 
 @[simp]
-theorem unitCofork_π (A : adj.toMonad.Algebra)
+lemma unitCofork_π (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))] :
     (unitCofork A).π = G.map (coequalizer.π (F.map A.a) (adj.counit.app (F.obj A.A))) :=
   rfl
 #align category_theory.monad.monadicity_internal.unit_cofork_π CategoryTheory.Monad.MonadicityInternal.unitCofork_π
 
-theorem comparisonAdjunction_unit_f
+lemma comparisonAdjunction_unit_f
     [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a)
       (adj.counit.app (F.obj A.A))]
     (A : adj.toMonad.Algebra) :
@@ -227,7 +227,7 @@ instance
     (F.map ((comparison adj).obj B).a)
     (adj.counit.app (F.obj ((comparison adj).obj B).A))
 
-theorem comparisonAdjunction_counit_app
+lemma comparisonAdjunction_counit_app
     [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))] (B : D) :
     (comparisonAdjunction adj).counit.app B = colimit.desc _ (counitCofork adj B) := by
   apply coequalizer.hom_ext

@@ -76,26 +76,26 @@ instance : Group (DihedralGroup n) where
     · exact congr_arg r (sub_self a)
 
 @[simp]
-theorem r_mul_r (i j : ZMod n) : r i * r j = r (i + j) :=
+lemma r_mul_r (i j : ZMod n) : r i * r j = r (i + j) :=
   rfl
 #align dihedral_group.r_mul_r DihedralGroup.r_mul_r
 
 @[simp]
-theorem r_mul_sr (i j : ZMod n) : r i * sr j = sr (j - i) :=
+lemma r_mul_sr (i j : ZMod n) : r i * sr j = sr (j - i) :=
   rfl
 #align dihedral_group.r_mul_sr DihedralGroup.r_mul_sr
 
 @[simp]
-theorem sr_mul_r (i j : ZMod n) : sr i * r j = sr (i + j) :=
+lemma sr_mul_r (i j : ZMod n) : sr i * r j = sr (i + j) :=
   rfl
 #align dihedral_group.sr_mul_r DihedralGroup.sr_mul_r
 
 @[simp]
-theorem sr_mul_sr (i j : ZMod n) : sr i * sr j = r (j - i) :=
+lemma sr_mul_sr (i j : ZMod n) : sr i * sr j = r (j - i) :=
   rfl
 #align dihedral_group.sr_mul_sr DihedralGroup.sr_mul_sr
 
-theorem one_def : (1 : DihedralGroup n) = r 0 :=
+lemma one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 #align dihedral_group.one_def DihedralGroup.one_def
 
@@ -126,13 +126,13 @@ theorem card [NeZero n] : Fintype.card (DihedralGroup n) = 2 * n := by
   rw [← Fintype.card_eq.mpr ⟨fintypeHelper⟩, Fintype.card_sum, ZMod.card, two_mul]
 #align dihedral_group.card DihedralGroup.card
 
-theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
+lemma nat_card : Nat.card (DihedralGroup n) = 2 * n := by
   cases n
   · rw [Nat.card_eq_zero_of_infinite]
   · rw [Nat.card_eq_fintype_card, card]
 
 @[simp]
-theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
+lemma r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
   induction' k with k IH
   · rw [Nat.cast_zero]
     rfl
@@ -143,14 +143,14 @@ theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
 #align dihedral_group.r_one_pow DihedralGroup.r_one_pow
 
 -- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `r_one_pow_n` is no longer useful.
-theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
+lemma r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
   rw [r_one_pow, one_def]
   congr 1
   exact ZMod.natCast_self _
 #align dihedral_group.r_one_pow_n DihedralGroup.r_one_pow_n
 
 -- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `sr_mul_self` is no longer useful.
-theorem sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by rw [sr_mul_sr, sub_self, one_def]
+lemma sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by rw [sr_mul_sr, sub_self, one_def]
 #align dihedral_group.sr_mul_self DihedralGroup.sr_mul_self
 
 /-- If `0 < n`, then `sr i` has order 2.
@@ -191,7 +191,7 @@ theorem orderOf_r [NeZero n] (i : ZMod n) : orderOf (r i) = n / Nat.gcd n i.val 
   rw [← r_one_pow, orderOf_pow, orderOf_r_one]
 #align dihedral_group.order_of_r DihedralGroup.orderOf_r
 
-theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
+lemma exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
   rcases eq_zero_or_neZero n with (rfl | hn)
   · exact Monoid.exponent_eq_zero_of_order_zero orderOf_r_one
   apply Nat.dvd_antisymm

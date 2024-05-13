@@ -29,7 +29,7 @@ open Polynomial
 namespace EisensteinCriterionAux
 
 -- Section for auxiliary lemmas used in the proof of `irreducible_of_eisenstein_criterion`
-theorem map_eq_C_mul_X_pow_of_forall_coeff_mem {f : R[X]} {P : Ideal R}
+lemma map_eq_C_mul_X_pow_of_forall_coeff_mem {f : R[X]} {P : Ideal R}
     (hfP : ∀ n : ℕ, ↑n < f.degree → f.coeff n ∈ P) :
     map (mk P) f = C ((mk P) f.leadingCoeff) * X ^ f.natDegree :=
   Polynomial.ext fun n => by
@@ -49,7 +49,7 @@ theorem map_eq_C_mul_X_pow_of_forall_coeff_mem {f : R[X]} {P : Ideal R}
 set_option linter.uppercaseLean3 false in
 #align polynomial.eisenstein_criterion_aux.map_eq_C_mul_X_pow_of_forall_coeff_mem Polynomial.EisensteinCriterionAux.map_eq_C_mul_X_pow_of_forall_coeff_mem
 
-theorem le_natDegree_of_map_eq_mul_X_pow {n : ℕ} {P : Ideal R} (hP : P.IsPrime) {q : R[X]}
+lemma le_natDegree_of_map_eq_mul_X_pow {n : ℕ} {P : Ideal R} (hP : P.IsPrime) {q : R[X]}
     {c : Polynomial (R ⧸ P)} (hq : map (mk P) q = c * X ^ n) (hc0 : c.degree = 0) :
     n ≤ q.natDegree :=
   Nat.cast_le.1
@@ -62,14 +62,14 @@ theorem le_natDegree_of_map_eq_mul_X_pow {n : ℕ} {P : Ideal R} (hP : P.IsPrime
 set_option linter.uppercaseLean3 false in
 #align polynomial.eisenstein_criterion_aux.le_nat_degree_of_map_eq_mul_X_pow Polynomial.EisensteinCriterionAux.le_natDegree_of_map_eq_mul_X_pow
 
-theorem eval_zero_mem_ideal_of_eq_mul_X_pow {n : ℕ} {P : Ideal R} {q : R[X]}
+lemma eval_zero_mem_ideal_of_eq_mul_X_pow {n : ℕ} {P : Ideal R} {q : R[X]}
     {c : Polynomial (R ⧸ P)} (hq : map (mk P) q = c * X ^ n) (hn0 : n ≠ 0) : eval 0 q ∈ P := by
   rw [← coeff_zero_eq_eval_zero, ← eq_zero_iff_mem, ← coeff_map, hq,
     coeff_zero_eq_eval_zero, eval_mul, eval_pow, eval_X, zero_pow hn0, mul_zero]
 set_option linter.uppercaseLean3 false in
 #align polynomial.eisenstein_criterion_aux.eval_zero_mem_ideal_of_eq_mul_X_pow Polynomial.EisensteinCriterionAux.eval_zero_mem_ideal_of_eq_mul_X_pow
 
-theorem isUnit_of_natDegree_eq_zero_of_isPrimitive {p q : R[X]}
+lemma isUnit_of_natDegree_eq_zero_of_isPrimitive {p q : R[X]}
     -- Porting note: stated using `IsPrimitive` which is defeq to old statement.
     (hu : IsPrimitive (p * q)) (hpm : p.natDegree = 0) : IsUnit p := by
   rw [eq_C_of_degree_le_zero (natDegree_eq_zero_iff_degree_le_zero.1 hpm), isUnit_C]

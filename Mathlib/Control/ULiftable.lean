@@ -103,13 +103,13 @@ def downMap {F : Type max u₀ v₀ → Type u₁} {G : Type u₀ → Type v₁}
 #align uliftable.down_map ULiftable.downMap
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem up_down {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α}
+lemma up_down {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α}
     (x : g (ULift.{v₀} α)) : up (down x : f α) = x :=
   (ULiftable.congr Equiv.ulift.symm).right_inv _
 #align uliftable.up_down ULiftable.up_down
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem down_up {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α}
+lemma down_up {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α}
     (x : f α) : down (up x : g (ULift.{v₀} α)) = x :=
   (ULiftable.congr Equiv.ulift.symm).left_inv _
 #align uliftable.down_up ULiftable.down_up

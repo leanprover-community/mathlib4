@@ -79,25 +79,25 @@ theorem multiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) (
 
 namespace Prime
 
-theorem multiplicity_one {p : ℕ} (hp : p.Prime) : multiplicity p 1 = 0 :=
+lemma multiplicity_one {p : ℕ} (hp : p.Prime) : multiplicity p 1 = 0 :=
   multiplicity.one_right hp.prime.not_unit
 #align nat.prime.multiplicity_one Nat.Prime.multiplicity_one
 
-theorem multiplicity_mul {p m n : ℕ} (hp : p.Prime) :
+lemma multiplicity_mul {p m n : ℕ} (hp : p.Prime) :
     multiplicity p (m * n) = multiplicity p m + multiplicity p n :=
   multiplicity.mul hp.prime
 #align nat.prime.multiplicity_mul Nat.Prime.multiplicity_mul
 
-theorem multiplicity_pow {p m n : ℕ} (hp : p.Prime) :
+lemma multiplicity_pow {p m n : ℕ} (hp : p.Prime) :
     multiplicity p (m ^ n) = n • multiplicity p m :=
   multiplicity.pow hp.prime
 #align nat.prime.multiplicity_pow Nat.Prime.multiplicity_pow
 
-theorem multiplicity_self {p : ℕ} (hp : p.Prime) : multiplicity p p = 1 :=
+lemma multiplicity_self {p : ℕ} (hp : p.Prime) : multiplicity p p = 1 :=
   multiplicity.multiplicity_self hp.prime.not_unit hp.ne_zero
 #align nat.prime.multiplicity_self Nat.Prime.multiplicity_self
 
-theorem multiplicity_pow_self {p n : ℕ} (hp : p.Prime) : multiplicity p (p ^ n) = n :=
+lemma multiplicity_pow_self {p n : ℕ} (hp : p.Prime) : multiplicity p (p ^ n) = n :=
   multiplicity.multiplicity_pow_self hp.ne_zero hp.prime.not_unit n
 #align nat.prime.multiplicity_pow_self Nat.Prime.multiplicity_pow_self
 
@@ -176,13 +176,13 @@ theorem pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log 
   rw [← PartENat.coe_le_coe, ← hp.multiplicity_factorial hbn, ← pow_dvd_iff_le_multiplicity]
 #align nat.prime.pow_dvd_factorial_iff Nat.Prime.pow_dvd_factorial_iff
 
-theorem multiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
+lemma multiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
     multiplicity p n ! ≤ (n / (p - 1) : ℕ) := by
   rw [hp.multiplicity_factorial (lt_succ_self _), PartENat.coe_le_coe]
   exact Nat.geom_sum_Ico_le hp.two_le _ _
 #align nat.prime.multiplicity_factorial_le_div_pred Nat.Prime.multiplicity_factorial_le_div_pred
 
-theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
+lemma multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
     ∑ i in Finset.Ico 1 b, n / p ^ i =
       ((∑ i in Finset.Ico 1 b, k / p ^ i) + ∑ i in Finset.Ico 1 b, (n - k) / p ^ i) +
         ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
@@ -242,7 +242,7 @@ theorem multiplicity_le_multiplicity_choose_add {p : ℕ} (hp : p.Prime) :
 
 variable {p n k : ℕ}
 
-theorem multiplicity_choose_prime_pow_add_multiplicity (hp : p.Prime) (hkn : k ≤ p ^ n)
+lemma multiplicity_choose_prime_pow_add_multiplicity (hp : p.Prime) (hkn : k ≤ p ^ n)
     (hk0 : k ≠ 0) : multiplicity p (choose (p ^ n) k) + multiplicity p k = n :=
   le_antisymm
     (by
@@ -262,14 +262,14 @@ theorem multiplicity_choose_prime_pow_add_multiplicity (hp : p.Prime) (hkn : k �
     (by rw [← hp.multiplicity_pow_self]; exact multiplicity_le_multiplicity_choose_add hp _ _)
 #align nat.prime.multiplicity_choose_prime_pow_add_multiplicity Nat.Prime.multiplicity_choose_prime_pow_add_multiplicity
 
-theorem multiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
+lemma multiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
     multiplicity p (choose (p ^ n) k) =
       ↑(n - (multiplicity p k).get (finite_nat_iff.2 ⟨hp.ne_one, hk0.bot_lt⟩)) :=
   PartENat.eq_natCast_sub_of_add_eq_natCast <|
     multiplicity_choose_prime_pow_add_multiplicity hp hkn hk0
 #align nat.prime.multiplicity_choose_prime_pow Nat.Prime.multiplicity_choose_prime_pow
 
-theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by
+lemma dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by
   obtain hkp | hkp := hkp.symm.lt_or_lt
   · simp [choose_eq_zero_of_lt hkp]
   refine' multiplicity_ne_zero.1 fun h => hkp.not_le <| Nat.le_of_dvd hk.bot_lt _
@@ -278,14 +278,14 @@ theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣
   exact H.1
 #align nat.prime.dvd_choose_pow Nat.Prime.dvd_choose_pow
 
-theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 ∧ k ≠ p ^ n := by
+lemma dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 ∧ k ≠ p ^ n := by
   refine' ⟨fun h => ⟨_, _⟩, fun h => dvd_choose_pow hp h.1 h.2⟩ <;> rintro rfl <;>
     simp [hp.ne_one] at h
 #align nat.prime.dvd_choose_pow_iff Nat.Prime.dvd_choose_pow_iff
 
 end Prime
 
-theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicity 2 n ! < n := by
+lemma multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicity 2 n ! < n := by
   have h2 := prime_two.prime
   refine' binaryRec _ _
   · exact fun h => False.elim <| h rfl

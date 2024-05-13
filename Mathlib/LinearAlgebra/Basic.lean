@@ -135,31 +135,31 @@ def eqLocus (f g : F) : Submodule R M :=
 #align linear_map.eq_locus LinearMap.eqLocus
 
 @[simp]
-theorem mem_eqLocus {x : M} {f g : F} : x ∈ eqLocus f g ↔ f x = g x :=
+lemma mem_eqLocus {x : M} {f g : F} : x ∈ eqLocus f g ↔ f x = g x :=
   Iff.rfl
 #align linear_map.mem_eq_locus LinearMap.mem_eqLocus
 
-theorem eqLocus_toAddSubmonoid (f g : F) :
+lemma eqLocus_toAddSubmonoid (f g : F) :
     (eqLocus f g).toAddSubmonoid = (f : M →+ M₂).eqLocusM g :=
   rfl
 #align linear_map.eq_locus_to_add_submonoid LinearMap.eqLocus_toAddSubmonoid
 
 @[simp]
-theorem eqLocus_eq_top {f g : F} : eqLocus f g = ⊤ ↔ f = g := by
+lemma eqLocus_eq_top {f g : F} : eqLocus f g = ⊤ ↔ f = g := by
   simp [SetLike.ext_iff, DFunLike.ext_iff]
 
 @[simp]
-theorem eqLocus_same (f : F) : eqLocus f f = ⊤ := eqLocus_eq_top.2 rfl
+lemma eqLocus_same (f : F) : eqLocus f f = ⊤ := eqLocus_eq_top.2 rfl
 #align linear_map.eq_locus_same LinearMap.eqLocus_same
 
-theorem le_eqLocus {f g : F} {S : Submodule R M} : S ≤ eqLocus f g ↔ Set.EqOn f g S := Iff.rfl
+lemma le_eqLocus {f g : F} {S : Submodule R M} : S ≤ eqLocus f g ↔ Set.EqOn f g S := Iff.rfl
 
-theorem eqOn_sup {f g : F} {S T : Submodule R M} (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) :
+lemma eqOn_sup {f g : F} {S T : Submodule R M} (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) :
     Set.EqOn f g ↑(S ⊔ T) := by
   rw [← le_eqLocus] at hS hT ⊢
   exact sup_le hS hT
 
-theorem ext_on_codisjoint {f g : F} {S T : Submodule R M} (hST : Codisjoint S T)
+lemma ext_on_codisjoint {f g : F} {S T : Submodule R M} (hST : Codisjoint S T)
     (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) : f = g :=
   DFunLike.ext _ _ fun _ ↦ eqOn_sup hS hT <| hST.eq_top.symm ▸ trivial
 
@@ -179,7 +179,7 @@ variable {f : F}
 
 open Submodule
 
-theorem eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : eqLocus f g = ker (f - g) :=
+lemma eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : eqLocus f g = ker (f - g) :=
   SetLike.ext fun _ => sub_eq_zero.symm
 #align linear_map.eq_locus_eq_ker_sub LinearMap.eqLocus_eq_ker_sub
 
@@ -189,7 +189,7 @@ end LinearMap
 
 namespace IsLinearMap
 
-theorem isLinearMap_add [Semiring R] [AddCommMonoid M] [Module R M] :
+lemma isLinearMap_add [Semiring R] [AddCommMonoid M] [Module R M] :
     IsLinearMap R fun x : M × M => x.1 + x.2 := by
   apply IsLinearMap.mk
   · intro x y
@@ -199,7 +199,7 @@ theorem isLinearMap_add [Semiring R] [AddCommMonoid M] [Module R M] :
     simp [smul_add]
 #align is_linear_map.is_linear_map_add IsLinearMap.isLinearMap_add
 
-theorem isLinearMap_sub {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M] :
+lemma isLinearMap_sub {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M] :
     IsLinearMap R fun x : M × M => x.1 - x.2 := by
   apply IsLinearMap.mk
   · intro x y
@@ -242,16 +242,16 @@ instance : Zero (M ≃ₛₗ[σ₁₂] M₂) :=
 -- Even though these are implied by `Subsingleton.elim` via the `Unique` instance below, they're
 -- nice to have as `rfl`-lemmas for `dsimp`.
 @[simp]
-theorem zero_symm : (0 : M ≃ₛₗ[σ₁₂] M₂).symm = 0 :=
+lemma zero_symm : (0 : M ≃ₛₗ[σ₁₂] M₂).symm = 0 :=
   rfl
 #align linear_equiv.zero_symm LinearEquiv.zero_symm
 
 @[simp]
-theorem coe_zero : ⇑(0 : M ≃ₛₗ[σ₁₂] M₂) = 0 :=
+lemma coe_zero : ⇑(0 : M ≃ₛₗ[σ₁₂] M₂) = 0 :=
   rfl
 #align linear_equiv.coe_zero LinearEquiv.coe_zero
 
-theorem zero_apply (x : M) : (0 : M ≃ₛₗ[σ₁₂] M₂) x = 0 :=
+lemma zero_apply (x : M) : (0 : M ≃ₛₗ[σ₁₂] M₂) x = 0 :=
   rfl
 #align linear_equiv.zero_apply LinearEquiv.zero_apply
 
@@ -292,12 +292,12 @@ protected def curry : (V × V₂ → R) ≃ₗ[R] V → V₂ → R :=
 #align linear_equiv.curry LinearEquiv.curry
 
 @[simp]
-theorem coe_curry : ⇑(LinearEquiv.curry R V V₂) = curry :=
+lemma coe_curry : ⇑(LinearEquiv.curry R V V₂) = curry :=
   rfl
 #align linear_equiv.coe_curry LinearEquiv.coe_curry
 
 @[simp]
-theorem coe_curry_symm : ⇑(LinearEquiv.curry R V V₂).symm = uncurry :=
+lemma coe_curry_symm : ⇑(LinearEquiv.curry R V V₂).symm = uncurry :=
   rfl
 #align linear_equiv.coe_curry_symm LinearEquiv.coe_curry_symm
 
@@ -327,17 +327,17 @@ def ofEq (h : p = q) : p ≃ₗ[R] q :=
 variable {p q}
 
 @[simp]
-theorem coe_ofEq_apply (h : p = q) (x : p) : (ofEq p q h x : M) = x :=
+lemma coe_ofEq_apply (h : p = q) (x : p) : (ofEq p q h x : M) = x :=
   rfl
 #align linear_equiv.coe_of_eq_apply LinearEquiv.coe_ofEq_apply
 
 @[simp]
-theorem ofEq_symm (h : p = q) : (ofEq p q h).symm = ofEq q p h.symm :=
+lemma ofEq_symm (h : p = q) : (ofEq p q h).symm = ofEq q p h.symm :=
   rfl
 #align linear_equiv.of_eq_symm LinearEquiv.ofEq_symm
 
 @[simp]
-theorem ofEq_rfl : ofEq p p rfl = LinearEquiv.refl R p := by ext; rfl
+lemma ofEq_rfl : ofEq p p rfl = LinearEquiv.refl R p := by ext; rfl
 #align linear_equiv.of_eq_rfl LinearEquiv.ofEq_rfl
 
 /-- A linear equivalence which maps a submodule of one module onto another, restricts to a linear
@@ -348,13 +348,13 @@ def ofSubmodules (p : Submodule R M) (q : Submodule R₂ M₂) (h : p.map (e : M
 #align linear_equiv.of_submodules LinearEquiv.ofSubmodules
 
 @[simp]
-theorem ofSubmodules_apply {p : Submodule R M} {q : Submodule R₂ M₂} (h : p.map ↑e = q) (x : p) :
+lemma ofSubmodules_apply {p : Submodule R M} {q : Submodule R₂ M₂} (h : p.map ↑e = q) (x : p) :
     ↑(e.ofSubmodules p q h x) = e x :=
   rfl
 #align linear_equiv.of_submodules_apply LinearEquiv.ofSubmodules_apply
 
 @[simp]
-theorem ofSubmodules_symm_apply {p : Submodule R M} {q : Submodule R₂ M₂} (h : p.map ↑e = q)
+lemma ofSubmodules_symm_apply {p : Submodule R M} {q : Submodule R₂ M₂} (h : p.map ↑e = q)
     (x : q) : ↑((e.ofSubmodules p q h).symm x) = e.symm x :=
   rfl
 #align linear_equiv.of_submodules_symm_apply LinearEquiv.ofSubmodules_symm_apply
@@ -368,7 +368,7 @@ def ofSubmodule' [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂
   (f.symm.ofSubmodules _ _ f.symm.map_eq_comap).symm
 #align linear_equiv.of_submodule' LinearEquiv.ofSubmodule'
 
-theorem ofSubmodule'_toLinearMap [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂)
+lemma ofSubmodule'_toLinearMap [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂)
     (U : Submodule R₂ M₂) :
     (f.ofSubmodule' U).toLinearMap = (f.toLinearMap.domRestrict _).codRestrict _ Subtype.prop := by
   ext
@@ -376,13 +376,13 @@ theorem ofSubmodule'_toLinearMap [Module R M] [Module R₂ M₂] (f : M ≃ₛ�
 #align linear_equiv.of_submodule'_to_linear_map LinearEquiv.ofSubmodule'_toLinearMap
 
 @[simp]
-theorem ofSubmodule'_apply [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂) (U : Submodule R₂ M₂)
+lemma ofSubmodule'_apply [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂) (U : Submodule R₂ M₂)
     (x : U.comap (f : M →ₛₗ[σ₁₂] M₂)) : (f.ofSubmodule' U x : M₂) = f (x : M) :=
   rfl
 #align linear_equiv.of_submodule'_apply LinearEquiv.ofSubmodule'_apply
 
 @[simp]
-theorem ofSubmodule'_symm_apply [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂)
+lemma ofSubmodule'_symm_apply [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂)
     (U : Submodule R₂ M₂) (x : U) : ((f.ofSubmodule' U).symm x : M) = f.symm (x : M₂) :=
   rfl
 #align linear_equiv.of_submodule'_symm_apply LinearEquiv.ofSubmodule'_symm_apply
@@ -398,16 +398,16 @@ def ofTop (h : p = ⊤) : p ≃ₗ[R] M :=
 #align linear_equiv.of_top LinearEquiv.ofTop
 
 @[simp]
-theorem ofTop_apply {h} (x : p) : ofTop p h x = x :=
+lemma ofTop_apply {h} (x : p) : ofTop p h x = x :=
   rfl
 #align linear_equiv.of_top_apply LinearEquiv.ofTop_apply
 
 @[simp]
-theorem coe_ofTop_symm_apply {h} (x : M) : ((ofTop p h).symm x : M) = x :=
+lemma coe_ofTop_symm_apply {h} (x : M) : ((ofTop p h).symm x : M) = x :=
   rfl
 #align linear_equiv.coe_of_top_symm_apply LinearEquiv.coe_ofTop_symm_apply
 
-theorem ofTop_symm_apply {h} (x : M) : (ofTop p h).symm x = ⟨x, h.symm ▸ trivial⟩ :=
+lemma ofTop_symm_apply {h} (x : M) : (ofTop p h).symm x = ⟨x, h.symm ▸ trivial⟩ :=
   rfl
 #align linear_equiv.of_top_symm_apply LinearEquiv.ofTop_symm_apply
 
@@ -420,33 +420,33 @@ def ofLinear (h₁ : f.comp g = LinearMap.id) (h₂ : g.comp f = LinearMap.id) :
 #align linear_equiv.of_linear LinearEquiv.ofLinear
 
 @[simp]
-theorem ofLinear_apply {h₁ h₂} (x : M) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) x = f x :=
+lemma ofLinear_apply {h₁ h₂} (x : M) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) x = f x :=
   rfl
 #align linear_equiv.of_linear_apply LinearEquiv.ofLinear_apply
 
 @[simp]
-theorem ofLinear_symm_apply {h₁ h₂} (x : M₂) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm x = g x :=
+lemma ofLinear_symm_apply {h₁ h₂} (x : M₂) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm x = g x :=
   rfl
 #align linear_equiv.of_linear_symm_apply LinearEquiv.ofLinear_symm_apply
 
 @[simp]
-theorem ofLinear_toLinearMap {h₁ h₂} : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
+lemma ofLinear_toLinearMap {h₁ h₂} : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
 
 @[simp]
-theorem ofLinear_symm_toLinearMap {h₁ h₂} : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm = g := rfl
+lemma ofLinear_symm_toLinearMap {h₁ h₂} : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm = g := rfl
 
 @[simp]
-protected theorem range : LinearMap.range (e : M →ₛₗ[σ₁₂] M₂) = ⊤ :=
+protected lemma range : LinearMap.range (e : M →ₛₗ[σ₁₂] M₂) = ⊤ :=
   LinearMap.range_eq_top.2 e.toEquiv.surjective
 #align linear_equiv.range LinearEquiv.range
 
 @[simp]
-protected theorem _root_.LinearEquivClass.range [Module R M] [Module R₂ M₂] {F : Type*}
+protected lemma _root_.LinearEquivClass.range [Module R M] [Module R₂ M₂] {F : Type*}
     [EquivLike F M M₂] [SemilinearEquivClass F σ₁₂ M M₂] (e : F) : LinearMap.range e = ⊤ :=
   LinearMap.range_eq_top.2 (EquivLike.surjective e)
 #align linear_equiv_class.range LinearEquivClass.range
 
-theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Submodule R₂ M₂)) : p = ⊥ := by
+lemma eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Submodule R₂ M₂)) : p = ⊥ := by
   refine' bot_unique (SetLike.le_def.2 fun b hb => (Submodule.mem_bot R).2 _)
   rw [← p.mk_eq_zero hb, ← e.map_eq_zero_iff]
   apply Submodule.eq_zero_of_bot_submodule
@@ -454,7 +454,7 @@ theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Sub
 
 -- Porting note: `RingHomSurjective σ₁₂` is an unused argument.
 @[simp]
-theorem range_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] :
+lemma range_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] :
     LinearMap.range (h.comp (e : M →ₛₗ[σ₁₂] M₂) : M →ₛₗ[σ₁₃] M₃) = LinearMap.range h :=
   LinearMap.range_comp_of_range_eq_top _ e.range
 #align linear_equiv.range_comp LinearEquiv.range_comp
@@ -479,13 +479,13 @@ def ofLeftInverse [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ
 #align linear_equiv.of_left_inverse LinearEquiv.ofLeftInverse
 
 @[simp]
-theorem ofLeftInverse_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+lemma ofLeftInverse_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
     (h : Function.LeftInverse g f) (x : M) : ↑(ofLeftInverse h x) = f x :=
   rfl
 #align linear_equiv.of_left_inverse_apply LinearEquiv.ofLeftInverse_apply
 
 @[simp]
-theorem ofLeftInverse_symm_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+lemma ofLeftInverse_symm_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
     (h : Function.LeftInverse g f) (x : LinearMap.range f) : (ofLeftInverse h).symm x = g x :=
   rfl
 #align linear_equiv.of_left_inverse_symm_apply LinearEquiv.ofLeftInverse_symm_apply
@@ -500,7 +500,7 @@ noncomputable def ofInjective [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair
 #align linear_equiv.of_injective LinearEquiv.ofInjective
 
 @[simp]
-theorem ofInjective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h : Injective f}
+lemma ofInjective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h : Injective f}
     (x : M) : ↑(ofInjective f h x) = f x :=
   rfl
 #align linear_equiv.of_injective_apply LinearEquiv.ofInjective_apply
@@ -512,13 +512,13 @@ noncomputable def ofBijective [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair
 #align linear_equiv.of_bijective LinearEquiv.ofBijective
 
 @[simp]
-theorem ofBijective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {hf} (x : M) :
+lemma ofBijective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {hf} (x : M) :
     ofBijective f hf x = f x :=
   rfl
 #align linear_equiv.of_bijective_apply LinearEquiv.ofBijective_apply
 
 @[simp]
-theorem ofBijective_symm_apply_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h} (x : M) :
+lemma ofBijective_symm_apply_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h} (x : M) :
     (ofBijective f h).symm (f x) = x := by
   simp [LinearEquiv.symm_apply_eq]
 
@@ -555,15 +555,15 @@ def neg : M ≃ₗ[R] M :=
 variable {R}
 
 @[simp]
-theorem coe_neg : ⇑(neg R : M ≃ₗ[R] M) = -id :=
+lemma coe_neg : ⇑(neg R : M ≃ₗ[R] M) = -id :=
   rfl
 #align linear_equiv.coe_neg LinearEquiv.coe_neg
 
-theorem neg_apply (x : M) : neg R x = -x := by simp
+lemma neg_apply (x : M) : neg R x = -x := by simp
 #align linear_equiv.neg_apply LinearEquiv.neg_apply
 
 @[simp]
-theorem symm_neg : (neg R : M ≃ₗ[R] M).symm = neg R :=
+lemma symm_neg : (neg R : M ≃ₗ[R] M).symm = neg R :=
   rfl
 #align linear_equiv.symm_neg LinearEquiv.symm_neg
 
@@ -604,7 +604,7 @@ def arrowCongr {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommM
 #align linear_equiv.arrow_congr LinearEquiv.arrowCongr
 
 @[simp]
-theorem arrowCongr_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁]
+lemma arrowCongr_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁]
     [AddCommMonoid M₂] [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂]
     [Module R M₂₁] [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) (f : M₁ →ₗ[R] M₂₁)
     (x : M₂) : arrowCongr e₁ e₂ f x = e₂ (f (e₁.symm x)) :=
@@ -612,14 +612,14 @@ theorem arrowCongr_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R]
 #align linear_equiv.arrow_congr_apply LinearEquiv.arrowCongr_apply
 
 @[simp]
-theorem arrowCongr_symm_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁]
+lemma arrowCongr_symm_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁]
     [AddCommMonoid M₂] [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂]
     [Module R M₂₁] [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) (f : M₂ →ₗ[R] M₂₂)
     (x : M₁) : (arrowCongr e₁ e₂).symm f x = e₂.symm (f (e₁ x)) :=
   rfl
 #align linear_equiv.arrow_congr_symm_apply LinearEquiv.arrowCongr_symm_apply
 
-theorem arrowCongr_comp {N N₂ N₃ : Sort _} [AddCommMonoid N] [AddCommMonoid N₂] [AddCommMonoid N₃]
+lemma arrowCongr_comp {N N₂ N₃ : Sort _} [AddCommMonoid N] [AddCommMonoid N₂] [AddCommMonoid N₃]
     [Module R N] [Module R N₂] [Module R N₃] (e₁ : M ≃ₗ[R] N) (e₂ : M₂ ≃ₗ[R] N₂) (e₃ : M₃ ≃ₗ[R] N₃)
     (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) :
     arrowCongr e₁ e₃ (g.comp f) = (arrowCongr e₂ e₃ g).comp (arrowCongr e₁ e₂ f) := by
@@ -627,7 +627,7 @@ theorem arrowCongr_comp {N N₂ N₃ : Sort _} [AddCommMonoid N] [AddCommMonoid 
   simp only [symm_apply_apply, arrowCongr_apply, LinearMap.comp_apply]
 #align linear_equiv.arrow_congr_comp LinearEquiv.arrowCongr_comp
 
-theorem arrowCongr_trans {M₁ M₂ M₃ N₁ N₂ N₃ : Sort _} [AddCommMonoid M₁] [Module R M₁]
+lemma arrowCongr_trans {M₁ M₂ M₃ N₁ N₂ N₃ : Sort _} [AddCommMonoid M₁] [Module R M₁]
     [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R M₃] [AddCommMonoid N₁]
     [Module R N₁] [AddCommMonoid N₂] [Module R N₂] [AddCommMonoid N₃] [Module R N₃]
     (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : N₁ ≃ₗ[R] N₂) (e₃ : M₂ ≃ₗ[R] M₃) (e₄ : N₂ ≃ₗ[R] N₃) :
@@ -647,34 +647,34 @@ def conj (e : M ≃ₗ[R] M₂) : Module.End R M ≃ₗ[R] Module.End R M₂ :=
   arrowCongr e e
 #align linear_equiv.conj LinearEquiv.conj
 
-theorem conj_apply (e : M ≃ₗ[R] M₂) (f : Module.End R M) :
+lemma conj_apply (e : M ≃ₗ[R] M₂) (f : Module.End R M) :
     e.conj f = ((↑e : M →ₗ[R] M₂).comp f).comp (e.symm : M₂ →ₗ[R] M) :=
   rfl
 #align linear_equiv.conj_apply LinearEquiv.conj_apply
 
-theorem conj_apply_apply (e : M ≃ₗ[R] M₂) (f : Module.End R M) (x : M₂) :
+lemma conj_apply_apply (e : M ≃ₗ[R] M₂) (f : Module.End R M) (x : M₂) :
     e.conj f x = e (f (e.symm x)) :=
   rfl
 #align linear_equiv.conj_apply_apply LinearEquiv.conj_apply_apply
 
-theorem symm_conj_apply (e : M ≃ₗ[R] M₂) (f : Module.End R M₂) :
+lemma symm_conj_apply (e : M ≃ₗ[R] M₂) (f : Module.End R M₂) :
     e.symm.conj f = ((↑e.symm : M₂ →ₗ[R] M).comp f).comp (e : M →ₗ[R] M₂) :=
   rfl
 #align linear_equiv.symm_conj_apply LinearEquiv.symm_conj_apply
 
-theorem conj_comp (e : M ≃ₗ[R] M₂) (f g : Module.End R M) :
+lemma conj_comp (e : M ≃ₗ[R] M₂) (f g : Module.End R M) :
     e.conj (g.comp f) = (e.conj g).comp (e.conj f) :=
   arrowCongr_comp e e e f g
 #align linear_equiv.conj_comp LinearEquiv.conj_comp
 
-theorem conj_trans (e₁ : M ≃ₗ[R] M₂) (e₂ : M₂ ≃ₗ[R] M₃) :
+lemma conj_trans (e₁ : M ≃ₗ[R] M₂) (e₂ : M₂ ≃ₗ[R] M₃) :
     e₁.conj.trans e₂.conj = (e₁.trans e₂).conj := by
   ext f x
   rfl
 #align linear_equiv.conj_trans LinearEquiv.conj_trans
 
 @[simp]
-theorem conj_id (e : M ≃ₗ[R] M₂) : e.conj LinearMap.id = LinearMap.id := by
+lemma conj_id (e : M ≃ₗ[R] M₂) : e.conj LinearMap.id = LinearMap.id := by
   ext
   simp [conj_apply]
 #align linear_equiv.conj_id LinearEquiv.conj_id
@@ -730,13 +730,13 @@ def equivSubtypeMap (p : Submodule R M) (q : Submodule R p) : q ≃ₗ[R] q.map 
 #align submodule.equiv_subtype_map Submodule.equivSubtypeMap
 
 @[simp]
-theorem equivSubtypeMap_apply {p : Submodule R M} {q : Submodule R p} (x : q) :
+lemma equivSubtypeMap_apply {p : Submodule R M} {q : Submodule R p} (x : q) :
     (p.equivSubtypeMap q x : M) = p.subtype.domRestrict q x :=
   rfl
 #align submodule.equiv_subtype_map_apply Submodule.equivSubtypeMap_apply
 
 @[simp]
-theorem equivSubtypeMap_symm_apply {p : Submodule R M} {q : Submodule R p} (x : q.map p.subtype) :
+lemma equivSubtypeMap_symm_apply {p : Submodule R M} {q : Submodule R p} (x : q.map p.subtype) :
     ((p.equivSubtypeMap q).symm x : M) = x := by
   cases x
   rfl
@@ -785,21 +785,21 @@ def funLeft (f : m → n) : (n → M) →ₗ[R] m → M where
 #align linear_map.fun_left LinearMap.funLeft
 
 @[simp]
-theorem funLeft_apply (f : m → n) (g : n → M) (i : m) : funLeft R M f g i = g (f i) :=
+lemma funLeft_apply (f : m → n) (g : n → M) (i : m) : funLeft R M f g i = g (f i) :=
   rfl
 #align linear_map.fun_left_apply LinearMap.funLeft_apply
 
 @[simp]
-theorem funLeft_id (g : n → M) : funLeft R M _root_.id g = g :=
+lemma funLeft_id (g : n → M) : funLeft R M _root_.id g = g :=
   rfl
 #align linear_map.fun_left_id LinearMap.funLeft_id
 
-theorem funLeft_comp (f₁ : n → p) (f₂ : m → n) :
+lemma funLeft_comp (f₁ : n → p) (f₂ : m → n) :
     funLeft R M (f₁ ∘ f₂) = (funLeft R M f₂).comp (funLeft R M f₁) :=
   rfl
 #align linear_map.fun_left_comp LinearMap.funLeft_comp
 
-theorem funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
+lemma funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
     Surjective (funLeft R M f) := by
   classical
     intro g
@@ -812,7 +812,7 @@ theorem funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
     · simp only [not_true, exists_apply_eq_apply] at w
 #align linear_map.fun_left_surjective_of_injective LinearMap.funLeft_surjective_of_injective
 
-theorem funLeft_injective_of_surjective (f : m → n) (hf : Surjective f) :
+lemma funLeft_injective_of_surjective (f : m → n) (hf : Surjective f) :
     Injective (funLeft R M f) := by
   obtain ⟨g, hg⟩ := hf.hasRightInverse
   suffices LeftInverse (funLeft R M g) (funLeft R M f) by exact this.injective
@@ -837,24 +837,24 @@ def funCongrLeft (e : m ≃ n) : (n → M) ≃ₗ[R] m → M :=
 #align linear_equiv.fun_congr_left LinearEquiv.funCongrLeft
 
 @[simp]
-theorem funCongrLeft_apply (e : m ≃ n) (x : n → M) : funCongrLeft R M e x = funLeft R M e x :=
+lemma funCongrLeft_apply (e : m ≃ n) (x : n → M) : funCongrLeft R M e x = funLeft R M e x :=
   rfl
 #align linear_equiv.fun_congr_left_apply LinearEquiv.funCongrLeft_apply
 
 @[simp]
-theorem funCongrLeft_id : funCongrLeft R M (Equiv.refl n) = LinearEquiv.refl R (n → M) :=
+lemma funCongrLeft_id : funCongrLeft R M (Equiv.refl n) = LinearEquiv.refl R (n → M) :=
   rfl
 #align linear_equiv.fun_congr_left_id LinearEquiv.funCongrLeft_id
 
 @[simp]
-theorem funCongrLeft_comp (e₁ : m ≃ n) (e₂ : n ≃ p) :
+lemma funCongrLeft_comp (e₁ : m ≃ n) (e₂ : n ≃ p) :
     funCongrLeft R M (Equiv.trans e₁ e₂) =
       LinearEquiv.trans (funCongrLeft R M e₂) (funCongrLeft R M e₁) :=
   rfl
 #align linear_equiv.fun_congr_left_comp LinearEquiv.funCongrLeft_comp
 
 @[simp]
-theorem funCongrLeft_symm (e : m ≃ n) : (funCongrLeft R M e).symm = funCongrLeft R M e.symm :=
+lemma funCongrLeft_symm (e : m ≃ n) : (funCongrLeft R M e).symm = funCongrLeft R M e.symm :=
   rfl
 #align linear_equiv.fun_congr_left_symm LinearEquiv.funCongrLeft_symm
 

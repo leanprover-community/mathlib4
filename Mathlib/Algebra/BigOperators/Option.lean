@@ -24,18 +24,18 @@ namespace Finset
 variable {α M : Type*} [CommMonoid M]
 
 @[to_additive (attr := simp)]
-theorem prod_insertNone (f : Option α → M) (s : Finset α) :
+lemma prod_insertNone (f : Option α → M) (s : Finset α) :
     ∏ x in insertNone s, f x = f none * ∏ x in s, f (some x) := by simp [insertNone]
 #align finset.prod_insert_none Finset.prod_insertNone
 #align finset.sum_insert_none Finset.sum_insertNone
 
 @[to_additive]
-theorem mul_prod_eq_prod_insertNone (f : α → M) (x : M) (s : Finset α) :
+lemma mul_prod_eq_prod_insertNone (f : α → M) (x : M) (s : Finset α) :
     x * ∏ i in s, f i = ∏ i in insertNone s, i.elim x f :=
   (prod_insertNone (fun i => i.elim x f) _).symm
 
 @[to_additive]
-theorem prod_eraseNone (f : α → M) (s : Finset (Option α)) :
+lemma prod_eraseNone (f : α → M) (s : Finset (Option α)) :
     ∏ x in eraseNone s, f x = ∏ x in s, Option.elim' 1 f x := by
   classical calc
       ∏ x in eraseNone s, f x = ∏ x in (eraseNone s).map Embedding.some, Option.elim' 1 f x :=

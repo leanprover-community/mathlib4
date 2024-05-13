@@ -86,7 +86,7 @@ noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
 #align Module.to_kernel_subobject ModuleCat.toKernelSubobject
 
 @[simp]
-theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
+lemma toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
     (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by
   -- Porting note: The whole proof was just `simp [toKernelSubobject]`.
   suffices ((arrow ((kernelSubobject f))) ∘ (kernelSubobjectIso f ≪≫ kernelIsoKer f).inv) x = x by

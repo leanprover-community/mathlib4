@@ -29,20 +29,20 @@ instance smul [Group G] [MulAction G β] : SMul G (α ↪ β) :=
   ⟨fun g f => f.trans (MulAction.toPerm g).toEmbedding⟩
 
 @[to_additive]
-theorem smul_def [Group G] [MulAction G β] (g : G) (f : α ↪ β) :
+lemma smul_def [Group G] [MulAction G β] (g : G) (f : α ↪ β) :
     g • f = f.trans (MulAction.toPerm g).toEmbedding :=
   rfl
 #align function.embedding.smul_def Function.Embedding.smul_def
 #align function.embedding.vadd_def Function.Embedding.vadd_def
 
 @[to_additive (attr := simp)]
-theorem smul_apply [Group G] [MulAction G β] (g : G) (f : α ↪ β) (a : α) : (g • f) a = g • f a :=
+lemma smul_apply [Group G] [MulAction G β] (g : G) (f : α ↪ β) (a : α) : (g • f) a = g • f a :=
   rfl
 #align function.embedding.smul_apply Function.Embedding.smul_apply
 #align function.embedding.vadd_apply Function.Embedding.vadd_apply
 
 @[to_additive]
-theorem coe_smul [Group G] [MulAction G β] (g : G) (f : α ↪ β) : ⇑(g • f) = g • ⇑f :=
+lemma coe_smul [Group G] [MulAction G β] (g : G) (f : α ↪ β) : ⇑(g • f) = g • ⇑f :=
   rfl
 #align function.embedding.coe_smul Function.Embedding.coe_smul
 #align function.embedding.coe_vadd Function.Embedding.coe_vadd

@@ -29,18 +29,18 @@ protected def closure (K : ConvexCone 𝕜 E) : ConvexCone 𝕜 E where
 #align convex_cone.closure ConvexCone.closure
 
 @[simp, norm_cast]
-theorem coe_closure (K : ConvexCone 𝕜 E) : (K.closure : Set E) = closure K :=
+lemma coe_closure (K : ConvexCone 𝕜 E) : (K.closure : Set E) = closure K :=
   rfl
 #align convex_cone.coe_closure ConvexCone.coe_closure
 
 @[simp]
-protected theorem mem_closure {K : ConvexCone 𝕜 E} {a : E} :
+protected lemma mem_closure {K : ConvexCone 𝕜 E} {a : E} :
     a ∈ K.closure ↔ a ∈ closure (K : Set E) :=
   Iff.rfl
 #align convex_cone.mem_closure ConvexCone.mem_closure
 
 @[simp]
-theorem closure_eq {K L : ConvexCone 𝕜 E} : K.closure = L ↔ closure (K : Set E) = L :=
+lemma closure_eq {K L : ConvexCone 𝕜 E} : K.closure = L ↔ closure (K : Set E) = L :=
   SetLike.ext'_iff
 #align convex_cone.closure_eq ConvexCone.closure_eq
 
@@ -63,16 +63,16 @@ protected def closure (K : PointedCone 𝕜 E) : PointedCone 𝕜 E :=
   ConvexCone.toPointedCone K.toConvexCone_closure_pointed
 
 @[simp, norm_cast]
-theorem coe_closure (K : PointedCone 𝕜 E) : (K.closure : Set E) = closure K :=
+lemma coe_closure (K : PointedCone 𝕜 E) : (K.closure : Set E) = closure K :=
   rfl
 
 @[simp]
-protected theorem mem_closure {K : PointedCone 𝕜 E} {a : E} :
+protected lemma mem_closure {K : PointedCone 𝕜 E} {a : E} :
     a ∈ K.closure ↔ a ∈ closure (K : Set E) :=
   Iff.rfl
 
 @[simp]
-theorem closure_eq {K L : PointedCone 𝕜 E} : K.closure = L ↔ closure (K : Set E) = L :=
+lemma closure_eq {K L : PointedCone 𝕜 E} : K.closure = L ↔ closure (K : Set E) = L :=
   SetLike.ext'_iff
 
 end PointedCone

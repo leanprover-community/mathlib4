@@ -99,24 +99,24 @@ lemma ext {A B : Algebra F} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : f 
   Hom.ext _ _ w
 
 @[simp]
-theorem id_eq_id : Algebra.Hom.id A = 𝟙 A :=
+lemma id_eq_id : Algebra.Hom.id A = 𝟙 A :=
   rfl
 #align category_theory.endofunctor.algebra.id_eq_id CategoryTheory.Endofunctor.Algebra.id_eq_id
 
 @[simp]
-theorem id_f : (𝟙 _ : A ⟶ A).1 = 𝟙 A.1 :=
+lemma id_f : (𝟙 _ : A ⟶ A).1 = 𝟙 A.1 :=
   rfl
 #align category_theory.endofunctor.algebra.id_f CategoryTheory.Endofunctor.Algebra.id_f
 
 variable (f : A₀ ⟶ A₁) (g : A₁ ⟶ A₂)
 
 @[simp]
-theorem comp_eq_comp : Algebra.Hom.comp f g = f ≫ g :=
+lemma comp_eq_comp : Algebra.Hom.comp f g = f ≫ g :=
   rfl
 #align category_theory.endofunctor.algebra.comp_eq_comp CategoryTheory.Endofunctor.Algebra.comp_eq_comp
 
 @[simp]
-theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
+lemma comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
   rfl
 #align category_theory.endofunctor.algebra.comp_f CategoryTheory.Endofunctor.Algebra.comp_f
 
@@ -230,16 +230,16 @@ def strInv : A.1 ⟶ F.obj A.1 :=
 
 #align category_theory.endofunctor.algebra.initial.str_inv CategoryTheory.Endofunctor.Algebra.Initial.strInv
 
-theorem left_inv' :
+lemma left_inv' :
     ⟨strInv h ≫ A.str, by rw [← Category.assoc, F.map_comp, strInv, ← Hom.h]⟩ = 𝟙 A :=
   Limits.IsInitial.hom_ext h _ (𝟙 A)
 #align category_theory.endofunctor.algebra.initial.left_inv' CategoryTheory.Endofunctor.Algebra.Initial.left_inv'
 
-theorem left_inv : strInv h ≫ A.str = 𝟙 _ :=
+lemma left_inv : strInv h ≫ A.str = 𝟙 _ :=
   congr_arg Hom.f (left_inv' h)
 #align category_theory.endofunctor.algebra.initial.left_inv CategoryTheory.Endofunctor.Algebra.Initial.left_inv
 
-theorem right_inv : A.str ≫ strInv h = 𝟙 _ := by
+lemma right_inv : A.str ≫ strInv h = 𝟙 _ := by
   rw [strInv, ← (h.to ⟨F.obj A.1, F.map A.str⟩).h, ← F.map_id, ← F.map_comp]
   congr
   exact left_inv h
@@ -322,24 +322,24 @@ lemma ext {A B : Coalgebra F} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : 
   Hom.ext _ _ w
 
 @[simp]
-theorem id_eq_id : Coalgebra.Hom.id V = 𝟙 V :=
+lemma id_eq_id : Coalgebra.Hom.id V = 𝟙 V :=
   rfl
 #align category_theory.endofunctor.coalgebra.id_eq_id CategoryTheory.Endofunctor.Coalgebra.id_eq_id
 
 @[simp]
-theorem id_f : (𝟙 _ : V ⟶ V).1 = 𝟙 V.1 :=
+lemma id_f : (𝟙 _ : V ⟶ V).1 = 𝟙 V.1 :=
   rfl
 #align category_theory.endofunctor.coalgebra.id_f CategoryTheory.Endofunctor.Coalgebra.id_f
 
 variable (f : V₀ ⟶ V₁) (g : V₁ ⟶ V₂)
 
 @[simp]
-theorem comp_eq_comp : Coalgebra.Hom.comp f g = f ≫ g :=
+lemma comp_eq_comp : Coalgebra.Hom.comp f g = f ≫ g :=
   rfl
 #align category_theory.endofunctor.coalgebra.comp_eq_comp CategoryTheory.Endofunctor.Coalgebra.comp_eq_comp
 
 @[simp]
-theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
+lemma comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
   rfl
 #align category_theory.endofunctor.coalgebra.comp_f CategoryTheory.Endofunctor.Coalgebra.comp_f
 
@@ -451,12 +451,12 @@ namespace Adjunction
 
 variable {F : C ⥤ C} {G : C ⥤ C}
 
-theorem Algebra.homEquiv_naturality_str (adj : F ⊣ G) (A₁ A₂ : Algebra F) (f : A₁ ⟶ A₂) :
+lemma Algebra.homEquiv_naturality_str (adj : F ⊣ G) (A₁ A₂ : Algebra F) (f : A₁ ⟶ A₂) :
     (adj.homEquiv A₁.a A₁.a) A₁.str ≫ G.map f.f = f.f ≫ (adj.homEquiv A₂.a A₂.a) A₂.str := by
   rw [← Adjunction.homEquiv_naturality_right, ← Adjunction.homEquiv_naturality_left, f.h]
 #align category_theory.endofunctor.adjunction.algebra.hom_equiv_naturality_str CategoryTheory.Endofunctor.Adjunction.Algebra.homEquiv_naturality_str
 
-theorem Coalgebra.homEquiv_naturality_str_symm (adj : F ⊣ G) (V₁ V₂ : Coalgebra G) (f : V₁ ⟶ V₂) :
+lemma Coalgebra.homEquiv_naturality_str_symm (adj : F ⊣ G) (V₁ V₂ : Coalgebra G) (f : V₁ ⟶ V₂) :
     F.map f.f ≫ (adj.homEquiv V₂.V V₂.V).symm V₂.str =
     (adj.homEquiv V₁.V V₁.V).symm V₁.str ≫ f.f := by
   rw [← Adjunction.homEquiv_naturality_left_symm, ← Adjunction.homEquiv_naturality_right_symm,

@@ -96,7 +96,7 @@ set_option linter.uppercaseLean3 false in
 add_decl_doc AddGroupCat.of
 
 @[to_additive (attr := simp)]
-theorem coe_of (R : Type u) [Group R] : ↑(GroupCat.of R) = R :=
+lemma coe_of (R : Type u) [Group R] : ↑(GroupCat.of R) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Group.coe_of GroupCat.coe_of
@@ -123,7 +123,7 @@ instance : Coe GroupCat.{u} MonCat.{u} where coe := (forget₂ GroupCat MonCat).
 instance (G H : GroupCat) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 
 @[to_additive (attr := simp)]
-theorem one_apply (G H : GroupCat) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :=
+lemma one_apply (G H : GroupCat) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Group.one_apply GroupCat.one_apply
@@ -143,7 +143,7 @@ set_option linter.uppercaseLean3 false in
 add_decl_doc AddGroupCat.ofHom
 
 @[to_additive]
-theorem ofHom_apply {X Y : Type _} [Group X] [Group Y] (f : X →* Y) (x : X) :
+lemma ofHom_apply {X Y : Type _} [Group X] [Group Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -255,7 +255,7 @@ instance : Inhabited CommGroupCat :=
 -- bundled or unbundled lemmas.
 -- (This change seems dangerous!)
 @[to_additive]
-theorem coe_of (R : Type u) [CommGroup R] : (CommGroupCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [CommGroup R] : (CommGroupCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommGroup.coe_of CommGroupCat.coe_of
@@ -297,7 +297,7 @@ instance : Coe CommGroupCat.{u} CommMonCat.{u} where coe := (forget₂ CommGroup
 instance (G H : CommGroupCat) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 
 @[to_additive (attr := simp)]
-theorem one_apply (G H : CommGroupCat) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :=
+lemma one_apply (G H : CommGroupCat) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommGroup.one_apply CommGroupCat.one_apply
@@ -317,7 +317,7 @@ set_option linter.uppercaseLean3 false in
 add_decl_doc AddCommGroupCat.ofHom
 
 @[to_additive (attr := simp)]
-theorem ofHom_apply {X Y : Type _} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
+lemma ofHom_apply {X Y : Type _} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -344,18 +344,18 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.as_hom AddCommGroupCat.asHom
 
 @[simp]
-theorem asHom_apply {G : AddCommGroupCat.{0}} (g : G) (i : ℤ) : (asHom g) i = i • g :=
+lemma asHom_apply {G : AddCommGroupCat.{0}} (g : G) (i : ℤ) : (asHom g) i = i • g :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.as_hom_apply AddCommGroupCat.asHom_apply
 
-theorem asHom_injective {G : AddCommGroupCat.{0}} : Function.Injective (@asHom G) := fun h k w => by
+lemma asHom_injective {G : AddCommGroupCat.{0}} : Function.Injective (@asHom G) := fun h k w => by
   convert congr_arg (fun k : AddCommGroupCat.of ℤ ⟶ G => (k : ℤ → G) (1 : ℤ)) w <;> simp
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.as_hom_injective AddCommGroupCat.asHom_injective
 
 @[ext]
-theorem int_hom_ext {G : AddCommGroupCat.{0}} (f g : AddCommGroupCat.of ℤ ⟶ G)
+lemma int_hom_ext {G : AddCommGroupCat.{0}} (f g : AddCommGroupCat.of ℤ ⟶ G)
     (w : f (1 : ℤ) = g (1 : ℤ)) : f = g :=
   @AddMonoidHom.ext_int G _ f g w
 set_option linter.uppercaseLean3 false in
@@ -363,7 +363,7 @@ set_option linter.uppercaseLean3 false in
 
 -- TODO: this argument should be generalised to the situation where
 -- the forgetful functor is representable.
-theorem injective_of_mono {G H : AddCommGroupCat.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
+lemma injective_of_mono {G H : AddCommGroupCat.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
   fun g₁ g₂ h => by
   have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by aesop_cat
   have t1 : asHom g₁ = asHom g₂ := (cancel_mono _).1 t0

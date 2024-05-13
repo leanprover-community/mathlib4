@@ -108,7 +108,7 @@ variable (i : D ⥤ C)
 -- Porting note: this used to be used as a local instance,
 -- now it can instead be used as a have when needed
 -- we assume HasFiniteProducts D as a hypothesis below
-theorem reflective_products [HasFiniteProducts C] [Reflective i] : HasFiniteProducts D :=
+lemma reflective_products [HasFiniteProducts C] [Reflective i] : HasFiniteProducts D :=
   ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
 #align category_theory.reflective_products CategoryTheory.reflective_products
 
@@ -199,7 +199,7 @@ noncomputable def bijection (A B : C) (X : D) :
     _ ≃ ((reflector i).obj A ⨯ (reflector i).obj B ⟶ X) := (equivOfFullyFaithful _).symm
 #align category_theory.bijection CategoryTheory.bijection
 
-theorem bijection_symm_apply_id (A B : C) :
+lemma bijection_symm_apply_id (A B : C) :
     (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
   dsimp [bijection]
   -- Porting note: added
@@ -219,7 +219,7 @@ theorem bijection_symm_apply_id (A B : C) :
     apply (reflectorAdjunction i).unit.naturality
 #align category_theory.bijection_symm_apply_id CategoryTheory.bijection_symm_apply_id
 
-theorem bijection_natural (A B : C) (X X' : D) (f : (reflector i).obj (A ⨯ B) ⟶ X) (g : X ⟶ X') :
+lemma bijection_natural (A B : C) (X X' : D) (f : (reflector i).obj (A ⨯ B) ⟶ X) (g : X ⟶ X') :
     bijection i _ _ _ (f ≫ g) = bijection i _ _ _ f ≫ g := by
   dsimp [bijection]
   -- Porting note: added

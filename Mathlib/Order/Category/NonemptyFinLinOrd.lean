@@ -82,7 +82,7 @@ set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.of NonemptyFinLinOrd.of
 
 @[simp]
-theorem coe_of (α : Type*) [NonemptyFiniteLinearOrder α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [NonemptyFiniteLinearOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.coe_of NonemptyFinLinOrd.coe_of
@@ -148,7 +148,7 @@ instance {A B : NonemptyFinLinOrd.{u}} : FunLike (A ⟶ B) A B where
 instance {A B : NonemptyFinLinOrd.{u}} : OrderHomClass (A ⟶ B) A B where
   map_rel f _ _ h := f.monotone h
 
-theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
+lemma mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Mono f ↔ Function.Injective f := by
   refine' ⟨_, ConcreteCategory.mono_of_injective f⟩
   intro
@@ -169,7 +169,7 @@ set_option linter.uppercaseLean3 false in
 lemma forget_map_apply {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) (a : A) :
     (forget NonemptyFinLinOrd).map f a = (f : OrderHom A B).toFun a := rfl
 
-theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
+lemma epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Epi f ↔ Function.Surjective f := by
   constructor
   · intro
@@ -251,7 +251,7 @@ instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
 
 end NonemptyFinLinOrd
 
-theorem nonemptyFinLinOrd_dual_comp_forget_to_linOrd :
+lemma nonemptyFinLinOrd_dual_comp_forget_to_linOrd :
     NonemptyFinLinOrd.dual ⋙ forget₂ NonemptyFinLinOrd LinOrd =
       forget₂ NonemptyFinLinOrd LinOrd ⋙ LinOrd.dual :=
   rfl

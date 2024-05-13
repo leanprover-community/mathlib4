@@ -164,25 +164,25 @@ theorem differentiable_tsum' (hu : Summable u) (hg : ∀ n y, HasDerivAt (g n) (
   refine differentiable_tsum hu hg ?_
   simpa? says simpa only [ContinuousLinearMap.norm_smulRight_apply, norm_one, one_mul]
 
-theorem fderiv_tsum_apply (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f n))
+lemma fderiv_tsum_apply (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f n))
     (hf' : ∀ n x, ‖fderiv 𝕜 (f n) x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) (x : E) :
     fderiv 𝕜 (fun y => ∑' n, f n y) x = ∑' n, fderiv 𝕜 (f n) x :=
   (hasFDerivAt_tsum hu (fun n x => (hf n x).hasFDerivAt) hf' hf0 _).fderiv
 #align fderiv_tsum_apply fderiv_tsum_apply
 
-theorem deriv_tsum_apply (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
+lemma deriv_tsum_apply (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
     (hg' : ∀ n y, ‖deriv (g n) y‖ ≤ u n) (hg0 : Summable fun n => g n y₀) (y : 𝕜) :
     deriv (fun z => ∑' n, g n z) y = ∑' n, deriv (g n) y :=
   (hasDerivAt_tsum hu (fun n y => (hg n y).hasDerivAt) hg' hg0 _).deriv
 
-theorem fderiv_tsum (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f n))
+lemma fderiv_tsum (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f n))
     (hf' : ∀ n x, ‖fderiv 𝕜 (f n) x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) :
     (fderiv 𝕜 fun y => ∑' n, f n y) = fun x => ∑' n, fderiv 𝕜 (f n) x := by
   ext1 x
   exact fderiv_tsum_apply hu hf hf' hf0 x
 #align fderiv_tsum fderiv_tsum
 
-theorem deriv_tsum (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
+lemma deriv_tsum (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
     (hg' : ∀ n y, ‖deriv (g n) y‖ ≤ u n) (hg0 : Summable fun n => g n y₀) :
     (deriv fun y => ∑' n, g n y) = fun y => ∑' n, deriv (g n) y := by
   ext1 x

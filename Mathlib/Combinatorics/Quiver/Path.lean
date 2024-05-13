@@ -69,16 +69,16 @@ instance {a : V} : Inhabited (Path a a) :=
   ⟨nil⟩
 
 @[simp]
-theorem length_nil {a : V} : (nil : Path a a).length = 0 :=
+lemma length_nil {a : V} : (nil : Path a a).length = 0 :=
   rfl
 #align quiver.path.length_nil Quiver.Path.length_nil
 
 @[simp]
-theorem length_cons (a b c : V) (p : Path a b) (e : b ⟶ c) : (p.cons e).length = p.length + 1 :=
+lemma length_cons (a b c : V) (p : Path a b) (e : b ⟶ c) : (p.cons e).length = p.length + 1 :=
   rfl
 #align quiver.path.length_cons Quiver.Path.length_cons
 
-theorem eq_of_length_zero (p : Path a b) (hzero : p.length = 0) : a = b := by
+lemma eq_of_length_zero (p : Path a b) (hzero : p.length = 0) : a = b := by
   cases p
   · rfl
   · cases Nat.succ_ne_zero _ hzero
@@ -91,36 +91,36 @@ def comp {a b : V} : ∀ {c}, Path a b → Path b c → Path a c
 #align quiver.path.comp Quiver.Path.comp
 
 @[simp]
-theorem comp_cons {a b c d : V} (p : Path a b) (q : Path b c) (e : c ⟶ d) :
+lemma comp_cons {a b c d : V} (p : Path a b) (q : Path b c) (e : c ⟶ d) :
     p.comp (q.cons e) = (p.comp q).cons e :=
   rfl
 #align quiver.path.comp_cons Quiver.Path.comp_cons
 
 @[simp]
-theorem comp_nil {a b : V} (p : Path a b) : p.comp Path.nil = p :=
+lemma comp_nil {a b : V} (p : Path a b) : p.comp Path.nil = p :=
   rfl
 #align quiver.path.comp_nil Quiver.Path.comp_nil
 
 @[simp]
-theorem nil_comp {a : V} : ∀ {b} (p : Path a b), Path.nil.comp p = p
+lemma nil_comp {a : V} : ∀ {b} (p : Path a b), Path.nil.comp p = p
   | _, nil => rfl
   | _, cons p _ => by rw [comp_cons, nil_comp p]
 #align quiver.path.nil_comp Quiver.Path.nil_comp
 
 @[simp]
-theorem comp_assoc {a b c : V} :
+lemma comp_assoc {a b c : V} :
     ∀ {d} (p : Path a b) (q : Path b c) (r : Path c d), (p.comp q).comp r = p.comp (q.comp r)
   | _, _, _, nil => rfl
   | _, p, q, cons r _ => by rw [comp_cons, comp_cons, comp_cons, comp_assoc p q r]
 #align quiver.path.comp_assoc Quiver.Path.comp_assoc
 
 @[simp]
-theorem length_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).length = p.length + q.length
+lemma length_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).length = p.length + q.length
   | _, nil => rfl
   | _, cons _ _ => congr_arg Nat.succ (length_comp _ _)
 #align quiver.path.length_comp Quiver.Path.length_comp
 
-theorem comp_inj {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (hq : q₁.length = q₂.length) :
+lemma comp_inj {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (hq : q₁.length = q₂.length) :
     p₁.comp q₁ = p₂.comp q₂ ↔ p₁ = p₂ ∧ q₁ = q₂ := by
   refine' ⟨fun h => _, by rintro ⟨rfl, rfl⟩; rfl⟩
   induction' q₁ with d₁ e₁ q₁ f₁ ih <;> obtain _ | ⟨q₂, f₂⟩ := q₂
@@ -134,27 +134,27 @@ theorem comp_inj {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (hq : q₁.length
     exact ⟨rfl, rfl⟩
 #align quiver.path.comp_inj Quiver.Path.comp_inj
 
-theorem comp_inj' {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (h : p₁.length = p₂.length) :
+lemma comp_inj' {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (h : p₁.length = p₂.length) :
     p₁.comp q₁ = p₂.comp q₂ ↔ p₁ = p₂ ∧ q₁ = q₂ :=
   ⟨fun h_eq => (comp_inj <| Nat.add_left_cancel <| by simpa [h] using congr_arg length h_eq).1 h_eq,
    by rintro ⟨rfl, rfl⟩; rfl⟩
 #align quiver.path.comp_inj' Quiver.Path.comp_inj'
 
-theorem comp_injective_left (q : Path b c) : Injective fun p : Path a b => p.comp q :=
+lemma comp_injective_left (q : Path b c) : Injective fun p : Path a b => p.comp q :=
   fun _ _ h => ((comp_inj rfl).1 h).1
 #align quiver.path.comp_injective_left Quiver.Path.comp_injective_left
 
-theorem comp_injective_right (p : Path a b) : Injective (p.comp : Path b c → Path a c) :=
+lemma comp_injective_right (p : Path a b) : Injective (p.comp : Path b c → Path a c) :=
   fun _ _ h => ((comp_inj' rfl).1 h).2
 #align quiver.path.comp_injective_right Quiver.Path.comp_injective_right
 
 @[simp]
-theorem comp_inj_left {p₁ p₂ : Path a b} {q : Path b c} : p₁.comp q = p₂.comp q ↔ p₁ = p₂ :=
+lemma comp_inj_left {p₁ p₂ : Path a b} {q : Path b c} : p₁.comp q = p₂.comp q ↔ p₁ = p₂ :=
   q.comp_injective_left.eq_iff
 #align quiver.path.comp_inj_left Quiver.Path.comp_inj_left
 
 @[simp]
-theorem comp_inj_right {p : Path a b} {q₁ q₂ : Path b c} : p.comp q₁ = p.comp q₂ ↔ q₁ = q₂ :=
+lemma comp_inj_right {p : Path a b} {q₁ q₂ : Path b c} : p.comp q₁ = p.comp q₂ ↔ q₁ = q₂ :=
   p.comp_injective_right.eq_iff
 #align quiver.path.comp_inj_right Quiver.Path.comp_inj_right
 
@@ -173,7 +173,7 @@ theorem toList_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).toList =
   | _, @cons _ _ _ d _ q _ => by simp [toList_comp]
 #align quiver.path.to_list_comp Quiver.Path.toList_comp
 
-theorem toList_chain_nonempty :
+lemma toList_chain_nonempty :
     ∀ {b} (p : Path a b), p.toList.Chain (fun x y => Nonempty (y ⟶ x)) b
   | _, nil => List.Chain.nil
   | _, cons p f => p.toList_chain_nonempty.cons ⟨f⟩
@@ -181,7 +181,7 @@ theorem toList_chain_nonempty :
 
 variable [∀ a b : V, Subsingleton (a ⟶ b)]
 
-theorem toList_injective (a : V) : ∀ b, Injective (toList : Path a b → List V)
+lemma toList_injective (a : V) : ∀ b, Injective (toList : Path a b → List V)
   | _, nil, nil, _ => rfl
   | _, nil, @cons _ _ _ c _ p f, h => by cases h
   | _, @cons _ _ _ c _ p f, nil, h => by cases h
@@ -192,7 +192,7 @@ theorem toList_injective (a : V) : ∀ b, Injective (toList : Path a b → List 
 #align quiver.path.to_list_injective Quiver.Path.toList_injective
 
 @[simp]
-theorem toList_inj {p q : Path a b} : p.toList = q.toList ↔ p = q :=
+lemma toList_inj {p q : Path a b} : p.toList = q.toList ↔ p = q :=
   (toList_injective _ _).eq_iff
 #align quiver.path.to_list_inj Quiver.Path.toList_inj
 
@@ -213,25 +213,25 @@ def mapPath {a : V} : ∀ {b : V}, Path a b → Path (F.obj a) (F.obj b)
 #align prefunctor.map_path Prefunctor.mapPath
 
 @[simp]
-theorem mapPath_nil (a : V) : F.mapPath (Path.nil : Path a a) = Path.nil :=
+lemma mapPath_nil (a : V) : F.mapPath (Path.nil : Path a a) = Path.nil :=
   rfl
 #align prefunctor.map_path_nil Prefunctor.mapPath_nil
 
 @[simp]
-theorem mapPath_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
+lemma mapPath_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
     F.mapPath (Path.cons p e) = Path.cons (F.mapPath p) (F.map e) :=
   rfl
 #align prefunctor.map_path_cons Prefunctor.mapPath_cons
 
 @[simp]
-theorem mapPath_comp {a b : V} (p : Path a b) :
+lemma mapPath_comp {a b : V} (p : Path a b) :
     ∀ {c : V} (q : Path b c), F.mapPath (p.comp q) = (F.mapPath p).comp (F.mapPath q)
   | _, Path.nil => rfl
   | c, Path.cons q e => by dsimp; rw [mapPath_comp p q]
 #align prefunctor.map_path_comp Prefunctor.mapPath_comp
 
 @[simp]
-theorem mapPath_toPath {a b : V} (f : a ⟶ b) : F.mapPath f.toPath = (F.map f).toPath :=
+lemma mapPath_toPath {a b : V} (f : a ⟶ b) : F.mapPath f.toPath = (F.map f).toPath :=
   rfl
 #align prefunctor.map_path_to_path Prefunctor.mapPath_toPath
 

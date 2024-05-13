@@ -89,7 +89,7 @@ def Basis.indexEquiv (v : Basis ι R M) (v' : Basis ι' R M) : ι ≃ ι' :=
   (Cardinal.lift_mk_eq'.1 <| mk_eq_mk_of_basis v v').some
 #align basis.index_equiv Basis.indexEquiv
 
-theorem mk_eq_mk_of_basis' {ι' : Type w} (v : Basis ι R M) (v' : Basis ι' R M) : #ι = #ι' :=
+lemma mk_eq_mk_of_basis' {ι' : Type w} (v : Basis ι R M) (v' : Basis ι' R M) : #ι = #ι' :=
   Cardinal.lift_inj.1 <| mk_eq_mk_of_basis v v'
 #align mk_eq_mk_of_basis' mk_eq_mk_of_basis'
 
@@ -174,7 +174,7 @@ open Submodule
 
 -- An auxiliary lemma for `linearIndependent_le_span'`,
 -- with the additional assumption that the linearly independent family is finite.
-theorem linearIndependent_le_span_aux' {ι : Type*} [Fintype ι] (v : ι → M)
+lemma linearIndependent_le_span_aux' {ι : Type*} [Fintype ι] (v : ι → M)
     (i : LinearIndependent R v) (w : Set M) [Fintype w] (s : range v ≤ span R w) :
     Fintype.card ι ≤ Fintype.card w := by
   -- We construct an injective linear map `(ι → R) →ₗ[R] (w → R)`,
@@ -299,7 +299,7 @@ theorem maximal_linearIndependent_eq_infinite_basis {ι : Type w} (b : Basis ι 
     exact infinite_basis_le_maximal_linearIndependent b v i m
 #align maximal_linear_independent_eq_infinite_basis maximal_linearIndependent_eq_infinite_basis
 
-theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank R M := by
+lemma Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank R M := by
   haveI := nontrivial_of_invariantBasisNumber R
   rw [Module.rank_def]
   apply le_antisymm
@@ -317,7 +317,7 @@ theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank 
     apply linearIndependent_le_basis v _ li
 #align basis.mk_eq_rank'' Basis.mk_eq_rank''
 
-theorem Basis.mk_range_eq_rank (v : Basis ι R M) : #(range v) = Module.rank R M :=
+lemma Basis.mk_range_eq_rank (v : Basis ι R M) : #(range v) = Module.rank R M :=
   v.reindexRange.mk_eq_rank''
 #align basis.mk_range_eq_rank Basis.mk_range_eq_rank
 
@@ -330,43 +330,43 @@ theorem rank_eq_card_basis {ι : Type w} [Fintype ι] (h : Basis ι R M) :
   rw [← h.mk_range_eq_rank, Cardinal.mk_fintype, Set.card_range_of_injective h.injective]
 #align rank_eq_card_basis rank_eq_card_basis
 
-theorem Basis.card_le_card_of_linearIndependent {ι : Type*} [Fintype ι] (b : Basis ι R M)
+lemma Basis.card_le_card_of_linearIndependent {ι : Type*} [Fintype ι] (b : Basis ι R M)
     {ι' : Type*} [Fintype ι'] {v : ι' → M} (hv : LinearIndependent R v) :
     Fintype.card ι' ≤ Fintype.card ι := by
   letI := nontrivial_of_invariantBasisNumber R
   simpa [rank_eq_card_basis b, Cardinal.mk_fintype] using hv.cardinal_lift_le_rank
 #align basis.card_le_card_of_linear_independent Basis.card_le_card_of_linearIndependent
 
-theorem Basis.card_le_card_of_submodule (N : Submodule R M) [Fintype ι] (b : Basis ι R M)
+lemma Basis.card_le_card_of_submodule (N : Submodule R M) [Fintype ι] (b : Basis ι R M)
     [Fintype ι'] (b' : Basis ι' R N) : Fintype.card ι' ≤ Fintype.card ι :=
   b.card_le_card_of_linearIndependent (b'.linearIndependent.map' N.subtype N.ker_subtype)
 #align basis.card_le_card_of_submodule Basis.card_le_card_of_submodule
 
-theorem Basis.card_le_card_of_le {N O : Submodule R M} (hNO : N ≤ O) [Fintype ι] (b : Basis ι R O)
+lemma Basis.card_le_card_of_le {N O : Submodule R M} (hNO : N ≤ O) [Fintype ι] (b : Basis ι R O)
     [Fintype ι'] (b' : Basis ι' R N) : Fintype.card ι' ≤ Fintype.card ι :=
   b.card_le_card_of_linearIndependent
     (b'.linearIndependent.map' (Submodule.inclusion hNO) (N.ker_inclusion O _))
 #align basis.card_le_card_of_le Basis.card_le_card_of_le
 
-theorem Basis.mk_eq_rank (v : Basis ι R M) :
+lemma Basis.mk_eq_rank (v : Basis ι R M) :
     Cardinal.lift.{v} #ι = Cardinal.lift.{w} (Module.rank R M) := by
   haveI := nontrivial_of_invariantBasisNumber R
   rw [← v.mk_range_eq_rank, Cardinal.mk_range_eq_of_injective v.injective]
 #align basis.mk_eq_rank Basis.mk_eq_rank
 
-theorem Basis.mk_eq_rank'.{m} (v : Basis ι R M) :
+lemma Basis.mk_eq_rank'.{m} (v : Basis ι R M) :
     Cardinal.lift.{max v m} #ι = Cardinal.lift.{max w m} (Module.rank R M) :=
   Cardinal.lift_umax_eq.{w, v, m}.mpr v.mk_eq_rank
 #align basis.mk_eq_rank' Basis.mk_eq_rank'
 
-theorem rank_span {v : ι → M} (hv : LinearIndependent R v) :
+lemma rank_span {v : ι → M} (hv : LinearIndependent R v) :
     Module.rank R ↑(span R (range v)) = #(range v) := by
   haveI := nontrivial_of_invariantBasisNumber R
   rw [← Cardinal.lift_inj, ← (Basis.span hv).mk_eq_rank,
     Cardinal.mk_range_eq_of_injective (@LinearIndependent.injective ι R M v _ _ _ _ hv)]
 #align rank_span rank_span
 
-theorem rank_span_set {s : Set M} (hs : LinearIndependent R (fun x => x : s → M)) :
+lemma rank_span_set {s : Set M} (hs : LinearIndependent R (fun x => x : s → M)) :
     Module.rank R ↑(span R s) = #s := by
   rw [← @setOf_mem_eq _ s, ← Subtype.range_coe_subtype]
   exact rank_span hs
@@ -406,7 +406,7 @@ theorem Ideal.rank_eq {R S : Type*} [CommRing R] [StrongRankCondition R] [Ring S
 
 open FiniteDimensional
 
-theorem finrank_eq_nat_card_basis (h : Basis ι R M) :
+lemma finrank_eq_nat_card_basis (h : Basis ι R M) :
     finrank R M = Nat.card ι := by
   rw [Nat.card, ← toNat_lift.{v}, h.mk_eq_rank, toNat_lift, finrank]
 
@@ -439,7 +439,7 @@ open FiniteDimensional
 variable (R)
 
 @[simp]
-theorem rank_self : Module.rank R R = 1 := by
+lemma rank_self : Module.rank R R = 1 := by
   rw [← Cardinal.lift_inj, ← (Basis.singleton PUnit R).mk_eq_rank, Cardinal.mk_punit]
 #align rank_self rank_self
 
@@ -486,12 +486,12 @@ protected alias FiniteDimensional.finrank_eq_rank := finrank_eq_rank
 variable {R M}
 variable {M'} [AddCommGroup M'] [Module R M']
 
-theorem LinearMap.finrank_le_finrank_of_injective [Module.Finite R M'] {f : M →ₗ[R] M'}
+lemma LinearMap.finrank_le_finrank_of_injective [Module.Finite R M'] {f : M →ₗ[R] M'}
     (hf : Function.Injective f) : finrank R M ≤ finrank R M' :=
   finrank_le_finrank_of_rank_le_rank (LinearMap.lift_rank_le_of_injective _ hf) (rank_lt_aleph0 _ _)
 #align linear_map.finrank_le_finrank_of_injective LinearMap.finrank_le_finrank_of_injective
 
-theorem LinearMap.finrank_range_le [Module.Finite R M] (f : M →ₗ[R] M') :
+lemma LinearMap.finrank_range_le [Module.Finite R M] (f : M →ₗ[R] M') :
     finrank R (LinearMap.range f) ≤ finrank R M :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_range_le f) (rank_lt_aleph0 _ _)
 #align linear_map.finrank_range_le LinearMap.finrank_range_le

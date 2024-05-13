@@ -405,7 +405,7 @@ end Presieve
 
 namespace Presheaf
 
-theorem isSheaf_iff_isLimit_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ D) :
+lemma isSheaf_iff_isLimit_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ D) :
     Presheaf.IsSheaf (toGrothendieck _ K) P ↔ ∀ ⦃X : C⦄ (R : Presieve X),
       R ∈ K.covering X →
         Nonempty (IsLimit (P.mapCone (Sieve.generate R).arrows.cocone.op)) := by
@@ -413,7 +413,7 @@ theorem isSheaf_iff_isLimit_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ D) :
     ← Presieve.isSheafFor_iff_generate]
   aesop
 
-theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ D) :
+lemma isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ D) :
     (IsSheaf ((K ⊔ L).toGrothendieck C)) P ↔
     (IsSheaf (K.toGrothendieck C)) P ∧ (IsSheaf (L.toGrothendieck C)) P :=
   ⟨fun h ↦ ⟨fun E ↦ ((Presieve.isSheaf_sup K L _).mp (h E)).1, fun E ↦

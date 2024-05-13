@@ -42,7 +42,7 @@ def IsLocalHomeomorphOn :=
   ∀ x ∈ s, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ f = e
 #align is_locally_homeomorph_on IsLocalHomeomorphOn
 
-theorem isLocalHomeomorphOn_iff_openEmbedding_restrict {f : X → Y} :
+lemma isLocalHomeomorphOn_iff_openEmbedding_restrict {f : X → Y} :
     IsLocalHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, OpenEmbedding (U.restrict f) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
   · obtain ⟨e, hxe, rfl⟩ := h x hx
@@ -84,10 +84,10 @@ lemma PartialHomeomorph.isLocalHomeomorphOn (e : PartialHomeomorph X Y) :
 
 variable {g f s t}
 
-theorem mono {t : Set X} (hf : IsLocalHomeomorphOn f t) (hst : s ⊆ t) : IsLocalHomeomorphOn f s :=
+lemma mono {t : Set X} (hf : IsLocalHomeomorphOn f t) (hst : s ⊆ t) : IsLocalHomeomorphOn f s :=
   fun x hx ↦ hf x (hst hx)
 
-theorem of_comp_left (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hg : IsLocalHomeomorphOn g (f '' s))
+lemma of_comp_left (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hg : IsLocalHomeomorphOn g (f '' s))
     (cont : ∀ x ∈ s, ContinuousAt f x) : IsLocalHomeomorphOn f s := mk f s fun x hx ↦ by
   obtain ⟨g, hxg, rfl⟩ := hg (f x) ⟨x, hx, rfl⟩
   obtain ⟨gf, hgf, he⟩ := hgf x hx
@@ -98,7 +98,7 @@ theorem of_comp_left (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hg : IsLocalHomeom
   have : f y ∈ g.source := by apply interior_subset hy.1.2
   rw [← he, g.eq_symm_apply this (by apply g.map_source this), Function.comp_apply]
 
-theorem of_comp_right (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hf : IsLocalHomeomorphOn f s) :
+lemma of_comp_right (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hf : IsLocalHomeomorphOn f s) :
     IsLocalHomeomorphOn g (f '' s) := mk g _ <| by
   rintro _ ⟨x, hx, rfl⟩
   obtain ⟨f, hxf, rfl⟩ := hf x hx
@@ -108,21 +108,21 @@ theorem of_comp_right (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hf : IsLocalHomeo
   · change g y = gf (f.symm y)
     rw [← he, Function.comp_apply, f.right_inv hy.1]
 
-theorem map_nhds_eq (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x ∈ s) : (𝓝 x).map f = 𝓝 (f x) :=
+lemma map_nhds_eq (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x ∈ s) : (𝓝 x).map f = 𝓝 (f x) :=
   let ⟨e, hx, he⟩ := hf x hx
   he.symm ▸ e.map_nhds_eq hx
 #align is_locally_homeomorph_on.map_nhds_eq IsLocalHomeomorphOn.map_nhds_eq
 
-protected theorem continuousAt (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x ∈ s) :
+protected lemma continuousAt (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x ∈ s) :
     ContinuousAt f x :=
   (hf.map_nhds_eq hx).le
 #align is_locally_homeomorph_on.continuous_at IsLocalHomeomorphOn.continuousAt
 
-protected theorem continuousOn (hf : IsLocalHomeomorphOn f s) : ContinuousOn f s :=
+protected lemma continuousOn (hf : IsLocalHomeomorphOn f s) : ContinuousOn f s :=
   ContinuousAt.continuousOn fun _x ↦ hf.continuousAt
 #align is_locally_homeomorph_on.continuous_on IsLocalHomeomorphOn.continuousOn
 
-protected theorem comp (hg : IsLocalHomeomorphOn g t) (hf : IsLocalHomeomorphOn f s)
+protected lemma comp (hg : IsLocalHomeomorphOn g t) (hf : IsLocalHomeomorphOn f s)
     (h : Set.MapsTo f s t) : IsLocalHomeomorphOn (g ∘ f) s := by
   intro x hx
   obtain ⟨eg, hxg, rfl⟩ := hg (f x) (h hx)
@@ -138,26 +138,26 @@ def IsLocalHomeomorph :=
   ∀ x : X, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ f = e
 #align is_locally_homeomorph IsLocalHomeomorph
 
-theorem Homeomorph.isLocalHomeomorph (f : X ≃ₜ Y) : IsLocalHomeomorph f :=
+lemma Homeomorph.isLocalHomeomorph (f : X ≃ₜ Y) : IsLocalHomeomorph f :=
   fun _ ↦ ⟨f.toPartialHomeomorph, trivial, rfl⟩
 
 variable {f s}
 
-theorem isLocalHomeomorph_iff_isLocalHomeomorphOn_univ :
+lemma isLocalHomeomorph_iff_isLocalHomeomorphOn_univ :
     IsLocalHomeomorph f ↔ IsLocalHomeomorphOn f Set.univ :=
   ⟨fun h x _ ↦ h x, fun h x ↦ h x trivial⟩
 #align is_locally_homeomorph_iff_is_locally_homeomorph_on_univ isLocalHomeomorph_iff_isLocalHomeomorphOn_univ
 
-protected theorem IsLocalHomeomorph.isLocalHomeomorphOn (hf : IsLocalHomeomorph f) :
+protected lemma IsLocalHomeomorph.isLocalHomeomorphOn (hf : IsLocalHomeomorph f) :
     IsLocalHomeomorphOn f s := fun x _ ↦ hf x
 #align is_locally_homeomorph.is_locally_homeomorph_on IsLocalHomeomorph.isLocalHomeomorphOn
 
-theorem isLocalHomeomorph_iff_openEmbedding_restrict {f : X → Y} :
+lemma isLocalHomeomorph_iff_openEmbedding_restrict {f : X → Y} :
     IsLocalHomeomorph f ↔ ∀ x : X, ∃ U ∈ 𝓝 x, OpenEmbedding (U.restrict f) := by
   simp_rw [isLocalHomeomorph_iff_isLocalHomeomorphOn_univ,
     isLocalHomeomorphOn_iff_openEmbedding_restrict, imp_iff_right (Set.mem_univ _)]
 
-theorem OpenEmbedding.isLocalHomeomorph (hf : OpenEmbedding f) : IsLocalHomeomorph f :=
+lemma OpenEmbedding.isLocalHomeomorph (hf : OpenEmbedding f) : IsLocalHomeomorph f :=
   isLocalHomeomorph_iff_openEmbedding_restrict.mpr fun _ ↦
     ⟨_, Filter.univ_mem, hf.comp (Homeomorph.Set.univ X).openEmbedding⟩
 
@@ -183,12 +183,12 @@ variable {g f}
 lemma isLocallyInjective (hf : IsLocalHomeomorph f) : IsLocallyInjective f :=
   fun x ↦ by obtain ⟨f, hx, rfl⟩ := hf x; exact ⟨f.source, f.open_source, hx, f.injOn⟩
 
-theorem of_comp (hgf : IsLocalHomeomorph (g ∘ f)) (hg : IsLocalHomeomorph g)
+lemma of_comp (hgf : IsLocalHomeomorph (g ∘ f)) (hg : IsLocalHomeomorph g)
     (cont : Continuous f) : IsLocalHomeomorph f :=
   isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr <|
     hgf.isLocalHomeomorphOn.of_comp_left hg.isLocalHomeomorphOn fun _ _ ↦ cont.continuousAt
 
-theorem map_nhds_eq (hf : IsLocalHomeomorph f) (x : X) : (𝓝 x).map f = 𝓝 (f x) :=
+lemma map_nhds_eq (hf : IsLocalHomeomorph f) (x : X) : (𝓝 x).map f = 𝓝 (f x) :=
   hf.isLocalHomeomorphOn.map_nhds_eq (Set.mem_univ x)
 #align is_locally_homeomorph.map_nhds_eq IsLocalHomeomorph.map_nhds_eq
 

@@ -23,7 +23,7 @@ open scoped Real
 /-- The complex arctangent, defined via the complex logarithm. -/
 noncomputable def arctan (z : ℂ) : ℂ := -I / 2 * log ((1 + z * I) / (1 - z * I))
 
-theorem tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z) = z := by
+lemma tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z) = z := by
   unfold tan sin cos
   rw [div_div_eq_mul_div, div_mul_cancel₀ _ two_ne_zero, ← div_mul_eq_mul_div,
     -- multiply top and bottom by `exp (arctan z * I)`
@@ -61,7 +61,7 @@ lemma cos_ne_zero_of_arctan_bounds {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π 
     rwa [show 2 * k + 1 = 1 by omega, Int.cast_one, one_mul] at nr
   · exact Or.inr ni
 
-theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h₂ : z.re ≤ π / 2) :
+lemma arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h₂ : z.re ≤ π / 2) :
     arctan (tan z) = z := by
   have h := cos_ne_zero_of_arctan_bounds h₀ h₁ h₂
   unfold arctan tan
@@ -77,7 +77,7 @@ theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h�
   · rwa [← le_div_iff' two_pos]
 
 @[simp, norm_cast]
-theorem ofReal_arctan (x : ℝ) : (Real.arctan x : ℂ) = arctan x := by
+lemma ofReal_arctan (x : ℝ) : (Real.arctan x : ℂ) = arctan x := by
   conv_rhs => rw [← Real.tan_arctan x]
   rw [ofReal_tan, arctan_tan]
   all_goals norm_cast

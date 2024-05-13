@@ -36,24 +36,24 @@ section SuperFactorial
 variable {n : ℕ}
 
 @[simp]
-theorem superFactorial_zero : sf 0 = 1 :=
+lemma superFactorial_zero : sf 0 = 1 :=
   rfl
 
-theorem superFactorial_succ (n : ℕ) : (sf n.succ) = (n + 1)! * sf n :=
-  rfl
-
-@[simp]
-theorem superFactorial_one : sf 1 = 1 :=
+lemma superFactorial_succ (n : ℕ) : (sf n.succ) = (n + 1)! * sf n :=
   rfl
 
 @[simp]
-theorem superFactorial_two : sf 2 = 2 :=
+lemma superFactorial_one : sf 1 = 1 :=
+  rfl
+
+@[simp]
+lemma superFactorial_two : sf 2 = 2 :=
   rfl
 
 open BigOperators Finset
 
 @[simp]
-theorem prod_Icc_factorial : ∀ n : ℕ, ∏ x in Icc 1 n, x ! = sf n
+lemma prod_Icc_factorial : ∀ n : ℕ, ∏ x in Icc 1 n, x ! = sf n
   | 0 => rfl
   | n + 1 => by
     rw [← Ico_succ_right 1 n.succ, prod_Ico_succ_top <| Nat.succ_le_succ <| Nat.zero_le n,
@@ -61,18 +61,18 @@ theorem prod_Icc_factorial : ∀ n : ℕ, ∏ x in Icc 1 n, x ! = sf n
     Nat.succ_eq_add_one, mul_comm]
 
 @[simp]
-theorem prod_range_factorial_succ (n : ℕ) : ∏ x in range n, (x + 1)! = sf n :=
+lemma prod_range_factorial_succ (n : ℕ) : ∏ x in range n, (x + 1)! = sf n :=
   (prod_Icc_factorial n) ▸ range_eq_Ico ▸ Finset.prod_Ico_add' _ _ _ _
 
 @[simp]
-theorem prod_range_succ_factorial : ∀ n : ℕ, ∏ x in range (n + 1), x ! = sf n
+lemma prod_range_succ_factorial : ∀ n : ℕ, ∏ x in range (n + 1), x ! = sf n
   | 0 => rfl
   | n + 1 => by
     rw [prod_range_succ, prod_range_succ_factorial n, mul_comm, superFactorial]
 
 variable {R : Type*} [CommRing R]
 
-theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
+lemma det_vandermonde_id_eq_superFactorial (n : ℕ) :
     (Matrix.vandermonde (fun (i : Fin (n + 1)) ↦ (i : R))).det = Nat.superFactorial n := by
   induction' n with n hn
   · simp [Matrix.det_vandermonde]
@@ -85,7 +85,7 @@ theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
     · rw [Matrix.det_vandermonde] at hn
       simp [hn]
 
-theorem superFactorial_two_mul : ∀ n : ℕ,
+lemma superFactorial_two_mul : ∀ n : ℕ,
     sf (2 * n) = (∏ i in range n, (2 * i + 1) !) ^ 2 * 2 ^ n * n !
   | 0 => rfl
   | (n + 1) => by
@@ -93,7 +93,7 @@ theorem superFactorial_two_mul : ∀ n : ℕ,
       superFactorial_two_mul n, factorial_succ]
     ring
 
-theorem superFactorial_four_mul (n : ℕ) :
+lemma superFactorial_four_mul (n : ℕ) :
     sf (4 * n) = ((∏ i in range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! :=
   calc
     sf (4 * n) = (∏ i in range (2 * n), (2 * i + 1) !) ^ 2 * 2 ^ (2 * n) * (2 * n) ! := by
@@ -101,7 +101,7 @@ theorem superFactorial_four_mul (n : ℕ) :
     _ = ((∏ i in range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! := by
       rw [pow_mul', mul_pow]
 
-private theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v : Fin n → ℕ) :
+private lemma matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v : Fin n → ℕ) :
     (Matrix.of (fun (i j : Fin n) => (descPochhammer ℤ j).eval (v i : ℤ))).det =
     (∏ i : Fin n, Nat.factorial i) *
       (Matrix.of (fun (i j : Fin n) => (Nat.choose (v i) (j : ℕ) : ℤ))).det := by
@@ -111,7 +111,7 @@ private theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v
     exact Nat.descFactorial_eq_factorial_mul_choose _ _
   · rw [Nat.cast_prod]
 
-theorem superFactorial_dvd_vandermonde_det {n : ℕ} (v : Fin (n + 1) → ℤ) :
+lemma superFactorial_dvd_vandermonde_det {n : ℕ} (v : Fin (n + 1) → ℤ) :
     ↑(Nat.superFactorial n) ∣ (Matrix.vandermonde v).det := by
   let m := inf' univ ⟨0, mem_univ _⟩ v
   let w' := fun i ↦ (v i - m).toNat

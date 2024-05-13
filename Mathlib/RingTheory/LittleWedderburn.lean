@@ -136,7 +136,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
 
 end InductionHyp
 
-private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
+private lemma center_eq_top [Finite D] : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D
   induction' hn : Fintype.card D using Nat.strong_induction_on with n IH generalizing D

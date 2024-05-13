@@ -26,17 +26,17 @@ variable {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace K G']
 variable {f f₀ f₁ g : E → F} {x} {s t} {n}
 
-theorem contDiff_id' : ContDiff K n (fun x : E => x) := contDiff_id
+lemma contDiff_id' : ContDiff K n (fun x : E => x) := contDiff_id
 
-theorem contDiffAt_id' : ContDiffAt K n (fun x : E => x) x := contDiffAt_id
+lemma contDiffAt_id' : ContDiffAt K n (fun x : E => x) x := contDiffAt_id
 
-theorem contDiffOn_id' : ContDiffOn K n (fun x : E => x) s :=
+lemma contDiffOn_id' : ContDiffOn K n (fun x : E => x) s :=
   contDiff_id.contDiffOn
 
-theorem ContDiff.comp' {g : F → G} (hg : ContDiff K n g) (hf : ContDiff K n f) :
+lemma ContDiff.comp' {g : F → G} (hg : ContDiff K n g) (hf : ContDiff K n f) :
     ContDiff K n (fun x => g (f x)) := ContDiff.comp hg hf
 
-theorem ContDiffAt.comp' {f : E → F} {g : F → G} (hg : ContDiffAt K n g (f x))
+lemma ContDiffAt.comp' {f : E → F} {g : F → G} (hg : ContDiffAt K n g (f x))
     (hf : ContDiffAt K n f x) : ContDiffAt K n (fun x => g (f x)) x := ContDiffAt.comp x hg hf
 
 -- theorem ContDiffOn.comp'' {g : F → G} {t : Set F} (hg : ContDiffOn K n g t)
@@ -45,13 +45,13 @@ theorem ContDiffAt.comp' {f : E → F} {g : F → G} (hg : ContDiffAt K n g (f x
 variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
   [∀ i, NormedSpace K (F' i)] {φ : ∀ i, E → F' i} {Φ : E → ∀ i, F' i}
 
-theorem contDiff_pi' (hΦ : ∀ i, ContDiff K n fun x => Φ x i) : ContDiff K n Φ :=
+lemma contDiff_pi' (hΦ : ∀ i, ContDiff K n fun x => Φ x i) : ContDiff K n Φ :=
   contDiff_pi.2 hΦ
 
-theorem contDiffOn_pi' (hΦ : ∀ i, ContDiffOn K n (fun x => Φ x i) s) : ContDiffOn K n Φ s :=
+lemma contDiffOn_pi' (hΦ : ∀ i, ContDiffOn K n (fun x => Φ x i) s) : ContDiffOn K n Φ s :=
   contDiffOn_pi.2 hΦ
 
-theorem contDiffAt_pi' (hΦ : ∀ i, ContDiffAt K n (fun x => Φ x i) x) : ContDiffAt K n Φ x :=
+lemma contDiffAt_pi' (hΦ : ∀ i, ContDiffAt K n (fun x => Φ x i) x) : ContDiffAt K n Φ x :=
   contDiffAt_pi.2 hΦ
 
 end lambda_rules
@@ -63,7 +63,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
 variable {f f₀ f₁ g : E → F} {x} {s t} {n}
 
-theorem ContDiffOn.div' [CompleteSpace K] {f g : E → K} {n} (hf : ContDiffOn K n f s)
+lemma ContDiffOn.div' [CompleteSpace K] {f g : E → K} {n} (hf : ContDiffOn K n f s)
     (hg : ContDiffOn K n g s) (h₀ : ∀ x ∈ s, g x ≠ 0) : ContDiffOn K n (fun x => f x / g x) s :=
   ContDiffOn.div hf hg h₀
 

@@ -65,7 +65,7 @@ end CharZero
 
 section Homomorphism
 
-theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
+lemma mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
   rw [p.as_sum, Finsupp.mapRange_finset_sum, map_sum (map f)]
   refine' Finset.sum_congr rfl fun n _ => _
@@ -86,7 +86,7 @@ def restrictSupport (s : Set (σ →₀ ℕ)) : Submodule R (MvPolynomial σ R) 
 def basisRestrictSupport (s : Set (σ →₀ ℕ)) : Basis s R (restrictSupport R s) where
   repr := Finsupp.supportedEquivFinsupp s
 
-theorem restrictSupport_mono {s t : Set (σ →₀ ℕ)} (h : s ⊆ t) :
+lemma restrictSupport_mono {s t : Set (σ →₀ ℕ)} (h : s ⊆ t) :
     restrictSupport R s ≤ restrictSupport R t := Finsupp.supported_mono h
 
 variable (σ)
@@ -104,19 +104,19 @@ def restrictDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
 
 variable {R}
 
-theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
+lemma mem_restrictTotalDegree (p : MvPolynomial σ R) :
     p ∈ restrictTotalDegree σ R m ↔ p.totalDegree ≤ m := by
   rw [totalDegree, Finset.sup_le_iff]
   rfl
 #align mv_polynomial.mem_restrict_total_degree MvPolynomial.mem_restrictTotalDegree
 
-theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
+lemma mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ s ∈ p.support, ∀ i, (s : σ →₀ ℕ) i ≤ n := by
   rw [restrictDegree, restrictSupport, Finsupp.mem_supported]
   rfl
 #align mv_polynomial.mem_restrict_degree MvPolynomial.mem_restrictDegree
 
-theorem mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n : ℕ) :
+lemma mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ i, p.degrees.count i ≤ n := by
   simp only [mem_restrictDegree, degrees_def, Multiset.count_finset_sup, Finsupp.count_toMultiset,
     Finset.sup_le_iff]
@@ -125,7 +125,7 @@ theorem mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n :
 
 variable (R)
 
-theorem restrictTotalDegree_le_restrictDegree (m : ℕ) :
+lemma restrictTotalDegree_le_restrictDegree (m : ℕ) :
     restrictTotalDegree σ R m ≤ restrictDegree σ R m :=
   fun p hp ↦ (mem_restrictDegree _ _ _).mpr fun s hs i ↦ (degreeOf_le_iff.mp
     (degreeOf_le_totalDegree p i) s hs).trans ((mem_restrictTotalDegree _ _ _).mp hp)
@@ -136,7 +136,7 @@ def basisMonomials : Basis (σ →₀ ℕ) R (MvPolynomial σ R) :=
 #align mv_polynomial.basis_monomials MvPolynomial.basisMonomials
 
 @[simp]
-theorem coe_basisMonomials :
+lemma coe_basisMonomials :
     (basisMonomials σ R : (σ →₀ ℕ) → MvPolynomial σ R) = fun s => monomial s 1 :=
   rfl
 #align mv_polynomial.coe_basis_monomials MvPolynomial.coe_basisMonomials
@@ -145,7 +145,7 @@ theorem coe_basisMonomials :
 instance : Module.Free R (MvPolynomial σ R) :=
   Module.Free.of_basis (MvPolynomial.basisMonomials σ R)
 
-theorem linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R) :=
+lemma linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R) :=
   (basisMonomials σ R).linearIndependent.comp (fun s : σ => Finsupp.single s 1)
     (Finsupp.single_left_injective one_ne_zero)
 set_option linter.uppercaseLean3 false in
@@ -181,7 +181,7 @@ noncomputable def basisMonomials : Basis ℕ R R[X] :=
 #align polynomial.basis_monomials Polynomial.basisMonomials
 
 @[simp]
-theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
+lemma coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
   funext fun _ => ofFinsupp_single _ _
 #align polynomial.coe_basis_monomials Polynomial.coe_basisMonomials
 

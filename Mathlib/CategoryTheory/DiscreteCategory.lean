@@ -53,7 +53,7 @@ structure Discrete (α : Type u₁) where
 #align category_theory.discrete CategoryTheory.Discrete
 
 @[simp]
-theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X := by
+lemma Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X := by
   rfl
 #align category_theory.discrete.mk_as CategoryTheory.Discrete.mk_as
 
@@ -156,7 +156,7 @@ abbrev eqToIso' {a b : α} (h : a = b) : Discrete.mk a ≅ Discrete.mk b :=
 #align category_theory.discrete.eq_to_iso' CategoryTheory.Discrete.eqToIso'
 
 @[simp]
-theorem id_def (X : Discrete α) : ULift.up (PLift.up (Eq.refl X.as)) = 𝟙 X :=
+lemma id_def (X : Discrete α) : ULift.up (PLift.up (Eq.refl X.as)) = 𝟙 X :=
   rfl
 #align category_theory.discrete.id_def CategoryTheory.Discrete.id_def
 
@@ -178,12 +178,12 @@ def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
 #align category_theory.discrete.functor CategoryTheory.Discrete.functor
 
 @[simp]
-theorem functor_obj {I : Type u₁} (F : I → C) (i : I) :
+lemma functor_obj {I : Type u₁} (F : I → C) (i : I) :
     (Discrete.functor F).obj (Discrete.mk i) = F i :=
   rfl
 #align category_theory.discrete.functor_obj CategoryTheory.Discrete.functor_obj
 
-theorem functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i) :
+lemma functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i) :
     (Discrete.functor F).map f = 𝟙 (F i.as) := by aesop_cat
 #align category_theory.discrete.functor_map CategoryTheory.Discrete.functor_map
 
@@ -231,7 +231,7 @@ instance {I : Type*} {F G : Discrete I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i) [
   infer_instance
 
 @[simp]
-theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i)
+lemma natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i)
     (i : Discrete I) : (Discrete.natIso f).app i = f i := by aesop_cat
 #align category_theory.discrete.nat_iso_app CategoryTheory.Discrete.natIso_app
 
@@ -292,7 +292,7 @@ protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
 variable {C : Type u₂} [Category.{v₂} C]
 
 @[simp]
-theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
+lemma functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
     F.map f = 𝟙 (F.obj j) := by
   have h : f = 𝟙 j := by aesop_cat
   rw [h]

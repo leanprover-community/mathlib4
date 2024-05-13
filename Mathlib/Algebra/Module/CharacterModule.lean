@@ -57,7 +57,7 @@ instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
 instance : AddCommGroup (CharacterModule A) :=
   inferInstanceAs (AddCommGroup (A →+ _))
 
-@[ext] theorem ext {c c' : CharacterModule A} (h : ∀ x, c x = c' x) : c = c' := DFunLike.ext _ _ h
+@[ext] lemma ext {c c' : CharacterModule A} (h : ∀ x, c x = c' x) : c = c' := DFunLike.ext _ _ h
 
 section module
 
@@ -123,7 +123,7 @@ Linear maps into a character module are exactly characters of the tensor product
     (A →ₗ[R] CharacterModule B) ≃ₗ[R] CharacterModule (A ⊗[R] B) :=
   .ofLinear uncurry curry (by ext _ z; refine z.induction_on ?_ ?_ ?_ <;> aesop) (by aesop)
 
-theorem dual_rTensor_conj_homEquiv (f : A →ₗ[R] A') :
+lemma dual_rTensor_conj_homEquiv (f : A →ₗ[R] A') :
     homEquiv.symm.toLinearMap ∘ₗ dual (f.rTensor B) ∘ₗ homEquiv.toLinearMap = f.lcomp R _ := rfl
 
 end module
@@ -209,7 +209,7 @@ lemma dual_surjective_iff_injective {f : A →ₗ[R] A'} :
     obtain ⟨c, rfl⟩ := h c; exact congr(c $h0).trans c.map_zero,
   dual_surjective_of_injective f⟩
 
-theorem _root_.rTensor_injective_iff_lcomp_surjective {f : A →ₗ[R] A'} :
+lemma _root_.rTensor_injective_iff_lcomp_surjective {f : A →ₗ[R] A'} :
     Function.Injective (f.rTensor B) ↔ Function.Surjective (f.lcomp R <| CharacterModule B) := by
   simp [← dual_rTensor_conj_homEquiv, dual_surjective_iff_injective]
 

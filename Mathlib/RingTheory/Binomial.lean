@@ -54,7 +54,7 @@ namespace Ring
 
 variable {R : Type*} [Semiring R] [BinomialRing R]
 
-theorem nsmul_right_injective (n : ℕ) (h : n ≠ 0) :
+lemma nsmul_right_injective (n : ℕ) (h : n ≠ 0) :
     Injective (n • · : R → R) := BinomialRing.nsmul_right_injective n h
 
 /-- The multichoose function is the quotient of ascending Pochhammer evaluation by the corresponding
@@ -63,10 +63,10 @@ items from a group of `k`, i.e., choosing with replacement. -/
 def multichoose (r : R) (n : ℕ) : R := BinomialRing.multichoose r n
 
 @[simp]
-theorem multichoose_eq_multichoose (r : R) (n : ℕ) :
+lemma multichoose_eq_multichoose (r : R) (n : ℕ) :
     BinomialRing.multichoose r n = multichoose r n := rfl
 
-theorem factorial_nsmul_multichoose_eq_ascPochhammer (r : R) (n : ℕ) :
+lemma factorial_nsmul_multichoose_eq_ascPochhammer (r : R) (n : ℕ) :
     n.factorial • multichoose r n = Polynomial.eval r (ascPochhammer R n) :=
   BinomialRing.factorial_nsmul_multichoose r n
 
@@ -112,11 +112,11 @@ variable {R : Type*} [Ring R] [BinomialRing R]
   interpreted in terms of choosing without replacement. -/
 def choose (r : R) (n : ℕ): R := multichoose (r - n + 1) n
 
-theorem descPochhammer_eq_factorial_smul_choose (r : R) (n : ℕ) :
+lemma descPochhammer_eq_factorial_smul_choose (r : R) (n : ℕ) :
     Polynomial.eval r (descPochhammer R n) = n.factorial • choose r n := by
   rw [choose, factorial_nsmul_multichoose_eq_ascPochhammer, descPochhammer_eval_eq_ascPochhammer]
 
-theorem choose_natCast (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
+lemma choose_natCast (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
   refine nsmul_right_injective (Nat.factorial k) (Nat.factorial_ne_zero k) ?_
   simp only
   rw [← descPochhammer_eq_factorial_smul_choose, nsmul_eq_mul, ← Nat.cast_mul,

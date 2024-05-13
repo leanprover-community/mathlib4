@@ -84,23 +84,23 @@ inductive Rel : lib R X → lib R X → Prop
 
 variable {R X}
 
-theorem Rel.addLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a + b) (a + c) := by
+lemma Rel.addLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a + b) (a + c) := by
   rw [add_comm _ b, add_comm _ c]; exact h.add_right _
 #align free_lie_algebra.rel.add_left FreeLieAlgebra.Rel.addLeft
 
-theorem Rel.neg {a b : lib R X} (h : Rel R X a b) : Rel R X (-a) (-b) := by
+lemma Rel.neg {a b : lib R X} (h : Rel R X a b) : Rel R X (-a) (-b) := by
   simpa only [neg_one_smul] using h.smul (-1)
 #align free_lie_algebra.rel.neg FreeLieAlgebra.Rel.neg
 
-theorem Rel.subLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a - b) (a - c) := by
+lemma Rel.subLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a - b) (a - c) := by
   simpa only [sub_eq_add_neg] using h.neg.addLeft a
 #align free_lie_algebra.rel.sub_left FreeLieAlgebra.Rel.subLeft
 
-theorem Rel.subRight {a b : lib R X} (c : lib R X) (h : Rel R X a b) : Rel R X (a - c) (b - c) := by
+lemma Rel.subRight {a b : lib R X} (c : lib R X) (h : Rel R X a b) : Rel R X (a - c) (b - c) := by
   simpa only [sub_eq_add_neg] using h.add_right (-c)
 #align free_lie_algebra.rel.sub_right FreeLieAlgebra.Rel.subRight
 
-theorem Rel.smulOfTower {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (t : S)
+lemma Rel.smulOfTower {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (t : S)
     (a b : lib R X) (h : Rel R X a b) : Rel R X (t • a) (t • b) := by
   rw [← smul_one_smul R t a, ← smul_one_smul R t b]
   exact h.smul _
@@ -179,22 +179,22 @@ def liftAux (f : X → CommutatorRing L) :=
   lib.lift R f
 #align free_lie_algebra.lift_aux FreeLieAlgebra.liftAux
 
-theorem liftAux_map_smul (f : X → L) (t : R) (a : lib R X) :
+lemma liftAux_map_smul (f : X → L) (t : R) (a : lib R X) :
     liftAux R f (t • a) = t • liftAux R f a :=
   NonUnitalAlgHom.map_smul _ t a
 #align free_lie_algebra.lift_aux_map_smul FreeLieAlgebra.liftAux_map_smul
 
-theorem liftAux_map_add (f : X → L) (a b : lib R X) :
+lemma liftAux_map_add (f : X → L) (a b : lib R X) :
     liftAux R f (a + b) = liftAux R f a + liftAux R f b :=
   NonUnitalAlgHom.map_add _ a b
 #align free_lie_algebra.lift_aux_map_add FreeLieAlgebra.liftAux_map_add
 
-theorem liftAux_map_mul (f : X → L) (a b : lib R X) :
+lemma liftAux_map_mul (f : X → L) (a b : lib R X) :
     liftAux R f (a * b) = ⁅liftAux R f a, liftAux R f b⁆ :=
   NonUnitalAlgHom.map_mul _ a b
 #align free_lie_algebra.lift_aux_map_mul FreeLieAlgebra.liftAux_map_mul
 
-theorem liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a b) :
+lemma liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a b) :
     liftAux R f a = liftAux R f b := by
   induction h with
   | lie_self a' => simp only [liftAux_map_mul, NonUnitalAlgHom.map_zero, lie_self]
@@ -234,32 +234,32 @@ def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where
 #align free_lie_algebra.lift FreeLieAlgebra.lift
 
 @[simp]
-theorem lift_symm_apply (F : FreeLieAlgebra R X →ₗ⁅R⁆ L) : (lift R).symm F = F ∘ of R := rfl
+lemma lift_symm_apply (F : FreeLieAlgebra R X →ₗ⁅R⁆ L) : (lift R).symm F = F ∘ of R := rfl
 #align free_lie_algebra.lift_symm_apply FreeLieAlgebra.lift_symm_apply
 
 variable {R}
 
 @[simp]
-theorem of_comp_lift (f : X → L) : lift R f ∘ of R = f := (lift R).left_inv f
+lemma of_comp_lift (f : X → L) : lift R f ∘ of R = f := (lift R).left_inv f
 #align free_lie_algebra.of_comp_lift FreeLieAlgebra.of_comp_lift
 
 @[simp]
-theorem lift_unique (f : X → L) (g : FreeLieAlgebra R X →ₗ⁅R⁆ L) : g ∘ of R = f ↔ g = lift R f :=
+lemma lift_unique (f : X → L) (g : FreeLieAlgebra R X →ₗ⁅R⁆ L) : g ∘ of R = f ↔ g = lift R f :=
   (lift R).symm_apply_eq
 #align free_lie_algebra.lift_unique FreeLieAlgebra.lift_unique
 
 @[simp]
-theorem lift_of_apply (f : X → L) (x) : lift R f (of R x) = f x := by
+lemma lift_of_apply (f : X → L) (x) : lift R f (of R x) = f x := by
   rw [← @Function.comp_apply _ _ _ (lift R f) (of R) x, of_comp_lift]
 #align free_lie_algebra.lift_of_apply FreeLieAlgebra.lift_of_apply
 
 @[simp]
-theorem lift_comp_of (F : FreeLieAlgebra R X →ₗ⁅R⁆ L) : lift R (F ∘ of R) = F := by
+lemma lift_comp_of (F : FreeLieAlgebra R X →ₗ⁅R⁆ L) : lift R (F ∘ of R) = F := by
   rw [← lift_symm_apply]; exact (lift R).apply_symm_apply F
 #align free_lie_algebra.lift_comp_of FreeLieAlgebra.lift_comp_of
 
 @[ext]
-theorem hom_ext {F₁ F₂ : FreeLieAlgebra R X →ₗ⁅R⁆ L} (h : ∀ x, F₁ (of R x) = F₂ (of R x)) :
+lemma hom_ext {F₁ F₂ : FreeLieAlgebra R X →ₗ⁅R⁆ L} (h : ∀ x, F₁ (of R x) = F₂ (of R x)) :
     F₁ = F₂ :=
   have h' : (lift R).symm F₁ = (lift R).symm F₂ := by ext; simp [h]
   (lift R).symm.injective h'

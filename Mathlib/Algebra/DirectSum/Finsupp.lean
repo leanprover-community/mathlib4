@@ -38,13 +38,13 @@ def finsuppLEquivDirectSum : (ι →₀ M) ≃ₗ[R] ⨁ _ : ι, M :=
 #align finsupp_lequiv_direct_sum finsuppLEquivDirectSum
 
 @[simp]
-theorem finsuppLEquivDirectSum_single (i : ι) (m : M) :
+lemma finsuppLEquivDirectSum_single (i : ι) (m : M) :
     finsuppLEquivDirectSum R M ι (Finsupp.single i m) = DirectSum.lof R ι _ i m :=
   Finsupp.toDFinsupp_single i m
 #align finsupp_lequiv_direct_sum_single finsuppLEquivDirectSum_single
 
 @[simp]
-theorem finsuppLEquivDirectSum_symm_lof (i : ι) (m : M) :
+lemma finsuppLEquivDirectSum_symm_lof (i : ι) (m : M) :
     (finsuppLEquivDirectSum R M ι).symm (DirectSum.lof R ι _ i m) = Finsupp.single i m :=
   letI : ∀ m : M, Decidable (m ≠ 0) := Classical.decPred _
   DFinsupp.toFinsupp_single i m

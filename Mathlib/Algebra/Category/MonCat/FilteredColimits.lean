@@ -64,7 +64,7 @@ noncomputable abbrev M.mk : (Σ j, F.obj j) → M.{v, u} F :=
 #align AddMon.filtered_colimits.M.mk AddMonCat.FilteredColimits.M.mk
 
 @[to_additive]
-theorem M.mk_eq (x y : Σ j, F.obj j)
+lemma M.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) :
     M.mk.{v, u} F x = M.mk F y :=
   Quot.EqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget MonCat) x y h)
@@ -275,7 +275,7 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
 #align AddMon.filtered_colimits.cocone_morphism AddMonCat.FilteredColimits.coconeMorphism
 
 @[to_additive (attr := simp)]
-theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
+lemma cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism.{v, u} F j' = coconeMorphism F j :=
   MonoidHom.ext fun x =>
     congr_fun ((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x

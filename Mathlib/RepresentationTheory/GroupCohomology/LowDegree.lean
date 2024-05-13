@@ -97,12 +97,12 @@ def dZero : A →ₗ[k] G → A where
   map_add' x y := funext fun g => by simp only [map_add, add_sub_add_comm]; rfl
   map_smul' r x := funext fun g => by dsimp; rw [map_smul, smul_sub]
 
-theorem dZero_ker_eq_invariants : LinearMap.ker (dZero A) = invariants A.ρ := by
+lemma dZero_ker_eq_invariants : LinearMap.ker (dZero A) = invariants A.ρ := by
   ext x
   simp only [LinearMap.mem_ker, mem_invariants, ← @sub_eq_zero _ _ _ x, Function.funext_iff]
   rfl
 
-@[simp] theorem dZero_eq_zero [A.IsTrivial] : dZero A = 0 := by
+@[simp] lemma dZero_eq_zero [A.IsTrivial] : dZero A = 0 := by
   ext
   simp only [dZero_apply, apply_eq_self, sub_self, LinearMap.zero_apply, Pi.zero_apply]
 
@@ -195,13 +195,13 @@ theorem dTwo_comp_eq :
     one_smul, Fin.val_one, Fin.val_two, pow_succ' (-1 : k) 2, neg_sq, Nat.one_add, one_pow, mul_one]
   rcongr i <;> fin_cases i <;> rfl
 
-theorem dOne_comp_dZero : dOne A ∘ₗ dZero A = 0 := by
+lemma dOne_comp_dZero : dOne A ∘ₗ dZero A = 0 := by
   ext x g
   simp only [LinearMap.coe_comp, Function.comp_apply, dOne_apply A, dZero_apply A, map_sub,
     map_mul, LinearMap.mul_apply, sub_sub_sub_cancel_left, sub_add_sub_cancel, sub_self]
   rfl
 
-theorem dTwo_comp_dOne : dTwo A ∘ₗ dOne A = 0 := by
+lemma dTwo_comp_dOne : dTwo A ∘ₗ dOne A = 0 := by
   show ModuleCat.ofHom (dOne A) ≫ ModuleCat.ofHom (dTwo A) = _
   have h1 : _ ≫ ModuleCat.ofHom (dOne A) = _ ≫ _ := congr_arg ModuleCat.ofHom (dOne_comp_eq A)
   have h2 : _ ≫ ModuleCat.ofHom (dTwo A) = _ ≫ _ := congr_arg ModuleCat.ofHom (dTwo_comp_eq A)
@@ -224,30 +224,30 @@ def twoCocycles : Submodule k (G × G → A) := LinearMap.ker (dTwo A)
 
 variable {A}
 
-theorem mem_oneCocycles_def (f : G → A) :
+lemma mem_oneCocycles_def (f : G → A) :
     f ∈ oneCocycles A ↔ ∀ g h : G, A.ρ g (f h) - f (g * h) + f g = 0 :=
   LinearMap.mem_ker.trans <| by
     rw [Function.funext_iff]
     simp only [dOne_apply, Pi.zero_apply, Prod.forall]
 
-theorem mem_oneCocycles_iff (f : G → A) :
+lemma mem_oneCocycles_iff (f : G → A) :
     f ∈ oneCocycles A ↔ ∀ g h : G, f (g * h) = A.ρ g (f h) + f g := by
   simp_rw [mem_oneCocycles_def, sub_add_eq_add_sub, sub_eq_zero, eq_comm]
 
-@[simp] theorem oneCocycles_map_one (f : oneCocycles A) : f.1 1 = 0 := by
+@[simp] lemma oneCocycles_map_one (f : oneCocycles A) : f.1 1 = 0 := by
   have := (mem_oneCocycles_def f.1).1 f.2 1 1
   simpa only [map_one, LinearMap.one_apply, mul_one, sub_self, zero_add] using this
 
-@[simp] theorem oneCocycles_map_inv (f : oneCocycles A) (g : G) :
+@[simp] lemma oneCocycles_map_inv (f : oneCocycles A) (g : G) :
     A.ρ g (f.1 g⁻¹) = - f.1 g := by
   rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_self g,
     (mem_oneCocycles_iff f.1).1 f.2 g g⁻¹]
 
-theorem oneCocycles_map_mul_of_isTrivial [A.IsTrivial] (f : oneCocycles A) (g h : G) :
+lemma oneCocycles_map_mul_of_isTrivial [A.IsTrivial] (f : oneCocycles A) (g h : G) :
     f.1 (g * h) = f.1 g + f.1 h := by
   rw [(mem_oneCocycles_iff f.1).1 f.2, apply_eq_self A.ρ g (f.1 h), add_comm]
 
-theorem mem_oneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
+lemma mem_oneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     f ∘ Additive.ofMul ∈ oneCocycles A :=
   (mem_oneCocycles_iff _).2 fun g h => by
     simp only [Function.comp_apply, ofMul_mul, map_add,
@@ -274,26 +274,26 @@ group homs `G → A`. -/
 
 variable {A}
 
-theorem mem_twoCocycles_def (f : G × G → A) :
+lemma mem_twoCocycles_def (f : G × G → A) :
     f ∈ twoCocycles A ↔ ∀ g h j : G,
       A.ρ g (f (h, j)) - f (g * h, j) + f (g, h * j) - f (g, h) = 0 :=
   LinearMap.mem_ker.trans <| by
     rw [Function.funext_iff]
     simp only [dTwo_apply, Prod.mk.eta, Pi.zero_apply, Prod.forall]
 
-theorem mem_twoCocycles_iff (f : G × G → A) :
+lemma mem_twoCocycles_iff (f : G × G → A) :
     f ∈ twoCocycles A ↔ ∀ g h j : G,
       f (g * h, j) + f (g, h) =
         A.ρ g (f (h, j)) + f (g, h * j) := by
   simp_rw [mem_twoCocycles_def, sub_eq_zero, sub_add_eq_add_sub, sub_eq_iff_eq_add, eq_comm,
     add_comm (f (_ * _, _))]
 
-theorem twoCocycles_map_one_fst (f : twoCocycles A) (g : G) :
+lemma twoCocycles_map_one_fst (f : twoCocycles A) (g : G) :
     f.1 (1, g) = f.1 (1, 1) := by
   have := ((mem_twoCocycles_iff f.1).1 f.2 1 1 g).symm
   simpa only [map_one, LinearMap.one_apply, one_mul, add_right_inj, this]
 
-theorem twoCocycles_map_one_snd (f : twoCocycles A) (g : G) :
+lemma twoCocycles_map_one_snd (f : twoCocycles A) (g : G) :
     f.1 (g, 1) = A.ρ g (f.1 (1, 1)) := by
   have := (mem_twoCocycles_iff f.1).1 f.2 g 1 1
   simpa only [mul_one, add_left_inj, this]
@@ -330,7 +330,7 @@ def oneCoboundariesOfMemRange {f : G → A} (h : f ∈ LinearMap.range (dZero A)
   ⟨⟨f, LinearMap.range_le_ker_iff.2 (dOne_comp_dZero A) h⟩,
     by rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩⟩
 
-theorem oneCoboundaries_of_mem_range_apply {f : G → A} (h : f ∈ LinearMap.range (dZero A)) :
+lemma oneCoboundaries_of_mem_range_apply {f : G → A} (h : f ∈ LinearMap.range (dZero A)) :
     (oneCoboundariesOfMemRange h).1.1 = f := rfl
 
 /-- Makes a 1-coboundary out of `f : G → A` and `x` such that
@@ -339,14 +339,14 @@ def oneCoboundariesOfEq {f : G → A} {x : A} (hf : ∀ g, A.ρ g x - x = f g) :
     oneCoboundaries A :=
   oneCoboundariesOfMemRange ⟨x, by ext g; exact hf g⟩
 
-theorem oneCoboundariesOfEq_apply {f : G → A} {x : A} (hf : ∀ g, A.ρ g x - x = f g) :
+lemma oneCoboundariesOfEq_apply {f : G → A} {x : A} (hf : ∀ g, A.ρ g x - x = f g) :
     (oneCoboundariesOfEq hf).1.1 = f := rfl
 
-theorem mem_range_of_mem_oneCoboundaries {f : oneCocycles A} (h : f ∈ oneCoboundaries A) :
+lemma mem_range_of_mem_oneCoboundaries {f : oneCocycles A} (h : f ∈ oneCoboundaries A) :
     f.1 ∈ LinearMap.range (dZero A) := by
   rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
 
-theorem oneCoboundaries_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
+lemma oneCoboundaries_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
     oneCoboundaries A = ⊥ := by
   simp_rw [oneCoboundaries, dZero_eq_zero]
   exact LinearMap.range_eq_bot.2 rfl
@@ -357,7 +357,7 @@ def twoCoboundariesOfMemRange {f : G × G → A} (h : f ∈ LinearMap.range (dOn
   ⟨⟨f, LinearMap.range_le_ker_iff.2 (dTwo_comp_dOne A) h⟩,
     by rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩⟩
 
-theorem twoCoboundariesOfMemRange_apply {f : G × G → A} (h : f ∈ LinearMap.range (dOne A)) :
+lemma twoCoboundariesOfMemRange_apply {f : G × G → A} (h : f ∈ LinearMap.range (dOne A)) :
     (twoCoboundariesOfMemRange h).1.1 = f := rfl
 
 /-- Makes a 2-coboundary out of `f : G × G → A` and `x : G → A` such that
@@ -367,11 +367,11 @@ def twoCoboundariesOfEq {f : G × G → A} {x : G → A}
     twoCoboundaries A :=
   twoCoboundariesOfMemRange ⟨x, by ext g; exact hf g.1 g.2⟩
 
-theorem twoCoboundariesOfEq_apply {f : G × G → A} {x : G → A}
+lemma twoCoboundariesOfEq_apply {f : G × G → A} {x : G → A}
     (hf : ∀ g h, A.ρ g (x h) - x (g * h) + x g = f (g, h)) :
     (twoCoboundariesOfEq hf).1.1 = f := rfl
 
-theorem mem_range_of_mem_twoCoboundaries {f : twoCocycles A} (h : f ∈ twoCoboundaries A) :
+lemma mem_range_of_mem_twoCoboundaries {f : twoCocycles A} (h : f ∈ twoCoboundaries A) :
     (twoCocycles A).subtype f ∈ LinearMap.range (dOne A) := by
   rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
 
@@ -398,15 +398,15 @@ section
 
 variable {G A : Type*} [Monoid G] [AddCommGroup A] [MulAction G A]
 
-theorem map_one_of_isOneCocycle {f : G → A} (hf : IsOneCocycle f) :
+lemma map_one_of_isOneCocycle {f : G → A} (hf : IsOneCocycle f) :
     f 1 = 0 := by
   simpa only [mul_one, one_smul, self_eq_add_right] using hf 1 1
 
-theorem map_one_fst_of_isTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) (g : G) :
+lemma map_one_fst_of_isTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) (g : G) :
     f (1, g) = f (1, 1) := by
   simpa only [one_smul, one_mul, mul_one, add_right_inj] using (hf 1 1 g).symm
 
-theorem map_one_snd_of_isTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) (g : G) :
+lemma map_one_snd_of_isTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) (g : G) :
     f (g, 1) = g • f (1, 1) := by
   simpa only [mul_one, add_left_inj] using hf g 1 1
 
@@ -416,11 +416,11 @@ section
 
 variable {G A : Type*} [Group G] [AddCommGroup A] [MulAction G A]
 
-@[simp] theorem map_inv_of_isOneCocycle {f : G → A} (hf : IsOneCocycle f) (g : G) :
+@[simp] lemma map_inv_of_isOneCocycle {f : G → A} (hf : IsOneCocycle f) (g : G) :
     g • f g⁻¹ = - f g := by
   rw [← add_eq_zero_iff_eq_neg, ← map_one_of_isOneCocycle hf, ← mul_inv_self g, hf g g⁻¹]
 
-theorem smul_map_inv_sub_map_inv_of_isTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) (g : G) :
+lemma smul_map_inv_sub_map_inv_of_isTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) (g : G) :
     g • f (g⁻¹, g) - f (g, g⁻¹) = f (1, 1) - f (g, 1) := by
   have := hf g g⁻¹ g
   simp only [mul_right_inv, mul_left_inv, map_one_fst_of_isTwoCocycle hf g] at this
@@ -457,7 +457,7 @@ def oneCocyclesOfIsOneCocycle {f : G → A} (hf : IsOneCocycle f) :
     oneCocycles (Rep.ofDistribMulAction k G A) :=
   ⟨f, (mem_oneCocycles_iff (A := Rep.ofDistribMulAction k G A) f).2 hf⟩
 
-theorem isOneCocycle_of_oneCocycles (f : oneCocycles (Rep.ofDistribMulAction k G A)) :
+lemma isOneCocycle_of_oneCocycles (f : oneCocycles (Rep.ofDistribMulAction k G A)) :
     IsOneCocycle (A := A) f.1 := (mem_oneCocycles_iff f.1).1 f.2
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
@@ -467,7 +467,7 @@ def oneCoboundariesOfIsOneCoboundary {f : G → A} (hf : IsOneCoboundary f) :
     oneCoboundaries (Rep.ofDistribMulAction k G A) :=
   oneCoboundariesOfMemRange (by rcases hf with ⟨x, hx⟩; exact ⟨x, by ext g; exact hx g⟩)
 
-theorem isOneCoboundary_of_oneCoboundaries (f : oneCoboundaries (Rep.ofDistribMulAction k G A)) :
+lemma isOneCoboundary_of_oneCoboundaries (f : oneCoboundaries (Rep.ofDistribMulAction k G A)) :
     IsOneCoboundary (A := A) f.1.1 := by
   rcases mem_range_of_mem_oneCoboundaries f.2 with ⟨x, hx⟩
   exact ⟨x, by rw [← hx]; intro g; rfl⟩
@@ -479,7 +479,7 @@ def twoCocyclesOfIsTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) :
     twoCocycles (Rep.ofDistribMulAction k G A) :=
   ⟨f, (mem_twoCocycles_iff (A := Rep.ofDistribMulAction k G A) f).2 hf⟩
 
-theorem isTwoCocycle_of_twoCocycles (f : twoCocycles (Rep.ofDistribMulAction k G A)) :
+lemma isTwoCocycle_of_twoCocycles (f : twoCocycles (Rep.ofDistribMulAction k G A)) :
     IsTwoCocycle (A := A) f.1 := (mem_twoCocycles_iff f.1).1 f.2
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
@@ -489,7 +489,7 @@ def twoCoboundariesOfIsTwoCoboundary {f : G × G → A} (hf : IsTwoCoboundary f)
     twoCoboundaries (Rep.ofDistribMulAction k G A) :=
   twoCoboundariesOfMemRange (by rcases hf with ⟨x, hx⟩; exact ⟨x, by ext g; exact hx g.1 g.2⟩)
 
-theorem isTwoCoboundary_of_twoCoboundaries (f : twoCoboundaries (Rep.ofDistribMulAction k G A)) :
+lemma isTwoCoboundary_of_twoCoboundaries (f : twoCoboundaries (Rep.ofDistribMulAction k G A)) :
     IsTwoCoboundary (A := A) f.1.1 := by
   rcases mem_range_of_mem_twoCoboundaries f.2 with ⟨x, hx⟩
   exact ⟨x, fun g h => Function.funext_iff.1 hx (g, h)⟩
@@ -521,15 +521,15 @@ section
 
 variable {G M : Type*} [Monoid G] [CommGroup M] [MulAction G M]
 
-theorem map_one_of_isMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) :
+lemma map_one_of_isMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) :
     f 1 = 1 := by
   simpa only [mul_one, one_smul, self_eq_mul_right] using hf 1 1
 
-theorem map_one_fst_of_isMulTwoCocycle {f : G × G → M} (hf : IsMulTwoCocycle f) (g : G) :
+lemma map_one_fst_of_isMulTwoCocycle {f : G × G → M} (hf : IsMulTwoCocycle f) (g : G) :
     f (1, g) = f (1, 1) := by
   simpa only [one_smul, one_mul, mul_one, mul_right_inj] using (hf 1 1 g).symm
 
-theorem map_one_snd_of_isMulTwoCocycle {f : G × G → M} (hf : IsMulTwoCocycle f) (g : G) :
+lemma map_one_snd_of_isMulTwoCocycle {f : G × G → M} (hf : IsMulTwoCocycle f) (g : G) :
     f (g, 1) = g • f (1, 1) := by
   simpa only [mul_one, mul_left_inj] using hf g 1 1
 
@@ -539,11 +539,11 @@ section
 
 variable {G M : Type*} [Group G] [CommGroup M] [MulAction G M]
 
-@[simp] theorem map_inv_of_isMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) (g : G) :
+@[simp] lemma map_inv_of_isMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) (g : G) :
     g • f g⁻¹ = (f g)⁻¹ := by
   rw [← mul_eq_one_iff_eq_inv, ← map_one_of_isMulOneCocycle hf, ← mul_inv_self g, hf g g⁻¹]
 
-theorem smul_map_inv_div_map_inv_of_isMulTwoCocycle
+lemma smul_map_inv_div_map_inv_of_isMulTwoCocycle
     {f : G × G → M} (hf : IsMulTwoCocycle f) (g : G) :
     g • f (g⁻¹, g) / f (g, g⁻¹) = f (1, 1) / f (g, 1) := by
   have := hf g g⁻¹ g
@@ -580,7 +580,7 @@ def oneCocyclesOfIsMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) :
     oneCocycles (Rep.ofMulDistribMulAction G M) :=
   ⟨Additive.ofMul ∘ f, (mem_oneCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).2 hf⟩
 
-theorem isMulOneCocycle_of_oneCocycles (f : oneCocycles (Rep.ofMulDistribMulAction G M)) :
+lemma isMulOneCocycle_of_oneCocycles (f : oneCocycles (Rep.ofMulDistribMulAction G M)) :
     IsMulOneCocycle (M := M) (Additive.toMul ∘ f.1) := (mem_oneCocycles_iff f.1).1 f.2
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
@@ -591,7 +591,7 @@ def oneCoboundariesOfIsMulOneCoboundary {f : G → M} (hf : IsMulOneCoboundary f
   oneCoboundariesOfMemRange (f := Additive.ofMul ∘ f)
     (by rcases hf with ⟨x, hx⟩; exact ⟨x, by ext g; exact hx g⟩)
 
-theorem isMulOneCoboundary_of_oneCoboundaries
+lemma isMulOneCoboundary_of_oneCoboundaries
     (f : oneCoboundaries (Rep.ofMulDistribMulAction G M)) :
     IsMulOneCoboundary (M := M) (Additive.ofMul ∘ f.1.1) := by
   rcases mem_range_of_mem_oneCoboundaries f.2 with ⟨x, hx⟩
@@ -604,7 +604,7 @@ def twoCocyclesOfIsMulTwoCocycle {f : G × G → M} (hf : IsMulTwoCocycle f) :
     twoCocycles (Rep.ofMulDistribMulAction G M) :=
   ⟨Additive.ofMul ∘ f, (mem_twoCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).2 hf⟩
 
-theorem isMulTwoCocycle_of_twoCocycles (f : twoCocycles (Rep.ofMulDistribMulAction G M)) :
+lemma isMulTwoCocycle_of_twoCocycles (f : twoCocycles (Rep.ofMulDistribMulAction G M)) :
     IsMulTwoCocycle (M := M) (Additive.toMul ∘ f.1) := (mem_twoCocycles_iff f.1).1 f.2
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
@@ -614,7 +614,7 @@ def twoCoboundariesOfIsMulTwoCoboundary {f : G × G → M} (hf : IsMulTwoCobound
     twoCoboundaries (Rep.ofMulDistribMulAction G M) :=
   twoCoboundariesOfMemRange (by rcases hf with ⟨x, hx⟩; exact ⟨x, by ext g; exact hx g.1 g.2⟩)
 
-theorem isMulTwoCoboundary_of_twoCoboundaries
+lemma isMulTwoCoboundary_of_twoCoboundaries
     (f : twoCoboundaries (Rep.ofMulDistribMulAction G M)) :
     IsMulTwoCoboundary (M := M) (Additive.toMul ∘ f.1.1) := by
   rcases mem_range_of_mem_twoCoboundaries f.2 with ⟨x, hx⟩
@@ -652,13 +652,13 @@ section H0
 def H0LequivOfIsTrivial [A.IsTrivial] :
     H0 A ≃ₗ[k] A := LinearEquiv.ofTop _ (invariants_eq_top A.ρ)
 
-@[simp] theorem H0LequivOfIsTrivial_eq_subtype [A.IsTrivial] :
+@[simp] lemma H0LequivOfIsTrivial_eq_subtype [A.IsTrivial] :
     H0LequivOfIsTrivial A = A.ρ.invariants.subtype := rfl
 
-theorem H0LequivOfIsTrivial_apply [A.IsTrivial] (x : H0 A) :
+lemma H0LequivOfIsTrivial_apply [A.IsTrivial] (x : H0 A) :
     H0LequivOfIsTrivial A x = x := rfl
 
-@[simp] theorem H0LequivOfIsTrivial_symm_apply [A.IsTrivial] (x : A) :
+@[simp] lemma H0LequivOfIsTrivial_symm_apply [A.IsTrivial] (x : A) :
     (H0LequivOfIsTrivial A).symm x = x := rfl
 
 end H0
@@ -672,15 +672,15 @@ def H1LequivOfIsTrivial [A.IsTrivial] :
   (Submodule.quotEquivOfEqBot _ (oneCoboundaries_eq_bot_of_isTrivial A)).trans
     (oneCocyclesLequivOfIsTrivial A)
 
-theorem H1LequivOfIsTrivial_comp_H1_π [A.IsTrivial] :
+lemma H1LequivOfIsTrivial_comp_H1_π [A.IsTrivial] :
     (H1LequivOfIsTrivial A).comp (H1_π A) = oneCocyclesLequivOfIsTrivial A := by
   ext; rfl
 
-@[simp] theorem H1LequivOfIsTrivial_H1_π_apply_apply
+@[simp] lemma H1LequivOfIsTrivial_H1_π_apply_apply
     [A.IsTrivial] (f : oneCocycles A) (x : Additive G) :
     H1LequivOfIsTrivial A (H1_π A f) x = f.1 (Additive.toMul x) := rfl
 
-@[simp] theorem H1LequivOfIsTrivial_symm_apply [A.IsTrivial] (f : Additive G →+ A) :
+@[simp] lemma H1LequivOfIsTrivial_symm_apply [A.IsTrivial] (f : Additive G →+ A) :
     (H1LequivOfIsTrivial A).symm f = H1_π A ((oneCocyclesLequivOfIsTrivial A).symm f) :=
   rfl
 

@@ -33,7 +33,7 @@ section Support
 
 open Function
 
-theorem support_deriv_subset : support (deriv f) ⊆ tsupport f := by
+lemma support_deriv_subset : support (deriv f) ⊆ tsupport f := by
   intro x
   rw [← not_imp_not]
   intro h2x
@@ -41,7 +41,7 @@ theorem support_deriv_subset : support (deriv f) ⊆ tsupport f := by
   exact nmem_support.mpr (h2x.deriv_eq.trans (deriv_const x 0))
 #align support_deriv_subset support_deriv_subset
 
-protected theorem HasCompactSupport.deriv (hf : HasCompactSupport f) :
+protected lemma HasCompactSupport.deriv (hf : HasCompactSupport f) :
     HasCompactSupport (deriv f) :=
   hf.mono' support_deriv_subset
 #align has_compact_support.deriv HasCompactSupport.deriv

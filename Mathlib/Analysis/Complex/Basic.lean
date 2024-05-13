@@ -49,13 +49,13 @@ instance : Norm ℂ :=
   ⟨abs⟩
 
 @[simp]
-theorem norm_eq_abs (z : ℂ) : ‖z‖ = abs z :=
+lemma norm_eq_abs (z : ℂ) : ‖z‖ = abs z :=
   rfl
 #align complex.norm_eq_abs Complex.norm_eq_abs
 
 lemma norm_I : ‖I‖ = 1 := abs_I
 
-theorem norm_exp_ofReal_mul_I (t : ℝ) : ‖exp (t * I)‖ = 1 := by
+lemma norm_exp_ofReal_mul_I (t : ℝ) : ‖exp (t * I)‖ = 1 := by
   simp only [norm_eq_abs, abs_exp_ofReal_mul_I]
 set_option linter.uppercaseLean3 false in
 #align complex.norm_exp_of_real_mul_I Complex.norm_exp_ofReal_mul_I
@@ -95,78 +95,78 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
     [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
   NormedAlgebra.restrictScalars ℝ ℂ A
 
-theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
+lemma dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
   rfl
 #align complex.dist_eq Complex.dist_eq
 
-theorem dist_eq_re_im (z w : ℂ) : dist z w = √((z.re - w.re) ^ 2 + (z.im - w.im) ^ 2) := by
+lemma dist_eq_re_im (z w : ℂ) : dist z w = √((z.re - w.re) ^ 2 + (z.im - w.im) ^ 2) := by
   rw [sq, sq]
   rfl
 #align complex.dist_eq_re_im Complex.dist_eq_re_im
 
 @[simp]
-theorem dist_mk (x₁ y₁ x₂ y₂ : ℝ) :
+lemma dist_mk (x₁ y₁ x₂ y₂ : ℝ) :
     dist (mk x₁ y₁) (mk x₂ y₂) = √((x₁ - x₂) ^ 2 + (y₁ - y₂) ^ 2) :=
   dist_eq_re_im _ _
 #align complex.dist_mk Complex.dist_mk
 
-theorem dist_of_re_eq {z w : ℂ} (h : z.re = w.re) : dist z w = dist z.im w.im := by
+lemma dist_of_re_eq {z w : ℂ} (h : z.re = w.re) : dist z w = dist z.im w.im := by
   rw [dist_eq_re_im, h, sub_self, zero_pow two_ne_zero, zero_add, Real.sqrt_sq_eq_abs, Real.dist_eq]
 #align complex.dist_of_re_eq Complex.dist_of_re_eq
 
-theorem nndist_of_re_eq {z w : ℂ} (h : z.re = w.re) : nndist z w = nndist z.im w.im :=
+lemma nndist_of_re_eq {z w : ℂ} (h : z.re = w.re) : nndist z w = nndist z.im w.im :=
   NNReal.eq <| dist_of_re_eq h
 #align complex.nndist_of_re_eq Complex.nndist_of_re_eq
 
-theorem edist_of_re_eq {z w : ℂ} (h : z.re = w.re) : edist z w = edist z.im w.im := by
+lemma edist_of_re_eq {z w : ℂ} (h : z.re = w.re) : edist z w = edist z.im w.im := by
   rw [edist_nndist, edist_nndist, nndist_of_re_eq h]
 #align complex.edist_of_re_eq Complex.edist_of_re_eq
 
-theorem dist_of_im_eq {z w : ℂ} (h : z.im = w.im) : dist z w = dist z.re w.re := by
+lemma dist_of_im_eq {z w : ℂ} (h : z.im = w.im) : dist z w = dist z.re w.re := by
   rw [dist_eq_re_im, h, sub_self, zero_pow two_ne_zero, add_zero, Real.sqrt_sq_eq_abs, Real.dist_eq]
 #align complex.dist_of_im_eq Complex.dist_of_im_eq
 
-theorem nndist_of_im_eq {z w : ℂ} (h : z.im = w.im) : nndist z w = nndist z.re w.re :=
+lemma nndist_of_im_eq {z w : ℂ} (h : z.im = w.im) : nndist z w = nndist z.re w.re :=
   NNReal.eq <| dist_of_im_eq h
 #align complex.nndist_of_im_eq Complex.nndist_of_im_eq
 
-theorem edist_of_im_eq {z w : ℂ} (h : z.im = w.im) : edist z w = edist z.re w.re := by
+lemma edist_of_im_eq {z w : ℂ} (h : z.im = w.im) : edist z w = edist z.re w.re := by
   rw [edist_nndist, edist_nndist, nndist_of_im_eq h]
 #align complex.edist_of_im_eq Complex.edist_of_im_eq
 
-theorem dist_conj_self (z : ℂ) : dist (conj z) z = 2 * |z.im| := by
+lemma dist_conj_self (z : ℂ) : dist (conj z) z = 2 * |z.im| := by
   rw [dist_of_re_eq (conj_re z), conj_im, dist_comm, Real.dist_eq, sub_neg_eq_add, ← two_mul,
     _root_.abs_mul, abs_of_pos (zero_lt_two' ℝ)]
 #align complex.dist_conj_self Complex.dist_conj_self
 
-theorem nndist_conj_self (z : ℂ) : nndist (conj z) z = 2 * Real.nnabs z.im :=
+lemma nndist_conj_self (z : ℂ) : nndist (conj z) z = 2 * Real.nnabs z.im :=
   NNReal.eq <| by rw [← dist_nndist, NNReal.coe_mul, NNReal.coe_two, Real.coe_nnabs, dist_conj_self]
 #align complex.nndist_conj_self Complex.nndist_conj_self
 
-theorem dist_self_conj (z : ℂ) : dist z (conj z) = 2 * |z.im| := by rw [dist_comm, dist_conj_self]
+lemma dist_self_conj (z : ℂ) : dist z (conj z) = 2 * |z.im| := by rw [dist_comm, dist_conj_self]
 #align complex.dist_self_conj Complex.dist_self_conj
 
-theorem nndist_self_conj (z : ℂ) : nndist z (conj z) = 2 * Real.nnabs z.im := by
+lemma nndist_self_conj (z : ℂ) : nndist z (conj z) = 2 * Real.nnabs z.im := by
   rw [nndist_comm, nndist_conj_self]
 #align complex.nndist_self_conj Complex.nndist_self_conj
 
 @[simp 1100]
-theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
+lemma comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
   comap_norm_nhds_zero
 #align complex.comap_abs_nhds_zero Complex.comap_abs_nhds_zero
 
-theorem norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ :=
+lemma norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ :=
   abs_ofReal _
 #align complex.norm_real Complex.norm_real
 
 @[simp 1100]
-theorem norm_rat (r : ℚ) : ‖(r : ℂ)‖ = |(r : ℝ)| := by
+lemma norm_rat (r : ℚ) : ‖(r : ℂ)‖ = |(r : ℝ)| := by
   rw [← ofReal_ratCast]
   exact norm_real _
 #align complex.norm_rat Complex.norm_rat
 
 @[simp 1100]
-theorem norm_nat (n : ℕ) : ‖(n : ℂ)‖ = n :=
+lemma norm_nat (n : ℕ) : ‖(n : ℂ)‖ = n :=
   abs_natCast _
 #align complex.norm_nat Complex.norm_nat
 
@@ -174,7 +174,7 @@ theorem norm_nat (n : ℕ) : ‖(n : ℂ)‖ = n :=
 lemma norm_int {n : ℤ} : ‖(n : ℂ)‖ = |(n : ℝ)| := abs_intCast n
 #align complex.norm_int Complex.norm_int
 
-theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
+lemma norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
   rw [norm_int, ← Int.cast_abs, _root_.abs_of_nonneg hn]
 #align complex.norm_int_of_nonneg Complex.norm_int_of_nonneg
 
@@ -182,56 +182,56 @@ lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   rw [normSq_eq_abs, norm_eq_abs]
 
 @[continuity]
-theorem continuous_abs : Continuous abs :=
+lemma continuous_abs : Continuous abs :=
   continuous_norm
 #align complex.continuous_abs Complex.continuous_abs
 
 @[continuity]
-theorem continuous_normSq : Continuous normSq := by
+lemma continuous_normSq : Continuous normSq := by
   simpa [← normSq_eq_abs] using continuous_abs.pow 2
 #align complex.continuous_norm_sq Complex.continuous_normSq
 
 @[simp, norm_cast]
-theorem nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ :=
+lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ :=
   Subtype.ext <| norm_real r
 #align complex.nnnorm_real Complex.nnnorm_real
 
 @[simp, norm_cast]
-theorem nnnorm_nat (n : ℕ) : ‖(n : ℂ)‖₊ = n :=
+lemma nnnorm_nat (n : ℕ) : ‖(n : ℂ)‖₊ = n :=
   Subtype.ext <| by simp
 #align complex.nnnorm_nat Complex.nnnorm_nat
 
 @[simp, norm_cast]
-theorem nnnorm_int (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ :=
+lemma nnnorm_int (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ :=
   Subtype.ext norm_int
 #align complex.nnnorm_int Complex.nnnorm_int
 
-theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
+lemma nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
   (pow_left_inj zero_le' zero_le' hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
 #align complex.nnnorm_eq_one_of_pow_eq_one Complex.nnnorm_eq_one_of_pow_eq_one
 
-theorem norm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖ = 1 :=
+lemma norm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖ = 1 :=
   congr_arg Subtype.val (nnnorm_eq_one_of_pow_eq_one h hn)
 #align complex.norm_eq_one_of_pow_eq_one Complex.norm_eq_one_of_pow_eq_one
 
-theorem equivRealProd_apply_le (z : ℂ) : ‖equivRealProd z‖ ≤ abs z := by
+lemma equivRealProd_apply_le (z : ℂ) : ‖equivRealProd z‖ ≤ abs z := by
   simp [Prod.norm_def, abs_re_le_abs, abs_im_le_abs]
 #align complex.equiv_real_prod_apply_le Complex.equivRealProd_apply_le
 
-theorem equivRealProd_apply_le' (z : ℂ) : ‖equivRealProd z‖ ≤ 1 * abs z := by
+lemma equivRealProd_apply_le' (z : ℂ) : ‖equivRealProd z‖ ≤ 1 * abs z := by
   simpa using equivRealProd_apply_le z
 #align complex.equiv_real_prod_apply_le' Complex.equivRealProd_apply_le'
 
-theorem lipschitz_equivRealProd : LipschitzWith 1 equivRealProd := by
+lemma lipschitz_equivRealProd : LipschitzWith 1 equivRealProd := by
   simpa using AddMonoidHomClass.lipschitz_of_bound equivRealProdLm 1 equivRealProd_apply_le'
 #align complex.lipschitz_equiv_real_prod Complex.lipschitz_equivRealProd
 
-theorem antilipschitz_equivRealProd : AntilipschitzWith (NNReal.sqrt 2) equivRealProd :=
+lemma antilipschitz_equivRealProd : AntilipschitzWith (NNReal.sqrt 2) equivRealProd :=
   AddMonoidHomClass.antilipschitz_of_bound equivRealProdLm fun z ↦ by
     simpa only [Real.coe_sqrt, NNReal.coe_ofNat] using abs_le_sqrt_two_mul_max z
 #align complex.antilipschitz_equiv_real_prod Complex.antilipschitz_equivRealProd
 
-theorem uniformEmbedding_equivRealProd : UniformEmbedding equivRealProd :=
+lemma uniformEmbedding_equivRealProd : UniformEmbedding equivRealProd :=
   antilipschitz_equivRealProd.uniformEmbedding lipschitz_equivRealProd.uniformContinuous
 #align complex.uniform_embedding_equiv_real_prod Complex.uniformEmbedding_equivRealProd
 
@@ -247,7 +247,7 @@ def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
     abs_le_sqrt_two_mul_max (equivRealProd.symm p)
 #align complex.equiv_real_prod_clm Complex.equivRealProdCLM
 
-theorem equivRealProdCLM_symm_apply (p : ℝ × ℝ) :
+lemma equivRealProdCLM_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdCLM.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
 instance : ProperSpace ℂ :=
@@ -272,17 +272,17 @@ def reCLM : ℂ →L[ℝ] ℝ :=
 #align complex.re_clm Complex.reCLM
 
 @[continuity, fun_prop]
-theorem continuous_re : Continuous re :=
+lemma continuous_re : Continuous re :=
   reCLM.continuous
 #align complex.continuous_re Complex.continuous_re
 
 @[simp]
-theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
+lemma reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
   rfl
 #align complex.re_clm_coe Complex.reCLM_coe
 
 @[simp]
-theorem reCLM_apply (z : ℂ) : (reCLM : ℂ → ℝ) z = z.re :=
+lemma reCLM_apply (z : ℂ) : (reCLM : ℂ → ℝ) z = z.re :=
   rfl
 #align complex.re_clm_apply Complex.reCLM_apply
 
@@ -292,28 +292,28 @@ def imCLM : ℂ →L[ℝ] ℝ :=
 #align complex.im_clm Complex.imCLM
 
 @[continuity, fun_prop]
-theorem continuous_im : Continuous im :=
+lemma continuous_im : Continuous im :=
   imCLM.continuous
 #align complex.continuous_im Complex.continuous_im
 
 @[simp]
-theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
+lemma imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
   rfl
 #align complex.im_clm_coe Complex.imCLM_coe
 
 @[simp]
-theorem imCLM_apply (z : ℂ) : (imCLM : ℂ → ℝ) z = z.im :=
+lemma imCLM_apply (z : ℂ) : (imCLM : ℂ → ℝ) z = z.im :=
   rfl
 #align complex.im_clm_apply Complex.imCLM_apply
 
-theorem restrictScalars_one_smulRight' (x : E) :
+lemma restrictScalars_one_smulRight' (x : E) :
     ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] E) =
       reCLM.smulRight x + I • imCLM.smulRight x := by
   ext ⟨a, b⟩
   simp [mk_eq_add_mul_I, mul_smul, smul_comm I b x]
 #align complex.restrict_scalars_one_smul_right' Complex.restrictScalars_one_smulRight'
 
-theorem restrictScalars_one_smulRight (x : ℂ) :
+lemma restrictScalars_one_smulRight (x : ℂ) :
     ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] ℂ) =
     x • (1 : ℂ →L[ℝ] ℂ) := by
   ext1 z
@@ -327,34 +327,34 @@ def conjLIE : ℂ ≃ₗᵢ[ℝ] ℂ :=
 #align complex.conj_lie Complex.conjLIE
 
 @[simp]
-theorem conjLIE_apply (z : ℂ) : conjLIE z = conj z :=
+lemma conjLIE_apply (z : ℂ) : conjLIE z = conj z :=
   rfl
 #align complex.conj_lie_apply Complex.conjLIE_apply
 
 @[simp]
-theorem conjLIE_symm : conjLIE.symm = conjLIE :=
+lemma conjLIE_symm : conjLIE.symm = conjLIE :=
   rfl
 #align complex.conj_lie_symm Complex.conjLIE_symm
 
-theorem isometry_conj : Isometry (conj : ℂ → ℂ) :=
+lemma isometry_conj : Isometry (conj : ℂ → ℂ) :=
   conjLIE.isometry
 #align complex.isometry_conj Complex.isometry_conj
 
 @[simp]
-theorem dist_conj_conj (z w : ℂ) : dist (conj z) (conj w) = dist z w :=
+lemma dist_conj_conj (z w : ℂ) : dist (conj z) (conj w) = dist z w :=
   isometry_conj.dist_eq z w
 #align complex.dist_conj_conj Complex.dist_conj_conj
 
 @[simp]
-theorem nndist_conj_conj (z w : ℂ) : nndist (conj z) (conj w) = nndist z w :=
+lemma nndist_conj_conj (z w : ℂ) : nndist (conj z) (conj w) = nndist z w :=
   isometry_conj.nndist_eq z w
 #align complex.nndist_conj_conj Complex.nndist_conj_conj
 
-theorem dist_conj_comm (z w : ℂ) : dist (conj z) w = dist z (conj w) := by
+lemma dist_conj_comm (z w : ℂ) : dist (conj z) w = dist z (conj w) := by
   rw [← dist_conj_conj, conj_conj]
 #align complex.dist_conj_comm Complex.dist_conj_comm
 
-theorem nndist_conj_comm (z w : ℂ) : nndist (conj z) w = nndist z (conj w) :=
+lemma nndist_conj_comm (z w : ℂ) : nndist (conj z) w = nndist z (conj w) :=
   Subtype.ext <| dist_conj_comm _ _
 #align complex.nndist_conj_comm Complex.nndist_conj_comm
 
@@ -362,7 +362,7 @@ instance : ContinuousStar ℂ :=
   ⟨conjLIE.continuous⟩
 
 @[continuity]
-theorem continuous_conj : Continuous (conj : ℂ → ℂ) :=
+lemma continuous_conj : Continuous (conj : ℂ → ℂ) :=
   continuous_star
 #align complex.continuous_conj Complex.continuous_conj
 
@@ -379,12 +379,12 @@ def conjCLE : ℂ ≃L[ℝ] ℂ :=
 #align complex.conj_cle Complex.conjCLE
 
 @[simp]
-theorem conjCLE_coe : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
+lemma conjCLE_coe : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
   rfl
 #align complex.conj_cle_coe Complex.conjCLE_coe
 
 @[simp]
-theorem conjCLE_apply (z : ℂ) : conjCLE z = conj z :=
+lemma conjCLE_apply (z : ℂ) : conjCLE z = conj z :=
   rfl
 #align complex.conj_cle_apply Complex.conjCLE_apply
 
@@ -393,12 +393,12 @@ def ofRealLI : ℝ →ₗᵢ[ℝ] ℂ :=
   ⟨ofRealAm.toLinearMap, norm_real⟩
 #align complex.of_real_li Complex.ofRealLI
 
-theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
+lemma isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
   ofRealLI.isometry
 #align complex.isometry_of_real Complex.isometry_ofReal
 
 @[continuity, fun_prop]
-theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
+lemma continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
   ofRealLI.continuous
 #align complex.continuous_of_real Complex.continuous_ofReal
 
@@ -418,12 +418,12 @@ def ofRealCLM : ℝ →L[ℝ] ℂ :=
 #align complex.of_real_clm Complex.ofRealCLM
 
 @[simp]
-theorem ofRealCLM_coe : (ofRealCLM : ℝ →ₗ[ℝ] ℂ) = ofRealAm.toLinearMap :=
+lemma ofRealCLM_coe : (ofRealCLM : ℝ →ₗ[ℝ] ℂ) = ofRealAm.toLinearMap :=
   rfl
 #align complex.of_real_clm_coe Complex.ofRealCLM_coe
 
 @[simp]
-theorem ofRealCLM_apply (x : ℝ) : ofRealCLM x = x :=
+lemma ofRealCLM_apply (x : ℝ) : ofRealCLM x = x :=
   rfl
 #align complex.of_real_clm_apply Complex.ofRealCLM_apply
 
@@ -446,11 +446,11 @@ noncomputable instance : RCLike ℂ where
   toPartialOrder := Complex.partialOrder
   le_iff_re_im := Iff.rfl
 
-theorem _root_.RCLike.re_eq_complex_re : ⇑(RCLike.re : ℂ →+ ℝ) = Complex.re :=
+lemma _root_.RCLike.re_eq_complex_re : ⇑(RCLike.re : ℂ →+ ℝ) = Complex.re :=
   rfl
 #align is_R_or_C.re_eq_complex_re RCLike.re_eq_complex_re
 
-theorem _root_.RCLike.im_eq_complex_im : ⇑(RCLike.im : ℂ →+ ℝ) = Complex.im :=
+lemma _root_.RCLike.im_eq_complex_im : ⇑(RCLike.im : ℂ →+ ℝ) = Complex.im :=
   rfl
 #align is_R_or_C.im_eq_complex_im RCLike.im_eq_complex_im
 
@@ -498,7 +498,7 @@ section ComplexOrder
 
 open ComplexOrder
 
-theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
+lemma eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
   lift z to ℝ using hz.2.symm
   rw [norm_eq_abs, abs_ofReal, _root_.abs_of_nonneg (id hz.1 : 0 ≤ z)]
 #align complex.eq_coe_norm_of_nonneg Complex.eq_coe_norm_of_nonneg
@@ -526,23 +526,23 @@ local notation "IC" => @RCLike.I ℂ _
 local notation "norm_sqC" => @RCLike.normSq ℂ _
 
 @[simp]
-theorem re_to_complex {x : ℂ} : reC x = x.re :=
+lemma re_to_complex {x : ℂ} : reC x = x.re :=
   rfl
 #align is_R_or_C.re_to_complex RCLike.re_to_complex
 
 @[simp]
-theorem im_to_complex {x : ℂ} : imC x = x.im :=
+lemma im_to_complex {x : ℂ} : imC x = x.im :=
   rfl
 #align is_R_or_C.im_to_complex RCLike.im_to_complex
 
 @[simp]
-theorem I_to_complex : IC = Complex.I :=
+lemma I_to_complex : IC = Complex.I :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.I_to_complex RCLike.I_to_complex
 
 @[simp]
-theorem normSq_to_complex {x : ℂ} : norm_sqC x = Complex.normSq x :=
+lemma normSq_to_complex {x : ℂ} : norm_sqC x = Complex.normSq x :=
   rfl
 #align is_R_or_C.norm_sq_to_complex RCLike.normSq_to_complex
 
@@ -551,66 +551,66 @@ section tsum
 variable {α : Type*} (𝕜 : Type*) [RCLike 𝕜]
 
 @[simp]
-theorem hasSum_conj {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
+lemma hasSum_conj {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
   conjCLE.hasSum
 #align is_R_or_C.has_sum_conj RCLike.hasSum_conj
 
-theorem hasSum_conj' {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) (conj x) ↔ HasSum f x :=
+lemma hasSum_conj' {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) (conj x) ↔ HasSum f x :=
   conjCLE.hasSum'
 #align is_R_or_C.has_sum_conj' RCLike.hasSum_conj'
 
 @[simp]
-theorem summable_conj {f : α → 𝕜} : (Summable fun x => conj (f x)) ↔ Summable f :=
+lemma summable_conj {f : α → 𝕜} : (Summable fun x => conj (f x)) ↔ Summable f :=
   summable_star_iff
 #align is_R_or_C.summable_conj RCLike.summable_conj
 
 variable {𝕜}
 
-theorem conj_tsum (f : α → 𝕜) : conj (∑' a, f a) = ∑' a, conj (f a) :=
+lemma conj_tsum (f : α → 𝕜) : conj (∑' a, f a) = ∑' a, conj (f a) :=
   tsum_star
 #align is_R_or_C.conj_tsum RCLike.conj_tsum
 
 variable (𝕜)
 
 @[simp, norm_cast]
-theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : 𝕜)) x ↔ HasSum f x :=
+lemma hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : 𝕜)) x ↔ HasSum f x :=
   ⟨fun h => by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.hasSum h,
     ofRealCLM.hasSum⟩
 #align is_R_or_C.has_sum_of_real RCLike.hasSum_ofReal
 
 @[simp, norm_cast]
-theorem summable_ofReal {f : α → ℝ} : (Summable fun x => (f x : 𝕜)) ↔ Summable f :=
+lemma summable_ofReal {f : α → ℝ} : (Summable fun x => (f x : 𝕜)) ↔ Summable f :=
   ⟨fun h => by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.summable h,
     ofRealCLM.summable⟩
 #align is_R_or_C.summable_of_real RCLike.summable_ofReal
 
 @[norm_cast]
-theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : 𝕜) = ∑' a, (f a : 𝕜) := by
+lemma ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : 𝕜) = ∑' a, (f a : 𝕜) := by
   by_cases h : Summable f
   · exact ContinuousLinearMap.map_tsum ofRealCLM h
   · rw [tsum_eq_zero_of_not_summable h,
       tsum_eq_zero_of_not_summable ((summable_ofReal _).not.mpr h), ofReal_zero]
 #align is_R_or_C.of_real_tsum RCLike.ofReal_tsum
 
-theorem hasSum_re {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x => re (f x)) (re x) :=
+lemma hasSum_re {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x => re (f x)) (re x) :=
   reCLM.hasSum h
 #align is_R_or_C.has_sum_re RCLike.hasSum_re
 
-theorem hasSum_im {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x => im (f x)) (im x) :=
+lemma hasSum_im {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x => im (f x)) (im x) :=
   imCLM.hasSum h
 #align is_R_or_C.has_sum_im RCLike.hasSum_im
 
-theorem re_tsum {f : α → 𝕜} (h : Summable f) : re (∑' a, f a) = ∑' a, re (f a) :=
+lemma re_tsum {f : α → 𝕜} (h : Summable f) : re (∑' a, f a) = ∑' a, re (f a) :=
   reCLM.map_tsum h
 #align is_R_or_C.re_tsum RCLike.re_tsum
 
-theorem im_tsum {f : α → 𝕜} (h : Summable f) : im (∑' a, f a) = ∑' a, im (f a) :=
+lemma im_tsum {f : α → 𝕜} (h : Summable f) : im (∑' a, f a) = ∑' a, im (f a) :=
   imCLM.map_tsum h
 #align is_R_or_C.im_tsum RCLike.im_tsum
 
 variable {𝕜}
 
-theorem hasSum_iff (f : α → 𝕜) (c : 𝕜) :
+lemma hasSum_iff (f : α → 𝕜) (c : 𝕜) :
     HasSum f c ↔ HasSum (fun x => re (f x)) (re c) ∧ HasSum (fun x => im (f x)) (im c) := by
   refine' ⟨fun h => ⟨hasSum_re _ h, hasSum_im _ h⟩, _⟩
   rintro ⟨h₁, h₂⟩
@@ -640,55 +640,55 @@ variable {α : Type*}
 open ComplexConjugate
 
 -- Porting note: @[simp] unneeded due to `RCLike.hasSum_conj`
-theorem hasSum_conj {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
+lemma hasSum_conj {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
   RCLike.hasSum_conj _
 #align complex.has_sum_conj Complex.hasSum_conj
 
-theorem hasSum_conj' {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) (conj x) ↔ HasSum f x :=
+lemma hasSum_conj' {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) (conj x) ↔ HasSum f x :=
   RCLike.hasSum_conj' _
 #align complex.has_sum_conj' Complex.hasSum_conj'
 
 -- Porting note: @[simp] unneeded due to `RCLike.summable_conj`
-theorem summable_conj {f : α → ℂ} : (Summable fun x => conj (f x)) ↔ Summable f :=
+lemma summable_conj {f : α → ℂ} : (Summable fun x => conj (f x)) ↔ Summable f :=
   RCLike.summable_conj _
 #align complex.summable_conj Complex.summable_conj
 
-theorem conj_tsum (f : α → ℂ) : conj (∑' a, f a) = ∑' a, conj (f a) :=
+lemma conj_tsum (f : α → ℂ) : conj (∑' a, f a) = ∑' a, conj (f a) :=
   RCLike.conj_tsum _
 #align complex.conj_tsum Complex.conj_tsum
 
 @[simp, norm_cast]
-theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : ℂ)) x ↔ HasSum f x :=
+lemma hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : ℂ)) x ↔ HasSum f x :=
   RCLike.hasSum_ofReal _
 #align complex.has_sum_of_real Complex.hasSum_ofReal
 
 @[simp, norm_cast]
-theorem summable_ofReal {f : α → ℝ} : (Summable fun x => (f x : ℂ)) ↔ Summable f :=
+lemma summable_ofReal {f : α → ℝ} : (Summable fun x => (f x : ℂ)) ↔ Summable f :=
   RCLike.summable_ofReal _
 #align complex.summable_of_real Complex.summable_ofReal
 
 @[norm_cast]
-theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : ℂ) = ∑' a, ↑(f a) :=
+lemma ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : ℂ) = ∑' a, ↑(f a) :=
   RCLike.ofReal_tsum _ _
 #align complex.of_real_tsum Complex.ofReal_tsum
 
-theorem hasSum_re {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).re) x.re :=
+lemma hasSum_re {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).re) x.re :=
   RCLike.hasSum_re _ h
 #align complex.has_sum_re Complex.hasSum_re
 
-theorem hasSum_im {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).im) x.im :=
+lemma hasSum_im {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).im) x.im :=
   RCLike.hasSum_im _ h
 #align complex.has_sum_im Complex.hasSum_im
 
-theorem re_tsum {f : α → ℂ} (h : Summable f) : (∑' a, f a).re = ∑' a, (f a).re :=
+lemma re_tsum {f : α → ℂ} (h : Summable f) : (∑' a, f a).re = ∑' a, (f a).re :=
   RCLike.re_tsum _ h
 #align complex.re_tsum Complex.re_tsum
 
-theorem im_tsum {f : α → ℂ} (h : Summable f) : (∑' a, f a).im = ∑' a, (f a).im :=
+lemma im_tsum {f : α → ℂ} (h : Summable f) : (∑' a, f a).im = ∑' a, (f a).im :=
   RCLike.im_tsum _ h
 #align complex.im_tsum Complex.im_tsum
 
-theorem hasSum_iff (f : α → ℂ) (c : ℂ) :
+lemma hasSum_iff (f : α → ℂ) (c : ℂ) :
     HasSum f c ↔ HasSum (fun x => (f x).re) c.re ∧ HasSum (fun x => (f x).im) c.im :=
   RCLike.hasSum_iff _ _
 #align complex.has_sum_iff Complex.hasSum_iff

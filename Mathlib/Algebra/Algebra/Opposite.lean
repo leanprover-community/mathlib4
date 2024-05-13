@@ -46,7 +46,7 @@ instance instAlgebra : Algebra R Aᵐᵒᵖ where
     simp only [RingHom.toOpposite_apply, Function.comp_apply, ← op_mul, Algebra.commutes]
 
 @[simp]
-theorem algebraMap_apply (c : R) : algebraMap R Aᵐᵒᵖ c = op (algebraMap R A c) :=
+lemma algebraMap_apply (c : R) : algebraMap R Aᵐᵒᵖ c = op (algebraMap R A c) :=
   rfl
 #align mul_opposite.algebra_map_apply MulOpposite.algebraMap_apply
 
@@ -61,7 +61,7 @@ def opOp : A ≃ₐ[R] Aᵐᵒᵖᵐᵒᵖ where
   __ := RingEquiv.opOp A
   commutes' _ := rfl
 
-@[simp] theorem toRingEquiv_opOp : (opOp R A : A ≃+* Aᵐᵒᵖᵐᵒᵖ) = RingEquiv.opOp A := rfl
+@[simp] lemma toRingEquiv_opOp : (opOp R A : A ≃+* Aᵐᵒᵖᵐᵒᵖ) = RingEquiv.opOp A := rfl
 
 end AlgEquiv
 
@@ -77,12 +77,12 @@ def fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : Aᵐ�
     commutes' := fun r => f.commutes r }
 
 @[simp]
-theorem toLinearMap_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
+lemma toLinearMap_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
     (f.fromOpposite hf).toLinearMap = f.toLinearMap ∘ₗ (opLinearEquiv R (M := A)).symm :=
   rfl
 
 @[simp]
-theorem toRingHom_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
+lemma toRingHom_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
     (f.fromOpposite hf : Aᵐᵒᵖ →+* B) = (f : A →+* B).fromOpposite hf :=
   rfl
 
@@ -96,12 +96,12 @@ def toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : A →�
     commutes' := fun r => unop_injective <| f.commutes r }
 
 @[simp]
-theorem toLinearMap_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
+lemma toLinearMap_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
     (f.toOpposite hf).toLinearMap = (opLinearEquiv R : B ≃ₗ[R] Bᵐᵒᵖ) ∘ₗ f.toLinearMap :=
   rfl
 
 @[simp]
-theorem toRingHom_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
+lemma toRingHom_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
     (f.toOpposite hf : A →+* Bᵐᵒᵖ) = (f : A →+* B).toOpposite hf :=
   rfl
 
@@ -114,13 +114,13 @@ protected def op : (A →ₐ[R] B) ≃ (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) where
   left_inv _f := AlgHom.ext fun _a => rfl
   right_inv _f := AlgHom.ext fun _a => rfl
 
-theorem toRingHom_op (f : A →ₐ[R] B) : f.op.toRingHom = RingHom.op f.toRingHom :=
+lemma toRingHom_op (f : A →ₐ[R] B) : f.op.toRingHom = RingHom.op f.toRingHom :=
   rfl
 
 /-- The 'unopposite' of an algebra hom `Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ`. Inverse to `RingHom.op`. -/
 abbrev unop : (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) ≃ (A →ₐ[R] B) := AlgHom.op.symm
 
-theorem toRingHom_unop (f : Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) : f.unop.toRingHom = RingHom.unop f.toRingHom :=
+lemma toRingHom_unop (f : Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) : f.unop.toRingHom = RingHom.unop f.toRingHom :=
   rfl
 
 /-- Swap the `ᵐᵒᵖ` on an algebra hom to the opposite side. -/
@@ -145,21 +145,21 @@ def op : (A ≃ₐ[R] B) ≃ Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ where
   left_inv _f := AlgEquiv.ext fun _a => rfl
   right_inv _f := AlgEquiv.ext fun _a => rfl
 
-theorem toAlgHom_op (f : A ≃ₐ[R] B) :
+lemma toAlgHom_op (f : A ≃ₐ[R] B) :
     (AlgEquiv.op f).toAlgHom = AlgHom.op f.toAlgHom :=
   rfl
 
-theorem toRingEquiv_op (f : A ≃ₐ[R] B) :
+lemma toRingEquiv_op (f : A ≃ₐ[R] B) :
     (AlgEquiv.op f).toRingEquiv = RingEquiv.op f.toRingEquiv :=
   rfl
 
 /-- The 'unopposite' of an algebra iso `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`. Inverse to `AlgEquiv.op`. -/
 abbrev unop : (Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) ≃ A ≃ₐ[R] B := AlgEquiv.op.symm
 
-theorem toAlgHom_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) : f.unop.toAlgHom = AlgHom.unop f.toAlgHom :=
+lemma toAlgHom_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) : f.unop.toAlgHom = AlgHom.unop f.toAlgHom :=
   rfl
 
-theorem toRingEquiv_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) :
+lemma toRingEquiv_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) :
     (AlgEquiv.unop f).toRingEquiv = RingEquiv.unop f.toRingEquiv :=
   rfl
 

@@ -50,7 +50,7 @@ instance Module.Finite.linearMap [Module.Finite S N] : Module.Finite S (M →ₗ
 variable [StrongRankCondition R] [StrongRankCondition S] [Module.Free S N]
 
 open Cardinal
-theorem FiniteDimensional.rank_linearMap :
+lemma FiniteDimensional.rank_linearMap :
     Module.rank S (M →ₗ[R] N) = lift.{w} (Module.rank R M) * lift.{v} (Module.rank S N) := by
   rw [(linearMapEquivFun R S M N).rank_eq, rank_fun_eq_lift_mul,
     ← finrank_eq_card_chooseBasisIndex, ← finrank_eq_rank R, lift_natCast]
@@ -63,11 +63,11 @@ theorem FiniteDimensional.finrank_linearMap :
 
 variable [Module R S] [SMulCommClass R S S]
 
-theorem FiniteDimensional.rank_linearMap_self :
+lemma FiniteDimensional.rank_linearMap_self :
     Module.rank S (M →ₗ[R] S) = lift.{u'} (Module.rank R M) := by
   rw [rank_linearMap, rank_self, lift_one, mul_one]
 
-theorem FiniteDimensional.finrank_linearMap_self : finrank S (M →ₗ[R] S) = finrank R M := by
+lemma FiniteDimensional.finrank_linearMap_self : finrank S (M →ₗ[R] S) = finrank R M := by
   rw [finrank_linearMap, finrank_self, mul_one]
 
 end Ring
@@ -82,13 +82,13 @@ instance Finite.algHom : Finite (M →ₐ[K] L) :=
 
 open Cardinal
 
-theorem cardinal_mk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K M) := by
+lemma cardinal_mk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K M) := by
   convert (linearIndependent_algHom_toLinearMap K M L).cardinal_lift_le_rank
   · rw [lift_id]
   · have := Module.nontrivial K L
     rw [lift_id, FiniteDimensional.rank_linearMap_self]
 
-theorem card_algHom_le_finrank : Nat.card (M →ₐ[K] L) ≤ finrank K M := by
+lemma card_algHom_le_finrank : Nat.card (M →ₐ[K] L) ≤ finrank K M := by
   convert toNat_le_toNat (cardinal_mk_algHom_le_rank K M L) ?_
   · rw [toNat_lift, finrank]
   · rw [lift_lt_aleph0]; have := Module.nontrivial K L; apply rank_lt_aleph0
@@ -110,7 +110,7 @@ instance Module.Free.addMonoidHom [Module.Free ℤ N] : Module.Free ℤ (M →+ 
 
 end Integer
 
-theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [Fintype n]
+lemma Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [Fintype n]
     [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by
   nontriviality K
   rw [Matrix.vecMulVec_eq, Matrix.toLin'_mul]

@@ -273,14 +273,14 @@ def torsionMulEquiv (tG : IsTorsion G) : torsion G ≃* G :=
 #align add_monoid.is_torsion.torsion_add_equiv AddMonoid.IsTorsion.torsionAddEquiv
 
 @[to_additive]
-theorem torsionMulEquiv_apply (tG : IsTorsion G) (a : torsion G) :
+lemma torsionMulEquiv_apply (tG : IsTorsion G) (a : torsion G) :
     tG.torsionMulEquiv a = MulEquiv.submonoidCongr tG.torsion_eq_top a :=
   rfl
 #align monoid.is_torsion.torsion_mul_equiv_apply Monoid.IsTorsion.torsionMulEquiv_apply
 #align add_monoid.is_torsion.torsion_add_equiv_apply AddMonoid.IsTorsion.torsionAddEquiv_apply
 
 @[to_additive]
-theorem torsionMulEquiv_symm_apply_coe (tG : IsTorsion G) (a : G) :
+lemma torsionMulEquiv_symm_apply_coe (tG : IsTorsion G) (a : G) :
     tG.torsionMulEquiv.symm a = ⟨Submonoid.topEquiv.symm a, tG _⟩ :=
   rfl
 #align monoid.is_torsion.torsion_mul_equiv_symm_apply_coe Monoid.IsTorsion.torsionMulEquiv_symm_apply_coe
@@ -322,7 +322,7 @@ theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubm
 #align add_comm_group.add_torsion_eq_add_torsion_submonoid AddCommGroup.add_torsion_eq_add_torsion_submonoid
 
 @[to_additive]
-theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
+lemma mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
 
 variable (p : ℕ) [hp : Fact p.Prime]
 

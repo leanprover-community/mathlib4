@@ -79,7 +79,7 @@ open Subobject
 
 variable [HasZeroMorphisms C] [HasZeroObject C]
 
-theorem exists_simple_subobject {X : C} [ArtinianObject X] (h : ¬IsZero X) :
+lemma exists_simple_subobject {X : C} [ArtinianObject X] (h : ¬IsZero X) :
     ∃ Y : Subobject X, Simple (Y : C) := by
   haveI : Nontrivial (Subobject X) := nontrivial_of_not_isZero h
   haveI := isAtomic_of_orderBot_wellFounded_lt (ArtinianObject.subobject_lt_wellFounded X)

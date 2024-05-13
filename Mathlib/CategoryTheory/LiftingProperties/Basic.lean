@@ -52,13 +52,13 @@ namespace HasLiftingProperty
 
 variable {i p}
 
-theorem op (h : HasLiftingProperty i p) : HasLiftingProperty p.op i.op :=
+lemma op (h : HasLiftingProperty i p) : HasLiftingProperty p.op i.op :=
   ⟨fun {f} {g} sq => by
     simp only [CommSq.HasLift.iff_unop, Quiver.Hom.unop_op]
     infer_instance⟩
 #align category_theory.has_lifting_property.op CategoryTheory.HasLiftingProperty.op
 
-theorem unop {A B X Y : Cᵒᵖ} {i : A ⟶ B} {p : X ⟶ Y} (h : HasLiftingProperty i p) :
+lemma unop {A B X Y : Cᵒᵖ} {i : A ⟶ B} {p : X ⟶ Y} (h : HasLiftingProperty i p) :
     HasLiftingProperty p.unop i.unop :=
   ⟨fun {f} {g} sq => by
     rw [CommSq.HasLift.iff_op]
@@ -66,11 +66,11 @@ theorem unop {A B X Y : Cᵒᵖ} {i : A ⟶ B} {p : X ⟶ Y} (h : HasLiftingProp
     infer_instance⟩
 #align category_theory.has_lifting_property.unop CategoryTheory.HasLiftingProperty.unop
 
-theorem iff_op : HasLiftingProperty i p ↔ HasLiftingProperty p.op i.op :=
+lemma iff_op : HasLiftingProperty i p ↔ HasLiftingProperty p.op i.op :=
   ⟨op, unop⟩
 #align category_theory.has_lifting_property.iff_op CategoryTheory.HasLiftingProperty.iff_op
 
-theorem iff_unop {A B X Y : Cᵒᵖ} (i : A ⟶ B) (p : X ⟶ Y) :
+lemma iff_unop {A B X Y : Cᵒᵖ} (i : A ⟶ B) (p : X ⟶ Y) :
     HasLiftingProperty i p ↔ HasLiftingProperty p.unop i.unop :=
   ⟨unop, op⟩
 #align category_theory.has_lifting_property.iff_unop CategoryTheory.HasLiftingProperty.iff_unop
@@ -118,27 +118,27 @@ instance of_comp_right [HasLiftingProperty i p] [HasLiftingProperty i p'] :
           fac_right := by simp only [CommSq.fac_right_assoc, CommSq.fac_right] }⟩
 #align category_theory.has_lifting_property.of_comp_right CategoryTheory.HasLiftingProperty.of_comp_right
 
-theorem of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
+lemma of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
     (e : Arrow.mk i ≅ Arrow.mk i') (p : X ⟶ Y) [hip : HasLiftingProperty i p] :
     HasLiftingProperty i' p := by
   rw [Arrow.iso_w' e]
   infer_instance
 #align category_theory.has_lifting_property.of_arrow_iso_left CategoryTheory.HasLiftingProperty.of_arrow_iso_left
 
-theorem of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {p' : X' ⟶ Y'}
+lemma of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {p' : X' ⟶ Y'}
     (e : Arrow.mk p ≅ Arrow.mk p') [hip : HasLiftingProperty i p] : HasLiftingProperty i p' := by
   rw [Arrow.iso_w' e]
   infer_instance
 #align category_theory.has_lifting_property.of_arrow_iso_right CategoryTheory.HasLiftingProperty.of_arrow_iso_right
 
-theorem iff_of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
+lemma iff_of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
     (e : Arrow.mk i ≅ Arrow.mk i') (p : X ⟶ Y) :
     HasLiftingProperty i p ↔ HasLiftingProperty i' p := by
   constructor <;> intro
   exacts [of_arrow_iso_left e p, of_arrow_iso_left e.symm p]
 #align category_theory.has_lifting_property.iff_of_arrow_iso_left CategoryTheory.HasLiftingProperty.iff_of_arrow_iso_left
 
-theorem iff_of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {p' : X' ⟶ Y'}
+lemma iff_of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {p' : X' ⟶ Y'}
     (e : Arrow.mk p ≅ Arrow.mk p') : HasLiftingProperty i p ↔ HasLiftingProperty i p' := by
   constructor <;> intro
   exacts [of_arrow_iso_right i e, of_arrow_iso_right i e.symm]

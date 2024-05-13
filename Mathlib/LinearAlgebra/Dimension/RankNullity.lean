@@ -65,7 +65,7 @@ instance (priority := 100) : Nontrivial R := by
   have := rank_quotient_add_rank (R := R) (M := PUnit) ⊥
   simp [one_add_one_eq_two] at this
 
-theorem lift_rank_range_add_rank_ker (f : M →ₗ[R] M') :
+lemma lift_rank_range_add_rank_ker (f : M →ₗ[R] M') :
     lift.{u} (Module.rank R (LinearMap.range f)) + lift.{v} (Module.rank R (LinearMap.ker f)) =
       lift.{v} (Module.rank R M) := by
   haveI := fun p : Submodule R M => Classical.decEq (M ⧸ p)
@@ -78,17 +78,17 @@ theorem rank_range_add_rank_ker (f : M →ₗ[R] M₁) :
   rw [← f.quotKerEquivRange.rank_eq, rank_quotient_add_rank]
 #align rank_range_add_rank_ker rank_range_add_rank_ker
 
-theorem lift_rank_eq_of_surjective {f : M →ₗ[R] M'} (h : Surjective f) :
+lemma lift_rank_eq_of_surjective {f : M →ₗ[R] M'} (h : Surjective f) :
     lift.{v} (Module.rank R M) =
       lift.{u} (Module.rank R M') + lift.{v} (Module.rank R (LinearMap.ker f)) := by
   rw [← lift_rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 
-theorem rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f) :
+lemma rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f) :
     Module.rank R M = Module.rank R M₁ + Module.rank R (LinearMap.ker f) := by
   rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 #align rank_eq_of_surjective rank_eq_of_surjective
 
-theorem exists_linearIndependent_of_lt_rank [StrongRankCondition R]
+lemma exists_linearIndependent_of_lt_rank [StrongRankCondition R]
     {s : Set M} (hs : LinearIndependent (ι := s) R Subtype.val) :
     ∃ t, s ⊆ t ∧ #t = Module.rank R M ∧ LinearIndependent (ι := t) R Subtype.val := by
   obtain ⟨t, ht, ht'⟩ := exists_set_linearIndependent R (M ⧸ Submodule.span R s)
@@ -141,7 +141,7 @@ theorem exists_linearIndependent_pair_of_one_lt_rank [StrongRankCondition R]
   rw [this] at hy
   exact ⟨y, hy⟩
 
-theorem exists_smul_not_mem_of_rank_lt {N : Submodule R M} (h : Module.rank R N < Module.rank R M) :
+lemma exists_smul_not_mem_of_rank_lt {N : Submodule R M} (h : Module.rank R N < Module.rank R M) :
     ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   have : Module.rank R (M ⧸ N) ≠ 0 := by
     intro e
@@ -154,7 +154,7 @@ theorem exists_smul_not_mem_of_rank_lt {N : Submodule R M} (h : Module.rank R N 
 
 open BigOperators Cardinal Basis Submodule Function Set LinearMap
 
-theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule R M) :
+lemma Submodule.rank_sup_add_rank_inf_eq (s t : Submodule R M) :
     Module.rank R (s ⊔ t : Submodule R M) + Module.rank R (s ⊓ t : Submodule R M) =
     Module.rank R s + Module.rank R t := by
   conv_rhs => enter [2]; rw [show t = (s ⊔ t) ⊓ t by simp]
@@ -166,7 +166,7 @@ theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule R M) :
     ← inf_assoc, inf_idem, add_right_comm]
 #align submodule.rank_sup_add_rank_inf_eq Submodule.rank_sup_add_rank_inf_eq
 
-theorem Submodule.rank_add_le_rank_add_rank (s t : Submodule R M) :
+lemma Submodule.rank_add_le_rank_add_rank (s t : Submodule R M) :
     Module.rank R (s ⊔ t : Submodule R M) ≤ Module.rank R s + Module.rank R t := by
   rw [← Submodule.rank_sup_add_rank_inf_eq]
   exact self_le_add_right _ _

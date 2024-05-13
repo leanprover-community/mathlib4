@@ -362,7 +362,7 @@ variable (E) (μ)
 
 namespace BoundedContinuousFunction
 
-theorem toLp_denseRange [μ.WeaklyRegular] [IsFiniteMeasure μ] :
+lemma toLp_denseRange [μ.WeaklyRegular] [IsFiniteMeasure μ] :
     DenseRange (toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ) := by
   haveI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
   rw [denseRange_iff_closure_range]

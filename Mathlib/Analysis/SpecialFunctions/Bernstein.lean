@@ -58,13 +58,13 @@ def bernstein (n ν : ℕ) : C(I, ℝ) :=
 #align bernstein bernstein
 
 @[simp]
-theorem bernstein_apply (n ν : ℕ) (x : I) :
+lemma bernstein_apply (n ν : ℕ) (x : I) :
     bernstein n ν x = (n.choose ν : ℝ) * (x : ℝ) ^ ν * (1 - (x : ℝ)) ^ (n - ν) := by
   dsimp [bernstein, Polynomial.toContinuousMapOn, Polynomial.toContinuousMap, bernsteinPolynomial]
   simp
 #align bernstein_apply bernstein_apply
 
-theorem bernstein_nonneg {n ν : ℕ} {x : I} : 0 ≤ bernstein n ν x := by
+lemma bernstein_nonneg {n ν : ℕ} {x : I} : 0 ≤ bernstein n ν x := by
   simp only [bernstein_apply]
   have h₁ : (0:ℝ) ≤ x := by unit_interval
   have h₂ : (0:ℝ) ≤ 1 - x := by unit_interval
@@ -106,7 +106,7 @@ def z {n : ℕ} (k : Fin (n + 1)) : I :=
 
 local postfix:90 "/ₙ" => z
 
-theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
+lemma probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
   have := bernsteinPolynomial.sum ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
   simp? [AlgHom.map_sum, Finset.sum_range] at this says
@@ -114,7 +114,7 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
   exact this
 #align bernstein.probability bernstein.probability
 
-theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
+lemma variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
     (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = (x : ℝ) * (1 - x) / n := by
   have h' : (n : ℝ) ≠ 0 := ne_of_gt h
   apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
@@ -167,7 +167,7 @@ We show that if `k ∉ S`, then `1 ≤ δ^-2 * (x - k/n)^2`.
 namespace bernsteinApproximation
 
 @[simp]
-theorem apply (n : ℕ) (f : C(I, ℝ)) (x : I) :
+lemma apply (n : ℕ) (f : C(I, ℝ)) (x : I) :
     bernsteinApproximation n f x = ∑ k : Fin (n + 1), f k/ₙ * bernstein n k x := by
   simp [bernsteinApproximation]
 #align bernstein_approximation.apply bernsteinApproximation.apply
@@ -178,7 +178,7 @@ def δ (f : C(I, ℝ)) (ε : ℝ) (h : 0 < ε) : ℝ :=
   f.modulus (ε / 2) (half_pos h)
 #align bernstein_approximation.δ bernsteinApproximation.δ
 
-theorem δ_pos {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} : 0 < δ f ε h :=
+lemma δ_pos {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} : 0 < δ f ε h :=
   f.modulus_pos
 #align bernstein_approximation.δ_pos bernsteinApproximation.δ_pos
 

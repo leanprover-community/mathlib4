@@ -39,7 +39,7 @@ variable {R : Type u}
 /-! ### Distrib -/
 namespace Distrib
 
-@[ext] theorem ext ⦃inst₁ inst₂ : Distrib R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : Distrib R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
@@ -49,7 +49,7 @@ namespace Distrib
   -- Prove equality of parts using function extensionality.
   congr
 
-theorem ext_iff {inst₁ inst₂ : Distrib R} :
+lemma ext_iff {inst₁ inst₂ : Distrib R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -60,7 +60,7 @@ end Distrib
 /-! ### NonUnitalNonAssocSemiring -/
 namespace NonUnitalNonAssocSemiring
 
-@[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalNonAssocSemiring R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : NonUnitalNonAssocSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
@@ -70,13 +70,13 @@ namespace NonUnitalNonAssocSemiring
   -- Prove equality of parts using already-proved extensionality lemmas.
   congr; ext : 1; assumption
 
-theorem toDistrib_injective : Function.Injective (@toDistrib R) := by
+lemma toDistrib_injective : Function.Injective (@toDistrib R) := by
   intro _ _ h
   ext x y
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem ext_iff {inst₁ inst₂ : NonUnitalNonAssocSemiring R} :
+lemma ext_iff {inst₁ inst₂ : NonUnitalNonAssocSemiring R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -87,18 +87,18 @@ end NonUnitalNonAssocSemiring
 /-! ### NonUnitalSemiring -/
 namespace NonUnitalSemiring
 
-theorem toNonUnitalNonAssocSemiring_injective :
+lemma toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
   rintro ⟨⟩ ⟨⟩ _; congr
 
-@[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalSemiring R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : NonUnitalSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ :=
   toNonUnitalNonAssocSemiring_injective <|
     NonUnitalNonAssocSemiring.ext h_add h_mul
 
-theorem ext_iff {inst₁ inst₂ : NonUnitalSemiring R} :
+lemma ext_iff {inst₁ inst₂ : NonUnitalSemiring R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -113,7 +113,7 @@ as these are considered implementation detail of the ring classes.
 TODO consider relocating these lemmas.
 -/
 /- TODO consider relocating these lemmas. -/
-@[ext] theorem AddMonoidWithOne.ext ⦃inst₁ inst₂ : AddMonoidWithOne R⦄
+@[ext] lemma AddMonoidWithOne.ext ⦃inst₁ inst₂ : AddMonoidWithOne R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one : R)) :
     inst₁ = inst₂ := by
@@ -130,11 +130,11 @@ TODO consider relocating these lemmas.
   rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
   congr
 
-theorem AddCommMonoidWithOne.toAddMonoidWithOne_injective :
+lemma AddCommMonoidWithOne.toAddMonoidWithOne_injective :
     Function.Injective (@AddCommMonoidWithOne.toAddMonoidWithOne R) := by
   rintro ⟨⟩ ⟨⟩ _; congr
 
-@[ext] theorem AddCommMonoidWithOne.ext ⦃inst₁ inst₂ : AddCommMonoidWithOne R⦄
+@[ext] lemma AddCommMonoidWithOne.ext ⦃inst₁ inst₂ : AddCommMonoidWithOne R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one : R)) :
     inst₁ = inst₂ :=
@@ -146,7 +146,7 @@ namespace NonAssocSemiring
 /- The best place to prove that the `NatCast` is determined by the other operations is probably in
 an extensionality lemma for `AddMonoidWithOne`, in which case we may as well do the typeclasses
 defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
-@[ext] theorem ext ⦃inst₁ inst₂ : NonAssocSemiring R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : NonAssocSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
@@ -168,12 +168,12 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
   cases inst₁; cases inst₂
   congr
 
-theorem toNonUnitalNonAssocSemiring_injective :
+lemma toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
   intro _ _ _
   ext <;> congr
 
-theorem ext_iff {inst₁ inst₂ : NonAssocSemiring R} :
+lemma ext_iff {inst₁ inst₂ : NonAssocSemiring R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -184,7 +184,7 @@ end NonAssocSemiring
 /-! ### NonUnitalNonAssocRing -/
 namespace NonUnitalNonAssocRing
 
-@[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalNonAssocRing R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : NonUnitalNonAssocRing R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
@@ -192,7 +192,7 @@ namespace NonUnitalNonAssocRing
   rcases inst₁ with @⟨_, ⟨⟩⟩; rcases inst₂ with @⟨_, ⟨⟩⟩
   congr; (ext : 1; assumption)
 
-theorem toNonUnitalNonAssocSemiring_injective :
+lemma toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
   intro _ _ h
   -- Use above extensionality lemma to prove injectivity by showing that `h_add` and `h_mul` hold.
@@ -200,7 +200,7 @@ theorem toNonUnitalNonAssocSemiring_injective :
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem ext_iff {inst₁ inst₂ : NonUnitalNonAssocRing R} :
+lemma ext_iff {inst₁ inst₂ : NonUnitalNonAssocRing R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -211,7 +211,7 @@ end NonUnitalNonAssocRing
 /-! ### NonUnitalRing -/
 namespace NonUnitalRing
 
-@[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalRing R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : NonUnitalRing R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
@@ -221,19 +221,19 @@ namespace NonUnitalRing
   cases inst₁; cases inst₂
   congr
 
-theorem toNonUnitalSemiring_injective :
+lemma toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
   intro _ _ h
   ext x y
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonUnitalNonAssocring_injective :
+lemma toNonUnitalNonAssocring_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
 
-theorem ext_iff {inst₁ inst₂ : NonUnitalRing R} :
+lemma ext_iff {inst₁ inst₂ : NonUnitalRing R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -246,7 +246,7 @@ end NonUnitalRing
 This section also includes results for `AddGroupWithOne`, `AddCommGroupWithOne`, etc.
 as these are considered implementation detail of the ring classes.
 TODO consider relocating these lemmas. -/
-@[ext] theorem AddGroupWithOne.ext ⦃inst₁ inst₂ : AddGroupWithOne R⦄
+@[ext] lemma AddGroupWithOne.ext ⦃inst₁ inst₂ : AddGroupWithOne R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one)) :
     inst₁ = inst₂ := by
@@ -263,7 +263,7 @@ TODO consider relocating these lemmas. -/
   rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
   congr
 
-@[ext] theorem AddCommGroupWithOne.ext ⦃inst₁ inst₂ : AddCommGroupWithOne R⦄
+@[ext] lemma AddCommGroupWithOne.ext ⦃inst₁ inst₂ : AddCommGroupWithOne R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one)) :
     inst₁ = inst₂ := by
@@ -277,7 +277,7 @@ TODO consider relocating these lemmas. -/
 
 namespace NonAssocRing
 
-@[ext] theorem ext ⦃inst₁ inst₂ : NonAssocRing R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : NonAssocRing R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
@@ -291,19 +291,19 @@ namespace NonAssocRing
   cases inst₁; cases inst₂
   congr <;> solve| injection h₁ | injection h₂ | injection h₃
 
-theorem toNonAssocSemiring_injective :
+lemma toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
   intro _ _ h
   ext x y
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonUnitalNonAssocring_injective :
+lemma toNonUnitalNonAssocring_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
 
-theorem ext_iff {inst₁ inst₂ : NonAssocRing R} :
+lemma ext_iff {inst₁ inst₂ : NonAssocRing R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -314,7 +314,7 @@ end NonAssocRing
 /-! ### Semiring -/
 namespace Semiring
 
-@[ext] theorem ext ⦃inst₁ inst₂ : Semiring R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : Semiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
@@ -329,21 +329,21 @@ namespace Semiring
   cases inst₁; cases inst₂
   congr <;> solve| injection h₁ | injection h₂ | injection h₃
 
-theorem toNonUnitalSemiring_injective :
+lemma toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
   intro _ _ h
   ext x y
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonAssocSemiring_injective :
+lemma toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
   intro _ _ h
   ext x y
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem ext_iff {inst₁ inst₂ : Semiring R} :
+lemma ext_iff {inst₁ inst₂ : Semiring R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -354,7 +354,7 @@ end Semiring
 /-! ### Ring -/
 namespace Ring
 
-@[ext] theorem ext ⦃inst₁ inst₂ : Ring R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : Ring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
@@ -372,26 +372,26 @@ namespace Ring
   cases inst₁; cases inst₂
   congr <;> solve | injection h₂ | injection h₃
 
-theorem toNonUnitalRing_injective :
+lemma toNonUnitalRing_injective :
     Function.Injective (@toNonUnitalRing R) := by
   intro _ _ h
   ext x y
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonAssocRing_injective :
+lemma toNonAssocRing_injective :
     Function.Injective (@toNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
 
-theorem toSemiring_injective :
+lemma toSemiring_injective :
     Function.Injective (@toSemiring R) := by
   intro _ _ h
   ext x y
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem ext_iff {inst₁ inst₂ : Ring R} :
+lemma ext_iff {inst₁ inst₂ : Ring R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -402,18 +402,18 @@ end Ring
 /-! ### NonUnitalNonAssocCommSemiring -/
 namespace NonUnitalNonAssocCommSemiring
 
-theorem toNonUnitalNonAssocSemiring_injective :
+lemma toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
   rintro ⟨⟩ ⟨⟩ _; congr
 
-@[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalNonAssocCommSemiring R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : NonUnitalNonAssocCommSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ :=
   toNonUnitalNonAssocSemiring_injective <|
     NonUnitalNonAssocSemiring.ext h_add h_mul
 
-theorem ext_iff {inst₁ inst₂ : NonUnitalNonAssocCommSemiring R} :
+lemma ext_iff {inst₁ inst₂ : NonUnitalNonAssocCommSemiring R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -424,18 +424,18 @@ end NonUnitalNonAssocCommSemiring
 /-! ### NonUnitalCommSemiring -/
 namespace NonUnitalCommSemiring
 
-theorem toNonUnitalSemiring_injective :
+lemma toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
   rintro ⟨⟩ ⟨⟩ _; congr
 
-@[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalCommSemiring R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : NonUnitalCommSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ :=
   toNonUnitalSemiring_injective <|
     NonUnitalSemiring.ext h_add h_mul
 
-theorem ext_iff {inst₁ inst₂ : NonUnitalCommSemiring R} :
+lemma ext_iff {inst₁ inst₂ : NonUnitalCommSemiring R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -448,18 +448,18 @@ end NonUnitalCommSemiring
 /-! ### NonUnitalNonAssocCommRing -/
 namespace NonUnitalNonAssocCommRing
 
-theorem toNonUnitalNonAssocRing_injective :
+lemma toNonUnitalNonAssocRing_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   rintro ⟨⟩ ⟨⟩ _; congr
 
-@[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalNonAssocCommRing R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : NonUnitalNonAssocCommRing R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ :=
   toNonUnitalNonAssocRing_injective <|
     NonUnitalNonAssocRing.ext h_add h_mul
 
-theorem ext_iff {inst₁ inst₂ : NonUnitalNonAssocCommRing R} :
+lemma ext_iff {inst₁ inst₂ : NonUnitalNonAssocCommRing R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -470,18 +470,18 @@ end NonUnitalNonAssocCommRing
 /-! ### NonUnitalCommRing -/
 namespace NonUnitalCommRing
 
-theorem toNonUnitalRing_injective :
+lemma toNonUnitalRing_injective :
     Function.Injective (@toNonUnitalRing R) := by
   rintro ⟨⟩ ⟨⟩ _; congr
 
-@[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalCommRing R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : NonUnitalCommRing R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ :=
   toNonUnitalRing_injective <|
     NonUnitalRing.ext h_add h_mul
 
-theorem ext_iff {inst₁ inst₂ : NonUnitalCommRing R} :
+lemma ext_iff {inst₁ inst₂ : NonUnitalCommRing R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -494,18 +494,18 @@ end NonUnitalCommRing
 /-! ### CommSemiring -/
 namespace CommSemiring
 
-theorem toSemiring_injective :
+lemma toSemiring_injective :
     Function.Injective (@toSemiring R) := by
   rintro ⟨⟩ ⟨⟩ _; congr
 
-@[ext] theorem ext ⦃inst₁ inst₂ : CommSemiring R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : CommSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ :=
   toSemiring_injective <|
     Semiring.ext h_add h_mul
 
-theorem ext_iff {inst₁ inst₂ : CommSemiring R} :
+lemma ext_iff {inst₁ inst₂ : CommSemiring R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=
@@ -516,16 +516,16 @@ end CommSemiring
 /-! ### CommRing -/
 namespace CommRing
 
-theorem toRing_injective : Function.Injective (@toRing R) := by
+lemma toRing_injective : Function.Injective (@toRing R) := by
   rintro ⟨⟩ ⟨⟩ _; congr
 
-@[ext] theorem ext ⦃inst₁ inst₂ : CommRing R⦄
+@[ext] lemma ext ⦃inst₁ inst₂ : CommRing R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ :=
   toRing_injective <| Ring.ext h_add h_mul
 
-theorem ext_iff {inst₁ inst₂ : CommRing R} :
+lemma ext_iff {inst₁ inst₂ : CommRing R} :
     inst₁ = inst₂ ↔
       (local_hAdd[R, inst₁] = local_hAdd[R, inst₂]) ∧
       (local_hMul[R, inst₁] = local_hMul[R, inst₂]) :=

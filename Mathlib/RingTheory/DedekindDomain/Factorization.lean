@@ -122,7 +122,7 @@ theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
 
 end Ideal
 
-theorem Associates.finprod_ne_zero (I : Ideal R) :
+lemma Associates.finprod_ne_zero (I : Ideal R) :
     Associates.mk (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I) ≠ 0 := by
   rw [Associates.mk_ne_zero, finprod_def]
   split_ifs

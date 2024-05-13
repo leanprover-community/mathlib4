@@ -58,21 +58,21 @@ def mapEquiv : f α ≃ f β where
 #align equiv_functor.map_equiv EquivFunctor.mapEquiv
 
 @[simp]
-theorem mapEquiv_apply (x : f α) : mapEquiv f e x = EquivFunctor.map e x :=
+lemma mapEquiv_apply (x : f α) : mapEquiv f e x = EquivFunctor.map e x :=
   rfl
 #align equiv_functor.map_equiv_apply EquivFunctor.mapEquiv_apply
 
-theorem mapEquiv_symm_apply (y : f β) : (mapEquiv f e).symm y = EquivFunctor.map e.symm y :=
+lemma mapEquiv_symm_apply (y : f β) : (mapEquiv f e).symm y = EquivFunctor.map e.symm y :=
   rfl
 #align equiv_functor.map_equiv_symm_apply EquivFunctor.mapEquiv_symm_apply
 
 @[simp]
-theorem mapEquiv_refl (α) : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := by
+lemma mapEquiv_refl (α) : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := by
  simp only [mapEquiv, map_refl', Equiv.refl_symm]; rfl
 #align equiv_functor.map_equiv_refl EquivFunctor.mapEquiv_refl
 
 @[simp]
-theorem mapEquiv_symm : (mapEquiv f e).symm = mapEquiv f e.symm :=
+lemma mapEquiv_symm : (mapEquiv f e).symm = mapEquiv f e.symm :=
   Equiv.ext <| mapEquiv_symm_apply f e
 #align equiv_functor.map_equiv_symm EquivFunctor.mapEquiv_symm
 
@@ -99,7 +99,7 @@ instance (priority := 100) ofLawfulFunctor (f : Type u₀ → Type u₁) [Functo
     apply LawfulFunctor.comp_map k h x
 #align equiv_functor.of_is_lawful_functor EquivFunctor.ofLawfulFunctor
 
-theorem mapEquiv.injective (f : Type u₀ → Type u₁)
+lemma mapEquiv.injective (f : Type u₀ → Type u₁)
     [Applicative f] [LawfulApplicative f] {α β : Type u₀}
     (h : ∀ γ, Function.Injective (pure : γ → f γ)) :
       Function.Injective (@EquivFunctor.mapEquiv f _ α β) :=

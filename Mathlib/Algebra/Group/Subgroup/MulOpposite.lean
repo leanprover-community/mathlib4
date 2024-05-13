@@ -32,7 +32,7 @@ protected def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
   inv_mem' := H.inv_mem
 
 @[to_additive (attr := simp)]
-theorem mem_op {x : Gᵐᵒᵖ} {S : Subgroup G} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
+lemma mem_op {x : Gᵐᵒᵖ} {S : Subgroup G} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
 @[to_additive (attr := simp)] lemma op_toSubmonoid (H : Subgroup G) :
     H.op.toSubmonoid = H.toSubmonoid.op :=
@@ -48,34 +48,34 @@ protected def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
   inv_mem' := H.inv_mem
 
 @[to_additive (attr := simp)]
-theorem mem_unop {x : G} {S : Subgroup Gᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
+lemma mem_unop {x : G} {S : Subgroup Gᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
 
 @[to_additive (attr := simp)] lemma unop_toSubmonoid (H : Subgroup Gᵐᵒᵖ) :
     H.unop.toSubmonoid = H.toSubmonoid.unop :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem unop_op (S : Subgroup G) : S.op.unop = S := rfl
+lemma unop_op (S : Subgroup G) : S.op.unop = S := rfl
 
 @[to_additive (attr := simp)]
-theorem op_unop (S : Subgroup Gᵐᵒᵖ) : S.unop.op = S := rfl
+lemma op_unop (S : Subgroup Gᵐᵒᵖ) : S.unop.op = S := rfl
 
 /-! ### Lattice results -/
 
 @[to_additive]
-theorem op_le_iff {S₁ : Subgroup G} {S₂ : Subgroup Gᵐᵒᵖ} : S₁.op ≤ S₂ ↔ S₁ ≤ S₂.unop :=
+lemma op_le_iff {S₁ : Subgroup G} {S₂ : Subgroup Gᵐᵒᵖ} : S₁.op ≤ S₂ ↔ S₁ ≤ S₂.unop :=
   MulOpposite.op_surjective.forall
 
 @[to_additive]
-theorem le_op_iff {S₁ : Subgroup Gᵐᵒᵖ} {S₂ : Subgroup G} : S₁ ≤ S₂.op ↔ S₁.unop ≤ S₂ :=
+lemma le_op_iff {S₁ : Subgroup Gᵐᵒᵖ} {S₂ : Subgroup G} : S₁ ≤ S₂.op ↔ S₁.unop ≤ S₂ :=
   MulOpposite.op_surjective.forall
 
 @[to_additive (attr := simp)]
-theorem op_le_op_iff {S₁ S₂ : Subgroup G} : S₁.op ≤ S₂.op ↔ S₁ ≤ S₂ :=
+lemma op_le_op_iff {S₁ S₂ : Subgroup G} : S₁.op ≤ S₂.op ↔ S₁ ≤ S₂ :=
   MulOpposite.op_surjective.forall
 
 @[to_additive (attr := simp)]
-theorem unop_le_unop_iff {S₁ S₂ : Subgroup Gᵐᵒᵖ} : S₁.unop ≤ S₂.unop ↔ S₁ ≤ S₂ :=
+lemma unop_le_unop_iff {S₁ S₂ : Subgroup Gᵐᵒᵖ} : S₁.unop ≤ S₂.unop ↔ S₁ ≤ S₂ :=
   MulOpposite.unop_surjective.forall
 
 /-- A subgroup `H` of `G` determines a subgroup `H.op` of the opposite group `Gᵐᵒᵖ`. -/
@@ -91,70 +91,70 @@ def opEquiv : Subgroup G ≃o Subgroup Gᵐᵒᵖ where
 #align add_subgroup.opposite AddSubgroup.opEquiv
 
 @[to_additive (attr := simp)]
-theorem op_bot : (⊥ : Subgroup G).op = ⊥ := opEquiv.map_bot
+lemma op_bot : (⊥ : Subgroup G).op = ⊥ := opEquiv.map_bot
 
 @[to_additive (attr := simp)]
-theorem unop_bot : (⊥ : Subgroup Gᵐᵒᵖ).unop = ⊥ := opEquiv.symm.map_bot
+lemma unop_bot : (⊥ : Subgroup Gᵐᵒᵖ).unop = ⊥ := opEquiv.symm.map_bot
 
 @[to_additive (attr := simp)]
-theorem op_top : (⊤ : Subgroup G).op = ⊤ := opEquiv.map_top
+lemma op_top : (⊤ : Subgroup G).op = ⊤ := opEquiv.map_top
 
 @[to_additive (attr := simp)]
-theorem unop_top : (⊤ : Subgroup Gᵐᵒᵖ).unop = ⊤ := opEquiv.symm.map_top
+lemma unop_top : (⊤ : Subgroup Gᵐᵒᵖ).unop = ⊤ := opEquiv.symm.map_top
 
 @[to_additive]
-theorem op_sup (S₁ S₂ : Subgroup G) : (S₁ ⊔ S₂).op = S₁.op ⊔ S₂.op :=
+lemma op_sup (S₁ S₂ : Subgroup G) : (S₁ ⊔ S₂).op = S₁.op ⊔ S₂.op :=
   opEquiv.map_sup _ _
 
 @[to_additive]
-theorem unop_sup (S₁ S₂ : Subgroup Gᵐᵒᵖ) : (S₁ ⊔ S₂).unop = S₁.unop ⊔ S₂.unop :=
+lemma unop_sup (S₁ S₂ : Subgroup Gᵐᵒᵖ) : (S₁ ⊔ S₂).unop = S₁.unop ⊔ S₂.unop :=
   opEquiv.symm.map_sup _ _
 
 @[to_additive]
-theorem op_inf (S₁ S₂ : Subgroup G) : (S₁ ⊓ S₂).op = S₁.op ⊓ S₂.op := opEquiv.map_inf _ _
+lemma op_inf (S₁ S₂ : Subgroup G) : (S₁ ⊓ S₂).op = S₁.op ⊓ S₂.op := opEquiv.map_inf _ _
 
 @[to_additive]
-theorem unop_inf (S₁ S₂ : Subgroup Gᵐᵒᵖ) : (S₁ ⊓ S₂).unop = S₁.unop ⊓ S₂.unop :=
+lemma unop_inf (S₁ S₂ : Subgroup Gᵐᵒᵖ) : (S₁ ⊓ S₂).unop = S₁.unop ⊓ S₂.unop :=
   opEquiv.symm.map_inf _ _
 
 @[to_additive]
-theorem op_sSup (S : Set (Subgroup G)) : (sSup S).op = sSup (.unop ⁻¹' S) :=
+lemma op_sSup (S : Set (Subgroup G)) : (sSup S).op = sSup (.unop ⁻¹' S) :=
   opEquiv.map_sSup_eq_sSup_symm_preimage _
 
 @[to_additive]
-theorem unop_sSup (S : Set (Subgroup Gᵐᵒᵖ)) : (sSup S).unop = sSup (.op ⁻¹' S) :=
+lemma unop_sSup (S : Set (Subgroup Gᵐᵒᵖ)) : (sSup S).unop = sSup (.op ⁻¹' S) :=
   opEquiv.symm.map_sSup_eq_sSup_symm_preimage _
 
 @[to_additive]
-theorem op_sInf (S : Set (Subgroup G)) : (sInf S).op = sInf (.unop ⁻¹' S) :=
+lemma op_sInf (S : Set (Subgroup G)) : (sInf S).op = sInf (.unop ⁻¹' S) :=
   opEquiv.map_sInf_eq_sInf_symm_preimage _
 
 @[to_additive]
-theorem unop_sInf (S : Set (Subgroup Gᵐᵒᵖ)) : (sInf S).unop = sInf (.op ⁻¹' S) :=
+lemma unop_sInf (S : Set (Subgroup Gᵐᵒᵖ)) : (sInf S).unop = sInf (.op ⁻¹' S) :=
   opEquiv.symm.map_sInf_eq_sInf_symm_preimage _
 
 @[to_additive]
-theorem op_iSup (S : ι → Subgroup G) : (iSup S).op = ⨆ i, (S i).op := opEquiv.map_iSup _
+lemma op_iSup (S : ι → Subgroup G) : (iSup S).op = ⨆ i, (S i).op := opEquiv.map_iSup _
 
 @[to_additive]
-theorem unop_iSup (S : ι → Subgroup Gᵐᵒᵖ) : (iSup S).unop = ⨆ i, (S i).unop :=
+lemma unop_iSup (S : ι → Subgroup Gᵐᵒᵖ) : (iSup S).unop = ⨆ i, (S i).unop :=
   opEquiv.symm.map_iSup _
 
 @[to_additive]
-theorem op_iInf (S : ι → Subgroup G) : (iInf S).op = ⨅ i, (S i).op := opEquiv.map_iInf _
+lemma op_iInf (S : ι → Subgroup G) : (iInf S).op = ⨅ i, (S i).op := opEquiv.map_iInf _
 
 @[to_additive]
-theorem unop_iInf (S : ι → Subgroup Gᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S i).unop :=
+lemma unop_iInf (S : ι → Subgroup Gᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S i).unop :=
   opEquiv.symm.map_iInf _
 
 @[to_additive]
-theorem op_closure (s : Set G) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
+lemma op_closure (s : Set G) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
   simp_rw [closure, op_sInf, Set.preimage_setOf_eq, Subgroup.unop_coe]
   congr with a
   exact MulOpposite.unop_surjective.forall
 
 @[to_additive]
-theorem unop_closure (s : Set Gᵐᵒᵖ) : (closure s).unop = closure (MulOpposite.op ⁻¹' s) := by
+lemma unop_closure (s : Set Gᵐᵒᵖ) : (closure s).unop = closure (MulOpposite.op ⁻¹' s) := by
   simp_rw [closure, unop_sInf, Set.preimage_setOf_eq, Subgroup.op_coe]
   congr with a
   exact MulOpposite.op_surjective.forall
@@ -176,7 +176,7 @@ instance (H : Subgroup G) [Countable H] : Countable H.op :=
   Countable.of_equiv H H.equivOp
 
 @[to_additive]
-theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : H.op) :
+lemma smul_opposite_mul {H : Subgroup G} (x g : G) (h : H.op) :
     h • (g * x) = g * h • x :=
   mul_assoc _ _ _
 #align subgroup.smul_opposite_mul Subgroup.smul_opposite_mul

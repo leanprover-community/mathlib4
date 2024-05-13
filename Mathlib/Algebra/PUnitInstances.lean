@@ -41,28 +41,28 @@ instance commGroup : CommGroup PUnit where
 @[to_additive] instance : Inv PUnit where inv _ := ()
 
 @[to_additive (attr := simp)]
-theorem one_eq : (1 : PUnit) = unit :=
+lemma one_eq : (1 : PUnit) = unit :=
   rfl
 #align punit.one_eq PUnit.one_eq
 #align punit.zero_eq PUnit.zero_eq
 
 -- note simp can prove this when the Boolean ring structure is introduced
 @[to_additive]
-theorem mul_eq {x y : PUnit} : x * y = unit :=
+lemma mul_eq {x y : PUnit} : x * y = unit :=
   rfl
 #align punit.mul_eq PUnit.mul_eq
 #align punit.add_eq PUnit.add_eq
 
 -- `sub_eq` simplifies `PUnit.sub_eq`, but the latter is eligible for `dsimp`
 @[to_additive (attr := simp, nolint simpNF)]
-theorem div_eq {x y : PUnit} : x / y = unit :=
+lemma div_eq {x y : PUnit} : x / y = unit :=
   rfl
 #align punit.div_eq PUnit.div_eq
 #align punit.sub_eq PUnit.sub_eq
 
 -- `neg_eq` simplifies `PUnit.neg_eq`, but the latter is eligible for `dsimp`
 @[to_additive (attr := simp, nolint simpNF)]
-theorem inv_eq {x : PUnit} : x⁻¹ = unit :=
+lemma inv_eq {x : PUnit} : x⁻¹ = unit :=
   rfl
 #align punit.inv_eq PUnit.inv_eq
 #align punit.neg_eq PUnit.neg_eq
@@ -96,17 +96,17 @@ instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   normalize_lcm := by intros; rfl
 
 -- Porting note (#10618): simpNF lint: simp can prove this @[simp]
-theorem gcd_eq {x y : PUnit} : gcd x y = unit :=
+lemma gcd_eq {x y : PUnit} : gcd x y = unit :=
   rfl
 #align punit.gcd_eq PUnit.gcd_eq
 
 -- Porting note (#10618): simpNF lint: simp can prove this @[simp]
-theorem lcm_eq {x y : PUnit} : lcm x y = unit :=
+lemma lcm_eq {x y : PUnit} : lcm x y = unit :=
   rfl
 #align punit.lcm_eq PUnit.lcm_eq
 
 @[simp]
-theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
+lemma norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
@@ -134,7 +134,7 @@ instance smul : SMul R PUnit :=
   ⟨fun _ _ => unit⟩
 
 @[to_additive (attr := simp)]
-theorem smul_eq {R : Type*} (y : PUnit) (r : R) : r • y = unit :=
+lemma smul_eq {R : Type*} (y : PUnit) (r : R) : r • y = unit :=
   rfl
 #align punit.smul_eq PUnit.smul_eq
 #align punit.vadd_eq PUnit.vadd_eq

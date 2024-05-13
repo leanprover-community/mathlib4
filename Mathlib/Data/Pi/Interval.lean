@@ -35,23 +35,23 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (∀ i, α i) :=
 
 variable (a b : ∀ i, α i)
 
-theorem Icc_eq : Icc a b = piFinset fun i => Icc (a i) (b i) :=
+lemma Icc_eq : Icc a b = piFinset fun i => Icc (a i) (b i) :=
   rfl
 #align pi.Icc_eq Pi.Icc_eq
 
-theorem card_Icc : (Icc a b).card = ∏ i, (Icc (a i) (b i)).card :=
+lemma card_Icc : (Icc a b).card = ∏ i, (Icc (a i) (b i)).card :=
   card_piFinset _
 #align pi.card_Icc Pi.card_Icc
 
-theorem card_Ico : (Ico a b).card = (∏ i, (Icc (a i) (b i)).card) - 1 := by
+lemma card_Ico : (Ico a b).card = (∏ i, (Icc (a i) (b i)).card) - 1 := by
   rw [card_Ico_eq_card_Icc_sub_one, card_Icc]
 #align pi.card_Ico Pi.card_Ico
 
-theorem card_Ioc : (Ioc a b).card = (∏ i, (Icc (a i) (b i)).card) - 1 := by
+lemma card_Ioc : (Ioc a b).card = (∏ i, (Icc (a i) (b i)).card) - 1 := by
   rw [card_Ioc_eq_card_Icc_sub_one, card_Icc]
 #align pi.card_Ioc Pi.card_Ioc
 
-theorem card_Ioo : (Ioo a b).card = (∏ i, (Icc (a i) (b i)).card) - 2 := by
+lemma card_Ioo : (Ioo a b).card = (∏ i, (Icc (a i) (b i)).card) - 2 := by
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
 #align pi.card_Ioo Pi.card_Ioo
 
@@ -64,11 +64,11 @@ instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (∀ i, α i) :=
   .ofIic _ (fun b => piFinset fun i => Iic (b i)) fun b x => by
     simp_rw [mem_piFinset, mem_Iic, le_def]
 
-theorem card_Iic : (Iic b).card = ∏ i, (Iic (b i)).card :=
+lemma card_Iic : (Iic b).card = ∏ i, (Iic (b i)).card :=
   card_piFinset _
 #align pi.card_Iic Pi.card_Iic
 
-theorem card_Iio : (Iio b).card = (∏ i, (Iic (b i)).card) - 1 := by
+lemma card_Iio : (Iio b).card = (∏ i, (Iic (b i)).card) - 1 := by
   rw [card_Iio_eq_card_Iic_sub_one, card_Iic]
 #align pi.card_Iio Pi.card_Iio
 
@@ -81,11 +81,11 @@ instance instLocallyFiniteOrderTop : LocallyFiniteOrderTop (∀ i, α i) :=
   LocallyFiniteOrderTop.ofIci _ (fun a => piFinset fun i => Ici (a i)) fun a x => by
     simp_rw [mem_piFinset, mem_Ici, le_def]
 
-theorem card_Ici : (Ici a).card = ∏ i, (Ici (a i)).card :=
+lemma card_Ici : (Ici a).card = ∏ i, (Ici (a i)).card :=
   card_piFinset _
 #align pi.card_Ici Pi.card_Ici
 
-theorem card_Ioi : (Ioi a).card = (∏ i, (Ici (a i)).card) - 1 := by
+lemma card_Ioi : (Ioi a).card = (∏ i, (Ici (a i)).card) - 1 := by
   rw [card_Ioi_eq_card_Ici_sub_one, card_Ici]
 #align pi.card_Ioi Pi.card_Ioi
 
@@ -95,10 +95,10 @@ end PartialOrder
 section Lattice
 variable [∀ i, Lattice (α i)] [∀ i, LocallyFiniteOrder (α i)] (a b : ∀ i, α i)
 
-theorem uIcc_eq : uIcc a b = piFinset fun i => uIcc (a i) (b i) := rfl
+lemma uIcc_eq : uIcc a b = piFinset fun i => uIcc (a i) (b i) := rfl
 #align pi.uIcc_eq Pi.uIcc_eq
 
-theorem card_uIcc : (uIcc a b).card = ∏ i, (uIcc (a i) (b i)).card := card_Icc _ _
+lemma card_uIcc : (uIcc a b).card = ∏ i, (uIcc (a i) (b i)).card := card_Icc _ _
 #align pi.card_uIcc Pi.card_uIcc
 
 end Lattice

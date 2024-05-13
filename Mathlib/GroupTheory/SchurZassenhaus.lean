@@ -47,7 +47,7 @@ instance : Inhabited H.QuotientDiff := by
   dsimp [QuotientDiff] -- Porting note: Added `dsimp`
   infer_instance
 
-theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
+lemma smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
     diff (MonoidHom.id H) (g • α) (g • β) =
       ⟨g.unop⁻¹ * (diff (MonoidHom.id H) α β : H) * g.unop,
         hH.mem_comm ((congr_arg (· ∈ H) (mul_inv_cancel_left _ _)).mpr (SetLike.coe_mem _))⟩ := by
@@ -80,7 +80,7 @@ noncomputable instance : MulAction G H.QuotientDiff where
     Quotient.inductionOn' q fun T =>
       congr_arg Quotient.mk'' (by rw [inv_one]; apply one_smul Gᵐᵒᵖ T)
 
-theorem smul_diff' (h : H) :
+lemma smul_diff' (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
   letI := H.fintypeQuotientOfFiniteIndex
   rw [diff, diff, index_eq_card, ← Finset.card_univ, ← Finset.prod_const, ← Finset.prod_mul_distrib]
@@ -91,7 +91,7 @@ theorem smul_diff' (h : H) :
   exact self_eq_mul_right.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
 #align subgroup.smul_diff' Subgroup.smul_diff'
 
-theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.QuotientDiff)
+lemma eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.QuotientDiff)
     (h : H) : h • α = α → h = 1 :=
   Quotient.inductionOn' α fun α hα =>
     (powCoprime hH).injective <|
@@ -102,7 +102,7 @@ theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.Qu
 
 #align subgroup.eq_one_of_smul_eq_one Subgroup.eq_one_of_smul_eq_one
 
-theorem exists_smul_eq (hH : Nat.Coprime (Nat.card H) H.index) (α β : H.QuotientDiff) :
+lemma exists_smul_eq (hH : Nat.Coprime (Nat.card H) H.index) (α β : H.QuotientDiff) :
     ∃ h : H, h • α = β :=
   Quotient.inductionOn' α
     (Quotient.inductionOn' β fun β α =>
@@ -114,7 +114,7 @@ theorem exists_smul_eq (hH : Nat.Coprime (Nat.card H) H.index) (α β : H.Quotie
                 (by rw [inv_pow, ← powCoprime_apply hH, Equiv.apply_symm_apply, mul_inv_self])))⟩)
 #align subgroup.exists_smul_eq Subgroup.exists_smul_eq
 
-theorem isComplement'_stabilizer_of_coprime {α : H.QuotientDiff}
+lemma isComplement'_stabilizer_of_coprime {α : H.QuotientDiff}
     (hH : Nat.Coprime (Nat.card H) H.index) : IsComplement' H (stabilizer G α) :=
   isComplement'_stabilizer α (eq_one_of_smul_eq_one hH α) fun g => exists_smul_eq hH (g • α) α
 #align subgroup.is_complement'_stabilizer_of_coprime Subgroup.isComplement'_stabilizer_of_coprime

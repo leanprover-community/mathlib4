@@ -150,14 +150,14 @@ variable [EquivLike F α β]
 variable {F}
 
 @[to_additive (attr := simp)]
-theorem map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
+lemma map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
     (h : F) {x : M} :
     h x = 1 ↔ x = 1 := _root_.map_eq_one_iff h (EquivLike.injective h)
 #align mul_equiv_class.map_eq_one_iff MulEquivClass.map_eq_one_iff
 #align add_equiv_class.map_eq_zero_iff AddEquivClass.map_eq_zero_iff
 
 @[to_additive]
-theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
+lemma map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
     (h : F) {x : M} :
     h x ≠ 1 ↔ x ≠ 1 := _root_.map_ne_one_iff h (EquivLike.injective h)
 #align mul_equiv_class.map_ne_one_iff MulEquivClass.map_ne_one_iff
@@ -183,7 +183,7 @@ instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
   ⟨MulEquivClass.toMulEquiv⟩
 
 @[to_additive]
-theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α β] :
+lemma MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α β] :
     Function.Injective ((↑) : F → α ≃* β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
 
@@ -212,14 +212,14 @@ instance : CoeFun (M ≃* N) fun _ ↦ M → N where
   coe f := f
 
 @[to_additive (attr := simp)]
-theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
+lemma toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
   rfl
 #align mul_equiv.to_equiv_eq_coe MulEquiv.toEquiv_eq_coe
 #align add_equiv.to_equiv_eq_coe AddEquiv.toEquiv_eq_coe
 
 -- Porting note: added, to simplify `f.toMulHom` back to the coercion via `MulHomClass.toMulHom`.
 @[to_additive (attr := simp)]
-theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
+lemma toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
   rfl
 
 -- Porting note: `to_fun_eq_coe` no longer needed in Lean4
@@ -227,14 +227,14 @@ theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
 #noalign add_equiv.to_fun_eq_coe
 
 @[to_additive (attr := simp)]
-theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
+lemma coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 #align mul_equiv.coe_to_equiv MulEquiv.coe_toEquiv
 #align add_equiv.coe_to_equiv AddEquiv.coe_toEquiv
 
 -- Porting note (#11215): TODO: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
 -- not `f.toEquiv.toFun`; use higher priority as a workaround
 @[to_additive (attr := simp 1100)]
-theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
+lemma coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
 #align mul_equiv.coe_to_mul_hom MulEquiv.coe_toMulHom
 #align add_equiv.coe_to_add_hom AddEquiv.coe_toAddHom
 
@@ -252,19 +252,19 @@ def mk' (f : M ≃ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃* N := ⟨f, h
 #align add_equiv.mk' AddEquiv.mk'
 
 @[to_additive]
-protected theorem bijective (e : M ≃* N) : Function.Bijective e :=
+protected lemma bijective (e : M ≃* N) : Function.Bijective e :=
   EquivLike.bijective e
 #align mul_equiv.bijective MulEquiv.bijective
 #align add_equiv.bijective AddEquiv.bijective
 
 @[to_additive]
-protected theorem injective (e : M ≃* N) : Function.Injective e :=
+protected lemma injective (e : M ≃* N) : Function.Injective e :=
   EquivLike.injective e
 #align mul_equiv.injective MulEquiv.injective
 #align add_equiv.injective AddEquiv.injective
 
 @[to_additive]
-protected theorem surjective (e : M ≃* N) : Function.Surjective e :=
+protected lemma surjective (e : M ≃* N) : Function.Surjective e :=
   EquivLike.surjective e
 #align mul_equiv.surjective MulEquiv.surjective
 #align add_equiv.surjective AddEquiv.surjective
@@ -295,16 +295,16 @@ def symm {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
 #align add_equiv.symm AddEquiv.symm
 
 @[to_additive] -- Porting note: no longer a `simp`, see below
-theorem invFun_eq_symm {f : M ≃* N} : f.invFun = f.symm := rfl
+lemma invFun_eq_symm {f : M ≃* N} : f.invFun = f.symm := rfl
 #align mul_equiv.inv_fun_eq_symm MulEquiv.invFun_eq_symm
 -- Porting note: to_additive translated the name incorrectly in mathlib 3.
 #align add_equiv.neg_fun_eq_symm AddEquiv.invFun_eq_symm
 
 @[to_additive (attr := simp)]
-theorem coe_toEquiv_symm (f : M ≃* N) : ((f : M ≃ N).symm : N → M) = f.symm := rfl
+lemma coe_toEquiv_symm (f : M ≃* N) : ((f : M ≃ N).symm : N → M) = f.symm := rfl
 
 @[to_additive (attr := simp)]
-theorem equivLike_inv_eq_symm (f : M ≃* N) : EquivLike.inv f = f.symm := rfl
+lemma equivLike_inv_eq_symm (f : M ≃* N) : EquivLike.inv f = f.symm := rfl
 
 -- we don't hyperlink the note in the additive version, since that breaks syntax highlighting
 -- in the whole file.
@@ -321,13 +321,13 @@ initialize_simps_projections AddEquiv (toFun → apply, invFun → symm_apply)
 initialize_simps_projections MulEquiv (toFun → apply, invFun → symm_apply)
 
 @[to_additive (attr := simp)]
-theorem toEquiv_symm (f : M ≃* N) : (f.symm : N ≃ M) = (f : M ≃ N).symm := rfl
+lemma toEquiv_symm (f : M ≃* N) : (f.symm : N ≃ M) = (f : M ≃ N).symm := rfl
 #align mul_equiv.to_equiv_symm MulEquiv.toEquiv_symm
 #align add_equiv.to_equiv_symm AddEquiv.toEquiv_symm
 
 -- Porting note: doesn't align with Mathlib 3 because `MulEquiv.mk` has a new signature
 @[to_additive (attr := simp)]
-theorem coe_mk (f : M ≃ N) (hf : ∀ x y, f (x * y) = f x * f y) : (mk f hf : M → N) = f := rfl
+lemma coe_mk (f : M ≃ N) (hf : ∀ x y, f (x * y) = f x * f y) : (mk f hf : M → N) = f := rfl
 #align mul_equiv.coe_mk MulEquiv.coe_mkₓ
 #align add_equiv.coe_mk AddEquiv.coe_mkₓ
 
@@ -336,12 +336,12 @@ theorem coe_mk (f : M ≃ N) (hf : ∀ x y, f (x * y) = f x * f y) : (mk f hf : 
 #noalign add_equiv.to_equiv_mk
 
 @[to_additive (attr := simp)]
-theorem symm_symm (f : M ≃* N) : f.symm.symm = f := rfl
+lemma symm_symm (f : M ≃* N) : f.symm.symm = f := rfl
 #align mul_equiv.symm_symm MulEquiv.symm_symm
 #align add_equiv.symm_symm AddEquiv.symm_symm
 
 @[to_additive]
-theorem symm_bijective : Function.Bijective (symm : (M ≃* N) → N ≃* M) :=
+lemma symm_bijective : Function.Bijective (symm : (M ≃* N) → N ≃* M) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align mul_equiv.symm_bijective MulEquiv.symm_bijective
 #align add_equiv.symm_bijective AddEquiv.symm_bijective
@@ -349,13 +349,13 @@ theorem symm_bijective : Function.Bijective (symm : (M ≃* N) → N ≃* M) :=
 -- Porting note: this doesn't really align with mathlib3's `symm_mk`,
 -- because the signature of `MulEquiv.mk` has changed.
 @[to_additive (attr := simp)]
-theorem symm_mk (f : M ≃ N) (h) :
+lemma symm_mk (f : M ≃ N) (h) :
     (MulEquiv.mk f h).symm = ⟨f.symm, (MulEquiv.mk f h).symm_map_mul⟩ := rfl
 #align mul_equiv.symm_mk MulEquiv.symm_mkₓ
 #align add_equiv.symm_mk AddEquiv.symm_mkₓ
 
 @[to_additive (attr := simp)]
-theorem refl_symm : (refl M).symm = refl M := rfl
+lemma refl_symm : (refl M).symm = refl M := rfl
 #align mul_equiv.refl_symm MulEquiv.refl_symm
 #align add_equiv.refl_symm AddEquiv.refl_symm
 
@@ -383,104 +383,104 @@ theorem symm_apply_apply (e : M ≃* N) (x : M) : e.symm (e x) = x :=
 #align add_equiv.symm_apply_apply AddEquiv.symm_apply_apply
 
 @[to_additive (attr := simp)]
-theorem symm_comp_self (e : M ≃* N) : e.symm ∘ e = id :=
+lemma symm_comp_self (e : M ≃* N) : e.symm ∘ e = id :=
   funext e.symm_apply_apply
 #align mul_equiv.symm_comp_self MulEquiv.symm_comp_self
 #align add_equiv.symm_comp_self AddEquiv.symm_comp_self
 
 @[to_additive (attr := simp)]
-theorem self_comp_symm (e : M ≃* N) : e ∘ e.symm = id :=
+lemma self_comp_symm (e : M ≃* N) : e ∘ e.symm = id :=
   funext e.apply_symm_apply
 #align mul_equiv.self_comp_symm MulEquiv.self_comp_symm
 #align add_equiv.self_comp_symm AddEquiv.self_comp_symm
 
 @[to_additive (attr := simp)]
-theorem coe_refl : ↑(refl M) = id := rfl
+lemma coe_refl : ↑(refl M) = id := rfl
 #align mul_equiv.coe_refl MulEquiv.coe_refl
 #align add_equiv.coe_refl AddEquiv.coe_refl
 
 @[to_additive (attr := simp)]
-theorem refl_apply (m : M) : refl M m = m := rfl
+lemma refl_apply (m : M) : refl M m = m := rfl
 #align mul_equiv.refl_apply MulEquiv.refl_apply
 #align add_equiv.refl_apply AddEquiv.refl_apply
 
 @[to_additive (attr := simp)]
-theorem coe_trans (e₁ : M ≃* N) (e₂ : N ≃* P) : ↑(e₁.trans e₂) = e₂ ∘ e₁ := rfl
+lemma coe_trans (e₁ : M ≃* N) (e₂ : N ≃* P) : ↑(e₁.trans e₂) = e₂ ∘ e₁ := rfl
 #align mul_equiv.coe_trans MulEquiv.coe_trans
 #align add_equiv.coe_trans AddEquiv.coe_trans
 
 @[to_additive (attr := simp)]
-theorem trans_apply (e₁ : M ≃* N) (e₂ : N ≃* P) (m : M) : e₁.trans e₂ m = e₂ (e₁ m) := rfl
+lemma trans_apply (e₁ : M ≃* N) (e₂ : N ≃* P) (m : M) : e₁.trans e₂ m = e₂ (e₁ m) := rfl
 #align mul_equiv.trans_apply MulEquiv.trans_apply
 #align add_equiv.trans_apply AddEquiv.trans_apply
 
 @[to_additive (attr := simp)]
-theorem symm_trans_apply (e₁ : M ≃* N) (e₂ : N ≃* P) (p : P) :
+lemma symm_trans_apply (e₁ : M ≃* N) (e₂ : N ≃* P) (p : P) :
     (e₁.trans e₂).symm p = e₁.symm (e₂.symm p) := rfl
 #align mul_equiv.symm_trans_apply MulEquiv.symm_trans_apply
 #align add_equiv.symm_trans_apply AddEquiv.symm_trans_apply
 
 -- Porting note (#10618): `simp` can prove this
 @[to_additive]
-theorem apply_eq_iff_eq (e : M ≃* N) {x y : M} : e x = e y ↔ x = y :=
+lemma apply_eq_iff_eq (e : M ≃* N) {x y : M} : e x = e y ↔ x = y :=
   e.injective.eq_iff
 #align mul_equiv.apply_eq_iff_eq MulEquiv.apply_eq_iff_eq
 #align add_equiv.apply_eq_iff_eq AddEquiv.apply_eq_iff_eq
 
 @[to_additive]
-theorem apply_eq_iff_symm_apply (e : M ≃* N) {x : M} {y : N} : e x = y ↔ x = e.symm y :=
+lemma apply_eq_iff_symm_apply (e : M ≃* N) {x : M} {y : N} : e x = y ↔ x = e.symm y :=
   e.toEquiv.apply_eq_iff_eq_symm_apply
 #align mul_equiv.apply_eq_iff_symm_apply MulEquiv.apply_eq_iff_symm_apply
 #align add_equiv.apply_eq_iff_symm_apply AddEquiv.apply_eq_iff_symm_apply
 
 @[to_additive]
-theorem symm_apply_eq (e : M ≃* N) {x y} : e.symm x = y ↔ x = e y :=
+lemma symm_apply_eq (e : M ≃* N) {x y} : e.symm x = y ↔ x = e y :=
   e.toEquiv.symm_apply_eq
 #align mul_equiv.symm_apply_eq MulEquiv.symm_apply_eq
 #align add_equiv.symm_apply_eq AddEquiv.symm_apply_eq
 
 @[to_additive]
-theorem eq_symm_apply (e : M ≃* N) {x y} : y = e.symm x ↔ e y = x :=
+lemma eq_symm_apply (e : M ≃* N) {x y} : y = e.symm x ↔ e y = x :=
   e.toEquiv.eq_symm_apply
 #align mul_equiv.eq_symm_apply MulEquiv.eq_symm_apply
 #align add_equiv.eq_symm_apply AddEquiv.eq_symm_apply
 
 @[to_additive]
-theorem eq_comp_symm {α : Type*} (e : M ≃* N) (f : N → α) (g : M → α) :
+lemma eq_comp_symm {α : Type*} (e : M ≃* N) (f : N → α) (g : M → α) :
     f = g ∘ e.symm ↔ f ∘ e = g :=
   e.toEquiv.eq_comp_symm f g
 #align mul_equiv.eq_comp_symm MulEquiv.eq_comp_symm
 #align add_equiv.eq_comp_symm AddEquiv.eq_comp_symm
 
 @[to_additive]
-theorem comp_symm_eq {α : Type*} (e : M ≃* N) (f : N → α) (g : M → α) :
+lemma comp_symm_eq {α : Type*} (e : M ≃* N) (f : N → α) (g : M → α) :
     g ∘ e.symm = f ↔ g = f ∘ e :=
   e.toEquiv.comp_symm_eq f g
 #align mul_equiv.comp_symm_eq MulEquiv.comp_symm_eq
 #align add_equiv.comp_symm_eq AddEquiv.comp_symm_eq
 
 @[to_additive]
-theorem eq_symm_comp {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
+lemma eq_symm_comp {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
     f = e.symm ∘ g ↔ e ∘ f = g :=
   e.toEquiv.eq_symm_comp f g
 #align mul_equiv.eq_symm_comp MulEquiv.eq_symm_comp
 #align add_equiv.eq_symm_comp AddEquiv.eq_symm_comp
 
 @[to_additive]
-theorem symm_comp_eq {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
+lemma symm_comp_eq {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
     e.symm ∘ g = f ↔ g = e ∘ f :=
   e.toEquiv.symm_comp_eq f g
 #align mul_equiv.symm_comp_eq MulEquiv.symm_comp_eq
 #align add_equiv.symm_comp_eq AddEquiv.symm_comp_eq
 
 @[to_additive (attr := simp)]
-theorem symm_trans_self (e : M ≃* N) : e.symm.trans e = refl N :=
+lemma symm_trans_self (e : M ≃* N) : e.symm.trans e = refl N :=
   DFunLike.ext _ _ e.apply_symm_apply
 #align mul_equiv.symm_trans_self MulEquiv.symm_trans_self
 #align add_equiv.symm_trans_self AddEquiv.symm_trans_self
 
 @[to_additive (attr := simp)]
-theorem self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
+lemma self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
   DFunLike.ext _ _ e.symm_apply_apply
 #align mul_equiv.self_trans_symm MulEquiv.self_trans_symm
 #align add_equiv.self_trans_symm AddEquiv.self_trans_symm
@@ -495,31 +495,31 @@ theorem ext {f g : MulEquiv M N} (h : ∀ x, f x = g x) : f = g :=
 #align add_equiv.ext AddEquiv.ext
 
 @[to_additive]
-theorem ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 #align mul_equiv.ext_iff MulEquiv.ext_iff
 #align add_equiv.ext_iff AddEquiv.ext_iff
 
 @[to_additive (attr := simp)]
-theorem mk_coe (e : M ≃* N) (e' h₁ h₂ h₃) : (⟨⟨e, e', h₁, h₂⟩, h₃⟩ : M ≃* N) = e :=
+lemma mk_coe (e : M ≃* N) (e' h₁ h₂ h₃) : (⟨⟨e, e', h₁, h₂⟩, h₃⟩ : M ≃* N) = e :=
   ext fun _ => rfl
 #align mul_equiv.mk_coe MulEquiv.mk_coe
 #align add_equiv.mk_coe AddEquiv.mk_coe
 
 @[to_additive (attr := simp)]
-theorem mk_coe' (e : M ≃* N) (f h₁ h₂ h₃) : (MulEquiv.mk ⟨f, e, h₁, h₂⟩ h₃ : N ≃* M) = e.symm :=
+lemma mk_coe' (e : M ≃* N) (f h₁ h₂ h₃) : (MulEquiv.mk ⟨f, e, h₁, h₂⟩ h₃ : N ≃* M) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 #align mul_equiv.mk_coe' MulEquiv.mk_coe'
 #align add_equiv.mk_coe' AddEquiv.mk_coe'
 
 @[to_additive]
-protected theorem congr_arg {f : MulEquiv M N} {x x' : M} : x = x' → f x = f x' :=
+protected lemma congr_arg {f : MulEquiv M N} {x x' : M} : x = x' → f x = f x' :=
   DFunLike.congr_arg f
 #align mul_equiv.congr_arg MulEquiv.congr_arg
 #align add_equiv.congr_arg AddEquiv.congr_arg
 
 @[to_additive]
-protected theorem congr_fun {f g : MulEquiv M N} (h : f = g) (x : M) : f x = g x :=
+protected lemma congr_fun {f g : MulEquiv M N} (h : f = g) (x : M) : f x = g x :=
   DFunLike.congr_fun h x
 #align mul_equiv.congr_fun MulEquiv.congr_fun
 #align add_equiv.congr_fun AddEquiv.congr_fun
@@ -549,7 +549,7 @@ variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
 -- Porting note (#10618): `simp` can prove this
 @[to_additive]
-theorem coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
+lemma coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
 #align mul_equiv.coe_monoid_hom_refl MulEquiv.coe_monoidHom_refl
 #align add_equiv.coe_add_monoid_hom_refl AddEquiv.coe_addMonoidHom_refl
 
@@ -585,13 +585,13 @@ protected theorem map_one (h : M ≃* N) : h 1 = 1 := _root_.map_one h
 #align add_equiv.map_zero AddEquiv.map_zero
 
 @[to_additive]
-protected theorem map_eq_one_iff (h : M ≃* N) {x : M} : h x = 1 ↔ x = 1 :=
+protected lemma map_eq_one_iff (h : M ≃* N) {x : M} : h x = 1 ↔ x = 1 :=
   MulEquivClass.map_eq_one_iff h
 #align mul_equiv.map_eq_one_iff MulEquiv.map_eq_one_iff
 #align add_equiv.map_eq_zero_iff AddEquiv.map_eq_zero_iff
 
 @[to_additive]
-theorem map_ne_one_iff (h : M ≃* N) {x : M} : h x ≠ 1 ↔ x ≠ 1 :=
+lemma map_ne_one_iff (h : M ≃* N) {x : M} : h x ≠ 1 ↔ x ≠ 1 :=
   MulEquivClass.map_ne_one_iff h
 #align mul_equiv.map_ne_one_iff MulEquiv.map_ne_one_iff
 #align add_equiv.map_ne_zero_iff AddEquiv.map_ne_zero_iff
@@ -608,7 +608,7 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomCla
 
 -- Porting note (#11215): TODO: simplify `symm_apply` to `surjInv`?
 @[to_additive (attr := simp)]
-theorem ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
+lemma ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
     f ((ofBijective f hf).symm n) = n := (ofBijective f hf).apply_symm_apply n
 #align mul_equiv.of_bijective_apply_symm_apply MulEquiv.ofBijective_apply_symm_apply
 #align add_equiv.of_bijective_apply_symm_apply AddEquiv.ofBijective_apply_symm_apply
@@ -624,13 +624,13 @@ def toMonoidHom (h : M ≃* N) : M →* N :=
 #align add_equiv.to_add_monoid_hom AddEquiv.toAddMonoidHom
 
 @[to_additive (attr := simp)]
-theorem coe_toMonoidHom (e : M ≃* N) : ⇑e.toMonoidHom = e := rfl
+lemma coe_toMonoidHom (e : M ≃* N) : ⇑e.toMonoidHom = e := rfl
 #align mul_equiv.coe_to_monoid_hom MulEquiv.coe_toMonoidHom
 #align add_equiv.coe_to_add_monoid_hom AddEquiv.coe_toAddMonoidHom
 
 set_option linter.deprecated false in
 @[to_additive]
-theorem toMonoidHom_injective : Injective (toMonoidHom : M ≃* N → M →* N) :=
+lemma toMonoidHom_injective : Injective (toMonoidHom : M ≃* N → M →* N) :=
   fun _ _ h => MulEquiv.ext (MonoidHom.ext_iff.1 h)
 #align mul_equiv.to_monoid_hom_injective MulEquiv.toMonoidHom_injective
 #align add_equiv.to_add_monoid_hom_injective AddEquiv.toAddMonoidHom_injective
@@ -698,19 +698,19 @@ def piCongrRight {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j,
 #align add_equiv.Pi_congr_right_apply AddEquiv.piCongrRight_apply
 
 @[to_additive (attr := simp)]
-theorem piCongrRight_refl {η : Type*} {Ms : η → Type*} [∀ j, Mul (Ms j)] :
+lemma piCongrRight_refl {η : Type*} {Ms : η → Type*} [∀ j, Mul (Ms j)] :
     (piCongrRight fun j => MulEquiv.refl (Ms j)) = MulEquiv.refl _ := rfl
 #align mul_equiv.Pi_congr_right_refl MulEquiv.piCongrRight_refl
 #align add_equiv.Pi_congr_right_refl AddEquiv.piCongrRight_refl
 
 @[to_additive (attr := simp)]
-theorem piCongrRight_symm {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
+lemma piCongrRight_symm {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
     (es : ∀ j, Ms j ≃* Ns j) : (piCongrRight es).symm = piCongrRight fun i => (es i).symm := rfl
 #align mul_equiv.Pi_congr_right_symm MulEquiv.piCongrRight_symm
 #align add_equiv.Pi_congr_right_symm AddEquiv.piCongrRight_symm
 
 @[to_additive (attr := simp)]
-theorem piCongrRight_trans {η : Type*} {Ms Ns Ps : η → Type*} [∀ j, Mul (Ms j)]
+lemma piCongrRight_trans {η : Type*} {Ms Ns Ps : η → Type*} [∀ j, Mul (Ms j)]
     [∀ j, Mul (Ns j)] [∀ j, Mul (Ps j)] (es : ∀ j, Ms j ≃* Ns j) (fs : ∀ j, Ns j ≃* Ps j) :
     (piCongrRight es).trans (piCongrRight fs) = piCongrRight fun i => (es i).trans (fs i) := rfl
 #align mul_equiv.Pi_congr_right_trans MulEquiv.piCongrRight_trans
@@ -779,7 +779,7 @@ def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ 
 -- Porting note: the next two lemmas were added manually because `@[simps]` is generating
 -- lemmas with `toFun` in
 @[to_additive (attr := simp)]
-theorem MulHom.toMulEquiv_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)
+lemma MulHom.toMulEquiv_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)
     (h₁ : g.comp f = MulHom.id _) (h₂ : f.comp g = MulHom.id _) :
     ((MulHom.toMulEquiv f g h₁ h₂) : M → N) = f :=
   rfl
@@ -787,7 +787,7 @@ theorem MulHom.toMulEquiv_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ*
 #align add_hom.to_add_equiv_apply AddHom.toAddEquiv_apply
 
 @[to_additive (attr := simp)]
-theorem MulHom.toMulEquiv_symm_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)
+lemma MulHom.toMulEquiv_symm_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)
     (h₁ : g.comp f = MulHom.id _) (h₂ : f.comp g = MulHom.id _) :
     (MulEquiv.symm (MulHom.toMulEquiv f g h₁ h₂) : N → M) = ↑g :=
   rfl
@@ -835,7 +835,7 @@ protected def inv : Perm G :=
 variable {G}
 
 @[to_additive (attr := simp)]
-theorem inv_symm : (Equiv.inv G).symm = Equiv.inv G := rfl
+lemma inv_symm : (Equiv.inv G).symm = Equiv.inv G := rfl
 #align equiv.inv_symm Equiv.inv_symm
 #align equiv.neg_symm Equiv.neg_symm
 

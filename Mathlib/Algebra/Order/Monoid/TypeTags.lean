@@ -120,22 +120,22 @@ namespace Additive
 variable [Preorder α]
 
 @[simp]
-theorem ofMul_le {a b : α} : ofMul a ≤ ofMul b ↔ a ≤ b :=
+lemma ofMul_le {a b : α} : ofMul a ≤ ofMul b ↔ a ≤ b :=
   Iff.rfl
 #align additive.of_mul_le Additive.ofMul_le
 
 @[simp]
-theorem ofMul_lt {a b : α} : ofMul a < ofMul b ↔ a < b :=
+lemma ofMul_lt {a b : α} : ofMul a < ofMul b ↔ a < b :=
   Iff.rfl
 #align additive.of_mul_lt Additive.ofMul_lt
 
 @[simp]
-theorem toMul_le {a b : Additive α} : toMul a ≤ toMul b ↔ a ≤ b :=
+lemma toMul_le {a b : Additive α} : toMul a ≤ toMul b ↔ a ≤ b :=
   Iff.rfl
 #align additive.to_mul_le Additive.toMul_le
 
 @[simp]
-theorem toMul_lt {a b : Additive α} : toMul a < toMul b ↔ a < b :=
+lemma toMul_lt {a b : Additive α} : toMul a < toMul b ↔ a < b :=
   Iff.rfl
 #align additive.to_mul_lt Additive.toMul_lt
 
@@ -146,22 +146,22 @@ namespace Multiplicative
 variable [Preorder α]
 
 @[simp]
-theorem ofAdd_le {a b : α} : ofAdd a ≤ ofAdd b ↔ a ≤ b :=
+lemma ofAdd_le {a b : α} : ofAdd a ≤ ofAdd b ↔ a ≤ b :=
   Iff.rfl
 #align multiplicative.of_add_le Multiplicative.ofAdd_le
 
 @[simp]
-theorem ofAdd_lt {a b : α} : ofAdd a < ofAdd b ↔ a < b :=
+lemma ofAdd_lt {a b : α} : ofAdd a < ofAdd b ↔ a < b :=
   Iff.rfl
 #align multiplicative.of_add_lt Multiplicative.ofAdd_lt
 
 @[simp]
-theorem toAdd_le {a b : Multiplicative α} : toAdd a ≤ toAdd b ↔ a ≤ b :=
+lemma toAdd_le {a b : Multiplicative α} : toAdd a ≤ toAdd b ↔ a ≤ b :=
   Iff.rfl
 #align multiplicative.to_add_le Multiplicative.toAdd_le
 
 @[simp]
-theorem toAdd_lt {a b : Multiplicative α} : toAdd a < toAdd b ↔ a < b :=
+lemma toAdd_lt {a b : Multiplicative α} : toAdd a < toAdd b ↔ a < b :=
   Iff.rfl
 #align multiplicative.to_add_lt Multiplicative.toAdd_lt
 

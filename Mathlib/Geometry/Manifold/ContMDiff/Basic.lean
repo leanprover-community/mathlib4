@@ -175,22 +175,22 @@ nonrec theorem SmoothAt.comp {g : M' → M''} (x : M) (hg : SmoothAt I' I'' g (f
   hg.comp x hf
 #align smooth_at.comp SmoothAt.comp
 
-theorem ContMDiff.comp_contMDiffOn {f : M → M'} {g : M' → M''} {s : Set M}
+lemma ContMDiff.comp_contMDiffOn {f : M → M'} {g : M' → M''} {s : Set M}
     (hg : ContMDiff I' I'' n g) (hf : ContMDiffOn I I' n f s) : ContMDiffOn I I'' n (g ∘ f) s :=
   hg.contMDiffOn.comp hf Set.subset_preimage_univ
 #align cont_mdiff.comp_cont_mdiff_on ContMDiff.comp_contMDiffOn
 
-theorem Smooth.comp_smoothOn {f : M → M'} {g : M' → M''} {s : Set M} (hg : Smooth I' I'' g)
+lemma Smooth.comp_smoothOn {f : M → M'} {g : M' → M''} {s : Set M} (hg : Smooth I' I'' g)
     (hf : SmoothOn I I' f s) : SmoothOn I I'' (g ∘ f) s :=
   hg.smoothOn.comp hf Set.subset_preimage_univ
 #align smooth.comp_smooth_on Smooth.comp_smoothOn
 
-theorem ContMDiffOn.comp_contMDiff {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
+lemma ContMDiffOn.comp_contMDiff {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
     (hf : ContMDiff I I' n f) (ht : ∀ x, f x ∈ t) : ContMDiff I I'' n (g ∘ f) :=
   contMDiffOn_univ.mp <| hg.comp hf.contMDiffOn fun x _ => ht x
 #align cont_mdiff_on.comp_cont_mdiff ContMDiffOn.comp_contMDiff
 
-theorem SmoothOn.comp_smooth {t : Set M'} {g : M' → M''} (hg : SmoothOn I' I'' g t)
+lemma SmoothOn.comp_smooth {t : Set M'} {g : M' → M''} (hg : SmoothOn I' I'' g t)
     (hf : Smooth I I' f) (ht : ∀ x, f x ∈ t) : Smooth I I'' (g ∘ f) :=
   hg.comp_contMDiff hf ht
 #align smooth_on.comp_smooth SmoothOn.comp_smooth
@@ -201,36 +201,36 @@ end Composition
 
 section id
 
-theorem contMDiff_id : ContMDiff I I n (id : M → M) :=
+lemma contMDiff_id : ContMDiff I I n (id : M → M) :=
   ContMDiff.of_le
     ((contDiffWithinAt_localInvariantProp I I ∞).liftProp_id (contDiffWithinAtProp_id I)) le_top
 #align cont_mdiff_id contMDiff_id
 
-theorem smooth_id : Smooth I I (id : M → M) :=
+lemma smooth_id : Smooth I I (id : M → M) :=
   contMDiff_id
 #align smooth_id smooth_id
 
-theorem contMDiffOn_id : ContMDiffOn I I n (id : M → M) s :=
+lemma contMDiffOn_id : ContMDiffOn I I n (id : M → M) s :=
   contMDiff_id.contMDiffOn
 #align cont_mdiff_on_id contMDiffOn_id
 
-theorem smoothOn_id : SmoothOn I I (id : M → M) s :=
+lemma smoothOn_id : SmoothOn I I (id : M → M) s :=
   contMDiffOn_id
 #align smooth_on_id smoothOn_id
 
-theorem contMDiffAt_id : ContMDiffAt I I n (id : M → M) x :=
+lemma contMDiffAt_id : ContMDiffAt I I n (id : M → M) x :=
   contMDiff_id.contMDiffAt
 #align cont_mdiff_at_id contMDiffAt_id
 
-theorem smoothAt_id : SmoothAt I I (id : M → M) x :=
+lemma smoothAt_id : SmoothAt I I (id : M → M) x :=
   contMDiffAt_id
 #align smooth_at_id smoothAt_id
 
-theorem contMDiffWithinAt_id : ContMDiffWithinAt I I n (id : M → M) s x :=
+lemma contMDiffWithinAt_id : ContMDiffWithinAt I I n (id : M → M) s x :=
   contMDiffAt_id.contMDiffWithinAt
 #align cont_mdiff_within_at_id contMDiffWithinAt_id
 
-theorem smoothWithinAt_id : SmoothWithinAt I I (id : M → M) s x :=
+lemma smoothWithinAt_id : SmoothWithinAt I I (id : M → M) s x :=
   contMDiffWithinAt_id
 #align smooth_within_at_id smoothWithinAt_id
 
@@ -241,7 +241,7 @@ end id
 section id
 variable {c : M'}
 
-theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
+lemma contMDiff_const : ContMDiff I I' n fun _ : M => c := by
   intro x
   refine' ⟨continuousWithinAt_const, _⟩
   simp only [ContDiffWithinAtProp, (· ∘ ·)]
@@ -249,76 +249,76 @@ theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
 #align cont_mdiff_const contMDiff_const
 
 @[to_additive]
-theorem contMDiff_one [One M'] : ContMDiff I I' n (1 : M → M') := by
+lemma contMDiff_one [One M'] : ContMDiff I I' n (1 : M → M') := by
   simp only [Pi.one_def, contMDiff_const]
 #align cont_mdiff_one contMDiff_one
 #align cont_mdiff_zero contMDiff_zero
 
-theorem smooth_const : Smooth I I' fun _ : M => c :=
+lemma smooth_const : Smooth I I' fun _ : M => c :=
   contMDiff_const
 #align smooth_const smooth_const
 
 @[to_additive]
-theorem smooth_one [One M'] : Smooth I I' (1 : M → M') := by simp only [Pi.one_def, smooth_const]
+lemma smooth_one [One M'] : Smooth I I' (1 : M → M') := by simp only [Pi.one_def, smooth_const]
 #align smooth_one smooth_one
 #align smooth_zero smooth_zero
 
-theorem contMDiffOn_const : ContMDiffOn I I' n (fun _ : M => c) s :=
+lemma contMDiffOn_const : ContMDiffOn I I' n (fun _ : M => c) s :=
   contMDiff_const.contMDiffOn
 #align cont_mdiff_on_const contMDiffOn_const
 
 @[to_additive]
-theorem contMDiffOn_one [One M'] : ContMDiffOn I I' n (1 : M → M') s :=
+lemma contMDiffOn_one [One M'] : ContMDiffOn I I' n (1 : M → M') s :=
   contMDiff_one.contMDiffOn
 #align cont_mdiff_on_one contMDiffOn_one
 #align cont_mdiff_on_zero contMDiffOn_zero
 
-theorem smoothOn_const : SmoothOn I I' (fun _ : M => c) s :=
+lemma smoothOn_const : SmoothOn I I' (fun _ : M => c) s :=
   contMDiffOn_const
 #align smooth_on_const smoothOn_const
 
 @[to_additive]
-theorem smoothOn_one [One M'] : SmoothOn I I' (1 : M → M') s :=
+lemma smoothOn_one [One M'] : SmoothOn I I' (1 : M → M') s :=
   contMDiffOn_one
 #align smooth_on_one smoothOn_one
 #align smooth_on_zero smoothOn_zero
 
-theorem contMDiffAt_const : ContMDiffAt I I' n (fun _ : M => c) x :=
+lemma contMDiffAt_const : ContMDiffAt I I' n (fun _ : M => c) x :=
   contMDiff_const.contMDiffAt
 #align cont_mdiff_at_const contMDiffAt_const
 
 @[to_additive]
-theorem contMDiffAt_one [One M'] : ContMDiffAt I I' n (1 : M → M') x :=
+lemma contMDiffAt_one [One M'] : ContMDiffAt I I' n (1 : M → M') x :=
   contMDiff_one.contMDiffAt
 #align cont_mdiff_at_one contMDiffAt_one
 #align cont_mdiff_at_zero contMDiffAt_zero
 
-theorem smoothAt_const : SmoothAt I I' (fun _ : M => c) x :=
+lemma smoothAt_const : SmoothAt I I' (fun _ : M => c) x :=
   contMDiffAt_const
 #align smooth_at_const smoothAt_const
 
 @[to_additive]
-theorem smoothAt_one [One M'] : SmoothAt I I' (1 : M → M') x :=
+lemma smoothAt_one [One M'] : SmoothAt I I' (1 : M → M') x :=
   contMDiffAt_one
 #align smooth_at_one smoothAt_one
 #align smooth_at_zero smoothAt_zero
 
-theorem contMDiffWithinAt_const : ContMDiffWithinAt I I' n (fun _ : M => c) s x :=
+lemma contMDiffWithinAt_const : ContMDiffWithinAt I I' n (fun _ : M => c) s x :=
   contMDiffAt_const.contMDiffWithinAt
 #align cont_mdiff_within_at_const contMDiffWithinAt_const
 
 @[to_additive]
-theorem contMDiffWithinAt_one [One M'] : ContMDiffWithinAt I I' n (1 : M → M') s x :=
+lemma contMDiffWithinAt_one [One M'] : ContMDiffWithinAt I I' n (1 : M → M') s x :=
   contMDiffAt_const.contMDiffWithinAt
 #align cont_mdiff_within_at_one contMDiffWithinAt_one
 #align cont_mdiff_within_at_zero contMDiffWithinAt_zero
 
-theorem smoothWithinAt_const : SmoothWithinAt I I' (fun _ : M => c) s x :=
+lemma smoothWithinAt_const : SmoothWithinAt I I' (fun _ : M => c) s x :=
   contMDiffWithinAt_const
 #align smooth_within_at_const smoothWithinAt_const
 
 @[to_additive]
-theorem smoothWithinAt_one [One M'] : SmoothWithinAt I I' (1 : M → M') s x :=
+lemma smoothWithinAt_one [One M'] : SmoothWithinAt I I' (1 : M → M') s x :=
   contMDiffWithinAt_one
 #align smooth_within_at_one smoothWithinAt_one
 #align smooth_within_at_zero smoothWithinAt_zero
@@ -342,7 +342,7 @@ theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
 @[deprecated] alias contMDiff_of_support := contMDiff_of_tsupport
 
 @[to_additive contMDiffWithinAt_of_not_mem]
-theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
+lemma contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : ℕ∞) (s : Set M) : ContMDiffWithinAt I I' n f s x := by
   apply contMDiffWithinAt_const.congr_of_eventuallyEq
     (eventually_nhdsWithin_of_eventually_nhds <| not_mem_mulTSupport_iff_eventuallyEq.mp hx)
@@ -361,15 +361,15 @@ section Inclusion
 
 open TopologicalSpace
 
-theorem contMdiffAt_subtype_iff {n : ℕ∞} {U : Opens M} {f : M → M'} {x : U} :
+lemma contMdiffAt_subtype_iff {n : ℕ∞} {U : Opens M} {f : M → M'} {x : U} :
     ContMDiffAt I I' n (fun x : U ↦ f x) x ↔ ContMDiffAt I I' n f x :=
   ((contDiffWithinAt_localInvariantProp I I' n).liftPropAt_iff_comp_subtype_val _ _).symm
 
-theorem contMDiff_subtype_val {n : ℕ∞} {U : Opens M} : ContMDiff I I n (Subtype.val : U → M) :=
+lemma contMDiff_subtype_val {n : ℕ∞} {U : Opens M} : ContMDiff I I n (Subtype.val : U → M) :=
   fun _ ↦ contMdiffAt_subtype_iff.mpr contMDiffAt_id
 
 @[to_additive]
-theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f : U → M'}
+lemma ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f : U → M'}
     (supp : HasCompactMulSupport f) (diff : ContMDiff I I' n f) :
     ContMDiff I I' n (Subtype.val.extend f 1) := fun x ↦ by
   refine contMDiff_of_mulTSupport (fun x h ↦ ?_) _
@@ -378,7 +378,7 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f 
   rw [← contMdiffAt_subtype_iff, ← comp_def, extend_comp Subtype.val_injective]
   exact diff.contMDiffAt
 
-theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
+lemma contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
     ContMDiff I I n (Set.inclusion h : U → V) := by
   rintro ⟨x, hx : x ∈ U⟩
   apply (contDiffWithinAt_localInvariantProp I I n).liftProp_inclusion
@@ -388,17 +388,17 @@ theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
   exact contDiffWithinAt_id.congr I.rightInvOn (congr_arg I (I.left_inv y))
 #align cont_mdiff_inclusion contMDiff_inclusion
 
-theorem smooth_subtype_iff {U : Opens M} {f : M → M'} {x : U} :
+lemma smooth_subtype_iff {U : Opens M} {f : M → M'} {x : U} :
     SmoothAt I I' (fun x : U ↦ f x) x ↔ SmoothAt I I' f x := contMdiffAt_subtype_iff
 
-theorem smooth_subtype_val {U : Opens M} : Smooth I I (Subtype.val : U → M) := contMDiff_subtype_val
+lemma smooth_subtype_val {U : Opens M} : Smooth I I (Subtype.val : U → M) := contMDiff_subtype_val
 
 @[to_additive]
-theorem Smooth.extend_one [T2Space M] [One M'] {U : Opens M} {f : U → M'}
+lemma Smooth.extend_one [T2Space M] [One M'] {U : Opens M} {f : U → M'}
     (supp : HasCompactMulSupport f) (diff : Smooth I I' f) : Smooth I I' (Subtype.val.extend f 1) :=
   ContMDiff.extend_one supp diff
 
-theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) : Smooth I I (Set.inclusion h : U → V) :=
+lemma smooth_inclusion {U V : Opens M} (h : U ≤ V) : Smooth I I (Set.inclusion h : U → V) :=
   contMDiff_inclusion h
 #align smooth_inclusion smooth_inclusion
 

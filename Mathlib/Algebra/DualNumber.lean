@@ -63,12 +63,12 @@ namespace DualNumber
 open TrivSqZeroExt
 
 @[simp]
-theorem fst_eps [Zero R] [One R] : fst ε = (0 : R) :=
+lemma fst_eps [Zero R] [One R] : fst ε = (0 : R) :=
   fst_inr _ _
 #align dual_number.fst_eps DualNumber.fst_eps
 
 @[simp]
-theorem snd_eps [Zero R] [One R] : snd ε = (1 : R) :=
+lemma snd_eps [Zero R] [One R] : snd ε = (1 : R) :=
   snd_inr _ _
 #align dual_number.snd_eps DualNumber.snd_eps
 
@@ -79,16 +79,16 @@ theorem snd_mul [Semiring R] (x y : R[ε]) : snd (x * y) = fst x * snd y + snd x
 #align dual_number.snd_mul DualNumber.snd_mul
 
 @[simp]
-theorem eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
+lemma eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
   inr_mul_inr _ _ _
 #align dual_number.eps_mul_eps DualNumber.eps_mul_eps
 
 @[simp]
-theorem inv_eps [DivisionRing R] : (ε : R[ε])⁻¹ = 0 :=
+lemma inv_eps [DivisionRing R] : (ε : R[ε])⁻¹ = 0 :=
   TrivSqZeroExt.inv_inr 1
 
 @[simp]
-theorem inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε]) :=
+lemma inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε]) :=
   ext (mul_zero r).symm (mul_one r).symm
 #align dual_number.inr_eq_smul_eps DualNumber.inr_eq_smul_eps
 
@@ -154,10 +154,10 @@ def lift :
         rw [← fg.prop.2.1, smul_eq_mul, mul_one] }
 #align dual_number.lift DualNumber.lift
 
-theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
+lemma lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
     lift fe a = fe.val.1 a.fst + fe.val.1 a.snd * fe.val.2 := rfl
 
-@[simp] theorem coe_lift_symm_apply (F : A[ε] →ₐ[R] B) :
+@[simp] lemma coe_lift_symm_apply (F : A[ε] →ₐ[R] B) :
     (lift.symm F).val = (F.comp (inlAlgHom _ _ _), F ε) := rfl
 
 /-- When applied to `inl`, `DualNumber.lift` applies the map `f : A →ₐ[R] B`. -/

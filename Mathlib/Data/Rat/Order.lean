@@ -49,7 +49,7 @@ variable {a b c : ℚ}
 @[simp] lemma mkRat_nonneg {a : ℤ} (ha : 0 ≤ a) (b : ℕ) : 0 ≤ mkRat a b := by
   simpa using divInt_nonneg ha b.cast_nonneg
 
-theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) :
+lemma ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) :
     0 ≤ Rat.ofScientific m s e := by
   rw [Rat.ofScientific]
   cases s
@@ -95,14 +95,14 @@ protected lemma nonneg_antisymm : 0 ≤ a → 0 ≤ -a → a = 0 := by
   simp_rw [← num_eq_zero, le_antisymm_iff, ← num_nonneg, num_neg_eq_neg_num, neg_nonneg]; tauto
 #align rat.nonneg_antisymm Rat.nonneg_antisymm
 
-protected theorem nonneg_total (a : ℚ) : 0 ≤ a ∨ 0 ≤ -a := by
+protected lemma nonneg_total (a : ℚ) : 0 ≤ a ∨ 0 ≤ -a := by
   simp_rw [← num_nonneg, num_neg_eq_neg_num, neg_nonneg]; exact le_total _ _
 #align rat.nonneg_total Rat.nonneg_total
 
 #align rat.decidable_nonneg Rat.instDecidableLe
 
 -- Porting note (#11215): TODO can this be shortened?
-protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
+protected lemma le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
   numDenCasesOn'' a fun na da ha hared =>
     numDenCasesOn'' b fun nb db hb hbred => by
       change Rat.blt _ _ = false ↔ _
@@ -154,7 +154,7 @@ protected lemma le_total : a ≤ b ∨ b ≤ a := by
   simpa only [← Rat.le_iff_sub_nonneg, neg_sub] using Rat.nonneg_total (b - a)
 #align rat.le_total Rat.le_total
 
-protected theorem not_le {a b : ℚ} : ¬a ≤ b ↔ b < a := (Bool.not_eq_false _).to_iff
+protected lemma not_le {a b : ℚ} : ¬a ≤ b ↔ b < a := (Bool.not_eq_false _).to_iff
 
 instance linearOrder : LinearOrder ℚ where
   le_refl a := by rw [Rat.le_iff_sub_nonneg, ← num_nonneg]; simp
@@ -205,7 +205,7 @@ protected lemma le_def {p q : ℚ} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den
   exact Rat.divInt_le_divInt (mod_cast p.pos) (mod_cast q.pos)
 #align rat.le_def' Rat.le_def
 
-protected theorem lt_def {p q : ℚ} : p < q ↔ p.num * q.den < q.num * p.den := by
+protected lemma lt_def {p q : ℚ} : p < q ↔ p.num * q.den < q.num * p.den := by
   rw [lt_iff_le_and_ne, Rat.le_def]
   suffices p ≠ q ↔ p.num * q.den ≠ q.num * p.den by
     constructor <;> intro h
@@ -217,7 +217,7 @@ protected theorem lt_def {p q : ℚ} : p < q ↔ p.num * q.den < q.num * p.den :
 
 #noalign rat.nonneg_iff_zero_le
 
-protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b := by
+protected lemma add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b := by
   rw [Rat.le_iff_sub_nonneg, add_sub_add_left_eq_sub, ← Rat.le_iff_sub_nonneg]
 #align rat.add_le_add_left Rat.add_le_add_left
 
@@ -253,7 +253,7 @@ instance : OrderedAddCommMonoid ℚ := by infer_instance
 @[deprecated] alias num_nonneg_iff_zero_le := num_nonneg -- 2024-02-16
 @[deprecated] alias num_pos_iff_pos := num_pos -- 2024-02-16
 
-theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
+lemma div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by
   simp only [lt_iff_le_not_le]
   apply and_congr
@@ -262,10 +262,10 @@ theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d
     simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
 #align rat.div_lt_div_iff_mul_lt_mul Rat.div_lt_div_iff_mul_lt_mul
 
-theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_def]
+lemma lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_def]
 #align rat.lt_one_iff_num_lt_denom Rat.lt_one_iff_num_lt_denom
 
-theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
+lemma abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
   rcases le_total q 0 with hq | hq
   · rw [abs_of_nonpos hq]
     rw [← num_divInt_den q, ← zero_divInt, Rat.divInt_le_divInt (mod_cast q.pos) zero_lt_one,

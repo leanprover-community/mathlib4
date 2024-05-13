@@ -17,7 +17,7 @@ namespace Polynomial
 
 open Polynomial
 
-theorem ofReal_eval (p : ℝ[X]) (x : ℝ) : (↑(p.eval x) : K) = aeval (↑x) p :=
+lemma ofReal_eval (p : ℝ[X]) (x : ℝ) : (↑(p.eval x) : K) = aeval (↑x) p :=
   (@aeval_algebraMap_apply_eq_algebraMap_eval ℝ K _ _ _ x p).symm
 #align polynomial.of_real_eval Polynomial.ofReal_eval
 
@@ -68,19 +68,19 @@ end FiniteDimensional
 namespace RCLike
 
 @[simp, rclike_simps]
-theorem reCLM_norm : ‖(reCLM : K →L[ℝ] ℝ)‖ = 1 := by
+lemma reCLM_norm : ‖(reCLM : K →L[ℝ] ℝ)‖ = 1 := by
   apply le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _)
   convert ContinuousLinearMap.ratio_le_opNorm (reCLM : K →L[ℝ] ℝ) (1 : K)
   simp
 #align is_R_or_C.re_clm_norm RCLike.reCLM_norm
 
 @[simp, rclike_simps]
-theorem conjCLE_norm : ‖(@conjCLE K _ : K →L[ℝ] K)‖ = 1 :=
+lemma conjCLE_norm : ‖(@conjCLE K _ : K →L[ℝ] K)‖ = 1 :=
   (@conjLIE K _).toLinearIsometry.norm_toContinuousLinearMap
 #align is_R_or_C.conj_cle_norm RCLike.conjCLE_norm
 
 @[simp, rclike_simps]
-theorem ofRealCLM_norm : ‖(ofRealCLM : ℝ →L[ℝ] K)‖ = 1 :=
+lemma ofRealCLM_norm : ‖(ofRealCLM : ℝ →L[ℝ] K)‖ = 1 :=
   -- Porting note: the following timed out
   -- LinearIsometry.norm_toContinuousLinearMap ofRealLI
   LinearIsometry.norm_toContinuousLinearMap _

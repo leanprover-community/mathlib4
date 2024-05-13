@@ -24,41 +24,41 @@ section LE
 
 variable [LE α] [LE β] [LE γ]
 
-theorem range_eq (e : α ≃o β) : Set.range e = Set.univ :=
+lemma range_eq (e : α ≃o β) : Set.range e = Set.univ :=
   e.surjective.range_eq
 #align order_iso.range_eq OrderIso.range_eq
 
 @[simp]
-theorem symm_image_image (e : α ≃o β) (s : Set α) : e.symm '' (e '' s) = s :=
+lemma symm_image_image (e : α ≃o β) (s : Set α) : e.symm '' (e '' s) = s :=
   e.toEquiv.symm_image_image s
 #align order_iso.symm_image_image OrderIso.symm_image_image
 
 @[simp]
-theorem image_symm_image (e : α ≃o β) (s : Set β) : e '' (e.symm '' s) = s :=
+lemma image_symm_image (e : α ≃o β) (s : Set β) : e '' (e.symm '' s) = s :=
   e.toEquiv.image_symm_image s
 #align order_iso.image_symm_image OrderIso.image_symm_image
 
-theorem image_eq_preimage (e : α ≃o β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
+lemma image_eq_preimage (e : α ≃o β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage s
 #align order_iso.image_eq_preimage OrderIso.image_eq_preimage
 
 @[simp]
-theorem preimage_symm_preimage (e : α ≃o β) (s : Set α) : e ⁻¹' (e.symm ⁻¹' s) = s :=
+lemma preimage_symm_preimage (e : α ≃o β) (s : Set α) : e ⁻¹' (e.symm ⁻¹' s) = s :=
   e.toEquiv.preimage_symm_preimage s
 #align order_iso.preimage_symm_preimage OrderIso.preimage_symm_preimage
 
 @[simp]
-theorem symm_preimage_preimage (e : α ≃o β) (s : Set β) : e.symm ⁻¹' (e ⁻¹' s) = s :=
+lemma symm_preimage_preimage (e : α ≃o β) (s : Set β) : e.symm ⁻¹' (e ⁻¹' s) = s :=
   e.toEquiv.symm_preimage_preimage s
 #align order_iso.symm_preimage_preimage OrderIso.symm_preimage_preimage
 
 @[simp]
-theorem image_preimage (e : α ≃o β) (s : Set β) : e '' (e ⁻¹' s) = s :=
+lemma image_preimage (e : α ≃o β) (s : Set β) : e '' (e ⁻¹' s) = s :=
   e.toEquiv.image_preimage s
 #align order_iso.image_preimage OrderIso.image_preimage
 
 @[simp]
-theorem preimage_image (e : α ≃o β) (s : Set α) : e ⁻¹' (e '' s) = s :=
+lemma preimage_image (e : α ≃o β) (s : Set α) : e ⁻¹' (e '' s) = s :=
   e.toEquiv.preimage_image s
 #align order_iso.preimage_image OrderIso.preimage_image
 
@@ -121,17 +121,17 @@ noncomputable def orderIsoOfSurjective : α ≃o β :=
 #align strict_mono.order_iso_of_surjective StrictMono.orderIsoOfSurjective
 
 @[simp]
-theorem coe_orderIsoOfSurjective : (orderIsoOfSurjective f h_mono h_surj : α → β) = f :=
+lemma coe_orderIsoOfSurjective : (orderIsoOfSurjective f h_mono h_surj : α → β) = f :=
   rfl
 #align strict_mono.coe_order_iso_of_surjective StrictMono.coe_orderIsoOfSurjective
 
 @[simp]
-theorem orderIsoOfSurjective_symm_apply_self (a : α) :
+lemma orderIsoOfSurjective_symm_apply_self (a : α) :
     (orderIsoOfSurjective f h_mono h_surj).symm (f a) = a :=
   (orderIsoOfSurjective f h_mono h_surj).symm_apply_apply _
 #align strict_mono.order_iso_of_surjective_symm_apply_self StrictMono.orderIsoOfSurjective_symm_apply_self
 
-theorem orderIsoOfSurjective_self_symm_apply (b : β) :
+lemma orderIsoOfSurjective_self_symm_apply (b : β) :
     f ((orderIsoOfSurjective f h_mono h_surj).symm b) = b :=
   (orderIsoOfSurjective f h_mono h_surj).apply_symm_apply _
 #align strict_mono.order_iso_of_surjective_self_symm_apply StrictMono.orderIsoOfSurjective_self_symm_apply
@@ -154,11 +154,11 @@ def OrderIso.compl : α ≃o αᵒᵈ where
 #align order_iso.compl_symm_apply OrderIso.compl_symm_apply
 #align order_iso.compl_apply OrderIso.compl_apply
 
-theorem compl_strictAnti : StrictAnti (compl : α → α) :=
+lemma compl_strictAnti : StrictAnti (compl : α → α) :=
   (OrderIso.compl α).strictMono
 #align compl_strict_anti compl_strictAnti
 
-theorem compl_antitone : Antitone (compl : α → α) :=
+lemma compl_antitone : Antitone (compl : α → α) :=
   (OrderIso.compl α).monotone
 #align compl_antitone compl_antitone
 

@@ -31,7 +31,7 @@ namespace AddCircle
 
 variable {T : ℝ} [hT : Fact (0 < T)]
 
-theorem closedBall_ae_eq_ball {x : AddCircle T} {ε : ℝ} : closedBall x ε =ᵐ[volume] ball x ε := by
+lemma closedBall_ae_eq_ball {x : AddCircle T} {ε : ℝ} : closedBall x ε =ᵐ[volume] ball x ε := by
   rcases le_or_lt ε 0 with hε | hε
   · rw [ball_eq_empty.mpr hε, ae_eq_empty, volume_closedBall,
       min_eq_right (by linarith [hT.out] : 2 * ε ≤ T), ENNReal.ofReal_eq_zero]
@@ -92,7 +92,7 @@ theorem isAddFundamentalDomain_of_ae_ball (I : Set <| AddCircle T) (u x : AddCir
     exact two_ne_zero
 #align add_circle.is_add_fundamental_domain_of_ae_ball AddCircle.isAddFundamentalDomain_of_ae_ball
 
-theorem volume_of_add_preimage_eq (s I : Set <| AddCircle T) (u x : AddCircle T)
+lemma volume_of_add_preimage_eq (s I : Set <| AddCircle T) (u x : AddCircle T)
     (hu : IsOfFinAddOrder u) (hs : (u +ᵥ s : Set <| AddCircle T) =ᵐ[volume] s)
     (hI : I =ᵐ[volume] ball x (T / (2 * addOrderOf u))) :
     volume s = addOrderOf u • volume (s ∩ I) := by

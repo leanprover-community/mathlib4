@@ -60,7 +60,7 @@ This follows from the one-dimensional result that a Lipschitz function on `ℝ` 
 variation, and is therefore ae differentiable, together with a Fubini argument.
 -/
 
-theorem ae_lineDifferentiableAt (hf : LipschitzWith C f) (v : E) :
+lemma ae_lineDifferentiableAt (hf : LipschitzWith C f) (v : E) :
     ∀ᵐ p ∂μ, LineDifferentiableAt ℝ f p v := by
   let L : ℝ →L[ℝ] E := ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) v
   suffices A : ∀ p, ∀ᵐ (t : ℝ) ∂volume, LineDifferentiableAt ℝ f (p + t • v) v from
@@ -76,12 +76,12 @@ theorem ae_lineDifferentiableAt (hf : LipschitzWith C f) (v : E) :
   convert h's.comp 0 this with _ t
   simp only [LineDifferentiableAt, add_assoc, Function.comp_apply, add_smul]
 
-theorem memℒp_lineDeriv (hf : LipschitzWith C f) (v : E) :
+lemma memℒp_lineDeriv (hf : LipschitzWith C f) (v : E) :
     Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
   memℒp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
     (C * ‖v‖) (eventually_of_forall (fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf))
 
-theorem locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
+lemma locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
     LocallyIntegrable (fun x ↦ lineDeriv ℝ f x v) μ :=
   (hf.memℒp_lineDeriv v).locallyIntegrable le_top
 
@@ -94,7 +94,7 @@ the derivative to the smooth function by integration by parts. As the derivative
 function is linear, this gives the result.
 -/
 
-theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
+lemma integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
     (hf : LipschitzWith C f) (hg : Integrable g μ) (v : E) :
     Tendsto (fun (t : ℝ) ↦ ∫ x, (t⁻¹ • (f (x + t • v) - f x)) * g x ∂μ) (𝓝[>] 0)
       (𝓝 (∫ x, lineDeriv ℝ f x v * g x ∂μ)) := by
@@ -116,7 +116,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
   · filter_upwards [hf.ae_lineDifferentiableAt v] with x hx
     exact hx.hasLineDerivAt.tendsto_slope_zero_right.mul tendsto_const_nhds
 
-theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
+lemma integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
     (hf : LipschitzWith C f) (h'f : HasCompactSupport f) (hg : Continuous g) (v : E) :
     Tendsto (fun (t : ℝ) ↦ ∫ x, (t⁻¹ • (f (x + t • v) - f x)) * g x ∂μ) (𝓝[>] 0)
       (𝓝 (∫ x, lineDeriv ℝ f x v * g x ∂μ)) := by
@@ -236,7 +236,7 @@ theorem ae_lineDeriv_sum_eq
 ### Step 3: construct the derivative using the line derivatives along a basis
 -/
 
-theorem ae_exists_fderiv_of_countable
+lemma ae_exists_fderiv_of_countable
     (hf : LipschitzWith C f) {s : Set E} (hs : s.Countable) :
     ∀ᵐ x ∂μ, ∃ (L : E →L[ℝ] ℝ), ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v := by
   have B := Basis.ofVectorSpace ℝ E

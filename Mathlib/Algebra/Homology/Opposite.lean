@@ -37,7 +37,7 @@ section
 
 variable {V : Type*} [Category V] [Abelian V]
 
-theorem imageToKernel_op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
+lemma imageToKernel_op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     imageToKernel g.op f.op (by rw [← op_comp, w, op_zero]) =
       (imageSubobjectIso _ ≪≫ (imageOpOp _).symm).hom ≫
         (cokernel.desc f (factorThruImage g)
@@ -50,7 +50,7 @@ theorem imageToKernel_op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 
   rfl
 #align image_to_kernel_op imageToKernel_op
 
-theorem imageToKernel_unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
+lemma imageToKernel_unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     imageToKernel g.unop f.unop (by rw [← unop_comp, w, unop_zero]) =
       (imageSubobjectIso _ ≪≫ (imageUnopUnop _).symm).hom ≫
         (cokernel.desc f (factorThruImage g)

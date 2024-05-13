@@ -73,13 +73,13 @@ section CommRing
 
 variable [CommRing K] [Algebra R K] [IsFractionRing R K] [Algebra A K] [IsFractionRing A K]
 
-theorem to_map_eq_zero_iff {x : R} : algebraMap R K x = 0 ↔ x = 0 :=
+lemma to_map_eq_zero_iff {x : R} : algebraMap R K x = 0 ↔ x = 0 :=
   IsLocalization.to_map_eq_zero_iff _ le_rfl
 #align is_fraction_ring.to_map_eq_zero_iff IsFractionRing.to_map_eq_zero_iff
 
 variable (R K)
 
-protected theorem injective : Function.Injective (algebraMap R K) :=
+protected lemma injective : Function.Injective (algebraMap R K) :=
   IsLocalization.injective _ (le_of_eq rfl)
 #align is_fraction_ring.injective IsFractionRing.injective
 
@@ -87,14 +87,14 @@ variable {R K}
 
 @[norm_cast, simp]
 -- Porting note: using `↑` didn't work, so I needed to explicitly put in the cast myself
-theorem coe_inj {a b : R} : (Algebra.cast a : K) = Algebra.cast b ↔ a = b :=
+lemma coe_inj {a b : R} : (Algebra.cast a : K) = Algebra.cast b ↔ a = b :=
   (IsFractionRing.injective R K).eq_iff
 #align is_fraction_ring.coe_inj IsFractionRing.coe_inj
 
 instance (priority := 100) [NoZeroDivisors K] : NoZeroSMulDivisors R K :=
   NoZeroSMulDivisors.of_algebraMap_injective <| IsFractionRing.injective R K
 
-protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] {x : R}
+protected lemma to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] {x : R}
     (hx : x ∈ nonZeroDivisors R) : algebraMap R K x ≠ 0 :=
   IsLocalization.to_map_ne_zero_of_mem_nonZeroDivisors _ le_rfl hx
 #align is_fraction_ring.to_map_ne_zero_of_mem_non_zero_divisors IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors
@@ -117,7 +117,7 @@ protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical
           h <| eq_zero_of_fst_eq_zero (sec_spec (nonZeroDivisors A) z) h0⟩
 #align is_fraction_ring.inv IsFractionRing.inv
 
-protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv A x = 1 := by
+protected lemma mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv A x = 1 := by
   rw [IsFractionRing.inv, dif_neg hx, ←
     IsUnit.mul_left_inj
       (map_units K
@@ -152,7 +152,7 @@ end CommRing
 variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [Algebra A K]
   [IsFractionRing A K] {g : A →+* L}
 
-theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
+lemma mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
     mk' K r ⟨s, hs⟩ = algebraMap A K r / algebraMap A K s :=
   mk'_eq_iff_eq_mul.2 <|
     (div_mul_cancel₀ (algebraMap A K r)
@@ -160,17 +160,17 @@ theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
 #align is_fraction_ring.mk'_mk_eq_div IsFractionRing.mk'_mk_eq_div
 
 @[simp]
-theorem mk'_eq_div {r} (s : nonZeroDivisors A) : mk' K r s = algebraMap A K r / algebraMap A K s :=
+lemma mk'_eq_div {r} (s : nonZeroDivisors A) : mk' K r s = algebraMap A K r / algebraMap A K s :=
   mk'_mk_eq_div s.2
 #align is_fraction_ring.mk'_eq_div IsFractionRing.mk'_eq_div
 
-theorem div_surjective (z : K) :
+lemma div_surjective (z : K) :
     ∃ x y : A, y ∈ nonZeroDivisors A ∧ algebraMap _ _ x / algebraMap _ _ y = z :=
   let ⟨x, ⟨y, hy⟩, h⟩ := mk'_surjective (nonZeroDivisors A) z
   ⟨x, y, hy, by rwa [mk'_eq_div] at h⟩
 #align is_fraction_ring.div_surjective IsFractionRing.div_surjective
 
-theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors A) :
+lemma isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors A) :
     IsUnit (g y) :=
   IsUnit.mk0 (g y) <|
     show g.toMonoidWithZeroHom y ≠ 0 from map_ne_zero_of_mem_nonZeroDivisors g hg y.2
@@ -178,14 +178,14 @@ theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors
 
 set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[simp]
-theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
+lemma mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
   refine' ⟨fun hxy => _, fun h => by rw [h, mk'_zero]⟩
   simp_rw [mk'_eq_zero_iff, mul_left_coe_nonZeroDivisors_eq_zero_iff] at hxy
   exact (exists_const _).mp hxy
 #align is_fraction_ring.mk'_eq_zero_iff_eq_zero IsFractionRing.mk'_eq_zero_iff_eq_zero
 
-theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y := by
+lemma mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y := by
   refine' ⟨_, fun hxy => by rw [hxy, mk'_self']⟩
   intro hxy
   have hy : (algebraMap A K) ↑y ≠ (0 : K) :=
@@ -247,7 +247,7 @@ noncomputable def fieldEquivOfRingEquiv [Algebra B L] [IsFractionRing B L] (h : 
       exact h.symm.map_ne_zero_iff)
 #align is_fraction_ring.field_equiv_of_ring_equiv IsFractionRing.fieldEquivOfRingEquiv
 
-theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
+lemma isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsFractionRing R S ↔
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
@@ -266,7 +266,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     rw [← h.symm.map_mul, hz, h.symm.map_zero]
 #align is_fraction_ring.is_fraction_ring_iff_of_base_ring_equiv IsFractionRing.isFractionRing_iff_of_base_ringEquiv
 
-protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
+protected lemma nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
     [IsFractionRing R S] : Nontrivial S := by
   apply nontrivial_of_ne
   · intro h
@@ -306,7 +306,7 @@ in mathlib3, the last instance in this file suffers a TC timeout -/
 noncomputable instance field : Field (FractionRing A) := IsFractionRing.toField A
 
 @[simp]
-theorem mk_eq_div {r s} :
+lemma mk_eq_div {r s} :
     (Localization.mk r s : FractionRing A) =
       (algebraMap _ _ r / algebraMap A _ s : FractionRing A) :=
   by rw [Localization.mk_eq_mk', IsFractionRing.mk'_eq_div]

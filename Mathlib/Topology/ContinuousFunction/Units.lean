@@ -67,7 +67,7 @@ section NormedRing
 
 variable [NormedRing R] [CompleteSpace R]
 
-theorem continuous_isUnit_unit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) :
+lemma continuous_isUnit_unit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) :
     Continuous fun x => (h x).unit := by
   refine'
     continuous_induced_rng.2
@@ -94,7 +94,7 @@ instance canLift :
   prf f h := ⟨unitsOfForallIsUnit h, by ext; rfl⟩
 #align continuous_map.can_lift ContinuousMap.canLift
 
-theorem isUnit_iff_forall_isUnit (f : C(X, R)) : IsUnit f ↔ ∀ x, IsUnit (f x) :=
+lemma isUnit_iff_forall_isUnit (f : C(X, R)) : IsUnit f ↔ ∀ x, IsUnit (f x) :=
   Iff.intro (fun h => fun x => ⟨unitsLift.symm h.unit x, rfl⟩) fun h =>
     ⟨ContinuousMap.unitsLift (unitsOfForallIsUnit h), by ext; rfl⟩
 #align continuous_map.is_unit_iff_forall_is_unit ContinuousMap.isUnit_iff_forall_isUnit
@@ -105,11 +105,11 @@ section NormedField
 
 variable [NormedField 𝕜] [NormedDivisionRing R] [Algebra 𝕜 R] [CompleteSpace R]
 
-theorem isUnit_iff_forall_ne_zero (f : C(X, R)) : IsUnit f ↔ ∀ x, f x ≠ 0 := by
+lemma isUnit_iff_forall_ne_zero (f : C(X, R)) : IsUnit f ↔ ∀ x, f x ≠ 0 := by
   simp_rw [f.isUnit_iff_forall_isUnit, isUnit_iff_ne_zero]
 #align continuous_map.is_unit_iff_forall_ne_zero ContinuousMap.isUnit_iff_forall_ne_zero
 
-theorem spectrum_eq_preimage_range (f : C(X, R)) :
+lemma spectrum_eq_preimage_range (f : C(X, R)) :
     spectrum 𝕜 f = algebraMap _ _ ⁻¹' Set.range f := by
   ext x
   simp only [spectrum.mem_iff, isUnit_iff_forall_ne_zero, not_forall, sub_apply,
@@ -117,7 +117,7 @@ theorem spectrum_eq_preimage_range (f : C(X, R)) :
     sub_eq_zero, @eq_comm _ (x • 1 : R) _, Set.mem_preimage, Algebra.algebraMap_eq_smul_one,
     smul_apply, one_apply]
 
-theorem spectrum_eq_range [CompleteSpace 𝕜] (f : C(X, 𝕜)) : spectrum 𝕜 f = Set.range f := by
+lemma spectrum_eq_range [CompleteSpace 𝕜] (f : C(X, 𝕜)) : spectrum 𝕜 f = Set.range f := by
   rw [spectrum_eq_preimage_range, Algebra.id.map_eq_id]
   exact Set.preimage_id
 #align continuous_map.spectrum_eq_range ContinuousMap.spectrum_eq_range

@@ -130,7 +130,7 @@ instance : FunLike (Con M) M (M → Prop) where
     subst x; rfl
 
 @[to_additive (attr := simp)]
-theorem rel_eq_coe (c : Con M) : c.r = c :=
+lemma rel_eq_coe (c : Con M) : c.r = c :=
   rfl
 #align con.rel_eq_coe Con.rel_eq_coe
 #align add_con.rel_eq_coe AddCon.rel_eq_coe
@@ -161,7 +161,7 @@ protected theorem mul {w x y z} : c w x → c y z → c (w * y) (x * z) := c.mul
 #align add_con.add AddCon.add
 
 @[to_additive (attr := simp)]
-theorem rel_mk {s : Setoid M} {h a b} : Con.mk s h a b ↔ r a b :=
+lemma rel_mk {s : Setoid M} {h a b} : Con.mk s h a b ↔ r a b :=
   Iff.rfl
 #align con.rel_mk Con.rel_mk
 #align add_con.rel_mk AddCon.rel_mk
@@ -279,7 +279,7 @@ instance (priority := 500) [∀ a b, Decidable (c a b)] : DecidableEq c.Quotient
   inferInstanceAs (DecidableEq (Quotient c.toSetoid))
 
 @[to_additive (attr := simp)]
-theorem quot_mk_eq_coe {M : Type*} [Mul M] (c : Con M) (x : M) : Quot.mk c x = (x : c.Quotient) :=
+lemma quot_mk_eq_coe {M : Type*} [Mul M] (c : Con M) (x : M) : Quot.mk c x = (x : c.Quotient) :=
   rfl
 #align con.quot_mk_eq_coe Con.quot_mk_eq_coe
 #align add_con.quot_mk_eq_coe AddCon.quot_mk_eq_coe
@@ -316,7 +316,7 @@ protected def hrecOn₂ {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quoti
 #align add_con.hrec_on₂ AddCon.hrecOn₂
 
 @[to_additive (attr := simp)]
-theorem hrec_on₂_coe {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort*} (a : M)
+lemma hrec_on₂_coe {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort*} (a : M)
     (b : N) (f : ∀ (x : M) (y : N), φ x y)
     (h : ∀ x y x' y', cM x x' → cN y y' → HEq (f x y) (f x' y')) :
     Con.hrecOn₂ (↑a) (↑b) f h = f a b :=
@@ -452,7 +452,7 @@ theorem coe_sInf (S : Set (Con M)) :
 #align add_con.Inf_def AddCon.coe_sInf
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_iInf {ι : Sort*} (f : ι → Con M) : ⇑(iInf f) = ⨅ i, ⇑(f i) := by
+lemma coe_iInf {ι : Sort*} (f : ι → Con M) : ⇑(iInf f) = ⨅ i, ⇑(f i) := by
   rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp]
 
 @[to_additive]
@@ -667,7 +667,7 @@ def comap (f : M → N) (H : ∀ x y, f (x * y) = f x * f y) (c : Con N) : Con M
 #align add_con.comap AddCon.comap
 
 @[to_additive (attr := simp)]
-theorem comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N} {x y : M} :
+lemma comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N} {x y : M} :
     comap f H c x y ↔ c (f x) (f y) :=
   Iff.rfl
 #align con.comap_rel Con.comap_rel
@@ -788,19 +788,19 @@ instance toSubmonoid : Coe (Con M) (Submonoid (M × M)) :=
 #align add_con.to_add_submonoid AddCon.toAddSubmonoid
 
 @[to_additive]
-theorem mem_coe {c : Con M} {x y} : (x, y) ∈ (↑c : Submonoid (M × M)) ↔ (x, y) ∈ c :=
+lemma mem_coe {c : Con M} {x y} : (x, y) ∈ (↑c : Submonoid (M × M)) ↔ (x, y) ∈ c :=
   Iff.rfl
 #align con.mem_coe Con.mem_coe
 #align add_con.mem_coe AddCon.mem_coe
 
 @[to_additive]
-theorem to_submonoid_inj (c d : Con M) (H : (c : Submonoid (M × M)) = d) : c = d :=
+lemma to_submonoid_inj (c d : Con M) (H : (c : Submonoid (M × M)) = d) : c = d :=
   ext fun x y => show (x, y) ∈ c.submonoid ↔ (x, y) ∈ d from H ▸ Iff.rfl
 #align con.to_submonoid_inj Con.to_submonoid_inj
 #align add_con.to_add_submonoid_inj AddCon.to_addSubmonoid_inj
 
 @[to_additive]
-theorem le_iff {c d : Con M} : c ≤ d ↔ (c : Submonoid (M × M)) ≤ d :=
+lemma le_iff {c d : Con M} : c ≤ d ↔ (c : Submonoid (M × M)) ≤ d :=
   ⟨fun h _ H => h H, fun h x y hc => h <| show (x, y) ∈ c from hc⟩
 #align con.le_iff Con.le_iff
 #align add_con.le_iff AddCon.le_iff
@@ -863,21 +863,21 @@ theorem mk'_surjective : Surjective c.mk' :=
 #align add_con.mk'_surjective AddCon.mk'_surjective
 
 @[to_additive (attr := simp)]
-theorem coe_mk' : (c.mk' : M → c.Quotient) = ((↑) : M → c.Quotient) :=
+lemma coe_mk' : (c.mk' : M → c.Quotient) = ((↑) : M → c.Quotient) :=
   rfl
 #align con.coe_mk' Con.coe_mk'
 #align add_con.coe_mk' AddCon.coe_mk'
 
 @[to_additive (attr := simp)]
 -- Porting note: removed dot notation
-theorem mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
+lemma mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
   MonoidHom.mrange_top_iff_surjective.2 mk'_surjective
 #align con.mrange_mk' Con.mrange_mk'
 #align add_con.mrange_mk' AddCon.mrange_mk'
 
 -- Porting note: used to abuse defeq between sets and predicates
 @[to_additive]
-theorem ker_apply {f : M →* P} {x y} : ker f x y ↔ f x = f y := Iff.rfl
+lemma ker_apply {f : M →* P} {x y} : ker f x y ↔ f x = f y := Iff.rfl
 #noalign con.ker_apply_eq_preimage
 #noalign add_con.ker_apply_eq_preimage
 
@@ -1154,7 +1154,7 @@ instance one [MulOneClass M] (c : Con M) : One c.Quotient where
   -- one := ((1 : M) : c.Quotient)
 
 @[to_additive]
-theorem smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) (a : α)
+lemma smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) (a : α)
     {w x : M} (h : c w x) : c (a • w) (a • x) := by
   simpa only [smul_one_mul] using c.mul (c.refl' (a • (1 : M) : M)) h
 #align con.smul Con.smul
@@ -1354,7 +1354,7 @@ of `α` provided that `f x y _ _ = f x' y' _ _` whenever `c x x'` and `c y y'`. 
 add_decl_doc AddCon.liftOnAddUnits
 
 @[to_additive (attr := simp)]
-theorem liftOnUnits_mk (f : ∀ x y : M, c (x * y) 1 → c (y * x) 1 → α)
+lemma liftOnUnits_mk (f : ∀ x y : M, c (x * y) 1 → c (y * x) 1 → α)
     (Hf : ∀ x y hxy hyx x' y' hxy' hyx', c x x' → c y y' → f x y hxy hyx = f x' y' hxy' hyx')
     (x y : M) (hxy hyx) :
     liftOnUnits ⟨(x : c.Quotient), y, hxy, hyx⟩ f Hf = f x y (c.eq.1 hxy) (c.eq.1 hyx) :=
@@ -1363,7 +1363,7 @@ theorem liftOnUnits_mk (f : ∀ x y : M, c (x * y) 1 → c (y * x) 1 → α)
 #align add_con.lift_on_add_units_mk AddCon.liftOnAddUnits_mk
 
 @[to_additive (attr := elab_as_elim)]
-theorem induction_on_units {p : Units c.Quotient → Prop} (u : Units c.Quotient)
+lemma induction_on_units {p : Units c.Quotient → Prop} (u : Units c.Quotient)
     (H : ∀ (x y : M) (hxy : c (x * y) 1) (hyx : c (y * x) 1), p ⟨x, y, c.eq.2 hxy, c.eq.2 hyx⟩) :
     p u := by
   rcases u with ⟨⟨x⟩, ⟨y⟩, h₁, h₂⟩
@@ -1383,7 +1383,7 @@ instance instSMul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M
 #align add_con.has_vadd AddCon.instVAdd
 
 @[to_additive]
-theorem coe_smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M)
+lemma coe_smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M)
     (a : α) (x : M) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
   rfl
 #align con.coe_smul Con.coe_smul

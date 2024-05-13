@@ -160,7 +160,7 @@ lemma mem_piAntidiagonal' (s : Finset ι) (n : μ) (f) :
   exact fun _ _ => rfl
 
 @[simp]
-theorem piAntidiagonal_empty_of_zero :
+lemma piAntidiagonal_empty_of_zero :
     piAntidiagonal (∅ : Finset ι) (0 : μ) = {0} := by
   ext f
   rw [mem_piAntidiagonal]
@@ -169,7 +169,7 @@ theorem piAntidiagonal_empty_of_zero :
   intro hf
   rw [hf, sum_zero_index]
 
-theorem piAntidiagonal_empty_of_ne_zero {n : μ} (hn : n ≠ 0) :
+lemma piAntidiagonal_empty_of_ne_zero {n : μ} (hn : n ≠ 0) :
     piAntidiagonal (∅ : Finset ι) n = ∅ := by
   ext f
   rw [mem_piAntidiagonal]
@@ -179,14 +179,14 @@ theorem piAntidiagonal_empty_of_ne_zero {n : μ} (hn : n ≠ 0) :
   rw [hf, sum_zero_index]
   exact Ne.symm hn
 
-theorem piAntidiagonal_empty [DecidableEq μ] (n : μ) :
+lemma piAntidiagonal_empty [DecidableEq μ] (n : μ) :
     piAntidiagonal (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by
   split_ifs with hn
   · rw [hn]
     apply piAntidiagonal_empty_of_zero
   · apply piAntidiagonal_empty_of_ne_zero hn
 
-theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
+lemma mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
     (h : a ∉ s) (n : μ) {f : ι →₀ μ} :
     f ∈ piAntidiagonal (insert a s) n ↔
       ∃ m ∈ antidiagonal n, ∃ (g : ι →₀ μ),
@@ -210,7 +210,7 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
         intro x hx
         rw [update_noteq (ne_of_mem_of_not_mem hx h) n1 ⇑g]
 
-theorem piAntidiagonal_insert [DecidableEq ι] [DecidableEq μ] {a : ι} {s : Finset ι}
+lemma piAntidiagonal_insert [DecidableEq ι] [DecidableEq μ] {a : ι} {s : Finset ι}
     (h : a ∉ s) (n : μ) :
     piAntidiagonal (insert a s) n = (antidiagonal n).biUnion
       (fun p : μ × μ =>
@@ -264,7 +264,7 @@ section CanonicallyOrderedAddCommMonoid
 variable [DecidableEq ι]
 variable [CanonicallyOrderedAddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ]
 
-theorem piAntidiagonal_zero (s : Finset ι) :
+lemma piAntidiagonal_zero (s : Finset ι) :
     piAntidiagonal s (0 : μ) = {(0 : ι →₀ μ)} := by
   ext f
   simp_rw [mem_piAntidiagonal', mem_singleton, sum_eq_zero_iff, Finset.subset_iff,

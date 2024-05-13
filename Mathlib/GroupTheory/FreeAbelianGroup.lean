@@ -109,13 +109,13 @@ open FreeAbelianGroup
 
 -- Porting note: needed to add `(β := Multiplicative β)` and `using 1`.
 @[simp]
-protected theorem of (x : α) : lift f (of x) = f x := by
+protected lemma of (x : α) : lift f (of x) = f x := by
   convert Abelianization.lift.of
      (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x) using 1
   exact (FreeGroup.lift.of (β := Multiplicative β)).symm
 #align free_abelian_group.lift.of FreeAbelianGroup.lift.of
 
-protected theorem unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f x) {x} :
+protected lemma unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f x) {x} :
     g x = lift f x :=
   DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _
 #align free_abelian_group.lift.unique FreeAbelianGroup.lift.unique
@@ -126,7 +126,7 @@ protected theorem ext (g h : FreeAbelianGroup α →+ β) (H : ∀ x, g (of x) =
   lift.symm.injective <| funext H
 #align free_abelian_group.lift.ext FreeAbelianGroup.lift.ext
 
-theorem map_hom {α β γ} [AddCommGroup β] [AddCommGroup γ] (a : FreeAbelianGroup α) (f : α → β)
+lemma map_hom {α β γ} [AddCommGroup β] [AddCommGroup γ] (a : FreeAbelianGroup α) (f : α → β)
     (g : β →+ γ) : g (lift f a) = lift (g ∘ f) a := by
   show (g.comp (lift f)) a = lift (g ∘ f) a
   apply lift.unique
@@ -141,7 +141,7 @@ section
 
 open scoped Classical
 
-theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
+lemma of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
   fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
     let f : FreeAbelianGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
     have hfx1 : f (of x) = 1 := (lift.of _ _).trans <| if_pos rfl
@@ -155,7 +155,7 @@ end
 attribute [local instance] QuotientGroup.leftRel
 
 @[elab_as_elim]
-protected theorem induction_on {C : FreeAbelianGroup α → Prop} (z : FreeAbelianGroup α) (C0 : C 0)
+protected lemma induction_on {C : FreeAbelianGroup α → Prop} (z : FreeAbelianGroup α) (C0 : C 0)
     (C1 : ∀ x, C <| of x) (Cn : ∀ x, C (of x) → C (-of x)) (Cp : ∀ x y, C x → C y → C (x + y)) :
     C z :=
   Quotient.inductionOn' z fun x ↦
@@ -163,7 +163,7 @@ protected theorem induction_on {C : FreeAbelianGroup α → Prop} (z : FreeAbeli
       List.recOn L C0 fun ⟨x, b⟩ _ ih ↦ Bool.recOn b (Cp _ _ (Cn _ (C1 x)) ih) (Cp _ _ (C1 x) ih)
 #align free_abelian_group.induction_on FreeAbelianGroup.induction_on
 
-theorem lift.add' {α β} [AddCommGroup β] (a : FreeAbelianGroup α) (f g : α → β) :
+lemma lift.add' {α β} [AddCommGroup β] (a : FreeAbelianGroup α) (f g : α → β) :
     lift (f + g) a = lift f a + lift g a := by
   refine' FreeAbelianGroup.induction_on a _ _ _ _
   · simp only [(lift _).map_zero, zero_add]
@@ -183,7 +183,7 @@ def liftAddGroupHom {α} (β) [AddCommGroup β] (a : FreeAbelianGroup α) : (α 
   AddMonoidHom.mk' (fun f ↦ lift f a) (lift.add' a)
 #align free_abelian_group.lift_add_group_hom FreeAbelianGroup.liftAddGroupHom
 
-theorem lift_neg' {β} [AddCommGroup β] (f : α → β) : lift (-f) = -lift f :=
+lemma lift_neg' {β} [AddCommGroup β] (f : α → β) : lift (-f) = -lift f :=
   AddMonoidHom.ext fun _ ↦ (liftAddGroupHom _ _ : (α → β) →+ β).map_neg _
 #align free_abelian_group.lift_neg' FreeAbelianGroup.lift_neg'
 
@@ -196,94 +196,94 @@ instance : Monad FreeAbelianGroup.{u} where
   bind x f := lift f x
 
 @[elab_as_elim]
-protected theorem induction_on' {C : FreeAbelianGroup α → Prop} (z : FreeAbelianGroup α) (C0 : C 0)
+protected lemma induction_on' {C : FreeAbelianGroup α → Prop} (z : FreeAbelianGroup α) (C0 : C 0)
     (C1 : ∀ x, C <| pure x) (Cn : ∀ x, C (pure x) → C (-pure x))
     (Cp : ∀ x y, C x → C y → C (x + y)) : C z :=
   FreeAbelianGroup.induction_on z C0 C1 Cn Cp
 #align free_abelian_group.induction_on' FreeAbelianGroup.induction_on'
 
 @[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
-theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeAbelianGroup α) = pure (f x) :=
+lemma map_pure (f : α → β) (x : α) : f <$> (pure x : FreeAbelianGroup α) = pure (f x) :=
   rfl
 #align free_abelian_group.map_pure FreeAbelianGroup.map_pure
 
 @[simp]
-protected theorem map_zero (f : α → β) : f <$> (0 : FreeAbelianGroup α) = 0 :=
+protected lemma map_zero (f : α → β) : f <$> (0 : FreeAbelianGroup α) = 0 :=
   (lift (of ∘ f)).map_zero
 #align free_abelian_group.map_zero FreeAbelianGroup.map_zero
 
 @[simp]
-protected theorem map_add (f : α → β) (x y : FreeAbelianGroup α) :
+protected lemma map_add (f : α → β) (x y : FreeAbelianGroup α) :
     f <$> (x + y) = f <$> x + f <$> y :=
   (lift _).map_add _ _
 #align free_abelian_group.map_add FreeAbelianGroup.map_add
 
 @[simp]
-protected theorem map_neg (f : α → β) (x : FreeAbelianGroup α) : f <$> (-x) = -f <$> x :=
+protected lemma map_neg (f : α → β) (x : FreeAbelianGroup α) : f <$> (-x) = -f <$> x :=
   map_neg (lift <| of ∘ f) _
 #align free_abelian_group.map_neg FreeAbelianGroup.map_neg
 
 @[simp]
-protected theorem map_sub (f : α → β) (x y : FreeAbelianGroup α) :
+protected lemma map_sub (f : α → β) (x y : FreeAbelianGroup α) :
     f <$> (x - y) = f <$> x - f <$> y :=
   map_sub (lift <| of ∘ f) _ _
 #align free_abelian_group.map_sub FreeAbelianGroup.map_sub
 
 @[simp]
-theorem map_of (f : α → β) (y : α) : f <$> of y = of (f y) :=
+lemma map_of (f : α → β) (y : α) : f <$> of y = of (f y) :=
   rfl
 #align free_abelian_group.map_of FreeAbelianGroup.map_of
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem pure_bind (f : α → FreeAbelianGroup β) (x) : pure x >>= f = f x :=
+lemma pure_bind (f : α → FreeAbelianGroup β) (x) : pure x >>= f = f x :=
   lift.of _ _
 #align free_abelian_group.pure_bind FreeAbelianGroup.pure_bind
 
 @[simp]
-theorem zero_bind (f : α → FreeAbelianGroup β) : 0 >>= f = 0 :=
+lemma zero_bind (f : α → FreeAbelianGroup β) : 0 >>= f = 0 :=
   (lift f).map_zero
 #align free_abelian_group.zero_bind FreeAbelianGroup.zero_bind
 
 @[simp]
-theorem add_bind (f : α → FreeAbelianGroup β) (x y : FreeAbelianGroup α) :
+lemma add_bind (f : α → FreeAbelianGroup β) (x y : FreeAbelianGroup α) :
     x + y >>= f = (x >>= f) + (y >>= f) :=
   (lift _).map_add _ _
 #align free_abelian_group.add_bind FreeAbelianGroup.add_bind
 
 @[simp]
-theorem neg_bind (f : α → FreeAbelianGroup β) (x : FreeAbelianGroup α) : -x >>= f = -(x >>= f) :=
+lemma neg_bind (f : α → FreeAbelianGroup β) (x : FreeAbelianGroup α) : -x >>= f = -(x >>= f) :=
   map_neg (lift f) _
 #align free_abelian_group.neg_bind FreeAbelianGroup.neg_bind
 
 @[simp]
-theorem sub_bind (f : α → FreeAbelianGroup β) (x y : FreeAbelianGroup α) :
+lemma sub_bind (f : α → FreeAbelianGroup β) (x y : FreeAbelianGroup α) :
     x - y >>= f = (x >>= f) - (y >>= f) :=
   map_sub (lift f) _ _
 #align free_abelian_group.sub_bind FreeAbelianGroup.sub_bind
 
 @[simp]
-theorem pure_seq (f : α → β) (x : FreeAbelianGroup α) : pure f <*> x = f <$> x :=
+lemma pure_seq (f : α → β) (x : FreeAbelianGroup α) : pure f <*> x = f <$> x :=
   pure_bind _ _
 #align free_abelian_group.pure_seq FreeAbelianGroup.pure_seq
 
 @[simp]
-theorem zero_seq (x : FreeAbelianGroup α) : (0 : FreeAbelianGroup (α → β)) <*> x = 0 :=
+lemma zero_seq (x : FreeAbelianGroup α) : (0 : FreeAbelianGroup (α → β)) <*> x = 0 :=
   zero_bind _
 #align free_abelian_group.zero_seq FreeAbelianGroup.zero_seq
 
 @[simp]
-theorem add_seq (f g : FreeAbelianGroup (α → β)) (x : FreeAbelianGroup α) :
+lemma add_seq (f g : FreeAbelianGroup (α → β)) (x : FreeAbelianGroup α) :
     f + g <*> x = (f <*> x) + (g <*> x) :=
   add_bind _ _ _
 #align free_abelian_group.add_seq FreeAbelianGroup.add_seq
 
 @[simp]
-theorem neg_seq (f : FreeAbelianGroup (α → β)) (x : FreeAbelianGroup α) : -f <*> x = -(f <*> x) :=
+lemma neg_seq (f : FreeAbelianGroup (α → β)) (x : FreeAbelianGroup α) : -f <*> x = -(f <*> x) :=
   neg_bind _ _
 #align free_abelian_group.neg_seq FreeAbelianGroup.neg_seq
 
 @[simp]
-theorem sub_seq (f g : FreeAbelianGroup (α → β)) (x : FreeAbelianGroup α) :
+lemma sub_seq (f g : FreeAbelianGroup (α → β)) (x : FreeAbelianGroup α) :
     f - g <*> x = (f <*> x) - (g <*> x) :=
   sub_bind _ _ _
 #align free_abelian_group.sub_seq FreeAbelianGroup.sub_seq
@@ -298,23 +298,23 @@ def seqAddGroupHom (f : FreeAbelianGroup (α → β)) : FreeAbelianGroup α →+
 #align free_abelian_group.seq_add_group_hom FreeAbelianGroup.seqAddGroupHom
 
 @[simp]
-theorem seq_zero (f : FreeAbelianGroup (α → β)) : f <*> 0 = 0 :=
+lemma seq_zero (f : FreeAbelianGroup (α → β)) : f <*> 0 = 0 :=
   (seqAddGroupHom f).map_zero
 #align free_abelian_group.seq_zero FreeAbelianGroup.seq_zero
 
 @[simp]
-theorem seq_add (f : FreeAbelianGroup (α → β)) (x y : FreeAbelianGroup α) :
+lemma seq_add (f : FreeAbelianGroup (α → β)) (x y : FreeAbelianGroup α) :
     f <*> x + y = (f <*> x) + (f <*> y) :=
   (seqAddGroupHom f).map_add x y
 #align free_abelian_group.seq_add FreeAbelianGroup.seq_add
 
 @[simp]
-theorem seq_neg (f : FreeAbelianGroup (α → β)) (x : FreeAbelianGroup α) : f <*> -x = -(f <*> x) :=
+lemma seq_neg (f : FreeAbelianGroup (α → β)) (x : FreeAbelianGroup α) : f <*> -x = -(f <*> x) :=
   (seqAddGroupHom f).map_neg x
 #align free_abelian_group.seq_neg FreeAbelianGroup.seq_neg
 
 @[simp]
-theorem seq_sub (f : FreeAbelianGroup (α → β)) (x y : FreeAbelianGroup α) :
+lemma seq_sub (f : FreeAbelianGroup (α → β)) (x y : FreeAbelianGroup α) :
     f <*> x - y = (f <*> x) - (f <*> y) :=
   (seqAddGroupHom f).map_sub x y
 #align free_abelian_group.seq_sub FreeAbelianGroup.seq_sub
@@ -357,7 +357,7 @@ def map (f : α → β) : FreeAbelianGroup α →+ FreeAbelianGroup β :=
   lift (of ∘ f)
 #align free_abelian_group.map FreeAbelianGroup.map
 
-theorem lift_comp {α} {β} {γ} [AddCommGroup γ] (f : α → β) (g : β → γ) (x : FreeAbelianGroup α) :
+lemma lift_comp {α} {β} {γ} [AddCommGroup γ] (f : α → β) (g : β → γ) (x : FreeAbelianGroup α) :
     lift (g ∘ f) x = lift g (map f x) := by
   -- Porting note: Added motive.
   apply FreeAbelianGroup.induction_on (C := fun x ↦ lift (g ∘ f) x = lift g (map f x)) x
@@ -370,21 +370,21 @@ theorem lift_comp {α} {β} {γ} [AddCommGroup γ] (f : α → β) (g : β → �
     simp only [h₁, h₂, AddMonoidHom.map_add]
 #align free_abelian_group.lift_comp FreeAbelianGroup.lift_comp
 
-theorem map_id : map id = AddMonoidHom.id (FreeAbelianGroup α) :=
+lemma map_id : map id = AddMonoidHom.id (FreeAbelianGroup α) :=
   Eq.symm <|
     lift.ext _ _ fun _ ↦ lift.unique of (AddMonoidHom.id _) fun _ ↦ AddMonoidHom.id_apply _ _
 #align free_abelian_group.map_id FreeAbelianGroup.map_id
 
-theorem map_id_apply (x : FreeAbelianGroup α) : map id x = x := by
+lemma map_id_apply (x : FreeAbelianGroup α) : map id x = x := by
   rw [map_id]
   rfl
 #align free_abelian_group.map_id_apply FreeAbelianGroup.map_id_apply
 
-theorem map_comp {f : α → β} {g : β → γ} : map (g ∘ f) = (map g).comp (map f) :=
+lemma map_comp {f : α → β} {g : β → γ} : map (g ∘ f) = (map g).comp (map f) :=
   Eq.symm <| lift.ext _ _ fun _ ↦ by simp [map]
 #align free_abelian_group.map_comp FreeAbelianGroup.map_comp
 
-theorem map_comp_apply {f : α → β} {g : β → γ} (x : FreeAbelianGroup α) :
+lemma map_comp_apply {f : α → β} {g : β → γ} (x : FreeAbelianGroup α) :
     map (g ∘ f) x = (map g) ((map f) x) := by
   rw [map_comp]
   rfl
@@ -392,7 +392,7 @@ theorem map_comp_apply {f : α → β} {g : β → γ} (x : FreeAbelianGroup α)
 
 -- version of map_of which uses `map`
 @[simp]
-theorem map_of_apply {f : α → β} (a : α) : map f (of a) = of (f a) :=
+lemma map_of_apply {f : α → β} (a : α) : map f (of a) = of (f a) :=
   rfl
 #align free_abelian_group.map_of_apply FreeAbelianGroup.map_of_apply
 
@@ -407,17 +407,17 @@ instance mul : Mul (FreeAbelianGroup α) :=
 
 variable {α}
 
-theorem mul_def (x y : FreeAbelianGroup α) :
+lemma mul_def (x y : FreeAbelianGroup α) :
     x * y = lift (fun x₂ ↦ lift (fun x₁ ↦ of (x₁ * x₂)) x) y :=
   rfl
 #align free_abelian_group.mul_def FreeAbelianGroup.mul_def
 
 @[simp]
-theorem of_mul_of (x y : α) : of x * of y = of (x * y) := by
+lemma of_mul_of (x y : α) : of x * of y = of (x * y) := by
   rw [mul_def, lift.of, lift.of]
 #align free_abelian_group.of_mul_of FreeAbelianGroup.of_mul_of
 
-theorem of_mul (x y : α) : of (x * y) = of x * of y :=
+lemma of_mul (x y : α) : of (x * y) = of x * of y :=
   Eq.symm <| of_mul_of x y
 #align free_abelian_group.of_mul FreeAbelianGroup.of_mul
 
@@ -494,7 +494,7 @@ def ofMulHom : α →* FreeAbelianGroup α where
 #align free_abelian_group.of_mul_hom FreeAbelianGroup.ofMulHom
 
 @[simp]
-theorem ofMulHom_coe : (ofMulHom : α → FreeAbelianGroup α) = of :=
+lemma ofMulHom_coe : (ofMulHom : α → FreeAbelianGroup α) = of :=
   rfl
 #align free_abelian_group.of_mul_hom_coe FreeAbelianGroup.ofMulHom_coe
 
@@ -529,27 +529,27 @@ def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
 #align free_abelian_group.lift_monoid FreeAbelianGroup.liftMonoid
 
 @[simp]
-theorem liftMonoid_coe_addMonoidHom (f : α →* R) : ↑(liftMonoid f) = lift f :=
+lemma liftMonoid_coe_addMonoidHom (f : α →* R) : ↑(liftMonoid f) = lift f :=
   rfl
 #align free_abelian_group.lift_monoid_coe_add_monoid_hom FreeAbelianGroup.liftMonoid_coe_addMonoidHom
 
 @[simp]
-theorem liftMonoid_coe (f : α →* R) : ⇑(liftMonoid f) = lift f :=
+lemma liftMonoid_coe (f : α →* R) : ⇑(liftMonoid f) = lift f :=
   rfl
 #align free_abelian_group.lift_monoid_coe FreeAbelianGroup.liftMonoid_coe
 
 @[simp]
 -- Porting note: Added a type to `↑f`.
-theorem liftMonoid_symm_coe (f : FreeAbelianGroup α →+* R) :
+lemma liftMonoid_symm_coe (f : FreeAbelianGroup α →+* R) :
     ⇑(liftMonoid.symm f) = lift.symm (↑f : FreeAbelianGroup α →+ R) :=
   rfl
 #align free_abelian_group.lift_monoid_symm_coe FreeAbelianGroup.liftMonoid_symm_coe
 
-theorem one_def : (1 : FreeAbelianGroup α) = of 1 :=
+lemma one_def : (1 : FreeAbelianGroup α) = of 1 :=
   rfl
 #align free_abelian_group.one_def FreeAbelianGroup.one_def
 
-theorem of_one : (of 1 : FreeAbelianGroup α) = 1 :=
+lemma of_one : (of 1 : FreeAbelianGroup α) = 1 :=
   rfl
 #align free_abelian_group.of_one FreeAbelianGroup.of_one
 

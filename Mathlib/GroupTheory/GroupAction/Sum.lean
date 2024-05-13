@@ -35,25 +35,25 @@ instance : SMul M (Sum α β) :=
   ⟨fun a => Sum.map (a • ·) (a • ·)⟩
 
 @[to_additive]
-theorem smul_def : a • x = x.map (a • ·) (a • ·) :=
+lemma smul_def : a • x = x.map (a • ·) (a • ·) :=
   rfl
 #align sum.smul_def Sum.smul_def
 #align sum.vadd_def Sum.vadd_def
 
 @[to_additive (attr := simp)]
-theorem smul_inl : a • (inl b : Sum α β) = inl (a • b) :=
+lemma smul_inl : a • (inl b : Sum α β) = inl (a • b) :=
   rfl
 #align sum.smul_inl Sum.smul_inl
 #align sum.vadd_inl Sum.vadd_inl
 
 @[to_additive (attr := simp)]
-theorem smul_inr : a • (inr c : Sum α β) = inr (a • c) :=
+lemma smul_inr : a • (inr c : Sum α β) = inr (a • c) :=
   rfl
 #align sum.smul_inr Sum.smul_inr
 #align sum.vadd_inr Sum.vadd_inr
 
 @[to_additive (attr := simp)]
-theorem smul_swap : (a • x).swap = a • x.swap := by cases x <;> rfl
+lemma smul_swap : (a • x).swap = a • x.swap := by cases x <;> rfl
 #align sum.smul_swap Sum.smul_swap
 #align sum.vadd_swap Sum.vadd_swap
 

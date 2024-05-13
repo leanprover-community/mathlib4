@@ -126,7 +126,7 @@ def PreservesTerminal.iso : G.obj (⊤_ C) ≅ ⊤_ D :=
 #align category_theory.limits.preserves_terminal.iso CategoryTheory.Limits.PreservesTerminal.iso
 
 @[simp]
-theorem PreservesTerminal.iso_hom : (PreservesTerminal.iso G).hom = terminalComparison G :=
+lemma PreservesTerminal.iso_hom : (PreservesTerminal.iso G).hom = terminalComparison G :=
   rfl
 #align category_theory.limits.preserves_terminal.iso_hom CategoryTheory.Limits.PreservesTerminal.iso_hom
 
@@ -227,7 +227,7 @@ def PreservesInitial.iso : G.obj (⊥_ C) ≅ ⊥_ D :=
 #align category_theory.limits.preserves_initial.iso CategoryTheory.Limits.PreservesInitial.iso
 
 @[simp]
-theorem PreservesInitial.iso_hom : (PreservesInitial.iso G).inv = initialComparison G :=
+lemma PreservesInitial.iso_hom : (PreservesInitial.iso G).inv = initialComparison G :=
   rfl
 #align category_theory.limits.preserves_initial.iso_hom CategoryTheory.Limits.PreservesInitial.iso_hom
 

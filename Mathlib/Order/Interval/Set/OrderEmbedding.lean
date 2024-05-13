@@ -25,25 +25,25 @@ section Preorder
 
 variable [Preorder α] [Preorder β] (e : α ↪o β) (x y : α)
 
-@[simp] theorem preimage_Ici : e ⁻¹' Ici (e x) = Ici x := ext fun _ ↦ e.le_iff_le
-@[simp] theorem preimage_Iic : e ⁻¹' Iic (e x) = Iic x := ext fun _ ↦ e.le_iff_le
-@[simp] theorem preimage_Ioi : e ⁻¹' Ioi (e x) = Ioi x := ext fun _ ↦ e.lt_iff_lt
-@[simp] theorem preimage_Iio : e ⁻¹' Iio (e x) = Iio x := ext fun _ ↦ e.lt_iff_lt
+@[simp] lemma preimage_Ici : e ⁻¹' Ici (e x) = Ici x := ext fun _ ↦ e.le_iff_le
+@[simp] lemma preimage_Iic : e ⁻¹' Iic (e x) = Iic x := ext fun _ ↦ e.le_iff_le
+@[simp] lemma preimage_Ioi : e ⁻¹' Ioi (e x) = Ioi x := ext fun _ ↦ e.lt_iff_lt
+@[simp] lemma preimage_Iio : e ⁻¹' Iio (e x) = Iio x := ext fun _ ↦ e.lt_iff_lt
 
-@[simp] theorem preimage_Icc : e ⁻¹' Icc (e x) (e y) = Icc x y := by ext; simp
-@[simp] theorem preimage_Ico : e ⁻¹' Ico (e x) (e y) = Ico x y := by ext; simp
-@[simp] theorem preimage_Ioc : e ⁻¹' Ioc (e x) (e y) = Ioc x y := by ext; simp
-@[simp] theorem preimage_Ioo : e ⁻¹' Ioo (e x) (e y) = Ioo x y := by ext; simp
+@[simp] lemma preimage_Icc : e ⁻¹' Icc (e x) (e y) = Icc x y := by ext; simp
+@[simp] lemma preimage_Ico : e ⁻¹' Ico (e x) (e y) = Ico x y := by ext; simp
+@[simp] lemma preimage_Ioc : e ⁻¹' Ioc (e x) (e y) = Ioc x y := by ext; simp
+@[simp] lemma preimage_Ioo : e ⁻¹' Ioo (e x) (e y) = Ioo x y := by ext; simp
 
 end Preorder
 
 variable [LinearOrder α]
 
-@[simp] theorem preimage_uIcc [Lattice β] (e : α ↪o β) (x y : α) :
+@[simp] lemma preimage_uIcc [Lattice β] (e : α ↪o β) (x y : α) :
     e ⁻¹' (uIcc (e x) (e y)) = uIcc x y := by
   cases le_total x y <;> simp [*]
 
-@[simp] theorem preimage_uIoc [LinearOrder β] (e : α ↪o β) (x y : α) :
+@[simp] lemma preimage_uIoc [LinearOrder β] (e : α ↪o β) (x y : α) :
     e ⁻¹' (uIoc (e x) (e y)) = uIoc x y := by
   cases le_or_lt x y <;> simp [*]
 

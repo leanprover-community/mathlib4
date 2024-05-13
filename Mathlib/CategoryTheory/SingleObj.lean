@@ -71,11 +71,11 @@ instance category : Category (SingleObj M)
   assoc x y z := (mul_assoc z y x).symm
 #align category_theory.single_obj.category CategoryTheory.SingleObj.category
 
-theorem id_as_one (x : SingleObj M) : 𝟙 x = 1 :=
+lemma id_as_one (x : SingleObj M) : 𝟙 x = 1 :=
   rfl
 #align category_theory.single_obj.id_as_one CategoryTheory.SingleObj.id_as_one
 
-theorem comp_as_mul {x y z : SingleObj M} (f : x ⟶ y) (g : y ⟶ z) : f ≫ g = g * f :=
+lemma comp_as_mul {x y z : SingleObj M} (f : x ⟶ y) (g : y ⟶ z) : f ≫ g = g * f :=
   rfl
 #align category_theory.single_obj.comp_as_mul CategoryTheory.SingleObj.comp_as_mul
 
@@ -94,7 +94,7 @@ instance groupoid : Groupoid (SingleObj G)
   comp_inv := mul_left_inv
 #align category_theory.single_obj.groupoid CategoryTheory.SingleObj.groupoid
 
-theorem inv_as_inv {x y : SingleObj G} (f : x ⟶ y) : inv f = f⁻¹ := by
+lemma inv_as_inv {x y : SingleObj G} (f : x ⟶ y) : inv f = f⁻¹ := by
   apply IsIso.inv_eq_of_hom_inv_id
   rw [comp_as_mul, inv_mul_self, id_as_one]
 #align category_theory.single_obj.inv_as_inv CategoryTheory.SingleObj.inv_as_inv
@@ -112,7 +112,7 @@ def toEnd : M ≃* End (SingleObj.star M) :=
   { Equiv.refl M with map_mul' := fun _ _ => rfl }
 #align category_theory.single_obj.to_End CategoryTheory.SingleObj.toEnd
 
-theorem toEnd_def (x : M) : toEnd M x = x :=
+lemma toEnd_def (x : M) : toEnd M x = x :=
   rfl
 #align category_theory.single_obj.to_End_def CategoryTheory.SingleObj.toEnd_def
 
@@ -139,13 +139,13 @@ def mapHom : (M →* N) ≃ SingleObj M ⥤ SingleObj N where
   right_inv := by aesop_cat
 #align category_theory.single_obj.map_hom CategoryTheory.SingleObj.mapHom
 
-theorem mapHom_id : mapHom M M (MonoidHom.id M) = 𝟭 _ :=
+lemma mapHom_id : mapHom M M (MonoidHom.id M) = 𝟭 _ :=
   rfl
 #align category_theory.single_obj.map_hom_id CategoryTheory.SingleObj.mapHom_id
 
 variable {M N G}
 
-theorem mapHom_comp (f : M →* N) {P : Type w} [Monoid P] (g : N →* P) :
+lemma mapHom_comp (f : M →* N) {P : Type w} [Monoid P] (g : N →* P) :
     mapHom M P (g.comp f) = mapHom M N f ⋙ mapHom N P g :=
   rfl
 #align category_theory.single_obj.map_hom_comp CategoryTheory.SingleObj.mapHom_comp
@@ -202,7 +202,7 @@ abbrev toFunctor (f : M →* N) : SingleObj M ⥤ SingleObj N :=
 #align monoid_hom.to_functor MonoidHom.toFunctor
 
 @[simp]
-theorem comp_toFunctor (f : M →* N) {P : Type w} [Monoid P] (g : N →* P) :
+lemma comp_toFunctor (f : M →* N) {P : Type w} [Monoid P] (g : N →* P) :
     (g.comp f).toFunctor = f.toFunctor ⋙ g.toFunctor :=
   rfl
 #align monoid_hom.comp_to_functor MonoidHom.comp_toFunctor
@@ -210,7 +210,7 @@ theorem comp_toFunctor (f : M →* N) {P : Type w} [Monoid P] (g : N →* P) :
 variable (M)
 
 @[simp]
-theorem id_toFunctor : (id M).toFunctor = 𝟭 _ :=
+lemma id_toFunctor : (id M).toFunctor = 𝟭 _ :=
   rfl
 #align monoid_hom.id_to_functor MonoidHom.id_toFunctor
 
@@ -249,13 +249,13 @@ set_option linter.uppercaseLean3 false in
 #align units.to_Aut Units.toAut
 
 @[simp]
-theorem toAut_hom (x : Mˣ) : (toAut M x).hom = SingleObj.toEnd M x :=
+lemma toAut_hom (x : Mˣ) : (toAut M x).hom = SingleObj.toEnd M x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align units.to_Aut_hom Units.toAut_hom
 
 @[simp]
-theorem toAut_inv (x : Mˣ) : (toAut M x).inv = SingleObj.toEnd M (x⁻¹ : Mˣ) :=
+lemma toAut_inv (x : Mˣ) : (toAut M x).inv = SingleObj.toEnd M (x⁻¹ : Mˣ) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align units.to_Aut_inv Units.toAut_inv

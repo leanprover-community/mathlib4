@@ -93,14 +93,14 @@ lemma measurableSet_natGeneratingSequence [MeasurableSpace α] [CountablyGenerat
   measurableSet_countableGeneratingSet $ Set.enumerateCountable_mem _
     empty_mem_countableGeneratingSet n
 
-theorem CountablyGenerated.comap [m : MeasurableSpace β] [h : CountablyGenerated β] (f : α → β) :
+lemma CountablyGenerated.comap [m : MeasurableSpace β] [h : CountablyGenerated β] (f : α → β) :
     @CountablyGenerated α (.comap f m) := by
   rcases h with ⟨⟨b, hbc, rfl⟩⟩
   rw [comap_generateFrom]
   letI := generateFrom (preimage f '' b)
   exact ⟨_, hbc.image _, rfl⟩
 
-theorem CountablyGenerated.sup {m₁ m₂ : MeasurableSpace β} (h₁ : @CountablyGenerated β m₁)
+lemma CountablyGenerated.sup {m₁ m₂ : MeasurableSpace β} (h₁ : @CountablyGenerated β m₁)
     (h₂ : @CountablyGenerated β m₂) : @CountablyGenerated β (m₁ ⊔ m₂) := by
   rcases h₁ with ⟨⟨b₁, hb₁c, rfl⟩⟩
   rcases h₂ with ⟨⟨b₂, hb₂c, rfl⟩⟩
@@ -138,15 +138,15 @@ there is a measurable set containing one but not the other. -/
 class SeparatesPoints (α : Type*) [m : MeasurableSpace α] : Prop where
   separates : ∀ x y : α, (∀ s, MeasurableSet s → (x ∈ s → y ∈ s)) → x = y
 
-theorem separatesPoints_def [MeasurableSpace α] [hs : SeparatesPoints α] {x y : α}
+lemma separatesPoints_def [MeasurableSpace α] [hs : SeparatesPoints α] {x y : α}
     (h : ∀ s, MeasurableSet s → (x ∈ s → y ∈ s)) : x = y := hs.separates _ _ h
 
-theorem exists_measurableSet_of_ne [MeasurableSpace α] [SeparatesPoints α] {x y : α}
+lemma exists_measurableSet_of_ne [MeasurableSpace α] [SeparatesPoints α] {x y : α}
     (h : x ≠ y) : ∃ s, MeasurableSet s ∧ x ∈ s ∧ y ∉ s := by
   contrapose! h
   exact separatesPoints_def h
 
-theorem separatesPoints_iff [MeasurableSpace α] : SeparatesPoints α ↔
+lemma separatesPoints_iff [MeasurableSpace α] : SeparatesPoints α ↔
     ∀ x y : α, (∀ s, MeasurableSet s → (x ∈ s ↔ y ∈ s)) → x = y :=
   ⟨fun h ↦ fun _ _ hxy ↦ h.separates _ _ fun _ hs xs ↦ (hxy _ hs).mp xs,
     fun h ↦ ⟨fun _ _ hxy ↦ h _ _ fun _ hs ↦
@@ -162,7 +162,7 @@ theorem separating_of_generateFrom (S : Set (Set α))
   rw [← forall_generateFrom_mem_iff_mem_iff] at hxy
   exact separatesPoints_def $ fun _ hs ↦ (hxy _ hs).mp
 
-theorem SeparatesPoints.mono {m m' : MeasurableSpace α} [hsep : @SeparatesPoints _ m] (h : m ≤ m') :
+lemma SeparatesPoints.mono {m m' : MeasurableSpace α} [hsep : @SeparatesPoints _ m] (h : m ≤ m') :
     @SeparatesPoints _ m' := @SeparatesPoints.mk _ m' fun _ _ hxy ↦
     @SeparatesPoints.separates _ m hsep _ _ fun _ hs ↦ hxy _ (h _ hs)
 
@@ -178,17 +178,17 @@ instance hasCountableSeparatingOn_of_countablySeparated [MeasurableSpace α]
     [h : CountablySeparated α] : HasCountableSeparatingOn α MeasurableSet univ :=
   h.countably_separated
 
-theorem countablySeparated_def [MeasurableSpace α] :
+lemma countablySeparated_def [MeasurableSpace α] :
     CountablySeparated α ↔ HasCountableSeparatingOn α MeasurableSet univ :=
   ⟨fun h ↦ h.countably_separated, fun h ↦ ⟨h⟩⟩
 
-theorem CountablySeparated.mono {m m' : MeasurableSpace α} [hsep : @CountablySeparated _ m]
+lemma CountablySeparated.mono {m m' : MeasurableSpace α} [hsep : @CountablySeparated _ m]
     (h : m ≤ m') : @CountablySeparated _ m' := by
   simp_rw [countablySeparated_def] at *
   rcases hsep with ⟨S, Sct, Smeas, hS⟩
   use S, Sct, (fun s hs ↦ h _ <| Smeas _ hs), hS
 
-theorem CountablySeparated.subtype_iff [MeasurableSpace α] {s : Set α} :
+lemma CountablySeparated.subtype_iff [MeasurableSpace α] {s : Set α} :
     CountablySeparated s ↔ HasCountableSeparatingOn α MeasurableSet s := by
   rw [countablySeparated_def]
   exact HasCountableSeparatingOn.subtype_iff
@@ -248,7 +248,7 @@ noncomputable
 def mapNatBool [MeasurableSpace α] [CountablyGenerated α] (x : α) (n : ℕ) :
     Bool := x ∈ natGeneratingSequence α n
 
-theorem measurable_mapNatBool [MeasurableSpace α] [CountablyGenerated α] :
+lemma measurable_mapNatBool [MeasurableSpace α] [CountablyGenerated α] :
     Measurable (mapNatBool α) := by
   rw [measurable_pi_iff]
   refine fun n ↦ measurable_to_bool ?_
@@ -256,7 +256,7 @@ theorem measurable_mapNatBool [MeasurableSpace α] [CountablyGenerated α] :
     Bool.decide_iff, setOf_mem_eq]
   apply measurableSet_natGeneratingSequence
 
-theorem injective_mapNatBool [MeasurableSpace α] [CountablyGenerated α]
+lemma injective_mapNatBool [MeasurableSpace α] [CountablyGenerated α]
     [SeparatesPoints α] : Injective (mapNatBool α) := by
   intro x y hxy
   rw [← generateFrom_natGeneratingSequence α] at *
@@ -295,7 +295,7 @@ theorem measurable_injection_nat_bool_of_countablySeparated [MeasurableSpace α]
 variable {α}
 
 --TODO: Make this an instance
-theorem measurableSingletonClass_of_countablySeparated
+lemma measurableSingletonClass_of_countablySeparated
     [MeasurableSpace α] [CountablySeparated α] :
     MeasurableSingletonClass α := by
   rcases measurable_injection_nat_bool_of_countablySeparated α with ⟨f, fmeas, finj⟩

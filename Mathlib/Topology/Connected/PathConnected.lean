@@ -97,7 +97,7 @@ instance : CoeFun (Path x y) fun _ => I → X :=
 -/
 
 @[ext]
-protected theorem Path.ext : ∀ {γ₁ γ₂ : Path x y}, (γ₁ : I → X) = γ₂ → γ₁ = γ₂ := by
+protected lemma Path.ext : ∀ {γ₁ γ₂ : Path x y}, (γ₁ : I → X) = γ₂ → γ₁ = γ₂ := by
   rintro ⟨⟨x, h11⟩, h12, h13⟩ ⟨⟨x, h21⟩, h22, h23⟩ rfl
   rfl
 #align path.ext Path.ext
@@ -105,7 +105,7 @@ protected theorem Path.ext : ∀ {γ₁ γ₂ : Path x y}, (γ₁ : I → X) = �
 namespace Path
 
 @[simp]
-theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
+lemma coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
     ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
   rfl
 #align path.coe_mk Path.coe_mk_mk
@@ -114,17 +114,17 @@ theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
 variable (γ : Path x y)
 
 @[continuity]
-protected theorem continuous : Continuous γ :=
+protected lemma continuous : Continuous γ :=
   γ.continuous_toFun
 #align path.continuous Path.continuous
 
 @[simp]
-protected theorem source : γ 0 = x :=
+protected lemma source : γ 0 = x :=
   γ.source'
 #align path.source Path.source
 
 @[simp]
-protected theorem target : γ 1 = y :=
+protected lemma target : γ 1 = y :=
   γ.target'
 #align path.target Path.target
 
@@ -137,13 +137,13 @@ def simps.apply : I → X :=
 initialize_simps_projections Path (toFun → simps.apply, -toContinuousMap)
 
 @[simp]
-theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
+lemma coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
   rfl
 #align path.coe_to_continuous_map Path.coe_toContinuousMap
 
 -- Porting note: this is needed because of the `Path.continuousMapClass` instance
 @[simp]
-theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
+lemma coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
 
 /-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
@@ -162,7 +162,7 @@ def refl (x : X) : Path x x where
 #align path.refl Path.refl
 
 @[simp]
-theorem refl_range {a : X} : range (Path.refl a) = {a} := by simp [Path.refl, CoeFun.coe]
+lemma refl_range {a : X} : range (Path.refl a) = {a} := by simp [Path.refl, CoeFun.coe]
 #align path.refl_range Path.refl_range
 
 /-- The reverse of a path from `x` to `y`, as a path from `y` to `x` -/
@@ -175,23 +175,23 @@ def symm (γ : Path x y) : Path y x where
 #align path.symm Path.symm
 
 @[simp]
-theorem symm_symm (γ : Path x y) : γ.symm.symm = γ := by
+lemma symm_symm (γ : Path x y) : γ.symm.symm = γ := by
   ext t
   show γ (σ (σ t)) = γ t
   rw [unitInterval.symm_symm]
 #align path.symm_symm Path.symm_symm
 
-theorem symm_bijective : Function.Bijective (Path.symm : Path x y → Path y x) :=
+lemma symm_bijective : Function.Bijective (Path.symm : Path x y → Path y x) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
-theorem refl_symm {a : X} : (Path.refl a).symm = Path.refl a := by
+lemma refl_symm {a : X} : (Path.refl a).symm = Path.refl a := by
   ext
   rfl
 #align path.refl_symm Path.refl_symm
 
 @[simp]
-theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
+lemma symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
   ext x
   simp only [mem_range, Path.symm, DFunLike.coe, unitInterval.symm, SetCoe.exists, comp_apply,
     Subtype.coe_mk]
@@ -217,17 +217,17 @@ compact-open topology on the space `C(I,X)` of continuous maps from `I` to `X`.
 instance topologicalSpace : TopologicalSpace (Path x y) :=
   TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
 
-theorem continuous_eval : Continuous fun p : Path x y × I => p.1 p.2 :=
+lemma continuous_eval : Continuous fun p : Path x y × I => p.1 p.2 :=
   continuous_eval.comp <| (continuous_induced_dom (α := Path x y)).prod_map continuous_id
 #align path.continuous_eval Path.continuous_eval
 
 @[continuity]
-theorem _root_.Continuous.path_eval {Y} [TopologicalSpace Y] {f : Y → Path x y} {g : Y → I}
+lemma _root_.Continuous.path_eval {Y} [TopologicalSpace Y] {f : Y → Path x y} {g : Y → I}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun y => f y (g y) :=
   Continuous.comp continuous_eval (hf.prod_mk hg)
 #align continuous.path_eval Continuous.path_eval
 
-theorem continuous_uncurry_iff {Y} [TopologicalSpace Y] {g : Y → Path x y} :
+lemma continuous_uncurry_iff {Y} [TopologicalSpace Y] {g : Y → Path x y} :
     Continuous ↿g ↔ Continuous g :=
   Iff.symm <| continuous_induced_rng.trans
     ⟨fun h => continuous_uncurry_of_continuous ⟨_, h⟩,
@@ -251,54 +251,54 @@ theorem continuous_extend : Continuous γ.extend :=
   γ.continuous.Icc_extend'
 #align path.continuous_extend Path.continuous_extend
 
-theorem _root_.Filter.Tendsto.path_extend
+lemma _root_.Filter.Tendsto.path_extend
     {l r : Y → X} {y : Y} {l₁ : Filter ℝ} {l₂ : Filter X} {γ : ∀ y, Path (l y) (r y)}
     (hγ : Tendsto (↿γ) (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
     Tendsto (↿fun x => (γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
   Filter.Tendsto.IccExtend _ hγ
 #align filter.tendsto.path_extend Filter.Tendsto.path_extend
 
-theorem _root_.ContinuousAt.path_extend {g : Y → ℝ} {l r : Y → X} (γ : ∀ y, Path (l y) (r y))
+lemma _root_.ContinuousAt.path_extend {g : Y → ℝ} {l r : Y → X} (γ : ∀ y, Path (l y) (r y))
     {y : Y} (hγ : ContinuousAt (↿γ) (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
     ContinuousAt (fun i => (γ i).extend (g i)) y :=
   hγ.IccExtend (fun x => γ x) hg
 #align continuous_at.path_extend ContinuousAt.path_extend
 
 @[simp]
-theorem extend_extends {a b : X} (γ : Path a b) {t : ℝ}
+lemma extend_extends {a b : X} (γ : Path a b) {t : ℝ}
     (ht : t ∈ (Icc 0 1 : Set ℝ)) : γ.extend t = γ ⟨t, ht⟩ :=
   IccExtend_of_mem _ γ ht
 #align path.extend_extends Path.extend_extends
 
-theorem extend_zero : γ.extend 0 = x := by simp
+lemma extend_zero : γ.extend 0 = x := by simp
 #align path.extend_zero Path.extend_zero
 
-theorem extend_one : γ.extend 1 = y := by simp
+lemma extend_one : γ.extend 1 = y := by simp
 #align path.extend_one Path.extend_one
 
 @[simp]
-theorem extend_extends' {a b : X} (γ : Path a b) (t : (Icc 0 1 : Set ℝ)) : γ.extend t = γ t :=
+lemma extend_extends' {a b : X} (γ : Path a b) (t : (Icc 0 1 : Set ℝ)) : γ.extend t = γ t :=
   IccExtend_val _ γ t
 #align path.extend_extends' Path.extend_extends'
 
 @[simp]
-theorem extend_range {a b : X} (γ : Path a b) :
+lemma extend_range {a b : X} (γ : Path a b) :
     range γ.extend = range γ :=
   IccExtend_range _ γ
 #align path.extend_range Path.extend_range
 
-theorem extend_of_le_zero {a b : X} (γ : Path a b) {t : ℝ}
+lemma extend_of_le_zero {a b : X} (γ : Path a b) {t : ℝ}
     (ht : t ≤ 0) : γ.extend t = a :=
   (IccExtend_of_le_left _ _ ht).trans γ.source
 #align path.extend_of_le_zero Path.extend_of_le_zero
 
-theorem extend_of_one_le {a b : X} (γ : Path a b) {t : ℝ}
+lemma extend_of_one_le {a b : X} (γ : Path a b) {t : ℝ}
     (ht : 1 ≤ t) : γ.extend t = b :=
   (IccExtend_of_right_le _ _ ht).trans γ.target
 #align path.extend_of_one_le Path.extend_of_one_le
 
 @[simp]
-theorem refl_extend {a : X} : (Path.refl a).extend = fun _ => a :=
+lemma refl_extend {a : X} : (Path.refl a).extend = fun _ => a :=
   rfl
 #align path.refl_extend Path.refl_extend
 
@@ -310,7 +310,7 @@ def ofLine {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 
   target' := h₁
 #align path.of_line Path.ofLine
 
-theorem ofLine_mem {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 = y) :
+lemma ofLine_mem {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 = y) :
     ∀ t, ofLine hf h₀ h₁ t ∈ f '' I := fun ⟨t, t_in⟩ => ⟨t, t_in, rfl⟩
 #align path.of_line_mem Path.ofLine_mem
 
@@ -331,7 +331,7 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   target' := by norm_num
 #align path.trans Path.trans
 
-theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
+lemma trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
     (γ.trans γ') t =
       if h : (t : ℝ) ≤ 1 / 2 then γ ⟨2 * t, (mul_pos_mem_iff zero_lt_two).2 ⟨t.2.1, h⟩⟩
       else γ' ⟨2 * t - 1, two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, t.2.2⟩⟩ :=
@@ -339,7 +339,7 @@ theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
 #align path.trans_apply Path.trans_apply
 
 @[simp]
-theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.symm.trans γ.symm := by
+lemma trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.symm.trans γ.symm := by
   ext t
   simp only [trans_apply, ← one_div, symm_apply, not_le, Function.comp_apply]
   split_ifs with h h₁ h₂ <;> rw [coe_symm_eq] at h
@@ -355,14 +355,14 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
 #align path.trans_symm Path.trans_symm
 
 @[simp]
-theorem refl_trans_refl {a : X} :
+lemma refl_trans_refl {a : X} :
     (Path.refl a).trans (Path.refl a) = Path.refl a := by
   ext
   simp only [Path.trans, ite_self, one_div, Path.refl_extend]
   rfl
 #align path.refl_trans_refl Path.refl_trans_refl
 
-theorem trans_range {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
+lemma trans_range {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
     range (γ₁.trans γ₂) = range γ₁ ∪ range γ₂ := by
   rw [Path.trans]
   apply eq_of_subset_of_subset
@@ -412,20 +412,20 @@ def map (γ : Path x y) {f : X → Y} (h : Continuous f) :
 #align path.map Path.map
 
 @[simp]
-theorem map_coe (γ : Path x y) {f : X → Y} (h : Continuous f) :
+lemma map_coe (γ : Path x y) {f : X → Y} (h : Continuous f) :
     (γ.map h : I → Y) = f ∘ γ := by
   ext t
   rfl
 #align path.map_coe Path.map_coe
 
 @[simp]
-theorem map_symm (γ : Path x y) {f : X → Y} (h : Continuous f) :
+lemma map_symm (γ : Path x y) {f : X → Y} (h : Continuous f) :
     (γ.map h).symm = γ.symm.map h :=
   rfl
 #align path.map_symm Path.map_symm
 
 @[simp]
-theorem map_trans (γ : Path x y) (γ' : Path y z) {f : X → Y}
+lemma map_trans (γ : Path x y) (γ' : Path y z) {f : X → Y}
     (h : Continuous f) : (γ.trans γ').map h = (γ.map h).trans (γ'.map h) := by
   ext t
   rw [trans_apply, map_coe, Function.comp_apply, trans_apply]
@@ -433,13 +433,13 @@ theorem map_trans (γ : Path x y) (γ' : Path y z) {f : X → Y}
 #align path.map_trans Path.map_trans
 
 @[simp]
-theorem map_id (γ : Path x y) : γ.map continuous_id = γ := by
+lemma map_id (γ : Path x y) : γ.map continuous_id = γ := by
   ext
   rfl
 #align path.map_id Path.map_id
 
 @[simp]
-theorem map_map (γ : Path x y) {Z : Type*} [TopologicalSpace Z]
+lemma map_map (γ : Path x y) {Z : Type*} [TopologicalSpace Z]
     {f : X → Y} (hf : Continuous f) {g : Y → Z} (hg : Continuous g) :
     (γ.map hf).map hg = γ.map (hg.comp hf) := by
   ext
@@ -455,37 +455,37 @@ def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
 #align path.cast Path.cast
 
 @[simp]
-theorem symm_cast {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
+lemma symm_cast {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
     (γ.cast ha hb).symm = γ.symm.cast hb ha :=
   rfl
 #align path.symm_cast Path.symm_cast
 
 @[simp]
-theorem trans_cast {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
+lemma trans_cast {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
     (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
     (γ.cast ha hb).trans (γ'.cast hb hc) = (γ.trans γ').cast ha hc :=
   rfl
 #align path.trans_cast Path.trans_cast
 
 @[simp]
-theorem cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast hx hy : I → X) = γ :=
+lemma cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast hx hy : I → X) = γ :=
   rfl
 #align path.cast_coe Path.cast_coe
 
 @[continuity]
-theorem symm_continuous_family {ι : Type*} [TopologicalSpace ι]
+lemma symm_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
     Continuous ↿fun t => (γ t).symm :=
   h.comp (continuous_id.prod_map continuous_symm)
 #align path.symm_continuous_family Path.symm_continuous_family
 
 @[continuity]
-theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
+lemma continuous_symm : Continuous (symm : Path x y → Path y x) :=
   continuous_uncurry_iff.mp <| symm_continuous_family _ (continuous_fst.path_eval continuous_snd)
 #align path.continuous_symm Path.continuous_symm
 
 @[continuity]
-theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [TopologicalSpace ι]
+lemma continuous_uncurry_extend_of_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
     Continuous ↿fun t => (γ t).extend := by
   refine' h.comp (continuous_id.prod_map continuous_projIcc)
@@ -493,7 +493,7 @@ theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [Topological
 #align path.continuous_uncurry_extend_of_continuous_family Path.continuous_uncurry_extend_of_continuous_family
 
 @[continuity]
-theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
+lemma trans_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b c : ι → X} (γ₁ : ∀ t : ι, Path (a t) (b t)) (h₁ : Continuous ↿γ₁)
     (γ₂ : ∀ t : ι, Path (b t) (c t)) (h₂ : Continuous ↿γ₂) :
     Continuous ↿fun t => (γ₁ t).trans (γ₂ t) := by
@@ -515,7 +515,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
 #align path.trans_continuous_family Path.trans_continuous_family
 
 @[continuity]
-theorem _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :
+lemma _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :
     Continuous f → Continuous g → Continuous fun t => (f t).trans (g t) := by
   intro hf hg
   apply continuous_uncurry_iff.mp
@@ -523,7 +523,7 @@ theorem _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :
 #align continuous.path_trans Continuous.path_trans
 
 @[continuity]
-theorem continuous_trans {x y z : X} : Continuous fun ρ : Path x y × Path y z => ρ.1.trans ρ.2 :=
+lemma continuous_trans {x y z : X} : Continuous fun ρ : Path x y × Path y z => ρ.1.trans ρ.2 :=
   continuous_fst.path_trans continuous_snd
 #align path.continuous_trans Path.continuous_trans
 
@@ -543,7 +543,7 @@ protected def prod (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) : Path (a�
 #align path.prod Path.prod
 
 @[simp]
-theorem prod_coe (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) :
+lemma prod_coe (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) :
     ⇑(γ₁.prod γ₂) = fun t => (γ₁ t, γ₂ t) :=
   rfl
 #align path.prod_coe_fn Path.prod_coe
@@ -573,7 +573,7 @@ protected def pi (γ : ∀ i, Path (as i) (bs i)) : Path as bs where
 #align path.pi Path.pi
 
 @[simp]
-theorem pi_coe (γ : ∀ i, Path (as i) (bs i)) : ⇑(Path.pi γ) = fun t i => γ i t :=
+lemma pi_coe (γ : ∀ i, Path (as i) (bs i)) : ⇑(Path.pi γ) = fun t i => γ i t :=
   rfl
 #align path.pi_coe_fn Path.pi_coe
 
@@ -601,7 +601,7 @@ protected def mul [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : P
 #align path.add Path.add
 
 @[to_additive]
-protected theorem mul_apply [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : Path a₁ b₁)
+protected lemma mul_apply [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : Path a₁ b₁)
     (γ₂ : Path a₂ b₂) (t : unitInterval) : (γ₁.mul γ₂) t = γ₁ t * γ₂ t :=
   rfl
 #align path.mul_apply Path.mul_apply
@@ -645,7 +645,7 @@ def truncateOfLE {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) {t�
   (γ.truncate t₀ t₁).cast (by rw [min_eq_left h]) rfl
 #align path.truncate_of_le Path.truncateOfLE
 
-theorem truncate_range {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} :
+lemma truncate_range {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} :
     range (γ.truncate t₀ t₁) ⊆ range γ := by
   rw [← γ.extend_range]
   simp only [range_subset_iff, SetCoe.exists, SetCoe.forall]
@@ -664,14 +664,14 @@ theorem truncate_continuous_family {a b : X} (γ : Path a b) :
 #align path.truncate_continuous_family Path.truncate_continuous_family
 
 @[continuity]
-theorem truncate_const_continuous_family {a b : X} (γ : Path a b)
+lemma truncate_const_continuous_family {a b : X} (γ : Path a b)
     (t : ℝ) : Continuous ↿(γ.truncate t) := by
   have key : Continuous (fun x => (t, x) : ℝ × I → ℝ × ℝ × I) := by continuity
   exact γ.truncate_continuous_family.comp key
 #align path.truncate_const_continuous_family Path.truncate_const_continuous_family
 
 @[simp]
-theorem truncate_self {a b : X} (γ : Path a b) (t : ℝ) :
+lemma truncate_self {a b : X} (γ : Path a b) (t : ℝ) :
     γ.truncate t t = (Path.refl <| γ.extend t).cast (by rw [min_self]) rfl := by
   ext x
   rw [cast_coe]
@@ -680,19 +680,19 @@ theorem truncate_self {a b : X} (γ : Path a b) (t : ℝ) :
 #align path.truncate_self Path.truncate_self
 
 @[simp 1001] -- Porting note: increase `simp` priority so left-hand side doesn't simplify
-theorem truncate_zero_zero {a b : X} (γ : Path a b) :
+lemma truncate_zero_zero {a b : X} (γ : Path a b) :
     γ.truncate 0 0 = (Path.refl a).cast (by rw [min_self, γ.extend_zero]) γ.extend_zero := by
   convert γ.truncate_self 0
 #align path.truncate_zero_zero Path.truncate_zero_zero
 
 @[simp 1001] -- Porting note: increase `simp` priority so left-hand side doesn't simplify
-theorem truncate_one_one {a b : X} (γ : Path a b) :
+lemma truncate_one_one {a b : X} (γ : Path a b) :
     γ.truncate 1 1 = (Path.refl b).cast (by rw [min_self, γ.extend_one]) γ.extend_one := by
   convert γ.truncate_self 1
 #align path.truncate_one_one Path.truncate_one_one
 
 @[simp]
-theorem truncate_zero_one {a b : X} (γ : Path a b) :
+lemma truncate_zero_one {a b : X} (γ : Path a b) :
     γ.truncate 0 1 = γ.cast (by simp [zero_le_one, extend_zero]) (by simp) := by
   ext x
   rw [cast_coe]
@@ -715,19 +715,19 @@ def reparam (γ : Path x y) (f : I → I) (hfcont : Continuous f) (hf₀ : f 0 =
 #align path.reparam Path.reparam
 
 @[simp]
-theorem coe_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0)
+lemma coe_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0)
     (hf₁ : f 1 = 1) : ⇑(γ.reparam f hfcont hf₀ hf₁) = γ ∘ f :=
   rfl
 #align path.coe_to_fun Path.coe_reparam
 -- Porting note: this seems like it was poorly named (was: `coe_to_fun`)
 
 @[simp]
-theorem reparam_id (γ : Path x y) : γ.reparam id continuous_id rfl rfl = γ := by
+lemma reparam_id (γ : Path x y) : γ.reparam id continuous_id rfl rfl = γ := by
   ext
   rfl
 #align path.reparam_id Path.reparam_id
 
-theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0)
+lemma range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0)
     (hf₁ : f 1 = 1) : range (γ.reparam f hfcont hf₀ hf₁) = range γ := by
   change range (γ ∘ f) = range γ
   have : range f = univ := by
@@ -742,7 +742,7 @@ theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf�
   rw [range_comp, this, image_univ]
 #align path.range_reparam Path.range_reparam
 
-theorem refl_reparam {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :
+lemma refl_reparam {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :
     (refl x).reparam f hfcont hf₀ hf₁ = refl x := by
   ext
   simp
@@ -759,7 +759,7 @@ def Joined (x y : X) : Prop :=
 #align joined Joined
 
 @[refl]
-theorem Joined.refl (x : X) : Joined x x :=
+lemma Joined.refl (x : X) : Joined x x :=
   ⟨Path.refl x⟩
 #align joined.refl Joined.refl
 
@@ -769,12 +769,12 @@ def Joined.somePath (h : Joined x y) : Path x y :=
 #align joined.some_path Joined.somePath
 
 @[symm]
-theorem Joined.symm {x y : X} (h : Joined x y) : Joined y x :=
+lemma Joined.symm {x y : X} (h : Joined x y) : Joined y x :=
   ⟨h.somePath.symm⟩
 #align joined.symm Joined.symm
 
 @[trans]
-theorem Joined.trans {x y z : X} (hxy : Joined x y) (hyz : Joined y z) : Joined x z :=
+lemma Joined.trans {x y z : X} (hxy : Joined x y) (hyz : Joined y z) : Joined x z :=
   ⟨hxy.somePath.trans hyz.somePath⟩
 #align joined.trans Joined.trans
 
@@ -807,17 +807,17 @@ def JoinedIn (F : Set X) (x y : X) : Prop :=
 
 variable {F : Set X}
 
-theorem JoinedIn.mem (h : JoinedIn F x y) : x ∈ F ∧ y ∈ F := by
+lemma JoinedIn.mem (h : JoinedIn F x y) : x ∈ F ∧ y ∈ F := by
   rcases h with ⟨γ, γ_in⟩
   have : γ 0 ∈ F ∧ γ 1 ∈ F := by constructor <;> apply γ_in
   simpa using this
 #align joined_in.mem JoinedIn.mem
 
-theorem JoinedIn.source_mem (h : JoinedIn F x y) : x ∈ F :=
+lemma JoinedIn.source_mem (h : JoinedIn F x y) : x ∈ F :=
   h.mem.1
 #align joined_in.source_mem JoinedIn.source_mem
 
-theorem JoinedIn.target_mem (h : JoinedIn F x y) : y ∈ F :=
+lemma JoinedIn.target_mem (h : JoinedIn F x y) : y ∈ F :=
   h.mem.2
 #align joined_in.target_mem JoinedIn.target_mem
 
@@ -826,7 +826,7 @@ def JoinedIn.somePath (h : JoinedIn F x y) : Path x y :=
   Classical.choose h
 #align joined_in.some_path JoinedIn.somePath
 
-theorem JoinedIn.somePath_mem (h : JoinedIn F x y) (t : I) : h.somePath t ∈ F :=
+lemma JoinedIn.somePath_mem (h : JoinedIn F x y) (t : I) : h.somePath t ∈ F :=
   Classical.choose_spec h t
 #align joined_in.some_path_mem JoinedIn.somePath_mem
 
@@ -839,55 +839,55 @@ theorem JoinedIn.joined_subtype (h : JoinedIn F x y) :
       target' := by simp }⟩
 #align joined_in.joined_subtype JoinedIn.joined_subtype
 
-theorem JoinedIn.ofLine {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 = y)
+lemma JoinedIn.ofLine {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 = y)
     (hF : f '' I ⊆ F) : JoinedIn F x y :=
   ⟨Path.ofLine hf h₀ h₁, fun t => hF <| Path.ofLine_mem hf h₀ h₁ t⟩
 #align joined_in.of_line JoinedIn.ofLine
 
-theorem JoinedIn.joined (h : JoinedIn F x y) : Joined x y :=
+lemma JoinedIn.joined (h : JoinedIn F x y) : Joined x y :=
   ⟨h.somePath⟩
 #align joined_in.joined JoinedIn.joined
 
-theorem joinedIn_iff_joined (x_in : x ∈ F) (y_in : y ∈ F) :
+lemma joinedIn_iff_joined (x_in : x ∈ F) (y_in : y ∈ F) :
     JoinedIn F x y ↔ Joined (⟨x, x_in⟩ : F) (⟨y, y_in⟩ : F) :=
   ⟨fun h => h.joined_subtype, fun h => ⟨h.somePath.map continuous_subtype_val, by simp⟩⟩
 #align joined_in_iff_joined joinedIn_iff_joined
 
 @[simp]
-theorem joinedIn_univ : JoinedIn univ x y ↔ Joined x y := by
+lemma joinedIn_univ : JoinedIn univ x y ↔ Joined x y := by
   simp [JoinedIn, Joined, exists_true_iff_nonempty]
 #align joined_in_univ joinedIn_univ
 
-theorem JoinedIn.mono {U V : Set X} (h : JoinedIn U x y) (hUV : U ⊆ V) : JoinedIn V x y :=
+lemma JoinedIn.mono {U V : Set X} (h : JoinedIn U x y) (hUV : U ⊆ V) : JoinedIn V x y :=
   ⟨h.somePath, fun t => hUV (h.somePath_mem t)⟩
 #align joined_in.mono JoinedIn.mono
 
-theorem JoinedIn.refl (h : x ∈ F) : JoinedIn F x x :=
+lemma JoinedIn.refl (h : x ∈ F) : JoinedIn F x x :=
   ⟨Path.refl x, fun _t => h⟩
 #align joined_in.refl JoinedIn.refl
 
 @[symm]
-theorem JoinedIn.symm (h : JoinedIn F x y) : JoinedIn F y x := by
+lemma JoinedIn.symm (h : JoinedIn F x y) : JoinedIn F y x := by
   cases' h.mem with hx hy
   simp_all [joinedIn_iff_joined]
   exact h.symm
 #align joined_in.symm JoinedIn.symm
 
-theorem JoinedIn.trans (hxy : JoinedIn F x y) (hyz : JoinedIn F y z) : JoinedIn F x z := by
+lemma JoinedIn.trans (hxy : JoinedIn F x y) (hyz : JoinedIn F y z) : JoinedIn F x z := by
   cases' hxy.mem with hx hy
   cases' hyz.mem with hx hy
   simp_all [joinedIn_iff_joined]
   exact hxy.trans hyz
 #align joined_in.trans JoinedIn.trans
 
-theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y := by
+lemma Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y := by
   refine ⟨⟨⟨Set.piecewise {1} (const I y) (const I x), ?_⟩, by simp, by simp⟩, fun t ↦ ?_⟩
   · exact isClosed_singleton.continuous_piecewise_of_specializes continuous_const continuous_const
       fun _ ↦ h
   · simp only [Path.coe_mk_mk, piecewise]
     split_ifs <;> assumption
 
-theorem Inseparable.joinedIn (h : Inseparable x y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y :=
+lemma Inseparable.joinedIn (h : Inseparable x y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y :=
   h.specializes.joinedIn hx hy
 
 /-! ### Path component -/
@@ -899,24 +899,24 @@ def pathComponent (x : X) :=
 #align path_component pathComponent
 
 @[simp]
-theorem mem_pathComponent_self (x : X) : x ∈ pathComponent x :=
+lemma mem_pathComponent_self (x : X) : x ∈ pathComponent x :=
   Joined.refl x
 #align mem_path_component_self mem_pathComponent_self
 
 @[simp]
-theorem pathComponent.nonempty (x : X) : (pathComponent x).Nonempty :=
+lemma pathComponent.nonempty (x : X) : (pathComponent x).Nonempty :=
   ⟨x, mem_pathComponent_self x⟩
 #align path_component.nonempty pathComponent.nonempty
 
-theorem mem_pathComponent_of_mem (h : x ∈ pathComponent y) : y ∈ pathComponent x :=
+lemma mem_pathComponent_of_mem (h : x ∈ pathComponent y) : y ∈ pathComponent x :=
   Joined.symm h
 #align mem_path_component_of_mem mem_pathComponent_of_mem
 
-theorem pathComponent_symm : x ∈ pathComponent y ↔ y ∈ pathComponent x :=
+lemma pathComponent_symm : x ∈ pathComponent y ↔ y ∈ pathComponent x :=
   ⟨fun h => mem_pathComponent_of_mem h, fun h => mem_pathComponent_of_mem h⟩
 #align path_component_symm pathComponent_symm
 
-theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = pathComponent y := by
+lemma pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = pathComponent y := by
   ext z
   constructor
   · intro h'
@@ -927,7 +927,7 @@ theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = path
     exact h'.trans h
 #align path_component_congr pathComponent_congr
 
-theorem pathComponent_subset_component (x : X) : pathComponent x ⊆ connectedComponent x :=
+lemma pathComponent_subset_component (x : X) : pathComponent x ⊆ connectedComponent x :=
   fun y h =>
   (isConnected_range h.somePath.continuous).subset_connectedComponent ⟨0, by simp⟩ ⟨1, by simp⟩
 #align path_component_subset_component pathComponent_subset_component
@@ -938,11 +938,11 @@ def pathComponentIn (x : X) (F : Set X) :=
 #align path_component_in pathComponentIn
 
 @[simp]
-theorem pathComponentIn_univ (x : X) : pathComponentIn x univ = pathComponent x := by
+lemma pathComponentIn_univ (x : X) : pathComponentIn x univ = pathComponent x := by
   simp [pathComponentIn, pathComponent, JoinedIn, Joined, exists_true_iff_nonempty]
 #align path_component_in_univ pathComponentIn_univ
 
-theorem Joined.mem_pathComponent (hyz : Joined y z) (hxy : y ∈ pathComponent x) :
+lemma Joined.mem_pathComponent (hyz : Joined y z) (hxy : y ∈ pathComponent x) :
     z ∈ pathComponent x :=
   hxy.trans hyz
 #align joined.mem_path_component Joined.mem_pathComponent
@@ -955,7 +955,7 @@ def IsPathConnected (F : Set X) : Prop :=
   ∃ x ∈ F, ∀ {y}, y ∈ F → JoinedIn F x y
 #align is_path_connected IsPathConnected
 
-theorem isPathConnected_iff_eq : IsPathConnected F ↔ ∃ x ∈ F, pathComponentIn x F = F := by
+lemma isPathConnected_iff_eq : IsPathConnected F ↔ ∃ x ∈ F, pathComponentIn x F = F := by
   constructor <;> rintro ⟨x, x_in, h⟩ <;> use x, x_in
   · ext y
     exact ⟨fun hy => hy.mem.2, h⟩
@@ -963,13 +963,13 @@ theorem isPathConnected_iff_eq : IsPathConnected F ↔ ∃ x ∈ F, pathComponen
     rwa [← h] at y_in
 #align is_path_connected_iff_eq isPathConnected_iff_eq
 
-theorem IsPathConnected.joinedIn (h : IsPathConnected F) :
+lemma IsPathConnected.joinedIn (h : IsPathConnected F) :
     ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y := fun _x x_in _y y_in =>
   let ⟨_b, _b_in, hb⟩ := h
   (hb x_in).symm.trans (hb y_in)
 #align is_path_connected.joined_in IsPathConnected.joinedIn
 
-theorem isPathConnected_iff :
+lemma isPathConnected_iff :
     IsPathConnected F ↔ F.Nonempty ∧ ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y :=
   ⟨fun h =>
     ⟨let ⟨b, b_in, _hb⟩ := h; ⟨b, b_in⟩, h.joinedIn⟩,
@@ -1018,21 +1018,21 @@ theorem Homeomorph.isPathConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
     IsPathConnected (h ⁻¹' s) ↔ IsPathConnected s := by
   rw [← Homeomorph.image_symm]; exact h.symm.isPathConnected_image
 
-theorem IsPathConnected.mem_pathComponent (h : IsPathConnected F) (x_in : x ∈ F) (y_in : y ∈ F) :
+lemma IsPathConnected.mem_pathComponent (h : IsPathConnected F) (x_in : x ∈ F) (y_in : y ∈ F) :
     y ∈ pathComponent x :=
   (h.joinedIn x x_in y y_in).joined
 #align is_path_connected.mem_path_component IsPathConnected.mem_pathComponent
 
-theorem IsPathConnected.subset_pathComponent (h : IsPathConnected F) (x_in : x ∈ F) :
+lemma IsPathConnected.subset_pathComponent (h : IsPathConnected F) (x_in : x ∈ F) :
     F ⊆ pathComponent x := fun _y y_in => h.mem_pathComponent x_in y_in
 #align is_path_connected.subset_path_component IsPathConnected.subset_pathComponent
 
-theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
+lemma isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
   refine ⟨x, rfl, ?_⟩
   rintro y rfl
   exact JoinedIn.refl rfl
 
-theorem IsPathConnected.union {U V : Set X} (hU : IsPathConnected U) (hV : IsPathConnected V)
+lemma IsPathConnected.union {U V : Set X} (hU : IsPathConnected U) (hV : IsPathConnected V)
     (hUV : (U ∩ V).Nonempty) : IsPathConnected (U ∪ V) := by
   rcases hUV with ⟨x, xU, xV⟩
   use x, Or.inl xU
@@ -1051,7 +1051,7 @@ theorem IsPathConnected.preimage_coe {U W : Set X} (hW : IsPathConnected W) (hWU
   exact ⟨(hx hyW).joined_subtype.somePath.map (continuous_inclusion hWU), by simp⟩
 #align is_path_connected.preimage_coe IsPathConnected.preimage_coe
 
-theorem IsPathConnected.exists_path_through_family {n : ℕ}
+lemma IsPathConnected.exists_path_through_family {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
     ∃ γ : Path (p 0) (p n), range γ ⊆ s ∧ ∀ i, p i ∈ range γ := by
   let p' : ℕ → X := fun k => if h : k < n + 1 then p ⟨k, h⟩ else p ⟨0, n.zero_lt_succ⟩
@@ -1107,7 +1107,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
   rw [Nat.mod_eq_of_lt hi]
 #align is_path_connected.exists_path_through_family IsPathConnected.exists_path_through_family
 
-theorem IsPathConnected.exists_path_through_family' {n : ℕ}
+lemma IsPathConnected.exists_path_through_family' {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
     ∃ (γ : Path (p 0) (p n)) (t : Fin (n + 1) → I), (∀ t, γ t ∈ s) ∧ ∀ i, γ (t i) = p i := by
   rcases h.exists_path_through_family p hp with ⟨γ, hγ⟩
@@ -1130,7 +1130,7 @@ class PathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   joined : ∀ x y : X, Joined x y
 #align path_connected_space PathConnectedSpace
 
-theorem pathConnectedSpace_iff_zerothHomotopy :
+lemma pathConnectedSpace_iff_zerothHomotopy :
     PathConnectedSpace X ↔ Nonempty (ZerothHomotopy X) ∧ Subsingleton (ZerothHomotopy X) := by
   letI := pathSetoid X
   constructor
@@ -1154,7 +1154,7 @@ def somePath (x y : X) : Path x y :=
 
 end PathConnectedSpace
 
-theorem isPathConnected_iff_pathConnectedSpace : IsPathConnected F ↔ PathConnectedSpace F := by
+lemma isPathConnected_iff_pathConnectedSpace : IsPathConnected F ↔ PathConnectedSpace F := by
   rw [isPathConnected_iff]
   constructor
   · rintro ⟨⟨x, x_in⟩, h⟩
@@ -1168,7 +1168,7 @@ theorem isPathConnected_iff_pathConnectedSpace : IsPathConnected F ↔ PathConne
     apply H
 #align is_path_connected_iff_path_connected_space isPathConnected_iff_pathConnectedSpace
 
-theorem pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (univ : Set X) := by
+lemma pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (univ : Set X) := by
   constructor
   · intro h
     haveI := @PathConnectedSpace.nonempty X _ _
@@ -1182,15 +1182,15 @@ theorem pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (
     exact ⟨⟨x⟩, by simpa using h'⟩
 #align path_connected_space_iff_univ pathConnectedSpace_iff_univ
 
-theorem isPathConnected_univ [PathConnectedSpace X] : IsPathConnected (univ : Set X) :=
+lemma isPathConnected_univ [PathConnectedSpace X] : IsPathConnected (univ : Set X) :=
   pathConnectedSpace_iff_univ.mp inferInstance
 
-theorem isPathConnected_range [PathConnectedSpace X] {f : X → Y} (hf : Continuous f) :
+lemma isPathConnected_range [PathConnectedSpace X] {f : X → Y} (hf : Continuous f) :
     IsPathConnected (range f) := by
   rw [← image_univ]
   exact isPathConnected_univ.image hf
 
-theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
+lemma Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
     {f : X → Y} (hf : Surjective f) (hf' : Continuous f) : PathConnectedSpace Y := by
   rw [pathConnectedSpace_iff_univ, ← hf.range_eq]
   exact isPathConnected_range hf'
@@ -1205,7 +1205,7 @@ instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
   joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
   nonempty := inferInstance
 
-theorem pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by
+lemma pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by
   simp [pathConnectedSpace_iff_univ, isPathConnected_iff_eq]
 #align path_connected_space_iff_eq pathConnectedSpace_iff_eq
 
@@ -1219,7 +1219,7 @@ instance (priority := 100) PathConnectedSpace.connectedSpace [PathConnectedSpace
   exact (by simpa using hx : pathComponent x = univ) ▸ pathComponent_subset_component x
 #align path_connected_space.connected_space PathConnectedSpace.connectedSpace
 
-theorem IsPathConnected.isConnected (hF : IsPathConnected F) : IsConnected F := by
+lemma IsPathConnected.isConnected (hF : IsPathConnected F) : IsConnected F := by
   rw [isConnected_iff_connectedSpace]
   rw [isPathConnected_iff_pathConnectedSpace] at hF
   exact @PathConnectedSpace.connectedSpace _ _ hF
@@ -1229,14 +1229,14 @@ namespace PathConnectedSpace
 
 variable [PathConnectedSpace X]
 
-theorem exists_path_through_family {n : ℕ} (p : Fin (n + 1) → X) :
+lemma exists_path_through_family {n : ℕ} (p : Fin (n + 1) → X) :
     ∃ γ : Path (p 0) (p n), ∀ i, p i ∈ range γ := by
   have : IsPathConnected (univ : Set X) := pathConnectedSpace_iff_univ.mp (by infer_instance)
   rcases this.exists_path_through_family p fun _i => True.intro with ⟨γ, -, h⟩
   exact ⟨γ, h⟩
 #align path_connected_space.exists_path_through_family PathConnectedSpace.exists_path_through_family
 
-theorem exists_path_through_family' {n : ℕ} (p : Fin (n + 1) → X) :
+lemma exists_path_through_family' {n : ℕ} (p : Fin (n + 1) → X) :
     ∃ (γ : Path (p 0) (p n)) (t : Fin (n + 1) → I), ∀ i, γ (t i) = p i := by
   have : IsPathConnected (univ : Set X) := pathConnectedSpace_iff_univ.mp (by infer_instance)
   rcases this.exists_path_through_family' p fun _i => True.intro with ⟨γ, t, -, h⟩
@@ -1257,7 +1257,7 @@ class LocPathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 export LocPathConnectedSpace (path_connected_basis)
 
-theorem locPathConnected_of_bases {p : ι → Prop} {s : X → ι → Set X}
+lemma locPathConnected_of_bases {p : ι → Prop} {s : X → ι → Set X}
     (h : ∀ x, (𝓝 x).HasBasis p (s x)) (h' : ∀ x i, p i → IsPathConnected (s x i)) :
     LocPathConnectedSpace X := by
   constructor
@@ -1270,7 +1270,7 @@ theorem locPathConnected_of_bases {p : ι → Prop} {s : X → ι → Set X}
     tauto
 #align loc_path_connected_of_bases locPathConnected_of_bases
 
-theorem pathConnectedSpace_iff_connectedSpace [LocPathConnectedSpace X] :
+lemma pathConnectedSpace_iff_connectedSpace [LocPathConnectedSpace X] :
     PathConnectedSpace X ↔ ConnectedSpace X := by
   constructor
   · intro h
@@ -1292,12 +1292,12 @@ theorem pathConnectedSpace_iff_connectedSpace [LocPathConnectedSpace X] :
       exact hU.subset_pathComponent (mem_of_mem_nhds U_in)
 #align path_connected_space_iff_connected_space pathConnectedSpace_iff_connectedSpace
 
-theorem pathConnected_subset_basis [LocPathConnectedSpace X] {U : Set X} (h : IsOpen U)
+lemma pathConnected_subset_basis [LocPathConnectedSpace X] {U : Set X} (h : IsOpen U)
     (hx : x ∈ U) : (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
   (path_connected_basis x).hasBasis_self_subset (IsOpen.mem_nhds h hx)
 #align path_connected_subset_basis pathConnected_subset_basis
 
-theorem locPathConnected_of_isOpen [LocPathConnectedSpace X] {U : Set X} (h : IsOpen U) :
+lemma locPathConnected_of_isOpen [LocPathConnectedSpace X] {U : Set X} (h : IsOpen U) :
     LocPathConnectedSpace U :=
   ⟨by
     rintro ⟨x, x_in⟩
@@ -1319,7 +1319,7 @@ theorem locPathConnected_of_isOpen [LocPathConnectedSpace X] {U : Set X} (h : Is
       tauto⟩
 #align loc_path_connected_of_is_open locPathConnected_of_isOpen
 
-theorem IsOpen.isConnected_iff_isPathConnected [LocPathConnectedSpace X] {U : Set X}
+lemma IsOpen.isConnected_iff_isPathConnected [LocPathConnectedSpace X] {U : Set X}
     (U_op : IsOpen U) : IsPathConnected U ↔ IsConnected U := by
   rw [isConnected_iff_connectedSpace, isPathConnected_iff_pathConnectedSpace]
   haveI := locPathConnected_of_isOpen U_op

@@ -135,7 +135,7 @@ theorem effectiveEpiFamily_tfae
     ext; rfl
   tfae_finish
 
-theorem effectiveEpiFamily_of_jointly_surjective
+lemma effectiveEpiFamily_of_jointly_surjective
     {α : Type} [Finite α] {B : CompHaus.{u}}
     (X : α → CompHaus.{u}) (π : (a : α) → (X a ⟶ B))
     (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b) :

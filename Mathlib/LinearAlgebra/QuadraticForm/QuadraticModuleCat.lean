@@ -30,7 +30,7 @@ open QuadraticForm
 instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
-@[simp] theorem moduleCat_of_toModuleCat (X : QuadraticModuleCat.{v} R) :
+@[simp] lemma moduleCat_of_toModuleCat (X : QuadraticModuleCat.{v} R) :
     ModuleCat.of R X.toModuleCat = X.toModuleCat :=
   rfl
 
@@ -71,11 +71,11 @@ abbrev ofHom {X : Type v} [AddCommGroup X] [Module R X]
     of Q₁ ⟶ of Q₂ :=
   ⟨f⟩
 
-@[simp] theorem toIsometry_comp {M N U : QuadraticModuleCat.{v} R} (f : M ⟶ N) (g : N ⟶ U) :
+@[simp] lemma toIsometry_comp {M N U : QuadraticModuleCat.{v} R} (f : M ⟶ N) (g : N ⟶ U) :
     (f ≫ g).toIsometry = g.toIsometry.comp f.toIsometry :=
   rfl
 
-@[simp] theorem toIsometry_id {M : QuadraticModuleCat.{v} R} :
+@[simp] lemma toIsometry_id {M : QuadraticModuleCat.{v} R} :
     Hom.toIsometry (𝟙 M) = Isometry.id _ :=
   rfl
 
@@ -92,12 +92,12 @@ instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) w
       map := fun f => f.toIsometry.toLinearMap }
 
 @[simp]
-theorem forget₂_obj (X : QuadraticModuleCat R) :
+lemma forget₂_obj (X : QuadraticModuleCat R) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).obj X = ModuleCat.of R X :=
   rfl
 
 @[simp]
-theorem forget₂_map (X Y : QuadraticModuleCat R) (f : X ⟶ Y) :
+lemma forget₂_map (X Y : QuadraticModuleCat R) (f : X ⟶ Y) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map f = f.toIsometry.toLinearMap :=
   rfl
 
@@ -114,13 +114,13 @@ def ofIso (e : Q₁.IsometryEquiv Q₂) : QuadraticModuleCat.of Q₁ ≅ Quadrat
   hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
 
-@[simp] theorem ofIso_refl : ofIso (IsometryEquiv.refl Q₁) = .refl _ :=
+@[simp] lemma ofIso_refl : ofIso (IsometryEquiv.refl Q₁) = .refl _ :=
   rfl
 
-@[simp] theorem ofIso_symm (e : Q₁.IsometryEquiv Q₂) : ofIso e.symm = (ofIso e).symm :=
+@[simp] lemma ofIso_symm (e : Q₁.IsometryEquiv Q₂) : ofIso e.symm = (ofIso e).symm :=
   rfl
 
-@[simp] theorem ofIso_trans (e : Q₁.IsometryEquiv Q₂) (f : Q₂.IsometryEquiv Q₃) :
+@[simp] lemma ofIso_trans (e : Q₁.IsometryEquiv Q₂) (f : Q₂.IsometryEquiv Q₃) :
     ofIso (e.trans f) = ofIso e ≪≫ ofIso f :=
   rfl
 
@@ -148,14 +148,14 @@ def toIsometryEquiv (i : X ≅ Y) : X.form.IsometryEquiv Y.form where
   map_smul' := map_smul _
   map_app' := Isometry.map_app _
 
-@[simp] theorem toIsometryEquiv_refl : toIsometryEquiv (.refl X) = .refl _ :=
+@[simp] lemma toIsometryEquiv_refl : toIsometryEquiv (.refl X) = .refl _ :=
   rfl
 
-@[simp] theorem toIsometryEquiv_symm (e : X ≅ Y) :
+@[simp] lemma toIsometryEquiv_symm (e : X ≅ Y) :
     toIsometryEquiv e.symm = (toIsometryEquiv e).symm :=
   rfl
 
-@[simp] theorem toIsometryEquiv_trans (e : X ≅ Y) (f : Y ≅ Z) :
+@[simp] lemma toIsometryEquiv_trans (e : X ≅ Y) (f : Y ≅ Z) :
     toIsometryEquiv (e ≪≫ f) = e.toIsometryEquiv.trans f.toIsometryEquiv :=
   rfl
 

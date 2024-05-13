@@ -232,13 +232,13 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
 #align category_theory.monoidal_category.full_monoidal_closed_subcategory CategoryTheory.MonoidalCategory.fullMonoidalClosedSubcategory
 
 @[simp]
-theorem fullMonoidalClosedSubcategory_ihom_obj (X Y : FullSubcategory P) :
+lemma fullMonoidalClosedSubcategory_ihom_obj (X Y : FullSubcategory P) :
     ((ihom X).obj Y).obj = (ihom X.obj).obj Y.obj :=
   rfl
 #align category_theory.monoidal_category.full_monoidal_closed_subcategory_ihom_obj CategoryTheory.MonoidalCategory.fullMonoidalClosedSubcategory_ihom_obj
 
 @[simp]
-theorem fullMonoidalClosedSubcategory_ihom_map (X : FullSubcategory P) {Y Z : FullSubcategory P}
+lemma fullMonoidalClosedSubcategory_ihom_map (X : FullSubcategory P) {Y Z : FullSubcategory P}
     (f : Y ⟶ Z) : (ihom X).map f = (ihom X.obj).map f :=
   rfl
 #align category_theory.monoidal_category.full_monoidal_closed_subcategory_ihom_map CategoryTheory.MonoidalCategory.fullMonoidalClosedSubcategory_ihom_map

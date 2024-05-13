@@ -34,17 +34,17 @@ def invUnitsSub (u : Rˣ) : PowerSeries R :=
 #align power_series.inv_units_sub PowerSeries.invUnitsSub
 
 @[simp]
-theorem coeff_invUnitsSub (u : Rˣ) (n : ℕ) : coeff R n (invUnitsSub u) = 1 /ₚ u ^ (n + 1) :=
+lemma coeff_invUnitsSub (u : Rˣ) (n : ℕ) : coeff R n (invUnitsSub u) = 1 /ₚ u ^ (n + 1) :=
   coeff_mk _ _
 #align power_series.coeff_inv_units_sub PowerSeries.coeff_invUnitsSub
 
 @[simp]
-theorem constantCoeff_invUnitsSub (u : Rˣ) : constantCoeff R (invUnitsSub u) = 1 /ₚ u := by
+lemma constantCoeff_invUnitsSub (u : Rˣ) : constantCoeff R (invUnitsSub u) = 1 /ₚ u := by
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_invUnitsSub, zero_add, pow_one]
 #align power_series.constant_coeff_inv_units_sub PowerSeries.constantCoeff_invUnitsSub
 
 @[simp]
-theorem invUnitsSub_mul_X (u : Rˣ) : invUnitsSub u * X = invUnitsSub u * C R u - 1 := by
+lemma invUnitsSub_mul_X (u : Rˣ) : invUnitsSub u * X = invUnitsSub u * C R u - 1 := by
   ext (_ | n)
   · simp
   · simp [n.succ_ne_zero, pow_succ']
@@ -52,11 +52,11 @@ set_option linter.uppercaseLean3 false in
 #align power_series.inv_units_sub_mul_X PowerSeries.invUnitsSub_mul_X
 
 @[simp]
-theorem invUnitsSub_mul_sub (u : Rˣ) : invUnitsSub u * (C R u - X) = 1 := by
+lemma invUnitsSub_mul_sub (u : Rˣ) : invUnitsSub u * (C R u - X) = 1 := by
   simp [mul_sub, sub_sub_cancel]
 #align power_series.inv_units_sub_mul_sub PowerSeries.invUnitsSub_mul_sub
 
-theorem map_invUnitsSub (f : R →+* S) (u : Rˣ) :
+lemma map_invUnitsSub (f : R →+* S) (u : Rˣ) :
     map f (invUnitsSub u) = invUnitsSub (Units.map (f : R →* S) u) := by
   ext
   simp only [← map_pow, coeff_map, coeff_invUnitsSub, one_divp]
@@ -90,56 +90,56 @@ def cos : PowerSeries A :=
 variable {A A'} [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A'] (n : ℕ) (f : A →+* A')
 
 @[simp]
-theorem coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
+lemma coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
   coeff_mk _ _
 #align power_series.coeff_exp PowerSeries.coeff_exp
 
 @[simp]
-theorem constantCoeff_exp : constantCoeff A (exp A) = 1 := by
+lemma constantCoeff_exp : constantCoeff A (exp A) = 1 := by
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_exp]
   simp
 #align power_series.constant_coeff_exp PowerSeries.constantCoeff_exp
 
 set_option linter.deprecated false in
 @[simp]
-theorem coeff_sin_bit0 : coeff A (bit0 n) (sin A) = 0 := by
+lemma coeff_sin_bit0 : coeff A (bit0 n) (sin A) = 0 := by
   rw [sin, coeff_mk, if_pos (even_bit0 n)]
 #align power_series.coeff_sin_bit0 PowerSeries.coeff_sin_bit0
 
 set_option linter.deprecated false in
 @[simp]
-theorem coeff_sin_bit1 : coeff A (bit1 n) (sin A) = (-1) ^ n * coeff A (bit1 n) (exp A) := by
+lemma coeff_sin_bit1 : coeff A (bit1 n) (sin A) = (-1) ^ n * coeff A (bit1 n) (exp A) := by
   rw [sin, coeff_mk, if_neg n.not_even_bit1, Nat.bit1_div_two, ← mul_one_div, map_mul, map_pow,
     map_neg, map_one, coeff_exp]
 #align power_series.coeff_sin_bit1 PowerSeries.coeff_sin_bit1
 
 set_option linter.deprecated false in
 @[simp]
-theorem coeff_cos_bit0 : coeff A (bit0 n) (cos A) = (-1) ^ n * coeff A (bit0 n) (exp A) := by
+lemma coeff_cos_bit0 : coeff A (bit0 n) (cos A) = (-1) ^ n * coeff A (bit0 n) (exp A) := by
   rw [cos, coeff_mk, if_pos (even_bit0 n), Nat.bit0_div_two, ← mul_one_div, map_mul, map_pow,
     map_neg, map_one, coeff_exp]
 #align power_series.coeff_cos_bit0 PowerSeries.coeff_cos_bit0
 
 set_option linter.deprecated false in
 @[simp]
-theorem coeff_cos_bit1 : coeff A (bit1 n) (cos A) = 0 := by
+lemma coeff_cos_bit1 : coeff A (bit1 n) (cos A) = 0 := by
   rw [cos, coeff_mk, if_neg n.not_even_bit1]
 #align power_series.coeff_cos_bit1 PowerSeries.coeff_cos_bit1
 
 @[simp]
-theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by
+lemma map_exp : map (f : A →+* A') (exp A) = exp A' := by
   ext
   simp
 #align power_series.map_exp PowerSeries.map_exp
 
 @[simp]
-theorem map_sin : map f (sin A) = sin A' := by
+lemma map_sin : map f (sin A) = sin A' := by
   ext
   simp [sin, apply_ite f]
 #align power_series.map_sin PowerSeries.map_sin
 
 @[simp]
-theorem map_cos : map f (cos A) = cos A' := by
+lemma map_cos : map f (cos A) = cos A' := by
   ext
   simp [cos, apply_ite f]
 #align power_series.map_cos PowerSeries.map_cos

@@ -90,12 +90,12 @@ def finsubgraphOfAdj {u v : V} (e : G.Adj u v) : G.Finsubgraph :=
 #align simple_graph.finsubgraph_of_adj SimpleGraph.finsubgraphOfAdj
 
 -- Lemmas establishing the ordering between edge- and vertex-generated subgraphs.
-theorem singletonFinsubgraph_le_adj_left {u v : V} {e : G.Adj u v} :
+lemma singletonFinsubgraph_le_adj_left {u v : V} {e : G.Adj u v} :
     singletonFinsubgraph u ≤ finsubgraphOfAdj e := by
   simp [singletonFinsubgraph, finsubgraphOfAdj]
 #align simple_graph.singleton_finsubgraph_le_adj_left SimpleGraph.singletonFinsubgraph_le_adj_left
 
-theorem singletonFinsubgraph_le_adj_right {u v : V} {e : G.Adj u v} :
+lemma singletonFinsubgraph_le_adj_right {u v : V} {e : G.Adj u v} :
     singletonFinsubgraph v ≤ finsubgraphOfAdj e := by
   simp [singletonFinsubgraph, finsubgraphOfAdj]
 #align simple_graph.singleton_finsubgraph_le_adj_right SimpleGraph.singletonFinsubgraph_le_adj_right

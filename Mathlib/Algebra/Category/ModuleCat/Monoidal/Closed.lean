@@ -56,7 +56,7 @@ instance : MonoidalClosed (ModuleCat.{u} R) where
                 intro m n
                 rfl } }
 
-theorem ihom_map_apply {M N P : ModuleCat.{u} R} (f : N ⟶ P) (g : ModuleCat.of R (M ⟶ N)) :
+lemma ihom_map_apply {M N P : ModuleCat.{u} R} (f : N ⟶ P) (g : ModuleCat.of R (M ⟶ N)) :
     (ihom M).map f g = g ≫ f :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -66,7 +66,7 @@ open MonoidalCategory
 
 -- Porting note: `CoeFun` was replaced by `DFunLike`
 -- I can't seem to express the function coercion here without writing `@DFunLike.coe`.
-theorem monoidalClosed_curry {M N P : ModuleCat.{u} R} (f : M ⊗ N ⟶ P) (x : M) (y : N) :
+lemma monoidalClosed_curry {M N P : ModuleCat.{u} R} (f : M ⊗ N ⟶ P) (x : M) (y : N) :
     @DFunLike.coe _ _ _ LinearMap.instFunLike
       ((MonoidalClosed.curry f : N →ₗ[R] M →ₗ[R] P) y) x = f (x ⊗ₜ[R] y) :=
   rfl
@@ -74,7 +74,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.monoidal_closed_curry ModuleCat.monoidalClosed_curry
 
 @[simp]
-theorem monoidalClosed_uncurry
+lemma monoidalClosed_uncurry
     {M N P : ModuleCat.{u} R} (f : N ⟶ M ⟶[ModuleCat.{u} R] P) (x : M) (y : N) :
     MonoidalClosed.uncurry f (x ⊗ₜ[R] y) =
       @DFunLike.coe _ _ _ LinearMap.instFunLike (f y) x :=
@@ -101,7 +101,7 @@ theorem ihom_coev_app (M N : ModuleCat.{u} R) :
 set_option linter.uppercaseLean3 false in
 #align Module.ihom_coev_app ModuleCat.ihom_coev_app
 
-theorem monoidalClosed_pre_app {M N : ModuleCat.{u} R} (P : ModuleCat.{u} R) (f : N ⟶ M) :
+lemma monoidalClosed_pre_app {M N : ModuleCat.{u} R} (P : ModuleCat.{u} R) (f : N ⟶ M) :
     (MonoidalClosed.pre f).app P = LinearMap.lcomp R _ f :=
   rfl
 set_option linter.uppercaseLean3 false in

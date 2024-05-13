@@ -57,12 +57,12 @@ theorem prod_id (X : C) (Y : D) : 𝟙 (X, Y) = (𝟙 X, 𝟙 Y) :=
 #align category_theory.prod_id CategoryTheory.prod_id
 
 @[simp]
-theorem prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) ⟶ (R, U)) :
+lemma prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) ⟶ (R, U)) :
     f ≫ g = (f.1 ≫ g.1, f.2 ≫ g.2) :=
   rfl
 #align category_theory.prod_comp CategoryTheory.prod_comp
 
-theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
+lemma isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
   constructor
   · rintro ⟨g, hfg, hgf⟩
@@ -266,12 +266,12 @@ def diag : C ⥤ C × C :=
 #align category_theory.functor.diag CategoryTheory.Functor.diag
 
 @[simp]
-theorem diag_obj (X : C) : (diag C).obj X = (X, X) :=
+lemma diag_obj (X : C) : (diag C).obj X = (X, X) :=
   rfl
 #align category_theory.functor.diag_obj CategoryTheory.Functor.diag_obj
 
 @[simp]
-theorem diag_map {X Y : C} (f : X ⟶ Y) : (diag C).map f = (f, f) :=
+lemma diag_map {X Y : C} (f : X ⟶ Y) : (diag C).map f = (f, f) :=
   rfl
 #align category_theory.functor.diag_map CategoryTheory.Functor.diag_map
 

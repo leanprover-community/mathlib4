@@ -67,14 +67,14 @@ theorem zero_mconv (μ : Measure M) : μ ∗ (0 : Measure M) = (0 : Measure M) :
   simp
 
 @[to_additive conv_add]
-theorem mconv_add [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ]
+lemma mconv_add [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ]
     [SFinite ν] [SFinite ρ] : μ ∗ (ν + ρ) = μ ∗ ν + μ ∗ ρ := by
   unfold mconv
   rw [prod_add, map_add]
   measurability
 
 @[to_additive add_conv]
-theorem add_mconv [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ]
+lemma add_mconv [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ]
     [SFinite ν] [SFinite ρ] : (μ + ν) ∗ ρ = μ ∗ ρ + ν ∗ ρ := by
   unfold mconv
   rw [add_prod, map_add]

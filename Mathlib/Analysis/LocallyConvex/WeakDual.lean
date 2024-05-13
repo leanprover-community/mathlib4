@@ -56,21 +56,21 @@ def toSeminorm (f : E →ₗ[𝕜] 𝕜) : Seminorm 𝕜 E :=
   (normSeminorm 𝕜 𝕜).comp f
 #align linear_map.to_seminorm LinearMap.toSeminorm
 
-theorem coe_toSeminorm {f : E →ₗ[𝕜] 𝕜} : ⇑f.toSeminorm = fun x => ‖f x‖ :=
+lemma coe_toSeminorm {f : E →ₗ[𝕜] 𝕜} : ⇑f.toSeminorm = fun x => ‖f x‖ :=
   rfl
 #align linear_map.coe_to_seminorm LinearMap.coe_toSeminorm
 
 @[simp]
-theorem toSeminorm_apply {f : E →ₗ[𝕜] 𝕜} {x : E} : f.toSeminorm x = ‖f x‖ :=
+lemma toSeminorm_apply {f : E →ₗ[𝕜] 𝕜} {x : E} : f.toSeminorm x = ‖f x‖ :=
   rfl
 #align linear_map.to_seminorm_apply LinearMap.toSeminorm_apply
 
-theorem toSeminorm_ball_zero {f : E →ₗ[𝕜] 𝕜} {r : ℝ} :
+lemma toSeminorm_ball_zero {f : E →ₗ[𝕜] 𝕜} {r : ℝ} :
     Seminorm.ball f.toSeminorm 0 r = { x : E | ‖f x‖ < r } := by
   simp only [Seminorm.ball_zero_eq, toSeminorm_apply]
 #align linear_map.to_seminorm_ball_zero LinearMap.toSeminorm_ball_zero
 
-theorem toSeminorm_comp (f : F →ₗ[𝕜] 𝕜) (g : E →ₗ[𝕜] F) :
+lemma toSeminorm_comp (f : F →ₗ[𝕜] 𝕜) (g : E →ₗ[𝕜] F) :
     f.toSeminorm.comp g = (f.comp g).toSeminorm := by
   ext
   simp only [Seminorm.comp_apply, toSeminorm_apply, coe_comp, Function.comp_apply]
@@ -82,7 +82,7 @@ def toSeminormFamily (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : SeminormFamily �
 #align linear_map.to_seminorm_family LinearMap.toSeminormFamily
 
 @[simp]
-theorem toSeminormFamily_apply {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {x y} : (B.toSeminormFamily y) x = ‖B x y‖ :=
+lemma toSeminormFamily_apply {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {x y} : (B.toSeminormFamily y) x = ‖B x y‖ :=
   rfl
 #align linear_map.to_seminorm_family_apply LinearMap.toSeminormFamily_apply
 
@@ -96,7 +96,7 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [M
 variable [Nonempty ι]
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
 
-theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
+lemma LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     (𝓝 (0 : WeakBilin B)).HasBasis B.toSeminormFamily.basisSets _root_.id := by
   let p := B.toSeminormFamily
   rw [nhds_induced, nhds_pi]
@@ -135,7 +135,7 @@ theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
   exact hx y hy
 #align linear_map.has_basis_weak_bilin LinearMap.hasBasis_weakBilin
 
-theorem LinearMap.weakBilin_withSeminorms (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
+lemma LinearMap.weakBilin_withSeminorms (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     WithSeminorms (LinearMap.toSeminormFamily B : F → Seminorm 𝕜 (WeakBilin B)) :=
   SeminormFamily.withSeminorms_of_hasBasis _ B.hasBasis_weakBilin
 #align linear_map.weak_bilin_with_seminorms LinearMap.weakBilin_withSeminorms

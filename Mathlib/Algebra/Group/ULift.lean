@@ -34,7 +34,7 @@ instance one [One α] : One (ULift α) :=
 #align ulift.has_zero ULift.zero
 
 @[to_additive (attr := simp)]
-theorem one_down [One α] : (1 : ULift α).down = 1 :=
+lemma one_down [One α] : (1 : ULift α).down = 1 :=
   rfl
 #align ulift.one_down ULift.one_down
 #align ulift.zero_down ULift.zero_down
@@ -46,7 +46,7 @@ instance mul [Mul α] : Mul (ULift α) :=
 #align ulift.has_add ULift.add
 
 @[to_additive (attr := simp)]
-theorem mul_down [Mul α] : (x * y).down = x.down * y.down :=
+lemma mul_down [Mul α] : (x * y).down = x.down * y.down :=
   rfl
 #align ulift.mul_down ULift.mul_down
 #align ulift.add_down ULift.add_down
@@ -58,7 +58,7 @@ instance div [Div α] : Div (ULift α) :=
 #align ulift.has_sub ULift.sub
 
 @[to_additive (attr := simp)]
-theorem div_down [Div α] : (x / y).down = x.down / y.down :=
+lemma div_down [Div α] : (x / y).down = x.down / y.down :=
   rfl
 #align ulift.div_down ULift.div_down
 #align ulift.sub_down ULift.sub_down
@@ -70,7 +70,7 @@ instance inv [Inv α] : Inv (ULift α) :=
 #align ulift.has_neg ULift.neg
 
 @[to_additive (attr := simp)]
-theorem inv_down [Inv α] : x⁻¹.down = x.down⁻¹ :=
+lemma inv_down [Inv α] : x⁻¹.down = x.down⁻¹ :=
   rfl
 #align ulift.inv_down ULift.inv_down
 #align ulift.neg_down ULift.neg_down
@@ -82,7 +82,7 @@ instance smul [SMul α β] : SMul α (ULift β) :=
 #align ulift.has_vadd ULift.vadd
 
 @[to_additive (attr := simp)]
-theorem smul_down [SMul α β] (a : α) (b : ULift.{v} β) : (a • b).down = a • b.down :=
+lemma smul_down [SMul α β] (a : α) (b : ULift.{v} β) : (a • b).down = a • b.down :=
   rfl
 #align ulift.smul_down ULift.smul_down
 #align ulift.vadd_down ULift.vadd_down
@@ -93,7 +93,7 @@ instance pow [Pow α β] : Pow (ULift α) β :=
 #align ulift.has_pow ULift.pow
 
 @[to_additive existing (attr := simp) (reorder := 1 2) smul_down]
-theorem pow_down [Pow α β] (a : ULift.{v} α) (b : β) : (a ^ b).down = a.down ^ b :=
+lemma pow_down [Pow α β] (a : ULift.{v} α) (b : β) : (a ^ b).down = a.down ^ b :=
   rfl
 #align ulift.pow_down ULift.pow_down
 
@@ -149,34 +149,34 @@ instance instIntCast [IntCast α] : IntCast (ULift α) := ⟨(up ·)⟩
 #align ulift.has_int_cast ULift.instIntCast
 
 @[simp, norm_cast]
-theorem up_natCast [NatCast α] (n : ℕ) : up (n : α) = n :=
+lemma up_natCast [NatCast α] (n : ℕ) : up (n : α) = n :=
   rfl
 #align ulift.up_nat_cast ULift.up_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem up_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+lemma up_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
     up (no_index (OfNat.ofNat n : α)) = OfNat.ofNat n :=
   rfl
 
 @[simp, norm_cast]
-theorem up_intCast [IntCast α] (n : ℤ) : up (n : α) = n :=
+lemma up_intCast [IntCast α] (n : ℤ) : up (n : α) = n :=
   rfl
 #align ulift.up_int_cast ULift.up_intCast
 
 @[simp, norm_cast]
-theorem down_natCast [NatCast α] (n : ℕ) : down (n : ULift α) = n :=
+lemma down_natCast [NatCast α] (n : ℕ) : down (n : ULift α) = n :=
   rfl
 #align ulift.down_nat_cast ULift.down_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem down_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+lemma down_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
     down (no_index (OfNat.ofNat n : ULift α)) = OfNat.ofNat n :=
   rfl
 
 @[simp, norm_cast]
-theorem down_intCast [IntCast α] (n : ℤ) : down (n : ULift α) = n :=
+lemma down_intCast [IntCast α] (n : ℤ) : down (n : ULift α) = n :=
   rfl
 #align ulift.down_int_cast ULift.down_intCast
 

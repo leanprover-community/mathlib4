@@ -71,7 +71,7 @@ abbrev insertAt (i : N) : (I × I^{ j // j ≠ i }) ≃ₜ I^N :=
   (funSplitAt I i).symm
 #align cube.insert_at Cube.insertAt
 
-theorem insertAt_boundary (i : N) {t₀ : I} {t}
+lemma insertAt_boundary (i : N) {t₀ : I} {t}
     (H : (t₀ = 0 ∨ t₀ = 1) ∨ t ∈ boundary { j // j ≠ i }) : insertAt i ⟨t₀, t⟩ ∈ boundary N := by
   obtain H | ⟨j, H⟩ := H
   · use i; rwa [funSplitAt_symm_apply, dif_pos rfl]
@@ -114,12 +114,12 @@ instance instFunLike : FunLike (Ω^ N X x) (I^N) X where
 #align gen_loop.fun_like GenLoop.instFunLike
 
 @[ext]
-theorem ext (f g : Ω^ N X x) (H : ∀ y, f y = g y) : f = g :=
+lemma ext (f g : Ω^ N X x) (H : ∀ y, f y = g y) : f = g :=
   DFunLike.coe_injective' (funext H)
 #align gen_loop.ext GenLoop.ext
 
 @[simp]
-theorem mk_apply (f : C(I^N, X)) (H y) : (⟨f, H⟩ : Ω^ N X x) y = f y :=
+lemma mk_apply (f : C(I^N, X)) (H y) : (⟨f, H⟩ : Ω^ N X x) y = f y :=
   rfl
 #align gen_loop.mk_apply GenLoop.mk_apply
 
@@ -131,16 +131,16 @@ def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
 
 /- porting note: this now requires the `instFunLike` instance,
   so the instance is now put before `copy`. -/
-theorem coe_copy (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : ⇑(copy f g h) = g :=
+lemma coe_copy (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : ⇑(copy f g h) = g :=
   rfl
 #align gen_loop.coe_copy GenLoop.coe_copy
 
-theorem copy_eq (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : copy f g h = f := by
+lemma copy_eq (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : copy f g h = f := by
   ext x
   exact congr_fun h x
 #align gen_loop.copy_eq GenLoop.copy_eq
 
-theorem boundary (f : Ω^ N X x) : ∀ y ∈ Cube.boundary N, f y = x :=
+lemma boundary (f : Ω^ N X x) : ∀ y ∈ Cube.boundary N, f y = x :=
   f.2
 #align gen_loop.boundary GenLoop.boundary
 
@@ -150,7 +150,7 @@ def const : Ω^ N X x :=
 #align gen_loop.const GenLoop.const
 
 @[simp]
-theorem const_apply {t} : (@const N X _ x) t = x :=
+lemma const_apply {t} : (@const N X _ x) t = x :=
   rfl
 #align gen_loop.const_apply GenLoop.const_apply
 
@@ -167,21 +167,21 @@ namespace Homotopic
 variable {f g h : Ω^ N X x}
 
 @[refl]
-theorem refl (f : Ω^ N X x) : Homotopic f f :=
+lemma refl (f : Ω^ N X x) : Homotopic f f :=
   ContinuousMap.HomotopicRel.refl _
 #align gen_loop.homotopic.refl GenLoop.Homotopic.refl
 
 @[symm]
-nonrec theorem symm (H : Homotopic f g) : Homotopic g f :=
+nonrec lemma symm (H : Homotopic f g) : Homotopic g f :=
   H.symm
 #align gen_loop.homotopic.symm GenLoop.Homotopic.symm
 
 @[trans]
-nonrec theorem trans (H0 : Homotopic f g) (H1 : Homotopic g h) : Homotopic f h :=
+nonrec lemma trans (H0 : Homotopic f g) (H1 : Homotopic g h) : Homotopic f h :=
   H0.trans H1
 #align gen_loop.homotopic.trans GenLoop.Homotopic.trans
 
-theorem equiv : Equivalence (@Homotopic N X _ x) :=
+lemma equiv : Equivalence (@Homotopic N X _ x) :=
   ⟨Homotopic.refl, Homotopic.symm, Homotopic.trans⟩
 #align gen_loop.homotopic.equiv GenLoop.Homotopic.equiv
 
@@ -207,7 +207,7 @@ def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const
 #align gen_loop.to_loop GenLoop.toLoop
 
 
-theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
+lemma continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
   Path.continuous_uncurry_iff.1 <|
     Continuous.subtype_mk
       (ContinuousMap.continuous_eval.comp <|
@@ -233,14 +233,14 @@ def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
     · exact GenLoop.boundary _ _ ⟨⟨j, Hne⟩, Hj⟩⟩
 #align gen_loop.from_loop GenLoop.fromLoop
 
-theorem continuous_fromLoop (i : N) : Continuous (@fromLoop N X _ x _ i) :=
+lemma continuous_fromLoop (i : N) : Continuous (@fromLoop N X _ x _ i) :=
   ((ContinuousMap.continuous_comp_left _).comp <|
         ContinuousMap.continuous_uncurry.comp <|
           (ContinuousMap.continuous_comp _).comp continuous_induced_dom).subtype_mk
     _
 #align gen_loop.continuous_from_loop GenLoop.continuous_fromLoop
 
-theorem to_from (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : toLoop i (fromLoop i p) = p := by
+lemma to_from (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : toLoop i (fromLoop i p) = p := by
   simp_rw [toLoop, fromLoop, ContinuousMap.comp_assoc,
     toContinuousMap_comp_symm, ContinuousMap.comp_id]
   ext; rfl
@@ -260,12 +260,12 @@ def loopHomeo (i : N) : Ω^ N X x ≃ₜ Ω (Ω^ { j // j ≠ i } X x) const
   continuous_invFun := continuous_fromLoop i
 #align gen_loop.loop_homeo GenLoop.loopHomeo
 
-theorem toLoop_apply (i : N) {p : Ω^ N X x} {t} {tn} :
+lemma toLoop_apply (i : N) {p : Ω^ N X x} {t} {tn} :
     toLoop i p t tn = p (Cube.insertAt i ⟨t, tn⟩) :=
   rfl
 #align gen_loop.to_loop_apply GenLoop.toLoop_apply
 
-theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^N} :
+lemma fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^N} :
     fromLoop i p t = p (t i) (Cube.splitAt i t).snd :=
   rfl
 #align gen_loop.from_loop_apply GenLoop.fromLoop_apply
@@ -285,13 +285,13 @@ def homotopyTo (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 (Cube.boundary
 #align gen_loop.homotopy_to GenLoop.homotopyTo
 
 -- porting note (#11083): `@[simps]` no longer too slow in Lean 4 but does not generate this lemma.
-theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| Cube.boundary N)
+lemma homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| Cube.boundary N)
     (t : I × I) (tₙ : I^{ j // j ≠ i }) :
     homotopyTo i H t tₙ = H (t.fst, Cube.insertAt i (t.snd, tₙ)) :=
   rfl
 #align gen_loop.homotopy_to_apply GenLoop.homotopyTo_apply
 
-theorem homotopicTo (i : N) {p q : Ω^ N X x} :
+lemma homotopicTo (i : N) {p q : Ω^ N X x} :
     Homotopic p q → (toLoop i p).Homotopic (toLoop i q) := by
   refine' Nonempty.map fun H => ⟨⟨⟨fun t => ⟨homotopyTo i H t, _⟩, _⟩, _, _⟩, _⟩
   · rintro y ⟨i, iH⟩
@@ -318,7 +318,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
 -- porting note (#11083): @[simps!] no longer too slow in Lean 4.
 #align gen_loop.homotopy_from_apply GenLoop.homotopyFrom_apply
 
-theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
+lemma homotopicFrom (i : N) {p q : Ω^ N X x} :
     (toLoop i p).Homotopic (toLoop i q) → Homotopic p q := by
   refine' Nonempty.map fun H => ⟨⟨homotopyFrom i H, _, _⟩, _⟩
   pick_goal 3
@@ -360,7 +360,7 @@ def symmAt (i : N) (f : Ω^ N X x) : Ω^ N X x :=
     ext1; change _ = f _; congr; ext1; simp
 #align gen_loop.symm_at GenLoop.symmAt
 
-theorem transAt_distrib {i j : N} (h : i ≠ j) (a b c d : Ω^ N X x) :
+lemma transAt_distrib {i j : N} (h : i ≠ j) (a b c d : Ω^ N X x) :
     transAt i (transAt j a b) (transAt j c d) = transAt j (transAt i a c) (transAt i b d) := by
   ext; simp_rw [transAt, coe_copy, Function.update_apply, if_neg h, if_neg h.symm]
   split_ifs <;>
@@ -368,12 +368,12 @@ theorem transAt_distrib {i j : N} (h : i ≠ j) (a b c d : Ω^ N X x) :
       apply ite_ite_comm; rintro rfl; exact h.symm
 #align gen_loop.trans_at_distrib GenLoop.transAt_distrib
 
-theorem fromLoop_trans_toLoop {i : N} {p q : Ω^ N X x} :
+lemma fromLoop_trans_toLoop {i : N} {p q : Ω^ N X x} :
     fromLoop i ((toLoop i p).trans <| toLoop i q) = transAt i p q :=
   (copy_eq _ _).symm
 #align gen_loop.from_loop_trans_to_loop GenLoop.fromLoop_trans_toLoop
 
-theorem fromLoop_symm_toLoop {i : N} {p : Ω^ N X x} : fromLoop i (toLoop i p).symm = symmAt i p :=
+lemma fromLoop_symm_toLoop {i : N} {p : Ω^ N X x} : fromLoop i (toLoop i p).symm = symmAt i p :=
   (copy_eq _ _).symm
 #align gen_loop.from_loop_symm_to_loop GenLoop.fromLoop_symm_toLoop
 
@@ -506,14 +506,14 @@ abbrev auxGroup (i : N) : Group (HomotopyGroup N X x) :=
   (homotopyGroupEquivFundamentalGroup i).group
 #align homotopy_group.aux_group HomotopyGroup.auxGroup
 
-theorem isUnital_auxGroup (i : N) :
+lemma isUnital_auxGroup (i : N) :
     EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) := {
     left_id := (auxGroup i).one_mul,
     right_id := (auxGroup i).mul_one
   }
 #align homotopy_group.is_unital_aux_group HomotopyGroup.isUnital_auxGroup
 
-theorem auxGroup_indep (i j : N) : (auxGroup i : Group (HomotopyGroup N X x)) = auxGroup j := by
+lemma auxGroup_indep (i j : N) : (auxGroup i : Group (HomotopyGroup N X x)) = auxGroup j := by
   by_cases h : i = j; · rw [h]
   refine' Group.ext (EckmannHilton.mul (isUnital_auxGroup i) (isUnital_auxGroup j) _)
   rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨d⟩
@@ -523,14 +523,14 @@ theorem auxGroup_indep (i j : N) : (auxGroup i : Group (HomotopyGroup N X x)) = 
     coe_symm_toEquiv, loopHomeo_symm_apply]
 #align homotopy_group.aux_group_indep HomotopyGroup.auxGroup_indep
 
-theorem transAt_indep {i} (j) (f g : Ω^ N X x) :
+lemma transAt_indep {i} (j) (f g : Ω^ N X x) :
     (⟦transAt i f g⟧ : HomotopyGroup N X x) = ⟦transAt j f g⟧ := by
   simp_rw [← fromLoop_trans_toLoop]
   let m := fun (G) (_ : Group G) => ((· * ·) : G → G → G)
   exact congr_fun₂ (congr_arg (m <| HomotopyGroup N X x) <| auxGroup_indep i j) ⟦g⟧ ⟦f⟧
 #align homotopy_group.trans_at_indep HomotopyGroup.transAt_indep
 
-theorem symmAt_indep {i} (j) (f : Ω^ N X x) :
+lemma symmAt_indep {i} (j) (f : Ω^ N X x) :
     (⟦symmAt i f⟧ : HomotopyGroup N X x) = ⟦symmAt j f⟧ := by
   simp_rw [← fromLoop_symm_toLoop]
   let inv := fun (G) (_ : Group G) => ((·⁻¹) : G → G)

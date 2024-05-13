@@ -28,7 +28,7 @@ variable {x y : ℂ}
 
 namespace Complex
 
-theorem sameRay_iff : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg := by
+lemma sameRay_iff : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg := by
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
   rcases eq_or_ne y 0 with (rfl | hy)
@@ -38,7 +38,7 @@ theorem sameRay_iff : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg := b
   rw [mul_comm, eq_comm]
 #align complex.same_ray_iff Complex.sameRay_iff
 
-theorem sameRay_iff_arg_div_eq_zero : SameRay ℝ x y ↔ arg (x / y) = 0 := by
+lemma sameRay_iff_arg_div_eq_zero : SameRay ℝ x y ↔ arg (x / y) = 0 := by
   rw [← Real.Angle.toReal_zero, ← arg_coe_angle_eq_iff_eq_toReal, sameRay_iff]
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
@@ -46,23 +46,23 @@ theorem sameRay_iff_arg_div_eq_zero : SameRay ℝ x y ↔ arg (x / y) = 0 := by
 #align complex.same_ray_iff_arg_div_eq_zero Complex.sameRay_iff_arg_div_eq_zero
 
 -- Porting note: `(x + y).abs` stopped working.
-theorem abs_add_eq_iff : abs (x + y) = abs x + abs y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg :=
+lemma abs_add_eq_iff : abs (x + y) = abs x + abs y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg :=
   sameRay_iff_norm_add.symm.trans sameRay_iff
 #align complex.abs_add_eq_iff Complex.abs_add_eq_iff
 
-theorem abs_sub_eq_iff : abs (x - y) = |abs x - abs y| ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg :=
+lemma abs_sub_eq_iff : abs (x - y) = |abs x - abs y| ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg :=
   sameRay_iff_norm_sub.symm.trans sameRay_iff
 #align complex.abs_sub_eq_iff Complex.abs_sub_eq_iff
 
-theorem sameRay_of_arg_eq (h : x.arg = y.arg) : SameRay ℝ x y :=
+lemma sameRay_of_arg_eq (h : x.arg = y.arg) : SameRay ℝ x y :=
   sameRay_iff.mpr <| Or.inr <| Or.inr h
 #align complex.same_ray_of_arg_eq Complex.sameRay_of_arg_eq
 
-theorem abs_add_eq (h : x.arg = y.arg) : abs (x + y) = abs x + abs y :=
+lemma abs_add_eq (h : x.arg = y.arg) : abs (x + y) = abs x + abs y :=
   (sameRay_of_arg_eq h).norm_add
 #align complex.abs_add_eq Complex.abs_add_eq
 
-theorem abs_sub_eq (h : x.arg = y.arg) : abs (x - y) = ‖abs x - abs y‖ :=
+lemma abs_sub_eq (h : x.arg = y.arg) : abs (x - y) = ‖abs x - abs y‖ :=
   (sameRay_of_arg_eq h).norm_sub
 #align complex.abs_sub_eq Complex.abs_sub_eq
 

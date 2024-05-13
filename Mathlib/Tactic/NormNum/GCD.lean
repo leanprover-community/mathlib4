@@ -19,7 +19,7 @@ namespace Tactic
 
 namespace NormNum
 
-theorem int_gcd_helper' {d : ℕ} {x y : ℤ} (a b : ℤ) (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
+lemma int_gcd_helper' {d : ℕ} {x y : ℤ} (a b : ℤ) (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
     (h₃ : x * a + y * b = d) : Int.gcd x y = d := by
   refine Nat.dvd_antisymm ?_ (Int.natCast_dvd_natCast.1 (Int.dvd_gcd h₁ h₂))
   rw [← Int.natCast_dvd_natCast, ← h₃]
@@ -27,13 +27,13 @@ theorem int_gcd_helper' {d : ℕ} {x y : ℤ} (a b : ℤ) (h₁ : (d : ℤ) ∣ 
   · exact Int.gcd_dvd_left.mul_right _
   · exact Int.gcd_dvd_right.mul_right _
 
-theorem nat_gcd_helper_dvd_left (x y : ℕ) (h : y % x = 0) : Nat.gcd x y = x :=
+lemma nat_gcd_helper_dvd_left (x y : ℕ) (h : y % x = 0) : Nat.gcd x y = x :=
   Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero h)
 
-theorem nat_gcd_helper_dvd_right (x y : ℕ) (h : x % y = 0) : Nat.gcd x y = y :=
+lemma nat_gcd_helper_dvd_right (x y : ℕ) (h : x % y = 0) : Nat.gcd x y = y :=
   Nat.gcd_eq_right (Nat.dvd_of_mod_eq_zero h)
 
-theorem nat_gcd_helper_2 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
+lemma nat_gcd_helper_2 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
     (h : x * a = y * b + d) : Nat.gcd x y = d := by
   rw [← Int.coe_nat_gcd]
   apply int_gcd_helper' a (-b)
@@ -42,48 +42,48 @@ theorem nat_gcd_helper_2 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
   rw [mul_neg, ← sub_eq_add_neg, sub_eq_iff_eq_add']
   exact mod_cast h
 
-theorem nat_gcd_helper_1 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
+lemma nat_gcd_helper_1 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
     (h : y * b = x * a + d) : Nat.gcd x y = d :=
   (Nat.gcd_comm _ _).trans <| nat_gcd_helper_2 _ _ _ _ _ hv hu h
 
-theorem nat_gcd_helper_1' (x y a b : ℕ) (h : y * b = x * a + 1) :
+lemma nat_gcd_helper_1' (x y a b : ℕ) (h : y * b = x * a + 1) :
     Nat.gcd x y = 1 :=
   nat_gcd_helper_1 1 _ _ _ _ (Nat.mod_one _) (Nat.mod_one _) h
 
-theorem nat_gcd_helper_2' (x y a b : ℕ) (h : x * a = y * b + 1) :
+lemma nat_gcd_helper_2' (x y a b : ℕ) (h : x * a = y * b + 1) :
     Nat.gcd x y = 1 :=
   nat_gcd_helper_2 1 _ _ _ _ (Nat.mod_one _) (Nat.mod_one _) h
 
-theorem nat_lcm_helper (x y d m : ℕ) (hd : Nat.gcd x y = d)
+lemma nat_lcm_helper (x y d m : ℕ) (hd : Nat.gcd x y = d)
     (d0 : Nat.beq d 0 = false)
     (dm : x * y = d * m) : Nat.lcm x y = m :=
   mul_right_injective₀ (Nat.ne_of_beq_eq_false d0) <| by
     dsimp only -- Porting note: the `dsimp only` was not necessary in Lean3.
     rw [← dm, ← hd, Nat.gcd_mul_lcm]
 
-theorem int_gcd_helper {x y : ℤ} {x' y' d : ℕ}
+lemma int_gcd_helper {x y : ℤ} {x' y' d : ℕ}
     (hx : x.natAbs = x') (hy : y.natAbs = y') (h : Nat.gcd x' y' = d) :
     Int.gcd x y = d := by subst_vars; rw [Int.gcd_def]
 
-theorem int_lcm_helper {x y : ℤ} {x' y' d : ℕ}
+lemma int_lcm_helper {x y : ℤ} {x' y' d : ℕ}
     (hx : x.natAbs = x') (hy : y.natAbs = y') (h : Nat.lcm x' y' = d) :
     Int.lcm x y = d := by subst_vars; rw [Int.lcm_def]
 
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
-theorem isNat_gcd : {x y nx ny z : ℕ} →
+lemma isNat_gcd : {x y nx ny z : ℕ} →
     IsNat x nx → IsNat y ny → Nat.gcd nx ny = z → IsNat (Nat.gcd x y) z
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
-theorem isNat_lcm : {x y nx ny z : ℕ} →
+lemma isNat_lcm : {x y nx ny z : ℕ} →
     IsNat x nx → IsNat y ny → Nat.lcm nx ny = z → IsNat (Nat.lcm x y) z
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
-theorem isInt_gcd : {x y nx ny : ℤ} → {z : ℕ} →
+lemma isInt_gcd : {x y nx ny : ℤ} → {z : ℕ} →
     IsInt x nx → IsInt y ny → Int.gcd nx ny = z → IsNat (Int.gcd x y) z
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
-theorem isInt_lcm : {x y nx ny : ℤ} → {z : ℕ} →
+lemma isInt_lcm : {x y nx ny : ℤ} → {z : ℕ} →
     IsInt x nx → IsInt y ny → Int.lcm nx ny = z → IsNat (Int.lcm x y) z
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 

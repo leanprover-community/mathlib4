@@ -83,7 +83,7 @@ theorem approximates_deriv_on_nhds {f : E → F} {f' : E →L[𝕜] F} {a : E}
   exact ⟨s, has, fun x hx y hy => hs (mk_mem_prod hx hy)⟩
 #align has_strict_fderiv_at.approximates_deriv_on_nhds HasStrictFDerivAt.approximates_deriv_on_nhds
 
-theorem map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f' : E →L[𝕜] F} {a : E}
+lemma map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f' : E →L[𝕜] F} {a : E}
     (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) (h : LinearMap.range f' = ⊤) :
     map f (𝓝 a) = 𝓝 (f a) := by
   let f'symm := f'.nonlinearRightInverseOfSurjective h
@@ -98,7 +98,7 @@ theorem map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f
 
 variable [CompleteSpace E] {f : E → F} {f' : E ≃L[𝕜] F} {a : E}
 
-theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+lemma approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     ∃ s : Set E, a ∈ s ∧ IsOpen s ∧
       ApproximatesLinearOn f (f' : E →L[𝕜] F) s (‖(f'.symm : F →L[𝕜] E)‖₊⁻¹ / 2) := by
   simp only [← and_assoc]
@@ -125,22 +125,22 @@ def toPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) : Par
 variable {f}
 
 @[simp]
-theorem toPartialHomeomorph_coe (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+lemma toPartialHomeomorph_coe (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     (hf.toPartialHomeomorph f : E → F) = f :=
   rfl
 #align has_strict_fderiv_at.to_local_homeomorph_coe HasStrictFDerivAt.toPartialHomeomorph_coe
 
-theorem mem_toPartialHomeomorph_source (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+lemma mem_toPartialHomeomorph_source (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     a ∈ (hf.toPartialHomeomorph f).source :=
   (Classical.choose_spec hf.approximates_deriv_on_open_nhds).1
 #align has_strict_fderiv_at.mem_to_local_homeomorph_source HasStrictFDerivAt.mem_toPartialHomeomorph_source
 
-theorem image_mem_toPartialHomeomorph_target (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+lemma image_mem_toPartialHomeomorph_target (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     f a ∈ (hf.toPartialHomeomorph f).target :=
   (hf.toPartialHomeomorph f).map_source hf.mem_toPartialHomeomorph_source
 #align has_strict_fderiv_at.image_mem_to_local_homeomorph_target HasStrictFDerivAt.image_mem_toPartialHomeomorph_target
 
-theorem map_nhds_eq_of_equiv (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+lemma map_nhds_eq_of_equiv (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     map f (𝓝 a) = 𝓝 (f a) :=
   (hf.toPartialHomeomorph f).map_nhds_eq hf.mem_toPartialHomeomorph_source
 #align has_strict_fderiv_at.map_nhds_eq_of_equiv HasStrictFDerivAt.map_nhds_eq_of_equiv
@@ -155,38 +155,38 @@ def localInverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) : F → E :=
 
 variable {f f' a}
 
-theorem localInverse_def (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+lemma localInverse_def (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     hf.localInverse f _ _ = (hf.toPartialHomeomorph f).symm :=
   rfl
 #align has_strict_fderiv_at.local_inverse_def HasStrictFDerivAt.localInverse_def
 
-theorem eventually_left_inverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+lemma eventually_left_inverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     ∀ᶠ x in 𝓝 a, hf.localInverse f f' a (f x) = x :=
   (hf.toPartialHomeomorph f).eventually_left_inverse hf.mem_toPartialHomeomorph_source
 #align has_strict_fderiv_at.eventually_left_inverse HasStrictFDerivAt.eventually_left_inverse
 
 @[simp]
-theorem localInverse_apply_image (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+lemma localInverse_apply_image (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     hf.localInverse f f' a (f a) = a :=
   hf.eventually_left_inverse.self_of_nhds
 #align has_strict_fderiv_at.local_inverse_apply_image HasStrictFDerivAt.localInverse_apply_image
 
-theorem eventually_right_inverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+lemma eventually_right_inverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     ∀ᶠ y in 𝓝 (f a), f (hf.localInverse f f' a y) = y :=
   (hf.toPartialHomeomorph f).eventually_right_inverse' hf.mem_toPartialHomeomorph_source
 #align has_strict_fderiv_at.eventually_right_inverse HasStrictFDerivAt.eventually_right_inverse
 
-theorem localInverse_continuousAt (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+lemma localInverse_continuousAt (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     ContinuousAt (hf.localInverse f f' a) (f a) :=
   (hf.toPartialHomeomorph f).continuousAt_symm hf.image_mem_toPartialHomeomorph_target
 #align has_strict_fderiv_at.local_inverse_continuous_at HasStrictFDerivAt.localInverse_continuousAt
 
-theorem localInverse_tendsto (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+lemma localInverse_tendsto (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     Tendsto (hf.localInverse f f' a) (𝓝 <| f a) (𝓝 a) :=
   (hf.toPartialHomeomorph f).tendsto_symm hf.mem_toPartialHomeomorph_source
 #align has_strict_fderiv_at.local_inverse_tendsto HasStrictFDerivAt.localInverse_tendsto
 
-theorem localInverse_unique (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) {g : F → E}
+lemma localInverse_unique (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) {g : F → E}
     (hg : ∀ᶠ x in 𝓝 a, g (f x) = x) : ∀ᶠ y in 𝓝 (f a), g y = localInverse f f' a hf y :=
   eventuallyEq_of_left_inv_of_right_inv hg hf.eventually_right_inverse <|
     (hf.toPartialHomeomorph f).tendsto_symm hf.mem_toPartialHomeomorph_source

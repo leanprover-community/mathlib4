@@ -92,7 +92,7 @@ theorem isIntegrallyClosed_dvd {s : S} (hs : IsIntegral R s) {p : R[X]}
   exact Polynomial.eq_zero_of_dvd_of_degree_lt this (degree_modByMonic_lt p <| minpoly.monic hs)
 #align minpoly.is_integrally_closed_dvd minpoly.isIntegrallyClosed_dvd
 
-theorem isIntegrallyClosed_dvd_iff {s : S} (hs : IsIntegral R s) (p : R[X]) :
+lemma isIntegrallyClosed_dvd_iff {s : S} (hs : IsIntegral R s) (p : R[X]) :
     Polynomial.aeval s p = 0 ↔ minpoly R s ∣ p :=
   ⟨fun hp => isIntegrallyClosed_dvd hs hp, fun hp => by
     simpa only [RingHom.mem_ker, RingHom.coe_comp, coe_evalRingHom, coe_mapRingHom,
@@ -100,7 +100,7 @@ theorem isIntegrallyClosed_dvd_iff {s : S} (hs : IsIntegral R s) (p : R[X]) :
       aeval_eq_zero_of_dvd_aeval_eq_zero hp (minpoly.aeval R s)⟩
 #align minpoly.is_integrally_closed_dvd_iff minpoly.isIntegrallyClosed_dvd_iff
 
-theorem ker_eval {s : S} (hs : IsIntegral R s) :
+lemma ker_eval {s : S} (hs : IsIntegral R s) :
     RingHom.ker ((Polynomial.aeval s).toRingHom : R[X] →+* S) =
     Ideal.span ({minpoly R s} : Set R[X]) := by
   ext p
@@ -135,7 +135,7 @@ theorem _root_.IsIntegrallyClosed.minpoly.unique {s : S} {P : R[X]} (hmo : P.Mon
   · rw [(monic hs).leadingCoeff, hmo.leadingCoeff]
 #align minpoly.is_integrally_closed.minpoly.unique IsIntegrallyClosed.minpoly.unique
 
-theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpoly R x) := by
+lemma prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpoly R x) := by
   refine'
     ⟨(minpoly.monic hx).ne_zero,
       ⟨fun h_contra => (ne_of_lt (minpoly.degree_pos hx)) (degree_eq_zero_of_isUnit h_contra).symm,
@@ -151,7 +151,7 @@ open Algebra Polynomial AdjoinRoot
 
 variable {x : S}
 
-theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) := by
+lemma ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) := by
   refine' (injective_iff_map_eq_zero _).2 fun P₁ hP₁ => _
   obtain ⟨P, rfl⟩ := mk_surjective P₁
   rwa [Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe,
@@ -173,12 +173,12 @@ def _root_.Algebra.adjoin.powerBasis' (hx : IsIntegral R x) :
 #align algebra.adjoin.power_basis' Algebra.adjoin.powerBasis'
 
 @[simp]
-theorem _root_.Algebra.adjoin.powerBasis'_dim (hx : IsIntegral R x) :
+lemma _root_.Algebra.adjoin.powerBasis'_dim (hx : IsIntegral R x) :
     (Algebra.adjoin.powerBasis' hx).dim = (minpoly R x).natDegree := rfl
 #align algebra.adjoin.power_basis'_dim Algebra.adjoin.powerBasis'_dim
 
 @[simp]
-theorem _root_.Algebra.adjoin.powerBasis'_gen (hx : IsIntegral R x) :
+lemma _root_.Algebra.adjoin.powerBasis'_gen (hx : IsIntegral R x) :
     (adjoin.powerBasis' hx).gen = ⟨x, SetLike.mem_coe.1 <| subset_adjoin <| mem_singleton x⟩ := by
   rw [Algebra.adjoin.powerBasis', PowerBasis.map_gen, AdjoinRoot.powerBasis'_gen, equivAdjoin,
     AlgEquiv.ofBijective_apply, Minpoly.toAdjoin, liftHom_root]
@@ -193,13 +193,13 @@ noncomputable def _root_.PowerBasis.ofGenMemAdjoin' (B : PowerBasis R S) (hint :
 #align power_basis.of_gen_mem_adjoin' PowerBasis.ofGenMemAdjoin'
 
 @[simp]
-theorem _root_.PowerBasis.ofGenMemAdjoin'_dim (B : PowerBasis R S) (hint : IsIntegral R x)
+lemma _root_.PowerBasis.ofGenMemAdjoin'_dim (B : PowerBasis R S) (hint : IsIntegral R x)
     (hx : B.gen ∈ adjoin R ({x} : Set S)) :
     (B.ofGenMemAdjoin' hint hx).dim = (minpoly R x).natDegree := rfl
 #align power_basis.of_gen_mem_adjoin'_dim PowerBasis.ofGenMemAdjoin'_dim
 
 @[simp]
-theorem _root_.PowerBasis.ofGenMemAdjoin'_gen (B : PowerBasis R S) (hint : IsIntegral R x)
+lemma _root_.PowerBasis.ofGenMemAdjoin'_gen (B : PowerBasis R S) (hint : IsIntegral R x)
     (hx : B.gen ∈ adjoin R ({x} : Set S)) :
     (B.ofGenMemAdjoin' hint hx).gen = x := by
   simp [PowerBasis.ofGenMemAdjoin']

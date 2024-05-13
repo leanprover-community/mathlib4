@@ -64,11 +64,11 @@ noncomputable def toDualLeft : M ≃ₗ[R] Dual R N :=
   LinearEquiv.ofBijective p.toLin p.bijectiveLeft
 
 @[simp]
-theorem toDualLeft_apply (a : M) : p.toDualLeft a = p a :=
+lemma toDualLeft_apply (a : M) : p.toDualLeft a = p a :=
   rfl
 
 @[simp]
-theorem apply_toDualLeft_symm_apply (f : Dual R N) (x : N) : p (p.toDualLeft.symm f) x = f x := by
+lemma apply_toDualLeft_symm_apply (f : Dual R N) (x : N) : p (p.toDualLeft.symm f) x = f x := by
   have h := LinearEquiv.apply_symm_apply p.toDualLeft f
   rw [toDualLeft_apply] at h
   exact congrFun (congrArg DFunLike.coe h) x
@@ -78,43 +78,43 @@ noncomputable def toDualRight : N ≃ₗ[R] Dual R M :=
   toDualLeft p.flip
 
 @[simp]
-theorem toDualRight_apply (a : N) : p.toDualRight a = p.flip a :=
+lemma toDualRight_apply (a : N) : p.toDualRight a = p.flip a :=
   rfl
 
 @[simp]
-theorem apply_apply_toDualRight_symm (x : M) (f : Dual R M) :
+lemma apply_apply_toDualRight_symm (x : M) (f : Dual R M) :
     (p x) (p.toDualRight.symm f) = f x := by
   have h := LinearEquiv.apply_symm_apply p.toDualRight f
   rw [toDualRight_apply] at h
   exact congrFun (congrArg DFunLike.coe h) x
 
-theorem toDualLeft_of_toDualRight_symm (x : M) (f : Dual R M) :
+lemma toDualLeft_of_toDualRight_symm (x : M) (f : Dual R M) :
     (p.toDualLeft x) (p.toDualRight.symm f) = f x := by
   rw [@toDualLeft_apply]
   exact apply_apply_toDualRight_symm p x f
 
-theorem toDualRight_symm_toDualLeft (x : M) :
+lemma toDualRight_symm_toDualLeft (x : M) :
     p.toDualRight.symm.dualMap (p.toDualLeft x) = Dual.eval R M x := by
   ext f
   simp only [LinearEquiv.dualMap_apply, Dual.eval_apply]
   exact toDualLeft_of_toDualRight_symm p x f
 
-theorem toDualRight_symm_comp_toDualLeft :
+lemma toDualRight_symm_comp_toDualLeft :
     p.toDualRight.symm.dualMap ∘ₗ (p.toDualLeft : M →ₗ[R] Dual R N) = Dual.eval R M := by
   ext1 x
   exact p.toDualRight_symm_toDualLeft x
 
-theorem bijective_toDualRight_symm_toDualLeft :
+lemma bijective_toDualRight_symm_toDualLeft :
     Bijective (fun x => p.toDualRight.symm.dualMap (p.toDualLeft x)) :=
   Bijective.comp (LinearEquiv.bijective p.toDualRight.symm.dualMap)
     (LinearEquiv.bijective p.toDualLeft)
 
-theorem reflexive_left : IsReflexive R M where
+lemma reflexive_left : IsReflexive R M where
   bijective_dual_eval' := by
     rw [← p.toDualRight_symm_comp_toDualLeft]
     exact p.bijective_toDualRight_symm_toDualLeft
 
-theorem reflexive_right : IsReflexive R N :=
+lemma reflexive_right : IsReflexive R N :=
   p.flip.reflexive_left
 
 end PerfectPairing

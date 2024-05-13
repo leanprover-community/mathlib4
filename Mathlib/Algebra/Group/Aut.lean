@@ -61,44 +61,44 @@ instance : Inhabited (MulAut M) :=
   ⟨1⟩
 
 @[simp]
-theorem coe_mul (e₁ e₂ : MulAut M) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
+lemma coe_mul (e₁ e₂ : MulAut M) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
   rfl
 #align mul_aut.coe_mul MulAut.coe_mul
 
 @[simp]
-theorem coe_one : ⇑(1 : MulAut M) = id :=
+lemma coe_one : ⇑(1 : MulAut M) = id :=
   rfl
 #align mul_aut.coe_one MulAut.coe_one
 
-theorem mul_def (e₁ e₂ : MulAut M) : e₁ * e₂ = e₂.trans e₁ :=
+lemma mul_def (e₁ e₂ : MulAut M) : e₁ * e₂ = e₂.trans e₁ :=
   rfl
 #align mul_aut.mul_def MulAut.mul_def
 
-theorem one_def : (1 : MulAut M) = MulEquiv.refl _ :=
+lemma one_def : (1 : MulAut M) = MulEquiv.refl _ :=
   rfl
 #align mul_aut.one_def MulAut.one_def
 
-theorem inv_def (e₁ : MulAut M) : e₁⁻¹ = e₁.symm :=
+lemma inv_def (e₁ : MulAut M) : e₁⁻¹ = e₁.symm :=
   rfl
 #align mul_aut.inv_def MulAut.inv_def
 
 @[simp]
-theorem mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ m) :=
+lemma mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ m) :=
   rfl
 #align mul_aut.mul_apply MulAut.mul_apply
 
 @[simp]
-theorem one_apply (m : M) : (1 : MulAut M) m = m :=
+lemma one_apply (m : M) : (1 : MulAut M) m = m :=
   rfl
 #align mul_aut.one_apply MulAut.one_apply
 
 @[simp]
-theorem apply_inv_self (e : MulAut M) (m : M) : e (e⁻¹ m) = m :=
+lemma apply_inv_self (e : MulAut M) (m : M) : e (e⁻¹ m) = m :=
   MulEquiv.apply_symm_apply _ _
 #align mul_aut.apply_inv_self MulAut.apply_inv_self
 
 @[simp]
-theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
+lemma inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
   MulEquiv.apply_symm_apply _ _
 #align mul_aut.inv_apply_self MulAut.inv_apply_self
 
@@ -119,7 +119,7 @@ instance applyMulDistribMulAction {M} [Monoid M] : MulDistribMulAction (MulAut M
 #align mul_aut.apply_mul_distrib_mul_action MulAut.applyMulDistribMulAction
 
 @[simp]
-protected theorem smul_def {M} [Monoid M] (f : MulAut M) (a : M) : f • a = f a :=
+protected lemma smul_def {M} [Monoid M] (f : MulAut M) (a : M) : f • a = f a :=
   rfl
 #align mul_aut.smul_def MulAut.smul_def
 
@@ -147,17 +147,17 @@ def conj [Group G] : G →* MulAut G where
 #align mul_aut.conj MulAut.conj
 
 @[simp]
-theorem conj_apply [Group G] (g h : G) : conj g h = g * h * g⁻¹ :=
+lemma conj_apply [Group G] (g h : G) : conj g h = g * h * g⁻¹ :=
   rfl
 #align mul_aut.conj_apply MulAut.conj_apply
 
 @[simp]
-theorem conj_symm_apply [Group G] (g h : G) : (conj g).symm h = g⁻¹ * h * g :=
+lemma conj_symm_apply [Group G] (g h : G) : (conj g).symm h = g⁻¹ * h * g :=
   rfl
 #align mul_aut.conj_symm_apply MulAut.conj_symm_apply
 
 @[simp]
-theorem conj_inv_apply [Group G] (g h : G) : (conj g)⁻¹ h = g⁻¹ * h * g :=
+lemma conj_inv_apply [Group G] (g h : G) : (conj g)⁻¹ h = g⁻¹ * h * g :=
   rfl
 #align mul_aut.conj_inv_apply MulAut.conj_inv_apply
 
@@ -184,44 +184,44 @@ instance : Inhabited (AddAut A) :=
   ⟨1⟩
 
 @[simp]
-theorem coe_mul (e₁ e₂ : AddAut A) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
+lemma coe_mul (e₁ e₂ : AddAut A) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
   rfl
 #align add_aut.coe_mul AddAut.coe_mul
 
 @[simp]
-theorem coe_one : ⇑(1 : AddAut A) = id :=
+lemma coe_one : ⇑(1 : AddAut A) = id :=
   rfl
 #align add_aut.coe_one AddAut.coe_one
 
-theorem mul_def (e₁ e₂ : AddAut A) : e₁ * e₂ = e₂.trans e₁ :=
+lemma mul_def (e₁ e₂ : AddAut A) : e₁ * e₂ = e₂.trans e₁ :=
   rfl
 #align add_aut.mul_def AddAut.mul_def
 
-theorem one_def : (1 : AddAut A) = AddEquiv.refl _ :=
+lemma one_def : (1 : AddAut A) = AddEquiv.refl _ :=
   rfl
 #align add_aut.one_def AddAut.one_def
 
-theorem inv_def (e₁ : AddAut A) : e₁⁻¹ = e₁.symm :=
+lemma inv_def (e₁ : AddAut A) : e₁⁻¹ = e₁.symm :=
   rfl
 #align add_aut.inv_def AddAut.inv_def
 
 @[simp]
-theorem mul_apply (e₁ e₂ : AddAut A) (a : A) : (e₁ * e₂) a = e₁ (e₂ a) :=
+lemma mul_apply (e₁ e₂ : AddAut A) (a : A) : (e₁ * e₂) a = e₁ (e₂ a) :=
   rfl
 #align add_aut.mul_apply AddAut.mul_apply
 
 @[simp]
-theorem one_apply (a : A) : (1 : AddAut A) a = a :=
+lemma one_apply (a : A) : (1 : AddAut A) a = a :=
   rfl
 #align add_aut.one_apply AddAut.one_apply
 
 @[simp]
-theorem apply_inv_self (e : AddAut A) (a : A) : e⁻¹ (e a) = a :=
+lemma apply_inv_self (e : AddAut A) (a : A) : e⁻¹ (e a) = a :=
   AddEquiv.apply_symm_apply _ _
 #align add_aut.apply_inv_self AddAut.apply_inv_self
 
 @[simp]
-theorem inv_apply_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
+lemma inv_apply_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
   AddEquiv.apply_symm_apply _ _
 #align add_aut.inv_apply_self AddAut.inv_apply_self
 
@@ -242,7 +242,7 @@ instance applyDistribMulAction {A} [AddMonoid A] : DistribMulAction (AddAut A) A
 #align add_aut.apply_distrib_mul_action AddAut.applyDistribMulAction
 
 @[simp]
-protected theorem smul_def {A} [AddMonoid A] (f : AddAut A) (a : A) : f • a = f a :=
+protected lemma smul_def {A} [AddMonoid A] (f : AddAut A) (a : A) : f • a = f a :=
   rfl
 #align add_aut.smul_def AddAut.smul_def
 
@@ -274,12 +274,12 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
 #align add_aut.conj AddAut.conj
 
 @[simp]
-theorem conj_apply [AddGroup G] (g h : G) : conj g h = g + h + -g :=
+lemma conj_apply [AddGroup G] (g h : G) : conj g h = g + h + -g :=
   rfl
 #align add_aut.conj_apply AddAut.conj_apply
 
 @[simp]
-theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).symm h = -g + h + g :=
+lemma conj_symm_apply [AddGroup G] (g h : G) : (conj g).symm h = -g + h + g :=
   rfl
 #align add_aut.conj_symm_apply AddAut.conj_symm_apply
 
@@ -287,7 +287,7 @@ theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).symm h = -g + h + g :=
 -- but this no longer pass the simp_nf linter, as the LHS simplifies by `toMul_neg` to
 -- `(Additive.toMul (conj g))⁻¹`.
 @[simp]
-theorem conj_inv_apply [AddGroup G] (g h : G) : (Additive.toMul (conj g))⁻¹ h = -g + h + g :=
+lemma conj_inv_apply [AddGroup G] (g h : G) : (Additive.toMul (conj g))⁻¹ h = -g + h + g :=
   rfl
 #align add_aut.conj_inv_apply AddAut.conj_inv_apply
 

@@ -439,7 +439,7 @@ theorem eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero {u v : E} (hvm : v ∈
 
 variable (K)
 
-theorem orthogonalProjectionFn_norm_sq (v : E) :
+lemma orthogonalProjectionFn_norm_sq (v : E) :
     ‖v‖ * ‖v‖ =
       ‖v - orthogonalProjectionFn K v‖ * ‖v - orthogonalProjectionFn K v‖ +
         ‖orthogonalProjectionFn K v‖ * ‖orthogonalProjectionFn K v‖ := by
@@ -482,7 +482,7 @@ def orthogonalProjection : E →L[𝕜] K :=
 variable {K}
 
 @[simp]
-theorem orthogonalProjectionFn_eq (v : E) :
+lemma orthogonalProjectionFn_eq (v : E) :
     orthogonalProjectionFn K v = (orthogonalProjection K v : E) :=
   rfl
 #align orthogonal_projection_fn_eq orthogonalProjectionFn_eq
@@ -524,12 +524,12 @@ theorem eq_orthogonalProjection_of_mem_orthogonal' {u v z : E}
 #align eq_orthogonal_projection_of_mem_orthogonal' eq_orthogonalProjection_of_mem_orthogonal'
 
 @[simp]
-theorem orthogonalProjection_orthogonal_val (u : E) :
+lemma orthogonalProjection_orthogonal_val (u : E) :
     (orthogonalProjection Kᗮ u : E) = u - orthogonalProjection K u :=
   eq_orthogonalProjection_of_mem_orthogonal' (sub_orthogonalProjection_mem_orthogonal _)
     (K.le_orthogonal_orthogonal (orthogonalProjection K u).2) <| by simp
 
-theorem orthogonalProjection_orthogonal (u : E) :
+lemma orthogonalProjection_orthogonal (u : E) :
     orthogonalProjection Kᗮ u =
       ⟨u - orthogonalProjection K u, sub_orthogonalProjection_mem_orthogonal _⟩ :=
   Subtype.eq <| orthogonalProjection_orthogonal_val _
@@ -563,17 +563,17 @@ theorem orthogonalProjection_eq_self_iff {v : E} : (orthogonalProjection K v : E
 #align orthogonal_projection_eq_self_iff orthogonalProjection_eq_self_iff
 
 @[simp]
-theorem orthogonalProjection_eq_zero_iff {v : E} : orthogonalProjection K v = 0 ↔ v ∈ Kᗮ := by
+lemma orthogonalProjection_eq_zero_iff {v : E} : orthogonalProjection K v = 0 ↔ v ∈ Kᗮ := by
   refine ⟨fun h ↦ ?_, fun h ↦ Subtype.eq <| eq_orthogonalProjection_of_mem_orthogonal
     (zero_mem _) ?_⟩
   · simpa [h] using sub_orthogonalProjection_mem_orthogonal (K := K) v
   · simpa
 
 @[simp]
-theorem ker_orthogonalProjection : LinearMap.ker (orthogonalProjection K) = Kᗮ := by
+lemma ker_orthogonalProjection : LinearMap.ker (orthogonalProjection K) = Kᗮ := by
   ext; exact orthogonalProjection_eq_zero_iff
 
-theorem LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGroup E]
+lemma LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] [HasOrthogonalProjection (p.map f.toLinearMap)]
     (x : E) : f (orthogonalProjection p x) = orthogonalProjection (p.map f.toLinearMap) (f x) := by
@@ -583,7 +583,7 @@ theorem LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGro
   rw [← f.map_sub, f.inner_map_map, orthogonalProjection_inner_eq_zero x x' hx']
 #align linear_isometry.map_orthogonal_projection LinearIsometry.map_orthogonalProjection
 
-theorem LinearIsometry.map_orthogonalProjection' {E E' : Type*} [NormedAddCommGroup E]
+lemma LinearIsometry.map_orthogonalProjection' {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] [HasOrthogonalProjection (p.map f)] (x : E) :
     f (orthogonalProjection p x) = orthogonalProjection (p.map f) (f x) :=
@@ -615,7 +615,7 @@ theorem orthogonalProjection_norm_le : ‖orthogonalProjection K‖ ≤ 1 :=
 
 variable (𝕜)
 
-theorem smul_orthogonalProjection_singleton {v : E} (w : E) :
+lemma smul_orthogonalProjection_singleton {v : E} (w : E) :
     ((‖v‖ ^ 2 : ℝ) : 𝕜) • (orthogonalProjection (𝕜 ∙ v) w : E) = ⟪v, w⟫ • v := by
   suffices ((orthogonalProjection (𝕜 ∙ v) (((‖v‖ : 𝕜) ^ 2) • w)) : E) = ⟪v, w⟫ • v by
     simpa using this
@@ -729,15 +729,15 @@ theorem reflection_mul_reflection : reflection K * reflection K = 1 :=
   reflection_trans_reflection _
 #align reflection_mul_reflection reflection_mul_reflection
 
-theorem reflection_orthogonal_apply (v : E) : reflection Kᗮ v = -reflection K v := by
+lemma reflection_orthogonal_apply (v : E) : reflection Kᗮ v = -reflection K v := by
   simp [reflection_apply]; abel
 
-theorem reflection_orthogonal : reflection Kᗮ = .trans (reflection K) (.neg _) := by
+lemma reflection_orthogonal : reflection Kᗮ = .trans (reflection K) (.neg _) := by
   ext; apply reflection_orthogonal_apply
 
 variable {K}
 
-theorem reflection_singleton_apply (u v : E) :
+lemma reflection_singleton_apply (u v : E) :
     reflection (𝕜 ∙ u) v = 2 • (⟪u, v⟫ / ((‖u‖ : 𝕜) ^ 2)) • u - v := by
   rw [reflection_apply, orthogonalProjection_singleton, ofReal_pow]
 
@@ -749,7 +749,7 @@ theorem reflection_eq_self_iff (x : E) : reflection K x = x ↔ x ∈ K := by
   exact two_ne_zero
 #align reflection_eq_self_iff reflection_eq_self_iff
 
-theorem reflection_mem_subspace_eq_self {x : E} (hx : x ∈ K) : reflection K x = x :=
+lemma reflection_mem_subspace_eq_self {x : E} (hx : x ∈ K) : reflection K x = x :=
   (reflection_eq_self_iff x).mpr hx
 #align reflection_mem_subspace_eq_self reflection_mem_subspace_eq_self
 
@@ -848,7 +848,7 @@ theorem Submodule.isCompl_orthogonal_of_completeSpace [HasOrthogonalProjection K
 #align submodule.is_compl_orthogonal_of_complete_space Submodule.isCompl_orthogonal_of_completeSpace
 
 @[simp]
-theorem Submodule.orthogonal_eq_bot_iff [HasOrthogonalProjection K] : Kᗮ = ⊥ ↔ K = ⊤ := by
+lemma Submodule.orthogonal_eq_bot_iff [HasOrthogonalProjection K] : Kᗮ = ⊥ ↔ K = ⊤ := by
   refine' ⟨_, fun h => by rw [h, Submodule.top_orthogonal_eq_bot]⟩
   intro h
   have : K ⊔ Kᗮ = ⊤ := Submodule.sup_orthogonal_of_completeSpace
@@ -880,7 +880,7 @@ theorem orthogonalProjection_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜 E}
 set_option linter.uppercaseLean3 false in
 #align orthogonal_projection_comp_subtypeL_eq_zero_iff orthogonalProjection_comp_subtypeL_eq_zero_iff
 
-theorem orthogonalProjection_eq_linear_proj [HasOrthogonalProjection K] (x : E) :
+lemma orthogonalProjection_eq_linear_proj [HasOrthogonalProjection K] (x : E) :
     orthogonalProjection K x =
       K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_completeSpace x := by
   have : IsCompl K Kᗮ := Submodule.isCompl_orthogonal_of_completeSpace
@@ -889,7 +889,7 @@ theorem orthogonalProjection_eq_linear_proj [HasOrthogonalProjection K] (x : E) 
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (Submodule.coe_mem _), add_zero]
 #align orthogonal_projection_eq_linear_proj orthogonalProjection_eq_linear_proj
 
-theorem orthogonalProjection_coe_linearMap_eq_linearProj [HasOrthogonalProjection K] :
+lemma orthogonalProjection_coe_linearMap_eq_linearProj [HasOrthogonalProjection K] :
     (orthogonalProjection K : E →ₗ[𝕜] K) =
       K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_completeSpace :=
   LinearMap.ext <| orthogonalProjection_eq_linear_proj
@@ -982,13 +982,13 @@ open Submodule
 
 variable {x y : E}
 
-theorem eq_zero_of_inner_left (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪x, v⟫ = 0) : x = 0 := by
+lemma eq_zero_of_inner_left (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪x, v⟫ = 0) : x = 0 := by
   have : (⟪x, ·⟫) = 0 := (continuous_const.inner continuous_id).ext_on
     hK continuous_const (Subtype.forall.1 h)
   simpa using congr_fun this x
 #align dense.eq_zero_of_inner_left Dense.eq_zero_of_inner_left
 
-theorem eq_zero_of_mem_orthogonal (hK : Dense (K : Set E)) (h : x ∈ Kᗮ) : x = 0 :=
+lemma eq_zero_of_mem_orthogonal (hK : Dense (K : Set E)) (h : x ∈ Kᗮ) : x = 0 :=
   eq_zero_of_inner_left hK fun v ↦ (mem_orthogonal' _ _).1 h _ v.2
 #align dense.eq_zero_of_mem_orthogonal Dense.eq_zero_of_mem_orthogonal
 
@@ -997,16 +997,16 @@ theorem eq_of_sub_mem_orthogonal (hK : Dense (K : Set E)) (h : x - y ∈ Kᗮ) :
   sub_eq_zero.1 <| eq_zero_of_mem_orthogonal hK h
 #align dense.eq_of_sub_mem_orthogonal Dense.eq_of_sub_mem_orthogonal
 
-theorem eq_of_inner_left (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x = y :=
+lemma eq_of_inner_left (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x = y :=
   hK.eq_of_sub_mem_orthogonal (Submodule.sub_mem_orthogonal_of_inner_left h)
 #align dense.eq_of_inner_left Dense.eq_of_inner_left
 
-theorem eq_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x⟫ = ⟪(v : E), y⟫) :
+lemma eq_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x⟫ = ⟪(v : E), y⟫) :
     x = y :=
   hK.eq_of_sub_mem_orthogonal (Submodule.sub_mem_orthogonal_of_inner_right h)
 #align dense.eq_of_inner_right Dense.eq_of_inner_right
 
-theorem eq_zero_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x⟫ = 0) : x = 0 :=
+lemma eq_zero_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x⟫ = 0) : x = 0 :=
   hK.eq_of_inner_right fun v => by rw [inner_zero_right, h v]
 #align dense.eq_zero_of_inner_right Dense.eq_zero_of_inner_right
 
@@ -1030,7 +1030,7 @@ theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (�
   reflection_mem_subspace_orthogonal_precomplement_eq_neg (Submodule.mem_span_singleton_self v)
 #align reflection_orthogonal_complement_singleton_eq_neg reflection_orthogonalComplement_singleton_eq_neg
 
-theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (v - w))ᗮ v = w := by
+lemma reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (v - w))ᗮ v = w := by
   set R : F ≃ₗᵢ[ℝ] F := reflection (ℝ ∙ v - w)ᗮ
   suffices R v + R v = w + w by
     apply smul_right_injective F (by norm_num : (2 : ℝ) ≠ 0)
@@ -1079,7 +1079,7 @@ theorem id_eq_sum_orthogonalProjection_self_orthogonalComplement [HasOrthogonalP
 
 -- Porting note: The priority should be higher than `Submodule.coe_inner`.
 @[simp high]
-theorem inner_orthogonalProjection_eq_of_mem_right [HasOrthogonalProjection K] (u : K) (v : E) :
+lemma inner_orthogonalProjection_eq_of_mem_right [HasOrthogonalProjection K] (u : K) (v : E) :
     ⟪orthogonalProjection K v, u⟫ = ⟪v, u⟫ :=
   calc
     ⟪orthogonalProjection K v, u⟫ = ⟪(orthogonalProjection K v : E), u⟫ := K.coe_inner _ _
@@ -1090,7 +1090,7 @@ theorem inner_orthogonalProjection_eq_of_mem_right [HasOrthogonalProjection K] (
 
 -- Porting note: The priority should be higher than `Submodule.coe_inner`.
 @[simp high]
-theorem inner_orthogonalProjection_eq_of_mem_left [HasOrthogonalProjection K] (u : K) (v : E) :
+lemma inner_orthogonalProjection_eq_of_mem_left [HasOrthogonalProjection K] (u : K) (v : E) :
     ⟪u, orthogonalProjection K v⟫ = ⟪(u : E), v⟫ := by
   rw [← inner_conj_symm, ← inner_conj_symm (u : E), inner_orthogonalProjection_eq_of_mem_right]
 #align inner_orthogonal_projection_eq_of_mem_left inner_orthogonalProjection_eq_of_mem_left

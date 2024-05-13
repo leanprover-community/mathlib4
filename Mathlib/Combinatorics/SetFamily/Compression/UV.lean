@@ -82,12 +82,12 @@ def compress (u v a : α) : α :=
   if Disjoint u a ∧ v ≤ a then (a ⊔ u) \ v else a
 #align uv.compress UV.compress
 
-theorem compress_of_disjoint_of_le (hua : Disjoint u a) (hva : v ≤ a) :
+lemma compress_of_disjoint_of_le (hua : Disjoint u a) (hva : v ≤ a) :
     compress u v a = (a ⊔ u) \ v :=
   if_pos ⟨hua, hva⟩
 #align uv.compress_of_disjoint_of_le UV.compress_of_disjoint_of_le
 
-theorem compress_of_disjoint_of_le' (hva : Disjoint v a) (hua : u ≤ a) :
+lemma compress_of_disjoint_of_le' (hva : Disjoint v a) (hua : u ≤ a) :
     compress u v ((a ⊔ v) \ u) = a := by
   rw [compress_of_disjoint_of_le disjoint_sdiff_self_right
       (le_sdiff.2 ⟨(le_sup_right : v ≤ a ⊔ v), hva.mono_right hua⟩),
@@ -95,7 +95,7 @@ theorem compress_of_disjoint_of_le' (hva : Disjoint v a) (hua : u ≤ a) :
 #align uv.compress_of_disjoint_of_le' UV.compress_of_disjoint_of_le'
 
 @[simp]
-theorem compress_self (u a : α) : compress u u a = a := by
+lemma compress_self (u a : α) : compress u u a = a := by
   unfold compress
   split_ifs with h
   · exact h.1.symm.sup_sdiff_cancel_right
@@ -158,11 +158,11 @@ theorem mem_compression :
   simp_rw [compression, mem_union, mem_filter, mem_image, and_comm]
 #align uv.mem_compression UV.mem_compression
 
-protected theorem IsCompressed.eq (h : IsCompressed u v s) : 𝓒 u v s = s := h
+protected lemma IsCompressed.eq (h : IsCompressed u v s) : 𝓒 u v s = s := h
 #align uv.is_compressed.eq UV.IsCompressed.eq
 
 @[simp]
-theorem compression_self (u : α) (s : Finset α) : 𝓒 u u s = s := by
+lemma compression_self (u : α) (s : Finset α) : 𝓒 u u s = s := by
   unfold compression
   convert union_empty s
   · ext a
@@ -177,12 +177,12 @@ theorem compression_self (u : α) (s : Finset α) : 𝓒 u u s = s := by
 theorem isCompressed_self (u : α) (s : Finset α) : IsCompressed u u s := compression_self u s
 #align uv.is_compressed_self UV.isCompressed_self
 
-theorem compress_disjoint :
+lemma compress_disjoint :
     Disjoint (s.filter (compress u v · ∈ s)) ((s.image <| compress u v).filter (· ∉ s)) :=
   disjoint_left.2 fun _a ha₁ ha₂ ↦ (mem_filter.1 ha₂).2 (mem_filter.1 ha₁).1
 #align uv.compress_disjoint UV.compress_disjoint
 
-theorem compress_mem_compression (ha : a ∈ s) : compress u v a ∈ 𝓒 u v s := by
+lemma compress_mem_compression (ha : a ∈ s) : compress u v a ∈ 𝓒 u v s := by
   rw [mem_compression]
   by_cases h : compress u v a ∈ s
   · rw [compress_idem]
@@ -191,7 +191,7 @@ theorem compress_mem_compression (ha : a ∈ s) : compress u v a ∈ 𝓒 u v s 
 #align uv.compress_mem_compression UV.compress_mem_compression
 
 -- This is a special case of `compress_mem_compression` once we have `compression_idem`.
-theorem compress_mem_compression_of_mem_compression (ha : a ∈ 𝓒 u v s) :
+lemma compress_mem_compression_of_mem_compression (ha : a ∈ 𝓒 u v s) :
     compress u v a ∈ 𝓒 u v s := by
   rw [mem_compression] at ha ⊢
   simp only [compress_idem, exists_prop]
@@ -217,7 +217,7 @@ theorem card_compression (u v : α) (s : Finset α) : (𝓒 u v s).card = s.card
     filter_union_filter_neg_eq]
 #align uv.card_compression UV.card_compression
 
-theorem le_of_mem_compression_of_not_mem (h : a ∈ 𝓒 u v s) (ha : a ∉ s) : u ≤ a := by
+lemma le_of_mem_compression_of_not_mem (h : a ∈ 𝓒 u v s) (ha : a ∉ s) : u ≤ a := by
   rw [mem_compression] at h
   obtain h | ⟨-, b, hb, hba⟩ := h
   · cases ha h.1
@@ -228,7 +228,7 @@ theorem le_of_mem_compression_of_not_mem (h : a ∈ 𝓒 u v s) (ha : a ∉ s) :
   · cases ne_of_mem_of_not_mem hb ha hba
 #align uv.le_of_mem_compression_of_not_mem UV.le_of_mem_compression_of_not_mem
 
-theorem disjoint_of_mem_compression_of_not_mem (h : a ∈ 𝓒 u v s) (ha : a ∉ s) : Disjoint v a := by
+lemma disjoint_of_mem_compression_of_not_mem (h : a ∈ 𝓒 u v s) (ha : a ∉ s) : Disjoint v a := by
   rw [mem_compression] at h
   obtain h | ⟨-, b, hb, hba⟩ := h
   · cases ha h.1
@@ -239,7 +239,7 @@ theorem disjoint_of_mem_compression_of_not_mem (h : a ∈ 𝓒 u v s) (ha : a �
   · cases ne_of_mem_of_not_mem hb ha hba
 #align uv.disjoint_of_mem_compression_of_not_mem UV.disjoint_of_mem_compression_of_not_mem
 
-theorem sup_sdiff_mem_of_mem_compression_of_not_mem (h : a ∈ 𝓒 u v s) (ha : a ∉ s) :
+lemma sup_sdiff_mem_of_mem_compression_of_not_mem (h : a ∈ 𝓒 u v s) (ha : a ∉ s) :
     (a ⊔ v) \ u ∈ s := by
   rw [mem_compression] at h
   obtain h | ⟨-, b, hb, hba⟩ := h
@@ -309,7 +309,7 @@ lemma _root_.Set.Sized.uvCompression (huv : u.card = v.card) (h𝒜 : (𝒜 : Se
   · exact h𝒜 hs.1
   · rw [card_compress huv, h𝒜 ht]
 
-private theorem aux (huv : ∀ x ∈ u, ∃ y ∈ v, IsCompressed (u.erase x) (v.erase y) 𝒜) :
+private lemma aux (huv : ∀ x ∈ u, ∃ y ∈ v, IsCompressed (u.erase x) (v.erase y) 𝒜) :
     v = ∅ → u = ∅ := by
   rintro rfl; refine' eq_empty_of_forall_not_mem fun a ha ↦ _; obtain ⟨_, ⟨⟩, -⟩ := huv a ha
 

@@ -67,16 +67,16 @@ protected instance LT [∀ i, LT (α i)] : LT (Σi, α i) where
   lt := Sigma.lt
 
 @[simp]
-theorem mk_le_mk_iff [∀ i, LE (α i)] {i : ι} {a b : α i} : (⟨i, a⟩ : Sigma α) ≤ ⟨i, b⟩ ↔ a ≤ b :=
+lemma mk_le_mk_iff [∀ i, LE (α i)] {i : ι} {a b : α i} : (⟨i, a⟩ : Sigma α) ≤ ⟨i, b⟩ ↔ a ≤ b :=
   ⟨fun ⟨_, _, _, h⟩ => h, Sigma.le.fiber _ _ _⟩
 #align sigma.mk_le_mk_iff Sigma.mk_le_mk_iff
 
 @[simp]
-theorem mk_lt_mk_iff [∀ i, LT (α i)] {i : ι} {a b : α i} : (⟨i, a⟩ : Sigma α) < ⟨i, b⟩ ↔ a < b :=
+lemma mk_lt_mk_iff [∀ i, LT (α i)] {i : ι} {a b : α i} : (⟨i, a⟩ : Sigma α) < ⟨i, b⟩ ↔ a < b :=
   ⟨fun ⟨_, _, _, h⟩ => h, Sigma.lt.fiber _ _ _⟩
 #align sigma.mk_lt_mk_iff Sigma.mk_lt_mk_iff
 
-theorem le_def [∀ i, LE (α i)] {a b : Σi, α i} : a ≤ b ↔ ∃ h : a.1 = b.1, h.rec a.2 ≤ b.2 := by
+lemma le_def [∀ i, LE (α i)] {a b : Σi, α i} : a ≤ b ↔ ∃ h : a.1 = b.1, h.rec a.2 ≤ b.2 := by
   constructor
   · rintro ⟨i, a, b, h⟩
     exact ⟨rfl, h⟩
@@ -86,7 +86,7 @@ theorem le_def [∀ i, LE (α i)] {a b : Σi, α i} : a ≤ b ↔ ∃ h : a.1 = 
     exact le.fiber _ _ _ h
 #align sigma.le_def Sigma.le_def
 
-theorem lt_def [∀ i, LT (α i)] {a b : Σi, α i} : a < b ↔ ∃ h : a.1 = b.1, h.rec a.2 < b.2 := by
+lemma lt_def [∀ i, LT (α i)] {a b : Σi, α i} : a < b ↔ ∃ h : a.1 = b.1, h.rec a.2 < b.2 := by
   constructor
   · rintro ⟨i, a, b, h⟩
     exact ⟨rfl, h⟩
@@ -139,12 +139,12 @@ protected instance LT [LT ι] [∀ i, LT (α i)] : LT (Σₗ i, α i) where
   lt := Lex (· < ·) fun _ => (· < ·)
 #align sigma.lex.has_lt Sigma.Lex.LT
 
-theorem le_def [LT ι] [∀ i, LE (α i)] {a b : Σₗ i, α i} :
+lemma le_def [LT ι] [∀ i, LE (α i)] {a b : Σₗ i, α i} :
     a ≤ b ↔ a.1 < b.1 ∨ ∃ h : a.1 = b.1, h.rec a.2 ≤ b.2 :=
   Sigma.lex_iff
 #align sigma.lex.le_def Sigma.Lex.le_def
 
-theorem lt_def [LT ι] [∀ i, LT (α i)] {a b : Σₗ i, α i} :
+lemma lt_def [LT ι] [∀ i, LT (α i)] {a b : Σₗ i, α i} :
     a < b ↔ a.1 < b.1 ∨ ∃ h : a.1 = b.1, h.rec a.2 < b.2 :=
   Sigma.lex_iff
 #align sigma.lex.lt_def Sigma.Lex.lt_def

@@ -37,7 +37,7 @@ which are used to deduce corresponding results for Euclidean affine spaces.
 -/
 
 
-theorem mul_norm_eq_abs_sub_sq_norm {x y z : V} (h₁ : ∃ k : ℝ, k ≠ 1 ∧ x + y = k • (x - y))
+lemma mul_norm_eq_abs_sub_sq_norm {x y z : V} (h₁ : ∃ k : ℝ, k ≠ 1 ∧ x + y = k • (x - y))
     (h₂ : ‖z - y‖ = ‖z + y‖) : ‖x - y‖ * ‖x + y‖ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2| := by
   obtain ⟨k, hk_ne_one, hk⟩ := h₁
   let r := (k - 1)⁻¹ * (k + 1)

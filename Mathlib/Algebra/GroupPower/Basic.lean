@@ -54,17 +54,17 @@ section Monoid
 
 variable [Monoid M] [AddMonoid A]
 
-theorem nsmul_zero (n : ℕ) : n • (0 : A) = 0 := by
+lemma nsmul_zero (n : ℕ) : n • (0 : A) = 0 := by
   induction' n with n ih
   · exact zero_nsmul _
   · rw [succ_nsmul, ih, add_zero]
 #align nsmul_zero nsmul_zero
 
 @[simp]
-theorem one_nsmul (a : A) : 1 • a = a := by rw [succ_nsmul, zero_nsmul, zero_add]
+lemma one_nsmul (a : A) : 1 • a = a := by rw [succ_nsmul, zero_nsmul, zero_add]
 #align one_nsmul one_nsmul
 
-theorem add_nsmul (a : A) (m n : ℕ) : (m + n) • a = m • a + n • a := by
+lemma add_nsmul (a : A) (m n : ℕ) : (m + n) • a = m • a + n • a := by
   induction n with
   | zero => rw [Nat.add_zero, zero_nsmul, add_zero]
   | succ n ih => rw [Nat.add_succ, Nat.succ_eq_add_one, succ_nsmul, ih, succ_nsmul, add_assoc]
@@ -72,14 +72,14 @@ theorem add_nsmul (a : A) (m n : ℕ) : (m + n) • a = m • a + n • a := by
 
 -- the attributes are intentionally out of order.
 @[to_additive existing nsmul_zero, simp]
-theorem one_pow (n : ℕ) : (1 : M) ^ n = 1 := by
+lemma one_pow (n : ℕ) : (1 : M) ^ n = 1 := by
   induction' n with n ih
   · exact pow_zero _
   · rw [pow_succ, ih, one_mul]
 #align one_pow one_pow
 
 @[to_additive existing (attr := simp) one_nsmul]
-theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
+lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
 #align pow_one pow_one
 
 /-- Note that most of the lemmas about powers of two refer to it as `sq`. -/
@@ -92,22 +92,22 @@ theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
 #align sq sq
 
 @[to_additive three'_nsmul]
-theorem pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ, pow_two]
+lemma pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ, pow_two]
 #align pow_three' pow_three'
 
 @[to_additive three_nsmul]
-theorem pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ', pow_two]
+lemma pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ', pow_two]
 #align pow_three pow_three
 
 @[to_additive existing add_nsmul]
-theorem pow_add (a : M) (m n : ℕ) : a ^ (m + n) = a ^ m * a ^ n := by
+lemma pow_add (a : M) (m n : ℕ) : a ^ (m + n) = a ^ m * a ^ n := by
   induction' n with n ih
   · rw [Nat.add_zero, pow_zero, mul_one]
   · rw [pow_succ, ← mul_assoc, ← ih, ← pow_succ, Nat.add_assoc]
 #align pow_add pow_add
 
 @[to_additive mul_nsmul]
-theorem pow_mul (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ m) ^ n := by
+lemma pow_mul (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ m) ^ n := by
   induction' n with n ih
   · rw [Nat.mul_zero, pow_zero, pow_zero]
   · rw [Nat.mul_succ, pow_add, pow_succ, ih]
@@ -117,12 +117,12 @@ theorem pow_mul (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ m) ^ n := by
 #align mul_nsmul' mul_nsmul
 
 @[to_additive mul_nsmul']
-theorem pow_mul' (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Nat.mul_comm, pow_mul]
+lemma pow_mul' (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Nat.mul_comm, pow_mul]
 #align pow_mul' pow_mul'
 #align mul_nsmul mul_nsmul'
 
 @[to_additive]
-theorem Commute.mul_pow {a b : M} (h : Commute a b) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n := by
+lemma Commute.mul_pow {a b : M} (h : Commute a b) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n := by
   induction' n with n ih
   · rw [pow_zero, pow_zero, pow_zero, one_mul]
   · simp only [pow_succ', ih, ← mul_assoc, (h.pow_left n).right_comm]
@@ -130,30 +130,30 @@ theorem Commute.mul_pow {a b : M} (h : Commute a b) (n : ℕ) : (a * b) ^ n = a 
 #align add_commute.add_nsmul AddCommute.add_nsmul
 
 @[to_additive]
-theorem pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n :=
+lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n :=
   Commute.pow_self a n
 #align pow_mul_comm' pow_mul_comm'
 #align nsmul_add_comm' nsmul_add_comm'
 
 @[to_additive boole_nsmul]
-theorem pow_boole (P : Prop) [Decidable P] (a : M) :
+lemma pow_boole (P : Prop) [Decidable P] (a : M) :
     (a ^ if P then 1 else 0) = if P then a else 1 := by simp
 #align pow_boole pow_boole
 
 @[to_additive nsmul_left_comm]
-theorem pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
+lemma pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
   rw [← pow_mul, Nat.mul_comm, pow_mul]
 #align pow_right_comm pow_right_comm
 #align nsmul_left_comm nsmul_left_comm
 
 @[to_additive nsmul_add_sub_nsmul]
-theorem pow_mul_pow_sub (a : M) {m n : ℕ} (h : m ≤ n) : a ^ m * a ^ (n - m) = a ^ n := by
+lemma pow_mul_pow_sub (a : M) {m n : ℕ} (h : m ≤ n) : a ^ m * a ^ (n - m) = a ^ n := by
   rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]
 #align pow_mul_pow_sub pow_mul_pow_sub
 #align nsmul_add_sub_nsmul nsmul_add_sub_nsmul
 
 @[to_additive sub_nsmul_nsmul_add]
-theorem pow_sub_mul_pow (a : M) {m n : ℕ} (h : m ≤ n) : a ^ (n - m) * a ^ m = a ^ n := by
+lemma pow_sub_mul_pow (a : M) {m n : ℕ} (h : m ≤ n) : a ^ (n - m) * a ^ m = a ^ n := by
   rw [← pow_add, Nat.sub_add_cancel h]
 #align pow_sub_mul_pow pow_sub_mul_pow
 #align sub_nsmul_nsmul_add sub_nsmul_nsmul_add
@@ -169,7 +169,7 @@ theorem pow_eq_pow_mod {M : Type*} [Monoid M] {x : M} (m : ℕ) {n : ℕ} (h : x
 #align nsmul_eq_mod_nsmul nsmul_eq_mod_nsmul
 
 @[to_additive]
-theorem pow_mul_comm (a : M) (m n : ℕ) : a ^ m * a ^ n = a ^ n * a ^ m :=
+lemma pow_mul_comm (a : M) (m n : ℕ) : a ^ m * a ^ n = a ^ n * a ^ m :=
   Commute.pow_pow_self a m n
 #align pow_mul_comm pow_mul_comm
 #align nsmul_add_comm nsmul_add_comm
@@ -179,25 +179,25 @@ section Bit
 set_option linter.deprecated false
 
 @[to_additive bit0_nsmul]
-theorem pow_bit0 (a : M) (n : ℕ) : a ^ bit0 n = a ^ n * a ^ n :=
+lemma pow_bit0 (a : M) (n : ℕ) : a ^ bit0 n = a ^ n * a ^ n :=
   pow_add _ _ _
 #align pow_bit0 pow_bit0
 #align bit0_nsmul bit0_nsmul
 
 @[to_additive bit1_nsmul]
-theorem pow_bit1 (a : M) (n : ℕ) : a ^ bit1 n = a ^ n * a ^ n * a := by
+lemma pow_bit1 (a : M) (n : ℕ) : a ^ bit1 n = a ^ n * a ^ n * a := by
   rw [bit1, pow_succ, pow_bit0]
 #align pow_bit1 pow_bit1
 #align bit1_nsmul bit1_nsmul
 
 @[to_additive bit0_nsmul']
-theorem pow_bit0' (a : M) (n : ℕ) : a ^ bit0 n = (a * a) ^ n := by
+lemma pow_bit0' (a : M) (n : ℕ) : a ^ bit0 n = (a * a) ^ n := by
   rw [pow_bit0, (Commute.refl a).mul_pow]
 #align pow_bit0' pow_bit0'
 #align bit0_nsmul' bit0_nsmul'
 
 @[to_additive bit1_nsmul']
-theorem pow_bit1' (a : M) (n : ℕ) : a ^ bit1 n = (a * a) ^ n * a := by
+lemma pow_bit1' (a : M) (n : ℕ) : a ^ bit1 n = (a * a) ^ n * a := by
   rw [bit1, pow_succ, pow_bit0']
 #align pow_bit1' pow_bit1'
 #align bit1_nsmul' bit1_nsmul'
@@ -205,7 +205,7 @@ theorem pow_bit1' (a : M) (n : ℕ) : a ^ bit1 n = (a * a) ^ n * a := by
 end Bit
 
 @[to_additive]
-theorem pow_mul_pow_eq_one {a b : M} (n : ℕ) (h : a * b = 1) : a ^ n * b ^ n = 1 := by
+lemma pow_mul_pow_eq_one {a b : M} (n : ℕ) (h : a * b = 1) : a ^ n * b ^ n = 1 := by
   induction' n with n hn
   · simp
   · calc
@@ -229,7 +229,7 @@ section CommMonoid
 variable [CommMonoid M]
 
 @[to_additive nsmul_add]
-theorem mul_pow (a b : M) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n :=
+lemma mul_pow (a b : M) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n :=
   (Commute.all a b).mul_pow n
 #align mul_pow mul_pow
 #align nsmul_add nsmul_add
@@ -243,27 +243,27 @@ variable [DivInvMonoid G]
 open Int
 
 @[to_additive (attr := simp) one_zsmul]
-theorem zpow_one (a : G) : a ^ (1 : ℤ) = a := by
+lemma zpow_one (a : G) : a ^ (1 : ℤ) = a := by
   convert pow_one a using 1
   exact zpow_natCast a 1
 #align zpow_one zpow_one
 #align one_zsmul one_zsmul
 
 @[to_additive two_zsmul]
-theorem zpow_two (a : G) : a ^ (2 : ℤ) = a * a := by
+lemma zpow_two (a : G) : a ^ (2 : ℤ) = a * a := by
   convert pow_two a using 1
   exact zpow_natCast a 2
 #align zpow_two zpow_two
 #align two_zsmul two_zsmul
 
 @[to_additive neg_one_zsmul]
-theorem zpow_neg_one (x : G) : x ^ (-1 : ℤ) = x⁻¹ :=
+lemma zpow_neg_one (x : G) : x ^ (-1 : ℤ) = x⁻¹ :=
   (zpow_negSucc x 0).trans <| congr_arg Inv.inv (pow_one x)
 #align zpow_neg_one zpow_neg_one
 #align neg_one_zsmul neg_one_zsmul
 
 @[to_additive]
-theorem zpow_neg_coe_of_pos (a : G) : ∀ {n : ℕ}, 0 < n → a ^ (-(n : ℤ)) = (a ^ n)⁻¹
+lemma zpow_neg_coe_of_pos (a : G) : ∀ {n : ℕ}, 0 < n → a ^ (-(n : ℤ)) = (a ^ n)⁻¹
   | _ + 1, _ => zpow_negSucc _ _
 #align zpow_neg_coe_of_pos zpow_neg_coe_of_pos
 #align zsmul_neg_coe_of_pos zsmul_neg_coe_of_pos
@@ -275,7 +275,7 @@ section DivisionMonoid
 variable [DivisionMonoid α] {a b : α}
 
 @[to_additive (attr := simp)]
-theorem inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
+lemma inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
   | 0 => by rw [pow_zero, pow_zero, inv_one]
   | n + 1 => by rw [pow_succ', pow_succ, inv_pow _ n, mul_inv_rev]
 #align inv_pow inv_pow
@@ -283,14 +283,14 @@ theorem inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
 
 -- the attributes are intentionally out of order. `smul_zero` proves `zsmul_zero`.
 @[to_additive zsmul_zero, simp]
-theorem one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
+lemma one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
   | (n : ℕ)       => by rw [zpow_natCast, one_pow]
   | .negSucc n => by rw [zpow_negSucc, one_pow, inv_one]
 #align one_zpow one_zpow
 #align zsmul_zero zsmul_zero
 
 @[to_additive (attr := simp) neg_zsmul]
-theorem zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
+lemma zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
   | (n + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
   | 0 => by
     change a ^ (0 : ℤ) = (a ^ (0 : ℤ))⁻¹
@@ -302,35 +302,35 @@ theorem zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
 #align neg_zsmul neg_zsmul
 
 @[to_additive neg_one_zsmul_add]
-theorem mul_zpow_neg_one (a b : α) : (a * b) ^ (-1 : ℤ) = b ^ (-1 : ℤ) * a ^ (-1 : ℤ) := by
+lemma mul_zpow_neg_one (a b : α) : (a * b) ^ (-1 : ℤ) = b ^ (-1 : ℤ) * a ^ (-1 : ℤ) := by
   simp only [zpow_neg, zpow_one, mul_inv_rev]
 #align mul_zpow_neg_one mul_zpow_neg_one
 #align neg_one_zsmul_add neg_one_zsmul_add
 
 @[to_additive zsmul_neg]
-theorem inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
+lemma inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
   | (n : ℕ)    => by rw [zpow_natCast, zpow_natCast, inv_pow]
   | .negSucc n => by rw [zpow_negSucc, zpow_negSucc, inv_pow]
 #align inv_zpow inv_zpow
 #align zsmul_neg zsmul_neg
 
 @[to_additive (attr := simp) zsmul_neg']
-theorem inv_zpow' (a : α) (n : ℤ) : a⁻¹ ^ n = a ^ (-n) := by rw [inv_zpow, zpow_neg]
+lemma inv_zpow' (a : α) (n : ℤ) : a⁻¹ ^ n = a ^ (-n) := by rw [inv_zpow, zpow_neg]
 #align inv_zpow' inv_zpow'
 #align zsmul_neg' zsmul_neg'
 
 @[to_additive nsmul_zero_sub]
-theorem one_div_pow (a : α) (n : ℕ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_pow]
+lemma one_div_pow (a : α) (n : ℕ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_pow]
 #align one_div_pow one_div_pow
 #align nsmul_zero_sub nsmul_zero_sub
 
 @[to_additive zsmul_zero_sub]
-theorem one_div_zpow (a : α) (n : ℤ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_zpow]
+lemma one_div_zpow (a : α) (n : ℤ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_zpow]
 #align one_div_zpow one_div_zpow
 #align zsmul_zero_sub zsmul_zero_sub
 
 @[to_additive AddCommute.zsmul_add]
-protected theorem Commute.mul_zpow (h : Commute a b) : ∀ i : ℤ, (a * b) ^ i = a ^ i * b ^ i
+protected lemma Commute.mul_zpow (h : Commute a b) : ∀ i : ℤ, (a * b) ^ i = a ^ i * b ^ i
   | (n : ℕ)    => by simp [zpow_natCast, h.mul_pow n]
   | .negSucc n => by simp [h.mul_pow, (h.pow_pow _ _).eq, mul_inv_rev]
 #align commute.mul_zpow Commute.mul_zpow
@@ -370,7 +370,7 @@ lemma zpow_bit0 (a : α) (n : ℤ) : a ^ bit0 n = a ^ n * a ^ n := by
 #align bit0_zsmul bit0_zsmul
 
 @[to_additive bit0_zsmul']
-theorem zpow_bit0' (a : α) (n : ℤ) : a ^ bit0 n = (a * a) ^ n :=
+lemma zpow_bit0' (a : α) (n : ℤ) : a ^ bit0 n = (a * a) ^ n :=
   (zpow_bit0 a n).trans ((Commute.refl a).mul_zpow n).symm
 #align zpow_bit0' zpow_bit0'
 #align bit0_zsmul' bit0_zsmul'
@@ -382,19 +382,19 @@ section DivisionCommMonoid
 variable [DivisionCommMonoid α]
 
 @[to_additive zsmul_add]
-theorem mul_zpow (a b : α) : ∀ n : ℤ, (a * b) ^ n = a ^ n * b ^ n :=
+lemma mul_zpow (a b : α) : ∀ n : ℤ, (a * b) ^ n = a ^ n * b ^ n :=
   (Commute.all a b).mul_zpow
 #align mul_zpow mul_zpow
 #align zsmul_add zsmul_add
 
 @[to_additive (attr := simp) nsmul_sub]
-theorem div_pow (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n := by
+lemma div_pow (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_pow, inv_pow]
 #align div_pow div_pow
 #align nsmul_sub nsmul_sub
 
 @[to_additive (attr := simp) zsmul_sub]
-theorem div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
+lemma div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_zpow, inv_zpow]
 #align div_zpow div_zpow
 #align zsmul_sub zsmul_sub
@@ -406,19 +406,19 @@ section Group
 variable [Group G] [Group H] [AddGroup A] [AddGroup B]
 
 @[to_additive sub_nsmul]
-theorem pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ :=
+lemma pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ :=
   eq_mul_inv_of_mul_eq <| by rw [← pow_add, Nat.sub_add_cancel h]
 #align pow_sub pow_sub
 #align sub_nsmul sub_nsmul
 
 @[to_additive]
-theorem pow_inv_comm (a : G) (m n : ℕ) : a⁻¹ ^ m * a ^ n = a ^ n * a⁻¹ ^ m :=
+lemma pow_inv_comm (a : G) (m n : ℕ) : a⁻¹ ^ m * a ^ n = a ^ n * a⁻¹ ^ m :=
   (Commute.refl a).inv_left.pow_pow _ _
 #align pow_inv_comm pow_inv_comm
 #align nsmul_neg_comm nsmul_neg_comm
 
 @[to_additive sub_nsmul_neg]
-theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
+lemma inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
   rw [pow_sub a⁻¹ h, inv_pow, inv_pow, inv_inv]
 #align inv_pow_sub inv_pow_sub
 #align sub_nsmul_neg sub_nsmul_neg
@@ -477,13 +477,13 @@ lemma mul_zpow_self (a : G) (n : ℤ) : a ^ n * a = a ^ (n + 1) := (zpow_add_one
 #align zpow_mul_comm zpow_mul_comm
 #align zsmul_add_comm zsmul_add_comm
 
-theorem zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
+lemma zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % n) :=
   calc
     x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_ediv]
     _ = x ^ (m % n) := by simp [zpow_add, zpow_mul, h]
 
-theorem zpow_eq_zpow_emod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
+lemma zpow_eq_zpow_emod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % (n : ℤ)) := zpow_eq_zpow_emod m (by simpa)
 
 section bit1
@@ -535,7 +535,7 @@ lemma zpow_induction_right {g : G} {P : G → Prop} (h_one : P (1 : G))
 end Group
 
 @[to_additive (attr := simp)]
-theorem SemiconjBy.zpow_right [Group G] {a x y : G} (h : SemiconjBy a x y) :
+lemma SemiconjBy.zpow_right [Group G] {a x y : G} (h : SemiconjBy a x y) :
     ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
   | (n : ℕ)    => by simp [zpow_natCast, h.pow_right n]
   | .negSucc n => by
@@ -549,19 +549,19 @@ namespace Commute
 variable [Group G] {a b : G}
 
 @[to_additive (attr := simp)]
-theorem zpow_right (h : Commute a b) (m : ℤ) : Commute a (b ^ m) :=
+lemma zpow_right (h : Commute a b) (m : ℤ) : Commute a (b ^ m) :=
   SemiconjBy.zpow_right h m
 #align commute.zpow_right Commute.zpow_right
 #align add_commute.zsmul_right AddCommute.zsmul_right
 
 @[to_additive (attr := simp)]
-theorem zpow_left (h : Commute a b) (m : ℤ) : Commute (a ^ m) b :=
+lemma zpow_left (h : Commute a b) (m : ℤ) : Commute (a ^ m) b :=
   (h.symm.zpow_right m).symm
 #align commute.zpow_left Commute.zpow_left
 #align add_commute.zsmul_left AddCommute.zsmul_left
 
 @[to_additive]
-theorem zpow_zpow (h : Commute a b) (m n : ℤ) : Commute (a ^ m) (b ^ n) :=
+lemma zpow_zpow (h : Commute a b) (m n : ℤ) : Commute (a ^ m) (b ^ n) :=
   (h.zpow_left m).zpow_right n
 #align commute.zpow_zpow Commute.zpow_zpow
 #align add_commute.zsmul_zsmul AddCommute.zsmul_zsmul
@@ -569,19 +569,19 @@ theorem zpow_zpow (h : Commute a b) (m n : ℤ) : Commute (a ^ m) (b ^ n) :=
 variable (a) (m n : ℤ)
 
 @[to_additive]
-theorem self_zpow : Commute a (a ^ n) :=
+lemma self_zpow : Commute a (a ^ n) :=
   (Commute.refl a).zpow_right n
 #align commute.self_zpow Commute.self_zpow
 #align add_commute.self_zsmul AddCommute.self_zsmul
 
 @[to_additive]
-theorem zpow_self : Commute (a ^ n) a :=
+lemma zpow_self : Commute (a ^ n) a :=
   (Commute.refl a).zpow_left n
 #align commute.zpow_self Commute.zpow_self
 #align add_commute.zsmul_self AddCommute.zsmul_self
 
 @[to_additive]
-theorem zpow_zpow_self : Commute (a ^ m) (a ^ n) :=
+lemma zpow_zpow_self : Commute (a ^ m) (a ^ n) :=
   (Commute.refl a).zpow_zpow m n
 #align commute.zpow_zpow_self Commute.zpow_zpow_self
 #align add_commute.zsmul_zsmul_self AddCommute.zsmul_zsmul_self

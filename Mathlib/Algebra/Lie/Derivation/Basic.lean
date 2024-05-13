@@ -61,7 +61,7 @@ instance instLinearMapClass : LinearMapClass (LieDerivation R L M) R L M where
   map_add D := D.toLinearMap.map_add'
   map_smulₛₗ D := D.toLinearMap.map_smul
 
-theorem toFun_eq_coe : D.toFun = ⇑D := rfl
+lemma toFun_eq_coe : D.toFun = ⇑D := rfl
 
 /-- See Note [custom simps projection] -/
 def Simps.apply (D : LieDerivation R L M) : L → M := D
@@ -74,21 +74,21 @@ instance instCoeToLinearMap : Coe (LieDerivation R L M) (L →ₗ[R] M) :=
   ⟨fun D => D.toLinearMap⟩
 
 @[simp]
-theorem mk_coe (f : L →ₗ[R] M) (h₁) : ((⟨f, h₁⟩ : LieDerivation R L M) : L → M) = f :=
+lemma mk_coe (f : L →ₗ[R] M) (h₁) : ((⟨f, h₁⟩ : LieDerivation R L M) : L → M) = f :=
   rfl
 
 @[simp, norm_cast]
-theorem coeFn_coe (f : LieDerivation R L M) : ⇑(f : L →ₗ[R] M) = f :=
+lemma coeFn_coe (f : LieDerivation R L M) : ⇑(f : L →ₗ[R] M) = f :=
   rfl
 
-theorem coe_injective : @Function.Injective (LieDerivation R L M) (L → M) DFunLike.coe :=
+lemma coe_injective : @Function.Injective (LieDerivation R L M) (L → M) DFunLike.coe :=
   DFunLike.coe_injective
 
 @[ext]
-theorem ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
+lemma ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
   DFunLike.ext _ _ H
 
-theorem congr_fun (h : D1 = D2) (a : L) : D1 a = D2 a :=
+lemma congr_fun (h : D1 = D2) (a : L) : D1 a = D2 a :=
   DFunLike.congr_fun h a
 
 @[simp]
@@ -127,14 +127,14 @@ instance instZero : Zero (LieDerivation R L M) where
       leibniz' := fun a b => by simp only [LinearMap.zero_apply, lie_zero, sub_self] }
 
 @[simp]
-theorem coe_zero : ⇑(0 : LieDerivation R L M) = 0 :=
+lemma coe_zero : ⇑(0 : LieDerivation R L M) = 0 :=
   rfl
 
 @[simp]
-theorem coe_zero_linearMap : ↑(0 : LieDerivation R L M) = (0 : L →ₗ[R] M) :=
+lemma coe_zero_linearMap : ↑(0 : LieDerivation R L M) = (0 : L →ₗ[R] M) :=
   rfl
 
-theorem zero_apply (a : L) : (0 : LieDerivation R L M) a = 0 :=
+lemma zero_apply (a : L) : (0 : LieDerivation R L M) a = 0 :=
   rfl
 
 instance : Inhabited (LieDerivation R L M) :=
@@ -147,20 +147,20 @@ instance instAdd : Add (LieDerivation R L M) where
         simp only [LinearMap.add_apply, coeFn_coe, apply_lie_eq_sub, lie_add, add_sub_add_comm] }
 
 @[simp]
-theorem coe_add (D1 D2 : LieDerivation R L M) : ⇑(D1 + D2) = D1 + D2 :=
+lemma coe_add (D1 D2 : LieDerivation R L M) : ⇑(D1 + D2) = D1 + D2 :=
   rfl
 
 @[simp]
-theorem coe_add_linearMap (D1 D2 : LieDerivation R L M) : ↑(D1 + D2) = (D1 + D2 : L →ₗ[R] M) :=
+lemma coe_add_linearMap (D1 D2 : LieDerivation R L M) : ↑(D1 + D2) = (D1 + D2 : L →ₗ[R] M) :=
   rfl
 
-theorem add_apply : (D1 + D2) a = D1 a + D2 a :=
+lemma add_apply : (D1 + D2) a = D1 a + D2 a :=
   rfl
 
-protected theorem map_neg : D (-a) = -D a :=
+protected lemma map_neg : D (-a) = -D a :=
   map_neg D a
 
-protected theorem map_sub : D (a - b) = D a - D b :=
+protected lemma map_sub : D (a - b) = D a - D b :=
   map_sub D a b
 
 instance instNeg : Neg (LieDerivation R L M) :=
@@ -170,14 +170,14 @@ instance instNeg : Neg (LieDerivation R L M) :=
         neg_sub, lie_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg] ⟩
 
 @[simp]
-theorem coe_neg (D : LieDerivation R L M) : ⇑(-D) = -D :=
+lemma coe_neg (D : LieDerivation R L M) : ⇑(-D) = -D :=
   rfl
 
 @[simp]
-theorem coe_neg_linearMap (D : LieDerivation R L M) : ↑(-D) = (-D : L →ₗ[R] M) :=
+lemma coe_neg_linearMap (D : LieDerivation R L M) : ↑(-D) = (-D : L →ₗ[R] M) :=
   rfl
 
-theorem neg_apply : (-D) a = -D a :=
+lemma neg_apply : (-D) a = -D a :=
   rfl
 
 instance instSub : Sub (LieDerivation R L M) :=
@@ -186,14 +186,14 @@ instance instSub : Sub (LieDerivation R L M) :=
       simp only [LinearMap.sub_apply, coeFn_coe, apply_lie_eq_sub, lie_sub, sub_sub_sub_comm]⟩
 
 @[simp]
-theorem coe_sub (D1 D2 : LieDerivation R L M) : ⇑(D1 - D2) = D1 - D2 :=
+lemma coe_sub (D1 D2 : LieDerivation R L M) : ⇑(D1 - D2) = D1 - D2 :=
   rfl
 
 @[simp]
-theorem coe_sub_linearMap (D1 D2 : LieDerivation R L M) : ↑(D1 - D2) = (D1 - D2 : L →ₗ[R] M) :=
+lemma coe_sub_linearMap (D1 D2 : LieDerivation R L M) : ↑(D1 - D2) = (D1 - D2 : L →ₗ[R] M) :=
   rfl
 
-theorem sub_apply {D1 D2 : LieDerivation R L M} : (D1 - D2) a = D1 a - D2 a :=
+lemma sub_apply {D1 D2 : LieDerivation R L M} : (D1 - D2) a = D1 a - D2 a :=
   rfl
 
 section Scalar
@@ -215,14 +215,14 @@ instance instSMul : SMul S (LieDerivation R L M) where
         smul_sub, SMulBracketCommClass.smul_bracket_comm] }
 
 @[simp]
-theorem coe_smul (r : S) (D : LieDerivation R L M) : ⇑(r • D) = r • ⇑D :=
+lemma coe_smul (r : S) (D : LieDerivation R L M) : ⇑(r • D) = r • ⇑D :=
   rfl
 
 @[simp]
-theorem coe_smul_linearMap (r : S) (D : LieDerivation R L M) : ↑(r • D) = r • (D : L →ₗ[R] M) :=
+lemma coe_smul_linearMap (r : S) (D : LieDerivation R L M) : ↑(r • D) = r • (D : L →ₗ[R] M) :=
   rfl
 
-theorem smul_apply (r : S) (D : LieDerivation R L M) : (r • D) a = r • D a :=
+lemma smul_apply (r : S) (D : LieDerivation R L M) : (r • D) a = r • D a :=
   rfl
 
 instance instSMulBase : SMulBracketCommClass R L M := ⟨fun s l a ↦ (lie_smul s l a).symm⟩

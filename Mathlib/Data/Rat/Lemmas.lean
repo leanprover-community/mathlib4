@@ -21,7 +21,7 @@ namespace Rat
 
 open Rat
 
-theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
+lemma num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   cases' e : a /. b with n d h c
   rw [Rat.mk'_eq_divInt, divInt_eq_iff b0 (mod_cast h)] at e
   refine Int.natAbs_dvd.1 <| Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <|
@@ -30,7 +30,7 @@ theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   simp only [Int.natAbs_mul, Int.natAbs_ofNat] at this; simp [this]
 #align rat.num_dvd Rat.num_dvd
 
-theorem den_dvd (a b : ℤ) : ((a /. b).den : ℤ) ∣ b := by
+lemma den_dvd (a b : ℤ) : ((a /. b).den : ℤ) ∣ b := by
   by_cases b0 : b = 0; · simp [b0]
   cases' e : a /. b with n d h c
   rw [mk'_eq_divInt, divInt_eq_iff b0 (ne_of_gt (Int.natCast_pos.2 (Nat.pos_of_ne_zero h)))] at e
@@ -38,7 +38,7 @@ theorem den_dvd (a b : ℤ) : ((a /. b).den : ℤ) ∣ b := by
   rw [← Int.natAbs_mul, ← Int.natCast_dvd_natCast, Int.dvd_natAbs, ← e]; simp
 #align rat.denom_dvd Rat.den_dvd
 
-theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
+lemma num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
     ∃ c : ℤ, n = c * q.num ∧ d = c * q.den := by
   obtain rfl | hn := eq_or_ne n 0
   · simp [qdf]
@@ -59,7 +59,7 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
 #noalign rat.mk_pnat_num
 #noalign rat.mk_pnat_denom
 
-theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
+lemma num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
   have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
     rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
   rcases d with ((_ | _) | _) <;>
@@ -68,7 +68,7 @@ theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
     Int.zero_ediv, Int.ofNat_dvd_left, Nat.gcd_dvd_left, this]
 #align rat.num_mk Rat.num_mk
 
-theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d := by
+lemma den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d := by
   have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
     rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
   rcases d with ((_ | _) | _) <;>
@@ -78,40 +78,40 @@ theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gc
 
 #noalign rat.mk_pnat_denom_dvd
 
-theorem add_den_dvd (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den * q₂.den := by
+lemma add_den_dvd (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den * q₂.den := by
   rw [add_def, normalize_eq]
   apply Nat.div_dvd_of_dvd
   apply Nat.gcd_dvd_right
 #align rat.add_denom_dvd Rat.add_den_dvd
 
-theorem mul_den_dvd (q₁ q₂ : ℚ) : (q₁ * q₂).den ∣ q₁.den * q₂.den := by
+lemma mul_den_dvd (q₁ q₂ : ℚ) : (q₁ * q₂).den ∣ q₁.den * q₂.den := by
   rw [mul_def, normalize_eq]
   apply Nat.div_dvd_of_dvd
   apply Nat.gcd_dvd_right
 #align rat.mul_denom_dvd Rat.mul_den_dvd
 
-theorem mul_num (q₁ q₂ : ℚ) :
+lemma mul_num (q₁ q₂ : ℚ) :
     (q₁ * q₂).num = q₁.num * q₂.num / Nat.gcd (q₁.num * q₂.num).natAbs (q₁.den * q₂.den) := by
   rw [mul_def, normalize_eq]
 #align rat.mul_num Rat.mul_num
 
-theorem mul_den (q₁ q₂ : ℚ) :
+lemma mul_den (q₁ q₂ : ℚ) :
     (q₁ * q₂).den =
       q₁.den * q₂.den / Nat.gcd (q₁.num * q₂.num).natAbs (q₁.den * q₂.den) := by
   rw [mul_def, normalize_eq]
 #align rat.mul_denom Rat.mul_den
 
-theorem mul_self_num (q : ℚ) : (q * q).num = q.num * q.num := by
+lemma mul_self_num (q : ℚ) : (q * q).num = q.num * q.num := by
   rw [mul_num, Int.natAbs_mul, Nat.Coprime.gcd_eq_one, Int.ofNat_one, Int.ediv_one]
   exact (q.reduced.mul_right q.reduced).mul (q.reduced.mul_right q.reduced)
 #align rat.mul_self_num Rat.mul_self_num
 
-theorem mul_self_den (q : ℚ) : (q * q).den = q.den * q.den := by
+lemma mul_self_den (q : ℚ) : (q * q).den = q.den * q.den := by
   rw [Rat.mul_den, Int.natAbs_mul, Nat.Coprime.gcd_eq_one, Nat.div_one]
   exact (q.reduced.mul_right q.reduced).mul (q.reduced.mul_right q.reduced)
 #align rat.mul_self_denom Rat.mul_self_den
 
-theorem add_num_den (q r : ℚ) :
+lemma add_num_den (q r : ℚ) :
     q + r = (q.num * r.den + q.den * r.num : ℤ) /. (↑q.den * ↑r.den : ℤ) := by
   have hqd : (q.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.2 q.den_pos
   have hrd : (r.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.2 r.den_pos
@@ -121,13 +121,13 @@ theorem add_num_den (q r : ℚ) :
 
 section Casts
 
-theorem exists_eq_mul_div_num_and_eq_mul_div_den (n : ℤ) {d : ℤ} (d_ne_zero : d ≠ 0) :
+lemma exists_eq_mul_div_num_and_eq_mul_div_den (n : ℤ) {d : ℤ} (d_ne_zero : d ≠ 0) :
     ∃ c : ℤ, n = c * ((n : ℚ) / d).num ∧ (d : ℤ) = c * ((n : ℚ) / d).den :=
   haveI : (n : ℚ) / d = Rat.divInt n d := by rw [← Rat.divInt_eq_div]
   Rat.num_den_mk d_ne_zero this
 #align rat.exists_eq_mul_div_num_and_eq_mul_div_denom Rat.exists_eq_mul_div_num_and_eq_mul_div_den
 
-theorem mul_num_den' (q r : ℚ) :
+lemma mul_num_den' (q r : ℚ) :
     (q * r).num * q.den * r.den = q.num * r.num * (q * r).den := by
   let s := q.num * r.num /. (q.den * r.den : ℤ)
   have hs : (q.den * r.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.mpr (mul_pos q.pos r.pos)
@@ -144,7 +144,7 @@ theorem mul_num_den' (q r : ℚ) :
   rw [h, mul_comm, ← Rat.eq_iff_mul_eq_mul, ← divInt_eq_div]
 #align rat.mul_num_denom' Rat.mul_num_den'
 
-theorem add_num_den' (q r : ℚ) :
+lemma add_num_den' (q r : ℚ) :
     (q + r).num * q.den * r.den = (q.num * r.den + r.num * q.den) * (q + r).den := by
   let s := divInt (q.num * r.den + r.num * q.den) (q.den * r.den : ℤ)
   have hs : (q.den * r.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.mpr (mul_pos q.pos r.pos)
@@ -164,7 +164,7 @@ theorem add_num_den' (q r : ℚ) :
   rw [← divInt_eq_div]
 #align rat.add_num_denom' Rat.add_num_den'
 
-theorem substr_num_den' (q r : ℚ) :
+lemma substr_num_den' (q r : ℚ) :
     (q - r).num * q.den * r.den = (q.num * r.den - r.num * q.den) * (q - r).den := by
   rw [sub_eq_add_neg, sub_eq_add_neg, ← neg_mul, ← num_neg_eq_neg_num, ← den_neg_eq_den r,
     add_num_den' q (-r)]
@@ -172,12 +172,12 @@ theorem substr_num_den' (q r : ℚ) :
 
 end Casts
 
-protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
+protected lemma inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
   rw [← num_divInt_den q]
   simp only [Rat.neg_divInt, Rat.inv_divInt', eq_self_iff_true, Rat.divInt_neg]
 #align rat.inv_neg Rat.inv_neg
 
-theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m := by
+lemma den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m := by
   replace hn : (n : ℚ) ≠ 0 := by rwa [Ne, ← Int.cast_zero, coe_int_inj]
   constructor
   · intro h
@@ -190,21 +190,21 @@ theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den
     rw [Int.cast_mul, mul_comm, mul_div_cancel_right₀ _ hn, Rat.den_intCast]
 #align rat.denom_div_cast_eq_one_iff Rat.den_div_cast_eq_one_iff
 
-theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
+lemma num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     (a / b : ℚ).num = a := by
   -- Porting note: was `lift b to ℕ using le_of_lt hb0`
   rw [← Int.natAbs_of_nonneg hb0.le, ← Rat.divInt_eq_div,
     ← mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
 #align rat.num_div_eq_of_coprime Rat.num_div_eq_of_coprime
 
-theorem den_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
+lemma den_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     ((a / b : ℚ).den : ℤ) = b := by
   -- Porting note: was `lift b to ℕ using le_of_lt hb0`
   rw [← Int.natAbs_of_nonneg hb0.le, ← Rat.divInt_eq_div,
     ← mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
 #align rat.denom_div_eq_of_coprime Rat.den_div_eq_of_coprime
 
-theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.Coprime a.natAbs b.natAbs)
+lemma div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.Coprime a.natAbs b.natAbs)
     (h2 : Nat.Coprime c.natAbs d.natAbs) (h : (a : ℚ) / b = (c : ℚ) / d) : a = c ∧ b = d := by
   apply And.intro
   · rw [← num_div_eq_of_coprime hb0 h1, h, num_div_eq_of_coprime hd0 h2]
@@ -212,7 +212,7 @@ theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.Coprim
 #align rat.div_int_inj Rat.div_int_inj
 
 @[norm_cast]
-theorem intCast_div_self (n : ℤ) : ((n / n : ℤ) : ℚ) = n / n := by
+lemma intCast_div_self (n : ℤ) : ((n / n : ℤ) : ℚ) = n / n := by
   by_cases hn : n = 0
   · subst hn
     simp only [Int.cast_zero, Int.zero_div, zero_div, Int.ediv_zero]
@@ -221,47 +221,47 @@ theorem intCast_div_self (n : ℤ) : ((n / n : ℤ) : ℚ) = n / n := by
 #align rat.coe_int_div_self Rat.intCast_div_self
 
 @[norm_cast]
-theorem natCast_div_self (n : ℕ) : ((n / n : ℕ) : ℚ) = n / n :=
+lemma natCast_div_self (n : ℕ) : ((n / n : ℕ) : ℚ) = n / n :=
   intCast_div_self n
 #align rat.coe_nat_div_self Rat.natCast_div_self
 
-theorem intCast_div (a b : ℤ) (h : b ∣ a) : ((a / b : ℤ) : ℚ) = a / b := by
+lemma intCast_div (a b : ℤ) (h : b ∣ a) : ((a / b : ℤ) : ℚ) = a / b := by
   rcases h with ⟨c, rfl⟩
   rw [mul_comm b, Int.mul_ediv_assoc c (dvd_refl b), Int.cast_mul,
     intCast_div_self, Int.cast_mul, mul_div_assoc]
 #align rat.coe_int_div Rat.intCast_div
 
-theorem natCast_div (a b : ℕ) (h : b ∣ a) : ((a / b : ℕ) : ℚ) = a / b := by
+lemma natCast_div (a b : ℕ) (h : b ∣ a) : ((a / b : ℕ) : ℚ) = a / b := by
   rcases h with ⟨c, rfl⟩
   simp only [mul_comm b, Nat.mul_div_assoc c (dvd_refl b), Nat.cast_mul, mul_div_assoc,
     natCast_div_self]
 #align rat.coe_nat_div Rat.natCast_div
 
-theorem inv_intCast_num_of_pos {a : ℤ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 := by
+lemma inv_intCast_num_of_pos {a : ℤ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 := by
   rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_divInt', divInt_eq_div, Nat.cast_one]
   apply num_div_eq_of_coprime ha0
   rw [Int.natAbs_one]
   exact Nat.coprime_one_left _
 #align rat.inv_coe_int_num_of_pos Rat.inv_intCast_num_of_pos
 
-theorem inv_natCast_num_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 :=
+lemma inv_natCast_num_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 :=
   inv_intCast_num_of_pos (mod_cast ha0 : 0 < (a : ℤ))
 #align rat.inv_coe_nat_num_of_pos Rat.inv_natCast_num_of_pos
 
-theorem inv_intCast_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : ℤ) = a := by
+lemma inv_intCast_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : ℤ) = a := by
   rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_divInt', divInt_eq_div, Nat.cast_one]
   apply den_div_eq_of_coprime ha0
   rw [Int.natAbs_one]
   exact Nat.coprime_one_left _
 #align rat.inv_coe_int_denom_of_pos Rat.inv_intCast_den_of_pos
 
-theorem inv_natCast_den_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.den = a := by
+lemma inv_natCast_den_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.den = a := by
   rw [← Int.ofNat_inj, ← Int.cast_natCast a, inv_intCast_den_of_pos]
   rwa [Nat.cast_pos]
 #align rat.inv_coe_nat_denom_of_pos Rat.inv_natCast_den_of_pos
 
 @[simp]
-theorem inv_intCast_num (a : ℤ) : (a : ℚ)⁻¹.num = Int.sign a := by
+lemma inv_intCast_num (a : ℤ) : (a : ℚ)⁻¹.num = Int.sign a := by
   rcases lt_trichotomy a 0 with lt | rfl | gt
   · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
     simp at lt
@@ -271,16 +271,16 @@ theorem inv_intCast_num (a : ℤ) : (a : ℚ)⁻¹.num = Int.sign a := by
 #align rat.inv_coe_int_num Rat.inv_intCast_num
 
 @[simp]
-theorem inv_natCast_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
+lemma inv_natCast_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
   inv_intCast_num a
 #align rat.inv_coe_nat_num Rat.inv_natCast_num
 
 @[simp]
-theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℚ))⁻¹.num = 1 :=
+lemma inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℚ))⁻¹.num = 1 :=
   inv_natCast_num_of_pos (NeZero.pos a)
 
 @[simp]
-theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by
+lemma inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by
   rw [← Int.ofNat_inj]
   rcases lt_trichotomy a 0 with lt | rfl | gt
   · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
@@ -293,7 +293,7 @@ theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.
 #align rat.inv_coe_int_denom Rat.inv_intCast_den
 
 @[simp]
-theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by
+lemma inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by
   simpa [-inv_intCast_den, ofInt_eq_cast] using inv_intCast_den a
 #align rat.inv_coe_nat_denom Rat.inv_natCast_den
 
@@ -312,18 +312,18 @@ theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a 
 @[deprecated] alias inv_coe_nat_den := inv_natCast_den
 
 @[simp]
-theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
+lemma inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
     (no_index (OfNat.ofNat a : ℚ))⁻¹.den = OfNat.ofNat a :=
   inv_natCast_den_of_pos (NeZero.pos a)
 
-protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=
+protected lemma «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=
   ⟨fun h _ _ => h _,
    fun h q => by
     have := h q.num q.den
     rwa [Int.cast_natCast, num_div_den q] at this⟩
 #align rat.forall Rat.forall
 
-protected theorem «exists» {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ, p (a / b) :=
+protected lemma «exists» {p : ℚ → Prop} : (∃ r, p r) ↔ ∃ a b : ℤ, p (a / b) :=
   ⟨fun ⟨r, hr⟩ => ⟨r.num, r.den, by convert hr; convert num_div_den r⟩, fun ⟨a, b, h⟩ => ⟨_, h⟩⟩
 #align rat.exists Rat.exists
 
@@ -340,23 +340,23 @@ def pnatDen (x : ℚ) : ℕ+ :=
 #align rat.pnat_denom Rat.pnatDen
 
 @[simp]
-theorem coe_pnatDen (x : ℚ) : (x.pnatDen : ℕ) = x.den :=
+lemma coe_pnatDen (x : ℚ) : (x.pnatDen : ℕ) = x.den :=
   rfl
 #align rat.coe_pnat_denom Rat.coe_pnatDen
 
 #noalign rat.mk_pnat_pnat_denom_eq
 
-theorem pnatDen_eq_iff_den_eq {x : ℚ} {n : ℕ+} : x.pnatDen = n ↔ x.den = ↑n :=
+lemma pnatDen_eq_iff_den_eq {x : ℚ} {n : ℕ+} : x.pnatDen = n ↔ x.den = ↑n :=
   Subtype.ext_iff
 #align rat.pnat_denom_eq_iff_denom_eq Rat.pnatDen_eq_iff_den_eq
 
 @[simp]
-theorem pnatDen_one : (1 : ℚ).pnatDen = 1 :=
+lemma pnatDen_one : (1 : ℚ).pnatDen = 1 :=
   rfl
 #align rat.pnat_denom_one Rat.pnatDen_one
 
 @[simp]
-theorem pnatDen_zero : (0 : ℚ).pnatDen = 1 :=
+lemma pnatDen_zero : (0 : ℚ).pnatDen = 1 :=
   rfl
 #align rat.pnat_denom_zero Rat.pnatDen_zero
 

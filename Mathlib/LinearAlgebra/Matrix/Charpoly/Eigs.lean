@@ -57,14 +57,14 @@ open scoped Matrix BigOperators
 
 namespace Matrix
 
-theorem det_eq_prod_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id R)) :
+lemma det_eq_prod_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id R)) :
     A.det = (Matrix.charpoly A).roots.prod := by
   rw [det_eq_sign_charpoly_coeff, ← charpoly_natDegree_eq_dim A,
     Polynomial.prod_roots_eq_coeff_zero_of_monic_of_split A.charpoly_monic hAps, ← mul_assoc,
     ← pow_two, pow_right_comm, neg_one_sq, one_pow, one_mul]
 #align matrix.det_eq_prod_roots_charpoly_of_splits Matrix.det_eq_prod_roots_charpoly_of_splits
 
-theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id R)) :
+lemma trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id R)) :
     A.trace = (Matrix.charpoly A).roots.sum := by
   cases' isEmpty_or_nonempty n with h
   · rw [Matrix.trace, Fintype.sum_empty, Matrix.charpoly,
@@ -77,11 +77,11 @@ theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom
 
 variable (A)
 
-theorem det_eq_prod_roots_charpoly [IsAlgClosed R] : A.det = (Matrix.charpoly A).roots.prod :=
+lemma det_eq_prod_roots_charpoly [IsAlgClosed R] : A.det = (Matrix.charpoly A).roots.prod :=
   det_eq_prod_roots_charpoly_of_splits (IsAlgClosed.splits A.charpoly)
 #align matrix.det_eq_prod_roots_charpoly Matrix.det_eq_prod_roots_charpoly
 
-theorem trace_eq_sum_roots_charpoly [IsAlgClosed R] : A.trace = (Matrix.charpoly A).roots.sum :=
+lemma trace_eq_sum_roots_charpoly [IsAlgClosed R] : A.trace = (Matrix.charpoly A).roots.sum :=
   trace_eq_sum_roots_charpoly_of_splits (IsAlgClosed.splits A.charpoly)
 #align matrix.trace_eq_sum_roots_charpoly Matrix.trace_eq_sum_roots_charpoly
 

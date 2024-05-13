@@ -76,27 +76,27 @@ attribute [simp] IsRegular.left IsRegular.right
 attribute [to_additive] IsRegular
 
 @[to_additive]
-protected theorem MulLECancellable.isLeftRegular [PartialOrder R] {a : R}
+protected lemma MulLECancellable.isLeftRegular [PartialOrder R] {a : R}
     (ha : MulLECancellable a) : IsLeftRegular a :=
   ha.Injective
 #align mul_le_cancellable.is_left_regular MulLECancellable.isLeftRegular
 #align add_le_cancellable.is_add_left_regular AddLECancellable.isAddLeftRegular
 
-theorem IsLeftRegular.right_of_commute {a : R}
+lemma IsLeftRegular.right_of_commute {a : R}
     (ca : ∀ b, Commute a b) (h : IsLeftRegular a) : IsRightRegular a :=
   fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
 #align is_left_regular.right_of_commute IsLeftRegular.right_of_commute
 
-theorem IsRightRegular.left_of_commute {a : R}
+lemma IsRightRegular.left_of_commute {a : R}
     (ca : ∀ b, Commute a b) (h : IsRightRegular a) : IsLeftRegular a := by
   simp_rw [@Commute.symm_iff R _ a] at ca
   exact fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
 
-theorem Commute.isRightRegular_iff {a : R} (ca : ∀ b, Commute a b) :
+lemma Commute.isRightRegular_iff {a : R} (ca : ∀ b, Commute a b) :
     IsRightRegular a ↔ IsLeftRegular a :=
   ⟨IsRightRegular.left_of_commute ca, IsLeftRegular.right_of_commute ca⟩
 
-theorem Commute.isRegular_iff {a : R} (ca : ∀ b, Commute a b) : IsRegular a ↔ IsLeftRegular a :=
+lemma Commute.isRegular_iff {a : R} (ca : ∀ b, Commute a b) : IsRegular a ↔ IsLeftRegular a :=
   ⟨fun h => h.left, fun h => ⟨h, h.right_of_commute ca⟩⟩
 #align commute.is_regular_iff Commute.isRegular_iff
 

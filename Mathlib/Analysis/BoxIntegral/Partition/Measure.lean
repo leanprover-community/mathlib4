@@ -42,11 +42,11 @@ namespace Box
 
 variable (I : Box ι)
 
-theorem measure_Icc_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : μ (Box.Icc I) < ∞ :=
+lemma measure_Icc_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : μ (Box.Icc I) < ∞ :=
   show μ (Icc I.lower I.upper) < ∞ from I.isCompact_Icc.measure_lt_top
 #align box_integral.box.measure_Icc_lt_top BoxIntegral.Box.measure_Icc_lt_top
 
-theorem measure_coe_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : μ I < ∞ :=
+lemma measure_coe_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : μ I < ∞ :=
   (measure_mono <| coe_subset_Icc).trans_lt (I.measure_Icc_lt_top μ)
 #align box_integral.box.measure_coe_lt_top BoxIntegral.Box.measure_coe_lt_top
 
@@ -54,16 +54,16 @@ section Countable
 
 variable [Countable ι]
 
-theorem measurableSet_coe : MeasurableSet (I : Set (ι → ℝ)) := by
+lemma measurableSet_coe : MeasurableSet (I : Set (ι → ℝ)) := by
   rw [coe_eq_pi]
   exact MeasurableSet.univ_pi fun i => measurableSet_Ioc
 #align box_integral.box.measurable_set_coe BoxIntegral.Box.measurableSet_coe
 
-theorem measurableSet_Icc : MeasurableSet (Box.Icc I) :=
+lemma measurableSet_Icc : MeasurableSet (Box.Icc I) :=
   _root_.measurableSet_Icc
 #align box_integral.box.measurable_set_Icc BoxIntegral.Box.measurableSet_Icc
 
-theorem measurableSet_Ioo : MeasurableSet (Box.Ioo I) :=
+lemma measurableSet_Ioo : MeasurableSet (Box.Ioo I) :=
   MeasurableSet.univ_pi fun _ => _root_.measurableSet_Ioo
 #align box_integral.box.measurable_set_Ioo BoxIntegral.Box.measurableSet_Ioo
 
@@ -71,18 +71,18 @@ end Countable
 
 variable [Fintype ι]
 
-theorem coe_ae_eq_Icc : (I : Set (ι → ℝ)) =ᵐ[volume] Box.Icc I := by
+lemma coe_ae_eq_Icc : (I : Set (ι → ℝ)) =ᵐ[volume] Box.Icc I := by
   rw [coe_eq_pi]
   exact Measure.univ_pi_Ioc_ae_eq_Icc
 #align box_integral.box.coe_ae_eq_Icc BoxIntegral.Box.coe_ae_eq_Icc
 
-theorem Ioo_ae_eq_Icc : Box.Ioo I =ᵐ[volume] Box.Icc I :=
+lemma Ioo_ae_eq_Icc : Box.Ioo I =ᵐ[volume] Box.Icc I :=
   Measure.univ_pi_Ioo_ae_eq_Icc
 #align box_integral.box.Ioo_ae_eq_Icc BoxIntegral.Box.Ioo_ae_eq_Icc
 
 end Box
 
-theorem Prepartition.measure_iUnion_toReal [Finite ι] {I : Box ι} (π : Prepartition I)
+lemma Prepartition.measure_iUnion_toReal [Finite ι] {I : Box ι} (π : Prepartition I)
     (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] :
     (μ π.iUnion).toReal = ∑ J in π.boxes, (μ J).toReal := by
   erw [← ENNReal.toReal_sum, π.iUnion_def, measure_biUnion_finset π.pairwiseDisjoint]
@@ -118,17 +118,17 @@ namespace Box
 variable [Fintype ι]
 
 -- @[simp] -- Porting note: simp normal form is `volume_apply'`
-theorem volume_apply (I : Box ι) :
+lemma volume_apply (I : Box ι) :
     (volume : Measure (ι → ℝ)).toBoxAdditive I = ∏ i, (I.upper i - I.lower i) := by
   rw [Measure.toBoxAdditive_apply, coe_eq_pi, Real.volume_pi_Ioc_toReal I.lower_le_upper]
 #align box_integral.box.volume_apply BoxIntegral.Box.volume_apply
 
 @[simp]
-theorem volume_apply' (I : Box ι) :
+lemma volume_apply' (I : Box ι) :
     ((volume : Measure (ι → ℝ)) I).toReal = ∏ i, (I.upper i - I.lower i) := by
   rw [coe_eq_pi, Real.volume_pi_Ioc_toReal I.lower_le_upper]
 
-theorem volume_face_mul {n} (i : Fin (n + 1)) (I : Box (Fin (n + 1))) :
+lemma volume_face_mul {n} (i : Fin (n + 1)) (I : Box (Fin (n + 1))) :
     (∏ j, ((I.face i).upper j - (I.face i).lower j)) * (I.upper i - I.lower i) =
       ∏ j, (I.upper j - I.lower j) := by
   simp only [face_lower, face_upper, (· ∘ ·), Fin.prod_univ_succAbove _ i, mul_comm]
@@ -146,7 +146,7 @@ protected def volume {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] : ι
   (volume : Measure (ι → ℝ)).toBoxAdditive.toSMul
 #align box_integral.box_additive_map.volume BoxIntegral.BoxAdditiveMap.volume
 
-theorem volume_apply {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (I : Box ι) (x : E) :
+lemma volume_apply {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (I : Box ι) (x : E) :
     BoxAdditiveMap.volume I x = (∏ j, (I.upper j - I.lower j)) • x := by
   rw [BoxAdditiveMap.volume, toSMul_apply]
   exact congr_arg₂ (· • ·) I.volume_apply rfl

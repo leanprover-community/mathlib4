@@ -37,7 +37,7 @@ open Finset Filter Metric
 
 variable {ι α E F : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
 
-theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
+lemma cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
     (CauchySeq fun s : Finset ι => ∑ i in s, f i) ↔
       ∀ ε > (0 : ℝ), ∃ s : Finset ι, ∀ t, Disjoint t s → ‖∑ i in t, f i‖ < ε := by
   rw [cauchySeq_finset_iff_sum_vanishing, nhds_basis_ball.forall_iff]
@@ -46,12 +46,12 @@ theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
     exact ⟨s', fun t' ht' => hst <| hs' _ ht'⟩
 #align cauchy_seq_finset_iff_vanishing_norm cauchySeq_finset_iff_vanishing_norm
 
-theorem summable_iff_vanishing_norm [CompleteSpace E] {f : ι → E} :
+lemma summable_iff_vanishing_norm [CompleteSpace E] {f : ι → E} :
     Summable f ↔ ∀ ε > (0 : ℝ), ∃ s : Finset ι, ∀ t, Disjoint t s → ‖∑ i in t, f i‖ < ε := by
   rw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_vanishing_norm]
 #align summable_iff_vanishing_norm summable_iff_vanishing_norm
 
-theorem cauchySeq_finset_of_norm_bounded_eventually {f : ι → E} {g : ι → ℝ} (hg : Summable g)
+lemma cauchySeq_finset_of_norm_bounded_eventually {f : ι → E} {g : ι → ℝ} (hg : Summable g)
     (h : ∀ᶠ i in cofinite, ‖f i‖ ≤ g i) : CauchySeq fun s => ∑ i in s, f i := by
   refine' cauchySeq_finset_iff_vanishing_norm.2 fun ε hε => _
   rcases summable_iff_vanishing_norm.1 hg ε hε with ⟨s, hs⟩
@@ -68,7 +68,7 @@ theorem cauchySeq_finset_of_norm_bounded_eventually {f : ι → E} {g : ι → �
     _ < ε := hs _ (ht.mono_right le_sup_left)
 #align cauchy_seq_finset_of_norm_bounded_eventually cauchySeq_finset_of_norm_bounded_eventually
 
-theorem cauchySeq_finset_of_norm_bounded {f : ι → E} (g : ι → ℝ) (hg : Summable g)
+lemma cauchySeq_finset_of_norm_bounded {f : ι → E} (g : ι → ℝ) (hg : Summable g)
     (h : ∀ i, ‖f i‖ ≤ g i) : CauchySeq fun s : Finset ι => ∑ i in s, f i :=
   cauchySeq_finset_of_norm_bounded_eventually hg <| eventually_of_forall h
 #align cauchy_seq_finset_of_norm_bounded cauchySeq_finset_of_norm_bounded
@@ -89,7 +89,7 @@ theorem cauchySeq_range_of_norm_bounded {f : ℕ → E} (g : ℕ → ℝ)
     _ < ε := hg
 #align cauchy_seq_range_of_norm_bounded cauchySeq_range_of_norm_bounded
 
-theorem cauchySeq_finset_of_summable_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) :
+lemma cauchySeq_finset_of_summable_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) :
     CauchySeq fun s : Finset ι => ∑ a in s, f a :=
   cauchySeq_finset_of_norm_bounded _ hf fun _i => le_rfl
 #align cauchy_seq_finset_of_summable_norm cauchySeq_finset_of_summable_norm
@@ -103,7 +103,7 @@ theorem hasSum_of_subseq_of_summable {f : ι → E} (hf : Summable fun a => ‖f
   tendsto_nhds_of_cauchySeq_of_subseq (cauchySeq_finset_of_summable_norm hf) hs ha
 #align has_sum_of_subseq_of_summable hasSum_of_subseq_of_summable
 
-theorem hasSum_iff_tendsto_nat_of_summable_norm {f : ℕ → E} {a : E} (hf : Summable fun i => ‖f i‖) :
+lemma hasSum_iff_tendsto_nat_of_summable_norm {f : ℕ → E} {a : E} (hf : Summable fun i => ‖f i‖) :
     HasSum f a ↔ Tendsto (fun n : ℕ => ∑ i in range n, f i) atTop (𝓝 a) :=
   ⟨fun h => h.tendsto_sum_nat, fun h => hasSum_of_subseq_of_summable hf tendsto_finset_range h⟩
 #align has_sum_iff_tendsto_nat_of_summable_norm hasSum_iff_tendsto_nat_of_summable_norm
@@ -116,7 +116,7 @@ theorem Summable.of_norm_bounded [CompleteSpace E] {f : ι → E} (g : ι → �
   exact cauchySeq_finset_of_norm_bounded g hg h
 #align summable_of_norm_bounded Summable.of_norm_bounded
 
-theorem HasSum.norm_le_of_bounded {f : ι → E} {g : ι → ℝ} {a : E} {b : ℝ} (hf : HasSum f a)
+lemma HasSum.norm_le_of_bounded {f : ι → E} {g : ι → ℝ} {a : E} {b : ℝ} (hf : HasSum f a)
     (hg : HasSum g b) (h : ∀ i, ‖f i‖ ≤ g i) : ‖a‖ ≤ b := by
   classical exact le_of_tendsto_of_tendsto' hf.norm hg fun _s ↦ norm_sum_le_of_le _ fun i _hi ↦ h i
 #align has_sum.norm_le_of_bounded HasSum.norm_le_of_bounded
@@ -171,15 +171,15 @@ theorem Summable.of_norm_bounded_eventually_nat {f : ℕ → E} (g : ℕ → ℝ
     (h : ∀ᶠ i in atTop, ‖f i‖ ≤ g i) : Summable f :=
   .of_norm_bounded_eventually g hg <| Nat.cofinite_eq_atTop ▸ h
 
-theorem Summable.of_nnnorm_bounded {f : ι → E} (g : ι → ℝ≥0) (hg : Summable g)
+lemma Summable.of_nnnorm_bounded {f : ι → E} (g : ι → ℝ≥0) (hg : Summable g)
     (h : ∀ i, ‖f i‖₊ ≤ g i) : Summable f :=
   .of_norm_bounded (fun i => (g i : ℝ)) (NNReal.summable_coe.2 hg) h
 #align summable_of_nnnorm_bounded Summable.of_nnnorm_bounded
 
-theorem Summable.of_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) : Summable f :=
+lemma Summable.of_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) : Summable f :=
   .of_norm_bounded _ hf fun _i => le_rfl
 #align summable_of_summable_norm Summable.of_norm
 
-theorem Summable.of_nnnorm {f : ι → E} (hf : Summable fun a => ‖f a‖₊) : Summable f :=
+lemma Summable.of_nnnorm {f : ι → E} (hf : Summable fun a => ‖f a‖₊) : Summable f :=
   .of_nnnorm_bounded _ hf fun _i => le_rfl
 #align summable_of_summable_nnnorm Summable.of_nnnorm

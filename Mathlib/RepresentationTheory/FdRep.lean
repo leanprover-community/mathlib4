@@ -92,7 +92,7 @@ def isoToLinearEquiv {V W : FdRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
   FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)
 #align fdRep.iso_to_linear_equiv FdRep.isoToLinearEquiv
 
-theorem Iso.conj_ρ {V W : FdRep k G} (i : V ≅ W) (g : G) :
+lemma Iso.conj_ρ {V W : FdRep k G} (i : V ≅ W) (g : G) :
     W.ρ g = (FdRep.isoToLinearEquiv i).conj (V.ρ g) := by
   -- Porting note: Changed `rw` to `erw`
   erw [FdRep.isoToLinearEquiv, ← FGModuleCat.Iso.conj_eq_conj, Iso.conj_apply]
@@ -110,7 +110,7 @@ def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
 instance : HasForget₂ (FdRep k G) (Rep k G) where
   forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
 
-theorem forget₂_ρ (V : FdRep k G) : ((forget₂ (FdRep k G) (Rep k G)).obj V).ρ = V.ρ := by
+lemma forget₂_ρ (V : FdRep k G) : ((forget₂ (FdRep k G) (Rep k G)).obj V).ρ = V.ρ := by
   ext g v; rfl
 #align fdRep.forget₂_ρ FdRep.forget₂_ρ
 
@@ -192,7 +192,7 @@ noncomputable def dualTensorIsoLinHom : FdRep.of ρV.dual ⊗ W ≅ FdRep.of (li
 #align fdRep.dual_tensor_iso_lin_hom FdRep.dualTensorIsoLinHom
 
 @[simp]
-theorem dualTensorIsoLinHom_hom_hom : (dualTensorIsoLinHom ρV W).hom.hom = dualTensorHom k V W :=
+lemma dualTensorIsoLinHom_hom_hom : (dualTensorIsoLinHom ρV W).hom.hom = dualTensorHom k V W :=
   rfl
 #align fdRep.dual_tensor_iso_lin_hom_hom_hom FdRep.dualTensorIsoLinHom_hom_hom
 

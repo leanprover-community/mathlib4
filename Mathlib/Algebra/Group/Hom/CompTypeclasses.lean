@@ -95,7 +95,7 @@ lemma comp_apply
   rw [← h.comp_eq, MonoidHom.comp_apply]
 
 @[simp]
-theorem comp_assoc {Q : Type*} [Monoid Q]
+lemma comp_assoc {Q : Type*} [Monoid Q]
     {φ₁ : M →* N} {φ₂ : N →* P} {φ₁₂ : M →* P}
     (κ : CompTriple φ₁ φ₂ φ₁₂)
     {φ₃ : P →* Q} {φ₂₃ : N →* Q} (κ' : CompTriple φ₂ φ₃ φ₂₃)

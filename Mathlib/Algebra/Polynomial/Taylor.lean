@@ -38,36 +38,36 @@ def taylor (r : R) : R[X] →ₗ[R] R[X] where
   map_smul' c f := by simp only [smul_eq_C_mul, C_mul_comp, RingHom.id_apply]
 #align polynomial.taylor Polynomial.taylor
 
-theorem taylor_apply : taylor r f = f.comp (X + C r) :=
+lemma taylor_apply : taylor r f = f.comp (X + C r) :=
   rfl
 #align polynomial.taylor_apply Polynomial.taylor_apply
 
 @[simp]
-theorem taylor_X : taylor r X = X + C r := by simp only [taylor_apply, X_comp]
+lemma taylor_X : taylor r X = X + C r := by simp only [taylor_apply, X_comp]
 set_option linter.uppercaseLean3 false in
 #align polynomial.taylor_X Polynomial.taylor_X
 
 @[simp]
-theorem taylor_C (x : R) : taylor r (C x) = C x := by simp only [taylor_apply, C_comp]
+lemma taylor_C (x : R) : taylor r (C x) = C x := by simp only [taylor_apply, C_comp]
 set_option linter.uppercaseLean3 false in
 #align polynomial.taylor_C Polynomial.taylor_C
 
 @[simp]
-theorem taylor_zero' : taylor (0 : R) = LinearMap.id := by
+lemma taylor_zero' : taylor (0 : R) = LinearMap.id := by
   ext
   simp only [taylor_apply, add_zero, comp_X, _root_.map_zero, LinearMap.id_comp,
     Function.comp_apply, LinearMap.coe_comp]
 #align polynomial.taylor_zero' Polynomial.taylor_zero'
 
-theorem taylor_zero (f : R[X]) : taylor 0 f = f := by rw [taylor_zero', LinearMap.id_apply]
+lemma taylor_zero (f : R[X]) : taylor 0 f = f := by rw [taylor_zero', LinearMap.id_apply]
 #align polynomial.taylor_zero Polynomial.taylor_zero
 
 @[simp]
-theorem taylor_one : taylor r (1 : R[X]) = C 1 := by rw [← C_1, taylor_C]
+lemma taylor_one : taylor r (1 : R[X]) = C 1 := by rw [← C_1, taylor_C]
 #align polynomial.taylor_one Polynomial.taylor_one
 
 @[simp]
-theorem taylor_monomial (i : ℕ) (k : R) : taylor r (monomial i k) = C k * (X + C r) ^ i := by
+lemma taylor_monomial (i : ℕ) (k : R) : taylor r (monomial i k) = C k * (X + C r) ^ i := by
   simp [taylor_apply]
 #align polynomial.taylor_monomial Polynomial.taylor_monomial
 
@@ -85,17 +85,17 @@ theorem taylor_coeff (n : ℕ) : (taylor r f).coeff n = (hasseDeriv n f).eval r 
 #align polynomial.taylor_coeff Polynomial.taylor_coeff
 
 @[simp]
-theorem taylor_coeff_zero : (taylor r f).coeff 0 = f.eval r := by
+lemma taylor_coeff_zero : (taylor r f).coeff 0 = f.eval r := by
   rw [taylor_coeff, hasseDeriv_zero, LinearMap.id_apply]
 #align polynomial.taylor_coeff_zero Polynomial.taylor_coeff_zero
 
 @[simp]
-theorem taylor_coeff_one : (taylor r f).coeff 1 = f.derivative.eval r := by
+lemma taylor_coeff_one : (taylor r f).coeff 1 = f.derivative.eval r := by
   rw [taylor_coeff, hasseDeriv_one]
 #align polynomial.taylor_coeff_one Polynomial.taylor_coeff_one
 
 @[simp]
-theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree p := by
+lemma natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree p := by
   refine' map_natDegree_eq_natDegree _ _
   nontriviality R
   intro n c c0
@@ -103,7 +103,7 @@ theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree
 #align polynomial.nat_degree_taylor Polynomial.natDegree_taylor
 
 @[simp]
-theorem taylor_mul {R} [CommSemiring R] (r : R) (p q : R[X]) :
+lemma taylor_mul {R} [CommSemiring R] (r : R) (p q : R[X]) :
     taylor r (p * q) = taylor r p * taylor r q := by simp only [taylor_apply, mul_comp]
 #align polynomial.taylor_mul Polynomial.taylor_mul
 
@@ -113,28 +113,28 @@ def taylorAlgHom {R} [CommSemiring R] (r : R) : R[X] →ₐ[R] R[X] :=
   AlgHom.ofLinearMap (taylor r) (taylor_one r) (taylor_mul r)
 #align polynomial.taylor_alg_hom Polynomial.taylorAlgHom
 
-theorem taylor_taylor {R} [CommSemiring R] (f : R[X]) (r s : R) :
+lemma taylor_taylor {R} [CommSemiring R] (f : R[X]) (r s : R) :
     taylor r (taylor s f) = taylor (r + s) f := by
   simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, C_add, add_assoc]
 #align polynomial.taylor_taylor Polynomial.taylor_taylor
 
-theorem taylor_eval {R} [CommSemiring R] (r : R) (f : R[X]) (s : R) :
+lemma taylor_eval {R} [CommSemiring R] (r : R) (f : R[X]) (s : R) :
     (taylor r f).eval s = f.eval (s + r) := by
   simp only [taylor_apply, eval_comp, eval_C, eval_X, eval_add]
 #align polynomial.taylor_eval Polynomial.taylor_eval
 
-theorem taylor_eval_sub {R} [CommRing R] (r : R) (f : R[X]) (s : R) :
+lemma taylor_eval_sub {R} [CommRing R] (r : R) (f : R[X]) (s : R) :
     (taylor r f).eval (s - r) = f.eval s := by rw [taylor_eval, sub_add_cancel]
 #align polynomial.taylor_eval_sub Polynomial.taylor_eval_sub
 
-theorem taylor_injective {R} [CommRing R] (r : R) : Function.Injective (taylor r) := by
+lemma taylor_injective {R} [CommRing R] (r : R) : Function.Injective (taylor r) := by
   intro f g h
   apply_fun taylor (-r) at h
   simpa only [taylor_apply, comp_assoc, add_comp, X_comp, C_comp, C_neg, neg_add_cancel_right,
     comp_X] using h
 #align polynomial.taylor_injective Polynomial.taylor_injective
 
-theorem eq_zero_of_hasseDeriv_eq_zero {R} [CommRing R] (f : R[X]) (r : R)
+lemma eq_zero_of_hasseDeriv_eq_zero {R} [CommRing R] (f : R[X]) (r : R)
     (h : ∀ k, (hasseDeriv k f).eval r = 0) : f = 0 := by
   apply taylor_injective r
   rw [LinearMap.map_zero]

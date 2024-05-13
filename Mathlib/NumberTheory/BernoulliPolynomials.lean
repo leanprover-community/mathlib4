@@ -56,7 +56,7 @@ def bernoulli (n : ℕ) : ℚ[X] :=
   ∑ i in range (n + 1), Polynomial.monomial (n - i) (_root_.bernoulli i * choose n i)
 #align polynomial.bernoulli Polynomial.bernoulli
 
-theorem bernoulli_def (n : ℕ) : bernoulli n =
+lemma bernoulli_def (n : ℕ) : bernoulli n =
     ∑ i in range (n + 1), Polynomial.monomial i (_root_.bernoulli (n - i) * choose n i) := by
   rw [← sum_range_reflect, add_succ_sub_one, add_zero, bernoulli]
   apply sum_congr rfl
@@ -71,11 +71,11 @@ theorem bernoulli_def (n : ℕ) : bernoulli n =
 section Examples
 
 @[simp]
-theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
+lemma bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 #align polynomial.bernoulli_zero Polynomial.bernoulli_zero
 
 @[simp]
-theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
+lemma bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
   rw [bernoulli, eval_finset_sum, sum_range_succ]
   have : ∑ x : ℕ in range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x) = 0 := by
     apply sum_eq_zero fun x hx => _
@@ -85,7 +85,7 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
 #align polynomial.bernoulli_eval_zero Polynomial.bernoulli_eval_zero
 
 @[simp]
-theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
+lemma bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
   simp only [bernoulli, eval_finset_sum]
   simp only [← succ_eq_add_one, sum_range_succ, mul_one, cast_one, choose_self,
     (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_C, eval_monomial, one_mul]
@@ -96,7 +96,7 @@ theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
 
 end Examples
 
-theorem derivative_bernoulli_add_one (k : ℕ) :
+lemma derivative_bernoulli_add_one (k : ℕ) :
     Polynomial.derivative (bernoulli (k + 1)) = (k + 1) * bernoulli k := by
   simp_rw [bernoulli, derivative_sum, derivative_monomial, Nat.sub_sub, Nat.add_sub_add_right]
   -- LHS sum has an extra term, but the coefficient is zero:
@@ -110,7 +110,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   rw [(choose_mul_succ_eq k m).symm]
 #align polynomial.derivative_bernoulli_add_one Polynomial.derivative_bernoulli_add_one
 
-theorem derivative_bernoulli (k : ℕ) :
+lemma derivative_bernoulli (k : ℕ) :
     Polynomial.derivative (bernoulli k) = k * bernoulli (k - 1) := by
   cases k with
   | zero => rw [Nat.cast_zero, zero_mul, bernoulli_zero, derivative_one]
@@ -118,7 +118,7 @@ theorem derivative_bernoulli (k : ℕ) :
 #align polynomial.derivative_bernoulli Polynomial.derivative_bernoulli
 
 @[simp]
-nonrec theorem sum_bernoulli (n : ℕ) :
+nonrec lemma sum_bernoulli (n : ℕ) :
     (∑ k in range (n + 1), ((n + 1).choose k : ℚ) • bernoulli k) = monomial n (n + 1 : ℚ) := by
   simp_rw [bernoulli_def, Finset.smul_sum, Finset.range_eq_Ico, ← Finset.sum_Ico_Ico_comm,
     Finset.sum_Ico_eq_sum_range]
@@ -187,7 +187,7 @@ theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
   rw [sum_range_pow_eq_bernoulli_sub]
 #align polynomial.bernoulli_succ_eval Polynomial.bernoulli_succ_eval
 
-theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
+lemma bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (1 + x) = (bernoulli n).eval x + n * x ^ (n - 1) := by
   refine' Nat.strong_induction_on n fun d hd => _
   have nz : ((d.succ : ℕ) : ℚ) ≠ 0 := by

@@ -65,12 +65,12 @@ noncomputable def leftInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
 #align formal_multilinear_series.left_inv FormalMultilinearSeries.leftInv
 
 @[simp]
-theorem leftInv_coeff_zero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
+lemma leftInv_coeff_zero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
     p.leftInv i 0 = 0 := by rw [leftInv]
 #align formal_multilinear_series.left_inv_coeff_zero FormalMultilinearSeries.leftInv_coeff_zero
 
 @[simp]
-theorem leftInv_coeff_one (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
+lemma leftInv_coeff_one (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
     p.leftInv i 1 = (continuousMultilinearCurryFin1 𝕜 F E).symm i.symm := by rw [leftInv]
 #align formal_multilinear_series.left_inv_coeff_one FormalMultilinearSeries.leftInv_coeff_one
 
@@ -174,12 +174,12 @@ noncomputable def rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
 #align formal_multilinear_series.right_inv FormalMultilinearSeries.rightInv
 
 @[simp]
-theorem rightInv_coeff_zero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
+lemma rightInv_coeff_zero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
     p.rightInv i 0 = 0 := by rw [rightInv]
 #align formal_multilinear_series.right_inv_coeff_zero FormalMultilinearSeries.rightInv_coeff_zero
 
 @[simp]
-theorem rightInv_coeff_one (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
+lemma rightInv_coeff_one (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
     p.rightInv i 1 = (continuousMultilinearCurryFin1 𝕜 F E).symm i.symm := by rw [rightInv]
 #align formal_multilinear_series.right_inv_coeff_one FormalMultilinearSeries.rightInv_coeff_one
 
@@ -199,7 +199,7 @@ theorem rightInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
     by_cases hk : k < n + 2 <;> simp [hk, IH]
 #align formal_multilinear_series.right_inv_remove_zero FormalMultilinearSeries.rightInv_removeZero
 
-theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries 𝕜 E F)
+lemma comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries 𝕜 E F)
     (q : FormalMultilinearSeries 𝕜 F E) (v : Fin n → F) :
     p.comp q n v =
       ∑ c : Composition n in {c : Composition n | 1 < c.length}.toFinset,
@@ -228,7 +228,7 @@ theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
     -add_right_inj, -Composition.single_length]
 #align formal_multilinear_series.comp_right_inv_aux1 FormalMultilinearSeries.comp_rightInv_aux1
 
-theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (n : ℕ)
+lemma comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (n : ℕ)
     (v : Fin (n + 2) → F) :
     ∑ c : Composition (n + 2) in {c : Composition (n + 2) | 1 < c.length}.toFinset,
         p c.length (applyComposition (fun k : ℕ => ite (k < n + 2) (p.rightInv i k) 0) c v) =
@@ -262,7 +262,7 @@ theorem comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F
       ← sub_eq_add_neg, sub_eq_zero, comp_rightInv_aux2, -Set.toFinset_setOf]
 #align formal_multilinear_series.comp_right_inv FormalMultilinearSeries.comp_rightInv
 
-theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (n : ℕ) (hn : 2 ≤ n) :
+lemma rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (n : ℕ) (hn : 2 ≤ n) :
     p.rightInv i n =
       -(i.symm : F →L[𝕜] E).compContinuousMultilinearMap
           (∑ c in ({c | 1 < Composition.length c}.toFinset : Finset (Composition n)),
@@ -282,7 +282,7 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
 /-! ### Coincidence of the left and the right inverse -/
 
 
-private theorem leftInv_eq_rightInv_aux (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
+private lemma leftInv_eq_rightInv_aux (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
     (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) (h0 : p 0 = 0) :
     leftInv p i = rightInv p i :=
   calc

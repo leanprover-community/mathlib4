@@ -42,13 +42,13 @@ protected def lim (_h : Subadditive u) :=
   sInf ((fun n : ℕ => u n / n) '' Ici 1)
 #align subadditive.lim Subadditive.lim
 
-theorem lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n ≠ 0) :
+lemma lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n ≠ 0) :
     h.lim ≤ u n / n := by
   rw [Subadditive.lim]
   exact csInf_le (hbdd.mono <| image_subset_range _ _) ⟨n, hn.bot_lt, rfl⟩
 #align subadditive.lim_le_div Subadditive.lim_le_div
 
-theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
+lemma apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
   induction k with
   | zero => simp only [Nat.zero_eq, Nat.cast_zero, zero_mul, zero_add]; rfl
   | succ k IH =>
@@ -59,7 +59,7 @@ theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
       _ = (k + 1 : ℕ) * u n + u r := by simp; ring
 #align subadditive.apply_mul_add_le Subadditive.apply_mul_add_le
 
-theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n / n < L) :
+lemma eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n / n < L) :
     ∀ᶠ p in atTop, u p / p < L := by
   /- It suffices to prove the statement for each arithmetic progression `(n * · + r)`. -/
   refine .atTop_of_arithmetic hn fun r _ => ?_

@@ -73,7 +73,7 @@ instance GSMul.toSMul [VAdd ιA ιM] [GSMul A M] : SMul (GradedMonoid A) (Graded
   ⟨fun x y ↦ ⟨_, GSMul.smul x.snd y.snd⟩⟩
 #align graded_monoid.ghas_smul.to_has_smul GradedMonoid.GSMul.toSMul
 
-theorem mk_smul_mk [VAdd ιA ιM] [GSMul A M] {i j} (a : A i) (b : M j) :
+lemma mk_smul_mk [VAdd ιA ιM] [GSMul A M] {i j} (a : A i) (b : M j) :
     mk i a • mk j b = mk (i +ᵥ j) (GSMul.smul a b) :=
   rfl
 #align graded_monoid.mk_smul_mk GradedMonoid.mk_smul_mk
@@ -133,7 +133,7 @@ example {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
     (@GradedMonoid.GSMul.smul ι (fun i ↦ A i) (fun i ↦ B i) _ _ i j x y : M) = x.1 • y.1 := by simp
 -/
 @[simp,nolint simpNF]
-theorem SetLike.coe_GSMul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [VAdd ιA ιB]
+lemma SetLike.coe_GSMul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [VAdd ιA ιB]
     (A : ιA → S) (B : ιB → N) [SetLike.GradedSMul A B] {i : ιA} {j : ιB} (x : A i) (y : B j) :
     (@GradedMonoid.GSMul.smul ιA ιB (fun i ↦ A i) (fun i ↦ B i) _ _ i j x y : M) = x.1 • y.1 :=
   rfl
@@ -151,7 +151,7 @@ section HomogeneousElements
 
 variable {S R N M : Type*} [SetLike S R] [SetLike N M]
 
-theorem SetLike.Homogeneous.graded_smul [VAdd ιA ιB] [SMul R M] {A : ιA → S} {B : ιB → N}
+lemma SetLike.Homogeneous.graded_smul [VAdd ιA ιB] [SMul R M] {A : ιA → S} {B : ιB → N}
     [SetLike.GradedSMul A B] {a : R} {b : M} :
     SetLike.Homogeneous A a → SetLike.Homogeneous B b → SetLike.Homogeneous B (a • b)
   | ⟨i, hi⟩, ⟨j, hj⟩ => ⟨i +ᵥ j, SetLike.GradedSMul.smul_mem hi hj⟩

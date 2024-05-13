@@ -57,14 +57,14 @@ scoped[ModularForm] notation:100 f " ∣[" k "] " a:100 => SlashAction.map ℂ k
 open scoped ModularForm
 
 @[simp]
-theorem SlashAction.neg_slash {β G α γ : Type*} [Group G] [AddGroup α] [SMul γ α]
+lemma SlashAction.neg_slash {β G α γ : Type*} [Group G] [AddGroup α] [SMul γ α]
     [SlashAction β G α γ] (k : β) (g : G) (a : α) : (-a) ∣[k;γ] g = -a ∣[k;γ] g :=
   eq_neg_of_add_eq_zero_left <| by
     rw [← SlashAction.add_slash, add_left_neg, SlashAction.zero_slash]
 #align slash_action.neg_slash SlashAction.neg_slash
 
 @[simp]
-theorem SlashAction.smul_slash_of_tower {R β G α : Type*} (γ : Type*) [Group G] [AddGroup α]
+lemma SlashAction.smul_slash_of_tower {R β G α : Type*} (γ : Type*) [Group G] [AddGroup α]
     [Monoid γ] [MulAction γ α] [SMul R γ] [SMul R α] [IsScalarTower R γ α] [SlashAction β G α γ]
     (k : β) (g : G) (a : α) (r : R) : (r • a) ∣[k;γ] g = r • a ∣[k;γ] g := by
   rw [← smul_one_smul γ r a, SlashAction.smul_slash, smul_one_smul]
@@ -104,7 +104,7 @@ local notation:100 f " ∣[" k "]" γ:100 => ModularForm.slash k γ f
 (Part of the code was ignoring the `maxDischargeDepth` setting:
  now that we have to increase it, other paths become slow.) -/
 set_option maxHeartbeats 400000 in
-private theorem slash_mul (k : ℤ) (A B : GL(2, ℝ)⁺) (f : ℍ → ℂ) :
+private lemma slash_mul (k : ℤ) (A B : GL(2, ℝ)⁺) (f : ℍ → ℂ) :
     f ∣[k](A * B) = (f ∣[k]A) ∣[k]B := by
   ext1 x
   simp_rw [slash, UpperHalfPlane.denom_cocycle A B x]
@@ -121,18 +121,18 @@ private theorem slash_mul (k : ℤ) (A B : GL(2, ℝ)⁺) (f : ℍ → ℂ) :
     rw [← mul_zpow]
   simp_rw [this, ← mul_assoc, ← mul_zpow]
 
-private theorem add_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
+private lemma add_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
     (f + g) ∣[k]A = f ∣[k]A + g ∣[k]A := by
   ext1
   simp only [slash, Pi.add_apply, denom, zpow_neg]
   ring
 
-private theorem slash_one (k : ℤ) (f : ℍ → ℂ) : f ∣[k]1 = f :=
+private lemma slash_one (k : ℤ) (f : ℍ → ℂ) : f ∣[k]1 = f :=
   funext <| by simp [slash, denom]
 
 variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
-private theorem smul_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f : ℍ → ℂ) (c : α) :
+private lemma smul_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f : ℍ → ℂ) (c : α) :
     (c • f) ∣[k]A = c • f ∣[k]A := by
   simp_rw [← smul_one_smul ℂ c f, ← smul_one_smul ℂ c (f ∣[k]A)]
   ext1
@@ -140,7 +140,7 @@ private theorem smul_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f : ℍ → ℂ) (c : 
   simp only [slash, Algebra.id.smul_eq_mul, Matrix.GeneralLinearGroup.val_det_apply, Pi.smul_apply]
   ring
 
-private theorem zero_slash (k : ℤ) (A : GL(2, ℝ)⁺) : (0 : ℍ → ℂ) ∣[k]A = 0 :=
+private lemma zero_slash (k : ℤ) (A : GL(2, ℝ)⁺) : (0 : ℍ → ℂ) ∣[k]A = 0 :=
   funext fun _ => by simp only [slash, Pi.zero_apply, zero_mul]
 
 instance : SlashAction ℤ GL(2, ℝ)⁺ (ℍ → ℂ) ℂ where
@@ -153,7 +153,7 @@ instance : SlashAction ℤ GL(2, ℝ)⁺ (ℍ → ℂ) ℂ where
 
 end
 
-theorem slash_def (A : GL(2, ℝ)⁺) : f ∣[k] A = slash k A f :=
+lemma slash_def (A : GL(2, ℝ)⁺) : f ∣[k] A = slash k A f :=
   rfl
 #align modular_form.slash_def ModularForm.slash_def
 
@@ -164,7 +164,7 @@ instance subgroupAction (Γ : Subgroup SL(2, ℤ)) : SlashAction ℤ Γ (ℍ →
 #align modular_form.subgroup_action ModularForm.subgroupAction
 
 @[simp]
-theorem subgroup_slash (Γ : Subgroup SL(2, ℤ)) (γ : Γ) : f ∣[k] γ = f ∣[k] (γ : GL(2, ℝ)⁺) :=
+lemma subgroup_slash (Γ : Subgroup SL(2, ℤ)) (γ : Γ) : f ∣[k] γ = f ∣[k] (γ : GL(2, ℝ)⁺) :=
   rfl
 #align modular_form.subgroup_slash ModularForm.subgroup_slash
 
@@ -176,12 +176,12 @@ set_option linter.uppercaseLean3 false in
 #align modular_form.SL_action ModularForm.SLAction
 
 @[simp]
-theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL(2, ℝ)⁺) :=
+lemma SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL(2, ℝ)⁺) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align modular_form.SL_slash ModularForm.SL_slash
 
-theorem is_invariant_const (A : SL(2, ℤ)) (x : ℂ) :
+lemma is_invariant_const (A : SL(2, ℤ)) (x : ℂ) :
     Function.const ℍ x ∣[(0 : ℤ)] A = Function.const ℍ x := by
   have : ((↑ₘ(A : GL(2, ℝ)⁺)).det : ℝ) = 1 := det_coe'
   funext
@@ -208,7 +208,7 @@ theorem slash_action_eq'_iff (k : ℤ) (Γ : Subgroup SL(2, ℤ)) (f : ℍ → �
   · convert zpow_ne_zero k (denom_ne_zero γ z)
 #align modular_form.slash_action_eq'_iff ModularForm.slash_action_eq'_iff
 
-theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
+lemma mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = ((↑ₘA).det : ℝ) • f ∣[k1] A * g ∣[k2] A := by
   ext1 x
   simp only [slash_def, slash, Matrix.GeneralLinearGroup.val_det_apply,
@@ -229,7 +229,7 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
 #align modular_form.mul_slash ModularForm.mul_slash
 
 -- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
-theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
+lemma mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A :=
   calc
     (f * g) ∣[k1 + k2] (A : GL(2, ℝ)⁺) =
@@ -240,7 +240,7 @@ theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
 set_option linter.uppercaseLean3 false in
 #align modular_form.mul_slash_SL2 ModularForm.mul_slash_SL2
 
-theorem mul_slash_subgroup (k1 k2 : ℤ) (Γ : Subgroup SL(2, ℤ)) (A : Γ) (f g : ℍ → ℂ) :
+lemma mul_slash_subgroup (k1 k2 : ℤ) (Γ : Subgroup SL(2, ℤ)) (A : Γ) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A :=
   mul_slash_SL2 k1 k2 A f g
 #align modular_form.mul_slash_subgroup ModularForm.mul_slash_subgroup

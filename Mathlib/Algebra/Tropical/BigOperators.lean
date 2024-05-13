@@ -39,37 +39,37 @@ variable {R S : Type*}
 
 open Tropical Finset
 
-theorem List.trop_sum [AddMonoid R] (l : List R) : trop l.sum = List.prod (l.map trop) := by
+lemma List.trop_sum [AddMonoid R] (l : List R) : trop l.sum = List.prod (l.map trop) := by
   induction' l with hd tl IH
   · simp
   · simp [← IH]
 #align list.trop_sum List.trop_sum
 
-theorem Multiset.trop_sum [AddCommMonoid R] (s : Multiset R) :
+lemma Multiset.trop_sum [AddCommMonoid R] (s : Multiset R) :
     trop s.sum = Multiset.prod (s.map trop) :=
   Quotient.inductionOn s (by simpa using List.trop_sum)
 #align multiset.trop_sum Multiset.trop_sum
 
-theorem trop_sum [AddCommMonoid R] (s : Finset S) (f : S → R) :
+lemma trop_sum [AddCommMonoid R] (s : Finset S) (f : S → R) :
     trop (∑ i in s, f i) = ∏ i in s, trop (f i) := by
   convert Multiset.trop_sum (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 #align trop_sum trop_sum
 
-theorem List.untrop_prod [AddMonoid R] (l : List (Tropical R)) :
+lemma List.untrop_prod [AddMonoid R] (l : List (Tropical R)) :
     untrop l.prod = List.sum (l.map untrop) := by
   induction' l with hd tl IH
   · simp
   · simp [← IH]
 #align list.untrop_prod List.untrop_prod
 
-theorem Multiset.untrop_prod [AddCommMonoid R] (s : Multiset (Tropical R)) :
+lemma Multiset.untrop_prod [AddCommMonoid R] (s : Multiset (Tropical R)) :
     untrop s.prod = Multiset.sum (s.map untrop) :=
   Quotient.inductionOn s (by simpa using List.untrop_prod)
 #align multiset.untrop_prod Multiset.untrop_prod
 
-theorem untrop_prod [AddCommMonoid R] (s : Finset S) (f : S → Tropical R) :
+lemma untrop_prod [AddCommMonoid R] (s : Finset S) (f : S → Tropical R) :
     untrop (∏ i in s, f i) = ∑ i in s, untrop (f i) := by
   convert Multiset.untrop_prod (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply]
@@ -77,40 +77,40 @@ theorem untrop_prod [AddCommMonoid R] (s : Finset S) (f : S → Tropical R) :
 #align untrop_prod untrop_prod
 
 -- Porting note: replaced `coe` with `WithTop.some` in statement
-theorem List.trop_minimum [LinearOrder R] (l : List R) :
+lemma List.trop_minimum [LinearOrder R] (l : List R) :
     trop l.minimum = List.sum (l.map (trop ∘ WithTop.some)) := by
   induction' l with hd tl IH
   · simp
   · simp [List.minimum_cons, ← IH]
 #align list.trop_minimum List.trop_minimum
 
-theorem Multiset.trop_inf [LinearOrder R] [OrderTop R] (s : Multiset R) :
+lemma Multiset.trop_inf [LinearOrder R] [OrderTop R] (s : Multiset R) :
     trop s.inf = Multiset.sum (s.map trop) := by
   induction' s using Multiset.induction with s x IH
   · simp
   · simp [← IH]
 #align multiset.trop_inf Multiset.trop_inf
 
-theorem Finset.trop_inf [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → R) :
+lemma Finset.trop_inf [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → R) :
     trop (s.inf f) = ∑ i in s, trop (f i) := by
   convert Multiset.trop_inf (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 #align finset.trop_inf Finset.trop_inf
 
-theorem trop_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finset S) (f : S → WithTop R) :
+lemma trop_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finset S) (f : S → WithTop R) :
     trop (sInf (f '' s)) = ∑ i in s, trop (f i) := by
   rcases s.eq_empty_or_nonempty with (rfl | h)
   · simp only [Set.image_empty, coe_empty, sum_empty, WithTop.sInf_empty, trop_top]
   rw [← inf'_eq_csInf_image _ h, inf'_eq_inf, s.trop_inf]
 #align trop_Inf_image trop_sInf_image
 
-theorem trop_iInf [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → WithTop R) :
+lemma trop_iInf [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → WithTop R) :
     trop (⨅ i : S, f i) = ∑ i : S, trop (f i) := by
   rw [iInf, ← Set.image_univ, ← coe_univ, trop_sInf_image]
 #align trop_infi trop_iInf
 
-theorem Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical R)) :
+lemma Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical R)) :
     untrop s.sum = Multiset.inf (s.map untrop) := by
   induction' s using Multiset.induction with s x IH
   · simp
@@ -118,21 +118,21 @@ theorem Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical
     rfl
 #align multiset.untrop_sum Multiset.untrop_sum
 
-theorem Finset.untrop_sum' [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → Tropical R) :
+lemma Finset.untrop_sum' [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → Tropical R) :
     untrop (∑ i in s, f i) = s.inf (untrop ∘ f) := by
   convert Multiset.untrop_sum (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 #align finset.untrop_sum' Finset.untrop_sum'
 
-theorem untrop_sum_eq_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finset S)
+lemma untrop_sum_eq_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finset S)
     (f : S → Tropical (WithTop R)) : untrop (∑ i in s, f i) = sInf (untrop ∘ f '' s) := by
   rcases s.eq_empty_or_nonempty with (rfl | h)
   · simp only [Set.image_empty, coe_empty, sum_empty, WithTop.sInf_empty, untrop_zero]
   · rw [← inf'_eq_csInf_image _ h, inf'_eq_inf, Finset.untrop_sum']
 #align untrop_sum_eq_Inf_image untrop_sum_eq_sInf_image
 
-theorem untrop_sum [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → Tropical (WithTop R)) :
+lemma untrop_sum [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → Tropical (WithTop R)) :
     untrop (∑ i : S, f i) = ⨅ i : S, untrop (f i) := by
   rw [iInf,← Set.image_univ,← coe_univ, untrop_sum_eq_sInf_image]
   rfl

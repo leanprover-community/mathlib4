@@ -127,7 +127,7 @@ instance (priority := 100) isIdempotentComplete_of_abelian (D : Type*) [Category
 
 variable {C}
 
-theorem split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
+lemma split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
     (hpp' : p ≫ φ.hom = φ.hom ≫ p')
     (h : ∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p) :
     ∃ (Y' : C) (i' : Y' ⟶ X') (e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' := by
@@ -140,7 +140,7 @@ theorem split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
     rw [hpp', ← assoc, φ.inv_hom_id, id_comp]
 #align category_theory.idempotents.split_imp_of_iso CategoryTheory.Idempotents.split_imp_of_iso
 
-theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
+lemma split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
     (hpp' : p ≫ φ.hom = φ.hom ≫ p') :
     (∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p) ↔
       ∃ (Y' : C) (i' : Y' ⟶ X') (e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' := by
@@ -154,7 +154,7 @@ theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
     rfl
 #align category_theory.idempotents.split_iff_of_iso CategoryTheory.Idempotents.split_iff_of_iso
 
-theorem Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
+lemma Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
     (h : IsIdempotentComplete C) : IsIdempotentComplete D := by
   refine' ⟨_⟩
   intro X' p hp
@@ -181,7 +181,7 @@ theorem isIdempotentComplete_iff_of_equivalence {D : Type*} [Category D] (ε : C
   · exact Equivalence.isIdempotentComplete ε.symm
 #align category_theory.idempotents.is_idempotent_complete_iff_of_equivalence CategoryTheory.Idempotents.isIdempotentComplete_iff_of_equivalence
 
-theorem isIdempotentComplete_of_isIdempotentComplete_opposite (h : IsIdempotentComplete Cᵒᵖ) :
+lemma isIdempotentComplete_of_isIdempotentComplete_opposite (h : IsIdempotentComplete Cᵒᵖ) :
     IsIdempotentComplete C := by
   refine' ⟨_⟩
   intro X p hp
@@ -195,7 +195,7 @@ theorem isIdempotentComplete_of_isIdempotentComplete_opposite (h : IsIdempotentC
     rfl
 #align category_theory.idempotents.is_idempotent_complete_of_is_idempotent_complete_opposite CategoryTheory.Idempotents.isIdempotentComplete_of_isIdempotentComplete_opposite
 
-theorem isIdempotentComplete_iff_opposite : IsIdempotentComplete Cᵒᵖ ↔ IsIdempotentComplete C := by
+lemma isIdempotentComplete_iff_opposite : IsIdempotentComplete Cᵒᵖ ↔ IsIdempotentComplete C := by
   constructor
   · exact isIdempotentComplete_of_isIdempotentComplete_opposite
   · intro h

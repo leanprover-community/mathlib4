@@ -58,7 +58,7 @@ structure HasFiniteFPowerSeriesOnBall (f : E → F) (p : FormalMultilinearSeries
     (n : ℕ) (r : ℝ≥0∞) extends HasFPowerSeriesOnBall f p x r : Prop where
   finite : ∀ (m : ℕ), n ≤ m → p m = 0
 
-theorem HasFiniteFPowerSeriesOnBall.mk' {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {x : E}
+lemma HasFiniteFPowerSeriesOnBall.mk' {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {x : E}
     {n : ℕ} {r : ℝ≥0∞} (finite : ∀ (m : ℕ), n ≤ m → p m = 0) (pos : 0 < r)
     (sum_eq : ∀ y ∈ EMetric.ball 0 r, (∑ i in Finset.range n, p i fun _ ↦ y) = f (x + y)) :
     HasFiniteFPowerSeriesOnBall f p x n r where
@@ -74,12 +74,12 @@ neighborhood of `0`and `pₙ = 0` for `n ≤ m`. -/
 def HasFiniteFPowerSeriesAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E) (n : ℕ) :=
   ∃ r, HasFiniteFPowerSeriesOnBall f p x n r
 
-theorem HasFiniteFPowerSeriesAt.toHasFPowerSeriesAt
+lemma HasFiniteFPowerSeriesAt.toHasFPowerSeriesAt
     (hf : HasFiniteFPowerSeriesAt f p x n) : HasFPowerSeriesAt f p x :=
   let ⟨r, hf⟩ := hf
   ⟨r, hf.toHasFPowerSeriesOnBall⟩
 
-theorem HasFiniteFPowerSeriesAt.finite (hf : HasFiniteFPowerSeriesAt f p x n) :
+lemma HasFiniteFPowerSeriesAt.finite (hf : HasFiniteFPowerSeriesAt f p x n) :
     ∀ m : ℕ, n ≤ m → p m = 0 := let ⟨_, hf⟩ := hf; hf.finite
 
 variable (𝕜)
@@ -96,27 +96,27 @@ def CPolynomialOn (f : E → F) (s : Set E) :=
 
 variable {𝕜}
 
-theorem HasFiniteFPowerSeriesOnBall.hasFiniteFPowerSeriesAt
+lemma HasFiniteFPowerSeriesOnBall.hasFiniteFPowerSeriesAt
     (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
     HasFiniteFPowerSeriesAt f p x n :=
   ⟨r, hf⟩
 
-theorem HasFiniteFPowerSeriesAt.cPolynomialAt (hf : HasFiniteFPowerSeriesAt f p x n) :
+lemma HasFiniteFPowerSeriesAt.cPolynomialAt (hf : HasFiniteFPowerSeriesAt f p x n) :
     CPolynomialAt 𝕜 f x :=
   ⟨p, n, hf⟩
 
-theorem HasFiniteFPowerSeriesOnBall.cPolynomialAt (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
+lemma HasFiniteFPowerSeriesOnBall.cPolynomialAt (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
     CPolynomialAt 𝕜 f x :=
   hf.hasFiniteFPowerSeriesAt.cPolynomialAt
 
-theorem CPolynomialAt.analyticAt (hf : CPolynomialAt 𝕜 f x) : AnalyticAt 𝕜 f x :=
+lemma CPolynomialAt.analyticAt (hf : CPolynomialAt 𝕜 f x) : AnalyticAt 𝕜 f x :=
   let ⟨p, _, hp⟩ := hf
   ⟨p, hp.toHasFPowerSeriesAt⟩
 
-theorem CPolynomialOn.analyticOn {s : Set E} (hf : CPolynomialOn 𝕜 f s) : AnalyticOn 𝕜 f s :=
+lemma CPolynomialOn.analyticOn {s : Set E} (hf : CPolynomialOn 𝕜 f s) : AnalyticOn 𝕜 f s :=
   fun x hx ↦ (hf x hx).analyticAt
 
-theorem HasFiniteFPowerSeriesOnBall.congr (hf : HasFiniteFPowerSeriesOnBall f p x n r)
+lemma HasFiniteFPowerSeriesOnBall.congr (hf : HasFiniteFPowerSeriesOnBall f p x n r)
     (hg : EqOn f g (EMetric.ball x r)) : HasFiniteFPowerSeriesOnBall g p x n r :=
   ⟨hf.1.congr hg, hf.finite⟩
 
@@ -126,111 +126,111 @@ theorem HasFiniteFPowerSeriesOnBall.comp_sub (hf : HasFiniteFPowerSeriesOnBall f
     HasFiniteFPowerSeriesOnBall (fun z => f (z - y)) p (x + y) n r :=
   ⟨hf.1.comp_sub y, hf.finite⟩
 
-theorem HasFiniteFPowerSeriesOnBall.mono (hf : HasFiniteFPowerSeriesOnBall f p x n r)
+lemma HasFiniteFPowerSeriesOnBall.mono (hf : HasFiniteFPowerSeriesOnBall f p x n r)
     (r'_pos : 0 < r') (hr : r' ≤ r) : HasFiniteFPowerSeriesOnBall f p x n r' :=
   ⟨hf.1.mono r'_pos hr, hf.finite⟩
 
-theorem HasFiniteFPowerSeriesAt.congr (hf : HasFiniteFPowerSeriesAt f p x n) (hg : f =ᶠ[𝓝 x] g) :
+lemma HasFiniteFPowerSeriesAt.congr (hf : HasFiniteFPowerSeriesAt f p x n) (hg : f =ᶠ[𝓝 x] g) :
     HasFiniteFPowerSeriesAt g p x n :=
   Exists.imp (fun _ hg ↦ ⟨hg, hf.finite⟩) (hf.toHasFPowerSeriesAt.congr hg)
 
-protected theorem HasFiniteFPowerSeriesAt.eventually (hf : HasFiniteFPowerSeriesAt f p x n) :
+protected lemma HasFiniteFPowerSeriesAt.eventually (hf : HasFiniteFPowerSeriesAt f p x n) :
     ∀ᶠ r : ℝ≥0∞ in 𝓝[>] 0, HasFiniteFPowerSeriesOnBall f p x n r :=
   hf.toHasFPowerSeriesAt.eventually.mono fun _ h ↦ ⟨h, hf.finite⟩
 
-theorem hasFiniteFPowerSeriesOnBall_const {c : F} {e : E} :
+lemma hasFiniteFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFiniteFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e 1 ⊤ :=
   ⟨hasFPowerSeriesOnBall_const, fun n hn ↦ constFormalMultilinearSeries_apply (id hn : 0 < n).ne'⟩
 
-theorem hasFiniteFPowerSeriesAt_const {c : F} {e : E} :
+lemma hasFiniteFPowerSeriesAt_const {c : F} {e : E} :
     HasFiniteFPowerSeriesAt (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e 1 :=
   ⟨⊤, hasFiniteFPowerSeriesOnBall_const⟩
 
-theorem CPolynomialAt_const {v : F} : CPolynomialAt 𝕜 (fun _ => v) x :=
+lemma CPolynomialAt_const {v : F} : CPolynomialAt 𝕜 (fun _ => v) x :=
   ⟨constFormalMultilinearSeries 𝕜 E v, 1, hasFiniteFPowerSeriesAt_const⟩
 
-theorem CPolynomialOn_const {v : F} {s : Set E} : CPolynomialOn 𝕜 (fun _ => v) s :=
+lemma CPolynomialOn_const {v : F} {s : Set E} : CPolynomialOn 𝕜 (fun _ => v) s :=
   fun _ _ => CPolynomialAt_const
 
-theorem HasFiniteFPowerSeriesOnBall.add (hf : HasFiniteFPowerSeriesOnBall f pf x n r)
+lemma HasFiniteFPowerSeriesOnBall.add (hf : HasFiniteFPowerSeriesOnBall f pf x n r)
     (hg : HasFiniteFPowerSeriesOnBall g pg x m r) :
     HasFiniteFPowerSeriesOnBall (f + g) (pf + pg) x (max n m) r :=
   ⟨hf.1.add hg.1, fun N hN ↦ by
     rw [Pi.add_apply, hf.finite _ ((le_max_left n m).trans hN),
         hg.finite _ ((le_max_right n m).trans hN), zero_add]⟩
 
-theorem HasFiniteFPowerSeriesAt.add (hf : HasFiniteFPowerSeriesAt f pf x n)
+lemma HasFiniteFPowerSeriesAt.add (hf : HasFiniteFPowerSeriesAt f pf x n)
     (hg : HasFiniteFPowerSeriesAt g pg x m) :
     HasFiniteFPowerSeriesAt (f + g) (pf + pg) x (max n m) := by
   rcases (hf.eventually.and hg.eventually).exists with ⟨r, hr⟩
   exact ⟨r, hr.1.add hr.2⟩
 
-theorem CPolynomialAt.congr (hf : CPolynomialAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : CPolynomialAt 𝕜 g x :=
+lemma CPolynomialAt.congr (hf : CPolynomialAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : CPolynomialAt 𝕜 g x :=
   let ⟨_, _, hpf⟩ := hf
   (hpf.congr hg).cPolynomialAt
 
-theorem CPolynomialAt_congr (h : f =ᶠ[𝓝 x] g) : CPolynomialAt 𝕜 f x ↔ CPolynomialAt 𝕜 g x :=
+lemma CPolynomialAt_congr (h : f =ᶠ[𝓝 x] g) : CPolynomialAt 𝕜 f x ↔ CPolynomialAt 𝕜 g x :=
   ⟨fun hf ↦ hf.congr h, fun hg ↦ hg.congr h.symm⟩
 
-theorem CPolynomialAt.add (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜 g x) :
+lemma CPolynomialAt.add (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜 g x) :
     CPolynomialAt 𝕜 (f + g) x :=
   let ⟨_, _, hpf⟩ := hf
   let ⟨_, _, hqf⟩ := hg
   (hpf.add hqf).cPolynomialAt
 
-theorem HasFiniteFPowerSeriesOnBall.neg (hf : HasFiniteFPowerSeriesOnBall f pf x n r) :
+lemma HasFiniteFPowerSeriesOnBall.neg (hf : HasFiniteFPowerSeriesOnBall f pf x n r) :
     HasFiniteFPowerSeriesOnBall (-f) (-pf) x n r :=
   ⟨hf.1.neg, fun m hm ↦ by rw [Pi.neg_apply, hf.finite m hm, neg_zero]⟩
 
-theorem HasFiniteFPowerSeriesAt.neg (hf : HasFiniteFPowerSeriesAt f pf x n) :
+lemma HasFiniteFPowerSeriesAt.neg (hf : HasFiniteFPowerSeriesAt f pf x n) :
     HasFiniteFPowerSeriesAt (-f) (-pf) x n :=
   let ⟨_, hrf⟩ := hf
   hrf.neg.hasFiniteFPowerSeriesAt
 
-theorem CPolynomialAt.neg (hf : CPolynomialAt 𝕜 f x) : CPolynomialAt 𝕜 (-f) x :=
+lemma CPolynomialAt.neg (hf : CPolynomialAt 𝕜 f x) : CPolynomialAt 𝕜 (-f) x :=
   let ⟨_, _, hpf⟩ := hf
   hpf.neg.cPolynomialAt
 
-theorem HasFiniteFPowerSeriesOnBall.sub (hf : HasFiniteFPowerSeriesOnBall f pf x n r)
+lemma HasFiniteFPowerSeriesOnBall.sub (hf : HasFiniteFPowerSeriesOnBall f pf x n r)
     (hg : HasFiniteFPowerSeriesOnBall g pg x m r) :
     HasFiniteFPowerSeriesOnBall (f - g) (pf - pg) x (max n m) r := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
-theorem HasFiniteFPowerSeriesAt.sub (hf : HasFiniteFPowerSeriesAt f pf x n)
+lemma HasFiniteFPowerSeriesAt.sub (hf : HasFiniteFPowerSeriesAt f pf x n)
     (hg : HasFiniteFPowerSeriesAt g pg x m) :
     HasFiniteFPowerSeriesAt (f - g) (pf - pg) x (max n m) := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
-theorem CPolynomialAt.sub (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜 g x) :
+lemma CPolynomialAt.sub (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜 g x) :
     CPolynomialAt 𝕜 (f - g) x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
-theorem CPolynomialOn.mono {s t : Set E} (hf : CPolynomialOn 𝕜 f t) (hst : s ⊆ t) :
+lemma CPolynomialOn.mono {s t : Set E} (hf : CPolynomialOn 𝕜 f t) (hst : s ⊆ t) :
     CPolynomialOn 𝕜 f s :=
   fun z hz => hf z (hst hz)
 
-theorem CPolynomialOn.congr' {s : Set E} (hf : CPolynomialOn 𝕜 f s) (hg : f =ᶠ[𝓝ˢ s] g) :
+lemma CPolynomialOn.congr' {s : Set E} (hf : CPolynomialOn 𝕜 f s) (hg : f =ᶠ[𝓝ˢ s] g) :
     CPolynomialOn 𝕜 g s :=
   fun z hz => (hf z hz).congr (mem_nhdsSet_iff_forall.mp hg z hz)
 
-theorem CPolynomialOn_congr' {s : Set E} (h : f =ᶠ[𝓝ˢ s] g) :
+lemma CPolynomialOn_congr' {s : Set E} (h : f =ᶠ[𝓝ˢ s] g) :
     CPolynomialOn 𝕜 f s ↔ CPolynomialOn 𝕜 g s :=
   ⟨fun hf => hf.congr' h, fun hg => hg.congr' h.symm⟩
 
-theorem CPolynomialOn.congr {s : Set E} (hs : IsOpen s) (hf : CPolynomialOn 𝕜 f s)
+lemma CPolynomialOn.congr {s : Set E} (hs : IsOpen s) (hf : CPolynomialOn 𝕜 f s)
     (hg : s.EqOn f g) : CPolynomialOn 𝕜 g s :=
   hf.congr' <| mem_nhdsSet_iff_forall.mpr
     (fun _ hz => eventuallyEq_iff_exists_mem.mpr ⟨s, hs.mem_nhds hz, hg⟩)
 
-theorem CPolynomialOn_congr {s : Set E} (hs : IsOpen s) (h : s.EqOn f g) :
+lemma CPolynomialOn_congr {s : Set E} (hs : IsOpen s) (h : s.EqOn f g) :
     CPolynomialOn 𝕜 f s ↔ CPolynomialOn 𝕜 g s :=
   ⟨fun hf => hf.congr hs h, fun hg => hg.congr hs h.symm⟩
 
-theorem CPolynomialOn.add {s : Set E} (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
+lemma CPolynomialOn.add {s : Set E} (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
     CPolynomialOn 𝕜 (f + g) s :=
   fun z hz => (hf z hz).add (hg z hz)
 
-theorem CPolynomialOn.sub {s : Set E} (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
+lemma CPolynomialOn.sub {s : Set E} (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
     CPolynomialOn 𝕜 (f - g) s :=
   fun z hz => (hf z hz).sub (hg z hz)
 
@@ -281,7 +281,7 @@ theorem HasFiniteFPowerSeriesOnBall.eq_zero_of_bound_zero
   rw [hf.eq_partialSum' y hy 0 le_rfl, FormalMultilinearSeries.partialSum]
   simp only [Finset.range_zero, Finset.sum_empty]
 
-theorem HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ EMetric.ball x r, f y = 0)
+lemma HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ EMetric.ball x r, f y = 0)
     (r_pos : 0 < r) (hp : ∀ n, p n = 0) : HasFiniteFPowerSeriesOnBall f p x 0 r := by
   refine ⟨⟨?_, r_pos, ?_⟩, fun n _ ↦ hp n⟩
   · rw [p.radius_eq_top_of_forall_image_add_eq_zero 0 (fun n ↦ by rw [add_zero]; exact hp n)]
@@ -324,13 +324,13 @@ protected theorem HasFiniteFPowerSeriesOnBall.continuousOn
     (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
     ContinuousOn f (EMetric.ball x r) := hf.1.continuousOn
 
-protected theorem HasFiniteFPowerSeriesAt.continuousAt (hf : HasFiniteFPowerSeriesAt f p x n) :
+protected lemma HasFiniteFPowerSeriesAt.continuousAt (hf : HasFiniteFPowerSeriesAt f p x n) :
     ContinuousAt f x := hf.toHasFPowerSeriesAt.continuousAt
 
-protected theorem CPolynomialAt.continuousAt (hf : CPolynomialAt 𝕜 f x) : ContinuousAt f x :=
+protected lemma CPolynomialAt.continuousAt (hf : CPolynomialAt 𝕜 f x) : ContinuousAt f x :=
   hf.analyticAt.continuousAt
 
-protected theorem CPolynomialOn.continuousOn {s : Set E} (hf : CPolynomialOn 𝕜 f s) :
+protected lemma CPolynomialOn.continuousOn {s : Set E} (hf : CPolynomialOn 𝕜 f s) :
     ContinuousOn f s :=
   hf.analyticOn.continuousOn
 
@@ -338,7 +338,7 @@ protected theorem CPolynomialOn.continuousOn {s : Set E} (hf : CPolynomialOn �
 theorem CPolynomialOn.continuous {f : E → F} (fa : CPolynomialOn 𝕜 f univ) : Continuous f := by
   rw [continuous_iff_continuousOn_univ]; exact fa.continuousOn
 
-protected theorem FormalMultilinearSeries.sum_of_finite (p : FormalMultilinearSeries 𝕜 E F)
+protected lemma FormalMultilinearSeries.sum_of_finite (p : FormalMultilinearSeries 𝕜 E F)
     {n : ℕ} (hn : ∀ m, n ≤ m → p m = 0) (x : E) :
     p.sum x = p.partialSum n x :=
   tsum_eq_sum fun m hm ↦ by rw [Finset.mem_range, not_lt] at hm; rw [hn m hm]; rfl
@@ -359,7 +359,7 @@ protected theorem FormalMultilinearSeries.hasFiniteFPowerSeriesOnBall_of_finite
   finite := hn
   hasSum {y} _ := by rw [zero_add]; exact p.hasSum_of_finite hn y
 
-theorem HasFiniteFPowerSeriesOnBall.sum (h : HasFiniteFPowerSeriesOnBall f p x n r) {y : E}
+lemma HasFiniteFPowerSeriesOnBall.sum (h : HasFiniteFPowerSeriesOnBall f p x n r) {y : E}
     (hy : y ∈ EMetric.ball (0 : E) r) : f (x + y) = p.sum y :=
   (h.hasSum hy).tsum_eq.symm
 
@@ -422,14 +422,14 @@ lemma changeOrigin_finite_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
   rw [p.changeOriginSeries_finite_of_finite hn k (le_add_of_le_left hk),
     ContinuousMultilinearMap.zero_apply]
 
-theorem hasFiniteFPowerSeriesOnBall_changeOrigin (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
+lemma hasFiniteFPowerSeriesOnBall_changeOrigin (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (k : ℕ) (hn : ∀ (m : ℕ), n + k ≤ m → p m = 0) :
     HasFiniteFPowerSeriesOnBall (p.changeOrigin · k) (p.changeOriginSeries k) 0 n ⊤ :=
   (p.changeOriginSeries k).hasFiniteFPowerSeriesOnBall_of_finite
     (fun _ hm => p.changeOriginSeries_finite_of_finite hn k
     (by rw [add_comm n k]; apply add_le_add_left hm))
 
-theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
+lemma changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (x y : E) :
     (p.changeOrigin x).sum y = p.sum (x + y) := by
   let f (s : Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) : F :=
@@ -481,7 +481,7 @@ section
 
 variable {x y : E}
 
-theorem HasFiniteFPowerSeriesOnBall.changeOrigin (hf : HasFiniteFPowerSeriesOnBall f p x n r)
+lemma HasFiniteFPowerSeriesOnBall.changeOrigin (hf : HasFiniteFPowerSeriesOnBall f p x n r)
     (h : (‖y‖₊ : ℝ≥0∞) < r) :
     HasFiniteFPowerSeriesOnBall f (p.changeOrigin y) (x + y) n (r - ‖y‖₊) where
   r_le := (tsub_le_tsub_right hf.r_le _).trans p.changeOrigin_radius
@@ -507,7 +507,7 @@ theorem HasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
   rw [add_sub_cancel] at this
   exact this.cPolynomialAt
 
-theorem HasFiniteFPowerSeriesOnBall.cPolynomialOn (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
+lemma HasFiniteFPowerSeriesOnBall.cPolynomialOn (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
     CPolynomialOn 𝕜 f (EMetric.ball x r) :=
   fun _y hy => hf.cPolynomialAt_of_mem hy
 
@@ -522,11 +522,11 @@ theorem isOpen_cPolynomialAt : IsOpen { x | CPolynomialAt 𝕜 f x } := by
 
 variable {𝕜}
 
-theorem CPolynomialAt.eventually_cPolynomialAt {f : E → F} {x : E} (h : CPolynomialAt 𝕜 f x) :
+lemma CPolynomialAt.eventually_cPolynomialAt {f : E → F} {x : E} (h : CPolynomialAt 𝕜 f x) :
     ∀ᶠ y in 𝓝 x, CPolynomialAt 𝕜 f y :=
   (isOpen_cPolynomialAt 𝕜 f).mem_nhds h
 
-theorem CPolynomialAt.exists_mem_nhds_cPolynomialOn {f : E → F} {x : E} (h : CPolynomialAt 𝕜 f x) :
+lemma CPolynomialAt.exists_mem_nhds_cPolynomialOn {f : E → F} {x : E} (h : CPolynomialAt 𝕜 f x) :
     ∃ s ∈ 𝓝 x, CPolynomialOn 𝕜 f s :=
   h.eventually_cPolynomialAt.exists_mem
 

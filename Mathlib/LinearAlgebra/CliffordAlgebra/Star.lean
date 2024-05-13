@@ -38,16 +38,16 @@ instance instStarRing : StarRing (CliffordAlgebra Q) where
   star_mul x y := by simp only [map_mul, reverse.map_mul]
   star_add x y := by simp only [map_add]
 
-theorem star_def (x : CliffordAlgebra Q) : star x = reverse (involute x) :=
+lemma star_def (x : CliffordAlgebra Q) : star x = reverse (involute x) :=
   rfl
 #align clifford_algebra.star_def CliffordAlgebra.star_def
 
-theorem star_def' (x : CliffordAlgebra Q) : star x = involute (reverse x) :=
+lemma star_def' (x : CliffordAlgebra Q) : star x = involute (reverse x) :=
   reverse_involute _
 #align clifford_algebra.star_def' CliffordAlgebra.star_def'
 
 @[simp]
-theorem star_ι (m : M) : star (ι Q m) = -ι Q m := by rw [star_def, involute_ι, map_neg, reverse_ι]
+lemma star_ι (m : M) : star (ι Q m) = -ι Q m := by rw [star_def, involute_ι, map_neg, reverse_ι]
 #align clifford_algebra.star_ι CliffordAlgebra.star_ι
 
 /-- Note that this not match the `star_smul` implied by `StarModule`; it certainly could if we
@@ -59,7 +59,7 @@ theorem star_smul (r : R) (x : CliffordAlgebra Q) : star (r • x) = r • star 
 #align clifford_algebra.star_smul CliffordAlgebra.star_smul
 
 @[simp]
-theorem star_algebraMap (r : R) :
+lemma star_algebraMap (r : R) :
     star (algebraMap R (CliffordAlgebra Q) r) = algebraMap R (CliffordAlgebra Q) r := by
   rw [star_def, involute.commutes, reverse.commutes]
 #align clifford_algebra.star_algebra_map CliffordAlgebra.star_algebraMap

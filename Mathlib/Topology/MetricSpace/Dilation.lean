@@ -98,34 +98,34 @@ instance : CoeFun (α →ᵈ β) fun _ => α → β :=
   DFunLike.hasCoeToFun
 
 @[simp]
-theorem toFun_eq_coe {f : α →ᵈ β} : f.toFun = (f : α → β) :=
+lemma toFun_eq_coe {f : α →ᵈ β} : f.toFun = (f : α → β) :=
   rfl
 #align dilation.to_fun_eq_coe Dilation.toFun_eq_coe
 
 @[simp]
-theorem coe_mk (f : α → β) (h) : ⇑(⟨f, h⟩ : α →ᵈ β) = f :=
+lemma coe_mk (f : α → β) (h) : ⇑(⟨f, h⟩ : α →ᵈ β) = f :=
   rfl
 #align dilation.coe_mk Dilation.coe_mk
 
-theorem congr_fun {f g : α →ᵈ β} (h : f = g) (x : α) : f x = g x :=
+lemma congr_fun {f g : α →ᵈ β} (h : f = g) (x : α) : f x = g x :=
   DFunLike.congr_fun h x
 #align dilation.congr_fun Dilation.congr_fun
 
-theorem congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f y :=
+lemma congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f y :=
   DFunLike.congr_arg f h
 #align dilation.congr_arg Dilation.congr_arg
 
 @[ext]
-theorem ext {f g : α →ᵈ β} (h : ∀ x, f x = g x) : f = g :=
+lemma ext {f g : α →ᵈ β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align dilation.ext Dilation.ext
 
-theorem ext_iff {f g : α →ᵈ β} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : α →ᵈ β} : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 #align dilation.ext_iff Dilation.ext_iff
 
 @[simp]
-theorem mk_coe (f : α →ᵈ β) (h) : Dilation.mk f h = f :=
+lemma mk_coe (f : α →ᵈ β) (h) : Dilation.mk f h = f :=
   ext fun _ => rfl
 #align dilation.mk_coe Dilation.mk_coe
 
@@ -137,7 +137,7 @@ protected def copy (f : α →ᵈ β) (f' : α → β) (h : f' = ⇑f) : α →�
   edist_eq' := h.symm ▸ f.edist_eq'
 #align dilation.copy Dilation.copy
 
-theorem copy_eq_self (f : α →ᵈ β) {f' : α → β} (h : f' = f) : f.copy f' h = f :=
+lemma copy_eq_self (f : α →ᵈ β) {f' : α → β} (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 #align dilation.copy_eq_self Dilation.copy_eq_self
 
@@ -149,26 +149,26 @@ def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=
   if ∀ x y : α, edist x y = 0 ∨ edist x y = ⊤ then 1 else (DilationClass.edist_eq' f).choose
 #align dilation.ratio Dilation.ratio
 
-theorem ratio_of_trivial [DilationClass F α β] (f : F)
+lemma ratio_of_trivial [DilationClass F α β] (f : F)
     (h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞) : ratio f = 1 :=
   if_pos h
 
 @[nontriviality]
-theorem ratio_of_subsingleton [Subsingleton α] [DilationClass F α β] (f : F) : ratio f = 1 :=
+lemma ratio_of_subsingleton [Subsingleton α] [DilationClass F α β] (f : F) : ratio f = 1 :=
   if_pos fun x y ↦ by simp [Subsingleton.elim x y]
 
-theorem ratio_ne_zero [DilationClass F α β] (f : F) : ratio f ≠ 0 := by
+lemma ratio_ne_zero [DilationClass F α β] (f : F) : ratio f ≠ 0 := by
   rw [ratio]; split_ifs
   · exact one_ne_zero
   exact (DilationClass.edist_eq' f).choose_spec.1
 #align dilation.ratio_ne_zero Dilation.ratio_ne_zero
 
-theorem ratio_pos [DilationClass F α β] (f : F) : 0 < ratio f :=
+lemma ratio_pos [DilationClass F α β] (f : F) : 0 < ratio f :=
   (ratio_ne_zero f).bot_lt
 #align dilation.ratio_pos Dilation.ratio_pos
 
 @[simp]
-theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
+lemma edist_eq [DilationClass F α β] (f : F) (x y : α) :
     edist (f x) (f y) = ratio f * edist x y := by
   rw [ratio]; split_ifs with key
   · rcases DilationClass.edist_eq' f with ⟨r, hne, hr⟩
@@ -180,14 +180,14 @@ theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
 #align dilation.edist_eq Dilation.edist_eq
 
 @[simp]
-theorem nndist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β]
+lemma nndist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β]
     [DilationClass F α β] (f : F) (x y : α) :
     nndist (f x) (f y) = ratio f * nndist x y := by
   simp only [← ENNReal.coe_inj, ← edist_nndist, ENNReal.coe_mul, edist_eq]
 #align dilation.nndist_eq Dilation.nndist_eq
 
 @[simp]
-theorem dist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β]
+lemma dist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β]
     [DilationClass F α β] (f : F) (x y : α) :
     dist (f x) (f y) = ratio f * dist x y := by
   simp only [dist_nndist, nndist_eq, NNReal.coe_mul]
@@ -229,13 +229,13 @@ def mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α �
 #align dilation.mk_of_nndist_eq Dilation.mkOfNNDistEq
 
 @[simp]
-theorem coe_mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α → β) (h) :
+lemma coe_mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α → β) (h) :
     ⇑(mkOfNNDistEq f h : α →ᵈ β) = f :=
   rfl
 #align dilation.coe_mk_of_nndist_eq Dilation.coe_mkOfNNDistEq
 
 @[simp]
-theorem mk_coe_of_nndist_eq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α →ᵈ β)
+lemma mk_coe_of_nndist_eq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α →ᵈ β)
     (h) : Dilation.mkOfNNDistEq f h = f :=
   ext fun _ => rfl
 #align dilation.mk_coe_of_nndist_eq Dilation.mk_coe_of_nndist_eq
@@ -249,13 +249,13 @@ def mkOfDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α →
 #align dilation.mk_of_dist_eq Dilation.mkOfDistEq
 
 @[simp]
-theorem coe_mkOfDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α → β) (h) :
+lemma coe_mkOfDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α → β) (h) :
     ⇑(mkOfDistEq f h : α →ᵈ β) = f :=
   rfl
 #align dilation.coe_mk_of_dist_eq Dilation.coe_mkOfDistEq
 
 @[simp]
-theorem mk_coe_of_dist_eq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α →ᵈ β) (h) :
+lemma mk_coe_of_dist_eq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α →ᵈ β) (h) :
     Dilation.mkOfDistEq f h = f :=
   ext fun _ => rfl
 #align dilation.mk_coe_of_dist_eq Dilation.mk_coe_of_dist_eq
@@ -282,10 +282,10 @@ lemma _root_.Isometry.toDilation_ratio {f : α → β} {hf : Isometry f} : ratio
     obtain ⟨x, y, h₁, h₂⟩ := h
     exact ratio_unique h₁ h₂ (by simp [hf x y]) |>.symm
 
-theorem lipschitz : LipschitzWith (ratio f) (f : α → β) := fun x y => (edist_eq f x y).le
+lemma lipschitz : LipschitzWith (ratio f) (f : α → β) := fun x y => (edist_eq f x y).le
 #align dilation.lipschitz Dilation.lipschitz
 
-theorem antilipschitz : AntilipschitzWith (ratio f)⁻¹ (f : α → β) := fun x y => by
+lemma antilipschitz : AntilipschitzWith (ratio f)⁻¹ (f : α → β) := fun x y => by
   have hr : ratio f ≠ 0 := ratio_ne_zero f
   exact mod_cast
     (ENNReal.mul_le_iff_le_inv (ENNReal.coe_ne_zero.2 hr) ENNReal.coe_ne_top).1 (edist_eq f x y).ge
@@ -308,11 +308,11 @@ instance : Inhabited (α →ᵈ α) :=
   ⟨Dilation.id α⟩
 
 @[simp] -- Porting note: Removed `@[protected]`
-theorem coe_id : ⇑(Dilation.id α) = id :=
+lemma coe_id : ⇑(Dilation.id α) = id :=
   rfl
 #align dilation.coe_id Dilation.coe_id
 
-theorem ratio_id : ratio (Dilation.id α) = 1 := by
+lemma ratio_id : ratio (Dilation.id α) = 1 := by
   by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
   · rw [ratio, if_pos h]
   · push_neg at h
@@ -328,17 +328,17 @@ def comp (g : β →ᵈ γ) (f : α →ᵈ β) : α →ᵈ γ where
     fun x y => by simp_rw [Function.comp, edist_eq, ENNReal.coe_mul, mul_assoc]⟩
 #align dilation.comp Dilation.comp
 
-theorem comp_assoc {δ : Type*} [PseudoEMetricSpace δ] (f : α →ᵈ β) (g : β →ᵈ γ)
+lemma comp_assoc {δ : Type*} [PseudoEMetricSpace δ] (f : α →ᵈ β) (g : β →ᵈ γ)
     (h : γ →ᵈ δ) : (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 #align dilation.comp_assoc Dilation.comp_assoc
 
 @[simp]
-theorem coe_comp (g : β →ᵈ γ) (f : α →ᵈ β) : (g.comp f : α → γ) = g ∘ f :=
+lemma coe_comp (g : β →ᵈ γ) (f : α →ᵈ β) : (g.comp f : α → γ) = g ∘ f :=
   rfl
 #align dilation.coe_comp Dilation.coe_comp
 
-theorem comp_apply (g : β →ᵈ γ) (f : α →ᵈ β) (x : α) : (g.comp f : α → γ) x = g (f x) :=
+lemma comp_apply (g : β →ᵈ γ) (f : α →ᵈ β) (x : α) : (g.comp f : α → γ) x = g (f x) :=
   rfl
 #align dilation.comp_apply Dilation.comp_apply
 
@@ -358,12 +358,12 @@ theorem ratio_comp' {g : β →ᵈ γ} {f : α →ᵈ β}
 #align dilation.comp_ratio Dilation.ratio_comp'
 
 @[simp]
-theorem comp_id (f : α →ᵈ β) : f.comp (Dilation.id α) = f :=
+lemma comp_id (f : α →ᵈ β) : f.comp (Dilation.id α) = f :=
   ext fun _ => rfl
 #align dilation.comp_id Dilation.comp_id
 
 @[simp]
-theorem id_comp (f : α →ᵈ β) : (Dilation.id β).comp f = f :=
+lemma id_comp (f : α →ᵈ β) : (Dilation.id β).comp f = f :=
   ext fun _ => rfl
 #align dilation.id_comp Dilation.id_comp
 
@@ -374,28 +374,28 @@ instance : Monoid (α →ᵈ α) where
   one_mul := id_comp
   mul_assoc f g h := comp_assoc _ _ _
 
-theorem one_def : (1 : α →ᵈ α) = Dilation.id α :=
+lemma one_def : (1 : α →ᵈ α) = Dilation.id α :=
   rfl
 #align dilation.one_def Dilation.one_def
 
-theorem mul_def (f g : α →ᵈ α) : f * g = f.comp g :=
+lemma mul_def (f g : α →ᵈ α) : f * g = f.comp g :=
   rfl
 #align dilation.mul_def Dilation.mul_def
 
 @[simp]
-theorem coe_one : ⇑(1 : α →ᵈ α) = id :=
+lemma coe_one : ⇑(1 : α →ᵈ α) = id :=
   rfl
 #align dilation.coe_one Dilation.coe_one
 
 @[simp]
-theorem coe_mul (f g : α →ᵈ α) : ⇑(f * g) = f ∘ g :=
+lemma coe_mul (f g : α →ᵈ α) : ⇑(f * g) = f ∘ g :=
   rfl
 #align dilation.coe_mul Dilation.coe_mul
 
-@[simp] theorem ratio_one : ratio (1 : α →ᵈ α) = 1 := ratio_id
+@[simp] lemma ratio_one : ratio (1 : α →ᵈ α) = 1 := ratio_id
 
 @[simp]
-theorem ratio_mul (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
+lemma ratio_mul (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
   by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
   · simp [ratio_of_trivial, h]
   push_neg at h
@@ -406,17 +406,17 @@ theorem ratio_mul (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
 def ratioHom : (α →ᵈ α) →* ℝ≥0 := ⟨⟨ratio, ratio_one⟩, ratio_mul⟩
 
 @[simp]
-theorem ratio_pow (f : α →ᵈ α) (n : ℕ) : ratio (f ^ n) = ratio f ^ n :=
+lemma ratio_pow (f : α →ᵈ α) (n : ℕ) : ratio (f ^ n) = ratio f ^ n :=
   ratioHom.map_pow _ _
 
 @[simp]
-theorem cancel_right {g₁ g₂ : β →ᵈ γ} {f : α →ᵈ β} (hf : Surjective f) :
+lemma cancel_right {g₁ g₂ : β →ᵈ γ} {f : α →ᵈ β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => Dilation.ext <| hf.forall.2 (ext_iff.1 h), fun h => h ▸ rfl⟩
 #align dilation.cancel_right Dilation.cancel_right
 
 @[simp]
-theorem cancel_left {g : β →ᵈ γ} {f₁ f₂ : α →ᵈ β} (hg : Injective g) :
+lemma cancel_left {g : β →ᵈ γ} {f₁ f₂ : α →ᵈ β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => Dilation.ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
 #align dilation.cancel_left Dilation.cancel_left
@@ -426,7 +426,7 @@ protected theorem uniformInducing : UniformInducing (f : α → β) :=
   (antilipschitz f).uniformInducing (lipschitz f).uniformContinuous
 #align dilation.uniform_inducing Dilation.uniformInducing
 
-theorem tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α} :
+lemma tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α} :
     Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto ((f : α → β) ∘ g) a (𝓝 (f b)) :=
   (Dilation.uniformInducing f).inducing.tendsto_nhds_iff
 #align dilation.tendsto_nhds_iff Dilation.tendsto_nhds_iff
@@ -463,12 +463,12 @@ theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
   fun y hy => (edist_eq f y x).trans_le <| mul_le_mul_left' (by exact hy) _
 #align dilation.maps_to_emetric_closed_ball Dilation.mapsTo_emetric_closedBall
 
-theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
+lemma comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
     ContinuousOn ((f : α → β) ∘ g) s ↔ ContinuousOn g s :=
   (Dilation.uniformInducing f).inducing.continuousOn_iff.symm
 #align dilation.comp_continuous_on_iff Dilation.comp_continuousOn_iff
 
-theorem comp_continuous_iff {γ} [TopologicalSpace γ] {g : γ → α} :
+lemma comp_continuous_iff {γ} [TopologicalSpace γ] {g : γ → α} :
     Continuous ((f : α → β) ∘ g) ↔ Continuous g :=
   (Dilation.uniformInducing f).inducing.continuous_iff.symm
 #align dilation.comp_continuous_iff Dilation.comp_continuous_iff
@@ -520,7 +520,7 @@ theorem diam_image (s : Set α) : Metric.diam ((f : α → β) '' s) = ratio f *
   simp [Metric.diam, ediam_image, ENNReal.toReal_mul]
 #align dilation.diam_image Dilation.diam_image
 
-theorem diam_range : Metric.diam (range (f : α → β)) = ratio f * Metric.diam (univ : Set α) := by
+lemma diam_range : Metric.diam (range (f : α → β)) = ratio f * Metric.diam (univ : Set α) := by
   rw [← image_univ, diam_image]
 #align dilation.diam_range Dilation.diam_range
 

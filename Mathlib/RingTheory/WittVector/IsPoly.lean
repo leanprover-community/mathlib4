@@ -111,7 +111,7 @@ noncomputable section
 -/
 
 
-theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolynomial (idx × ℕ) ℤ)
+lemma poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolynomial (idx × ℕ) ℤ)
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
   ext1 n
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
@@ -122,7 +122,7 @@ theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolyn
     bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
 #align witt_vector.poly_eq_of_witt_polynomial_bind_eq' WittVector.poly_eq_of_wittPolynomial_bind_eq'
 
-theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolynomial ℕ ℤ)
+lemma poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolynomial ℕ ℤ)
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
   ext1 n
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
@@ -169,7 +169,7 @@ instance : Inhabited (IsPoly p fun _ _ => id) :=
 
 variable {p}
 
-theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
+lemma ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
     (h : ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R) (n : ℕ),
         ghostComponent n (f x) = ghostComponent n (g x)) :
     ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R), f x = g x := by
@@ -307,7 +307,7 @@ instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
 #align witt_vector.zero_is_poly WittVector.zeroIsPoly
 
 @[simp]
-theorem bind₁_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
+lemma bind₁_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
     bind₁ (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
   rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, RingHom.map_zero]
 #align witt_vector.bind₁_zero_witt_polynomial WittVector.bind₁_zero_wittPolynomial
@@ -318,7 +318,7 @@ def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 #align witt_vector.one_poly WittVector.onePoly
 
 @[simp]
-theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
+lemma bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
   rw [wittPolynomial_eq_sum_C_mul_X_pow, AlgHom.map_sum, Finset.sum_eq_single 0]
   · simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
@@ -363,7 +363,7 @@ instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
 #align witt_vector.mul_is_poly₂ WittVector.mulIsPoly₂
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't
-theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : 𝕎 R) :
+lemma IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : 𝕎 R) :
     map g (f x) = f (map g x) := by
   -- this could be turned into a tactic “macro” (taking `hf` as parameter)
   -- so that applications do not have to worry about the universe issue
@@ -398,7 +398,7 @@ theorem compRight {g f} [IsPoly₂ p g] [IsPoly p f] :
   inferInstance
 #align witt_vector.is_poly₂.comp_right WittVector.IsPoly₂.compRight
 
-theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
+lemma ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
     (h : ∀ (R : Type u) [_Rcr : CommRing R] (x y : 𝕎 R) (n : ℕ),
         ghostComponent n (f x y) = ghostComponent n (g x y)) :
     ∀ (R) [_Rcr : CommRing R] (x y : 𝕎 R), f x y = g x y := by
@@ -428,7 +428,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
 #align witt_vector.is_poly₂.ext WittVector.IsPoly₂.ext
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't
-theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 R) :
+lemma map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 R) :
     map g (f x y) = f (map g x) (map g y) := by
   -- this could be turned into a tactic “macro” (taking `hf` as parameter)
   -- so that applications do not have to worry about the universe issue

@@ -26,7 +26,7 @@ variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type*} {f f' : α → �
 variable {s s' : Set α} {t t' : Set β} {u u' : Set γ} {v : Set δ} {a a' : α} {b b' : β} {c c' : γ}
   {d d' : δ}
 
-theorem mem_image2_iff (hf : Injective2 f) : f a b ∈ image2 f s t ↔ a ∈ s ∧ b ∈ t :=
+lemma mem_image2_iff (hf : Injective2 f) : f a b ∈ image2 f s t ↔ a ∈ s ∧ b ∈ t :=
   ⟨by
     rintro ⟨a', ha', b', hb', h⟩
     rcases hf h with ⟨rfl, rfl⟩
@@ -39,37 +39,37 @@ theorem image2_subset (hs : s ⊆ s') (ht : t ⊆ t') : image2 f s t ⊆ image2 
   exact mem_image2_of_mem (hs ha) (ht hb)
 #align set.image2_subset Set.image2_subset
 
-theorem image2_subset_left (ht : t ⊆ t') : image2 f s t ⊆ image2 f s t' :=
+lemma image2_subset_left (ht : t ⊆ t') : image2 f s t ⊆ image2 f s t' :=
   image2_subset Subset.rfl ht
 #align set.image2_subset_left Set.image2_subset_left
 
-theorem image2_subset_right (hs : s ⊆ s') : image2 f s t ⊆ image2 f s' t :=
+lemma image2_subset_right (hs : s ⊆ s') : image2 f s t ⊆ image2 f s' t :=
   image2_subset hs Subset.rfl
 #align set.image2_subset_right Set.image2_subset_right
 
-theorem image_subset_image2_left (hb : b ∈ t) : (fun a => f a b) '' s ⊆ image2 f s t :=
+lemma image_subset_image2_left (hb : b ∈ t) : (fun a => f a b) '' s ⊆ image2 f s t :=
   forall_mem_image.2 fun _ ha => mem_image2_of_mem ha hb
 #align set.image_subset_image2_left Set.image_subset_image2_left
 
-theorem image_subset_image2_right (ha : a ∈ s) : f a '' t ⊆ image2 f s t :=
+lemma image_subset_image2_right (ha : a ∈ s) : f a '' t ⊆ image2 f s t :=
   forall_mem_image.2 fun _ => mem_image2_of_mem ha
 #align set.image_subset_image2_right Set.image_subset_image2_right
 
-theorem forall_image2_iff {p : γ → Prop} :
+lemma forall_image2_iff {p : γ → Prop} :
     (∀ z ∈ image2 f s t, p z) ↔ ∀ x ∈ s, ∀ y ∈ t, p (f x y) :=
   ⟨fun h x hx y hy => h _ ⟨x, hx, y, hy, rfl⟩, fun h _ ⟨x, hx, y, hy, hz⟩ => hz ▸ h x hx y hy⟩
 #align set.forall_image2_iff Set.forall_image2_iff
 
 @[simp]
-theorem image2_subset_iff {u : Set γ} : image2 f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=
+lemma image2_subset_iff {u : Set γ} : image2 f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=
   forall_image2_iff
 #align set.image2_subset_iff Set.image2_subset_iff
 
-theorem image2_subset_iff_left : image2 f s t ⊆ u ↔ ∀ a ∈ s, (fun b => f a b) '' t ⊆ u := by
+lemma image2_subset_iff_left : image2 f s t ⊆ u ↔ ∀ a ∈ s, (fun b => f a b) '' t ⊆ u := by
   simp_rw [image2_subset_iff, image_subset_iff, subset_def, mem_preimage]
 #align set.image2_subset_iff_left Set.image2_subset_iff_left
 
-theorem image2_subset_iff_right : image2 f s t ⊆ u ↔ ∀ b ∈ t, (fun a => f a b) '' s ⊆ u := by
+lemma image2_subset_iff_right : image2 f s t ⊆ u ↔ ∀ b ∈ t, (fun a => f a b) '' s ⊆ u := by
   simp_rw [image2_subset_iff, image_subset_iff, subset_def, mem_preimage, @forall₂_swap α]
 #align set.image2_subset_iff_right Set.image2_subset_iff_right
 
@@ -93,18 +93,18 @@ lemma image2_curry (f : α × β → γ) (s : Set α) (t : Set β) :
   simp [← image_uncurry_prod, uncurry]
 #align set.image2_curry Set.image2_curry
 
-theorem image2_swap (s : Set α) (t : Set β) : image2 f s t = image2 (fun a b => f b a) t s := by
+lemma image2_swap (s : Set α) (t : Set β) : image2 f s t = image2 (fun a b => f b a) t s := by
   ext
   constructor <;> rintro ⟨a, ha, b, hb, rfl⟩ <;> exact ⟨b, hb, a, ha, rfl⟩
 #align set.image2_swap Set.image2_swap
 
 variable {f}
 
-theorem image2_union_left : image2 f (s ∪ s') t = image2 f s t ∪ image2 f s' t := by
+lemma image2_union_left : image2 f (s ∪ s') t = image2 f s t ∪ image2 f s' t := by
   simp_rw [← image_prod, union_prod, image_union]
 #align set.image2_union_left Set.image2_union_left
 
-theorem image2_union_right : image2 f s (t ∪ t') = image2 f s t ∪ image2 f s t' := by
+lemma image2_union_right : image2 f s (t ∪ t') = image2 f s t ∪ image2 f s t' := by
   rw [← image2_swap, image2_union_left, image2_swap f, image2_swap f]
 #align set.image2_union_right Set.image2_union_right
 
@@ -119,76 +119,76 @@ lemma image2_inter_right (hf : Injective2 f) :
 #align set.image2_inter_right Set.image2_inter_right
 
 @[simp]
-theorem image2_empty_left : image2 f ∅ t = ∅ :=
+lemma image2_empty_left : image2 f ∅ t = ∅ :=
   ext <| by simp
 #align set.image2_empty_left Set.image2_empty_left
 
 @[simp]
-theorem image2_empty_right : image2 f s ∅ = ∅ :=
+lemma image2_empty_right : image2 f s ∅ = ∅ :=
   ext <| by simp
 #align set.image2_empty_right Set.image2_empty_right
 
-theorem Nonempty.image2 : s.Nonempty → t.Nonempty → (image2 f s t).Nonempty :=
+lemma Nonempty.image2 : s.Nonempty → t.Nonempty → (image2 f s t).Nonempty :=
   fun ⟨_, ha⟩ ⟨_, hb⟩ => ⟨_, mem_image2_of_mem ha hb⟩
 #align set.nonempty.image2 Set.Nonempty.image2
 
 @[simp]
-theorem image2_nonempty_iff : (image2 f s t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
+lemma image2_nonempty_iff : (image2 f s t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   ⟨fun ⟨_, a, ha, b, hb, _⟩ => ⟨⟨a, ha⟩, b, hb⟩, fun h => h.1.image2 h.2⟩
 #align set.image2_nonempty_iff Set.image2_nonempty_iff
 
-theorem Nonempty.of_image2_left (h : (Set.image2 f s t).Nonempty) : s.Nonempty :=
+lemma Nonempty.of_image2_left (h : (Set.image2 f s t).Nonempty) : s.Nonempty :=
   (image2_nonempty_iff.1 h).1
 #align set.nonempty.of_image2_left Set.Nonempty.of_image2_left
 
-theorem Nonempty.of_image2_right (h : (Set.image2 f s t).Nonempty) : t.Nonempty :=
+lemma Nonempty.of_image2_right (h : (Set.image2 f s t).Nonempty) : t.Nonempty :=
   (image2_nonempty_iff.1 h).2
 #align set.nonempty.of_image2_right Set.Nonempty.of_image2_right
 
 @[simp]
-theorem image2_eq_empty_iff : image2 f s t = ∅ ↔ s = ∅ ∨ t = ∅ := by
+lemma image2_eq_empty_iff : image2 f s t = ∅ ↔ s = ∅ ∨ t = ∅ := by
   rw [← not_nonempty_iff_eq_empty, image2_nonempty_iff, not_and_or]
   simp [not_nonempty_iff_eq_empty]
 #align set.image2_eq_empty_iff Set.image2_eq_empty_iff
 
-theorem Subsingleton.image2 (hs : s.Subsingleton) (ht : t.Subsingleton) (f : α → β → γ) :
+lemma Subsingleton.image2 (hs : s.Subsingleton) (ht : t.Subsingleton) (f : α → β → γ) :
     (image2 f s t).Subsingleton := by
   rw [← image_prod]
   apply (hs.prod ht).image
 
-theorem image2_inter_subset_left : image2 f (s ∩ s') t ⊆ image2 f s t ∩ image2 f s' t :=
+lemma image2_inter_subset_left : image2 f (s ∩ s') t ⊆ image2 f s t ∩ image2 f s' t :=
   Monotone.map_inf_le (fun _ _ ↦ image2_subset_right) s s'
 #align set.image2_inter_subset_left Set.image2_inter_subset_left
 
-theorem image2_inter_subset_right : image2 f s (t ∩ t') ⊆ image2 f s t ∩ image2 f s t' :=
+lemma image2_inter_subset_right : image2 f s (t ∩ t') ⊆ image2 f s t ∩ image2 f s t' :=
   Monotone.map_inf_le (fun _ _ ↦ image2_subset_left) t t'
 #align set.image2_inter_subset_right Set.image2_inter_subset_right
 
 @[simp]
-theorem image2_singleton_left : image2 f {a} t = f a '' t :=
+lemma image2_singleton_left : image2 f {a} t = f a '' t :=
   ext fun x => by simp
 #align set.image2_singleton_left Set.image2_singleton_left
 
 @[simp]
-theorem image2_singleton_right : image2 f s {b} = (fun a => f a b) '' s :=
+lemma image2_singleton_right : image2 f s {b} = (fun a => f a b) '' s :=
   ext fun x => by simp
 #align set.image2_singleton_right Set.image2_singleton_right
 
-theorem image2_singleton : image2 f {a} {b} = {f a b} := by simp
+lemma image2_singleton : image2 f {a} {b} = {f a b} := by simp
 #align set.image2_singleton Set.image2_singleton
 
 @[simp]
-theorem image2_insert_left : image2 f (insert a s) t = (fun b => f a b) '' t ∪ image2 f s t := by
+lemma image2_insert_left : image2 f (insert a s) t = (fun b => f a b) '' t ∪ image2 f s t := by
   rw [insert_eq, image2_union_left, image2_singleton_left]
 #align set.image2_insert_left Set.image2_insert_left
 
 @[simp]
-theorem image2_insert_right : image2 f s (insert b t) = (fun a => f a b) '' s ∪ image2 f s t := by
+lemma image2_insert_right : image2 f s (insert b t) = (fun a => f a b) '' s ∪ image2 f s t := by
   rw [insert_eq, image2_union_right, image2_singleton_right]
 #align set.image2_insert_right Set.image2_insert_right
 
 @[congr]
-theorem image2_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) : image2 f s t = image2 f' s t := by
+lemma image2_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) : image2 f s t = image2 f' s t := by
   ext
   constructor <;> rintro ⟨a, ha, b, hb, rfl⟩ <;> exact ⟨a, ha, b, hb, by rw [h a ha b hb]⟩
 #align set.image2_congr Set.image2_congr
@@ -206,28 +206,28 @@ theorem image2_congr' (h : ∀ a b, f a b = f' a b) : image2 f s t = image2 f' s
 #noalign set.image2_image2_left
 #noalign set.image2_image2_right
 
-theorem image_image2 (f : α → β → γ) (g : γ → δ) :
+lemma image_image2 (f : α → β → γ) (g : γ → δ) :
     g '' image2 f s t = image2 (fun a b => g (f a b)) s t := by
   simp only [← image_prod, image_image]
 #align set.image_image2 Set.image_image2
 
-theorem image2_image_left (f : γ → β → δ) (g : α → γ) :
+lemma image2_image_left (f : γ → β → δ) (g : α → γ) :
     image2 f (g '' s) t = image2 (fun a b => f (g a) b) s t := by
   ext; simp
 #align set.image2_image_left Set.image2_image_left
 
-theorem image2_image_right (f : α → γ → δ) (g : β → γ) :
+lemma image2_image_right (f : α → γ → δ) (g : β → γ) :
     image2 f s (g '' t) = image2 (fun a b => f a (g b)) s t := by
   ext; simp
 #align set.image2_image_right Set.image2_image_right
 
 @[simp]
-theorem image2_left (h : t.Nonempty) : image2 (fun x _ => x) s t = s := by
+lemma image2_left (h : t.Nonempty) : image2 (fun x _ => x) s t = s := by
   simp [nonempty_def.mp h, ext_iff]
 #align set.image2_left Set.image2_left
 
 @[simp]
-theorem image2_right (h : s.Nonempty) : image2 (fun _ y => y) s t = t := by
+lemma image2_right (h : s.Nonempty) : image2 (fun _ y => y) s t = t := by
   simp [nonempty_def.mp h, ext_iff]
 #align set.image2_right Set.image2_right
 
@@ -235,31 +235,31 @@ lemma image2_range (f : α' → β' → γ) (g : α → α') (h : β → β') :
     image2 f (range g) (range h) = range fun x : α × β ↦ f (g x.1) (h x.2) := by
   simp_rw [← image_univ, image2_image_left, image2_image_right, ← image_prod, univ_prod_univ]
 
-theorem image2_assoc {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε} {g' : β → γ → ε'}
+lemma image2_assoc {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε} {g' : β → γ → ε'}
     (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c)) :
     image2 f (image2 g s t) u = image2 f' s (image2 g' t u) :=
   eq_of_forall_subset_iff fun _ ↦ by simp only [image2_subset_iff, forall_image2_iff, h_assoc]
 #align set.image2_assoc Set.image2_assoc
 
-theorem image2_comm {g : β → α → γ} (h_comm : ∀ a b, f a b = g b a) : image2 f s t = image2 g t s :=
+lemma image2_comm {g : β → α → γ} (h_comm : ∀ a b, f a b = g b a) : image2 f s t = image2 g t s :=
   (image2_swap _ _ _).trans <| by simp_rw [h_comm]
 #align set.image2_comm Set.image2_comm
 
-theorem image2_left_comm {f : α → δ → ε} {g : β → γ → δ} {f' : α → γ → δ'} {g' : β → δ' → ε}
+lemma image2_left_comm {f : α → δ → ε} {g : β → γ → δ} {f' : α → γ → δ'} {g' : β → δ' → ε}
     (h_left_comm : ∀ a b c, f a (g b c) = g' b (f' a c)) :
     image2 f s (image2 g t u) = image2 g' t (image2 f' s u) := by
   rw [image2_swap f', image2_swap f]
   exact image2_assoc fun _ _ _ => h_left_comm _ _ _
 #align set.image2_left_comm Set.image2_left_comm
 
-theorem image2_right_comm {f : δ → γ → ε} {g : α → β → δ} {f' : α → γ → δ'} {g' : δ' → β → ε}
+lemma image2_right_comm {f : δ → γ → ε} {g : α → β → δ} {f' : α → γ → δ'} {g' : δ' → β → ε}
     (h_right_comm : ∀ a b c, f (g a b) c = g' (f' a c) b) :
     image2 f (image2 g s t) u = image2 g' (image2 f' s u) t := by
   rw [image2_swap g, image2_swap g']
   exact image2_assoc fun _ _ _ => h_right_comm _ _ _
 #align set.image2_right_comm Set.image2_right_comm
 
-theorem image2_image2_image2_comm {f : ε → ζ → ν} {g : α → β → ε} {h : γ → δ → ζ} {f' : ε' → ζ' → ν}
+lemma image2_image2_image2_comm {f : ε → ζ → ν} {g : α → β → ε} {h : γ → δ → ζ} {f' : ε' → ζ' → ν}
     {g' : α → γ → ε'} {h' : β → δ → ζ'}
     (h_comm : ∀ a b c d, f (g a b) (h c d) = f' (g' a c) (h' b d)) :
     image2 f (image2 g s t) (image2 h u v) = image2 f' (image2 g' s u) (image2 h' t v) := by
@@ -270,7 +270,7 @@ theorem image2_image2_image2_comm {f : ε → ζ → ν} {g : α → β → ε} 
     exact ⟨_, ⟨a, ha, b, hb, rfl⟩, _, ⟨c, hc, d, hd, rfl⟩, h_comm _ _ _ _⟩
 #align set.image2_image2_image2_comm Set.image2_image2_image2_comm
 
-theorem image_image2_distrib {g : γ → δ} {f' : α' → β' → δ} {g₁ : α → α'} {g₂ : β → β'}
+lemma image_image2_distrib {g : γ → δ} {f' : α' → β' → δ} {g₁ : α → α'} {g₂ : β → β'}
     (h_distrib : ∀ a b, g (f a b) = f' (g₁ a) (g₂ b)) :
     (image2 f s t).image g = image2 f' (s.image g₁) (t.image g₂) := by
   simp_rw [image_image2, image2_image_left, image2_image_right, h_distrib]
@@ -322,7 +322,7 @@ theorem image2_distrib_subset_right {f : δ → γ → ε} {g : α → β → δ
   exact mem_image2_of_mem (mem_image2_of_mem ha hc) (mem_image2_of_mem hb hc)
 #align set.image2_distrib_subset_right Set.image2_distrib_subset_right
 
-theorem image_image2_antidistrib {g : γ → δ} {f' : β' → α' → δ} {g₁ : β → β'} {g₂ : α → α'}
+lemma image_image2_antidistrib {g : γ → δ} {f' : β' → α' → δ} {g₁ : β → β'} {g₂ : α → α'}
     (h_antidistrib : ∀ a b, g (f a b) = f' (g₁ b) (g₂ a)) :
     (image2 f s t).image g = image2 f' (t.image g₁) (s.image g₂) := by
   rw [image2_swap f]
@@ -371,7 +371,7 @@ lemma image2_right_identity {f : α → β → α} {b : β} (h : ∀ a, f a b = 
   rw [image2_singleton_right, funext h, image_id']
 #align set.image2_right_identity Set.image2_right_identity
 
-theorem image2_inter_union_subset_union :
+lemma image2_inter_union_subset_union :
     image2 f (s ∩ s') (t ∪ t') ⊆ image2 f s t ∪ image2 f s' t' := by
   rw [image2_union_right]
   exact
@@ -379,7 +379,7 @@ theorem image2_inter_union_subset_union :
       (image2_subset_right <| inter_subset_right _ _)
 #align set.image2_inter_union_subset_union Set.image2_inter_union_subset_union
 
-theorem image2_union_inter_subset_union :
+lemma image2_union_inter_subset_union :
     image2 f (s ∪ s') (t ∩ t') ⊆ image2 f s t ∪ image2 f s' t' := by
   rw [image2_union_left]
   exact
@@ -387,13 +387,13 @@ theorem image2_union_inter_subset_union :
       (image2_subset_left <| inter_subset_right _ _)
 #align set.image2_union_inter_subset_union Set.image2_union_inter_subset_union
 
-theorem image2_inter_union_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
+lemma image2_inter_union_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
     image2 f (s ∩ t) (s ∪ t) ⊆ image2 f s t := by
   rw [inter_comm]
   exact image2_inter_union_subset_union.trans (union_subset (image2_comm hf).subset Subset.rfl)
 #align set.image2_inter_union_subset Set.image2_inter_union_subset
 
-theorem image2_union_inter_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
+lemma image2_union_inter_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
     image2 f (s ∪ t) (s ∩ t) ⊆ image2 f s t := by
   rw [image2_comm hf]
   exact image2_inter_union_subset hf

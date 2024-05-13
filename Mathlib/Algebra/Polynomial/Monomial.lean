@@ -25,7 +25,7 @@ universe u
 variable {R : Type u} {a b : R} {m n : ℕ}
 variable [Semiring R] {p q r : R[X]}
 
-theorem monomial_one_eq_iff [Nontrivial R] {i j : ℕ} :
+lemma monomial_one_eq_iff [Nontrivial R] {i j : ℕ} :
     (monomial i 1 : R[X]) = monomial j 1 ↔ i = j := by
   -- Porting note: `ofFinsupp.injEq` is required.
   simp_rw [← ofFinsupp_single, ofFinsupp.injEq]
@@ -36,7 +36,7 @@ instance infinite [Nontrivial R] : Infinite R[X] :=
   Infinite.of_injective (fun i => monomial i 1) fun m n h => by simpa [monomial_one_eq_iff] using h
 #align polynomial.infinite Polynomial.infinite
 
-theorem card_support_le_one_iff_monomial {f : R[X]} :
+lemma card_support_le_one_iff_monomial {f : R[X]} :
     Finset.card f.support ≤ 1 ↔ ∃ n a, f = monomial n a := by
   constructor
   · intro H
@@ -56,7 +56,7 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
     exact support_monomial' _ _
 #align polynomial.card_support_le_one_iff_monomial Polynomial.card_support_le_one_iff_monomial
 
-theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a) = g (C a))
+lemma ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a) = g (C a))
     (h₂ : f X = g X) : f = g := by
   set f' := f.comp (toFinsuppIso R).symm.toRingHom with hf'
   set g' := g.comp (toFinsuppIso R).symm.toRingHom with hg'
@@ -81,7 +81,7 @@ theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a)
 #align polynomial.ring_hom_ext Polynomial.ringHom_ext
 
 @[ext high]
-theorem ringHom_ext' {S} [Semiring S] {f g : R[X] →+* S} (h₁ : f.comp C = g.comp C)
+lemma ringHom_ext' {S} [Semiring S] {f g : R[X] →+* S} (h₁ : f.comp C = g.comp C)
     (h₂ : f X = g X) : f = g :=
   ringHom_ext (RingHom.congr_fun h₁) h₂
 #align polynomial.ring_hom_ext' Polynomial.ringHom_ext'

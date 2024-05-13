@@ -52,33 +52,33 @@ def generateMeasurableRec (s : Set (Set α)) : (ω₁ : Type u) → Set (Set α)
   decreasing_by exact j.2
 #align measurable_space.generate_measurable_rec MeasurableSpace.generateMeasurableRec
 
-theorem self_subset_generateMeasurableRec (s : Set (Set α)) (i : ω₁) :
+lemma self_subset_generateMeasurableRec (s : Set (Set α)) (i : ω₁) :
     s ⊆ generateMeasurableRec s i := by
   unfold generateMeasurableRec
   apply_rules [subset_union_of_subset_left]
   exact subset_rfl
 #align measurable_space.self_subset_generate_measurable_rec MeasurableSpace.self_subset_generateMeasurableRec
 
-theorem empty_mem_generateMeasurableRec (s : Set (Set α)) (i : ω₁) :
+lemma empty_mem_generateMeasurableRec (s : Set (Set α)) (i : ω₁) :
     ∅ ∈ generateMeasurableRec s i := by
   unfold generateMeasurableRec
   exact mem_union_left _ (mem_union_left _ (mem_union_right _ (mem_singleton ∅)))
 #align measurable_space.empty_mem_generate_measurable_rec MeasurableSpace.empty_mem_generateMeasurableRec
 
-theorem compl_mem_generateMeasurableRec {s : Set (Set α)} {i j : ω₁} (h : j < i) {t : Set α}
+lemma compl_mem_generateMeasurableRec {s : Set (Set α)} {i j : ω₁} (h : j < i) {t : Set α}
     (ht : t ∈ generateMeasurableRec s j) : tᶜ ∈ generateMeasurableRec s i := by
   unfold generateMeasurableRec
   exact mem_union_left _ (mem_union_right _ ⟨t, mem_iUnion.2 ⟨⟨j, h⟩, ht⟩, rfl⟩)
 #align measurable_space.compl_mem_generate_measurable_rec MeasurableSpace.compl_mem_generateMeasurableRec
 
-theorem iUnion_mem_generateMeasurableRec {s : Set (Set α)} {i : ω₁} {f : ℕ → Set α}
+lemma iUnion_mem_generateMeasurableRec {s : Set (Set α)} {i : ω₁} {f : ℕ → Set α}
     (hf : ∀ n, ∃ j < i, f n ∈ generateMeasurableRec s j) :
     (⋃ n, f n) ∈ generateMeasurableRec s i := by
   unfold generateMeasurableRec
   exact mem_union_right _ ⟨fun n => ⟨f n, let ⟨j, hj, hf⟩ := hf n; mem_iUnion.2 ⟨⟨j, hj⟩, hf⟩⟩, rfl⟩
 #align measurable_space.Union_mem_generate_measurable_rec MeasurableSpace.iUnion_mem_generateMeasurableRec
 
-theorem generateMeasurableRec_subset (s : Set (Set α)) {i j : ω₁} (h : i ≤ j) :
+lemma generateMeasurableRec_subset (s : Set (Set α)) {i j : ω₁} (h : i ≤ j) :
     generateMeasurableRec s i ⊆ generateMeasurableRec s j := fun x hx => by
   rcases eq_or_lt_of_le h with (rfl | h)
   · exact hx

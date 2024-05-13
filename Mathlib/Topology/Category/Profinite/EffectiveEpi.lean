@@ -133,7 +133,7 @@ theorem effectiveEpiFamily_tfae
     ext; rfl
   tfae_finish
 
-theorem effectiveEpiFamily_of_jointly_surjective
+lemma effectiveEpiFamily_of_jointly_surjective
     {α : Type} [Finite α] {B : Profinite.{u}}
     (X : α → Profinite.{u}) (π : (a : α) → (X a ⟶ B))
     (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b) :

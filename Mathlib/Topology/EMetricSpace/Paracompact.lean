@@ -166,7 +166,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
 #align emetric.paracompact_space EMetric.instParacompactSpace
 
 -- Porting note: no longer an instance because `inferInstance` can find it
-theorem t4Space [EMetricSpace α] : T4Space α := inferInstance
+lemma t4Space [EMetricSpace α] : T4Space α := inferInstance
 #align emetric.normal_of_emetric EMetric.t4Space
 
 end EMetric

@@ -30,7 +30,7 @@ section frobenius
 
 variable {p : ℕ} [Fact p.Prime]
 
-theorem frobenius_zmod (f : MvPolynomial σ (ZMod p)) : frobenius _ p f = expand p f := by
+lemma frobenius_zmod (f : MvPolynomial σ (ZMod p)) : frobenius _ p f = expand p f := by
   apply induction_on f
   · intro a; rw [expand_C, frobenius_def, ← C_pow, ZMod.pow_card]
   · simp only [AlgHom.map_add, RingHom.map_add]; intro _ _ hf hg; rw [hf, hg]
@@ -38,7 +38,7 @@ theorem frobenius_zmod (f : MvPolynomial σ (ZMod p)) : frobenius _ p f = expand
     intro _ _ hf; rw [hf, frobenius_def]
 #align mv_polynomial.frobenius_zmod MvPolynomial.frobenius_zmod
 
-theorem expand_zmod (f : MvPolynomial σ (ZMod p)) : expand p f = f ^ p :=
+lemma expand_zmod (f : MvPolynomial σ (ZMod p)) : expand p f = f ^ p :=
   (frobenius_zmod _).symm
 #align mv_polynomial.expand_zmod MvPolynomial.expand_zmod
 
@@ -69,14 +69,14 @@ section CommRing
 
 variable [CommRing K]
 
-theorem eval_indicator_apply_eq_one (a : σ → K) : eval a (indicator a) = 1 := by
+lemma eval_indicator_apply_eq_one (a : σ → K) : eval a (indicator a) = 1 := by
   nontriviality
   have : 0 < Fintype.card K - 1 := tsub_pos_of_lt Fintype.one_lt_card
   simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C, sub_self,
     zero_pow this.ne', sub_zero, Finset.prod_const_one]
 #align mv_polynomial.eval_indicator_apply_eq_one MvPolynomial.eval_indicator_apply_eq_one
 
-theorem degrees_indicator (c : σ → K) :
+lemma degrees_indicator (c : σ → K) :
     degrees (indicator c) ≤ ∑ s : σ, (Fintype.card K - 1) • {s} := by
   rw [indicator]
   refine' le_trans (degrees_prod _ _) (Finset.sum_le_sum fun s _ => _)
@@ -88,7 +88,7 @@ theorem degrees_indicator (c : σ → K) :
   exact degrees_X' _
 #align mv_polynomial.degrees_indicator MvPolynomial.degrees_indicator
 
-theorem indicator_mem_restrictDegree (c : σ → K) :
+lemma indicator_mem_restrictDegree (c : σ → K) :
     indicator c ∈ restrictDegree σ K (Fintype.card K - 1) := by
   rw [mem_restrictDegree_iff_sup, indicator]
   intro n
@@ -107,7 +107,7 @@ end CommRing
 
 variable [Field K]
 
-theorem eval_indicator_apply_eq_zero (a b : σ → K) (h : a ≠ b) : eval a (indicator b) = 0 := by
+lemma eval_indicator_apply_eq_zero (a b : σ → K) (h : a ≠ b) : eval a (indicator b) = 0 := by
   obtain ⟨i, hi⟩ : ∃ i, a i ≠ b i := by rwa [Ne, Function.funext_iff, not_forall] at h
   simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C, sub_self,
     Finset.prod_eq_zero_iff]
@@ -134,7 +134,7 @@ variable [Field K] [Fintype K] [Finite σ]
 
 -- Porting note: `K` and `σ` were implicit in mathlib3, even if they were declared via
 -- `variable (K σ)` (I don't understand why). They are now explicit, as expected.
-theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
+lemma map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
   cases nonempty_fintype σ
   refine' top_unique (SetLike.le_def.2 fun e _ => mem_map.2 _)
   refine' ⟨∑ n : σ → K, e n • indicator n, _, _⟩
@@ -201,7 +201,7 @@ end CommRing
 
 variable [Field K]
 
-theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :=
+lemma rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :=
   calc
     Module.rank K (R σ K) =
         Module.rank K (↥{ s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 } →₀ K) :=
@@ -228,25 +228,25 @@ instance [Finite σ] : FiniteDimensional K (R σ K) := by
       (IsNoetherian.iff_rank_lt_aleph0.mpr <| by
         simpa only [rank_R] using Cardinal.nat_lt_aleph0 (Fintype.card (σ → K)))
 
-theorem finrank_R [Fintype σ] : FiniteDimensional.finrank K (R σ K) = Fintype.card (σ → K) :=
+lemma finrank_R [Fintype σ] : FiniteDimensional.finrank K (R σ K) = Fintype.card (σ → K) :=
   FiniteDimensional.finrank_eq_of_rank_eq (rank_R σ K)
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.finrank_R MvPolynomial.finrank_R
 
 -- Porting note: was `(evalᵢ σ K).range`.
-theorem range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
+lemma range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
   rw [evalᵢ, LinearMap.range_comp, range_subtype]
   exact map_restrict_dom_evalₗ K σ
 #align mv_polynomial.range_evalᵢ MvPolynomial.range_evalᵢ
 
 -- Porting note: was `(evalᵢ σ K).ker`.
-theorem ker_evalₗ [Finite σ] : ker (evalᵢ σ K) = ⊥ := by
+lemma ker_evalₗ [Finite σ] : ker (evalᵢ σ K) = ⊥ := by
   cases nonempty_fintype σ
   refine' (ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank _).mpr (range_evalᵢ σ K)
   rw [FiniteDimensional.finrank_fintype_fun_eq_card, finrank_R]
 #align mv_polynomial.ker_evalₗ MvPolynomial.ker_evalₗ
 
-theorem eq_zero_of_eval_eq_zero [Finite σ] (p : MvPolynomial σ K) (h : ∀ v : σ → K, eval v p = 0)
+lemma eq_zero_of_eval_eq_zero [Finite σ] (p : MvPolynomial σ K) (h : ∀ v : σ → K, eval v p = 0)
     (hp : p ∈ restrictDegree σ K (Fintype.card K - 1)) : p = 0 :=
   let p' : R σ K := ⟨p, hp⟩
   have : p' ∈ ker (evalᵢ σ K) := funext h

@@ -80,7 +80,7 @@ def Sieve.coverByImage (G : C ⥤ D) (U : D) : Sieve U :=
     ⟨⟨Z, g ≫ f₁, f₂, show (g ≫ f₁) ≫ f₂ = g ≫ _ by rw [Category.assoc, ← e]⟩⟩⟩
 #align category_theory.sieve.cover_by_image CategoryTheory.Sieve.coverByImage
 
-theorem Presieve.in_coverByImage (G : C ⥤ D) {X : D} {Y : C} (f : G.obj Y ⟶ X) :
+lemma Presieve.in_coverByImage (G : C ⥤ D) {X : D} {Y : C} (f : G.obj Y ⟶ X) :
     Presieve.coverByImage G X f :=
   ⟨⟨Y, 𝟙 _, f, by simp⟩⟩
 #align category_theory.presieve.in_cover_by_image CategoryTheory.Presieve.in_coverByImage
@@ -119,7 +119,7 @@ variable {K}
 variable {A : Type*} [Category A] (G : C ⥤ D) [G.IsCoverDense K]
 
 -- this is not marked with `@[ext]` because `H` can not be inferred from the type
-theorem ext (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.obj (op X)}
+lemma ext (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.obj (op X)}
     (h : ∀ ⦃Y : C⦄ (f : G.obj Y ⟶ X), ℱ.val.map f.op s = ℱ.val.map f.op t) : s = t := by
   apply (ℱ.cond (Sieve.coverByImage G X) (G.is_cover_of_isCoverDense K X)).isSeparatedFor.ext
   rintro Y _ ⟨Z, f₁, f₂, ⟨rfl⟩⟩
@@ -128,7 +128,7 @@ theorem ext (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.obj (op X)}
 
 variable {G}
 
-theorem functorPullback_pushforward_covering [Full G] {X : C}
+lemma functorPullback_pushforward_covering [Full G] {X : C}
     (T : K (G.obj X)) : (T.val.functorPullback G).functorPushforward G ∈ K (G.obj X) := by
   refine' K.superset_covering _ (K.bind_covering T.property
     fun Y f _ => G.is_cover_of_isCoverDense K Y)
@@ -157,7 +157,7 @@ def isoOver {ℱ ℱ' : Sheaf K A} (α : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val)
   isoWhiskerRight α (coyoneda.obj (op X))
 #align category_theory.cover_dense.iso_over CategoryTheory.Functor.IsCoverDense.isoOver
 
-theorem sheaf_eq_amalgamation (ℱ : Sheaf K A) {X : A} {U : D} {T : Sieve U} (hT)
+lemma sheaf_eq_amalgamation (ℱ : Sheaf K A) {X : A} {U : D} {T : Sieve U} (hT)
     (x : FamilyOfElements _ T) (hx) (t) (h : x.IsAmalgamation t) :
     t = (ℱ.cond X T hT).amalgamate x hx :=
   (ℱ.cond X T hT).isSeparatedFor x t _ h ((ℱ.cond X T hT).isAmalgamation hx)
@@ -183,7 +183,7 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
 
 -- Porting note: `pushforward_family` was tagged `@[simp]` in Lean 3 so we add the
 -- equation lemma
-@[simp] theorem pushforwardFamily_def {X} (x : ℱ.obj (op X)) :
+@[simp] lemma pushforwardFamily_def {X} (x : ℱ.obj (op X)) :
     pushforwardFamily α x = fun _ _ hf =>
   ℱ'.val.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x : _) := rfl
 
@@ -213,7 +213,7 @@ noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.val.obj (op X) := fun
 #align category_theory.cover_dense.types.app_hom CategoryTheory.Functor.IsCoverDense.Types.appHom
 
 @[simp]
-theorem pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y ⟶ X) :
+lemma pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y ⟶ X) :
     pushforwardFamily α x f (Presieve.in_coverByImage G f) = α.app (op Y) (ℱ.map f.op x) := by
   unfold pushforwardFamily
   -- Porting note: congr_fun was more powerful in Lean 3; I had to explicitly supply
@@ -232,7 +232,7 @@ theorem pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y �
 #align category_theory.cover_dense.types.pushforward_family_apply CategoryTheory.Functor.IsCoverDense.Types.pushforwardFamily_apply
 
 @[simp]
-theorem appHom_restrict {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) (x) :
+lemma appHom_restrict {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) (x) :
     ℱ'.val.map f (appHom α X x) = α.app (op Y) (ℱ.map f x) :=
   ((ℱ'.cond _ (G.is_cover_of_isCoverDense _ X)).valid_glue
       (pushforwardFamily_compatible α x) f.unop
@@ -240,7 +240,7 @@ theorem appHom_restrict {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) (x) :
 #align category_theory.cover_dense.types.app_hom_restrict CategoryTheory.Functor.IsCoverDense.Types.appHom_restrict
 
 @[simp]
-theorem appHom_valid_glue {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) :
+lemma appHom_valid_glue {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) :
     appHom α X ≫ ℱ'.val.map f = ℱ.map f ≫ α.app (op Y) := by
   ext
   apply appHom_restrict

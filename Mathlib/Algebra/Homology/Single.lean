@@ -88,7 +88,7 @@ lemma single_obj_d (j : ι) (A : V) (k l : ι) :
     ((single V c j).obj A).d k l = 0 := rfl
 
 @[reassoc]
-theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
+lemma single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
     ((single V c j).map f).f j = (singleObjXSelf c j A).hom ≫
       f ≫ (singleObjXSelf c j B).inv := by
   dsimp [single]

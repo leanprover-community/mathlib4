@@ -91,24 +91,24 @@ def unop : αᵐᵒᵖ → α :=
 #align add_opposite.unop AddOpposite.unop
 
 @[to_additive (attr := simp)]
-theorem unop_op (x : α) : unop (op x) = x := rfl
+lemma unop_op (x : α) : unop (op x) = x := rfl
 #align mul_opposite.unop_op MulOpposite.unop_op
 #align add_opposite.unop_op AddOpposite.unop_op
 
 @[to_additive (attr := simp)]
-theorem op_unop (x : αᵐᵒᵖ) : op (unop x) = x :=
+lemma op_unop (x : αᵐᵒᵖ) : op (unop x) = x :=
   rfl
 #align mul_opposite.op_unop MulOpposite.op_unop
 #align add_opposite.op_unop AddOpposite.op_unop
 
 @[to_additive (attr := simp)]
-theorem op_comp_unop : (op : α → αᵐᵒᵖ) ∘ unop = id :=
+lemma op_comp_unop : (op : α → αᵐᵒᵖ) ∘ unop = id :=
   rfl
 #align mul_opposite.op_comp_unop MulOpposite.op_comp_unop
 #align add_opposite.op_comp_unop AddOpposite.op_comp_unop
 
 @[to_additive (attr := simp)]
-theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
+lemma unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
   rfl
 #align mul_opposite.unop_comp_op MulOpposite.unop_comp_op
 #align add_opposite.unop_comp_op AddOpposite.unop_comp_op
@@ -131,48 +131,48 @@ def opEquiv : α ≃ αᵐᵒᵖ :=
 #align add_opposite.op_equiv AddOpposite.opEquiv
 
 @[to_additive]
-theorem op_bijective : Bijective (op : α → αᵐᵒᵖ) :=
+lemma op_bijective : Bijective (op : α → αᵐᵒᵖ) :=
   opEquiv.bijective
 #align mul_opposite.op_bijective MulOpposite.op_bijective
 #align add_opposite.op_bijective AddOpposite.op_bijective
 
 @[to_additive]
-theorem unop_bijective : Bijective (unop : αᵐᵒᵖ → α) :=
+lemma unop_bijective : Bijective (unop : αᵐᵒᵖ → α) :=
   opEquiv.symm.bijective
 #align mul_opposite.unop_bijective MulOpposite.unop_bijective
 #align add_opposite.unop_bijective AddOpposite.unop_bijective
 
 @[to_additive]
-theorem op_injective : Injective (op : α → αᵐᵒᵖ) :=
+lemma op_injective : Injective (op : α → αᵐᵒᵖ) :=
   op_bijective.injective
 #align mul_opposite.op_injective MulOpposite.op_injective
 #align add_opposite.op_injective AddOpposite.op_injective
 
 @[to_additive]
-theorem op_surjective : Surjective (op : α → αᵐᵒᵖ) :=
+lemma op_surjective : Surjective (op : α → αᵐᵒᵖ) :=
   op_bijective.surjective
 #align mul_opposite.op_surjective MulOpposite.op_surjective
 #align add_opposite.op_surjective AddOpposite.op_surjective
 
 @[to_additive]
-theorem unop_injective : Injective (unop : αᵐᵒᵖ → α) :=
+lemma unop_injective : Injective (unop : αᵐᵒᵖ → α) :=
   unop_bijective.injective
 #align mul_opposite.unop_injective MulOpposite.unop_injective
 #align add_opposite.unop_injective AddOpposite.unop_injective
 
 @[to_additive]
-theorem unop_surjective : Surjective (unop : αᵐᵒᵖ → α) :=
+lemma unop_surjective : Surjective (unop : αᵐᵒᵖ → α) :=
   unop_bijective.surjective
 #align mul_opposite.unop_surjective MulOpposite.unop_surjective
 #align add_opposite.unop_surjective AddOpposite.unop_surjective
 
 @[to_additive (attr := simp)]
-theorem op_inj {x y : α} : op x = op y ↔ x = y := iff_of_eq <| PreOpposite.op'.injEq _ _
+lemma op_inj {x y : α} : op x = op y ↔ x = y := iff_of_eq <| PreOpposite.op'.injEq _ _
 #align mul_opposite.op_inj MulOpposite.op_inj
 #align add_opposite.op_inj AddOpposite.op_inj
 
 @[to_additive (attr := simp, nolint simpComm)]
-theorem unop_inj {x y : αᵐᵒᵖ} : unop x = unop y ↔ x = y :=
+lemma unop_inj {x y : αᵐᵒᵖ} : unop x = unop y ↔ x = y :=
   unop_injective.eq_iff
 #align mul_opposite.unop_inj MulOpposite.unop_inj
 #align add_opposite.unop_inj AddOpposite.unop_inj
@@ -273,25 +273,25 @@ lemma unop_smul [SMul α β] (a : α) (b : βᵐᵒᵖ) : unop (a • b) = a •
 #align add_opposite.unop_vadd AddOpposite.unop_vadd
 
 @[simp, nolint simpComm]
-theorem unop_eq_zero_iff [Zero α] (a : αᵐᵒᵖ) : a.unop = (0 : α) ↔ a = (0 : αᵐᵒᵖ) :=
+lemma unop_eq_zero_iff [Zero α] (a : αᵐᵒᵖ) : a.unop = (0 : α) ↔ a = (0 : αᵐᵒᵖ) :=
   unop_injective.eq_iff' rfl
 #align mul_opposite.unop_eq_zero_iff MulOpposite.unop_eq_zero_iff
 
 @[simp]
-theorem op_eq_zero_iff [Zero α] (a : α) : op a = (0 : αᵐᵒᵖ) ↔ a = (0 : α) :=
+lemma op_eq_zero_iff [Zero α] (a : α) : op a = (0 : αᵐᵒᵖ) ↔ a = (0 : α) :=
   op_injective.eq_iff' rfl
 #align mul_opposite.op_eq_zero_iff MulOpposite.op_eq_zero_iff
 
-theorem unop_ne_zero_iff [Zero α] (a : αᵐᵒᵖ) : a.unop ≠ (0 : α) ↔ a ≠ (0 : αᵐᵒᵖ) :=
+lemma unop_ne_zero_iff [Zero α] (a : αᵐᵒᵖ) : a.unop ≠ (0 : α) ↔ a ≠ (0 : αᵐᵒᵖ) :=
   not_congr <| unop_eq_zero_iff a
 #align mul_opposite.unop_ne_zero_iff MulOpposite.unop_ne_zero_iff
 
-theorem op_ne_zero_iff [Zero α] (a : α) : op a ≠ (0 : αᵐᵒᵖ) ↔ a ≠ (0 : α) :=
+lemma op_ne_zero_iff [Zero α] (a : α) : op a ≠ (0 : αᵐᵒᵖ) ↔ a ≠ (0 : α) :=
   not_congr <| op_eq_zero_iff a
 #align mul_opposite.op_ne_zero_iff MulOpposite.op_ne_zero_iff
 
 @[to_additive (attr := simp, nolint simpComm)]
-theorem unop_eq_one_iff [One α] (a : αᵐᵒᵖ) : a.unop = 1 ↔ a = 1 :=
+lemma unop_eq_one_iff [One α] (a : αᵐᵒᵖ) : a.unop = 1 ↔ a = 1 :=
   unop_injective.eq_iff' rfl
 #align mul_opposite.unop_eq_one_iff MulOpposite.unop_eq_one_iff
 #align add_opposite.unop_eq_zero_iff AddOpposite.unop_eq_zero_iff

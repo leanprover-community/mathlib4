@@ -134,27 +134,27 @@ section Commute
 variable {A} [NonUnitalNonAssocRing A] [IsJordan A]
 
 @[simp]
-theorem commute_lmul_rmul (a : A) : Commute (L a) (R a) :=
+lemma commute_lmul_rmul (a : A) : Commute (L a) (R a) :=
   AddMonoidHom.ext fun _ => (IsJordan.lmul_comm_rmul _ _).symm
 #align commute_lmul_rmul commute_lmul_rmul
 
 @[simp]
-theorem commute_lmul_lmul_sq (a : A) : Commute (L a) (L (a * a)) :=
+lemma commute_lmul_lmul_sq (a : A) : Commute (L a) (L (a * a)) :=
   AddMonoidHom.ext fun _ => (IsJordan.lmul_lmul_comm_lmul _ _).symm
 #align commute_lmul_lmul_sq commute_lmul_lmul_sq
 
 @[simp]
-theorem commute_lmul_rmul_sq (a : A) : Commute (L a) (R (a * a)) :=
+lemma commute_lmul_rmul_sq (a : A) : Commute (L a) (R (a * a)) :=
   AddMonoidHom.ext fun _ => (IsJordan.lmul_comm_rmul_rmul _ _).symm
 #align commute_lmul_rmul_sq commute_lmul_rmul_sq
 
 @[simp]
-theorem commute_lmul_sq_rmul (a : A) : Commute (L (a * a)) (R a) :=
+lemma commute_lmul_sq_rmul (a : A) : Commute (L (a * a)) (R a) :=
   AddMonoidHom.ext fun _ => IsJordan.lmul_lmul_comm_rmul _ _
 #align commute_lmul_sq_rmul commute_lmul_sq_rmul
 
 @[simp]
-theorem commute_rmul_rmul_sq (a : A) : Commute (R a) (R (a * a)) :=
+lemma commute_rmul_rmul_sq (a : A) : Commute (R a) (R (a * a)) :=
   AddMonoidHom.ext fun _ => (IsJordan.rmul_comm_rmul_rmul _ _).symm
 #align commute_rmul_rmul_sq commute_rmul_rmul_sq
 
@@ -168,7 +168,7 @@ with a Lie Bracket via `Ring.bracket`.
 -/
 
 
-theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
+lemma two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
     2 • (⁅L a, L (a * b)⁆ + ⁅L b, L (b * a)⁆) = ⁅L (a * a), L b⁆ + ⁅L (b * b), L a⁆ := by
   suffices 2 • ⁅L a, L (a * b)⁆ + 2 • ⁅L b, L (b * a)⁆ + ⁅L b, L (a * a)⁆ + ⁅L a, L (b * b)⁆ = 0 by
     rwa [← sub_eq_zero, ← sub_sub, sub_eq_add_neg, sub_eq_add_neg, lie_skew, lie_skew, nsmul_add]
@@ -180,7 +180,7 @@ theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
 
 -- Porting note: the monolithic `calc`-based proof of `two_nsmul_lie_lmul_lmul_add_add_eq_zero`
 -- has had four auxiliary parts `aux{0,1,2,3}` split off from it.
-private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c))⁆ =
+private lemma aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c))⁆ =
     ⁅L a + L b + L c, L (a * a) + L (b * b) + L (c * c) +
     2 • L (a * b) + 2 • L (c * a) + 2 • L (b * c)⁆ := by
   rw [add_mul, add_mul]
@@ -191,7 +191,7 @@ private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c
   simp only [lie_add, add_lie, commute_lmul_lmul_sq, zero_add, add_zero]
   abel
 
-private theorem aux1 {a b c : A} :
+private lemma aux1 {a b c : A} :
     ⁅L a + L b + L c, L (a * a) + L (b * b) + L (c * c) +
     2 • L (a * b) + 2 • L (c * a) + 2 • L (b * c)⁆
     =
@@ -204,7 +204,7 @@ private theorem aux1 {a b c : A} :
   rw [add_lie, add_lie]
   iterate 15 rw [lie_add]
 
-private theorem aux2 {a b c : A} :
+private lemma aux2 {a b c : A} :
     ⁅L a, L (a * a)⁆ + ⁅L a, L (b * b)⁆ + ⁅L a, L (c * c)⁆ +
     ⁅L a, 2 • L (a * b)⁆ + ⁅L a, 2 • L (c * a)⁆ + ⁅L a, 2 • L (b * c)⁆ +
     (⁅L b, L (a * a)⁆ + ⁅L b, L (b * b)⁆ + ⁅L b, L (c * c)⁆ +
@@ -221,7 +221,7 @@ private theorem aux2 {a b c : A} :
   simp only [lie_nsmul]
   abel
 
-private theorem aux3 {a b c : A} :
+private lemma aux3 {a b c : A} :
     ⁅L a, L (b * b)⁆ + ⁅L b, L (a * a)⁆ + 2 • (⁅L a, L (a * b)⁆ + ⁅L b, L (a * b)⁆) +
     (⁅L a, L (c * c)⁆ + ⁅L c, L (a * a)⁆ + 2 • (⁅L a, L (c * a)⁆ + ⁅L c, L (c * a)⁆)) +
     (⁅L b, L (c * c)⁆ + ⁅L c, L (b * b)⁆ + 2 • (⁅L b, L (b * c)⁆ + ⁅L c, L (b * c)⁆)) +
@@ -237,7 +237,7 @@ private theorem aux3 {a b c : A} :
   iterate 2 rw [← lie_skew (L (a * a)), ← lie_skew (L (b * b)), ← lie_skew (L (c * c))]
   abel
 
-theorem two_nsmul_lie_lmul_lmul_add_add_eq_zero (a b c : A) :
+lemma two_nsmul_lie_lmul_lmul_add_add_eq_zero (a b c : A) :
     2 • (⁅L a, L (b * c)⁆ + ⁅L b, L (c * a)⁆ + ⁅L c, L (a * b)⁆) = 0 := by
   symm
   calc

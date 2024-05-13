@@ -86,7 +86,7 @@ noncomputable def sequentialFunctor_obj : ℕ → J := fun
   | .succ n => (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose n)
       (sequentialFunctor_obj n)).choose
 
-theorem sequentialFunctor_map  : Antitone (sequentialFunctor_obj J) :=
+lemma sequentialFunctor_map  : Antitone (sequentialFunctor_obj J) :=
   antitone_nat_of_succ_le fun n ↦
     leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose n)
       (sequentialFunctor_obj J n)).choose_spec.choose_spec.choose
@@ -99,7 +99,7 @@ noncomputable def sequentialFunctor : ℕᵒᵖ ⥤ J where
   obj n := sequentialFunctor_obj J (unop n)
   map h := homOfLE (sequentialFunctor_map J (leOfHom h.unop))
 
-theorem sequentialFunctor_initial_aux (j : J) : ∃ (n : ℕ), sequentialFunctor_obj J n ≤ j := by
+lemma sequentialFunctor_initial_aux (j : J) : ∃ (n : ℕ), sequentialFunctor_obj J n ≤ j := by
   obtain ⟨m, h⟩ := (exists_surjective_nat _).choose_spec j
   refine ⟨m + 1, ?_⟩
   simpa [h] using leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose m)

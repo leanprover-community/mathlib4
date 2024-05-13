@@ -117,12 +117,12 @@ def ULiftHom.objUp {C} (A : C) : ULiftHom C :=
 #align category_theory.ulift_hom.obj_up CategoryTheory.ULiftHom.objUp
 
 @[simp]
-theorem objDown_objUp {C} (A : C) : (ULiftHom.objUp A).objDown = A :=
+lemma objDown_objUp {C} (A : C) : (ULiftHom.objUp A).objDown = A :=
   rfl
 #align category_theory.obj_down_obj_up CategoryTheory.objDown_objUp
 
 @[simp]
-theorem objUp_objDown {C} (A : ULiftHom C) : ULiftHom.objUp A.objDown = A :=
+lemma objUp_objDown {C} (A : ULiftHom C) : ULiftHom.objUp A.objDown = A :=
   rfl
 #align category_theory.obj_up_obj_down CategoryTheory.objUp_objDown
 

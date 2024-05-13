@@ -93,25 +93,25 @@ instance : Membership (Set G) (GroupFilterBasis G) :=
   ⟨fun s f ↦ s ∈ f.sets⟩
 
 @[to_additive]
-theorem one {U : Set G} : U ∈ B → (1 : G) ∈ U :=
+lemma one {U : Set G} : U ∈ B → (1 : G) ∈ U :=
   GroupFilterBasis.one'
 #align group_filter_basis.one GroupFilterBasis.one
 #align add_group_filter_basis.zero AddGroupFilterBasis.zero
 
 @[to_additive]
-theorem mul {U : Set G} : U ∈ B → ∃ V ∈ B, V * V ⊆ U :=
+lemma mul {U : Set G} : U ∈ B → ∃ V ∈ B, V * V ⊆ U :=
   GroupFilterBasis.mul'
 #align group_filter_basis.mul GroupFilterBasis.mul
 #align add_group_filter_basis.add AddGroupFilterBasis.add
 
 @[to_additive]
-theorem inv {U : Set G} : U ∈ B → ∃ V ∈ B, V ⊆ (fun x ↦ x⁻¹) ⁻¹' U :=
+lemma inv {U : Set G} : U ∈ B → ∃ V ∈ B, V ⊆ (fun x ↦ x⁻¹) ⁻¹' U :=
   GroupFilterBasis.inv'
 #align group_filter_basis.inv GroupFilterBasis.inv
 #align add_group_filter_basis.neg AddGroupFilterBasis.neg
 
 @[to_additive]
-theorem conj : ∀ x₀, ∀ {U}, U ∈ B → ∃ V ∈ B, V ⊆ (fun x ↦ x₀ * x * x₀⁻¹) ⁻¹' U :=
+lemma conj : ∀ x₀, ∀ {U}, U ∈ B → ∃ V ∈ B, V ⊆ (fun x ↦ x₀ * x * x₀⁻¹) ⁻¹' U :=
   GroupFilterBasis.conj'
 #align group_filter_basis.conj GroupFilterBasis.conj
 #align add_group_filter_basis.conj AddGroupFilterBasis.conj
@@ -140,7 +140,7 @@ instance : Inhabited (GroupFilterBasis G) := ⟨by
     simp⟩
 
 @[to_additive]
-theorem subset_mul_self (B : GroupFilterBasis G) {U : Set G} (h : U ∈ B) : U ⊆ U * U :=
+lemma subset_mul_self (B : GroupFilterBasis G) {U : Set G} (h : U ∈ B) : U ⊆ U * U :=
   fun x x_in ↦ ⟨1, one h, x, x_in, one_mul x⟩
 #align group_filter_basis.prod_subset_self GroupFilterBasis.subset_mul_self
 #align add_group_filter_basis.sum_subset_self AddGroupFilterBasis.subset_add_self
@@ -155,7 +155,7 @@ set_option linter.uppercaseLean3 false in
 #align add_group_filter_basis.N AddGroupFilterBasis.N
 
 @[to_additive (attr := simp)]
-theorem N_one (B : GroupFilterBasis G) : B.N 1 = B.toFilterBasis.filter := by
+lemma N_one (B : GroupFilterBasis G) : B.N 1 = B.toFilterBasis.filter := by
   simp only [N, one_mul, map_id']
 set_option linter.uppercaseLean3 false in
 #align group_filter_basis.N_one GroupFilterBasis.N_one
@@ -163,7 +163,7 @@ set_option linter.uppercaseLean3 false in
 #align add_group_filter_basis.N_zero AddGroupFilterBasis.N_zero
 
 @[to_additive]
-protected theorem hasBasis (B : GroupFilterBasis G) (x : G) :
+protected lemma hasBasis (B : GroupFilterBasis G) (x : G) :
     HasBasis (B.N x) (fun V : Set G ↦ V ∈ B) fun V ↦ (fun y ↦ x * y) '' V :=
   HasBasis.map (fun y ↦ x * y) toFilterBasis.hasBasis
 #align group_filter_basis.has_basis GroupFilterBasis.hasBasis
@@ -177,7 +177,7 @@ def topology (B : GroupFilterBasis G) : TopologicalSpace G :=
 #align add_group_filter_basis.topology AddGroupFilterBasis.topology
 
 @[to_additive]
-theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = B.N x₀ := by
+lemma nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = B.N x₀ := by
   apply TopologicalSpace.nhds_mkOfNhds_of_hasBasis (fun x ↦ (FilterBasis.hasBasis _).map _)
   · intro a U U_in
     exact ⟨1, B.one U_in, mul_one a⟩
@@ -194,7 +194,7 @@ theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = 
 #align add_group_filter_basis.nhds_eq AddGroupFilterBasis.nhds_eq
 
 @[to_additive]
-theorem nhds_one_eq (B : GroupFilterBasis G) :
+lemma nhds_one_eq (B : GroupFilterBasis G) :
     @nhds G B.topology (1 : G) = B.toFilterBasis.filter := by
   rw [B.nhds_eq]
   simp only [N, one_mul]
@@ -203,7 +203,7 @@ theorem nhds_one_eq (B : GroupFilterBasis G) :
 #align add_group_filter_basis.nhds_zero_eq AddGroupFilterBasis.nhds_zero_eq
 
 @[to_additive]
-theorem nhds_hasBasis (B : GroupFilterBasis G) (x₀ : G) :
+lemma nhds_hasBasis (B : GroupFilterBasis G) (x₀ : G) :
     HasBasis (@nhds G B.topology x₀) (fun V : Set G ↦ V ∈ B) fun V ↦ (fun y ↦ x₀ * y) '' V := by
   rw [B.nhds_eq]
   apply B.hasBasis
@@ -211,7 +211,7 @@ theorem nhds_hasBasis (B : GroupFilterBasis G) (x₀ : G) :
 #align add_group_filter_basis.nhds_has_basis AddGroupFilterBasis.nhds_hasBasis
 
 @[to_additive]
-theorem nhds_one_hasBasis (B : GroupFilterBasis G) :
+lemma nhds_one_hasBasis (B : GroupFilterBasis G) :
     HasBasis (@nhds G B.topology 1) (fun V : Set G ↦ V ∈ B) id := by
   rw [B.nhds_one_eq]
   exact B.toFilterBasis.hasBasis
@@ -219,7 +219,7 @@ theorem nhds_one_hasBasis (B : GroupFilterBasis G) :
 #align add_group_filter_basis.nhds_zero_has_basis AddGroupFilterBasis.nhds_zero_hasBasis
 
 @[to_additive]
-theorem mem_nhds_one (B : GroupFilterBasis G) {U : Set G} (hU : U ∈ B) :
+lemma mem_nhds_one (B : GroupFilterBasis G) {U : Set G} (hU : U ∈ B) :
     U ∈ @nhds G B.topology 1 := by
   rw [B.nhds_one_hasBasis.mem_iff]
   exact ⟨U, hU, rfl.subset⟩
@@ -276,15 +276,15 @@ variable {R : Type u} [Ring R] (B : RingFilterBasis R)
 instance : Membership (Set R) (RingFilterBasis R) :=
   ⟨fun s B ↦ s ∈ B.sets⟩
 
-theorem mul {U : Set R} (hU : U ∈ B) : ∃ V ∈ B, V * V ⊆ U :=
+lemma mul {U : Set R} (hU : U ∈ B) : ∃ V ∈ B, V * V ⊆ U :=
   mul' hU
 #align ring_filter_basis.mul RingFilterBasis.mul
 
-theorem mul_left (x₀ : R) {U : Set R} (hU : U ∈ B) : ∃ V ∈ B, V ⊆ (fun x ↦ x₀ * x) ⁻¹' U :=
+lemma mul_left (x₀ : R) {U : Set R} (hU : U ∈ B) : ∃ V ∈ B, V ⊆ (fun x ↦ x₀ * x) ⁻¹' U :=
   mul_left' x₀ hU
 #align ring_filter_basis.mul_left RingFilterBasis.mul_left
 
-theorem mul_right (x₀ : R) {U : Set R} (hU : U ∈ B) : ∃ V ∈ B, V ⊆ (fun x ↦ x * x₀) ⁻¹' U :=
+lemma mul_right (x₀ : R) {U : Set R} (hU : U ∈ B) : ∃ V ∈ B, V ⊆ (fun x ↦ x * x₀) ⁻¹' U :=
   mul_right' x₀ hU
 #align ring_filter_basis.mul_right RingFilterBasis.mul_right
 
@@ -343,15 +343,15 @@ instance GroupFilterBasis.hasMem : Membership (Set M) (ModuleFilterBasis R M) :=
   ⟨fun s B ↦ s ∈ B.sets⟩
 #align module_filter_basis.group_filter_basis.has_mem ModuleFilterBasis.GroupFilterBasis.hasMem
 
-theorem smul {U : Set M} (hU : U ∈ B) : ∃ V ∈ 𝓝 (0 : R), ∃ W ∈ B, V • W ⊆ U :=
+lemma smul {U : Set M} (hU : U ∈ B) : ∃ V ∈ 𝓝 (0 : R), ∃ W ∈ B, V • W ⊆ U :=
   B.smul' hU
 #align module_filter_basis.smul ModuleFilterBasis.smul
 
-theorem smul_left (x₀ : R) {U : Set M} (hU : U ∈ B) : ∃ V ∈ B, V ⊆ (fun x ↦ x₀ • x) ⁻¹' U :=
+lemma smul_left (x₀ : R) {U : Set M} (hU : U ∈ B) : ∃ V ∈ B, V ⊆ (fun x ↦ x₀ • x) ⁻¹' U :=
   B.smul_left' x₀ hU
 #align module_filter_basis.smul_left ModuleFilterBasis.smul_left
 
-theorem smul_right (m₀ : M) {U : Set M} (hU : U ∈ B) : ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ U :=
+lemma smul_right (m₀ : M) {U : Set M} (hU : U ∈ B) : ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ U :=
   B.smul_right' m₀ hU
 #align module_filter_basis.smul_right ModuleFilterBasis.smul_right
 

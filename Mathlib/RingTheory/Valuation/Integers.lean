@@ -57,7 +57,7 @@ structure Integers : Prop where
 instance : Algebra v.integer R :=
   Algebra.ofSubring v.integer
 
-theorem integer.integers : v.Integers v.integer :=
+lemma integer.integers : v.Integers v.integer :=
   { hom_inj := Subtype.coe_injective
     map_le_one := fun r => r.2
     exists_of_le_one := fun r hr => ⟨⟨r, hr⟩, rfl⟩ }
@@ -67,7 +67,7 @@ namespace Integers
 
 variable {v O} [CommRing O] [Algebra O R]
 
-theorem one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) ≤ 1) :
+lemma one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) ≤ 1) :
     v (algebraMap O R x) = 1 :=
   let ⟨u, hu⟩ := hx
   le_antisymm (H _) <| by
@@ -77,10 +77,10 @@ theorem one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) 
 
 variable (hv : Integers v O)
 
-theorem one_of_isUnit {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
+lemma one_of_isUnit {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
   one_of_isUnit' hx hv.map_le_one
 
-theorem isUnit_of_one {x : O} (hx : IsUnit (algebraMap O R x)) (hvx : v (algebraMap O R x) = 1) :
+lemma isUnit_of_one {x : O} (hx : IsUnit (algebraMap O R x)) (hvx : v (algebraMap O R x) = 1) :
     IsUnit x :=
   let ⟨u, hu⟩ := hx
   have h1 : v u ≤ 1 := hu.symm ▸ hv.2 x
@@ -93,7 +93,7 @@ theorem isUnit_of_one {x : O} (hx : IsUnit (algebraMap O R x)) (hvx : v (algebra
     hv.1 <| hr1.trans hu⟩
 #align valuation.integers.is_unit_of_one Valuation.Integers.isUnit_of_one
 
-theorem le_of_dvd {x y : O} (h : x ∣ y) : v (algebraMap O R y) ≤ v (algebraMap O R x) := by
+lemma le_of_dvd {x y : O} (h : x ∣ y) : v (algebraMap O R y) ≤ v (algebraMap O R x) := by
   let ⟨z, hz⟩ := h
   rw [← mul_one (v (algebraMap O R x)), hz, RingHom.map_mul, v.map_mul]
   exact mul_le_mul_left' (hv.2 z) _
@@ -110,7 +110,7 @@ variable {v : Valuation F Γ₀} {O : Type w} [CommRing O] [Algebra O F] (hv : I
 
 namespace Integers
 
-theorem dvd_of_le {x y : O} (h : v (algebraMap O F x) ≤ v (algebraMap O F y)) : y ∣ x :=
+lemma dvd_of_le {x y : O} (h : v (algebraMap O F x) ≤ v (algebraMap O F y)) : y ∣ x :=
   by_cases
     (fun hy : algebraMap O F y = 0 =>
       have hx : x = 0 :=
@@ -125,11 +125,11 @@ theorem dvd_of_le {x y : O} (h : v (algebraMap O F x) ≤ v (algebraMap O F y)) 
     ⟨z, hv.1 <| ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩
 #align valuation.integers.dvd_of_le Valuation.Integers.dvd_of_le
 
-theorem dvd_iff_le {x y : O} : x ∣ y ↔ v (algebraMap O F y) ≤ v (algebraMap O F x) :=
+lemma dvd_iff_le {x y : O} : x ∣ y ↔ v (algebraMap O F y) ≤ v (algebraMap O F x) :=
   ⟨hv.le_of_dvd, hv.dvd_of_le⟩
 #align valuation.integers.dvd_iff_le Valuation.Integers.dvd_iff_le
 
-theorem le_iff_dvd {x y : O} : v (algebraMap O F x) ≤ v (algebraMap O F y) ↔ y ∣ x :=
+lemma le_iff_dvd {x y : O} : v (algebraMap O F x) ≤ v (algebraMap O F y) ↔ y ∣ x :=
   ⟨hv.dvd_of_le, hv.le_of_dvd⟩
 #align valuation.integers.le_iff_dvd Valuation.Integers.le_iff_dvd
 

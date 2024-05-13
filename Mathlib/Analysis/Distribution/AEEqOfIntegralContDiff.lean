@@ -138,7 +138,7 @@ nonrec theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' {U : Set M} (h
   · apply zero_smul
   · rintro ⟨x, rfl⟩; exact x.2
 
-theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOpen U)
+lemma IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOpen U)
     (hf : LocallyIntegrableOn f U μ)
     (h : ∀ g : M → ℝ,
       Smooth I 𝓘(ℝ) g → HasCompactSupport g → tsupport g ⊆ U → ∫ x, g x • f x ∂μ = 0) :

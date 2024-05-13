@@ -87,15 +87,15 @@ def StableUnderInverse (P : MorphismProperty C) : Prop :=
   ∀ ⦃X Y⦄ (e : X ≅ Y), P e.hom → P e.inv
 #align category_theory.morphism_property.stable_under_inverse CategoryTheory.MorphismProperty.StableUnderInverse
 
-theorem StableUnderInverse.op {P : MorphismProperty C} (h : StableUnderInverse P) :
+lemma StableUnderInverse.op {P : MorphismProperty C} (h : StableUnderInverse P) :
     StableUnderInverse P.op := fun _ _ e he => h e.unop he
 #align category_theory.morphism_property.stable_under_inverse.op CategoryTheory.MorphismProperty.StableUnderInverse.op
 
-theorem StableUnderInverse.unop {P : MorphismProperty Cᵒᵖ} (h : StableUnderInverse P) :
+lemma StableUnderInverse.unop {P : MorphismProperty Cᵒᵖ} (h : StableUnderInverse P) :
     StableUnderInverse P.unop := fun _ _ e he => h e.op he
 #align category_theory.morphism_property.stable_under_inverse.unop CategoryTheory.MorphismProperty.StableUnderInverse.unop
 
-theorem respectsIso_of_isStableUnderComposition {P : MorphismProperty C}
+lemma respectsIso_of_isStableUnderComposition {P : MorphismProperty C}
     [P.IsStableUnderComposition] (hP : isomorphisms C ≤ P) :
     RespectsIso P :=
   ⟨fun _ _ hf => P.comp_mem _ _ (hP _ (isomorphisms.infer_property _)) hf,
@@ -125,7 +125,7 @@ instance isStableUnderComposition {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X
     rw [Category.assoc]
 #align category_theory.morphism_property.naturality_property.is_stable_under_composition CategoryTheory.MorphismProperty.naturalityProperty.isStableUnderComposition
 
-theorem stableUnderInverse {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) :
+lemma stableUnderInverse {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) :
     (naturalityProperty app).StableUnderInverse := fun X Y e he => by
   simp only [naturalityProperty] at he ⊢
   rw [← cancel_epi (F₁.map e.hom)]

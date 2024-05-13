@@ -268,7 +268,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
     _ ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by gcongr
 #align sum_div_pow_sq_le_div_sq sum_div_pow_sq_le_div_sq
 
-theorem mul_pow_le_nat_floor_pow {c : ℝ} (hc : 1 < c) (i : ℕ) : (1 - c⁻¹) * c ^ i ≤ ⌊c ^ i⌋₊ := by
+lemma mul_pow_le_nat_floor_pow {c : ℝ} (hc : 1 < c) (i : ℕ) : (1 - c⁻¹) * c ^ i ≤ ⌊c ^ i⌋₊ := by
   have cpos : 0 < c := zero_lt_one.trans hc
   rcases eq_or_ne i 0 with (rfl | hi)
   · simp only [pow_zero, Nat.floor_one, Nat.cast_one, mul_one, sub_le_self_iff, inv_nonneg, cpos.le]

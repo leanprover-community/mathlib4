@@ -70,24 +70,24 @@ noncomputable def map (f : ContinuousMonoidHom A B) :
 #align pontryagin_dual.map PontryaginDual.map
 
 @[simp]
-theorem map_apply (f : ContinuousMonoidHom A B) (x : PontryaginDual B) (y : A) :
+lemma map_apply (f : ContinuousMonoidHom A B) (x : PontryaginDual B) (y : A) :
     map f x y = x (f y) :=
   rfl
 #align pontryagin_dual.map_apply PontryaginDual.map_apply
 
 @[simp]
-theorem map_one : map (one A B) = one (PontryaginDual B) (PontryaginDual A) :=
+lemma map_one : map (one A B) = one (PontryaginDual B) (PontryaginDual A) :=
   ext fun x => ext (fun _y => OneHomClass.map_one x)
 #align pontryagin_dual.map_one PontryaginDual.map_one
 
 @[simp]
-theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
+lemma map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
     map (comp g f) = ContinuousMonoidHom.comp (map f) (map g) :=
   ext fun _x => ext fun _y => rfl
 #align pontryagin_dual.map_comp PontryaginDual.map_comp
 
 @[simp]
-nonrec theorem map_mul (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :=
+nonrec lemma map_mul (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :=
   ext fun x => ext fun y => map_mul x (f y) (g y)
 #align pontryagin_dual.map_mul PontryaginDual.map_mul
 

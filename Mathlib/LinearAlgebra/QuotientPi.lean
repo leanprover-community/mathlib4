@@ -40,7 +40,7 @@ def piQuotientLift [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
 
 set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
-theorem piQuotientLift_mk [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
+lemma piQuotientLift_mk [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
     (q : Submodule R N) (f : ∀ i, Ms i →ₗ[R] N) (hf : ∀ i, p i ≤ q.comap (f i)) (x : ∀ i, Ms i) :
     (piQuotientLift p q f hf fun i => Quotient.mk (x i)) = Quotient.mk (lsum _ _ R f x) := by
   rw [piQuotientLift, lsum_apply, sum_apply, ← mkQ_apply, lsum_apply, sum_apply, _root_.map_sum]
@@ -48,7 +48,7 @@ theorem piQuotientLift_mk [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R 
 #align submodule.pi_quotient_lift_mk Submodule.piQuotientLift_mk
 
 @[simp]
-theorem piQuotientLift_single [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
+lemma piQuotientLift_single [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
     (q : Submodule R N) (f : ∀ i, Ms i →ₗ[R] N) (hf : ∀ i, p i ≤ q.comap (f i)) (i)
     (x : Ms i ⧸ p i) : piQuotientLift p q f hf (Pi.single i x) = mapQ _ _ (f i) (hf i) x := by
   simp_rw [piQuotientLift, lsum_apply, sum_apply, comp_apply, proj_apply]
@@ -71,7 +71,7 @@ def quotientPiLift (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →ₗ[R] Ns
 #align submodule.quotient_pi_lift Submodule.quotientPiLift
 
 @[simp]
-theorem quotientPiLift_mk (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →ₗ[R] Ns i)
+lemma quotientPiLift_mk (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →ₗ[R] Ns i)
     (hf : ∀ i, p i ≤ ker (f i)) (x : ∀ i, Ms i) :
     quotientPiLift p f hf (Quotient.mk x) = fun i => f i (x i) :=
   rfl
@@ -90,14 +90,14 @@ def toFun : ((∀ i, Ms i) ⧸ pi Set.univ p) → ∀ i, Ms i ⧸ p i :=
 def invFun : (∀ i, Ms i ⧸ p i) → (∀ i, Ms i) ⧸ pi Set.univ p :=
   piQuotientLift p (pi Set.univ p) single fun _ => le_comap_single_pi p
 
-theorem left_inv : Function.LeftInverse (invFun p) (toFun p) := fun x =>
+lemma left_inv : Function.LeftInverse (invFun p) (toFun p) := fun x =>
   Quotient.inductionOn' x fun x' => by
     rw [Quotient.mk''_eq_mk x']
     dsimp only [toFun, invFun]
     rw [quotientPiLift_mk p, funext fun i => (mkQ_apply (p i) (x' i)), piQuotientLift_mk p,
       lsum_single, id_apply]
 
-theorem right_inv : Function.RightInverse (invFun p) (toFun p) := by
+lemma right_inv : Function.RightInverse (invFun p) (toFun p) := by
   dsimp only [toFun, invFun]
   rw [Function.rightInverse_iff_comp, ← coe_comp, ← @id_coe R]
   refine' congr_arg _ (pi_ext fun i x => Quotient.inductionOn' x fun x' => funext fun j => _)
@@ -108,11 +108,11 @@ theorem right_inv : Function.RightInverse (invFun p) (toFun p) := by
     rw [Pi.single_eq_same, Pi.single_eq_same]
   · rw [Pi.single_eq_of_ne (Ne.symm hij), Pi.single_eq_of_ne (Ne.symm hij), Quotient.mk_zero]
 
-theorem map_add (x y : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
+lemma map_add (x y : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
     toFun p (x + y) = toFun p x + toFun p y :=
   LinearMap.map_add (quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge) x y
 
-theorem map_smul (r : R) (x : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
+lemma map_smul (r : R) (x : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
     toFun p (r • x) = (RingHom.id R r) • toFun p x :=
   LinearMap.map_smul (quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge) r x
 

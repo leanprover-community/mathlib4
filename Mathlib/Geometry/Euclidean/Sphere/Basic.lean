@@ -62,16 +62,16 @@ instance : Coe (Sphere P) (Set P) :=
 instance : Membership P (Sphere P) :=
   ⟨fun p s => p ∈ (s : Set P)⟩
 
-theorem Sphere.mk_center (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).center = c :=
+lemma Sphere.mk_center (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).center = c :=
   rfl
 #align euclidean_geometry.sphere.mk_center EuclideanGeometry.Sphere.mk_center
 
-theorem Sphere.mk_radius (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).radius = r :=
+lemma Sphere.mk_radius (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).radius = r :=
   rfl
 #align euclidean_geometry.sphere.mk_radius EuclideanGeometry.Sphere.mk_radius
 
 @[simp]
-theorem Sphere.mk_center_radius (s : Sphere P) : (⟨s.center, s.radius⟩ : Sphere P) = s := by
+lemma Sphere.mk_center_radius (s : Sphere P) : (⟨s.center, s.radius⟩ : Sphere P) = s := by
   ext <;> rfl
 #align euclidean_geometry.sphere.mk_center_radius EuclideanGeometry.Sphere.mk_center_radius
 
@@ -81,64 +81,64 @@ theorem Sphere.coe_def (s : Sphere P) : (s : Set P) = Metric.sphere s.center s.r
 #noalign euclidean_geometry.sphere.coe_def
 
 @[simp]
-theorem Sphere.coe_mk (c : P) (r : ℝ) : ↑(⟨c, r⟩ : Sphere P) = Metric.sphere c r :=
+lemma Sphere.coe_mk (c : P) (r : ℝ) : ↑(⟨c, r⟩ : Sphere P) = Metric.sphere c r :=
   rfl
 #align euclidean_geometry.sphere.coe_mk EuclideanGeometry.Sphere.coe_mk
 
 -- @[simp] -- Porting note: simp-normal form is `Sphere.mem_coe'`
-theorem Sphere.mem_coe {p : P} {s : Sphere P} : p ∈ (s : Set P) ↔ p ∈ s :=
+lemma Sphere.mem_coe {p : P} {s : Sphere P} : p ∈ (s : Set P) ↔ p ∈ s :=
   Iff.rfl
 #align euclidean_geometry.sphere.mem_coe EuclideanGeometry.Sphere.mem_coe
 
 @[simp]
-theorem Sphere.mem_coe' {p : P} {s : Sphere P} : dist p s.center = s.radius ↔ p ∈ s :=
+lemma Sphere.mem_coe' {p : P} {s : Sphere P} : dist p s.center = s.radius ↔ p ∈ s :=
   Iff.rfl
 
-theorem mem_sphere {p : P} {s : Sphere P} : p ∈ s ↔ dist p s.center = s.radius :=
+lemma mem_sphere {p : P} {s : Sphere P} : p ∈ s ↔ dist p s.center = s.radius :=
   Iff.rfl
 #align euclidean_geometry.mem_sphere EuclideanGeometry.mem_sphere
 
-theorem mem_sphere' {p : P} {s : Sphere P} : p ∈ s ↔ dist s.center p = s.radius :=
+lemma mem_sphere' {p : P} {s : Sphere P} : p ∈ s ↔ dist s.center p = s.radius :=
   Metric.mem_sphere'
 #align euclidean_geometry.mem_sphere' EuclideanGeometry.mem_sphere'
 
-theorem subset_sphere {ps : Set P} {s : Sphere P} : ps ⊆ s ↔ ∀ p ∈ ps, p ∈ s :=
+lemma subset_sphere {ps : Set P} {s : Sphere P} : ps ⊆ s ↔ ∀ p ∈ ps, p ∈ s :=
   Iff.rfl
 #align euclidean_geometry.subset_sphere EuclideanGeometry.subset_sphere
 
-theorem dist_of_mem_subset_sphere {p : P} {ps : Set P} {s : Sphere P} (hp : p ∈ ps)
+lemma dist_of_mem_subset_sphere {p : P} {ps : Set P} {s : Sphere P} (hp : p ∈ ps)
     (hps : ps ⊆ (s : Set P)) : dist p s.center = s.radius :=
   mem_sphere.1 (Sphere.mem_coe.1 (Set.mem_of_mem_of_subset hp hps))
 #align euclidean_geometry.dist_of_mem_subset_sphere EuclideanGeometry.dist_of_mem_subset_sphere
 
-theorem dist_of_mem_subset_mk_sphere {p c : P} {ps : Set P} {r : ℝ} (hp : p ∈ ps)
+lemma dist_of_mem_subset_mk_sphere {p c : P} {ps : Set P} {r : ℝ} (hp : p ∈ ps)
     (hps : ps ⊆ ↑(⟨c, r⟩ : Sphere P)) : dist p c = r :=
   dist_of_mem_subset_sphere hp hps
 #align euclidean_geometry.dist_of_mem_subset_mk_sphere EuclideanGeometry.dist_of_mem_subset_mk_sphere
 
-theorem Sphere.ne_iff {s₁ s₂ : Sphere P} :
+lemma Sphere.ne_iff {s₁ s₂ : Sphere P} :
     s₁ ≠ s₂ ↔ s₁.center ≠ s₂.center ∨ s₁.radius ≠ s₂.radius := by
   rw [← not_and_or, ← Sphere.ext_iff]
 #align euclidean_geometry.sphere.ne_iff EuclideanGeometry.Sphere.ne_iff
 
-theorem Sphere.center_eq_iff_eq_of_mem {s₁ s₂ : Sphere P} {p : P} (hs₁ : p ∈ s₁) (hs₂ : p ∈ s₂) :
+lemma Sphere.center_eq_iff_eq_of_mem {s₁ s₂ : Sphere P} {p : P} (hs₁ : p ∈ s₁) (hs₂ : p ∈ s₂) :
     s₁.center = s₂.center ↔ s₁ = s₂ := by
   refine' ⟨fun h => Sphere.ext _ _ h _, fun h => h ▸ rfl⟩
   rw [mem_sphere] at hs₁ hs₂
   rw [← hs₁, ← hs₂, h]
 #align euclidean_geometry.sphere.center_eq_iff_eq_of_mem EuclideanGeometry.Sphere.center_eq_iff_eq_of_mem
 
-theorem Sphere.center_ne_iff_ne_of_mem {s₁ s₂ : Sphere P} {p : P} (hs₁ : p ∈ s₁) (hs₂ : p ∈ s₂) :
+lemma Sphere.center_ne_iff_ne_of_mem {s₁ s₂ : Sphere P} {p : P} (hs₁ : p ∈ s₁) (hs₂ : p ∈ s₂) :
     s₁.center ≠ s₂.center ↔ s₁ ≠ s₂ :=
   (Sphere.center_eq_iff_eq_of_mem hs₁ hs₂).not
 #align euclidean_geometry.sphere.center_ne_iff_ne_of_mem EuclideanGeometry.Sphere.center_ne_iff_ne_of_mem
 
-theorem dist_center_eq_dist_center_of_mem_sphere {p₁ p₂ : P} {s : Sphere P} (hp₁ : p₁ ∈ s)
+lemma dist_center_eq_dist_center_of_mem_sphere {p₁ p₂ : P} {s : Sphere P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) : dist p₁ s.center = dist p₂ s.center := by
   rw [mem_sphere.1 hp₁, mem_sphere.1 hp₂]
 #align euclidean_geometry.dist_center_eq_dist_center_of_mem_sphere EuclideanGeometry.dist_center_eq_dist_center_of_mem_sphere
 
-theorem dist_center_eq_dist_center_of_mem_sphere' {p₁ p₂ : P} {s : Sphere P} (hp₁ : p₁ ∈ s)
+lemma dist_center_eq_dist_center_of_mem_sphere' {p₁ p₂ : P} {s : Sphere P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) : dist s.center p₁ = dist s.center p₂ := by
   rw [mem_sphere'.1 hp₁, mem_sphere'.1 hp₂]
 #align euclidean_geometry.dist_center_eq_dist_center_of_mem_sphere' EuclideanGeometry.dist_center_eq_dist_center_of_mem_sphere'

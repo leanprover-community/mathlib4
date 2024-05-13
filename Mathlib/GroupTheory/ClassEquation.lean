@@ -71,7 +71,7 @@ theorem Group.nat_card_center_add_sum_card_noncenter_eq_card [Finite G] :
   rw [eq_comm, ← Set.toFinset_card, Finset.card_eq_one]
   exact ⟨g, Finset.coe_injective <| by simpa using hg.eq_singleton_of_mem mem_carrier_mk⟩
 
-theorem Group.card_center_add_sum_card_noncenter_eq_card (G) [Group G]
+lemma Group.card_center_add_sum_card_noncenter_eq_card (G) [Group G]
     [∀ x : ConjClasses G, Fintype x.carrier] [Fintype G] [Fintype <| Subgroup.center G]
     [Fintype <| noncenter G] : Fintype.card (Subgroup.center G) +
   ∑ x in (noncenter G).toFinset, x.carrier.toFinset.card = Fintype.card G := by

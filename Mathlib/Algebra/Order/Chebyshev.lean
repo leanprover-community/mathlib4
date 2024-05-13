@@ -151,7 +151,7 @@ end Mul
 
 variable [LinearOrderedField α] {s : Finset ι} {f : ι → α}
 
-theorem sum_div_card_sq_le_sum_sq_div_card :
+lemma sum_div_card_sq_le_sum_sq_div_card :
     ((∑ i in s, f i) / s.card) ^ 2 ≤ (∑ i in s, f i ^ 2) / s.card := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp

@@ -55,17 +55,17 @@ def map (h : ∀ i, J i → K i) : C(obj C K, obj C J) :=
     rw [← hy.2]
     exact ⟨y, hy.1, rfl⟩), Continuous.restrict _ (Pi.continuous_precomp' _)⟩
 
-theorem surjective_π_app :
+lemma surjective_π_app :
     Function.Surjective (π_app C J) := by
   intro x
   obtain ⟨y, hy⟩ := x.prop
   exact ⟨⟨y, hy.1⟩, Subtype.ext hy.2⟩
 
-theorem map_comp_π_app (h : ∀ i, J i → K i) : map C h ∘ π_app C K = π_app C J := rfl
+lemma map_comp_π_app (h : ∀ i, J i → K i) : map C h ∘ π_app C K = π_app C J := rfl
 
 variable {C}
 
-theorem eq_of_forall_π_app_eq (a b : C)
+lemma eq_of_forall_π_app_eq (a b : C)
     (h : ∀ (J : Finset ι), π_app C (· ∈ J) a = π_app C (· ∈ J) b) : a = b := by
   ext i
   specialize h ({i} : Finset ι)

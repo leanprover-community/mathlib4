@@ -169,7 +169,7 @@ namespace SatelliteConfig
 
 variable {α : Type*} [MetricSpace α] {N : ℕ} {τ : ℝ} (a : SatelliteConfig α N τ)
 
-theorem inter' (i : Fin N.succ) : dist (a.c i) (a.c (last N)) ≤ a.r i + a.r (last N) := by
+lemma inter' (i : Fin N.succ) : dist (a.c i) (a.c (last N)) ≤ a.r i + a.r (last N) := by
   rcases lt_or_le i (last N) with (H | H)
   · exact a.inter i H
   · have I : i = last N := top_le_iff.1 H
@@ -177,7 +177,7 @@ theorem inter' (i : Fin N.succ) : dist (a.c i) (a.c (last N)) ≤ a.r i + a.r (l
     simp only [I, add_nonneg this this, dist_self]
 #align besicovitch.satellite_config.inter' Besicovitch.SatelliteConfig.inter'
 
-theorem hlast' (i : Fin N.succ) (h : 1 ≤ τ) : a.r (last N) ≤ τ * a.r i := by
+lemma hlast' (i : Fin N.succ) (h : 1 ≤ τ) : a.r (last N) ≤ τ * a.r i := by
   rcases lt_or_le i (last N) with (H | H)
   · exact (a.hlast i H).2
   · have : i = last N := top_le_iff.1 H
@@ -260,7 +260,7 @@ def iUnionUpTo (i : Ordinal.{u}) : Set α :=
   ⋃ j : { j // j < i }, ball (p.c (p.index j)) (p.r (p.index j))
 #align besicovitch.tau_package.Union_up_to Besicovitch.TauPackage.iUnionUpTo
 
-theorem monotone_iUnionUpTo : Monotone p.iUnionUpTo := by
+lemma monotone_iUnionUpTo : Monotone p.iUnionUpTo := by
   intro i j hij
   simp only [iUnionUpTo]
   exact iUnion_mono' fun r => ⟨⟨r, r.2.trans_le hij⟩, Subset.rfl⟩
@@ -291,7 +291,7 @@ def lastStep : Ordinal.{u} :=
   sInf {i | ¬∃ b : β, p.c b ∉ p.iUnionUpTo i ∧ p.R i ≤ p.τ * p.r b}
 #align besicovitch.tau_package.last_step Besicovitch.TauPackage.lastStep
 
-theorem lastStep_nonempty :
+lemma lastStep_nonempty :
     {i | ¬∃ b : β, p.c b ∉ p.iUnionUpTo i ∧ p.R i ≤ p.τ * p.r b}.Nonempty := by
   by_contra h
   suffices H : Function.Injective p.index from not_injective_of_ordinal p.index H

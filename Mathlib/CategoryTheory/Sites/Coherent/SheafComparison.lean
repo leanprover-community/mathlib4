@@ -50,7 +50,7 @@ instance : F.IsCoverDense (coherentTopology _) := by
   · rw [← effectiveEpi_iff_effectiveEpiFamily]
     infer_instance
 
-theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
+lemma exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
       EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
     (S ∈ F.inducedTopologyOfIsCoverDense (coherentTopology _) X) := by
@@ -156,7 +156,7 @@ instance : F.IsCoverDense (regularTopology _) := by
   rintro ⟨⟩
   simp
 
-theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
+lemma exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (Y : C) (π : Y ⟶ X),
       EffectiveEpi π ∧ S.arrows π) ↔
     (S ∈ F.inducedTopologyOfIsCoverDense (regularTopology _) X) := by

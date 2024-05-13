@@ -34,17 +34,17 @@ theorem finite_compl_fixedBy_closure_iff {S : Set G} :
     refine closure_induction hg h (by simp) (fun g g' hg hg' ↦ (hg.union hg').subset ?_) (by simp)
     simp_rw [← compl_inter, compl_subset_compl, fixedBy_mul]⟩
 
-theorem finite_compl_fixedBy_swap {x y : α} : (fixedBy α (swap x y))ᶜ.Finite :=
+lemma finite_compl_fixedBy_swap {x y : α} : (fixedBy α (swap x y))ᶜ.Finite :=
   Set.Finite.subset (s := {x, y}) (by simp)
     (compl_subset_comm.mp fun z h ↦ by apply swap_apply_of_ne_of_ne <;> rintro rfl <;> simp at h)
 
-theorem Equiv.Perm.IsSwap.finite_compl_fixedBy {σ : Perm α} (h : σ.IsSwap) :
+lemma Equiv.Perm.IsSwap.finite_compl_fixedBy {σ : Perm α} (h : σ.IsSwap) :
     (fixedBy α σ)ᶜ.Finite := by
   obtain ⟨x, y, -, rfl⟩ := h
   exact finite_compl_fixedBy_swap
 
 -- this result cannot be moved to Perm/Basic since Perm/Basic is not allowed to import Submonoid
-theorem SubmonoidClass.swap_mem_trans {a b c : α} {C} [SetLike C (Perm α)]
+lemma SubmonoidClass.swap_mem_trans {a b c : α} {C} [SetLike C (Perm α)]
     [SubmonoidClass C (Perm α)] (M : C) (hab : swap a b ∈ M) (hbc : swap b c ∈ M) :
     swap a c ∈ M := by
   obtain rfl | hab' := eq_or_ne a b

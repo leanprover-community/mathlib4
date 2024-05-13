@@ -87,7 +87,7 @@ variable {m : MeasurableSpace α} [MeasurableSpace M] [SMul M α] [MeasurableSMu
   (μ : Measure α) [SMulInvariantMeasure M α μ]
 
 @[to_additive (attr := simp)]
-theorem measurePreserving_smul : MeasurePreserving (c • ·) μ μ :=
+lemma measurePreserving_smul : MeasurePreserving (c • ·) μ μ :=
   { measurable := measurable_const_smul c
     map_eq := by
       ext1 s hs
@@ -97,7 +97,7 @@ theorem measurePreserving_smul : MeasurePreserving (c • ·) μ μ :=
 #align measure_theory.measure_preserving_vadd MeasureTheory.measurePreserving_vadd
 
 @[to_additive (attr := simp)]
-theorem map_smul : map (c • ·) μ = μ :=
+lemma map_smul : map (c • ·) μ = μ :=
   (measurePreserving_smul c μ).map_eq
 #align measure_theory.map_smul MeasureTheory.map_smul
 #align measure_theory.map_vadd MeasureTheory.map_vadd
@@ -111,7 +111,7 @@ variable {M : Type uM} {N : Type uN}  {α : Type uα} {β : Type uβ}
   [MeasurableSpace M] [MeasurableSpace N] [MeasurableSpace α] [MeasurableSpace β]
 
 @[to_additive]
-theorem smulInvariantMeasure_map [SMul M α] [SMul M β]
+lemma smulInvariantMeasure_map [SMul M α] [SMul M β]
     [MeasurableSMul M β]
     (μ : Measure α) [SMulInvariantMeasure M α μ] (f : α → β)
     (hsmul : ∀ (m : M) a, f (m • a) = m • f a) (hf : Measurable f) :
@@ -206,13 +206,13 @@ variable {G}
 variable [SMulInvariantMeasure G α μ]
 
 @[to_additive (attr := simp)]
-theorem measure_preimage_smul (s : Set α) : μ ((c • ·) ⁻¹' s) = μ s :=
+lemma measure_preimage_smul (s : Set α) : μ ((c • ·) ⁻¹' s) = μ s :=
   ((smulInvariantMeasure_tfae G μ).out 0 3 rfl rfl).mp ‹_› c s
 #align measure_theory.measure_preimage_smul MeasureTheory.measure_preimage_smul
 #align measure_theory.measure_preimage_vadd MeasureTheory.measure_preimage_vadd
 
 @[to_additive (attr := simp)]
-theorem measure_smul (s : Set α) : μ (c • s) = μ s :=
+lemma measure_smul (s : Set α) : μ (c • s) = μ s :=
   ((smulInvariantMeasure_tfae G μ).out 0 4 rfl rfl).mp ‹_› c s
 #align measure_theory.measure_smul MeasureTheory.measure_smul
 #align measure_theory.measure_vadd MeasureTheory.measure_vadd
@@ -220,7 +220,7 @@ theorem measure_smul (s : Set α) : μ (c • s) = μ s :=
 variable {μ}
 
 @[to_additive]
-theorem NullMeasurableSet.smul {s} (hs : NullMeasurableSet s μ) (c : G) :
+lemma NullMeasurableSet.smul {s} (hs : NullMeasurableSet s μ) (c : G) :
     NullMeasurableSet (c • s) μ := by
   simpa only [← preimage_smul_inv] using
     hs.preimage (measurePreserving_smul _ _).quasiMeasurePreserving
@@ -228,7 +228,7 @@ theorem NullMeasurableSet.smul {s} (hs : NullMeasurableSet s μ) (c : G) :
 #align measure_theory.null_measurable_set.vadd MeasureTheory.NullMeasurableSet.vadd
 
 @[to_additive]
-theorem measure_smul_null {s} (h : μ s = 0) (c : G) : μ (c • s) = 0 := by rwa [measure_smul]
+lemma measure_smul_null {s} (h : μ s = 0) (c : G) : μ (c • s) = 0 := by rwa [measure_smul]
 #align measure_theory.measure_smul_null MeasureTheory.measure_smul_null
 
 section IsMinimal
@@ -256,7 +256,7 @@ instead of `μ K ≠ 0`, see `MeasureTheory.measure_isOpen_pos_of_vaddInvariant_
 add_decl_doc measure_isOpen_pos_of_vaddInvariant_of_compact_ne_zero
 
 @[to_additive]
-theorem isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempty) (hμU : μ U ≠ ∞) :
+lemma isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempty) (hμU : μ U ≠ ∞) :
     IsLocallyFiniteMeasure μ :=
   ⟨fun x =>
     let ⟨g, hg⟩ := hU.exists_smul_mem G x hne
@@ -268,7 +268,7 @@ theorem isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempt
 variable [Measure.Regular μ]
 
 @[to_additive]
-theorem measure_isOpen_pos_of_smulInvariant_of_ne_zero (hμ : μ ≠ 0) (hU : IsOpen U)
+lemma measure_isOpen_pos_of_smulInvariant_of_ne_zero (hμ : μ ≠ 0) (hU : IsOpen U)
     (hne : U.Nonempty) : 0 < μ U :=
   let ⟨_K, hK, hμK⟩ := Regular.exists_compact_not_null.mpr hμ
   measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero G hK hμK hU hne
@@ -276,7 +276,7 @@ theorem measure_isOpen_pos_of_smulInvariant_of_ne_zero (hμ : μ ≠ 0) (hU : Is
 #align measure_theory.measure_is_open_pos_of_vadd_invariant_of_ne_zero MeasureTheory.measure_isOpen_pos_of_vaddInvariant_of_ne_zero
 
 @[to_additive]
-theorem measure_pos_iff_nonempty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
+lemma measure_pos_iff_nonempty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
     0 < μ U ↔ U.Nonempty :=
   ⟨fun h => nonempty_of_measure_ne_zero h.ne',
     measure_isOpen_pos_of_smulInvariant_of_ne_zero G hμ hU⟩
@@ -284,7 +284,7 @@ theorem measure_pos_iff_nonempty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen 
 #align measure_theory.measure_pos_iff_nonempty_of_vadd_invariant MeasureTheory.measure_pos_iff_nonempty_of_vaddInvariant
 
 @[to_additive]
-theorem measure_eq_zero_iff_eq_empty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
+lemma measure_eq_zero_iff_eq_empty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
     μ U = 0 ↔ U = ∅ := by
   rw [← not_iff_not, ← Ne, ← pos_iff_ne_zero,
     measure_pos_iff_nonempty_of_smulInvariant G hμ hU, nonempty_iff_ne_empty]
@@ -293,7 +293,7 @@ theorem measure_eq_zero_iff_eq_empty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsO
 
 end IsMinimal
 
-theorem smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[μ] s)
+lemma smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[μ] s)
     (hy : y ∈ Subgroup.zpowers x) : (y • s : Set α) =ᵐ[μ] s := by
   obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp hy
   let e : α ≃ α := MulAction.toPermHom G α x
@@ -305,7 +305,7 @@ theorem smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[�
   simpa only [MulAction.toPermHom_apply, MulAction.toPerm_apply, image_smul] using h
 #align measure_theory.smul_ae_eq_self_of_mem_zpowers MeasureTheory.smul_ae_eq_self_of_mem_zpowers
 
-theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α}
+lemma vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α}
     {m : MeasurableSpace α} [AddGroup G] [AddAction G α] [MeasurableSpace G] [MeasurableVAdd G α]
     {μ : Measure α} [VAddInvariantMeasure G α μ] {x y : G}
     (hs : (x +ᵥ s : Set α) =ᵐ[μ] s) (hy : y ∈ AddSubgroup.zmultiples x) :
@@ -324,7 +324,7 @@ theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α
 attribute [to_additive existing] smul_ae_eq_self_of_mem_zpowers
 
 @[to_additive]
-theorem inv_smul_ae_eq_self {x : G} (hs : (x • s : Set α) =ᵐ[μ] s) : (x⁻¹ • s : Set α) =ᵐ[μ] s :=
+lemma inv_smul_ae_eq_self {x : G} (hs : (x • s : Set α) =ᵐ[μ] s) : (x⁻¹ • s : Set α) =ᵐ[μ] s :=
   smul_ae_eq_self_of_mem_zpowers hs <| inv_mem (Subgroup.mem_zpowers _)
 
 end MeasureTheory

@@ -120,7 +120,7 @@ noncomputable def quotientEquivDirectSum :
     (DirectSum.linearEquivFunOnFintype _ _ _).symm
 #align ideal.quotient_equiv_direct_sum Ideal.quotientEquivDirectSum
 
-theorem finrank_quotient_eq_sum {ι} [Fintype ι] (b : Basis ι R S) [Nontrivial F]
+lemma finrank_quotient_eq_sum {ι} [Fintype ι] (b : Basis ι R S) [Nontrivial F]
     [∀ i, Module.Free F (R ⧸ span ({I.smithCoeffs b hI i} : Set R))]
     [∀ i, Module.Finite F (R ⧸ span ({I.smithCoeffs b hI i} : Set R))] :
     FiniteDimensional.finrank F (S ⧸ I) =

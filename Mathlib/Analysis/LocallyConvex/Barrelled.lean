@@ -85,12 +85,12 @@ class BarrelledSpace (𝕜 E : Type*) [SeminormedRing 𝕜] [AddGroup E] [SMul �
   /-- In a barrelled space, all lower semicontinuous seminorms on `E` are actually continuous. -/
   continuous_of_lowerSemicontinuous : ∀ p : Seminorm 𝕜 E, LowerSemicontinuous p → Continuous p
 
-theorem Seminorm.continuous_of_lowerSemicontinuous {𝕜 E : Type*} [AddGroup E] [SMul 𝕜 E]
+lemma Seminorm.continuous_of_lowerSemicontinuous {𝕜 E : Type*} [AddGroup E] [SMul 𝕜 E]
     [SeminormedRing 𝕜] [TopologicalSpace E] [BarrelledSpace 𝕜 E] (p : Seminorm 𝕜 E)
     (hp : LowerSemicontinuous p) : Continuous p :=
   BarrelledSpace.continuous_of_lowerSemicontinuous p hp
 
-theorem Seminorm.continuous_iSup
+lemma Seminorm.continuous_iSup
     {ι : Sort*} {𝕜 E : Type*} [NormedField 𝕜]  [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [BarrelledSpace 𝕜 E] (p : ι → Seminorm 𝕜 E)
     (hp : ∀ i, Continuous (p i)) (bdd : BddAbove (range p)) :

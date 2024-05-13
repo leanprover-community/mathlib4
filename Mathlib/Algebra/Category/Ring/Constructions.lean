@@ -53,7 +53,7 @@ set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone CommRingCat.pushoutCocone
 
 @[simp]
-theorem pushoutCocone_inl :
+lemma pushoutCocone_inl :
     (pushoutCocone f g).inl = by
       letI := f.toAlgebra
       letI := g.toAlgebra
@@ -63,7 +63,7 @@ set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone_inl CommRingCat.pushoutCocone_inl
 
 @[simp]
-theorem pushoutCocone_inr :
+lemma pushoutCocone_inr :
     (pushoutCocone f g).inr = by
       letI := f.toAlgebra
       letI := g.toAlgebra
@@ -73,7 +73,7 @@ set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone_inr CommRingCat.pushoutCocone_inr
 
 @[simp]
-theorem pushoutCocone_pt :
+lemma pushoutCocone_pt :
     (pushoutCocone f g).pt = by
       letI := f.toAlgebra
       letI := g.toAlgebra
@@ -167,7 +167,7 @@ instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRin
 set_option linter.uppercaseLean3 false in
 #align CommRing.CommRing_has_strict_terminal_objects CommRingCat.commRingCat_hasStrictTerminalObjects
 
-theorem subsingleton_of_isTerminal {X : CommRingCat} (hX : IsTerminal X) : Subsingleton X :=
+lemma subsingleton_of_isTerminal {X : CommRingCat} (hX : IsTerminal X) : Subsingleton X :=
   (hX.uniqueUpToIso punitIsTerminal).commRingCatIsoToRingEquiv.toEquiv.subsingleton_congr.mpr
     (show Subsingleton PUnit by infer_instance)
 set_option linter.uppercaseLean3 false in

@@ -29,7 +29,7 @@ namespace Real
 
 variable {x y : ℝ}
 
-theorem log_mul_self_monotoneOn : MonotoneOn (fun x : ℝ => log x * x) { x | 1 ≤ x } := by
+lemma log_mul_self_monotoneOn : MonotoneOn (fun x : ℝ => log x * x) { x | 1 ≤ x } := by
   -- TODO: can be strengthened to exp (-1) ≤ x
   simp only [MonotoneOn, mem_setOf_eq]
   intro x hex y hey hxy
@@ -38,7 +38,7 @@ theorem log_mul_self_monotoneOn : MonotoneOn (fun x : ℝ => log x * x) { x | 1 
   rwa [le_log_iff_exp_le y_pos, Real.exp_zero]
 #align real.log_mul_self_monotone_on Real.log_mul_self_monotoneOn
 
-theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ => log x / x) { x | exp 1 ≤ x } := by
+lemma log_div_self_antitoneOn : AntitoneOn (fun x : ℝ => log x / x) { x | exp 1 ≤ x } := by
   simp only [AntitoneOn, mem_setOf_eq]
   intro x hex y hey hxy
   have x_pos : 0 < x := (exp_pos 1).trans_le hex
@@ -53,7 +53,7 @@ theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ => log x / x) { x | ex
     _ = log x / x * y - log x := by ring
 #align real.log_div_self_antitone_on Real.log_div_self_antitoneOn
 
-theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
+lemma log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
     AntitoneOn (fun x : ℝ => log x / x ^ a) { x | exp (1 / a) ≤ x } := by
   simp only [AntitoneOn, mem_setOf_eq]
   intro x hex y _ hxy
@@ -82,7 +82,7 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
   gcongr
 #align real.log_div_self_rpow_antitone_on Real.log_div_self_rpow_antitoneOn
 
-theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ => log x / √x) { x | exp 2 ≤ x } := by
+lemma log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ => log x / √x) { x | exp 2 ≤ x } := by
   simp_rw [sqrt_eq_rpow]
   convert @log_div_self_rpow_antitoneOn (1 / 2) (by norm_num)
   norm_num

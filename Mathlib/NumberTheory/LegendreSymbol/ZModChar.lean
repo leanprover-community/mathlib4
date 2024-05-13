@@ -71,7 +71,7 @@ theorem χ₄_int_eq_if_mod_four (n : ℤ) :
   exact help (n % 4) (Int.emod_nonneg n (by norm_num)) (Int.emod_lt n (by norm_num))
 #align zmod.χ₄_int_eq_if_mod_four ZMod.χ₄_int_eq_if_mod_four
 
-theorem χ₄_nat_eq_if_mod_four (n : ℕ) :
+lemma χ₄_nat_eq_if_mod_four (n : ℕ) :
     χ₄ n = if n % 2 = 0 then 0 else if n % 4 = 1 then 1 else -1 :=
   mod_cast χ₄_int_eq_if_mod_four n
 #align zmod.χ₄_nat_eq_if_mod_four ZMod.χ₄_nat_eq_if_mod_four
@@ -166,7 +166,7 @@ theorem χ₈_int_eq_if_mod_eight (n : ℤ) :
   exact help (n % 8) (Int.emod_nonneg n (by norm_num)) (Int.emod_lt n (by norm_num))
 #align zmod.χ₈_int_eq_if_mod_eight ZMod.χ₈_int_eq_if_mod_eight
 
-theorem χ₈_nat_eq_if_mod_eight (n : ℕ) :
+lemma χ₈_nat_eq_if_mod_eight (n : ℕ) :
     χ₈ n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 7 then 1 else -1 :=
   mod_cast χ₈_int_eq_if_mod_eight n
 #align zmod.χ₈_nat_eq_if_mod_eight ZMod.χ₈_nat_eq_if_mod_eight
@@ -199,7 +199,7 @@ theorem χ₈'_int_eq_if_mod_eight (n : ℤ) :
   exact help (n % 8) (Int.emod_nonneg n (by norm_num)) (Int.emod_lt n (by norm_num))
 #align zmod.χ₈'_int_eq_if_mod_eight ZMod.χ₈'_int_eq_if_mod_eight
 
-theorem χ₈'_nat_eq_if_mod_eight (n : ℕ) :
+lemma χ₈'_nat_eq_if_mod_eight (n : ℕ) :
     χ₈' n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 3 then 1 else -1 :=
   mod_cast χ₈'_int_eq_if_mod_eight n
 #align zmod.χ₈'_nat_eq_if_mod_eight ZMod.χ₈'_nat_eq_if_mod_eight
@@ -211,7 +211,7 @@ theorem χ₈'_eq_χ₄_mul_χ₈ (a : ZMod 8) : χ₈' a = χ₄ (cast a) * χ�
   all_goals decide
 #align zmod.χ₈'_eq_χ₄_mul_χ₈ ZMod.χ₈'_eq_χ₄_mul_χ₈
 
-theorem χ₈'_int_eq_χ₄_mul_χ₈ (a : ℤ) : χ₈' a = χ₄ a * χ₈ a := by
+lemma χ₈'_int_eq_χ₄_mul_χ₈ (a : ℤ) : χ₈' a = χ₄ a * χ₈ a := by
   rw [← @cast_intCast 8 (ZMod 4) _ 4 _ (by decide) a]
   exact χ₈'_eq_χ₄_mul_χ₈ a
 #align zmod.χ₈'_int_eq_χ₄_mul_χ₈ ZMod.χ₈'_int_eq_χ₄_mul_χ₈

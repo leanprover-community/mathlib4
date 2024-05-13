@@ -42,7 +42,7 @@ lemma _root_.Function.semiconj_iff_comp_eq : Semiconj f ga gb ↔ f ∘ ga = gb 
 protected alias ⟨comp_eq, _⟩ := semiconj_iff_comp_eq
 #align function.semiconj.comp_eq Function.Semiconj.comp_eq
 
-protected theorem eq (h : Semiconj f ga gb) (x : α) : f (ga x) = gb (f x) :=
+protected lemma eq (h : Semiconj f ga gb) (x : α) : f (ga x) = gb (f x) :=
   h x
 #align function.semiconj.eq Function.Semiconj.eq
 
@@ -130,11 +130,11 @@ definitionally equal but have different dot-notation lemmas. -/
 theorem semiconj (h : Commute f g) : Semiconj f g g := h
 
 @[refl]
-theorem refl (f : α → α) : Commute f f := fun _ ↦ Eq.refl _
+lemma refl (f : α → α) : Commute f f := fun _ ↦ Eq.refl _
 #align function.commute.refl Function.Commute.refl
 
 @[symm]
-theorem symm (h : Commute f g) : Commute g f := fun x ↦ (h x).symm
+lemma symm (h : Commute f g) : Commute g f := fun x ↦ (h x).symm
 #align function.commute.symm Function.Commute.symm
 
 /-- If `f` commutes with `g` and `g'`, then it commutes with `g ∘ g'`. -/
@@ -176,37 +176,37 @@ namespace Semiconj₂
 
 variable {f : α → β} {ga : α → α → α} {gb : β → β → β}
 
-protected theorem eq (h : Semiconj₂ f ga gb) (x y : α) : f (ga x y) = gb (f x) (f y) :=
+protected lemma eq (h : Semiconj₂ f ga gb) (x y : α) : f (ga x y) = gb (f x) (f y) :=
   h x y
 #align function.semiconj₂.eq Function.Semiconj₂.eq
 
-protected theorem comp_eq (h : Semiconj₂ f ga gb) : bicompr f ga = bicompl gb f f :=
+protected lemma comp_eq (h : Semiconj₂ f ga gb) : bicompr f ga = bicompl gb f f :=
   funext fun x ↦ funext <| h x
 #align function.semiconj₂.comp_eq Function.Semiconj₂.comp_eq
 
-theorem id_left (op : α → α → α) : Semiconj₂ id op op := fun _ _ ↦ rfl
+lemma id_left (op : α → α → α) : Semiconj₂ id op op := fun _ _ ↦ rfl
 #align function.semiconj₂.id_left Function.Semiconj₂.id_left
 
-theorem comp {f' : β → γ} {gc : γ → γ → γ} (hf' : Semiconj₂ f' gb gc) (hf : Semiconj₂ f ga gb) :
+lemma comp {f' : β → γ} {gc : γ → γ → γ} (hf' : Semiconj₂ f' gb gc) (hf : Semiconj₂ f ga gb) :
     Semiconj₂ (f' ∘ f) ga gc := fun x y ↦ by simp only [hf'.eq, hf.eq, comp_apply]
 #align function.semiconj₂.comp Function.Semiconj₂.comp
 
-theorem isAssociative_right [Std.Associative ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
+lemma isAssociative_right [Std.Associative ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
     Std.Associative gb :=
   ⟨h_surj.forall₃.2 fun x₁ x₂ x₃ ↦ by simp only [← h.eq, Std.Associative.assoc (op := ga)]⟩
 #align function.semiconj₂.is_associative_right Function.Semiconj₂.isAssociative_right
 
-theorem isAssociative_left [Std.Associative gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
+lemma isAssociative_left [Std.Associative gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
     Std.Associative ga :=
   ⟨fun x₁ x₂ x₃ ↦ h_inj <| by simp only [h.eq, Std.Associative.assoc (op := gb)]⟩
 #align function.semiconj₂.is_associative_left Function.Semiconj₂.isAssociative_left
 
-theorem isIdempotent_right [Std.IdempotentOp ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
+lemma isIdempotent_right [Std.IdempotentOp ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
     Std.IdempotentOp gb :=
   ⟨h_surj.forall.2 fun x ↦ by simp only [← h.eq, Std.IdempotentOp.idempotent (op := ga)]⟩
 #align function.semiconj₂.is_idempotent_right Function.Semiconj₂.isIdempotent_right
 
-theorem isIdempotent_left [Std.IdempotentOp gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
+lemma isIdempotent_left [Std.IdempotentOp gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
     Std.IdempotentOp ga :=
   ⟨fun x ↦ h_inj <| by rw [h.eq, Std.IdempotentOp.idempotent (op := gb)]⟩
 #align function.semiconj₂.is_idempotent_left Function.Semiconj₂.isIdempotent_left

@@ -42,7 +42,7 @@ variable [Denumerable α] [Denumerable β]
 
 open Encodable
 
-theorem decode_isSome (α) [Denumerable α] (n : ℕ) : (decode (α := α) n).isSome :=
+lemma decode_isSome (α) [Denumerable α] (n : ℕ) : (decode (α := α) n).isSome :=
   Option.isSome_iff_exists.2 <| (decode_inv n).imp fun _ => And.left
 #align denumerable.decode_is_some Denumerable.decode_isSome
 
@@ -52,23 +52,23 @@ def ofNat (α) [Denumerable α] (n : ℕ) : α :=
 #align denumerable.of_nat Denumerable.ofNat
 
 @[simp]
-theorem decode_eq_ofNat (α) [Denumerable α] (n : ℕ) : decode (α := α) n = some (ofNat α n) :=
+lemma decode_eq_ofNat (α) [Denumerable α] (n : ℕ) : decode (α := α) n = some (ofNat α n) :=
   Option.eq_some_of_isSome _
 #align denumerable.decode_eq_of_nat Denumerable.decode_eq_ofNat
 
 @[simp]
-theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := α) n = b :=
+lemma ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := α) n = b :=
   Option.some.inj <| (decode_eq_ofNat _ _).symm.trans h
 #align denumerable.of_nat_of_decode Denumerable.ofNat_of_decode
 
 @[simp]
-theorem encode_ofNat (n) : encode (ofNat α n) = n := by
+lemma encode_ofNat (n) : encode (ofNat α n) = n := by
   obtain ⟨a, h, e⟩ := decode_inv (α := α) n
   rwa [ofNat_of_decode h]
 #align denumerable.encode_of_nat Denumerable.encode_ofNat
 
 @[simp]
-theorem ofNat_encode (a) : ofNat α (encode a) = a :=
+lemma ofNat_encode (a) : ofNat α (encode a) = a :=
   ofNat_of_decode (encodek _)
 #align denumerable.of_nat_encode Denumerable.ofNat_encode
 
@@ -101,7 +101,7 @@ def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
 #align denumerable.of_equiv Denumerable.ofEquiv
 
 @[simp]
-theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
+lemma ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by
   -- Porting note: added `letI`
   letI := ofEquiv _ e
@@ -120,7 +120,7 @@ instance nat : Denumerable ℕ :=
 #align denumerable.nat Denumerable.nat
 
 @[simp]
-theorem ofNat_nat (n) : ofNat ℕ n = n :=
+lemma ofNat_nat (n) : ofNat ℕ n = n :=
   rfl
 #align denumerable.of_nat_nat Denumerable.ofNat_nat
 
@@ -157,7 +157,7 @@ instance sigma : Denumerable (Sigma γ) :=
 #align denumerable.sigma Denumerable.sigma
 
 @[simp]
-theorem sigma_ofNat_val (n : ℕ) :
+lemma sigma_ofNat_val (n : ℕ) :
     ofNat (Sigma γ) n = ⟨ofNat α (unpair n).1, ofNat (γ _) (unpair n).2⟩ :=
   Option.some.inj <| by rw [← decode_eq_ofNat, decode_sigma_val]; simp
 #align denumerable.sigma_of_nat_val Denumerable.sigma_ofNat_val
@@ -170,12 +170,12 @@ instance prod : Denumerable (α × β) :=
 #align denumerable.prod Denumerable.prod
 
 -- Porting note: removed @[simp] - simp can prove it
-theorem prod_ofNat_val (n : ℕ) : ofNat (α × β) n = (ofNat α (unpair n).1, ofNat β (unpair n).2) :=
+lemma prod_ofNat_val (n : ℕ) : ofNat (α × β) n = (ofNat α (unpair n).1, ofNat β (unpair n).2) :=
   by simp
 #align denumerable.prod_of_nat_val Denumerable.prod_ofNat_val
 
 @[simp]
-theorem prod_nat_ofNat : ofNat (ℕ × ℕ) = unpair := by funext; simp
+lemma prod_nat_ofNat : ofNat (ℕ × ℕ) = unpair := by funext; simp
 #align denumerable.prod_nat_of_nat Denumerable.prod_nat_ofNat
 
 instance int : Denumerable ℤ :=
@@ -218,7 +218,7 @@ section Classical
 
 open scoped Classical
 
-theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s :=
+lemma exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s :=
   _root_.by_contradiction fun h =>
     have : ∀ (a : ℕ) (_ : a ∈ s), a < x + 1 := fun a ha =>
       lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [add_right_comm, add_tsub_cancel_of_le hax]⟩
@@ -239,7 +239,7 @@ def succ (x : s) : s :=
   ⟨↑x + Nat.find h + 1, Nat.find_spec h⟩
 #align nat.subtype.succ Nat.Subtype.succ
 
-theorem succ_le_of_lt {x y : s} (h : y < x) : succ y ≤ x :=
+lemma succ_le_of_lt {x y : s} (h : y < x) : succ y ≤ x :=
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   let ⟨k, hk⟩ := Nat.exists_eq_add_of_lt h
   have : Nat.find hx ≤ k := Nat.find_min' _ (hk ▸ x.2)
@@ -248,7 +248,7 @@ theorem succ_le_of_lt {x y : s} (h : y < x) : succ y ≤ x :=
     exact add_le_add_right (add_le_add_left this _) _
 #align nat.subtype.succ_le_of_lt Nat.Subtype.succ_le_of_lt
 
-theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ y :=
+lemma le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ y :=
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   show (x : ℕ) ≤ (y : ℕ) + Nat.find hx + 1 from
     le_of_not_gt fun hxy =>
@@ -258,14 +258,14 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
           _ < (y : ℕ) + Nat.find hx + 1 := Nat.lt_succ_self _
 #align nat.subtype.le_succ_of_forall_lt_le Nat.Subtype.le_succ_of_forall_lt_le
 
-theorem lt_succ_self (x : s) : x < succ x :=
+lemma lt_succ_self (x : s) : x < succ x :=
   calc
     -- Porting note: replaced `x + _`, added type annotations
     (x : ℕ) ≤ (x + Nat.find (exists_succ x): ℕ) := le_self_add
     _ < (succ x : ℕ) := Nat.lt_succ_self (x + _)
 #align nat.subtype.lt_succ_self Nat.Subtype.lt_succ_self
 
-theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
+lemma lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
   ⟨fun h => le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
     lt_of_le_of_lt h (lt_succ_self _)⟩
 #align nat.subtype.lt_succ_iff_le Nat.Subtype.lt_succ_iff_le
@@ -278,7 +278,7 @@ def ofNat (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : ℕ → s
 #align nat.subtype.of_nat Nat.Subtype.ofNat
 
 set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
-theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = ⟨x, hx⟩
+lemma ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = ⟨x, hx⟩
   | x => fun hx => by
     set t : List s :=
       ((List.range x).filter fun y => y ∈ s).pmap
@@ -304,30 +304,30 @@ decreasing_by
   tauto
 #align nat.subtype.of_nat_surjective_aux Nat.Subtype.ofNat_surjective_aux
 
-theorem ofNat_surjective : Surjective (ofNat s) := fun ⟨_, hx⟩ => ofNat_surjective_aux hx
+lemma ofNat_surjective : Surjective (ofNat s) := fun ⟨_, hx⟩ => ofNat_surjective_aux hx
 #align nat.subtype.of_nat_surjective Nat.Subtype.ofNat_surjective
 
 @[simp]
-theorem ofNat_range : Set.range (ofNat s) = Set.univ :=
+lemma ofNat_range : Set.range (ofNat s) = Set.univ :=
   ofNat_surjective.range_eq
 #align nat.subtype.of_nat_range Nat.Subtype.ofNat_range
 
 @[simp]
-theorem coe_comp_ofNat_range : Set.range ((↑) ∘ ofNat s : ℕ → ℕ) = s := by
+lemma coe_comp_ofNat_range : Set.range ((↑) ∘ ofNat s : ℕ → ℕ) = s := by
   rw [Set.range_comp Subtype.val, ofNat_range, Set.image_univ, Subtype.range_coe]
 #align nat.subtype.coe_comp_of_nat_range Nat.Subtype.coe_comp_ofNat_range
 
 private def toFunAux (x : s) : ℕ :=
   (List.range x).countP (· ∈ s)
 
-private theorem toFunAux_eq (x : s) : toFunAux x = ((Finset.range x).filter (· ∈ s)).card := by
+private lemma toFunAux_eq (x : s) : toFunAux x = ((Finset.range x).filter (· ∈ s)).card := by
   rw [toFunAux, List.countP_eq_length_filter]
   rfl
 
 open Finset
 
 set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
-private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
+private lemma right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
     rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_not_mem]
     rintro n hn
@@ -382,7 +382,7 @@ theorem nonempty_denumerable (α : Type*) [Countable α] [Infinite α] : Nonempt
   (nonempty_encodable α).map fun h => @Denumerable.ofEncodableOfInfinite _ h _
 #align nonempty_denumerable nonempty_denumerable
 
-theorem nonempty_denumerable_iff {α : Type*} :
+lemma nonempty_denumerable_iff {α : Type*} :
     Nonempty (Denumerable α) ↔ Countable α ∧ Infinite α :=
   ⟨fun ⟨_⟩ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ nonempty_denumerable _⟩
 

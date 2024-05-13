@@ -51,7 +51,7 @@ class HasSolidNorm (α : Type*) [NormedAddCommGroup α] [Lattice α] : Prop wher
 
 variable {α : Type*} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α]
 
-theorem norm_le_norm_of_abs_le_abs {a b : α} (h : |a| ≤ |b|) : ‖a‖ ≤ ‖b‖ :=
+lemma norm_le_norm_of_abs_le_abs {a b : α} (h : |a| ≤ |b|) : ‖a‖ ≤ ‖b‖ :=
   HasSolidNorm.solid h
 #align norm_le_norm_of_abs_le_abs norm_le_norm_of_abs_le_abs
 
@@ -93,7 +93,7 @@ variable {α : Type*} [NormedLatticeAddCommGroup α]
 
 open HasSolidNorm
 
-theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ := by
+lemma dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ := by
   apply solid
   rw [abs]
   nth_rw 1 [← neg_neg a]
@@ -112,11 +112,11 @@ instance (priority := 100) OrderDual.instNormedLatticeAddCommGroup :
   { OrderDual.orderedAddCommGroup, OrderDual.normedAddCommGroup, OrderDual.instLattice α with
     solid := dual_solid (α := α) }
 
-theorem norm_abs_eq_norm (a : α) : ‖|a|‖ = ‖a‖ :=
+lemma norm_abs_eq_norm (a : α) : ‖|a|‖ = ‖a‖ :=
   (solid (abs_abs a).le).antisymm (solid (abs_abs a).symm.le)
 #align norm_abs_eq_norm norm_abs_eq_norm
 
-theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
+lemma norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
   rw [← norm_abs_eq_norm (a - c), ← norm_abs_eq_norm (b - d)]
   refine' le_trans (solid _) (norm_add_le |a - c| |b - d|)
   rw [abs_of_nonneg (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
@@ -130,7 +130,7 @@ theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ �
         exact abs_inf_sub_inf_le_abs _ _ _
 #align norm_inf_sub_inf_le_add_norm norm_inf_sub_inf_le_add_norm
 
-theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
+lemma norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
   rw [← norm_abs_eq_norm (a - c), ← norm_abs_eq_norm (b - d)]
   refine' le_trans (solid _) (norm_add_le |a - c| |b - d|)
   rw [abs_of_nonneg (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
@@ -144,12 +144,12 @@ theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ �
         exact abs_sup_sub_sup_le_abs _ _ _
 #align norm_sup_sub_sup_le_add_norm norm_sup_sub_sup_le_add_norm
 
-theorem norm_inf_le_add (x y : α) : ‖x ⊓ y‖ ≤ ‖x‖ + ‖y‖ := by
+lemma norm_inf_le_add (x y : α) : ‖x ⊓ y‖ ≤ ‖x‖ + ‖y‖ := by
   have h : ‖x ⊓ y - 0 ⊓ 0‖ ≤ ‖x - 0‖ + ‖y - 0‖ := norm_inf_sub_inf_le_add_norm x y 0 0
   simpa only [inf_idem, sub_zero] using h
 #align norm_inf_le_add norm_inf_le_add
 
-theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ := by
+lemma norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ := by
   have h : ‖x ⊔ y - 0 ⊔ 0‖ ≤ ‖x - 0‖ + ‖y - 0‖ := norm_sup_sub_sup_le_add_norm x y 0 0
   simpa only [sup_idem, sub_zero] using h
 #align norm_sup_le_add norm_sup_le_add
@@ -181,18 +181,18 @@ instance (priority := 100) NormedLatticeAddCommGroup.toTopologicalLattice : Topo
   TopologicalLattice.mk
 #align normed_lattice_add_comm_group_topological_lattice NormedLatticeAddCommGroup.toTopologicalLattice
 
-theorem norm_abs_sub_abs (a b : α) : ‖|a| - |b|‖ ≤ ‖a - b‖ := solid (abs_abs_sub_abs_le _ _)
+lemma norm_abs_sub_abs (a b : α) : ‖|a| - |b|‖ ≤ ‖a - b‖ := solid (abs_abs_sub_abs_le _ _)
 #align norm_abs_sub_abs norm_abs_sub_abs
 
-theorem norm_sup_sub_sup_le_norm (x y z : α) : ‖x ⊔ z - y ⊔ z‖ ≤ ‖x - y‖ :=
+lemma norm_sup_sub_sup_le_norm (x y z : α) : ‖x ⊔ z - y ⊔ z‖ ≤ ‖x - y‖ :=
   solid (abs_sup_sub_sup_le_abs x y z)
 #align norm_sup_sub_sup_le_norm norm_sup_sub_sup_le_norm
 
-theorem norm_inf_sub_inf_le_norm (x y z : α) : ‖x ⊓ z - y ⊓ z‖ ≤ ‖x - y‖ :=
+lemma norm_inf_sub_inf_le_norm (x y z : α) : ‖x ⊓ z - y ⊓ z‖ ≤ ‖x - y‖ :=
   solid (abs_inf_sub_inf_le_abs x y z)
 #align norm_inf_sub_inf_le_norm norm_inf_sub_inf_le_norm
 
-theorem lipschitzWith_sup_right (z : α) : LipschitzWith 1 fun x => x ⊔ z :=
+lemma lipschitzWith_sup_right (z : α) : LipschitzWith 1 fun x => x ⊔ z :=
   LipschitzWith.of_dist_le_mul fun x y => by
     rw [NNReal.coe_one, one_mul, dist_eq_norm, dist_eq_norm]
     exact norm_sup_sub_sup_le_norm x y z
@@ -217,7 +217,7 @@ lemma isClosed_nonneg : IsClosed {x : α | 0 ≤ x} := by
   exact isClosed_singleton.preimage continuous_negPart
 #align is_closed_nonneg isClosed_nonneg
 
-theorem isClosed_le_of_isClosed_nonneg {G} [OrderedAddCommGroup G] [TopologicalSpace G]
+lemma isClosed_le_of_isClosed_nonneg {G} [OrderedAddCommGroup G] [TopologicalSpace G]
     [ContinuousSub G] (h : IsClosed { x : G | 0 ≤ x }) :
     IsClosed { p : G × G | p.fst ≤ p.snd } := by
   have : { p : G × G | p.fst ≤ p.snd } = (fun p : G × G => p.snd - p.fst) ⁻¹' { x : G | 0 ≤ x } :=

@@ -13,16 +13,16 @@ import Mathlib.Algebra.Group.Units
 
 namespace Nat
 
-theorem units_eq_one (u : ℕˣ) : u = 1 :=
+lemma units_eq_one (u : ℕˣ) : u = 1 :=
   Units.ext <| Nat.eq_one_of_dvd_one ⟨u.inv, u.val_inv.symm⟩
 #align nat.units_eq_one Nat.units_eq_one
 
-theorem addUnits_eq_zero (u : AddUnits ℕ) : u = 0 :=
+lemma addUnits_eq_zero (u : AddUnits ℕ) : u = 0 :=
   AddUnits.ext <| (Nat.eq_zero_of_add_eq_zero u.val_neg).1
 #align nat.add_units_eq_zero Nat.addUnits_eq_zero
 
 @[simp]
-protected theorem isUnit_iff {n : ℕ} : IsUnit n ↔ n = 1 :=
+protected lemma isUnit_iff {n : ℕ} : IsUnit n ↔ n = 1 :=
   Iff.intro
     (fun ⟨u, hu⟩ =>
       match n, u, hu, Nat.units_eq_one u with

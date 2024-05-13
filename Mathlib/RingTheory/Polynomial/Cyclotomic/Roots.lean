@@ -39,7 +39,7 @@ namespace Polynomial
 
 variable {R : Type*} [CommRing R] {n : ℕ}
 
-theorem isRoot_of_unity_of_root_cyclotomic {ζ : R} {i : ℕ} (hi : i ∈ n.divisors)
+lemma isRoot_of_unity_of_root_cyclotomic {ζ : R} {i : ℕ} (hi : i ∈ n.divisors)
     (h : (cyclotomic i R).IsRoot ζ) : ζ ^ n = 1 := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · exact pow_zero _
@@ -55,7 +55,7 @@ section IsDomain
 
 variable [IsDomain R]
 
-theorem _root_.isRoot_of_unity_iff (h : 0 < n) (R : Type*) [CommRing R] [IsDomain R] {ζ : R} :
+lemma _root_.isRoot_of_unity_iff (h : 0 < n) (R : Type*) [CommRing R] [IsDomain R] {ζ : R} :
     ζ ^ n = 1 ↔ ∃ i ∈ n.divisors, (cyclotomic i R).IsRoot ζ := by
   rw [← mem_nthRoots h, nthRoots, mem_roots <| X_pow_sub_C_ne_zero h _, C_1, ←
       prod_cyclotomic_eq_X_pow_sub_one h, isRoot_prod]
@@ -69,7 +69,7 @@ theorem _root_.IsPrimitiveRoot.isRoot_cyclotomic (hpos : 0 < n) {μ : R} (h : Is
   rwa [← mem_primitiveRoots hpos] at h
 #align is_primitive_root.is_root_cyclotomic IsPrimitiveRoot.isRoot_cyclotomic
 
-private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} [NeZero (n : K)] :
+private lemma isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} [NeZero (n : K)] :
     IsRoot (cyclotomic n K) μ ↔ IsPrimitiveRoot μ n := by
   -- in this proof, `o` stands for `orderOf μ`
   have hnpos : 0 < n := (NeZero.of_neZero_natCast K).out.bot_lt
@@ -98,7 +98,7 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
   specialize hn (X - C μ) ⟨(∏ x in n.divisors \ {i, n}, cyclotomic x K) * k * j, by ring⟩
   simp [Polynomial.isUnit_iff_degree_eq_zero] at hn
 
-theorem isRoot_cyclotomic_iff [NeZero (n : R)] {μ : R} :
+lemma isRoot_cyclotomic_iff [NeZero (n : R)] {μ : R} :
     IsRoot (cyclotomic n R) μ ↔ IsPrimitiveRoot μ n := by
   have hf : Function.Injective _ := IsFractionRing.injective R (FractionRing R)
   haveI : NeZero (n : FractionRing R) := NeZero.nat_of_injective hf
@@ -106,7 +106,7 @@ theorem isRoot_cyclotomic_iff [NeZero (n : R)] {μ : R} :
     isRoot_cyclotomic_iff']
 #align polynomial.is_root_cyclotomic_iff Polynomial.isRoot_cyclotomic_iff
 
-theorem roots_cyclotomic_nodup [NeZero (n : R)] : (cyclotomic n R).roots.Nodup := by
+lemma roots_cyclotomic_nodup [NeZero (n : R)] : (cyclotomic n R).roots.Nodup := by
   obtain h | ⟨ζ, hζ⟩ := (cyclotomic n R).roots.empty_or_exists_mem
   · exact h.symm ▸ Multiset.nodup_zero
   rw [mem_roots <| cyclotomic_ne_zero n R, isRoot_cyclotomic_iff] at hζ
@@ -115,7 +115,7 @@ theorem roots_cyclotomic_nodup [NeZero (n : R)] : (cyclotomic n R).roots.Nodup :
       cyclotomic.dvd_X_pow_sub_one n R) hζ.nthRoots_one_nodup
 #align polynomial.roots_cyclotomic_nodup Polynomial.roots_cyclotomic_nodup
 
-theorem cyclotomic.roots_to_finset_eq_primitiveRoots [NeZero (n : R)] :
+lemma cyclotomic.roots_to_finset_eq_primitiveRoots [NeZero (n : R)] :
     (⟨(cyclotomic n R).roots, roots_cyclotomic_nodup⟩ : Finset _) = primitiveRoots n R := by
   ext a
   -- Porting note: was
@@ -126,7 +126,7 @@ theorem cyclotomic.roots_to_finset_eq_primitiveRoots [NeZero (n : R)] :
   simp [cyclotomic_ne_zero n R]
 #align polynomial.cyclotomic.roots_to_finset_eq_primitive_roots Polynomial.cyclotomic.roots_to_finset_eq_primitiveRoots
 
-theorem cyclotomic.roots_eq_primitiveRoots_val [NeZero (n : R)] :
+lemma cyclotomic.roots_eq_primitiveRoots_val [NeZero (n : R)] :
     (cyclotomic n R).roots = (primitiveRoots n R).val := by
   rw [← cyclotomic.roots_to_finset_eq_primitiveRoots]
 #align polynomial.cyclotomic.roots_eq_primitive_roots_val Polynomial.cyclotomic.roots_eq_primitiveRoots_val
@@ -174,7 +174,7 @@ section minpoly
 
 open IsPrimitiveRoot Complex
 
-theorem _root_.IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible {K : Type*} [Field K]
+lemma _root_.IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible {K : Type*} [Field K]
     {R : Type*} [CommRing R] [IsDomain R] {μ : R} {n : ℕ} [Algebra K R] (hμ : IsPrimitiveRoot μ n)
     (h : Irreducible <| cyclotomic n K) [NeZero (n : K)] : cyclotomic n K = minpoly K μ := by
   haveI := NeZero.of_noZeroSMulDivisors K R n

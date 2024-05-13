@@ -27,21 +27,21 @@ namespace List
 variable {α : Type u} [DecidableEq α]
 
 @[simp]
-theorem dedup_nil : dedup [] = ([] : List α) :=
+lemma dedup_nil : dedup [] = ([] : List α) :=
   rfl
 #align list.dedup_nil List.dedup_nil
 
-theorem dedup_cons_of_mem' {a : α} {l : List α} (h : a ∈ dedup l) : dedup (a :: l) = dedup l :=
+lemma dedup_cons_of_mem' {a : α} {l : List α} (h : a ∈ dedup l) : dedup (a :: l) = dedup l :=
   pwFilter_cons_of_neg <| by simpa only [forall_mem_ne, not_not] using h
 #align list.dedup_cons_of_mem' List.dedup_cons_of_mem'
 
-theorem dedup_cons_of_not_mem' {a : α} {l : List α} (h : a ∉ dedup l) :
+lemma dedup_cons_of_not_mem' {a : α} {l : List α} (h : a ∉ dedup l) :
     dedup (a :: l) = a :: dedup l :=
   pwFilter_cons_of_pos <| by simpa only [forall_mem_ne] using h
 #align list.dedup_cons_of_not_mem' List.dedup_cons_of_not_mem'
 
 @[simp]
-theorem mem_dedup {a : α} {l : List α} : a ∈ dedup l ↔ a ∈ l := by
+lemma mem_dedup {a : α} {l : List α} : a ∈ dedup l ↔ a ∈ l := by
   have := not_congr (@forall_mem_pwFilter α (· ≠ ·) _ ?_ a l)
   · simpa only [dedup, forall_mem_ne, not_not] using this
   · intros x y z xz
@@ -49,49 +49,49 @@ theorem mem_dedup {a : α} {l : List α} : a ∈ dedup l ↔ a ∈ l := by
 #align list.mem_dedup List.mem_dedup
 
 @[simp]
-theorem dedup_cons_of_mem {a : α} {l : List α} (h : a ∈ l) : dedup (a :: l) = dedup l :=
+lemma dedup_cons_of_mem {a : α} {l : List α} (h : a ∈ l) : dedup (a :: l) = dedup l :=
   dedup_cons_of_mem' <| mem_dedup.2 h
 #align list.dedup_cons_of_mem List.dedup_cons_of_mem
 
 @[simp]
-theorem dedup_cons_of_not_mem {a : α} {l : List α} (h : a ∉ l) : dedup (a :: l) = a :: dedup l :=
+lemma dedup_cons_of_not_mem {a : α} {l : List α} (h : a ∉ l) : dedup (a :: l) = a :: dedup l :=
   dedup_cons_of_not_mem' <| mt mem_dedup.1 h
 #align list.dedup_cons_of_not_mem List.dedup_cons_of_not_mem
 
-theorem dedup_sublist : ∀ l : List α, dedup l <+ l :=
+lemma dedup_sublist : ∀ l : List α, dedup l <+ l :=
   pwFilter_sublist
 #align list.dedup_sublist List.dedup_sublist
 
-theorem dedup_subset : ∀ l : List α, dedup l ⊆ l :=
+lemma dedup_subset : ∀ l : List α, dedup l ⊆ l :=
   pwFilter_subset
 #align list.dedup_subset List.dedup_subset
 
-theorem subset_dedup (l : List α) : l ⊆ dedup l := fun _ => mem_dedup.2
+lemma subset_dedup (l : List α) : l ⊆ dedup l := fun _ => mem_dedup.2
 #align list.subset_dedup List.subset_dedup
 
-theorem nodup_dedup : ∀ l : List α, Nodup (dedup l) :=
+lemma nodup_dedup : ∀ l : List α, Nodup (dedup l) :=
   pairwise_pwFilter
 #align list.nodup_dedup List.nodup_dedup
 
-theorem headI_dedup [Inhabited α] (l : List α) :
+lemma headI_dedup [Inhabited α] (l : List α) :
     l.dedup.headI = if l.headI ∈ l.tail then l.tail.dedup.headI else l.headI :=
   match l with
   | [] => rfl
   | a :: l => by by_cases ha : a ∈ l <;> simp [ha, List.dedup_cons_of_mem]
 #align list.head_dedup List.headI_dedup
 
-theorem tail_dedup [Inhabited α] (l : List α) :
+lemma tail_dedup [Inhabited α] (l : List α) :
     l.dedup.tail = if l.headI ∈ l.tail then l.tail.dedup.tail else l.tail.dedup :=
   match l with
   | [] => rfl
   | a :: l => by by_cases ha : a ∈ l <;> simp [ha, List.dedup_cons_of_mem]
 #align list.tail_dedup List.tail_dedup
 
-theorem dedup_eq_self {l : List α} : dedup l = l ↔ Nodup l :=
+lemma dedup_eq_self {l : List α} : dedup l = l ↔ Nodup l :=
   pwFilter_eq_self
 #align list.dedup_eq_self List.dedup_eq_self
 
-theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
+lemma dedup_eq_cons (l : List α) (a : α) (l' : List α) :
     l.dedup = a :: l' ↔ a ∈ l ∧ a ∉ l' ∧ l.dedup.tail = l' := by
   refine' ⟨fun h => _, fun h => _⟩
   · refine' ⟨mem_dedup.1 (h.symm ▸ mem_cons_self _ _), fun ha => _, by rw [h, tail_cons]⟩
@@ -106,7 +106,7 @@ theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
 #align list.dedup_eq_cons List.dedup_eq_cons
 
 @[simp]
-theorem dedup_eq_nil (l : List α) : l.dedup = [] ↔ l = [] := by
+lemma dedup_eq_nil (l : List α) : l.dedup = [] ↔ l = [] := by
   induction' l with a l hl
   · exact Iff.rfl
   · by_cases h : a ∈ l
@@ -114,16 +114,16 @@ theorem dedup_eq_nil (l : List α) : l.dedup = [] ↔ l = [] := by
     · simp only [List.dedup_cons_of_not_mem h, List.cons_ne_nil]
 #align list.dedup_eq_nil List.dedup_eq_nil
 
-protected theorem Nodup.dedup {l : List α} (h : l.Nodup) : l.dedup = l :=
+protected lemma Nodup.dedup {l : List α} (h : l.Nodup) : l.dedup = l :=
   List.dedup_eq_self.2 h
 #align list.nodup.dedup List.Nodup.dedup
 
 @[simp]
-theorem dedup_idem {l : List α} : dedup (dedup l) = dedup l :=
+lemma dedup_idem {l : List α} : dedup (dedup l) = dedup l :=
   pwFilter_idem
 #align list.dedup_idempotent List.dedup_idem
 
-theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
+lemma dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
   induction' l₁ with a l₁ IH; · rfl
   simp only [cons_union] at *
   rw [← IH, cons_append]
@@ -132,7 +132,7 @@ theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ ded
   · rw [dedup_cons_of_not_mem' h, insert_of_not_mem h]
 #align list.dedup_append List.dedup_append
 
-theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = [x]
+lemma replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = [x]
   | 0, h => (h rfl).elim
   | 1, _ => rfl
   | n + 2, _ => by
@@ -140,7 +140,7 @@ theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = 
       replicate_dedup n.succ_ne_zero]
 #align list.replicate_dedup List.replicate_dedup
 
-theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
+lemma count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
   simp_rw [count_eq_of_nodup <| nodup_dedup l, mem_dedup]
 #align list.count_dedup List.count_dedup
 

@@ -120,54 +120,54 @@ instance (priority := 70) : Div R :=
 instance (priority := 70) : Mod R :=
   ⟨EuclideanDomain.remainder⟩
 
-theorem div_add_mod (a b : R) : b * (a / b) + a % b = a :=
+lemma div_add_mod (a b : R) : b * (a / b) + a % b = a :=
   EuclideanDomain.quotient_mul_add_remainder_eq _ _
 #align euclidean_domain.div_add_mod EuclideanDomain.div_add_mod
 
-theorem mod_add_div (a b : R) : a % b + b * (a / b) = a :=
+lemma mod_add_div (a b : R) : a % b + b * (a / b) = a :=
   (add_comm _ _).trans (div_add_mod _ _)
 #align euclidean_domain.mod_add_div EuclideanDomain.mod_add_div
 
-theorem mod_add_div' (m k : R) : m % k + m / k * k = m := by
+lemma mod_add_div' (m k : R) : m % k + m / k * k = m := by
   rw [mul_comm]
   exact mod_add_div _ _
 #align euclidean_domain.mod_add_div' EuclideanDomain.mod_add_div'
 
-theorem div_add_mod' (m k : R) : m / k * k + m % k = m := by
+lemma div_add_mod' (m k : R) : m / k * k + m % k = m := by
   rw [mul_comm]
   exact div_add_mod _ _
 #align euclidean_domain.div_add_mod' EuclideanDomain.div_add_mod'
 
-theorem mod_eq_sub_mul_div {R : Type*} [EuclideanDomain R] (a b : R) : a % b = a - b * (a / b) :=
+lemma mod_eq_sub_mul_div {R : Type*} [EuclideanDomain R] (a b : R) : a % b = a - b * (a / b) :=
   calc
     a % b = b * (a / b) + a % b - b * (a / b) := (add_sub_cancel_left _ _).symm
     _ = a - b * (a / b) := by rw [div_add_mod]
 #align euclidean_domain.mod_eq_sub_mul_div EuclideanDomain.mod_eq_sub_mul_div
 
-theorem mod_lt : ∀ (a) {b : R}, b ≠ 0 → a % b ≺ b :=
+lemma mod_lt : ∀ (a) {b : R}, b ≠ 0 → a % b ≺ b :=
   EuclideanDomain.remainder_lt
 #align euclidean_domain.mod_lt EuclideanDomain.mod_lt
 
-theorem mul_right_not_lt {a : R} (b) (h : a ≠ 0) : ¬a * b ≺ b := by
+lemma mul_right_not_lt {a : R} (b) (h : a ≠ 0) : ¬a * b ≺ b := by
   rw [mul_comm]
   exact mul_left_not_lt b h
 #align euclidean_domain.mul_right_not_lt EuclideanDomain.mul_right_not_lt
 
 @[simp]
-theorem mod_zero (a : R) : a % 0 = a := by simpa only [zero_mul, zero_add] using div_add_mod a 0
+lemma mod_zero (a : R) : a % 0 = a := by simpa only [zero_mul, zero_add] using div_add_mod a 0
 #align euclidean_domain.mod_zero EuclideanDomain.mod_zero
 
-theorem lt_one (a : R) : a ≺ (1 : R) → a = 0 :=
+lemma lt_one (a : R) : a ≺ (1 : R) → a = 0 :=
   haveI := Classical.dec
   not_imp_not.1 fun h => by simpa only [one_mul] using mul_left_not_lt 1 h
 #align euclidean_domain.lt_one EuclideanDomain.lt_one
 
-theorem val_dvd_le : ∀ a b : R, b ∣ a → a ≠ 0 → ¬a ≺ b
+lemma val_dvd_le : ∀ a b : R, b ∣ a → a ≠ 0 → ¬a ≺ b
   | _, b, ⟨d, rfl⟩, ha => mul_left_not_lt b (mt (by rintro rfl; exact mul_zero _) ha)
 #align euclidean_domain.val_dvd_le EuclideanDomain.val_dvd_le
 
 @[simp]
-theorem div_zero (a : R) : a / 0 = 0 :=
+lemma div_zero (a : R) : a / 0 = 0 :=
   EuclideanDomain.quotient_zero a
 #align euclidean_domain.div_zero EuclideanDomain.div_zero
 
@@ -176,7 +176,7 @@ section
 open scoped Classical
 
 @[elab_as_elim]
-theorem GCD.induction {P : R → R → Prop} (a b : R) (H0 : ∀ x, P 0 x)
+lemma GCD.induction {P : R → R → Prop} (a b : R) (H0 : ∀ x, P 0 x)
     (H1 : ∀ a b, a ≠ 0 → P (b % a) a → P a b) : P a b :=
   if a0 : a = 0 then by
     -- Porting note: required for hygiene, the equation compiler introduces a dummy variable `x`
@@ -206,7 +206,7 @@ termination_by a
 #align euclidean_domain.gcd EuclideanDomain.gcd
 
 @[simp]
-theorem gcd_zero_left (a : R) : gcd 0 a = a := by
+lemma gcd_zero_left (a : R) : gcd 0 a = a := by
   rw [gcd]
   exact if_pos rfl
 #align euclidean_domain.gcd_zero_left EuclideanDomain.gcd_zero_left
@@ -230,12 +230,12 @@ termination_by r
 #align euclidean_domain.xgcd_aux EuclideanDomain.xgcdAux
 
 @[simp]
-theorem xgcd_zero_left {s t r' s' t' : R} : xgcdAux 0 s t r' s' t' = (r', s', t') := by
+lemma xgcd_zero_left {s t r' s' t' : R} : xgcdAux 0 s t r' s' t' = (r', s', t') := by
   unfold xgcdAux
   exact if_pos rfl
 #align euclidean_domain.xgcd_zero_left EuclideanDomain.xgcd_zero_left
 
-theorem xgcdAux_rec {r s t r' s' t' : R} (h : r ≠ 0) :
+lemma xgcdAux_rec {r s t r' s' t' : R} (h : r ≠ 0) :
     xgcdAux r s t r' s' t' = xgcdAux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
   conv =>
     lhs
@@ -260,18 +260,18 @@ def gcdB (x y : R) : R :=
 #align euclidean_domain.gcd_b EuclideanDomain.gcdB
 
 @[simp]
-theorem gcdA_zero_left {s : R} : gcdA 0 s = 0 := by
+lemma gcdA_zero_left {s : R} : gcdA 0 s = 0 := by
   unfold gcdA
   rw [xgcd, xgcd_zero_left]
 #align euclidean_domain.gcd_a_zero_left EuclideanDomain.gcdA_zero_left
 
 @[simp]
-theorem gcdB_zero_left {s : R} : gcdB 0 s = 1 := by
+lemma gcdB_zero_left {s : R} : gcdB 0 s = 1 := by
   unfold gcdB
   rw [xgcd, xgcd_zero_left]
 #align euclidean_domain.gcd_b_zero_left EuclideanDomain.gcdB_zero_left
 
-theorem xgcd_val (x y : R) : xgcd x y = (gcdA x y, gcdB x y) :=
+lemma xgcd_val (x y : R) : xgcd x y = (gcdA x y, gcdB x y) :=
   rfl
 #align euclidean_domain.xgcd_val EuclideanDomain.xgcd_val
 

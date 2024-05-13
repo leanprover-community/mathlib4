@@ -54,11 +54,11 @@ theorem Quotient.eq_rel {r : Setoid α} {x y} :
 namespace Setoid
 
 @[ext]
-theorem ext' {r s : Setoid α} (H : ∀ a b, r.Rel a b ↔ s.Rel a b) : r = s :=
+lemma ext' {r s : Setoid α} (H : ∀ a b, r.Rel a b ↔ s.Rel a b) : r = s :=
   ext H
 #align setoid.ext' Setoid.ext'
 
-theorem ext_iff {r s : Setoid α} : r = s ↔ ∀ a b, r.Rel a b ↔ s.Rel a b :=
+lemma ext_iff {r s : Setoid α} : r = s ↔ ∀ a b, r.Rel a b ↔ s.Rel a b :=
   ⟨fun h _ _ => h ▸ Iff.rfl, ext'⟩
 #align setoid.ext_iff Setoid.ext_iff
 
@@ -71,23 +71,23 @@ theorem eq_iff_rel_eq {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ r₁.Rel = r₂.
 instance : LE (Setoid α) :=
   ⟨fun r s => ∀ ⦃x y⦄, r.Rel x y → s.Rel x y⟩
 
-theorem le_def {r s : Setoid α} : r ≤ s ↔ ∀ {x y}, r.Rel x y → s.Rel x y :=
+lemma le_def {r s : Setoid α} : r ≤ s ↔ ∀ {x y}, r.Rel x y → s.Rel x y :=
   Iff.rfl
 #align setoid.le_def Setoid.le_def
 
 @[refl]
-theorem refl' (r : Setoid α) (x) : r.Rel x x := r.iseqv.refl x
+lemma refl' (r : Setoid α) (x) : r.Rel x x := r.iseqv.refl x
 #align setoid.refl' Setoid.refl'
 
 @[symm]
-theorem symm' (r : Setoid α) : ∀ {x y}, r.Rel x y → r.Rel y x := r.iseqv.symm
+lemma symm' (r : Setoid α) : ∀ {x y}, r.Rel x y → r.Rel y x := r.iseqv.symm
 #align setoid.symm' Setoid.symm'
 
 @[trans]
-theorem trans' (r : Setoid α) : ∀ {x y z}, r.Rel x y → r.Rel y z → r.Rel x z := r.iseqv.trans
+lemma trans' (r : Setoid α) : ∀ {x y z}, r.Rel x y → r.Rel y z → r.Rel x z := r.iseqv.trans
 #align setoid.trans' Setoid.trans'
 
-theorem comm' (s : Setoid α) {x y} : s.Rel x y ↔ s.Rel y x :=
+lemma comm' (s : Setoid α) {x y} : s.Rel x y ↔ s.Rel y x :=
   ⟨s.symm', s.symm'⟩
 #align setoid.comm' Setoid.comm'
 
@@ -102,16 +102,16 @@ theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
   ext' fun _ _ => Quotient.eq
 #align setoid.ker_mk_eq Setoid.ker_mk_eq
 
-theorem ker_apply_mk_out {f : α → β} (a : α) : f (haveI := Setoid.ker f; ⟦a⟧.out) = f a :=
+lemma ker_apply_mk_out {f : α → β} (a : α) : f (haveI := Setoid.ker f; ⟦a⟧.out) = f a :=
   @Quotient.mk_out _ (Setoid.ker f) a
 #align setoid.ker_apply_mk_out Setoid.ker_apply_mk_out
 
-theorem ker_apply_mk_out' {f : α → β} (a : α) :
+lemma ker_apply_mk_out' {f : α → β} (a : α) :
     f (Quotient.mk _ a : Quotient <| Setoid.ker f).out' = f a :=
   @Quotient.mk_out' _ (Setoid.ker f) a
 #align setoid.ker_apply_mk_out' Setoid.ker_apply_mk_out'
 
-theorem ker_def {f : α → β} {x y : α} : (ker f).Rel x y ↔ f x = f y :=
+lemma ker_def {f : α → β} {x y : α} : (ker f).Rel x y ↔ f x = f y :=
   Iff.rfl
 #align setoid.ker_def Setoid.ker_def
 
@@ -139,7 +139,7 @@ theorem inf_def {r s : Setoid α} : (r ⊓ s).Rel = r.Rel ⊓ s.Rel :=
   rfl
 #align setoid.inf_def Setoid.inf_def
 
-theorem inf_iff_and {r s : Setoid α} {x y} : (r ⊓ s).Rel x y ↔ r.Rel x y ∧ s.Rel x y :=
+lemma inf_iff_and {r s : Setoid α} {x y} : (r ⊓ s).Rel x y ↔ r.Rel x y ∧ s.Rel x y :=
   Iff.rfl
 #align setoid.inf_iff_and Setoid.inf_iff_and
 
@@ -182,16 +182,16 @@ instance completeLattice : CompleteLattice (Setoid α) :=
 #align setoid.complete_lattice Setoid.completeLattice
 
 @[simp]
-theorem top_def : (⊤ : Setoid α).Rel = ⊤ :=
+lemma top_def : (⊤ : Setoid α).Rel = ⊤ :=
   rfl
 #align setoid.top_def Setoid.top_def
 
 @[simp]
-theorem bot_def : (⊥ : Setoid α).Rel = (· = ·) :=
+lemma bot_def : (⊥ : Setoid α).Rel = (· = ·) :=
   rfl
 #align setoid.bot_def Setoid.bot_def
 
-theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s.Rel x y := by
+lemma eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s.Rel x y := by
   rw [_root_.eq_top_iff, Setoid.le_def, Setoid.top_def]
   simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
 #align setoid.eq_top_iff Setoid.eq_top_iff
@@ -390,7 +390,7 @@ abbrev comap (f : α → β) (r : Setoid β) : Setoid α :=
   ⟨r.Rel on f, r.iseqv.comap _⟩
 #align setoid.comap Setoid.comap
 
-theorem comap_rel (f : α → β) (r : Setoid β) (x y : α) : (comap f r).Rel x y ↔ r.Rel (f x) (f y) :=
+lemma comap_rel (f : α → β) (r : Setoid β) (x y : α) : (comap f r).Rel x y ↔ r.Rel (f x) (f y) :=
   Iff.rfl
 #align setoid.comap_rel Setoid.comap_rel
 
@@ -454,7 +454,7 @@ def sigmaQuotientEquivOfLe {r s : Setoid α} (hle : r ≤ s) :
 end Setoid
 
 @[simp]
-theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
+lemma Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
   simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply,
     forall_const]
   refine' (surjective_quotient_mk' _).forall.trans (forall_congr' fun a => _)
@@ -463,7 +463,7 @@ theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) �
   rfl
 #align quotient.subsingleton_iff Quotient.subsingleton_iff
 
-theorem Quot.subsingleton_iff (r : α → α → Prop) : Subsingleton (Quot r) ↔ EqvGen r = ⊤ := by
+lemma Quot.subsingleton_iff (r : α → α → Prop) : Subsingleton (Quot r) ↔ EqvGen r = ⊤ := by
   simp only [_root_.subsingleton_iff, _root_.eq_top_iff, Pi.le_def, Pi.top_apply, forall_const]
   refine' (surjective_quot_mk _).forall.trans (forall_congr' fun a => _)
   refine' (surjective_quot_mk _).forall.trans (forall_congr' fun b => _)

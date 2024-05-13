@@ -107,7 +107,7 @@ instance : Group M.Group := QuotientGroup.Quotient.group _
 /-- The simple reflection of the Coxeter group `M.group` at the index `i`. -/
 def simple (i : B) : M.Group := PresentedGroup.of i
 
-theorem reindex_relationsSet :
+lemma reindex_relationsSet :
     (M.reindex e).relationsSet =
     FreeGroup.freeGroupCongr e '' M.relationsSet := let M' := M.reindex e; calc
   Set.range (uncurry M'.relation)
@@ -128,10 +128,10 @@ def reindexGroupEquiv : (M.reindex e).Group ≃* M.Group :=
         Subgroup.map_normalClosure _ _ (by simpa using (FreeGroup.freeGroupCongr e).surjective),
         MonoidHom.coe_coe])).symm
 
-theorem reindexGroupEquiv_apply_simple (i : B') :
+lemma reindexGroupEquiv_apply_simple (i : B') :
     (M.reindexGroupEquiv e) ((M.reindex e).simple i) = M.simple (e.symm i) := rfl
 
-theorem reindexGroupEquiv_symm_apply_simple (i : B) :
+lemma reindexGroupEquiv_symm_apply_simple (i : B) :
     (M.reindexGroupEquiv e).symm (M.simple i) = (M.reindex e).simple (e i) := rfl
 
 end CoxeterMatrix
@@ -181,17 +181,17 @@ protected def map (e : W ≃* H) : CoxeterSystem M H := ⟨e.symm.trans cs.mulEq
 def simple (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
 
 @[simp]
-theorem _root_.CoxeterMatrix.toCoxeterSystem_simple (M : CoxeterMatrix B) :
+lemma _root_.CoxeterMatrix.toCoxeterSystem_simple (M : CoxeterMatrix B) :
     M.toCoxeterSystem.simple = M.simple := rfl
 
-@[simp] theorem reindex_simple (i' : B') : (cs.reindex e).simple i' = cs.simple (e.symm i') := rfl
+@[simp] lemma reindex_simple (i' : B') : (cs.reindex e).simple i' = cs.simple (e.symm i') := rfl
 
-@[simp] theorem map_simple (e : W ≃* H) (i : B) : (cs.map e).simple i = e (cs.simple i) := rfl
+@[simp] lemma map_simple (e : W ≃* H) (i : B) : (cs.map e).simple i = e (cs.simple i) := rfl
 
 local prefix:100 "s" => cs.simple
 
 @[simp]
-theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
+lemma simple_mul_simple_self (i : B) : s i * s i = 1 := by
   have : (FreeGroup.of i) * (FreeGroup.of i) ∈ M.relationsSet := ⟨(i, i), by simp [relation]⟩
   have : (QuotientGroup.mk (FreeGroup.of i * FreeGroup.of i) : M.Group) = 1 :=
     (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
@@ -199,21 +199,21 @@ theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
   rw [← map_mul, PresentedGroup.of, ← QuotientGroup.mk_mul, this, map_one]
 
 @[simp]
-theorem simple_mul_simple_cancel_right {w : W} (i : B) : w * s i * s i = w := by
+lemma simple_mul_simple_cancel_right {w : W} (i : B) : w * s i * s i = w := by
   simp [mul_assoc]
 
 @[simp]
-theorem simple_mul_simple_cancel_left {w : W} (i : B) : s i * (s i * w) = w := by
+lemma simple_mul_simple_cancel_left {w : W} (i : B) : s i * (s i * w) = w := by
   simp [← mul_assoc]
 
-@[simp] theorem simple_sq (i : B) : s i ^ 2 = 1 := pow_two (s i) ▸ cs.simple_mul_simple_self i
+@[simp] lemma simple_sq (i : B) : s i ^ 2 = 1 := pow_two (s i) ▸ cs.simple_mul_simple_self i
 
 @[simp]
-theorem inv_simple (i : B) : (s i)⁻¹ = s i :=
+lemma inv_simple (i : B) : (s i)⁻¹ = s i :=
   (eq_inv_of_mul_eq_one_right (cs.simple_mul_simple_self i)).symm
 
 @[simp]
-theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
+lemma simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
   have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ M.relationsSet := ⟨(i, i'), rfl⟩
   have : (QuotientGroup.mk ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : M.Group) = 1 :=
     (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
@@ -221,7 +221,7 @@ theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
   rw [← map_mul, ← map_pow, PresentedGroup.of, PresentedGroup.of,
       ← QuotientGroup.mk_mul, ← QuotientGroup.mk_pow, this, map_one]
 
-@[simp] theorem simple_mul_simple_pow' (i i' : B) : (s i' * s i) ^ M i i' = 1 :=
+@[simp] lemma simple_mul_simple_pow' (i i' : B) : (s i' * s i) ^ M i i' = 1 :=
   M.symmetric i' i ▸ cs.simple_mul_simple_pow i' i
 
 /-- The simple reflections of `W` generate `W` as a group. -/
@@ -284,7 +284,7 @@ corresponding to the matrix `M`. -/
 def _root_.CoxeterMatrix.IsLiftable {G : Type*} [Monoid G] (M : CoxeterMatrix B) (f : B → G) :
     Prop := ∀ i i', (f i * f i') ^ M i i' = 1
 
-private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f)
+private lemma relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f)
     (r : FreeGroup B) (hr : r ∈ M.relationsSet) : (FreeGroup.lift f) r = 1 := by
   rcases hr with ⟨⟨i, i'⟩, rfl⟩
   rw [uncurry, relation, map_pow, _root_.map_mul, FreeGroup.lift.of, FreeGroup.lift.of]
@@ -300,7 +300,7 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
   val_inv := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
   inv_val := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
 
-private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet)):
+private lemma toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet)):
     (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (M.relationsSet))
     ((MulEquiv.symm cs.mulEquiv) a) = a := calc
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
@@ -330,7 +330,7 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
     rfl
 
 @[simp]
-theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
+lemma lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
     cs.lift ⟨f, hf⟩ (s i) = f i := congrFun (congrArg Subtype.val (cs.lift.left_inv ⟨f, hf⟩)) i
 
 /-- If two Coxeter systems on the same group `W` have the same Coxeter matrix `M : Matrix B B ℕ`
@@ -352,22 +352,22 @@ def wordProd (ω : List B) : W := prod (map cs.simple ω)
 
 local prefix:100 "π" => cs.wordProd
 
-@[simp] theorem wordProd_nil : π [] = 1 := by simp [wordProd]
+@[simp] lemma wordProd_nil : π [] = 1 := by simp [wordProd]
 
-theorem wordProd_cons (i : B) (ω : List B) : π (i :: ω) = s i * π ω := by simp [wordProd]
+lemma wordProd_cons (i : B) (ω : List B) : π (i :: ω) = s i * π ω := by simp [wordProd]
 
-@[simp] theorem wordProd_singleton (i : B) : π ([i]) = s i := by simp [wordProd]
+@[simp] lemma wordProd_singleton (i : B) : π ([i]) = s i := by simp [wordProd]
 
-theorem wordProd_concat (i : B) (ω : List B) : π (ω.concat i) = π ω * s i := by simp [wordProd]
+lemma wordProd_concat (i : B) (ω : List B) : π (ω.concat i) = π ω * s i := by simp [wordProd]
 
-theorem wordProd_append (ω ω' : List B) : π (ω ++ ω') = π ω * π ω' := by simp [wordProd]
+lemma wordProd_append (ω ω' : List B) : π (ω ++ ω') = π ω * π ω' := by simp [wordProd]
 
-@[simp] theorem wordProd_reverse (ω : List B) : π (reverse ω) = (π ω)⁻¹ := by
+@[simp] lemma wordProd_reverse (ω : List B) : π (reverse ω) = (π ω)⁻¹ := by
   induction' ω with x ω' ih
   · simp
   · simpa [wordProd_cons, wordProd_append] using ih
 
-theorem wordProd_surjective : Surjective cs.wordProd := by
+lemma wordProd_surjective : Surjective cs.wordProd := by
   intro w
   apply cs.simple_induction_left w
   · use []
@@ -385,10 +385,10 @@ def alternatingWord (i i' : B) (m : ℕ) : List B :=
 /-- The word of length `M i i'` that alternates between `i` and `i'`, ending with `i'`. -/
 abbrev braidWord (M : CoxeterMatrix B) (i i' : B) : List B := alternatingWord i i' (M i i')
 
-theorem alternatingWord_succ (i i' : B) (m : ℕ) :
+lemma alternatingWord_succ (i i' : B) (m : ℕ) :
     alternatingWord i i' (m + 1) = (alternatingWord i' i m).concat i' := rfl
 
-theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
+lemma alternatingWord_succ' (i i' : B) (m : ℕ) :
     alternatingWord i i' (m + 1) = (if Even m then i' else i) :: alternatingWord i i' m := by
   induction' m with m ih generalizing i i'
   · simp [alternatingWord]
@@ -398,13 +398,13 @@ theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
     simp [Nat.even_add_one]
 
 @[simp]
-theorem length_alternatingWord (i i' : B) (m : ℕ) :
+lemma length_alternatingWord (i i' : B) (m : ℕ) :
     List.length (alternatingWord i i' m) = m := by
   induction' m with m ih generalizing i i'
   · dsimp [alternatingWord]
   · simpa [alternatingWord] using ih i' i
 
-theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
+lemma prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
     π (alternatingWord i i' m) = (if Even m then 1 else s i') * (s i * s i') ^ (m / 2) := by
   induction' m with m ih
   · simp [alternatingWord]
@@ -425,7 +425,7 @@ theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
       norm_num
       rw [pow_succ', mul_assoc]
 
-theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (hm : m ≤ M i i' * 2) :
+lemma prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (hm : m ≤ M i i' * 2) :
     π (alternatingWord i i' m) = π (alternatingWord i' i (M i i' * 2 - m)) := by
   simp_rw [prod_alternatingWord_eq_mul_pow, ← Int.even_coe_nat]
 

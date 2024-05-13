@@ -122,7 +122,7 @@ add_decl_doc AddMonCat.of
 -- bundled or unbundled lemmas.
 -- (This change seems dangerous!)
 @[to_additive]
-theorem coe_of (R : Type u) [Monoid R] : (MonCat.of R : Type u) = R := rfl
+lemma coe_of (R : Type u) [Monoid R] : (MonCat.of R : Type u) = R := rfl
 set_option linter.uppercaseLean3 false in
 #align Mon.coe_of MonCat.coe_of
 set_option linter.uppercaseLean3 false in
@@ -252,7 +252,7 @@ instance : Inhabited CommMonCat :=
 -- bundled or unbundled lemmas.
 -- (This change seems dangerous!)
 @[to_additive]
-theorem coe_of (R : Type u) [CommMonoid R] : (CommMonCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [CommMonoid R] : (CommMonCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommMon.coe_of CommMonCat.coe_of

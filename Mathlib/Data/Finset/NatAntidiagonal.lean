@@ -64,7 +64,7 @@ theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [
 theorem antidiagonal_zero : antidiagonal 0 = {(0, 0)} := rfl
 #align finset.nat.antidiagonal_zero Finset.Nat.antidiagonal_zero
 
-theorem antidiagonal_succ (n : ℕ) :
+lemma antidiagonal_succ (n : ℕ) :
     antidiagonal (n + 1) =
       cons (0, n + 1)
         ((antidiagonal n).map
@@ -75,7 +75,7 @@ theorem antidiagonal_succ (n : ℕ) :
   apply Multiset.Nat.antidiagonal_succ
 #align finset.nat.antidiagonal_succ Finset.Nat.antidiagonal_succ
 
-theorem antidiagonal_succ' (n : ℕ) :
+lemma antidiagonal_succ' (n : ℕ) :
     antidiagonal (n + 1) =
       cons (n + 1, 0)
         ((antidiagonal n).map
@@ -86,7 +86,7 @@ theorem antidiagonal_succ' (n : ℕ) :
   exact Multiset.Nat.antidiagonal_succ'
 #align finset.nat.antidiagonal_succ' Finset.Nat.antidiagonal_succ'
 
-theorem antidiagonal_succ_succ' {n : ℕ} :
+lemma antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
       cons (0, n + 2)
         (cons (n + 2, 0)
@@ -99,10 +99,10 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
   rfl
 #align finset.nat.antidiagonal_succ_succ' Finset.Nat.antidiagonal_succ_succ'
 
-theorem antidiagonal.fst_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.1 < n + 1 :=
+lemma antidiagonal.fst_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.1 < n + 1 :=
   Nat.lt_succ_of_le <| antidiagonal.fst_le hlk
 
-theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.2 < n + 1 :=
+lemma antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.2 < n + 1 :=
   Nat.lt_succ_of_le <| antidiagonal.snd_le hlk
 
 @[simp] lemma antidiagonal_filter_snd_le_of_le {n k : ℕ} (h : k ≤ n) :

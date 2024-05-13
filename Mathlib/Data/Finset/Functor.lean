@@ -44,7 +44,7 @@ instance lawfulFunctor : LawfulFunctor Finset where
   map_const {α} {β} := by simp only [Functor.mapConst, Functor.map]
 
 @[simp]
-theorem fmap_def {s : Finset α} (f : α → β) : f <$> s = s.image f := rfl
+lemma fmap_def {s : Finset α} (f : α → β) : f <$> s = s.image f := rfl
 #align finset.fmap_def Finset.fmap_def
 
 end Functor
@@ -56,7 +56,7 @@ protected instance pure : Pure Finset :=
   ⟨fun x => {x}⟩
 
 @[simp]
-theorem pure_def {α} : (pure : α → Finset α) = singleton := rfl
+lemma pure_def {α} : (pure : α → Finset α) = singleton := rfl
 #align finset.pure_def Finset.pure_def
 
 /-! ### Applicative functor -/
@@ -73,17 +73,17 @@ protected instance applicative : Applicative Finset :=
     seqRight := fun s t => if s = ∅ then ∅ else t () }
 
 @[simp]
-theorem seq_def (s : Finset α) (t : Finset (α → β)) : t <*> s = t.sup fun f => s.image f :=
+lemma seq_def (s : Finset α) (t : Finset (α → β)) : t <*> s = t.sup fun f => s.image f :=
   rfl
 #align finset.seq_def Finset.seq_def
 
 @[simp]
-theorem seqLeft_def (s : Finset α) (t : Finset β) : s <* t = if t = ∅ then ∅ else s :=
+lemma seqLeft_def (s : Finset α) (t : Finset β) : s <* t = if t = ∅ then ∅ else s :=
   rfl
 #align finset.seq_left_def Finset.seqLeft_def
 
 @[simp]
-theorem seqRight_def (s : Finset α) (t : Finset β) : s *> t = if s = ∅ then ∅ else t :=
+lemma seqRight_def (s : Finset α) (t : Finset β) : s *> t = if s = ∅ then ∅ else t :=
   rfl
 #align finset.seq_right_def Finset.seqRight_def
 
@@ -156,7 +156,7 @@ instance : Monad Finset :=
   { Finset.applicative with bind := sup }
 
 @[simp]
-theorem bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
+lemma bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
   rfl
 #align finset.bind_def Finset.bind_def
 
@@ -197,7 +197,7 @@ def traverse [DecidableEq β] (f : α → F β) (s : Finset α) : F (Finset β) 
 #align finset.traverse Finset.traverse
 
 @[simp]
-theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = s := by
+lemma id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = s := by
   rw [traverse, Multiset.id_traverse]
   exact s.val_toFinset
 #align finset.id_traverse Finset.id_traverse
@@ -205,12 +205,12 @@ theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → I
 open scoped Classical
 
 @[simp]
-theorem map_comp_coe (h : α → β) :
+lemma map_comp_coe (h : α → β) :
     Functor.map h ∘ Multiset.toFinset = Multiset.toFinset ∘ Functor.map h :=
   funext fun _ => image_toFinset
 #align finset.map_comp_coe Finset.map_comp_coe
 
-theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
+lemma map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
     Functor.map h <$> traverse g s = traverse (Functor.map h ∘ g) s := by
   unfold traverse
   simp only [map_comp_coe, functor_norm]

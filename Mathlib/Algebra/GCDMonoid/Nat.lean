@@ -22,11 +22,11 @@ instance : GCDMonoid ℕ where
   lcm_zero_left := Nat.lcm_zero_left
   lcm_zero_right := Nat.lcm_zero_right
 
-theorem gcd_eq_nat_gcd (m n : ℕ) : gcd m n = Nat.gcd m n :=
+lemma gcd_eq_nat_gcd (m n : ℕ) : gcd m n = Nat.gcd m n :=
   rfl
 #align gcd_eq_nat_gcd gcd_eq_nat_gcd
 
-theorem lcm_eq_nat_lcm (m n : ℕ) : lcm m n = Nat.lcm m n :=
+lemma lcm_eq_nat_lcm (m n : ℕ) : lcm m n = Nat.lcm m n :=
   rfl
 #align lcm_eq_nat_lcm lcm_eq_nat_lcm
 

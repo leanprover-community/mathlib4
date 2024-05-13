@@ -145,7 +145,7 @@ section NonarchAddGroupSeminormClass
 
 variable [AddGroup E] [FunLike F E ℝ] [NonarchAddGroupSeminormClass F E] (f : F) (x y : E)
 
-theorem map_sub_le_max : f (x - y) ≤ max (f x) (f y) := by
+lemma map_sub_le_max : f (x - y) ≤ max (f x) (f y) := by
   rw [sub_eq_add_neg, ← NonarchAddGroupSeminormClass.map_neg_eq_map' f y]
   exact map_add_le_max _ _ _
 #align map_sub_le_max map_sub_le_max
@@ -207,13 +207,13 @@ instance : CoeFun (GroupSeminorm E) fun _ => E → ℝ :=
   ⟨DFunLike.coe⟩
 
 @[to_additive (attr := simp)]
-theorem toFun_eq_coe : p.toFun = p :=
+lemma toFun_eq_coe : p.toFun = p :=
   rfl
 #align group_seminorm.to_fun_eq_coe GroupSeminorm.toFun_eq_coe
 #align add_group_seminorm.to_fun_eq_coe AddGroupSeminorm.toFun_eq_coe
 
 @[to_additive (attr := ext)]
-theorem ext : (∀ x, p x = q x) → p = q :=
+lemma ext : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
 #align group_seminorm.ext GroupSeminorm.ext
 #align add_group_seminorm.ext AddGroupSeminorm.ext
@@ -223,25 +223,25 @@ instance : PartialOrder (GroupSeminorm E) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 @[to_additive]
-theorem le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
+lemma le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
   Iff.rfl
 #align group_seminorm.le_def GroupSeminorm.le_def
 #align add_group_seminorm.le_def AddGroupSeminorm.le_def
 
 @[to_additive]
-theorem lt_def : p < q ↔ (p : E → ℝ) < q :=
+lemma lt_def : p < q ↔ (p : E → ℝ) < q :=
   Iff.rfl
 #align group_seminorm.lt_def GroupSeminorm.lt_def
 #align add_group_seminorm.lt_def AddGroupSeminorm.lt_def
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
+lemma coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
   Iff.rfl
 #align group_seminorm.coe_le_coe GroupSeminorm.coe_le_coe
 #align add_group_seminorm.coe_le_coe AddGroupSeminorm.coe_le_coe
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
+lemma coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
   Iff.rfl
 #align group_seminorm.coe_lt_coe GroupSeminorm.coe_lt_coe
 #align add_group_seminorm.coe_lt_coe AddGroupSeminorm.coe_lt_coe
@@ -256,13 +256,13 @@ instance instZeroGroupSeminorm : Zero (GroupSeminorm E) :=
       inv' := fun _ => rfl }⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_zero : ⇑(0 : GroupSeminorm E) = 0 :=
+lemma coe_zero : ⇑(0 : GroupSeminorm E) = 0 :=
   rfl
 #align group_seminorm.coe_zero GroupSeminorm.coe_zero
 #align add_group_seminorm.coe_zero AddGroupSeminorm.coe_zero
 
 @[to_additive (attr := simp)]
-theorem zero_apply (x : E) : (0 : GroupSeminorm E) x = 0 :=
+lemma zero_apply (x : E) : (0 : GroupSeminorm E) x = 0 :=
   rfl
 #align group_seminorm.zero_apply GroupSeminorm.zero_apply
 #align add_group_seminorm.zero_apply AddGroupSeminorm.zero_apply
@@ -282,13 +282,13 @@ instance : Add (GroupSeminorm E) :=
       inv' := fun x => by simp_rw [map_inv_eq_map p, map_inv_eq_map q] }⟩
 
 @[to_additive (attr := simp)]
-theorem coe_add : ⇑(p + q) = p + q :=
+lemma coe_add : ⇑(p + q) = p + q :=
   rfl
 #align group_seminorm.coe_add GroupSeminorm.coe_add
 #align add_group_seminorm.coe_add AddGroupSeminorm.coe_add
 
 @[to_additive (attr := simp)]
-theorem add_apply (x : E) : (p + q) x = p x + q x :=
+lemma add_apply (x : E) : (p + q) x = p x + q x :=
   rfl
 #align group_seminorm.add_apply GroupSeminorm.add_apply
 #align add_group_seminorm.add_apply AddGroupSeminorm.add_apply
@@ -307,13 +307,13 @@ instance : Sup (GroupSeminorm E) :=
       inv' := fun x => by rw [Pi.sup_apply, Pi.sup_apply, map_inv_eq_map p, map_inv_eq_map q] }⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
+lemma coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
   rfl
 #align group_seminorm.coe_sup GroupSeminorm.coe_sup
 #align add_group_seminorm.coe_sup AddGroupSeminorm.coe_sup
 
 @[to_additive (attr := simp)]
-theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
+lemma sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 #align group_seminorm.sup_apply GroupSeminorm.sup_apply
 #align add_group_seminorm.sup_apply AddGroupSeminorm.sup_apply
@@ -335,43 +335,43 @@ def comp (p : GroupSeminorm E) (f : F →* E) : GroupSeminorm F
 #align add_group_seminorm.comp AddGroupSeminorm.comp
 
 @[to_additive (attr := simp)]
-theorem coe_comp : ⇑(p.comp f) = p ∘ f :=
+lemma coe_comp : ⇑(p.comp f) = p ∘ f :=
   rfl
 #align group_seminorm.coe_comp GroupSeminorm.coe_comp
 #align add_group_seminorm.coe_comp AddGroupSeminorm.coe_comp
 
 @[to_additive (attr := simp)]
-theorem comp_apply (x : F) : (p.comp f) x = p (f x) :=
+lemma comp_apply (x : F) : (p.comp f) x = p (f x) :=
   rfl
 #align group_seminorm.comp_apply GroupSeminorm.comp_apply
 #align add_group_seminorm.comp_apply AddGroupSeminorm.comp_apply
 
 @[to_additive (attr := simp)]
-theorem comp_id : p.comp (MonoidHom.id _) = p :=
+lemma comp_id : p.comp (MonoidHom.id _) = p :=
   ext fun _ => rfl
 #align group_seminorm.comp_id GroupSeminorm.comp_id
 #align add_group_seminorm.comp_id AddGroupSeminorm.comp_id
 
 @[to_additive (attr := simp)]
-theorem comp_zero : p.comp (1 : F →* E) = 0 :=
+lemma comp_zero : p.comp (1 : F →* E) = 0 :=
   ext fun _ => map_one_eq_zero p
 #align group_seminorm.comp_zero GroupSeminorm.comp_zero
 #align add_group_seminorm.comp_zero AddGroupSeminorm.comp_zero
 
 @[to_additive (attr := simp)]
-theorem zero_comp : (0 : GroupSeminorm E).comp f = 0 :=
+lemma zero_comp : (0 : GroupSeminorm E).comp f = 0 :=
   ext fun _ => rfl
 #align group_seminorm.zero_comp GroupSeminorm.zero_comp
 #align add_group_seminorm.zero_comp AddGroupSeminorm.zero_comp
 
 @[to_additive]
-theorem comp_assoc (g : F →* E) (f : G →* F) : p.comp (g.comp f) = (p.comp g).comp f :=
+lemma comp_assoc (g : F →* E) (f : G →* F) : p.comp (g.comp f) = (p.comp g).comp f :=
   ext fun _ => rfl
 #align group_seminorm.comp_assoc GroupSeminorm.comp_assoc
 #align add_group_seminorm.comp_assoc AddGroupSeminorm.comp_assoc
 
 @[to_additive]
-theorem add_comp (f : F →* E) : (p + q).comp f = p.comp f + q.comp f :=
+lemma add_comp (f : F →* E) : (p + q).comp f = p.comp f + q.comp f :=
   ext fun _ => rfl
 #align group_seminorm.add_comp GroupSeminorm.add_comp
 #align add_group_seminorm.add_comp AddGroupSeminorm.add_comp
@@ -379,7 +379,7 @@ theorem add_comp (f : F →* E) : (p + q).comp f = p.comp f + q.comp f :=
 variable {p q}
 
 @[to_additive]
-theorem comp_mono (hp : p ≤ q) : p.comp f ≤ q.comp f := fun _ => hp _
+lemma comp_mono (hp : p ≤ q) : p.comp f ≤ q.comp f := fun _ => hp _
 #align group_seminorm.comp_mono GroupSeminorm.comp_mono
 #align add_group_seminorm.comp_mono AddGroupSeminorm.comp_mono
 
@@ -390,13 +390,13 @@ section CommGroup
 variable [CommGroup E] [CommGroup F] (p q : GroupSeminorm E) (x y : E)
 
 @[to_additive]
-theorem comp_mul_le (f g : F →* E) : p.comp (f * g) ≤ p.comp f + p.comp g := fun _ =>
+lemma comp_mul_le (f g : F →* E) : p.comp (f * g) ≤ p.comp f + p.comp g := fun _ =>
   map_mul_le_add p _ _
 #align group_seminorm.comp_mul_le GroupSeminorm.comp_mul_le
 #align add_group_seminorm.comp_add_le AddGroupSeminorm.comp_add_le
 
 @[to_additive]
-theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
+lemma mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
     BddBelow (range fun y => p y + q (x / y)) :=
   ⟨0, by
     rintro _ ⟨x, rfl⟩
@@ -424,7 +424,7 @@ noncomputable instance : Inf (GroupSeminorm E) :=
           simp_rw [map_inv_eq_map p, ← inv_div', map_inv_eq_map q] }⟩
 
 @[to_additive (attr := simp)]
-theorem inf_apply : (p ⊓ q) x = ⨅ y, p y + q (x / y) :=
+lemma inf_apply : (p ⊓ q) x = ⨅ y, p y + q (x / y) :=
   rfl
 #align group_seminorm.inf_apply GroupSeminorm.inf_apply
 #align add_group_seminorm.inf_apply AddGroupSeminorm.inf_apply
@@ -464,7 +464,7 @@ instance toOne [DecidableEq E] : One (AddGroupSeminorm E) :=
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
 
 @[simp]
-theorem apply_one [DecidableEq E] (x : E) : (1 : AddGroupSeminorm E) x = if x = 0 then 0 else 1 :=
+lemma apply_one [DecidableEq E] (x : E) : (1 : AddGroupSeminorm E) x = if x = 0 then 0 else 1 :=
   rfl
 #align add_group_seminorm.apply_one AddGroupSeminorm.apply_one
 
@@ -481,12 +481,12 @@ instance toSMul : SMul R (AddGroupSeminorm E) :=
       neg' := fun x => by simp_rw [map_neg_eq_map] }⟩
 
 @[simp, norm_cast]
-theorem coe_smul (r : R) (p : AddGroupSeminorm E) : ⇑(r • p) = r • ⇑p :=
+lemma coe_smul (r : R) (p : AddGroupSeminorm E) : ⇑(r • p) = r • ⇑p :=
   rfl
 #align add_group_seminorm.coe_smul AddGroupSeminorm.coe_smul
 
 @[simp]
-theorem smul_apply (r : R) (p : AddGroupSeminorm E) (x : E) : (r • p) x = r • p x :=
+lemma smul_apply (r : R) (p : AddGroupSeminorm E) (x : E) : (r • p) x = r • p x :=
   rfl
 #align add_group_seminorm.smul_apply AddGroupSeminorm.smul_apply
 
@@ -494,7 +494,7 @@ instance isScalarTower [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0
     [IsScalarTower R R' ℝ] : IsScalarTower R R' (AddGroupSeminorm E) :=
   ⟨fun r a p => ext fun x => smul_assoc r a (p x)⟩
 
-theorem smul_sup (r : R) (p q : AddGroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
+lemma smul_sup (r : R) (p q : AddGroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
       mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
@@ -527,33 +527,33 @@ instance : CoeFun (NonarchAddGroupSeminorm E) fun _ => E → ℝ :=
 
 -- Porting note: `simpNF` said the left hand side simplified to this
 @[simp]
-theorem toZeroHom_eq_coe : ⇑p.toZeroHom = p := by
+lemma toZeroHom_eq_coe : ⇑p.toZeroHom = p := by
   rfl
 #align nonarch_add_group_seminorm.to_fun_eq_coe NonarchAddGroupSeminorm.toZeroHom_eq_coe
 
 @[ext]
-theorem ext : (∀ x, p x = q x) → p = q :=
+lemma ext : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
 #align nonarch_add_group_seminorm.ext NonarchAddGroupSeminorm.ext
 
 noncomputable instance : PartialOrder (NonarchAddGroupSeminorm E) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
-theorem le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
+lemma le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
   Iff.rfl
 #align nonarch_add_group_seminorm.le_def NonarchAddGroupSeminorm.le_def
 
-theorem lt_def : p < q ↔ (p : E → ℝ) < q :=
+lemma lt_def : p < q ↔ (p : E → ℝ) < q :=
   Iff.rfl
 #align nonarch_add_group_seminorm.lt_def NonarchAddGroupSeminorm.lt_def
 
 @[simp, norm_cast]
-theorem coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
+lemma coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
   Iff.rfl
 #align nonarch_add_group_seminorm.coe_le_coe NonarchAddGroupSeminorm.coe_le_coe
 
 @[simp, norm_cast]
-theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
+lemma coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
   Iff.rfl
 #align nonarch_add_group_seminorm.coe_lt_coe NonarchAddGroupSeminorm.coe_lt_coe
 
@@ -566,12 +566,12 @@ instance : Zero (NonarchAddGroupSeminorm E) :=
       neg' := fun x => rfl }⟩
 
 @[simp, norm_cast]
-theorem coe_zero : ⇑(0 : NonarchAddGroupSeminorm E) = 0 :=
+lemma coe_zero : ⇑(0 : NonarchAddGroupSeminorm E) = 0 :=
   rfl
 #align nonarch_add_group_seminorm.coe_zero NonarchAddGroupSeminorm.coe_zero
 
 @[simp]
-theorem zero_apply (x : E) : (0 : NonarchAddGroupSeminorm E) x = 0 :=
+lemma zero_apply (x : E) : (0 : NonarchAddGroupSeminorm E) x = 0 :=
   rfl
 #align nonarch_add_group_seminorm.zero_apply NonarchAddGroupSeminorm.zero_apply
 
@@ -590,12 +590,12 @@ instance : Sup (NonarchAddGroupSeminorm E) :=
       neg' := fun x => by simp_rw [Pi.sup_apply, map_neg_eq_map p, map_neg_eq_map q]}⟩
 
 @[simp, norm_cast]
-theorem coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
+lemma coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
   rfl
 #align nonarch_add_group_seminorm.coe_sup NonarchAddGroupSeminorm.coe_sup
 
 @[simp]
-theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
+lemma sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 #align nonarch_add_group_seminorm.sup_apply NonarchAddGroupSeminorm.sup_apply
 
@@ -608,7 +608,7 @@ section AddCommGroup
 
 variable [AddCommGroup E] [AddCommGroup F] (p q : NonarchAddGroupSeminorm E) (x y : E)
 
-theorem add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
+lemma add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
     BddBelow (range fun y => p y + q (x - y)) :=
   ⟨0, by
     rintro _ ⟨x, rfl⟩
@@ -638,7 +638,7 @@ instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
       inv' := fun x => by simp_rw [inv_eq_one] }⟩
 
 @[to_additive (attr := simp) existing AddGroupSeminorm.apply_one]
-theorem apply_one [DecidableEq E] (x : E) : (1 : GroupSeminorm E) x = if x = 1 then 0 else 1 :=
+lemma apply_one [DecidableEq E] (x : E) : (1 : GroupSeminorm E) x = if x = 1 then 0 else 1 :=
   rfl
 #align group_seminorm.apply_one GroupSeminorm.apply_one
 
@@ -662,17 +662,17 @@ instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R 
   ⟨fun r a p => ext fun x => smul_assoc r a <| p x⟩
 
 @[to_additive (attr := simp, norm_cast) existing AddGroupSeminorm.coe_smul]
-theorem coe_smul (r : R) (p : GroupSeminorm E) : ⇑(r • p) = r • ⇑p :=
+lemma coe_smul (r : R) (p : GroupSeminorm E) : ⇑(r • p) = r • ⇑p :=
   rfl
 #align group_seminorm.coe_smul GroupSeminorm.coe_smul
 
 @[to_additive (attr := simp) existing AddGroupSeminorm.smul_apply]
-theorem smul_apply (r : R) (p : GroupSeminorm E) (x : E) : (r • p) x = r • p x :=
+lemma smul_apply (r : R) (p : GroupSeminorm E) (x : E) : (r • p) x = r • p x :=
   rfl
 #align group_seminorm.smul_apply GroupSeminorm.smul_apply
 
 @[to_additive existing AddGroupSeminorm.smul_sup]
-theorem smul_sup (r : R) (p q : GroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
+lemma smul_sup (r : R) (p q : GroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
       mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
@@ -697,7 +697,7 @@ instance [DecidableEq E] : One (NonarchAddGroupSeminorm E) :=
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
 
 @[simp]
-theorem apply_one [DecidableEq E] (x : E) :
+lemma apply_one [DecidableEq E] (x : E) :
     (1 : NonarchAddGroupSeminorm E) x = if x = 0 then 0 else 1 :=
   rfl
 #align nonarch_add_group_seminorm.apply_one NonarchAddGroupSeminorm.apply_one
@@ -721,16 +721,16 @@ instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R 
   ⟨fun r a p => ext fun x => smul_assoc r a <| p x⟩
 
 @[simp, norm_cast]
-theorem coe_smul (r : R) (p : NonarchAddGroupSeminorm E) : ⇑(r • p) = r • ⇑p :=
+lemma coe_smul (r : R) (p : NonarchAddGroupSeminorm E) : ⇑(r • p) = r • ⇑p :=
   rfl
 #align nonarch_add_group_seminorm.coe_smul NonarchAddGroupSeminorm.coe_smul
 
 @[simp]
-theorem smul_apply (r : R) (p : NonarchAddGroupSeminorm E) (x : E) : (r • p) x = r • p x :=
+lemma smul_apply (r : R) (p : NonarchAddGroupSeminorm E) (x : E) : (r • p) x = r • p x :=
   rfl
 #align nonarch_add_group_seminorm.smul_apply NonarchAddGroupSeminorm.smul_apply
 
-theorem smul_sup (r : R) (p q : NonarchAddGroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
+lemma smul_sup (r : R) (p q : NonarchAddGroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
       mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
@@ -773,13 +773,13 @@ instance : CoeFun (GroupNorm E) fun _ => E → ℝ :=
 
 -- Porting note: `simpNF` told me the left-hand side simplified to this
 @[to_additive (attr := simp)]
-theorem toGroupSeminorm_eq_coe : ⇑p.toGroupSeminorm = p :=
+lemma toGroupSeminorm_eq_coe : ⇑p.toGroupSeminorm = p :=
   rfl
 #align group_norm.to_fun_eq_coe GroupNorm.toGroupSeminorm_eq_coe
 #align add_group_norm.to_fun_eq_coe AddGroupNorm.toAddGroupSeminorm_eq_coe
 
 @[to_additive (attr := ext)]
-theorem ext : (∀ x, p x = q x) → p = q :=
+lemma ext : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
 #align group_norm.ext GroupNorm.ext
 #align add_group_norm.ext AddGroupNorm.ext
@@ -789,25 +789,25 @@ instance : PartialOrder (GroupNorm E) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 @[to_additive]
-theorem le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
+lemma le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
   Iff.rfl
 #align group_norm.le_def GroupNorm.le_def
 #align add_group_norm.le_def AddGroupNorm.le_def
 
 @[to_additive]
-theorem lt_def : p < q ↔ (p : E → ℝ) < q :=
+lemma lt_def : p < q ↔ (p : E → ℝ) < q :=
   Iff.rfl
 #align group_norm.lt_def GroupNorm.lt_def
 #align add_group_norm.lt_def AddGroupNorm.lt_def
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
+lemma coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
   Iff.rfl
 #align group_norm.coe_le_coe GroupNorm.coe_le_coe
 #align add_group_norm.coe_le_coe AddGroupNorm.coe_le_coe
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
+lemma coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
   Iff.rfl
 #align group_norm.coe_lt_coe GroupNorm.coe_lt_coe
 #align add_group_norm.coe_lt_coe AddGroupNorm.coe_lt_coe
@@ -822,13 +822,13 @@ instance : Add (GroupNorm E) :=
         of_not_not fun h => hx.not_gt <| add_pos (map_pos_of_ne_one p h) (map_pos_of_ne_one q h) }⟩
 
 @[to_additive (attr := simp)]
-theorem coe_add : ⇑(p + q) = p + q :=
+lemma coe_add : ⇑(p + q) = p + q :=
   rfl
 #align group_norm.coe_add GroupNorm.coe_add
 #align add_group_norm.coe_add AddGroupNorm.coe_add
 
 @[to_additive (attr := simp)]
-theorem add_apply (x : E) : (p + q) x = p x + q x :=
+lemma add_apply (x : E) : (p + q) x = p x + q x :=
   rfl
 #align group_norm.add_apply GroupNorm.add_apply
 #align add_group_norm.add_apply AddGroupNorm.add_apply
@@ -842,13 +842,13 @@ instance : Sup (GroupNorm E) :=
         of_not_not fun h => hx.not_gt <| lt_sup_iff.2 <| Or.inl <| map_pos_of_ne_one p h }⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
+lemma coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
   rfl
 #align group_norm.coe_sup GroupNorm.coe_sup
 #align add_group_norm.coe_sup AddGroupNorm.coe_sup
 
 @[to_additive (attr := simp)]
-theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
+lemma sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 #align group_norm.sup_apply GroupNorm.sup_apply
 #align add_group_norm.sup_apply AddGroupNorm.sup_apply
@@ -870,7 +870,7 @@ instance : One (AddGroupNorm E) :=
       eq_zero_of_map_eq_zero' := fun _x => zero_ne_one.ite_eq_left_iff.1 }⟩
 
 @[simp]
-theorem apply_one (x : E) : (1 : AddGroupNorm E) x = if x = 0 then 0 else 1 :=
+lemma apply_one (x : E) : (1 : AddGroupNorm E) x = if x = 0 then 0 else 1 :=
   rfl
 #align add_group_norm.apply_one AddGroupNorm.apply_one
 
@@ -892,7 +892,7 @@ instance toOne : One (GroupNorm E) :=
   ⟨{ (1 : GroupSeminorm E) with eq_one_of_map_eq_zero' := fun _ => zero_ne_one.ite_eq_left_iff.1 }⟩
 
 @[to_additive (attr := simp) existing AddGroupNorm.apply_one]
-theorem apply_one (x : E) : (1 : GroupNorm E) x = if x = 1 then 0 else 1 :=
+lemma apply_one (x : E) : (1 : GroupNorm E) x = if x = 1 then 0 else 1 :=
   rfl
 #align group_norm.apply_one GroupNorm.apply_one
 
@@ -927,33 +927,33 @@ noncomputable instance : CoeFun (NonarchAddGroupNorm E) fun _ => E → ℝ :=
 
 -- Porting note: `simpNF` told me the left-hand side simplified to this
 @[simp]
-theorem toNonarchAddGroupSeminorm_eq_coe : ⇑p.toNonarchAddGroupSeminorm = p :=
+lemma toNonarchAddGroupSeminorm_eq_coe : ⇑p.toNonarchAddGroupSeminorm = p :=
   rfl
 #align nonarch_add_group_norm.to_fun_eq_coe NonarchAddGroupNorm.toNonarchAddGroupSeminorm_eq_coe
 
 @[ext]
-theorem ext : (∀ x, p x = q x) → p = q :=
+lemma ext : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
 #align nonarch_add_group_norm.ext NonarchAddGroupNorm.ext
 
 noncomputable instance : PartialOrder (NonarchAddGroupNorm E) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
-theorem le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
+lemma le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
   Iff.rfl
 #align nonarch_add_group_norm.le_def NonarchAddGroupNorm.le_def
 
-theorem lt_def : p < q ↔ (p : E → ℝ) < q :=
+lemma lt_def : p < q ↔ (p : E → ℝ) < q :=
   Iff.rfl
 #align nonarch_add_group_norm.lt_def NonarchAddGroupNorm.lt_def
 
 @[simp, norm_cast]
-theorem coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
+lemma coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
   Iff.rfl
 #align nonarch_add_group_norm.coe_le_coe NonarchAddGroupNorm.coe_le_coe
 
 @[simp, norm_cast]
-theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
+lemma coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
   Iff.rfl
 #align nonarch_add_group_norm.coe_lt_coe NonarchAddGroupNorm.coe_lt_coe
 
@@ -966,12 +966,12 @@ instance : Sup (NonarchAddGroupNorm E) :=
         of_not_not fun h => hx.not_gt <| lt_sup_iff.2 <| Or.inl <| map_pos_of_ne_zero p h }⟩
 
 @[simp, norm_cast]
-theorem coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
+lemma coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
   rfl
 #align nonarch_add_group_norm.coe_sup NonarchAddGroupNorm.coe_sup
 
 @[simp]
-theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
+lemma sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 #align nonarch_add_group_norm.sup_apply NonarchAddGroupNorm.sup_apply
 
@@ -983,7 +983,7 @@ instance [DecidableEq E] : One (NonarchAddGroupNorm E) :=
       eq_zero_of_map_eq_zero' := fun _ => zero_ne_one.ite_eq_left_iff.1 }⟩
 
 @[simp]
-theorem apply_one [DecidableEq E] (x : E) :
+lemma apply_one [DecidableEq E] (x : E) :
     (1 : NonarchAddGroupNorm E) x = if x = 0 then 0 else 1 :=
   rfl
 #align nonarch_add_group_norm.apply_one NonarchAddGroupNorm.apply_one

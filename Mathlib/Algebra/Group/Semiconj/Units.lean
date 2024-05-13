@@ -50,7 +50,7 @@ theorem units_inv_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) : SemiconjBy 
 #align add_semiconj_by.add_units_neg_right AddSemiconjBy.addUnits_neg_right
 
 @[to_additive (attr := simp)]
-theorem units_inv_right_iff {a : M} {x y : Mˣ} : SemiconjBy a ↑x⁻¹ ↑y⁻¹ ↔ SemiconjBy a x y :=
+lemma units_inv_right_iff {a : M} {x y : Mˣ} : SemiconjBy a ↑x⁻¹ ↑y⁻¹ ↔ SemiconjBy a x y :=
   ⟨units_inv_right, units_inv_right⟩
 #align semiconj_by.units_inv_right_iff SemiconjBy.units_inv_right_iff
 #align add_semiconj_by.add_units_neg_right_iff AddSemiconjBy.addUnits_neg_right_iff
@@ -66,25 +66,25 @@ theorem units_inv_symm_left {a : Mˣ} {x y : M} (h : SemiconjBy (↑a) x y) : Se
 #align add_semiconj_by.add_units_neg_symm_left AddSemiconjBy.addUnits_neg_symm_left
 
 @[to_additive (attr := simp)]
-theorem units_inv_symm_left_iff {a : Mˣ} {x y : M} : SemiconjBy (↑a⁻¹) y x ↔ SemiconjBy (↑a) x y :=
+lemma units_inv_symm_left_iff {a : Mˣ} {x y : M} : SemiconjBy (↑a⁻¹) y x ↔ SemiconjBy (↑a) x y :=
   ⟨units_inv_symm_left, units_inv_symm_left⟩
 #align semiconj_by.units_inv_symm_left_iff SemiconjBy.units_inv_symm_left_iff
 #align add_semiconj_by.add_units_neg_symm_left_iff AddSemiconjBy.addUnits_neg_symm_left_iff
 
 @[to_additive]
-theorem units_val {a x y : Mˣ} (h : SemiconjBy a x y) : SemiconjBy (a : M) x y :=
+lemma units_val {a x y : Mˣ} (h : SemiconjBy a x y) : SemiconjBy (a : M) x y :=
   congr_arg Units.val h
 #align semiconj_by.units_coe SemiconjBy.units_val
 #align add_semiconj_by.add_units_coe AddSemiconjBy.addUnits_val
 
 @[to_additive]
-theorem units_of_val {a x y : Mˣ} (h : SemiconjBy (a : M) x y) : SemiconjBy a x y :=
+lemma units_of_val {a x y : Mˣ} (h : SemiconjBy (a : M) x y) : SemiconjBy a x y :=
   Units.ext h
 #align semiconj_by.units_of_coe SemiconjBy.units_of_val
 #align add_semiconj_by.add_units_of_coe AddSemiconjBy.addUnits_of_val
 
 @[to_additive (attr := simp)]
-theorem units_val_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x y :=
+lemma units_val_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x y :=
   ⟨units_of_val, units_val⟩
 #align semiconj_by.units_coe_iff SemiconjBy.units_val_iff
 #align add_semiconj_by.add_units_coe_iff AddSemiconjBy.addUnits_val_iff

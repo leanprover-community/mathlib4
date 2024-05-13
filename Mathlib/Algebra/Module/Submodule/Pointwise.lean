@@ -73,17 +73,17 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseNeg
 open Pointwise
 
 @[simp]
-theorem coe_set_neg (S : Submodule R M) : ↑(-S) = -(S : Set M) :=
+lemma coe_set_neg (S : Submodule R M) : ↑(-S) = -(S : Set M) :=
   rfl
 #align submodule.coe_set_neg Submodule.coe_set_neg
 
 @[simp]
-theorem neg_toAddSubmonoid (S : Submodule R M) : (-S).toAddSubmonoid = -S.toAddSubmonoid :=
+lemma neg_toAddSubmonoid (S : Submodule R M) : (-S).toAddSubmonoid = -S.toAddSubmonoid :=
   rfl
 #align submodule.neg_to_add_submonoid Submodule.neg_toAddSubmonoid
 
 @[simp]
-theorem mem_neg {g : M} {S : Submodule R M} : g ∈ -S ↔ -g ∈ S :=
+lemma mem_neg {g : M} {S : Submodule R M} : g ∈ -S ↔ -g ∈ S :=
   Iff.rfl
 #align submodule.mem_neg Submodule.mem_neg
 
@@ -99,11 +99,11 @@ protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M)
 scoped[Pointwise] attribute [instance] Submodule.involutivePointwiseNeg
 
 @[simp]
-theorem neg_le_neg (S T : Submodule R M) : -S ≤ -T ↔ S ≤ T :=
+lemma neg_le_neg (S T : Submodule R M) : -S ≤ -T ↔ S ≤ T :=
   SetLike.coe_subset_coe.symm.trans Set.neg_subset_neg
 #align submodule.neg_le_neg Submodule.neg_le_neg
 
-theorem neg_le (S T : Submodule R M) : -S ≤ T ↔ S ≤ -T :=
+lemma neg_le (S T : Submodule R M) : -S ≤ T ↔ S ≤ -T :=
   SetLike.coe_subset_coe.symm.trans Set.neg_subset
 #align submodule.neg_le Submodule.neg_le
 
@@ -114,7 +114,7 @@ def negOrderIso : Submodule R M ≃o Submodule R M
   map_rel_iff' := @neg_le_neg _ _ _ _ _
 #align submodule.neg_order_iso Submodule.negOrderIso
 
-theorem closure_neg (s : Set M) : span R (-s) = -span R s := by
+lemma closure_neg (s : Set M) : span R (-s) = -span R s := by
   apply le_antisymm
   · rw [span_le, coe_set_neg, ← Set.neg_subset, neg_neg]
     exact subset_span
@@ -123,32 +123,32 @@ theorem closure_neg (s : Set M) : span R (-s) = -span R s := by
 #align submodule.closure_neg Submodule.closure_neg
 
 @[simp]
-theorem neg_inf (S T : Submodule R M) : -(S ⊓ T) = -S ⊓ -T :=
+lemma neg_inf (S T : Submodule R M) : -(S ⊓ T) = -S ⊓ -T :=
   SetLike.coe_injective Set.inter_neg
 #align submodule.neg_inf Submodule.neg_inf
 
 @[simp]
-theorem neg_sup (S T : Submodule R M) : -(S ⊔ T) = -S ⊔ -T :=
+lemma neg_sup (S T : Submodule R M) : -(S ⊔ T) = -S ⊔ -T :=
   (negOrderIso : Submodule R M ≃o Submodule R M).map_sup S T
 #align submodule.neg_sup Submodule.neg_sup
 
 @[simp]
-theorem neg_bot : -(⊥ : Submodule R M) = ⊥ :=
+lemma neg_bot : -(⊥ : Submodule R M) = ⊥ :=
   SetLike.coe_injective <| (Set.neg_singleton 0).trans <| congr_arg _ neg_zero
 #align submodule.neg_bot Submodule.neg_bot
 
 @[simp]
-theorem neg_top : -(⊤ : Submodule R M) = ⊤ :=
+lemma neg_top : -(⊤ : Submodule R M) = ⊤ :=
   SetLike.coe_injective <| Set.neg_univ
 #align submodule.neg_top Submodule.neg_top
 
 @[simp]
-theorem neg_iInf {ι : Sort*} (S : ι → Submodule R M) : (-⨅ i, S i) = ⨅ i, -S i :=
+lemma neg_iInf {ι : Sort*} (S : ι → Submodule R M) : (-⨅ i, S i) = ⨅ i, -S i :=
   (negOrderIso : Submodule R M ≃o Submodule R M).map_iInf _
 #align submodule.neg_infi Submodule.neg_iInf
 
 @[simp]
-theorem neg_iSup {ι : Sort*} (S : ι → Submodule R M) : (-⨆ i, S i) = ⨆ i, -S i :=
+lemma neg_iSup {ι : Sort*} (S : ι → Submodule R M) : (-⨆ i, S i) = ⨆ i, -S i :=
   (negOrderIso : Submodule R M ≃o Submodule R M).map_iSup _
 #align submodule.neg_supr Submodule.neg_iSup
 
@@ -157,7 +157,7 @@ end Semiring
 open Pointwise
 
 @[simp]
-theorem neg_eq_self [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M) : -p = p :=
+lemma neg_eq_self [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M) : -p = p :=
   ext fun _ => p.neg_mem_iff
 #align submodule.neg_eq_self Submodule.neg_eq_self
 
@@ -180,12 +180,12 @@ instance pointwiseAddCommMonoid : AddCommMonoid (Submodule R M) where
 #align submodule.pointwise_add_comm_monoid Submodule.pointwiseAddCommMonoid
 
 @[simp]
-theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
+lemma add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
   rfl
 #align submodule.add_eq_sup Submodule.add_eq_sup
 
 @[simp]
-theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
+lemma zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 #align submodule.zero_eq_bot Submodule.zero_eq_bot
 
@@ -220,24 +220,24 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseDistribMulAction
 open Pointwise
 
 @[simp]
-theorem coe_pointwise_smul (a : α) (S : Submodule R M) : ↑(a • S) = a • (S : Set M) :=
+lemma coe_pointwise_smul (a : α) (S : Submodule R M) : ↑(a • S) = a • (S : Set M) :=
   rfl
 #align submodule.coe_pointwise_smul Submodule.coe_pointwise_smul
 
 @[simp]
-theorem pointwise_smul_toAddSubmonoid (a : α) (S : Submodule R M) :
+lemma pointwise_smul_toAddSubmonoid (a : α) (S : Submodule R M) :
     (a • S).toAddSubmonoid = a • S.toAddSubmonoid :=
   rfl
 #align submodule.pointwise_smul_to_add_submonoid Submodule.pointwise_smul_toAddSubmonoid
 
 @[simp]
-theorem pointwise_smul_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [DistribMulAction α M]
+lemma pointwise_smul_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [DistribMulAction α M]
     [Module R M] [SMulCommClass α R M] (a : α) (S : Submodule R M) :
     (a • S).toAddSubgroup = a • S.toAddSubgroup :=
   rfl
 #align submodule.pointwise_smul_to_add_subgroup Submodule.pointwise_smul_toAddSubgroup
 
-theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submodule R M) : m ∈ S → a • m ∈ a • S :=
+lemma smul_mem_pointwise_smul (m : M) (a : α) (S : Submodule R M) : m ∈ S → a • m ∈ a • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 #align submodule.smul_mem_pointwise_smul Submodule.smul_mem_pointwise_smul
 
@@ -255,11 +255,11 @@ theorem smul_sup' (a : α) (S T : Submodule R M) : a • (S ⊔ T) = a • S ⊔
   map_sup _ _ _
 #align submodule.smul_sup' Submodule.smul_sup'
 
-theorem smul_span (a : α) (s : Set M) : a • span R s = span R (a • s) :=
+lemma smul_span (a : α) (s : Set M) : a • span R s = span R (a • s) :=
   map_span _ _
 #align submodule.smul_span Submodule.smul_span
 
-theorem span_smul (a : α) (s : Set M) : span R (a • s) = a • span R s :=
+lemma span_smul (a : α) (s : Set M) : span R (a • s) = a • span R s :=
   Eq.symm (span_image _).symm
 #align submodule.span_smul Submodule.span_smul
 
@@ -269,7 +269,7 @@ instance pointwiseCentralScalar [DistribMulAction αᵐᵒᵖ M] [SMulCommClass 
 #align submodule.pointwise_central_scalar Submodule.pointwiseCentralScalar
 
 @[simp]
-theorem smul_le_self_of_tower {α : Type*} [Semiring α] [Module α R] [Module α M]
+lemma smul_le_self_of_tower {α : Type*} [Semiring α] [Module α R] [Module α M]
     [SMulCommClass α R M] [IsScalarTower α R M] (a : α) (S : Submodule R M) : a • S ≤ S := by
   rintro y ⟨x, hx, rfl⟩
   exact smul_of_tower_mem _ a hx
@@ -383,7 +383,7 @@ instance : CovariantClass (Set S) (Submodule R M) HSMul.hSMul LE.le :=
     (mem2 := le hm)⟩
 
 -- 2024-03-31
-@[deprecated smul_mono_right] theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
+@[deprecated smul_mono_right] lemma set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
     s • p ≤ s • q :=
   smul_mono_right s le
 

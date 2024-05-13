@@ -190,7 +190,7 @@ denominators `Bₙ` are bounded from below by the fibonacci sequence `Nat.fib`. 
 -- open `Nat` as we will make use of fibonacci numbers.
 open Nat
 
-theorem fib_le_of_continuantsAux_b :
+lemma fib_le_of_continuantsAux_b :
     n ≤ 1 ∨ ¬(of v).TerminatedAt (n - 2) → (fib n : K) ≤ ((of v).continuantsAux n).b :=
   Nat.strong_induction_on n
     (by
@@ -248,7 +248,7 @@ theorem succ_nth_fib_le_of_nth_denom (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n -
 /-! As a simple consequence, we can now derive that all denominators are nonnegative. -/
 
 
-theorem zero_le_of_continuantsAux_b : 0 ≤ ((of v).continuantsAux n).b := by
+lemma zero_le_of_continuantsAux_b : 0 ≤ ((of v).continuantsAux n).b := by
   let g := of v
   induction n with
   | zero => rfl
@@ -271,7 +271,7 @@ theorem zero_le_of_denom : 0 ≤ (of v).denominators n := by
   rw [denom_eq_conts_b, nth_cont_eq_succ_nth_cont_aux]; exact zero_le_of_continuantsAux_b
 #align generalized_continued_fraction.zero_le_of_denom GeneralizedContinuedFraction.zero_le_of_denom
 
-theorem le_of_succ_succ_get?_continuantsAux_b {b : K}
+lemma le_of_succ_succ_get?_continuantsAux_b {b : K}
     (nth_part_denom_eq : (of v).partialDenominators.get? n = some b) :
     b * ((of v).continuantsAux <| n + 1).b ≤ ((of v).continuantsAux <| n + 2).b := by
   obtain ⟨gp_n, nth_s_eq, rfl⟩ : ∃ gp_n, (of v).s.get? n = some gp_n ∧ gp_n.b = b :=
@@ -318,7 +318,7 @@ Next we prove the so-called *determinant formula* for `GeneralizedContinuedFract
 -/
 
 
-theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
+lemma determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
     ((of v).continuantsAux n).a * ((of v).continuantsAux (n + 1)).b -
       ((of v).continuantsAux n).b * ((of v).continuantsAux (n + 1)).a = (-1) ^ n := by
   induction n with

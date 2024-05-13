@@ -140,7 +140,7 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
 #align category_theory.limits.inhabited_cone CategoryTheory.Limits.inhabitedCone
 
 @[reassoc (attr := simp)]
-theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
+lemma Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
     c.π.app j ≫ F.map f = c.π.app j' := by
   rw [← c.π.naturality f]
   apply id_comp
@@ -178,7 +178,7 @@ instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
 #align category_theory.limits.inhabited_cocone CategoryTheory.Limits.inhabitedCocone
 
 @[reassoc] -- @[simp] -- Porting note (#10618): simp can prove this
-theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
+lemma Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
     F.map f ≫ c.ι.app j' = c.ι.app j := by
   rw [c.ι.naturality f]
   apply comp_id
@@ -301,7 +301,7 @@ instance Cone.category : Category (Cone F) where
 -- the hom field of a category, we need to write the `ext` lemma in terms of the categorical
 -- morphism, rather than the underlying structure.
 @[ext]
-theorem ConeMorphism.ext {c c' : Cone F} (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
+lemma ConeMorphism.ext {c c' : Cone F} (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
   cases f
   cases g
   congr
@@ -522,7 +522,7 @@ instance Cocone.category : Category (Cocone F) where
 -- the hom field of a category, we need to write the `ext` lemma in terms of the categorical
 -- morphism, rather than the underlying structure.
 @[ext]
-theorem CoconeMorphism.ext {c c' : Cocone F} (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
+lemma CoconeMorphism.ext {c c' : Cocone F} (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
   cases f
   cases g
   congr
@@ -986,7 +986,7 @@ def coconeOfConeLeftOp (c : Cone F.leftOp) : Cocone F where
 #align category_theory.limits.cocone_of_cone_left_op CategoryTheory.Limits.coconeOfConeLeftOp
 
 @[simp]
-theorem coconeOfConeLeftOp_ι_app (c : Cone F.leftOp) (j) :
+lemma coconeOfConeLeftOp_ι_app (c : Cone F.leftOp) (j) :
     (coconeOfConeLeftOp c).ι.app j = (c.π.app (op j)).op := by
   dsimp only [coconeOfConeLeftOp]
   simp

@@ -57,7 +57,7 @@ abbrev M.mk : (Σ j, F.obj j) → M F :=
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.M.mk ModuleCat.FilteredColimits.M.mk
 
-theorem M.mk_eq (x y : Σ j, F.obj j)
+lemma M.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) : M.mk F x = M.mk F y :=
   Quot.EqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget (ModuleCat R)) x y h)
 set_option linter.uppercaseLean3 false in
@@ -69,7 +69,7 @@ def colimitSMulAux (r : R) (x : Σ j, F.obj j) : M F :=
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_smul_aux ModuleCat.FilteredColimits.colimitSMulAux
 
-theorem colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
+lemma colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
     (h : Types.FilteredColimit.Rel (F ⋙ forget (ModuleCat R)) x y) :
     colimitSMulAux F r x = colimitSMulAux F r y := by
   apply M.mk_eq
@@ -92,12 +92,12 @@ set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_has_smul ModuleCat.FilteredColimits.colimitHasSMul
 
 @[simp]
-theorem colimit_smul_mk_eq (r : R) (x : Σ j, F.obj j) : r • M.mk F x = M.mk F ⟨x.1, r • x.2⟩ :=
+lemma colimit_smul_mk_eq (r : R) (x : Σ j, F.obj j) : r • M.mk F x = M.mk F ⟨x.1, r • x.2⟩ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_smul_mk_eq ModuleCat.FilteredColimits.colimit_smul_mk_eq
 
-private theorem colimitModule.one_smul (x : (M F)) : (1 : R) • x = x := by
+private lemma colimitModule.one_smul (x : (M F)) : (1 : R) • x = x := by
   refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
   erw [colimit_smul_mk_eq F 1 ⟨j, x⟩]
   simp
@@ -124,7 +124,7 @@ instance colimitSMulWithZero : SMulWithZero R (M F) :=
     erw [colimit_smul_mk_eq, zero_smul, colimit_zero_eq _ j]
     rfl }
 
-private theorem colimitModule.add_smul (r s : R) (x : (M F)) : (r + s) • x = r • x + s • x := by
+private lemma colimitModule.add_smul (r s : R) (x : (M F)) : (r + s) • x = r • x + s • x := by
   refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
   erw [colimit_smul_mk_eq, _root_.add_smul, colimit_smul_mk_eq, colimit_smul_mk_eq,
       colimit_add_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]

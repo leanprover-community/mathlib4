@@ -22,7 +22,7 @@ section One
 variable [One α]
 
 @[to_additive (attr := simp)]
-theorem finite_one : (1 : Set α).Finite :=
+lemma finite_one : (1 : Set α).Finite :=
   finite_singleton _
 #align set.finite_one Set.finite_one
 #align set.finite_zero Set.finite_zero
@@ -34,7 +34,7 @@ section InvolutiveInv
 variable [InvolutiveInv α] {s : Set α}
 
 @[to_additive]
-theorem Finite.inv (hs : s.Finite) : s⁻¹.Finite :=
+lemma Finite.inv (hs : s.Finite) : s⁻¹.Finite :=
   hs.preimage <| inv_injective.injOn _
 #align set.finite.inv Set.Finite.inv
 #align set.finite.neg Set.Finite.neg
@@ -46,7 +46,7 @@ section Mul
 variable [Mul α] {s t : Set α}
 
 @[to_additive]
-theorem Finite.mul : s.Finite → t.Finite → (s * t).Finite :=
+lemma Finite.mul : s.Finite → t.Finite → (s * t).Finite :=
   Finite.image2 _
 #align set.finite.mul Set.Finite.mul
 #align set.finite.add Set.Finite.add
@@ -89,7 +89,7 @@ section SMul
 variable [SMul α β] {s : Set α} {t : Set β}
 
 @[to_additive]
-theorem Finite.smul : s.Finite → t.Finite → (s • t).Finite :=
+lemma Finite.smul : s.Finite → t.Finite → (s • t).Finite :=
   Finite.image2 _
 #align set.finite.smul Set.Finite.smul
 #align set.finite.vadd Set.Finite.vadd
@@ -101,13 +101,13 @@ section HasSMulSet
 variable [SMul α β] {s : Set β} {a : α}
 
 @[to_additive]
-theorem Finite.smul_set : s.Finite → (a • s).Finite :=
+lemma Finite.smul_set : s.Finite → (a • s).Finite :=
   Finite.image _
 #align set.finite.smul_set Set.Finite.smul_set
 #align set.finite.vadd_set Set.Finite.vadd_set
 
 @[to_additive]
-theorem Infinite.of_smul_set : (a • s).Infinite → s.Infinite :=
+lemma Infinite.of_smul_set : (a • s).Infinite → s.Infinite :=
   Infinite.of_image _
 #align set.infinite.of_smul_set Set.Infinite.of_smul_set
 #align set.infinite.of_vadd_set Set.Infinite.of_vadd_set
@@ -118,7 +118,7 @@ section Vsub
 
 variable [VSub α β] {s t : Set β}
 
-theorem Finite.vsub (hs : s.Finite) (ht : t.Finite) : Set.Finite (s -ᵥ t) :=
+lemma Finite.vsub (hs : s.Finite) (ht : t.Finite) : Set.Finite (s -ᵥ t) :=
   hs.image2 _ ht
 #align set.finite.vsub Set.Finite.vsub
 
@@ -129,7 +129,7 @@ section Cancel
 variable [Mul α] [IsLeftCancelMul α] [IsRightCancelMul α] {s t : Set α}
 
 @[to_additive]
-theorem infinite_mul : (s * t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty :=
+lemma infinite_mul : (s * t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty :=
   infinite_image2 (fun _ _ => (mul_left_injective _).injOn _) fun _ _ =>
     (mul_right_injective _).injOn _
 #align set.infinite_mul Set.infinite_mul
@@ -147,13 +147,13 @@ section Group
 variable [Group α] [MulAction α β] {a : α} {s : Set β}
 
 @[to_additive (attr := simp)]
-theorem finite_smul_set : (a • s).Finite ↔ s.Finite :=
+lemma finite_smul_set : (a • s).Finite ↔ s.Finite :=
   finite_image_iff <| (MulAction.injective _).injOn _
 #align set.finite_smul_set Set.finite_smul_set
 #align set.finite_vadd_set Set.finite_vadd_set
 
 @[to_additive (attr := simp)]
-theorem infinite_smul_set : (a • s).Infinite ↔ s.Infinite :=
+lemma infinite_smul_set : (a • s).Infinite ↔ s.Infinite :=
   infinite_image_iff <| (MulAction.injective _).injOn _
 #align set.infinite_smul_set Set.infinite_smul_set
 #align set.infinite_vadd_set Set.infinite_vadd_set
@@ -177,7 +177,7 @@ namespace Group
 variable {G : Type*} [Group G] [Fintype G] (S : Set G)
 
 @[to_additive]
-theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k)] :
+lemma card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k)] :
     ∀ k, Fintype.card G ≤ k → Fintype.card (↥(S ^ k)) = Fintype.card (↥(S ^ Fintype.card G)) := by
   have hG : 0 < Fintype.card G := Fintype.card_pos
   rcases S.eq_empty_or_nonempty with (rfl | ⟨a, ha⟩)

@@ -99,7 +99,7 @@ lemma toLower_inj {a b : α} : toLower a = toLower b ↔ a = b := Iff.rfl
 #align with_lower_topology.to_lower_inj Topology.WithLower.toLower_inj
 
 -- Porting note: removed @[simp] to make linter happy
-theorem ofLower_inj {a b : WithLower α} : ofLower a = ofLower b ↔ a = b :=
+lemma ofLower_inj {a b : WithLower α} : ofLower a = ofLower b ↔ a = b :=
   Iff.rfl
 #align with_lower_topology.of_lower_inj Topology.WithLower.ofLower_inj
 
@@ -215,7 +215,7 @@ def withLowerHomeomorph : WithLower α ≃ₜ α :=
   WithLower.ofLower.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 #align lower_topology.with_lower_topology_homeomorph Topology.IsLower.withLowerHomeomorph
 
-theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
+lemma isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
 #align lower_topology.is_open_iff_generate_Ici_compl Topology.IsLower.isOpen_iff_generate_Ici_compl
 
@@ -248,7 +248,7 @@ theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
   | sUnion _ _ ih => exact isLowerSet_sUnion ih
 #align lower_topology.is_lower_set_of_is_open Topology.IsLower.isLowerSet_of_isOpen
 
-theorem isUpperSet_of_isClosed (h : IsClosed s) : IsUpperSet s :=
+lemma isUpperSet_of_isClosed (h : IsClosed s) : IsUpperSet s :=
   isLowerSet_compl.1 <| isLowerSet_of_isOpen h.isOpen_compl
 #align lower_topology.is_upper_set_of_is_closed Topology.IsLower.isUpperSet_of_isClosed
 
@@ -262,7 +262,7 @@ theorem closure_singleton (a : α) : closure {a} = Ici a :=
     (isUpperSet_of_isClosed isClosed_closure).Ici_subset <| subset_closure rfl
 #align lower_topology.closure_singleton Topology.IsLower.closure_singleton
 
-protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
+protected lemma isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
   convert isTopologicalBasis_of_subbasis (topology_eq α)
   simp_rw [lowerBasis, coe_upperClosure, compl_iUnion]
   ext s
@@ -327,7 +327,7 @@ variable {α}
 def withUpperHomeomorph : WithUpper α ≃ₜ α :=
   WithUpper.ofUpper.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
-theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
+lemma isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
 
 instance _root_.OrderDual.instIsLower [Preorder α] [TopologicalSpace α] [IsUpper α] :
@@ -346,7 +346,7 @@ theorem isClosed_lowerClosure (h : s.Finite) : IsClosed (lowerClosure s : Set α
 theorem isUpperSet_of_isOpen (h : IsOpen s) : IsUpperSet s :=
   IsLower.isLowerSet_of_isOpen (α := αᵒᵈ) h
 
-theorem isLowerSet_of_isClosed (h : IsClosed s) : IsLowerSet s :=
+lemma isLowerSet_of_isClosed (h : IsClosed s) : IsLowerSet s :=
   isUpperSet_compl.1 <| isUpperSet_of_isOpen h.isOpen_compl
 
 /--
@@ -357,7 +357,7 @@ The closure of a singleton `{a}` in the upper topology is the left-infinite righ
 theorem closure_singleton (a : α) : closure {a} = Iic a :=
   IsLower.closure_singleton (α := αᵒᵈ) _
 
-protected theorem isTopologicalBasis : IsTopologicalBasis (upperBasis α) :=
+protected lemma isTopologicalBasis : IsTopologicalBasis (upperBasis α) :=
   IsLower.isTopologicalBasis (α := αᵒᵈ)
 
 /-- A function `f : β → α` with upper topology in the codomain is continuous

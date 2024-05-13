@@ -60,23 +60,23 @@ theorem ne_zero [Nontrivial A] (hx : IsIntegral A x) : minpoly A x ≠ 0 :=
   (monic hx).ne_zero
 #align minpoly.ne_zero minpoly.ne_zero
 
-theorem eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
+lemma eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
   dif_neg hx
 #align minpoly.eq_zero minpoly.eq_zero
 
-theorem algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
+lemma algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
     minpoly A (f x) = minpoly A x := by
   refine' dif_ctx_congr (isIntegral_algHom_iff _ hf) (fun _ => _) fun _ => rfl
   simp_rw [← Polynomial.aeval_def, aeval_algHom, AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
 #align minpoly.minpoly_alg_hom minpoly.algHom_eq
 
-theorem algebraMap_eq {B} [CommRing B] [Algebra A B] [Algebra B B'] [IsScalarTower A B B']
+lemma algebraMap_eq {B} [CommRing B] [Algebra A B] [Algebra B B'] [IsScalarTower A B B']
     (h : Function.Injective (algebraMap B B')) (x : B) :
     minpoly A (algebraMap B B' x) = minpoly A x :=
   algHom_eq (IsScalarTower.toAlgHom A B B') h x
 
 @[simp]
-theorem algEquiv_eq (f : B ≃ₐ[A] B') (x : B) : minpoly A (f x) = minpoly A x :=
+lemma algEquiv_eq (f : B ≃ₐ[A] B') (x : B) : minpoly A (f x) = minpoly A x :=
   algHom_eq (f : B →ₐ[A] B') f.injective x
 #align minpoly.minpoly_alg_equiv minpoly.algEquiv_eq
 
@@ -98,7 +98,7 @@ theorem ne_one [Nontrivial B] : minpoly A x ≠ 1 := by
   simpa using congr_arg (Polynomial.aeval x) h
 #align minpoly.ne_one minpoly.ne_one
 
-theorem map_ne_one [Nontrivial B] {R : Type*} [Semiring R] [Nontrivial R] (f : A →+* R) :
+lemma map_ne_one [Nontrivial B] {R : Type*} [Semiring R] [Nontrivial R] (f : A →+* R) :
     (minpoly A x).map f ≠ 1 := by
   by_cases hx : IsIntegral A x
   · exact mt ((monic hx).eq_one_of_map_eq_one f) (ne_one A x)
@@ -115,7 +115,7 @@ theorem not_isUnit [Nontrivial B] : ¬IsUnit (minpoly A x) := by
     exact not_isUnit_zero
 #align minpoly.not_is_unit minpoly.not_isUnit
 
-theorem mem_range_of_degree_eq_one (hx : (minpoly A x).degree = 1) :
+lemma mem_range_of_degree_eq_one (hx : (minpoly A x).degree = 1) :
     x ∈ (algebraMap A B).range := by
   have h : IsIntegral A x := by
     by_contra h
@@ -136,7 +136,7 @@ theorem min {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0) :
   · simp only [degree_zero, bot_le]
 #align minpoly.min minpoly.min
 
-theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
+lemma unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
     (hl : ∀ q : A[X], degree q < degree p → q = 0 ∨ Polynomial.aeval x q ≠ 0) :
     p = minpoly A x := by
   nontriviality A
@@ -162,7 +162,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
 #align minpoly.unique' minpoly.unique'
 
 @[nontriviality]
-theorem subsingleton [Subsingleton B] : minpoly A x = 1 := by
+lemma subsingleton [Subsingleton B] : minpoly A x = 1 := by
   nontriviality A
   have := minpoly.min A x monic_one (Subsingleton.elim _ _)
   rw [degree_one] at this
@@ -210,17 +210,17 @@ theorem degree_eq_one_iff : (minpoly A x).degree = 1 ↔ x ∈ (algebraMap A B).
   exact (degree_X_sub_C x ▸ minpoly.min A (algebraMap A B x) (monic_X_sub_C x) (by simp)).antisymm
     (Nat.WithBot.add_one_le_of_lt <| minpoly.degree_pos isIntegral_algebraMap)
 
-theorem natDegree_eq_one_iff :
+lemma natDegree_eq_one_iff :
     (minpoly A x).natDegree = 1 ↔ x ∈ (algebraMap A B).range := by
   rw [← Polynomial.degree_eq_iff_natDegree_eq_of_pos zero_lt_one]
   exact degree_eq_one_iff
 
-theorem two_le_natDegree_iff (int : IsIntegral A x) :
+lemma two_le_natDegree_iff (int : IsIntegral A x) :
     2 ≤ (minpoly A x).natDegree ↔ x ∉ (algebraMap A B).range := by
   rw [iff_not_comm, ← natDegree_eq_one_iff, not_le]
   exact ⟨fun h ↦ h.trans_lt one_lt_two, fun h ↦ by linarith only [minpoly.natDegree_pos int, h]⟩
 
-theorem two_le_natDegree_subalgebra {B} [CommRing B] [Algebra A B] [Nontrivial B]
+lemma two_le_natDegree_subalgebra {B} [CommRing B] [Algebra A B] [Nontrivial B]
     {S : Subalgebra A B} {x : B} (int : IsIntegral S x) : 2 ≤ (minpoly S x).natDegree ↔ x ∉ S := by
   rw [two_le_natDegree_iff int, Iff.not]
   apply Set.ext_iff.mp Subtype.range_val_subtype

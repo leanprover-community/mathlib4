@@ -29,58 +29,58 @@ instance (priority := 20) One.instNonempty [One α] : Nonempty α :=
   ⟨1⟩
 
 @[simp]
-theorem Nonempty.forall {α} {p : Nonempty α → Prop} : (∀ h : Nonempty α, p h) ↔ ∀ a, p ⟨a⟩ :=
+lemma Nonempty.forall {α} {p : Nonempty α → Prop} : (∀ h : Nonempty α, p h) ↔ ∀ a, p ⟨a⟩ :=
   Iff.intro (fun h _ ↦ h _) fun h ⟨a⟩ ↦ h a
 #align nonempty.forall Nonempty.forall
 
 @[simp]
-theorem Nonempty.exists {α} {p : Nonempty α → Prop} : (∃ h : Nonempty α, p h) ↔ ∃ a, p ⟨a⟩ :=
+lemma Nonempty.exists {α} {p : Nonempty α → Prop} : (∃ h : Nonempty α, p h) ↔ ∃ a, p ⟨a⟩ :=
   Iff.intro (fun ⟨⟨a⟩, h⟩ ↦ ⟨a, h⟩) fun ⟨a, h⟩ ↦ ⟨⟨a⟩, h⟩
 #align nonempty.exists Nonempty.exists
 
-theorem exists_true_iff_nonempty {α : Sort*} : (∃ _ : α, True) ↔ Nonempty α :=
+lemma exists_true_iff_nonempty {α : Sort*} : (∃ _ : α, True) ↔ Nonempty α :=
   Iff.intro (fun ⟨a, _⟩ ↦ ⟨a⟩) fun ⟨a⟩ ↦ ⟨a, trivial⟩
 #align exists_true_iff_nonempty exists_true_iff_nonempty
 
 @[simp]
-theorem nonempty_Prop {p : Prop} : Nonempty p ↔ p :=
+lemma nonempty_Prop {p : Prop} : Nonempty p ↔ p :=
   Iff.intro (fun ⟨h⟩ ↦ h) fun h ↦ ⟨h⟩
 #align nonempty_Prop nonempty_Prop
 
-theorem Nonempty.imp {α} {p : Prop} : (Nonempty α → p) ↔ (α → p) :=
+lemma Nonempty.imp {α} {p : Prop} : (Nonempty α → p) ↔ (α → p) :=
   Nonempty.forall
 
-theorem not_nonempty_iff_imp_false {α : Sort*} : ¬Nonempty α ↔ α → False :=
+lemma not_nonempty_iff_imp_false {α : Sort*} : ¬Nonempty α ↔ α → False :=
   Nonempty.imp
 #align not_nonempty_iff_imp_false not_nonempty_iff_imp_false
 
 @[simp]
-theorem nonempty_sigma : Nonempty (Σa : α, γ a) ↔ ∃ a : α, Nonempty (γ a) :=
+lemma nonempty_sigma : Nonempty (Σa : α, γ a) ↔ ∃ a : α, Nonempty (γ a) :=
   Iff.intro (fun ⟨⟨a, c⟩⟩ ↦ ⟨a, ⟨c⟩⟩) fun ⟨a, ⟨c⟩⟩ ↦ ⟨⟨a, c⟩⟩
 #align nonempty_sigma nonempty_sigma
 
 @[simp]
-theorem nonempty_psigma {α} {β : α → Sort*} : Nonempty (PSigma β) ↔ ∃ a : α, Nonempty (β a) :=
+lemma nonempty_psigma {α} {β : α → Sort*} : Nonempty (PSigma β) ↔ ∃ a : α, Nonempty (β a) :=
   Iff.intro (fun ⟨⟨a, c⟩⟩ ↦ ⟨a, ⟨c⟩⟩) fun ⟨a, ⟨c⟩⟩ ↦ ⟨⟨a, c⟩⟩
 #align nonempty_psigma nonempty_psigma
 
 @[simp]
-theorem nonempty_subtype {α} {p : α → Prop} : Nonempty (Subtype p) ↔ ∃ a : α, p a :=
+lemma nonempty_subtype {α} {p : α → Prop} : Nonempty (Subtype p) ↔ ∃ a : α, p a :=
   Iff.intro (fun ⟨⟨a, h⟩⟩ ↦ ⟨a, h⟩) fun ⟨a, h⟩ ↦ ⟨⟨a, h⟩⟩
 #align nonempty_subtype nonempty_subtype
 
 @[simp]
-theorem nonempty_prod : Nonempty (α × β) ↔ Nonempty α ∧ Nonempty β :=
+lemma nonempty_prod : Nonempty (α × β) ↔ Nonempty α ∧ Nonempty β :=
   Iff.intro (fun ⟨⟨a, b⟩⟩ ↦ ⟨⟨a⟩, ⟨b⟩⟩) fun ⟨⟨a⟩, ⟨b⟩⟩ ↦ ⟨⟨a, b⟩⟩
 #align nonempty_prod nonempty_prod
 
 @[simp]
-theorem nonempty_pprod {α β} : Nonempty (PProd α β) ↔ Nonempty α ∧ Nonempty β :=
+lemma nonempty_pprod {α β} : Nonempty (PProd α β) ↔ Nonempty α ∧ Nonempty β :=
   Iff.intro (fun ⟨⟨a, b⟩⟩ ↦ ⟨⟨a⟩, ⟨b⟩⟩) fun ⟨⟨a⟩, ⟨b⟩⟩ ↦ ⟨⟨a, b⟩⟩
 #align nonempty_pprod nonempty_pprod
 
 @[simp]
-theorem nonempty_sum : Nonempty (Sum α β) ↔ Nonempty α ∨ Nonempty β :=
+lemma nonempty_sum : Nonempty (Sum α β) ↔ Nonempty α ∨ Nonempty β :=
   Iff.intro
     (fun ⟨h⟩ ↦
       match h with
@@ -93,7 +93,7 @@ theorem nonempty_sum : Nonempty (Sum α β) ↔ Nonempty α ∨ Nonempty β :=
 #align nonempty_sum nonempty_sum
 
 @[simp]
-theorem nonempty_psum {α β} : Nonempty (PSum α β) ↔ Nonempty α ∨ Nonempty β :=
+lemma nonempty_psum {α β} : Nonempty (PSum α β) ↔ Nonempty α ∨ Nonempty β :=
   Iff.intro
     (fun ⟨h⟩ ↦
       match h with
@@ -106,12 +106,12 @@ theorem nonempty_psum {α β} : Nonempty (PSum α β) ↔ Nonempty α ∨ Nonemp
 #align nonempty_psum nonempty_psum
 
 @[simp]
-theorem nonempty_ulift : Nonempty (ULift α) ↔ Nonempty α :=
+lemma nonempty_ulift : Nonempty (ULift α) ↔ Nonempty α :=
   Iff.intro (fun ⟨⟨a⟩⟩ ↦ ⟨a⟩) fun ⟨a⟩ ↦ ⟨⟨a⟩⟩
 #align nonempty_ulift nonempty_ulift
 
 @[simp]
-theorem nonempty_plift {α} : Nonempty (PLift α) ↔ Nonempty α :=
+lemma nonempty_plift {α} : Nonempty (PLift α) ↔ Nonempty α :=
   Iff.intro (fun ⟨⟨a⟩⟩ ↦ ⟨a⟩) fun ⟨a⟩ ↦ ⟨⟨a⟩⟩
 #align nonempty_plift nonempty_plift
 
@@ -139,16 +139,16 @@ theorem Nonempty.map {α β} (f : α → β) : Nonempty α → Nonempty β
   | ⟨h⟩ => ⟨f h⟩
 #align nonempty.map Nonempty.map
 
-protected theorem Nonempty.map2 {α β γ : Sort*} (f : α → β → γ) :
+protected lemma Nonempty.map2 {α β γ : Sort*} (f : α → β → γ) :
     Nonempty α → Nonempty β → Nonempty γ
   | ⟨x⟩, ⟨y⟩ => ⟨f x y⟩
 #align nonempty.map2 Nonempty.map2
 
-protected theorem Nonempty.congr {α β} (f : α → β) (g : β → α) : Nonempty α ↔ Nonempty β :=
+protected lemma Nonempty.congr {α β} (f : α → β) (g : β → α) : Nonempty α ↔ Nonempty β :=
   ⟨Nonempty.map f, Nonempty.map g⟩
 #align nonempty.congr Nonempty.congr
 
-theorem Nonempty.elim_to_inhabited {α : Sort*} [h : Nonempty α] {p : Prop} (f : Inhabited α → p) :
+lemma Nonempty.elim_to_inhabited {α : Sort*} [h : Nonempty α] {p : Prop} (f : Inhabited α → p) :
     p :=
   h.elim <| f ∘ Inhabited.mk
 #align nonempty.elim_to_inhabited Nonempty.elim_to_inhabited
@@ -160,15 +160,15 @@ protected instance Pi.instNonempty {ι : Sort*} {α : ι → Sort*} [∀ i, None
     Nonempty (∀ i, α i) :=
   ⟨fun _ ↦ Classical.arbitrary _⟩
 
-theorem Classical.nonempty_pi {ι} {α : ι → Sort*} : Nonempty (∀ i, α i) ↔ ∀ i, Nonempty (α i) :=
+lemma Classical.nonempty_pi {ι} {α : ι → Sort*} : Nonempty (∀ i, α i) ↔ ∀ i, Nonempty (α i) :=
   ⟨fun ⟨f⟩ a ↦ ⟨f a⟩, @Pi.instNonempty _ _⟩
 #align classical.nonempty_pi Classical.nonempty_pi
 
-theorem subsingleton_of_not_nonempty {α : Sort*} (h : ¬Nonempty α) : Subsingleton α :=
+lemma subsingleton_of_not_nonempty {α : Sort*} (h : ¬Nonempty α) : Subsingleton α :=
   ⟨fun x ↦ False.elim <| not_nonempty_iff_imp_false.mp h x⟩
 #align subsingleton_of_not_nonempty subsingleton_of_not_nonempty
 
-theorem Function.Surjective.nonempty [h : Nonempty β] {f : α → β} (hf : Function.Surjective f) :
+lemma Function.Surjective.nonempty [h : Nonempty β] {f : α → β} (hf : Function.Surjective f) :
     Nonempty α :=
   let ⟨y⟩ := h
   let ⟨x, _⟩ := hf y

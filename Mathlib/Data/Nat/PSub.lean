@@ -33,10 +33,10 @@ def ppred : ℕ → Option ℕ
 #align nat.ppred Nat.ppred
 
 @[simp]
-theorem ppred_zero : ppred 0 = none := rfl
+lemma ppred_zero : ppred 0 = none := rfl
 
 @[simp]
-theorem ppred_succ {n : ℕ} : ppred (succ n) = some n := rfl
+lemma ppred_succ {n : ℕ} : ppred (succ n) = some n := rfl
 
 /-- Partial subtraction operation. Returns `psub m n = some k`
   if `m = n + k`, otherwise `none`. -/
@@ -46,21 +46,21 @@ def psub (m : ℕ) : ℕ → Option ℕ
 #align nat.psub Nat.psub
 
 @[simp]
-theorem psub_zero {m : ℕ} : psub m 0 = some m := rfl
+lemma psub_zero {m : ℕ} : psub m 0 = some m := rfl
 
 @[simp]
-theorem psub_succ {m n : ℕ} : psub m (succ n) = psub m n >>= ppred := rfl
+lemma psub_succ {m n : ℕ} : psub m (succ n) = psub m n >>= ppred := rfl
 
-theorem pred_eq_ppred (n : ℕ) : pred n = (ppred n).getD 0 := by cases n <;> rfl
+lemma pred_eq_ppred (n : ℕ) : pred n = (ppred n).getD 0 := by cases n <;> rfl
 #align nat.pred_eq_ppred Nat.pred_eq_ppred
 
-theorem sub_eq_psub (m : ℕ) : ∀ n, m - n = (psub m n).getD 0
+lemma sub_eq_psub (m : ℕ) : ∀ n, m - n = (psub m n).getD 0
   | 0 => rfl
   | n + 1 => (pred_eq_ppred (m - n)).trans <| by rw [sub_eq_psub m n, psub]; cases psub m n <;> rfl
 #align nat.sub_eq_psub Nat.sub_eq_psub
 
 @[simp]
-theorem ppred_eq_some {m : ℕ} : ∀ {n}, ppred n = some m ↔ succ m = n
+lemma ppred_eq_some {m : ℕ} : ∀ {n}, ppred n = some m ↔ succ m = n
   | 0 => by constructor <;> intro h <;> contradiction
   | n + 1 => by constructor <;> intro h <;> injection h <;> subst m <;> rfl
 #align nat.ppred_eq_some Nat.ppred_eq_some
@@ -69,12 +69,12 @@ theorem ppred_eq_some {m : ℕ} : ∀ {n}, ppred n = some m ↔ succ m = n
 -- `ppred (n + 1) = none → n + 1 = 0` and `n + 1 = 0 → ppred (n + 1) = none`
 
 @[simp]
-theorem ppred_eq_none : ∀ {n : ℕ}, ppred n = none ↔ n = 0
+lemma ppred_eq_none : ∀ {n : ℕ}, ppred n = none ↔ n = 0
   | 0 => by simp
   | n + 1 => by constructor <;> intro <;> contradiction
 #align nat.ppred_eq_none Nat.ppred_eq_none
 
-theorem psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
+lemma psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
   | 0, k => by simp [eq_comm]
   | n + 1, k => by
     apply Option.bind_eq_some.trans
@@ -82,7 +82,7 @@ theorem psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
     simp [add_comm, add_left_comm, Nat.succ_eq_add_one]
 #align nat.psub_eq_some Nat.psub_eq_some
 
-theorem psub_eq_none {m n : ℕ} : psub m n = none ↔ m < n := by
+lemma psub_eq_none {m n : ℕ} : psub m n = none ↔ m < n := by
   cases s : psub m n <;> simp [eq_comm]
   · show m < n
     refine' lt_of_not_ge fun h => _
@@ -93,16 +93,16 @@ theorem psub_eq_none {m n : ℕ} : psub m n = none ↔ m < n := by
     apply Nat.le_add_left
 #align nat.psub_eq_none Nat.psub_eq_none
 
-theorem ppred_eq_pred {n} (h : 0 < n) : ppred n = some (pred n) :=
+lemma ppred_eq_pred {n} (h : 0 < n) : ppred n = some (pred n) :=
   ppred_eq_some.2 <| succ_pred_eq_of_pos h
 #align nat.ppred_eq_pred Nat.ppred_eq_pred
 
-theorem psub_eq_sub {m n} (h : n ≤ m) : psub m n = some (m - n) :=
+lemma psub_eq_sub {m n} (h : n ≤ m) : psub m n = some (m - n) :=
   psub_eq_some.2 <| Nat.sub_add_cancel h
 #align nat.psub_eq_sub Nat.psub_eq_sub
 
 -- Porting note: we only have the simp lemma `Option.bind_some` which uses `Option.bind` not `>>=`
-theorem psub_add (m n k) :
+lemma psub_add (m n k) :
     psub m (n + k) = (do psub (← psub m n) k) := by
     induction k with
     | zero => simp only [zero_eq, add_zero, psub_zero, Option.bind_eq_bind, Option.bind_some]
@@ -115,7 +115,7 @@ def psub' (m n : ℕ) : Option ℕ :=
   if n ≤ m then some (m - n) else none
 #align nat.psub' Nat.psub'
 
-theorem psub'_eq_psub (m n) : psub' m n = psub m n := by
+lemma psub'_eq_psub (m n) : psub' m n = psub m n := by
   rw [psub']
   split_ifs with h
   · exact (psub_eq_sub h).symm

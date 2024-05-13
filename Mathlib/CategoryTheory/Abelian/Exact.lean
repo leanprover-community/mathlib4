@@ -63,7 +63,7 @@ theorem exact_iff_image_eq_kernel : Exact f g ↔ imageSubobject f = kernelSubob
   · apply exact_of_image_eq_kernel
 #align category_theory.abelian.exact_iff_image_eq_kernel CategoryTheory.Abelian.exact_iff_image_eq_kernel
 
-theorem exact_iff : Exact f g ↔ f ≫ g = 0 ∧ kernel.ι g ≫ cokernel.π f = 0 := by
+lemma exact_iff : Exact f g ↔ f ≫ g = 0 ∧ kernel.ι g ≫ cokernel.π f = 0 := by
   constructor
   · exact fun h ↦ ⟨h.1, kernel_comp_cokernel f g h⟩
   · refine fun h ↦ ⟨h.1, ?_⟩
@@ -81,7 +81,7 @@ theorem exact_iff : Exact f g ↔ f ≫ g = 0 ∧ kernel.ι g ≫ cokernel.π f 
       simp
 #align category_theory.abelian.exact_iff CategoryTheory.Abelian.exact_iff
 
-theorem exact_iff' {cg : KernelFork g} (hg : IsLimit cg) {cf : CokernelCofork f}
+lemma exact_iff' {cg : KernelFork g} (hg : IsLimit cg) {cf : CokernelCofork f}
     (hf : IsColimit cf) : Exact f g ↔ f ≫ g = 0 ∧ cg.ι ≫ cf.π = 0 := by
   constructor
   · intro h
@@ -102,7 +102,7 @@ theorem exact_tfae :
   tfae_finish
 #align category_theory.abelian.exact_tfae CategoryTheory.Abelian.exact_tfae
 
-nonrec theorem IsEquivalence.exact_iff {D : Type u₁} [Category.{v₁} D] [Abelian D] (F : C ⥤ D)
+nonrec lemma IsEquivalence.exact_iff {D : Type u₁} [Category.{v₁} D] [Abelian D] (F : C ⥤ D)
     [F.IsEquivalence] : Exact (F.map f) (F.map g) ↔ Exact f g := by
   simp only [exact_iff, ← F.map_eq_zero_iff, F.map_comp, Category.assoc, ←
     kernelComparison_comp_ι g F, ← π_comp_cokernelComparison f F]
@@ -159,7 +159,7 @@ def isColimitImage (h : Exact f g) :
     (cancel_mono (Limits.image.ι g)).1 <| by simp
 #align category_theory.abelian.is_colimit_image CategoryTheory.Abelian.isColimitImage
 
-theorem exact_cokernel : Exact f (cokernel.π f) := by
+lemma exact_cokernel : Exact f (cokernel.π f) := by
   rw [exact_iff]
   aesop_cat
 #align category_theory.abelian.exact_cokernel CategoryTheory.Abelian.exact_cokernel
@@ -181,7 +181,7 @@ lemma isIso_cokernel_desc_of_exact_of_epi (ex : Exact f g) [Epi g] :
 
 -- Porting note: removed the simp attribute because the lemma may never apply automatically
 @[reassoc (attr := nolint unusedHavesSuffices)]
-theorem cokernel.desc.inv [Epi g] (ex : Exact f g) :
+lemma cokernel.desc.inv [Epi g] (ex : Exact f g) :
     have := isIso_cokernel_desc_of_exact_of_epi _ _ ex
     g ≫ inv (cokernel.desc _ _ ex.w) = cokernel.π _ := by
   have := isIso_cokernel_desc_of_exact_of_epi _ _ ex
@@ -195,7 +195,7 @@ lemma isIso_kernel_lift_of_exact_of_mono (ex : Exact f g) [Mono f] : IsIso (kern
 
 -- Porting note: removed the simp attribute because the lemma may never apply automatically
 @[reassoc (attr := nolint unusedHavesSuffices)]
-theorem kernel.lift.inv [Mono f] (ex : Exact f g) :
+lemma kernel.lift.inv [Mono f] (ex : Exact f g) :
     have := isIso_kernel_lift_of_exact_of_mono _ _ ex
     inv (kernel.lift _ _ ex.w) ≫ f = kernel.ι g := by
   have := isIso_kernel_lift_of_exact_of_mono _ _ ex
@@ -220,7 +220,7 @@ def isLimitOfExactOfMono [Mono f] (h : Exact f g) : IsLimit (KernelFork.ofι _ h
       fun j => by cases j <;> simp
 #align category_theory.abelian.is_limit_of_exact_of_mono CategoryTheory.Abelian.isLimitOfExactOfMono
 
-theorem exact_of_is_cokernel (w : f ≫ g = 0)
+lemma exact_of_is_cokernel (w : f ≫ g = 0)
     (h : IsColimit (CokernelCofork.ofπ _ w)) : Exact f g := by
   refine' (exact_iff _ _).2 ⟨w, _⟩
   have := h.fac (CokernelCofork.ofπ _ (cokernel.condition f)) WalkingParallelPair.one
@@ -228,19 +228,19 @@ theorem exact_of_is_cokernel (w : f ≫ g = 0)
   rw [← this, ← Category.assoc, kernel.condition, zero_comp]
 #align category_theory.abelian.exact_of_is_cokernel CategoryTheory.Abelian.exact_of_is_cokernel
 
-theorem exact_of_is_kernel (w : f ≫ g = 0) (h : IsLimit (KernelFork.ofι _ w)) : Exact f g := by
+lemma exact_of_is_kernel (w : f ≫ g = 0) (h : IsLimit (KernelFork.ofι _ w)) : Exact f g := by
   refine' (exact_iff _ _).2 ⟨w, _⟩
   have := h.fac (KernelFork.ofι _ (kernel.condition g)) WalkingParallelPair.zero
   simp only [Fork.ofι_π_app] at this
   rw [← this, Category.assoc, cokernel.condition, comp_zero]
 #align category_theory.abelian.exact_of_is_kernel CategoryTheory.Abelian.exact_of_is_kernel
 
-theorem exact_iff_exact_image_ι : Exact f g ↔ Exact (Abelian.image.ι f) g := by
+lemma exact_iff_exact_image_ι : Exact f g ↔ Exact (Abelian.image.ι f) g := by
   conv_lhs => rw [← Abelian.image.fac f]
   rw [exact_epi_comp_iff]
 #align category_theory.abelian.exact_iff_exact_image_ι CategoryTheory.Abelian.exact_iff_exact_image_ι
 
-theorem exact_iff_exact_coimage_π : Exact f g ↔ Exact f (coimage.π g) := by
+lemma exact_iff_exact_coimage_π : Exact f g ↔ Exact f (coimage.π g) := by
   conv_lhs => rw [← Abelian.coimage.fac g]
   rw [exact_comp_mono_iff]
 #align category_theory.abelian.exact_iff_exact_coimage_π CategoryTheory.Abelian.exact_iff_exact_coimage_π
@@ -263,7 +263,7 @@ theorem tfae_mono : TFAE [Mono f, kernel.ι f = 0, Exact (0 : Z ⟶ X) f] := by
 
 -- Note we've already proved `mono_iff_exact_zero_left : mono f ↔ Exact (0 : Z ⟶ X) f`
 -- in any preadditive category with kernels and images.
-theorem mono_iff_kernel_ι_eq_zero : Mono f ↔ kernel.ι f = 0 :=
+lemma mono_iff_kernel_ι_eq_zero : Mono f ↔ kernel.ι f = 0 :=
   (tfae_mono X f).out 0 1
 #align category_theory.abelian.mono_iff_kernel_ι_eq_zero CategoryTheory.Abelian.mono_iff_kernel_ι_eq_zero
 
@@ -284,7 +284,7 @@ theorem tfae_epi : TFAE [Epi f, cokernel.π f = 0, Exact f (0 : Y ⟶ Z)] := by
 
 -- Note we've already proved `epi_iff_exact_zero_right : epi f ↔ exact f (0 : Y ⟶ Z)`
 -- in any preadditive category with equalizers and images.
-theorem epi_iff_cokernel_π_eq_zero : Epi f ↔ cokernel.π f = 0 :=
+lemma epi_iff_cokernel_π_eq_zero : Epi f ↔ cokernel.π f = 0 :=
   (tfae_epi X f).out 0 1
 #align category_theory.abelian.epi_iff_cokernel_π_eq_zero CategoryTheory.Abelian.epi_iff_cokernel_π_eq_zero
 
@@ -292,25 +292,25 @@ end
 
 section Opposite
 
-theorem Exact.op (h : Exact f g) : Exact g.op f.op := by
+lemma Exact.op (h : Exact f g) : Exact g.op f.op := by
   rw [exact_iff]
   refine' ⟨by simp [← op_comp, h.w], Quiver.Hom.unop_inj _⟩
   simp only [unop_comp, cokernel.π_op, eqToHom_refl, kernel.ι_op, Category.id_comp,
     Category.assoc, kernel_comp_cokernel_assoc _ _ h, zero_comp, comp_zero, unop_zero]
 #align category_theory.abelian.exact.op CategoryTheory.Abelian.Exact.op
 
-theorem Exact.op_iff : Exact g.op f.op ↔ Exact f g :=
+lemma Exact.op_iff : Exact g.op f.op ↔ Exact f g :=
   ⟨fun e => by
     rw [← IsEquivalence.exact_iff _ _ (opOpEquivalence C).inverse]
     exact Exact.op _ _ e, Exact.op _ _⟩
 #align category_theory.abelian.exact.op_iff CategoryTheory.Abelian.Exact.op_iff
 
-theorem Exact.unop {X Y Z : Cᵒᵖ} (g : X ⟶ Y) (f : Y ⟶ Z) (h : Exact g f) : Exact f.unop g.unop := by
+lemma Exact.unop {X Y Z : Cᵒᵖ} (g : X ⟶ Y) (f : Y ⟶ Z) (h : Exact g f) : Exact f.unop g.unop := by
   rw [← f.op_unop, ← g.op_unop] at h
   rwa [← Exact.op_iff]
 #align category_theory.abelian.exact.unop CategoryTheory.Abelian.Exact.unop
 
-theorem Exact.unop_iff {X Y Z : Cᵒᵖ} (g : X ⟶ Y) (f : Y ⟶ Z) : Exact f.unop g.unop ↔ Exact g f :=
+lemma Exact.unop_iff {X Y Z : Cᵒᵖ} (g : X ⟶ Y) (f : Y ⟶ Z) : Exact f.unop g.unop ↔ Exact g f :=
   ⟨fun e => by rwa [← f.op_unop, ← g.op_unop, ← Exact.op_iff] at e, fun e => by
     rw [← Exact.op_iff]
     exact e⟩

@@ -59,7 +59,7 @@ def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_locally_surjective TopCat.Presheaf.IsLocallySurjective
 
-theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
+lemma isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
       ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, T.app _ s = t |_ₕ ι) ∧ x ∈ V :=
   Iff.rfl

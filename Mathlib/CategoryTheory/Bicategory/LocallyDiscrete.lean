@@ -43,7 +43,7 @@ structure LocallyDiscrete (C : Type u) where
 namespace LocallyDiscrete
 
 @[simp]
-theorem mk_as (a : LocallyDiscrete C) : mk a.as = a := rfl
+lemma mk_as (a : LocallyDiscrete C) : mk a.as = a := rfl
 
 /-- `LocallyDiscrete C` is equivalent to the original type `C`. -/
 @[simps]

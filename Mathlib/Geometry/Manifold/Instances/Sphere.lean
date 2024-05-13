@@ -90,12 +90,12 @@ def stereoToFun (x : E) : (ℝ ∙ v)ᗮ :=
 variable {v}
 
 @[simp]
-theorem stereoToFun_apply (x : E) :
+lemma stereoToFun_apply (x : E) :
     stereoToFun v x = (2 / ((1 : ℝ) - innerSL ℝ v x)) • orthogonalProjection (ℝ ∙ v)ᗮ x :=
   rfl
 #align stereo_to_fun_apply stereoToFun_apply
 
-theorem contDiffOn_stereoToFun :
+lemma contDiffOn_stereoToFun :
     ContDiffOn ℝ ⊤ (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
   refine' ContDiffOn.smul _ (orthogonalProjection (ℝ ∙ v)ᗮ).contDiff.contDiffOn
   refine' contDiff_const.contDiffOn.div _ _
@@ -104,7 +104,7 @@ theorem contDiffOn_stereoToFun :
     exact h (sub_eq_zero.mp h').symm
 #align cont_diff_on_stereo_to_fun contDiffOn_stereoToFun
 
-theorem continuousOn_stereoToFun :
+lemma continuousOn_stereoToFun :
     ContinuousOn (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} :=
   contDiffOn_stereoToFun.continuousOn
 #align continuous_on_stereo_to_fun continuousOn_stereoToFun
@@ -123,12 +123,12 @@ def stereoInvFunAux (w : E) : E :=
 variable {v}
 
 @[simp]
-theorem stereoInvFunAux_apply (w : E) :
+lemma stereoInvFunAux_apply (w : E) :
     stereoInvFunAux v w = (‖w‖ ^ 2 + 4)⁻¹ • ((4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v) :=
   rfl
 #align stereo_inv_fun_aux_apply stereoInvFunAux_apply
 
-theorem stereoInvFunAux_mem (hv : ‖v‖ = 1) {w : E} (hw : w ∈ (ℝ ∙ v)ᗮ) :
+lemma stereoInvFunAux_mem (hv : ‖v‖ = 1) {w : E} (hw : w ∈ (ℝ ∙ v)ᗮ) :
     stereoInvFunAux v w ∈ sphere (0 : E) 1 := by
   have h₁ : (0 : ℝ) < ‖w‖ ^ 2 + 4 := by positivity
   suffices ‖(4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v‖ = ‖w‖ ^ 2 + 4 by
@@ -142,7 +142,7 @@ theorem stereoInvFunAux_mem (hv : ‖v‖ = 1) {w : E} (hw : w ∈ (ℝ ∙ v)�
   ring
 #align stereo_inv_fun_aux_mem stereoInvFunAux_mem
 
-theorem hasFDerivAt_stereoInvFunAux (v : E) :
+lemma hasFDerivAt_stereoInvFunAux (v : E) :
     HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) 0 := by
   have h₀ : HasFDerivAt (fun w : E => ‖w‖ ^ 2) (0 : E →L[ℝ] ℝ) 0 := by
     convert (hasStrictFDerivAt_norm_sq (0 : E)).hasFDerivAt
@@ -160,14 +160,14 @@ theorem hasFDerivAt_stereoInvFunAux (v : E) :
   simp
 #align has_fderiv_at_stereo_inv_fun_aux hasFDerivAt_stereoInvFunAux
 
-theorem hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
+lemma hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
     HasFDerivAt (stereoInvFunAux v ∘ ((↑) : (ℝ ∙ v)ᗮ → E)) (ℝ ∙ v)ᗮ.subtypeL 0 := by
   have : HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) ((ℝ ∙ v)ᗮ.subtypeL 0) :=
     hasFDerivAt_stereoInvFunAux v
   convert this.comp (0 : (ℝ ∙ v)ᗮ) (by apply ContinuousLinearMap.hasFDerivAt)
 #align has_fderiv_at_stereo_inv_fun_aux_comp_coe hasFDerivAt_stereoInvFunAux_comp_coe
 
-theorem contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
+lemma contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
   have h₀ : ContDiff ℝ ⊤ fun w : E => ‖w‖ ^ 2 := contDiff_norm_sq ℝ
   have h₁ : ContDiff ℝ ⊤ fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
     refine' (h₀.add contDiff_const).inv _
@@ -186,12 +186,12 @@ def stereoInvFun (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : sphere (0 : E) 1 :=
 #align stereo_inv_fun stereoInvFun
 
 @[simp]
-theorem stereoInvFun_apply (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
+lemma stereoInvFun_apply (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
     (stereoInvFun hv w : E) = (‖w‖ ^ 2 + 4)⁻¹ • ((4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v) :=
   rfl
 #align stereo_inv_fun_apply stereoInvFun_apply
 
-theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
+lemma stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
     stereoInvFun hv w ≠ (⟨v, by simp [hv]⟩ : sphere (0 : E) 1) := by
   refine' Subtype.coe_ne_coe.1 _
   rw [← inner_lt_one_iff_real_of_norm_one _ hv]
@@ -205,11 +205,11 @@ theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
   · simpa using stereoInvFunAux_mem hv w.2
 #align stereo_inv_fun_ne_north_pole stereoInvFun_ne_north_pole
 
-theorem continuous_stereoInvFun (hv : ‖v‖ = 1) : Continuous (stereoInvFun hv) :=
+lemma continuous_stereoInvFun (hv : ‖v‖ = 1) : Continuous (stereoInvFun hv) :=
   continuous_induced_rng.2 (contDiff_stereoInvFunAux.continuous.comp continuous_subtype_val)
 #align continuous_stereo_inv_fun continuous_stereoInvFun
 
-theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) ≠ v) :
+lemma stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) ≠ v) :
     stereoInvFun hv (stereoToFun v x) = x := by
   ext
   simp only [stereoToFun_apply, stereoInvFun_apply, smul_add]
@@ -254,7 +254,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     rw [one_smul]
 #align stereo_left_inv stereo_left_inv
 
-theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
+lemma stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
   have : 2 / (1 - (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4)) * (‖(w : E)‖ ^ 2 + 4)⁻¹ * 4 = 1 := by
     field_simp; ring
   convert congr_arg (· • w) this
@@ -293,29 +293,29 @@ def stereographic (hv : ‖v‖ = 1) : PartialHomeomorph (sphere (0 : E) 1) (ℝ
   continuousOn_invFun := (continuous_stereoInvFun hv).continuousOn
 #align stereographic stereographic
 
-theorem stereographic_apply (hv : ‖v‖ = 1) (x : sphere (0 : E) 1) :
+lemma stereographic_apply (hv : ‖v‖ = 1) (x : sphere (0 : E) 1) :
     stereographic hv x = (2 / ((1 : ℝ) - inner v x)) • orthogonalProjection (ℝ ∙ v)ᗮ x :=
   rfl
 #align stereographic_apply stereographic_apply
 
 @[simp]
-theorem stereographic_source (hv : ‖v‖ = 1) : (stereographic hv).source = {⟨v, by simp [hv]⟩}ᶜ :=
+lemma stereographic_source (hv : ‖v‖ = 1) : (stereographic hv).source = {⟨v, by simp [hv]⟩}ᶜ :=
   rfl
 #align stereographic_source stereographic_source
 
 @[simp]
-theorem stereographic_target (hv : ‖v‖ = 1) : (stereographic hv).target = Set.univ :=
+lemma stereographic_target (hv : ‖v‖ = 1) : (stereographic hv).target = Set.univ :=
   rfl
 #align stereographic_target stereographic_target
 
 @[simp]
-theorem stereographic_apply_neg (v : sphere (0 : E) 1) :
+lemma stereographic_apply_neg (v : sphere (0 : E) 1) :
     stereographic (norm_eq_of_mem_sphere v) (-v) = 0 := by
   simp [stereographic_apply, orthogonalProjection_orthogonalComplement_singleton_eq_zero]
 #align stereographic_apply_neg stereographic_apply_neg
 
 @[simp]
-theorem stereographic_neg_apply (v : sphere (0 : E) 1) :
+lemma stereographic_neg_apply (v : sphere (0 : E) 1) :
     stereographic (norm_eq_of_mem_sphere (-v)) v = 0 := by
   convert stereographic_apply_neg (-v)
   ext1
@@ -345,7 +345,7 @@ orthogonalization, but in the finite-dimensional case it follows more easily by 
 -/
 
 -- Porting note: unnecessary in Lean 3
-private theorem findim (n : ℕ) [Fact (finrank ℝ E = n + 1)] : FiniteDimensional ℝ E :=
+private lemma findim (n : ℕ) [Fact (finrank ℝ E = n + 1)] : FiniteDimensional ℝ E :=
   .of_fact_finrank_eq_succ n
 
 /-- Variant of the stereographic projection, for the sphere in an `n + 1`-dimensional inner product
@@ -360,12 +360,12 @@ def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 
 #align stereographic' stereographic'
 
 @[simp]
-theorem stereographic'_source {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+lemma stereographic'_source {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     (stereographic' n v).source = {v}ᶜ := by simp [stereographic']
 #align stereographic'_source stereographic'_source
 
 @[simp]
-theorem stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+lemma stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     (stereographic' n v).target = Set.univ := by simp [stereographic']
 #align stereographic'_target stereographic'_target
 
@@ -382,11 +382,11 @@ end ChartedSpace
 
 section SmoothManifold
 
-theorem sphere_ext_iff (u v : sphere (0 : E) 1) : u = v ↔ ⟪(u : E), v⟫_ℝ = 1 := by
+lemma sphere_ext_iff (u v : sphere (0 : E) 1) : u = v ↔ ⟪(u : E), v⟫_ℝ = 1 := by
   simp [Subtype.ext_iff, inner_eq_one_iff_of_norm_one]
 #align sphere_ext_iff sphere_ext_iff
 
-theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1)
+lemma stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1)
     (x : EuclideanSpace ℝ (Fin n)) :
     ((stereographic' n v).symm x : E) =
       let U : (ℝ ∙ (v : E))ᗮ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin n) :=
@@ -567,7 +567,7 @@ section circle
 open Complex
 
 -- Porting note: 1+1 = 2 except when synthing instances
-theorem finrank_real_complex_fact' : Fact (finrank ℝ ℂ = 1 + 1) :=
+lemma finrank_real_complex_fact' : Fact (finrank ℝ ℂ = 1 + 1) :=
   finrank_real_complex_fact
 
 attribute [local instance] finrank_real_complex_fact'

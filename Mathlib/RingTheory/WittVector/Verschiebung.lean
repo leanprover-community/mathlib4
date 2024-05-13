@@ -39,30 +39,30 @@ def verschiebungFun (x : 𝕎 R) : 𝕎 R :=
   @mk' p _ fun n => if n = 0 then 0 else x.coeff (n - 1)
 #align witt_vector.verschiebung_fun WittVector.verschiebungFun
 
-theorem verschiebungFun_coeff (x : 𝕎 R) (n : ℕ) :
+lemma verschiebungFun_coeff (x : 𝕎 R) (n : ℕ) :
     (verschiebungFun x).coeff n = if n = 0 then 0 else x.coeff (n - 1) := by
   simp only [verschiebungFun, ge_iff_le]
 #align witt_vector.verschiebung_fun_coeff WittVector.verschiebungFun_coeff
 
-theorem verschiebungFun_coeff_zero (x : 𝕎 R) : (verschiebungFun x).coeff 0 = 0 := by
+lemma verschiebungFun_coeff_zero (x : 𝕎 R) : (verschiebungFun x).coeff 0 = 0 := by
   rw [verschiebungFun_coeff, if_pos rfl]
 #align witt_vector.verschiebung_fun_coeff_zero WittVector.verschiebungFun_coeff_zero
 
 @[simp]
-theorem verschiebungFun_coeff_succ (x : 𝕎 R) (n : ℕ) :
+lemma verschiebungFun_coeff_succ (x : 𝕎 R) (n : ℕ) :
     (verschiebungFun x).coeff n.succ = x.coeff n :=
   rfl
 #align witt_vector.verschiebung_fun_coeff_succ WittVector.verschiebungFun_coeff_succ
 
 @[ghost_simps]
-theorem ghostComponent_zero_verschiebungFun (x : 𝕎 R) :
+lemma ghostComponent_zero_verschiebungFun (x : 𝕎 R) :
     ghostComponent 0 (verschiebungFun x) = 0 := by
   rw [ghostComponent_apply, aeval_wittPolynomial, Finset.range_one, Finset.sum_singleton,
     verschiebungFun_coeff_zero, pow_zero, pow_zero, pow_one, one_mul]
 #align witt_vector.ghost_component_zero_verschiebung_fun WittVector.ghostComponent_zero_verschiebungFun
 
 @[ghost_simps]
-theorem ghostComponent_verschiebungFun (x : 𝕎 R) (n : ℕ) :
+lemma ghostComponent_verschiebungFun (x : 𝕎 R) (n : ℕ) :
     ghostComponent (n + 1) (verschiebungFun x) = p * ghostComponent n x := by
   simp only [ghostComponent_apply, aeval_wittPolynomial]
   rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl,
@@ -79,11 +79,11 @@ def verschiebungPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 #align witt_vector.verschiebung_poly WittVector.verschiebungPoly
 
 @[simp]
-theorem verschiebungPoly_zero : verschiebungPoly 0 = 0 :=
+lemma verschiebungPoly_zero : verschiebungPoly 0 = 0 :=
   rfl
 #align witt_vector.verschiebung_poly_zero WittVector.verschiebungPoly_zero
 
-theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
+lemma aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebungFun x).coeff n := by
   cases' n with n
   · simp only [verschiebungPoly, Nat.zero_eq, ge_iff_le, tsub_eq_zero_of_le, ite_true, map_zero,
@@ -141,39 +141,39 @@ theorem map_verschiebung (f : R →+* S) (x : 𝕎 R) :
 #align witt_vector.map_verschiebung WittVector.map_verschiebung
 
 @[ghost_simps]
-theorem ghostComponent_zero_verschiebung (x : 𝕎 R) : ghostComponent 0 (verschiebung x) = 0 :=
+lemma ghostComponent_zero_verschiebung (x : 𝕎 R) : ghostComponent 0 (verschiebung x) = 0 :=
   ghostComponent_zero_verschiebungFun _
 #align witt_vector.ghost_component_zero_verschiebung WittVector.ghostComponent_zero_verschiebung
 
 @[ghost_simps]
-theorem ghostComponent_verschiebung (x : 𝕎 R) (n : ℕ) :
+lemma ghostComponent_verschiebung (x : 𝕎 R) (n : ℕ) :
     ghostComponent (n + 1) (verschiebung x) = p * ghostComponent n x :=
   ghostComponent_verschiebungFun _ _
 #align witt_vector.ghost_component_verschiebung WittVector.ghostComponent_verschiebung
 
 @[simp]
-theorem verschiebung_coeff_zero (x : 𝕎 R) : (verschiebung x).coeff 0 = 0 :=
+lemma verschiebung_coeff_zero (x : 𝕎 R) : (verschiebung x).coeff 0 = 0 :=
   rfl
 #align witt_vector.verschiebung_coeff_zero WittVector.verschiebung_coeff_zero
 
 -- simp_nf complains if this is simp
-theorem verschiebung_coeff_add_one (x : 𝕎 R) (n : ℕ) :
+lemma verschiebung_coeff_add_one (x : 𝕎 R) (n : ℕ) :
     (verschiebung x).coeff (n + 1) = x.coeff n :=
   rfl
 #align witt_vector.verschiebung_coeff_add_one WittVector.verschiebung_coeff_add_one
 
 @[simp]
-theorem verschiebung_coeff_succ (x : 𝕎 R) (n : ℕ) : (verschiebung x).coeff n.succ = x.coeff n :=
+lemma verschiebung_coeff_succ (x : 𝕎 R) (n : ℕ) : (verschiebung x).coeff n.succ = x.coeff n :=
   rfl
 #align witt_vector.verschiebung_coeff_succ WittVector.verschiebung_coeff_succ
 
-theorem aeval_verschiebungPoly (x : 𝕎 R) (n : ℕ) :
+lemma aeval_verschiebungPoly (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebung x).coeff n :=
   aeval_verschiebung_poly' x n
 #align witt_vector.aeval_verschiebung_poly WittVector.aeval_verschiebungPoly
 
 @[simp]
-theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
+lemma bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
     bind₁ verschiebungPoly (wittPolynomial p ℤ n) =
       if n = 0 then 0 else p * wittPolynomial p ℤ (n - 1) := by
   apply MvPolynomial.funext

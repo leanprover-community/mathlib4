@@ -103,7 +103,7 @@ noncomputable def retraction {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] : Y �
 #align category_theory.retraction CategoryTheory.retraction
 
 @[reassoc (attr := simp)]
-theorem IsSplitMono.id {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] : f ≫ retraction f = 𝟙 X :=
+lemma IsSplitMono.id {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] : f ≫ retraction f = 𝟙 X :=
   hf.exists_splitMono.some.id
 #align category_theory.is_split_mono.id CategoryTheory.IsSplitMono.id
 
@@ -131,7 +131,7 @@ noncomputable def section_ {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] : Y ⟶ X
 #align category_theory.section_ CategoryTheory.section_
 
 @[reassoc (attr := simp)]
-theorem IsSplitEpi.id {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] : section_ f ≫ f = 𝟙 Y :=
+lemma IsSplitEpi.id {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] : section_ f ≫ f = 𝟙 Y :=
   hf.exists_splitEpi.some.id
 #align category_theory.is_split_epi.id CategoryTheory.IsSplitEpi.id
 
@@ -160,7 +160,7 @@ instance (priority := 100) IsSplitEpi.of_iso {X Y : C} (f : X ⟶ Y) [IsIso f] :
   IsSplitEpi.mk' { section_ := inv f }
 #align category_theory.is_split_epi.of_iso CategoryTheory.IsSplitEpi.of_iso
 
-theorem SplitMono.mono {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : Mono f :=
+lemma SplitMono.mono {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : Mono f :=
   { right_cancellation := fun g h w => by replace w := w =≫ sm.retraction; simpa using w }
 #align category_theory.split_mono.mono CategoryTheory.SplitMono.mono
 
@@ -169,7 +169,7 @@ instance (priority := 100) IsSplitMono.mono {X Y : C} (f : X ⟶ Y) [hf : IsSpli
   hf.exists_splitMono.some.mono
 #align category_theory.is_split_mono.mono CategoryTheory.IsSplitMono.mono
 
-theorem SplitEpi.epi {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : Epi f :=
+lemma SplitEpi.epi {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : Epi f :=
   { left_cancellation := fun g h w => by replace w := se.section_ ≫= w; simpa using w }
 #align category_theory.split_epi.epi CategoryTheory.SplitEpi.epi
 

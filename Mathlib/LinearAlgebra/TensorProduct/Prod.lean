@@ -41,11 +41,11 @@ def prodRight : M₁ ⊗[R] (M₂ × M₃) ≃ₗ[R] ((M₁ ⊗[R] M₂) × (M�
     (by ext <;> simp)
     (by ext <;> simp)
 
-@[simp] theorem prodRight_tmul (m₁ : M₁) (m₂ : M₂) (m₃ : M₃) :
+@[simp] lemma prodRight_tmul (m₁ : M₁) (m₂ : M₂) (m₃ : M₃) :
     prodRight R M₁ M₂ M₃ (m₁ ⊗ₜ (m₂, m₃)) = (m₁ ⊗ₜ m₂, m₁ ⊗ₜ m₃) :=
   rfl
 
-@[simp] theorem prodRight_symm_tmul (m₁ : M₁) (m₂ : M₂) (m₃ : M₃) :
+@[simp] lemma prodRight_symm_tmul (m₁ : M₁) (m₂ : M₂) (m₃ : M₃) :
     (prodRight R M₁ M₂ M₃).symm (m₁ ⊗ₜ m₂, m₁ ⊗ₜ m₃) = (m₁ ⊗ₜ (m₂, m₃)) :=
   (LinearEquiv.symm_apply_eq _).mpr rfl
 
@@ -55,11 +55,11 @@ def prodLeft : (M₁ × M₂) ⊗[R] M₃ ≃ₗ[R] ((M₁ ⊗[R] M₃) × (M₂
     ≪≫ₗ TensorProduct.prodRight R _ _ _
     ≪≫ₗ (TensorProduct.comm R _ _).prod (TensorProduct.comm R _ _)
 
-@[simp] theorem prodLeft_tmul (m₁ : M₁) (m₂ : M₂) (m₃ : M₃) :
+@[simp] lemma prodLeft_tmul (m₁ : M₁) (m₂ : M₂) (m₃ : M₃) :
     prodLeft R M₁ M₂ M₃ ((m₁, m₂) ⊗ₜ m₃) = (m₁ ⊗ₜ m₃, m₂ ⊗ₜ m₃) :=
   rfl
 
-@[simp] theorem prodLeft_symm_tmul (m₁ : M₁) (m₂ : M₂) (m₃ : M₃) :
+@[simp] lemma prodLeft_symm_tmul (m₁ : M₁) (m₂ : M₂) (m₃ : M₃) :
     (prodLeft R M₁ M₂ M₃).symm (m₁ ⊗ₜ m₃, m₂ ⊗ₜ m₃) = ((m₁, m₂) ⊗ₜ m₃) :=
   (LinearEquiv.symm_apply_eq _).mpr rfl
 

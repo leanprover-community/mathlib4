@@ -39,7 +39,7 @@ protected def surjective : MorphismProperty C := fun _ _ f => Surjective f
 protected def bijective : MorphismProperty C := fun _ _ f => Bijective f
 #align category_theory.morphism_property.bijective CategoryTheory.MorphismProperty.bijective
 
-theorem bijective_eq_sup :
+lemma bijective_eq_sup :
     MorphismProperty.bijective C = MorphismProperty.injective C ⊓ MorphismProperty.surjective C :=
   rfl
 #align category_theory.morphism_property.bijective_eq_sup CategoryTheory.MorphismProperty.bijective_eq_sup
@@ -74,17 +74,17 @@ instance : (MorphismProperty.bijective C).IsMultiplicative where
     rw [coe_comp]
     exact hg.comp hf
 
-theorem injective_respectsIso : (MorphismProperty.injective C).RespectsIso :=
+lemma injective_respectsIso : (MorphismProperty.injective C).RespectsIso :=
   respectsIso_of_isStableUnderComposition
     (fun _ _ f (_ : IsIso f) => ((forget C).mapIso (asIso f)).toEquiv.injective)
 #align category_theory.morphism_property.injective_respects_iso CategoryTheory.MorphismProperty.injective_respectsIso
 
-theorem surjective_respectsIso : (MorphismProperty.surjective C).RespectsIso :=
+lemma surjective_respectsIso : (MorphismProperty.surjective C).RespectsIso :=
   respectsIso_of_isStableUnderComposition
     (fun _ _ f (_ : IsIso f) => ((forget C).mapIso (asIso f)).toEquiv.surjective)
 #align category_theory.morphism_property.surjective_respects_iso CategoryTheory.MorphismProperty.surjective_respectsIso
 
-theorem bijective_respectsIso : (MorphismProperty.bijective C).RespectsIso :=
+lemma bijective_respectsIso : (MorphismProperty.bijective C).RespectsIso :=
   respectsIso_of_isStableUnderComposition
     (fun _ _ f (_ : IsIso f) => ((forget C).mapIso (asIso f)).toEquiv.bijective)
 #align category_theory.morphism_property.bijective_respects_iso CategoryTheory.MorphismProperty.bijective_respectsIso

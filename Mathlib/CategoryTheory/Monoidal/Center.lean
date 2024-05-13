@@ -94,7 +94,7 @@ instance : Quiver (Center C) where
   Hom := Hom
 
 @[ext]
-theorem ext {X Y : Center C} (f g : X ⟶ Y) (w : f.f = g.f) : f = g := by
+lemma ext {X Y : Center C} (f g : X ⟶ Y) (w : f.f = g.f) : f = g := by
   cases f; cases g; congr
 #align category_theory.center.ext CategoryTheory.Center.ext
 
@@ -103,12 +103,12 @@ instance : Category (Center C) where
   comp f g := { f := f.f ≫ g.f }
 
 @[simp]
-theorem id_f (X : Center C) : Hom.f (𝟙 X) = 𝟙 X.1 :=
+lemma id_f (X : Center C) : Hom.f (𝟙 X) = 𝟙 X.1 :=
   rfl
 #align category_theory.center.id_f CategoryTheory.Center.id_f
 
 @[simp]
-theorem comp_f {X Y Z : Center C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).f = f.f ≫ g.f :=
+lemma comp_f {X Y Z : Center C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).f = f.f ≫ g.f :=
   rfl
 #align category_theory.center.comp_f CategoryTheory.Center.comp_f
 
@@ -163,7 +163,7 @@ def tensorObj (X Y : Center C) : Center C :=
 #align category_theory.center.tensor_obj CategoryTheory.Center.tensorObj
 
 @[reassoc]
-theorem whiskerLeft_comm (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) (U : C) :
+lemma whiskerLeft_comm (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) (U : C) :
     (X.1 ◁ f.f) ▷ U ≫ ((tensorObj X Y₂).2.β U).hom =
       ((tensorObj X Y₁).2.β U).hom ≫ U ◁ X.1 ◁ f.f := by
   dsimp only [tensorObj_fst, tensorObj_snd_β, Iso.trans_hom, whiskerLeftIso_hom,
@@ -185,7 +185,7 @@ def whiskerLeft (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) :
   comm U := whiskerLeft_comm X f U
 
 @[reassoc]
-theorem whiskerRight_comm {X₁ X₂: Center C} (f : X₁ ⟶ X₂) (Y : Center C) (U : C) :
+lemma whiskerRight_comm {X₁ X₂: Center C} (f : X₁ ⟶ X₂) (Y : Center C) (U : C) :
     f.f ▷ Y.1 ▷ U ≫ ((tensorObj X₂ Y).2.β U).hom =
       ((tensorObj X₁ Y).2.β U).hom ≫ U ◁ f.f ▷ Y.1 := by
   dsimp only [tensorObj_fst, tensorObj_snd_β, Iso.trans_hom, whiskerLeftIso_hom,
@@ -261,12 +261,12 @@ instance : MonoidalCategory (Center C) where
   rightUnitor := rightUnitor
 
 @[simp]
-theorem tensor_fst (X Y : Center C) : (X ⊗ Y).1 = X.1 ⊗ Y.1 :=
+lemma tensor_fst (X Y : Center C) : (X ⊗ Y).1 = X.1 ⊗ Y.1 :=
   rfl
 #align category_theory.center.tensor_fst CategoryTheory.Center.tensor_fst
 
 @[simp]
-theorem tensor_β (X Y : Center C) (U : C) :
+lemma tensor_β (X Y : Center C) (U : C) :
     (X ⊗ Y).2.β U =
       α_ _ _ _ ≪≫
         (whiskerLeftIso X.1 (Y.2.β U)) ≪≫ (α_ _ _ _).symm ≪≫
@@ -275,52 +275,52 @@ theorem tensor_β (X Y : Center C) (U : C) :
 #align category_theory.center.tensor_β CategoryTheory.Center.tensor_β
 
 @[simp]
-theorem whiskerLeft_f (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) : (X ◁ f).f = X.1 ◁ f.f :=
+lemma whiskerLeft_f (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) : (X ◁ f).f = X.1 ◁ f.f :=
   rfl
 
 @[simp]
-theorem whiskerRight_f {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) : (f ▷ Y).f = f.f ▷ Y.1 :=
+lemma whiskerRight_f {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) : (f ▷ Y).f = f.f ▷ Y.1 :=
   rfl
 
 @[simp]
-theorem tensor_f {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (f ⊗ g).f = f.f ⊗ g.f :=
+lemma tensor_f {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (f ⊗ g).f = f.f ⊗ g.f :=
   rfl
 #align category_theory.center.tensor_f CategoryTheory.Center.tensor_f
 
 @[simp]
-theorem tensorUnit_β (U : C) : (𝟙_ (Center C)).2.β U = λ_ U ≪≫ (ρ_ U).symm :=
+lemma tensorUnit_β (U : C) : (𝟙_ (Center C)).2.β U = λ_ U ≪≫ (ρ_ U).symm :=
   rfl
 #align category_theory.center.tensor_unit_β CategoryTheory.Center.tensorUnit_β
 
 @[simp]
-theorem associator_hom_f (X Y Z : Center C) : Hom.f (α_ X Y Z).hom = (α_ X.1 Y.1 Z.1).hom :=
+lemma associator_hom_f (X Y Z : Center C) : Hom.f (α_ X Y Z).hom = (α_ X.1 Y.1 Z.1).hom :=
   rfl
 #align category_theory.center.associator_hom_f CategoryTheory.Center.associator_hom_f
 
 @[simp]
-theorem associator_inv_f (X Y Z : Center C) : Hom.f (α_ X Y Z).inv = (α_ X.1 Y.1 Z.1).inv := by
+lemma associator_inv_f (X Y Z : Center C) : Hom.f (α_ X Y Z).inv = (α_ X.1 Y.1 Z.1).inv := by
   apply Iso.inv_ext' -- Porting note: Originally `ext`
   rw [← associator_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 #align category_theory.center.associator_inv_f CategoryTheory.Center.associator_inv_f
 
 @[simp]
-theorem leftUnitor_hom_f (X : Center C) : Hom.f (λ_ X).hom = (λ_ X.1).hom :=
+lemma leftUnitor_hom_f (X : Center C) : Hom.f (λ_ X).hom = (λ_ X.1).hom :=
   rfl
 #align category_theory.center.left_unitor_hom_f CategoryTheory.Center.leftUnitor_hom_f
 
 @[simp]
-theorem leftUnitor_inv_f (X : Center C) : Hom.f (λ_ X).inv = (λ_ X.1).inv := by
+lemma leftUnitor_inv_f (X : Center C) : Hom.f (λ_ X).inv = (λ_ X.1).inv := by
   apply Iso.inv_ext' -- Porting note: Originally `ext`
   rw [← leftUnitor_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 #align category_theory.center.left_unitor_inv_f CategoryTheory.Center.leftUnitor_inv_f
 
 @[simp]
-theorem rightUnitor_hom_f (X : Center C) : Hom.f (ρ_ X).hom = (ρ_ X.1).hom :=
+lemma rightUnitor_hom_f (X : Center C) : Hom.f (ρ_ X).hom = (ρ_ X.1).hom :=
   rfl
 #align category_theory.center.right_unitor_hom_f CategoryTheory.Center.rightUnitor_hom_f
 
 @[simp]
-theorem rightUnitor_inv_f (X : Center C) : Hom.f (ρ_ X).inv = (ρ_ X.1).inv := by
+lemma rightUnitor_inv_f (X : Center C) : Hom.f (ρ_ X).inv = (ρ_ X.1).inv := by
   apply Iso.inv_ext' -- Porting note: Originally `ext`
   rw [← rightUnitor_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 #align category_theory.center.right_unitor_inv_f CategoryTheory.Center.rightUnitor_inv_f

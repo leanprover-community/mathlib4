@@ -63,12 +63,12 @@ def pderiv (i : σ) : Derivation R (MvPolynomial σ R) (MvPolynomial σ R) :=
   mkDerivation R <| Pi.single i 1
 #align mv_polynomial.pderiv MvPolynomial.pderiv
 
-theorem pderiv_def [DecidableEq σ] (i : σ) : pderiv i = mkDerivation R (Pi.single i 1) := by
+lemma pderiv_def [DecidableEq σ] (i : σ) : pderiv i = mkDerivation R (Pi.single i 1) := by
   unfold pderiv; congr!
 #align mv_polynomial.pderiv_def MvPolynomial.pderiv_def
 
 @[simp]
-theorem pderiv_monomial {i : σ} :
+lemma pderiv_monomial {i : σ} :
     pderiv i (monomial s a) = monomial (s - single i 1) (a * s i) := by
   classical
     simp only [pderiv_def, mkDerivation_monomial, Finsupp.smul_sum, smul_eq_mul, ← smul_mul_assoc,
@@ -79,52 +79,52 @@ theorem pderiv_monomial {i : σ} :
     · simp
 #align mv_polynomial.pderiv_monomial MvPolynomial.pderiv_monomial
 
-theorem pderiv_C {i : σ} : pderiv i (C a) = 0 :=
+lemma pderiv_C {i : σ} : pderiv i (C a) = 0 :=
   derivation_C _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_C MvPolynomial.pderiv_C
 
-theorem pderiv_one {i : σ} : pderiv i (1 : MvPolynomial σ R) = 0 := pderiv_C
+lemma pderiv_one {i : σ} : pderiv i (1 : MvPolynomial σ R) = 0 := pderiv_C
 #align mv_polynomial.pderiv_one MvPolynomial.pderiv_one
 
 @[simp]
-theorem pderiv_X [DecidableEq σ] (i j : σ) :
+lemma pderiv_X [DecidableEq σ] (i j : σ) :
     pderiv i (X j : MvPolynomial σ R) = Pi.single (f := fun j => _) i 1 j := by
   rw [pderiv_def, mkDerivation_X]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_X MvPolynomial.pderiv_X
 
 @[simp]
-theorem pderiv_X_self (i : σ) : pderiv i (X i : MvPolynomial σ R) = 1 := by classical simp
+lemma pderiv_X_self (i : σ) : pderiv i (X i : MvPolynomial σ R) = 1 := by classical simp
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_X_self MvPolynomial.pderiv_X_self
 
 @[simp]
-theorem pderiv_X_of_ne {i j : σ} (h : j ≠ i) : pderiv i (X j : MvPolynomial σ R) = 0 := by
+lemma pderiv_X_of_ne {i j : σ} (h : j ≠ i) : pderiv i (X j : MvPolynomial σ R) = 0 := by
   classical simp [h]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_X_of_ne MvPolynomial.pderiv_X_of_ne
 
-theorem pderiv_eq_zero_of_not_mem_vars {i : σ} {f : MvPolynomial σ R} (h : i ∉ f.vars) :
+lemma pderiv_eq_zero_of_not_mem_vars {i : σ} {f : MvPolynomial σ R} (h : i ∉ f.vars) :
     pderiv i f = 0 :=
   derivation_eq_zero_of_forall_mem_vars fun _ hj => pderiv_X_of_ne <| ne_of_mem_of_not_mem hj h
 #align mv_polynomial.pderiv_eq_zero_of_not_mem_vars MvPolynomial.pderiv_eq_zero_of_not_mem_vars
 
-theorem pderiv_monomial_single {i : σ} {n : ℕ} : pderiv i (monomial (single i n) a) =
+lemma pderiv_monomial_single {i : σ} {n : ℕ} : pderiv i (monomial (single i n) a) =
     monomial (single i (n - 1)) (a * n) := by simp
 #align mv_polynomial.pderiv_monomial_single MvPolynomial.pderiv_monomial_single
 
-theorem pderiv_mul {i : σ} {f g : MvPolynomial σ R} :
+lemma pderiv_mul {i : σ} {f g : MvPolynomial σ R} :
     pderiv i (f * g) = pderiv i f * g + f * pderiv i g := by
   simp only [(pderiv i).leibniz f g, smul_eq_mul, mul_comm, add_comm]
 #align mv_polynomial.pderiv_mul MvPolynomial.pderiv_mul
 
-theorem pderiv_pow {i : σ} {f : MvPolynomial σ R} {n : ℕ} :
+lemma pderiv_pow {i : σ} {f : MvPolynomial σ R} {n : ℕ} :
     pderiv i (f ^ n) = n * f ^ (n - 1) * pderiv i f := by
   rw [(pderiv i).leibniz_pow f n, nsmul_eq_mul, smul_eq_mul, mul_assoc]
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a * pderiv i f := by
+lemma pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a * pderiv i f := by
   rw [C_mul', Derivation.map_smul, C_mul']
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_C_mul MvPolynomial.pderiv_C_mul

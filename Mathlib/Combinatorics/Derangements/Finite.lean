@@ -39,12 +39,12 @@ instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFi
 -- Porting note: used to use the tactic delta_instance
 instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
 
-theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
+lemma card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
     [DecidableEq β] (h : card α = card β) : card (derangements α) = card (derangements β) :=
   Fintype.card_congr (Equiv.derangementsCongr <| equivOfCardEq h)
 #align card_derangements_invariant card_derangements_invariant
 
-theorem card_derangements_fin_add_two (n : ℕ) :
+lemma card_derangements_fin_add_two (n : ℕ) :
     card (derangements (Fin (n + 2))) =
       (n + 1) * card (derangements (Fin n)) + (n + 1) * card (derangements (Fin (n + 1))) := by
   -- get some basic results about the size of fin (n+1) plus or minus an element
@@ -72,21 +72,21 @@ def numDerangements : ℕ → ℕ
 #align num_derangements numDerangements
 
 @[simp]
-theorem numDerangements_zero : numDerangements 0 = 1 :=
+lemma numDerangements_zero : numDerangements 0 = 1 :=
   rfl
 #align num_derangements_zero numDerangements_zero
 
 @[simp]
-theorem numDerangements_one : numDerangements 1 = 0 :=
+lemma numDerangements_one : numDerangements 1 = 0 :=
   rfl
 #align num_derangements_one numDerangements_one
 
-theorem numDerangements_add_two (n : ℕ) :
+lemma numDerangements_add_two (n : ℕ) :
     numDerangements (n + 2) = (n + 1) * (numDerangements n + numDerangements (n + 1)) :=
   rfl
 #align num_derangements_add_two numDerangements_add_two
 
-theorem numDerangements_succ (n : ℕ) :
+lemma numDerangements_succ (n : ℕ) :
     (numDerangements (n + 1) : ℤ) = (n + 1) * (numDerangements n : ℤ) - (-1) ^ n := by
   induction' n with n hn
   · rfl
@@ -94,7 +94,7 @@ theorem numDerangements_succ (n : ℕ) :
     ring
 #align num_derangements_succ numDerangements_succ
 
-theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
+lemma card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by
   induction' n using Nat.strong_induction_on with n hyp
   rcases n with _ | _ | n
@@ -106,13 +106,13 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
   rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add, hyp, hyp] <;> omega
 #align card_derangements_fin_eq_num_derangements card_derangements_fin_eq_numDerangements
 
-theorem card_derangements_eq_numDerangements (α : Type*) [Fintype α] [DecidableEq α] :
+lemma card_derangements_eq_numDerangements (α : Type*) [Fintype α] [DecidableEq α] :
     card (derangements α) = numDerangements (card α) := by
   rw [← card_derangements_invariant (card_fin _)]
   exact card_derangements_fin_eq_numDerangements
 #align card_derangements_eq_num_derangements card_derangements_eq_numDerangements
 
-theorem numDerangements_sum (n : ℕ) :
+lemma numDerangements_sum (n : ℕ) :
     (numDerangements n : ℤ) =
       ∑ k in Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial (k + 1) (n - k) := by
   induction' n with n hn; · rfl

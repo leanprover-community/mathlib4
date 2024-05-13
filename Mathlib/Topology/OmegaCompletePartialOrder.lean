@@ -38,7 +38,7 @@ def IsωSup {α : Type u} [Preorder α] (c : Chain α) (x : α) : Prop :=
   (∀ i, c i ≤ x) ∧ ∀ y, (∀ i, c i ≤ y) → x ≤ y
 #align Scott.is_ωSup Scott.IsωSup
 
-theorem isωSup_iff_isLUB {α : Type u} [Preorder α] {c : Chain α} {x : α} :
+lemma isωSup_iff_isLUB {α : Type u} [Preorder α] {c : Chain α} {x : α} :
     IsωSup c x ↔ IsLUB (range c) x := by
   simp [IsωSup, IsLUB, IsLeast, upperBounds, lowerBounds]
 #align Scott.is_ωSup_iff_is_lub Scott.isωSup_iff_isLUB
@@ -51,22 +51,22 @@ def IsOpen (s : Set α) : Prop :=
   Continuous' fun x ↦ x ∈ s
 #align Scott.is_open Scott.IsOpen
 
-theorem isOpen_univ : IsOpen α univ :=
+lemma isOpen_univ : IsOpen α univ :=
   ⟨fun _ _ _ _ ↦ mem_univ _, @CompleteLattice.top_continuous α Prop _ _⟩
 #align Scott.is_open_univ Scott.isOpen_univ
 
-theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α (s ∩ t) :=
+lemma IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α (s ∩ t) :=
   CompleteLattice.inf_continuous'
 #align Scott.is_open.inter Scott.IsOpen.inter
 
-theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
+lemma isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs ⊢
   convert CompleteLattice.sSup_continuous' (setOf ⁻¹' s) hs
   simp only [sSup_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
     SetCoe.exists, iSup_Prop_eq, mem_setOf_eq, mem_sUnion]
 #align Scott.is_open_sUnion Scott.isOpen_sUnion
 
-theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.fst
+lemma IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.fst
 
 end Scott
 
@@ -94,7 +94,7 @@ def notBelow :=
   { x | ¬x ≤ y }
 #align not_below notBelow
 
-theorem notBelow_isOpen : IsOpen (notBelow y) := by
+lemma notBelow_isOpen : IsOpen (notBelow y) := by
   have h : Monotone (notBelow y) := fun x z hle ↦ mt hle.trans
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
   simp only [ωSup_le_iff, notBelow, mem_setOf_eq, le_Prop_eq, OrderHom.coe_mk, Chain.map_coe,
@@ -107,13 +107,13 @@ open Scott hiding IsOpen
 
 open OmegaCompletePartialOrder
 
-theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωSup c (ωSup c) := by
+lemma isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωSup c (ωSup c) := by
   constructor
   · apply le_ωSup
   · apply ωSup_le
 #align is_ωSup_ωSup isωSup_ωSup
 
-theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
+lemma scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : Continuous f) :
     OmegaCompletePartialOrder.Continuous' f := by
   have h : Monotone f := fun x y h ↦ by
@@ -129,7 +129,7 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
   tauto
 #align Scott_continuous_of_continuous scottContinuous_of_continuous
 
-theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
+lemma continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β)
     (hf : OmegaCompletePartialOrder.Continuous' f) : Continuous f := by
   rw [continuous_def]

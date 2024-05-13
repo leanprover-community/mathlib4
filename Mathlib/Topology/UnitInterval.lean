@@ -39,27 +39,27 @@ scoped[unitInterval] notation "I" => unitInterval
 
 namespace unitInterval
 
-theorem zero_mem : (0 : ℝ) ∈ I :=
+lemma zero_mem : (0 : ℝ) ∈ I :=
   ⟨le_rfl, zero_le_one⟩
 #align unit_interval.zero_mem unitInterval.zero_mem
 
-theorem one_mem : (1 : ℝ) ∈ I :=
+lemma one_mem : (1 : ℝ) ∈ I :=
   ⟨zero_le_one, le_rfl⟩
 #align unit_interval.one_mem unitInterval.one_mem
 
-theorem mul_mem {x y : ℝ} (hx : x ∈ I) (hy : y ∈ I) : x * y ∈ I :=
+lemma mul_mem {x y : ℝ} (hx : x ∈ I) (hy : y ∈ I) : x * y ∈ I :=
   ⟨mul_nonneg hx.1 hy.1, mul_le_one hx.2 hy.1 hy.2⟩
 #align unit_interval.mul_mem unitInterval.mul_mem
 
-theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / y ∈ I :=
+lemma div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / y ∈ I :=
   ⟨div_nonneg hx hy, div_le_one_of_le hxy hy⟩
 #align unit_interval.div_mem unitInterval.div_mem
 
-theorem fract_mem (x : ℝ) : fract x ∈ I :=
+lemma fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
 #align unit_interval.fract_mem unitInterval.fract_mem
 
-theorem mem_iff_one_sub_mem {t : ℝ} : t ∈ I ↔ 1 - t ∈ I := by
+lemma mem_iff_one_sub_mem {t : ℝ} : t ∈ I ↔ 1 - t ∈ I := by
   rw [mem_Icc, mem_Icc]
   constructor <;> intro <;> constructor <;> linarith
 #align unit_interval.mem_iff_one_sub_mem unitInterval.mem_iff_one_sub_mem
@@ -78,11 +78,11 @@ instance : BoundedOrder I := Set.Icc.boundedOrder zero_le_one
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
-theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 :=
+lemma coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 :=
   not_iff_not.mpr coe_eq_zero
 #align unit_interval.coe_ne_zero unitInterval.coe_ne_zero
 
-theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 :=
+lemma coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 :=
   not_iff_not.mpr coe_eq_one
 #align unit_interval.coe_ne_one unitInterval.coe_ne_one
 
@@ -93,11 +93,11 @@ instance : Mul I :=
   ⟨fun x y => ⟨x * y, mul_mem x.2 y.2⟩⟩
 
 -- todo: we could set up a `LinearOrderedCommMonoidWithZero I` instance
-theorem mul_le_left {x y : I} : x * y ≤ x :=
+lemma mul_le_left {x y : I} : x * y ≤ x :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.2.1 y.2.2
 #align unit_interval.mul_le_left unitInterval.mul_le_left
 
-theorem mul_le_right {x y : I} : x * y ≤ y :=
+lemma mul_le_right {x y : I} : x * y ≤ y :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 #align unit_interval.mul_le_right unitInterval.mul_le_right
 
@@ -109,32 +109,32 @@ def symm : I → I := fun t => ⟨1 - t, mem_iff_one_sub_mem.mp t.prop⟩
 scoped notation "σ" => unitInterval.symm
 
 @[simp]
-theorem symm_zero : σ 0 = 1 :=
+lemma symm_zero : σ 0 = 1 :=
   Subtype.ext <| by simp [symm]
 #align unit_interval.symm_zero unitInterval.symm_zero
 
 @[simp]
-theorem symm_one : σ 1 = 0 :=
+lemma symm_one : σ 1 = 0 :=
   Subtype.ext <| by simp [symm]
 #align unit_interval.symm_one unitInterval.symm_one
 
 @[simp]
-theorem symm_symm (x : I) : σ (σ x) = x :=
+lemma symm_symm (x : I) : σ (σ x) = x :=
   Subtype.ext <| by simp [symm]
 #align unit_interval.symm_symm unitInterval.symm_symm
 
-theorem symm_involutive : Function.Involutive (symm : I → I) := symm_symm
+lemma symm_involutive : Function.Involutive (symm : I → I) := symm_symm
 
-theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.bijective
+lemma symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.bijective
 
 @[simp]
-theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
+lemma coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
 #align unit_interval.coe_symm_eq unitInterval.coe_symm_eq
 
 -- Porting note: Proof used to be `by continuity!`
 @[continuity]
-theorem continuous_symm : Continuous σ :=
+lemma continuous_symm : Continuous σ :=
   (continuous_const.add continuous_induced_dom.neg).subtype_mk _
 #align unit_interval.continuous_symm unitInterval.continuous_symm
 
@@ -146,7 +146,7 @@ def symmHomeomorph : I ≃ₜ I where
   left_inv := symm_symm
   right_inv := symm_symm
 
-theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
+lemma strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
 -- 2024-02-27
 @[deprecated] alias involutive_symm := symm_involutive
@@ -154,7 +154,7 @@ theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := 
 -- 2024-02-27
 @[deprecated] alias bijective_symm := symm_bijective
 
-theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
+lemma half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]
 
 instance : ConnectedSpace I :=
@@ -163,21 +163,21 @@ instance : ConnectedSpace I :=
 /-- Verify there is an instance for `CompactSpace I`. -/
 example : CompactSpace I := by infer_instance
 
-theorem nonneg (x : I) : 0 ≤ (x : ℝ) :=
+lemma nonneg (x : I) : 0 ≤ (x : ℝ) :=
   x.2.1
 #align unit_interval.nonneg unitInterval.nonneg
 
-theorem one_minus_nonneg (x : I) : 0 ≤ 1 - (x : ℝ) := by simpa using x.2.2
+lemma one_minus_nonneg (x : I) : 0 ≤ 1 - (x : ℝ) := by simpa using x.2.2
 #align unit_interval.one_minus_nonneg unitInterval.one_minus_nonneg
 
-theorem le_one (x : I) : (x : ℝ) ≤ 1 :=
+lemma le_one (x : I) : (x : ℝ) ≤ 1 :=
   x.2.2
 #align unit_interval.le_one unitInterval.le_one
 
-theorem one_minus_le_one (x : I) : 1 - (x : ℝ) ≤ 1 := by simpa using x.2.1
+lemma one_minus_le_one (x : I) : 1 - (x : ℝ) ≤ 1 := by simpa using x.2.1
 #align unit_interval.one_minus_le_one unitInterval.one_minus_le_one
 
-theorem add_pos {t : I} {x : ℝ} (hx : 0 < x) : 0 < (x + t : ℝ) :=
+lemma add_pos {t : I} {x : ℝ} (hx : 0 < x) : 0 < (x + t : ℝ) :=
   add_pos_of_pos_of_nonneg hx <| nonneg _
 #align unit_interval.add_pos unitInterval.add_pos
 
@@ -193,7 +193,7 @@ theorem le_one' {t : I} : t ≤ 1 :=
 
 instance : Nontrivial I := ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)⟩⟩
 
-theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
+lemma mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor
   · exact nonneg_of_mul_nonneg_right h₁ ha
   · rwa [le_div_iff ha, mul_comm]
@@ -201,7 +201,7 @@ theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc
   · rwa [le_div_iff ha, mul_comm] at h₂
 #align unit_interval.mul_pos_mem_iff unitInterval.mul_pos_mem_iff
 
-theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
+lemma two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
 #align unit_interval.two_mul_sub_one_mem_iff unitInterval.two_mul_sub_one_mem_iff
 
@@ -290,12 +290,12 @@ lemma exists_monotone_Icc_subset_open_cover_unitInterval_prod_self {ι} {c : ι 
 end partition
 
 @[simp]
-theorem projIcc_eq_zero {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 0 ↔ x ≤ 0 :=
+lemma projIcc_eq_zero {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 0 ↔ x ≤ 0 :=
   projIcc_eq_left zero_lt_one
 #align proj_Icc_eq_zero projIcc_eq_zero
 
 @[simp]
-theorem projIcc_eq_one {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 1 ↔ 1 ≤ x :=
+lemma projIcc_eq_one {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 1 ↔ 1 ≤ x :=
   projIcc_eq_right zero_lt_one
 #align proj_Icc_eq_one projIcc_eq_one
 
@@ -340,14 +340,14 @@ set_option linter.uppercaseLean3 false in
 #align Icc_homeo_I iccHomeoI
 
 @[simp]
-theorem iccHomeoI_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc a b) :
+lemma iccHomeoI_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc a b) :
     ((iccHomeoI a b h) x : 𝕜) = (x - a) / (b - a) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Icc_homeo_I_apply_coe iccHomeoI_apply_coe
 
 @[simp]
-theorem iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜) (1 : 𝕜)) :
+lemma iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜) (1 : 𝕜)) :
     ((iccHomeoI a b h).symm x : 𝕜) = (b - a) * x + a :=
   rfl
 set_option linter.uppercaseLean3 false in

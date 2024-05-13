@@ -90,7 +90,7 @@ instance WellOrderExtension.wellFoundedLT [LT α] [WellFoundedLT α] :
   WellFounded.wellOrderExtension.isWellFounded_lt _
 #align well_order_extension.well_founded_lt WellOrderExtension.wellFoundedLT
 
-theorem toWellOrderExtension_strictMono [Preorder α] [WellFoundedLT α] :
+lemma toWellOrderExtension_strictMono [Preorder α] [WellFoundedLT α] :
     StrictMono (toWellOrderExtension : α → WellOrderExtension α) := fun _ _ h =>
   Prod.Lex.left _ _ <| WellFounded.rank_lt_of_rel _ h
 #align to_well_order_extension_strict_mono toWellOrderExtension_strictMono

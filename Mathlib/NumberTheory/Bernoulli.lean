@@ -70,17 +70,17 @@ def bernoulli' : ℕ → ℚ :=
     1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k k.2
 #align bernoulli' bernoulli'
 
-theorem bernoulli'_def' (n : ℕ) :
+lemma bernoulli'_def' (n : ℕ) :
     bernoulli' n = 1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k :=
   WellFounded.fix_eq _ _ _
 #align bernoulli'_def' bernoulli'_def'
 
-theorem bernoulli'_def (n : ℕ) :
+lemma bernoulli'_def (n : ℕ) :
     bernoulli' n = 1 - ∑ k in range n, n.choose k / (n - k + 1) * bernoulli' k := by
   rw [bernoulli'_def', ← Fin.sum_univ_eq_sum_range]
 #align bernoulli'_def bernoulli'_def
 
-theorem bernoulli'_spec (n : ℕ) :
+lemma bernoulli'_spec (n : ℕ) :
     (∑ k in range n.succ, (n.choose (n - k) : ℚ) / (n - k + 1) * bernoulli' k) = 1 := by
   rw [sum_range_succ_comm, bernoulli'_def n, tsub_self, choose_zero_right, sub_self, zero_add,
     div_one, cast_one, one_mul, sub_add, ← sum_sub_distrib, ← sub_eq_zero, sub_sub_cancel_left,
@@ -88,7 +88,7 @@ theorem bernoulli'_spec (n : ℕ) :
   exact Finset.sum_eq_zero (fun x hx => by rw [choose_symm (le_of_lt (mem_range.1 hx)), sub_self])
 #align bernoulli'_spec bernoulli'_spec
 
-theorem bernoulli'_spec' (n : ℕ) :
+lemma bernoulli'_spec' (n : ℕ) :
     (∑ k in antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli' k.1) = 1 := by
   refine' ((sum_antidiagonal_eq_sum_range_succ_mk _ n).trans _).trans (bernoulli'_spec n)
   refine' sum_congr rfl fun x hx => _
@@ -101,31 +101,31 @@ theorem bernoulli'_spec' (n : ℕ) :
 section Examples
 
 @[simp]
-theorem bernoulli'_zero : bernoulli' 0 = 1 := by
+lemma bernoulli'_zero : bernoulli' 0 = 1 := by
   rw [bernoulli'_def]
   norm_num
 #align bernoulli'_zero bernoulli'_zero
 
 @[simp]
-theorem bernoulli'_one : bernoulli' 1 = 1 / 2 := by
+lemma bernoulli'_one : bernoulli' 1 = 1 / 2 := by
   rw [bernoulli'_def]
   norm_num
 #align bernoulli'_one bernoulli'_one
 
 @[simp]
-theorem bernoulli'_two : bernoulli' 2 = 1 / 6 := by
+lemma bernoulli'_two : bernoulli' 2 = 1 / 6 := by
   rw [bernoulli'_def]
   norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
 #align bernoulli'_two bernoulli'_two
 
 @[simp]
-theorem bernoulli'_three : bernoulli' 3 = 0 := by
+lemma bernoulli'_three : bernoulli' 3 = 0 := by
   rw [bernoulli'_def]
   norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
 #align bernoulli'_three bernoulli'_three
 
 @[simp]
-theorem bernoulli'_four : bernoulli' 4 = -1 / 30 := by
+lemma bernoulli'_four : bernoulli' 4 = -1 / 30 := by
   have : Nat.choose 4 2 = 6 := by decide -- shrug
   rw [bernoulli'_def]
   norm_num [sum_range_succ, sum_range_succ, sum_range_zero, this]
@@ -134,7 +134,7 @@ theorem bernoulli'_four : bernoulli' 4 = -1 / 30 := by
 end Examples
 
 @[simp]
-theorem sum_bernoulli' (n : ℕ) : (∑ k in range n, (n.choose k : ℚ) * bernoulli' k) = n := by
+lemma sum_bernoulli' (n : ℕ) : (∑ k in range n, (n.choose k : ℚ) * bernoulli' k) = n := by
   cases' n with n
   · simp
   suffices
@@ -155,7 +155,7 @@ def bernoulli'PowerSeries :=
   mk fun n => algebraMap ℚ A (bernoulli' n / n !)
 #align bernoulli'_power_series bernoulli'PowerSeries
 
-theorem bernoulli'PowerSeries_mul_exp_sub_one :
+lemma bernoulli'PowerSeries_mul_exp_sub_one :
     bernoulli'PowerSeries A * (exp A - 1) = X * exp A := by
   ext n
   -- constant coefficient is a special case
@@ -201,19 +201,19 @@ def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
 #align bernoulli bernoulli
 
-theorem bernoulli'_eq_bernoulli (n : ℕ) : bernoulli' n = (-1) ^ n * bernoulli n := by
+lemma bernoulli'_eq_bernoulli (n : ℕ) : bernoulli' n = (-1) ^ n * bernoulli n := by
   simp [bernoulli, ← mul_assoc, ← sq, ← pow_mul, mul_comm n 2, pow_mul]
 #align bernoulli'_eq_bernoulli bernoulli'_eq_bernoulli
 
 @[simp]
-theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
+lemma bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 #align bernoulli_zero bernoulli_zero
 
 @[simp]
-theorem bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num [bernoulli]
+lemma bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num [bernoulli]
 #align bernoulli_one bernoulli_one
 
-theorem bernoulli_eq_bernoulli'_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli n = bernoulli' n := by
+lemma bernoulli_eq_bernoulli'_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli n = bernoulli' n := by
   by_cases h0 : n = 0; · simp [h0]
   rw [bernoulli, neg_one_pow_eq_pow_mod_two]
   cases' mod_two_eq_zero_or_one n with h h
@@ -222,7 +222,7 @@ theorem bernoulli_eq_bernoulli'_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli n
 #align bernoulli_eq_bernoulli'_of_ne_one bernoulli_eq_bernoulli'_of_ne_one
 
 @[simp]
-theorem sum_bernoulli (n : ℕ) :
+lemma sum_bernoulli (n : ℕ) :
     (∑ k in range n, (n.choose k : ℚ) * bernoulli k) = if n = 1 then 1 else 0 := by
   cases' n with n n
   · simp
@@ -245,7 +245,7 @@ theorem sum_bernoulli (n : ℕ) :
     ring
 #align sum_bernoulli sum_bernoulli
 
-theorem bernoulli_spec' (n : ℕ) :
+lemma bernoulli_spec' (n : ℕ) :
     (∑ k in antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli k.1) =
       if n = 0 then 1 else 0 := by
   cases' n with n n;
@@ -274,7 +274,7 @@ def bernoulliPowerSeries :=
   mk fun n => algebraMap ℚ A (bernoulli n / n !)
 #align bernoulli_power_series bernoulliPowerSeries
 
-theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A - 1) = X := by
+lemma bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A - 1) = X := by
   ext n
   -- constant coefficient is a special case
   cases' n with n n;

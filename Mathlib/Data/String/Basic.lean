@@ -56,7 +56,7 @@ def ltb.inductionOn.{u} {motive : Iterator → Iterator → Sort u} (it₁ it₂
     else base₁ it₁.s it₂.s it₁.i it₂.i h₂ h₁
   else base₂ it₁.s it₂.s it₁.i it₂.i h₂
 
-theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) :
+lemma ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) :
     ltb ⟨⟨c :: cs₁⟩, i₁ + c⟩ ⟨⟨c :: cs₂⟩, i₂ + c⟩ = ltb ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ := by
   apply ltb.inductionOn ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ (motive := fun ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ ↦
     ltb ⟨⟨c :: cs₁⟩, i₁ + c⟩ ⟨⟨c :: cs₂⟩, i₂ + c⟩ =
@@ -73,7 +73,7 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) 
     simp [Iterator.curr, get_cons_addChar, hne]
 
 @[simp]
-theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
+lemma lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
   | ⟨s₁⟩, ⟨s₂⟩ => show ltb ⟨⟨s₁⟩, 0⟩ ⟨⟨s₂⟩, 0⟩ ↔ s₁ < s₂ by
     induction s₁ generalizing s₂ <;> cases s₂
     · unfold ltb; decide
@@ -112,30 +112,30 @@ instance decidableLE : @DecidableRel String (· ≤ ·) := by
 #align string.decidable_le String.decidableLE
 
 @[simp]
-theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
+lemma le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
   (not_congr lt_iff_toList_lt).trans not_lt
 #align string.le_iff_to_list_le String.le_iff_toList_le
 
-theorem toList_inj {s₁ s₂ : String} : s₁.toList = s₂.toList ↔ s₁ = s₂ :=
+lemma toList_inj {s₁ s₂ : String} : s₁.toList = s₂.toList ↔ s₁ = s₂ :=
   ⟨congr_arg mk, congr_arg toList⟩
 #align string.to_list_inj String.toList_inj
 
-theorem nil_asString_eq_empty : [].asString = "" :=
+lemma nil_asString_eq_empty : [].asString = "" :=
   rfl
 #align string.nil_as_string_eq_empty String.nil_asString_eq_empty
 
 @[simp]
-theorem toList_empty : "".toList = [] :=
+lemma toList_empty : "".toList = [] :=
   rfl
 #align string.to_list_empty String.toList_empty
 
-theorem asString_inv_toList (s : String) : s.toList.asString = s :=
+lemma asString_inv_toList (s : String) : s.toList.asString = s :=
   rfl
 #align string.as_string_inv_to_list String.asString_inv_toList
 
 #align string.to_list_singleton String.data_singleton
 
-theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
+lemma toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
   | ⟨s⟩, h => by
     cases s with
     | nil => simp at h
@@ -145,7 +145,7 @@ theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s
 #align string.to_list_nonempty String.toList_nonempty
 
 @[simp]
-theorem head_empty : "".data.head! = default :=
+lemma head_empty : "".data.head! = default :=
   rfl
 #align string.head_empty String.head_empty
 
@@ -175,26 +175,26 @@ end String
 
 open String
 
-theorem List.toList_inv_asString (l : List Char) : l.asString.toList = l :=
+lemma List.toList_inv_asString (l : List Char) : l.asString.toList = l :=
   rfl
 #align list.to_list_inv_as_string List.toList_inv_asString
 
 @[simp]
-theorem List.length_asString (l : List Char) : l.asString.length = l.length :=
+lemma List.length_asString (l : List Char) : l.asString.length = l.length :=
   rfl
 #align list.length_as_string List.length_asString
 
 @[simp]
-theorem List.asString_inj {l l' : List Char} : l.asString = l'.asString ↔ l = l' :=
+lemma List.asString_inj {l l' : List Char} : l.asString = l'.asString ↔ l = l' :=
   ⟨fun h ↦ by rw [← toList_inv_asString l, ← toList_inv_asString l', toList_inj, h],
    fun h ↦ h ▸ rfl⟩
 #align list.as_string_inj List.asString_inj
 
 @[simp]
-theorem String.length_data (s : String) : s.data.length = s.length :=
+lemma String.length_data (s : String) : s.data.length = s.length :=
   rfl
 #align string.length_to_list String.length_data
 
-theorem List.asString_eq {l : List Char} {s : String} : l.asString = s ↔ l = s.toList := by
+lemma List.asString_eq {l : List Char} {s : String} : l.asString = s ↔ l = s.toList := by
   rw [← asString_inv_toList s, asString_inj, asString_inv_toList s]
 #align list.as_string_eq List.asString_eq

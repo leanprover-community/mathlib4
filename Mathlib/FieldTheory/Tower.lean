@@ -60,14 +60,14 @@ theorem left [Nontrivial A] [FiniteDimensional F A] : FiniteDimensional F K :=
     (LinearMap.ringLmapEquivSelf K ℕ A |>.symm x |>.restrictScalars F) (smul_left_injective K hx)
 #align finite_dimensional.left FiniteDimensional.left
 
-theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
+lemma right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
   let ⟨⟨b, hb⟩⟩ := hf
   ⟨⟨b, Submodule.restrictScalars_injective F _ _ <| by
     rw [Submodule.restrictScalars_top, eq_top_iff, ← hb, Submodule.span_le]
     exact Submodule.subset_span⟩⟩
 #align finite_dimensional.right FiniteDimensional.right
 
-theorem Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDomain A]
+lemma Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDomain A]
     [Algebra F A] (hp : (finrank F A).Prime) : IsSimpleOrder (Subalgebra F A) :=
   { toNontrivial :=
       ⟨⟨⊥, ⊤, fun he =>

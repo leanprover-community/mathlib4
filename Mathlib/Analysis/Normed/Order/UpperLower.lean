@@ -32,7 +32,7 @@ section MetricSpace
 variable [NormedOrderedGroup α] {s : Set α}
 
 @[to_additive IsUpperSet.thickening]
-protected theorem IsUpperSet.thickening' (hs : IsUpperSet s) (ε : ℝ) :
+protected lemma IsUpperSet.thickening' (hs : IsUpperSet s) (ε : ℝ) :
     IsUpperSet (thickening ε s) := by
   rw [← ball_mul_one]
   exact hs.mul_left
@@ -40,7 +40,7 @@ protected theorem IsUpperSet.thickening' (hs : IsUpperSet s) (ε : ℝ) :
 #align is_upper_set.thickening IsUpperSet.thickening
 
 @[to_additive IsLowerSet.thickening]
-protected theorem IsLowerSet.thickening' (hs : IsLowerSet s) (ε : ℝ) :
+protected lemma IsLowerSet.thickening' (hs : IsLowerSet s) (ε : ℝ) :
     IsLowerSet (thickening ε s) := by
   rw [← ball_mul_one]
   exact hs.mul_left
@@ -48,7 +48,7 @@ protected theorem IsLowerSet.thickening' (hs : IsLowerSet s) (ε : ℝ) :
 #align is_lower_set.thickening IsLowerSet.thickening
 
 @[to_additive IsUpperSet.cthickening]
-protected theorem IsUpperSet.cthickening' (hs : IsUpperSet s) (ε : ℝ) :
+protected lemma IsUpperSet.cthickening' (hs : IsUpperSet s) (ε : ℝ) :
     IsUpperSet (cthickening ε s) := by
   rw [cthickening_eq_iInter_thickening'']
   exact isUpperSet_iInter₂ fun δ _ => hs.thickening' _
@@ -56,7 +56,7 @@ protected theorem IsUpperSet.cthickening' (hs : IsUpperSet s) (ε : ℝ) :
 #align is_upper_set.cthickening IsUpperSet.cthickening
 
 @[to_additive IsLowerSet.cthickening]
-protected theorem IsLowerSet.cthickening' (hs : IsLowerSet s) (ε : ℝ) :
+protected lemma IsLowerSet.cthickening' (hs : IsLowerSet s) (ε : ℝ) :
     IsLowerSet (cthickening ε s) := by
   rw [cthickening_eq_iInter_thickening'']
   exact isLowerSet_iInter₂ fun δ _ => hs.thickening' _
@@ -72,7 +72,7 @@ section Finite
 
 variable [Finite ι] {s : Set (ι → ℝ)} {x y : ι → ℝ} {δ : ℝ}
 
-theorem IsUpperSet.mem_interior_of_forall_lt (hs : IsUpperSet s) (hx : x ∈ closure s)
+lemma IsUpperSet.mem_interior_of_forall_lt (hs : IsUpperSet s) (hx : x ∈ closure s)
     (h : ∀ i, x i < y i) : y ∈ interior s := by
   cases nonempty_fintype ι
   obtain ⟨ε, hε, hxy⟩ := Pi.exists_forall_pos_add_lt h
@@ -90,7 +90,7 @@ theorem IsUpperSet.mem_interior_of_forall_lt (hs : IsUpperSet s) (hx : x ∈ clo
   exact ((lt_sub_iff_add_lt.2 <| hyz _).trans (hw _ <| mem_univ _).1).le
 #align is_upper_set.mem_interior_of_forall_lt IsUpperSet.mem_interior_of_forall_lt
 
-theorem IsLowerSet.mem_interior_of_forall_lt (hs : IsLowerSet s) (hx : x ∈ closure s)
+lemma IsLowerSet.mem_interior_of_forall_lt (hs : IsLowerSet s) (hx : x ∈ closure s)
     (h : ∀ i, y i < x i) : y ∈ interior s := by
   cases nonempty_fintype ι
   obtain ⟨ε, hε, hxy⟩ := Pi.exists_forall_pos_add_lt h
@@ -115,7 +115,7 @@ section Fintype
 
 variable [Fintype ι] {s : Set (ι → ℝ)} {x y : ι → ℝ} {δ : ℝ}
 
-theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
+lemma IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
   refine' ⟨x + const _ (3 / 4 * δ), closedBall_subset_closedBall' _, _⟩
   · rw [dist_self_add_left]
@@ -134,7 +134,7 @@ theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s)
   linarith
 #align is_upper_set.exists_subset_ball IsUpperSet.exists_subset_ball
 
-theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
+lemma IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
   refine' ⟨x - const _ (3 / 4 * δ), closedBall_subset_closedBall' _, _⟩
   · rw [dist_self_sub_left]

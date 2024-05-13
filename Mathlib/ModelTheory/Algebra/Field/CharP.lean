@@ -35,7 +35,7 @@ saying that `n` is zero. -/
 noncomputable def eqZero (n : ℕ) : Language.ring.Sentence :=
   Term.equal (termOfFreeCommRing n) 0
 
-@[simp] theorem realize_eqZero [CommRing K] [CompatibleRing K] (n : ℕ)
+@[simp] lemma realize_eqZero [CommRing K] [CompatibleRing K] (n : ℕ)
     (v : Empty → K) : (Formula.Realize (eqZero n) v) ↔ ((n : K) = 0) := by
   simp [eqZero, Term.realize]
 
@@ -60,7 +60,7 @@ instance model_hasChar_of_charP [Field K] [CompatibleRing K] [CharP K p] :
       Formula.realize_not, realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
     exact CharP.charP_to_charZero K
 
-theorem charP_iff_model_fieldOfChar [Field K] [CompatibleRing K] :
+lemma charP_iff_model_fieldOfChar [Field K] [CompatibleRing K] :
     (Theory.fieldOfChar p).Model K ↔ CharP K p := by
   simp only [Theory.fieldOfChar, Theory.model_union_iff,
     (show (Theory.field.Model K) by infer_instance), true_and]
@@ -83,7 +83,7 @@ instance model_fieldOfChar_of_charP [Field K] [CompatibleRing K]
 
 variable (p) (K)
 /- Not an instance because it caused performance problems in a different file. -/
-theorem charP_of_model_fieldOfChar [Field K] [CompatibleRing K]
+lemma charP_of_model_fieldOfChar [Field K] [CompatibleRing K]
     [h : (Theory.fieldOfChar p).Model K] : CharP K p :=
   charP_iff_model_fieldOfChar.1 h
 

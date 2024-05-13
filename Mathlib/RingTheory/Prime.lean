@@ -62,12 +62,12 @@ section CommRing
 
 variable {α : Type*} [CommRing α]
 
-theorem Prime.neg {p : α} (hp : Prime p) : Prime (-p) := by
+lemma Prime.neg {p : α} (hp : Prime p) : Prime (-p) := by
   obtain ⟨h1, h2, h3⟩ := hp
   exact ⟨neg_ne_zero.mpr h1, by rwa [IsUnit.neg_iff], by simpa [neg_dvd] using h3⟩
 #align prime.neg Prime.neg
 
-theorem Prime.abs [LinearOrder α] {p : α} (hp : Prime p) : Prime (abs p) := by
+lemma Prime.abs [LinearOrder α] {p : α} (hp : Prime p) : Prime (abs p) := by
   obtain h | h := abs_choice p <;> rw [h]
   · exact hp
   · exact hp.neg

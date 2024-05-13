@@ -44,7 +44,7 @@ open multiplicity
 
 variable [Semiring R] {φ : R⟦X⟧}
 
-theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
+lemma exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
   refine' not_iff_not.mp _
   push_neg
   -- FIXME: the `FunLike.coe` doesn't seem to be picked up in the expression after #8386?
@@ -65,7 +65,7 @@ theorem order_zero : order (0 : R⟦X⟧) = ⊤ :=
   dif_pos rfl
 #align power_series.order_zero PowerSeries.order_zero
 
-theorem order_finite_iff_ne_zero : (order φ).Dom ↔ φ ≠ 0 := by
+lemma order_finite_iff_ne_zero : (order φ).Dom ↔ φ ≠ 0 := by
   simp only [order]
   constructor
   · split_ifs with h <;> intro H
@@ -164,7 +164,7 @@ theorem le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) ≤ order (�
   simp (config := { contextual := true }) [coeff_of_lt_order]
 #align power_series.le_order_add PowerSeries.le_order_add
 
-private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ order ψ)
+private lemma order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ order ψ)
     (H : order φ < order ψ) : order (φ + ψ) ≤ order φ ⊓ order ψ := by
   suffices order (φ + ψ) = order φ by
     rw [le_inf_iff, this]
@@ -242,12 +242,12 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
   omega
 #align power_series.coeff_mul_of_lt_order PowerSeries.coeff_mul_of_lt_order
 
-theorem coeff_mul_one_sub_of_lt_order {R : Type*} [CommRing R] {φ ψ : R⟦X⟧} (n : ℕ)
+lemma coeff_mul_one_sub_of_lt_order {R : Type*} [CommRing R] {φ ψ : R⟦X⟧} (n : ℕ)
     (h : ↑n < ψ.order) : coeff R n (φ * (1 - ψ)) = coeff R n φ := by
   simp [coeff_mul_of_lt_order h, mul_sub]
 #align power_series.coeff_mul_one_sub_of_lt_order PowerSeries.coeff_mul_one_sub_of_lt_order
 
-theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ) (s : Finset ι)
+lemma coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ) (s : Finset ι)
     (φ : R⟦X⟧) (f : ι → R⟦X⟧) :
     (∀ i ∈ s, ↑k < (f i).order) → coeff R k (φ * ∏ i in s, (1 - f i)) = coeff R k φ := by
   classical
@@ -260,7 +260,7 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
 #align power_series.coeff_mul_prod_one_sub_of_lt_order PowerSeries.coeff_mul_prod_one_sub_of_lt_order
 
 -- TODO: link with `X_pow_dvd_iff`
-theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
+lemma X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
   refine' ⟨PowerSeries.mk fun n => coeff R (n + (order φ).get h) φ, _⟩
   ext n
   simp only [coeff_mul, coeff_X_pow, coeff_mk, boole_mul, Finset.sum_ite,
@@ -274,7 +274,7 @@ theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
 set_option linter.uppercaseLean3 false in
 #align power_series.X_pow_order_dvd PowerSeries.X_pow_order_dvd
 
-theorem order_eq_multiplicity_X {R : Type*} [Semiring R] [@DecidableRel R⟦X⟧ (· ∣ ·)] (φ : R⟦X⟧) :
+lemma order_eq_multiplicity_X {R : Type*} [Semiring R] [@DecidableRel R⟦X⟧ (· ∣ ·)] (φ : R⟦X⟧) :
     order φ = multiplicity X φ := by
   classical
   rcases eq_or_ne φ 0 with (rfl | hφ)
@@ -303,7 +303,7 @@ set_option linter.uppercaseLean3 false in
 def divided_by_X_pow_order {f : PowerSeries R} (hf : f ≠ 0) : R⟦X⟧ :=
   (exists_eq_mul_right_of_dvd (X_pow_order_dvd (order_finite_iff_ne_zero.2 hf))).choose
 
-theorem self_eq_X_pow_order_mul_divided_by_X_pow_order {f : R⟦X⟧} (hf : f ≠ 0) :
+lemma self_eq_X_pow_order_mul_divided_by_X_pow_order {f : R⟦X⟧} (hf : f ≠ 0) :
     X ^ f.order.get (order_finite_iff_ne_zero.mpr hf) * divided_by_X_pow_order hf = f :=
   haveI dvd := X_pow_order_dvd (order_finite_iff_ne_zero.mpr hf)
   (exists_eq_mul_right_of_dvd dvd).choose_spec.symm
@@ -359,13 +359,13 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
 
 -- Dividing `X` by the maximal power of `X` dividing it leaves `1`.
 @[simp]
-theorem divided_by_X_pow_order_of_X_eq_one : divided_by_X_pow_order X_ne_zero = (1 : R⟦X⟧) := by
+lemma divided_by_X_pow_order_of_X_eq_one : divided_by_X_pow_order X_ne_zero = (1 : R⟦X⟧) := by
   rw [← mul_eq_left₀ X_ne_zero]
   simpa only [order_X, X_ne_zero, PartENat.get_one, pow_one, Ne, not_false_iff] using
     self_eq_X_pow_order_mul_divided_by_X_pow_order (@X_ne_zero R _ _)
 
 -- Dividing a power series by the maximal power of `X` dividing it, respects multiplication.
-theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0) :
+lemma divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0) :
     divided_by_X_pow_order hf * divided_by_X_pow_order hg =
       divided_by_X_pow_order (mul_ne_zero hf hg) := by
   set df := f.order.get (order_finite_iff_ne_zero.mpr hf)

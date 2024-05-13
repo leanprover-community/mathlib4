@@ -44,37 +44,37 @@ def IsIrreducible (s : Set X) : Prop :=
   s.Nonempty ∧ IsPreirreducible s
 #align is_irreducible IsIrreducible
 
-theorem IsIrreducible.nonempty (h : IsIrreducible s) : s.Nonempty :=
+lemma IsIrreducible.nonempty (h : IsIrreducible s) : s.Nonempty :=
   h.1
 #align is_irreducible.nonempty IsIrreducible.nonempty
 
-theorem IsIrreducible.isPreirreducible (h : IsIrreducible s) : IsPreirreducible s :=
+lemma IsIrreducible.isPreirreducible (h : IsIrreducible s) : IsPreirreducible s :=
   h.2
 #align is_irreducible.is_preirreducible IsIrreducible.isPreirreducible
 
-theorem isPreirreducible_empty : IsPreirreducible (∅ : Set X) := fun _ _ _ _ _ ⟨_, h1, _⟩ =>
+lemma isPreirreducible_empty : IsPreirreducible (∅ : Set X) := fun _ _ _ _ _ ⟨_, h1, _⟩ =>
   h1.elim
 #align is_preirreducible_empty isPreirreducible_empty
 
-theorem Set.Subsingleton.isPreirreducible (hs : s.Subsingleton) : IsPreirreducible s :=
+lemma Set.Subsingleton.isPreirreducible (hs : s.Subsingleton) : IsPreirreducible s :=
   fun _u _v _ _ ⟨_x, hxs, hxu⟩ ⟨y, hys, hyv⟩ => ⟨y, hys, hs hxs hys ▸ hxu, hyv⟩
 #align set.subsingleton.is_preirreducible Set.Subsingleton.isPreirreducible
 
 -- Porting note (#10756): new lemma
-theorem isPreirreducible_singleton {x} : IsPreirreducible ({x} : Set X) :=
+lemma isPreirreducible_singleton {x} : IsPreirreducible ({x} : Set X) :=
   subsingleton_singleton.isPreirreducible
 
-theorem isIrreducible_singleton {x} : IsIrreducible ({x} : Set X) :=
+lemma isIrreducible_singleton {x} : IsIrreducible ({x} : Set X) :=
   ⟨singleton_nonempty x, isPreirreducible_singleton⟩
 #align is_irreducible_singleton isIrreducible_singleton
 
-theorem isPreirreducible_iff_closure : IsPreirreducible (closure s) ↔ IsPreirreducible s :=
+lemma isPreirreducible_iff_closure : IsPreirreducible (closure s) ↔ IsPreirreducible s :=
   forall₄_congr fun u v hu hv => by
     iterate 3 rw [closure_inter_open_nonempty_iff]
     exacts [hu.inter hv, hv, hu]
 #align is_preirreducible_iff_closure isPreirreducible_iff_closure
 
-theorem isIrreducible_iff_closure : IsIrreducible (closure s) ↔ IsIrreducible s :=
+lemma isIrreducible_iff_closure : IsIrreducible (closure s) ↔ IsIrreducible s :=
   and_congr closure_nonempty_iff isPreirreducible_iff_closure
 #align is_irreducible_iff_closure isIrreducible_iff_closure
 
@@ -84,7 +84,7 @@ protected alias ⟨_, IsPreirreducible.closure⟩ := isPreirreducible_iff_closur
 protected alias ⟨_, IsIrreducible.closure⟩ := isIrreducible_iff_closure
 #align is_irreducible.closure IsIrreducible.closure
 
-theorem exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
+lemma exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
     ∃ t : Set X, IsPreirreducible t ∧ s ⊆ t ∧ ∀ u, IsPreirreducible u → t ⊆ u → u = t :=
   let ⟨m, hm, hsm, hmm⟩ :=
     zorn_subset_nonempty { t : Set X | IsPreirreducible t }
@@ -109,13 +109,13 @@ def irreducibleComponents (X : Type*) [TopologicalSpace X] : Set (Set X) :=
   maximals (· ≤ ·) { s : Set X | IsIrreducible s }
 #align irreducible_components irreducibleComponents
 
-theorem isClosed_of_mem_irreducibleComponents (s) (H : s ∈ irreducibleComponents X) :
+lemma isClosed_of_mem_irreducibleComponents (s) (H : s ∈ irreducibleComponents X) :
     IsClosed s := by
   rw [← closure_eq_iff_isClosed, eq_comm]
   exact subset_closure.antisymm (H.2 H.1.closure subset_closure)
 #align is_closed_of_mem_irreducible_components isClosed_of_mem_irreducibleComponents
 
-theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X] :
+lemma irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X] :
     irreducibleComponents X = maximals (· ≤ ·) { s : Set X | IsClosed s ∧ IsIrreducible s } := by
   ext s
   constructor
@@ -132,32 +132,32 @@ def irreducibleComponent (x : X) : Set X :=
   Classical.choose (exists_preirreducible {x} isPreirreducible_singleton)
 #align irreducible_component irreducibleComponent
 
-theorem irreducibleComponent_property (x : X) :
+lemma irreducibleComponent_property (x : X) :
     IsPreirreducible (irreducibleComponent x) ∧
       {x} ⊆ irreducibleComponent x ∧
         ∀ u, IsPreirreducible u → irreducibleComponent x ⊆ u → u = irreducibleComponent x :=
   Classical.choose_spec (exists_preirreducible {x} isPreirreducible_singleton)
 #align irreducible_component_property irreducibleComponent_property
 
-theorem mem_irreducibleComponent {x : X} : x ∈ irreducibleComponent x :=
+lemma mem_irreducibleComponent {x : X} : x ∈ irreducibleComponent x :=
   singleton_subset_iff.1 (irreducibleComponent_property x).2.1
 #align mem_irreducible_component mem_irreducibleComponent
 
-theorem isIrreducible_irreducibleComponent {x : X} : IsIrreducible (irreducibleComponent x) :=
+lemma isIrreducible_irreducibleComponent {x : X} : IsIrreducible (irreducibleComponent x) :=
   ⟨⟨x, mem_irreducibleComponent⟩, (irreducibleComponent_property x).1⟩
 #align is_irreducible_irreducible_component isIrreducible_irreducibleComponent
 
-theorem eq_irreducibleComponent {x : X} :
+lemma eq_irreducibleComponent {x : X} :
     IsPreirreducible s → irreducibleComponent x ⊆ s → s = irreducibleComponent x :=
   (irreducibleComponent_property x).2.2 _
 #align eq_irreducible_component eq_irreducibleComponent
 
-theorem irreducibleComponent_mem_irreducibleComponents (x : X) :
+lemma irreducibleComponent_mem_irreducibleComponents (x : X) :
     irreducibleComponent x ∈ irreducibleComponents X :=
   ⟨isIrreducible_irreducibleComponent, fun _ h₁ h₂ => (eq_irreducibleComponent h₁.2 h₂).le⟩
 #align irreducible_component_mem_irreducible_components irreducibleComponent_mem_irreducibleComponents
 
-theorem isClosed_irreducibleComponent {x : X} : IsClosed (irreducibleComponent x) :=
+lemma isClosed_irreducibleComponent {x : X} : IsClosed (irreducibleComponent x) :=
   isClosed_of_mem_irreducibleComponents _ (irreducibleComponent_mem_irreducibleComponents x)
 #align is_closed_irreducible_component isClosed_irreducibleComponent
 
@@ -176,19 +176,19 @@ class IrreducibleSpace (X : Type*) [TopologicalSpace X] extends PreirreducibleSp
 -- see Note [lower instance priority]
 attribute [instance 50] IrreducibleSpace.toNonempty
 
-theorem IrreducibleSpace.isIrreducible_univ (X : Type*) [TopologicalSpace X] [IrreducibleSpace X] :
+lemma IrreducibleSpace.isIrreducible_univ (X : Type*) [TopologicalSpace X] [IrreducibleSpace X] :
     IsIrreducible (univ : Set X) :=
   ⟨univ_nonempty, PreirreducibleSpace.isPreirreducible_univ⟩
 #align irreducible_space.is_irreducible_univ IrreducibleSpace.isIrreducible_univ
 
-theorem irreducibleSpace_def (X : Type*) [TopologicalSpace X] :
+lemma irreducibleSpace_def (X : Type*) [TopologicalSpace X] :
     IrreducibleSpace X ↔ IsIrreducible (⊤ : Set X) :=
   ⟨@IrreducibleSpace.isIrreducible_univ X _, fun h =>
     haveI : PreirreducibleSpace X := ⟨h.2⟩
     ⟨⟨h.1.some⟩⟩⟩
 #align irreducible_space_def irreducibleSpace_def
 
-theorem nonempty_preirreducible_inter [PreirreducibleSpace X] :
+lemma nonempty_preirreducible_inter [PreirreducibleSpace X] :
     IsOpen s → IsOpen t → s.Nonempty → t.Nonempty → (s ∩ t).Nonempty := by
   simpa only [univ_inter, univ_subset_iff] using
     @PreirreducibleSpace.isPreirreducible_univ X _ _ s t
@@ -200,7 +200,7 @@ protected theorem IsOpen.dense [PreirreducibleSpace X] (ho : IsOpen s) (hne : s.
   dense_iff_inter_open.2 fun _t hto htne => nonempty_preirreducible_inter hto ho htne hne
 #align is_open.dense IsOpen.dense
 
-theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : ContinuousOn f s) :
+lemma IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : ContinuousOn f s) :
     IsPreirreducible (f '' s) := by
   rintro u v hu hv ⟨_, ⟨⟨x, hx, rfl⟩, hxu⟩⟩ ⟨_, ⟨⟨y, hy, rfl⟩, hyv⟩⟩
   rw [← mem_preimage] at hxu hyv
@@ -218,19 +218,19 @@ theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : Cont
     simp [*]
 #align is_preirreducible.image IsPreirreducible.image
 
-theorem IsIrreducible.image (H : IsIrreducible s) (f : X → Y) (hf : ContinuousOn f s) :
+lemma IsIrreducible.image (H : IsIrreducible s) (f : X → Y) (hf : ContinuousOn f s) :
     IsIrreducible (f '' s) :=
   ⟨H.nonempty.image _, H.isPreirreducible.image f hf⟩
 #align is_irreducible.image IsIrreducible.image
 
-theorem Subtype.preirreducibleSpace (h : IsPreirreducible s) : PreirreducibleSpace s where
+lemma Subtype.preirreducibleSpace (h : IsPreirreducible s) : PreirreducibleSpace s where
   isPreirreducible_univ := by
     rintro _ _ ⟨u, hu, rfl⟩ ⟨v, hv, rfl⟩ ⟨⟨x, hxs⟩, -, hxu⟩ ⟨⟨y, hys⟩, -, hyv⟩
     rcases h u v hu hv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩ with ⟨x, hxs, ⟨hxu, hxv⟩⟩
     exact ⟨⟨x, hxs⟩, ⟨Set.mem_univ _, ⟨hxu, hxv⟩⟩⟩
 #align subtype.preirreducible_space Subtype.preirreducibleSpace
 
-theorem Subtype.irreducibleSpace (h : IsIrreducible s) : IrreducibleSpace s where
+lemma Subtype.irreducibleSpace (h : IsIrreducible s) : IrreducibleSpace s where
   isPreirreducible_univ :=
     (Subtype.preirreducibleSpace h.isPreirreducible).isPreirreducible_univ
   toNonempty := h.nonempty.to_subtype
@@ -319,17 +319,17 @@ theorem IsPreirreducible.subset_irreducible {S U : Set X} (ht : IsPreirreducible
   exact ⟨x, h₁ hx'.1, hx'.2⟩
 #align is_preirreducible.subset_irreducible IsPreirreducible.subset_irreducible
 
-theorem IsPreirreducible.open_subset {U : Set X} (ht : IsPreirreducible t) (hU : IsOpen U)
+lemma IsPreirreducible.open_subset {U : Set X} (ht : IsPreirreducible t) (hU : IsOpen U)
     (hU' : U ⊆ t) : IsPreirreducible U :=
   U.eq_empty_or_nonempty.elim (fun h => h.symm ▸ isPreirreducible_empty) fun h =>
     (ht.subset_irreducible h hU (fun _ => id) hU').2
 #align is_preirreducible.open_subset IsPreirreducible.open_subset
 
-theorem IsPreirreducible.interior (ht : IsPreirreducible t) : IsPreirreducible (interior t) :=
+lemma IsPreirreducible.interior (ht : IsPreirreducible t) : IsPreirreducible (interior t) :=
   ht.open_subset isOpen_interior interior_subset
 #align is_preirreducible.interior IsPreirreducible.interior
 
-theorem IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
+lemma IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
     (hf : OpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
   rintro U V hU hV ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
   obtain ⟨_, h₁, ⟨y, h₂, rfl⟩, ⟨y', h₃, h₄⟩⟩ :=

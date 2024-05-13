@@ -33,7 +33,7 @@ open scoped Pointwise nonZeroDivisors
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
 variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
-theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
+lemma absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
     (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den:R)| =
       (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a:R)| := by
@@ -72,29 +72,29 @@ noncomputable def absNorm : FractionalIdeal R⁰ K →*₀ ℚ where
       Submonoid.coe_mul, _root_.map_mul, _root_.map_mul, Nat.cast_mul, div_mul_div_comm,
       Int.cast_abs, Int.cast_abs, Int.cast_abs, ← abs_mul, Int.cast_mul]
 
-theorem absNorm_eq (I : FractionalIdeal R⁰ K) :
+lemma absNorm_eq (I : FractionalIdeal R⁰ K) :
     absNorm I = (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)| := rfl
 
-theorem absNorm_eq' {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
+lemma absNorm_eq' {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
     absNorm I = (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a:R)| := by
   rw [absNorm, ← absNorm_div_norm_eq_absNorm_div_norm a I₀ h, MonoidWithZeroHom.coe_mk,
     ZeroHom.coe_mk]
 
-theorem absNorm_nonneg (I : FractionalIdeal R⁰ K) : 0 ≤ absNorm I := by dsimp [absNorm]; positivity
+lemma absNorm_nonneg (I : FractionalIdeal R⁰ K) : 0 ≤ absNorm I := by dsimp [absNorm]; positivity
 
-theorem absNorm_bot : absNorm (⊥ : FractionalIdeal R⁰ K) = 0 := absNorm.map_zero'
+lemma absNorm_bot : absNorm (⊥ : FractionalIdeal R⁰ K) = 0 := absNorm.map_zero'
 
-theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert absNorm.map_one'
+lemma absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert absNorm.map_one'
 
-theorem absNorm_eq_zero_iff [NoZeroDivisors K] {I : FractionalIdeal R⁰ K} :
+lemma absNorm_eq_zero_iff [NoZeroDivisors K] {I : FractionalIdeal R⁰ K} :
     absNorm I = 0 ↔ I = 0 := by
   refine ⟨fun h ↦ zero_of_num_eq_bot zero_not_mem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq, div_eq_zero_iff] at h
   refine Ideal.absNorm_eq_zero_iff.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
   simpa [Algebra.norm_eq_zero_iff] using nonZeroDivisors.coe_ne_zero _
 
-theorem coeIdeal_absNorm (I₀ : Ideal R) :
+lemma coeIdeal_absNorm (I₀ : Ideal R) :
     absNorm (I₀ : FractionalIdeal R⁰ K) = Ideal.absNorm I₀ := by
   rw [absNorm_eq' 1 I₀ (by rw [one_smul]; rfl), OneMemClass.coe_one, _root_.map_one, abs_one,
     Int.cast_one, _root_.div_one]
@@ -103,7 +103,7 @@ section IsLocalization
 
 variable [IsLocalization (Algebra.algebraMapSubmonoid R ℤ⁰) K] [Algebra ℚ K]
 
-theorem abs_det_basis_change [NoZeroDivisors K] {ι : Type*} [Fintype ι]
+lemma abs_det_basis_change [NoZeroDivisors K] {ι : Type*} [Fintype ι]
     [DecidableEq ι] (b : Basis ι ℤ R) (I : FractionalIdeal R⁰ K) (bI : Basis ι ℤ I) :
     |(b.localizationLocalization ℚ ℤ⁰ K).det ((↑) ∘ bI)| = absNorm I := by
   have := IsFractionRing.nontrivial R K

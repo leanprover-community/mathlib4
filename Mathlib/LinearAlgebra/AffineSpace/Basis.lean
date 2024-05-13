@@ -73,19 +73,19 @@ instance instFunLike : FunLike (AffineBasis ι k P) ι P where
 #align affine_basis.fun_like AffineBasis.instFunLike
 
 @[ext]
-theorem ext {b₁ b₂ : AffineBasis ι k P} (h : (b₁ : ι → P) = b₂) : b₁ = b₂ :=
+lemma ext {b₁ b₂ : AffineBasis ι k P} (h : (b₁ : ι → P) = b₂) : b₁ = b₂ :=
   DFunLike.coe_injective h
 #align affine_basis.ext AffineBasis.ext
 
-theorem ind : AffineIndependent k b :=
+lemma ind : AffineIndependent k b :=
   b.ind'
 #align affine_basis.ind AffineBasis.ind
 
-theorem tot : affineSpan k (range b) = ⊤ :=
+lemma tot : affineSpan k (range b) = ⊤ :=
   b.tot'
 #align affine_basis.tot AffineBasis.tot
 
-protected theorem nonempty : Nonempty ι :=
+protected lemma nonempty : Nonempty ι :=
   not_isEmpty_iff.mp fun hι => by
     simpa only [@range_eq_empty _ _ hι, AffineSubspace.span_empty, bot_ne_top] using b.tot
 #align affine_basis.nonempty AffineBasis.nonempty
@@ -98,17 +98,17 @@ def reindex (e : ι ≃ ι') : AffineBasis ι' k P :=
 #align affine_basis.reindex AffineBasis.reindex
 
 @[simp, norm_cast]
-theorem coe_reindex : ⇑(b.reindex e) = b ∘ e.symm :=
+lemma coe_reindex : ⇑(b.reindex e) = b ∘ e.symm :=
   rfl
 #align affine_basis.coe_reindex AffineBasis.coe_reindex
 
 @[simp]
-theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') :=
+lemma reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') :=
   rfl
 #align affine_basis.reindex_apply AffineBasis.reindex_apply
 
 @[simp]
-theorem reindex_refl : b.reindex (Equiv.refl _) = b :=
+lemma reindex_refl : b.reindex (Equiv.refl _) = b :=
   ext rfl
 #align affine_basis.reindex_refl AffineBasis.reindex_refl
 
@@ -131,12 +131,12 @@ noncomputable def basisOf (i : ι) : Basis { j : ι // j ≠ i } k V :=
 #align affine_basis.basis_of AffineBasis.basisOf
 
 @[simp]
-theorem basisOf_apply (i : ι) (j : { j : ι // j ≠ i }) : b.basisOf i j = b ↑j -ᵥ b i := by
+lemma basisOf_apply (i : ι) (j : { j : ι // j ≠ i }) : b.basisOf i j = b ↑j -ᵥ b i := by
   simp [basisOf]
 #align affine_basis.basis_of_apply AffineBasis.basisOf_apply
 
 @[simp]
-theorem basisOf_reindex (i : ι') :
+lemma basisOf_reindex (i : ι') :
     (b.reindex e).basisOf i =
       (b.basisOf <| e.symm i).reindex (e.subtypeEquiv fun _ => e.eq_symm_apply.not) := by
   ext j
@@ -154,24 +154,24 @@ noncomputable def coord (i : ι) : P →ᵃ[k] k where
 #align affine_basis.coord AffineBasis.coord
 
 @[simp]
-theorem linear_eq_sumCoords (i : ι) : (b.coord i).linear = -(b.basisOf i).sumCoords :=
+lemma linear_eq_sumCoords (i : ι) : (b.coord i).linear = -(b.basisOf i).sumCoords :=
   rfl
 #align affine_basis.linear_eq_sum_coords AffineBasis.linear_eq_sumCoords
 
 @[simp]
-theorem coord_reindex (i : ι') : (b.reindex e).coord i = b.coord (e.symm i) := by
+lemma coord_reindex (i : ι') : (b.reindex e).coord i = b.coord (e.symm i) := by
   ext
   classical simp [AffineBasis.coord]
 #align affine_basis.coord_reindex AffineBasis.coord_reindex
 
 @[simp]
-theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
+lemma coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
   simp only [coord, Basis.coe_sumCoords, LinearEquiv.map_zero, LinearEquiv.coe_coe, sub_zero,
     AffineMap.coe_mk, Finsupp.sum_zero_index, vsub_self]
 #align affine_basis.coord_apply_eq AffineBasis.coord_apply_eq
 
 @[simp]
-theorem coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
+lemma coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
   -- Porting note:
   -- in mathlib3 we didn't need to given the `fun j => j ≠ i` argument to `Subtype.coe_mk`,
   -- but I don't think we can complain: this proof was over-golfed.
@@ -179,12 +179,12 @@ theorem coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
     Basis.sumCoords_self_apply, sub_self]
 #align affine_basis.coord_apply_ne AffineBasis.coord_apply_ne
 
-theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j then 1 else 0 := by
+lemma coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j then 1 else 0 := by
   rcases eq_or_ne i j with h | h <;> simp [h]
 #align affine_basis.coord_apply AffineBasis.coord_apply
 
 @[simp]
-theorem coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum w = 1) :
+lemma coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = w i := by
   classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_true,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
@@ -192,7 +192,7 @@ theorem coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum
 #align affine_basis.coord_apply_combination_of_mem AffineBasis.coord_apply_combination_of_mem
 
 @[simp]
-theorem coord_apply_combination_of_not_mem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
+lemma coord_apply_combination_of_not_mem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = 0 := by
   classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_false,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
@@ -200,7 +200,7 @@ theorem coord_apply_combination_of_not_mem (hi : i ∉ s) {w : ι → k} (hw : s
 #align affine_basis.coord_apply_combination_of_not_mem AffineBasis.coord_apply_combination_of_not_mem
 
 @[simp]
-theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by
+lemma sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by
   have hq : q ∈ affineSpan k (range b) := by
     rw [b.tot]
     exact AffineSubspace.mem_top k V q
@@ -210,7 +210,7 @@ theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := 
 #align affine_basis.sum_coord_apply_eq_one AffineBasis.sum_coord_apply_eq_one
 
 @[simp]
-theorem affineCombination_coord_eq_self [Fintype ι] (q : P) :
+lemma affineCombination_coord_eq_self [Fintype ι] (q : P) :
     (Finset.univ.affineCombination k b fun i => b.coord i q) = q := by
   have hq : q ∈ affineSpan k (range b) := by
     rw [b.tot]
@@ -230,14 +230,14 @@ theorem linear_combination_coord_eq_self [Fintype ι] (b : AffineBasis ι k V) (
   rwa [Finset.univ.affineCombination_eq_linear_combination _ _ (b.sum_coord_apply_eq_one v)] at hb
 #align affine_basis.linear_combination_coord_eq_self AffineBasis.linear_combination_coord_eq_self
 
-theorem ext_elem [Finite ι] {q₁ q₂ : P} (h : ∀ i, b.coord i q₁ = b.coord i q₂) : q₁ = q₂ := by
+lemma ext_elem [Finite ι] {q₁ q₂ : P} (h : ∀ i, b.coord i q₁ = b.coord i q₂) : q₁ = q₂ := by
   cases nonempty_fintype ι
   rw [← b.affineCombination_coord_eq_self q₁, ← b.affineCombination_coord_eq_self q₂]
   simp only [h]
 #align affine_basis.ext_elem AffineBasis.ext_elem
 
 @[simp]
-theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i : P → k) = 1 := by
+lemma coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i : P → k) = 1 := by
   ext q
   have hp : (range b).Subsingleton := by
     rw [← image_univ]
@@ -252,7 +252,7 @@ theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i
   rw [Pi.one_apply, hq, b.coord_apply_combination_of_mem hi hw, Function.const_apply]
 #align affine_basis.coe_coord_of_subsingleton_eq_one AffineBasis.coe_coord_of_subsingleton_eq_one
 
-theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coord i := by
+lemma surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coord i := by
   classical
     intro x
     obtain ⟨j, hij⟩ := exists_ne i
@@ -275,7 +275,7 @@ noncomputable def coords : P →ᵃ[k] ι → k where
 #align affine_basis.coords AffineBasis.coords
 
 @[simp]
-theorem coords_apply (q : P) (i : ι) : b.coords q i = b.coord i q :=
+lemma coords_apply (q : P) (i : ι) : b.coords q i = b.coord i q :=
   rfl
 #align affine_basis.coords_apply AffineBasis.coords_apply
 
@@ -286,14 +286,14 @@ section DivisionRing
 variable [DivisionRing k] [Module k V]
 
 @[simp]
-theorem coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset ι} {i : ι}
+lemma coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset ι} {i : ι}
     (hi : i ∈ s) : b.coord i (s.centroid k b) = (s.card : k)⁻¹ := by
   rw [Finset.centroid,
     b.coord_apply_combination_of_mem hi (s.sum_centroidWeights_eq_one_of_nonempty _ ⟨i, hi⟩),
     Finset.centroidWeights, Function.const_apply]
 #align affine_basis.coord_apply_centroid AffineBasis.coord_apply_centroid
 
-theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
+lemma exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
     ∃ s ⊆ t, ∃ b : AffineBasis s k P, ⇑b = ((↑) : s → P) := by
   obtain ⟨s, hst, h_tot, h_ind⟩ := exists_affineIndependent k V t
   refine' ⟨s, hst, ⟨(↑), h_ind, _⟩, rfl⟩
@@ -302,7 +302,7 @@ theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
 
 variable (k V P)
 
-theorem exists_affineBasis : ∃ (s : Set P) (b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) :=
+lemma exists_affineBasis : ∃ (s : Set P) (b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) :=
   let ⟨s, _, hs⟩ := exists_affine_subbasis (AffineSubspace.span_univ k V P)
   ⟨s, hs⟩
 #align affine_basis.exists_affine_basis AffineBasis.exists_affineBasis

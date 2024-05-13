@@ -72,13 +72,13 @@ def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R)
     tensorObj M₁ N ⟶ tensorObj M₂ N :=
   f.rTensor N
 
-theorem tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
+lemma tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
   -- Porting note: even with high priority ext fails to find this
   apply TensorProduct.ext
   rfl
 #align Module.monoidal_category.tensor_id ModuleCat.MonoidalCategory.tensor_id
 
-theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
+lemma tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
     (g₂ : Y₂ ⟶ Z₂) : tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
   -- Porting note: even with high priority ext fails to find this
   apply TensorProduct.ext
@@ -121,7 +121,7 @@ We give them some help by expressing the lemmas first non-categorically, then us
 
 open TensorProduct (assoc map)
 
-private theorem associator_naturality_aux {X₁ X₂ X₃ : Type*} [AddCommMonoid X₁] [AddCommMonoid X₂]
+private lemma associator_naturality_aux {X₁ X₂ X₃ : Type*} [AddCommMonoid X₁] [AddCommMonoid X₂]
     [AddCommMonoid X₃] [Module R X₁] [Module R X₂] [Module R X₃] {Y₁ Y₂ Y₃ : Type*}
     [AddCommMonoid Y₁] [AddCommMonoid Y₂] [AddCommMonoid Y₃] [Module R Y₁] [Module R Y₂]
     [Module R Y₃] (f₁ : X₁ →ₗ[R] Y₁) (f₂ : X₂ →ₗ[R] Y₂) (f₃ : X₃ →ₗ[R] Y₃) :
@@ -134,7 +134,7 @@ private theorem associator_naturality_aux {X₁ X₂ X₃ : Type*} [AddCommMonoi
 
 variable (R)
 
-private theorem pentagon_aux (W X Y Z : Type*) [AddCommMonoid W] [AddCommMonoid X]
+private lemma pentagon_aux (W X Y Z : Type*) [AddCommMonoid W] [AddCommMonoid X]
     [AddCommMonoid Y] [AddCommMonoid Z] [Module R W] [Module R X] [Module R Y] [Module R Z] :
     (((assoc R X Y Z).toLinearMap.lTensor W).comp
             (assoc R W (X ⊗[R] Y) Z).toLinearMap).comp
@@ -148,21 +148,21 @@ private theorem pentagon_aux (W X Y Z : Type*) [AddCommMonoid W] [AddCommMonoid 
 
 end
 
-theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
+lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
     (f₃ : X₃ ⟶ Y₃) :
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
       (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
   convert associator_naturality_aux f₁ f₂ f₃ using 1
 #align Module.monoidal_category.associator_naturality ModuleCat.MonoidalCategory.associator_naturality
 
-theorem pentagon (W X Y Z : ModuleCat R) :
+lemma pentagon (W X Y Z : ModuleCat R) :
     whiskerRight (associator W X Y).hom Z ≫
         (associator W (tensorObj X Y) Z).hom ≫ whiskerLeft W (associator X Y Z).hom =
       (associator (tensorObj W X) Y Z).hom ≫ (associator W X (tensorObj Y Z)).hom := by
   convert pentagon_aux R W X Y Z using 1
 #align Module.monoidal_category.pentagon ModuleCat.MonoidalCategory.pentagon
 
-theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
+lemma leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom (𝟙 (ModuleCat.of R R)) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
   -- Porting note (#11041): broken ext
   apply TensorProduct.ext
@@ -176,7 +176,7 @@ theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
   rfl
 #align Module.monoidal_category.left_unitor_naturality ModuleCat.MonoidalCategory.leftUnitor_naturality
 
-theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
+lemma rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom f (𝟙 (ModuleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
   -- Porting note (#11041): broken ext
   apply TensorProduct.ext
@@ -190,7 +190,7 @@ theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
   rfl
 #align Module.monoidal_category.right_unitor_naturality ModuleCat.MonoidalCategory.rightUnitor_naturality
 
-theorem triangle (M N : ModuleCat.{u} R) :
+lemma triangle (M N : ModuleCat.{u} R) :
     (associator M (ModuleCat.of R R) N).hom ≫ tensorHom (𝟙 M) (leftUnitor N).hom =
       tensorHom (rightUnitor M).hom (𝟙 N) := by
   apply TensorProduct.ext_threefold
@@ -223,55 +223,55 @@ instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
 namespace MonoidalCategory
 
 @[simp]
-theorem hom_apply {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
+lemma hom_apply {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
     (f ⊗ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
   rfl
 #align Module.monoidal_category.hom_apply ModuleCat.MonoidalCategory.hom_apply
 
 @[simp]
-theorem whiskerLeft_apply (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N)
+lemma whiskerLeft_apply (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N)
     (l : L) (m : M) :
     (L ◁ f) (l ⊗ₜ m) = l ⊗ₜ f m :=
   rfl
 
 @[simp]
-theorem whiskerRight_apply {L M : ModuleCat.{u} R} (f : L ⟶ M) (N : ModuleCat.{u} R)
+lemma whiskerRight_apply {L M : ModuleCat.{u} R} (f : L ⟶ M) (N : ModuleCat.{u} R)
     (l : L) (n : N) :
     (f ▷ N) (l ⊗ₜ n) = f l ⊗ₜ n :=
   rfl
 
 @[simp]
-theorem leftUnitor_hom_apply {M : ModuleCat.{u} R} (r : R) (m : M) :
+lemma leftUnitor_hom_apply {M : ModuleCat.{u} R} (r : R) (m : M) :
     ((λ_ M).hom : 𝟙_ (ModuleCat R) ⊗ M ⟶ M) (r ⊗ₜ[R] m) = r • m :=
   TensorProduct.lid_tmul m r
 #align Module.monoidal_category.left_unitor_hom_apply ModuleCat.MonoidalCategory.leftUnitor_hom_apply
 
 @[simp]
-theorem leftUnitor_inv_apply {M : ModuleCat.{u} R} (m : M) :
+lemma leftUnitor_inv_apply {M : ModuleCat.{u} R} (m : M) :
     ((λ_ M).inv : M ⟶ 𝟙_ (ModuleCat.{u} R) ⊗ M) m = 1 ⊗ₜ[R] m :=
   TensorProduct.lid_symm_apply m
 #align Module.monoidal_category.left_unitor_inv_apply ModuleCat.MonoidalCategory.leftUnitor_inv_apply
 
 @[simp]
-theorem rightUnitor_hom_apply {M : ModuleCat.{u} R} (m : M) (r : R) :
+lemma rightUnitor_hom_apply {M : ModuleCat.{u} R} (m : M) (r : R) :
     ((ρ_ M).hom : M ⊗ 𝟙_ (ModuleCat R) ⟶ M) (m ⊗ₜ r) = r • m :=
   TensorProduct.rid_tmul m r
 #align Module.monoidal_category.right_unitor_hom_apply ModuleCat.MonoidalCategory.rightUnitor_hom_apply
 
 @[simp]
-theorem rightUnitor_inv_apply {M : ModuleCat.{u} R} (m : M) :
+lemma rightUnitor_inv_apply {M : ModuleCat.{u} R} (m : M) :
     ((ρ_ M).inv : M ⟶ M ⊗ 𝟙_ (ModuleCat.{u} R)) m = m ⊗ₜ[R] 1 :=
   TensorProduct.rid_symm_apply m
 #align Module.monoidal_category.right_unitor_inv_apply ModuleCat.MonoidalCategory.rightUnitor_inv_apply
 
 @[simp]
-theorem associator_hom_apply {M N K : ModuleCat.{u} R} (m : M) (n : N) (k : K) :
+lemma associator_hom_apply {M N K : ModuleCat.{u} R} (m : M) (n : N) (k : K) :
     ((α_ M N K).hom : (M ⊗ N) ⊗ K ⟶ M ⊗ N ⊗ K) (m ⊗ₜ n ⊗ₜ k) = m ⊗ₜ (n ⊗ₜ k) :=
   rfl
 #align Module.monoidal_category.associator_hom_apply ModuleCat.MonoidalCategory.associator_hom_apply
 
 @[simp]
-theorem associator_inv_apply {M N K : ModuleCat.{u} R} (m : M) (n : N) (k : K) :
+lemma associator_inv_apply {M N K : ModuleCat.{u} R} (m : M) (n : N) (k : K) :
     ((α_ M N K).inv : M ⊗ N ⊗ K ⟶ (M ⊗ N) ⊗ K) (m ⊗ₜ (n ⊗ₜ k)) = m ⊗ₜ n ⊗ₜ k :=
   rfl
 #align Module.monoidal_category.associator_inv_apply ModuleCat.MonoidalCategory.associator_inv_apply

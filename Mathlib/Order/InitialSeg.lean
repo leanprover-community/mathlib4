@@ -81,19 +81,19 @@ instance : EmbeddingLike (r ≼i s) α β where
 #align initial_seg.ext InitialSeg.ext
 
 @[simp]
-theorem coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
+lemma coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
   rfl
 #align initial_seg.coe_coe_fn InitialSeg.coe_coe_fn
 
-theorem init (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b :=
+lemma init (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b :=
   f.init' _ _
 #align initial_seg.init InitialSeg.init
 
-theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
+lemma map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align initial_seg.map_rel_iff InitialSeg.map_rel_iff
 
-theorem init_iff (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
+lemma init_iff (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   ⟨fun h => by
     rcases f.init h with ⟨a', rfl⟩
     exact ⟨a', rfl, f.map_rel_iff.1 h⟩,
@@ -124,12 +124,12 @@ protected def trans (f : r ≼i s) (g : s ≼i t) : r ≼i t :=
 #align initial_seg.trans InitialSeg.trans
 
 @[simp]
-theorem refl_apply (x : α) : InitialSeg.refl r x = x :=
+lemma refl_apply (x : α) : InitialSeg.refl r x = x :=
   rfl
 #align initial_seg.refl_apply InitialSeg.refl_apply
 
 @[simp]
-theorem trans_apply (f : r ≼i s) (g : s ≼i t) (a : α) : (f.trans g) a = g (f a) :=
+lemma trans_apply (f : r ≼i s) (g : s ≼i t) (a : α) : (f.trans g) a = g (f a) :=
   rfl
 #align initial_seg.trans_apply InitialSeg.trans_apply
 
@@ -146,11 +146,11 @@ instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl 
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
   ⟨fun a => by let _ := a.isWellFounded; exact Subsingleton.elim a⟩
 
-protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
+protected lemma eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
 #align initial_seg.eq InitialSeg.eq
 
-theorem Antisymm.aux [IsWellOrder α r] (f : r ≼i s) (g : s ≼i r) : LeftInverse g f :=
+lemma Antisymm.aux [IsWellOrder α r] (f : r ≼i s) (g : s ≼i r) : LeftInverse g f :=
   InitialSeg.eq (f.trans g) (InitialSeg.refl _)
 #align initial_seg.antisymm.aux InitialSeg.Antisymm.aux
 
@@ -162,17 +162,17 @@ def antisymm [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : r ≃r s :=
 #align initial_seg.antisymm InitialSeg.antisymm
 
 @[simp]
-theorem antisymm_toFun [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : (antisymm f g : α → β) = f :=
+lemma antisymm_toFun [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : (antisymm f g : α → β) = f :=
   rfl
 #align initial_seg.antisymm_to_fun InitialSeg.antisymm_toFun
 
 @[simp]
-theorem antisymm_symm [IsWellOrder α r] [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) :
+lemma antisymm_symm [IsWellOrder α r] [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) :
     (antisymm f g).symm = antisymm g f :=
   RelIso.coe_fn_injective rfl
 #align initial_seg.antisymm_symm InitialSeg.antisymm_symm
 
-theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
+lemma eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
     Surjective f ∨ ∃ b, ∀ x, s x b ↔ ∃ y, f y = x :=
   or_iff_not_imp_right.2 fun h b =>
     Acc.recOn (IsWellFounded.wf.apply b : Acc s b) fun x _ IH =>
@@ -194,7 +194,7 @@ def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subr
 #align initial_seg.cod_restrict InitialSeg.codRestrict
 
 @[simp]
-theorem codRestrict_apply (p) (f : r ≼i s) (H a) : codRestrict p f H a = ⟨f a, H a⟩ :=
+lemma codRestrict_apply (p) (f : r ≼i s) (H a) : codRestrict p f H a = ⟨f a, H a⟩ :=
   rfl
 #align initial_seg.cod_restrict_apply InitialSeg.codRestrict_apply
 
@@ -210,11 +210,11 @@ def leAdd (r : α → α → Prop) (s : β → β → Prop) : r ≼i Sum.Lex r s
 #align initial_seg.le_add InitialSeg.leAdd
 
 @[simp]
-theorem leAdd_apply (r : α → α → Prop) (s : β → β → Prop) (a) : leAdd r s a = Sum.inl a :=
+lemma leAdd_apply (r : α → α → Prop) (s : β → β → Prop) (a) : leAdd r s a = Sum.inl a :=
   rfl
 #align initial_seg.le_add_apply InitialSeg.leAdd_apply
 
-protected theorem acc (f : r ≼i s) (a : α) : Acc r a ↔ Acc s (f a) :=
+protected lemma acc (f : r ≼i s) (a : α) : Acc r a ↔ Acc s (f a) :=
   ⟨by
     refine' fun h => Acc.recOn h fun a _ ha => Acc.intro _ fun b hb => _
     obtain ⟨a', rfl⟩ := f.init hb
@@ -258,19 +258,19 @@ instance : CoeFun (r ≺i s) fun _ => α → β :=
   ⟨fun f => f⟩
 
 @[simp]
-theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α → β) = f :=
+lemma coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α → β) = f :=
   rfl
 #align principal_seg.coe_fn_mk PrincipalSeg.coe_fn_mk
 
-theorem down (f : r ≺i s) : ∀ {b : β}, s b f.top ↔ ∃ a, f a = b :=
+lemma down (f : r ≺i s) : ∀ {b : β}, s b f.top ↔ ∃ a, f a = b :=
   f.down' _
 #align principal_seg.down PrincipalSeg.down
 
-theorem lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
+lemma lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
   f.down.2 ⟨_, rfl⟩
 #align principal_seg.lt_top PrincipalSeg.lt_top
 
-theorem init [IsTrans β s] (f : r ≺i s) {a : α} {b : β} (h : s b (f a)) : ∃ a', f a' = b :=
+lemma init [IsTrans β s] (f : r ≺i s) {a : α} {b : β} (h : s b (f a)) : ∃ a', f a' = b :=
   f.down.1 <| _root_.trans h <| f.lt_top _
 #align principal_seg.init PrincipalSeg.init
 
@@ -279,15 +279,15 @@ instance hasCoeInitialSeg [IsTrans β s] : Coe (r ≺i s) (r ≼i s) :=
   ⟨fun f => ⟨f.toRelEmbedding, fun _ _ => f.init⟩⟩
 #align principal_seg.has_coe_initial_seg PrincipalSeg.hasCoeInitialSeg
 
-theorem coe_coe_fn' [IsTrans β s] (f : r ≺i s) : ((f : r ≼i s) : α → β) = f :=
+lemma coe_coe_fn' [IsTrans β s] (f : r ≺i s) : ((f : r ≼i s) : α → β) = f :=
   rfl
 #align principal_seg.coe_coe_fn' PrincipalSeg.coe_coe_fn'
 
-theorem init_iff [IsTrans β s] (f : r ≺i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
+lemma init_iff [IsTrans β s] (f : r ≺i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   @InitialSeg.init_iff α β r s f a b
 #align principal_seg.init_iff PrincipalSeg.init_iff
 
-theorem irrefl {r : α → α → Prop} [IsWellOrder α r] (f : r ≺i r) : False := by
+lemma irrefl {r : α → α → Prop} [IsWellOrder α r] (f : r ≺i r) : False := by
   have h := f.lt_top f.top
   rw [show f f.top = f.top from InitialSeg.eq (↑f) (InitialSeg.refl r) f.top] at h
   exact _root_.irrefl _ h
@@ -304,12 +304,12 @@ def ltLe (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
 #align principal_seg.lt_le PrincipalSeg.ltLe
 
 @[simp]
-theorem lt_le_apply (f : r ≺i s) (g : s ≼i t) (a : α) : (f.ltLe g) a = g (f a) :=
+lemma lt_le_apply (f : r ≺i s) (g : s ≼i t) (a : α) : (f.ltLe g) a = g (f a) :=
   RelEmbedding.trans_apply _ _ _
 #align principal_seg.lt_le_apply PrincipalSeg.lt_le_apply
 
 @[simp]
-theorem lt_le_top (f : r ≺i s) (g : s ≼i t) : (f.ltLe g).top = g f.top :=
+lemma lt_le_top (f : r ≺i s) (g : s ≼i t) : (f.ltLe g).top = g f.top :=
   rfl
 #align principal_seg.lt_le_top PrincipalSeg.lt_le_top
 
@@ -320,12 +320,12 @@ protected def trans [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : r ≺i t :=
 #align principal_seg.trans PrincipalSeg.trans
 
 @[simp]
-theorem trans_apply [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) (a : α) : (f.trans g) a = g (f a) :=
+lemma trans_apply [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) (a : α) : (f.trans g) a = g (f a) :=
   lt_le_apply _ _ _
 #align principal_seg.trans_apply PrincipalSeg.trans_apply
 
 @[simp]
-theorem trans_top [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : (f.trans g).top = g f.top :=
+lemma trans_top [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : (f.trans g).top = g f.top :=
   rfl
 #align principal_seg.trans_top PrincipalSeg.trans_top
 
@@ -347,12 +347,12 @@ def ltEquiv {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ →
 #align principal_seg.lt_equiv PrincipalSeg.ltEquiv
 
 @[simp]
-theorem equivLT_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLT f g) a = g (f a) :=
+lemma equivLT_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLT f g) a = g (f a) :=
   RelEmbedding.trans_apply _ _ _
 #align principal_seg.equiv_lt_apply PrincipalSeg.equivLT_apply
 
 @[simp]
-theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
+lemma equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
   rfl
 #align principal_seg.equiv_lt_top PrincipalSeg.equivLT_top
 
@@ -369,11 +369,11 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
     cases g
     have := RelEmbedding.coe_fn_injective ef; congr ⟩
 
-theorem top_eq [IsWellOrder γ t] (e : r ≃r s) (f : r ≺i t) (g : s ≺i t) : f.top = g.top := by
+lemma top_eq [IsWellOrder γ t] (e : r ≃r s) (f : r ≺i t) (g : s ≺i t) : f.top = g.top := by
   rw [Subsingleton.elim f (PrincipalSeg.equivLT e g)]; rfl
 #align principal_seg.top_eq PrincipalSeg.top_eq
 
-theorem topLTTop {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} [IsWellOrder γ t]
+lemma topLTTop {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} [IsWellOrder γ t]
     (f : PrincipalSeg r s) (g : PrincipalSeg s t) (h : PrincipalSeg r t) : t h.top g.top := by
   rw [Subsingleton.elim h (f.trans g)]
   apply PrincipalSeg.lt_top
@@ -386,12 +386,12 @@ def ofElement {α : Type*} (r : α → α → Prop) (a : α) : Subrel r { b | r 
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
 @[simp, nolint simpNF]
-theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
+lemma ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
   rfl
 #align principal_seg.of_element_apply PrincipalSeg.ofElement_apply
 
 @[simp]
-theorem ofElement_top {α : Type*} (r : α → α → Prop) (a : α) : (ofElement r a).top = a :=
+lemma ofElement_top {α : Type*} (r : α → α → Prop) (a : α) : (ofElement r a).top = a :=
   rfl
 #align principal_seg.of_element_top PrincipalSeg.ofElement_top
 
@@ -408,13 +408,13 @@ attribute [nolint simpNF] PrincipalSeg.subrelIso_symm_apply
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
 @[simp, nolint simpNF]
-theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
+lemma apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
     f (f.subrelIso b) = b :=
   Equiv.apply_ofInjective_symm f.injective _
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
 @[simp, nolint simpNF]
-theorem subrelIso_apply (f : r ≺i s) (a : α) :
+lemma subrelIso_apply (f : r ≺i s) (a : α) :
     f.subrelIso ⟨f a, f.down.mpr ⟨a, rfl⟩⟩ = a :=
   Equiv.ofInjective_symm_apply f.injective _
 
@@ -426,12 +426,12 @@ def codRestrict (p : Set β) (f : r ≺i s) (H : ∀ a, f a ∈ p) (H₂ : f.top
 #align principal_seg.cod_restrict PrincipalSeg.codRestrict
 
 @[simp]
-theorem codRestrict_apply (p) (f : r ≺i s) (H H₂ a) : codRestrict p f H H₂ a = ⟨f a, H a⟩ :=
+lemma codRestrict_apply (p) (f : r ≺i s) (H H₂ a) : codRestrict p f H H₂ a = ⟨f a, H a⟩ :=
   rfl
 #align principal_seg.cod_restrict_apply PrincipalSeg.codRestrict_apply
 
 @[simp]
-theorem codRestrict_top (p) (f : r ≺i s) (H H₂) : (codRestrict p f H H₂).top = ⟨f.top, H₂⟩ :=
+lemma codRestrict_top (p) (f : r ≺i s) (H H₂) : (codRestrict p f H H₂).top = ⟨f.top, H₂⟩ :=
   rfl
 #align principal_seg.cod_restrict_top PrincipalSeg.codRestrict_top
 
@@ -443,7 +443,7 @@ def ofIsEmpty (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b', ¬s b'
 #align principal_seg.of_is_empty PrincipalSeg.ofIsEmpty
 
 @[simp]
-theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b', ¬s b' b) :
+lemma ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b', ¬s b' b) :
     (ofIsEmpty r H).top = b :=
   rfl
 #align principal_seg.of_is_empty_top PrincipalSeg.ofIsEmpty_top
@@ -453,7 +453,7 @@ abbrev pemptyToPunit : @EmptyRelation PEmpty ≺i @EmptyRelation PUnit :=
   (@ofIsEmpty _ _ EmptyRelation _ _ PUnit.unit) fun _ => not_false
 #align principal_seg.pempty_to_punit PrincipalSeg.pemptyToPunit
 
-protected theorem acc [IsTrans β s] (f : r ≺i s) (a : α) : Acc r a ↔ Acc s (f a) :=
+protected lemma acc [IsTrans β s] (f : r ≺i s) (a : α) : Acc r a ↔ Acc s (f a) :=
   (f : r ≼i s).acc a
 #align principal_seg.acc PrincipalSeg.acc
 
@@ -474,7 +474,7 @@ theorem wellFounded_iff_wellFounded_subrel {β : Type*} {s : β → β → Prop}
   exact (f.acc b').mp ((wf b).apply b')
 #align well_founded_iff_well_founded_subrel wellFounded_iff_wellFounded_subrel
 
-theorem wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} [IsTrans β s] :
+lemma wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} [IsTrans β s] :
     WellFounded s ↔ ∀ (α : Type u) (r : α → α → Prop) (_ : r ≺i s), WellFounded r :=
   ⟨fun wf _ _ f => RelHomClass.wellFounded f.toRelEmbedding wf, fun h =>
     wellFounded_iff_wellFounded_subrel.mpr fun b => h _ _ (PrincipalSeg.ofElement s b)⟩
@@ -493,12 +493,12 @@ noncomputable def InitialSeg.ltOrEq [IsWellOrder β s] (f : r ≼i s) : Sum (r �
     exact Sum.inl ⟨f, Classical.choose h', Classical.choose_spec h'⟩
 #align initial_seg.lt_or_eq InitialSeg.ltOrEq
 
-theorem InitialSeg.ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) :
+lemma InitialSeg.ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) :
     g a = f a :=
   @InitialSeg.eq α β r s _ g f a
 #align initial_seg.lt_or_eq_apply_left InitialSeg.ltOrEq_apply_left
 
-theorem InitialSeg.ltOrEq_apply_right [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) :
+lemma InitialSeg.ltOrEq_apply_right [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) :
     g a = f a :=
   InitialSeg.eq (InitialSeg.ofIso g) f a
 #align initial_seg.lt_or_eq_apply_right InitialSeg.ltOrEq_apply_right
@@ -512,7 +512,7 @@ noncomputable def InitialSeg.leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i 
 #align initial_seg.le_lt InitialSeg.leLT
 
 @[simp]
-theorem InitialSeg.leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
+lemma InitialSeg.leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
     (f.leLT g) a = g (f a) := by
   delta InitialSeg.leLT; cases' f.ltOrEq with f' f'
   · simp only [PrincipalSeg.trans_apply, f.ltOrEq_apply_left]
@@ -535,7 +535,7 @@ noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : ∀ a, { b // ¬
 set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F RelEmbedding.collapseF
 
-theorem collapseF.lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
+lemma collapseF.lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
     ∀ {a'}, r a' a → s (collapseF f a').1 (collapseF f a).1 := @fun a => by
   revert a
   show (collapseF f a).1 ∈ { b | ∀ (a') (_ : r a' a), s (collapseF f a').1 b }
@@ -545,7 +545,7 @@ theorem collapseF.lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
 set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F.lt RelEmbedding.collapseF.lt
 
-theorem collapseF.not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
+lemma collapseF.not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
     (h : ∀ a' (_ : r a' a), s (collapseF f a').1 b) : ¬s b (collapseF f a).1 := by
   unfold collapseF; rw [WellFounded.fix_eq]
   dsimp only
@@ -569,7 +569,7 @@ noncomputable def collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
       a⟩
 #align rel_embedding.collapse RelEmbedding.collapse
 
-theorem collapse_apply [IsWellOrder β s] (f : r ↪r s) (a) : collapse f a = (collapseF f a).1 :=
+lemma collapse_apply [IsWellOrder β s] (f : r ↪r s) (a) : collapse f a = (collapseF f a).1 :=
   rfl
 #align rel_embedding.collapse_apply RelEmbedding.collapse_apply
 

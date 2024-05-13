@@ -22,7 +22,7 @@ open scoped Filter
 
 open Filter Set Metric
 
-theorem setOf_liouville_eq_iInter_iUnion :
+lemma setOf_liouville_eq_iInter_iUnion :
     { x | Liouville x } =
       ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (_ : 1 < b),
       ball ((a : ℝ) / b) (1 / (b : ℝ) ^ n) \ {(a : ℝ) / b} := by
@@ -31,7 +31,7 @@ theorem setOf_liouville_eq_iInter_iUnion :
     mem_singleton_iff, mem_ball, Real.dist_eq, and_comm]
 #align set_of_liouville_eq_Inter_Union setOf_liouville_eq_iInter_iUnion
 
-theorem IsGδ.setOf_liouville : IsGδ { x | Liouville x } := by
+lemma IsGδ.setOf_liouville : IsGδ { x | Liouville x } := by
   rw [setOf_liouville_eq_iInter_iUnion]
   refine .iInter fun n => IsOpen.isGδ ?_
   refine isOpen_iUnion fun a => isOpen_iUnion fun b => isOpen_iUnion fun _hb => ?_
@@ -41,7 +41,7 @@ set_option linter.uppercaseLean3 false in
 
 @[deprecated] alias isGδ_setOf_liouville := IsGδ.setOf_liouville -- 2024-02-15
 
-theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
+lemma setOf_liouville_eq_irrational_inter_iInter_iUnion :
     { x | Liouville x } =
       { x | Irrational x } ∩ ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (hb : 1 < b),
       ball (a / b) (1 / (b : ℝ) ^ n) := by

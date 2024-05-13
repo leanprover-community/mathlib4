@@ -48,7 +48,7 @@ open BigOperators Affine
 
 namespace Finset
 
-theorem univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := by
+lemma univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := by
   ext x
   fin_cases x <;> simp
 #align finset.univ_fin2 Finset.univ_fin2
@@ -69,7 +69,7 @@ def weightedVSubOfPoint (p : ι → P) (b : P) : (ι → k) →ₗ[k] V :=
 #align finset.weighted_vsub_of_point Finset.weightedVSubOfPoint
 
 @[simp]
-theorem weightedVSubOfPoint_apply (w : ι → k) (p : ι → P) (b : P) :
+lemma weightedVSubOfPoint_apply (w : ι → k) (p : ι → P) (b : P) :
     s.weightedVSubOfPoint p b w = ∑ i in s, w i • (p i -ᵥ b) := by
   simp [weightedVSubOfPoint, LinearMap.sum_apply]
 #align finset.weighted_vsub_of_point_apply Finset.weightedVSubOfPoint_apply
@@ -429,7 +429,7 @@ theorem affineCombination_vsub (w₁ w₂ : ι → k) (p : ι → P) :
   rw [← AffineMap.linearMap_vsub, affineCombination_linear, vsub_eq_sub]
 #align finset.affine_combination_vsub Finset.affineCombination_vsub
 
-theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w : P → k) (f : s → P)
+lemma attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w : P → k) (f : s → P)
     (hf : Function.Injective f) :
     s.attach.affineCombination k f (w ∘ f) = (image f univ).affineCombination k id w := by
   simp only [affineCombination, weightedVSubOfPoint_apply, id, vadd_right_cancel_iff,
@@ -445,7 +445,7 @@ theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w 
   · exact fun _ _ _ _ hxy => hf hxy
 #align finset.attach_affine_combination_of_injective Finset.attach_affineCombination_of_injective
 
-theorem attach_affineCombination_coe (s : Finset P) (w : P → k) :
+lemma attach_affineCombination_coe (s : Finset P) (w : P → k) :
     s.attach.affineCombination k ((↑) : s → P) (w ∘ (↑)) = s.affineCombination k id w := by
   classical rw [attach_affineCombination_of_injective s w ((↑) : s → P) Subtype.coe_injective,
       univ_eq_attach, attach_image_val]
@@ -646,17 +646,17 @@ def affineCombinationSingleWeights [DecidableEq ι] (i : ι) : ι → k :=
 #align finset.affine_combination_single_weights Finset.affineCombinationSingleWeights
 
 @[simp]
-theorem affineCombinationSingleWeights_apply_self [DecidableEq ι] (i : ι) :
+lemma affineCombinationSingleWeights_apply_self [DecidableEq ι] (i : ι) :
     affineCombinationSingleWeights k i i = 1 := by simp [affineCombinationSingleWeights]
 #align finset.affine_combination_single_weights_apply_self Finset.affineCombinationSingleWeights_apply_self
 
 @[simp]
-theorem affineCombinationSingleWeights_apply_of_ne [DecidableEq ι] {i j : ι} (h : j ≠ i) :
+lemma affineCombinationSingleWeights_apply_of_ne [DecidableEq ι] {i j : ι} (h : j ≠ i) :
     affineCombinationSingleWeights k i j = 0 := by simp [affineCombinationSingleWeights, h]
 #align finset.affine_combination_single_weights_apply_of_ne Finset.affineCombinationSingleWeights_apply_of_ne
 
 @[simp]
-theorem sum_affineCombinationSingleWeights [DecidableEq ι] {i : ι} (h : i ∈ s) :
+lemma sum_affineCombinationSingleWeights [DecidableEq ι] {i : ι} (h : i ∈ s) :
     ∑ j in s, affineCombinationSingleWeights k i j = 1 := by
   rw [← affineCombinationSingleWeights_apply_self k i]
   exact sum_eq_single_of_mem i h fun j _ hj => affineCombinationSingleWeights_apply_of_ne k hj
@@ -668,27 +668,27 @@ def weightedVSubVSubWeights [DecidableEq ι] (i j : ι) : ι → k :=
 #align finset.weighted_vsub_vsub_weights Finset.weightedVSubVSubWeights
 
 @[simp]
-theorem weightedVSubVSubWeights_self [DecidableEq ι] (i : ι) : weightedVSubVSubWeights k i i = 0 :=
+lemma weightedVSubVSubWeights_self [DecidableEq ι] (i : ι) : weightedVSubVSubWeights k i i = 0 :=
   by simp [weightedVSubVSubWeights]
 #align finset.weighted_vsub_vsub_weights_self Finset.weightedVSubVSubWeights_self
 
 @[simp]
-theorem weightedVSubVSubWeights_apply_left [DecidableEq ι] {i j : ι} (h : i ≠ j) :
+lemma weightedVSubVSubWeights_apply_left [DecidableEq ι] {i j : ι} (h : i ≠ j) :
     weightedVSubVSubWeights k i j i = 1 := by simp [weightedVSubVSubWeights, h]
 #align finset.weighted_vsub_vsub_weights_apply_left Finset.weightedVSubVSubWeights_apply_left
 
 @[simp]
-theorem weightedVSubVSubWeights_apply_right [DecidableEq ι] {i j : ι} (h : i ≠ j) :
+lemma weightedVSubVSubWeights_apply_right [DecidableEq ι] {i j : ι} (h : i ≠ j) :
     weightedVSubVSubWeights k i j j = -1 := by simp [weightedVSubVSubWeights, h.symm]
 #align finset.weighted_vsub_vsub_weights_apply_right Finset.weightedVSubVSubWeights_apply_right
 
 @[simp]
-theorem weightedVSubVSubWeights_apply_of_ne [DecidableEq ι] {i j t : ι} (hi : t ≠ i) (hj : t ≠ j) :
+lemma weightedVSubVSubWeights_apply_of_ne [DecidableEq ι] {i j t : ι} (hi : t ≠ i) (hj : t ≠ j) :
     weightedVSubVSubWeights k i j t = 0 := by simp [weightedVSubVSubWeights, hi, hj]
 #align finset.weighted_vsub_vsub_weights_apply_of_ne Finset.weightedVSubVSubWeights_apply_of_ne
 
 @[simp]
-theorem sum_weightedVSubVSubWeights [DecidableEq ι] {i j : ι} (hi : i ∈ s) (hj : j ∈ s) :
+lemma sum_weightedVSubVSubWeights [DecidableEq ι] {i j : ι} (hi : i ∈ s) (hj : j ∈ s) :
     ∑ t in s, weightedVSubVSubWeights k i j t = 0 := by
   simp_rw [weightedVSubVSubWeights, Pi.sub_apply, sum_sub_distrib]
   simp [hi, hj]
@@ -702,31 +702,31 @@ def affineCombinationLineMapWeights [DecidableEq ι] (i j : ι) (c : k) : ι →
 #align finset.affine_combination_line_map_weights Finset.affineCombinationLineMapWeights
 
 @[simp]
-theorem affineCombinationLineMapWeights_self [DecidableEq ι] (i : ι) (c : k) :
+lemma affineCombinationLineMapWeights_self [DecidableEq ι] (i : ι) (c : k) :
     affineCombinationLineMapWeights i i c = affineCombinationSingleWeights k i := by
   simp [affineCombinationLineMapWeights]
 #align finset.affine_combination_line_map_weights_self Finset.affineCombinationLineMapWeights_self
 
 @[simp]
-theorem affineCombinationLineMapWeights_apply_left [DecidableEq ι] {i j : ι} (h : i ≠ j) (c : k) :
+lemma affineCombinationLineMapWeights_apply_left [DecidableEq ι] {i j : ι} (h : i ≠ j) (c : k) :
     affineCombinationLineMapWeights i j c i = 1 - c := by
   simp [affineCombinationLineMapWeights, h.symm, sub_eq_neg_add]
 #align finset.affine_combination_line_map_weights_apply_left Finset.affineCombinationLineMapWeights_apply_left
 
 @[simp]
-theorem affineCombinationLineMapWeights_apply_right [DecidableEq ι] {i j : ι} (h : i ≠ j) (c : k) :
+lemma affineCombinationLineMapWeights_apply_right [DecidableEq ι] {i j : ι} (h : i ≠ j) (c : k) :
     affineCombinationLineMapWeights i j c j = c := by
   simp [affineCombinationLineMapWeights, h.symm]
 #align finset.affine_combination_line_map_weights_apply_right Finset.affineCombinationLineMapWeights_apply_right
 
 @[simp]
-theorem affineCombinationLineMapWeights_apply_of_ne [DecidableEq ι] {i j t : ι} (hi : t ≠ i)
+lemma affineCombinationLineMapWeights_apply_of_ne [DecidableEq ι] {i j t : ι} (hi : t ≠ i)
     (hj : t ≠ j) (c : k) : affineCombinationLineMapWeights i j c t = 0 := by
   simp [affineCombinationLineMapWeights, hi, hj]
 #align finset.affine_combination_line_map_weights_apply_of_ne Finset.affineCombinationLineMapWeights_apply_of_ne
 
 @[simp]
-theorem sum_affineCombinationLineMapWeights [DecidableEq ι] {i j : ι} (hi : i ∈ s) (hj : j ∈ s)
+lemma sum_affineCombinationLineMapWeights [DecidableEq ι] {i j : ι} (hi : i ∈ s) (hj : j ∈ s)
     (c : k) : ∑ t in s, affineCombinationLineMapWeights i j c t = 1 := by
   simp_rw [affineCombinationLineMapWeights, Pi.add_apply, sum_add_distrib]
   simp [hi, hj, ← mul_sum]
@@ -836,7 +836,7 @@ theorem centroid_def (p : ι → P) : s.centroid k p = s.affineCombination k p (
   rfl
 #align finset.centroid_def Finset.centroid_def
 
-theorem centroid_univ (s : Finset P) : univ.centroid k ((↑) : s → P) = s.centroid k id := by
+lemma centroid_univ (s : Finset P) : univ.centroid k ((↑) : s → P) = s.centroid k id := by
   rw [centroid, centroid, ← s.attach_affineCombination_coe]
   congr
   ext
@@ -1113,7 +1113,7 @@ theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
     · rw [add_comm, ← Finset.weightedVSub_vadd_affineCombination, hw0s, hs', vsub_vadd]
 #align eq_affine_combination_of_mem_affine_span eq_affineCombination_of_mem_affineSpan
 
-theorem eq_affineCombination_of_mem_affineSpan_of_fintype [Fintype ι] {p1 : P} {p : ι → P}
+lemma eq_affineCombination_of_mem_affineSpan_of_fintype [Fintype ι] {p1 : P} {p : ι → P}
     (h : p1 ∈ affineSpan k (Set.range p)) :
     ∃ w : ι → k, ∑ i, w i = 1 ∧ p1 = Finset.univ.affineCombination k p w := by
   classical

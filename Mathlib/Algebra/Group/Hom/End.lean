@@ -81,17 +81,17 @@ def AddMonoidHom.mul : R →+ R →+ R where
   map_add' a b := AddMonoidHom.ext <| add_mul a b
 #align add_monoid_hom.mul AddMonoidHom.mul
 
-theorem AddMonoidHom.mul_apply (x y : R) : AddMonoidHom.mul x y = x * y :=
+lemma AddMonoidHom.mul_apply (x y : R) : AddMonoidHom.mul x y = x * y :=
   rfl
 #align add_monoid_hom.mul_apply AddMonoidHom.mul_apply
 
 @[simp]
-theorem AddMonoidHom.coe_mul : ⇑(AddMonoidHom.mul : R →+ R →+ R) = AddMonoidHom.mulLeft :=
+lemma AddMonoidHom.coe_mul : ⇑(AddMonoidHom.mul : R →+ R →+ R) = AddMonoidHom.mulLeft :=
   rfl
 #align add_monoid_hom.coe_mul AddMonoidHom.coe_mul
 
 @[simp]
-theorem AddMonoidHom.coe_flip_mul :
+lemma AddMonoidHom.coe_flip_mul :
     ⇑(AddMonoidHom.mul : R →+ R →+ R).flip = AddMonoidHom.mulRight :=
   rfl
 #align add_monoid_hom.coe_flip_mul AddMonoidHom.coe_flip_mul

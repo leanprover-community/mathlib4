@@ -46,13 +46,13 @@ open NumberField
 /-- The canonical embedding of a number field `K` of degree `n` into `ℂ^n`. -/
 def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := Pi.ringHom fun φ => φ
 
-theorem _root_.NumberField.canonicalEmbedding_injective [NumberField K] :
+lemma _root_.NumberField.canonicalEmbedding_injective [NumberField K] :
     Function.Injective (NumberField.canonicalEmbedding K) := RingHom.injective _
 
 variable {K}
 
 @[simp]
-theorem apply_at (φ : K →+* ℂ) (x : K) : (NumberField.canonicalEmbedding K x) φ = φ x := rfl
+lemma apply_at (φ : K →+* ℂ) (x : K) : (NumberField.canonicalEmbedding K x) φ = φ x := rfl
 
 open scoped ComplexConjugate
 
@@ -69,11 +69,11 @@ theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
   · rw [Pi.smul_apply, Complex.real_smul, map_mul, Complex.conj_ofReal]
     exact congrArg ((a : ℂ) * ·) hx
 
-theorem nnnorm_eq [NumberField K] (x : K) :
+lemma nnnorm_eq [NumberField K] (x : K) :
     ‖canonicalEmbedding K x‖₊ = Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
   simp_rw [Pi.nnnorm_def, apply_at]
 
-theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
+lemma norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
   obtain hr | hr := lt_or_le r 0
   · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
@@ -90,7 +90,7 @@ variable (K)
 def integerLattice : Subring ((K →+* ℂ) → ℂ) :=
   (RingHom.range (algebraMap (𝓞 K) K)).map (canonicalEmbedding K)
 
-theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
+lemma integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     ((integerLattice K : Set ((K →+* ℂ) → ℂ)) ∩ Metric.closedBall 0 r).Finite := by
   obtain hr | _ := lt_or_le r 0
   · simp [Metric.closedBall_eq_empty.2 hr]
@@ -136,12 +136,12 @@ noncomputable def latticeBasis [NumberField K] :
       (fun i => integralBasis K (e i)) RingHom.equivRatAlgHom).symm
 
 @[simp]
-theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
+lemma latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
     latticeBasis K i = (canonicalEmbedding K) (integralBasis K i) := by
   simp only [latticeBasis, integralBasis_apply, coe_basisOfLinearIndependentOfCardEqFinrank,
     Function.comp_apply, Equiv.apply_symm_apply]
 
-theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
+lemma mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
       x ∈ ((canonicalEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
   rw [show Set.range (latticeBasis K) =
@@ -175,14 +175,14 @@ instance [NumberField K] : Nontrivial (E K) := by
   · have : Nonempty {w : InfinitePlace K // IsComplex w} := ⟨⟨w, hw⟩⟩
     exact nontrivial_prod_right
 
-protected theorem finrank [NumberField K] : finrank ℝ (E K) = finrank ℚ K := by
+protected lemma finrank [NumberField K] : finrank ℝ (E K) = finrank ℚ K := by
   classical
   rw [finrank_prod, finrank_pi, finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const,
     Finset.card_univ, ← NrRealPlaces, ← NrComplexPlaces, ← card_real_embeddings,
     Algebra.id.smul_eq_mul, mul_comm, ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ,
     Fintype.card_subtype_compl, Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
-theorem _root_.NumberField.mixedEmbedding_injective [NumberField K] :
+lemma _root_.NumberField.mixedEmbedding_injective [NumberField K] :
     Function.Injective (NumberField.mixedEmbedding K) := by
   exact RingHom.injective _
 
@@ -200,14 +200,14 @@ noncomputable def commMap : ((K →+* ℂ) → ℂ) →ₗ[ℝ] (E K) where
       Complex.ofReal_im, zero_mul, sub_zero, RingHom.id_apply, Prod.smul_mk, Prod.mk.injEq]
     exact fun _ _ => ⟨rfl, rfl⟩
 
-theorem commMap_apply_of_isReal (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsReal w) :
+lemma commMap_apply_of_isReal (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsReal w) :
     (commMap K x).1 ⟨w, hw⟩ = (x w.embedding).re := rfl
 
-theorem commMap_apply_of_isComplex (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsComplex w) :
+lemma commMap_apply_of_isComplex (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsComplex w) :
     (commMap K x).2 ⟨w, hw⟩ = x w.embedding := rfl
 
 @[simp]
-theorem commMap_canonical_eq_mixed (x : K) :
+lemma commMap_canonical_eq_mixed (x : K) :
     commMap K (canonicalEmbedding K x) = mixedEmbedding K x := by
   simp only [canonicalEmbedding, commMap, LinearMap.coe_mk, AddHom.coe_mk, Pi.ringHom_apply,
     mixedEmbedding, RingHom.prod_apply, Prod.mk.injEq]
@@ -267,28 +267,28 @@ protected def norm  : (E K) →*₀ ℝ where
   map_mul' _ _ := by simp only [Prod.fst_mul, Pi.mul_apply, norm_mul, Real.norm_eq_abs,
       Finset.prod_mul_distrib, Prod.snd_mul, Complex.norm_eq_abs, mul_pow]; ring
 
-protected theorem norm_eq_zero_iff {x : E K} :
+protected lemma norm_eq_zero_iff {x : E K} :
     mixedEmbedding.norm x = 0 ↔ (∃ w, x.1 w = 0) ∨ (∃ w, x.2 w = 0) := by
   simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mul_eq_zero,
     Finset.prod_eq_zero_iff, Finset.mem_univ, true_and, pow_eq_zero_iff two_ne_zero, norm_eq_zero]
 
-protected theorem norm_ne_zero_iff {x : E K} :
+protected lemma norm_ne_zero_iff {x : E K} :
     mixedEmbedding.norm x ≠ 0 ↔ (∀ w, x.1 w ≠ 0) ∧ (∀ w, x.2 w ≠ 0) := by
   rw [← not_iff_not]
   simp_rw [ne_eq, mixedEmbedding.norm_eq_zero_iff, not_and_or, not_forall, not_not]
 
-theorem norm_real (c : ℝ) :
+lemma norm_real (c : ℝ) :
     mixedEmbedding.norm ((fun _ ↦ c, fun _ ↦ c) : (E K)) = |c| ^ finrank ℚ K := by
   simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Real.norm_eq_abs,
     Complex.norm_eq_abs, Complex.abs_ofReal, Finset.prod_const, ← pow_mul,
     ← card_add_two_mul_card_eq_rank, Finset.card_univ, pow_add]
 
-theorem norm_smul (c : ℝ) (x : E K) :
+lemma norm_smul (c : ℝ) (x : E K) :
     mixedEmbedding.norm (c • x) = |c| ^ finrank ℚ K * (mixedEmbedding.norm x) := by
   rw [show c • x = ((fun _ ↦ c, fun _ ↦ c) : (E K)) * x by rfl, map_mul, norm_real]
 
 @[simp]
-theorem norm_eq_norm (x : K) :
+lemma norm_eq_norm (x : K) :
     mixedEmbedding.norm (mixedEmbedding K x) = |Algebra.norm ℚ x| := by
   simp_rw [← prod_eq_abs_norm, mixedEmbedding.norm, mixedEmbedding, RingHom.prod_apply,
     MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Pi.ringHom_apply, norm_embedding_eq,
@@ -300,7 +300,7 @@ theorem norm_eq_norm (x : K) :
     · exact fun _ ↦ not_isReal_iff_isComplex
     · rw [Equiv.subtypeEquivRight_apply_coe, mult, if_neg w.prop]
 
-theorem norm_eq_zero_iff' {x : E K} (hx : x ∈ Set.range (mixedEmbedding K)) :
+lemma norm_eq_zero_iff' {x : E K} (hx : x ∈ Set.range (mixedEmbedding K)) :
     mixedEmbedding.norm x = 0 ↔ x = 0 := by
   obtain ⟨a, rfl⟩ := hx
   rw [norm_eq_norm, Rat.cast_abs, abs_eq_zero, Rat.cast_eq_zero, Algebra.norm_eq_zero_iff,
@@ -330,27 +330,27 @@ def stdBasis : Basis (index K) ℝ (E K) :=
 variable {K}
 
 @[simp]
-theorem stdBasis_apply_ofIsReal (x : E K) (w : {w : InfinitePlace K // IsReal w}) :
+lemma stdBasis_apply_ofIsReal (x : E K) (w : {w : InfinitePlace K // IsReal w}) :
     (stdBasis K).repr x (Sum.inl w) = x.1 w := rfl
 
 @[simp]
-theorem stdBasis_apply_ofIsComplex_fst (x : E K) (w : {w : InfinitePlace K // IsComplex w}) :
+lemma stdBasis_apply_ofIsComplex_fst (x : E K) (w : {w : InfinitePlace K // IsComplex w}) :
     (stdBasis K).repr x (Sum.inr ⟨w, 0⟩) = (x.2 w).re := rfl
 
 @[simp]
-theorem stdBasis_apply_ofIsComplex_snd (x : E K) (w : {w : InfinitePlace K // IsComplex w}) :
+lemma stdBasis_apply_ofIsComplex_snd (x : E K) (w : {w : InfinitePlace K // IsComplex w}) :
     (stdBasis K).repr x (Sum.inr ⟨w, 1⟩) = (x.2 w).im := rfl
 
 variable (K)
 
-theorem fundamentalDomain_stdBasis :
+lemma fundamentalDomain_stdBasis :
     fundamentalDomain (stdBasis K) =
         (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
         (Set.univ.pi fun _ => Complex.measurableEquivPi⁻¹' (Set.univ.pi fun _ => Set.Ico 0 1)) := by
   ext
   simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi]
 
-theorem volume_fundamentalDomain_stdBasis :
+lemma volume_fundamentalDomain_stdBasis :
     volume (fundamentalDomain (stdBasis K)) = 1 := by
   rw [fundamentalDomain_stdBasis, volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi,
     Complex.volume_preserving_equiv_pi.measure_preimage ?_, volume_pi, pi_pi, Real.volume_Ico,
@@ -381,15 +381,15 @@ def indexEquiv : (index K) ≃ (K →+* ℂ) := by
 variable {K}
 
 @[simp]
-theorem indexEquiv_apply_ofIsReal (w : {w : InfinitePlace K // IsReal w}) :
+lemma indexEquiv_apply_ofIsReal (w : {w : InfinitePlace K // IsReal w}) :
     (indexEquiv K) (Sum.inl w) = w.val.embedding := rfl
 
 @[simp]
-theorem indexEquiv_apply_ofIsComplex_fst (w : {w : InfinitePlace K // IsComplex w}) :
+lemma indexEquiv_apply_ofIsComplex_fst (w : {w : InfinitePlace K // IsComplex w}) :
     (indexEquiv K) (Sum.inr ⟨w, 0⟩) = w.val.embedding := rfl
 
 @[simp]
-theorem indexEquiv_apply_ofIsComplex_snd (w : {w : InfinitePlace K // IsComplex w}) :
+lemma indexEquiv_apply_ofIsComplex_snd (w : {w : InfinitePlace K // IsComplex w}) :
     (indexEquiv K) (Sum.inr ⟨w, 1⟩) = ComplexEmbedding.conjugate w.val.embedding := rfl
 
 variable (K)
@@ -401,7 +401,7 @@ def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
   fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
     (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; - I, I]))
 
-theorem det_matrixToStdBasis :
+lemma det_matrixToStdBasis :
     (matrixToStdBasis K).det = (2⁻¹ * I) ^ NrComplexPlaces K :=
   calc
   _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, det ((2 : ℂ)⁻¹ • !![1, 1; -I, I]) := by
@@ -479,12 +479,12 @@ def latticeBasis :
       Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
 @[simp]
-theorem latticeBasis_apply (i : ChooseBasisIndex ℤ (𝓞 K)) :
+lemma latticeBasis_apply (i : ChooseBasisIndex ℤ (𝓞 K)) :
     latticeBasis K i = (mixedEmbedding K) (integralBasis K i) := by
   simp only [latticeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, Function.comp_apply,
     canonicalEmbedding.latticeBasis_apply, integralBasis_apply, commMap_canonical_eq_mixed]
 
-theorem mem_span_latticeBasis (x : (E K)) :
+lemma mem_span_latticeBasis (x : (E K)) :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
       x ∈ ((mixedEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
   rw [show Set.range (latticeBasis K) =
@@ -495,7 +495,7 @@ theorem mem_span_latticeBasis (x : (E K)) :
     RingHom.mem_range, exists_exists_eq_and]
   rfl
 
-theorem mem_rat_span_latticeBasis (x : K) :
+lemma mem_rat_span_latticeBasis (x : K) :
     mixedEmbedding K x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by
   rw [← Basis.sum_repr (integralBasis K) x, map_sum]
   simp_rw [map_rat_smul]
@@ -503,7 +503,7 @@ theorem mem_rat_span_latticeBasis (x : K) :
   rw [← latticeBasis_apply]
   exact Set.mem_range_self i
 
-theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
+lemma latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
     (latticeBasis K).repr (mixedEmbedding K x) i = (integralBasis K).repr x i := by
   rw [← Basis.restrictScalars_repr_apply ℚ _ ⟨_, mem_rat_span_latticeBasis K x⟩, eq_ratCast,
     Rat.cast_inj]
@@ -558,12 +558,12 @@ def fractionalIdealLatticeBasis :
   exact Units.ne_zero I
 
 @[simp]
-theorem fractionalIdealLatticeBasis_apply (i : ChooseBasisIndex ℤ I) :
+lemma fractionalIdealLatticeBasis_apply (i : ChooseBasisIndex ℤ I) :
     fractionalIdealLatticeBasis K I i = (mixedEmbedding K) (basisOfFractionalIdeal K I i) := by
   simp only [fractionalIdealLatticeBasis, Basis.coe_reindex, Basis.coe_mk, Function.comp_apply,
     Equiv.apply_symm_apply]
 
-theorem mem_span_fractionalIdealLatticeBasis (x : (E K)) :
+lemma mem_span_fractionalIdealLatticeBasis (x : (E K)) :
     x ∈ Submodule.span ℤ (Set.range (fractionalIdealLatticeBasis K I)) ↔
       x ∈ mixedEmbedding K '' I := by
   rw [show Set.range (fractionalIdealLatticeBasis K I) =

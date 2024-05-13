@@ -45,32 +45,32 @@ def IsOrderRightAdjoint [Preorder α] [Preorder β] (f : α → β) (g : β → 
   ∀ y, IsLUB { x | f x ≤ y } (g y)
 #align is_order_right_adjoint IsOrderRightAdjoint
 
-theorem isOrderRightAdjoint_sSup [CompleteLattice α] [Preorder β] (f : α → β) :
+lemma isOrderRightAdjoint_sSup [CompleteLattice α] [Preorder β] (f : α → β) :
     IsOrderRightAdjoint f fun y => sSup { x | f x ≤ y } := fun _ => isLUB_sSup _
 #align is_order_right_adjoint_Sup isOrderRightAdjoint_sSup
 
-theorem isOrderRightAdjoint_csSup [ConditionallyCompleteLattice α] [Preorder β] (f : α → β)
+lemma isOrderRightAdjoint_csSup [ConditionallyCompleteLattice α] [Preorder β] (f : α → β)
     (hne : ∀ y, ∃ x, f x ≤ y) (hbdd : ∀ y, BddAbove { x | f x ≤ y }) :
     IsOrderRightAdjoint f fun y => sSup { x | f x ≤ y } := fun y => isLUB_csSup (hne y) (hbdd y)
 #align is_order_right_adjoint_cSup isOrderRightAdjoint_csSup
 
 namespace IsOrderRightAdjoint
 
-protected theorem unique [PartialOrder α] [Preorder β] {f : α → β} {g₁ g₂ : β → α}
+protected lemma unique [PartialOrder α] [Preorder β] {f : α → β} {g₁ g₂ : β → α}
     (h₁ : IsOrderRightAdjoint f g₁) (h₂ : IsOrderRightAdjoint f g₂) : g₁ = g₂ :=
   funext fun y => (h₁ y).unique (h₂ y)
 #align is_order_right_adjoint.unique IsOrderRightAdjoint.unique
 
-theorem right_mono [Preorder α] [Preorder β] {f : α → β} {g : β → α} (h : IsOrderRightAdjoint f g) :
+lemma right_mono [Preorder α] [Preorder β] {f : α → β} {g : β → α} (h : IsOrderRightAdjoint f g) :
     Monotone g := fun y₁ y₂ hy => ((h y₁).mono (h y₂)) fun _ hx => le_trans hx hy
 #align is_order_right_adjoint.right_mono IsOrderRightAdjoint.right_mono
 
-theorem orderIso_comp [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
+lemma orderIso_comp [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
     (h : IsOrderRightAdjoint f g) (e : β ≃o γ) : IsOrderRightAdjoint (e ∘ f) (g ∘ e.symm) :=
   fun y => by simpa [e.le_symm_apply] using h (e.symm y)
 #align is_order_right_adjoint.order_iso_comp IsOrderRightAdjoint.orderIso_comp
 
-theorem comp_orderIso [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
+lemma comp_orderIso [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
     (h : IsOrderRightAdjoint f g) (e : γ ≃o α) : IsOrderRightAdjoint (f ∘ e) (e.symm ∘ g) := by
   intro y
   change IsLUB (e ⁻¹' { x | f x ≤ y }) (e.symm (g y))
@@ -98,7 +98,7 @@ theorem Semiconj.symm_adjoint [PartialOrder α] [Preorder β] {fa : α ≃o α} 
 
 variable {G : Type*}
 
-theorem semiconj_of_isLUB [PartialOrder α] [Group G] (f₁ f₂ : G →* α ≃o α) {h : α → α}
+lemma semiconj_of_isLUB [PartialOrder α] [Group G] (f₁ f₂ : G →* α ≃o α) {h : α → α}
     (H : ∀ x, IsLUB (range fun g' => (f₁ g')⁻¹ (f₂ g' x)) (h x)) (g : G) :
     Function.Semiconj h (f₂ g) (f₁ g) := by
   refine' fun y => (H _).unique _

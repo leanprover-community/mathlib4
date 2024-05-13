@@ -50,7 +50,7 @@ def splitCenterBox (I : Box ι) (s : Set ι) : Box ι where
     split_ifs <;> simp only [left_lt_add_div_two, add_div_two_lt_right, I.lower_lt_upper]
 #align box_integral.box.split_center_box BoxIntegral.Box.splitCenterBox
 
-theorem mem_splitCenterBox {s : Set ι} {y : ι → ℝ} :
+lemma mem_splitCenterBox {s : Set ι} {y : ι → ℝ} :
     y ∈ I.splitCenterBox s ↔ y ∈ I ∧ ∀ i, (I.lower i + I.upper i) / 2 < y i ↔ i ∈ s := by
   simp only [splitCenterBox, mem_def, ← forall_and]
   refine' forall_congr' fun i ↦ _
@@ -62,11 +62,11 @@ theorem mem_splitCenterBox {s : Set ι} {y : ι → ℝ} :
       fun H ↦ ⟨H.1.1, H.2⟩⟩]
 #align box_integral.box.mem_split_center_box BoxIntegral.Box.mem_splitCenterBox
 
-theorem splitCenterBox_le (I : Box ι) (s : Set ι) : I.splitCenterBox s ≤ I :=
+lemma splitCenterBox_le (I : Box ι) (s : Set ι) : I.splitCenterBox s ≤ I :=
   fun _ hx ↦ (mem_splitCenterBox.1 hx).1
 #align box_integral.box.split_center_box_le BoxIntegral.Box.splitCenterBox_le
 
-theorem disjoint_splitCenterBox (I : Box ι) {s t : Set ι} (h : s ≠ t) :
+lemma disjoint_splitCenterBox (I : Box ι) {s t : Set ι} (h : s ≠ t) :
     Disjoint (I.splitCenterBox s : Set (ι → ℝ)) (I.splitCenterBox t) := by
   rw [disjoint_iff_inf_le]
   rintro y ⟨hs, ht⟩; apply h
@@ -75,12 +75,12 @@ theorem disjoint_splitCenterBox (I : Box ι) {s t : Set ι} (h : s ≠ t) :
   rw [← hs.2, ← ht.2]
 #align box_integral.box.disjoint_split_center_box BoxIntegral.Box.disjoint_splitCenterBox
 
-theorem injective_splitCenterBox (I : Box ι) : Injective I.splitCenterBox := fun _ _ H ↦
+lemma injective_splitCenterBox (I : Box ι) : Injective I.splitCenterBox := fun _ _ H ↦
   by_contra fun Hne ↦ (I.disjoint_splitCenterBox Hne).ne (nonempty_coe _).ne_empty (H ▸ rfl)
 #align box_integral.box.injective_split_center_box BoxIntegral.Box.injective_splitCenterBox
 
 @[simp]
-theorem exists_mem_splitCenterBox {I : Box ι} {x : ι → ℝ} : (∃ s, x ∈ I.splitCenterBox s) ↔ x ∈ I :=
+lemma exists_mem_splitCenterBox {I : Box ι} {x : ι → ℝ} : (∃ s, x ∈ I.splitCenterBox s) ↔ x ∈ I :=
   ⟨fun ⟨s, hs⟩ ↦ I.splitCenterBox_le s hs, fun hx ↦
     ⟨{ i | (I.lower i + I.upper i) / 2 < x i }, mem_splitCenterBox.2 ⟨hx, fun _ ↦ Iff.rfl⟩⟩⟩
 #align box_integral.box.exists_mem_split_center_box BoxIntegral.Box.exists_mem_splitCenterBox
@@ -92,13 +92,13 @@ def splitCenterBoxEmb (I : Box ι) : Set ι ↪ Box ι :=
 #align box_integral.box.split_center_box_emb BoxIntegral.Box.splitCenterBoxEmb
 
 @[simp]
-theorem iUnion_coe_splitCenterBox (I : Box ι) : ⋃ s, (I.splitCenterBox s : Set (ι → ℝ)) = I := by
+lemma iUnion_coe_splitCenterBox (I : Box ι) : ⋃ s, (I.splitCenterBox s : Set (ι → ℝ)) = I := by
   ext x
   simp
 #align box_integral.box.Union_coe_split_center_box BoxIntegral.Box.iUnion_coe_splitCenterBox
 
 @[simp]
-theorem upper_sub_lower_splitCenterBox (I : Box ι) (s : Set ι) (i : ι) :
+lemma upper_sub_lower_splitCenterBox (I : Box ι) (s : Set ι) (i : ι) :
     (I.splitCenterBox s).upper i - (I.splitCenterBox s).lower i = (I.upper i - I.lower i) / 2 := by
   by_cases i ∈ s <;> field_simp [splitCenterBox] <;> field_simp [mul_two, two_mul]
 #align box_integral.box.upper_sub_lower_split_center_box BoxIntegral.Box.upper_sub_lower_splitCenterBox

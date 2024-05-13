@@ -26,7 +26,7 @@ open Nat BigOperators
 
 namespace Fintype
 
-theorem card_embedding_eq_of_unique {α β : Type*} [Unique α] [Fintype β] [Fintype (α ↪ β)] :
+lemma card_embedding_eq_of_unique {α β : Type*} [Unique α] [Fintype β] [Fintype (α ↪ β)] :
     ‖α ↪ β‖ = ‖β‖ :=
   card_congr Equiv.uniqueEmbeddingEquivResult
 #align fintype.card_embedding_eq_of_unique Fintype.card_embedding_eq_of_unique
@@ -34,7 +34,7 @@ theorem card_embedding_eq_of_unique {α β : Type*} [Unique α] [Fintype β] [Fi
 -- Establishes the cardinality of the type of all injections between two finite types.
 -- Porting note: `induction'` is broken so instead we make an ugly refine and `dsimp` a lot.
 @[simp]
-theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Fintype (α ↪ β)] :
+lemma card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Fintype (α ↪ β)] :
     ‖α ↪ β‖ = ‖β‖.descFactorial ‖α‖ := by
   rw [Subsingleton.elim emb Embedding.fintype]
   refine' Fintype.induction_empty_option (P := fun t ↦ ‖t ↪ β‖ = ‖β‖.descFactorial ‖t‖)

@@ -60,7 +60,7 @@ theorem factorization_choose_le_one (p_large : n < p ^ 2) : (choose n k).factori
   exact Nat.lt_succ_iff.1 (log_lt_of_lt_pow hn0 p_large)
 #align nat.factorization_choose_le_one Nat.factorization_choose_le_one
 
-theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk' : p ≤ n - k)
+lemma factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk' : p ≤ n - k)
     (hn : n < 3 * p) : (choose n k).factorization p = 0 := by
   cases' em' p.Prime with hp hp
   · exact factorization_eq_zero_of_non_prime (choose n k) hp
@@ -99,13 +99,13 @@ theorem factorization_centralBinom_of_two_mul_self_lt_three_mul (n_big : 2 < n) 
   · rw [two_mul, add_tsub_cancel_left]
 #align nat.factorization_central_binom_of_two_mul_self_lt_three_mul Nat.factorization_centralBinom_of_two_mul_self_lt_three_mul
 
-theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factorization p = 0 := by
+lemma factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factorization p = 0 := by
   induction' n with n hn; · simp
   rw [factorial_succ, factorization_mul n.succ_ne_zero n.factorial_ne_zero, Finsupp.coe_add,
     Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
 #align nat.factorization_factorial_eq_zero_of_lt Nat.factorization_factorial_eq_zero_of_lt
 
-theorem factorization_choose_eq_zero_of_lt (h : n < p) : (choose n k).factorization p = 0 := by
+lemma factorization_choose_eq_zero_of_lt (h : n < p) : (choose n k).factorization p = 0 := by
   by_cases hnk : n < k; · simp [choose_eq_zero_of_lt hnk]
   rw [choose_eq_factorial_div_factorial (le_of_not_lt hnk),
     factorization_div (factorial_mul_factorial_dvd_factorial (le_of_not_lt hnk)), Finsupp.coe_tsub,

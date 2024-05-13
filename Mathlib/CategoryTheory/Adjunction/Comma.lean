@@ -166,13 +166,13 @@ def mkTerminalOfRightAdjoint (h : F ⊣ G) (A : D) :
 
 end
 
-theorem isRightAdjoint_iff_hasInitial_structuredArrow {G : D ⥤ C} :
+lemma isRightAdjoint_iff_hasInitial_structuredArrow {G : D ⥤ C} :
     G.IsRightAdjoint ↔ ∀ A, HasInitial (StructuredArrow A G) :=
   ⟨fun _ A => (mkInitialOfLeftAdjoint _ (Adjunction.ofIsRightAdjoint G) A).hasInitial,
     fun _ => isRightAdjointOfStructuredArrowInitials _⟩
 #align category_theory.nonempty_is_right_adjoint_iff_has_initial_structured_arrow CategoryTheory.isRightAdjoint_iff_hasInitial_structuredArrow
 
-theorem isLeftAdjoint_iff_hasTerminal_costructuredArrow {F : C ⥤ D} :
+lemma isLeftAdjoint_iff_hasTerminal_costructuredArrow {F : C ⥤ D} :
     F.IsLeftAdjoint ↔ ∀ A, HasTerminal (CostructuredArrow F A) :=
   ⟨fun _ A => (mkTerminalOfRightAdjoint _ (Adjunction.ofIsLeftAdjoint F) A).hasTerminal,
     fun _ => isLeftAdjoint_of_costructuredArrowTerminals _⟩

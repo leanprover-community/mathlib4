@@ -192,25 +192,25 @@ def M.mk {α : TypeVec n} : P (α.append1 (P.M α)) → P.M α :=
   M.corec _ fun i => appendFun id (M.dest P) <$$> i
 #align mvpfunctor.M.mk MvPFunctor.M.mk
 
-theorem M.dest'_eq_dest' {α : TypeVec n} {x : P.last.M} {a₁ : P.A}
+lemma M.dest'_eq_dest' {α : TypeVec n} {x : P.last.M} {a₁ : P.A}
     {f₁ : P.last.B a₁ → P.last.M} (h₁ : PFunctor.M.dest x = ⟨a₁, f₁⟩) {a₂ : P.A}
     {f₂ : P.last.B a₂ → P.last.M} (h₂ : PFunctor.M.dest x = ⟨a₂, f₂⟩) (f' : M.Path P x ⟹ α) :
     M.dest' P h₁ f' = M.dest' P h₂ f' := by cases h₁.symm.trans h₂; rfl
 #align mvpfunctor.M.dest'_eq_dest' MvPFunctor.M.dest'_eq_dest'
 
-theorem M.dest_eq_dest' {α : TypeVec n} {x : P.last.M} {a : P.A}
+lemma M.dest_eq_dest' {α : TypeVec n} {x : P.last.M} {a : P.A}
     {f : P.last.B a → P.last.M} (h : PFunctor.M.dest x = ⟨a, f⟩) (f' : M.Path P x ⟹ α) :
     M.dest P ⟨x, f'⟩ = M.dest' P h f' :=
   M.dest'_eq_dest' _ _ _ _
 #align mvpfunctor.M.dest_eq_dest' MvPFunctor.M.dest_eq_dest'
 
-theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type u} (g₀ : β → P.A)
+lemma M.dest_corec' {α : TypeVec.{u} n} {β : Type u} (g₀ : β → P.A)
     (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) (x : β) :
     M.dest P (M.corec' P g₀ g₁ g₂ x) = ⟨g₀ x, splitFun (g₁ x) (M.corec' P g₀ g₁ g₂ ∘ g₂ x)⟩ :=
   rfl
 #align mvpfunctor.M.dest_corec' MvPFunctor.M.dest_corec'
 
-theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β)) (x : β) :
+lemma M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β)) (x : β) :
     M.dest P (M.corec P g x) = appendFun id (M.corec P g) <$$> g x := by
   trans
   · apply M.dest_corec'
@@ -220,7 +220,7 @@ theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β
   rfl
 #align mvpfunctor.M.dest_corec MvPFunctor.M.dest_corec
 
-theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ ⟹ α} {a' : P.A}
+lemma M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ ⟹ α} {a' : P.A}
     {f' : (P.B a').drop ⟹ α} {f₁' : (P.B a').last → M P α}
     (e₁ : M.dest P ⟨a₁, f₁⟩ = ⟨a', splitFun f' f₁'⟩) :
     ∃ (g₁' : _)(e₁' : PFunctor.M.dest a₁ = ⟨a', g₁'⟩),
@@ -233,7 +233,7 @@ theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ �
   cases e₁; exact ⟨_, e₁', splitFun_inj ef⟩
 #align mvpfunctor.M.bisim_lemma MvPFunctor.M.bisim_lemma
 
-theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
+lemma M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     (h :
       ∀ x y,
         R x y →
@@ -267,7 +267,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
   · exact IH _ _ (h'' _)
 #align mvpfunctor.M.bisim MvPFunctor.M.bisim
 
-theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equivalence R)
+lemma M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equivalence R)
     (h : ∀ x y, R x y → (id ::: Quot.mk R) <$$> M.dest _ x = (id ::: Quot.mk R) <$$> M.dest _ y)
     (x y) (r : R x y) : x = y := by
   apply M.bisim P R _ _ _ r
@@ -300,7 +300,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   exact h₁
 #align mvpfunctor.M.bisim₀ MvPFunctor.M.bisim₀
 
-theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
+lemma M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     (h : ∀ x y, R x y → (id ::: Quot.mk R) <$$> M.dest _ x = (id ::: Quot.mk R) <$$> M.dest _ y)
     (x y) (r : R x y) : x = y := by
   have := M.bisim₀ P (EqvGen R) ?_ ?_
@@ -316,7 +316,7 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     all_goals aesop
 #align mvpfunctor.M.bisim' MvPFunctor.M.bisim'
 
-theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
+lemma M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
     M.dest P (g <$$> x) = (appendFun g fun x => g <$$> x) <$$> M.dest P x := by
   cases' x with a f
   rw [map_eq]
@@ -326,7 +326,7 @@ theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
   rfl
 #align mvpfunctor.M.dest_map MvPFunctor.M.dest_map
 
-theorem M.map_dest {α β : TypeVec n} (g : (α ::: P.M α) ⟹ (β ::: P.M β)) (x : P.M α)
+lemma M.map_dest {α β : TypeVec n} (g : (α ::: P.M α) ⟹ (β ::: P.M β)) (x : P.M α)
     (h : ∀ x : P.M α, lastFun g x = (dropFun g <$$> x : P.M β)) :
     g <$$> M.dest P x = M.dest P (dropFun g <$$> x) := by
   rw [M.dest_map]; congr

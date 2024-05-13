@@ -90,16 +90,16 @@ class InvolutiveStar (R : Type u) extends Star R where
 export InvolutiveStar (star_involutive)
 
 @[simp]
-theorem star_star [InvolutiveStar R] (r : R) : star (star r) = r :=
+lemma star_star [InvolutiveStar R] (r : R) : star (star r) = r :=
   star_involutive _
 #align star_star star_star
 
-theorem star_injective [InvolutiveStar R] : Function.Injective (star : R → R) :=
+lemma star_injective [InvolutiveStar R] : Function.Injective (star : R → R) :=
   Function.Involutive.injective star_involutive
 #align star_injective star_injective
 
 @[simp]
-theorem star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=
+lemma star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=
   star_injective.eq_iff
 #align star_inj star_inj
 
@@ -108,15 +108,15 @@ protected def Equiv.star [InvolutiveStar R] : Equiv.Perm R :=
   star_involutive.toPerm _
 #align equiv.star Equiv.star
 
-theorem eq_star_of_eq_star [InvolutiveStar R] {r s : R} (h : r = star s) : s = star r := by
+lemma eq_star_of_eq_star [InvolutiveStar R] {r s : R} (h : r = star s) : s = star r := by
   simp [h]
 #align eq_star_of_eq_star eq_star_of_eq_star
 
-theorem eq_star_iff_eq_star [InvolutiveStar R] {r s : R} : r = star s ↔ s = star r :=
+lemma eq_star_iff_eq_star [InvolutiveStar R] {r s : R} : r = star s ↔ s = star r :=
   ⟨eq_star_of_eq_star, eq_star_of_eq_star⟩
 #align eq_star_iff_eq_star eq_star_iff_eq_star
 
-theorem star_eq_iff_star_eq [InvolutiveStar R] {r s : R} : star r = s ↔ star s = r :=
+lemma star_eq_iff_star_eq [InvolutiveStar R] {r s : R} : star r = s ↔ star s = r :=
   eq_comm.trans <| eq_star_iff_eq_star.trans eq_comm
 #align star_eq_iff_star_eq star_eq_iff_star_eq
 
@@ -147,14 +147,14 @@ section StarMul
 
 variable [Mul R] [StarMul R]
 
-theorem star_star_mul (x y : R) : star (star x * y) = star y * x := by rw [star_mul, star_star]
+lemma star_star_mul (x y : R) : star (star x * y) = star y * x := by rw [star_mul, star_star]
 #align star_star_mul star_star_mul
 
-theorem star_mul_star (x y : R) : star (x * star y) = y * star x := by rw [star_mul, star_star]
+lemma star_mul_star (x y : R) : star (x * star y) = y * star x := by rw [star_mul, star_star]
 #align star_mul_star star_mul_star
 
 @[simp]
-theorem semiconjBy_star_star_star {x y z : R} :
+lemma semiconjBy_star_star_star {x y z : R} :
     SemiconjBy (star x) (star z) (star y) ↔ SemiconjBy x y z := by
   simp_rw [SemiconjBy, ← star_mul, star_inj, eq_comm]
 #align semiconj_by_star_star_star semiconjBy_star_star_star
@@ -163,14 +163,14 @@ alias ⟨_, SemiconjBy.star_star_star⟩ := semiconjBy_star_star_star
 #align semiconj_by.star_star_star SemiconjBy.star_star_star
 
 @[simp]
-theorem commute_star_star {x y : R} : Commute (star x) (star y) ↔ Commute x y :=
+lemma commute_star_star {x y : R} : Commute (star x) (star y) ↔ Commute x y :=
   semiconjBy_star_star_star
 #align commute_star_star commute_star_star
 
 alias ⟨_, Commute.star_star⟩ := commute_star_star
 #align commute.star_star Commute.star_star
 
-theorem commute_star_comm {x y : R} : Commute (star x) y ↔ Commute x (star y) := by
+lemma commute_star_comm {x y : R} : Commute (star x) y ↔ Commute x (star y) := by
   rw [← commute_star_star, star_star]
 #align commute_star_comm commute_star_comm
 
@@ -203,25 +203,25 @@ def starMulAut [CommSemigroup R] [StarMul R] : MulAut R :=
 variable (R)
 
 @[simp]
-theorem star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
+lemma star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
   op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans op_one.symm
 #align star_one star_one
 
 variable {R}
 
 @[simp]
-theorem star_pow [Monoid R] [StarMul R] (x : R) (n : ℕ) : star (x ^ n) = star x ^ n :=
+lemma star_pow [Monoid R] [StarMul R] (x : R) (n : ℕ) : star (x ^ n) = star x ^ n :=
   op_injective <|
     ((starMulEquiv : R ≃* Rᵐᵒᵖ).toMonoidHom.map_pow x n).trans (op_pow (star x) n).symm
 #align star_pow star_pow
 
 @[simp]
-theorem star_inv [Group R] [StarMul R] (x : R) : star x⁻¹ = (star x)⁻¹ :=
+lemma star_inv [Group R] [StarMul R] (x : R) : star x⁻¹ = (star x)⁻¹ :=
   op_injective <| ((starMulEquiv : R ≃* Rᵐᵒᵖ).toMonoidHom.map_inv x).trans (op_inv (star x)).symm
 #align star_inv star_inv
 
 @[simp]
-theorem star_zpow [Group R] [StarMul R] (x : R) (z : ℤ) : star (x ^ z) = star x ^ z :=
+lemma star_zpow [Group R] [StarMul R] (x : R) (z : ℤ) : star (x ^ z) = star x ^ z :=
   op_injective <|
     ((starMulEquiv : R ≃* Rᵐᵒᵖ).toMonoidHom.map_zpow x z).trans (op_zpow (star x) z).symm
 #align star_zpow star_zpow
@@ -276,38 +276,38 @@ def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R :=
 variable (R)
 
 @[simp]
-theorem star_zero [AddMonoid R] [StarAddMonoid R] : star (0 : R) = 0 :=
+lemma star_zero [AddMonoid R] [StarAddMonoid R] : star (0 : R) = 0 :=
   (starAddEquiv : R ≃+ R).map_zero
 #align star_zero star_zero
 
 variable {R}
 
 @[simp]
-theorem star_eq_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x = 0 ↔ x = 0 :=
+lemma star_eq_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x = 0 ↔ x = 0 :=
   starAddEquiv.map_eq_zero_iff (M := R)
 #align star_eq_zero star_eq_zero
 
-theorem star_ne_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x ≠ 0 ↔ x ≠ 0 := by
+lemma star_ne_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x ≠ 0 ↔ x ≠ 0 := by
   simp only [ne_eq, star_eq_zero]
 #align star_ne_zero star_ne_zero
 
 @[simp]
-theorem star_neg [AddGroup R] [StarAddMonoid R] (r : R) : star (-r) = -star r :=
+lemma star_neg [AddGroup R] [StarAddMonoid R] (r : R) : star (-r) = -star r :=
   (starAddEquiv : R ≃+ R).map_neg _
 #align star_neg star_neg
 
 @[simp]
-theorem star_sub [AddGroup R] [StarAddMonoid R] (r s : R) : star (r - s) = star r - star s :=
+lemma star_sub [AddGroup R] [StarAddMonoid R] (r s : R) : star (r - s) = star r - star s :=
   (starAddEquiv : R ≃+ R).map_sub _ _
 #align star_sub star_sub
 
 @[simp]
-theorem star_nsmul [AddMonoid R] [StarAddMonoid R] (x : R) (n : ℕ) : star (n • x) = n • star x :=
+lemma star_nsmul [AddMonoid R] [StarAddMonoid R] (x : R) (n : ℕ) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_nsmul _ _
 #align star_nsmul star_nsmul
 
 @[simp]
-theorem star_zsmul [AddGroup R] [StarAddMonoid R] (x : R) (n : ℤ) : star (n • x) = n • star x :=
+lemma star_zsmul [AddGroup R] [StarAddMonoid R] (x : R) (n : ℤ) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_zsmul _ _
 #align star_zsmul star_zsmul
 
@@ -333,20 +333,20 @@ def starRingEquiv [NonUnitalNonAssocSemiring R] [StarRing R] : R ≃+* Rᵐᵒ�
 #align star_ring_equiv_apply starRingEquiv_apply
 
 @[simp, norm_cast]
-theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
+lemma star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
   (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
 #align star_nat_cast star_natCast
 
 -- Porting note (#10756): new theorem
 @[simp]
-theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
+lemma star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
     star (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
   star_natCast _
 
 section
 
 @[simp, norm_cast]
-theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
+lemma star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
   (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
 #align star_int_cast star_intCast
 
@@ -355,7 +355,7 @@ lemma star_nnratCast [DivisionSemiring R] [StarRing R] (q : ℚ≥0) : star (q :
   (congr_arg unop <| map_nnratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) q).trans (unop_nnratCast _)
 
 @[simp, norm_cast]
-theorem star_ratCast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
+lemma star_ratCast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
   (congr_arg unop <| map_ratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r).trans (unop_ratCast _)
 #align star_rat_cast star_ratCast
 
@@ -401,7 +401,7 @@ One of the lemmas above could be a duplicate.
 If that's not the case try reordering lemmas or adding @[priority].
  -/
 -- @[simp]
-theorem starRingEnd_self_apply (x : R) : starRingEnd R (starRingEnd R x) = x := star_star x
+lemma starRingEnd_self_apply (x : R) : starRingEnd R (starRingEnd R x) = x := star_star x
 #align star_ring_end_self_apply starRingEnd_self_apply
 
 instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] : InvolutiveStar (S →+* R) where
@@ -412,11 +412,11 @@ instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] : InvolutiveSta
     simp only [RingHom.coe_comp, Function.comp_apply, starRingEnd_self_apply]
 #align ring_hom.has_involutive_star RingHom.involutiveStar
 
-theorem RingHom.star_def {S : Type*} [NonAssocSemiring S] (f : S →+* R) :
+lemma RingHom.star_def {S : Type*} [NonAssocSemiring S] (f : S →+* R) :
     Star.star f = RingHom.comp (starRingEnd R) f := rfl
 #align ring_hom.star_def RingHom.star_def
 
-theorem RingHom.star_apply {S : Type*} [NonAssocSemiring S] (f : S →+* R) (s : S) :
+lemma RingHom.star_apply {S : Type*} [NonAssocSemiring S] (f : S →+* R) (s : S) :
     star f s = star (f s) := rfl
 #align ring_hom.star_apply RingHom.star_apply
 
@@ -435,12 +435,12 @@ open scoped ComplexConjugate
 end CommSemiring
 
 @[simp]
-theorem star_inv' [DivisionSemiring R] [StarRing R] (x : R) : star x⁻¹ = (star x)⁻¹ :=
+lemma star_inv' [DivisionSemiring R] [StarRing R] (x : R) : star x⁻¹ = (star x)⁻¹ :=
   op_injective <| (map_inv₀ (starRingEquiv : R ≃+* Rᵐᵒᵖ) x).trans (op_inv (star x)).symm
 #align star_inv' star_inv'
 
 @[simp]
-theorem star_zpow₀ [DivisionSemiring R] [StarRing R] (x : R) (z : ℤ) : star (x ^ z) = star x ^ z :=
+lemma star_zpow₀ [DivisionSemiring R] [StarRing R] (x : R) (z : ℤ) : star (x ^ z) = star x ^ z :=
   op_injective <| (map_zpow₀ (starRingEquiv : R ≃+* Rᵐᵒᵖ) x z).trans (op_zpow (star x) z).symm
 #align star_zpow₀ star_zpow₀
 
@@ -456,12 +456,12 @@ section
 set_option linter.deprecated false
 
 @[simp]
-theorem star_bit0 [AddMonoid R] [StarAddMonoid R] (r : R) : star (bit0 r) = bit0 (star r) := by
+lemma star_bit0 [AddMonoid R] [StarAddMonoid R] (r : R) : star (bit0 r) = bit0 (star r) := by
   simp [bit0]
 #align star_bit0 star_bit0
 
 @[simp]
-theorem star_bit1 [Semiring R] [StarRing R] (r : R) : star (bit1 r) = bit1 (star r) := by
+lemma star_bit1 [Semiring R] [StarRing R] (r : R) : star (bit1 r) = bit1 (star r) := by
   simp [bit1]
 #align star_bit1 star_bit1
 
@@ -553,12 +553,12 @@ instance : StarMul Rˣ where
   star_mul _ _ := Units.ext (star_mul _ _)
 
 @[simp]
-theorem coe_star (u : Rˣ) : ↑(star u) = (star ↑u : R) :=
+lemma coe_star (u : Rˣ) : ↑(star u) = (star ↑u : R) :=
   rfl
 #align units.coe_star Units.coe_star
 
 @[simp]
-theorem coe_star_inv (u : Rˣ) : ↑(star u)⁻¹ = (star ↑u⁻¹ : R) :=
+lemma coe_star_inv (u : Rˣ) : ↑(star u)⁻¹ = (star ↑u⁻¹ : R) :=
   rfl
 #align units.coe_star_inv Units.coe_star_inv
 
@@ -567,16 +567,16 @@ instance {A : Type*} [Star A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
 
 end Units
 
-protected theorem IsUnit.star [Monoid R] [StarMul R] {a : R} : IsUnit a → IsUnit (star a)
+protected lemma IsUnit.star [Monoid R] [StarMul R] {a : R} : IsUnit a → IsUnit (star a)
   | ⟨u, hu⟩ => ⟨Star.star u, hu ▸ rfl⟩
 #align is_unit.star IsUnit.star
 
 @[simp]
-theorem isUnit_star [Monoid R] [StarMul R] {a : R} : IsUnit (star a) ↔ IsUnit a :=
+lemma isUnit_star [Monoid R] [StarMul R] {a : R} : IsUnit (star a) ↔ IsUnit a :=
   ⟨fun h => star_star a ▸ h.star, IsUnit.star⟩
 #align is_unit_star isUnit_star
 
-theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
+lemma Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
     Ring.inverse (star a) = star (Ring.inverse a) := by
   by_cases ha : IsUnit a
   · obtain ⟨u, rfl⟩ := ha
@@ -591,7 +591,7 @@ protected instance Invertible.star {R : Type*} [MulOneClass R] [StarMul R] (r : 
   mul_invOf_self := by rw [← star_mul, invOf_mul_self, star_one]
 #align invertible.star Invertible.star
 
-theorem star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
+lemma star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
     [Invertible (star r)] : star (⅟ r) = ⅟ (star r) := by
   have : star (⅟ r) = star (⅟ r) * ((star r) * ⅟ (star r)) := by
     simp only [mul_invOf_self, mul_one]
@@ -606,12 +606,12 @@ namespace MulOpposite
 instance [Star R] : Star Rᵐᵒᵖ where star r := op (star r.unop)
 
 @[simp]
-theorem unop_star [Star R] (r : Rᵐᵒᵖ) : unop (star r) = star (unop r) :=
+lemma unop_star [Star R] (r : Rᵐᵒᵖ) : unop (star r) = star (unop r) :=
   rfl
 #align mul_opposite.unop_star MulOpposite.unop_star
 
 @[simp]
-theorem op_star [Star R] (r : R) : op (star r) = star (op r) :=
+lemma op_star [Star R] (r : R) : op (star r) = star (op r) :=
   rfl
 #align mul_opposite.op_star MulOpposite.op_star
 

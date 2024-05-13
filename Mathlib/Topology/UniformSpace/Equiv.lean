@@ -48,7 +48,7 @@ namespace UniformEquiv
 
 variable [UniformSpace α] [UniformSpace β] [UniformSpace γ] [UniformSpace δ]
 
-theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α ≃ β)
+lemma toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α ≃ β)
   | ⟨e, h₁, h₂⟩, ⟨e', h₁', h₂'⟩, h => by simpa only [mk.injEq]
 #align uniform_equiv.to_equiv_injective UniformEquiv.toEquiv_injective
 
@@ -60,7 +60,7 @@ instance : EquivLike (α ≃ᵤ β) α β where
   coe_injective' := fun _ _ H _ => toEquiv_injective <| DFunLike.ext' H
 
 @[simp]
-theorem uniformEquiv_mk_coe (a : Equiv α β) (b c) : (UniformEquiv.mk a b c : α → β) = a :=
+lemma uniformEquiv_mk_coe (a : Equiv α β) (b c) : (UniformEquiv.mk a b c : α → β) = a :=
   rfl
 #align uniform_equiv.uniform_equiv_mk_coe UniformEquiv.uniformEquiv_mk_coe
 
@@ -86,17 +86,17 @@ def Simps.symm_apply (h : α ≃ᵤ β) : β → α :=
 initialize_simps_projections UniformEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp]
-theorem coe_toEquiv (h : α ≃ᵤ β) : ⇑h.toEquiv = h :=
+lemma coe_toEquiv (h : α ≃ᵤ β) : ⇑h.toEquiv = h :=
   rfl
 #align uniform_equiv.coe_to_equiv UniformEquiv.coe_toEquiv
 
 @[simp]
-theorem coe_symm_toEquiv (h : α ≃ᵤ β) : ⇑h.toEquiv.symm = h.symm :=
+lemma coe_symm_toEquiv (h : α ≃ᵤ β) : ⇑h.toEquiv.symm = h.symm :=
   rfl
 #align uniform_equiv.coe_symm_to_equiv UniformEquiv.coe_symm_toEquiv
 
 @[ext]
-theorem ext {h h' : α ≃ᵤ β} (H : ∀ x, h x = h' x) : h = h' :=
+lemma ext {h h' : α ≃ᵤ β} (H : ∀ x, h x = h' x) : h = h' :=
   toEquiv_injective <| Equiv.ext H
 #align uniform_equiv.ext UniformEquiv.ext
 
@@ -118,37 +118,37 @@ protected def trans (h₁ : α ≃ᵤ β) (h₂ : β ≃ᵤ γ) : α ≃ᵤ γ
 #align uniform_equiv.trans UniformEquiv.trans
 
 @[simp]
-theorem trans_apply (h₁ : α ≃ᵤ β) (h₂ : β ≃ᵤ γ) (a : α) : h₁.trans h₂ a = h₂ (h₁ a) :=
+lemma trans_apply (h₁ : α ≃ᵤ β) (h₂ : β ≃ᵤ γ) (a : α) : h₁.trans h₂ a = h₂ (h₁ a) :=
   rfl
 #align uniform_equiv.trans_apply UniformEquiv.trans_apply
 
 @[simp]
-theorem uniformEquiv_mk_coe_symm (a : Equiv α β) (b c) :
+lemma uniformEquiv_mk_coe_symm (a : Equiv α β) (b c) :
     ((UniformEquiv.mk a b c).symm : β → α) = a.symm :=
   rfl
 #align uniform_equiv.uniform_equiv_mk_coe_symm UniformEquiv.uniformEquiv_mk_coe_symm
 
 @[simp]
-theorem refl_symm : (UniformEquiv.refl α).symm = UniformEquiv.refl α :=
+lemma refl_symm : (UniformEquiv.refl α).symm = UniformEquiv.refl α :=
   rfl
 #align uniform_equiv.refl_symm UniformEquiv.refl_symm
 
-protected theorem uniformContinuous (h : α ≃ᵤ β) : UniformContinuous h :=
+protected lemma uniformContinuous (h : α ≃ᵤ β) : UniformContinuous h :=
   h.uniformContinuous_toFun
 #align uniform_equiv.uniform_continuous UniformEquiv.uniformContinuous
 
 @[continuity]
-protected theorem continuous (h : α ≃ᵤ β) : Continuous h :=
+protected lemma continuous (h : α ≃ᵤ β) : Continuous h :=
   h.uniformContinuous.continuous
 #align uniform_equiv.continuous UniformEquiv.continuous
 
-protected theorem uniformContinuous_symm (h : α ≃ᵤ β) : UniformContinuous h.symm :=
+protected lemma uniformContinuous_symm (h : α ≃ᵤ β) : UniformContinuous h.symm :=
   h.uniformContinuous_invFun
 #align uniform_equiv.uniform_continuous_symm UniformEquiv.uniformContinuous_symm
 
 -- otherwise `by continuity` can't prove continuity of `h.to_equiv.symm`
 @[continuity]
-protected theorem continuous_symm (h : α ≃ᵤ β) : Continuous h.symm :=
+protected lemma continuous_symm (h : α ≃ᵤ β) : Continuous h.symm :=
   h.uniformContinuous_symm.continuous
 #align uniform_equiv.continuous_symm UniformEquiv.continuous_symm
 
@@ -167,24 +167,24 @@ lemma toHomeomorph_symm_apply (e : α ≃ᵤ β) : (e.toHomeomorph.symm : β →
 #align uniform_equiv.to_homeomorph_symm_apply UniformEquiv.toHomeomorph_symm_apply
 
 @[simp]
-theorem apply_symm_apply (h : α ≃ᵤ β) (x : β) : h (h.symm x) = x :=
+lemma apply_symm_apply (h : α ≃ᵤ β) (x : β) : h (h.symm x) = x :=
   h.toEquiv.apply_symm_apply x
 #align uniform_equiv.apply_symm_apply UniformEquiv.apply_symm_apply
 
 @[simp]
-theorem symm_apply_apply (h : α ≃ᵤ β) (x : α) : h.symm (h x) = x :=
+lemma symm_apply_apply (h : α ≃ᵤ β) (x : α) : h.symm (h x) = x :=
   h.toEquiv.symm_apply_apply x
 #align uniform_equiv.symm_apply_apply UniformEquiv.symm_apply_apply
 
-protected theorem bijective (h : α ≃ᵤ β) : Function.Bijective h :=
+protected lemma bijective (h : α ≃ᵤ β) : Function.Bijective h :=
   h.toEquiv.bijective
 #align uniform_equiv.bijective UniformEquiv.bijective
 
-protected theorem injective (h : α ≃ᵤ β) : Function.Injective h :=
+protected lemma injective (h : α ≃ᵤ β) : Function.Injective h :=
   h.toEquiv.injective
 #align uniform_equiv.injective UniformEquiv.injective
 
-protected theorem surjective (h : α ≃ᵤ β) : Function.Surjective h :=
+protected lemma surjective (h : α ≃ᵤ β) : Function.Surjective h :=
   h.toEquiv.surjective
 #align uniform_equiv.surjective UniformEquiv.surjective
 
@@ -203,52 +203,52 @@ def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f
 #align uniform_equiv.change_inv UniformEquiv.changeInv
 
 @[simp]
-theorem symm_comp_self (h : α ≃ᵤ β) : (h.symm : β → α) ∘ h = id :=
+lemma symm_comp_self (h : α ≃ᵤ β) : (h.symm : β → α) ∘ h = id :=
   funext h.symm_apply_apply
 #align uniform_equiv.symm_comp_self UniformEquiv.symm_comp_self
 
 @[simp]
-theorem self_comp_symm (h : α ≃ᵤ β) : (h : α → β) ∘ h.symm = id :=
+lemma self_comp_symm (h : α ≃ᵤ β) : (h : α → β) ∘ h.symm = id :=
   funext h.apply_symm_apply
 #align uniform_equiv.self_comp_symm UniformEquiv.self_comp_symm
 
 -- @[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.range_eq_univ]`
-theorem range_coe (h : α ≃ᵤ β) : range h = univ :=
+lemma range_coe (h : α ≃ᵤ β) : range h = univ :=
   h.surjective.range_eq
 #align uniform_equiv.range_coe UniformEquiv.range_coe
 
-theorem image_symm (h : α ≃ᵤ β) : image h.symm = preimage h :=
+lemma image_symm (h : α ≃ᵤ β) : image h.symm = preimage h :=
   funext h.symm.toEquiv.image_eq_preimage
 #align uniform_equiv.image_symm UniformEquiv.image_symm
 
-theorem preimage_symm (h : α ≃ᵤ β) : preimage h.symm = image h :=
+lemma preimage_symm (h : α ≃ᵤ β) : preimage h.symm = image h :=
   (funext h.toEquiv.image_eq_preimage).symm
 #align uniform_equiv.preimage_symm UniformEquiv.preimage_symm
 
 -- @[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.image_preimage]`
-theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' (h ⁻¹' s) = s :=
+lemma image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' (h ⁻¹' s) = s :=
   h.toEquiv.image_preimage s
 #align uniform_equiv.image_preimage UniformEquiv.image_preimage
 
 --@[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.preimage_image]`
-theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' (h '' s) = s :=
+lemma preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 #align uniform_equiv.preimage_image UniformEquiv.preimage_image
 
-protected theorem uniformInducing (h : α ≃ᵤ β) : UniformInducing h :=
+protected lemma uniformInducing (h : α ≃ᵤ β) : UniformInducing h :=
   uniformInducing_of_compose h.uniformContinuous h.symm.uniformContinuous <| by
     simp only [symm_comp_self, uniformInducing_id]
 #align uniform_equiv.uniform_inducing UniformEquiv.uniformInducing
 
-theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› :=
+lemma comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› :=
   h.uniformInducing.comap_uniformSpace
 #align uniform_equiv.comap_eq UniformEquiv.comap_eq
 
-protected theorem uniformEmbedding (h : α ≃ᵤ β) : UniformEmbedding h :=
+protected lemma uniformEmbedding (h : α ≃ᵤ β) : UniformEmbedding h :=
   ⟨h.uniformInducing, h.injective⟩
 #align uniform_equiv.uniform_embedding UniformEquiv.uniformEmbedding
 
-theorem completeSpace_iff (h : α ≃ᵤ β) : CompleteSpace α ↔ CompleteSpace β :=
+lemma completeSpace_iff (h : α ≃ᵤ β) : CompleteSpace α ↔ CompleteSpace β :=
   completeSpace_congr h.uniformEmbedding
 
 /-- Uniform equiv given a uniform embedding. -/
@@ -283,13 +283,13 @@ def prodCongr (h₁ : α ≃ᵤ β) (h₂ : γ ≃ᵤ δ) : α × γ ≃ᵤ β �
 #align uniform_equiv.prod_congr UniformEquiv.prodCongr
 
 @[simp]
-theorem prodCongr_symm (h₁ : α ≃ᵤ β) (h₂ : γ ≃ᵤ δ) :
+lemma prodCongr_symm (h₁ : α ≃ᵤ β) (h₂ : γ ≃ᵤ δ) :
     (h₁.prodCongr h₂).symm = h₁.symm.prodCongr h₂.symm :=
   rfl
 #align uniform_equiv.prod_congr_symm UniformEquiv.prodCongr_symm
 
 @[simp]
-theorem coe_prodCongr (h₁ : α ≃ᵤ β) (h₂ : γ ≃ᵤ δ) : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
+lemma coe_prodCongr (h₁ : α ≃ᵤ β) (h₂ : γ ≃ᵤ δ) : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
   rfl
 #align uniform_equiv.coe_prod_congr UniformEquiv.coe_prodCongr
 
@@ -306,12 +306,12 @@ def prodComm : α × β ≃ᵤ β × α
 #align uniform_equiv.prod_comm UniformEquiv.prodComm
 
 @[simp]
-theorem prodComm_symm : (prodComm α β).symm = prodComm β α :=
+lemma prodComm_symm : (prodComm α β).symm = prodComm β α :=
   rfl
 #align uniform_equiv.prod_comm_symm UniformEquiv.prodComm_symm
 
 @[simp]
-theorem coe_prodComm : ⇑(prodComm α β) = Prod.swap :=
+lemma coe_prodComm : ⇑(prodComm α β) = Prod.swap :=
   rfl
 #align uniform_equiv.coe_prod_comm UniformEquiv.coe_prodComm
 
@@ -342,7 +342,7 @@ def punitProd : PUnit × α ≃ᵤ α :=
 #align uniform_equiv.punit_prod UniformEquiv.punitProd
 
 @[simp]
-theorem coe_punitProd : ⇑(punitProd α) = Prod.snd :=
+lemma coe_punitProd : ⇑(punitProd α) = Prod.snd :=
   rfl
 #align uniform_equiv.coe_punit_prod UniformEquiv.coe_punitProd
 
@@ -367,7 +367,7 @@ def piCongrRight {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, UniformSpace 
   toEquiv := Equiv.piCongrRight fun i => (F i).toEquiv
 
 @[simp]
-theorem piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, UniformSpace (β₁ i)]
+lemma piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, UniformSpace (β₁ i)]
     [∀ i, UniformSpace (β₂ i)] (F : ∀ i, β₁ i ≃ᵤ β₂ i) :
     (piCongrRight F).symm = piCongrRight fun i => (F i).symm :=
   rfl

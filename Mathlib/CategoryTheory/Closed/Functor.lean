@@ -80,7 +80,7 @@ def expComparison (A : C) : exp A ⋙ F ⟶ F ⋙ exp (F.obj A) :=
   transferNatTrans (exp.adjunction A) (exp.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
 #align category_theory.exp_comparison CategoryTheory.expComparison
 
-theorem expComparison_ev (A B : C) :
+lemma expComparison_ev (A B : C) :
     Limits.prod.map (𝟙 (F.obj A)) ((expComparison F A).app B) ≫ (exp.ev (F.obj A)).app (F.obj B) =
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
   convert transferNatTrans_counit _ _ (prodComparisonNatIso F A).inv B using 2
@@ -88,7 +88,7 @@ theorem expComparison_ev (A B : C) :
   simp only [Limits.prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app, IsIso.hom_inv_id]
 #align category_theory.exp_comparison_ev CategoryTheory.expComparison_ev
 
-theorem coev_expComparison (A B : C) :
+lemma coev_expComparison (A B : C) :
     F.map ((exp.coev A).app B) ≫ (expComparison F A).app (A ⨯ B) =
       (exp.coev _).app (F.obj B) ≫ (exp (F.obj A)).map (inv (prodComparison F A B)) := by
   convert unit_transferNatTrans _ _ (prodComparisonNatIso F A).inv B using 3
@@ -97,7 +97,7 @@ theorem coev_expComparison (A B : C) :
   simp
 #align category_theory.coev_exp_comparison CategoryTheory.coev_expComparison
 
-theorem uncurry_expComparison (A B : C) :
+lemma uncurry_expComparison (A B : C) :
     CartesianClosed.uncurry ((expComparison F A).app B) =
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) :=
   by rw [uncurry_eq, expComparison_ev]
@@ -125,7 +125,7 @@ class CartesianClosedFunctor : Prop where
 
 attribute [instance] CartesianClosedFunctor.comparison_iso
 
-theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
+lemma frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
     transferNatTransSelf (h.comp (exp.adjunction A)) ((exp.adjunction (F.obj A)).comp h)
         (frobeniusMorphism F h A) =
       expComparison F A := by

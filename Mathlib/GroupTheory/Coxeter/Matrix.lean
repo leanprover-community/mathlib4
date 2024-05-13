@@ -80,7 +80,7 @@ variable {B' : Type*} (e : B ≃ B') (M : CoxeterMatrix B)
 
 attribute [simp] diagonal
 
-theorem symmetric (i i' : B) : M i i' = M i' i := M.isSymm.apply i' i
+lemma symmetric (i i' : B) : M i i' = M i' i := M.isSymm.apply i' i
 
 /-- The Coxeter matrix formed by reindexing via the bijection `e : B ≃ B'`. -/
 protected def reindex : CoxeterMatrix B' where
@@ -89,7 +89,7 @@ protected def reindex : CoxeterMatrix B' where
   diagonal i := M.diagonal (e.symm i)
   off_diagonal i i' h := M.off_diagonal (e.symm i) (e.symm i') (e.symm.injective.ne h)
 
-theorem reindex_apply (i i' : B') : M.reindex e i i' = M (e.symm i) (e.symm i') := rfl
+lemma reindex_apply (i i' : B') : M.reindex e i i' = M (e.symm i) (e.symm i') := rfl
 
 variable (n : ℕ)
 

@@ -28,13 +28,13 @@ namespace Set
 
 variable {s t : Set α}
 
-theorem toFinset_prod (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype (s ×ˢ t)] :
+lemma toFinset_prod (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype (s ×ˢ t)] :
     (s ×ˢ t).toFinset = s.toFinset ×ˢ t.toFinset := by
   ext
   simp
 #align set.to_finset_prod Set.toFinset_prod
 
-theorem toFinset_off_diag {s : Set α} [DecidableEq α] [Fintype s] [Fintype s.offDiag] :
+lemma toFinset_off_diag {s : Set α} [DecidableEq α] [Fintype s] [Fintype s.offDiag] :
     s.offDiag.toFinset = s.toFinset.offDiag :=
   Finset.ext <| by simp
 #align set.to_finset_off_diag Set.toFinset_off_diag
@@ -56,7 +56,7 @@ variable [Fintype α] [Fintype β] {s : Finset α} {t : Finset β}
 end Finset
 
 @[simp]
-theorem Fintype.card_prod (α β : Type*) [Fintype α] [Fintype β] :
+lemma Fintype.card_prod (α β : Type*) [Fintype α] [Fintype β] :
     Fintype.card (α × β) = Fintype.card α * Fintype.card β :=
   card_product _ _
 #align fintype.card_prod Fintype.card_prod
@@ -66,7 +66,7 @@ section
 open scoped Classical
 
 @[simp]
-theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ Nonempty α ∧ Infinite β := by
+lemma infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ Nonempty α ∧ Infinite β := by
   refine'
     ⟨fun H => _, fun H =>
       H.elim (and_imp.2 <| @Prod.infinite_of_left α β) (and_imp.2 <| @Prod.infinite_of_right α β)⟩

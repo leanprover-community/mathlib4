@@ -36,7 +36,7 @@ namespace CategoryTheory
 variable {C D : Type*} [Category C] [Category D] (F : Cᵒᵖ ⥤ D) [Preregular C]
   [FinitaryPreExtensive C]
 
-theorem isSheaf_coherent_iff_regular_and_extensive : IsSheaf (coherentTopology C) F ↔
+lemma isSheaf_coherent_iff_regular_and_extensive : IsSheaf (coherentTopology C) F ↔
     IsSheaf (extensiveTopology C) F ∧ IsSheaf (regularTopology C) F := by
   rw [← extensive_regular_generate_coherent]
   exact isSheaf_sup (extensiveCoverage C) (regularCoverage C) F
@@ -45,7 +45,7 @@ end CategoryTheory
 
 namespace CompHaus
 
-theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
+lemma isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
     (F : CompHaus.{u}ᵒᵖ ⥤ Type w) :
     IsSheaf (coherentTopology CompHaus) F ↔
     Nonempty (PreservesFiniteProducts F) ∧ EqualizerCondition F := by
@@ -54,7 +54,7 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
   · rw [isSheaf_iff_isSheaf_of_type, extensiveTopology, isSheaf_iff_preservesFiniteProducts]
   · rw [equalizerCondition_iff_isSheaf, isSheaf_iff_isSheaf_of_type]
 
-theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
+lemma isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     {A : Type*} [Category A] (G : A ⥤ Type w)
     [HasLimitsOfSize.{u, u+1} A] [PreservesLimitsOfSize.{u, u+1} G]
     [G.ReflectsIsomorphisms] (F : CompHaus.{u}ᵒᵖ ⥤ A) :
@@ -67,7 +67,7 @@ end CompHaus
 
 namespace Profinite
 
-theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
+lemma isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
     (F : Profinite.{u}ᵒᵖ ⥤ Type w) :
     IsSheaf (coherentTopology Profinite) F ↔
     Nonempty (PreservesFiniteProducts F) ∧ EqualizerCondition F := by
@@ -76,7 +76,7 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
   · rw [isSheaf_iff_isSheaf_of_type, extensiveTopology, isSheaf_iff_preservesFiniteProducts]
   · rw [equalizerCondition_iff_isSheaf, isSheaf_iff_isSheaf_of_type]
 
-theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
+lemma isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     {A : Type*} [Category A] (G : A ⥤ Type w)
     [HasLimitsOfSize.{u, u+1} A] [PreservesLimitsOfSize.{u, u+1} G]
     [G.ReflectsIsomorphisms] (F : Profinite.{u}ᵒᵖ ⥤ A) :
@@ -89,7 +89,7 @@ end Profinite
 
 namespace Stonean
 
-theorem isSheaf_iff_preservesFiniteProducts
+lemma isSheaf_iff_preservesFiniteProducts
     (F : Stonean.{u}ᵒᵖ ⥤ Type w) :
     IsSheaf (coherentTopology Stonean) F ↔ Nonempty (PreservesFiniteProducts F) := by
   rw [isSheaf_coherent_iff_regular_and_extensive, and_iff_left ?_]
@@ -100,7 +100,7 @@ theorem isSheaf_iff_preservesFiniteProducts
     have _ : R.regular := ⟨Y, hR⟩
     exact isSheafFor_regular_of_projective R F
 
-theorem isSheaf_iff_preservesFiniteProducts'
+lemma isSheaf_iff_preservesFiniteProducts'
     {A : Type*} [Category A] (G : A ⥤ Type w)
     [HasLimitsOfSize.{u, u+1} A] [PreservesLimitsOfSize.{u, u+1} G]
     [G.ReflectsIsomorphisms] (F : Stonean.{u}ᵒᵖ ⥤ A) :

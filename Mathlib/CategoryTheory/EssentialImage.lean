@@ -166,7 +166,7 @@ instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage :=
 instance instEssSurjId : EssSurj (𝟭 C) where
   mem_essImage Y := ⟨Y, ⟨Iso.refl _⟩⟩
 
-theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
+lemma essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
   mem_essImage Y := by
     obtain ⟨X, rfl⟩ := h Y
     apply obj_mem_essImage

@@ -40,7 +40,7 @@ set_option linter.uppercaseLean3 false in
 #align matrix.J Matrix.J
 
 @[simp]
-theorem J_transpose : (J l R)ᵀ = -J l R := by
+lemma J_transpose : (J l R)ᵀ = -J l R := by
   rw [J, fromBlocks_transpose, ← neg_one_smul R (fromBlocks _ _ _ _ : Matrix (l ⊕ l) (l ⊕ l) R),
     fromBlocks_smul, Matrix.transpose_zero, Matrix.transpose_one, transpose_neg]
   simp [fromBlocks]
@@ -49,21 +49,21 @@ set_option linter.uppercaseLean3 false in
 
 variable [Fintype l]
 
-theorem J_squared : J l R * J l R = -1 := by
+lemma J_squared : J l R * J l R = -1 := by
   rw [J, fromBlocks_multiply]
   simp only [Matrix.zero_mul, Matrix.neg_mul, zero_add, neg_zero, Matrix.one_mul, add_zero]
   rw [← neg_zero, ← Matrix.fromBlocks_neg, ← fromBlocks_one]
 set_option linter.uppercaseLean3 false in
 #align matrix.J_squared Matrix.J_squared
 
-theorem J_inv : (J l R)⁻¹ = -J l R := by
+lemma J_inv : (J l R)⁻¹ = -J l R := by
   refine' Matrix.inv_eq_right_inv _
   rw [Matrix.mul_neg, J_squared]
   exact neg_neg 1
 set_option linter.uppercaseLean3 false in
 #align matrix.J_inv Matrix.J_inv
 
-theorem J_det_mul_J_det : det (J l R) * det (J l R) = 1 := by
+lemma J_det_mul_J_det : det (J l R) * det (J l R) = 1 := by
   rw [← det_mul, J_squared, ← one_smul R (-1 : Matrix _ _ R), smul_neg, ← neg_smul, det_smul,
     Fintype.card_sum, det_one, mul_one]
   apply Even.neg_one_pow
@@ -71,7 +71,7 @@ theorem J_det_mul_J_det : det (J l R) * det (J l R) = 1 := by
 set_option linter.uppercaseLean3 false in
 #align matrix.J_det_mul_J_det Matrix.J_det_mul_J_det
 
-theorem isUnit_det_J : IsUnit (det (J l R)) :=
+lemma isUnit_det_J : IsUnit (det (J l R)) :=
   isUnit_iff_exists_inv.mpr ⟨det (J l R), J_det_mul_J_det _ _⟩
 set_option linter.uppercaseLean3 false in
 #align matrix.is_unit_det_J Matrix.isUnit_det_J
@@ -98,7 +98,7 @@ variable [DecidableEq l] [Fintype l] [CommRing R]
 
 open Matrix
 
-theorem mem_iff {A : Matrix (Sum l l) (Sum l l) R} :
+lemma mem_iff {A : Matrix (Sum l l) (Sum l l) R} :
     A ∈ symplecticGroup l R ↔ A * J l R * Aᵀ = J l R := by simp [symplecticGroup]
 #align symplectic_group.mem_iff SymplecticGroup.mem_iff
 
@@ -111,7 +111,7 @@ section SymplecticJ
 
 variable (l) (R)
 
-theorem J_mem : J l R ∈ symplecticGroup l R := by
+lemma J_mem : J l R ∈ symplecticGroup l R := by
   rw [mem_iff, J, fromBlocks_multiply, fromBlocks_transpose, fromBlocks_multiply]
   simp
 set_option linter.uppercaseLean3 false in
@@ -126,7 +126,7 @@ set_option linter.uppercaseLean3 false in
 variable {l} {R}
 
 @[simp]
-theorem coe_J : ↑(symJ l R) = J l R := rfl
+lemma coe_J : ↑(symJ l R) = J l R := rfl
 set_option linter.uppercaseLean3 false in
 #align symplectic_group.coe_J SymplecticGroup.coe_J
 
@@ -134,12 +134,12 @@ end SymplecticJ
 
 variable {A : Matrix (Sum l l) (Sum l l) R}
 
-theorem neg_mem (h : A ∈ symplecticGroup l R) : -A ∈ symplecticGroup l R := by
+lemma neg_mem (h : A ∈ symplecticGroup l R) : -A ∈ symplecticGroup l R := by
   rw [mem_iff] at h ⊢
   simp [h]
 #align symplectic_group.neg_mem SymplecticGroup.neg_mem
 
-theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
+lemma symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   rw [isUnit_iff_exists_inv]
   use A.det
   refine' (isUnit_det_J l R).mul_left_cancel _
@@ -151,7 +151,7 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   exact hA
 #align symplectic_group.symplectic_det SymplecticGroup.symplectic_det
 
-theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
+lemma transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
   rw [mem_iff] at hA ⊢
   rw [transpose_transpose]
   have huA := symplectic_det hA
@@ -171,11 +171,11 @@ theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGrou
 #align symplectic_group.transpose_mem SymplecticGroup.transpose_mem
 
 @[simp]
-theorem transpose_mem_iff : Aᵀ ∈ symplecticGroup l R ↔ A ∈ symplecticGroup l R :=
+lemma transpose_mem_iff : Aᵀ ∈ symplecticGroup l R ↔ A ∈ symplecticGroup l R :=
   ⟨fun hA => by simpa using transpose_mem hA, transpose_mem⟩
 #align symplectic_group.transpose_mem_iff SymplecticGroup.transpose_mem_iff
 
-theorem mem_iff' : A ∈ symplecticGroup l R ↔ Aᵀ * J l R * A = J l R := by
+lemma mem_iff' : A ∈ symplecticGroup l R ↔ Aᵀ * J l R * A = J l R := by
   rw [← transpose_mem_iff, mem_iff, transpose_transpose]
 #align symplectic_group.mem_iff' SymplecticGroup.mem_iff'
 
@@ -183,10 +183,10 @@ instance hasInv : Inv (symplecticGroup l R) where
   inv A := ⟨(-J l R) * (A : Matrix (Sum l l) (Sum l l) R)ᵀ * J l R,
       mul_mem (mul_mem (neg_mem <| J_mem _ _) <| transpose_mem A.2) <| J_mem _ _⟩
 
-theorem coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) * (↑A)ᵀ * J l R := rfl
+lemma coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) * (↑A)ᵀ * J l R := rfl
 #align symplectic_group.coe_inv SymplecticGroup.coe_inv
 
-theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -(J l R * Aᵀ * J l R * A) = 1 :=
+lemma inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -(J l R * Aᵀ * J l R * A) = 1 :=
   calc
     -(J l R * Aᵀ * J l R * A) = (-J l R) * (Aᵀ * J l R * A) := by
       simp only [Matrix.mul_assoc, Matrix.neg_mul]
@@ -198,12 +198,12 @@ theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -(J l R * Aᵀ * J l
     _ = 1 := by simp only [neg_smul_neg, one_smul]
 #align symplectic_group.inv_left_mul_aux SymplecticGroup.inv_left_mul_aux
 
-theorem coe_inv' (A : symplecticGroup l R) : (↑A⁻¹ : Matrix (Sum l l) (Sum l l) R) = (↑A)⁻¹ := by
+lemma coe_inv' (A : symplecticGroup l R) : (↑A⁻¹ : Matrix (Sum l l) (Sum l l) R) = (↑A)⁻¹ := by
   refine' (coe_inv A).trans (inv_eq_left_inv _).symm
   simp [inv_left_mul_aux, coe_inv]
 #align symplectic_group.coe_inv' SymplecticGroup.coe_inv'
 
-theorem inv_eq_symplectic_inv (A : Matrix (Sum l l) (Sum l l) R) (hA : A ∈ symplecticGroup l R) :
+lemma inv_eq_symplectic_inv (A : Matrix (Sum l l) (Sum l l) R) (hA : A ∈ symplecticGroup l R) :
     A⁻¹ = (-J l R) * Aᵀ * J l R :=
   inv_eq_left_inv (by simp only [Matrix.neg_mul, inv_left_mul_aux hA])
 #align symplectic_group.inv_eq_symplectic_inv SymplecticGroup.inv_eq_symplectic_inv

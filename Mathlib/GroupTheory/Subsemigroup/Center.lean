@@ -63,7 +63,7 @@ section Semigroup
 variable {M} [Semigroup M]
 
 @[to_additive]
-theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
+lemma mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]
   exact Iff.rfl
 #align subsemigroup.mem_center_iff Subsemigroup.mem_center_iff
@@ -82,7 +82,7 @@ section CommSemigroup
 variable [CommSemigroup M]
 
 @[to_additive (attr := simp)]
-theorem center_eq_top : center M = ⊤ :=
+lemma center_eq_top : center M = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ M)
 #align subsemigroup.center_eq_top Subsemigroup.center_eq_top
 #align add_subsemigroup.center_eq_top AddSubsemigroup.center_eq_top

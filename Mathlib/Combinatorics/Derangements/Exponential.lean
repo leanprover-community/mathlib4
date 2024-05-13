@@ -23,7 +23,7 @@ open scoped BigOperators
 
 open scoped Topology
 
-theorem numDerangements_tendsto_inv_e :
+lemma numDerangements_tendsto_inv_e :
     Tendsto (fun n => (numDerangements n : ℝ) / n.factorial) atTop (𝓝 (Real.exp (-1))) := by
   -- we show that d(n)/n! is the partial sum of exp(-1), but offset by 1.
   -- this isn't entirely obvious, since we have to ensure that asc_factorial and

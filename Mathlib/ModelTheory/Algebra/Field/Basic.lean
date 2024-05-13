@@ -78,14 +78,14 @@ def FieldAxiom.toProp (K : Type*) [Add K] [Mul K] [Neg K] [Zero K] [One K] :
 def _root_.FirstOrder.Language.Theory.field : Language.ring.Theory :=
   Set.range FieldAxiom.toSentence
 
-theorem FieldAxiom.realize_toSentence_iff_toProp {K : Type*}
+lemma FieldAxiom.realize_toSentence_iff_toProp {K : Type*}
     [Add K] [Mul K] [Neg K] [Zero K] [One K] [CompatibleRing K]
     (ax : FieldAxiom) :
     (K ⊨ (ax.toSentence : Sentence Language.ring)) ↔ ax.toProp K := by
   cases ax <;>
   simp [Sentence.Realize, Formula.Realize, Fin.snoc]
 
-theorem FieldAxiom.toProp_of_model {K : Type*}
+lemma FieldAxiom.toProp_of_model {K : Type*}
     [Add K] [Mul K] [Neg K] [Zero K] [One K] [CompatibleRing K]
     [Theory.field.Model K] (ax : FieldAxiom) : ax.toProp K :=
   (FieldAxiom.realize_toSentence_iff_toProp ax).1

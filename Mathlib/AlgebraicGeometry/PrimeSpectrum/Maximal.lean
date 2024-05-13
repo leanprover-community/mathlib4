@@ -56,13 +56,13 @@ def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
   ⟨x.asIdeal, x.IsMaximal.isPrime⟩
 #align maximal_spectrum.to_prime_spectrum MaximalSpectrum.toPrimeSpectrum
 
-theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
+lemma toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
   simpa only [MaximalSpectrum.mk.injEq] using (PrimeSpectrum.ext_iff _ _).mp h
 #align maximal_spectrum.to_prime_spectrum_injective MaximalSpectrum.toPrimeSpectrum_injective
 
 open PrimeSpectrum Set
 
-theorem toPrimeSpectrum_range :
+lemma toPrimeSpectrum_range :
     Set.range (@toPrimeSpectrum R _) = { x | IsClosed ({x} : Set <| PrimeSpectrum R) } := by
   simp only [isClosed_singleton_iff_isMaximal]
   ext ⟨x, _⟩
@@ -80,7 +80,7 @@ instance : T1Space <| MaximalSpectrum R :=
     ⟨{toPrimeSpectrum x}, (isClosed_singleton_iff_isMaximal _).mpr x.IsMaximal, by
       simpa only [← image_singleton] using preimage_image_eq {x} toPrimeSpectrum_injective⟩⟩
 
-theorem toPrimeSpectrum_continuous : Continuous <| @toPrimeSpectrum R _ :=
+lemma toPrimeSpectrum_continuous : Continuous <| @toPrimeSpectrum R _ :=
   continuous_induced_dom
 #align maximal_spectrum.to_prime_spectrum_continuous MaximalSpectrum.toPrimeSpectrum_continuous
 

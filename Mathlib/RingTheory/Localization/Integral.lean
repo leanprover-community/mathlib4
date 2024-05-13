@@ -52,13 +52,13 @@ noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
   else 0
 #align is_localization.coeff_integer_normalization IsLocalization.coeffIntegerNormalization
 
-theorem coeffIntegerNormalization_of_not_mem_support (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
+lemma coeffIntegerNormalization_of_not_mem_support (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
     coeffIntegerNormalization M p i = 0 := by
   simp only [coeffIntegerNormalization, h, mem_support_iff, eq_self_iff_true, not_true, Ne,
     dif_neg, not_false_iff]
 #align is_localization.coeff_integer_normalization_of_not_mem_support IsLocalization.coeffIntegerNormalization_of_not_mem_support
 
-theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
+lemma coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
   contrapose h
   rw [Ne, Classical.not_not, coeffIntegerNormalization, dif_neg h]
@@ -71,13 +71,13 @@ noncomputable def integerNormalization (p : S[X]) : R[X] :=
 #align is_localization.integer_normalization IsLocalization.integerNormalization
 
 @[simp]
-theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
+lemma integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i := by
   simp (config := { contextual := true }) [integerNormalization, coeff_monomial,
     coeffIntegerNormalization_of_not_mem_support]
 #align is_localization.integer_normalization_coeff IsLocalization.integerNormalization_coeff
 
-theorem integerNormalization_spec (p : S[X]) :
+lemma integerNormalization_spec (p : S[X]) :
     ∃ b : M, ∀ i, algebraMap R S ((integerNormalization M p).coeff i) = (b : R) • p.coeff i := by
   use Classical.choose (exist_integer_multiples_of_finset M (p.support.image p.coeff))
   intro i
@@ -91,7 +91,7 @@ theorem integerNormalization_spec (p : S[X]) :
     -- Porting note: was `convert (smul_zero _).symm, ...`
 #align is_localization.integer_normalization_spec IsLocalization.integerNormalization_spec
 
-theorem integerNormalization_map_to_map (p : S[X]) :
+lemma integerNormalization_map_to_map (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p :=
   let ⟨b, hb⟩ := integerNormalization_spec M p
   ⟨b,
@@ -102,14 +102,14 @@ theorem integerNormalization_map_to_map (p : S[X]) :
 
 variable {R' : Type*} [CommRing R']
 
-theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'}
+lemma integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'}
     (hx : eval₂ g x p = 0) : eval₂ (g.comp (algebraMap R S)) x (integerNormalization M p) = 0 :=
   let ⟨b, hb⟩ := integerNormalization_map_to_map M p
   _root_.trans (eval₂_map (algebraMap R S) g x).symm
     (by rw [hb, ← IsScalarTower.algebraMap_smul S (b : R) p, eval₂_smul, hx, mul_zero])
 #align is_localization.integer_normalization_eval₂_eq_zero IsLocalization.integerNormalization_eval₂_eq_zero
 
-theorem integerNormalization_aeval_eq_zero [Algebra R R'] [Algebra S R'] [IsScalarTower R S R']
+lemma integerNormalization_aeval_eq_zero [Algebra R R'] [Algebra S R'] [IsScalarTower R S R']
     (p : S[X]) {x : R'} (hx : aeval x p = 0) : aeval x (integerNormalization M p) = 0 := by
   rw [aeval_def, IsScalarTower.algebraMap_eq R S R',
     integerNormalization_eval₂_eq_zero _ (algebraMap _ _) _ hx]
@@ -126,7 +126,7 @@ open IsLocalization
 variable {A K C : Type*} [CommRing A] [IsDomain A] [Field K] [Algebra A K] [IsFractionRing A K]
 variable [CommRing C]
 
-theorem integerNormalization_eq_zero_iff {p : K[X]} :
+lemma integerNormalization_eq_zero_iff {p : K[X]} :
     integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 := by
   refine' Polynomial.ext_iff.trans (Polynomial.ext_iff.trans _).symm
   obtain ⟨⟨b, nonzero⟩, hb⟩ := integerNormalization_spec (nonZeroDivisors A) p
@@ -181,7 +181,7 @@ variable {M}
 
 open Polynomial
 
-theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommRing R] [CommRing S]
+lemma RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommRing R] [CommRing S]
     (f : R →+* S) (x : S) (p : R[X]) (hf : p.eval₂ f x = 0) (M : Submonoid R)
     (hM : p.leadingCoeff ∈ M) {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ] [Algebra R Rₘ]
     [IsLocalization M Rₘ] [Algebra S Sₘ] [IsLocalization (M.map f : Submonoid S) Sₘ] :
@@ -238,7 +238,7 @@ theorem isIntegral_localization (H : Algebra.IsIntegral R S) :
     exact hx.symm ▸ is_integral_localization_at_leadingCoeff p hp.2 (hp.1.symm ▸ M.one_mem)
 #align is_integral_localization isIntegral_localization
 
-theorem isIntegral_localization' {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S}
+lemma isIntegral_localization' {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S}
     (hf : f.IsIntegral) (M : Submonoid R) :
     (map (Localization (M.map (f : R →* S))) f
           (M.le_comap_map : _ ≤ Submonoid.comap (f : R →* S) _) :
@@ -252,7 +252,7 @@ theorem isIntegral_localization' {R S : Type*} [CommRing R] [CommRing S] {f : R 
 
 variable (M)
 
-theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
+lemma IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
     (hp : p.leadingCoeff ∈ (algebraMap R Rₘ).range) :
     p.scaleRoots (algebraMap R Rₘ <| IsLocalization.commonDenom M p.support p.coeff) ∈
       Polynomial.lifts (algebraMap R Rₘ) := by
@@ -275,7 +275,7 @@ theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
     exact zero_mem (algebraMap R Rₘ).range
 #align is_localization.scale_roots_common_denom_mem_lifts IsLocalization.scaleRoots_commonDenom_mem_lifts
 
-theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [IsScalarTower R Rₘ S]
+lemma IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [IsScalarTower R Rₘ S]
     (x : S) (hx : IsIntegral Rₘ x) : ∃ m : M, IsIntegral R (m • x) := by
   cases' subsingleton_or_nontrivial Rₘ with _ nontriv
   · haveI := (_root_.algebraMap Rₘ S).codomain_trivial

@@ -55,7 +55,7 @@ lemma of_abv (hf : IsCauSeq abs fun m ↦ ∑ n in range m, abv (f n)) :
   hf.of_abv_le 0 fun _ _ ↦ le_rfl
 #align is_cau_series_of_abv_cau IsCauSeq.of_abv
 
-theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n in range m, abv (f n))
+lemma _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n in range m, abv (f n))
     (hb : IsCauSeq abv fun m ↦ ∑ n in range m, g n) (ε : α) (ε0 : 0 < ε) :
     ∃ i : ℕ, ∀ j ≥ i,
       abv ((∑ k in range j, f k) * ∑ k in range j, g k -

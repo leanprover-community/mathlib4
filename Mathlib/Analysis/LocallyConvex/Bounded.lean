@@ -68,16 +68,16 @@ def IsVonNBounded (s : Set E) : Prop :=
 variable (E)
 
 @[simp]
-theorem isVonNBounded_empty : IsVonNBounded 𝕜 (∅ : Set E) := fun _ _ => Absorbs.empty
+lemma isVonNBounded_empty : IsVonNBounded 𝕜 (∅ : Set E) := fun _ _ => Absorbs.empty
 #align bornology.is_vonN_bounded_empty Bornology.isVonNBounded_empty
 
 variable {𝕜 E}
 
-theorem isVonNBounded_iff (s : Set E) : IsVonNBounded 𝕜 s ↔ ∀ V ∈ 𝓝 (0 : E), Absorbs 𝕜 V s :=
+lemma isVonNBounded_iff (s : Set E) : IsVonNBounded 𝕜 s ↔ ∀ V ∈ 𝓝 (0 : E), Absorbs 𝕜 V s :=
   Iff.rfl
 #align bornology.is_vonN_bounded_iff Bornology.isVonNBounded_iff
 
-theorem _root_.Filter.HasBasis.isVonNBounded_iff {q : ι → Prop} {s : ι → Set E} {A : Set E}
+lemma _root_.Filter.HasBasis.isVonNBounded_iff {q : ι → Prop} {s : ι → Set E} {A : Set E}
     (h : (𝓝 (0 : E)).HasBasis q s) : IsVonNBounded 𝕜 A ↔ ∀ i, q i → Absorbs 𝕜 (s i) A := by
   refine' ⟨fun hA i hi => hA (h.mem_of_mem hi), fun hA V hV => _⟩
   rcases h.mem_iff.mp hV with ⟨i, hi, hV⟩
@@ -104,7 +104,7 @@ section ContinuousAdd
 variable [SeminormedRing 𝕜] [AddZeroClass E] [TopologicalSpace E] [ContinuousAdd E]
   [DistribSMul 𝕜 E] {s t : Set E}
 
-protected theorem IsVonNBounded.add (hs : IsVonNBounded 𝕜 s) (ht : IsVonNBounded 𝕜 t) :
+protected lemma IsVonNBounded.add (hs : IsVonNBounded 𝕜 s) (ht : IsVonNBounded 𝕜 t) :
     IsVonNBounded 𝕜 (s + t) := fun U hU ↦ by
   rcases exists_open_nhds_zero_add_subset hU with ⟨V, hVo, hV, hVU⟩
   exact ((hs <| hVo.mem_nhds hV).add (ht <| hVo.mem_nhds hV)).mono_left hVU
@@ -116,17 +116,17 @@ section TopologicalAddGroup
 variable [SeminormedRing 𝕜] [AddGroup E] [TopologicalSpace E] [TopologicalAddGroup E]
   [DistribMulAction 𝕜 E] {s t : Set E}
 
-protected theorem IsVonNBounded.neg (hs : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕜 (-s) := fun U hU ↦ by
+protected lemma IsVonNBounded.neg (hs : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕜 (-s) := fun U hU ↦ by
   rw [← neg_neg U]
   exact (hs <| neg_mem_nhds_zero _ hU).neg_neg
 
 @[simp]
-theorem isVonNBounded_neg : IsVonNBounded 𝕜 (-s) ↔ IsVonNBounded 𝕜 s :=
+lemma isVonNBounded_neg : IsVonNBounded 𝕜 (-s) ↔ IsVonNBounded 𝕜 s :=
   ⟨fun h ↦ neg_neg s ▸ h.neg, fun h ↦ h.neg⟩
 
 alias ⟨IsVonNBounded.of_neg, _⟩ := isVonNBounded_neg
 
-protected theorem IsVonNBounded.sub (hs : IsVonNBounded 𝕜 s) (ht : IsVonNBounded 𝕜 t) :
+protected lemma IsVonNBounded.sub (hs : IsVonNBounded 𝕜 s) (ht : IsVonNBounded 𝕜 t) :
     IsVonNBounded 𝕜 (s - t) := by
   rw [sub_eq_add_neg]
   exact hs.add ht.neg
@@ -187,13 +187,13 @@ section sequence
 variable {𝕝 : Type*} [NormedField 𝕜] [NontriviallyNormedField 𝕝] [AddCommGroup E] [Module 𝕜 E]
   [Module 𝕝 E] [TopologicalSpace E] [ContinuousSMul 𝕝 E]
 
-theorem IsVonNBounded.smul_tendsto_zero {S : Set E} {ε : ι → 𝕜} {x : ι → E} {l : Filter ι}
+lemma IsVonNBounded.smul_tendsto_zero {S : Set E} {ε : ι → 𝕜} {x : ι → E} {l : Filter ι}
     (hS : IsVonNBounded 𝕜 S) (hxS : ∀ᶠ n in l, x n ∈ S) (hε : Tendsto ε l (𝓝 0)) :
     Tendsto (ε • x) l (𝓝 0) :=
   (hS.tendsto_smallSets_nhds.comp hε).of_smallSets <| hxS.mono fun _ ↦ smul_mem_smul_set
 #align bornology.is_vonN_bounded.smul_tendsto_zero Bornology.IsVonNBounded.smul_tendsto_zero
 
-theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l.NeBot]
+lemma isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l.NeBot]
     (hε : ∀ᶠ n in l, ε n ≠ 0) {S : Set E}
     (H : ∀ x : ι → E, (∀ n, x n ∈ S) → Tendsto (ε • x) l (𝓝 0)) : IsVonNBounded 𝕝 S := by
   rw [(nhds_basis_balanced 𝕝 E).isVonNBounded_iff]
@@ -241,40 +241,40 @@ section ContinuousAdd
 
 variable [ContinuousAdd E] {s t : Set E}
 
-protected theorem IsVonNBounded.vadd (hs : IsVonNBounded 𝕜 s) (x : E) :
+protected lemma IsVonNBounded.vadd (hs : IsVonNBounded 𝕜 s) (x : E) :
     IsVonNBounded 𝕜 (x +ᵥ s) := by
   rw [← singleton_vadd]
   -- TODO: dot notation timeouts in the next line
   exact IsVonNBounded.add (isVonNBounded_singleton x) hs
 
 @[simp]
-theorem isVonNBounded_vadd (x : E) : IsVonNBounded 𝕜 (x +ᵥ s) ↔ IsVonNBounded 𝕜 s :=
+lemma isVonNBounded_vadd (x : E) : IsVonNBounded 𝕜 (x +ᵥ s) ↔ IsVonNBounded 𝕜 s :=
   ⟨fun h ↦ by simpa using h.vadd (-x), fun h ↦ h.vadd x⟩
 
-theorem IsVonNBounded.of_add_right (hst : IsVonNBounded 𝕜 (s + t)) (hs : s.Nonempty) :
+lemma IsVonNBounded.of_add_right (hst : IsVonNBounded 𝕜 (s + t)) (hs : s.Nonempty) :
     IsVonNBounded 𝕜 t :=
   let ⟨x, hx⟩ := hs
   (isVonNBounded_vadd x).mp <| hst.subset <| image_subset_image2_right hx
 
-theorem IsVonNBounded.of_add_left (hst : IsVonNBounded 𝕜 (s + t)) (ht : t.Nonempty) :
+lemma IsVonNBounded.of_add_left (hst : IsVonNBounded 𝕜 (s + t)) (ht : t.Nonempty) :
     IsVonNBounded 𝕜 s :=
   ((add_comm s t).subst hst).of_add_right ht
 
-theorem isVonNBounded_add_of_nonempty (hs : s.Nonempty) (ht : t.Nonempty) :
+lemma isVonNBounded_add_of_nonempty (hs : s.Nonempty) (ht : t.Nonempty) :
     IsVonNBounded 𝕜 (s + t) ↔ IsVonNBounded 𝕜 s ∧ IsVonNBounded 𝕜 t :=
   ⟨fun h ↦ ⟨h.of_add_left ht, h.of_add_right hs⟩, and_imp.2 IsVonNBounded.add⟩
 
-theorem isVonNBounded_add :
+lemma isVonNBounded_add :
     IsVonNBounded 𝕜 (s + t) ↔ s = ∅ ∨ t = ∅ ∨ IsVonNBounded 𝕜 s ∧ IsVonNBounded 𝕜 t := by
   rcases s.eq_empty_or_nonempty with rfl | hs; · simp
   rcases t.eq_empty_or_nonempty with rfl | ht; · simp
   simp [hs.ne_empty, ht.ne_empty, isVonNBounded_add_of_nonempty hs ht]
 
 @[simp]
-theorem isVonNBounded_add_self : IsVonNBounded 𝕜 (s + s) ↔ IsVonNBounded 𝕜 s := by
+lemma isVonNBounded_add_self : IsVonNBounded 𝕜 (s + s) ↔ IsVonNBounded 𝕜 s := by
   rcases s.eq_empty_or_nonempty with rfl | hs <;> simp [isVonNBounded_add_of_nonempty, *]
 
-theorem IsVonNBounded.of_sub_left (hst : IsVonNBounded 𝕜 (s - t)) (ht : t.Nonempty) :
+lemma IsVonNBounded.of_sub_left (hst : IsVonNBounded 𝕜 (s - t)) (ht : t.Nonempty) :
     IsVonNBounded 𝕜 s :=
   ((sub_eq_add_neg s t).subst hst).of_add_left ht.neg
 
@@ -284,15 +284,15 @@ section TopologicalAddGroup
 
 variable [TopologicalAddGroup E] {s t : Set E}
 
-theorem IsVonNBounded.of_sub_right (hst : IsVonNBounded 𝕜 (s - t)) (hs : s.Nonempty) :
+lemma IsVonNBounded.of_sub_right (hst : IsVonNBounded 𝕜 (s - t)) (hs : s.Nonempty) :
     IsVonNBounded 𝕜 t :=
   (((sub_eq_add_neg s t).subst hst).of_add_right hs).of_neg
 
-theorem isVonNBounded_sub_of_nonempty (hs : s.Nonempty) (ht : t.Nonempty) :
+lemma isVonNBounded_sub_of_nonempty (hs : s.Nonempty) (ht : t.Nonempty) :
     IsVonNBounded 𝕜 (s - t) ↔ IsVonNBounded 𝕜 s ∧ IsVonNBounded 𝕜 t := by
   simp [sub_eq_add_neg, isVonNBounded_add_of_nonempty, hs, ht]
 
-theorem isVonNBounded_sub :
+lemma isVonNBounded_sub :
     IsVonNBounded 𝕜 (s - t) ↔ s = ∅ ∨ t = ∅ ∨ IsVonNBounded 𝕜 s ∧ IsVonNBounded 𝕜 t := by
   simp [sub_eq_add_neg, isVonNBounded_add]
 
@@ -319,7 +319,7 @@ abbrev vonNBornology : Bornology E :=
 variable {E}
 
 @[simp]
-theorem isBounded_iff_isVonNBounded {s : Set E} :
+lemma isBounded_iff_isVonNBounded {s : Set E} :
     @IsBounded _ (vonNBornology 𝕜 E) s ↔ IsVonNBounded 𝕜 s :=
   isBounded_ofBounded_iff _
 #align bornology.is_bounded_iff_is_vonN_bounded Bornology.isBounded_iff_isVonNBounded
@@ -333,7 +333,7 @@ section UniformAddGroup
 variable (𝕜) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [UniformSpace E] [UniformAddGroup E] [ContinuousSMul 𝕜 E]
 
-theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
+lemma TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     Bornology.IsVonNBounded 𝕜 s := by
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at hs
   intro U hU
@@ -361,17 +361,17 @@ variable (𝕜 E) [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup E] [Nor
 
 namespace NormedSpace
 
-theorem isVonNBounded_ball (r : ℝ) : Bornology.IsVonNBounded 𝕜 (Metric.ball (0 : E) r) := by
+lemma isVonNBounded_ball (r : ℝ) : Bornology.IsVonNBounded 𝕜 (Metric.ball (0 : E) r) := by
   rw [Metric.nhds_basis_ball.isVonNBounded_iff, ← ball_normSeminorm 𝕜 E]
   exact fun ε hε => (normSeminorm 𝕜 E).ball_zero_absorbs_ball_zero hε
 #align normed_space.is_vonN_bounded_ball NormedSpace.isVonNBounded_ball
 
-theorem isVonNBounded_closedBall (r : ℝ) :
+lemma isVonNBounded_closedBall (r : ℝ) :
     Bornology.IsVonNBounded 𝕜 (Metric.closedBall (0 : E) r) :=
   (isVonNBounded_ball 𝕜 E (r + 1)).subset (Metric.closedBall_subset_ball <| by linarith)
 #align normed_space.is_vonN_bounded_closed_ball NormedSpace.isVonNBounded_closedBall
 
-theorem isVonNBounded_iff (s : Set E) : Bornology.IsVonNBounded 𝕜 s ↔ Bornology.IsBounded s := by
+lemma isVonNBounded_iff (s : Set E) : Bornology.IsVonNBounded 𝕜 s ↔ Bornology.IsBounded s := by
   rw [Metric.isBounded_iff_subset_closedBall (0 : E)]
   constructor
   · intro h
@@ -384,12 +384,12 @@ theorem isVonNBounded_iff (s : Set E) : Bornology.IsVonNBounded 𝕜 s ↔ Borno
   · exact fun ⟨C, hC⟩ => (isVonNBounded_closedBall 𝕜 E C).subset hC
 #align normed_space.is_vonN_bounded_iff NormedSpace.isVonNBounded_iff
 
-theorem isVonNBounded_iff' (s : Set E) :
+lemma isVonNBounded_iff' (s : Set E) :
     Bornology.IsVonNBounded 𝕜 s ↔ ∃ r : ℝ, ∀ x ∈ s, ‖x‖ ≤ r := by
   rw [NormedSpace.isVonNBounded_iff, isBounded_iff_forall_norm_le]
 #align normed_space.is_vonN_bounded_iff' NormedSpace.isVonNBounded_iff'
 
-theorem image_isVonNBounded_iff (f : E' → E) (s : Set E') :
+lemma image_isVonNBounded_iff (f : E' → E) (s : Set E') :
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔ ∃ r : ℝ, ∀ x ∈ s, ‖f x‖ ≤ r := by
   simp_rw [isVonNBounded_iff', Set.forall_mem_image]
 #align normed_space.image_is_vonN_bounded_iff NormedSpace.image_isVonNBounded_iff
@@ -403,7 +403,7 @@ theorem vonNBornology_eq : Bornology.vonNBornology 𝕜 E = PseudoMetricSpace.to
   exact isVonNBounded_iff 𝕜 E s
 #align normed_space.vonN_bornology_eq NormedSpace.vonNBornology_eq
 
-theorem isBounded_iff_subset_smul_ball {s : Set E} :
+lemma isBounded_iff_subset_smul_ball {s : Set E} :
     Bornology.IsBounded s ↔ ∃ a : 𝕜, s ⊆ a • Metric.ball (0 : E) 1 := by
   rw [← isVonNBounded_iff 𝕜]
   constructor
@@ -415,7 +415,7 @@ theorem isBounded_iff_subset_smul_ball {s : Set E} :
     exact ((isVonNBounded_ball 𝕜 E 1).image (a • (1 : E →L[𝕜] E))).subset ha
 #align normed_space.is_bounded_iff_subset_smul_ball NormedSpace.isBounded_iff_subset_smul_ball
 
-theorem isBounded_iff_subset_smul_closedBall {s : Set E} :
+lemma isBounded_iff_subset_smul_closedBall {s : Set E} :
     Bornology.IsBounded s ↔ ∃ a : 𝕜, s ⊆ a • Metric.closedBall (0 : E) 1 := by
   constructor
   · rw [isBounded_iff_subset_smul_ball 𝕜]

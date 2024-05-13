@@ -88,10 +88,10 @@ We use this to prove that all clauses in the formula are subsumed by it. -/
 structure Fmla.subsumes (f f' : Fmla) : Prop where
   prop : ∀ x, x ∈ f' → x ∈ f
 
-theorem Fmla.subsumes_self (f : Fmla) : f.subsumes f := ⟨fun _ h ↦ h⟩
-theorem Fmla.subsumes_left (f f₁ f₂ : Fmla) (H : f.subsumes (f₁.and f₂)) : f.subsumes f₁ :=
+lemma Fmla.subsumes_self (f : Fmla) : f.subsumes f := ⟨fun _ h ↦ h⟩
+lemma Fmla.subsumes_left (f f₁ f₂ : Fmla) (H : f.subsumes (f₁.and f₂)) : f.subsumes f₁ :=
   ⟨fun _ h ↦ H.1 _ <| List.mem_append.2 <| Or.inl h⟩
-theorem Fmla.subsumes_right (f f₁ f₂ : Fmla) (H : f.subsumes (f₁.and f₂)) : f.subsumes f₂ :=
+lemma Fmla.subsumes_right (f f₁ f₂ : Fmla) (H : f.subsumes (f₁.and f₂)) : f.subsumes f₂ :=
   ⟨fun _ h ↦ H.1 _ <| List.mem_append.2 <| Or.inr h⟩
 
 /-- A valuation is an assignment of values to all the propositional variables. -/

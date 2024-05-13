@@ -54,79 +54,79 @@ theorem inv_goldConj : ψ⁻¹ = -φ := by
 #align inv_gold_conj inv_goldConj
 
 @[simp]
-theorem gold_mul_goldConj : φ * ψ = -1 := by
+lemma gold_mul_goldConj : φ * ψ = -1 := by
   field_simp
   rw [← sq_sub_sq]
   norm_num
 #align gold_mul_gold_conj gold_mul_goldConj
 
 @[simp]
-theorem goldConj_mul_gold : ψ * φ = -1 := by
+lemma goldConj_mul_gold : ψ * φ = -1 := by
   rw [mul_comm]
   exact gold_mul_goldConj
 #align gold_conj_mul_gold goldConj_mul_gold
 
 @[simp]
-theorem gold_add_goldConj : φ + ψ = 1 := by
+lemma gold_add_goldConj : φ + ψ = 1 := by
   rw [goldenRatio, goldenConj]
   ring
 #align gold_add_gold_conj gold_add_goldConj
 
-theorem one_sub_goldConj : 1 - φ = ψ := by
+lemma one_sub_goldConj : 1 - φ = ψ := by
   linarith [gold_add_goldConj]
 #align one_sub_gold_conj one_sub_goldConj
 
-theorem one_sub_gold : 1 - ψ = φ := by
+lemma one_sub_gold : 1 - ψ = φ := by
   linarith [gold_add_goldConj]
 #align one_sub_gold one_sub_gold
 
 @[simp]
-theorem gold_sub_goldConj : φ - ψ = √5 := by ring
+lemma gold_sub_goldConj : φ - ψ = √5 := by ring
 #align gold_sub_gold_conj gold_sub_goldConj
 
-theorem gold_pow_sub_gold_pow (n : ℕ) : φ ^ (n + 2) - φ ^ (n + 1) = φ ^ n := by
+lemma gold_pow_sub_gold_pow (n : ℕ) : φ ^ (n + 2) - φ ^ (n + 1) = φ ^ n := by
   rw [goldenRatio]; ring_nf; norm_num; ring
 
 @[simp 1200]
-theorem gold_sq : φ ^ 2 = φ + 1 := by
+lemma gold_sq : φ ^ 2 = φ + 1 := by
   rw [goldenRatio, ← sub_eq_zero]
   ring_nf
   rw [Real.sq_sqrt] <;> norm_num
 #align gold_sq gold_sq
 
 @[simp 1200]
-theorem goldConj_sq : ψ ^ 2 = ψ + 1 := by
+lemma goldConj_sq : ψ ^ 2 = ψ + 1 := by
   rw [goldenConj, ← sub_eq_zero]
   ring_nf
   rw [Real.sq_sqrt] <;> norm_num
 #align gold_conj_sq goldConj_sq
 
-theorem gold_pos : 0 < φ :=
+lemma gold_pos : 0 < φ :=
   mul_pos (by apply add_pos <;> norm_num) <| inv_pos.2 zero_lt_two
 #align gold_pos gold_pos
 
-theorem gold_ne_zero : φ ≠ 0 :=
+lemma gold_ne_zero : φ ≠ 0 :=
   ne_of_gt gold_pos
 #align gold_ne_zero gold_ne_zero
 
-theorem one_lt_gold : 1 < φ := by
+lemma one_lt_gold : 1 < φ := by
   refine' lt_of_mul_lt_mul_left _ (le_of_lt gold_pos)
   simp [← sq, gold_pos, zero_lt_one, - div_pow] -- Porting note: Added `- div_pow`
 #align one_lt_gold one_lt_gold
 
-theorem gold_lt_two : φ < 2 := by calc
+lemma gold_lt_two : φ < 2 := by calc
   (1 + sqrt 5) / 2 < (1 + 3) / 2 := by gcongr; rw [sqrt_lt'] <;> norm_num
   _ = 2 := by norm_num
 
-theorem goldConj_neg : ψ < 0 := by
+lemma goldConj_neg : ψ < 0 := by
   linarith [one_sub_goldConj, one_lt_gold]
 #align gold_conj_neg goldConj_neg
 
-theorem goldConj_ne_zero : ψ ≠ 0 :=
+lemma goldConj_ne_zero : ψ ≠ 0 :=
   ne_of_lt goldConj_neg
 #align gold_conj_ne_zero goldConj_ne_zero
 
-theorem neg_one_lt_goldConj : -1 < ψ := by
+lemma neg_one_lt_goldConj : -1 < ψ := by
   rw [neg_lt, ← inv_gold]
   exact inv_lt_one one_lt_gold
 #align neg_one_lt_gold_conj neg_one_lt_goldConj

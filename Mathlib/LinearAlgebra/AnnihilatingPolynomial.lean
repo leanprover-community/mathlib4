@@ -86,7 +86,7 @@ section
 variable {𝕜}
 
 @[simp]
-theorem annIdealGenerator_eq_zero_iff {a : A} : annIdealGenerator 𝕜 a = 0 ↔ annIdeal 𝕜 a = ⊥ := by
+lemma annIdealGenerator_eq_zero_iff {a : A} : annIdealGenerator 𝕜 a = 0 ↔ annIdeal 𝕜 a = ⊥ := by
   simp only [annIdealGenerator, mul_eq_zero, IsPrincipal.eq_bot_iff_generator_eq_zero,
     Polynomial.C_eq_zero, inv_eq_zero, Polynomial.leadingCoeff_eq_zero, or_self_iff]
 #align polynomial.ann_ideal_generator_eq_zero_iff Polynomial.annIdealGenerator_eq_zero_iff
@@ -112,7 +112,7 @@ theorem annIdealGenerator_mem (a : A) : annIdealGenerator 𝕜 a ∈ annIdeal �
   Ideal.mul_mem_right _ _ (Submodule.IsPrincipal.generator_mem _)
 #align polynomial.ann_ideal_generator_mem Polynomial.annIdealGenerator_mem
 
-theorem mem_iff_eq_smul_annIdealGenerator {p : 𝕜[X]} (a : A) :
+lemma mem_iff_eq_smul_annIdealGenerator {p : 𝕜[X]} (a : A) :
     p ∈ annIdeal 𝕜 a ↔ ∃ s : 𝕜[X], p = s • annIdealGenerator 𝕜 a := by
   simp_rw [@eq_comm _ p, ← mem_span_singleton, ← span_singleton_annIdealGenerator 𝕜 a, Ideal.span]
 #align polynomial.mem_iff_eq_smul_ann_ideal_generator Polynomial.mem_iff_eq_smul_annIdealGenerator
@@ -130,13 +130,13 @@ theorem of the minimal polynomial.
 This is the first condition: it must annihilate the original element `a : A`. -/
 
 
-theorem annIdealGenerator_aeval_eq_zero (a : A) : aeval a (annIdealGenerator 𝕜 a) = 0 :=
+lemma annIdealGenerator_aeval_eq_zero (a : A) : aeval a (annIdealGenerator 𝕜 a) = 0 :=
   mem_annIdeal_iff_aeval_eq_zero.mp (annIdealGenerator_mem 𝕜 a)
 #align polynomial.ann_ideal_generator_aeval_eq_zero Polynomial.annIdealGenerator_aeval_eq_zero
 
 variable {𝕜}
 
-theorem mem_iff_annIdealGenerator_dvd {p : 𝕜[X]} {a : A} :
+lemma mem_iff_annIdealGenerator_dvd {p : 𝕜[X]} {a : A} :
     p ∈ annIdeal 𝕜 a ↔ annIdealGenerator 𝕜 a ∣ p := by
   rw [← Ideal.mem_span_singleton, span_singleton_annIdealGenerator]
 #align polynomial.mem_iff_ann_ideal_generator_dvd Polynomial.mem_iff_annIdealGenerator_dvd
@@ -175,7 +175,7 @@ theorem monic_generator_eq_minpoly (a : A) (p : 𝕜[X]) (p_monic : p.Monic)
     apply monic_annIdealGenerator _ _ ((Associated.ne_zero_iff p_gen).mp h)
 #align polynomial.monic_generator_eq_minpoly Polynomial.monic_generator_eq_minpoly
 
-theorem span_minpoly_eq_annihilator {M} [AddCommGroup M] [Module 𝕜 M] (f : Module.End 𝕜 M) :
+lemma span_minpoly_eq_annihilator {M} [AddCommGroup M] [Module 𝕜 M] (f : Module.End 𝕜 M) :
     Ideal.span {minpoly 𝕜 f} = Module.annihilator 𝕜[X] (Module.AEval' f) := by
   rw [← annIdealGenerator_eq_minpoly, span_singleton_annIdealGenerator]; ext
   rw [mem_annIdeal_iff_aeval_eq_zero, DFunLike.ext_iff, Module.mem_annihilator]; rfl

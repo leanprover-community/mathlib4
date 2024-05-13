@@ -31,7 +31,7 @@ section Ring
 variable {R : Type*} {M : Type*} {ι : Type*}
 variable [Ring R] [AddCommGroup M] [Module R M]
 
-theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
+lemma linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
     (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σi, φ i => single ix.1 (f ix.1 ix.2) := by
   apply @linearIndependent_iUnion_finite R _ _ _ _ ι φ fun i x => single i (f i x)
@@ -98,13 +98,13 @@ protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (�
 #align finsupp.basis Finsupp.basis
 
 @[simp]
-theorem basis_repr {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) (g : ι →₀ M) (ix) :
+lemma basis_repr {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) (g : ι →₀ M) (ix) :
     (Finsupp.basis b).repr g ix = (b ix.1).repr (g ix.1) ix.2 :=
   rfl
 #align finsupp.basis_repr Finsupp.basis_repr
 
 @[simp]
-theorem coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
+lemma coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
     ⇑(Finsupp.basis b) = fun ix : Σi, φ i => single ix.1 (b ix.1 ix.2) :=
   funext fun ⟨i, x⟩ =>
     Basis.apply_eq_iff.mpr <| by
@@ -127,7 +127,7 @@ protected def basisSingleOne : Basis ι R (ι →₀ R) :=
 #align finsupp.basis_single_one Finsupp.basisSingleOne
 
 @[simp]
-theorem coe_basisSingleOne : (Finsupp.basisSingleOne : ι → ι →₀ R) = fun i => Finsupp.single i 1 :=
+lemma coe_basisSingleOne : (Finsupp.basisSingleOne : ι → ι →₀ R) = fun i => Finsupp.single i 1 :=
   funext fun _ => Basis.apply_eq_iff.mpr rfl
 #align finsupp.coe_basis_single_one Finsupp.coe_basisSingleOne
 
@@ -159,13 +159,13 @@ variable {R M n : Type*}
 variable [DecidableEq n]
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-theorem _root_.Finset.sum_single_ite [Fintype n] (a : R) (i : n) :
+lemma _root_.Finset.sum_single_ite [Fintype n] (a : R) (i : n) :
     (∑ x : n, Finsupp.single x (if i = x then a else 0)) = Finsupp.single i a := by
   simp only [apply_ite (Finsupp.single _), Finsupp.single_zero, Finset.sum_ite_eq,
     if_pos (Finset.mem_univ _)]
 #align finset.sum_single_ite Finset.sum_single_ite
 
-theorem equivFun_symm_stdBasis [Finite n] (b : Basis n R M) (i : n) :
+lemma equivFun_symm_stdBasis [Finite n] (b : Basis n R M) (i : n) :
     b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by
   cases nonempty_fintype n
   simp

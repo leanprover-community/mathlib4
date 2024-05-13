@@ -56,7 +56,7 @@ export LocallyBoundedMapClass (comap_cobounded_le)
 
 variable [FunLike F α β]
 
-theorem Bornology.IsBounded.image [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] (f : F)
+lemma Bornology.IsBounded.image [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] (f : F)
     {s : Set α} (hs : IsBounded s) : IsBounded (f '' s) :=
   comap_cobounded_le_iff.1 (comap_cobounded_le f) hs
 #align is_bounded.image Bornology.IsBounded.image
@@ -92,7 +92,7 @@ instance : LocallyBoundedMapClass (LocallyBoundedMap α β) α β where
 #noalign locally_bounded_map.to_fun_eq_coe
 
 @[ext]
-theorem ext {f g : LocallyBoundedMap α β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : LocallyBoundedMap α β} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 #align locally_bounded_map.ext LocallyBoundedMap.ext
 
@@ -103,11 +103,11 @@ protected def copy (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) :
 #align locally_bounded_map.copy LocallyBoundedMap.copy
 
 @[simp]
-theorem coe_copy (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+lemma coe_copy (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 #align locally_bounded_map.coe_copy LocallyBoundedMap.coe_copy
 
-theorem copy_eq (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
+lemma copy_eq (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 #align locally_bounded_map.copy_eq LocallyBoundedMap.copy_eq
 
@@ -120,12 +120,12 @@ def ofMapBounded (f : α → β) (h : ∀ ⦃s : Set α⦄, IsBounded s → IsBo
 #align locally_bounded_map.of_map_bounded LocallyBoundedMap.ofMapBounded
 
 @[simp]
-theorem coe_ofMapBounded (f : α → β) {h} : ⇑(ofMapBounded f h) = f :=
+lemma coe_ofMapBounded (f : α → β) {h} : ⇑(ofMapBounded f h) = f :=
   rfl
 #align locally_bounded_map.coe_of_map_bounded LocallyBoundedMap.coe_ofMapBounded
 
 @[simp]
-theorem ofMapBounded_apply (f : α → β) {h} (a : α) : ofMapBounded f h a = f a :=
+lemma ofMapBounded_apply (f : α → β) {h} (a : α) : ofMapBounded f h a = f a :=
   rfl
 #align locally_bounded_map.of_map_bounded_apply LocallyBoundedMap.ofMapBounded_apply
 
@@ -140,14 +140,14 @@ instance : Inhabited (LocallyBoundedMap α α) :=
   ⟨LocallyBoundedMap.id α⟩
 
 @[simp]
-theorem coe_id : ⇑(LocallyBoundedMap.id α) = id :=
+lemma coe_id : ⇑(LocallyBoundedMap.id α) = id :=
   rfl
 #align locally_bounded_map.coe_id LocallyBoundedMap.coe_id
 
 variable {α}
 
 @[simp]
-theorem id_apply (a : α) : LocallyBoundedMap.id α a = a :=
+lemma id_apply (a : α) : LocallyBoundedMap.id α a = a :=
   rfl
 #align locally_bounded_map.id_apply LocallyBoundedMap.id_apply
 
@@ -160,41 +160,41 @@ def comp (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) : LocallyBo
 #align locally_bounded_map.comp LocallyBoundedMap.comp
 
 @[simp]
-theorem coe_comp (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) : ⇑(f.comp g) = f ∘ g :=
+lemma coe_comp (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) : ⇑(f.comp g) = f ∘ g :=
   rfl
 #align locally_bounded_map.coe_comp LocallyBoundedMap.coe_comp
 
 @[simp]
-theorem comp_apply (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) (a : α) :
+lemma comp_apply (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) (a : α) :
     f.comp g a = f (g a) :=
   rfl
 #align locally_bounded_map.comp_apply LocallyBoundedMap.comp_apply
 
 @[simp]
-theorem comp_assoc (f : LocallyBoundedMap γ δ) (g : LocallyBoundedMap β γ)
+lemma comp_assoc (f : LocallyBoundedMap γ δ) (g : LocallyBoundedMap β γ)
     (h : LocallyBoundedMap α β) : (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 #align locally_bounded_map.comp_assoc LocallyBoundedMap.comp_assoc
 
 @[simp]
-theorem comp_id (f : LocallyBoundedMap α β) : f.comp (LocallyBoundedMap.id α) = f :=
+lemma comp_id (f : LocallyBoundedMap α β) : f.comp (LocallyBoundedMap.id α) = f :=
   ext fun _ => rfl
 #align locally_bounded_map.comp_id LocallyBoundedMap.comp_id
 
 @[simp]
-theorem id_comp (f : LocallyBoundedMap α β) : (LocallyBoundedMap.id β).comp f = f :=
+lemma id_comp (f : LocallyBoundedMap α β) : (LocallyBoundedMap.id β).comp f = f :=
   ext fun _ => rfl
 #align locally_bounded_map.id_comp LocallyBoundedMap.id_comp
 
 @[simp]
-theorem cancel_right {g₁ g₂ : LocallyBoundedMap β γ} {f : LocallyBoundedMap α β}
+lemma cancel_right {g₁ g₂ : LocallyBoundedMap β γ} {f : LocallyBoundedMap α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congrArg (fun x => comp x f)⟩
 -- Porting note: unification was not strong enough to do `congrArg _`.
 #align locally_bounded_map.cancel_right LocallyBoundedMap.cancel_right
 
 @[simp]
-theorem cancel_left {g : LocallyBoundedMap β γ} {f₁ f₂ : LocallyBoundedMap α β} (hg : Injective g) :
+lemma cancel_left {g : LocallyBoundedMap β γ} {f₁ f₂ : LocallyBoundedMap α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align locally_bounded_map.cancel_left LocallyBoundedMap.cancel_left

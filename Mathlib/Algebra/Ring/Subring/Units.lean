@@ -21,7 +21,7 @@ def Units.posSubgroup (R : Type*) [LinearOrderedSemiring R] : Subgroup Rˣ :=
 #align units.pos_subgroup Units.posSubgroup
 
 @[simp]
-theorem Units.mem_posSubgroup {R : Type*} [LinearOrderedSemiring R] (u : Rˣ) :
+lemma Units.mem_posSubgroup {R : Type*} [LinearOrderedSemiring R] (u : Rˣ) :
     u ∈ Units.posSubgroup R ↔ (0 : R) < u :=
   Iff.rfl
 #align units.mem_pos_subgroup Units.mem_posSubgroup

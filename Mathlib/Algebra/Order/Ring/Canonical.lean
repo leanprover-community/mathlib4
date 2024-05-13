@@ -69,7 +69,7 @@ instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
 #align canonically_ordered_comm_semiring.to_ordered_comm_semiring CanonicallyOrderedCommSemiring.toOrderedCommSemiring
 
 @[simp]
-protected theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
+protected lemma mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
   simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
 #align canonically_ordered_comm_semiring.mul_pos CanonicallyOrderedCommSemiring.mul_pos
 
@@ -92,14 +92,14 @@ variable [IsTotal α (· ≤ ·)]
 
 namespace AddLECancellable
 
-protected theorem mul_tsub (h : AddLECancellable (a * c)) : a * (b - c) = a * b - a * c := by
+protected lemma mul_tsub (h : AddLECancellable (a * c)) : a * (b - c) = a * b - a * c := by
   cases' total_of (· ≤ ·) b c with hbc hcb
   · rw [tsub_eq_zero_iff_le.2 hbc, mul_zero, tsub_eq_zero_iff_le.2 (mul_le_mul_left' hbc a)]
   · apply h.eq_tsub_of_add_eq
     rw [← mul_add, tsub_add_cancel_of_le hcb]
 #align add_le_cancellable.mul_tsub AddLECancellable.mul_tsub
 
-protected theorem tsub_mul (h : AddLECancellable (b * c)) : (a - b) * c = a * c - b * c := by
+protected lemma tsub_mul (h : AddLECancellable (b * c)) : (a - b) * c = a * c - b * c := by
   simp only [mul_comm _ c] at *
   exact h.mul_tsub
 #align add_le_cancellable.tsub_mul AddLECancellable.tsub_mul
@@ -108,11 +108,11 @@ end AddLECancellable
 
 variable [ContravariantClass α α (· + ·) (· ≤ ·)]
 
-theorem mul_tsub (a b c : α) : a * (b - c) = a * b - a * c :=
+lemma mul_tsub (a b c : α) : a * (b - c) = a * b - a * c :=
   Contravariant.AddLECancellable.mul_tsub
 #align mul_tsub mul_tsub
 
-theorem tsub_mul (a b c : α) : (a - b) * c = a * c - b * c :=
+lemma tsub_mul (a b c : α) : (a - b) * c = a * c - b * c :=
   Contravariant.AddLECancellable.tsub_mul
 #align tsub_mul tsub_mul
 

@@ -55,7 +55,7 @@ variable {C}
 
 namespace Presheaf
 
-@[simp] theorem comp_app {P Q R : Presheaf C X} (f : P ⟶ Q) (g : Q ⟶ R) :
+@[simp] lemma comp_app {P Q R : Presheaf C X} (f : P ⟶ Q) (g : Q ⟶ R) :
     (f ≫ g).app U = f.app U ≫ g.app U := rfl
 
 -- Porting note (#10756): added an `ext` lemma,
@@ -140,7 +140,7 @@ scoped[AlgebraicGeometry] infixl:80 " |_ " => TopCat.Presheaf.restrictOpen
 
 -- Porting note: linter tells this lemma is no going to be picked up by the simplifier, hence
 -- `@[simp]` is removed
-theorem restrict_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
+lemma restrict_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
     {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : F.obj (op W)) :
     x |_ V |_ U = x |_ U := by
   delta restrictOpen restrict
@@ -151,7 +151,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: linter tells this lemma is no going to be picked up by the simplifier, hence
 -- `@[simp]` is removed
-theorem map_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
+lemma map_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
     {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : F.obj (op V)) :
     e.app _ (x |_ U) = e.app _ x |_ U := by
   delta restrictOpen restrict
@@ -170,14 +170,14 @@ set_option linter.uppercaseLean3 false in
 infixl:80 " _* " => pushforwardObj
 
 @[simp]
-theorem pushforwardObj_obj {X Y : TopCat.{w}} (f : X ⟶ Y) (ℱ : X.Presheaf C) (U : (Opens Y)ᵒᵖ) :
+lemma pushforwardObj_obj {X Y : TopCat.{w}} (f : X ⟶ Y) (ℱ : X.Presheaf C) (U : (Opens Y)ᵒᵖ) :
     (f _* ℱ).obj U = ℱ.obj ((Opens.map f).op.obj U) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_obj_obj TopCat.Presheaf.pushforwardObj_obj
 
 @[simp]
-theorem pushforwardObj_map {X Y : TopCat.{w}} (f : X ⟶ Y) (ℱ : X.Presheaf C) {U V : (Opens Y)ᵒᵖ}
+lemma pushforwardObj_map {X Y : TopCat.{w}} (f : X ⟶ Y) (ℱ : X.Presheaf C) {U V : (Opens Y)ᵒᵖ}
     (i : U ⟶ V) : (f _* ℱ).map i = ℱ.map ((Opens.map f).op.map i) :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -193,13 +193,13 @@ def pushforwardEq {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Preshe
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_eq TopCat.Presheaf.pushforwardEq
 
-theorem pushforward_eq' {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C) :
+lemma pushforward_eq' {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C) :
     f _* ℱ = g _* ℱ := by rw [h]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_eq' TopCat.Presheaf.pushforward_eq'
 
 @[simp]
-theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
+lemma pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
     (h : f = g) (ℱ : X.Presheaf C) (U) :
     (pushforwardEq h ℱ).hom.app U =
       ℱ.map (by dsimp [Functor.op]; apply Quiver.Hom.op; apply eqToHom; rw [h]) :=
@@ -207,7 +207,7 @@ theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_eq_hom_app TopCat.Presheaf.pushforwardEq_hom_app
 
-theorem pushforward_eq'_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C)
+lemma pushforward_eq'_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C)
     (U) : NatTrans.app (eqToHom (pushforward_eq' h ℱ)) U = ℱ.map (eqToHom (by rw [h])) := by
   rw [eqToHom_app, eqToHom_map]
 set_option linter.uppercaseLean3 false in
@@ -215,14 +215,14 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: This lemma is promoted to a higher priority to short circuit the simplifier
 @[simp (high)]
-theorem pushforwardEq_rfl {X Y : TopCat.{w}} (f : X ⟶ Y) (ℱ : X.Presheaf C) (U) :
+lemma pushforwardEq_rfl {X Y : TopCat.{w}} (f : X ⟶ Y) (ℱ : X.Presheaf C) (U) :
     (pushforwardEq (rfl : f = f) ℱ).hom.app (op U) = 𝟙 _ := by
   dsimp [pushforwardEq]
   simp
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_eq_rfl TopCat.Presheaf.pushforwardEq_rfl
 
-theorem pushforwardEq_eq {X Y : TopCat.{w}} {f g : X ⟶ Y} (h₁ h₂ : f = g) (ℱ : X.Presheaf C) :
+lemma pushforwardEq_eq {X Y : TopCat.{w}} {f g : X ⟶ Y} (h₁ h₂ : f = g) (ℱ : X.Presheaf C) :
     ℱ.pushforwardEq h₁ = ℱ.pushforwardEq h₂ :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -239,7 +239,7 @@ def id : 𝟙 X _* ℱ ≅ ℱ :=
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id TopCat.Presheaf.Pushforward.id
 
-theorem id_eq : 𝟙 X _* ℱ = ℱ := by
+lemma id_eq : 𝟙 X _* ℱ = ℱ := by
   unfold pushforwardObj
   rw [Opens.map_id_eq]
   erw [Functor.id_comp]
@@ -248,7 +248,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: This lemma is promoted to a higher priority to short circuit the simplifier
 @[simp (high)]
-theorem id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
+lemma id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
   simp
 set_option linter.uppercaseLean3 false in
@@ -262,7 +262,7 @@ attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opposite
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
 
 @[simp]
-theorem id_hom_app (U) : (id ℱ).hom.app U = ℱ.map (eqToHom (Opens.op_map_id_obj U)) := by
+lemma id_hom_app (U) : (id ℱ).hom.app U = ℱ.map (eqToHom (Opens.op_map_id_obj U)) := by
   -- was `tidy`, see porting note above.
   induction U
   apply id_hom_app'
@@ -270,7 +270,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app TopCat.Presheaf.Pushforward.id_hom_app
 
 @[simp]
-theorem id_inv_app' (U) (p) : (id ℱ).inv.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
+lemma id_inv_app' (U) (p) : (id ℱ).inv.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
   simp [CategoryStruct.comp]
 set_option linter.uppercaseLean3 false in
@@ -284,19 +284,19 @@ def comp {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g) _* ℱ ≅ g
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.comp TopCat.Presheaf.Pushforward.comp
 
-theorem comp_eq {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g) _* ℱ = g _* (f _* ℱ) :=
+lemma comp_eq {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g) _* ℱ = g _* (f _* ℱ) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.comp_eq TopCat.Presheaf.Pushforward.comp_eq
 
 @[simp]
-theorem comp_hom_app {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
+lemma comp_hom_app {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (comp ℱ f g).hom.app U = 𝟙 _ := by simp [comp]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.comp_hom_app TopCat.Presheaf.Pushforward.comp_hom_app
 
 @[simp]
-theorem comp_inv_app {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
+lemma comp_inv_app {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (comp ℱ f g).inv.app U = 𝟙 _ := by simp [comp]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.comp_inv_app TopCat.Presheaf.Pushforward.comp_inv_app
@@ -381,7 +381,7 @@ def id : pullbackObj (𝟙 _) ℱ ≅ ℱ :=
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback.id TopCat.Presheaf.Pullback.id
 
-theorem id_inv_app (U : Opens Y) :
+lemma id_inv_app (U : Opens Y) :
     (id ℱ).inv.app (op U) =
       colimit.ι (Lan.diagram (Opens.map (𝟙 Y)).op ℱ (op U))
         (@CostructuredArrow.mk _ _ _ _ _ (op U) _ (eqToHom (by simp))) := by
@@ -408,13 +408,13 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward TopCat.Presheaf.pushforward
 
 @[simp]
-theorem pushforward_map_app' {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : X.Presheaf C} (α : ℱ ⟶ 𝒢)
+lemma pushforward_map_app' {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : X.Presheaf C} (α : ℱ ⟶ 𝒢)
     {U : (Opens Y)ᵒᵖ} : ((pushforward C f).map α).app U = α.app (op <| (Opens.map f).obj U.unop) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_map_app' TopCat.Presheaf.pushforward_map_app'
 
-theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) := by
+lemma id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) := by
   apply CategoryTheory.Functor.ext
   · intros a b f
     ext U
@@ -446,7 +446,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.to_pushforward_of_iso TopCat.Presheaf.toPushforwardOfIso
 
 @[simp]
-theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf C} {𝒢 : Y.Presheaf C}
+lemma toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf C} {𝒢 : Y.Presheaf C}
     (H₂ : H₁.hom _* ℱ ⟶ 𝒢) (U : (Opens X)ᵒᵖ) :
     (toPushforwardOfIso H₁ H₂).app U =
       ℱ.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) ≫
@@ -476,7 +476,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_to_of_iso TopCat.Presheaf.pushforwardToOfIso
 
 @[simp]
-theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf C} {𝒢 : X.Presheaf C}
+lemma pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf C} {𝒢 : X.Presheaf C}
     (H₂ : ℱ ⟶ H₁.hom _* 𝒢) (U : (Opens X)ᵒᵖ) :
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
@@ -500,7 +500,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback TopCat.Presheaf.pullback
 
 @[simp]
-theorem pullbackObj_eq_pullbackObj {C} [Category C] [HasColimits C] {X Y : TopCat.{w}} (f : X ⟶ Y)
+lemma pullbackObj_eq_pullbackObj {C} [Category C] [HasColimits C] {X Y : TopCat.{w}} (f : X ⟶ Y)
     (ℱ : Y.Presheaf C) : (pullback C f).obj ℱ = pullbackObj f ℱ :=
   rfl
 set_option linter.uppercaseLean3 false in

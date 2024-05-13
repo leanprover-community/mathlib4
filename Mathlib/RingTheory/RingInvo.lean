@@ -98,7 +98,7 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
 #noalign ring_invo.to_fun_eq_coe
 
 @[simp]
-theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
+lemma involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x
 #align ring_invo.involution RingInvo.involution
 
@@ -108,13 +108,13 @@ theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
 -- #align ring_invo.has_coe_to_ring_equiv RingInvo.hasCoeToRingEquiv
 
 @[norm_cast]
-theorem coe_ringEquiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f a :=
+lemma coe_ringEquiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f a :=
   rfl
 #align ring_invo.coe_ring_equiv RingInvo.coe_ringEquiv
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
-theorem map_eq_zero_iff (f : RingInvo R) {x : R} : f x = 0 ↔ x = 0 :=
+lemma map_eq_zero_iff (f : RingInvo R) {x : R} : f x = 0 ↔ x = 0 :=
   f.toRingEquiv.map_eq_zero_iff
 #align ring_invo.map_eq_zero_iff RingInvo.map_eq_zero_iff
 

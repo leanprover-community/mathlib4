@@ -36,7 +36,7 @@ open scoped Classical nonZeroDivisors Polynomial
 
 variable {R : Type u} [CommRing R] [hdomain : IsDomain R] (r s : R) (p q : R[X]) (f : RatFunc R)
 
-theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰ := by
+lemma taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰ := by
   rw [mem_nonZeroDivisors_iff]
   intro x hx
   have : x = taylor (r - r) x := by simp
@@ -57,13 +57,13 @@ def laurentAux : RatFunc R →+* RatFunc R :=
     (taylor_mem_nonZeroDivisors _)
 #align ratfunc.laurent_aux RatFunc.laurentAux
 
-theorem laurentAux_ofFractionRing_mk (q : R[X]⁰) :
+lemma laurentAux_ofFractionRing_mk (q : R[X]⁰) :
     laurentAux r (ofFractionRing (Localization.mk p q)) =
       ofFractionRing (.mk (taylor r p) ⟨taylor r q, taylor_mem_nonZeroDivisors r q q.prop⟩) :=
   map_apply_ofFractionRing_mk _ _ _ _
 #align ratfunc.laurent_aux_of_fraction_ring_mk RatFunc.laurentAux_ofFractionRing_mk
 
-theorem laurentAux_div :
+lemma laurentAux_div :
     laurentAux r (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap _ _ (taylor r p) / algebraMap _ _ (taylor r q) :=
   -- Porting note: added `by exact taylor_mem_nonZeroDivisors r`
@@ -71,7 +71,7 @@ theorem laurentAux_div :
 #align ratfunc.laurent_aux_div RatFunc.laurentAux_div
 
 @[simp]
-theorem laurentAux_algebraMap : laurentAux r (algebraMap _ _ p) = algebraMap _ _ (taylor r p) := by
+lemma laurentAux_algebraMap : laurentAux r (algebraMap _ _ p) = algebraMap _ _ (taylor r p) := by
   rw [← mk_one, ← mk_one, mk_eq_div, laurentAux_div, mk_eq_div, taylor_one, map_one, map_one]
 #align ratfunc.laurent_aux_algebra_map RatFunc.laurentAux_algebraMap
 
@@ -81,39 +81,39 @@ def laurent : RatFunc R →ₐ[R] RatFunc R :=
     (taylor_mem_nonZeroDivisors _)
 #align ratfunc.laurent RatFunc.laurent
 
-theorem laurent_div :
+lemma laurent_div :
     laurent r (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap _ _ (taylor r p) / algebraMap _ _ (taylor r q) :=
   laurentAux_div r p q
 #align ratfunc.laurent_div RatFunc.laurent_div
 
 @[simp]
-theorem laurent_algebraMap : laurent r (algebraMap _ _ p) = algebraMap _ _ (taylor r p) :=
+lemma laurent_algebraMap : laurent r (algebraMap _ _ p) = algebraMap _ _ (taylor r p) :=
   laurentAux_algebraMap _ _
 #align ratfunc.laurent_algebra_map RatFunc.laurent_algebraMap
 
 @[simp]
-theorem laurent_X : laurent r X = X + C r := by
+lemma laurent_X : laurent r X = X + C r := by
   rw [← algebraMap_X, laurent_algebraMap, taylor_X, _root_.map_add, algebraMap_C]
 set_option linter.uppercaseLean3 false in
 #align ratfunc.laurent_X RatFunc.laurent_X
 
 @[simp]
-theorem laurent_C (x : R) : laurent r (C x) = C x := by
+lemma laurent_C (x : R) : laurent r (C x) = C x := by
   rw [← algebraMap_C, laurent_algebraMap, taylor_C]
 set_option linter.uppercaseLean3 false in
 #align ratfunc.laurent_C RatFunc.laurent_C
 
 @[simp]
-theorem laurent_at_zero : laurent 0 f = f := by induction f using RatFunc.induction_on; simp
+lemma laurent_at_zero : laurent 0 f = f := by induction f using RatFunc.induction_on; simp
 #align ratfunc.laurent_at_zero RatFunc.laurent_at_zero
 
-theorem laurent_laurent : laurent r (laurent s f) = laurent (r + s) f := by
+lemma laurent_laurent : laurent r (laurent s f) = laurent (r + s) f := by
   induction f using RatFunc.induction_on
   simp_rw [laurent_div, taylor_taylor]
 #align ratfunc.laurent_laurent RatFunc.laurent_laurent
 
-theorem laurent_injective : Function.Injective (laurent r) := fun _ _ h => by
+lemma laurent_injective : Function.Injective (laurent r) := fun _ _ h => by
   simpa [laurent_laurent] using congr_arg (laurent (-r)) h
 #align ratfunc.laurent_injective RatFunc.laurent_injective
 

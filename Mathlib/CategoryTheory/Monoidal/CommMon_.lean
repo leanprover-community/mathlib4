@@ -48,13 +48,13 @@ instance : Category (CommMon_ C) :=
   InducedCategory.category CommMon_.toMon_
 
 @[simp]
-theorem id_hom (A : CommMon_ C) : Mon_.Hom.hom (𝟙 A) = 𝟙 A.X :=
+lemma id_hom (A : CommMon_ C) : Mon_.Hom.hom (𝟙 A) = 𝟙 A.X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommMon_.id_hom CommMon_.id_hom
 
 @[simp]
-theorem comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
+lemma comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
     Mon_.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -91,19 +91,19 @@ instance : (forget₂Mon_ C).Full := InducedCategory.full _
 instance : (forget₂Mon_ C).Faithful := InducedCategory.faithful _
 
 @[simp]
-theorem forget₂_Mon_obj_one (A : CommMon_ C) : ((forget₂Mon_ C).obj A).one = A.one :=
+lemma forget₂_Mon_obj_one (A : CommMon_ C) : ((forget₂Mon_ C).obj A).one = A.one :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommMon_.forget₂_Mon_obj_one CommMon_.forget₂_Mon_obj_one
 
 @[simp]
-theorem forget₂_Mon_obj_mul (A : CommMon_ C) : ((forget₂Mon_ C).obj A).mul = A.mul :=
+lemma forget₂_Mon_obj_mul (A : CommMon_ C) : ((forget₂Mon_ C).obj A).mul = A.mul :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommMon_.forget₂_Mon_obj_mul CommMon_.forget₂_Mon_obj_mul
 
 @[simp]
-theorem forget₂_Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
+lemma forget₂_Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommMon_.forget₂_Mon_map_hom CommMon_.forget₂_Mon_map_hom

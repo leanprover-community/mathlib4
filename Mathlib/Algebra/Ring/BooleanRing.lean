@@ -58,12 +58,12 @@ instance : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
 @[simp]
-theorem mul_self : a * a = a :=
+lemma mul_self : a * a = a :=
   BooleanRing.mul_self _
 #align mul_self mul_self
 
 @[simp]
-theorem add_self : a + a = 0 := by
+lemma add_self : a + a = 0 := by
   have : a + a = a + a + (a + a) :=
     calc
       a + a = (a + a) * (a + a) := by rw [mul_self]
@@ -73,21 +73,21 @@ theorem add_self : a + a = 0 := by
 #align add_self add_self
 
 @[simp]
-theorem neg_eq : -a = a :=
+lemma neg_eq : -a = a :=
   calc
     -a = -a + 0 := by rw [add_zero]
     _ = -a + -a + a := by rw [← neg_add_self, add_assoc]
     _ = a := by rw [add_self, zero_add]
 #align neg_eq neg_eq
 
-theorem add_eq_zero' : a + b = 0 ↔ a = b :=
+lemma add_eq_zero' : a + b = 0 ↔ a = b :=
   calc
     a + b = 0 ↔ a = -b := add_eq_zero_iff_eq_neg
     _ ↔ a = b := by rw [neg_eq]
 #align add_eq_zero' add_eq_zero'
 
 @[simp]
-theorem mul_add_mul : a * b + b * a = 0 := by
+lemma mul_add_mul : a * b + b * a = 0 := by
   have : a + b = a + b + (a * b + b * a) :=
     calc
       a + b = (a + b) * (a + b) := by rw [mul_self]
@@ -98,11 +98,11 @@ theorem mul_add_mul : a * b + b * a = 0 := by
 #align mul_add_mul mul_add_mul
 
 @[simp]
-theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
+lemma sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
 #align sub_eq_add sub_eq_add
 
 @[simp]
-theorem mul_one_add_self : a * (1 + a) = 0 := by rw [mul_add, mul_one, mul_self, add_self]
+lemma mul_one_add_self : a * (1 + a) = 0 := by rw [mul_add, mul_one, mul_self, add_self]
 #align mul_one_add_self mul_one_add_self
 
 -- Note [lower instance priority]
@@ -137,32 +137,32 @@ def ofBoolAlg : AsBoolAlg α ≃ α :=
 #align of_boolalg ofBoolAlg
 
 @[simp]
-theorem toBoolAlg_symm_eq : (@toBoolAlg α).symm = ofBoolAlg :=
+lemma toBoolAlg_symm_eq : (@toBoolAlg α).symm = ofBoolAlg :=
   rfl
 #align to_boolalg_symm_eq toBoolAlg_symm_eq
 
 @[simp]
-theorem ofBoolAlg_symm_eq : (@ofBoolAlg α).symm = toBoolAlg :=
+lemma ofBoolAlg_symm_eq : (@ofBoolAlg α).symm = toBoolAlg :=
   rfl
 #align of_boolalg_symm_eq ofBoolAlg_symm_eq
 
 @[simp]
-theorem toBoolAlg_ofBoolAlg (a : AsBoolAlg α) : toBoolAlg (ofBoolAlg a) = a :=
+lemma toBoolAlg_ofBoolAlg (a : AsBoolAlg α) : toBoolAlg (ofBoolAlg a) = a :=
   rfl
 #align to_boolalg_of_boolalg toBoolAlg_ofBoolAlg
 
 @[simp]
-theorem ofBoolAlg_toBoolAlg (a : α) : ofBoolAlg (toBoolAlg a) = a :=
+lemma ofBoolAlg_toBoolAlg (a : α) : ofBoolAlg (toBoolAlg a) = a :=
   rfl
 #align of_boolalg_to_boolalg ofBoolAlg_toBoolAlg
 
 -- Porting note (#10618): simp can prove this -- @[simp]
-theorem toBoolAlg_inj {a b : α} : toBoolAlg a = toBoolAlg b ↔ a = b :=
+lemma toBoolAlg_inj {a b : α} : toBoolAlg a = toBoolAlg b ↔ a = b :=
   Iff.rfl
 #align to_boolalg_inj toBoolAlg_inj
 
 -- Porting note (#10618): simp can prove this -- @[simp]
-theorem ofBoolAlg_inj {a b : AsBoolAlg α} : ofBoolAlg a = ofBoolAlg b ↔ a = b :=
+lemma ofBoolAlg_inj {a b : AsBoolAlg α} : ofBoolAlg a = ofBoolAlg b ↔ a = b :=
   Iff.rfl
 #align of_boolalg_inj ofBoolAlg_inj
 
@@ -188,37 +188,37 @@ scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.sup
 scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
 
-theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
+lemma sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
   dsimp only [(· ⊔ ·)]
   ring
 #align boolean_ring.sup_comm BooleanRing.sup_comm
 
-theorem inf_comm (a b : α) : a ⊓ b = b ⊓ a := by
+lemma inf_comm (a b : α) : a ⊓ b = b ⊓ a := by
   dsimp only [(· ⊓ ·)]
   ring
 #align boolean_ring.inf_comm BooleanRing.inf_comm
 
-theorem sup_assoc (a b c : α) : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) := by
+lemma sup_assoc (a b c : α) : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) := by
   dsimp only [(· ⊔ ·)]
   ring
 #align boolean_ring.sup_assoc BooleanRing.sup_assoc
 
-theorem inf_assoc (a b c : α) : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) := by
+lemma inf_assoc (a b c : α) : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) := by
   dsimp only [(· ⊓ ·)]
   ring
 #align boolean_ring.inf_assoc BooleanRing.inf_assoc
 
-theorem sup_inf_self (a b : α) : a ⊔ a ⊓ b = a := by
+lemma sup_inf_self (a b : α) : a ⊔ a ⊓ b = a := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
   rw [← mul_assoc, mul_self, add_assoc, add_self, add_zero]
 #align boolean_ring.sup_inf_self BooleanRing.sup_inf_self
 
-theorem inf_sup_self (a b : α) : a ⊓ (a ⊔ b) = a := by
+lemma inf_sup_self (a b : α) : a ⊓ (a ⊔ b) = a := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
   rw [mul_add, mul_add, mul_self, ← mul_assoc, mul_self, add_assoc, add_self, add_zero]
 #align boolean_ring.inf_sup_self BooleanRing.inf_sup_self
 
-theorem le_sup_inf_aux (a b c : α) : (a + b + a * b) * (a + c + a * c) = a + b * c + a * (b * c) :=
+lemma le_sup_inf_aux (a b c : α) : (a + b + a * b) * (a + c + a * c) = a + b * c + a * (b * c) :=
   calc
     (a + b + a * b) * (a + c + a * c) =
         a * a + b * c + a * (b * c) + (a * b + a * a * b) + (a * c + a * a * c) +
@@ -228,7 +228,7 @@ theorem le_sup_inf_aux (a b c : α) : (a + b + a * b) * (a + c + a * c) = a + b 
 
 #align boolean_ring.le_sup_inf_aux BooleanRing.le_sup_inf_aux
 
-theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = a ⊔ b ⊓ c := by
+lemma le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = a ⊔ b ⊓ c := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
   rw [le_sup_inf_aux, add_self, mul_self, zero_add]
 #align boolean_ring.le_sup_inf BooleanRing.le_sup_inf
@@ -272,77 +272,77 @@ instance : BooleanAlgebra (AsBoolAlg α) :=
   @BooleanRing.toBooleanAlgebra α _
 
 @[simp]
-theorem ofBoolAlg_top : ofBoolAlg (⊤ : AsBoolAlg α) = 1 :=
+lemma ofBoolAlg_top : ofBoolAlg (⊤ : AsBoolAlg α) = 1 :=
   rfl
 #align of_boolalg_top ofBoolAlg_top
 
 @[simp]
-theorem ofBoolAlg_bot : ofBoolAlg (⊥ : AsBoolAlg α) = 0 :=
+lemma ofBoolAlg_bot : ofBoolAlg (⊥ : AsBoolAlg α) = 0 :=
   rfl
 #align of_boolalg_bot ofBoolAlg_bot
 
 @[simp]
-theorem ofBoolAlg_sup (a b : AsBoolAlg α) :
+lemma ofBoolAlg_sup (a b : AsBoolAlg α) :
     ofBoolAlg (a ⊔ b) = ofBoolAlg a + ofBoolAlg b + ofBoolAlg a * ofBoolAlg b :=
   rfl
 #align of_boolalg_sup ofBoolAlg_sup
 
 @[simp]
-theorem ofBoolAlg_inf (a b : AsBoolAlg α) : ofBoolAlg (a ⊓ b) = ofBoolAlg a * ofBoolAlg b :=
+lemma ofBoolAlg_inf (a b : AsBoolAlg α) : ofBoolAlg (a ⊓ b) = ofBoolAlg a * ofBoolAlg b :=
   rfl
 #align of_boolalg_inf ofBoolAlg_inf
 
 @[simp]
-theorem ofBoolAlg_compl (a : AsBoolAlg α) : ofBoolAlg aᶜ = 1 + ofBoolAlg a :=
+lemma ofBoolAlg_compl (a : AsBoolAlg α) : ofBoolAlg aᶜ = 1 + ofBoolAlg a :=
   rfl
 #align of_boolalg_compl ofBoolAlg_compl
 
 @[simp]
-theorem ofBoolAlg_sdiff (a b : AsBoolAlg α) : ofBoolAlg (a \ b) = ofBoolAlg a * (1 + ofBoolAlg b) :=
+lemma ofBoolAlg_sdiff (a b : AsBoolAlg α) : ofBoolAlg (a \ b) = ofBoolAlg a * (1 + ofBoolAlg b) :=
   rfl
 #align of_boolalg_sdiff ofBoolAlg_sdiff
 
-private theorem of_boolalg_symmDiff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
+private lemma of_boolalg_symmDiff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
   calc
     (a + b + a * b) * (1 + a * b) = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) :=
       by ring
     _ = a + b := by simp only [mul_self, add_self, add_zero]
 
 @[simp]
-theorem ofBoolAlg_symmDiff (a b : AsBoolAlg α) : ofBoolAlg (a ∆ b) = ofBoolAlg a + ofBoolAlg b := by
+lemma ofBoolAlg_symmDiff (a b : AsBoolAlg α) : ofBoolAlg (a ∆ b) = ofBoolAlg a + ofBoolAlg b := by
   rw [symmDiff_eq_sup_sdiff_inf]
   exact of_boolalg_symmDiff_aux _ _
 #align of_boolalg_symm_diff ofBoolAlg_symmDiff
 
 @[simp]
-theorem ofBoolAlg_mul_ofBoolAlg_eq_left_iff {a b : AsBoolAlg α} :
+lemma ofBoolAlg_mul_ofBoolAlg_eq_left_iff {a b : AsBoolAlg α} :
     ofBoolAlg a * ofBoolAlg b = ofBoolAlg a ↔ a ≤ b :=
   @inf_eq_left (AsBoolAlg α) _ _ _
 #align of_boolalg_mul_of_boolalg_eq_left_iff ofBoolAlg_mul_ofBoolAlg_eq_left_iff
 
 @[simp]
-theorem toBoolAlg_zero : toBoolAlg (0 : α) = ⊥ :=
+lemma toBoolAlg_zero : toBoolAlg (0 : α) = ⊥ :=
   rfl
 #align to_boolalg_zero toBoolAlg_zero
 
 @[simp]
-theorem toBoolAlg_one : toBoolAlg (1 : α) = ⊤ :=
+lemma toBoolAlg_one : toBoolAlg (1 : α) = ⊤ :=
   rfl
 #align to_boolalg_one toBoolAlg_one
 
 @[simp]
-theorem toBoolAlg_mul (a b : α) : toBoolAlg (a * b) = toBoolAlg a ⊓ toBoolAlg b :=
+lemma toBoolAlg_mul (a b : α) : toBoolAlg (a * b) = toBoolAlg a ⊓ toBoolAlg b :=
   rfl
 #align to_boolalg_mul toBoolAlg_mul
 
 -- `toBoolAlg_add` simplifies the LHS but this lemma is eligible to `dsimp`
 @[simp, nolint simpNF]
-theorem toBoolAlg_add_add_mul (a b : α) : toBoolAlg (a + b + a * b) = toBoolAlg a ⊔ toBoolAlg b :=
+lemma toBoolAlg_add_add_mul (a b : α) : toBoolAlg (a + b + a * b) = toBoolAlg a ⊔ toBoolAlg b :=
   rfl
 #align to_boolalg_add_add_mul toBoolAlg_add_add_mul
 
 @[simp]
-theorem toBoolAlg_add (a b : α) : toBoolAlg (a + b) = toBoolAlg a ∆ toBoolAlg b :=
+lemma toBoolAlg_add (a b : α) : toBoolAlg (a + b) = toBoolAlg a ∆ toBoolAlg b :=
   (ofBoolAlg_symmDiff a b).symm
 #align to_boolalg_add toBoolAlg_add
 
@@ -360,12 +360,12 @@ protected def RingHom.asBoolAlg (f : α →+* β) : BoundedLatticeHom (AsBoolAlg
 #align ring_hom.as_boolalg RingHom.asBoolAlg
 
 @[simp]
-theorem RingHom.asBoolAlg_id : (RingHom.id α).asBoolAlg = BoundedLatticeHom.id _ :=
+lemma RingHom.asBoolAlg_id : (RingHom.id α).asBoolAlg = BoundedLatticeHom.id _ :=
   rfl
 #align ring_hom.as_boolalg_id RingHom.asBoolAlg_id
 
 @[simp]
-theorem RingHom.asBoolAlg_comp (g : β →+* γ) (f : α →+* β) :
+lemma RingHom.asBoolAlg_comp (g : β →+* γ) (f : α →+* β) :
     (g.comp f).asBoolAlg = g.asBoolAlg.comp f.asBoolAlg :=
   rfl
 #align ring_hom.as_boolalg_comp RingHom.asBoolAlg_comp
@@ -393,32 +393,32 @@ def ofBoolRing : AsBoolRing α ≃ α :=
 #align of_boolring ofBoolRing
 
 @[simp]
-theorem toBoolRing_symm_eq : (@toBoolRing α).symm = ofBoolRing :=
+lemma toBoolRing_symm_eq : (@toBoolRing α).symm = ofBoolRing :=
   rfl
 #align to_boolring_symm_eq toBoolRing_symm_eq
 
 @[simp]
-theorem ofBoolRing_symm_eq : (@ofBoolRing α).symm = toBoolRing :=
+lemma ofBoolRing_symm_eq : (@ofBoolRing α).symm = toBoolRing :=
   rfl
 #align of_boolring_symm_eq ofBoolRing_symm_eq
 
 @[simp]
-theorem toBoolRing_ofBoolRing (a : AsBoolRing α) : toBoolRing (ofBoolRing a) = a :=
+lemma toBoolRing_ofBoolRing (a : AsBoolRing α) : toBoolRing (ofBoolRing a) = a :=
   rfl
 #align to_boolring_of_boolring toBoolRing_ofBoolRing
 
 @[simp]
-theorem ofBoolRing_toBoolRing (a : α) : ofBoolRing (toBoolRing a) = a :=
+lemma ofBoolRing_toBoolRing (a : α) : ofBoolRing (toBoolRing a) = a :=
   rfl
 #align of_boolring_to_boolring ofBoolRing_toBoolRing
 
 -- Porting note (#10618): simp can prove this -- @[simp]
-theorem toBoolRing_inj {a b : α} : toBoolRing a = toBoolRing b ↔ a = b :=
+lemma toBoolRing_inj {a b : α} : toBoolRing a = toBoolRing b ↔ a = b :=
   Iff.rfl
 #align to_boolring_inj toBoolRing_inj
 
 -- Porting note (#10618): simp can prove this -- @[simp]
-theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a = b :=
+lemma ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a = b :=
   Iff.rfl
 #align of_boolring_inj ofBoolRing_inj
 
@@ -484,60 +484,60 @@ instance : BooleanRing (AsBoolRing α) :=
   @BooleanAlgebra.toBooleanRing α _
 
 @[simp]
-theorem ofBoolRing_zero : ofBoolRing (0 : AsBoolRing α) = ⊥ :=
+lemma ofBoolRing_zero : ofBoolRing (0 : AsBoolRing α) = ⊥ :=
   rfl
 #align of_boolring_zero ofBoolRing_zero
 
 @[simp]
-theorem ofBoolRing_one : ofBoolRing (1 : AsBoolRing α) = ⊤ :=
+lemma ofBoolRing_one : ofBoolRing (1 : AsBoolRing α) = ⊤ :=
   rfl
 #align of_boolring_one ofBoolRing_one
 
 -- `sub_eq_add` proves this lemma but it is eligible for `dsimp`
 @[simp, nolint simpNF]
-theorem ofBoolRing_neg (a : AsBoolRing α) : ofBoolRing (-a) = ofBoolRing a :=
+lemma ofBoolRing_neg (a : AsBoolRing α) : ofBoolRing (-a) = ofBoolRing a :=
   rfl
 #align of_boolring_neg ofBoolRing_neg
 
 @[simp]
-theorem ofBoolRing_add (a b : AsBoolRing α) : ofBoolRing (a + b) = ofBoolRing a ∆ ofBoolRing b :=
+lemma ofBoolRing_add (a b : AsBoolRing α) : ofBoolRing (a + b) = ofBoolRing a ∆ ofBoolRing b :=
   rfl
 #align of_boolring_add ofBoolRing_add
 
 -- `sub_eq_add` simplifies the LHS but this lemma is eligible for `dsimp`
 @[simp, nolint simpNF]
-theorem ofBoolRing_sub (a b : AsBoolRing α) : ofBoolRing (a - b) = ofBoolRing a ∆ ofBoolRing b :=
+lemma ofBoolRing_sub (a b : AsBoolRing α) : ofBoolRing (a - b) = ofBoolRing a ∆ ofBoolRing b :=
   rfl
 #align of_boolring_sub ofBoolRing_sub
 
 @[simp]
-theorem ofBoolRing_mul (a b : AsBoolRing α) : ofBoolRing (a * b) = ofBoolRing a ⊓ ofBoolRing b :=
+lemma ofBoolRing_mul (a b : AsBoolRing α) : ofBoolRing (a * b) = ofBoolRing a ⊓ ofBoolRing b :=
   rfl
 #align of_boolring_mul ofBoolRing_mul
 
 @[simp]
-theorem ofBoolRing_le_ofBoolRing_iff {a b : AsBoolRing α} :
+lemma ofBoolRing_le_ofBoolRing_iff {a b : AsBoolRing α} :
     ofBoolRing a ≤ ofBoolRing b ↔ a * b = a :=
   inf_eq_left.symm
 #align of_boolring_le_of_boolring_iff ofBoolRing_le_ofBoolRing_iff
 
 @[simp]
-theorem toBoolRing_bot : toBoolRing (⊥ : α) = 0 :=
+lemma toBoolRing_bot : toBoolRing (⊥ : α) = 0 :=
   rfl
 #align to_boolring_bot toBoolRing_bot
 
 @[simp]
-theorem toBoolRing_top : toBoolRing (⊤ : α) = 1 :=
+lemma toBoolRing_top : toBoolRing (⊤ : α) = 1 :=
   rfl
 #align to_boolring_top toBoolRing_top
 
 @[simp]
-theorem toBoolRing_inf (a b : α) : toBoolRing (a ⊓ b) = toBoolRing a * toBoolRing b :=
+lemma toBoolRing_inf (a b : α) : toBoolRing (a ⊓ b) = toBoolRing a * toBoolRing b :=
   rfl
 #align to_boolring_inf toBoolRing_inf
 
 @[simp]
-theorem toBoolRing_symmDiff (a b : α) : toBoolRing (a ∆ b) = toBoolRing a + toBoolRing b :=
+lemma toBoolRing_symmDiff (a b : α) : toBoolRing (a ∆ b) = toBoolRing a + toBoolRing b :=
   rfl
 #align to_boolring_symm_diff toBoolRing_symmDiff
 
@@ -554,12 +554,12 @@ protected def BoundedLatticeHom.asBoolRing (f : BoundedLatticeHom α β) :
 #align bounded_lattice_hom.as_boolring BoundedLatticeHom.asBoolRing
 
 @[simp]
-theorem BoundedLatticeHom.asBoolRing_id : (BoundedLatticeHom.id α).asBoolRing = RingHom.id _ :=
+lemma BoundedLatticeHom.asBoolRing_id : (BoundedLatticeHom.id α).asBoolRing = RingHom.id _ :=
   rfl
 #align bounded_lattice_hom.as_boolring_id BoundedLatticeHom.asBoolRing_id
 
 @[simp]
-theorem BoundedLatticeHom.asBoolRing_comp (g : BoundedLatticeHom β γ) (f : BoundedLatticeHom α β) :
+lemma BoundedLatticeHom.asBoolRing_comp (g : BoundedLatticeHom β γ) (f : BoundedLatticeHom α β) :
     (g.comp f).asBoolRing = g.asBoolRing.comp f.asBoolRing :=
   rfl
 #align bounded_lattice_hom.as_boolring_comp BoundedLatticeHom.asBoolRing_comp

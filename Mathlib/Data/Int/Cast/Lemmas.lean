@@ -38,11 +38,11 @@ def ofNatHom : ℕ →+* ℤ :=
 
 -- Porting note: no need to be `@[simp]`, as `Nat.cast_pos` handles this.
 -- @[simp]
-theorem natCast_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n :=
+lemma natCast_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n :=
   Nat.cast_pos
 #align int.coe_nat_pos Int.natCast_pos
 
-theorem natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
+lemma natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
   Int.natCast_pos.2 (succ_pos n)
 #align int.coe_nat_succ_pos Int.natCast_succ_pos
 
@@ -61,7 +61,7 @@ lemma natMod_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.natMod b < b :=
 section cast
 
 @[simp, norm_cast]
-theorem cast_ite [AddGroupWithOne α] (P : Prop) [Decidable P] (m n : ℤ) :
+lemma cast_ite [AddGroupWithOne α] (P : Prop) [Decidable P] (m n : ℤ) :
     ((ite P m n : ℤ) : α) = ite P (m : α) (n : α) :=
   apply_ite _ _ _ _
 #align int.cast_ite Int.cast_ite
@@ -74,7 +74,7 @@ def castAddHom (α : Type*) [AddGroupWithOne α] : ℤ →+ α where
 #align int.cast_add_hom Int.castAddHom
 
 @[simp]
-theorem coe_castAddHom [AddGroupWithOne α] : ⇑(castAddHom α) = fun x : ℤ => (x : α) :=
+lemma coe_castAddHom [AddGroupWithOne α] : ⇑(castAddHom α) = fun x : ℤ => (x : α) :=
   rfl
 #align int.coe_cast_add_hom Int.coe_castAddHom
 
@@ -123,7 +123,7 @@ lemma _root_.zsmul_eq_mul' (a : α) (n : ℤ) : n • a = a * n := by
 
 end Ring
 
-theorem cast_mono [OrderedRing α] : Monotone (fun x : ℤ => (x : α)) := by
+lemma cast_mono [OrderedRing α] : Monotone (fun x : ℤ => (x : α)) := by
   intro m n h
   rw [← sub_nonneg] at h
   lift n - m to ℕ using h with k hk
@@ -132,7 +132,7 @@ theorem cast_mono [OrderedRing α] : Monotone (fun x : ℤ => (x : α)) := by
 #align int.cast_mono Int.cast_mono
 
 @[simp]
-theorem cast_nonneg [OrderedRing α] [Nontrivial α] : ∀ {n : ℤ}, (0 : α) ≤ n ↔ 0 ≤ n
+lemma cast_nonneg [OrderedRing α] [Nontrivial α] : ∀ {n : ℤ}, (0 : α) ≤ n ↔ 0 ≤ n
   | (n : ℕ) => by simp
   | -[n+1] => by
     have : -(n : α) < 1 := lt_of_le_of_lt (by simp) zero_lt_one
@@ -140,31 +140,31 @@ theorem cast_nonneg [OrderedRing α] [Nontrivial α] : ∀ {n : ℤ}, (0 : α) �
 #align int.cast_nonneg Int.cast_nonneg
 
 @[simp, norm_cast]
-theorem cast_le [OrderedRing α] [Nontrivial α] {m n : ℤ} : (m : α) ≤ n ↔ m ≤ n := by
+lemma cast_le [OrderedRing α] [Nontrivial α] {m n : ℤ} : (m : α) ≤ n ↔ m ≤ n := by
   rw [← sub_nonneg, ← cast_sub, cast_nonneg, sub_nonneg]
 #align int.cast_le Int.cast_le
 
-theorem cast_strictMono [OrderedRing α] [Nontrivial α] : StrictMono (fun x : ℤ => (x : α)) :=
+lemma cast_strictMono [OrderedRing α] [Nontrivial α] : StrictMono (fun x : ℤ => (x : α)) :=
   strictMono_of_le_iff_le fun _ _ => cast_le.symm
 #align int.cast_strict_mono Int.cast_strictMono
 
 @[simp, norm_cast]
-theorem cast_lt [OrderedRing α] [Nontrivial α] {m n : ℤ} : (m : α) < n ↔ m < n :=
+lemma cast_lt [OrderedRing α] [Nontrivial α] {m n : ℤ} : (m : α) < n ↔ m < n :=
   cast_strictMono.lt_iff_lt
 #align int.cast_lt Int.cast_lt
 
 @[simp]
-theorem cast_nonpos [OrderedRing α] [Nontrivial α] {n : ℤ} : (n : α) ≤ 0 ↔ n ≤ 0 := by
+lemma cast_nonpos [OrderedRing α] [Nontrivial α] {n : ℤ} : (n : α) ≤ 0 ↔ n ≤ 0 := by
   rw [← cast_zero, cast_le]
 #align int.cast_nonpos Int.cast_nonpos
 
 @[simp]
-theorem cast_pos [OrderedRing α] [Nontrivial α] {n : ℤ} : (0 : α) < n ↔ 0 < n := by
+lemma cast_pos [OrderedRing α] [Nontrivial α] {n : ℤ} : (0 : α) < n ↔ 0 < n := by
   rw [← cast_zero, cast_lt]
 #align int.cast_pos Int.cast_pos
 
 @[simp]
-theorem cast_lt_zero [OrderedRing α] [Nontrivial α] {n : ℤ} : (n : α) < 0 ↔ n < 0 := by
+lemma cast_lt_zero [OrderedRing α] [Nontrivial α] {n : ℤ} : (n : α) < 0 ↔ n < 0 := by
   rw [← cast_zero, cast_lt]
 #align int.cast_lt_zero Int.cast_lt_zero
 
@@ -173,36 +173,36 @@ section LinearOrderedRing
 variable [LinearOrderedRing α] {a b : ℤ} (n : ℤ)
 
 @[simp, norm_cast]
-theorem cast_min : (↑(min a b) : α) = min (a : α) (b : α) :=
+lemma cast_min : (↑(min a b) : α) = min (a : α) (b : α) :=
   Monotone.map_min cast_mono
 #align int.cast_min Int.cast_min
 
 @[simp, norm_cast]
-theorem cast_max : (↑(max a b) : α) = max (a : α) (b : α) :=
+lemma cast_max : (↑(max a b) : α) = max (a : α) (b : α) :=
   Monotone.map_max cast_mono
 #align int.cast_max Int.cast_max
 
 @[simp, norm_cast]
-theorem cast_abs : ((|a| : ℤ) : α) = |(a : α)| := by simp [abs_eq_max_neg]
+lemma cast_abs : ((|a| : ℤ) : α) = |(a : α)| := by simp [abs_eq_max_neg]
 #align int.cast_abs Int.cast_abs
 
-theorem cast_one_le_of_pos (h : 0 < a) : (1 : α) ≤ a := mod_cast Int.add_one_le_of_lt h
+lemma cast_one_le_of_pos (h : 0 < a) : (1 : α) ≤ a := mod_cast Int.add_one_le_of_lt h
 #align int.cast_one_le_of_pos Int.cast_one_le_of_pos
 
-theorem cast_le_neg_one_of_neg (h : a < 0) : (a : α) ≤ -1 := by
+lemma cast_le_neg_one_of_neg (h : a < 0) : (a : α) ≤ -1 := by
   rw [← Int.cast_one, ← Int.cast_neg, cast_le]
   exact Int.le_sub_one_of_lt h
 #align int.cast_le_neg_one_of_neg Int.cast_le_neg_one_of_neg
 
 variable (α) {n}
 
-theorem cast_le_neg_one_or_one_le_cast_of_ne_zero (hn : n ≠ 0) : (n : α) ≤ -1 ∨ 1 ≤ (n : α) :=
+lemma cast_le_neg_one_or_one_le_cast_of_ne_zero (hn : n ≠ 0) : (n : α) ≤ -1 ∨ 1 ≤ (n : α) :=
   hn.lt_or_lt.imp cast_le_neg_one_of_neg cast_one_le_of_pos
 #align int.cast_le_neg_one_or_one_le_cast_of_ne_zero Int.cast_le_neg_one_or_one_le_cast_of_ne_zero
 
 variable {α} (n)
 
-theorem nneg_mul_add_sq_of_abs_le_one {x : α} (hx : |x| ≤ 1) : (0 : α) ≤ n * x + n * n := by
+lemma nneg_mul_add_sq_of_abs_le_one {x : α} (hx : |x| ≤ 1) : (0 : α) ≤ n * x + n * n := by
   have hnx : 0 < n → 0 ≤ x + n := fun hn => by
     have := _root_.add_le_add (neg_le_of_abs_le hx) (cast_one_le_of_pos hn)
     rwa [add_left_neg] at this
@@ -216,7 +216,7 @@ theorem nneg_mul_add_sq_of_abs_le_one {x : α} (hx : |x| ≤ 1) : (0 : α) ≤ n
   · exact Or.inl ⟨mod_cast h.le, hnx h⟩
 #align int.nneg_mul_add_sq_of_abs_le_one Int.nneg_mul_add_sq_of_abs_le_one
 
-theorem cast_natAbs : (n.natAbs : α) = |n| := by
+lemma cast_natAbs : (n.natAbs : α) = |n| := by
   cases n
   · simp
   · rw [abs_eq_natAbs, natAbs_negSucc, cast_succ, cast_natCast, cast_succ]
@@ -224,7 +224,7 @@ theorem cast_natAbs : (n.natAbs : α) = |n| := by
 
 end LinearOrderedRing
 
-theorem coe_int_dvd [CommRing α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
+lemma coe_int_dvd [CommRing α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
   RingHom.map_dvd (Int.castRingHom α) h
 #align int.coe_int_dvd Int.coe_int_dvd
 
@@ -324,13 +324,13 @@ theorem ext_int [AddMonoid A] {f g : ℤ →+ A} (h1 : f 1 = g 1) : f = g :=
 
 variable [AddGroupWithOne A]
 
-theorem eq_intCastAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
+lemma eq_intCastAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
   ext_int <| by simp [h1]
 #align add_monoid_hom.eq_int_cast_hom AddMonoidHom.eq_intCastAddHom
 
 end AddMonoidHom
 
-theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F ℤ α]
+lemma eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F ℤ α]
     (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
   DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_intCastAddHom h₁
@@ -340,7 +340,7 @@ theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F
 #align zsmul_one zsmul_one
 
 @[simp]
-theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
+lemma Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
   ((AddMonoidHom.id ℤ).eq_intCastAddHom rfl).symm
 #align int.cast_add_hom_int Int.castAddHom_int
 
@@ -351,7 +351,7 @@ variable {M : Type*} [Monoid M]
 open Multiplicative
 
 @[ext]
-theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 1)) : f = g :=
+lemma ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 1)) : f = g :=
   MonoidHom.toAdditive''.injective <| AddMonoidHom.ext_int <| Additive.toMul.injective h1
 #align monoid_hom.ext_mint MonoidHom.ext_mint
 
@@ -480,22 +480,22 @@ section NonAssocRing
 variable [NonAssocRing α] [NonAssocRing β]
 
 @[simp]
-theorem eq_intCast [FunLike F ℤ α] [RingHomClass F ℤ α] (f : F) (n : ℤ) : f n = n :=
+lemma eq_intCast [FunLike F ℤ α] [RingHomClass F ℤ α] (f : F) (n : ℤ) : f n = n :=
   eq_intCast' f (map_one _) n
 #align eq_int_cast eq_intCast
 
 @[simp]
-theorem map_intCast [FunLike F α β] [RingHomClass F α β] (f : F) (n : ℤ) : f n = n :=
+lemma map_intCast [FunLike F α β] [RingHomClass F α β] (f : F) (n : ℤ) : f n = n :=
   eq_intCast ((f : α →+* β).comp (Int.castRingHom α)) n
 #align map_int_cast map_intCast
 
 namespace RingHom
 
-theorem eq_intCast' (f : ℤ →+* α) : f = Int.castRingHom α :=
+lemma eq_intCast' (f : ℤ →+* α) : f = Int.castRingHom α :=
   RingHom.ext <| eq_intCast f
 #align ring_hom.eq_int_cast' RingHom.eq_intCast'
 
-theorem ext_int {R : Type*} [NonAssocSemiring R] (f g : ℤ →+* R) : f = g :=
+lemma ext_int {R : Type*} [NonAssocSemiring R] (f g : ℤ →+* R) : f = g :=
   coe_addMonoidHom_injective <| AddMonoidHom.ext_int <| f.map_one.trans g.map_one.symm
 #align ring_hom.ext_int RingHom.ext_int
 
@@ -510,7 +510,7 @@ end NonAssocRing
 #align int.cast_id Int.cast_idₓ -- dubious translation, type involves HasLiftT?
 
 @[simp]
-theorem Int.castRingHom_int : Int.castRingHom ℤ = RingHom.id ℤ :=
+lemma Int.castRingHom_int : Int.castRingHom ℤ = RingHom.id ℤ :=
   (RingHom.id ℤ).eq_intCast'.symm
 #align int.cast_ring_hom_int Int.castRingHom_int
 
@@ -520,12 +520,12 @@ variable {π : ι → Type*} [∀ i, IntCast (π i)]
 
 instance instIntCast : IntCast (∀ i, π i) where intCast n _ := n
 
-theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
+lemma intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
   rfl
 #align pi.int_apply Pi.intCast_apply
 
 @[simp]
-theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
+lemma intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
   rfl
 #align pi.coe_int Pi.intCast_def
 
@@ -535,7 +535,7 @@ theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
 
 end Pi
 
-theorem Sum.elim_intCast_intCast {α β γ : Type*} [IntCast γ] (n : ℤ) :
+lemma Sum.elim_intCast_intCast {α β γ : Type*} [IntCast γ] (n : ℤ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
   Sum.elim_lam_const_lam_const (γ := γ) n
 #align sum.elim_int_cast_int_cast Sum.elim_intCast_intCast
@@ -556,12 +556,12 @@ instance [h : AddCommGroupWithOne α] : AddCommGroupWithOne αᵒᵈ :=
   h
 
 @[simp]
-theorem toDual_intCast [IntCast α] (n : ℤ) : toDual (n : α) = n :=
+lemma toDual_intCast [IntCast α] (n : ℤ) : toDual (n : α) = n :=
   rfl
 #align to_dual_int_cast toDual_intCast
 
 @[simp]
-theorem ofDual_intCast [IntCast α] (n : ℤ) : (ofDual n : α) = n :=
+lemma ofDual_intCast [IntCast α] (n : ℤ) : (ofDual n : α) = n :=
   rfl
 #align of_dual_int_cast ofDual_intCast
 
@@ -578,11 +578,11 @@ instance [h : AddCommGroupWithOne α] : AddCommGroupWithOne (Lex α) :=
   h
 
 @[simp]
-theorem toLex_intCast [IntCast α] (n : ℤ) : toLex (n : α) = n :=
+lemma toLex_intCast [IntCast α] (n : ℤ) : toLex (n : α) = n :=
   rfl
 #align to_lex_int_cast toLex_intCast
 
 @[simp]
-theorem ofLex_intCast [IntCast α] (n : ℤ) : (ofLex n : α) = n :=
+lemma ofLex_intCast [IntCast α] (n : ℤ) : (ofLex n : α) = n :=
   rfl
 #align of_lex_int_cast ofLex_intCast

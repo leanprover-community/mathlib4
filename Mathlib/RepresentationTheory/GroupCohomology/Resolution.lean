@@ -105,7 +105,7 @@ def actionDiagonalSucc (G : Type u) [Group G] :
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.Action_diagonal_succ groupCohomology.resolution.actionDiagonalSucc
 
-theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
+lemma actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
     (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
   induction' n with n hn
   · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
@@ -125,7 +125,7 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.Action_diagonal_succ_hom_apply groupCohomology.resolution.actionDiagonalSucc_hom_apply
 
-theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f : Fin n → G) :
+lemma actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f : Fin n → G) :
     (actionDiagonalSucc G n).inv.hom (g, f) = (g • Fin.partialProd f : Fin (n + 1) → G) := by
   revert g
   induction' n with n hn
@@ -173,7 +173,7 @@ def diagonalSucc (n : ℕ) :
 
 variable {k G n}
 
-theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
+lemma diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     (diagonalSucc k G n).hom.hom (single f a) =
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
 /- Porting note (#11039): broken proof was
@@ -197,7 +197,7 @@ theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
   rfl
 #align group_cohomology.resolution.diagonal_succ_hom_single groupCohomology.resolution.diagonalSucc_hom_single
 
-theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
+lemma diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g a ⊗ₜ Finsupp.single f b) =
       single (g • partialProd f) (a * b) := by
 /- Porting note (#11039): broken proof was
@@ -218,7 +218,7 @@ theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
   rfl
 #align group_cohomology.resolution.diagonal_succ_inv_single_single groupCohomology.resolution.diagonalSucc_inv_single_single
 
-theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
+lemma diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g r ⊗ₜ f) =
       Finsupp.lift (Gⁿ⁺¹ →₀ k) k Gⁿ (fun f => single (g • partialProd f) r) f := by
   refine f.induction ?_ ?_
@@ -240,7 +240,7 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     rw [zero_mul, single_zero]
 #align group_cohomology.resolution.diagonal_succ_inv_single_left groupCohomology.resolution.diagonalSucc_inv_single_left
 
-theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
+lemma diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
     (diagonalSucc k G n).inv.hom (g ⊗ₜ Finsupp.single f r) =
       Finsupp.lift _ k G (fun a => single (a • partialProd f) r) g := by
   refine g.induction ?_ ?_
@@ -305,7 +305,7 @@ def ofMulActionBasis :
     (ofMulActionBasisAux k G n)
 #align group_cohomology.resolution.of_mul_action_basis groupCohomology.resolution.ofMulActionBasis
 
-theorem ofMulAction_free :
+lemma ofMulAction_free :
     Module.Free (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule :=
   Module.Free.of_basis (ofMulActionBasis k G n)
 #align group_cohomology.resolution.of_mul_action_free groupCohomology.resolution.ofMulAction_free
@@ -525,7 +525,7 @@ def d (G : Type u) (n : ℕ) : ((Fin (n + 1) → G) →₀ k) →ₗ[k] (Fin n �
 variable {k G}
 
 @[simp]
-theorem d_of {G : Type u} {n : ℕ} (c : Fin (n + 1) → G) :
+lemma d_of {G : Type u} {n : ℕ} (c : Fin (n + 1) → G) :
     d k G n (Finsupp.single c 1) =
       Finset.univ.sum fun p : Fin (n + 1) =>
         Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) :=
@@ -648,7 +648,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.forget₂_to_Module_homotopy_equiv_f_0_eq groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv_f_0_eq
 
-theorem d_comp_ε : (groupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
+lemma d_comp_ε : (groupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
   ext : 1
   refine' LinearMap.ext fun x => _
   have : (forget₂ToModuleCat k G).d 1 0
@@ -666,7 +666,7 @@ def εToSingle₀ :
   ((groupCohomology.resolution k G).toSingle₀Equiv _).symm ⟨ε k G, d_comp_ε k G⟩
 #align group_cohomology.resolution.ε_to_single₀ groupCohomology.resolution.εToSingle₀
 
-theorem εToSingle₀_comp_eq :
+lemma εToSingle₀_comp_eq :
     ((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G) ≫
         (HomologicalComplex.singleMapHomologicalComplex _ _ _).hom.app _ =
       (forget₂ToModuleCatHomotopyEquiv k G).hom := by
@@ -676,7 +676,7 @@ theorem εToSingle₀_comp_eq :
   simpa using (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
 #align group_cohomology.resolution.ε_to_single₀_comp_eq groupCohomology.resolution.εToSingle₀_comp_eq
 
-theorem quasiIso_forget₂_εToSingle₀ :
+lemma quasiIso_forget₂_εToSingle₀ :
     QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
   have h : QuasiIso (forget₂ToModuleCatHomotopyEquiv k G).hom := inferInstance
   rw [← εToSingle₀_comp_eq k G] at h

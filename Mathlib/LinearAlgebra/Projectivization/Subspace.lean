@@ -62,11 +62,11 @@ instance : SetLike (Subspace K V) (ℙ K V) where
     simp
 
 @[simp]
-theorem mem_carrier_iff (A : Subspace K V) (x : ℙ K V) : x ∈ A.carrier ↔ x ∈ A :=
+lemma mem_carrier_iff (A : Subspace K V) (x : ℙ K V) : x ∈ A.carrier ↔ x ∈ A :=
   Iff.refl _
 #align projectivization.subspace.mem_carrier_iff Projectivization.Subspace.mem_carrier_iff
 
-theorem mem_add (T : Subspace K V) (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0) :
+lemma mem_add (T : Subspace K V) (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0) :
     Projectivization.mk K v hv ∈ T →
       Projectivization.mk K w hw ∈ T → Projectivization.mk K (v + w) hvw ∈ T :=
   T.mem_add' v w hv hw hvw
@@ -171,7 +171,7 @@ theorem monotone_span : Monotone (span : Set (ℙ K V) → Subspace K V) :=
   gi.gc.monotone_l
 #align projectivization.subspace.monotone_span Projectivization.Subspace.monotone_span
 
-theorem subset_span_trans {S T U : Set (ℙ K V)} (hST : S ⊆ span T) (hTU : T ⊆ span U) :
+lemma subset_span_trans {S T U : Set (ℙ K V)} (hST : S ⊆ span T) (hTU : T ⊆ span U) :
     S ⊆ span U :=
   gi.gc.le_u_l_trans hST hTU
 #align projectivization.subspace.subset_span_trans Projectivization.Subspace.subset_span_trans
@@ -193,7 +193,7 @@ theorem sup_span {S : Set (ℙ K V)} {W : Subspace K V} : W ⊔ span S = span (W
   rw [span_union, span_coe]
 #align projectivization.subspace.sup_span Projectivization.Subspace.sup_span
 
-theorem span_sup {S : Set (ℙ K V)} {W : Subspace K V} : span S ⊔ W = span (S ∪ W) := by
+lemma span_sup {S : Set (ℙ K V)} {W : Subspace K V} : span S ⊔ W = span (S ∪ W) := by
   rw [span_union, span_coe]
 #align projectivization.subspace.span_sup Projectivization.Subspace.span_sup
 

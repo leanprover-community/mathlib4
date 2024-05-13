@@ -144,11 +144,11 @@ where
     have pf₃ : Q(Nat.blt $nr $nb = true) := (q(Eq.refl true) :)
     ⟨nr, q(isInt_emod $pa $pb $pf₁ $pf₂ $pf₃)⟩
 
-theorem isInt_dvd_true : {a b : ℤ} → {a' b' c : ℤ} →
+lemma isInt_dvd_true : {a b : ℤ} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.mul a' c = b' → a ∣ b
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨_, rfl⟩
 
-theorem isInt_dvd_false : {a b : ℤ} → {a' b' : ℤ} →
+lemma isInt_dvd_false : {a b : ℤ} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → Int.mod b' a' != 0 → ¬a ∣ b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, e => mt Int.mod_eq_zero_of_dvd (by simpa using e)
 

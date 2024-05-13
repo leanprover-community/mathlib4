@@ -117,7 +117,7 @@ def id : MorphComponents X n (X _[n + 1]) where
 #align algebraic_topology.dold_kan.morph_components.id AlgebraicTopology.DoldKan.MorphComponents.id
 
 @[simp]
-theorem id_φ : (id X n).φ = 𝟙 _ := by
+lemma id_φ : (id X n).φ = 𝟙 _ := by
   simp only [← P_add_Q_f (n + 1) (n + 1), φ]
   congr 1
   · simp only [id, PInfty_f, P_f_idem]
@@ -134,7 +134,7 @@ def postComp : MorphComponents X n Z' where
 #align algebraic_topology.dold_kan.morph_components.post_comp AlgebraicTopology.DoldKan.MorphComponents.postComp
 
 @[simp]
-theorem postComp_φ : (f.postComp h).φ = f.φ ≫ h := by
+lemma postComp_φ : (f.postComp h).φ = f.φ ≫ h := by
   unfold φ postComp
   simp only [add_comp, sum_comp, assoc]
 #align algebraic_topology.dold_kan.morph_components.post_comp_φ AlgebraicTopology.DoldKan.MorphComponents.postComp_φ
@@ -147,7 +147,7 @@ def preComp : MorphComponents X' n Z where
 #align algebraic_topology.dold_kan.morph_components.pre_comp AlgebraicTopology.DoldKan.MorphComponents.preComp
 
 @[simp]
-theorem preComp_φ : (f.preComp g).φ = g.app (op [n + 1]) ≫ f.φ := by
+lemma preComp_φ : (f.preComp g).φ = g.app (op [n + 1]) ≫ f.φ := by
   unfold φ preComp
   simp only [PInfty_f, comp_add]
   congr 1

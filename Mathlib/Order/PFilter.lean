@@ -51,7 +51,7 @@ def IsPFilter [Preorder P] (F : Set P) : Prop :=
   IsIdeal (OrderDual.ofDual ⁻¹' F)
 #align order.is_pfilter Order.IsPFilter
 
-theorem IsPFilter.of_def [Preorder P] {F : Set P} (nonempty : F.Nonempty)
+lemma IsPFilter.of_def [Preorder P] {F : Set P} (nonempty : F.Nonempty)
     (directed : DirectedOn (· ≥ ·) F) (mem_of_le : ∀ {x y : P}, x ≤ y → x ∈ F → y ∈ F) :
     IsPFilter F :=
   ⟨fun _ _ _ _ => mem_of_le ‹_› ‹_›, nonempty, directed⟩
@@ -77,16 +77,16 @@ instance : SetLike (PFilter P) P where
   coe_injective' := fun ⟨_⟩ ⟨_⟩ h => congr_arg mk <| Ideal.ext h
 #align order.pfilter.mem_coe SetLike.mem_coeₓ
 
-theorem isPFilter : IsPFilter (F : Set P) := F.dual.isIdeal
+lemma isPFilter : IsPFilter (F : Set P) := F.dual.isIdeal
 #align order.pfilter.is_pfilter Order.PFilter.isPFilter
 
-protected theorem nonempty : (F : Set P).Nonempty := F.dual.nonempty
+protected lemma nonempty : (F : Set P).Nonempty := F.dual.nonempty
 #align order.pfilter.nonempty Order.PFilter.nonempty
 
-theorem directed : DirectedOn (· ≥ ·) (F : Set P) := F.dual.directed
+lemma directed : DirectedOn (· ≥ ·) (F : Set P) := F.dual.directed
 #align order.pfilter.directed Order.PFilter.directed
 
-theorem mem_of_le {F : PFilter P} : x ≤ y → x ∈ F → y ∈ F := fun h => F.dual.lower h
+lemma mem_of_le {F : PFilter P} : x ≤ y → x ∈ F → y ∈ F := fun h => F.dual.lower h
 #align order.pfilter.mem_of_le Order.PFilter.mem_of_le
 
 /-- Two filters are equal when their underlying sets are equal. -/
@@ -95,7 +95,7 @@ theorem ext (h : (s : Set P) = t) : s = t := SetLike.ext' h
 #align order.pfilter.ext Order.PFilter.ext
 
 @[trans]
-theorem mem_of_mem_of_le {F G : PFilter P} (hx : x ∈ F) (hle : F ≤ G) : x ∈ G :=
+lemma mem_of_mem_of_le {F G : PFilter P} (hx : x ∈ F) (hle : F ≤ G) : x ∈ G :=
   hle hx
 #align order.pfilter.mem_of_mem_of_le Order.PFilter.mem_of_mem_of_le
 
@@ -105,23 +105,23 @@ def principal (p : P) : PFilter P :=
 #align order.pfilter.principal Order.PFilter.principal
 
 @[simp]
-theorem mem_mk (x : P) (I : Ideal Pᵒᵈ) : x ∈ (⟨I⟩ : PFilter P) ↔ toDual x ∈ I :=
+lemma mem_mk (x : P) (I : Ideal Pᵒᵈ) : x ∈ (⟨I⟩ : PFilter P) ↔ toDual x ∈ I :=
   Iff.rfl
 #align order.pfilter.mem_def Order.PFilter.mem_mk
 
 @[simp]
-theorem principal_le_iff {F : PFilter P} : principal x ≤ F ↔ x ∈ F :=
+lemma principal_le_iff {F : PFilter P} : principal x ≤ F ↔ x ∈ F :=
   Ideal.principal_le_iff (x := toDual x)
 #align order.pfilter.principal_le_iff Order.PFilter.principal_le_iff
 
-@[simp] theorem mem_principal : x ∈ principal y ↔ y ≤ x := Iff.rfl
+@[simp] lemma mem_principal : x ∈ principal y ↔ y ≤ x := Iff.rfl
 #align order.pfilter.mem_principal Order.PFilter.mem_principal
 
-theorem principal_le_principal_iff {p q : P} : principal q ≤ principal p ↔ p ≤ q := by simp
+lemma principal_le_principal_iff {p q : P} : principal q ≤ principal p ↔ p ≤ q := by simp
 #align order.pfilter.principal_le_principal_iff Order.PFilter.principal_le_principal_iff
 
 -- defeq abuse
-theorem antitone_principal : Antitone (principal : P → PFilter P) := fun _ _ =>
+lemma antitone_principal : Antitone (principal : P → PFilter P) := fun _ _ =>
   principal_le_principal_iff.2
 #align order.pfilter.antitone_principal Order.PFilter.antitone_principal
 
@@ -157,7 +157,7 @@ theorem inf_mem (hx : x ∈ F) (hy : y ∈ F) : x ⊓ y ∈ F :=
 #align order.pfilter.inf_mem Order.PFilter.inf_mem
 
 @[simp]
-theorem inf_mem_iff : x ⊓ y ∈ F ↔ x ∈ F ∧ y ∈ F :=
+lemma inf_mem_iff : x ⊓ y ∈ F ↔ x ∈ F ∧ y ∈ F :=
   Ideal.sup_mem_iff
 #align order.pfilter.inf_mem_iff Order.PFilter.inf_mem_iff
 
@@ -167,7 +167,7 @@ section CompleteSemilatticeInf
 
 variable [CompleteSemilatticeInf P] {F : PFilter P}
 
-theorem sInf_gc :
+lemma sInf_gc :
     GaloisConnection (fun x => toDual (principal x)) fun F => sInf (ofDual F : PFilter P) :=
   fun x F => by
   simp only [le_sInf_iff, SetLike.mem_coe]

@@ -113,17 +113,17 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
 
 variable [CommSemiring R]
 
-theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
-theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
-theorem mul_neg {R} [Ring R] (a b : R) : a * -b = -(a * b) := by simp
-theorem add_neg {R} [Ring R] (a b : R) : a + -b = a - b := (sub_eq_add_neg ..).symm
-theorem nat_rawCast_0 : (Nat.rawCast 0 : R) = 0 := by simp
-theorem nat_rawCast_1 : (Nat.rawCast 1 : R) = 1 := by simp
-theorem nat_rawCast_2 [Nat.AtLeastTwo n] : (Nat.rawCast n : R) = OfNat.ofNat n := rfl
-theorem int_rawCast_neg {R} [Ring R] : (Int.rawCast (.negOfNat n) : R) = -Nat.rawCast n := by simp
-theorem rat_rawCast_pos {R} [DivisionRing R] :
+lemma add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
+lemma mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
+lemma mul_neg {R} [Ring R] (a b : R) : a * -b = -(a * b) := by simp
+lemma add_neg {R} [Ring R] (a b : R) : a + -b = a - b := (sub_eq_add_neg ..).symm
+lemma nat_rawCast_0 : (Nat.rawCast 0 : R) = 0 := by simp
+lemma nat_rawCast_1 : (Nat.rawCast 1 : R) = 1 := by simp
+lemma nat_rawCast_2 [Nat.AtLeastTwo n] : (Nat.rawCast n : R) = OfNat.ofNat n := rfl
+lemma int_rawCast_neg {R} [Ring R] : (Int.rawCast (.negOfNat n) : R) = -Nat.rawCast n := by simp
+lemma rat_rawCast_pos {R} [DivisionRing R] :
     (Rat.rawCast (.ofNat n) d : R) = Nat.rawCast n / Nat.rawCast d := by simp
-theorem rat_rawCast_neg {R} [DivisionRing R] :
+lemma rat_rawCast_neg {R} [DivisionRing R] :
     (Rat.rawCast (.negOfNat n) d : R) = Int.rawCast (.negOfNat n) / Nat.rawCast d := by simp
 
 /--

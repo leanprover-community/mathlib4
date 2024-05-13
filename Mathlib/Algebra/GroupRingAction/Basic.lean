@@ -61,7 +61,7 @@ def MulSemiringAction.toRingHom [MulSemiringAction M R] (x : M) : R →+* R :=
 #align mul_semiring_action.to_ring_hom MulSemiringAction.toRingHom
 #align mul_semiring_action.to_ring_hom_apply MulSemiringAction.toRingHom_apply
 
-theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
+lemma toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
     Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h =>
   eq_of_smul_eq_smul fun r => RingHom.ext_iff.1 h r
 #align to_ring_hom_injective toRingHom_injective
@@ -80,7 +80,7 @@ instance RingHom.applyMulSemiringAction : MulSemiringAction (R →+* R) R where
 #align ring_hom.apply_distrib_mul_action RingHom.applyMulSemiringActionₓ
 
 @[simp]
-protected theorem RingHom.smul_def (f : R →+* R) (a : R) : f • a = f a :=
+protected lemma RingHom.smul_def (f : R →+* R) (a : R) : f • a = f a :=
   rfl
 #align ring_hom.smul_def RingHom.smul_def
 

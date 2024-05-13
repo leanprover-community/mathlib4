@@ -57,7 +57,7 @@ theorem exists_prime_gt_modEq_one {k : ℕ} (n : ℕ) (hk0 : k ≠ 0) :
     exact ((modEq_iff_dvd' hprime.1.pos).2 hdiv).symm
 #align nat.exists_prime_gt_modeq_one Nat.exists_prime_gt_modEq_one
 
-theorem frequently_atTop_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
+lemma frequently_atTop_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
     ∃ᶠ p in atTop, Nat.Prime p ∧ p ≡ 1 [MOD k] := by
   refine' frequently_atTop.2 fun n => _
   obtain ⟨p, hp⟩ := exists_prime_gt_modEq_one n hk0

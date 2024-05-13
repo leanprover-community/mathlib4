@@ -391,14 +391,14 @@ theorem norm_image_sub_le_of_norm_deriv_le_segment_01 {C : ℝ}
     norm_image_sub_le_of_norm_deriv_le_segment hf bound 1 (right_mem_Icc.2 zero_le_one)
 #align norm_image_sub_le_of_norm_deriv_le_segment_01 norm_image_sub_le_of_norm_deriv_le_segment_01
 
-theorem constant_of_has_deriv_right_zero (hcont : ContinuousOn f (Icc a b))
+lemma constant_of_has_deriv_right_zero (hcont : ContinuousOn f (Icc a b))
     (hderiv : ∀ x ∈ Ico a b, HasDerivWithinAt f 0 (Ici x) x) : ∀ x ∈ Icc a b, f x = f a := by
   have : ∀ x ∈ Icc a b, ‖f x - f a‖ ≤ 0 * (x - a) := fun x hx =>
     norm_image_sub_le_of_norm_deriv_right_le_segment hcont hderiv (fun _ _ => norm_zero.le) x hx
   simpa only [zero_mul, norm_le_zero_iff, sub_eq_zero] using this
 #align constant_of_has_deriv_right_zero constant_of_has_deriv_right_zero
 
-theorem constant_of_derivWithin_zero (hdiff : DifferentiableOn ℝ f (Icc a b))
+lemma constant_of_derivWithin_zero (hdiff : DifferentiableOn ℝ f (Icc a b))
     (hderiv : ∀ x ∈ Ico a b, derivWithin f (Icc a b) x = 0) : ∀ x ∈ Icc a b, f x = f a := by
   have H : ∀ x ∈ Ico a b, ‖derivWithin f (Icc a b) x‖ ≤ 0 := by
     simpa only [norm_le_zero_iff] using fun x hx => hderiv x hx
@@ -604,7 +604,7 @@ theorem is_const_of_fderivWithin_eq_zero (hs : Convex ℝ s) (hf : Differentiabl
     hs.norm_image_sub_le_of_norm_fderivWithin_le hf bound hx hy
 #align convex.is_const_of_fderiv_within_eq_zero Convex.is_const_of_fderivWithin_eq_zero
 
-theorem _root_.is_const_of_fderiv_eq_zero
+lemma _root_.is_const_of_fderiv_eq_zero
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → G}
     (hf : Differentiable 𝕜 f) (hf' : ∀ x, fderiv 𝕜 f x = 0)
     (x y : E) : f x = f y := by
@@ -624,7 +624,7 @@ theorem eqOn_of_fderivWithin_eq (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 
   rw [fderivWithin_sub (hs' _ hz) (hf _ hz) (hg _ hz), sub_eq_zero, hf' _ hz]
 #align convex.eq_on_of_fderiv_within_eq Convex.eqOn_of_fderivWithin_eq
 
-theorem _root_.eq_of_fderiv_eq
+lemma _root_.eq_of_fderiv_eq
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f g : E → G}
     (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g)
     (hf' : ∀ x, fderiv 𝕜 f x = fderiv 𝕜 g x) (x : E) (hfgx : f x = g x) : f = g := by

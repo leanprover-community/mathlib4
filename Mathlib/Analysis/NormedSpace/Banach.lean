@@ -46,12 +46,12 @@ instance : CoeFun (NonlinearRightInverse f) fun _ => F → E :=
   ⟨fun fsymm => fsymm.toFun⟩
 
 @[simp]
-theorem NonlinearRightInverse.right_inv {f : E →SL[σ] F} (fsymm : NonlinearRightInverse f) (y : F) :
+lemma NonlinearRightInverse.right_inv {f : E →SL[σ] F} (fsymm : NonlinearRightInverse f) (y : F) :
     f (fsymm y) = y :=
   fsymm.right_inv' y
 #align continuous_linear_map.nonlinear_right_inverse.right_inv ContinuousLinearMap.NonlinearRightInverse.right_inv
 
-theorem NonlinearRightInverse.bound {f : E →SL[σ] F} (fsymm : NonlinearRightInverse f) (y : F) :
+lemma NonlinearRightInverse.bound {f : E →SL[σ] F} (fsymm : NonlinearRightInverse f) (y : F) :
     ‖fsymm y‖ ≤ fsymm.nnnorm * ‖y‖ :=
   fsymm.bound' y
 #align continuous_linear_map.nonlinear_right_inverse.bound ContinuousLinearMap.NonlinearRightInverse.bound
@@ -252,11 +252,11 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
   exact Set.mem_image_of_mem _ (hε this)
 #align continuous_linear_map.is_open_map ContinuousLinearMap.isOpenMap
 
-protected theorem quotientMap (surj : Surjective f) : QuotientMap f :=
+protected lemma quotientMap (surj : Surjective f) : QuotientMap f :=
   (f.isOpenMap surj).to_quotientMap f.continuous surj
 #align continuous_linear_map.quotient_map ContinuousLinearMap.quotientMap
 
-theorem _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+lemma _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     [CompleteSpace F] {P Q : Type*} [MetricSpace P] [NormedAddTorsor E P] [MetricSpace Q]
     [NormedAddTorsor F Q] (f : P →ᵃ[𝕜] Q) (hf : Continuous f) (surj : Surjective f) :
     IsOpenMap f :=
@@ -268,21 +268,21 @@ theorem _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpa
 /-! ### Applications of the Banach open mapping theorem -/
 
 
-theorem interior_preimage (hsurj : Surjective f) (s : Set F) :
+lemma interior_preimage (hsurj : Surjective f) (s : Set F) :
     interior (f ⁻¹' s) = f ⁻¹' interior s :=
   ((f.isOpenMap hsurj).preimage_interior_eq_interior_preimage f.continuous s).symm
 #align continuous_linear_map.interior_preimage ContinuousLinearMap.interior_preimage
 
-theorem closure_preimage (hsurj : Surjective f) (s : Set F) : closure (f ⁻¹' s) = f ⁻¹' closure s :=
+lemma closure_preimage (hsurj : Surjective f) (s : Set F) : closure (f ⁻¹' s) = f ⁻¹' closure s :=
   ((f.isOpenMap hsurj).preimage_closure_eq_closure_preimage f.continuous s).symm
 #align continuous_linear_map.closure_preimage ContinuousLinearMap.closure_preimage
 
-theorem frontier_preimage (hsurj : Surjective f) (s : Set F) :
+lemma frontier_preimage (hsurj : Surjective f) (s : Set F) :
     frontier (f ⁻¹' s) = f ⁻¹' frontier s :=
   ((f.isOpenMap hsurj).preimage_frontier_eq_frontier_preimage f.continuous s).symm
 #align continuous_linear_map.frontier_preimage ContinuousLinearMap.frontier_preimage
 
-theorem exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F)
+lemma exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F)
     (hsurj : LinearMap.range f = ⊤) :
     ∃ fsymm : NonlinearRightInverse f, 0 < fsymm.nnnorm := by
   choose C hC fsymm h using exists_preimage_norm_le _ (LinearMap.range_eq_top.mp hsurj)
@@ -303,7 +303,7 @@ noncomputable irreducible_def nonlinearRightInverseOfSurjective (f : E →SL[σ]
   Classical.choose (exists_nonlinearRightInverse_of_surjective f hsurj)
 #align continuous_linear_map.nonlinear_right_inverse_of_surjective ContinuousLinearMap.nonlinearRightInverseOfSurjective
 
-theorem nonlinearRightInverseOfSurjective_nnnorm_pos (f : E →SL[σ] F)
+lemma nonlinearRightInverseOfSurjective_nnnorm_pos (f : E →SL[σ] F)
     (hsurj : LinearMap.range f = ⊤) : 0 < (nonlinearRightInverseOfSurjective f hsurj).nnnorm := by
   rw [nonlinearRightInverseOfSurjective]
   exact Classical.choose_spec (exists_nonlinearRightInverse_of_surjective f hsurj)
@@ -335,13 +335,13 @@ def toContinuousLinearEquivOfContinuous (e : E ≃ₛₗ[σ] F) (h : Continuous 
 #align linear_equiv.to_continuous_linear_equiv_of_continuous LinearEquiv.toContinuousLinearEquivOfContinuous
 
 @[simp]
-theorem coeFn_toContinuousLinearEquivOfContinuous (e : E ≃ₛₗ[σ] F) (h : Continuous e) :
+lemma coeFn_toContinuousLinearEquivOfContinuous (e : E ≃ₛₗ[σ] F) (h : Continuous e) :
     ⇑(e.toContinuousLinearEquivOfContinuous h) = e :=
   rfl
 #align linear_equiv.coe_fn_to_continuous_linear_equiv_of_continuous LinearEquiv.coeFn_toContinuousLinearEquivOfContinuous
 
 @[simp]
-theorem coeFn_toContinuousLinearEquivOfContinuous_symm (e : E ≃ₛₗ[σ] F) (h : Continuous e) :
+lemma coeFn_toContinuousLinearEquivOfContinuous_symm (e : E ≃ₛₗ[σ] F) (h : Continuous e) :
     ⇑(e.toContinuousLinearEquivOfContinuous h).symm = e.symm :=
   rfl
 #align linear_equiv.coe_fn_to_continuous_linear_equiv_of_continuous_symm LinearEquiv.coeFn_toContinuousLinearEquivOfContinuous_symm
@@ -361,12 +361,12 @@ noncomputable def equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : Is
     (f.continuous.codRestrict fun x ↦ LinearMap.mem_range_self f x).congr fun _ ↦ rfl
 
 @[simp]
-theorem coe_linearMap_equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+lemma coe_linearMap_equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
     f.equivRange hinj hclo = f.rangeRestrict :=
   rfl
 
 @[simp]
-theorem coe_equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+lemma coe_equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
     (f.equivRange hinj hclo : E → LinearMap.range f) = f.rangeRestrict :=
   rfl
 
@@ -388,25 +388,25 @@ noncomputable def ofBijective (f : E →SL[σ] F) (hinj : ker f = ⊥) (hsurj : 
 #align continuous_linear_equiv.of_bijective ContinuousLinearEquiv.ofBijective
 
 @[simp]
-theorem coeFn_ofBijective (f : E →SL[σ] F) (hinj : ker f = ⊥) (hsurj : LinearMap.range f = ⊤) :
+lemma coeFn_ofBijective (f : E →SL[σ] F) (hinj : ker f = ⊥) (hsurj : LinearMap.range f = ⊤) :
     ⇑(ofBijective f hinj hsurj) = f :=
   rfl
 #align continuous_linear_equiv.coe_fn_of_bijective ContinuousLinearEquiv.coeFn_ofBijective
 
-theorem coe_ofBijective (f : E →SL[σ] F) (hinj : ker f = ⊥) (hsurj : LinearMap.range f = ⊤) :
+lemma coe_ofBijective (f : E →SL[σ] F) (hinj : ker f = ⊥) (hsurj : LinearMap.range f = ⊤) :
     ↑(ofBijective f hinj hsurj) = f := by
   ext
   rfl
 #align continuous_linear_equiv.coe_of_bijective ContinuousLinearEquiv.coe_ofBijective
 
 @[simp]
-theorem ofBijective_symm_apply_apply (f : E →SL[σ] F) (hinj : ker f = ⊥)
+lemma ofBijective_symm_apply_apply (f : E →SL[σ] F) (hinj : ker f = ⊥)
     (hsurj : LinearMap.range f = ⊤) (x : E) : (ofBijective f hinj hsurj).symm (f x) = x :=
   (ofBijective f hinj hsurj).symm_apply_apply x
 #align continuous_linear_equiv.of_bijective_symm_apply_apply ContinuousLinearEquiv.ofBijective_symm_apply_apply
 
 @[simp]
-theorem ofBijective_apply_symm_apply (f : E →SL[σ] F) (hinj : ker f = ⊥)
+lemma ofBijective_apply_symm_apply (f : E →SL[σ] F) (hinj : ker f = ⊥)
     (hsurj : LinearMap.range f = ⊤) (y : F) : f ((ofBijective f hinj hsurj).symm y) = y :=
   (ofBijective f hinj hsurj).apply_symm_apply y
 #align continuous_linear_equiv.of_bijective_apply_symm_apply ContinuousLinearEquiv.ofBijective_apply_symm_apply
@@ -442,7 +442,7 @@ noncomputable def coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_map.coprod_subtypeL_equiv_of_is_compl ContinuousLinearMap.coprodSubtypeLEquivOfIsCompl
 
-theorem range_eq_map_coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F]
+lemma range_eq_map_coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
     (h : IsCompl (LinearMap.range f) G) [CompleteSpace G] (hker : ker f = ⊥) :
     LinearMap.range f =
@@ -456,7 +456,7 @@ set_option linter.uppercaseLean3 false in
 
 /- TODO: remove the assumption `f.ker = ⊥` in the next lemma, by using the map induced by `f` on
 `E / f.ker`, once we have quotient normed spaces. -/
-theorem closed_complemented_range_of_isCompl_of_ker_eq_bot {F : Type*} [NormedAddCommGroup F]
+lemma closed_complemented_range_of_isCompl_of_ker_eq_bot {F : Type*} [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (f : E →L[𝕜] F) (G : Submodule 𝕜 F)
     (h : IsCompl (LinearMap.range f) G) (hG : IsClosed (G : Set F)) (hker : ker f = ⊥) :
     IsClosed (LinearMap.range f : Set F) := by
@@ -516,12 +516,12 @@ def ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) : E →L[𝕜] F w
 #align continuous_linear_map.of_is_closed_graph ContinuousLinearMap.ofIsClosedGraph
 
 @[simp]
-theorem coeFn_ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) :
+lemma coeFn_ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) :
     ⇑(ContinuousLinearMap.ofIsClosedGraph hg) = g :=
   rfl
 #align continuous_linear_map.coe_fn_of_is_closed_graph ContinuousLinearMap.coeFn_ofIsClosedGraph
 
-theorem coe_ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) :
+lemma coe_ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) :
     ↑(ContinuousLinearMap.ofIsClosedGraph hg) = g := by
   ext
   rfl
@@ -537,13 +537,13 @@ def ofSeqClosedGraph
 #align continuous_linear_map.of_seq_closed_graph ContinuousLinearMap.ofSeqClosedGraph
 
 @[simp]
-theorem coeFn_ofSeqClosedGraph
+lemma coeFn_ofSeqClosedGraph
     (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
     ⇑(ContinuousLinearMap.ofSeqClosedGraph hg) = g :=
   rfl
 #align continuous_linear_map.coe_fn_of_seq_closed_graph ContinuousLinearMap.coeFn_ofSeqClosedGraph
 
-theorem coe_ofSeqClosedGraph
+lemma coe_ofSeqClosedGraph
     (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
     ↑(ContinuousLinearMap.ofSeqClosedGraph hg) = g := by
   ext

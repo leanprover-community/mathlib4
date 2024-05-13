@@ -63,7 +63,7 @@ variable {α : Type*} [TopologicalSpace α] [CommSemiring R] [TopologicalSpace R
   [TopologicalSemiring R]
 
 @[simp]
-theorem aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
+lemma aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
     ((Polynomial.aeval f) g) x = g.eval (f x) := by
   refine' Polynomial.induction_on' g _ _
   · intro p q hp hq
@@ -140,7 +140,7 @@ def polynomialFunctions (X : Set R) : Subalgebra R C(X, R) :=
 #align polynomial_functions polynomialFunctions
 
 @[simp]
-theorem polynomialFunctions_coe (X : Set R) :
+lemma polynomialFunctions_coe (X : Set R) :
     (polynomialFunctions X : Set C(X, R)) = Set.range (Polynomial.toContinuousMapOnAlgHom X) := by
   ext
   simp [polynomialFunctions]
@@ -150,7 +150,7 @@ theorem polynomialFunctions_coe (X : Set R) :
 -- if `f : R → R` is an affine equivalence, then pulling back along `f`
 -- induces a normed algebra isomorphism between `polynomialFunctions X` and
 -- `polynomialFunctions (f ⁻¹' X)`, intertwining the pullback along `f` of `C(R, R)` to itself.
-theorem polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X).SeparatesPoints :=
+lemma polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X).SeparatesPoints :=
   fun x y h => by
   -- We use `Polynomial.X`, then clean up.
   refine' ⟨_, ⟨⟨_, ⟨⟨Polynomial.X, ⟨Algebra.mem_top, rfl⟩⟩, rfl⟩⟩, _⟩⟩
@@ -206,7 +206,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
 set_option linter.uppercaseLean3 false in
 #align polynomial_functions.comap_comp_right_alg_hom_Icc_homeo_I polynomialFunctions.comap_compRightAlgHom_iccHomeoI
 
-theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
+lemma polynomialFunctions.eq_adjoin_X (s : Set R) :
     polynomialFunctions s = Algebra.adjoin R {toContinuousMapOnAlgHom s X} := by
   refine le_antisymm ?_
     (Algebra.adjoin_le fun _ h => ⟨X, trivial, (Set.mem_singleton_iff.1 h).symm⟩)
@@ -220,7 +220,7 @@ theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
   · rw [pow_succ, ← mul_assoc, map_mul]
     exact mul_mem hn (Algebra.subset_adjoin <| Set.mem_singleton _)
 
-theorem polynomialFunctions.le_equalizer {A : Type*} [Semiring A] [Algebra R A] (s : Set R)
+lemma polynomialFunctions.le_equalizer {A : Type*} [Semiring A] [Algebra R A] (s : Set R)
     (φ ψ : C(s, R) →ₐ[R] A)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) :
     polynomialFunctions s ≤ φ.equalizer ψ := by
@@ -229,11 +229,11 @@ theorem polynomialFunctions.le_equalizer {A : Type*} [Semiring A] [Algebra R A] 
 
 open StarAlgebra
 
-theorem polynomialFunctions.starClosure_eq_adjoin_X [StarRing R] [ContinuousStar R] (s : Set R) :
+lemma polynomialFunctions.starClosure_eq_adjoin_X [StarRing R] [ContinuousStar R] (s : Set R) :
     (polynomialFunctions s).starClosure = adjoin R {toContinuousMapOnAlgHom s X} := by
   rw [polynomialFunctions.eq_adjoin_X s, adjoin_eq_starClosure_adjoin]
 
-theorem polynomialFunctions.starClosure_le_equalizer {A : Type*} [StarRing R] [ContinuousStar R]
+lemma polynomialFunctions.starClosure_le_equalizer {A : Type*} [StarRing R] [ContinuousStar R]
     [Semiring A] [StarRing A] [Algebra R A] (s : Set R) (φ ψ : C(s, R) →⋆ₐ[R] A)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) :
     (polynomialFunctions s).starClosure ≤ StarAlgHom.equalizer φ ψ := by

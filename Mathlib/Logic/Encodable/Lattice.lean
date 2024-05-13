@@ -27,19 +27,19 @@ namespace Encodable
 
 variable {α : Type*} {β : Type*} [Encodable β]
 
-theorem iSup_decode₂ [CompleteLattice α] (f : β → α) :
+lemma iSup_decode₂ [CompleteLattice α] (f : β → α) :
     ⨆ (i : ℕ) (b ∈ decode₂ β i), f b = (⨆ b, f b) := by
   rw [iSup_comm]
   simp only [mem_decode₂, iSup_iSup_eq_right]
 #align encodable.supr_decode₂ Encodable.iSup_decode₂
 
-theorem iUnion_decode₂ (f : β → Set α) : ⋃ (i : ℕ) (b ∈ decode₂ β i), f b = ⋃ b, f b :=
+lemma iUnion_decode₂ (f : β → Set α) : ⋃ (i : ℕ) (b ∈ decode₂ β i), f b = ⋃ b, f b :=
   iSup_decode₂ f
 #align encodable.Union_decode₂ Encodable.iUnion_decode₂
 
 /- Porting note: `@[elab_as_elim]` gives `unexpected eliminator resulting type`. -/
 --@[elab_as_elim]
-theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C ∅) (H1 : ∀ b, C (f b)) {n} :
+lemma iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C ∅) (H1 : ∀ b, C (f b)) {n} :
     C (⋃ b ∈ decode₂ β n, f b) :=
   match decode₂ β n with
   | none => by
@@ -50,7 +50,7 @@ theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C
     simp [ext_iff]
 #align encodable.Union_decode₂_cases Encodable.iUnion_decode₂_cases
 
-theorem iUnion_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint on f)) :
+lemma iUnion_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint on f)) :
     Pairwise (Disjoint on fun i => ⋃ b ∈ decode₂ β i, f b) := by
   rintro i j ij
   refine' disjoint_left.mpr fun x => _

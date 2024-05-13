@@ -37,17 +37,17 @@ section Seminormed
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
-theorem inv_norm_smul_mem_closed_unit_ball (x : E) :
+lemma inv_norm_smul_mem_closed_unit_ball (x : E) :
     ‖x‖⁻¹ • x ∈ closedBall (0 : E) 1 := by
   simp only [mem_closedBall_zero_iff, norm_smul, norm_inv, norm_norm, ← div_eq_inv_mul,
     div_self_le_one]
 #align inv_norm_smul_mem_closed_unit_ball inv_norm_smul_mem_closed_unit_ball
 
-theorem norm_smul_of_nonneg {t : ℝ} (ht : 0 ≤ t) (x : E) : ‖t • x‖ = t * ‖x‖ := by
+lemma norm_smul_of_nonneg {t : ℝ} (ht : 0 ≤ t) (x : E) : ‖t • x‖ = t * ‖x‖ := by
   rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg ht]
 #align norm_smul_of_nonneg norm_smul_of_nonneg
 
-theorem dist_smul_add_one_sub_smul_le {r : ℝ} {x y : E} (h : r ∈ Icc 0 1) :
+lemma dist_smul_add_one_sub_smul_le {r : ℝ} {x y : E} (h : r ∈ Icc 0 1) :
     dist (r • x + (1 - r) • y) x ≤ dist y x :=
   calc
     dist (r • x + (1 - r) • y) x = ‖1 - r‖ * ‖x - y‖ := by
@@ -58,7 +58,7 @@ theorem dist_smul_add_one_sub_smul_le {r : ℝ} {x y : E} (h : r ∈ Icc 0 1) :
     _ ≤ (1 - 0) * dist y x := by gcongr; exact h.1
     _ = dist y x := by rw [sub_zero, one_mul]
 
-theorem closure_ball (x : E) {r : ℝ} (hr : r ≠ 0) : closure (ball x r) = closedBall x r := by
+lemma closure_ball (x : E) {r : ℝ} (hr : r ≠ 0) : closure (ball x r) = closedBall x r := by
   refine' Subset.antisymm closure_ball_subset_closedBall fun y hy => _
   have : ContinuousWithinAt (fun c : ℝ => c • (y - x) + x) (Ico 0 1) 1 :=
     ((continuous_id.smul continuous_const).add continuous_const).continuousWithinAt
@@ -73,12 +73,12 @@ theorem closure_ball (x : E) {r : ℝ} (hr : r ≠ 0) : closure (ball x r) = clo
     apply mul_lt_mul' <;> assumption
 #align closure_ball closure_ball
 
-theorem frontier_ball (x : E) {r : ℝ} (hr : r ≠ 0) :
+lemma frontier_ball (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (ball x r) = sphere x r := by
   rw [frontier, closure_ball x hr, isOpen_ball.interior_eq, closedBall_diff_ball]
 #align frontier_ball frontier_ball
 
-theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
+lemma interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
     interior (closedBall x r) = ball x r := by
   cases' hr.lt_or_lt with hr hr
   · rw [closedBall_eq_empty.2 hr, ball_eq_empty.2 hr.le, interior_empty]
@@ -98,16 +98,16 @@ theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
   simpa [f, dist_eq_norm, norm_smul] using hc
 #align interior_closed_ball interior_closedBall
 
-theorem frontier_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
+lemma frontier_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (closedBall x r) = sphere x r := by
   rw [frontier, closure_closedBall, interior_closedBall x hr, closedBall_diff_ball]
 #align frontier_closed_ball frontier_closedBall
 
-theorem interior_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : interior (sphere x r) = ∅ := by
+lemma interior_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : interior (sphere x r) = ∅ := by
   rw [← frontier_closedBall x hr, interior_frontier isClosed_ball]
 #align interior_sphere interior_sphere
 
-theorem frontier_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : frontier (sphere x r) = sphere x r := by
+lemma frontier_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : frontier (sphere x r) = sphere x r := by
   rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
 #align frontier_sphere frontier_sphere
 
@@ -121,7 +121,7 @@ section Surj
 
 variable (E)
 
-theorem exists_norm_eq {c : ℝ} (hc : 0 ≤ c) : ∃ x : E, ‖x‖ = c := by
+lemma exists_norm_eq {c : ℝ} (hc : 0 ≤ c) : ∃ x : E, ‖x‖ = c := by
   rcases exists_ne (0 : E) with ⟨x, hx⟩
   rw [← norm_ne_zero_iff] at hx
   use c • ‖x‖⁻¹ • x
@@ -129,38 +129,38 @@ theorem exists_norm_eq {c : ℝ} (hc : 0 ≤ c) : ∃ x : E, ‖x‖ = c := by
 #align exists_norm_eq exists_norm_eq
 
 @[simp]
-theorem range_norm : range (norm : E → ℝ) = Ici 0 :=
+lemma range_norm : range (norm : E → ℝ) = Ici 0 :=
   Subset.antisymm (range_subset_iff.2 norm_nonneg) fun _ => exists_norm_eq E
 #align range_norm range_norm
 
-theorem nnnorm_surjective : Surjective (nnnorm : E → ℝ≥0) := fun c =>
+lemma nnnorm_surjective : Surjective (nnnorm : E → ℝ≥0) := fun c =>
   (exists_norm_eq E c.coe_nonneg).imp fun _ h => NNReal.eq h
 #align nnnorm_surjective nnnorm_surjective
 
 @[simp]
-theorem range_nnnorm : range (nnnorm : E → ℝ≥0) = univ :=
+lemma range_nnnorm : range (nnnorm : E → ℝ≥0) = univ :=
   (nnnorm_surjective E).range_eq
 #align range_nnnorm range_nnnorm
 
 end Surj
 
-theorem interior_closedBall' (x : E) (r : ℝ) : interior (closedBall x r) = ball x r := by
+lemma interior_closedBall' (x : E) (r : ℝ) : interior (closedBall x r) = ball x r := by
   rcases eq_or_ne r 0 with (rfl | hr)
   · rw [closedBall_zero, ball_zero, interior_singleton]
   · exact interior_closedBall x hr
 #align interior_closed_ball' interior_closedBall'
 
-theorem frontier_closedBall' (x : E) (r : ℝ) : frontier (closedBall x r) = sphere x r := by
+lemma frontier_closedBall' (x : E) (r : ℝ) : frontier (closedBall x r) = sphere x r := by
   rw [frontier, closure_closedBall, interior_closedBall' x r, closedBall_diff_ball]
 #align frontier_closed_ball' frontier_closedBall'
 
 @[simp]
-theorem interior_sphere' (x : E) (r : ℝ) : interior (sphere x r) = ∅ := by
+lemma interior_sphere' (x : E) (r : ℝ) : interior (sphere x r) = ∅ := by
   rw [← frontier_closedBall' x, interior_frontier isClosed_ball]
 #align interior_sphere' interior_sphere'
 
 @[simp]
-theorem frontier_sphere' (x : E) (r : ℝ) : frontier (sphere x r) = sphere x r := by
+lemma frontier_sphere' (x : E) (r : ℝ) : frontier (sphere x r) = sphere x r := by
   rw [isClosed_sphere.frontier_eq, interior_sphere' x, diff_empty]
 #align frontier_sphere' frontier_sphere'
 

@@ -41,11 +41,11 @@ def invMonoidHom : α →* α where
 #align neg_add_monoid_hom negAddMonoidHom
 
 @[simp]
-theorem coe_invMonoidHom : (invMonoidHom : α → α) = Inv.inv := rfl
+lemma coe_invMonoidHom : (invMonoidHom : α → α) = Inv.inv := rfl
 #align coe_inv_monoid_hom coe_invMonoidHom
 
 @[simp]
-theorem invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
+lemma invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
 #align inv_monoid_hom_apply invMonoidHom_apply
 
 end DivisionCommMonoid
@@ -64,19 +64,19 @@ instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
 @[to_additive (attr := simp)]
-theorem mul_apply {M N} [Mul M] [CommSemigroup N] (f g : M →ₙ* N) (x : M) :
+lemma mul_apply {M N} [Mul M] [CommSemigroup N] (f g : M →ₙ* N) (x : M) :
     (f * g) x = f x * g x := rfl
 #align mul_hom.mul_apply MulHom.mul_apply
 #align add_hom.add_apply AddHom.add_apply
 
 @[to_additive]
-theorem mul_comp [Mul M] [Mul N] [CommSemigroup P] (g₁ g₂ : N →ₙ* P) (f : M →ₙ* N) :
+lemma mul_comp [Mul M] [Mul N] [CommSemigroup P] (g₁ g₂ : N →ₙ* P) (f : M →ₙ* N) :
     (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
 #align mul_hom.mul_comp MulHom.mul_comp
 #align add_hom.add_comp AddHom.add_comp
 
 @[to_additive]
-theorem comp_mul [Mul M] [CommSemigroup N] [CommSemigroup P] (g : N →ₙ* P) (f₁ f₂ : M →ₙ* N) :
+lemma comp_mul [Mul M] [CommSemigroup N] [CommSemigroup P] (g : N →ₙ* P) (f₁ f₂ : M →ₙ* N) :
     g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
   ext
   simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
@@ -140,7 +140,7 @@ def ofMapMulInv {H : Type*} [Group H] (f : G → H)
 #align add_monoid_hom.of_map_add_neg AddMonoidHom.ofMapAddNeg
 
 @[to_additive (attr := simp)]
-theorem coe_of_map_mul_inv {H : Type*} [Group H] (f : G → H)
+lemma coe_of_map_mul_inv {H : Type*} [Group H] (f : G → H)
     (map_div : ∀ a b : G, f (a * b⁻¹) = f a * (f b)⁻¹) :
   ↑(ofMapMulInv f map_div) = f := rfl
 #align monoid_hom.coe_of_map_mul_inv MonoidHom.coe_of_map_mul_inv
@@ -154,7 +154,7 @@ def ofMapDiv {H : Type*} [Group H] (f : G → H) (hf : ∀ x y, f (x / y) = f x 
 #align add_monoid_hom.of_map_sub AddMonoidHom.ofMapSub
 
 @[to_additive (attr := simp)]
-theorem coe_of_map_div {H : Type*} [Group H] (f : G → H) (hf : ∀ x y, f (x / y) = f x / f y) :
+lemma coe_of_map_div {H : Type*} [Group H] (f : G → H) (hf : ∀ x y, f (x / y) = f x / f y) :
     ↑(ofMapDiv f hf) = f := rfl
 #align monoid_hom.coe_of_map_div MonoidHom.coe_of_map_div
 #align add_monoid_hom.coe_of_map_sub AddMonoidHom.coe_of_map_sub
@@ -213,12 +213,12 @@ instance : Inv (M →* G) where
 #align add_monoid_hom.neg_apply AddMonoidHom.neg_apply
 
 @[to_additive (attr := simp)]
-theorem inv_comp (φ : N →* G) (ψ : M →* N) : φ⁻¹.comp ψ = (φ.comp ψ)⁻¹ := rfl
+lemma inv_comp (φ : N →* G) (ψ : M →* N) : φ⁻¹.comp ψ = (φ.comp ψ)⁻¹ := rfl
 #align monoid_hom.inv_comp MonoidHom.inv_comp
 #align add_monoid_hom.neg_comp AddMonoidHom.neg_comp
 
 @[to_additive (attr := simp)]
-theorem comp_inv (φ : G →* H) (ψ : M →* G) : φ.comp ψ⁻¹ = (φ.comp ψ)⁻¹ := by
+lemma comp_inv (φ : G →* H) (ψ : M →* G) : φ.comp ψ⁻¹ = (φ.comp ψ)⁻¹ := by
   ext
   simp only [Function.comp_apply, inv_apply, map_inv, coe_comp]
 #align monoid_hom.comp_inv MonoidHom.comp_inv

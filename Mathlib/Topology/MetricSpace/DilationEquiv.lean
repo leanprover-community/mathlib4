@@ -63,10 +63,10 @@ instance : DilationEquivClass (X ≃ᵈ Y) X Y where
 instance : CoeFun (X ≃ᵈ Y) fun _ ↦ (X → Y) where
   coe f := f
 
-@[simp] theorem coe_toEquiv (e : X ≃ᵈ Y) : ⇑e.toEquiv = e := rfl
+@[simp] lemma coe_toEquiv (e : X ≃ᵈ Y) : ⇑e.toEquiv = e := rfl
 
 @[ext]
-protected theorem ext {e e' : X ≃ᵈ Y} (h : ∀ x, e x = e' x) : e = e' :=
+protected lemma ext {e e' : X ≃ᵈ Y} (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
 
 /-- Inverse `DilationEquiv`. -/
@@ -78,13 +78,13 @@ def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
     rw [← mul_assoc, ← ENNReal.coe_mul, inv_mul_cancel (ratio_ne_zero e),
       ENNReal.coe_one, one_mul]
 
-@[simp] theorem symm_symm (e : X ≃ᵈ Y) : e.symm.symm = e := rfl
+@[simp] lemma symm_symm (e : X ≃ᵈ Y) : e.symm.symm = e := rfl
 
-theorem symm_bijective : Function.Bijective (DilationEquiv.symm : (X ≃ᵈ Y) → Y ≃ᵈ X) :=
+lemma symm_bijective : Function.Bijective (DilationEquiv.symm : (X ≃ᵈ Y) → Y ≃ᵈ X) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
-@[simp] theorem apply_symm_apply (e : X ≃ᵈ Y) (x : Y) : e (e.symm x) = x := e.right_inv x
-@[simp] theorem symm_apply_apply (e : X ≃ᵈ Y) (x : X) : e.symm (e x) = x := e.left_inv x
+@[simp] lemma apply_symm_apply (e : X ≃ᵈ Y) (x : Y) : e (e.symm x) = x := e.right_inv x
+@[simp] lemma symm_apply_apply (e : X ≃ᵈ Y) (x : X) : e.symm (e x) = x := e.left_inv x
 
 /-- See Note [custom simps projection]. -/
 def Simps.symm_apply (e : X ≃ᵈ Y) : Y → X := e.symm
@@ -99,8 +99,8 @@ def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
   toEquiv := .refl X
   edist_eq' := ⟨1, one_ne_zero, fun _ _ ↦ by simp⟩
 
-@[simp] theorem refl_symm : (refl X).symm = refl X := rfl
-@[simp] theorem ratio_refl : ratio (refl X) = 1 := Dilation.ratio_id
+@[simp] lemma refl_symm : (refl X).symm = refl X := rfl
+@[simp] lemma ratio_refl : ratio (refl X) = 1 := Dilation.ratio_id
 
 /-- Composition of `DilationEquiv`s. -/
 @[simps! (config := .asFn) apply]
@@ -108,21 +108,21 @@ def trans (e₁ : X ≃ᵈ Y) (e₂ : Y ≃ᵈ Z) : X ≃ᵈ Z where
   toEquiv := e₁.1.trans e₂.1
   __ := e₂.toDilation.comp e₁.toDilation
 
-@[simp] theorem refl_trans (e : X ≃ᵈ Y) : (refl X).trans e = e := rfl
-@[simp] theorem trans_refl (e : X ≃ᵈ Y) : e.trans (refl Y) = e := rfl
+@[simp] lemma refl_trans (e : X ≃ᵈ Y) : (refl X).trans e = e := rfl
+@[simp] lemma trans_refl (e : X ≃ᵈ Y) : e.trans (refl Y) = e := rfl
 
-@[simp] theorem symm_trans_self (e : X ≃ᵈ Y) : e.symm.trans e = refl Y :=
+@[simp] lemma symm_trans_self (e : X ≃ᵈ Y) : e.symm.trans e = refl Y :=
   DilationEquiv.ext e.apply_symm_apply
 
-@[simp] theorem self_trans_symm (e : X ≃ᵈ Y) : e.trans e.symm = refl X :=
+@[simp] lemma self_trans_symm (e : X ≃ᵈ Y) : e.trans e.symm = refl X :=
   DilationEquiv.ext e.symm_apply_apply
 
-protected theorem surjective (e : X ≃ᵈ Y) : Surjective e := e.1.surjective
-protected theorem bijective (e : X ≃ᵈ Y) : Bijective e := e.1.bijective
-protected theorem injective (e : X ≃ᵈ Y) : Injective e := e.1.injective
+protected lemma surjective (e : X ≃ᵈ Y) : Surjective e := e.1.surjective
+protected lemma bijective (e : X ≃ᵈ Y) : Bijective e := e.1.bijective
+protected lemma injective (e : X ≃ᵈ Y) : Injective e := e.1.injective
 
 @[simp]
-theorem ratio_trans (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ratio e * ratio e' := by
+lemma ratio_trans (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ratio e * ratio e' := by
   -- If `X` is trivial, then so is `Y`, otherwise we apply `Dilation.ratio_comp'`
   by_cases hX : ∀ x y : X, edist x y = 0 ∨ edist x y = ∞
   · have hY : ∀ x y : Y, edist x y = 0 ∨ edist x y = ∞ := e.surjective.forall₂.2 fun x y ↦ by
@@ -132,7 +132,7 @@ theorem ratio_trans (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ra
   exact (Dilation.ratio_comp' (g := e'.toDilation) (f := e.toDilation) hX).trans (mul_comm _ _)
 
 @[simp]
-theorem ratio_symm (e : X ≃ᵈ Y) : ratio e.symm = (ratio e)⁻¹ :=
+lemma ratio_symm (e : X ≃ᵈ Y) : ratio e.symm = (ratio e)⁻¹ :=
   eq_inv_of_mul_eq_one_left <| by rw [← ratio_trans, symm_trans_self, ratio_refl]
 
 instance : Group (X ≃ᵈ X) where
@@ -144,13 +144,13 @@ instance : Group (X ≃ᵈ X) where
   inv := symm
   mul_left_inv := self_trans_symm
 
-theorem mul_def (e e' : X ≃ᵈ X) : e * e' = e'.trans e := rfl
-theorem one_def : (1 : X ≃ᵈ X) = refl X := rfl
-theorem inv_def (e : X ≃ᵈ X) : e⁻¹ = e.symm := rfl
+lemma mul_def (e e' : X ≃ᵈ X) : e * e' = e'.trans e := rfl
+lemma one_def : (1 : X ≃ᵈ X) = refl X := rfl
+lemma inv_def (e : X ≃ᵈ X) : e⁻¹ = e.symm := rfl
 
-@[simp] theorem coe_mul (e e' : X ≃ᵈ X) : ⇑(e * e') = e ∘ e' := rfl
-@[simp] theorem coe_one : ⇑(1 : X ≃ᵈ X) = id := rfl
-theorem coe_inv (e : X ≃ᵈ X) : ⇑(e⁻¹) = e.symm := rfl
+@[simp] lemma coe_mul (e e' : X ≃ᵈ X) : ⇑(e * e') = e ∘ e' := rfl
+@[simp] lemma coe_one : ⇑(1 : X ≃ᵈ X) = id := rfl
+lemma coe_inv (e : X ≃ᵈ X) : ⇑(e⁻¹) = e.symm := rfl
 
 /-- `Dilation.ratio` as a monoid homomorphism. -/
 noncomputable def ratioHom : (X ≃ᵈ X) →* ℝ≥0 where
@@ -159,14 +159,14 @@ noncomputable def ratioHom : (X ≃ᵈ X) →* ℝ≥0 where
   map_mul' _ _ := (ratio_trans _ _).trans (mul_comm _ _)
 
 @[simp]
-theorem ratio_inv (e : X ≃ᵈ X) : ratio (e⁻¹) = (ratio e)⁻¹ := ratio_symm e
+lemma ratio_inv (e : X ≃ᵈ X) : ratio (e⁻¹) = (ratio e)⁻¹ := ratio_symm e
 
 @[simp]
-theorem ratio_pow (e : X ≃ᵈ X) (n : ℕ) : ratio (e ^ n) = ratio e ^ n :=
+lemma ratio_pow (e : X ≃ᵈ X) (n : ℕ) : ratio (e ^ n) = ratio e ^ n :=
   ratioHom.map_pow _ _
 
 @[simp]
-theorem ratio_zpow (e : X ≃ᵈ X) (n : ℤ) : ratio (e ^ n) = ratio e ^ n :=
+lemma ratio_zpow (e : X ≃ᵈ X) (n : ℤ) : ratio (e ^ n) = ratio e ^ n :=
   ratioHom.map_zpow _ _
 
 /-- `DilationEquiv.toEquiv` as a monoid homomorphism. -/
@@ -177,7 +177,7 @@ def toPerm : (X ≃ᵈ X) →* Equiv.Perm X where
   map_one' := rfl
 
 @[norm_cast]
-theorem coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
+lemma coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
   rw [← coe_toEquiv, ← toPerm_apply, map_pow, Equiv.Perm.coe_pow]; rfl
 
 -- TODO: Once `IsometryEquiv` follows the `*EquivClass` pattern, replace this with an instance

@@ -31,23 +31,23 @@ section Continuity
 
 variable {α R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar R]
 
-theorem continuousOn_star {s : Set R} : ContinuousOn star s :=
+lemma continuousOn_star {s : Set R} : ContinuousOn star s :=
   continuous_star.continuousOn
 #align continuous_on_star continuousOn_star
 
-theorem continuousWithinAt_star {s : Set R} {x : R} : ContinuousWithinAt star s x :=
+lemma continuousWithinAt_star {s : Set R} {x : R} : ContinuousWithinAt star s x :=
   continuous_star.continuousWithinAt
 #align continuous_within_at_star continuousWithinAt_star
 
-theorem continuousAt_star {x : R} : ContinuousAt star x :=
+lemma continuousAt_star {x : R} : ContinuousAt star x :=
   continuous_star.continuousAt
 #align continuous_at_star continuousAt_star
 
-theorem tendsto_star (a : R) : Tendsto star (𝓝 a) (𝓝 (star a)) :=
+lemma tendsto_star (a : R) : Tendsto star (𝓝 a) (𝓝 (star a)) :=
   continuousAt_star
 #align tendsto_star tendsto_star
 
-theorem Filter.Tendsto.star {f : α → R} {l : Filter α} {y : R} (h : Tendsto f l (𝓝 y)) :
+lemma Filter.Tendsto.star {f : α → R} {l : Filter α} {y : R} (h : Tendsto f l (𝓝 y)) :
     Tendsto (fun x => star (f x)) l (𝓝 (star y)) :=
   (continuous_star.tendsto y).comp h
 #align filter.tendsto.star Filter.Tendsto.star
@@ -55,21 +55,21 @@ theorem Filter.Tendsto.star {f : α → R} {l : Filter α} {y : R} (h : Tendsto 
 variable [TopologicalSpace α] {f : α → R} {s : Set α} {x : α}
 
 @[continuity, fun_prop]
-theorem Continuous.star (hf : Continuous f) : Continuous fun x => star (f x) :=
+lemma Continuous.star (hf : Continuous f) : Continuous fun x => star (f x) :=
   continuous_star.comp hf
 #align continuous.star Continuous.star
 
 @[fun_prop]
-theorem ContinuousAt.star (hf : ContinuousAt f x) : ContinuousAt (fun x => star (f x)) x :=
+lemma ContinuousAt.star (hf : ContinuousAt f x) : ContinuousAt (fun x => star (f x)) x :=
   continuousAt_star.comp hf
 #align continuous_at.star ContinuousAt.star
 
 @[fun_prop]
-theorem ContinuousOn.star (hf : ContinuousOn f s) : ContinuousOn (fun x => star (f x)) s :=
+lemma ContinuousOn.star (hf : ContinuousOn f s) : ContinuousOn (fun x => star (f x)) s :=
   continuous_star.comp_continuousOn hf
 #align continuous_on.star ContinuousOn.star
 
-theorem ContinuousWithinAt.star (hf : ContinuousWithinAt f s x) :
+lemma ContinuousWithinAt.star (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun x => star (f x)) s x :=
   Filter.Tendsto.star hf
 #align continuous_within_at.star ContinuousWithinAt.star

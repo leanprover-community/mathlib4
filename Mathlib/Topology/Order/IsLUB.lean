@@ -21,7 +21,7 @@ section OrderTopology
 variable [TopologicalSpace α] [TopologicalSpace β] [LinearOrder α] [LinearOrder β] [OrderTopology α]
   [OrderTopology β]
 
-theorem IsLUB.frequently_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty) :
+lemma IsLUB.frequently_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty) :
     ∃ᶠ x in 𝓝[≤] a, x ∈ s := by
   rcases hs with ⟨a', ha'⟩
   intro h
@@ -32,39 +32,39 @@ theorem IsLUB.frequently_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.None
     exact hb hb' hb's
 #align is_lub.frequently_mem IsLUB.frequently_mem
 
-theorem IsLUB.frequently_nhds_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty) :
+lemma IsLUB.frequently_nhds_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty) :
     ∃ᶠ x in 𝓝 a, x ∈ s :=
   (ha.frequently_mem hs).filter_mono inf_le_left
 #align is_lub.frequently_nhds_mem IsLUB.frequently_nhds_mem
 
-theorem IsGLB.frequently_mem {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Nonempty) :
+lemma IsGLB.frequently_mem {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Nonempty) :
     ∃ᶠ x in 𝓝[≥] a, x ∈ s :=
   IsLUB.frequently_mem (α := αᵒᵈ) ha hs
 #align is_glb.frequently_mem IsGLB.frequently_mem
 
-theorem IsGLB.frequently_nhds_mem {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Nonempty) :
+lemma IsGLB.frequently_nhds_mem {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Nonempty) :
     ∃ᶠ x in 𝓝 a, x ∈ s :=
   (ha.frequently_mem hs).filter_mono inf_le_left
 #align is_glb.frequently_nhds_mem IsGLB.frequently_nhds_mem
 
-theorem IsLUB.mem_closure {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty) : a ∈ closure s :=
+lemma IsLUB.mem_closure {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty) : a ∈ closure s :=
   (ha.frequently_nhds_mem hs).mem_closure
 #align is_lub.mem_closure IsLUB.mem_closure
 
-theorem IsGLB.mem_closure {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Nonempty) : a ∈ closure s :=
+lemma IsGLB.mem_closure {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Nonempty) : a ∈ closure s :=
   (ha.frequently_nhds_mem hs).mem_closure
 #align is_glb.mem_closure IsGLB.mem_closure
 
-theorem IsLUB.nhdsWithin_neBot {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty) :
+lemma IsLUB.nhdsWithin_neBot {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty) :
     NeBot (𝓝[s] a) :=
   mem_closure_iff_nhdsWithin_neBot.1 (ha.mem_closure hs)
 #align is_lub.nhds_within_ne_bot IsLUB.nhdsWithin_neBot
 
-theorem IsGLB.nhdsWithin_neBot : ∀ {a : α} {s : Set α}, IsGLB s a → s.Nonempty → NeBot (𝓝[s] a) :=
+lemma IsGLB.nhdsWithin_neBot : ∀ {a : α} {s : Set α}, IsGLB s a → s.Nonempty → NeBot (𝓝[s] a) :=
   IsLUB.nhdsWithin_neBot (α := αᵒᵈ)
 #align is_glb.nhds_within_ne_bot IsGLB.nhdsWithin_neBot
 
-theorem isLUB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ upperBounds s) (hsf : s ∈ f)
+lemma isLUB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ upperBounds s) (hsf : s ∈ f)
     [NeBot (f ⊓ 𝓝 a)] : IsLUB s a :=
   ⟨hsa, fun b hb =>
     not_lt.1 fun hba =>
@@ -74,23 +74,23 @@ theorem isLUB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ upp
       lt_irrefl b this⟩
 #align is_lub_of_mem_nhds isLUB_of_mem_nhds
 
-theorem isLUB_of_mem_closure {s : Set α} {a : α} (hsa : a ∈ upperBounds s) (hsf : a ∈ closure s) :
+lemma isLUB_of_mem_closure {s : Set α} {a : α} (hsa : a ∈ upperBounds s) (hsf : a ∈ closure s) :
     IsLUB s a := by
   rw [mem_closure_iff_clusterPt, ClusterPt, inf_comm] at hsf
   exact isLUB_of_mem_nhds hsa (mem_principal_self s)
 #align is_lub_of_mem_closure isLUB_of_mem_closure
 
-theorem isGLB_of_mem_nhds :
+lemma isGLB_of_mem_nhds :
     ∀ {s : Set α} {a : α} {f : Filter α}, a ∈ lowerBounds s → s ∈ f → NeBot (f ⊓ 𝓝 a) → IsGLB s a :=
   isLUB_of_mem_nhds (α := αᵒᵈ)
 #align is_glb_of_mem_nhds isGLB_of_mem_nhds
 
-theorem isGLB_of_mem_closure {s : Set α} {a : α} (hsa : a ∈ lowerBounds s) (hsf : a ∈ closure s) :
+lemma isGLB_of_mem_closure {s : Set α} {a : α} (hsa : a ∈ lowerBounds s) (hsf : a ∈ closure s) :
     IsGLB s a :=
   isLUB_of_mem_closure (α := αᵒᵈ) hsa hsf
 #align is_glb_of_mem_closure isGLB_of_mem_closure
 
-theorem IsLUB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
+lemma IsLUB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
     {f : α → γ} {s : Set α} {a : α} {b : γ} (hf : MonotoneOn f s) (ha : IsLUB s a)
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : b ∈ upperBounds (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩
@@ -102,7 +102,7 @@ theorem IsLUB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
 
 -- For a version of this theorem in which the convergence considered on the domain `α` is as `x : α`
 -- tends to infinity, rather than tending to a point `x` in `α`, see `isLUB_of_tendsto_atTop`
-theorem IsLUB.isLUB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] {f : α → γ}
+lemma IsLUB.isLUB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] {f : α → γ}
     {s : Set α} {a : α} {b : γ} (hf : MonotoneOn f s) (ha : IsLUB s a) (hs : s.Nonempty)
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : IsLUB (f '' s) b :=
   haveI := ha.nhdsWithin_neBot hs
@@ -110,7 +110,7 @@ theorem IsLUB.isLUB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedT
     le_of_tendsto hb (mem_of_superset self_mem_nhdsWithin fun _ hx => hb' <| mem_image_of_mem _ hx)⟩
 #align is_lub.is_lub_of_tendsto IsLUB.isLUB_of_tendsto
 
-theorem IsGLB.mem_lowerBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
+lemma IsGLB.mem_lowerBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
     {f : α → γ} {s : Set α} {a : α} {b : γ} (hf : MonotoneOn f s) (ha : IsGLB s a)
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : b ∈ lowerBounds (f '' s) :=
   IsLUB.mem_upperBounds_of_tendsto (α := αᵒᵈ) (γ := γᵒᵈ) hf.dual ha hb
@@ -119,37 +119,37 @@ theorem IsGLB.mem_lowerBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
 -- For a version of this theorem in which the convergence considered on the domain `α` is as
 -- `x : α` tends to negative infinity, rather than tending to a point `x` in `α`, see
 -- `isGLB_of_tendsto_atBot`
-theorem IsGLB.isGLB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] {f : α → γ}
+lemma IsGLB.isGLB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] {f : α → γ}
     {s : Set α} {a : α} {b : γ} (hf : MonotoneOn f s) :
     IsGLB s a → s.Nonempty → Tendsto f (𝓝[s] a) (𝓝 b) → IsGLB (f '' s) b :=
   IsLUB.isLUB_of_tendsto (α := αᵒᵈ) (γ := γᵒᵈ) hf.dual
 #align is_glb.is_glb_of_tendsto IsGLB.isGLB_of_tendsto
 
-theorem IsLUB.mem_lowerBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
+lemma IsLUB.mem_lowerBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
     {f : α → γ} {s : Set α} {a : α} {b : γ} (hf : AntitoneOn f s) (ha : IsLUB s a)
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : b ∈ lowerBounds (f '' s) :=
   IsLUB.mem_upperBounds_of_tendsto (γ := γᵒᵈ) hf ha hb
 #align is_lub.mem_lower_bounds_of_tendsto IsLUB.mem_lowerBounds_of_tendsto
 
-theorem IsLUB.isGLB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] :
+lemma IsLUB.isGLB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] :
     ∀ {f : α → γ} {s : Set α} {a : α} {b : γ},
       AntitoneOn f s → IsLUB s a → s.Nonempty → Tendsto f (𝓝[s] a) (𝓝 b) → IsGLB (f '' s) b :=
   IsLUB.isLUB_of_tendsto (γ := γᵒᵈ)
 #align is_lub.is_glb_of_tendsto IsLUB.isGLB_of_tendsto
 
-theorem IsGLB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
+lemma IsGLB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
     {f : α → γ} {s : Set α} {a : α} {b : γ} (hf : AntitoneOn f s) (ha : IsGLB s a)
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : b ∈ upperBounds (f '' s) :=
   IsGLB.mem_lowerBounds_of_tendsto (γ := γᵒᵈ) hf ha hb
 #align is_glb.mem_upper_bounds_of_tendsto IsGLB.mem_upperBounds_of_tendsto
 
-theorem IsGLB.isLUB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] :
+lemma IsGLB.isLUB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] :
     ∀ {f : α → γ} {s : Set α} {a : α} {b : γ},
       AntitoneOn f s → IsGLB s a → s.Nonempty → Tendsto f (𝓝[s] a) (𝓝 b) → IsLUB (f '' s) b :=
   IsGLB.isGLB_of_tendsto (γ := γᵒᵈ)
 #align is_glb.is_lub_of_tendsto IsGLB.isLUB_of_tendsto
 
-theorem IsLUB.mem_of_isClosed {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty)
+lemma IsLUB.mem_of_isClosed {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty)
     (sc : IsClosed s) : a ∈ s :=
   sc.closure_subset <| ha.mem_closure hs
 #align is_lub.mem_of_is_closed IsLUB.mem_of_isClosed
@@ -157,7 +157,7 @@ theorem IsLUB.mem_of_isClosed {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Non
 alias IsClosed.isLUB_mem := IsLUB.mem_of_isClosed
 #align is_closed.is_lub_mem IsClosed.isLUB_mem
 
-theorem IsGLB.mem_of_isClosed {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Nonempty)
+lemma IsGLB.mem_of_isClosed {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Nonempty)
     (sc : IsClosed s) : a ∈ s :=
   sc.closure_subset <| ha.mem_closure hs
 #align is_glb.mem_of_is_closed IsGLB.mem_of_isClosed
@@ -169,7 +169,7 @@ alias IsClosed.isGLB_mem := IsGLB.mem_of_isClosed
 ### Existence of sequences tending to `sInf` or `sSup` of a given set
 -/
 
-theorem IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
+lemma IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
     [IsCountablyGenerated (𝓝 x)] (htx : IsLUB t x) (not_mem : x ∉ t) (ht : t.Nonempty) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n < x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t := by
   obtain ⟨v, hvx, hvt⟩ := exists_seq_forall_of_frequently (htx.frequently_mem ht)
@@ -183,7 +183,7 @@ theorem IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
   · rw [iterate_succ_apply']; exact hN _
 #align is_lub.exists_seq_strict_mono_tendsto_of_not_mem IsLUB.exists_seq_strictMono_tendsto_of_not_mem
 
-theorem IsLUB.exists_seq_monotone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
+lemma IsLUB.exists_seq_monotone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
     (htx : IsLUB t x) (ht : t.Nonempty) :
     ∃ u : ℕ → α, Monotone u ∧ (∀ n, u n ≤ x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t := by
   by_cases h : x ∈ t
@@ -192,7 +192,7 @@ theorem IsLUB.exists_seq_monotone_tendsto {t : Set α} {x : α} [IsCountablyGene
     exact ⟨u, hu.1.monotone, fun n => (hu.2.1 n).le, hu.2.2⟩
 #align is_lub.exists_seq_monotone_tendsto IsLUB.exists_seq_monotone_tendsto
 
-theorem exists_seq_strictMono_tendsto' {α : Type*} [LinearOrder α] [TopologicalSpace α]
+lemma exists_seq_strictMono_tendsto' {α : Type*} [LinearOrder α] [TopologicalSpace α]
     [DenselyOrdered α] [OrderTopology α] [FirstCountableTopology α] {x y : α} (hy : y < x) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ Ioo y x) ∧ Tendsto u atTop (𝓝 x) := by
   have hx : x ∉ Ioo y x := fun h => (lt_irrefl x h.2).elim
@@ -201,57 +201,57 @@ theorem exists_seq_strictMono_tendsto' {α : Type*} [LinearOrder α] [Topologica
   exact ⟨u, hu.1, hu.2.2.symm⟩
 #align exists_seq_strict_mono_tendsto' exists_seq_strictMono_tendsto'
 
-theorem exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α] [FirstCountableTopology α]
+lemma exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α] [FirstCountableTopology α]
     (x : α) : ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n < x) ∧ Tendsto u atTop (𝓝 x) := by
   obtain ⟨y, hy⟩ : ∃ y, y < x := exists_lt x
   rcases exists_seq_strictMono_tendsto' hy with ⟨u, hu_mono, hu_mem, hux⟩
   exact ⟨u, hu_mono, fun n => (hu_mem n).2, hux⟩
 #align exists_seq_strict_mono_tendsto exists_seq_strictMono_tendsto
 
-theorem exists_seq_strictMono_tendsto_nhdsWithin [DenselyOrdered α] [NoMinOrder α]
+lemma exists_seq_strictMono_tendsto_nhdsWithin [DenselyOrdered α] [NoMinOrder α]
     [FirstCountableTopology α] (x : α) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n < x) ∧ Tendsto u atTop (𝓝[<] x) :=
   let ⟨u, hu, hx, h⟩ := exists_seq_strictMono_tendsto x
   ⟨u, hu, hx, tendsto_nhdsWithin_mono_right (range_subset_iff.2 hx) <| tendsto_nhdsWithin_range.2 h⟩
 #align exists_seq_strict_mono_tendsto_nhds_within exists_seq_strictMono_tendsto_nhdsWithin
 
-theorem exists_seq_tendsto_sSup {α : Type*} [ConditionallyCompleteLinearOrder α]
+lemma exists_seq_tendsto_sSup {α : Type*} [ConditionallyCompleteLinearOrder α]
     [TopologicalSpace α] [OrderTopology α] [FirstCountableTopology α] {S : Set α} (hS : S.Nonempty)
     (hS' : BddAbove S) : ∃ u : ℕ → α, Monotone u ∧ Tendsto u atTop (𝓝 (sSup S)) ∧ ∀ n, u n ∈ S := by
   rcases (isLUB_csSup hS hS').exists_seq_monotone_tendsto hS with ⟨u, hu⟩
   exact ⟨u, hu.1, hu.2.2⟩
 #align exists_seq_tendsto_Sup exists_seq_tendsto_sSup
 
-theorem IsGLB.exists_seq_strictAnti_tendsto_of_not_mem {t : Set α} {x : α}
+lemma IsGLB.exists_seq_strictAnti_tendsto_of_not_mem {t : Set α} {x : α}
     [IsCountablyGenerated (𝓝 x)] (htx : IsGLB t x) (not_mem : x ∉ t) (ht : t.Nonempty) :
     ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t :=
   IsLUB.exists_seq_strictMono_tendsto_of_not_mem (α := αᵒᵈ) htx not_mem ht
 #align is_glb.exists_seq_strict_anti_tendsto_of_not_mem IsGLB.exists_seq_strictAnti_tendsto_of_not_mem
 
-theorem IsGLB.exists_seq_antitone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
+lemma IsGLB.exists_seq_antitone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
     (htx : IsGLB t x) (ht : t.Nonempty) :
     ∃ u : ℕ → α, Antitone u ∧ (∀ n, x ≤ u n) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t :=
   IsLUB.exists_seq_monotone_tendsto (α := αᵒᵈ) htx ht
 #align is_glb.exists_seq_antitone_tendsto IsGLB.exists_seq_antitone_tendsto
 
-theorem exists_seq_strictAnti_tendsto' [DenselyOrdered α] [FirstCountableTopology α] {x y : α}
+lemma exists_seq_strictAnti_tendsto' [DenselyOrdered α] [FirstCountableTopology α] {x y : α}
     (hy : x < y) : ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, u n ∈ Ioo x y) ∧ Tendsto u atTop (𝓝 x) := by
   simpa only [dual_Ioo]
     using exists_seq_strictMono_tendsto' (α := αᵒᵈ) (OrderDual.toDual_lt_toDual.2 hy)
 #align exists_seq_strict_anti_tendsto' exists_seq_strictAnti_tendsto'
 
-theorem exists_seq_strictAnti_tendsto [DenselyOrdered α] [NoMaxOrder α] [FirstCountableTopology α]
+lemma exists_seq_strictAnti_tendsto [DenselyOrdered α] [NoMaxOrder α] [FirstCountableTopology α]
     (x : α) : ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto u atTop (𝓝 x) :=
   exists_seq_strictMono_tendsto (α := αᵒᵈ) x
 #align exists_seq_strict_anti_tendsto exists_seq_strictAnti_tendsto
 
-theorem exists_seq_strictAnti_tendsto_nhdsWithin [DenselyOrdered α] [NoMaxOrder α]
+lemma exists_seq_strictAnti_tendsto_nhdsWithin [DenselyOrdered α] [NoMaxOrder α]
     [FirstCountableTopology α] (x : α) :
     ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto u atTop (𝓝[>] x) :=
   exists_seq_strictMono_tendsto_nhdsWithin (α := αᵒᵈ) _
 #align exists_seq_strict_anti_tendsto_nhds_within exists_seq_strictAnti_tendsto_nhdsWithin
 
-theorem exists_seq_strictAnti_strictMono_tendsto [DenselyOrdered α] [FirstCountableTopology α]
+lemma exists_seq_strictAnti_strictMono_tendsto [DenselyOrdered α] [FirstCountableTopology α]
     {x y : α} (h : x < y) :
     ∃ u v : ℕ → α, StrictAnti u ∧ StrictMono v ∧ (∀ k, u k ∈ Ioo x y) ∧ (∀ l, v l ∈ Ioo x y) ∧
       (∀ k l, u k < v l) ∧ Tendsto u atTop (𝓝 x) ∧ Tendsto v atTop (𝓝 y) := by
@@ -262,7 +262,7 @@ theorem exists_seq_strictAnti_strictMono_tendsto [DenselyOrdered α] [FirstCount
       fun k l => (hu_anti.antitone (zero_le k)).trans_lt (hv_mem l).1, hux, hvy⟩
 #align exists_seq_strict_anti_strict_mono_tendsto exists_seq_strictAnti_strictMono_tendsto
 
-theorem exists_seq_tendsto_sInf {α : Type*} [ConditionallyCompleteLinearOrder α]
+lemma exists_seq_tendsto_sInf {α : Type*} [ConditionallyCompleteLinearOrder α]
     [TopologicalSpace α] [OrderTopology α] [FirstCountableTopology α] {S : Set α} (hS : S.Nonempty)
     (hS' : BddBelow S) : ∃ u : ℕ → α, Antitone u ∧ Tendsto u atTop (𝓝 (sInf S)) ∧ ∀ n, u n ∈ S :=
   exists_seq_tendsto_sSup (α := αᵒᵈ) hS hS'

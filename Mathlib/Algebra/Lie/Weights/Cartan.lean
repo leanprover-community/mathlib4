@@ -45,20 +45,20 @@ abbrev rootSpace (χ : H → R) : LieSubmodule R H L :=
   weightSpace L χ
 #align lie_algebra.root_space LieAlgebra.rootSpace
 
-theorem zero_rootSpace_eq_top_of_nilpotent [IsNilpotent R L] :
+lemma zero_rootSpace_eq_top_of_nilpotent [IsNilpotent R L] :
     rootSpace (⊤ : LieSubalgebra R L) 0 = ⊤ :=
   zero_weightSpace_eq_top_of_nilpotent L
 #align lie_algebra.zero_root_space_eq_top_of_nilpotent LieAlgebra.zero_rootSpace_eq_top_of_nilpotent
 
 @[simp]
-theorem rootSpace_comap_eq_weightSpace (χ : H → R) :
+lemma rootSpace_comap_eq_weightSpace (χ : H → R) :
     (rootSpace H χ).comap H.incl' = weightSpace H χ :=
   comap_weightSpace_eq_of_injective Subtype.coe_injective
 #align lie_algebra.root_space_comap_eq_weight_space LieAlgebra.rootSpace_comap_eq_weightSpace
 
 variable {H}
 
-theorem lie_mem_weightSpace_of_mem_weightSpace {χ₁ χ₂ : H → R} {x : L} {m : M}
+lemma lie_mem_weightSpace_of_mem_weightSpace {χ₁ χ₂ : H → R} {x : L} {m : M}
     (hx : x ∈ rootSpace H χ₁) (hm : m ∈ weightSpace M χ₂) : ⁅x, m⁆ ∈ weightSpace M (χ₁ + χ₂) := by
   rw [weightSpace, LieSubmodule.mem_iInf]
   intro y
@@ -113,7 +113,7 @@ def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ�
 #align lie_algebra.root_space_weight_space_product LieAlgebra.rootSpaceWeightSpaceProduct
 
 @[simp]
-theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
+lemma coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
     (x : rootSpace H χ₁) (m : weightSpace M χ₂) :
     (rootSpaceWeightSpaceProduct R L H M χ₁ χ₂ χ₃ hχ (x ⊗ₜ m) : M) = ⁅(x : L), (m : M)⁆ := by
   simp only [rootSpaceWeightSpaceProduct, rootSpaceWeightSpaceProductAux, coe_liftLie_eq_lift_coe,
@@ -121,7 +121,7 @@ theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ 
     Submodule.coe_mk]
 #align lie_algebra.coe_root_space_weight_space_product_tmul LieAlgebra.coe_rootSpaceWeightSpaceProduct_tmul
 
-theorem mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace (α χ : H → R)
+lemma mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace (α χ : H → R)
     {x : L} (hx : x ∈ rootSpace H α) :
     MapsTo (toEndomorphism R L M x) (weightSpace M χ) (weightSpace M (α + χ)) := by
   intro m hm
@@ -137,10 +137,10 @@ def rootSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
 #align lie_algebra.root_space_product LieAlgebra.rootSpaceProduct
 
 @[simp]
-theorem rootSpaceProduct_def : rootSpaceProduct R L H = rootSpaceWeightSpaceProduct R L H L := rfl
+lemma rootSpaceProduct_def : rootSpaceProduct R L H = rootSpaceWeightSpaceProduct R L H L := rfl
 #align lie_algebra.root_space_product_def LieAlgebra.rootSpaceProduct_def
 
-theorem rootSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) (x : rootSpace H χ₁)
+lemma rootSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) (x : rootSpace H χ₁)
     (y : rootSpace H χ₂) : (rootSpaceProduct R L H χ₁ χ₂ χ₃ hχ (x ⊗ₜ y) : L) = ⁅(x : L), (y : L)⁆ :=
   by simp only [rootSpaceProduct_def, coe_rootSpaceWeightSpaceProduct_tmul]
 #align lie_algebra.root_space_product_tmul LieAlgebra.rootSpaceProduct_tmul
@@ -157,16 +157,16 @@ def zeroRootSubalgebra : LieSubalgebra R L :=
 #align lie_algebra.zero_root_subalgebra LieAlgebra.zeroRootSubalgebra
 
 @[simp]
-theorem coe_zeroRootSubalgebra : (zeroRootSubalgebra R L H : Submodule R L) = rootSpace H 0 := rfl
+lemma coe_zeroRootSubalgebra : (zeroRootSubalgebra R L H : Submodule R L) = rootSpace H 0 := rfl
 #align lie_algebra.coe_zero_root_subalgebra LieAlgebra.coe_zeroRootSubalgebra
 
-theorem mem_zeroRootSubalgebra (x : L) :
+lemma mem_zeroRootSubalgebra (x : L) :
     x ∈ zeroRootSubalgebra R L H ↔ ∀ y : H, ∃ k : ℕ, (toEndomorphism R H L y ^ k) x = 0 := by
   change x ∈ rootSpace H 0 ↔ _
   simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero]
 #align lie_algebra.mem_zero_root_subalgebra LieAlgebra.mem_zeroRootSubalgebra
 
-theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 := by
+lemma toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 := by
   intro x hx
   simp only [LieSubalgebra.mem_toLieSubmodule] at hx
   simp only [mem_weightSpace, Pi.zero_apply, sub_zero, zero_smul]
@@ -190,14 +190,14 @@ theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 :=
   exact h
 #align lie_algebra.to_lie_submodule_le_root_space_zero LieAlgebra.toLieSubmodule_le_rootSpace_zero
 
-theorem le_zeroRootSubalgebra : H ≤ zeroRootSubalgebra R L H := by
+lemma le_zeroRootSubalgebra : H ≤ zeroRootSubalgebra R L H := by
   rw [← LieSubalgebra.coe_submodule_le_coe_submodule, ← H.coe_toLieSubmodule,
     coe_zeroRootSubalgebra, LieSubmodule.coeSubmodule_le_coeSubmodule]
   exact toLieSubmodule_le_rootSpace_zero R L H
 #align lie_algebra.le_zero_root_subalgebra LieAlgebra.le_zeroRootSubalgebra
 
 @[simp]
-theorem zeroRootSubalgebra_normalizer_eq_self :
+lemma zeroRootSubalgebra_normalizer_eq_self :
     (zeroRootSubalgebra R L H).normalizer = zeroRootSubalgebra R L H := by
   refine' le_antisymm _ (LieSubalgebra.le_normalizer _)
   intro x hx
@@ -225,7 +225,7 @@ theorem is_cartan_of_zeroRootSubalgebra_eq (h : zeroRootSubalgebra R L H = H) :
 #align lie_algebra.is_cartan_of_zero_root_subalgebra_eq LieAlgebra.is_cartan_of_zeroRootSubalgebra_eq
 
 @[simp]
-theorem zeroRootSubalgebra_eq_of_is_cartan (H : LieSubalgebra R L) [H.IsCartanSubalgebra]
+lemma zeroRootSubalgebra_eq_of_is_cartan (H : LieSubalgebra R L) [H.IsCartanSubalgebra]
     [IsNoetherian R L] : zeroRootSubalgebra R L H = H := by
   refine' le_antisymm _ (le_zeroRootSubalgebra R L H)
   suffices rootSpace H 0 ≤ H.toLieSubmodule by exact fun x hx => this hx
@@ -233,13 +233,13 @@ theorem zeroRootSubalgebra_eq_of_is_cartan (H : LieSubalgebra R L) [H.IsCartanSu
   exact hk.trans (LieSubmodule.ucs_le_of_normalizer_eq_self (by simp) k)
 #align lie_algebra.zero_root_subalgebra_eq_of_is_cartan LieAlgebra.zeroRootSubalgebra_eq_of_is_cartan
 
-theorem zeroRootSubalgebra_eq_iff_is_cartan [IsNoetherian R L] :
+lemma zeroRootSubalgebra_eq_iff_is_cartan [IsNoetherian R L] :
     zeroRootSubalgebra R L H = H ↔ H.IsCartanSubalgebra :=
   ⟨is_cartan_of_zeroRootSubalgebra_eq R L H, by intros; simp⟩
 #align lie_algebra.zero_root_subalgebra_eq_iff_is_cartan LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan
 
 @[simp]
-theorem rootSpace_zero_eq (H : LieSubalgebra R L) [H.IsCartanSubalgebra] [IsNoetherian R L] :
+lemma rootSpace_zero_eq (H : LieSubalgebra R L) [H.IsCartanSubalgebra] [IsNoetherian R L] :
     rootSpace H 0 = H.toLieSubmodule := by
   rw [← LieSubmodule.coe_toSubmodule_eq_iff, ← coe_zeroRootSubalgebra,
     zeroRootSubalgebra_eq_of_is_cartan R L H, LieSubalgebra.coe_toLieSubmodule]

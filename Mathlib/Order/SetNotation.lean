@@ -181,12 +181,12 @@ def sUnion (S : Set (Set α)) : Set α :=
 prefix:110 "⋃₀ " => sUnion
 
 @[simp]
-theorem mem_sInter {x : α} {S : Set (Set α)} : x ∈ ⋂₀ S ↔ ∀ t ∈ S, x ∈ t :=
+lemma mem_sInter {x : α} {S : Set (Set α)} : x ∈ ⋂₀ S ↔ ∀ t ∈ S, x ∈ t :=
   Iff.rfl
 #align set.mem_sInter Set.mem_sInter
 
 @[simp]
-theorem mem_sUnion {x : α} {S : Set (Set α)} : x ∈ ⋃₀ S ↔ ∃ t ∈ S, x ∈ t :=
+lemma mem_sUnion {x : α} {S : Set (Set α)} : x ∈ ⋃₀ S ↔ ∃ t ∈ S, x ∈ t :=
   Iff.rfl
 #align set.mem_sUnion Set.mem_sUnion
 
@@ -269,34 +269,34 @@ def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
 end delaborators
 
 @[simp]
-theorem mem_iUnion {x : α} {s : ι → Set α} : (x ∈ ⋃ i, s i) ↔ ∃ i, x ∈ s i :=
+lemma mem_iUnion {x : α} {s : ι → Set α} : (x ∈ ⋃ i, s i) ↔ ∃ i, x ∈ s i :=
   ⟨fun ⟨_, ⟨⟨a, (t_eq : s a = _)⟩, (h : x ∈ _)⟩⟩ => ⟨a, t_eq.symm ▸ h⟩, fun ⟨a, h⟩ =>
     ⟨s a, ⟨⟨a, rfl⟩, h⟩⟩⟩
 #align set.mem_Union Set.mem_iUnion
 
 @[simp]
-theorem mem_iInter {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i, x ∈ s i :=
+lemma mem_iInter {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i, x ∈ s i :=
   ⟨fun (h : ∀ a ∈ { a : Set α | ∃ i, s i = a }, x ∈ a) a => h (s a) ⟨a, rfl⟩,
     fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩
 #align set.mem_Inter Set.mem_iInter
 
 @[simp]
-theorem sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀S :=
+lemma sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀S :=
   rfl
 #align set.Sup_eq_sUnion Set.sSup_eq_sUnion
 
 @[simp]
-theorem sInf_eq_sInter (S : Set (Set α)) : sInf S = ⋂₀ S :=
+lemma sInf_eq_sInter (S : Set (Set α)) : sInf S = ⋂₀ S :=
   rfl
 #align set.Inf_eq_sInter Set.sInf_eq_sInter
 
 @[simp]
-theorem iSup_eq_iUnion (s : ι → Set α) : iSup s = iUnion s :=
+lemma iSup_eq_iUnion (s : ι → Set α) : iSup s = iUnion s :=
   rfl
 #align set.supr_eq_Union Set.iSup_eq_iUnion
 
 @[simp]
-theorem iInf_eq_iInter (s : ι → Set α) : iInf s = iInter s :=
+lemma iInf_eq_iInter (s : ι → Set α) : iInf s = iInter s :=
   rfl
 #align set.infi_eq_Inter Set.iInf_eq_iInter
 

@@ -255,7 +255,7 @@ def cyclotomic (n : ℕ) (R : Type*) [Ring R] : R[X] :=
   else map (Int.castRingHom R) (int_coeff_of_cyclotomic' (Complex.isPrimitiveRoot_exp n h)).choose
 #align polynomial.cyclotomic Polynomial.cyclotomic
 
-theorem int_cyclotomic_rw {n : ℕ} (h : n ≠ 0) :
+lemma int_cyclotomic_rw {n : ℕ} (h : n ≠ 0) :
     cyclotomic n ℤ = (int_coeff_of_cyclotomic' (Complex.isPrimitiveRoot_exp n h)).choose := by
   simp only [cyclotomic, h, dif_neg, not_false_iff]
   ext i
@@ -270,7 +270,7 @@ theorem map_cyclotomic_int (n : ℕ) (R : Type*) [Ring R] :
   simp [cyclotomic, hzero]
 #align polynomial.map_cyclotomic_int Polynomial.map_cyclotomic_int
 
-theorem int_cyclotomic_spec (n : ℕ) :
+lemma int_cyclotomic_spec (n : ℕ) :
     map (Int.castRingHom ℂ) (cyclotomic n ℤ) = cyclotomic' n ℂ ∧
       (cyclotomic n ℤ).degree = (cyclotomic' n ℂ).degree ∧ (cyclotomic n ℤ).Monic := by
   by_cases hzero : n = 0
@@ -280,7 +280,7 @@ theorem int_cyclotomic_spec (n : ℕ) :
   exact (int_coeff_of_cyclotomic' (Complex.isPrimitiveRoot_exp n hzero)).choose_spec
 #align polynomial.int_cyclotomic_spec Polynomial.int_cyclotomic_spec
 
-theorem int_cyclotomic_unique {n : ℕ} {P : ℤ[X]} (h : map (Int.castRingHom ℂ) P = cyclotomic' n ℂ) :
+lemma int_cyclotomic_unique {n : ℕ} {P : ℤ[X]} (h : map (Int.castRingHom ℂ) P = cyclotomic' n ℂ) :
     P = cyclotomic n ℤ := by
   apply map_injective (Int.castRingHom ℂ) Int.cast_injective
   rw [h, (int_cyclotomic_spec n).1]
@@ -295,7 +295,7 @@ theorem map_cyclotomic (n : ℕ) {R S : Type*} [Ring R] [Ring S] (f : R →+* S)
   congr!
 #align polynomial.map_cyclotomic Polynomial.map_cyclotomic
 
-theorem cyclotomic.eval_apply {R S : Type*} (q : R) (n : ℕ) [Ring R] [Ring S] (f : R →+* S) :
+lemma cyclotomic.eval_apply {R S : Type*} (q : R) (n : ℕ) [Ring R] [Ring S] (f : R →+* S) :
     eval (f q) (cyclotomic n S) = f (eval q (cyclotomic n R)) := by
   rw [← map_cyclotomic n f, eval_map, eval₂_at_apply]
 #align polynomial.cyclotomic.eval_apply Polynomial.cyclotomic.eval_apply
@@ -372,7 +372,7 @@ theorem prod_cyclotomic_eq_X_pow_sub_one {n : ℕ} (hpos : 0 < n) (R : Type*) [C
 set_option linter.uppercaseLean3 false in
 #align polynomial.prod_cyclotomic_eq_X_pow_sub_one Polynomial.prod_cyclotomic_eq_X_pow_sub_one
 
-theorem cyclotomic.dvd_X_pow_sub_one (n : ℕ) (R : Type*) [Ring R] :
+lemma cyclotomic.dvd_X_pow_sub_one (n : ℕ) (R : Type*) [Ring R] :
     cyclotomic n R ∣ X ^ n - 1 := by
   suffices cyclotomic n ℤ ∣ X ^ n - 1 by
     simpa only [map_cyclotomic_int, Polynomial.map_sub, Polynomial.map_one, Polynomial.map_pow,
@@ -384,7 +384,7 @@ theorem cyclotomic.dvd_X_pow_sub_one (n : ℕ) (R : Type*) [Ring R] :
 set_option linter.uppercaseLean3 false in
 #align polynomial.cyclotomic.dvd_X_pow_sub_one Polynomial.cyclotomic.dvd_X_pow_sub_one
 
-theorem prod_cyclotomic_eq_geom_sum {n : ℕ} (h : 0 < n) (R) [CommRing R] :
+lemma prod_cyclotomic_eq_geom_sum {n : ℕ} (h : 0 < n) (R) [CommRing R] :
     ∏ i in n.divisors.erase 1, cyclotomic i R = ∑ i in Finset.range n, X ^ i := by
   suffices (∏ i in n.divisors.erase 1, cyclotomic i ℤ) = ∑ i in Finset.range n, X ^ i by
     simpa only [Polynomial.map_prod, map_cyclotomic_int, Polynomial.map_sum, Polynomial.map_pow,
@@ -403,21 +403,21 @@ theorem cyclotomic_prime (R : Type*) [Ring R] (p : ℕ) [hp : Fact p.Prime] :
     erase_insert (mem_singleton.not.2 hp.out.ne_one.symm), prod_singleton]
 #align polynomial.cyclotomic_prime Polynomial.cyclotomic_prime
 
-theorem cyclotomic_prime_mul_X_sub_one (R : Type*) [Ring R] (p : ℕ) [hn : Fact (Nat.Prime p)] :
+lemma cyclotomic_prime_mul_X_sub_one (R : Type*) [Ring R] (p : ℕ) [hn : Fact (Nat.Prime p)] :
     cyclotomic p R * (X - 1) = X ^ p - 1 := by rw [cyclotomic_prime, geom_sum_mul]
 set_option linter.uppercaseLean3 false in
 #align polynomial.cyclotomic_prime_mul_X_sub_one Polynomial.cyclotomic_prime_mul_X_sub_one
 
 @[simp]
-theorem cyclotomic_two (R : Type*) [Ring R] : cyclotomic 2 R = X + 1 := by simp [cyclotomic_prime]
+lemma cyclotomic_two (R : Type*) [Ring R] : cyclotomic 2 R = X + 1 := by simp [cyclotomic_prime]
 #align polynomial.cyclotomic_two Polynomial.cyclotomic_two
 
 @[simp]
-theorem cyclotomic_three (R : Type*) [Ring R] : cyclotomic 3 R = X ^ 2 + X + 1 := by
+lemma cyclotomic_three (R : Type*) [Ring R] : cyclotomic 3 R = X ^ 2 + X + 1 := by
   simp [cyclotomic_prime, sum_range_succ']
 #align polynomial.cyclotomic_three Polynomial.cyclotomic_three
 
-theorem cyclotomic_dvd_geom_sum_of_dvd (R) [Ring R] {d n : ℕ} (hdn : d ∣ n) (hd : d ≠ 1) :
+lemma cyclotomic_dvd_geom_sum_of_dvd (R) [Ring R] {d n : ℕ} (hdn : d ∣ n) (hd : d ≠ 1) :
     cyclotomic d R ∣ ∑ i in Finset.range n, X ^ i := by
   suffices cyclotomic d ℤ ∣ ∑ i in Finset.range n, X ^ i by
     simpa only [map_cyclotomic_int, Polynomial.map_sum, Polynomial.map_pow, Polynomial.map_X] using
@@ -429,7 +429,7 @@ theorem cyclotomic_dvd_geom_sum_of_dvd (R) [Ring R] {d n : ℕ} (hdn : d ∣ n) 
   simp [hd, hdn, hn.ne']
 #align polynomial.cyclotomic_dvd_geom_sum_of_dvd Polynomial.cyclotomic_dvd_geom_sum_of_dvd
 
-theorem X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd (R) [CommRing R] {d n : ℕ}
+lemma X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd (R) [CommRing R] {d n : ℕ}
     (h : d ∈ n.properDivisors) :
     ((X ^ d - 1) * ∏ x in n.divisors \ d.divisors, cyclotomic x R) = X ^ n - 1 := by
   obtain ⟨hd, hdn⟩ := Nat.mem_properDivisors.mp h
@@ -440,7 +440,7 @@ theorem X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd (R) [CommRing 
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd Polynomial.X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd
 
-theorem X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd (R) [CommRing R] {d n : ℕ}
+lemma X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd (R) [CommRing R] {d n : ℕ}
     (h : d ∈ n.properDivisors) : (X ^ d - 1) * cyclotomic n R ∣ X ^ n - 1 := by
   have hdn := (Nat.mem_properDivisors.mp h).2
   use ∏ x in n.properDivisors \ d.divisors, cyclotomic x R
@@ -536,7 +536,7 @@ theorem cyclotomic_eq_prod_X_sub_primitiveRoots {K : Type*} [CommRing K] [IsDoma
 set_option linter.uppercaseLean3 false in
 #align polynomial.cyclotomic_eq_prod_X_sub_primitive_roots Polynomial.cyclotomic_eq_prod_X_sub_primitiveRoots
 
-theorem eq_cyclotomic_iff {R : Type*} [CommRing R] {n : ℕ} (hpos : 0 < n) (P : R[X]) :
+lemma eq_cyclotomic_iff {R : Type*} [CommRing R] {n : ℕ} (hpos : 0 < n) (P : R[X]) :
     P = cyclotomic n R ↔
     (P * ∏ i in Nat.properDivisors n, Polynomial.cyclotomic i R) = X ^ n - 1 := by
   nontriviality R
@@ -576,7 +576,7 @@ theorem cyclotomic_prime_pow_eq_geom_sum {R : Type*} [CommRing R] {p n : ℕ} (h
 
 #align polynomial.cyclotomic_prime_pow_eq_geom_sum Polynomial.cyclotomic_prime_pow_eq_geom_sum
 
-theorem cyclotomic_prime_pow_mul_X_pow_sub_one (R : Type*) [CommRing R] (p k : ℕ)
+lemma cyclotomic_prime_pow_mul_X_pow_sub_one (R : Type*) [CommRing R] (p k : ℕ)
     [hn : Fact (Nat.Prime p)] :
     cyclotomic (p ^ (k + 1)) R * (X ^ p ^ k - 1) = X ^ p ^ (k + 1) - 1 := by
   rw [cyclotomic_prime_pow_eq_geom_sum hn.out, geom_sum_mul, ← pow_mul, pow_succ, mul_comm]

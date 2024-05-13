@@ -116,7 +116,7 @@ protected def nonUnitalRingHom {γ : Type w} [∀ i, NonUnitalNonAssocSemiring (
     toFun := fun x b => g b x }
 #align pi.non_unital_ring_hom Pi.nonUnitalRingHom
 
-theorem nonUnitalRingHom_injective {γ : Type w} [Nonempty I]
+lemma nonUnitalRingHom_injective {γ : Type w} [Nonempty I]
     [∀ i, NonUnitalNonAssocSemiring (f i)] [NonUnitalNonAssocSemiring γ] (g : ∀ i, γ →ₙ+* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.nonUnitalRingHom g) :=
   mulHom_injective (fun i => (g i).toMulHom) hg
@@ -132,7 +132,7 @@ protected def ringHom {γ : Type w} [∀ i, NonAssocSemiring (f i)] [NonAssocSem
 #align pi.ring_hom Pi.ringHom
 #align pi.ring_hom_apply Pi.ringHom_apply
 
-theorem ringHom_injective {γ : Type w} [Nonempty I] [∀ i, NonAssocSemiring (f i)]
+lemma ringHom_injective {γ : Type w} [Nonempty I] [∀ i, NonAssocSemiring (f i)]
     [NonAssocSemiring γ] (g : ∀ i, γ →+* f i) (hg : ∀ i, Function.Injective (g i)) :
     Function.Injective (Pi.ringHom g) :=
   monoidHom_injective (fun i => (g i).toMonoidHom) hg

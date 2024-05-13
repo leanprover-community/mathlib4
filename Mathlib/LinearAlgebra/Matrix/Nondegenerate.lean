@@ -63,13 +63,13 @@ theorem nondegenerate_of_det_ne_zero [DecidableEq m] {M : Matrix m m A} (hM : M.
     contradiction
 #align matrix.nondegenerate_of_det_ne_zero Matrix.nondegenerate_of_det_ne_zero
 
-theorem eq_zero_of_vecMul_eq_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det ≠ 0) {v : m → A}
+lemma eq_zero_of_vecMul_eq_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det ≠ 0) {v : m → A}
     (hv : v ᵥ* M = 0) : v = 0 :=
   (nondegenerate_of_det_ne_zero hM).eq_zero_of_ortho fun w => by
     rw [dotProduct_mulVec, hv, zero_dotProduct]
 #align matrix.eq_zero_of_vec_mul_eq_zero Matrix.eq_zero_of_vecMul_eq_zero
 
-theorem eq_zero_of_mulVec_eq_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det ≠ 0) {v : m → A}
+lemma eq_zero_of_mulVec_eq_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det ≠ 0) {v : m → A}
     (hv : M *ᵥ v = 0) : v = 0 :=
   eq_zero_of_vecMul_eq_zero (by rwa [det_transpose]) ((vecMul_transpose M v).trans hv)
 #align matrix.eq_zero_of_mul_vec_eq_zero Matrix.eq_zero_of_mulVec_eq_zero

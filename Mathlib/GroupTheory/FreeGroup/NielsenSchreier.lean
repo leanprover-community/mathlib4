@@ -180,7 +180,7 @@ theorem treeHom_eq {a : G} (p : Path (root T) a) : treeHom T a = homOfPath T p :
 #align is_free_groupoid.spanning_tree.tree_hom_eq IsFreeGroupoid.SpanningTree.treeHom_eq
 
 @[simp]
-theorem treeHom_root : treeHom T (root' T) = 𝟙 _ :=
+lemma treeHom_root : treeHom T (root' T) = 𝟙 _ :=
   -- this should just be `treeHom_eq T Path.nil`, but Lean treats `homOfPath` with suspicion.
     _root_.trans
     (treeHom_eq T Path.nil) rfl

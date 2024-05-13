@@ -50,19 +50,19 @@ instance rel : LargeCategory RelCat where
 
 namespace RelCat
 
-@[ext] theorem hom_ext {X Y : RelCat} (f g : X ⟶ Y) (h : ∀ a b, f a b ↔ g a b) : f = g :=
+@[ext] lemma hom_ext {X Y : RelCat} (f g : X ⟶ Y) (h : ∀ a b, f a b ↔ g a b) : f = g :=
   funext₂ (fun a b => propext (h a b))
 
 namespace Hom
 
-protected theorem rel_id (X : RelCat) : 𝟙 X = (· = ·) := rfl
+protected lemma rel_id (X : RelCat) : 𝟙 X = (· = ·) := rfl
 
-protected theorem rel_comp {X Y Z : RelCat} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ g = Rel.comp f g := rfl
+protected lemma rel_comp {X Y Z : RelCat} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ g = Rel.comp f g := rfl
 
-theorem rel_id_apply₂ (X : RelCat) (x y : X) : (𝟙 X) x y ↔ x = y := by
+lemma rel_id_apply₂ (X : RelCat) (x y : X) : (𝟙 X) x y ↔ x = y := by
   rw [RelCat.Hom.rel_id]
 
-theorem rel_comp_apply₂ {X Y Z : RelCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) (z : Z) :
+lemma rel_comp_apply₂ {X Y Z : RelCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) (z : Z) :
     (f ≫ g) x z ↔ ∃ y, f x y ∧ g y z := by rfl
 
 end Hom
@@ -79,7 +79,7 @@ def graphFunctor : Type u ⥤ RelCat.{u} where
     ext
     simp [Hom.rel_comp_apply₂]
 
-@[simp] theorem graphFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : X) (y : Y) :
+@[simp] lemma graphFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : X) (y : Y) :
     graphFunctor.map f x y ↔ f x = y := f.graph_def x y
 
 instance graphFunctor_faithful : graphFunctor.Faithful where
@@ -155,10 +155,10 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
     apply exists_congr
     exact fun a => And.comm
 
-@[simp] theorem opFunctor_comp_unopFunctor_eq :
+@[simp] lemma opFunctor_comp_unopFunctor_eq :
     Functor.comp opFunctor unopFunctor = Functor.id _ := rfl
 
-@[simp] theorem unopFunctor_comp_opFunctor_eq :
+@[simp] lemma unopFunctor_comp_opFunctor_eq :
     Functor.comp unopFunctor opFunctor = Functor.id _ := rfl
 
 /-- `rel` is self-dual: The map that swaps the argument order of a

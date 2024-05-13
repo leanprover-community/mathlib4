@@ -24,7 +24,7 @@ section Unary
 variable (xs : Vector α n) (f₁ : β → σ₁ → σ₁ × γ) (f₂ : α → σ₂ → σ₂ × β)
 
 @[simp]
-theorem mapAccumr_mapAccumr :
+lemma mapAccumr_mapAccumr :
     mapAccumr f₁ (mapAccumr f₂ xs s₂).snd s₁
     = let m := (mapAccumr (fun x s =>
         let r₂ := f₂ x s.snd
@@ -35,19 +35,19 @@ theorem mapAccumr_mapAccumr :
   induction xs using Vector.revInductionOn generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr_map (f₂ : α → β) :
+lemma mapAccumr_map (f₂ : α → β) :
     (mapAccumr f₁ (map f₂ xs) s) = (mapAccumr (fun x s => f₁ (f₂ x) s) xs s) := by
   induction xs using Vector.revInductionOn generalizing s <;> simp_all
 
 @[simp]
-theorem map_mapAccumr (f₁ : β → γ) :
+lemma map_mapAccumr (f₁ : β → γ) :
     (map f₁ (mapAccumr f₂ xs s).snd) = (mapAccumr (fun x s =>
         let r := (f₂ x s); (r.fst, f₁ r.snd)
       ) xs s).snd := by
   induction xs using Vector.revInductionOn generalizing s <;> simp_all
 
 @[simp]
-theorem map_map (f₁ : β → γ) (f₂ : α → β) :
+lemma map_map (f₁ : β → γ) (f₂ : α → β) :
     map f₁ (map f₂ xs) = map (fun x => f₁ <| f₂ x) xs := by
   induction xs using Vector.inductionOn <;> simp_all
 
@@ -57,7 +57,7 @@ section Binary
 variable (xs : Vector α n) (ys : Vector β n)
 
 @[simp]
-theorem mapAccumr₂_mapAccumr_left (f₁ : γ → β → σ₁ → σ₁ × ζ) (f₂ : α → σ₂ → σ₂ × γ) :
+lemma mapAccumr₂_mapAccumr_left (f₁ : γ → β → σ₁ → σ₁ × ζ) (f₂ : α → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr f₂ xs s₂).snd ys s₁)
     = let m := (mapAccumr₂ (fun x y s =>
           let r₂ := f₂ x s.snd
@@ -68,12 +68,12 @@ theorem mapAccumr₂_mapAccumr_left (f₁ : γ → β → σ₁ → σ₁ × ζ)
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem map₂_map_left (f₁ : γ → β → ζ) (f₂ : α → γ) :
+lemma map₂_map_left (f₁ : γ → β → ζ) (f₂ : α → γ) :
     map₂ f₁ (map f₂ xs) ys = map₂ (fun x y => f₁ (f₂ x) y) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr_right (f₁ : α → γ → σ₁ → σ₁ × ζ) (f₂ : β → σ₂ → σ₂ × γ) :
+lemma mapAccumr₂_mapAccumr_right (f₁ : α → γ → σ₁ → σ₁ × ζ) (f₂ : β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ xs (mapAccumr f₂ ys s₂).snd s₁)
     = let m := (mapAccumr₂ (fun x y s =>
           let r₂ := f₂ y s.snd
@@ -84,12 +84,12 @@ theorem mapAccumr₂_mapAccumr_right (f₁ : α → γ → σ₁ → σ₁ × ζ
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem map₂_map_right (f₁ : α → γ → ζ) (f₂ : β → γ) :
+lemma map₂_map_right (f₁ : α → γ → ζ) (f₂ : β → γ) :
     map₂ f₁ xs (map f₂ ys) = map₂ (fun x y => f₁ x (f₂ y)) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr_mapAccumr₂ (f₁ : γ → σ₁ → σ₁ × ζ) (f₂ : α → β → σ₂ → σ₂ × γ) :
+lemma mapAccumr_mapAccumr₂ (f₁ : γ → σ₁ → σ₁ × ζ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr f₁ (mapAccumr₂ f₂ xs ys s₂).snd s₁)
     = let m := mapAccumr₂ (fun x y s =>
           let r₂ := f₂ x y s.snd
@@ -100,12 +100,12 @@ theorem mapAccumr_mapAccumr₂ (f₁ : γ → σ₁ → σ₁ × ζ) (f₂ : α 
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem map_map₂ (f₁ : γ → ζ) (f₂ : α → β → γ) :
+lemma map_map₂ (f₁ : γ → ζ) (f₂ : α → β → γ) :
     map f₁ (map₂ f₂ xs ys) = map₂ (fun x y => f₁ <| f₂ x y) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
+lemma mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr₂ f₂ xs ys s₂).snd xs s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂
@@ -117,7 +117,7 @@ theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ�
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_left_right
+lemma mapAccumr₂_mapAccumr₂_left_right
     (f₁ : γ → β → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr₂ f₂ xs ys s₂).snd ys s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
@@ -130,7 +130,7 @@ theorem mapAccumr₂_mapAccumr₂_left_right
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_right_left (f₁ : α → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
+lemma mapAccumr₂_mapAccumr₂_right_left (f₁ : α → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ xs (mapAccumr₂ f₂ xs ys s₂).snd s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂
@@ -142,7 +142,7 @@ theorem mapAccumr₂_mapAccumr₂_right_left (f₁ : α → γ → σ₁ → σ�
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
+lemma mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ ys (mapAccumr₂ f₂ xs ys s₂).snd s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂
@@ -170,7 +170,7 @@ input values.
 section Bisim
 variable {xs : Vector α n}
 
-theorem mapAccumr_bisim {f₁ : α → σ₁ → σ₁ × β} {f₂ : α → σ₂ → σ₂ × β} {s₁ : σ₁} {s₂ : σ₂}
+lemma mapAccumr_bisim {f₁ : α → σ₁ → σ₁ × β} {f₂ : α → σ₂ → σ₂ × β} {s₁ : σ₁} {s₂ : σ₂}
     (R : σ₁ → σ₂ → Prop) (h₀ : R s₁ s₂)
     (hR : ∀ {s q} a, R s q → R (f₁ a s).1 (f₂ a q).1 ∧ (f₁ a s).2 = (f₂ a q).2) :
     R (mapAccumr f₁ xs s₁).fst (mapAccumr f₂ xs s₂).fst
@@ -182,14 +182,14 @@ theorem mapAccumr_bisim {f₁ : α → σ₁ → σ₁ × β} {f₂ : α → σ�
     simp only [mapAccumr_snoc, ih hR, true_and]
     congr 1
 
-theorem mapAccumr_bisim_tail {f₁ : α → σ₁ → σ₁ × β} {f₂ : α → σ₂ → σ₂ × β} {s₁ : σ₁} {s₂ : σ₂}
+lemma mapAccumr_bisim_tail {f₁ : α → σ₁ → σ₁ × β} {f₂ : α → σ₂ → σ₂ × β} {s₁ : σ₁} {s₂ : σ₂}
     (h : ∃ R : σ₁ → σ₂ → Prop, R s₁ s₂ ∧
       ∀ {s q} a, R s q → R (f₁ a s).1 (f₂ a q).1 ∧ (f₁ a s).2 = (f₂ a q).2) :
     (mapAccumr f₁ xs s₁).snd = (mapAccumr f₂ xs s₂).snd := by
   rcases h with ⟨R, h₀, hR⟩
   exact (mapAccumr_bisim R h₀ hR).2
 
-theorem mapAccumr₂_bisim {ys : Vector β n} {f₁ : α → β → σ₁ → σ₁ × γ}
+lemma mapAccumr₂_bisim {ys : Vector β n} {f₁ : α → β → σ₁ → σ₁ × γ}
     {f₂ : α → β → σ₂ → σ₂ × γ} {s₁ : σ₁} {s₂ : σ₂}
     (R : σ₁ → σ₂ → Prop) (h₀ : R s₁ s₂)
     (hR :  ∀ {s q} a b, R s q → R (f₁ a b s).1 (f₂ a b q).1 ∧ (f₁ a b s).2 = (f₂ a b q).2) :
@@ -202,7 +202,7 @@ theorem mapAccumr₂_bisim {ys : Vector β n} {f₁ : α → β → σ₁ → σ
     simp only [mapAccumr₂_snoc, ih hR, true_and]
     congr 1
 
-theorem mapAccumr₂_bisim_tail {ys : Vector β n} {f₁ : α → β → σ₁ → σ₁ × γ}
+lemma mapAccumr₂_bisim_tail {ys : Vector β n} {f₁ : α → β → σ₁ → σ₁ × γ}
     {f₂ : α → β → σ₂ → σ₂ × γ} {s₁ : σ₁} {s₂ : σ₂}
     (h : ∃ R : σ₁ → σ₂ → Prop, R s₁ s₂ ∧
       ∀ {s q} a b, R s q → R (f₁ a b s).1 (f₂ a b q).1 ∧ (f₁ a b s).2 = (f₂ a b q).2) :
@@ -221,7 +221,7 @@ accumulation state
 section RedundantState
 variable {xs : Vector α n} {ys : Vector β n}
 
-protected theorem map_eq_mapAccumr :
+protected lemma map_eq_mapAccumr :
     map f xs = (mapAccumr (fun x (_ : Unit) ↦ ((), f x)) xs ()).snd := by
   clear ys
   induction xs using Vector.revInductionOn <;> simp_all
@@ -240,7 +240,7 @@ theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (
   use fun s _ => s ∈ S, h₀
   exact @fun s _q a h => ⟨closure a s h, out a s s₀ h h₀⟩
 
-protected theorem map₂_eq_mapAccumr₂ :
+protected lemma map₂_eq_mapAccumr₂ :
     map₂ f xs ys = (mapAccumr₂ (fun x y (_ : Unit) ↦ ((), f x y)) xs ys ()).snd := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
@@ -366,11 +366,11 @@ end UnusedInput
 section Comm
 variable (xs ys : Vector α n)
 
-theorem map₂_comm (f : α → α → β) (comm : ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁) :
+lemma map₂_comm (f : α → α → β) (comm : ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁) :
     map₂ f xs ys = map₂ f ys xs := by
   induction xs, ys using Vector.inductionOn₂ <;> simp_all
 
-theorem mapAccumr₂_comm (f : α → α → σ → σ × γ) (comm : ∀ a₁ a₂ s, f a₁ a₂ s = f a₂ a₁ s) :
+lemma mapAccumr₂_comm (f : α → α → σ → σ × γ) (comm : ∀ a₁ a₂ s, f a₁ a₂ s = f a₂ a₁ s) :
     mapAccumr₂ f xs ys s = mapAccumr₂ f ys xs s := by
   induction xs, ys using Vector.inductionOn₂ generalizing s <;> simp_all
 
@@ -382,11 +382,11 @@ end Comm
 section Flip
 variable (xs : Vector α n) (ys : Vector β n)
 
-theorem map₂_flip (f : α → β → γ) :
+lemma map₂_flip (f : α → β → γ) :
     map₂ f xs ys = map₂ (flip f) ys xs := by
   induction xs, ys using Vector.inductionOn₂ <;> simp_all[flip]
 
-theorem mapAccumr₂_flip (f : α → β → σ → σ × γ) :
+lemma mapAccumr₂_flip (f : α → β → σ → σ × γ) :
     mapAccumr₂ f xs ys s = mapAccumr₂ (flip f) ys xs s := by
   induction xs, ys using Vector.inductionOn₂ <;> simp_all[flip]
 

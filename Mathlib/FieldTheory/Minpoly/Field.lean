@@ -42,7 +42,7 @@ theorem degree_le_of_ne_zero {p : A[X]} (pnz : p ≠ 0) (hp : Polynomial.aeval x
     _ = degree p := degree_mul_leadingCoeff_inv p pnz
 #align minpoly.degree_le_of_ne_zero minpoly.degree_le_of_ne_zero
 
-theorem ne_zero_of_finite (e : B) [FiniteDimensional A B] : minpoly A e ≠ 0 :=
+lemma ne_zero_of_finite (e : B) [FiniteDimensional A B] : minpoly A e ≠ 0 :=
   minpoly.ne_zero <| .of_finite A _
 #align minpoly.ne_zero_of_finite_field_extension minpoly.ne_zero_of_finite
 
@@ -80,17 +80,17 @@ variable {A x} in
 lemma dvd_iff {p : A[X]} : minpoly A x ∣ p ↔ Polynomial.aeval x p = 0 :=
   ⟨fun ⟨q, hq⟩ ↦ by rw [hq, map_mul, aeval, zero_mul], minpoly.dvd A x⟩
 
-theorem isRadical [IsReduced B] : IsRadical (minpoly A x) := fun n p dvd ↦ by
+lemma isRadical [IsReduced B] : IsRadical (minpoly A x) := fun n p dvd ↦ by
   rw [dvd_iff] at dvd ⊢; rw [map_pow] at dvd; exact IsReduced.eq_zero _ ⟨n, dvd⟩
 
-theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
+lemma dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
     minpoly K x ∣ (minpoly A x).map (algebraMap A K) := by
   refine' minpoly.dvd K x _
   rw [aeval_map_algebraMap, minpoly.aeval]
 #align minpoly.dvd_map_of_is_scalar_tower minpoly.dvd_map_of_isScalarTower
 
-theorem dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [CommRing R]
+lemma dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [CommRing R]
     [CommRing S] [Field K] [CommRing L] [Algebra R S] [Algebra R K] [Algebra S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L] (s : S) :
     minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (minpoly R s) := by
@@ -120,7 +120,7 @@ lemma ker_aeval_eq_span_minpoly :
 
 variable {A x}
 
-theorem eq_of_irreducible_of_monic [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
+lemma eq_of_irreducible_of_monic [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
     (hp2 : Polynomial.aeval x p = 0) (hp3 : p.Monic) : p = minpoly A x :=
   let ⟨_, hq⟩ := dvd A x hp2
   eq_of_monic_of_associated hp3 (monic ⟨p, ⟨hp3, hp2⟩⟩) <|
@@ -128,7 +128,7 @@ theorem eq_of_irreducible_of_monic [Nontrivial B] {p : A[X]} (hp1 : Irreducible 
       (associated_one_iff_isUnit.2 <| (hp1.isUnit_or_isUnit hq).resolve_left <| not_isUnit A x)
 #align minpoly.eq_of_irreducible_of_monic minpoly.eq_of_irreducible_of_monic
 
-theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
+lemma eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
     (hp2 : Polynomial.aeval x p = 0) : p * C p.leadingCoeff⁻¹ = minpoly A x := by
   have : p.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr hp1.ne_zero
   apply eq_of_irreducible_of_monic
@@ -138,7 +138,7 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
   · rwa [Polynomial.Monic, leadingCoeff_mul, leadingCoeff_C, mul_inv_cancel]
 #align minpoly.eq_of_irreducible minpoly.eq_of_irreducible
 
-theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
+lemma add_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
   refine' (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) _ fun q qmo hq => _).symm
   · simp [aeval_comp]
@@ -152,7 +152,7 @@ theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIn
       natDegree_X_add_C, mul_one] at H
 #align minpoly.add_algebra_map minpoly.add_algebraMap
 
-theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
+lemma sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
     (a : A) : minpoly A (x - algebraMap A B a) = (minpoly A x).comp (X + C a) := by
   simpa [sub_eq_add_neg] using add_algebraMap hx (-a)
 #align minpoly.sub_algebra_map minpoly.sub_algebraMap
@@ -179,7 +179,7 @@ def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
       ← aeval_def, aeval_algHom_apply, minpoly.aeval, map_zero]⟩
 #align minpoly.roots_of_min_poly_pi_type minpoly.rootsOfMinPolyPiType
 
-theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
+lemma aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   intro f g h
   -- needs explicit coercion on the RHS
   suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rwa [DFunLike.ext'_iff] at this ⊢
@@ -208,7 +208,7 @@ theorem eq_X_sub_C (a : A) : minpoly A (algebraMap A B a) = X - C a :=
 set_option linter.uppercaseLean3 false in
 #align minpoly.eq_X_sub_C minpoly.eq_X_sub_C
 
-theorem eq_X_sub_C' (a : A) : minpoly A a = X - C a :=
+lemma eq_X_sub_C' (a : A) : minpoly A a = X - C a :=
   eq_X_sub_C A a
 set_option linter.uppercaseLean3 false in
 #align minpoly.eq_X_sub_C' minpoly.eq_X_sub_C'

@@ -19,32 +19,32 @@ open Lean Meta Elab.Tactic Parser.Tactic
 
 variable (p q : Prop) (s : α → Prop)
 
-theorem not_not_eq : (¬ ¬ p) = p := propext not_not
-theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
-theorem not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or
-theorem not_or_eq : (¬ (p ∨ q)) = (¬ p ∧ ¬ q) := propext not_or
-theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
-theorem not_exists_eq : (¬ ∃ x, s x) = (∀ x, ¬ s x) := propext not_exists
-theorem not_implies_eq : (¬ (p → q)) = (p ∧ ¬ q) := propext Classical.not_imp
-theorem not_ne_eq (x y : α) : (¬ (x ≠ y)) = (x = y) := ne_eq x y ▸ not_not_eq _
-theorem not_iff : (¬ (p ↔ q)) = ((p ∧ ¬ q) ∨ (¬ p ∧ q)) := propext <|
+lemma not_not_eq : (¬ ¬ p) = p := propext not_not
+lemma not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
+lemma not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or
+lemma not_or_eq : (¬ (p ∨ q)) = (¬ p ∧ ¬ q) := propext not_or
+lemma not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
+lemma not_exists_eq : (¬ ∃ x, s x) = (∀ x, ¬ s x) := propext not_exists
+lemma not_implies_eq : (¬ (p → q)) = (p ∧ ¬ q) := propext Classical.not_imp
+lemma not_ne_eq (x y : α) : (¬ (x ≠ y)) = (x = y) := ne_eq x y ▸ not_not_eq _
+lemma not_iff : (¬ (p ↔ q)) = ((p ∧ ¬ q) ∨ (¬ p ∧ q)) := propext <|
   _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
 
 variable {β : Type u} [LinearOrder β]
-theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
-theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
-theorem not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
-theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
+lemma not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
+lemma not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
+lemma not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
+lemma not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
 
-theorem not_nonempty_eq (s : Set γ) : (¬ s.Nonempty) = (s = ∅) := by
+lemma not_nonempty_eq (s : Set γ) : (¬ s.Nonempty) = (s = ∅) := by
   have A : ∀ (x : γ), ¬(x ∈ (∅ : Set γ)) := fun x ↦ id
   simp only [Set.Nonempty, not_exists, eq_iff_iff]
   exact ⟨fun h ↦ Set.ext (fun x ↦ by simp only [h x, false_iff, A]), fun h ↦ by rwa [h]⟩
 
-theorem ne_empty_eq_nonempty (s : Set γ) : (s ≠ ∅) = s.Nonempty := by
+lemma ne_empty_eq_nonempty (s : Set γ) : (s ≠ ∅) = s.Nonempty := by
   rw [ne_eq, ← not_nonempty_eq s, not_not]
 
-theorem empty_ne_eq_nonempty (s : Set γ) : (∅ ≠ s) = s.Nonempty := by
+lemma empty_ne_eq_nonempty (s : Set γ) : (∅ ≠ s) = s.Nonempty := by
   rw [ne_comm, ne_empty_eq_nonempty]
 
 /-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/

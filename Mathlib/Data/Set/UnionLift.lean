@@ -62,21 +62,21 @@ variable {S : ι → Set α} {f : ∀ i, S i → β}
   {hT : T ⊆ iUnion S} (hT' : T = iUnion S)
 
 @[simp]
-theorem iUnionLift_mk {i : ι} (x : S i) (hx : (x : α) ∈ T) :
+lemma iUnionLift_mk {i : ι} (x : S i) (hx : (x : α) ∈ T) :
     iUnionLift S f hf T hT ⟨x, hx⟩ = f i x := hf _ i x _ _
 #align set.Union_lift_mk Set.iUnionLift_mk
 
 @[simp]
-theorem iUnionLift_inclusion {i : ι} (x : S i) (h : S i ⊆ T) :
+lemma iUnionLift_inclusion {i : ι} (x : S i) (h : S i ⊆ T) :
     iUnionLift S f hf T hT (Set.inclusion h x) = f i x :=
   iUnionLift_mk x _
 #align set.Union_lift_inclusion Set.iUnionLift_inclusion
 
-theorem iUnionLift_of_mem (x : T) {i : ι} (hx : (x : α) ∈ S i) :
+lemma iUnionLift_of_mem (x : T) {i : ι} (hx : (x : α) ∈ S i) :
     iUnionLift S f hf T hT x = f i ⟨x, hx⟩ := by cases' x with x hx; exact hf _ _ _ _ _
 #align set.Union_lift_of_mem Set.iUnionLift_of_mem
 
-theorem preimage_iUnionLift (t : Set β) :
+lemma preimage_iUnionLift (t : Set β) :
     iUnionLift S f hf T hT ⁻¹' t =
       inclusion hT ⁻¹' (⋃ i, inclusion (subset_iUnion S i) '' (f i ⁻¹' t)) := by
   ext x
@@ -165,16 +165,16 @@ noncomputable def liftCover (S : ι → Set α) (f : ∀ i, S i → β)
 #align set.lift_cover Set.liftCover
 
 @[simp]
-theorem liftCover_coe {i : ι} (x : S i) : liftCover S f hf hS x = f i x :=
+lemma liftCover_coe {i : ι} (x : S i) : liftCover S f hf hS x = f i x :=
   iUnionLift_mk x _
 #align set.lift_cover_coe Set.liftCover_coe
 
-theorem liftCover_of_mem {i : ι} {x : α} (hx : (x : α) ∈ S i) :
+lemma liftCover_of_mem {i : ι} {x : α} (hx : (x : α) ∈ S i) :
     liftCover S f hf hS x = f i ⟨x, hx⟩ :=
   iUnionLift_of_mem (⟨x, trivial⟩ : {_z // True}) hx
 #align set.lift_cover_of_mem Set.liftCover_of_mem
 
-theorem preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, (↑) '' (f i ⁻¹' t) := by
+lemma preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, (↑) '' (f i ⁻¹' t) := by
   change (iUnionLift S f hf univ hS.symm.subset ∘ fun a => ⟨a, mem_univ a⟩) ⁻¹' t = _
   rw [preimage_comp, preimage_iUnionLift]
   ext; simp

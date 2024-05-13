@@ -51,34 +51,34 @@ def equivRealProd : ℂ ≃ ℝ × ℝ where
 #align complex.equiv_real_prod Complex.equivRealProd
 
 @[simp]
-theorem eta : ∀ z : ℂ, Complex.mk z.re z.im = z
+lemma eta : ∀ z : ℂ, Complex.mk z.re z.im = z
   | ⟨_, _⟩ => rfl
 #align complex.eta Complex.eta
 
 -- We only mark this lemma with `ext` *locally* to avoid it applying whenever terms of `ℂ` appear.
-theorem ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
+lemma ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
   | ⟨_, _⟩, ⟨_, _⟩, rfl, rfl => rfl
 #align complex.ext Complex.ext
 
 attribute [local ext] Complex.ext
 
-theorem ext_iff {z w : ℂ} : z = w ↔ z.re = w.re ∧ z.im = w.im :=
+lemma ext_iff {z w : ℂ} : z = w ↔ z.re = w.re ∧ z.im = w.im :=
   ⟨fun H => by simp [H], fun h => ext h.1 h.2⟩
 #align complex.ext_iff Complex.ext_iff
 
-theorem re_surjective : Surjective re := fun x => ⟨⟨x, 0⟩, rfl⟩
+lemma re_surjective : Surjective re := fun x => ⟨⟨x, 0⟩, rfl⟩
 #align complex.re_surjective Complex.re_surjective
 
-theorem im_surjective : Surjective im := fun y => ⟨⟨0, y⟩, rfl⟩
+lemma im_surjective : Surjective im := fun y => ⟨⟨0, y⟩, rfl⟩
 #align complex.im_surjective Complex.im_surjective
 
 @[simp]
-theorem range_re : range re = univ :=
+lemma range_re : range re = univ :=
   re_surjective.range_eq
 #align complex.range_re Complex.range_re
 
 @[simp]
-theorem range_im : range im = univ :=
+lemma range_im : range im = univ :=
   im_surjective.range_eq
 #align complex.range_im Complex.range_im
 
@@ -92,26 +92,26 @@ instance : Coe ℝ ℂ :=
   ⟨ofReal'⟩
 
 @[simp, norm_cast]
-theorem ofReal_re (r : ℝ) : Complex.re (r : ℂ) = r :=
+lemma ofReal_re (r : ℝ) : Complex.re (r : ℂ) = r :=
   rfl
 #align complex.of_real_re Complex.ofReal_re
 
 @[simp, norm_cast]
-theorem ofReal_im (r : ℝ) : (r : ℂ).im = 0 :=
+lemma ofReal_im (r : ℝ) : (r : ℂ).im = 0 :=
   rfl
 #align complex.of_real_im Complex.ofReal_im
 
-theorem ofReal_def (r : ℝ) : (r : ℂ) = ⟨r, 0⟩ :=
+lemma ofReal_def (r : ℝ) : (r : ℂ) = ⟨r, 0⟩ :=
   rfl
 #align complex.of_real_def Complex.ofReal_def
 
 @[simp, norm_cast]
-theorem ofReal_inj {z w : ℝ} : (z : ℂ) = w ↔ z = w :=
+lemma ofReal_inj {z w : ℝ} : (z : ℂ) = w ↔ z = w :=
   ⟨congrArg re, by apply congrArg⟩
 #align complex.of_real_inj Complex.ofReal_inj
 
 -- Porting note: made coercion explicit
-theorem ofReal_injective : Function.Injective ((↑) : ℝ → ℂ) := fun _ _ => congrArg re
+lemma ofReal_injective : Function.Injective ((↑) : ℝ → ℂ) := fun _ _ => congrArg re
 #align complex.of_real_injective Complex.ofReal_injective
 
 -- Porting note: made coercion explicit
@@ -128,7 +128,7 @@ def Set.reProdIm (s t : Set ℝ) : Set ℂ :=
 @[inherit_doc]
 infixl:72 " ×ℂ " => Set.reProdIm
 
-theorem mem_reProdIm {z : ℂ} {s t : Set ℝ} : z ∈ s ×ℂ t ↔ z.re ∈ s ∧ z.im ∈ t :=
+lemma mem_reProdIm {z : ℂ} {s t : Set ℝ} : z ∈ s ×ℂ t ↔ z.re ∈ s ∧ z.im ∈ t :=
   Iff.rfl
 #align complex.mem_re_prod_im Complex.mem_reProdIm
 
@@ -139,26 +139,26 @@ instance : Inhabited ℂ :=
   ⟨0⟩
 
 @[simp]
-theorem zero_re : (0 : ℂ).re = 0 :=
+lemma zero_re : (0 : ℂ).re = 0 :=
   rfl
 #align complex.zero_re Complex.zero_re
 
 @[simp]
-theorem zero_im : (0 : ℂ).im = 0 :=
+lemma zero_im : (0 : ℂ).im = 0 :=
   rfl
 #align complex.zero_im Complex.zero_im
 
 @[simp, norm_cast]
-theorem ofReal_zero : ((0 : ℝ) : ℂ) = 0 :=
+lemma ofReal_zero : ((0 : ℝ) : ℂ) = 0 :=
   rfl
 #align complex.of_real_zero Complex.ofReal_zero
 
 @[simp]
-theorem ofReal_eq_zero {z : ℝ} : (z : ℂ) = 0 ↔ z = 0 :=
+lemma ofReal_eq_zero {z : ℝ} : (z : ℂ) = 0 ↔ z = 0 :=
   ofReal_inj
 #align complex.of_real_eq_zero Complex.ofReal_eq_zero
 
-theorem ofReal_ne_zero {z : ℝ} : (z : ℂ) ≠ 0 ↔ z ≠ 0 :=
+lemma ofReal_ne_zero {z : ℝ} : (z : ℂ) ≠ 0 ↔ z ≠ 0 :=
   not_congr ofReal_eq_zero
 #align complex.of_real_ne_zero Complex.ofReal_ne_zero
 
@@ -166,26 +166,26 @@ instance : One ℂ :=
   ⟨(1 : ℝ)⟩
 
 @[simp]
-theorem one_re : (1 : ℂ).re = 1 :=
+lemma one_re : (1 : ℂ).re = 1 :=
   rfl
 #align complex.one_re Complex.one_re
 
 @[simp]
-theorem one_im : (1 : ℂ).im = 0 :=
+lemma one_im : (1 : ℂ).im = 0 :=
   rfl
 #align complex.one_im Complex.one_im
 
 @[simp, norm_cast]
-theorem ofReal_one : ((1 : ℝ) : ℂ) = 1 :=
+lemma ofReal_one : ((1 : ℝ) : ℂ) = 1 :=
   rfl
 #align complex.of_real_one Complex.ofReal_one
 
 @[simp]
-theorem ofReal_eq_one {z : ℝ} : (z : ℂ) = 1 ↔ z = 1 :=
+lemma ofReal_eq_one {z : ℝ} : (z : ℂ) = 1 ↔ z = 1 :=
   ofReal_inj
 #align complex.of_real_eq_one Complex.ofReal_eq_one
 
-theorem ofReal_ne_one {z : ℝ} : (z : ℂ) ≠ 1 ↔ z ≠ 1 :=
+lemma ofReal_ne_one {z : ℝ} : (z : ℂ) ≠ 1 ↔ z ≠ 1 :=
   not_congr ofReal_eq_one
 #align complex.of_real_ne_one Complex.ofReal_ne_one
 
@@ -193,12 +193,12 @@ instance : Add ℂ :=
   ⟨fun z w => ⟨z.re + w.re, z.im + w.im⟩⟩
 
 @[simp]
-theorem add_re (z w : ℂ) : (z + w).re = z.re + w.re :=
+lemma add_re (z w : ℂ) : (z + w).re = z.re + w.re :=
   rfl
 #align complex.add_re Complex.add_re
 
 @[simp]
-theorem add_im (z w : ℂ) : (z + w).im = z.im + w.im :=
+lemma add_im (z w : ℂ) : (z + w).im = z.im + w.im :=
   rfl
 #align complex.add_im Complex.add_im
 
@@ -210,7 +210,7 @@ theorem add_im (z w : ℂ) : (z + w).im = z.im + w.im :=
 #noalign complex.bit1_im
 
 @[simp, norm_cast]
-theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
+lemma ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_add Complex.ofReal_add
 
@@ -222,17 +222,17 @@ instance : Neg ℂ :=
   ⟨fun z => ⟨-z.re, -z.im⟩⟩
 
 @[simp]
-theorem neg_re (z : ℂ) : (-z).re = -z.re :=
+lemma neg_re (z : ℂ) : (-z).re = -z.re :=
   rfl
 #align complex.neg_re Complex.neg_re
 
 @[simp]
-theorem neg_im (z : ℂ) : (-z).im = -z.im :=
+lemma neg_im (z : ℂ) : (-z).im = -z.im :=
   rfl
 #align complex.neg_im Complex.neg_im
 
 @[simp, norm_cast]
-theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : ℂ) = -r :=
+lemma ofReal_neg (r : ℝ) : ((-r : ℝ) : ℂ) = -r :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_neg Complex.ofReal_neg
 
@@ -243,30 +243,30 @@ instance : Mul ℂ :=
   ⟨fun z w => ⟨z.re * w.re - z.im * w.im, z.re * w.im + z.im * w.re⟩⟩
 
 @[simp]
-theorem mul_re (z w : ℂ) : (z * w).re = z.re * w.re - z.im * w.im :=
+lemma mul_re (z w : ℂ) : (z * w).re = z.re * w.re - z.im * w.im :=
   rfl
 #align complex.mul_re Complex.mul_re
 
 @[simp]
-theorem mul_im (z w : ℂ) : (z * w).im = z.re * w.im + z.im * w.re :=
+lemma mul_im (z w : ℂ) : (z * w).im = z.re * w.im + z.im * w.re :=
   rfl
 #align complex.mul_im Complex.mul_im
 
 @[simp, norm_cast]
-theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : ℂ) = r * s :=
+lemma ofReal_mul (r s : ℝ) : ((r * s : ℝ) : ℂ) = r * s :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_mul Complex.ofReal_mul
 
-theorem re_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).re = r * z.re := by simp [ofReal']
+lemma re_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).re = r * z.re := by simp [ofReal']
 #align complex.of_real_mul_re Complex.re_ofReal_mul
 
-theorem im_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).im = r * z.im := by simp [ofReal']
+lemma im_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).im = r * z.im := by simp [ofReal']
 #align complex.of_real_mul_im Complex.im_ofReal_mul
 
 lemma re_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).re = z.re *  r := by simp [ofReal']
 lemma im_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).im = z.im *  r := by simp [ofReal']
 
-theorem ofReal_mul' (r : ℝ) (z : ℂ) : ↑r * z = ⟨r * z.re, r * z.im⟩ :=
+lemma ofReal_mul' (r : ℝ) (z : ℂ) : ↑r * z = ⟨r * z.re, r * z.im⟩ :=
   ext (re_ofReal_mul _ _) (im_ofReal_mul _ _)
 #align complex.of_real_mul' Complex.ofReal_mul'
 
@@ -280,24 +280,24 @@ set_option linter.uppercaseLean3 false in
 #align complex.I Complex.I
 
 @[simp]
-theorem I_re : I.re = 0 :=
+lemma I_re : I.re = 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align complex.I_re Complex.I_re
 
 @[simp]
-theorem I_im : I.im = 1 :=
+lemma I_im : I.im = 1 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align complex.I_im Complex.I_im
 
 @[simp]
-theorem I_mul_I : I * I = -1 :=
+lemma I_mul_I : I * I = -1 :=
   ext_iff.2 <| by simp
 set_option linter.uppercaseLean3 false in
 #align complex.I_mul_I Complex.I_mul_I
 
-theorem I_mul (z : ℂ) : I * z = ⟨-z.im, z.re⟩ :=
+lemma I_mul (z : ℂ) : I * z = ⟨-z.im, z.re⟩ :=
   ext_iff.2 <| by simp
 set_option linter.uppercaseLean3 false in
 #align complex.I_mul Complex.I_mul
@@ -306,34 +306,34 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align complex.I_ne_zero Complex.I_ne_zero
 
-theorem mk_eq_add_mul_I (a b : ℝ) : Complex.mk a b = a + b * I :=
+lemma mk_eq_add_mul_I (a b : ℝ) : Complex.mk a b = a + b * I :=
   ext_iff.2 <| by simp [ofReal']
 set_option linter.uppercaseLean3 false in
 #align complex.mk_eq_add_mul_I Complex.mk_eq_add_mul_I
 
 @[simp]
-theorem re_add_im (z : ℂ) : (z.re : ℂ) + z.im * I = z :=
+lemma re_add_im (z : ℂ) : (z.re : ℂ) + z.im * I = z :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.re_add_im Complex.re_add_im
 
-theorem mul_I_re (z : ℂ) : (z * I).re = -z.im := by simp
+lemma mul_I_re (z : ℂ) : (z * I).re = -z.im := by simp
 set_option linter.uppercaseLean3 false in
 #align complex.mul_I_re Complex.mul_I_re
 
-theorem mul_I_im (z : ℂ) : (z * I).im = z.re := by simp
+lemma mul_I_im (z : ℂ) : (z * I).im = z.re := by simp
 set_option linter.uppercaseLean3 false in
 #align complex.mul_I_im Complex.mul_I_im
 
-theorem I_mul_re (z : ℂ) : (I * z).re = -z.im := by simp
+lemma I_mul_re (z : ℂ) : (I * z).re = -z.im := by simp
 set_option linter.uppercaseLean3 false in
 #align complex.I_mul_re Complex.I_mul_re
 
-theorem I_mul_im (z : ℂ) : (I * z).im = z.re := by simp
+lemma I_mul_im (z : ℂ) : (I * z).im = z.re := by simp
 set_option linter.uppercaseLean3 false in
 #align complex.I_mul_im Complex.I_mul_im
 
 @[simp]
-theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 + p.2 * I := by
+lemma equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 + p.2 * I := by
   ext <;> simp [Complex.equivRealProd, ofReal']
 #align complex.equiv_real_prod_symm_apply Complex.equivRealProd_symm_apply
 
@@ -367,14 +367,14 @@ section SMul
 
 variable {R : Type*} [SMul R ℝ]
 
-theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
+lemma smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
 #align complex.smul_re Complex.smul_re
 
-theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im := by simp [(· • ·), SMul.smul]
+lemma smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im := by simp [(· • ·), SMul.smul]
 #align complex.smul_im Complex.smul_im
 
 @[simp]
-theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
+lemma real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
   rfl
 #align complex.real_smul Complex.real_smul
 
@@ -463,7 +463,7 @@ def reAddGroupHom : ℂ →+ ℝ where
 #align complex.re_add_group_hom Complex.reAddGroupHom
 
 @[simp]
-theorem coe_reAddGroupHom : (reAddGroupHom : ℂ → ℝ) = re :=
+lemma coe_reAddGroupHom : (reAddGroupHom : ℂ → ℝ) = re :=
   rfl
 #align complex.coe_re_add_group_hom Complex.coe_reAddGroupHom
 
@@ -475,19 +475,19 @@ def imAddGroupHom : ℂ →+ ℝ where
 #align complex.im_add_group_hom Complex.imAddGroupHom
 
 @[simp]
-theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
+lemma coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
   rfl
 #align complex.coe_im_add_group_hom Complex.coe_imAddGroupHom
 
 section
 set_option linter.deprecated false
 @[simp]
-theorem I_pow_bit0 (n : ℕ) : I ^ bit0 n = (-1 : ℂ) ^ n := by rw [pow_bit0', Complex.I_mul_I]
+lemma I_pow_bit0 (n : ℕ) : I ^ bit0 n = (-1 : ℂ) ^ n := by rw [pow_bit0', Complex.I_mul_I]
 set_option linter.uppercaseLean3 false in
 #align complex.I_pow_bit0 Complex.I_pow_bit0
 
 @[simp]
-theorem I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [pow_bit1', Complex.I_mul_I]
+lemma I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [pow_bit1', Complex.I_mul_I]
 set_option linter.uppercaseLean3 false in
 #align complex.I_pow_bit1 Complex.I_pow_bit1
 
@@ -544,21 +544,21 @@ instance : StarRing ℂ where
   star_add a b := by ext <;> simp [add_comm]
 
 @[simp]
-theorem conj_re (z : ℂ) : (conj z).re = z.re :=
+lemma conj_re (z : ℂ) : (conj z).re = z.re :=
   rfl
 #align complex.conj_re Complex.conj_re
 
 @[simp]
-theorem conj_im (z : ℂ) : (conj z).im = -z.im :=
+lemma conj_im (z : ℂ) : (conj z).im = -z.im :=
   rfl
 #align complex.conj_im Complex.conj_im
 
-theorem conj_ofReal (r : ℝ) : conj (r : ℂ) = r :=
+lemma conj_ofReal (r : ℝ) : conj (r : ℂ) = r :=
   ext_iff.2 <| by simp [star]
 #align complex.conj_of_real Complex.conj_ofReal
 
 @[simp]
-theorem conj_I : conj I = -I :=
+lemma conj_I : conj I = -I :=
   ext_iff.2 <| by simp
   set_option linter.uppercaseLean3 false in
 #align complex.conj_I Complex.conj_I
@@ -566,31 +566,31 @@ theorem conj_I : conj I = -I :=
 #noalign complex.conj_bit0
 #noalign complex.conj_bit1
 
-theorem conj_natCast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
+lemma conj_natCast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
 
 -- See note [no_index around OfNat.ofNat]
-theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
+lemma conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
   map_ofNat _ _
 
 -- @[simp]
 /- Porting note (#11119): `simp` attribute removed as the result could be proved
 by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
 -/
-theorem conj_neg_I : conj (-I) = I :=
+lemma conj_neg_I : conj (-I) = I :=
   ext_iff.2 <| by simp
 set_option linter.uppercaseLean3 false in
 #align complex.conj_neg_I Complex.conj_neg_I
 
-theorem conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
+lemma conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
   ⟨fun h => ⟨z.re, ext rfl <| eq_zero_of_neg_eq (congr_arg im h)⟩, fun ⟨h, e⟩ => by
     rw [e, conj_ofReal]⟩
 #align complex.conj_eq_iff_real Complex.conj_eq_iff_real
 
-theorem conj_eq_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
+lemma conj_eq_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
   conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩; simp [ofReal'], fun h => ⟨_, h.symm⟩⟩
 #align complex.conj_eq_iff_re Complex.conj_eq_iff_re
 
-theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
+lemma conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
   ⟨fun h => add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp (congr_arg im h)), fun h =>
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
 #align complex.conj_eq_iff_im Complex.conj_eq_iff_im
@@ -599,7 +599,7 @@ theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
 -- though it's not imported by this file.
 -- Porting note: linter `simpNF` not found
 @[simp]
-theorem star_def : (Star.star : ℂ → ℂ) = conj :=
+lemma star_def : (Star.star : ℂ → ℂ) = conj :=
   rfl
 #align complex.star_def Complex.star_def
 
@@ -618,68 +618,68 @@ def normSq : ℂ →*₀ ℝ where
     ring
 #align complex.norm_sq Complex.normSq
 
-theorem normSq_apply (z : ℂ) : normSq z = z.re * z.re + z.im * z.im :=
+lemma normSq_apply (z : ℂ) : normSq z = z.re * z.re + z.im * z.im :=
   rfl
 #align complex.norm_sq_apply Complex.normSq_apply
 
 @[simp]
-theorem normSq_ofReal (r : ℝ) : normSq r = r * r := by
+lemma normSq_ofReal (r : ℝ) : normSq r = r * r := by
   simp [normSq, ofReal']
 #align complex.norm_sq_of_real Complex.normSq_ofReal
 
 @[simp]
-theorem normSq_natCast (n : ℕ) : normSq n = n * n := normSq_ofReal _
+lemma normSq_natCast (n : ℕ) : normSq n = n * n := normSq_ofReal _
 
 @[simp]
-theorem normSq_intCast (z : ℤ) : normSq z = z * z := normSq_ofReal _
+lemma normSq_intCast (z : ℤ) : normSq z = z * z := normSq_ofReal _
 
 @[simp]
-theorem normSq_ratCast (q : ℚ) : normSq q = q * q := normSq_ofReal _
+lemma normSq_ratCast (q : ℚ) : normSq q = q * q := normSq_ofReal _
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem normSq_ofNat (n : ℕ) [n.AtLeastTwo] :
+lemma normSq_ofNat (n : ℕ) [n.AtLeastTwo] :
     normSq (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n * OfNat.ofNat n :=
   normSq_natCast _
 
 @[simp]
-theorem normSq_mk (x y : ℝ) : normSq ⟨x, y⟩ = x * x + y * y :=
+lemma normSq_mk (x y : ℝ) : normSq ⟨x, y⟩ = x * x + y * y :=
   rfl
 #align complex.norm_sq_mk Complex.normSq_mk
 
-theorem normSq_add_mul_I (x y : ℝ) : normSq (x + y * I) = x ^ 2 + y ^ 2 := by
+lemma normSq_add_mul_I (x y : ℝ) : normSq (x + y * I) = x ^ 2 + y ^ 2 := by
   rw [← mk_eq_add_mul_I, normSq_mk, sq, sq]
 set_option linter.uppercaseLean3 false in
 #align complex.norm_sq_add_mul_I Complex.normSq_add_mul_I
 
-theorem normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
+lemma normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
   ext <;> simp [normSq, mul_comm, ofReal']
 #align complex.norm_sq_eq_conj_mul_self Complex.normSq_eq_conj_mul_self
 
 -- @[simp]
 /- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_zero]` -/
-theorem normSq_zero : normSq 0 = 0 :=
+lemma normSq_zero : normSq 0 = 0 :=
   normSq.map_zero
 #align complex.norm_sq_zero Complex.normSq_zero
 
 -- @[simp]
 /- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_one]` -/
-theorem normSq_one : normSq 1 = 1 :=
+lemma normSq_one : normSq 1 = 1 :=
   normSq.map_one
 #align complex.norm_sq_one Complex.normSq_one
 
 @[simp]
-theorem normSq_I : normSq I = 1 := by simp [normSq]
+lemma normSq_I : normSq I = 1 := by simp [normSq]
 set_option linter.uppercaseLean3 false in
 #align complex.norm_sq_I Complex.normSq_I
 
-theorem normSq_nonneg (z : ℂ) : 0 ≤ normSq z :=
+lemma normSq_nonneg (z : ℂ) : 0 ≤ normSq z :=
   add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
 #align complex.norm_sq_nonneg Complex.normSq_nonneg
 
-theorem normSq_eq_zero {z : ℂ} : normSq z = 0 ↔ z = 0 :=
+lemma normSq_eq_zero {z : ℂ} : normSq z = 0 ↔ z = 0 :=
   ⟨fun h =>
     ext (eq_zero_of_mul_self_add_mul_self_eq_zero h)
       (eq_zero_of_mul_self_add_mul_self_eq_zero <| (add_comm _ _).trans h),
@@ -687,7 +687,7 @@ theorem normSq_eq_zero {z : ℂ} : normSq z = 0 ↔ z = 0 :=
 #align complex.norm_sq_eq_zero Complex.normSq_eq_zero
 
 @[simp]
-theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
+lemma normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
   (normSq_nonneg z).lt_iff_ne.trans <| not_congr (eq_comm.trans normSq_eq_zero)
 #align complex.norm_sq_pos Complex.normSq_pos
 
@@ -695,34 +695,34 @@ theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
 -- The simpNF linter now times out on this lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/12228
 @[simp, nolint simpNF]
-theorem normSq_neg (z : ℂ) : normSq (-z) = normSq z := by simp [normSq]
+lemma normSq_neg (z : ℂ) : normSq (-z) = normSq z := by simp [normSq]
 #align complex.norm_sq_neg Complex.normSq_neg
 
 @[simp]
-theorem normSq_conj (z : ℂ) : normSq (conj z) = normSq z := by simp [normSq]
+lemma normSq_conj (z : ℂ) : normSq (conj z) = normSq z := by simp [normSq]
 #align complex.norm_sq_conj Complex.normSq_conj
 
-theorem normSq_mul (z w : ℂ) : normSq (z * w) = normSq z * normSq w :=
+lemma normSq_mul (z w : ℂ) : normSq (z * w) = normSq z * normSq w :=
   normSq.map_mul z w
 #align complex.norm_sq_mul Complex.normSq_mul
 
-theorem normSq_add (z w : ℂ) : normSq (z + w) = normSq z + normSq w + 2 * (z * conj w).re := by
+lemma normSq_add (z w : ℂ) : normSq (z + w) = normSq z + normSq w + 2 * (z * conj w).re := by
   dsimp [normSq]; ring
 #align complex.norm_sq_add Complex.normSq_add
 
-theorem re_sq_le_normSq (z : ℂ) : z.re * z.re ≤ normSq z :=
+lemma re_sq_le_normSq (z : ℂ) : z.re * z.re ≤ normSq z :=
   le_add_of_nonneg_right (mul_self_nonneg _)
 #align complex.re_sq_le_norm_sq Complex.re_sq_le_normSq
 
-theorem im_sq_le_normSq (z : ℂ) : z.im * z.im ≤ normSq z :=
+lemma im_sq_le_normSq (z : ℂ) : z.im * z.im ≤ normSq z :=
   le_add_of_nonneg_left (mul_self_nonneg _)
 #align complex.im_sq_le_norm_sq Complex.im_sq_le_normSq
 
-theorem mul_conj (z : ℂ) : z * conj z = normSq z :=
+lemma mul_conj (z : ℂ) : z * conj z = normSq z :=
   ext_iff.2 <| by simp [normSq, mul_comm, sub_eq_neg_add, add_comm, ofReal']
 #align complex.mul_conj Complex.mul_conj
 
-theorem add_conj (z : ℂ) : z + conj z = (2 * z.re : ℝ) :=
+lemma add_conj (z : ℂ) : z + conj z = (2 * z.re : ℝ) :=
   ext_iff.2 <| by simp [two_mul, ofReal']
 #align complex.add_conj Complex.add_conj
 
@@ -736,43 +736,43 @@ def ofReal : ℝ →+* ℂ where
 #align complex.of_real Complex.ofReal
 
 @[simp]
-theorem ofReal_eq_coe (r : ℝ) : ofReal r = r :=
+lemma ofReal_eq_coe (r : ℝ) : ofReal r = r :=
   rfl
 #align complex.of_real_eq_coe Complex.ofReal_eq_coe
 
 @[simp]
-theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
+lemma I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
 set_option linter.uppercaseLean3 false in
 #align complex.I_sq Complex.I_sq
 
 @[simp]
-theorem I_pow_four : I ^ 4 = 1 := by rw [(by norm_num : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
+lemma I_pow_four : I ^ 4 = 1 := by rw [(by norm_num : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
 
 @[simp]
-theorem sub_re (z w : ℂ) : (z - w).re = z.re - w.re :=
+lemma sub_re (z w : ℂ) : (z - w).re = z.re - w.re :=
   rfl
 #align complex.sub_re Complex.sub_re
 
 @[simp]
-theorem sub_im (z w : ℂ) : (z - w).im = z.im - w.im :=
+lemma sub_im (z w : ℂ) : (z - w).im = z.im - w.im :=
   rfl
 #align complex.sub_im Complex.sub_im
 
 @[simp, norm_cast]
-theorem ofReal_sub (r s : ℝ) : ((r - s : ℝ) : ℂ) = r - s :=
+lemma ofReal_sub (r s : ℝ) : ((r - s : ℝ) : ℂ) = r - s :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_sub Complex.ofReal_sub
 
 @[simp, norm_cast]
-theorem ofReal_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : ℂ) = (r : ℂ) ^ n := by
+lemma ofReal_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : ℂ) = (r : ℂ) ^ n := by
   induction n <;> simp [*, ofReal_mul, pow_succ]
 #align complex.of_real_pow Complex.ofReal_pow
 
-theorem sub_conj (z : ℂ) : z - conj z = (2 * z.im : ℝ) * I :=
+lemma sub_conj (z : ℂ) : z - conj z = (2 * z.im : ℝ) * I :=
   ext_iff.2 <| by simp [two_mul, sub_eq_add_neg, ofReal']
 #align complex.sub_conj Complex.sub_conj
 
-theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z * conj w).re := by
+lemma normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z * conj w).re := by
   rw [sub_eq_add_neg, normSq_add]
   simp only [RingHom.map_neg, mul_neg, neg_re, normSq_neg]
   ring
@@ -784,28 +784,28 @@ theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z *
 noncomputable instance : Inv ℂ :=
   ⟨fun z => conj z * ((normSq z)⁻¹ : ℝ)⟩
 
-theorem inv_def (z : ℂ) : z⁻¹ = conj z * ((normSq z)⁻¹ : ℝ) :=
+lemma inv_def (z : ℂ) : z⁻¹ = conj z * ((normSq z)⁻¹ : ℝ) :=
   rfl
 #align complex.inv_def Complex.inv_def
 
 @[simp]
-theorem inv_re (z : ℂ) : z⁻¹.re = z.re / normSq z := by simp [inv_def, division_def, ofReal']
+lemma inv_re (z : ℂ) : z⁻¹.re = z.re / normSq z := by simp [inv_def, division_def, ofReal']
 #align complex.inv_re Complex.inv_re
 
 @[simp]
-theorem inv_im (z : ℂ) : z⁻¹.im = -z.im / normSq z := by simp [inv_def, division_def, ofReal']
+lemma inv_im (z : ℂ) : z⁻¹.im = -z.im / normSq z := by simp [inv_def, division_def, ofReal']
 #align complex.inv_im Complex.inv_im
 
 @[simp, norm_cast]
-theorem ofReal_inv (r : ℝ) : ((r⁻¹ : ℝ) : ℂ) = (r : ℂ)⁻¹ :=
+lemma ofReal_inv (r : ℝ) : ((r⁻¹ : ℝ) : ℂ) = (r : ℂ)⁻¹ :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_inv Complex.ofReal_inv
 
-protected theorem inv_zero : (0⁻¹ : ℂ) = 0 := by
+protected lemma inv_zero : (0⁻¹ : ℂ) = 0 := by
   rw [← ofReal_zero, ← ofReal_inv, inv_zero]
 #align complex.inv_zero Complex.inv_zero
 
-protected theorem mul_inv_cancel {z : ℂ} (h : z ≠ 0) : z * z⁻¹ = 1 := by
+protected lemma mul_inv_cancel {z : ℂ} (h : z ≠ 0) : z * z⁻¹ = 1 := by
   rw [inv_def, ← mul_assoc, mul_conj, ← ofReal_mul, mul_inv_cancel (mt normSq_eq_zero.1 h),
     ofReal_one]
 #align complex.mul_inv_cancel Complex.mul_inv_cancel
@@ -842,39 +842,39 @@ lemma ofReal_qsmul (q : ℚ) (r : ℝ) : ofReal' (q • r) = q • r := by simp 
 section
 set_option linter.deprecated false
 @[simp]
-theorem I_zpow_bit0 (n : ℤ) : I ^ bit0 n = (-1 : ℂ) ^ n := by rw [zpow_bit0', I_mul_I]
+lemma I_zpow_bit0 (n : ℤ) : I ^ bit0 n = (-1 : ℂ) ^ n := by rw [zpow_bit0', I_mul_I]
 set_option linter.uppercaseLean3 false in
 #align complex.I_zpow_bit0 Complex.I_zpow_bit0
 
 @[simp]
-theorem I_zpow_bit1 (n : ℤ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [zpow_bit1', I_mul_I]
+lemma I_zpow_bit1 (n : ℤ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [zpow_bit1', I_mul_I]
 set_option linter.uppercaseLean3 false in
 #align complex.I_zpow_bit1 Complex.I_zpow_bit1
 
 end
 
-theorem conj_inv (x : ℂ) : conj x⁻¹ = (conj x)⁻¹ :=
+lemma conj_inv (x : ℂ) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv' _
 #align complex.conj_inv Complex.conj_inv
 
 @[simp, norm_cast]
-theorem ofReal_div (r s : ℝ) : ((r / s : ℝ) : ℂ) = r / s :=
+lemma ofReal_div (r s : ℝ) : ((r / s : ℝ) : ℂ) = r / s :=
   map_div₀ ofReal r s
 #align complex.of_real_div Complex.ofReal_div
 
 @[simp, norm_cast]
-theorem ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : ℂ) = (r : ℂ) ^ n :=
+lemma ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : ℂ) = (r : ℂ) ^ n :=
   map_zpow₀ ofReal r n
 #align complex.of_real_zpow Complex.ofReal_zpow
 
 @[simp]
-theorem div_I (z : ℂ) : z / I = -(z * I) :=
+lemma div_I (z : ℂ) : z / I = -(z * I) :=
   (div_eq_iff_mul_eq I_ne_zero).2 <| by simp [mul_assoc]
 set_option linter.uppercaseLean3 false in
 #align complex.div_I Complex.div_I
 
 @[simp]
-theorem inv_I : I⁻¹ = -I := by
+lemma inv_I : I⁻¹ = -I := by
   rw [inv_eq_one_div, div_I, one_mul]
 set_option linter.uppercaseLean3 false in
 #align complex.inv_I Complex.inv_I
@@ -882,14 +882,14 @@ set_option linter.uppercaseLean3 false in
 -- @[simp]
 /- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_inv₀]` -/
-theorem normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ :=
+lemma normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 #align complex.norm_sq_inv Complex.normSq_inv
 
 -- @[simp]
 /- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_div₀]` -/
-theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
+lemma normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 #align complex.norm_sq_div Complex.normSq_div
 

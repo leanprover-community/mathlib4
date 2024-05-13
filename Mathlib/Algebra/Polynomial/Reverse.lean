@@ -37,7 +37,7 @@ def revAtFun (N i : ℕ) : ℕ :=
   ite (i ≤ N) (N - i) i
 #align polynomial.rev_at_fun Polynomial.revAtFun
 
-theorem revAtFun_invol {N i : ℕ} : revAtFun N (revAtFun N i) = i := by
+lemma revAtFun_invol {N i : ℕ} : revAtFun N (revAtFun N i) = i := by
   unfold revAtFun
   split_ifs with h j
   · exact tsub_tsub_cancel_of_le h
@@ -47,7 +47,7 @@ theorem revAtFun_invol {N i : ℕ} : revAtFun N (revAtFun N i) = i := by
   · rfl
 #align polynomial.rev_at_fun_invol Polynomial.revAtFun_invol
 
-theorem revAtFun_inj {N : ℕ} : Function.Injective (revAtFun N) := by
+lemma revAtFun_inj {N : ℕ} : Function.Injective (revAtFun N) := by
   intro a b hab
   rw [← @revAtFun_invol N a, hab, revAtFun_invol]
 #align polynomial.rev_at_fun_inj Polynomial.revAtFun_inj
@@ -69,18 +69,18 @@ theorem revAtFun_eq (N i : ℕ) : revAtFun N i = revAt N i :=
 #align polynomial.rev_at_fun_eq Polynomial.revAtFun_eq
 
 @[simp]
-theorem revAt_invol {N i : ℕ} : (revAt N) (revAt N i) = i :=
+lemma revAt_invol {N i : ℕ} : (revAt N) (revAt N i) = i :=
   revAtFun_invol
 #align polynomial.rev_at_invol Polynomial.revAt_invol
 
 @[simp]
-theorem revAt_le {N i : ℕ} (H : i ≤ N) : revAt N i = N - i :=
+lemma revAt_le {N i : ℕ} (H : i ≤ N) : revAt N i = N - i :=
   if_pos H
 #align polynomial.rev_at_le Polynomial.revAt_le
 
 lemma revAt_eq_self_of_lt {N i : ℕ} (h : N < i) : revAt N i = i := by simp [revAt, Nat.not_le.mpr h]
 
-theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
+lemma revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
     revAt (N + O) (n + o) = revAt N n + revAt O o := by
   rcases Nat.le.dest hn with ⟨n', rfl⟩
   rcases Nat.le.dest ho with ⟨o', rfl⟩
@@ -90,7 +90,7 @@ theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
 #align polynomial.rev_at_add Polynomial.revAt_add
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem revAt_zero (N : ℕ) : revAt N 0 = N := by simp
+lemma revAt_zero (N : ℕ) : revAt N 0 = N := by simp
 #align polynomial.rev_at_zero Polynomial.revAt_zero
 
 /-- `reflect N f` is the polynomial such that `(reflect N f).coeff i = f.coeff (revAt N i)`.
@@ -103,7 +103,7 @@ noncomputable def reflect (N : ℕ) : R[X] → R[X]
   | ⟨f⟩ => ⟨Finsupp.embDomain (revAt N) f⟩
 #align polynomial.reflect Polynomial.reflect
 
-theorem reflect_support (N : ℕ) (f : R[X]) :
+lemma reflect_support (N : ℕ) (f : R[X]) :
     (reflect N f).support = Finset.image (revAt N) f.support := by
   rcases f with ⟨⟩
   ext1
@@ -111,7 +111,7 @@ theorem reflect_support (N : ℕ) (f : R[X]) :
 #align polynomial.reflect_support Polynomial.reflect_support
 
 @[simp]
-theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f.coeff (revAt N i) := by
+lemma coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f.coeff (revAt N i) := by
   rcases f with ⟨f⟩
   simp only [reflect, coeff]
   calc
@@ -121,30 +121,30 @@ theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f
 #align polynomial.coeff_reflect Polynomial.coeff_reflect
 
 @[simp]
-theorem reflect_zero {N : ℕ} : reflect N (0 : R[X]) = 0 :=
+lemma reflect_zero {N : ℕ} : reflect N (0 : R[X]) = 0 :=
   rfl
 #align polynomial.reflect_zero Polynomial.reflect_zero
 
 @[simp]
-theorem reflect_eq_zero_iff {N : ℕ} {f : R[X]} : reflect N (f : R[X]) = 0 ↔ f = 0 := by
+lemma reflect_eq_zero_iff {N : ℕ} {f : R[X]} : reflect N (f : R[X]) = 0 ↔ f = 0 := by
   rw [ofFinsupp_eq_zero, reflect, embDomain_eq_zero, ofFinsupp_eq_zero]
 #align polynomial.reflect_eq_zero_iff Polynomial.reflect_eq_zero_iff
 
 @[simp]
-theorem reflect_add (f g : R[X]) (N : ℕ) : reflect N (f + g) = reflect N f + reflect N g := by
+lemma reflect_add (f g : R[X]) (N : ℕ) : reflect N (f + g) = reflect N f + reflect N g := by
   ext
   simp only [coeff_add, coeff_reflect]
 #align polynomial.reflect_add Polynomial.reflect_add
 
 @[simp]
-theorem reflect_C_mul (f : R[X]) (r : R) (N : ℕ) : reflect N (C r * f) = C r * reflect N f := by
+lemma reflect_C_mul (f : R[X]) (r : R) (N : ℕ) : reflect N (C r * f) = C r * reflect N f := by
   ext
   simp only [coeff_reflect, coeff_C_mul]
 set_option linter.uppercaseLean3 false in
 #align polynomial.reflect_C_mul Polynomial.reflect_C_mul
 
 -- @[simp] -- Porting note (#10618): simp can prove this (once `reflect_monomial` is in simp scope)
-theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c * X ^ revAt N n := by
+lemma reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c * X ^ revAt N n := by
   ext
   rw [reflect_C_mul, coeff_C_mul, coeff_C_mul, coeff_X_pow, coeff_reflect]
   split_ifs with h
@@ -158,20 +158,20 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.reflect_C_mul_X_pow Polynomial.reflect_C_mul_X_pow
 
 @[simp]
-theorem reflect_C (r : R) (N : ℕ) : reflect N (C r) = C r * X ^ N := by
+lemma reflect_C (r : R) (N : ℕ) : reflect N (C r) = C r * X ^ N := by
   conv_lhs => rw [← mul_one (C r), ← pow_zero X, reflect_C_mul_X_pow, revAt_zero]
 set_option linter.uppercaseLean3 false in
 #align polynomial.reflect_C Polynomial.reflect_C
 
 @[simp]
-theorem reflect_monomial (N n : ℕ) : reflect N ((X : R[X]) ^ n) = X ^ revAt N n := by
+lemma reflect_monomial (N n : ℕ) : reflect N ((X : R[X]) ^ n) = X ^ revAt N n := by
   rw [← one_mul (X ^ n), ← one_mul (X ^ revAt N n), ← C_1, reflect_C_mul_X_pow]
 #align polynomial.reflect_monomial Polynomial.reflect_monomial
 
 @[simp] lemma reflect_one_X : reflect 1 (X : R[X]) = 1 := by
   simpa using reflect_monomial 1 1 (R := R)
 
-theorem reflect_mul_induction (cf cg : ℕ) :
+lemma reflect_mul_induction (cf cg : ℕ) :
     ∀ N O : ℕ,
       ∀ f g : R[X],
         f.support.card ≤ cf.succ →
@@ -210,7 +210,7 @@ theorem reflect_mul_induction (cf cg : ℕ) :
 #align polynomial.reflect_mul_induction Polynomial.reflect_mul_induction
 
 @[simp]
-theorem reflect_mul (f g : R[X]) {F G : ℕ} (Ff : f.natDegree ≤ F) (Gg : g.natDegree ≤ G) :
+lemma reflect_mul (f g : R[X]) {F G : ℕ} (Ff : f.natDegree ≤ F) (Gg : g.natDegree ≤ G) :
     reflect (F + G) (f * g) = reflect F f * reflect G g :=
   reflect_mul_induction _ _ F G f g f.support.card.le_succ g.support.card.le_succ Ff Gg
 #align polynomial.reflect_mul Polynomial.reflect_mul
@@ -219,7 +219,7 @@ section Eval₂
 
 variable {S : Type*} [CommSemiring S]
 
-theorem eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
+lemma eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
     (hf : f.natDegree ≤ N) : eval₂ i (⅟ x) (reflect N f) * x ^ N = eval₂ i x f := by
   refine'
     induction_with_natDegree_le (fun f => eval₂ i (⅟ x) (reflect N f) * x ^ N = eval₂ i x f) _ _ _
@@ -233,7 +233,7 @@ theorem eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ)
     simp [*, add_mul]
 #align polynomial.eval₂_reflect_mul_pow Polynomial.eval₂_reflect_mul_pow
 
-theorem eval₂_reflect_eq_zero_iff (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
+lemma eval₂_reflect_eq_zero_iff (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
     (hf : f.natDegree ≤ N) : eval₂ i (⅟ x) (reflect N f) = 0 ↔ eval₂ i x f = 0 := by
   conv_rhs => rw [← eval₂_reflect_mul_pow i x N f hf]
   constructor
@@ -252,25 +252,25 @@ noncomputable def reverse (f : R[X]) : R[X] :=
   reflect f.natDegree f
 #align polynomial.reverse Polynomial.reverse
 
-theorem coeff_reverse (f : R[X]) (n : ℕ) : f.reverse.coeff n = f.coeff (revAt f.natDegree n) := by
+lemma coeff_reverse (f : R[X]) (n : ℕ) : f.reverse.coeff n = f.coeff (revAt f.natDegree n) := by
   rw [reverse, coeff_reflect]
 #align polynomial.coeff_reverse Polynomial.coeff_reverse
 
 @[simp]
-theorem coeff_zero_reverse (f : R[X]) : coeff (reverse f) 0 = leadingCoeff f := by
+lemma coeff_zero_reverse (f : R[X]) : coeff (reverse f) 0 = leadingCoeff f := by
   rw [coeff_reverse, revAt_le (zero_le f.natDegree), tsub_zero, leadingCoeff]
 #align polynomial.coeff_zero_reverse Polynomial.coeff_zero_reverse
 
 @[simp]
-theorem reverse_zero : reverse (0 : R[X]) = 0 :=
+lemma reverse_zero : reverse (0 : R[X]) = 0 :=
   rfl
 #align polynomial.reverse_zero Polynomial.reverse_zero
 
 @[simp]
-theorem reverse_eq_zero : f.reverse = 0 ↔ f = 0 := by simp [reverse]
+lemma reverse_eq_zero : f.reverse = 0 ↔ f = 0 := by simp [reverse]
 #align polynomial.reverse_eq_zero Polynomial.reverse_eq_zero
 
-theorem reverse_natDegree_le (f : R[X]) : f.reverse.natDegree ≤ f.natDegree := by
+lemma reverse_natDegree_le (f : R[X]) : f.reverse.natDegree ≤ f.natDegree := by
   rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero]
   intro n hn
   rw [Nat.cast_lt] at hn
@@ -278,7 +278,7 @@ theorem reverse_natDegree_le (f : R[X]) : f.reverse.natDegree ≤ f.natDegree :=
     coeff_eq_zero_of_natDegree_lt hn]
 #align polynomial.reverse_nat_degree_le Polynomial.reverse_natDegree_le
 
-theorem natDegree_eq_reverse_natDegree_add_natTrailingDegree (f : R[X]) :
+lemma natDegree_eq_reverse_natDegree_add_natTrailingDegree (f : R[X]) :
     f.natDegree = f.reverse.natDegree + f.natTrailingDegree := by
   by_cases hf : f = 0
   · rw [hf, reverse_zero, natDegree_zero, natTrailingDegree_zero]
@@ -293,32 +293,32 @@ theorem natDegree_eq_reverse_natDegree_add_natTrailingDegree (f : R[X]) :
     rwa [leadingCoeff, coeff_reverse, revAt_le f.reverse_natDegree_le] at key
 #align polynomial.nat_degree_eq_reverse_nat_degree_add_nat_trailing_degree Polynomial.natDegree_eq_reverse_natDegree_add_natTrailingDegree
 
-theorem reverse_natDegree (f : R[X]) : f.reverse.natDegree = f.natDegree - f.natTrailingDegree := by
+lemma reverse_natDegree (f : R[X]) : f.reverse.natDegree = f.natDegree - f.natTrailingDegree := by
   rw [f.natDegree_eq_reverse_natDegree_add_natTrailingDegree, add_tsub_cancel_right]
 #align polynomial.reverse_nat_degree Polynomial.reverse_natDegree
 
-theorem reverse_leadingCoeff (f : R[X]) : f.reverse.leadingCoeff = f.trailingCoeff := by
+lemma reverse_leadingCoeff (f : R[X]) : f.reverse.leadingCoeff = f.trailingCoeff := by
   rw [leadingCoeff, reverse_natDegree, ← revAt_le f.natTrailingDegree_le_natDegree,
     coeff_reverse, revAt_invol, trailingCoeff]
 #align polynomial.reverse_leading_coeff Polynomial.reverse_leadingCoeff
 
-theorem natTrailingDegree_reverse (f : R[X]) : f.reverse.natTrailingDegree = 0 := by
+lemma natTrailingDegree_reverse (f : R[X]) : f.reverse.natTrailingDegree = 0 := by
   rw [natTrailingDegree_eq_zero, reverse_eq_zero, coeff_zero_reverse, leadingCoeff_ne_zero]
   exact eq_or_ne _ _
 #align polynomial.reverse_nat_trailing_degree Polynomial.natTrailingDegree_reverse
 
-theorem reverse_trailingCoeff (f : R[X]) : f.reverse.trailingCoeff = f.leadingCoeff := by
+lemma reverse_trailingCoeff (f : R[X]) : f.reverse.trailingCoeff = f.leadingCoeff := by
   rw [trailingCoeff, natTrailingDegree_reverse, coeff_zero_reverse]
 #align polynomial.reverse_trailing_coeff Polynomial.reverse_trailingCoeff
 
-theorem reverse_mul {f g : R[X]} (fg : f.leadingCoeff * g.leadingCoeff ≠ 0) :
+lemma reverse_mul {f g : R[X]} (fg : f.leadingCoeff * g.leadingCoeff ≠ 0) :
     reverse (f * g) = reverse f * reverse g := by
   unfold reverse
   rw [natDegree_mul' fg, reflect_mul f g rfl.le rfl.le]
 #align polynomial.reverse_mul Polynomial.reverse_mul
 
 @[simp]
-theorem reverse_mul_of_domain {R : Type*} [Ring R] [NoZeroDivisors R] (f g : R[X]) :
+lemma reverse_mul_of_domain {R : Type*} [Ring R] [NoZeroDivisors R] (f g : R[X]) :
     reverse (f * g) = reverse f * reverse g := by
   by_cases f0 : f = 0
   · simp only [f0, zero_mul, reverse_zero]
@@ -327,14 +327,14 @@ theorem reverse_mul_of_domain {R : Type*} [Ring R] [NoZeroDivisors R] (f g : R[X
   simp [reverse_mul, *]
 #align polynomial.reverse_mul_of_domain Polynomial.reverse_mul_of_domain
 
-theorem trailingCoeff_mul {R : Type*} [Ring R] [NoZeroDivisors R] (p q : R[X]) :
+lemma trailingCoeff_mul {R : Type*} [Ring R] [NoZeroDivisors R] (p q : R[X]) :
     (p * q).trailingCoeff = p.trailingCoeff * q.trailingCoeff := by
   rw [← reverse_leadingCoeff, reverse_mul_of_domain, leadingCoeff_mul, reverse_leadingCoeff,
     reverse_leadingCoeff]
 #align polynomial.trailing_coeff_mul Polynomial.trailingCoeff_mul
 
 @[simp]
-theorem coeff_one_reverse (f : R[X]) : coeff (reverse f) 1 = nextCoeff f := by
+lemma coeff_one_reverse (f : R[X]) : coeff (reverse f) 1 = nextCoeff f := by
   rw [coeff_reverse, nextCoeff]
   split_ifs with hf
   · have : coeff f 1 = 0 := coeff_eq_zero_of_natDegree_lt (by simp only [hf, zero_lt_one])
@@ -376,13 +376,13 @@ section Eval₂
 
 variable {S : Type*} [CommSemiring S]
 
-theorem eval₂_reverse_mul_pow (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
+lemma eval₂_reverse_mul_pow (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
     eval₂ i (⅟ x) (reverse f) * x ^ f.natDegree = eval₂ i x f :=
   eval₂_reflect_mul_pow i _ _ f le_rfl
 #align polynomial.eval₂_reverse_mul_pow Polynomial.eval₂_reverse_mul_pow
 
 @[simp]
-theorem eval₂_reverse_eq_zero_iff (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
+lemma eval₂_reverse_eq_zero_iff (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
     eval₂ i (⅟ x) (reverse f) = 0 ↔ eval₂ i x f = 0 :=
   eval₂_reflect_eq_zero_iff i x _ _ le_rfl
 #align polynomial.eval₂_reverse_eq_zero_iff Polynomial.eval₂_reverse_eq_zero_iff
@@ -396,17 +396,17 @@ section Ring
 variable {R : Type*} [Ring R]
 
 @[simp]
-theorem reflect_neg (f : R[X]) (N : ℕ) : reflect N (-f) = -reflect N f := by
+lemma reflect_neg (f : R[X]) (N : ℕ) : reflect N (-f) = -reflect N f := by
   rw [neg_eq_neg_one_mul, ← C_1, ← C_neg, reflect_C_mul, C_neg, C_1, ← neg_eq_neg_one_mul]
 #align polynomial.reflect_neg Polynomial.reflect_neg
 
 @[simp]
-theorem reflect_sub (f g : R[X]) (N : ℕ) : reflect N (f - g) = reflect N f - reflect N g := by
+lemma reflect_sub (f g : R[X]) (N : ℕ) : reflect N (f - g) = reflect N f - reflect N g := by
   rw [sub_eq_add_neg, sub_eq_add_neg, reflect_add, reflect_neg]
 #align polynomial.reflect_sub Polynomial.reflect_sub
 
 @[simp]
-theorem reverse_neg (f : R[X]) : reverse (-f) = -reverse f := by
+lemma reverse_neg (f : R[X]) : reverse (-f) = -reverse f := by
   rw [reverse, reverse, reflect_neg, natDegree_neg]
 #align polynomial.reverse_neg Polynomial.reverse_neg
 

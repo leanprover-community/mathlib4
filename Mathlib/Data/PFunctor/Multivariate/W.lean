@@ -94,25 +94,25 @@ def wPathDestRight {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_path_dest_right MvPFunctor.wPathDestRight
 
-theorem wPathDestLeft_wPathCasesOn {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
+lemma wPathDestLeft_wPathCasesOn {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
     (g' : P.drop.B a ⟹ α) (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) :
     P.wPathDestLeft (P.wPathCasesOn g' g) = g' := rfl
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_path_dest_left_W_path_cases_on MvPFunctor.wPathDestLeft_wPathCasesOn
 
-theorem wPathDestRight_wPathCasesOn {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
+lemma wPathDestRight_wPathCasesOn {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
     (g' : P.drop.B a ⟹ α) (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) :
     P.wPathDestRight (P.wPathCasesOn g' g) = g := rfl
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_path_dest_right_W_path_cases_on MvPFunctor.wPathDestRight_wPathCasesOn
 
-theorem wPathCasesOn_eta {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
+lemma wPathCasesOn_eta {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
     (h : P.WPath ⟨a, f⟩ ⟹ α) : P.wPathCasesOn (P.wPathDestLeft h) (P.wPathDestRight h) = h := by
   ext i x; cases x <;> rfl
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_path_cases_on_eta MvPFunctor.wPathCasesOn_eta
 
-theorem comp_wPathCasesOn {α β : TypeVec n} (h : α ⟹ β) {a : P.A} {f : P.last.B a → P.last.W}
+lemma comp_wPathCasesOn {α β : TypeVec n} (h : α ⟹ β) {a : P.A} {f : P.last.B a → P.last.W}
     (g' : P.drop.B a ⟹ α) (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) :
     h ⊚ P.wPathCasesOn g' g = P.wPathCasesOn (h ⊚ g') fun i => h ⊚ g i := by
   ext i x; cases x <;> rfl
@@ -159,7 +159,7 @@ def wpRec {α : TypeVec n} {C : Type*}
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp_rec MvPFunctor.wpRec
 
-theorem wpRec_eq {α : TypeVec n} {C : Type*}
+lemma wpRec_eq {α : TypeVec n} {C : Type*}
     (g : ∀ (a : P.A) (f : P.last.B a → P.last.W), P.WPath ⟨a, f⟩ ⟹ α → (P.last.B a → C) → C)
     (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α) :
     P.wpRec g ⟨a, f⟩ f' = g a f f' fun i => P.wpRec g (f i) (P.wPathDestRight f' i) := rfl
@@ -167,7 +167,7 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp_rec_eq MvPFunctor.wpRec_eq
 
 -- Note: we could replace Prop by Type* and obtain a dependent recursor
-theorem wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Prop}
+lemma wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Prop}
     (ih : ∀ (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α),
         (∀ i : P.last.B a, C (f i) (P.wPathDestRight f' i)) → C ⟨a, f⟩ f') :
     ∀ (x : P.last.W) (f' : P.WPath x ⟹ α), C x f'
@@ -229,7 +229,7 @@ theorem w_ind {α : TypeVec n} {C : P.W α → Prop}
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_ind MvPFunctor.w_ind
 
-theorem w_cases {α : TypeVec n} {C : P.W α → Prop}
+lemma w_cases {α : TypeVec n} {C : P.W α → Prop}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α), C (P.wMk a f' f)) :
     ∀ x, C x := P.w_ind fun a f' f _ih' => ih a f' f
 set_option linter.uppercaseLean3 false in
@@ -240,13 +240,13 @@ def wMap {α β : TypeVec n} (g : α ⟹ β) : P.W α → P.W β := fun x => g <
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_map MvPFunctor.wMap
 
-theorem wMk_eq {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (g' : P.drop.B a ⟹ α)
+lemma wMk_eq {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (g' : P.drop.B a ⟹ α)
     (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) :
     (P.wMk a g' fun i => ⟨f i, g i⟩) = ⟨⟨a, f⟩, P.wPathCasesOn g' g⟩ := rfl
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_mk_eq MvPFunctor.wMk_eq
 
-theorem w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a ⟹ α)
+lemma w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → P.W α) : g <$$> P.wMk a f' f = P.wMk a (g ⊚ f') fun i => g <$$> f i := by
   show _ = P.wMk a (g ⊚ f') (MvFunctor.map g ∘ f)
   have : MvFunctor.map g ∘ f = fun i => ⟨(f i).fst, g ⊚ (f i).snd⟩ := by
@@ -276,7 +276,7 @@ abbrev objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ 
   ⟨a, splitFun f' f⟩
 #align mvpfunctor.obj_append1 MvPFunctor.objAppend1
 
-theorem map_objAppend1 {α γ : TypeVec n} (g : α ⟹ γ) (a : P.A) (f' : P.drop.B a ⟹ α)
+lemma map_objAppend1 {α γ : TypeVec n} (g : α ⟹ γ) (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → P.W α) :
     appendFun g (P.wMap g) <$$> P.objAppend1 a f' f =
       P.objAppend1 a (g ⊚ f') fun x => P.wMap g (f x) :=
@@ -302,12 +302,12 @@ def wDest' {α : TypeVec.{u} n} : P.W α → P (α.append1 (P.W α)) :=
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_dest' MvPFunctor.wDest'
 
-theorem wDest'_wMk {α : TypeVec n} (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
+lemma wDest'_wMk {α : TypeVec n} (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
     P.wDest' (P.wMk a f' f) = ⟨a, splitFun f' f⟩ := by rw [wDest', wRec_eq]
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_dest'_W_mk MvPFunctor.wDest'_wMk
 
-theorem wDest'_wMk' {α : TypeVec n} (x : P (α.append1 (P.W α))) : P.wDest' (P.wMk' x) = x := by
+lemma wDest'_wMk' {α : TypeVec n} (x : P (α.append1 (P.W α))) : P.wDest' (P.wMk' x) = x := by
   cases' x with a f; rw [wMk', wDest'_wMk, split_dropFun_lastFun]
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_dest'_W_mk' MvPFunctor.wDest'_wMk'

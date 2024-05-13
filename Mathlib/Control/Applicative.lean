@@ -28,16 +28,16 @@ variable {F : Type u → Type v}
 variable [Applicative F] [LawfulApplicative F]
 variable {α β γ σ : Type u}
 
-theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α) (y : F σ) :
+lemma Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α) (y : F σ) :
     f <$> x <*> g <$> y = ((· ∘ g) ∘ f) <$> x <*> y := by
   simp [flip, functor_norm]
 #align applicative.map_seq_map Applicative.map_seq_map
 
-theorem Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) :=
+lemma Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) :=
   by ext; simp [functor_norm]
 #align applicative.pure_seq_eq_map' Applicative.pure_seq_eq_map'
 
-theorem Applicative.ext {F} :
+lemma Applicative.ext {F} :
     ∀ {A1 : Applicative F} {A2 : Applicative F} [@LawfulApplicative F A1] [@LawfulApplicative F A2],
       (∀ {α : Type u} (x : α), @Pure.pure _ A1.toPure _ x = @Pure.pure _ A2.toPure _ x) →
       (∀ {α β : Type u} (f : F (α → β)) (x : F α),
@@ -86,20 +86,20 @@ variable [Applicative F] [Applicative G]
 variable [LawfulApplicative F] [LawfulApplicative G]
 variable {α β γ : Type v}
 
-theorem map_pure (f : α → β) (x : α) : (f <$> pure x : Comp F G β) = pure (f x) :=
+lemma map_pure (f : α → β) (x : α) : (f <$> pure x : Comp F G β) = pure (f x) :=
   Comp.ext <| by simp
 #align functor.comp.map_pure Functor.Comp.map_pure
 
-theorem seq_pure (f : Comp F G (α → β)) (x : α) : f <*> pure x = (fun g : α → β => g x) <$> f :=
+lemma seq_pure (f : Comp F G (α → β)) (x : α) : f <*> pure x = (fun g : α → β => g x) <$> f :=
   Comp.ext <| by simp [(· ∘ ·), functor_norm]
 #align functor.comp.seq_pure Functor.Comp.seq_pure
 
-theorem seq_assoc (x : Comp F G α) (f : Comp F G (α → β)) (g : Comp F G (β → γ)) :
+lemma seq_assoc (x : Comp F G α) (f : Comp F G (α → β)) (g : Comp F G (β → γ)) :
     g <*> (f <*> x) = @Function.comp α β γ <$> g <*> f <*> x :=
   Comp.ext <| by simp [(· ∘ ·), functor_norm]
 #align functor.comp.seq_assoc Functor.Comp.seq_assoc
 
-theorem pure_seq_eq_map (f : α → β) (x : Comp F G α) : pure f <*> x = f <$> x :=
+lemma pure_seq_eq_map (f : α → β) (x : Comp F G α) : pure f <*> x = f <$> x :=
   Comp.ext <| by simp [Applicative.pure_seq_eq_map', functor_norm]
 #align functor.comp.pure_seq_eq_map Functor.Comp.pure_seq_eq_map
 
@@ -114,13 +114,13 @@ instance instLawfulApplicativeComp : LawfulApplicative (Comp F G) where
 
 -- Porting note: mathport wasn't aware of the new implicit parameter omission in these `fun` binders
 
-theorem applicative_id_comp {F} [AF : Applicative F] [LawfulApplicative F] :
+lemma applicative_id_comp {F} [AF : Applicative F] [LawfulApplicative F] :
     @instApplicativeComp Id F _ _ = AF :=
   @Applicative.ext F _ _ (@instLawfulApplicativeComp Id F _ _ _ _) _
     (fun _ => rfl) (fun _ _ => rfl)
 #align functor.comp.applicative_id_comp Functor.Comp.applicative_id_comp
 
-theorem applicative_comp_id {F} [AF : Applicative F] [LawfulApplicative F] :
+lemma applicative_comp_id {F} [AF : Applicative F] [LawfulApplicative F] :
     @Comp.instApplicativeComp F Id _ _ = AF :=
   @Applicative.ext F _ _ (@Comp.instLawfulApplicativeComp F Id _ _ _ _) _
     (fun _ => rfl) (fun f x => show id <$> f <*> x = f <*> x by rw [id_map])
@@ -147,7 +147,7 @@ end Functor
 open Functor
 
 @[functor_norm]
-theorem Comp.seq_mk {α β : Type w} {f : Type u → Type v} {g : Type w → Type u} [Applicative f]
+lemma Comp.seq_mk {α β : Type w} {f : Type u → Type v} {g : Type w → Type u} [Applicative f]
     [Applicative g] (h : f (g (α → β))) (x : f (g α)) :
     Comp.mk h <*> Comp.mk x = Comp.mk ((· <*> ·) <$> h <*> x) :=
   rfl

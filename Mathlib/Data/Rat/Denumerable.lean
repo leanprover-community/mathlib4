@@ -41,5 +41,5 @@ end Rat
 
 open Cardinal
 
-theorem Cardinal.mkRat : #ℚ = ℵ₀ := by simp only [mk_eq_aleph0]
+lemma Cardinal.mkRat : #ℚ = ℵ₀ := by simp only [mk_eq_aleph0]
 #align cardinal.mk_rat Cardinal.mkRat

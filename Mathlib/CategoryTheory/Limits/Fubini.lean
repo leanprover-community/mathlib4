@@ -262,7 +262,7 @@ noncomputable instance diagramOfConesInhabited : Inhabited (DiagramOfCones F) :=
 #align category_theory.limits.diagram_of_cones_inhabited CategoryTheory.Limits.diagramOfConesInhabited
 
 @[simp]
-theorem DiagramOfCones.mkOfHasLimits_conePoints :
+lemma DiagramOfCones.mkOfHasLimits_conePoints :
     (DiagramOfCones.mkOfHasLimits F).conePoints = F ⋙ lim :=
   rfl
 #align category_theory.limits.diagram_of_cones.mk_of_has_limits_cone_points CategoryTheory.Limits.DiagramOfCones.mkOfHasLimits_conePoints
@@ -285,7 +285,7 @@ noncomputable def limitUncurryIsoLimitCompLim : limit (uncurry.obj F) ≅ limit 
 #align category_theory.limits.limit_uncurry_iso_limit_comp_lim CategoryTheory.Limits.limitUncurryIsoLimitCompLim
 
 @[simp, reassoc]
-theorem limitUncurryIsoLimitCompLim_hom_π_π {j} {k} :
+lemma limitUncurryIsoLimitCompLim_hom_π_π {j} {k} :
     (limitUncurryIsoLimitCompLim F).hom ≫ limit.π _ j ≫ limit.π _ k = limit.π _ (j, k) := by
   dsimp [limitUncurryIsoLimitCompLim, IsLimit.conePointUniqueUpToIso, IsLimit.uniqueUpToIso]
   simp
@@ -293,7 +293,7 @@ theorem limitUncurryIsoLimitCompLim_hom_π_π {j} {k} :
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
-theorem limitUncurryIsoLimitCompLim_inv_π {j} {k} :
+lemma limitUncurryIsoLimitCompLim_inv_π {j} {k} :
     (limitUncurryIsoLimitCompLim F).inv ≫ limit.π _ (j, k) =
       (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
   rw [← cancel_epi (limitUncurryIsoLimitCompLim F).hom]
@@ -321,7 +321,7 @@ noncomputable instance diagramOfCoconesInhabited : Inhabited (DiagramOfCocones F
   ⟨DiagramOfCocones.mkOfHasColimits F⟩
 
 @[simp]
-theorem DiagramOfCocones.mkOfHasColimits_coconePoints :
+lemma DiagramOfCocones.mkOfHasColimits_coconePoints :
     (DiagramOfCocones.mkOfHasColimits F).coconePoints = F ⋙ colim :=
   rfl
 
@@ -343,7 +343,7 @@ noncomputable def colimitUncurryIsoColimitCompColim :
   exact IsColimit.coconePointUniqueUpToIso Q' Q''
 
 @[simp, reassoc]
-theorem colimitUncurryIsoColimitCompColim_ι_ι_inv {j} {k} :
+lemma colimitUncurryIsoColimitCompColim_ι_ι_inv {j} {k} :
     colimit.ι (F.obj j) k ≫ colimit.ι (F ⋙ colim) j ≫ (colimitUncurryIsoColimitCompColim F).inv =
       colimit.ι (uncurry.obj F) (j, k) := by
   dsimp [colimitUncurryIsoColimitCompColim, IsColimit.coconePointUniqueUpToIso,
@@ -351,7 +351,7 @@ theorem colimitUncurryIsoColimitCompColim_ι_ι_inv {j} {k} :
   simp
 
 @[simp, reassoc]
-theorem colimitUncurryIsoColimitCompColim_ι_hom {j} {k} :
+lemma colimitUncurryIsoColimitCompColim_ι_hom {j} {k} :
     colimit.ι _ (j, k) ≫ (colimitUncurryIsoColimitCompColim F).hom =
       (colimit.ι _ k ≫ colimit.ι (F ⋙ colim) j : _ ⟶ (colimit (F ⋙ colim))) := by
   rw [← cancel_mono (colimitUncurryIsoColimitCompColim F).inv]
@@ -377,7 +377,7 @@ noncomputable def limitFlipCompLimIsoLimitCompLim : limit (F.flip ⋙ lim) ≅ l
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
-theorem limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
+lemma limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
     (limitFlipCompLimIsoLimitCompLim F).hom ≫ limit.π _ j ≫ limit.π _ k =
       (limit.π _ k ≫ limit.π _ j : limit (_ ⋙ lim) ⟶ _) := by
   dsimp [limitFlipCompLimIsoLimitCompLim]
@@ -387,7 +387,7 @@ theorem limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 -- See note [dsimp, simp]
 @[simp, reassoc]
-theorem limitFlipCompLimIsoLimitCompLim_inv_π_π (k) (j) :
+lemma limitFlipCompLimIsoLimitCompLim_inv_π_π (k) (j) :
     (limitFlipCompLimIsoLimitCompLim F).inv ≫ limit.π _ k ≫ limit.π _ j =
       (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
   dsimp [limitFlipCompLimIsoLimitCompLim]
@@ -411,7 +411,7 @@ noncomputable def colimitFlipCompColimIsoColimitCompColim :
         colimitUncurryIsoColimitCompColim _
 
 @[simp, reassoc]
-theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_hom (j) (k) :
+lemma colimitFlipCompColimIsoColimitCompColim_ι_ι_hom (j) (k) :
     colimit.ι (F.flip.obj k) j ≫ colimit.ι (F.flip ⋙ colim) k ≫
       (colimitFlipCompColimIsoColimitCompColim F).hom =
         (colimit.ι _ k ≫ colimit.ι (F ⋙ colim) j : _ ⟶ colimit (F⋙ colim)) := by
@@ -420,7 +420,7 @@ theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_hom (j) (k) :
   simp
 
 @[simp, reassoc]
-theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_inv (k) (j) :
+lemma colimitFlipCompColimIsoColimitCompColim_ι_ι_inv (k) (j) :
     colimit.ι (F.obj j) k ≫ colimit.ι (F ⋙ colim) j ≫
       (colimitFlipCompColimIsoColimitCompColim F).inv =
         (colimit.ι _ j ≫ colimit.ι (F.flip ⋙ colim) k : _ ⟶ colimit (F.flip ⋙ colim)) := by
@@ -451,7 +451,7 @@ noncomputable def limitIsoLimitCurryCompLim : limit G ≅ limit (curry.obj G ⋙
 #align category_theory.limits.limit_iso_limit_curry_comp_lim CategoryTheory.Limits.limitIsoLimitCurryCompLim
 
 @[simp, reassoc]
-theorem limitIsoLimitCurryCompLim_hom_π_π {j} {k} :
+lemma limitIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k = limit.π _ (j, k) := by
   set_option tactic.skipAssignedInstances false in
   simp [limitIsoLimitCurryCompLim, Trans.simple, HasLimit.isoOfNatIso, limitUncurryIsoLimitCompLim]
@@ -459,7 +459,7 @@ theorem limitIsoLimitCurryCompLim_hom_π_π {j} {k} :
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
-theorem limitIsoLimitCurryCompLim_inv_π {j} {k} :
+lemma limitIsoLimitCurryCompLim_inv_π {j} {k} :
     (limitIsoLimitCurryCompLim G).inv ≫ limit.π _ (j, k) =
       (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
   rw [← cancel_epi (limitIsoLimitCurryCompLim G).hom]
@@ -486,7 +486,7 @@ noncomputable def colimitIsoColimitCurryCompColim : colimit G ≅ colimit (curry
   · exact colimitUncurryIsoColimitCompColim ((@curry J _ K _ C _).obj G)
 
 @[simp, reassoc]
-theorem colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
+lemma colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
     colimit.ι ((curry.obj G).obj j) k ≫ colimit.ι (curry.obj G ⋙ colim) j ≫
       (colimitIsoColimitCurryCompColim G).inv  = colimit.ι _ (j, k) := by
   set_option tactic.skipAssignedInstances false in
@@ -494,7 +494,7 @@ theorem colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
     colimitUncurryIsoColimitCompColim]
 
 @[simp, reassoc]
-theorem colimitIsoColimitCurryCompColim_ι_hom {j} {k} :
+lemma colimitIsoColimitCurryCompColim_ι_hom {j} {k} :
     colimit.ι _ (j, k) ≫ (colimitIsoColimitCurryCompColim G).hom =
       (colimit.ι (_) k ≫ colimit.ι (curry.obj G ⋙ colim) j : _ ⟶ colimit (_ ⋙ colim)) := by
   rw [← cancel_mono (colimitIsoColimitCurryCompColim G).inv]
@@ -523,7 +523,7 @@ noncomputable def limitCurrySwapCompLimIsoLimitCurryCompLim :
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp]
-theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
+lemma limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k =
       (limit.π _ k ≫ limit.π _ j : limit (_ ⋙ lim) ⟶ _) := by
   dsimp [limitCurrySwapCompLimIsoLimitCurryCompLim]
@@ -541,7 +541,7 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp]
-theorem limitCurrySwapCompLimIsoLimitCurryCompLim_inv_π_π {j} {k} :
+lemma limitCurrySwapCompLimIsoLimitCurryCompLim_inv_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).inv ≫ limit.π _ k ≫ limit.π _ j =
       (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
   dsimp [limitCurrySwapCompLimIsoLimitCurryCompLim]
@@ -572,7 +572,7 @@ noncomputable def colimitCurrySwapCompColimIsoColimitCurryCompColim :
     _ ≅ colimit (curry.obj G ⋙ colim) := colimitIsoColimitCurryCompColim _
 
 @[simp]
-theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_hom {j} {k} :
+lemma colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_hom {j} {k} :
     colimit.ι _ j ≫ colimit.ι (curry.obj (Prod.swap K J ⋙ G) ⋙ colim) k ≫
       (colimitCurrySwapCompColimIsoColimitCurryCompColim G).hom =
         (colimit.ι _ k ≫ colimit.ι (curry.obj G ⋙ colim) j : _ ⟶ colimit (curry.obj G⋙ colim)) := by
@@ -581,7 +581,7 @@ theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_hom {j} {k} :
   simp
 
 @[simp]
-theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
+lemma colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
     colimit.ι _ k ≫ colimit.ι (curry.obj G ⋙ colim) j ≫
       (colimitCurrySwapCompColimIsoColimitCurryCompColim G).inv =
         (colimit.ι _ j ≫

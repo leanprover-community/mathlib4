@@ -61,36 +61,36 @@ def cantorFunctionAux (c : ℝ) (f : ℕ → Bool) (n : ℕ) : ℝ :=
 #align cardinal.cantor_function_aux Cardinal.cantorFunctionAux
 
 @[simp]
-theorem cantorFunctionAux_true (h : f n = true) : cantorFunctionAux c f n = c ^ n := by
+lemma cantorFunctionAux_true (h : f n = true) : cantorFunctionAux c f n = c ^ n := by
   simp [cantorFunctionAux, h]
 #align cardinal.cantor_function_aux_tt Cardinal.cantorFunctionAux_true
 
 @[simp]
-theorem cantorFunctionAux_false (h : f n = false) : cantorFunctionAux c f n = 0 := by
+lemma cantorFunctionAux_false (h : f n = false) : cantorFunctionAux c f n = 0 := by
   simp [cantorFunctionAux, h]
 #align cardinal.cantor_function_aux_ff Cardinal.cantorFunctionAux_false
 
-theorem cantorFunctionAux_nonneg (h : 0 ≤ c) : 0 ≤ cantorFunctionAux c f n := by
+lemma cantorFunctionAux_nonneg (h : 0 ≤ c) : 0 ≤ cantorFunctionAux c f n := by
   cases h' : f n <;> simp [h']
   apply pow_nonneg h
 #align cardinal.cantor_function_aux_nonneg Cardinal.cantorFunctionAux_nonneg
 
-theorem cantorFunctionAux_eq (h : f n = g n) : cantorFunctionAux c f n = cantorFunctionAux c g n :=
+lemma cantorFunctionAux_eq (h : f n = g n) : cantorFunctionAux c f n = cantorFunctionAux c g n :=
   by simp [cantorFunctionAux, h]
 #align cardinal.cantor_function_aux_eq Cardinal.cantorFunctionAux_eq
 
-theorem cantorFunctionAux_zero (f : ℕ → Bool) : cantorFunctionAux c f 0 = cond (f 0) 1 0 := by
+lemma cantorFunctionAux_zero (f : ℕ → Bool) : cantorFunctionAux c f 0 = cond (f 0) 1 0 := by
   cases h : f 0 <;> simp [h]
 #align cardinal.cantor_function_aux_zero Cardinal.cantorFunctionAux_zero
 
-theorem cantorFunctionAux_succ (f : ℕ → Bool) :
+lemma cantorFunctionAux_succ (f : ℕ → Bool) :
     (fun n => cantorFunctionAux c f (n + 1)) = fun n =>
       c * cantorFunctionAux c (fun n => f (n + 1)) n := by
   ext n
   cases h : f (n + 1) <;> simp [h, _root_.pow_succ']
 #align cardinal.cantor_function_aux_succ Cardinal.cantorFunctionAux_succ
 
-theorem summable_cantor_function (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) :
+lemma summable_cantor_function (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) :
     Summable (cantorFunctionAux c f) := by
   apply (summable_geometric_of_lt_one h1 h2).summable_of_eq_zero_or_self
   intro n; cases h : f n <;> simp [h]
@@ -102,7 +102,7 @@ def cantorFunction (c : ℝ) (f : ℕ → Bool) : ℝ :=
   ∑' n, cantorFunctionAux c f n
 #align cardinal.cantor_function Cardinal.cantorFunction
 
-theorem cantorFunction_le (h1 : 0 ≤ c) (h2 : c < 1) (h3 : ∀ n, f n → g n) :
+lemma cantorFunction_le (h1 : 0 ≤ c) (h2 : c < 1) (h3 : ∀ n, f n → g n) :
     cantorFunction c f ≤ cantorFunction c g := by
   apply tsum_le_tsum _ (summable_cantor_function f h1 h2) (summable_cantor_function g h1 h2)
   intro n; cases h : f n
@@ -110,7 +110,7 @@ theorem cantorFunction_le (h1 : 0 ≤ c) (h2 : c < 1) (h3 : ∀ n, f n → g n) 
   replace h3 : g n = true := h3 n h; simp [h, h3]
 #align cardinal.cantor_function_le Cardinal.cantorFunction_le
 
-theorem cantorFunction_succ (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) :
+lemma cantorFunction_succ (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) :
     cantorFunction c f = cond (f 0) 1 0 + c * cantorFunction c fun n => f (n + 1) := by
   rw [cantorFunction, tsum_eq_zero_add (summable_cantor_function f h1 h2)]
   rw [cantorFunctionAux_succ, tsum_mul_left, cantorFunctionAux, _root_.pow_zero]

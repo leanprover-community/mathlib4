@@ -84,7 +84,7 @@ def transvection (c : R) : Matrix n n R :=
 #align matrix.transvection Matrix.transvection
 
 @[simp]
-theorem transvection_zero : transvection i j (0 : R) = 1 := by simp [transvection]
+lemma transvection_zero : transvection i j (0 : R) = 1 := by simp [transvection]
 #align matrix.transvection_zero Matrix.transvection_zero
 
 section
@@ -110,35 +110,35 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
 
 variable [Fintype n]
 
-theorem transvection_mul_transvection_same (h : i ≠ j) (c d : R) :
+lemma transvection_mul_transvection_same (h : i ≠ j) (c d : R) :
     transvection i j c * transvection i j d = transvection i j (c + d) := by
   simp [transvection, Matrix.add_mul, Matrix.mul_add, h, h.symm, add_smul, add_assoc,
     stdBasisMatrix_add]
 #align matrix.transvection_mul_transvection_same Matrix.transvection_mul_transvection_same
 
 @[simp]
-theorem transvection_mul_apply_same (b : n) (c : R) (M : Matrix n n R) :
+lemma transvection_mul_apply_same (b : n) (c : R) (M : Matrix n n R) :
     (transvection i j c * M) i b = M i b + c * M j b := by simp [transvection, Matrix.add_mul]
 #align matrix.transvection_mul_apply_same Matrix.transvection_mul_apply_same
 
 @[simp]
-theorem mul_transvection_apply_same (a : n) (c : R) (M : Matrix n n R) :
+lemma mul_transvection_apply_same (a : n) (c : R) (M : Matrix n n R) :
     (M * transvection i j c) a j = M a j + c * M a i := by
   simp [transvection, Matrix.mul_add, mul_comm]
 #align matrix.mul_transvection_apply_same Matrix.mul_transvection_apply_same
 
 @[simp]
-theorem transvection_mul_apply_of_ne (a b : n) (ha : a ≠ i) (c : R) (M : Matrix n n R) :
+lemma transvection_mul_apply_of_ne (a b : n) (ha : a ≠ i) (c : R) (M : Matrix n n R) :
     (transvection i j c * M) a b = M a b := by simp [transvection, Matrix.add_mul, ha]
 #align matrix.transvection_mul_apply_of_ne Matrix.transvection_mul_apply_of_ne
 
 @[simp]
-theorem mul_transvection_apply_of_ne (a b : n) (hb : b ≠ j) (c : R) (M : Matrix n n R) :
+lemma mul_transvection_apply_of_ne (a b : n) (hb : b ≠ j) (c : R) (M : Matrix n n R) :
     (M * transvection i j c) a b = M a b := by simp [transvection, Matrix.mul_add, hb]
 #align matrix.mul_transvection_apply_of_ne Matrix.mul_transvection_apply_of_ne
 
 @[simp]
-theorem det_transvection_of_ne (h : i ≠ j) (c : R) : det (transvection i j c) = 1 := by
+lemma det_transvection_of_ne (h : i ≠ j) (c : R) : det (transvection i j c) = 1 := by
   rw [← updateRow_eq_transvection i j, det_updateRow_add_smul_self _ h, det_one]
 #align matrix.det_transvection_of_ne Matrix.det_transvection_of_ne
 
@@ -170,18 +170,18 @@ def toMatrix (t : TransvectionStruct n R) : Matrix n n R :=
 #align matrix.transvection_struct.to_matrix Matrix.TransvectionStruct.toMatrix
 
 @[simp]
-theorem toMatrix_mk (i j : n) (hij : i ≠ j) (c : R) :
+lemma toMatrix_mk (i j : n) (hij : i ≠ j) (c : R) :
     TransvectionStruct.toMatrix ⟨i, j, hij, c⟩ = transvection i j c :=
   rfl
 #align matrix.transvection_struct.to_matrix_mk Matrix.TransvectionStruct.toMatrix_mk
 
 @[simp]
-protected theorem det [Fintype n] (t : TransvectionStruct n R) : det t.toMatrix = 1 :=
+protected lemma det [Fintype n] (t : TransvectionStruct n R) : det t.toMatrix = 1 :=
   det_transvection_of_ne _ _ t.hij _
 #align matrix.transvection_struct.det Matrix.TransvectionStruct.det
 
 @[simp]
-theorem det_toMatrix_prod [Fintype n] (L : List (TransvectionStruct n 𝕜)) :
+lemma det_toMatrix_prod [Fintype n] (L : List (TransvectionStruct n 𝕜)) :
     det (L.map toMatrix).prod = 1 := by
   induction' L with t L IH
   · simp
@@ -202,17 +202,17 @@ section
 
 variable [Fintype n]
 
-theorem inv_mul (t : TransvectionStruct n R) : t.inv.toMatrix * t.toMatrix = 1 := by
+lemma inv_mul (t : TransvectionStruct n R) : t.inv.toMatrix * t.toMatrix = 1 := by
   rcases t with ⟨_, _, t_hij⟩
   simp [toMatrix, transvection_mul_transvection_same, t_hij]
 #align matrix.transvection_struct.inv_mul Matrix.TransvectionStruct.inv_mul
 
-theorem mul_inv (t : TransvectionStruct n R) : t.toMatrix * t.inv.toMatrix = 1 := by
+lemma mul_inv (t : TransvectionStruct n R) : t.toMatrix * t.inv.toMatrix = 1 := by
   rcases t with ⟨_, _, t_hij⟩
   simp [toMatrix, transvection_mul_transvection_same, t_hij]
 #align matrix.transvection_struct.mul_inv Matrix.TransvectionStruct.mul_inv
 
-theorem reverse_inv_prod_mul_prod (L : List (TransvectionStruct n R)) :
+lemma reverse_inv_prod_mul_prod (L : List (TransvectionStruct n R)) :
     (L.reverse.map (toMatrix ∘ TransvectionStruct.inv)).prod * (L.map toMatrix).prod = 1 := by
   induction' L with t L IH
   · simp
@@ -223,7 +223,7 @@ theorem reverse_inv_prod_mul_prod (L : List (TransvectionStruct n R)) :
     simpa [inv_mul] using IH
 #align matrix.transvection_struct.reverse_inv_prod_mul_prod Matrix.TransvectionStruct.reverse_inv_prod_mul_prod
 
-theorem prod_mul_reverse_inv_prod (L : List (TransvectionStruct n R)) :
+lemma prod_mul_reverse_inv_prod (L : List (TransvectionStruct n R)) :
     (L.map toMatrix).prod * (L.reverse.map (toMatrix ∘ TransvectionStruct.inv)).prod = 1 := by
   induction' L with t L IH
   · simp
@@ -243,7 +243,7 @@ theorem _root_.Matrix.mem_range_scalar_of_commute_transvectionStruct {M : Matrix
   intro i j hij
   simpa [transvection, mul_add, add_mul] using (hM ⟨i, j, hij, 1⟩).eq
 
-theorem _root_.Matrix.mem_range_scalar_iff_commute_transvectionStruct {M : Matrix n n R} :
+lemma _root_.Matrix.mem_range_scalar_iff_commute_transvectionStruct {M : Matrix n n R} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ t : TransvectionStruct n R, Commute t.toMatrix M := by
   refine ⟨fun h t => ?_, mem_range_scalar_of_commute_transvectionStruct⟩
   rw [mem_range_scalar_iff_commute_stdBasisMatrix] at h
@@ -264,7 +264,7 @@ def sumInl (t : TransvectionStruct n R) : TransvectionStruct (Sum n p) R where
   c := t.c
 #align matrix.transvection_struct.sum_inl Matrix.TransvectionStruct.sumInl
 
-theorem toMatrix_sumInl (t : TransvectionStruct n R) :
+lemma toMatrix_sumInl (t : TransvectionStruct n R) :
     (t.sumInl p).toMatrix = fromBlocks t.toMatrix 0 0 1 := by
   cases t
   ext a b
@@ -276,7 +276,7 @@ theorem toMatrix_sumInl (t : TransvectionStruct n R) :
 #align matrix.transvection_struct.to_matrix_sum_inl Matrix.TransvectionStruct.toMatrix_sumInl
 
 @[simp]
-theorem sumInl_toMatrix_prod_mul [Fintype n] [Fintype p] (M : Matrix n n R)
+lemma sumInl_toMatrix_prod_mul [Fintype n] [Fintype p] (M : Matrix n n R)
     (L : List (TransvectionStruct n R)) (N : Matrix p p R) :
     (L.map (toMatrix ∘ sumInl p)).prod * fromBlocks M 0 0 N =
       fromBlocks ((L.map toMatrix).prod * M) 0 0 N := by
@@ -286,7 +286,7 @@ theorem sumInl_toMatrix_prod_mul [Fintype n] [Fintype p] (M : Matrix n n R)
 #align matrix.transvection_struct.sum_inl_to_matrix_prod_mul Matrix.TransvectionStruct.sumInl_toMatrix_prod_mul
 
 @[simp]
-theorem mul_sumInl_toMatrix_prod [Fintype n] [Fintype p] (M : Matrix n n R)
+lemma mul_sumInl_toMatrix_prod [Fintype n] [Fintype p] (M : Matrix n n R)
     (L : List (TransvectionStruct n R)) (N : Matrix p p R) :
     fromBlocks M 0 0 N * (L.map (toMatrix ∘ sumInl p)).prod =
       fromBlocks (M * (L.map toMatrix).prod) 0 0 N := by
@@ -308,7 +308,7 @@ def reindexEquiv (e : n ≃ p) (t : TransvectionStruct n R) : TransvectionStruct
 
 variable [Fintype n] [Fintype p]
 
-theorem toMatrix_reindexEquiv (e : n ≃ p) (t : TransvectionStruct n R) :
+lemma toMatrix_reindexEquiv (e : n ≃ p) (t : TransvectionStruct n R) :
     (t.reindexEquiv e).toMatrix = reindexAlgEquiv R e t.toMatrix := by
   rcases t with ⟨t_i, t_j, _⟩
   ext a b
@@ -318,7 +318,7 @@ theorem toMatrix_reindexEquiv (e : n ≃ p) (t : TransvectionStruct n R) :
     simp [ha, hb, hab, ← e.apply_eq_iff_eq_symm_apply, stdBasisMatrix]
 #align matrix.transvection_struct.to_matrix_reindex_equiv Matrix.TransvectionStruct.toMatrix_reindexEquiv
 
-theorem toMatrix_reindexEquiv_prod (e : n ≃ p) (L : List (TransvectionStruct n R)) :
+lemma toMatrix_reindexEquiv_prod (e : n ≃ p) (L : List (TransvectionStruct n R)) :
     (L.map (toMatrix ∘ reindexEquiv e)).prod = reindexAlgEquiv R e (L.map toMatrix).prod := by
   induction' L with t L IH
   · simp

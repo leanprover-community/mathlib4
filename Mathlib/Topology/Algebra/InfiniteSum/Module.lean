@@ -19,11 +19,11 @@ section ConstSMul
 variable [Monoid γ] [TopologicalSpace α] [AddCommMonoid α] [DistribMulAction γ α]
   [ContinuousConstSMul γ α] {f : β → α}
 
-theorem HasSum.const_smul {a : α} (b : γ) (hf : HasSum f a) : HasSum (fun i ↦ b • f i) (b • a) :=
+lemma HasSum.const_smul {a : α} (b : γ) (hf : HasSum f a) : HasSum (fun i ↦ b • f i) (b • a) :=
   hf.map (DistribMulAction.toAddMonoidHom α _) <| continuous_const_smul _
 #align has_sum.const_smul HasSum.const_smul
 
-theorem Summable.const_smul (b : γ) (hf : Summable f) : Summable fun i ↦ b • f i :=
+lemma Summable.const_smul (b : γ) (hf : Summable f) : Summable fun i ↦ b • f i :=
   (hf.hasSum.const_smul _).summable
 #align summable.const_smul Summable.const_smul
 
@@ -68,15 +68,15 @@ section SMulConst
 variable [Semiring R] [TopologicalSpace R] [TopologicalSpace M] [AddCommMonoid M] [Module R M]
   [ContinuousSMul R M] {f : ι → R}
 
-theorem HasSum.smul_const {r : R} (hf : HasSum f r) (a : M) : HasSum (fun z ↦ f z • a) (r • a) :=
+lemma HasSum.smul_const {r : R} (hf : HasSum f r) (a : M) : HasSum (fun z ↦ f z • a) (r • a) :=
   hf.map ((smulAddHom R M).flip a) (continuous_id.smul continuous_const)
 #align has_sum.smul_const HasSum.smul_const
 
-theorem Summable.smul_const (hf : Summable f) (a : M) : Summable fun z ↦ f z • a :=
+lemma Summable.smul_const (hf : Summable f) (a : M) : Summable fun z ↦ f z • a :=
   (hf.hasSum.smul_const _).summable
 #align summable.smul_const Summable.smul_const
 
-theorem tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : ∑' z, f z • a = (∑' z, f z) • a :=
+lemma tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : ∑' z, f z • a = (∑' z, f z) • a :=
   (hf.hasSum.smul_const _).tsum_eq
 #align tsum_smul_const tsum_smul_const
 
@@ -93,14 +93,14 @@ variable [TopologicalSpace R] [TopologicalSpace M] [T3Space M]
 variable [ContinuousAdd M] [ContinuousSMul R M]
 variable {f : ι → R} {g : κ → M} {s : R} {t u : M}
 
-theorem HasSum.smul_eq (hf : HasSum f s) (hg : HasSum g t)
+lemma HasSum.smul_eq (hf : HasSum f s) (hg : HasSum g t)
     (hfg : HasSum (fun x : ι × κ ↦ f x.1 • g x.2) u) : s • t = u :=
   have key₁ : HasSum (fun i ↦ f i • t) (s • t) := hf.smul_const t
   have this : ∀ i : ι, HasSum (fun c : κ ↦ f i • g c) (f i • t) := fun i ↦ hg.const_smul (f i)
   have key₂ : HasSum (fun i ↦ f i • t) u := HasSum.prod_fiberwise hfg this
   key₁.unique key₂
 
-theorem HasSum.smul (hf : HasSum f s) (hg : HasSum g t)
+lemma HasSum.smul (hf : HasSum f s) (hg : HasSum g t)
     (hfg : Summable fun x : ι × κ ↦ f x.1 • g x.2) :
     HasSum (fun x : ι × κ ↦ f x.1 • g x.2) (s • t) :=
   let ⟨_u, hu⟩ := hfg
@@ -132,7 +132,7 @@ alias HasSum.mapL := ContinuousLinearMap.hasSum
 set_option linter.uppercaseLean3 false in
 #align has_sum.mapL HasSum.mapL
 
-protected theorem ContinuousLinearMap.summable {f : ι → M} (φ : M →SL[σ] M₂) (hf : Summable f) :
+protected lemma ContinuousLinearMap.summable {f : ι → M} (φ : M →SL[σ] M₂) (hf : Summable f) :
     Summable fun b : ι ↦ φ (f b) :=
   (hf.hasSum.mapL φ).summable
 #align continuous_linear_map.summable ContinuousLinearMap.summable
@@ -141,7 +141,7 @@ alias Summable.mapL := ContinuousLinearMap.summable
 set_option linter.uppercaseLean3 false in
 #align summable.mapL Summable.mapL
 
-protected theorem ContinuousLinearMap.map_tsum [T2Space M₂] {f : ι → M} (φ : M →SL[σ] M₂)
+protected lemma ContinuousLinearMap.map_tsum [T2Space M₂] {f : ι → M} (φ : M →SL[σ] M₂)
     (hf : Summable f) : φ (∑' z, f z) = ∑' z, φ (f z) :=
   (hf.hasSum.mapL φ).tsum_eq.symm
 #align continuous_linear_map.map_tsum ContinuousLinearMap.map_tsum
@@ -159,12 +159,12 @@ protected theorem ContinuousLinearEquiv.hasSum' {f : ι → M} (e : M ≃SL[σ] 
   rw [e.hasSum, ContinuousLinearEquiv.symm_apply_apply]
 #align continuous_linear_equiv.has_sum' ContinuousLinearEquiv.hasSum'
 
-protected theorem ContinuousLinearEquiv.summable {f : ι → M} (e : M ≃SL[σ] M₂) :
+protected lemma ContinuousLinearEquiv.summable {f : ι → M} (e : M ≃SL[σ] M₂) :
     (Summable fun b : ι ↦ e (f b)) ↔ Summable f :=
   ⟨fun hf ↦ (e.hasSum.1 hf.hasSum).summable, (e : M →SL[σ] M₂).summable⟩
 #align continuous_linear_equiv.summable ContinuousLinearEquiv.summable
 
-theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι → M} (e : M ≃SL[σ] M₂)
+lemma ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι → M} (e : M ≃SL[σ] M₂)
     {y : M₂} : (∑' z, e (f z)) = y ↔ ∑' z, f z = e.symm y := by
   by_cases hf : Summable f
   · exact
@@ -178,7 +178,7 @@ theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι →
     · simpa using congr_arg (fun z ↦ e z) H
 #align continuous_linear_equiv.tsum_eq_iff ContinuousLinearEquiv.tsum_eq_iff
 
-protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂] {f : ι → M}
+protected lemma ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂] {f : ι → M}
     (e : M ≃SL[σ] M₂) : e (∑' z, f z) = ∑' z, e (f z) := by
   refine' symm (e.tsum_eq_iff.mpr _)
   rw [e.symm_apply_apply _]

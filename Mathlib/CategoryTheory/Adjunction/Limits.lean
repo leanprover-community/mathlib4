@@ -131,14 +131,14 @@ noncomputable example (E : C ⥤ D) [E.IsEquivalence] (c : Cocone K) (h : IsColi
     IsColimit (E.mapCocone c) :=
   PreservesColimit.preserves h
 
-theorem hasColimit_comp_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimit K] :
+lemma hasColimit_comp_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimit K] :
     HasColimit (K ⋙ E) :=
   HasColimit.mk
     { cocone := E.mapCocone (colimit.cocone K)
       isColimit := PreservesColimit.preserves (colimit.isColimit K) }
 #align category_theory.adjunction.has_colimit_comp_equivalence CategoryTheory.Adjunction.hasColimit_comp_equivalence
 
-theorem hasColimit_of_comp_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimit (K ⋙ E)] :
+lemma hasColimit_of_comp_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimit (K ⋙ E)] :
     HasColimit K :=
   @hasColimitOfIso _ _ _ _ (K ⋙ E ⋙ E.inv) K
     (@hasColimit_comp_equivalence _ _ _ _ _ _ (K ⋙ E) E.inv _ _)
@@ -246,13 +246,13 @@ noncomputable example (E : D ⥤ C) [E.IsEquivalence] (c : Cone K) (h : IsLimit 
     IsLimit (E.mapCone c) :=
   PreservesLimit.preserves h
 
-theorem hasLimit_comp_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimit K] : HasLimit (K ⋙ E) :=
+lemma hasLimit_comp_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimit K] : HasLimit (K ⋙ E) :=
   HasLimit.mk
     { cone := E.mapCone (limit.cone K)
       isLimit := PreservesLimit.preserves (limit.isLimit K) }
 #align category_theory.adjunction.has_limit_comp_equivalence CategoryTheory.Adjunction.hasLimit_comp_equivalence
 
-theorem hasLimit_of_comp_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimit (K ⋙ E)] :
+lemma hasLimit_of_comp_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimit (K ⋙ E)] :
     HasLimit K :=
   @hasLimitOfIso _ _ _ _ (K ⋙ E ⋙ E.inv) K
     (@hasLimit_comp_equivalence _ _ _ _ _ _ (K ⋙ E) E.inv _ _)

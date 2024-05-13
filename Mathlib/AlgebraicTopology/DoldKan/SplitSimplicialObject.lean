@@ -44,13 +44,13 @@ noncomputable def πSummand [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A
 #align simplicial_object.splitting.π_summand SimplicialObject.Splitting.πSummand
 
 @[reassoc (attr := simp)]
-theorem cofan_inj_πSummand_eq_id [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
+lemma cofan_inj_πSummand_eq_id [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     (s.cofan Δ).inj A ≫ s.πSummand A = 𝟙 _ := by
   simp [πSummand]
 #align simplicial_object.splitting.ι_π_summand_eq_id SimplicialObject.Splitting.cofan_inj_πSummand_eq_id
 
 @[reassoc (attr := simp)]
-theorem cofan_inj_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A B : IndexSet Δ)
+lemma cofan_inj_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A B : IndexSet Δ)
     (h : B ≠ A) : (s.cofan Δ).inj A ≫ s.πSummand B = 0 := by
   dsimp [πSummand]
   rw [ι_desc, dif_neg h.symm]
@@ -58,7 +58,7 @@ theorem cofan_inj_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategory�
 
 variable [Preadditive C]
 
-theorem decomposition_id (Δ : SimplexCategoryᵒᵖ) :
+lemma decomposition_id (Δ : SimplexCategoryᵒᵖ) :
     𝟙 (X.obj Δ) = ∑ A : IndexSet Δ, s.πSummand A ≫ (s.cofan Δ).inj A := by
   apply s.hom_ext'
   intro A
@@ -70,7 +70,7 @@ theorem decomposition_id (Δ : SimplexCategoryᵒᵖ) :
 #align simplicial_object.splitting.decomposition_id SimplicialObject.Splitting.decomposition_id
 
 @[reassoc (attr := simp)]
-theorem σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
+lemma σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
     X.σ i ≫ s.πSummand (IndexSet.id (op [n + 1])) = 0 := by
   apply s.hom_ext'
   intro A
@@ -96,7 +96,7 @@ theorem cofan_inj_comp_PInfty_eq_zero {X : SimplicialObject C} (s : SimplicialOb
 set_option linter.uppercaseLean3 false in
 #align simplicial_object.splitting.ι_summand_comp_P_infty_eq_zero SimplicialObject.Splitting.cofan_inj_comp_PInfty_eq_zero
 
-theorem comp_PInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _[n]) :
+lemma comp_PInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _[n]) :
     f ≫ PInfty.f n = 0 ↔ f ≫ s.πSummand (IndexSet.id (op [n])) = 0 := by
   constructor
   · intro h
@@ -124,7 +124,7 @@ set_option linter.uppercaseLean3 false in
 #align simplicial_object.splitting.comp_P_infty_eq_zero_iff SimplicialObject.Splitting.comp_PInfty_eq_zero_iff
 
 @[reassoc (attr := simp)]
-theorem PInfty_comp_πSummand_id (n : ℕ) :
+lemma PInfty_comp_πSummand_id (n : ℕ) :
     PInfty.f n ≫ s.πSummand (IndexSet.id (op [n])) = s.πSummand (IndexSet.id (op [n])) := by
   conv_rhs => rw [← id_comp (s.πSummand _)]
   symm
@@ -134,7 +134,7 @@ set_option linter.uppercaseLean3 false in
 #align simplicial_object.splitting.P_infty_comp_π_summand_id SimplicialObject.Splitting.PInfty_comp_πSummand_id
 
 @[reassoc (attr := simp)]
-theorem πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty (n : ℕ) :
+lemma πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty (n : ℕ) :
     s.πSummand (IndexSet.id (op [n])) ≫ (s.cofan _).inj (IndexSet.id (op [n])) ≫ PInfty.f n =
       PInfty.f n := by
   conv_rhs => rw [← id_comp (PInfty.f n)]
@@ -152,7 +152,7 @@ noncomputable def d (i j : ℕ) : s.N i ⟶ s.N j :=
   (s.cofan _).inj (IndexSet.id (op [i])) ≫ K[X].d i j ≫ s.πSummand (IndexSet.id (op [j]))
 #align simplicial_object.splitting.d SimplicialObject.Splitting.d
 
-theorem ιSummand_comp_d_comp_πSummand_eq_zero (j k : ℕ) (A : IndexSet (op [j])) (hA : ¬A.EqId) :
+lemma ιSummand_comp_d_comp_πSummand_eq_zero (j k : ℕ) (A : IndexSet (op [j])) (hA : ¬A.EqId) :
     (s.cofan _).inj A ≫ K[X].d j k ≫ s.πSummand (IndexSet.id (op [k])) = 0 := by
   rw [A.eqId_iff_mono] at hA
   rw [← assoc, ← s.comp_PInfty_eq_zero_iff, assoc, ← PInfty.comm j k, s.cofan_inj_eq, assoc,

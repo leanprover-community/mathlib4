@@ -56,7 +56,7 @@ namespace Over
 variable {X : T}
 
 @[ext]
-theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.left) : f = g := by
+lemma OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.left) : f = g := by
   let ⟨_,b,_⟩ := f
   let ⟨_,e,_⟩ := g
   congr
@@ -64,21 +64,21 @@ theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.
 #align category_theory.over.over_morphism.ext CategoryTheory.Over.OverMorphism.ext
 
 -- @[simp] : Porting note (#10618): simp can prove this
-theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
+lemma over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
 #align category_theory.over.over_right CategoryTheory.Over.over_right
 
 @[simp]
-theorem id_left (U : Over X) : CommaMorphism.left (𝟙 U) = 𝟙 U.left :=
+lemma id_left (U : Over X) : CommaMorphism.left (𝟙 U) = 𝟙 U.left :=
   rfl
 #align category_theory.over.id_left CategoryTheory.Over.id_left
 
 @[simp]
-theorem comp_left (a b c : Over X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).left = f.left ≫ g.left :=
+lemma comp_left (a b c : Over X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).left = f.left ≫ g.left :=
   rfl
 #align category_theory.over.comp_left CategoryTheory.Over.comp_left
 
 @[reassoc (attr := simp)]
-theorem w {A B : Over X} (f : A ⟶ B) : f.left ≫ B.hom = A.hom := by have := f.w; aesop_cat
+lemma w {A B : Over X} (f : A ⟶ B) : f.left ≫ B.hom = A.hom := by have := f.w; aesop_cat
 #align category_theory.over.w CategoryTheory.Over.w
 
 /-- To give an object in the over category, it suffices to give a morphism with codomain `X`. -/
@@ -97,7 +97,7 @@ section
 attribute [local instance] coeFromHom
 
 @[simp]
-theorem coe_hom {X Y : T} (f : Y ⟶ X) : (f : Over X).hom = f :=
+lemma coe_hom {X Y : T} (f : Y ⟶ X) : (f : Over X).hom = f :=
   rfl
 #align category_theory.over.coe_hom CategoryTheory.Over.coe_hom
 
@@ -140,12 +140,12 @@ def forget : Over X ⥤ T :=
 end
 
 @[simp]
-theorem forget_obj {U : Over X} : (forget X).obj U = U.left :=
+lemma forget_obj {U : Over X} : (forget X).obj U = U.left :=
   rfl
 #align category_theory.over.forget_obj CategoryTheory.Over.forget_obj
 
 @[simp]
-theorem forget_map {U V : Over X} {f : U ⟶ V} : (forget X).map f = f.left :=
+lemma forget_map {U V : Over X} {f : U ⟶ V} : (forget X).map f = f.left :=
   rfl
 #align category_theory.over.forget_map CategoryTheory.Over.forget_map
 
@@ -169,17 +169,17 @@ section
 variable {Y : T} {f : X ⟶ Y} {U V : Over X} {g : U ⟶ V}
 
 @[simp]
-theorem map_obj_left : ((map f).obj U).left = U.left :=
+lemma map_obj_left : ((map f).obj U).left = U.left :=
   rfl
 #align category_theory.over.map_obj_left CategoryTheory.Over.map_obj_left
 
 @[simp]
-theorem map_obj_hom : ((map f).obj U).hom = U.hom ≫ f :=
+lemma map_obj_hom : ((map f).obj U).hom = U.hom ≫ f :=
   rfl
 #align category_theory.over.map_obj_hom CategoryTheory.Over.map_obj_hom
 
 @[simp]
-theorem map_map_left : ((map f).map g).left = g.left :=
+lemma map_map_left : ((map f).map g).left = g.left :=
   rfl
 #align category_theory.over.map_map_left CategoryTheory.Over.map_map_left
 
@@ -280,12 +280,12 @@ def iteratedSliceEquiv : Over f ≌ Over f.left
   counitIso := NatIso.ofComponents (fun g => Over.isoMk (Iso.refl _))
 #align category_theory.over.iterated_slice_equiv CategoryTheory.Over.iteratedSliceEquiv
 
-theorem iteratedSliceForward_forget :
+lemma iteratedSliceForward_forget :
     iteratedSliceForward f ⋙ forget f.left = forget f ⋙ forget X :=
   rfl
 #align category_theory.over.iterated_slice_forward_forget CategoryTheory.Over.iteratedSliceForward_forget
 
-theorem iteratedSliceBackward_forget_forget :
+lemma iteratedSliceBackward_forget_forget :
     iteratedSliceBackward f ⋙ forget f ⋙ forget X = forget f.left :=
   rfl
 #align category_theory.over.iterated_slice_backward_forget_forget CategoryTheory.Over.iteratedSliceBackward_forget_forget
@@ -356,28 +356,28 @@ namespace Under
 variable {X : T}
 
 @[ext]
-theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g.right) :
+lemma UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g.right) :
     f = g := by
   let ⟨_,b,_⟩ := f; let ⟨_,e,_⟩ := g
   congr; simp only [eq_iff_true_of_subsingleton]
 #align category_theory.under.under_morphism.ext CategoryTheory.Under.UnderMorphism.ext
 
 -- @[simp] Porting note (#10618): simp can prove this
-theorem under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only
+lemma under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only
 #align category_theory.under.under_left CategoryTheory.Under.under_left
 
 @[simp]
-theorem id_right (U : Under X) : CommaMorphism.right (𝟙 U) = 𝟙 U.right :=
+lemma id_right (U : Under X) : CommaMorphism.right (𝟙 U) = 𝟙 U.right :=
   rfl
 #align category_theory.under.id_right CategoryTheory.Under.id_right
 
 @[simp]
-theorem comp_right (a b c : Under X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).right = f.right ≫ g.right :=
+lemma comp_right (a b c : Under X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).right = f.right ≫ g.right :=
   rfl
 #align category_theory.under.comp_right CategoryTheory.Under.comp_right
 
 @[reassoc (attr := simp)]
-theorem w {A B : Under X} (f : A ⟶ B) : A.hom ≫ f.right = B.hom := by have := f.w; aesop_cat
+lemma w {A B : Under X} (f : A ⟶ B) : A.hom ≫ f.right = B.hom := by have := f.w; aesop_cat
 #align category_theory.under.w CategoryTheory.Under.w
 
 /-- To give an object in the under category, it suffices to give an arrow with domain `X`. -/
@@ -405,13 +405,13 @@ def isoMk {f g : Under X} (hr : f.right ≅ g.right)
 #align category_theory.under.iso_mk CategoryTheory.Under.isoMk
 
 @[simp]
-theorem isoMk_hom_right {f g : Under X} (hr : f.right ≅ g.right) (hw : f.hom ≫ hr.hom = g.hom) :
+lemma isoMk_hom_right {f g : Under X} (hr : f.right ≅ g.right) (hw : f.hom ≫ hr.hom = g.hom) :
     (isoMk hr hw).hom.right = hr.hom :=
   rfl
 #align category_theory.under.iso_mk_hom_right CategoryTheory.Under.isoMk_hom_right
 
 @[simp]
-theorem isoMk_inv_right {f g : Under X} (hr : f.right ≅ g.right) (hw : f.hom ≫ hr.hom = g.hom) :
+lemma isoMk_inv_right {f g : Under X} (hr : f.right ≅ g.right) (hw : f.hom ≫ hr.hom = g.hom) :
     (isoMk hr hw).inv.right = hr.inv :=
   rfl
 #align category_theory.under.iso_mk_inv_right CategoryTheory.Under.isoMk_inv_right
@@ -428,12 +428,12 @@ def forget : Under X ⥤ T :=
 end
 
 @[simp]
-theorem forget_obj {U : Under X} : (forget X).obj U = U.right :=
+lemma forget_obj {U : Under X} : (forget X).obj U = U.right :=
   rfl
 #align category_theory.under.forget_obj CategoryTheory.Under.forget_obj
 
 @[simp]
-theorem forget_map {U V : Under X} {f : U ⟶ V} : (forget X).map f = f.right :=
+lemma forget_map {U V : Under X} {f : U ⟶ V} : (forget X).map f = f.right :=
   rfl
 #align category_theory.under.forget_map CategoryTheory.Under.forget_map
 
@@ -454,17 +454,17 @@ section
 variable {Y : T} {f : X ⟶ Y} {U V : Under Y} {g : U ⟶ V}
 
 @[simp]
-theorem map_obj_right : ((map f).obj U).right = U.right :=
+lemma map_obj_right : ((map f).obj U).right = U.right :=
   rfl
 #align category_theory.under.map_obj_right CategoryTheory.Under.map_obj_right
 
 @[simp]
-theorem map_obj_hom : ((map f).obj U).hom = f ≫ U.hom :=
+lemma map_obj_hom : ((map f).obj U).hom = f ≫ U.hom :=
   rfl
 #align category_theory.under.map_obj_hom CategoryTheory.Under.map_obj_hom
 
 @[simp]
-theorem map_map_right : ((map f).map g).right = g.right :=
+lemma map_map_right : ((map f).map g).right = g.right :=
   rfl
 #align category_theory.under.map_map_right CategoryTheory.Under.map_map_right
 

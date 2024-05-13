@@ -74,7 +74,7 @@ theorem dist_eq_norm_vsub (x y : P) : dist x y = ‖x -ᵥ y‖ :=
   NormedAddTorsor.dist_eq_norm' x y
 #align dist_eq_norm_vsub dist_eq_norm_vsub
 
-theorem nndist_eq_nnnorm_vsub (x y : P) : nndist x y = ‖x -ᵥ y‖₊ :=
+lemma nndist_eq_nnnorm_vsub (x y : P) : nndist x y = ‖x -ᵥ y‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub V x y
 #align nndist_eq_nnnorm_vsub nndist_eq_nnnorm_vsub
 
@@ -86,47 +86,47 @@ theorem dist_eq_norm_vsub' (x y : P) : dist x y = ‖y -ᵥ x‖ :=
   (dist_comm _ _).trans (dist_eq_norm_vsub _ _ _)
 #align dist_eq_norm_vsub' dist_eq_norm_vsub'
 
-theorem nndist_eq_nnnorm_vsub' (x y : P) : nndist x y = ‖y -ᵥ x‖₊ :=
+lemma nndist_eq_nnnorm_vsub' (x y : P) : nndist x y = ‖y -ᵥ x‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub' V x y
 #align nndist_eq_nnnorm_vsub' nndist_eq_nnnorm_vsub'
 
 end
 
-theorem dist_vadd_cancel_left (v : V) (x y : P) : dist (v +ᵥ x) (v +ᵥ y) = dist x y :=
+lemma dist_vadd_cancel_left (v : V) (x y : P) : dist (v +ᵥ x) (v +ᵥ y) = dist x y :=
   dist_vadd _ _ _
 #align dist_vadd_cancel_left dist_vadd_cancel_left
 
 -- Porting note (#10756): new theorem
-theorem nndist_vadd_cancel_left (v : V) (x y : P) : nndist (v +ᵥ x) (v +ᵥ y) = nndist x y :=
+lemma nndist_vadd_cancel_left (v : V) (x y : P) : nndist (v +ᵥ x) (v +ᵥ y) = nndist x y :=
   NNReal.eq <| dist_vadd_cancel_left _ _ _
 
 @[simp]
-theorem dist_vadd_cancel_right (v₁ v₂ : V) (x : P) : dist (v₁ +ᵥ x) (v₂ +ᵥ x) = dist v₁ v₂ := by
+lemma dist_vadd_cancel_right (v₁ v₂ : V) (x : P) : dist (v₁ +ᵥ x) (v₂ +ᵥ x) = dist v₁ v₂ := by
   rw [dist_eq_norm_vsub V, dist_eq_norm, vadd_vsub_vadd_cancel_right]
 #align dist_vadd_cancel_right dist_vadd_cancel_right
 
 @[simp]
-theorem nndist_vadd_cancel_right (v₁ v₂ : V) (x : P) : nndist (v₁ +ᵥ x) (v₂ +ᵥ x) = nndist v₁ v₂ :=
+lemma nndist_vadd_cancel_right (v₁ v₂ : V) (x : P) : nndist (v₁ +ᵥ x) (v₂ +ᵥ x) = nndist v₁ v₂ :=
   NNReal.eq <| dist_vadd_cancel_right _ _ _
 #align nndist_vadd_cancel_right nndist_vadd_cancel_right
 
 @[simp]
-theorem dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
+lemma dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
   -- porting note (#10745): was `simp [dist_eq_norm_vsub V _ x]`
   rw [dist_eq_norm_vsub V _ x, vadd_vsub]
 #align dist_vadd_left dist_vadd_left
 
 @[simp]
-theorem nndist_vadd_left (v : V) (x : P) : nndist (v +ᵥ x) x = ‖v‖₊ :=
+lemma nndist_vadd_left (v : V) (x : P) : nndist (v +ᵥ x) x = ‖v‖₊ :=
   NNReal.eq <| dist_vadd_left _ _
 #align nndist_vadd_left nndist_vadd_left
 
 @[simp]
-theorem dist_vadd_right (v : V) (x : P) : dist x (v +ᵥ x) = ‖v‖ := by rw [dist_comm, dist_vadd_left]
+lemma dist_vadd_right (v : V) (x : P) : dist x (v +ᵥ x) = ‖v‖ := by rw [dist_comm, dist_vadd_left]
 #align dist_vadd_right dist_vadd_right
 
 @[simp]
-theorem nndist_vadd_right (v : V) (x : P) : nndist x (v +ᵥ x) = ‖v‖₊ :=
+lemma nndist_vadd_right (v : V) (x : P) : nndist x (v +ᵥ x) = ‖v‖₊ :=
   NNReal.eq <| dist_vadd_right _ _
 #align nndist_vadd_right nndist_vadd_right
 
@@ -139,13 +139,13 @@ def IsometryEquiv.vaddConst (x : P) : V ≃ᵢ P where
 #align isometry_equiv.vadd_const IsometryEquiv.vaddConst
 
 @[simp]
-theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y z := by
+lemma dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y z := by
   rw [dist_eq_norm, vsub_sub_vsub_cancel_left, dist_comm, dist_eq_norm_vsub V]
 #align dist_vsub_cancel_left dist_vsub_cancel_left
 
 -- Porting note (#10756): new theorem
 @[simp]
-theorem nndist_vsub_cancel_left (x y z : P) : nndist (x -ᵥ y) (x -ᵥ z) = nndist y z :=
+lemma nndist_vsub_cancel_left (x y z : P) : nndist (x -ᵥ y) (x -ᵥ z) = nndist y z :=
   NNReal.eq <| dist_vsub_cancel_left _ _ _
 
 /-- Isometry between the tangent space `V` of a (semi)normed add torsor `P` and `P` given by
@@ -157,44 +157,44 @@ def IsometryEquiv.constVSub (x : P) : P ≃ᵢ V where
 #align isometry_equiv.const_vsub IsometryEquiv.constVSub
 
 @[simp]
-theorem dist_vsub_cancel_right (x y z : P) : dist (x -ᵥ z) (y -ᵥ z) = dist x y :=
+lemma dist_vsub_cancel_right (x y z : P) : dist (x -ᵥ z) (y -ᵥ z) = dist x y :=
   (IsometryEquiv.vaddConst z).symm.dist_eq x y
 #align dist_vsub_cancel_right dist_vsub_cancel_right
 
 @[simp]
-theorem nndist_vsub_cancel_right (x y z : P) : nndist (x -ᵥ z) (y -ᵥ z) = nndist x y :=
+lemma nndist_vsub_cancel_right (x y z : P) : nndist (x -ᵥ z) (y -ᵥ z) = nndist x y :=
   NNReal.eq <| dist_vsub_cancel_right _ _ _
 #align nndist_vsub_cancel_right nndist_vsub_cancel_right
 
-theorem dist_vadd_vadd_le (v v' : V) (p p' : P) :
+lemma dist_vadd_vadd_le (v v' : V) (p p' : P) :
     dist (v +ᵥ p) (v' +ᵥ p') ≤ dist v v' + dist p p' := by
   simpa using dist_triangle (v +ᵥ p) (v' +ᵥ p) (v' +ᵥ p')
 #align dist_vadd_vadd_le dist_vadd_vadd_le
 
-theorem nndist_vadd_vadd_le (v v' : V) (p p' : P) :
+lemma nndist_vadd_vadd_le (v v' : V) (p p' : P) :
     nndist (v +ᵥ p) (v' +ᵥ p') ≤ nndist v v' + nndist p p' :=
   dist_vadd_vadd_le _ _ _ _
 #align nndist_vadd_vadd_le nndist_vadd_vadd_le
 
-theorem dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
+lemma dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     dist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ dist p₁ p₃ + dist p₂ p₄ := by
   rw [dist_eq_norm, vsub_sub_vsub_comm, dist_eq_norm_vsub V, dist_eq_norm_vsub V]
   exact norm_sub_le _ _
 #align dist_vsub_vsub_le dist_vsub_vsub_le
 
-theorem nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
+lemma nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     nndist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ nndist p₁ p₃ + nndist p₂ p₄ := by
   simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, dist_vsub_vsub_le]
 #align nndist_vsub_vsub_le nndist_vsub_vsub_le
 
-theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
+lemma edist_vadd_vadd_le (v v' : V) (p p' : P) :
     edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' := by
   simp only [edist_nndist]
   norm_cast  -- Porting note: was apply_mod_cast
   apply dist_vadd_vadd_le
 #align edist_vadd_vadd_le edist_vadd_vadd_le
 
-theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
+lemma edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     edist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ edist p₁ p₃ + edist p₂ p₄ := by
   simp only [edist_nndist]
   norm_cast  -- Porting note: was apply_mod_cast
@@ -231,7 +231,7 @@ def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup
     apply norm_add_le
 #align metric_space_of_normed_add_comm_group_of_add_torsor metricSpaceOfNormedAddCommGroupOfAddTorsor
 
-theorem LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P} {Kf Kg : ℝ≥0}
+lemma LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P} {Kf Kg : ℝ≥0}
     (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) : LipschitzWith (Kf + Kg) (f +ᵥ g) :=
   fun x y =>
   calc
@@ -241,7 +241,7 @@ theorem LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P}
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
 #align lipschitz_with.vadd LipschitzWith.vadd
 
-theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ≥0}
+lemma LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ≥0}
     (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) : LipschitzWith (Kf + Kg) (f -ᵥ g) :=
   fun x y =>
   calc
@@ -251,11 +251,11 @@ theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
 #align lipschitz_with.vsub LipschitzWith.vsub
 
-theorem uniformContinuous_vadd : UniformContinuous fun x : V × P => x.1 +ᵥ x.2 :=
+lemma uniformContinuous_vadd : UniformContinuous fun x : V × P => x.1 +ᵥ x.2 :=
   (LipschitzWith.prod_fst.vadd LipschitzWith.prod_snd).uniformContinuous
 #align uniform_continuous_vadd uniformContinuous_vadd
 
-theorem uniformContinuous_vsub : UniformContinuous fun x : P × P => x.1 -ᵥ x.2 :=
+lemma uniformContinuous_vsub : UniformContinuous fun x : P × P => x.1 -ᵥ x.2 :=
   (LipschitzWith.prod_fst.vsub LipschitzWith.prod_snd).uniformContinuous
 #align uniform_continuous_vsub uniformContinuous_vsub
 
@@ -263,11 +263,11 @@ instance (priority := 100) NormedAddTorsor.to_continuousVAdd : ContinuousVAdd V 
   continuous_vadd := uniformContinuous_vadd.continuous
 #align normed_add_torsor.to_has_continuous_vadd NormedAddTorsor.to_continuousVAdd
 
-theorem continuous_vsub : Continuous fun x : P × P => x.1 -ᵥ x.2 :=
+lemma continuous_vsub : Continuous fun x : P × P => x.1 -ᵥ x.2 :=
   uniformContinuous_vsub.continuous
 #align continuous_vsub continuous_vsub
 
-theorem Filter.Tendsto.vsub {l : Filter α} {f g : α → P} {x y : P} (hf : Tendsto f l (𝓝 x))
+lemma Filter.Tendsto.vsub {l : Filter α} {f g : α → P} {x y : P} (hf : Tendsto f l (𝓝 x))
     (hg : Tendsto g l (𝓝 y)) : Tendsto (f -ᵥ g) l (𝓝 (x -ᵥ y)) :=
   (continuous_vsub.tendsto (x, y)).comp (hf.prod_mk_nhds hg)
 #align filter.tendsto.vsub Filter.Tendsto.vsub
@@ -276,24 +276,24 @@ section
 
 variable [TopologicalSpace α]
 
-theorem Continuous.vsub {f g : α → P} (hf : Continuous f) (hg : Continuous g) :
+lemma Continuous.vsub {f g : α → P} (hf : Continuous f) (hg : Continuous g) :
     Continuous (f -ᵥ g) :=
   continuous_vsub.comp (hf.prod_mk hg : _)
 #align continuous.vsub Continuous.vsub
 
-nonrec theorem ContinuousAt.vsub {f g : α → P} {x : α} (hf : ContinuousAt f x)
+nonrec lemma ContinuousAt.vsub {f g : α → P} {x : α} (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) :
     ContinuousAt (f -ᵥ g) x :=
   hf.vsub hg
 #align continuous_at.vsub ContinuousAt.vsub
 
-nonrec theorem ContinuousWithinAt.vsub {f g : α → P} {x : α} {s : Set α}
+nonrec lemma ContinuousWithinAt.vsub {f g : α → P} {x : α} {s : Set α}
     (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
     ContinuousWithinAt (f -ᵥ g) s x :=
   hf.vsub hg
 #align continuous_within_at.vsub ContinuousWithinAt.vsub
 
-theorem ContinuousOn.vsub {f g : α → P} {s : Set α} (hf : ContinuousOn f s)
+lemma ContinuousOn.vsub {f g : α → P} {s : Set α} (hf : ContinuousOn f s)
     (hg : ContinuousOn g s) : ContinuousOn (f -ᵥ g) s := fun x hx ↦
   (hf x hx).vsub (hg x hx)
 
@@ -303,13 +303,13 @@ section
 
 variable {R : Type*} [Ring R] [TopologicalSpace R] [Module R V] [ContinuousSMul R V]
 
-theorem Filter.Tendsto.lineMap {l : Filter α} {f₁ f₂ : α → P} {g : α → R} {p₁ p₂ : P} {c : R}
+lemma Filter.Tendsto.lineMap {l : Filter α} {f₁ f₂ : α → P} {g : α → R} {p₁ p₂ : P} {c : R}
     (h₁ : Tendsto f₁ l (𝓝 p₁)) (h₂ : Tendsto f₂ l (𝓝 p₂)) (hg : Tendsto g l (𝓝 c)) :
     Tendsto (fun x => AffineMap.lineMap (f₁ x) (f₂ x) (g x)) l (𝓝 <| AffineMap.lineMap p₁ p₂ c) :=
   (hg.smul (h₂.vsub h₁)).vadd h₁
 #align filter.tendsto.line_map Filter.Tendsto.lineMap
 
-theorem Filter.Tendsto.midpoint [Invertible (2 : R)] {l : Filter α} {f₁ f₂ : α → P} {p₁ p₂ : P}
+lemma Filter.Tendsto.midpoint [Invertible (2 : R)] {l : Filter α} {f₁ f₂ : α → P} {p₁ p₂ : P}
     (h₁ : Tendsto f₁ l (𝓝 p₁)) (h₂ : Tendsto f₂ l (𝓝 p₂)) :
     Tendsto (fun x => midpoint R (f₁ x) (f₂ x)) l (𝓝 <| midpoint R p₁ p₂) :=
   h₁.lineMap h₂ tendsto_const_nhds
@@ -321,7 +321,7 @@ section Pointwise
 
 open Pointwise
 
-theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed s)
+lemma IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed s)
     (ht : IsCompact t) : IsClosed (s +ᵥ t) := by
   -- This result is still true for any `AddTorsor` where `-ᵥ` is continuous,
   -- but we don't yet have a nice way to state it.

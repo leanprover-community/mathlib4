@@ -41,12 +41,12 @@ def pi (s : Finset α) (t : ∀ a, Finset (β a)) : Finset (∀ a ∈ s, β a) :
 #align finset.pi Finset.pi
 
 @[simp]
-theorem pi_val (s : Finset α) (t : ∀ a, Finset (β a)) : (s.pi t).1 = s.1.pi fun a => (t a).1 :=
+lemma pi_val (s : Finset α) (t : ∀ a, Finset (β a)) : (s.pi t).1 = s.1.pi fun a => (t a).1 :=
   rfl
 #align finset.pi_val Finset.pi_val
 
 @[simp]
-theorem mem_pi {s : Finset α} {t : ∀ a, Finset (β a)} {f : ∀ a ∈ s, β a} :
+lemma mem_pi {s : Finset α} {t : ∀ a, Finset (β a)} {f : ∀ a ∈ s, β a} :
     f ∈ s.pi t ↔ ∀ (a) (h : a ∈ s), f a h ∈ t a :=
   Multiset.mem_pi _ _ _
 #align finset.mem_pi Finset.mem_pi
@@ -61,17 +61,17 @@ def Pi.cons (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (a
 #align finset.pi.cons Finset.Pi.cons
 
 @[simp]
-theorem Pi.cons_same (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (h : a ∈ insert a s) :
+lemma Pi.cons_same (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (h : a ∈ insert a s) :
     Pi.cons s a b f a h = b :=
   Multiset.Pi.cons_same _
 #align finset.pi.cons_same Finset.Pi.cons_same
 
-theorem Pi.cons_ne {s : Finset α} {a a' : α} {b : δ a} {f : ∀ a, a ∈ s → δ a} {h : a' ∈ insert a s}
+lemma Pi.cons_ne {s : Finset α} {a a' : α} {b : δ a} {f : ∀ a, a ∈ s → δ a} {h : a' ∈ insert a s}
     (ha : a ≠ a') : Pi.cons s a b f a' h = f a' ((mem_insert.1 h).resolve_left ha.symm) :=
   Multiset.Pi.cons_ne _ (Ne.symm ha)
 #align finset.pi.cons_ne Finset.Pi.cons_ne
 
-theorem Pi.cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
+lemma Pi.cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
     Function.Injective (Pi.cons s a b) := fun e₁ e₂ eq =>
   @Multiset.Pi.cons_injective α _ δ a b s.1 hs _ _ <|
     funext fun e =>
@@ -84,7 +84,7 @@ theorem Pi.cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
 #align finset.pi.cons_injective Finset.Pi.cons_injective
 
 @[simp]
-theorem pi_empty {t : ∀ a : α, Finset (β a)} : pi (∅ : Finset α) t = singleton (Pi.empty β) :=
+lemma pi_empty {t : ∀ a : α, Finset (β a)} : pi (∅ : Finset α) t = singleton (Pi.empty β) :=
   rfl
 #align finset.pi_empty Finset.pi_empty
 
@@ -93,7 +93,7 @@ lemma pi_nonempty : (s.pi t).Nonempty ↔ ∀ a ∈ s, (t a).Nonempty := by
   simp [Finset.Nonempty, Classical.skolem]
 
 @[simp]
-theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}
+lemma pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}
     (ha : a ∉ s) : pi (insert a s) t = (t a).biUnion fun b => (pi s t).image (Pi.cons s a b) := by
   apply eq_of_veq
   rw [← (pi (insert a s) t).2.dedup]
@@ -112,7 +112,7 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
   exact ((pi s t).nodup.map <| Multiset.Pi.cons_injective ha).dedup.symm
 #align finset.pi_insert Finset.pi_insert
 
-theorem pi_singletons {β : Type*} (s : Finset α) (f : α → β) :
+lemma pi_singletons {β : Type*} (s : Finset α) (f : α → β) :
     (s.pi fun a => ({f a} : Finset β)) = {fun a _ => f a} := by
   rw [eq_singleton_iff_unique_mem]
   constructor
@@ -123,16 +123,16 @@ theorem pi_singletons {β : Type*} (s : Finset α) (f : α → β) :
   simpa using ha i hi
 #align finset.pi_singletons Finset.pi_singletons
 
-theorem pi_const_singleton {β : Type*} (s : Finset α) (i : β) :
+lemma pi_const_singleton {β : Type*} (s : Finset α) (i : β) :
     (s.pi fun _ => ({i} : Finset β)) = {fun _ _ => i} :=
   pi_singletons s fun _ => i
 #align finset.pi_const_singleton Finset.pi_const_singleton
 
-theorem pi_subset {s : Finset α} (t₁ t₂ : ∀ a, Finset (β a)) (h : ∀ a ∈ s, t₁ a ⊆ t₂ a) :
+lemma pi_subset {s : Finset α} (t₁ t₂ : ∀ a, Finset (β a)) (h : ∀ a ∈ s, t₁ a ⊆ t₂ a) :
     s.pi t₁ ⊆ s.pi t₂ := fun _ hg => mem_pi.2 fun a ha => h a ha (mem_pi.mp hg a ha)
 #align finset.pi_subset Finset.pi_subset
 
-theorem pi_disjoint_of_disjoint {δ : α → Type*} {s : Finset α} (t₁ t₂ : ∀ a, Finset (δ a)) {a : α}
+lemma pi_disjoint_of_disjoint {δ : α → Type*} {s : Finset α} (t₁ t₂ : ∀ a, Finset (δ a)) {a : α}
     (ha : a ∈ s) (h : Disjoint (t₁ a) (t₂ a)) : Disjoint (s.pi t₁) (s.pi t₂) :=
   disjoint_iff_ne.2 fun f₁ hf₁ f₂ hf₂ eq₁₂ =>
     disjoint_iff_ne.1 h (f₁ a ha) (mem_pi.mp hf₁ a ha) (f₂ a ha) (mem_pi.mp hf₂ a ha) <|

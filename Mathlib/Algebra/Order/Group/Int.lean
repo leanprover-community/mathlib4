@@ -39,7 +39,7 @@ instance linearOrderedAddCommGroup : LinearOrderedAddCommGroup ℤ where
 
 /-! ### Miscellaneous lemmas -/
 
-theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
+lemma abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
   | (n : ℕ) => abs_of_nonneg <| ofNat_zero_le _
   | -[_+1] => abs_of_nonpos <| le_of_lt <| negSucc_lt_zero _
 #align int.abs_eq_nat_abs Int.abs_eq_natAbs
@@ -47,10 +47,10 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 @[simp, norm_cast] lemma natCast_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
 #align int.coe_nat_abs Int.natCast_natAbs
 
-theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
+lemma natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
 #align int.nat_abs_abs Int.natAbs_abs
 
-theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by
+lemma sign_mul_abs (a : ℤ) : sign a * |a| = a := by
   rw [abs_eq_natAbs, sign_mul_natAbs a]
 #align int.sign_mul_abs Int.sign_mul_abs
 
@@ -71,46 +71,46 @@ alias le_self_pow_two := le_self_sq
 @[norm_cast] lemma abs_natCast (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (natCast_nonneg n)
 #align int.abs_coe_nat Int.abs_natCast
 
-theorem natAbs_sub_pos_iff {i j : ℤ} : 0 < natAbs (i - j) ↔ i ≠ j := by
+lemma natAbs_sub_pos_iff {i j : ℤ} : 0 < natAbs (i - j) ↔ i ≠ j := by
   rw [natAbs_pos, ne_eq, sub_eq_zero]
 
-theorem natAbs_sub_ne_zero_iff {i j : ℤ} : natAbs (i - j) ≠ 0 ↔ i ≠ j :=
+lemma natAbs_sub_ne_zero_iff {i j : ℤ} : natAbs (i - j) ≠ 0 ↔ i ≠ j :=
   Nat.ne_zero_iff_zero_lt.trans natAbs_sub_pos_iff
 
 /-! #### succ and pred -/
 
-theorem lt_succ_self (a : ℤ) : a < succ a :=
+lemma lt_succ_self (a : ℤ) : a < succ a :=
   lt_add_of_pos_right _ Int.zero_lt_one
 #align int.lt_succ_self Int.lt_succ_self
 
-theorem pred_self_lt (a : ℤ) : pred a < a :=
+lemma pred_self_lt (a : ℤ) : pred a < a :=
   sub_lt_self _ Int.zero_lt_one
 #align int.pred_self_lt Int.pred_self_lt
 
 #align int.lt_add_one_iff Int.lt_add_one_iff
 #align int.le_add_one Int.le_add_one
 
-theorem le_add_one_iff {m n : ℤ} : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 := by
+lemma le_add_one_iff {m n : ℤ} : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 := by
   rw [le_iff_lt_or_eq, lt_add_one_iff]
 
-theorem sub_one_lt_iff {a b : ℤ} : a - 1 < b ↔ a ≤ b :=
+lemma sub_one_lt_iff {a b : ℤ} : a - 1 < b ↔ a ≤ b :=
   sub_lt_iff_lt_add.trans lt_add_one_iff
 #align int.sub_one_lt_iff Int.sub_one_lt_iff
 
-theorem le_sub_one_iff {a b : ℤ} : a ≤ b - 1 ↔ a < b :=
+lemma le_sub_one_iff {a b : ℤ} : a ≤ b - 1 ↔ a < b :=
   le_sub_iff_add_le
 #align int.le_sub_one_iff Int.le_sub_one_iff
 
 @[simp]
-theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 := by
+lemma abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 := by
   rw [← zero_add 1, lt_add_one_iff, abs_nonpos_iff]
 #align int.abs_lt_one_iff Int.abs_lt_one_iff
 
-theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := by
+lemma abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := by
   rw [le_iff_lt_or_eq, abs_lt_one_iff, abs_eq Int.one_nonneg]
 #align int.abs_le_one_iff Int.abs_le_one_iff
 
-theorem one_le_abs {z : ℤ} (h₀ : z ≠ 0) : 1 ≤ |z| :=
+lemma one_le_abs {z : ℤ} (h₀ : z ≠ 0) : 1 ≤ |z| :=
   add_one_le_iff.mpr (abs_pos.mpr h₀)
 #align int.one_le_abs Int.one_le_abs
 
@@ -177,7 +177,7 @@ attribute [simp] natAbs_ofNat natAbs_zero natAbs_one
 
 #align int.div_nonpos Int.ediv_nonpos
 
-theorem ediv_eq_zero_of_lt_abs {a b : ℤ} (H1 : 0 ≤ a) (H2 : a < |b|) : a / b = 0 :=
+lemma ediv_eq_zero_of_lt_abs {a b : ℤ} (H1 : 0 ≤ a) (H2 : a < |b|) : a / b = 0 :=
   match b, |b|, abs_eq_natAbs b, H2 with
   | (n : ℕ), _, rfl, H2 => ediv_eq_zero_of_lt H1 H2
   | -[n+1], _, rfl, H2 => neg_injective <| by rw [← Int.ediv_neg]; exact ediv_eq_zero_of_lt H1 H2
@@ -202,7 +202,7 @@ attribute [local simp] Int.zero_ediv Int.ediv_zero
 /-! #### mod -/
 
 @[simp]
-theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
+lemma emod_abs (a b : ℤ) : a % |b| = a % b :=
   abs_by_cases (fun i => a % i = a % b) rfl (emod_neg _ _)
 #align int.mod_abs Int.emod_abs
 
@@ -210,7 +210,7 @@ theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
 
 #align int.mod_lt_of_pos Int.emod_lt_of_pos
 
-theorem emod_lt (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
+lemma emod_lt (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
   rw [← emod_abs]; exact emod_lt_of_pos _ (abs_pos.2 H)
 #align int.mod_lt Int.emod_lt
 
@@ -228,7 +228,7 @@ theorem emod_lt (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
 
 #align int.add_mod Int.add_emod
 
-theorem add_emod_eq_add_mod_right {m n k : ℤ} (i : ℤ) (H : m % n = k % n) :
+lemma add_emod_eq_add_mod_right {m n k : ℤ} (i : ℤ) (H : m % n = k % n) :
     (m + i) % n = (k + i) % n := by rw [← emod_add_emod, ← emod_add_emod k, H]
 #align int.add_mod_eq_add_mod_right Int.add_emod_eq_add_emod_right
 
@@ -263,7 +263,7 @@ attribute [local simp] Int.zero_emod
 #align int.mod_eq_mod_iff_mod_sub_eq_zero Int.emod_eq_emod_iff_emod_sub_eq_zero
 
 @[simp]
-theorem neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by
+lemma neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by
   apply Int.emod_eq_emod_iff_emod_sub_eq_zero.mpr
   convert Int.mul_emod_right 2 (-i) using 2
   rw [Int.two_mul, sub_eq_add_neg]
@@ -273,7 +273,7 @@ theorem neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by
 
 #align int.lt_div_add_one_mul_self Int.lt_ediv_add_one_mul_self
 
-theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
+lemma abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
   suffices ∀ (a : ℤ) (n : ℕ), |a / n| ≤ |a| from fun a b =>
     match b, eq_nat_or_neg b with
     | _, ⟨n, Or.inl rfl⟩ => this _ _
@@ -310,7 +310,7 @@ theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
 
 #align int.mul_div_cancel' Int.mul_ediv_cancel'
 
-theorem ediv_dvd_ediv : ∀ {a b c : ℤ}, a ∣ b → b ∣ c → b / a ∣ c / a
+lemma ediv_dvd_ediv : ∀ {a b c : ℤ}, a ∣ b → b ∣ c → b / a ∣ c / a
   | a, _, _, ⟨b, rfl⟩, ⟨c, rfl⟩ =>
     if az : a = 0 then by simp [az]
     else by
@@ -336,7 +336,7 @@ theorem ediv_dvd_ediv : ∀ {a b c : ℤ}, a ∣ b → b ∣ c → b / a ∣ c /
 
 #align int.div_left_inj Int.ediv_left_inj
 
-theorem abs_sign_of_nonzero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
+lemma abs_sign_of_nonzero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
   rw [abs_eq_natAbs, natAbs_sign_of_nonzero hz, Int.ofNat_one]
 #align int.abs_sign_of_nonzero Int.abs_sign_of_nonzero
 
@@ -352,7 +352,7 @@ attribute [local simp] Int.ediv_zero
 
 #align int.sub_div_of_dvd_sub Int.sub_ediv_of_dvd_sub
 
-protected theorem sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
+protected lemma sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]
   else (Int.ediv_eq_of_eq_mul_left (mt abs_eq_zero.1 az) (sign_mul_abs _).symm).symm
 #align int.sign_eq_div_abs Int.sign_eq_ediv_abs
@@ -374,13 +374,13 @@ protected theorem sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
 #align int.lt_div_iff_mul_lt Int.lt_ediv_iff_mul_lt
 #align int.div_pos_of_pos_of_dvd Int.ediv_pos_of_pos_of_dvd
 
-theorem natAbs_eq_of_dvd_dvd {s t : ℤ} (hst : s ∣ t) (hts : t ∣ s) : natAbs s = natAbs t :=
+lemma natAbs_eq_of_dvd_dvd {s t : ℤ} (hst : s ∣ t) (hts : t ∣ s) : natAbs s = natAbs t :=
   Nat.dvd_antisymm (natAbs_dvd_natAbs.mpr hst) (natAbs_dvd_natAbs.mpr hts)
 #align int.nat_abs_eq_of_dvd_dvd Int.natAbs_eq_of_dvd_dvd
 
 #align int.div_eq_div_of_mul_eq_mul Int.ediv_eq_ediv_of_mul_eq_mul
 
-theorem ediv_dvd_of_dvd {s t : ℤ} (hst : s ∣ t) : t / s ∣ t := by
+lemma ediv_dvd_of_dvd {s t : ℤ} (hst : s ∣ t) : t / s ∣ t := by
   rcases eq_or_ne s 0 with (rfl | hs)
   · simpa using hst
   rcases hst with ⟨c, hc⟩
@@ -391,41 +391,41 @@ theorem ediv_dvd_of_dvd {s t : ℤ} (hst : s ∣ t) : t / s ∣ t := by
 
 
 @[simp]
-theorem toNat_le {a : ℤ} {n : ℕ} : toNat a ≤ n ↔ a ≤ n := by
+lemma toNat_le {a : ℤ} {n : ℕ} : toNat a ≤ n ↔ a ≤ n := by
   rw [ofNat_le.symm, toNat_eq_max, max_le_iff]; exact and_iff_left (ofNat_zero_le _)
 #align int.to_nat_le Int.toNat_le
 
 @[simp]
-theorem lt_toNat {n : ℕ} {a : ℤ} : n < toNat a ↔ (n : ℤ) < a :=
+lemma lt_toNat {n : ℕ} {a : ℤ} : n < toNat a ↔ (n : ℤ) < a :=
   le_iff_le_iff_lt_iff_lt.1 toNat_le
 #align int.lt_to_nat Int.lt_toNat
 
 @[simp]
-theorem natCast_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 :=
+lemma natCast_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 :=
   ⟨fun h => le_antisymm (Int.ofNat_le.mp (h.trans Int.ofNat_zero.le)) n.zero_le,
    fun h => (natCast_eq_zero.mpr h).le⟩
 #align int.coe_nat_nonpos_iff Int.natCast_nonpos_iff
 
-theorem toNat_le_toNat {a b : ℤ} (h : a ≤ b) : toNat a ≤ toNat b := by
+lemma toNat_le_toNat {a b : ℤ} (h : a ≤ b) : toNat a ≤ toNat b := by
   rw [toNat_le]; exact le_trans h (self_le_toNat b)
 #align int.to_nat_le_to_nat Int.toNat_le_toNat
 
-theorem toNat_lt_toNat {a b : ℤ} (hb : 0 < b) : toNat a < toNat b ↔ a < b :=
+lemma toNat_lt_toNat {a b : ℤ} (hb : 0 < b) : toNat a < toNat b ↔ a < b :=
   ⟨fun h => by cases a; exacts [lt_toNat.1 h, lt_trans (neg_of_sign_eq_neg_one rfl) hb],
    fun h => by rw [lt_toNat]; cases a; exacts [h, hb]⟩
 #align int.to_nat_lt_to_nat Int.toNat_lt_toNat
 
-theorem lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
+lemma lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
   (toNat_lt_toNat <| lt_toNat.1 <| lt_of_le_of_lt (Nat.zero_le _) h).1 h
 #align int.lt_of_to_nat_lt Int.lt_of_toNat_lt
 
 @[simp]
-theorem toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
+lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
   simp [h, le_of_lt h, push_cast]
 #align int.to_nat_pred_coe_of_pos Int.toNat_pred_coe_of_pos
 
 @[simp]
-theorem toNat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
+lemma toNat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
   | (n : ℕ) =>
     calc
       _ ↔ n = 0 := ⟨(toNat_natCast n).symm.trans, (toNat_natCast n).trans⟩
@@ -440,7 +440,7 @@ theorem toNat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
 #align int.to_nat_eq_zero Int.toNat_eq_zero
 
 @[simp]
-theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - b :=
+lemma toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - b :=
   Int.toNat_of_nonneg (sub_nonneg_of_le h)
 #align int.to_nat_sub_of_le Int.toNat_sub_of_le
 

@@ -44,7 +44,7 @@ def of {X : Type*} (to_prod : X × X) : Bipointed :=
 #align Bipointed.of Bipointed.of
 
 @[simp]
-theorem coe_of {X : Type*} (to_prod : X × X) : ↥(of to_prod) = X :=
+lemma coe_of {X : Type*} (to_prod : X × X) : ↥(of to_prod) = X :=
   rfl
 #align Bipointed.coe_of Bipointed.coe_of
 
@@ -117,7 +117,7 @@ def swapEquiv : Bipointed ≌ Bipointed :=
 #align Bipointed.swap_equiv Bipointed.swapEquiv
 
 @[simp]
-theorem swapEquiv_symm : swapEquiv.symm = swapEquiv :=
+lemma swapEquiv_symm : swapEquiv.symm = swapEquiv :=
   rfl
 #align Bipointed.swap_equiv_symm Bipointed.swapEquiv_symm
 
@@ -136,25 +136,25 @@ def bipointedToPointedSnd : Bipointed ⥤ Pointed where
 #align Bipointed_to_Pointed_snd bipointedToPointedSnd
 
 @[simp]
-theorem bipointedToPointedFst_comp_forget :
+lemma bipointedToPointedFst_comp_forget :
     bipointedToPointedFst ⋙ forget Pointed = forget Bipointed :=
   rfl
 #align Bipointed_to_Pointed_fst_comp_forget bipointedToPointedFst_comp_forget
 
 @[simp]
-theorem bipointedToPointedSnd_comp_forget :
+lemma bipointedToPointedSnd_comp_forget :
     bipointedToPointedSnd ⋙ forget Pointed = forget Bipointed :=
   rfl
 #align Bipointed_to_Pointed_snd_comp_forget bipointedToPointedSnd_comp_forget
 
 @[simp]
-theorem swap_comp_bipointedToPointedFst :
+lemma swap_comp_bipointedToPointedFst :
     Bipointed.swap ⋙ bipointedToPointedFst = bipointedToPointedSnd :=
   rfl
 #align swap_comp_Bipointed_to_Pointed_fst swap_comp_bipointedToPointedFst
 
 @[simp]
-theorem swap_comp_bipointedToPointedSnd :
+lemma swap_comp_bipointedToPointedSnd :
     Bipointed.swap ⋙ bipointedToPointedSnd = bipointedToPointedFst :=
   rfl
 #align swap_comp_Bipointed_to_Pointed_snd swap_comp_bipointedToPointedSnd
@@ -182,13 +182,13 @@ def pointedToBipointedSnd : Pointed.{u} ⥤ Bipointed where
 #align Pointed_to_Bipointed_snd pointedToBipointedSnd
 
 @[simp]
-theorem pointedToBipointedFst_comp_swap :
+lemma pointedToBipointedFst_comp_swap :
     pointedToBipointedFst ⋙ Bipointed.swap = pointedToBipointedSnd :=
   rfl
 #align Pointed_to_Bipointed_fst_comp_swap pointedToBipointedFst_comp_swap
 
 @[simp]
-theorem pointedToBipointedSnd_comp_swap :
+lemma pointedToBipointedSnd_comp_swap :
     pointedToBipointedSnd ⋙ Bipointed.swap = pointedToBipointedFst :=
   rfl
 #align Pointed_to_Bipointed_snd_comp_swap pointedToBipointedSnd_comp_swap

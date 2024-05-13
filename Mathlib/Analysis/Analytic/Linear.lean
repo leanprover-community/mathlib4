@@ -28,11 +28,11 @@ noncomputable section
 namespace ContinuousLinearMap
 
 @[simp]
-theorem fpowerSeries_radius (f : E →L[𝕜] F) (x : E) : (f.fpowerSeries x).radius = ∞ :=
+lemma fpowerSeries_radius (f : E →L[𝕜] F) (x : E) : (f.fpowerSeries x).radius = ∞ :=
   (f.fpowerSeries x).radius_eq_top_of_forall_image_add_eq_zero 2 fun _ => rfl
 #align continuous_linear_map.fpower_series_radius ContinuousLinearMap.fpowerSeries_radius
 
-protected theorem hasFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
+protected lemma hasFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
     HasFPowerSeriesOnBall f (f.fpowerSeries x) x ∞ :=
   { r_le := by simp
     r_pos := ENNReal.coe_lt_top
@@ -40,12 +40,12 @@ protected theorem hasFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
       simp [Finset.sum_range_succ, ← sub_sub, hasSum_zero, fpowerSeries] }
 #align continuous_linear_map.has_fpower_series_on_ball ContinuousLinearMap.hasFPowerSeriesOnBall
 
-protected theorem hasFPowerSeriesAt (f : E →L[𝕜] F) (x : E) :
+protected lemma hasFPowerSeriesAt (f : E →L[𝕜] F) (x : E) :
     HasFPowerSeriesAt f (f.fpowerSeries x) x :=
   ⟨∞, f.hasFPowerSeriesOnBall x⟩
 #align continuous_linear_map.has_fpower_series_at ContinuousLinearMap.hasFPowerSeriesAt
 
-protected theorem analyticAt (f : E →L[𝕜] F) (x : E) : AnalyticAt 𝕜 f x :=
+protected lemma analyticAt (f : E →L[𝕜] F) (x : E) : AnalyticAt 𝕜 f x :=
   (f.hasFPowerSeriesAt x).analyticAt
 #align continuous_linear_map.analytic_at ContinuousLinearMap.analyticAt
 
@@ -60,7 +60,7 @@ def uncurryBilinear (f : E →L[𝕜] F →L[𝕜] G) : E × F[×2]→L[𝕜] G 
 #align continuous_linear_map.uncurry_bilinear ContinuousLinearMap.uncurryBilinear
 
 @[simp]
-theorem uncurryBilinear_apply (f : E →L[𝕜] F →L[𝕜] G) (m : Fin 2 → E × F) :
+lemma uncurryBilinear_apply (f : E →L[𝕜] F →L[𝕜] G) (m : Fin 2 → E × F) :
     f.uncurryBilinear m = f (m 0).1 (m 1).2 :=
   rfl
 #align continuous_linear_map.uncurry_bilinear_apply ContinuousLinearMap.uncurryBilinear_apply
@@ -73,19 +73,19 @@ def fpowerSeriesBilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) : Formal
   | _ => 0
 #align continuous_linear_map.fpower_series_bilinear ContinuousLinearMap.fpowerSeriesBilinear
 
-theorem fpowerSeriesBilinear_apply_zero (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
+lemma fpowerSeriesBilinear_apply_zero (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
     fpowerSeriesBilinear f x 0 = ContinuousMultilinearMap.curry0 𝕜 _ (f x.1 x.2) :=
   rfl
 
-theorem fpowerSeriesBilinear_apply_one (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
+lemma fpowerSeriesBilinear_apply_one (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
     fpowerSeriesBilinear f x 1 = (continuousMultilinearCurryFin1 𝕜 (E × F) G).symm (f.deriv₂ x) :=
   rfl
 
-theorem fpowerSeriesBilinear_apply_two (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
+lemma fpowerSeriesBilinear_apply_two (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
     fpowerSeriesBilinear f x 2 = f.uncurryBilinear :=
   rfl
 
-theorem fpowerSeriesBilinear_apply_add_three (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) (n) :
+lemma fpowerSeriesBilinear_apply_add_three (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) (n) :
     fpowerSeriesBilinear f x (n + 3) = 0 :=
   rfl
 
@@ -98,12 +98,12 @@ attribute
 attribute [simp] fpowerSeriesBilinear
 
 @[simp]
-theorem fpowerSeriesBilinear_radius (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
+lemma fpowerSeriesBilinear_radius (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
     (f.fpowerSeriesBilinear x).radius = ∞ :=
   (f.fpowerSeriesBilinear x).radius_eq_top_of_forall_image_add_eq_zero 3 fun _ => rfl
 #align continuous_linear_map.fpower_series_bilinear_radius ContinuousLinearMap.fpowerSeriesBilinear_radius
 
-protected theorem hasFPowerSeriesOnBall_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
+protected lemma hasFPowerSeriesOnBall_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
     HasFPowerSeriesOnBall (fun x : E × F => f x.1 x.2) (f.fpowerSeriesBilinear x) x ∞ :=
   { r_le := by simp
     r_pos := ENNReal.coe_lt_top
@@ -114,12 +114,12 @@ protected theorem hasFPowerSeriesOnBall_bilinear (f : E →L[𝕜] F →L[𝕜] 
         simp [fpowerSeriesBilinear, hasSum_zero] }
 #align continuous_linear_map.has_fpower_series_on_ball_bilinear ContinuousLinearMap.hasFPowerSeriesOnBall_bilinear
 
-protected theorem hasFPowerSeriesAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
+protected lemma hasFPowerSeriesAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
     HasFPowerSeriesAt (fun x : E × F => f x.1 x.2) (f.fpowerSeriesBilinear x) x :=
   ⟨∞, f.hasFPowerSeriesOnBall_bilinear x⟩
 #align continuous_linear_map.has_fpower_series_at_bilinear ContinuousLinearMap.hasFPowerSeriesAt_bilinear
 
-protected theorem analyticAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
+protected lemma analyticAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
     AnalyticAt 𝕜 (fun x : E × F => f x.1 x.2) x :=
   (f.hasFPowerSeriesAt_bilinear x).analyticAt
 #align continuous_linear_map.analytic_at_bilinear ContinuousLinearMap.analyticAt_bilinear

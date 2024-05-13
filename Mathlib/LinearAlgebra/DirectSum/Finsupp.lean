@@ -99,7 +99,7 @@ lemma finsuppLeft_apply_tmul_apply (p : ι →₀ M) (n : N) (i : ι) :
   rw [finsuppLeft_apply_tmul, Finsupp.sum_apply,
     Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne) (by simp), Finsupp.single_eq_same]
 
-theorem finsuppLeft_apply (t : (ι →₀ M) ⊗[R] N) (i : ι) :
+lemma finsuppLeft_apply (t : (ι →₀ M) ⊗[R] N) (i : ι) :
     finsuppLeft R M N ι t i = rTensor N (Finsupp.lapply i) t := by
   induction t using TensorProduct.induction_on with
   | zero => simp
@@ -134,7 +134,7 @@ lemma finsuppRight_apply_tmul_apply (m : M) (p : ι →₀ N) (i : ι) :
   rw [finsuppRight_apply_tmul, Finsupp.sum_apply,
     Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne) (by simp), Finsupp.single_eq_same]
 
-theorem finsuppRight_apply (t : M ⊗[R] (ι →₀ N)) (i : ι) :
+lemma finsuppRight_apply (t : M ⊗[R] (ι →₀ N)) (i : ι) :
     finsuppRight R M N ι t i = lTensor M (Finsupp.lapply i) t := by
   induction t using TensorProduct.induction_on with
   | zero => simp
@@ -253,14 +253,14 @@ def finsuppTensorFinsupp : (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[S] ι × κ
 #align finsupp_tensor_finsupp finsuppTensorFinsupp
 
 @[simp]
-theorem finsuppTensorFinsupp_single (i : ι) (m : M) (k : κ) (n : N) :
+lemma finsuppTensorFinsupp_single (i : ι) (m : M) (k : κ) (n : N) :
     finsuppTensorFinsupp R S M N ι κ (Finsupp.single i m ⊗ₜ Finsupp.single k n) =
       Finsupp.single (i, k) (m ⊗ₜ n) := by
   simp [finsuppTensorFinsupp]
 #align finsupp_tensor_finsupp_single finsuppTensorFinsupp_single
 
 @[simp]
-theorem finsuppTensorFinsupp_apply (f : ι →₀ M) (g : κ →₀ N) (i : ι) (k : κ) :
+lemma finsuppTensorFinsupp_apply (f : ι →₀ M) (g : κ →₀ N) (i : ι) (k : κ) :
     finsuppTensorFinsupp R S M N ι κ (f ⊗ₜ g) (i, k) = f i ⊗ₜ g k := by
   apply Finsupp.induction_linear f
   · simp
@@ -278,7 +278,7 @@ theorem finsuppTensorFinsupp_apply (f : ι →₀ M) (g : κ →₀ N) (i : ι) 
 #align finsupp_tensor_finsupp_apply finsuppTensorFinsupp_apply
 
 @[simp]
-theorem finsuppTensorFinsupp_symm_single (i : ι × κ) (m : M) (n : N) :
+lemma finsuppTensorFinsupp_symm_single (i : ι × κ) (m : M) (n : N) :
     (finsuppTensorFinsupp R S M N ι κ).symm (Finsupp.single i (m ⊗ₜ n)) =
       Finsupp.single i.1 m ⊗ₜ Finsupp.single i.2 n :=
   Prod.casesOn i fun _ _ =>
@@ -290,18 +290,18 @@ def finsuppTensorFinsuppLid : (ι →₀ R) ⊗[R] (κ →₀ N) ≃ₗ[R] ι ×
   finsuppTensorFinsupp R R R N ι κ ≪≫ₗ Finsupp.lcongr (Equiv.refl _) (TensorProduct.lid R N)
 
 @[simp]
-theorem finsuppTensorFinsuppLid_apply_apply (f : ι →₀ R) (g : κ →₀ N) (a : ι) (b : κ) :
+lemma finsuppTensorFinsuppLid_apply_apply (f : ι →₀ R) (g : κ →₀ N) (a : ι) (b : κ) :
     finsuppTensorFinsuppLid R N ι κ (f ⊗ₜ[R] g) (a, b) = f a • g b := by
   simp [finsuppTensorFinsuppLid]
 
 @[simp]
-theorem finsuppTensorFinsuppLid_single_tmul_single (a : ι) (b : κ) (r : R) (n : N) :
+lemma finsuppTensorFinsuppLid_single_tmul_single (a : ι) (b : κ) (r : R) (n : N) :
     finsuppTensorFinsuppLid R N ι κ (Finsupp.single a r ⊗ₜ[R] Finsupp.single b n) =
       Finsupp.single (a, b) (r • n) := by
   simp [finsuppTensorFinsuppLid]
 
 @[simp]
-theorem finsuppTensorFinsuppLid_symm_single_smul (i : ι × κ) (r : R) (n : N) :
+lemma finsuppTensorFinsuppLid_symm_single_smul (i : ι × κ) (r : R) (n : N) :
     (finsuppTensorFinsuppLid R N ι κ).symm (Finsupp.single i (r • n)) =
       Finsupp.single i.1 r ⊗ₜ Finsupp.single i.2 n :=
   Prod.casesOn i fun _ _ =>
@@ -312,18 +312,18 @@ def finsuppTensorFinsuppRid : (ι →₀ M) ⊗[R] (κ →₀ R) ≃ₗ[R] ι ×
   finsuppTensorFinsupp R R M R ι κ ≪≫ₗ Finsupp.lcongr (Equiv.refl _) (TensorProduct.rid R M)
 
 @[simp]
-theorem finsuppTensorFinsuppRid_apply_apply (f : ι →₀ M) (g : κ →₀ R) (a : ι) (b : κ) :
+lemma finsuppTensorFinsuppRid_apply_apply (f : ι →₀ M) (g : κ →₀ R) (a : ι) (b : κ) :
     finsuppTensorFinsuppRid R M ι κ (f ⊗ₜ[R] g) (a, b) = g b • f a := by
   simp [finsuppTensorFinsuppRid]
 
 @[simp]
-theorem finsuppTensorFinsuppRid_single_tmul_single (a : ι) (b : κ) (m : M) (r : R) :
+lemma finsuppTensorFinsuppRid_single_tmul_single (a : ι) (b : κ) (m : M) (r : R) :
     finsuppTensorFinsuppRid R M ι κ (Finsupp.single a m ⊗ₜ[R] Finsupp.single b r) =
       Finsupp.single (a, b) (r • m) := by
   simp [finsuppTensorFinsuppRid]
 
 @[simp]
-theorem finsuppTensorFinsuppRid_symm_single_smul (i : ι × κ) (m : M) (r : R) :
+lemma finsuppTensorFinsuppRid_symm_single_smul (i : ι × κ) (m : M) (r : R) :
     (finsuppTensorFinsuppRid R M ι κ).symm (Finsupp.single i (r • m)) =
       Finsupp.single i.1 m ⊗ₜ Finsupp.single i.2 r :=
   Prod.casesOn i fun _ _ =>
@@ -335,39 +335,39 @@ def finsuppTensorFinsupp' : (ι →₀ R) ⊗[R] (κ →₀ R) ≃ₗ[R] ι × �
 #align finsupp_tensor_finsupp' finsuppTensorFinsupp'
 
 @[simp]
-theorem finsuppTensorFinsupp'_apply_apply (f : ι →₀ R) (g : κ →₀ R) (a : ι) (b : κ) :
+lemma finsuppTensorFinsupp'_apply_apply (f : ι →₀ R) (g : κ →₀ R) (a : ι) (b : κ) :
     finsuppTensorFinsupp' R ι κ (f ⊗ₜ[R] g) (a, b) = f a * g b :=
   finsuppTensorFinsuppLid_apply_apply R R ι κ f g a b
 #align finsupp_tensor_finsupp'_apply_apply finsuppTensorFinsupp'_apply_apply
 
 @[simp]
-theorem finsuppTensorFinsupp'_single_tmul_single (a : ι) (b : κ) (r₁ r₂ : R) :
+lemma finsuppTensorFinsupp'_single_tmul_single (a : ι) (b : κ) (r₁ r₂ : R) :
     finsuppTensorFinsupp' R ι κ (Finsupp.single a r₁ ⊗ₜ[R] Finsupp.single b r₂) =
       Finsupp.single (a, b) (r₁ * r₂) :=
   finsuppTensorFinsuppLid_single_tmul_single R R ι κ a b r₁ r₂
 #align finsupp_tensor_finsupp'_single_tmul_single finsuppTensorFinsupp'_single_tmul_single
 
-theorem finsuppTensorFinsupp'_symm_single_mul (i : ι × κ) (r₁ r₂ : R) :
+lemma finsuppTensorFinsupp'_symm_single_mul (i : ι × κ) (r₁ r₂ : R) :
     (finsuppTensorFinsupp' R ι κ).symm (Finsupp.single i (r₁ * r₂)) =
       Finsupp.single i.1 r₁ ⊗ₜ Finsupp.single i.2 r₂ :=
   finsuppTensorFinsuppLid_symm_single_smul R R ι κ i r₁ r₂
 
-theorem finsuppTensorFinsupp'_symm_single_eq_single_one_tmul (i : ι × κ) (r : R) :
+lemma finsuppTensorFinsupp'_symm_single_eq_single_one_tmul (i : ι × κ) (r : R) :
     (finsuppTensorFinsupp' R ι κ).symm (Finsupp.single i r) =
       Finsupp.single i.1 1 ⊗ₜ Finsupp.single i.2 r := by
   nth_rw 1 [← one_mul r]
   exact finsuppTensorFinsupp'_symm_single_mul R ι κ i _ _
 
-theorem finsuppTensorFinsupp'_symm_single_eq_tmul_single_one (i : ι × κ) (r : R) :
+lemma finsuppTensorFinsupp'_symm_single_eq_tmul_single_one (i : ι × κ) (r : R) :
     (finsuppTensorFinsupp' R ι κ).symm (Finsupp.single i r) =
       Finsupp.single i.1 r ⊗ₜ Finsupp.single i.2 1 := by
   nth_rw 1 [← mul_one r]
   exact finsuppTensorFinsupp'_symm_single_mul R ι κ i _ _
 
-theorem finsuppTensorFinsuppLid_self :
+lemma finsuppTensorFinsuppLid_self :
     finsuppTensorFinsuppLid R R ι κ = finsuppTensorFinsupp' R ι κ := rfl
 
-theorem finsuppTensorFinsuppRid_self :
+lemma finsuppTensorFinsuppRid_self :
     finsuppTensorFinsuppRid R R ι κ = finsuppTensorFinsupp' R ι κ := by
   rw [finsuppTensorFinsupp', finsuppTensorFinsuppLid, finsuppTensorFinsuppRid,
     TensorProduct.lid_eq_rid]

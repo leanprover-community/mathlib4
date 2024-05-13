@@ -35,63 +35,63 @@ def Measure.trim {m m0 : MeasurableSpace α} (μ : @Measure α m0) (hm : m ≤ m
 #align measure_theory.measure.trim MeasureTheory.Measure.trim
 
 @[simp]
-theorem trim_eq_self [MeasurableSpace α] {μ : Measure α} : μ.trim le_rfl = μ := by
+lemma trim_eq_self [MeasurableSpace α] {μ : Measure α} : μ.trim le_rfl = μ := by
   simp [Measure.trim]
 #align measure_theory.trim_eq_self MeasureTheory.trim_eq_self
 
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
 
-theorem toOuterMeasure_trim_eq_trim_toOuterMeasure (μ : Measure α) (hm : m ≤ m0) :
+lemma toOuterMeasure_trim_eq_trim_toOuterMeasure (μ : Measure α) (hm : m ≤ m0) :
     @Measure.toOuterMeasure _ m (μ.trim hm) = @OuterMeasure.trim _ m μ.toOuterMeasure := by
   rw [Measure.trim, toMeasure_toOuterMeasure (ms := m)]
 #align measure_theory.to_outer_measure_trim_eq_trim_to_outer_measure MeasureTheory.toOuterMeasure_trim_eq_trim_toOuterMeasure
 
 @[simp]
-theorem zero_trim (hm : m ≤ m0) : (0 : Measure α).trim hm = (0 : @Measure α m) := by
+lemma zero_trim (hm : m ≤ m0) : (0 : Measure α).trim hm = (0 : @Measure α m) := by
   simp [Measure.trim, @OuterMeasure.toMeasure_zero _ m]
 #align measure_theory.zero_trim MeasureTheory.zero_trim
 
-theorem trim_measurableSet_eq (hm : m ≤ m0) (hs : @MeasurableSet α m s) : μ.trim hm s = μ s := by
+lemma trim_measurableSet_eq (hm : m ≤ m0) (hs : @MeasurableSet α m s) : μ.trim hm s = μ s := by
   rw [Measure.trim, toMeasure_apply (ms := m) _ _ hs, Measure.coe_toOuterMeasure]
 #align measure_theory.trim_measurable_set_eq MeasureTheory.trim_measurableSet_eq
 
-theorem le_trim (hm : m ≤ m0) : μ s ≤ μ.trim hm s := by
+lemma le_trim (hm : m ≤ m0) : μ s ≤ μ.trim hm s := by
   simp_rw [Measure.trim]
   exact @le_toMeasure_apply _ m _ _ _
 #align measure_theory.le_trim MeasureTheory.le_trim
 
-theorem measure_eq_zero_of_trim_eq_zero (hm : m ≤ m0) (h : μ.trim hm s = 0) : μ s = 0 :=
+lemma measure_eq_zero_of_trim_eq_zero (hm : m ≤ m0) (h : μ.trim hm s = 0) : μ s = 0 :=
   le_antisymm ((le_trim hm).trans (le_of_eq h)) (zero_le _)
 #align measure_theory.measure_eq_zero_of_trim_eq_zero MeasureTheory.measure_eq_zero_of_trim_eq_zero
 
-theorem measure_trim_toMeasurable_eq_zero {hm : m ≤ m0} (hs : μ.trim hm s = 0) :
+lemma measure_trim_toMeasurable_eq_zero {hm : m ≤ m0} (hs : μ.trim hm s = 0) :
     μ (@toMeasurable α m (μ.trim hm) s) = 0 :=
   measure_eq_zero_of_trim_eq_zero hm (by rwa [@measure_toMeasurable _ m])
 #align measure_theory.measure_trim_to_measurable_eq_zero MeasureTheory.measure_trim_toMeasurable_eq_zero
 
-theorem ae_of_ae_trim (hm : m ≤ m0) {μ : Measure α} {P : α → Prop} (h : ∀ᵐ x ∂μ.trim hm, P x) :
+lemma ae_of_ae_trim (hm : m ≤ m0) {μ : Measure α} {P : α → Prop} (h : ∀ᵐ x ∂μ.trim hm, P x) :
     ∀ᵐ x ∂μ, P x :=
   measure_eq_zero_of_trim_eq_zero hm h
 #align measure_theory.ae_of_ae_trim MeasureTheory.ae_of_ae_trim
 
-theorem ae_eq_of_ae_eq_trim {E} {hm : m ≤ m0} {f₁ f₂ : α → E}
+lemma ae_eq_of_ae_eq_trim {E} {hm : m ≤ m0} {f₁ f₂ : α → E}
     (h12 : f₁ =ᶠ[@Measure.ae α m (μ.trim hm)] f₂) : f₁ =ᵐ[μ] f₂ :=
   measure_eq_zero_of_trim_eq_zero hm h12
 #align measure_theory.ae_eq_of_ae_eq_trim MeasureTheory.ae_eq_of_ae_eq_trim
 
-theorem ae_le_of_ae_le_trim {E} [LE E] {hm : m ≤ m0} {f₁ f₂ : α → E}
+lemma ae_le_of_ae_le_trim {E} [LE E] {hm : m ≤ m0} {f₁ f₂ : α → E}
     (h12 : f₁ ≤ᶠ[@Measure.ae α m (μ.trim hm)] f₂) : f₁ ≤ᵐ[μ] f₂ :=
   measure_eq_zero_of_trim_eq_zero hm h12
 #align measure_theory.ae_le_of_ae_le_trim MeasureTheory.ae_le_of_ae_le_trim
 
-theorem trim_trim {m₁ m₂ : MeasurableSpace α} {hm₁₂ : m₁ ≤ m₂} {hm₂ : m₂ ≤ m0} :
+lemma trim_trim {m₁ m₂ : MeasurableSpace α} {hm₁₂ : m₁ ≤ m₂} {hm₂ : m₂ ≤ m0} :
     (μ.trim hm₂).trim hm₁₂ = μ.trim (hm₁₂.trans hm₂) := by
   refine @Measure.ext _ m₁ _ _ (fun t ht => ?_)
   rw [trim_measurableSet_eq hm₁₂ ht, trim_measurableSet_eq (hm₁₂.trans hm₂) ht,
     trim_measurableSet_eq hm₂ (hm₁₂ t ht)]
 #align measure_theory.trim_trim MeasureTheory.trim_trim
 
-theorem restrict_trim (hm : m ≤ m0) (μ : Measure α) (hs : @MeasurableSet α m s) :
+lemma restrict_trim (hm : m ≤ m0) (μ : Measure α) (hs : @MeasurableSet α m s) :
     @Measure.restrict α m (μ.trim hm) s = (μ.restrict s).trim hm := by
   refine @Measure.ext _ m _ _ (fun t ht => ?_)
   rw [@Measure.restrict_apply α m _ _ _ ht, trim_measurableSet_eq hm ht,
@@ -105,7 +105,7 @@ instance isFiniteMeasure_trim (hm : m ≤ m0) [IsFiniteMeasure μ] : IsFiniteMea
     exact measure_lt_top _ _
 #align measure_theory.is_finite_measure_trim MeasureTheory.isFiniteMeasure_trim
 
-theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m0)
+lemma sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m0)
     (hm₂ : m₂ ≤ m) [SigmaFinite (μ.trim (hm₂.trans hm))] : SigmaFinite (μ.trim hm) := by
   refine ⟨⟨?_⟩⟩
   refine
@@ -122,7 +122,7 @@ theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} 
     _ < ∞ := measure_spanningSets_lt_top _ _
 #align measure_theory.sigma_finite_trim_mono MeasureTheory.sigmaFiniteTrim_mono
 
-theorem sigmaFinite_trim_bot_iff : SigmaFinite (μ.trim bot_le) ↔ IsFiniteMeasure μ := by
+lemma sigmaFinite_trim_bot_iff : SigmaFinite (μ.trim bot_le) ↔ IsFiniteMeasure μ := by
   rw [sigmaFinite_bot_iff]
   refine' ⟨fun h => ⟨_⟩, fun h => ⟨_⟩⟩ <;> have h_univ := h.measure_univ_lt_top
   · rwa [trim_measurableSet_eq bot_le MeasurableSet.univ] at h_univ

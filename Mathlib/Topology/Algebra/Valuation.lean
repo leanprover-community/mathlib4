@@ -116,19 +116,19 @@ def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
 variable (R Γ₀)
 variable [_i : Valued R Γ₀]
 
-theorem hasBasis_nhds_zero :
+lemma hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ => True) fun γ : Γ₀ˣ => { x | v x < (γ : Γ₀) } := by
   simp [Filter.hasBasis_iff, is_topological_valuation]
 #align valued.has_basis_nhds_zero Valued.hasBasis_nhds_zero
 
 -- Porting note: Replaced `𝓤 R` with `uniformity R`
-theorem hasBasis_uniformity : (uniformity R).HasBasis (fun _ => True)
+lemma hasBasis_uniformity : (uniformity R).HasBasis (fun _ => True)
     fun γ : Γ₀ˣ => { p : R × R | v (p.2 - p.1) < (γ : Γ₀) } := by
   rw [uniformity_eq_comap_nhds_zero]
   exact (hasBasis_nhds_zero R Γ₀).comap _
 #align valued.has_basis_uniformity Valued.hasBasis_uniformity
 
-theorem toUniformSpace_eq :
+lemma toUniformSpace_eq :
     toUniformSpace = @TopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _ :=
   UniformSpace.ext
     ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
@@ -136,16 +136,16 @@ theorem toUniformSpace_eq :
 
 variable {R Γ₀}
 
-theorem mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 x ↔ ∃ γ : Γ₀ˣ, { y | (v (y - x) : Γ₀) < γ } ⊆ s := by
+lemma mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 x ↔ ∃ γ : Γ₀ˣ, { y | (v (y - x) : Γ₀) < γ } ⊆ s := by
   simp only [← nhds_translation_add_neg x, ← sub_eq_add_neg, preimage_setOf_eq, true_and,
     ((hasBasis_nhds_zero R Γ₀).comap fun y => y - x).mem_iff]
 #align valued.mem_nhds Valued.mem_nhds
 
-theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x | v x < (γ : Γ₀) } ⊆ s := by
+lemma mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x | v x < (γ : Γ₀) } ⊆ s := by
   simp only [mem_nhds, sub_zero]
 #align valued.mem_nhds_zero Valued.mem_nhds_zero
 
-theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
+lemma loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
   rw [mem_nhds]
   rcases Units.exists_iff_ne_zero.mpr h with ⟨γ, hx⟩
   use γ
@@ -157,7 +157,7 @@ theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 
 instance (priority := 100) : TopologicalRing R :=
   (toUniformSpace_eq R Γ₀).symm ▸ v.subgroups_basis.toRingFilterBasis.isTopologicalRing
 
-theorem cauchy_iff {F : Filter R} : Cauchy F ↔
+lemma cauchy_iff {F : Filter R} : Cauchy F ↔
     F.NeBot ∧ ∀ γ : Γ₀ˣ, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), (v (y - x) : Γ₀) < γ := by
   rw [toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
   apply and_congr Iff.rfl

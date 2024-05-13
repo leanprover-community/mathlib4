@@ -88,7 +88,7 @@ instance : Coe (Pair α) (Pair β) :=
   ⟨coeFn⟩
 
 @[simp, norm_cast]
-theorem coe_toPair {a b : α} : (↑(Pair.mk a b) : Pair β) = Pair.mk (a : β) (b : β) := rfl
+lemma coe_toPair {a b : α} : (↑(Pair.mk a b) : Pair β) = Pair.mk (a : β) (b : β) := rfl
 #align generalized_continued_fraction.pair.coe_to_generalized_continued_fraction_pair GeneralizedContinuedFraction.Pair.coe_toPair
 
 end coe
@@ -177,7 +177,7 @@ instance : Coe (GeneralizedContinuedFraction α) (GeneralizedContinuedFraction �
   ⟨coeFn⟩
 
 @[simp, norm_cast]
-theorem coe_toGeneralizedContinuedFraction {g : GeneralizedContinuedFraction α} :
+lemma coe_toGeneralizedContinuedFraction {g : GeneralizedContinuedFraction α} :
     (g : GeneralizedContinuedFraction β) =
       ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩ := rfl
 #align generalized_continued_fraction.coe_to_generalized_continued_fraction GeneralizedContinuedFraction.coe_toGeneralizedContinuedFraction

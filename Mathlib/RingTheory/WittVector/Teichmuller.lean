@@ -58,7 +58,7 @@ satisfy the ring axioms.
 -/
 
 
-private theorem ghostComponent_teichmullerFun (r : R) (n : ℕ) :
+private lemma ghostComponent_teichmullerFun (r : R) (n : ℕ) :
     ghostComponent n (teichmullerFun p r) = r ^ p ^ n := by
   rw [ghostComponent_apply, aeval_wittPolynomial, Finset.sum_eq_single 0, pow_zero, one_mul,
     tsub_zero]
@@ -67,20 +67,20 @@ private theorem ghostComponent_teichmullerFun (r : R) (n : ℕ) :
     simp [teichmullerFun, h0, hp.1.ne_zero]
   · rw [Finset.mem_range]; intro h; exact (h (Nat.succ_pos n)).elim
 
-private theorem map_teichmullerFun (f : R →+* S) (r : R) :
+private lemma map_teichmullerFun (f : R →+* S) (r : R) :
     map f (teichmullerFun p r) = teichmullerFun p (f r) := by
   ext n; cases n
   · rfl
   · exact f.map_zero
 
-private theorem teichmuller_mul_aux₁ (x y : MvPolynomial R ℚ) :
+private lemma teichmuller_mul_aux₁ (x y : MvPolynomial R ℚ) :
     teichmullerFun p (x * y) = teichmullerFun p x * teichmullerFun p y := by
   apply (ghostMap.bijective_of_invertible p (MvPolynomial R ℚ)).1
   rw [RingHom.map_mul]
   ext1 n
   simp only [Pi.mul_apply, ghostMap_apply, ghostComponent_teichmullerFun, mul_pow]
 
-private theorem teichmuller_mul_aux₂ (x y : MvPolynomial R ℤ) :
+private lemma teichmuller_mul_aux₂ (x y : MvPolynomial R ℤ) :
     teichmullerFun p (x * y) = teichmullerFun p x * teichmullerFun p y := by
   refine' map_injective (MvPolynomial.map (Int.castRingHom ℚ))
     (MvPolynomial.map_injective _ Int.cast_injective) _
@@ -103,17 +103,17 @@ def teichmuller : R →* 𝕎 R where
 #align witt_vector.teichmuller WittVector.teichmuller
 
 @[simp]
-theorem teichmuller_coeff_zero (r : R) : (teichmuller p r).coeff 0 = r :=
+lemma teichmuller_coeff_zero (r : R) : (teichmuller p r).coeff 0 = r :=
   rfl
 #align witt_vector.teichmuller_coeff_zero WittVector.teichmuller_coeff_zero
 
 @[simp]
-theorem teichmuller_coeff_pos (r : R) : ∀ (n : ℕ) (_ : 0 < n), (teichmuller p r).coeff n = 0
+lemma teichmuller_coeff_pos (r : R) : ∀ (n : ℕ) (_ : 0 < n), (teichmuller p r).coeff n = 0
   | _ + 1, _ => rfl
 #align witt_vector.teichmuller_coeff_pos WittVector.teichmuller_coeff_pos
 
 @[simp]
-theorem teichmuller_zero : teichmuller p (0 : R) = 0 := by
+lemma teichmuller_zero : teichmuller p (0 : R) = 0 := by
   ext ⟨⟩ <;> · rw [zero_coeff]; rfl
 #align witt_vector.teichmuller_zero WittVector.teichmuller_zero
 

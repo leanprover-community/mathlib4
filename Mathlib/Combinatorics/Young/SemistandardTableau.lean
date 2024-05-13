@@ -77,13 +77,13 @@ instance {μ : YoungDiagram} : CoeFun (SemistandardYoungTableau μ) fun _ ↦ �
   inferInstance
 
 @[simp]
-theorem to_fun_eq_coe {μ : YoungDiagram} {T : SemistandardYoungTableau μ} :
+lemma to_fun_eq_coe {μ : YoungDiagram} {T : SemistandardYoungTableau μ} :
     T.entry = (T : ℕ → ℕ → ℕ) :=
   rfl
 #align ssyt.to_fun_eq_coe SemistandardYoungTableau.to_fun_eq_coe
 
 @[ext]
-theorem ext {μ : YoungDiagram} {T T' : SemistandardYoungTableau μ} (h : ∀ i j, T i j = T' i j) :
+lemma ext {μ : YoungDiagram} {T T' : SemistandardYoungTableau μ} (h : ∀ i j, T i j = T' i j) :
     T = T' :=
   DFunLike.ext T T' fun _ ↦ by
     funext
@@ -101,39 +101,39 @@ protected def copy {μ : YoungDiagram} (T : SemistandardYoungTableau μ) (entry'
 #align ssyt.copy SemistandardYoungTableau.copy
 
 @[simp]
-theorem coe_copy {μ : YoungDiagram} (T : SemistandardYoungTableau μ) (entry' : ℕ → ℕ → ℕ)
+lemma coe_copy {μ : YoungDiagram} (T : SemistandardYoungTableau μ) (entry' : ℕ → ℕ → ℕ)
     (h : entry' = T) : ⇑(T.copy entry' h) = entry' :=
   rfl
 #align ssyt.coe_copy SemistandardYoungTableau.coe_copy
 
-theorem copy_eq {μ : YoungDiagram} (T : SemistandardYoungTableau μ) (entry' : ℕ → ℕ → ℕ)
+lemma copy_eq {μ : YoungDiagram} (T : SemistandardYoungTableau μ) (entry' : ℕ → ℕ → ℕ)
     (h : entry' = T) : T.copy entry' h = T :=
   DFunLike.ext' h
 #align ssyt.copy_eq SemistandardYoungTableau.copy_eq
 
-theorem row_weak {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i j1 j2 : ℕ} (hj : j1 < j2)
+lemma row_weak {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i j1 j2 : ℕ} (hj : j1 < j2)
     (hcell : (i, j2) ∈ μ) : T i j1 ≤ T i j2 :=
   T.row_weak' hj hcell
 #align ssyt.row_weak SemistandardYoungTableau.row_weak
 
-theorem col_strict {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i1 i2 j : ℕ} (hi : i1 < i2)
+lemma col_strict {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i1 i2 j : ℕ} (hi : i1 < i2)
     (hcell : (i2, j) ∈ μ) : T i1 j < T i2 j :=
   T.col_strict' hi hcell
 #align ssyt.col_strict SemistandardYoungTableau.col_strict
 
-theorem zeros {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i j : ℕ}
+lemma zeros {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i j : ℕ}
     (not_cell : (i, j) ∉ μ) : T i j = 0 :=
   T.zeros' not_cell
 #align ssyt.zeros SemistandardYoungTableau.zeros
 
-theorem row_weak_of_le {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i j1 j2 : ℕ}
+lemma row_weak_of_le {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i j1 j2 : ℕ}
     (hj : j1 ≤ j2) (cell : (i, j2) ∈ μ) : T i j1 ≤ T i j2 := by
   cases' eq_or_lt_of_le hj with h h
   · rw [h]
   · exact T.row_weak h cell
 #align ssyt.row_weak_of_le SemistandardYoungTableau.row_weak_of_le
 
-theorem col_weak {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i1 i2 j : ℕ} (hi : i1 ≤ i2)
+lemma col_weak {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i1 i2 j : ℕ} (hi : i1 ≤ i2)
     (cell : (i2, j) ∈ μ) : T i1 j ≤ T i2 j := by
   cases' eq_or_lt_of_le hi with h h
   · rw [h]
@@ -153,7 +153,7 @@ def highestWeight (μ : YoungDiagram) : SemistandardYoungTableau μ where
 #align ssyt.highest_weight SemistandardYoungTableau.highestWeight
 
 @[simp]
-theorem highestWeight_apply {μ : YoungDiagram} {i j : ℕ} :
+lemma highestWeight_apply {μ : YoungDiagram} {i j : ℕ} :
     highestWeight μ i j = if (i, j) ∈ μ then i else 0 :=
   rfl
 #align ssyt.highest_weight_apply SemistandardYoungTableau.highestWeight_apply

@@ -121,7 +121,7 @@ instance : HShiftLeft PosNum Nat PosNum where hShiftLeft := PosNum.shiftl
 
 -- Porting note: `PosNum.shiftl` is defined as tail-recursive in Lean4.
 --               This theorem ensures the definition is same to one in Lean3.
-theorem shiftl_succ_eq_bit0_shiftl : ∀ (p : PosNum) (n : Nat), p <<< n.succ = bit0 (p <<< n)
+lemma shiftl_succ_eq_bit0_shiftl : ∀ (p : PosNum) (n : Nat), p <<< n.succ = bit0 (p <<< n)
   | _, 0       => rfl
   | p, .succ n => shiftl_succ_eq_bit0_shiftl p.bit0 n
 
@@ -363,10 +363,10 @@ def bit1 : SNum → SNum :=
   bit true
 #align snum.bit1 SNum.bit1
 
-theorem bit_zero (b : Bool) : (b :: zero b) = zero b := by cases b <;> rfl
+lemma bit_zero (b : Bool) : (b :: zero b) = zero b := by cases b <;> rfl
 #align snum.bit_zero SNum.bit_zero
 
-theorem bit_one (b : Bool) : (b :: zero (Not b)) = msb b := by cases b <;> rfl
+lemma bit_one (b : Bool) : (b :: zero (Not b)) = msb b := by cases b <;> rfl
 #align snum.bit_one SNum.bit_one
 
 end SNum

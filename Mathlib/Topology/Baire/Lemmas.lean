@@ -88,7 +88,7 @@ theorem eventually_residual {p : X → Prop} :
   tauto
 #align eventually_residual eventually_residual
 
-theorem dense_of_mem_residual {s : Set X} (hs : s ∈ residual X) : Dense s :=
+lemma dense_of_mem_residual {s : Set X} (hs : s ∈ residual X) : Dense s :=
   let ⟨_, hts, _, hd⟩ := mem_residual.1 hs
   hd.mono hts
 #align dense_of_mem_residual dense_of_mem_residual

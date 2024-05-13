@@ -77,7 +77,7 @@ lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := 
   · rw [_root_.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
 #align int.nat_abs_pow Int.natAbs_pow
 
-theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
+lemma coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
 #align int.coe_nat_strict_mono Int.coe_nat_strictMono
 
 section Multiplicative

@@ -51,12 +51,12 @@ section Zero
 
 variable [PartialOrder Γ] [Zero R]
 
-theorem coeff_injective : Injective (coeff : HahnSeries Γ R → Γ → R) :=
+lemma coeff_injective : Injective (coeff : HahnSeries Γ R → Γ → R) :=
   HahnSeries.ext
 #align hahn_series.coeff_injective HahnSeries.coeff_injective
 
 @[simp]
-theorem coeff_inj {x y : HahnSeries Γ R} : x.coeff = y.coeff ↔ x = y :=
+lemma coeff_inj {x y : HahnSeries Γ R} : x.coeff = y.coeff ↔ x = y :=
   coeff_injective.eq_iff
 #align hahn_series.coeff_inj HahnSeries.coeff_inj
 
@@ -67,17 +67,17 @@ nonrec def support (x : HahnSeries Γ R) : Set Γ :=
 #align hahn_series.support HahnSeries.support
 
 @[simp]
-theorem isPWO_support (x : HahnSeries Γ R) : x.support.IsPWO :=
+lemma isPWO_support (x : HahnSeries Γ R) : x.support.IsPWO :=
   x.isPWO_support'
 #align hahn_series.is_pwo_support HahnSeries.isPWO_support
 
 @[simp]
-theorem isWF_support (x : HahnSeries Γ R) : x.support.IsWF :=
+lemma isWF_support (x : HahnSeries Γ R) : x.support.IsWF :=
   x.isPWO_support.isWF
 #align hahn_series.is_wf_support HahnSeries.isWF_support
 
 @[simp]
-theorem mem_support (x : HahnSeries Γ R) (a : Γ) : a ∈ x.support ↔ x.coeff a ≠ 0 :=
+lemma mem_support (x : HahnSeries Γ R) (a : Γ) : a ∈ x.support ↔ x.coeff a ≠ 0 :=
   Iff.refl _
 #align hahn_series.mem_support HahnSeries.mem_support
 
@@ -92,31 +92,31 @@ instance [Subsingleton R] : Subsingleton (HahnSeries Γ R) :=
   ⟨fun a b => a.ext b (Subsingleton.elim _ _)⟩
 
 @[simp]
-theorem zero_coeff {a : Γ} : (0 : HahnSeries Γ R).coeff a = 0 :=
+lemma zero_coeff {a : Γ} : (0 : HahnSeries Γ R).coeff a = 0 :=
   rfl
 #align hahn_series.zero_coeff HahnSeries.zero_coeff
 
 @[simp]
-theorem coeff_fun_eq_zero_iff {x : HahnSeries Γ R} : x.coeff = 0 ↔ x = 0 :=
+lemma coeff_fun_eq_zero_iff {x : HahnSeries Γ R} : x.coeff = 0 ↔ x = 0 :=
   coeff_injective.eq_iff' rfl
 #align hahn_series.coeff_fun_eq_zero_iff HahnSeries.coeff_fun_eq_zero_iff
 
-theorem ne_zero_of_coeff_ne_zero {x : HahnSeries Γ R} {g : Γ} (h : x.coeff g ≠ 0) : x ≠ 0 :=
+lemma ne_zero_of_coeff_ne_zero {x : HahnSeries Γ R} {g : Γ} (h : x.coeff g ≠ 0) : x ≠ 0 :=
   mt (fun x0 => (x0.symm ▸ zero_coeff : x.coeff g = 0)) h
 #align hahn_series.ne_zero_of_coeff_ne_zero HahnSeries.ne_zero_of_coeff_ne_zero
 
 @[simp]
-theorem support_zero : support (0 : HahnSeries Γ R) = ∅ :=
+lemma support_zero : support (0 : HahnSeries Γ R) = ∅ :=
   Function.support_zero
 #align hahn_series.support_zero HahnSeries.support_zero
 
 @[simp]
-nonrec theorem support_nonempty_iff {x : HahnSeries Γ R} : x.support.Nonempty ↔ x ≠ 0 := by
+nonrec lemma support_nonempty_iff {x : HahnSeries Γ R} : x.support.Nonempty ↔ x ≠ 0 := by
   rw [support, support_nonempty_iff, Ne, coeff_fun_eq_zero_iff]
 #align hahn_series.support_nonempty_iff HahnSeries.support_nonempty_iff
 
 @[simp]
-theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :=
+lemma support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :=
   support_eq_empty_iff.trans coeff_fun_eq_zero_iff
 #align hahn_series.support_eq_empty_iff HahnSeries.support_eq_empty_iff
 
@@ -167,47 +167,47 @@ def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
 variable {a b : Γ} {r : R}
 
 @[simp]
-theorem single_coeff_same (a : Γ) (r : R) : (single a r).coeff a = r :=
+lemma single_coeff_same (a : Γ) (r : R) : (single a r).coeff a = r :=
   Pi.single_eq_same (f := fun _ => R) a r
 #align hahn_series.single_coeff_same HahnSeries.single_coeff_same
 
 @[simp]
-theorem single_coeff_of_ne (h : b ≠ a) : (single a r).coeff b = 0 :=
+lemma single_coeff_of_ne (h : b ≠ a) : (single a r).coeff b = 0 :=
   Pi.single_eq_of_ne (f := fun _ => R) h r
 #align hahn_series.single_coeff_of_ne HahnSeries.single_coeff_of_ne
 
-theorem single_coeff : (single a r).coeff b = if b = a then r else 0 := by
+lemma single_coeff : (single a r).coeff b = if b = a then r else 0 := by
   split_ifs with h <;> simp [h]
 #align hahn_series.single_coeff HahnSeries.single_coeff
 
 @[simp]
-theorem support_single_of_ne (h : r ≠ 0) : support (single a r) = {a} :=
+lemma support_single_of_ne (h : r ≠ 0) : support (single a r) = {a} :=
   Pi.support_single_of_ne h
 #align hahn_series.support_single_of_ne HahnSeries.support_single_of_ne
 
-theorem support_single_subset : support (single a r) ⊆ {a} :=
+lemma support_single_subset : support (single a r) ⊆ {a} :=
   Pi.support_single_subset
 #align hahn_series.support_single_subset HahnSeries.support_single_subset
 
-theorem eq_of_mem_support_single {b : Γ} (h : b ∈ support (single a r)) : b = a :=
+lemma eq_of_mem_support_single {b : Γ} (h : b ∈ support (single a r)) : b = a :=
   support_single_subset h
 #align hahn_series.eq_of_mem_support_single HahnSeries.eq_of_mem_support_single
 
 --@[simp] Porting note (#10618): simp can prove it
-theorem single_eq_zero : single a (0 : R) = 0 :=
+lemma single_eq_zero : single a (0 : R) = 0 :=
   (single a).map_zero
 #align hahn_series.single_eq_zero HahnSeries.single_eq_zero
 
-theorem single_injective (a : Γ) : Function.Injective (single a : R → HahnSeries Γ R) :=
+lemma single_injective (a : Γ) : Function.Injective (single a : R → HahnSeries Γ R) :=
   fun r s rs => by rw [← single_coeff_same a r, ← single_coeff_same a s, rs]
 #align hahn_series.single_injective HahnSeries.single_injective
 
-theorem single_ne_zero (h : r ≠ 0) : single a r ≠ 0 := fun con =>
+lemma single_ne_zero (h : r ≠ 0) : single a r ≠ 0 := fun con =>
   h (single_injective a (con.trans single_eq_zero.symm))
 #align hahn_series.single_ne_zero HahnSeries.single_ne_zero
 
 @[simp]
-theorem single_eq_zero_iff {a : Γ} {r : R} : single a r = 0 ↔ r = 0 :=
+lemma single_eq_zero_iff {a : Γ} {r : R} : single a r = 0 ↔ r = 0 :=
   map_eq_zero_iff _ <| single_injective a
 #align hahn_series.single_eq_zero_iff HahnSeries.single_eq_zero_iff
 
@@ -229,34 +229,34 @@ def order (x : HahnSeries Γ R) : Γ :=
 #align hahn_series.order HahnSeries.order
 
 @[simp]
-theorem order_zero : order (0 : HahnSeries Γ R) = 0 :=
+lemma order_zero : order (0 : HahnSeries Γ R) = 0 :=
   dif_pos rfl
 #align hahn_series.order_zero HahnSeries.order_zero
 
-theorem order_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
+lemma order_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
     order x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
   dif_neg hx
 #align hahn_series.order_of_ne HahnSeries.order_of_ne
 
-theorem coeff_order_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) : x.coeff x.order ≠ 0 := by
+lemma coeff_order_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) : x.coeff x.order ≠ 0 := by
   rw [order_of_ne hx]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
 #align hahn_series.coeff_order_ne_zero HahnSeries.coeff_order_ne_zero
 
-theorem order_le_of_coeff_ne_zero {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x : HahnSeries Γ R}
+lemma order_le_of_coeff_ne_zero {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x : HahnSeries Γ R}
     {g : Γ} (h : x.coeff g ≠ 0) : x.order ≤ g :=
   le_trans (le_of_eq (order_of_ne (ne_zero_of_coeff_ne_zero h)))
     (Set.IsWF.min_le _ _ ((mem_support _ _).2 h))
 #align hahn_series.order_le_of_coeff_ne_zero HahnSeries.order_le_of_coeff_ne_zero
 
 @[simp]
-theorem order_single (h : r ≠ 0) : (single a r).order = a :=
+lemma order_single (h : r ≠ 0) : (single a r).order = a :=
   (order_of_ne (single_ne_zero h)).trans
     (support_single_subset
       ((single a r).isWF_support.min_mem (support_nonempty_iff.2 (single_ne_zero h))))
 #align hahn_series.order_single HahnSeries.order_single
 
-theorem coeff_eq_zero_of_lt_order {x : HahnSeries Γ R} {i : Γ} (hi : i < x.order) :
+lemma coeff_eq_zero_of_lt_order {x : HahnSeries Γ R} {i : Γ} (hi : i < x.order) :
     x.coeff i = 0 := by
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
@@ -282,7 +282,7 @@ def embDomain (f : Γ ↪o Γ') : HahnSeries Γ R → HahnSeries Γ' R := fun x 
 #align hahn_series.emb_domain HahnSeries.embDomain
 
 @[simp]
-theorem embDomain_coeff {f : Γ ↪o Γ'} {x : HahnSeries Γ R} {a : Γ} :
+lemma embDomain_coeff {f : Γ ↪o Γ'} {x : HahnSeries Γ R} {a : Γ} :
     (embDomain f x).coeff (f a) = x.coeff a := by
   rw [embDomain]
   dsimp only
@@ -296,37 +296,37 @@ theorem embDomain_coeff {f : Γ ↪o Γ'} {x : HahnSeries Γ R} {a : Γ} :
 #align hahn_series.emb_domain_coeff HahnSeries.embDomain_coeff
 
 @[simp]
-theorem embDomain_mk_coeff {f : Γ → Γ'} (hfi : Function.Injective f)
+lemma embDomain_mk_coeff {f : Γ → Γ'} (hfi : Function.Injective f)
     (hf : ∀ g g' : Γ, f g ≤ f g' ↔ g ≤ g') {x : HahnSeries Γ R} {a : Γ} :
     (embDomain ⟨⟨f, hfi⟩, hf _ _⟩ x).coeff (f a) = x.coeff a :=
   embDomain_coeff
 #align hahn_series.emb_domain_mk_coeff HahnSeries.embDomain_mk_coeff
 
-theorem embDomain_notin_image_support {f : Γ ↪o Γ'} {x : HahnSeries Γ R} {b : Γ'}
+lemma embDomain_notin_image_support {f : Γ ↪o Γ'} {x : HahnSeries Γ R} {b : Γ'}
     (hb : b ∉ f '' x.support) : (embDomain f x).coeff b = 0 :=
   dif_neg hb
 #align hahn_series.emb_domain_notin_image_support HahnSeries.embDomain_notin_image_support
 
-theorem support_embDomain_subset {f : Γ ↪o Γ'} {x : HahnSeries Γ R} :
+lemma support_embDomain_subset {f : Γ ↪o Γ'} {x : HahnSeries Γ R} :
     support (embDomain f x) ⊆ f '' x.support := by
   intro g hg
   contrapose! hg
   rw [mem_support, embDomain_notin_image_support hg, Classical.not_not]
 #align hahn_series.support_emb_domain_subset HahnSeries.support_embDomain_subset
 
-theorem embDomain_notin_range {f : Γ ↪o Γ'} {x : HahnSeries Γ R} {b : Γ'} (hb : b ∉ Set.range f) :
+lemma embDomain_notin_range {f : Γ ↪o Γ'} {x : HahnSeries Γ R} {b : Γ'} (hb : b ∉ Set.range f) :
     (embDomain f x).coeff b = 0 :=
   embDomain_notin_image_support fun con => hb (Set.image_subset_range _ _ con)
 #align hahn_series.emb_domain_notin_range HahnSeries.embDomain_notin_range
 
 @[simp]
-theorem embDomain_zero {f : Γ ↪o Γ'} : embDomain f (0 : HahnSeries Γ R) = 0 := by
+lemma embDomain_zero {f : Γ ↪o Γ'} : embDomain f (0 : HahnSeries Γ R) = 0 := by
   ext
   simp [embDomain_notin_image_support]
 #align hahn_series.emb_domain_zero HahnSeries.embDomain_zero
 
 @[simp]
-theorem embDomain_single {f : Γ ↪o Γ'} {g : Γ} {r : R} :
+lemma embDomain_single {f : Γ ↪o Γ'} {g : Γ} {r : R} :
     embDomain f (single g r) = single (f g) r := by
   ext g'
   by_cases h : g' = f g
@@ -337,7 +337,7 @@ theorem embDomain_single {f : Γ ↪o Γ'} {g : Γ} {r : R} :
   rwa [support_single_of_ne hr, Set.image_singleton, Set.mem_singleton_iff]
 #align hahn_series.emb_domain_single HahnSeries.embDomain_single
 
-theorem embDomain_injective {f : Γ ↪o Γ'} :
+lemma embDomain_injective {f : Γ ↪o Γ'} :
     Function.Injective (embDomain f : HahnSeries Γ R → HahnSeries Γ' R) := fun x y xy => by
   ext g
   rw [HahnSeries.ext_iff, Function.funext_iff] at xy
@@ -353,10 +353,10 @@ section LocallyFiniteLinearOrder
 
 variable [Zero R] [LinearOrder Γ] [LocallyFiniteOrder Γ]
 
-theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
+lemma suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
     (Function.support f).IsPWO := Set.isWF_iff_isPWO.mp hf.wellFoundedOn_lt
 
-theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
+lemma forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
     BddBelow (Function.support f) := by
   simp only [BddBelow, Set.Nonempty, lowerBounds]
   use n
@@ -370,14 +370,14 @@ def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : HahnSer
   coeff := f
   isPWO_support' := suppBddBelow_supp_PWO f hf
 
-theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
+lemma BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
   simp only [support_zero', bddBelow_empty]
 
 @[simp]
-theorem zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 BddBelow_zero = (0 : HahnSeries Γ R) :=
+lemma zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 BddBelow_zero = (0 : HahnSeries Γ R) :=
   rfl
 
-theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
+lemma order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
     (hn : ∀(m : Γ), m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
   dsimp only [order]

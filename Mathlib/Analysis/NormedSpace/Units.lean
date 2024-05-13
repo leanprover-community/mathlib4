@@ -83,7 +83,7 @@ protected theorem isOpen : IsOpen { x : R | IsUnit x } := by
   exact (x.ofNearby y hy).isUnit
 #align units.is_open Units.isOpen
 
-protected theorem nhds (x : Rˣ) : { x : R | IsUnit x } ∈ 𝓝 (x : R) :=
+protected lemma nhds (x : Rˣ) : { x : R | IsUnit x } ∈ 𝓝 (x : R) :=
   IsOpen.mem_nhds Units.isOpen x.isUnit
 #align units.nhds Units.nhds
 
@@ -98,7 +98,7 @@ theorem subset_compl_ball : nonunits R ⊆ (Metric.ball (1 : R) 1)ᶜ := fun x h
 #align nonunits.subset_compl_ball nonunits.subset_compl_ball
 
 -- The `nonunits` in a complete normed ring are a closed set
-protected theorem isClosed : IsClosed (nonunits R) :=
+protected lemma isClosed : IsClosed (nonunits R) :=
   Units.isOpen.isClosed_compl
 #align nonunits.is_closed nonunits.isClosed
 
@@ -111,7 +111,7 @@ open BigOperators
 
 open Asymptotics Filter Metric Finset Ring
 
-theorem inverse_one_sub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by
+lemma inverse_one_sub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by
   rw [← inverse_unit (Units.oneSub t h), Units.val_oneSub]
 #align normed_ring.inverse_one_sub NormedRing.inverse_one_sub
 
@@ -127,7 +127,7 @@ theorem inverse_add (x : Rˣ) :
     ← inverse_unit, Units.val_oneSub, sub_neg_eq_add]
 #align normed_ring.inverse_add NormedRing.inverse_add
 
-theorem inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
+lemma inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
     inverse ((1 : R) - t) = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) :=
   have := NormedRing.summable_geometric_of_norm_lt_one t ht
   calc inverse (1 - t) = ∑' i : ℕ, t ^ i := inverse_one_sub t ht
@@ -135,7 +135,7 @@ theorem inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
     _ = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) := by
       simp only [inverse_one_sub t ht, add_comm _ n, pow_add, this.tsum_mul_left]; rfl
 
-theorem inverse_one_sub_nth_order (n : ℕ) :
+lemma inverse_one_sub_nth_order (n : ℕ) :
     ∀ᶠ t in 𝓝 0, inverse ((1 : R) - t) = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) :=
   Metric.eventually_nhds_iff.2 ⟨1, one_pos, fun t ht ↦ inverse_one_sub_nth_order' n <| by
     rwa [← dist_zero_right]⟩
@@ -157,7 +157,7 @@ theorem inverse_add_nth_order (x : Rˣ) (n : ℕ) :
   rw [ht]
 #align normed_ring.inverse_add_nth_order NormedRing.inverse_add_nth_order
 
-theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t => 1 : R → ℝ) := by
+lemma inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t => 1 : R → ℝ) := by
   simp only [IsBigO, IsBigOWith, Metric.eventually_nhds_iff]
   refine ⟨‖(1 : R)‖ + 1, (2 : ℝ)⁻¹, by norm_num, fun t ht ↦ ?_⟩
   rw [dist_zero_right] at ht

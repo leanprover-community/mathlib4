@@ -14,7 +14,7 @@ set_option autoImplicit true
 namespace Mathlib.Tactic.Nontriviality
 open Lean Elab Meta Tactic Qq
 
-theorem subsingleton_or_nontrivial_elim {p : Prop} {α : Type u}
+lemma subsingleton_or_nontrivial_elim {p : Prop} {α : Type u}
     (h₁ : Subsingleton α → p) (h₂ : Nontrivial α → p) : p :=
   (subsingleton_or_nontrivial α).elim @h₁ @h₂
 

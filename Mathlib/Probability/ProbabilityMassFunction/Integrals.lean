@@ -25,7 +25,7 @@ section General
 variable {α : Type*} [MeasurableSpace α] [MeasurableSingletonClass α]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
-theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeasure) :
+lemma integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeasure) :
     ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
   _ = ∑' (a : support p), (p.toMeasure {a.val}).toReal • f a := by
@@ -40,7 +40,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
         Function.support_smul_subset_left _ _
       _ ⊆ support p := fun x h1 h2 => h1 (by simp [h2])
 
-theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
+lemma integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
     ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
   rw [integral_fintype _ (.of_finite _ f)]
   congr with x; congr 2
@@ -48,5 +48,5 @@ theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
 
 end General
 
-theorem bernoulli_expectation {p : ℝ≥0∞} (h : p ≤ 1) :
+lemma bernoulli_expectation {p : ℝ≥0∞} (h : p ≤ 1) :
     ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by simp [integral_eq_sum]

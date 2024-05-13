@@ -26,7 +26,7 @@ variable [StrictConvexSpace ℝ V]
 section PseudoMetricSpace
 variable [PseudoMetricSpace P] [NormedAddTorsor V P]
 
-theorem Sbtw.dist_lt_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) :
+lemma Sbtw.dist_lt_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) :
     dist p₂ p < max (dist p₁ p) (dist p₃ p) := by
   have hp₁p₃ : p₁ -ᵥ p ≠ p₃ -ᵥ p := by simpa using h.left_ne_right
   rw [Sbtw, ← wbtw_vsub_const_iff p, Wbtw, affineSegment_eq_segment, ← insert_endpoints_openSegment,
@@ -43,7 +43,7 @@ theorem Sbtw.dist_lt_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p�
       norm_combo_lt_of_ne (le_max_left _ _) (le_max_right _ _) hp₁p₃ (sub_pos.2 hr1) hr0 (by abel)
 #align sbtw.dist_lt_max_dist Sbtw.dist_lt_max_dist
 
-theorem Wbtw.dist_le_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) :
+lemma Wbtw.dist_le_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) :
     dist p₂ p ≤ max (dist p₁ p) (dist p₃ p) := by
   by_cases hp₁ : p₂ = p₁; · simp [hp₁]
   by_cases hp₃ : p₂ = p₃; · simp [hp₃]

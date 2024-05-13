@@ -97,12 +97,12 @@ def symm (c : ComplexShape ι) : ComplexShape ι where
 #align complex_shape.symm_rel ComplexShape.symm_Rel
 
 @[simp]
-theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := by
+lemma symm_symm (c : ComplexShape ι) : c.symm.symm = c := by
   ext
   simp
 #align complex_shape.symm_symm ComplexShape.symm_symm
 
-theorem symm_bijective :
+lemma symm_bijective :
     Function.Bijective (ComplexShape.symm : ComplexShape ι → ComplexShape ι) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
@@ -151,14 +151,14 @@ def prev (c : ComplexShape ι) (j : ι) : ι :=
   if h : ∃ i, c.Rel i j then h.choose else j
 #align complex_shape.prev ComplexShape.prev
 
-theorem next_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.next i = j := by
+lemma next_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.next i = j := by
   apply c.next_eq _ h
   rw [next]
   rw [dif_pos]
   exact Exists.choose_spec ⟨j, h⟩
 #align complex_shape.next_eq' ComplexShape.next_eq'
 
-theorem prev_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.prev j = i := by
+lemma prev_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.prev j = i := by
   apply c.prev_eq _ h
   rw [prev, dif_pos]
   exact Exists.choose_spec (⟨i, h⟩ : ∃ k, c.Rel k j)
@@ -186,7 +186,7 @@ def down' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α w
 #align complex_shape.down' ComplexShape.down'
 #align complex_shape.down'_rel ComplexShape.down'_Rel
 
-theorem down'_mk {α : Type*} [AddRightCancelSemigroup α] (a : α) (i j : α) (h : j + a = i) :
+lemma down'_mk {α : Type*} [AddRightCancelSemigroup α] (a : α) (i j : α) (h : j + a = i) :
     (down' a).Rel i j := h
 #align complex_shape.down'_mk ComplexShape.down'_mk
 
@@ -206,7 +206,7 @@ def down (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
 #align complex_shape.down ComplexShape.down
 #align complex_shape.down_rel ComplexShape.down_Rel
 
-theorem down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
+lemma down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
     (down α).Rel i j :=
   down'_mk (1 : α) i j h
 #align complex_shape.down_mk ComplexShape.down_mk

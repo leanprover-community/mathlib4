@@ -62,7 +62,7 @@ theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
   tfae_finish
 #align tfae_mem_nhds_within_Ioi TFAE_mem_nhdsWithin_Ioi
 
-theorem mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset {a u' : α} {s : Set α} (hu' : a < u') :
+lemma mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioc a u', Ioo a u ⊆ s :=
   (TFAE_mem_nhdsWithin_Ioi hu' s).out 0 3
 #align mem_nhds_within_Ioi_iff_exists_mem_Ioc_Ioo_subset mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset
@@ -74,14 +74,14 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' {a u' : α} {s : Set α} (hu' 
   (TFAE_mem_nhdsWithin_Ioi hu' s).out 0 4
 #align mem_nhds_within_Ioi_iff_exists_Ioo_subset' mem_nhdsWithin_Ioi_iff_exists_Ioo_subset'
 
-theorem nhdsWithin_Ioi_basis' {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
+lemma nhdsWithin_Ioi_basis' {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
   let ⟨_, h⟩ := h
   ⟨fun _ => mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' h⟩
 
 lemma nhdsWithin_Ioi_basis [NoMaxOrder α] (a : α) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
   nhdsWithin_Ioi_basis' <| exists_gt a
 
-theorem nhdsWithin_Ioi_eq_bot_iff {a : α} : 𝓝[>] a = ⊥ ↔ IsTop a ∨ ∃ b, a ⋖ b := by
+lemma nhdsWithin_Ioi_eq_bot_iff {a : α} : 𝓝[>] a = ⊥ ↔ IsTop a ∨ ∃ b, a ⋖ b := by
   by_cases ha : IsTop a
   · simp [ha, ha.isMax.Ioi_eq]
   · simp only [ha, false_or]
@@ -140,7 +140,7 @@ theorem TFAE_mem_nhdsWithin_Iio {a b : α} (h : a < b) (s : Set α) :
     TFAE_mem_nhdsWithin_Ioi h.dual (ofDual ⁻¹' s)
 #align tfae_mem_nhds_within_Iio TFAE_mem_nhdsWithin_Iio
 
-theorem mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset {a l' : α} {s : Set α} (hl' : l' < a) :
+lemma mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Ico l' a, Ioo l a ⊆ s :=
   (TFAE_mem_nhdsWithin_Iio hl' s).out 0 3
 #align mem_nhds_within_Iio_iff_exists_mem_Ico_Ioo_subset mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset
@@ -168,11 +168,11 @@ theorem mem_nhdsWithin_Iio_iff_exists_Ico_subset [NoMinOrder α] [DenselyOrdered
   simpa only [OrderDual.exists, exists_prop, dual_Ioc] using this
 #align mem_nhds_within_Iio_iff_exists_Ico_subset mem_nhdsWithin_Iio_iff_exists_Ico_subset
 
-theorem nhdsWithin_Iio_basis' {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
+lemma nhdsWithin_Iio_basis' {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
   let ⟨_, h⟩ := h
   ⟨fun _ => mem_nhdsWithin_Iio_iff_exists_Ioo_subset' h⟩
 
-theorem nhdsWithin_Iio_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
+lemma nhdsWithin_Iio_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
     convert (config := {preTransparency := .default})
       nhdsWithin_Ioi_eq_bot_iff (a := OrderDual.toDual a) using 4
     exact ofDual_covBy_ofDual_iff
@@ -208,7 +208,7 @@ theorem TFAE_mem_nhdsWithin_Ici {a b : α} (hab : a < b) (s : Set α) :
   tfae_finish
 #align tfae_mem_nhds_within_Ici TFAE_mem_nhdsWithin_Ici
 
-theorem mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset {a u' : α} {s : Set α} (hu' : a < u') :
+lemma mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioc a u', Ico a u ⊆ s :=
   (TFAE_mem_nhdsWithin_Ici hu' s).out 0 3 (by norm_num) (by norm_num)
 #align mem_nhds_within_Ici_iff_exists_mem_Ioc_Ico_subset mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset
@@ -228,7 +228,7 @@ theorem mem_nhdsWithin_Ici_iff_exists_Ico_subset [NoMaxOrder α] {a : α} {s : S
   mem_nhdsWithin_Ici_iff_exists_Ico_subset' hu'
 #align mem_nhds_within_Ici_iff_exists_Ico_subset mem_nhdsWithin_Ici_iff_exists_Ico_subset
 
-theorem nhdsWithin_Ici_basis_Ico [NoMaxOrder α] (a : α) :
+lemma nhdsWithin_Ici_basis_Ico [NoMaxOrder α] (a : α) :
     (𝓝[≥] a).HasBasis (fun u => a < u) (Ico a) :=
   ⟨fun _ => mem_nhdsWithin_Ici_iff_exists_Ico_subset⟩
 #align nhds_within_Ici_basis_Ico nhdsWithin_Ici_basis_Ico
@@ -265,7 +265,7 @@ theorem TFAE_mem_nhdsWithin_Iic {a b : α} (h : a < b) (s : Set α) :
     TFAE_mem_nhdsWithin_Ici h.dual (ofDual ⁻¹' s)
 #align tfae_mem_nhds_within_Iic TFAE_mem_nhdsWithin_Iic
 
-theorem mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset {a l' : α} {s : Set α} (hl' : l' < a) :
+lemma mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Ico l' a, Ioc l a ⊆ s :=
   (TFAE_mem_nhdsWithin_Iic hl' s).out 0 3 (by norm_num) (by norm_num)
 #align mem_nhds_within_Iic_iff_exists_mem_Ico_Ioc_subset mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset
@@ -309,14 +309,14 @@ section LinearOrderedAddCommGroup
 variable [TopologicalSpace α] [LinearOrderedAddCommGroup α] [OrderTopology α]
 variable {l : Filter β} {f g : β → α}
 
-theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r } := by
+lemma nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r } := by
   simp only [nhds_eq_order, abs_lt, setOf_and, ← inf_principal, iInf_inf_eq]
   refine (congr_arg₂ _ ?_ ?_).trans (inf_comm ..)
   · refine (Equiv.subLeft a).iInf_congr fun x => ?_; simp [Ioi]
   · refine (Equiv.subRight a).iInf_congr fun x => ?_; simp [Iio]
 #align nhds_eq_infi_abs_sub nhds_eq_iInf_abs_sub
 
-theorem orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrderedAddCommGroup α]
+lemma orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrderedAddCommGroup α]
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r }) : OrderTopology α := by
   refine' ⟨TopologicalSpace.ext_nhds fun a => _⟩
   rw [h_nhds]
@@ -324,12 +324,12 @@ theorem orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrde
   exact (nhds_eq_iInf_abs_sub a).symm
 #align order_topology_of_nhds_abs orderTopology_of_nhds_abs
 
-theorem LinearOrderedAddCommGroup.tendsto_nhds {x : Filter β} {a : α} :
+lemma LinearOrderedAddCommGroup.tendsto_nhds {x : Filter β} {a : α} :
     Tendsto f x (𝓝 a) ↔ ∀ ε > (0 : α), ∀ᶠ b in x, |f b - a| < ε := by
   simp [nhds_eq_iInf_abs_sub, abs_sub_comm a]
 #align linear_ordered_add_comm_group.tendsto_nhds LinearOrderedAddCommGroup.tendsto_nhds
 
-theorem eventually_abs_sub_lt (a : α) {ε : α} (hε : 0 < ε) : ∀ᶠ x in 𝓝 a, |x - a| < ε :=
+lemma eventually_abs_sub_lt (a : α) {ε : α} (hε : 0 < ε) : ∀ᶠ x in 𝓝 a, |x - a| < ε :=
   (nhds_eq_iInf_abs_sub a).symm ▸
     mem_iInf_of_mem ε (mem_iInf_of_mem hε <| by simp only [abs_sub_comm, mem_principal_self])
 #align eventually_abs_sub_lt eventually_abs_sub_lt
@@ -367,7 +367,7 @@ theorem Filter.Tendsto.atBot_add {C : α} (hf : Tendsto f l atBot) (hg : Tendsto
   exact hg.add_atBot hf
 #align filter.tendsto.at_bot_add Filter.Tendsto.atBot_add
 
-theorem nhds_basis_abs_sub_lt [NoMaxOrder α] (a : α) :
+lemma nhds_basis_abs_sub_lt [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε) fun ε => { b | |b - a| < ε } := by
   simp only [nhds_eq_iInf_abs_sub, abs_sub_comm (a := a)]
   refine hasBasis_biInf_principal' (fun x hx y hy => ?_) (exists_gt _)
@@ -375,13 +375,13 @@ theorem nhds_basis_abs_sub_lt [NoMaxOrder α] (a : α) :
     fun _ hz => hz.trans_le (min_le_right _ _)⟩
 #align nhds_basis_abs_sub_lt nhds_basis_abs_sub_lt
 
-theorem nhds_basis_Ioo_pos [NoMaxOrder α] (a : α) :
+lemma nhds_basis_Ioo_pos [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε) fun ε => Ioo (a - ε) (a + ε) := by
   convert nhds_basis_abs_sub_lt a
   simp only [Ioo, abs_lt, ← sub_lt_iff_lt_add, neg_lt_sub_iff_lt_add, sub_lt_comm]
 #align nhds_basis_Ioo_pos nhds_basis_Ioo_pos
 
-theorem nhds_basis_Icc_pos [NoMaxOrder α] [DenselyOrdered α] (a : α) :
+lemma nhds_basis_Icc_pos [NoMaxOrder α] [DenselyOrdered α] (a : α) :
     (𝓝 a).HasBasis ((0 : α) < ·) fun ε ↦ Icc (a - ε) (a + ε) :=
   (nhds_basis_Ioo_pos a).to_hasBasis
     (fun _ε ε₀ ↦ let ⟨δ, δ₀, δε⟩ := exists_between ε₀
@@ -390,7 +390,7 @@ theorem nhds_basis_Icc_pos [NoMaxOrder α] [DenselyOrdered α] (a : α) :
 
 variable (α)
 
-theorem nhds_basis_zero_abs_sub_lt [NoMaxOrder α] :
+lemma nhds_basis_zero_abs_sub_lt [NoMaxOrder α] :
     (𝓝 (0 : α)).HasBasis (fun ε : α => (0 : α) < ε) fun ε => { b | |b| < ε } := by
   simpa using nhds_basis_abs_sub_lt (0 : α)
 #align nhds_basis_zero_abs_sub_lt nhds_basis_zero_abs_sub_lt
@@ -407,12 +407,12 @@ theorem nhds_basis_Ioo_pos_of_pos [NoMaxOrder α] {a : α} (ha : 0 < a) :
 end LinearOrderedAddCommGroup
 
 @[deprecated image_neg]
-theorem preimage_neg [AddGroup α] : preimage (Neg.neg : α → α) = image (Neg.neg : α → α) :=
+lemma preimage_neg [AddGroup α] : preimage (Neg.neg : α → α) = image (Neg.neg : α → α) :=
   funext fun _ => image_neg.symm
 #align preimage_neg preimage_neg
 
 @[deprecated] -- use `Filter.map_neg` from `Mathlib.Order.Filter.Pointwise`
-theorem Filter.map_neg_eq_comap_neg [AddGroup α] :
+lemma Filter.map_neg_eq_comap_neg [AddGroup α] :
     map (Neg.neg : α → α) = comap (Neg.neg : α → α) :=
   funext fun _ => map_eq_comap_of_inverse (funext neg_neg) (funext neg_neg)
 #align filter.map_neg_eq_comap_neg Filter.map_neg_eq_comap_neg

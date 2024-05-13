@@ -41,7 +41,7 @@ set_option autoImplicit true
 attribute [ext] ReaderT.ext StateT.ext ExceptT.ext
 
 @[monad_norm]
-theorem map_eq_bind_pure_comp (m : Type u → Type v) [Monad m] [LawfulMonad m]
+lemma map_eq_bind_pure_comp (m : Type u → Type v) [Monad m] [LawfulMonad m]
     (f : α → β) (x : m α) : f <$> x = x >>= pure ∘ f :=
   (bind_pure_comp f x).symm
 #align map_eq_bind_pure_comp map_eq_bind_pure_comp

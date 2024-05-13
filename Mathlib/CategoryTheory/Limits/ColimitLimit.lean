@@ -37,12 +37,12 @@ variable (F : J × K ⥤ C)
 
 open CategoryTheory.prod
 
-theorem map_id_left_eq_curry_map {j : J} {k k' : K} {f : k ⟶ k'} :
+lemma map_id_left_eq_curry_map {j : J} {k k' : K} {f : k ⟶ k'} :
     F.map ((𝟙 j, f) : (j, k) ⟶ (j, k')) = ((curry.obj F).obj j).map f :=
   rfl
 #align category_theory.limits.map_id_left_eq_curry_map CategoryTheory.Limits.map_id_left_eq_curry_map
 
-theorem map_id_right_eq_curry_swap_map {j j' : J} {f : j ⟶ j'} {k : K} :
+lemma map_id_right_eq_curry_swap_map {j j' : J} {f : j ⟶ j'} {k : K} :
     F.map ((f, 𝟙 k) : (j, k) ⟶ (j', k)) = ((curry.obj (Prod.swap K J ⋙ F)).obj k).map f :=
   rfl
 #align category_theory.limits.map_id_right_eq_curry_swap_map CategoryTheory.Limits.map_id_right_eq_curry_swap_map
@@ -94,7 +94,7 @@ theorem ι_colimitLimitToLimitColimit_π (j) (k) :
 #align category_theory.limits.ι_colimit_limit_to_limit_colimit_π CategoryTheory.Limits.ι_colimitLimitToLimitColimit_π
 
 @[simp]
-theorem ι_colimitLimitToLimitColimit_π_apply [Small.{v} J] [Small.{v} K] (F : J × K ⥤ Type v)
+lemma ι_colimitLimitToLimitColimit_π_apply [Small.{v} J] [Small.{v} K] (F : J × K ⥤ Type v)
     (j : J) (k : K) (f) : limit.π (curry.obj F ⋙ colim) j
         (colimitLimitToLimitColimit F (colimit.ι (curry.obj (Prod.swap K J ⋙ F) ⋙ lim) k f)) =
       colimit.ι ((curry.obj F).obj j) k (limit.π ((curry.obj (Prod.swap K J ⋙ F)).obj k) j f) := by

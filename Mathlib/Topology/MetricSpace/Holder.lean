@@ -59,27 +59,27 @@ def HolderOnWith (C r : ℝ≥0) (f : X → Y) (s : Set X) : Prop :=
 #align holder_on_with HolderOnWith
 
 @[simp]
-theorem holderOnWith_empty (C r : ℝ≥0) (f : X → Y) : HolderOnWith C r f ∅ := fun _ hx => hx.elim
+lemma holderOnWith_empty (C r : ℝ≥0) (f : X → Y) : HolderOnWith C r f ∅ := fun _ hx => hx.elim
 #align holder_on_with_empty holderOnWith_empty
 
 @[simp]
-theorem holderOnWith_singleton (C r : ℝ≥0) (f : X → Y) (x : X) : HolderOnWith C r f {x} := by
+lemma holderOnWith_singleton (C r : ℝ≥0) (f : X → Y) (x : X) : HolderOnWith C r f {x} := by
   rintro a (rfl : a = x) b (rfl : b = a)
   rw [edist_self]
   exact zero_le _
 #align holder_on_with_singleton holderOnWith_singleton
 
-theorem Set.Subsingleton.holderOnWith {s : Set X} (hs : s.Subsingleton) (C r : ℝ≥0) (f : X → Y) :
+lemma Set.Subsingleton.holderOnWith {s : Set X} (hs : s.Subsingleton) (C r : ℝ≥0) (f : X → Y) :
     HolderOnWith C r f s :=
   hs.induction_on (holderOnWith_empty C r f) (holderOnWith_singleton C r f)
 #align set.subsingleton.holder_on_with Set.Subsingleton.holderOnWith
 
-theorem holderOnWith_univ {C r : ℝ≥0} {f : X → Y} : HolderOnWith C r f univ ↔ HolderWith C r f := by
+lemma holderOnWith_univ {C r : ℝ≥0} {f : X → Y} : HolderOnWith C r f univ ↔ HolderWith C r f := by
   simp only [HolderOnWith, HolderWith, mem_univ, true_imp_iff]
 #align holder_on_with_univ holderOnWith_univ
 
 @[simp]
-theorem holderOnWith_one {C : ℝ≥0} {f : X → Y} {s : Set X} :
+lemma holderOnWith_one {C : ℝ≥0} {f : X → Y} {s : Set X} :
     HolderOnWith C 1 f s ↔ LipschitzOnWith C f s := by
   simp only [HolderOnWith, LipschitzOnWith, NNReal.coe_one, ENNReal.rpow_one]
 #align holder_on_with_one holderOnWith_one
@@ -88,18 +88,18 @@ alias ⟨_, LipschitzOnWith.holderOnWith⟩ := holderOnWith_one
 #align lipschitz_on_with.holder_on_with LipschitzOnWith.holderOnWith
 
 @[simp]
-theorem holderWith_one {C : ℝ≥0} {f : X → Y} : HolderWith C 1 f ↔ LipschitzWith C f :=
+lemma holderWith_one {C : ℝ≥0} {f : X → Y} : HolderWith C 1 f ↔ LipschitzWith C f :=
   holderOnWith_univ.symm.trans <| holderOnWith_one.trans lipschitzOn_univ
 #align holder_with_one holderWith_one
 
 alias ⟨_, LipschitzWith.holderWith⟩ := holderWith_one
 #align lipschitz_with.holder_with LipschitzWith.holderWith
 
-theorem holderWith_id : HolderWith 1 1 (id : X → X) :=
+lemma holderWith_id : HolderWith 1 1 (id : X → X) :=
   LipschitzWith.id.holderWith
 #align holder_with_id holderWith_id
 
-protected theorem HolderWith.holderOnWith {C r : ℝ≥0} {f : X → Y} (h : HolderWith C r f)
+protected lemma HolderWith.holderOnWith {C r : ℝ≥0} {f : X → Y} (h : HolderWith C r f)
     (s : Set X) : HolderOnWith C r f s := fun x _ y _ => h x y
 #align holder_with.holder_on_with HolderWith.holderOnWith
 
@@ -107,17 +107,17 @@ namespace HolderOnWith
 
 variable {C r : ℝ≥0} {f : X → Y} {s t : Set X}
 
-theorem edist_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈ s) :
+lemma edist_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈ s) :
     edist (f x) (f y) ≤ (C : ℝ≥0∞) * edist x y ^ (r : ℝ) :=
   h x hx y hy
 #align holder_on_with.edist_le HolderOnWith.edist_le
 
-theorem edist_le_of_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈ s) {d : ℝ≥0∞}
+lemma edist_le_of_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈ s) {d : ℝ≥0∞}
     (hd : edist x y ≤ d) : edist (f x) (f y) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
   (h.edist_le hx hy).trans <| by gcongr
 #align holder_on_with.edist_le_of_le HolderOnWith.edist_le_of_le
 
-theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t) {Cf rf : ℝ≥0}
+lemma comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t) {Cf rf : ℝ≥0}
     {f : X → Y} (hf : HolderOnWith Cf rf f s) (hst : MapsTo f s t) :
     HolderOnWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) s := by
   intro x hx y hy
@@ -126,7 +126,7 @@ theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg r
   exact hg.edist_le_of_le (hst hx) (hst hy) (hf.edist_le hx hy)
 #align holder_on_with.comp HolderOnWith.comp
 
-theorem comp_holderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t)
+lemma comp_holderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t)
     {Cf rf : ℝ≥0} {f : X → Y} (hf : HolderWith Cf rf f) (ht : ∀ x, f x ∈ t) :
     HolderWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) :=
   holderOnWith_univ.mp <| hg.comp (hf.holderOnWith univ) fun x _ => ht x
@@ -142,42 +142,42 @@ protected theorem uniformContinuousOn (hf : HolderOnWith C r f s) (h0 : 0 < r) :
   exact ⟨δ, δ0, fun hx y hy h => (hf.edist_le hx hy).trans_lt (H h)⟩
 #align holder_on_with.uniform_continuous_on HolderOnWith.uniformContinuousOn
 
-protected theorem continuousOn (hf : HolderOnWith C r f s) (h0 : 0 < r) : ContinuousOn f s :=
+protected lemma continuousOn (hf : HolderOnWith C r f s) (h0 : 0 < r) : ContinuousOn f s :=
   (hf.uniformContinuousOn h0).continuousOn
 #align holder_on_with.continuous_on HolderOnWith.continuousOn
 
-protected theorem mono (hf : HolderOnWith C r f s) (ht : t ⊆ s) : HolderOnWith C r f t :=
+protected lemma mono (hf : HolderOnWith C r f s) (ht : t ⊆ s) : HolderOnWith C r f t :=
   fun _ hx _ hy => hf.edist_le (ht hx) (ht hy)
 #align holder_on_with.mono HolderOnWith.mono
 
-theorem ediam_image_le_of_le (hf : HolderOnWith C r f s) {d : ℝ≥0∞} (hd : EMetric.diam s ≤ d) :
+lemma ediam_image_le_of_le (hf : HolderOnWith C r f s) {d : ℝ≥0∞} (hd : EMetric.diam s ≤ d) :
     EMetric.diam (f '' s) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
   EMetric.diam_image_le_iff.2 fun _ hx _ hy =>
     hf.edist_le_of_le hx hy <| (EMetric.edist_le_diam_of_mem hx hy).trans hd
 #align holder_on_with.ediam_image_le_of_le HolderOnWith.ediam_image_le_of_le
 
-theorem ediam_image_le (hf : HolderOnWith C r f s) :
+lemma ediam_image_le (hf : HolderOnWith C r f s) :
     EMetric.diam (f '' s) ≤ (C : ℝ≥0∞) * EMetric.diam s ^ (r : ℝ) :=
   hf.ediam_image_le_of_le le_rfl
 #align holder_on_with.ediam_image_le HolderOnWith.ediam_image_le
 
-theorem ediam_image_le_of_subset (hf : HolderOnWith C r f s) (ht : t ⊆ s) :
+lemma ediam_image_le_of_subset (hf : HolderOnWith C r f s) (ht : t ⊆ s) :
     EMetric.diam (f '' t) ≤ (C : ℝ≥0∞) * EMetric.diam t ^ (r : ℝ) :=
   (hf.mono ht).ediam_image_le
 #align holder_on_with.ediam_image_le_of_subset HolderOnWith.ediam_image_le_of_subset
 
-theorem ediam_image_le_of_subset_of_le (hf : HolderOnWith C r f s) (ht : t ⊆ s) {d : ℝ≥0∞}
+lemma ediam_image_le_of_subset_of_le (hf : HolderOnWith C r f s) (ht : t ⊆ s) {d : ℝ≥0∞}
     (hd : EMetric.diam t ≤ d) : EMetric.diam (f '' t) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
   (hf.mono ht).ediam_image_le_of_le hd
 #align holder_on_with.ediam_image_le_of_subset_of_le HolderOnWith.ediam_image_le_of_subset_of_le
 
-theorem ediam_image_inter_le_of_le (hf : HolderOnWith C r f s) {d : ℝ≥0∞}
+lemma ediam_image_inter_le_of_le (hf : HolderOnWith C r f s) {d : ℝ≥0∞}
     (hd : EMetric.diam t ≤ d) : EMetric.diam (f '' (t ∩ s)) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
   hf.ediam_image_le_of_subset_of_le (inter_subset_right _ _) <|
     (EMetric.diam_mono <| inter_subset_left _ _).trans hd
 #align holder_on_with.ediam_image_inter_le_of_le HolderOnWith.ediam_image_inter_le_of_le
 
-theorem ediam_image_inter_le (hf : HolderOnWith C r f s) (t : Set X) :
+lemma ediam_image_inter_le (hf : HolderOnWith C r f s) (t : Set X) :
     EMetric.diam (f '' (t ∩ s)) ≤ (C : ℝ≥0∞) * EMetric.diam t ^ (r : ℝ) :=
   hf.ediam_image_inter_le_of_le le_rfl
 #align holder_on_with.ediam_image_inter_le HolderOnWith.ediam_image_inter_le
@@ -188,22 +188,22 @@ namespace HolderWith
 
 variable {C r : ℝ≥0} {f : X → Y}
 
-theorem edist_le (h : HolderWith C r f) (x y : X) :
+lemma edist_le (h : HolderWith C r f) (x y : X) :
     edist (f x) (f y) ≤ (C : ℝ≥0∞) * edist x y ^ (r : ℝ) :=
   h x y
 #align holder_with.edist_le HolderWith.edist_le
 
-theorem edist_le_of_le (h : HolderWith C r f) {x y : X} {d : ℝ≥0∞} (hd : edist x y ≤ d) :
+lemma edist_le_of_le (h : HolderWith C r f) {x y : X} {d : ℝ≥0∞} (hd : edist x y ≤ d) :
     edist (f x) (f y) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
   (h.holderOnWith univ).edist_le_of_le trivial trivial hd
 #align holder_with.edist_le_of_le HolderWith.edist_le_of_le
 
-theorem comp {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0} {f : X → Y}
+lemma comp {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0} {f : X → Y}
     (hf : HolderWith Cf rf f) : HolderWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) :=
   (hg.holderOnWith univ).comp_holderWith hf fun _ => trivial
 #align holder_with.comp HolderWith.comp
 
-theorem comp_holderOnWith {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0}
+lemma comp_holderOnWith {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0}
     {f : X → Y} {s : Set X} (hf : HolderOnWith Cf rf f s) :
     HolderOnWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) s :=
   (hg.holderOnWith univ).comp hf fun _ _ => trivial
@@ -214,11 +214,11 @@ protected theorem uniformContinuous (hf : HolderWith C r f) (h0 : 0 < r) : Unifo
   uniformContinuousOn_univ.mp <| (hf.holderOnWith univ).uniformContinuousOn h0
 #align holder_with.uniform_continuous HolderWith.uniformContinuous
 
-protected theorem continuous (hf : HolderWith C r f) (h0 : 0 < r) : Continuous f :=
+protected lemma continuous (hf : HolderWith C r f) (h0 : 0 < r) : Continuous f :=
   (hf.uniformContinuous h0).continuous
 #align holder_with.continuous HolderWith.continuous
 
-theorem ediam_image_le (hf : HolderWith C r f) (s : Set X) :
+lemma ediam_image_le (hf : HolderWith C r f) (s : Set X) :
     EMetric.diam (f '' s) ≤ (C : ℝ≥0∞) * EMetric.diam s ^ (r : ℝ) :=
   EMetric.diam_image_le_iff.2 fun _ hx _ hy =>
     hf.edist_le_of_le <| EMetric.edist_le_diam_of_mem hx hy
@@ -234,7 +234,7 @@ variable [PseudoMetricSpace X] [PseudoMetricSpace Y] {C r : ℝ≥0} {f : X → 
 
 namespace HolderWith
 
-theorem nndist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ≥0} (hd : nndist x y ≤ d) :
+lemma nndist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ≥0} (hd : nndist x y ≤ d) :
     nndist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
   rw [← ENNReal.coe_le_coe, ← edist_nndist, ENNReal.coe_mul, ←
     ENNReal.coe_rpow_of_nonneg _ r.coe_nonneg]
@@ -242,12 +242,12 @@ theorem nndist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ≥0} (hd : nn
   rwa [edist_nndist, ENNReal.coe_le_coe]
 #align holder_with.nndist_le_of_le HolderWith.nndist_le_of_le
 
-theorem nndist_le (hf : HolderWith C r f) (x y : X) :
+lemma nndist_le (hf : HolderWith C r f) (x y : X) :
     nndist (f x) (f y) ≤ C * nndist x y ^ (r : ℝ) :=
   hf.nndist_le_of_le le_rfl
 #align holder_with.nndist_le HolderWith.nndist_le
 
-theorem dist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ} (hd : dist x y ≤ d) :
+lemma dist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ} (hd : dist x y ≤ d) :
     dist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
   lift d to ℝ≥0 using dist_nonneg.trans hd
   rw [dist_nndist] at hd ⊢
@@ -255,7 +255,7 @@ theorem dist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ} (hd : dist x y
   exact hf.nndist_le_of_le hd
 #align holder_with.dist_le_of_le HolderWith.dist_le_of_le
 
-theorem dist_le (hf : HolderWith C r f) (x y : X) : dist (f x) (f y) ≤ C * dist x y ^ (r : ℝ) :=
+lemma dist_le (hf : HolderWith C r f) (x y : X) : dist (f x) (f y) ≤ C * dist x y ^ (r : ℝ) :=
   hf.dist_le_of_le le_rfl
 #align holder_with.dist_le HolderWith.dist_le
 

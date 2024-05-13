@@ -49,7 +49,7 @@ protected def one [One β] : One α :=
 #align equiv.has_zero Equiv.zero
 
 @[to_additive]
-theorem one_def [One β] :
+lemma one_def [One β] :
     letI := e.one
     1 = e.symm 1 :=
   rfl
@@ -68,7 +68,7 @@ protected def mul [Mul β] : Mul α :=
 #align equiv.has_add Equiv.add
 
 @[to_additive]
-theorem mul_def [Mul β] (x y : α) :
+lemma mul_def [Mul β] (x y : α) :
     letI := Equiv.mul e
     x * y = e.symm (e x * e y) :=
   rfl
@@ -87,7 +87,7 @@ protected def div [Div β] : Div α :=
 #align equiv.has_sub Equiv.sub
 
 @[to_additive]
-theorem div_def [Div β] (x y : α) :
+lemma div_def [Div β] (x y : α) :
     letI := Equiv.div e
     x / y = e.symm (e x / e y) :=
   rfl
@@ -108,7 +108,7 @@ protected def Inv [Inv β] : Inv α :=
 #align equiv.has_neg Equiv.Neg
 
 @[to_additive]
-theorem inv_def [Inv β] (x : α) :
+lemma inv_def [Inv β] (x : α) :
     letI := Equiv.Inv e
     x⁻¹ = e.symm (e x)⁻¹ :=
   rfl
@@ -124,7 +124,7 @@ protected abbrev smul (R : Type*) [SMul R β] : SMul R α :=
   ⟨fun r x => e.symm (r • e x)⟩
 #align equiv.has_smul Equiv.smul
 
-theorem smul_def {R : Type*} [SMul R β] (r : R) (x : α) :
+lemma smul_def {R : Type*} [SMul R β] (r : R) (x : α) :
     letI := e.smul R
     r • x = e.symm (r • e x) :=
   rfl
@@ -139,7 +139,7 @@ protected def pow (N : Type*) [Pow β N] : Pow α N :=
   ⟨fun x n => e.symm (e x ^ n)⟩
 #align equiv.has_pow Equiv.pow
 
-theorem pow_def {N : Type*} [Pow β N] (n : N) (x : α) :
+lemma pow_def {N : Type*} [Pow β N] (n : N) (x : α) :
     letI := e.pow N
     x ^ n = e.symm (e x ^ n) :=
   rfl
@@ -167,13 +167,13 @@ def mulEquiv (e : α ≃ β) [Mul β] :
 #align equiv.add_equiv Equiv.addEquiv
 
 @[to_additive (attr := simp)]
-theorem mulEquiv_apply (e : α ≃ β) [Mul β] (a : α) : (mulEquiv e) a = e a :=
+lemma mulEquiv_apply (e : α ≃ β) [Mul β] (a : α) : (mulEquiv e) a = e a :=
   rfl
 #align equiv.mul_equiv_apply Equiv.mulEquiv_apply
 #align equiv.add_equiv_apply Equiv.addEquiv_apply
 
 @[to_additive]
-theorem mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
+lemma mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
     letI := Equiv.mul e
     (mulEquiv e).symm b = e.symm b :=
   rfl
@@ -205,11 +205,11 @@ def ringEquiv (e : α ≃ β) [Add β] [Mul β] : by
 #align equiv.ring_equiv Equiv.ringEquiv
 
 @[simp]
-theorem ringEquiv_apply (e : α ≃ β) [Add β] [Mul β] (a : α) : (ringEquiv e) a = e a :=
+lemma ringEquiv_apply (e : α ≃ β) [Add β] [Mul β] (a : α) : (ringEquiv e) a = e a :=
   rfl
 #align equiv.ring_equiv_apply Equiv.ringEquiv_apply
 
-theorem ringEquiv_symm_apply (e : α ≃ β) [Add β] [Mul β] (b : β) : by
+lemma ringEquiv_symm_apply (e : α ≃ β) [Add β] [Mul β] (b : β) : by
     letI := Equiv.add e
     letI := Equiv.mul e
     exact (ringEquiv e).symm b = e.symm b := rfl
@@ -722,10 +722,10 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
 #align equiv.alg_equiv Equiv.algEquiv
 
 @[simp]
-theorem algEquiv_apply (e : α ≃ β) [Semiring β] [Algebra R β] (a : α) : (algEquiv R e) a = e a :=
+lemma algEquiv_apply (e : α ≃ β) [Semiring β] [Algebra R β] (a : α) : (algEquiv R e) a = e a :=
   rfl
 
-theorem algEquiv_symm_apply (e : α ≃ β) [Semiring β] [Algebra R β] (b : β) : by
+lemma algEquiv_symm_apply (e : α ≃ β) [Semiring β] [Algebra R β] (b : β) : by
     letI := Equiv.semiring e
     letI := Equiv.algebra R e
     exact (algEquiv R e).symm b = e.symm b := by intros; rfl

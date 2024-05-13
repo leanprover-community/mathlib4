@@ -129,7 +129,7 @@ def of {i : ι} : M i →* CoprodI M where
   map_mul' x y := Eq.symm <| (Con.eq _).mpr (ConGen.Rel.of _ _ (CoprodI.Rel.of_mul x y))
 #align free_product.of Monoid.CoprodI.of
 
-theorem of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m) :=
+lemma of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m) :=
   rfl
 #align free_product.of_apply Monoid.CoprodI.of_apply
 
@@ -174,55 +174,55 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
 #align free_product.lift Monoid.CoprodI.lift
 
 @[simp]
-theorem lift_comp_of {N} [Monoid N] (fi : ∀ i, M i →* N) i : (lift fi).comp of = fi i :=
+lemma lift_comp_of {N} [Monoid N] (fi : ∀ i, M i →* N) i : (lift fi).comp of = fi i :=
   congr_fun (lift.symm_apply_apply fi) i
 
 @[simp]
-theorem lift_of {N} [Monoid N] (fi : ∀ i, M i →* N) {i} (m : M i) : lift fi (of m) = fi i m :=
+lemma lift_of {N} [Monoid N] (fi : ∀ i, M i →* N) {i} (m : M i) : lift fi (of m) = fi i m :=
   DFunLike.congr_fun (lift_comp_of ..) m
 #align free_product.lift_of Monoid.CoprodI.lift_of
 
 @[simp]
-theorem lift_comp_of' {N} [Monoid N] (f : CoprodI M →* N) :
+lemma lift_comp_of' {N} [Monoid N] (f : CoprodI M →* N) :
     lift (fun i ↦ f.comp (of (i := i))) = f :=
   lift.apply_symm_apply f
 
 @[simp]
-theorem lift_of' : lift (fun i ↦ (of : M i →* CoprodI M)) = .id (CoprodI M) :=
+lemma lift_of' : lift (fun i ↦ (of : M i →* CoprodI M)) = .id (CoprodI M) :=
   lift_comp_of' (.id _)
 
-theorem of_leftInverse [DecidableEq ι] (i : ι) :
+lemma of_leftInverse [DecidableEq ι] (i : ι) :
     Function.LeftInverse (lift <| Pi.mulSingle i (MonoidHom.id (M i))) of := fun x => by
   simp only [lift_of, Pi.mulSingle_eq_same, MonoidHom.id_apply]
 #align free_product.of_left_inverse Monoid.CoprodI.of_leftInverse
 
-theorem of_injective (i : ι) : Function.Injective (of : M i →* _) := by
+lemma of_injective (i : ι) : Function.Injective (of : M i →* _) := by
   classical exact (of_leftInverse i).injective
 #align free_product.of_injective Monoid.CoprodI.of_injective
 
-theorem mrange_eq_iSup {N} [Monoid N] (f : ∀ i, M i →* N) :
+lemma mrange_eq_iSup {N} [Monoid N] (f : ∀ i, M i →* N) :
     MonoidHom.mrange (lift f) = ⨆ i, MonoidHom.mrange (f i) := by
   rw [lift, Equiv.coe_fn_mk, Con.lift_range, FreeMonoid.mrange_lift,
     range_sigma_eq_iUnion_range, Submonoid.closure_iUnion]
   simp only [MonoidHom.mclosure_range]
 #align free_product.mrange_eq_supr Monoid.CoprodI.mrange_eq_iSup
 
-theorem lift_mrange_le {N} [Monoid N] (f : ∀ i, M i →* N) {s : Submonoid N} :
+lemma lift_mrange_le {N} [Monoid N] (f : ∀ i, M i →* N) {s : Submonoid N} :
     MonoidHom.mrange (lift f) ≤ s ↔ ∀ i, MonoidHom.mrange (f i) ≤ s := by
   simp [mrange_eq_iSup]
 #align free_product.lift_mrange_le Monoid.CoprodI.lift_mrange_le
 
 @[simp]
-theorem iSup_mrange_of : ⨆ i, MonoidHom.mrange (of : M i →* CoprodI M) = ⊤ := by
+lemma iSup_mrange_of : ⨆ i, MonoidHom.mrange (of : M i →* CoprodI M) = ⊤ := by
   simp [← mrange_eq_iSup]
 
 @[simp]
-theorem mclosure_iUnion_range_of :
+lemma mclosure_iUnion_range_of :
     Submonoid.closure (⋃ i, Set.range (of : M i →* CoprodI M)) = ⊤ := by
   simp [Submonoid.closure_iUnion]
 
 @[elab_as_elim]
-theorem induction_left {C : CoprodI M → Prop} (m : CoprodI M) (one : C 1)
+lemma induction_left {C : CoprodI M → Prop} (m : CoprodI M) (one : C 1)
     (mul : ∀ {i} (m : M i) x, C x → C (of m * x)) : C m := by
   induction m using Submonoid.induction_of_closure_eq_top_left mclosure_iUnion_range_of with
   | one => exact one
@@ -231,7 +231,7 @@ theorem induction_left {C : CoprodI M → Prop} (m : CoprodI M) (one : C 1)
     exact mul m y ihy
 
 @[elab_as_elim]
-theorem induction_on {C : CoprodI M → Prop} (m : CoprodI M) (h_one : C 1)
+lemma induction_on {C : CoprodI M → Prop} (m : CoprodI M) (h_one : C 1)
     (h_of : ∀ (i) (m : M i), C (of m)) (h_mul : ∀ x y, C x → C y → C (x * y)) : C m := by
   induction m using CoprodI.induction_left with
   | one => exact h_one
@@ -246,7 +246,7 @@ instance : Inv (CoprodI G) where
   inv :=
     MulOpposite.unop ∘ lift fun i => (of : G i →* _).op.comp (MulEquiv.inv' (G i)).toMonoidHom
 
-theorem inv_def (x : CoprodI G) :
+lemma inv_def (x : CoprodI G) :
     x⁻¹ =
       MulOpposite.unop
         (lift (fun i => (of : G i →* _).op.comp (MulEquiv.inv' (G i)).toMonoidHom) x) :=
@@ -266,7 +266,7 @@ instance : Group (CoprodI G) :=
         rw [MonoidHom.map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
           ihy] }
 
-theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
+lemma lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
     (h : ∀ i, (f i).range ≤ s) : (lift f).range ≤ s := by
   rintro _ ⟨x, rfl⟩
   induction' x using CoprodI.induction_on with i x x y hx hy
@@ -277,7 +277,7 @@ theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
     exact s.mul_mem hx hy
 #align free_product.lift_range_le Monoid.CoprodI.lift_range_le
 
-theorem range_eq_iSup {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range := by
+lemma range_eq_iSup {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range := by
   apply le_antisymm (lift_range_le _ f fun i => le_iSup (fun i => MonoidHom.range (f i)) i)
   apply iSup_le _
   rintro i _ ⟨x, rfl⟩
@@ -305,7 +305,7 @@ def prod (w : Word M) : CoprodI M :=
 #align free_product.word.prod Monoid.CoprodI.Word.prod
 
 @[simp]
-theorem prod_empty : prod (empty : Word M) = 1 :=
+lemma prod_empty : prod (empty : Word M) = 1 :=
   rfl
 #align free_product.word.prod_empty Monoid.CoprodI.Word.prod_empty
 
@@ -315,7 +315,7 @@ def fstIdx (w : Word M) : Option ι :=
   w.toList.head?.map Sigma.fst
 #align free_product.word.fst_idx Monoid.CoprodI.Word.fstIdx
 
-theorem fstIdx_ne_iff {w : Word M} {i} :
+lemma fstIdx_ne_iff {w : Word M} {i} :
     fstIdx w ≠ some i ↔ ∀ l ∈ w.toList.head?, i ≠ Sigma.fst l :=
   not_iff_not.mp <| by simp [fstIdx]
 #align free_product.word.fst_idx_ne_iff Monoid.CoprodI.Word.fstIdx_ne_iff
@@ -365,12 +365,12 @@ def rcons {i} (p : Pair M i) : Word M :=
 #noalign free_product.word.cons_eq_rcons
 
 @[simp]
-theorem prod_rcons {i} (p : Pair M i) : prod (rcons p) = of p.head * prod p.tail :=
+lemma prod_rcons {i} (p : Pair M i) : prod (rcons p) = of p.head * prod p.tail :=
   if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, MonoidHom.map_one, one_mul]
   else by rw [rcons, dif_neg hm, cons, prod, List.map_cons, List.prod_cons, prod]
 #align free_product.word.prod_rcons Monoid.CoprodI.Word.prod_rcons
 
-theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
+lemma rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
   rintro ⟨m, w, h⟩ ⟨m', w', h'⟩ he
   by_cases hm : m = 1 <;> by_cases hm' : m' = 1
   · simp only [rcons, dif_pos hm, dif_pos hm'] at he
@@ -391,7 +391,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
     exact Word.ext _ _ h
 #align free_product.word.rcons_inj Monoid.CoprodI.Word.rcons_inj
 
-theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
+lemma mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
       m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
   simp only [rcons, cons, ne_eq]
@@ -404,11 +404,11 @@ theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
   · split_ifs <;> simp_all [Ne.symm hij]
 
 @[simp]
-theorem fstIdx_cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
+lemma fstIdx_cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
     fstIdx (cons m w hmw h1) = some i := by simp [cons, fstIdx]
 
 @[simp]
-theorem prod_cons (i) (m : M i) (w : Word M) (h1 : m ≠ 1) (h2 : w.fstIdx ≠ some i) :
+lemma prod_cons (i) (m : M i) (w : Word M) (h1 : m ≠ 1) (h2 : w.fstIdx ≠ some i) :
     prod (cons m w h2 h1) = of m * prod w := by
   simp [cons, prod, List.map_cons, List.prod_cons]
 
@@ -431,12 +431,12 @@ def consRecOn {motive : Word M → Sort*} (w : Word M) (h_empty : motive empty)
     · exact h1 _ (List.mem_cons_self _ _)
 
 @[simp]
-theorem consRecOn_empty {motive : Word M → Sort*} (h_empty : motive empty)
+lemma consRecOn_empty {motive : Word M → Sort*} (h_empty : motive empty)
     (h_cons : ∀ (i) (m : M i) (w) h1 h2, motive w → motive (cons m w h1 h2)) :
     consRecOn empty h_empty h_cons = h_empty := rfl
 
 @[simp]
-theorem consRecOn_cons {motive : Word M → Sort*} (i) (m : M i) (w : Word M) h1 h2
+lemma consRecOn_cons {motive : Word M → Sort*} (i) (m : M i) (w : Word M) h1 h2
     (h_empty : motive empty)
     (h_cons : ∀ (i) (m : M i) (w) h1 h2, motive w → motive (cons m w h1 h2)) :
     consRecOn (cons m w h1 h2) h_empty h_cons = h_cons i m w h1 h2
@@ -468,16 +468,16 @@ def equivPair (i) : Word M ≃ Pair M i where
   right_inv _ := rcons_inj (equivPairAux i _).property
 #align free_product.word.equiv_pair Monoid.CoprodI.Word.equivPair
 
-theorem equivPair_symm (i) (p : Pair M i) : (equivPair i).symm p = rcons p :=
+lemma equivPair_symm (i) (p : Pair M i) : (equivPair i).symm p = rcons p :=
   rfl
 #align free_product.word.equiv_pair_symm Monoid.CoprodI.Word.equivPair_symm
 
-theorem equivPair_eq_of_fstIdx_ne {i} {w : Word M} (h : fstIdx w ≠ some i) :
+lemma equivPair_eq_of_fstIdx_ne {i} {w : Word M} (h : fstIdx w ≠ some i) :
     equivPair i w = ⟨1, w, h⟩ :=
   (equivPair i).apply_eq_iff_eq_symm_apply.mpr <| Eq.symm (dif_pos rfl)
 #align free_product.word.equiv_pair_eq_of_fst_idx_ne Monoid.CoprodI.Word.equivPair_eq_of_fstIdx_ne
 
-theorem mem_equivPair_tail_iff {i j : ι} {w : Word M} (m : M i) :
+lemma mem_equivPair_tail_iff {i j : ι} {w : Word M} (m : M i) :
     (⟨i, m⟩ ∈ (equivPair j w).tail.toList) ↔ ⟨i, m⟩ ∈ w.toList.tail
       ∨ i ≠ j ∧ ∃ h : w.toList ≠ [], w.toList.head h = ⟨i, m⟩ := by
   simp only [equivPair, equivPairAux, ne_eq, Equiv.coe_fn_mk]
@@ -492,14 +492,14 @@ theorem mem_equivPair_tail_iff {i j : ι} {w : Word M} (m : M i) :
       · subst i; simp_all [@eq_comm _ m g, @eq_comm _ k j, or_comm]
       · simp [hik, Ne.symm hik]
 
-theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
+lemma mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
     (⟨i, m⟩ ∈ (equivPair j w).tail.toList) → ⟨i, m⟩ ∈ w.toList := by
   rw [mem_equivPair_tail_iff]
   rintro (h | h)
   · exact List.mem_of_mem_tail h
   · revert h; cases w.toList <;> simp (config := {contextual := true})
 
-theorem equivPair_head {i : ι} {w : Word M} :
+lemma equivPair_head {i : ι} {w : Word M} :
     (equivPair i w).head =
       if h : ∃ (h : w.toList ≠ []), (w.toList.head h).1 = i
       then h.snd ▸ (w.toList.head h.1).2
@@ -525,30 +525,30 @@ instance summandAction (i) : MulAction (M i) (Word M) where
 instance : MulAction (CoprodI M) (Word M) :=
   MulAction.ofEndHom (lift fun _ => MulAction.toEndHom)
 
-theorem smul_def {i} (m : M i) (w : Word M) :
+lemma smul_def {i} (m : M i) (w : Word M) :
     m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
   rfl
 
-theorem of_smul_def (i) (w : Word M) (m : M i) :
+lemma of_smul_def (i) (w : Word M) (m : M i) :
     of m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
   rfl
 #align free_product.word.of_smul_def Monoid.CoprodI.Word.of_smul_def
 
-theorem equivPair_smul_same {i} (m : M i) (w : Word M) :
+lemma equivPair_smul_same {i} (m : M i) (w : Word M) :
     equivPair i (of m • w) = ⟨m * (equivPair i w).head, (equivPair i w).tail,
       (equivPair i w).fstIdx_ne⟩ := by
   rw [of_smul_def, ← equivPair_symm]
   simp
 
 @[simp]
-theorem equivPair_tail {i} (p : Pair M i) :
+lemma equivPair_tail {i} (p : Pair M i) :
     equivPair i p.tail = ⟨1, p.tail, p.fstIdx_ne⟩ :=
   equivPair_eq_of_fstIdx_ne _
 
-theorem smul_eq_of_smul {i} (m : M i) (w : Word M) :
+lemma smul_eq_of_smul {i} (m : M i) (w : Word M) :
     m • w = of m • w := rfl
 
-theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
+lemma mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
     ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔
       (¬i = j ∧ ⟨i, m₁⟩ ∈ w.toList)
       ∨ (m₁ ≠ 1 ∧ ∃ (hij : i = j),(⟨i, m₁⟩ ∈ w.toList.tail) ∨
@@ -583,32 +583,32 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
   · rcases w with ⟨_ | _, _, _⟩ <;>
     simp [or_comm, hij, Ne.symm hij]; rw [eq_comm]
 
-theorem mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {m₂ : M j} {w : Word M} :
+lemma mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {m₂ : M j} {w : Word M} :
     ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔ ⟨i, m₁⟩ ∈ w.toList := by
   simp [mem_smul_iff, *]
 
-theorem cons_eq_smul {i} {m : M i} {ls h1 h2} :
+lemma cons_eq_smul {i} {m : M i} {ls h1 h2} :
     cons m ls h1 h2 = of m • ls := by
   rw [of_smul_def, equivPair_eq_of_fstIdx_ne _]
   · simp [cons, rcons, h2]
   · exact h1
 #align free_product.word.cons_eq_smul Monoid.CoprodI.Word.cons_eq_smul
 
-theorem rcons_eq_smul {i} (p : Pair M i) :
+lemma rcons_eq_smul {i} (p : Pair M i) :
     rcons p = of p.head • p.tail := by
   simp [of_smul_def]
 
 @[simp]
-theorem equivPair_head_smul_equivPair_tail {i : ι} (w : Word M) :
+lemma equivPair_head_smul_equivPair_tail {i : ι} (w : Word M) :
     of (equivPair i w).head • (equivPair i w).tail = w := by
   rw [← rcons_eq_smul, ← equivPair_symm, Equiv.symm_apply_apply]
 
-theorem equivPair_tail_eq_inv_smul {G : ι → Type*} [∀ i, Group (G i)]
+lemma equivPair_tail_eq_inv_smul {G : ι → Type*} [∀ i, Group (G i)]
     [∀i, DecidableEq (G i)] {i} (w : Word G) :
     (equivPair i w).tail = (of (equivPair i w).head)⁻¹ • w :=
   Eq.symm <| inv_smul_eq_iff.2 (equivPair_head_smul_equivPair_tail w).symm
 
-theorem smul_induction {C : Word M → Prop} (h_empty : C empty)
+lemma smul_induction {C : Word M → Prop} (h_empty : C empty)
     (h_smul : ∀ (i) (m : M i) (w), C w → C (of m • w)) (w : Word M) : C w := by
   induction w using consRecOn with
   | h_empty => exact h_empty
@@ -618,7 +618,7 @@ theorem smul_induction {C : Word M → Prop} (h_empty : C empty)
 #align free_product.word.smul_induction Monoid.CoprodI.Word.smul_induction
 
 @[simp]
-theorem prod_smul (m) : ∀ w : Word M, prod (m • w) = m * prod w := by
+lemma prod_smul (m) : ∀ w : Word M, prod (m • w) = m * prod w := by
   induction m using CoprodI.induction_on with
   | h_one =>
     intro
@@ -678,7 +678,7 @@ def toList : ∀ {i j} (_w : NeWord M i j), List (Σi, M i)
   | _, _, append w₁ _ w₂ => w₁.toList ++ w₂.toList
 #align free_product.neword.to_list Monoid.CoprodI.NeWord.toList
 
-theorem toList_ne_nil {i j} (w : NeWord M i j) : w.toList ≠ List.nil := by
+lemma toList_ne_nil {i j} (w : NeWord M i j) : w.toList ≠ List.nil := by
   induction w
   · rintro ⟨rfl⟩
   · apply List.append_ne_nil_of_ne_nil_left
@@ -700,7 +700,7 @@ def last : ∀ {i j} (_w : NeWord M i j), M j
 #align free_product.neword.last Monoid.CoprodI.NeWord.last
 
 @[simp]
-theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨i, w.head⟩ := by
+lemma toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨i, w.head⟩ := by
   rw [← Option.mem_def]
   induction w
   · rw [Option.mem_def]
@@ -709,7 +709,7 @@ theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨
 #align free_product.neword.to_list_head' Monoid.CoprodI.NeWord.toList_head?
 
 @[simp]
-theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ := by
+lemma toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ := by
   rw [← Option.mem_def]
   induction w
   · rw [Option.mem_def]
@@ -767,34 +767,34 @@ def prod {i j} (w : NeWord M i j) :=
 #align free_product.neword.prod Monoid.CoprodI.NeWord.prod
 
 @[simp]
-theorem singleton_head {i} (x : M i) (hne_one : x ≠ 1) : (singleton x hne_one).head = x :=
+lemma singleton_head {i} (x : M i) (hne_one : x ≠ 1) : (singleton x hne_one).head = x :=
   rfl
 #align free_product.neword.singleton_head Monoid.CoprodI.NeWord.singleton_head
 
 @[simp]
-theorem singleton_last {i} (x : M i) (hne_one : x ≠ 1) : (singleton x hne_one).last = x :=
+lemma singleton_last {i} (x : M i) (hne_one : x ≠ 1) : (singleton x hne_one).last = x :=
   rfl
 #align free_product.neword.singleton_last Monoid.CoprodI.NeWord.singleton_last
 
 @[simp]
-theorem prod_singleton {i} (x : M i) (hne_one : x ≠ 1) : (singleton x hne_one).prod = of x := by
+lemma prod_singleton {i} (x : M i) (hne_one : x ≠ 1) : (singleton x hne_one).prod = of x := by
   simp [toWord, prod, Word.prod]
 #align free_product.neword.prod_singleton Monoid.CoprodI.NeWord.prod_singleton
 
 @[simp]
-theorem append_head {i j k l} {w₁ : NeWord M i j} {hne : j ≠ k} {w₂ : NeWord M k l} :
+lemma append_head {i j k l} {w₁ : NeWord M i j} {hne : j ≠ k} {w₂ : NeWord M k l} :
     (append w₁ hne w₂).head = w₁.head :=
   rfl
 #align free_product.neword.append_head Monoid.CoprodI.NeWord.append_head
 
 @[simp]
-theorem append_last {i j k l} {w₁ : NeWord M i j} {hne : j ≠ k} {w₂ : NeWord M k l} :
+lemma append_last {i j k l} {w₁ : NeWord M i j} {hne : j ≠ k} {w₂ : NeWord M k l} :
     (append w₁ hne w₂).last = w₂.last :=
   rfl
 #align free_product.neword.append_last Monoid.CoprodI.NeWord.append_last
 
 @[simp]
-theorem append_prod {i j k l} {w₁ : NeWord M i j} {hne : j ≠ k} {w₂ : NeWord M k l} :
+lemma append_prod {i j k l} {w₁ : NeWord M i j} {hne : j ≠ k} {w₂ : NeWord M k l} :
     (append w₁ hne w₂).prod = w₁.prod * w₂.prod := by simp [toWord, prod, Word.prod]
 #align free_product.neword.append_prod Monoid.CoprodI.NeWord.append_prod
 
@@ -806,7 +806,7 @@ def replaceHead : ∀ {i j : ι} (x : M i) (_hnotone : x ≠ 1) (_w : NeWord M i
 #align free_product.neword.replace_head Monoid.CoprodI.NeWord.replaceHead
 
 @[simp]
-theorem replaceHead_head {i j : ι} (x : M i) (hnotone : x ≠ 1) (w : NeWord M i j) :
+lemma replaceHead_head {i j : ι} (x : M i) (hnotone : x ≠ 1) (w : NeWord M i j) :
     (replaceHead x hnotone w).head = x := by
   induction w
   · rfl
@@ -820,7 +820,7 @@ def mulHead {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1)
 #align free_product.neword.mul_head Monoid.CoprodI.NeWord.mulHead
 
 @[simp]
-theorem mulHead_head {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1) :
+lemma mulHead_head {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1) :
     (mulHead w x hnotone).head = x * w.head := by
   induction w
   · rfl
@@ -828,7 +828,7 @@ theorem mulHead_head {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
 #align free_product.neword.mul_head_head Monoid.CoprodI.NeWord.mulHead_head
 
 @[simp]
-theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1) :
+lemma mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1) :
     (mulHead w x hnotone).prod = of x * w.prod := by
   unfold mulHead
   induction' w with _ _ _ _ _ _ _ _ _ _ w_ih_w₁ w_ih_w₂
@@ -851,17 +851,17 @@ def inv : ∀ {i j} (_w : NeWord G i j), NeWord G j i
 #align free_product.neword.inv Monoid.CoprodI.NeWord.inv
 
 @[simp]
-theorem inv_prod {i j} (w : NeWord G i j) : w.inv.prod = w.prod⁻¹ := by
+lemma inv_prod {i j} (w : NeWord G i j) : w.inv.prod = w.prod⁻¹ := by
   induction w <;> simp [inv, *]
 #align free_product.neword.inv_prod Monoid.CoprodI.NeWord.inv_prod
 
 @[simp]
-theorem inv_head {i j} (w : NeWord G i j) : w.inv.head = w.last⁻¹ := by
+lemma inv_head {i j} (w : NeWord G i j) : w.inv.head = w.last⁻¹ := by
   induction w <;> simp [inv, *]
 #align free_product.neword.inv_head Monoid.CoprodI.NeWord.inv_head
 
 @[simp]
-theorem inv_last {i j} (w : NeWord G i j) : w.inv.last = w.head⁻¹ := by
+lemma inv_last {i j} (w : NeWord G i j) : w.inv.last = w.head⁻¹ := by
   induction w <;> simp [inv, *]
 #align free_product.neword.inv_last Monoid.CoprodI.NeWord.inv_last
 
@@ -890,7 +890,7 @@ variable (hXnonempty : ∀ i, (X i).Nonempty)
 variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
 variable (hpp : Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
 
-theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
+lemma lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
     lift f w.prod • X k ⊆ X i := by
   induction' w with i x hne_one i j k l w₁ hne w₂ hIw₁ hIw₂ generalizing k
   · simpa using hpp hk _ hne_one
@@ -901,7 +901,7 @@ theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
       _ ⊆ X i := hIw₁ hne
 #align free_product.lift_word_ping_pong Monoid.CoprodI.lift_word_ping_pong
 
-theorem lift_word_prod_nontrivial_of_other_i {i j k} (w : NeWord H i j) (hhead : k ≠ i)
+lemma lift_word_prod_nontrivial_of_other_i {i j k} (w : NeWord H i j) (hhead : k ≠ i)
     (hlast : k ≠ j) : lift f w.prod ≠ 1 := by
   intro heq1
   have : X k ⊆ X i := by simpa [heq1] using lift_word_ping_pong f X hpp w hlast.symm
@@ -909,12 +909,12 @@ theorem lift_word_prod_nontrivial_of_other_i {i j k} (w : NeWord H i j) (hhead :
   exact (hXdisj hhead).le_bot ⟨hx, this hx⟩
 #align free_product.lift_word_prod_nontrivial_of_other_i Monoid.CoprodI.lift_word_prod_nontrivial_of_other_i
 
-theorem lift_word_prod_nontrivial_of_head_eq_last {i} (w : NeWord H i i) : lift f w.prod ≠ 1 := by
+lemma lift_word_prod_nontrivial_of_head_eq_last {i} (w : NeWord H i i) : lift f w.prod ≠ 1 := by
   obtain ⟨k, hk⟩ := exists_ne i
   exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hk hk
 #align free_product.lift_word_prod_nontrivial_of_head_eq_last Monoid.CoprodI.lift_word_prod_nontrivial_of_head_eq_last
 
-theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard : 3 ≤ #(H i))
+lemma lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard : 3 ≤ #(H i))
     (hheadtail : i ≠ j) : lift f w.prod ≠ 1 := by
   obtain ⟨h, hn1, hnh⟩ := Cardinal.three_le hcard 1 w.head⁻¹
   have hnot1 : h * w.head ≠ 1 := by
@@ -930,7 +930,7 @@ theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard :
   simp [w', heq1]
 #align free_product.lift_word_prod_nontrivial_of_head_card Monoid.CoprodI.lift_word_prod_nontrivial_of_head_card
 
-theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) : lift f w.prod ≠ 1 := by
+lemma lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) : lift f w.prod ≠ 1 := by
   classical
     cases' hcard with hcard hcard
     · obtain ⟨i, h1, h2⟩ := Cardinal.three_le hcard i j
@@ -963,7 +963,7 @@ theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) : lift f
         simp [w', heq1]
 #align free_product.lift_word_prod_nontrivial_of_not_empty Monoid.CoprodI.lift_word_prod_nontrivial_of_not_empty
 
-theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) : w = Word.empty := by
+lemma empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) : w = Word.empty := by
   by_contra hnotempty
   obtain ⟨i, j, w, rfl⟩ := NeWord.of_word w hnotempty
   exact lift_word_prod_nontrivial_of_not_empty f hcard X hXnonempty hXdisj hpp w h

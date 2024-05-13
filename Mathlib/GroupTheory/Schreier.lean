@@ -34,7 +34,7 @@ open MemRightTransversals
 
 variable {G : Type*} [Group G] {H : Subgroup G} {R S : Set G}
 
-theorem closure_mul_image_mul_eq_top
+lemma closure_mul_image_mul_eq_top
     (hR : R ∈ rightTransversals (H : Set G)) (hR1 : (1 : G) ∈ R) (hS : closure S = ⊤) :
     (closure ((R * S).image fun g => g * (toFun hR g : G)⁻¹)) * R = ⊤ := by
   let f : G → R := fun g => toFun hR g
@@ -102,7 +102,7 @@ theorem closure_mul_image_eq_top' [DecidableEq G] {R S : Finset G}
 
 variable (H)
 
-theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (S : Set G) = ⊤) :
+lemma exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (S : Set G) = ⊤) :
     ∃ T : Finset H, T.card ≤ H.index * S.card ∧ closure (T : Set H) = ⊤ := by
   letI := H.fintypeQuotientOfFiniteIndex
   haveI : DecidableEq G := Classical.decEq G
@@ -132,7 +132,7 @@ instance fg_of_index_ne_zero [hG : Group.FG G] [FiniteIndex H] : Group.FG H := b
   exact ⟨⟨T, hT⟩⟩
 #align subgroup.fg_of_index_ne_zero Subgroup.fg_of_index_ne_zero
 
-theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
+lemma rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
     Group.rank H ≤ H.index * Group.rank G := by
   haveI := H.fg_of_index_ne_zero
   obtain ⟨S, hS₀, hS⟩ := Group.rank_spec G

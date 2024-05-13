@@ -134,7 +134,7 @@ lemma of_nonneg_iff' [NonUnitalRing R] [PartialOrder R] [StarRing R]
     simpa [sub_eq_iff_eq_add', sub_nonneg] using fun x y => h_nonneg_iff (y - x)
 #align star_ordered_ring.of_nonneg_iff' StarOrderedRing.of_nonneg_iff'
 
-theorem nonneg_iff [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {x : R} :
+lemma nonneg_iff [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {x : R} :
     0 ≤ x ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s) := by
   simp only [le_iff, zero_add, exists_eq_right']
 #align star_ordered_ring.nonneg_iff StarOrderedRing.nonneg_iff
@@ -145,15 +145,15 @@ section NonUnitalSemiring
 
 variable [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 
-theorem star_mul_self_nonneg (r : R) : 0 ≤ star r * r :=
+lemma star_mul_self_nonneg (r : R) : 0 ≤ star r * r :=
   StarOrderedRing.nonneg_iff.mpr <| AddSubmonoid.subset_closure ⟨r, rfl⟩
 #align star_mul_self_nonneg star_mul_self_nonneg
 
-theorem mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
+lemma mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
   simpa only [star_star] using star_mul_self_nonneg (star r)
 #align star_mul_self_nonneg' mul_star_self_nonneg
 
-theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
+lemma conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   rw [StarOrderedRing.nonneg_iff] at ha
   refine' AddSubmonoid.closure_induction ha (fun x hx => _)
     (by rw [mul_zero, zero_mul]) fun x y hx hy => _
@@ -166,11 +166,11 @@ theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c :
       _ ≤ _ := by rw [mul_add, add_mul]
 #align conjugate_nonneg conjugate_nonneg
 
-theorem conjugate_nonneg' {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c := by
+lemma conjugate_nonneg' {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c := by
   simpa only [star_star] using conjugate_nonneg ha (star c)
 #align conjugate_nonneg' conjugate_nonneg'
 
-theorem conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
+lemma conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
     star c * a * c ≤ star c * b * c := by
   rw [StarOrderedRing.le_iff] at hab ⊢
   obtain ⟨p, hp, rfl⟩ := hab
@@ -178,7 +178,7 @@ theorem conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
   exact ⟨star c * p * c, conjugate_nonneg hp c, by simp only [add_mul, mul_add]⟩
 #align conjugate_le_conjugate conjugate_le_conjugate
 
-theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star c ≤ c * b * star c :=
+lemma conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star c ≤ c * b * star c :=
   by simpa only [star_star] using conjugate_le_conjugate hab (star c)
 #align conjugate_le_conjugate' conjugate_le_conjugate'
 

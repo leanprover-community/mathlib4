@@ -119,7 +119,7 @@ end IndObjectPresentation
 structure IsIndObject (A : Cᵒᵖ ⥤ Type v) : Prop where
   mk' :: nonempty_presentation : Nonempty (IndObjectPresentation A)
 
-theorem IsIndObject.mk {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) : IsIndObject A :=
+lemma IsIndObject.mk {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) : IsIndObject A :=
   ⟨⟨P⟩⟩
 
 /-- Representable presheaves are (trivially) ind-objects. -/
@@ -130,27 +130,27 @@ namespace IsIndObject
 
 variable {A : Cᵒᵖ ⥤ Type v}
 
-theorem map {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A → IsIndObject B
+lemma map {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A → IsIndObject B
   | ⟨⟨P⟩⟩ => ⟨⟨P.extend η⟩⟩
 
-theorem iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A ↔ IsIndObject B :=
+lemma iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A ↔ IsIndObject B :=
   ⟨.map η, .map (inv η)⟩
 
 /-- Pick a presentation for an ind-object using choice. -/
 noncomputable def presentation : IsIndObject A → IndObjectPresentation A
   | ⟨P⟩ => P.some
 
-theorem isFiltered (h : IsIndObject A) : IsFiltered (CostructuredArrow yoneda A) :=
+lemma isFiltered (h : IsIndObject A) : IsFiltered (CostructuredArrow yoneda A) :=
   IsFiltered.of_final h.presentation.toCostructuredArrow
 
-theorem finallySmall (h : IsIndObject A) : FinallySmall.{v} (CostructuredArrow yoneda A) :=
+lemma finallySmall (h : IsIndObject A) : FinallySmall.{v} (CostructuredArrow yoneda A) :=
   FinallySmall.mk' h.presentation.toCostructuredArrow
 
 end IsIndObject
 
 open IsFiltered.SmallFilteredIntermediate
 
-theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
+lemma isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
     [IsFiltered (CostructuredArrow yoneda A)] [FinallySmall.{v} (CostructuredArrow yoneda A)] :
     IsIndObject A := by
   have h₁ : (factoring (fromFinalModel (CostructuredArrow yoneda A)) ⋙

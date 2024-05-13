@@ -32,7 +32,7 @@ instance smulLeft [SMul R M] : SMul (ULift R) M :=
 #align ulift.has_vadd_left ULift.vaddLeft
 
 @[to_additive (attr := simp)]
-theorem smul_def [SMul R M] (s : ULift R) (x : M) : s • x = s.down • x :=
+lemma smul_def [SMul R M] (s : ULift R) (x : M) : s • x = s.down • x :=
   rfl
 #align ulift.smul_def ULift.smul_def
 #align ulift.vadd_def ULift.vadd_def

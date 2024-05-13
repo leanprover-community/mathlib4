@@ -45,7 +45,7 @@ set_option linter.uppercaseLean3 false in
 #align LinOrd.of LinOrd.of
 
 @[simp]
-theorem coe_of (α : Type*) [LinearOrder α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [LinearOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align LinOrd.coe_of LinOrd.coe_of
@@ -97,7 +97,7 @@ set_option linter.uppercaseLean3 false in
 
 end LinOrd
 
-theorem linOrd_dual_comp_forget_to_Lat :
+lemma linOrd_dual_comp_forget_to_Lat :
     LinOrd.dual ⋙ forget₂ LinOrd Lat = forget₂ LinOrd Lat ⋙ Lat.dual :=
   rfl
 set_option linter.uppercaseLean3 false in

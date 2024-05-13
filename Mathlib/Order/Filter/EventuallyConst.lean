@@ -30,11 +30,11 @@ namespace Filter
 /-- The proposition that a function is eventually constant along a filter on the domain. -/
 def EventuallyConst (f : α → β) (l : Filter α) : Prop := (map f l).Subsingleton
 
-theorem HasBasis.eventuallyConst_iff {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
+lemma HasBasis.eventuallyConst_iff {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
     (h : l.HasBasis p s) : EventuallyConst f l ↔ ∃ i, p i ∧ ∀ x ∈ s i, ∀ y ∈ s i, f x = f y :=
   (h.map f).subsingleton_iff.trans <| by simp only [Set.Subsingleton, forall_mem_image]
 
-theorem HasBasis.eventuallyConst_iff' {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
+lemma HasBasis.eventuallyConst_iff' {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
     {x : ι → α} (h : l.HasBasis p s) (hx : ∀ i, p i → x i ∈ s i) :
     EventuallyConst f l ↔ ∃ i, p i ∧ ∀ y ∈ s i, f y = f (x i) :=
   h.eventuallyConst_iff.trans <| exists_congr fun i ↦ and_congr_right fun hi ↦
@@ -46,36 +46,36 @@ lemma eventuallyConst_iff_tendsto [Nonempty β] :
 
 alias ⟨EventuallyConst.exists_tendsto, _⟩ := eventuallyConst_iff_tendsto
 
-theorem EventuallyConst.of_tendsto {x : β} (h : Tendsto f l (pure x)) : EventuallyConst f l :=
+lemma EventuallyConst.of_tendsto {x : β} (h : Tendsto f l (pure x)) : EventuallyConst f l :=
   have : Nonempty β := ⟨x⟩; eventuallyConst_iff_tendsto.2 ⟨x, h⟩
 
-theorem eventuallyConst_iff_exists_eventuallyEq [Nonempty β] :
+lemma eventuallyConst_iff_exists_eventuallyEq [Nonempty β] :
     EventuallyConst f l ↔ ∃ c, f =ᶠ[l] fun _ ↦ c :=
   subsingleton_iff_exists_singleton_mem
 
 alias ⟨EventuallyConst.eventuallyEq_const, _⟩ := eventuallyConst_iff_exists_eventuallyEq
 
-theorem eventuallyConst_pred' {p : α → Prop} :
+lemma eventuallyConst_pred' {p : α → Prop} :
     EventuallyConst p l ↔ (p =ᶠ[l] fun _ ↦ False) ∨ (p =ᶠ[l] fun _ ↦ True) := by
   simp only [eventuallyConst_iff_exists_eventuallyEq, Prop.exists_iff]
 
-theorem eventuallyConst_pred {p : α → Prop} :
+lemma eventuallyConst_pred {p : α → Prop} :
     EventuallyConst p l ↔ (∀ᶠ x in l, p x) ∨ (∀ᶠ x in l, ¬p x) := by
   simp [eventuallyConst_pred', or_comm, EventuallyEq]
 
-theorem eventuallyConst_set' {s : Set α} :
+lemma eventuallyConst_set' {s : Set α} :
     EventuallyConst s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
   eventuallyConst_pred'
 
-theorem eventuallyConst_set {s : Set α} :
+lemma eventuallyConst_set {s : Set α} :
     EventuallyConst s l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
   eventuallyConst_pred
 
-theorem EventuallyEq.eventuallyConst_iff {g : α → β} (h : f =ᶠ[l] g) :
+lemma EventuallyEq.eventuallyConst_iff {g : α → β} (h : f =ᶠ[l] g) :
     EventuallyConst f l ↔ EventuallyConst g l := by
   simp only [EventuallyConst, map_congr h]
 
-@[simp] theorem eventuallyConst_id : EventuallyConst id l ↔ l.Subsingleton := Iff.rfl
+@[simp] lemma eventuallyConst_id : EventuallyConst id l ↔ l.Subsingleton := Iff.rfl
 
 namespace EventuallyConst
 
@@ -133,17 +133,17 @@ lemma of_mulIndicator_const (h : EventuallyConst (s.mulIndicator fun _ ↦ c) l)
   simpa [(· ∘ ·), hc, imp_false] using h.comp (· = c)
 
 @[to_additive]
-theorem mulIndicator_const (h : EventuallyConst s l) (c : β) :
+lemma mulIndicator_const (h : EventuallyConst s l) (c : β) :
     EventuallyConst (s.mulIndicator fun _ ↦ c) l := by
   classical exact h.comp (if · then c else 1)
 
 @[to_additive]
-theorem mulIndicator_const_iff_of_ne (hc : c ≠ 1) :
+lemma mulIndicator_const_iff_of_ne (hc : c ≠ 1) :
     EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ EventuallyConst s l :=
   ⟨(of_mulIndicator_const · hc), (mulIndicator_const · c)⟩
 
 @[to_additive (attr := simp)]
-theorem mulIndicator_const_iff :
+lemma mulIndicator_const_iff :
     EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ c = 1 ∨ EventuallyConst s l := by
   rcases eq_or_ne c 1 with rfl | hc <;> simp [mulIndicator_const_iff_of_ne, *]
 

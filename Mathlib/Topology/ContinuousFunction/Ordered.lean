@@ -30,11 +30,11 @@ instance partialOrder [PartialOrder β] : PartialOrder C(α, β) :=
   -- Porting note: was `by tidy`, and `by aesop` alone didn't work
 #align continuous_map.partial_order ContinuousMap.partialOrder
 
-theorem le_def [PartialOrder β] {f g : C(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=
+lemma le_def [PartialOrder β] {f g : C(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=
   Pi.le_def
 #align continuous_map.le_def ContinuousMap.le_def
 
-theorem lt_def [PartialOrder β] {f g : C(α, β)} : f < g ↔ (∀ a, f a ≤ g a) ∧ ∃ a, f a < g a :=
+lemma lt_def [PartialOrder β] {f g : C(α, β)} : f < g ↔ (∀ a, f a ≤ g a) ∧ ∃ a, f a < g a :=
   Pi.lt_def
 #align continuous_map.lt_def ContinuousMap.lt_def
 
@@ -107,7 +107,7 @@ def IccExtend (f : C(Set.Icc a b, β)) : C(α, β) where
 #align continuous_map.Icc_extend ContinuousMap.IccExtend
 
 @[simp]
-theorem coe_IccExtend (f : C(Set.Icc a b, β)) :
+lemma coe_IccExtend (f : C(Set.Icc a b, β)) :
     ((IccExtend h f : C(α, β)) : α → β) = Set.IccExtend h f :=
   rfl
 #align continuous_map.coe_Icc_extend ContinuousMap.coe_IccExtend

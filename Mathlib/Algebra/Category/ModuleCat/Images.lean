@@ -51,7 +51,7 @@ def factorThruImage : G ⟶ image f :=
   f.rangeRestrict
 #align Module.factor_thru_image ModuleCat.factorThruImage
 
-theorem image.fac : factorThruImage f ≫ image.ι f = f :=
+lemma image.fac : factorThruImage f ≫ image.ι f = f :=
   rfl
 #align Module.image.fac ModuleCat.image.fac
 
@@ -78,7 +78,7 @@ noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I where
     rfl
 #align Module.image.lift ModuleCat.image.lift
 
-theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f := by
+lemma image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f := by
   ext x
   change (F'.e ≫ F'.m) _ = _
   rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]
@@ -108,13 +108,13 @@ noncomputable def imageIsoRange {G H : ModuleCat.{v} R} (f : G ⟶ H) :
 #align Module.image_iso_range ModuleCat.imageIsoRange
 
 @[simp, reassoc, elementwise]
-theorem imageIsoRange_inv_image_ι {G H : ModuleCat.{v} R} (f : G ⟶ H) :
+lemma imageIsoRange_inv_image_ι {G H : ModuleCat.{v} R} (f : G ⟶ H) :
     (imageIsoRange f).inv ≫ Limits.image.ι f = ModuleCat.ofHom f.range.subtype :=
   IsImage.isoExt_inv_m _ _
 #align Module.image_iso_range_inv_image_ι ModuleCat.imageIsoRange_inv_image_ι
 
 @[simp, reassoc, elementwise]
-theorem imageIsoRange_hom_subtype {G H : ModuleCat.{v} R} (f : G ⟶ H) :
+lemma imageIsoRange_hom_subtype {G H : ModuleCat.{v} R} (f : G ⟶ H) :
     (imageIsoRange f).hom ≫ ModuleCat.ofHom f.range.subtype = Limits.image.ι f := by
   erw [← imageIsoRange_inv_image_ι f, Iso.hom_inv_id_assoc]
 #align Module.image_iso_range_hom_subtype ModuleCat.imageIsoRange_hom_subtype

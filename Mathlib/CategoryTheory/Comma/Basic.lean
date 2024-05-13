@@ -117,22 +117,22 @@ lemma hom_ext (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right
   CommaMorphism.ext _ _ h₁ h₂
 
 @[simp]
-theorem id_left : (𝟙 X : CommaMorphism X X).left = 𝟙 X.left :=
+lemma id_left : (𝟙 X : CommaMorphism X X).left = 𝟙 X.left :=
   rfl
 #align category_theory.comma.id_left CategoryTheory.Comma.id_left
 
 @[simp]
-theorem id_right : (𝟙 X : CommaMorphism X X).right = 𝟙 X.right :=
+lemma id_right : (𝟙 X : CommaMorphism X X).right = 𝟙 X.right :=
   rfl
 #align category_theory.comma.id_right CategoryTheory.Comma.id_right
 
 @[simp]
-theorem comp_left : (f ≫ g).left = f.left ≫ g.left :=
+lemma comp_left : (f ≫ g).left = f.left ≫ g.left :=
   rfl
 #align category_theory.comma.comp_left CategoryTheory.Comma.comp_left
 
 @[simp]
-theorem comp_right : (f ≫ g).right = f.right ≫ g.right :=
+lemma comp_right : (f ≫ g).right = f.right ≫ g.right :=
   rfl
 #align category_theory.comma.comp_right CategoryTheory.Comma.comp_right
 
@@ -163,14 +163,14 @@ def natTrans : fst L R ⋙ L ⟶ snd L R ⋙ R where app X := X.hom
 #align category_theory.comma.nat_trans CategoryTheory.Comma.natTrans
 
 @[simp]
-theorem eqToHom_left (X Y : Comma L R) (H : X = Y) :
+lemma eqToHom_left (X Y : Comma L R) (H : X = Y) :
     CommaMorphism.left (eqToHom H) = eqToHom (by cases H; rfl) := by
   cases H
   rfl
 #align category_theory.comma.eq_to_hom_left CategoryTheory.Comma.eqToHom_left
 
 @[simp]
-theorem eqToHom_right (X Y : Comma L R) (H : X = Y) :
+lemma eqToHom_right (X Y : Comma L R) (H : X = Y) :
     CommaMorphism.right (eqToHom H) = eqToHom (by cases H; rfl) := by
   cases H
   rfl

@@ -112,7 +112,7 @@ instance ContinuousMonoidHomClass : ContinuousMonoidHomClass (ContinuousMonoidHo
   map_continuous f := f.continuous_toFun
 
 @[to_additive (attr := ext)]
-theorem ext {f g : ContinuousMonoidHom A B} (h : ∀ x, f x = g x) : f = g :=
+lemma ext {f g : ContinuousMonoidHom A B} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 #align continuous_monoid_hom.ext ContinuousMonoidHom.ext
 #align continuous_add_monoid_hom.ext ContinuousAddMonoidHom.ext
@@ -125,7 +125,7 @@ def toContinuousMap (f : ContinuousMonoidHom A B) : C(A, B) :=
 #align continuous_add_monoid_hom.to_continuous_map ContinuousAddMonoidHom.toContinuousMap
 
 @[to_additive]
-theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
+lemma toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
   ext <| by convert DFunLike.ext_iff.1 h
 #align continuous_monoid_hom.to_continuous_map_injective ContinuousMonoidHom.toContinuousMap_injective
 #align continuous_add_monoid_hom.to_continuous_map_injective ContinuousAddMonoidHom.toContinuousMap_injective
@@ -269,13 +269,13 @@ instance : TopologicalSpace (ContinuousMonoidHom A B) :=
 variable (A B C D E)
 
 @[to_additive]
-theorem inducing_toContinuousMap : Inducing (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
+lemma inducing_toContinuousMap : Inducing (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
   ⟨rfl⟩
 #align continuous_monoid_hom.inducing_to_continuous_map ContinuousMonoidHom.inducing_toContinuousMap
 #align continuous_add_monoid_hom.inducing_to_continuous_map ContinuousAddMonoidHom.inducing_toContinuousMap
 
 @[to_additive]
-theorem embedding_toContinuousMap :
+lemma embedding_toContinuousMap :
     Embedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
   ⟨inducing_toContinuousMap A B, toContinuousMap_injective⟩
 #align continuous_monoid_hom.embedding_to_continuous_map ContinuousMonoidHom.embedding_toContinuousMap
@@ -290,7 +290,7 @@ lemma range_toContinuousMap :
   exact ⟨{ f with map_one' := h1, map_mul' := hmul }, rfl⟩
 
 @[to_additive]
-theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
+lemma closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
     ClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
   toEmbedding := embedding_toContinuousMap A B
   isClosed_range := by
@@ -316,7 +316,7 @@ instance : TopologicalGroup (ContinuousMonoidHom A E) :=
     continuous_inv := hi.continuous_iff.mpr (continuous_inv.comp hc) }
 
 @[to_additive]
-theorem continuous_of_continuous_uncurry {A : Type*} [TopologicalSpace A]
+lemma continuous_of_continuous_uncurry {A : Type*} [TopologicalSpace A]
     (f : A → ContinuousMonoidHom B C) (h : Continuous (Function.uncurry fun x y => f x y)) :
     Continuous f :=
   (inducing_toContinuousMap _ _).continuous_iff.mpr
@@ -325,7 +325,7 @@ theorem continuous_of_continuous_uncurry {A : Type*} [TopologicalSpace A]
 #align continuous_add_monoid_hom.continuous_of_continuous_uncurry ContinuousAddMonoidHom.continuous_of_continuous_uncurry
 
 @[to_additive]
-theorem continuous_comp [LocallyCompactSpace B] :
+lemma continuous_comp [LocallyCompactSpace B] :
     Continuous fun f : ContinuousMonoidHom A B × ContinuousMonoidHom B C => f.2.comp f.1 :=
   (inducing_toContinuousMap A C).continuous_iff.2 <|
     ContinuousMap.continuous_comp'.comp
@@ -334,7 +334,7 @@ theorem continuous_comp [LocallyCompactSpace B] :
 #align continuous_add_monoid_hom.continuous_comp ContinuousAddMonoidHom.continuous_comp
 
 @[to_additive]
-theorem continuous_comp_left (f : ContinuousMonoidHom A B) :
+lemma continuous_comp_left (f : ContinuousMonoidHom A B) :
     Continuous fun g : ContinuousMonoidHom B C => g.comp f :=
   (inducing_toContinuousMap A C).continuous_iff.2 <|
     f.toContinuousMap.continuous_comp_left.comp (inducing_toContinuousMap B C).continuous
@@ -342,7 +342,7 @@ theorem continuous_comp_left (f : ContinuousMonoidHom A B) :
 #align continuous_add_monoid_hom.continuous_comp_left ContinuousAddMonoidHom.continuous_comp_left
 
 @[to_additive]
-theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
+lemma continuous_comp_right (f : ContinuousMonoidHom B C) :
     Continuous fun g : ContinuousMonoidHom A B => f.comp g :=
   (inducing_toContinuousMap A C).continuous_iff.2 <|
     f.toContinuousMap.continuous_comp.comp (inducing_toContinuousMap A B).continuous

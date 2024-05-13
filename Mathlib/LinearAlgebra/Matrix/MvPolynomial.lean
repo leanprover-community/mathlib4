@@ -36,7 +36,7 @@ noncomputable def mvPolynomialX [CommSemiring R] : Matrix m n (MvPolynomial (m Ã
 
 -- TODO: set as an equation lemma for `mv_polynomial_X`, see mathlib4#3024
 @[simp]
-theorem mvPolynomialX_apply [CommSemiring R] (i j) :
+lemma mvPolynomialX_apply [CommSemiring R] (i j) :
     mvPolynomialX m n R i j = MvPolynomial.X (i, j) :=
   rfl
 #align matrix.mv_polynomial_X_apply Matrix.mvPolynomialX_apply

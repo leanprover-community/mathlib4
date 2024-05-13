@@ -62,7 +62,7 @@ def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R :
 
 scoped[Matrix] infixl:74 " ×₃ " => crossProduct
 
-theorem cross_apply (a b : Fin 3 → R) :
+lemma cross_apply (a b : Fin 3 → R) :
     a ×₃ b = ![a 1 * b 2 - a 2 * b 1, a 2 * b 0 - a 0 * b 2, a 0 * b 1 - a 1 * b 0] := rfl
 #align cross_apply cross_apply
 
@@ -72,7 +72,7 @@ section ProductsProperties
 -- The simpNF linter now times out on this lemma,
 -- likely due to https://github.com/leanprover/lean4/pull/3807
 @[simp, nolint simpNF]
-theorem cross_anticomm (v w : Fin 3 → R) : -(v ×₃ w) = w ×₃ v := by
+lemma cross_anticomm (v w : Fin 3 → R) : -(v ×₃ w) = w ×₃ v := by
   simp [cross_apply, mul_comm]
 #align cross_anticomm cross_anticomm
 
@@ -83,7 +83,7 @@ alias neg_cross := cross_anticomm
 -- The simpNF linter now times out on this lemma,
 -- likely due to https://github.com/leanprover/lean4/pull/3807
 @[simp, nolint simpNF]
-theorem cross_anticomm' (v w : Fin 3 → R) : v ×₃ w + w ×₃ v = 0 := by
+lemma cross_anticomm' (v w : Fin 3 → R) : v ×₃ w + w ×₃ v = 0 := by
   rw [add_eq_zero_iff_eq_neg, cross_anticomm]
 #align cross_anticomm' cross_anticomm'
 
@@ -91,7 +91,7 @@ theorem cross_anticomm' (v w : Fin 3 → R) : v ×₃ w + w ×₃ v = 0 := by
 -- The simpNF linter now times out on this lemma,
 -- likely due to https://github.com/leanprover/lean4/pull/3807
 @[simp, nolint simpNF]
-theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
+lemma cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
   simp [cross_apply, mul_comm]
 #align cross_self cross_self
 
@@ -162,7 +162,7 @@ def Cross.lieRing : LieRing (Fin 3 → R) :=
 
 attribute [local instance] Cross.lieRing
 
-theorem cross_cross (u v w : Fin 3 → R) : u ×₃ v ×₃ w = u ×₃ (v ×₃ w) - v ×₃ (u ×₃ w) :=
+lemma cross_cross (u v w : Fin 3 → R) : u ×₃ v ×₃ w = u ×₃ (v ×₃ w) - v ×₃ (u ×₃ w) :=
   lie_lie u v w
 #align cross_cross cross_cross
 

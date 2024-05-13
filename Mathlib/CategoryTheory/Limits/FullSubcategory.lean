@@ -43,12 +43,12 @@ section
 
 variable {C : Type u} [Category.{v} C] {J : Type w} [Category.{w'} J] {P : C → Prop}
 
-theorem ClosedUnderLimitsOfShape.limit (h : ClosedUnderLimitsOfShape J P) {F : J ⥤ C} [HasLimit F] :
+lemma ClosedUnderLimitsOfShape.limit (h : ClosedUnderLimitsOfShape J P) {F : J ⥤ C} [HasLimit F] :
     (∀ j, P (F.obj j)) → P (limit F) :=
   h (limit.isLimit _)
 #align category_theory.limits.closed_under_limits_of_shape.limit CategoryTheory.Limits.ClosedUnderLimitsOfShape.limit
 
-theorem ClosedUnderColimitsOfShape.colimit (h : ClosedUnderColimitsOfShape J P) {F : J ⥤ C}
+lemma ClosedUnderColimitsOfShape.colimit (h : ClosedUnderColimitsOfShape J P) {F : J ⥤ C}
     [HasColimit F] : (∀ j, P (F.obj j)) → P (colimit F) :=
   h (colimit.isColimit _)
 #align category_theory.limits.closed_under_colimits_of_shape.colimit CategoryTheory.Limits.ClosedUnderColimitsOfShape.colimit
@@ -105,7 +105,7 @@ def createsLimitsOfShapeFullSubcategoryInclusion (h : ClosedUnderLimitsOfShape J
   CreatesLimit := @fun F => createsLimitFullSubcategoryInclusionOfClosed h F
 #align category_theory.limits.creates_limits_of_shape_full_subcategory_inclusion CategoryTheory.Limits.createsLimitsOfShapeFullSubcategoryInclusion
 
-theorem hasLimit_of_closedUnderLimits (h : ClosedUnderLimitsOfShape J P)
+lemma hasLimit_of_closedUnderLimits (h : ClosedUnderLimitsOfShape J P)
     (F : J ⥤ FullSubcategory P) [HasLimit (F ⋙ fullSubcategoryInclusion P)] : HasLimit F :=
   have : CreatesLimit F (fullSubcategoryInclusion P) :=
     createsLimitFullSubcategoryInclusionOfClosed h F
@@ -113,7 +113,7 @@ theorem hasLimit_of_closedUnderLimits (h : ClosedUnderLimitsOfShape J P)
 #align category_theory.limits.has_limit_of_closed_under_limits CategoryTheory.Limits.hasLimit_of_closedUnderLimits
 @[deprecated] alias hasLimit_of_closed_under_limits := hasLimit_of_closedUnderLimits -- 2024-03-23
 
-theorem hasLimitsOfShape_of_closedUnderLimits (h : ClosedUnderLimitsOfShape J P)
+lemma hasLimitsOfShape_of_closedUnderLimits (h : ClosedUnderLimitsOfShape J P)
     [HasLimitsOfShape J C] : HasLimitsOfShape J (FullSubcategory P) :=
   { has_limit := fun F => hasLimit_of_closedUnderLimits h F }
 #align category_theory.limits.has_limits_of_shape_of_closed_under_limits CategoryTheory.Limits.hasLimitsOfShape_of_closedUnderLimits
@@ -131,7 +131,7 @@ def createsColimitsOfShapeFullSubcategoryInclusion (h : ClosedUnderColimitsOfSha
   CreatesColimit := @fun F => createsColimitFullSubcategoryInclusionOfClosed h F
 #align category_theory.limits.creates_colimits_of_shape_full_subcategory_inclusion CategoryTheory.Limits.createsColimitsOfShapeFullSubcategoryInclusion
 
-theorem hasColimit_of_closedUnderColimits (h : ClosedUnderColimitsOfShape J P)
+lemma hasColimit_of_closedUnderColimits (h : ClosedUnderColimitsOfShape J P)
     (F : J ⥤ FullSubcategory P) [HasColimit (F ⋙ fullSubcategoryInclusion P)] : HasColimit F :=
   have : CreatesColimit F (fullSubcategoryInclusion P) :=
     createsColimitFullSubcategoryInclusionOfClosed h F
@@ -140,7 +140,7 @@ theorem hasColimit_of_closedUnderColimits (h : ClosedUnderColimitsOfShape J P)
 @[deprecated] alias hasColimit_of_closed_under_colimits :=
   hasColimit_of_closedUnderColimits -- 2024-03-23
 
-theorem hasColimitsOfShape_of_closedUnderColimits (h : ClosedUnderColimitsOfShape J P)
+lemma hasColimitsOfShape_of_closedUnderColimits (h : ClosedUnderColimitsOfShape J P)
     [HasColimitsOfShape J C] : HasColimitsOfShape J (FullSubcategory P) :=
   { has_colimit := fun F => hasColimit_of_closedUnderColimits h F }
 #align category_theory.limits.has_colimits_of_shape_of_closed_under_colimits CategoryTheory.Limits.hasColimitsOfShape_of_closedUnderColimits

@@ -65,22 +65,22 @@ def classes (r : Setoid α) : Set (Set α) :=
   { s | ∃ y, s = { x | r.Rel x y } }
 #align setoid.classes Setoid.classes
 
-theorem mem_classes (r : Setoid α) (y) : { x | r.Rel x y } ∈ r.classes :=
+lemma mem_classes (r : Setoid α) (y) : { x | r.Rel x y } ∈ r.classes :=
   ⟨y, rfl⟩
 #align setoid.mem_classes Setoid.mem_classes
 
-theorem classes_ker_subset_fiber_set {β : Type*} (f : α → β) :
+lemma classes_ker_subset_fiber_set {β : Type*} (f : α → β) :
     (Setoid.ker f).classes ⊆ Set.range fun y => { x | f x = y } := by
   rintro s ⟨x, rfl⟩
   rw [Set.mem_range]
   exact ⟨f x, rfl⟩
 #align setoid.classes_ker_subset_fiber_set Setoid.classes_ker_subset_fiber_set
 
-theorem finite_classes_ker {α β : Type*} [Finite β] (f : α → β) : (Setoid.ker f).classes.Finite :=
+lemma finite_classes_ker {α β : Type*} [Finite β] (f : α → β) : (Setoid.ker f).classes.Finite :=
   (Set.finite_range _).subset <| classes_ker_subset_fiber_set f
 #align setoid.finite_classes_ker Setoid.finite_classes_ker
 
-theorem card_classes_ker_le {α β : Type*} [Fintype β] (f : α → β)
+lemma card_classes_ker_le {α β : Type*} [Fintype β] (f : α → β)
     [Fintype (Setoid.ker f).classes] : Fintype.card (Setoid.ker f).classes ≤ Fintype.card β := by
   classical exact
       le_trans (Set.card_le_card (classes_ker_subset_fiber_set f)) (Fintype.card_range_le _)
@@ -92,7 +92,7 @@ theorem eq_iff_classes_eq {r₁ r₂ : Setoid α} :
   ⟨fun h _x => h ▸ rfl, fun h => ext' fun x => Set.ext_iff.1 <| h x⟩
 #align setoid.eq_iff_classes_eq Setoid.eq_iff_classes_eq
 
-theorem rel_iff_exists_classes (r : Setoid α) {x y} : r.Rel x y ↔ ∃ c ∈ r.classes, x ∈ c ∧ y ∈ c :=
+lemma rel_iff_exists_classes (r : Setoid α) {x y} : r.Rel x y ↔ ∃ c ∈ r.classes, x ∈ c ∧ y ∈ c :=
   ⟨fun h => ⟨_, r.mem_classes y, h, r.refl' y⟩, fun ⟨c, ⟨z, hz⟩, hx, hy⟩ => by
     subst c
     exact r.trans' hx (r.symm' hy)⟩
@@ -142,7 +142,7 @@ theorem eqv_class_mem {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b) {y} 
   (H y).elim fun _ hc _ => eq_eqv_class_of_mem H hc.1 hc.2 ▸ hc.1
 #align setoid.eqv_class_mem Setoid.eqv_class_mem
 
-theorem eqv_class_mem' {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b) {x} :
+lemma eqv_class_mem' {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b) {x} :
     { y : α | (mkClasses c H).Rel x y } ∈ c := by
   convert @Setoid.eqv_class_mem _ _ H x using 3
   rw [Setoid.comm']
@@ -177,7 +177,7 @@ theorem mkClasses_classes (r : Setoid α) : mkClasses r.classes classes_eqv_clas
 #align setoid.mk_classes_classes Setoid.mkClasses_classes
 
 @[simp]
-theorem sUnion_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
+lemma sUnion_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
   Set.eq_univ_of_forall fun x => Set.mem_sUnion.2 ⟨{ y | r.Rel y x }, ⟨x, rfl⟩, Setoid.refl _⟩
 #align setoid.sUnion_classes Setoid.sUnion_classes
 
@@ -221,16 +221,16 @@ theorem nonempty_of_mem_partition {c : Set (Set α)} (hc : IsPartition c) {s} (h
   Set.nonempty_iff_ne_empty.2 fun hs0 => hc.1 <| hs0 ▸ h
 #align setoid.nonempty_of_mem_partition Setoid.nonempty_of_mem_partition
 
-theorem isPartition_classes (r : Setoid α) : IsPartition r.classes :=
+lemma isPartition_classes (r : Setoid α) : IsPartition r.classes :=
   ⟨empty_not_mem_classes, classes_eqv_classes⟩
 #align setoid.is_partition_classes Setoid.isPartition_classes
 
-theorem IsPartition.pairwiseDisjoint {c : Set (Set α)} (hc : IsPartition c) :
+lemma IsPartition.pairwiseDisjoint {c : Set (Set α)} (hc : IsPartition c) :
     c.PairwiseDisjoint id :=
   eqv_classes_disjoint hc.2
 #align setoid.is_partition.pairwise_disjoint Setoid.IsPartition.pairwiseDisjoint
 
-theorem IsPartition.sUnion_eq_univ {c : Set (Set α)} (hc : IsPartition c) : ⋃₀ c = Set.univ :=
+lemma IsPartition.sUnion_eq_univ {c : Set (Set α)} (hc : IsPartition c) : ⋃₀ c = Set.univ :=
   Set.eq_univ_of_forall fun x =>
     Set.mem_sUnion.2 <|
       let ⟨t, ht⟩ := hc.2 x
@@ -374,24 +374,24 @@ instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι =>
 -- Porting note: `simpNF` complains about `mem_index`
 attribute [simp] some_mem --mem_index
 
-theorem exists_mem (x : α) : ∃ i, x ∈ s i :=
+lemma exists_mem (x : α) : ∃ i, x ∈ s i :=
   ⟨hs.index x, hs.mem_index x⟩
 #align indexed_partition.exists_mem IndexedPartition.exists_mem
 
-theorem iUnion : ⋃ i, s i = univ := by
+lemma iUnion : ⋃ i, s i = univ := by
   ext x
   simp [hs.exists_mem x]
 #align indexed_partition.Union IndexedPartition.iUnion
 
-theorem disjoint : Pairwise fun i j => Disjoint (s i) (s j) := fun {_i _j} h =>
+lemma disjoint : Pairwise fun i j => Disjoint (s i) (s j) := fun {_i _j} h =>
   disjoint_left.mpr fun {_x} hxi hxj => h (hs.eq_of_mem hxi hxj)
 #align indexed_partition.disjoint IndexedPartition.disjoint
 
-theorem mem_iff_index_eq {x i} : x ∈ s i ↔ hs.index x = i :=
+lemma mem_iff_index_eq {x i} : x ∈ s i ↔ hs.index x = i :=
   ⟨fun hxi => (hs.eq_of_mem hxi (hs.mem_index x)).symm, fun h => h ▸ hs.mem_index _⟩
 #align indexed_partition.mem_iff_index_eq IndexedPartition.mem_iff_index_eq
 
-theorem eq (i) : s i = { x | hs.index x = i } :=
+lemma eq (i) : s i = { x | hs.index x = i } :=
   Set.ext fun _ => hs.mem_iff_index_eq
 #align indexed_partition.eq IndexedPartition.eq
 
@@ -402,11 +402,11 @@ protected abbrev setoid (hs : IndexedPartition s) : Setoid α :=
 #align indexed_partition.setoid IndexedPartition.setoid
 
 @[simp]
-theorem index_some (i : ι) : hs.index (hs.some i) = i :=
+lemma index_some (i : ι) : hs.index (hs.some i) = i :=
   (mem_iff_index_eq _).1 <| hs.some_mem i
 #align indexed_partition.index_some IndexedPartition.index_some
 
-theorem some_index (x : α) : hs.setoid.Rel (hs.some (hs.index x)) x :=
+lemma some_index (x : α) : hs.setoid.Rel (hs.some (hs.index x)) x :=
   hs.index_some (hs.index x)
 #align indexed_partition.some_index IndexedPartition.some_index
 
@@ -423,12 +423,12 @@ def proj : α → hs.Quotient :=
 instance [Inhabited α] : Inhabited hs.Quotient :=
   ⟨hs.proj default⟩
 
-theorem proj_eq_iff {x y : α} : hs.proj x = hs.proj y ↔ hs.index x = hs.index y :=
+lemma proj_eq_iff {x y : α} : hs.proj x = hs.proj y ↔ hs.index x = hs.index y :=
   Quotient.eq_rel
 #align indexed_partition.proj_eq_iff IndexedPartition.proj_eq_iff
 
 @[simp]
-theorem proj_some_index (x : α) : hs.proj (hs.some (hs.index x)) = hs.proj x :=
+lemma proj_some_index (x : α) : hs.proj (hs.some (hs.index x)) = hs.proj x :=
   Quotient.eq''.2 (hs.some_index x)
 #align indexed_partition.proj_some_index IndexedPartition.proj_some_index
 
@@ -439,16 +439,16 @@ def equivQuotient : ι ≃ hs.Quotient :=
 #align indexed_partition.equiv_quotient IndexedPartition.equivQuotient
 
 @[simp]
-theorem equivQuotient_index_apply (x : α) : hs.equivQuotient (hs.index x) = hs.proj x :=
+lemma equivQuotient_index_apply (x : α) : hs.equivQuotient (hs.index x) = hs.proj x :=
   hs.proj_eq_iff.mpr (some_index hs x)
 #align indexed_partition.equiv_quotient_index_apply IndexedPartition.equivQuotient_index_apply
 
 @[simp]
-theorem equivQuotient_symm_proj_apply (x : α) : hs.equivQuotient.symm (hs.proj x) = hs.index x :=
+lemma equivQuotient_symm_proj_apply (x : α) : hs.equivQuotient.symm (hs.proj x) = hs.index x :=
   rfl
 #align indexed_partition.equiv_quotient_symm_proj_apply IndexedPartition.equivQuotient_symm_proj_apply
 
-theorem equivQuotient_index : hs.equivQuotient ∘ hs.index = hs.proj :=
+lemma equivQuotient_index : hs.equivQuotient ∘ hs.index = hs.proj :=
   funext hs.equivQuotient_index_apply
 #align indexed_partition.equiv_quotient_index IndexedPartition.equivQuotient_index
 
@@ -475,11 +475,11 @@ theorem proj_out (x : hs.Quotient) : hs.proj (hs.out x) = x :=
   Quotient.inductionOn' x fun x => Quotient.sound' <| hs.some_index x
 #align indexed_partition.proj_out IndexedPartition.proj_out
 
-theorem class_of {x : α} : setOf (hs.setoid.Rel x) = s (hs.index x) :=
+lemma class_of {x : α} : setOf (hs.setoid.Rel x) = s (hs.index x) :=
   Set.ext fun _y => eq_comm.trans hs.mem_iff_index_eq.symm
 #align indexed_partition.class_of IndexedPartition.class_of
 
-theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.symm x) :=
+lemma proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.symm x) :=
   Quotient.inductionOn' x fun x => by
     ext y
     simp only [Set.mem_preimage, Set.mem_singleton_iff, hs.mem_iff_index_eq]

@@ -141,7 +141,7 @@ theorem convexIndependent_iff_not_mem_convexHull_diff {p : ι → E} :
     exact hi
 #align convex_independent_iff_not_mem_convex_hull_diff convexIndependent_iff_not_mem_convexHull_diff
 
-theorem convexIndependent_set_iff_inter_convexHull_subset {s : Set E} :
+lemma convexIndependent_set_iff_inter_convexHull_subset {s : Set E} :
     ConvexIndependent 𝕜 ((↑) : s → E) ↔ ∀ t, t ⊆ s → s ∩ convexHull 𝕜 t ⊆ t := by
   constructor
   · rintro hc t h x ⟨hxs, hxt⟩
@@ -198,7 +198,7 @@ theorem convexIndependent_iff_finset {p : ι → E} :
 /-! ### Extreme points -/
 
 
-theorem Convex.convexIndependent_extremePoints (hs : Convex 𝕜 s) :
+lemma Convex.convexIndependent_extremePoints (hs : Convex 𝕜 s) :
     ConvexIndependent 𝕜 ((↑) : s.extremePoints 𝕜 → E) :=
   convexIndependent_set_iff_not_mem_convexHull_diff.2 fun _ hx h =>
     (extremePoints_convexHull_subset

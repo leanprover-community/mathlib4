@@ -37,14 +37,14 @@ protected instance instMul {G : Type*} [Mul G] [TopologicalSpace G] [ChartedSpac
 #align smooth_map.has_add SmoothMap.instAdd
 
 @[to_additive (attr := simp)]
-theorem coe_mul {G : Type*} [Mul G] [TopologicalSpace G] [ChartedSpace H' G] [SmoothMul I' G]
+lemma coe_mul {G : Type*} [Mul G] [TopologicalSpace G] [ChartedSpace H' G] [SmoothMul I' G]
     (f g : C^∞⟮I, N; I', G⟯) : ⇑(f * g) = f * g :=
   rfl
 #align smooth_map.coe_mul SmoothMap.coe_mul
 #align smooth_map.coe_add SmoothMap.coe_add
 
 @[to_additive (attr := simp)]
-theorem mul_comp {G : Type*} [Mul G] [TopologicalSpace G] [ChartedSpace H' G] [SmoothMul I' G]
+lemma mul_comp {G : Type*} [Mul G] [TopologicalSpace G] [ChartedSpace H' G] [SmoothMul I' G]
     (f g : C^∞⟮I'', N'; I', G⟯) (h : C^∞⟮I, N; I'', N'⟯) : (f * g).comp h = f.comp h * g.comp h :=
   rfl
 #align smooth_map.mul_comp SmoothMap.mul_comp
@@ -58,7 +58,7 @@ protected instance instOne {G : Type*} [One G] [TopologicalSpace G] [ChartedSpac
 #align smooth_map.has_zero SmoothMap.instZero
 
 @[to_additive (attr := simp)]
-theorem coe_one {G : Type*} [One G] [TopologicalSpace G] [ChartedSpace H' G] :
+lemma coe_one {G : Type*} [One G] [TopologicalSpace G] [ChartedSpace H' G] :
     ⇑(1 : C^∞⟮I, N; I', G⟯) = 1 :=
   rfl
 #align smooth_map.coe_one SmoothMap.coe_one
@@ -74,7 +74,7 @@ instance instPow {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
   pow f n := ⟨(f : N → G) ^ n, (smooth_pow n).comp f.smooth⟩
 
 @[to_additive (attr := simp)]
-theorem coe_pow {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G] [SmoothMul I' G]
+lemma coe_pow {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G] [SmoothMul I' G]
     (f : C^∞⟮I, N; I', G⟯) (n : ℕ) :
     ⇑(f ^ n) = (f : N → G) ^ n :=
   rfl
@@ -166,14 +166,14 @@ instance group {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [L
 #align smooth_map.add_group SmoothMap.addGroup
 
 @[to_additive (attr := simp)]
-theorem coe_inv {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' G]
+lemma coe_inv {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' G]
     (f : C^∞⟮I, N; I', G⟯) : ⇑f⁻¹ = (⇑f)⁻¹ :=
   rfl
 #align smooth_map.coe_inv SmoothMap.coe_inv
 #align smooth_map.coe_neg SmoothMap.coe_neg
 
 @[to_additive (attr := simp)]
-theorem coe_div {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' G]
+lemma coe_div {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' G]
     (f g : C^∞⟮I, N; I', G⟯) : ⇑(f / g) = f / g :=
   rfl
 #align smooth_map.coe_div SmoothMap.coe_div
@@ -275,13 +275,13 @@ instance instSMul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
 #align smooth_map.has_smul SmoothMap.instSMul
 
 @[simp]
-theorem coe_smul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
+lemma coe_smul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
     (f : C^∞⟮I, N; 𝓘(𝕜, V), V⟯) : ⇑(r • f) = r • ⇑f :=
   rfl
 #align smooth_map.coe_smul SmoothMap.coe_smul
 
 @[simp]
-theorem smul_comp {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
+lemma smul_comp {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
     (g : C^∞⟮I'', N'; 𝓘(𝕜, V), V⟯) (h : C^∞⟮I, N; I'', N'⟯) : (r • g).comp h = r • g.comp h :=
   rfl
 #align smooth_map.smul_comp SmoothMap.smul_comp
@@ -361,7 +361,7 @@ instance instSMul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
 #align smooth_map.has_smul' SmoothMap.instSMul'
 
 @[simp]
-theorem smul_comp' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (f : C^∞⟮I'', N'; 𝕜⟯)
+lemma smul_comp' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (f : C^∞⟮I'', N'; 𝕜⟯)
     (g : C^∞⟮I'', N'; 𝓘(𝕜, V), V⟯) (h : C^∞⟮I, N; I'', N'⟯) :
     (f • g).comp h = f.comp h • g.comp h :=
   rfl

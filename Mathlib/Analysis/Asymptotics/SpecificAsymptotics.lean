@@ -39,28 +39,28 @@ section LinearOrderedField
 
 variable {𝕜 : Type*} [LinearOrderedField 𝕜]
 
-theorem pow_div_pow_eventuallyEq_atTop {p q : ℕ} :
+lemma pow_div_pow_eventuallyEq_atTop {p q : ℕ} :
     (fun x : 𝕜 => x ^ p / x ^ q) =ᶠ[atTop] fun x => x ^ ((p : ℤ) - q) := by
   apply (eventually_gt_atTop (0 : 𝕜)).mono fun x hx => _
   intro x hx
   simp [zpow_sub₀ hx.ne']
 #align pow_div_pow_eventually_eq_at_top pow_div_pow_eventuallyEq_atTop
 
-theorem pow_div_pow_eventuallyEq_atBot {p q : ℕ} :
+lemma pow_div_pow_eventuallyEq_atBot {p q : ℕ} :
     (fun x : 𝕜 => x ^ p / x ^ q) =ᶠ[atBot] fun x => x ^ ((p : ℤ) - q) := by
   apply (eventually_lt_atBot (0 : 𝕜)).mono fun x hx => _
   intro x hx
   simp [zpow_sub₀ hx.ne]
 #align pow_div_pow_eventually_eq_at_bot pow_div_pow_eventuallyEq_atBot
 
-theorem tendsto_pow_div_pow_atTop_atTop {p q : ℕ} (hpq : q < p) :
+lemma tendsto_pow_div_pow_atTop_atTop {p q : ℕ} (hpq : q < p) :
     Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop atTop := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_atTop
   omega
 #align tendsto_pow_div_pow_at_top_at_top tendsto_pow_div_pow_atTop_atTop
 
-theorem tendsto_pow_div_pow_atTop_zero [TopologicalSpace 𝕜] [OrderTopology 𝕜] {p q : ℕ}
+lemma tendsto_pow_div_pow_atTop_zero [TopologicalSpace 𝕜] [OrderTopology 𝕜] {p q : ℕ}
     (hpq : p < q) : Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop (𝓝 0) := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_zero
@@ -73,13 +73,13 @@ section NormedLinearOrderedField
 
 variable {𝕜 : Type*} [NormedLinearOrderedField 𝕜]
 
-theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
+lemma Asymptotics.isLittleO_pow_pow_atTop_of_lt [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
     (fun x : 𝕜 => x ^ p) =o[atTop] fun x => x ^ q := by
   refine' (isLittleO_iff_tendsto' _).mpr (tendsto_pow_div_pow_atTop_zero hpq)
   exact (eventually_gt_atTop 0).mono fun x hx hxq => (pow_ne_zero q hx.ne' hxq).elim
 #align asymptotics.is_o_pow_pow_at_top_of_lt Asymptotics.isLittleO_pow_pow_atTop_of_lt
 
-theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → 𝕜} {l : Filter α}
+lemma Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → 𝕜} {l : Filter α}
     (huv : u =O[l] v) (hu : Tendsto (fun x => ‖u x‖) l atTop) :
     Tendsto (fun x => ‖v x‖) l atTop := by
   rcases huv.exists_pos with ⟨c, hc, hcuv⟩
@@ -97,7 +97,7 @@ open BigOperators
 
 open Finset
 
-theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f : ℕ → α} {g : ℕ → ℝ}
+lemma Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f : ℕ → α} {g : ℕ → ℝ}
     (h : f =o[atTop] g) (hg : 0 ≤ g) (h'g : Tendsto (fun n => ∑ i in range n, g i) atTop atTop) :
     (fun n => ∑ i in range n, f i) =o[atTop] fun n => ∑ i in range n, g i := by
   have A : ∀ i, ‖g i‖ = g i := fun i => Real.norm_of_nonneg (hg i)
@@ -130,7 +130,7 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
       ring
 #align asymptotics.is_o.sum_range Asymptotics.IsLittleO.sum_range
 
-theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddCommGroup α]
+lemma Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddCommGroup α]
     {f : ℕ → α} (h : Tendsto f atTop (𝓝 0)) :
     (fun n => ∑ i in range n, f i) =o[atTop] fun n => (n : ℝ) := by
   have := ((isLittleO_one_iff ℝ).2 h).sum_range fun i => zero_le_one

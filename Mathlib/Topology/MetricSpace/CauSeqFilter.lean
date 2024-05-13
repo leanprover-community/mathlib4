@@ -25,7 +25,7 @@ open Topology
 
 variable {β : Type v}
 
-theorem CauSeq.tendsto_limit [NormedRing β] [hn : IsAbsoluteValue (norm : β → ℝ)]
+lemma CauSeq.tendsto_limit [NormedRing β] [hn : IsAbsoluteValue (norm : β → ℝ)]
     (f : CauSeq β norm) [CauSeq.IsComplete β norm] : Tendsto f atTop (𝓝 f.lim) :=
   tendsto_nhds.mpr
     (by
@@ -52,7 +52,7 @@ variable [NormedField β]
 -/
 open Metric
 
-theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f := by
+lemma CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f := by
   cases' cauchy_iff.1 hf with hf1 hf2
   intro ε hε
   rcases hf2 { x | dist x.1 x.2 < ε } (dist_mem_uniformity hε) with ⟨t, ⟨ht, htsub⟩⟩
@@ -64,7 +64,7 @@ theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f
   apply Set.mk_mem_prod <;> solve_by_elim [le_refl]
 #align cauchy_seq.is_cau_seq CauchySeq.isCauSeq
 
-theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
+lemma CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
   refine' cauchy_iff.2 ⟨by infer_instance, fun s hs => _⟩
   rcases mem_uniformity_dist.1 hs with ⟨ε, ⟨hε, hεs⟩⟩
   cases' CauSeq.cauchy₂ f hε with N hN

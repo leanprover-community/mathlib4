@@ -72,28 +72,28 @@ nilradical if `p > 1` (`pNilradical_eq_nilradical`), and defined to be the zero 
 `x ^ p ^ n = 0` for some `n` (`mem_pNilradical`). -/
 def pNilradical (R : Type*) [CommSemiring R] (p : ℕ) : Ideal R := if 1 < p then nilradical R else ⊥
 
-theorem pNilradical_le_nilradical {R : Type*} [CommSemiring R] {p : ℕ} :
+lemma pNilradical_le_nilradical {R : Type*} [CommSemiring R] {p : ℕ} :
     pNilradical R p ≤ nilradical R := by
   by_cases hp : 1 < p
   · rw [pNilradical, if_pos hp]
   simp_rw [pNilradical, if_neg hp, bot_le]
 
-theorem pNilradical_eq_nilradical {R : Type*} [CommSemiring R] {p : ℕ} (hp : 1 < p) :
+lemma pNilradical_eq_nilradical {R : Type*} [CommSemiring R] {p : ℕ} (hp : 1 < p) :
     pNilradical R p = nilradical R := by rw [pNilradical, if_pos hp]
 
-theorem pNilradical_eq_bot {R : Type*} [CommSemiring R] {p : ℕ} (hp : ¬ 1 < p) :
+lemma pNilradical_eq_bot {R : Type*} [CommSemiring R] {p : ℕ} (hp : ¬ 1 < p) :
     pNilradical R p = ⊥ := by rw [pNilradical, if_neg hp]
 
-theorem pNilradical_eq_bot' {R : Type*} [CommSemiring R] {p : ℕ} (hp : p ≤ 1) :
+lemma pNilradical_eq_bot' {R : Type*} [CommSemiring R] {p : ℕ} (hp : p ≤ 1) :
     pNilradical R p = ⊥ := pNilradical_eq_bot (not_lt.2 hp)
 
-theorem pNilradical_prime {R : Type*} [CommSemiring R] {p : ℕ} (hp : p.Prime) :
+lemma pNilradical_prime {R : Type*} [CommSemiring R] {p : ℕ} (hp : p.Prime) :
     pNilradical R p = nilradical R := pNilradical_eq_nilradical hp.one_lt
 
-theorem pNilradical_one {R : Type*} [CommSemiring R] :
+lemma pNilradical_one {R : Type*} [CommSemiring R] :
     pNilradical R 1 = ⊥ := pNilradical_eq_bot' rfl.le
 
-theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
+lemma mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
     x ∈ pNilradical R p ↔ ∃ n : ℕ, x ^ p ^ n = 0 := by
   by_cases hp : 1 < p
   · rw [pNilradical_eq_nilradical hp]
@@ -109,20 +109,20 @@ theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
     exact Subsingleton.elim _ _
   rwa [hp, one_pow, pow_one] at h
 
-theorem sub_mem_pNilradical_iff_pow_expChar_pow_eq {R : Type*} [CommRing R] {p : ℕ} [ExpChar R p]
+lemma sub_mem_pNilradical_iff_pow_expChar_pow_eq {R : Type*} [CommRing R] {p : ℕ} [ExpChar R p]
     {x y : R} : x - y ∈ pNilradical R p ↔ ∃ n : ℕ, x ^ p ^ n = y ^ p ^ n := by
   simp_rw [mem_pNilradical, sub_pow_expChar_pow, sub_eq_zero]
 
-theorem pow_expChar_pow_inj_of_pNilradical_eq_bot (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+lemma pow_expChar_pow_inj_of_pNilradical_eq_bot (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
     (h : pNilradical R p = ⊥) (n : ℕ) : Function.Injective fun x : R ↦ x ^ p ^ n := fun _ _ H ↦
   sub_eq_zero.1 <| Ideal.mem_bot.1 <| h ▸ sub_mem_pNilradical_iff_pow_expChar_pow_eq.2 ⟨n, H⟩
 
-theorem pNilradical_eq_bot_of_frobenius_inj (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+lemma pNilradical_eq_bot_of_frobenius_inj (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
     (h : Function.Injective (frobenius R p)) : pNilradical R p = ⊥ := bot_unique fun x ↦ by
   rw [mem_pNilradical, Ideal.mem_bot]
   exact fun ⟨n, _⟩ ↦ h.iterate n (by rwa [← coe_iterateFrobenius, map_zero])
 
-theorem PerfectRing.pNilradical_eq_bot (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+lemma PerfectRing.pNilradical_eq_bot (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
     [PerfectRing R p] : pNilradical R p = ⊥ :=
   pNilradical_eq_bot_of_frobenius_inj R p (injective_frobenius R p)
 
@@ -148,13 +148,13 @@ class IsPRadical : Prop where
   pow_mem' : ∀ x : L, ∃ (n : ℕ) (y : K), i y = x ^ p ^ n
   ker_le' : RingHom.ker i ≤ pNilradical K p
 
-theorem IsPRadical.pow_mem [IsPRadical i p] (x : L) :
+lemma IsPRadical.pow_mem [IsPRadical i p] (x : L) :
     ∃ (n : ℕ) (y : K), i y = x ^ p ^ n := pow_mem' x
 
-theorem IsPRadical.ker_le [IsPRadical i p] :
+lemma IsPRadical.ker_le [IsPRadical i p] :
     RingHom.ker i ≤ pNilradical K p := ker_le'
 
-theorem IsPRadical.comap_pNilradical [IsPRadical i p] :
+lemma IsPRadical.comap_pNilradical [IsPRadical i p] :
     (pNilradical L p).comap i = pNilradical K p := by
   refine le_antisymm (fun x h ↦ mem_pNilradical.2 ?_) (fun x h ↦ ?_)
   · obtain ⟨n, h⟩ := mem_pNilradical.1 <| Ideal.mem_comap.1 h
@@ -200,7 +200,7 @@ theorem RingHom.pNilradical_le_ker_of_perfectRing [PerfectRing L p] :
   rwa [map_pow, ← iterateFrobenius_def, ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply,
     map_zero, map_zero] at h
 
-theorem IsPerfectClosure.ker_eq [PerfectRing L p] [IsPerfectClosure i p] :
+lemma IsPerfectClosure.ker_eq [PerfectRing L p] [IsPerfectClosure i p] :
     RingHom.ker i = pNilradical K p :=
   IsPRadical.ker_le'.antisymm (i.pNilradical_le_ker_of_perfectRing p)
 
@@ -211,7 +211,7 @@ namespace PerfectRing
 
 variable [PerfectRing M p] [IsPRadical i p]
 
-theorem lift_aux (x : L) : ∃ y : ℕ × K, i y.2 = x ^ p ^ y.1 := by
+lemma lift_aux (x : L) : ∃ y : ℕ × K, i y.2 = x ^ p ^ y.1 := by
   obtain ⟨n, y, h⟩ := IsPRadical.pow_mem i p x
   exact ⟨(n, y), h⟩
 
@@ -223,21 +223,21 @@ def liftAux (x : L) : M := (iterateFrobeniusEquiv M p (Classical.choose (lift_au
   (j (Classical.choose (lift_aux i p x)).2)
 
 @[simp]
-theorem liftAux_self_apply [PerfectRing L p] (x : L) : liftAux i i p x = x := by
+lemma liftAux_self_apply [PerfectRing L p] (x : L) : liftAux i i p x = x := by
   rw [liftAux, Classical.choose_spec (lift_aux i p x), ← iterateFrobenius_def,
     ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply]
 
 @[simp]
-theorem liftAux_self [PerfectRing L p] : liftAux i i p = id := funext (liftAux_self_apply i p)
+lemma liftAux_self [PerfectRing L p] : liftAux i i p = id := funext (liftAux_self_apply i p)
 
 @[simp]
-theorem liftAux_id_apply (x : K) : liftAux (RingHom.id K) j p x = j x := by
+lemma liftAux_id_apply (x : K) : liftAux (RingHom.id K) j p x = j x := by
   have := RingHom.id_apply _ ▸ Classical.choose_spec (lift_aux (RingHom.id K) p x)
   rw [liftAux, this, map_pow, ← iterateFrobenius_def, ← iterateFrobeniusEquiv_apply,
     RingEquiv.symm_apply_apply]
 
 @[simp]
-theorem liftAux_id : liftAux (RingHom.id K) j p = j := funext (liftAux_id_apply j p)
+lemma liftAux_id : liftAux (RingHom.id K) j p = j := funext (liftAux_id_apply j p)
 
 end PerfectRing
 
@@ -333,33 +333,33 @@ def lift : L →+* M where
     rw [RingEquiv.symm_apply_apply, add_comm n1, iterateFrobeniusEquiv_symm_add_apply,
       ← iterateFrobeniusEquiv_def, RingEquiv.symm_apply_apply]
 
-theorem lift_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
+lemma lift_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
     lift i j p x = (iterateFrobeniusEquiv M p n).symm (j y) :=
   liftAux_apply i j p _ _ _ h
 
 @[simp]
-theorem lift_comp_apply (x : K) : lift i j p (i x) = j x := by
+lemma lift_comp_apply (x : K) : lift i j p (i x) = j x := by
   rw [lift_apply i j p _ 0 x (by rw [pow_zero, pow_one]), iterateFrobeniusEquiv_zero]; rfl
 
 @[simp]
-theorem lift_comp : (lift i j p).comp i = j := RingHom.ext (lift_comp_apply i j p)
+lemma lift_comp : (lift i j p).comp i = j := RingHom.ext (lift_comp_apply i j p)
 
-theorem lift_self_apply [PerfectRing L p] (x : L) : lift i i p x = x := liftAux_self_apply i p x
+lemma lift_self_apply [PerfectRing L p] (x : L) : lift i i p x = x := liftAux_self_apply i p x
 
 @[simp]
-theorem lift_self [PerfectRing L p] : lift i i p = RingHom.id L :=
+lemma lift_self [PerfectRing L p] : lift i i p = RingHom.id L :=
   RingHom.ext (liftAux_self_apply i p)
 
-theorem lift_id_apply (x : K) : lift (RingHom.id K) j p x = j x := liftAux_id_apply j p x
+lemma lift_id_apply (x : K) : lift (RingHom.id K) j p x = j x := liftAux_id_apply j p x
 
 @[simp]
-theorem lift_id : lift (RingHom.id K) j p = j := RingHom.ext (liftAux_id_apply j p)
+lemma lift_id : lift (RingHom.id K) j p = j := RingHom.ext (liftAux_id_apply j p)
 
 @[simp]
-theorem comp_lift : lift i (f.comp i) p = f :=
+lemma comp_lift : lift i (f.comp i) p = f :=
   IsPRadical.injective_comp_of_perfect _ i p (lift_comp i _ p)
 
-theorem comp_lift_apply (x : L) : lift i (f.comp i) p x = f x := congr($(comp_lift i f p) x)
+lemma comp_lift_apply (x : L) : lift i (f.comp i) p x = f x := congr($(comp_lift i f p) x)
 
 variable (M) in
 /-- If `i : K →+* L` is a homomorphisms of characteristic `p` rings, such that
@@ -372,15 +372,15 @@ def liftEquiv : (K →+* M) ≃ (L →+* M) where
   left_inv f := lift_comp i f p
   right_inv f := comp_lift i f p
 
-theorem liftEquiv_apply : liftEquiv M i p j = lift i j p := rfl
+lemma liftEquiv_apply : liftEquiv M i p j = lift i j p := rfl
 
-theorem liftEquiv_symm_apply : (liftEquiv M i p).symm f = f.comp i := rfl
+lemma liftEquiv_symm_apply : (liftEquiv M i p).symm f = f.comp i := rfl
 
-theorem liftEquiv_id_apply : liftEquiv M (RingHom.id K) p j = j :=
+lemma liftEquiv_id_apply : liftEquiv M (RingHom.id K) p j = j :=
   lift_id j p
 
 @[simp]
-theorem liftEquiv_id : liftEquiv M (RingHom.id K) p = Equiv.refl _ :=
+lemma liftEquiv_id : liftEquiv M (RingHom.id K) p = Equiv.refl _ :=
   Equiv.ext (liftEquiv_id_apply · p)
 
 section comp
@@ -388,18 +388,18 @@ section comp
 variable [PerfectRing N p] [IsPRadical j p]
 
 @[simp]
-theorem lift_comp_lift : (lift j k p).comp (lift i j p) = lift i k p :=
+lemma lift_comp_lift : (lift j k p).comp (lift i j p) = lift i k p :=
   IsPRadical.injective_comp_of_perfect _ i p (by ext; simp)
 
 @[simp]
-theorem lift_comp_lift_apply (x : L) : lift j k p (lift i j p x) = lift i k p x :=
+lemma lift_comp_lift_apply (x : L) : lift j k p (lift i j p x) = lift i k p x :=
   congr($(lift_comp_lift i j k p) x)
 
-theorem lift_comp_lift_apply_eq_self [PerfectRing L p] (x : L) :
+lemma lift_comp_lift_apply_eq_self [PerfectRing L p] (x : L) :
     lift j i p (lift i j p x) = x := by
   rw [lift_comp_lift_apply, lift_self_apply]
 
-theorem lift_comp_lift_eq_id [PerfectRing L p] :
+lemma lift_comp_lift_eq_id [PerfectRing L p] :
     (lift j i p).comp (lift i j p) = RingHom.id L :=
   RingHom.ext (lift_comp_lift_apply_eq_self i j p)
 
@@ -410,19 +410,19 @@ section liftEquiv_comp
 variable [IsPRadical g p] [IsPRadical (g.comp i) p]
 
 @[simp]
-theorem lift_lift : lift g (lift i j p) p = lift (g.comp i) j p := by
+lemma lift_lift : lift g (lift i j p) p = lift (g.comp i) j p := by
   refine IsPRadical.injective_comp_of_perfect _ (g.comp i) p ?_
   simp_rw [← RingHom.comp_assoc _ _ (lift g _ p), lift_comp]
 
-theorem lift_lift_apply (x : N) : lift g (lift i j p) p x = lift (g.comp i) j p x :=
+lemma lift_lift_apply (x : N) : lift g (lift i j p) p x = lift (g.comp i) j p x :=
   congr($(lift_lift i j g p) x)
 
 @[simp]
-theorem liftEquiv_comp_apply :
+lemma liftEquiv_comp_apply :
     liftEquiv M g p (liftEquiv M i p j) = liftEquiv M (g.comp i) p j := lift_lift i j g p
 
 @[simp]
-theorem liftEquiv_trans :
+lemma liftEquiv_trans :
     (liftEquiv M i p).trans (liftEquiv M g p) = liftEquiv M (g.comp i) p :=
   Equiv.ext (liftEquiv_comp_apply i · g p)
 
@@ -442,35 +442,35 @@ def equiv : L ≃+* M where
   left_inv := PerfectRing.lift_comp_lift_apply_eq_self i j p
   right_inv := PerfectRing.lift_comp_lift_apply_eq_self j i p
 
-theorem equiv_toRingHom : (equiv i j p).toRingHom = PerfectRing.lift i j p := rfl
+lemma equiv_toRingHom : (equiv i j p).toRingHom = PerfectRing.lift i j p := rfl
 
 @[simp]
-theorem equiv_symm : (equiv i j p).symm = equiv j i p := rfl
+lemma equiv_symm : (equiv i j p).symm = equiv j i p := rfl
 
-theorem equiv_symm_toRingHom :
+lemma equiv_symm_toRingHom :
     (equiv i j p).symm.toRingHom = PerfectRing.lift j i p := rfl
 
-theorem equiv_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
+lemma equiv_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
     equiv i j p x = (iterateFrobeniusEquiv M p n).symm (j y) :=
   PerfectRing.liftAux_apply i j p _ _ _ h
 
-theorem equiv_symm_apply (x : M) (n : ℕ) (y : K) (h : j y = x ^ p ^ n) :
+lemma equiv_symm_apply (x : M) (n : ℕ) (y : K) (h : j y = x ^ p ^ n) :
     (equiv i j p).symm x = (iterateFrobeniusEquiv L p n).symm (i y) := by
   rw [equiv_symm, equiv_apply j i p _ _ _ h]
 
-theorem equiv_self_apply (x : L) : equiv i i p x = x :=
+lemma equiv_self_apply (x : L) : equiv i i p x = x :=
   PerfectRing.liftAux_self_apply i p x
 
 @[simp]
-theorem equiv_self : equiv i i p = RingEquiv.refl L :=
+lemma equiv_self : equiv i i p = RingEquiv.refl L :=
   RingEquiv.ext (equiv_self_apply i p)
 
 @[simp]
-theorem equiv_comp_apply (x : K) : equiv i j p (i x) = j x :=
+lemma equiv_comp_apply (x : K) : equiv i j p (i x) = j x :=
   PerfectRing.lift_comp_apply i j p x
 
 @[simp]
-theorem equiv_comp : RingHom.comp (equiv i j p) i = j :=
+lemma equiv_comp : RingHom.comp (equiv i j p) i = j :=
   RingHom.ext (equiv_comp_apply i j p)
 
 section comp
@@ -478,19 +478,19 @@ section comp
 variable [PerfectRing N p] [IsPerfectClosure k p]
 
 @[simp]
-theorem equiv_comp_equiv_apply (x : L) :
+lemma equiv_comp_equiv_apply (x : L) :
     equiv j k p (equiv i j p x) = equiv i k p x :=
   PerfectRing.lift_comp_lift_apply i j k p x
 
 @[simp]
-theorem equiv_comp_equiv : (equiv i j p).trans (equiv j k p) = equiv i k p :=
+lemma equiv_comp_equiv : (equiv i j p).trans (equiv j k p) = equiv i k p :=
   RingEquiv.ext (equiv_comp_equiv_apply i j k p)
 
-theorem equiv_comp_equiv_apply_eq_self (x : L) :
+lemma equiv_comp_equiv_apply_eq_self (x : L) :
     equiv j i p (equiv i j p x) = x := by
   rw [equiv_comp_equiv_apply, equiv_self_apply]
 
-theorem equiv_comp_equiv_eq_id :
+lemma equiv_comp_equiv_eq_id :
     (equiv i j p).trans (equiv j i p) = RingEquiv.refl L :=
   RingEquiv.ext (equiv_comp_equiv_apply_eq_self i j p)
 

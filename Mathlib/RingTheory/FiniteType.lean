@@ -75,11 +75,11 @@ variable [AddCommMonoid N] [Module R N]
 
 namespace FiniteType
 
-theorem self : FiniteType R R :=
+lemma self : FiniteType R R :=
   ⟨⟨{1}, Subsingleton.elim _ _⟩⟩
 #align algebra.finite_type.self Algebra.FiniteType.self
 
-protected theorem polynomial : FiniteType R R[X] :=
+protected lemma polynomial : FiniteType R R[X] :=
   ⟨⟨{Polynomial.X}, by
       rw [Finset.coe_singleton]
       exact Polynomial.adjoin_X⟩⟩
@@ -87,14 +87,14 @@ protected theorem polynomial : FiniteType R R[X] :=
 
 open scoped Classical
 
-protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) := by
+protected lemma freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) := by
   cases nonempty_fintype ι
   exact
     ⟨⟨Finset.univ.image (FreeAlgebra.ι R), by
         rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
         exact FreeAlgebra.adjoin_range_ι R ι⟩⟩
 
-protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolynomial ι R) := by
+protected lemma mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolynomial ι R) := by
   cases nonempty_fintype ι
   exact
     ⟨⟨Finset.univ.image MvPolynomial.X, by
@@ -102,7 +102,7 @@ protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolyno
         exact MvPolynomial.adjoin_range_X⟩⟩
 #align algebra.finite_type.mv_polynomial Algebra.FiniteType.mvPolynomial
 
-theorem of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : FiniteType R A] :
+lemma of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : FiniteType R A] :
     FiniteType S A := by
   obtain ⟨s, hS⟩ := hA.out
   refine' ⟨⟨s, eq_top_iff.2 fun b => _⟩⟩
@@ -115,17 +115,17 @@ theorem of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : 
 
 variable {R S A B}
 
-theorem of_surjective (hRA : FiniteType R A) (f : A →ₐ[R] B) (hf : Surjective f) : FiniteType R B :=
+lemma of_surjective (hRA : FiniteType R A) (f : A →ₐ[R] B) (hf : Surjective f) : FiniteType R B :=
   ⟨by
     convert hRA.1.map f
     simpa only [map_top f, @eq_comm _ ⊤, eq_top_iff, AlgHom.mem_range] using hf⟩
 #align algebra.finite_type.of_surjective Algebra.FiniteType.of_surjective
 
-theorem equiv (hRA : FiniteType R A) (e : A ≃ₐ[R] B) : FiniteType R B :=
+lemma equiv (hRA : FiniteType R A) (e : A ≃ₐ[R] B) : FiniteType R B :=
   hRA.of_surjective e e.surjective
 #align algebra.finite_type.equiv Algebra.FiniteType.equiv
 
-theorem trans [Algebra S A] [IsScalarTower R S A] (hRS : FiniteType R S) (hSA : FiniteType S A) :
+lemma trans [Algebra S A] [IsScalarTower R S A] (hRS : FiniteType R S) (hSA : FiniteType S A) :
     FiniteType R A :=
   ⟨fg_trans' hRS.1 hSA.1⟩
 #align algebra.finite_type.trans Algebra.FiniteType.trans
@@ -204,7 +204,7 @@ instance prod [hA : FiniteType R A] [hB : FiniteType R B] : FiniteType R (A × B
   ⟨by rw [← Subalgebra.prod_top]; exact hA.1.prod hB.1⟩
 #align algebra.finite_type.prod Algebra.FiniteType.prod
 
-theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+lemma isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [h : Algebra.FiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
   obtain ⟨s, hs⟩ := h.1
   apply
@@ -215,7 +215,7 @@ theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
   rfl
 #align algebra.finite_type.is_noetherian_ring Algebra.FiniteType.isNoetherianRing
 
-theorem _root_.Subalgebra.fg_iff_finiteType (S : Subalgebra R A) : S.FG ↔ Algebra.FiniteType R S :=
+lemma _root_.Subalgebra.fg_iff_finiteType (S : Subalgebra R A) : S.FG ↔ Algebra.FiniteType R S :=
   S.fg_top.symm.trans ⟨fun h => ⟨h⟩, fun h => h.out⟩
 #align subalgebra.fg_iff_finite_type Subalgebra.fg_iff_finiteType
 
@@ -236,7 +236,7 @@ def FiniteType (f : A →+* B) : Prop :=
 
 namespace Finite
 
-theorem finiteType {f : A →+* B} (hf : f.Finite) : FiniteType f :=
+lemma finiteType {f : A →+* B} (hf : f.Finite) : FiniteType f :=
   @Module.Finite.finiteType _ _ _ _ f.toAlgebra hf
 #align ring_hom.finite.finite_type RingHom.Finite.finiteType
 
@@ -246,13 +246,13 @@ namespace FiniteType
 
 variable (A)
 
-theorem id : FiniteType (RingHom.id A) :=
+lemma id : FiniteType (RingHom.id A) :=
   Algebra.FiniteType.self A
 #align ring_hom.finite_type.id RingHom.FiniteType.id
 
 variable {A}
 
-theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
+lemma comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by
   let _ : Algebra A B := f.toAlgebra
   let _ : Algebra A C := (g.comp f).toAlgebra
@@ -263,12 +263,12 @@ theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg 
     hg
 #align ring_hom.finite_type.comp_surjective RingHom.FiniteType.comp_surjective
 
-theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.FiniteType := by
+lemma of_surjective (f : A →+* B) (hf : Surjective f) : f.FiniteType := by
   rw [← f.comp_id]
   exact (id A).comp_surjective hf
 #align ring_hom.finite_type.of_surjective RingHom.FiniteType.of_surjective
 
-theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FiniteType) (hf : f.FiniteType) :
+lemma comp {g : B →+* C} {f : A →+* B} (hg : g.FiniteType) (hf : f.FiniteType) :
     (g.comp f).FiniteType := by
   let _ : Algebra A B := f.toAlgebra
   let _ : Algebra A C := (g.comp f).toAlgebra
@@ -281,14 +281,14 @@ theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FiniteType) (hf : f.FiniteT
     hf hg
 #align ring_hom.finite_type.comp RingHom.FiniteType.comp
 
-theorem of_finite {f : A →+* B} (hf : f.Finite) : f.FiniteType :=
+lemma of_finite {f : A →+* B} (hf : f.Finite) : f.FiniteType :=
   @Module.Finite.finiteType _ _ _ _ f.toAlgebra hf
 #align ring_hom.finite_type.of_finite RingHom.FiniteType.of_finite
 
 alias _root_.RingHom.Finite.to_finiteType := of_finite
 #align ring_hom.finite.to_finite_type RingHom.Finite.to_finiteType
 
-theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).FiniteType) :
+lemma of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).FiniteType) :
     g.FiniteType := by
   let _ := f.toAlgebra
   let _ := g.toAlgebra
@@ -316,7 +316,7 @@ def FiniteType (f : A →ₐ[R] B) : Prop :=
 
 namespace Finite
 
-theorem finiteType {f : A →ₐ[R] B} (hf : f.Finite) : FiniteType f :=
+lemma finiteType {f : A →ₐ[R] B} (hf : f.Finite) : FiniteType f :=
   RingHom.Finite.finiteType hf
 #align alg_hom.finite.finite_type AlgHom.Finite.finiteType
 
@@ -326,27 +326,27 @@ namespace FiniteType
 
 variable (R A)
 
-theorem id : FiniteType (AlgHom.id R A) :=
+lemma id : FiniteType (AlgHom.id R A) :=
   RingHom.FiniteType.id A
 #align alg_hom.finite_type.id AlgHom.FiniteType.id
 
 variable {R A}
 
-theorem comp {g : B →ₐ[R] C} {f : A →ₐ[R] B} (hg : g.FiniteType) (hf : f.FiniteType) :
+lemma comp {g : B →ₐ[R] C} {f : A →ₐ[R] B} (hg : g.FiniteType) (hf : f.FiniteType) :
     (g.comp f).FiniteType :=
   RingHom.FiniteType.comp hg hf
 #align alg_hom.finite_type.comp AlgHom.FiniteType.comp
 
-theorem comp_surjective {f : A →ₐ[R] B} {g : B →ₐ[R] C} (hf : f.FiniteType) (hg : Surjective g) :
+lemma comp_surjective {f : A →ₐ[R] B} {g : B →ₐ[R] C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType :=
   RingHom.FiniteType.comp_surjective hf hg
 #align alg_hom.finite_type.comp_surjective AlgHom.FiniteType.comp_surjective
 
-theorem of_surjective (f : A →ₐ[R] B) (hf : Surjective f) : f.FiniteType :=
+lemma of_surjective (f : A →ₐ[R] B) (hf : Surjective f) : f.FiniteType :=
   RingHom.FiniteType.of_surjective f.toRingHom hf
 #align alg_hom.finite_type.of_surjective AlgHom.FiniteType.of_surjective
 
-theorem of_comp_finiteType {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp f).FiniteType) :
+lemma of_comp_finiteType {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp f).FiniteType) :
     g.FiniteType :=
   RingHom.FiniteType.of_comp_finiteType h
 #align alg_hom.finite_type.of_comp_finite_type AlgHom.FiniteType.of_comp_finiteType

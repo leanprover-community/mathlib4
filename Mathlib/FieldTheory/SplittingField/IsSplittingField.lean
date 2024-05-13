@@ -54,13 +54,13 @@ variable {K}
 
 -- Porting note: infer kinds are unsupported
 -- so we provide a version of `splits'` with `f` explicit.
-theorem splits (f : K[X]) [IsSplittingField K L f] : Splits (algebraMap K L) f :=
+lemma splits (f : K[X]) [IsSplittingField K L f] : Splits (algebraMap K L) f :=
   splits'
 #align polynomial.is_splitting_field.splits Polynomial.IsSplittingField.splits
 
 -- Porting note: infer kinds are unsupported
 -- so we provide a version of `adjoin_rootSet'` with `f` explicit.
-theorem adjoin_rootSet (f : K[X]) [IsSplittingField K L f] :
+lemma adjoin_rootSet (f : K[X]) [IsSplittingField K L f] :
     Algebra.adjoin K (f.rootSet L : Set L) = ⊤ :=
   adjoin_rootSet'
 #align polynomial.is_splitting_field.adjoin_root_set Polynomial.IsSplittingField.adjoin_rootSet
@@ -77,7 +77,7 @@ instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <
       exact fun x hx => @Algebra.subset_adjoin K _ _ _ _ _ _ hx⟩
 #align polynomial.is_splitting_field.map Polynomial.IsSplittingField.map
 
-theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
+lemma splits_iff (f : K[X]) [IsSplittingField K L f] :
     Splits (RingHom.id K) f ↔ (⊤ : Subalgebra K L) = ⊥ :=
   ⟨fun h => by -- Porting note: replaced term-mode proof
     rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, roots_map (algebraMap K L) h,
@@ -93,7 +93,7 @@ theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
         exact splits_comp_of_splits _ _ (splits L f)⟩
 #align polynomial.is_splitting_field.splits_iff Polynomial.IsSplittingField.splits_iff
 
-theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
+lemma mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
     [IsSplittingField K L (g.map <| algebraMap F K)] : IsSplittingField F L (f * g) :=
   ⟨(IsScalarTower.algebraMap_eq F K L).symm ▸
       splits_mul _ (splits_comp_of_splits _ _ (splits K f))
@@ -126,14 +126,14 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
       splits_of_splits_of_dvd _ hf0 hf <| minpoly.dvd _ _ this⟩)) Algebra.toTop
 #align polynomial.is_splitting_field.lift Polynomial.IsSplittingField.lift
 
-theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensional K L :=
+lemma finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensional K L :=
   ⟨@Algebra.top_toSubmodule K L _ _ _ ▸
     adjoin_rootSet L f ▸ fg_adjoin_of_finite (Finset.finite_toSet _) fun y hy ↦
       if hf : f = 0 then by rw [hf, rootSet_zero] at hy; cases hy
       else IsAlgebraic.isIntegral ⟨f, hf, (mem_rootSet'.mp hy).2⟩⟩
 #align polynomial.is_splitting_field.finite_dimensional Polynomial.IsSplittingField.finiteDimensional
 
-theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingField K F p] :
+lemma of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingField K F p] :
     IsSplittingField K L p := by
   constructor
   · rw [← f.toAlgHom.comp_algebraMap]
@@ -142,7 +142,7 @@ theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingFie
       adjoin_rootSet_eq_range (splits F p), adjoin_rootSet F p]
 #align polynomial.is_splitting_field.of_alg_equiv Polynomial.IsSplittingField.of_algEquiv
 
-theorem adjoin_rootSet_eq_range [Algebra K F] (f : K[X]) [IsSplittingField K L f] (i : L →ₐ[K] F) :
+lemma adjoin_rootSet_eq_range [Algebra K F] (f : K[X]) [IsSplittingField K L f] (i : L →ₐ[K] F) :
     Algebra.adjoin K (rootSet f F) = i.range :=
   (Polynomial.adjoin_rootSet_eq_range (splits L f) i).mpr (adjoin_rootSet L f)
 
@@ -154,12 +154,12 @@ open Polynomial
 
 variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]} {F : IntermediateField K L}
 
-theorem IntermediateField.splits_of_splits (h : p.Splits (algebraMap K L))
+lemma IntermediateField.splits_of_splits (h : p.Splits (algebraMap K L))
     (hF : ∀ x ∈ p.rootSet L, x ∈ F) : p.Splits (algebraMap K F) := by
   simp_rw [← F.fieldRange_val, rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
   exact splits_of_comp _ F.val.toRingHom h hF
 #align intermediate_field.splits_of_splits IntermediateField.splits_of_splits
 
-theorem IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsIntegral K x)
+lemma IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsIntegral K x)
     {F : IntermediateField K L} (h : Splits (algebraMap K F) (minpoly K x)) : x ∈ F := by
   rw [← F.fieldRange_val]; exact int.mem_range_algebraMap_of_minpoly_splits h

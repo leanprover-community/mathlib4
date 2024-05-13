@@ -57,11 +57,11 @@ instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (Kl
 #align category_theory.Kleisli.category CategoryTheory.KleisliCat.category
 
 @[simp]
-theorem KleisliCat.id_def {m} [Monad m] (α : KleisliCat m) : 𝟙 α = @pure m _ α :=
+lemma KleisliCat.id_def {m} [Monad m] (α : KleisliCat m) : 𝟙 α = @pure m _ α :=
   rfl
 #align category_theory.Kleisli.id_def CategoryTheory.KleisliCat.id_def
 
-theorem KleisliCat.comp_def {m} [Monad m] (α β γ : KleisliCat m) (xs : α ⟶ β) (ys : β ⟶ γ) (a : α) :
+lemma KleisliCat.comp_def {m} [Monad m] (α β γ : KleisliCat m) (xs : α ⟶ β) (ys : β ⟶ γ) (a : α) :
     (xs ≫ ys) a = xs a >>= ys :=
   rfl
 #align category_theory.Kleisli.comp_def CategoryTheory.KleisliCat.comp_def

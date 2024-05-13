@@ -70,13 +70,13 @@ namespace Commute
 
 variable [NonUnitalNonAssocSemiring α] (s : Multiset α)
 
-theorem multiset_sum_right (a : α) (h : ∀ b ∈ s, Commute a b) : Commute a s.sum := by
+lemma multiset_sum_right (a : α) (h : ∀ b ∈ s, Commute a b) : Commute a s.sum := by
   induction s using Quotient.inductionOn
   rw [quot_mk_to_coe, sum_coe]
   exact Commute.list_sum_right _ _ h
 #align commute.multiset_sum_right Commute.multiset_sum_right
 
-theorem multiset_sum_left (b : α) (h : ∀ a ∈ s, Commute a b) : Commute s.sum b :=
+lemma multiset_sum_left (b : α) (h : ∀ a ∈ s, Commute a b) : Commute s.sum b :=
   ((Commute.multiset_sum_right _ _) fun _ ha => (h _ ha).symm).symm
 #align commute.multiset_sum_left Commute.multiset_sum_left
 

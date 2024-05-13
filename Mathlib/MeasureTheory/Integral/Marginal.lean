@@ -85,7 +85,7 @@ notation "∫⋯∫⁻_" s ", " f => lmarginal (fun _ ↦ volume) s f
 
 variable (μ)
 
-theorem _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫⁻_s, f ∂μ) := by
+lemma _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫⁻_s, f ∂μ) := by
   refine' Measurable.lintegral_prod_right _
   refine' hf.comp _
   rw [measurable_pi_iff]; intro i
@@ -95,7 +95,7 @@ theorem _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫�
   · simp [hi, updateFinset]
     exact measurable_pi_iff.1 measurable_fst _
 
-@[simp] theorem lmarginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫⁻_∅, f ∂μ = f := by
+@[simp] lemma lmarginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫⁻_∅, f ∂μ = f := by
   ext1 x
   simp_rw [lmarginal, Measure.pi_of_empty fun i : (∅ : Finset δ) => μ i]
   apply lintegral_dirac'
@@ -107,7 +107,7 @@ theorem lmarginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
     (∫⋯∫⁻_s, f ∂μ) x = (∫⋯∫⁻_s, f ∂μ) y := by
   dsimp [lmarginal, updateFinset_def]; rcongr; exact h _ ‹_›
 
-theorem lmarginal_update_of_mem {i : δ} (hi : i ∈ s)
+lemma lmarginal_update_of_mem {i : δ} (hi : i ∈ s)
     (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) (y : π i) :
     (∫⋯∫⁻_s, f ∂μ) (Function.update x i y) = (∫⋯∫⁻_s, f ∂μ) x := by
   apply lmarginal_congr
@@ -115,7 +115,7 @@ theorem lmarginal_update_of_mem {i : δ} (hi : i ∈ s)
   have : j ≠ i := by rintro rfl; exact hj hi
   apply update_noteq this
 
-theorem lmarginal_union (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
+lemma lmarginal_union (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
     (hst : Disjoint s t) : ∫⋯∫⁻_s ∪ t, f ∂μ = ∫⋯∫⁻_s, ∫⋯∫⁻_t, f ∂μ ∂μ := by
   ext1 x
   let e := MeasurableEquiv.piFinsetUnion π hst
@@ -134,14 +134,14 @@ theorem lmarginal_union (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
         simp_rw [lmarginal, updateFinset_updateFinset hst]
         rfl
 
-theorem lmarginal_union' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {s t : Finset δ}
+lemma lmarginal_union' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) {s t : Finset δ}
     (hst : Disjoint s t) : ∫⋯∫⁻_s ∪ t, f ∂μ = ∫⋯∫⁻_t, ∫⋯∫⁻_s, f ∂μ ∂μ := by
   rw [Finset.union_comm, lmarginal_union μ f hf hst.symm]
 
 variable {μ}
 
 set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
-theorem lmarginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
+lemma lmarginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
     ∫⋯∫⁻_{i}, f ∂μ = fun x => ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
   let α : Type _ := ({i} : Finset δ)
   let e := (MeasurableEquiv.piUnique fun j : α ↦ π j).symm
@@ -185,10 +185,10 @@ theorem lmarginal_erase' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) 
 open Filter
 
 @[gcongr]
-theorem lmarginal_mono {f g : (∀ i, π i) → ℝ≥0∞} (hfg : f ≤ g) : ∫⋯∫⁻_s, f ∂μ ≤ ∫⋯∫⁻_s, g ∂μ :=
+lemma lmarginal_mono {f g : (∀ i, π i) → ℝ≥0∞} (hfg : f ≤ g) : ∫⋯∫⁻_s, f ∂μ ≤ ∫⋯∫⁻_s, g ∂μ :=
   fun _ => lintegral_mono fun _ => hfg _
 
-@[simp] theorem lmarginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} :
+@[simp] lemma lmarginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} :
     ∫⋯∫⁻_univ, f ∂μ = fun _ => ∫⁻ x, f x ∂Measure.pi μ := by
   let e : { j // j ∈ Finset.univ } ≃ δ := Equiv.subtypeUnivEquiv mem_univ
   ext1 x
@@ -196,10 +196,10 @@ theorem lmarginal_mono {f g : (∀ i, π i) → ℝ≥0∞} (hfg : f ≤ g) : �
   simp
   rfl
 
-theorem lintegral_eq_lmarginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} (x : ∀ i, π i) :
+lemma lintegral_eq_lmarginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} (x : ∀ i, π i) :
     ∫⁻ x, f x ∂Measure.pi μ = (∫⋯∫⁻_univ, f ∂μ) x := by simp
 
-theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s : Finset δ')
+lemma lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s : Finset δ')
     {f : (∀ i, π (e i)) → ℝ≥0∞} (hf : Measurable f) (x : ∀ i, π i) :
       (∫⋯∫⁻_s.image e, f ∘ (· ∘' e) ∂μ) x = (∫⋯∫⁻_s, f ∂μ ∘' e) (x ∘' e) := by
   have h : Measurable ((· ∘' e) : (∀ i, π i) → _) :=
@@ -211,7 +211,7 @@ theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s
       lmarginal_insert _ hf hi]
     simp_rw [ih, ← update_comp_eq_of_injective' x he]
 
-theorem lmarginal_update_of_not_mem {i : δ}
+lemma lmarginal_update_of_not_mem {i : δ}
     {f : (∀ i, π i) → ℝ≥0∞} (hf : Measurable f) (hi : i ∉ s) (x : ∀ i, π i) (y : π i) :
     (∫⋯∫⁻_s, f ∂μ) (Function.update x i y) = (∫⋯∫⁻_s, f ∘ (Function.update · i y) ∂μ) x := by
   induction s using Finset.induction generalizing x with
@@ -221,27 +221,27 @@ theorem lmarginal_update_of_not_mem {i : δ}
     have hii' : i ≠ i' := mt (by rintro rfl; exact mem_insert_self i s) hi
     simp_rw [update_comm hii', ih (mt Finset.mem_insert_of_mem hi)]
 
-theorem lmarginal_eq_of_subset {f g : (∀ i, π i) → ℝ≥0∞} (hst : s ⊆ t)
+lemma lmarginal_eq_of_subset {f g : (∀ i, π i) → ℝ≥0∞} (hst : s ⊆ t)
     (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫⁻_s, f ∂μ = ∫⋯∫⁻_s, g ∂μ) :
     ∫⋯∫⁻_t, f ∂μ = ∫⋯∫⁻_t, g ∂μ := by
   rw [← union_sdiff_of_subset hst, lmarginal_union' μ f hf disjoint_sdiff,
     lmarginal_union' μ g hg disjoint_sdiff, hfg]
 
-theorem lmarginal_le_of_subset {f g : (∀ i, π i) → ℝ≥0∞} (hst : s ⊆ t)
+lemma lmarginal_le_of_subset {f g : (∀ i, π i) → ℝ≥0∞} (hst : s ⊆ t)
     (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫⁻_s, f ∂μ ≤ ∫⋯∫⁻_s, g ∂μ) :
     ∫⋯∫⁻_t, f ∂μ ≤ ∫⋯∫⁻_t, g ∂μ := by
   rw [← union_sdiff_of_subset hst, lmarginal_union' μ f hf disjoint_sdiff,
     lmarginal_union' μ g hg disjoint_sdiff]
   exact lmarginal_mono hfg
 
-theorem lintegral_eq_of_lmarginal_eq [Fintype δ] (s : Finset δ) {f g : (∀ i, π i) → ℝ≥0∞}
+lemma lintegral_eq_of_lmarginal_eq [Fintype δ] (s : Finset δ) {f g : (∀ i, π i) → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫⁻_s, f ∂μ = ∫⋯∫⁻_s, g ∂μ) :
     ∫⁻ x, f x ∂Measure.pi μ = ∫⁻ x, g x ∂Measure.pi μ := by
   rcases isEmpty_or_nonempty (∀ i, π i) with h|⟨⟨x⟩⟩
   · simp_rw [lintegral_of_isEmpty]
   simp_rw [lintegral_eq_lmarginal_univ x, lmarginal_eq_of_subset (Finset.subset_univ s) hf hg hfg]
 
-theorem lintegral_le_of_lmarginal_le [Fintype δ] (s : Finset δ) {f g : (∀ i, π i) → ℝ≥0∞}
+lemma lintegral_le_of_lmarginal_le [Fintype δ] (s : Finset δ) {f g : (∀ i, π i) → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫⁻_s, f ∂μ ≤ ∫⋯∫⁻_s, g ∂μ) :
     ∫⁻ x, f x ∂Measure.pi μ ≤ ∫⁻ x, g x ∂Measure.pi μ := by
   rcases isEmpty_or_nonempty (∀ i, π i) with h|⟨⟨x⟩⟩

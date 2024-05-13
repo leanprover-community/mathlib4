@@ -49,7 +49,7 @@ open FiniteDimensional NumberField.InfinitePlace
 
 open scoped nonZeroDivisors Real
 
-theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
+lemma exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
     ∃ I : (Ideal (𝓞 K))⁰, ClassGroup.mk0 I = C ∧
       Ideal.absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ NrComplexPlaces K *
         ((finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K|) := by
@@ -74,7 +74,7 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
     refine le_of_mul_le_mul_of_pos_left h_nm ?_
     exact Nat.cast_pos.mpr <| Nat.pos_of_ne_zero <| Ideal.absNorm_ne_zero_of_nonZeroDivisors J
 
-theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
+lemma _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
     (h : |discr K| < (2 * (π / 4) ^ NrComplexPlaces K *
       ((finrank ℚ K) ^ (finrank ℚ K) / (finrank ℚ K).factorial)) ^ 2) :
     IsPrincipalIdealRing (𝓞 K) := by
@@ -97,7 +97,7 @@ namespace Rat
 
 open NumberField
 
-theorem classNumber_eq : NumberField.classNumber ℚ = 1 :=
+lemma classNumber_eq : NumberField.classNumber ℚ = 1 :=
   classNumber_eq_one_iff.mpr <| by
     convert IsPrincipalIdealRing.of_surjective
       (Rat.ringOfIntegersEquiv.symm: ℤ →+* 𝓞 ℚ) Rat.ringOfIntegersEquiv.symm.surjective

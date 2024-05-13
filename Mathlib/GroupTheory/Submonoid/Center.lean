@@ -40,13 +40,13 @@ def center : Submonoid M where
 #align add_submonoid.center AddSubmonoid.center
 
 @[to_additive]
-theorem coe_center : ↑(center M) = Set.center M :=
+lemma coe_center : ↑(center M) = Set.center M :=
   rfl
 #align submonoid.coe_center Submonoid.coe_center
 #align add_submonoid.coe_center AddSubmonoid.coe_center
 
 @[to_additive (attr := simp) AddSubmonoid.center_toAddSubsemigroup]
-theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center M :=
+lemma center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center M :=
   rfl
 #align submonoid.center_to_subsemigroup Submonoid.center_toSubsemigroup
 
@@ -76,7 +76,7 @@ example : center.commMonoid.toMonoid = Submonoid.toMonoid (center M) := by
   with_reducible_and_instances rfl
 
 @[to_additive]
-theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
+lemma mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]
   exact Iff.rfl
 #align submonoid.mem_center_iff Submonoid.mem_center_iff
@@ -112,7 +112,7 @@ section
 variable (M : Type*) [CommMonoid M]
 
 @[simp]
-theorem center_eq_top : center M = ⊤ :=
+lemma center_eq_top : center M = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ M)
 #align submonoid.center_eq_top Submonoid.center_eq_top
 
@@ -135,7 +135,7 @@ def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.
           Submonoid.coe_subtype, u.1.prop.comm r]
 
 @[to_additive]
-theorem unitsCenterToCenterUnits_injective [Monoid M] :
+lemma unitsCenterToCenterUnits_injective [Monoid M] :
     Function.Injective (unitsCenterToCenterUnits M) :=
   fun _a _b h => Units.ext <| Subtype.ext <| congr_arg (Units.val ∘ Subtype.val) h
 

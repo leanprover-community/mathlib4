@@ -123,14 +123,14 @@ structure Methods where
   /-- Construct the canonical numeral for integer `z`, or fail if `z` is out of range. -/
   mkNumeral : Int → MetaM Expr
 
-theorem of_not_lt_left [LinearOrder α] (h : ¬(a:α) < b) (eq : a = a') : b ≤ a' := eq ▸ not_lt.1 h
-theorem of_not_lt_right [LinearOrder α] (h : ¬(a:α) < b) (eq : b = b') : b' ≤ a := eq ▸ not_lt.1 h
-theorem of_not_le_left [LE α] (h : ¬(a:α) ≤ b) (eq : a = a') : ¬a' ≤ b := eq ▸ h
-theorem of_not_le_right [LE α] (h : ¬(a:α) ≤ b) (eq : b = b') : ¬a ≤ b' := eq ▸ h
-theorem of_lt_left [LinearOrder α] (h : (a:α) < b) (eq : a = a') : ¬b ≤ a' := eq ▸ not_le.2 h
-theorem of_lt_right [LinearOrder α] (h : (a:α) < b) (eq : b = b') : ¬b' ≤ a := eq ▸ not_le.2 h
-theorem of_le_left [LE α] (h : (a:α) ≤ b) (eq : a = a') : a' ≤ b := eq ▸ h
-theorem of_le_right [LE α] (h : (a:α) ≤ b) (eq : b = b') : a ≤ b' := eq ▸ h
+lemma of_not_lt_left [LinearOrder α] (h : ¬(a:α) < b) (eq : a = a') : b ≤ a' := eq ▸ not_lt.1 h
+lemma of_not_lt_right [LinearOrder α] (h : ¬(a:α) < b) (eq : b = b') : b' ≤ a := eq ▸ not_lt.1 h
+lemma of_not_le_left [LE α] (h : ¬(a:α) ≤ b) (eq : a = a') : ¬a' ≤ b := eq ▸ h
+lemma of_not_le_right [LE α] (h : ¬(a:α) ≤ b) (eq : b = b') : ¬a ≤ b' := eq ▸ h
+lemma of_lt_left [LinearOrder α] (h : (a:α) < b) (eq : a = a') : ¬b ≤ a' := eq ▸ not_le.2 h
+lemma of_lt_right [LinearOrder α] (h : (a:α) < b) (eq : b = b') : ¬b' ≤ a := eq ▸ not_le.2 h
+lemma of_le_left [LE α] (h : (a:α) ≤ b) (eq : a = a') : a' ≤ b := eq ▸ h
+lemma of_le_right [LE α] (h : (a:α) ≤ b) (eq : b = b') : a ≤ b' := eq ▸ h
 
 /--
 Given a proof `pf`, attempts to parse it as an upper (`lb = false`) or lower (`lb = true`)
@@ -159,7 +159,7 @@ def Methods.getBound (m : Methods) (e : Expr) (pf : Expr) (lb : Bool) :
   let .true ← withNewMCtxDepth <| withReducible <| isDefEq e e' | failure
   pure c
 
-theorem le_of_not_le_of_le [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) : (n:α) ≤ lo :=
+lemma le_of_not_le_of_le [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) : (n:α) ≤ lo :=
   le_trans (le_of_not_le h1) h2
 
 /--
@@ -227,9 +227,9 @@ def natMethods : Methods where
     | (i : ℕ) => pure q($i)
     | _ => failure
 
-theorem _root_.Int.add_one_le_of_not_le {a b : ℤ} (h : ¬b ≤ a) : a + 1 ≤ b :=
+lemma _root_.Int.add_one_le_of_not_le {a b : ℤ} (h : ¬b ≤ a) : a + 1 ≤ b :=
   Int.add_one_le_iff.2 (Int.not_le.1 h)
-theorem _root_.Int.le_sub_one_of_not_le {a b : ℤ} (h : ¬b ≤ a) : a ≤ b - 1 :=
+lemma _root_.Int.le_sub_one_of_not_le {a b : ℤ} (h : ¬b ≤ a) : a ≤ b - 1 :=
   Int.le_sub_one_iff.2 (Int.not_le.1 h)
 
 /-- A `Methods` implementation for `ℤ`.

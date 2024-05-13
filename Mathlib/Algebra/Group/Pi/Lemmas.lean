@@ -32,7 +32,7 @@ variable {f : I → Type v}
 variable (x y : ∀ i, f i) (i j : I)
 
 @[to_additive]
-theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : β) ∈ s)] :
+lemma Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : β) ∈ s)] :
     (1 : α → β) ⁻¹' s = if (1 : β) ∈ s then Set.univ else ∅ :=
   Set.preimage_const 1 s
 #align set.preimage_one Set.preimage_one
@@ -41,7 +41,7 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
 namespace MulHom
 
 @[to_additive]
-theorem coe_mul {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) : (f * g : M → N) =
+lemma coe_mul {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) : (f * g : M → N) =
     fun x => f x * g x := rfl
 #align mul_hom.coe_mul MulHom.coe_mul
 #align add_hom.coe_add AddHom.coe_add
@@ -64,7 +64,7 @@ def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f
 #align pi.add_hom_apply Pi.addHom_apply
 
 @[to_additive]
-theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
+lemma Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun x y h =>
   let ⟨i⟩ := ‹Nonempty I›
   hg i ((Function.funext_iff.mp h : _) i)
@@ -87,7 +87,7 @@ def Pi.monoidHom {γ : Type w} [∀ i, MulOneClass (f i)] [MulOneClass γ] (g : 
 #align pi.add_monoid_hom_apply Pi.addMonoidHom_apply
 
 @[to_additive]
-theorem Pi.monoidHom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
+lemma Pi.monoidHom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
     (g : ∀ i, γ →* f i) (hg : ∀ i, Function.Injective (g i)) :
     Function.Injective (Pi.monoidHom g) :=
   Pi.mulHom_injective (fun i => (g i).toMulHom) hg
@@ -238,7 +238,7 @@ nonrec def OneHom.mulSingle [∀ i, One <| f i] (i : I) : OneHom (f i) (∀ i, f
 #align zero_hom.single ZeroHom.single
 
 @[to_additive (attr := simp)]
-theorem OneHom.mulSingle_apply [∀ i, One <| f i] (i : I) (x : f i) :
+lemma OneHom.mulSingle_apply [∀ i, One <| f i] (i : I) (x : f i) :
     mulSingle f i x = Pi.mulSingle i x := rfl
 #align one_hom.single_apply OneHom.mulSingle_apply
 #align zero_hom.single_apply ZeroHom.single_apply
@@ -258,7 +258,7 @@ def MonoidHom.mulSingle [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f 
 #align add_monoid_hom.single AddMonoidHom.single
 
 @[to_additive (attr := simp)]
-theorem MonoidHom.mulSingle_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
+lemma MonoidHom.mulSingle_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
     mulSingle f i x = Pi.mulSingle i x :=
   rfl
 #align monoid_hom.single_apply MonoidHom.mulSingle_apply
@@ -267,35 +267,35 @@ theorem MonoidHom.mulSingle_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) 
 variable {f}
 
 @[to_additive]
-theorem Pi.mulSingle_sup [∀ i, SemilatticeSup (f i)] [∀ i, One (f i)] (i : I) (x y : f i) :
+lemma Pi.mulSingle_sup [∀ i, SemilatticeSup (f i)] [∀ i, One (f i)] (i : I) (x y : f i) :
     Pi.mulSingle i (x ⊔ y) = Pi.mulSingle i x ⊔ Pi.mulSingle i y :=
   Function.update_sup _ _ _ _
 #align pi.mul_single_sup Pi.mulSingle_sup
 #align pi.single_sup Pi.single_sup
 
 @[to_additive]
-theorem Pi.mulSingle_inf [∀ i, SemilatticeInf (f i)] [∀ i, One (f i)] (i : I) (x y : f i) :
+lemma Pi.mulSingle_inf [∀ i, SemilatticeInf (f i)] [∀ i, One (f i)] (i : I) (x y : f i) :
     Pi.mulSingle i (x ⊓ y) = Pi.mulSingle i x ⊓ Pi.mulSingle i y :=
   Function.update_inf _ _ _ _
 #align pi.mul_single_inf Pi.mulSingle_inf
 #align pi.single_inf Pi.single_inf
 
 @[to_additive]
-theorem Pi.mulSingle_mul [∀ i, MulOneClass <| f i] (i : I) (x y : f i) :
+lemma Pi.mulSingle_mul [∀ i, MulOneClass <| f i] (i : I) (x y : f i) :
     mulSingle i (x * y) = mulSingle i x * mulSingle i y :=
   (MonoidHom.mulSingle f i).map_mul x y
 #align pi.mul_single_mul Pi.mulSingle_mul
 #align pi.single_add Pi.single_add
 
 @[to_additive]
-theorem Pi.mulSingle_inv [∀ i, Group <| f i] (i : I) (x : f i) :
+lemma Pi.mulSingle_inv [∀ i, Group <| f i] (i : I) (x : f i) :
     mulSingle i x⁻¹ = (mulSingle i x)⁻¹ :=
   (MonoidHom.mulSingle f i).map_inv x
 #align pi.mul_single_inv Pi.mulSingle_inv
 #align pi.single_neg Pi.single_neg
 
 @[to_additive]
-theorem Pi.mulSingle_div [∀ i, Group <| f i] (i : I) (x y : f i) :
+lemma Pi.mulSingle_div [∀ i, Group <| f i] (i : I) (x y : f i) :
     mulSingle i (x / y) = mulSingle i x / mulSingle i y :=
   (MonoidHom.mulSingle f i).map_div x y
 #align pi.single_div Pi.mulSingle_div
@@ -305,19 +305,19 @@ section
 variable [∀ i, Mul <| f i]
 
 @[to_additive]
-theorem SemiconjBy.pi {x y z : ∀ i, f i} (h : ∀ i, SemiconjBy (x i) (y i) (z i)) :
+lemma SemiconjBy.pi {x y z : ∀ i, f i} (h : ∀ i, SemiconjBy (x i) (y i) (z i)) :
     SemiconjBy x y z :=
   funext h
 
 @[to_additive]
-theorem Pi.semiconjBy_iff {x y z : ∀ i, f i} :
+lemma Pi.semiconjBy_iff {x y z : ∀ i, f i} :
     SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := Function.funext_iff
 
 @[to_additive]
-theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := .pi h
+lemma Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := .pi h
 
 @[to_additive]
-theorem Pi.commute_iff {x y : ∀ i, f i} : Commute x y ↔ ∀ i, Commute (x i) (y i) := semiconjBy_iff
+lemma Pi.commute_iff {x y : ∀ i, f i} : Commute x y ↔ ∀ i, Commute (x i) (y i) := semiconjBy_iff
 
 end
 
@@ -352,7 +352,7 @@ theorem Pi.mulSingle_apply_commute [∀ i, MulOneClass <| f i] (x : ∀ i, f i) 
 #align pi.single_apply_commute Pi.single_apply_addCommute
 
 @[to_additive]
-theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i) (x : f i) :
+lemma Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i) (x : f i) :
     Function.update g i x = g / mulSingle i (g i) * mulSingle i x := by
   ext j
   rcases eq_or_ne i j with (rfl | h)
@@ -362,7 +362,7 @@ theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i
 #align pi.update_eq_sub_add_single Pi.update_eq_div_mul_mulSingle
 
 @[to_additive]
-theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommMonoid M]
+lemma Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommMonoid M]
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     (mulSingle k u : I → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n := by
@@ -401,27 +401,27 @@ end Single
 namespace Function
 
 @[to_additive (attr := simp)]
-theorem update_one [∀ i, One (f i)] [DecidableEq I] (i : I) : update (1 : ∀ i, f i) i 1 = 1 :=
+lemma update_one [∀ i, One (f i)] [DecidableEq I] (i : I) : update (1 : ∀ i, f i) i 1 = 1 :=
   update_eq_self i (1 : (a : I) → f a)
 #align function.update_one Function.update_one
 #align function.update_zero Function.update_zero
 
 @[to_additive]
-theorem update_mul [∀ i, Mul (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (i : I) (x₁ : f i)
+lemma update_mul [∀ i, Mul (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (i : I) (x₁ : f i)
     (x₂ : f i) : update (f₁ * f₂) i (x₁ * x₂) = update f₁ i x₁ * update f₂ i x₂ :=
   funext fun j => (apply_update₂ (fun _ => (· * ·)) f₁ f₂ i x₁ x₂ j).symm
 #align function.update_mul Function.update_mul
 #align function.update_add Function.update_add
 
 @[to_additive]
-theorem update_inv [∀ i, Inv (f i)] [DecidableEq I] (f₁ : ∀ i, f i) (i : I) (x₁ : f i) :
+lemma update_inv [∀ i, Inv (f i)] [DecidableEq I] (f₁ : ∀ i, f i) (i : I) (x₁ : f i) :
     update f₁⁻¹ i x₁⁻¹ = (update f₁ i x₁)⁻¹ :=
   funext fun j => (apply_update (fun _ => Inv.inv) f₁ i x₁ j).symm
 #align function.update_inv Function.update_inv
 #align function.update_neg Function.update_neg
 
 @[to_additive]
-theorem update_div [∀ i, Div (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (i : I) (x₁ : f i)
+lemma update_div [∀ i, Div (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (i : I) (x₁ : f i)
     (x₂ : f i) : update (f₁ / f₂) i (x₁ / x₂) = update f₁ i x₁ / update f₂ i x₂ :=
   funext fun j => (apply_update₂ (fun _ => (· / ·)) f₁ f₂ i x₁ x₂ j).symm
 #align function.update_div Function.update_div
@@ -430,13 +430,13 @@ theorem update_div [∀ i, Div (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (
 variable [One α] [Nonempty ι] {a : α}
 
 @[to_additive (attr := simp)]
-theorem const_eq_one : const ι a = 1 ↔ a = 1 :=
+lemma const_eq_one : const ι a = 1 ↔ a = 1 :=
   @const_inj _ _ _ _ 1
 #align function.const_eq_one Function.const_eq_one
 #align function.const_eq_zero Function.const_eq_zero
 
 @[to_additive]
-theorem const_ne_one : const ι a ≠ 1 ↔ a ≠ 1 :=
+lemma const_ne_one : const ι a ≠ 1 ↔ a ≠ 1 :=
   Iff.not const_eq_one
 #align function.const_ne_one Function.const_ne_one
 #align function.const_ne_zero Function.const_ne_zero
@@ -446,7 +446,7 @@ end Function
 section Piecewise
 
 @[to_additive]
-theorem Set.piecewise_mul [∀ i, Mul (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
+lemma Set.piecewise_mul [∀ i, Mul (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (f₁ f₂ g₁ g₂ : ∀ i, f i) :
     s.piecewise (f₁ * f₂) (g₁ * g₂) = s.piecewise f₁ g₁ * s.piecewise f₂ g₂ :=
   s.piecewise_op₂ f₁ _ _ _ fun _ => (· * ·)
@@ -454,14 +454,14 @@ theorem Set.piecewise_mul [∀ i, Mul (f i)] (s : Set I) [∀ i, Decidable (i �
 #align set.piecewise_add Set.piecewise_add
 
 @[to_additive]
-theorem Set.piecewise_inv [∀ i, Inv (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)] (f₁ g₁ : ∀ i, f i) :
+lemma Set.piecewise_inv [∀ i, Inv (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)] (f₁ g₁ : ∀ i, f i) :
     s.piecewise f₁⁻¹ g₁⁻¹ = (s.piecewise f₁ g₁)⁻¹ :=
   s.piecewise_op f₁ g₁ fun _ x => x⁻¹
 #align set.piecewise_inv Set.piecewise_inv
 #align set.piecewise_neg Set.piecewise_neg
 
 @[to_additive]
-theorem Set.piecewise_div [∀ i, Div (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
+lemma Set.piecewise_div [∀ i, Div (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (f₁ f₂ g₁ g₂ : ∀ i, f i) :
     s.piecewise (f₁ / f₂) (g₁ / g₂) = s.piecewise f₁ g₁ / s.piecewise f₂ g₂ :=
   s.piecewise_op₂ f₁ _ _ _ fun _ => (· / ·)
@@ -493,13 +493,13 @@ namespace Pi
 variable [DecidableEq I] [∀ i, Preorder (f i)] [∀ i, One (f i)]
 
 @[to_additive]
-theorem mulSingle_mono : Monotone (Pi.mulSingle i : f i → ∀ i, f i) :=
+lemma mulSingle_mono : Monotone (Pi.mulSingle i : f i → ∀ i, f i) :=
   Function.update_mono
 #align pi.mul_single_mono Pi.mulSingle_mono
 #align pi.single_mono Pi.single_mono
 
 @[to_additive]
-theorem mulSingle_strictMono : StrictMono (Pi.mulSingle i : f i → ∀ i, f i) :=
+lemma mulSingle_strictMono : StrictMono (Pi.mulSingle i : f i → ∀ i, f i) :=
   Function.update_strictMono
 #align pi.mul_single_strict_mono Pi.mulSingle_strictMono
 #align pi.single_strict_mono Pi.single_strictMono
@@ -511,41 +511,41 @@ namespace Sigma
 variable {α : Type*} {β : α → Type*} {γ : ∀ a, β a → Type*}
 
 @[to_additive (attr := simp)]
-theorem curry_one [∀ a b, One (γ a b)] : Sigma.curry (1 : (i : Σ a, β a) → γ i.1 i.2) = 1 :=
+lemma curry_one [∀ a b, One (γ a b)] : Sigma.curry (1 : (i : Σ a, β a) → γ i.1 i.2) = 1 :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem uncurry_one [∀ a b, One (γ a b)] : Sigma.uncurry (1 : ∀ a b, γ a b) = 1 :=
+lemma uncurry_one [∀ a b, One (γ a b)] : Sigma.uncurry (1 : ∀ a b, γ a b) = 1 :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem curry_mul [∀ a b, Mul (γ a b)] (x y : (i : Σ a, β a) → γ i.1 i.2) :
+lemma curry_mul [∀ a b, Mul (γ a b)] (x y : (i : Σ a, β a) → γ i.1 i.2) :
     Sigma.curry (x * y) = Sigma.curry x * Sigma.curry y :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem uncurry_mul [∀ a b, Mul (γ a b)] (x y : ∀ a b, γ a b) :
+lemma uncurry_mul [∀ a b, Mul (γ a b)] (x y : ∀ a b, γ a b) :
     Sigma.uncurry (x * y) = Sigma.uncurry x * Sigma.uncurry y :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem curry_inv [∀ a b, Inv (γ a b)] (x : (i : Σ a, β a) → γ i.1 i.2) :
+lemma curry_inv [∀ a b, Inv (γ a b)] (x : (i : Σ a, β a) → γ i.1 i.2) :
     Sigma.curry (x⁻¹) = (Sigma.curry x)⁻¹ :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem uncurry_inv [∀ a b, Inv (γ a b)] (x : ∀ a b, γ a b) :
+lemma uncurry_inv [∀ a b, Inv (γ a b)] (x : ∀ a b, γ a b) :
     Sigma.uncurry (x⁻¹) = (Sigma.uncurry x)⁻¹ :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem curry_mulSingle [DecidableEq α] [∀ a, DecidableEq (β a)] [∀ a b, One (γ a b)]
+lemma curry_mulSingle [DecidableEq α] [∀ a, DecidableEq (β a)] [∀ a b, One (γ a b)]
     (i : Σ a, β a) (x : γ i.1 i.2) :
     Sigma.curry (Pi.mulSingle i x) = Pi.mulSingle i.1 (Pi.mulSingle i.2 x) := by
   simp only [Pi.mulSingle, Sigma.curry_update, Sigma.curry_one, Pi.one_apply]
 
 @[to_additive (attr := simp)]
-theorem uncurry_mulSingle_mulSingle [DecidableEq α] [∀ a, DecidableEq (β a)] [∀ a b, One (γ a b)]
+lemma uncurry_mulSingle_mulSingle [DecidableEq α] [∀ a, DecidableEq (β a)] [∀ a b, One (γ a b)]
     (a : α) (b : β a) (x : γ a b) :
     Sigma.uncurry (Pi.mulSingle a (Pi.mulSingle b x)) = Pi.mulSingle (Sigma.mk a b) x := by
   rw [← curry_mulSingle ⟨a, b⟩, uncurry_curry]

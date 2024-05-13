@@ -38,7 +38,7 @@ def IsDiag [Zero α] (A : Matrix n n α) : Prop :=
 #align matrix.is_diag Matrix.IsDiag
 
 @[simp]
-theorem isDiag_diagonal [Zero α] [DecidableEq n] (d : n → α) : (diagonal d).IsDiag := fun _ _ =>
+lemma isDiag_diagonal [Zero α] [DecidableEq n] (d : n → α) : (diagonal d).IsDiag := fun _ _ =>
   Matrix.diagonal_apply_ne _
 #align matrix.is_diag_diagonal Matrix.isDiag_diagonal
 
@@ -73,69 +73,69 @@ theorem isDiag_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α).IsDi
   one_apply_ne
 #align matrix.is_diag_one Matrix.isDiag_one
 
-theorem IsDiag.map [Zero α] [Zero β] {A : Matrix n n α} (ha : A.IsDiag) {f : α → β} (hf : f 0 = 0) :
+lemma IsDiag.map [Zero α] [Zero β] {A : Matrix n n α} (ha : A.IsDiag) {f : α → β} (hf : f 0 = 0) :
     (A.map f).IsDiag := by
   intro i j h
   simp [ha h, hf]
 #align matrix.is_diag.map Matrix.IsDiag.map
 
-theorem IsDiag.neg [AddGroup α] {A : Matrix n n α} (ha : A.IsDiag) : (-A).IsDiag := by
+lemma IsDiag.neg [AddGroup α] {A : Matrix n n α} (ha : A.IsDiag) : (-A).IsDiag := by
   intro i j h
   simp [ha h]
 #align matrix.is_diag.neg Matrix.IsDiag.neg
 
 @[simp]
-theorem isDiag_neg_iff [AddGroup α] {A : Matrix n n α} : (-A).IsDiag ↔ A.IsDiag :=
+lemma isDiag_neg_iff [AddGroup α] {A : Matrix n n α} : (-A).IsDiag ↔ A.IsDiag :=
   ⟨fun ha _ _ h => neg_eq_zero.1 (ha h), IsDiag.neg⟩
 #align matrix.is_diag_neg_iff Matrix.isDiag_neg_iff
 
-theorem IsDiag.add [AddZeroClass α] {A B : Matrix n n α} (ha : A.IsDiag) (hb : B.IsDiag) :
+lemma IsDiag.add [AddZeroClass α] {A B : Matrix n n α} (ha : A.IsDiag) (hb : B.IsDiag) :
     (A + B).IsDiag := by
   intro i j h
   simp [ha h, hb h]
 #align matrix.is_diag.add Matrix.IsDiag.add
 
-theorem IsDiag.sub [AddGroup α] {A B : Matrix n n α} (ha : A.IsDiag) (hb : B.IsDiag) :
+lemma IsDiag.sub [AddGroup α] {A B : Matrix n n α} (ha : A.IsDiag) (hb : B.IsDiag) :
     (A - B).IsDiag := by
   intro i j h
   simp [ha h, hb h]
 #align matrix.is_diag.sub Matrix.IsDiag.sub
 
-theorem IsDiag.smul [Monoid R] [AddMonoid α] [DistribMulAction R α] (k : R) {A : Matrix n n α}
+lemma IsDiag.smul [Monoid R] [AddMonoid α] [DistribMulAction R α] (k : R) {A : Matrix n n α}
     (ha : A.IsDiag) : (k • A).IsDiag := by
   intro i j h
   simp [ha h]
 #align matrix.is_diag.smul Matrix.IsDiag.smul
 
 @[simp]
-theorem isDiag_smul_one (n) [Semiring α] [DecidableEq n] (k : α) :
+lemma isDiag_smul_one (n) [Semiring α] [DecidableEq n] (k : α) :
     (k • (1 : Matrix n n α)).IsDiag :=
   isDiag_one.smul k
 #align matrix.is_diag_smul_one Matrix.isDiag_smul_one
 
-theorem IsDiag.transpose [Zero α] {A : Matrix n n α} (ha : A.IsDiag) : Aᵀ.IsDiag := fun _ _ h =>
+lemma IsDiag.transpose [Zero α] {A : Matrix n n α} (ha : A.IsDiag) : Aᵀ.IsDiag := fun _ _ h =>
   ha h.symm
 #align matrix.is_diag.transpose Matrix.IsDiag.transpose
 
 @[simp]
-theorem isDiag_transpose_iff [Zero α] {A : Matrix n n α} : Aᵀ.IsDiag ↔ A.IsDiag :=
+lemma isDiag_transpose_iff [Zero α] {A : Matrix n n α} : Aᵀ.IsDiag ↔ A.IsDiag :=
   ⟨IsDiag.transpose, IsDiag.transpose⟩
 #align matrix.is_diag_transpose_iff Matrix.isDiag_transpose_iff
 
-theorem IsDiag.conjTranspose [Semiring α] [StarRing α] {A : Matrix n n α} (ha : A.IsDiag) :
+lemma IsDiag.conjTranspose [Semiring α] [StarRing α] {A : Matrix n n α} (ha : A.IsDiag) :
     Aᴴ.IsDiag :=
   ha.transpose.map (star_zero _)
 #align matrix.is_diag.conj_transpose Matrix.IsDiag.conjTranspose
 
 @[simp]
-theorem isDiag_conjTranspose_iff [Semiring α] [StarRing α] {A : Matrix n n α} :
+lemma isDiag_conjTranspose_iff [Semiring α] [StarRing α] {A : Matrix n n α} :
     Aᴴ.IsDiag ↔ A.IsDiag :=
   ⟨fun ha => by
     convert ha.conjTranspose
     simp, IsDiag.conjTranspose⟩
 #align matrix.is_diag_conj_transpose_iff Matrix.isDiag_conjTranspose_iff
 
-theorem IsDiag.submatrix [Zero α] {A : Matrix n n α} (ha : A.IsDiag) {f : m → n}
+lemma IsDiag.submatrix [Zero α] {A : Matrix n n α} (ha : A.IsDiag) {f : m → n}
     (hf : Injective f) : (A.submatrix f f).IsDiag := fun _ _ h => ha (hf.ne h)
 #align matrix.is_diag.submatrix Matrix.IsDiag.submatrix
 
@@ -149,7 +149,7 @@ theorem IsDiag.kronecker [MulZeroClass α] {A : Matrix m m α} {B : Matrix n n �
   · simp [hB hbd]
 #align matrix.is_diag.kronecker Matrix.IsDiag.kronecker
 
-theorem IsDiag.isSymm [Zero α] {A : Matrix n n α} (h : A.IsDiag) : A.IsSymm := by
+lemma IsDiag.isSymm [Zero α] {A : Matrix n n α} (h : A.IsDiag) : A.IsSymm := by
   ext i j
   by_cases g : i = j; · rw [g, transpose_apply]
   simp [h g, h (Ne.symm g)]
@@ -188,12 +188,12 @@ theorem IsDiag.fromBlocks_of_isSymm [Zero α] {A : Matrix m m α} {C : Matrix n 
   exact ha.fromBlocks hd
 #align matrix.is_diag.from_blocks_of_is_symm Matrix.IsDiag.fromBlocks_of_isSymm
 
-theorem mul_transpose_self_isDiag_iff_hasOrthogonalRows [Fintype n] [Mul α] [AddCommMonoid α]
+lemma mul_transpose_self_isDiag_iff_hasOrthogonalRows [Fintype n] [Mul α] [AddCommMonoid α]
     {A : Matrix m n α} : (A * Aᵀ).IsDiag ↔ A.HasOrthogonalRows :=
   Iff.rfl
 #align matrix.mul_transpose_self_is_diag_iff_has_orthogonal_rows Matrix.mul_transpose_self_isDiag_iff_hasOrthogonalRows
 
-theorem transpose_mul_self_isDiag_iff_hasOrthogonalCols [Fintype m] [Mul α] [AddCommMonoid α]
+lemma transpose_mul_self_isDiag_iff_hasOrthogonalCols [Fintype m] [Mul α] [AddCommMonoid α]
     {A : Matrix m n α} : (Aᵀ * A).IsDiag ↔ A.HasOrthogonalCols :=
   Iff.rfl
 #align matrix.transpose_mul_self_is_diag_iff_has_orthogonal_cols Matrix.transpose_mul_self_isDiag_iff_hasOrthogonalCols

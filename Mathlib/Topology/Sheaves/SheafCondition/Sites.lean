@@ -44,7 +44,7 @@ def coveringOfPresieve (U : Opens X) (R : Presieve U) : (ΣV, { f : V ⟶ U // R
 #align Top.presheaf.covering_of_presieve TopCat.Presheaf.coveringOfPresieve
 
 @[simp]
-theorem coveringOfPresieve_apply (U : Opens X) (R : Presieve U) (f : ΣV, { f : V ⟶ U // R f }) :
+lemma coveringOfPresieve_apply (U : Opens X) (R : Presieve U) (f : ΣV, { f : V ⟶ U // R f }) :
     coveringOfPresieve U R f = f.1 := rfl
 #align Top.presheaf.covering_of_presieve_apply TopCat.Presheaf.coveringOfPresieve_apply
 
@@ -121,7 +121,7 @@ def indexOfHom (f : ΣV, { f : V ⟶ iSup U // presieveOfCovering U f }) : ι :=
   f.2.2.choose
 #align Top.presheaf.presieve_of_covering.index_of_hom TopCat.Presheaf.presieveOfCovering.indexOfHom
 
-theorem indexOfHom_spec (f : ΣV, { f : V ⟶ iSup U // presieveOfCovering U f }) :
+lemma indexOfHom_spec (f : ΣV, { f : V ⟶ iSup U // presieveOfCovering U f }) :
     f.1 = U (indexOfHom U f) :=
   f.2.2.choose_spec
 #align Top.presheaf.presieve_of_covering.index_of_hom_spec TopCat.Presheaf.presieveOfCovering.indexOfHom_spec
@@ -134,7 +134,7 @@ namespace TopCat.Opens
 
 variable {X : TopCat} {ι : Type*}
 
-theorem coverDense_iff_isBasis [Category ι] (B : ι ⥤ Opens X) :
+lemma coverDense_iff_isBasis [Category ι] (B : ι ⥤ Opens X) :
     B.IsCoverDense (Opens.grothendieckTopology X) ↔ Opens.IsBasis (Set.range B.obj) := by
   rw [Opens.isBasis_iff_nbhd]
   constructor
@@ -144,7 +144,7 @@ theorem coverDense_iff_isBasis [Category ι] (B : ι ⥤ Opens X) :
   exact ⟨B.obj i, ⟨⟨hi⟩⟩, ⟨⟨i, 𝟙 _, ⟨⟨hi⟩⟩, rfl⟩⟩, hx⟩
 #align Top.opens.cover_dense_iff_is_basis TopCat.Opens.coverDense_iff_isBasis
 
-theorem coverDense_inducedFunctor {B : ι → Opens X} (h : Opens.IsBasis (Set.range B)) :
+lemma coverDense_inducedFunctor {B : ι → Opens X} (h : Opens.IsBasis (Set.range B)) :
     (inducedFunctor B).IsCoverDense (Opens.grothendieckTopology X)  :=
   (coverDense_iff_isBasis _).2 h
 #align Top.opens.cover_dense_induced_functor TopCat.Opens.coverDense_inducedFunctor
@@ -158,7 +158,7 @@ open TopCat.Presheaf Opposite
 variable {C : Type u} [Category.{v} C]
 variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
-theorem OpenEmbedding.compatiblePreserving (hf : OpenEmbedding f) :
+lemma OpenEmbedding.compatiblePreserving (hf : OpenEmbedding f) :
     CompatiblePreserving (Opens.grothendieckTopology Y) hf.isOpenMap.functor := by
   haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.inj
   apply compatiblePreservingOfDownwardsClosed
@@ -168,7 +168,7 @@ theorem OpenEmbedding.compatiblePreserving (hf : OpenEmbedding f) :
   exact ⟨_, rfl⟩
 #align open_embedding.compatible_preserving OpenEmbedding.compatiblePreserving
 
-theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
+lemma IsOpenMap.coverPreserving (hf : IsOpenMap f) :
     CoverPreserving (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) hf.functor := by
   constructor
   rintro U S hU _ ⟨x, hx, rfl⟩
@@ -184,7 +184,7 @@ lemma OpenEmbedding.functor_isContinuous (h : OpenEmbedding f) :
   · exact h.compatiblePreserving
   · exact h.isOpenMap.coverPreserving
 
-theorem TopCat.Presheaf.isSheaf_of_openEmbedding (h : OpenEmbedding f) (hF : F.IsSheaf) :
+lemma TopCat.Presheaf.isSheaf_of_openEmbedding (h : OpenEmbedding f) (hF : F.IsSheaf) :
     IsSheaf (h.isOpenMap.functor.op ⋙ F) := by
   have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
@@ -204,11 +204,11 @@ instance : RepresentablyFlat (Opens.map f) := by
     · exact fun _ _ _ _ ↦ ⟨_, 𝟙 _, by simp [eq_iff_true_of_subsingleton]⟩
   · exact ⟨StructuredArrow.mk <| show U ⟶ (Opens.map f).obj ⊤ from homOfLE le_top⟩
 
-theorem compatiblePreserving_opens_map :
+lemma compatiblePreserving_opens_map :
     CompatiblePreserving (Opens.grothendieckTopology X) (Opens.map f) :=
   compatiblePreservingOfFlat _ _
 
-theorem coverPreserving_opens_map : CoverPreserving (Opens.grothendieckTopology Y)
+lemma coverPreserving_opens_map : CoverPreserving (Opens.grothendieckTopology Y)
     (Opens.grothendieckTopology X) (Opens.map f) := by
   constructor
   intro U S hS x hx
@@ -253,13 +253,13 @@ def restrictHomEquivHom :
 #align Top.sheaf.restrict_hom_equiv_hom TopCat.Sheaf.restrictHomEquivHom
 
 @[simp]
-theorem extend_hom_app (α : (inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) (i : ι) :
+lemma extend_hom_app (α : (inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) (i : ι) :
     (restrictHomEquivHom F F' h α).app (op (B i)) = α.app (op i) := by
   nth_rw 2 [← (restrictHomEquivHom F F' h).left_inv α]
   rfl
 #align Top.sheaf.extend_hom_app TopCat.Sheaf.extend_hom_app
 
-theorem hom_ext {α β : F ⟶ F'.1} (he : ∀ i, α.app (op (B i)) = β.app (op (B i))) : α = β := by
+lemma hom_ext {α β : F ⟶ F'.1} (he : ∀ i, α.app (op (B i)) = β.app (op (B i))) : α = β := by
   apply (restrictHomEquivHom F F' h).symm.injective
   ext i
   exact he i.unop

@@ -51,7 +51,7 @@ set_option linter.uppercaseLean3 false in
 #align Preord.of Preord.of
 
 @[simp]
-theorem coe_of (α : Type*) [Preorder α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [Preorder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Preord.coe_of Preord.coe_of

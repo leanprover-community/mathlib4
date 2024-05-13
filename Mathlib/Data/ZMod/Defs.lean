@@ -54,7 +54,7 @@ instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
     mul_comm := Fin.mul_comm }
 #align fin.comm_semigroup Fin.instCommSemigroup
 
-private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
+private lemma left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
   fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
   Fin.eq_of_val_eq <|
     calc
@@ -120,7 +120,7 @@ instance infinite : Infinite (ZMod 0) :=
 #align zmod.infinite ZMod.infinite
 
 @[simp]
-theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
+lemma card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   cases n with
   | zero => exact (not_finite (ZMod 0)).elim
   | succ n => convert Fintype.card_fin (n + 1) using 2

@@ -41,19 +41,19 @@ def commProb : ℚ :=
   Nat.card { p : M × M // Commute p.1 p.2 } / (Nat.card M : ℚ) ^ 2
 #align comm_prob commProb
 
-theorem commProb_def :
+lemma commProb_def :
     commProb M = Nat.card { p : M × M // Commute p.1 p.2 } / (Nat.card M : ℚ) ^ 2 :=
   rfl
 #align comm_prob_def commProb_def
 
-theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * commProb M' := by
+lemma commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * commProb M' := by
   simp_rw [commProb_def, div_mul_div_comm, Nat.card_prod, Nat.cast_mul, mul_pow, ← Nat.cast_mul,
     ← Nat.card_prod, Commute, SemiconjBy, Prod.ext_iff]
   congr 2
   exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.1.1.1, x.1.2.1⟩, x.2.1⟩, ⟨⟨x.1.1.2, x.1.2.2⟩, x.2.2⟩⟩,
     fun x => ⟨⟨⟨x.1.1.1, x.2.1.1⟩, ⟨x.1.1.2, x.2.1.2⟩⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => rfl, fun x => rfl⟩
 
-theorem commProb_pi {α : Type*} (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
+lemma commProb_pi {α : Type*} (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
     commProb (∀ a, i a) = ∏ a, commProb (i a) := by
   simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ← Nat.cast_prod,
     ← Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
@@ -61,23 +61,23 @@ theorem commProb_pi {α : Type*} (i : α → Type*) [Fintype α] [∀ a, Mul (i 
   exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
     fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
 
-theorem commProb_function {α β : Type*} [Fintype α] [Mul β] :
+lemma commProb_function {α β : Type*} [Fintype α] [Mul β] :
     commProb (α → β) = (commProb β) ^ Fintype.card α := by
   rw [commProb_pi, Finset.prod_const, Finset.card_univ]
 
 @[simp]
-theorem commProb_eq_zero_of_infinite [Infinite M] : commProb M = 0 :=
+lemma commProb_eq_zero_of_infinite [Infinite M] : commProb M = 0 :=
   div_eq_zero_iff.2 (Or.inl (Nat.cast_eq_zero.2 Nat.card_eq_zero_of_infinite))
 
 variable [Finite M]
 
-theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
+lemma commProb_pos [h : Nonempty M] : 0 < commProb M :=
   h.elim fun x ↦
     div_pos (Nat.cast_pos.mpr (Finite.card_pos_iff.mpr ⟨⟨(x, x), rfl⟩⟩))
       (pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2)
 #align comm_prob_pos commProb_pos
 
-theorem commProb_le_one : commProb M ≤ 1 := by
+lemma commProb_le_one : commProb M ≤ 1 := by
   refine' div_le_one_of_le _ (sq_nonneg (Nat.card M : ℚ))
   rw [← Nat.cast_pow, Nat.cast_le, sq, ← Nat.card_prod]
   apply Finite.card_subtype_le
@@ -85,7 +85,7 @@ theorem commProb_le_one : commProb M ≤ 1 := by
 
 variable {M}
 
-theorem commProb_eq_one_iff [h : Nonempty M] :
+lemma commProb_eq_one_iff [h : Nonempty M] :
     commProb M = 1 ↔ Commutative ((· * ·) : M → M → M) := by
   haveI := Fintype.ofFinite M
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
@@ -97,7 +97,7 @@ theorem commProb_eq_one_iff [h : Nonempty M] :
 
 variable (G : Type*) [Group G]
 
-theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
+lemma commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
   rw [commProb, card_comm_eq_card_conjClasses_mul_card, Nat.cast_mul, sq]
   by_cases h : (Nat.card G : ℚ) = 0
   · rw [h, zero_mul, div_zero, div_zero]
@@ -108,7 +108,7 @@ variable {G}
 variable [Finite G] (H : Subgroup G)
 
 set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
-theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : ℚ) ^ 2 := by
+lemma Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : ℚ) ^ 2 := by
   /- After rewriting with `commProb_def`, we reduce to showing that `G` has at least as many
       commuting pairs as `H`. -/
   rw [commProb_def, commProb_def, div_le_iff, mul_assoc, ← mul_pow, ← Nat.cast_mul,
@@ -119,7 +119,7 @@ theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : �
   · exact pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2
 #align subgroup.comm_prob_subgroup_le Subgroup.commProb_subgroup_le
 
-theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commProb G * Nat.card H := by
+lemma Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commProb G * Nat.card H := by
   /- After rewriting with `commProb_def'`, we reduce to showing that `G` has at least as many
       conjugacy classes as `G ⧸ H`. -/
   rw [commProb_def', commProb_def', div_le_iff, mul_assoc, ← Nat.cast_mul, ← Subgroup.index,
@@ -134,7 +134,7 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
 variable (G)
 
 set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
-theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ ≤ commProb G :=
+lemma inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ ≤ commProb G :=
   (inv_pos_le_iff_one_le_mul (Nat.cast_pos.mpr Finite.card_pos)).mpr
     (le_trans (ge_of_eq (commProb_eq_one_iff.mpr (Abelianization.commGroup G).mul_comm))
       (commutator G).commProb_quotient_le)

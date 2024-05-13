@@ -36,11 +36,11 @@ instance Prop.instBoundedOrder : BoundedOrder Prop where
   bot_le := @False.elim
 #align Prop.bounded_order Prop.instBoundedOrder
 
-theorem Prop.bot_eq_false : (⊥ : Prop) = False :=
+lemma Prop.bot_eq_false : (⊥ : Prop) = False :=
   rfl
 #align Prop.bot_eq_false Prop.bot_eq_false
 
-theorem Prop.top_eq_true : (⊤ : Prop) = True :=
+lemma Prop.top_eq_true : (⊤ : Prop) = True :=
   rfl
 #align Prop.top_eq_true Prop.top_eq_true
 
@@ -54,12 +54,12 @@ noncomputable instance Prop.linearOrder : LinearOrder Prop := by
 #align Prop.linear_order Prop.linearOrder
 
 @[simp]
-theorem sup_Prop_eq : (· ⊔ ·) = (· ∨ ·) :=
+lemma sup_Prop_eq : (· ⊔ ·) = (· ∨ ·) :=
   rfl
 #align sup_Prop_eq sup_Prop_eq
 
 @[simp]
-theorem inf_Prop_eq : (· ⊓ ·) = (· ∧ ·) :=
+lemma inf_Prop_eq : (· ⊓ ·) = (· ∧ ·) :=
   rfl
 #align inf_Prop_eq inf_Prop_eq
 
@@ -67,7 +67,7 @@ namespace Pi
 
 variable {ι : Type*} {α' : ι → Type*} [∀ i, PartialOrder (α' i)]
 
-theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
+lemma disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
     Disjoint f g ↔ ∀ i, Disjoint (f i) (g i) := by
   classical
   constructor
@@ -80,12 +80,12 @@ theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
     apply h i (hf i) (hg i)
 #align pi.disjoint_iff Pi.disjoint_iff
 
-theorem codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} :
+lemma codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} :
     Codisjoint f g ↔ ∀ i, Codisjoint (f i) (g i) :=
   @disjoint_iff _ (fun i => (α' i)ᵒᵈ) _ _ _ _
 #align pi.codisjoint_iff Pi.codisjoint_iff
 
-theorem isCompl_iff [∀ i, BoundedOrder (α' i)] {f g : ∀ i, α' i} :
+lemma isCompl_iff [∀ i, BoundedOrder (α' i)] {f g : ∀ i, α' i} :
     IsCompl f g ↔ ∀ i, IsCompl (f i) (g i) := by
   simp_rw [_root_.isCompl_iff, disjoint_iff, codisjoint_iff, forall_and]
 #align pi.is_compl_iff Pi.isCompl_iff
@@ -93,17 +93,17 @@ theorem isCompl_iff [∀ i, BoundedOrder (α' i)] {f g : ∀ i, α' i} :
 end Pi
 
 @[simp]
-theorem Prop.disjoint_iff {P Q : Prop} : Disjoint P Q ↔ ¬(P ∧ Q) :=
+lemma Prop.disjoint_iff {P Q : Prop} : Disjoint P Q ↔ ¬(P ∧ Q) :=
   disjoint_iff_inf_le
 #align Prop.disjoint_iff Prop.disjoint_iff
 
 @[simp]
-theorem Prop.codisjoint_iff {P Q : Prop} : Codisjoint P Q ↔ P ∨ Q :=
+lemma Prop.codisjoint_iff {P Q : Prop} : Codisjoint P Q ↔ P ∨ Q :=
   codisjoint_iff_le_sup.trans <| forall_const True
 #align Prop.codisjoint_iff Prop.codisjoint_iff
 
 @[simp]
-theorem Prop.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
+lemma Prop.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
   rw [_root_.isCompl_iff, Prop.disjoint_iff, Prop.codisjoint_iff, not_iff]
   by_cases P <;> by_cases Q <;> simp [*]
 #align Prop.is_compl_iff Prop.isCompl_iff

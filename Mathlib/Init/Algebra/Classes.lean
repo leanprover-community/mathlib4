@@ -288,35 +288,35 @@ variable {α : Sort u} {r : α → α → Prop}
 
 local infixl:50 " ≺ " => r
 
-theorem irrefl [IsIrrefl α r] (a : α) : ¬a ≺ a :=
+lemma irrefl [IsIrrefl α r] (a : α) : ¬a ≺ a :=
   IsIrrefl.irrefl a
 #align irrefl irrefl
 
-theorem refl [IsRefl α r] (a : α) : a ≺ a :=
+lemma refl [IsRefl α r] (a : α) : a ≺ a :=
   IsRefl.refl a
 #align refl refl
 
-theorem trans [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
+lemma trans [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
   IsTrans.trans _ _ _
 #align trans trans
 
-theorem symm [IsSymm α r] {a b : α} : a ≺ b → b ≺ a :=
+lemma symm [IsSymm α r] {a b : α} : a ≺ b → b ≺ a :=
   IsSymm.symm _ _
 #align symm symm
 
-theorem antisymm [IsAntisymm α r] {a b : α} : a ≺ b → b ≺ a → a = b :=
+lemma antisymm [IsAntisymm α r] {a b : α} : a ≺ b → b ≺ a → a = b :=
   IsAntisymm.antisymm _ _
 #align antisymm antisymm
 
-theorem asymm [IsAsymm α r] {a b : α} : a ≺ b → ¬b ≺ a :=
+lemma asymm [IsAsymm α r] {a b : α} : a ≺ b → ¬b ≺ a :=
   IsAsymm.asymm _ _
 #align asymm asymm
 
-theorem trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
+lemma trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   IsTrichotomous.trichotomous
 #align trichotomous trichotomous
 
-theorem incomp_trans [IsIncompTrans α r] {a b c : α} :
+lemma incomp_trans [IsIncompTrans α r] {a b c : α} :
     ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
   IsIncompTrans.incomp_trans _ _ _
 #align incomp_trans incomp_trans
@@ -331,42 +331,42 @@ section ExplicitRelationVariants
 variable (r)
 
 @[elab_without_expected_type]
-theorem irrefl_of [IsIrrefl α r] (a : α) : ¬a ≺ a :=
+lemma irrefl_of [IsIrrefl α r] (a : α) : ¬a ≺ a :=
   irrefl a
 #align irrefl_of irrefl_of
 
 @[elab_without_expected_type]
-theorem refl_of [IsRefl α r] (a : α) : a ≺ a :=
+lemma refl_of [IsRefl α r] (a : α) : a ≺ a :=
   refl a
 #align refl_of refl_of
 
 @[elab_without_expected_type]
-theorem trans_of [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
+lemma trans_of [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
   _root_.trans
 #align trans_of trans_of
 
 @[elab_without_expected_type]
-theorem symm_of [IsSymm α r] {a b : α} : a ≺ b → b ≺ a :=
+lemma symm_of [IsSymm α r] {a b : α} : a ≺ b → b ≺ a :=
   symm
 #align symm_of symm_of
 
 @[elab_without_expected_type]
-theorem asymm_of [IsAsymm α r] {a b : α} : a ≺ b → ¬b ≺ a :=
+lemma asymm_of [IsAsymm α r] {a b : α} : a ≺ b → ¬b ≺ a :=
   asymm
 #align asymm_of asymm_of
 
 @[elab_without_expected_type]
-theorem total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a :=
+lemma total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a :=
   IsTotal.total _ _
 #align total_of total_of
 
 @[elab_without_expected_type]
-theorem trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
+lemma trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   trichotomous
 #align trichotomous_of trichotomous_of
 
 @[elab_without_expected_type]
-theorem incomp_trans_of [IsIncompTrans α r] {a b c : α} :
+lemma incomp_trans_of [IsIncompTrans α r] {a b c : α} :
     ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
   incomp_trans
 #align incomp_trans_of incomp_trans_of
@@ -391,21 +391,21 @@ variable [IsStrictWeakOrder α r]
 
 local infixl:50 " ≈ " => @Equiv _ r
 
-theorem erefl (a : α) : a ≈ a :=
+lemma erefl (a : α) : a ≈ a :=
   ⟨irrefl a, irrefl a⟩
 #align strict_weak_order.erefl StrictWeakOrder.erefl
 
-theorem esymm {a b : α} : a ≈ b → b ≈ a := fun ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩
+lemma esymm {a b : α} : a ≈ b → b ≈ a := fun ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩
 #align strict_weak_order.esymm StrictWeakOrder.esymm
 
-theorem etrans {a b c : α} : a ≈ b → b ≈ c → a ≈ c :=
+lemma etrans {a b c : α} : a ≈ b → b ≈ c → a ≈ c :=
   incomp_trans
 #align strict_weak_order.etrans StrictWeakOrder.etrans
 
-theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h => h.1
+lemma not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h => h.1
 #align strict_weak_order.not_lt_of_equiv StrictWeakOrder.not_lt_of_equiv
 
-theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h => h.2
+lemma not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h => h.2
 #align strict_weak_order.not_lt_of_equiv' StrictWeakOrder.not_lt_of_equiv'
 
 instance isEquiv : IsEquiv α (@Equiv _ r) where
@@ -421,7 +421,7 @@ notation:50 a " ≈[" lt "]" b:50 => @Equiv _ lt a b--Equiv (r := lt) a b
 
 end StrictWeakOrder
 
-theorem isStrictWeakOrder_of_isTotalPreorder {α : Sort u} {le : α → α → Prop} {lt : α → α → Prop}
+lemma isStrictWeakOrder_of_isTotalPreorder {α : Sort u} {le : α → α → Prop} {lt : α → α → Prop}
     [DecidableRel le] [IsTotalPreorder α le] (h : ∀ a b, lt a b ↔ ¬le b a) :
     IsStrictWeakOrder α lt :=
   { trans := fun a b c hab hbc =>
@@ -443,7 +443,7 @@ theorem isStrictWeakOrder_of_isTotalPreorder {α : Sort u} {le : α → α → P
       And.intro (fun n => absurd hca (Iff.mp (h _ _) n)) fun n => absurd hac (Iff.mp (h _ _) n) }
 #align is_strict_weak_order_of_is_total_preorder isStrictWeakOrder_of_isTotalPreorder
 
-theorem lt_of_lt_of_incomp {α : Sort u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
+lemma lt_of_lt_of_incomp {α : Sort u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
     [DecidableRel lt] : ∀ {a b c}, lt a b → ¬lt b c ∧ ¬lt c b → lt a c :=
   @fun a b c hab ⟨nbc, ncb⟩ =>
   have nca : ¬lt c a := fun hca => absurd (trans_of lt hca hab) ncb
@@ -452,7 +452,7 @@ theorem lt_of_lt_of_incomp {α : Sort u} {lt : α → α → Prop} [IsStrictWeak
     absurd hab this.1
 #align lt_of_lt_of_incomp lt_of_lt_of_incomp
 
-theorem lt_of_incomp_of_lt {α : Sort u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
+lemma lt_of_incomp_of_lt {α : Sort u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
     [DecidableRel lt] : ∀ {a b c}, ¬lt a b ∧ ¬lt b a → lt b c → lt a c :=
   @fun a b c ⟨nab, nba⟩ hbc =>
   have nca : ¬lt c a := fun hca => absurd (trans_of lt hbc hca) nba
@@ -461,7 +461,7 @@ theorem lt_of_incomp_of_lt {α : Sort u} {lt : α → α → Prop} [IsStrictWeak
     absurd hbc this.1
 #align lt_of_incomp_of_lt lt_of_incomp_of_lt
 
-theorem eq_of_incomp {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α lt] {a b} :
+lemma eq_of_incomp {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α lt] {a b} :
     ¬lt a b ∧ ¬lt b a → a = b := fun ⟨nab, nba⟩ =>
   match trichotomous_of lt a b with
   | Or.inl hab => absurd hab nab
@@ -469,21 +469,21 @@ theorem eq_of_incomp {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α 
   | Or.inr (Or.inr hba) => absurd hba nba
 #align eq_of_incomp eq_of_incomp
 
-theorem eq_of_eqv_lt {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α lt] {a b} :
+lemma eq_of_eqv_lt {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α lt] {a b} :
     a ≈[lt]b → a = b :=
   eq_of_incomp
 #align eq_of_eqv_lt eq_of_eqv_lt
 
-theorem incomp_iff_eq {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α lt] [IsIrrefl α lt] (a b) :
+lemma incomp_iff_eq {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α lt] [IsIrrefl α lt] (a b) :
     ¬lt a b ∧ ¬lt b a ↔ a = b :=
   Iff.intro eq_of_incomp fun hab => hab ▸ And.intro (irrefl_of lt a) (irrefl_of lt a)
 #align incomp_iff_eq incomp_iff_eq
 
-theorem eqv_lt_iff_eq {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α lt] [IsIrrefl α lt] (a b) :
+lemma eqv_lt_iff_eq {α : Sort u} {lt : α → α → Prop} [IsTrichotomous α lt] [IsIrrefl α lt] (a b) :
     a ≈[lt]b ↔ a = b :=
   incomp_iff_eq a b
 #align eqv_lt_iff_eq eqv_lt_iff_eq
 
-theorem not_lt_of_lt {α : Sort u} {lt : α → α → Prop} [IsStrictOrder α lt] {a b} :
+lemma not_lt_of_lt {α : Sort u} {lt : α → α → Prop} [IsStrictOrder α lt] {a b} :
     lt a b → ¬lt b a := fun h₁ h₂ => absurd (trans_of lt h₁ h₂) (irrefl_of lt _)
 #align not_lt_of_lt not_lt_of_lt

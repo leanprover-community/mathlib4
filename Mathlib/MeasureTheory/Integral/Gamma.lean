@@ -18,7 +18,7 @@ open Real Set MeasureTheory MeasureTheory.Measure
 
 section real
 
-theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : - 1 < q) :
+lemma integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : - 1 < q) :
     ∫ x in Ioi (0:ℝ), x ^ q * exp (- x ^ p) = (1 / p) * Gamma ((q + 1) / p) := by
   calc
     _ = ∫ (x : ℝ) in Ioi 0,  (1 / p * x ^ (1 / p - 1)) • ((x ^ (1 / p)) ^ q * exp (-x)) := by
@@ -36,7 +36,7 @@ theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : - 1 < q) :
       simp_rw [show 1 / p - 1 + q / p = (q + 1) / p - 1 by field_simp; ring, ← integral_mul_left,
         ← mul_assoc]
 
-theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : - 1 < q) (hb : 0 < b) :
+lemma integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : - 1 < q) (hb : 0 < b) :
     ∫ x in Ioi (0:ℝ), x ^ q * exp (- b * x ^ p) =
       b ^ (-(q + 1) / p) * (1 / p) * Gamma ((q + 1) / p) := by
   calc
@@ -56,13 +56,13 @@ theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : - 1 
       · congr; ring
       all_goals positivity
 
-theorem integral_exp_neg_rpow {p : ℝ} (hp : 0 < p) :
+lemma integral_exp_neg_rpow {p : ℝ} (hp : 0 < p) :
     ∫ x in Ioi (0:ℝ), exp (- x ^ p) = Gamma (1 / p + 1) := by
   convert (integral_rpow_mul_exp_neg_rpow hp neg_one_lt_zero) using 1
   · simp_rw [rpow_zero, one_mul]
   · rw [zero_add, Gamma_add_one (one_div_ne_zero (ne_of_gt hp))]
 
-theorem integral_exp_neg_mul_rpow {p b : ℝ} (hp : 0 < p) (hb : 0 < b) :
+lemma integral_exp_neg_mul_rpow {p b : ℝ} (hp : 0 < p) (hb : 0 < b) :
     ∫ x in Ioi (0:ℝ), exp (- b * x ^ p) = b ^ (- 1 / p) * Gamma (1 / p + 1) := by
   convert (integral_rpow_mul_exp_neg_mul_rpow hp neg_one_lt_zero hb) using 1
   · simp_rw [rpow_zero, one_mul]
@@ -72,7 +72,7 @@ end real
 
 section complex
 
-theorem Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : - 2 < q) :
+lemma Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : - 2 < q) :
     ∫ x : ℂ, ‖x‖ ^ q * rexp (- ‖x‖ ^ p) = (2 * π / p) * Real.Gamma ((q + 2) / p) := by
   calc
     _ = ∫ x in Ioi (0:ℝ) ×ˢ Ioo (-π) π, x.1 * (|x.1| ^ q * rexp (-|x.1| ^ p)) := by
@@ -96,7 +96,7 @@ theorem Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : 
         one_add_one_eq_two]
       ring
 
-theorem Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) (hq : - 2 < q)
+lemma Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) (hq : - 2 < q)
     (hb : 0 < b) :
     ∫ x : ℂ, ‖x‖ ^ q * rexp (- b * ‖x‖ ^ p) = (2 * π / p) *
       b ^ (-(q + 2) / p) * Real.Gamma ((q + 2) / p) := by
@@ -122,14 +122,14 @@ theorem Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) 
         one_add_one_eq_two]
       ring
 
-theorem Complex.integral_exp_neg_rpow {p : ℝ} (hp : 1 ≤ p) :
+lemma Complex.integral_exp_neg_rpow {p : ℝ} (hp : 1 ≤ p) :
     ∫ x : ℂ, rexp (- ‖x‖ ^ p) = π * Real.Gamma (2 / p + 1) := by
   convert (integral_rpow_mul_exp_neg_rpow hp (by linarith : (-2:ℝ) < 0)) using 1
   · simp_rw [norm_eq_abs, rpow_zero, one_mul]
   · rw [zero_add, Real.Gamma_add_one (div_ne_zero two_ne_zero (by linarith))]
     ring
 
-theorem Complex.integral_exp_neg_mul_rpow {p b : ℝ} (hp : 1 ≤ p) (hb : 0 < b) :
+lemma Complex.integral_exp_neg_mul_rpow {p b : ℝ} (hp : 1 ≤ p) (hb : 0 < b) :
     ∫ x : ℂ, rexp (- b * ‖x‖ ^ p) = π * b ^ (-2 / p) * Real.Gamma (2 / p + 1) := by
   convert (integral_rpow_mul_exp_neg_mul_rpow hp (by linarith : (-2:ℝ) < 0)) hb using 1
   · simp_rw [norm_eq_abs, rpow_zero, one_mul]

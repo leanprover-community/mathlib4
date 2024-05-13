@@ -65,7 +65,7 @@ variable {R : Type u} [CommSemiring R]
 variable {A : Type u} [Semiring A] [Algebra R A]
 variable {B : Type u} [CommRing B] [Algebra R B] (I : Ideal B)
 
-theorem exists_lift {B : Type u} [CommRing B] [_RB : Algebra R B]
+lemma exists_lift {B : Type u} [CommRing B] [_RB : Algebra R B]
     [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I) (g : A →ₐ[R] B ⧸ I) :
     ∃ f : A →ₐ[R] B, (Ideal.Quotient.mkₐ R I).comp f = g := by
   revert g
@@ -96,13 +96,13 @@ noncomputable def lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
 #align algebra.formally_smooth.lift Algebra.FormallySmooth.lift
 
 @[simp]
-theorem comp_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
+lemma comp_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
     (g : A →ₐ[R] B ⧸ I) : (Ideal.Quotient.mkₐ R I).comp (FormallySmooth.lift I hI g) = g :=
   (FormallySmooth.exists_lift I hI g).choose_spec
 #align algebra.formally_smooth.comp_lift Algebra.FormallySmooth.comp_lift
 
 @[simp]
-theorem mk_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
+lemma mk_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
     (g : A →ₐ[R] B ⧸ I) (x : A) : Ideal.Quotient.mk I (FormallySmooth.lift I hI g x) = g x :=
   AlgHom.congr_fun (FormallySmooth.comp_lift I hI g : _) x
 #align algebra.formally_smooth.mk_lift Algebra.FormallySmooth.mk_lift
@@ -118,7 +118,7 @@ noncomputable def liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C)
 #align algebra.formally_smooth.lift_of_surjective Algebra.FormallySmooth.liftOfSurjective
 
 @[simp]
-theorem liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
+lemma liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker (g : B →+* C)) (x : A) :
     g (FormallySmooth.liftOfSurjective f g hg hg' x) = f x := by
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).symm.injective
@@ -132,7 +132,7 @@ theorem liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B �
 #align algebra.formally_smooth.lift_of_surjective_apply Algebra.FormallySmooth.liftOfSurjective_apply
 
 @[simp]
-theorem comp_liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
+lemma comp_liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker (g : B →+* C)) :
     g.comp (FormallySmooth.liftOfSurjective f g hg hg') = f :=
   AlgHom.ext (FormallySmooth.liftOfSurjective_apply f g hg hg')
@@ -145,7 +145,7 @@ section OfEquiv
 variable {R : Type u} [CommSemiring R]
 variable {A B : Type u} [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
-theorem of_equiv [FormallySmooth R A] (e : A ≃ₐ[R] B) : FormallySmooth R B := by
+lemma of_equiv [FormallySmooth R A] (e : A ≃ₐ[R] B) : FormallySmooth R B := by
   constructor
   intro C _ _ I hI f
   use (FormallySmooth.lift I ⟨2, hI⟩ (f.comp e : A →ₐ[R] C ⧸ I)).comp e.symm
@@ -185,7 +185,7 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [CommSemiring A] [Algebra R A]
 variable (B : Type u) [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
-theorem comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := by
+lemma comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := by
   constructor
   intro C _ _ I hI f
   obtain ⟨f', e⟩ := FormallySmooth.comp_surjective I hI (f.comp (IsScalarTower.toAlgHom R A B))
@@ -206,7 +206,7 @@ variable {P A : Type u} [CommRing A] [Algebra R A] [CommRing P] [Algebra R P]
 variable (I : Ideal P) (f : P →ₐ[R] A) (hf : Function.Surjective f)
 
 set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
-theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRingHom) ^ 2)
+lemma of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRingHom) ^ 2)
     (hg : f.kerSquareLift.comp g = AlgHom.id R A) : FormallySmooth R A := by
   constructor
   intro C _ _ I hI i
@@ -303,7 +303,7 @@ variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 -- Porting note: no longer supported
 -- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
 
-theorem of_isLocalization : FormallySmooth R Rₘ := by
+lemma of_isLocalization : FormallySmooth R Rₘ := by
   constructor
   intro Q _ _ I e f
   have : ∀ x : M, IsUnit (algebraMap R Q x) := by
@@ -320,7 +320,7 @@ theorem of_isLocalization : FormallySmooth R Rₘ := by
   simp
 #align algebra.formally_smooth.of_is_localization Algebra.FormallySmooth.of_isLocalization
 
-theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := by
+lemma localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := by
   constructor
   intro Q _ _ I e f
   letI := ((algebraMap Rₘ Q).comp (algebraMap R Rₘ)).toAlgebra
@@ -342,7 +342,7 @@ theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := 
   simp [f]
 #align algebra.formally_smooth.localization_base Algebra.FormallySmooth.localization_base
 
-theorem localization_map [FormallySmooth R S] : FormallySmooth Rₘ Sₘ := by
+lemma localization_map [FormallySmooth R S] : FormallySmooth Rₘ Sₘ := by
   haveI : FormallySmooth S Sₘ := FormallySmooth.of_isLocalization (M.map (algebraMap R S))
   haveI : FormallySmooth R Sₘ := FormallySmooth.comp R S Sₘ
   exact FormallySmooth.localization_base M

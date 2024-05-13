@@ -38,7 +38,7 @@ open Cardinal
 -- Porting note: `W` is a special name, exceptionally in upper case in Lean3
 set_option linter.uppercaseLean3 false
 
-theorem cardinal_mk_eq_sum' : #(WType β) = sum (fun a : α => #(WType β) ^ lift.{u} #(β a)) :=
+lemma cardinal_mk_eq_sum' : #(WType β) = sum (fun a : α => #(WType β) ^ lift.{u} #(β a)) :=
   (mk_congr <| equivSigma β).trans <| by
     simp_rw [mk_sigma, mk_arrow]; rw [lift_id'.{v, u}, lift_umax.{v, u}]
 
@@ -85,7 +85,7 @@ theorem cardinal_mk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
 
 variable {β : α → Type u}
 
-theorem cardinal_mk_eq_sum : #(WType β) = sum (fun a : α => #(WType β) ^ #(β a)) :=
+lemma cardinal_mk_eq_sum : #(WType β) = sum (fun a : α => #(WType β) ^ #(β a)) :=
   cardinal_mk_eq_sum'.trans <| by simp_rw [lift_id]
 #align W_type.cardinal_mk_eq_sum WType.cardinal_mk_eq_sum
 

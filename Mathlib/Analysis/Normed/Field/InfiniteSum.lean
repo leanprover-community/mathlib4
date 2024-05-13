@@ -30,20 +30,20 @@ open Finset
 
 /-! ### Arbitrary index types -/
 
-theorem Summable.mul_of_nonneg {f : ι → ℝ} {g : ι' → ℝ} (hf : Summable f) (hg : Summable g)
+lemma Summable.mul_of_nonneg {f : ι → ℝ} {g : ι' → ℝ} (hf : Summable f) (hg : Summable g)
     (hf' : 0 ≤ f) (hg' : 0 ≤ g) : Summable fun x : ι × ι' => f x.1 * g x.2 :=
   (summable_prod_of_nonneg fun _ ↦ mul_nonneg (hf' _) (hg' _)).2 ⟨fun x ↦ hg.mul_left (f x),
     by simpa only [hg.tsum_mul_left _] using hf.mul_right (∑' x, g x)⟩
 #align summable.mul_of_nonneg Summable.mul_of_nonneg
 
-theorem Summable.mul_norm {f : ι → R} {g : ι' → R} (hf : Summable fun x => ‖f x‖)
+lemma Summable.mul_norm {f : ι → R} {g : ι' → R} (hf : Summable fun x => ‖f x‖)
     (hg : Summable fun x => ‖g x‖) : Summable fun x : ι × ι' => ‖f x.1 * g x.2‖ :=
   .of_nonneg_of_le (fun _ ↦ norm_nonneg _)
     (fun x => norm_mul_le (f x.1) (g x.2))
     (hf.mul_of_nonneg hg (fun x => norm_nonneg <| f x) fun x => norm_nonneg <| g x : _)
 #align summable.mul_norm Summable.mul_norm
 
-theorem summable_mul_of_summable_norm [CompleteSpace R] {f : ι → R} {g : ι' → R}
+lemma summable_mul_of_summable_norm [CompleteSpace R] {f : ι → R} {g : ι' → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
     Summable fun x : ι × ι' => f x.1 * g x.2 :=
   (hf.mul_norm hg).of_norm
@@ -71,7 +71,7 @@ section Nat
 
 open Finset.Nat
 
-theorem summable_norm_sum_mul_antidiagonal_of_summable_norm {f g : ℕ → R}
+lemma summable_norm_sum_mul_antidiagonal_of_summable_norm {f g : ℕ → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
     Summable fun n => ‖∑ kl in antidiagonal n, f kl.1 * g kl.2‖ := by
   have :=
@@ -94,7 +94,7 @@ theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm [CompleteSpace R
   tsum_mul_tsum_eq_tsum_sum_antidiagonal hf.of_norm hg.of_norm (summable_mul_of_summable_norm hf hg)
 #align tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm
 
-theorem summable_norm_sum_mul_range_of_summable_norm {f g : ℕ → R} (hf : Summable fun x => ‖f x‖)
+lemma summable_norm_sum_mul_range_of_summable_norm {f g : ℕ → R} (hf : Summable fun x => ‖f x‖)
     (hg : Summable fun x => ‖g x‖) : Summable fun n => ‖∑ k in range (n + 1), f k * g (n - k)‖ := by
   simp_rw [← sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
   exact summable_norm_sum_mul_antidiagonal_of_summable_norm hf hg

@@ -39,38 +39,38 @@ instance [DecidableEq α] : DecidableEq (PLift α) :=
 instance [IsEmpty α] : IsEmpty (PLift α) :=
   Equiv.plift.isEmpty
 
-theorem up_injective : Injective (@up α) :=
+lemma up_injective : Injective (@up α) :=
   Equiv.plift.symm.injective
 #align plift.up_injective PLift.up_injective
 
-theorem up_surjective : Surjective (@up α) :=
+lemma up_surjective : Surjective (@up α) :=
   Equiv.plift.symm.surjective
 #align plift.up_surjective PLift.up_surjective
 
-theorem up_bijective : Bijective (@up α) :=
+lemma up_bijective : Bijective (@up α) :=
   Equiv.plift.symm.bijective
 #align plift.up_bijective PLift.up_bijective
 
 @[simp]
-theorem up_inj {x y : α} : up x = up y ↔ x = y :=
+lemma up_inj {x y : α} : up x = up y ↔ x = y :=
   up_injective.eq_iff
 #align plift.up_inj PLift.up_inj
 
-theorem down_surjective : Surjective (@down α) :=
+lemma down_surjective : Surjective (@down α) :=
   Equiv.plift.surjective
 #align plift.down_surjective PLift.down_surjective
 
-theorem down_bijective : Bijective (@down α) :=
+lemma down_bijective : Bijective (@down α) :=
   Equiv.plift.bijective
 #align plift.down_bijective PLift.down_bijective
 
 @[simp]
-theorem «forall» {p : PLift α → Prop} : (∀ x, p x) ↔ ∀ x : α, p (PLift.up x) :=
+lemma «forall» {p : PLift α → Prop} : (∀ x, p x) ↔ ∀ x : α, p (PLift.up x) :=
   up_surjective.forall
 #align plift.forall PLift.forall
 
 @[simp]
-theorem «exists» {p : PLift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (PLift.up x) :=
+lemma «exists» {p : PLift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (PLift.up x) :=
   up_surjective.exists
 #align plift.exists PLift.exists
 
@@ -104,38 +104,38 @@ instance [DecidableEq α] : DecidableEq (ULift α) :=
 instance [IsEmpty α] : IsEmpty (ULift α) :=
   Equiv.ulift.isEmpty
 
-theorem up_injective : Injective (@up α) :=
+lemma up_injective : Injective (@up α) :=
   Equiv.ulift.symm.injective
 #align ulift.up_injective ULift.up_injective
 
-theorem up_surjective : Surjective (@up α) :=
+lemma up_surjective : Surjective (@up α) :=
   Equiv.ulift.symm.surjective
 #align ulift.up_surjective ULift.up_surjective
 
-theorem up_bijective : Bijective (@up α) :=
+lemma up_bijective : Bijective (@up α) :=
   Equiv.ulift.symm.bijective
 #align ulift.up_bijective ULift.up_bijective
 
 @[simp]
-theorem up_inj {x y : α} : up x = up y ↔ x = y :=
+lemma up_inj {x y : α} : up x = up y ↔ x = y :=
   up_injective.eq_iff
 #align ulift.up_inj ULift.up_inj
 
-theorem down_surjective : Surjective (@down α) :=
+lemma down_surjective : Surjective (@down α) :=
   Equiv.ulift.surjective
 #align ulift.down_surjective ULift.down_surjective
 
-theorem down_bijective : Bijective (@down α) :=
+lemma down_bijective : Bijective (@down α) :=
   Equiv.ulift.bijective
 #align ulift.down_bijective ULift.down_bijective
 
 @[simp]
-theorem «forall» {p : ULift α → Prop} : (∀ x, p x) ↔ ∀ x : α, p (ULift.up x) :=
+lemma «forall» {p : ULift α → Prop} : (∀ x, p x) ↔ ∀ x : α, p (ULift.up x) :=
   up_surjective.forall
 #align ulift.forall ULift.forall
 
 @[simp]
-theorem «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULift.up x) :=
+lemma «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULift.up x) :=
   up_surjective.exists
 #align ulift.exists ULift.exists
 
@@ -150,11 +150,11 @@ theorem «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULi
   (down_bijective.of_comp_iff _).trans <| Bijective.of_comp_iff' up_bijective _
 
 @[ext]
-theorem ext (x y : ULift α) (h : x.down = y.down) : x = y :=
+lemma ext (x y : ULift α) (h : x.down = y.down) : x = y :=
   congrArg up h
 #align ulift.ext ULift.ext
 
-theorem ext_iff {α : Type*} (x y : ULift α) : x = y ↔ x.down = y.down :=
+lemma ext_iff {α : Type*} (x y : ULift α) : x = y ↔ x.down = y.down :=
   ⟨congrArg _, ULift.ext _ _⟩
 #align ulift.ext_iff ULift.ext_iff
 

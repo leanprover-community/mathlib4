@@ -39,7 +39,7 @@ protected theorem val_neg (u : αˣ) : (↑(-u) : α) = -u :=
 #align units.coe_neg Units.val_neg
 
 @[simp, norm_cast]
-protected theorem coe_neg_one : ((-1 : αˣ) : α) = -1 :=
+protected lemma coe_neg_one : ((-1 : αˣ) : α) = -1 :=
   rfl
 #align units.coe_neg_one Units.coe_neg_one
 
@@ -47,7 +47,7 @@ instance : HasDistribNeg αˣ :=
   Units.ext.hasDistribNeg _ Units.val_neg Units.val_mul
 
 @[field_simps]
-theorem neg_divp (a : α) (u : αˣ) : -(a /ₚ u) = -a /ₚ u := by simp only [divp, neg_mul]
+lemma neg_divp (a : α) (u : αˣ) : -(a /ₚ u) = -a /ₚ u := by simp only [divp, neg_mul]
 #align units.neg_divp Units.neg_divp
 
 end HasDistribNeg
@@ -58,43 +58,43 @@ variable [Ring α] {a b : α}
 
 -- Needs to have higher simp priority than divp_add_divp. 1000 is the default priority.
 @[field_simps 1010]
-theorem divp_add_divp_same (a b : α) (u : αˣ) : a /ₚ u + b /ₚ u = (a + b) /ₚ u := by
+lemma divp_add_divp_same (a b : α) (u : αˣ) : a /ₚ u + b /ₚ u = (a + b) /ₚ u := by
   simp only [divp, add_mul]
 #align units.divp_add_divp_same Units.divp_add_divp_same
 
 -- Needs to have higher simp priority than divp_sub_divp. 1000 is the default priority.
 @[field_simps 1010]
-theorem divp_sub_divp_same (a b : α) (u : αˣ) : a /ₚ u - b /ₚ u = (a - b) /ₚ u := by
+lemma divp_sub_divp_same (a b : α) (u : αˣ) : a /ₚ u - b /ₚ u = (a - b) /ₚ u := by
   rw [sub_eq_add_neg, sub_eq_add_neg, neg_divp, divp_add_divp_same]
 #align units.divp_sub_divp_same Units.divp_sub_divp_same
 
 @[field_simps]
-theorem add_divp (a b : α) (u : αˣ) : a + b /ₚ u = (a * u + b) /ₚ u := by
+lemma add_divp (a b : α) (u : αˣ) : a + b /ₚ u = (a * u + b) /ₚ u := by
   simp only [divp, add_mul, Units.mul_inv_cancel_right]
 #align units.add_divp Units.add_divp
 
 @[field_simps]
-theorem sub_divp (a b : α) (u : αˣ) : a - b /ₚ u = (a * u - b) /ₚ u := by
+lemma sub_divp (a b : α) (u : αˣ) : a - b /ₚ u = (a * u - b) /ₚ u := by
   simp only [divp, sub_mul, Units.mul_inv_cancel_right]
 #align units.sub_divp Units.sub_divp
 
 @[field_simps]
-theorem divp_add (a b : α) (u : αˣ) : a /ₚ u + b = (a + b * u) /ₚ u := by
+lemma divp_add (a b : α) (u : αˣ) : a /ₚ u + b = (a + b * u) /ₚ u := by
   simp only [divp, add_mul, Units.mul_inv_cancel_right]
 #align units.divp_add Units.divp_add
 
 @[field_simps]
-theorem divp_sub (a b : α) (u : αˣ) : a /ₚ u - b = (a - b * u) /ₚ u := by
+lemma divp_sub (a b : α) (u : αˣ) : a /ₚ u - b = (a - b * u) /ₚ u := by
   simp only [divp, sub_mul, sub_right_inj]
   rw [mul_assoc, Units.mul_inv, mul_one]
 #align units.divp_sub Units.divp_sub
 
 @[simp]
-protected theorem map_neg {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F α β]
+protected lemma map_neg {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F α β]
     (f : F) (u : αˣ) : map (f : α →* β) (-u) = -map (f : α →* β) u :=
   ext (by simp only [coe_map, Units.val_neg, MonoidHom.coe_coe, map_neg])
 
-protected theorem map_neg_one {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F α β]
+protected lemma map_neg_one {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F α β]
     (f : F) : map (f : α →* β) (-1) = -1 := by
   simp only [Units.map_neg, map_one]
 
@@ -102,25 +102,25 @@ end Ring
 
 end Units
 
-theorem IsUnit.neg [Monoid α] [HasDistribNeg α] {a : α} : IsUnit a → IsUnit (-a)
+lemma IsUnit.neg [Monoid α] [HasDistribNeg α] {a : α} : IsUnit a → IsUnit (-a)
   | ⟨x, hx⟩ => hx ▸ (-x).isUnit
 #align is_unit.neg IsUnit.neg
 
 @[simp]
-theorem IsUnit.neg_iff [Monoid α] [HasDistribNeg α] (a : α) : IsUnit (-a) ↔ IsUnit a :=
+lemma IsUnit.neg_iff [Monoid α] [HasDistribNeg α] (a : α) : IsUnit (-a) ↔ IsUnit a :=
   ⟨fun h => neg_neg a ▸ h.neg, IsUnit.neg⟩
 #align is_unit.neg_iff IsUnit.neg_iff
 
-theorem isUnit_neg_one [Monoid α] [HasDistribNeg α] : IsUnit (-1 : α) := isUnit_one.neg
+lemma isUnit_neg_one [Monoid α] [HasDistribNeg α] : IsUnit (-1 : α) := isUnit_one.neg
 
-theorem IsUnit.sub_iff [Ring α] {x y : α} : IsUnit (x - y) ↔ IsUnit (y - x) :=
+lemma IsUnit.sub_iff [Ring α] {x y : α} : IsUnit (x - y) ↔ IsUnit (y - x) :=
   (IsUnit.neg_iff _).symm.trans <| neg_sub x y ▸ Iff.rfl
 #align is_unit.sub_iff IsUnit.sub_iff
 
 namespace Units
 
 @[field_simps]
-theorem divp_add_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
+lemma divp_add_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ + b /ₚ u₂ = (a * u₂ + u₁ * b) /ₚ (u₁ * u₂) := by
   simp only [divp, add_mul, mul_inv_rev, val_mul]
   rw [mul_comm (↑u₁ * b), mul_comm b]
@@ -130,12 +130,12 @@ theorem divp_add_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
 #align units.divp_add_divp Units.divp_add_divp
 
 @[field_simps]
-theorem divp_sub_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
+lemma divp_sub_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ - b /ₚ u₂ = (a * u₂ - u₁ * b) /ₚ (u₁ * u₂) := by
   simp only [sub_eq_add_neg, neg_divp, divp_add_divp, mul_neg]
 #align units.divp_sub_divp Units.divp_sub_divp
 
-theorem add_eq_mul_one_add_div [Semiring R] {a : Rˣ} {b : R} : ↑a + b = a * (1 + ↑a⁻¹ * b) := by
+lemma add_eq_mul_one_add_div [Semiring R] {a : Rˣ} {b : R} : ↑a + b = a * (1 + ↑a⁻¹ * b) := by
   rw [mul_add, mul_one, ← mul_assoc, Units.mul_inv, one_mul]
 #align units.add_eq_mul_one_add_div Units.add_eq_mul_one_add_div
 

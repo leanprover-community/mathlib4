@@ -33,28 +33,28 @@ abbrev rank (f : V →ₗ[K] V') : Cardinal :=
   Module.rank K (LinearMap.range f)
 #align linear_map.rank LinearMap.rank
 
-theorem rank_le_range (f : V →ₗ[K] V') : rank f ≤ Module.rank K V' :=
+lemma rank_le_range (f : V →ₗ[K] V') : rank f ≤ Module.rank K V' :=
   rank_submodule_le _
 #align linear_map.rank_le_range LinearMap.rank_le_range
 
-theorem rank_le_domain (f : V →ₗ[K] V₁) : rank f ≤ Module.rank K V :=
+lemma rank_le_domain (f : V →ₗ[K] V₁) : rank f ≤ Module.rank K V :=
   rank_range_le _
 #align linear_map.rank_le_domain LinearMap.rank_le_domain
 
 @[simp]
-theorem rank_zero [Nontrivial K] : rank (0 : V →ₗ[K] V') = 0 := by
+lemma rank_zero [Nontrivial K] : rank (0 : V →ₗ[K] V') = 0 := by
   rw [rank, LinearMap.range_zero, rank_bot]
 #align linear_map.rank_zero LinearMap.rank_zero
 
 variable [AddCommGroup V''] [Module K V'']
 
-theorem rank_comp_le_left (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') : rank (f.comp g) ≤ rank f := by
+lemma rank_comp_le_left (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') : rank (f.comp g) ≤ rank f := by
   refine' rank_le_of_submodule _ _ _
   rw [LinearMap.range_comp]
   exact LinearMap.map_le_range
 #align linear_map.rank_comp_le_left LinearMap.rank_comp_le_left
 
-theorem lift_rank_comp_le_right (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') :
+lemma lift_rank_comp_le_right (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') :
     Cardinal.lift.{v'} (rank (f.comp g)) ≤ Cardinal.lift.{v''} (rank g) := by
   rw [rank, rank, LinearMap.range_comp]; exact lift_rank_map_le _ _
 #align linear_map.lift_rank_comp_le_right LinearMap.lift_rank_comp_le_right
@@ -68,7 +68,7 @@ theorem lift_rank_comp_le (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') :
 
 variable [AddCommGroup V'₁] [Module K V'₁]
 
-theorem rank_comp_le_right (g : V →ₗ[K] V') (f : V' →ₗ[K] V'₁) : rank (f.comp g) ≤ rank g := by
+lemma rank_comp_le_right (g : V →ₗ[K] V') (f : V' →ₗ[K] V'₁) : rank (f.comp g) ≤ rank g := by
   simpa only [Cardinal.lift_id] using lift_rank_comp_le_right g f
 #align linear_map.rank_comp_le_right LinearMap.rank_comp_le_right
 
@@ -87,7 +87,7 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
 variable [AddCommGroup V'] [Module K V']
 
-theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
+lemma rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
   calc
     rank (f + g) ≤ Module.rank K (LinearMap.range f ⊔ LinearMap.range g : Submodule K V') := by
       refine' rank_le_of_submodule _ _ _
@@ -97,13 +97,13 @@ theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
     _ ≤ rank f + rank g := Submodule.rank_add_le_rank_add_rank _ _
 #align linear_map.rank_add_le LinearMap.rank_add_le
 
-theorem rank_finset_sum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
+lemma rank_finset_sum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
     rank (∑ d in s, f d) ≤ ∑ d in s, rank (f d) :=
   @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
     (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (add_le_add_left h _)
 #align linear_map.rank_finset_sum_le LinearMap.rank_finset_sum_le
 
-theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :
+lemma le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :
     c ≤ rank f ↔ ∃ s : Set V,
     Cardinal.lift.{v'} #s = Cardinal.lift.{v} c ∧ LinearIndependent K (fun x : s => f x) := by
   rcases f.rangeRestrict.exists_rightInverse_of_surjective f.range_rangeRestrict with ⟨g, hg⟩
@@ -125,7 +125,7 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'}
     exact injOn_iff_injective.2 this.injective
 #align linear_map.le_rank_iff_exists_linear_independent LinearMap.le_rank_iff_exists_linearIndependent
 
-theorem le_rank_iff_exists_linearIndependent_finset {n : ℕ} {f : V →ₗ[K] V'} :
+lemma le_rank_iff_exists_linearIndependent_finset {n : ℕ} {f : V →ₗ[K] V'} :
     ↑n ≤ rank f ↔ ∃ s : Finset V, s.card = n ∧ LinearIndependent K fun x : (s : Set V) => f x := by
   simp only [le_rank_iff_exists_linearIndependent, Cardinal.lift_natCast, Cardinal.lift_eq_nat_iff,
     Cardinal.mk_set_eq_nat_iff_finset]

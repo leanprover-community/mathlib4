@@ -77,20 +77,20 @@ We start with simple observations.
 -/
 
 
-protected theorem summable {m : ℝ} (hm : 1 < m) : Summable fun i : ℕ => 1 / m ^ i ! :=
+protected lemma summable {m : ℝ} (hm : 1 < m) : Summable fun i : ℕ => 1 / m ^ i ! :=
   summable_one_div_pow_of_le hm Nat.self_le_factorial
 #align liouville_number.summable LiouvilleNumber.summable
 
-theorem remainder_summable {m : ℝ} (hm : 1 < m) (k : ℕ) :
+lemma remainder_summable {m : ℝ} (hm : 1 < m) (k : ℕ) :
     Summable fun i : ℕ => 1 / m ^ (i + (k + 1))! := by
   convert (summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
 #align liouville_number.remainder_summable LiouvilleNumber.remainder_summable
 
-theorem remainder_pos {m : ℝ} (hm : 1 < m) (k : ℕ) : 0 < remainder m k :=
+lemma remainder_pos {m : ℝ} (hm : 1 < m) (k : ℕ) : 0 < remainder m k :=
   tsum_pos (remainder_summable hm k) (fun _ => by positivity) 0 (by positivity)
 #align liouville_number.remainder_pos LiouvilleNumber.remainder_pos
 
-theorem partialSum_succ (m : ℝ) (n : ℕ) :
+lemma partialSum_succ (m : ℝ) (n : ℕ) :
     partialSum m (n + 1) = partialSum m n + 1 / m ^ (n + 1)! :=
   sum_range_succ _ _
 #align liouville_number.partial_sum_succ LiouvilleNumber.partialSum_succ
@@ -134,7 +134,7 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
     _ = (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) := by rw [tsum_geometric_of_lt_one (by positivity) mi]
 #align liouville_number.remainder_lt' LiouvilleNumber.remainder_lt'
 
-theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
+lemma aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
     (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) ≤ 1 / (m ^ n !) ^ n :=
   calc
     (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) ≤ 2 * (1 / m ^ (n + 1)!) :=
@@ -190,7 +190,7 @@ end LiouvilleNumber
 
 open LiouvilleNumber
 
-theorem liouville_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) : Liouville (liouvilleNumber m) := by
+lemma liouville_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) : Liouville (liouvilleNumber m) := by
   -- two useful inequalities
   have mZ1 : 1 < (m : ℤ) := by norm_cast
   have m1 : 1 < (m : ℝ) := by norm_cast
@@ -206,7 +206,7 @@ theorem liouville_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) : Liouville (liouvill
   simpa [abs_of_pos hpos, hpos.ne'] using @remainder_lt n m (by assumption_mod_cast)
 #align liouville_liouville_number liouville_liouvilleNumber
 
-theorem transcendental_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) :
+lemma transcendental_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) :
     Transcendental ℤ (liouvilleNumber m) :=
   (liouville_liouvilleNumber hm).transcendental
 #align transcendental_liouville_number transcendental_liouvilleNumber

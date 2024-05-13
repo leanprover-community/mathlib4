@@ -106,7 +106,7 @@ theorem StrictConvexSpace.of_norm_combo_lt_one
     sub_eq_iff_eq_add.2 hab.symm]
 #align strict_convex_space.of_norm_combo_lt_one StrictConvexSpace.of_norm_combo_lt_one
 
-theorem StrictConvexSpace.of_norm_combo_ne_one
+lemma StrictConvexSpace.of_norm_combo_ne_one
     (h :
       ∀ x y : E,
         ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ∃ a b : ℝ, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ ‖a • x + b • y‖ ≠ 1) :
@@ -120,7 +120,7 @@ theorem StrictConvexSpace.of_norm_combo_ne_one
   exact ⟨_, ⟨a, b, ha, hb, hab, rfl⟩, mt mem_sphere_zero_iff_norm.1 hne'⟩
 #align strict_convex_space.of_norm_combo_ne_one StrictConvexSpace.of_norm_combo_ne_one
 
-theorem StrictConvexSpace.of_norm_add_ne_two
+lemma StrictConvexSpace.of_norm_add_ne_two
     (h : ∀ ⦃x y : E⦄, ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ‖x + y‖ ≠ 2) : StrictConvexSpace ℝ E := by
   refine'
     StrictConvexSpace.of_norm_combo_ne_one fun x y hx hy hne =>
@@ -130,7 +130,7 @@ theorem StrictConvexSpace.of_norm_add_ne_two
   exact h hx hy hne
 #align strict_convex_space.of_norm_add_ne_two StrictConvexSpace.of_norm_add_ne_two
 
-theorem StrictConvexSpace.of_pairwise_sphere_norm_ne_two
+lemma StrictConvexSpace.of_pairwise_sphere_norm_ne_two
     (h : (sphere (0 : E) 1).Pairwise fun x y => ‖x + y‖ ≠ 2) : StrictConvexSpace ℝ E :=
   StrictConvexSpace.of_norm_add_ne_two fun _ _ hx hy =>
     h (mem_sphere_zero_iff_norm.2 hx) (mem_sphere_zero_iff_norm.2 hy)
@@ -189,12 +189,12 @@ theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x�
     div_eq_inv_mul, div_lt_one hxy] at this
 #align norm_add_lt_of_not_same_ray norm_add_lt_of_not_sameRay
 
-theorem lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x‖ - ‖y‖ < ‖x - y‖ := by
+lemma lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x‖ - ‖y‖ < ‖x - y‖ := by
   nth_rw 1 [← sub_add_cancel x y] at h ⊢
   exact sub_lt_iff_lt_add.2 (norm_add_lt_of_not_sameRay fun H' => h <| H'.add_left SameRay.rfl)
 #align lt_norm_sub_of_not_same_ray lt_norm_sub_of_not_sameRay
 
-theorem abs_lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : |‖x‖ - ‖y‖| < ‖x - y‖ := by
+lemma abs_lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : |‖x‖ - ‖y‖| < ‖x - y‖ := by
   refine' abs_sub_lt_iff.2 ⟨lt_norm_sub_of_not_sameRay h, _⟩
   rw [norm_sub_rev]
   exact lt_norm_sub_of_not_sameRay (mt SameRay.symm h)
@@ -218,16 +218,16 @@ theorem not_sameRay_iff_norm_add_lt : ¬SameRay ℝ x y ↔ ‖x + y‖ < ‖x�
   sameRay_iff_norm_add.not.trans (norm_add_le _ _).lt_iff_ne.symm
 #align not_same_ray_iff_norm_add_lt not_sameRay_iff_norm_add_lt
 
-theorem sameRay_iff_norm_sub : SameRay ℝ x y ↔ ‖x - y‖ = |‖x‖ - ‖y‖| :=
+lemma sameRay_iff_norm_sub : SameRay ℝ x y ↔ ‖x - y‖ = |‖x‖ - ‖y‖| :=
   ⟨SameRay.norm_sub, fun h =>
     Classical.not_not.1 fun h' => (abs_lt_norm_sub_of_not_sameRay h').ne' h⟩
 #align same_ray_iff_norm_sub sameRay_iff_norm_sub
 
-theorem not_sameRay_iff_abs_lt_norm_sub : ¬SameRay ℝ x y ↔ |‖x‖ - ‖y‖| < ‖x - y‖ :=
+lemma not_sameRay_iff_abs_lt_norm_sub : ¬SameRay ℝ x y ↔ |‖x‖ - ‖y‖| < ‖x - y‖ :=
   sameRay_iff_norm_sub.not.trans <| ne_comm.trans (abs_norm_sub_norm_le _ _).lt_iff_ne.symm
 #align not_same_ray_iff_abs_lt_norm_sub not_sameRay_iff_abs_lt_norm_sub
 
-theorem norm_midpoint_lt_iff (h : ‖x‖ = ‖y‖) : ‖(1 / 2 : ℝ) • (x + y)‖ < ‖x‖ ↔ x ≠ y := by
+lemma norm_midpoint_lt_iff (h : ‖x‖ = ‖y‖) : ‖(1 / 2 : ℝ) • (x + y)‖ < ‖x‖ ↔ x ≠ y := by
   rw [norm_smul, Real.norm_of_nonneg (one_div_nonneg.2 zero_le_two), ← inv_eq_one_div, ←
     div_eq_inv_mul, div_lt_iff (zero_lt_two' ℝ), mul_two, ← not_sameRay_iff_of_norm_eq h,
     not_sameRay_iff_norm_add_lt, h]

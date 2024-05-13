@@ -66,7 +66,7 @@ variable {R : Type u} [CommSemiring R]
 variable {A : Type u} [Semiring A] [Algebra R A]
 variable {B : Type u} [CommRing B] [Algebra R B] (I : Ideal B)
 
-theorem lift_unique {B : Type u} [CommRing B] [_RB : Algebra R B]
+lemma lift_unique {B : Type u} [CommRing B] [_RB : Algebra R B]
     [FormallyUnramified R A] (I : Ideal B) (hI : IsNilpotent I) (g₁ g₂ : A →ₐ[R] B)
     (h : (Ideal.Quotient.mkₐ R I).comp g₁ = (Ideal.Quotient.mkₐ R I).comp g₂) : g₁ = g₂ := by
   revert g₁ g₂
@@ -83,12 +83,12 @@ theorem lift_unique {B : Type u} [CommRing B] [_RB : Algebra R B]
     rwa [Ideal.Quotient.eq, ← map_sub, Ideal.mem_quotient_iff_mem hIJ, ← Ideal.Quotient.eq]
 #align algebra.formally_unramified.lift_unique Algebra.FormallyUnramified.lift_unique
 
-theorem ext [FormallyUnramified R A] (hI : IsNilpotent I) {g₁ g₂ : A →ₐ[R] B}
+lemma ext [FormallyUnramified R A] (hI : IsNilpotent I) {g₁ g₂ : A →ₐ[R] B}
     (H : ∀ x, Ideal.Quotient.mk I (g₁ x) = Ideal.Quotient.mk I (g₂ x)) : g₁ = g₂ :=
   FormallyUnramified.lift_unique I hI g₁ g₂ (AlgHom.ext H)
 #align algebra.formally_unramified.ext Algebra.FormallyUnramified.ext
 
-theorem lift_unique_of_ringHom [FormallyUnramified R A] {C : Type u} [CommRing C]
+lemma lift_unique_of_ringHom [FormallyUnramified R A] {C : Type u} [CommRing C]
     (f : B →+* C) (hf : IsNilpotent <| RingHom.ker f) (g₁ g₂ : A →ₐ[R] B)
     (h : f.comp ↑g₁ = f.comp (g₂ : A →+* B)) : g₁ = g₂ :=
   FormallyUnramified.lift_unique _ hf _ _
@@ -99,13 +99,13 @@ theorem lift_unique_of_ringHom [FormallyUnramified R A] {C : Type u} [CommRing C
         RingHom.mem_ker, map_sub, sub_eq_zero])
 #align algebra.formally_unramified.lift_unique_of_ring_hom Algebra.FormallyUnramified.lift_unique_of_ringHom
 
-theorem ext' [FormallyUnramified R A] {C : Type u} [CommRing C] (f : B →+* C)
+lemma ext' [FormallyUnramified R A] {C : Type u} [CommRing C] (f : B →+* C)
     (hf : IsNilpotent <| RingHom.ker f) (g₁ g₂ : A →ₐ[R] B) (h : ∀ x, f (g₁ x) = f (g₂ x)) :
     g₁ = g₂ :=
   FormallyUnramified.lift_unique_of_ringHom f hf g₁ g₂ (RingHom.ext h)
 #align algebra.formally_unramified.ext' Algebra.FormallyUnramified.ext'
 
-theorem lift_unique' [FormallyUnramified R A] {C : Type u} [CommRing C]
+lemma lift_unique' [FormallyUnramified R A] {C : Type u} [CommRing C]
     [Algebra R C] (f : B →ₐ[R] C) (hf : IsNilpotent <| RingHom.ker (f : B →+* C))
     (g₁ g₂ : A →ₐ[R] B) (h : f.comp g₁ = f.comp g₂) : g₁ = g₂ :=
   FormallyUnramified.ext' _ hf g₁ g₂ (AlgHom.congr_fun h)
@@ -118,7 +118,7 @@ section OfEquiv
 variable {R : Type u} [CommSemiring R]
 variable {A B : Type u} [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
-theorem of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B) :
+lemma of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B) :
     FormallyUnramified R B := by
   constructor
   intro C _ _ I hI f₁ f₂ e'
@@ -136,7 +136,7 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [CommSemiring A] [Algebra R A]
 variable (B : Type u) [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
-theorem comp [FormallyUnramified R A] [FormallyUnramified A B] :
+lemma comp [FormallyUnramified R A] [FormallyUnramified A B] :
     FormallyUnramified R B := by
   constructor
   intro C _ _ I hI f₁ f₂ e
@@ -152,7 +152,7 @@ theorem comp [FormallyUnramified R A] [FormallyUnramified A B] :
   exact FormallyUnramified.ext I ⟨2, hI⟩ (AlgHom.congr_fun e)
 #align algebra.formally_unramified.comp Algebra.FormallyUnramified.comp
 
-theorem of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
+lemma of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
   constructor
   intro Q _ _ I e f₁ f₂ e'
   letI := ((algebraMap A Q).comp (algebraMap R A)).toAlgebra
@@ -219,7 +219,7 @@ theorem localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ 
   FormallyUnramified.of_comp R Rₘ Sₘ
 #align algebra.formally_unramified.localization_base Algebra.FormallyUnramified.localization_base
 
-theorem localization_map [FormallyUnramified R S] :
+lemma localization_map [FormallyUnramified R S] :
     FormallyUnramified Rₘ Sₘ := by
   haveI : FormallyUnramified S Sₘ :=
     FormallyUnramified.of_isLocalization (M.map (algebraMap R S))

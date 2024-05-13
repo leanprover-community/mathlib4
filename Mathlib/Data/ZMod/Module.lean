@@ -47,11 +47,11 @@ variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [FunLike F M M₁]
 
 namespace ZMod
 
-theorem map_smul (f : F) (c : ZMod n) (x : M) : f (c • x) = c • f x := by
+lemma map_smul (f : F) (c : ZMod n) (x : M) : f (c • x) = c • f x := by
   rw [← ZMod.intCast_zmod_cast c]
   exact map_intCast_smul f _ _ (cast c) x
 
-theorem smul_mem (hx : x ∈ K) (c : ZMod n) : c • x ∈ K := by
+lemma smul_mem (hx : x ∈ K) (c : ZMod n) : c • x ∈ K := by
   rw [← ZMod.intCast_zmod_cast c, ← zsmul_eq_smul_cast]
   exact zsmul_mem hx (cast c)
 
@@ -67,11 +67,11 @@ See also:
 `AddMonoidHom.toIntLinearMap`, `AddMonoidHom.toNatLinearMap`, `AddMonoidHom.toRatLinearMap` -/
 def toZModLinearMap (f : M →+ M₁) : M →ₗ[ZMod n] M₁ := { f with map_smul' := ZMod.map_smul f }
 
-theorem toZModLinearMap_injective: Function.Injective <| toZModLinearMap n (M := M) (M₁ := M₁) :=
+lemma toZModLinearMap_injective: Function.Injective <| toZModLinearMap n (M := M) (M₁ := M₁) :=
   fun _ _ h ↦ ext fun x ↦ congr($h x)
 
 @[simp]
-theorem coe_toZModLinearMap (f : M →+ M₁) : ⇑(f.toZModLinearMap n) = f := rfl
+lemma coe_toZModLinearMap (f : M →+ M₁) : ⇑(f.toZModLinearMap n) = f := rfl
 
 end AddMonoidHom
 
@@ -88,21 +88,21 @@ def toZModSubmodule : AddSubgroup M ≃o Submodule (ZMod n) M where
   map_rel_iff' := Iff.rfl
 
 @[simp]
-theorem toZModSubmodule_symm :
+lemma toZModSubmodule_symm :
     ⇑((toZModSubmodule n).symm : _ ≃o AddSubgroup M) = Submodule.toAddSubgroup :=
   rfl
 
 @[simp]
-theorem coe_toZModSubmodule (S : AddSubgroup M) : (toZModSubmodule n S : Set M) = S :=
+lemma coe_toZModSubmodule (S : AddSubgroup M) : (toZModSubmodule n S : Set M) = S :=
   rfl
 
 @[simp]
-theorem toZModSubmodule_toAddSubgroup (S : AddSubgroup M) :
+lemma toZModSubmodule_toAddSubgroup (S : AddSubgroup M) :
     (toZModSubmodule n S).toAddSubgroup = S :=
   rfl
 
 @[simp]
-theorem _root_.Submodule.toAddSubgroup_toZModSubmodule (S : Submodule (ZMod n) M) :
+lemma _root_.Submodule.toAddSubgroup_toZModSubmodule (S : Submodule (ZMod n) M) :
     toZModSubmodule n S.toAddSubgroup = S :=
   rfl
 

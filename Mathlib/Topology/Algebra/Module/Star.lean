@@ -47,22 +47,22 @@ def starL' (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [TrivialStar R]
 variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
   [Module R A] [StarAddMonoid A] [StarModule R A] [Invertible (2 : R)] [TopologicalSpace A]
 
-theorem continuous_selfAdjointPart [ContinuousAdd A] [ContinuousStar A] [ContinuousConstSMul R A] :
+lemma continuous_selfAdjointPart [ContinuousAdd A] [ContinuousStar A] [ContinuousConstSMul R A] :
     Continuous (@selfAdjointPart R A _ _ _ _ _ _ _ _) :=
   ((continuous_const_smul _).comp <| continuous_id.add continuous_star).subtype_mk _
 #align continuous_self_adjoint_part continuous_selfAdjointPart
 
-theorem continuous_skewAdjointPart [ContinuousSub A] [ContinuousStar A] [ContinuousConstSMul R A] :
+lemma continuous_skewAdjointPart [ContinuousSub A] [ContinuousStar A] [ContinuousConstSMul R A] :
     Continuous (@skewAdjointPart R A _ _ _ _ _ _ _ _) :=
   ((continuous_const_smul _).comp <| continuous_id.sub continuous_star).subtype_mk _
 #align continuous_skew_adjoint_part continuous_skewAdjointPart
 
-theorem continuous_decomposeProdAdjoint [TopologicalAddGroup A] [ContinuousStar A]
+lemma continuous_decomposeProdAdjoint [TopologicalAddGroup A] [ContinuousStar A]
     [ContinuousConstSMul R A] : Continuous (StarModule.decomposeProdAdjoint R A) :=
   (continuous_selfAdjointPart R A).prod_mk (continuous_skewAdjointPart R A)
 #align continuous_decompose_prod_adjoint continuous_decomposeProdAdjoint
 
-theorem continuous_decomposeProdAdjoint_symm [TopologicalAddGroup A] :
+lemma continuous_decomposeProdAdjoint_symm [TopologicalAddGroup A] :
     Continuous (StarModule.decomposeProdAdjoint R A).symm :=
   (continuous_subtype_val.comp continuous_fst).add (continuous_subtype_val.comp continuous_snd)
 #align continuous_decompose_prod_adjoint_symm continuous_decomposeProdAdjoint_symm

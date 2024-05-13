@@ -135,7 +135,7 @@ def PreservesKernel.iso : G.obj (kernel f) ≅ kernel (G.map f) :=
 #align category_theory.limits.preserves_kernel.iso CategoryTheory.Limits.PreservesKernel.iso
 
 @[simp]
-theorem PreservesKernel.iso_hom : (PreservesKernel.iso G f).hom = kernelComparison f G := by
+lemma PreservesKernel.iso_hom : (PreservesKernel.iso G f).hom = kernelComparison f G := by
   rw [← cancel_mono (kernel.ι _)]
   simp [PreservesKernel.iso]
 #align category_theory.limits.preserves_kernel.iso_hom CategoryTheory.Limits.PreservesKernel.iso_hom
@@ -145,7 +145,7 @@ instance : IsIso (kernelComparison f G) := by
   infer_instance
 
 @[reassoc]
-theorem kernel_map_comp_preserves_kernel_iso_inv {X' Y' : C} (g : X' ⟶ Y') [HasKernel g]
+lemma kernel_map_comp_preserves_kernel_iso_inv {X' Y' : C} (g : X' ⟶ Y') [HasKernel g]
     [HasKernel (G.map g)] [PreservesLimit (parallelPair g 0) G] (p : X ⟶ X') (q : Y ⟶ Y')
     (hpq : f ≫ q = p ≫ g) :
     kernel.map (G.map f) (G.map g) (G.map p) (G.map q) (by rw [← G.map_comp, hpq, G.map_comp]) ≫
@@ -264,7 +264,7 @@ def PreservesCokernel.iso : G.obj (cokernel f) ≅ cokernel (G.map f) :=
 #align category_theory.limits.preserves_cokernel.iso CategoryTheory.Limits.PreservesCokernel.iso
 
 @[simp]
-theorem PreservesCokernel.iso_inv : (PreservesCokernel.iso G f).inv = cokernelComparison f G := by
+lemma PreservesCokernel.iso_inv : (PreservesCokernel.iso G f).inv = cokernelComparison f G := by
   rw [← cancel_epi (cokernel.π _)]
   simp [PreservesCokernel.iso]
 #align category_theory.limits.preserves_cokernel.iso_inv CategoryTheory.Limits.PreservesCokernel.iso_inv
@@ -274,7 +274,7 @@ instance : IsIso (cokernelComparison f G) := by
   infer_instance
 
 @[reassoc]
-theorem preserves_cokernel_iso_comp_cokernel_map {X' Y' : C} (g : X' ⟶ Y') [HasCokernel g]
+lemma preserves_cokernel_iso_comp_cokernel_map {X' Y' : C} (g : X' ⟶ Y') [HasCokernel g]
     [HasCokernel (G.map g)] [PreservesColimit (parallelPair g 0) G] (p : X ⟶ X') (q : Y ⟶ Y')
     (hpq : f ≫ q = p ≫ g) :
     (PreservesCokernel.iso G _).hom ≫

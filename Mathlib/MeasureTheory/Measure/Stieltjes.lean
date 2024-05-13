@@ -60,27 +60,27 @@ initialize_simps_projections StieltjesFunction (toFun → apply)
 
 variable (f : StieltjesFunction)
 
-theorem mono : Monotone f :=
+lemma mono : Monotone f :=
   f.mono'
 #align stieltjes_function.mono StieltjesFunction.mono
 
-theorem right_continuous (x : ℝ) : ContinuousWithinAt f (Ici x) x :=
+lemma right_continuous (x : ℝ) : ContinuousWithinAt f (Ici x) x :=
   f.right_continuous' x
 #align stieltjes_function.right_continuous StieltjesFunction.right_continuous
 
-theorem rightLim_eq (f : StieltjesFunction) (x : ℝ) : Function.rightLim f x = f x := by
+lemma rightLim_eq (f : StieltjesFunction) (x : ℝ) : Function.rightLim f x = f x := by
   rw [← f.mono.continuousWithinAt_Ioi_iff_rightLim_eq, continuousWithinAt_Ioi_iff_Ici]
   exact f.right_continuous' x
 #align stieltjes_function.right_lim_eq StieltjesFunction.rightLim_eq
 
-theorem iInf_Ioi_eq (f : StieltjesFunction) (x : ℝ) : ⨅ r : Ioi x, f r = f x := by
+lemma iInf_Ioi_eq (f : StieltjesFunction) (x : ℝ) : ⨅ r : Ioi x, f r = f x := by
   suffices Function.rightLim f x = ⨅ r : Ioi x, f r by rw [← this, f.rightLim_eq]
   rw [f.mono.rightLim_eq_sInf, sInf_image']
   rw [← neBot_iff]
   infer_instance
 #align stieltjes_function.infi_Ioi_eq StieltjesFunction.iInf_Ioi_eq
 
-theorem iInf_rat_gt_eq (f : StieltjesFunction) (x : ℝ) :
+lemma iInf_rat_gt_eq (f : StieltjesFunction) (x : ℝ) :
     ⨅ r : { r' : ℚ // x < r' }, f r = f x := by
   rw [← iInf_Ioi_eq f x]
   refine' (Real.iInf_Ioi_eq_iInf_rat_gt _ _ f.mono).symm
@@ -99,7 +99,7 @@ protected def id : StieltjesFunction where
 #align stieltjes_function.id_apply StieltjesFunction.id_apply
 
 @[simp]
-theorem id_leftLim (x : ℝ) : leftLim StieltjesFunction.id x = x :=
+lemma id_leftLim (x : ℝ) : leftLim StieltjesFunction.id x = x :=
   tendsto_nhds_unique (StieltjesFunction.id.mono.tendsto_leftLim x) <|
     continuousAt_id.tendsto.mono_left nhdsWithin_le_nhds
 #align stieltjes_function.id_left_lim StieltjesFunction.id_leftLim
@@ -130,12 +130,12 @@ noncomputable def _root_.Monotone.stieltjesFunction {f : ℝ → ℝ} (hf : Mono
       _ < u := (h'y ⟨hz.1.trans_lt za, ay.le⟩).2
 #align monotone.stieltjes_function Monotone.stieltjesFunction
 
-theorem _root_.Monotone.stieltjesFunction_eq {f : ℝ → ℝ} (hf : Monotone f) (x : ℝ) :
+lemma _root_.Monotone.stieltjesFunction_eq {f : ℝ → ℝ} (hf : Monotone f) (x : ℝ) :
     hf.stieltjesFunction x = rightLim f x :=
   rfl
 #align monotone.stieltjes_function_eq Monotone.stieltjesFunction_eq
 
-theorem countable_leftLim_ne (f : StieltjesFunction) : Set.Countable { x | leftLim f x ≠ f x } := by
+lemma countable_leftLim_ne (f : StieltjesFunction) : Set.Countable { x | leftLim f x ≠ f x } := by
   refine Countable.mono ?_ f.mono.countable_not_continuousAt
   intro x hx h'x
   apply hx
@@ -152,12 +152,12 @@ def length (s : Set ℝ) : ℝ≥0∞ :=
 #align stieltjes_function.length StieltjesFunction.length
 
 @[simp]
-theorem length_empty : f.length ∅ = 0 :=
+lemma length_empty : f.length ∅ = 0 :=
   nonpos_iff_eq_zero.1 <| iInf_le_of_le 0 <| iInf_le_of_le 0 <| by simp
 #align stieltjes_function.length_empty StieltjesFunction.length_empty
 
 @[simp]
-theorem length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by
+lemma length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by
   refine'
     le_antisymm (iInf_le_of_le a <| iInf₂_le b Subset.rfl)
       (le_iInf fun a' => le_iInf fun b' => le_iInf fun h => ENNReal.coe_le_coe.2 _)
@@ -168,7 +168,7 @@ theorem length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by
   exact Real.toNNReal_le_toNNReal (sub_le_sub (f.mono h₁) (f.mono h₂))
 #align stieltjes_function.length_Ioc StieltjesFunction.length_Ioc
 
-theorem length_mono {s₁ s₂ : Set ℝ} (h : s₁ ⊆ s₂) : f.length s₁ ≤ f.length s₂ :=
+lemma length_mono {s₁ s₂ : Set ℝ} (h : s₁ ⊆ s₂) : f.length s₁ ≤ f.length s₂ :=
   iInf_mono fun _ => biInf_mono fun _ => h.trans
 #align stieltjes_function.length_mono StieltjesFunction.length_mono
 
@@ -179,7 +179,7 @@ protected def outer : OuterMeasure ℝ :=
   OuterMeasure.ofFunction f.length f.length_empty
 #align stieltjes_function.outer StieltjesFunction.outer
 
-theorem outer_le_length (s : Set ℝ) : f.outer s ≤ f.length s :=
+lemma outer_le_length (s : Set ℝ) : f.outer s ≤ f.length s :=
   OuterMeasure.ofFunction_le _
 #align stieltjes_function.outer_le_length StieltjesFunction.outer_le_length
 
@@ -222,7 +222,7 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
 #align stieltjes_function.length_subadditive_Icc_Ioo StieltjesFunction.length_subadditive_Icc_Ioo
 
 @[simp]
-theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
+lemma outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
   /- It suffices to show that, if `(a, b]` is covered by sets `s i`, then `f b - f a` is bounded
     by `∑ f.length (s i) + ε`. The difficulty is that `f.length` is expressed in terms of half-open
     intervals, while we would like to have a compact interval covered by open intervals to use
@@ -285,7 +285,7 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
     _ = ∑' i : ℕ, f.length (s i) + ε := by simp [δ, add_assoc, ENNReal.add_halves]
 #align stieltjes_function.outer_Ioc StieltjesFunction.outer_Ioc
 
-theorem measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
+lemma measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
   refine OuterMeasure.ofFunction_caratheodory fun t => ?_
   refine' le_iInf fun a => le_iInf fun b => le_iInf fun h => _
   refine'
@@ -305,7 +305,7 @@ theorem measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c
       le_refl, Ioc_eq_empty, add_zero, max_eq_left, f.length_empty, not_lt]
 #align stieltjes_function.measurable_set_Ioi StieltjesFunction.measurableSet_Ioi
 
-theorem outer_trim : f.outer.trim = f.outer := by
+lemma outer_trim : f.outer.trim = f.outer := by
   refine' le_antisymm (fun s => _) (OuterMeasure.le_trim _)
   rw [OuterMeasure.trim_eq_iInf]
   refine' le_iInf fun t => le_iInf fun ht => ENNReal.le_of_forall_pos_le_add fun ε ε0 h => _
@@ -331,7 +331,7 @@ theorem outer_trim : f.outer.trim = f.outer := by
   exact le_trans (f.outer.iUnion _) (ENNReal.tsum_le_tsum fun i => (hg i).2.2)
 #align stieltjes_function.outer_trim StieltjesFunction.outer_trim
 
-theorem borel_le_measurable : borel ℝ ≤ f.outer.caratheodory := by
+lemma borel_le_measurable : borel ℝ ≤ f.outer.caratheodory := by
   rw [borel_eq_generateFrom_Ioi]
   refine' MeasurableSpace.generateFrom_le _
   simp (config := { contextual := true }) [f.measurableSet_Ioi]
@@ -350,7 +350,7 @@ protected irreducible_def measure : Measure ℝ :=
 #align stieltjes_function.measure StieltjesFunction.measure
 
 @[simp]
-theorem measure_Ioc (a b : ℝ) : f.measure (Ioc a b) = ofReal (f b - f a) := by
+lemma measure_Ioc (a b : ℝ) : f.measure (Ioc a b) = ofReal (f b - f a) := by
   rw [StieltjesFunction.measure]
   exact f.outer_Ioc a b
 #align stieltjes_function.measure_Ioc StieltjesFunction.measure_Ioc
@@ -358,7 +358,7 @@ theorem measure_Ioc (a b : ℝ) : f.measure (Ioc a b) = ofReal (f b - f a) := by
 -- Adaptation note: nightly-2024-04-01
 -- The simpNF linter now times out on this lemma.
 @[simp, nolint simpNF]
-theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a) := by
+lemma measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a) := by
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
     ∃ u : ℕ → ℝ, StrictMono u ∧ (∀ n : ℕ, u n < a) ∧ Tendsto u atTop (𝓝 a) :=
     exists_seq_strictMono_tendsto a
@@ -385,7 +385,7 @@ theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a)
 #align stieltjes_function.measure_singleton StieltjesFunction.measure_singleton
 
 @[simp]
-theorem measure_Icc (a b : ℝ) : f.measure (Icc a b) = ofReal (f b - leftLim f a) := by
+lemma measure_Icc (a b : ℝ) : f.measure (Icc a b) = ofReal (f b - leftLim f a) := by
   rcases le_or_lt a b with (hab | hab)
   · have A : Disjoint {a} (Ioc a b) := by simp
     simp [← Icc_union_Ioc_eq_Icc le_rfl hab, -singleton_union, ← ENNReal.ofReal_add,
@@ -396,7 +396,7 @@ theorem measure_Icc (a b : ℝ) : f.measure (Icc a b) = ofReal (f b - leftLim f 
 #align stieltjes_function.measure_Icc StieltjesFunction.measure_Icc
 
 @[simp]
-theorem measure_Ioo {a b : ℝ} : f.measure (Ioo a b) = ofReal (leftLim f b - f a) := by
+lemma measure_Ioo {a b : ℝ} : f.measure (Ioo a b) = ofReal (leftLim f b - f a) := by
   rcases le_or_lt b a with (hab | hab)
   · simp only [hab, measure_empty, Ioo_eq_empty, not_lt]
     symm
@@ -413,7 +413,7 @@ theorem measure_Ioo {a b : ℝ} : f.measure (Ioo a b) = ofReal (leftLim f b - f 
 #align stieltjes_function.measure_Ioo StieltjesFunction.measure_Ioo
 
 @[simp]
-theorem measure_Ico (a b : ℝ) : f.measure (Ico a b) = ofReal (leftLim f b - leftLim f a) := by
+lemma measure_Ico (a b : ℝ) : f.measure (Ico a b) = ofReal (leftLim f b - leftLim f a) := by
   rcases le_or_lt b a with (hab | hab)
   · simp only [hab, measure_empty, Ico_eq_empty, not_lt]
     symm
@@ -423,14 +423,14 @@ theorem measure_Ico (a b : ℝ) : f.measure (Ico a b) = ofReal (leftLim f b - le
       measure_union A measurableSet_Ioo, f.mono.le_leftLim hab, ← ENNReal.ofReal_add]
 #align stieltjes_function.measure_Ico StieltjesFunction.measure_Ico
 
-theorem measure_Iic {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : ℝ) :
+lemma measure_Iic {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : ℝ) :
     f.measure (Iic x) = ofReal (f x - l) := by
   refine' tendsto_nhds_unique (tendsto_measure_Ioc_atBot _ _) _
   simp_rw [measure_Ioc]
   exact ENNReal.tendsto_ofReal (Tendsto.const_sub _ hf)
 #align stieltjes_function.measure_Iic StieltjesFunction.measure_Iic
 
-theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : ℝ) :
+lemma measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : ℝ) :
     f.measure (Ici x) = ofReal (l - leftLim f x) := by
   refine' tendsto_nhds_unique (tendsto_measure_Ico_atTop _ _) _
   simp_rw [measure_Ico]
@@ -442,7 +442,7 @@ theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : ℝ) :
   exact fun y => ⟨y + 1, fun z hyz => by rwa [le_sub_iff_add_le]⟩
 #align stieltjes_function.measure_Ici StieltjesFunction.measure_Ici
 
-theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
+lemma measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
     f.measure univ = ofReal (u - l) := by
   refine' tendsto_nhds_unique (tendsto_measure_Iic_atTop _) _
   simp_rw [measure_Iic f hfl]

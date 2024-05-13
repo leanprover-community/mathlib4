@@ -83,7 +83,7 @@ abbrev hcast {X : TopCat} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ 
 #align continuous_map.homotopy.hcast ContinuousMap.Homotopy.hcast
 
 @[simp]
-theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :
+lemma hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :
     hcast hx₀ = eqToHom (FundamentalGroupoid.ext _ _ hx₀) :=
   rfl
 #align continuous_map.homotopy.hcast_def ContinuousMap.Homotopy.hcast_def
@@ -97,11 +97,11 @@ theorem heq_path_of_eq_image : HEq ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q�
   simp only [map_eq, ← Path.Homotopic.map_lift]; apply Path.Homotopic.hpath_hext; exact hfg
 #align continuous_map.homotopy.heq_path_of_eq_image ContinuousMap.Homotopy.heq_path_of_eq_image
 
-private theorem start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
+private lemma start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
 
-private theorem end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Path.target]
+private lemma end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Path.target]
 
-theorem eq_path_of_eq_image :
+lemma eq_path_of_eq_image :
     (πₘ f).map ⟦p⟧ = hcast (start_path hfg) ≫ (πₘ g).map ⟦q⟧ ≫ hcast (end_path hfg).symm := by
   rw [Functor.conj_eqToHom_iff_heq
     ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q⟧)
@@ -147,7 +147,7 @@ def uliftMap : C(TopCat.of (ULift.{u} I × X), Y) :=
 
 -- This lemma has always been bad, but the linter only noticed after lean4#2644.
 @[simp, nolint simpNF]
-theorem ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x) :=
+lemma ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x) :=
   rfl
 #align continuous_map.homotopy.ulift_apply ContinuousMap.Homotopy.ulift_apply
 
@@ -202,7 +202,7 @@ theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
 #align continuous_map.homotopy.eval_at_eq ContinuousMap.Homotopy.evalAt_eq
 
 -- Finally, we show `d = f(p) ≫ H₁ = H₀ ≫ g(p)`
-theorem eq_diag_path : (πₘ f).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath' p ∧
+lemma eq_diag_path : (πₘ f).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath' p ∧
     (⟦H.evalAt x₀⟧ ≫ (πₘ g).map p : fromTop (f x₀) ⟶ fromTop (g x₁)) = H.diagonalPath' p := by
   rw [H.apply_zero_path, H.apply_one_path, H.evalAt_eq]
   erw [H.evalAt_eq] -- Porting note: `rw` didn't work, so using `erw`

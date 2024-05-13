@@ -74,7 +74,7 @@ variable {C}
 variable (D : GlueData C)
 
 @[simp]
-theorem t'_iij (i j : D.J) : D.t' i i j = (pullbackSymmetry _ _).hom := by
+lemma t'_iij (i j : D.J) : D.t' i i j = (pullbackSymmetry _ _).hom := by
   have eq₁ := D.t_fac i i j
   have eq₂ := (IsIso.eq_comp_inv (D.f i i)).mpr (@pullback.condition _ _ _ _ _ _ (D.f i j) _)
   rw [D.t_id, Category.comp_id, eq₂] at eq₁
@@ -85,18 +85,18 @@ theorem t'_iij (i j : D.J) : D.t' i i j = (pullbackSymmetry _ _).hom := by
       ((Mono.right_cancellation _ _ eq₃).trans (pullbackSymmetry_hom_comp_fst _ _).symm)
 #align category_theory.glue_data.t'_iij CategoryTheory.GlueData.t'_iij
 
-theorem t'_jii (i j : D.J) : D.t' j i i = pullback.fst ≫ D.t j i ≫ inv pullback.snd := by
+lemma t'_jii (i j : D.J) : D.t' j i i = pullback.fst ≫ D.t j i ≫ inv pullback.snd := by
   rw [← Category.assoc, ← D.t_fac]
   simp
 #align category_theory.glue_data.t'_jii CategoryTheory.GlueData.t'_jii
 
-theorem t'_iji (i j : D.J) : D.t' i j i = pullback.fst ≫ D.t i j ≫ inv pullback.snd := by
+lemma t'_iji (i j : D.J) : D.t' i j i = pullback.fst ≫ D.t i j ≫ inv pullback.snd := by
   rw [← Category.assoc, ← D.t_fac]
   simp
 #align category_theory.glue_data.t'_iji CategoryTheory.GlueData.t'_iji
 
 @[reassoc, elementwise (attr := simp)]
-theorem t_inv (i j : D.J) : D.t i j ≫ D.t j i = 𝟙 _ := by
+lemma t_inv (i j : D.J) : D.t i j ≫ D.t j i = 𝟙 _ := by
   have eq : (pullbackSymmetry (D.f i i) (D.f i j)).hom = pullback.snd ≫ inv pullback.fst := by simp
   have := D.cocycle i j i
   rw [D.t'_iij, D.t'_jii, D.t'_iji, fst_eq_snd_of_mono_eq, eq] at this
@@ -105,7 +105,7 @@ theorem t_inv (i j : D.J) : D.t i j ≫ D.t j i = 𝟙 _ := by
   simpa using this
 #align category_theory.glue_data.t_inv CategoryTheory.GlueData.t_inv
 
-theorem t'_inv (i j k : D.J) :
+lemma t'_inv (i j k : D.J) :
     D.t' i j k ≫ (pullbackSymmetry _ _).hom ≫ D.t' j i k ≫ (pullbackSymmetry _ _).hom = 𝟙 _ := by
   rw [← cancel_mono (pullback.fst : pullback (D.f i j) (D.f i k) ⟶ _)]
   simp [t_fac, t_fac_assoc]
@@ -120,7 +120,7 @@ instance t'_isIso (i j k : D.J) : IsIso (D.t' i j k) :=
 #align category_theory.glue_data.t'_is_iso CategoryTheory.GlueData.t'_isIso
 
 @[reassoc]
-theorem t'_comp_eq_pullbackSymmetry (i j k : D.J) :
+lemma t'_comp_eq_pullbackSymmetry (i j k : D.J) :
     D.t' j k i ≫ D.t' k i j =
       (pullbackSymmetry _ _).hom ≫ D.t' j i k ≫ (pullbackSymmetry _ _).hom := by
   trans inv (D.t' i j k)
@@ -147,44 +147,44 @@ def diagram : MultispanIndex C where
 #align category_theory.glue_data.diagram CategoryTheory.GlueData.diagram
 
 @[simp]
-theorem diagram_l : D.diagram.L = (D.J × D.J) :=
+lemma diagram_l : D.diagram.L = (D.J × D.J) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.glue_data.diagram_L CategoryTheory.GlueData.diagram_l
 
 @[simp]
-theorem diagram_r : D.diagram.R = D.J :=
+lemma diagram_r : D.diagram.R = D.J :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.glue_data.diagram_R CategoryTheory.GlueData.diagram_r
 
 @[simp]
-theorem diagram_fstFrom (i j : D.J) : D.diagram.fstFrom ⟨i, j⟩ = i :=
+lemma diagram_fstFrom (i j : D.J) : D.diagram.fstFrom ⟨i, j⟩ = i :=
   rfl
 #align category_theory.glue_data.diagram_fst_from CategoryTheory.GlueData.diagram_fstFrom
 
 @[simp]
-theorem diagram_sndFrom (i j : D.J) : D.diagram.sndFrom ⟨i, j⟩ = j :=
+lemma diagram_sndFrom (i j : D.J) : D.diagram.sndFrom ⟨i, j⟩ = j :=
   rfl
 #align category_theory.glue_data.diagram_snd_from CategoryTheory.GlueData.diagram_sndFrom
 
 @[simp]
-theorem diagram_fst (i j : D.J) : D.diagram.fst ⟨i, j⟩ = D.f i j :=
+lemma diagram_fst (i j : D.J) : D.diagram.fst ⟨i, j⟩ = D.f i j :=
   rfl
 #align category_theory.glue_data.diagram_fst CategoryTheory.GlueData.diagram_fst
 
 @[simp]
-theorem diagram_snd (i j : D.J) : D.diagram.snd ⟨i, j⟩ = D.t i j ≫ D.f j i :=
+lemma diagram_snd (i j : D.J) : D.diagram.snd ⟨i, j⟩ = D.t i j ≫ D.f j i :=
   rfl
 #align category_theory.glue_data.diagram_snd CategoryTheory.GlueData.diagram_snd
 
 @[simp]
-theorem diagram_left : D.diagram.left = D.V :=
+lemma diagram_left : D.diagram.left = D.V :=
   rfl
 #align category_theory.glue_data.diagram_left CategoryTheory.GlueData.diagram_left
 
 @[simp]
-theorem diagram_right : D.diagram.right = D.U :=
+lemma diagram_right : D.diagram.right = D.U :=
   rfl
 #align category_theory.glue_data.diagram_right CategoryTheory.GlueData.diagram_right
 
@@ -203,7 +203,7 @@ def ι (i : D.J) : D.U i ⟶ D.glued :=
 #align category_theory.glue_data.ι CategoryTheory.GlueData.ι
 
 @[elementwise (attr := simp)]
-theorem glue_condition (i j : D.J) : D.t i j ≫ D.f j i ≫ D.ι j = D.f i j ≫ D.ι i :=
+lemma glue_condition (i j : D.J) : D.t i j ≫ D.f j i ≫ D.ι j = D.f i j ≫ D.ι i :=
   (Category.assoc _ _ _).symm.trans (Multicoequalizer.condition D.diagram ⟨i, j⟩).symm
 #align category_theory.glue_data.glue_condition CategoryTheory.GlueData.glue_condition
 
@@ -228,11 +228,11 @@ instance π_epi : Epi D.π := by
 
 end
 
-theorem types_π_surjective (D : GlueData (Type*)) : Function.Surjective D.π :=
+lemma types_π_surjective (D : GlueData (Type*)) : Function.Surjective D.π :=
   (epi_iff_surjective _).mp inferInstance
 #align category_theory.glue_data.types_π_surjective CategoryTheory.GlueData.types_π_surjective
 
-theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
+lemma types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
     ∃ (i : _) (y : D.U i), D.ι i y = x := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ D.diagram]
@@ -295,50 +295,50 @@ def diagramIso : D.diagram.multispan ⋙ F ≅ (D.mapGlueData F).diagram.multisp
 #align category_theory.glue_data.diagram_iso CategoryTheory.GlueData.diagramIso
 
 @[simp]
-theorem diagramIso_app_left (i : D.J × D.J) :
+lemma diagramIso_app_left (i : D.J × D.J) :
     (D.diagramIso F).app (WalkingMultispan.left i) = Iso.refl _ :=
   rfl
 #align category_theory.glue_data.diagram_iso_app_left CategoryTheory.GlueData.diagramIso_app_left
 
 @[simp]
-theorem diagramIso_app_right (i : D.J) :
+lemma diagramIso_app_right (i : D.J) :
     (D.diagramIso F).app (WalkingMultispan.right i) = Iso.refl _ :=
   rfl
 #align category_theory.glue_data.diagram_iso_app_right CategoryTheory.GlueData.diagramIso_app_right
 
 @[simp]
-theorem diagramIso_hom_app_left (i : D.J × D.J) :
+lemma diagramIso_hom_app_left (i : D.J × D.J) :
     (D.diagramIso F).hom.app (WalkingMultispan.left i) = 𝟙 _ :=
   rfl
 #align category_theory.glue_data.diagram_iso_hom_app_left CategoryTheory.GlueData.diagramIso_hom_app_left
 
 @[simp]
-theorem diagramIso_hom_app_right (i : D.J) :
+lemma diagramIso_hom_app_right (i : D.J) :
     (D.diagramIso F).hom.app (WalkingMultispan.right i) = 𝟙 _ :=
   rfl
 #align category_theory.glue_data.diagram_iso_hom_app_right CategoryTheory.GlueData.diagramIso_hom_app_right
 
 @[simp]
-theorem diagramIso_inv_app_left (i : D.J × D.J) :
+lemma diagramIso_inv_app_left (i : D.J × D.J) :
     (D.diagramIso F).inv.app (WalkingMultispan.left i) = 𝟙 _ :=
   rfl
 #align category_theory.glue_data.diagram_iso_inv_app_left CategoryTheory.GlueData.diagramIso_inv_app_left
 
 @[simp]
-theorem diagramIso_inv_app_right (i : D.J) :
+lemma diagramIso_inv_app_right (i : D.J) :
     (D.diagramIso F).inv.app (WalkingMultispan.right i) = 𝟙 _ :=
   rfl
 #align category_theory.glue_data.diagram_iso_inv_app_right CategoryTheory.GlueData.diagramIso_inv_app_right
 
 variable [HasMulticoequalizer D.diagram] [PreservesColimit D.diagram.multispan F]
 
-theorem hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
+lemma hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
   ⟨⟨⟨_, PreservesColimit.preserves (colimit.isColimit _)⟩⟩⟩
 #align category_theory.glue_data.has_colimit_multispan_comp CategoryTheory.GlueData.hasColimit_multispan_comp
 
 attribute [local instance] hasColimit_multispan_comp
 
-theorem hasColimit_mapGlueData_diagram : HasMulticoequalizer (D.mapGlueData F).diagram :=
+lemma hasColimit_mapGlueData_diagram : HasMulticoequalizer (D.mapGlueData F).diagram :=
   hasColimitOfIso (D.diagramIso F).symm
 #align category_theory.glue_data.has_colimit_map_glue_data_diagram CategoryTheory.GlueData.hasColimit_mapGlueData_diagram
 
@@ -351,7 +351,7 @@ def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
 #align category_theory.glue_data.glued_iso CategoryTheory.GlueData.gluedIso
 
 @[reassoc (attr := simp)]
-theorem ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.mapGlueData F).ι i := by
+lemma ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.mapGlueData F).ι i := by
   haveI : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
   erw [ι_preservesColimitsIso_hom_assoc]
   rw [HasColimit.isoOfNatIso_ι_hom]
@@ -360,7 +360,7 @@ theorem ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.m
 #align category_theory.glue_data.ι_glued_iso_hom CategoryTheory.GlueData.ι_gluedIso_hom
 
 @[reassoc (attr := simp)]
-theorem ι_gluedIso_inv (i : D.J) : (D.mapGlueData F).ι i ≫ (D.gluedIso F).inv = F.map (D.ι i) := by
+lemma ι_gluedIso_inv (i : D.J) : (D.mapGlueData F).ι i ≫ (D.gluedIso F).inv = F.map (D.ι i) := by
   rw [Iso.comp_inv_eq, ι_gluedIso_hom]
 #align category_theory.glue_data.ι_glued_iso_inv CategoryTheory.GlueData.ι_gluedIso_inv
 

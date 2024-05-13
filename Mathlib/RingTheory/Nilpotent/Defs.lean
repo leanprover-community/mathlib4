@@ -38,18 +38,18 @@ def IsNilpotent [Zero R] [Pow R ℕ] (x : R) : Prop :=
   ∃ n : ℕ, x ^ n = 0
 #align is_nilpotent IsNilpotent
 
-theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : IsNilpotent x :=
+lemma IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : IsNilpotent x :=
   ⟨n, e⟩
 #align is_nilpotent.mk IsNilpotent.mk
 
 @[simp] lemma isNilpotent_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] : IsNilpotent x :=
   ⟨0, Subsingleton.elim _ _⟩
 
-@[simp] theorem IsNilpotent.zero [MonoidWithZero R] : IsNilpotent (0 : R) :=
+@[simp] lemma IsNilpotent.zero [MonoidWithZero R] : IsNilpotent (0 : R) :=
   ⟨1, pow_one 0⟩
 #align is_nilpotent.zero IsNilpotent.zero
 
-theorem not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
+lemma not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
     ¬ IsNilpotent (1 : R) := fun ⟨_, H⟩ ↦ zero_ne_one (H.symm.trans (one_pow _))
 
 lemma IsNilpotent.pow_succ (n : ℕ) {S : Type*} [MonoidWithZero S] {x : S}
@@ -58,7 +58,7 @@ lemma IsNilpotent.pow_succ (n : ℕ) {S : Type*} [MonoidWithZero S] {x : S}
   use N
   rw [← pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
 
-theorem  IsNilpotent.of_pow [MonoidWithZero R] {x : R} {m : ℕ}
+lemma  IsNilpotent.of_pow [MonoidWithZero R] {x : R} {m : ℕ}
     (h : IsNilpotent (x ^ m)) : IsNilpotent x := by
   obtain ⟨n, h⟩ := h
   use m*n
@@ -75,7 +75,7 @@ lemma IsNilpotent.pow_iff_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
     (hn : n ≠ 0) : IsNilpotent (x ^ n) ↔ IsNilpotent x :=
  ⟨fun h => of_pow h, fun h => pow_of_pos h hn⟩
 
-theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
+lemma IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
     [FunLike F R S] [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) :
     IsNilpotent (f r) := by
   use hr.choose
@@ -87,12 +87,12 @@ lemma IsNilpotent.map_iff [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Typ
     IsNilpotent (f r) ↔ IsNilpotent r :=
   ⟨fun ⟨k, hk⟩ ↦ ⟨k, (map_eq_zero_iff f hf).mp <| by rwa [map_pow]⟩, fun h ↦ h.map f⟩
 
-theorem IsUnit.isNilpotent_mul_unit_of_commute_iff [MonoidWithZero R] {r u : R}
+lemma IsUnit.isNilpotent_mul_unit_of_commute_iff [MonoidWithZero R] {r u : R}
     (hu : IsUnit u) (h_comm : Commute r u) :
     IsNilpotent (r * u) ↔ IsNilpotent r :=
   exists_congr fun n ↦ by rw [h_comm.mul_pow, (hu.pow n).mul_left_eq_zero]
 
-theorem IsUnit.isNilpotent_unit_mul_of_commute_iff [MonoidWithZero R] {r u : R}
+lemma IsUnit.isNilpotent_unit_mul_of_commute_iff [MonoidWithZero R] {r u : R}
     (hu : IsUnit u) (h_comm : Commute r u) :
     IsNilpotent (u * r) ↔ IsNilpotent r :=
   h_comm ▸ hu.isNilpotent_mul_unit_of_commute_iff h_comm
@@ -182,16 +182,16 @@ instance (priority := 900) isReduced_of_subsingleton [Zero R] [Pow R ℕ] [Subsi
   ⟨fun _ _ => Subsingleton.elim _ _⟩
 #align is_reduced_of_subsingleton isReduced_of_subsingleton
 
-theorem IsNilpotent.eq_zero [Zero R] [Pow R ℕ] [IsReduced R] (h : IsNilpotent x) : x = 0 :=
+lemma IsNilpotent.eq_zero [Zero R] [Pow R ℕ] [IsReduced R] (h : IsNilpotent x) : x = 0 :=
   IsReduced.eq_zero x h
 #align is_nilpotent.eq_zero IsNilpotent.eq_zero
 
 @[simp]
-theorem isNilpotent_iff_eq_zero [MonoidWithZero R] [IsReduced R] : IsNilpotent x ↔ x = 0 :=
+lemma isNilpotent_iff_eq_zero [MonoidWithZero R] [IsReduced R] : IsNilpotent x ↔ x = 0 :=
   ⟨fun h => h.eq_zero, fun h => h.symm ▸ IsNilpotent.zero⟩
 #align is_nilpotent_iff_eq_zero isNilpotent_iff_eq_zero
 
-theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
+lemma isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
     [FunLike F R S] [MonoidWithZeroHomClass F R S]
     (f : F) (hf : Function.Injective f) [IsReduced S] :
     IsReduced R := by
@@ -212,7 +212,7 @@ def IsRadical [Dvd R] [Pow R ℕ] (y : R) : Prop :=
   ∀ (n : ℕ) (x), y ∣ x ^ n → y ∣ x
 #align is_radical IsRadical
 
-theorem isRadical_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
+lemma isRadical_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
     IsRadical y ↔ ∀ x, y ∣ x ^ k → y ∣ x :=
   ⟨(· k), k.pow_imp_self_of_one_lt hk _ fun _ _ h ↦ .inl (dvd_mul_of_dvd_left h _)⟩
 #align is_radical_iff_pow_one_lt isRadical_iff_pow_one_lt
@@ -223,13 +223,13 @@ section Semiring
 
 variable [Semiring R] (h_comm : Commute x y)
 
-theorem isNilpotent_mul_left (h : IsNilpotent x) : IsNilpotent (x * y) := by
+lemma isNilpotent_mul_left (h : IsNilpotent x) : IsNilpotent (x * y) := by
   obtain ⟨n, hn⟩ := h
   use n
   rw [h_comm.mul_pow, hn, zero_mul]
 #align commute.is_nilpotent_mul_left Commute.isNilpotent_mul_left
 
-theorem isNilpotent_mul_right (h : IsNilpotent y) : IsNilpotent (x * y) := by
+lemma isNilpotent_mul_right (h : IsNilpotent y) : IsNilpotent (x * y) := by
   rw [h_comm.eq]
   exact h_comm.symm.isNilpotent_mul_left h
 #align commute.is_nilpotent_mul_right Commute.isNilpotent_mul_right

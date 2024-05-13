@@ -43,23 +43,23 @@ variable {m n : ℕ}
     · exact h
 
 @[simp]
-theorem succ_eq_succ : Order.succ = succ :=
+lemma succ_eq_succ : Order.succ = succ :=
   rfl
 #align nat.succ_eq_succ Nat.succ_eq_succ
 
 @[simp]
-theorem pred_eq_pred : Order.pred = pred :=
+lemma pred_eq_pred : Order.pred = pred :=
   rfl
 #align nat.pred_eq_pred Nat.pred_eq_pred
 
-theorem succ_iterate (a : ℕ) : ∀ n, succ^[n] a = a + n
+lemma succ_iterate (a : ℕ) : ∀ n, succ^[n] a = a + n
   | 0 => rfl
   | n + 1 => by
     rw [Function.iterate_succ', add_succ]
     exact congr_arg _ (succ_iterate a n)
 #align nat.succ_iterate Nat.succ_iterate
 
-theorem pred_iterate (a : ℕ) : ∀ n, pred^[n] a = a - n
+lemma pred_iterate (a : ℕ) : ∀ n, pred^[n] a = a - n
   | 0 => rfl
   | n + 1 => by
     rw [Function.iterate_succ', sub_succ]
@@ -81,14 +81,14 @@ lemma forall_ne_zero_iff (P : ℕ → Prop) :
 /-! ### Covering relation -/
 
 
-protected theorem covBy_iff_succ_eq {m n : ℕ} : m ⋖ n ↔ m + 1 = n :=
+protected lemma covBy_iff_succ_eq {m n : ℕ} : m ⋖ n ↔ m + 1 = n :=
   succ_eq_iff_covBy.symm
 #align nat.covby_iff_succ_eq Nat.covBy_iff_succ_eq
 
 end Nat
 
 @[simp, norm_cast]
-theorem Fin.coe_covBy_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b :=
+lemma Fin.coe_covBy_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b :=
   and_congr_right' ⟨fun h _c hc => h hc, fun h c ha hb => @h ⟨c, hb.trans b.prop⟩ ha hb⟩
 #align fin.coe_covby_iff Fin.coe_covBy_iff
 

@@ -72,16 +72,16 @@ lemma eigenvectorUnitary_coe {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n
   rfl
 
 @[simp]
-theorem eigenvectorUnitary_apply (i j : n) :
+lemma eigenvectorUnitary_apply (i j : n) :
     eigenvectorUnitary hA i j = ⇑(hA.eigenvectorBasis j) i :=
   rfl
 #align matrix.is_hermitian.eigenvector_matrix_apply Matrix.IsHermitian.eigenvectorUnitary_apply
 
-theorem eigenvectorUnitary_mulVec (j : n) :
+lemma eigenvectorUnitary_mulVec (j : n) :
     eigenvectorUnitary hA *ᵥ Pi.single j 1 = ⇑(hA.eigenvectorBasis j) := by
   simp only [mulVec_single, eigenvectorUnitary_apply, mul_one]
 
-theorem star_eigenvectorUnitary_mulVec (j : n) :
+lemma star_eigenvectorUnitary_mulVec (j : n) :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ ⇑(hA.eigenvectorBasis j) = Pi.single j 1 := by
   rw [← eigenvectorUnitary_mulVec, mulVec_mulVec, unitary.coe_star_mul_self, one_mulVec]
 
@@ -113,7 +113,7 @@ theorem spectral_theorem :
     ← mul_assoc, (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, one_mul]
 #align matrix.is_hermitian.spectral_theorem' Matrix.IsHermitian.spectral_theorem
 
-theorem eigenvalues_eq (i : n) :
+lemma eigenvalues_eq (i : n) :
     (hA.eigenvalues i) = RCLike.re (Matrix.dotProduct (star ⇑(hA.eigenvectorBasis i))
     (A *ᵥ ⇑(hA.eigenvectorBasis i))):= by
   simp only [mulVec_eigenvectorBasis, dotProduct_smul,← EuclideanSpace.inner_eq_star_dotProduct,

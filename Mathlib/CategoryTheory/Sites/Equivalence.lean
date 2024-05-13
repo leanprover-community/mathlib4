@@ -46,7 +46,7 @@ variable (A : Type*) [Category A]
 
 namespace Equivalence
 
-theorem locallyCoverDense : LocallyCoverDense J e.inverse := by
+lemma locallyCoverDense : LocallyCoverDense J e.inverse := by
   intro X T
   convert T.prop
   ext Z f
@@ -62,7 +62,7 @@ theorem locallyCoverDense : LocallyCoverDense J e.inverse := by
       exact T.val.downward_closed hf _
     · simp
 
-theorem coverPreserving : CoverPreserving J (e.locallyCoverDense J).inducedTopology e.functor where
+lemma coverPreserving : CoverPreserving J (e.locallyCoverDense J).inducedTopology e.functor where
   cover_preserve {U S} h := by
     change _ ∈ J.sieves (e.inverse.obj (e.functor.obj U))
     convert J.pullback_stable (e.unitInv.app U) h
@@ -109,7 +109,7 @@ instance : e.TransportsGrothendieckTopology J (e.locallyCoverDense J).inducedTop
 
 variable [e.TransportsGrothendieckTopology J K]
 
-theorem eq_inducedTopology_of_transports : K = (e.locallyCoverDense J).inducedTopology :=
+lemma eq_inducedTopology_of_transports : K = (e.locallyCoverDense J).inducedTopology :=
   TransportsGrothendieckTopology.eq_inducedTopology
 
 instance : IsContinuous e.functor J K := by
@@ -199,7 +199,7 @@ theorem hasSheafify : HasSheafify J A :=
 variable {A : Type*} [Category A] {B : Type*} [Category B] (F : A ⥤ B)
   [K.HasSheafCompose F]
 
-theorem hasSheafCompose : J.HasSheafCompose F where
+lemma hasSheafCompose : J.HasSheafCompose F where
   isSheaf P hP := by
     have hP' : Presheaf.IsSheaf K (e.inverse.op ⋙ P ⋙ F) := by
       change Presheaf.IsSheaf K ((_ ⋙ _) ⋙ _)

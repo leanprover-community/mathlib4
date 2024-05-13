@@ -39,7 +39,7 @@ def toRealLinearMap (f : E →+ F) (hf : Continuous f) : E →L[ℝ] F :=
 #align add_monoid_hom.to_real_linear_map AddMonoidHom.toRealLinearMap
 
 @[simp]
-theorem coe_toRealLinearMap (f : E →+ F) (hf : Continuous f) : ⇑(f.toRealLinearMap hf) = f :=
+lemma coe_toRealLinearMap (f : E →+ F) (hf : Continuous f) : ⇑(f.toRealLinearMap hf) = f :=
   rfl
 #align add_monoid_hom.coe_to_real_linear_map AddMonoidHom.coe_toRealLinearMap
 

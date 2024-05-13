@@ -76,13 +76,13 @@ noncomputable def finsetBasisIndex [IsNoetherian K V] : Finset V :=
 #align is_noetherian.finset_basis_index IsNoetherian.finsetBasisIndex
 
 @[simp]
-theorem coe_finsetBasisIndex [IsNoetherian K V] :
+lemma coe_finsetBasisIndex [IsNoetherian K V] :
     (↑(finsetBasisIndex K V) : Set V) = Basis.ofVectorSpaceIndex K V :=
   Set.Finite.coe_toFinset _
 #align is_noetherian.coe_finset_basis_index IsNoetherian.coe_finsetBasisIndex
 
 @[simp]
-theorem coeSort_finsetBasisIndex [IsNoetherian K V] :
+lemma coeSort_finsetBasisIndex [IsNoetherian K V] :
     (finsetBasisIndex K V : Type _) = Basis.ofVectorSpaceIndex K V :=
   Set.Finite.coeSort_toFinset _
 #align is_noetherian.coe_sort_finset_basis_index IsNoetherian.coeSort_finsetBasisIndex
@@ -97,7 +97,7 @@ noncomputable def finsetBasis [IsNoetherian K V] : Basis (finsetBasisIndex K V) 
 #align is_noetherian.finset_basis IsNoetherian.finsetBasis
 
 @[simp]
-theorem range_finsetBasis [IsNoetherian K V] :
+lemma range_finsetBasis [IsNoetherian K V] :
     Set.range (finsetBasis K V) = Basis.ofVectorSpaceIndex K V := by
   rw [finsetBasis, Basis.range_reindex, Basis.range_ofVectorSpace]
 #align is_noetherian.range_finset_basis IsNoetherian.range_finsetBasis

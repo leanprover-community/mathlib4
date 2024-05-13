@@ -38,26 +38,26 @@ namespace MonoidalOpposite
 @[inherit_doc]
 notation:max C "ᴹᵒᵖ" => MonoidalOpposite C
 
-theorem mop_injective : Function.Injective (mop : C → Cᴹᵒᵖ) := @mop.inj C
+lemma mop_injective : Function.Injective (mop : C → Cᴹᵒᵖ) := @mop.inj C
 #align category_theory.monoidal_opposite.op_injective CategoryTheory.MonoidalOpposite.mop_injective
 
-theorem unmop_injective : Function.Injective (unmop : Cᴹᵒᵖ → C) :=
+lemma unmop_injective : Function.Injective (unmop : Cᴹᵒᵖ → C) :=
   fun _ _ h => congrArg mop h
 #align category_theory.monoidal_opposite.unop_injective CategoryTheory.MonoidalOpposite.unmop_injective
 
-theorem mop_inj_iff (x y : C) : mop x = mop y ↔ x = y := mop_injective.eq_iff
+lemma mop_inj_iff (x y : C) : mop x = mop y ↔ x = y := mop_injective.eq_iff
 #align category_theory.monoidal_opposite.op_inj_iff CategoryTheory.MonoidalOpposite.mop_inj_iff
 
 @[simp]
-theorem unmop_inj_iff (x y : Cᴹᵒᵖ) : unmop x = unmop y ↔ x = y := unmop_injective.eq_iff
+lemma unmop_inj_iff (x y : Cᴹᵒᵖ) : unmop x = unmop y ↔ x = y := unmop_injective.eq_iff
 #align category_theory.monoidal_opposite.unop_inj_iff CategoryTheory.MonoidalOpposite.unmop_inj_iff
 
 @[simp]
-theorem mop_unmop (X : Cᴹᵒᵖ) : mop (unmop X) = X := rfl
+lemma mop_unmop (X : Cᴹᵒᵖ) : mop (unmop X) = X := rfl
 #align category_theory.monoidal_opposite.mop_unmop CategoryTheory.MonoidalOpposite.mop_unmop
 
 -- can't be simp bc after putting the lhs in whnf it's `X = X`
-theorem unmop_mop (X : C) : unmop (mop X) = X := rfl
+lemma unmop_mop (X : C) : unmop (mop X) = X := rfl
 #align category_theory.monoidal_opposite.unmop_mop CategoryTheory.MonoidalOpposite.unmop_mop
 
 instance monoidalOppositeCategory [Category.{v₁} C] : Category Cᴹᵒᵖ where
@@ -88,23 +88,23 @@ namespace Quiver.Hom
 
 open MonoidalOpposite renaming mop → mop', unmop → unmop'
 
-theorem mop_inj {X Y : C} :
+lemma mop_inj {X Y : C} :
     Function.Injective (Quiver.Hom.mop : (X ⟶ Y) → (mop' X ⟶ mop' Y)) :=
   fun _ _ H => congr_arg Quiver.Hom.unmop H
 #align category_theory.mop_inj Quiver.Hom.mop_inj
 
-theorem unmop_inj {X Y : Cᴹᵒᵖ} :
+lemma unmop_inj {X Y : Cᴹᵒᵖ} :
     Function.Injective (Quiver.Hom.unmop : (X ⟶ Y) → (unmop' X ⟶ unmop' Y)) :=
   fun _ _ H => congr_arg Quiver.Hom.mop H
 #align category_theory.unmop_inj Quiver.Hom.unmop_inj
 
 @[simp]
-theorem unmop_mop {X Y : C} {f : X ⟶ Y} : f.mop.unmop = f :=
+lemma unmop_mop {X Y : C} {f : X ⟶ Y} : f.mop.unmop = f :=
   rfl
 #align category_theory.unmop_mop Quiver.Hom.unmop_mop
 
 @[simp]
-theorem mop_unmop {X Y : Cᴹᵒᵖ} {f : X ⟶ Y} : f.unmop.mop = f :=
+lemma mop_unmop {X Y : Cᴹᵒᵖ} {f : X ⟶ Y} : f.unmop.mop = f :=
   rfl
 #align category_theory.mop_unmop Quiver.Hom.mop_unmop
 
@@ -113,29 +113,29 @@ end Quiver.Hom
 namespace CategoryTheory
 
 @[simp]
-theorem mop_comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} :
+lemma mop_comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} :
     (f ≫ g).mop = f.mop ≫ g.mop := rfl
 #align category_theory.mop_comp CategoryTheory.mop_comp
 
 @[simp]
-theorem mop_id {X : C} : (𝟙 X).mop = 𝟙 (mop X) := rfl
+lemma mop_id {X : C} : (𝟙 X).mop = 𝟙 (mop X) := rfl
 #align category_theory.mop_id CategoryTheory.mop_id
 
 @[simp]
-theorem unmop_comp {X Y Z : Cᴹᵒᵖ} {f : X ⟶ Y} {g : Y ⟶ Z} :
+lemma unmop_comp {X Y Z : Cᴹᵒᵖ} {f : X ⟶ Y} {g : Y ⟶ Z} :
     (f ≫ g).unmop = f.unmop ≫ g.unmop := rfl
 #align category_theory.unmop_comp CategoryTheory.unmop_comp
 
 @[simp]
-theorem unmop_id {X : Cᴹᵒᵖ} : (𝟙 X).unmop = 𝟙 (unmop X) := rfl
+lemma unmop_id {X : Cᴹᵒᵖ} : (𝟙 X).unmop = 𝟙 (unmop X) := rfl
 #align category_theory.unmop_id CategoryTheory.unmop_id
 
 @[simp]
-theorem unmop_id_mop {X : C} : (𝟙 (mop X)).unmop = 𝟙 X := rfl
+lemma unmop_id_mop {X : C} : (𝟙 (mop X)).unmop = 𝟙 X := rfl
 #align category_theory.unmop_id_mop CategoryTheory.unmop_id_mop
 
 @[simp]
-theorem mop_id_unmop {X : Cᴹᵒᵖ} : (𝟙 (unmop X)).mop = 𝟙 X := rfl
+lemma mop_id_unmop {X : Cᴹᵒᵖ} : (𝟙 (unmop X)).mop = 𝟙 X := rfl
 #align category_theory.mop_id_unmop CategoryTheory.mop_id_unmop
 
 variable (C)
@@ -248,9 +248,9 @@ section OppositeLemmas
 
 end OppositeLemmas
 
-theorem op_tensor_op {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f.op ⊗ g.op = (f ⊗ g).op := rfl
+lemma op_tensor_op {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f.op ⊗ g.op = (f ⊗ g).op := rfl
 
-theorem unop_tensor_unop {W X Y Z : Cᵒᵖ} (f : W ⟶ X) (g : Y ⟶ Z) :
+lemma unop_tensor_unop {W X Y Z : Cᵒᵖ} (f : W ⟶ X) (g : Y ⟶ Z) :
     f.unop ⊗ g.unop = (f ⊗ g).unop := rfl
 
 instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where

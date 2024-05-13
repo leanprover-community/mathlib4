@@ -65,7 +65,7 @@ def cons (a : α) (s : Seq α) : Seq α :=
 #align stream.seq.cons Stream'.Seq.cons
 
 @[simp]
-theorem val_cons (s : Seq α) (x : α) : (cons x s).val = some x::s.val :=
+lemma val_cons (s : Seq α) (x : α) : (cons x s).val = some x::s.val :=
   rfl
 #align stream.seq.val_cons Stream'.Seq.val_cons
 
@@ -75,40 +75,40 @@ def get? : Seq α → ℕ → Option α :=
 #align stream.seq.nth Stream'.Seq.get?
 
 @[simp]
-theorem get?_mk (f hf) : @get? α ⟨f, hf⟩ = f :=
+lemma get?_mk (f hf) : @get? α ⟨f, hf⟩ = f :=
   rfl
 #align stream.seq.nth_mk Stream'.Seq.get?_mk
 
 @[simp]
-theorem get?_nil (n : ℕ) : (@nil α).get? n = none :=
+lemma get?_nil (n : ℕ) : (@nil α).get? n = none :=
   rfl
 #align stream.seq.nth_nil Stream'.Seq.get?_nil
 
 @[simp]
-theorem get?_cons_zero (a : α) (s : Seq α) : (cons a s).get? 0 = some a :=
+lemma get?_cons_zero (a : α) (s : Seq α) : (cons a s).get? 0 = some a :=
   rfl
 #align stream.seq.nth_cons_zero Stream'.Seq.get?_cons_zero
 
 @[simp]
-theorem get?_cons_succ (a : α) (s : Seq α) (n : ℕ) : (cons a s).get? (n + 1) = s.get? n :=
+lemma get?_cons_succ (a : α) (s : Seq α) (n : ℕ) : (cons a s).get? (n + 1) = s.get? n :=
   rfl
 #align stream.seq.nth_cons_succ Stream'.Seq.get?_cons_succ
 
 @[ext]
-protected theorem ext {s t : Seq α} (h : ∀ n : ℕ, s.get? n = t.get? n) : s = t :=
+protected lemma ext {s t : Seq α} (h : ∀ n : ℕ, s.get? n = t.get? n) : s = t :=
   Subtype.eq <| funext h
 #align stream.seq.ext Stream'.Seq.ext
 
-theorem cons_injective2 : Function.Injective2 (cons : α → Seq α → Seq α) := fun x y s t h =>
+lemma cons_injective2 : Function.Injective2 (cons : α → Seq α → Seq α) := fun x y s t h =>
   ⟨by rw [← Option.some_inj, ← get?_cons_zero, h, get?_cons_zero],
     Seq.ext fun n => by simp_rw [← get?_cons_succ x s n, h, get?_cons_succ]⟩
 #align stream.seq.cons_injective2 Stream'.Seq.cons_injective2
 
-theorem cons_left_injective (s : Seq α) : Function.Injective fun x => cons x s :=
+lemma cons_left_injective (s : Seq α) : Function.Injective fun x => cons x s :=
   cons_injective2.left _
 #align stream.seq.cons_left_injective Stream'.Seq.cons_left_injective
 
-theorem cons_right_injective (x : α) : Function.Injective (cons x) :=
+lemma cons_right_injective (x : α) : Function.Injective (cons x) :=
   cons_injective2.right _
 #align stream.seq.cons_right_injective Stream'.Seq.cons_right_injective
 
@@ -127,7 +127,7 @@ def Terminates (s : Seq α) : Prop :=
   ∃ n : ℕ, s.TerminatedAt n
 #align stream.seq.terminates Stream'.Seq.Terminates
 
-theorem not_terminates_iff {s : Seq α} : ¬s.Terminates ↔ ∀ n, (s.get? n).isSome := by
+lemma not_terminates_iff {s : Seq α} : ¬s.Terminates ↔ ∀ n, (s.get? n).isSome := by
   simp only [Terminates, TerminatedAt, ← Ne.eq_def, Option.ne_none_iff_isSome, not_exists, iff_self]
 #align stream.seq.not_terminates_iff Stream'.Seq.not_terminates_iff
 
@@ -158,7 +158,7 @@ protected def Mem (a : α) (s : Seq α) :=
 instance : Membership α (Seq α) :=
   ⟨Seq.Mem⟩
 
-theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
+lemma le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
   cases' s with f al
   induction' h with n _ IH
   exacts [id, fun h2 => al (IH h2)]
@@ -179,23 +179,23 @@ theorem ge_stable (s : Seq α) {aₙ : α} {n m : ℕ} (m_le_n : m ≤ n)
   Option.ne_none_iff_exists'.mp this
 #align stream.seq.ge_stable Stream'.Seq.ge_stable
 
-theorem not_mem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
+lemma not_mem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
 #align stream.seq.not_mem_nil Stream'.Seq.not_mem_nil
 
-theorem mem_cons (a : α) : ∀ s : Seq α, a ∈ cons a s
+lemma mem_cons (a : α) : ∀ s : Seq α, a ∈ cons a s
   | ⟨_, _⟩ => Stream'.mem_cons (some a) _
 #align stream.seq.mem_cons Stream'.Seq.mem_cons
 
-theorem mem_cons_of_mem (y : α) {a : α} : ∀ {s : Seq α}, a ∈ s → a ∈ cons y s
+lemma mem_cons_of_mem (y : α) {a : α} : ∀ {s : Seq α}, a ∈ s → a ∈ cons y s
   | ⟨_, _⟩ => Stream'.mem_cons_of_mem (some y)
 #align stream.seq.mem_cons_of_mem Stream'.Seq.mem_cons_of_mem
 
-theorem eq_or_mem_of_mem_cons {a b : α} : ∀ {s : Seq α}, a ∈ cons b s → a = b ∨ a ∈ s
+lemma eq_or_mem_of_mem_cons {a b : α} : ∀ {s : Seq α}, a ∈ cons b s → a = b ∨ a ∈ s
   | ⟨f, al⟩, h => (Stream'.eq_or_mem_of_mem_cons h).imp_left fun h => by injection h
 #align stream.seq.eq_or_mem_of_mem_cons Stream'.Seq.eq_or_mem_of_mem_cons
 
 @[simp]
-theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a ∈ s :=
+lemma mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a ∈ s :=
   ⟨eq_or_mem_of_mem_cons, by rintro (rfl | m) <;> [apply mem_cons; exact mem_cons_of_mem _ m]⟩
 #align stream.seq.mem_cons_iff Stream'.Seq.mem_cons_iff
 
@@ -205,7 +205,7 @@ def destruct (s : Seq α) : Option (Seq1 α) :=
   (fun a' => (a', s.tail)) <$> get? s 0
 #align stream.seq.destruct Stream'.Seq.destruct
 
-theorem destruct_eq_nil {s : Seq α} : destruct s = none → s = nil := by
+lemma destruct_eq_nil {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
   induction' f0 : get? s 0 <;> intro h
   · apply Subtype.eq
@@ -215,7 +215,7 @@ theorem destruct_eq_nil {s : Seq α} : destruct s = none → s = nil := by
   · contradiction
 #align stream.seq.destruct_eq_nil Stream'.Seq.destruct_eq_nil
 
-theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s = cons a s' := by
+lemma destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s = cons a s' := by
   dsimp [destruct]
   induction' f0 : get? s 0 with a' <;> intro h
   · contradiction
@@ -230,12 +230,12 @@ theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s =
 #align stream.seq.destruct_eq_cons Stream'.Seq.destruct_eq_cons
 
 @[simp]
-theorem destruct_nil : destruct (nil : Seq α) = none :=
+lemma destruct_nil : destruct (nil : Seq α) = none :=
   rfl
 #align stream.seq.destruct_nil Stream'.Seq.destruct_nil
 
 @[simp]
-theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
+lemma destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
   | ⟨f, al⟩ => by
     unfold cons destruct Functor.map
     apply congr_arg fun s => some (a, s)
@@ -243,34 +243,34 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
 #align stream.seq.destruct_cons Stream'.Seq.destruct_cons
 
 -- Porting note: needed universe annotation to avoid universe issues
-theorem head_eq_destruct (s : Seq α) : head.{u} s = Prod.fst.{u} <$> destruct.{u} s := by
+lemma head_eq_destruct (s : Seq α) : head.{u} s = Prod.fst.{u} <$> destruct.{u} s := by
   unfold destruct head; cases get? s 0 <;> rfl
 #align stream.seq.head_eq_destruct Stream'.Seq.head_eq_destruct
 
 @[simp]
-theorem head_nil : head (nil : Seq α) = none :=
+lemma head_nil : head (nil : Seq α) = none :=
   rfl
 #align stream.seq.head_nil Stream'.Seq.head_nil
 
 @[simp]
-theorem head_cons (a : α) (s) : head (cons a s) = some a := by
+lemma head_cons (a : α) (s) : head (cons a s) = some a := by
   rw [head_eq_destruct, destruct_cons, Option.map_eq_map, Option.map_some']
 #align stream.seq.head_cons Stream'.Seq.head_cons
 
 @[simp]
-theorem tail_nil : tail (nil : Seq α) = nil :=
+lemma tail_nil : tail (nil : Seq α) = nil :=
   rfl
 #align stream.seq.tail_nil Stream'.Seq.tail_nil
 
 @[simp]
-theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
+lemma tail_cons (a : α) (s) : tail (cons a s) = s := by
   cases' s with f al
   apply Subtype.eq
   dsimp [tail, cons]
 #align stream.seq.tail_cons Stream'.Seq.tail_cons
 
 @[simp]
-theorem get?_tail (s : Seq α) (n) : get? (tail s) n = get? s (n + 1) :=
+lemma get?_tail (s : Seq α) (n) : get? (tail s) n = get? s (n + 1) :=
   rfl
 #align stream.seq.nth_tail Stream'.Seq.get?_tail
 
@@ -285,7 +285,7 @@ def recOn {C : Seq α → Sort v} (s : Seq α) (h1 : C nil) (h2 : ∀ x s, C (co
     apply h2
 #align stream.seq.rec_on Stream'.Seq.recOn
 
-theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
+lemma mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
   cases' M with k e; unfold Stream'.get at e
   induction' k with k IH generalizing s
@@ -337,7 +337,7 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
 #align stream.seq.corec Stream'.Seq.corec
 
 @[simp]
-theorem corec_eq (f : β → Option (α × β)) (b : β) :
+lemma corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
   dsimp [corec, destruct, get]
   -- Porting note: next two lines were `change`...`with`...
@@ -374,7 +374,7 @@ def IsBisimulation :=
 #align stream.seq.is_bisimulation Stream'.Seq.IsBisimulation
 
 -- If two streams are bisimilar, then they are equal
-theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
+lemma eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
   apply Subtype.eq
   apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
   · dsimp [Stream'.IsBisimulation]
@@ -408,7 +408,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
 
 end Bisim
 
-theorem coinduction :
+lemma coinduction :
     ∀ {s₁ s₂ : Seq α},
       head s₁ = head s₂ →
         (∀ (β : Type u) (fr : Seq α → β), fr s₁ = fr s₂ → fr (tail s₁) = fr (tail s₂)) → s₁ = s₂
@@ -416,7 +416,7 @@ theorem coinduction :
     Subtype.eq (Stream'.coinduction hh fun β fr => ht β fun s => fr s.1)
 #align stream.seq.coinduction Stream'.Seq.coinduction
 
-theorem coinduction2 (s) (f g : Seq α → Seq β)
+lemma coinduction2 (s) (f g : Seq α → Seq β)
     (H :
       ∀ s,
         BisimO (fun s1 s2 : Seq β => ∃ s : Seq α, s1 = f s ∧ s2 = g s) (destruct (f s))
@@ -440,17 +440,17 @@ instance coeList : Coe (List α) (Seq α) :=
 #align stream.seq.coe_list Stream'.Seq.coeList
 
 @[simp]
-theorem ofList_nil : ofList [] = (nil : Seq α) :=
+lemma ofList_nil : ofList [] = (nil : Seq α) :=
   rfl
 #align stream.seq.of_list_nil Stream'.Seq.ofList_nil
 
 @[simp]
-theorem ofList_get (l : List α) (n : ℕ) : (ofList l).get? n = l.get? n :=
+lemma ofList_get (l : List α) (n : ℕ) : (ofList l).get? n = l.get? n :=
   rfl
 #align stream.seq.of_list_nth Stream'.Seq.ofList_get
 
 @[simp]
-theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) := by
+lemma ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) := by
   ext1 (_ | n) <;> rfl
 #align stream.seq.of_list_cons Stream'.Seq.ofList_cons
 
@@ -499,7 +499,7 @@ def nats : Seq ℕ :=
 #align stream.seq.nats Stream'.Seq.nats
 
 @[simp]
-theorem nats_get? (n : ℕ) : nats.get? n = some n :=
+lemma nats_get? (n : ℕ) : nats.get? n = some n :=
   rfl
 #align stream.seq.nats_nth Stream'.Seq.nats_get?
 
@@ -581,7 +581,7 @@ def zipWith (f : α → β → γ) (s₁ : Seq α) (s₂ : Seq β) : Seq γ :=
 variable {s : Seq α} {s' : Seq β} {n : ℕ}
 
 @[simp]
-theorem get?_zipWith (f : α → β → γ) (s s' n) :
+lemma get?_zipWith (f : α → β → γ) (s s' n) :
     (zipWith f s s').get? n = Option.map₂ f (s.get? n) (s'.get? n) :=
   rfl
 #align stream.seq.nth_zip_with Stream'.Seq.get?_zipWith
@@ -593,7 +593,7 @@ def zip : Seq α → Seq β → Seq (α × β) :=
   zipWith Prod.mk
 #align stream.seq.zip Stream'.Seq.zip
 
-theorem get?_zip (s : Seq α) (t : Seq β) (n : ℕ) :
+lemma get?_zip (s : Seq α) (t : Seq β) (n : ℕ) :
     get? (zip s t) n = Option.map₂ Prod.mk (get? s n) (get? t n) :=
   get?_zipWith _ _ _ _
 #align stream.seq.nth_zip Stream'.Seq.get?_zip
@@ -609,12 +609,12 @@ def enum (s : Seq α) : Seq (ℕ × α) :=
 #align stream.seq.enum Stream'.Seq.enum
 
 @[simp]
-theorem get?_enum (s : Seq α) (n : ℕ) : get? (enum s) n = Option.map (Prod.mk n) (get? s n) :=
+lemma get?_enum (s : Seq α) (n : ℕ) : get? (enum s) n = Option.map (Prod.mk n) (get? s n) :=
   get?_zip _ _ _
 #align stream.seq.nth_enum Stream'.Seq.get?_enum
 
 @[simp]
-theorem enum_nil : enum (nil : Seq α) = nil :=
+lemma enum_nil : enum (nil : Seq α) = nil :=
   rfl
 #align stream.seq.enum_nil Stream'.Seq.enum_nil
 
@@ -636,7 +636,7 @@ def toListOrStream (s : Seq α) [Decidable s.Terminates] : Sum (List α) (Stream
 #align stream.seq.to_list_or_stream Stream'.Seq.toListOrStream
 
 @[simp]
-theorem nil_append (s : Seq α) : append nil s = s := by
+lemma nil_append (s : Seq α) : append nil s = s := by
   apply coinduction2; intro s
   dsimp [append]; rw [corec_eq]
   dsimp [append]; apply recOn s _ _
@@ -648,14 +648,14 @@ theorem nil_append (s : Seq α) : append nil s = s := by
 #align stream.seq.nil_append Stream'.Seq.nil_append
 
 @[simp]
-theorem cons_append (a : α) (s t) : append (cons a s) t = cons a (append s t) :=
+lemma cons_append (a : α) (s t) : append (cons a s) t = cons a (append s t) :=
   destruct_eq_cons <| by
     dsimp [append]; rw [corec_eq]
     dsimp [append]; rw [destruct_cons]
 #align stream.seq.cons_append Stream'.Seq.cons_append
 
 @[simp]
-theorem append_nil (s : Seq α) : append s nil = s := by
+lemma append_nil (s : Seq α) : append s nil = s := by
   apply coinduction2 s; intro s
   apply recOn s _ _
   · trivial
@@ -666,7 +666,7 @@ theorem append_nil (s : Seq α) : append s nil = s := by
 #align stream.seq.append_nil Stream'.Seq.append_nil
 
 @[simp]
-theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append t u) := by
+lemma append_assoc (s t u : Seq α) : append (append s t) u = append s (append t u) := by
   apply eq_of_bisim fun s1 s2 => ∃ s t u, s1 = append (append s t) u ∧ s2 = append s (append t u)
   · intro s1 s2 h
     exact
@@ -685,28 +685,28 @@ theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append
 #align stream.seq.append_assoc Stream'.Seq.append_assoc
 
 @[simp]
-theorem map_nil (f : α → β) : map f nil = nil :=
+lemma map_nil (f : α → β) : map f nil = nil :=
   rfl
 #align stream.seq.map_nil Stream'.Seq.map_nil
 
 @[simp]
-theorem map_cons (f : α → β) (a) : ∀ s, map f (cons a s) = cons (f a) (map f s)
+lemma map_cons (f : α → β) (a) : ∀ s, map f (cons a s) = cons (f a) (map f s)
   | ⟨s, al⟩ => by apply Subtype.eq; dsimp [cons, map]; rw [Stream'.map_cons]; rfl
 #align stream.seq.map_cons Stream'.Seq.map_cons
 
 @[simp]
-theorem map_id : ∀ s : Seq α, map id s = s
+lemma map_id : ∀ s : Seq α, map id s = s
   | ⟨s, al⟩ => by
     apply Subtype.eq; dsimp [map]
     rw [Option.map_id, Stream'.map_id]
 #align stream.seq.map_id Stream'.Seq.map_id
 
 @[simp]
-theorem map_tail (f : α → β) : ∀ s, map f (tail s) = tail (map f s)
+lemma map_tail (f : α → β) : ∀ s, map f (tail s) = tail (map f s)
   | ⟨s, al⟩ => by apply Subtype.eq; dsimp [tail, map]
 #align stream.seq.map_tail Stream'.Seq.map_tail
 
-theorem map_comp (f : α → β) (g : β → γ) : ∀ s : Seq α, map (g ∘ f) s = map g (map f s)
+lemma map_comp (f : α → β) (g : β → γ) : ∀ s : Seq α, map (g ∘ f) s = map g (map f s)
   | ⟨s, al⟩ => by
     apply Subtype.eq; dsimp [map]
     apply congr_arg fun f : _ → Option γ => Stream'.map f s
@@ -714,7 +714,7 @@ theorem map_comp (f : α → β) (g : β → γ) : ∀ s : Seq α, map (g ∘ f)
 #align stream.seq.map_comp Stream'.Seq.map_comp
 
 @[simp]
-theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s) (map f t) := by
+lemma map_append (f : α → β) (s t) : map f (append s t) = append (map f s) (map f t) := by
   apply
     eq_of_bisim (fun s1 s2 => ∃ s t, s1 = map f (append s t) ∧ s2 = append (map f s) (map f t)) _
       ⟨s, t, rfl, rfl⟩
@@ -731,7 +731,7 @@ theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s)
 #align stream.seq.map_append Stream'.Seq.map_append
 
 @[simp]
-theorem map_get? (f : α → β) : ∀ s n, get? (map f s) n = (get? s n).map f
+lemma map_get? (f : α → β) : ∀ s n, get? (map f s) n = (get? s n).map f
   | ⟨_, _⟩, _ => rfl
 #align stream.seq.map_nth Stream'.Seq.map_get?
 
@@ -743,23 +743,23 @@ instance : LawfulFunctor Seq where
   map_const := rfl
 
 @[simp]
-theorem join_nil : join nil = (nil : Seq α) :=
+lemma join_nil : join nil = (nil : Seq α) :=
   destruct_eq_nil rfl
 #align stream.seq.join_nil Stream'.Seq.join_nil
 
 --@[simp] -- Porting note: simp can prove: `join_cons` is more general
-theorem join_cons_nil (a : α) (S) : join (cons (a, nil) S) = cons a (join S) :=
+lemma join_cons_nil (a : α) (S) : join (cons (a, nil) S) = cons a (join S) :=
   destruct_eq_cons <| by simp [join]
 #align stream.seq.join_cons_nil Stream'.Seq.join_cons_nil
 
 --@[simp] -- Porting note: simp can prove: `join_cons` is more general
-theorem join_cons_cons (a b : α) (s S) :
+lemma join_cons_cons (a b : α) (s S) :
     join (cons (a, cons b s) S) = cons a (join (cons (b, s) S)) :=
   destruct_eq_cons <| by simp [join]
 #align stream.seq.join_cons_cons Stream'.Seq.join_cons_cons
 
 @[simp]
-theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join S)) := by
+lemma join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join S)) := by
   apply
     eq_of_bisim
       (fun s1 s2 => s1 = s2 ∨ ∃ a s S, s1 = join (cons (a, s) S) ∧ s2 = cons a (append s (join S)))
@@ -780,7 +780,7 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
 #align stream.seq.join_cons Stream'.Seq.join_cons
 
 @[simp]
-theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) (join T) := by
+lemma join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) (join T) := by
   apply
     eq_of_bisim fun s1 s2 =>
       ∃ s S T, s1 = append s (join (append S T)) ∧ s2 = append s (append (join S) (join T))
@@ -804,17 +804,17 @@ theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) 
 #align stream.seq.join_append Stream'.Seq.join_append
 
 @[simp]
-theorem ofStream_cons (a : α) (s) : ofStream (a::s) = cons a (ofStream s) := by
+lemma ofStream_cons (a : α) (s) : ofStream (a::s) = cons a (ofStream s) := by
   apply Subtype.eq; simp only [ofStream, cons]; rw [Stream'.map_cons]
 #align stream.seq.of_stream_cons Stream'.Seq.ofStream_cons
 
 @[simp]
-theorem ofList_append (l l' : List α) : ofList (l ++ l') = append (ofList l) (ofList l') := by
+lemma ofList_append (l l' : List α) : ofList (l ++ l') = append (ofList l) (ofList l') := by
   induction l <;> simp [*]
 #align stream.seq.of_list_append Stream'.Seq.ofList_append
 
 @[simp]
-theorem ofStream_append (l : List α) (s : Stream' α) :
+lemma ofStream_append (l : List α) (s : Stream' α) :
     ofStream (l ++ₛ s) = append (ofList l) (ofStream s) := by
   induction l <;> simp [*, Stream'.nil_append_stream, Stream'.cons_append_stream]
 #align stream.seq.of_stream_append Stream'.Seq.ofStream_append
@@ -831,26 +831,26 @@ def toList' {α} (s : Seq α) : Computation (List α) :=
     ([], s)
 #align stream.seq.to_list' Stream'.Seq.toList'
 
-theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
+lemma dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
   | 0 => rfl
   | n + 1 => congr_arg tail (dropn_add s _ n)
 #align stream.seq.dropn_add Stream'.Seq.dropn_add
 
-theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
+lemma dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
   rw [Nat.add_comm]; symm; apply dropn_add
 #align stream.seq.dropn_tail Stream'.Seq.dropn_tail
 
 @[simp]
-theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
+lemma head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
   induction' n with n IH generalizing s; · rfl
   rw [← get?_tail, ← dropn_tail]; apply IH
 #align stream.seq.head_dropn Stream'.Seq.head_dropn
 
-theorem mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈ map f s
+lemma mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈ map f s
   | ⟨_, _⟩ => Stream'.mem_map (Option.map f)
 #align stream.seq.mem_map Stream'.Seq.mem_map
 
-theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃ a, a ∈ s ∧ f a = b :=
+lemma exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃ a, a ∈ s ∧ f a = b :=
   fun {s} h => by match s with
   | ⟨g, al⟩ =>
     let ⟨o, om, oe⟩ := @Stream'.exists_of_mem_map _ _ (Option.map f) (some b) g h
@@ -859,7 +859,7 @@ theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃
     · injection oe with h'; exact ⟨a, om, h'⟩
 #align stream.seq.exists_of_mem_map Stream'.Seq.exists_of_mem_map
 
-theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
+lemma of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
   have := h; revert this
   generalize e : append s₁ s₂ = ss; intro h; revert s₁
   apply mem_rec_on h _
@@ -879,12 +879,12 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
       · exact Or.imp_left (mem_cons_of_mem _) (IH m i2)
 #align stream.seq.of_mem_append Stream'.Seq.of_mem_append
 
-theorem mem_append_left {s₁ s₂ : Seq α} {a : α} (h : a ∈ s₁) : a ∈ append s₁ s₂ := by
+lemma mem_append_left {s₁ s₂ : Seq α} {a : α} (h : a ∈ s₁) : a ∈ append s₁ s₂ := by
   apply mem_rec_on h; intros; simp [*]
 #align stream.seq.mem_append_left Stream'.Seq.mem_append_left
 
 @[simp]
-theorem enum_cons (s : Seq α) (x : α) :
+lemma enum_cons (s : Seq α) (x : α) :
     enum (cons x s) = cons (0, x) (map (Prod.map Nat.succ id) (enum s)) := by
   ext ⟨n⟩ : 1
   · simp
@@ -915,9 +915,9 @@ def map (f : α → β) : Seq1 α → Seq1 β
 #align stream.seq1.map Stream'.Seq1.map
 
 -- Porting note (#10756): new theorem.
-theorem map_pair {f : α → β} {a s} : map f (a, s) = (f a, Seq.map f s) := rfl
+lemma map_pair {f : α → β} {a s} : map f (a, s) = (f a, Seq.map f s) := rfl
 
-theorem map_id : ∀ s : Seq1 α, map id s = s
+lemma map_id : ∀ s : Seq1 α, map id s = s
   | ⟨a, s⟩ => by simp [map]
 #align stream.seq1.map_id Stream'.Seq1.map_id
 
@@ -930,12 +930,12 @@ def join : Seq1 (Seq1 α) → Seq1 α
 #align stream.seq1.join Stream'.Seq1.join
 
 @[simp]
-theorem join_nil (a : α) (S) : join ((a, nil), S) = (a, Seq.join S) :=
+lemma join_nil (a : α) (S) : join ((a, nil), S) = (a, Seq.join S) :=
   rfl
 #align stream.seq1.join_nil Stream'.Seq1.join_nil
 
 @[simp]
-theorem join_cons (a b : α) (s S) :
+lemma join_cons (a b : α) (s S) :
     join ((a, Seq.cons b s), S) = (a, Seq.join (Seq.cons (b, s) S)) := by
   dsimp [join]; rw [destruct_cons]
 #align stream.seq1.join_cons Stream'.Seq1.join_cons
@@ -958,12 +958,12 @@ def bind (s : Seq1 α) (f : α → Seq1 β) : Seq1 β :=
 #align stream.seq1.bind Stream'.Seq1.bind
 
 @[simp]
-theorem join_map_ret (s : Seq α) : Seq.join (Seq.map ret s) = s := by
+lemma join_map_ret (s : Seq α) : Seq.join (Seq.map ret s) = s := by
   apply coinduction2 s; intro s; apply recOn s <;> simp [ret]
 #align stream.seq1.join_map_ret Stream'.Seq1.join_map_ret
 
 @[simp]
-theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
+lemma bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
   | ⟨a, s⟩ => by
     dsimp [bind, map]
     -- Porting note: Was `rw [map_comp]; simp [Function.comp, ret]`
@@ -972,14 +972,14 @@ theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
 #align stream.seq1.bind_ret Stream'.Seq1.bind_ret
 
 @[simp]
-theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
+lemma ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
   simp only [bind, map, ret.eq_1, map_nil]
   cases' f a with a s
   apply recOn s <;> intros <;> simp
 #align stream.seq1.ret_bind Stream'.Seq1.ret_bind
 
 @[simp]
-theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.map (map f) S) := by
+lemma map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.map (map f) S) := by
   apply
     Seq.eq_of_bisim fun s1 s2 =>
       ∃ s S,
@@ -999,12 +999,12 @@ theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.m
 #align stream.seq1.map_join' Stream'.Seq1.map_join'
 
 @[simp]
-theorem map_join (f : α → β) : ∀ S, map f (join S) = join (map (map f) S)
+lemma map_join (f : α → β) : ∀ S, map f (join S) = join (map (map f) S)
   | ((a, s), S) => by apply recOn s <;> intros <;> simp [map]
 #align stream.seq1.map_join Stream'.Seq1.map_join
 
 @[simp]
-theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
+lemma join_join (SS : Seq (Seq1 (Seq1 α))) :
     Seq.join (Seq.join SS) = Seq.join (Seq.map join SS) := by
   apply
     Seq.eq_of_bisim fun s1 s2 =>
@@ -1029,7 +1029,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
 #align stream.seq1.join_join Stream'.Seq1.join_join
 
 @[simp]
-theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
+lemma bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
   cases' s with a s
   -- porting note (#10745): was `simp [bind, map]`.

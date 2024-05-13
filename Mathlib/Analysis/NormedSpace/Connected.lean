@@ -189,7 +189,7 @@ theorem isConnected_compl_of_one_lt_codim {E : Submodule ℝ F} (hcodim : 1 < Mo
     IsConnected (Eᶜ : Set F) :=
   (isPathConnected_compl_of_one_lt_codim hcodim).isConnected
 
-theorem Submodule.connectedComponentIn_eq_self_of_one_lt_codim (E : Submodule ℝ F)
+lemma Submodule.connectedComponentIn_eq_self_of_one_lt_codim (E : Submodule ℝ F)
     (hcodim : 1 < Module.rank ℝ (F ⧸ E)) {x : F} (hx : x ∉ E) :
     connectedComponentIn ((E : Set F)ᶜ) x = (E : Set F)ᶜ :=
   (isConnected_compl_of_one_lt_codim hcodim).2.connectedComponentIn hx

@@ -41,7 +41,7 @@ variable (hv : LinearIndependent R v) {u : ι ⊕ ι' → S.X₂}
   (hw : LinearIndependent R (S.g ∘ u ∘ Sum.inr))
   (hm : Mono S.f) (huv : u ∘ Sum.inl = S.f ∘ v)
 
-theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
+lemma disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
     (span R (range (u ∘ Sum.inr))) := by
   rw [huv, disjoint_comm]
   refine' Disjoint.mono_right (span_mono (range_comp_subset_range _ _)) _
@@ -154,7 +154,7 @@ theorem free_shortExact [Module.Free R S.X₁] [Module.Free R S.X₃] :
   Module.Free.of_basis (Basis.ofShortExact hS' (Module.Free.chooseBasis R S.X₁)
     (Module.Free.chooseBasis R S.X₃))
 
-theorem free_shortExact_rank_add [Module.Free R S.X₁] [Module.Free R S.X₃]
+lemma free_shortExact_rank_add [Module.Free R S.X₁] [Module.Free R S.X₃]
     [StrongRankCondition R] :
     Module.rank R S.X₂ = Module.rank R S.X₁ + Module.rank R S.X₃ := by
   haveI := free_shortExact hS'
@@ -163,7 +163,7 @@ theorem free_shortExact_rank_add [Module.Free R S.X₁] [Module.Free R S.X₃]
   exact ⟨Basis.indexEquiv (Module.Free.chooseBasis R S.X₂) (Basis.ofShortExact hS'
     (Module.Free.chooseBasis R S.X₁) (Module.Free.chooseBasis R S.X₃))⟩
 
-theorem free_shortExact_finrank_add {n p : ℕ} [Module.Free R S.X₁] [Module.Free R S.X₃]
+lemma free_shortExact_finrank_add {n p : ℕ} [Module.Free R S.X₁] [Module.Free R S.X₃]
     [Module.Finite R S.X₁] [Module.Finite R S.X₃]
     (hN : FiniteDimensional.finrank R S.X₁ = n)
     (hP : FiniteDimensional.finrank R S.X₃ = p)

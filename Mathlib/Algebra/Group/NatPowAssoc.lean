@@ -50,30 +50,30 @@ section MulOneClass
 
 variable [MulOneClass M] [Pow M ℕ] [NatPowAssoc M]
 
-theorem npow_add (k n : ℕ) (x : M) : x ^ (k + n) = x ^ k * x ^ n  :=
+lemma npow_add (k n : ℕ) (x : M) : x ^ (k + n) = x ^ k * x ^ n  :=
   NatPowAssoc.npow_add k n x
 
 @[simp]
-theorem npow_zero (x : M) : x ^ 0 = 1 :=
+lemma npow_zero (x : M) : x ^ 0 = 1 :=
   NatPowAssoc.npow_zero x
 
 @[simp]
-theorem npow_one (x : M) : x ^ 1 = x :=
+lemma npow_one (x : M) : x ^ 1 = x :=
   NatPowAssoc.npow_one x
 
-theorem npow_mul_assoc (k m n : ℕ) (x : M) :
+lemma npow_mul_assoc (k m n : ℕ) (x : M) :
     (x ^ k * x ^ m) * x ^ n = x ^ k * (x ^ m * x ^ n) := by
   simp only [← npow_add, add_assoc]
 
-theorem npow_mul_comm (m n : ℕ) (x : M) :
+lemma npow_mul_comm (m n : ℕ) (x : M) :
     x ^ m * x ^ n = x ^ n * x ^ m := by simp only [← npow_add, add_comm]
 
-theorem npow_mul (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ m) ^ n := by
+lemma npow_mul (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ m) ^ n := by
   induction n with
   | zero => rw [npow_zero, Nat.mul_zero, npow_zero]
   | succ n ih => rw [mul_add, npow_add, ih, mul_one, npow_add, npow_one]
 
-theorem npow_mul' (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ n) ^ m := by
+lemma npow_mul' (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ n) ^ m := by
   rw [mul_comm]
   exact npow_mul x n m
 
@@ -101,14 +101,14 @@ instance Monoid.PowAssoc : NatPowAssoc M where
   npow_one _ := pow_one _
 
 @[simp, norm_cast]
-theorem Nat.cast_npow (R : Type*) [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] (n m : ℕ) :
+lemma Nat.cast_npow (R : Type*) [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] (n m : ℕ) :
     (↑(n ^ m) : R) = (↑n : R) ^ m := by
   induction' m with m ih
   · simp only [pow_zero, Nat.cast_one, npow_zero]
   · rw [npow_add, npow_add, Nat.cast_mul, ih, npow_one, npow_one]
 
 @[simp, norm_cast]
-theorem Int.cast_npow (R : Type*) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
+lemma Int.cast_npow (R : Type*) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
     (n : ℤ) : ∀(m : ℕ), @Int.cast R NonAssocRing.toIntCast (n ^ m) = (n : R) ^ m
   | 0 => by
     rw [pow_zero, npow_zero, Int.cast_one]

@@ -101,7 +101,7 @@ section CompIso
 variable {B B' : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
   (i : B ⟶ B') [IsIso i]
 
-theorem effectiveEpiFamilyStructCompIso_aux
+lemma effectiveEpiFamilyStructCompIso_aux
     {W : C} (e : (a : α) → X a ⟶ W)
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π a₁ ≫ i = g₂ ≫ π a₂ ≫ i → g₁ ≫ e a₁ = g₂ ≫ e a₂)

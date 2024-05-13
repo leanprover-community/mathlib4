@@ -73,7 +73,7 @@ def descFOne {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveR
 #align category_theory.InjectiveResolution.desc_f_one CategoryTheory.InjectiveResolution.descFOne
 
 @[simp]
-theorem descFOne_zero_comm {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
+lemma descFOne_zero_comm {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
     (J : InjectiveResolution Z) :
     J.cocomplex.d 0 1 ≫ descFOne f I J = descFZero f I J ≫ I.cocomplex.d 0 1 := by
   apply J.exact₀.comp_descToInjective
@@ -203,12 +203,12 @@ def homotopyEquiv {X : C} (I J : InjectiveResolution X) :
 #align category_theory.InjectiveResolution.homotopy_equiv CategoryTheory.InjectiveResolution.homotopyEquiv
 
 @[reassoc (attr := simp)] -- Porting note: Originally `@[simp, reassoc.1]`
-theorem homotopyEquiv_hom_ι {X : C} (I J : InjectiveResolution X) :
+lemma homotopyEquiv_hom_ι {X : C} (I J : InjectiveResolution X) :
     I.ι ≫ (homotopyEquiv I J).hom = J.ι := by simp [homotopyEquiv]
 #align category_theory.InjectiveResolution.homotopy_equiv_hom_ι CategoryTheory.InjectiveResolution.homotopyEquiv_hom_ι
 
 @[reassoc (attr := simp)] -- Porting note: Originally `@[simp, reassoc.1]`
-theorem homotopyEquiv_inv_ι {X : C} (I J : InjectiveResolution X) :
+lemma homotopyEquiv_inv_ι {X : C} (I J : InjectiveResolution X) :
     J.ι ≫ (homotopyEquiv I J).inv = I.ι := by simp [homotopyEquiv]
 #align category_theory.InjectiveResolution.homotopy_equiv_inv_ι CategoryTheory.InjectiveResolution.homotopyEquiv_inv_ι
 
@@ -278,7 +278,7 @@ section
 
 variable [Abelian C] [EnoughInjectives C]
 
-theorem exact_f_d {X Y : C} (f : X ⟶ Y) :
+lemma exact_f_d {X Y : C} (f : X ⟶ Y) :
     (ShortComplex.mk f (d f) (by simp)).Exact := by
   let α : ShortComplex.mk f (cokernel.π f) (by simp) ⟶ ShortComplex.mk f (d f) (by simp) :=
     { τ₁ := 𝟙 _

@@ -44,7 +44,7 @@ def embeddingOfSubset : ℓ^∞(ℕ) :=
     exact abs_dist_sub_le _ _ _⟩
 #align Kuratowski_embedding.embedding_of_subset KuratowskiEmbedding.embeddingOfSubset
 
-theorem embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x 0) (x n) :=
+lemma embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x 0) (x n) :=
   rfl
 #align Kuratowski_embedding.embedding_of_subset_coe KuratowskiEmbedding.embeddingOfSubset_coe
 

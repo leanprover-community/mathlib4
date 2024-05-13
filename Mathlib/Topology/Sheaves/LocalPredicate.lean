@@ -155,7 +155,7 @@ def PrelocalPredicate.sheafify {T : X → Type v} (P : PrelocalPredicate T) : Lo
 set_option linter.uppercaseLean3 false in
 #align Top.prelocal_predicate.sheafify TopCat.PrelocalPredicate.sheafify
 
-theorem PrelocalPredicate.sheafifyOf {T : X → Type v} {P : PrelocalPredicate T} {U : Opens X}
+lemma PrelocalPredicate.sheafifyOf {T : X → Type v} {P : PrelocalPredicate T} {U : Opens X}
     {f : ∀ x : U, T x} (h : P.pred f) : P.sheafify.pred f := fun x =>
   ⟨U, x.2, 𝟙 _, by convert h⟩
 set_option linter.uppercaseLean3 false in
@@ -245,7 +245,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note (#11119): removed `simp` attribute,
 -- due to left hand side is not in simple normal form.
-theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : U) (f) :
+lemma stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : U) (f) :
     stalkToFiber P x ((subsheafToTypes P).presheaf.germ x f) = f.1 x := by
   dsimp [Presheaf.germ, stalkToFiber]
   cases x

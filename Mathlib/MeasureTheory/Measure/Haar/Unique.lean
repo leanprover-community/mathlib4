@@ -690,7 +690,7 @@ positive), up to the scalar `haarScalarFactor μ' μ `.
 -/
 
 @[to_additive measure_isAddHaarMeasure_eq_smul_of_isEverywherePos]
-theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
+lemma measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ']
     {s : Set G} (hs : MeasurableSet s) (h's : IsEverywherePos μ s) :
     μ' s = haarScalarFactor μ' μ • μ s := by
@@ -970,7 +970,7 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
   rw [hc, this, one_smul]
 
 @[to_additive]
-theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn : n ≠ 0) :
+lemma measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn : n ≠ 0) :
     MeasurePreserving (fun g : G => g ^ n) μ μ :=
   { measurable := (continuous_zpow n).measurable
     map_eq := by
@@ -992,7 +992,7 @@ theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn
 #align measure_theory.measure.measure_preserving_zsmul MeasureTheory.Measure.measurePreserving_zsmul
 
 @[to_additive]
-theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ]
+lemma MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ]
     {n : ℤ} (hn : n ≠ 0) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
     MeasurePreserving (fun x => f x ^ n) μ' μ :=

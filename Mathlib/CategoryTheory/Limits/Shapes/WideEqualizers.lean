@@ -109,7 +109,7 @@ instance WalkingParallelFamily.category : SmallCategory (WalkingParallelFamily J
   CategoryTheory.Limits.WalkingParallelFamily.category
 
 @[simp]
-theorem WalkingParallelFamily.hom_id (X : WalkingParallelFamily J) :
+lemma WalkingParallelFamily.hom_id (X : WalkingParallelFamily J) :
     WalkingParallelFamily.Hom.id X = 𝟙 X :=
   rfl
 #align
@@ -134,17 +134,17 @@ def parallelFamily : WalkingParallelFamily J ⥤ C where
 #align category_theory.limits.parallel_family CategoryTheory.Limits.parallelFamily
 
 @[simp]
-theorem parallelFamily_obj_zero : (parallelFamily f).obj zero = X :=
+lemma parallelFamily_obj_zero : (parallelFamily f).obj zero = X :=
   rfl
 #align category_theory.limits.parallel_family_obj_zero CategoryTheory.Limits.parallelFamily_obj_zero
 
 @[simp]
-theorem parallelFamily_obj_one : (parallelFamily f).obj one = Y :=
+lemma parallelFamily_obj_one : (parallelFamily f).obj one = Y :=
   rfl
 #align category_theory.limits.parallel_family_obj_one CategoryTheory.Limits.parallelFamily_obj_one
 
 @[simp]
-theorem parallelFamily_map_left {j : J} : (parallelFamily f).map (line j) = f j :=
+lemma parallelFamily_map_left {j : J} : (parallelFamily f).map (line j) = f j :=
   rfl
 #align
   category_theory.limits.parallel_family_map_left
@@ -205,22 +205,22 @@ abbrev Cotrident.π (t : Cotrident f) :=
 #align category_theory.limits.cotrident.π CategoryTheory.Limits.Cotrident.π
 
 @[simp]
-theorem Trident.ι_eq_app_zero (t : Trident f) : t.ι = t.π.app zero :=
+lemma Trident.ι_eq_app_zero (t : Trident f) : t.ι = t.π.app zero :=
   rfl
 #align category_theory.limits.trident.ι_eq_app_zero CategoryTheory.Limits.Trident.ι_eq_app_zero
 
 @[simp]
-theorem Cotrident.π_eq_app_one (t : Cotrident f) : t.π = t.ι.app one :=
+lemma Cotrident.π_eq_app_one (t : Cotrident f) : t.π = t.ι.app one :=
   rfl
 #align category_theory.limits.cotrident.π_eq_app_one CategoryTheory.Limits.Cotrident.π_eq_app_one
 
 @[reassoc (attr := simp)]
-theorem Trident.app_zero (s : Trident f) (j : J) : s.π.app zero ≫ f j = s.π.app one := by
+lemma Trident.app_zero (s : Trident f) (j : J) : s.π.app zero ≫ f j = s.π.app one := by
   rw [← s.w (line j), parallelFamily_map_left]
 #align category_theory.limits.trident.app_zero CategoryTheory.Limits.Trident.app_zero
 
 @[reassoc (attr := simp)]
-theorem Cotrident.app_one (s : Cotrident f) (j : J) : f j ≫ s.ι.app one = s.ι.app zero := by
+lemma Cotrident.app_one (s : Cotrident f) (j : J) : f j ≫ s.ι.app one = s.ι.app zero := by
   rw [← s.w (line j), parallelFamily_map_left]
 #align category_theory.limits.cotrident.app_one CategoryTheory.Limits.Cotrident.app_one
 
@@ -257,23 +257,23 @@ def Cotrident.ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂, f j�
 #align category_theory.limits.cotrident.of_π CategoryTheory.Limits.Cotrident.ofπ
 
 -- See note [dsimp, simp]
-theorem Trident.ι_ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ f j₁ = ι ≫ f j₂) :
+lemma Trident.ι_ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ f j₁ = ι ≫ f j₂) :
     (Trident.ofι ι w).ι = ι :=
   rfl
 #align category_theory.limits.trident.ι_of_ι CategoryTheory.Limits.Trident.ι_ofι
 
-theorem Cotrident.π_ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂, f j₁ ≫ π = f j₂ ≫ π) :
+lemma Cotrident.π_ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂, f j₁ ≫ π = f j₂ ≫ π) :
     (Cotrident.ofπ π w).π = π :=
   rfl
 #align category_theory.limits.cotrident.π_of_π CategoryTheory.Limits.Cotrident.π_ofπ
 
 @[reassoc]
-theorem Trident.condition (j₁ j₂ : J) (t : Trident f) : t.ι ≫ f j₁ = t.ι ≫ f j₂ := by
+lemma Trident.condition (j₁ j₂ : J) (t : Trident f) : t.ι ≫ f j₁ = t.ι ≫ f j₂ := by
   rw [t.app_zero, t.app_zero]
 #align category_theory.limits.trident.condition CategoryTheory.Limits.Trident.condition
 
 @[reassoc]
-theorem Cotrident.condition (j₁ j₂ : J) (t : Cotrident f) : f j₁ ≫ t.π = f j₂ ≫ t.π := by
+lemma Cotrident.condition (j₁ j₂ : J) (t : Cotrident f) : f j₁ ≫ t.π = f j₂ ≫ t.π := by
   rw [t.app_one, t.app_one]
 #align category_theory.limits.cotrident.condition CategoryTheory.Limits.Cotrident.condition
 
@@ -295,12 +295,12 @@ theorem Cotrident.coequalizer_ext [Nonempty J] (s : Cotrident f) {W : C} {k l : 
   category_theory.limits.cotrident.coequalizer_ext
   CategoryTheory.Limits.Cotrident.coequalizer_ext
 
-theorem Trident.IsLimit.hom_ext [Nonempty J] {s : Trident f} (hs : IsLimit s) {W : C}
+lemma Trident.IsLimit.hom_ext [Nonempty J] {s : Trident f} (hs : IsLimit s) {W : C}
     {k l : W ⟶ s.pt} (h : k ≫ s.ι = l ≫ s.ι) : k = l :=
   hs.hom_ext <| Trident.equalizer_ext _ h
 #align category_theory.limits.trident.is_limit.hom_ext CategoryTheory.Limits.Trident.IsLimit.hom_ext
 
-theorem Cotrident.IsColimit.hom_ext [Nonempty J] {s : Cotrident f} (hs : IsColimit s) {W : C}
+lemma Cotrident.IsColimit.hom_ext [Nonempty J] {s : Cotrident f} (hs : IsColimit s) {W : C}
     {k l : s.pt ⟶ W} (h : s.π ≫ k = s.π ≫ l) : k = l :=
   hs.hom_ext <| Cotrident.coequalizer_ext _ h
 #align
@@ -459,13 +459,13 @@ def Cocone.ofCotrident {F : WalkingParallelFamily J ⥤ C} (t : Cotrident fun j 
 #align category_theory.limits.cocone.of_cotrident CategoryTheory.Limits.Cocone.ofCotrident
 
 @[simp]
-theorem Cone.ofTrident_π {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.map (line j))
+lemma Cone.ofTrident_π {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.map (line j))
     (j) : (Cone.ofTrident t).π.app j = t.π.app j ≫ eqToHom (by cases j <;> aesop_cat) :=
   rfl
 #align category_theory.limits.cone.of_trident_π CategoryTheory.Limits.Cone.ofTrident_π
 
 @[simp]
-theorem Cocone.ofCotrident_ι {F : WalkingParallelFamily J ⥤ C}
+lemma Cocone.ofCotrident_ι {F : WalkingParallelFamily J ⥤ C}
     (t : Cotrident fun j => F.map (line j)) (j) :
     (Cocone.ofCotrident t).ι.app j = eqToHom (by cases j <;> aesop_cat) ≫ t.ι.app j :=
   rfl
@@ -494,13 +494,13 @@ def Cotrident.ofCocone {F : WalkingParallelFamily J ⥤ C} (t : Cocone F) :
 #align category_theory.limits.cotrident.of_cocone CategoryTheory.Limits.Cotrident.ofCocone
 
 @[simp]
-theorem Trident.ofCone_π {F : WalkingParallelFamily J ⥤ C} (t : Cone F) (j) :
+lemma Trident.ofCone_π {F : WalkingParallelFamily J ⥤ C} (t : Cone F) (j) :
     (Trident.ofCone t).π.app j = t.π.app j ≫ eqToHom (by cases j <;> aesop_cat) :=
   rfl
 #align category_theory.limits.trident.of_cone_π CategoryTheory.Limits.Trident.ofCone_π
 
 @[simp]
-theorem Cotrident.ofCocone_ι {F : WalkingParallelFamily J ⥤ C} (t : Cocone F) (j) :
+lemma Cotrident.ofCocone_ι {F : WalkingParallelFamily J ⥤ C} (t : Cocone F) (j) :
     (Cotrident.ofCocone t).ι.app j = eqToHom (by cases j <;> aesop_cat) ≫ t.ι.app j :=
   rfl
 #align category_theory.limits.cotrident.of_cocone_ι CategoryTheory.Limits.Cotrident.ofCocone_ι
@@ -583,12 +583,12 @@ abbrev wideEqualizer.trident : Trident f :=
 #align category_theory.limits.wide_equalizer.trident CategoryTheory.Limits.wideEqualizer.trident
 
 @[simp]
-theorem wideEqualizer.trident_ι : (wideEqualizer.trident f).ι = wideEqualizer.ι f :=
+lemma wideEqualizer.trident_ι : (wideEqualizer.trident f).ι = wideEqualizer.ι f :=
   rfl
 #align category_theory.limits.wide_equalizer.trident_ι CategoryTheory.Limits.wideEqualizer.trident_ι
 
 @[simp 1100]
-theorem wideEqualizer.trident_π_app_zero :
+lemma wideEqualizer.trident_π_app_zero :
     (wideEqualizer.trident f).π.app zero = wideEqualizer.ι f :=
   rfl
 #align
@@ -596,7 +596,7 @@ theorem wideEqualizer.trident_π_app_zero :
   CategoryTheory.Limits.wideEqualizer.trident_π_app_zero
 
 @[reassoc]
-theorem wideEqualizer.condition (j₁ j₂ : J) : wideEqualizer.ι f ≫ f j₁ = wideEqualizer.ι f ≫ f j₂ :=
+lemma wideEqualizer.condition (j₁ j₂ : J) : wideEqualizer.ι f ≫ f j₁ = wideEqualizer.ι f ≫ f j₂ :=
   Trident.condition j₁ j₂ <| limit.cone <| parallelFamily f
 #align category_theory.limits.wide_equalizer.condition CategoryTheory.Limits.wideEqualizer.condition
 
@@ -618,7 +618,7 @@ abbrev wideEqualizer.lift [Nonempty J] {W : C} (k : W ⟶ X) (h : ∀ j₁ j₂,
 #align category_theory.limits.wide_equalizer.lift CategoryTheory.Limits.wideEqualizer.lift
 
 @[reassoc (attr := simp 1100)]
-theorem wideEqualizer.lift_ι [Nonempty J] {W : C} (k : W ⟶ X)
+lemma wideEqualizer.lift_ι [Nonempty J] {W : C} (k : W ⟶ X)
     (h : ∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂) :
     wideEqualizer.lift k h ≫ wideEqualizer.ι f = k :=
   limit.lift_π _ _
@@ -692,14 +692,14 @@ abbrev wideCoequalizer.cotrident : Cotrident f :=
   CategoryTheory.Limits.wideCoequalizer.cotrident
 
 @[simp]
-theorem wideCoequalizer.cotrident_π : (wideCoequalizer.cotrident f).π = wideCoequalizer.π f :=
+lemma wideCoequalizer.cotrident_π : (wideCoequalizer.cotrident f).π = wideCoequalizer.π f :=
   rfl
 #align
   category_theory.limits.wide_coequalizer.cotrident_π
   CategoryTheory.Limits.wideCoequalizer.cotrident_π
 
 @[simp 1100]
-theorem wideCoequalizer.cotrident_ι_app_one :
+lemma wideCoequalizer.cotrident_ι_app_one :
     (wideCoequalizer.cotrident f).ι.app one = wideCoequalizer.π f :=
   rfl
 #align
@@ -707,7 +707,7 @@ theorem wideCoequalizer.cotrident_ι_app_one :
   CategoryTheory.Limits.wideCoequalizer.cotrident_ι_app_one
 
 @[reassoc]
-theorem wideCoequalizer.condition (j₁ j₂ : J) :
+lemma wideCoequalizer.condition (j₁ j₂ : J) :
     f j₁ ≫ wideCoequalizer.π f = f j₂ ≫ wideCoequalizer.π f :=
   Cotrident.condition j₁ j₂ <| colimit.cocone <| parallelFamily f
 #align
@@ -732,7 +732,7 @@ abbrev wideCoequalizer.desc [Nonempty J] {W : C} (k : Y ⟶ W) (h : ∀ j₁ j�
 #align category_theory.limits.wide_coequalizer.desc CategoryTheory.Limits.wideCoequalizer.desc
 
 @[reassoc (attr := simp 1100)]
-theorem wideCoequalizer.π_desc [Nonempty J] {W : C} (k : Y ⟶ W)
+lemma wideCoequalizer.π_desc [Nonempty J] {W : C} (k : Y ⟶ W)
     (h : ∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k) :
     wideCoequalizer.π f ≫ wideCoequalizer.desc k h = k :=
   colimit.ι_desc _ _

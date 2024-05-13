@@ -125,12 +125,12 @@ def Basis.ofRankEqZero {ι : Type*} [IsEmpty ι] (hV : Module.rank K V = 0) : Ba
 #align basis.of_rank_eq_zero Basis.ofRankEqZero
 
 @[simp]
-theorem Basis.ofRankEqZero_apply {ι : Type*} [IsEmpty ι] (hV : Module.rank K V = 0) (i : ι) :
+lemma Basis.ofRankEqZero_apply {ι : Type*} [IsEmpty ι] (hV : Module.rank K V = 0) (i : ι) :
     Basis.ofRankEqZero hV i = 0 :=
   rfl
 #align basis.of_rank_eq_zero_apply Basis.ofRankEqZero_apply
 
-theorem le_rank_iff_exists_linearIndependent {c : Cardinal} :
+lemma le_rank_iff_exists_linearIndependent {c : Cardinal} :
     c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndependent K ((↑) : s → V) := by
   constructor
   · intro h
@@ -142,7 +142,7 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} :
     exact si.cardinal_le_rank
 #align le_rank_iff_exists_linear_independent le_rank_iff_exists_linearIndependent
 
-theorem le_rank_iff_exists_linearIndependent_finset {n : ℕ} : ↑n ≤ Module.rank K V ↔
+lemma le_rank_iff_exists_linearIndependent_finset {n : ℕ} : ↑n ≤ Module.rank K V ↔
     ∃ s : Finset V, s.card = n ∧ LinearIndependent K ((↑) : ↥(s : Set V) → V) := by
   simp only [le_rank_iff_exists_linearIndependent, Cardinal.mk_set_eq_nat_iff_finset]
   constructor
@@ -224,7 +224,7 @@ theorem rank_submodule_le_one_iff' (s : Submodule K V) :
       simp [hw]
 #align rank_submodule_le_one_iff' rank_submodule_le_one_iff'
 
-theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) :
+lemma Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) :
     Module.rank K W ≤ 1 ↔ W.IsPrincipal := by
   simp only [rank_le_one_iff, Submodule.isPrincipal_iff, le_antisymm_iff, le_span_singleton_iff,
     span_singleton_le_iff_mem]
@@ -237,7 +237,7 @@ theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) :
     exact ⟨⟨a, ha⟩, fun v => ⟨f v.1 v.2, Subtype.ext (hf v.1 v.2)⟩⟩
 #align submodule.rank_le_one_iff_is_principal Submodule.rank_le_one_iff_isPrincipal
 
-theorem Module.rank_le_one_iff_top_isPrincipal :
+lemma Module.rank_le_one_iff_top_isPrincipal :
     Module.rank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by
   rw [← Submodule.rank_le_one_iff_isPrincipal, rank_top]
 #align module.rank_le_one_iff_top_is_principal Module.rank_le_one_iff_top_isPrincipal
@@ -250,7 +250,7 @@ open FiniteDimensional
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
-theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintype ι] {b : ι → V}
+lemma linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintype ι] {b : ι → V}
     (spans : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) :
     LinearIndependent K b :=
   linearIndependent_iff'.mpr fun s g dependent i i_mem_s => by
@@ -323,7 +323,7 @@ theorem linearIndependent_iff_card_eq_finrank_span {ι : Type*} [Fintype ι] {b 
     convert (linearIndependent_of_top_le_span_of_card_eq_finrank hs hc).map' _ hi
 #align linear_independent_iff_card_eq_finrank_span linearIndependent_iff_card_eq_finrank_span
 
-theorem linearIndependent_iff_card_le_finrank_span {ι : Type*} [Fintype ι] {b : ι → V} :
+lemma linearIndependent_iff_card_le_finrank_span {ι : Type*} [Fintype ι] {b : ι → V} :
     LinearIndependent K b ↔ Fintype.card ι ≤ (Set.range b).finrank K := by
   rw [linearIndependent_iff_card_eq_finrank_span, (finrank_range_le_card _).le_iff_eq]
 #align linear_independent_iff_card_le_finrank_span linearIndependent_iff_card_le_finrank_span
@@ -335,7 +335,7 @@ noncomputable def basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b :
 #align basis_of_top_le_span_of_card_eq_finrank basisOfTopLeSpanOfCardEqFinrank
 
 @[simp]
-theorem coe_basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι → V)
+lemma coe_basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι → V)
     (le_span : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) :
     ⇑(basisOfTopLeSpanOfCardEqFinrank b le_span card_eq) = b :=
   Basis.coe_mk _ _
@@ -449,7 +449,7 @@ theorem rank_dual_eq_card_dual_of_aleph0_le_rank {K V} [Field K] [AddCommGroup V
   rw [e.rank_eq, e.toEquiv.cardinal_eq]
   apply rank_fun_infinite
 
-theorem lift_rank_lt_rank_dual' {V : Type v} [AddCommGroup V] [Module K V]
+lemma lift_rank_lt_rank_dual' {V : Type v} [AddCommGroup V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) :
     Cardinal.lift.{u} (Module.rank K V) < Module.rank Kᵐᵒᵖ (V →ₗ[K] K) := by
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := K) (M := V)
@@ -459,17 +459,17 @@ theorem lift_rank_lt_rank_dual' {V : Type v} [AddCommGroup V] [Module K V]
   erw [nat_lt_lift_iff, one_lt_iff_nontrivial]
   infer_instance
 
-theorem lift_rank_lt_rank_dual {K : Type u} {V : Type v} [Field K] [AddCommGroup V] [Module K V]
+lemma lift_rank_lt_rank_dual {K : Type u} {V : Type v} [Field K] [AddCommGroup V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) :
     Cardinal.lift.{u} (Module.rank K V) < Module.rank K (V →ₗ[K] K) := by
   rw [rank_dual_eq_card_dual_of_aleph0_le_rank h, ← rank_dual_eq_card_dual_of_aleph0_le_rank' h]
   exact lift_rank_lt_rank_dual' h
 
-theorem rank_lt_rank_dual' {V : Type u} [AddCommGroup V] [Module K V] (h : ℵ₀ ≤ Module.rank K V) :
+lemma rank_lt_rank_dual' {V : Type u} [AddCommGroup V] [Module K V] (h : ℵ₀ ≤ Module.rank K V) :
     Module.rank K V < Module.rank Kᵐᵒᵖ (V →ₗ[K] K) := by
   convert lift_rank_lt_rank_dual' h; rw [lift_id]
 
-theorem rank_lt_rank_dual {K V : Type u} [Field K] [AddCommGroup V] [Module K V]
+lemma rank_lt_rank_dual {K V : Type u} [Field K] [AddCommGroup V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) : Module.rank K V < Module.rank K (V →ₗ[K] K) := by
   convert lift_rank_lt_rank_dual h; rw [lift_id]
 

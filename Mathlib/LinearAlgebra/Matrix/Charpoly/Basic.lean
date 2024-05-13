@@ -46,25 +46,25 @@ def charmatrix (M : Matrix n n R) : Matrix n n R[X] :=
   Matrix.scalar n (X : R[X]) - (C : R →+* R[X]).mapMatrix M
 #align charmatrix Matrix.charmatrix
 
-theorem charmatrix_apply :
+lemma charmatrix_apply :
     charmatrix M i j = (Matrix.diagonal fun _ : n => X) i j - C (M i j) :=
   rfl
 #align charmatrix_apply Matrix.charmatrix_apply
 
 @[simp]
-theorem charmatrix_apply_eq : charmatrix M i i = (X : R[X]) - C (M i i) := by
+lemma charmatrix_apply_eq : charmatrix M i i = (X : R[X]) - C (M i i) := by
   simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, map_apply,
     diagonal_apply_eq]
 
 #align charmatrix_apply_eq Matrix.charmatrix_apply_eq
 
 @[simp]
-theorem charmatrix_apply_ne (h : i ≠ j) : charmatrix M i j = -C (M i j) := by
+lemma charmatrix_apply_ne (h : i ≠ j) : charmatrix M i j = -C (M i j) := by
   simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, diagonal_apply_ne _ h,
     map_apply, sub_eq_neg_self]
 #align charmatrix_apply_ne Matrix.charmatrix_apply_ne
 
-theorem matPolyEquiv_charmatrix : matPolyEquiv (charmatrix M) = X - C M := by
+lemma matPolyEquiv_charmatrix : matPolyEquiv (charmatrix M) = X - C M := by
   ext k i j
   simp only [matPolyEquiv_coeff_apply, coeff_sub, Pi.sub_apply]
   by_cases h : i = j
@@ -76,7 +76,7 @@ theorem matPolyEquiv_charmatrix : matPolyEquiv (charmatrix M) = X - C M := by
     split_ifs <;> simp [h]
 #align mat_poly_equiv_charmatrix Matrix.matPolyEquiv_charmatrix
 
-theorem charmatrix_reindex (e : n ≃ m) :
+lemma charmatrix_reindex (e : n ≃ m) :
     charmatrix (reindex e e M) = reindex e e (charmatrix M) := by
   ext i j x
   by_cases h : i = j
@@ -100,7 +100,7 @@ def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
 #align matrix.charpoly Matrix.charpoly
 
-theorem charpoly_reindex (e : n ≃ m)
+lemma charpoly_reindex (e : n ≃ m)
     (M : Matrix n n R) : (reindex e e M).charpoly = M.charpoly := by
   unfold Matrix.charpoly
   rw [charmatrix_reindex, Matrix.det_reindex_self]

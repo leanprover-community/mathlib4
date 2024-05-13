@@ -113,13 +113,13 @@ protected def symm : PartialDiffeomorph J I N M n where
   contMDiffOn_toFun := Φ.contMDiffOn_invFun
   contMDiffOn_invFun := Φ.contMDiffOn_toFun
 
-protected theorem contMDiffOn : ContMDiffOn I J n Φ Φ.source :=
+protected lemma contMDiffOn : ContMDiffOn I J n Φ Φ.source :=
   Φ.contMDiffOn_toFun
 
-protected theorem mdifferentiableOn : MDifferentiableOn I J Φ Φ.source :=
+protected lemma mdifferentiableOn : MDifferentiableOn I J Φ Φ.source :=
   (Φ.contMDiffOn).mdifferentiableOn hn
 
-protected theorem mdifferentiableAt {x : M} (hx : x ∈ Φ.source) : MDifferentiableAt I J Φ x :=
+protected lemma mdifferentiableAt {x : M} (hx : x ∈ Φ.source) : MDifferentiableAt I J Φ x :=
   (Φ.mdifferentiableOn hn x hx).mdifferentiableAt (Φ.open_source.mem_nhds hx)
 
 /- We could add lots of additional API (following `Diffeomorph` and `PartialHomeomorph`), such as

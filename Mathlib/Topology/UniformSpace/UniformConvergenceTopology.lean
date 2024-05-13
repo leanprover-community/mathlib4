@@ -615,7 +615,7 @@ protected theorem topologicalSpace_eq :
   rfl
 #align uniform_on_fun.topological_space_eq UniformOnFun.topologicalSpace_eq
 
-protected theorem hasBasis_uniformity_of_basis_aux₁ {p : ι → Prop} {s : ι → Set (β × β)}
+protected lemma hasBasis_uniformity_of_basis_aux₁ {p : ι → Prop} {s : ι → Set (β × β)}
     (hb : HasBasis (𝓤 β) p s) (S : Set α) :
     (@uniformity (α →ᵤ[𝔖] β) ((UniformFun.uniformSpace S β).comap S.restrict)).HasBasis p fun i =>
       UniformOnFun.gen 𝔖 S (s i) := by
@@ -623,7 +623,7 @@ protected theorem hasBasis_uniformity_of_basis_aux₁ {p : ι → Prop} {s : ι 
   exact (UniformFun.hasBasis_uniformity_of_basis S β hb).comap _
 #align uniform_on_fun.has_basis_uniformity_of_basis_aux₁ UniformOnFun.hasBasis_uniformity_of_basis_aux₁
 
-protected theorem hasBasis_uniformity_of_basis_aux₂ (h : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
+protected lemma hasBasis_uniformity_of_basis_aux₂ (h : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
     {s : ι → Set (β × β)} (hb : HasBasis (𝓤 β) p s) :
     DirectedOn
       ((fun s : Set α => (UniformFun.uniformSpace s β).comap (s.restrict : (α →ᵤ β) → s →ᵤ β)) ⁻¹'o
@@ -696,7 +696,7 @@ protected theorem hasAntitoneBasis_uniformity {ι : Type*} [Preorder ι] [IsDire
     exact ⟨n, trivial, UniformOnFun.gen_mono (hmono hkn) (hb.2 <| hln)⟩
   · exact fun k l h ↦ UniformOnFun.gen_mono (hmono h) (hb.2 h)
 
-protected theorem isCountablyGenerated_uniformity [IsCountablyGenerated (𝓤 β)] {t : ℕ → Set α}
+protected lemma isCountablyGenerated_uniformity [IsCountablyGenerated (𝓤 β)] {t : ℕ → Set α}
     (ht : ∀ n, t n ∈ 𝔖) (hmono : Monotone t) (hex : ∀ s ∈ 𝔖, ∃ n, s ⊆ t n) :
     IsCountablyGenerated (𝓤 (α →ᵤ[𝔖] β)) :=
   let ⟨_V, hV⟩ := exists_antitone_basis (𝓤 β)
@@ -747,10 +747,10 @@ protected theorem uniformity_eq_of_basis {ι : Sort*} {p : ι → Prop} {V : ι 
     Function.comp_apply, UniformFun.gen, Subtype.forall]
   rfl
 
-protected theorem uniformity_eq : 𝓤 (α →ᵤ[𝔖] β) = ⨅ s ∈ 𝔖, ⨅ V ∈ 𝓤 β, 𝓟 (UniformOnFun.gen 𝔖 s V) :=
+protected lemma uniformity_eq : 𝓤 (α →ᵤ[𝔖] β) = ⨅ s ∈ 𝔖, ⨅ V ∈ 𝓤 β, 𝓟 (UniformOnFun.gen 𝔖 s V) :=
   UniformOnFun.uniformity_eq_of_basis _ _ (𝓤 β).basis_sets
 
-protected theorem gen_mem_uniformity (hs : s ∈ 𝔖) {V : Set (β × β)} (hV : V ∈ 𝓤 β) :
+protected lemma gen_mem_uniformity (hs : s ∈ 𝔖) {V : Set (β × β)} (hV : V ∈ 𝓤 β) :
     UniformOnFun.gen 𝔖 s V ∈ 𝓤 (α →ᵤ[𝔖] β) := by
   rw [UniformOnFun.uniformity_eq]
   apply_rules [mem_iInf_of_mem, mem_principal_self]
@@ -766,16 +766,16 @@ protected theorem nhds_eq_of_basis {ι : Sort*} {p : ι → Prop} {V : ι → Se
   simp_rw [nhds_eq_comap_uniformity, UniformOnFun.uniformity_eq_of_basis _ _ h, comap_iInf,
     comap_principal]; rfl
 
-protected theorem nhds_eq (f : α →ᵤ[𝔖] β) :
+protected lemma nhds_eq (f : α →ᵤ[𝔖] β) :
     𝓝 f = ⨅ s ∈ 𝔖, ⨅ V ∈ 𝓤 β, 𝓟 {g | ∀ x ∈ s, (toFun 𝔖 f x, toFun 𝔖 g x) ∈ V} :=
   UniformOnFun.nhds_eq_of_basis _ _ (𝓤 β).basis_sets f
 
-protected theorem gen_mem_nhds (f : α →ᵤ[𝔖] β) (hs : s ∈ 𝔖) {V : Set (β × β)} (hV : V ∈ 𝓤 β) :
+protected lemma gen_mem_nhds (f : α →ᵤ[𝔖] β) (hs : s ∈ 𝔖) {V : Set (β × β)} (hV : V ∈ 𝓤 β) :
     {g | ∀ x ∈ s, (toFun 𝔖 f x, toFun 𝔖 g x) ∈ V} ∈ 𝓝 f := by
   rw [UniformOnFun.nhds_eq]
   apply_rules [mem_iInf_of_mem, mem_principal_self]
 
-theorem uniformContinuous_ofUniformFun :
+lemma uniformContinuous_ofUniformFun :
     UniformContinuous fun f : α →ᵤ β ↦ ofFun 𝔖 (UniformFun.toFun f) := by
   simp only [UniformContinuous, UniformOnFun.uniformity_eq, tendsto_iInf, tendsto_principal,
     (UniformFun.hasBasis_uniformity _ _).eventually_iff]
@@ -813,7 +813,7 @@ theorem uniformContinuous_eval_of_mem {x : α} (hxs : x ∈ s) (hs : s ∈ 𝔖)
     (UniformOnFun.uniformContinuous_restrict α β 𝔖 hs)
 #align uniform_on_fun.uniform_continuous_eval_of_mem UniformOnFun.uniformContinuous_eval_of_mem
 
-theorem uniformContinuous_eval_of_mem_sUnion {x : α} (hx : x ∈ ⋃₀ 𝔖) :
+lemma uniformContinuous_eval_of_mem_sUnion {x : α} (hx : x ∈ ⋃₀ 𝔖) :
     UniformContinuous ((Function.eval x : (α → β) → β) ∘ toFun 𝔖) :=
   let ⟨_s, hs, hxs⟩ := hx
   uniformContinuous_eval_of_mem _ _ hxs hs

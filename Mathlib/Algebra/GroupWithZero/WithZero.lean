@@ -83,7 +83,7 @@ variable [MulZeroOneClass β]
 
 -- See note [partially-applied ext lemmas]
 @[ext high]
-theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
+lemma monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
     (h : f.toMonoidHom.comp coeMonoidHom = g.toMonoidHom.comp coeMonoidHom) :
     f = g :=
   DFunLike.ext _ _ fun

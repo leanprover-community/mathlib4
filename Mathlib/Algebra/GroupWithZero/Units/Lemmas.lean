@@ -35,17 +35,17 @@ variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [FunLike 
   (f : F) {a : G₀}
 
 
-theorem map_ne_zero : f a ≠ 0 ↔ a ≠ 0 :=
+lemma map_ne_zero : f a ≠ 0 ↔ a ≠ 0 :=
   ⟨fun hfa ha => hfa <| ha.symm ▸ map_zero f, fun ha => ((IsUnit.mk0 a ha).map f).ne_zero⟩
 #align map_ne_zero map_ne_zero
 
 @[simp]
-theorem map_eq_zero : f a = 0 ↔ a = 0 :=
+lemma map_eq_zero : f a = 0 ↔ a = 0 :=
   not_iff_not.1 (map_ne_zero f)
 #align map_eq_zero map_eq_zero
 
 
-theorem eq_on_inv₀ (f g : F') (h : f a = g a) : f a⁻¹ = g a⁻¹ := by
+lemma eq_on_inv₀ (f g : F') (h : f a = g a) : f a⁻¹ = g a⁻¹ := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · rw [inv_zero, map_zero, map_zero]
   · exact (IsUnit.mk0 a ha).eq_on_inv f g h
@@ -68,7 +68,7 @@ theorem map_inv₀ : f a⁻¹ = (f a)⁻¹ := by
 #align map_inv₀ map_inv₀
 
 @[simp]
-theorem map_div₀ : f (a / b) = f a / f b :=
+lemma map_div₀ : f (a / b) = f a / f b :=
   map_div' f (map_inv₀ f) a b
 #align map_div₀ map_div₀
 
@@ -85,13 +85,13 @@ noncomputable def MonoidWithZero.inverse {M : Type*} [CommMonoidWithZero M] :
 #align monoid_with_zero.inverse MonoidWithZero.inverse
 
 @[simp]
-theorem MonoidWithZero.coe_inverse {M : Type*} [CommMonoidWithZero M] :
+lemma MonoidWithZero.coe_inverse {M : Type*} [CommMonoidWithZero M] :
     (MonoidWithZero.inverse : M → M) = Ring.inverse :=
   rfl
 #align monoid_with_zero.coe_inverse MonoidWithZero.coe_inverse
 
 @[simp]
-theorem MonoidWithZero.inverse_apply {M : Type*} [CommMonoidWithZero M] (a : M) :
+lemma MonoidWithZero.inverse_apply {M : Type*} [CommMonoidWithZero M] (a : M) :
     MonoidWithZero.inverse a = Ring.inverse a :=
   rfl
 #align monoid_with_zero.inverse_apply MonoidWithZero.inverse_apply
@@ -107,7 +107,7 @@ variable [GroupWithZero G₀]
 variable {a b : G₀}
 
 @[simp]
-theorem smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a :=
+lemma smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a :=
   rfl
 #align units.smul_mk0 Units.smul_mk0
 

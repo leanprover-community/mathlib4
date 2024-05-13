@@ -91,10 +91,10 @@ protected theorem map {x : α} (hx : IsFixedPt fa x) {g : α → β} (h : Semico
     _ = g x := congr_arg g hx
 #align function.is_fixed_pt.map Function.IsFixedPt.map
 
-protected theorem apply {x : α} (hx : IsFixedPt f x) : IsFixedPt f (f x) := by convert hx
+protected lemma apply {x : α} (hx : IsFixedPt f x) : IsFixedPt f (f x) := by convert hx
 #align function.is_fixed_pt.apply Function.IsFixedPt.apply
 
-theorem preimage_iterate {s : Set α} (h : IsFixedPt (Set.preimage f) s) (n : ℕ) :
+lemma preimage_iterate {s : Set α} (h : IsFixedPt (Set.preimage f) s) (n : ℕ) :
     IsFixedPt (Set.preimage f^[n]) s := by
   rw [Set.preimage_iterate_eq]
   exact h.iterate n
@@ -104,20 +104,20 @@ lemma image_iterate {s : Set α} (h : IsFixedPt (Set.image f) s) (n : ℕ) :
     IsFixedPt (Set.image f^[n]) s :=
   Set.image_iterate_eq ▸ h.iterate n
 
-protected theorem equiv_symm (h : IsFixedPt e x) : IsFixedPt e.symm x :=
+protected lemma equiv_symm (h : IsFixedPt e x) : IsFixedPt e.symm x :=
   h.to_leftInverse e.leftInverse_symm
 #align function.is_fixed_pt.equiv_symm Function.IsFixedPt.equiv_symm
 
-protected theorem perm_inv (h : IsFixedPt e x) : IsFixedPt (⇑e⁻¹) x :=
+protected lemma perm_inv (h : IsFixedPt e x) : IsFixedPt (⇑e⁻¹) x :=
   h.equiv_symm
 #align function.is_fixed_pt.perm_inv Function.IsFixedPt.perm_inv
 
-protected theorem perm_pow (h : IsFixedPt e x) (n : ℕ) : IsFixedPt (⇑(e ^ n)) x := by
+protected lemma perm_pow (h : IsFixedPt e x) (n : ℕ) : IsFixedPt (⇑(e ^ n)) x := by
   rw [Equiv.Perm.coe_pow]
   exact h.iterate _
 #align function.is_fixed_pt.perm_pow Function.IsFixedPt.perm_pow
 
-protected theorem perm_zpow (h : IsFixedPt e x) : ∀ n : ℤ, IsFixedPt (⇑(e ^ n)) x
+protected lemma perm_zpow (h : IsFixedPt e x) : ∀ n : ℤ, IsFixedPt (⇑(e ^ n)) x
   | Int.ofNat _ => h.perm_pow _
   | Int.negSucc n => (h.perm_pow <| n + 1).perm_inv
 #align function.is_fixed_pt.perm_zpow Function.IsFixedPt.perm_zpow
@@ -125,7 +125,7 @@ protected theorem perm_zpow (h : IsFixedPt e x) : ∀ n : ℤ, IsFixedPt (⇑(e 
 end IsFixedPt
 
 @[simp]
-theorem Injective.isFixedPt_apply_iff (hf : Injective f) {x : α} :
+lemma Injective.isFixedPt_apply_iff (hf : Injective f) {x : α} :
     IsFixedPt f (f x) ↔ IsFixedPt f x :=
   ⟨fun h => hf h.eq, IsFixedPt.apply⟩
 #align function.injective.is_fixed_pt_apply_iff Function.Injective.isFixedPt_apply_iff
@@ -141,20 +141,20 @@ instance fixedPoints.decidable [DecidableEq α] (f : α → α) (x : α) :
 #align function.fixed_points.decidable Function.fixedPoints.decidable
 
 @[simp]
-theorem mem_fixedPoints : x ∈ fixedPoints f ↔ IsFixedPt f x :=
+lemma mem_fixedPoints : x ∈ fixedPoints f ↔ IsFixedPt f x :=
   Iff.rfl
 #align function.mem_fixed_points Function.mem_fixedPoints
 
-theorem mem_fixedPoints_iff {α : Type*} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x := by
+lemma mem_fixedPoints_iff {α : Type*} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x := by
   rfl
 #align function.mem_fixed_points_iff Function.mem_fixedPoints_iff
 
 @[simp]
-theorem fixedPoints_id : fixedPoints (@id α) = Set.univ :=
+lemma fixedPoints_id : fixedPoints (@id α) = Set.univ :=
   Set.ext fun _ => by simpa using isFixedPt_id _
 #align function.fixed_points_id Function.fixedPoints_id
 
-theorem fixedPoints_subset_range : fixedPoints f ⊆ Set.range f := fun x hx => ⟨x, hx⟩
+lemma fixedPoints_subset_range : fixedPoints f ⊆ Set.range f := fun x hx => ⟨x, hx⟩
 #align function.fixed_points_subset_range Function.fixedPoints_subset_range
 
 /-- If `g` semiconjugates `fa` to `fb`, then it sends fixed points of `fa` to fixed points

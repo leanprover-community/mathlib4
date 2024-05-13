@@ -88,7 +88,7 @@ def polishSpaceMetric (α : Type*) [TopologicalSpace α] [h : PolishSpace α] : 
   h.complete.choose.replaceTopology h.complete.choose_spec.1.symm
 #align polish_space_metric polishSpaceMetric
 
-theorem complete_polishSpaceMetric (α : Type*) [ht : TopologicalSpace α] [h : PolishSpace α] :
+lemma complete_polishSpaceMetric (α : Type*) [ht : TopologicalSpace α] [h : PolishSpace α] :
     @CompleteSpace α (polishSpaceMetric α).toUniformSpace := by
   convert h.complete.choose_spec.2
   exact MetricSpace.replaceTopology_eq _ _
@@ -110,7 +110,7 @@ instance (priority := 100) instMetrizableSpace (α : Type*) [TopologicalSpace α
   infer_instance
 
 @[deprecated] -- 2024-02-23
-theorem t2Space (α : Type*) [TopologicalSpace α] [PolishSpace α] : T2Space α := inferInstance
+lemma t2Space (α : Type*) [TopologicalSpace α] [PolishSpace α] : T2Space α := inferInstance
 #align polish_space.t2_space PolishSpace.t2Space
 
 /-- A countable product of Polish spaces is Polish. -/
@@ -191,7 +191,7 @@ instance instPolishSpaceUniv [TopologicalSpace α] [PolishSpace α] :
   isClosed_univ.polishSpace
 #align measure_theory.set.univ.polish_space PolishSpace.instPolishSpaceUniv
 
-protected theorem _root_.CompletePseudometrizable.iInf {ι : Type*} [Countable ι]
+protected lemma _root_.CompletePseudometrizable.iInf {ι : Type*} [Countable ι]
     {t : ι → TopologicalSpace α} (ht₀ : ∃ t₀, @T2Space α t₀ ∧ ∀ i, t i ≤ t₀)
     (ht : ∀ i, ∃ u : UniformSpace α, CompleteSpace α ∧ 𝓤[u].IsCountablyGenerated ∧
       u.toTopologicalSpace = t i) :
@@ -203,7 +203,7 @@ protected theorem _root_.CompletePseudometrizable.iInf {ι : Type*} [Countable �
   rw [iInf_uniformity]
   infer_instance
 
-protected theorem iInf {ι : Type*} [Countable ι] {t : ι → TopologicalSpace α}
+protected lemma iInf {ι : Type*} [Countable ι] {t : ι → TopologicalSpace α}
     (ht₀ : ∃ i₀, ∀ i, t i ≤ t i₀) (ht : ∀ i, @PolishSpace α (t i)) : @PolishSpace α (⨅ i, t i) := by
   rcases ht₀ with ⟨i₀, hi₀⟩
   rcases CompletePseudometrizable.iInf ⟨t i₀, letI := t i₀; haveI := ht i₀; inferInstance, hi₀⟩
@@ -265,12 +265,12 @@ instance instDist : Dist (CompleteCopy s) where
   dist x y := dist x.1 y.1 + abs (1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ)
 #align polish_space.has_dist_complete_copy TopologicalSpace.Opens.CompleteCopy.instDistₓ
 
-theorem dist_eq (x y : CompleteCopy s) :
+lemma dist_eq (x y : CompleteCopy s) :
     dist x y = dist x.1 y.1 + abs (1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ) :=
   rfl
 #align polish_space.dist_complete_copy_eq TopologicalSpace.Opens.CompleteCopy.dist_eqₓ
 
-theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
+lemma dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
   (le_add_iff_nonneg_right _).2 (abs_nonneg _)
 #align polish_space.dist_le_dist_complete_copy TopologicalSpace.Opens.CompleteCopy.dist_val_le_distₓ
 
@@ -393,20 +393,20 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
     simp [f, preimage_preimage]
 #align is_closed.is_clopenable IsClosed.isClopenable
 
-theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
+lemma IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
     IsClopenable sᶜ := by
   rcases hs with ⟨t, t_le, t_polish, h, h'⟩
   exact ⟨t, t_le, t_polish, @IsOpen.isClosed_compl α t s h', @IsClosed.isOpen_compl α t s h⟩
 #align polish_space.is_clopenable.compl PolishSpace.IsClopenable.compl
 
-theorem _root_.IsOpen.isClopenable [TopologicalSpace α] [PolishSpace α] {s : Set α}
+lemma _root_.IsOpen.isClopenable [TopologicalSpace α] [PolishSpace α] {s : Set α}
     (hs : IsOpen s) : IsClopenable s := by
   simpa using hs.isClosed_compl.isClopenable.compl
 #align is_open.is_clopenable IsOpen.isClopenable
 
 set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 -- Porting note (#11215): TODO: generalize for free to `[Countable ι] {s : ι → Set α}`
-theorem IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ → Set α}
+lemma IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ → Set α}
     (hs : ∀ n, IsClopenable (s n)) : IsClopenable (⋃ n, s n) := by
   choose m mt m_polish _ m_open using hs
   obtain ⟨t', t'm, -, t'_polish⟩ :

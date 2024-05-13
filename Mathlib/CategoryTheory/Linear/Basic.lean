@@ -165,13 +165,13 @@ def homCongr (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C] [
         Iso.inv_hom_id, Category.comp_id] }
 #align category_theory.linear.hom_congr CategoryTheory.Linear.homCongr
 
-theorem homCongr_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C]
+lemma homCongr_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C]
     [Linear k C] {X Y W Z : C} (f₁ : X ≅ Y) (f₂ : W ≅ Z) (f : X ⟶ W) :
     homCongr k f₁ f₂ f = (f₁.inv ≫ f) ≫ f₂.hom :=
   rfl
 #align category_theory.linear.hom_congr_apply CategoryTheory.Linear.homCongr_apply
 
-theorem homCongr_symm_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C]
+lemma homCongr_symm_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C]
     [Linear k C] {X Y W Z : C} (f₁ : X ≅ Y) (f₂ : W ≅ Z) (f : Y ⟶ Z) :
     (homCongr k f₁ f₂).symm f = f₁.hom ≫ f ≫ f₂.inv :=
   rfl

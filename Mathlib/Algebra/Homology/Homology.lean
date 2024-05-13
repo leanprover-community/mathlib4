@@ -54,7 +54,7 @@ abbrev cycles' (i : ι) : Subobject (C.X i) :=
   kernelSubobject (C.dFrom i)
 #align homological_complex.cycles HomologicalComplex.cycles'
 
-theorem cycles'_eq_kernelSubobject {i j : ι} (r : c.Rel i j) :
+lemma cycles'_eq_kernelSubobject {i j : ι} (r : c.Rel i j) :
     C.cycles' i = kernelSubobject (C.d i j) :=
   C.kernel_from_eq_kernel r
 #align homological_complex.cycles_eq_kernel_subobject HomologicalComplex.cycles'_eq_kernelSubobject
@@ -65,7 +65,7 @@ def cycles'IsoKernel {i j : ι} (r : c.Rel i j) : (C.cycles' i : V) ≅ kernel (
   Subobject.isoOfEq _ _ (C.cycles'_eq_kernelSubobject r) ≪≫ kernelSubobjectIso (C.d i j)
 #align homological_complex.cycles_iso_kernel HomologicalComplex.cycles'IsoKernel
 
-theorem cycles_eq_top {i} (h : ¬c.Rel i (c.next i)) : C.cycles' i = ⊤ := by
+lemma cycles_eq_top {i} (h : ¬c.Rel i (c.next i)) : C.cycles' i = ⊤ := by
   rw [eq_top_iff]
   apply le_kernelSubobject
   rw [C.dFrom_eq_zero h, comp_zero]
@@ -82,7 +82,7 @@ abbrev boundaries (C : HomologicalComplex V c) (j : ι) : Subobject (C.X j) :=
   imageSubobject (C.dTo j)
 #align homological_complex.boundaries HomologicalComplex.boundaries
 
-theorem boundaries_eq_imageSubobject [HasEqualizers V] {i j : ι} (r : c.Rel i j) :
+lemma boundaries_eq_imageSubobject [HasEqualizers V] {i j : ι} (r : c.Rel i j) :
     C.boundaries j = imageSubobject (C.d i j) :=
   C.image_to_eq_image r
 #align homological_complex.boundaries_eq_image_subobject HomologicalComplex.boundaries_eq_imageSubobject
@@ -94,7 +94,7 @@ def boundariesIsoImage [HasEqualizers V] {i j : ι} (r : c.Rel i j) :
   Subobject.isoOfEq _ _ (C.boundaries_eq_imageSubobject r) ≪≫ imageSubobjectIso (C.d i j)
 #align homological_complex.boundaries_iso_image HomologicalComplex.boundariesIsoImage
 
-theorem boundaries_eq_bot [HasZeroObject V] {j} (h : ¬c.Rel (c.prev j) j) : C.boundaries j = ⊥ := by
+lemma boundaries_eq_bot [HasZeroObject V] {j} (h : ¬c.Rel (c.prev j) j) : C.boundaries j = ⊥ := by
   rw [eq_bot_iff]
   refine' imageSubobject_le _ 0 _
   rw [C.dTo_eq_zero h, zero_comp]
@@ -106,7 +106,7 @@ section
 
 variable [HasKernels V] [HasImages V]
 
-theorem boundaries_le_cycles' (C : HomologicalComplex V c) (i : ι) :
+lemma boundaries_le_cycles' (C : HomologicalComplex V c) (i : ι) :
     C.boundaries i ≤ C.cycles' i :=
   image_le_kernel _ _ (C.dTo_comp_dFrom i)
 #align homological_complex.boundaries_le_cycles HomologicalComplex.boundaries_le_cycles'
@@ -210,7 +210,7 @@ abbrev cycles'Map (f : C₁ ⟶ C₂) (i : ι) : (C₁.cycles' i : V) ⟶ (C₂.
 
 -- Porting note: Originally `@[simp, reassoc.1, elementwise]`
 @[reassoc, elementwise] -- @[simp] -- Porting note (#10618): simp can prove this
-theorem cycles'Map_arrow (f : C₁ ⟶ C₂) (i : ι) :
+lemma cycles'Map_arrow (f : C₁ ⟶ C₂) (i : ι) :
     cycles'Map f i ≫ (C₂.cycles' i).arrow = (C₁.cycles' i).arrow ≫ f.f i := by simp
 #align cycles_map_arrow cycles'Map_arrow
 
@@ -218,13 +218,13 @@ attribute [simp 1100] cycles'Map_arrow_assoc
 attribute [simp] cycles'Map_arrow_apply
 
 @[simp]
-theorem cycles'Map_id (i : ι) : cycles'Map (𝟙 C₁) i = 𝟙 _ := by
+lemma cycles'Map_id (i : ι) : cycles'Map (𝟙 C₁) i = 𝟙 _ := by
   dsimp only [cycles'Map]
   simp
 #align cycles_map_id cycles'Map_id
 
 @[simp]
-theorem cycles'Map_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
+lemma cycles'Map_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
     cycles'Map (f ≫ g) i = cycles'Map f i ≫ cycles'Map g i := by
   dsimp only [cycles'Map]
   simp [Subobject.factorThru_right]
@@ -275,7 +275,7 @@ variable {C₁ C₂ : HomologicalComplex V c} (f : C₁ ⟶ C₂)
 
 -- Porting note: Originally `@[simp, reassoc.1]`
 @[reassoc (attr := simp)]
-theorem boundariesToCycles'_naturality (i : ι) :
+lemma boundariesToCycles'_naturality (i : ι) :
     boundariesMap f i ≫ C₂.boundariesToCycles' i =
       C₁.boundariesToCycles' i ≫ cycles'Map f i := by
   ext

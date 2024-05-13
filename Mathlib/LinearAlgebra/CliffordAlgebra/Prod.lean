@@ -88,17 +88,17 @@ nonrec theorem map_mul_map_of_isOrtho_of_mem_evenOdd
             ι_mul_ι_comm_of_isOrtho (hf _ _), neg_mul, mul_assoc, ih₂, mul_smul_comm,
             ← mul_assoc, ← Units.neg_smul, uzpow_add, uzpow_one, mul_neg_one]
 
-theorem commute_map_mul_map_of_isOrtho_of_mem_evenOdd_zero_left
+lemma commute_map_mul_map_of_isOrtho_of_mem_evenOdd_zero_left
     {i₂ : ZMod 2} (hm₁ : m₁ ∈ evenOdd Q₁ 0) (hm₂ : m₂ ∈ evenOdd Q₂ i₂) :
     Commute (map f₁ m₁) (map f₂ m₂) :=
   (map_mul_map_of_isOrtho_of_mem_evenOdd _ _ hf _ _ hm₁ hm₂).trans <| by simp
 
-theorem commute_map_mul_map_of_isOrtho_of_mem_evenOdd_zero_right
+lemma commute_map_mul_map_of_isOrtho_of_mem_evenOdd_zero_right
     {i₁ : ZMod 2} (hm₁ : m₁ ∈ evenOdd Q₁ i₁) (hm₂ : m₂ ∈ evenOdd Q₂ 0) :
     Commute (map f₁ m₁) (map f₂ m₂) :=
   (map_mul_map_of_isOrtho_of_mem_evenOdd _ _ hf _ _ hm₁ hm₂).trans <| by simp
 
-theorem map_mul_map_eq_neg_of_isOrtho_of_mem_evenOdd_one
+lemma map_mul_map_eq_neg_of_isOrtho_of_mem_evenOdd_one
     (hm₁ : m₁ ∈ evenOdd Q₁ 1) (hm₂ : m₂ ∈ evenOdd Q₂ 1) :
     map f₁ m₁ * map f₂ m₂ = - map f₂ m₂ * map f₁ m₁ := by
   simp [map_mul_map_of_isOrtho_of_mem_evenOdd _ _ hf _ _ hm₁ hm₂]

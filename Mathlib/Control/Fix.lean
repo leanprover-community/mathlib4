@@ -71,7 +71,7 @@ protected def fix (x : α) : Part (β x) :=
     WellFounded.fix.{1} (Nat.Upto.wf h) (fixAux f) Nat.Upto.zero x
 #align part.fix Part.fix
 
-protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
+protected lemma fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     Part.fix f x = Fix.approx f (Nat.succ (Nat.find h')) x := by
   let p := fun i : ℕ => (Fix.approx f i x).Dom
   have : p (Nat.find h') := Nat.find_spec h'
@@ -108,7 +108,7 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     rw [assert_pos hh, n_ih (Upto.succ z hh) _this hk]
 #align part.fix_def Part.fix_def
 
-theorem fix_def' {x : α} (h' : ¬∃ i, (Fix.approx f i x).Dom) : Part.fix f x = none := by
+lemma fix_def' {x : α} (h' : ¬∃ i, (Fix.approx f i x).Dom) : Part.fix f x = none := by
   dsimp [Part.fix]
   rw [assert_neg h']
 #align part.fix_def' Part.fix_def'

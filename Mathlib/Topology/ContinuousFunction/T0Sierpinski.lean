@@ -25,7 +25,7 @@ noncomputable section
 
 namespace TopologicalSpace
 
-theorem eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
+lemma eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
     t = ⨅ u : Opens X, sierpinskiSpace.induced (· ∈ u) := by
   apply le_antisymm
   · rw [le_iInf_iff]
@@ -47,18 +47,18 @@ def productOfMemOpens : C(X, Opens X → Prop) where
   continuous_toFun := continuous_pi_iff.2 fun u => continuous_Prop.2 u.isOpen
 #align topological_space.product_of_mem_opens TopologicalSpace.productOfMemOpens
 
-theorem productOfMemOpens_inducing : Inducing (productOfMemOpens X) := by
+lemma productOfMemOpens_inducing : Inducing (productOfMemOpens X) := by
   convert inducing_iInf_to_pi fun (u : Opens X) (x : X) => x ∈ u
   apply eq_induced_by_maps_to_sierpinski
 #align topological_space.product_of_mem_opens_inducing TopologicalSpace.productOfMemOpens_inducing
 
-theorem productOfMemOpens_injective [T0Space X] : Function.Injective (productOfMemOpens X) := by
+lemma productOfMemOpens_injective [T0Space X] : Function.Injective (productOfMemOpens X) := by
   intro x1 x2 h
   apply Inseparable.eq
   rw [← Inducing.inseparable_iff (productOfMemOpens_inducing X), h]
 #align topological_space.product_of_mem_opens_injective TopologicalSpace.productOfMemOpens_injective
 
-theorem productOfMemOpens_embedding [T0Space X] : Embedding (productOfMemOpens X) :=
+lemma productOfMemOpens_embedding [T0Space X] : Embedding (productOfMemOpens X) :=
   Embedding.mk (productOfMemOpens_inducing X) (productOfMemOpens_injective X)
 #align topological_space.product_of_mem_opens_embedding TopologicalSpace.productOfMemOpens_embedding
 

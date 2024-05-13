@@ -54,7 +54,7 @@ theorem measurable_of_tendsto_metrizable {f : ℕ → α → β} {g : α → β}
   measurable_of_tendsto_metrizable' atTop hf lim
 #align measurable_of_tendsto_metrizable measurable_of_tendsto_metrizable
 
-theorem aemeasurable_of_tendsto_metrizable_ae {ι} {μ : Measure α} {f : ι → α → β} {g : α → β}
+lemma aemeasurable_of_tendsto_metrizable_ae {ι} {μ : Measure α} {f : ι → α → β} {g : α → β}
     (u : Filter ι) [hu : NeBot u] [IsCountablyGenerated u] (hf : ∀ n, AEMeasurable (f n) μ)
     (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) u (𝓝 (g x))) : AEMeasurable g μ := by
   rcases u.exists_seq_tendsto with ⟨v, hv⟩
@@ -78,13 +78,13 @@ theorem aemeasurable_of_tendsto_metrizable_ae {ι} {μ : Measure α} {f : ι →
           (aeSeq.measure_compl_aeSeqSet_eq_zero h'f hp)).symm
 #align ae_measurable_of_tendsto_metrizable_ae aemeasurable_of_tendsto_metrizable_ae
 
-theorem aemeasurable_of_tendsto_metrizable_ae' {μ : Measure α} {f : ℕ → α → β} {g : α → β}
+lemma aemeasurable_of_tendsto_metrizable_ae' {μ : Measure α} {f : ℕ → α → β} {g : α → β}
     (hf : ∀ n, AEMeasurable (f n) μ)
     (h_ae_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) : AEMeasurable g μ :=
   aemeasurable_of_tendsto_metrizable_ae atTop hf h_ae_tendsto
 #align ae_measurable_of_tendsto_metrizable_ae' aemeasurable_of_tendsto_metrizable_ae'
 
-theorem aemeasurable_of_unif_approx {β} [MeasurableSpace β] [PseudoMetricSpace β] [BorelSpace β]
+lemma aemeasurable_of_unif_approx {β} [MeasurableSpace β] [PseudoMetricSpace β] [BorelSpace β]
     {μ : Measure α} {g : α → β}
     (hf : ∀ ε > (0 : ℝ), ∃ f : α → β, AEMeasurable f μ ∧ ∀ᵐ x ∂μ, dist (f x) (g x) ≤ ε) :
     AEMeasurable g μ := by
@@ -101,14 +101,14 @@ theorem aemeasurable_of_unif_approx {β} [MeasurableSpace β] [PseudoMetricSpace
   exact aemeasurable_of_tendsto_metrizable_ae' (fun n => (Hf n).1) this
 #align ae_measurable_of_unif_approx aemeasurable_of_unif_approx
 
-theorem measurable_of_tendsto_metrizable_ae {μ : Measure α} [μ.IsComplete] {f : ℕ → α → β}
+lemma measurable_of_tendsto_metrizable_ae {μ : Measure α} [μ.IsComplete] {f : ℕ → α → β}
     {g : α → β} (hf : ∀ n, Measurable (f n))
     (h_ae_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) : Measurable g :=
   aemeasurable_iff_measurable.mp
     (aemeasurable_of_tendsto_metrizable_ae' (fun i => (hf i).aemeasurable) h_ae_tendsto)
 #align measurable_of_tendsto_metrizable_ae measurable_of_tendsto_metrizable_ae
 
-theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty ι] {μ : Measure α}
+lemma measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty ι] {μ : Measure α}
     {f : ι → α → β} {L : Filter ι} [L.IsCountablyGenerated] (hf : ∀ n, AEMeasurable (f n) μ)
     (h_ae_tendsto : ∀ᵐ x ∂μ, ∃ l : β, Tendsto (fun n => f n x) L (𝓝 l)) :
     ∃ f_lim : α → β, Measurable f_lim ∧ ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) := by

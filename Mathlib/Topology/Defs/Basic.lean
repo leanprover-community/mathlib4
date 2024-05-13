@@ -85,14 +85,14 @@ variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 def IsOpen : Set X → Prop := TopologicalSpace.IsOpen
 #align is_open IsOpen
 
-@[simp] theorem isOpen_univ : IsOpen (univ : Set X) := TopologicalSpace.isOpen_univ
+@[simp] lemma isOpen_univ : IsOpen (univ : Set X) := TopologicalSpace.isOpen_univ
 #align is_open_univ isOpen_univ
 
-theorem IsOpen.inter (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ t) :=
+lemma IsOpen.inter (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ t) :=
   TopologicalSpace.isOpen_inter s t hs ht
 #align is_open.inter IsOpen.inter
 
-theorem isOpen_sUnion {s : Set (Set X)} (h : ∀ t ∈ s, IsOpen t) : IsOpen (⋃₀ s) :=
+lemma isOpen_sUnion {s : Set (Set X)} (h : ∀ t ∈ s, IsOpen t) : IsOpen (⋃₀ s) :=
   TopologicalSpace.isOpen_sUnion s h
 #align is_open_sUnion isOpen_sUnion
 

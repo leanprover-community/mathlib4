@@ -51,7 +51,7 @@ local infixr:65 " +ₗ " => leftAdd X Y
 
 local infixr:65 " +ᵣ " => rightAdd X Y
 
-theorem isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by
+lemma isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by
   have hr : ∀ f : X ⟶ Y, biprod.lift (0 : X ⟶ Y) f = f ≫ biprod.inr := by
     intro f
     ext
@@ -68,7 +68,7 @@ theorem isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by
   }
 #align category_theory.semiadditive_of_binary_biproducts.is_unital_left_add CategoryTheory.SemiadditiveOfBinaryBiproducts.isUnital_leftAdd
 
-theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
+lemma isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
   have h₂ : ∀ f : X ⟶ Y, biprod.desc (0 : X ⟶ Y) f = biprod.snd ≫ f := by
     intro f
     ext
@@ -85,7 +85,7 @@ theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
   }
 #align category_theory.semiadditive_of_binary_biproducts.is_unital_right_add CategoryTheory.SemiadditiveOfBinaryBiproducts.isUnital_rightAdd
 
-theorem distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ g +ₗ k := by
+lemma distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ g +ₗ k := by
   let diag : X ⊞ X ⟶ Y ⊞ Y := biprod.lift (biprod.desc f g) (biprod.desc h k)
   have hd₁ : biprod.inl ≫ diag = biprod.lift f h := by ext <;> simp [diag]
   have hd₂ : biprod.inr ≫ diag = biprod.lift g k := by ext <;> simp [diag]
@@ -117,22 +117,22 @@ variable {X Y Z : C}
 
 attribute [local instance] addCommMonoidHomOfHasBinaryBiproducts
 
-theorem add_eq_right_addition (f g : X ⟶ Y) : f + g = biprod.lift (𝟙 X) (𝟙 X) ≫ biprod.desc f g :=
+lemma add_eq_right_addition (f g : X ⟶ Y) : f + g = biprod.lift (𝟙 X) (𝟙 X) ≫ biprod.desc f g :=
   rfl
 #align category_theory.semiadditive_of_binary_biproducts.add_eq_right_addition CategoryTheory.SemiadditiveOfBinaryBiproducts.add_eq_right_addition
 
-theorem add_eq_left_addition (f g : X ⟶ Y) : f + g = biprod.lift f g ≫ biprod.desc (𝟙 Y) (𝟙 Y) :=
+lemma add_eq_left_addition (f g : X ⟶ Y) : f + g = biprod.lift f g ≫ biprod.desc (𝟙 Y) (𝟙 Y) :=
   congr_fun₂ (EckmannHilton.mul (isUnital_leftAdd X Y) (isUnital_rightAdd X Y) (distrib X Y)).symm f
     g
 #align category_theory.semiadditive_of_binary_biproducts.add_eq_left_addition CategoryTheory.SemiadditiveOfBinaryBiproducts.add_eq_left_addition
 
-theorem add_comp (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f ≫ h + g ≫ h := by
+lemma add_comp (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f ≫ h + g ≫ h := by
   simp only [add_eq_right_addition, Category.assoc]
   congr
   ext <;> simp
 #align category_theory.semiadditive_of_binary_biproducts.add_comp CategoryTheory.SemiadditiveOfBinaryBiproducts.add_comp
 
-theorem comp_add (f : X ⟶ Y) (g h : Y ⟶ Z) : f ≫ (g + h) = f ≫ g + f ≫ h := by
+lemma comp_add (f : X ⟶ Y) (g h : Y ⟶ Z) : f ≫ (g + h) = f ≫ g + f ≫ h := by
   simp only [add_eq_left_addition, ← Category.assoc]
   congr
   ext <;> simp

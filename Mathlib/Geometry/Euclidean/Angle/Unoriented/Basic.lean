@@ -48,7 +48,7 @@ def angle (x y : V) : ℝ :=
   Real.arccos (⟪x, y⟫ / (‖x‖ * ‖y‖))
 #align inner_product_geometry.angle InnerProductGeometry.angle
 
-theorem continuousAt_angle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
+lemma continuousAt_angle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
     ContinuousAt (fun y : V × V => angle y.1 y.2) x :=
   Real.continuous_arccos.continuousAt.comp <|
     continuous_inner.continuousAt.div
@@ -56,21 +56,21 @@ theorem continuousAt_angle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
       (by simp [hx1, hx2])
 #align inner_product_geometry.continuous_at_angle InnerProductGeometry.continuousAt_angle
 
-theorem angle_smul_smul {c : ℝ} (hc : c ≠ 0) (x y : V) : angle (c • x) (c • y) = angle x y := by
+lemma angle_smul_smul {c : ℝ} (hc : c ≠ 0) (x y : V) : angle (c • x) (c • y) = angle x y := by
   have : c * c ≠ 0 := mul_ne_zero hc hc
   rw [angle, angle, real_inner_smul_left, inner_smul_right, norm_smul, norm_smul, Real.norm_eq_abs,
     mul_mul_mul_comm _ ‖x‖, abs_mul_abs_self, ← mul_assoc c c, mul_div_mul_left _ _ this]
 #align inner_product_geometry.angle_smul_smul InnerProductGeometry.angle_smul_smul
 
 @[simp]
-theorem _root_.LinearIsometry.angle_map {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
+lemma _root_.LinearIsometry.angle_map {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
     [InnerProductSpace ℝ E] [InnerProductSpace ℝ F] (f : E →ₗᵢ[ℝ] F) (u v : E) :
     angle (f u) (f v) = angle u v := by
   rw [angle, angle, f.inner_map_map, f.norm_map, f.norm_map]
 #align linear_isometry.angle_map LinearIsometry.angle_map
 
 @[simp, norm_cast]
-theorem _root_.Submodule.angle_coe {s : Submodule ℝ V} (x y : s) :
+lemma _root_.Submodule.angle_coe {s : Submodule ℝ V} (x y : s) :
     angle (x : V) (y : V) = angle x y :=
   s.subtypeₗᵢ.angle_map x y
 #align submodule.angle_coe Submodule.angle_coe

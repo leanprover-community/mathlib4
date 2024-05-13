@@ -79,7 +79,7 @@ variable {C}
 instance LE : LE (Pretopology C) where
   le K₁ K₂ := (K₁ : ∀ X : C, Set (Presieve X)) ≤ K₂
 
-theorem le_def {K₁ K₂ : Pretopology C} : K₁ ≤ K₂ ↔ (K₁ : ∀ X : C, Set (Presieve X)) ≤ K₂ :=
+lemma le_def {K₁ K₂ : Pretopology C} : K₁ ≤ K₂ ↔ (K₁ : ∀ X : C, Set (Presieve X)) ≤ K₂ :=
   Iff.rfl
 #align category_theory.pretopology.le_def CategoryTheory.Pretopology.le_def
 
@@ -124,7 +124,7 @@ def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
     apply t₃ (RS _ hg) _ hf
 #align category_theory.pretopology.to_grothendieck CategoryTheory.Pretopology.toGrothendieck
 
-theorem mem_toGrothendieck (K : Pretopology C) (X S) :
+lemma mem_toGrothendieck (K : Pretopology C) (X S) :
     S ∈ toGrothendieck C K X ↔ ∃ R ∈ K X, R ≤ (S : Presieve X) :=
   Iff.rfl
 #align category_theory.pretopology.mem_to_grothendieck CategoryTheory.Pretopology.mem_toGrothendieck

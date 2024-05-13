@@ -24,7 +24,7 @@ open BigOperators
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
-theorem ker_rangeRestrict (f : A →ₐ[R] B) : RingHom.ker f.rangeRestrict = RingHom.ker f :=
+lemma ker_rangeRestrict (f : A →ₐ[R] B) : RingHom.ker f.rangeRestrict = RingHom.ker f :=
   Ideal.ext fun _ ↦ Subtype.ext_iff
 
 end AlgHom
@@ -70,7 +70,7 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
   exact ⟨⟨_, hn i⟩, rfl⟩
 #align subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem Subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem
 
-theorem mem_of_span_eq_top_of_smul_pow_mem
+lemma mem_of_span_eq_top_of_smul_pow_mem
     (s : Set S) (l : s →₀ S) (hs : Finsupp.total s S S (↑) l = 1)
     (hs' : s ⊆ S') (hl : ∀ i, l i ∈ S') (x : S) (H : ∀ r : s, ∃ n : ℕ, (r : S) ^ n • x ∈ S') :
     x ∈ S' :=

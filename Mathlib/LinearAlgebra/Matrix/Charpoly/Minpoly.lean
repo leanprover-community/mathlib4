@@ -35,21 +35,21 @@ open Matrix
 variable (M : Matrix n n R)
 
 @[simp]
-theorem minpoly_toLin' : minpoly R (toLin' M) = minpoly R M :=
+lemma minpoly_toLin' : minpoly R (toLin' M) = minpoly R M :=
   minpoly.algEquiv_eq (toLinAlgEquiv' : Matrix n n R ≃ₐ[R] _) M
 #align matrix.minpoly_to_lin' Matrix.minpoly_toLin'
 
 @[simp]
-theorem minpoly_toLin (b : Basis n R N) (M : Matrix n n R) :
+lemma minpoly_toLin (b : Basis n R N) (M : Matrix n n R) :
     minpoly R (toLin b b M) = minpoly R M :=
   minpoly.algEquiv_eq (toLinAlgEquiv b : Matrix n n R ≃ₐ[R] _) M
 #align matrix.minpoly_to_lin Matrix.minpoly_toLin
 
-theorem isIntegral : IsIntegral R M :=
+lemma isIntegral : IsIntegral R M :=
   ⟨M.charpoly, ⟨charpoly_monic M, aeval_self_charpoly M⟩⟩
 #align matrix.is_integral Matrix.isIntegral
 
-theorem minpoly_dvd_charpoly {K : Type*} [Field K] (M : Matrix n n K) : minpoly K M ∣ M.charpoly :=
+lemma minpoly_dvd_charpoly {K : Type*} [Field K] (M : Matrix n n K) : minpoly K M ∣ M.charpoly :=
   minpoly.dvd _ _ (aeval_self_charpoly M)
 #align matrix.minpoly_dvd_charpoly Matrix.minpoly_dvd_charpoly
 
@@ -58,12 +58,12 @@ end Matrix
 namespace LinearMap
 
 @[simp]
-theorem minpoly_toMatrix' (f : (n → R) →ₗ[R] n → R) : minpoly R (toMatrix' f) = minpoly R f :=
+lemma minpoly_toMatrix' (f : (n → R) →ₗ[R] n → R) : minpoly R (toMatrix' f) = minpoly R f :=
   minpoly.algEquiv_eq (toMatrixAlgEquiv' : _ ≃ₐ[R] Matrix n n R) f
 #align linear_map.minpoly_to_matrix' LinearMap.minpoly_toMatrix'
 
 @[simp]
-theorem minpoly_toMatrix (b : Basis n R N) (f : N →ₗ[R] N) :
+lemma minpoly_toMatrix (b : Basis n R N) (f : N →ₗ[R] N) :
     minpoly R (toMatrix b b f) = minpoly R f :=
   minpoly.algEquiv_eq (toMatrixAlgEquiv b : _ ≃ₐ[R] Matrix n n R) f
 #align linear_map.minpoly_to_matrix LinearMap.minpoly_toMatrix

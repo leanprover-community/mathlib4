@@ -129,7 +129,7 @@ namespace Submodule
 
 variable {p : Submodule K V} {f : Module.End K V}
 
-theorem inf_iSup_generalizedEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈ p) :
+lemma inf_iSup_generalizedEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈ p) :
     p ⊓ ⨆ μ, ⨆ k, f.generalizedEigenspace μ k = ⨆ μ, ⨆ k, p ⊓ f.generalizedEigenspace μ k := by
   simp_rw [← (f.generalizedEigenspace _).mono.directed_le.inf_iSup_eq]
   refine le_antisymm (fun m hm ↦ ?_)
@@ -191,7 +191,7 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p,
     hg₄ ⟨(hg₀ ▸ hg₁ hm₀), hg₂ hm₂⟩
   rwa [← hg₃ hy₁ hm₂ hy₂]
 
-theorem eq_iSup_inf_generalizedEigenspace [FiniteDimensional K V]
+lemma eq_iSup_inf_generalizedEigenspace [FiniteDimensional K V]
     (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, ⨆ k, f.generalizedEigenspace μ k = ⊤) :
     p = ⨆ μ, ⨆ k, p ⊓ f.generalizedEigenspace μ k := by
   rw [← inf_iSup_generalizedEigenspace h, h', inf_top_eq]

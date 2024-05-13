@@ -76,7 +76,7 @@ theorem shadow_empty : ∂ (∅ : Finset (Finset α)) = ∅ :=
   induction' k <;> simp [*, shadow_empty]
 
 @[simp]
-theorem shadow_singleton_empty : ∂ ({∅} : Finset (Finset α)) = ∅ :=
+lemma shadow_singleton_empty : ∂ ({∅} : Finset (Finset α)) = ∅ :=
   rfl
 #align finset.shadow_singleton_empty Finset.shadow_singleton_empty
 
@@ -93,7 +93,7 @@ lemma mem_shadow_iff : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, ∃ a ∈ s, erase s a
   simp only [shadow, mem_sup, mem_image]
 #align finset.mem_shadow_iff Finset.mem_shadow_iff
 
-theorem erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ ∂ 𝒜 :=
+lemma erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ ∂ 𝒜 :=
   mem_shadow_iff.2 ⟨s, hs, a, ha, rfl⟩
 #align finset.erase_mem_shadow Finset.erase_mem_shadow
 
@@ -167,7 +167,7 @@ lemma _root_.Set.Sized.shadow_iterate (h𝒜 : (𝒜 : Set (Finset α)).Sized r)
   rintro t ⟨s, hs, hts, rfl⟩
   rw [card_sdiff hts, ← h𝒜 hs, Nat.sub_sub_self (card_le_card hts)]
 
-theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
+lemma sized_shadow_iff (h : ∅ ∉ 𝒜) :
     (∂ 𝒜 : Set (Finset α)).Sized r ↔ (𝒜 : Set (Finset α)).Sized (r + 1) := by
   refine' ⟨fun h𝒜 s hs => _, Set.Sized.shadow⟩
   obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 (ne_of_mem_of_not_mem hs h)
@@ -216,7 +216,7 @@ lemma mem_upShadow_iff : t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, ∃ a ∉ s, inse
   simp_rw [upShadow, mem_sup, mem_image, mem_compl]
 #align finset.mem_up_shadow_iff Finset.mem_upShadow_iff
 
-theorem insert_mem_upShadow (hs : s ∈ 𝒜) (ha : a ∉ s) : insert a s ∈ ∂⁺ 𝒜 :=
+lemma insert_mem_upShadow (hs : s ∈ 𝒜) (ha : a ∉ s) : insert a s ∈ ∂⁺ 𝒜 :=
   mem_upShadow_iff.2 ⟨s, hs, a, ha, rfl⟩
 #align finset.insert_mem_up_shadow Finset.insert_mem_upShadow
 

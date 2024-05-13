@@ -103,7 +103,7 @@ class FastSubsingleton (α : Sort u) : Prop where
 class FastIsEmpty (α : Sort u) : Prop where
   [inst : IsEmpty α]
 
-protected theorem FastSubsingleton.elim {α : Sort u} [h : FastSubsingleton α] : (a b : α) → a = b :=
+protected lemma FastSubsingleton.elim {α : Sort u} [h : FastSubsingleton α] : (a b : α) → a = b :=
   h.inst.allEq
 
 instance (priority := 100) {α : Type u} [inst : FastIsEmpty α] : FastSubsingleton α where

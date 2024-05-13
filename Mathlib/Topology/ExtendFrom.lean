@@ -47,13 +47,13 @@ theorem tendsto_extendFrom {A : Set X} {f : X → Y} {x : X} (h : ∃ y, Tendsto
   tendsto_nhds_limUnder h
 #align tendsto_extend_from tendsto_extendFrom
 
-theorem extendFrom_eq [T2Space Y] {A : Set X} {f : X → Y} {x : X} {y : Y} (hx : x ∈ closure A)
+lemma extendFrom_eq [T2Space Y] {A : Set X} {f : X → Y} {x : X} {y : Y} (hx : x ∈ closure A)
     (hf : Tendsto f (𝓝[A] x) (𝓝 y)) : extendFrom A f x = y :=
   haveI := mem_closure_iff_nhdsWithin_neBot.mp hx
   tendsto_nhds_unique (tendsto_nhds_limUnder ⟨y, hf⟩) hf
 #align extend_from_eq extendFrom_eq
 
-theorem extendFrom_extends [T2Space Y] {f : X → Y} {A : Set X} (hf : ContinuousOn f A) :
+lemma extendFrom_extends [T2Space Y] {f : X → Y} {A : Set X} (hf : ContinuousOn f A) :
     ∀ x ∈ A, extendFrom A f x = f x :=
   fun x x_in ↦ extendFrom_eq (subset_closure x_in) (hf x x_in)
 #align extend_from_extends extendFrom_extends

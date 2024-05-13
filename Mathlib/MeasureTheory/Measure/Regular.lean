@@ -211,14 +211,14 @@ namespace InnerRegularWRT
 variable {α : Type*} {m : MeasurableSpace α} {μ : Measure α} {p q : Set α → Prop} {U : Set α}
   {ε : ℝ≥0∞}
 
-theorem measure_eq_iSup (H : InnerRegularWRT μ p q) (hU : q U) :
+lemma measure_eq_iSup (H : InnerRegularWRT μ p q) (hU : q U) :
     μ U = ⨆ (K) (_ : K ⊆ U) (_ : p K), μ K := by
   refine'
     le_antisymm (le_of_forall_lt fun r hr => _) (iSup₂_le fun K hK => iSup_le fun _ => μ.mono hK)
   simpa only [lt_iSup_iff, exists_prop] using H hU r hr
 #align measure_theory.measure.inner_regular.measure_eq_supr MeasureTheory.Measure.InnerRegularWRT.measure_eq_iSup
 
-theorem exists_subset_lt_add (H : InnerRegularWRT μ p q) (h0 : p ∅) (hU : q U) (hμU : μ U ≠ ∞)
+lemma exists_subset_lt_add (H : InnerRegularWRT μ p q) (h0 : p ∅) (hU : q U) (hμU : μ U ≠ ∞)
     (hε : ε ≠ 0) : ∃ K, K ⊆ U ∧ p K ∧ μ U < μ K + ε := by
   rcases eq_or_ne (μ U) 0 with h₀ | h₀
   · refine' ⟨∅, empty_subset _, h0, _⟩
@@ -227,7 +227,7 @@ theorem exists_subset_lt_add (H : InnerRegularWRT μ p q) (h0 : p ∅) (hU : q U
     exact ⟨K, hKU, hKc, ENNReal.lt_add_of_sub_lt_right (Or.inl hμU) hrK⟩
 #align measure_theory.measure.inner_regular.exists_subset_lt_add MeasureTheory.Measure.InnerRegularWRT.exists_subset_lt_add
 
-protected theorem map {α β} [MeasurableSpace α] [MeasurableSpace β]
+protected lemma map {α β} [MeasurableSpace α] [MeasurableSpace β]
     {μ : Measure α} {pa qa : Set α → Prop}
     (H : InnerRegularWRT μ pa qa) {f : α → β} (hf : AEMeasurable f μ) {pb qb : Set β → Prop}
     (hAB : ∀ U, qb U → qa (f ⁻¹' U)) (hAB' : ∀ K, pa K → pb (f '' K))
@@ -240,7 +240,7 @@ protected theorem map {α β} [MeasurableSpace α] [MeasurableSpace β]
   exact hK.trans_le (le_map_apply_image hf _)
 #align measure_theory.measure.inner_regular.map MeasureTheory.Measure.InnerRegularWRT.map
 
-theorem map' {α β} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {pa qa : Set α → Prop}
+lemma map' {α β} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {pa qa : Set α → Prop}
     (H : InnerRegularWRT μ pa qa) (f : α ≃ᵐ β) {pb qb : Set β → Prop}
     (hAB : ∀ U, qb U → qa (f ⁻¹' U)) (hAB' : ∀ K, pa K → pb (f '' K)) :
     InnerRegularWRT (map f μ) pb qb := by
@@ -250,26 +250,26 @@ theorem map' {α β} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α}
   refine' ⟨f '' K, image_subset_iff.2 hKU, hAB' _ hKc, _⟩
   rwa [f.map_apply, f.preimage_image]
 
-theorem smul (H : InnerRegularWRT μ p q) (c : ℝ≥0∞) : InnerRegularWRT (c • μ) p q := by
+lemma smul (H : InnerRegularWRT μ p q) (c : ℝ≥0∞) : InnerRegularWRT (c • μ) p q := by
   intro U hU r hr
   rw [smul_apply, H.measure_eq_iSup hU, smul_eq_mul] at hr
   simpa only [ENNReal.mul_iSup, lt_iSup_iff, exists_prop] using hr
 #align measure_theory.measure.inner_regular.smul MeasureTheory.Measure.InnerRegularWRT.smul
 
-theorem trans {q' : Set α → Prop} (H : InnerRegularWRT μ p q) (H' : InnerRegularWRT μ q q') :
+lemma trans {q' : Set α → Prop} (H : InnerRegularWRT μ p q) (H' : InnerRegularWRT μ q q') :
     InnerRegularWRT μ p q' := by
   intro U hU r hr
   rcases H' hU r hr with ⟨F, hFU, hqF, hF⟩; rcases H hqF _ hF with ⟨K, hKF, hpK, hrK⟩
   exact ⟨K, hKF.trans hFU, hpK, hrK⟩
 #align measure_theory.measure.inner_regular.trans MeasureTheory.Measure.InnerRegularWRT.trans
 
-theorem rfl {p : Set α → Prop} : InnerRegularWRT μ p p :=
+lemma rfl {p : Set α → Prop} : InnerRegularWRT μ p p :=
   fun U hU _r hr ↦ ⟨U, Subset.rfl, hU, hr⟩
 
-theorem of_imp (h : ∀ s, q s → p s) : InnerRegularWRT μ p q :=
+lemma of_imp (h : ∀ s, q s → p s) : InnerRegularWRT μ p q :=
   fun U hU _ hr ↦ ⟨U, Subset.rfl, h U hU, hr⟩
 
-theorem mono {p' q' : Set α → Prop} (H : InnerRegularWRT μ p q)
+lemma mono {p' q' : Set α → Prop} (H : InnerRegularWRT μ p q)
     (h : ∀ s, q' s → q s) (h' : ∀ s, p s → p' s) : InnerRegularWRT μ p' q' :=
   of_imp h' |>.trans H |>.trans (of_imp h)
 
@@ -352,12 +352,12 @@ theorem _root_.Set.measure_eq_iInf_isOpen (A : Set α) (μ : Measure α) [OuterR
   simpa only [iInf_lt_iff, exists_prop] using A.exists_isOpen_lt_of_lt r hr
 #align set.measure_eq_infi_is_open Set.measure_eq_iInf_isOpen
 
-theorem _root_.Set.exists_isOpen_lt_add [OuterRegular μ] (A : Set α) (hA : μ A ≠ ∞) {ε : ℝ≥0∞}
+lemma _root_.Set.exists_isOpen_lt_add [OuterRegular μ] (A : Set α) (hA : μ A ≠ ∞) {ε : ℝ≥0∞}
     (hε : ε ≠ 0) : ∃ U, U ⊇ A ∧ IsOpen U ∧ μ U < μ A + ε :=
   A.exists_isOpen_lt_of_lt _ (ENNReal.lt_add_right hA hε)
 #align set.exists_is_open_lt_add Set.exists_isOpen_lt_add
 
-theorem _root_.Set.exists_isOpen_le_add (A : Set α) (μ : Measure α) [OuterRegular μ] {ε : ℝ≥0∞}
+lemma _root_.Set.exists_isOpen_le_add (A : Set α) (μ : Measure α) [OuterRegular μ] {ε : ℝ≥0∞}
     (hε : ε ≠ 0) : ∃ U, U ⊇ A ∧ IsOpen U ∧ μ U ≤ μ A + ε := by
   rcases eq_or_ne (μ A) ∞ with (H | H)
   · exact ⟨univ, subset_univ _, isOpen_univ, by simp only [H, _root_.top_add, le_top]⟩
@@ -365,7 +365,7 @@ theorem _root_.Set.exists_isOpen_le_add (A : Set α) (μ : Measure α) [OuterReg
     exact ⟨U, AU, U_open, hU.le⟩
 #align set.exists_is_open_le_add Set.exists_isOpen_le_add
 
-theorem _root_.MeasurableSet.exists_isOpen_diff_lt [OuterRegular μ] {A : Set α}
+lemma _root_.MeasurableSet.exists_isOpen_diff_lt [OuterRegular μ] {A : Set α}
     (hA : MeasurableSet A) (hA' : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ U, U ⊇ A ∧ IsOpen U ∧ μ U < ∞ ∧ μ (U \ A) < ε := by
   rcases A.exists_isOpen_lt_add hA' hε with ⟨U, hAU, hUo, hU⟩
@@ -373,7 +373,7 @@ theorem _root_.MeasurableSet.exists_isOpen_diff_lt [OuterRegular μ] {A : Set α
   exact measure_diff_lt_of_lt_add hA hAU hA' hU
 #align measurable_set.exists_is_open_diff_lt MeasurableSet.exists_isOpen_diff_lt
 
-protected theorem map [OpensMeasurableSpace α] [MeasurableSpace β] [TopologicalSpace β]
+protected lemma map [OpensMeasurableSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] (f : α ≃ₜ β) (μ : Measure α) [OuterRegular μ] :
     (Measure.map f μ).OuterRegular := by
   refine' ⟨fun A hA r hr => _⟩
@@ -384,7 +384,7 @@ protected theorem map [OpensMeasurableSpace α] [MeasurableSpace β] [Topologica
   rwa [map_apply f.measurable this.measurableSet, f.preimage_symm, f.preimage_image]
 #align measure_theory.measure.outer_regular.map MeasureTheory.Measure.OuterRegular.map
 
-protected theorem smul (μ : Measure α) [OuterRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) :
+protected lemma smul (μ : Measure α) [OuterRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) :
     (x • μ).OuterRegular := by
   rcases eq_or_ne x 0 with (rfl | h0)
   · rw [zero_smul]
@@ -679,7 +679,7 @@ lemma innerRegularWRT_isClosed_isOpen [R1Space α] [OpensMeasurableSpace α] [h 
   exact ⟨closure K, K_comp.closure_subset_of_isOpen hU KU, isClosed_closure,
     hK.trans_le (measure_mono subset_closure)⟩
 
-theorem exists_compact_not_null [InnerRegular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
+lemma exists_compact_not_null [InnerRegular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
   simp_rw [Ne, ← measure_univ_eq_zero, MeasurableSet.univ.measure_eq_iSup_isCompact,
     ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and_iff]
 
@@ -690,17 +690,17 @@ theorem _root_.MeasurableSet.exists_lt_isCompact [InnerRegular μ] ⦃A : Set α
     ∃ K, K ⊆ A ∧ IsCompact K ∧ r < μ K :=
   InnerRegular.innerRegular hA _ hr
 
-protected theorem map_of_continuous [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
+protected lemma map_of_continuous [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] [h : InnerRegular μ] {f : α → β} (hf : Continuous f) :
     InnerRegular (Measure.map f μ) :=
   ⟨InnerRegularWRT.map h.innerRegular hf.aemeasurable (fun _s hs ↦ hf.measurable hs)
     (fun _K hK ↦ hK.image hf) (fun _s hs ↦ hs)⟩
 
-protected theorem map [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
+protected lemma map [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] [InnerRegular μ] (f : α ≃ₜ β) : (Measure.map f μ).InnerRegular :=
   InnerRegular.map_of_continuous f.continuous
 
-protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
+protected lemma map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] (f : α ≃ₜ β) :
     InnerRegular (Measure.map f μ) ↔ InnerRegular μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
@@ -801,7 +801,7 @@ protected lemma _root_.IsCompact.measure_eq_iInf_isOpen [InnerRegularCompactLTTo
 @[deprecated] -- Since 28 Jan 2024
 alias _root_.IsCompact.measure_eq_infi_isOpen := IsCompact.measure_eq_iInf_isOpen
 
-protected theorem _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTop μ]
+protected lemma _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTop μ]
     [IsLocallyFiniteMeasure μ] [R1Space α] [BorelSpace α]
     {K : Set α} (hK : IsCompact K) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ U, K ⊆ U ∧ IsOpen U ∧ μ U < μ K + ε :=
@@ -830,7 +830,7 @@ instance smul_nnreal [InnerRegularCompactLTTop μ] (c : ℝ≥0) :
 instance (priority := 80) [InnerRegularCompactLTTop μ] [SigmaFinite μ] : InnerRegular μ :=
   ⟨InnerRegularCompactLTTop.innerRegular.trans InnerRegularWRT.of_sigmaFinite⟩
 
-protected theorem map_of_continuous [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
+protected lemma map_of_continuous [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] [h : InnerRegularCompactLTTop μ] {f : α → β} (hf : Continuous f) :
     InnerRegularCompactLTTop (Measure.map f μ) := by
   constructor
@@ -862,7 +862,7 @@ theorem _root_.IsOpen.measure_eq_iSup_isClosed ⦃U : Set α⦄ (hU : IsOpen U) 
   WeaklyRegular.innerRegular.measure_eq_iSup hU
 #align is_open.measure_eq_supr_is_closed IsOpen.measure_eq_iSup_isClosed
 
-theorem innerRegular_measurable [WeaklyRegular μ] :
+lemma innerRegular_measurable [WeaklyRegular μ] :
     InnerRegularWRT μ IsClosed fun s => MeasurableSet s ∧ μ s ≠ ∞ :=
   WeaklyRegular.innerRegular.measurableSet_of_isOpen (fun _ _ h₁ h₂ ↦ h₁.inter h₂.isClosed_compl)
 #align measure_theory.measure.weakly_regular.inner_regular_measurable MeasureTheory.Measure.WeaklyRegular.innerRegular_measurable
@@ -875,7 +875,7 @@ theorem _root_.MeasurableSet.exists_isClosed_lt_add [WeaklyRegular μ] {s : Set 
   innerRegular_measurable.exists_subset_lt_add isClosed_empty ⟨hs, hμs⟩ hμs hε
 #align measurable_set.exists_is_closed_lt_add MeasurableSet.exists_isClosed_lt_add
 
-theorem _root_.MeasurableSet.exists_isClosed_diff_lt [OpensMeasurableSpace α] [WeaklyRegular μ]
+lemma _root_.MeasurableSet.exists_isClosed_diff_lt [OpensMeasurableSpace α] [WeaklyRegular μ]
     ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ F, F ⊆ A ∧ IsClosed F ∧ μ (A \ F) < ε := by
   rcases hA.exists_isClosed_lt_add h'A hε with ⟨F, hFA, hFc, hF⟩
@@ -934,7 +934,7 @@ instance (priority := 100) of_pseudoMetrizableSpace_secondCountable_of_locallyFi
   ⟨InnerRegularWRT.of_pseudoMetrizableSpace μ⟩
 #align measure_theory.measure.weakly_regular.of_pseudo_emetric_second_countable_of_locally_finite MeasureTheory.Measure.WeaklyRegular.of_pseudoMetrizableSpace_secondCountable_of_locallyFinite
 
-protected theorem smul [WeaklyRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).WeaklyRegular := by
+protected lemma smul [WeaklyRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).WeaklyRegular := by
   haveI := OuterRegular.smul μ hx
   exact ⟨WeaklyRegular.innerRegular.smul x⟩
 
@@ -961,7 +961,7 @@ theorem _root_.IsOpen.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : IsOpen U)
   Regular.innerRegular.measure_eq_iSup hU
 #align is_open.measure_eq_supr_is_compact IsOpen.measure_eq_iSup_isCompact
 
-theorem exists_compact_not_null [Regular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
+lemma exists_compact_not_null [Regular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
   simp_rw [Ne, ← measure_univ_eq_zero, isOpen_univ.measure_eq_iSup_isCompact,
     ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and_iff]
 #align measure_theory.measure.regular.exists_compact_not_null MeasureTheory.Measure.Regular.exists_compact_not_null
@@ -973,7 +973,7 @@ instance (priority := 100) [Regular μ] : InnerRegularCompactLTTop μ :=
   ⟨Regular.innerRegular.measurableSet_of_isOpen (fun _ _ hs hU ↦ hs.diff hU)⟩
 #noalign measure_theory.measure.regular.inner_regular_measurable
 
-protected theorem map [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
+protected lemma map [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] [Regular μ] (f : α ≃ₜ β) : (Measure.map f μ).Regular := by
   haveI := OuterRegular.map f μ
   haveI := IsFiniteMeasureOnCompacts.map μ f
@@ -983,7 +983,7 @@ protected theorem map [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
         (fun K hK => hK.image f.continuous)⟩
 #align measure_theory.measure.regular.map MeasureTheory.Measure.Regular.map
 
-protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
+protected lemma map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] (f : α ≃ₜ β) :
     Regular (Measure.map f μ) ↔ Regular μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
@@ -991,7 +991,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
   rw [map_map f.symm.continuous.measurable f.continuous.measurable]
   simp
 
-protected theorem smul [Regular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).Regular := by
+protected lemma smul [Regular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).Regular := by
   haveI := OuterRegular.smul μ hx
   haveI := IsFiniteMeasureOnCompacts.smul μ hx
   exact ⟨Regular.innerRegular.smul x⟩

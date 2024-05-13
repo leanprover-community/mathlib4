@@ -62,7 +62,7 @@ universe u v
 
 open BigOperators Polynomial LocalRing Polynomial Function List
 
-theorem isLocalRingHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
+lemma isLocalRingHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalRingHom (Ideal.Quotient.mk I) := by
   constructor
   intro a h
@@ -118,7 +118,7 @@ instance (priority := 100) Field.henselian (K : Type*) [Field K] : HenselianLoca
     exact ⟨a₀, h₁, sub_self _⟩
 #align field.henselian Field.henselian
 
-theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
+lemma HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
     TFAE
       [HenselianLocalRing R,
         ∀ f : R[X], f.Monic → ∀ a₀ : ResidueField R, aeval a₀ f = 0 →

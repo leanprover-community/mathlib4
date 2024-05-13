@@ -33,7 +33,7 @@ universe u v
 variable {σ : Type u} {K : Type v}
 variable (σ K) [Field K]
 
-theorem quotient_mk_comp_C_injective (I : Ideal (MvPolynomial σ K)) (hI : I ≠ ⊤) :
+lemma quotient_mk_comp_C_injective (I : Ideal (MvPolynomial σ K)) (hI : I ≠ ⊤) :
     Function.Injective ((Ideal.Quotient.mk I).comp MvPolynomial.C) := by
   refine' (injective_iff_map_eq_zero _).2 fun x hx => _
   rw [RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem] at hx
@@ -53,7 +53,7 @@ variable {σ : Type u} {K : Type u} [Field K]
 
 open scoped Classical
 
-theorem rank_mvPolynomial : Module.rank K (MvPolynomial σ K) = Cardinal.mk (σ →₀ ℕ) := by
+lemma rank_mvPolynomial : Module.rank K (MvPolynomial σ K) = Cardinal.mk (σ →₀ ℕ) := by
   rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank]
 #align mv_polynomial.rank_mv_polynomial MvPolynomial.rank_mvPolynomial
 

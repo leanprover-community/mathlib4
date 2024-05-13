@@ -45,7 +45,7 @@ def circleTransformDeriv (f : ℂ → E) (θ : ℝ) : E :=
   (2 * ↑π * I)⁻¹ • deriv (circleMap z R) θ • ((circleMap z R θ - w) ^ 2)⁻¹ • f (circleMap z R θ)
 #align complex.circle_transform_deriv Complex.circleTransformDeriv
 
-theorem circleTransformDeriv_periodic (f : ℂ → E) :
+lemma circleTransformDeriv_periodic (f : ℂ → E) :
     Periodic (circleTransformDeriv R z w f) (2 * π) := by
   have := periodic_circleMap
   simp_rw [Periodic] at *
@@ -55,7 +55,7 @@ theorem circleTransformDeriv_periodic (f : ℂ → E) :
   simp [this]
 #align complex.circle_transform_deriv_periodic Complex.circleTransformDeriv_periodic
 
-theorem circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
+lemma circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
     fun θ => (circleMap z R θ - w)⁻¹ • circleTransform R z w f θ := by
   ext
   simp_rw [circleTransformDeriv, circleTransform, ← mul_smul, ← mul_assoc]
@@ -65,14 +65,14 @@ theorem circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
   ring
 #align complex.circle_transform_deriv_eq Complex.circleTransformDeriv_eq
 
-theorem integral_circleTransform (f : ℂ → E) :
+lemma integral_circleTransform (f : ℂ → E) :
     (∫ θ : ℝ in (0)..2 * π, circleTransform R z w f θ) =
       (2 * ↑π * I)⁻¹ • ∮ z in C(z, R), (z - w)⁻¹ • f z := by
   simp_rw [circleTransform, circleIntegral, deriv_circleMap, circleMap]
   simp
 #align complex.integral_circle_transform Complex.integral_circleTransform
 
-theorem continuous_circleTransform {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w : ℂ}
+lemma continuous_circleTransform {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w : ℂ}
     (hf : ContinuousOn f <| sphere z R) (hw : w ∈ ball z R) :
     Continuous (circleTransform R z w f) := by
   apply_rules [Continuous.smul, continuous_const]
@@ -83,7 +83,7 @@ theorem continuous_circleTransform {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w :
     exact fun _ => (circleMap_mem_sphere _ hR.le) _
 #align complex.continuous_circle_transform Complex.continuous_circleTransform
 
-theorem continuous_circleTransformDeriv {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w : ℂ}
+lemma continuous_circleTransformDeriv {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w : ℂ}
     (hf : ContinuousOn f (sphere z R)) (hw : w ∈ ball z R) :
     Continuous (circleTransformDeriv R z w f) := by
   rw [circleTransformDeriv_eq]
@@ -95,7 +95,7 @@ def circleTransformBoundingFunction (R : ℝ) (z : ℂ) (w : ℂ × ℝ) : ℂ :
   circleTransformDeriv R z w.1 (fun _ => 1) w.2
 #align complex.circle_transform_bounding_function Complex.circleTransformBoundingFunction
 
-theorem continuousOn_prod_circle_transform_function {R r : ℝ} (hr : r < R) {z : ℂ} :
+lemma continuousOn_prod_circle_transform_function {R r : ℝ} (hr : r < R) {z : ℂ} :
     ContinuousOn (fun w : ℂ × ℝ => (circleMap z R w.snd - w.fst)⁻¹ ^ 2)
       (closedBall z r ×ˢ univ) := by
   simp_rw [← one_div]
@@ -106,7 +106,7 @@ theorem continuousOn_prod_circle_transform_function {R r : ℝ} (hr : r < R) {z 
     exact sub_ne_zero.2 (circleMap_ne_mem_ball ha2 b)
 #align complex.continuous_on_prod_circle_transform_function Complex.continuousOn_prod_circle_transform_function
 
-theorem continuousOn_abs_circleTransformBoundingFunction {R r : ℝ} (hr : r < R) (z : ℂ) :
+lemma continuousOn_abs_circleTransformBoundingFunction {R r : ℝ} (hr : r < R) (z : ℂ) :
     ContinuousOn (abs ∘ circleTransformBoundingFunction R z) (closedBall z r ×ˢ univ) := by
   have : ContinuousOn (circleTransformBoundingFunction R z) (closedBall z r ×ˢ univ) := by
     apply_rules [ContinuousOn.smul, continuousOn_const]
@@ -117,7 +117,7 @@ theorem continuousOn_abs_circleTransformBoundingFunction {R r : ℝ} (hr : r < R
   exact this.norm
 #align complex.continuous_on_abs_circle_transform_bounding_function Complex.continuousOn_abs_circleTransformBoundingFunction
 
-theorem abs_circleTransformBoundingFunction_le {R r : ℝ} (hr : r < R) (hr' : 0 ≤ r) (z : ℂ) :
+lemma abs_circleTransformBoundingFunction_le {R r : ℝ} (hr : r < R) (hr' : 0 ≤ r) (z : ℂ) :
     ∃ x : closedBall z r ×ˢ [[0, 2 * π]], ∀ y : closedBall z r ×ˢ [[0, 2 * π]],
     abs (circleTransformBoundingFunction R z y) ≤ abs (circleTransformBoundingFunction R z x) := by
   have cts := continuousOn_abs_circleTransformBoundingFunction hr z

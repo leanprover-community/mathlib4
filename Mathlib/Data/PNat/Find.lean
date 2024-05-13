@@ -54,21 +54,21 @@ protected def find : ℕ+ :=
   PNat.findX h
 #align pnat.find PNat.find
 
-protected theorem find_spec : p (PNat.find h) :=
+protected lemma find_spec : p (PNat.find h) :=
   (PNat.findX h).prop.left
 #align pnat.find_spec PNat.find_spec
 
-protected theorem find_min : ∀ {m : ℕ+}, m < PNat.find h → ¬p m :=
+protected lemma find_min : ∀ {m : ℕ+}, m < PNat.find h → ¬p m :=
   @(PNat.findX h).prop.right
 #align pnat.find_min PNat.find_min
 
-protected theorem find_min' {m : ℕ+} (hm : p m) : PNat.find h ≤ m :=
+protected lemma find_min' {m : ℕ+} (hm : p m) : PNat.find h ≤ m :=
   le_of_not_lt fun l => PNat.find_min h l hm
 #align pnat.find_min' PNat.find_min'
 
 variable {n m : ℕ+}
 
-theorem find_eq_iff : PNat.find h = m ↔ p m ∧ ∀ n < m, ¬p n := by
+lemma find_eq_iff : PNat.find h = m ↔ p m ∧ ∀ n < m, ¬p n := by
   constructor
   · rintro rfl
     exact ⟨PNat.find_spec h, fun _ => PNat.find_min h⟩
@@ -77,45 +77,45 @@ theorem find_eq_iff : PNat.find h = m ↔ p m ∧ ∀ n < m, ¬p n := by
 #align pnat.find_eq_iff PNat.find_eq_iff
 
 @[simp]
-theorem find_lt_iff (n : ℕ+) : PNat.find h < n ↔ ∃ m < n, p m :=
+lemma find_lt_iff (n : ℕ+) : PNat.find h < n ↔ ∃ m < n, p m :=
   ⟨fun h2 => ⟨PNat.find h, h2, PNat.find_spec h⟩, fun ⟨_, hmn, hm⟩ =>
     (PNat.find_min' h hm).trans_lt hmn⟩
 #align pnat.find_lt_iff PNat.find_lt_iff
 
 @[simp]
-theorem find_le_iff (n : ℕ+) : PNat.find h ≤ n ↔ ∃ m ≤ n, p m := by
+lemma find_le_iff (n : ℕ+) : PNat.find h ≤ n ↔ ∃ m ≤ n, p m := by
   simp only [exists_prop, ← lt_add_one_iff, find_lt_iff]
 #align pnat.find_le_iff PNat.find_le_iff
 
 @[simp]
-theorem le_find_iff (n : ℕ+) : n ≤ PNat.find h ↔ ∀ m < n, ¬p m := by
+lemma le_find_iff (n : ℕ+) : n ≤ PNat.find h ↔ ∀ m < n, ¬p m := by
   simp only [← not_lt, find_lt_iff, not_exists, not_and]
 #align pnat.le_find_iff PNat.le_find_iff
 
 @[simp]
-theorem lt_find_iff (n : ℕ+) : n < PNat.find h ↔ ∀ m ≤ n, ¬p m := by
+lemma lt_find_iff (n : ℕ+) : n < PNat.find h ↔ ∀ m ≤ n, ¬p m := by
   simp only [← add_one_le_iff, le_find_iff, add_le_add_iff_right]
 #align pnat.lt_find_iff PNat.lt_find_iff
 
 @[simp]
-theorem find_eq_one : PNat.find h = 1 ↔ p 1 := by simp [find_eq_iff]
+lemma find_eq_one : PNat.find h = 1 ↔ p 1 := by simp [find_eq_iff]
 #align pnat.find_eq_one PNat.find_eq_one
 
 -- Porting note: deleted `@[simp]` to satisfy the linter because `le_find_iff` is more general
-theorem one_le_find : 1 < PNat.find h ↔ ¬p 1 :=
+lemma one_le_find : 1 < PNat.find h ↔ ¬p 1 :=
   not_iff_not.mp <| by simp
 #align pnat.one_le_find PNat.one_le_find
 
-theorem find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :
+lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :
     PNat.find hp ≤ PNat.find hq :=
   PNat.find_min' _ (h _ (PNat.find_spec hq))
 #align pnat.find_mono PNat.find_mono
 
-theorem find_le {h : ∃ n, p n} (hn : p n) : PNat.find h ≤ n :=
+lemma find_le {h : ∃ n, p n} (hn : p n) : PNat.find h ≤ n :=
   (PNat.find_le_iff _ _).2 ⟨n, le_rfl, hn⟩
 #align pnat.find_le PNat.find_le
 
-theorem find_comp_succ (h : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h1 : ¬p 1) :
+lemma find_comp_succ (h : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h1 : ¬p 1) :
     PNat.find h = PNat.find h₂ + 1 := by
   refine' (find_eq_iff _).2 ⟨PNat.find_spec h₂, fun n => PNat.recOn n _ _⟩
   · simp [h1]

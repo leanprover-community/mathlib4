@@ -61,12 +61,12 @@ def π : ActionCategory M X ⥤ SingleObj M :=
 #align category_theory.action_category.π CategoryTheory.ActionCategory.π
 
 @[simp]
-theorem π_map (p q : ActionCategory M X) (f : p ⟶ q) : (π M X).map f = f.val :=
+lemma π_map (p q : ActionCategory M X) (f : p ⟶ q) : (π M X).map f = f.val :=
   rfl
 #align category_theory.action_category.π_map CategoryTheory.ActionCategory.π_map
 
 @[simp]
-theorem π_obj (p : ActionCategory M X) : (π M X).obj p = SingleObj.star M :=
+lemma π_obj (p : ActionCategory M X) : (π M X).obj p = SingleObj.star M :=
   Unit.ext _ _
 #align category_theory.action_category.π_obj CategoryTheory.ActionCategory.π_obj
 
@@ -81,12 +81,12 @@ instance : CoeTC X (ActionCategory M X) :=
   ⟨fun x => ⟨(), x⟩⟩
 
 @[simp]
-theorem coe_back (x : X) : ActionCategory.back (x : ActionCategory M X) = x :=
+lemma coe_back (x : X) : ActionCategory.back (x : ActionCategory M X) = x :=
   rfl
 #align category_theory.action_category.coe_back CategoryTheory.ActionCategory.coe_back
 
 @[simp]
-theorem back_coe (x : ActionCategory M X) : ↑x.back = x := by cases x; rfl
+lemma back_coe (x : ActionCategory M X) : ↑x.back = x := by cases x; rfl
 #align category_theory.action_category.back_coe CategoryTheory.ActionCategory.back_coe
 
 variable (M X)
@@ -99,7 +99,7 @@ def objEquiv : X ≃ ActionCategory M X where
   right_inv := back_coe
 #align category_theory.action_category.obj_equiv CategoryTheory.ActionCategory.objEquiv
 
-theorem hom_as_subtype (p q : ActionCategory M X) : (p ⟶ q) = { m : M // m • p.back = q.back } :=
+lemma hom_as_subtype (p q : ActionCategory M X) : (p ⟶ q) = { m : M // m • p.back = q.back } :=
   rfl
 #align category_theory.action_category.hom_as_subtype CategoryTheory.ActionCategory.hom_as_subtype
 
@@ -118,25 +118,25 @@ def stabilizerIsoEnd : stabilizerSubmonoid M x ≃* @End (ActionCategory M X) _ 
 #align category_theory.action_category.stabilizer_iso_End CategoryTheory.ActionCategory.stabilizerIsoEnd
 
 @[simp]
-theorem stabilizerIsoEnd_apply (f : stabilizerSubmonoid M x) :
+lemma stabilizerIsoEnd_apply (f : stabilizerSubmonoid M x) :
     (stabilizerIsoEnd M x) f = f :=
   rfl
 #align category_theory.action_category.stabilizer_iso_End_apply CategoryTheory.ActionCategory.stabilizerIsoEnd_apply
 
 @[simp 1100]
-theorem stabilizerIsoEnd_symm_apply (f : End _) : (stabilizerIsoEnd M x).symm f = f :=
+lemma stabilizerIsoEnd_symm_apply (f : End _) : (stabilizerIsoEnd M x).symm f = f :=
   rfl
 #align category_theory.action_category.stabilizer_iso_End_symm_apply CategoryTheory.ActionCategory.stabilizerIsoEnd_symm_apply
 
 variable {M}
 
 @[simp]
-protected theorem id_val (x : ActionCategory M X) : Subtype.val (𝟙 x) = 1 :=
+protected lemma id_val (x : ActionCategory M X) : Subtype.val (𝟙 x) = 1 :=
   rfl
 #align category_theory.action_category.id_val CategoryTheory.ActionCategory.id_val
 
 @[simp]
-protected theorem comp_val {x y z : ActionCategory M X} (f : x ⟶ y) (g : y ⟶ z) :
+protected lemma comp_val {x y z : ActionCategory M X} (f : x ⟶ y) (g : y ⟶ z) :
     (f ≫ g).val = g.val * f.val :=
   rfl
 #align category_theory.action_category.comp_val CategoryTheory.ActionCategory.comp_val
@@ -165,7 +165,7 @@ def homOfPair (t : X) (g : G) : @Quiver.Hom (ActionCategory G X) _ (g⁻¹ • t
 #align category_theory.action_category.hom_of_pair CategoryTheory.ActionCategory.homOfPair
 
 @[simp]
-theorem homOfPair.val (t : X) (g : G) : (homOfPair t g).val = g :=
+lemma homOfPair.val (t : X) (g : G) : (homOfPair t g).val = g :=
   rfl
 #align category_theory.action_category.hom_of_pair.val CategoryTheory.ActionCategory.homOfPair.val
 

@@ -67,7 +67,7 @@ def weightedDegree (w : σ → M) : (σ →₀ ℕ) →+ M :=
   (Finsupp.total σ M ℕ w).toAddMonoidHom
 #align mv_polynomial.weighted_degree' MvPolynomial.weightedDegree
 
-theorem weightedDegree_apply (w : σ → M) (f : σ →₀ ℕ):
+lemma weightedDegree_apply (w : σ → M) (f : σ →₀ ℕ):
     weightedDegree w f = Finsupp.sum f (fun i c => c • w i) := by
   rfl
 section SemilatticeSup
@@ -122,7 +122,7 @@ theorem weightedTotalDegree_zero (w : σ → M) : weightedTotalDegree w (0 : MvP
   by simp only [weightedTotalDegree, support_zero, Finset.sup_empty]
 #align mv_polynomial.weighted_total_degree_zero MvPolynomial.weightedTotalDegree_zero
 
-theorem le_weightedTotalDegree (w : σ → M) {φ : MvPolynomial σ R} {d : σ →₀ ℕ}
+lemma le_weightedTotalDegree (w : σ → M) {φ : MvPolynomial σ R} {d : σ →₀ ℕ}
     (hd : d ∈ φ.support) : weightedDegree w d ≤ φ.weightedTotalDegree w :=
   le_sup hd
 #align mv_polynomial.le_weighted_total_degree MvPolynomial.le_weightedTotalDegree
@@ -156,7 +156,7 @@ def weightedHomogeneousSubmodule (w : σ → M) (m : M) : Submodule R (MvPolynom
 #align mv_polynomial.weighted_homogeneous_submodule MvPolynomial.weightedHomogeneousSubmodule
 
 @[simp]
-theorem mem_weightedHomogeneousSubmodule (w : σ → M) (m : M) (p : MvPolynomial σ R) :
+lemma mem_weightedHomogeneousSubmodule (w : σ → M) (m : M) (p : MvPolynomial σ R) :
     p ∈ weightedHomogeneousSubmodule R w m ↔ p.IsWeightedHomogeneous w m :=
   Iff.rfl
 #align mv_polynomial.mem_weighted_homogeneous_submodule MvPolynomial.mem_weightedHomogeneousSubmodule
@@ -337,14 +337,14 @@ section WeightedHomogeneousComponent
 
 variable {w : σ → M} (n : M) (φ ψ : MvPolynomial σ R)
 
-theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
+lemma coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
     coeff d (weightedHomogeneousComponent w n φ) =
       if weightedDegree w d = n then coeff d φ else 0 :=
   letI := Classical.decEq M
   Finsupp.filter_apply (fun d : σ →₀ ℕ => weightedDegree w d = n) φ d |>.trans <| by convert rfl
 #align mv_polynomial.coeff_weighted_homogeneous_component MvPolynomial.coeff_weightedHomogeneousComponent
 
-theorem weightedHomogeneousComponent_apply [DecidableEq M] :
+lemma weightedHomogeneousComponent_apply [DecidableEq M] :
     weightedHomogeneousComponent w n φ =
       ∑ d in φ.support.filter fun d => weightedDegree w d = n, monomial d (coeff d φ) :=
   letI := Classical.decEq M
@@ -361,19 +361,19 @@ theorem weightedHomogeneousComponent_isWeightedHomogeneous :
   rw [coeff_weightedHomogeneousComponent, if_neg hd]
 #align mv_polynomial.weighted_homogeneous_component_is_weighted_homogeneous MvPolynomial.weightedHomogeneousComponent_isWeightedHomogeneous
 
-theorem weightedHomogeneousComponent_mem (w : σ → M) (φ : MvPolynomial σ R) (m : M) :
+lemma weightedHomogeneousComponent_mem (w : σ → M) (φ : MvPolynomial σ R) (m : M) :
     weightedHomogeneousComponent w m φ ∈ weightedHomogeneousSubmodule R w m := by
   rw [mem_weightedHomogeneousSubmodule]
   exact weightedHomogeneousComponent_isWeightedHomogeneous m φ
 
 @[simp]
-theorem weightedHomogeneousComponent_C_mul (n : M) (r : R) :
+lemma weightedHomogeneousComponent_C_mul (n : M) (r : R) :
     weightedHomogeneousComponent w n (C r * φ) = C r * weightedHomogeneousComponent w n φ := by
   simp only [C_mul', LinearMap.map_smul]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.weighted_homogeneous_component_C_mul MvPolynomial.weightedHomogeneousComponent_C_mul
 
-theorem weightedHomogeneousComponent_eq_zero'
+lemma weightedHomogeneousComponent_eq_zero'
     (h : ∀ d : σ →₀ ℕ, d ∈ φ.support → weightedDegree w d ≠ n) :
     weightedHomogeneousComponent w n φ = 0 := by
   classical
@@ -382,7 +382,7 @@ theorem weightedHomogeneousComponent_eq_zero'
   exfalso; exact h _ hd.1 hd.2
 #align mv_polynomial.weighted_homogeneous_component_eq_zero' MvPolynomial.weightedHomogeneousComponent_eq_zero'
 
-theorem weightedHomogeneousComponent_eq_zero [SemilatticeSup M] [OrderBot M]
+lemma weightedHomogeneousComponent_eq_zero [SemilatticeSup M] [OrderBot M]
     (h : weightedTotalDegree w φ < n) : weightedHomogeneousComponent w n φ = 0 := by
   classical
   rw [weightedHomogeneousComponent_apply, sum_eq_zero]
@@ -394,7 +394,7 @@ theorem weightedHomogeneousComponent_eq_zero [SemilatticeSup M] [OrderBot M]
   exact lt_of_le_of_lt (le_weightedTotalDegree w hd.1) h
 #align mv_polynomial.weighted_homogeneous_component_eq_zero MvPolynomial.weightedHomogeneousComponent_eq_zero
 
-theorem weightedHomogeneousComponent_finsupp :
+lemma weightedHomogeneousComponent_finsupp :
     (Function.support fun m => weightedHomogeneousComponent w m φ).Finite := by
   suffices
     (Function.support fun m => weightedHomogeneousComponent w m φ) ⊆
@@ -429,13 +429,13 @@ theorem sum_weightedHomogeneousComponent :
     exact this.symm
 #align mv_polynomial.sum_weighted_homogeneous_component MvPolynomial.sum_weightedHomogeneousComponent
 
-theorem finsum_weightedHomogeneousComponent :
+lemma finsum_weightedHomogeneousComponent :
     (finsum fun m => weightedHomogeneousComponent w m φ) = φ := by
   rw [sum_weightedHomogeneousComponent]
 
 variable {w}
 
-theorem IsWeightedHomogeneous.weightedHomogeneousComponent_same {m : M} {p : MvPolynomial σ R}
+lemma IsWeightedHomogeneous.weightedHomogeneousComponent_same {m : M} {p : MvPolynomial σ R}
     (hp : IsWeightedHomogeneous w p m) :
     weightedHomogeneousComponent w m p = p := by
   classical
@@ -447,7 +447,7 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_same {m : M} {p : MvP
     rw [zero_coeff]
   · rw [hp zero_coeff, if_pos]; rfl
 
-theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
+lemma IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
     {p : MvPolynomial σ R} (hp : IsWeightedHomogeneous w p m) :
     n ≠ m → weightedHomogeneousComponent w n p = 0 := by
   classical
@@ -509,7 +509,7 @@ theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i
 def NonTorsionWeight (w : σ → M) :=
   ∀ n x, n • w x = (0 : M) → n = 0
 
-theorem nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
+lemma nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
     NonTorsionWeight w := by
   intro n x
   rw [smul_eq_zero]

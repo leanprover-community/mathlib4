@@ -53,16 +53,16 @@ noncomputable def stirlingSeq (n : ℕ) : ℝ :=
 #align stirling.stirling_seq Stirling.stirlingSeq
 
 @[simp]
-theorem stirlingSeq_zero : stirlingSeq 0 = 0 := by
+lemma stirlingSeq_zero : stirlingSeq 0 = 0 := by
   rw [stirlingSeq, cast_zero, mul_zero, Real.sqrt_zero, zero_mul, div_zero]
 #align stirling.stirling_seq_zero Stirling.stirlingSeq_zero
 
 @[simp]
-theorem stirlingSeq_one : stirlingSeq 1 = exp 1 / √2 := by
+lemma stirlingSeq_one : stirlingSeq 1 = exp 1 / √2 := by
   rw [stirlingSeq, pow_one, factorial_one, cast_one, mul_one, mul_one_div, one_div_div]
 #align stirling.stirling_seq_one Stirling.stirlingSeq_one
 
-theorem log_stirlingSeq_formula (n : ℕ) :
+lemma log_stirlingSeq_formula (n : ℕ) :
     log (stirlingSeq n) = Real.log n ! - 1 / 2 * Real.log (2 * n) - n * log (n / exp 1) := by
   cases n
   · simp

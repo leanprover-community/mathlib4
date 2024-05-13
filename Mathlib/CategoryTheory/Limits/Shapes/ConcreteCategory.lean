@@ -224,7 +224,7 @@ open WidePullback
 
 open WidePullbackShape
 
-theorem widePullback_ext {B : C} {ι : Type w} {X : ι → C} (f : ∀ j : ι, X j ⟶ B)
+lemma widePullback_ext {B : C} {ι : Type w} {X : ι → C} (f : ∀ j : ι, X j ⟶ B)
     [HasWidePullback B X f] [PreservesLimit (wideCospan B X f) (forget C)]
     (x y : ↑(widePullback B X f)) (h₀ : base f x = base f y) (h : ∀ j, π f j x = π f j y) :
     x = y := by
@@ -234,7 +234,7 @@ theorem widePullback_ext {B : C} {ι : Type w} {X : ι → C} (f : ∀ j : ι, X
   · apply h
 #align category_theory.limits.concrete.wide_pullback_ext CategoryTheory.Limits.Concrete.widePullback_ext
 
-theorem widePullback_ext' {B : C} {ι : Type w} [Nonempty ι] {X : ι → C}
+lemma widePullback_ext' {B : C} {ι : Type w} [Nonempty ι] {X : ι → C}
     (f : ∀ j : ι, X j ⟶ B) [HasWidePullback.{w} B X f]
     [PreservesLimit (wideCospan B X f) (forget C)] (x y : ↑(widePullback B X f))
     (h : ∀ j, π f j x = π f j y) : x = y := by
@@ -249,7 +249,7 @@ section Multiequalizer
 
 variable [ConcreteCategory.{max w v} C]
 
-theorem multiequalizer_ext {I : MulticospanIndex.{w} C} [HasMultiequalizer I]
+lemma multiequalizer_ext {I : MulticospanIndex.{w} C} [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] (x y : ↑(multiequalizer I))
     (h : ∀ t : I.L, Multiequalizer.ι I t x = Multiequalizer.ι I t y) : x = y := by
   apply Concrete.limit_ext
@@ -305,7 +305,7 @@ noncomputable def multiequalizerEquiv (I : MulticospanIndex.{w} C) [HasMultiequa
 #align category_theory.limits.concrete.multiequalizer_equiv CategoryTheory.Limits.Concrete.multiequalizerEquiv
 
 @[simp]
-theorem multiequalizerEquiv_apply (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
+lemma multiequalizerEquiv_apply (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] (x : ↑(multiequalizer I)) (i : I.L) :
     ((Concrete.multiequalizerEquiv I) x : ∀ i : I.L, I.left i) i = Multiequalizer.ι I i x :=
   rfl
@@ -321,7 +321,7 @@ open WidePushoutShape
 
 variable [ConcreteCategory.{v} C]
 
-theorem widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f : ∀ j : α, B ⟶ X j)
+lemma widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f : ∀ j : α, B ⟶ X j)
     [HasWidePushout.{v} B X f] [PreservesColimit (wideSpan B X f) (forget C)]
     (x : ↑(widePushout B X f)) : (∃ y : B, head f y = x) ∨ ∃ (i : α) (y : X i), ι f i y = x := by
   obtain ⟨_ | j, y, rfl⟩ := Concrete.colimit_exists_rep _ x
@@ -333,7 +333,7 @@ theorem widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f : ∀ j :
     rfl
 #align category_theory.limits.concrete.wide_pushout_exists_rep CategoryTheory.Limits.Concrete.widePushout_exists_rep
 
-theorem widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → C}
+lemma widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → C}
     (f : ∀ j : α, B ⟶ X j) [HasWidePushout.{v} B X f] [PreservesColimit (wideSpan B X f) (forget C)]
     (x : ↑(widePushout B X f)) : ∃ (i : α) (y : X i), ι f i y = x := by
   rcases Concrete.widePushout_exists_rep f x with (⟨y, rfl⟩ | ⟨i, y, rfl⟩)
@@ -346,7 +346,7 @@ theorem widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → 
 end WidePushout
 
 -- We don't mark this as an `@[ext]` lemma as we don't always want to work elementwise.
-theorem cokernel_funext {C : Type*} [Category C] [HasZeroMorphisms C] [ConcreteCategory C]
+lemma cokernel_funext {C : Type*} [Category C] [HasZeroMorphisms C] [ConcreteCategory C]
     {M N K : C} {f : M ⟶ N} [HasCokernel f] {g h : cokernel f ⟶ K}
     (w : ∀ n : N, g (cokernel.π f n) = h (cokernel.π f n)) : g = h := by
   ext x

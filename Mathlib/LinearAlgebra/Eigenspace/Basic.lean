@@ -66,7 +66,7 @@ def eigenspace (f : End R M) (μ : R) : Submodule R M :=
 #align module.End.eigenspace Module.End.eigenspace
 
 @[simp]
-theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by simp [eigenspace]
+lemma eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by simp [eigenspace]
 #align module.End.eigenspace_zero Module.End.eigenspace_zero
 
 /-- A nonzero element of an eigenspace is an eigenvector. (Def 5.7 of [axler2015]) -/
@@ -95,31 +95,31 @@ instance Eigenvalues.instDecidableEq [DecidableEq R] (f : Module.End R M) :
     DecidableEq (Eigenvalues f) :=
   inferInstanceAs (DecidableEq (Subtype (fun x : R => HasEigenvalue f x)))
 
-theorem hasEigenvalue_of_hasEigenvector {f : End R M} {μ : R} {x : M} (h : HasEigenvector f μ x) :
+lemma hasEigenvalue_of_hasEigenvector {f : End R M} {μ : R} {x : M} (h : HasEigenvector f μ x) :
     HasEigenvalue f μ := by
   rw [HasEigenvalue, Submodule.ne_bot_iff]
   use x; exact h
 #align module.End.has_eigenvalue_of_has_eigenvector Module.End.hasEigenvalue_of_hasEigenvector
 
-theorem mem_eigenspace_iff {f : End R M} {μ : R} {x : M} : x ∈ eigenspace f μ ↔ f x = μ • x := by
+lemma mem_eigenspace_iff {f : End R M} {μ : R} {x : M} : x ∈ eigenspace f μ ↔ f x = μ • x := by
   rw [eigenspace, LinearMap.mem_ker, LinearMap.sub_apply, algebraMap_end_apply, sub_eq_zero]
 #align module.End.mem_eigenspace_iff Module.End.mem_eigenspace_iff
 
-theorem HasEigenvector.apply_eq_smul {f : End R M} {μ : R} {x : M} (hx : f.HasEigenvector μ x) :
+lemma HasEigenvector.apply_eq_smul {f : End R M} {μ : R} {x : M} (hx : f.HasEigenvector μ x) :
     f x = μ • x :=
   mem_eigenspace_iff.mp hx.1
 #align module.End.has_eigenvector.apply_eq_smul Module.End.HasEigenvector.apply_eq_smul
 
-theorem HasEigenvector.pow_apply {f : End R M} {μ : R} {v : M} (hv : f.HasEigenvector μ v) (n : ℕ) :
+lemma HasEigenvector.pow_apply {f : End R M} {μ : R} {v : M} (hv : f.HasEigenvector μ v) (n : ℕ) :
     (f ^ n) v = μ ^ n • v := by
   induction n <;> simp [*, pow_succ f, hv.apply_eq_smul, smul_smul, pow_succ' μ]
 
-theorem HasEigenvalue.exists_hasEigenvector {f : End R M} {μ : R} (hμ : f.HasEigenvalue μ) :
+lemma HasEigenvalue.exists_hasEigenvector {f : End R M} {μ : R} (hμ : f.HasEigenvalue μ) :
     ∃ v, f.HasEigenvector μ v :=
   Submodule.exists_mem_ne_zero_of_ne_bot hμ
 #align module.End.has_eigenvalue.exists_has_eigenvector Module.End.HasEigenvalue.exists_hasEigenvector
 
-theorem HasEigenvalue.mem_spectrum {f : End R M} {μ : R} (hμ : HasEigenvalue f μ) :
+lemma HasEigenvalue.mem_spectrum {f : End R M} {μ : R} (hμ : HasEigenvalue f μ) :
     μ ∈ spectrum R f := by
   refine' spectrum.mem_iff.mpr fun h_unit => _
   set f' := LinearMap.GeneralLinearGroup.toLinearEquiv h_unit.unit
@@ -128,14 +128,14 @@ theorem HasEigenvalue.mem_spectrum {f : End R M} {μ : R} (hμ : HasEigenvalue f
   rw [hv.apply_eq_smul, sub_self]
 #align module.End.mem_spectrum_of_has_eigenvalue Module.End.HasEigenvalue.mem_spectrum
 
-theorem hasEigenvalue_iff_mem_spectrum [FiniteDimensional K V] {f : End K V} {μ : K} :
+lemma hasEigenvalue_iff_mem_spectrum [FiniteDimensional K V] {f : End K V} {μ : K} :
     f.HasEigenvalue μ ↔ μ ∈ spectrum K f := by
   rw [spectrum.mem_iff, IsUnit.sub_iff, LinearMap.isUnit_iff_ker_eq_bot, HasEigenvalue, eigenspace]
 #align module.End.has_eigenvalue_iff_mem_spectrum Module.End.hasEigenvalue_iff_mem_spectrum
 
 alias ⟨_, HasEigenvalue.of_mem_spectrum⟩ := hasEigenvalue_iff_mem_spectrum
 
-theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
+lemma eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
     eigenspace f (a / b) = LinearMap.ker (b • f - algebraMap K (End K V) a) :=
   calc
     eigenspace f (a / b) = eigenspace f (b⁻¹ * a) := by rw [div_eq_mul_inv, mul_comm]
@@ -160,12 +160,12 @@ def generalizedEigenspace (f : End R M) (μ : R) : ℕ →o Submodule R M where
 #align module.End.generalized_eigenspace Module.End.generalizedEigenspace
 
 @[simp]
-theorem mem_generalizedEigenspace (f : End R M) (μ : R) (k : ℕ) (m : M) :
+lemma mem_generalizedEigenspace (f : End R M) (μ : R) (k : ℕ) (m : M) :
     m ∈ f.generalizedEigenspace μ k ↔ ((f - μ • (1 : End R M)) ^ k) m = 0 := Iff.rfl
 #align module.End.mem_generalized_eigenspace Module.End.mem_generalizedEigenspace
 
 @[simp]
-theorem generalizedEigenspace_zero (f : End R M) (k : ℕ) :
+lemma generalizedEigenspace_zero (f : End R M) (k : ℕ) :
     f.generalizedEigenspace 0 k = LinearMap.ker (f ^ k) := by
   simp [Module.End.generalizedEigenspace]
 #align module.End.generalized_eigenspace_zero Module.End.generalizedEigenspace_zero
@@ -200,13 +200,13 @@ def maximalGeneralizedEigenspace (f : End R M) (μ : R) : Submodule R M :=
   ⨆ k, f.generalizedEigenspace μ k
 #align module.End.maximal_generalized_eigenspace Module.End.maximalGeneralizedEigenspace
 
-theorem generalizedEigenspace_le_maximal (f : End R M) (μ : R) (k : ℕ) :
+lemma generalizedEigenspace_le_maximal (f : End R M) (μ : R) (k : ℕ) :
     f.generalizedEigenspace μ k ≤ f.maximalGeneralizedEigenspace μ :=
   le_iSup _ _
 #align module.End.generalized_eigenspace_le_maximal Module.End.generalizedEigenspace_le_maximal
 
 @[simp]
-theorem mem_maximalGeneralizedEigenspace (f : End R M) (μ : R) (m : M) :
+lemma mem_maximalGeneralizedEigenspace (f : End R M) (μ : R) (m : M) :
     m ∈ f.maximalGeneralizedEigenspace μ ↔ ∃ k : ℕ, ((f - μ • (1 : End R M)) ^ k) m = 0 := by
   simp only [maximalGeneralizedEigenspace, ← mem_generalizedEigenspace, Submodule.mem_iSup_of_chain]
 #align module.End.mem_maximal_generalized_eigenspace Module.End.mem_maximalGeneralizedEigenspace
@@ -274,7 +274,7 @@ theorem generalizedEigenspace_le_generalizedEigenspace_finrank [FiniteDimensiona
   ker_pow_le_ker_pow_finrank _ _
 #align module.End.generalized_eigenspace_le_generalized_eigenspace_finrank Module.End.generalizedEigenspace_le_generalizedEigenspace_finrank
 
-@[simp] theorem iSup_generalizedEigenspace_eq_generalizedEigenspace_finrank
+@[simp] lemma iSup_generalizedEigenspace_eq_generalizedEigenspace_finrank
     [FiniteDimensional K V] (f : End K V) (μ : K) :
     ⨆ k, f.generalizedEigenspace μ k = f.generalizedEigenspace μ (finrank K V) :=
   le_antisymm (iSup_le (generalizedEigenspace_le_generalizedEigenspace_finrank f μ)) (le_iSup _ _)
@@ -361,7 +361,7 @@ lemma injOn_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
   apply hμ₂
   simpa only [hμ₁₂, disjoint_self] using f.disjoint_iSup_generalizedEigenspace contra
 
-theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
+lemma independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
     CompleteLattice.Independent (fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) := by
   classical
   suffices ∀ μ (s : Finset R), μ ∉ s → Disjoint (⨆ k, f.generalizedEigenspace μ k)

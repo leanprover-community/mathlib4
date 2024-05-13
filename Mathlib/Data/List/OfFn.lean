@@ -37,7 +37,7 @@ namespace List
 #noalign list.length_of_fn_aux
 
 @[simp]
-theorem length_ofFn_go {n} (f : Fin n → α) (i j h) : length (ofFn.go f i j h) = i := by
+lemma length_ofFn_go {n} (f : Fin n → α) (i j h) : length (ofFn.go f i j h) = i := by
   induction i generalizing j <;> simp_all [ofFn.go]
 
 /-- The length of a list converted from a function is the size of the domain. -/
@@ -48,7 +48,7 @@ theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
 
 #noalign list.nth_of_fn_aux
 
-theorem get_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
+lemma get_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
     get (ofFn.go f i j h) ⟨k, hk⟩ = f ⟨j + k, by simp at hk; omega⟩ := by
   let i+1 := i
   cases k <;> simp [ofFn.go, get_ofFn_go (i := i)]
@@ -56,7 +56,7 @@ theorem get_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
 
 -- Porting note (#10756): new theorem
 @[simp]
-theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
+lemma get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   cases i; simp [ofFn, get_ofFn_go]
 
 /-- The `n`th element of a list -/
@@ -73,20 +73,20 @@ theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i 
 
 set_option linter.deprecated false in
 @[deprecated get_ofFn] -- 2023-01-17
-theorem nthLe_ofFn {n} (f : Fin n → α) (i : Fin n) :
+lemma nthLe_ofFn {n} (f : Fin n → α) (i : Fin n) :
     nthLe (ofFn f) i ((length_ofFn f).symm ▸ i.2) = f i := by
   simp [nthLe]
 #align list.nth_le_of_fn List.nthLe_ofFn
 
 set_option linter.deprecated false in
 @[simp, deprecated get_ofFn] -- 2023-01-17
-theorem nthLe_ofFn' {n} (f : Fin n → α) {i : ℕ} (h : i < (ofFn f).length) :
+lemma nthLe_ofFn' {n} (f : Fin n → α) {i : ℕ} (h : i < (ofFn f).length) :
     nthLe (ofFn f) i h = f ⟨i, length_ofFn f ▸ h⟩ :=
   nthLe_ofFn f ⟨i, length_ofFn f ▸ h⟩
 #align list.nth_le_of_fn' List.nthLe_ofFn'
 
 @[simp]
-theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
+lemma map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
     map g (ofFn f) = ofFn (g ∘ f) :=
   ext_get (by simp) fun i h h' => by simp
 #align list.map_of_fn List.map_ofFn
@@ -103,7 +103,7 @@ theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
 -- #align list.array_eq_of_fn List.array_eq_of_fn
 
 @[congr]
-theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
+lemma ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
     ofFn f = ofFn fun i : Fin n => f (Fin.cast h.symm i) := by
   subst h
   simp_rw [Fin.cast_refl, id]
@@ -116,14 +116,14 @@ theorem ofFn_zero (f : Fin 0 → α) : ofFn f = [] :=
 #align list.of_fn_zero List.ofFn_zero
 
 @[simp]
-theorem ofFn_succ {n} (f : Fin (succ n) → α) : ofFn f = f 0 :: ofFn fun i => f i.succ :=
+lemma ofFn_succ {n} (f : Fin (succ n) → α) : ofFn f = f 0 :: ofFn fun i => f i.succ :=
   ext_get (by simp) (fun i hi₁ hi₂ => by
     cases i
     · simp; rfl
     · simp)
 #align list.of_fn_succ List.ofFn_succ
 
-theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
+lemma ofFn_succ' {n} (f : Fin (succ n) → α) :
     ofFn f = (ofFn fun i => f (Fin.castSucc i)).concat (f (Fin.last _)) := by
   induction' n with n IH
   · rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero]
@@ -133,16 +133,16 @@ theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
 #align list.of_fn_succ' List.ofFn_succ'
 
 @[simp]
-theorem ofFn_eq_nil_iff {n : ℕ} {f : Fin n → α} : ofFn f = [] ↔ n = 0 := by
+lemma ofFn_eq_nil_iff {n : ℕ} {f : Fin n → α} : ofFn f = [] ↔ n = 0 := by
   cases n <;> simp only [ofFn_zero, ofFn_succ, eq_self_iff_true, Nat.succ_ne_zero]
 #align list.of_fn_eq_nil_iff List.ofFn_eq_nil_iff
 
-theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
+lemma last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
     (hn : n - 1 < n := Nat.pred_lt <| ofFn_eq_nil_iff.not.mp h) :
     getLast (ofFn f) h = f ⟨n - 1, hn⟩ := by simp [getLast_eq_get]
 #align list.last_of_fn List.last_ofFn
 
-theorem last_ofFn_succ {n : ℕ} (f : Fin n.succ → α)
+lemma last_ofFn_succ {n : ℕ} (f : Fin n.succ → α)
     (h : ofFn f ≠ [] := mt ofFn_eq_nil_iff.mp (Nat.succ_ne_zero _)) :
     getLast (ofFn f) h = f (Fin.last _) :=
   last_ofFn f h
@@ -160,7 +160,7 @@ theorem ofFn_add {m n} (f : Fin (m + n) → α) :
 #align list.of_fn_add List.ofFn_add
 
 @[simp]
-theorem ofFn_fin_append {m n} (a : Fin m → α) (b : Fin n → α) :
+lemma ofFn_fin_append {m n} (a : Fin m → α) (b : Fin n → α) :
     List.ofFn (Fin.append a b) = List.ofFn a ++ List.ofFn b := by
   simp_rw [ofFn_add, Fin.append_left, Fin.append_right]
 #align list.of_fn_fin_append List.ofFn_fin_append
@@ -187,7 +187,7 @@ theorem ofFn_mul' {m n} (f : Fin (m * n) → α) :
 #align list.of_fn_mul' List.ofFn_mul'
 
 @[simp]
-theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
+lemma ofFn_get : ∀ l : List α, (ofFn (get l)) = l
   | [] => by rw [ofFn_zero]
   | a :: l => by
     rw [ofFn_succ]
@@ -195,42 +195,42 @@ theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
     exact ofFn_get l
 
 @[simp]
-theorem ofFn_get_eq_map {β : Type*} (l : List α) (f : α → β) : ofFn (f <| l.get ·) = l.map f := by
+lemma ofFn_get_eq_map {β : Type*} (l : List α) (f : α → β) : ofFn (f <| l.get ·) = l.map f := by
   rw [← Function.comp_def, ← map_ofFn, ofFn_get]
 
 set_option linter.deprecated false in
 @[deprecated ofFn_get] -- 2023-01-17
-theorem ofFn_nthLe : ∀ l : List α, (ofFn fun i => nthLe l i i.2) = l :=
+lemma ofFn_nthLe : ∀ l : List α, (ofFn fun i => nthLe l i i.2) = l :=
   ofFn_get
 #align list.of_fn_nth_le List.ofFn_nthLe
 
 -- not registered as a simp lemma, as otherwise it fires before `forall_mem_ofFn_iff` which
 -- is much more useful
-theorem mem_ofFn {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by
+lemma mem_ofFn {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by
   simp only [mem_iff_get, Set.mem_range, get_ofFn]
   exact ⟨fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩, fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩⟩
 #align list.mem_of_fn List.mem_ofFn
 
 @[simp]
-theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
+lemma forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
     (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp only [mem_ofFn, Set.forall_mem_range]
 #align list.forall_mem_of_fn_iff List.forall_mem_ofFn_iff
 
 @[simp]
-theorem ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replicate n c
+lemma ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replicate n c
   | 0, c => by rw [ofFn_zero, replicate_zero]
   | n+1, c => by rw [replicate, ← ofFn_const n]; simp
 #align list.of_fn_const List.ofFn_const
 
 @[simp]
-theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
+lemma ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
     List.ofFn (Fin.repeat n a) = (List.replicate n (List.ofFn a)).join := by
   simp_rw [ofFn_mul, ← ofFn_const, Fin.repeat, Fin.modNat, add_comm,
     Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt (Fin.is_lt _)]
 #align list.of_fn_fin_repeat List.ofFn_fin_repeat
 
 @[simp]
-theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
+lemma pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
   simp only [pairwise_iff_get, (Fin.rightInverse_cast (length_ofFn f)).surjective.forall, get_ofFn,
     lt_iff_not_le, Fin.cast_le_cast]
@@ -259,7 +259,7 @@ def ofFnRec {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofF
 #align list.of_fn_rec List.ofFnRec
 
 @[simp]
-theorem ofFnRec_ofFn {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) {n : ℕ}
+lemma ofFnRec_ofFn {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) {n : ℕ}
     (f : Fin n → α) : @ofFnRec _ C h (List.ofFn f) = h _ f := by
   -- Porting note: Old proof was
   -- equivSigmaTuple.rightInverse_symm.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
@@ -270,12 +270,12 @@ theorem ofFnRec_ofFn {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C 
   rw [ofFnRec, ← this]
 #align list.of_fn_rec_of_fn List.ofFnRec_ofFn
 
-theorem exists_iff_exists_tuple {P : List α → Prop} :
+lemma exists_iff_exists_tuple {P : List α → Prop} :
     (∃ l : List α, P l) ↔ ∃ (n : _) (f : Fin n → α), P (List.ofFn f) :=
   equivSigmaTuple.symm.surjective.exists.trans Sigma.exists
 #align list.exists_iff_exists_tuple List.exists_iff_exists_tuple
 
-theorem forall_iff_forall_tuple {P : List α → Prop} :
+lemma forall_iff_forall_tuple {P : List α → Prop} :
     (∀ l : List α, P l) ↔ ∀ (n) (f : Fin n → α), P (List.ofFn f) :=
   equivSigmaTuple.symm.surjective.forall.trans Sigma.forall
 #align list.forall_iff_forall_tuple List.forall_iff_forall_tuple

@@ -68,14 +68,14 @@ instance : MonoidalCategoryStruct (QuadraticModuleCat.{u} R) where
   leftUnitor X := ofIso (tensorLId X.form)
   rightUnitor X := ofIso (tensorRId X.form)
 
-@[simp] theorem toModuleCat_tensor (X Y : QuadraticModuleCat.{u} R) :
+@[simp] lemma toModuleCat_tensor (X Y : QuadraticModuleCat.{u} R) :
     (X ⊗ Y).toModuleCat = X.toModuleCat ⊗ Y.toModuleCat := rfl
 
-theorem forget₂_map_associator_hom (X Y Z : QuadraticModuleCat.{u} R) :
+lemma forget₂_map_associator_hom (X Y Z : QuadraticModuleCat.{u} R) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).hom =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).hom := rfl
 
-theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
+lemma forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).inv =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 

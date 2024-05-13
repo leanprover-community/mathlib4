@@ -59,7 +59,7 @@ section Four
 
 variable {R₁ R₂ : ComposableArrows C 3} (φ : R₁ ⟶ R₂)
 
-theorem mono_of_epi_of_mono_of_mono' (hR₁ : R₁.map' 0 2 = 0)
+lemma mono_of_epi_of_mono_of_mono' (hR₁ : R₁.map' 0 2 = 0)
     (hR₁' : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
     (hR₂ : (mk₂ (R₂.map' 0 1) (R₂.map' 1 2)).Exact)
     (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) (h₃ : Mono (app' φ 3)) :
@@ -83,7 +83,7 @@ theorem mono_of_epi_of_mono_of_mono' (hR₁ : R₁.map' 0 2 = 0)
     comp_zero, ← reassoc_of% h₄, ← R₁.map'_comp 0 1 2, hR₁, comp_zero]
 #align category_theory.abelian.mono_of_epi_of_mono_of_mono CategoryTheory.Abelian.mono_of_epi_of_mono_of_mono'
 
-theorem mono_of_epi_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
+lemma mono_of_epi_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
     (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) (h₃ : Mono (app' φ 3)) :
     Mono (app' φ 2) :=
   mono_of_epi_of_mono_of_mono' φ
@@ -92,7 +92,7 @@ theorem mono_of_epi_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
 
 attribute [local instance] epi_comp
 
-theorem epi_of_epi_of_epi_of_mono'
+lemma epi_of_epi_of_epi_of_mono'
     (hR₁ : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
     (hR₂ : (mk₂ (R₂.map' 0 1) (R₂.map' 1 2)).Exact) (hR₂' : R₂.map' 1 3 = 0)
     (h₀ : Epi (app' φ 0)) (h₂ : Epi (app' φ 2)) (h₃ : Mono (app' φ 3)) :
@@ -120,7 +120,7 @@ theorem epi_of_epi_of_epi_of_mono'
   rw [add_sub_cancel]
 #align category_theory.abelian.epi_of_epi_of_epi_of_mono CategoryTheory.Abelian.epi_of_epi_of_epi_of_mono'
 
-theorem epi_of_epi_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
+lemma epi_of_epi_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
     (h₀ : Epi (app' φ 0)) (h₂ : Epi (app' φ 2)) (h₃ : Mono (app' φ 3)) :
     Epi (app' φ 1) :=
   epi_of_epi_of_epi_of_mono' φ (hR₁.exact 1).exact_toComposableArrows
@@ -164,7 +164,7 @@ variable {R₁ R₂ : ComposableArrows C 2} (φ : R₁ ⟶ R₂)
 
 attribute [local simp] Precomp.map
 
-theorem mono_of_epi_of_epi_mono' (hR₁ : R₁.map' 0 2 = 0) (hR₁' : Epi (R₁.map' 1 2))
+lemma mono_of_epi_of_epi_mono' (hR₁ : R₁.map' 0 2 = 0) (hR₁' : Epi (R₁.map' 1 2))
     (hR₂ : R₂.Exact) (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) :
     Mono (app' φ 2) := by
   let ψ : mk₃ (R₁.map' 0 1) (R₁.map' 1 2) (0 : _ ⟶ R₁.obj' 0) ⟶
@@ -178,13 +178,13 @@ theorem mono_of_epi_of_epi_mono' (hR₁ : R₁.map' 0 2 = 0) (hR₁' : Epi (R₁
   · rw [ShortComplex.exact_iff_epi _ (by simp)]
     exact hR₁'
 
-theorem mono_of_epi_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
+lemma mono_of_epi_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
     (hR₁' : Epi (R₁.map' 1 2)) (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) :
     Mono (app' φ 2) :=
   mono_of_epi_of_epi_mono' φ (by simpa only [map'_comp R₁ 0 1 2] using hR₁.toIsComplex.zero 0)
     hR₁' hR₂ h₀ h₁
 
-theorem epi_of_mono_of_epi_of_mono' (hR₁ : R₁.Exact) (hR₂ : R₂.map' 0 2 = 0)
+lemma epi_of_mono_of_epi_of_mono' (hR₁ : R₁.Exact) (hR₂ : R₂.map' 0 2 = 0)
     (hR₂' : Mono (R₂.map' 0 1)) (h₀ : Epi (app' φ 1)) (h₁ : Mono (app' φ 2)) :
     Epi (app' φ 0) := by
   let ψ : mk₃ (0 : R₁.obj' 0 ⟶ _) (R₁.map' 0 1) (R₁.map' 1 2) ⟶
@@ -198,13 +198,13 @@ theorem epi_of_mono_of_epi_of_mono' (hR₁ : R₁.Exact) (hR₂ : R₂.map' 0 2 
     rw [← Functor.map_comp]
     exact hR₂
 
-theorem epi_of_mono_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
+lemma epi_of_mono_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
     (hR₂' : Mono (R₂.map' 0 1)) (h₀ : Epi (app' φ 1)) (h₁ : Mono (app' φ 2)) :
     Epi (app' φ 0) :=
   epi_of_mono_of_epi_of_mono' φ hR₁
     (by simpa only [map'_comp R₂ 0 1 2] using hR₂.toIsComplex.zero 0) hR₂' h₀ h₁
 
-theorem mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact)
+lemma mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact)
     (hR₂' : Mono (R₂.map' 0 1))
     (h₀ : Mono (app' φ 0))
     (h₁ : Mono (app' φ 2)) :
@@ -218,7 +218,7 @@ theorem mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact)
   rw [ShortComplex.exact_iff_mono _ (by simp)]
   exact hR₂'
 
-theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi (R₁.map' 1 2))
+lemma epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi (R₁.map' 1 2))
     (h₀ : Epi (app' φ 0)) (h₁ : Epi (app' φ 2)) :
     Epi (app' φ 1) := by
   let ψ : mk₃ (R₁.map' 0 1) (R₁.map' 1 2) (0 : _ ⟶ R₁.obj' 0) ⟶

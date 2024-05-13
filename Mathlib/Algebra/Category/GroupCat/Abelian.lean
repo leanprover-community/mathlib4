@@ -48,7 +48,7 @@ instance : Abelian AddCommGroupCat.{u} where
   normalMonoOfMono := normalMono
   normalEpiOfEpi := normalEpi
 
-theorem exact_iff : Exact f g ↔ f.range = g.ker := by
+lemma exact_iff : Exact f g ↔ f.range = g.ker := by
   rw [Abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
   exact
     ⟨fun h => ((AddMonoidHom.range_le_ker_iff _ _).mpr h.left).antisymm

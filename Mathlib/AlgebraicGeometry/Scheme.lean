@@ -90,7 +90,7 @@ instance : forgetToLocallyRingedSpace.Faithful :=
   InducedCategory.faithful _
 
 @[simp]
-theorem forgetToLocallyRingedSpace_preimage {X Y : Scheme} (f : X ⟶ Y) :
+lemma forgetToLocallyRingedSpace_preimage {X Y : Scheme} (f : X ⟶ Y) :
     Scheme.forgetToLocallyRingedSpace.preimage f = f :=
   Scheme.forgetToLocallyRingedSpace.map_injective (Functor.map_preimage _ _)
 #align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace_preimage AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace_preimage
@@ -111,52 +111,52 @@ unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
   forgetToTop.obj X ≟ (X : TopCat)
 
 @[simp]
-theorem id_val_base (X : Scheme) : (𝟙 X : _).1.base = 𝟙 _ :=
+lemma id_val_base (X : Scheme) : (𝟙 X : _).1.base = 𝟙 _ :=
   rfl
 #align algebraic_geometry.Scheme.id_val_base AlgebraicGeometry.Scheme.id_val_base
 
 @[simp]
-theorem id_app {X : Scheme} (U : (Opens X.carrier)ᵒᵖ) :
+lemma id_app {X : Scheme} (U : (Opens X.carrier)ᵒᵖ) :
     (𝟙 X : _).val.c.app U =
       X.presheaf.map (eqToHom (by induction' U with U; cases U; rfl)) :=
   PresheafedSpace.id_c_app X.toPresheafedSpace U
 #align algebraic_geometry.Scheme.id_app AlgebraicGeometry.Scheme.id_app
 
 @[reassoc]
-theorem comp_val {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).val = f.val ≫ g.val :=
+lemma comp_val {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).val = f.val ≫ g.val :=
   rfl
 #align algebraic_geometry.Scheme.comp_val AlgebraicGeometry.Scheme.comp_val
 
 @[simp, reassoc] -- reassoc lemma does not need `simp`
-theorem comp_coeBase {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma comp_coeBase {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).val.base = f.val.base ≫ g.val.base :=
   rfl
 #align algebraic_geometry.Scheme.comp_coe_base AlgebraicGeometry.Scheme.comp_coeBase
 
 -- Porting note: removed elementwise attribute, as generated lemmas were trivial.
 @[reassoc]
-theorem comp_val_base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma comp_val_base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).val.base = f.val.base ≫ g.val.base :=
   rfl
 #align algebraic_geometry.Scheme.comp_val_base AlgebraicGeometry.Scheme.comp_val_base
 
-theorem comp_val_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+lemma comp_val_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g).val.base x = g.val.base (f.val.base x) := by
   simp
 #align algebraic_geometry.Scheme.comp_val_base_apply AlgebraicGeometry.Scheme.comp_val_base_apply
 
 @[simp, reassoc] -- reassoc lemma does not need `simp`
-theorem comp_val_c_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
+lemma comp_val_c_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g).val.c.app U = g.val.c.app U ≫ f.val.c.app _ :=
   rfl
 #align algebraic_geometry.Scheme.comp_val_c_app AlgebraicGeometry.Scheme.comp_val_c_app
 
-theorem congr_app {X Y : Scheme} {f g : X ⟶ Y} (e : f = g) (U) :
+lemma congr_app {X Y : Scheme} {f g : X ⟶ Y} (e : f = g) (U) :
     f.val.c.app U = g.val.c.app U ≫ X.presheaf.map (eqToHom (by subst e; rfl)) := by
   subst e; dsimp; simp
 #align algebraic_geometry.Scheme.congr_app AlgebraicGeometry.Scheme.congr_app
 
-theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) :
+lemma app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) :
     f.val.c.app (op U) =
       Y.presheaf.map (eqToHom e.symm).op ≫
         f.val.c.app (op V) ≫
@@ -183,7 +183,7 @@ instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.val.c.app U) :=
   NatIso.isIso_app_of_isIso _ _
 
 @[simp]
-theorem inv_val_c_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X.carrier) :
+lemma inv_val_c_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X.carrier) :
     (inv f).val.c.app (op U) =
       X.presheaf.map
           (eqToHom <| by rw [IsIso.hom_inv_id]; ext1; rfl :
@@ -195,7 +195,7 @@ theorem inv_val_c_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X.carrie
     eqToHom_op]
 #align algebraic_geometry.Scheme.inv_val_c_app AlgebraicGeometry.Scheme.inv_val_c_app
 
-theorem inv_val_c_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+lemma inv_val_c_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     (inv f).val.c.app (op ⊤) = inv (f.val.c.app (op ⊤)) := by simp
 
 /-- Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
@@ -213,7 +213,7 @@ def specObj (R : CommRingCat) : Scheme where
 #align algebraic_geometry.Scheme.Spec_obj AlgebraicGeometry.Scheme.specObj
 
 @[simp]
-theorem specObj_toLocallyRingedSpace (R : CommRingCat) :
+lemma specObj_toLocallyRingedSpace (R : CommRingCat) :
     (specObj R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
   rfl
 #align algebraic_geometry.Scheme.Spec_obj_to_LocallyRingedSpace AlgebraicGeometry.Scheme.specObj_toLocallyRingedSpace
@@ -225,11 +225,11 @@ def specMap {R S : CommRingCat} (f : R ⟶ S) : specObj S ⟶ specObj R :=
 #align algebraic_geometry.Scheme.Spec_map AlgebraicGeometry.Scheme.specMap
 
 @[simp]
-theorem specMap_id (R : CommRingCat) : specMap (𝟙 R) = 𝟙 (specObj R) :=
+lemma specMap_id (R : CommRingCat) : specMap (𝟙 R) = 𝟙 (specObj R) :=
   Spec.locallyRingedSpaceMap_id R
 #align algebraic_geometry.Scheme.Spec_map_id AlgebraicGeometry.Scheme.specMap_id
 
-theorem specMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
+lemma specMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
     specMap (f ≫ g) = specMap g ≫ specMap f :=
   Spec.locallyRingedSpaceMap_comp f g
 #align algebraic_geometry.Scheme.Spec_map_comp AlgebraicGeometry.Scheme.specMap_comp
@@ -270,25 +270,25 @@ def Γ : Schemeᵒᵖ ⥤ CommRingCat :=
   (inducedFunctor Scheme.toLocallyRingedSpace).op ⋙ LocallyRingedSpace.Γ
 #align algebraic_geometry.Scheme.Γ AlgebraicGeometry.Scheme.Γ
 
-theorem Γ_def : Γ = (inducedFunctor Scheme.toLocallyRingedSpace).op ⋙ LocallyRingedSpace.Γ :=
+lemma Γ_def : Γ = (inducedFunctor Scheme.toLocallyRingedSpace).op ⋙ LocallyRingedSpace.Γ :=
   rfl
 #align algebraic_geometry.Scheme.Γ_def AlgebraicGeometry.Scheme.Γ_def
 
 @[simp]
-theorem Γ_obj (X : Schemeᵒᵖ) : Γ.obj X = (unop X).presheaf.obj (op ⊤) :=
+lemma Γ_obj (X : Schemeᵒᵖ) : Γ.obj X = (unop X).presheaf.obj (op ⊤) :=
   rfl
 #align algebraic_geometry.Scheme.Γ_obj AlgebraicGeometry.Scheme.Γ_obj
 
-theorem Γ_obj_op (X : Scheme) : Γ.obj (op X) = X.presheaf.obj (op ⊤) :=
+lemma Γ_obj_op (X : Scheme) : Γ.obj (op X) = X.presheaf.obj (op ⊤) :=
   rfl
 #align algebraic_geometry.Scheme.Γ_obj_op AlgebraicGeometry.Scheme.Γ_obj_op
 
 @[simp]
-theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.1.c.app (op ⊤) :=
+lemma Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.1.c.app (op ⊤) :=
   rfl
 #align algebraic_geometry.Scheme.Γ_map AlgebraicGeometry.Scheme.Γ_map
 
-theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.1.c.app (op ⊤) :=
+lemma Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.1.c.app (op ⊤) :=
   rfl
 #align algebraic_geometry.Scheme.Γ_map_op AlgebraicGeometry.Scheme.Γ_map_op
 
@@ -303,11 +303,11 @@ def basicOpen : Opens X.carrier :=
 #align algebraic_geometry.Scheme.basic_open AlgebraicGeometry.Scheme.basicOpen
 
 @[simp]
-theorem mem_basicOpen (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ x f) :=
+lemma mem_basicOpen (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ x f) :=
   RingedSpace.mem_basicOpen _ _ _
 #align algebraic_geometry.Scheme.mem_basic_open AlgebraicGeometry.Scheme.mem_basicOpen
 
-theorem mem_basicOpen_top' {U : Opens X} (f : X.presheaf.obj (op U)) (x : X.carrier) :
+lemma mem_basicOpen_top' {U : Opens X} (f : X.presheaf.obj (op U)) (x : X.carrier) :
     x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ (⟨x, m⟩ : U) f) := by
   fconstructor
   · rintro ⟨y, hy1, rfl⟩
@@ -316,25 +316,25 @@ theorem mem_basicOpen_top' {U : Opens X} (f : X.presheaf.obj (op U)) (x : X.carr
     exact ⟨⟨x, m⟩, hm, rfl⟩
 
 @[simp]
-theorem mem_basicOpen_top (f : X.presheaf.obj (op ⊤)) (x : X.carrier) :
+lemma mem_basicOpen_top (f : X.presheaf.obj (op ⊤)) (x : X.carrier) :
     x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ (⟨x, trivial⟩ : (⊤ : Opens _)) f) :=
   RingedSpace.mem_basicOpen _ f ⟨x, trivial⟩
 #align algebraic_geometry.Scheme.mem_basic_open_top AlgebraicGeometry.Scheme.mem_basicOpen_top
 
 @[simp]
-theorem basicOpen_res (i : op U ⟶ op V) : X.basicOpen (X.presheaf.map i f) = V ⊓ X.basicOpen f :=
+lemma basicOpen_res (i : op U ⟶ op V) : X.basicOpen (X.presheaf.map i f) = V ⊓ X.basicOpen f :=
   RingedSpace.basicOpen_res _ i f
 #align algebraic_geometry.Scheme.basic_open_res AlgebraicGeometry.Scheme.basicOpen_res
 
 -- This should fire before `basicOpen_res`.
 @[simp 1100]
-theorem basicOpen_res_eq (i : op U ⟶ op V) [IsIso i] :
+lemma basicOpen_res_eq (i : op U ⟶ op V) [IsIso i] :
     X.basicOpen (X.presheaf.map i f) = X.basicOpen f :=
   RingedSpace.basicOpen_res_eq _ i f
 #align algebraic_geometry.Scheme.basic_open_res_eq AlgebraicGeometry.Scheme.basicOpen_res_eq
 
 @[sheaf_restrict]
-theorem basicOpen_le : X.basicOpen f ≤ U :=
+lemma basicOpen_le : X.basicOpen f ≤ U :=
   RingedSpace.basicOpen_le _ _
 #align algebraic_geometry.Scheme.basic_open_le AlgebraicGeometry.Scheme.basicOpen_le
 
@@ -344,7 +344,7 @@ lemma basicOpen_restrict (i : V ⟶ U) (f : X.presheaf.obj (op U)) :
   (Scheme.basicOpen_res _ _ _).trans_le inf_le_right
 
 @[simp]
-theorem preimage_basicOpen {X Y : Scheme} (f : X ⟶ Y) {U : Opens Y.carrier}
+lemma preimage_basicOpen {X Y : Scheme} (f : X ⟶ Y) {U : Opens Y.carrier}
     (r : Y.presheaf.obj <| op U) :
     (Opens.map f.1.base).obj (Y.basicOpen r) =
       @Scheme.basicOpen X ((Opens.map f.1.base).obj U) (f.1.c.app (op U) r) :=
@@ -352,16 +352,16 @@ theorem preimage_basicOpen {X Y : Scheme} (f : X ⟶ Y) {U : Opens Y.carrier}
 #align algebraic_geometry.Scheme.preimage_basic_open AlgebraicGeometry.Scheme.preimage_basicOpen
 
 @[simp]
-theorem basicOpen_zero (U : Opens X.carrier) : X.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ :=
+lemma basicOpen_zero (U : Opens X.carrier) : X.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ :=
   LocallyRingedSpace.basicOpen_zero _ U
 #align algebraic_geometry.Scheme.basic_open_zero AlgebraicGeometry.Scheme.basicOpen_zero
 
 @[simp]
-theorem basicOpen_mul : X.basicOpen (f * g) = X.basicOpen f ⊓ X.basicOpen g :=
+lemma basicOpen_mul : X.basicOpen (f * g) = X.basicOpen f ⊓ X.basicOpen g :=
   RingedSpace.basicOpen_mul _ _ _
 #align algebraic_geometry.Scheme.basic_open_mul AlgebraicGeometry.Scheme.basicOpen_mul
 
-theorem basicOpen_of_isUnit {f : X.presheaf.obj (op U)} (hf : IsUnit f) : X.basicOpen f = U :=
+lemma basicOpen_of_isUnit {f : X.presheaf.obj (op U)} (hf : IsUnit f) : X.basicOpen f = U :=
   RingedSpace.basicOpen_of_isUnit _ hf
 #align algebraic_geometry.Scheme.basic_open_of_is_unit AlgebraicGeometry.Scheme.basicOpen_of_isUnit
 
@@ -373,7 +373,7 @@ end BasicOpen
 
 end Scheme
 
-theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
+lemma basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
     (Scheme.Spec.obj <| op R).basicOpen ((SpecΓIdentity.app R).inv f) =
       PrimeSpectrum.basicOpen f := by
   ext x
@@ -388,7 +388,7 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
 #align algebraic_geometry.basic_open_eq_of_affine AlgebraicGeometry.basicOpen_eq_of_affine
 
 @[simp]
-theorem basicOpen_eq_of_affine' {R : CommRingCat}
+lemma basicOpen_eq_of_affine' {R : CommRingCat}
     (f : (Spec.toSheafedSpace.obj (op R)).presheaf.obj (op ⊤)) :
     (Scheme.Spec.obj <| op R).basicOpen f =
       PrimeSpectrum.basicOpen ((SpecΓIdentity.app R).hom f) := by
@@ -396,7 +396,7 @@ theorem basicOpen_eq_of_affine' {R : CommRingCat}
   exact (Iso.hom_inv_id_apply (SpecΓIdentity.app R) f).symm
 #align algebraic_geometry.basic_open_eq_of_affine' AlgebraicGeometry.basicOpen_eq_of_affine'
 
-theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : Opens X} (h : U = V) (W) :
+lemma Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : Opens X} (h : U = V) (W) :
     (Scheme.Spec.map (X.presheaf.map (eqToHom h).op).op).val.c.app W =
       eqToHom (by cases h; induction W using Opposite.rec'; dsimp; simp) := by
   have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by

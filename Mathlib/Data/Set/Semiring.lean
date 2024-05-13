@@ -57,36 +57,36 @@ open Set (up)
 
 -- Porting note (#11036): dot notation no longer works
 @[simp]
-protected theorem down_up (s : Set α) : SetSemiring.down (Set.up s) = s :=
+protected lemma down_up (s : Set α) : SetSemiring.down (Set.up s) = s :=
   rfl
 #align set_semiring.down_up SetSemiring.down_up
 
 -- Porting note (#11036): dot notation no longer works
 @[simp]
-protected theorem up_down (s : SetSemiring α) : Set.up (SetSemiring.down s) = s :=
+protected lemma up_down (s : SetSemiring α) : Set.up (SetSemiring.down s) = s :=
   rfl
 #align set_semiring.up_down SetSemiring.up_down
 
 -- TODO: These lemmas are not tagged `simp` because `Set.le_eq_subset` simplifies the LHS
 -- Porting note (#11036): dot notation no longer works
-theorem up_le_up {s t : Set α} : Set.up s ≤ Set.up t ↔ s ⊆ t :=
+lemma up_le_up {s t : Set α} : Set.up s ≤ Set.up t ↔ s ⊆ t :=
   Iff.rfl
 #align set_semiring.up_le_up SetSemiring.up_le_up
 
 -- Porting note (#11036): dot notation no longer works
-theorem up_lt_up {s t : Set α} : Set.up s < Set.up t ↔ s ⊂ t :=
+lemma up_lt_up {s t : Set α} : Set.up s < Set.up t ↔ s ⊂ t :=
   Iff.rfl
 #align set_semiring.up_lt_up SetSemiring.up_lt_up
 
 -- Porting note (#11036): dot notation no longer works
 @[simp]
-theorem down_subset_down {s t : SetSemiring α} : SetSemiring.down s ⊆ SetSemiring.down t ↔ s ≤ t :=
+lemma down_subset_down {s t : SetSemiring α} : SetSemiring.down s ⊆ SetSemiring.down t ↔ s ≤ t :=
   Iff.rfl
 #align set_semiring.down_subset_down SetSemiring.down_subset_down
 
 -- Porting note (#11036): dot notation no longer works
 @[simp]
-theorem down_ssubset_down {s t : SetSemiring α} : SetSemiring.down s ⊂ SetSemiring.down t ↔ s < t :=
+lemma down_ssubset_down {s t : SetSemiring α} : SetSemiring.down s ⊂ SetSemiring.down t ↔ s < t :=
   Iff.rfl
 #align set_semiring.down_ssubset_down SetSemiring.down_ssubset_down
 
@@ -102,31 +102,31 @@ instance : AddCommMonoid (SetSemiring α) where
   add_comm := union_comm
   nsmul := nsmulRec
 
-theorem zero_def : (0 : SetSemiring α) = Set.up ∅ :=
+lemma zero_def : (0 : SetSemiring α) = Set.up ∅ :=
   rfl
 #align set_semiring.zero_def SetSemiring.zero_def
 
 @[simp]
-theorem down_zero : down (0 : SetSemiring α) = ∅ :=
+lemma down_zero : down (0 : SetSemiring α) = ∅ :=
   rfl
 #align set_semiring.down_zero SetSemiring.down_zero
 
 @[simp]
-theorem _root_.Set.up_empty : Set.up (∅ : Set α) = 0 :=
+lemma _root_.Set.up_empty : Set.up (∅ : Set α) = 0 :=
   rfl
 #align set.up_empty Set.up_empty
 
-theorem add_def (s t : SetSemiring α) : s + t = up (down s ∪ down t) :=
+lemma add_def (s t : SetSemiring α) : s + t = up (down s ∪ down t) :=
   rfl
 #align set_semiring.add_def SetSemiring.add_def
 
 @[simp]
-theorem down_add (s t : SetSemiring α) : down (s + t) = down s ∪ down t :=
+lemma down_add (s t : SetSemiring α) : down (s + t) = down s ∪ down t :=
   rfl
 #align set_semiring.down_add SetSemiring.down_add
 
 @[simp]
-theorem _root_.Set.up_union (s t : Set α) : up (s ∪ t) = up s + up t :=
+lemma _root_.Set.up_union (s t : Set α) : up (s ∪ t) = up s + up t :=
   rfl
 #align set.up_union Set.up_union
 
@@ -150,17 +150,17 @@ instance : NonUnitalNonAssocSemiring (SetSemiring α) :=
     right_distrib := fun _ _ _ => union_mul }
 
 -- TODO: port
-theorem mul_def (s t : SetSemiring α) : s * t = up (down s * down t) :=
+lemma mul_def (s t : SetSemiring α) : s * t = up (down s * down t) :=
   rfl
 #align set_semiring.mul_def SetSemiring.mul_def
 
 @[simp]
-theorem down_mul (s t : SetSemiring α) : down (s * t) = down s * down t :=
+lemma down_mul (s t : SetSemiring α) : down (s * t) = down s * down t :=
   rfl
 #align set_semiring.down_mul SetSemiring.down_mul
 
 @[simp]
-theorem _root_.Set.up_mul (s t : Set α) : up (s * t) = up s * up t :=
+lemma _root_.Set.up_mul (s t : Set α) : up (s * t) = up s * up t :=
   rfl
 #align set.up_mul Set.up_mul
 
@@ -189,17 +189,17 @@ variable [One α]
 
 instance : One (SetSemiring α) where one := Set.up (1 : Set α)
 
-theorem one_def : (1 : SetSemiring α) = Set.up 1 :=
+lemma one_def : (1 : SetSemiring α) = Set.up 1 :=
   rfl
 #align set_semiring.one_def SetSemiring.one_def
 
 @[simp]
-theorem down_one : down (1 : SetSemiring α) = 1 :=
+lemma down_one : down (1 : SetSemiring α) = 1 :=
   rfl
 #align set_semiring.down_one SetSemiring.down_one
 
 @[simp]
-theorem _root_.Set.up_one : up (1 : Set α) = 1 :=
+lemma _root_.Set.up_one : up (1 : Set α) = 1 :=
   rfl
 #align set.up_one Set.up_one
 

@@ -79,17 +79,17 @@ namespace NatOrdinal
 open Ordinal
 
 @[simp]
-theorem toOrdinal_symm_eq : NatOrdinal.toOrdinal.symm = Ordinal.toNatOrdinal :=
+lemma toOrdinal_symm_eq : NatOrdinal.toOrdinal.symm = Ordinal.toNatOrdinal :=
   rfl
 #align nat_ordinal.to_ordinal_symm_eq NatOrdinal.toOrdinal_symm_eq
 
 -- Porting note: used to use dot notation, but doesn't work in Lean 4 with `OrderIso`
 @[simp]
-theorem toOrdinal_toNatOrdinal (a : NatOrdinal) :
+lemma toOrdinal_toNatOrdinal (a : NatOrdinal) :
     Ordinal.toNatOrdinal (NatOrdinal.toOrdinal a) = a := rfl
 #align nat_ordinal.to_ordinal_to_nat_ordinal NatOrdinal.toOrdinal_toNatOrdinal
 
-theorem lt_wf : @WellFounded NatOrdinal (· < ·) :=
+lemma lt_wf : @WellFounded NatOrdinal (· < ·) :=
   Ordinal.lt_wf
 #align nat_ordinal.lt_wf NatOrdinal.lt_wf
 
@@ -100,36 +100,36 @@ instance : IsWellOrder NatOrdinal (· < ·) :=
   Ordinal.isWellOrder
 
 @[simp]
-theorem toOrdinal_zero : toOrdinal 0 = 0 :=
+lemma toOrdinal_zero : toOrdinal 0 = 0 :=
   rfl
 #align nat_ordinal.to_ordinal_zero NatOrdinal.toOrdinal_zero
 
 @[simp]
-theorem toOrdinal_one : toOrdinal 1 = 1 :=
+lemma toOrdinal_one : toOrdinal 1 = 1 :=
   rfl
 #align nat_ordinal.to_ordinal_one NatOrdinal.toOrdinal_one
 
 @[simp]
-theorem toOrdinal_eq_zero (a) : toOrdinal a = 0 ↔ a = 0 :=
+lemma toOrdinal_eq_zero (a) : toOrdinal a = 0 ↔ a = 0 :=
   Iff.rfl
 #align nat_ordinal.to_ordinal_eq_zero NatOrdinal.toOrdinal_eq_zero
 
 @[simp]
-theorem toOrdinal_eq_one (a) : toOrdinal a = 1 ↔ a = 1 :=
+lemma toOrdinal_eq_one (a) : toOrdinal a = 1 ↔ a = 1 :=
   Iff.rfl
 #align nat_ordinal.to_ordinal_eq_one NatOrdinal.toOrdinal_eq_one
 
 @[simp]
-theorem toOrdinal_max : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
+lemma toOrdinal_max : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
   rfl
 #align nat_ordinal.to_ordinal_max NatOrdinal.toOrdinal_max
 
 @[simp]
-theorem toOrdinal_min : toOrdinal (min a b)= min (toOrdinal a) (toOrdinal b) :=
+lemma toOrdinal_min : toOrdinal (min a b)= min (toOrdinal a) (toOrdinal b) :=
   rfl
 #align nat_ordinal.to_ordinal_min NatOrdinal.toOrdinal_min
 
-theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
+lemma succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
   rfl
 #align nat_ordinal.succ_def NatOrdinal.succ_def
 
@@ -150,43 +150,43 @@ namespace Ordinal
 variable {a b c : Ordinal.{u}}
 
 @[simp]
-theorem toNatOrdinal_symm_eq : toNatOrdinal.symm = NatOrdinal.toOrdinal :=
+lemma toNatOrdinal_symm_eq : toNatOrdinal.symm = NatOrdinal.toOrdinal :=
   rfl
 #align ordinal.to_nat_ordinal_symm_eq Ordinal.toNatOrdinal_symm_eq
 
 @[simp]
-theorem toNatOrdinal_toOrdinal (a : Ordinal) :  NatOrdinal.toOrdinal (toNatOrdinal a) = a :=
+lemma toNatOrdinal_toOrdinal (a : Ordinal) :  NatOrdinal.toOrdinal (toNatOrdinal a) = a :=
   rfl
 #align ordinal.to_nat_ordinal_to_ordinal Ordinal.toNatOrdinal_toOrdinal
 
 @[simp]
-theorem toNatOrdinal_zero : toNatOrdinal 0 = 0 :=
+lemma toNatOrdinal_zero : toNatOrdinal 0 = 0 :=
   rfl
 #align ordinal.to_nat_ordinal_zero Ordinal.toNatOrdinal_zero
 
 @[simp]
-theorem toNatOrdinal_one : toNatOrdinal 1 = 1 :=
+lemma toNatOrdinal_one : toNatOrdinal 1 = 1 :=
   rfl
 #align ordinal.to_nat_ordinal_one Ordinal.toNatOrdinal_one
 
 @[simp]
-theorem toNatOrdinal_eq_zero (a) : toNatOrdinal a = 0 ↔ a = 0 :=
+lemma toNatOrdinal_eq_zero (a) : toNatOrdinal a = 0 ↔ a = 0 :=
   Iff.rfl
 #align ordinal.to_nat_ordinal_eq_zero Ordinal.toNatOrdinal_eq_zero
 
 @[simp]
-theorem toNatOrdinal_eq_one (a) : toNatOrdinal a = 1 ↔ a = 1 :=
+lemma toNatOrdinal_eq_one (a) : toNatOrdinal a = 1 ↔ a = 1 :=
   Iff.rfl
 #align ordinal.to_nat_ordinal_eq_one Ordinal.toNatOrdinal_eq_one
 
 @[simp]
-theorem toNatOrdinal_max (a b : Ordinal) :
+lemma toNatOrdinal_max (a b : Ordinal) :
     toNatOrdinal (max a b) = max (toNatOrdinal a) (toNatOrdinal b) :=
   rfl
 #align ordinal.to_nat_ordinal_max Ordinal.toNatOrdinal_max
 
 @[simp]
-theorem toNatOrdinal_min (a b : Ordinal) :
+lemma toNatOrdinal_min (a b : Ordinal) :
     toNatOrdinal (linearOrder.min a b) = linearOrder.min (toNatOrdinal a) (toNatOrdinal b) :=
   rfl
 #align ordinal.to_nat_ordinal_min Ordinal.toNatOrdinal_min
@@ -229,36 +229,36 @@ scoped[NaturalOps] infixl:70 " ⨳ " => Ordinal.nmul
 
 /-! ### Natural addition -/
 
-theorem nadd_def (a b : Ordinal) :
+lemma nadd_def (a b : Ordinal) :
     a ♯ b = max (blsub.{u, u} a fun a' _ => a' ♯ b) (blsub.{u, u} b fun b' _ => a ♯ b') := by
   rw [nadd]
 #align ordinal.nadd_def Ordinal.nadd_def
 
-theorem lt_nadd_iff : a < b ♯ c ↔ (∃ b' < b, a ≤ b' ♯ c) ∨ ∃ c' < c, a ≤ b ♯ c' := by
+lemma lt_nadd_iff : a < b ♯ c ↔ (∃ b' < b, a ≤ b' ♯ c) ∨ ∃ c' < c, a ≤ b ♯ c' := by
   rw [nadd_def]
   simp [lt_blsub_iff]
 #align ordinal.lt_nadd_iff Ordinal.lt_nadd_iff
 
-theorem nadd_le_iff : b ♯ c ≤ a ↔ (∀ b' < b, b' ♯ c < a) ∧ ∀ c' < c, b ♯ c' < a := by
+lemma nadd_le_iff : b ♯ c ≤ a ↔ (∀ b' < b, b' ♯ c < a) ∧ ∀ c' < c, b ♯ c' < a := by
   rw [nadd_def]
   simp [blsub_le_iff]
 #align ordinal.nadd_le_iff Ordinal.nadd_le_iff
 
-theorem nadd_lt_nadd_left (h : b < c) (a) : a ♯ b < a ♯ c :=
+lemma nadd_lt_nadd_left (h : b < c) (a) : a ♯ b < a ♯ c :=
   lt_nadd_iff.2 (Or.inr ⟨b, h, le_rfl⟩)
 #align ordinal.nadd_lt_nadd_left Ordinal.nadd_lt_nadd_left
 
-theorem nadd_lt_nadd_right (h : b < c) (a) : b ♯ a < c ♯ a :=
+lemma nadd_lt_nadd_right (h : b < c) (a) : b ♯ a < c ♯ a :=
   lt_nadd_iff.2 (Or.inl ⟨b, h, le_rfl⟩)
 #align ordinal.nadd_lt_nadd_right Ordinal.nadd_lt_nadd_right
 
-theorem nadd_le_nadd_left (h : b ≤ c) (a) : a ♯ b ≤ a ♯ c := by
+lemma nadd_le_nadd_left (h : b ≤ c) (a) : a ♯ b ≤ a ♯ c := by
   rcases lt_or_eq_of_le h with (h | rfl)
   · exact (nadd_lt_nadd_left h a).le
   · exact le_rfl
 #align ordinal.nadd_le_nadd_left Ordinal.nadd_le_nadd_left
 
-theorem nadd_le_nadd_right (h : b ≤ c) (a) : b ♯ a ≤ c ♯ a := by
+lemma nadd_le_nadd_right (h : b ≤ c) (a) : b ♯ a ≤ c ♯ a := by
   rcases lt_or_eq_of_le h with (h | rfl)
   · exact (nadd_lt_nadd_right h a).le
   · exact le_rfl
@@ -266,14 +266,14 @@ theorem nadd_le_nadd_right (h : b ≤ c) (a) : b ♯ a ≤ c ♯ a := by
 
 variable (a b)
 
-theorem nadd_comm : ∀ a b, a ♯ b = b ♯ a
+lemma nadd_comm : ∀ a b, a ♯ b = b ♯ a
   | a, b => by
     rw [nadd_def, nadd_def, max_comm]
     congr <;> ext <;> apply nadd_comm
   termination_by a b => (a,b)
 #align ordinal.nadd_comm Ordinal.nadd_comm
 
-theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
+lemma blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     (hf : ∀ {i j} (hi hj), i ≤ j → f i hi ≤ f j hj) :
     -- Porting note: needed to add universe hint blsub.{u,v} in the line below
     blsub.{u,v} _ f =
@@ -290,7 +290,7 @@ theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     apply mem_brange_self
 #align ordinal.blsub_nadd_of_mono Ordinal.blsub_nadd_of_mono
 
-theorem nadd_assoc (a b c) : a ♯ b ♯ c = a ♯ (b ♯ c) := by
+lemma nadd_assoc (a b c) : a ♯ b ♯ c = a ♯ (b ♯ c) := by
   rw [nadd_def a (b ♯ c), nadd_def, blsub_nadd_of_mono, blsub_nadd_of_mono, max_assoc]
   · congr <;> ext <;> apply nadd_assoc
   · exact fun _ _ h => nadd_le_nadd_left h a
@@ -299,7 +299,7 @@ termination_by (a, b, c)
 #align ordinal.nadd_assoc Ordinal.nadd_assoc
 
 @[simp]
-theorem nadd_zero : a ♯ 0 = a := by
+lemma nadd_zero : a ♯ 0 = a := by
   induction' a using Ordinal.induction with a IH
   rw [nadd_def, blsub_zero, max_zero_right]
   convert blsub_id a
@@ -308,11 +308,11 @@ theorem nadd_zero : a ♯ 0 = a := by
 #align ordinal.nadd_zero Ordinal.nadd_zero
 
 @[simp]
-theorem zero_nadd : 0 ♯ a = a := by rw [nadd_comm, nadd_zero]
+lemma zero_nadd : 0 ♯ a = a := by rw [nadd_comm, nadd_zero]
 #align ordinal.zero_nadd Ordinal.zero_nadd
 
 @[simp]
-theorem nadd_one : a ♯ 1 = succ a := by
+lemma nadd_one : a ♯ 1 = succ a := by
   induction' a using Ordinal.induction with a IH
   rw [nadd_def, blsub_one, nadd_zero, max_eq_right_iff, blsub_le_iff]
   intro i hi
@@ -320,27 +320,27 @@ theorem nadd_one : a ♯ 1 = succ a := by
 #align ordinal.nadd_one Ordinal.nadd_one
 
 @[simp]
-theorem one_nadd : 1 ♯ a = succ a := by rw [nadd_comm, nadd_one]
+lemma one_nadd : 1 ♯ a = succ a := by rw [nadd_comm, nadd_one]
 #align ordinal.one_nadd Ordinal.one_nadd
 
-theorem nadd_succ : a ♯ succ b = succ (a ♯ b) := by rw [← nadd_one (a ♯ b), nadd_assoc, nadd_one]
+lemma nadd_succ : a ♯ succ b = succ (a ♯ b) := by rw [← nadd_one (a ♯ b), nadd_assoc, nadd_one]
 #align ordinal.nadd_succ Ordinal.nadd_succ
 
-theorem succ_nadd : succ a ♯ b = succ (a ♯ b) := by rw [← one_nadd (a ♯ b), ← nadd_assoc, one_nadd]
+lemma succ_nadd : succ a ♯ b = succ (a ♯ b) := by rw [← one_nadd (a ♯ b), ← nadd_assoc, one_nadd]
 #align ordinal.succ_nadd Ordinal.succ_nadd
 
 @[simp]
-theorem nadd_nat (n : ℕ) : a ♯ n = a + n := by
+lemma nadd_nat (n : ℕ) : a ♯ n = a + n := by
   induction' n with n hn
   · simp
   · rw [Nat.cast_succ, add_one_eq_succ, nadd_succ, add_succ, hn]
 #align ordinal.nadd_nat Ordinal.nadd_nat
 
 @[simp]
-theorem nat_nadd (n : ℕ) : ↑n ♯ a = a + n := by rw [nadd_comm, nadd_nat]
+lemma nat_nadd (n : ℕ) : ↑n ♯ a = a + n := by rw [nadd_comm, nadd_nat]
 #align ordinal.nat_nadd Ordinal.nat_nadd
 
-theorem add_le_nadd : a + b ≤ a ♯ b := by
+lemma add_le_nadd : a + b ≤ a ♯ b := by
   induction b using limitRecOn with
   | H₁ => simp
   | H₂ c h =>
@@ -390,12 +390,12 @@ instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
 
 @[simp]
-theorem add_one_eq_succ : ∀ a : NatOrdinal, a + 1 = succ a :=
+lemma add_one_eq_succ : ∀ a : NatOrdinal, a + 1 = succ a :=
   nadd_one
 #align nat_ordinal.add_one_eq_succ NatOrdinal.add_one_eq_succ
 
 @[simp]
-theorem toOrdinal_cast_nat (n : ℕ) : toOrdinal n = n := by
+lemma toOrdinal_cast_nat (n : ℕ) : toOrdinal n = n := by
   induction' n with n hn
   · rfl
   · change (toOrdinal n) ♯ 1 = n + 1
@@ -410,99 +410,99 @@ open NaturalOps
 
 namespace Ordinal
 
-theorem nadd_eq_add (a b : Ordinal) : a ♯ b = toOrdinal (toNatOrdinal a + toNatOrdinal b) :=
+lemma nadd_eq_add (a b : Ordinal) : a ♯ b = toOrdinal (toNatOrdinal a + toNatOrdinal b) :=
   rfl
 #align ordinal.nadd_eq_add Ordinal.nadd_eq_add
 
 @[simp]
-theorem toNatOrdinal_cast_nat (n : ℕ) : toNatOrdinal n = n := by
+lemma toNatOrdinal_cast_nat (n : ℕ) : toNatOrdinal n = n := by
   rw [← toOrdinal_cast_nat n]
   rfl
 #align ordinal.to_nat_ordinal_cast_nat Ordinal.toNatOrdinal_cast_nat
 
-theorem lt_of_nadd_lt_nadd_left : ∀ {a b c}, a ♯ b < a ♯ c → b < c :=
+lemma lt_of_nadd_lt_nadd_left : ∀ {a b c}, a ♯ b < a ♯ c → b < c :=
   @lt_of_add_lt_add_left NatOrdinal _ _ _
 #align ordinal.lt_of_nadd_lt_nadd_left Ordinal.lt_of_nadd_lt_nadd_left
 
-theorem lt_of_nadd_lt_nadd_right : ∀ {a b c}, b ♯ a < c ♯ a → b < c :=
+lemma lt_of_nadd_lt_nadd_right : ∀ {a b c}, b ♯ a < c ♯ a → b < c :=
   @lt_of_add_lt_add_right NatOrdinal _ _ _
 #align ordinal.lt_of_nadd_lt_nadd_right Ordinal.lt_of_nadd_lt_nadd_right
 
-theorem le_of_nadd_le_nadd_left : ∀ {a b c}, a ♯ b ≤ a ♯ c → b ≤ c :=
+lemma le_of_nadd_le_nadd_left : ∀ {a b c}, a ♯ b ≤ a ♯ c → b ≤ c :=
   @le_of_add_le_add_left NatOrdinal _ _ _
 #align ordinal.le_of_nadd_le_nadd_left Ordinal.le_of_nadd_le_nadd_left
 
-theorem le_of_nadd_le_nadd_right : ∀ {a b c}, b ♯ a ≤ c ♯ a → b ≤ c :=
+lemma le_of_nadd_le_nadd_right : ∀ {a b c}, b ♯ a ≤ c ♯ a → b ≤ c :=
   @le_of_add_le_add_right NatOrdinal _ _ _
 #align ordinal.le_of_nadd_le_nadd_right Ordinal.le_of_nadd_le_nadd_right
 
-theorem nadd_lt_nadd_iff_left : ∀ (a) {b c}, a ♯ b < a ♯ c ↔ b < c :=
+lemma nadd_lt_nadd_iff_left : ∀ (a) {b c}, a ♯ b < a ♯ c ↔ b < c :=
   @add_lt_add_iff_left NatOrdinal _ _ _ _
 #align ordinal.nadd_lt_nadd_iff_left Ordinal.nadd_lt_nadd_iff_left
 
-theorem nadd_lt_nadd_iff_right : ∀ (a) {b c}, b ♯ a < c ♯ a ↔ b < c :=
+lemma nadd_lt_nadd_iff_right : ∀ (a) {b c}, b ♯ a < c ♯ a ↔ b < c :=
   @add_lt_add_iff_right NatOrdinal _ _ _ _
 #align ordinal.nadd_lt_nadd_iff_right Ordinal.nadd_lt_nadd_iff_right
 
-theorem nadd_le_nadd_iff_left : ∀ (a) {b c}, a ♯ b ≤ a ♯ c ↔ b ≤ c :=
+lemma nadd_le_nadd_iff_left : ∀ (a) {b c}, a ♯ b ≤ a ♯ c ↔ b ≤ c :=
   @add_le_add_iff_left NatOrdinal _ _ _ _
 #align ordinal.nadd_le_nadd_iff_left Ordinal.nadd_le_nadd_iff_left
 
-theorem nadd_le_nadd_iff_right : ∀ (a) {b c}, b ♯ a ≤ c ♯ a ↔ b ≤ c :=
+lemma nadd_le_nadd_iff_right : ∀ (a) {b c}, b ♯ a ≤ c ♯ a ↔ b ≤ c :=
   @_root_.add_le_add_iff_right NatOrdinal _ _ _ _
 #align ordinal.nadd_le_nadd_iff_right Ordinal.nadd_le_nadd_iff_right
 
-theorem nadd_le_nadd : ∀ {a b c d}, a ≤ b → c ≤ d → a ♯ c ≤ b ♯ d :=
+lemma nadd_le_nadd : ∀ {a b c d}, a ≤ b → c ≤ d → a ♯ c ≤ b ♯ d :=
   @add_le_add NatOrdinal _ _ _ _
 #align ordinal.nadd_le_nadd Ordinal.nadd_le_nadd
 
-theorem nadd_lt_nadd : ∀ {a b c d}, a < b → c < d → a ♯ c < b ♯ d :=
+lemma nadd_lt_nadd : ∀ {a b c d}, a < b → c < d → a ♯ c < b ♯ d :=
   @add_lt_add NatOrdinal _ _ _ _
 #align ordinal.nadd_lt_nadd Ordinal.nadd_lt_nadd
 
-theorem nadd_lt_nadd_of_lt_of_le : ∀ {a b c d}, a < b → c ≤ d → a ♯ c < b ♯ d :=
+lemma nadd_lt_nadd_of_lt_of_le : ∀ {a b c d}, a < b → c ≤ d → a ♯ c < b ♯ d :=
   @add_lt_add_of_lt_of_le NatOrdinal _ _ _ _
 #align ordinal.nadd_lt_nadd_of_lt_of_le Ordinal.nadd_lt_nadd_of_lt_of_le
 
-theorem nadd_lt_nadd_of_le_of_lt : ∀ {a b c d}, a ≤ b → c < d → a ♯ c < b ♯ d :=
+lemma nadd_lt_nadd_of_le_of_lt : ∀ {a b c d}, a ≤ b → c < d → a ♯ c < b ♯ d :=
   @add_lt_add_of_le_of_lt NatOrdinal _ _ _ _
 #align ordinal.nadd_lt_nadd_of_le_of_lt Ordinal.nadd_lt_nadd_of_le_of_lt
 
-theorem nadd_left_cancel : ∀ {a b c}, a ♯ b = a ♯ c → b = c :=
+lemma nadd_left_cancel : ∀ {a b c}, a ♯ b = a ♯ c → b = c :=
   @_root_.add_left_cancel NatOrdinal _ _
 #align ordinal.nadd_left_cancel Ordinal.nadd_left_cancel
 
-theorem nadd_right_cancel : ∀ {a b c}, a ♯ b = c ♯ b → a = c :=
+lemma nadd_right_cancel : ∀ {a b c}, a ♯ b = c ♯ b → a = c :=
   @_root_.add_right_cancel NatOrdinal _ _
 #align ordinal.nadd_right_cancel Ordinal.nadd_right_cancel
 
-theorem nadd_left_cancel_iff : ∀ {a b c}, a ♯ b = a ♯ c ↔ b = c :=
+lemma nadd_left_cancel_iff : ∀ {a b c}, a ♯ b = a ♯ c ↔ b = c :=
   @add_left_cancel_iff NatOrdinal _ _
 #align ordinal.nadd_left_cancel_iff Ordinal.nadd_left_cancel_iff
 
-theorem nadd_right_cancel_iff : ∀ {a b c}, b ♯ a = c ♯ a ↔ b = c :=
+lemma nadd_right_cancel_iff : ∀ {a b c}, b ♯ a = c ♯ a ↔ b = c :=
   @add_right_cancel_iff NatOrdinal _ _
 #align ordinal.nadd_right_cancel_iff Ordinal.nadd_right_cancel_iff
 
-theorem le_nadd_self {a b} : a ≤ b ♯ a := by simpa using nadd_le_nadd_right (Ordinal.zero_le b) a
+lemma le_nadd_self {a b} : a ≤ b ♯ a := by simpa using nadd_le_nadd_right (Ordinal.zero_le b) a
 #align ordinal.le_nadd_self Ordinal.le_nadd_self
 
-theorem le_nadd_left {a b c} (h : a ≤ c) : a ≤ b ♯ c :=
+lemma le_nadd_left {a b c} (h : a ≤ c) : a ≤ b ♯ c :=
   le_nadd_self.trans (nadd_le_nadd_left h b)
 #align ordinal.le_nadd_left Ordinal.le_nadd_left
 
-theorem le_self_nadd {a b} : a ≤ a ♯ b := by simpa using nadd_le_nadd_left (Ordinal.zero_le b) a
+lemma le_self_nadd {a b} : a ≤ a ♯ b := by simpa using nadd_le_nadd_left (Ordinal.zero_le b) a
 #align ordinal.le_self_nadd Ordinal.le_self_nadd
 
-theorem le_nadd_right {a b c} (h : a ≤ b) : a ≤ b ♯ c :=
+lemma le_nadd_right {a b c} (h : a ≤ b) : a ≤ b ♯ c :=
   le_self_nadd.trans (nadd_le_nadd_right h c)
 #align ordinal.le_nadd_right Ordinal.le_nadd_right
 
-theorem nadd_left_comm : ∀ a b c, a ♯ (b ♯ c) = b ♯ (a ♯ c) :=
+lemma nadd_left_comm : ∀ a b c, a ♯ (b ♯ c) = b ♯ (a ♯ c) :=
   @add_left_comm NatOrdinal _
 #align ordinal.nadd_left_comm Ordinal.nadd_left_comm
 
-theorem nadd_right_comm : ∀ a b c, a ♯ b ♯ c = a ♯ c ♯ b :=
+lemma nadd_right_comm : ∀ a b c, a ♯ b ♯ c = a ♯ c ♯ b :=
   @add_right_comm NatOrdinal _
 #align ordinal.nadd_right_comm Ordinal.nadd_right_comm
 
@@ -510,7 +510,7 @@ theorem nadd_right_comm : ∀ a b c, a ♯ b ♯ c = a ♯ c ♯ b :=
 
 variable {a b c d : Ordinal.{u}}
 
-theorem nmul_def (a b : Ordinal) :
+lemma nmul_def (a b : Ordinal) :
     a ⨳ b = sInf {c | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'} := by rw [nmul]
 #align ordinal.nmul_def Ordinal.nmul_def
 
@@ -520,13 +520,13 @@ theorem nmul_nonempty (a b : Ordinal.{u}) :
   ⟨_, fun _ ha _ hb => (lt_blsub₂.{u, u, u} _ ha hb).trans_le le_self_nadd⟩
 #align ordinal.nmul_nonempty Ordinal.nmul_nonempty
 
-theorem nmul_nadd_lt {a' b' : Ordinal} (ha : a' < a) (hb : b' < b) :
+lemma nmul_nadd_lt {a' b' : Ordinal} (ha : a' < a) (hb : b' < b) :
     a' ⨳ b ♯ a ⨳ b' < a ⨳ b ♯ a' ⨳ b' := by
   rw [nmul_def a b]
   exact csInf_mem (nmul_nonempty a b) a' ha b' hb
 #align ordinal.nmul_nadd_lt Ordinal.nmul_nadd_lt
 
-theorem nmul_nadd_le {a' b' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) :
+lemma nmul_nadd_le {a' b' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) :
     a' ⨳ b ♯ a ⨳ b' ≤ a ⨳ b ♯ a' ⨳ b' := by
   rcases lt_or_eq_of_le ha with (ha | rfl)
   · rcases lt_or_eq_of_le hb with (hb | rfl)
@@ -535,7 +535,7 @@ theorem nmul_nadd_le {a' b' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) :
   · exact le_rfl
 #align ordinal.nmul_nadd_le Ordinal.nmul_nadd_le
 
-theorem lt_nmul_iff : c < a ⨳ b ↔ ∃ a' < a, ∃ b' < b, c ♯ a' ⨳ b' ≤ a' ⨳ b ♯ a ⨳ b' := by
+lemma lt_nmul_iff : c < a ⨳ b ↔ ∃ a' < a, ∃ b' < b, c ♯ a' ⨳ b' ≤ a' ⨳ b ♯ a ⨳ b' := by
   refine' ⟨fun h => _, _⟩
   · rw [nmul] at h
     simpa using not_mem_of_lt_csInf h ⟨0, fun _ _ => bot_le⟩
@@ -544,11 +544,11 @@ theorem lt_nmul_iff : c < a ⨳ b ↔ ∃ a' < a, ∃ b' < b, c ♯ a' ⨳ b' �
     rwa [nadd_lt_nadd_iff_right] at this
 #align ordinal.lt_nmul_iff Ordinal.lt_nmul_iff
 
-theorem nmul_le_iff : a ⨳ b ≤ c ↔ ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b' := by
+lemma nmul_le_iff : a ⨳ b ≤ c ↔ ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b' := by
   rw [← not_iff_not]; simp [lt_nmul_iff]
 #align ordinal.nmul_le_iff Ordinal.nmul_le_iff
 
-theorem nmul_comm : ∀ a b, a ⨳ b = b ⨳ a
+lemma nmul_comm : ∀ a b, a ⨳ b = b ⨳ a
   | a, b => by
     rw [nmul, nmul]
     congr; ext x; constructor <;> intro H c hc d hd
@@ -562,17 +562,17 @@ termination_by a b => (a, b)
 #align ordinal.nmul_comm Ordinal.nmul_comm
 
 @[simp]
-theorem nmul_zero (a) : a ⨳ 0 = 0 := by
+lemma nmul_zero (a) : a ⨳ 0 = 0 := by
   rw [← Ordinal.le_zero, nmul_le_iff]
   exact fun _ _ a ha => (Ordinal.not_lt_zero a ha).elim
 #align ordinal.nmul_zero Ordinal.nmul_zero
 
 @[simp]
-theorem zero_nmul (a) : 0 ⨳ a = 0 := by rw [nmul_comm, nmul_zero]
+lemma zero_nmul (a) : 0 ⨳ a = 0 := by rw [nmul_comm, nmul_zero]
 #align ordinal.zero_nmul Ordinal.zero_nmul
 
 @[simp]
-theorem nmul_one (a : Ordinal) : a ⨳ 1 = a := by
+lemma nmul_one (a : Ordinal) : a ⨳ 1 = a := by
   rw [nmul]
   simp only [lt_one_iff_zero, forall_eq, nmul_zero, nadd_zero]
   convert csInf_Ici (α := Ordinal)
@@ -589,29 +589,29 @@ termination_by a
 #align ordinal.nmul_one Ordinal.nmul_one
 
 @[simp]
-theorem one_nmul (a) : 1 ⨳ a = a := by rw [nmul_comm, nmul_one]
+lemma one_nmul (a) : 1 ⨳ a = a := by rw [nmul_comm, nmul_one]
 #align ordinal.one_nmul Ordinal.one_nmul
 
-theorem nmul_lt_nmul_of_pos_left (h₁ : a < b) (h₂ : 0 < c) : c ⨳ a < c ⨳ b :=
+lemma nmul_lt_nmul_of_pos_left (h₁ : a < b) (h₂ : 0 < c) : c ⨳ a < c ⨳ b :=
   lt_nmul_iff.2 ⟨0, h₂, a, h₁, by simp⟩
 #align ordinal.nmul_lt_nmul_of_pos_left Ordinal.nmul_lt_nmul_of_pos_left
 
-theorem nmul_lt_nmul_of_pos_right (h₁ : a < b) (h₂ : 0 < c) : a ⨳ c < b ⨳ c :=
+lemma nmul_lt_nmul_of_pos_right (h₁ : a < b) (h₂ : 0 < c) : a ⨳ c < b ⨳ c :=
   lt_nmul_iff.2 ⟨a, h₁, 0, h₂, by simp⟩
 #align ordinal.nmul_lt_nmul_of_pos_right Ordinal.nmul_lt_nmul_of_pos_right
 
-theorem nmul_le_nmul_of_nonneg_left (h₁ : a ≤ b) (h₂ : 0 ≤ c) : c ⨳ a ≤ c ⨳ b := by
+lemma nmul_le_nmul_of_nonneg_left (h₁ : a ≤ b) (h₂ : 0 ≤ c) : c ⨳ a ≤ c ⨳ b := by
   rcases lt_or_eq_of_le h₁ with (h₁ | rfl) <;> rcases lt_or_eq_of_le h₂ with (h₂ | rfl)
   · exact (nmul_lt_nmul_of_pos_left h₁ h₂).le
   all_goals simp
 #align ordinal.nmul_le_nmul_of_nonneg_left Ordinal.nmul_le_nmul_of_nonneg_left
 
-theorem nmul_le_nmul_of_nonneg_right (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a ⨳ c ≤ b ⨳ c := by
+lemma nmul_le_nmul_of_nonneg_right (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a ⨳ c ≤ b ⨳ c := by
   rw [nmul_comm, nmul_comm b]
   exact nmul_le_nmul_of_nonneg_left h₁ h₂
 #align ordinal.nmul_le_nmul_of_nonneg_right Ordinal.nmul_le_nmul_of_nonneg_right
 
-theorem nmul_nadd : ∀ a b c, a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c
+lemma nmul_nadd : ∀ a b c, a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c
   | a, b, c => by
     refine le_antisymm (nmul_le_iff.2 fun a' ha d hd => ?_)
       (nadd_le_iff.2 ⟨fun d hd => ?_, fun d hd => ?_⟩)
@@ -654,23 +654,23 @@ theorem nmul_nadd : ∀ a b c, a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c
 termination_by a b c => (a, b, c)
 #align ordinal.nmul_nadd Ordinal.nmul_nadd
 
-theorem nadd_nmul (a b c) : (a ♯ b) ⨳ c = a ⨳ c ♯ b ⨳ c := by
+lemma nadd_nmul (a b c) : (a ♯ b) ⨳ c = a ⨳ c ♯ b ⨳ c := by
   rw [nmul_comm, nmul_nadd, nmul_comm, nmul_comm c]
 #align ordinal.nadd_nmul Ordinal.nadd_nmul
 
-theorem nmul_nadd_lt₃ {a' b' c' : Ordinal} (ha : a' < a) (hb : b' < b) (hc : c' < c) :
+lemma nmul_nadd_lt₃ {a' b' c' : Ordinal} (ha : a' < a) (hb : b' < b) (hc : c' < c) :
     a' ⨳ b ⨳ c ♯ a ⨳ b' ⨳ c ♯ a ⨳ b ⨳ c' ♯ a' ⨳ b' ⨳ c' <
       a ⨳ b ⨳ c ♯ a' ⨳ b' ⨳ c ♯ a' ⨳ b ⨳ c' ♯ a ⨳ b' ⨳ c' := by
   simpa only [nadd_nmul, ← nadd_assoc] using nmul_nadd_lt (nmul_nadd_lt ha hb) hc
 #align ordinal.nmul_nadd_lt₃ Ordinal.nmul_nadd_lt₃
 
-theorem nmul_nadd_le₃ {a' b' c' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) (hc : c' ≤ c) :
+lemma nmul_nadd_le₃ {a' b' c' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) (hc : c' ≤ c) :
     a' ⨳ b ⨳ c ♯ a ⨳ b' ⨳ c ♯ a ⨳ b ⨳ c' ♯ a' ⨳ b' ⨳ c' ≤
       a ⨳ b ⨳ c ♯ a' ⨳ b' ⨳ c ♯ a' ⨳ b ⨳ c' ♯ a ⨳ b' ⨳ c' := by
   simpa only [nadd_nmul, ← nadd_assoc] using nmul_nadd_le (nmul_nadd_le ha hb) hc
 #align ordinal.nmul_nadd_le₃ Ordinal.nmul_nadd_le₃
 
-theorem nmul_nadd_lt₃' {a' b' c' : Ordinal} (ha : a' < a) (hb : b' < b) (hc : c' < c) :
+lemma nmul_nadd_lt₃' {a' b' c' : Ordinal} (ha : a' < a) (hb : b' < b) (hc : c' < c) :
     a' ⨳ (b ⨳ c) ♯ a ⨳ (b' ⨳ c) ♯ a ⨳ (b ⨳ c') ♯ a' ⨳ (b' ⨳ c') <
       a ⨳ (b ⨳ c) ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') := by
   simp only [nmul_comm _ (_ ⨳ _)]
@@ -678,7 +678,7 @@ theorem nmul_nadd_lt₃' {a' b' c' : Ordinal} (ha : a' < a) (hb : b' < b) (hc : 
     · simp only [nadd_eq_add, NatOrdinal.toOrdinal_toNatOrdinal]; abel_nf
 #align ordinal.nmul_nadd_lt₃' Ordinal.nmul_nadd_lt₃'
 
-theorem nmul_nadd_le₃' {a' b' c' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) (hc : c' ≤ c) :
+lemma nmul_nadd_le₃' {a' b' c' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) (hc : c' ≤ c) :
     a' ⨳ (b ⨳ c) ♯ a ⨳ (b' ⨳ c) ♯ a ⨳ (b ⨳ c') ♯ a' ⨳ (b' ⨳ c') ≤
       a ⨳ (b ⨳ c) ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') := by
   simp only [nmul_comm _ (_ ⨳ _)]
@@ -686,7 +686,7 @@ theorem nmul_nadd_le₃' {a' b' c' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) (h
     · simp only [nadd_eq_add, NatOrdinal.toOrdinal_toNatOrdinal]; abel_nf
 #align ordinal.nmul_nadd_le₃' Ordinal.nmul_nadd_le₃'
 
-theorem lt_nmul_iff₃ :
+lemma lt_nmul_iff₃ :
     d < a ⨳ b ⨳ c ↔
       ∃ a' < a, ∃ b' < b, ∃ c' < c,
         d ♯ a' ⨳ b' ⨳ c ♯ a' ⨳ b ⨳ c' ♯ a ⨳ b' ⨳ c' ≤
@@ -709,7 +709,7 @@ theorem lt_nmul_iff₃ :
     assumption
 #align ordinal.lt_nmul_iff₃ Ordinal.lt_nmul_iff₃
 
-theorem nmul_le_iff₃ :
+lemma nmul_le_iff₃ :
     a ⨳ b ⨳ c ≤ d ↔
       ∀ a' < a, ∀ b' < b, ∀ c' < c,
         a' ⨳ b ⨳ c ♯ a ⨳ b' ⨳ c ♯ a ⨳ b ⨳ c' ♯ a' ⨳ b' ⨳ c' <
@@ -717,7 +717,7 @@ theorem nmul_le_iff₃ :
   rw [← not_iff_not]; simp [lt_nmul_iff₃]
 #align ordinal.nmul_le_iff₃ Ordinal.nmul_le_iff₃
 
-theorem lt_nmul_iff₃' :
+lemma lt_nmul_iff₃' :
     d < a ⨳ (b ⨳ c) ↔
       ∃ a' < a, ∃ b' < b, ∃ c' < c,
         d ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') ≤
@@ -728,7 +728,7 @@ theorem lt_nmul_iff₃' :
   · use c', hc, a', ha, b', hb; convert h using 1 <;> abel_nf
 #align ordinal.lt_nmul_iff₃' Ordinal.lt_nmul_iff₃'
 
-theorem nmul_le_iff₃' :
+lemma nmul_le_iff₃' :
     a ⨳ (b ⨳ c) ≤ d ↔
       ∀ a' < a, ∀ b' < b, ∀ c' < c,
         a' ⨳ (b ⨳ c) ♯ a ⨳ (b' ⨳ c) ♯ a ⨳ (b ⨳ c') ♯ a' ⨳ (b' ⨳ c') <
@@ -736,7 +736,7 @@ theorem nmul_le_iff₃' :
   rw [← not_iff_not]; simp [lt_nmul_iff₃']
 #align ordinal.nmul_le_iff₃' Ordinal.nmul_le_iff₃'
 
-theorem nmul_assoc : ∀ a b c, a ⨳ b ⨳ c = a ⨳ (b ⨳ c)
+lemma nmul_assoc : ∀ a b c, a ⨳ b ⨳ c = a ⨳ (b ⨳ c)
   | a, b, c => by
     apply le_antisymm
     · rw [nmul_le_iff₃]
@@ -786,29 +786,29 @@ instance : OrderedCommSemiring NatOrdinal.{u} :=
 
 namespace Ordinal
 
-theorem nmul_eq_mul (a b) : a ⨳ b = toOrdinal (toNatOrdinal a * toNatOrdinal b) :=
+lemma nmul_eq_mul (a b) : a ⨳ b = toOrdinal (toNatOrdinal a * toNatOrdinal b) :=
   rfl
 #align ordinal.nmul_eq_mul Ordinal.nmul_eq_mul
 
-theorem nmul_nadd_one : ∀ a b, a ⨳ (b ♯ 1) = a ⨳ b ♯ a :=
+lemma nmul_nadd_one : ∀ a b, a ⨳ (b ♯ 1) = a ⨳ b ♯ a :=
   @mul_add_one NatOrdinal _ _ _
 #align ordinal.nmul_nadd_one Ordinal.nmul_nadd_one
 
-theorem nadd_one_nmul : ∀ a b, (a ♯ 1) ⨳ b = a ⨳ b ♯ b :=
+lemma nadd_one_nmul : ∀ a b, (a ♯ 1) ⨳ b = a ⨳ b ♯ b :=
   @add_one_mul NatOrdinal _ _ _
 #align ordinal.nadd_one_nmul Ordinal.nadd_one_nmul
 
-theorem nmul_succ (a b) : a ⨳ succ b = a ⨳ b ♯ a := by rw [← nadd_one, nmul_nadd_one]
+lemma nmul_succ (a b) : a ⨳ succ b = a ⨳ b ♯ a := by rw [← nadd_one, nmul_nadd_one]
 #align ordinal.nmul_succ Ordinal.nmul_succ
 
-theorem succ_nmul (a b) : succ a ⨳ b = a ⨳ b ♯ b := by rw [← nadd_one, nadd_one_nmul]
+lemma succ_nmul (a b) : succ a ⨳ b = a ⨳ b ♯ b := by rw [← nadd_one, nadd_one_nmul]
 #align ordinal.succ_nmul Ordinal.succ_nmul
 
-theorem nmul_add_one : ∀ a b, a ⨳ (b + 1) = a ⨳ b ♯ a :=
+lemma nmul_add_one : ∀ a b, a ⨳ (b + 1) = a ⨳ b ♯ a :=
   nmul_succ
 #align ordinal.nmul_add_one Ordinal.nmul_add_one
 
-theorem add_one_nmul : ∀ a b, (a + 1) ⨳ b = a ⨳ b ♯ b :=
+lemma add_one_nmul : ∀ a b, (a + 1) ⨳ b = a ⨳ b ♯ b :=
   succ_nmul
 #align ordinal.add_one_nmul Ordinal.add_one_nmul
 
@@ -818,7 +818,7 @@ namespace NatOrdinal
 
 open Ordinal
 
-theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
+lemma mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
   refine b.limitRecOn ?_ ?_ ?_
   · simp
   · intro c h

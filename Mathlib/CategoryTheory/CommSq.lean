@@ -52,11 +52,11 @@ namespace CommSq
 
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
-theorem flip (p : CommSq f g h i) : CommSq g f i h :=
+lemma flip (p : CommSq f g h i) : CommSq g f i h :=
   ⟨p.w.symm⟩
 #align category_theory.comm_sq.flip CategoryTheory.CommSq.flip
 
-theorem of_arrow {f g : Arrow C} (h : f ⟶ g) : CommSq f.hom h.left h.right g.hom :=
+lemma of_arrow {f g : Arrow C} (h : f ⟶ g) : CommSq f.hom h.left h.right g.hom :=
   ⟨h.w.symm⟩
 #align category_theory.comm_sq.of_arrow CategoryTheory.CommSq.of_arrow
 
@@ -71,11 +71,11 @@ theorem unop {W X Y Z : Cᵒᵖ} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : 
   ⟨by simp only [← unop_comp, p.w]⟩
 #align category_theory.comm_sq.unop CategoryTheory.CommSq.unop
 
-theorem vert_inv {g : W ≅ Y} {h : X ≅ Z} (p : CommSq f g.hom h.hom i) :
+lemma vert_inv {g : W ≅ Y} {h : X ≅ Z} (p : CommSq f g.hom h.hom i) :
     CommSq i g.inv h.inv f :=
   ⟨by rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, p.w]⟩
 
-theorem horiz_inv {f : W ≅ X} {i : Y ≅ Z} (p : CommSq f.hom g h i.hom) :
+lemma horiz_inv {f : W ≅ X} {i : Y ≅ Z} (p : CommSq f.hom g h i.hom) :
     CommSq f.inv h g i.inv :=
   flip (vert_inv (flip p))
 
@@ -123,7 +123,7 @@ namespace Functor
 variable {D : Type*} [Category D]
 variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
-theorem map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (F.map i) :=
+lemma map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (F.map i) :=
   ⟨by simpa using congr_arg (fun k : W ⟶ Z => F.map k) s.w⟩
 #align category_theory.functor.map_comm_sq CategoryTheory.Functor.map_commSq
 
@@ -236,23 +236,23 @@ namespace HasLift
 
 variable {sq}
 
-theorem mk' (l : sq.LiftStruct) : HasLift sq :=
+lemma mk' (l : sq.LiftStruct) : HasLift sq :=
   ⟨Nonempty.intro l⟩
 #align category_theory.comm_sq.has_lift.mk' CategoryTheory.CommSq.HasLift.mk'
 
 variable (sq)
 
-theorem iff : HasLift sq ↔ Nonempty sq.LiftStruct := by
+lemma iff : HasLift sq ↔ Nonempty sq.LiftStruct := by
   constructor
   exacts [fun h => h.exists_lift, fun h => mk h]
 #align category_theory.comm_sq.has_lift.iff CategoryTheory.CommSq.HasLift.iff
 
-theorem iff_op : HasLift sq ↔ HasLift sq.op := by
+lemma iff_op : HasLift sq ↔ HasLift sq.op := by
   rw [iff, iff]
   exact Nonempty.congr (LiftStruct.opEquiv sq).toFun (LiftStruct.opEquiv sq).invFun
 #align category_theory.comm_sq.has_lift.iff_op CategoryTheory.CommSq.HasLift.iff_op
 
-theorem iff_unop {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
+lemma iff_unop {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
     (sq : CommSq f i p g) : HasLift sq ↔ HasLift sq.unop := by
   rw [iff, iff]
   exact Nonempty.congr (LiftStruct.unopEquiv sq).toFun (LiftStruct.unopEquiv sq).invFun
@@ -267,12 +267,12 @@ noncomputable def lift [hsq : HasLift sq] : B ⟶ X :=
 #align category_theory.comm_sq.lift CategoryTheory.CommSq.lift
 
 @[reassoc (attr := simp)]
-theorem fac_left [hsq : HasLift sq] : i ≫ sq.lift = f :=
+lemma fac_left [hsq : HasLift sq] : i ≫ sq.lift = f :=
   hsq.exists_lift.some.fac_left
 #align category_theory.comm_sq.fac_left CategoryTheory.CommSq.fac_left
 
 @[reassoc (attr := simp)]
-theorem fac_right [hsq : HasLift sq] : sq.lift ≫ p = g :=
+lemma fac_right [hsq : HasLift sq] : sq.lift ≫ p = g :=
   hsq.exists_lift.some.fac_right
 #align category_theory.comm_sq.fac_right CategoryTheory.CommSq.fac_right
 

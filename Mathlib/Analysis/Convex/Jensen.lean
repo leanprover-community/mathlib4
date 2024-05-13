@@ -253,7 +253,7 @@ variable [LinearOrderedField 𝕜] [AddCommGroup E] [LinearOrderedAddCommGroup �
   [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β} {t : Finset ι} {w : ι → 𝕜} {p : ι → E}
   {x y z : E}
 
-theorem le_sup_of_mem_convexHull {s : Finset E} (hf : ConvexOn 𝕜 (convexHull 𝕜 (s : Set E)) f)
+lemma le_sup_of_mem_convexHull {s : Finset E} (hf : ConvexOn 𝕜 (convexHull 𝕜 (s : Set E)) f)
     (hx : x ∈ convexHull 𝕜 (s : Set E)) :
     f x ≤ s.sup' (coe_nonempty.1 <| convexHull_nonempty_iff.1 ⟨x, hx⟩) f := by
   obtain ⟨w, hw₀, hw₁, rfl⟩ := mem_convexHull.1 hx
@@ -261,7 +261,7 @@ theorem le_sup_of_mem_convexHull {s : Finset E} (hf : ConvexOn 𝕜 (convexHull 
     (centerMass_le_sup hw₀ <| by positivity)
 #align le_sup_of_mem_convex_hull le_sup_of_mem_convexHull
 
-theorem inf_le_of_mem_convexHull {s : Finset E} (hf : ConcaveOn 𝕜 (convexHull 𝕜 (s : Set E)) f)
+lemma inf_le_of_mem_convexHull {s : Finset E} (hf : ConcaveOn 𝕜 (convexHull 𝕜 (s : Set E)) f)
     (hx : x ∈ convexHull 𝕜 (s : Set E)) :
     s.inf' (coe_nonempty.1 <| convexHull_nonempty_iff.1 ⟨x, hx⟩) f ≤ f x :=
   le_sup_of_mem_convexHull hf.dual hx

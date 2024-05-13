@@ -99,7 +99,7 @@ lemma IsSemisimple_smul (t : K) (h : f.IsSemisimple) :
   wlog ht : t ≠ 0; · simp [not_not.mp ht]
   rwa [IsSemisimple_smul_iff ht]
 
-theorem isSemisimple_of_squarefree_aeval_eq_zero {p : K[X]}
+lemma isSemisimple_of_squarefree_aeval_eq_zero {p : K[X]}
     (hp : Squarefree p) (hpf : aeval f p = 0) : f.IsSemisimple := by
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M), mem_annihilator,
       ← IsTorsionBy, ← isTorsionBySet_singleton_iff, isTorsionBySet_iff_is_torsion_by_span] at hpf
@@ -125,7 +125,7 @@ theorem IsSemisimple.minpoly_squarefree : Squarefree (minpoly K f) :=
   IsRadical.squarefree (minpoly.ne_zero <| isIntegral _) <| by
     rw [isRadical_iff_span_singleton, span_minpoly_eq_annihilator]; exact hf.annihilator_isRadical
 
-protected theorem IsSemisimple.aeval (p : K[X]) : (aeval f p).IsSemisimple :=
+protected lemma IsSemisimple.aeval (p : K[X]) : (aeval f p).IsSemisimple :=
   let R := K[X] ⧸ Ideal.span {minpoly K f}
   have : Finite K R := (AdjoinRoot.powerBasis' <| minpoly.monic <| isIntegral f).finite
   have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
@@ -136,11 +136,11 @@ protected theorem IsSemisimple.aeval (p : K[X]) : (aeval f p).IsSemisimple :=
         fun a h ↦ by rwa [Ideal.span, ← minpoly.ker_aeval_eq_span_minpoly] at h, aeval_algHom,
         AlgHom.comp_apply, AlgHom.comp_apply, ← aeval_algHom_apply, minpoly.aeval, map_zero]
 
-theorem IsSemisimple.of_mem_adjoin_singleton {a : End K M}
+lemma IsSemisimple.of_mem_adjoin_singleton {a : End K M}
     (ha : a ∈ Algebra.adjoin K {f}) : a.IsSemisimple := by
   rw [Algebra.adjoin_singleton_eq_range_aeval] at ha; obtain ⟨p, rfl⟩ := ha; exact .aeval hf _
 
-protected theorem IsSemisimple.pow (n : ℕ) : (f ^ n).IsSemisimple :=
+protected lemma IsSemisimple.pow (n : ℕ) : (f ^ n).IsSemisimple :=
   .of_mem_adjoin_singleton hf (pow_mem (Algebra.self_mem_adjoin_singleton _ _) _)
 
 end
@@ -150,7 +150,7 @@ section PerfectField
 variable [PerfectField K] (comm : Commute f g) (hf : f.IsSemisimple) (hg : g.IsSemisimple)
 
 set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
-theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin K {f, g}) :
+lemma IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin K {f, g}) :
     a.IsSemisimple := by
   let R := K[X] ⧸ Ideal.span {minpoly K f}
   let S := AdjoinRoot ((minpoly K g).map <| algebraMap K R)
@@ -182,13 +182,13 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
     ((minpoly.isRadical K p).squarefree <| minpoly.ne_zero <| .of_finite K p) ?_
   rw [aeval_algHom, φ.comp_apply, minpoly.aeval, φ.map_zero]
 
-theorem IsSemisimple.add_of_commute : (f + g).IsSemisimple := .of_mem_adjoin_pair
+lemma IsSemisimple.add_of_commute : (f + g).IsSemisimple := .of_mem_adjoin_pair
   comm hf hg <| add_mem (Algebra.subset_adjoin <| .inl rfl) (Algebra.subset_adjoin <| .inr rfl)
 
-theorem IsSemisimple.sub_of_commute : (f - g).IsSemisimple := .of_mem_adjoin_pair
+lemma IsSemisimple.sub_of_commute : (f - g).IsSemisimple := .of_mem_adjoin_pair
   comm hf hg <| sub_mem (Algebra.subset_adjoin <| .inl rfl) (Algebra.subset_adjoin <| .inr rfl)
 
-theorem IsSemisimple.mul_of_commute : (f * g).IsSemisimple := .of_mem_adjoin_pair
+lemma IsSemisimple.mul_of_commute : (f * g).IsSemisimple := .of_mem_adjoin_pair
   comm hf hg <| mul_mem (Algebra.subset_adjoin <| .inl rfl) (Algebra.subset_adjoin <| .inr rfl)
 
 end PerfectField

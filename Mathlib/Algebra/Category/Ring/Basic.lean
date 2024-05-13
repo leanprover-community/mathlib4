@@ -88,7 +88,7 @@ set_option linter.uppercaseLean3 false in
 #align SemiRing.of SemiRingCat.of
 
 @[simp]
-theorem coe_of (R : Type u) [Semiring R] : (SemiRingCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [Semiring R] : (SemiRingCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align SemiRing.coe_of SemiRingCat.coe_of
@@ -128,7 +128,7 @@ set_option linter.uppercaseLean3 false in
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
 -- see https://github.com/leanprover/std4/issues/86
 @[simp, nolint simpNF]
-theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
+lemma ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
     ofHom f x = f x :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -221,7 +221,7 @@ instance (R : RingCat) : Ring R :=
   R.str
 
 @[simp]
-theorem coe_of (R : Type u) [Ring R] : (RingCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [Ring R] : (RingCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Ring.coe_of RingCat.coe_of
@@ -336,7 +336,7 @@ instance (R : CommSemiRingCat) : CommSemiring R :=
   R.str
 
 @[simp]
-theorem coe_of (R : Type u) [CommSemiring R] : (CommSemiRingCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [CommSemiring R] : (CommSemiRingCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.coe_of CommSemiRingCat.coe_of
@@ -471,7 +471,7 @@ instance (R : CommRingCat) : CommRing R :=
   R.str
 
 @[simp]
-theorem coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.coe_of CommRingCat.coe_of
@@ -535,7 +535,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: make this high priority to short circuit simplifier
 @[simp (high)]
-theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
+lemma commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.toRingHom = i.hom := by
   ext
   rfl
@@ -544,7 +544,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: make this high priority to short circuit simplifier
 @[simp (high)]
-theorem commRingIsoToRingEquiv_symm_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
+lemma commRingIsoToRingEquiv_symm_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.symm.toRingHom = i.inv := by
   ext
   rfl
@@ -590,13 +590,13 @@ instance CommRingCat.forget_reflects_isos : (forget CommRingCat.{u}).ReflectsIso
 set_option linter.uppercaseLean3 false in
 #align CommRing.forget_reflects_isos CommRingCat.forget_reflects_isos
 
-theorem CommRingCat.comp_eq_ring_hom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
+lemma CommRingCat.comp_eq_ring_hom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
     f ≫ g = g.comp f :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.comp_eq_ring_hom_comp CommRingCat.comp_eq_ring_hom_comp
 
-theorem CommRingCat.ringHom_comp_eq_comp {R S T : Type _} [CommRing R] [CommRing S] [CommRing T]
+lemma CommRingCat.ringHom_comp_eq_comp {R S T : Type _} [CommRing R] [CommRing S] [CommRing T]
     (f : R →+* S) (g : S →+* T) : g.comp f = CommRingCat.ofHom f ≫ CommRingCat.ofHom g :=
   rfl
 set_option linter.uppercaseLean3 false in

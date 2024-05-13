@@ -130,7 +130,7 @@ def secondMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
   Pi.lift fun fg => Pi.π _ ⟨_, fg.2.2.2⟩ ≫ P.map fg.2.2.1.op
 #align category_theory.equalizer.sieve.second_map CategoryTheory.Equalizer.Sieve.secondMap
 
-theorem w : forkMap P (S : Presieve X) ≫ firstMap P S = forkMap P S ≫ secondMap P S := by
+lemma w : forkMap P (S : Presieve X) ≫ firstMap P S = forkMap P S ≫ secondMap P S := by
   ext
   simp [firstMap, secondMap, forkMap]
 #align category_theory.equalizer.sieve.w CategoryTheory.Equalizer.Sieve.w
@@ -213,7 +213,7 @@ def secondMap : FirstObj P R ⟶ SecondObj P R :=
     Pi.π _ _ ≫ P.map pullback.snd.op
 #align category_theory.equalizer.presieve.second_map CategoryTheory.Equalizer.Presieve.secondMap
 
-theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
+lemma w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
   dsimp
   ext fg
   simp only [firstMap, secondMap, forkMap]
@@ -317,7 +317,7 @@ each pullback.
 -/
 def secondMap : FirstObj P X ⟶ SecondObj P X π := Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.snd.op
 
-theorem w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P X π := by
+lemma w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P X π := by
   ext x ij
   simp only [firstMap, secondMap, forkMap, types_comp_apply, Types.pi_lift_π_apply,
     ← FunctorToTypes.map_comp_apply, ← op_comp, pullback.condition]

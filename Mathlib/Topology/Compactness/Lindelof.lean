@@ -151,7 +151,7 @@ theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U 
     exact Subset.refl _
   exact hs.induction_on hmono hcountable_union h_nhds
 
-theorem IsLindelof.elim_nhds_subcover' (hs : IsLindelof s) (U : ∀ x ∈ s, Set X)
+lemma IsLindelof.elim_nhds_subcover' (hs : IsLindelof s) (U : ∀ x ∈ s, Set X)
     (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) :
     ∃ t : Set s, t.Countable ∧ s ⊆ ⋃ x ∈ t, U (x : s) x.2 := by
   have := hs.elim_countable_subcover (fun x : s ↦ interior (U x x.2)) (fun _ ↦ isOpen_interior)
@@ -165,7 +165,7 @@ theorem IsLindelof.elim_nhds_subcover' (hs : IsLindelof s) (U : ∀ x ∈ s, Set
   apply Subset.trans interior_subset
   exact subset_iUnion_of_subset i (subset_iUnion_of_subset hi (Subset.refl _))
 
-theorem IsLindelof.elim_nhds_subcover (hs : IsLindelof s) (U : X → Set X)
+lemma IsLindelof.elim_nhds_subcover (hs : IsLindelof s) (U : X → Set X)
     (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
     ∃ t : Set X, t.Countable ∧ (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x := by
   let ⟨t, ⟨htc, htsub⟩⟩ := hs.elim_nhds_subcover' (fun x _ ↦ U x) hU
@@ -297,10 +297,10 @@ theorem isLindelof_singleton {x : X} : IsLindelof ({x} : Set X) := fun f hf _ hf
   ⟨x, rfl, ClusterPt.of_le_nhds'
     (hfa.trans <| by simpa only [principal_singleton] using pure_le_nhds x) hf⟩
 
-theorem Set.Subsingleton.isLindelof (hs : s.Subsingleton) : IsLindelof s :=
+lemma Set.Subsingleton.isLindelof (hs : s.Subsingleton) : IsLindelof s :=
   Subsingleton.induction_on hs isLindelof_empty fun _ ↦ isLindelof_singleton
 
-theorem Set.Countable.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Countable)
+lemma Set.Countable.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Countable)
     (hf : ∀ i ∈ s, IsLindelof (f i)) : IsLindelof (⋃ i ∈ s, f i) := by
   apply isLindelof_of_countable_subcover
   intro i U hU hUcover
@@ -319,49 +319,49 @@ theorem Set.Countable.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s
     exact mem_biUnion is ((hr i is).2 hx)
 
 
-theorem Set.Finite.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Finite)
+lemma Set.Finite.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Finite)
     (hf : ∀ i ∈ s, IsLindelof (f i)) : IsLindelof (⋃ i ∈ s, f i) :=
   Set.Countable.isLindelof_biUnion (countable hs) hf
 
-theorem Finset.isLindelof_biUnion (s : Finset ι) {f : ι → Set X} (hf : ∀ i ∈ s, IsLindelof (f i)) :
+lemma Finset.isLindelof_biUnion (s : Finset ι) {f : ι → Set X} (hf : ∀ i ∈ s, IsLindelof (f i)) :
     IsLindelof (⋃ i ∈ s, f i) :=
   s.finite_toSet.isLindelof_biUnion hf
 
-theorem isLindelof_accumulate {K : ℕ → Set X} (hK : ∀ n, IsLindelof (K n)) (n : ℕ) :
+lemma isLindelof_accumulate {K : ℕ → Set X} (hK : ∀ n, IsLindelof (K n)) (n : ℕ) :
     IsLindelof (Accumulate K n) :=
   (finite_le_nat n).isLindelof_biUnion fun k _ => hK k
 
-theorem Set.Countable.isLindelof_sUnion {S : Set (Set X)} (hf : S.Countable)
+lemma Set.Countable.isLindelof_sUnion {S : Set (Set X)} (hf : S.Countable)
     (hc : ∀ s ∈ S, IsLindelof s) : IsLindelof (⋃₀ S) := by
   rw [sUnion_eq_biUnion]; exact hf.isLindelof_biUnion hc
 
-theorem Set.Finite.isLindelof_sUnion {S : Set (Set X)} (hf : S.Finite)
+lemma Set.Finite.isLindelof_sUnion {S : Set (Set X)} (hf : S.Finite)
     (hc : ∀ s ∈ S, IsLindelof s) : IsLindelof (⋃₀ S) := by
   rw [sUnion_eq_biUnion]; exact hf.isLindelof_biUnion hc
 
-theorem isLindelof_iUnion {ι : Sort*} {f : ι → Set X} [Countable ι] (h : ∀ i, IsLindelof (f i)) :
+lemma isLindelof_iUnion {ι : Sort*} {f : ι → Set X} [Countable ι] (h : ∀ i, IsLindelof (f i)) :
     IsLindelof (⋃ i, f i) := (countable_range f).isLindelof_sUnion  <| forall_mem_range.2 h
 
-theorem Set.Countable.isLindelof (hs : s.Countable) : IsLindelof s :=
+lemma Set.Countable.isLindelof (hs : s.Countable) : IsLindelof s :=
   biUnion_of_singleton s ▸ hs.isLindelof_biUnion fun _ _ => isLindelof_singleton
 
-theorem Set.Finite.isLindelof (hs : s.Finite) : IsLindelof s :=
+lemma Set.Finite.isLindelof (hs : s.Finite) : IsLindelof s :=
   biUnion_of_singleton s ▸ hs.isLindelof_biUnion fun _ _ => isLindelof_singleton
 
-theorem IsLindelof.countable_of_discrete [DiscreteTopology X] (hs : IsLindelof s) :
+lemma IsLindelof.countable_of_discrete [DiscreteTopology X] (hs : IsLindelof s) :
     s.Countable := by
   have : ∀ x : X, ({x} : Set X) ∈ 𝓝 x := by simp [nhds_discrete]
   rcases hs.elim_nhds_subcover (fun x => {x}) fun x _ => this x with ⟨t, ht, _, hssubt⟩
   rw [biUnion_of_singleton] at hssubt
   exact ht.mono hssubt
 
-theorem isLindelof_iff_countable [DiscreteTopology X] : IsLindelof s ↔ s.Countable :=
+lemma isLindelof_iff_countable [DiscreteTopology X] : IsLindelof s ↔ s.Countable :=
   ⟨fun h => h.countable_of_discrete, fun h => h.isLindelof⟩
 
-theorem IsLindelof.union (hs : IsLindelof s) (ht : IsLindelof t) : IsLindelof (s ∪ t) := by
+lemma IsLindelof.union (hs : IsLindelof s) (ht : IsLindelof t) : IsLindelof (s ∪ t) := by
   rw [union_eq_iUnion]; exact isLindelof_iUnion fun b => by cases b <;> assumption
 
-protected theorem IsLindelof.insert (hs : IsLindelof s) (a) : IsLindelof (insert a s) :=
+protected lemma IsLindelof.insert (hs : IsLindelof s) (a) : IsLindelof (insert a s) :=
   isLindelof_singleton.union hs
 
 /-- If `X` has a basis consisting of compact opens, then an open set in `X` is compact open iff
@@ -397,26 +397,26 @@ def Filter.coLindelof (X : Type*) [TopologicalSpace X] : Filter X :=
   --`Filter.coLindelof` is the filter generated by complements to Lindelöf sets.
   ⨅ (s : Set X) (_ : IsLindelof s), 𝓟 sᶜ
 
-theorem hasBasis_coLindelof : (coLindelof X).HasBasis IsLindelof compl :=
+lemma hasBasis_coLindelof : (coLindelof X).HasBasis IsLindelof compl :=
   hasBasis_biInf_principal'
     (fun s hs t ht =>
       ⟨s ∪ t, hs.union ht, compl_subset_compl.2 (subset_union_left s t),
         compl_subset_compl.2 (subset_union_right s t)⟩)
     ⟨∅, isLindelof_empty⟩
 
-theorem mem_coLindelof : s ∈ coLindelof X ↔ ∃ t, IsLindelof t ∧ tᶜ ⊆ s :=
+lemma mem_coLindelof : s ∈ coLindelof X ↔ ∃ t, IsLindelof t ∧ tᶜ ⊆ s :=
   hasBasis_coLindelof.mem_iff
 
-theorem mem_coLindelof' : s ∈ coLindelof X ↔ ∃ t, IsLindelof t ∧ sᶜ ⊆ t :=
+lemma mem_coLindelof' : s ∈ coLindelof X ↔ ∃ t, IsLindelof t ∧ sᶜ ⊆ t :=
   mem_coLindelof.trans <| exists_congr fun _ => and_congr_right fun _ => compl_subset_comm
 
-theorem _root_.IsLindelof.compl_mem_coLindelof (hs : IsLindelof s) : sᶜ ∈ coLindelof X :=
+lemma _root_.IsLindelof.compl_mem_coLindelof (hs : IsLindelof s) : sᶜ ∈ coLindelof X :=
   hasBasis_coLindelof.mem_of_mem hs
 
-theorem coLindelof_le_cofinite : coLindelof X ≤ cofinite := fun s hs =>
+lemma coLindelof_le_cofinite : coLindelof X ≤ cofinite := fun s hs =>
   compl_compl s ▸ hs.isLindelof.compl_mem_coLindelof
 
-theorem Tendsto.isLindelof_insert_range_of_coLindelof {f : X → Y} {y}
+lemma Tendsto.isLindelof_insert_range_of_coLindelof {f : X → Y} {y}
     (hf : Tendsto f (coLindelof X) (𝓝 y)) (hfc : Continuous f) :
     IsLindelof (insert y (range f)) := by
   intro l hne _ hle
@@ -438,7 +438,7 @@ def Filter.coclosedLindelof (X : Type*) [TopologicalSpace X] : Filter X :=
   -- `Filter.coclosedLindelof` is the filter generated by complements to closed Lindelof sets.
   ⨅ (s : Set X) (_ : IsClosed s) (_ : IsLindelof s), 𝓟 sᶜ
 
-theorem hasBasis_coclosedLindelof :
+lemma hasBasis_coclosedLindelof :
     (Filter.coclosedLindelof X).HasBasis (fun s => IsClosed s ∧ IsLindelof s) compl := by
   simp only [Filter.coclosedLindelof, iInf_and']
   refine' hasBasis_biInf_principal' _ ⟨∅, isClosed_empty, isLindelof_empty⟩
@@ -446,18 +446,18 @@ theorem hasBasis_coclosedLindelof :
   exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 (subset_union_left _ _),
     compl_subset_compl.2 (subset_union_right _ _)⟩⟩
 
-theorem mem_coclosedLindelof : s ∈ coclosedLindelof X ↔
+lemma mem_coclosedLindelof : s ∈ coclosedLindelof X ↔
     ∃ t, IsClosed t ∧ IsLindelof t ∧ tᶜ ⊆ s := by
   simp only [hasBasis_coclosedLindelof.mem_iff, and_assoc]
 
-theorem mem_coclosed_Lindelof' : s ∈ coclosedLindelof X ↔
+lemma mem_coclosed_Lindelof' : s ∈ coclosedLindelof X ↔
     ∃ t, IsClosed t ∧ IsLindelof t ∧ sᶜ ⊆ t := by
   simp only [mem_coclosedLindelof, compl_subset_comm]
 
-theorem coLindelof_le_coclosedLindelof : coLindelof X ≤ coclosedLindelof X :=
+lemma coLindelof_le_coclosedLindelof : coLindelof X ≤ coclosedLindelof X :=
   iInf_mono fun _ => le_iInf fun _ => le_rfl
 
-theorem IsLindeof.compl_mem_coclosedLindelof_of_isClosed (hs : IsLindelof s) (hs' : IsClosed s) :
+lemma IsLindeof.compl_mem_coclosedLindelof_of_isClosed (hs : IsLindelof s) (hs' : IsClosed s) :
     sᶜ ∈ Filter.coclosedLindelof X :=
   hasBasis_coclosedLindelof.mem_of_mem ⟨hs', hs⟩
 
@@ -469,29 +469,29 @@ class LindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
 instance (priority := 10) Subsingleton.lindelofSpace [Subsingleton X] : LindelofSpace X :=
   ⟨subsingleton_univ.isLindelof⟩
 
-theorem isLindelof_univ_iff : IsLindelof (univ : Set X) ↔ LindelofSpace X :=
+lemma isLindelof_univ_iff : IsLindelof (univ : Set X) ↔ LindelofSpace X :=
   ⟨fun h => ⟨h⟩, fun h => h.1⟩
 
-theorem isLindelof_univ [h : LindelofSpace X] : IsLindelof (univ : Set X) :=
+lemma isLindelof_univ [h : LindelofSpace X] : IsLindelof (univ : Set X) :=
   h.isLindelof_univ
 
-theorem cluster_point_of_Lindelof [LindelofSpace X] (f : Filter X) [NeBot f]
+lemma cluster_point_of_Lindelof [LindelofSpace X] (f : Filter X) [NeBot f]
     [CountableInterFilter f] : ∃ x, ClusterPt x f := by
   simpa using isLindelof_univ (show f ≤ 𝓟 univ by simp)
 
-theorem LindelofSpace.elim_nhds_subcover [LindelofSpace X] (U : X → Set X) (hU : ∀ x, U x ∈ 𝓝 x) :
+lemma LindelofSpace.elim_nhds_subcover [LindelofSpace X] (U : X → Set X) (hU : ∀ x, U x ∈ 𝓝 x) :
     ∃ t : Set X, t.Countable ∧ ⋃ x ∈ t, U x = univ := by
   obtain ⟨t, tc, -, s⟩ := IsLindelof.elim_nhds_subcover isLindelof_univ U fun x _ => hU x
   use t, tc
   apply top_unique s
 
-theorem lindelofSpace_of_countable_subfamily_closed
+lemma lindelofSpace_of_countable_subfamily_closed
     (h : ∀ {ι : Type u} (t : ι → Set X), (∀ i, IsClosed (t i)) → ⋂ i, t i = ∅ →
       ∃ u : Set ι, u.Countable ∧ ⋂ i ∈ u, t i = ∅) :
     LindelofSpace X where
   isLindelof_univ := isLindelof_of_countable_subfamily_closed fun t => by simpa using h t
 
-theorem IsClosed.isLindelof [LindelofSpace X] (h : IsClosed s) : IsLindelof s :=
+lemma IsClosed.isLindelof [LindelofSpace X] (h : IsClosed s) : IsLindelof s :=
   isLindelof_univ.of_isClosed_subset h (subset_univ _)
 
 /-- A compact set `s` is Lindelöf. -/
@@ -524,7 +524,7 @@ lemma nonLindelof_univ (X : Type*) [TopologicalSpace X] [NonLindelofSpace X] :
     ¬IsLindelof (univ : Set X) :=
   NonLindelofSpace.nonLindelof_univ
 
-theorem IsLindelof.ne_univ [NonLindelofSpace X] (hs : IsLindelof s) : s ≠ univ := fun h ↦
+lemma IsLindelof.ne_univ [NonLindelofSpace X] (hs : IsLindelof s) : s ≠ univ := fun h ↦
   nonLindelof_univ X (h ▸ hs)
 
 instance [NonLindelofSpace X] : NeBot (Filter.coLindelof X) := by
@@ -535,36 +535,36 @@ instance [NonLindelofSpace X] : NeBot (Filter.coLindelof X) := by
   exact nonLindelof_univ X
 
 @[simp]
-theorem Filter.coLindelof_eq_bot [LindelofSpace X] : Filter.coLindelof X = ⊥ :=
+lemma Filter.coLindelof_eq_bot [LindelofSpace X] : Filter.coLindelof X = ⊥ :=
   hasBasis_coLindelof.eq_bot_iff.mpr ⟨Set.univ, isLindelof_univ, Set.compl_univ⟩
 
 instance [NonLindelofSpace X] : NeBot (Filter.coclosedLindelof X) :=
   neBot_of_le coLindelof_le_coclosedLindelof
 
-theorem nonLindelofSpace_of_neBot (_ : NeBot (Filter.coLindelof X)) : NonLindelofSpace X :=
+lemma nonLindelofSpace_of_neBot (_ : NeBot (Filter.coLindelof X)) : NonLindelofSpace X :=
   ⟨fun h' => (Filter.nonempty_of_mem h'.compl_mem_coLindelof).ne_empty compl_univ⟩
 
-theorem Filter.coLindelof_neBot_iff : NeBot (Filter.coLindelof X) ↔ NonLindelofSpace X :=
+lemma Filter.coLindelof_neBot_iff : NeBot (Filter.coLindelof X) ↔ NonLindelofSpace X :=
   ⟨nonLindelofSpace_of_neBot, fun _ => inferInstance⟩
 
 
-theorem not_LindelofSpace_iff : ¬LindelofSpace X ↔ NonLindelofSpace X :=
+lemma not_LindelofSpace_iff : ¬LindelofSpace X ↔ NonLindelofSpace X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩
 
 /-- A compact space `X` is Lindelöf.  -/
 instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
   { isLindelof_univ := isCompact_univ.isLindelof}
 
-theorem countable_of_Lindelof_of_discrete [LindelofSpace X] [DiscreteTopology X] : Countable X :=
+lemma countable_of_Lindelof_of_discrete [LindelofSpace X] [DiscreteTopology X] : Countable X :=
   countable_univ_iff.mp isLindelof_univ.countable_of_discrete
 
-theorem countable_cover_nhds_interior [LindelofSpace X] {U : X → Set X} (hU : ∀ x, U x ∈ 𝓝 x) :
+lemma countable_cover_nhds_interior [LindelofSpace X] {U : X → Set X} (hU : ∀ x, U x ∈ 𝓝 x) :
     ∃ t : Set X, t.Countable ∧ ⋃ x ∈ t, interior (U x) = univ :=
   let ⟨t, ht⟩ := isLindelof_univ.elim_countable_subcover (fun x => interior (U x))
     (fun _ => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
   ⟨t, ⟨ht.1, univ_subset_iff.1 ht.2⟩⟩
 
-theorem countable_cover_nhds [LindelofSpace X] {U : X → Set X} (hU : ∀ x, U x ∈ 𝓝 x) :
+lemma countable_cover_nhds [LindelofSpace X] {U : X → Set X} (hU : ∀ x, U x ∈ 𝓝 x) :
     ∃ t : Set X, t.Countable ∧ ⋃ x ∈ t, U x = univ :=
   let ⟨t, ht⟩ := countable_cover_nhds_interior hU
   ⟨t, ⟨ht.1, univ_subset_iff.1 <| ht.2.symm.subset.trans <|
@@ -580,10 +580,10 @@ theorem Filter.comap_coLindelof_le {f : X → Y} (hf : Continuous f) :
   refine' ⟨f '' t, ht.image hf, _⟩
   simpa using t.subset_preimage_image f
 
-theorem isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) : IsLindelof (range f) :=
+lemma isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) : IsLindelof (range f) :=
   by rw [← image_univ]; exact isLindelof_univ.image hf
 
-theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
+lemma isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
   @range_diag X ▸ isLindelof_range (continuous_id.prod_mk continuous_id)
 
 /-- If `f : X → Y` is an `Inducing` map, the image `f '' s` of a set `s` is Lindelöf
@@ -623,23 +623,23 @@ theorem Subtype.isLindelof_iff {p : X → Prop} {s : Set { x // p x }} :
     IsLindelof s ↔ IsLindelof ((↑) '' s : Set X) :=
   embedding_subtype_val.isLindelof_iff
 
-theorem isLindelof_iff_isLindelof_univ : IsLindelof s ↔ IsLindelof (univ : Set s) := by
+lemma isLindelof_iff_isLindelof_univ : IsLindelof s ↔ IsLindelof (univ : Set s) := by
   rw [Subtype.isLindelof_iff, image_univ, Subtype.range_coe]
 
-theorem isLindelof_iff_LindelofSpace : IsLindelof s ↔ LindelofSpace s :=
+lemma isLindelof_iff_LindelofSpace : IsLindelof s ↔ LindelofSpace s :=
   isLindelof_iff_isLindelof_univ.trans isLindelof_univ_iff
 
 lemma IsLindelof.of_coe [LindelofSpace s] : IsLindelof s := isLindelof_iff_LindelofSpace.mpr ‹_›
 
-theorem IsLindelof.countable (hs : IsLindelof s) (hs' : DiscreteTopology s) : s.Countable :=
+lemma IsLindelof.countable (hs : IsLindelof s) (hs' : DiscreteTopology s) : s.Countable :=
   countable_coe_iff.mp
   (@countable_of_Lindelof_of_discrete _ _ (isLindelof_iff_LindelofSpace.mp hs) hs')
 
-protected theorem ClosedEmbedding.nonLindelofSpace [NonLindelofSpace X] {f : X → Y}
+protected lemma ClosedEmbedding.nonLindelofSpace [NonLindelofSpace X] {f : X → Y}
     (hf : ClosedEmbedding f) : NonLindelofSpace Y :=
   nonLindelofSpace_of_neBot hf.tendsto_coLindelof.neBot
 
-protected theorem ClosedEmbedding.LindelofSpace [h : LindelofSpace Y] {f : X → Y}
+protected lemma ClosedEmbedding.LindelofSpace [h : LindelofSpace Y] {f : X → Y}
     (hf : ClosedEmbedding f) : LindelofSpace X :=
   ⟨by rw [hf.toInducing.isLindelof_iff, image_univ]; exact hf.isClosed_range.isLindelof⟩
 
@@ -694,7 +694,7 @@ instance (priority := 100) HereditarilyLindelof.to_Lindelof [HereditarilyLindelo
     LindelofSpace X where
   isLindelof_univ := HereditarilyLindelofSpace.isHereditarilyLindelof_univ.isLindelof
 
-theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X):
+lemma HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X):
     IsLindelof s := by
   apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
   exact subset_univ s

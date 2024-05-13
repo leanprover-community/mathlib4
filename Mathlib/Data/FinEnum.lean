@@ -69,12 +69,12 @@ def toList (α) [FinEnum α] : List α :=
 open Function
 
 @[simp]
-theorem mem_toList [FinEnum α] (x : α) : x ∈ toList α := by
+lemma mem_toList [FinEnum α] (x : α) : x ∈ toList α := by
   simp [toList]; exists equiv x; simp
 #align fin_enum.mem_to_list FinEnum.mem_toList
 
 @[simp]
-theorem nodup_toList [FinEnum α] : List.Nodup (toList α) := by
+lemma nodup_toList [FinEnum α] : List.Nodup (toList α) := by
   simp [toList]; apply List.Nodup.map <;> [apply Equiv.injective; apply List.nodup_finRange]
 #align fin_enum.nodup_to_list FinEnum.nodup_toList
 
@@ -133,7 +133,7 @@ def Finset.enum [DecidableEq α] : List α → List (Finset α)
 #align fin_enum.finset.enum FinEnum.Finset.enum
 
 @[simp]
-theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
+lemma Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
     s ∈ Finset.enum xs ↔ ∀ x ∈ s, x ∈ xs := by
   induction' xs with xs_hd generalizing s <;> simp [*, Finset.enum]
   · simp [Finset.eq_empty_iff_forall_not_mem]
@@ -226,7 +226,7 @@ def pi {β : α → Type max u v} [DecidableEq α] :
   | x :: xs, fs => FinEnum.Pi.cons x xs <$> fs x <*> pi xs fs
 #align fin_enum.pi FinEnum.pi
 
-theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : List α)
+lemma mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : List α)
     (f : ∀ a, a ∈ xs → β a) : f ∈ pi xs fun x => toList (β x) := by
   induction' xs with xs_hd xs_tl xs_ih <;> simp [pi, -List.map_eq_map, monad_norm, functor_norm]
   · ext a ⟨⟩
@@ -249,7 +249,7 @@ def pi.enum (β : α → Type (max u v)) [FinEnum α] [∀ a, FinEnum (β a)] : 
   (pi.{u, v} (toList α) fun x => toList (β x)).map (fun f x => f x (mem_toList _))
 #align fin_enum.pi.enum FinEnum.pi.enum
 
-theorem pi.mem_enum {β : α → Type (max u v)} [FinEnum α] [∀ a, FinEnum (β a)] (f : ∀ a, β a) :
+lemma pi.mem_enum {β : α → Type (max u v)} [FinEnum α] [∀ a, FinEnum (β a)] (f : ∀ a, β a) :
     f ∈ pi.enum.{u, v} β := by simp [pi.enum]; refine' ⟨fun a _ => f a, mem_pi _ _, rfl⟩
 #align fin_enum.pi.mem_enum FinEnum.pi.mem_enum
 

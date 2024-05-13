@@ -42,7 +42,7 @@ def truncFun (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
   ∑ m in Finset.Iio n, MvPolynomial.monomial m (coeff R m φ)
 #align mv_power_series.trunc_fun MvPowerSeries.truncFun
 
-theorem coeff_truncFun (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
+lemma coeff_truncFun (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (truncFun n φ).coeff m = if m < n then coeff R m φ else 0 := by
   classical
   simp [truncFun, MvPolynomial.coeff_sum]
@@ -70,13 +70,13 @@ def trunc : MvPowerSeries σ R →+ MvPolynomial σ R where
 
 variable {R}
 
-theorem coeff_trunc (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
+lemma coeff_trunc (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc R n φ).coeff m = if m < n then coeff R m φ else 0 := by
   classical simp [trunc, coeff_truncFun]
 #align mv_power_series.coeff_trunc MvPowerSeries.coeff_trunc
 
 @[simp]
-theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
+lemma trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
   MvPolynomial.ext _ _ fun m => by
     classical
     rw [coeff_trunc, coeff_one]
@@ -95,7 +95,7 @@ theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
 #align mv_power_series.trunc_one MvPowerSeries.trunc_one
 
 @[simp]
-theorem trunc_c (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C σ R a) = MvPolynomial.C a :=
+lemma trunc_c (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C σ R a) = MvPolynomial.C a :=
   MvPolynomial.ext _ _ fun m => by
     classical
     rw [coeff_trunc, coeff_C, MvPolynomial.coeff_C]

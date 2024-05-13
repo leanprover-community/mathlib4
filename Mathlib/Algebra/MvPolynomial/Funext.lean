@@ -27,7 +27,7 @@ namespace MvPolynomial
 
 variable {R : Type*} [CommRing R] [IsDomain R] [Infinite R]
 
-private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
+private lemma funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     (h : ∀ x : Fin n → R, eval x p = 0) : p = 0 := by
   induction' n with n ih
   · apply (MvPolynomial.isEmptyRingEquiv R (Fin 0)).injective
@@ -59,7 +59,7 @@ theorem funext {σ : Type*} {p q : MvPolynomial σ R} (h : ∀ x : σ → R, eva
     simp only [eval, eval₂Hom_rename, Function.extend_comp hf]
 #align mv_polynomial.funext MvPolynomial.funext
 
-theorem funext_iff {σ : Type*} {p q : MvPolynomial σ R} :
+lemma funext_iff {σ : Type*} {p q : MvPolynomial σ R} :
     p = q ↔ ∀ x : σ → R, eval x p = eval x q :=
   ⟨by rintro rfl; simp only [forall_const, eq_self_iff_true], funext⟩
 #align mv_polynomial.funext_iff MvPolynomial.funext_iff

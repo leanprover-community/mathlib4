@@ -56,7 +56,7 @@ instance [GroupWithZero G] : GroupWithZero (ConjAct G) := ‹GroupWithZero G›
 instance [Fintype G] : Fintype (ConjAct G) := ‹Fintype G›
 
 @[simp]
-theorem card [Fintype G] : Fintype.card (ConjAct G) = Fintype.card G :=
+lemma card [Fintype G] : Fintype.card (ConjAct G) = Fintype.card G :=
   rfl
 #align conj_act.card ConjAct.card
 
@@ -87,63 +87,63 @@ protected def rec {C : ConjAct G → Sort*} (h : ∀ g, C (toConjAct g)) : ∀ g
 #align conj_act.rec ConjAct.rec
 
 @[simp]
-theorem «forall» (p : ConjAct G → Prop) : (∀ x : ConjAct G, p x) ↔ ∀ x : G, p (toConjAct x) :=
+lemma «forall» (p : ConjAct G → Prop) : (∀ x : ConjAct G, p x) ↔ ∀ x : G, p (toConjAct x) :=
   id Iff.rfl
 #align conj_act.forall ConjAct.forall
 
 @[simp]
-theorem of_mul_symm_eq : (@ofConjAct G _).symm = toConjAct :=
+lemma of_mul_symm_eq : (@ofConjAct G _).symm = toConjAct :=
   rfl
 #align conj_act.of_mul_symm_eq ConjAct.of_mul_symm_eq
 
 @[simp]
-theorem to_mul_symm_eq : (@toConjAct G _).symm = ofConjAct :=
+lemma to_mul_symm_eq : (@toConjAct G _).symm = ofConjAct :=
   rfl
 #align conj_act.to_mul_symm_eq ConjAct.to_mul_symm_eq
 
 @[simp]
-theorem toConjAct_ofConjAct (x : ConjAct G) : toConjAct (ofConjAct x) = x :=
+lemma toConjAct_ofConjAct (x : ConjAct G) : toConjAct (ofConjAct x) = x :=
   rfl
 #align conj_act.to_conj_act_of_conj_act ConjAct.toConjAct_ofConjAct
 
 @[simp]
-theorem ofConjAct_toConjAct (x : G) : ofConjAct (toConjAct x) = x :=
+lemma ofConjAct_toConjAct (x : G) : ofConjAct (toConjAct x) = x :=
   rfl
 #align conj_act.of_conj_act_to_conj_act ConjAct.ofConjAct_toConjAct
 
 -- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
-theorem ofConjAct_one : ofConjAct (1 : ConjAct G) = 1 :=
+lemma ofConjAct_one : ofConjAct (1 : ConjAct G) = 1 :=
   rfl
 #align conj_act.of_conj_act_one ConjAct.ofConjAct_one
 
 -- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
-theorem toConjAct_one : toConjAct (1 : G) = 1 :=
+lemma toConjAct_one : toConjAct (1 : G) = 1 :=
   rfl
 #align conj_act.to_conj_act_one ConjAct.toConjAct_one
 
 @[simp]
-theorem ofConjAct_inv (x : ConjAct G) : ofConjAct x⁻¹ = (ofConjAct x)⁻¹ :=
+lemma ofConjAct_inv (x : ConjAct G) : ofConjAct x⁻¹ = (ofConjAct x)⁻¹ :=
   rfl
 #align conj_act.of_conj_act_inv ConjAct.ofConjAct_inv
 
 @[simp]
-theorem toConjAct_inv (x : G) : toConjAct x⁻¹ = (toConjAct x)⁻¹ :=
+lemma toConjAct_inv (x : G) : toConjAct x⁻¹ = (toConjAct x)⁻¹ :=
   rfl
 #align conj_act.to_conj_act_inv ConjAct.toConjAct_inv
 
 -- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
-theorem ofConjAct_mul (x y : ConjAct G) : ofConjAct (x * y) = ofConjAct x * ofConjAct y :=
+lemma ofConjAct_mul (x y : ConjAct G) : ofConjAct (x * y) = ofConjAct x * ofConjAct y :=
   rfl
 #align conj_act.of_conj_act_mul ConjAct.ofConjAct_mul
 
 -- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
-theorem toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y :=
+lemma toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y :=
   rfl
 #align conj_act.to_conj_act_mul ConjAct.toConjAct_mul
 
 instance : SMul (ConjAct G) G where smul g h := ofConjAct g * h * (ofConjAct g)⁻¹
 
-theorem smul_def (g : ConjAct G) (h : G) : g • h = ofConjAct g * h * (ofConjAct g)⁻¹ :=
+lemma smul_def (g : ConjAct G) (h : G) : g • h = ofConjAct g * h * (ofConjAct g)⁻¹ :=
   rfl
 #align conj_act.smul_def ConjAct.smul_def
 
@@ -158,7 +158,7 @@ variable [Monoid M]
 instance unitsScalar : SMul (ConjAct Mˣ) M where smul g h := ofConjAct g * h * ↑(ofConjAct g)⁻¹
 #align conj_act.has_units_scalar ConjAct.unitsScalar
 
-theorem units_smul_def (g : ConjAct Mˣ) (h : M) : g • h = ofConjAct g * h * ↑(ofConjAct g)⁻¹ :=
+lemma units_smul_def (g : ConjAct Mˣ) (h : M) : g • h = ofConjAct g * h * ↑(ofConjAct g)⁻¹ :=
   rfl
 #align conj_act.units_smul_def ConjAct.units_smul_def
 
@@ -214,12 +214,12 @@ section GroupWithZero
 variable [GroupWithZero G₀]
 
 -- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
-theorem ofConjAct_zero : ofConjAct (0 : ConjAct G₀) = 0 :=
+lemma ofConjAct_zero : ofConjAct (0 : ConjAct G₀) = 0 :=
   rfl
 #align conj_act.of_conj_act_zero ConjAct.ofConjAct_zero
 
 -- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
-theorem toConjAct_zero : toConjAct (0 : G₀) = 0 :=
+lemma toConjAct_zero : toConjAct (0 : G₀) = 0 :=
   rfl
 #align conj_act.to_conj_act_zero ConjAct.toConjAct_zero
 
@@ -292,7 +292,7 @@ instance smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G
   SMulCommClass.symm _ _ _
 #align conj_act.smul_comm_class' ConjAct.smulCommClass'
 
-theorem smul_eq_mulAut_conj (g : ConjAct G) (h : G) : g • h = MulAut.conj (ofConjAct g) h :=
+lemma smul_eq_mulAut_conj (g : ConjAct G) (h : G) : g • h = MulAut.conj (ofConjAct g) h :=
   rfl
 #align conj_act.smul_eq_mul_aut_conj ConjAct.smul_eq_mulAut_conj
 
@@ -303,20 +303,20 @@ theorem fixedPoints_eq_center : fixedPoints (ConjAct G) G = center G := by
 #align conj_act.fixed_points_eq_center ConjAct.fixedPoints_eq_center
 
 @[simp]
-theorem mem_orbit_conjAct {g h : G} : g ∈ orbit (ConjAct G) h ↔ IsConj g h := by
+lemma mem_orbit_conjAct {g h : G} : g ∈ orbit (ConjAct G) h ↔ IsConj g h := by
   rw [isConj_comm, isConj_iff, mem_orbit_iff]; rfl
 #align conj_act.mem_orbit_conj_act ConjAct.mem_orbit_conjAct
 
-theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
+lemma orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
   funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
 #align conj_act.orbit_rel_conj_act ConjAct.orbitRel_conjAct
 
-theorem orbit_eq_carrier_conjClasses (g : G) :
+lemma orbit_eq_carrier_conjClasses (g : G) :
     orbit (ConjAct G) g = (ConjClasses.mk g).carrier := by
   ext h
   rw [ConjClasses.mem_carrier_iff_mk_eq, ConjClasses.mk_eq_mk_iff_isConj, mem_orbit_conjAct]
 
-theorem stabilizer_eq_centralizer (g : G) :
+lemma stabilizer_eq_centralizer (g : G) :
     stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=
   le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ => mul_inv_eq_iff_eq_mul.mp)) fun _ h =>
     mul_inv_eq_of_eq_mul (h g (mem_zpowers g)).symm
@@ -328,7 +328,7 @@ instance Subgroup.conjAction {H : Subgroup G} [hH : H.Normal] : SMul (ConjAct G)
   ⟨fun g h => ⟨g • (h : G), hH.conj_mem h.1 h.2 (ofConjAct g)⟩⟩
 #align conj_act.subgroup.conj_action ConjAct.Subgroup.conjAction
 
-theorem Subgroup.val_conj_smul {H : Subgroup G} [H.Normal] (g : ConjAct G) (h : H) :
+lemma Subgroup.val_conj_smul {H : Subgroup G} [H.Normal] (g : ConjAct G) (h : H) :
     ↑(g • h) = g • (h : G) :=
   rfl
 #align conj_act.subgroup.coe_conj_smul ConjAct.Subgroup.val_conj_smul
@@ -344,13 +344,13 @@ def _root_.MulAut.conjNormal {H : Subgroup G} [H.Normal] : G →* MulAut H :=
 #align mul_aut.conj_normal MulAut.conjNormal
 
 @[simp]
-theorem _root_.MulAut.conjNormal_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
+lemma _root_.MulAut.conjNormal_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
     ↑(MulAut.conjNormal g h) = g * h * g⁻¹ :=
   rfl
 #align mul_aut.conj_normal_apply MulAut.conjNormal_apply
 
 @[simp]
-theorem _root_.MulAut.conjNormal_symm_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
+lemma _root_.MulAut.conjNormal_symm_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
     ↑((MulAut.conjNormal g).symm h) = g⁻¹ * h * g := by
   change _ * _⁻¹⁻¹ = _
   rw [inv_inv]
@@ -358,12 +358,12 @@ theorem _root_.MulAut.conjNormal_symm_apply {H : Subgroup G} [H.Normal] (g : G) 
 #align mul_aut.conj_normal_symm_apply MulAut.conjNormal_symm_apply
 
 @[simp]
-theorem _root_.MulAut.conjNormal_inv_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
+lemma _root_.MulAut.conjNormal_inv_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
     ↑((MulAut.conjNormal g)⁻¹ h) = g⁻¹ * h * g :=
   MulAut.conjNormal_symm_apply g h
 #align mul_aut.conj_normal_inv_apply MulAut.conjNormal_inv_apply
 
-theorem _root_.MulAut.conjNormal_val {H : Subgroup G} [H.Normal] {h : H} :
+lemma _root_.MulAut.conjNormal_val {H : Subgroup G} [H.Normal] {h : H} :
     MulAut.conjNormal ↑h = MulAut.conj h :=
   MulEquiv.ext fun _ => rfl
 #align mul_aut.conj_normal_coe MulAut.conjNormal_val

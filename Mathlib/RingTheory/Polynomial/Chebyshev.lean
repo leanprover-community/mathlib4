@@ -71,21 +71,21 @@ noncomputable def T : ℕ → R[X]
 #align polynomial.chebyshev.T Polynomial.Chebyshev.T
 
 @[simp]
-theorem T_zero : T R 0 = 1 := rfl
+lemma T_zero : T R 0 = 1 := rfl
 #align polynomial.chebyshev.T_zero Polynomial.Chebyshev.T_zero
 
 @[simp]
-theorem T_one : T R 1 = X := rfl
+lemma T_one : T R 1 = X := rfl
 #align polynomial.chebyshev.T_one Polynomial.Chebyshev.T_one
 
 @[simp]
-theorem T_add_two (n : ℕ) : T R (n + 2) = 2 * X * T R (n + 1) - T R n := by rw [T]
+lemma T_add_two (n : ℕ) : T R (n + 2) = 2 * X * T R (n + 1) - T R n := by rw [T]
 #align polynomial.chebyshev.T_add_two Polynomial.Chebyshev.T_add_two
 
-theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by simp only [T, sub_left_inj, sq, mul_assoc]
+lemma T_two : T R 2 = 2 * X ^ 2 - 1 := by simp only [T, sub_left_inj, sq, mul_assoc]
 #align polynomial.chebyshev.T_two Polynomial.Chebyshev.T_two
 
-theorem T_of_two_le (n : ℕ) (h : 2 ≤ n) : T R n = 2 * X * T R (n - 1) - T R (n - 2) := by
+lemma T_of_two_le (n : ℕ) (h : 2 ≤ n) : T R n = 2 * X * T R (n - 1) - T R (n - 2) := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
   rw [add_comm]
   exact T_add_two R n
@@ -99,29 +99,29 @@ noncomputable def U : ℕ → R[X]
 #align polynomial.chebyshev.U Polynomial.Chebyshev.U
 
 @[simp]
-theorem U_zero : U R 0 = 1 := rfl
+lemma U_zero : U R 0 = 1 := rfl
 #align polynomial.chebyshev.U_zero Polynomial.Chebyshev.U_zero
 
 @[simp]
-theorem U_one : U R 1 = 2 * X := rfl
+lemma U_one : U R 1 = 2 * X := rfl
 #align polynomial.chebyshev.U_one Polynomial.Chebyshev.U_one
 
 @[simp]
-theorem U_add_two (n : ℕ) : U R (n + 2) = 2 * X * U R (n + 1) - U R n := by rw [U]
+lemma U_add_two (n : ℕ) : U R (n + 2) = 2 * X * U R (n + 1) - U R n := by rw [U]
 #align polynomial.chebyshev.U_add_two Polynomial.Chebyshev.U_add_two
 
-theorem U_two : U R 2 = 4 * X ^ 2 - 1 := by
+lemma U_two : U R 2 = 4 * X ^ 2 - 1 := by
   simp only [U]
   ring
 #align polynomial.chebyshev.U_two Polynomial.Chebyshev.U_two
 
-theorem U_of_two_le (n : ℕ) (h : 2 ≤ n) : U R n = 2 * X * U R (n - 1) - U R (n - 2) := by
+lemma U_of_two_le (n : ℕ) (h : 2 ≤ n) : U R n = 2 * X * U R (n - 1) - U R (n - 2) := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
   rw [add_comm]
   exact U_add_two R n
 #align polynomial.chebyshev.U_of_two_le Polynomial.Chebyshev.U_of_two_le
 
-theorem U_eq_X_mul_U_add_T : ∀ n : ℕ, U R (n + 1) = X * U R n + T R (n + 1)
+lemma U_eq_X_mul_U_add_T : ∀ n : ℕ, U R (n + 1) = X * U R n + T R (n + 1)
   | 0 => by simp only [T, U, two_mul, mul_one]
   | 1 => by simp only [T, U]; ring
   | n + 2 => by
@@ -133,11 +133,11 @@ theorem U_eq_X_mul_U_add_T : ∀ n : ℕ, U R (n + 1) = X * U R n + T R (n + 1)
     linear_combination -h₃ - (X:R[X]) * h₂ + h₁ + 2 * (X:R[X]) * H₁ - H₂
 #align polynomial.chebyshev.U_eq_X_mul_U_add_T Polynomial.Chebyshev.U_eq_X_mul_U_add_T
 
-theorem T_eq_U_sub_X_mul_U (n : ℕ) : T R (n + 1) = U R (n + 1) - X * U R n := by
+lemma T_eq_U_sub_X_mul_U (n : ℕ) : T R (n + 1) = U R (n + 1) - X * U R n := by
   linear_combination - U_eq_X_mul_U_add_T R n
 #align polynomial.chebyshev.T_eq_U_sub_X_mul_U Polynomial.Chebyshev.T_eq_U_sub_X_mul_U
 
-theorem T_eq_X_mul_T_sub_pol_U : ∀ n : ℕ, T R (n + 2) = X * T R (n + 1) - (1 - X ^ 2) * U R n
+lemma T_eq_X_mul_T_sub_pol_U : ∀ n : ℕ, T R (n + 2) = X * T R (n + 1) - (1 - X ^ 2) * U R n
   | 0 => by simp only [T, U]; ring
   | 1 => by simp only [T, U]; ring
   | n + 2 => by
@@ -149,7 +149,7 @@ theorem T_eq_X_mul_T_sub_pol_U : ∀ n : ℕ, T R (n + 2) = X * T R (n + 1) - (1
     linear_combination (-(X:R[X]) ^ 2 + 1) * h₃ + h₂ - (X:R[X]) * h₁ - H₂ + 2 * (X:R[X]) * H₁
 #align polynomial.chebyshev.T_eq_X_mul_T_sub_pol_U Polynomial.Chebyshev.T_eq_X_mul_T_sub_pol_U
 
-theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℕ) :
+lemma one_sub_X_sq_mul_U_eq_pol_in_T (n : ℕ) :
     (1 - X ^ 2) * U R n = X * T R (n + 1) - T R (n + 2) := by
   linear_combination T_eq_X_mul_T_sub_pol_U R n
 #align polynomial.chebyshev.one_sub_X_sq_mul_U_eq_pol_in_T Polynomial.Chebyshev.one_sub_X_sq_mul_U_eq_pol_in_T
@@ -157,20 +157,20 @@ theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℕ) :
 variable {R S}
 
 @[simp]
-theorem map_T (f : R →+* S) : ∀ n : ℕ, map f (T R n) = T S n
+lemma map_T (f : R →+* S) : ∀ n : ℕ, map f (T R n) = T S n
   | 0 => by simp
   | 1 => by simp
   | n + 2 => by simp [map_T]
 #align polynomial.chebyshev.map_T Polynomial.Chebyshev.map_T
 
 @[simp]
-theorem map_U (f : R →+* S) : ∀ n : ℕ, map f (U R n) = U S n
+lemma map_U (f : R →+* S) : ∀ n : ℕ, map f (U R n) = U S n
   | 0 => by simp
   | 1 => by simp
   | n + 2 => by simp [map_U]
 #align polynomial.chebyshev.map_U Polynomial.Chebyshev.map_U
 
-theorem T_derivative_eq_U : ∀ n : ℕ, derivative (T R (n + 1)) = (n + 1) * U R n
+lemma T_derivative_eq_U : ∀ n : ℕ, derivative (T R (n + 1)) = (n + 1) * U R n
   | 0 => by simp
   | 1 => by
     simp [T_two, U_one, derivative_sub, derivative_one, derivative_mul, derivative_X_pow, add_mul]
@@ -185,7 +185,7 @@ theorem T_derivative_eq_U : ∀ n : ℕ, derivative (T R (n + 1)) = (n + 1) * U 
     linear_combination 2 * (X:R[X]) * H₁ + (-n - 1) * H₄ + 2 * H₃ - H₂ + h
 #align polynomial.chebyshev.T_derivative_eq_U Polynomial.Chebyshev.T_derivative_eq_U
 
-theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℕ) :
+lemma one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℕ) :
     (1 - X ^ 2) * derivative (T R (n + 1)) = (n + 1 : R[X]) * (T R n - X * T R (n + 1)) := by
   have H₁ := one_sub_X_sq_mul_U_eq_pol_in_T R n
   have H₂ := T_derivative_eq_U (R := R) n
@@ -193,7 +193,7 @@ theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℕ) :
   linear_combination (-n - 1) * h₁ + (-(X:R[X]) ^ 2 + 1) * H₂ + (n + 1) * H₁
 #align polynomial.chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T Polynomial.Chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T
 
-theorem add_one_mul_T_eq_poly_in_U (n : ℕ) :
+lemma add_one_mul_T_eq_poly_in_U (n : ℕ) :
     ((n : R[X]) + 1) * T R (n + 1) = X * U R n - (1 - X ^ 2) * derivative (U R n) := by
   have h₁ := congr_arg derivative <| T_eq_X_mul_T_sub_pol_U R n
   simp only [derivative_sub, derivative_mul, derivative_X, derivative_one, derivative_X_pow,

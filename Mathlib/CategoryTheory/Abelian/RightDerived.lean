@@ -206,7 +206,7 @@ noncomputable def NatTrans.rightDerived
 #align category_theory.nat_trans.right_derived CategoryTheory.NatTrans.rightDerived
 
 @[simp]
-theorem NatTrans.rightDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
+lemma NatTrans.rightDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
     NatTrans.rightDerived (𝟙 F) n = 𝟙 (F.rightDerived n) := by
   dsimp only [rightDerived]
   simp only [rightDerivedToHomotopyCategory_id, whiskerRight_id']
@@ -214,7 +214,7 @@ theorem NatTrans.rightDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
 #align category_theory.nat_trans.right_derived_id CategoryTheory.NatTrans.rightDerived_id
 
 @[simp, reassoc]
-theorem NatTrans.rightDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H.Additive]
+lemma NatTrans.rightDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H.Additive]
     (α : F ⟶ G) (β : G ⟶ H) (n : ℕ) :
     NatTrans.rightDerived (α ≫ β) n = NatTrans.rightDerived α n ≫ NatTrans.rightDerived β n := by
   simp [NatTrans.rightDerived]

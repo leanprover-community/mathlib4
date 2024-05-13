@@ -264,7 +264,7 @@ variable {α Ω E F : Type*} {mα : MeasurableSpace α} [MeasurableSpace Ω]
   [StandardBorelSpace Ω] [Nonempty Ω] [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
 
-theorem AEStronglyMeasurable.ae_integrable_condKernel_iff {f : α × Ω → F}
+lemma AEStronglyMeasurable.ae_integrable_condKernel_iff {f : α × Ω → F}
     (hf : AEStronglyMeasurable f ρ) :
     (∀ᵐ a ∂ρ.fst, Integrable (fun ω ↦ f (a, ω)) (ρ.condKernel a)) ∧
       Integrable (fun a ↦ ∫ ω, ‖f (a, ω)‖ ∂ρ.condKernel a) ρ.fst ↔ Integrable f ρ := by
@@ -273,21 +273,21 @@ theorem AEStronglyMeasurable.ae_integrable_condKernel_iff {f : α × Ω → F}
   rw [Measure.integrable_compProd_iff hf]
 #align measure_theory.ae_strongly_measurable.ae_integrable_cond_kernel_iff MeasureTheory.AEStronglyMeasurable.ae_integrable_condKernel_iff
 
-theorem Integrable.condKernel_ae {f : α × Ω → F} (hf_int : Integrable f ρ) :
+lemma Integrable.condKernel_ae {f : α × Ω → F} (hf_int : Integrable f ρ) :
     ∀ᵐ a ∂ρ.fst, Integrable (fun ω ↦ f (a, ω)) (ρ.condKernel a) := by
   have hf_ae : AEStronglyMeasurable f ρ := hf_int.1
   rw [← hf_ae.ae_integrable_condKernel_iff] at hf_int
   exact hf_int.1
 #align measure_theory.integrable.cond_kernel_ae MeasureTheory.Integrable.condKernel_ae
 
-theorem Integrable.integral_norm_condKernel {f : α × Ω → F} (hf_int : Integrable f ρ) :
+lemma Integrable.integral_norm_condKernel {f : α × Ω → F} (hf_int : Integrable f ρ) :
     Integrable (fun x ↦ ∫ y, ‖f (x, y)‖ ∂ρ.condKernel x) ρ.fst := by
   have hf_ae : AEStronglyMeasurable f ρ := hf_int.1
   rw [← hf_ae.ae_integrable_condKernel_iff] at hf_int
   exact hf_int.2
 #align measure_theory.integrable.integral_norm_cond_kernel MeasureTheory.Integrable.integral_norm_condKernel
 
-theorem Integrable.norm_integral_condKernel {f : α × Ω → E} (hf_int : Integrable f ρ) :
+lemma Integrable.norm_integral_condKernel {f : α × Ω → E} (hf_int : Integrable f ρ) :
     Integrable (fun x ↦ ‖∫ y, f (x, y) ∂ρ.condKernel x‖) ρ.fst := by
   refine hf_int.integral_norm_condKernel.mono hf_int.1.integral_condKernel.norm ?_
   refine Filter.eventually_of_forall fun x ↦ ?_
@@ -296,7 +296,7 @@ theorem Integrable.norm_integral_condKernel {f : α × Ω → E} (hf_int : Integ
   exact integral_nonneg_of_ae (Filter.eventually_of_forall fun y ↦ norm_nonneg _)
 #align measure_theory.integrable.norm_integral_cond_kernel MeasureTheory.Integrable.norm_integral_condKernel
 
-theorem Integrable.integral_condKernel {f : α × Ω → E} (hf_int : Integrable f ρ) :
+lemma Integrable.integral_condKernel {f : α × Ω → E} (hf_int : Integrable f ρ) :
     Integrable (fun x ↦ ∫ y, f (x, y) ∂ρ.condKernel x) ρ.fst :=
   (integrable_norm_iff hf_int.1.integral_condKernel).mp hf_int.norm_integral_condKernel
 #align measure_theory.integrable.integral_cond_kernel MeasureTheory.Integrable.integral_condKernel

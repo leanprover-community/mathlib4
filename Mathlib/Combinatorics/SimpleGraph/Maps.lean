@@ -64,7 +64,7 @@ instance instDecidableMapAdj {f : V ↪ W} {a b} [Decidable (Relation.Map G.Adj 
 #align simple_graph.decidable_map SimpleGraph.instDecidableMapAdj
 
 @[simp]
-theorem map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :
+lemma map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :
     (G.map f).Adj u v ↔ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v :=
   Iff.rfl
 #align simple_graph.map_adj SimpleGraph.map_adj
@@ -73,7 +73,7 @@ lemma map_adj_apply {G : SimpleGraph V} {f : V ↪ W} {a b : V} :
     (G.map f).Adj (f a) (f b) ↔ G.Adj a b := by simp
 #align simple_graph.map_adj_apply SimpleGraph.map_adj_apply
 
-theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
+lemma map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
   rintro G G' h _ _ ⟨u, v, ha, rfl, rfl⟩
   exact ⟨_, _, h ha, rfl, rfl⟩
 #align simple_graph.map_monotone SimpleGraph.map_monotone
@@ -120,38 +120,38 @@ lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
     G.map e.symm.toEmbedding = G.comap e.toEmbedding := by rw [← comap_symm, e.symm_symm]
 #align simple_graph.map_symm SimpleGraph.map_symm
 
-theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) := by
+lemma comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) := by
   intro G G' h _ _ ha
   exact h ha
 #align simple_graph.comap_monotone SimpleGraph.comap_monotone
 
 @[simp]
-theorem comap_map_eq (f : V ↪ W) (G : SimpleGraph V) : (G.map f).comap f = G := by
+lemma comap_map_eq (f : V ↪ W) (G : SimpleGraph V) : (G.map f).comap f = G := by
   ext
   simp
 #align simple_graph.comap_map_eq SimpleGraph.comap_map_eq
 
-theorem leftInverse_comap_map (f : V ↪ W) :
+lemma leftInverse_comap_map (f : V ↪ W) :
     Function.LeftInverse (SimpleGraph.comap f) (SimpleGraph.map f) :=
   comap_map_eq f
 #align simple_graph.left_inverse_comap_map SimpleGraph.leftInverse_comap_map
 
-theorem map_injective (f : V ↪ W) : Function.Injective (SimpleGraph.map f) :=
+lemma map_injective (f : V ↪ W) : Function.Injective (SimpleGraph.map f) :=
   (leftInverse_comap_map f).injective
 #align simple_graph.map_injective SimpleGraph.map_injective
 
-theorem comap_surjective (f : V ↪ W) : Function.Surjective (SimpleGraph.comap f) :=
+lemma comap_surjective (f : V ↪ W) : Function.Surjective (SimpleGraph.comap f) :=
   (leftInverse_comap_map f).surjective
 #align simple_graph.comap_surjective SimpleGraph.comap_surjective
 
-theorem map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph W) :
+lemma map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph W) :
     G.map f ≤ G' ↔ G ≤ G'.comap f :=
   ⟨fun h u v ha => h ⟨_, _, ha, rfl, rfl⟩, by
     rintro h _ _ ⟨u, v, ha, rfl, rfl⟩
     exact h ha⟩
 #align simple_graph.map_le_iff_le_comap SimpleGraph.map_le_iff_le_comap
 
-theorem map_comap_le (f : V ↪ W) (G : SimpleGraph W) : (G.comap f).map f ≤ G := by
+lemma map_comap_le (f : V ↪ W) (G : SimpleGraph W) : (G.comap f).map f ≤ G := by
   rw [map_le_iff_le_comap]
 #align simple_graph.map_comap_le SimpleGraph.map_comap_le
 
@@ -210,11 +210,11 @@ abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : SimpleGraph V :=
   G.map (Function.Embedding.subtype _)
 #align simple_graph.spanning_coe SimpleGraph.spanningCoe
 
-theorem induce_spanningCoe {s : Set V} {G : SimpleGraph s} : G.spanningCoe.induce s = G :=
+lemma induce_spanningCoe {s : Set V} {G : SimpleGraph s} : G.spanningCoe.induce s = G :=
   comap_map_eq _ _
 #align simple_graph.induce_spanning_coe SimpleGraph.induce_spanningCoe
 
-theorem spanningCoe_induce_le (s : Set V) : (G.induce s).spanningCoe ≤ G :=
+lemma spanningCoe_induce_le (s : Set V) : (G.induce s).spanningCoe ≤ G :=
   map_comap_le _ _
 #align simple_graph.spanning_coe_induce_le SimpleGraph.spanningCoe_induce_le
 
@@ -274,15 +274,15 @@ instance instFintype [DecidableEq V] [Fintype V] [Fintype W] [DecidableRel G.Adj
 
 instance [Finite V] [Finite W] : Finite (G →g H) := DFunLike.finite _
 
-theorem map_adj {v w : V} (h : G.Adj v w) : G'.Adj (f v) (f w) :=
+lemma map_adj {v w : V} (h : G.Adj v w) : G'.Adj (f v) (f w) :=
   f.map_rel' h
 #align simple_graph.hom.map_adj SimpleGraph.Hom.map_adj
 
-theorem map_mem_edgeSet {e : Sym2 V} (h : e ∈ G.edgeSet) : e.map f ∈ G'.edgeSet :=
+lemma map_mem_edgeSet {e : Sym2 V} (h : e ∈ G.edgeSet) : e.map f ∈ G'.edgeSet :=
   Sym2.ind (fun _ _ => f.map_rel') e h
 #align simple_graph.hom.map_mem_edge_set SimpleGraph.Hom.map_mem_edgeSet
 
-theorem apply_mem_neighborSet {v w : V} (h : w ∈ G.neighborSet v) : f w ∈ G'.neighborSet (f v) :=
+lemma apply_mem_neighborSet {v w : V} (h : w ∈ G.neighborSet v) : f w ∈ G'.neighborSet (f v) :=
   map_adj f h
 #align simple_graph.hom.apply_mem_neighbor_set SimpleGraph.Hom.apply_mem_neighborSet
 
@@ -305,7 +305,7 @@ def mapDart (d : G.Dart) : G'.Dart :=
 #align simple_graph.hom.map_dart SimpleGraph.Hom.mapDart
 
 @[simp]
-theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2⟩ :=
+lemma mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2⟩ :=
   rfl
 #align simple_graph.hom.map_dart_apply SimpleGraph.Hom.mapDart_apply
 
@@ -316,7 +316,7 @@ def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
   map_rel' ha := h ha
 #align simple_graph.hom.map_spanning_subgraphs SimpleGraph.Hom.mapSpanningSubgraphs
 
-theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
+lemma mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩
   dsimp [Hom.mapEdgeSet]
   repeat rw [Subtype.mk_eq_mk]
@@ -346,7 +346,7 @@ abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
 #align simple_graph.hom.comp SimpleGraph.Hom.comp
 
 @[simp]
-theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
+lemma coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 #align simple_graph.hom.coe_comp SimpleGraph.Hom.coe_comp
 
@@ -376,15 +376,15 @@ abbrev toHom : G →g G' :=
 @[simp] lemma coe_toHom (f : G ↪g H) : ⇑f.toHom = f := rfl
 #align simple_graph.embedding.coe_to_hom SimpleGraph.Embedding.coe_toHom
 
-@[simp] theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
+@[simp] lemma map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
   f.map_rel_iff
 #align simple_graph.embedding.map_adj_iff SimpleGraph.Embedding.map_adj_iff
 
-theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.edgeSet :=
+lemma map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.edgeSet :=
   Sym2.ind (fun _ _ => f.map_adj_iff) e
 #align simple_graph.embedding.map_mem_edge_set_iff SimpleGraph.Embedding.map_mem_edgeSet_iff
 
-theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
+lemma apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
   map_adj_iff f
 #align simple_graph.embedding.apply_mem_neighbor_set_iff SimpleGraph.Embedding.apply_mem_neighborSet_iff
 
@@ -415,7 +415,7 @@ protected def comap (f : V ↪ W) (G : SimpleGraph W) : G.comap f ↪g G :=
 #align simple_graph.embedding.comap SimpleGraph.Embedding.comap
 
 @[simp]
-theorem comap_apply (f : V ↪ W) (G : SimpleGraph W) (v : V) :
+lemma comap_apply (f : V ↪ W) (G : SimpleGraph W) (v : V) :
     SimpleGraph.Embedding.comap f G v = f v := rfl
 #align simple_graph.embedding.comap_apply SimpleGraph.Embedding.comap_apply
 
@@ -427,7 +427,7 @@ protected def map (f : V ↪ W) (G : SimpleGraph V) : G ↪g G.map f :=
 #align simple_graph.embedding.map SimpleGraph.Embedding.map
 
 @[simp]
-theorem map_apply (f : V ↪ W) (G : SimpleGraph V) (v : V) :
+lemma map_apply (f : V ↪ W) (G : SimpleGraph V) (v : V) :
     SimpleGraph.Embedding.map f G v = f v := rfl
 #align simple_graph.embedding.map_apply SimpleGraph.Embedding.map_apply
 
@@ -460,7 +460,7 @@ abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
 #align simple_graph.embedding.comp SimpleGraph.Embedding.comp
 
 @[simp]
-theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
+lemma coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 #align simple_graph.embedding.coe_comp SimpleGraph.Embedding.coe_comp
 
@@ -540,15 +540,15 @@ abbrev symm : G' ≃g G :=
   RelIso.symm f
 #align simple_graph.iso.symm SimpleGraph.Iso.symm
 
-theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
+lemma map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
   f.map_rel_iff
 #align simple_graph.iso.map_adj_iff SimpleGraph.Iso.map_adj_iff
 
-theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.edgeSet :=
+lemma map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.edgeSet :=
   Sym2.ind (fun _ _ => f.map_adj_iff) e
 #align simple_graph.iso.map_mem_edge_set_iff SimpleGraph.Iso.map_mem_edgeSet_iff
 
-theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
+lemma apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
   map_adj_iff f
 #align simple_graph.iso.apply_mem_neighbor_set_iff SimpleGraph.Iso.apply_mem_neighborSet_iff
 
@@ -586,7 +586,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v)
   right_inv w := by simp
 #align simple_graph.iso.map_neighbor_set SimpleGraph.Iso.mapNeighborSet
 
-theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
+lemma card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
   convert rfl
 #align simple_graph.iso.card_eq_of_iso SimpleGraph.Iso.card_eq
@@ -632,7 +632,7 @@ protected def completeGraph {α β : Type*} (f : α ≃ β) :
   { f with map_rel_iff' := by simp }
 #align simple_graph.iso.complete_graph SimpleGraph.Iso.completeGraph
 
-theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
+lemma toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
     (Iso.completeGraph f).toEmbedding = Embedding.completeGraph f.toEmbedding :=
   rfl
 #align simple_graph.iso.to_embedding_complete_graph SimpleGraph.Iso.toEmbedding_completeGraph
@@ -645,7 +645,7 @@ abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
 #align simple_graph.iso.comp SimpleGraph.Iso.comp
 
 @[simp]
-theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f :=
+lemma coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 #align simple_graph.iso.coe_comp SimpleGraph.Iso.coe_comp
 

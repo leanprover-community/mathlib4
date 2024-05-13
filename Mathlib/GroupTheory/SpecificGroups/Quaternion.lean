@@ -109,26 +109,26 @@ instance : Group (QuaternionGroup n) where
     · exact congr_arg a (sub_self (n + i))
 
 @[simp]
-theorem a_mul_a (i j : ZMod (2 * n)) : a i * a j = a (i + j) :=
+lemma a_mul_a (i j : ZMod (2 * n)) : a i * a j = a (i + j) :=
   rfl
 #align quaternion_group.a_mul_a QuaternionGroup.a_mul_a
 
 @[simp]
-theorem a_mul_xa (i j : ZMod (2 * n)) : a i * xa j = xa (j - i) :=
+lemma a_mul_xa (i j : ZMod (2 * n)) : a i * xa j = xa (j - i) :=
   rfl
 #align quaternion_group.a_mul_xa QuaternionGroup.a_mul_xa
 
 @[simp]
-theorem xa_mul_a (i j : ZMod (2 * n)) : xa i * a j = xa (i + j) :=
+lemma xa_mul_a (i j : ZMod (2 * n)) : xa i * a j = xa (i + j) :=
   rfl
 #align quaternion_group.xa_mul_a QuaternionGroup.xa_mul_a
 
 @[simp]
-theorem xa_mul_xa (i j : ZMod (2 * n)) : xa i * xa j = a ((n : ZMod (2 * n)) + j - i) :=
+lemma xa_mul_xa (i j : ZMod (2 * n)) : xa i * xa j = a ((n : ZMod (2 * n)) + j - i) :=
   rfl
 #align quaternion_group.xa_mul_xa QuaternionGroup.xa_mul_xa
 
-theorem one_def : (1 : QuaternionGroup n) = a 0 :=
+lemma one_def : (1 : QuaternionGroup n) = a 0 :=
   rfl
 #align quaternion_group.one_def QuaternionGroup.one_def
 
@@ -177,7 +177,7 @@ theorem card [NeZero n] : Fintype.card (QuaternionGroup n) = 4 * n := by
 #align quaternion_group.card QuaternionGroup.card
 
 @[simp]
-theorem a_one_pow (k : ℕ) : (a 1 : QuaternionGroup n) ^ k = a k := by
+lemma a_one_pow (k : ℕ) : (a 1 : QuaternionGroup n) ^ k = a k := by
   induction' k with k IH
   · rw [Nat.cast_zero]; rfl
   · rw [pow_succ, IH, a_mul_a]
@@ -186,18 +186,18 @@ theorem a_one_pow (k : ℕ) : (a 1 : QuaternionGroup n) ^ k = a k := by
 #align quaternion_group.a_one_pow QuaternionGroup.a_one_pow
 
 -- @[simp] -- Porting note: simp changes this to `a 0 = 1`, so this is no longer a good simp lemma.
-theorem a_one_pow_n : (a 1 : QuaternionGroup n) ^ (2 * n) = 1 := by
+lemma a_one_pow_n : (a 1 : QuaternionGroup n) ^ (2 * n) = 1 := by
   rw [a_one_pow, one_def]
   congr 1
   exact ZMod.natCast_self _
 #align quaternion_group.a_one_pow_n QuaternionGroup.a_one_pow_n
 
 @[simp]
-theorem xa_sq (i : ZMod (2 * n)) : xa i ^ 2 = a n := by simp [sq]
+lemma xa_sq (i : ZMod (2 * n)) : xa i ^ 2 = a n := by simp [sq]
 #align quaternion_group.xa_sq QuaternionGroup.xa_sq
 
 @[simp]
-theorem xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 := by
+lemma xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 := by
   rw [pow_succ, pow_succ, sq, xa_mul_xa, a_mul_xa, xa_mul_xa,
     add_sub_cancel_right, add_sub_assoc, sub_sub_cancel]
   norm_cast
@@ -259,7 +259,7 @@ theorem orderOf_a [NeZero n] (i : ZMod (2 * n)) :
   rw [← a_one_pow, orderOf_pow, orderOf_a_one]
 #align quaternion_group.order_of_a QuaternionGroup.orderOf_a
 
-theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
+lemma exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
   rw [← normalize_eq 2, ← lcm_mul_left, normalize_eq]
   set_option tactic.skipAssignedInstances false in
   norm_num

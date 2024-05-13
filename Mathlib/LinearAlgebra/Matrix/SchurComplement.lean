@@ -97,14 +97,14 @@ def fromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n m α) (D : 
       fromBlocks_one]
 #align matrix.from_blocks_zero₁₂_invertible Matrix.fromBlocksZero₁₂Invertible
 
-theorem invOf_fromBlocks_zero₂₁_eq (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
+lemma invOf_fromBlocks_zero₂₁_eq (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
     [Invertible A] [Invertible D] [Invertible (fromBlocks A B 0 D)] :
     ⅟ (fromBlocks A B 0 D) = fromBlocks (⅟ A) (-(⅟ A * B * ⅟ D)) 0 (⅟ D) := by
   letI := fromBlocksZero₂₁Invertible A B D
   convert (rfl : ⅟ (fromBlocks A B 0 D) = _)
 #align matrix.inv_of_from_blocks_zero₂₁_eq Matrix.invOf_fromBlocks_zero₂₁_eq
 
-theorem invOf_fromBlocks_zero₁₂_eq (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
+lemma invOf_fromBlocks_zero₁₂_eq (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
     [Invertible A] [Invertible D] [Invertible (fromBlocks A 0 C D)] :
     ⅟ (fromBlocks A 0 C D) = fromBlocks (⅟ A) 0 (-(⅟ D * C * ⅟ A)) (⅟ D) := by
   letI := fromBlocksZero₁₂Invertible A C D
@@ -290,7 +290,7 @@ def fromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
       (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
 #align matrix.from_blocks₁₁_invertible Matrix.fromBlocks₁₁Invertible
 
-theorem invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
+lemma invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible D] [Invertible (A - B * ⅟ D * C)]
     [Invertible (fromBlocks A B C D)] :
     ⅟ (fromBlocks A B C D) =
@@ -300,7 +300,7 @@ theorem invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : M
   convert (rfl : ⅟ (fromBlocks A B C D) = _)
 #align matrix.inv_of_from_blocks₂₂_eq Matrix.invOf_fromBlocks₂₂_eq
 
-theorem invOf_fromBlocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
+lemma invOf_fromBlocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible A] [Invertible (D - C * ⅟ A * B)]
     [Invertible (fromBlocks A B C D)] :
     ⅟ (fromBlocks A B C D) =
@@ -397,7 +397,7 @@ theorem det_fromBlocks₁₁ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix
 #align matrix.det_from_blocks₁₁ Matrix.det_fromBlocks₁₁
 
 @[simp]
-theorem det_fromBlocks_one₁₁ (B : Matrix m n α) (C : Matrix n m α) (D : Matrix n n α) :
+lemma det_fromBlocks_one₁₁ (B : Matrix m n α) (C : Matrix n m α) (D : Matrix n n α) :
     (Matrix.fromBlocks 1 B C D).det = det (D - C * B) := by
   haveI : Invertible (1 : Matrix m m α) := invertibleOne
   rw [det_fromBlocks₁₁, invOf_one, Matrix.mul_one, det_one, one_mul]
@@ -416,7 +416,7 @@ theorem det_fromBlocks₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix
 #align matrix.det_from_blocks₂₂ Matrix.det_fromBlocks₂₂
 
 @[simp]
-theorem det_fromBlocks_one₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α) :
+lemma det_fromBlocks_one₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α) :
     (Matrix.fromBlocks A B C 1).det = det (A - B * C) := by
   haveI : Invertible (1 : Matrix n n α) := invertibleOne
   rw [det_fromBlocks₂₂, invOf_one, Matrix.mul_one, det_one, one_mul]
@@ -437,7 +437,7 @@ theorem det_mul_add_one_comm (A : Matrix m n α) (B : Matrix n m α) :
     det (A * B + 1) = det (B * A + 1) := by rw [add_comm, det_one_add_mul_comm, add_comm]
 #align matrix.det_mul_add_one_comm Matrix.det_mul_add_one_comm
 
-theorem det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
+lemma det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
     det (1 - A * B) = det (1 - B * A) := by
   rw [sub_eq_add_neg, ← Matrix.neg_mul, det_one_add_mul_comm, Matrix.mul_neg, ← sub_eq_add_neg]
 #align matrix.det_one_sub_mul_comm Matrix.det_one_sub_mul_comm
@@ -481,7 +481,7 @@ variable {𝕜 : Type*} [CommRing 𝕜] [PartialOrder 𝕜] [StarRing 𝕜] [Sta
 
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 
-theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}
+lemma schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}
     (B : Matrix m n 𝕜) (D : Matrix n n 𝕜) (x : m → 𝕜) (y : n → 𝕜) [Invertible A]
     (hA : A.IsHermitian) :
     (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
@@ -493,7 +493,7 @@ theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : M
   abel
 #align matrix.schur_complement_eq₁₁ Matrix.schur_complement_eq₁₁
 
-theorem schur_complement_eq₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : Matrix m m 𝕜)
+lemma schur_complement_eq₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : Matrix m m 𝕜)
     (B : Matrix m n 𝕜) {D : Matrix n n 𝕜} (x : m → 𝕜) (y : n → 𝕜) [Invertible D]
     (hD : D.IsHermitian) :
     (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
@@ -505,7 +505,7 @@ theorem schur_complement_eq₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : M
   abel
 #align matrix.schur_complement_eq₂₂ Matrix.schur_complement_eq₂₂
 
-theorem IsHermitian.fromBlocks₁₁ [Fintype m] [DecidableEq m] {A : Matrix m m 𝕜} (B : Matrix m n 𝕜)
+lemma IsHermitian.fromBlocks₁₁ [Fintype m] [DecidableEq m] {A : Matrix m m 𝕜} (B : Matrix m n 𝕜)
     (D : Matrix n n 𝕜) (hA : A.IsHermitian) :
     (Matrix.fromBlocks A B Bᴴ D).IsHermitian ↔ (D - Bᴴ * A⁻¹ * B).IsHermitian := by
   have hBAB : (Bᴴ * A⁻¹ * B).IsHermitian := by
@@ -521,7 +521,7 @@ theorem IsHermitian.fromBlocks₁₁ [Fintype m] [DecidableEq m] {A : Matrix m m
     apply IsHermitian.add h hBAB
 #align matrix.is_hermitian.from_blocks₁₁ Matrix.IsHermitian.fromBlocks₁₁
 
-theorem IsHermitian.fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m 𝕜) (B : Matrix m n 𝕜)
+lemma IsHermitian.fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m 𝕜) (B : Matrix m n 𝕜)
     {D : Matrix n n 𝕜} (hD : D.IsHermitian) :
     (Matrix.fromBlocks A B Bᴴ D).IsHermitian ↔ (A - B * D⁻¹ * Bᴴ).IsHermitian := by
   rw [← isHermitian_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
@@ -529,7 +529,7 @@ theorem IsHermitian.fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m
   convert IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
 #align matrix.is_hermitian.from_blocks₂₂ Matrix.IsHermitian.fromBlocks₂₂
 
-theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}
+lemma PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}
     (B : Matrix m n 𝕜) (D : Matrix n n 𝕜) (hA : A.PosDef) [Invertible A] :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
   rw [PosSemidef, IsHermitian.fromBlocks₁₁ _ _ hA.1]
@@ -548,7 +548,7 @@ theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A :
       apply h.2
 #align matrix.pos_semidef.from_blocks₁₁ Matrix.PosSemidef.fromBlocks₁₁
 
-theorem PosSemidef.fromBlocks₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : Matrix m m 𝕜)
+lemma PosSemidef.fromBlocks₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : Matrix m m 𝕜)
     (B : Matrix m n 𝕜) {D : Matrix n n 𝕜} (hD : D.PosDef) [Invertible D] :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (A - B * D⁻¹ * Bᴴ).PosSemidef := by
   rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,

@@ -47,24 +47,24 @@ instance : One (Module.End R M) := ⟨LinearMap.id⟩
 
 instance : Mul (Module.End R M) := ⟨LinearMap.comp⟩
 
-theorem one_eq_id : (1 : Module.End R M) = id := rfl
+lemma one_eq_id : (1 : Module.End R M) = id := rfl
 #align linear_map.one_eq_id LinearMap.one_eq_id
 
-theorem mul_eq_comp (f g : Module.End R M) : f * g = f.comp g := rfl
+lemma mul_eq_comp (f g : Module.End R M) : f * g = f.comp g := rfl
 #align linear_map.mul_eq_comp LinearMap.mul_eq_comp
 
 @[simp]
-theorem one_apply (x : M) : (1 : Module.End R M) x = x := rfl
+lemma one_apply (x : M) : (1 : Module.End R M) x = x := rfl
 #align linear_map.one_apply LinearMap.one_apply
 
 @[simp]
-theorem mul_apply (f g : Module.End R M) (x : M) : (f * g) x = f (g x) := rfl
+lemma mul_apply (f g : Module.End R M) (x : M) : (f * g) x = f (g x) := rfl
 #align linear_map.mul_apply LinearMap.mul_apply
 
-theorem coe_one : ⇑(1 : Module.End R M) = _root_.id := rfl
+lemma coe_one : ⇑(1 : Module.End R M) = _root_.id := rfl
 #align linear_map.coe_one LinearMap.coe_one
 
-theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g := rfl
+lemma coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g := rfl
 #align linear_map.coe_mul LinearMap.coe_mul
 
 instance _root_.Module.End.instNontrivial [Nontrivial M] : Nontrivial (Module.End R M) := by
@@ -96,7 +96,7 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
 #align module.End.nat_cast_apply Module.End.natCast_apply
 
 @[simp]
-theorem _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
+lemma _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
     (no_index (OfNat.ofNat n) : Module.End R M) m = OfNat.ofNat n • m := rfl
 
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
@@ -131,30 +131,30 @@ instance _root_.Module.End.smulCommClass' [SMul S R] [IsScalarTower S R M] :
   SMulCommClass.symm _ _ _
 #align module.End.smul_comm_class' Module.End.smulCommClass'
 
-theorem _root_.Module.End_isUnit_apply_inv_apply_of_isUnit
+lemma _root_.Module.End_isUnit_apply_inv_apply_of_isUnit
     {f : Module.End R M} (h : IsUnit f) (x : M) :
     f (h.unit.inv x) = x :=
   show (f * h.unit.inv) x = x by simp
 #align module.End_is_unit_apply_inv_apply_of_is_unit Module.End_isUnit_apply_inv_apply_of_isUnit
 
-theorem _root_.Module.End_isUnit_inv_apply_apply_of_isUnit
+lemma _root_.Module.End_isUnit_inv_apply_apply_of_isUnit
     {f : Module.End R M} (h : IsUnit f) (x : M) :
     h.unit.inv (f x) = x :=
   (by simp : (h.unit.inv * f) x = x)
 #align module.End_is_unit_inv_apply_apply_of_is_unit Module.End_isUnit_inv_apply_apply_of_isUnit
 
-theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+lemma coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 #align linear_map.coe_pow LinearMap.coe_pow
 
-theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := congr_fun (coe_pow f n) m
+lemma pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := congr_fun (coe_pow f n) m
 #align linear_map.pow_apply LinearMap.pow_apply
 
-theorem pow_map_zero_of_le {f : Module.End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
+lemma pow_map_zero_of_le {f : Module.End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
     (hm : (f ^ k) m = 0) : (f ^ l) m = 0 := by
   rw [← tsub_add_cancel_of_le hk, pow_add, mul_apply, hm, map_zero]
 #align linear_map.pow_map_zero_of_le LinearMap.pow_map_zero_of_le
 
-theorem commute_pow_left_of_commute
+lemma commute_pow_left_of_commute
     [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂] {σ₁₂ : R →+* R₂}
     {f : M →ₛₗ[σ₁₂] M₂} {g : Module.End R M} {g₂ : Module.End R₂ M₂}
     (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
@@ -165,43 +165,43 @@ theorem commute_pow_left_of_commute
 #align linear_map.commute_pow_left_of_commute LinearMap.commute_pow_left_of_commute
 
 @[simp]
-theorem id_pow (n : ℕ) : (id : M →ₗ[R] M) ^ n = id :=
+lemma id_pow (n : ℕ) : (id : M →ₗ[R] M) ^ n = id :=
   one_pow n
 #align linear_map.id_pow LinearMap.id_pow
 
 variable {f' : M →ₗ[R] M}
 
-theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = comp (f' ^ n) f' := by rw [pow_succ, mul_eq_comp]
+lemma iterate_succ (n : ℕ) : f' ^ (n + 1) = comp (f' ^ n) f' := by rw [pow_succ, mul_eq_comp]
 #align linear_map.iterate_succ LinearMap.iterate_succ
 
-theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective (f' ^ n)
+lemma iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective (f' ^ n)
   | 0 => surjective_id
   | n + 1 => by
     rw [iterate_succ]
     exact (iterate_surjective h n).comp h
 #align linear_map.iterate_surjective LinearMap.iterate_surjective
 
-theorem iterate_injective (h : Injective f') : ∀ n : ℕ, Injective (f' ^ n)
+lemma iterate_injective (h : Injective f') : ∀ n : ℕ, Injective (f' ^ n)
   | 0 => injective_id
   | n + 1 => by
     rw [iterate_succ]
     exact (iterate_injective h n).comp h
 #align linear_map.iterate_injective LinearMap.iterate_injective
 
-theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective (f' ^ n)
+lemma iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective (f' ^ n)
   | 0 => bijective_id
   | n + 1 => by
     rw [iterate_succ]
     exact (iterate_bijective h n).comp h
 #align linear_map.iterate_bijective LinearMap.iterate_bijective
 
-theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (f' ^ n)) :
+lemma injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (f' ^ n)) :
     Injective f' := by
   rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), iterate_succ, coe_comp] at h
   exact h.of_comp
 #align linear_map.injective_of_iterate_injective LinearMap.injective_of_iterate_injective
 
-theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
+lemma surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
     Surjective f' := by
   rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), pow_succ', coe_mul] at h
   exact Surjective.of_comp h
@@ -226,7 +226,7 @@ instance applyModule : Module (Module.End R M) M where
 #align linear_map.apply_module LinearMap.applyModule
 
 @[simp]
-protected theorem smul_def (f : Module.End R M) (a : M) : f • a = f a :=
+protected lemma smul_def (f : Module.End R M) (a : M) : f • a = f a :=
   rfl
 #align linear_map.smul_def LinearMap.smul_def
 
@@ -326,12 +326,12 @@ def moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
 #align module.module_End_self_op_symm_apply Module.moduleEndSelfOp_symm_apply
 #align module.module_End_self_op_apply Module.moduleEndSelfOp_apply
 
-theorem End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
+lemma End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
     (↑n : Module.End R N₁) = Module.toModuleEnd R N₁ n :=
   rfl
 #align module.End.nat_cast_def Module.End.natCast_def
 
-theorem End.intCast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
+lemma End.intCast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
     (z : Module.End R N₁) = Module.toModuleEnd R N₁ z :=
   rfl
 #align module.End.int_cast_def Module.End.intCast_def
@@ -356,11 +356,11 @@ def smulRight (f : M₁ →ₗ[R] S) (x : M) : M₁ →ₗ[R] M where
 #align linear_map.smul_right LinearMap.smulRight
 
 @[simp]
-theorem coe_smulRight (f : M₁ →ₗ[R] S) (x : M) : (smulRight f x : M₁ → M) = fun c => f c • x :=
+lemma coe_smulRight (f : M₁ →ₗ[R] S) (x : M) : (smulRight f x : M₁ → M) = fun c => f c • x :=
   rfl
 #align linear_map.coe_smul_right LinearMap.coe_smulRight
 
-theorem smulRight_apply (f : M₁ →ₗ[R] S) (x : M) (c : M₁) : smulRight f x c = f c • x :=
+lemma smulRight_apply (f : M₁ →ₗ[R] S) (x : M) (c : M₁) : smulRight f x c = f c • x :=
   rfl
 #align linear_map.smul_right_apply LinearMap.smulRight_apply
 
@@ -421,7 +421,7 @@ def compRight (f : M₂ →ₗ[R] M₃) : (M →ₗ[R] M₂) →ₗ[R] M →ₗ[
 #align linear_map.comp_right LinearMap.compRight
 
 @[simp]
-theorem compRight_apply (f : M₂ →ₗ[R] M₃) (g : M →ₗ[R] M₂) : compRight f g = f.comp g :=
+lemma compRight_apply (f : M₂ →ₗ[R] M₃) (g : M →ₗ[R] M₂) : compRight f g = f.comp g :=
   rfl
 #align linear_map.comp_right_apply LinearMap.compRight_apply
 
@@ -457,7 +457,7 @@ def smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M whe
 #align linear_map.smul_rightₗ LinearMap.smulRightₗ
 
 @[simp]
-theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) (c : M₂) :
+lemma smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) (c : M₂) :
     (smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M) f x c = f c • x :=
   rfl
 #align linear_map.smul_rightₗ_apply LinearMap.smulRightₗ_apply

@@ -42,7 +42,7 @@ initialize_simps_projections Embedding (toFun → apply)
 -- Porting note: this needs `tactic.lift`.
 --instance {α β : Sort*} : CanLift (α → β) (α ↪ β) coeFn Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
-theorem exists_surjective_iff {α β : Sort*} :
+lemma exists_surjective_iff {α β : Sort*} :
     (∃ f : α → β, Surjective f) ↔ Nonempty (α → β) ∧ Nonempty (β ↪ α) :=
   ⟨fun ⟨f, h⟩ ↦ ⟨⟨f⟩, ⟨⟨_, injective_surjInv h⟩⟩⟩, fun ⟨h, ⟨e⟩⟩ ↦ (nonempty_fun.mp h).elim
     (fun _ ↦ ⟨isEmptyElim, (isEmptyElim <| e ·)⟩) fun _ ↦ ⟨_, invFun_surjective e.inj'⟩⟩
@@ -74,15 +74,15 @@ protected def Equiv.toEmbedding : α ↪ β :=
 #align equiv.to_embedding Equiv.toEmbedding
 
 @[simp]
-theorem Equiv.coe_toEmbedding : (f.toEmbedding : α → β) = f :=
+lemma Equiv.coe_toEmbedding : (f.toEmbedding : α → β) = f :=
   rfl
 #align equiv.coe_to_embedding Equiv.coe_toEmbedding
 
-theorem Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
+lemma Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
   rfl
 #align equiv.to_embedding_apply Equiv.toEmbedding_apply
 
-theorem Equiv.toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
+lemma Equiv.toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
   fun _ _ h ↦ by rwa [DFunLike.ext'_iff] at h ⊢
 
 instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
@@ -102,12 +102,12 @@ namespace Function
 
 namespace Embedding
 
-theorem coe_injective {α β} : @Injective (α ↪ β) (α → β) (fun f ↦ ↑f) :=
+lemma coe_injective {α β} : @Injective (α ↪ β) (α → β) (fun f ↦ ↑f) :=
   DFunLike.coe_injective
 #align function.embedding.coe_injective Function.Embedding.coe_injective
 
 @[ext]
-theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
+lemma ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align function.embedding.ext Function.Embedding.ext
 
@@ -116,30 +116,30 @@ instance {α β : Sort*} [IsEmpty α] : Unique (α ↪ β) where
   uniq := by intro; ext v; exact isEmptyElim v
 
 -- Porting note : in Lean 3 `DFunLike.ext_iff.symm` works
-theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
+lemma ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
   Iff.symm (DFunLike.ext_iff)
 #align function.embedding.ext_iff Function.Embedding.ext_iff
 
 @[simp]
-theorem toFun_eq_coe {α β} (f : α ↪ β) : toFun f = f :=
+lemma toFun_eq_coe {α β} (f : α ↪ β) : toFun f = f :=
   rfl
 #align function.embedding.to_fun_eq_coe Function.Embedding.toFun_eq_coe
 
 @[simp]
-theorem coeFn_mk {α β} (f : α → β) (i) : (@mk _ _ f i : α → β) = f :=
+lemma coeFn_mk {α β} (f : α → β) (i) : (@mk _ _ f i : α → β) = f :=
   rfl
 #align function.embedding.coe_fn_mk Function.Embedding.coeFn_mk
 
 @[simp]
-theorem mk_coe {α β : Type*} (f : α ↪ β) (inj) : (⟨f, inj⟩ : α ↪ β) = f :=
+lemma mk_coe {α β : Type*} (f : α ↪ β) (inj) : (⟨f, inj⟩ : α ↪ β) = f :=
   rfl
 #align function.embedding.mk_coe Function.Embedding.mk_coe
 
-protected theorem injective {α β} (f : α ↪ β) : Injective f :=
+protected lemma injective {α β} (f : α ↪ β) : Injective f :=
   EmbeddingLike.injective f
 #align function.embedding.injective Function.Embedding.injective
 
-theorem apply_eq_iff_eq {α β} (f : α ↪ β) (x y : α) : f x = f y ↔ x = y :=
+lemma apply_eq_iff_eq {α β} (f : α ↪ β) (x y : α) : f x = f y ↔ x = y :=
   EmbeddingLike.apply_eq_iff_eq f
 #align function.embedding.apply_eq_iff_eq Function.Embedding.apply_eq_iff_eq
 
@@ -160,14 +160,14 @@ protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
 instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 
 @[simp]
-theorem equiv_toEmbedding_trans_symm_toEmbedding {α β : Sort*} (e : α ≃ β) :
+lemma equiv_toEmbedding_trans_symm_toEmbedding {α β : Sort*} (e : α ≃ β) :
     e.toEmbedding.trans e.symm.toEmbedding = Embedding.refl _ := by
   ext
   simp
 #align function.embedding.equiv_to_embedding_trans_symm_to_embedding Function.Embedding.equiv_toEmbedding_trans_symm_toEmbedding
 
 @[simp]
-theorem equiv_symm_toEmbedding_trans_toEmbedding {α β : Sort*} (e : α ≃ β) :
+lemma equiv_symm_toEmbedding_trans_toEmbedding {α β : Sort*} (e : α ≃ β) :
     e.symm.toEmbedding.trans e.toEmbedding = Embedding.refl _ := by
   ext
   simp
@@ -217,13 +217,13 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
 #align function.embedding.set_value Function.Embedding.setValue
 
 @[simp]
-theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
+lemma setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : setValue f a b a = b := by
   simp [setValue]
 #align function.embedding.set_value_eq Function.Embedding.setValue_eq
 
 @[simp]
-theorem setValue_eq_iff {α β} (f : α ↪ β) {a a' : α} {b : β} [∀ a', Decidable (a' = a)]
+lemma setValue_eq_iff {α β} (f : α ↪ β) {a a' : α} {b : β} [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : setValue f a b a' = b ↔ a' = a :=
   (setValue f a b).injective.eq_iff' <| setValue_eq ..
 
@@ -251,7 +251,7 @@ def subtype {α} (p : α → Prop) : Subtype p ↪ α :=
 #align function.embedding.subtype Function.Embedding.subtype
 
 @[simp]
-theorem coe_subtype {α} (p : α → Prop) : ↑(subtype p) = Subtype.val :=
+lemma coe_subtype {α} (p : α → Prop) : ↑(subtype p) = Subtype.val :=
   rfl
 #align function.embedding.coe_subtype Function.Embedding.coe_subtype
 
@@ -261,7 +261,7 @@ noncomputable def quotientOut (α) [s : Setoid α] : Quotient s ↪ α :=
 #align function.embedding.quotient_out Function.Embedding.quotientOut
 
 @[simp]
-theorem coe_quotientOut (α) [Setoid α] : ↑(quotientOut α) = Quotient.out :=
+lemma coe_quotientOut (α) [Setoid α] : ↑(quotientOut α) = Quotient.out :=
   rfl
 #align function.embedding.coe_quotient_out Function.Embedding.coe_quotientOut
 
@@ -292,7 +292,7 @@ def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × 
 #align function.embedding.prod_map Function.Embedding.prodMap
 
 @[simp]
-theorem coe_prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) :
+lemma coe_prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) :
     e₁.prodMap e₂ = Prod.map e₁ e₂ :=
   rfl
 #align function.embedding.coe_prod_map Function.Embedding.coe_prodMap
@@ -313,7 +313,7 @@ def sumMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : Sum α 
 #align function.embedding.sum_map Function.Embedding.sumMap
 
 @[simp]
-theorem coe_sumMap {α β γ δ} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : sumMap e₁ e₂ = Sum.map e₁ e₂ :=
+lemma coe_sumMap {α β γ δ} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : sumMap e₁ e₂ = Sum.map e₁ e₂ :=
   rfl
 #align function.embedding.coe_sum_map Function.Embedding.coe_sumMap
 
@@ -369,7 +369,7 @@ def arrowCongrRight {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) : 
 #align function.embedding.arrow_congr_right Function.Embedding.arrowCongrRight
 
 @[simp]
-theorem arrowCongrRight_apply {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) (f : γ → α) :
+lemma arrowCongrRight_apply {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) (f : γ → α) :
     arrowCongrRight e f = e ∘ f :=
   rfl
 #align function.embedding.arrow_congr_right_apply Function.Embedding.arrowCongrRight_apply
@@ -392,12 +392,12 @@ protected def subtypeMap {α β} {p : α → Prop} {q : β → Prop} (f : α ↪
 
 open Set
 
-theorem swap_apply {α β : Type*} [DecidableEq α] [DecidableEq β] (f : α ↪ β) (x y z : α) :
+lemma swap_apply {α β : Type*} [DecidableEq α] [DecidableEq β] (f : α ↪ β) (x y z : α) :
     Equiv.swap (f x) (f y) (f z) = f (Equiv.swap x y z) :=
   f.injective.swap_apply x y z
 #align function.embedding.swap_apply Function.Embedding.swap_apply
 
-theorem swap_comp {α β : Type*} [DecidableEq α] [DecidableEq β] (f : α ↪ β) (x y : α) :
+lemma swap_comp {α β : Type*} [DecidableEq α] [DecidableEq β] (f : α ↪ β) (x y : α) :
     Equiv.swap (f x) (f y) ∘ f = f ∘ Equiv.swap x y :=
   f.injective.swap_comp x y
 #align function.embedding.swap_comp Function.Embedding.swap_comp
@@ -445,13 +445,13 @@ def embeddingCongr {α β γ δ : Sort*} (h : α ≃ β) (h' : γ ≃ δ) : (α 
 #align equiv.embedding_congr_apply Equiv.embeddingCongr_apply
 
 @[simp]
-theorem embeddingCongr_refl {α β : Sort*} :
+lemma embeddingCongr_refl {α β : Sort*} :
     embeddingCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ↪ β) :=
   rfl
 #align equiv.embedding_congr_refl Equiv.embeddingCongr_refl
 
 @[simp]
-theorem embeddingCongr_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Sort*} (e₁ : α₁ ≃ α₂) (e₁' : β₁ ≃ β₂)
+lemma embeddingCongr_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Sort*} (e₁ : α₁ ≃ α₂) (e₁' : β₁ ≃ β₂)
     (e₂ : α₂ ≃ α₃) (e₂' : β₂ ≃ β₃) :
     embeddingCongr (e₁.trans e₂) (e₁'.trans e₂') =
       (embeddingCongr e₁ e₁').trans (embeddingCongr e₂ e₂') :=
@@ -459,12 +459,12 @@ theorem embeddingCongr_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Sort*} (e₁
 #align equiv.embedding_congr_trans Equiv.embeddingCongr_trans
 
 @[simp]
-theorem embeddingCongr_symm {α₁ β₁ α₂ β₂ : Sort*} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
+lemma embeddingCongr_symm {α₁ β₁ α₂ β₂ : Sort*} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
     (embeddingCongr e₁ e₂).symm = embeddingCongr e₁.symm e₂.symm :=
   rfl
 #align equiv.embedding_congr_symm Equiv.embeddingCongr_symm
 
-theorem embeddingCongr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂)
+lemma embeddingCongr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂)
     (ec : γ₁ ≃ γ₂) (f : α₁ ↪ β₁) (g : β₁ ↪ γ₁) :
     Equiv.embeddingCongr ea ec (f.trans g) =
       (Equiv.embeddingCongr ea eb f).trans (Equiv.embeddingCongr eb ec g) := by
@@ -473,12 +473,12 @@ theorem embeddingCongr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*}
 #align equiv.embedding_congr_apply_trans Equiv.embeddingCongr_apply_trans
 
 @[simp]
-theorem refl_toEmbedding {α : Type*} : (Equiv.refl α).toEmbedding = Embedding.refl α :=
+lemma refl_toEmbedding {α : Type*} : (Equiv.refl α).toEmbedding = Embedding.refl α :=
   rfl
 #align equiv.refl_to_embedding Equiv.refl_toEmbedding
 
 @[simp]
-theorem trans_toEmbedding {α β γ : Type*} (e : α ≃ β) (f : β ≃ γ) :
+lemma trans_toEmbedding {α β γ : Type*} (e : α ≃ β) (f : β ≃ γ) :
     (e.trans f).toEmbedding = e.toEmbedding.trans f.toEmbedding :=
   rfl
 #align equiv.trans_to_embedding Equiv.trans_toEmbedding
@@ -499,13 +499,13 @@ def subtypeOrLeftEmbedding (p q : α → Prop) [DecidablePred p] :
     split_ifs <;> simp [Subtype.ext_iff]⟩
 #align subtype_or_left_embedding subtypeOrLeftEmbedding
 
-theorem subtypeOrLeftEmbedding_apply_left {p q : α → Prop} [DecidablePred p]
+lemma subtypeOrLeftEmbedding_apply_left {p q : α → Prop} [DecidablePred p]
     (x : { x // p x ∨ q x }) (hx : p x) :
     subtypeOrLeftEmbedding p q x = Sum.inl ⟨x, hx⟩ :=
   dif_pos hx
 #align subtype_or_left_embedding_apply_left subtypeOrLeftEmbedding_apply_left
 
-theorem subtypeOrLeftEmbedding_apply_right {p q : α → Prop} [DecidablePred p]
+lemma subtypeOrLeftEmbedding_apply_right {p q : α → Prop} [DecidablePred p]
     (x : { x // p x ∨ q x }) (hx : ¬p x) :
     subtypeOrLeftEmbedding p q x = Sum.inr ⟨x, x.prop.resolve_left hx⟩ :=
   dif_neg hx

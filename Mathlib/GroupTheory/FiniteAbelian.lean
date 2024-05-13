@@ -88,7 +88,7 @@ namespace Module
 
 variable (M : Type u)
 
-theorem finite_of_fg_torsion [AddCommGroup M] [Module ℤ M] [Module.Finite ℤ M]
+lemma finite_of_fg_torsion [AddCommGroup M] [Module ℤ M] [Module.Finite ℤ M]
     (hM : Module.IsTorsion ℤ M) : _root_.Finite M := by
   rcases Module.equiv_directSum_of_isTorsion hM with ⟨ι, _, p, h, e, ⟨l⟩⟩
   haveI : ∀ i : ι, NeZero (p i ^ e i).natAbs := fun i =>
@@ -155,7 +155,7 @@ lemma equiv_directSum_zmod_of_finite' (G : Type*) [AddCommGroup G] [Finite G] :
   rintro ⟨i, hi⟩
   exact one_lt_pow (hp _).one_lt hi
 
-theorem finite_of_fg_torsion [hG' : AddGroup.FG G] (hG : AddMonoid.IsTorsion G) : Finite G :=
+lemma finite_of_fg_torsion [hG' : AddGroup.FG G] (hG : AddMonoid.IsTorsion G) : Finite G :=
   @Module.finite_of_fg_torsion _ _ _ (Module.Finite.iff_addGroup_fg.mpr hG') <|
     AddMonoid.isTorsion_iff_isTorsion_int.mp hG
 #align add_comm_group.finite_of_fg_torsion AddCommGroup.finite_of_fg_torsion
@@ -164,7 +164,7 @@ end AddCommGroup
 
 namespace CommGroup
 
-theorem finite_of_fg_torsion [CommGroup G] [Group.FG G] (hG : Monoid.IsTorsion G) : Finite G :=
+lemma finite_of_fg_torsion [CommGroup G] [Group.FG G] (hG : Monoid.IsTorsion G) : Finite G :=
   @Finite.of_equiv _ _ (AddCommGroup.finite_of_fg_torsion (Additive G) hG) Multiplicative.ofAdd
 #align comm_group.finite_of_fg_torsion CommGroup.finite_of_fg_torsion
 

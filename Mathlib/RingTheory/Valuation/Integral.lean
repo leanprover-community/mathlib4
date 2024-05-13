@@ -30,7 +30,7 @@ variable {v : Valuation R Γ₀} {O : Type w} [CommRing O] [Algebra O R] (hv : I
 
 open Polynomial
 
-theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
+lemma mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
   let ⟨p, hpm, hpx⟩ := hx
   le_of_not_lt fun hvx : 1 < v x => by
     rw [hpm.as_sum, eval₂_add, eval₂_pow, eval₂_X, eval₂_finset_sum, add_eq_zero_iff_eq_neg] at hpx
@@ -44,7 +44,7 @@ theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
     · erw [hvpi]; rw [one_mul, one_mul]; exact pow_lt_pow_right₀ hvx (Finset.mem_range.1 hi)
 #align valuation.integers.mem_of_integral Valuation.Integers.mem_of_integral
 
-protected theorem integralClosure : integralClosure O R = ⊥ :=
+protected lemma integralClosure : integralClosure O R = ⊥ :=
   bot_unique fun _ hr =>
     let ⟨x, hx⟩ := hv.3 (hv.mem_of_integral hr)
     Algebra.mem_bot.2 ⟨x, hx⟩
@@ -59,7 +59,7 @@ variable {v : Valuation K Γ₀} {O : Type w} [CommRing O] [IsDomain O]
 variable [Algebra O K] [IsFractionRing O K]
 variable (hv : Integers v O)
 
-theorem integrallyClosed : IsIntegrallyClosed O :=
+lemma integrallyClosed : IsIntegrallyClosed O :=
   (IsIntegrallyClosed.integralClosure_eq_bot_iff K).mp (Valuation.Integers.integralClosure hv)
 #align valuation.integers.integrally_closed Valuation.Integers.integrallyClosed
 

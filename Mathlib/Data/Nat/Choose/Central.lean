@@ -35,20 +35,20 @@ def centralBinom (n : ℕ) :=
   (2 * n).choose n
 #align nat.central_binom Nat.centralBinom
 
-theorem centralBinom_eq_two_mul_choose (n : ℕ) : centralBinom n = (2 * n).choose n :=
+lemma centralBinom_eq_two_mul_choose (n : ℕ) : centralBinom n = (2 * n).choose n :=
   rfl
 #align nat.central_binom_eq_two_mul_choose Nat.centralBinom_eq_two_mul_choose
 
-theorem centralBinom_pos (n : ℕ) : 0 < centralBinom n :=
+lemma centralBinom_pos (n : ℕ) : 0 < centralBinom n :=
   choose_pos (Nat.le_mul_of_pos_left _ zero_lt_two)
 #align nat.central_binom_pos Nat.centralBinom_pos
 
-theorem centralBinom_ne_zero (n : ℕ) : centralBinom n ≠ 0 :=
+lemma centralBinom_ne_zero (n : ℕ) : centralBinom n ≠ 0 :=
   (centralBinom_pos n).ne'
 #align nat.central_binom_ne_zero Nat.centralBinom_ne_zero
 
 @[simp]
-theorem centralBinom_zero : centralBinom 0 = 1 :=
+lemma centralBinom_zero : centralBinom 0 = 1 :=
   choose_zero_right _
 #align nat.central_binom_zero Nat.centralBinom_zero
 
@@ -60,7 +60,7 @@ theorem choose_le_centralBinom (r n : ℕ) : choose (2 * n) r ≤ centralBinom n
     _ = (2 * n).choose n := by rw [Nat.mul_div_cancel_left n zero_lt_two]
 #align nat.choose_le_central_binom Nat.choose_le_centralBinom
 
-theorem two_le_centralBinom (n : ℕ) (n_pos : 0 < n) : 2 ≤ centralBinom n :=
+lemma two_le_centralBinom (n : ℕ) (n_pos : 0 < n) : 2 ≤ centralBinom n :=
   calc
     2 ≤ 2 * n := Nat.le_mul_of_pos_right _ n_pos
     _ = (2 * n).choose 1 := (choose_one_right (2 * n)).symm
@@ -115,13 +115,13 @@ theorem four_pow_le_two_mul_self_mul_centralBinom :
         rw [mul_assoc]; refine' Nat.le_mul_of_pos_left _ zero_lt_two
 #align nat.four_pow_le_two_mul_self_mul_central_binom Nat.four_pow_le_two_mul_self_mul_centralBinom
 
-theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by
+lemma two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by
   use (n + 1 + n).choose n
   rw [centralBinom_eq_two_mul_choose, two_mul, ← add_assoc,
       choose_succ_succ' (n + 1 + n) n, choose_symm_add, ← two_mul]
 #align nat.two_dvd_central_binom_succ Nat.two_dvd_centralBinom_succ
 
-theorem two_dvd_centralBinom_of_one_le {n : ℕ} (h : 0 < n) : 2 ∣ centralBinom n := by
+lemma two_dvd_centralBinom_of_one_le {n : ℕ} (h : 0 < n) : 2 ∣ centralBinom n := by
   rw [← Nat.succ_pred_eq_of_pos h]
   exact two_dvd_centralBinom_succ n.pred
 #align nat.two_dvd_central_binom_of_one_le Nat.two_dvd_centralBinom_of_one_le

@@ -31,15 +31,15 @@ abbrev localInverse : 𝕜 → 𝕜 :=
 
 variable {f f' a}
 
-theorem map_nhds_eq : map f (𝓝 a) = 𝓝 (f a) :=
+lemma map_nhds_eq : map f (𝓝 a) = 𝓝 (f a) :=
   (hf.hasStrictFDerivAt_equiv hf').map_nhds_eq_of_equiv
 #align has_strict_deriv_at.map_nhds_eq HasStrictDerivAt.map_nhds_eq
 
-theorem to_localInverse : HasStrictDerivAt (hf.localInverse f f' a hf') f'⁻¹ (f a) :=
+lemma to_localInverse : HasStrictDerivAt (hf.localInverse f f' a hf') f'⁻¹ (f a) :=
   (hf.hasStrictFDerivAt_equiv hf').to_localInverse
 #align has_strict_deriv_at.to_local_inverse HasStrictDerivAt.to_localInverse
 
-theorem to_local_left_inverse {g : 𝕜 → 𝕜} (hg : ∀ᶠ x in 𝓝 a, g (f x) = x) :
+lemma to_local_left_inverse {g : 𝕜 → 𝕜} (hg : ∀ᶠ x in 𝓝 a, g (f x) = x) :
     HasStrictDerivAt g f'⁻¹ (f a) :=
   (hf.hasStrictFDerivAt_equiv hf').to_local_left_inverse hg
 #align has_strict_deriv_at.to_local_left_inverse HasStrictDerivAt.to_local_left_inverse

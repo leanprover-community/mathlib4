@@ -71,22 +71,22 @@ instance instSupSet : SupSet L where
 instance instInfSet : InfSet L where
   sInf s := ⟨sInf s, L.sInfClosed' image_val_subset⟩
 
-theorem sSupClosed {s : Set α} (h : s ⊆ L) : sSup s ∈ L := L.sSupClosed' h
+lemma sSupClosed {s : Set α} (h : s ⊆ L) : sSup s ∈ L := L.sSupClosed' h
 
-theorem sInfClosed {s : Set α} (h : s ⊆ L) : sInf s ∈ L := L.sInfClosed' h
+lemma sInfClosed {s : Set α} (h : s ⊆ L) : sInf s ∈ L := L.sInfClosed' h
 
-@[simp] theorem coe_bot : (↑(⊥ : L) : α) = ⊥ := rfl
+@[simp] lemma coe_bot : (↑(⊥ : L) : α) = ⊥ := rfl
 
-@[simp] theorem coe_top : (↑(⊤ : L) : α) = ⊤ := rfl
+@[simp] lemma coe_top : (↑(⊤ : L) : α) = ⊤ := rfl
 
-@[simp] theorem coe_sSup (S : Set L) : (↑(sSup S) : α) = sSup {(s : α) | s ∈ S} := rfl
+@[simp] lemma coe_sSup (S : Set L) : (↑(sSup S) : α) = sSup {(s : α) | s ∈ S} := rfl
 
-theorem coe_sSup' (S : Set L) : (↑(sSup S) : α) = ⨆ N ∈ S, (N : α) := by
+lemma coe_sSup' (S : Set L) : (↑(sSup S) : α) = ⨆ N ∈ S, (N : α) := by
   rw [coe_sSup, ← Set.image, sSup_image]
 
-@[simp] theorem coe_sInf (S : Set L) : (↑(sInf S) : α) = sInf {(s : α) | s ∈ S} := rfl
+@[simp] lemma coe_sInf (S : Set L) : (↑(sInf S) : α) = sInf {(s : α) | s ∈ S} := rfl
 
-theorem coe_sInf' (S : Set L) : (↑(sInf S) : α) = ⨅ N ∈ S, (N : α) := by
+lemma coe_sInf' (S : Set L) : (↑(sInf S) : α) = ⨅ N ∈ S, (N : α) := by
   rw [coe_sInf, ← Set.image, sInf_image]
 
 instance instCompleteLattice : CompleteLattice L :=
@@ -108,7 +108,7 @@ sublattice. -/
     rw [← map_sInf]
     exact mem_image_of_mem f (sInfClosed ht)
 
-@[simp] theorem mem_map {b : β} : b ∈ L.map f ↔ ∃ a ∈ L, f a = b := Iff.rfl
+@[simp] lemma mem_map {b : β} : b ∈ L.map f ↔ ∃ a ∈ L, f a = b := Iff.rfl
 
 /-- The pull back of a complete sublattice under a complete lattice hom is a complete sublattice. -/
 @[simps] def comap (L : CompleteSublattice β) : CompleteSublattice α where
@@ -120,7 +120,7 @@ sublattice. -/
   sInfClosed' s hs := by
     simpa only [mem_preimage, map_sInf, SetLike.mem_coe] using sInfClosed <| mapsTo'.mp hs
 
-@[simp] theorem mem_comap {L : CompleteSublattice β} {a : α} : a ∈ L.comap f ↔ f a ∈ L := Iff.rfl
+@[simp] lemma mem_comap {L : CompleteSublattice β} {a : α} : a ∈ L.comap f ↔ f a ∈ L := Iff.rfl
 
 protected lemma disjoint_iff {a b : L} :
     Disjoint a b ↔ Disjoint (a : α) (b : α) := by
@@ -166,7 +166,7 @@ See Note [range copy pattern]. -/
 protected def range : CompleteSublattice β :=
   (CompleteSublattice.map f ⊤).copy (range f) image_univ.symm
 
-theorem range_coe : (f.range : Set β) = range f := rfl
+lemma range_coe : (f.range : Set β) = range f := rfl
 
 /-- We can regard a complete lattice homomorphism as an order equivalence to its range. -/
 @[simps! apply] noncomputable def toOrderIsoRangeOfInjective (hf : Injective f) : α ≃o f.range :=

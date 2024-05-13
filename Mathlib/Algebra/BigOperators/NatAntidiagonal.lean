@@ -22,45 +22,45 @@ namespace Finset
 
 namespace Nat
 
-theorem prod_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → M} :
+lemma prod_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → M} :
     (∏ p in antidiagonal (n + 1), f p)
       = f (0, n + 1) * ∏ p in antidiagonal n, f (p.1 + 1, p.2) := by
   rw [antidiagonal_succ, prod_cons, prod_map]; rfl
 #align finset.nat.prod_antidiagonal_succ Finset.Nat.prod_antidiagonal_succ
 
-theorem sum_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → N} :
+lemma sum_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → N} :
     (∑ p in antidiagonal (n + 1), f p) = f (0, n + 1) + ∑ p in antidiagonal n, f (p.1 + 1, p.2) :=
   @prod_antidiagonal_succ (Multiplicative N) _ _ _
 #align finset.nat.sum_antidiagonal_succ Finset.Nat.sum_antidiagonal_succ
 
 @[to_additive]
-theorem prod_antidiagonal_swap {n : ℕ} {f : ℕ × ℕ → M} :
+lemma prod_antidiagonal_swap {n : ℕ} {f : ℕ × ℕ → M} :
     ∏ p in antidiagonal n, f p.swap = ∏ p in antidiagonal n, f p := by
   conv_lhs => rw [← map_swap_antidiagonal, Finset.prod_map]
   rfl
 #align finset.nat.prod_antidiagonal_swap Finset.Nat.prod_antidiagonal_swap
 #align finset.nat.sum_antidiagonal_swap Finset.Nat.sum_antidiagonal_swap
 
-theorem prod_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → M} : (∏ p in antidiagonal (n + 1), f p) =
+lemma prod_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → M} : (∏ p in antidiagonal (n + 1), f p) =
     f (n + 1, 0) * ∏ p in antidiagonal n, f (p.1, p.2 + 1) := by
   rw [← prod_antidiagonal_swap, prod_antidiagonal_succ, ← prod_antidiagonal_swap]
   rfl
 #align finset.nat.prod_antidiagonal_succ' Finset.Nat.prod_antidiagonal_succ'
 
-theorem sum_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → N} :
+lemma sum_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → N} :
     (∑ p in antidiagonal (n + 1), f p) = f (n + 1, 0) + ∑ p in antidiagonal n, f (p.1, p.2 + 1) :=
   @prod_antidiagonal_succ' (Multiplicative N) _ _ _
 #align finset.nat.sum_antidiagonal_succ' Finset.Nat.sum_antidiagonal_succ'
 
 @[to_additive]
-theorem prod_antidiagonal_subst {n : ℕ} {f : ℕ × ℕ → ℕ → M} :
+lemma prod_antidiagonal_subst {n : ℕ} {f : ℕ × ℕ → ℕ → M} :
     ∏ p in antidiagonal n, f p n = ∏ p in antidiagonal n, f p (p.1 + p.2) :=
   prod_congr rfl fun p hp ↦ by rw [mem_antidiagonal.mp hp]
 #align finset.nat.prod_antidiagonal_subst Finset.Nat.prod_antidiagonal_subst
 #align finset.nat.sum_antidiagonal_subst Finset.Nat.sum_antidiagonal_subst
 
 @[to_additive]
-theorem prod_antidiagonal_eq_prod_range_succ_mk {M : Type*} [CommMonoid M] (f : ℕ × ℕ → M)
+lemma prod_antidiagonal_eq_prod_range_succ_mk {M : Type*} [CommMonoid M] (f : ℕ × ℕ → M)
     (n : ℕ) : ∏ ij in antidiagonal n, f ij = ∏ k in range n.succ, f (k, n - k) :=
   Finset.prod_map (range n.succ) ⟨fun i ↦ (i, n - i), fun _ _ h ↦ (Prod.mk.inj h).1⟩ f
 #align finset.nat.prod_antidiagonal_eq_prod_range_succ_mk Finset.Nat.prod_antidiagonal_eq_prod_range_succ_mk

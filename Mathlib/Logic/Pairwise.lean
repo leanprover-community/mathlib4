@@ -34,18 +34,18 @@ def Pairwise (r : α → α → Prop) :=
   ∀ ⦃i j⦄, i ≠ j → r i j
 #align pairwise Pairwise
 
-theorem Pairwise.mono (hr : Pairwise r) (h : ∀ ⦃i j⦄, r i j → p i j) : Pairwise p :=
+lemma Pairwise.mono (hr : Pairwise r) (h : ∀ ⦃i j⦄, r i j → p i j) : Pairwise p :=
   fun _i _j hij => h <| hr hij
 #align pairwise.mono Pairwise.mono
 
-protected theorem Pairwise.eq (h : Pairwise r) : ¬r a b → a = b :=
+protected lemma Pairwise.eq (h : Pairwise r) : ¬r a b → a = b :=
   not_imp_comm.1 <| @h _ _
 #align pairwise.eq Pairwise.eq
 
 protected lemma Subsingleton.pairwise [Subsingleton α] : Pairwise r :=
   fun _ _ h ↦ False.elim <| h.elim <| Subsingleton.elim _ _
 
-theorem Function.injective_iff_pairwise_ne : Injective f ↔ Pairwise ((· ≠ ·) on f) :=
+lemma Function.injective_iff_pairwise_ne : Injective f ↔ Pairwise ((· ≠ ·) on f) :=
   forall₂_congr fun _i _j => not_imp_not.symm
 #align function.injective_iff_pairwise_ne Function.injective_iff_pairwise_ne
 
@@ -70,36 +70,36 @@ protected def Pairwise (s : Set α) (r : α → α → Prop) :=
   ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x ≠ y → r x y
 #align set.pairwise Set.Pairwise
 
-theorem pairwise_of_forall (s : Set α) (r : α → α → Prop) (h : ∀ a b, r a b) : s.Pairwise r :=
+lemma pairwise_of_forall (s : Set α) (r : α → α → Prop) (h : ∀ a b, r a b) : s.Pairwise r :=
   fun a _ b _ _ => h a b
 #align set.pairwise_of_forall Set.pairwise_of_forall
 
-theorem Pairwise.imp_on (h : s.Pairwise r) (hrp : s.Pairwise fun ⦃a b : α⦄ => r a b → p a b) :
+lemma Pairwise.imp_on (h : s.Pairwise r) (hrp : s.Pairwise fun ⦃a b : α⦄ => r a b → p a b) :
     s.Pairwise p :=
   fun _a ha _b hb hab => hrp ha hb hab <| h ha hb hab
 #align set.pairwise.imp_on Set.Pairwise.imp_on
 
-theorem Pairwise.imp (h : s.Pairwise r) (hpq : ∀ ⦃a b : α⦄, r a b → p a b) : s.Pairwise p :=
+lemma Pairwise.imp (h : s.Pairwise r) (hpq : ∀ ⦃a b : α⦄, r a b → p a b) : s.Pairwise p :=
   h.imp_on <| pairwise_of_forall s _ hpq
 #align set.pairwise.imp Set.Pairwise.imp
 
-protected theorem Pairwise.eq (hs : s.Pairwise r) (ha : a ∈ s) (hb : b ∈ s) (h : ¬r a b) : a = b :=
+protected lemma Pairwise.eq (hs : s.Pairwise r) (ha : a ∈ s) (hb : b ∈ s) (h : ¬r a b) : a = b :=
   of_not_not fun hab => h <| hs ha hb hab
 #align set.pairwise.eq Set.Pairwise.eq
 
-theorem _root_.Reflexive.set_pairwise_iff (hr : Reflexive r) :
+lemma _root_.Reflexive.set_pairwise_iff (hr : Reflexive r) :
     s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
   forall₄_congr fun a _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp <| Eq.ndrec <|
     hr a
 #align reflexive.set_pairwise_iff Reflexive.set_pairwise_iff
 
-theorem Pairwise.on_injective (hs : s.Pairwise r) (hf : Function.Injective f) (hfs : ∀ x, f x ∈ s) :
+lemma Pairwise.on_injective (hs : s.Pairwise r) (hf : Function.Injective f) (hfs : ∀ x, f x ∈ s) :
     Pairwise (r on f) := fun i j hij => hs (hfs i) (hfs j) (hf.ne hij)
 #align set.pairwise.on_injective Set.Pairwise.on_injective
 
 end Set
 
-theorem Pairwise.set_pairwise (h : Pairwise r) (s : Set α) : s.Pairwise r := fun _ _ _ _ w => h w
+lemma Pairwise.set_pairwise (h : Pairwise r) (s : Set α) : s.Pairwise r := fun _ _ _ _ w => h w
 #align pairwise.set_pairwise Pairwise.set_pairwise
 
 end Pairwise

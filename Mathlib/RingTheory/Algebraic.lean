@@ -39,7 +39,7 @@ def Transcendental (x : A) : Prop :=
   ¬IsAlgebraic R x
 #align transcendental Transcendental
 
-theorem is_transcendental_of_subsingleton [Subsingleton R] (x : A) : Transcendental R x :=
+lemma is_transcendental_of_subsingleton [Subsingleton R] (x : A) : Transcendental R x :=
   fun ⟨p, h, _⟩ => h <| Subsingleton.elim p 0
 #align is_transcendental_of_subsingleton is_transcendental_of_subsingleton
 
@@ -78,7 +78,7 @@ theorem Algebra.isAlgebraic_iff : Algebra.IsAlgebraic R A ↔ (⊤ : Subalgebra 
   simp only [Algebra.mem_top, forall_prop_of_true, iff_self_iff]
 #align algebra.is_algebraic_iff Algebra.isAlgebraic_iff
 
-theorem isAlgebraic_iff_not_injective {x : A} :
+lemma isAlgebraic_iff_not_injective {x : A} :
     IsAlgebraic R x ↔ ¬Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) := by
   simp only [IsAlgebraic, injective_iff_map_eq_zero, not_forall, and_comm, exists_prop]
 #align is_algebraic_iff_not_injective isAlgebraic_iff_not_injective
@@ -96,10 +96,10 @@ theorem IsIntegral.isAlgebraic [Nontrivial R] {x : A} : IsIntegral R x → IsAlg
   fun ⟨p, hp, hpx⟩ => ⟨p, hp.ne_zero, hpx⟩
 #align is_integral.is_algebraic IsIntegral.isAlgebraic
 
-theorem Algebra.IsIntegral.isAlgebraic [Nontrivial R] (h : Algebra.IsIntegral R A) :
+lemma Algebra.IsIntegral.isAlgebraic [Nontrivial R] (h : Algebra.IsIntegral R A) :
     Algebra.IsAlgebraic R A := fun a ↦ (h a).isAlgebraic
 
-theorem isAlgebraic_zero [Nontrivial R] : IsAlgebraic R (0 : A) :=
+lemma isAlgebraic_zero [Nontrivial R] : IsAlgebraic R (0 : A) :=
   ⟨_, X_ne_zero, aeval_X 0⟩
 #align is_algebraic_zero isAlgebraic_zero
 
@@ -108,35 +108,35 @@ theorem isAlgebraic_algebraMap [Nontrivial R] (x : R) : IsAlgebraic R (algebraMa
   ⟨_, X_sub_C_ne_zero x, by rw [_root_.map_sub, aeval_X, aeval_C, sub_self]⟩
 #align is_algebraic_algebra_map isAlgebraic_algebraMap
 
-theorem isAlgebraic_one [Nontrivial R] : IsAlgebraic R (1 : A) := by
+lemma isAlgebraic_one [Nontrivial R] : IsAlgebraic R (1 : A) := by
   rw [← _root_.map_one (algebraMap R A)]
   exact isAlgebraic_algebraMap 1
 #align is_algebraic_one isAlgebraic_one
 
-theorem isAlgebraic_nat [Nontrivial R] (n : ℕ) : IsAlgebraic R (n : A) := by
+lemma isAlgebraic_nat [Nontrivial R] (n : ℕ) : IsAlgebraic R (n : A) := by
   rw [← map_natCast (_ : R →+* A) n]
   exact isAlgebraic_algebraMap (Nat.cast n)
 #align is_algebraic_nat isAlgebraic_nat
 
-theorem isAlgebraic_int [Nontrivial R] (n : ℤ) : IsAlgebraic R (n : A) := by
+lemma isAlgebraic_int [Nontrivial R] (n : ℤ) : IsAlgebraic R (n : A) := by
   rw [← _root_.map_intCast (algebraMap R A)]
   exact isAlgebraic_algebraMap (Int.cast n)
 #align is_algebraic_int isAlgebraic_int
 
-theorem isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Algebra R A] (n : ℚ) :
+lemma isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Algebra R A] (n : ℚ) :
     IsAlgebraic R (n : A) := by
   rw [← map_ratCast (algebraMap R A)]
   exact isAlgebraic_algebraMap (Rat.cast n)
 #align is_algebraic_rat isAlgebraic_rat
 
-theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [Field R] [Field A] [Algebra R A]
+lemma isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [Field R] [Field A] [Algebra R A]
     {p : R[X]} {x : A} (hx : x ∈ p.rootSet A) : IsAlgebraic R x :=
   ⟨p, ne_zero_of_mem_rootSet hx, aeval_eq_zero_of_mem_rootSet hx⟩
 #align is_algebraic_of_mem_root_set isAlgebraic_of_mem_rootSet
 
 open IsScalarTower
 
-protected theorem IsAlgebraic.algebraMap {a : S} :
+protected lemma IsAlgebraic.algebraMap {a : S} :
     IsAlgebraic R a → IsAlgebraic R (algebraMap S A a) := fun ⟨f, hf₁, hf₂⟩ =>
   ⟨f, hf₁, by rw [aeval_algebraMap_apply, hf₂, map_zero]⟩
 #align is_algebraic_algebra_map_of_is_algebraic IsAlgebraic.algebraMap
@@ -153,12 +153,12 @@ protected theorem IsAlgebraic.algHom (f : A →ₐ[R] B) {a : A}
   ⟨p, hp, by rw [aeval_algHom, f.comp_apply, ha, map_zero]⟩
 #align is_algebraic_alg_hom_of_is_algebraic IsAlgebraic.algHom
 
-theorem isAlgebraic_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f)
+lemma isAlgebraic_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f)
     {a : A} : IsAlgebraic R (f a) ↔ IsAlgebraic R a :=
   ⟨fun ⟨p, hp0, hp⟩ ↦ ⟨p, hp0, hf <| by rwa [map_zero, ← f.comp_apply, ← aeval_algHom]⟩,
     IsAlgebraic.algHom f⟩
 
-theorem Algebra.IsAlgebraic.of_injective (f : A →ₐ[R] B) (hf : Function.Injective f)
+lemma Algebra.IsAlgebraic.of_injective (f : A →ₐ[R] B) (hf : Function.Injective f)
     (h : Algebra.IsAlgebraic R B) : Algebra.IsAlgebraic R A :=
   fun _ ↦ (isAlgebraic_algHom_iff f hf).mp (h _)
 
@@ -168,19 +168,19 @@ theorem AlgEquiv.isAlgebraic (e : A ≃ₐ[R] B)
   h.of_injective e.symm.toAlgHom e.symm.injective
 #align alg_equiv.is_algebraic AlgEquiv.isAlgebraic
 
-theorem AlgEquiv.isAlgebraic_iff (e : A ≃ₐ[R] B) :
+lemma AlgEquiv.isAlgebraic_iff (e : A ≃ₐ[R] B) :
     Algebra.IsAlgebraic R A ↔ Algebra.IsAlgebraic R B :=
   ⟨e.isAlgebraic, e.symm.isAlgebraic⟩
 #align alg_equiv.is_algebraic_iff AlgEquiv.isAlgebraic_iff
 
 end
 
-theorem isAlgebraic_algebraMap_iff {a : S} (h : Function.Injective (algebraMap S A)) :
+lemma isAlgebraic_algebraMap_iff {a : S} (h : Function.Injective (algebraMap S A)) :
     IsAlgebraic R (algebraMap S A a) ↔ IsAlgebraic R a :=
   isAlgebraic_algHom_iff (IsScalarTower.toAlgHom R S A) h
 #align is_algebraic_algebra_map_iff isAlgebraic_algebraMap_iff
 
-theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
+lemma IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
     IsAlgebraic R r := by
   obtain ⟨p, p_nonzero, hp⟩ := ht
   refine ⟨Polynomial.expand _ n p, ?_, ?_⟩
@@ -188,7 +188,7 @@ theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r
   · rwa [Polynomial.expand_aeval n p r]
 #align is_algebraic_of_pow IsAlgebraic.of_pow
 
-theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 < n) :
+lemma Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 < n) :
     Transcendental R (r ^ n) := fun ht' ↦ ht <| ht'.of_pow hn
 #align transcendental.pow Transcendental.pow
 
@@ -224,7 +224,7 @@ theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x 
   rw [← aeval_def, AlgHom.map_mul, hpx, zero_mul]
 #align is_algebraic_iff_is_integral isAlgebraic_iff_isIntegral
 
-protected theorem Algebra.isAlgebraic_iff_isIntegral :
+protected lemma Algebra.isAlgebraic_iff_isIntegral :
     Algebra.IsAlgebraic K A ↔ Algebra.IsIntegral K A :=
   forall_congr' fun _ ↦ isAlgebraic_iff_isIntegral
 #align algebra.is_algebraic_iff_is_integral Algebra.isAlgebraic_iff_isIntegral
@@ -283,7 +283,7 @@ theorem Algebra.IsAlgebraic.tower_top (A_alg : IsAlgebraic K A) : IsAlgebraic L 
 
 variable (K)
 
-theorem IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
+lemma IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
   (IsIntegral.of_finite K e).isAlgebraic
 
 variable (A)
@@ -319,7 +319,7 @@ namespace Algebra.IsAlgebraic
 variable [CommRing K] [Field L]
 variable [Algebra K L] [NoZeroSMulDivisors K L]
 
-theorem algHom_bijective (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] L) :
+lemma algHom_bijective (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] L) :
     Function.Bijective f := by
   refine' ⟨f.injective, fun b ↦ _⟩
   obtain ⟨p, hp, he⟩ := ha b
@@ -330,17 +330,17 @@ theorem algHom_bijective (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] L) :
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 #align algebra.is_algebraic.alg_hom_bijective Algebra.IsAlgebraic.algHom_bijective
 
-theorem algHom_bijective₂ [Field R] [Algebra K R]
+lemma algHom_bijective₂ [Field R] [Algebra K R]
     (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] R) (g : R →ₐ[K] L) :
     Function.Bijective f ∧ Function.Bijective g :=
   (g.injective.bijective₂_of_surjective f.injective (ha.algHom_bijective <| g.comp f).2).symm
 
-theorem bijective_of_isScalarTower (ha : Algebra.IsAlgebraic K L)
+lemma bijective_of_isScalarTower (ha : Algebra.IsAlgebraic K L)
     [Field R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
   (ha.algHom_bijective₂ (IsScalarTower.toAlgHom K L R) f).2
 
-theorem bijective_of_isScalarTower' [Field R] [Algebra K R]
+lemma bijective_of_isScalarTower' [Field R] [Algebra K R]
     [NoZeroSMulDivisors K R]
     (ha : Algebra.IsAlgebraic K R) [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
@@ -368,7 +368,7 @@ section Field
 variable [Field K] [Field L]
 variable [Algebra K L]
 
-theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
+lemma AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
   (Algebra.IsAlgebraic.of_finite K L).algHom_bijective ϕ
 #align alg_hom.bijective AlgHom.bijective
 
@@ -386,7 +386,7 @@ end
 
 variable {R S : Type*} [CommRing R] [IsDomain R] [CommRing S]
 
-theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
+lemma exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     (inj : ∀ x, algebraMap R S x = 0 → x = 0) :
     ∃ᵉ (x : integralClosure R S) (y ≠ (0 : R)), z * algebraMap R S y = x := by
   rcases hz with ⟨p, p_ne_zero, px⟩
@@ -419,7 +419,7 @@ section Field
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (A : Subalgebra K L)
 
-theorem inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (divX p) ≠ 0) :
+lemma inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (divX p) ≠ 0) :
     x⁻¹ = aeval x (divX p) / (aeval x p - algebraMap _ _ (p.coeff 0)) := by
   rw [inv_eq_iff_eq_inv, inv_div, eq_comm, div_eq_iff, sub_eq_iff_eq_add, mul_comm]
   conv_lhs => rw [← divX_mul_X_add p]
@@ -428,7 +428,7 @@ theorem inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (div
 set_option linter.uppercaseLean3 false in
 #align inv_eq_of_aeval_div_X_ne_zero inv_eq_of_aeval_divX_ne_zero
 
-theorem inv_eq_of_root_of_coeff_zero_ne_zero {x : L} {p : K[X]} (aeval_eq : aeval x p = 0)
+lemma inv_eq_of_root_of_coeff_zero_ne_zero {x : L} {p : K[X]} (aeval_eq : aeval x p = 0)
     (coeff_zero_ne : p.coeff 0 ≠ 0) : x⁻¹ = -(aeval x (divX p) / algebraMap _ _ (p.coeff 0)) := by
   convert inv_eq_of_aeval_divX_ne_zero (p := p) (L := L)
     (mt (fun h => (algebraMap K L).injective ?_) coeff_zero_ne) using 1
@@ -439,7 +439,7 @@ theorem inv_eq_of_root_of_coeff_zero_ne_zero {x : L} {p : K[X]} (aeval_eq : aeva
   rw [AlgHom.map_add, AlgHom.map_mul, h, zero_mul, zero_add, aeval_C]
 #align inv_eq_of_root_of_coeff_zero_ne_zero inv_eq_of_root_of_coeff_zero_ne_zero
 
-theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
+lemma Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
     (aeval_eq : aeval x p = 0) (coeff_zero_ne : p.coeff 0 ≠ 0) : (x⁻¹ : L) ∈ A := by
   suffices (x⁻¹ : L) = (-p.coeff 0)⁻¹ • aeval x (divX p) by
     rw [this]
@@ -452,7 +452,7 @@ theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
   rw [map_inv₀, map_neg, inv_neg, neg_mul]
 #align subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero
 
-theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : L)) :
+lemma Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : L)) :
     (x⁻¹ : L) ∈ A := by
   obtain ⟨p, ne_zero, aeval_eq⟩ := hx
   rw [Subalgebra.aeval_coe, Subalgebra.coe_eq_zero] at aeval_eq
@@ -503,13 +503,13 @@ noncomputable def Polynomial.hasSMulPi' [CommSemiring R'] [Semiring S'] [Algebra
 attribute [local instance] Polynomial.hasSMulPi Polynomial.hasSMulPi'
 
 @[simp]
-theorem polynomial_smul_apply [Semiring R'] [SMul R' S'] (p : R'[X]) (f : R' → S') (x : R') :
+lemma polynomial_smul_apply [Semiring R'] [SMul R' S'] (p : R'[X]) (f : R' → S') (x : R') :
     (p • f) x = eval x p • f x :=
   rfl
 #align polynomial_smul_apply polynomial_smul_apply
 
 @[simp]
-theorem polynomial_smul_apply' [CommSemiring R'] [Semiring S'] [Algebra R' S'] [SMul S' T']
+lemma polynomial_smul_apply' [CommSemiring R'] [Semiring S'] [Algebra R' S'] [SMul S' T']
     (p : R'[X]) (f : S' → T') (x : S') : (p • f) x = aeval x p • f x :=
   rfl
 #align polynomial_smul_apply' polynomial_smul_apply'
@@ -546,13 +546,13 @@ noncomputable def Polynomial.algebraPi : Algebra R'[X] (S' → T') :=
 attribute [local instance] Polynomial.algebraPi
 
 @[simp]
-theorem Polynomial.algebraMap_pi_eq_aeval :
+lemma Polynomial.algebraMap_pi_eq_aeval :
     (algebraMap R'[X] (S' → T') : R'[X] → S' → T') = fun p z => algebraMap _ _ (aeval z p) :=
   rfl
 #align polynomial.algebra_map_pi_eq_aeval Polynomial.algebraMap_pi_eq_aeval
 
 @[simp]
-theorem Polynomial.algebraMap_pi_self_eq_eval :
+lemma Polynomial.algebraMap_pi_self_eq_eval :
     (algebraMap R'[X] (R' → R') : R'[X] → R' → R') = fun p z => eval z p :=
   rfl
 #align polynomial.algebra_map_pi_self_eq_eval Polynomial.algebraMap_pi_self_eq_eval

@@ -34,7 +34,7 @@ theorem linearEquiv_det_conjLIE : LinearEquiv.det conjLIE.toLinearEquiv = -1 :=
 #align complex.linear_equiv_det_conj_lie Complex.linearEquiv_det_conjLIE
 
 @[simp]
-theorem reCLM_norm : ‖reCLM‖ = 1 :=
+lemma reCLM_norm : ‖reCLM‖ = 1 :=
   le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _) <|
     calc
       1 = ‖reCLM 1‖ := by simp
@@ -42,12 +42,12 @@ theorem reCLM_norm : ‖reCLM‖ = 1 :=
 #align complex.re_clm_norm Complex.reCLM_norm
 
 @[simp]
-theorem reCLM_nnnorm : ‖reCLM‖₊ = 1 :=
+lemma reCLM_nnnorm : ‖reCLM‖₊ = 1 :=
   Subtype.ext reCLM_norm
 #align complex.re_clm_nnnorm Complex.reCLM_nnnorm
 
 @[simp]
-theorem imCLM_norm : ‖imCLM‖ = 1 :=
+lemma imCLM_norm : ‖imCLM‖ = 1 :=
   le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _) <|
     calc
       1 = ‖imCLM I‖ := by simp
@@ -55,27 +55,27 @@ theorem imCLM_norm : ‖imCLM‖ = 1 :=
 #align complex.im_clm_norm Complex.imCLM_norm
 
 @[simp]
-theorem imCLM_nnnorm : ‖imCLM‖₊ = 1 :=
+lemma imCLM_nnnorm : ‖imCLM‖₊ = 1 :=
   Subtype.ext imCLM_norm
 #align complex.im_clm_nnnorm Complex.imCLM_nnnorm
 
 @[simp]
-theorem conjCLE_norm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ = 1 :=
+lemma conjCLE_norm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ = 1 :=
   conjLIE.toLinearIsometry.norm_toContinuousLinearMap
 #align complex.conj_cle_norm Complex.conjCLE_norm
 
 @[simp]
-theorem conjCLE_nnorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
+lemma conjCLE_nnorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
   Subtype.ext conjCLE_norm
 #align complex.conj_cle_nnorm Complex.conjCLE_nnorm
 
 @[simp]
-theorem ofRealCLM_norm : ‖ofRealCLM‖ = 1 :=
+lemma ofRealCLM_norm : ‖ofRealCLM‖ = 1 :=
   ofRealLI.norm_toContinuousLinearMap
 #align complex.of_real_clm_norm Complex.ofRealCLM_norm
 
 @[simp]
-theorem ofRealCLM_nnnorm : ‖ofRealCLM‖₊ = 1 :=
+lemma ofRealCLM_nnnorm : ‖ofRealCLM‖₊ = 1 :=
   Subtype.ext <| ofRealCLM_norm
 #align complex.of_real_clm_nnnorm Complex.ofRealCLM_nnnorm
 

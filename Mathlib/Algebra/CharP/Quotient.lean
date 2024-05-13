@@ -18,7 +18,7 @@ universe u v
 
 namespace CharP
 
-theorem quotient (R : Type u) [CommRing R] (p : ℕ) [hp1 : Fact p.Prime] (hp2 : ↑p ∈ nonunits R) :
+lemma quotient (R : Type u) [CommRing R] (p : ℕ) [hp1 : Fact p.Prime] (hp2 : ↑p ∈ nonunits R) :
     CharP (R ⧸ (Ideal.span ({(p : R)} : Set R) : Ideal R)) p :=
   have hp0 : (p : R ⧸ (Ideal.span {(p : R)} : Ideal R)) = 0 :=
     map_natCast (Ideal.Quotient.mk (Ideal.span {(p : R)} : Ideal R)) p ▸
@@ -57,7 +57,7 @@ theorem quotient_iff_le_ker_natCast {R : Type*} [CommRing R] (n : ℕ) [CharP R 
 
 end CharP
 
-theorem Ideal.Quotient.index_eq_zero {R : Type*} [CommRing R] (I : Ideal R) :
+lemma Ideal.Quotient.index_eq_zero {R : Type*} [CommRing R] (I : Ideal R) :
     (↑I.toAddSubgroup.index : R ⧸ I) = 0 := by
   rw [AddSubgroup.index, Nat.card_eq]
   split_ifs with hq; swap

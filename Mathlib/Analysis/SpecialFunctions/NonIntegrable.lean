@@ -95,7 +95,7 @@ theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter_aux
       apply setIntegral_mono_set hgi
         (ae_of_all _ fun x => mul_nonneg hC₀ (norm_nonneg _)) hsub'.eventuallyLE
 
-theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter
+lemma not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter
     {f : ℝ → E} {g : ℝ → F}
     {k : Set ℝ} (l : Filter ℝ) [NeBot l] [TendstoIxxClass Icc l l]
     (hl : k ∈ l) (hd : ∀ᶠ x in l, DifferentiableAt ℝ f x) (hf : Tendsto (fun x => ‖f x‖) l atTop)

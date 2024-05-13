@@ -90,27 +90,27 @@ instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G 
 variable {F G}
 
 -- This cannot be a `simp` lemma, as the RHS is a coercion which contains `η.app`.
-theorem app_eq_coe (η : ApplicativeTransformation F G) : η.app = η :=
+lemma app_eq_coe (η : ApplicativeTransformation F G) : η.app = η :=
   rfl
 #align applicative_transformation.app_eq_coe ApplicativeTransformation.app_eq_coe
 
 @[simp]
-theorem coe_mk (f : ∀ α : Type u, F α → G α) (pp ps) :
+lemma coe_mk (f : ∀ α : Type u, F α → G α) (pp ps) :
     (ApplicativeTransformation.mk f @pp @ps) = f :=
   rfl
 #align applicative_transformation.coe_mk ApplicativeTransformation.coe_mk
 
-protected theorem congr_fun (η η' : ApplicativeTransformation F G) (h : η = η') {α : Type u}
+protected lemma congr_fun (η η' : ApplicativeTransformation F G) (h : η = η') {α : Type u}
     (x : F α) : η x = η' x :=
   congrArg (fun η'' : ApplicativeTransformation F G => η'' x) h
 #align applicative_transformation.congr_fun ApplicativeTransformation.congr_fun
 
-protected theorem congr_arg (η : ApplicativeTransformation F G) {α : Type u} {x y : F α}
+protected lemma congr_arg (η : ApplicativeTransformation F G) {α : Type u} {x y : F α}
     (h : x = y) : η x = η y :=
   congrArg (fun z : F α => η z) h
 #align applicative_transformation.congr_arg ApplicativeTransformation.congr_arg
 
-theorem coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, F α → G α) = η') :
+lemma coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, F α → G α) = η') :
     η = η' := by
   cases η
   cases η'
@@ -118,14 +118,14 @@ theorem coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, 
 #align applicative_transformation.coe_inj ApplicativeTransformation.coe_inj
 
 @[ext]
-theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) (x : F α), η x = η' x) :
+lemma ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) (x : F α), η x = η' x) :
     η = η' := by
   apply coe_inj
   ext1 α
   exact funext (h α)
 #align applicative_transformation.ext ApplicativeTransformation.ext
 
-theorem ext_iff {η η' : ApplicativeTransformation F G} :
+lemma ext_iff {η η' : ApplicativeTransformation F G} :
     η = η' ↔ ∀ (α : Type u) (x : F α), η x = η' x :=
   ⟨fun h _ _ => h ▸ rfl, fun h => ext h⟩
 #align applicative_transformation.ext_iff ApplicativeTransformation.ext_iff
@@ -135,21 +135,21 @@ section Preserves
 variable (η : ApplicativeTransformation F G)
 
 @[functor_norm]
-theorem preserves_pure {α} : ∀ x : α, η (pure x) = pure x :=
+lemma preserves_pure {α} : ∀ x : α, η (pure x) = pure x :=
   η.preserves_pure'
 #align applicative_transformation.preserves_pure ApplicativeTransformation.preserves_pure
 
 @[functor_norm]
-theorem preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η (x <*> y) = η x <*> η y :=
+lemma preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η (x <*> y) = η x <*> η y :=
   η.preserves_seq'
 #align applicative_transformation.preserves_seq ApplicativeTransformation.preserves_seq
 
 @[functor_norm]
-theorem preserves_map {α β} (x : α → β) (y : F α) : η (x <$> y) = x <$> η y := by
+lemma preserves_map {α β} (x : α → β) (y : F α) : η (x <$> y) = x <$> η y := by
   rw [← pure_seq, η.preserves_seq, preserves_pure, pure_seq]
 #align applicative_transformation.preserves_map ApplicativeTransformation.preserves_map
 
-theorem preserves_map' {α β} (x : α → β) : @η _ ∘ Functor.map x = Functor.map x ∘ @η _ := by
+lemma preserves_map' {α β} (x : α → β) : @η _ ∘ Functor.map x = Functor.map x ∘ @η _ := by
   ext y
   exact preserves_map η x y
 #align applicative_transformation.preserves_map' ApplicativeTransformation.preserves_map'
@@ -181,26 +181,26 @@ def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F
 #align applicative_transformation.comp ApplicativeTransformation.comp
 
 @[simp]
-theorem comp_apply (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G)
+lemma comp_apply (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G)
     {α : Type u} (x : F α) : η'.comp η x = η' (η x) :=
   rfl
 #align applicative_transformation.comp_apply ApplicativeTransformation.comp_apply
 
 -- Porting note: in mathlib3 we also had the assumption `[LawfulApplicative I]` because
 -- this was assumed
-theorem comp_assoc {I : Type u → Type t} [Applicative I]
+lemma comp_assoc {I : Type u → Type t} [Applicative I]
     (η'' : ApplicativeTransformation H I) (η' : ApplicativeTransformation G H)
     (η : ApplicativeTransformation F G) : (η''.comp η').comp η = η''.comp (η'.comp η) :=
   rfl
 #align applicative_transformation.comp_assoc ApplicativeTransformation.comp_assoc
 
 @[simp]
-theorem comp_id (η : ApplicativeTransformation F G) : η.comp idTransformation = η :=
+lemma comp_id (η : ApplicativeTransformation F G) : η.comp idTransformation = η :=
   ext fun _ _ => rfl
 #align applicative_transformation.comp_id ApplicativeTransformation.comp_id
 
 @[simp]
-theorem id_comp (η : ApplicativeTransformation F G) : idTransformation.comp η = η :=
+lemma id_comp (η : ApplicativeTransformation F G) : idTransformation.comp η = η :=
   ext fun _ _ => rfl
 #align applicative_transformation.id_comp ApplicativeTransformation.id_comp
 

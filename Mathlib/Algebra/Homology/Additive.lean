@@ -56,32 +56,32 @@ instance hasIntScalar : SMul ℤ (C ⟶ D) :=
 #align homological_complex.has_int_scalar HomologicalComplex.hasIntScalar
 
 @[simp]
-theorem zero_f_apply (i : ι) : (0 : C ⟶ D).f i = 0 :=
+lemma zero_f_apply (i : ι) : (0 : C ⟶ D).f i = 0 :=
   rfl
 #align homological_complex.zero_f_apply HomologicalComplex.zero_f_apply
 
 @[simp]
-theorem add_f_apply (f g : C ⟶ D) (i : ι) : (f + g).f i = f.f i + g.f i :=
+lemma add_f_apply (f g : C ⟶ D) (i : ι) : (f + g).f i = f.f i + g.f i :=
   rfl
 #align homological_complex.add_f_apply HomologicalComplex.add_f_apply
 
 @[simp]
-theorem neg_f_apply (f : C ⟶ D) (i : ι) : (-f).f i = -f.f i :=
+lemma neg_f_apply (f : C ⟶ D) (i : ι) : (-f).f i = -f.f i :=
   rfl
 #align homological_complex.neg_f_apply HomologicalComplex.neg_f_apply
 
 @[simp]
-theorem sub_f_apply (f g : C ⟶ D) (i : ι) : (f - g).f i = f.f i - g.f i :=
+lemma sub_f_apply (f g : C ⟶ D) (i : ι) : (f - g).f i = f.f i - g.f i :=
   rfl
 #align homological_complex.sub_f_apply HomologicalComplex.sub_f_apply
 
 @[simp]
-theorem nsmul_f_apply (n : ℕ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f.f i :=
+lemma nsmul_f_apply (n : ℕ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f.f i :=
   rfl
 #align homological_complex.nsmul_f_apply HomologicalComplex.nsmul_f_apply
 
 @[simp]
-theorem zsmul_f_apply (n : ℤ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f.f i :=
+lemma zsmul_f_apply (n : ℤ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f.f i :=
   rfl
 #align homological_complex.zsmul_f_apply HomologicalComplex.zsmul_f_apply
 
@@ -200,13 +200,13 @@ def NatTrans.mapHomologicalComplex {F G : W₁ ⥤ W₂}
 #align category_theory.nat_trans.map_homological_complex CategoryTheory.NatTrans.mapHomologicalComplex
 
 @[simp]
-theorem NatTrans.mapHomologicalComplex_id
+lemma NatTrans.mapHomologicalComplex_id
     (c : ComplexShape ι) (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] :
     NatTrans.mapHomologicalComplex (𝟙 F) c = 𝟙 (F.mapHomologicalComplex c) := by aesop_cat
 #align category_theory.nat_trans.map_homological_complex_id CategoryTheory.NatTrans.mapHomologicalComplex_id
 
 @[simp]
-theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ ⥤ W₂}
+lemma NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ ⥤ W₂}
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] [H.PreservesZeroMorphisms]
     (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomologicalComplex (α ≫ β) c =
@@ -215,7 +215,7 @@ theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ 
 #align category_theory.nat_trans.map_homological_complex_comp CategoryTheory.NatTrans.mapHomologicalComplex_comp
 
 @[reassoc (attr := simp 1100)]
-theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : W₁ ⥤ W₂}
+lemma NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : W₁ ⥤ W₂}
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
     (α : F ⟶ G) {C D : HomologicalComplex W₁ c} (f : C ⟶ D) :
     (F.mapHomologicalComplex c).map f ≫ (NatTrans.mapHomologicalComplex α c).app D =
@@ -259,7 +259,7 @@ namespace ChainComplex
 
 variable {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
-theorem map_chain_complex_of (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (X : α → W₁)
+lemma map_chain_complex_of (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (X : α → W₁)
     (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
     (F.mapHomologicalComplex _).obj (ChainComplex.of X d sq) =
       ChainComplex.of (fun n => F.obj (X n)) (fun n => F.map (d n)) fun n => by
@@ -311,27 +311,27 @@ noncomputable def singleMapHomologicalComplex (j : ι) :
 #align homological_complex.single_map_homological_complex HomologicalComplex.singleMapHomologicalComplex
 
 @[simp]
-theorem singleMapHomologicalComplex_hom_app_self (j : ι) (X : W₁) :
+lemma singleMapHomologicalComplex_hom_app_self (j : ι) (X : W₁) :
     ((singleMapHomologicalComplex F c j).hom.app X).f j =
       F.map (singleObjXSelf c j X).hom ≫ (singleObjXSelf c j (F.obj X)).inv := by
   simp [singleMapHomologicalComplex, singleObjXSelf, singleObjXIsoOfEq, eqToHom_map]
 #align homological_complex.single_map_homological_complex_hom_app_self HomologicalComplex.singleMapHomologicalComplex_hom_app_self
 
 @[simp]
-theorem singleMapHomologicalComplex_hom_app_ne {i j : ι} (h : i ≠ j) (X : W₁) :
+lemma singleMapHomologicalComplex_hom_app_ne {i j : ι} (h : i ≠ j) (X : W₁) :
     ((singleMapHomologicalComplex F c j).hom.app X).f i = 0 := by
   simp [singleMapHomologicalComplex, h]
 #align homological_complex.single_map_homological_complex_hom_app_ne HomologicalComplex.singleMapHomologicalComplex_hom_app_ne
 
 @[simp]
-theorem singleMapHomologicalComplex_inv_app_self (j : ι) (X : W₁) :
+lemma singleMapHomologicalComplex_inv_app_self (j : ι) (X : W₁) :
     ((singleMapHomologicalComplex F c j).inv.app X).f j =
       (singleObjXSelf c j (F.obj X)).hom ≫ F.map (singleObjXSelf c j X).inv := by
   simp [singleMapHomologicalComplex, singleObjXSelf, singleObjXIsoOfEq, eqToHom_map]
 #align homological_complex.single_map_homological_complex_inv_app_self HomologicalComplex.singleMapHomologicalComplex_inv_app_self
 
 @[simp]
-theorem singleMapHomologicalComplex_inv_app_ne {i j : ι} (h : i ≠ j) (X : W₁) :
+lemma singleMapHomologicalComplex_inv_app_ne {i j : ι} (h : i ≠ j) (X : W₁) :
     ((singleMapHomologicalComplex F c j).inv.app X).f i = 0 := by
   simp [singleMapHomologicalComplex, h]
 #align homological_complex.single_map_homological_complex_inv_app_ne HomologicalComplex.singleMapHomologicalComplex_inv_app_ne

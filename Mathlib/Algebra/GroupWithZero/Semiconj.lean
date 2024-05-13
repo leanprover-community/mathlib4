@@ -20,28 +20,28 @@ variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 namespace SemiconjBy
 
 @[simp]
-theorem zero_right [MulZeroClass G₀] (a : G₀) : SemiconjBy a 0 0 := by
+lemma zero_right [MulZeroClass G₀] (a : G₀) : SemiconjBy a 0 0 := by
   simp only [SemiconjBy, mul_zero, zero_mul]
 #align semiconj_by.zero_right SemiconjBy.zero_right
 
 @[simp]
-theorem zero_left [MulZeroClass G₀] (x y : G₀) : SemiconjBy 0 x y := by
+lemma zero_left [MulZeroClass G₀] (x y : G₀) : SemiconjBy 0 x y := by
   simp only [SemiconjBy, mul_zero, zero_mul]
 #align semiconj_by.zero_left SemiconjBy.zero_left
 
 variable [GroupWithZero G₀] {a x y x' y' : G₀}
 
 @[simp]
-theorem inv_symm_left_iff₀ : SemiconjBy a⁻¹ x y ↔ SemiconjBy a y x :=
+lemma inv_symm_left_iff₀ : SemiconjBy a⁻¹ x y ↔ SemiconjBy a y x :=
   Classical.by_cases (fun ha : a = 0 => by simp only [ha, inv_zero, SemiconjBy.zero_left]) fun ha =>
     @units_inv_symm_left_iff _ _ (Units.mk0 a ha) _ _
 #align semiconj_by.inv_symm_left_iff₀ SemiconjBy.inv_symm_left_iff₀
 
-theorem inv_symm_left₀ (h : SemiconjBy a x y) : SemiconjBy a⁻¹ y x :=
+lemma inv_symm_left₀ (h : SemiconjBy a x y) : SemiconjBy a⁻¹ y x :=
   SemiconjBy.inv_symm_left_iff₀.2 h
 #align semiconj_by.inv_symm_left₀ SemiconjBy.inv_symm_left₀
 
-theorem inv_right₀ (h : SemiconjBy a x y) : SemiconjBy a x⁻¹ y⁻¹ := by
+lemma inv_right₀ (h : SemiconjBy a x y) : SemiconjBy a x⁻¹ y⁻¹ := by
   by_cases ha : a = 0
   · simp only [ha, zero_left]
   by_cases hx : x = 0
@@ -54,11 +54,11 @@ theorem inv_right₀ (h : SemiconjBy a x y) : SemiconjBy a x⁻¹ y⁻¹ := by
 #align semiconj_by.inv_right₀ SemiconjBy.inv_right₀
 
 @[simp]
-theorem inv_right_iff₀ : SemiconjBy a x⁻¹ y⁻¹ ↔ SemiconjBy a x y :=
+lemma inv_right_iff₀ : SemiconjBy a x⁻¹ y⁻¹ ↔ SemiconjBy a x y :=
   ⟨fun h => inv_inv x ▸ inv_inv y ▸ h.inv_right₀, inv_right₀⟩
 #align semiconj_by.inv_right_iff₀ SemiconjBy.inv_right_iff₀
 
-theorem div_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
+lemma div_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
     SemiconjBy a (x / x') (y / y') := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact h.mul_right h'.inv_right₀

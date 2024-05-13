@@ -90,7 +90,7 @@ theorem betaIntegral_convergent {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   · norm_num
 #align complex.beta_integral_convergent Complex.betaIntegral_convergent
 
-theorem betaIntegral_symm (u v : ℂ) : betaIntegral v u = betaIntegral u v := by
+lemma betaIntegral_symm (u v : ℂ) : betaIntegral v u = betaIntegral u v := by
   rw [betaIntegral, betaIntegral]
   have := intervalIntegral.integral_comp_mul_add (a := 0) (b := 1) (c := -1)
     (fun x : ℝ => (x : ℂ) ^ (u - 1) * (1 - (x : ℂ)) ^ (v - 1)) neg_one_lt_zero.ne 1
@@ -102,7 +102,7 @@ theorem betaIntegral_symm (u v : ℂ) : betaIntegral v u = betaIntegral u v := b
   exact this
 #align complex.beta_integral_symm Complex.betaIntegral_symm
 
-theorem betaIntegral_eval_one_right {u : ℂ} (hu : 0 < re u) : betaIntegral u 1 = 1 / u := by
+lemma betaIntegral_eval_one_right {u : ℂ} (hu : 0 < re u) : betaIntegral u 1 = 1 / u := by
   simp_rw [betaIntegral, sub_self, cpow_zero, mul_one]
   rw [integral_cpow (Or.inl _)]
   · rw [ofReal_zero, ofReal_one, one_cpow, zero_cpow, sub_zero, sub_add_cancel]
@@ -111,7 +111,7 @@ theorem betaIntegral_eval_one_right {u : ℂ} (hu : 0 < re u) : betaIntegral u 1
   · rwa [sub_re, one_re, ← sub_pos, sub_neg_eq_add, sub_add_cancel]
 #align complex.beta_integral_eval_one_right Complex.betaIntegral_eval_one_right
 
-theorem betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
+lemma betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
     ∫ x in (0)..a, (x : ℂ) ^ (s - 1) * ((a : ℂ) - x) ^ (t - 1) =
     (a : ℂ) ^ (s + t - 1) * betaIntegral s t := by
   have ha' : (a : ℂ) ≠ 0 := ofReal_ne_zero.mpr ha.ne'
@@ -244,12 +244,12 @@ noncomputable def GammaSeq (s : ℂ) (n : ℕ) :=
   (n : ℂ) ^ s * n ! / ∏ j : ℕ in Finset.range (n + 1), (s + j)
 #align complex.Gamma_seq Complex.GammaSeq
 
-theorem GammaSeq_eq_betaIntegral_of_re_pos {s : ℂ} (hs : 0 < re s) (n : ℕ) :
+lemma GammaSeq_eq_betaIntegral_of_re_pos {s : ℂ} (hs : 0 < re s) (n : ℕ) :
     GammaSeq s n = (n : ℂ) ^ s * betaIntegral s (n + 1) := by
   rw [GammaSeq, betaIntegral_eval_nat_add_one_right hs n, ← mul_div_assoc]
 #align complex.Gamma_seq_eq_beta_integral_of_re_pos Complex.GammaSeq_eq_betaIntegral_of_re_pos
 
-theorem GammaSeq_add_one_left (s : ℂ) {n : ℕ} (hn : n ≠ 0) :
+lemma GammaSeq_add_one_left (s : ℂ) {n : ℕ} (hn : n ≠ 0) :
     GammaSeq (s + 1) n / s = n / (n + 1 + s) * GammaSeq s n := by
   conv_lhs => rw [GammaSeq, Finset.prod_range_succ, div_div]
   conv_rhs =>
@@ -262,7 +262,7 @@ theorem GammaSeq_add_one_left (s : ℂ) {n : ℕ} (hn : n ≠ 0) :
   · abel
 #align complex.Gamma_seq_add_one_left Complex.GammaSeq_add_one_left
 
-theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (hn : n ≠ 0) :
+lemma GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (hn : n ≠ 0) :
     GammaSeq s n = ∫ x : ℝ in (0)..n, ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1) := by
   have : ∀ x : ℝ, x = x / n * n := by intro x; rw [div_mul_cancel₀]; exact Nat.cast_ne_zero.mpr hn
   conv_rhs => enter [1, x, 2, 1]; rw [this x]
@@ -394,7 +394,7 @@ section GammaReflection
 
 namespace Complex
 
-theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
+lemma GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
     GammaSeq z n * GammaSeq (1 - z) n =
       n / (n + ↑1 - z) * (↑1 / (z * ∏ j in Finset.range n, (↑1 - z ^ 2 / ((j : ℂ) + 1) ^ 2))) := by
   -- also true for n = 0 but we don't need it
@@ -468,7 +468,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
     exact A.1
 #align complex.Gamma_ne_zero Complex.Gamma_ne_zero
 
-theorem Gamma_eq_zero_iff (s : ℂ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m := by
+lemma Gamma_eq_zero_iff (s : ℂ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m := by
   constructor
   · contrapose!; exact Gamma_ne_zero
   · rintro ⟨m, rfl⟩; exact Gamma_neg_nat_eq_zero m
@@ -568,7 +568,7 @@ do not have to do any special-case handling for the poles of `Γ`.)
 
 namespace Complex
 
-theorem Gamma_mul_Gamma_add_half (s : ℂ) :
+lemma Gamma_mul_Gamma_add_half (s : ℂ) :
     Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℂ) ^ (1 - 2 * s) * ↑(√π) := by
   suffices (fun z => (Gamma z)⁻¹ * (Gamma (z + 1 / 2))⁻¹) = fun z =>
       (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(√π) by
@@ -607,7 +607,7 @@ namespace Real
 
 open Complex
 
-theorem Gamma_mul_Gamma_add_half (s : ℝ) :
+lemma Gamma_mul_Gamma_add_half (s : ℝ) :
     Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℝ) ^ (1 - 2 * s) * √π := by
   rw [← ofReal_inj]
   simpa only [← Gamma_ofReal, ofReal_cpow zero_le_two, ofReal_mul, ofReal_add, ofReal_div,

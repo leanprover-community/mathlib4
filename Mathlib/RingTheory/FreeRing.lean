@@ -52,12 +52,12 @@ def of (x : α) : FreeRing α :=
   FreeAbelianGroup.of (FreeMonoid.of x)
 #align free_ring.of FreeRing.of
 
-theorem of_injective : Function.Injective (of : α → FreeRing α) :=
+lemma of_injective : Function.Injective (of : α → FreeRing α) :=
   FreeAbelianGroup.of_injective.comp FreeMonoid.of_injective
 #align free_ring.of_injective FreeRing.of_injective
 
 @[elab_as_elim]
-protected theorem induction_on {C : FreeRing α → Prop} (z : FreeRing α) (hn1 : C (-1))
+protected lemma induction_on {C : FreeRing α → Prop} (z : FreeRing α) (hn1 : C (-1))
     (hb : ∀ b, C (of b)) (ha : ∀ x y, C x → C y → C (x + y)) (hm : ∀ x y, C x → C y → C (x * y)) :
     C z :=
   have hn : ∀ x, C x → C (-x) := fun x ih => neg_one_mul x ▸ hm _ _ hn1 ih
@@ -81,17 +81,17 @@ def lift : (α → R) ≃ (FreeRing α →+* R) :=
 #align free_ring.lift FreeRing.lift
 
 @[simp]
-theorem lift_of (x : α) : lift f (of x) = f x :=
+lemma lift_of (x : α) : lift f (of x) = f x :=
   congr_fun (lift.left_inv f) x
 #align free_ring.lift_of FreeRing.lift_of
 
 @[simp]
-theorem lift_comp_of (f : FreeRing α →+* R) : lift (f ∘ of) = f :=
+lemma lift_comp_of (f : FreeRing α →+* R) : lift (f ∘ of) = f :=
   lift.right_inv f
 #align free_ring.lift_comp_of FreeRing.lift_comp_of
 
 @[ext]
-theorem hom_ext ⦃f g : FreeRing α →+* R⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
+lemma hom_ext ⦃f g : FreeRing α →+* R⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
   lift.symm.injective (funext h)
 #align free_ring.hom_ext FreeRing.hom_ext
 
@@ -105,7 +105,7 @@ def map : FreeRing α →+* FreeRing β :=
 #align free_ring.map FreeRing.map
 
 @[simp]
-theorem map_of (x : α) : map f (of x) = of (f x) :=
+lemma map_of (x : α) : map f (of x) = of (f x) :=
   lift_of _ _
 #align free_ring.map_of FreeRing.map_of
 

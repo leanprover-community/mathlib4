@@ -118,7 +118,7 @@ section Monoid
 variable [Monoid M]
 
 @[to_additive (attr := simp)]
-theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x ^ n) (y ^ n) := by
+lemma pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x ^ n) (y ^ n) := by
   induction' n with n ih
   · rw [pow_zero, pow_zero]
     exact SemiconjBy.one_right _
@@ -141,7 +141,7 @@ theorem conj_mk (a x : G) : SemiconjBy a x (a * x * a⁻¹) := by
 #align add_semiconj_by.conj_mk AddSemiconjBy.conj_mk
 
 @[to_additive (attr := simp)]
-theorem conj_iff {a x y b : G} :
+lemma conj_iff {a x y b : G} :
     SemiconjBy (b * a * b⁻¹) (b * x * b⁻¹) (b * y * b⁻¹) ↔ SemiconjBy a x y := by
   unfold SemiconjBy
   simp only [← mul_assoc, inv_mul_cancel_right]
@@ -153,7 +153,7 @@ end Group
 end SemiconjBy
 
 @[to_additive (attr := simp)]
-theorem semiconjBy_iff_eq [CancelCommMonoid M] {a x y : M} : SemiconjBy a x y ↔ x = y :=
+lemma semiconjBy_iff_eq [CancelCommMonoid M] {a x y : M} : SemiconjBy a x y ↔ x = y :=
   ⟨fun h => mul_left_cancel (h.trans (mul_comm _ _)), fun h => by rw [h, SemiconjBy, mul_comm]⟩
 #align semiconj_by_iff_eq semiconjBy_iff_eq
 #align add_semiconj_by_iff_eq addSemiconjBy_iff_eq

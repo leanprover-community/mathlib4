@@ -44,21 +44,21 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (P : R[X]) {x : S
 def newtonMap (x : S) : S :=
   x - (Ring.inverse <| aeval x (derivative P)) * aeval x P
 
-theorem newtonMap_apply :
+lemma newtonMap_apply :
     P.newtonMap x = x - (Ring.inverse <| aeval x (derivative P)) * (aeval x P) :=
   rfl
 
 variable {P}
 
-theorem newtonMap_apply_of_isUnit (h : IsUnit <| aeval x (derivative P)) :
+lemma newtonMap_apply_of_isUnit (h : IsUnit <| aeval x (derivative P)) :
     P.newtonMap x = x - h.unit⁻¹ * aeval x P := by
   simp [newtonMap_apply, Ring.inverse, h]
 
-theorem newtonMap_apply_of_not_isUnit (h : ¬ (IsUnit <| aeval x (derivative P))) :
+lemma newtonMap_apply_of_not_isUnit (h : ¬ (IsUnit <| aeval x (derivative P))) :
     P.newtonMap x = x := by
   simp [newtonMap_apply, Ring.inverse, h]
 
-theorem isNilpotent_iterate_newtonMap_sub_of_isNilpotent (h : IsNilpotent <| aeval x P) (n : ℕ) :
+lemma isNilpotent_iterate_newtonMap_sub_of_isNilpotent (h : IsNilpotent <| aeval x P) (n : ℕ) :
     IsNilpotent <| P.newtonMap^[n] x - x := by
   induction n with
   | zero => simp
@@ -68,11 +68,11 @@ theorem isNilpotent_iterate_newtonMap_sub_of_isNilpotent (h : IsNilpotent <| aev
     simpa using Commute.isNilpotent_add (Commute.all _ _)
       (isNilpotent_aeval_sub_of_isNilpotent_sub P ih) h
 
-theorem isFixedPt_newtonMap_of_aeval_eq_zero (h : aeval x P = 0) :
+lemma isFixedPt_newtonMap_of_aeval_eq_zero (h : aeval x P = 0) :
     IsFixedPt P.newtonMap x := by
   rw [IsFixedPt, newtonMap_apply, h, mul_zero, sub_zero]
 
-theorem isFixedPt_newtonMap_of_isUnit_iff (h : IsUnit <| aeval x (derivative P)) :
+lemma isFixedPt_newtonMap_of_isUnit_iff (h : IsUnit <| aeval x (derivative P)) :
     IsFixedPt P.newtonMap x ↔ aeval x P = 0 := by
   rw [IsFixedPt, newtonMap_apply, sub_eq_self, Ring.inverse_mul_eq_iff_eq_mul _ _ _ h, mul_zero]
 

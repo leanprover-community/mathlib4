@@ -40,7 +40,7 @@ def natLT (f : ℕ → α) (H : ∀ n : ℕ, r (f n) (f (n + 1))) : ((· < ·) :
 #align rel_embedding.nat_lt RelEmbedding.natLT
 
 @[simp]
-theorem coe_natLT {f : ℕ → α} {H : ∀ n : ℕ, r (f n) (f (n + 1))} : ⇑(natLT f H) = f :=
+lemma coe_natLT {f : ℕ → α} {H : ∀ n : ℕ, r (f n) (f (n + 1))} : ⇑(natLT f H) = f :=
   rfl
 #align rel_embedding.coe_nat_lt RelEmbedding.coe_natLT
 
@@ -51,11 +51,11 @@ def natGT (f : ℕ → α) (H : ∀ n : ℕ, r (f (n + 1)) (f n)) : ((· > ·) :
 #align rel_embedding.nat_gt RelEmbedding.natGT
 
 @[simp]
-theorem coe_natGT {f : ℕ → α} {H : ∀ n : ℕ, r (f (n + 1)) (f n)} : ⇑(natGT f H) = f :=
+lemma coe_natGT {f : ℕ → α} {H : ∀ n : ℕ, r (f (n + 1)) (f n)} : ⇑(natGT f H) = f :=
   rfl
 #align rel_embedding.coe_nat_gt RelEmbedding.coe_natGT
 
-theorem exists_not_acc_lt_of_not_acc {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc r b ∧ r b a := by
+lemma exists_not_acc_lt_of_not_acc {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc r b ∧ r b a := by
   contrapose! h
   refine' ⟨_, fun b hr => _⟩
   by_contra hb
@@ -81,7 +81,7 @@ theorem acc_iff_no_decreasing_seq {x} :
     apply h
 #align rel_embedding.acc_iff_no_decreasing_seq RelEmbedding.acc_iff_no_decreasing_seq
 
-theorem not_acc_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) (k : ℕ) : ¬Acc r (f k) := by
+lemma not_acc_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) (k : ℕ) : ¬Acc r (f k) := by
   rw [acc_iff_no_decreasing_seq, not_isEmpty_iff]
   exact ⟨⟨f, k, rfl⟩⟩
 #align rel_embedding.not_acc_of_decreasing_seq RelEmbedding.not_acc_of_decreasing_seq
@@ -96,7 +96,7 @@ theorem wellFounded_iff_no_descending_seq :
     exact ⟨fun x => acc_iff_no_decreasing_seq.2 inferInstance⟩
 #align rel_embedding.well_founded_iff_no_descending_seq RelEmbedding.wellFounded_iff_no_descending_seq
 
-theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r := by
+lemma not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r := by
   rw [wellFounded_iff_no_descending_seq, not_isEmpty_iff]
   exact ⟨f⟩
 #align rel_embedding.not_well_founded_of_decreasing_seq RelEmbedding.not_wellFounded_of_decreasing_seq
@@ -128,30 +128,30 @@ noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
 variable {s}
 
 @[simp]
-theorem coe_orderEmbeddingOfSet [DecidablePred (· ∈ s)] :
+lemma coe_orderEmbeddingOfSet [DecidablePred (· ∈ s)] :
     ⇑(orderEmbeddingOfSet s) = (↑) ∘ Subtype.ofNat s :=
   rfl
 #align nat.coe_order_embedding_of_set Nat.coe_orderEmbeddingOfSet
 
-theorem orderEmbeddingOfSet_apply [DecidablePred (· ∈ s)] {n : ℕ} :
+lemma orderEmbeddingOfSet_apply [DecidablePred (· ∈ s)] {n : ℕ} :
     orderEmbeddingOfSet s n = Subtype.ofNat s n :=
   rfl
 #align nat.order_embedding_of_set_apply Nat.orderEmbeddingOfSet_apply
 
 @[simp]
-theorem Subtype.orderIsoOfNat_apply [dP : DecidablePred (· ∈ s)] {n : ℕ} :
+lemma Subtype.orderIsoOfNat_apply [dP : DecidablePred (· ∈ s)] {n : ℕ} :
     Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
   simp [orderIsoOfNat]; congr!
 #align nat.subtype.order_iso_of_nat_apply Nat.Subtype.orderIsoOfNat_apply
 
 variable (s)
 
-theorem orderEmbeddingOfSet_range [DecidablePred (· ∈ s)] :
+lemma orderEmbeddingOfSet_range [DecidablePred (· ∈ s)] :
     Set.range (Nat.orderEmbeddingOfSet s) = s :=
   Subtype.coe_comp_ofNat_range
 #align nat.order_embedding_of_set_range Nat.orderEmbeddingOfSet_range
 
-theorem exists_subseq_of_forall_mem_union {s t : Set α} (e : ℕ → α) (he : ∀ n, e n ∈ s ∪ t) :
+lemma exists_subseq_of_forall_mem_union {s t : Set α} (e : ℕ → α) (he : ∀ n, e n ∈ s ∪ t) :
     ∃ g : ℕ ↪o ℕ, (∀ n, e (g n) ∈ s) ∨ ∀ n, e (g n) ∈ t := by
   classical
     have : Infinite (e ⁻¹' s) ∨ Infinite (e ⁻¹' t) := by
@@ -164,7 +164,7 @@ theorem exists_subseq_of_forall_mem_union {s t : Set α} (e : ℕ → α) (he : 
 
 end Nat
 
-theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f : ℕ → α) :
+lemma exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f : ℕ → α) :
     ∃ g : ℕ ↪o ℕ,
       (∀ n : ℕ, r (f (g n)) (f (g (n + 1)))) ∨ ∀ m n : ℕ, m < n → ¬r (f (g m)) (f (g n)) := by
   classical
@@ -214,7 +214,7 @@ theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTr
   · exact ⟨g, Or.intro_right _ hnr⟩
 #align exists_increasing_or_nonincreasing_subseq exists_increasing_or_nonincreasing_subseq
 
-theorem WellFounded.monotone_chain_condition' [Preorder α] :
+lemma WellFounded.monotone_chain_condition' [Preorder α] :
     WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → ¬a n < a m := by
   refine' ⟨fun h a => _, fun h => _⟩
   · have hne : (Set.range a).Nonempty := ⟨a 0, by simp⟩
@@ -248,7 +248,7 @@ noncomputable def monotonicSequenceLimit [Preorder α] (a : ℕ →o α) :=
   a (monotonicSequenceLimitIndex a)
 #align monotonic_sequence_limit monotonicSequenceLimit
 
-theorem WellFounded.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
+lemma WellFounded.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
     (h : WellFounded ((· > ·) : α → α → Prop)) (a : ℕ →o α) :
     iSup a = monotonicSequenceLimit a := by
   refine' (iSup_le fun m => _).antisymm (le_iSup a _)

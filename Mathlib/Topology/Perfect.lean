@@ -84,7 +84,7 @@ structure Perfect (C : Set α) : Prop where
   acc : Preperfect C
 #align perfect Perfect
 
-theorem preperfect_iff_nhds : Preperfect C ↔ ∀ x ∈ C, ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
+lemma preperfect_iff_nhds : Preperfect C ↔ ∀ x ∈ C, ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
   simp only [Preperfect, accPt_iff_nhds]
 #align preperfect_iff_nhds preperfect_iff_nhds
 
@@ -100,7 +100,7 @@ Equivalently, this means that `𝓝[≠] x ≠ ⊥` for every point `x : X`.
 class PerfectSpace: Prop :=
   univ_preperfect : Preperfect (Set.univ : Set α)
 
-theorem PerfectSpace.univ_perfect [PerfectSpace α] : Perfect (Set.univ : Set α) :=
+lemma PerfectSpace.univ_perfect [PerfectSpace α] : Perfect (Set.univ : Set α) :=
   ⟨isClosed_univ, PerfectSpace.univ_preperfect⟩
 
 end PerfectSpace
@@ -144,7 +144,7 @@ theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (
   exact H.mono this
 #align preperfect_iff_perfect_closure preperfect_iff_perfect_closure
 
-theorem Perfect.closure_nhds_inter {U : Set α} (hC : Perfect C) (x : α) (xC : x ∈ C) (xU : x ∈ U)
+lemma Perfect.closure_nhds_inter {U : Set α} (hC : Perfect C) (x : α) (xC : x ∈ C) (xU : x ∈ U)
     (Uop : IsOpen U) : Perfect (closure (U ∩ C)) ∧ (closure (U ∩ C)).Nonempty := by
   constructor
   · apply Preperfect.perfect_closure
@@ -241,7 +241,7 @@ section PerfectSpace
 
 variable {X : Type*} [TopologicalSpace X]
 
-theorem perfectSpace_iff_forall_not_isolated : PerfectSpace X ↔ ∀ x : X, Filter.NeBot (𝓝[≠] x) := by
+lemma perfectSpace_iff_forall_not_isolated : PerfectSpace X ↔ ∀ x : X, Filter.NeBot (𝓝[≠] x) := by
   simp [perfectSpace_def, Preperfect, AccPt]
 
 instance PerfectSpace.not_isolated [PerfectSpace X] (x : X) : Filter.NeBot (𝓝[≠] x) :=

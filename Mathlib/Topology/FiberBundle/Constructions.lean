@@ -51,7 +51,7 @@ instance topologicalSpace [t₁ : TopologicalSpace B]
 
 variable [TopologicalSpace B] [TopologicalSpace F]
 
-theorem inducing_toProd : Inducing (TotalSpace.toProd B F) :=
+lemma inducing_toProd : Inducing (TotalSpace.toProd B F) :=
   ⟨by simp only [instTopologicalSpaceProd, induced_inf, induced_compose]; rfl⟩
 
 /-- Homeomorphism between the total space of the trivial bundle and the Cartesian product. -/
@@ -70,11 +70,11 @@ def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
 #align bundle.trivial.trivialization Bundle.Trivial.trivialization
 
 @[simp]
-theorem trivialization_source : (trivialization B F).source = univ := rfl
+lemma trivialization_source : (trivialization B F).source = univ := rfl
 #align bundle.trivial.trivialization_source Bundle.Trivial.trivialization_source
 
 @[simp]
-theorem trivialization_target : (trivialization B F).target = univ := rfl
+lemma trivialization_target : (trivialization B F).target = univ := rfl
 #align bundle.trivial.trivialization_target Bundle.Trivial.trivialization_target
 
 /-- Fiber bundle instance on the trivial bundle. -/
@@ -87,7 +87,7 @@ instance fiberBundle : FiberBundle F (Bundle.Trivial B F) where
     (inducing_const_prod.2 inducing_id)
 #align bundle.trivial.fiber_bundle Bundle.Trivial.fiberBundle
 
-theorem eq_trivialization (e : Trivialization F (π F (Bundle.Trivial B F)))
+lemma eq_trivialization (e : Trivialization F (π F (Bundle.Trivial B F)))
     [i : MemTrivializationAtlas e] : e = trivialization B F := i.out
 #align bundle.trivial.eq_trivialization Bundle.Trivial.eq_trivialization
 
@@ -145,7 +145,7 @@ def Prod.toFun' : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → B × F₁ × F
 
 variable {e₁ e₂}
 
-theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
+lemma Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
     (π (F₁ × F₂) (E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)) := by
   let f₁ : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ × TotalSpace F₂ E₂ :=
     fun p ↦ ((⟨p.1, p.2.1⟩ : TotalSpace F₁ E₁), (⟨p.1, p.2.2⟩ : TotalSpace F₂ E₂))
@@ -177,7 +177,7 @@ noncomputable def Prod.invFun' (p : B × F₁ × F₂) : TotalSpace (F₁ × F�
 
 variable {e₁ e₂}
 
-theorem Prod.left_inv {x : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
+lemma Prod.left_inv {x : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
     (h : x ∈ π (F₁ × F₂) (E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)) :
     Prod.invFun' e₁ e₂ (Prod.toFun' e₁ e₂ x) = x := by
   obtain ⟨x, v₁, v₂⟩ := x
@@ -185,7 +185,7 @@ theorem Prod.left_inv {x : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
   simp only [Prod.toFun', Prod.invFun', symm_apply_apply_mk, h₁, h₂]
 #align trivialization.prod.left_inv Trivialization.Prod.left_inv
 
-theorem Prod.right_inv {x : B × F₁ × F₂}
+lemma Prod.right_inv {x : B × F₁ × F₂}
     (h : x ∈ (e₁.baseSet ∩ e₂.baseSet) ×ˢ (univ : Set (F₁ × F₂))) :
     Prod.toFun' e₁ e₂ (Prod.invFun' e₁ e₂ x) = x := by
   obtain ⟨x, w₁, w₂⟩ := x
@@ -193,7 +193,7 @@ theorem Prod.right_inv {x : B × F₁ × F₂}
   simp only [Prod.toFun', Prod.invFun', apply_mk_symm, h₁, h₂]
 #align trivialization.prod.right_inv Trivialization.Prod.right_inv
 
-theorem Prod.continuous_inv_fun :
+lemma Prod.continuous_inv_fun :
     ContinuousOn (Prod.invFun' e₁ e₂) ((e₁.baseSet ∩ e₂.baseSet) ×ˢ univ) := by
   rw [(Prod.inducing_diag F₁ E₁ F₂ E₂).continuousOn_iff]
   have H₁ : Continuous fun p : B × F₁ × F₂ ↦ ((p.1, p.2.1), (p.1, p.2.2)) :=
@@ -232,10 +232,10 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
 #align trivialization.prod Trivialization.prod
 
 @[simp]
-theorem baseSet_prod : (prod e₁ e₂).baseSet = e₁.baseSet ∩ e₂.baseSet := rfl
+lemma baseSet_prod : (prod e₁ e₂).baseSet = e₁.baseSet ∩ e₂.baseSet := rfl
 #align trivialization.base_set_prod Trivialization.baseSet_prod
 
-theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
+lemma prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
     (prod e₁ e₂).toPartialEquiv.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl
 #align trivialization.prod_symm_apply Trivialization.prod_symm_apply
 
@@ -297,17 +297,17 @@ instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (
   pullbackTopology F E f
 #align pullback.total_space.topological_space Pullback.TotalSpace.topologicalSpace
 
-theorem Pullback.continuous_proj (f : B' → B) : Continuous (π F (f *ᵖ E)) := by
+lemma Pullback.continuous_proj (f : B' → B) : Continuous (π F (f *ᵖ E)) := by
   rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
   exact inf_le_left
 #align pullback.continuous_proj Pullback.continuous_proj
 
-theorem Pullback.continuous_lift (f : B' → B) : Continuous (@Pullback.lift B F E B' f) := by
+lemma Pullback.continuous_lift (f : B' → B) : Continuous (@Pullback.lift B F E B' f) := by
   rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
   exact inf_le_right
 #align pullback.continuous_lift Pullback.continuous_lift
 
-theorem inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
+lemma inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
     Inducing (@pullbackTotalSpaceEmbedding B F E B' f) := by
   constructor
   simp_rw [instTopologicalSpaceProd, induced_inf, induced_compose,
@@ -319,7 +319,7 @@ section FiberBundle
 
 variable [TopologicalSpace F] [TopologicalSpace B]
 
-theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
+lemma Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     {f : B' → B} {x : B'} : Continuous (@TotalSpace.mk _ F (f *ᵖ E) x) := by
   simp only [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, induced_compose,
     induced_inf, Function.comp, induced_const, top_inf_eq, pullbackTopology_def]

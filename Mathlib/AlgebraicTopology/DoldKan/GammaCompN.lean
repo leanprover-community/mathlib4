@@ -73,7 +73,7 @@ def N₁Γ₀ : Γ₀ ⋙ N₁ ≅ toKaroubi (ChainComplex C ℕ) :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁Γ₀ AlgebraicTopology.DoldKan.N₁Γ₀
 
-theorem N₁Γ₀_app (K : ChainComplex C ℕ) :
+lemma N₁Γ₀_app (K : ChainComplex C ℕ) :
     N₁Γ₀.app K = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.symm ≪≫
       (toKaroubi _).mapIso (Γ₀NondegComplexIso K) := by
   ext1
@@ -83,7 +83,7 @@ theorem N₁Γ₀_app (K : ChainComplex C ℕ) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁Γ₀_app AlgebraicTopology.DoldKan.N₁Γ₀_app
 
-theorem N₁Γ₀_hom_app (K : ChainComplex C ℕ) :
+lemma N₁Γ₀_hom_app (K : ChainComplex C ℕ) :
     N₁Γ₀.hom.app K = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.inv ≫
         (toKaroubi _).map (Γ₀NondegComplexIso K).hom := by
   change (N₁Γ₀.app K).hom = _
@@ -92,7 +92,7 @@ theorem N₁Γ₀_hom_app (K : ChainComplex C ℕ) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁Γ₀_hom_app AlgebraicTopology.DoldKan.N₁Γ₀_hom_app
 
-theorem N₁Γ₀_inv_app (K : ChainComplex C ℕ) :
+lemma N₁Γ₀_inv_app (K : ChainComplex C ℕ) :
     N₁Γ₀.inv.app K = (toKaroubi _).map (Γ₀NondegComplexIso K).inv ≫
         (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.hom := by
   change (N₁Γ₀.app K).inv = _
@@ -102,7 +102,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁Γ₀_inv_app AlgebraicTopology.DoldKan.N₁Γ₀_inv_app
 
 @[simp]
-theorem N₁Γ₀_hom_app_f_f (K : ChainComplex C ℕ) (n : ℕ) :
+lemma N₁Γ₀_hom_app_f_f (K : ChainComplex C ℕ) (n : ℕ) :
     (N₁Γ₀.hom.app K).f.f n = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.inv.f.f n := by
   rw [N₁Γ₀_hom_app]
   apply comp_id
@@ -110,7 +110,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁Γ₀_hom_app_f_f AlgebraicTopology.DoldKan.N₁Γ₀_hom_app_f_f
 
 @[simp]
-theorem N₁Γ₀_inv_app_f_f (K : ChainComplex C ℕ) (n : ℕ) :
+lemma N₁Γ₀_inv_app_f_f (K : ChainComplex C ℕ) (n : ℕ) :
     (N₁Γ₀.inv.app K).f.f n = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.hom.f.f n := by
   rw [N₁Γ₀_inv_app]
   apply id_comp
@@ -171,7 +171,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂Γ₂ AlgebraicTopology.DoldKan.N₂Γ₂
 
 @[simp]
-theorem N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
+lemma N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
     (N₂Γ₂.inv.app X).f.f n =
       X.p.f n ≫ ((Γ₀.splitting X.X).cofan _).inj (Splitting.IndexSet.id (op [n])) := by
   dsimp [N₂Γ₂]
@@ -198,7 +198,7 @@ lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
 -- Porting note (#10694): added to speed up elaboration
 attribute [irreducible] N₂Γ₂
 
-theorem N₂Γ₂_compatible_with_N₁Γ₀ (K : ChainComplex C ℕ) :
+lemma N₂Γ₂_compatible_with_N₁Γ₀ (K : ChainComplex C ℕ) :
     N₂Γ₂.hom.app ((toKaroubi _).obj K) = N₂Γ₂ToKaroubiIso.hom.app K ≫ N₁Γ₀.hom.app K :=
   congr_app whiskerLeft_toKaroubi_N₂Γ₂_hom K
 set_option linter.uppercaseLean3 false in

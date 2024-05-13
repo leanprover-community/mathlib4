@@ -69,7 +69,7 @@ noncomputable def discr (A : Type u) {B : Type v} [CommRing A] [CommRing B] [Alg
     [Fintype ι] (b : ι → B) := (traceMatrix A b).det
 #align algebra.discr Algebra.discr
 
-theorem discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).det := rfl
+lemma discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).det := rfl
 
 variable {A C} in
 /-- Mapping a family of vectors along an `AlgEquiv` preserves the discriminant. -/
@@ -85,7 +85,7 @@ variable {ι' : Type*} [Fintype ι'] [Fintype ι] [DecidableEq ι']
 section Basic
 
 @[simp]
-theorem discr_reindex (b : Basis ι A B) (f : ι ≃ ι') : discr A (b ∘ ⇑f.symm) = discr A b := by
+lemma discr_reindex (b : Basis ι A B) (f : ι ≃ ι') : discr A (b ∘ ⇑f.symm) = discr A b := by
   classical rw [← Basis.coe_reindex, discr_def, traceMatrix_reindex, det_reindex_self, ← discr_def]
 #align algebra.discr_reindex Algebra.discr_reindex
 

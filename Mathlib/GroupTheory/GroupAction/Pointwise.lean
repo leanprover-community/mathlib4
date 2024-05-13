@@ -30,7 +30,7 @@ import Mathlib.GroupTheory.GroupAction.Hom
 
 open Set Pointwise
 
-theorem MulAction.smul_bijective_of_is_unit
+lemma MulAction.smul_bijective_of_is_unit
     {M : Type*} [Monoid M] {α : Type*} [MulAction M α] {m : M} (hm : IsUnit m) :
     Function.Bijective (fun (a : α) ↦ m • a) := by
   lift m to Mˣ using hm
@@ -55,7 +55,7 @@ variable [FunLike F M N] [MulActionSemiHomClass F σ M N]
 -- "Left-hand side does not simplify, when using the simp lemma on itself."
 -- For now we will have to manually add `image_smul_setₛₗ _` to the `simp` argument list.
 -- TODO: when lean4#3107 is fixed, mark this as `@[simp]`.
-theorem image_smul_setₛₗ :
+lemma image_smul_setₛₗ :
     h '' (c • s) = σ c • h '' s := by
   simp only [← image_smul, image_image, map_smulₛₗ h]
 #align image_smul_setₛₗ image_smul_setₛₗ
@@ -126,23 +126,23 @@ variable [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
     (c : R) (s : Set M₁) (t : Set M₂)
 
 @[simp] -- This can be safely removed as a `@[simp]` lemma if `image_smul_setₛₗ` is readded.
-theorem image_smul_set :
+lemma image_smul_set :
     h '' (c • s) = c • h '' s :=
   image_smul_setₛₗ _ _ _ h c s
 #align image_smul_set image_smul_set
 
-theorem smul_preimage_set_le :
+lemma smul_preimage_set_le :
     c • h ⁻¹' t ⊆ h ⁻¹' (c • t) :=
   smul_preimage_set_leₛₗ _ _ _ h c t
 
 variable {c}
 
-theorem preimage_smul_set (hc : IsUnit c) :
+lemma preimage_smul_set (hc : IsUnit c) :
     h ⁻¹' (c • t) = c • h ⁻¹' t :=
   preimage_smul_setₛₗ_of_units _ _ _ h t hc hc
 #align preimage_smul_set preimage_smul_set
 
-theorem Group.preimage_smul_set
+lemma Group.preimage_smul_set
     {R : Type*} [Group R] (M₁ M₂ : Type*)
     [MulAction R M₁] [MulAction R M₂]
     {F : Type*} [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂] (h : F)

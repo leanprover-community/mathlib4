@@ -107,7 +107,7 @@ theorem integral_comp_inv_smul_of_nonneg (f : E → F) {R : ℝ} (hR : 0 ≤ R) 
   rw [integral_comp_inv_smul μ f R, abs_of_nonneg (pow_nonneg hR _)]
 #align measure_theory.measure.integral_comp_inv_smul_of_nonneg MeasureTheory.Measure.integral_comp_inv_smul_of_nonneg
 
-theorem setIntegral_comp_smul (f : E → F) {R : ℝ} (s : Set E) (hR : R ≠ 0) :
+lemma setIntegral_comp_smul (f : E → F) {R : ℝ} (s : Set E) (hR : R ≠ 0) :
     ∫ x in s, f (R • x) ∂μ = |(R ^ finrank ℝ E)⁻¹| • ∫ x in R • s, f x ∂μ := by
   let e : E ≃ᵐ E := (Homeomorph.smul (Units.mk0 R hR)).toMeasurableEquiv
   calc
@@ -126,7 +126,7 @@ theorem setIntegral_comp_smul (f : E → F) {R : ℝ} (s : Set E) (hR : R ≠ 0)
 alias set_integral_comp_smul :=
   setIntegral_comp_smul -- deprecated on 2024-04-17
 
-theorem setIntegral_comp_smul_of_pos (f : E → F) {R : ℝ} (s : Set E) (hR : 0 < R) :
+lemma setIntegral_comp_smul_of_pos (f : E → F) {R : ℝ} (s : Set E) (hR : 0 < R) :
     ∫ x in s, f (R • x) ∂μ = (R ^ finrank ℝ E)⁻¹ • ∫ x in R • s, f x ∂μ := by
   rw [setIntegral_comp_smul μ f s hR.ne', abs_of_nonneg (inv_nonneg.2 (pow_nonneg hR.le _))]
 
@@ -134,25 +134,25 @@ theorem setIntegral_comp_smul_of_pos (f : E → F) {R : ℝ} (s : Set E) (hR : 0
 alias set_integral_comp_smul_of_pos :=
   setIntegral_comp_smul_of_pos -- deprecated on 2024-04-17
 
-theorem integral_comp_mul_left (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y :=
+lemma integral_comp_mul_left (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y :=
   by simp_rw [← smul_eq_mul, Measure.integral_comp_smul, FiniteDimensional.finrank_self, pow_one]
 #align measure_theory.measure.integral_comp_mul_left MeasureTheory.Measure.integral_comp_mul_left
 
-theorem integral_comp_inv_mul_left (g : ℝ → F) (a : ℝ) :
+lemma integral_comp_inv_mul_left (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (a⁻¹ * x)) = |a| • ∫ y : ℝ, g y := by
   simp_rw [← smul_eq_mul, Measure.integral_comp_inv_smul, FiniteDimensional.finrank_self, pow_one]
 #align measure_theory.measure.integral_comp_inv_mul_left MeasureTheory.Measure.integral_comp_inv_mul_left
 
-theorem integral_comp_mul_right (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x * a)) = |a⁻¹| • ∫ y : ℝ, g y :=
+lemma integral_comp_mul_right (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x * a)) = |a⁻¹| • ∫ y : ℝ, g y :=
   by simpa only [mul_comm] using integral_comp_mul_left g a
 #align measure_theory.measure.integral_comp_mul_right MeasureTheory.Measure.integral_comp_mul_right
 
-theorem integral_comp_inv_mul_right (g : ℝ → F) (a : ℝ) :
+lemma integral_comp_inv_mul_right (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (x * a⁻¹)) = |a| • ∫ y : ℝ, g y := by
   simpa only [mul_comm] using integral_comp_inv_mul_left g a
 #align measure_theory.measure.integral_comp_inv_mul_right MeasureTheory.Measure.integral_comp_inv_mul_right
 
-theorem integral_comp_div (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x / a)) = |a| • ∫ y : ℝ, g y :=
+lemma integral_comp_div (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x / a)) = |a| • ∫ y : ℝ, g y :=
   integral_comp_inv_mul_right g a
 #align measure_theory.measure.integral_comp_div MeasureTheory.Measure.integral_comp_div
 
@@ -160,7 +160,7 @@ end Measure
 
 variable {F : Type*} [NormedAddCommGroup F]
 
-theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
     (f : E → F) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ ↔ Integrable f μ := by
   -- reduce to one-way implication
@@ -177,38 +177,38 @@ theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace
   simpa only [Ne, ENNReal.ofReal_eq_zero, not_le, abs_pos] using inv_ne_zero (pow_ne_zero _ hS)
 #align measure_theory.integrable_comp_smul_iff MeasureTheory.integrable_comp_smul_iff
 
-theorem Integrable.comp_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma Integrable.comp_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] {μ : Measure E} [IsAddHaarMeasure μ]
     {f : E → F} (hf : Integrable f μ) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ :=
   (integrable_comp_smul_iff μ f hR).2 hf
 #align measure_theory.integrable.comp_smul MeasureTheory.Integrable.comp_smul
 
-theorem integrable_comp_mul_left_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
+lemma integrable_comp_mul_left_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
     (Integrable fun x => g (R * x)) ↔ Integrable g := by
   simpa only [smul_eq_mul] using integrable_comp_smul_iff volume g hR
 #align measure_theory.integrable_comp_mul_left_iff MeasureTheory.integrable_comp_mul_left_iff
 
-theorem Integrable.comp_mul_left' {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :
+lemma Integrable.comp_mul_left' {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :
     Integrable fun x => g (R * x) :=
   (integrable_comp_mul_left_iff g hR).2 hg
 #align measure_theory.integrable.comp_mul_left' MeasureTheory.Integrable.comp_mul_left'
 
-theorem integrable_comp_mul_right_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
+lemma integrable_comp_mul_right_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
     (Integrable fun x => g (x * R)) ↔ Integrable g := by
   simpa only [mul_comm] using integrable_comp_mul_left_iff g hR
 #align measure_theory.integrable_comp_mul_right_iff MeasureTheory.integrable_comp_mul_right_iff
 
-theorem Integrable.comp_mul_right' {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :
+lemma Integrable.comp_mul_right' {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :
     Integrable fun x => g (x * R) :=
   (integrable_comp_mul_right_iff g hR).2 hg
 #align measure_theory.integrable.comp_mul_right' MeasureTheory.Integrable.comp_mul_right'
 
-theorem integrable_comp_div_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
+lemma integrable_comp_div_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
     (Integrable fun x => g (x / R)) ↔ Integrable g :=
   integrable_comp_mul_right_iff g (inv_ne_zero hR)
 #align measure_theory.integrable_comp_div_iff MeasureTheory.integrable_comp_div_iff
 
-theorem Integrable.comp_div {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :
+lemma Integrable.comp_div {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : R ≠ 0) :
     Integrable fun x => g (x / R) :=
   (integrable_comp_div_iff g hR).2 hg
 #align measure_theory.integrable.comp_div MeasureTheory.Integrable.comp_div
@@ -224,10 +224,10 @@ variable [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [FiniteDimensional �
 variable (f : E' ≃ₗᵢ[ℝ] F')
 variable [NormedAddCommGroup A] [NormedSpace ℝ A]
 
-theorem integrable_comp (g : F' → A) : Integrable (g ∘ f) ↔ Integrable g :=
+lemma integrable_comp (g : F' → A) : Integrable (g ∘ f) ↔ Integrable g :=
   f.measurePreserving.integrable_comp_emb f.toMeasureEquiv.measurableEmbedding
 
-theorem integral_comp (g : F' → A) : ∫ (x : E'), g (f x) = ∫ (y : F'), g y :=
+lemma integral_comp (g : F' → A) : ∫ (x : E'), g (f x) = ∫ (y : F'), g y :=
   f.measurePreserving.integral_comp' (f := f.toMeasureEquiv) g
 
 end InnerProductSpace

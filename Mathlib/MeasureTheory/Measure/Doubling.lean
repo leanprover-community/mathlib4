@@ -50,7 +50,7 @@ variable {α : Type*} [MetricSpace α] [MeasurableSpace α] (μ : Measure α)
   [IsUnifLocDoublingMeasure μ]
 
 -- Porting note: added for missing infer kinds
-theorem exists_measure_closedBall_le_mul :
+lemma exists_measure_closedBall_le_mul :
     ∃ C : ℝ≥0, ∀ᶠ ε in 𝓝[>] 0, ∀ x, μ (closedBall x (2 * ε)) ≤ C * μ (closedBall x ε) :=
   exists_measure_closedBall_le_mul''
 
@@ -61,12 +61,12 @@ def doublingConstant : ℝ≥0 :=
   Classical.choose <| exists_measure_closedBall_le_mul μ
 #align is_unif_loc_doubling_measure.doubling_constant IsUnifLocDoublingMeasure.doublingConstant
 
-theorem exists_measure_closedBall_le_mul' :
+lemma exists_measure_closedBall_le_mul' :
     ∀ᶠ ε in 𝓝[>] 0, ∀ x, μ (closedBall x (2 * ε)) ≤ doublingConstant μ * μ (closedBall x ε) :=
   Classical.choose_spec <| exists_measure_closedBall_le_mul μ
 #align is_unif_loc_doubling_measure.exists_measure_closed_ball_le_mul' IsUnifLocDoublingMeasure.exists_measure_closedBall_le_mul'
 
-theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
+lemma exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     ∃ C : ℝ≥0,
       ∀ᶠ ε in 𝓝[>] 0, ∀ (x t) (_ : t ≤ K), μ (closedBall x (t * ε)) ≤ C * μ (closedBall x ε) := by
   let C := doublingConstant μ
@@ -107,11 +107,11 @@ def scalingConstantOf (K : ℝ) : ℝ≥0 :=
 #align is_unif_loc_doubling_measure.scaling_constant_of IsUnifLocDoublingMeasure.scalingConstantOf
 
 @[simp]
-theorem one_le_scalingConstantOf (K : ℝ) : 1 ≤ scalingConstantOf μ K :=
+lemma one_le_scalingConstantOf (K : ℝ) : 1 ≤ scalingConstantOf μ K :=
   le_max_of_le_right <| le_refl 1
 #align is_unif_loc_doubling_measure.one_le_scaling_constant_of IsUnifLocDoublingMeasure.one_le_scalingConstantOf
 
-theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
+lemma eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
     ∃ R : ℝ,
       0 < R ∧
         ∀ x t r, t ∈ Ioc 0 K → r ≤ R →
@@ -129,14 +129,14 @@ theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
     exact mul_le_mul_right' (ENNReal.coe_le_coe.2 (le_max_left _ _)) _
 #align is_unif_loc_doubling_measure.eventually_measure_mul_le_scaling_constant_of_mul IsUnifLocDoublingMeasure.eventually_measure_mul_le_scalingConstantOf_mul
 
-theorem eventually_measure_le_scaling_constant_mul (K : ℝ) :
+lemma eventually_measure_le_scaling_constant_mul (K : ℝ) :
     ∀ᶠ r in 𝓝[>] 0, ∀ x, μ (closedBall x (K * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) := by
   filter_upwards [Classical.choose_spec
       (exists_eventually_forall_measure_closedBall_le_mul μ K)] with r hr x
   exact (hr x K le_rfl).trans (mul_le_mul_right' (ENNReal.coe_le_coe.2 (le_max_left _ _)) _)
 #align is_unif_loc_doubling_measure.eventually_measure_le_scaling_constant_mul IsUnifLocDoublingMeasure.eventually_measure_le_scaling_constant_mul
 
-theorem eventually_measure_le_scaling_constant_mul' (K : ℝ) (hK : 0 < K) :
+lemma eventually_measure_le_scaling_constant_mul' (K : ℝ) (hK : 0 < K) :
     ∀ᶠ r in 𝓝[>] 0, ∀ x,
       μ (closedBall x r) ≤ scalingConstantOf μ K⁻¹ * μ (closedBall x (K * r)) := by
   convert eventually_nhdsWithin_pos_mul_left hK (eventually_measure_le_scaling_constant_mul μ K⁻¹)
@@ -150,11 +150,11 @@ def scalingScaleOf (K : ℝ) : ℝ :=
   (eventually_measure_mul_le_scalingConstantOf_mul μ K).choose
 #align is_unif_loc_doubling_measure.scaling_scale_of IsUnifLocDoublingMeasure.scalingScaleOf
 
-theorem scalingScaleOf_pos (K : ℝ) : 0 < scalingScaleOf μ K :=
+lemma scalingScaleOf_pos (K : ℝ) : 0 < scalingScaleOf μ K :=
   (eventually_measure_mul_le_scalingConstantOf_mul μ K).choose_spec.1
 #align is_unif_loc_doubling_measure.scaling_scale_of_pos IsUnifLocDoublingMeasure.scalingScaleOf_pos
 
-theorem measure_mul_le_scalingConstantOf_mul {K : ℝ} {x : α} {t r : ℝ} (ht : t ∈ Ioc 0 K)
+lemma measure_mul_le_scalingConstantOf_mul {K : ℝ} {x : α} {t r : ℝ} (ht : t ∈ Ioc 0 K)
     (hr : r ≤ scalingScaleOf μ K) :
     μ (closedBall x (t * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) :=
   (eventually_measure_mul_le_scalingConstantOf_mul μ K).choose_spec.2 x t r ht hr

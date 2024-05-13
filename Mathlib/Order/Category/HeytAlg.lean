@@ -39,7 +39,7 @@ def of (α : Type*) [HeytingAlgebra α] : HeytAlg :=
 #align HeytAlg.of HeytAlg.of
 
 @[simp]
-theorem coe_of (α : Type*) [HeytingAlgebra α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [HeytingAlgebra α] : ↥(of α) = α :=
   rfl
 #align HeytAlg.coe_of HeytAlg.coe_of
 

@@ -64,7 +64,7 @@ noncomputable instance [IsIntegral X] : Field X.functionField := by
   have := (X.presheaf.germ ⟨_, hs⟩).isUnit_map (RingedSpace.isUnit_res_basicOpen _ s)
   rwa [TopCat.Presheaf.germ_res_apply] at this
 
-theorem germ_injective_of_isIntegral [IsIntegral X] {U : Opens X.carrier} (x : U) :
+lemma germ_injective_of_isIntegral [IsIntegral X] {U : Opens X.carrier} (x : U) :
     Function.Injective (X.presheaf.germ x) := by
   rw [injective_iff_map_eq_zero]
   intro y hy
@@ -75,12 +75,12 @@ theorem germ_injective_of_isIntegral [IsIntegral X] {U : Opens X.carrier} (x : U
   exact map_injective_of_isIntegral X iU e
 #align algebraic_geometry.germ_injective_of_is_integral AlgebraicGeometry.germ_injective_of_isIntegral
 
-theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : Opens X.carrier) [Nonempty U] :
+lemma Scheme.germToFunctionField_injective [IsIntegral X] (U : Opens X.carrier) [Nonempty U] :
     Function.Injective (X.germToFunctionField U) :=
   germ_injective_of_isIntegral _ _
 #align algebraic_geometry.Scheme.germ_to_function_field_injective AlgebraicGeometry.Scheme.germToFunctionField_injective
 
-theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
+lemma genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
     [hX : IrreducibleSpace X.carrier] [IrreducibleSpace Y.carrier] :
     f.1.base (genericPoint X.carrier : _) = (genericPoint Y.carrier : _) := by
   apply ((genericPoint_spec Y).eq _).symm
@@ -114,7 +114,7 @@ noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
   RingHom.toAlgebra <| by change CommRingCat.of R ⟶ _; apply StructureSheaf.toStalk
 
 @[simp]
-theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
+lemma genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
     genericPoint (Scheme.Spec.obj <| op R).carrier = (⟨0, Ideal.bot_prime⟩ : PrimeSpectrum R) := by
   apply (genericPoint_spec (Scheme.Spec.obj <| op R).carrier).eq
   rw [isGenericPoint_def]
@@ -140,7 +140,7 @@ instance {X : Scheme} [IsIntegral X] {U : Opens X.carrier} [hU : Nonempty U] :
   haveI : Nonempty (X.restrict U.openEmbedding).carrier := hU
   isIntegralOfOpenImmersion (X.ofRestrict U.openEmbedding)
 
-theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : Opens X.carrier}
+lemma IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : Opens X.carrier}
     (hU : IsAffineOpen U) [h : Nonempty U] :
     hU.primeIdealOf
         ⟨genericPoint X.carrier,
@@ -157,7 +157,7 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
   exact (genericPoint_eq_of_isOpenImmersion (X.ofRestrict U.openEmbedding)).symm
 #align algebraic_geometry.is_affine_open.prime_ideal_of_generic_point AlgebraicGeometry.IsAffineOpen.primeIdealOf_genericPoint
 
-theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X.carrier)
+lemma functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X.carrier)
     (hU : IsAffineOpen U) [hU' : Nonempty U] :
     IsFractionRing (X.presheaf.obj <| op U) X.functionField := by
   haveI : IsAffine _ := hU

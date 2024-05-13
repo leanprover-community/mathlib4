@@ -69,14 +69,14 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
     exact (smul_zero _).symm⟩
 #align linear_map.clm_of_exists_bounded_image LinearMap.clmOfExistsBoundedImage
 
-theorem LinearMap.clmOfExistsBoundedImage_coe {f : E →ₗ[𝕜] F}
+lemma LinearMap.clmOfExistsBoundedImage_coe {f : E →ₗ[𝕜] F}
     {h : ∃ V ∈ 𝓝 (0 : E), Bornology.IsVonNBounded 𝕜 (f '' V)} :
     (f.clmOfExistsBoundedImage h : E →ₗ[𝕜] F) = f :=
   rfl
 #align linear_map.clm_of_exists_bounded_image_coe LinearMap.clmOfExistsBoundedImage_coe
 
 @[simp]
-theorem LinearMap.clmOfExistsBoundedImage_apply {f : E →ₗ[𝕜] F}
+lemma LinearMap.clmOfExistsBoundedImage_apply {f : E →ₗ[𝕜] F}
     {h : ∃ V ∈ 𝓝 (0 : E), Bornology.IsVonNBounded 𝕜 (f '' V)} {x : E} :
     f.clmOfExistsBoundedImage h x = f x :=
   rfl
@@ -93,7 +93,7 @@ variable [RCLike 𝕜] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 variable [RCLike 𝕜'] [Module 𝕜' F] [ContinuousSMul 𝕜' F]
 variable {σ : 𝕜 →+* 𝕜'}
 
-theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
+lemma LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     (hf : ∀ s, IsVonNBounded 𝕜 s → IsVonNBounded 𝕜' (f '' s)) : ContinuousAt f 0 := by
   -- Assume that f is not continuous at 0
   by_contra h

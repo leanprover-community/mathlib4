@@ -352,7 +352,7 @@ theorem fderiv_fourierIntegral
     fderiv ℝ (𝓕 f) = 𝓕 (fourierSMulRight (innerSL ℝ) f) :=
   VectorFourier.fderiv_fourierIntegral (innerSL ℝ) hf_int hvf_int
 
-theorem differentiable_fourierIntegral
+lemma differentiable_fourierIntegral
     (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) :
     Differentiable ℝ (𝓕 f) :=
   VectorFourier.differentiable_fourierIntegral (innerSL ℝ) hf_int hvf_int
@@ -394,13 +394,13 @@ lemma hasDerivAt_fourierIntegral
     ← neg_mul, mul_smul]
   rfl
 
-theorem deriv_fourierIntegral
+lemma deriv_fourierIntegral
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) :
     deriv (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) • f x) := by
   ext x : 1
   exact (hasDerivAt_fourierIntegral hf hf' x).deriv
 
-theorem iteratedDeriv_fourierIntegral {f : ℝ → E} {N : ℕ∞} {n : ℕ}
+lemma iteratedDeriv_fourierIntegral {f : ℝ → E} {N : ℕ∞} {n : ℕ}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x^n • f x)) (hn : n ≤ N) :
     iteratedDeriv n (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) ^ n • f x) := by
   ext x : 1

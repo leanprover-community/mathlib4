@@ -68,23 +68,23 @@ instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
 namespace CategoryOfElements
 
 @[ext]
-theorem ext (F : C ⥤ Type w) {x y : F.Elements} (f g : x ⟶ y) (w : f.val = g.val) : f = g :=
+lemma ext (F : C ⥤ Type w) {x y : F.Elements} (f g : x ⟶ y) (w : f.val = g.val) : f = g :=
   Subtype.ext_val w
 #align category_theory.category_of_elements.ext CategoryTheory.CategoryOfElements.ext
 
 @[simp]
-theorem comp_val {F : C ⥤ Type w} {p q r : F.Elements} {f : p ⟶ q} {g : q ⟶ r} :
+lemma comp_val {F : C ⥤ Type w} {p q r : F.Elements} {f : p ⟶ q} {g : q ⟶ r} :
     (f ≫ g).val = f.val ≫ g.val :=
   rfl
 #align category_theory.category_of_elements.comp_val CategoryTheory.CategoryOfElements.comp_val
 
 @[simp]
-theorem id_val {F : C ⥤ Type w} {p : F.Elements} : (𝟙 p : p ⟶ p).val = 𝟙 p.1 :=
+lemma id_val {F : C ⥤ Type w} {p : F.Elements} : (𝟙 p : p ⟶ p).val = 𝟙 p.1 :=
   rfl
 #align category_theory.category_of_elements.id_val CategoryTheory.CategoryOfElements.id_val
 
 @[simp]
-theorem map_snd {F : C ⥤ Type w} {p q : F.Elements} (f : p ⟶ q) : (F.map f.val) p.2 = q.2 :=
+lemma map_snd {F : C ⥤ Type w} {p q : F.Elements} (f : p ⟶ q) : (F.map f.val) p.2 = q.2 :=
   f.property
 
 end CategoryOfElements
@@ -136,7 +136,7 @@ def map {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂
 #align category_theory.category_of_elements.map CategoryTheory.CategoryOfElements.map
 
 @[simp]
-theorem map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F₂ = π F₁ :=
+lemma map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F₂ = π F₁ :=
   rfl
 #align category_theory.category_of_elements.map_π CategoryTheory.CategoryOfElements.map_π
 
@@ -147,7 +147,7 @@ def toStructuredArrow : F.Elements ⥤ StructuredArrow PUnit F where
 #align category_theory.category_of_elements.to_structured_arrow CategoryTheory.CategoryOfElements.toStructuredArrow
 
 @[simp]
-theorem toStructuredArrow_obj (X) :
+lemma toStructuredArrow_obj (X) :
     (toStructuredArrow F).obj X =
       { left := ⟨⟨⟩⟩
         right := X.1
@@ -156,7 +156,7 @@ theorem toStructuredArrow_obj (X) :
 #align category_theory.category_of_elements.to_structured_arrow_obj CategoryTheory.CategoryOfElements.toStructuredArrow_obj
 
 @[simp]
-theorem to_comma_map_right {X Y} (f : X ⟶ Y) : ((toStructuredArrow F).map f).right = f.val :=
+lemma to_comma_map_right {X Y} (f : X ⟶ Y) : ((toStructuredArrow F).map f).right = f.val :=
   rfl
 #align category_theory.category_of_elements.to_comma_map_right CategoryTheory.CategoryOfElements.to_comma_map_right
 
@@ -167,12 +167,12 @@ def fromStructuredArrow : StructuredArrow PUnit F ⥤ F.Elements where
 #align category_theory.category_of_elements.from_structured_arrow CategoryTheory.CategoryOfElements.fromStructuredArrow
 
 @[simp]
-theorem fromStructuredArrow_obj (X) : (fromStructuredArrow F).obj X = ⟨X.right, X.hom PUnit.unit⟩ :=
+lemma fromStructuredArrow_obj (X) : (fromStructuredArrow F).obj X = ⟨X.right, X.hom PUnit.unit⟩ :=
   rfl
 #align category_theory.category_of_elements.from_structured_arrow_obj CategoryTheory.CategoryOfElements.fromStructuredArrow_obj
 
 @[simp]
-theorem fromStructuredArrow_map {X Y} (f : X ⟶ Y) :
+lemma fromStructuredArrow_map {X Y} (f : X ⟶ Y) :
     (fromStructuredArrow F).map f = ⟨f.right, congr_fun f.w.symm PUnit.unit⟩ :=
   rfl
 #align category_theory.category_of_elements.from_structured_arrow_map CategoryTheory.CategoryOfElements.fromStructuredArrow_map
@@ -223,7 +223,7 @@ def fromCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : (CostructuredArrow yoneda F
 #align category_theory.category_of_elements.from_costructured_arrow CategoryTheory.CategoryOfElements.fromCostructuredArrow
 
 @[simp]
-theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoneda.obj X ⟶ F) :
+lemma fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoneda.obj X ⟶ F) :
     (fromCostructuredArrow F).obj (op (CostructuredArrow.mk f)) = ⟨op X, yonedaEquiv.1 f⟩ :=
   rfl
 #align category_theory.category_of_elements.from_costructured_arrow_obj_mk CategoryTheory.CategoryOfElements.fromCostructuredArrow_obj_mk

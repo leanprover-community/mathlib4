@@ -55,21 +55,21 @@ def primeCounting (n : ℕ) : ℕ :=
 
 @[inherit_doc] scoped notation "π'" => Nat.primeCounting'
 
-theorem monotone_primeCounting' : Monotone primeCounting' :=
+lemma monotone_primeCounting' : Monotone primeCounting' :=
   count_monotone Prime
 #align nat.monotone_prime_counting' Nat.monotone_primeCounting'
 
-theorem monotone_primeCounting : Monotone primeCounting :=
+lemma monotone_primeCounting : Monotone primeCounting :=
   monotone_primeCounting'.comp (monotone_id.add_const _)
 #align nat.monotone_prime_counting Nat.monotone_primeCounting
 
 @[simp]
-theorem primeCounting'_nth_eq (n : ℕ) : π' (nth Prime n) = n :=
+lemma primeCounting'_nth_eq (n : ℕ) : π' (nth Prime n) = n :=
   count_nth_of_infinite infinite_setOf_prime _
 #align nat.prime_counting'_nth_eq Nat.primeCounting'_nth_eq
 
 @[simp]
-theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
+lemma prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _
 #align nat.prime_nth_prime Nat.prime_nth_prime
 
@@ -103,6 +103,6 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
 #align nat.prime_counting'_add_le Nat.primeCounting'_add_le
 
 @[simp]
-theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
+lemma zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
 
 end Nat

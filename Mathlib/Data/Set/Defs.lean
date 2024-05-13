@@ -76,24 +76,24 @@ namespace Set
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
-@[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
+@[simp, mfld_simps] lemma mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
 #align set.mem_set_of_eq Set.mem_setOf_eq
 
-@[simp, mfld_simps] theorem mem_univ (x : α) : x ∈ @univ α := trivial
+@[simp, mfld_simps] lemma mem_univ (x : α) : x ∈ @univ α := trivial
 #align set.mem_univ Set.mem_univ
 
 instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 
-@[simp] theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
+@[simp] lemma mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
 #align set.mem_compl_iff Set.mem_compl_iff
 
-theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
+lemma diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
 #align set.diff_eq Set.diff_eq
 
-@[simp] theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
+@[simp] lemma mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
 #align set.mem_diff Set.mem_diff
 
-theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
+lemma mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
 #align set.mem_diff_of_mem Set.mem_diff_of_mem
 
 -- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
@@ -117,19 +117,19 @@ def preimage (f : α → β) (s : Set β) : Set α := {x | f x ∈ s}
 infixl:80 " ⁻¹' " => preimage
 
 @[simp, mfld_simps]
-theorem mem_preimage {f : α → β} {s : Set β} {a : α} : a ∈ f ⁻¹' s ↔ f a ∈ s := Iff.rfl
+lemma mem_preimage {f : α → β} {s : Set β} {a : α} : a ∈ f ⁻¹' s ↔ f a ∈ s := Iff.rfl
 #align set.mem_preimage Set.mem_preimage
 
 /-- `f '' s` denotes the image of `s : Set α` under the function `f : α → β`. -/
 infixl:80 " '' " => image
 
 @[simp]
-theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, f x = y :=
+lemma mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, f x = y :=
   Iff.rfl
 #align set.mem_image Set.mem_image
 
 @[mfld_simps]
-theorem mem_image_of_mem (f : α → β) {x : α} {a : Set α} (h : x ∈ a) : f x ∈ f '' a :=
+lemma mem_image_of_mem (f : α → β) {x : α} {a : Set α} (h : x ∈ a) : f x ∈ f '' a :=
   ⟨_, h, rfl⟩
 #align set.mem_image_of_mem Set.mem_image_of_mem
 
@@ -157,10 +157,10 @@ and not an arbitrary Sort. -/
 def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 #align set.range Set.range
 
-@[simp] theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl
+@[simp] lemma mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl
 #align set.mem_range Set.mem_range
 
-@[mfld_simps] theorem mem_range_self (i : ι) : f i ∈ range f := ⟨i, rfl⟩
+@[mfld_simps] lemma mem_range_self (i : ι) : f i ∈ range f := ⟨i, rfl⟩
 #align set.mem_range_self Set.mem_range_self
 
 /-- Any map `f : ι → α` factors through a map `rangeFactorization f : ι → range f`. -/
@@ -174,12 +174,12 @@ noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.
 #align set.range_splitting Set.rangeSplitting
 
 -- This can not be a `@[simp]` lemma because the head of the left hand side is a variable.
-theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=
+lemma apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=
   x.2.choose_spec
 #align set.apply_range_splitting Set.apply_rangeSplitting
 
 @[simp]
-theorem comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = Subtype.val := by
+lemma comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = Subtype.val := by
   ext
   simp only [Function.comp_apply]
   apply apply_rangeSplitting
@@ -195,23 +195,23 @@ def prod (s : Set α) (t : Set β) : Set (α × β) := {p | p.1 ∈ s ∧ p.2 �
 instance instSProd : SProd (Set α) (Set β) (Set (α × β)) where
   sprod := Set.prod
 
-theorem prod_eq (s : Set α) (t : Set β) : s ×ˢ t = Prod.fst ⁻¹' s ∩ Prod.snd ⁻¹' t := rfl
+lemma prod_eq (s : Set α) (t : Set β) : s ×ˢ t = Prod.fst ⁻¹' s ∩ Prod.snd ⁻¹' t := rfl
 #align set.prod_eq Set.prod_eq
 
 variable {a : α} {b : β} {s : Set α} {t : Set β} {p : α × β}
 
-theorem mem_prod_eq : (p ∈ s ×ˢ t) = (p.1 ∈ s ∧ p.2 ∈ t) := rfl
+lemma mem_prod_eq : (p ∈ s ×ˢ t) = (p.1 ∈ s ∧ p.2 ∈ t) := rfl
 #align set.mem_prod_eq Set.mem_prod_eq
 
 @[simp, mfld_simps]
-theorem mem_prod : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t := .rfl
+lemma mem_prod : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t := .rfl
 #align set.mem_prod Set.mem_prod
 
 @[mfld_simps]
-theorem prod_mk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) := rfl
+lemma prod_mk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) := rfl
 #align set.prod_mk_mem_set_prod_eq Set.prod_mk_mem_set_prod_eq
 
-theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
+lemma mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
 #align set.mk_mem_prod Set.mk_mem_prod
 
 end Prod
@@ -222,10 +222,10 @@ section Diagonal
 def diagonal (α : Type*) : Set (α × α) := {p | p.1 = p.2}
 #align set.diagonal Set.diagonal
 
-theorem mem_diagonal (x : α) : (x, x) ∈ diagonal α := rfl
+lemma mem_diagonal (x : α) : (x, x) ∈ diagonal α := rfl
 #align set.mem_diagonal Set.mem_diagonal
 
-@[simp] theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 := .rfl
+@[simp] lemma mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 := .rfl
 #align set.mem_diagonal_iff Set.mem_diagonal_iff
 
 /-- The off-diagonal of a set `s` is the set of pairs `(a, b)` with `a, b ∈ s` and `a ≠ b`. -/
@@ -233,7 +233,7 @@ def offDiag (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.2 ∈ s ∧ x.
 #align set.off_diag Set.offDiag
 
 @[simp]
-theorem mem_offDiag {x : α × α} {s : Set α} : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 :=
+lemma mem_offDiag {x : α × α} {s : Set α} : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 :=
   Iff.rfl
 #align set.mem_off_diag Set.mem_offDiag
 
@@ -251,10 +251,10 @@ def pi (s : Set ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) := {f | ∀ i �
 
 variable {s : Set ι} {t : ∀ i, Set (α i)} {f : ∀ i, α i}
 
-@[simp] theorem mem_pi : f ∈ s.pi t ↔ ∀ i ∈ s, f i ∈ t i := .rfl
+@[simp] lemma mem_pi : f ∈ s.pi t ↔ ∀ i ∈ s, f i ∈ t i := .rfl
 #align set.mem_pi Set.mem_pi
 
-theorem mem_univ_pi : f ∈ pi univ t ↔ ∀ i, f i ∈ t i := by simp
+lemma mem_univ_pi : f ∈ pi univ t ↔ ∀ i, f i ∈ t i := by simp
 #align set.mem_univ_pi Set.mem_univ_pi
 
 end Pi
@@ -267,10 +267,10 @@ def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s →
 def MapsTo (f : α → β) (s : Set α) (t : Set β) : Prop := ∀ ⦃x⦄, x ∈ s → f x ∈ t
 #align set.maps_to Set.MapsTo
 
-theorem mapsTo_image (f : α → β) (s : Set α) : MapsTo f s (f '' s) := fun _ ↦ mem_image_of_mem f
+lemma mapsTo_image (f : α → β) (s : Set α) : MapsTo f s (f '' s) := fun _ ↦ mem_image_of_mem f
 #align set.maps_to_image Set.mapsTo_image
 
-theorem mapsTo_preimage (f : α → β) (t : Set β) : MapsTo f (f ⁻¹' t) t := fun _ ↦ id
+lemma mapsTo_preimage (f : α → β) (t : Set β) : MapsTo f (f ⁻¹' t) t := fun _ ↦ id
 #align set.maps_to_preimage Set.mapsTo_preimage
 
 /-- Given a map `f` sending `s : Set α` into `t : Set β`, restrict domain of `f` to `s`
@@ -324,10 +324,10 @@ def image2 (f : α → β → γ) (s : Set α) (t : Set β) : Set γ := {c | ∃
 
 variable {f : α → β → γ} {s : Set α} {t : Set β} {a : α} {b : β} {c : γ}
 
-@[simp] theorem mem_image2 : c ∈ image2 f s t ↔ ∃ a ∈ s, ∃ b ∈ t, f a b = c := .rfl
+@[simp] lemma mem_image2 : c ∈ image2 f s t ↔ ∃ a ∈ s, ∃ b ∈ t, f a b = c := .rfl
 #align set.mem_image2 Set.mem_image2
 
-theorem mem_image2_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image2 f s t :=
+lemma mem_image2_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image2 f s t :=
   ⟨a, ha, b, hb, rfl⟩
 #align set.mem_image2_of_mem Set.mem_image2_of_mem
 
@@ -339,7 +339,7 @@ def seq (s : Set (α → β)) (t : Set α) : Set β := image2 (fun f ↦ f) s t
 #align set.seq Set.seq
 
 @[simp]
-theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
+lemma mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
     b ∈ seq s t ↔ ∃ f ∈ s, ∃ a ∈ t, (f : α → β) a = b :=
   Iff.rfl
 #align set.mem_seq_iff Set.mem_seq_iff

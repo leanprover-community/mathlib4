@@ -45,7 +45,7 @@ theorem Nat.euler_four_squares (a b c d x y z w : ℕ) :
 
 namespace Int
 
-theorem sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2) :
+lemma sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2) :
     m = ((x - y) / 2) ^ 2 + ((x + y) / 2) ^ 2 :=
   have : Even (x ^ 2 + y ^ 2) := by simp [← h, even_mul]
   have hxaddy : Even (x + y) := by simpa [sq, parity_simps]
@@ -62,7 +62,7 @@ theorem sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2)
 #align int.sq_add_sq_of_two_mul_sq_add_sq Int.sq_add_sq_of_two_mul_sq_add_sq
 
 -- Porting note (#10756): new theorem
-theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
+lemma lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
     (h : a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = k * m)
     (ha : 2 * a < m) (hb : 2 * b < m) (hc : 2 * c < m) (hd : 2 * d < m) :
     k < m := by
@@ -77,7 +77,7 @@ theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
     _ = 2 ^ 2 * (m * m) := by simp; ring
 
 -- Porting note (#10756): new theorem
-theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
+lemma exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
     ∃ (a b k : ℕ), 0 < k ∧ k < p ∧ a ^ 2 + b ^ 2 + 1 = k * p := by
   rcases hp.1.eq_two_or_odd' with (rfl | hodd)
   · use 1, 0, 1; simp
@@ -98,7 +98,7 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
   · exact hp.1.pos
 
 @[deprecated exists_sq_add_sq_add_one_eq_mul]
-theorem exists_sq_add_sq_add_one_eq_k (p : ℕ) [Fact p.Prime] :
+lemma exists_sq_add_sq_add_one_eq_k (p : ℕ) [Fact p.Prime] :
     ∃ (a b : ℤ) (k : ℕ), a ^ 2 + b ^ 2 + 1 = k * p ∧ k < p :=
   let ⟨a, b, k, _, hkp, hk⟩ := exists_sq_add_sq_add_one_eq_mul p
   ⟨a, b, k, mod_cast hk, hkp⟩
@@ -112,7 +112,7 @@ open Int
 
 open scoped Classical
 
-private theorem sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
+private lemma sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
     (h : a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = 2 * m) :
     ∃ w x y z : ℤ, w ^ 2 + x ^ 2 + y ^ 2 + z ^ 2 = m := by
   have : ∀ f : Fin 4 → ZMod 2, f 0 ^ 2 + f 1 ^ 2 + f 2 ^ 2 + f 3 ^ 2 = 0 → ∃ i : Fin 4,

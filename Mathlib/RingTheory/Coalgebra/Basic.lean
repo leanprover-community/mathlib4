@@ -57,27 +57,27 @@ variable {R : Type u} {A : Type v}
 variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
 
 @[simp]
-theorem coassoc_apply (a : A) :
+lemma coassoc_apply (a : A) :
     TensorProduct.assoc R A A A (comul.rTensor A (comul a)) = comul.lTensor A (comul a) :=
   LinearMap.congr_fun coassoc a
 
 @[simp]
-theorem coassoc_symm_apply (a : A) :
+lemma coassoc_symm_apply (a : A) :
     (TensorProduct.assoc R A A A).symm (comul.lTensor A (comul a)) = comul.rTensor A (comul a) := by
   rw [(TensorProduct.assoc R A A A).symm_apply_eq, coassoc_apply a]
 
 @[simp]
-theorem coassoc_symm :
+lemma coassoc_symm :
     (TensorProduct.assoc R A A A).symm ∘ₗ comul.lTensor A ∘ₗ comul =
     comul.rTensor A ∘ₗ (comul (R := R)) :=
   LinearMap.ext coassoc_symm_apply
 
 @[simp]
-theorem rTensor_counit_comul (a : A) : counit.rTensor A (comul a) = 1 ⊗ₜ[R] a :=
+lemma rTensor_counit_comul (a : A) : counit.rTensor A (comul a) = 1 ⊗ₜ[R] a :=
   LinearMap.congr_fun rTensor_counit_comp_comul a
 
 @[simp]
-theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 1 :=
+lemma lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 1 :=
   LinearMap.congr_fun lTensor_counit_comp_comul a
 
 end Coalgebra
@@ -97,10 +97,10 @@ instance toCoalgebra : Coalgebra R R where
   lTensor_counit_comp_comul := by ext; rfl
 
 @[simp]
-theorem comul_apply (r : R) : comul r = 1 ⊗ₜ[R] r := rfl
+lemma comul_apply (r : R) : comul r = 1 ⊗ₜ[R] r := rfl
 
 @[simp]
-theorem counit_apply (r : R) : counit r = r := rfl
+lemma counit_apply (r : R) : counit r = r := rfl
 
 end CommSemiring
 
@@ -118,23 +118,23 @@ instance instCoalgebraStruct : CoalgebraStruct R (A × B) where
   counit := .coprod counit counit
 
 @[simp]
-theorem comul_apply (r : A × B) :
+lemma comul_apply (r : A × B) :
     comul r =
       TensorProduct.map (.inl R A B) (.inl R A B) (comul r.1) +
       TensorProduct.map (.inr R A B) (.inr R A B) (comul r.2) := rfl
 
 @[simp]
-theorem counit_apply (r : A × B) : (counit r : R) = counit r.1 + counit r.2 := rfl
+lemma counit_apply (r : A × B) : (counit r : R) = counit r.1 + counit r.2 := rfl
 
-theorem comul_comp_inl :
+lemma comul_comp_inl :
     comul ∘ₗ inl R A B = TensorProduct.map (.inl R A B) (.inl R A B) ∘ₗ comul := by
   ext; simp
 
-theorem comul_comp_inr :
+lemma comul_comp_inr :
     comul ∘ₗ inr R A B = TensorProduct.map (.inr R A B) (.inr R A B) ∘ₗ comul := by
   ext; simp
 
-theorem comul_comp_fst :
+lemma comul_comp_fst :
     comul ∘ₗ .fst R A B = TensorProduct.map (.fst R A B) (.fst R A B) ∘ₗ comul := by
   ext : 1
   · rw [comp_assoc, fst_comp_inl, comp_id, comp_assoc, comul_comp_inl, ← comp_assoc,
@@ -142,7 +142,7 @@ theorem comul_comp_fst :
   · rw [comp_assoc, fst_comp_inr, comp_zero, comp_assoc, comul_comp_inr, ← comp_assoc,
       ← TensorProduct.map_comp, fst_comp_inr, TensorProduct.map_zero_left, zero_comp]
 
-theorem comul_comp_snd :
+lemma comul_comp_snd :
     comul ∘ₗ .snd R A B = TensorProduct.map (.snd R A B) (.snd R A B) ∘ₗ comul := by
   ext : 1
   · rw [comp_assoc, snd_comp_inl, comp_zero, comp_assoc, comul_comp_inl, ← comp_assoc,
@@ -150,9 +150,9 @@ theorem comul_comp_snd :
   · rw [comp_assoc, snd_comp_inr, comp_id, comp_assoc, comul_comp_inr, ← comp_assoc,
       ← TensorProduct.map_comp, snd_comp_inr, TensorProduct.map_id, id_comp]
 
-@[simp] theorem counit_comp_inr : counit ∘ₗ inr R A B = counit := by ext; simp
+@[simp] lemma counit_comp_inr : counit ∘ₗ inr R A B = counit := by ext; simp
 
-@[simp] theorem counit_comp_inl : counit ∘ₗ inl R A B = counit := by ext; simp
+@[simp] lemma counit_comp_inl : counit ∘ₗ inl R A B = counit := by ext; simp
 
 instance instCoalgebra : Coalgebra R (A × B) where
   rTensor_counit_comp_comul := by
@@ -193,20 +193,20 @@ instance instCoalgebraStruct : CoalgebraStruct R (ι →₀ A) where
   counit := Finsupp.lsum R fun _ => counit
 
 @[simp]
-theorem comul_single (i : ι) (a : A) :
+lemma comul_single (i : ι) (a : A) :
     comul (R := R) (Finsupp.single i a) =
       (TensorProduct.map (Finsupp.lsingle i) (Finsupp.lsingle i) : _ →ₗ[R] _) (comul a) :=
   lsum_single _ _ _ _
 
 @[simp]
-theorem counit_single (i : ι) (a : A) : counit (Finsupp.single i a) = counit (R := R) a :=
+lemma counit_single (i : ι) (a : A) : counit (Finsupp.single i a) = counit (R := R) a :=
   lsum_single _ _ _ _
 
-theorem comul_comp_lsingle (i : ι) :
+lemma comul_comp_lsingle (i : ι) :
     comul ∘ₗ (lsingle i : A →ₗ[R] _) = TensorProduct.map (lsingle i) (lsingle i) ∘ₗ comul := by
   ext; simp
 
-theorem comul_comp_lapply (i : ι) :
+lemma comul_comp_lapply (i : ι) :
     comul ∘ₗ (lapply i : _ →ₗ[R] A) = TensorProduct.map (lapply i) (lapply i) ∘ₗ comul := by
   ext j : 1
   conv_rhs => rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, ← TensorProduct.map_comp]
@@ -215,7 +215,7 @@ theorem comul_comp_lapply (i : ι) :
   · rw [comp_assoc, lapply_comp_lsingle_of_ne _ _ hij, comp_zero, TensorProduct.map_zero_left,
       zero_comp]
 
-@[simp] theorem counit_comp_lsingle (i : ι) : counit ∘ₗ (lsingle i : A →ₗ[R] _) = counit := by
+@[simp] lemma counit_comp_lsingle (i : ι) : counit ∘ₗ (lsingle i : A →ₗ[R] _) = counit := by
   ext; simp
 
 /-- The `R`-module whose elements are functions `ι → A` which are zero on all but finitely many

@@ -53,16 +53,16 @@ protected def functor : Functor t' where map := Equiv.map eqv
 -- Porting note: `LawfulFunctor` is missing an `#align`.
 variable [LawfulFunctor t]
 
-protected theorem id_map {α : Type u} (x : t' α) : Equiv.map eqv id x = x := by
+protected lemma id_map {α : Type u} (x : t' α) : Equiv.map eqv id x = x := by
   simp [Equiv.map, id_map]
 #align equiv.id_map Equiv.id_map
 
-protected theorem comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (x : t' α) :
+protected lemma comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (x : t' α) :
     Equiv.map eqv (h ∘ g) x = Equiv.map eqv h (Equiv.map eqv g x) := by
   simpa [Equiv.map] using comp_map ..
 #align equiv.comp_map Equiv.comp_map
 
-protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
+protected lemma lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
   -- Porting note: why is `_inst` required here?
   let _inst := Equiv.functor eqv; {
     map_const := fun {_ _} => rfl
@@ -70,7 +70,7 @@ protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
     comp_map := Equiv.comp_map eqv }
 #align equiv.is_lawful_functor Equiv.lawfulFunctor
 
-protected theorem lawfulFunctor' [F : Functor t']
+protected lemma lawfulFunctor' [F : Functor t']
     (h₀ : ∀ {α β} (f : α → β), Functor.map f = Equiv.map eqv f)
     (h₁ : ∀ {α β} (f : β), Functor.mapConst f = (Equiv.map eqv ∘ Function.const α) f) :
     LawfulFunctor t' := by
@@ -98,7 +98,7 @@ protected def traverse (f : α → m β) (x : t' α) : m (t' β) :=
   eqv β <$> traverse f ((eqv α).symm x)
 #align equiv.traverse Equiv.traverse
 
-theorem traverse_def (f : α → m β) (x : t' α) :
+lemma traverse_def (f : α → m β) (x : t' α) :
     Equiv.traverse eqv f x = eqv β <$> traverse f ((eqv α).symm x) :=
   rfl
 
@@ -126,23 +126,23 @@ open LawfulTraversable Functor
 
 -- Porting note: Id.bind_eq is missing an `#align`.
 
-protected theorem id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id α) x = x := by
+protected lemma id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id α) x = x := by
   rw [Equiv.traverse, id_traverse, Id.map_eq, apply_symm_apply]
 #align equiv.id_traverse Equiv.id_traverse
 
-protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
+protected lemma traverse_eq_map_id (f : α → β) (x : t' α) :
     Equiv.traverse eqv ((pure : β → Id β) ∘ f) x = pure (Equiv.map eqv f x) := by
   simp only [Equiv.traverse, traverse_eq_map_id, Id.map_eq, Id.pure_eq]; rfl
 #align equiv.traverse_eq_map_id Equiv.traverse_eq_map_id
 
-protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :
+protected lemma comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :
     Equiv.traverse eqv (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Equiv.traverse eqv f <$> Equiv.traverse eqv g x) := by
   rw [traverse_def, comp_traverse, Comp.map_mk]
   simp only [map_map, Function.comp_def, traverse_def, symm_apply_apply]
 #align equiv.comp_traverse Equiv.comp_traverse
 
-protected theorem naturality (f : α → F β) (x : t' α) :
+protected lemma naturality (f : α → F β) (x : t' α) :
     η (Equiv.traverse eqv f x) = Equiv.traverse eqv (@η _ ∘ f) x := by
   simp only [Equiv.traverse, functor_norm]
 #align equiv.naturality Equiv.naturality

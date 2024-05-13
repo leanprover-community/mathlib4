@@ -50,7 +50,7 @@ protected def subtype : S' →ₗ[R] M where
 #align submodule_class.subtype SMulMemClass.subtype
 
 @[simp]
-protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
+protected lemma coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
 #align submodule_class.coe_subtype SMulMemClass.coeSubtype
 
@@ -73,16 +73,16 @@ variable (p)
 protected def subtype : p →ₗ[R] M := by refine' { toFun := Subtype.val.. } <;> simp [coe_smul]
 #align submodule.subtype Submodule.subtype
 
-theorem subtype_apply (x : p) : p.subtype x = x :=
+lemma subtype_apply (x : p) : p.subtype x = x :=
   rfl
 #align submodule.subtype_apply Submodule.subtype_apply
 
 @[simp]
-theorem coeSubtype : (Submodule.subtype p : p → M) = Subtype.val :=
+lemma coeSubtype : (Submodule.subtype p : p → M) = Subtype.val :=
   rfl
 #align submodule.coe_subtype Submodule.coeSubtype
 
-theorem injective_subtype : Injective p.subtype :=
+lemma injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
 #align submodule.injective_subtype Submodule.injective_subtype
 
@@ -134,7 +134,7 @@ def domRestrict (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) : p →ₛ�
 #align linear_map.dom_restrict LinearMap.domRestrict
 
 @[simp]
-theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (x : p) :
+lemma domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (x : p) :
     f.domRestrict p x = f x :=
   rfl
 #align linear_map.dom_restrict_apply LinearMap.domRestrict_apply
@@ -146,19 +146,19 @@ def codRestrict (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M₂) (h : 
 #align linear_map.cod_restrict LinearMap.codRestrict
 
 @[simp]
-theorem codRestrict_apply (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M₂) {h} (x : M) :
+lemma codRestrict_apply (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M₂) {h} (x : M) :
     (codRestrict p f h x : M₂) = f x :=
   rfl
 #align linear_map.cod_restrict_apply LinearMap.codRestrict_apply
 
 @[simp]
-theorem comp_codRestrict (p : Submodule R₃ M₃) (h : ∀ b, g b ∈ p) :
+lemma comp_codRestrict (p : Submodule R₃ M₃) (h : ∀ b, g b ∈ p) :
     ((codRestrict p g h).comp f : M →ₛₗ[σ₁₃] p) = codRestrict p (g.comp f) fun _ => h _ :=
   ext fun _ => rfl
 #align linear_map.comp_cod_restrict LinearMap.comp_codRestrict
 
 @[simp]
-theorem subtype_comp_codRestrict (p : Submodule R₂ M₂) (h : ∀ b, f b ∈ p) :
+lemma subtype_comp_codRestrict (p : Submodule R₂ M₂) (h : ∀ b, f b ∈ p) :
     p.subtype.comp (codRestrict p f h) = f :=
   ext fun _ => rfl
 #align linear_map.subtype_comp_cod_restrict LinearMap.subtype_comp_codRestrict
@@ -170,12 +170,12 @@ def restrict (f : M →ₗ[R] M₁) {p : Submodule R M} {q : Submodule R M₁} (
 #align linear_map.restrict LinearMap.restrict
 
 @[simp]
-theorem restrict_coe_apply (f : M →ₗ[R] M₁) {p : Submodule R M} {q : Submodule R M₁}
+lemma restrict_coe_apply (f : M →ₗ[R] M₁) {p : Submodule R M} {q : Submodule R M₁}
     (hf : ∀ x ∈ p, f x ∈ q) (x : p) : ↑(f.restrict hf x) = f x :=
   rfl
 #align linear_map.restrict_coe_apply LinearMap.restrict_coe_apply
 
-theorem restrict_apply {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule R M₁}
+lemma restrict_apply {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule R M₁}
     (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.1 x.2⟩ :=
   rfl
 #align linear_map.restrict_apply LinearMap.restrict_apply
@@ -195,30 +195,30 @@ lemma restrict_commute {f g : M →ₗ[R] M} (h : Commute f g) {p : Submodule R 
   conv_lhs => rw [mul_eq_comp, ← restrict_comp]; congr; rw [← mul_eq_comp, h.eq]
   rfl
 
-theorem subtype_comp_restrict {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule R M₁}
+lemma subtype_comp_restrict {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule R M₁}
     (hf : ∀ x ∈ p, f x ∈ q) : q.subtype.comp (f.restrict hf) = f.domRestrict p :=
   rfl
 #align linear_map.subtype_comp_restrict LinearMap.subtype_comp_restrict
 
-theorem restrict_eq_codRestrict_domRestrict {f : M →ₗ[R] M₁} {p : Submodule R M}
+lemma restrict_eq_codRestrict_domRestrict {f : M →ₗ[R] M₁} {p : Submodule R M}
     {q : Submodule R M₁} (hf : ∀ x ∈ p, f x ∈ q) :
     f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.1 x.2 :=
   rfl
 #align linear_map.restrict_eq_cod_restrict_dom_restrict LinearMap.restrict_eq_codRestrict_domRestrict
 
-theorem restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodule R M}
+lemma restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodule R M}
     {q : Submodule R M₁} (hf : ∀ x, f x ∈ q) :
     (f.restrict fun x _ => hf x) = (f.codRestrict q hf).domRestrict p :=
   rfl
 #align linear_map.restrict_eq_dom_restrict_cod_restrict LinearMap.restrict_eq_domRestrict_codRestrict
 
-theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
+lemma sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
     (∑ d in t, f d) b = ∑ d in t, f d b :=
   _root_.map_sum ((AddMonoidHom.eval b).comp toAddMonoidHom') f _
 #align linear_map.sum_apply LinearMap.sum_apply
 
 @[simp, norm_cast]
-theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
+lemma coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
     ⇑(∑ i in t, f i) = ∑ i in t, (f i : M → M₂) :=
   _root_.map_sum
     (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
@@ -227,7 +227,7 @@ theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂]
              map_add' := fun _ _ => rfl }) _ _
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum
 
-theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End R N}
+lemma submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End R N}
     {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ} (hG : G ^ k = 0) :
     g ^ k = 0 := by
   ext m
@@ -240,14 +240,14 @@ section
 
 variable {f' : M →ₗ[R] M}
 
-theorem pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p) (x : M)
+lemma pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p) (x : M)
     (hx : x ∈ p) : (f' ^ n) x ∈ p := by
   induction' n with n ih generalizing x
   · simpa
   · simpa only [iterate_succ, coe_comp, Function.comp_apply, restrict_apply] using ih _ (h _ hx)
 #align linear_map.pow_apply_mem_of_forall_mem LinearMap.pow_apply_mem_of_forall_mem
 
-theorem pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
+lemma pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
     (h' := pow_apply_mem_of_forall_mem n h) :
     (f'.restrict h) ^ n = (f' ^ n).restrict h' := by
   ext x
@@ -273,7 +273,7 @@ def domRestrict' (p : Submodule R M) : (M →ₗ[R] M₂) →ₗ[R] p →ₗ[R] 
 #align linear_map.dom_restrict' LinearMap.domRestrict'
 
 @[simp]
-theorem domRestrict'_apply (f : M →ₗ[R] M₂) (p : Submodule R M) (x : p) :
+lemma domRestrict'_apply (f : M →ₗ[R] M₂) (p : Submodule R M) (x : p) :
     domRestrict' p f x = f x :=
   rfl
 #align linear_map.dom_restrict'_apply LinearMap.domRestrict'_apply
@@ -297,21 +297,21 @@ def inclusion (h : p ≤ p') : p →ₗ[R] p' :=
 #align submodule.of_le Submodule.inclusion
 
 @[simp]
-theorem coe_inclusion (h : p ≤ p') (x : p) : (inclusion h x : M) = x :=
+lemma coe_inclusion (h : p ≤ p') (x : p) : (inclusion h x : M) = x :=
   rfl
 #align submodule.coe_of_le Submodule.coe_inclusion
 
-theorem inclusion_apply (h : p ≤ p') (x : p) : inclusion h x = ⟨x, h x.2⟩ :=
+lemma inclusion_apply (h : p ≤ p') (x : p) : inclusion h x = ⟨x, h x.2⟩ :=
   rfl
 #align submodule.of_le_apply Submodule.inclusion_apply
 
-theorem inclusion_injective (h : p ≤ p') : Function.Injective (inclusion h) := fun _ _ h =>
+lemma inclusion_injective (h : p ≤ p') : Function.Injective (inclusion h) := fun _ _ h =>
   Subtype.val_injective (Subtype.mk.inj h)
 #align submodule.of_le_injective Submodule.inclusion_injective
 
 variable (p p')
 
-theorem subtype_comp_inclusion (p q : Submodule R M) (h : p ≤ q) :
+lemma subtype_comp_inclusion (p q : Submodule R M) (h : p ≤ q) :
     q.subtype.comp (inclusion h) = p.subtype := by
   ext ⟨b, hb⟩
   rfl

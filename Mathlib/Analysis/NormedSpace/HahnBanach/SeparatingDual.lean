@@ -54,17 +54,17 @@ lemma exists_ne_zero {x : V} (hx : x ≠ 0) :
     ∃ f : V →L[R] R, f x ≠ 0 :=
   exists_ne_zero' x hx
 
-theorem exists_separating_of_ne {x y : V} (h : x ≠ y) :
+lemma exists_separating_of_ne {x y : V} (h : x ≠ y) :
     ∃ f : V →L[R] R, f x ≠ f y := by
   rcases exists_ne_zero (R := R) (sub_ne_zero_of_ne h) with ⟨f, hf⟩
   exact ⟨f, by simpa [sub_ne_zero] using hf⟩
 
-protected theorem t1Space [T1Space R] : T1Space V := by
+protected lemma t1Space [T1Space R] : T1Space V := by
   apply t1Space_iff_exists_open.2 (fun x y hxy ↦ ?_)
   rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
   exact ⟨f ⁻¹' {f y}ᶜ, isOpen_compl_singleton.preimage f.continuous, hf, by simp⟩
 
-protected theorem t2Space [T2Space R] : T2Space V := by
+protected lemma t2Space [T2Space R] : T2Space V := by
   apply (t2Space_iff _).2 (fun {x} {y} hxy ↦ ?_)
   rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
   exact separated_by_continuous f.continuous hf
@@ -77,7 +77,7 @@ variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [Topologi
   [TopologicalRing R] [TopologicalAddGroup V] [Module R V] [SeparatingDual R V]
 
 -- TODO (@alreadydone): this could generalize to CommRing R if we were to add a section
-theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
+lemma _root_.separatingDual_iff_injective : SeparatingDual R V ↔
     Function.Injective (ContinuousLinearMap.coeLM (R := R) R (M := V) (N₃ := R)).flip := by
   simp_rw [separatingDual_def, Ne, injective_iff_map_eq_zero]
   congrm ∀ v, ?_
@@ -101,7 +101,7 @@ lemma exists_eq_one {x : V} (hx : x ≠ 0) :
   rcases exists_ne_zero (R := R) hx with ⟨f, hf⟩
   exact ⟨(f x)⁻¹ • f, inv_mul_cancel hf⟩
 
-theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
+lemma exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ f : V →L[R] R, f x = 1 ∧ f y ≠ 0 := by
   obtain ⟨u, ux⟩ : ∃ u : V →L[R] R, u x = 1 := exists_eq_one hx
   rcases ne_or_eq (u y) 0 with uy|uy

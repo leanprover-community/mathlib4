@@ -41,7 +41,7 @@ variable {𝕜 B F₁ F₂ M : Type*} {E₁ : B → Type*} {E₂ : B → Type*} 
 local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂)
 
 -- Porting note (#11083): moved slow parts to separate lemmas
-theorem smoothOn_continuousLinearMapCoordChange
+lemma smoothOn_continuousLinearMapCoordChange
     [SmoothVectorBundle F₁ E₁ IB] [SmoothVectorBundle F₂ E₂ IB] [MemTrivializationAtlas e₁]
     [MemTrivializationAtlas e₁'] [MemTrivializationAtlas e₂] [MemTrivializationAtlas e₂'] :
     SmoothOn IB 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₂)
@@ -52,7 +52,7 @@ theorem smoothOn_continuousLinearMapCoordChange
   refine (h₁.mono ?_).cle_arrowCongr (h₂.mono ?_) <;> mfld_set_tac
 #align smooth_on_continuous_linear_map_coord_change smoothOn_continuousLinearMapCoordChange
 
-theorem hom_chart (y₀ y : LE₁E₂) :
+lemma hom_chart (y₀ y : LE₁E₂) :
     chartAt (ModelProd HB (F₁ →L[𝕜] F₂)) y₀ y =
       (chartAt HB y₀.1 y.1, inCoordinates F₁ E₁ F₂ E₂ y₀.1 y.1 y₀.1 y.1 y.2) := by
   rw [FiberBundle.chartedSpace_chartAt, trans_apply, PartialHomeomorph.prod_apply,
@@ -62,7 +62,7 @@ theorem hom_chart (y₀ y : LE₁E₂) :
 
 variable {IB}
 
-theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} {n : ℕ∞} :
+lemma contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} {n : ℕ∞} :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f x₀ ↔
       ContMDiffAt IM IB n (fun x => (f x).1) x₀ ∧
         ContMDiffAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
@@ -70,7 +70,7 @@ theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} {n : ℕ∞} :
   contMDiffAt_totalSpace ..
 #align cont_mdiff_at_hom_bundle contMDiffAt_hom_bundle
 
-theorem smoothAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
+lemma smoothAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
     SmoothAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) f x₀ ↔
       SmoothAt IM IB (fun x => (f x).1) x₀ ∧
         SmoothAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂)

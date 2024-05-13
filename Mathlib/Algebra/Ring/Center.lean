@@ -21,7 +21,7 @@ namespace Set
 variable (M)
 
 @[simp]
-theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.center M where
+lemma natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.center M where
   comm _:= by rw [Nat.commute_cast]
   left_assoc _ _ := by
     induction n with
@@ -38,12 +38,12 @@ theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.cent
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_mem_center [NonAssocSemiring M] (n : ℕ) [n.AtLeastTwo] :
+lemma ofNat_mem_center [NonAssocSemiring M] (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n)) ∈ Set.center M :=
   natCast_mem_center M n
 
 @[simp]
-theorem intCast_mem_center [NonAssocRing M] (n : ℤ) : (n : M) ∈ Set.center M where
+lemma intCast_mem_center [NonAssocRing M] (n : ℤ) : (n : M) ∈ Set.center M where
   comm _ := by rw [Int.commute_cast]
   left_assoc _ _ := match n with
     | (n : ℕ) => by rw [Int.cast_natCast, (natCast_mem_center _ n).left_assoc _ _]
@@ -69,7 +69,7 @@ theorem intCast_mem_center [NonAssocRing M] (n : ℤ) : (n : M) ∈ Set.center M
 variable {M}
 
 @[simp]
-theorem add_mem_center [Distrib M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
+lemma add_mem_center [Distrib M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a + b ∈ Set.center M  where
   comm _ := by rw [add_mul, mul_add, ha.comm, hb.comm]
   left_assoc _ _ := by rw [add_mul, ha.left_assoc, hb.left_assoc, ← add_mul, ← add_mul]
@@ -78,7 +78,7 @@ theorem add_mem_center [Distrib M] {a b : M} (ha : a ∈ Set.center M) (hb : b �
 #align set.add_mem_center Set.add_mem_center
 
 @[simp]
-theorem neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center M) :
+lemma neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center M) :
     -a ∈ Set.center M where
   comm _ := by rw [← neg_mul_comm, ← ha.comm, neg_mul_comm]
   left_assoc _ _ := by rw [neg_mul, ha.left_assoc, neg_mul, neg_mul]

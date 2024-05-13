@@ -196,7 +196,7 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
       · simpa using hm WalkingCospan.right =≫ pullback.snd
 #align category_theory.is_kernel_pair.pullback CategoryTheory.IsKernelPair.pullback
 
-theorem mono_of_isIso_fst (h : IsKernelPair f a b) [IsIso a] : Mono f := by
+lemma mono_of_isIso_fst (h : IsKernelPair f a b) [IsIso a] : Mono f := by
   obtain ⟨l, h₁, h₂⟩ := Limits.PullbackCone.IsLimit.lift' h.isLimit (𝟙 _) (𝟙 _) (by simp [h.w])
   rw [IsPullback.cone_fst, ← IsIso.eq_comp_inv, Category.id_comp] at h₁
   rw [h₁, IsIso.inv_comp_eq, Category.comp_id] at h₂
@@ -206,7 +206,7 @@ theorem mono_of_isIso_fst (h : IsKernelPair f a b) [IsIso a] : Mono f := by
   rw [IsPullback.cone_fst, h₂]
 #align category_theory.is_kernel_pair.mono_of_is_iso_fst CategoryTheory.IsKernelPair.mono_of_isIso_fst
 
-theorem isIso_of_mono (h : IsKernelPair f a b) [Mono f] : IsIso a := by
+lemma isIso_of_mono (h : IsKernelPair f a b) [Mono f] : IsIso a := by
   rw [←
     show _ = a from
       (Category.comp_id _).symm.trans
@@ -215,7 +215,7 @@ theorem isIso_of_mono (h : IsKernelPair f a b) [Mono f] : IsIso a := by
   infer_instance
 #align category_theory.is_kernel_pair.is_iso_of_mono CategoryTheory.IsKernelPair.isIso_of_mono
 
-theorem of_isIso_of_mono [IsIso a] [Mono f] : IsKernelPair f a a := by
+lemma of_isIso_of_mono [IsIso a] [Mono f] : IsKernelPair f a a := by
   change IsPullback _ _ _ _
   convert (IsPullback.of_horiz_isIso ⟨(rfl : a ≫ 𝟙 X = _ )⟩).paste_vert (IsKernelPair.id_of_mono f)
   all_goals { simp }

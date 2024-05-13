@@ -109,12 +109,12 @@ namespace Rat
 variable [DivisionRing α] {p q : ℚ}
 
 @[simp, norm_cast]
-theorem cast_intCast (n : ℤ) : ((n : ℚ) : α) = n :=
+lemma cast_intCast (n : ℤ) : ((n : ℚ) : α) = n :=
   (cast_def _).trans <| show (n / (1 : ℕ) : α) = n by rw [Nat.cast_one, div_one]
 #align rat.cast_coe_int Rat.cast_intCast
 
 @[simp, norm_cast]
-theorem cast_natCast (n : ℕ) : ((n : ℚ) : α) = n := by
+lemma cast_natCast (n : ℕ) : ((n : ℚ) : α) = n := by
   rw [← Int.cast_natCast, cast_intCast, Int.cast_natCast]
 #align rat.cast_coe_nat Rat.cast_natCast
 
@@ -128,24 +128,24 @@ theorem cast_natCast (n : ℕ) : ((n : ℚ) : α) = n := by
   simp [cast_def]
 
 @[simp, norm_cast]
-theorem cast_zero : ((0 : ℚ) : α) = 0 :=
+lemma cast_zero : ((0 : ℚ) : α) = 0 :=
   (cast_intCast _).trans Int.cast_zero
 #align rat.cast_zero Rat.cast_zero
 
 @[simp, norm_cast]
-theorem cast_one : ((1 : ℚ) : α) = 1 :=
+lemma cast_one : ((1 : ℚ) : α) = 1 :=
   (cast_intCast _).trans Int.cast_one
 #align rat.cast_one Rat.cast_one
 
-theorem cast_commute (r : ℚ) (a : α) : Commute (↑r) a := by
+lemma cast_commute (r : ℚ) (a : α) : Commute (↑r) a := by
   simpa only [cast_def] using (r.1.cast_commute a).div_left (r.2.cast_commute a)
 #align rat.cast_commute Rat.cast_commute
 
-theorem cast_comm (r : ℚ) (a : α) : (r : α) * a = a * r :=
+lemma cast_comm (r : ℚ) (a : α) : (r : α) * a = a * r :=
   (cast_commute r a).eq
 #align rat.cast_comm Rat.cast_comm
 
-theorem commute_cast (a : α) (r : ℚ) : Commute a r :=
+lemma commute_cast (a : α) (r : ℚ) : Commute a r :=
   (r.cast_commute a).symm
 #align rat.commute_cast Rat.commute_cast
 
@@ -231,7 +231,7 @@ lemma eq_nnratCast [DivisionSemiring α] [FunLike F ℚ≥0 α] [RingHomClass F 
     f q = q := by rw [← map_nnratCast f, NNRat.cast_id]
 
 @[simp]
-theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (f : F) (q : ℚ) :
+lemma map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (f : F) (q : ℚ) :
     f q = q := by rw [cast_def, map_div₀, map_intCast, map_natCast, cast_def]
 #align map_rat_cast map_ratCast
 

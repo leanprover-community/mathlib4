@@ -20,7 +20,7 @@ open MeasureTheory
 variable {ι α β γ δ R : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ] {f g : α → β} {μ ν : Measure α}
 
-theorem AEMeasurable.comp_aemeasurable' {f : α → δ} {g : δ → β} (hg : AEMeasurable g (μ.map f))
+lemma AEMeasurable.comp_aemeasurable' {f : α → δ} {g : δ → β} (hg : AEMeasurable g (μ.map f))
     (hf : AEMeasurable f μ) : AEMeasurable (fun x => g (f x)) μ := comp_aemeasurable hg hf
 
 end missing

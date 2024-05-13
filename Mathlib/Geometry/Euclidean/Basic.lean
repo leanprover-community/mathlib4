@@ -304,7 +304,7 @@ nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
 #align euclidean_geometry.orthogonal_projection EuclideanGeometry.orthogonalProjection
 
 @[simp]
-theorem orthogonalProjectionFn_eq {s : AffineSubspace ℝ P} [Nonempty s]
+lemma orthogonalProjectionFn_eq {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
     orthogonalProjectionFn s p = orthogonalProjection s p :=
   rfl
@@ -372,7 +372,7 @@ theorem orthogonalProjection_eq_self_iff {s : AffineSubspace ℝ P} [Nonempty s]
 #align euclidean_geometry.orthogonal_projection_eq_self_iff EuclideanGeometry.orthogonalProjection_eq_self_iff
 
 @[simp]
-theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [Nonempty s]
+lemma orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : s) : orthogonalProjection s p = p := by
   ext
   rw [orthogonalProjection_eq_self_iff]
@@ -389,7 +389,7 @@ theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [No
   exact orthogonalProjection_mem p
 #align euclidean_geometry.orthogonal_projection_orthogonal_projection EuclideanGeometry.orthogonalProjection_orthogonalProjection
 
-theorem eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s]
+lemma eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s]
     [Nonempty s'] [HasOrthogonalProjection s.direction] [HasOrthogonalProjection s'.direction]
     (h : s = s') (p : P) : (orthogonalProjection s p : P) = (orthogonalProjection s' p : P) := by
   subst h
@@ -533,7 +533,7 @@ theorem reflection_apply (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalP
   rfl
 #align euclidean_geometry.reflection_apply EuclideanGeometry.reflection_apply
 
-theorem eq_reflection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s] [Nonempty s']
+lemma eq_reflection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s] [Nonempty s']
     [HasOrthogonalProjection s.direction] [HasOrthogonalProjection s'.direction] (h : s = s')
     (p : P) : (reflection s p : P) = (reflection s' p : P) := by
   subst h

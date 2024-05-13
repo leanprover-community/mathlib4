@@ -43,17 +43,17 @@ def multinomial : ℕ :=
   (∑ i in s, f i)! / ∏ i in s, (f i)!
 #align nat.multinomial Nat.multinomial
 
-theorem multinomial_pos : 0 < multinomial s f :=
+lemma multinomial_pos : 0 < multinomial s f :=
   Nat.div_pos (le_of_dvd (factorial_pos _) (prod_factorial_dvd_factorial_sum s f))
     (prod_factorial_pos s f)
 #align nat.multinomial_pos Nat.multinomial_pos
 
-theorem multinomial_spec : (∏ i in s, (f i)!) * multinomial s f = (∑ i in s, f i)! :=
+lemma multinomial_spec : (∏ i in s, (f i)!) * multinomial s f = (∑ i in s, f i)! :=
   Nat.mul_div_cancel' (prod_factorial_dvd_factorial_sum s f)
 #align nat.multinomial_spec Nat.multinomial_spec
 
 @[simp]
-theorem multinomial_nil : multinomial ∅ f = 1 := by
+lemma multinomial_nil : multinomial ∅ f = 1 := by
   dsimp [multinomial]
 #align nat.multinomial_nil Nat.multinomial_nil
 
@@ -77,7 +77,7 @@ lemma multinomial_insert [DecidableEq α] (ha : a ∉ s) (f : α → ℕ) :
 #align nat.multinomial_singleton Nat.multinomial_singleton
 
 @[simp]
-theorem multinomial_insert_one [DecidableEq α] (h : a ∉ s) (h₁ : f a = 1) :
+lemma multinomial_insert_one [DecidableEq α] (h : a ∉ s) (h₁ : f a = 1) :
     multinomial (insert a s) f = (s.sum f).succ * multinomial s f := by
   simp only [multinomial, one_mul, factorial]
   rw [Finset.sum_insert h, Finset.prod_insert h, h₁, add_comm, ← succ_eq_add_one, factorial_succ]
@@ -85,7 +85,7 @@ theorem multinomial_insert_one [DecidableEq α] (h : a ∉ s) (h₁ : f a = 1) :
   rw [Nat.mul_div_assoc _ (prod_factorial_dvd_factorial_sum _ _)]
 #align nat.multinomial_insert_one Nat.multinomial_insert_one
 
-theorem multinomial_congr {f g : α → ℕ} (h : ∀ a ∈ s, f a = g a) :
+lemma multinomial_congr {f g : α → ℕ} (h : ∀ a ∈ s, f a = g a) :
     multinomial s f = multinomial s g := by
   simp only [multinomial]; congr 1
   · rw [Finset.sum_congr rfl h]
@@ -100,28 +100,28 @@ involves `Nat.multinomial {a, b}`.
 -/
 
 
-theorem binomial_eq [DecidableEq α] (h : a ≠ b) :
+lemma binomial_eq [DecidableEq α] (h : a ≠ b) :
     multinomial {a, b} f = (f a + f b)! / ((f a)! * (f b)!) := by
   simp [multinomial, Finset.sum_pair h, Finset.prod_pair h]
 #align nat.binomial_eq Nat.binomial_eq
 
-theorem binomial_eq_choose [DecidableEq α] (h : a ≠ b) :
+lemma binomial_eq_choose [DecidableEq α] (h : a ≠ b) :
     multinomial {a, b} f = (f a + f b).choose (f a) := by
   simp [binomial_eq h, choose_eq_factorial_div_factorial (Nat.le_add_right _ _)]
 #align nat.binomial_eq_choose Nat.binomial_eq_choose
 
-theorem binomial_spec [DecidableEq α] (hab : a ≠ b) :
+lemma binomial_spec [DecidableEq α] (hab : a ≠ b) :
     (f a)! * (f b)! * multinomial {a, b} f = (f a + f b)! := by
   simpa [Finset.sum_pair hab, Finset.prod_pair hab] using multinomial_spec {a, b} f
 #align nat.binomial_spec Nat.binomial_spec
 
 @[simp]
-theorem binomial_one [DecidableEq α] (h : a ≠ b) (h₁ : f a = 1) :
+lemma binomial_one [DecidableEq α] (h : a ≠ b) (h₁ : f a = 1) :
     multinomial {a, b} f = (f b).succ := by
   simp [multinomial_insert_one (Finset.not_mem_singleton.mpr h) h₁]
 #align nat.binomial_one Nat.binomial_one
 
-theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
+lemma binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
     multinomial {a, b} (Function.update (Function.update f a (f a).succ) b (f b).succ) =
       multinomial {a, b} (Function.update f a (f a).succ) +
       multinomial {a, b} (Function.update f b (f b).succ) := by
@@ -132,7 +132,7 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
   ring
 #align nat.binomial_succ_succ Nat.binomial_succ_succ
 
-theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
+lemma succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
     (f a + f b).succ * multinomial {a, b} f =
       (f a).succ * multinomial {a, b} (Function.update f a (f a).succ) := by
   rw [binomial_eq_choose h, binomial_eq_choose h, mul_comm (f a).succ, Function.update_same,
@@ -143,13 +143,13 @@ theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
 /-! ### Simple cases -/
 
 
-theorem multinomial_univ_two (a b : ℕ) :
+lemma multinomial_univ_two (a b : ℕ) :
     multinomial Finset.univ ![a, b] = (a + b)! / (a ! * b !) := by
   rw [multinomial, Fin.sum_univ_two, Fin.prod_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one,
     Matrix.head_cons]
 #align nat.multinomial_univ_two Nat.multinomial_univ_two
 
-theorem multinomial_univ_three (a b c : ℕ) :
+lemma multinomial_univ_three (a b c : ℕ) :
     multinomial Finset.univ ![a, b, c] = (a + b + c)! / (a ! * b ! * c !) := by
   rw [multinomial, Fin.sum_univ_three, Fin.prod_univ_three]
   rfl
@@ -171,11 +171,11 @@ def multinomial (f : α →₀ ℕ) : ℕ :=
   (f.sum fun _ => id)! / f.prod fun _ n => n !
 #align finsupp.multinomial Finsupp.multinomial
 
-theorem multinomial_eq (f : α →₀ ℕ) : f.multinomial = Nat.multinomial f.support f :=
+lemma multinomial_eq (f : α →₀ ℕ) : f.multinomial = Nat.multinomial f.support f :=
   rfl
 #align finsupp.multinomial_eq Finsupp.multinomial_eq
 
-theorem multinomial_update (a : α) (f : α →₀ ℕ) :
+lemma multinomial_update (a : α) (f : α →₀ ℕ) :
     f.multinomial = (f.sum fun _ => id).choose (f a) * (f.update a 0).multinomial := by
   simp only [multinomial_eq]
   classical
@@ -201,7 +201,7 @@ def multinomial [DecidableEq α] (m : Multiset α) : ℕ :=
   m.toFinsupp.multinomial
 #align multiset.multinomial Multiset.multinomial
 
-theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
+lemma multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     m.multinomial = m.card.choose (m.count a) * (m.filter (a ≠ ·)).multinomial := by
   dsimp only [multinomial]
   convert Finsupp.multinomial_update a _
@@ -214,7 +214,7 @@ theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
 #align multiset.multinomial_filter_ne Multiset.multinomial_filter_ne
 
 @[simp]
-theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := rfl
+lemma multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := rfl
 
 end Multiset
 
@@ -268,7 +268,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
 #align finset.sum_pow_of_commute Finset.sum_pow_of_commute
 
 
-theorem sum_pow [CommSemiring R] (x : α → R) (n : ℕ) :
+lemma sum_pow [CommSemiring R] (x : α → R) (n : ℕ) :
     s.sum x ^ n = ∑ k in s.sym n, k.val.multinomial * (k.val.map x).prod := by
   conv_rhs => rw [← sum_coe_sort]
   convert sum_pow_of_commute s x (fun _ _ _ _ _ => mul_comm _ _) n
@@ -281,7 +281,7 @@ namespace Sym
 
 variable {n : ℕ} {α : Type*} [DecidableEq α]
 
-theorem multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
+lemma multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
     (fill x m s : Multiset α).multinomial = n.choose m * (s : Multiset α).multinomial := by
   rw [Multiset.multinomial_filter_ne x]
   rw [← mem_coe] at hx

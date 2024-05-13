@@ -34,7 +34,7 @@ namespace IsHomeomorphicTrivialFiberBundle
 
 variable {F} {proj : Z → B}
 
-protected theorem proj_eq (h : IsHomeomorphicTrivialFiberBundle F proj) :
+protected lemma proj_eq (h : IsHomeomorphicTrivialFiberBundle F proj) :
     ∃ e : Z ≃ₜ B × F, proj = Prod.fst ∘ e :=
   ⟨h.choose, (funext h.choose_spec).symm⟩
 #align is_homeomorphic_trivial_fiber_bundle.proj_eq IsHomeomorphicTrivialFiberBundle.proj_eq

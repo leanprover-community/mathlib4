@@ -47,7 +47,7 @@ namespace Action
 variable {V}
 
 @[simp 1100]
-theorem ρ_one {G : MonCat.{u}} (A : Action V G) : A.ρ 1 = 𝟙 A.V := by rw [MonoidHom.map_one]; rfl
+lemma ρ_one {G : MonCat.{u}} (A : Action V G) : A.ρ 1 = 𝟙 A.V := by rw [MonoidHom.map_one]; rfl
 set_option linter.uppercaseLean3 false in
 #align Action.ρ_one Action.ρ_one
 
@@ -135,13 +135,13 @@ lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.
   Hom.ext _ _ h
 
 @[simp]
-theorem id_hom (M : Action V G) : (𝟙 M : Hom M M).hom = 𝟙 M.V :=
+lemma id_hom (M : Action V G) : (𝟙 M : Hom M M).hom = 𝟙 M.V :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.id_hom Action.id_hom
 
 @[simp]
-theorem comp_hom {M N K : Action V G} (f : M ⟶ N) (g : N ⟶ K) :
+lemma comp_hom {M N K : Action V G} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -301,7 +301,7 @@ noncomputable instance instPreservesColimitsForget [HasColimits V] :
 -- TODO construct categorical images?
 end Forget
 
-theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
+lemma Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
     N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) :=
       by rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 set_option linter.uppercaseLean3 false in

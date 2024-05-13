@@ -54,22 +54,22 @@ def SupPrime (a : α) : Prop :=
   ¬IsMin a ∧ ∀ ⦃b c⦄, a ≤ b ⊔ c → a ≤ b ∨ a ≤ c
 #align sup_prime SupPrime
 
-theorem SupIrred.not_isMin (ha : SupIrred a) : ¬IsMin a :=
+lemma SupIrred.not_isMin (ha : SupIrred a) : ¬IsMin a :=
   ha.1
 #align sup_irred.not_is_min SupIrred.not_isMin
 
-theorem SupPrime.not_isMin (ha : SupPrime a) : ¬IsMin a :=
+lemma SupPrime.not_isMin (ha : SupPrime a) : ¬IsMin a :=
   ha.1
 #align sup_prime.not_is_min SupPrime.not_isMin
 
-theorem IsMin.not_supIrred (ha : IsMin a) : ¬SupIrred a := fun h => h.1 ha
+lemma IsMin.not_supIrred (ha : IsMin a) : ¬SupIrred a := fun h => h.1 ha
 #align is_min.not_sup_irred IsMin.not_supIrred
 
-theorem IsMin.not_supPrime (ha : IsMin a) : ¬SupPrime a := fun h => h.1 ha
+lemma IsMin.not_supPrime (ha : IsMin a) : ¬SupPrime a := fun h => h.1 ha
 #align is_min.not_sup_prime IsMin.not_supPrime
 
 @[simp]
-theorem not_supIrred : ¬SupIrred a ↔ IsMin a ∨ ∃ b c, b ⊔ c = a ∧ b < a ∧ c < a := by
+lemma not_supIrred : ¬SupIrred a ↔ IsMin a ∨ ∃ b c, b ⊔ c = a ∧ b < a ∧ c < a := by
   rw [SupIrred, not_and_or]
   push_neg
   rw [exists₂_congr]
@@ -77,37 +77,37 @@ theorem not_supIrred : ¬SupIrred a ↔ IsMin a ∨ ∃ b c, b ⊔ c = a ∧ b <
 #align not_sup_irred not_supIrred
 
 @[simp]
-theorem not_supPrime : ¬SupPrime a ↔ IsMin a ∨ ∃ b c, a ≤ b ⊔ c ∧ ¬a ≤ b ∧ ¬a ≤ c := by
+lemma not_supPrime : ¬SupPrime a ↔ IsMin a ∨ ∃ b c, a ≤ b ⊔ c ∧ ¬a ≤ b ∧ ¬a ≤ c := by
   rw [SupPrime, not_and_or]; push_neg; rfl
 #align not_sup_prime not_supPrime
 
-protected theorem SupPrime.supIrred : SupPrime a → SupIrred a :=
+protected lemma SupPrime.supIrred : SupPrime a → SupIrred a :=
   And.imp_right fun h b c ha => by simpa [← ha] using h ha.ge
 #align sup_prime.sup_irred SupPrime.supIrred
 
-theorem SupPrime.le_sup (ha : SupPrime a) : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c :=
+lemma SupPrime.le_sup (ha : SupPrime a) : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c :=
   ⟨fun h => ha.2 h, fun h => h.elim le_sup_of_le_left le_sup_of_le_right⟩
 #align sup_prime.le_sup SupPrime.le_sup
 
 variable [OrderBot α] {s : Finset ι} {f : ι → α}
 
 @[simp]
-theorem not_supIrred_bot : ¬SupIrred (⊥ : α) :=
+lemma not_supIrred_bot : ¬SupIrred (⊥ : α) :=
   isMin_bot.not_supIrred
 #align not_sup_irred_bot not_supIrred_bot
 
 @[simp]
-theorem not_supPrime_bot : ¬SupPrime (⊥ : α) :=
+lemma not_supPrime_bot : ¬SupPrime (⊥ : α) :=
   isMin_bot.not_supPrime
 #align not_sup_prime_bot not_supPrime_bot
 
-theorem SupIrred.ne_bot (ha : SupIrred a) : a ≠ ⊥ := by rintro rfl; exact not_supIrred_bot ha
+lemma SupIrred.ne_bot (ha : SupIrred a) : a ≠ ⊥ := by rintro rfl; exact not_supIrred_bot ha
 #align sup_irred.ne_bot SupIrred.ne_bot
 
-theorem SupPrime.ne_bot (ha : SupPrime a) : a ≠ ⊥ := by rintro rfl; exact not_supPrime_bot ha
+lemma SupPrime.ne_bot (ha : SupPrime a) : a ≠ ⊥ := by rintro rfl; exact not_supPrime_bot ha
 #align sup_prime.ne_bot SupPrime.ne_bot
 
-theorem SupIrred.finset_sup_eq (ha : SupIrred a) (h : s.sup f = a) : ∃ i ∈ s, f i = a := by
+lemma SupIrred.finset_sup_eq (ha : SupIrred a) (h : s.sup f = a) : ∃ i ∈ s, f i = a := by
   classical
   induction' s using Finset.induction with i s _ ih
   · simpa [ha.ne_bot] using h.symm
@@ -116,7 +116,7 @@ theorem SupIrred.finset_sup_eq (ha : SupIrred a) (h : s.sup f = a) : ∃ i ∈ s
   exact (ha.2 h).imp_right ih
 #align sup_irred.finset_sup_eq SupIrred.finset_sup_eq
 
-theorem SupPrime.le_finset_sup (ha : SupPrime a) : a ≤ s.sup f ↔ ∃ i ∈ s, a ≤ f i := by
+lemma SupPrime.le_finset_sup (ha : SupPrime a) : a ≤ s.sup f ↔ ∃ i ∈ s, a ≤ f i := by
   classical
   induction' s using Finset.induction with i s _ ih
   · simp [ha.ne_bot]
@@ -161,54 +161,54 @@ def InfPrime (a : α) : Prop :=
 #align inf_prime InfPrime
 
 @[simp]
-theorem IsMax.not_infIrred (ha : IsMax a) : ¬InfIrred a := fun h => h.1 ha
+lemma IsMax.not_infIrred (ha : IsMax a) : ¬InfIrred a := fun h => h.1 ha
 #align is_max.not_inf_irred IsMax.not_infIrred
 
 @[simp]
-theorem IsMax.not_infPrime (ha : IsMax a) : ¬InfPrime a := fun h => h.1 ha
+lemma IsMax.not_infPrime (ha : IsMax a) : ¬InfPrime a := fun h => h.1 ha
 #align is_max.not_inf_prime IsMax.not_infPrime
 
 @[simp]
-theorem not_infIrred : ¬InfIrred a ↔ IsMax a ∨ ∃ b c, b ⊓ c = a ∧ a < b ∧ a < c :=
+lemma not_infIrred : ¬InfIrred a ↔ IsMax a ∨ ∃ b c, b ⊓ c = a ∧ a < b ∧ a < c :=
   @not_supIrred αᵒᵈ _ _
 #align not_inf_irred not_infIrred
 
 @[simp]
-theorem not_infPrime : ¬InfPrime a ↔ IsMax a ∨ ∃ b c, b ⊓ c ≤ a ∧ ¬b ≤ a ∧ ¬c ≤ a :=
+lemma not_infPrime : ¬InfPrime a ↔ IsMax a ∨ ∃ b c, b ⊓ c ≤ a ∧ ¬b ≤ a ∧ ¬c ≤ a :=
   @not_supPrime αᵒᵈ _ _
 #align not_inf_prime not_infPrime
 
-protected theorem InfPrime.infIrred : InfPrime a → InfIrred a :=
+protected lemma InfPrime.infIrred : InfPrime a → InfIrred a :=
   And.imp_right fun h b c ha => by simpa [← ha] using h ha.le
 #align inf_prime.inf_irred InfPrime.infIrred
 
-theorem InfPrime.inf_le (ha : InfPrime a) : b ⊓ c ≤ a ↔ b ≤ a ∨ c ≤ a :=
+lemma InfPrime.inf_le (ha : InfPrime a) : b ⊓ c ≤ a ↔ b ≤ a ∨ c ≤ a :=
   ⟨fun h => ha.2 h, fun h => h.elim inf_le_of_left_le inf_le_of_right_le⟩
 #align inf_prime.inf_le InfPrime.inf_le
 
 variable [OrderTop α] {s : Finset ι} {f : ι → α}
 
 -- @[simp] Porting note (#10618): simp can prove this.
-theorem not_infIrred_top : ¬InfIrred (⊤ : α) :=
+lemma not_infIrred_top : ¬InfIrred (⊤ : α) :=
   isMax_top.not_infIrred
 #align not_inf_irred_top not_infIrred_top
 
 -- @[simp] Porting note (#10618): simp can prove this.
-theorem not_infPrime_top : ¬InfPrime (⊤ : α) :=
+lemma not_infPrime_top : ¬InfPrime (⊤ : α) :=
   isMax_top.not_infPrime
 #align not_inf_prime_top not_infPrime_top
 
-theorem InfIrred.ne_top (ha : InfIrred a) : a ≠ ⊤ := by rintro rfl; exact not_infIrred_top ha
+lemma InfIrred.ne_top (ha : InfIrred a) : a ≠ ⊤ := by rintro rfl; exact not_infIrred_top ha
 #align inf_irred.ne_top InfIrred.ne_top
 
-theorem InfPrime.ne_top (ha : InfPrime a) : a ≠ ⊤ := by rintro rfl; exact not_infPrime_top ha
+lemma InfPrime.ne_top (ha : InfPrime a) : a ≠ ⊤ := by rintro rfl; exact not_infPrime_top ha
 #align inf_prime.ne_top InfPrime.ne_top
 
-theorem InfIrred.finset_inf_eq : InfIrred a → s.inf f = a → ∃ i ∈ s, f i = a :=
+lemma InfIrred.finset_inf_eq : InfIrred a → s.inf f = a → ∃ i ∈ s, f i = a :=
   @SupIrred.finset_sup_eq _ αᵒᵈ _ _ _ _ _
 #align inf_irred.finset_inf_eq InfIrred.finset_inf_eq
 
-theorem InfPrime.finset_inf_le (ha : InfPrime a) : s.inf f ≤ a ↔ ∃ i ∈ s, f i ≤ a :=
+lemma InfPrime.finset_inf_le (ha : InfPrime a) : s.inf f ≤ a ↔ ∃ i ∈ s, f i ≤ a :=
   @SupPrime.le_finset_sup _ αᵒᵈ _ _ _ _ _ ha
 #align inf_prime.finset_inf_le InfPrime.finset_inf_le
 
@@ -228,22 +228,22 @@ section SemilatticeSup
 variable [SemilatticeSup α]
 
 @[simp]
-theorem infIrred_toDual {a : α} : InfIrred (toDual a) ↔ SupIrred a :=
+lemma infIrred_toDual {a : α} : InfIrred (toDual a) ↔ SupIrred a :=
   Iff.rfl
 #align inf_irred_to_dual infIrred_toDual
 
 @[simp]
-theorem infPrime_toDual {a : α} : InfPrime (toDual a) ↔ SupPrime a :=
+lemma infPrime_toDual {a : α} : InfPrime (toDual a) ↔ SupPrime a :=
   Iff.rfl
 #align inf_prime_to_dual infPrime_toDual
 
 @[simp]
-theorem supIrred_ofDual {a : αᵒᵈ} : SupIrred (ofDual a) ↔ InfIrred a :=
+lemma supIrred_ofDual {a : αᵒᵈ} : SupIrred (ofDual a) ↔ InfIrred a :=
   Iff.rfl
 #align sup_irred_of_dual supIrred_ofDual
 
 @[simp]
-theorem supPrime_ofDual {a : αᵒᵈ} : SupPrime (ofDual a) ↔ InfPrime a :=
+lemma supPrime_ofDual {a : αᵒᵈ} : SupPrime (ofDual a) ↔ InfPrime a :=
   Iff.rfl
 #align sup_prime_of_dual supPrime_ofDual
 
@@ -266,22 +266,22 @@ section SemilatticeInf
 variable [SemilatticeInf α]
 
 @[simp]
-theorem supIrred_toDual {a : α} : SupIrred (toDual a) ↔ InfIrred a :=
+lemma supIrred_toDual {a : α} : SupIrred (toDual a) ↔ InfIrred a :=
   Iff.rfl
 #align sup_irred_to_dual supIrred_toDual
 
 @[simp]
-theorem supPrime_toDual {a : α} : SupPrime (toDual a) ↔ InfPrime a :=
+lemma supPrime_toDual {a : α} : SupPrime (toDual a) ↔ InfPrime a :=
   Iff.rfl
 #align sup_prime_to_dual supPrime_toDual
 
 @[simp]
-theorem infIrred_ofDual {a : αᵒᵈ} : InfIrred (ofDual a) ↔ SupIrred a :=
+lemma infIrred_ofDual {a : αᵒᵈ} : InfIrred (ofDual a) ↔ SupIrred a :=
   Iff.rfl
 #align inf_irred_of_dual infIrred_ofDual
 
 @[simp]
-theorem infPrime_ofDual {a : αᵒᵈ} : InfPrime (ofDual a) ↔ SupPrime a :=
+lemma infPrime_ofDual {a : αᵒᵈ} : InfPrime (ofDual a) ↔ SupPrime a :=
   Iff.rfl
 #align inf_prime_of_dual infPrime_ofDual
 
@@ -304,13 +304,13 @@ section DistribLattice
 variable [DistribLattice α] {a b c : α}
 
 @[simp]
-theorem supPrime_iff_supIrred : SupPrime a ↔ SupIrred a :=
+lemma supPrime_iff_supIrred : SupPrime a ↔ SupIrred a :=
   ⟨SupPrime.supIrred,
     And.imp_right fun h b c => by simp_rw [← inf_eq_left, inf_sup_left]; exact @h _ _⟩
 #align sup_prime_iff_sup_irred supPrime_iff_supIrred
 
 @[simp]
-theorem infPrime_iff_infIrred : InfPrime a ↔ InfIrred a :=
+lemma infPrime_iff_infIrred : InfPrime a ↔ InfIrred a :=
   ⟨InfPrime.infIrred,
     And.imp_right fun h b c => by simp_rw [← sup_eq_left, sup_inf_left]; exact @h _ _⟩
 #align inf_prime_iff_inf_irred infPrime_iff_infIrred
@@ -330,22 +330,22 @@ section LinearOrder
 variable [LinearOrder α] {a : α}
 
 -- @[simp] Porting note (#10618): simp can prove this
-theorem supPrime_iff_not_isMin : SupPrime a ↔ ¬IsMin a :=
+lemma supPrime_iff_not_isMin : SupPrime a ↔ ¬IsMin a :=
   and_iff_left <| by simp
 #align sup_prime_iff_not_is_min supPrime_iff_not_isMin
 
 -- @[simp] Porting note (#10618): simp can prove thisrove this
-theorem infPrime_iff_not_isMax : InfPrime a ↔ ¬IsMax a :=
+lemma infPrime_iff_not_isMax : InfPrime a ↔ ¬IsMax a :=
   and_iff_left <| by simp
 #align inf_prime_iff_not_is_max infPrime_iff_not_isMax
 
 @[simp]
-theorem supIrred_iff_not_isMin : SupIrred a ↔ ¬IsMin a :=
+lemma supIrred_iff_not_isMin : SupIrred a ↔ ¬IsMin a :=
   and_iff_left fun _ _ => by simpa only [sup_eq_max, max_eq_iff] using Or.imp And.left And.left
 #align sup_irred_iff_not_is_min supIrred_iff_not_isMin
 
 @[simp]
-theorem infIrred_iff_not_isMax : InfIrred a ↔ ¬IsMax a :=
+lemma infIrred_iff_not_isMax : InfIrred a ↔ ¬IsMax a :=
   and_iff_left fun _ _ => by simpa only [inf_eq_min, min_eq_iff] using Or.imp And.left And.left
 #align inf_irred_iff_not_is_max infIrred_iff_not_isMax
 

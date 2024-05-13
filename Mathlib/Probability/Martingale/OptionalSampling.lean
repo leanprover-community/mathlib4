@@ -48,7 +48,7 @@ variable {ι : Type*} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
   [FirstCountableTopology ι] {ℱ : Filtration ι m} [SigmaFiniteFiltration μ ℱ] {τ σ : Ω → ι}
   {f : ι → Ω → E} {i n : ι}
 
-theorem condexp_stopping_time_ae_eq_restrict_eq_const
+lemma condexp_stopping_time_ae_eq_restrict_eq_const
     [(Filter.atTop : Filter ι).IsCountablyGenerated] (h : Martingale f ℱ μ)
     (hτ : IsStoppingTime ℱ τ) [SigmaFinite (μ.trim hτ.measurableSpace_le)] (hin : i ≤ n) :
     μ[f n|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] f i := by
@@ -58,7 +58,7 @@ theorem condexp_stopping_time_ae_eq_restrict_eq_const
   rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
 #align measure_theory.martingale.condexp_stopping_time_ae_eq_restrict_eq_const MeasureTheory.Martingale.condexp_stopping_time_ae_eq_restrict_eq_const
 
-theorem condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingale f ℱ μ)
+lemma condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingale f ℱ μ)
     (hτ : IsStoppingTime ℱ τ) (hτ_le : ∀ x, τ x ≤ n)
     [SigmaFinite (μ.trim (hτ.measurableSpace_le_of_le hτ_le))] (i : ι) :
     μ[f n|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] f i := by
@@ -74,7 +74,7 @@ theorem condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingal
     exact hin (hτ_le x)
 #align measure_theory.martingale.condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const MeasureTheory.Martingale.condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const
 
-theorem stoppedValue_ae_eq_restrict_eq (h : Martingale f ℱ μ) (hτ : IsStoppingTime ℱ τ)
+lemma stoppedValue_ae_eq_restrict_eq (h : Martingale f ℱ μ) (hτ : IsStoppingTime ℱ τ)
     (hτ_le : ∀ x, τ x ≤ n) [SigmaFinite (μ.trim (hτ.measurableSpace_le_of_le hτ_le))] (i : ι) :
     stoppedValue f τ =ᵐ[μ.restrict {x | τ x = i}] μ[f n|hτ.measurableSpace] := by
   refine' Filter.EventuallyEq.trans _
@@ -154,7 +154,7 @@ variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι] [To
   [DiscreteTopology ι] [MeasurableSpace ι] [BorelSpace ι] [MeasurableSpace E] [BorelSpace E]
   [SecondCountableTopology E] {ℱ : Filtration ι m} {τ σ : Ω → ι} {f : ι → Ω → E} {i n : ι}
 
-theorem condexp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f ℱ μ)
+lemma condexp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f ℱ μ)
     (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ) [SigmaFinite (μ.trim hσ.measurableSpace_le)]
     (hτ_le : ∀ x, τ x ≤ n) :
     μ[stoppedValue f τ|hσ.measurableSpace] =ᵐ[μ.restrict {x : Ω | τ x ≤ σ x}] stoppedValue f τ := by

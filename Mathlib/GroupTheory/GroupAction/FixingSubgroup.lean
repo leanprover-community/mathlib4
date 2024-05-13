@@ -58,7 +58,7 @@ def fixingSubmonoid (s : Set α) : Submonoid M
 #align fixing_submonoid fixingSubmonoid
 #align fixing_add_submonoid fixingAddSubmonoid
 
-theorem mem_fixingSubmonoid_iff {s : Set α} {m : M} :
+lemma mem_fixingSubmonoid_iff {s : Set α} {m : M} :
     m ∈ fixingSubmonoid M s ↔ ∀ y ∈ s, m • y = y :=
   ⟨fun hg y hy => hg ⟨y, hy⟩, fun h ⟨y, hy⟩ => h y hy⟩
 #align mem_fixing_submonoid_iff mem_fixingSubmonoid_iff
@@ -72,11 +72,11 @@ theorem fixingSubmonoid_fixedPoints_gc :
   fun _s _P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
 #align fixing_submonoid_fixed_points_gc fixingSubmonoid_fixedPoints_gc
 
-theorem fixingSubmonoid_antitone : Antitone fun s : Set α => fixingSubmonoid M s :=
+lemma fixingSubmonoid_antitone : Antitone fun s : Set α => fixingSubmonoid M s :=
   (fixingSubmonoid_fixedPoints_gc M α).monotone_l
 #align fixing_submonoid_antitone fixingSubmonoid_antitone
 
-theorem fixedPoints_antitone : Antitone fun P : Submonoid M => fixedPoints P α :=
+lemma fixedPoints_antitone : Antitone fun P : Submonoid M => fixedPoints P α :=
   (fixingSubmonoid_fixedPoints_gc M α).monotone_u.dual_left
 #align fixed_points_antitone fixedPoints_antitone
 
@@ -119,15 +119,15 @@ def fixingSubgroup (s : Set α) : Subgroup M :=
 #align fixing_subgroup fixingSubgroup
 #align fixing_add_subgroup fixingAddSubgroup
 
-theorem mem_fixingSubgroup_iff {s : Set α} {m : M} : m ∈ fixingSubgroup M s ↔ ∀ y ∈ s, m • y = y :=
+lemma mem_fixingSubgroup_iff {s : Set α} {m : M} : m ∈ fixingSubgroup M s ↔ ∀ y ∈ s, m • y = y :=
   ⟨fun hg y hy => hg ⟨y, hy⟩, fun h ⟨y, hy⟩ => h y hy⟩
 #align mem_fixing_subgroup_iff mem_fixingSubgroup_iff
 
-theorem mem_fixingSubgroup_iff_subset_fixedBy {s : Set α} {m : M} :
+lemma mem_fixingSubgroup_iff_subset_fixedBy {s : Set α} {m : M} :
     m ∈ fixingSubgroup M s ↔ s ⊆ fixedBy α m := by
   simp_rw [mem_fixingSubgroup_iff, Set.subset_def, mem_fixedBy]
 
-theorem mem_fixingSubgroup_compl_iff_movedBy_subset {s : Set α} {m : M} :
+lemma mem_fixingSubgroup_compl_iff_movedBy_subset {s : Set α} {m : M} :
     m ∈ fixingSubgroup M sᶜ ↔ (fixedBy α m)ᶜ ⊆ s := by
   rw [mem_fixingSubgroup_iff_subset_fixedBy, Set.compl_subset_comm]
 
@@ -140,11 +140,11 @@ theorem fixingSubgroup_fixedPoints_gc :
   fun _s _P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
 #align fixing_subgroup_fixed_points_gc fixingSubgroup_fixedPoints_gc
 
-theorem fixingSubgroup_antitone : Antitone (fixingSubgroup M : Set α → Subgroup M) :=
+lemma fixingSubgroup_antitone : Antitone (fixingSubgroup M : Set α → Subgroup M) :=
   (fixingSubgroup_fixedPoints_gc M α).monotone_l
 #align fixing_subgroup_antitone fixingSubgroup_antitone
 
-theorem fixedPoints_subgroup_antitone : Antitone fun P : Subgroup M => fixedPoints P α :=
+lemma fixedPoints_subgroup_antitone : Antitone fun P : Subgroup M => fixedPoints P α :=
   (fixingSubgroup_fixedPoints_gc M α).monotone_u.dual_left
 #align fixed_points_subgroup_antitone fixedPoints_subgroup_antitone
 

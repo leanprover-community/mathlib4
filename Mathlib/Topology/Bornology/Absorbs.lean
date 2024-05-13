@@ -224,29 +224,29 @@ section SMul
 
 variable {M α : Type*} [Bornology M] [SMul M α] {s t : Set α}
 
-protected theorem mono (ht : Absorbent M s) (hsub : s ⊆ t) : Absorbent M t := fun x ↦
+protected lemma mono (ht : Absorbent M s) (hsub : s ⊆ t) : Absorbent M t := fun x ↦
   (ht x).mono_left hsub
 #align absorbent.subset Absorbent.mono
 
 @[deprecated] -- Deprecated since 16 January 2024
 protected alias subset := Absorbent.mono
 
-theorem _root_.absorbent_iff_forall_absorbs_singleton : Absorbent M s ↔ ∀ x, Absorbs M s {x} := .rfl
+lemma _root_.absorbent_iff_forall_absorbs_singleton : Absorbent M s ↔ ∀ x, Absorbs M s {x} := .rfl
 #align absorbent_iff_forall_absorbs_singleton absorbent_iff_forall_absorbs_singleton
 
-protected theorem absorbs (hs : Absorbent M s) {x : α} : Absorbs M s {x} := hs x
+protected lemma absorbs (hs : Absorbent M s) {x : α} : Absorbs M s {x} := hs x
 #align absorbent.absorbs Absorbent.absorbs
 
 #noalign absorbent_iff_nonneg_lt
 
-theorem absorbs_finite (hs : Absorbent M s) (ht : t.Finite) : Absorbs M s t := by
+lemma absorbs_finite (hs : Absorbent M s) (ht : t.Finite) : Absorbs M s t := by
   rw [← Set.biUnion_of_singleton t]
   exact .biUnion ht fun _ _ => hs.absorbs
 #align absorbent.absorbs_finite Absorbent.absorbs_finite
 
 end SMul
 
-theorem vadd_absorbs {M E : Type*} [Bornology M] [AddZeroClass E] [DistribSMul M E]
+lemma vadd_absorbs {M E : Type*} [Bornology M] [AddZeroClass E] [DistribSMul M E]
     {s₁ s₂ t : Set E} {x : E} (h₁ : Absorbent M s₁) (h₂ : Absorbs M s₂ t) :
     Absorbs M (s₁ + s₂) (x +ᵥ t) := by
   rw [← singleton_vadd]; exact (h₁ x).add h₂

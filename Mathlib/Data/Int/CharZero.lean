@@ -21,7 +21,7 @@ variable {α β : Type*}
 namespace Int
 
 @[simp]
-theorem cast_eq_zero [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) = 0 ↔ n = 0 :=
+lemma cast_eq_zero [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) = 0 ↔ n = 0 :=
   ⟨fun h => by
     cases n
     · erw [Int.cast_natCast] at h
@@ -32,29 +32,29 @@ theorem cast_eq_zero [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) = 0
 #align int.cast_eq_zero Int.cast_eq_zero
 
 @[simp, norm_cast]
-theorem cast_inj [AddGroupWithOne α] [CharZero α] {m n : ℤ} : (m : α) = n ↔ m = n := by
+lemma cast_inj [AddGroupWithOne α] [CharZero α] {m n : ℤ} : (m : α) = n ↔ m = n := by
   rw [← sub_eq_zero, ← cast_sub, cast_eq_zero, sub_eq_zero]
 #align int.cast_inj Int.cast_inj
 
-theorem cast_injective [AddGroupWithOne α] [CharZero α] : Function.Injective (Int.cast : ℤ → α)
+lemma cast_injective [AddGroupWithOne α] [CharZero α] : Function.Injective (Int.cast : ℤ → α)
   | _, _ => cast_inj.1
 #align int.cast_injective Int.cast_injective
 
-theorem cast_ne_zero [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) ≠ 0 ↔ n ≠ 0 :=
+lemma cast_ne_zero [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) ≠ 0 ↔ n ≠ 0 :=
   not_congr cast_eq_zero
 #align int.cast_ne_zero Int.cast_ne_zero
 
 @[simp]
-theorem cast_eq_one [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) = 1 ↔ n = 1 := by
+lemma cast_eq_one [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) = 1 ↔ n = 1 := by
   rw [← cast_one, cast_inj]
 #align int.cast_eq_one Int.cast_eq_one
 
-theorem cast_ne_one [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) ≠ 1 ↔ n ≠ 1 :=
+lemma cast_ne_one [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) ≠ 1 ↔ n ≠ 1 :=
   cast_eq_one.not
 #align int.cast_ne_one Int.cast_ne_one
 
 @[simp, norm_cast]
-theorem cast_div_charZero {k : Type*} [DivisionRing k] [CharZero k] {m n : ℤ} (n_dvd : n ∣ m) :
+lemma cast_div_charZero {k : Type*} [DivisionRing k] [CharZero k] {m n : ℤ} (n_dvd : n ∣ m) :
     ((m / n : ℤ) : k) = m / n := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp [Int.ediv_zero]
@@ -63,13 +63,13 @@ theorem cast_div_charZero {k : Type*} [DivisionRing k] [CharZero k] {m n : ℤ} 
 
 -- Necessary for confluence with `ofNat_ediv` and `cast_div_charZero`.
 @[simp, norm_cast]
-theorem cast_div_ofNat_charZero {k : Type*} [DivisionRing k] [CharZero k] {m n : ℕ}
+lemma cast_div_ofNat_charZero {k : Type*} [DivisionRing k] [CharZero k] {m n : ℕ}
     (n_dvd : n ∣ m) : (((m : ℤ) / (n : ℤ) : ℤ) : k) = m / n := by
   rw [cast_div_charZero (Int.ofNat_dvd.mpr n_dvd), cast_natCast, cast_natCast]
 
 end Int
 
-theorem RingHom.injective_int {α : Type*} [NonAssocRing α] (f : ℤ →+* α) [CharZero α] :
+lemma RingHom.injective_int {α : Type*} [NonAssocRing α] (f : ℤ →+* α) [CharZero α] :
     Function.Injective f :=
   Subsingleton.elim (Int.castRingHom _) f ▸ Int.cast_injective
 #align ring_hom.injective_int RingHom.injective_int

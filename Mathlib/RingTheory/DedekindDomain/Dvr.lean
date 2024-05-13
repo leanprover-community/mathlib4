@@ -115,7 +115,7 @@ theorem IsLocalization.AtPrime.isDedekindDomain [IsDedekindDomain A] (P : Ideal 
   IsLocalization.isDedekindDomain A P.primeCompl_le_nonZeroDivisors Aₘ
 #align is_localization.at_prime.is_dedekind_domain IsLocalization.AtPrime.isDedekindDomain
 
-theorem IsLocalization.AtPrime.not_isField {P : Ideal A} (hP : P ≠ ⊥) [pP : P.IsPrime] (Aₘ : Type*)
+lemma IsLocalization.AtPrime.not_isField {P : Ideal A} (hP : P ≠ ⊥) [pP : P.IsPrime] (Aₘ : Type*)
     [CommRing Aₘ] [Algebra A Aₘ] [IsLocalization.AtPrime Aₘ P] : ¬IsField Aₘ := by
   intro h
   letI := h.toField

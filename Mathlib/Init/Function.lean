@@ -79,7 +79,7 @@ abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x
 #align function.swap Function.swap
 
 #adaptation_note /-- nightly-2024-03-16: added to replace simp [Function.swap] -/
-theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
+lemma swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
 
 @[reducible, deprecated] -- Deprecated since 13 January 2024
 def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
@@ -90,7 +90,7 @@ def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
 -- notation f " -[" op "]- " g => combine f op g
 
 @[simp, mfld_simps]
-theorem id_comp (f : α → β) : id ∘ f = f := rfl
+lemma id_comp (f : α → β) : id ∘ f = f := rfl
 #align function.left_id Function.id_comp
 #align function.comp.left_id Function.id_comp
 
@@ -98,7 +98,7 @@ theorem id_comp (f : α → β) : id ∘ f = f := rfl
 @[deprecated] alias comp.left_id := id_comp -- Deprecated since 14 January 2014
 
 @[simp, mfld_simps]
-theorem comp_id (f : α → β) : f ∘ id = f := rfl
+lemma comp_id (f : α → β) : f ∘ id = f := rfl
 #align function.right_id Function.comp_id
 #align function.comp.right_id Function.comp_id
 
@@ -107,14 +107,14 @@ theorem comp_id (f : α → β) : f ∘ id = f := rfl
 
 #align function.comp_app Function.comp_apply
 
-theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
+lemma comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
   rfl
 #align function.comp.assoc Function.comp.assoc
 
-@[simp] theorem const_comp {γ : Sort*} (f : α → β) (c : γ) : const β c ∘ f = const α c := rfl
+@[simp] lemma const_comp {γ : Sort*} (f : α → β) (c : γ) : const β c ∘ f = const α c := rfl
 #align function.const_comp Function.const_comp
 
-@[simp] theorem comp_const (f : β → φ) (b : β) : f ∘ const α b = const α (f b) := rfl
+@[simp] lemma comp_const (f : β → φ) (b : β) : f ∘ const α b = const α (f b) := rfl
 #align function.comp_const_right Function.comp_const
 
 @[deprecated] alias comp_const_right := comp_const -- Deprecated since 14 January 2014
@@ -124,7 +124,7 @@ def Injective (f : α → β) : Prop :=
   ∀ ⦃a₁ a₂⦄, f a₁ = f a₂ → a₁ = a₂
 #align function.injective Function.Injective
 
-theorem Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : Injective f) :
+lemma Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : Injective f) :
     Injective (g ∘ f) := fun _a₁ _a₂ => fun h => hf (hg h)
 #align function.injective.comp Function.Injective.comp
 
@@ -134,7 +134,7 @@ def Surjective (f : α → β) : Prop :=
   ∀ b, ∃ a, f a = b
 #align function.surjective Function.Surjective
 
-theorem Surjective.comp {g : β → φ} {f : α → β} (hg : Surjective g) (hf : Surjective f) :
+lemma Surjective.comp {g : β → φ} {f : α → β} (hg : Surjective g) (hf : Surjective f) :
     Surjective (g ∘ f) := fun c : φ =>
   Exists.elim (hg c) fun b hb =>
     Exists.elim (hf b) fun a ha =>
@@ -146,7 +146,7 @@ def Bijective (f : α → β) :=
   Injective f ∧ Surjective f
 #align function.bijective Function.Bijective
 
-theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijective f → Bijective (g ∘ f)
+lemma Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijective f → Bijective (g ∘ f)
   | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
 #align function.bijective.comp Function.Bijective.comp
 
@@ -170,7 +170,7 @@ def HasRightInverse (f : α → β) : Prop :=
   ∃ finv : β → α, RightInverse finv f
 #align function.has_right_inverse Function.HasRightInverse
 
-theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f → Injective f :=
+lemma LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f → Injective f :=
   fun h a b faeqfb =>
   calc
     a = g (f a) := (h a).symm
@@ -178,25 +178,25 @@ theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f 
     _ = b := h b
 #align function.left_inverse.injective Function.LeftInverse.injective
 
-theorem HasLeftInverse.injective {f : α → β} : HasLeftInverse f → Injective f := fun h =>
+lemma HasLeftInverse.injective {f : α → β} : HasLeftInverse f → Injective f := fun h =>
   Exists.elim h fun _finv inv => inv.injective
 #align function.has_left_inverse.injective Function.HasLeftInverse.injective
 
-theorem rightInverse_of_injective_of_leftInverse {f : α → β} {g : β → α} (injf : Injective f)
+lemma rightInverse_of_injective_of_leftInverse {f : α → β} {g : β → α} (injf : Injective f)
     (lfg : LeftInverse f g) : RightInverse f g := fun x =>
   have h : f (g (f x)) = f x := lfg (f x)
   injf h
 #align function.right_inverse_of_injective_of_left_inverse Function.rightInverse_of_injective_of_leftInverse
 
-theorem RightInverse.surjective {f : α → β} {g : β → α} (h : RightInverse g f) : Surjective f :=
+lemma RightInverse.surjective {f : α → β} {g : β → α} (h : RightInverse g f) : Surjective f :=
   fun y => ⟨g y, h y⟩
 #align function.right_inverse.surjective Function.RightInverse.surjective
 
-theorem HasRightInverse.surjective {f : α → β} : HasRightInverse f → Surjective f
+lemma HasRightInverse.surjective {f : α → β} : HasRightInverse f → Surjective f
   | ⟨_finv, inv⟩ => inv.surjective
 #align function.has_right_inverse.surjective Function.HasRightInverse.surjective
 
-theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α} (surjf : Surjective f)
+lemma leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α} (surjf : Surjective f)
     (rfg : RightInverse f g) : LeftInverse f g := fun y =>
   Exists.elim (surjf y) fun x hx =>
     calc
@@ -205,13 +205,13 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
       _ = y := hx
 #align function.left_inverse_of_surjective_of_right_inverse Function.leftInverse_of_surjective_of_rightInverse
 
-theorem injective_id : Injective (@id α) := fun _a₁ _a₂ h => h
+lemma injective_id : Injective (@id α) := fun _a₁ _a₂ h => h
 #align function.injective_id Function.injective_id
 
-theorem surjective_id : Surjective (@id α) := fun a => ⟨a, rfl⟩
+lemma surjective_id : Surjective (@id α) := fun a => ⟨a, rfl⟩
 #align function.surjective_id Function.surjective_id
 
-theorem bijective_id : Bijective (@id α) :=
+lemma bijective_id : Bijective (@id α) :=
   ⟨injective_id, surjective_id⟩
 #align function.bijective_id Function.bijective_id
 
@@ -232,20 +232,20 @@ def uncurry : (α → β → φ) → α × β → φ := fun f a => f a.1 a.2
 #align function.uncurry Function.uncurry
 
 @[simp]
-theorem curry_uncurry (f : α → β → φ) : curry (uncurry f) = f :=
+lemma curry_uncurry (f : α → β → φ) : curry (uncurry f) = f :=
   rfl
 #align function.curry_uncurry Function.curry_uncurry
 
 @[simp]
-theorem uncurry_curry (f : α × β → φ) : uncurry (curry f) = f :=
+lemma uncurry_curry (f : α × β → φ) : uncurry (curry f) = f :=
   funext fun ⟨_a, _b⟩ => rfl
 #align function.uncurry_curry Function.uncurry_curry
 
-protected theorem LeftInverse.id {g : β → α} {f : α → β} (h : LeftInverse g f) : g ∘ f = id :=
+protected lemma LeftInverse.id {g : β → α} {f : α → β} (h : LeftInverse g f) : g ∘ f = id :=
   funext h
 #align function.left_inverse.id Function.LeftInverse.id
 
-protected theorem RightInverse.id {g : β → α} {f : α → β} (h : RightInverse g f) : f ∘ g = id :=
+protected lemma RightInverse.id {g : β → α} {f : α → β} (h : RightInverse g f) : f ∘ g = id :=
   funext h
 #align function.right_inverse.id Function.RightInverse.id
 

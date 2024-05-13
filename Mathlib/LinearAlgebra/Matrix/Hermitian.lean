@@ -45,53 +45,53 @@ def IsHermitian (A : Matrix n n α) : Prop := Aᴴ = A
 instance (A : Matrix n n α) [Decidable (Aᴴ = A)] : Decidable (IsHermitian A) :=
   inferInstanceAs <| Decidable (_ = _)
 
-theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
+lemma IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 #align matrix.is_hermitian.eq Matrix.IsHermitian.eq
 
-protected theorem IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermitian) :
+protected lemma IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermitian) :
     IsSelfAdjoint A := h
 #align matrix.is_hermitian.is_self_adjoint Matrix.IsHermitian.isSelfAdjoint
 
 -- @[ext] -- Porting note: incorrect ext, not a structure or a lemma proving x = y
-theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
+lemma IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
   intro h; ext i j; exact h i j
 #align matrix.is_hermitian.ext Matrix.IsHermitian.ext
 
-theorem IsHermitian.apply {A : Matrix n n α} (h : A.IsHermitian) (i j : n) : star (A j i) = A i j :=
+lemma IsHermitian.apply {A : Matrix n n α} (h : A.IsHermitian) (i j : n) : star (A j i) = A i j :=
   congr_fun (congr_fun h _) _
 #align matrix.is_hermitian.apply Matrix.IsHermitian.apply
 
-theorem IsHermitian.ext_iff {A : Matrix n n α} : A.IsHermitian ↔ ∀ i j, star (A j i) = A i j :=
+lemma IsHermitian.ext_iff {A : Matrix n n α} : A.IsHermitian ↔ ∀ i j, star (A j i) = A i j :=
   ⟨IsHermitian.apply, IsHermitian.ext⟩
 #align matrix.is_hermitian.ext_iff Matrix.IsHermitian.ext_iff
 
 @[simp]
-theorem IsHermitian.map {A : Matrix n n α} (h : A.IsHermitian) (f : α → β)
+lemma IsHermitian.map {A : Matrix n n α} (h : A.IsHermitian) (f : α → β)
     (hf : Function.Semiconj f star star) : (A.map f).IsHermitian :=
   (conjTranspose_map f hf).symm.trans <| h.eq.symm ▸ rfl
 #align matrix.is_hermitian.map Matrix.IsHermitian.map
 
-theorem IsHermitian.transpose {A : Matrix n n α} (h : A.IsHermitian) : Aᵀ.IsHermitian := by
+lemma IsHermitian.transpose {A : Matrix n n α} (h : A.IsHermitian) : Aᵀ.IsHermitian := by
   rw [IsHermitian, conjTranspose, transpose_map]
   exact congr_arg Matrix.transpose h
 #align matrix.is_hermitian.transpose Matrix.IsHermitian.transpose
 
 @[simp]
-theorem isHermitian_transpose_iff (A : Matrix n n α) : Aᵀ.IsHermitian ↔ A.IsHermitian :=
+lemma isHermitian_transpose_iff (A : Matrix n n α) : Aᵀ.IsHermitian ↔ A.IsHermitian :=
   ⟨by intro h; rw [← transpose_transpose A]; exact IsHermitian.transpose h, IsHermitian.transpose⟩
 #align matrix.is_hermitian_transpose_iff Matrix.isHermitian_transpose_iff
 
-theorem IsHermitian.conjTranspose {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ.IsHermitian :=
+lemma IsHermitian.conjTranspose {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ.IsHermitian :=
   h.transpose.map _ fun _ => rfl
 #align matrix.is_hermitian.conj_transpose Matrix.IsHermitian.conjTranspose
 
 @[simp]
-theorem IsHermitian.submatrix {A : Matrix n n α} (h : A.IsHermitian) (f : m → n) :
+lemma IsHermitian.submatrix {A : Matrix n n α} (h : A.IsHermitian) (f : m → n) :
     (A.submatrix f f).IsHermitian := (conjTranspose_submatrix _ _ _).trans (h.symm ▸ rfl)
 #align matrix.is_hermitian.submatrix Matrix.IsHermitian.submatrix
 
 @[simp]
-theorem isHermitian_submatrix_equiv {A : Matrix n n α} (e : m ≃ n) :
+lemma isHermitian_submatrix_equiv {A : Matrix n n α} (e : m ≃ n) :
     (A.submatrix e e).IsHermitian ↔ A.IsHermitian :=
   ⟨fun h => by simpa using h.submatrix e.symm, fun h => h.submatrix _⟩
 #align matrix.is_hermitian_submatrix_equiv Matrix.isHermitian_submatrix_equiv
@@ -103,7 +103,7 @@ section InvolutiveStar
 variable [InvolutiveStar α]
 
 @[simp]
-theorem isHermitian_conjTranspose_iff (A : Matrix n n α) : Aᴴ.IsHermitian ↔ A.IsHermitian :=
+lemma isHermitian_conjTranspose_iff (A : Matrix n n α) : Aᴴ.IsHermitian ↔ A.IsHermitian :=
   IsSelfAdjoint.star_iff
 #align matrix.is_hermitian_conj_transpose_iff Matrix.isHermitian_conjTranspose_iff
 
@@ -154,12 +154,12 @@ theorem isHermitian_diagonal [TrivialStar α] [DecidableEq n] (v : n → α) :
 #align matrix.is_hermitian_diagonal Matrix.isHermitian_diagonal
 
 @[simp]
-theorem isHermitian_zero : (0 : Matrix n n α).IsHermitian :=
+lemma isHermitian_zero : (0 : Matrix n n α).IsHermitian :=
   isSelfAdjoint_zero _
 #align matrix.is_hermitian_zero Matrix.isHermitian_zero
 
 @[simp]
-theorem IsHermitian.add {A B : Matrix n n α} (hA : A.IsHermitian) (hB : B.IsHermitian) :
+lemma IsHermitian.add {A B : Matrix n n α} (hA : A.IsHermitian) (hB : B.IsHermitian) :
     (A + B).IsHermitian :=
   IsSelfAdjoint.add hA hB
 #align matrix.is_hermitian.add Matrix.IsHermitian.add
@@ -170,11 +170,11 @@ section AddCommMonoid
 
 variable [AddCommMonoid α] [StarAddMonoid α]
 
-theorem isHermitian_add_transpose_self (A : Matrix n n α) : (A + Aᴴ).IsHermitian :=
+lemma isHermitian_add_transpose_self (A : Matrix n n α) : (A + Aᴴ).IsHermitian :=
   isSelfAdjoint_add_star_self A
 #align matrix.is_hermitian_add_transpose_self Matrix.isHermitian_add_transpose_self
 
-theorem isHermitian_transpose_add_self (A : Matrix n n α) : (Aᴴ + A).IsHermitian :=
+lemma isHermitian_transpose_add_self (A : Matrix n n α) : (Aᴴ + A).IsHermitian :=
   isSelfAdjoint_star_add_self A
 #align matrix.is_hermitian_transpose_add_self Matrix.isHermitian_transpose_add_self
 
@@ -185,12 +185,12 @@ section AddGroup
 variable [AddGroup α] [StarAddMonoid α]
 
 @[simp]
-theorem IsHermitian.neg {A : Matrix n n α} (h : A.IsHermitian) : (-A).IsHermitian :=
+lemma IsHermitian.neg {A : Matrix n n α} (h : A.IsHermitian) : (-A).IsHermitian :=
   IsSelfAdjoint.neg h
 #align matrix.is_hermitian.neg Matrix.IsHermitian.neg
 
 @[simp]
-theorem IsHermitian.sub {A B : Matrix n n α} (hA : A.IsHermitian) (hB : B.IsHermitian) :
+lemma IsHermitian.sub {A B : Matrix n n α} (hA : A.IsHermitian) (hB : B.IsHermitian) :
     (A - B).IsHermitian :=
   IsSelfAdjoint.sub hA hB
 #align matrix.is_hermitian.sub Matrix.IsHermitian.sub
@@ -240,7 +240,7 @@ theorem isHermitian_one [DecidableEq n] : (1 : Matrix n n α).IsHermitian :=
   conjTranspose_one
 #align matrix.is_hermitian_one Matrix.isHermitian_one
 
-theorem IsHermitian.pow [Fintype n] [DecidableEq n] {A : Matrix n n α} (h : A.IsHermitian) (k : ℕ) :
+lemma IsHermitian.pow [Fintype n] [DecidableEq n] {A : Matrix n n α} (h : A.IsHermitian) (k : ℕ) :
     (A ^ k).IsHermitian := IsSelfAdjoint.pow h _
 
 end Semiring
@@ -249,17 +249,17 @@ section CommRing
 
 variable [CommRing α] [StarRing α]
 
-theorem IsHermitian.inv [Fintype m] [DecidableEq m] {A : Matrix m m α} (hA : A.IsHermitian) :
+lemma IsHermitian.inv [Fintype m] [DecidableEq m] {A : Matrix m m α} (hA : A.IsHermitian) :
     A⁻¹.IsHermitian := by simp [IsHermitian, conjTranspose_nonsing_inv, hA.eq]
 #align matrix.is_hermitian.inv Matrix.IsHermitian.inv
 
 @[simp]
-theorem isHermitian_inv [Fintype m] [DecidableEq m] (A : Matrix m m α) [Invertible A] :
+lemma isHermitian_inv [Fintype m] [DecidableEq m] (A : Matrix m m α) [Invertible A] :
     A⁻¹.IsHermitian ↔ A.IsHermitian :=
   ⟨fun h => by rw [← inv_inv_of_invertible A]; exact IsHermitian.inv h, IsHermitian.inv⟩
 #align matrix.is_hermitian_inv Matrix.isHermitian_inv
 
-theorem IsHermitian.adjugate [Fintype m] [DecidableEq m] {A : Matrix m m α} (hA : A.IsHermitian) :
+lemma IsHermitian.adjugate [Fintype m] [DecidableEq m] {A : Matrix m m α} (hA : A.IsHermitian) :
     A.adjugate.IsHermitian := by simp [IsHermitian, adjugate_conjTranspose, hA.eq]
 #align matrix.is_hermitian.adjugate Matrix.IsHermitian.adjugate
 

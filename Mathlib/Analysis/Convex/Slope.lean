@@ -234,7 +234,7 @@ theorem strictConcaveOn_iff_slope_strict_anti_adjacent :
     strictConcaveOn_of_slope_strict_anti_adjacent h.1 (@fun _ _ _ hx hy => h.2 hx hy)⟩
 #align strict_concave_on_iff_slope_strict_anti_adjacent strictConcaveOn_iff_slope_strict_anti_adjacent
 
-theorem ConvexOn.secant_mono_aux1 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
+lemma ConvexOn.secant_mono_aux1 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
     (hxy : x < y) (hyz : y < z) : (z - x) * f y ≤ (z - y) * f x + (y - x) * f z := by
   have hxy' : 0 < y - x := by linarith
   have hyz' : 0 < z - y := by linarith
@@ -255,7 +255,7 @@ theorem ConvexOn.secant_mono_aux1 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : 
   · field_simp
 #align convex_on.secant_mono_aux1 ConvexOn.secant_mono_aux1
 
-theorem ConvexOn.secant_mono_aux2 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
+lemma ConvexOn.secant_mono_aux2 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
     (hxy : x < y) (hyz : y < z) : (f y - f x) / (y - x) ≤ (f z - f x) / (z - x) := by
   have hxy' : 0 < y - x := by linarith
   have hxz' : 0 < z - x := by linarith
@@ -263,7 +263,7 @@ theorem ConvexOn.secant_mono_aux2 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : 
   linarith only [hf.secant_mono_aux1 hx hz hxy hyz]
 #align convex_on.secant_mono_aux2 ConvexOn.secant_mono_aux2
 
-theorem ConvexOn.secant_mono_aux3 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
+lemma ConvexOn.secant_mono_aux3 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
     (hxy : x < y) (hyz : y < z) : (f z - f x) / (z - x) ≤ (f z - f y) / (z - y) := by
   have hyz' : 0 < z - y := by linarith
   have hxz' : 0 < z - x := by linarith
@@ -271,7 +271,7 @@ theorem ConvexOn.secant_mono_aux3 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : 
   linarith only [hf.secant_mono_aux1 hx hz hxy hyz]
 #align convex_on.secant_mono_aux3 ConvexOn.secant_mono_aux3
 
-theorem ConvexOn.secant_mono (hf : ConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈ s) (hx : x ∈ s)
+lemma ConvexOn.secant_mono (hf : ConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈ s) (hx : x ∈ s)
     (hy : y ∈ s) (hxa : x ≠ a) (hya : y ≠ a) (hxy : x ≤ y) :
     (f x - f a) / (x - a) ≤ (f y - f a) / (y - a) := by
   rcases eq_or_lt_of_le hxy with (rfl | hxy)
@@ -284,7 +284,7 @@ theorem ConvexOn.secant_mono (hf : ConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈
   · exact hf.secant_mono_aux2 ha hy hxa hxy
 #align convex_on.secant_mono ConvexOn.secant_mono
 
-theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
+lemma StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
     (hz : z ∈ s) (hxy : x < y) (hyz : y < z) : (z - x) * f y < (z - y) * f x + (y - x) * f z := by
   have hxy' : 0 < y - x := by linarith
   have hyz' : 0 < z - y := by linarith
@@ -305,7 +305,7 @@ theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x
   · field_simp
 #align strict_convex_on.secant_strict_mono_aux1 StrictConvexOn.secant_strict_mono_aux1
 
-theorem StrictConvexOn.secant_strict_mono_aux2 (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
+lemma StrictConvexOn.secant_strict_mono_aux2 (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
     (hz : z ∈ s) (hxy : x < y) (hyz : y < z) : (f y - f x) / (y - x) < (f z - f x) / (z - x) := by
   have hxy' : 0 < y - x := by linarith
   have hxz' : 0 < z - x := by linarith
@@ -313,7 +313,7 @@ theorem StrictConvexOn.secant_strict_mono_aux2 (hf : StrictConvexOn 𝕜 s f) {x
   linarith only [hf.secant_strict_mono_aux1 hx hz hxy hyz]
 #align strict_convex_on.secant_strict_mono_aux2 StrictConvexOn.secant_strict_mono_aux2
 
-theorem StrictConvexOn.secant_strict_mono_aux3 (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
+lemma StrictConvexOn.secant_strict_mono_aux3 (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
     (hz : z ∈ s) (hxy : x < y) (hyz : y < z) : (f z - f x) / (z - x) < (f z - f y) / (z - y) := by
   have hyz' : 0 < z - y := by linarith
   have hxz' : 0 < z - x := by linarith
@@ -321,7 +321,7 @@ theorem StrictConvexOn.secant_strict_mono_aux3 (hf : StrictConvexOn 𝕜 s f) {x
   linarith only [hf.secant_strict_mono_aux1 hx hz hxy hyz]
 #align strict_convex_on.secant_strict_mono_aux3 StrictConvexOn.secant_strict_mono_aux3
 
-theorem StrictConvexOn.secant_strict_mono (hf : StrictConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈ s)
+lemma StrictConvexOn.secant_strict_mono (hf : StrictConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈ s)
     (hx : x ∈ s) (hy : y ∈ s) (hxa : x ≠ a) (hya : y ≠ a) (hxy : x < y) :
     (f x - f a) / (x - a) < (f y - f a) / (y - a) := by
   cases' lt_or_gt_of_ne hxa with hxa hxa
@@ -333,7 +333,7 @@ theorem StrictConvexOn.secant_strict_mono (hf : StrictConvexOn 𝕜 s f) {a x y 
   · exact hf.secant_strict_mono_aux2 ha hy hxa hxy
 #align strict_convex_on.secant_strict_mono StrictConvexOn.secant_strict_mono
 
-theorem StrictConcaveOn.secant_strict_mono (hf : StrictConcaveOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈ s)
+lemma StrictConcaveOn.secant_strict_mono (hf : StrictConcaveOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈ s)
     (hx : x ∈ s) (hy : y ∈ s) (hxa : x ≠ a) (hya : y ≠ a) (hxy : x < y) :
     (f y - f a) / (y - a) < (f x - f a) / (x - a) := by
   have key := hf.neg.secant_strict_mono ha hx hy hxa hya hxy

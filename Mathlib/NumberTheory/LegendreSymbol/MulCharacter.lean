@@ -120,7 +120,7 @@ noncomputable def trivial : MulChar R R' where
 end trivial
 
 @[simp]
-theorem coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
+lemma coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
   rfl
 #align mul_char.coe_mk MulChar.coe_mk
 
@@ -137,7 +137,7 @@ instance : MulCharClass (MulChar R R') R R' where
   map_one χ := χ.map_one'
   map_nonunit χ := χ.map_nonunit' _
 
-theorem map_nonunit (χ : MulChar R R') {a : R} (ha : ¬IsUnit a) : χ a = 0 :=
+lemma map_nonunit (χ : MulChar R R') {a : R} (ha : ¬IsUnit a) : χ a = 0 :=
   χ.map_nonunit' a ha
 #align mul_char.map_nonunit MulChar.map_nonunit
 
@@ -152,7 +152,7 @@ theorem ext {χ χ' : MulChar R R'} (h : ∀ a : Rˣ, χ a = χ' a) : χ = χ' :
   · rw [map_nonunit χ ha, map_nonunit χ' ha]
 #align mul_char.ext MulChar.ext
 
-theorem ext_iff {χ χ' : MulChar R R'} : χ = χ' ↔ ∀ a : Rˣ, χ a = χ' a :=
+lemma ext_iff {χ χ' : MulChar R R'} : χ = χ' ↔ ∀ a : Rˣ, χ a = χ' a :=
   ⟨by
     rintro rfl a
     rfl, ext⟩
@@ -171,7 +171,7 @@ def toUnitHom (χ : MulChar R R') : Rˣ →* R'ˣ :=
   Units.map χ
 #align mul_char.to_unit_hom MulChar.toUnitHom
 
-theorem coe_toUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(χ.toUnitHom a) = χ a :=
+lemma coe_toUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(χ.toUnitHom a) = χ a :=
   rfl
 #align mul_char.coe_to_unit_hom MulChar.coe_toUnitHom
 
@@ -198,7 +198,7 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
     simp only [ha, not_false_iff, dif_neg]
 #align mul_char.of_unit_hom MulChar.ofUnitHom
 
-theorem ofUnitHom_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : ofUnitHom f ↑a = f a := by simp [ofUnitHom]
+lemma ofUnitHom_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : ofUnitHom f ↑a = f a := by simp [ofUnitHom]
 #align mul_char.of_unit_hom_coe MulChar.ofUnitHom_coe
 
 /-- The equivalence between multiplicative characters and homomorphisms of unit groups. -/
@@ -216,22 +216,22 @@ noncomputable def equivToUnitHom : MulChar R R' ≃ (Rˣ →* R'ˣ) where
 #align mul_char.equiv_to_unit_hom MulChar.equivToUnitHom
 
 @[simp]
-theorem toUnitHom_eq (χ : MulChar R R') : toUnitHom χ = equivToUnitHom χ :=
+lemma toUnitHom_eq (χ : MulChar R R') : toUnitHom χ = equivToUnitHom χ :=
   rfl
 #align mul_char.to_unit_hom_eq MulChar.toUnitHom_eq
 
 @[simp]
-theorem ofUnitHom_eq (χ : Rˣ →* R'ˣ) : ofUnitHom χ = equivToUnitHom.symm χ :=
+lemma ofUnitHom_eq (χ : Rˣ →* R'ˣ) : ofUnitHom χ = equivToUnitHom.symm χ :=
   rfl
 #align mul_char.of_unit_hom_eq MulChar.ofUnitHom_eq
 
 @[simp]
-theorem coe_equivToUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(equivToUnitHom χ a) = χ a :=
+lemma coe_equivToUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(equivToUnitHom χ a) = χ a :=
   coe_toUnitHom χ a
 #align mul_char.coe_equiv_to_unit_hom MulChar.coe_equivToUnitHom
 
 @[simp]
-theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.symm f ↑a = f a :=
+lemma equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.symm f ↑a = f a :=
   ofUnitHom_coe f a
 #align mul_char.equiv_unit_hom_symm_coe MulChar.equivToUnitHom_symm_coe
 
@@ -246,7 +246,7 @@ The multiplicative characters `R → R'` form a commutative group.
 -/
 
 
-protected theorem map_one (χ : MulChar R R') : χ (1 : R) = 1 :=
+protected lemma map_one (χ : MulChar R R') : χ (1 : R) = 1 :=
   χ.map_one'
 #align mul_char.map_one MulChar.map_one
 
@@ -297,21 +297,21 @@ instance hasMul : Mul (MulChar R R') :=
   ⟨mul⟩
 #align mul_char.has_mul MulChar.hasMul
 
-theorem mul_apply (χ χ' : MulChar R R') (a : R) : (χ * χ') a = χ a * χ' a :=
+lemma mul_apply (χ χ' : MulChar R R') (a : R) : (χ * χ') a = χ a * χ' a :=
   rfl
 #align mul_char.mul_apply MulChar.mul_apply
 
 @[simp]
-theorem coeToFun_mul (χ χ' : MulChar R R') : ⇑(χ * χ') = χ * χ' :=
+lemma coeToFun_mul (χ χ' : MulChar R R') : ⇑(χ * χ') = χ * χ' :=
   rfl
 #align mul_char.coe_to_fun_mul MulChar.coeToFun_mul
 
-protected theorem one_mul (χ : MulChar R R') : (1 : MulChar R R') * χ = χ := by
+protected lemma one_mul (χ : MulChar R R') : (1 : MulChar R R') * χ = χ := by
   ext
   simp only [one_mul, Pi.mul_apply, MulChar.coeToFun_mul, MulChar.one_apply_coe]
 #align mul_char.one_mul MulChar.one_mul
 
-protected theorem mul_one (χ : MulChar R R') : χ * 1 = χ := by
+protected lemma mul_one (χ : MulChar R R') : χ * 1 = χ := by
   ext
   simp only [mul_one, Pi.mul_apply, MulChar.coeToFun_mul, MulChar.one_apply_coe]
 #align mul_char.mul_one MulChar.mul_one

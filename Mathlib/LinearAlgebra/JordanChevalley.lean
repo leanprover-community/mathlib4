@@ -39,7 +39,7 @@ namespace Module.End
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V] {f : End K V}
 
-theorem exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : ℕ}
+lemma exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : ℕ}
     (sep : P.Separable) (nil : minpoly K f ∣ P ^ k) :
     ∃ᵉ (n ∈ adjoin K {f}) (s ∈ adjoin K {f}), IsNilpotent n ∧ IsSemisimple s ∧ f = n + s := by
   set ff : adjoin K {f} := ⟨f, self_mem_adjoin_singleton K f⟩

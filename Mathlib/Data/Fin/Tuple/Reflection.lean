@@ -41,7 +41,7 @@ def seq : ∀ {m}, (Fin m → α → β) → (Fin m → α) → Fin m → β
 #align fin_vec.seq FinVec.seq
 
 @[simp]
-theorem seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v = fun i => f i (v i)
+lemma seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v = fun i => f i (v i)
   | 0, f, v => Subsingleton.elim _ _
   | n + 1, f, v =>
     funext fun i => by

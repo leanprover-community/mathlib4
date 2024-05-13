@@ -71,7 +71,7 @@ variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R
 namespace RingHomCompTriple
 
 @[simp]
-theorem comp_apply [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] {x : R₁} : σ₂₃ (σ₁₂ x) = σ₁₃ x :=
+lemma comp_apply [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] {x : R₁} : σ₂₃ (σ₁₂ x) = σ₁₃ x :=
   RingHom.congr_fun comp_eq x
 #align ring_hom_comp_triple.comp_apply RingHomCompTriple.comp_apply
 
@@ -97,13 +97,13 @@ namespace RingHomInvPair
 variable [RingHomInvPair σ σ']
 
 -- @[simp] Porting note (#10618): `simp` can prove it
-theorem comp_apply_eq {x : R₁} : σ' (σ x) = x := by
+lemma comp_apply_eq {x : R₁} : σ' (σ x) = x := by
   rw [← RingHom.comp_apply, comp_eq]
   simp
 #align ring_hom_inv_pair.comp_apply_eq RingHomInvPair.comp_apply_eq
 
 -- @[simp] Porting note (#10618): `simp` can prove it
-theorem comp_apply_eq₂ {x : R₂} : σ (σ' x) = x := by
+lemma comp_apply_eq₂ {x : R₂} : σ (σ' x) = x := by
   rw [← RingHom.comp_apply, comp_eq₂]
   simp
 #align ring_hom_inv_pair.comp_apply_eq₂ RingHomInvPair.comp_apply_eq₂
@@ -166,7 +166,7 @@ class RingHomSurjective (σ : R₁ →+* R₂) : Prop where
   is_surjective : Function.Surjective σ
 #align ring_hom_surjective RingHomSurjective
 
-theorem RingHom.surjective (σ : R₁ →+* R₂) [t : RingHomSurjective σ] : Function.Surjective σ :=
+lemma RingHom.surjective (σ : R₁ →+* R₂) [t : RingHomSurjective σ] : Function.Surjective σ :=
   t.is_surjective
 #align ring_hom.is_surjective RingHom.surjective
 

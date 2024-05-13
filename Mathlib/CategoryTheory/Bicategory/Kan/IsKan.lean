@@ -70,7 +70,7 @@ abbrev desc (H : IsKan t) (s : LeftExtension f g) : t.extension ⟶ s.extension 
   StructuredArrow.IsUniversal.desc H s
 
 @[reassoc (attr := simp)]
-theorem fac (H : IsKan t) (s : LeftExtension f g) :
+lemma fac (H : IsKan t) (s : LeftExtension f g) :
     t.unit ≫ f ◁ H.desc s = s.unit :=
   StructuredArrow.IsUniversal.fac H s
 
@@ -132,7 +132,7 @@ abbrev desc (H : IsKan t) (s : LeftLift f g) : t.lift ⟶ s.lift :=
   StructuredArrow.IsUniversal.desc H s
 
 @[reassoc (attr := simp)]
-theorem fac (H : IsKan t) (s : LeftLift f g) :
+lemma fac (H : IsKan t) (s : LeftLift f g) :
     t.unit ≫ H.desc s ▷ f = s.unit :=
   StructuredArrow.IsUniversal.fac H s
 

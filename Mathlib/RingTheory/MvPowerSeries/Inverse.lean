@@ -72,7 +72,7 @@ protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerS
 termination_by n => n
 #align mv_power_series.inv.aux MvPowerSeries.inv.aux
 
-theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPowerSeries σ R) :
+lemma coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPowerSeries σ R) :
     coeff R n (inv.aux a φ) =
       if n = 0 then a
       else
@@ -89,7 +89,7 @@ def invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) : MvPowerSeries σ R :=
   inv.aux (↑u⁻¹) φ
 #align mv_power_series.inv_of_unit MvPowerSeries.invOfUnit
 
-theorem coeff_invOfUnit [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ R) (u : Rˣ) :
+lemma coeff_invOfUnit [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ R) (u : Rˣ) :
     coeff R n (invOfUnit φ u) =
       if n = 0 then ↑u⁻¹
       else
@@ -100,13 +100,13 @@ theorem coeff_invOfUnit [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries
 #align mv_power_series.coeff_inv_of_unit MvPowerSeries.coeff_invOfUnit
 
 @[simp]
-theorem constantCoeff_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) :
+lemma constantCoeff_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) :
     constantCoeff σ R (invOfUnit φ u) = ↑u⁻¹ := by
   classical
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_invOfUnit, if_pos rfl]
 #align mv_power_series.constant_coeff_inv_of_unit MvPowerSeries.constantCoeff_invOfUnit
 
-theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ R φ = u) :
+lemma mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ R φ = u) :
     φ * invOfUnit φ u = 1 :=
   ext fun n =>
     letI := Classical.decEq (σ →₀ ℕ)
@@ -190,7 +190,7 @@ protected def inv (φ : MvPowerSeries σ k) : MvPowerSeries σ k :=
 instance : Inv (MvPowerSeries σ k) :=
   ⟨MvPowerSeries.inv⟩
 
-theorem coeff_inv [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ k) :
+lemma coeff_inv [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ k) :
     coeff k n φ⁻¹ =
       if n = 0 then (constantCoeff σ k φ)⁻¹
       else
@@ -200,13 +200,13 @@ theorem coeff_inv [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ k)
 #align mv_power_series.coeff_inv MvPowerSeries.coeff_inv
 
 @[simp]
-theorem constantCoeff_inv (φ : MvPowerSeries σ k) :
+lemma constantCoeff_inv (φ : MvPowerSeries σ k) :
     constantCoeff σ k φ⁻¹ = (constantCoeff σ k φ)⁻¹ := by
   classical
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_inv, if_pos rfl]
 #align mv_power_series.constant_coeff_inv MvPowerSeries.constantCoeff_inv
 
-theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff σ k φ = 0 :=
+lemma inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff σ k φ = 0 :=
   ⟨fun h => by simpa using congr_arg (constantCoeff σ k) h, fun h =>
     ext fun n => by
       classical
@@ -216,19 +216,19 @@ theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff σ
 #align mv_power_series.inv_eq_zero MvPowerSeries.inv_eq_zero
 
 @[simp]
-theorem zero_inv : (0 : MvPowerSeries σ k)⁻¹ = 0 := by
+lemma zero_inv : (0 : MvPowerSeries σ k)⁻¹ = 0 := by
   rw [inv_eq_zero, constantCoeff_zero]
 #align mv_power_series.zero_inv MvPowerSeries.zero_inv
 
 -- Porting note (#10618): simp can prove this.
 -- @[simp]
-theorem invOfUnit_eq (φ : MvPowerSeries σ k) (h : constantCoeff σ k φ ≠ 0) :
+lemma invOfUnit_eq (φ : MvPowerSeries σ k) (h : constantCoeff σ k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
   rfl
 #align mv_power_series.inv_of_unit_eq MvPowerSeries.invOfUnit_eq
 
 @[simp]
-theorem invOfUnit_eq' (φ : MvPowerSeries σ k) (u : Units k) (h : constantCoeff σ k φ = u) :
+lemma invOfUnit_eq' (φ : MvPowerSeries σ k) (u : Units k) (h : constantCoeff σ k φ = u) :
     invOfUnit φ u = φ⁻¹ := by
   rw [← invOfUnit_eq φ (h.symm ▸ u.ne_zero)]
   apply congrArg (invOfUnit φ)
@@ -237,31 +237,31 @@ theorem invOfUnit_eq' (φ : MvPowerSeries σ k) (u : Units k) (h : constantCoeff
 #align mv_power_series.inv_of_unit_eq' MvPowerSeries.invOfUnit_eq'
 
 @[simp]
-protected theorem mul_inv_cancel (φ : MvPowerSeries σ k) (h : constantCoeff σ k φ ≠ 0) :
+protected lemma mul_inv_cancel (φ : MvPowerSeries σ k) (h : constantCoeff σ k φ ≠ 0) :
     φ * φ⁻¹ = 1 := by rw [← invOfUnit_eq φ h, mul_invOfUnit φ (Units.mk0 _ h) rfl]
 #align mv_power_series.mul_inv_cancel MvPowerSeries.mul_inv_cancel
 
 @[simp]
-protected theorem inv_mul_cancel (φ : MvPowerSeries σ k) (h : constantCoeff σ k φ ≠ 0) :
+protected lemma inv_mul_cancel (φ : MvPowerSeries σ k) (h : constantCoeff σ k φ ≠ 0) :
     φ⁻¹ * φ = 1 := by rw [mul_comm, φ.mul_inv_cancel h]
 #align mv_power_series.inv_mul_cancel MvPowerSeries.inv_mul_cancel
 
-protected theorem eq_mul_inv_iff_mul_eq {φ₁ φ₂ φ₃ : MvPowerSeries σ k}
+protected lemma eq_mul_inv_iff_mul_eq {φ₁ φ₂ φ₃ : MvPowerSeries σ k}
     (h : constantCoeff σ k φ₃ ≠ 0) : φ₁ = φ₂ * φ₃⁻¹ ↔ φ₁ * φ₃ = φ₂ :=
   ⟨fun k => by simp [k, mul_assoc, MvPowerSeries.inv_mul_cancel _ h], fun k => by
     simp [← k, mul_assoc, MvPowerSeries.mul_inv_cancel _ h]⟩
 #align mv_power_series.eq_mul_inv_iff_mul_eq MvPowerSeries.eq_mul_inv_iff_mul_eq
 
-protected theorem eq_inv_iff_mul_eq_one {φ ψ : MvPowerSeries σ k} (h : constantCoeff σ k ψ ≠ 0) :
+protected lemma eq_inv_iff_mul_eq_one {φ ψ : MvPowerSeries σ k} (h : constantCoeff σ k ψ ≠ 0) :
     φ = ψ⁻¹ ↔ φ * ψ = 1 := by rw [← MvPowerSeries.eq_mul_inv_iff_mul_eq h, one_mul]
 #align mv_power_series.eq_inv_iff_mul_eq_one MvPowerSeries.eq_inv_iff_mul_eq_one
 
-protected theorem inv_eq_iff_mul_eq_one {φ ψ : MvPowerSeries σ k} (h : constantCoeff σ k ψ ≠ 0) :
+protected lemma inv_eq_iff_mul_eq_one {φ ψ : MvPowerSeries σ k} (h : constantCoeff σ k ψ ≠ 0) :
     ψ⁻¹ = φ ↔ φ * ψ = 1 := by rw [eq_comm, MvPowerSeries.eq_inv_iff_mul_eq_one h]
 #align mv_power_series.inv_eq_iff_mul_eq_one MvPowerSeries.inv_eq_iff_mul_eq_one
 
 @[simp]
-protected theorem mul_inv_rev (φ ψ : MvPowerSeries σ k) :
+protected lemma mul_inv_rev (φ ψ : MvPowerSeries σ k) :
     (φ * ψ)⁻¹ = ψ⁻¹ * φ⁻¹ := by
   by_cases h : constantCoeff σ k (φ * ψ) = 0
   · rw [inv_eq_zero.mpr h]
@@ -282,7 +282,7 @@ instance : InvOneClass (MvPowerSeries σ k) :=
       simp }
 
 @[simp]
-theorem C_inv (r : k) : (C σ k r)⁻¹ = C σ k r⁻¹ := by
+lemma C_inv (r : k) : (C σ k r)⁻¹ = C σ k r⁻¹ := by
   rcases eq_or_ne r 0 with (rfl | hr)
   · simp
   rw [MvPowerSeries.inv_eq_iff_mul_eq_one, ← map_mul, inv_mul_cancel hr, map_one]
@@ -291,13 +291,13 @@ set_option linter.uppercaseLean3 false in
 #align mv_power_series.C_inv MvPowerSeries.C_inv
 
 @[simp]
-theorem X_inv (s : σ) : (X s : MvPowerSeries σ k)⁻¹ = 0 := by
+lemma X_inv (s : σ) : (X s : MvPowerSeries σ k)⁻¹ = 0 := by
   rw [inv_eq_zero, constantCoeff_X]
 set_option linter.uppercaseLean3 false in
 #align mv_power_series.X_inv MvPowerSeries.X_inv
 
 @[simp]
-theorem smul_inv (r : k) (φ : MvPowerSeries σ k) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ := by
+lemma smul_inv (r : k) (φ : MvPowerSeries σ k) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ := by
   simp [smul_eq_C_mul, mul_comm]
 #align mv_power_series.smul_inv MvPowerSeries.smul_inv
 

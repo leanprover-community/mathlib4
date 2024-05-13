@@ -77,11 +77,11 @@ lemma hasAntidiagonal_congr (A : Type*) [AddMonoid A]
     [H1 : HasAntidiagonal A] [H2 : HasAntidiagonal A] :
     H1.antidiagonal = H2.antidiagonal := by congr!; apply Subsingleton.elim
 
-theorem swap_mem_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} {xy : A × A}:
+lemma swap_mem_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} {xy : A × A}:
     xy.swap ∈ antidiagonal n ↔ xy ∈ antidiagonal n := by
   simp [add_comm]
 
-@[simp] theorem map_prodComm_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} :
+@[simp] lemma map_prodComm_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} :
     (antidiagonal n).map (Equiv.prodComm A A) = antidiagonal n :=
   Finset.ext fun ⟨a, b⟩ => by simp [add_comm]
 
@@ -128,17 +128,17 @@ section CanonicallyOrderedAddCommMonoid
 variable [CanonicallyOrderedAddCommMonoid A] [HasAntidiagonal A]
 
 @[simp]
-theorem antidiagonal_zero : antidiagonal (0 : A) = {(0, 0)} := by
+lemma antidiagonal_zero : antidiagonal (0 : A) = {(0, 0)} := by
   ext ⟨x, y⟩
   simp
 
-theorem antidiagonal.fst_le {n : A} {kl : A × A} (hlk : kl ∈ antidiagonal n) : kl.1 ≤ n := by
+lemma antidiagonal.fst_le {n : A} {kl : A × A} (hlk : kl ∈ antidiagonal n) : kl.1 ≤ n := by
   rw [le_iff_exists_add]
   use kl.2
   rwa [mem_antidiagonal, eq_comm] at hlk
 #align finset.nat.antidiagonal.fst_le Finset.antidiagonal.fst_le
 
-theorem antidiagonal.snd_le {n : A} {kl : A × A} (hlk : kl ∈ antidiagonal n) : kl.2 ≤ n := by
+lemma antidiagonal.snd_le {n : A} {kl : A × A} (hlk : kl ∈ antidiagonal n) : kl.2 ≤ n := by
   rw [le_iff_exists_add]
   use kl.1
   rwa [mem_antidiagonal, eq_comm, add_comm] at hlk
@@ -151,7 +151,7 @@ variable [CanonicallyOrderedAddCommMonoid A] [Sub A] [OrderedSub A]
 variable [ContravariantClass A A (· + ·) (· ≤ ·)]
 variable [HasAntidiagonal A]
 
-theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
+lemma filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
     filter (fun x : A × A ↦ x.fst = m) (antidiagonal n) = if m ≤ n then {(m, n - m)} else ∅ := by
   ext ⟨a, b⟩
   suffices a = m → (a + b = n ↔ m ≤ n ∧ b = n - m) by
@@ -166,7 +166,7 @@ theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable
     exact add_tsub_cancel_of_le h
 #align finset.nat.filter_fst_eq_antidiagonal Finset.filter_fst_eq_antidiagonal
 
-theorem filter_snd_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
+lemma filter_snd_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
     filter (fun x : A × A ↦ x.snd = m) (antidiagonal n) = if m ≤ n then {(n - m, m)} else ∅ := by
   have : (fun x : A × A ↦ (x.snd = m)) ∘ Prod.swap = fun x : A × A ↦ x.fst = m := by
     ext; simp

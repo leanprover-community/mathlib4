@@ -92,7 +92,7 @@ theorem integral_fintype_prod_eq_prod (ι : Type*) [Fintype ι] {E : ι → Type
   simp_rw [← e.prod_comp, MeasurableEquiv.coe_piCongrLeft, Equiv.piCongrLeft_apply_apply,
     MeasureTheory.integral_fin_nat_prod_eq_prod]
 
-theorem integral_fintype_prod_eq_pow {E : Type*} (ι : Type*) [Fintype ι] (f : E → 𝕜)
+lemma integral_fintype_prod_eq_pow {E : Type*} (ι : Type*) [Fintype ι] (f : E → 𝕜)
     [MeasureSpace E] [SigmaFinite (volume : Measure E)] :
     ∫ x : ι → E, ∏ i, f (x i) = (∫ x, f x) ^ (card ι) := by
   rw [integral_fintype_prod_eq_prod, Finset.prod_const, card]

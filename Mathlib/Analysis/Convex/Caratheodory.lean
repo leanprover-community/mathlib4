@@ -109,26 +109,26 @@ noncomputable def minCardFinsetOfMemConvexHull : Finset E :=
     simpa only [convexHull_eq_union_convexHull_finite_subsets s, exists_prop, mem_iUnion] using hx
 #align caratheodory.min_card_finset_of_mem_convex_hull Caratheodory.minCardFinsetOfMemConvexHull
 
-theorem minCardFinsetOfMemConvexHull_subseteq : ↑(minCardFinsetOfMemConvexHull hx) ⊆ s :=
+lemma minCardFinsetOfMemConvexHull_subseteq : ↑(minCardFinsetOfMemConvexHull hx) ⊆ s :=
   (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } _).1
 #align caratheodory.min_card_finset_of_mem_convex_hull_subseteq Caratheodory.minCardFinsetOfMemConvexHull_subseteq
 
-theorem mem_minCardFinsetOfMemConvexHull :
+lemma mem_minCardFinsetOfMemConvexHull :
     x ∈ convexHull 𝕜 (minCardFinsetOfMemConvexHull hx : Set E) :=
   (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } _).2
 #align caratheodory.mem_min_card_finset_of_mem_convex_hull Caratheodory.mem_minCardFinsetOfMemConvexHull
 
-theorem minCardFinsetOfMemConvexHull_nonempty : (minCardFinsetOfMemConvexHull hx).Nonempty := by
+lemma minCardFinsetOfMemConvexHull_nonempty : (minCardFinsetOfMemConvexHull hx).Nonempty := by
   rw [← Finset.coe_nonempty, ← @convexHull_nonempty_iff 𝕜]
   exact ⟨x, mem_minCardFinsetOfMemConvexHull hx⟩
 #align caratheodory.min_card_finset_of_mem_convex_hull_nonempty Caratheodory.minCardFinsetOfMemConvexHull_nonempty
 
-theorem minCardFinsetOfMemConvexHull_card_le_card {t : Finset E} (ht₁ : ↑t ⊆ s)
+lemma minCardFinsetOfMemConvexHull_card_le_card {t : Finset E} (ht₁ : ↑t ⊆ s)
     (ht₂ : x ∈ convexHull 𝕜 (t : Set E)) : (minCardFinsetOfMemConvexHull hx).card ≤ t.card :=
   Function.argminOn_le _ _ _ (by exact ⟨ht₁, ht₂⟩)
 #align caratheodory.min_card_finset_of_mem_convex_hull_card_le_card Caratheodory.minCardFinsetOfMemConvexHull_card_le_card
 
-theorem affineIndependent_minCardFinsetOfMemConvexHull :
+lemma affineIndependent_minCardFinsetOfMemConvexHull :
     AffineIndependent 𝕜 ((↑) : minCardFinsetOfMemConvexHull hx → E) := by
   let k := (minCardFinsetOfMemConvexHull hx).card - 1
   have hk : (minCardFinsetOfMemConvexHull hx).card = k + 1 :=

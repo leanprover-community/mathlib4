@@ -23,7 +23,7 @@ set_option autoImplicit true
 
 variable {C : Levenshtein.Cost α β δ} [CanonicallyLinearOrderedAddCommMonoid δ]
 
-theorem suffixLevenshtein_minimum_le_levenshtein_cons (xs : List α) (y ys) :
+lemma suffixLevenshtein_minimum_le_levenshtein_cons (xs : List α) (y ys) :
     (suffixLevenshtein C xs ys).1.minimum ≤ levenshtein C xs (y :: ys) := by
   induction xs with
   | nil =>
@@ -55,7 +55,7 @@ theorem suffixLevenshtein_minimum_le_levenshtein_cons (xs : List α) (y ys) :
             · simp [suffixLevenshtein_cons₁, List.minimum_cons]
         _ ≤ _ := by simp
 
-theorem le_suffixLevenshtein_cons_minimum (xs : List α) (y ys) :
+lemma le_suffixLevenshtein_cons_minimum (xs : List α) (y ys) :
     (suffixLevenshtein C xs ys).1.minimum ≤ (suffixLevenshtein C xs (y :: ys)).1.minimum := by
   apply List.le_minimum_of_forall_le
   simp only [suffixLevenshtein_eq_tails_map]
@@ -72,13 +72,13 @@ theorem le_suffixLevenshtein_cons_minimum (xs : List α) (y ys) :
   suffices ∃ a, a <:+ xs ∧ levenshtein C a ys = levenshtein C a' ys by simpa
   exact ⟨a', suff'.trans suff, rfl⟩
 
-theorem le_suffixLevenshtein_append_minimum (xs : List α) (ys₁ ys₂) :
+lemma le_suffixLevenshtein_append_minimum (xs : List α) (ys₁ ys₂) :
     (suffixLevenshtein C xs ys₂).1.minimum ≤ (suffixLevenshtein C xs (ys₁ ++ ys₂)).1.minimum := by
   induction ys₁ with
   | nil => exact le_refl _
   | cons y ys₁ ih => exact ih.trans (le_suffixLevenshtein_cons_minimum _ _ _)
 
-theorem suffixLevenshtein_minimum_le_levenshtein_append (xs ys₁ ys₂) :
+lemma suffixLevenshtein_minimum_le_levenshtein_append (xs ys₁ ys₂) :
     (suffixLevenshtein C xs ys₂).1.minimum ≤ levenshtein C xs (ys₁ ++ ys₂) := by
   cases ys₁ with
   | nil => exact List.minimum_le_of_mem' (List.get_mem _ _ _)
@@ -86,12 +86,12 @@ theorem suffixLevenshtein_minimum_le_levenshtein_append (xs ys₁ ys₂) :
       exact (le_suffixLevenshtein_append_minimum _ _ _).trans
         (suffixLevenshtein_minimum_le_levenshtein_cons _ _ _)
 
-theorem le_levenshtein_cons (xs : List α) (y ys) :
+lemma le_levenshtein_cons (xs : List α) (y ys) :
     ∃ xs', xs' <:+ xs ∧ levenshtein C xs' ys ≤ levenshtein C xs (y :: ys) := by
   simpa [suffixLevenshtein_eq_tails_map, List.minimum_le_coe_iff] using
     suffixLevenshtein_minimum_le_levenshtein_cons (δ := δ) xs y ys
 
-theorem le_levenshtein_append (xs : List α) (ys₁ ys₂) :
+lemma le_levenshtein_append (xs : List α) (ys₁ ys₂) :
     ∃ xs', xs' <:+ xs ∧ levenshtein C xs' ys₂ ≤ levenshtein C xs (ys₁ ++ ys₂) := by
   simpa [suffixLevenshtein_eq_tails_map, List.minimum_le_coe_iff] using
     suffixLevenshtein_minimum_le_levenshtein_append (δ := δ) xs ys₁ ys₂

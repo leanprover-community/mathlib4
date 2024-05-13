@@ -94,7 +94,7 @@ set_option linter.uppercaseLean3 false in
 #align sym.E2 Sym.e2
 
 -- Porting note: use eqn compiler instead of `pincerRecursion` to make cases more readable
-theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multichoose n k
+lemma card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multichoose n k
   | n, 0 => by simp
   | 0, k + 1 => by rw [multichoose_zero_succ]; exact card_eq_zero
   | 1, k + 1 => by simp
@@ -138,7 +138,7 @@ theorem card_image_diag (s : Finset α) : (s.diag.image Sym2.mk).card = s.card :
     rw [hx.2]
 #align sym2.card_image_diag Sym2.card_image_diag
 
-theorem two_mul_card_image_offDiag (s : Finset α) :
+lemma two_mul_card_image_offDiag (s : Finset α) :
     2 * (s.offDiag.image Sym2.mk).card = s.offDiag.card := by
   rw [card_eq_sum_card_image (Sym2.mk : α × α → _), sum_const_nat (Sym2.ind _), mul_comm]
   rintro x y hxy
@@ -168,7 +168,7 @@ theorem card_image_offDiag (s : Finset α) :
     Nat.div_eq_of_eq_mul_right zero_lt_two (two_mul_card_image_offDiag s).symm]
 #align sym2.card_image_off_diag Sym2.card_image_offDiag
 
-theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
+lemma card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
   convert card_image_diag (univ : Finset α)
   rw [← filter_image_mk_isDiag, Fintype.card_of_subtype]
   rintro x
@@ -177,7 +177,7 @@ theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card
   exact and_iff_right ⟨a, mem_univ _, ha⟩
 #align sym2.card_subtype_diag Sym2.card_subtype_diag
 
-theorem card_subtype_not_diag [Fintype α] :
+lemma card_subtype_not_diag [Fintype α] :
     card { a : Sym2 α // ¬a.IsDiag } = (card α).choose 2 := by
   convert card_image_offDiag (univ : Finset α)
   rw [← filter_image_mk_not_isDiag, Fintype.card_of_subtype]

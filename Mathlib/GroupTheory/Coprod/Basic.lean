@@ -154,16 +154,16 @@ variable {M N M' N' P : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass M'] 
 def mk : FreeMonoid (M ⊕ N) →* M ∗ N := Con.mk' _
 
 @[to_additive (attr := simp)]
-theorem con_ker_mk : Con.ker mk = coprodCon M N := Con.mk'_ker _
+lemma con_ker_mk : Con.ker mk = coprodCon M N := Con.mk'_ker _
 
 @[to_additive]
-theorem mk_surjective : Surjective (@mk M N _ _) := surjective_quot_mk _
+lemma mk_surjective : Surjective (@mk M N _ _) := surjective_quot_mk _
 
 @[to_additive (attr := simp)]
-theorem mrange_mk : MonoidHom.mrange (@mk M N _ _) = ⊤ := Con.mrange_mk'
+lemma mrange_mk : MonoidHom.mrange (@mk M N _ _) = ⊤ := Con.mrange_mk'
 
 @[to_additive]
-theorem mk_eq_mk {w₁ w₂ : FreeMonoid (M ⊕ N)} : mk w₁ = mk w₂ ↔ coprodCon M N w₁ w₂ := Con.eq _
+lemma mk_eq_mk {w₁ w₂ : FreeMonoid (M ⊕ N)} : mk w₁ = mk w₂ ↔ coprodCon M N w₁ w₂ := Con.eq _
 
 /-- The natural embedding `M →* M ∗ N`. -/
 @[to_additive "The natural embedding `M →+ AddMonoid.Coprod M N`."]
@@ -180,13 +180,13 @@ def inr : N →* M ∗ N where
   map_mul' := fun x y => mk_eq_mk.2 fun _c hc => hc.2.1 x y
 
 @[to_additive (attr := simp)]
-theorem mk_of_inl (x : M) : (mk (of (.inl x)) : M ∗ N) = inl x := rfl
+lemma mk_of_inl (x : M) : (mk (of (.inl x)) : M ∗ N) = inl x := rfl
 
 @[to_additive (attr := simp)]
-theorem mk_of_inr (x : N) : (mk (of (.inr x)) : M ∗ N) = inr x := rfl
+lemma mk_of_inr (x : N) : (mk (of (.inr x)) : M ∗ N) = inr x := rfl
 
 @[to_additive (attr := elab_as_elim)]
-theorem induction_on' {C : M ∗ N → Prop} (m : M ∗ N)
+lemma induction_on' {C : M ∗ N → Prop} (m : M ∗ N)
     (one : C 1)
     (inl_mul : ∀ m x, C x → C (inl m * x))
     (inr_mul : ∀ n x, C x → C (inr n * x)) : C m := by
@@ -199,7 +199,7 @@ theorem induction_on' {C : M ∗ N → Prop} (m : M ∗ N)
     | inr n => simpa using inr_mul n _ ih
 
 @[to_additive (attr := elab_as_elim)]
-theorem induction_on {C : M ∗ N → Prop} (m : M ∗ N)
+lemma induction_on {C : M ∗ N → Prop} (m : M ∗ N)
     (inl : ∀ m, C (inl m)) (inr : ∀ n, C (inr n)) (mul : ∀ x y, C x → C y → C (x * y)) : C m :=
   induction_on' m (by simpa using inl 1) (fun _ _ ↦ mul _ _ (inl _)) fun _ _ ↦ mul _ _ (inr _)
 
@@ -225,42 +225,42 @@ def clift (f : FreeMonoid (M ⊕ N) →* P)
   Con.lift _ f <| sInf_le ⟨hM, hN, hM₁.trans (map_one f).symm, hN₁.trans (map_one f).symm⟩
 
 @[to_additive (attr := simp)]
-theorem clift_apply_inl (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN) (x : M) :
+lemma clift_apply_inl (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN) (x : M) :
     clift f hM₁ hN₁ hM hN (inl x) = f (of (.inl x)) :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem clift_apply_inr (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN) (x : N) :
+lemma clift_apply_inr (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN) (x : N) :
     clift f hM₁ hN₁ hM hN (inr x) = f (of (.inr x)) :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem clift_apply_mk (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN w) :
+lemma clift_apply_mk (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN w) :
     clift f hM₁ hN₁ hM hN (mk w) = f w :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem clift_comp_mk (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN) :
+lemma clift_comp_mk (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN) :
     (clift f hM₁ hN₁ hM hN).comp mk = f :=
   DFunLike.ext' rfl
 
 @[to_additive (attr := simp)]
-theorem mclosure_range_inl_union_inr :
+lemma mclosure_range_inl_union_inr :
     Submonoid.closure (range (inl : M →* M ∗ N) ∪ range (inr : N →* M ∗ N)) = ⊤ := by
   rw [← mrange_mk, MonoidHom.mrange_eq_map, ← closure_range_of, MonoidHom.map_mclosure,
     ← range_comp, Sum.range_eq]; rfl
 
-@[to_additive (attr := simp)] theorem mrange_inl_sup_mrange_inr :
+@[to_additive (attr := simp)] lemma mrange_inl_sup_mrange_inr :
     MonoidHom.mrange (inl : M →* M ∗ N) ⊔ MonoidHom.mrange (inr : N →* M ∗ N) = ⊤ := by
   rw [← mclosure_range_inl_union_inr, Submonoid.closure_union, ← MonoidHom.coe_mrange,
     ← MonoidHom.coe_mrange, Submonoid.closure_eq, Submonoid.closure_eq]
 
 @[to_additive]
-theorem codisjoint_mrange_inl_mrange_inr :
+lemma codisjoint_mrange_inl_mrange_inr :
     Codisjoint (MonoidHom.mrange (inl : M →* M ∗ N)) (MonoidHom.mrange inr) :=
   codisjoint_iff.2 mrange_inl_sup_mrange_inr
 
-@[to_additive] theorem mrange_eq (f : M ∗ N →* P) :
+@[to_additive] lemma mrange_eq (f : M ∗ N →* P) :
     MonoidHom.mrange f = MonoidHom.mrange (f.comp inl) ⊔ MonoidHom.mrange (f.comp inr) := by
   rw [MonoidHom.mrange_eq_map, ← mrange_inl_sup_mrange_inr, Submonoid.map_sup, MonoidHom.map_mrange,
     MonoidHom.map_mrange]
@@ -278,7 +278,7 @@ theorem hom_ext {f g : M ∗ N →* P} (h₁ : f.comp inl = g.comp inl) (h₂ : 
     ⟨eqOn_range.2 <| DFunLike.ext'_iff.1 h₁, eqOn_range.2 <| DFunLike.ext'_iff.1 h₂⟩
 
 @[to_additive (attr := simp)]
-theorem clift_mk :
+lemma clift_mk :
     clift (mk : FreeMonoid (M ⊕ N) →* M ∗ N) (map_one inl) (map_one inr) (map_mul inl)
       (map_mul inr) = .id _ :=
   hom_ext rfl rfl
@@ -294,32 +294,32 @@ def map (f : M →* M') (g : N →* N') : M ∗ N →* M' ∗ N' :=
     fun x y => by simp only [MonoidHom.comp_apply, map_of, Sum.map_inr, map_mul, mk_of_inr]
 
 @[to_additive (attr := simp)]
-theorem map_mk_ofList (f : M →* M') (g : N →* N') (l : List (M ⊕ N)) :
+lemma map_mk_ofList (f : M →* M') (g : N →* N') (l : List (M ⊕ N)) :
     map f g (mk (ofList l)) = mk (ofList (l.map (Sum.map f g))) :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem map_apply_inl (f : M →* M') (g : N →* N') (x : M) : map f g (inl x) = inl (f x) := rfl
+lemma map_apply_inl (f : M →* M') (g : N →* N') (x : M) : map f g (inl x) = inl (f x) := rfl
 
 @[to_additive (attr := simp)]
-theorem map_apply_inr (f : M →* M') (g : N →* N') (x : N) : map f g (inr x) = inr (g x) := rfl
+lemma map_apply_inr (f : M →* M') (g : N →* N') (x : N) : map f g (inr x) = inr (g x) := rfl
 
 @[to_additive (attr := simp)]
-theorem map_comp_inl (f : M →* M') (g : N →* N') : (map f g).comp inl = inl.comp f := rfl
+lemma map_comp_inl (f : M →* M') (g : N →* N') : (map f g).comp inl = inl.comp f := rfl
 
 @[to_additive (attr := simp)]
-theorem map_comp_inr (f : M →* M') (g : N →* N') : (map f g).comp inr = inr.comp g := rfl
+lemma map_comp_inr (f : M →* M') (g : N →* N') : (map f g).comp inr = inr.comp g := rfl
 
 @[to_additive (attr := simp)]
-theorem map_id_id : map (.id M) (.id N) = .id (M ∗ N) := hom_ext rfl rfl
+lemma map_id_id : map (.id M) (.id N) = .id (M ∗ N) := hom_ext rfl rfl
 
 @[to_additive]
-theorem map_comp_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →* M'') (g' : N' →* N'')
+lemma map_comp_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →* M'') (g' : N' →* N'')
     (f : M →* M') (g : N →* N') : (map f' g').comp (map f g) = map (f'.comp f) (g'.comp g) :=
   hom_ext rfl rfl
 
 @[to_additive]
-theorem map_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →* M'') (g' : N' →* N'')
+lemma map_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →* M'') (g' : N' →* N'')
     (f : M →* M') (g : N →* N') (x : M ∗ N) :
     map f' g' (map f g x) = map (f'.comp f) (g'.comp g) x :=
   DFunLike.congr_fun (map_comp_map f' g' f g) x
@@ -341,49 +341,49 @@ def swap : M ∗ N →* N ∗ M :=
     (fun x y => by simp only [MonoidHom.comp_apply, map_of, Sum.swap_inr, mk_of_inl, map_mul])
 
 @[to_additive (attr := simp)]
-theorem swap_comp_swap : (swap M N).comp (swap N M) = .id _ := hom_ext rfl rfl
+lemma swap_comp_swap : (swap M N).comp (swap N M) = .id _ := hom_ext rfl rfl
 
 variable {M N}
 
 @[to_additive (attr := simp)]
-theorem swap_swap (x : M ∗ N) : swap N M (swap M N x) = x :=
+lemma swap_swap (x : M ∗ N) : swap N M (swap M N x) = x :=
   DFunLike.congr_fun (swap_comp_swap _ _) x
 
 @[to_additive]
-theorem swap_comp_map (f : M →* M') (g : N →* N') :
+lemma swap_comp_map (f : M →* M') (g : N →* N') :
     (swap M' N').comp (map f g) = (map g f).comp (swap M N) :=
   hom_ext rfl rfl
 
 @[to_additive]
-theorem swap_map (f : M →* M') (g : N →* N') (x : M ∗ N) :
+lemma swap_map (f : M →* M') (g : N →* N') (x : M ∗ N) :
     swap M' N' (map f g x) = map g f (swap M N x) :=
   DFunLike.congr_fun (swap_comp_map f g) x
 
-@[to_additive (attr := simp)] theorem swap_comp_inl : (swap M N).comp inl = inr := rfl
-@[to_additive (attr := simp)] theorem swap_inl (x : M) : swap M N (inl x) = inr x := rfl
-@[to_additive (attr := simp)] theorem swap_comp_inr : (swap M N).comp inr = inl := rfl
-@[to_additive (attr := simp)] theorem swap_inr (x : N) : swap M N (inr x) = inl x := rfl
+@[to_additive (attr := simp)] lemma swap_comp_inl : (swap M N).comp inl = inr := rfl
+@[to_additive (attr := simp)] lemma swap_inl (x : M) : swap M N (inl x) = inr x := rfl
+@[to_additive (attr := simp)] lemma swap_comp_inr : (swap M N).comp inr = inl := rfl
+@[to_additive (attr := simp)] lemma swap_inr (x : N) : swap M N (inr x) = inl x := rfl
 
 @[to_additive]
-theorem swap_injective : Injective (swap M N) := LeftInverse.injective swap_swap
+lemma swap_injective : Injective (swap M N) := LeftInverse.injective swap_swap
 
 @[to_additive (attr := simp)]
-theorem swap_inj {x y : M ∗ N} : swap M N x = swap M N y ↔ x = y := swap_injective.eq_iff
+lemma swap_inj {x y : M ∗ N} : swap M N x = swap M N y ↔ x = y := swap_injective.eq_iff
 
 @[to_additive (attr := simp)]
-theorem swap_eq_one {x : M ∗ N} : swap M N x = 1 ↔ x = 1 := swap_injective.eq_iff' (map_one _)
+lemma swap_eq_one {x : M ∗ N} : swap M N x = 1 ↔ x = 1 := swap_injective.eq_iff' (map_one _)
 
 @[to_additive]
-theorem swap_surjective : Surjective (swap M N) := LeftInverse.surjective swap_swap
+lemma swap_surjective : Surjective (swap M N) := LeftInverse.surjective swap_swap
 
 @[to_additive]
-theorem swap_bijective : Bijective (swap M N) := ⟨swap_injective, swap_surjective⟩
+lemma swap_bijective : Bijective (swap M N) := ⟨swap_injective, swap_surjective⟩
 
 @[to_additive (attr := simp)]
-theorem mker_swap : MonoidHom.mker (swap M N) = ⊥ := Submonoid.ext fun _ ↦ swap_eq_one
+lemma mker_swap : MonoidHom.mker (swap M N) = ⊥ := Submonoid.ext fun _ ↦ swap_eq_one
 
 @[to_additive (attr := simp)]
-theorem mrange_swap : MonoidHom.mrange (swap M N) = ⊤ :=
+lemma mrange_swap : MonoidHom.mrange (swap M N) = ⊤ :=
   MonoidHom.mrange_top_of_surjective _ swap_surjective
 
 end MulOneClass
@@ -407,39 +407,39 @@ def lift (f : M →* P) (g : N →* P) : (M ∗ N) →* P :=
   clift (FreeMonoid.lift <| Sum.elim f g) (map_one f) (map_one g) (map_mul f) (map_mul g)
 
 @[to_additive (attr := simp)]
-theorem lift_apply_mk (f : M →* P) (g : N →* P) (x : FreeMonoid (M ⊕ N)) :
+lemma lift_apply_mk (f : M →* P) (g : N →* P) (x : FreeMonoid (M ⊕ N)) :
     lift f g (mk x) = FreeMonoid.lift (Sum.elim f g) x :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem lift_apply_inl (f : M →* P) (g : N →* P) (x : M) : lift f g (inl x) = f x :=
+lemma lift_apply_inl (f : M →* P) (g : N →* P) (x : M) : lift f g (inl x) = f x :=
   rfl
 
 @[to_additive]
-theorem lift_unique {f : M →* P} {g : N →* P} {fg : M ∗ N →* P} (h₁ : fg.comp inl = f)
+lemma lift_unique {f : M →* P} {g : N →* P} {fg : M ∗ N →* P} (h₁ : fg.comp inl = f)
     (h₂ : fg.comp inr = g) : fg = lift f g :=
   hom_ext h₁ h₂
 
 @[to_additive (attr := simp)]
-theorem lift_comp_inl (f : M →* P) (g : N →* P) : (lift f g).comp inl = f := rfl
+lemma lift_comp_inl (f : M →* P) (g : N →* P) : (lift f g).comp inl = f := rfl
 
 @[to_additive (attr := simp)]
-theorem lift_apply_inr (f : M →* P) (g : N →* P) (x : N) : lift f g (inr x) = g x :=
+lemma lift_apply_inr (f : M →* P) (g : N →* P) (x : N) : lift f g (inr x) = g x :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem lift_comp_inr (f : M →* P) (g : N →* P) : (lift f g).comp inr = g := rfl
+lemma lift_comp_inr (f : M →* P) (g : N →* P) : (lift f g).comp inr = g := rfl
 
 @[to_additive (attr := simp)]
-theorem lift_comp_swap (f : M →* P) (g : N →* P) : (lift f g).comp (swap N M) = lift g f :=
+lemma lift_comp_swap (f : M →* P) (g : N →* P) : (lift f g).comp (swap N M) = lift g f :=
   hom_ext rfl rfl
 
 @[to_additive (attr := simp)]
-theorem lift_swap (f : M →* P) (g : N →* P) (x : N ∗ M) : lift f g (swap N M x) = lift g f x :=
+lemma lift_swap (f : M →* P) (g : N →* P) (x : N ∗ M) : lift f g (swap N M x) = lift g f x :=
   DFunLike.congr_fun (lift_comp_swap f g) x
 
 @[to_additive]
-theorem comp_lift {P' : Type*} [Monoid P'] (f : P →* P') (g₁ : M →* P) (g₂ : N →* P) :
+lemma comp_lift {P' : Type*} [Monoid P'] (f : P →* P') (g₁ : M →* P) (g₂ : N →* P) :
     f.comp (lift g₁ g₂) = lift (f.comp g₁) (f.comp g₂) :=
   hom_ext (by rw [MonoidHom.comp_assoc, lift_comp_inl, lift_comp_inl]) <| by
     rw [MonoidHom.comp_assoc, lift_comp_inr, lift_comp_inr]
@@ -453,7 +453,7 @@ def liftEquiv : (M →* P) × (N →* P) ≃ (M ∗ N →* P) where
   right_inv _ := Eq.symm <| lift_unique rfl rfl
 
 @[to_additive (attr := simp)]
-theorem mrange_lift (f : M →* P) (g : N →* P) :
+lemma mrange_lift (f : M →* P) (g : N →* P) :
     MonoidHom.mrange (lift f g) = MonoidHom.mrange f ⊔ MonoidHom.mrange g := by
   simp [mrange_eq]
 
@@ -480,82 +480,82 @@ def snd : M ∗ N →* N := lift 1 (.id N)
 @[to_additive "The natural projection `AddMonoid.Coprod M N →+ M × N`."]
 def toProd : M ∗ N →* M × N := lift (.inl _ _) (.inr _ _)
 
-@[to_additive (attr := simp)] theorem fst_comp_inl : (fst : M ∗ N →* M).comp inl = .id _ := rfl
-@[to_additive (attr := simp)] theorem fst_apply_inl (x : M) : fst (inl x : M ∗ N) = x := rfl
-@[to_additive (attr := simp)] theorem fst_comp_inr : (fst : M ∗ N →* M).comp inr = 1 := rfl
-@[to_additive (attr := simp)] theorem fst_apply_inr (x : N) : fst (inr x : M ∗ N) = 1 := rfl
-@[to_additive (attr := simp)] theorem snd_comp_inl : (snd : M ∗ N →* N).comp inl = 1 := rfl
-@[to_additive (attr := simp)] theorem snd_apply_inl (x : M) : snd (inl x : M ∗ N) = 1 := rfl
-@[to_additive (attr := simp)] theorem snd_comp_inr : (snd : M ∗ N →* N).comp inr = .id _ := rfl
-@[to_additive (attr := simp)] theorem snd_apply_inr (x : N) : snd (inr x : M ∗ N) = x := rfl
+@[to_additive (attr := simp)] lemma fst_comp_inl : (fst : M ∗ N →* M).comp inl = .id _ := rfl
+@[to_additive (attr := simp)] lemma fst_apply_inl (x : M) : fst (inl x : M ∗ N) = x := rfl
+@[to_additive (attr := simp)] lemma fst_comp_inr : (fst : M ∗ N →* M).comp inr = 1 := rfl
+@[to_additive (attr := simp)] lemma fst_apply_inr (x : N) : fst (inr x : M ∗ N) = 1 := rfl
+@[to_additive (attr := simp)] lemma snd_comp_inl : (snd : M ∗ N →* N).comp inl = 1 := rfl
+@[to_additive (attr := simp)] lemma snd_apply_inl (x : M) : snd (inl x : M ∗ N) = 1 := rfl
+@[to_additive (attr := simp)] lemma snd_comp_inr : (snd : M ∗ N →* N).comp inr = .id _ := rfl
+@[to_additive (attr := simp)] lemma snd_apply_inr (x : N) : snd (inr x : M ∗ N) = x := rfl
 
 @[to_additive (attr := simp)]
-theorem toProd_comp_inl : (toProd : M ∗ N →* M × N).comp inl = .inl _ _ := rfl
+lemma toProd_comp_inl : (toProd : M ∗ N →* M × N).comp inl = .inl _ _ := rfl
 
 @[to_additive (attr := simp)]
-theorem toProd_comp_inr : (toProd : M ∗ N →* M × N).comp inr = .inr _ _ := rfl
+lemma toProd_comp_inr : (toProd : M ∗ N →* M × N).comp inr = .inr _ _ := rfl
 
 @[to_additive (attr := simp)]
-theorem toProd_apply_inl (x : M) : toProd (inl x : M ∗ N) = (x, 1) := rfl
+lemma toProd_apply_inl (x : M) : toProd (inl x : M ∗ N) = (x, 1) := rfl
 
 @[to_additive (attr := simp)]
-theorem toProd_apply_inr (x : N) : toProd (inr x : M ∗ N) = (1, x) := rfl
+lemma toProd_apply_inr (x : N) : toProd (inr x : M ∗ N) = (1, x) := rfl
 
 @[to_additive (attr := simp)]
-theorem fst_prod_snd : (fst : M ∗ N →* M).prod snd = toProd := by ext1 <;> rfl
+lemma fst_prod_snd : (fst : M ∗ N →* M).prod snd = toProd := by ext1 <;> rfl
 
 @[to_additive (attr := simp)]
-theorem prod_mk_fst_snd (x : M ∗ N) : (fst x, snd x) = toProd x := by
+lemma prod_mk_fst_snd (x : M ∗ N) : (fst x, snd x) = toProd x := by
   rw [← fst_prod_snd, MonoidHom.prod_apply]
 
 @[to_additive (attr := simp)]
-theorem fst_comp_toProd : (MonoidHom.fst M N).comp toProd = fst := by
+lemma fst_comp_toProd : (MonoidHom.fst M N).comp toProd = fst := by
   rw [← fst_prod_snd, MonoidHom.fst_comp_prod]
 
 @[to_additive (attr := simp)]
-theorem fst_toProd (x : M ∗ N) : (toProd x).1 = fst x := by
+lemma fst_toProd (x : M ∗ N) : (toProd x).1 = fst x := by
   rw [← fst_comp_toProd]; rfl
 
 @[to_additive (attr := simp)]
-theorem snd_comp_toProd : (MonoidHom.snd M N).comp toProd = snd := by
+lemma snd_comp_toProd : (MonoidHom.snd M N).comp toProd = snd := by
   rw [← fst_prod_snd, MonoidHom.snd_comp_prod]
 
 @[to_additive (attr := simp)]
-theorem snd_toProd (x : M ∗ N) : (toProd x).2 = snd x := by
+lemma snd_toProd (x : M ∗ N) : (toProd x).2 = snd x := by
   rw [← snd_comp_toProd]; rfl
 
 @[to_additive (attr := simp)]
-theorem fst_comp_swap : fst.comp (swap M N) = snd := lift_comp_swap _ _
+lemma fst_comp_swap : fst.comp (swap M N) = snd := lift_comp_swap _ _
 
 @[to_additive (attr := simp)]
-theorem fst_swap (x : M ∗ N) : fst (swap M N x) = snd x := lift_swap _ _ _
+lemma fst_swap (x : M ∗ N) : fst (swap M N x) = snd x := lift_swap _ _ _
 
 @[to_additive (attr := simp)]
-theorem snd_comp_swap : snd.comp (swap M N) = fst := lift_comp_swap _ _
+lemma snd_comp_swap : snd.comp (swap M N) = fst := lift_comp_swap _ _
 
 @[to_additive (attr := simp)]
-theorem snd_swap (x : M ∗ N) : snd (swap M N x) = fst x := lift_swap _ _ _
+lemma snd_swap (x : M ∗ N) : snd (swap M N x) = fst x := lift_swap _ _ _
 
 @[to_additive (attr := simp)]
-theorem lift_inr_inl : lift (inr : M →* N ∗ M) inl = swap M N := hom_ext rfl rfl
+lemma lift_inr_inl : lift (inr : M →* N ∗ M) inl = swap M N := hom_ext rfl rfl
 
 @[to_additive (attr := simp)]
-theorem lift_inl_inr : lift (inl : M →* M ∗ N) inr = .id _ := hom_ext rfl rfl
+lemma lift_inl_inr : lift (inl : M →* M ∗ N) inr = .id _ := hom_ext rfl rfl
 
 @[to_additive]
-theorem inl_injective : Injective (inl : M →* M ∗ N) := LeftInverse.injective fst_apply_inl
+lemma inl_injective : Injective (inl : M →* M ∗ N) := LeftInverse.injective fst_apply_inl
 
 @[to_additive]
-theorem inr_injective : Injective (inr : N →* M ∗ N) := LeftInverse.injective snd_apply_inr
+lemma inr_injective : Injective (inr : N →* M ∗ N) := LeftInverse.injective snd_apply_inr
 
 @[to_additive]
-theorem fst_surjective : Surjective (fst : M ∗ N →* M) := LeftInverse.surjective fst_apply_inl
+lemma fst_surjective : Surjective (fst : M ∗ N →* M) := LeftInverse.surjective fst_apply_inl
 
 @[to_additive]
-theorem snd_surjective : Surjective (snd : M ∗ N →* N) := LeftInverse.surjective snd_apply_inr
+lemma snd_surjective : Surjective (snd : M ∗ N →* N) := LeftInverse.surjective snd_apply_inr
 
 @[to_additive]
-theorem toProd_surjective : Surjective (toProd : M ∗ N →* M × N) := fun x =>
+lemma toProd_surjective : Surjective (toProd : M ∗ N →* M × N) := fun x =>
   ⟨inl x.1 * inr x.2, by rw [map_mul, toProd_apply_inl, toProd_apply_inr, Prod.fst_mul_snd]⟩
 
 end ToProd
@@ -565,12 +565,12 @@ section Group
 variable {G H : Type*} [Group G] [Group H]
 
 @[to_additive]
-theorem mk_of_inv_mul : ∀ x : G ⊕ H, mk (of (x.map Inv.inv Inv.inv)) * mk (of x) = 1
+lemma mk_of_inv_mul : ∀ x : G ⊕ H, mk (of (x.map Inv.inv Inv.inv)) * mk (of x) = 1
   | Sum.inl _ => map_mul_eq_one inl (mul_left_inv _)
   | Sum.inr _ => map_mul_eq_one inr (mul_left_inv _)
 
 @[to_additive]
-theorem con_mul_left_inv (x : FreeMonoid (G ⊕ H)) :
+lemma con_mul_left_inv (x : FreeMonoid (G ⊕ H)) :
     coprodCon G H (ofList (x.toList.map (Sum.map Inv.inv Inv.inv)).reverse * x) 1 := by
   rw [← mk_eq_mk, map_mul, map_one]
   induction x using FreeMonoid.recOn with
@@ -585,7 +585,7 @@ instance : Inv (G ∗ H) where
     (coprodCon G H).map_of_mul_left_rel_one _ con_mul_left_inv
 
 @[to_additive]
-theorem inv_def (w : FreeMonoid (G ⊕ H)) :
+lemma inv_def (w : FreeMonoid (G ⊕ H)) :
     (mk w)⁻¹ = mk (ofList (w.toList.map (Sum.map Inv.inv Inv.inv)).reverse) :=
   rfl
 
@@ -594,31 +594,31 @@ instance : Group (G ∗ H) where
   mul_left_inv := mk_surjective.forall.2 fun x => mk_eq_mk.2 (con_mul_left_inv x)
 
 @[to_additive (attr := simp)]
-theorem closure_range_inl_union_inr :
+lemma closure_range_inl_union_inr :
     Subgroup.closure (range (inl : G →* G ∗ H) ∪ range inr) = ⊤ :=
   Subgroup.closure_eq_top_of_mclosure_eq_top mclosure_range_inl_union_inr
 
-@[to_additive (attr := simp)] theorem range_inl_sup_range_inr :
+@[to_additive (attr := simp)] lemma range_inl_sup_range_inr :
     MonoidHom.range (inl : G →* G ∗ H) ⊔ MonoidHom.range inr = ⊤ := by
   rw [← closure_range_inl_union_inr, Subgroup.closure_union, ← MonoidHom.coe_range,
     ← MonoidHom.coe_range, Subgroup.closure_eq, Subgroup.closure_eq]
 
 @[to_additive]
-theorem codisjoint_range_inl_range_inr :
+lemma codisjoint_range_inl_range_inr :
     Codisjoint (MonoidHom.range (inl : G →* G ∗ H)) (MonoidHom.range inr) :=
   codisjoint_iff.2 range_inl_sup_range_inr
 
-@[to_additive (attr := simp)] theorem range_swap : MonoidHom.range (swap G H) = ⊤ :=
+@[to_additive (attr := simp)] lemma range_swap : MonoidHom.range (swap G H) = ⊤ :=
   MonoidHom.range_top_of_surjective _ swap_surjective
 
 variable {K : Type*} [Group K]
 
-@[to_additive] theorem range_eq (f : G ∗ H →* K) :
+@[to_additive] lemma range_eq (f : G ∗ H →* K) :
     MonoidHom.range f = MonoidHom.range (f.comp inl) ⊔ MonoidHom.range (f.comp inr) := by
   rw [MonoidHom.range_eq_map, ← range_inl_sup_range_inr, Subgroup.map_sup, MonoidHom.map_range,
     MonoidHom.map_range]
 
-@[to_additive (attr := simp)] theorem range_lift (f : G →* K) (g : H →* K) :
+@[to_additive (attr := simp)] lemma range_lift (f : G →* K) (g : H →* K) :
     MonoidHom.range (lift f g) = MonoidHom.range f ⊔ MonoidHom.range g := by
   simp [range_eq]
 
@@ -669,25 +669,25 @@ def coprodAssoc : (M ∗ N) ∗ P ≃* M ∗ (N ∗ P) :=
 variable {M N P}
 
 @[to_additive (attr := simp)]
-theorem coprodAssoc_apply_inl_inl (x : M) : coprodAssoc M N P (inl (inl x)) = inl x := rfl
+lemma coprodAssoc_apply_inl_inl (x : M) : coprodAssoc M N P (inl (inl x)) = inl x := rfl
 
 @[to_additive (attr := simp)]
-theorem coprodAssoc_apply_inl_inr (x : N) : coprodAssoc M N P (inl (inr x)) = inr (inl x) := rfl
+lemma coprodAssoc_apply_inl_inr (x : N) : coprodAssoc M N P (inl (inr x)) = inr (inl x) := rfl
 
 @[to_additive (attr := simp)]
-theorem coprodAssoc_apply_inr (x : P) : coprodAssoc M N P (inr x) = inr (inr x) := rfl
+lemma coprodAssoc_apply_inr (x : P) : coprodAssoc M N P (inr x) = inr (inr x) := rfl
 
 @[to_additive (attr := simp)]
-theorem coprodAssoc_symm_apply_inl (x : M) : (coprodAssoc M N P).symm (inl x) = inl (inl x) :=
+lemma coprodAssoc_symm_apply_inl (x : M) : (coprodAssoc M N P).symm (inl x) = inl (inl x) :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem coprodAssoc_symm_apply_inr_inl (x : N) :
+lemma coprodAssoc_symm_apply_inr_inl (x : N) :
     (coprodAssoc M N P).symm (inr (inl x)) = inl (inr x) :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem coprodAssoc_symm_apply_inr_inr (x : P) :
+lemma coprodAssoc_symm_apply_inr_inr (x : P) :
     (coprodAssoc M N P).symm (inr (inr x)) = inr x :=
   rfl
 

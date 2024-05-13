@@ -67,7 +67,7 @@ variable [Field 𝕜] [Ring R] [AddCommGroup M]
   [TopologicalSpace R] [TopologicalSpace M]
   [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
-@[simp] theorem fst_expSeries (x : tsze R M) (n : ℕ) :
+@[simp] lemma fst_expSeries (x : tsze R M) (n : ℕ) :
     fst (expSeries 𝕜 (tsze R M) n fun _ => x) = expSeries 𝕜 R n fun _ => x.fst := by
   simp [expSeries_apply_eq]
 
@@ -80,7 +80,7 @@ variable [Field 𝕜] [CharZero 𝕜] [Ring R] [AddCommGroup M]
   [TopologicalSpace R] [TopologicalSpace M]
   [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
-theorem snd_expSeries_of_smul_comm
+lemma snd_expSeries_of_smul_comm
     (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) (n : ℕ) :
     snd (expSeries 𝕜 (tsze R M) (n + 1) fun _ => x) = (expSeries 𝕜 R n fun _ => x.fst) • x.snd := by
   simp_rw [expSeries_apply_eq, snd_smul, snd_pow_of_smul_comm _ _ hx, nsmul_eq_smul_cast 𝕜 (n + 1),
@@ -113,7 +113,7 @@ theorem hasSum_expSeries_of_smul_comm
 
 variable [T2Space R] [T2Space M]
 
-theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) :
+lemma exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) :
     exp 𝕜 x = inl (exp 𝕜 x.fst) + inr (exp 𝕜 x.fst • x.snd) := by
   simp_rw [exp, FormalMultilinearSeries.sum]
   by_cases h : Summable (fun (n : ℕ) => (expSeries 𝕜 R n) fun x_1 ↦ fst x)
@@ -126,13 +126,13 @@ theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd
     exact (Summable.map · (TrivSqZeroExt.fstHom 𝕜 R M).toLinearMap continuous_fst)
 
 @[simp]
-theorem exp_inl (x : R) : exp 𝕜 (inl x : tsze R M) = inl (exp 𝕜 x) := by
+lemma exp_inl (x : R) : exp 𝕜 (inl x : tsze R M) = inl (exp 𝕜 x) := by
   rw [exp_def_of_smul_comm, snd_inl, fst_inl, smul_zero, inr_zero, add_zero]
   rw [snd_inl, fst_inl, smul_zero, smul_zero]
 #align triv_sq_zero_ext.exp_inl TrivSqZeroExt.exp_inl
 
 @[simp]
-theorem exp_inr (m : M) : exp 𝕜 (inr m : tsze R M) = 1 + inr m := by
+lemma exp_inr (m : M) : exp 𝕜 (inr m : tsze R M) = 1 + inr m := by
   rw [exp_def_of_smul_comm, snd_inr, fst_inr, exp_zero, one_smul, inl_one]
   rw [snd_inr, fst_inr, MulOpposite.op_zero, zero_smul, zero_smul]
 #align triv_sq_zero_ext.exp_inr TrivSqZeroExt.exp_inr
@@ -148,17 +148,17 @@ variable [Field 𝕜] [CharZero 𝕜] [CommRing R] [AddCommGroup M]
 
 variable [T2Space R] [T2Space M]
 
-theorem exp_def (x : tsze R M) : exp 𝕜 x = inl (exp 𝕜 x.fst) + inr (exp 𝕜 x.fst • x.snd) :=
+lemma exp_def (x : tsze R M) : exp 𝕜 x = inl (exp 𝕜 x.fst) + inr (exp 𝕜 x.fst • x.snd) :=
   exp_def_of_smul_comm 𝕜 x (op_smul_eq_smul _ _)
 #align triv_sq_zero_ext.exp_def TrivSqZeroExt.exp_def
 
 @[simp]
-theorem fst_exp (x : tsze R M) : fst (exp 𝕜 x) = exp 𝕜 x.fst := by
+lemma fst_exp (x : tsze R M) : fst (exp 𝕜 x) = exp 𝕜 x.fst := by
   rw [exp_def, fst_add, fst_inl, fst_inr, add_zero]
 #align triv_sq_zero_ext.fst_exp TrivSqZeroExt.fst_exp
 
 @[simp]
-theorem snd_exp (x : tsze R M) : snd (exp 𝕜 x) = exp 𝕜 x.fst • x.snd := by
+lemma snd_exp (x : tsze R M) : snd (exp 𝕜 x) = exp 𝕜 x.fst • x.snd := by
   rw [exp_def, snd_add, snd_inl, snd_inr, zero_add]
 #align triv_sq_zero_ext.snd_exp TrivSqZeroExt.snd_exp
 
@@ -211,19 +211,19 @@ example :
     (TrivSqZeroExt.instUniformSpace : UniformSpace (tsze R M)) =
     PseudoMetricSpace.toUniformSpace := rfl
 
-theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
+lemma norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
   rw [WithLp.prod_norm_eq_add (by norm_num)]
   simp only [ENNReal.one_toReal, Real.rpow_one, div_one]
   rfl
 
-theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊ := by
+lemma nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊ := by
   ext; simp [norm_def]
 
-@[simp] theorem norm_inl (r : R) : ‖(inl r : tsze R M)‖ = ‖r‖ := by simp [norm_def]
-@[simp] theorem norm_inr (m : M) : ‖(inr m : tsze R M)‖ = ‖m‖ := by simp [norm_def]
+@[simp] lemma norm_inl (r : R) : ‖(inl r : tsze R M)‖ = ‖r‖ := by simp [norm_def]
+@[simp] lemma norm_inr (m : M) : ‖(inr m : tsze R M)‖ = ‖m‖ := by simp [norm_def]
 
-@[simp] theorem nnnorm_inl (r : R) : ‖(inl r : tsze R M)‖₊ = ‖r‖₊ := by simp [nnnorm_def]
-@[simp] theorem nnnorm_inr (m : M) : ‖(inr m : tsze R M)‖₊ = ‖m‖₊ := by simp [nnnorm_def]
+@[simp] lemma nnnorm_inl (r : R) : ‖(inl r : tsze R M)‖₊ = ‖r‖₊ := by simp [nnnorm_def]
+@[simp] lemma nnnorm_inr (m : M) : ‖(inr m : tsze R M)‖₊ = ‖m‖₊ := by simp [nnnorm_def]
 
 instance instL1SeminormedRing : SeminormedRing (tsze R M) where
   norm_mul

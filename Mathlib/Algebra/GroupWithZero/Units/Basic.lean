@@ -34,12 +34,12 @@ theorem ne_zero [Nontrivial M₀] (u : M₀ˣ) : (u : M₀) ≠ 0 :=
 -- We can't use `mul_eq_zero` + `Units.ne_zero` in the next two lemmas because we don't assume
 -- `Nonzero M₀`.
 @[simp]
-theorem mul_left_eq_zero (u : M₀ˣ) {a : M₀} : a * u = 0 ↔ a = 0 :=
+lemma mul_left_eq_zero (u : M₀ˣ) {a : M₀} : a * u = 0 ↔ a = 0 :=
   ⟨fun h => by simpa using mul_eq_zero_of_left h ↑u⁻¹, fun h => mul_eq_zero_of_left h u⟩
 #align units.mul_left_eq_zero Units.mul_left_eq_zero
 
 @[simp]
-theorem mul_right_eq_zero (u : M₀ˣ) {a : M₀} : ↑u * a = 0 ↔ a = 0 :=
+lemma mul_right_eq_zero (u : M₀ˣ) {a : M₀} : ↑u * a = 0 ↔ a = 0 :=
   ⟨fun h => by simpa using mul_eq_zero_of_right (↑u⁻¹) h, mul_eq_zero_of_right (u : M₀)⟩
 #align units.mul_right_eq_zero Units.mul_right_eq_zero
 
@@ -47,17 +47,17 @@ end Units
 
 namespace IsUnit
 
-theorem ne_zero [Nontrivial M₀] {a : M₀} (ha : IsUnit a) : a ≠ 0 :=
+lemma ne_zero [Nontrivial M₀] {a : M₀} (ha : IsUnit a) : a ≠ 0 :=
   let ⟨u, hu⟩ := ha
   hu ▸ u.ne_zero
 #align is_unit.ne_zero IsUnit.ne_zero
 
-theorem mul_right_eq_zero {a b : M₀} (ha : IsUnit a) : a * b = 0 ↔ b = 0 :=
+lemma mul_right_eq_zero {a b : M₀} (ha : IsUnit a) : a * b = 0 ↔ b = 0 :=
   let ⟨u, hu⟩ := ha
   hu ▸ u.mul_right_eq_zero
 #align is_unit.mul_right_eq_zero IsUnit.mul_right_eq_zero
 
-theorem mul_left_eq_zero {a b : M₀} (hb : IsUnit b) : a * b = 0 ↔ a = 0 :=
+lemma mul_left_eq_zero {a b : M₀} (hb : IsUnit b) : a * b = 0 ↔ a = 0 :=
   let ⟨u, hu⟩ := hb
   hu ▸ u.mul_left_eq_zero
 #align is_unit.mul_left_eq_zero IsUnit.mul_left_eq_zero
@@ -65,13 +65,13 @@ theorem mul_left_eq_zero {a b : M₀} (hb : IsUnit b) : a * b = 0 ↔ a = 0 :=
 end IsUnit
 
 @[simp]
-theorem isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
+lemma isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
   ⟨fun ⟨⟨_, a, (a0 : 0 * a = 1), _⟩, rfl⟩ => by rwa [zero_mul] at a0, fun h =>
     @isUnit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
 #align is_unit_zero_iff isUnit_zero_iff
 
 -- Porting note: removed `simp` tag because `simpNF` says it's redundant
-theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
+lemma not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
   mt isUnit_zero_iff.1 zero_ne_one
 #align not_is_unit_zero not_isUnit_zero
 
@@ -100,38 +100,38 @@ theorem inverse_non_unit (x : M₀) (h : ¬IsUnit x) : inverse x = 0 :=
   dif_neg h
 #align ring.inverse_non_unit Ring.inverse_non_unit
 
-theorem mul_inverse_cancel (x : M₀) (h : IsUnit x) : x * inverse x = 1 := by
+lemma mul_inverse_cancel (x : M₀) (h : IsUnit x) : x * inverse x = 1 := by
   rcases h with ⟨u, rfl⟩
   rw [inverse_unit, Units.mul_inv]
 #align ring.mul_inverse_cancel Ring.mul_inverse_cancel
 
-theorem inverse_mul_cancel (x : M₀) (h : IsUnit x) : inverse x * x = 1 := by
+lemma inverse_mul_cancel (x : M₀) (h : IsUnit x) : inverse x * x = 1 := by
   rcases h with ⟨u, rfl⟩
   rw [inverse_unit, Units.inv_mul]
 #align ring.inverse_mul_cancel Ring.inverse_mul_cancel
 
-theorem mul_inverse_cancel_right (x y : M₀) (h : IsUnit x) : y * x * inverse x = y := by
+lemma mul_inverse_cancel_right (x y : M₀) (h : IsUnit x) : y * x * inverse x = y := by
   rw [mul_assoc, mul_inverse_cancel x h, mul_one]
 #align ring.mul_inverse_cancel_right Ring.mul_inverse_cancel_right
 
-theorem inverse_mul_cancel_right (x y : M₀) (h : IsUnit x) : y * inverse x * x = y := by
+lemma inverse_mul_cancel_right (x y : M₀) (h : IsUnit x) : y * inverse x * x = y := by
   rw [mul_assoc, inverse_mul_cancel x h, mul_one]
 #align ring.inverse_mul_cancel_right Ring.inverse_mul_cancel_right
 
-theorem mul_inverse_cancel_left (x y : M₀) (h : IsUnit x) : x * (inverse x * y) = y := by
+lemma mul_inverse_cancel_left (x y : M₀) (h : IsUnit x) : x * (inverse x * y) = y := by
   rw [← mul_assoc, mul_inverse_cancel x h, one_mul]
 #align ring.mul_inverse_cancel_left Ring.mul_inverse_cancel_left
 
-theorem inverse_mul_cancel_left (x y : M₀) (h : IsUnit x) : inverse x * (x * y) = y := by
+lemma inverse_mul_cancel_left (x y : M₀) (h : IsUnit x) : inverse x * (x * y) = y := by
   rw [← mul_assoc, inverse_mul_cancel x h, one_mul]
 #align ring.inverse_mul_cancel_left Ring.inverse_mul_cancel_left
 
-theorem inverse_mul_eq_iff_eq_mul (x y z : M₀) (h : IsUnit x) : inverse x * y = z ↔ y = x * z :=
+lemma inverse_mul_eq_iff_eq_mul (x y z : M₀) (h : IsUnit x) : inverse x * y = z ↔ y = x * z :=
   ⟨fun h1 => by rw [← h1, mul_inverse_cancel_left _ _ h],
   fun h1 => by rw [h1, inverse_mul_cancel_left _ _ h]⟩
 #align ring.inverse_mul_eq_iff_eq_mul Ring.inverse_mul_eq_iff_eq_mul
 
-theorem eq_mul_inverse_iff_mul_eq (x y z : M₀) (h : IsUnit z) : x = y * inverse z ↔ x * z = y :=
+lemma eq_mul_inverse_iff_mul_eq (x y z : M₀) (h : IsUnit z) : x = y * inverse z ↔ x * z = y :=
   ⟨fun h1 => by rw [h1, inverse_mul_cancel_right _ _ h],
   fun h1 => by rw [← h1, mul_inverse_cancel_right _ _ h]⟩
 #align ring.eq_mul_inverse_iff_mul_eq Ring.eq_mul_inverse_iff_mul_eq
@@ -139,12 +139,12 @@ theorem eq_mul_inverse_iff_mul_eq (x y z : M₀) (h : IsUnit z) : x = y * invers
 variable (M₀)
 
 @[simp]
-theorem inverse_one : inverse (1 : M₀) = 1 :=
+lemma inverse_one : inverse (1 : M₀) = 1 :=
   inverse_unit 1
 #align ring.inverse_one Ring.inverse_one
 
 @[simp]
-theorem inverse_zero : inverse (0 : M₀) = 0 := by
+lemma inverse_zero : inverse (0 : M₀) = 0 := by
   nontriviality
   exact inverse_non_unit _ not_isUnit_zero
 #align ring.inverse_zero Ring.inverse_zero
@@ -153,12 +153,12 @@ variable {M₀}
 
 end Ring
 
-theorem IsUnit.ring_inverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
+lemma IsUnit.ring_inverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
   | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (Ring.inverse_unit u).symm⟩
 #align is_unit.ring_inverse IsUnit.ring_inverse
 
 @[simp]
-theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
+lemma isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
     · convert h
@@ -183,33 +183,33 @@ def mk0 (a : G₀) (ha : a ≠ 0) : G₀ˣ :=
 #align units.mk0 Units.mk0
 
 @[simp]
-theorem mk0_one (h := one_ne_zero) : mk0 (1 : G₀) h = 1 := by
+lemma mk0_one (h := one_ne_zero) : mk0 (1 : G₀) h = 1 := by
   ext
   rfl
 #align units.mk0_one Units.mk0_one
 
 @[simp]
-theorem val_mk0 {a : G₀} (h : a ≠ 0) : (mk0 a h : G₀) = a :=
+lemma val_mk0 {a : G₀} (h : a ≠ 0) : (mk0 a h : G₀) = a :=
   rfl
 #align units.coe_mk0 Units.val_mk0
 
 @[simp]
-theorem mk0_val (u : G₀ˣ) (h : (u : G₀) ≠ 0) : mk0 (u : G₀) h = u :=
+lemma mk0_val (u : G₀ˣ) (h : (u : G₀) ≠ 0) : mk0 (u : G₀) h = u :=
   Units.ext rfl
 #align units.mk0_coe Units.mk0_val
 
 -- Porting note: removed `simp` tag because `simpNF` says it's redundant
-theorem mul_inv' (u : G₀ˣ) : u * (u : G₀)⁻¹ = 1 :=
+lemma mul_inv' (u : G₀ˣ) : u * (u : G₀)⁻¹ = 1 :=
   mul_inv_cancel u.ne_zero
 #align units.mul_inv' Units.mul_inv'
 
 -- Porting note: removed `simp` tag because `simpNF` says it's redundant
-theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
+lemma inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
   inv_mul_cancel u.ne_zero
 #align units.inv_mul' Units.inv_mul'
 
 @[simp]
-theorem mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Units.mk0 b hb ↔ a = b :=
+lemma mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Units.mk0 b hb ↔ a = b :=
   ⟨fun h => by injection h, fun h => Units.ext h⟩
 #align units.mk0_inj Units.mk0_inj
 
@@ -228,10 +228,10 @@ theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
 #align units.exists0' Units.exists0'
 
 @[simp]
-theorem exists_iff_ne_zero {x : G₀} : (∃ u : G₀ˣ, ↑u = x) ↔ x ≠ 0 := by simp [exists0]
+lemma exists_iff_ne_zero {x : G₀} : (∃ u : G₀ˣ, ↑u = x) ↔ x ≠ 0 := by simp [exists0]
 #align units.exists_iff_ne_zero Units.exists_iff_ne_zero
 
-theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀ˣ, a = u := by
+lemma _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀ˣ, a = u := by
   by_cases h : a = 0
   · left
     exact h
@@ -245,12 +245,12 @@ section GroupWithZero
 
 variable [GroupWithZero G₀] {a b c d : G₀}
 
-theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
+lemma IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
   (Units.mk0 x hx).isUnit
 #align is_unit.mk0 IsUnit.mk0
 
 @[simp]
-theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
+lemma isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
   Units.exists_iff_ne_zero
 #align is_unit_iff_ne_zero isUnit_iff_ne_zero
 
@@ -272,22 +272,22 @@ instance (priority := 10) GroupWithZero.noZeroDivisors : NoZeroDivisors G₀ :=
 -- Can't be put next to the other `mk0` lemmas because it depends on the
 -- `NoZeroDivisors` instance, which depends on `mk0`.
 @[simp]
-theorem Units.mk0_mul (x y : G₀) (hxy) :
+lemma Units.mk0_mul (x y : G₀) (hxy) :
     Units.mk0 (x * y) hxy =
       Units.mk0 x (mul_ne_zero_iff.mp hxy).1 * Units.mk0 y (mul_ne_zero_iff.mp hxy).2 := by
   ext; rfl
 #align units.mk0_mul Units.mk0_mul
 
-theorem div_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : a / b ≠ 0 := by
+lemma div_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : a / b ≠ 0 := by
   rw [div_eq_mul_inv]
   exact mul_ne_zero ha (inv_ne_zero hb)
 #align div_ne_zero div_ne_zero
 
 @[simp]
-theorem div_eq_zero_iff : a / b = 0 ↔ a = 0 ∨ b = 0 := by simp [div_eq_mul_inv]
+lemma div_eq_zero_iff : a / b = 0 ↔ a = 0 ∨ b = 0 := by simp [div_eq_mul_inv]
 #align div_eq_zero_iff div_eq_zero_iff
 
-theorem div_ne_zero_iff : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 :=
+lemma div_ne_zero_iff : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 :=
   div_eq_zero_iff.not.trans not_or
 #align div_ne_zero_iff div_ne_zero_iff
 
@@ -407,14 +407,14 @@ lemma mul_div_cancel_of_imp (h : b = 0 → a = 0) : a * b / b = a := by
 @[simp] lemma divp_mk0 (a : G₀) (hb : b ≠ 0) : a /ₚ Units.mk0 b hb = a / b := divp_eq_div _ _
 #align divp_mk0 divp_mk0
 
-theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
+lemma Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
   · simp
   · exact Ring.inverse_unit (Units.mk0 a ha)
 #align ring.inverse_eq_inv Ring.inverse_eq_inv
 
 @[simp]
-theorem Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
+lemma Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
   funext Ring.inverse_eq_inv
 #align ring.inverse_eq_inv' Ring.inverse_eq_inv'
 

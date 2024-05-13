@@ -119,7 +119,7 @@ def Monad.comparisonForget (h : L ⊣ R) : Monad.comparison h ⋙ h.toMonad.forg
   inv := { app := fun X => 𝟙 _ }
 #align category_theory.monad.comparison_forget CategoryTheory.Monad.comparisonForget
 
-theorem Monad.left_comparison (h : L ⊣ R) : L ⋙ Monad.comparison h = h.toMonad.free :=
+lemma Monad.left_comparison (h : L ⊣ R) : L ⋙ Monad.comparison h = h.toMonad.free :=
   rfl
 #align category_theory.monad.left_comparison CategoryTheory.Monad.left_comparison
 
@@ -167,7 +167,7 @@ def Comonad.comparisonForget {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) :
   inv := { app := fun X => 𝟙 _ }
 #align category_theory.comonad.comparison_forget CategoryTheory.Comonad.comparisonForget
 
-theorem Comonad.left_comparison (h : L ⊣ R) : R ⋙ Comonad.comparison h = h.toComonad.cofree :=
+lemma Comonad.left_comparison (h : L ⊣ R) : R ⋙ Comonad.comparison h = h.toComonad.cofree :=
   rfl
 #align category_theory.comonad.left_comparison CategoryTheory.Comonad.left_comparison
 

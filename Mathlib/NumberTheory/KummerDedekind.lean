@@ -70,23 +70,23 @@ def conductor (x : S) : Ideal S where
 
 variable {R} {x : S}
 
-theorem conductor_eq_of_eq {y : S} (h : (R<x> : Set S) = R<y>) : conductor R x = conductor R y :=
+lemma conductor_eq_of_eq {y : S} (h : (R<x> : Set S) = R<y>) : conductor R x = conductor R y :=
   Ideal.ext fun _ => forall_congr' fun _ => Set.ext_iff.mp h _
 #align conductor_eq_of_eq conductor_eq_of_eq
 
-theorem conductor_subset_adjoin : (conductor R x : Set S) ⊆ R<x> := fun y hy => by
+lemma conductor_subset_adjoin : (conductor R x : Set S) ⊆ R<x> := fun y hy => by
   simpa only [mul_one] using hy 1
 #align conductor_subset_adjoin conductor_subset_adjoin
 
-theorem mem_conductor_iff {y : S} : y ∈ conductor R x ↔ ∀ b : S, y * b ∈ R<x> :=
+lemma mem_conductor_iff {y : S} : y ∈ conductor R x ↔ ∀ b : S, y * b ∈ R<x> :=
   ⟨fun h => h, fun h => h⟩
 #align mem_conductor_iff mem_conductor_iff
 
-theorem conductor_eq_top_of_adjoin_eq_top (h : R<x> = ⊤) : conductor R x = ⊤ := by
+lemma conductor_eq_top_of_adjoin_eq_top (h : R<x> = ⊤) : conductor R x = ⊤ := by
   simp only [Ideal.eq_top_iff_one, mem_conductor_iff, h, mem_top, forall_const]
 #align conductor_eq_top_of_adjoin_eq_top conductor_eq_top_of_adjoin_eq_top
 
-theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.gen = ⊤ :=
+lemma conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.gen = ⊤ :=
   conductor_eq_top_of_adjoin_eq_top pb.adjoin_gen_eq_top
 #align conductor_eq_top_of_power_basis conductor_eq_top_of_powerBasis
 
@@ -227,7 +227,7 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
 -- Porting note: on-line linter fails with `failed to synthesize` instance
 -- but #lint does not report any problem
 @[simp, nolint simpNF]
-theorem quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
+lemma quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (h_alg : Function.Injective (algebraMap R<x> S)) (a : R<x>) :
     quotAdjoinEquivQuotMap hx h_alg (Ideal.Quotient.mk (I.map (algebraMap R R<x>)) a) =
       Ideal.Quotient.mk (I.map (algebraMap R S)) ↑a := rfl
@@ -327,7 +327,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
       map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S)]
 #align kummer_dedekind.normalized_factors_ideal_map_eq_normalized_factors_min_poly_mk_map KummerDedekind.normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map
 
-theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I ≠ ⊥)
+lemma Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I ≠ ⊥)
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x)
     (hf : Irreducible (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))) :
     Irreducible (I.map (algebraMap R S)) := by

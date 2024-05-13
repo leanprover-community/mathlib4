@@ -57,22 +57,22 @@ structure IsSubmonoid (s : Set M) : Prop where
   mul_mem {a b} : a ∈ s → b ∈ s → a * b ∈ s
 #align is_submonoid IsSubmonoid
 
-theorem Additive.isAddSubmonoid {s : Set M} :
+lemma Additive.isAddSubmonoid {s : Set M} :
     IsSubmonoid s → @IsAddSubmonoid (Additive M) _ s
   | ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩
 #align additive.is_add_submonoid Additive.isAddSubmonoid
 
-theorem Additive.isAddSubmonoid_iff {s : Set M} :
+lemma Additive.isAddSubmonoid_iff {s : Set M} :
     @IsAddSubmonoid (Additive M) _ s ↔ IsSubmonoid s :=
   ⟨fun ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩, Additive.isAddSubmonoid⟩
 #align additive.is_add_submonoid_iff Additive.isAddSubmonoid_iff
 
-theorem Multiplicative.isSubmonoid {s : Set A} :
+lemma Multiplicative.isSubmonoid {s : Set A} :
     IsAddSubmonoid s → @IsSubmonoid (Multiplicative A) _ s
   | ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩
 #align multiplicative.is_submonoid Multiplicative.isSubmonoid
 
-theorem Multiplicative.isSubmonoid_iff {s : Set A} :
+lemma Multiplicative.isSubmonoid_iff {s : Set A} :
     @IsSubmonoid (Multiplicative A) _ s ↔ IsAddSubmonoid s :=
   ⟨fun ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩, Multiplicative.isSubmonoid⟩
 #align multiplicative.is_submonoid_iff Multiplicative.isSubmonoid_iff
@@ -298,7 +298,7 @@ def Closure (s : Set M) : Set M :=
 #align add_monoid.closure AddMonoid.Closure
 
 @[to_additive]
-theorem closure.isSubmonoid (s : Set M) : IsSubmonoid (Closure s) :=
+lemma closure.isSubmonoid (s : Set M) : IsSubmonoid (Closure s) :=
   { one_mem := InClosure.one
     mul_mem := InClosure.mul }
 #align monoid.closure.is_submonoid Monoid.closure.isSubmonoid
@@ -425,7 +425,7 @@ def Submonoid.of {s : Set M} (h : IsSubmonoid s) : Submonoid M :=
 #align add_submonoid.of AddSubmonoid.of
 
 @[to_additive]
-theorem Submonoid.isSubmonoid (S : Submonoid M) : IsSubmonoid (S : Set M) := by
+lemma Submonoid.isSubmonoid (S : Submonoid M) : IsSubmonoid (S : Set M) := by
   exact ⟨S.2, S.1.2⟩
 #align submonoid.is_submonoid Submonoid.isSubmonoid
 #align add_submonoid.is_add_submonoid AddSubmonoid.isAddSubmonoid

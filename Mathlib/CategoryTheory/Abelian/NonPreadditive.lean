@@ -282,15 +282,15 @@ end
 
 -- Porting note (#10618): simp can prove these
 @[reassoc]
-theorem diag_σ {X : C} : diag X ≫ σ = 0 := by rw [cokernel.condition_assoc, zero_comp]
+lemma diag_σ {X : C} : diag X ≫ σ = 0 := by rw [cokernel.condition_assoc, zero_comp]
 #align category_theory.non_preadditive_abelian.diag_σ CategoryTheory.NonPreadditiveAbelian.diag_σ
 
 @[reassoc (attr := simp)]
-theorem lift_σ {X : C} : prod.lift (𝟙 X) 0 ≫ σ = 𝟙 X := by rw [← Category.assoc, IsIso.hom_inv_id]
+lemma lift_σ {X : C} : prod.lift (𝟙 X) 0 ≫ σ = 𝟙 X := by rw [← Category.assoc, IsIso.hom_inv_id]
 #align category_theory.non_preadditive_abelian.lift_σ CategoryTheory.NonPreadditiveAbelian.lift_σ
 
 @[reassoc]
-theorem lift_map {X Y : C} (f : X ⟶ Y) :
+lemma lift_map {X Y : C} (f : X ⟶ Y) :
     prod.lift (𝟙 X) 0 ≫ Limits.prod.map f f = f ≫ prod.lift (𝟙 Y) 0 := by simp
 #align category_theory.non_preadditive_abelian.lift_map CategoryTheory.NonPreadditiveAbelian.lift_map
 
@@ -338,16 +338,16 @@ def hasAdd {X Y : C} : Add (X ⟶ Y) :=
 
 attribute [local instance] hasAdd
 
-theorem sub_def {X Y : C} (a b : X ⟶ Y) : a - b = prod.lift a b ≫ σ := rfl
+lemma sub_def {X Y : C} (a b : X ⟶ Y) : a - b = prod.lift a b ≫ σ := rfl
 #align category_theory.non_preadditive_abelian.sub_def CategoryTheory.NonPreadditiveAbelian.sub_def
 
-theorem add_def {X Y : C} (a b : X ⟶ Y) : a + b = a - -b := rfl
+lemma add_def {X Y : C} (a b : X ⟶ Y) : a + b = a - -b := rfl
 #align category_theory.non_preadditive_abelian.add_def CategoryTheory.NonPreadditiveAbelian.add_def
 
-theorem neg_def {X Y : C} (a : X ⟶ Y) : -a = 0 - a := rfl
+lemma neg_def {X Y : C} (a : X ⟶ Y) : -a = 0 - a := rfl
 #align category_theory.non_preadditive_abelian.neg_def CategoryTheory.NonPreadditiveAbelian.neg_def
 
-theorem sub_zero {X Y : C} (a : X ⟶ Y) : a - 0 = a := by
+lemma sub_zero {X Y : C} (a : X ⟶ Y) : a - 0 = a := by
   rw [sub_def]
   conv_lhs =>
     congr; congr; rw [← Category.comp_id a]
@@ -355,11 +355,11 @@ theorem sub_zero {X Y : C} (a : X ⟶ Y) : a - 0 = a := by
   rw [← prod.comp_lift, Category.assoc, lift_σ, Category.comp_id]
 #align category_theory.non_preadditive_abelian.sub_zero CategoryTheory.NonPreadditiveAbelian.sub_zero
 
-theorem sub_self {X Y : C} (a : X ⟶ Y) : a - a = 0 := by
+lemma sub_self {X Y : C} (a : X ⟶ Y) : a - a = 0 := by
   rw [sub_def, ← Category.comp_id a, ← prod.comp_lift, Category.assoc, diag_σ, comp_zero]
 #align category_theory.non_preadditive_abelian.sub_self CategoryTheory.NonPreadditiveAbelian.sub_self
 
-theorem lift_sub_lift {X Y : C} (a b c d : X ⟶ Y) :
+lemma lift_sub_lift {X Y : C} (a b c d : X ⟶ Y) :
     prod.lift a b - prod.lift c d = prod.lift (a - c) (b - d) := by
   simp only [sub_def]
   ext
@@ -367,22 +367,22 @@ theorem lift_sub_lift {X Y : C} (a b c d : X ⟶ Y) :
   · rw [Category.assoc, σ_comp, prod.lift_map_assoc, prod.lift_snd, prod.lift_snd, prod.lift_snd]
 #align category_theory.non_preadditive_abelian.lift_sub_lift CategoryTheory.NonPreadditiveAbelian.lift_sub_lift
 
-theorem sub_sub_sub {X Y : C} (a b c d : X ⟶ Y) : a - c - (b - d) = a - b - (c - d) := by
+lemma sub_sub_sub {X Y : C} (a b c d : X ⟶ Y) : a - c - (b - d) = a - b - (c - d) := by
   rw [sub_def, ← lift_sub_lift, sub_def, Category.assoc, σ_comp, prod.lift_map_assoc]; rfl
 #align category_theory.non_preadditive_abelian.sub_sub_sub CategoryTheory.NonPreadditiveAbelian.sub_sub_sub
 
-theorem neg_sub {X Y : C} (a b : X ⟶ Y) : -a - b = -b - a := by
+lemma neg_sub {X Y : C} (a b : X ⟶ Y) : -a - b = -b - a := by
   conv_lhs => rw [neg_def, ← sub_zero b, sub_sub_sub, sub_zero, ← neg_def]
 #align category_theory.non_preadditive_abelian.neg_sub CategoryTheory.NonPreadditiveAbelian.neg_sub
 
-theorem neg_neg {X Y : C} (a : X ⟶ Y) : - -a = a := by
+lemma neg_neg {X Y : C} (a : X ⟶ Y) : - -a = a := by
   rw [neg_def, neg_def]
   conv_lhs =>
     congr; rw [← sub_self a]
   rw [sub_sub_sub, sub_zero, sub_self, sub_zero]
 #align category_theory.non_preadditive_abelian.neg_neg CategoryTheory.NonPreadditiveAbelian.neg_neg
 
-theorem add_comm {X Y : C} (a b : X ⟶ Y) : a + b = b + a := by
+lemma add_comm {X Y : C} (a b : X ⟶ Y) : a + b = b + a := by
   rw [add_def]
   conv_lhs => rw [← neg_neg a]
   rw [neg_def, neg_def, neg_def, sub_sub_sub]
@@ -393,50 +393,50 @@ theorem add_comm {X Y : C} (a b : X ⟶ Y) : a + b = b + a := by
   rw [sub_sub_sub, add_def, ← neg_def, neg_neg b, neg_def]
 #align category_theory.non_preadditive_abelian.add_comm CategoryTheory.NonPreadditiveAbelian.add_comm
 
-theorem add_neg {X Y : C} (a b : X ⟶ Y) : a + -b = a - b := by rw [add_def, neg_neg]
+lemma add_neg {X Y : C} (a b : X ⟶ Y) : a + -b = a - b := by rw [add_def, neg_neg]
 #align category_theory.non_preadditive_abelian.add_neg CategoryTheory.NonPreadditiveAbelian.add_neg
 
-theorem add_neg_self {X Y : C} (a : X ⟶ Y) : a + -a = 0 := by rw [add_neg, sub_self]
+lemma add_neg_self {X Y : C} (a : X ⟶ Y) : a + -a = 0 := by rw [add_neg, sub_self]
 #align category_theory.non_preadditive_abelian.add_neg_self CategoryTheory.NonPreadditiveAbelian.add_neg_self
 
-theorem neg_add_self {X Y : C} (a : X ⟶ Y) : -a + a = 0 := by rw [add_comm, add_neg_self]
+lemma neg_add_self {X Y : C} (a : X ⟶ Y) : -a + a = 0 := by rw [add_comm, add_neg_self]
 #align category_theory.non_preadditive_abelian.neg_add_self CategoryTheory.NonPreadditiveAbelian.neg_add_self
 
-theorem neg_sub' {X Y : C} (a b : X ⟶ Y) : -(a - b) = -a + b := by
+lemma neg_sub' {X Y : C} (a b : X ⟶ Y) : -(a - b) = -a + b := by
   rw [neg_def, neg_def]
   conv_lhs => rw [← sub_self (0 : X ⟶ Y)]
   rw [sub_sub_sub, add_def, neg_def]
 #align category_theory.non_preadditive_abelian.neg_sub' CategoryTheory.NonPreadditiveAbelian.neg_sub'
 
-theorem neg_add {X Y : C} (a b : X ⟶ Y) : -(a + b) = -a - b := by rw [add_def, neg_sub', add_neg]
+lemma neg_add {X Y : C} (a b : X ⟶ Y) : -(a + b) = -a - b := by rw [add_def, neg_sub', add_neg]
 #align category_theory.non_preadditive_abelian.neg_add CategoryTheory.NonPreadditiveAbelian.neg_add
 
-theorem sub_add {X Y : C} (a b c : X ⟶ Y) : a - b + c = a - (b - c) := by
+lemma sub_add {X Y : C} (a b c : X ⟶ Y) : a - b + c = a - (b - c) := by
   rw [add_def, neg_def, sub_sub_sub, sub_zero]
 #align category_theory.non_preadditive_abelian.sub_add CategoryTheory.NonPreadditiveAbelian.sub_add
 
-theorem add_assoc {X Y : C} (a b c : X ⟶ Y) : a + b + c = a + (b + c) := by
+lemma add_assoc {X Y : C} (a b c : X ⟶ Y) : a + b + c = a + (b + c) := by
   conv_lhs =>
     congr; rw [add_def]
   rw [sub_add, ← add_neg, neg_sub', neg_neg]
 #align category_theory.non_preadditive_abelian.add_assoc CategoryTheory.NonPreadditiveAbelian.add_assoc
 
-theorem add_zero {X Y : C} (a : X ⟶ Y) : a + 0 = a := by rw [add_def, neg_def, sub_self, sub_zero]
+lemma add_zero {X Y : C} (a : X ⟶ Y) : a + 0 = a := by rw [add_def, neg_def, sub_self, sub_zero]
 #align category_theory.non_preadditive_abelian.add_zero CategoryTheory.NonPreadditiveAbelian.add_zero
 
-theorem comp_sub {X Y Z : C} (f : X ⟶ Y) (g h : Y ⟶ Z) : f ≫ (g - h) = f ≫ g - f ≫ h := by
+lemma comp_sub {X Y Z : C} (f : X ⟶ Y) (g h : Y ⟶ Z) : f ≫ (g - h) = f ≫ g - f ≫ h := by
   rw [sub_def, ← Category.assoc, prod.comp_lift, sub_def]
 #align category_theory.non_preadditive_abelian.comp_sub CategoryTheory.NonPreadditiveAbelian.comp_sub
 
-theorem sub_comp {X Y Z : C} (f g : X ⟶ Y) (h : Y ⟶ Z) : (f - g) ≫ h = f ≫ h - g ≫ h := by
+lemma sub_comp {X Y Z : C} (f g : X ⟶ Y) (h : Y ⟶ Z) : (f - g) ≫ h = f ≫ h - g ≫ h := by
   rw [sub_def, Category.assoc, σ_comp, ← Category.assoc, prod.lift_map, sub_def]
 #align category_theory.non_preadditive_abelian.sub_comp CategoryTheory.NonPreadditiveAbelian.sub_comp
 
-theorem comp_add (X Y Z : C) (f : X ⟶ Y) (g h : Y ⟶ Z) : f ≫ (g + h) = f ≫ g + f ≫ h := by
+lemma comp_add (X Y Z : C) (f : X ⟶ Y) (g h : Y ⟶ Z) : f ≫ (g + h) = f ≫ g + f ≫ h := by
   rw [add_def, comp_sub, neg_def, comp_sub, comp_zero, add_def, neg_def]
 #align category_theory.non_preadditive_abelian.comp_add CategoryTheory.NonPreadditiveAbelian.comp_add
 
-theorem add_comp (X Y Z : C) (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f ≫ h + g ≫ h := by
+lemma add_comp (X Y Z : C) (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f ≫ h + g ≫ h := by
   rw [add_def, sub_comp, neg_def, sub_comp, zero_comp, add_def, neg_def]
 #align category_theory.non_preadditive_abelian.add_comp CategoryTheory.NonPreadditiveAbelian.add_comp
 

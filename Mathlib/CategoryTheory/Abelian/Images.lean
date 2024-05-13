@@ -112,14 +112,14 @@ def coimageImageComparison' : Abelian.coimage f ⟶ Abelian.image f :=
   kernel.lift (cokernel.π f) (cokernel.desc (kernel.ι f) f (by simp)) (by ext; simp)
 #align category_theory.abelian.coimage_image_comparison' CategoryTheory.Abelian.coimageImageComparison'
 
-theorem coimageImageComparison_eq_coimageImageComparison' :
+lemma coimageImageComparison_eq_coimageImageComparison' :
     coimageImageComparison f = coimageImageComparison' f := by
   ext
   simp [coimageImageComparison, coimageImageComparison']
 #align category_theory.abelian.coimage_image_comparison_eq_coimage_image_comparison' CategoryTheory.Abelian.coimageImageComparison_eq_coimageImageComparison'
 
 @[reassoc (attr := simp)]
-theorem coimage_image_factorisation : coimage.π f ≫ coimageImageComparison f ≫ image.ι f = f := by
+lemma coimage_image_factorisation : coimage.π f ≫ coimageImageComparison f ≫ image.ι f = f := by
   simp [coimageImageComparison]
 #align category_theory.abelian.coimage_image_factorisation CategoryTheory.Abelian.coimage_image_factorisation
 

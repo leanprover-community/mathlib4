@@ -28,17 +28,17 @@ def Sections (s : Multiset (Multiset α)) : Multiset (Multiset α) :=
 #align multiset.sections Multiset.Sections
 
 @[simp]
-theorem sections_zero : Sections (0 : Multiset (Multiset α)) = {0} :=
+lemma sections_zero : Sections (0 : Multiset (Multiset α)) = {0} :=
   rfl
 #align multiset.sections_zero Multiset.sections_zero
 
 @[simp]
-theorem sections_cons (s : Multiset (Multiset α)) (m : Multiset α) :
+lemma sections_cons (s : Multiset (Multiset α)) (m : Multiset α) :
     Sections (m ::ₘ s) = m.bind fun a => (Sections s).map (Multiset.cons a) :=
   recOn_cons m s
 #align multiset.sections_cons Multiset.sections_cons
 
-theorem coe_sections :
+lemma coe_sections :
     ∀ l : List (List α),
       Sections (l.map fun l : List α => (l : Multiset α) : Multiset (Multiset α)) =
         (l.sections.map fun l : List α => (l : Multiset α) : Multiset (Multiset α))
@@ -50,24 +50,24 @@ theorem coe_sections :
 #align multiset.coe_sections Multiset.coe_sections
 
 @[simp]
-theorem sections_add (s t : Multiset (Multiset α)) :
+lemma sections_add (s t : Multiset (Multiset α)) :
     Sections (s + t) = (Sections s).bind fun m => (Sections t).map (m + ·) :=
   Multiset.induction_on s (by simp) fun a s ih => by
     simp [ih, bind_assoc, map_bind, bind_map]
 #align multiset.sections_add Multiset.sections_add
 
-theorem mem_sections {s : Multiset (Multiset α)} :
+lemma mem_sections {s : Multiset (Multiset α)} :
     ∀ {a}, a ∈ Sections s ↔ s.Rel (fun s a => a ∈ s) a := by
   induction s using Multiset.induction_on with
   | empty => simp
   | cons ih => simp [ih, rel_cons_left, eq_comm]
 #align multiset.mem_sections Multiset.mem_sections
 
-theorem card_sections {s : Multiset (Multiset α)} : card (Sections s) = prod (s.map card) :=
+lemma card_sections {s : Multiset (Multiset α)} : card (Sections s) = prod (s.map card) :=
   Multiset.induction_on s (by simp) (by simp (config := { contextual := true }))
 #align multiset.card_sections Multiset.card_sections
 
-theorem prod_map_sum [CommSemiring α] {s : Multiset (Multiset α)} :
+lemma prod_map_sum [CommSemiring α] {s : Multiset (Multiset α)} :
     prod (s.map sum) = sum ((Sections s).map prod) :=
   Multiset.induction_on s (by simp) fun a s ih => by
     simp [ih, map_bind, sum_map_mul_left, sum_map_mul_right]

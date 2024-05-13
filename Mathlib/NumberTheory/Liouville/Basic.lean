@@ -36,7 +36,7 @@ def Liouville (x : ℝ) :=
 
 namespace Liouville
 
-protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
+protected lemma irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   -- By contradiction, `x = a / b`, with `a ∈ ℤ`, `0 < b ∈ ℕ` is a Liouville number,
   rintro ⟨⟨a, b, bN0, cop⟩, rfl⟩
   -- clear up the mess of constructions of rationals
@@ -120,7 +120,7 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N 
     exact mul_le_mul_of_nonneg_left (le_max_right _ M) dist_nonneg
 #align liouville.exists_one_le_pow_mul_dist Liouville.exists_one_le_pow_mul_dist
 
-theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : ℤ[X]} (f0 : f ≠ 0)
+lemma exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : ℤ[X]} (f0 : f ≠ 0)
     (fa : eval α (map (algebraMap ℤ ℝ) f) = 0) :
     ∃ A : ℝ, 0 < A ∧ ∀ a : ℤ, ∀ b : ℕ,
       (1 : ℝ) ≤ ((b : ℝ) + 1) ^ f.natDegree * (|α - a / (b + 1)| * A) := by

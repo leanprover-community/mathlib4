@@ -35,14 +35,14 @@ open Set Filter Metric
 
 open Filter Topology
 
-protected theorem IsGδ.setOf_irrational : IsGδ { x | Irrational x } :=
+protected lemma IsGδ.setOf_irrational : IsGδ { x | Irrational x } :=
   (countable_range _).isGδ_compl
 set_option linter.uppercaseLean3 false in
 #align is_Gδ_irrational IsGδ.setOf_irrational
 
 @[deprecated] alias isGδ_irrational := IsGδ.setOf_irrational
 
-theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
+lemma dense_irrational : Dense { x : ℝ | Irrational x } := by
   refine' Real.isTopologicalBasis_Ioo_rat.dense_iff.2 _
   simp only [gt_iff_lt, Rat.cast_lt, not_lt, ge_iff_le, Rat.cast_le, mem_iUnion, mem_singleton_iff,
     exists_prop, forall_exists_index, and_imp]
@@ -51,7 +51,7 @@ theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
   exact exists_irrational_btwn (Rat.cast_lt.2 hlt)
 #align dense_irrational dense_irrational
 
-theorem eventually_residual_irrational : ∀ᶠ x in residual ℝ, Irrational x :=
+lemma eventually_residual_irrational : ∀ᶠ x in residual ℝ, Irrational x :=
   residual_of_dense_Gδ .setOf_irrational dense_irrational
 #align eventually_residual_irrational eventually_residual_irrational
 
@@ -75,7 +75,7 @@ instance : DenselyOrdered { x // Irrational x } :=
     let ⟨z, hz, hxz, hzy⟩ := exists_irrational_btwn hlt
     ⟨⟨z, hz⟩, hxz, hzy⟩⟩
 
-theorem eventually_forall_le_dist_cast_div (hx : Irrational x) (n : ℕ) :
+lemma eventually_forall_le_dist_cast_div (hx : Irrational x) (n : ℕ) :
     ∀ᶠ ε : ℝ in 𝓝 0, ∀ m : ℤ, ε ≤ dist x (m / n) := by
   have A : IsClosed (range (fun m => (n : ℝ)⁻¹ * m : ℤ → ℝ)) :=
     ((isClosedMap_smul₀ (n⁻¹ : ℝ)).comp Int.closedEmbedding_coe_real.isClosedMap).isClosed_range
@@ -89,12 +89,12 @@ theorem eventually_forall_le_dist_cast_div (hx : Irrational x) (n : ℕ) :
   simp [div_eq_inv_mul]
 #align irrational.eventually_forall_le_dist_cast_div Irrational.eventually_forall_le_dist_cast_div
 
-theorem eventually_forall_le_dist_cast_div_of_denom_le (hx : Irrational x) (n : ℕ) :
+lemma eventually_forall_le_dist_cast_div_of_denom_le (hx : Irrational x) (n : ℕ) :
     ∀ᶠ ε : ℝ in 𝓝 0, ∀ k ≤ n, ∀ (m : ℤ), ε ≤ dist x (m / k) :=
   (finite_le_nat n).eventually_all.2 fun k _ => hx.eventually_forall_le_dist_cast_div k
 #align irrational.eventually_forall_le_dist_cast_div_of_denom_le Irrational.eventually_forall_le_dist_cast_div_of_denom_le
 
-theorem eventually_forall_le_dist_cast_rat_of_den_le (hx : Irrational x) (n : ℕ) :
+lemma eventually_forall_le_dist_cast_rat_of_den_le (hx : Irrational x) (n : ℕ) :
     ∀ᶠ ε : ℝ in 𝓝 0, ∀ r : ℚ, r.den ≤ n → ε ≤ dist x r :=
   (hx.eventually_forall_le_dist_cast_div_of_denom_le n).mono fun ε H r hr => by
     simpa only [Rat.cast_def] using H r.den hr r.num

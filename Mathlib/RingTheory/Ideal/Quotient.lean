@@ -115,38 +115,38 @@ instance inhabited : Inhabited (R ⧸ I) :=
   ⟨mk I 37⟩
 #align ideal.quotient.inhabited Ideal.Quotient.inhabited
 
-protected theorem eq : mk I x = mk I y ↔ x - y ∈ I :=
+protected lemma eq : mk I x = mk I y ↔ x - y ∈ I :=
   Submodule.Quotient.eq I
 #align ideal.quotient.eq Ideal.Quotient.eq
 
 @[simp]
-theorem mk_eq_mk (x : R) : (Submodule.Quotient.mk x : R ⧸ I) = mk I x := rfl
+lemma mk_eq_mk (x : R) : (Submodule.Quotient.mk x : R ⧸ I) = mk I x := rfl
 #align ideal.quotient.mk_eq_mk Ideal.Quotient.mk_eq_mk
 
-theorem eq_zero_iff_mem {I : Ideal R} : mk I a = 0 ↔ a ∈ I :=
+lemma eq_zero_iff_mem {I : Ideal R} : mk I a = 0 ↔ a ∈ I :=
   Submodule.Quotient.mk_eq_zero _
 #align ideal.quotient.eq_zero_iff_mem Ideal.Quotient.eq_zero_iff_mem
 
-theorem eq_zero_iff_dvd (x y : R) : Ideal.Quotient.mk (Ideal.span ({x} : Set R)) y = 0 ↔ x ∣ y := by
+lemma eq_zero_iff_dvd (x y : R) : Ideal.Quotient.mk (Ideal.span ({x} : Set R)) y = 0 ↔ x ∣ y := by
   rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
 
 -- Porting note (#10756): new theorem
-theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
+lemma mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
   rw [← eq_zero_iff_mem, map_sub, sub_eq_zero]
 
-theorem zero_eq_one_iff {I : Ideal R} : (0 : R ⧸ I) = 1 ↔ I = ⊤ :=
+lemma zero_eq_one_iff {I : Ideal R} : (0 : R ⧸ I) = 1 ↔ I = ⊤ :=
   eq_comm.trans <| eq_zero_iff_mem.trans (eq_top_iff_one _).symm
 #align ideal.quotient.zero_eq_one_iff Ideal.Quotient.zero_eq_one_iff
 
-theorem zero_ne_one_iff {I : Ideal R} : (0 : R ⧸ I) ≠ 1 ↔ I ≠ ⊤ :=
+lemma zero_ne_one_iff {I : Ideal R} : (0 : R ⧸ I) ≠ 1 ↔ I ≠ ⊤ :=
   not_congr zero_eq_one_iff
 #align ideal.quotient.zero_ne_one_iff Ideal.Quotient.zero_ne_one_iff
 
-protected theorem nontrivial {I : Ideal R} (hI : I ≠ ⊤) : Nontrivial (R ⧸ I) :=
+protected lemma nontrivial {I : Ideal R} (hI : I ≠ ⊤) : Nontrivial (R ⧸ I) :=
   ⟨⟨0, 1, zero_ne_one_iff.2 hI⟩⟩
 #align ideal.quotient.nontrivial Ideal.Quotient.nontrivial
 
-theorem subsingleton_iff {I : Ideal R} : Subsingleton (R ⧸ I) ↔ I = ⊤ := by
+lemma subsingleton_iff {I : Ideal R} : Subsingleton (R ⧸ I) ↔ I = ⊤ := by
   rw [eq_top_iff_one, ← subsingleton_iff_zero_eq_one, eq_comm, ← (mk I).map_one,
     Quotient.eq_zero_iff_mem]
 #align ideal.quotient.subsingleton_iff Ideal.Quotient.subsingleton_iff
@@ -154,7 +154,7 @@ theorem subsingleton_iff {I : Ideal R} : Subsingleton (R ⧸ I) ↔ I = ⊤ := b
 instance : Unique (R ⧸ (⊤ : Ideal R)) :=
   ⟨⟨0⟩, by rintro ⟨x⟩; exact Quotient.eq_zero_iff_mem.mpr Submodule.mem_top⟩
 
-theorem mk_surjective : Function.Surjective (mk I) := fun y =>
+lemma mk_surjective : Function.Surjective (mk I) := fun y =>
   Quotient.inductionOn' y fun x => Exists.intro x rfl
 #align ideal.quotient.mk_surjective Ideal.Quotient.mk_surjective
 
@@ -183,7 +183,7 @@ instance isDomain (I : Ideal R) [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
   NoZeroDivisors.to_isDomain _
 #align ideal.quotient.is_domain Ideal.Quotient.isDomain
 
-theorem isDomain_iff_prime (I : Ideal R) : IsDomain (R ⧸ I) ↔ I.IsPrime := by
+lemma isDomain_iff_prime (I : Ideal R) : IsDomain (R ⧸ I) ↔ I.IsPrime := by
   refine' ⟨fun H => ⟨zero_ne_one_iff.1 _, fun {x y} h => _⟩, fun h => inferInstance⟩
   · haveI : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
     exact zero_ne_one
@@ -192,7 +192,7 @@ theorem isDomain_iff_prime (I : Ideal R) : IsDomain (R ⧸ I) ↔ I.IsPrime := b
     exact eq_zero_or_eq_zero_of_mul_eq_zero h
 #align ideal.quotient.is_domain_iff_prime Ideal.Quotient.isDomain_iff_prime
 
-theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
+lemma exists_inv {I : Ideal R} [hI : I.IsMaximal] :
     ∀ {a : R ⧸ I}, a ≠ 0 → ∃ b : R ⧸ I, a * b = 1 := by
   rintro ⟨a⟩ h
   rcases hI.exists_inv (mt eq_zero_iff_mem.2 h) with ⟨b, c, hc, abc⟩
@@ -260,12 +260,12 @@ def lift (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) : R 
 #align ideal.quotient.lift Ideal.Quotient.lift
 
 @[simp]
-theorem lift_mk (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) :
+lemma lift_mk (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) :
     lift I f H (mk I a) = f a :=
   rfl
 #align ideal.quotient.lift_mk Ideal.Quotient.lift_mk
 
-theorem lift_surjective_of_surjective (I : Ideal R) {f : R →+* S} (H : ∀ a : R, a ∈ I → f a = 0)
+lemma lift_surjective_of_surjective (I : Ideal R) {f : R →+* S} (H : ∀ a : R, a ∈ I → f a = 0)
     (hf : Function.Surjective f) : Function.Surjective (Ideal.Quotient.lift I f H) := by
   intro y
   obtain ⟨x, rfl⟩ := hf y
@@ -281,12 +281,12 @@ def factor (S T : Ideal R) (H : S ≤ T) : R ⧸ S →+* R ⧸ T :=
 #align ideal.quotient.factor Ideal.Quotient.factor
 
 @[simp]
-theorem factor_mk (S T : Ideal R) (H : S ≤ T) (x : R) : factor S T H (mk S x) = mk T x :=
+lemma factor_mk (S T : Ideal R) (H : S ≤ T) (x : R) : factor S T H (mk S x) = mk T x :=
   rfl
 #align ideal.quotient.factor_mk Ideal.Quotient.factor_mk
 
 @[simp]
-theorem factor_comp_mk (S T : Ideal R) (H : S ≤ T) : (factor S T H).comp (mk S) = mk T := by
+lemma factor_comp_mk (S T : Ideal R) (H : S ≤ T) : (factor S T H).comp (mk S) = mk T := by
   ext x
   rw [RingHom.comp_apply, factor_mk]
 #align ideal.quotient.factor_comp_mk Ideal.Quotient.factor_comp_mk
@@ -305,13 +305,13 @@ def quotEquivOfEq {R : Type*} [CommRing R] {I J : Ideal R} (h : I = J) : R ⧸ I
 #align ideal.quot_equiv_of_eq Ideal.quotEquivOfEq
 
 @[simp]
-theorem quotEquivOfEq_mk {R : Type*} [CommRing R] {I J : Ideal R} (h : I = J) (x : R) :
+lemma quotEquivOfEq_mk {R : Type*} [CommRing R] {I J : Ideal R} (h : I = J) (x : R) :
     quotEquivOfEq h (Ideal.Quotient.mk I x) = Ideal.Quotient.mk J x :=
   rfl
 #align ideal.quot_equiv_of_eq_mk Ideal.quotEquivOfEq_mk
 
 @[simp]
-theorem quotEquivOfEq_symm {R : Type*} [CommRing R] {I J : Ideal R} (h : I = J) :
+lemma quotEquivOfEq_symm {R : Type*} [CommRing R] {I J : Ideal R} (h : I = J) :
     (Ideal.quotEquivOfEq h).symm = Ideal.quotEquivOfEq h.symm := by ext; rfl
 #align ideal.quot_equiv_of_eq_symm Ideal.quotEquivOfEq_symm
 

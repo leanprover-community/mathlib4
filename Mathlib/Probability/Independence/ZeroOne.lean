@@ -34,7 +34,7 @@ namespace ProbabilityTheory
 variable {α Ω ι : Type*} {_mα : MeasurableSpace α} {m m0 : MeasurableSpace Ω}
   {κ : kernel α Ω} {μα : Measure α} {μ : Measure Ω}
 
-theorem kernel.measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
+lemma kernel.measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
     (h_indep : kernel.IndepSet t t κ μα) :
     ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 ∨ κ a t = ∞ := by
   specialize h_indep t t (measurableSet_generateFrom (Set.mem_singleton t))
@@ -47,25 +47,25 @@ theorem kernel.measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
   rw [← one_mul (κ a (t ∩ t)), Set.inter_self, ENNReal.mul_eq_mul_right h0 h_top] at ha
   exact Or.inr (Or.inl ha.symm)
 
-theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
+lemma measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 ∨ μ t = ∞ := by
   simpa only [ae_dirac_eq, Filter.eventually_pure]
     using kernel.measure_eq_zero_or_one_or_top_of_indepSet_self h_indep
 #align probability_theory.measure_eq_zero_or_one_or_top_of_indep_set_self ProbabilityTheory.measure_eq_zero_or_one_or_top_of_indepSet_self
 
-theorem kernel.measure_eq_zero_or_one_of_indepSet_self [∀ a, IsFiniteMeasure (κ a)] {t : Set Ω}
+lemma kernel.measure_eq_zero_or_one_of_indepSet_self [∀ a, IsFiniteMeasure (κ a)] {t : Set Ω}
     (h_indep : IndepSet t t κ μα) :
     ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 := by
   filter_upwards [measure_eq_zero_or_one_or_top_of_indepSet_self h_indep] with a h_0_1_top
   simpa only [measure_ne_top (κ a), or_false] using h_0_1_top
 
-theorem measure_eq_zero_or_one_of_indepSet_self [IsFiniteMeasure μ] {t : Set Ω}
+lemma measure_eq_zero_or_one_of_indepSet_self [IsFiniteMeasure μ] {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 := by
   simpa only [ae_dirac_eq, Filter.eventually_pure]
     using kernel.measure_eq_zero_or_one_of_indepSet_self h_indep
 #align probability_theory.measure_eq_zero_or_one_of_indep_set_self ProbabilityTheory.measure_eq_zero_or_one_of_indepSet_self
 
-theorem condexp_eq_zero_or_one_of_condIndepSet_self
+lemma condexp_eq_zero_or_one_of_condIndepSet_self
     [StandardBorelSpace Ω] [Nonempty Ω]
     (hm : m ≤ m0) [hμ : IsFiniteMeasure μ] {t : Set Ω} (ht : MeasurableSet t)
     (h_indep : CondIndepSet m hm t t μ) :
@@ -81,16 +81,16 @@ variable [IsMarkovKernel κ] [IsProbabilityMeasure μ] {s : ι → MeasurableSpa
 
 open Filter
 
-theorem kernel.indep_biSup_compl (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα) (t : Set ι) :
+lemma kernel.indep_biSup_compl (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα) (t : Set ι) :
     Indep (⨆ n ∈ t, s n) (⨆ n ∈ tᶜ, s n) κ μα :=
   indep_iSup_of_disjoint h_le h_indep disjoint_compl_right
 
-theorem indep_biSup_compl (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (t : Set ι) :
+lemma indep_biSup_compl (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (t : Set ι) :
     Indep (⨆ n ∈ t, s n) (⨆ n ∈ tᶜ, s n) μ :=
   kernel.indep_biSup_compl h_le h_indep t
 #align probability_theory.indep_bsupr_compl ProbabilityTheory.indep_biSup_compl
 
-theorem condIndep_biSup_compl [StandardBorelSpace Ω] [Nonempty Ω]
+lemma condIndep_biSup_compl [StandardBorelSpace Ω] [Nonempty Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) (t : Set ι) :
     CondIndep m (⨆ n ∈ t, s n) (⨆ n ∈ tᶜ, s n) hm μ :=
@@ -110,7 +110,7 @@ For the example of `f = atTop`, we can take
 `p = bddAbove` and `ns : ι → Set ι := fun i => Set.Iic i`.
 -/
 
-theorem kernel.indep_biSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
+lemma kernel.indep_biSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
     (hf : ∀ t, p t → tᶜ ∈ f) {t : Set ι} (ht : p t) :
     Indep (⨆ n ∈ t, s n) (limsup s f) κ μα := by
   refine' indep_of_indep_of_le_right (indep_biSup_compl h_le h_indep t) _
@@ -118,20 +118,20 @@ theorem kernel.indep_biSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s
   simp only [Set.mem_compl_iff, eventually_map]
   exact eventually_of_mem (hf t ht) le_iSup₂
 
-theorem indep_biSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf : ∀ t, p t → tᶜ ∈ f)
+lemma indep_biSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf : ∀ t, p t → tᶜ ∈ f)
     {t : Set ι} (ht : p t) :
     Indep (⨆ n ∈ t, s n) (limsup s f) μ :=
   kernel.indep_biSup_limsup h_le h_indep hf ht
 #align probability_theory.indep_bsupr_limsup ProbabilityTheory.indep_biSup_limsup
 
-theorem condIndep_biSup_limsup [StandardBorelSpace Ω] [Nonempty Ω]
+lemma condIndep_biSup_limsup [StandardBorelSpace Ω] [Nonempty Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) (hf : ∀ t, p t → tᶜ ∈ f)
     {t : Set ι} (ht : p t) :
     CondIndep m (⨆ n ∈ t, s n) (limsup s f) hm μ :=
   kernel.indep_biSup_limsup h_le h_indep hf ht
 
-theorem kernel.indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
+lemma kernel.indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
     Indep (⨆ a, ⨆ n ∈ ns a, s n) (limsup s f) κ μα := by
   refine' indep_iSup_of_directed_le _ _ _ _
@@ -144,20 +144,20 @@ theorem kernel.indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : 
     · exact hc.1 hn
     · exact hc.2 hn
 
-theorem indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ)
+lemma indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
     Indep (⨆ a, ⨆ n ∈ ns a, s n) (limsup s f) μ :=
   kernel.indep_iSup_directed_limsup h_le h_indep hf hns hnsp
 #align probability_theory.indep_supr_directed_limsup ProbabilityTheory.indep_iSup_directed_limsup
 
-theorem condIndep_iSup_directed_limsup [StandardBorelSpace Ω]
+lemma condIndep_iSup_directed_limsup [StandardBorelSpace Ω]
     [Nonempty Ω] (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
     CondIndep m (⨆ a, ⨆ n ∈ ns a, s n) (limsup s f) hm μ :=
   kernel.indep_iSup_directed_limsup h_le h_indep hf hns hnsp
 
-theorem kernel.indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
+lemma kernel.indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
     (hf : ∀ t, p t → tᶜ ∈ f)
     (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     Indep (⨆ n, s n) (limsup s f) κ μα := by
@@ -170,39 +170,39 @@ theorem kernel.indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s 
   haveI : Nonempty (∃ i : α, n ∈ ns i) := ⟨hns_univ n⟩
   rw [h, iSup_const]
 
-theorem indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf : ∀ t, p t → tᶜ ∈ f)
+lemma indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf : ∀ t, p t → tᶜ ∈ f)
     (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     Indep (⨆ n, s n) (limsup s f) μ :=
   kernel.indep_iSup_limsup h_le h_indep hf hns hnsp hns_univ
 #align probability_theory.indep_supr_limsup ProbabilityTheory.indep_iSup_limsup
 
-theorem condIndep_iSup_limsup [StandardBorelSpace Ω] [Nonempty Ω]
+lemma condIndep_iSup_limsup [StandardBorelSpace Ω] [Nonempty Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) (hf : ∀ t, p t → tᶜ ∈ f)
     (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     CondIndep m (⨆ n, s n) (limsup s f) hm μ :=
   kernel.indep_iSup_limsup h_le h_indep hf hns hnsp hns_univ
 
-theorem kernel.indep_limsup_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
+lemma kernel.indep_limsup_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
     (hf : ∀ t, p t → tᶜ ∈ f)
     (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     Indep (limsup s f) (limsup s f) κ μα :=
   indep_of_indep_of_le_left (indep_iSup_limsup h_le h_indep hf hns hnsp hns_univ) limsup_le_iSup
 
-theorem indep_limsup_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf : ∀ t, p t → tᶜ ∈ f)
+lemma indep_limsup_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf : ∀ t, p t → tᶜ ∈ f)
     (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     Indep (limsup s f) (limsup s f) μ :=
   kernel.indep_limsup_self h_le h_indep hf hns hnsp hns_univ
 #align probability_theory.indep_limsup_self ProbabilityTheory.indep_limsup_self
 
-theorem condIndep_limsup_self [StandardBorelSpace Ω] [Nonempty Ω]
+lemma condIndep_limsup_self [StandardBorelSpace Ω] [Nonempty Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) (hf : ∀ t, p t → tᶜ ∈ f)
     (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     CondIndep m (limsup s f) (limsup s f) hm μ :=
   kernel.indep_limsup_self h_le h_indep hf hns hnsp hns_univ
 
-theorem kernel.measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n ≤ m0)
+lemma kernel.measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n ≤ m0)
     (h_indep : iIndep s κ μα)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
     (hns_univ : ∀ n, ∃ a, n ∈ ns a) {t : Set Ω} (ht_tail : MeasurableSet[limsup s f] t) :
@@ -211,7 +211,7 @@ theorem kernel.measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n �
     ((indep_limsup_self h_le h_indep hf hns hnsp hns_univ).indepSet_of_measurableSet ht_tail
       ht_tail)
 
-theorem measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ)
+lemma measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
     (hns_univ : ∀ n, ∃ a, n ∈ ns a) {t : Set Ω} (ht_tail : MeasurableSet[limsup s f] t) :
     μ t = 0 ∨ μ t = 1 :=
@@ -220,7 +220,7 @@ theorem measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n ≤ m0) (
       ht_tail
 #align probability_theory.measure_zero_or_one_of_measurable_set_limsup ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup
 
-theorem condexp_zero_or_one_of_measurableSet_limsup [StandardBorelSpace Ω] [Nonempty Ω]
+lemma condexp_zero_or_one_of_measurableSet_limsup [StandardBorelSpace Ω] [Nonempty Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
@@ -241,7 +241,7 @@ section AtTop
 
 variable [SemilatticeSup ι] [NoMaxOrder ι] [Nonempty ι]
 
-theorem kernel.indep_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα) :
+lemma kernel.indep_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα) :
     Indep (limsup s atTop) (limsup s atTop) κ μα := by
   let ns : ι → Set ι := Set.Iic
   have hnsp : ∀ i, BddAbove (ns i) := fun i => bddAbove_Iic
@@ -255,18 +255,18 @@ theorem kernel.indep_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIn
   · exact Monotone.directed_le fun i j hij k hki => le_trans hki hij
   · exact fun n => ⟨n, le_rfl⟩
 
-theorem indep_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) :
+lemma indep_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) :
     Indep (limsup s atTop) (limsup s atTop) μ :=
   kernel.indep_limsup_atTop_self h_le h_indep
 #align probability_theory.indep_limsup_at_top_self ProbabilityTheory.indep_limsup_atTop_self
 
-theorem condIndep_limsup_atTop_self [StandardBorelSpace Ω] [Nonempty Ω]
+lemma condIndep_limsup_atTop_self [StandardBorelSpace Ω] [Nonempty Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) :
     CondIndep m (limsup s atTop) (limsup s atTop) hm μ :=
   kernel.indep_limsup_atTop_self h_le h_indep
 
-theorem kernel.measure_zero_or_one_of_measurableSet_limsup_atTop (h_le : ∀ n, s n ≤ m0)
+lemma kernel.measure_zero_or_one_of_measurableSet_limsup_atTop (h_le : ∀ n, s n ≤ m0)
     (h_indep : iIndep s κ μα) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atTop] t) :
     ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 :=
   measure_eq_zero_or_one_of_indepSet_self
@@ -282,7 +282,7 @@ theorem measure_zero_or_one_of_measurableSet_limsup_atTop (h_le : ∀ n, s n ≤
     using kernel.measure_zero_or_one_of_measurableSet_limsup_atTop h_le h_indep ht_tail
 #align probability_theory.measure_zero_or_one_of_measurable_set_limsup_at_top ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup_atTop
 
-theorem condexp_zero_or_one_of_measurableSet_limsup_atTop [StandardBorelSpace Ω] [Nonempty Ω]
+lemma condexp_zero_or_one_of_measurableSet_limsup_atTop [StandardBorelSpace Ω] [Nonempty Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ] (h_le : ∀ n, s n ≤ m0)
     (h_indep : iCondIndep m hm s μ) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atTop] t) :
     ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 :=
@@ -295,7 +295,7 @@ section AtBot
 
 variable [SemilatticeInf ι] [NoMinOrder ι] [Nonempty ι]
 
-theorem kernel.indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα) :
+lemma kernel.indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα) :
     Indep (limsup s atBot) (limsup s atBot) κ μα := by
   let ns : ι → Set ι := Set.Ici
   have hnsp : ∀ i, BddBelow (ns i) := fun i => bddBelow_Ici
@@ -309,12 +309,12 @@ theorem kernel.indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIn
   · exact Antitone.directed_le fun _ _ ↦ Set.Ici_subset_Ici.2
   · exact fun n => ⟨n, le_rfl⟩
 
-theorem indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) :
+lemma indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) :
     Indep (limsup s atBot) (limsup s atBot) μ :=
   kernel.indep_limsup_atBot_self h_le h_indep
 #align probability_theory.indep_limsup_at_bot_self ProbabilityTheory.indep_limsup_atBot_self
 
-theorem condIndep_limsup_atBot_self [StandardBorelSpace Ω] [Nonempty Ω]
+lemma condIndep_limsup_atBot_self [StandardBorelSpace Ω] [Nonempty Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) :
     CondIndep m (limsup s atBot) (limsup s atBot) hm μ :=

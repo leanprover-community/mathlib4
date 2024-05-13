@@ -55,7 +55,7 @@ noncomputable def finrank (R M : Type*) [Semiring R] [AddCommGroup M] [Module R 
   Cardinal.toNat (Module.rank R M)
 #align finite_dimensional.finrank FiniteDimensional.finrank
 
-theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank R M = ↑n) : finrank R M = n := by
+lemma finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank R M = ↑n) : finrank R M = n := by
   apply_fun toNat at h
   rw [toNat_natCast] at h
   exact mod_cast h
@@ -69,19 +69,19 @@ lemma rank_eq_ofNat_iff_finrank_eq_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
     Module.rank R M = OfNat.ofNat n ↔ finrank R M = OfNat.ofNat n :=
   Cardinal.toNat_eq_ofNat.symm
 
-theorem finrank_le_of_rank_le {n : ℕ} (h : Module.rank R M ≤ ↑n) : finrank R M ≤ n := by
+lemma finrank_le_of_rank_le {n : ℕ} (h : Module.rank R M ≤ ↑n) : finrank R M ≤ n := by
   rwa [← Cardinal.toNat_le_iff_le_of_lt_aleph0, toNat_natCast] at h
   · exact h.trans_lt (nat_lt_aleph0 n)
   · exact nat_lt_aleph0 n
 #align finite_dimensional.finrank_le_of_rank_le FiniteDimensional.finrank_le_of_rank_le
 
-theorem finrank_lt_of_rank_lt {n : ℕ} (h : Module.rank R M < ↑n) : finrank R M < n := by
+lemma finrank_lt_of_rank_lt {n : ℕ} (h : Module.rank R M < ↑n) : finrank R M < n := by
   rwa [← Cardinal.toNat_lt_iff_lt_of_lt_aleph0, toNat_natCast] at h
   · exact h.trans (nat_lt_aleph0 n)
   · exact nat_lt_aleph0 n
 #align finite_dimensional.finrank_lt_of_rank_lt FiniteDimensional.finrank_lt_of_rank_lt
 
-theorem lt_rank_of_lt_finrank {n : ℕ} (h : n < finrank R M) : ↑n < Module.rank R M := by
+lemma lt_rank_of_lt_finrank {n : ℕ} (h : n < finrank R M) : ↑n < Module.rank R M := by
   rwa [← Cardinal.toNat_lt_iff_lt_of_lt_aleph0, toNat_natCast]
   · exact nat_lt_aleph0 n
   · contrapose! h
@@ -89,10 +89,10 @@ theorem lt_rank_of_lt_finrank {n : ℕ} (h : n < finrank R M) : ↑n < Module.ra
     exact n.zero_le
 #align finite_dimensional.rank_lt_of_finrank_lt FiniteDimensional.lt_rank_of_lt_finrank
 
-theorem one_lt_rank_of_one_lt_finrank (h : 1 < finrank R M) : 1 < Module.rank R M := by
+lemma one_lt_rank_of_one_lt_finrank (h : 1 < finrank R M) : 1 < Module.rank R M := by
   simpa using lt_rank_of_lt_finrank h
 
-theorem finrank_le_finrank_of_rank_le_rank
+lemma finrank_le_finrank_of_rank_le_rank
     (h : lift.{w} (Module.rank R M) ≤ Cardinal.lift.{v} (Module.rank R N))
     (h' : Module.rank R N < ℵ₀) : finrank R M ≤ finrank R N := by
   simpa only [toNat_lift] using toNat_le_toNat h (lift_lt_aleph0.mpr h')
@@ -129,7 +129,7 @@ theorem LinearMap.finrank_range_of_inj {f : M →ₗ[R] N} (hf : Function.Inject
 #align linear_map.finrank_range_of_inj LinearMap.finrank_range_of_inj
 
 @[simp]
-theorem Submodule.finrank_map_subtype_eq (p : Submodule R M) (q : Submodule R p) :
+lemma Submodule.finrank_map_subtype_eq (p : Submodule R M) (q : Submodule R p) :
     finrank R (q.map p.subtype) = finrank R q :=
   (Submodule.equivSubtypeMap p q).symm.finrank_eq
 #align finite_dimensional.submodule.finrank_map_subtype_eq Submodule.finrank_map_subtype_eq
@@ -137,7 +137,7 @@ theorem Submodule.finrank_map_subtype_eq (p : Submodule R M) (q : Submodule R p)
 variable (R M)
 
 @[simp]
-theorem finrank_top : finrank R (⊤ : Submodule R M) = finrank R M := by
+lemma finrank_top : finrank R (⊤ : Submodule R M) = finrank R M := by
   unfold finrank
   simp [rank_top]
 #align finrank_top finrank_top

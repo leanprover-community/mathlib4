@@ -49,7 +49,7 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
 
-theorem nhds_basis_abs_convex :
+lemma nhds_basis_abs_convex :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ Balanced 𝕜 s ∧ Convex ℝ s) id := by
   refine'
     (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => _) fun s hs =>
@@ -62,7 +62,7 @@ theorem nhds_basis_abs_convex :
 
 variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
 
-theorem nhds_basis_abs_convex_open :
+lemma nhds_basis_abs_convex_open :
     (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ Balanced 𝕜 s ∧ Convex ℝ s) id := by
   refine' (nhds_basis_abs_convex 𝕜 E).to_hasBasis _ _
   · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
@@ -95,23 +95,23 @@ namespace AbsConvexOpenSets
 
 variable {𝕜 E}
 
-theorem coe_zero_mem (s : AbsConvexOpenSets 𝕜 E) : (0 : E) ∈ (s : Set E) :=
+lemma coe_zero_mem (s : AbsConvexOpenSets 𝕜 E) : (0 : E) ∈ (s : Set E) :=
   s.2.1
 #align abs_convex_open_sets.coe_zero_mem AbsConvexOpenSets.coe_zero_mem
 
-theorem coe_isOpen (s : AbsConvexOpenSets 𝕜 E) : IsOpen (s : Set E) :=
+lemma coe_isOpen (s : AbsConvexOpenSets 𝕜 E) : IsOpen (s : Set E) :=
   s.2.2.1
 #align abs_convex_open_sets.coe_is_open AbsConvexOpenSets.coe_isOpen
 
-theorem coe_nhds (s : AbsConvexOpenSets 𝕜 E) : (s : Set E) ∈ 𝓝 (0 : E) :=
+lemma coe_nhds (s : AbsConvexOpenSets 𝕜 E) : (s : Set E) ∈ 𝓝 (0 : E) :=
   s.coe_isOpen.mem_nhds s.coe_zero_mem
 #align abs_convex_open_sets.coe_nhds AbsConvexOpenSets.coe_nhds
 
-theorem coe_balanced (s : AbsConvexOpenSets 𝕜 E) : Balanced 𝕜 (s : Set E) :=
+lemma coe_balanced (s : AbsConvexOpenSets 𝕜 E) : Balanced 𝕜 (s : Set E) :=
   s.2.2.2.1
 #align abs_convex_open_sets.coe_balanced AbsConvexOpenSets.coe_balanced
 
-theorem coe_convex (s : AbsConvexOpenSets 𝕜 E) : Convex ℝ (s : Set E) :=
+lemma coe_convex (s : AbsConvexOpenSets 𝕜 E) : Convex ℝ (s : Set E) :=
   s.2.2.2.2
 #align abs_convex_open_sets.coe_convex AbsConvexOpenSets.coe_convex
 
@@ -138,7 +138,7 @@ noncomputable def gaugeSeminormFamily : SeminormFamily 𝕜 E (AbsConvexOpenSets
 
 variable {𝕜 E}
 
-theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
+lemma gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
     (gaugeSeminormFamily 𝕜 E s).ball 0 1 = (s : Set E) := by
   dsimp only [gaugeSeminormFamily]
   rw [Seminorm.ball_zero_eq]

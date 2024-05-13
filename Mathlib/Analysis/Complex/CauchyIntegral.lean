@@ -595,7 +595,7 @@ protected theorem _root_.DifferentiableOn.analyticAt {s : Set ℂ} {f : ℂ → 
   exact ((hd.mono hRs).hasFPowerSeriesOnBall hR0).analyticAt
 #align differentiable_on.analytic_at DifferentiableOn.analyticAt
 
-theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
+lemma _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
     (hs : IsOpen s) : AnalyticOn ℂ f s := fun _z hz => hd.analyticAt (hs.mem_nhds hz)
 #align differentiable_on.analytic_on DifferentiableOn.analyticOn
 

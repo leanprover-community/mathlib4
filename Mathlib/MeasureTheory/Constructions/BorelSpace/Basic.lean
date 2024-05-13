@@ -58,15 +58,15 @@ def borel (α : Type u) [TopologicalSpace α] : MeasurableSpace α :=
   generateFrom { s : Set α | IsOpen s }
 #align borel borel
 
-theorem borel_anti : Antitone (@borel α) := fun _ _ h =>
+lemma borel_anti : Antitone (@borel α) := fun _ _ h =>
   MeasurableSpace.generateFrom_le fun _ hs => .basic _ (h _ hs)
 #align borel_anti borel_anti
 
-theorem borel_eq_top_of_discrete [TopologicalSpace α] [DiscreteTopology α] : borel α = ⊤ :=
+lemma borel_eq_top_of_discrete [TopologicalSpace α] [DiscreteTopology α] : borel α = ⊤ :=
   top_le_iff.1 fun s _ => GenerateMeasurable.basic s (isOpen_discrete s)
 #align borel_eq_top_of_discrete borel_eq_top_of_discrete
 
-theorem borel_eq_top_of_countable [TopologicalSpace α] [T1Space α] [Countable α] : borel α = ⊤ := by
+lemma borel_eq_top_of_countable [TopologicalSpace α] [T1Space α] [Countable α] : borel α = ⊤ := by
   refine' top_le_iff.1 fun s _ => biUnion_of_singleton s ▸ _
   apply MeasurableSet.biUnion s.to_countable
   intro x _
@@ -75,7 +75,7 @@ theorem borel_eq_top_of_countable [TopologicalSpace α] [T1Space α] [Countable 
   exact isClosed_singleton.isOpen_compl
 #align borel_eq_top_of_countable borel_eq_top_of_countable
 
-theorem borel_eq_generateFrom_of_subbasis {s : Set (Set α)} [t : TopologicalSpace α]
+lemma borel_eq_generateFrom_of_subbasis {s : Set (Set α)} [t : TopologicalSpace α]
     [SecondCountableTopology α] (hs : t = .generateFrom s) : borel α = .generateFrom s :=
   le_antisymm
     (generateFrom_le fun u (hu : t.IsOpen u) => by
@@ -92,20 +92,20 @@ theorem borel_eq_generateFrom_of_subbasis {s : Set (Set α)} [t : TopologicalSpa
       GenerateMeasurable.basic _ <| show t.IsOpen u by rw [hs]; exact GenerateOpen.basic _ hu)
 #align borel_eq_generate_from_of_subbasis borel_eq_generateFrom_of_subbasis
 
-theorem TopologicalSpace.IsTopologicalBasis.borel_eq_generateFrom [TopologicalSpace α]
+lemma TopologicalSpace.IsTopologicalBasis.borel_eq_generateFrom [TopologicalSpace α]
     [SecondCountableTopology α] {s : Set (Set α)} (hs : IsTopologicalBasis s) :
     borel α = .generateFrom s :=
   borel_eq_generateFrom_of_subbasis hs.eq_generateFrom
 #align topological_space.is_topological_basis.borel_eq_generate_from TopologicalSpace.IsTopologicalBasis.borel_eq_generateFrom
 
-theorem isPiSystem_isOpen [TopologicalSpace α] : IsPiSystem ({s : Set α | IsOpen s}) :=
+lemma isPiSystem_isOpen [TopologicalSpace α] : IsPiSystem ({s : Set α | IsOpen s}) :=
   fun _s hs _t ht _ => IsOpen.inter hs ht
 #align is_pi_system_is_open isPiSystem_isOpen
 
 lemma isPiSystem_isClosed [TopologicalSpace α] : IsPiSystem ({s : Set α | IsClosed s}) :=
   fun _s hs _t ht _ ↦ IsClosed.inter hs ht
 
-theorem borel_eq_generateFrom_isClosed [TopologicalSpace α] :
+lemma borel_eq_generateFrom_isClosed [TopologicalSpace α] :
     borel α = .generateFrom { s | IsClosed s } :=
   le_antisymm
     (generateFrom_le fun _t ht =>
@@ -120,7 +120,7 @@ section OrderTopology
 variable (α)
 variable [TopologicalSpace α] [SecondCountableTopology α] [LinearOrder α] [OrderTopology α]
 
-theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
+lemma borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
   refine' le_antisymm _ (generateFrom_le _)
   · rw [borel_eq_generateFrom_of_subbasis (@OrderTopology.topology_eq_generate_intervals α _ _ _)]
     letI : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
@@ -143,11 +143,11 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
     exact GenerateMeasurable.basic _ isOpen_Iio
 #align borel_eq_generate_from_Iio borel_eq_generateFrom_Iio
 
-theorem borel_eq_generateFrom_Ioi : borel α = .generateFrom (range Ioi) :=
+lemma borel_eq_generateFrom_Ioi : borel α = .generateFrom (range Ioi) :=
   @borel_eq_generateFrom_Iio αᵒᵈ _ (by infer_instance : SecondCountableTopology α) _ _
 #align borel_eq_generate_from_Ioi borel_eq_generateFrom_Ioi
 
-theorem borel_eq_generateFrom_Iic :
+lemma borel_eq_generateFrom_Iic :
     borel α = MeasurableSpace.generateFrom (range Iic) := by
   rw [borel_eq_generateFrom_Ioi]
   refine' le_antisymm _ _
@@ -161,18 +161,18 @@ theorem borel_eq_generateFrom_Iic :
     exact (MeasurableSpace.measurableSet_generateFrom (mem_range.mpr ⟨u, rfl⟩)).compl
 #align borel_eq_generate_from_Iic borel_eq_generateFrom_Iic
 
-theorem borel_eq_generateFrom_Ici : borel α = MeasurableSpace.generateFrom (range Ici) :=
+lemma borel_eq_generateFrom_Ici : borel α = MeasurableSpace.generateFrom (range Ici) :=
   @borel_eq_generateFrom_Iic αᵒᵈ _ _ _ _
 #align borel_eq_generate_from_Ici borel_eq_generateFrom_Ici
 
 end OrderTopology
 
-theorem borel_comap {f : α → β} {t : TopologicalSpace β} :
+lemma borel_comap {f : α → β} {t : TopologicalSpace β} :
     @borel α (t.induced f) = (@borel β t).comap f :=
   comap_generateFrom.symm
 #align borel_comap borel_comap
 
-theorem Continuous.borel_measurable [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
+lemma Continuous.borel_measurable [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
     (hf : Continuous f) : @Measurable α β (borel α) (borel β) f :=
   Measurable.of_le_map <|
     generateFrom_le fun s hs => GenerateMeasurable.basic (f ⁻¹' s) (hs.preimage hf)
@@ -299,7 +299,7 @@ instance (priority := 100) BorelSpace.countablyGenerated {α : Type*} [Topologic
   exact hb.borel_eq_generateFrom
 #align borel_space.countably_generated BorelSpace.countablyGenerated
 
-theorem MeasurableSet.induction_on_open [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
+lemma MeasurableSet.induction_on_open [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
     {C : Set α → Prop} (h_open : ∀ U, IsOpen U → C U)
     (h_compl : ∀ t, MeasurableSet t → C t → C tᶜ)
     (h_union :
@@ -316,7 +316,7 @@ variable [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] [T
   [MeasurableSpace β] [OpensMeasurableSpace β] [TopologicalSpace γ] [MeasurableSpace γ]
   [BorelSpace γ] [TopologicalSpace γ₂] [MeasurableSpace γ₂] [BorelSpace γ₂] [MeasurableSpace δ]
 
-theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
+lemma IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
   OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ h
 #align is_open.measurable_set IsOpen.measurableSet
 
@@ -326,26 +326,26 @@ instance (priority := 1000) {s : Set α} [h : HasCountableSeparatingOn α IsOpen
     exact .mono (fun _ ↦ IsOpen.measurableSet) Subset.rfl
 
 @[measurability]
-theorem measurableSet_interior : MeasurableSet (interior s) :=
+lemma measurableSet_interior : MeasurableSet (interior s) :=
   isOpen_interior.measurableSet
 #align measurable_set_interior measurableSet_interior
 
-theorem IsGδ.measurableSet (h : IsGδ s) : MeasurableSet s := by
+lemma IsGδ.measurableSet (h : IsGδ s) : MeasurableSet s := by
   rcases h with ⟨S, hSo, hSc, rfl⟩
   exact MeasurableSet.sInter hSc fun t ht => (hSo t ht).measurableSet
 set_option linter.uppercaseLean3 false in
 #align is_Gδ.measurable_set IsGδ.measurableSet
 
-theorem measurableSet_of_continuousAt {β} [EMetricSpace β] (f : α → β) :
+lemma measurableSet_of_continuousAt {β} [EMetricSpace β] (f : α → β) :
     MeasurableSet { x | ContinuousAt f x } :=
   (IsGδ.setOf_continuousAt f).measurableSet
 #align measurable_set_of_continuous_at measurableSet_of_continuousAt
 
-theorem IsClosed.measurableSet (h : IsClosed s) : MeasurableSet s :=
+lemma IsClosed.measurableSet (h : IsClosed s) : MeasurableSet s :=
   h.isOpen_compl.measurableSet.of_compl
 #align is_closed.measurable_set IsClosed.measurableSet
 
-theorem IsCompact.measurableSet [T2Space α] (h : IsCompact s) : MeasurableSet s :=
+lemma IsCompact.measurableSet [T2Space α] (h : IsCompact s) : MeasurableSet s :=
   h.isClosed.measurableSet
 #align is_compact.measurable_set IsCompact.measurableSet
 
@@ -378,23 +378,23 @@ theorem IsCompact.measure_closure [R1Space γ] {K : Set γ} (hK : IsCompact K) (
     _ = μ K := measure_toMeasurable ..
 
 @[measurability]
-theorem measurableSet_closure : MeasurableSet (closure s) :=
+lemma measurableSet_closure : MeasurableSet (closure s) :=
   isClosed_closure.measurableSet
 #align measurable_set_closure measurableSet_closure
 
-theorem measurable_of_isOpen {f : δ → γ} (hf : ∀ s, IsOpen s → MeasurableSet (f ⁻¹' s)) :
+lemma measurable_of_isOpen {f : δ → γ} (hf : ∀ s, IsOpen s → MeasurableSet (f ⁻¹' s)) :
     Measurable f := by
   rw [‹BorelSpace γ›.measurable_eq]
   exact measurable_generateFrom hf
 #align measurable_of_is_open measurable_of_isOpen
 
-theorem measurable_of_isClosed {f : δ → γ} (hf : ∀ s, IsClosed s → MeasurableSet (f ⁻¹' s)) :
+lemma measurable_of_isClosed {f : δ → γ} (hf : ∀ s, IsClosed s → MeasurableSet (f ⁻¹' s)) :
     Measurable f := by
   apply measurable_of_isOpen; intro s hs
   rw [← MeasurableSet.compl_iff, ← preimage_compl]; apply hf; rw [isClosed_compl_iff]; exact hs
 #align measurable_of_is_closed measurable_of_isClosed
 
-theorem measurable_of_isClosed' {f : δ → γ}
+lemma measurable_of_isClosed' {f : δ → γ}
     (hf : ∀ s, IsClosed s → s.Nonempty → s ≠ univ → MeasurableSet (f ⁻¹' s)) : Measurable f := by
   apply measurable_of_isClosed; intro s hs
   rcases eq_empty_or_nonempty s with h1 | h1
@@ -520,27 +520,27 @@ instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
 
 variable {α' : Type*} [TopologicalSpace α'] [MeasurableSpace α']
 
-theorem interior_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
+lemma interior_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     interior s =ᵐ[μ] s :=
   interior_subset.eventuallyLE.antisymm <| subset_closure.eventuallyLE.trans (ae_le_set.2 h)
 #align interior_ae_eq_of_null_frontier interior_ae_eq_of_null_frontier
 
-theorem measure_interior_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
+lemma measure_interior_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     μ (interior s) = μ s :=
   measure_congr (interior_ae_eq_of_null_frontier h)
 #align measure_interior_of_null_frontier measure_interior_of_null_frontier
 
-theorem nullMeasurableSet_of_null_frontier {s : Set α} {μ : Measure α} (h : μ (frontier s) = 0) :
+lemma nullMeasurableSet_of_null_frontier {s : Set α} {μ : Measure α} (h : μ (frontier s) = 0) :
     NullMeasurableSet s μ :=
   ⟨interior s, isOpen_interior.measurableSet, (interior_ae_eq_of_null_frontier h).symm⟩
 #align null_measurable_set_of_null_frontier nullMeasurableSet_of_null_frontier
 
-theorem closure_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
+lemma closure_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     closure s =ᵐ[μ] s :=
   ((ae_le_set.2 h).trans interior_subset.eventuallyLE).antisymm <| subset_closure.eventuallyLE
 #align closure_ae_eq_of_null_frontier closure_ae_eq_of_null_frontier
 
-theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
+lemma measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     μ (closure s) = μ s :=
   measure_congr (closure_ae_eq_of_null_frontier h)
 #align measure_closure_of_null_frontier measure_closure_of_null_frontier
@@ -550,17 +550,17 @@ section Preorder
 variable [Preorder α] [OrderClosedTopology α] {a b x : α}
 
 @[simp, measurability]
-theorem measurableSet_Ici : MeasurableSet (Ici a) :=
+lemma measurableSet_Ici : MeasurableSet (Ici a) :=
   isClosed_Ici.measurableSet
 #align measurable_set_Ici measurableSet_Ici
 
 @[simp, measurability]
-theorem measurableSet_Iic : MeasurableSet (Iic a) :=
+lemma measurableSet_Iic : MeasurableSet (Iic a) :=
   isClosed_Iic.measurableSet
 #align measurable_set_Iic measurableSet_Iic
 
 @[simp, measurability]
-theorem measurableSet_Icc : MeasurableSet (Icc a b) :=
+lemma measurableSet_Icc : MeasurableSet (Icc a b) :=
   isClosed_Icc.measurableSet
 #align measurable_set_Icc measurableSet_Icc
 
@@ -601,12 +601,12 @@ section PartialOrder
 variable [PartialOrder α] [OrderClosedTopology α] [SecondCountableTopology α] {a b : α}
 
 @[measurability]
-theorem measurableSet_le' : MeasurableSet { p : α × α | p.1 ≤ p.2 } :=
+lemma measurableSet_le' : MeasurableSet { p : α × α | p.1 ≤ p.2 } :=
   OrderClosedTopology.isClosed_le'.measurableSet
 #align measurable_set_le' measurableSet_le'
 
 @[measurability]
-theorem measurableSet_le {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
+lemma measurableSet_le {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     MeasurableSet { a | f a ≤ g a } :=
   hf.prod_mk hg measurableSet_le'
 #align measurable_set_le measurableSet_le
@@ -621,27 +621,27 @@ variable [LinearOrder α] [OrderClosedTopology α] {a b x : α}
 open Interval
 
 @[simp, measurability]
-theorem measurableSet_Iio : MeasurableSet (Iio a) :=
+lemma measurableSet_Iio : MeasurableSet (Iio a) :=
   isOpen_Iio.measurableSet
 #align measurable_set_Iio measurableSet_Iio
 
 @[simp, measurability]
-theorem measurableSet_Ioi : MeasurableSet (Ioi a) :=
+lemma measurableSet_Ioi : MeasurableSet (Ioi a) :=
   isOpen_Ioi.measurableSet
 #align measurable_set_Ioi measurableSet_Ioi
 
 @[simp, measurability]
-theorem measurableSet_Ioo : MeasurableSet (Ioo a b) :=
+lemma measurableSet_Ioo : MeasurableSet (Ioo a b) :=
   isOpen_Ioo.measurableSet
 #align measurable_set_Ioo measurableSet_Ioo
 
 @[simp, measurability]
-theorem measurableSet_Ioc : MeasurableSet (Ioc a b) :=
+lemma measurableSet_Ioc : MeasurableSet (Ioc a b) :=
   measurableSet_Ioi.inter measurableSet_Iic
 #align measurable_set_Ioc measurableSet_Ioc
 
 @[simp, measurability]
-theorem measurableSet_Ico : MeasurableSet (Ico a b) :=
+lemma measurableSet_Ico : MeasurableSet (Ico a b) :=
   measurableSet_Ici.inter measurableSet_Iio
 #align measurable_set_Ico measurableSet_Ico
 
@@ -658,31 +658,31 @@ instance nhdsWithin_uIcc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[[[a
 #align nhds_within_uIcc_is_measurably_generated nhdsWithin_uIcc_isMeasurablyGenerated
 
 @[measurability]
-theorem measurableSet_lt' [SecondCountableTopology α] : MeasurableSet { p : α × α | p.1 < p.2 } :=
+lemma measurableSet_lt' [SecondCountableTopology α] : MeasurableSet { p : α × α | p.1 < p.2 } :=
   (isOpen_lt continuous_fst continuous_snd).measurableSet
 #align measurable_set_lt' measurableSet_lt'
 
 @[measurability]
-theorem measurableSet_lt [SecondCountableTopology α] {f g : δ → α} (hf : Measurable f)
+lemma measurableSet_lt [SecondCountableTopology α] {f g : δ → α} (hf : Measurable f)
     (hg : Measurable g) : MeasurableSet { a | f a < g a } :=
   hf.prod_mk hg measurableSet_lt'
 #align measurable_set_lt measurableSet_lt
 
-theorem nullMeasurableSet_lt [SecondCountableTopology α] {μ : Measure δ} {f g : δ → α}
+lemma nullMeasurableSet_lt [SecondCountableTopology α] {μ : Measure δ} {f g : δ → α}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) : NullMeasurableSet { a | f a < g a } μ :=
   (hf.prod_mk hg).nullMeasurable measurableSet_lt'
 #align null_measurable_set_lt nullMeasurableSet_lt
 
-theorem nullMeasurableSet_lt' [SecondCountableTopology α] {μ : Measure (α × α)} :
+lemma nullMeasurableSet_lt' [SecondCountableTopology α] {μ : Measure (α × α)} :
     NullMeasurableSet { p : α × α | p.1 < p.2 } μ :=
   measurableSet_lt'.nullMeasurableSet
 
-theorem nullMeasurableSet_le [SecondCountableTopology α] {μ : Measure δ}
+lemma nullMeasurableSet_le [SecondCountableTopology α] {μ : Measure δ}
     {f g : δ → α} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     NullMeasurableSet { a | f a ≤ g a } μ :=
   (hf.prod_mk hg).nullMeasurable measurableSet_le'
 
-theorem Set.OrdConnected.measurableSet (h : OrdConnected s) : MeasurableSet s := by
+lemma Set.OrdConnected.measurableSet (h : OrdConnected s) : MeasurableSet s := by
   let u := ⋃ (x ∈ s) (y ∈ s), Ioo x y
   have huopen : IsOpen u := isOpen_biUnion fun _ _ => isOpen_biUnion fun _ _ => isOpen_Ioo
   have humeas : MeasurableSet u := huopen.measurableSet
@@ -693,11 +693,11 @@ theorem Set.OrdConnected.measurableSet (h : OrdConnected s) : MeasurableSet s :=
   exact humeas.union hfinite.measurableSet
 #align set.ord_connected.measurable_set Set.OrdConnected.measurableSet
 
-theorem IsPreconnected.measurableSet (h : IsPreconnected s) : MeasurableSet s :=
+lemma IsPreconnected.measurableSet (h : IsPreconnected s) : MeasurableSet s :=
   h.ordConnected.measurableSet
 #align is_preconnected.measurable_set IsPreconnected.measurableSet
 
-theorem generateFrom_Ico_mem_le_borel {α : Type*} [TopologicalSpace α] [LinearOrder α]
+lemma generateFrom_Ico_mem_le_borel {α : Type*} [TopologicalSpace α] [LinearOrder α]
     [OrderClosedTopology α] (s t : Set α) :
     MeasurableSpace.generateFrom { S | ∃ l ∈ s, ∃ u ∈ t, l < u ∧ Ico l u = S }
       ≤ borel α := by
@@ -707,7 +707,7 @@ theorem generateFrom_Ico_mem_le_borel {α : Type*} [TopologicalSpace α] [Linear
   exact measurableSet_Ico
 #align generate_from_Ico_mem_le_borel generateFrom_Ico_mem_le_borel
 
-theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace α] [LinearOrder α]
+lemma Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] [SecondCountableTopology α] {s : Set α} (hd : Dense s)
     (hbot : ∀ x, IsBot x → x ∈ s) (hIoo : ∀ x y : α, x < y → Ioo x y = ∅ → y ∈ s) :
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S } := by
@@ -744,7 +744,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
       exact .basic _ ⟨x, hts hx, a, ha, hlt, mem_singleton _⟩
 #align dense.borel_eq_generate_from_Ico_mem_aux Dense.borel_eq_generateFrom_Ico_mem_aux
 
-theorem Dense.borel_eq_generateFrom_Ico_mem {α : Type*} [TopologicalSpace α] [LinearOrder α]
+lemma Dense.borel_eq_generateFrom_Ico_mem {α : Type*} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] [SecondCountableTopology α] [DenselyOrdered α] [NoMinOrder α] {s : Set α}
     (hd : Dense s) :
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S } :=
@@ -752,7 +752,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem {α : Type*} [TopologicalSpace α] [
     ((nonempty_Ioo.2 hxy).ne_empty H).elim
 #align dense.borel_eq_generate_from_Ico_mem Dense.borel_eq_generateFrom_Ico_mem
 
-theorem borel_eq_generateFrom_Ico (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
+lemma borel_eq_generateFrom_Ico (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
     [LinearOrder α] [OrderTopology α] :
     borel α = .generateFrom { S : Set α | ∃ (l u : α), l < u ∧ Ico l u = S } := by
   simpa only [exists_prop, mem_univ, true_and_iff] using
@@ -760,7 +760,7 @@ theorem borel_eq_generateFrom_Ico (α : Type*) [TopologicalSpace α] [SecondCoun
       mem_univ _
 #align borel_eq_generate_from_Ico borel_eq_generateFrom_Ico
 
-theorem Dense.borel_eq_generateFrom_Ioc_mem_aux {α : Type*} [TopologicalSpace α] [LinearOrder α]
+lemma Dense.borel_eq_generateFrom_Ioc_mem_aux {α : Type*} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] [SecondCountableTopology α] {s : Set α} (hd : Dense s)
     (hbot : ∀ x, IsTop x → x ∈ s) (hIoo : ∀ x y : α, x < y → Ioo x y = ∅ → x ∈ s) :
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ioc l u = S } := by
@@ -773,7 +773,7 @@ theorem Dense.borel_eq_generateFrom_Ioc_mem_aux {α : Type*} [TopologicalSpace �
     exact he
 #align dense.borel_eq_generate_from_Ioc_mem_aux Dense.borel_eq_generateFrom_Ioc_mem_aux
 
-theorem Dense.borel_eq_generateFrom_Ioc_mem {α : Type*} [TopologicalSpace α] [LinearOrder α]
+lemma Dense.borel_eq_generateFrom_Ioc_mem {α : Type*} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] [SecondCountableTopology α] [DenselyOrdered α] [NoMaxOrder α] {s : Set α}
     (hd : Dense s) :
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ioc l u = S } :=
@@ -781,7 +781,7 @@ theorem Dense.borel_eq_generateFrom_Ioc_mem {α : Type*} [TopologicalSpace α] [
     ((nonempty_Ioo.2 hxy).ne_empty H).elim
 #align dense.borel_eq_generate_from_Ioc_mem Dense.borel_eq_generateFrom_Ioc_mem
 
-theorem borel_eq_generateFrom_Ioc (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
+lemma borel_eq_generateFrom_Ioc (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
     [LinearOrder α] [OrderTopology α] :
     borel α = .generateFrom { S : Set α | ∃ l u, l < u ∧ Ioc l u = S } := by
   simpa only [exists_prop, mem_univ, true_and_iff] using
@@ -906,38 +906,38 @@ section LinearOrder
 variable [LinearOrder α] [OrderClosedTopology α] {a b : α}
 
 @[measurability]
-theorem measurableSet_uIcc : MeasurableSet (uIcc a b) :=
+lemma measurableSet_uIcc : MeasurableSet (uIcc a b) :=
   measurableSet_Icc
 #align measurable_set_uIcc measurableSet_uIcc
 
 @[measurability]
-theorem measurableSet_uIoc : MeasurableSet (uIoc a b) :=
+lemma measurableSet_uIoc : MeasurableSet (uIoc a b) :=
   measurableSet_Ioc
 #align measurable_set_uIoc measurableSet_uIoc
 
 variable [SecondCountableTopology α]
 
 @[measurability]
-theorem Measurable.max {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
+lemma Measurable.max {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a => max (f a) (g a) := by
   simpa only [max_def'] using hf.piecewise (measurableSet_le hg hf) hg
 #align measurable.max Measurable.max
 
 @[measurability]
-nonrec theorem AEMeasurable.max {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
+nonrec lemma AEMeasurable.max {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun a => max (f a) (g a)) μ :=
   ⟨fun a => max (hf.mk f a) (hg.mk g a), hf.measurable_mk.max hg.measurable_mk,
     EventuallyEq.comp₂ hf.ae_eq_mk _ hg.ae_eq_mk⟩
 #align ae_measurable.max AEMeasurable.max
 
 @[measurability]
-theorem Measurable.min {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
+lemma Measurable.min {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a => min (f a) (g a) := by
   simpa only [min_def] using hf.piecewise (measurableSet_le hf hg) hg
 #align measurable.min Measurable.min
 
 @[measurability]
-nonrec theorem AEMeasurable.min {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
+nonrec lemma AEMeasurable.min {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun a => min (f a) (g a)) μ :=
   ⟨fun a => min (hf.mk f a) (hg.mk g a), hf.measurable_mk.min hg.measurable_mk,
     EventuallyEq.comp₂ hf.ae_eq_mk _ hg.ae_eq_mk⟩
@@ -957,7 +957,7 @@ theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure
   h.measurable.aemeasurable
 #align continuous.ae_measurable Continuous.aemeasurable
 
-theorem ClosedEmbedding.measurable {f : α → γ} (hf : ClosedEmbedding f) : Measurable f :=
+lemma ClosedEmbedding.measurable {f : α → γ} (hf : ClosedEmbedding f) : Measurable f :=
   hf.continuous.measurable
 #align closed_embedding.measurable ClosedEmbedding.measurable
 
@@ -1034,7 +1034,7 @@ end Lattice
 section Homeomorph
 
 @[measurability]
-protected theorem Homeomorph.measurable (h : α ≃ₜ γ) : Measurable h :=
+protected lemma Homeomorph.measurable (h : α ≃ₜ γ) : Measurable h :=
   h.continuous.measurable
 #align homeomorph.measurable Homeomorph.measurable
 
@@ -1049,12 +1049,12 @@ lemma Homeomorph.measurableEmbedding (h : γ ≃ₜ γ₂) : MeasurableEmbedding
   h.toMeasurableEquiv.measurableEmbedding
 
 @[simp]
-theorem Homeomorph.toMeasurableEquiv_coe (h : γ ≃ₜ γ₂) : (h.toMeasurableEquiv : γ → γ₂) = h :=
+lemma Homeomorph.toMeasurableEquiv_coe (h : γ ≃ₜ γ₂) : (h.toMeasurableEquiv : γ → γ₂) = h :=
   rfl
 #align homeomorph.to_measurable_equiv_coe Homeomorph.toMeasurableEquiv_coe
 
 @[simp]
-theorem Homeomorph.toMeasurableEquiv_symm_coe (h : γ ≃ₜ γ₂) :
+lemma Homeomorph.toMeasurableEquiv_symm_coe (h : γ ≃ₜ γ₂) :
     (h.toMeasurableEquiv.symm : γ₂ → γ) = h.symm :=
   rfl
 #align homeomorph.to_measurable_equiv_symm_coe Homeomorph.toMeasurableEquiv_symm_coe
@@ -1062,23 +1062,23 @@ theorem Homeomorph.toMeasurableEquiv_symm_coe (h : γ ≃ₜ γ₂) :
 end Homeomorph
 
 @[measurability]
-theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
+lemma ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
   f.continuous.measurable
 #align continuous_map.measurable ContinuousMap.measurable
 
-theorem measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} (a : α)
+lemma measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} (a : α)
     (hf : ContinuousOn f {a}ᶜ) : Measurable f :=
   measurable_of_measurable_on_compl_singleton a
     (continuousOn_iff_continuous_restrict.1 hf).measurable
 #align measurable_of_continuous_on_compl_singleton measurable_of_continuousOn_compl_singleton
 
-theorem Continuous.measurable2 [SecondCountableTopologyEither α β] {f : δ → α}
+lemma Continuous.measurable2 [SecondCountableTopologyEither α β] {f : δ → α}
     {g : δ → β} {c : α → β → γ} (h : Continuous fun p : α × β => c p.1 p.2) (hf : Measurable f)
     (hg : Measurable g) : Measurable fun a => c (f a) (g a) :=
   h.measurable.comp (hf.prod_mk hg)
 #align continuous.measurable2 Continuous.measurable2
 
-theorem Continuous.aemeasurable2 [SecondCountableTopologyEither α β]
+lemma Continuous.aemeasurable2 [SecondCountableTopologyEither α β]
     {f : δ → α} {g : δ → β} {c : α → β → γ} {μ : Measure δ}
     (h : Continuous fun p : α × β => c p.1 p.2) (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => c (f a) (g a)) μ :=
@@ -1117,7 +1117,7 @@ variable [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [Topological
   [MeasurableSpace β] [BorelSpace β] [TopologicalSpace γ] [MeasurableSpace γ] [BorelSpace γ]
   [MeasurableSpace δ]
 
-theorem pi_le_borel_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+lemma pi_le_borel_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     [∀ i, MeasurableSpace (π i)] [∀ i, BorelSpace (π i)] :
       MeasurableSpace.pi ≤ borel (∀ i, π i) := by
   have : ‹∀ i, MeasurableSpace (π i)› = fun i => borel (π i) :=
@@ -1126,7 +1126,7 @@ theorem pi_le_borel_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace
   exact iSup_le fun i => comap_le_iff_le_map.2 <| (continuous_apply i).borel_measurable
 #align pi_le_borel_pi pi_le_borel_pi
 
-theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
+lemma prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
   rw [‹BorelSpace α›.measurable_eq, ‹BorelSpace β›.measurable_eq]
   refine' sup_le _ _
   · exact comap_le_iff_le_map.mpr continuous_fst.borel_measurable
@@ -1161,19 +1161,19 @@ instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
   constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, measurableSet_discrete]
 
-protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embedding f)
+protected lemma Embedding.measurableEmbedding {f : α → β} (h₁ : Embedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
   show MeasurableEmbedding
       (((↑) : range f → β) ∘ (Homeomorph.ofEmbedding f h₁).toMeasurableEquiv) from
     (MeasurableEmbedding.subtype_coe h₂).comp (MeasurableEquiv.measurableEmbedding _)
 #align embedding.measurable_embedding Embedding.measurableEmbedding
 
-protected theorem ClosedEmbedding.measurableEmbedding {f : α → β} (h : ClosedEmbedding f) :
+protected lemma ClosedEmbedding.measurableEmbedding {f : α → β} (h : ClosedEmbedding f) :
     MeasurableEmbedding f :=
   h.toEmbedding.measurableEmbedding h.isClosed_range.measurableSet
 #align closed_embedding.measurable_embedding ClosedEmbedding.measurableEmbedding
 
-protected theorem OpenEmbedding.measurableEmbedding {f : α → β} (h : OpenEmbedding f) :
+protected lemma OpenEmbedding.measurableEmbedding {f : α → β} (h : OpenEmbedding f) :
     MeasurableEmbedding f :=
   h.toEmbedding.measurableEmbedding h.isOpen_range.measurableSet
 #align open_embedding.measurable_embedding OpenEmbedding.measurableEmbedding
@@ -1182,35 +1182,35 @@ section LinearOrder
 
 variable [LinearOrder α] [OrderTopology α] [SecondCountableTopology α]
 
-theorem measurable_of_Iio {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Iio x)) : Measurable f := by
+lemma measurable_of_Iio {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Iio x)) : Measurable f := by
   convert measurable_generateFrom (α := δ) _
   · exact BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Iio _)
   · rintro _ ⟨x, rfl⟩; exact hf x
 #align measurable_of_Iio measurable_of_Iio
 
-theorem UpperSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpace δ] {f : δ → α}
+lemma UpperSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpace δ] {f : δ → α}
     (hf : UpperSemicontinuous f) : Measurable f :=
   measurable_of_Iio fun y => (hf.isOpen_preimage y).measurableSet
 #align upper_semicontinuous.measurable UpperSemicontinuous.measurable
 
-theorem measurable_of_Ioi {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Ioi x)) : Measurable f := by
+lemma measurable_of_Ioi {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Ioi x)) : Measurable f := by
   convert measurable_generateFrom (α := δ) _
   · exact BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ioi _)
   · rintro _ ⟨x, rfl⟩; exact hf x
 #align measurable_of_Ioi measurable_of_Ioi
 
-theorem LowerSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpace δ] {f : δ → α}
+lemma LowerSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpace δ] {f : δ → α}
     (hf : LowerSemicontinuous f) : Measurable f :=
   measurable_of_Ioi fun y => (hf.isOpen_preimage y).measurableSet
 #align lower_semicontinuous.measurable LowerSemicontinuous.measurable
 
-theorem measurable_of_Iic {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Iic x)) : Measurable f := by
+lemma measurable_of_Iic {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Iic x)) : Measurable f := by
   apply measurable_of_Ioi
   simp_rw [← compl_Iic, preimage_compl, MeasurableSet.compl_iff]
   assumption
 #align measurable_of_Iic measurable_of_Iic
 
-theorem measurable_of_Ici {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Ici x)) : Measurable f := by
+lemma measurable_of_Ici {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Ici x)) : Measurable f := by
   apply measurable_of_Iio
   simp_rw [← compl_Ici, preimage_compl, MeasurableSet.compl_iff]
   assumption
@@ -1265,7 +1265,7 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
           exact ⟨i, rfl⟩
       simp [A, this, hg' hb, isLUB_singleton]
 
-theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
+lemma AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsLUB { a | ∃ i, f i b = a } (g b)) :
     AEMeasurable g μ := by
   nontriviality α
@@ -1307,37 +1307,37 @@ theorem Measurable.isGLB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
     (hg' : EqOn g g' sᶜ) (g'_meas : Measurable g') : Measurable g :=
   Measurable.isLUB_of_mem (α := αᵒᵈ) hf hs hg hg'  g'_meas
 
-theorem AEMeasurable.isGLB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
+lemma AEMeasurable.isGLB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsGLB { a | ∃ i, f i b = a } (g b)) :
     AEMeasurable g μ :=
   AEMeasurable.isLUB (α := αᵒᵈ) hf hg
 #align ae_measurable.is_glb AEMeasurable.isGLB
 
-protected theorem Monotone.measurable [LinearOrder β] [OrderClosedTopology β] {f : β → α}
+protected lemma Monotone.measurable [LinearOrder β] [OrderClosedTopology β] {f : β → α}
     (hf : Monotone f) : Measurable f :=
   suffices h : ∀ x, OrdConnected (f ⁻¹' Ioi x) from measurable_of_Ioi fun x => (h x).measurableSet
   fun _ => ordConnected_def.mpr fun _a ha _ _ _c hc => lt_of_lt_of_le ha (hf hc.1)
 #align monotone.measurable Monotone.measurable
 
-theorem aemeasurable_restrict_of_monotoneOn [LinearOrder β] [OrderClosedTopology β] {μ : Measure β}
+lemma aemeasurable_restrict_of_monotoneOn [LinearOrder β] [OrderClosedTopology β] {μ : Measure β}
     {s : Set β} (hs : MeasurableSet s) {f : β → α} (hf : MonotoneOn f s) :
     AEMeasurable f (μ.restrict s) :=
   have : Monotone (f ∘ (↑) : s → α) := fun ⟨x, hx⟩ ⟨y, hy⟩ => fun (hxy : x ≤ y) => hf hx hy hxy
   aemeasurable_restrict_of_measurable_subtype hs this.measurable
 #align ae_measurable_restrict_of_monotone_on aemeasurable_restrict_of_monotoneOn
 
-protected theorem Antitone.measurable [LinearOrder β] [OrderClosedTopology β] {f : β → α}
+protected lemma Antitone.measurable [LinearOrder β] [OrderClosedTopology β] {f : β → α}
     (hf : Antitone f) : Measurable f :=
   @Monotone.measurable αᵒᵈ β _ _ ‹_› _ _ _ _ _ ‹_› _ _ _ hf
 #align antitone.measurable Antitone.measurable
 
-theorem aemeasurable_restrict_of_antitoneOn [LinearOrder β] [OrderClosedTopology β] {μ : Measure β}
+lemma aemeasurable_restrict_of_antitoneOn [LinearOrder β] [OrderClosedTopology β] {μ : Measure β}
     {s : Set β} (hs : MeasurableSet s) {f : β → α} (hf : AntitoneOn f s) :
     AEMeasurable f (μ.restrict s) :=
   @aemeasurable_restrict_of_monotoneOn αᵒᵈ β _ _ ‹_› _ _ _ _ _ ‹_› _ _ _ _ hs _ hf
 #align ae_measurable_restrict_of_antitone_on aemeasurable_restrict_of_antitoneOn
 
-theorem measurableSet_of_mem_nhdsWithin_Ioi_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
+lemma measurableSet_of_mem_nhdsWithin_Ioi_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
     (h' : ∀ x ∈ s, ∃ y, x < y) : MeasurableSet s := by
   choose! M hM using h'
   suffices H : (s \ interior s).Countable by
@@ -1413,7 +1413,7 @@ lemma measurableSet_bddBelow_range {ι} [Countable ι] {f : ι → δ → α} (h
 end LinearOrder
 
 @[measurability]
-theorem Measurable.iSup_Prop {α} [MeasurableSpace α] [ConditionallyCompleteLattice α]
+lemma Measurable.iSup_Prop {α} [MeasurableSpace α] [ConditionallyCompleteLattice α]
     (p : Prop) {f : δ → α} (hf : Measurable f) : Measurable fun b => ⨆ _ : p, f b := by
   simp_rw [ciSup_eq_ite]
   split_ifs with h
@@ -1422,7 +1422,7 @@ theorem Measurable.iSup_Prop {α} [MeasurableSpace α] [ConditionallyCompleteLat
 #align measurable.supr_Prop Measurable.iSup_Prop
 
 @[measurability]
-theorem Measurable.iInf_Prop {α} [MeasurableSpace α] [ConditionallyCompleteLattice α]
+lemma Measurable.iInf_Prop {α} [MeasurableSpace α] [ConditionallyCompleteLattice α]
     (p : Prop) {f : δ → α} (hf : Measurable f) : Measurable fun b => ⨅ _ : p, f b := by
   simp_rw [ciInf_eq_ite]
   split_ifs with h
@@ -1435,7 +1435,7 @@ section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [OrderTopology α] [SecondCountableTopology α]
 
 @[measurability]
-theorem measurable_iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
+lemma measurable_iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable (fun b ↦ ⨆ i, f i b) := by
   rcases isEmpty_or_nonempty ι with hι|hι
   · simp [iSup_of_empty']
@@ -1453,25 +1453,25 @@ theorem measurable_iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, 
     exact hb
 
 @[measurability]
-theorem aemeasurable_iSup {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
+lemma aemeasurable_iSup {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i, f i b) μ := by
   refine ⟨fun b ↦ ⨆ i, (hf i).mk (f i) b, measurable_iSup (fun i ↦ (hf i).measurable_mk), ?_⟩
   filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with b hb using by simp [hb]
 #align ae_measurable_supr aemeasurable_iSup
 
 @[measurability]
-theorem measurable_iInf {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
+lemma measurable_iInf {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable fun b => ⨅ i, f i b :=
   measurable_iSup (α := αᵒᵈ) hf
 #align measurable_infi measurable_iInf
 
 @[measurability]
-theorem aemeasurable_iInf {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
+lemma aemeasurable_iInf {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨅ i, f i b) μ :=
   aemeasurable_iSup (α := αᵒᵈ) hf
 #align ae_measurable_infi aemeasurable_iInf
 
-theorem measurable_sSup {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
+lemma measurable_sSup {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) :
     Measurable fun x => sSup ((fun i => f i x) '' s) := by
   have : Countable ↑s := countable_coe_iff.2 hs
@@ -1481,13 +1481,13 @@ theorem measurable_sSup {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countab
   exact image_eq_range (fun i ↦ f i b) s
 #align measurable_cSup measurable_sSup
 
-theorem measurable_sInf {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
+lemma measurable_sInf {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) :
     Measurable fun x => sInf ((fun i => f i x) '' s) :=
   measurable_sSup (α := αᵒᵈ) hs hf
 #align measurable_cInf measurable_sInf
 
-theorem measurable_biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
+lemma measurable_biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨆ i ∈ s, f i b := by
   haveI : Encodable s := hs.toEncodable
   by_cases H : ∀ i, i ∈ s
@@ -1502,7 +1502,7 @@ theorem measurable_biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Counta
     exact measurable_iSup (fun (i : s) ↦ hf i i.2)
 #align measurable_bsupr measurable_biSup
 
-theorem aemeasurable_biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
+lemma aemeasurable_biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i ∈ s, f i b) μ := by
   let g : ι → δ → α := fun i ↦ if hi : i ∈ s then (hf i hi).mk (f i) else fun _b ↦ sSup ∅
   have : ∀ i ∈ s, Measurable (g i) := by
@@ -1515,12 +1515,12 @@ theorem aemeasurable_biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ �
   exact iSup_congr fun i => iSup_congr (hb i)
 #align ae_measurable_bsupr aemeasurable_biSup
 
-theorem measurable_biInf {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
+lemma measurable_biInf {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨅ i ∈ s, f i b :=
   measurable_biSup (α := αᵒᵈ) s hs hf
 #align measurable_binfi measurable_biInf
 
-theorem aemeasurable_biInf {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
+lemma aemeasurable_biInf {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨅ i ∈ s, f i b) μ :=
   aemeasurable_biSup (α := αᵒᵈ) s hs hf
 #align ae_measurable_binfi aemeasurable_biInf
@@ -1612,7 +1612,7 @@ def Homemorph.toMeasurableEquiv (h : α ≃ₜ β) : α ≃ᵐ β where
   measurable_invFun := h.continuous_invFun.measurable
 #align homemorph.to_measurable_equiv Homemorph.toMeasurableEquiv
 
-protected theorem IsFiniteMeasureOnCompacts.map (μ : Measure α) [IsFiniteMeasureOnCompacts μ]
+protected lemma IsFiniteMeasureOnCompacts.map (μ : Measure α) [IsFiniteMeasureOnCompacts μ]
     (f : α ≃ₜ β) : IsFiniteMeasureOnCompacts (Measure.map f μ) := by
   refine ⟨fun K hK ↦ ?_⟩
   rw [← Homeomorph.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
@@ -1733,33 +1733,33 @@ variable [MeasurableSpace β] {x : α} {ε : ℝ}
 open Metric
 
 @[measurability]
-theorem measurableSet_ball : MeasurableSet (Metric.ball x ε) :=
+lemma measurableSet_ball : MeasurableSet (Metric.ball x ε) :=
   Metric.isOpen_ball.measurableSet
 #align measurable_set_ball measurableSet_ball
 
 @[measurability]
-theorem measurableSet_closedBall : MeasurableSet (Metric.closedBall x ε) :=
+lemma measurableSet_closedBall : MeasurableSet (Metric.closedBall x ε) :=
   Metric.isClosed_ball.measurableSet
 #align measurable_set_closed_ball measurableSet_closedBall
 
 @[measurability]
-theorem measurable_infDist {s : Set α} : Measurable fun x => infDist x s :=
+lemma measurable_infDist {s : Set α} : Measurable fun x => infDist x s :=
   (continuous_infDist_pt s).measurable
 #align measurable_inf_dist measurable_infDist
 
 @[measurability]
-theorem Measurable.infDist {f : β → α} (hf : Measurable f) {s : Set α} :
+lemma Measurable.infDist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infDist (f x) s :=
   measurable_infDist.comp hf
 #align measurable.inf_dist Measurable.infDist
 
 @[measurability]
-theorem measurable_infNndist {s : Set α} : Measurable fun x => infNndist x s :=
+lemma measurable_infNndist {s : Set α} : Measurable fun x => infNndist x s :=
   (continuous_infNndist_pt s).measurable
 #align measurable_inf_nndist measurable_infNndist
 
 @[measurability]
-theorem Measurable.infNndist {f : β → α} (hf : Measurable f) {s : Set α} :
+lemma Measurable.infNndist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infNndist (f x) s :=
   measurable_infNndist.comp hf
 #align measurable.inf_nndist Measurable.infNndist
@@ -1769,23 +1769,23 @@ section
 variable [SecondCountableTopology α]
 
 @[measurability]
-theorem measurable_dist : Measurable fun p : α × α => dist p.1 p.2 :=
+lemma measurable_dist : Measurable fun p : α × α => dist p.1 p.2 :=
   continuous_dist.measurable
 #align measurable_dist measurable_dist
 
 @[measurability]
-theorem Measurable.dist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
+lemma Measurable.dist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => dist (f b) (g b) :=
   (@continuous_dist α _).measurable2 hf hg
 #align measurable.dist Measurable.dist
 
 @[measurability]
-theorem measurable_nndist : Measurable fun p : α × α => nndist p.1 p.2 :=
+lemma measurable_nndist : Measurable fun p : α × α => nndist p.1 p.2 :=
   continuous_nndist.measurable
 #align measurable_nndist measurable_nndist
 
 @[measurability]
-theorem Measurable.nndist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
+lemma Measurable.nndist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => nndist (f b) (g b) :=
   (@continuous_nndist α _).measurable2 hf hg
 #align measurable.nndist Measurable.nndist
@@ -1802,27 +1802,27 @@ variable [MeasurableSpace β] {x : α} {ε : ℝ≥0∞}
 open EMetric
 
 @[measurability]
-theorem measurableSet_eball : MeasurableSet (EMetric.ball x ε) :=
+lemma measurableSet_eball : MeasurableSet (EMetric.ball x ε) :=
   EMetric.isOpen_ball.measurableSet
 #align measurable_set_eball measurableSet_eball
 
 @[measurability]
-theorem measurable_edist_right : Measurable (edist x) :=
+lemma measurable_edist_right : Measurable (edist x) :=
   (continuous_const.edist continuous_id).measurable
 #align measurable_edist_right measurable_edist_right
 
 @[measurability]
-theorem measurable_edist_left : Measurable fun y => edist y x :=
+lemma measurable_edist_left : Measurable fun y => edist y x :=
   (continuous_id.edist continuous_const).measurable
 #align measurable_edist_left measurable_edist_left
 
 @[measurability]
-theorem measurable_infEdist {s : Set α} : Measurable fun x => infEdist x s :=
+lemma measurable_infEdist {s : Set α} : Measurable fun x => infEdist x s :=
   continuous_infEdist.measurable
 #align measurable_inf_edist measurable_infEdist
 
 @[measurability]
-theorem Measurable.infEdist {f : β → α} (hf : Measurable f) {s : Set α} :
+lemma Measurable.infEdist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infEdist (f x) s :=
   measurable_infEdist.comp hf
 #align measurable.inf_edist Measurable.infEdist
@@ -1876,18 +1876,18 @@ theorem tendsto_measure_thickening_of_isClosed {μ : Measure α} {s : Set α}
 variable [SecondCountableTopology α]
 
 @[measurability]
-theorem measurable_edist : Measurable fun p : α × α => edist p.1 p.2 :=
+lemma measurable_edist : Measurable fun p : α × α => edist p.1 p.2 :=
   continuous_edist.measurable
 #align measurable_edist measurable_edist
 
 @[measurability]
-theorem Measurable.edist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
+lemma Measurable.edist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => edist (f b) (g b) :=
   (@continuous_edist α _).measurable2 hf hg
 #align measurable.edist Measurable.edist
 
 @[measurability]
-theorem AEMeasurable.edist {f g : β → α} {μ : Measure β} (hf : AEMeasurable f μ)
+lemma AEMeasurable.edist {f g : β → α} {μ : Measure β} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun a => edist (f a) (g a)) μ :=
   (@continuous_edist α _).aemeasurable2 hf hg
 #align ae_measurable.edist AEMeasurable.edist
@@ -1929,12 +1929,12 @@ namespace Real
 
 open MeasurableSpace MeasureTheory
 
-theorem borel_eq_generateFrom_Ioo_rat :
+lemma borel_eq_generateFrom_Ioo_rat :
     borel ℝ = .generateFrom (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) :=
   isTopologicalBasis_Ioo_rat.borel_eq_generateFrom
 #align real.borel_eq_generate_from_Ioo_rat Real.borel_eq_generateFrom_Ioo_rat
 
-theorem borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iio (a : ℝ)}) := by
+lemma borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iio (a : ℝ)}) := by
   rw [borel_eq_generateFrom_Iio]
   refine le_antisymm
     (generateFrom_le ?_)
@@ -1946,7 +1946,7 @@ theorem borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
   exact MeasurableSet.biUnion (to_countable _)
     fun b _ => GenerateMeasurable.basic (Iio (b : ℝ)) (by simp)
 
-theorem borel_eq_generateFrom_Ioi_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
+lemma borel_eq_generateFrom_Ioi_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
   rw [borel_eq_generateFrom_Ioi]
   refine le_antisymm
     (generateFrom_le ?_)
@@ -1958,7 +1958,7 @@ theorem borel_eq_generateFrom_Ioi_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
   exact MeasurableSet.biUnion (to_countable _)
     fun b _ => GenerateMeasurable.basic (Ioi (b : ℝ)) (by simp)
 
-theorem borel_eq_generateFrom_Iic_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iic (a : ℝ)}) := by
+lemma borel_eq_generateFrom_Iic_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iic (a : ℝ)}) := by
   rw [borel_eq_generateFrom_Ioi_rat, iUnion_singleton_eq_range, iUnion_singleton_eq_range]
   refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_) <;>
   rintro _ ⟨q, rfl⟩ <;>
@@ -1966,7 +1966,7 @@ theorem borel_eq_generateFrom_Iic_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
   [rw [← compl_Iic]; rw [← compl_Ioi]] <;>
   exact MeasurableSet.compl (GenerateMeasurable.basic _ (mem_range_self q))
 
-theorem borel_eq_generateFrom_Ici_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Ici (a : ℝ)}) := by
+lemma borel_eq_generateFrom_Ici_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Ici (a : ℝ)}) := by
   rw [borel_eq_generateFrom_Iio_rat, iUnion_singleton_eq_range, iUnion_singleton_eq_range]
   refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_) <;>
   rintro _ ⟨q, rfl⟩ <;>
@@ -1974,29 +1974,29 @@ theorem borel_eq_generateFrom_Ici_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
   [rw [← compl_Ici]; rw [← compl_Iio]] <;>
   exact MeasurableSet.compl (GenerateMeasurable.basic _ (mem_range_self q))
 
-theorem isPiSystem_Ioo_rat :
+lemma isPiSystem_Ioo_rat :
     IsPiSystem (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) := by
   convert isPiSystem_Ioo ((↑) : ℚ → ℝ) ((↑) : ℚ → ℝ)
   ext x
   simp [eq_comm]
 #align real.is_pi_system_Ioo_rat Real.isPiSystem_Ioo_rat
 
-theorem isPiSystem_Iio_rat : IsPiSystem (⋃ a : ℚ, {Iio (a : ℝ)}) := by
+lemma isPiSystem_Iio_rat : IsPiSystem (⋃ a : ℚ, {Iio (a : ℝ)}) := by
   convert isPiSystem_image_Iio (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
-theorem isPiSystem_Ioi_rat : IsPiSystem (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
+lemma isPiSystem_Ioi_rat : IsPiSystem (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
   convert isPiSystem_image_Ioi (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
-theorem isPiSystem_Iic_rat : IsPiSystem (⋃ a : ℚ, {Iic (a : ℝ)}) := by
+lemma isPiSystem_Iic_rat : IsPiSystem (⋃ a : ℚ, {Iic (a : ℝ)}) := by
   convert isPiSystem_image_Iic (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
-theorem isPiSystem_Ici_rat : IsPiSystem (⋃ a : ℚ, {Ici (a : ℝ)}) := by
+lemma isPiSystem_Ici_rat : IsPiSystem (⋃ a : ℚ, {Ici (a : ℝ)}) := by
   convert isPiSystem_image_Ici (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
@@ -2019,7 +2019,7 @@ def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
         (le_abs_self x).trans_lt (Nat.lt_floor_add_one _)⟩
 #align real.finite_spanning_sets_in_Ioo_rat Real.finiteSpanningSetsInIooRat
 
-theorem measure_ext_Ioo_rat {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ]
+lemma measure_ext_Ioo_rat {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ]
     (h : ∀ a b : ℚ, μ (Ioo a b) = ν (Ioo a b)) : μ = ν :=
   (finiteSpanningSetsInIooRat μ).ext borel_eq_generateFrom_Ioo_rat isPiSystem_Ioo_rat <| by
     simp only [mem_iUnion, mem_singleton_iff]
@@ -2032,58 +2032,58 @@ end Real
 variable [MeasurableSpace α]
 
 @[measurability]
-theorem measurable_real_toNNReal : Measurable Real.toNNReal :=
+lemma measurable_real_toNNReal : Measurable Real.toNNReal :=
   continuous_real_toNNReal.measurable
 #align measurable_real_to_nnreal measurable_real_toNNReal
 
 @[measurability]
-theorem Measurable.real_toNNReal {f : α → ℝ} (hf : Measurable f) :
+lemma Measurable.real_toNNReal {f : α → ℝ} (hf : Measurable f) :
     Measurable fun x => Real.toNNReal (f x) :=
   measurable_real_toNNReal.comp hf
 #align measurable.real_to_nnreal Measurable.real_toNNReal
 
 @[measurability]
-theorem AEMeasurable.real_toNNReal {f : α → ℝ} {μ : Measure α} (hf : AEMeasurable f μ) :
+lemma AEMeasurable.real_toNNReal {f : α → ℝ} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => Real.toNNReal (f x)) μ :=
   measurable_real_toNNReal.comp_aemeasurable hf
 #align ae_measurable.real_to_nnreal AEMeasurable.real_toNNReal
 
 @[measurability]
-theorem measurable_coe_nnreal_real : Measurable ((↑) : ℝ≥0 → ℝ) :=
+lemma measurable_coe_nnreal_real : Measurable ((↑) : ℝ≥0 → ℝ) :=
   NNReal.continuous_coe.measurable
 #align measurable_coe_nnreal_real measurable_coe_nnreal_real
 
 @[measurability]
-theorem Measurable.coe_nnreal_real {f : α → ℝ≥0} (hf : Measurable f) :
+lemma Measurable.coe_nnreal_real {f : α → ℝ≥0} (hf : Measurable f) :
     Measurable fun x => (f x : ℝ) :=
   measurable_coe_nnreal_real.comp hf
 #align measurable.coe_nnreal_real Measurable.coe_nnreal_real
 
 @[measurability]
-theorem AEMeasurable.coe_nnreal_real {f : α → ℝ≥0} {μ : Measure α} (hf : AEMeasurable f μ) :
+lemma AEMeasurable.coe_nnreal_real {f : α → ℝ≥0} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => (f x : ℝ)) μ :=
   measurable_coe_nnreal_real.comp_aemeasurable hf
 #align ae_measurable.coe_nnreal_real AEMeasurable.coe_nnreal_real
 
 @[measurability]
-theorem measurable_coe_nnreal_ennreal : Measurable ((↑) : ℝ≥0 → ℝ≥0∞) :=
+lemma measurable_coe_nnreal_ennreal : Measurable ((↑) : ℝ≥0 → ℝ≥0∞) :=
   ENNReal.continuous_coe.measurable
 #align measurable_coe_nnreal_ennreal measurable_coe_nnreal_ennreal
 
 @[measurability]
-theorem Measurable.coe_nnreal_ennreal {f : α → ℝ≥0} (hf : Measurable f) :
+lemma Measurable.coe_nnreal_ennreal {f : α → ℝ≥0} (hf : Measurable f) :
     Measurable fun x => (f x : ℝ≥0∞) :=
   ENNReal.continuous_coe.measurable.comp hf
 #align measurable.coe_nnreal_ennreal Measurable.coe_nnreal_ennreal
 
 @[measurability]
-theorem AEMeasurable.coe_nnreal_ennreal {f : α → ℝ≥0} {μ : Measure α} (hf : AEMeasurable f μ) :
+lemma AEMeasurable.coe_nnreal_ennreal {f : α → ℝ≥0} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => (f x : ℝ≥0∞)) μ :=
   ENNReal.continuous_coe.measurable.comp_aemeasurable hf
 #align ae_measurable.coe_nnreal_ennreal AEMeasurable.coe_nnreal_ennreal
 
 @[measurability]
-theorem Measurable.ennreal_ofReal {f : α → ℝ} (hf : Measurable f) :
+lemma Measurable.ennreal_ofReal {f : α → ℝ} (hf : Measurable f) :
     Measurable fun x => ENNReal.ofReal (f x) :=
   ENNReal.continuous_ofReal.measurable.comp hf
 #align measurable.ennreal_of_real Measurable.ennreal_ofReal
@@ -2094,13 +2094,13 @@ lemma AEMeasurable.ennreal_ofReal {f : α → ℝ} {μ : Measure α} (hf : AEMea
   ENNReal.continuous_ofReal.measurable.comp_aemeasurable hf
 
 @[simp, norm_cast]
-theorem measurable_coe_nnreal_real_iff {f : α → ℝ≥0} :
+lemma measurable_coe_nnreal_real_iff {f : α → ℝ≥0} :
     Measurable (fun x => f x : α → ℝ) ↔ Measurable f :=
   ⟨fun h => by simpa only [Real.toNNReal_coe] using h.real_toNNReal, Measurable.coe_nnreal_real⟩
 #align measurable_coe_nnreal_real_iff measurable_coe_nnreal_real_iff
 
 @[simp, norm_cast]
-theorem aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} :
+lemma aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} :
     AEMeasurable (fun x => f x : α → ℝ) μ ↔ AEMeasurable f μ :=
   ⟨fun h => by simpa only [Real.toNNReal_coe] using h.real_toNNReal, AEMeasurable.coe_nnreal_real⟩
 #align ae_measurable_coe_nnreal_real_iff aemeasurable_coe_nnreal_real_iff
@@ -2115,7 +2115,7 @@ def MeasurableEquiv.ennrealEquivNNReal : { r : ℝ≥0∞ | r ≠ ∞ } ≃ᵐ �
 
 namespace ENNReal
 
-theorem measurable_of_measurable_nnreal {f : ℝ≥0∞ → α} (h : Measurable fun p : ℝ≥0 => f p) :
+lemma measurable_of_measurable_nnreal {f : ℝ≥0∞ → α} (h : Measurable fun p : ℝ≥0 => f p) :
     Measurable f :=
   measurable_of_measurable_on_compl_singleton ∞
     (MeasurableEquiv.ennrealEquivNNReal.symm.measurable_comp_iff.1 h)
@@ -2131,7 +2131,7 @@ def ennrealEquivSum : ℝ≥0∞ ≃ᵐ Sum ℝ≥0 Unit :=
 
 open Function (uncurry)
 
-theorem measurable_of_measurable_nnreal_prod [MeasurableSpace β] [MeasurableSpace γ]
+lemma measurable_of_measurable_nnreal_prod [MeasurableSpace β] [MeasurableSpace γ]
     {f : ℝ≥0∞ × β → γ} (H₁ : Measurable fun p : ℝ≥0 × β => f (p.1, p.2))
     (H₂ : Measurable fun x => f (∞, x)) : Measurable f :=
   let e : ℝ≥0∞ × β ≃ᵐ Sum (ℝ≥0 × β) (Unit × β) :=
@@ -2140,7 +2140,7 @@ theorem measurable_of_measurable_nnreal_prod [MeasurableSpace β] [MeasurableSpa
   e.symm.measurable_comp_iff.1 <| measurable_sum H₁ (H₂.comp measurable_id.snd)
 #align ennreal.measurable_of_measurable_nnreal_prod ENNReal.measurable_of_measurable_nnreal_prod
 
-theorem measurable_of_measurable_nnreal_nnreal [MeasurableSpace β] {f : ℝ≥0∞ × ℝ≥0∞ → β}
+lemma measurable_of_measurable_nnreal_nnreal [MeasurableSpace β] {f : ℝ≥0∞ × ℝ≥0∞ → β}
     (h₁ : Measurable fun p : ℝ≥0 × ℝ≥0 => f (p.1, p.2)) (h₂ : Measurable fun r : ℝ≥0 => f (∞, r))
     (h₃ : Measurable fun r : ℝ≥0 => f (r, ∞)) : Measurable f :=
   measurable_of_measurable_nnreal_prod
@@ -2149,17 +2149,17 @@ theorem measurable_of_measurable_nnreal_nnreal [MeasurableSpace β] {f : ℝ≥0
 #align ennreal.measurable_of_measurable_nnreal_nnreal ENNReal.measurable_of_measurable_nnreal_nnreal
 
 @[measurability]
-theorem measurable_ofReal : Measurable ENNReal.ofReal :=
+lemma measurable_ofReal : Measurable ENNReal.ofReal :=
   ENNReal.continuous_ofReal.measurable
 #align ennreal.measurable_of_real ENNReal.measurable_ofReal
 
 @[measurability]
-theorem measurable_toReal : Measurable ENNReal.toReal :=
+lemma measurable_toReal : Measurable ENNReal.toReal :=
   ENNReal.measurable_of_measurable_nnreal measurable_coe_nnreal_real
 #align ennreal.measurable_to_real ENNReal.measurable_toReal
 
 @[measurability]
-theorem measurable_toNNReal : Measurable ENNReal.toNNReal :=
+lemma measurable_toNNReal : Measurable ENNReal.toNNReal :=
   ENNReal.measurable_of_measurable_nnreal measurable_id
 #align ennreal.measurable_to_nnreal ENNReal.measurable_toNNReal
 
@@ -2248,37 +2248,37 @@ lemma aemeasurable_of_tendsto {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥
 end ENNReal
 
 @[measurability]
-theorem Measurable.ennreal_toNNReal {f : α → ℝ≥0∞} (hf : Measurable f) :
+lemma Measurable.ennreal_toNNReal {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x => (f x).toNNReal :=
   ENNReal.measurable_toNNReal.comp hf
 #align measurable.ennreal_to_nnreal Measurable.ennreal_toNNReal
 
 @[measurability]
-theorem AEMeasurable.ennreal_toNNReal {f : α → ℝ≥0∞} {μ : Measure α} (hf : AEMeasurable f μ) :
+lemma AEMeasurable.ennreal_toNNReal {f : α → ℝ≥0∞} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => (f x).toNNReal) μ :=
   ENNReal.measurable_toNNReal.comp_aemeasurable hf
 #align ae_measurable.ennreal_to_nnreal AEMeasurable.ennreal_toNNReal
 
 @[simp, norm_cast]
-theorem measurable_coe_nnreal_ennreal_iff {f : α → ℝ≥0} :
+lemma measurable_coe_nnreal_ennreal_iff {f : α → ℝ≥0} :
     (Measurable fun x => (f x : ℝ≥0∞)) ↔ Measurable f :=
   ⟨fun h => h.ennreal_toNNReal, fun h => h.coe_nnreal_ennreal⟩
 #align measurable_coe_nnreal_ennreal_iff measurable_coe_nnreal_ennreal_iff
 
 @[simp, norm_cast]
-theorem aemeasurable_coe_nnreal_ennreal_iff {f : α → ℝ≥0} {μ : Measure α} :
+lemma aemeasurable_coe_nnreal_ennreal_iff {f : α → ℝ≥0} {μ : Measure α} :
     AEMeasurable (fun x => (f x : ℝ≥0∞)) μ ↔ AEMeasurable f μ :=
   ⟨fun h => h.ennreal_toNNReal, fun h => h.coe_nnreal_ennreal⟩
 #align ae_measurable_coe_nnreal_ennreal_iff aemeasurable_coe_nnreal_ennreal_iff
 
 @[measurability]
-theorem Measurable.ennreal_toReal {f : α → ℝ≥0∞} (hf : Measurable f) :
+lemma Measurable.ennreal_toReal {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x => ENNReal.toReal (f x) :=
   ENNReal.measurable_toReal.comp hf
 #align measurable.ennreal_to_real Measurable.ennreal_toReal
 
 @[measurability]
-theorem AEMeasurable.ennreal_toReal {f : α → ℝ≥0∞} {μ : Measure α} (hf : AEMeasurable f μ) :
+lemma AEMeasurable.ennreal_toReal {f : α → ℝ≥0∞} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => ENNReal.toReal (f x)) μ :=
   ENNReal.measurable_toReal.comp_aemeasurable hf
 #align ae_measurable.ennreal_to_real AEMeasurable.ennreal_toReal
@@ -2293,21 +2293,21 @@ theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0�
 #align measurable.ennreal_tsum Measurable.ennreal_tsum
 
 @[measurability]
-theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
+lemma Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable (∑' i, f i) := by
   convert Measurable.ennreal_tsum h with x
   exact tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 #align measurable.ennreal_tsum' Measurable.ennreal_tsum'
 
 @[measurability]
-theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (h : ∀ i, Measurable (f i)) :
+lemma Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (h : ∀ i, Measurable (f i)) :
     Measurable fun x => ∑' i, f i x := by
   simp_rw [NNReal.tsum_eq_toNNReal_tsum]
   exact (Measurable.ennreal_tsum fun i => (h i).coe_nnreal_ennreal).ennreal_toNNReal
 #align measurable.nnreal_tsum Measurable.nnreal_tsum
 
 @[measurability]
-theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
+lemma AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
     (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∑' i, f i x) μ := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
   apply aemeasurable_iSup
@@ -2315,7 +2315,7 @@ theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0
 #align ae_measurable.ennreal_tsum AEMeasurable.ennreal_tsum
 
 @[measurability]
-theorem AEMeasurable.nnreal_tsum {α : Type*} [MeasurableSpace α] {ι : Type*} [Countable ι]
+lemma AEMeasurable.nnreal_tsum {α : Type*} [MeasurableSpace α] {ι : Type*} [Countable ι]
     {f : ι → α → NNReal} {μ : MeasureTheory.Measure α} (h : ∀ i : ι, AEMeasurable (f i) μ) :
     AEMeasurable (fun x : α => ∑' i : ι, f i x) μ := by
   simp_rw [NNReal.tsum_eq_toNNReal_tsum]
@@ -2323,18 +2323,18 @@ theorem AEMeasurable.nnreal_tsum {α : Type*} [MeasurableSpace α] {ι : Type*} 
 #align ae_measurable.nnreal_tsum AEMeasurable.nnreal_tsum
 
 @[measurability]
-theorem measurable_coe_real_ereal : Measurable ((↑) : ℝ → EReal) :=
+lemma measurable_coe_real_ereal : Measurable ((↑) : ℝ → EReal) :=
   continuous_coe_real_ereal.measurable
 #align measurable_coe_real_ereal measurable_coe_real_ereal
 
 @[measurability]
-theorem Measurable.coe_real_ereal {f : α → ℝ} (hf : Measurable f) :
+lemma Measurable.coe_real_ereal {f : α → ℝ} (hf : Measurable f) :
     Measurable fun x => (f x : EReal) :=
   measurable_coe_real_ereal.comp hf
 #align measurable.coe_real_ereal Measurable.coe_real_ereal
 
 @[measurability]
-theorem AEMeasurable.coe_real_ereal {f : α → ℝ} {μ : Measure α} (hf : AEMeasurable f μ) :
+lemma AEMeasurable.coe_real_ereal {f : α → ℝ} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => (f x : EReal)) μ :=
   measurable_coe_real_ereal.comp_aemeasurable hf
 #align ae_measurable.coe_real_ereal AEMeasurable.coe_real_ereal
@@ -2344,42 +2344,42 @@ def MeasurableEquiv.erealEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ᵐ ℝ :=
   EReal.neBotTopHomeomorphReal.toMeasurableEquiv
 #align measurable_equiv.ereal_equiv_real MeasurableEquiv.erealEquivReal
 
-theorem EReal.measurable_of_measurable_real {f : EReal → α} (h : Measurable fun p : ℝ => f p) :
+lemma EReal.measurable_of_measurable_real {f : EReal → α} (h : Measurable fun p : ℝ => f p) :
     Measurable f :=
   measurable_of_measurable_on_compl_finite {⊥, ⊤} (by simp)
     (MeasurableEquiv.erealEquivReal.symm.measurable_comp_iff.1 h)
 #align ereal.measurable_of_measurable_real EReal.measurable_of_measurable_real
 
 @[measurability]
-theorem measurable_ereal_toReal : Measurable EReal.toReal :=
+lemma measurable_ereal_toReal : Measurable EReal.toReal :=
   EReal.measurable_of_measurable_real (by simpa using measurable_id)
 #align measurable_ereal_to_real measurable_ereal_toReal
 
 @[measurability]
-theorem Measurable.ereal_toReal {f : α → EReal} (hf : Measurable f) :
+lemma Measurable.ereal_toReal {f : α → EReal} (hf : Measurable f) :
     Measurable fun x => (f x).toReal :=
   measurable_ereal_toReal.comp hf
 #align measurable.ereal_to_real Measurable.ereal_toReal
 
 @[measurability]
-theorem AEMeasurable.ereal_toReal {f : α → EReal} {μ : Measure α} (hf : AEMeasurable f μ) :
+lemma AEMeasurable.ereal_toReal {f : α → EReal} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => (f x).toReal) μ :=
   measurable_ereal_toReal.comp_aemeasurable hf
 #align ae_measurable.ereal_to_real AEMeasurable.ereal_toReal
 
 @[measurability]
-theorem measurable_coe_ennreal_ereal : Measurable ((↑) : ℝ≥0∞ → EReal) :=
+lemma measurable_coe_ennreal_ereal : Measurable ((↑) : ℝ≥0∞ → EReal) :=
   continuous_coe_ennreal_ereal.measurable
 #align measurable_coe_ennreal_ereal measurable_coe_ennreal_ereal
 
 @[measurability]
-theorem Measurable.coe_ereal_ennreal {f : α → ℝ≥0∞} (hf : Measurable f) :
+lemma Measurable.coe_ereal_ennreal {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x => (f x : EReal) :=
   measurable_coe_ennreal_ereal.comp hf
 #align measurable.coe_ereal_ennreal Measurable.coe_ereal_ennreal
 
 @[measurability]
-theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α} (hf : AEMeasurable f μ) :
+lemma AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => (f x : EReal)) μ :=
   measurable_coe_ennreal_ereal.comp_aemeasurable hf
 #align ae_measurable.coe_ereal_ennreal AEMeasurable.coe_ereal_ennreal
@@ -2448,49 +2448,49 @@ section NormedAddCommGroup
 variable [NormedAddCommGroup α] [OpensMeasurableSpace α] [MeasurableSpace β]
 
 @[measurability]
-theorem measurable_norm : Measurable (norm : α → ℝ) :=
+lemma measurable_norm : Measurable (norm : α → ℝ) :=
   continuous_norm.measurable
 #align measurable_norm measurable_norm
 
 @[measurability]
-theorem Measurable.norm {f : β → α} (hf : Measurable f) : Measurable fun a => norm (f a) :=
+lemma Measurable.norm {f : β → α} (hf : Measurable f) : Measurable fun a => norm (f a) :=
   measurable_norm.comp hf
 #align measurable.norm Measurable.norm
 
 @[measurability]
-theorem AEMeasurable.norm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
+lemma AEMeasurable.norm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => norm (f a)) μ :=
   measurable_norm.comp_aemeasurable hf
 #align ae_measurable.norm AEMeasurable.norm
 
 @[measurability]
-theorem measurable_nnnorm : Measurable (nnnorm : α → ℝ≥0) :=
+lemma measurable_nnnorm : Measurable (nnnorm : α → ℝ≥0) :=
   continuous_nnnorm.measurable
 #align measurable_nnnorm measurable_nnnorm
 
 @[measurability]
-theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
+lemma Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
   measurable_nnnorm.comp hf
 #align measurable.nnnorm Measurable.nnnorm
 
 @[measurability]
-theorem AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
+lemma AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => ‖f a‖₊) μ :=
   measurable_nnnorm.comp_aemeasurable hf
 #align ae_measurable.nnnorm AEMeasurable.nnnorm
 
 @[measurability]
-theorem measurable_ennnorm : Measurable fun x : α => (‖x‖₊ : ℝ≥0∞) :=
+lemma measurable_ennnorm : Measurable fun x : α => (‖x‖₊ : ℝ≥0∞) :=
   measurable_nnnorm.coe_nnreal_ennreal
 #align measurable_ennnorm measurable_ennnorm
 
 @[measurability]
-theorem Measurable.ennnorm {f : β → α} (hf : Measurable f) : Measurable fun a => (‖f a‖₊ : ℝ≥0∞) :=
+lemma Measurable.ennnorm {f : β → α} (hf : Measurable f) : Measurable fun a => (‖f a‖₊ : ℝ≥0∞) :=
   hf.nnnorm.coe_nnreal_ennreal
 #align measurable.ennnorm Measurable.ennnorm
 
 @[measurability]
-theorem AEMeasurable.ennnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
+lemma AEMeasurable.ennnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => (‖f a‖₊ : ℝ≥0∞)) μ :=
   measurable_ennnorm.comp_aemeasurable hf
 #align ae_measurable.ennnorm AEMeasurable.ennnorm

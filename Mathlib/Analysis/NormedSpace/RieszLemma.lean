@@ -105,7 +105,7 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
     _ = ‖d • x - y‖ := by rw [yy', ← smul_sub, norm_smul]
 #align riesz_lemma_of_norm_lt riesz_lemma_of_norm_lt
 
-theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :
+lemma Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :
     closedBall x (infDist x sᶜ) ⊆ closure s := by
   rcases eq_or_ne (infDist x sᶜ) 0 with h₀ | h₀
   · rw [h₀, closedBall_zero']

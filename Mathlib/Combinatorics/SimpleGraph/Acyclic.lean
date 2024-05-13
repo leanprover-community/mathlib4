@@ -65,7 +65,7 @@ variable {G}
 
 @[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
 
-theorem isAcyclic_iff_forall_adj_isBridge :
+lemma isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
   simp_rw [isBridge_iff_adj_and_forall_cycle_not_mem]
   constructor
@@ -80,12 +80,12 @@ theorem isAcyclic_iff_forall_adj_isBridge :
       apply List.mem_cons_self
 #align simple_graph.is_acyclic_iff_forall_adj_is_bridge SimpleGraph.isAcyclic_iff_forall_adj_isBridge
 
-theorem isAcyclic_iff_forall_edge_isBridge :
+lemma isAcyclic_iff_forall_edge_isBridge :
     G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ (G.edgeSet) → G.IsBridge e := by
   simp [isAcyclic_iff_forall_adj_isBridge, Sym2.forall]
 #align simple_graph.is_acyclic_iff_forall_edge_is_bridge SimpleGraph.isAcyclic_iff_forall_edge_isBridge
 
-theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
+lemma IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
     p = q := by
   obtain ⟨p, hp⟩ := p
   obtain ⟨q, hq⟩ := q
@@ -115,7 +115,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
       exact absurd (Walk.fst_mem_support_of_mem_edges _ h) hp.2
 #align simple_graph.is_acyclic.path_unique SimpleGraph.IsAcyclic.path_unique
 
-theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic := by
+lemma isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic := by
   intro v c hc
   simp only [Walk.isCycle_def, Ne] at hc
   cases c with
@@ -127,11 +127,11 @@ theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) :
     simp [h] at hc
 #align simple_graph.is_acyclic_of_path_unique SimpleGraph.isAcyclic_of_path_unique
 
-theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.Path v w), p = q :=
+lemma isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.Path v w), p = q :=
   ⟨IsAcyclic.path_unique, isAcyclic_of_path_unique⟩
 #align simple_graph.is_acyclic_iff_path_unique SimpleGraph.isAcyclic_iff_path_unique
 
-theorem isTree_iff_existsUnique_path :
+lemma isTree_iff_existsUnique_path :
     G.IsTree ↔ Nonempty V ∧ ∀ v w : V, ∃! p : G.Walk v w, p.IsPath := by
   classical
   rw [isTree_iff, isAcyclic_iff_path_unique]

@@ -212,7 +212,7 @@ variable [HasZeroMorphisms V]
 instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by aesop_cat⟩
 
 @[simp]
-theorem zero_hom {X Y : Action V G} : (0 : X ⟶ Y).hom = 0 :=
+lemma zero_hom {X Y : Action V G} : (0 : X ⟶ Y).hom = 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.zero_hom Action.zero_hom
@@ -271,19 +271,19 @@ set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence_additive Action.functorCategoryEquivalence_additive
 
 @[simp]
-theorem neg_hom {X Y : Action V G} (f : X ⟶ Y) : (-f).hom = -f.hom :=
+lemma neg_hom {X Y : Action V G} (f : X ⟶ Y) : (-f).hom = -f.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.neg_hom Action.neg_hom
 
 @[simp]
-theorem add_hom {X Y : Action V G} (f g : X ⟶ Y) : (f + g).hom = f.hom + g.hom :=
+lemma add_hom {X Y : Action V G} (f g : X ⟶ Y) : (f + g).hom = f.hom + g.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.add_hom Action.add_hom
 
 @[simp]
-theorem sum_hom {X Y : Action V G} {ι : Type*} (f : ι → (X ⟶ Y)) (s : Finset ι) :
+lemma sum_hom {X Y : Action V G} {ι : Type*} (f : ι → (X ⟶ Y)) (s : Finset ι) :
     (s.sum f).hom = s.sum fun i => (f i).hom :=
   (forget V G).map_sum f s
 set_option linter.uppercaseLean3 false in
@@ -321,7 +321,7 @@ set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence_linear Action.functorCategoryEquivalence_linear
 
 @[simp]
-theorem smul_hom {X Y : Action V G} (r : R) (f : X ⟶ Y) : (r • f).hom = r • f.hom :=
+lemma smul_hom {X Y : Action V G} (r : R) (f : X ⟶ Y) : (r • f).hom = r • f.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.smul_hom Action.smul_hom

@@ -46,7 +46,7 @@ def noncommCoprod : M × N →ₙ* P where
   map_mul' mn mn' := by simpa using (comm _ _).mul_mul_mul_comm _ _
 
 @[to_additive]
-theorem comp_noncommCoprod {Q : Type*} [Semigroup Q] (h : P →ₙ* Q) :
+lemma comp_noncommCoprod {Q : Type*} [Semigroup Q] (h : P →ₙ* Q) :
     h.comp (f.noncommCoprod g comm) =
       (h.comp f).noncommCoprod (h.comp g) (fun m n ↦ (comm m n).map h) :=
   ext fun _ => map_mul h _ _
@@ -73,26 +73,26 @@ def noncommCoprod : M × N →* P where
   __ := f.toMulHom.noncommCoprod g.toMulHom comm
 
 @[to_additive (attr := simp)]
-theorem noncommCoprod_comp_inl : (f.noncommCoprod g comm).comp (inl M N) = f :=
+lemma noncommCoprod_comp_inl : (f.noncommCoprod g comm).comp (inl M N) = f :=
   ext fun x => by simp
 
 @[to_additive (attr := simp)]
-theorem noncommCoprod_comp_inr : (f.noncommCoprod g comm).comp (inr M N) = g :=
+lemma noncommCoprod_comp_inr : (f.noncommCoprod g comm).comp (inr M N) = g :=
   ext fun x => by simp
 
 @[to_additive (attr := simp)]
-theorem noncommCoprod_unique (f : M × N →* P) :
+lemma noncommCoprod_unique (f : M × N →* P) :
     (f.comp (inl M N)).noncommCoprod (f.comp (inr M N)) (fun _ _ => (commute_inl_inr _ _).map f)
       = f :=
   ext fun x => by simp [coprod_apply, inl_apply, inr_apply, ← map_mul]
 
 @[to_additive (attr := simp)]
-theorem noncommCoprod_inl_inr {M N : Type*} [Monoid M] [Monoid N]:
+lemma noncommCoprod_inl_inr {M N : Type*} [Monoid M] [Monoid N]:
     (inl M N).noncommCoprod (inr M N) commute_inl_inr = id (M × N) :=
   noncommCoprod_unique <| .id (M × N)
 
 @[to_additive]
-theorem comp_noncommCoprod {Q : Type*} [Monoid Q] (h : P →* Q) :
+lemma comp_noncommCoprod {Q : Type*} [Monoid Q] (h : P →* Q) :
     h.comp (f.noncommCoprod g comm) =
       (h.comp f).noncommCoprod (h.comp g) (fun m n ↦ (comm m n).map h) :=
   ext fun x => by simp

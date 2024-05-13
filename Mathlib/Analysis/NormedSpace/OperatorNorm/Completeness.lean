@@ -221,17 +221,17 @@ def extend : Fₗ →SL[σ₁₂] F :=
 
 -- Porting note: previously `(h_e.denseInducing h_dense)` was inferred.
 @[simp]
-theorem extend_eq (x : E) : extend f e h_dense h_e (e x) = f x :=
+lemma extend_eq (x : E) : extend f e h_dense h_e (e x) = f x :=
   DenseInducing.extend_eq (h_e.denseInducing h_dense) f.cont _
 #align continuous_linear_map.extend_eq ContinuousLinearMap.extend_eq
 
-theorem extend_unique (g : Fₗ →SL[σ₁₂] F) (H : g.comp e = f) : extend f e h_dense h_e = g :=
+lemma extend_unique (g : Fₗ →SL[σ₁₂] F) (H : g.comp e = f) : extend f e h_dense h_e = g :=
   ContinuousLinearMap.coeFn_injective <|
     uniformly_extend_unique h_e h_dense (ContinuousLinearMap.ext_iff.1 H) g.continuous
 #align continuous_linear_map.extend_unique ContinuousLinearMap.extend_unique
 
 @[simp]
-theorem extend_zero : extend (0 : E →SL[σ₁₂] F) e h_dense h_e = 0 :=
+lemma extend_zero : extend (0 : E →SL[σ₁₂] F) e h_dense h_e = 0 :=
   extend_unique _ _ _ _ _ (zero_comp _)
 #align continuous_linear_map.extend_zero ContinuousLinearMap.extend_zero
 

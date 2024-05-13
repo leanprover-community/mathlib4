@@ -36,7 +36,7 @@ theorem mem_ideal_span_monomial_image {x : MvPolynomial σ R} {s : Set (σ →�
   rfl
 #align mv_polynomial.mem_ideal_span_monomial_image MvPolynomial.mem_ideal_span_monomial_image
 
-theorem mem_ideal_span_monomial_image_iff_dvd {x : MvPolynomial σ R} {s : Set (σ →₀ ℕ)} :
+lemma mem_ideal_span_monomial_image_iff_dvd {x : MvPolynomial σ R} {s : Set (σ →₀ ℕ)} :
     x ∈ Ideal.span ((fun s => monomial s (1 : R)) '' s) ↔
       ∀ xi ∈ x.support, ∃ si ∈ s, monomial si 1 ∣ monomial xi (x.coeff xi) := by
   refine' mem_ideal_span_monomial_image.trans (forall₂_congr fun xi hxi => _)

@@ -270,7 +270,7 @@ end compWithZero
 
 section cancelDenoms
 
-theorem without_one_mul [MulOneClass M] {a b : M} (h : 1 * a = b) : a = b := by rwa [one_mul] at h
+lemma without_one_mul [MulOneClass M] {a b : M} (h : 1 * a = b) : a = b := by rwa [one_mul] at h
 
 /--
 `normalizeDenominatorsLHS h lhs` assumes that `h` is a proof of `lhs R 0`.

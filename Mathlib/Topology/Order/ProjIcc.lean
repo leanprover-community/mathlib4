@@ -21,13 +21,13 @@ open Set Filter Topology
 variable {α β γ : Type*} [LinearOrder α] [TopologicalSpace γ] {a b c : α} {h : a ≤ b}
 
 -- Porting note (#10756): new lemma
-protected theorem Filter.Tendsto.IccExtend (f : γ → Icc a b → β) {la : Filter α} {lb : Filter β}
+protected lemma Filter.Tendsto.IccExtend (f : γ → Icc a b → β) {la : Filter α} {lb : Filter β}
     {lc : Filter γ} (hf : Tendsto (↿f) (lc ×ˢ la.map (projIcc a b h)) lb) :
     Tendsto (↿(IccExtend h ∘ f)) (lc ×ˢ la) lb :=
   hf.comp <| tendsto_id.prod_map tendsto_map
 
 @[deprecated Filter.Tendsto.IccExtend]
-theorem Filter.Tendsto.IccExtend' (f : γ → Icc a b → β) {z : γ} {l : Filter α} {l' : Filter β}
+lemma Filter.Tendsto.IccExtend' (f : γ → Icc a b → β) {z : γ} {l : Filter α} {l' : Filter β}
     (hf : Tendsto (↿f) (𝓝 z ×ˢ l.map (projIcc a b h)) l') :
     Tendsto (↿(IccExtend h ∘ f)) (𝓝 z ×ˢ l) l' :=
   hf.IccExtend f
@@ -36,17 +36,17 @@ theorem Filter.Tendsto.IccExtend' (f : γ → Icc a b → β) {z : γ} {l : Filt
 variable [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β]
 
 @[continuity]
-theorem continuous_projIcc : Continuous (projIcc a b h) :=
+lemma continuous_projIcc : Continuous (projIcc a b h) :=
   (continuous_const.max <| continuous_const.min continuous_id).subtype_mk _
 #align continuous_proj_Icc continuous_projIcc
 
-theorem quotientMap_projIcc : QuotientMap (projIcc a b h) :=
+lemma quotientMap_projIcc : QuotientMap (projIcc a b h) :=
   quotientMap_iff.2 ⟨projIcc_surjective h, fun s =>
     ⟨fun hs => hs.preimage continuous_projIcc, fun hs => ⟨_, hs, by ext; simp⟩⟩⟩
 #align quotient_map_proj_Icc quotientMap_projIcc
 
 @[simp]
-theorem continuous_IccExtend_iff {f : Icc a b → β} : Continuous (IccExtend h f) ↔ Continuous f :=
+lemma continuous_IccExtend_iff {f : Icc a b → β} : Continuous (IccExtend h f) ↔ Continuous f :=
   quotientMap_projIcc.continuous_iff.symm
 #align continuous_Icc_extend_iff continuous_IccExtend_iff
 
@@ -64,7 +64,7 @@ protected theorem Continuous.Icc_extend' {f : Icc a b → β} (hf : Continuous f
   hf.comp continuous_projIcc
 #align continuous.Icc_extend' Continuous.Icc_extend'
 
-theorem ContinuousAt.IccExtend {x : γ} (f : γ → Icc a b → β) {g : γ → α}
+lemma ContinuousAt.IccExtend {x : γ} (f : γ → Icc a b → β) {g : γ → α}
     (hf : ContinuousAt (↿f) (x, projIcc a b h (g x))) (hg : ContinuousAt g x) :
     ContinuousAt (fun a => IccExtend h (f a) (g a)) x :=
   show ContinuousAt (↿f ∘ fun x => (x, projIcc a b h (g x))) x from

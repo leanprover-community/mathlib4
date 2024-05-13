@@ -109,23 +109,23 @@ section MeasurableSup
 variable [MeasurableSup M]
 
 @[measurability]
-theorem Measurable.const_sup (hf : Measurable f) (c : M) : Measurable fun x => c ⊔ f x :=
+lemma Measurable.const_sup (hf : Measurable f) (c : M) : Measurable fun x => c ⊔ f x :=
   (measurable_const_sup c).comp hf
 #align measurable.const_sup Measurable.const_sup
 
 @[measurability]
-theorem AEMeasurable.const_sup (hf : AEMeasurable f μ) (c : M) :
+lemma AEMeasurable.const_sup (hf : AEMeasurable f μ) (c : M) :
     AEMeasurable (fun x => c ⊔ f x) μ :=
   (MeasurableSup.measurable_const_sup c).comp_aemeasurable hf
 #align ae_measurable.const_sup AEMeasurable.const_sup
 
 @[measurability]
-theorem Measurable.sup_const (hf : Measurable f) (c : M) : Measurable fun x => f x ⊔ c :=
+lemma Measurable.sup_const (hf : Measurable f) (c : M) : Measurable fun x => f x ⊔ c :=
   (measurable_sup_const c).comp hf
 #align measurable.sup_const Measurable.sup_const
 
 @[measurability]
-theorem AEMeasurable.sup_const (hf : AEMeasurable f μ) (c : M) :
+lemma AEMeasurable.sup_const (hf : AEMeasurable f μ) (c : M) :
     AEMeasurable (fun x => f x ⊔ c) μ :=
   (measurable_sup_const c).comp_aemeasurable hf
 #align ae_measurable.sup_const AEMeasurable.sup_const
@@ -137,23 +137,23 @@ section MeasurableSup₂
 variable [MeasurableSup₂ M]
 
 @[measurability]
-theorem Measurable.sup' (hf : Measurable f) (hg : Measurable g) : Measurable (f ⊔ g) :=
+lemma Measurable.sup' (hf : Measurable f) (hg : Measurable g) : Measurable (f ⊔ g) :=
   measurable_sup.comp (hf.prod_mk hg)
 #align measurable.sup' Measurable.sup'
 
 @[measurability]
-theorem Measurable.sup (hf : Measurable f) (hg : Measurable g) : Measurable fun a => f a ⊔ g a :=
+lemma Measurable.sup (hf : Measurable f) (hg : Measurable g) : Measurable fun a => f a ⊔ g a :=
   measurable_sup.comp (hf.prod_mk hg)
 #align measurable.sup Measurable.sup
 
 @[measurability]
-theorem AEMeasurable.sup' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+lemma AEMeasurable.sup' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f ⊔ g) μ :=
   measurable_sup.comp_aemeasurable (hf.prod_mk hg)
 #align ae_measurable.sup' AEMeasurable.sup'
 
 @[measurability]
-theorem AEMeasurable.sup (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+lemma AEMeasurable.sup (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => f a ⊔ g a) μ :=
   measurable_sup.comp_aemeasurable (hf.prod_mk hg)
 #align ae_measurable.sup AEMeasurable.sup
@@ -175,23 +175,23 @@ section MeasurableInf
 variable [MeasurableInf M]
 
 @[measurability]
-theorem Measurable.const_inf (hf : Measurable f) (c : M) : Measurable fun x => c ⊓ f x :=
+lemma Measurable.const_inf (hf : Measurable f) (c : M) : Measurable fun x => c ⊓ f x :=
   (measurable_const_inf c).comp hf
 #align measurable.const_inf Measurable.const_inf
 
 @[measurability]
-theorem AEMeasurable.const_inf (hf : AEMeasurable f μ) (c : M) :
+lemma AEMeasurable.const_inf (hf : AEMeasurable f μ) (c : M) :
     AEMeasurable (fun x => c ⊓ f x) μ :=
   (MeasurableInf.measurable_const_inf c).comp_aemeasurable hf
 #align ae_measurable.const_inf AEMeasurable.const_inf
 
 @[measurability]
-theorem Measurable.inf_const (hf : Measurable f) (c : M) : Measurable fun x => f x ⊓ c :=
+lemma Measurable.inf_const (hf : Measurable f) (c : M) : Measurable fun x => f x ⊓ c :=
   (measurable_inf_const c).comp hf
 #align measurable.inf_const Measurable.inf_const
 
 @[measurability]
-theorem AEMeasurable.inf_const (hf : AEMeasurable f μ) (c : M) :
+lemma AEMeasurable.inf_const (hf : AEMeasurable f μ) (c : M) :
     AEMeasurable (fun x => f x ⊓ c) μ :=
   (measurable_inf_const c).comp_aemeasurable hf
 #align ae_measurable.inf_const AEMeasurable.inf_const
@@ -203,23 +203,23 @@ section MeasurableInf₂
 variable [MeasurableInf₂ M]
 
 @[measurability]
-theorem Measurable.inf' (hf : Measurable f) (hg : Measurable g) : Measurable (f ⊓ g) :=
+lemma Measurable.inf' (hf : Measurable f) (hg : Measurable g) : Measurable (f ⊓ g) :=
   measurable_inf.comp (hf.prod_mk hg)
 #align measurable.inf' Measurable.inf'
 
 @[measurability]
-theorem Measurable.inf (hf : Measurable f) (hg : Measurable g) : Measurable fun a => f a ⊓ g a :=
+lemma Measurable.inf (hf : Measurable f) (hg : Measurable g) : Measurable fun a => f a ⊓ g a :=
   measurable_inf.comp (hf.prod_mk hg)
 #align measurable.inf Measurable.inf
 
 @[measurability]
-theorem AEMeasurable.inf' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+lemma AEMeasurable.inf' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f ⊓ g) μ :=
   measurable_inf.comp_aemeasurable (hf.prod_mk hg)
 #align ae_measurable.inf' AEMeasurable.inf'
 
 @[measurability]
-theorem AEMeasurable.inf (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+lemma AEMeasurable.inf (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => f a ⊓ g a) μ :=
   measurable_inf.comp_aemeasurable (hf.prod_mk hg)
 #align ae_measurable.inf AEMeasurable.inf
@@ -239,13 +239,13 @@ open Finset
 variable {δ : Type*} [MeasurableSpace δ] [SemilatticeSup α] [MeasurableSup₂ α]
 
 @[measurability]
-theorem Finset.measurable_sup' {ι : Type*} {s : Finset ι} (hs : s.Nonempty) {f : ι → δ → α}
+lemma Finset.measurable_sup' {ι : Type*} {s : Finset ι} (hs : s.Nonempty) {f : ι → δ → α}
     (hf : ∀ n ∈ s, Measurable (f n)) : Measurable (s.sup' hs f) :=
   Finset.sup'_induction hs _ (fun _f hf _g hg => hf.sup hg) fun n hn => hf n hn
 #align finset.measurable_sup' Finset.measurable_sup'
 
 @[measurability]
-theorem Finset.measurable_range_sup' {f : ℕ → δ → α} {n : ℕ} (hf : ∀ k ≤ n, Measurable (f k)) :
+lemma Finset.measurable_range_sup' {f : ℕ → δ → α} {n : ℕ} (hf : ∀ k ≤ n, Measurable (f k)) :
     Measurable ((range (n + 1)).sup' nonempty_range_succ f) := by
   simp_rw [← Nat.lt_succ_iff] at hf
   refine' Finset.measurable_sup' _ _
@@ -253,7 +253,7 @@ theorem Finset.measurable_range_sup' {f : ℕ → δ → α} {n : ℕ} (hf : ∀
 #align finset.measurable_range_sup' Finset.measurable_range_sup'
 
 @[measurability]
-theorem Finset.measurable_range_sup'' {f : ℕ → δ → α} {n : ℕ} (hf : ∀ k ≤ n, Measurable (f k)) :
+lemma Finset.measurable_range_sup'' {f : ℕ → δ → α} {n : ℕ} (hf : ∀ k ≤ n, Measurable (f k)) :
     Measurable fun x => (range (n + 1)).sup' nonempty_range_succ fun k => f k x := by
   convert Finset.measurable_range_sup' hf using 1
   ext x

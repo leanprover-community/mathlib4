@@ -73,11 +73,11 @@ def infEdist (x : α) (s : Set α) : ℝ≥0∞ :=
 #align emetric.inf_edist EMetric.infEdist
 
 @[simp]
-theorem infEdist_empty : infEdist x ∅ = ∞ :=
+lemma infEdist_empty : infEdist x ∅ = ∞ :=
   iInf_emptyset
 #align emetric.inf_edist_empty EMetric.infEdist_empty
 
-theorem le_infEdist {d} : d ≤ infEdist x s ↔ ∀ y ∈ s, d ≤ edist x y := by
+lemma le_infEdist {d} : d ≤ infEdist x s ↔ ∀ y ∈ s, d ≤ edist x y := by
   simp only [infEdist, le_iInf_iff]
 #align emetric.le_inf_edist EMetric.le_infEdist
 
@@ -88,7 +88,7 @@ theorem infEdist_union : infEdist x (s ∪ t) = infEdist x s ⊓ infEdist x t :=
 #align emetric.inf_edist_union EMetric.infEdist_union
 
 @[simp]
-theorem infEdist_iUnion (f : ι → Set α) (x : α) : infEdist x (⋃ i, f i) = ⨅ i, infEdist x (f i) :=
+lemma infEdist_iUnion (f : ι → Set α) (x : α) : infEdist x (⋃ i, f i) = ⨅ i, infEdist x (f i) :=
   iInf_iUnion f _
 #align emetric.inf_edist_Union EMetric.infEdist_iUnion
 
@@ -127,12 +127,12 @@ theorem infEdist_le_infEdist_add_edist : infEdist x s ≤ infEdist y s + edist x
     _ = (⨅ z ∈ s, edist y z) + edist x y := by simp only [ENNReal.iInf_add]
 #align emetric.inf_edist_le_inf_edist_add_edist EMetric.infEdist_le_infEdist_add_edist
 
-theorem infEdist_le_edist_add_infEdist : infEdist x s ≤ edist x y + infEdist y s := by
+lemma infEdist_le_edist_add_infEdist : infEdist x s ≤ edist x y + infEdist y s := by
   rw [add_comm]
   exact infEdist_le_infEdist_add_edist
 #align emetric.inf_edist_le_edist_add_inf_edist EMetric.infEdist_le_edist_add_infEdist
 
-theorem edist_le_infEdist_add_ediam (hy : y ∈ s) : edist x y ≤ infEdist x s + diam s := by
+lemma edist_le_infEdist_add_ediam (hy : y ∈ s) : edist x y ≤ infEdist x s + diam s := by
   simp_rw [infEdist, ENNReal.iInf_add]
   refine le_iInf₂ fun i hi => ?_
   calc
@@ -185,19 +185,19 @@ theorem infEdist_pos_iff_not_mem_closure {x : α} {E : Set α} :
   rw [mem_closure_iff_infEdist_zero, pos_iff_ne_zero]
 #align emetric.inf_edist_pos_iff_not_mem_closure EMetric.infEdist_pos_iff_not_mem_closure
 
-theorem infEdist_closure_pos_iff_not_mem_closure {x : α} {E : Set α} :
+lemma infEdist_closure_pos_iff_not_mem_closure {x : α} {E : Set α} :
     0 < infEdist x (closure E) ↔ x ∉ closure E := by
   rw [infEdist_closure, infEdist_pos_iff_not_mem_closure]
 #align emetric.inf_edist_closure_pos_iff_not_mem_closure EMetric.infEdist_closure_pos_iff_not_mem_closure
 
-theorem exists_real_pos_lt_infEdist_of_not_mem_closure {x : α} {E : Set α} (h : x ∉ closure E) :
+lemma exists_real_pos_lt_infEdist_of_not_mem_closure {x : α} {E : Set α} (h : x ∉ closure E) :
     ∃ ε : ℝ, 0 < ε ∧ ENNReal.ofReal ε < infEdist x E := by
   rw [← infEdist_pos_iff_not_mem_closure, ENNReal.lt_iff_exists_real_btwn] at h
   rcases h with ⟨ε, ⟨_, ⟨ε_pos, ε_lt⟩⟩⟩
   exact ⟨ε, ⟨ENNReal.ofReal_pos.mp ε_pos, ε_lt⟩⟩
 #align emetric.exists_real_pos_lt_inf_edist_of_not_mem_closure EMetric.exists_real_pos_lt_infEdist_of_not_mem_closure
 
-theorem disjoint_closedBall_of_lt_infEdist {r : ℝ≥0∞} (h : r < infEdist x s) :
+lemma disjoint_closedBall_of_lt_infEdist {r : ℝ≥0∞} (h : r < infEdist x s) :
     Disjoint (closedBall x r) s := by
   rw [disjoint_left]
   intro y hy h'y
@@ -214,13 +214,13 @@ theorem infEdist_image (hΦ : Isometry Φ) : infEdist (Φ x) (Φ '' t) = infEdis
 #align emetric.inf_edist_image EMetric.infEdist_image
 
 @[to_additive (attr := simp)]
-theorem infEdist_smul {M} [SMul M α] [IsometricSMul M α] (c : M) (x : α) (s : Set α) :
+lemma infEdist_smul {M} [SMul M α] [IsometricSMul M α] (c : M) (x : α) (s : Set α) :
     infEdist (c • x) (c • s) = infEdist x s :=
   infEdist_image (isometry_smul _ _)
 #align emetric.inf_edist_smul EMetric.infEdist_smul
 #align emetric.inf_edist_vadd EMetric.infEdist_vadd
 
-theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
+lemma _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     ∃ F : ℕ → Set α, (∀ n, IsClosed (F n)) ∧ (∀ n, F n ⊆ U) ∧ ⋃ n, F n = U ∧ Monotone F := by
   obtain ⟨a, a_pos, a_lt_one⟩ : ∃ a : ℝ≥0∞, 0 < a ∧ a < 1 := exists_between zero_lt_one
   let F := fun n : ℕ => (fun x => infEdist x Uᶜ) ⁻¹' Ici (a ^ n)
@@ -245,14 +245,14 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
   apply le_trans (pow_le_pow_right_of_le_one' a_lt_one.le hmn) hx
 #align is_open.exists_Union_is_closed IsOpen.exists_iUnion_isClosed
 
-theorem _root_.IsCompact.exists_infEdist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :
+lemma _root_.IsCompact.exists_infEdist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infEdist x s = edist x y := by
   have A : Continuous fun y => edist x y := continuous_const.edist continuous_id
   obtain ⟨y, ys, hy⟩ := hs.exists_isMinOn hne A.continuousOn
   exact ⟨y, ys, le_antisymm (infEdist_le_edist_of_mem ys) (by rwa [le_infEdist])⟩
 #align is_compact.exists_inf_edist_eq_edist IsCompact.exists_infEdist_eq_edist
 
-theorem exists_pos_forall_lt_edist (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) :
+lemma exists_pos_forall_lt_edist (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) :
     ∃ r : ℝ≥0, 0 < r ∧ ∀ x ∈ s, ∀ y ∈ t, (r : ℝ≥0∞) < edist x y := by
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · use 1
@@ -445,7 +445,7 @@ theorem nonempty_of_hausdorffEdist_ne_top (hs : s.Nonempty) (fin : hausdorffEdis
   t.eq_empty_or_nonempty.resolve_left fun ht ↦ fin (ht.symm ▸ hausdorffEdist_empty hs)
 #align emetric.nonempty_of_Hausdorff_edist_ne_top EMetric.nonempty_of_hausdorffEdist_ne_top
 
-theorem empty_or_nonempty_of_hausdorffEdist_ne_top (fin : hausdorffEdist s t ≠ ⊤) :
+lemma empty_or_nonempty_of_hausdorffEdist_ne_top (fin : hausdorffEdist s t ≠ ⊤) :
     (s = ∅ ∧ t = ∅) ∨ (s.Nonempty ∧ t.Nonempty) := by
   rcases s.eq_empty_or_nonempty with hs | hs
   · rcases t.eq_empty_or_nonempty with ht | ht
@@ -482,7 +482,7 @@ def infDist (x : α) (s : Set α) : ℝ :=
   ENNReal.toReal (infEdist x s)
 #align metric.inf_dist Metric.infDist
 
-theorem infDist_eq_iInf : infDist x s = ⨅ y : s, dist x y := by
+lemma infDist_eq_iInf : infDist x s = ⨅ y : s, dist x y := by
   rw [infDist, infEdist, iInf_subtype', ENNReal.toReal_iInf]
   · simp only [dist_edist]
   · exact fun _ ↦ edist_ne_top _ _
@@ -506,7 +506,7 @@ theorem infEdist_ne_top (h : s.Nonempty) : infEdist x s ≠ ⊤ := by
 
 -- Porting note (#10756): new lemma;
 -- Porting note (#11215): TODO: make it a `simp` lemma
-theorem infEdist_eq_top_iff : infEdist x s = ∞ ↔ s = ∅ := by
+lemma infEdist_eq_top_iff : infEdist x s = ∞ ↔ s = ∅ := by
   rcases s.eq_empty_or_nonempty with rfl | hs <;> simp [*, Nonempty.ne_empty, infEdist_ne_top]
 
 /-- The minimal distance of a point to a set containing it vanishes. -/
@@ -544,28 +544,28 @@ theorem infDist_le_infDist_add_dist : infDist x s ≤ infDist y s + dist x y := 
   simp only [infEdist_eq_top_iff, imp_self]
 #align metric.inf_dist_le_inf_dist_add_dist Metric.infDist_le_infDist_add_dist
 
-theorem not_mem_of_dist_lt_infDist (h : dist x y < infDist x s) : y ∉ s := fun hy =>
+lemma not_mem_of_dist_lt_infDist (h : dist x y < infDist x s) : y ∉ s := fun hy =>
   h.not_le <| infDist_le_dist_of_mem hy
 #align metric.not_mem_of_dist_lt_inf_dist Metric.not_mem_of_dist_lt_infDist
 
-theorem disjoint_ball_infDist : Disjoint (ball x (infDist x s)) s :=
+lemma disjoint_ball_infDist : Disjoint (ball x (infDist x s)) s :=
   disjoint_left.2 fun _y hy => not_mem_of_dist_lt_infDist <| mem_ball'.1 hy
 #align metric.disjoint_ball_inf_dist Metric.disjoint_ball_infDist
 
-theorem ball_infDist_subset_compl : ball x (infDist x s) ⊆ sᶜ :=
+lemma ball_infDist_subset_compl : ball x (infDist x s) ⊆ sᶜ :=
   (disjoint_ball_infDist (s := s)).subset_compl_right
 #align metric.ball_inf_dist_subset_compl Metric.ball_infDist_subset_compl
 
-theorem ball_infDist_compl_subset : ball x (infDist x sᶜ) ⊆ s :=
+lemma ball_infDist_compl_subset : ball x (infDist x sᶜ) ⊆ s :=
   ball_infDist_subset_compl.trans_eq (compl_compl s)
 #align metric.ball_inf_dist_compl_subset Metric.ball_infDist_compl_subset
 
-theorem disjoint_closedBall_of_lt_infDist {r : ℝ} (h : r < infDist x s) :
+lemma disjoint_closedBall_of_lt_infDist {r : ℝ} (h : r < infDist x s) :
     Disjoint (closedBall x r) s :=
   disjoint_ball_infDist.mono_left <| closedBall_subset_ball h
 #align metric.disjoint_closed_ball_of_lt_inf_dist Metric.disjoint_closedBall_of_lt_infDist
 
-theorem dist_le_infDist_add_diam (hs : IsBounded s) (hy : y ∈ s) :
+lemma dist_le_infDist_add_diam (hs : IsBounded s) (hy : y ∈ s) :
     dist x y ≤ infDist x s + diam s := by
   rw [infDist, diam, dist_edist]
   exact toReal_le_add (edist_le_infEdist_add_ediam hy) (infEdist_ne_top ⟨y, hy⟩) hs.ediam_ne_top
@@ -620,7 +620,7 @@ theorem _root_.IsClosed.not_mem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempt
 #align is_closed.not_mem_iff_inf_dist_pos IsClosed.not_mem_iff_infDist_pos
 
 -- Porting note (#10756): new lemma
-theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
+lemma continuousAt_inv_infDist_pt (h : x ∉ closure s) :
     ContinuousAt (fun x ↦ (infDist x s)⁻¹) x := by
   rcases s.eq_empty_or_nonempty with (rfl | hs)
   · simp only [infDist_empty, continuousAt_const]
@@ -632,7 +632,7 @@ theorem infDist_image (hΦ : Isometry Φ) : infDist (Φ x) (Φ '' t) = infDist x
   simp [infDist, infEdist_image hΦ]
 #align metric.inf_dist_image Metric.infDist_image
 
-theorem infDist_inter_closedBall_of_mem (h : y ∈ s) :
+lemma infDist_inter_closedBall_of_mem (h : y ∈ s) :
     infDist x (s ∩ closedBall x (dist y x)) = infDist x s := by
   replace h : y ∈ s ∩ closedBall x (dist y x) := ⟨h, mem_closedBall.2 le_rfl⟩
   refine le_antisymm ?_ (infDist_le_infDist_of_subset (inter_subset_left _ _) ⟨y, h⟩)
@@ -644,13 +644,13 @@ theorem infDist_inter_closedBall_of_mem (h : y ∈ s) :
     exact (hlt.trans hz).not_le (infDist_le_dist_of_mem h)
 #align metric.inf_dist_inter_closed_ball_of_mem Metric.infDist_inter_closedBall_of_mem
 
-theorem _root_.IsCompact.exists_infDist_eq_dist (h : IsCompact s) (hne : s.Nonempty) (x : α) :
+lemma _root_.IsCompact.exists_infDist_eq_dist (h : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infDist x s = dist x y :=
   let ⟨y, hys, hy⟩ := h.exists_infEdist_eq_edist hne x
   ⟨y, hys, by rw [infDist, dist_edist, hy]⟩
 #align is_compact.exists_inf_dist_eq_dist IsCompact.exists_infDist_eq_dist
 
-theorem _root_.IsClosed.exists_infDist_eq_dist [ProperSpace α] (h : IsClosed s) (hne : s.Nonempty)
+lemma _root_.IsClosed.exists_infDist_eq_dist [ProperSpace α] (h : IsClosed s) (hne : s.Nonempty)
     (x : α) : ∃ y ∈ s, infDist x s = dist x y := by
   rcases hne with ⟨z, hz⟩
   rw [← infDist_inter_closedBall_of_mem hz]
@@ -661,7 +661,7 @@ theorem _root_.IsClosed.exists_infDist_eq_dist [ProperSpace α] (h : IsClosed s)
   exact ⟨y, hys, hyd⟩
 #align is_closed.exists_inf_dist_eq_dist IsClosed.exists_infDist_eq_dist
 
-theorem exists_mem_closure_infDist_eq_dist [ProperSpace α] (hne : s.Nonempty) (x : α) :
+lemma exists_mem_closure_infDist_eq_dist [ProperSpace α] (hne : s.Nonempty) (x : α) :
     ∃ y ∈ closure s, infDist x s = dist x y := by
   simpa only [infDist_closure] using isClosed_closure.exists_infDist_eq_dist hne.closure x
 #align metric.exists_mem_closure_inf_dist_eq_dist Metric.exists_mem_closure_infDist_eq_dist
@@ -674,7 +674,7 @@ def infNndist (x : α) (s : Set α) : ℝ≥0 :=
 #align metric.inf_nndist Metric.infNndist
 
 @[simp]
-theorem coe_infNndist : (infNndist x s : ℝ) = infDist x s :=
+lemma coe_infNndist : (infNndist x s : ℝ) = infDist x s :=
   rfl
 #align metric.coe_inf_nndist Metric.coe_infNndist
 

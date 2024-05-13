@@ -180,10 +180,10 @@ noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBoolean
 variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
   [Finite β] (D : Directed r f)
 
-theorem Directed.finite_set_le {s : Set γ} (hs : s.Finite) : ∃ z, ∀ i ∈ s, r (f i) (f z) := by
+lemma Directed.finite_set_le {s : Set γ} (hs : s.Finite) : ∃ z, ∀ i ∈ s, r (f i) (f z) := by
   convert D.finset_le hs.toFinset; rw [Set.Finite.mem_toFinset]
 
-theorem Directed.finite_le (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
+lemma Directed.finite_le (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical
     obtain ⟨z, hz⟩ := D.finite_set_le (Set.finite_range g)
     exact ⟨z, fun i => hz (g i) ⟨i, rfl⟩⟩
@@ -191,29 +191,29 @@ theorem Directed.finite_le (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := 
 
 variable [Nonempty α] [Preorder α]
 
-theorem Finite.exists_le [IsDirected α (· ≤ ·)] (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
+lemma Finite.exists_le [IsDirected α (· ≤ ·)] (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
   directed_id.finite_le _
 #align fintype.exists_le Finite.exists_le
 
-theorem Finite.exists_ge [IsDirected α (· ≥ ·)] (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
+lemma Finite.exists_ge [IsDirected α (· ≥ ·)] (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
   directed_id.finite_le (r := (· ≥ ·)) _
 
-theorem Set.Finite.exists_le [IsDirected α (· ≤ ·)] {s : Set α} (hs : s.Finite) :
+lemma Set.Finite.exists_le [IsDirected α (· ≤ ·)] {s : Set α} (hs : s.Finite) :
     ∃ M, ∀ i ∈ s, i ≤ M :=
   directed_id.finite_set_le hs
 
-theorem Set.Finite.exists_ge [IsDirected α (· ≥ ·)] {s : Set α} (hs : s.Finite) :
+lemma Set.Finite.exists_ge [IsDirected α (· ≥ ·)] {s : Set α} (hs : s.Finite) :
     ∃ M, ∀ i ∈ s, M ≤ i :=
   directed_id.finite_set_le (r := (· ≥ ·)) hs
 
-theorem Finite.bddAbove_range [IsDirected α (· ≤ ·)] (f : β → α) : BddAbove (Set.range f) := by
+lemma Finite.bddAbove_range [IsDirected α (· ≤ ·)] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_le f
   refine' ⟨M, fun a ha => _⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 #align fintype.bdd_above_range Finite.bddAbove_range
 
-theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddBelow (Set.range f) := by
+lemma Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddBelow (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_ge f
   refine' ⟨M, fun a ha => _⟩
   obtain ⟨b, rfl⟩ := ha

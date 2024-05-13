@@ -46,7 +46,7 @@ noncomputable def subsetSupSet [Inhabited s] : SupSet s where
 attribute [local instance] subsetSupSet
 
 @[simp]
-theorem subset_sSup_def [Inhabited s] :
+lemma subset_sSup_def [Inhabited s] :
     @sSup s _ = fun t =>
       if ht : t.Nonempty ∧ BddAbove t ∧ sSup ((↑) '' t : Set α) ∈ s
       then ⟨sSup ((↑) '' t : Set α), ht.2.2⟩
@@ -54,16 +54,16 @@ theorem subset_sSup_def [Inhabited s] :
   rfl
 #align subset_Sup_def subset_sSup_def
 
-theorem subset_sSup_of_within [Inhabited s] {t : Set s}
+lemma subset_sSup_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddAbove t)  (h : sSup ((↑) '' t : Set α) ∈ s) :
     sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [dif_pos, h, h', h'']
 #align subset_Sup_of_within subset_sSup_of_within
 
-theorem subset_sSup_emptyset [Inhabited s] :
+lemma subset_sSup_emptyset [Inhabited s] :
     sSup (∅ : Set s) = default := by
   simp [sSup]
 
-theorem subset_sSup_of_not_bddAbove [Inhabited s] {t : Set s} (ht : ¬BddAbove t) :
+lemma subset_sSup_of_not_bddAbove [Inhabited s] {t : Set s} (ht : ¬BddAbove t) :
     sSup t = default := by
   simp [sSup, ht]
 
@@ -86,7 +86,7 @@ noncomputable def subsetInfSet [Inhabited s] : InfSet s where
 attribute [local instance] subsetInfSet
 
 @[simp]
-theorem subset_sInf_def [Inhabited s] :
+lemma subset_sInf_def [Inhabited s] :
     @sInf s _ = fun t =>
       if ht : t.Nonempty ∧ BddBelow t ∧ sInf ((↑) '' t : Set α) ∈ s
       then ⟨sInf ((↑) '' t : Set α), ht.2.2⟩ else
@@ -94,16 +94,16 @@ theorem subset_sInf_def [Inhabited s] :
   rfl
 #align subset_Inf_def subset_sInf_def
 
-theorem subset_sInf_of_within [Inhabited s] {t : Set s}
+lemma subset_sInf_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddBelow t) (h : sInf ((↑) '' t : Set α) ∈ s) :
     sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [dif_pos, h, h', h'']
 #align subset_Inf_of_within subset_sInf_of_within
 
-theorem subset_sInf_emptyset [Inhabited s] :
+lemma subset_sInf_emptyset [Inhabited s] :
     sInf (∅ : Set s) = default := by
   simp [sInf]
 
-theorem subset_sInf_of_not_bddBelow [Inhabited s] {t : Set s} (ht : ¬BddBelow t) :
+lemma subset_sInf_of_not_bddBelow [Inhabited s] {t : Set s} (ht : ¬BddBelow t) :
     sInf t = default := by
   simp [sInf, ht]
 
@@ -257,19 +257,19 @@ instance instCompleteLattice : CompleteLattice (Iic a) where
 
 variable (S : Set <| Iic a) (f : ι → Iic a) (p : ι → Prop)
 
-@[simp] theorem coe_sSup : (↑(sSup S) : α) = sSup ((↑) '' S) := rfl
+@[simp] lemma coe_sSup : (↑(sSup S) : α) = sSup ((↑) '' S) := rfl
 
-@[simp] theorem coe_iSup : (↑(⨆ i, f i) : α) = ⨆ i, (f i : α) := by
+@[simp] lemma coe_iSup : (↑(⨆ i, f i) : α) = ⨆ i, (f i : α) := by
   rw [iSup, coe_sSup]; congr; ext; simp
 
-theorem coe_biSup : (↑(⨆ i, ⨆ (_ : p i), f i) : α) = ⨆ i, ⨆ (_ : p i), (f i : α) := by simp
+lemma coe_biSup : (↑(⨆ i, ⨆ (_ : p i), f i) : α) = ⨆ i, ⨆ (_ : p i), (f i : α) := by simp
 
-@[simp] theorem coe_sInf : (↑(sInf S) : α) = a ⊓ sInf ((↑) '' S) := rfl
+@[simp] lemma coe_sInf : (↑(sInf S) : α) = a ⊓ sInf ((↑) '' S) := rfl
 
-@[simp] theorem coe_iInf : (↑(⨅ i, f i) : α) = a ⊓ ⨅ i, (f i : α) := by
+@[simp] lemma coe_iInf : (↑(⨅ i, f i) : α) = a ⊓ ⨅ i, (f i : α) := by
   rw [iInf, coe_sInf]; congr; ext; simp
 
-theorem coe_biInf : (↑(⨅ i, ⨅ (_ : p i), f i) : α) = a ⊓ ⨅ i, ⨅ (_ : p i), (f i : α) := by
+lemma coe_biInf : (↑(⨅ i, ⨅ (_ : p i), f i) : α) = a ⊓ ⨅ i, ⨅ (_ : p i), (f i : α) := by
   cases isEmpty_or_nonempty ι
   · simp
   · simp_rw [coe_iInf, ← inf_iInf, ← inf_assoc, inf_idem]

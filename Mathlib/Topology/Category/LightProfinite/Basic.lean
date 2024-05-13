@@ -50,7 +50,7 @@ def FintypeCat.toLightProfinite (X : FintypeCat) : LightProfinite where
 namespace LightProfinite
 
 @[ext]
-theorem ext {Y : LightProfinite} {a b : Y.cone.pt}
+lemma ext {Y : LightProfinite} {a b : Y.cone.pt}
     (h : ∀ n, Y.cone.π.app n a = Y.cone.π.app n b) : a = b := by
   have : PreservesLimitsOfSize.{0, 0} (forget Profinite) := preservesLimitsOfSizeShrink _
   exact Concrete.isLimit_ext _ Y.isLimit _ _ h

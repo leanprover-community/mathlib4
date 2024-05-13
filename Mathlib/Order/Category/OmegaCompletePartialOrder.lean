@@ -60,7 +60,7 @@ def of (α : Type*) [OmegaCompletePartialOrder α] : ωCPO :=
 #align ωCPO.of ωCPO.of
 
 @[simp]
-theorem coe_of (α : Type*) [OmegaCompletePartialOrder α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [OmegaCompletePartialOrder α] : ↥(of α) = α :=
   rfl
 #align ωCPO.coe_of ωCPO.coe_of
 

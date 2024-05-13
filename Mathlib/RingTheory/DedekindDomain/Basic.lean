@@ -57,7 +57,7 @@ class Ring.DimensionLEOne : Prop :=
 
 open Ideal Ring
 
-theorem Ideal.IsPrime.isMaximal {R : Type*} [CommRing R] [DimensionLEOne R]
+lemma Ideal.IsPrime.isMaximal {R : Type*} [CommRing R] [DimensionLEOne R]
     {p : Ideal R} (h : p.IsPrime) (hp : p ≠ ⊥) : p.IsMaximal :=
   DimensionLEOne.maximalOfPrime hp h
 
@@ -69,7 +69,7 @@ instance DimensionLEOne.principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing 
     IsPrime.to_maximal_ideal nonzero
 #align ring.dimension_le_one.principal_ideal_ring Ring.DimensionLEOne.principal_ideal_ring
 
-theorem DimensionLEOne.isIntegralClosure (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R]
+lemma DimensionLEOne.isIntegralClosure (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R]
     [Algebra R A] [Algebra R B] [Algebra B A] [IsScalarTower R B A] [IsIntegralClosure B R A]
     [DimensionLEOne R] : DimensionLEOne B where
   maximalOfPrime := fun {p} ne_bot _ =>
@@ -84,12 +84,12 @@ nonrec instance DimensionLEOne.integralClosure [Nontrivial R] [IsDomain A] [Alge
 
 variable {R}
 
-theorem DimensionLEOne.not_lt_lt [Ring.DimensionLEOne R] (p₀ p₁ p₂ : Ideal R) [hp₁ : p₁.IsPrime]
+lemma DimensionLEOne.not_lt_lt [Ring.DimensionLEOne R] (p₀ p₁ p₂ : Ideal R) [hp₁ : p₁.IsPrime]
     [hp₂ : p₂.IsPrime] : ¬(p₀ < p₁ ∧ p₁ < p₂)
   | ⟨h01, h12⟩ => h12.ne ((hp₁.isMaximal (bot_le.trans_lt h01).ne').eq_of_le hp₂.ne_top h12.le)
 #align ring.dimension_le_one.not_lt_lt Ring.DimensionLEOne.not_lt_lt
 
-theorem DimensionLEOne.eq_bot_of_lt [Ring.DimensionLEOne R] (p P : Ideal R) [p.IsPrime]
+lemma DimensionLEOne.eq_bot_of_lt [Ring.DimensionLEOne R] (p P : Ideal R) [p.IsPrime]
     [P.IsPrime] (hpP : p < P) : p = ⊥ :=
   by_contra fun hp0 => not_lt_lt ⊥ p P ⟨Ne.bot_lt hp0, hpP⟩
 #align ring.dimension_le_one.eq_bot_of_lt Ring.DimensionLEOne.eq_bot_of_lt

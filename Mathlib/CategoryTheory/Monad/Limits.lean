@@ -346,7 +346,7 @@ noncomputable def monadicCreatesColimitsOfPreservesColimits (R : D ⥤ C) [Monad
 
 section
 
-theorem hasLimit_of_reflective (F : J ⥤ D) (R : D ⥤ C) [HasLimit (F ⋙ R)] [Reflective R] :
+lemma hasLimit_of_reflective (F : J ⥤ D) (R : D ⥤ C) [HasLimit (F ⋙ R)] [Reflective R] :
     HasLimit F :=
   haveI := monadicCreatesLimits.{v, u} R
   hasLimit_of_created F R

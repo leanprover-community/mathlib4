@@ -159,7 +159,7 @@ theorem zmodChar_apply {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ZMod 
   rfl
 #align add_char.zmod_char_apply AddChar.zmodChar_apply
 
-theorem zmodChar_apply' {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ℕ) :
+lemma zmodChar_apply' {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ℕ) :
     zmodChar n hζ a = ζ ^ a := by
   rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_natCast a]
 #align add_char.zmod_char_apply' AddChar.zmodChar_apply'

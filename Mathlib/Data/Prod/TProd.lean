@@ -64,12 +64,12 @@ instance [∀ i, Inhabited (α i)] : Inhabited (TProd α l) :=
   ⟨TProd.mk l default⟩
 
 @[simp]
-theorem fst_mk (i : ι) (l : List ι) (f : ∀ i, α i) : (TProd.mk (i :: l) f).1 = f i :=
+lemma fst_mk (i : ι) (l : List ι) (f : ∀ i, α i) : (TProd.mk (i :: l) f).1 = f i :=
   rfl
 #align list.tprod.fst_mk List.TProd.fst_mk
 
 @[simp]
-theorem snd_mk (i : ι) (l : List ι) (f : ∀ i, α i) :
+lemma snd_mk (i : ι) (l : List ι) (f : ∀ i, α i) :
     (TProd.mk.{u,v} (i :: l) f).2 = TProd.mk.{u,v} l f :=
   rfl
 #align list.tprod.snd_mk List.TProd.snd_mk
@@ -87,23 +87,23 @@ protected def elim : ∀ {l : List ι} (_ : TProd α l) {i : ι} (_ : i ∈ l), 
 #align list.tprod.elim List.TProd.elim
 
 @[simp]
-theorem elim_self (v : TProd α (i :: l)) : v.elim (l.mem_cons_self i) = v.1 := by simp [TProd.elim]
+lemma elim_self (v : TProd α (i :: l)) : v.elim (l.mem_cons_self i) = v.1 := by simp [TProd.elim]
 #align list.tprod.elim_self List.TProd.elim_self
 
 @[simp]
-theorem elim_of_ne (hj : j ∈ i :: l) (hji : j ≠ i) (v : TProd α (i :: l)) :
+lemma elim_of_ne (hj : j ∈ i :: l) (hji : j ≠ i) (v : TProd α (i :: l)) :
     v.elim hj = TProd.elim v.2 ((List.mem_cons.mp hj).resolve_left hji) := by simp [TProd.elim, hji]
 #align list.tprod.elim_of_ne List.TProd.elim_of_ne
 
 @[simp]
-theorem elim_of_mem (hl : (i :: l).Nodup) (hj : j ∈ l) (v : TProd α (i :: l)) :
+lemma elim_of_mem (hl : (i :: l).Nodup) (hj : j ∈ l) (v : TProd α (i :: l)) :
     v.elim (mem_cons_of_mem _ hj) = TProd.elim v.2 hj := by
   apply elim_of_ne
   rintro rfl
   exact hl.not_mem hj
 #align list.tprod.elim_of_mem List.TProd.elim_of_mem
 
-theorem elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (TProd.mk l f).elim hi = f i
+lemma elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (TProd.mk l f).elim hi = f i
   | i :: is, f, j, hj => by
     by_cases hji : j = i
     · subst hji
@@ -112,7 +112,7 @@ theorem elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (
 #align list.tprod.elim_mk List.TProd.elim_mk
 
 @[ext]
-theorem ext :
+lemma ext :
     ∀ {l : List ι} (_ : l.Nodup) {v w : TProd α l}
       (_ : ∀ (i) (hi : i ∈ l), v.elim hi = w.elim hi), v = w
   | [], _, v, w, _ => PUnit.ext v w
@@ -130,7 +130,7 @@ protected def elim' (h : ∀ i, i ∈ l) (v : TProd α l) (i : ι) : α i :=
   v.elim (h i)
 #align list.tprod.elim' List.TProd.elim'
 
-theorem mk_elim (hnd : l.Nodup) (h : ∀ i, i ∈ l) (v : TProd α l) : TProd.mk l (v.elim' h) = v :=
+lemma mk_elim (hnd : l.Nodup) (h : ∀ i, i ∈ l) (v : TProd α l) : TProd.mk l (v.elim' h) = v :=
   TProd.ext hnd fun i hi => by simp [elim_mk]
 #align list.tprod.mk_elim List.TProd.mk_elim
 
@@ -154,7 +154,7 @@ protected def tprod : ∀ (l : List ι) (_t : ∀ i, Set (α i)), Set (TProd α 
   | i :: is, t => t i ×ˢ Set.tprod is t
 #align set.tprod Set.tprod
 
-theorem mk_preimage_tprod :
+lemma mk_preimage_tprod :
     ∀ (l : List ι) (t : ∀ i, Set (α i)), TProd.mk l ⁻¹' Set.tprod l t = { i | i ∈ l }.pi t
   | [], t => by simp [Set.tprod]
   | i :: l, t => by
@@ -170,7 +170,7 @@ theorem mk_preimage_tprod :
     exact fun _ => h
 #align set.mk_preimage_tprod Set.mk_preimage_tprod
 
-theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀ i, i ∈ l)
+lemma elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀ i, i ∈ l)
     (t : ∀ i, Set (α i)) : TProd.elim' h ⁻¹' pi univ t = Set.tprod l t := by
   have h2 : { i | i ∈ l } = univ := by
     ext i

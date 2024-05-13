@@ -163,7 +163,7 @@ theorem finSepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
     finSepDegree F E = finSepDegree F K := Nat.card_congr (embEquivOfEquiv F E K i)
 
 @[simp]
-theorem finSepDegree_self : finSepDegree F F = 1 := by
+lemma finSepDegree_self : finSepDegree F F = 1 := by
   have : Cardinal.mk (Emb F F) = 1 := le_antisymm
     (Cardinal.le_one_iff_subsingleton.2 AlgHom.subsingleton)
     (Cardinal.one_le_iff_ne_zero.2 <| Cardinal.mk_ne_zero _)
@@ -174,7 +174,7 @@ end Field
 namespace IntermediateField
 
 @[simp]
-theorem finSepDegree_bot : finSepDegree F (⊥ : IntermediateField F E) = 1 := by
+lemma finSepDegree_bot : finSepDegree F (⊥ : IntermediateField F E) = 1 := by
   rw [finSepDegree_eq_of_equiv _ _ _ (botEquiv F E), finSepDegree_self]
 
 section Tower
@@ -183,11 +183,11 @@ variable {F}
 variable [Algebra E K] [IsScalarTower F E K]
 
 @[simp]
-theorem finSepDegree_bot' : finSepDegree F (⊥ : IntermediateField E K) = finSepDegree F E :=
+lemma finSepDegree_bot' : finSepDegree F (⊥ : IntermediateField E K) = finSepDegree F E :=
   finSepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
 
 @[simp]
-theorem finSepDegree_top : finSepDegree F (⊤ : IntermediateField E K) = finSepDegree F K :=
+lemma finSepDegree_top : finSepDegree F (⊤ : IntermediateField E K) = finSepDegree F K :=
   finSepDegree_eq_of_equiv _ _ _ ((topEquiv (F := E) (E := K)).restrictScalars F)
 
 end Tower
@@ -270,11 +270,11 @@ theorem natSepDegree_le_natDegree : f.natSepDegree ≤ f.natDegree := by
   exact (f.aroots f.SplittingField).toFinset_card_le.trans this
 
 @[simp]
-theorem natSepDegree_X_sub_C (x : F) : (X - C x).natSepDegree = 1 := by
+lemma natSepDegree_X_sub_C (x : F) : (X - C x).natSepDegree = 1 := by
   simp only [natSepDegree, aroots_X_sub_C, Multiset.toFinset_singleton, Finset.card_singleton]
 
 @[simp]
-theorem natSepDegree_X : (X : F[X]).natSepDegree = 1 := by
+lemma natSepDegree_X : (X : F[X]).natSepDegree = 1 := by
   simp only [natSepDegree, aroots_X, Multiset.toFinset_singleton, Finset.card_singleton]
 
 /-- A constant polynomial has zero separable degree. -/
@@ -282,14 +282,14 @@ theorem natSepDegree_eq_zero (h : f.natDegree = 0) : f.natSepDegree = 0 := by
   linarith only [natSepDegree_le_natDegree f, h]
 
 @[simp]
-theorem natSepDegree_C (x : F) : (C x).natSepDegree = 0 := natSepDegree_eq_zero _ (natDegree_C _)
+lemma natSepDegree_C (x : F) : (C x).natSepDegree = 0 := natSepDegree_eq_zero _ (natDegree_C _)
 
 @[simp]
-theorem natSepDegree_zero : (0 : F[X]).natSepDegree = 0 := by
+lemma natSepDegree_zero : (0 : F[X]).natSepDegree = 0 := by
   rw [← C_0, natSepDegree_C]
 
 @[simp]
-theorem natSepDegree_one : (1 : F[X]).natSepDegree = 0 := by
+lemma natSepDegree_one : (1 : F[X]).natSepDegree = 0 := by
   rw [← C_1, natSepDegree_C]
 
 /-- A non-constant polynomial has non-zero separable degree. -/
@@ -346,44 +346,44 @@ theorem natSepDegree_map : (f.map (algebraMap F E)).natSepDegree = f.natSepDegre
     ← IsScalarTower.algebraMap_eq]
 
 @[simp]
-theorem natSepDegree_C_mul {x : F} (hx : x ≠ 0) :
+lemma natSepDegree_C_mul {x : F} (hx : x ≠ 0) :
     (C x * f).natSepDegree = f.natSepDegree := by
   simp only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_C_mul _ hx]
 
 @[simp]
-theorem natSepDegree_smul_nonzero {x : F} (hx : x ≠ 0) :
+lemma natSepDegree_smul_nonzero {x : F} (hx : x ≠ 0) :
     (x • f).natSepDegree = f.natSepDegree := by
   simp only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_smul_nonzero _ hx]
 
 @[simp]
-theorem natSepDegree_pow {n : ℕ} : (f ^ n).natSepDegree = if n = 0 then 0 else f.natSepDegree := by
+lemma natSepDegree_pow {n : ℕ} : (f ^ n).natSepDegree = if n = 0 then 0 else f.natSepDegree := by
   simp only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_pow]
   by_cases h : n = 0
   · simp only [h, zero_smul, Multiset.toFinset_zero, Finset.card_empty, ite_true]
   simp only [h, Multiset.toFinset_nsmul _ n h, ite_false]
 
-theorem natSepDegree_pow_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
+lemma natSepDegree_pow_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
     (f ^ n).natSepDegree = f.natSepDegree := by simp_rw [natSepDegree_pow, hn, ite_false]
 
-theorem natSepDegree_X_pow {n : ℕ} : (X ^ n : F[X]).natSepDegree = if n = 0 then 0 else 1 := by
+lemma natSepDegree_X_pow {n : ℕ} : (X ^ n : F[X]).natSepDegree = if n = 0 then 0 else 1 := by
   simp only [natSepDegree_pow, natSepDegree_X]
 
-theorem natSepDegree_X_sub_C_pow {x : F} {n : ℕ} :
+lemma natSepDegree_X_sub_C_pow {x : F} {n : ℕ} :
     ((X - C x) ^ n).natSepDegree = if n = 0 then 0 else 1 := by
   simp only [natSepDegree_pow, natSepDegree_X_sub_C]
 
-theorem natSepDegree_C_mul_X_sub_C_pow {x y : F} {n : ℕ} (hx : x ≠ 0) :
+lemma natSepDegree_C_mul_X_sub_C_pow {x y : F} {n : ℕ} (hx : x ≠ 0) :
     (C x * (X - C y) ^ n).natSepDegree = if n = 0 then 0 else 1 := by
   simp only [natSepDegree_C_mul _ hx, natSepDegree_X_sub_C_pow]
 
-theorem natSepDegree_mul (g : F[X]) :
+lemma natSepDegree_mul (g : F[X]) :
     (f * g).natSepDegree ≤ f.natSepDegree + g.natSepDegree := by
   by_cases h : f * g = 0
   · simp only [h, natSepDegree_zero, zero_le]
   simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_mul h, Multiset.toFinset_add]
   exact Finset.card_union_le _ _
 
-theorem natSepDegree_mul_eq_iff (g : F[X]) :
+lemma natSepDegree_mul_eq_iff (g : F[X]) :
     (f * g).natSepDegree = f.natSepDegree + g.natSepDegree ↔ (f = 0 ∧ g = 0) ∨ IsCoprime f g := by
   by_cases h : f * g = 0
   · rw [mul_eq_zero] at h
@@ -415,11 +415,11 @@ theorem natSepDegree_mul_eq_iff (g : F[X]) :
   simpa only [map_add, map_mul, map_one, hf.2, hg.2, mul_zero, add_zero,
     zero_ne_one] using congr(aeval x $hfg)
 
-theorem natSepDegree_mul_of_isCoprime (g : F[X]) (hc : IsCoprime f g) :
+lemma natSepDegree_mul_of_isCoprime (g : F[X]) (hc : IsCoprime f g) :
     (f * g).natSepDegree = f.natSepDegree + g.natSepDegree :=
   (natSepDegree_mul_eq_iff f g).2 (.inr hc)
 
-theorem natSepDegree_le_of_dvd (g : F[X]) (h1 : f ∣ g) (h2 : g ≠ 0) :
+lemma natSepDegree_le_of_dvd (g : F[X]) (h1 : f ∣ g) (h2 : g ≠ 0) :
     f.natSepDegree ≤ g.natSepDegree := by
   simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F)]
   exact Finset.card_le_card <| Multiset.toFinset_subset.mpr <|
@@ -436,7 +436,7 @@ theorem natSepDegree_expand (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
     Fintype.card_coe] using Fintype.card_eq.2
       ⟨(f.map (algebraMap F (AlgebraicClosure F))).rootsExpandPowEquivRoots q n⟩
 
-theorem natSepDegree_X_pow_char_pow_sub_C (q : ℕ) [ExpChar F q] (n : ℕ) (y : F) :
+lemma natSepDegree_X_pow_char_pow_sub_C (q : ℕ) [ExpChar F q] (n : ℕ) (y : F) :
     (X ^ q ^ n - C y).natSepDegree = 1 := by
   rw [← expand_X, ← expand_C (q ^ n), ← map_sub, natSepDegree_expand, natSepDegree_X_sub_C]
 
@@ -643,7 +643,7 @@ theorem finSepDegree_adjoin_simple_eq_natSepDegree {α : E} (halg : IsAlgebraic 
 
 -- The separable degree of `F⟮α⟯ / F` divides the degree of `F⟮α⟯ / F`.
 -- Marked as `private` because it is a special case of `finSepDegree_dvd_finrank`.
-private theorem finSepDegree_adjoin_simple_dvd_finrank (α : E) :
+private lemma finSepDegree_adjoin_simple_dvd_finrank (α : E) :
     finSepDegree F F⟮α⟯ ∣ finrank F F⟮α⟯ := by
   by_cases halg : IsAlgebraic F α
   · rw [finSepDegree_adjoin_simple_eq_natSepDegree F E halg, adjoin.finrank halg.isIntegral]

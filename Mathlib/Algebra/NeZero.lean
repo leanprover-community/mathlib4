@@ -27,25 +27,25 @@ class NeZero (n : R) : Prop where
   out : n ≠ 0
 #align ne_zero NeZero
 
-theorem NeZero.ne (n : R) [h : NeZero n] : n ≠ 0 :=
+lemma NeZero.ne (n : R) [h : NeZero n] : n ≠ 0 :=
   h.out
 #align ne_zero.ne NeZero.ne
 
-theorem NeZero.ne' (n : R) [h : NeZero n] : 0 ≠ n :=
+lemma NeZero.ne' (n : R) [h : NeZero n] : 0 ≠ n :=
   h.out.symm
 #align ne_zero.ne' NeZero.ne'
 
-theorem neZero_iff {n : R} : NeZero n ↔ n ≠ 0 :=
+lemma neZero_iff {n : R} : NeZero n ↔ n ≠ 0 :=
   ⟨fun h ↦ h.out, NeZero.mk⟩
 #align ne_zero_iff neZero_iff
 
 @[simp] lemma neZero_zero_iff_false {α : Type*} [Zero α] : NeZero (0 : α) ↔ False :=
   ⟨fun h ↦ h.ne rfl, fun h ↦ h.elim⟩
 
-theorem not_neZero {n : R} : ¬NeZero n ↔ n = 0 := by simp [neZero_iff]
+lemma not_neZero {n : R} : ¬NeZero n ↔ n = 0 := by simp [neZero_iff]
 #align not_ne_zero not_neZero
 
-theorem eq_zero_or_neZero (a : R) : a = 0 ∨ NeZero a :=
+lemma eq_zero_or_neZero (a : R) : a = 0 ∨ NeZero a :=
   (eq_or_ne a 0).imp_right NeZero.mk
 #align eq_zero_or_ne_zero eq_zero_or_neZero
 
@@ -98,7 +98,7 @@ variable {M : Type*} {x : M}
 
 instance succ {n : ℕ} : NeZero (n + 1) := ⟨n.succ_ne_zero⟩
 
-theorem of_pos [Preorder M] [Zero M] (h : 0 < x) : NeZero x := ⟨ne_of_gt h⟩
+lemma of_pos [Preorder M] [Zero M] (h : 0 < x) : NeZero x := ⟨ne_of_gt h⟩
 #align ne_zero.of_pos NeZero.of_pos
 
 end NeZero

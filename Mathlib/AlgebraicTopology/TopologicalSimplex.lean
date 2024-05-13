@@ -40,7 +40,7 @@ instance (x : SimplexCategory) : CoeFun x.toTopObj fun _ => x → ℝ≥0 :=
   ⟨fun f => (f : x → ℝ≥0)⟩
 
 @[ext]
-theorem toTopObj.ext {x : SimplexCategory} (f g : x.toTopObj) : (f : x → ℝ≥0) = g → f = g :=
+lemma toTopObj.ext {x : SimplexCategory} (f g : x.toTopObj) : (f : x → ℝ≥0) = g → f = g :=
   Subtype.ext
 #align simplex_category.to_Top_obj.ext SimplexCategory.toTopObj.ext
 
@@ -56,13 +56,13 @@ def toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) : y.toTopObj
 #align simplex_category.to_Top_map SimplexCategory.toTopMap
 
 @[simp]
-theorem coe_toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) (i : y) :
+lemma coe_toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) (i : y) :
     toTopMap f g i = ∑ j in Finset.univ.filter (f · = i), g j :=
   rfl
 #align simplex_category.coe_to_Top_map SimplexCategory.coe_toTopMap
 
 @[continuity]
-theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (toTopMap f) := by
+lemma continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (toTopMap f) := by
   refine' Continuous.subtype_mk (continuous_pi fun i => _) _
   dsimp only [coe_toTopMap]
   exact continuous_finset_sum _ (fun j _ => (continuous_apply _).comp continuous_subtype_val)

@@ -64,7 +64,7 @@ open Submodule
 
 open UniqueFactorizationMonoid
 
-theorem Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible a) :
+lemma Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible a) :
     IsSemisimpleModule R (torsionBy R M a) := by
   rw [IsSemisimpleModule, ← (submodule_torsionBy_orderIso a).complementedLattice_iff]
   set I : Ideal R := R ∙ a
@@ -109,7 +109,7 @@ variable [dec : ∀ x : M, Decidable (x = 0)]
 
 open Ideal Submodule.IsPrincipal
 
-theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
+lemma _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
     torsionOf R M x = span {p ^ pOrder hM x} := by
   dsimp only [pOrder]
   rw [← (torsionOf R M x).span_singleton_generator, Ideal.span_singleton_eq_span_singleton, ←
@@ -123,7 +123,7 @@ theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
     this.choose_spec
 #align ideal.torsion_of_eq_span_pow_p_order Ideal.torsionOf_eq_span_pow_pOrder
 
-theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ pOrder hM y))
+lemma p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ pOrder hM y))
     (h : p ^ k • x ∈ R ∙ y) : ∃ a : R, p ^ k • x = p ^ k • a • y := by
   -- Porting note: needed to make `smul_smul` work below.
   letI : MulAction R M := MulActionWithZero.toMulAction
@@ -152,7 +152,7 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
 
 open Submodule.Quotient
 
-theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ pOrder hM z))
+lemma exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ pOrder hM z))
     {k : ℕ} (f : (R ⧸ R ∙ p ^ k) →ₗ[R] M ⧸ R ∙ z) :
     ∃ x : M, p ^ k • x = 0 ∧ Submodule.Quotient.mk (p := span R {z}) x = f 1 := by
   have f1 := mk_surjective (R ∙ z) (f 1)

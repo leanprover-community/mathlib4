@@ -54,13 +54,13 @@ for all `i : s`, `t i ∈ C i`.
 def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
   {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = (s : Set ι).pi t}
 
-theorem squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
+lemma squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
     squareCylinders C = ⋃ s : Finset ι, (fun t ↦ (s : Set ι).pi t) '' univ.pi C := by
   ext1 f
   simp only [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, exists_prop, mem_setOf_eq,
     eq_comm (a := f)]
 
-theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i))
+lemma isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i))
     (hC_univ : ∀ i, univ ∈ C i) :
     IsPiSystem (squareCylinders C) := by
   rintro S₁ ⟨s₁, t₁, h₁, rfl⟩ S₂ ⟨s₂, t₂, h₂, rfl⟩ hst_nonempty
@@ -104,7 +104,7 @@ theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, Is
         exact hC_univ i
   · rw [Finset.coe_union]
 
-theorem comap_eval_le_generateFrom_squareCylinders_singleton
+lemma comap_eval_le_generateFrom_squareCylinders_singleton
     (α : ι → Type*) [m : ∀ i, MeasurableSpace (α i)] (i : ι) :
     MeasurableSpace.comap (Function.eval i) (m i) ≤
       MeasurableSpace.generateFrom
@@ -153,20 +153,20 @@ def cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) : Set (∀ i, α i) :=
   (fun (f : ∀ i, α i) (i : s) ↦ f i) ⁻¹' S
 
 @[simp]
-theorem mem_cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) (f : ∀ i, α i) :
+lemma mem_cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) (f : ∀ i, α i) :
     f ∈ cylinder s S ↔ (fun i : s ↦ f i) ∈ S :=
   mem_preimage
 
 @[simp]
-theorem cylinder_empty (s : Finset ι) : cylinder s (∅ : Set (∀ i : s, α i)) = ∅ := by
+lemma cylinder_empty (s : Finset ι) : cylinder s (∅ : Set (∀ i : s, α i)) = ∅ := by
   rw [cylinder, preimage_empty]
 
 @[simp]
-theorem cylinder_univ (s : Finset ι) : cylinder s (univ : Set (∀ i : s, α i)) = univ := by
+lemma cylinder_univ (s : Finset ι) : cylinder s (univ : Set (∀ i : s, α i)) = univ := by
   rw [cylinder, preimage_univ]
 
 @[simp]
-theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset ι)
+lemma cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset ι)
     (S : Set (∀ i : s, α i)) :
     cylinder s S = ∅ ↔ S = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by (rw [h]; exact cylinder_empty _)⟩
@@ -182,7 +182,7 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset 
   rw [h] at hf'
   exact not_mem_empty _ hf'
 
-theorem inter_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i)) (S₂ : Set (∀ i : s₂, α i))
+lemma inter_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i)) (S₂ : Set (∀ i : s₂, α i))
     [DecidableEq ι] :
     cylinder s₁ S₁ ∩ cylinder s₂ S₂ =
       cylinder (s₁ ∪ s₂)
@@ -190,11 +190,11 @@ theorem inter_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i))
           (fun f ↦ fun j : s₂ ↦ f ⟨j, Finset.mem_union_right s₁ j.prop⟩) ⁻¹' S₂) := by
   ext1 f; simp only [mem_inter_iff, mem_cylinder, mem_setOf_eq]; rfl
 
-theorem inter_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i)) :
+lemma inter_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i)) :
     cylinder s S₁ ∩ cylinder s S₂ = cylinder s (S₁ ∩ S₂) := by
   classical rw [inter_cylinder]; rfl
 
-theorem union_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i)) (S₂ : Set (∀ i : s₂, α i))
+lemma union_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i)) (S₂ : Set (∀ i : s₂, α i))
     [DecidableEq ι] :
     cylinder s₁ S₁ ∪ cylinder s₂ S₂ =
       cylinder (s₁ ∪ s₂)
@@ -202,19 +202,19 @@ theorem union_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i))
           (fun f ↦ fun j : s₂ ↦ f ⟨j, Finset.mem_union_right s₁ j.prop⟩) ⁻¹' S₂) := by
   ext1 f; simp only [mem_union, mem_cylinder, mem_setOf_eq]; rfl
 
-theorem union_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i)) :
+lemma union_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i)) :
     cylinder s S₁ ∪ cylinder s S₂ = cylinder s (S₁ ∪ S₂) := by
   classical rw [union_cylinder]; rfl
 
-theorem compl_cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) :
+lemma compl_cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) :
     (cylinder s S)ᶜ = cylinder s (Sᶜ) := by
   ext1 f; simp only [mem_compl_iff, mem_cylinder]
 
-theorem diff_cylinder_same (s : Finset ι) (S T : Set (∀ i : s, α i)) :
+lemma diff_cylinder_same (s : Finset ι) (S T : Set (∀ i : s, α i)) :
     cylinder s S \ cylinder s T = cylinder s (S \ T) := by
   ext1 f; simp only [mem_diff, mem_cylinder]
 
-theorem eq_of_cylinder_eq_of_subset [h_nonempty : Nonempty (∀ i, α i)] {I J : Finset ι}
+lemma eq_of_cylinder_eq_of_subset [h_nonempty : Nonempty (∀ i, α i)] {I J : Finset ι}
     {S : Set (∀ i : I, α i)} {T : Set (∀ i : J, α i)} (h_eq : cylinder I S = cylinder J T)
     (hJI : J ⊆ I) :
     S = (fun f : ∀ i : I, α i ↦ fun j : J ↦ f ⟨j, hJI j.prop⟩) ⁻¹' T := by
@@ -228,13 +228,13 @@ theorem eq_of_cylinder_eq_of_subset [h_nonempty : Nonempty (∀ i, α i)] {I J :
   simp only [Finset.coe_mem, dite_true, h_mem] at h_eq
   exact h_eq
 
-theorem cylinder_eq_cylinder_union [DecidableEq ι] (I : Finset ι) (S : Set (∀ i : I, α i))
+lemma cylinder_eq_cylinder_union [DecidableEq ι] (I : Finset ι) (S : Set (∀ i : I, α i))
     (J : Finset ι) :
     cylinder I S =
       cylinder (I ∪ J) ((fun f ↦ fun j : I ↦ f ⟨j, Finset.mem_union_left J j.prop⟩) ⁻¹' S) := by
   ext1 f; simp only [mem_cylinder, mem_preimage]
 
-theorem disjoint_cylinder_iff [Nonempty (∀ i, α i)] {s t : Finset ι} {S : Set (∀ i : s, α i)}
+lemma disjoint_cylinder_iff [Nonempty (∀ i, α i)] {s t : Finset ι} {S : Set (∀ i : s, α i)}
     {T : Set (∀ i : t, α i)} [DecidableEq ι] :
     Disjoint (cylinder s S) (cylinder t T) ↔
       Disjoint
@@ -243,11 +243,11 @@ theorem disjoint_cylinder_iff [Nonempty (∀ i, α i)] {s t : Finset ι} {S : Se
         ((fun f ↦ fun j : t ↦ f ⟨j, Finset.mem_union_right s j.prop⟩) ⁻¹' T) := by
   simp_rw [Set.disjoint_iff, subset_empty_iff, inter_cylinder, cylinder_eq_empty_iff]
 
-theorem IsClosed.cylinder [∀ i, TopologicalSpace (α i)] (s : Finset ι) {S : Set (∀ i : s, α i)}
+lemma IsClosed.cylinder [∀ i, TopologicalSpace (α i)] (s : Finset ι) {S : Set (∀ i : s, α i)}
     (hs : IsClosed S) : IsClosed (cylinder s S) :=
   hs.preimage (continuous_pi fun _ ↦ continuous_apply _)
 
-theorem _root_.MeasurableSet.cylinder [∀ i, MeasurableSpace (α i)] (s : Finset ι)
+lemma _root_.MeasurableSet.cylinder [∀ i, MeasurableSpace (α i)] (s : Finset ι)
     {S : Set (∀ i : s, α i)} (hS : MeasurableSet S) :
     MeasurableSet (cylinder s S) :=
   measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS
@@ -262,7 +262,7 @@ the projection from `∀ i, α i` to `∀ i : s, α i`.
 def measurableCylinders (α : ι → Type*) [∀ i, MeasurableSpace (α i)] : Set (Set (∀ i, α i)) :=
   ⋃ (s) (S) (_ : MeasurableSet S), {cylinder s S}
 
-theorem empty_mem_measurableCylinders (α : ι → Type*) [∀ i, MeasurableSpace (α i)] :
+lemma empty_mem_measurableCylinders (α : ι → Type*) [∀ i, MeasurableSpace (α i)] :
     ∅ ∈ measurableCylinders α := by
   simp_rw [measurableCylinders, mem_iUnion, mem_singleton_iff]
   exact ⟨∅, ∅, MeasurableSet.empty, (cylinder_empty _).symm⟩
@@ -270,7 +270,7 @@ theorem empty_mem_measurableCylinders (α : ι → Type*) [∀ i, MeasurableSpac
 variable [∀ i, MeasurableSpace (α i)] {s t : Set (∀ i, α i)}
 
 @[simp]
-theorem mem_measurableCylinders (t : Set (∀ i, α i)) :
+lemma mem_measurableCylinders (t : Set (∀ i, α i)) :
     t ∈ measurableCylinders α ↔ ∃ s S, MeasurableSet S ∧ t = cylinder s S := by
   simp_rw [measurableCylinders, mem_iUnion, exists_prop, mem_singleton_iff]
 
@@ -283,20 +283,20 @@ def measurableCylinders.set (ht : t ∈ measurableCylinders α) :
     Set (∀ i : measurableCylinders.finset ht, α i) :=
   ((mem_measurableCylinders t).mp ht).choose_spec.choose
 
-theorem measurableCylinders.measurableSet (ht : t ∈ measurableCylinders α) :
+lemma measurableCylinders.measurableSet (ht : t ∈ measurableCylinders α) :
     MeasurableSet (measurableCylinders.set ht) :=
   ((mem_measurableCylinders t).mp ht).choose_spec.choose_spec.left
 
-theorem measurableCylinders.eq_cylinder (ht : t ∈ measurableCylinders α) :
+lemma measurableCylinders.eq_cylinder (ht : t ∈ measurableCylinders α) :
     t = cylinder (measurableCylinders.finset ht) (measurableCylinders.set ht) :=
   ((mem_measurableCylinders t).mp ht).choose_spec.choose_spec.right
 
-theorem cylinder_mem_measurableCylinders (s : Finset ι) (S : Set (∀ i : s, α i))
+lemma cylinder_mem_measurableCylinders (s : Finset ι) (S : Set (∀ i : s, α i))
     (hS : MeasurableSet S) :
     cylinder s S ∈ measurableCylinders α := by
   rw [mem_measurableCylinders]; exact ⟨s, S, hS, rfl⟩
 
-theorem inter_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
+lemma inter_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
     (ht : t ∈ measurableCylinders α) :
     s ∩ t ∈ measurableCylinders α := by
   rw [mem_measurableCylinders] at *
@@ -311,28 +311,28 @@ theorem inter_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
     · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS₂
   · exact inter_cylinder _ _ _ _
 
-theorem isPiSystem_measurableCylinders : IsPiSystem (measurableCylinders α) :=
+lemma isPiSystem_measurableCylinders : IsPiSystem (measurableCylinders α) :=
   fun _ hS _ hT _ ↦ inter_mem_measurableCylinders hS hT
 
-theorem compl_mem_measurableCylinders (hs : s ∈ measurableCylinders α) :
+lemma compl_mem_measurableCylinders (hs : s ∈ measurableCylinders α) :
     sᶜ ∈ measurableCylinders α := by
   rw [mem_measurableCylinders] at hs ⊢
   obtain ⟨s, S, hS, rfl⟩ := hs
   refine ⟨s, Sᶜ, hS.compl, ?_⟩
   rw [compl_cylinder]
 
-theorem univ_mem_measurableCylinders (α : ι → Type*) [∀ i, MeasurableSpace (α i)] :
+lemma univ_mem_measurableCylinders (α : ι → Type*) [∀ i, MeasurableSpace (α i)] :
     Set.univ ∈ measurableCylinders α := by
   rw [← compl_empty]; exact compl_mem_measurableCylinders (empty_mem_measurableCylinders α)
 
-theorem union_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
+lemma union_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
     (ht : t ∈ measurableCylinders α) :
     s ∪ t ∈ measurableCylinders α := by
   rw [union_eq_compl_compl_inter_compl]
   exact compl_mem_measurableCylinders (inter_mem_measurableCylinders
     (compl_mem_measurableCylinders hs) (compl_mem_measurableCylinders ht))
 
-theorem diff_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
+lemma diff_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
     (ht : t ∈ measurableCylinders α) :
     s \ t ∈ measurableCylinders α := by
   rw [diff_eq_compl_inter]

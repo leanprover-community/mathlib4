@@ -84,11 +84,11 @@ instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddM
   AddMonoidHom.addCommMonoid
 
 @[simp]
-theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
+lemma AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
   rfl
 
 -- Note: `@[simp]` omitted because `(1 : AddMonoid.End M) = id` by `AddMonoid.coe_one`
-theorem AddMonoid.End.one_apply [AddCommMonoid M] (m : M) : (1 : AddMonoid.End M) m = m :=
+lemma AddMonoid.End.one_apply [AddCommMonoid M] (m : M) : (1 : AddMonoid.End M) m = m :=
   rfl
 
 instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
@@ -115,7 +115,7 @@ is commutative.
 namespace MonoidHom
 
 @[to_additive]
-theorem ext_iff₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} {f g : M →* N →* P} :
+lemma ext_iff₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} {f g : M →* N →* P} :
     f = g ↔ ∀ x y, f x y = g x y :=
   DFunLike.ext_iff.trans <| forall_congr' fun _ => DFunLike.ext_iff
 #align monoid_hom.ext_iff₂ MonoidHom.ext_iff₂
@@ -135,35 +135,35 @@ def flip {mM : MulOneClass M} {mN : MulOneClass N} {mP : CommMonoid P} (f : M �
 #align add_monoid_hom.flip AddMonoidHom.flip
 
 @[to_additive (attr := simp)]
-theorem flip_apply {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} (f : M →* N →* P)
+lemma flip_apply {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} (f : M →* N →* P)
     (x : M) (y : N) : f.flip y x = f x y :=
   rfl
 #align monoid_hom.flip_apply MonoidHom.flip_apply
 #align add_monoid_hom.flip_apply AddMonoidHom.flip_apply
 
 @[to_additive]
-theorem map_one₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} (f : M →* N →* P)
+lemma map_one₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} (f : M →* N →* P)
     (n : N) : f 1 n = 1 :=
   (flip f n).map_one
 #align monoid_hom.map_one₂ MonoidHom.map_one₂
 #align add_monoid_hom.map_one₂ AddMonoidHom.map_one₂
 
 @[to_additive]
-theorem map_mul₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} (f : M →* N →* P)
+lemma map_mul₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} (f : M →* N →* P)
     (m₁ m₂ : M) (n : N) : f (m₁ * m₂) n = f m₁ n * f m₂ n :=
   (flip f n).map_mul _ _
 #align monoid_hom.map_mul₂ MonoidHom.map_mul₂
 #align add_monoid_hom.map_mul₂ AddMonoidHom.map_mul₂
 
 @[to_additive]
-theorem map_inv₂ {_ : Group M} {_ : MulOneClass N} {_ : CommGroup P} (f : M →* N →* P) (m : M)
+lemma map_inv₂ {_ : Group M} {_ : MulOneClass N} {_ : CommGroup P} (f : M →* N →* P) (m : M)
     (n : N) : f m⁻¹ n = (f m n)⁻¹ :=
   (flip f n).map_inv _
 #align monoid_hom.map_inv₂ MonoidHom.map_inv₂
 #align add_monoid_hom.map_inv₂ AddMonoidHom.map_inv₂
 
 @[to_additive]
-theorem map_div₂ {_ : Group M} {_ : MulOneClass N} {_ : CommGroup P} (f : M →* N →* P)
+lemma map_div₂ {_ : Group M} {_ : MulOneClass N} {_ : CommGroup P} (f : M →* N →* P)
     (m₁ m₂ : M) (n : N) : f (m₁ / m₂) n = f m₁ n / f m₂ n :=
   (flip f n).map_div _ _
 #align monoid_hom.map_div₂ MonoidHom.map_div₂
@@ -249,7 +249,7 @@ def compl₂ [MulOneClass M] [MulOneClass N] [CommMonoid P] [MulOneClass Q] (f :
 #align add_monoid_hom.compl₂ AddMonoidHom.compl₂
 
 @[to_additive (attr := simp)]
-theorem compl₂_apply [MulOneClass M] [MulOneClass N] [CommMonoid P] [MulOneClass Q]
+lemma compl₂_apply [MulOneClass M] [MulOneClass N] [CommMonoid P] [MulOneClass Q]
     (f : M →* N →* P) (g : Q →* N) (m : M) (q : Q) : (compl₂ f g) m q = f m (g q) :=
   rfl
 #align monoid_hom.compl₂_apply MonoidHom.compl₂_apply
@@ -267,7 +267,7 @@ def compr₂ [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q] (f : 
 #align add_monoid_hom.compr₂ AddMonoidHom.compr₂
 
 @[to_additive (attr := simp)]
-theorem compr₂_apply [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q] (f : M →* N →* P)
+lemma compr₂_apply [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q] (f : M →* N →* P)
     (g : P →* Q) (m : M) (n : N) : (compr₂ f g) m n = g (f m n) :=
   rfl
 #align monoid_hom.compr₂_apply MonoidHom.compr₂_apply

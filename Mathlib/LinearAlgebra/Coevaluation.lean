@@ -44,7 +44,7 @@ def coevaluation : K →ₗ[K] V ⊗[K] Module.Dual K V :=
     ∑ i : Basis.ofVectorSpaceIndex K V, bV i ⊗ₜ[K] bV.coord i
 #align coevaluation coevaluation
 
-theorem coevaluation_apply_one :
+lemma coevaluation_apply_one :
     (coevaluation K V) (1 : K) =
       let bV := Basis.ofVectorSpace K V
       ∑ i : Basis.ofVectorSpaceIndex K V, bV i ⊗ₜ[K] bV.coord i := by

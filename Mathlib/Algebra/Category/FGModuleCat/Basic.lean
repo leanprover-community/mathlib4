@@ -201,7 +201,7 @@ instance forget₂Monoidal_linear : (forget₂Monoidal R).Linear R := by
   exact Functor.fullSubcategoryInclusionLinear _ _
 #align fgModule.forget₂_monoidal_linear FGModuleCat.forget₂Monoidal_linear
 
-theorem Iso.conj_eq_conj {V W : FGModuleCat R} (i : V ≅ W) (f : End V) :
+lemma Iso.conj_eq_conj {V W : FGModuleCat R} (i : V ≅ W) (f : End V) :
     Iso.conj i f = LinearEquiv.conj (isoToLinearEquiv i) f :=
   rfl
 #align fgModule.iso.conj_eq_conj FGModuleCat.Iso.conj_eq_conj
@@ -229,7 +229,7 @@ instance : MonoidalClosed (FGModuleCat K) := by
 variable (V W : FGModuleCat K)
 
 @[simp]
-theorem ihom_obj : (ihom V).obj W = FGModuleCat.of K (V →ₗ[K] W) :=
+lemma ihom_obj : (ihom V).obj W = FGModuleCat.of K (V →ₗ[K] W) :=
   rfl
 #align fgModule.ihom_obj FGModuleCat.ihom_obj
 
@@ -249,7 +249,7 @@ def FGModuleCatCoevaluation : 𝟙_ (FGModuleCat K) ⟶ V ⊗ FGModuleCatDual K 
   coevaluation K V
 #align fgModule.fgModule_coevaluation FGModuleCat.FGModuleCatCoevaluation
 
-theorem FGModuleCatCoevaluation_apply_one :
+lemma FGModuleCatCoevaluation_apply_one :
     FGModuleCatCoevaluation K V (1 : K) =
       ∑ i : Basis.ofVectorSpaceIndex K V,
         (Basis.ofVectorSpace K V) i ⊗ₜ[K] (Basis.ofVectorSpace K V).coord i :=
@@ -262,18 +262,18 @@ def FGModuleCatEvaluation : FGModuleCatDual K V ⊗ V ⟶ 𝟙_ (FGModuleCat K) 
 #align fgModule.fgModule_evaluation FGModuleCat.FGModuleCatEvaluation
 
 @[simp]
-theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
+lemma FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
     (FGModuleCatEvaluation K V) (f ⊗ₜ x) = f.toFun x :=
   contractLeft_apply f x
 #align fgModule.fgModule_evaluation_apply FGModuleCat.FGModuleCatEvaluation_apply
 
-private theorem coevaluation_evaluation :
+private lemma coevaluation_evaluation :
     letI V' : FGModuleCat K := FGModuleCatDual K V
     V' ◁ FGModuleCatCoevaluation K V ≫ (α_ V' V V').inv ≫ FGModuleCatEvaluation K V ▷ V' =
       (ρ_ V').hom ≫ (λ_ V').inv := by
   apply contractLeft_assoc_coevaluation K V
 
-private theorem evaluation_coevaluation :
+private lemma evaluation_coevaluation :
     FGModuleCatCoevaluation K V ▷ V ≫
         (α_ V (FGModuleCatDual K V) V).hom ≫ V ◁ FGModuleCatEvaluation K V =
       (λ_ V).hom ≫ (ρ_ V).inv := by

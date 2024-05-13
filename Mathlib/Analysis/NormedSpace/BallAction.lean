@@ -199,10 +199,10 @@ end SMulCommClass
 variable (𝕜)
 variable [CharZero 𝕜]
 
-theorem ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x := fun h =>
+lemma ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x := fun h =>
   ne_zero_of_mem_sphere hr x ((self_eq_neg 𝕜 _).mp (by (conv_lhs => rw [h]); rfl))
 #align ne_neg_of_mem_sphere ne_neg_of_mem_sphere
 
-theorem ne_neg_of_mem_unit_sphere (x : sphere (0 : E) 1) : x ≠ -x :=
+lemma ne_neg_of_mem_unit_sphere (x : sphere (0 : E) 1) : x ≠ -x :=
   ne_neg_of_mem_sphere 𝕜 one_ne_zero x
 #align ne_neg_of_mem_unit_sphere ne_neg_of_mem_unit_sphere

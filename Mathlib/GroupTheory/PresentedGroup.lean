@@ -71,11 +71,11 @@ local notation "F" => FreeGroup.lift f
 -- Porting note: `F` has been expanded, because `F r = 1` produces a sorry.
 variable (h : ∀ r ∈ rels, FreeGroup.lift f r = 1)
 
-theorem closure_rels_subset_ker : Subgroup.normalClosure rels ≤ MonoidHom.ker F :=
+lemma closure_rels_subset_ker : Subgroup.normalClosure rels ≤ MonoidHom.ker F :=
   Subgroup.normalClosure_le_normal fun x w ↦ (MonoidHom.mem_ker _).2 (h x w)
 #align presented_group.closure_rels_subset_ker PresentedGroup.closure_rels_subset_ker
 
-theorem to_group_eq_one_of_mem_closure : ∀ x ∈ Subgroup.normalClosure rels, F x = 1 :=
+lemma to_group_eq_one_of_mem_closure : ∀ x ∈ Subgroup.normalClosure rels, F x = 1 :=
   fun _ w ↦ (MonoidHom.mem_ker _).1 <| closure_rels_subset_ker h w
 #align presented_group.to_group_eq_one_of_mem_closure PresentedGroup.to_group_eq_one_of_mem_closure
 
@@ -86,11 +86,11 @@ def toGroup : PresentedGroup rels →* G :=
 #align presented_group.to_group PresentedGroup.toGroup
 
 @[simp]
-theorem toGroup.of {x : α} : toGroup h (of x) = f x :=
+lemma toGroup.of {x : α} : toGroup h (of x) = f x :=
   FreeGroup.lift.of
 #align presented_group.to_group.of PresentedGroup.toGroup.of
 
-theorem toGroup.unique (g : PresentedGroup rels →* G)
+lemma toGroup.unique (g : PresentedGroup rels →* G)
     (hg : ∀ x : α, g (PresentedGroup.of x) = f x) : ∀ {x}, g x = toGroup h x := by
   intro x
   refine' QuotientGroup.induction_on x _
@@ -98,7 +98,7 @@ theorem toGroup.unique (g : PresentedGroup rels →* G)
 #align presented_group.to_group.unique PresentedGroup.toGroup.unique
 
 @[ext]
-theorem ext {φ ψ : PresentedGroup rels →* G} (hx : ∀ (x : α), φ (.of x) = ψ (.of x)) : φ = ψ := by
+lemma ext {φ ψ : PresentedGroup rels →* G} (hx : ∀ (x : α), φ (.of x) = ψ (.of x)) : φ = ψ := by
   unfold PresentedGroup
   ext
   apply hx
@@ -113,11 +113,11 @@ def equivPresentedGroup (rels : Set (FreeGroup α)) (e : α ≃ β) :
     (Subgroup.map_normalClosure rels (FreeGroup.freeGroupCongr e).toMonoidHom
       (FreeGroup.freeGroupCongr e).surjective)
 
-theorem equivPresentedGroup_apply_of (x : α) (rels : Set (FreeGroup α)) (e : α ≃ β) :
+lemma equivPresentedGroup_apply_of (x : α) (rels : Set (FreeGroup α)) (e : α ≃ β) :
     equivPresentedGroup rels e (PresentedGroup.of x) =
       PresentedGroup.of (rels := FreeGroup.freeGroupCongr e '' rels) (e x) := rfl
 
-theorem equivPresentedGroup_symm_apply_of (x : β) (rels : Set (FreeGroup α)) (e : α ≃ β) :
+lemma equivPresentedGroup_symm_apply_of (x : β) (rels : Set (FreeGroup α)) (e : α ≃ β) :
     (equivPresentedGroup rels e).symm (PresentedGroup.of x) =
       PresentedGroup.of (rels := rels) (e.symm x) := rfl
 

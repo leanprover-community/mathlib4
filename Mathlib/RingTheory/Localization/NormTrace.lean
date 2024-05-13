@@ -47,7 +47,7 @@ variable [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsSca
 
 open Algebra
 
-theorem Algebra.map_leftMulMatrix_localization {ι : Type*} [Fintype ι] [DecidableEq ι]
+lemma Algebra.map_leftMulMatrix_localization {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Basis ι R S) (a : S) :
     (algebraMap R Rₘ).mapMatrix (leftMulMatrix b a) =
     leftMulMatrix (b.localizationLocalization Rₘ M Sₘ) (algebraMap S Sₘ a) := by
@@ -98,7 +98,7 @@ variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
-theorem Algebra.traceMatrix_localizationLocalization (b : Basis ι R S) :
+lemma Algebra.traceMatrix_localizationLocalization (b : Basis ι R S) :
     Algebra.traceMatrix Rₘ (b.localizationLocalization Rₘ M Sₘ) =
       (algebraMap R Rₘ).mapMatrix (Algebra.traceMatrix R b) := by
   have : Module.Finite R S := Module.Finite.of_basis b

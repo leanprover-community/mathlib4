@@ -20,12 +20,12 @@ namespace Set
 variable {a b}
 
 @[simp]
-theorem add_mem_centralizer [Distrib M] (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) :
+lemma add_mem_centralizer [Distrib M] (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) :
     a + b ∈ centralizer S := fun c hc => by rw [add_mul, mul_add, ha c hc, hb c hc]
 #align set.add_mem_centralizer Set.add_mem_centralizer
 
 @[simp]
-theorem neg_mem_centralizer [Mul M] [HasDistribNeg M] (ha : a ∈ centralizer S) :
+lemma neg_mem_centralizer [Mul M] [HasDistribNeg M] (ha : a ∈ centralizer S) :
     -a ∈ centralizer S := fun c hc => by rw [mul_neg, ha c hc, neg_mul]
 #align set.neg_mem_centralizer Set.neg_mem_centralizer
 

@@ -39,7 +39,7 @@ class SimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
 #align simply_connected_space SimplyConnectedSpace
 #align simply_connected_def simply_connected_def
 
-theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
+lemma simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
     SimplyConnectedSpace X ↔
       Nonempty X ∧ ∀ x y : X, Nonempty (Unique (Path.Homotopic.Quotient x y)) := by
   simp only [simply_connected_def, equiv_punit_iff_unique,

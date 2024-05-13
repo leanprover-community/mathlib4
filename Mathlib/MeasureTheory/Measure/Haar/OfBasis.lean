@@ -49,12 +49,12 @@ def parallelepiped (v : ι → E) : Set E :=
   (fun t : ι → ℝ => ∑ i, t i • v i) '' Icc 0 1
 #align parallelepiped parallelepiped
 
-theorem mem_parallelepiped_iff (v : ι → E) (x : E) :
+lemma mem_parallelepiped_iff (v : ι → E) (x : E) :
     x ∈ parallelepiped v ↔ ∃ t ∈ Icc (0 : ι → ℝ) 1, x = ∑ i, t i • v i := by
   simp [parallelepiped, eq_comm]
 #align mem_parallelepiped_iff mem_parallelepiped_iff
 
-theorem parallelepiped_basis_eq (b : Basis ι ℝ E) :
+lemma parallelepiped_basis_eq (b : Basis ι ℝ E) :
     parallelepiped b = {x | ∀ i, b.repr x i ∈ Set.Icc 0 1} := by
   classical
   ext x
@@ -64,7 +64,7 @@ theorem parallelepiped_basis_eq (b : Basis ι ℝ E) :
     Pi.le_def, Pi.zero_apply, Pi.one_apply, ← forall_and]
   aesop
 
-theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
+lemma image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
   simp only [parallelepiped, ← image_comp]
   congr 1 with t
@@ -95,7 +95,7 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
 #align parallelepiped_comp_equiv parallelepiped_comp_equiv
 
 -- The parallelepiped associated to an orthonormal basis of `ℝ` is either `[0, 1]` or `[-1, 0]`.
-theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ) :
+lemma parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ) :
     parallelepiped b = Icc 0 1 ∨ parallelepiped b = Icc (-1) 0 := by
   have e : ι ≃ Fin 1 := by
     apply Fintype.equivFinOfCardEq
@@ -125,7 +125,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
       Finset.sum_singleton, ← image_comp, Function.comp, image_neg, preimage_neg_Icc, neg_zero]
 #align parallelepiped_orthonormal_basis_one_dim parallelepiped_orthonormalBasis_one_dim
 
-theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i, segment ℝ 0 (v i) := by
+lemma parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i, segment ℝ 0 (v i) := by
   ext
   simp only [mem_parallelepiped_iff, Set.mem_finset_sum, Finset.mem_univ, forall_true_left,
     segment_eq_image, smul_zero, zero_add, ← Set.pi_univ_Icc, Set.mem_univ_pi]
@@ -138,7 +138,7 @@ theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i,
   simp_rw [hg]
 #align parallelepiped_eq_sum_segment parallelepiped_eq_sum_segment
 
-theorem convex_parallelepiped (v : ι → E) : Convex ℝ (parallelepiped v) := by
+lemma convex_parallelepiped (v : ι → E) : Convex ℝ (parallelepiped v) := by
   rw [parallelepiped_eq_sum_segment]
   exact convex_sum _ fun _i _hi => convex_segment _ _
 #align convex_parallelepiped convex_parallelepiped
@@ -206,18 +206,18 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
 #align basis.parallelepiped Basis.parallelepiped
 
 @[simp]
-theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
+lemma Basis.coe_parallelepiped (b : Basis ι ℝ E) :
     (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
 #align basis.coe_parallelepiped Basis.coe_parallelepiped
 
 @[simp]
-theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
+lemma Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
     (b.reindex e).parallelepiped = b.parallelepiped :=
   PositiveCompacts.ext <|
     (congr_arg _root_.parallelepiped (b.coe_reindex e)).trans (parallelepiped_comp_equiv b e.symm)
 #align basis.parallelepiped_reindex Basis.parallelepiped_reindex
 
-theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
+lemma Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
     (have := FiniteDimensional.of_fintype_basis b
     -- Porting note: Lean cannot infer the instance above
@@ -229,7 +229,7 @@ theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
 #align basis.parallelepiped_map Basis.parallelepiped_map
 
 set_option tactic.skipAssignedInstances false in
-theorem Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
+lemma Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by
   ext x
   simp only [Basis.coe_parallelepiped, TopologicalSpace.PositiveCompacts.coe_prod, Set.mem_prod,
@@ -284,17 +284,17 @@ theorem Basis.addHaar_eq_iff [SecondCountableTopology E] (b : Basis ι ℝ E) (�
   exact addHaarMeasure_eq_iff b.parallelepiped μ
 
 @[simp]
-theorem Basis.addHaar_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
+lemma Basis.addHaar_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
     (b.reindex e).addHaar = b.addHaar := by
   rw [Basis.addHaar, b.parallelepiped_reindex e, ← Basis.addHaar]
 
-theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
+lemma Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
   rw [Basis.addHaar]; exact addHaarMeasure_self
 #align basis.add_haar_self Basis.addHaar_self
 
 variable [MeasurableSpace F] [BorelSpace F] [SecondCountableTopologyEither E F]
 
-theorem Basis.prod_addHaar (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
+lemma Basis.prod_addHaar (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).addHaar = v.addHaar.prod w.addHaar := by
   have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis v
   have : FiniteDimensional ℝ F := FiniteDimensional.of_fintype_basis w
@@ -345,10 +345,10 @@ protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
   measurable_invFun := measurable_id
 #align euclidean_space.measurable_equiv EuclideanSpace.measurableEquiv
 
-theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
+lemma coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
 #align euclidean_space.coe_measurable_equiv EuclideanSpace.coe_measurableEquiv
 
-theorem coe_measurableEquiv_symm :
+lemma coe_measurableEquiv_symm :
     ⇑(EuclideanSpace.measurableEquiv ι).symm = (WithLp.equiv 2 _).symm := rfl
 
 end EuclideanSpace

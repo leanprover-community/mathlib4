@@ -34,7 +34,7 @@ def prod : Subalgebra R (A × B) :=
 #align subalgebra.prod Subalgebra.prod
 
 @[simp]
-theorem coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ (S₁ : Set B) :=
+lemma coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ (S₁ : Set B) :=
   rfl
 #align subalgebra.coe_prod Subalgebra.coe_prod
 
@@ -43,21 +43,21 @@ theorem prod_toSubmodule : toSubmodule (S.prod S₁) = (toSubmodule S).prod (toS
 #align subalgebra.prod_to_submodule Subalgebra.prod_toSubmodule
 
 @[simp]
-theorem mem_prod {S : Subalgebra R A} {S₁ : Subalgebra R B} {x : A × B} :
+lemma mem_prod {S : Subalgebra R A} {S₁ : Subalgebra R B} {x : A × B} :
     x ∈ prod S S₁ ↔ x.1 ∈ S ∧ x.2 ∈ S₁ := Set.mem_prod
 #align subalgebra.mem_prod Subalgebra.mem_prod
 
 @[simp]
-theorem prod_top : (prod ⊤ ⊤ : Subalgebra R (A × B)) = ⊤ := by ext; simp
+lemma prod_top : (prod ⊤ ⊤ : Subalgebra R (A × B)) = ⊤ := by ext; simp
 #align subalgebra.prod_top Subalgebra.prod_top
 
-theorem prod_mono {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
+lemma prod_mono {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
     S ≤ T → S₁ ≤ T₁ → prod S S₁ ≤ prod T T₁ :=
   Set.prod_mono
 #align subalgebra.prod_mono Subalgebra.prod_mono
 
 @[simp]
-theorem prod_inf_prod {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
+lemma prod_inf_prod {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
     S.prod S₁ ⊓ T.prod T₁ = (S ⊓ T).prod (S₁ ⊓ T₁) :=
   SetLike.coe_injective Set.prod_inter_prod
 #align subalgebra.prod_inf_prod Subalgebra.prod_inf_prod

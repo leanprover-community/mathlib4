@@ -137,21 +137,21 @@ theorem tendsto_inv_atTop_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>
   inv_atTop₀.le
 #align tendsto_inv_at_top_zero' tendsto_inv_atTop_zero'
 
-theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
+lemma tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
   tendsto_inv_atTop_zero'.mono_right inf_le_left
 #align tendsto_inv_at_top_zero tendsto_inv_atTop_zero
 
-theorem Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atTop) :
+lemma Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x / g x) l (𝓝 0) := by
   simp only [div_eq_mul_inv]
   exact mul_zero a ▸ h.mul (tendsto_inv_atTop_zero.comp hg)
 #align filter.tendsto.div_at_top Filter.Tendsto.div_atTop
 
-theorem Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻¹ l (𝓝 0) :=
+lemma Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻¹ l (𝓝 0) :=
   tendsto_inv_atTop_zero.comp h
 #align filter.tendsto.inv_tendsto_at_top Filter.Tendsto.inv_tendsto_atTop
 
-theorem Filter.Tendsto.inv_tendsto_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
+lemma Filter.Tendsto.inv_tendsto_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
   tendsto_inv_zero_atTop.comp h
 #align filter.tendsto.inv_tendsto_zero Filter.Tendsto.inv_tendsto_zero
 
@@ -162,19 +162,19 @@ theorem tendsto_pow_neg_atTop {n : ℕ} (hn : n ≠ 0) :
   simpa only [zpow_neg, zpow_natCast] using (@tendsto_pow_atTop 𝕜 _ _ hn).inv_tendsto_atTop
 #align tendsto_pow_neg_at_top tendsto_pow_neg_atTop
 
-theorem tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
+lemma tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
     Tendsto (fun x : 𝕜 => x ^ n) atTop (𝓝 0) := by
   lift -n to ℕ using le_of_lt (neg_pos.mpr hn) with N h
   rw [← neg_pos, ← h, Nat.cast_pos] at hn
   simpa only [h, neg_neg] using tendsto_pow_neg_atTop hn.ne'
 #align tendsto_zpow_at_top_zero tendsto_zpow_atTop_zero
 
-theorem tendsto_const_mul_zpow_atTop_zero {n : ℤ} {c : 𝕜} (hn : n < 0) :
+lemma tendsto_const_mul_zpow_atTop_zero {n : ℤ} {c : 𝕜} (hn : n < 0) :
     Tendsto (fun x => c * x ^ n) atTop (𝓝 0) :=
   mul_zero c ▸ Filter.Tendsto.const_mul c (tendsto_zpow_atTop_zero hn)
 #align tendsto_const_mul_zpow_at_top_zero tendsto_const_mul_zpow_atTop_zero
 
-theorem tendsto_const_mul_pow_nhds_iff' {n : ℕ} {c d : 𝕜} :
+lemma tendsto_const_mul_pow_nhds_iff' {n : ℕ} {c d : 𝕜} :
     Tendsto (fun x : 𝕜 => c * x ^ n) atTop (𝓝 d) ↔ (c = 0 ∨ n = 0) ∧ c = d := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp [tendsto_const_nhds_iff]
@@ -186,12 +186,12 @@ theorem tendsto_const_mul_pow_nhds_iff' {n : ℕ} {c d : 𝕜} :
     simp [not_tendsto_nhds_of_tendsto_atTop this, hc.ne', hn]
 #align tendsto_const_mul_pow_nhds_iff' tendsto_const_mul_pow_nhds_iff'
 
-theorem tendsto_const_mul_pow_nhds_iff {n : ℕ} {c d : 𝕜} (hc : c ≠ 0) :
+lemma tendsto_const_mul_pow_nhds_iff {n : ℕ} {c d : 𝕜} (hc : c ≠ 0) :
     Tendsto (fun x : 𝕜 => c * x ^ n) atTop (𝓝 d) ↔ n = 0 ∧ c = d := by
   simp [tendsto_const_mul_pow_nhds_iff', hc]
 #align tendsto_const_mul_pow_nhds_iff tendsto_const_mul_pow_nhds_iff
 
-theorem tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : 𝕜} (hc : c ≠ 0) :
+lemma tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : 𝕜} (hc : c ≠ 0) :
     Tendsto (fun x : 𝕜 => c * x ^ n) atTop (𝓝 d) ↔ n = 0 ∧ c = d ∨ n < 0 ∧ d = 0 := by
   refine' ⟨fun h => _, fun h => _⟩
   · cases n with -- Porting note: Lean 3 proof used `by_cases`, then `lift` but `lift` failed
@@ -225,7 +225,7 @@ instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
 #align linear_ordered_field.to_topological_division_ring LinearOrderedField.toTopologicalDivisionRing
 
 -- Porting note (#11215): TODO: generalize to a `GroupWithZero`
-theorem nhdsWithin_pos_comap_mul_left {x : 𝕜} (hx : 0 < x) :
+lemma nhdsWithin_pos_comap_mul_left {x : 𝕜} (hx : 0 < x) :
     comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
   rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
   congr 1
@@ -233,7 +233,7 @@ theorem nhdsWithin_pos_comap_mul_left {x : 𝕜} (hx : 0 < x) :
   simp
 #align nhds_within_pos_comap_mul_left nhdsWithin_pos_comap_mul_left
 
-theorem eventually_nhdsWithin_pos_mul_left {x : 𝕜} (hx : 0 < x) {p : 𝕜 → Prop}
+lemma eventually_nhdsWithin_pos_mul_left {x : 𝕜} (hx : 0 < x) {p : 𝕜 → Prop}
     (h : ∀ᶠ ε in 𝓝[>] 0, p ε) : ∀ᶠ ε in 𝓝[>] 0, p (x * ε) := by
   rw [← nhdsWithin_pos_comap_mul_left hx]
   exact h.comap fun ε => x * ε

@@ -63,7 +63,7 @@ def IsUniform (X : Ω → E) (s : Set E) (ℙ : Measure Ω) (μ : Measure E := b
 
 namespace IsUniform
 
-theorem aemeasurable {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
+lemma aemeasurable {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) : AEMeasurable X ℙ := by
   dsimp [IsUniform, ProbabilityTheory.cond] at hu
   by_contra h
@@ -74,17 +74,17 @@ theorem aemeasurable {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s �
     _ = _ := by rw [hu, smul_apply, restrict_apply MeasurableSet.univ,
       Set.univ_inter, smul_eq_mul, ENNReal.inv_mul_cancel hns hnt]
 
-theorem absolutelyContinuous {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) : map X ℙ ≪ μ := by
+lemma absolutelyContinuous {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) : map X ℙ ≪ μ := by
   rw [hu]; exact ProbabilityTheory.cond_absolutelyContinuous
 
-theorem measure_preimage {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
+lemma measure_preimage {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) {A : Set E} (hA : MeasurableSet A) :
     ℙ (X ⁻¹' A) = μ (s ∩ A) / μ s := by
   rwa [← map_apply_of_aemeasurable (hu.aemeasurable hns hnt) hA, hu, ProbabilityTheory.cond_apply',
     ENNReal.div_eq_inv_mul]
 #align measure_theory.pdf.is_uniform.measure_preimage MeasureTheory.pdf.IsUniform.measure_preimage
 
-theorem isProbabilityMeasure {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
+lemma isProbabilityMeasure {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) : IsProbabilityMeasure ℙ :=
   ⟨by
     have : X ⁻¹' Set.univ = Set.univ := Set.preimage_univ
@@ -92,17 +92,17 @@ theorem isProbabilityMeasure {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt 
       ENNReal.div_self hns hnt]⟩
 #align measure_theory.pdf.is_uniform.is_probability_measure MeasureTheory.pdf.IsUniform.isProbabilityMeasure
 
-theorem toMeasurable_iff {X : Ω → E} {s : Set E} :
+lemma toMeasurable_iff {X : Ω → E} {s : Set E} :
     IsUniform X (toMeasurable μ s) ℙ μ ↔ IsUniform X s ℙ μ := by
   unfold IsUniform
   rw [ProbabilityTheory.cond_toMeasurable_eq]
 
-protected theorem toMeasurable {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) :
+protected lemma toMeasurable {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) :
     IsUniform X (toMeasurable μ s) ℙ μ := by
   unfold IsUniform at *
   rwa [ProbabilityTheory.cond_toMeasurable_eq]
 
-theorem hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
+lemma hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) : HasPDF X ℙ μ := by
   let t := toMeasurable μ s
   apply hasPDF_of_map_eq_withDensity (hu.aemeasurable hns hnt) (t.indicator ((μ t)⁻¹ • 1)) <|
@@ -111,7 +111,7 @@ theorem hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞
     withDensity_one, restrict_toMeasurable hnt, measure_toMeasurable, ProbabilityTheory.cond]
 #align measure_theory.pdf.is_uniform.has_pdf MeasureTheory.pdf.IsUniform.hasPDF
 
-theorem pdf_eq_zero_of_measure_eq_zero_or_top {X : Ω → E} {s : Set E}
+lemma pdf_eq_zero_of_measure_eq_zero_or_top {X : Ω → E} {s : Set E}
     (hu : IsUniform X s ℙ μ) (hμs : μ s = 0 ∨ μ s = ∞) : pdf X ℙ μ =ᵐ[μ] 0 := by
   rcases hμs with H|H
   · simp only [IsUniform, ProbabilityTheory.cond, H, ENNReal.inv_zero, restrict_eq_zero.mpr H,
@@ -120,7 +120,7 @@ theorem pdf_eq_zero_of_measure_eq_zero_or_top {X : Ω → E} {s : Set E}
   · simp only [IsUniform, ProbabilityTheory.cond, H, ENNReal.inv_top, zero_smul] at hu
     simp [pdf, hu]
 
-theorem pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
+lemma pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
     (hu : IsUniform X s ℙ μ) : pdf X ℙ μ =ᵐ[μ] s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) := by
   by_cases hnt : μ s = ∞
   · simp [pdf_eq_zero_of_measure_eq_zero_or_top hu (Or.inr hnt), hnt]
@@ -135,7 +135,7 @@ theorem pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
       ProbabilityTheory.cond]
   · exact (measurable_one.aemeasurable.const_smul (μ s)⁻¹).indicator hms
 
-theorem pdf_toReal_ae_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
+lemma pdf_toReal_ae_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
     (hX : IsUniform X s ℙ μ) :
     (fun x => (pdf X ℙ μ x).toReal) =ᵐ[μ] fun x =>
       (s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) x).toReal :=
@@ -144,7 +144,7 @@ theorem pdf_toReal_ae_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
 
 variable {X : Ω → ℝ} {s : Set ℝ}
 
-theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
+lemma mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
     Integrable fun x : ℝ => x * (pdf X ℙ volume x).toReal := by
   by_cases hnt : volume s = 0 ∨ volume s = ∞
   · have I : Integrable (fun x ↦ x * ENNReal.toReal (0)) := by simp
@@ -235,27 +235,27 @@ def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
 variable {s : Finset α} (hs : s.Nonempty) {a : α}
 
 @[simp]
-theorem uniformOfFinset_apply (a : α) :
+lemma uniformOfFinset_apply (a : α) :
     uniformOfFinset s hs a = if a ∈ s then (s.card : ℝ≥0∞)⁻¹ else 0 :=
   rfl
 #align pmf.uniform_of_finset_apply PMF.uniformOfFinset_apply
 
-theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (s.card : ℝ≥0∞)⁻¹ := by
+lemma uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (s.card : ℝ≥0∞)⁻¹ := by
   simp [ha]
 #align pmf.uniform_of_finset_apply_of_mem PMF.uniformOfFinset_apply_of_mem
 
-theorem uniformOfFinset_apply_of_not_mem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
+lemma uniformOfFinset_apply_of_not_mem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
 #align pmf.uniform_of_finset_apply_of_not_mem PMF.uniformOfFinset_apply_of_not_mem
 
 @[simp]
-theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
+lemma support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
   Set.ext
     (by
       let ⟨a, ha⟩ := hs
       simp [mem_support_iff, Finset.ne_empty_of_mem ha])
 #align pmf.support_uniform_of_finset PMF.support_uniformOfFinset
 
-theorem mem_support_uniformOfFinset_iff (a : α) : a ∈ (uniformOfFinset s hs).support ↔ a ∈ s := by
+lemma mem_support_uniformOfFinset_iff (a : α) : a ∈ (uniformOfFinset s hs).support ↔ a ∈ s := by
   simp
 #align pmf.mem_support_uniform_of_finset_iff PMF.mem_support_uniformOfFinset_iff
 
@@ -264,7 +264,7 @@ section Measure
 variable (t : Set α)
 
 @[simp]
-theorem toOuterMeasure_uniformOfFinset_apply :
+lemma toOuterMeasure_uniformOfFinset_apply :
     (uniformOfFinset s hs).toOuterMeasure t = (s.filter (· ∈ t)).card / s.card :=
   calc
     (uniformOfFinset s hs).toOuterMeasure t = ∑' x, if x ∈ t then uniformOfFinset s hs x else 0 :=
@@ -283,7 +283,7 @@ theorem toOuterMeasure_uniformOfFinset_apply :
 #align pmf.to_outer_measure_uniform_of_finset_apply PMF.toOuterMeasure_uniformOfFinset_apply
 
 @[simp]
-theorem toMeasure_uniformOfFinset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
+lemma toMeasure_uniformOfFinset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
     (uniformOfFinset s hs).toMeasure t = (s.filter (· ∈ t)).card / s.card :=
   (toMeasure_apply_eq_toOuterMeasure_apply _ t ht).trans (toOuterMeasure_uniformOfFinset_apply hs t)
 #align pmf.to_measure_uniform_of_finset_apply PMF.toMeasure_uniformOfFinset_apply
@@ -302,30 +302,30 @@ def uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] : PMF α :=
 variable [Fintype α] [Nonempty α]
 
 @[simp]
-theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card α : ℝ≥0∞)⁻¹ := by
+lemma uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card α : ℝ≥0∞)⁻¹ := by
   simp [uniformOfFintype, Finset.mem_univ, if_true, uniformOfFinset_apply]
 #align pmf.uniform_of_fintype_apply PMF.uniformOfFintype_apply
 
 @[simp]
-theorem support_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
+lemma support_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
     (uniformOfFintype α).support = ⊤ :=
   Set.ext fun x => by simp [mem_support_iff]
 #align pmf.support_uniform_of_fintype PMF.support_uniformOfFintype
 
-theorem mem_support_uniformOfFintype (a : α) : a ∈ (uniformOfFintype α).support := by simp
+lemma mem_support_uniformOfFintype (a : α) : a ∈ (uniformOfFintype α).support := by simp
 #align pmf.mem_support_uniform_of_fintype PMF.mem_support_uniformOfFintype
 
 section Measure
 
 variable (s : Set α)
 
-theorem toOuterMeasure_uniformOfFintype_apply :
+lemma toOuterMeasure_uniformOfFintype_apply :
     (uniformOfFintype α).toOuterMeasure s = Fintype.card s / Fintype.card α := by
   rw [uniformOfFintype, toOuterMeasure_uniformOfFinset_apply,Fintype.card_ofFinset]
   rfl
 #align pmf.to_outer_measure_uniform_of_fintype_apply PMF.toOuterMeasure_uniformOfFintype_apply
 
-theorem toMeasure_uniformOfFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) :
+lemma toMeasure_uniformOfFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) :
     (uniformOfFintype α).toMeasure s = Fintype.card s / Fintype.card α := by
   simp [uniformOfFintype, hs]
 #align pmf.to_measure_uniform_of_fintype_apply PMF.toMeasure_uniformOfFintype_apply
@@ -359,20 +359,20 @@ def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
 variable {s : Multiset α} (hs : s ≠ 0)
 
 @[simp]
-theorem ofMultiset_apply (a : α) : ofMultiset s hs a = s.count a / (Multiset.card s) :=
+lemma ofMultiset_apply (a : α) : ofMultiset s hs a = s.count a / (Multiset.card s) :=
   rfl
 #align pmf.of_multiset_apply PMF.ofMultiset_apply
 
 @[simp]
-theorem support_ofMultiset : (ofMultiset s hs).support = s.toFinset :=
+lemma support_ofMultiset : (ofMultiset s hs).support = s.toFinset :=
   Set.ext (by simp [mem_support_iff, hs])
 #align pmf.support_of_multiset PMF.support_ofMultiset
 
-theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support ↔ a ∈ s.toFinset := by
+lemma mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support ↔ a ∈ s.toFinset := by
   simp
 #align pmf.mem_support_of_multiset_iff PMF.mem_support_ofMultiset_iff
 
-theorem ofMultiset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofMultiset s hs a = 0 := by
+lemma ofMultiset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofMultiset s hs a = 0 := by
   simpa only [ofMultiset_apply, ENNReal.div_eq_zero_iff, Nat.cast_eq_zero, Multiset.count_eq_zero,
     ENNReal.natCast_ne_top, or_false_iff] using ha
 #align pmf.of_multiset_apply_of_not_mem PMF.ofMultiset_apply_of_not_mem
@@ -382,7 +382,7 @@ section Measure
 variable (t : Set α)
 
 @[simp]
-theorem toOuterMeasure_ofMultiset_apply :
+lemma toOuterMeasure_ofMultiset_apply :
     (ofMultiset s hs).toOuterMeasure t =
       (∑' x, (s.filter (· ∈ t)).count x : ℝ≥0∞) / (Multiset.card s) := by
   simp_rw [div_eq_mul_inv, ← ENNReal.tsum_mul_right, toOuterMeasure_apply]
@@ -391,7 +391,7 @@ theorem toOuterMeasure_ofMultiset_apply :
 #align pmf.to_outer_measure_of_multiset_apply PMF.toOuterMeasure_ofMultiset_apply
 
 @[simp]
-theorem toMeasure_ofMultiset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
+lemma toMeasure_ofMultiset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
     (ofMultiset s hs).toMeasure t = (∑' x, (s.filter (· ∈ t)).count x : ℝ≥0∞) / (Multiset.card s) :=
   (toMeasure_apply_eq_toOuterMeasure_apply _ t ht).trans (toOuterMeasure_ofMultiset_apply hs t)
 #align pmf.to_measure_of_multiset_apply PMF.toMeasure_ofMultiset_apply

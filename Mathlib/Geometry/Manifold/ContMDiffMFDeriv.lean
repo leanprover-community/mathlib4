@@ -609,15 +609,15 @@ namespace ContMDiffMap
 -- They could be moved to another file (perhaps a new file) if desired.
 open scoped Manifold
 
-protected theorem mdifferentiable' (f : C^n⟮I, M; I', M'⟯) (hn : 1 ≤ n) : MDifferentiable I I' f :=
+protected lemma mdifferentiable' (f : C^n⟮I, M; I', M'⟯) (hn : 1 ≤ n) : MDifferentiable I I' f :=
   f.contMDiff.mdifferentiable hn
 #align cont_mdiff_map.mdifferentiable' ContMDiffMap.mdifferentiable'
 
-protected theorem mdifferentiable (f : C^∞⟮I, M; I', M'⟯) : MDifferentiable I I' f :=
+protected lemma mdifferentiable (f : C^∞⟮I, M; I', M'⟯) : MDifferentiable I I' f :=
   f.contMDiff.mdifferentiable le_top
 #align cont_mdiff_map.mdifferentiable ContMDiffMap.mdifferentiable
 
-protected theorem mdifferentiableAt (f : C^∞⟮I, M; I', M'⟯) {x} : MDifferentiableAt I I' f x :=
+protected lemma mdifferentiableAt (f : C^∞⟮I, M; I', M'⟯) {x} : MDifferentiableAt I I' f x :=
   f.mdifferentiable x
 #align cont_mdiff_map.mdifferentiable_at ContMDiffMap.mdifferentiableAt
 

@@ -56,17 +56,17 @@ noncomputable def extend (hs : LinearIndependent K ((↑) : s → V)) :
     (SetLike.coe_subset_coe.mp <| by simpa using hs.subset_span_extend (subset_univ s))
 #align basis.extend Basis.extend
 
-theorem extend_apply_self (hs : LinearIndependent K ((↑) : s → V)) (x : hs.extend _) :
+lemma extend_apply_self (hs : LinearIndependent K ((↑) : s → V)) (x : hs.extend _) :
     Basis.extend hs x = x :=
   Basis.mk_apply _ _ _
 #align basis.extend_apply_self Basis.extend_apply_self
 
 @[simp]
-theorem coe_extend (hs : LinearIndependent K ((↑) : s → V)) : ⇑(Basis.extend hs) = ((↑) : _ → _) :=
+lemma coe_extend (hs : LinearIndependent K ((↑) : s → V)) : ⇑(Basis.extend hs) = ((↑) : _ → _) :=
   funext (extend_apply_self hs)
 #align basis.coe_extend Basis.coe_extend
 
-theorem range_extend (hs : LinearIndependent K ((↑) : s → V)) :
+lemma range_extend (hs : LinearIndependent K ((↑) : s → V)) :
     range (Basis.extend hs) = hs.extend (subset_univ _) := by
   rw [coe_extend, Subtype.range_coe_subtype, setOf_mem_eq]
 #align basis.range_extend Basis.range_extend
@@ -93,7 +93,7 @@ noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ sumExte
           Equiv.Set.sumDiffSubset (hs.to_subtype_range.subset_extend _)
 #align basis.sum_extend Basis.sumExtend
 
-theorem subset_extend {s : Set V} (hs : LinearIndependent K ((↑) : s → V)) :
+lemma subset_extend {s : Set V} (hs : LinearIndependent K ((↑) : s → V)) :
     s ⊆ hs.extend (Set.subset_univ _) :=
   hs.subset_extend _
 #align basis.subset_extend Basis.subset_extend
@@ -116,28 +116,28 @@ instance (priority := 100) _root_.Module.Free.of_divisionRing : Module.Free K V 
   Module.Free.of_basis (ofVectorSpace K V)
 #align module.free.of_division_ring Module.Free.of_divisionRing
 
-theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K V x = x := by
+lemma ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K V x = x := by
   unfold ofVectorSpace
   exact Basis.mk_apply _ _ _
 #align basis.of_vector_space_apply_self Basis.ofVectorSpace_apply_self
 
 @[simp]
-theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _ ) :=
+lemma coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _ ) :=
   funext fun x => ofVectorSpace_apply_self K V x
 #align basis.coe_of_vector_space Basis.coe_ofVectorSpace
 
-theorem ofVectorSpaceIndex.linearIndependent :
+lemma ofVectorSpaceIndex.linearIndependent :
     LinearIndependent K ((↑) : ofVectorSpaceIndex K V → V) := by
   convert (ofVectorSpace K V).linearIndependent
   ext x
   rw [ofVectorSpace_apply_self]
 #align basis.of_vector_space_index.linear_independent Basis.ofVectorSpaceIndex.linearIndependent
 
-theorem range_ofVectorSpace : range (ofVectorSpace K V) = ofVectorSpaceIndex K V :=
+lemma range_ofVectorSpace : range (ofVectorSpace K V) = ofVectorSpaceIndex K V :=
   range_extend _
 #align basis.range_of_vector_space Basis.range_ofVectorSpace
 
-theorem exists_basis : ∃ s : Set V, Nonempty (Basis s K V) :=
+lemma exists_basis : ∃ s : Set V, Nonempty (Basis s K V) :=
   ⟨ofVectorSpaceIndex K V, ⟨ofVectorSpace K V⟩⟩
 #align basis.exists_basis Basis.exists_basis
 
@@ -151,7 +151,7 @@ open Fintype
 
 variable (K V)
 
-theorem VectorSpace.card_fintype [Fintype K] [Fintype V] : ∃ n : ℕ, card V = card K ^ n := by
+lemma VectorSpace.card_fintype [Fintype K] [Fintype V] : ∃ n : ℕ, card V = card K ^ n := by
   classical
   exact ⟨card (Basis.ofVectorSpaceIndex K V), Module.card_fintype (Basis.ofVectorSpace K V)⟩
 #align vector_space.card_fintype VectorSpace.card_fintype
@@ -205,7 +205,7 @@ end AtomsOfSubmoduleLattice
 
 variable {K V}
 
-theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj : LinearMap.ker f = ⊥) :
+lemma LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj : LinearMap.ker f = ⊥) :
     ∃ g : V' →ₗ[K] V, g.comp f = LinearMap.id := by
   let B := Basis.ofVectorSpaceIndex K V
   let hB := Basis.ofVectorSpace K V
@@ -228,7 +228,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 #align linear_map.exists_left_inverse_of_injective LinearMap.exists_leftInverse_of_injective
 
-theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, IsCompl p q :=
+lemma Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, IsCompl p q :=
   let ⟨f, hf⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| LinearMap.ext_iff.1 hf⟩
 #align submodule.exists_is_compl Submodule.exists_isCompl
@@ -237,7 +237,7 @@ instance Module.Submodule.complementedLattice : ComplementedLattice (Submodule K
   ⟨Submodule.exists_isCompl⟩
 #align module.submodule.complemented_lattice Module.Submodule.complementedLattice
 
-theorem LinearMap.exists_rightInverse_of_surjective (f : V →ₗ[K] V') (hf_surj : range f = ⊤) :
+lemma LinearMap.exists_rightInverse_of_surjective (f : V →ₗ[K] V') (hf_surj : range f = ⊤) :
     ∃ g : V' →ₗ[K] V, f.comp g = LinearMap.id := by
   let C := Basis.ofVectorSpaceIndex K V'
   let hC := Basis.ofVectorSpace K V'
@@ -273,7 +273,7 @@ theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     simpa using (LinearMap.congr_fun hf _).trans this
 #align submodule.exists_le_ker_of_lt_top Submodule.exists_le_ker_of_lt_top
 
-theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × p) ≃ₗ[K] V) :=
+lemma quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × p) ≃ₗ[K] V) :=
   let ⟨q, hq⟩ := p.exists_isCompl
   Nonempty.intro <|
     ((quotientEquivOfIsCompl p q hq).prod (LinearEquiv.refl _ _)).trans

@@ -144,12 +144,12 @@ lemma bdd_below_bdd_above_iff_subset_uIcc (s : Set α) :
 section Prod
 
 @[simp]
-theorem uIcc_prod_uIcc (a₁ a₂ : α) (b₁ b₂ : β) :
+lemma uIcc_prod_uIcc (a₁ a₂ : α) (b₁ b₂ : β) :
     [[a₁, a₂]] ×ˢ [[b₁, b₂]] = [[(a₁, b₁), (a₂, b₂)]] :=
   Icc_prod_Icc _ _ _ _
 #align set.uIcc_prod_uIcc Set.uIcc_prod_uIcc
 
-theorem uIcc_prod_eq (a b : α × β) : [[a, b]] = [[a.1, b.1]] ×ˢ [[a.2, b.2]] := by simp
+lemma uIcc_prod_eq (a b : α × β) : [[a, b]] = [[a.1, b.1]] ×ˢ [[a.2, b.2]] := by simp
 #align set.uIcc_prod_eq Set.uIcc_prod_eq
 
 end Prod
@@ -219,7 +219,7 @@ end Lattice
 
 variable [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ c d x : α}
 
-theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
+lemma Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
 #align set.Icc_min_max Set.Icc_min_max
 

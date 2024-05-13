@@ -74,23 +74,23 @@ def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
 #align category_theory.paths.lift CategoryTheory.Paths.lift
 
 @[simp]
-theorem lift_nil {C} [Category C] (φ : V ⥤q C) (X : V) :
+lemma lift_nil {C} [Category C] (φ : V ⥤q C) (X : V) :
     (lift φ).map Quiver.Path.nil = 𝟙 (φ.obj X) := rfl
 #align category_theory.paths.lift_nil CategoryTheory.Paths.lift_nil
 
 @[simp]
-theorem lift_cons {C} [Category C] (φ : V ⥤q C) {X Y Z : V} (p : Quiver.Path X Y) (f : Y ⟶ Z) :
+lemma lift_cons {C} [Category C] (φ : V ⥤q C) {X Y Z : V} (p : Quiver.Path X Y) (f : Y ⟶ Z) :
     (lift φ).map (p.cons f) = (lift φ).map p ≫ φ.map f := rfl
 #align category_theory.paths.lift_cons CategoryTheory.Paths.lift_cons
 
 @[simp]
-theorem lift_toPath {C} [Category C] (φ : V ⥤q C) {X Y : V} (f : X ⟶ Y) :
+lemma lift_toPath {C} [Category C] (φ : V ⥤q C) {X Y : V} (f : X ⟶ Y) :
     (lift φ).map f.toPath = φ.map f := by
   dsimp [Quiver.Hom.toPath, lift]
   simp
 #align category_theory.paths.lift_to_path CategoryTheory.Paths.lift_toPath
 
-theorem lift_spec {C} [Category C] (φ : V ⥤q C) : of ⋙q (lift φ).toPrefunctor = φ := by
+lemma lift_spec {C} [Category C] (φ : V ⥤q C) : of ⋙q (lift φ).toPrefunctor = φ := by
   fapply Prefunctor.ext
   · rintro X
     rfl
@@ -100,7 +100,7 @@ theorem lift_spec {C} [Category C] (φ : V ⥤q C) : of ⋙q (lift φ).toPrefunc
     simp only [Category.id_comp]
 #align category_theory.paths.lift_spec CategoryTheory.Paths.lift_spec
 
-theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
+lemma lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
     (hΦ : of ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
   subst_vars
   fapply Functor.ext
@@ -141,7 +141,7 @@ variable (W : Type u₂) [Quiver.{v₂ + 1} W]
 
 -- A restatement of `Prefunctor.mapPath_comp` using `f ≫ g` instead of `f.comp g`.
 @[simp]
-theorem Prefunctor.mapPath_comp' (F : V ⥤q W) {X Y Z : Paths V} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma Prefunctor.mapPath_comp' (F : V ⥤q W) {X Y Z : Paths V} (f : X ⟶ Y) (g : Y ⟶ Z) :
     F.mapPath (f ≫ g) = (F.mapPath f).comp (F.mapPath g) :=
   Prefunctor.mapPath_comp _ _ _
 #align category_theory.prefunctor.map_path_comp' CategoryTheory.Prefunctor.mapPath_comp'
@@ -169,11 +169,11 @@ def composePath {X : C} : ∀ {Y : C} (_ : Path X Y), X ⟶ Y
   composePath (p.cons e) = composePath p ≫ e := rfl
 
 @[simp]
-theorem composePath_toPath {X Y : C} (f : X ⟶ Y) : composePath f.toPath = f := Category.id_comp _
+lemma composePath_toPath {X Y : C} (f : X ⟶ Y) : composePath f.toPath = f := Category.id_comp _
 #align category_theory.compose_path_to_path CategoryTheory.composePath_toPath
 
 @[simp]
-theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
+lemma composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
     composePath (f.comp g) = composePath f ≫ composePath g := by
   induction' g with Y' Z' g e ih
   · simp
@@ -182,11 +182,11 @@ theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
 
 @[simp]
 -- Porting note (#11215): TODO get rid of `(id X : C)` somehow?
-theorem composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 (id X : C) := rfl
+lemma composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 (id X : C) := rfl
 #align category_theory.compose_path_id CategoryTheory.composePath_id
 
 @[simp]
-theorem composePath_comp' {X Y Z : Paths C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma composePath_comp' {X Y Z : Paths C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     composePath (f ≫ g) = composePath f ≫ composePath g :=
   composePath_comp f g
 #align category_theory.compose_path_comp' CategoryTheory.composePath_comp'

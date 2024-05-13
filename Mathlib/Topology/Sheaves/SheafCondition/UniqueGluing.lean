@@ -109,7 +109,7 @@ def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
   · exact (h i' i).symm
   · exact congr_fun (G.map_id <| op <| Pairwise.pair i j) _
 
-theorem isGluing_iff_pairwise {sf s} : IsGluing F U sf s ↔
+lemma isGluing_iff_pairwise {sf s} : IsGluing F U sf s ↔
     ∀ i, (F.mapCone (Pairwise.cocone U).op).π.app i s = objPairwiseOfFamily sf i := by
   refine ⟨fun h ↦ ?_, fun h i ↦ h (op <| Pairwise.single i)⟩
   rintro (i|⟨i,j⟩)
@@ -213,7 +213,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.sheaf.exists_unique_gluing' TopCat.Sheaf.existsUnique_gluing'
 
 @[ext]
-theorem eq_of_locally_eq (s t : F.1.obj (op (iSup U)))
+lemma eq_of_locally_eq (s t : F.1.obj (op (iSup U)))
     (h : ∀ i, F.1.map (Opens.leSupr U i).op s = F.1.map (Opens.leSupr U i).op t) : s = t := by
   let sf : ∀ i : ι, F.1.obj (op (U i)) := fun i => F.1.map (Opens.leSupr U i).op s
   have sf_compatible : IsCompatible _ U sf := by
@@ -249,7 +249,7 @@ theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : 
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.eq_of_locally_eq' TopCat.Sheaf.eq_of_locally_eq'
 
-theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : U₂ ⟶ V) (hcover : V ≤ U₁ ⊔ U₂)
+lemma eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : U₂ ⟶ V) (hcover : V ≤ U₁ ⊔ U₂)
     (s t : F.1.obj (op V)) (h₁ : F.1.map i₁.op s = F.1.map i₁.op t)
     (h₂ : F.1.map i₂.op s = F.1.map i₂.op t) : s = t := by
   classical
@@ -268,7 +268,7 @@ set_option linter.uppercaseLean3 false in
 
 end
 
-theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCat.{u})
+lemma objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCat.{u})
     {U V W UW VW : Opens X} (e : W ≤ U ⊔ V) (x) (y : F.1.obj (op W))
     (h₁ : UW = U ⊓ W) (h₂ : VW = V ⊓ W) :
     F.1.map (homOfLE e).op ((F.objSupIsoProdEqLocus U V).inv x) = y ↔

@@ -53,7 +53,7 @@ def factorThruImage : G ⟶ image f :=
   f.rangeRestrict
 #align AddCommGroup.factor_thru_image AddCommGroupCat.factorThruImage
 
-theorem image.fac : factorThruImage f ≫ image.ι f = f := by
+lemma image.fac : factorThruImage f ≫ image.ι f = f := by
   ext
   rfl
 #align AddCommGroup.image.fac AddCommGroupCat.image.fac
@@ -84,7 +84,7 @@ noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I where
     rfl
 #align AddCommGroup.image.lift AddCommGroupCat.image.lift
 
-theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f := by
+lemma image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f := by
   ext x
   change (F'.e ≫ F'.m) _ = _
   rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]

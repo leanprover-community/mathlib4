@@ -39,32 +39,32 @@ def lapMatrix [AddGroupWithOne α] : Matrix V V α := G.degMatrix α - G.adjMatr
 
 variable {α}
 
-theorem isSymm_degMatrix [AddMonoidWithOne α] : (G.degMatrix α).IsSymm :=
+lemma isSymm_degMatrix [AddMonoidWithOne α] : (G.degMatrix α).IsSymm :=
   isSymm_diagonal _
 
-theorem isSymm_lapMatrix [AddGroupWithOne α] : (G.lapMatrix α).IsSymm :=
+lemma isSymm_lapMatrix [AddGroupWithOne α] : (G.lapMatrix α).IsSymm :=
   (isSymm_degMatrix _).sub (isSymm_adjMatrix _)
 
-theorem degMatrix_mulVec_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
+lemma degMatrix_mulVec_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
     (G.degMatrix α).mulVec vec v = G.degree v * vec v := by
   rw [degMatrix, mulVec_diagonal]
 
-theorem lapMatrix_mulVec_apply [NonAssocRing α] (v : V) (vec : V → α) :
+lemma lapMatrix_mulVec_apply [NonAssocRing α] (v : V) (vec : V → α) :
     (G.lapMatrix α).mulVec vec v = G.degree v * vec v - ∑ u in G.neighborFinset v, vec u := by
   simp_rw [lapMatrix, sub_mulVec, Pi.sub_apply, degMatrix_mulVec_apply, adjMatrix_mulVec_apply]
 
-theorem lapMatrix_mulVec_const_eq_zero [Ring α] : mulVec (G.lapMatrix α) (fun _ ↦ 1) = 0 := by
+lemma lapMatrix_mulVec_const_eq_zero [Ring α] : mulVec (G.lapMatrix α) (fun _ ↦ 1) = 0 := by
   ext1 i
   rw [lapMatrix_mulVec_apply]
   simp
 
-theorem dotProduct_mulVec_degMatrix [CommRing α] (x : V → α) :
+lemma dotProduct_mulVec_degMatrix [CommRing α] (x : V → α) :
     x ⬝ᵥ (G.degMatrix α).mulVec x = ∑ i : V, G.degree i * x i * x i := by
   simp only [dotProduct, degMatrix, mulVec_diagonal, ← mul_assoc, mul_comm]
 
 variable (α)
 
-theorem degree_eq_sum_if_adj [AddCommMonoidWithOne α] (i : V) :
+lemma degree_eq_sum_if_adj [AddCommMonoidWithOne α] (i : V) :
     (G.degree i : α) = ∑ j : V, if G.Adj i j then 1 else 0 := by
   unfold degree neighborFinset neighborSet
   rw [sum_boole, Set.toFinset_setOf]
@@ -98,7 +98,7 @@ theorem posSemidef_lapMatrix [LinearOrderedField α] [StarRing α] [StarOrderedR
     · apply sq_nonneg
     · rfl
 
-theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedField α] (x : V → α) :
+lemma lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedField α] (x : V → α) :
     Matrix.toLinearMap₂' (G.lapMatrix α) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   constructor
   · intro h i j
@@ -116,12 +116,12 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedFi
     refine Or.inl <| sum_eq_zero fun i _ ↦ (sum_eq_zero fun j _ ↦ ?_)
     simpa only [ite_eq_right_iff, pow_eq_zero_iff two_ne_zero, sub_eq_zero] using h i j
 
-theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
+lemma lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
     Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
 
-theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
+lemma lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
     Matrix.toLinearMap₂' (G.lapMatrix ℝ) x x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
   refine ⟨?_, fun h i j hA ↦ h i j hA.reachable⟩
@@ -130,7 +130,7 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V →
   · rfl
   · exact (h i j hA).trans h'
 
-theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
+lemma lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
     Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable]

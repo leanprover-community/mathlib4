@@ -36,20 +36,20 @@ namespace Mathlib.Tactic.LinearCombination
 open Lean hiding Rat
 open Elab Meta Term
 
-theorem pf_add_c [Add α] (p : a = b) (c : α) : a + c = b + c := p ▸ rfl
-theorem c_add_pf [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
-theorem add_pf [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
-theorem pf_sub_c [Sub α] (p : a = b) (c : α) : a - c = b - c := p ▸ rfl
-theorem c_sub_pf [Sub α] (p : b = c) (a : α) : a - b = a - c := p ▸ rfl
-theorem sub_pf [Sub α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ - a₂ = b₁ - b₂ := p₁ ▸ p₂ ▸ rfl
-theorem neg_pf [Neg α] (p : (a:α) = b) : -a = -b := p ▸ rfl
-theorem pf_mul_c [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
-theorem c_mul_pf [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
-theorem mul_pf [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := p₁ ▸ p₂ ▸ rfl
-theorem inv_pf [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := p ▸ rfl
-theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
-theorem c_div_pf [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
-theorem div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
+lemma pf_add_c [Add α] (p : a = b) (c : α) : a + c = b + c := p ▸ rfl
+lemma c_add_pf [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
+lemma add_pf [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
+lemma pf_sub_c [Sub α] (p : a = b) (c : α) : a - c = b - c := p ▸ rfl
+lemma c_sub_pf [Sub α] (p : b = c) (a : α) : a - b = a - c := p ▸ rfl
+lemma sub_pf [Sub α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ - a₂ = b₁ - b₂ := p₁ ▸ p₂ ▸ rfl
+lemma neg_pf [Neg α] (p : (a:α) = b) : -a = -b := p ▸ rfl
+lemma pf_mul_c [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
+lemma c_mul_pf [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
+lemma mul_pf [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := p₁ ▸ p₂ ▸ rfl
+lemma inv_pf [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := p ▸ rfl
+lemma pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
+lemma c_div_pf [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
+lemma div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
 
 /--
 Performs macro expansion of a linear combination expression,
@@ -106,12 +106,12 @@ partial def expandLinearCombo (stx : Syntax.Term) : TermElabM (Option Syntax.Ter
     some <$> e.toSyntax
   return result.map fun r => ⟨r.raw.setInfo (SourceInfo.fromRef stx true)⟩
 
-theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
+lemma eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
 
-theorem eq_of_add [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
+lemma eq_of_add [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; rwa [sub_eq_zero, p] at H
 
-theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
+lemma eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 

@@ -56,6 +56,6 @@ instance instOrderBot : OrderBot ℕ := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 
-theorem _root_.NeZero.one_le {n : ℕ} [NeZero n] : 1 ≤ n := one_le_iff_ne_zero.mpr (NeZero.ne n)
+lemma _root_.NeZero.one_le {n : ℕ} [NeZero n] : 1 ≤ n := one_le_iff_ne_zero.mpr (NeZero.ne n)
 
 end Nat

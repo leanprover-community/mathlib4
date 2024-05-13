@@ -23,7 +23,7 @@ lemma nat_sqrt_helper {x y r : ℕ} (hr : y * y + r = x) (hle : Nat.ble r (2 * y
   rw [two_mul] at hle
   exact Nat.sqrt_add_eq' _ (Nat.le_of_ble_eq_true hle)
 
-theorem isNat_sqrt : {x nx z : ℕ} → IsNat x nx → Nat.sqrt nx = z → IsNat (Nat.sqrt x) z
+lemma isNat_sqrt : {x nx z : ℕ} → IsNat x nx → Nat.sqrt nx = z → IsNat (Nat.sqrt x) z
   | _, _, _, ⟨rfl⟩, rfl => ⟨rfl⟩
 
 /-- Given the natural number literal `ex`, returns its square root as a natural number literal

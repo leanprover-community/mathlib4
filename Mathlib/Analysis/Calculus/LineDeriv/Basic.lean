@@ -119,15 +119,15 @@ lemma HasLineDerivWithinAt.lineDifferentiableWithinAt (hf : HasLineDerivWithinAt
     LineDifferentiableWithinAt 𝕜 f s x v :=
   HasDerivWithinAt.differentiableWithinAt hf
 
-theorem HasLineDerivAt.lineDifferentiableAt (hf : HasLineDerivAt 𝕜 f f' x v) :
+lemma HasLineDerivAt.lineDifferentiableAt (hf : HasLineDerivAt 𝕜 f f' x v) :
     LineDifferentiableAt 𝕜 f x v :=
   HasDerivAt.differentiableAt hf
 
-theorem LineDifferentiableWithinAt.hasLineDerivWithinAt (h : LineDifferentiableWithinAt 𝕜 f s x v) :
+lemma LineDifferentiableWithinAt.hasLineDerivWithinAt (h : LineDifferentiableWithinAt 𝕜 f s x v) :
     HasLineDerivWithinAt 𝕜 f (lineDerivWithin 𝕜 f s x v) s x v :=
   DifferentiableWithinAt.hasDerivWithinAt h
 
-theorem LineDifferentiableAt.hasLineDerivAt (h : LineDifferentiableAt 𝕜 f x v) :
+lemma LineDifferentiableAt.hasLineDerivAt (h : LineDifferentiableAt 𝕜 f x v) :
     HasLineDerivAt 𝕜 f (lineDeriv 𝕜 f x v) x v :=
   DifferentiableAt.hasDerivAt h
 
@@ -135,77 +135,77 @@ theorem LineDifferentiableAt.hasLineDerivAt (h : LineDifferentiableAt 𝕜 f x v
     HasLineDerivWithinAt 𝕜 f f' univ x v ↔ HasLineDerivAt 𝕜 f f' x v := by
   simp only [HasLineDerivWithinAt, HasLineDerivAt, preimage_univ, hasDerivWithinAt_univ]
 
-theorem lineDerivWithin_zero_of_not_lineDifferentiableWithinAt
+lemma lineDerivWithin_zero_of_not_lineDifferentiableWithinAt
     (h : ¬LineDifferentiableWithinAt 𝕜 f s x v) :
     lineDerivWithin 𝕜 f s x v = 0 :=
   derivWithin_zero_of_not_differentiableWithinAt h
 
-theorem lineDeriv_zero_of_not_lineDifferentiableAt (h : ¬LineDifferentiableAt 𝕜 f x v) :
+lemma lineDeriv_zero_of_not_lineDifferentiableAt (h : ¬LineDifferentiableAt 𝕜 f x v) :
     lineDeriv 𝕜 f x v = 0 :=
   deriv_zero_of_not_differentiableAt h
 
-theorem hasLineDerivAt_iff_isLittleO_nhds_zero :
+lemma hasLineDerivAt_iff_isLittleO_nhds_zero :
     HasLineDerivAt 𝕜 f f' x v ↔
       (fun t : 𝕜 => f (x + t • v) - f x - t • f') =o[𝓝 0] fun t => t := by
   simp only [HasLineDerivAt, hasDerivAt_iff_isLittleO_nhds_zero, zero_add, zero_smul, add_zero]
 
-theorem HasLineDerivAt.unique (h₀ : HasLineDerivAt 𝕜 f f₀' x v) (h₁ : HasLineDerivAt 𝕜 f f₁' x v) :
+lemma HasLineDerivAt.unique (h₀ : HasLineDerivAt 𝕜 f f₀' x v) (h₁ : HasLineDerivAt 𝕜 f f₁' x v) :
     f₀' = f₁' :=
   HasDerivAt.unique h₀ h₁
 
-protected theorem HasLineDerivAt.lineDeriv (h : HasLineDerivAt 𝕜 f f' x v) :
+protected lemma HasLineDerivAt.lineDeriv (h : HasLineDerivAt 𝕜 f f' x v) :
     lineDeriv 𝕜 f x v = f' := by
   rw [h.unique h.lineDifferentiableAt.hasLineDerivAt]
 
-theorem lineDifferentiableWithinAt_univ :
+lemma lineDifferentiableWithinAt_univ :
     LineDifferentiableWithinAt 𝕜 f univ x v ↔ LineDifferentiableAt 𝕜 f x v := by
   simp only [LineDifferentiableWithinAt, LineDifferentiableAt, preimage_univ,
     differentiableWithinAt_univ]
 
-theorem LineDifferentiableAt.lineDifferentiableWithinAt (h : LineDifferentiableAt 𝕜 f x v) :
+lemma LineDifferentiableAt.lineDifferentiableWithinAt (h : LineDifferentiableAt 𝕜 f x v) :
     LineDifferentiableWithinAt 𝕜 f s x v :=
   (differentiableWithinAt_univ.2 h).mono (subset_univ _)
 
 @[simp]
-theorem lineDerivWithin_univ : lineDerivWithin 𝕜 f univ x v = lineDeriv 𝕜 f x v := by
+lemma lineDerivWithin_univ : lineDerivWithin 𝕜 f univ x v = lineDeriv 𝕜 f x v := by
   simp [lineDerivWithin, lineDeriv]
 
-theorem LineDifferentiableWithinAt.mono (h : LineDifferentiableWithinAt 𝕜 f t x v) (st : s ⊆ t) :
+lemma LineDifferentiableWithinAt.mono (h : LineDifferentiableWithinAt 𝕜 f t x v) (st : s ⊆ t) :
     LineDifferentiableWithinAt 𝕜 f s x v :=
   (h.hasLineDerivWithinAt.mono st).lineDifferentiableWithinAt
 
-theorem HasLineDerivWithinAt.congr_mono (h : HasLineDerivWithinAt 𝕜 f f' s x v) (ht : EqOn f₁ f t)
+lemma HasLineDerivWithinAt.congr_mono (h : HasLineDerivWithinAt 𝕜 f f' s x v) (ht : EqOn f₁ f t)
     (hx : f₁ x = f x) (h₁ : t ⊆ s) : HasLineDerivWithinAt 𝕜 f₁ f' t x v :=
   HasDerivWithinAt.congr_mono h (fun y hy ↦ ht hy) (by simpa using hx) (preimage_mono h₁)
 
-theorem HasLineDerivWithinAt.congr (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : EqOn f₁ f s)
+lemma HasLineDerivWithinAt.congr (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : EqOn f₁ f s)
     (hx : f₁ x = f x) : HasLineDerivWithinAt 𝕜 f₁ f' s x v :=
   h.congr_mono hs hx (Subset.refl _)
 
-theorem HasLineDerivWithinAt.congr' (h : HasLineDerivWithinAt 𝕜 f f' s x v)
+lemma HasLineDerivWithinAt.congr' (h : HasLineDerivWithinAt 𝕜 f f' s x v)
     (hs : EqOn f₁ f s) (hx : x ∈ s) :
     HasLineDerivWithinAt 𝕜 f₁ f' s x v :=
   h.congr hs (hs hx)
 
-theorem LineDifferentiableWithinAt.congr_mono (h : LineDifferentiableWithinAt 𝕜 f s x v)
+lemma LineDifferentiableWithinAt.congr_mono (h : LineDifferentiableWithinAt 𝕜 f s x v)
     (ht : EqOn f₁ f t) (hx : f₁ x = f x) (h₁ : t ⊆ s) :
     LineDifferentiableWithinAt 𝕜 f₁ t x v :=
   (HasLineDerivWithinAt.congr_mono h.hasLineDerivWithinAt ht hx h₁).differentiableWithinAt
 
-theorem LineDifferentiableWithinAt.congr (h : LineDifferentiableWithinAt 𝕜 f s x v)
+lemma LineDifferentiableWithinAt.congr (h : LineDifferentiableWithinAt 𝕜 f s x v)
     (ht : ∀ x ∈ s, f₁ x = f x) (hx : f₁ x = f x) :
     LineDifferentiableWithinAt 𝕜 f₁ s x v :=
   LineDifferentiableWithinAt.congr_mono h ht hx (Subset.refl _)
 
-theorem lineDerivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
+lemma lineDerivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v :=
   derivWithin_congr (fun y hy ↦ hs hy) (by simpa using hx)
 
-theorem lineDerivWithin_congr' (hs : EqOn f₁ f s) (hx : x ∈ s) :
+lemma lineDerivWithin_congr' (hs : EqOn f₁ f s) (hx : x ∈ s) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v :=
   lineDerivWithin_congr hs (hs hx)
 
-theorem hasLineDerivAt_iff_tendsto_slope_zero :
+lemma hasLineDerivAt_iff_tendsto_slope_zero :
     HasLineDerivAt 𝕜 f f' x v ↔
       Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[≠] 0) (𝓝 f') := by
   simp only [HasLineDerivAt, hasDerivAt_iff_tendsto_slope_zero, zero_add,
@@ -213,11 +213,11 @@ theorem hasLineDerivAt_iff_tendsto_slope_zero :
 
 alias ⟨HasLineDerivAt.tendsto_slope_zero, _⟩ := hasLineDerivAt_iff_tendsto_slope_zero
 
-theorem HasLineDerivAt.tendsto_slope_zero_right [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
+lemma HasLineDerivAt.tendsto_slope_zero_right [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
     Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[>] 0) (𝓝 f') :=
   h.tendsto_slope_zero.mono_left (nhds_right'_le_nhds_ne 0)
 
-theorem HasLineDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
+lemma HasLineDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
     Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[<] 0) (𝓝 f') :=
   h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
 
@@ -232,21 +232,21 @@ Results that need a normed space structure on `E`
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {f f₀ f₁ : E → F} {f' : F} {s t : Set E} {x v : E} {L : E →L[𝕜] F}
 
-theorem HasLineDerivWithinAt.mono_of_mem
+lemma HasLineDerivWithinAt.mono_of_mem
     (h : HasLineDerivWithinAt 𝕜 f f' t x v) (hst : t ∈ 𝓝[s] x) :
     HasLineDerivWithinAt 𝕜 f f' s x v := by
   apply HasDerivWithinAt.mono_of_mem h
   apply ContinuousWithinAt.preimage_mem_nhdsWithin'' _ hst (by simp)
   apply Continuous.continuousWithinAt; continuity
 
-theorem HasLineDerivWithinAt.hasLineDerivAt
+lemma HasLineDerivWithinAt.hasLineDerivAt
     (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : s ∈ 𝓝 x) :
     HasLineDerivAt 𝕜 f f' x v := by
   rw [← hasLineDerivWithinAt_univ]
   rw [← nhdsWithin_univ] at hs
   exact h.mono_of_mem hs
 
-theorem LineDifferentiableWithinAt.lineDifferentiableAt (h : LineDifferentiableWithinAt 𝕜 f s x v)
+lemma LineDifferentiableWithinAt.lineDifferentiableAt (h : LineDifferentiableWithinAt 𝕜 f s x v)
     (hs : s ∈ 𝓝 x) : LineDifferentiableAt 𝕜 f x v :=
   (h.hasLineDerivWithinAt.hasLineDerivAt hs).lineDifferentiableAt
 
@@ -268,21 +268,21 @@ lemma DifferentiableAt.lineDeriv_eq_fderiv (hf : DifferentiableAt 𝕜 f x) :
     lineDeriv 𝕜 f x v = fderiv 𝕜 f x v :=
   (hf.hasFDerivAt.hasLineDerivAt v).lineDeriv
 
-theorem LineDifferentiableWithinAt.mono_of_mem (h : LineDifferentiableWithinAt 𝕜 f s x v)
+lemma LineDifferentiableWithinAt.mono_of_mem (h : LineDifferentiableWithinAt 𝕜 f s x v)
     (hst : s ∈ 𝓝[t] x) : LineDifferentiableWithinAt 𝕜 f t x v :=
   (h.hasLineDerivWithinAt.mono_of_mem hst).lineDifferentiableWithinAt
 
-theorem lineDerivWithin_of_mem_nhds (h : s ∈ 𝓝 x) :
+lemma lineDerivWithin_of_mem_nhds (h : s ∈ 𝓝 x) :
     lineDerivWithin 𝕜 f s x v = lineDeriv 𝕜 f x v := by
   apply derivWithin_of_mem_nhds
   apply (Continuous.continuousAt _).preimage_mem_nhds (by simpa using h)
   continuity
 
-theorem lineDerivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
+lemma lineDerivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
     lineDerivWithin 𝕜 f s x v = lineDeriv 𝕜 f x v :=
   lineDerivWithin_of_mem_nhds (hs.mem_nhds hx)
 
-theorem hasLineDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+lemma hasLineDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     HasLineDerivWithinAt 𝕜 f f' s x v ↔ HasLineDerivWithinAt 𝕜 f f' t x v := by
   apply hasDerivWithinAt_congr_set
   let F := fun (t : 𝕜) ↦ x + t • v
@@ -290,14 +290,14 @@ theorem hasLineDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
   have : s =ᶠ[𝓝 (F 0)] t := by convert h; simp [F]
   exact B.preimage_mem_nhds this
 
-theorem lineDifferentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+lemma lineDifferentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     LineDifferentiableWithinAt 𝕜 f s x v ↔ LineDifferentiableWithinAt 𝕜 f t x v :=
   ⟨fun h' ↦ ((hasLineDerivWithinAt_congr_set h).1
     h'.hasLineDerivWithinAt).lineDifferentiableWithinAt,
   fun h' ↦ ((hasLineDerivWithinAt_congr_set h.symm).1
     h'.hasLineDerivWithinAt).lineDifferentiableWithinAt⟩
 
-theorem lineDerivWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
+lemma lineDerivWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
     lineDerivWithin 𝕜 f s x v = lineDerivWithin 𝕜 f t x v := by
   apply derivWithin_congr_set
   let F := fun (t : 𝕜) ↦ x + t • v
@@ -305,7 +305,7 @@ theorem lineDerivWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
   have : s =ᶠ[𝓝 (F 0)] t := by convert h; simp [F]
   exact B.preimage_mem_nhds this
 
-theorem Filter.EventuallyEq.hasLineDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
+lemma Filter.EventuallyEq.hasLineDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
     HasLineDerivAt 𝕜 f₀ f' x v ↔ HasLineDerivAt 𝕜 f₁ f' x v := by
   apply hasDerivAt_iff
   let F := fun (t : 𝕜) ↦ x + t • v
@@ -313,29 +313,29 @@ theorem Filter.EventuallyEq.hasLineDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
   have : f₀ =ᶠ[𝓝 (F 0)] f₁ := by convert h; simp [F]
   exact B.preimage_mem_nhds this
 
-theorem Filter.EventuallyEq.lineDifferentiableAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
+lemma Filter.EventuallyEq.lineDifferentiableAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
     LineDifferentiableAt 𝕜 f₀ x v ↔ LineDifferentiableAt 𝕜 f₁ x v :=
   ⟨fun h' ↦ (h.hasLineDerivAt_iff.1 h'.hasLineDerivAt).lineDifferentiableAt,
   fun h' ↦ (h.hasLineDerivAt_iff.2 h'.hasLineDerivAt).lineDifferentiableAt⟩
 
-theorem Filter.EventuallyEq.hasLineDerivWithinAt_iff (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : f₀ x = f₁ x) :
+lemma Filter.EventuallyEq.hasLineDerivWithinAt_iff (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : f₀ x = f₁ x) :
     HasLineDerivWithinAt 𝕜 f₀ f' s x v ↔ HasLineDerivWithinAt 𝕜 f₁ f' s x v := by
   apply hasDerivWithinAt_iff
   · have A : Continuous (fun (t : 𝕜) ↦ x + t • v) := by continuity
     exact A.continuousWithinAt.preimage_mem_nhdsWithin'' h (by simp)
   · simpa using hx
 
-theorem Filter.EventuallyEq.hasLineDerivWithinAt_iff_of_mem (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : x ∈ s) :
+lemma Filter.EventuallyEq.hasLineDerivWithinAt_iff_of_mem (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : x ∈ s) :
     HasLineDerivWithinAt 𝕜 f₀ f' s x v ↔ HasLineDerivWithinAt 𝕜 f₁ f' s x v :=
   h.hasLineDerivWithinAt_iff (h.eq_of_nhdsWithin hx)
 
-theorem Filter.EventuallyEq.lineDifferentiableWithinAt_iff
+lemma Filter.EventuallyEq.lineDifferentiableWithinAt_iff
     (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : f₀ x = f₁ x) :
     LineDifferentiableWithinAt 𝕜 f₀ s x v ↔ LineDifferentiableWithinAt 𝕜 f₁ s x v :=
   ⟨fun h' ↦ ((h.hasLineDerivWithinAt_iff hx).1 h'.hasLineDerivWithinAt).lineDifferentiableWithinAt,
   fun h' ↦ ((h.hasLineDerivWithinAt_iff hx).2 h'.hasLineDerivWithinAt).lineDifferentiableWithinAt⟩
 
-theorem Filter.EventuallyEq.lineDifferentiableWithinAt_iff_of_mem
+lemma Filter.EventuallyEq.lineDifferentiableWithinAt_iff_of_mem
     (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : x ∈ s) :
     LineDifferentiableWithinAt 𝕜 f₀ s x v ↔ LineDifferentiableWithinAt 𝕜 f₁ s x v :=
   h.lineDifferentiableWithinAt_iff (h.eq_of_nhdsWithin hx)
@@ -346,18 +346,18 @@ lemma HasLineDerivWithinAt.congr_of_eventuallyEq (hf : HasLineDerivWithinAt 𝕜
   have A : Continuous (fun (t : 𝕜) ↦ x + t • v) := by continuity
   exact A.continuousWithinAt.preimage_mem_nhdsWithin'' h'f (by simp)
 
-theorem HasLineDerivAt.congr_of_eventuallyEq (h : HasLineDerivAt 𝕜 f f' x v) (h₁ : f₁ =ᶠ[𝓝 x] f) :
+lemma HasLineDerivAt.congr_of_eventuallyEq (h : HasLineDerivAt 𝕜 f f' x v) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasLineDerivAt 𝕜 f₁ f' x v := by
   apply HasDerivAt.congr_of_eventuallyEq h
   let F := fun (t : 𝕜) ↦ x + t • v
   rw [show x = F 0 by simp [F]] at h₁
   exact (Continuous.continuousAt (by continuity)).preimage_mem_nhds h₁
 
-theorem LineDifferentiableWithinAt.congr_of_eventuallyEq (h : LineDifferentiableWithinAt 𝕜 f s x v)
+lemma LineDifferentiableWithinAt.congr_of_eventuallyEq (h : LineDifferentiableWithinAt 𝕜 f s x v)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : LineDifferentiableWithinAt 𝕜 f₁ s x v :=
   (h.hasLineDerivWithinAt.congr_of_eventuallyEq h₁ hx).differentiableWithinAt
 
-theorem LineDifferentiableAt.congr_of_eventuallyEq
+lemma LineDifferentiableAt.congr_of_eventuallyEq
     (h : LineDifferentiableAt 𝕜 f x v) (hL : f₁ =ᶠ[𝓝 x] f) :
     LineDifferentiableAt 𝕜 f₁ x v := by
   apply DifferentiableAt.congr_of_eventuallyEq h
@@ -365,17 +365,17 @@ theorem LineDifferentiableAt.congr_of_eventuallyEq
   rw [show x = F 0 by simp [F]] at hL
   exact (Continuous.continuousAt (by continuity)).preimage_mem_nhds hL
 
-theorem Filter.EventuallyEq.lineDerivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
+lemma Filter.EventuallyEq.lineDerivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v := by
   apply derivWithin_eq ?_ (by simpa using hx)
   have A : Continuous (fun (t : 𝕜) ↦ x + t • v) := by continuity
   exact A.continuousWithinAt.preimage_mem_nhdsWithin'' hs (by simp)
 
-theorem Filter.EventuallyEq.lineDerivWithin_eq_nhds (h : f₁ =ᶠ[𝓝 x] f) :
+lemma Filter.EventuallyEq.lineDerivWithin_eq_nhds (h : f₁ =ᶠ[𝓝 x] f) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v :=
   (h.filter_mono nhdsWithin_le_nhds).lineDerivWithin_eq h.self_of_nhds
 
-theorem Filter.EventuallyEq.lineDeriv_eq (h : f₁ =ᶠ[𝓝 x] f) :
+lemma Filter.EventuallyEq.lineDeriv_eq (h : f₁ =ᶠ[𝓝 x] f) :
     lineDeriv 𝕜 f₁ x v = lineDeriv 𝕜 f x v := by
   rw [← lineDerivWithin_univ, ← lineDerivWithin_univ, h.lineDerivWithin_eq_nhds]
 
@@ -451,19 +451,19 @@ section Zero
 
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] {f : E → F} {s : Set E} {x : E}
 
-theorem hasLineDerivWithinAt_zero : HasLineDerivWithinAt 𝕜 f 0 s x 0 := by
+lemma hasLineDerivWithinAt_zero : HasLineDerivWithinAt 𝕜 f 0 s x 0 := by
   simp [HasLineDerivWithinAt, hasDerivWithinAt_const]
 
-theorem hasLineDerivAt_zero : HasLineDerivAt 𝕜 f 0 x 0 := by
+lemma hasLineDerivAt_zero : HasLineDerivAt 𝕜 f 0 x 0 := by
   simp [HasLineDerivAt, hasDerivAt_const]
 
-theorem lineDifferentiableWithinAt_zero : LineDifferentiableWithinAt 𝕜 f s x 0 :=
+lemma lineDifferentiableWithinAt_zero : LineDifferentiableWithinAt 𝕜 f s x 0 :=
   hasLineDerivWithinAt_zero.lineDifferentiableWithinAt
 
-theorem lineDifferentiableAt_zero : LineDifferentiableAt 𝕜 f x 0 :=
+lemma lineDifferentiableAt_zero : LineDifferentiableAt 𝕜 f x 0 :=
   hasLineDerivAt_zero.lineDifferentiableAt
 
-theorem lineDeriv_zero : lineDeriv 𝕜 f x 0 = 0 :=
+lemma lineDeriv_zero : lineDeriv 𝕜 f x 0 = 0 :=
   hasLineDerivAt_zero.lineDeriv
 
 end Zero
@@ -474,11 +474,11 @@ variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
   {E' : Type*} [AddCommGroup E'] [Module 𝕜 E']
   {f : E → F} {f' : F} {x v : E'} {L : E' →ₗ[𝕜] E}
 
-theorem HasLineDerivAt.of_comp {v : E'} (hf : HasLineDerivAt 𝕜 (f ∘ L) f' x v) :
+lemma HasLineDerivAt.of_comp {v : E'} (hf : HasLineDerivAt 𝕜 (f ∘ L) f' x v) :
     HasLineDerivAt 𝕜 f f' (L x) (L v) := by
   simpa [HasLineDerivAt] using hf
 
-theorem LineDifferentiableAt.of_comp {v : E'} (hf : LineDifferentiableAt 𝕜 (f ∘ L) x v) :
+lemma LineDifferentiableAt.of_comp {v : E'} (hf : LineDifferentiableAt 𝕜 (f ∘ L) x v) :
     LineDifferentiableAt 𝕜 f (L x) (L v) :=
   hf.hasLineDerivAt.of_comp.lineDifferentiableAt
 
@@ -488,7 +488,7 @@ section SMul
 
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] {f : E → F} {s : Set E} {x v : E} {f' : F}
 
-theorem HasLineDerivWithinAt.smul (h : HasLineDerivWithinAt 𝕜 f f' s x v) (c : 𝕜) :
+lemma HasLineDerivWithinAt.smul (h : HasLineDerivWithinAt 𝕜 f f' s x v) (c : 𝕜) :
     HasLineDerivWithinAt 𝕜 f (c • f') s x (c • v) := by
   simp only [HasLineDerivWithinAt] at h ⊢
   let g := fun (t : 𝕜) ↦ c • t
@@ -501,36 +501,36 @@ theorem HasLineDerivWithinAt.smul (h : HasLineDerivWithinAt 𝕜 f f' s x v) (c 
   ext t
   simp [← smul_smul]
 
-theorem hasLineDerivWithinAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
+lemma hasLineDerivWithinAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     HasLineDerivWithinAt 𝕜 f (c • f') s x (c • v) ↔ HasLineDerivWithinAt 𝕜 f f' s x v :=
   ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
-theorem HasLineDerivAt.smul (h : HasLineDerivAt 𝕜 f f' x v) (c : 𝕜) :
+lemma HasLineDerivAt.smul (h : HasLineDerivAt 𝕜 f f' x v) (c : 𝕜) :
     HasLineDerivAt 𝕜 f (c • f') x (c • v) := by
   simp only [← hasLineDerivWithinAt_univ] at h ⊢
   exact HasLineDerivWithinAt.smul h c
 
-theorem hasLineDerivAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
+lemma hasLineDerivAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     HasLineDerivAt 𝕜 f (c • f') x (c • v) ↔ HasLineDerivAt 𝕜 f f' x v :=
   ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
-theorem LineDifferentiableWithinAt.smul (h : LineDifferentiableWithinAt 𝕜 f s x v) (c : 𝕜) :
+lemma LineDifferentiableWithinAt.smul (h : LineDifferentiableWithinAt 𝕜 f s x v) (c : 𝕜) :
     LineDifferentiableWithinAt 𝕜 f s x (c • v) :=
   (h.hasLineDerivWithinAt.smul c).lineDifferentiableWithinAt
 
-theorem lineDifferentiableWithinAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
+lemma lineDifferentiableWithinAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     LineDifferentiableWithinAt 𝕜 f s x (c • v) ↔ LineDifferentiableWithinAt 𝕜 f s x v :=
   ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
-theorem LineDifferentiableAt.smul (h : LineDifferentiableAt 𝕜 f x v) (c : 𝕜) :
+lemma LineDifferentiableAt.smul (h : LineDifferentiableAt 𝕜 f x v) (c : 𝕜) :
     LineDifferentiableAt 𝕜 f x (c • v) :=
   (h.hasLineDerivAt.smul c).lineDifferentiableAt
 
-theorem lineDifferentiableAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
+lemma lineDifferentiableAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     LineDifferentiableAt 𝕜 f x (c • v) ↔ LineDifferentiableAt 𝕜 f x v :=
   ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
-theorem lineDeriv_smul {c : 𝕜} : lineDeriv 𝕜 f x (c • v) = c • lineDeriv 𝕜 f x v := by
+lemma lineDeriv_smul {c : 𝕜} : lineDeriv 𝕜 f x (c • v) = c • lineDeriv 𝕜 f x v := by
   rcases eq_or_ne c 0 with rfl|hc
   · simp [lineDeriv_zero]
   by_cases H : LineDifferentiableAt 𝕜 f x v
@@ -539,7 +539,7 @@ theorem lineDeriv_smul {c : 𝕜} : lineDeriv 𝕜 f x (c • v) = c • lineDer
       by simpa [lineDifferentiableAt_smul_iff hc] using H
     simp [lineDeriv_zero_of_not_lineDifferentiableAt, H, H']
 
-theorem lineDeriv_neg : lineDeriv 𝕜 f x (-v) = - lineDeriv 𝕜 f x v := by
+lemma lineDeriv_neg : lineDeriv 𝕜 f x (-v) = - lineDeriv 𝕜 f x v := by
   rw [← neg_one_smul (R := 𝕜) v, lineDeriv_smul, neg_one_smul]
 
 end SMul

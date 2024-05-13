@@ -69,7 +69,7 @@ abbrev homMk {s t : LeftExtension f g} (η : s.extension ⟶ t.extension)
   StructuredArrow.homMk η w
 
 @[reassoc (attr := simp)]
-theorem w {s t : LeftExtension f g} (η : s ⟶ t) :
+lemma w {s t : LeftExtension f g} (η : s ⟶ t) :
     s.unit ≫ f ◁ η.right = t.unit :=
   StructuredArrow.w η
 
@@ -93,12 +93,12 @@ def whisker (t : LeftExtension f g) {x : B} (h : c ⟶ x) : LeftExtension f (g �
   .mk _ <| t.unit ▷ h ≫ (α_ _ _ _).hom
 
 @[simp]
-theorem whisker_extension (t : LeftExtension f g) {x : B} (h : c ⟶ x) :
+lemma whisker_extension (t : LeftExtension f g) {x : B} (h : c ⟶ x) :
     (t.whisker h).extension = t.extension ≫ h :=
   rfl
 
 @[simp]
-theorem whisker_unit (t : LeftExtension f g) {x : B} (h : c ⟶ x) :
+lemma whisker_unit (t : LeftExtension f g) {x : B} (h : c ⟶ x) :
     (t.whisker h).unit = t.unit ▷ h ≫ (α_ f t.extension h).hom :=
   rfl
 
@@ -160,7 +160,7 @@ abbrev homMk {s t : LeftLift f g} (η : s.lift ⟶ t.lift) (w : s.unit ≫ η �
   StructuredArrow.homMk η w
 
 @[reassoc (attr := simp)]
-theorem w {s t : LeftLift f g} (h : s ⟶ t) :
+lemma w {s t : LeftLift f g} (h : s ⟶ t) :
     s.unit ≫ h.right ▷ f = t.unit :=
   StructuredArrow.w h
 
@@ -184,12 +184,12 @@ def whisker (t : LeftLift f g) {x : B} (h : x ⟶ c) : LeftLift f (h ≫ g) :=
   .mk _ <| h ◁ t.unit ≫ (α_ _ _ _).inv
 
 @[simp]
-theorem whisker_lift (t : LeftLift f g) {x : B} (h : x ⟶ c) :
+lemma whisker_lift (t : LeftLift f g) {x : B} (h : x ⟶ c) :
     (t.whisker h).lift = h ≫ t.lift :=
   rfl
 
 @[simp]
-theorem whisker_unit (t : LeftLift f g) {x : B} (h : x ⟶ c) :
+lemma whisker_unit (t : LeftLift f g) {x : B} (h : x ⟶ c) :
     (t.whisker h).unit = h ◁ t.unit ≫ (α_ h t.lift f).inv :=
   rfl
 
@@ -251,7 +251,7 @@ abbrev homMk {s t : RightExtension f g} (η : s.extension ⟶ t.extension)
   CostructuredArrow.homMk η w
 
 @[reassoc (attr := simp)]
-theorem w {s t : RightExtension f g} (η : s ⟶ t) :
+lemma w {s t : RightExtension f g} (η : s ⟶ t) :
     f ◁ η.left ≫ t.counit = s.counit :=
   CostructuredArrow.w η
 
@@ -296,7 +296,7 @@ abbrev homMk {s t : RightLift f g} (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.
   CostructuredArrow.homMk η w
 
 @[reassoc (attr := simp)]
-theorem w {s t : RightLift f g} (h : s ⟶ t) :
+lemma w {s t : RightLift f g} (h : s ⟶ t) :
     h.left ▷ f ≫ t.counit = s.counit :=
   CostructuredArrow.w h
 

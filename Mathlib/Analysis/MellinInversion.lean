@@ -20,18 +20,18 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 open scoped FourierTransform
 
-private theorem rexp_neg_deriv_aux :
+private lemma rexp_neg_deriv_aux :
     ∀ x ∈ univ, HasDerivWithinAt (rexp ∘ Neg.neg) (-rexp (-x)) univ x :=
   fun x _ ↦ mul_neg_one (rexp (-x)) ▸
     ((Real.hasDerivAt_exp (-x)).comp x (hasDerivAt_neg x)).hasDerivWithinAt
 
-private theorem rexp_neg_image_aux : rexp ∘ Neg.neg '' univ = Ioi 0 := by
+private lemma rexp_neg_image_aux : rexp ∘ Neg.neg '' univ = Ioi 0 := by
   rw [Set.image_comp, Set.image_univ_of_surjective neg_surjective, Set.image_univ, Real.range_exp]
 
-private theorem rexp_neg_injOn_aux : univ.InjOn (rexp ∘ Neg.neg) :=
+private lemma rexp_neg_injOn_aux : univ.InjOn (rexp ∘ Neg.neg) :=
   (Real.exp_injective.injOn _).comp (neg_injective.injOn _) (univ.mapsTo_univ _)
 
-private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
+private lemma rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
     rexp (-x) • cexp (-↑x) ^ (s - 1) • f = cexp (-s * ↑x) • f := by
   show (rexp (-x) : ℂ) • _ = _ • f
   rw [← smul_assoc, smul_eq_mul]
@@ -41,7 +41,7 @@ private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
     Complex.log_exp (by norm_num; exact pi_pos) (by simpa using pi_nonneg)]
   ring_nf
 
-theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
+lemma mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
     mellin f s = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) :=
   calc
     mellin f s
@@ -66,7 +66,7 @@ theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
     _ = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) := by
       simp [fourierIntegral_eq']
 
-theorem mellinInv_eq_fourierIntegralInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
+lemma mellinInv_eq_fourierIntegralInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
     mellinInv σ f x =
     (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := calc
   mellinInv σ f x

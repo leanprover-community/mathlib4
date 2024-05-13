@@ -20,7 +20,7 @@ section DivisionMonoid
 variable [DivisionMonoid G] {a x y : G}
 
 @[to_additive (attr := simp)]
-theorem inv_inv_symm_iff : SemiconjBy a⁻¹ x⁻¹ y⁻¹ ↔ SemiconjBy a y x := by
+lemma inv_inv_symm_iff : SemiconjBy a⁻¹ x⁻¹ y⁻¹ ↔ SemiconjBy a y x := by
   simp_rw [SemiconjBy, ← mul_inv_rev, inv_inj, eq_comm]
 #align semiconj_by.inv_inv_symm_iff SemiconjBy.inv_inv_symm_iff
 #align add_semiconj_by.neg_neg_symm_iff AddSemiconjBy.neg_neg_symm_iff

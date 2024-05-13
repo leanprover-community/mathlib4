@@ -56,13 +56,13 @@ section Left
 variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
 @[to_additive]
-theorem min_mul_mul_left (a b c : α) : min (a * b) (a * c) = a * min b c :=
+lemma min_mul_mul_left (a b c : α) : min (a * b) (a * c) = a * min b c :=
   (monotone_id.const_mul' a).map_min.symm
 #align min_mul_mul_left min_mul_mul_left
 #align min_add_add_left min_add_add_left
 
 @[to_additive]
-theorem max_mul_mul_left (a b c : α) : max (a * b) (a * c) = a * max b c :=
+lemma max_mul_mul_left (a b c : α) : max (a * b) (a * c) = a * max b c :=
   (monotone_id.const_mul' a).map_max.symm
 #align max_mul_mul_left max_mul_mul_left
 #align max_add_add_left max_add_add_left
@@ -74,13 +74,13 @@ section Right
 variable [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)]
 
 @[to_additive]
-theorem min_mul_mul_right (a b c : α) : min (a * c) (b * c) = min a b * c :=
+lemma min_mul_mul_right (a b c : α) : min (a * c) (b * c) = min a b * c :=
   (monotone_id.mul_const' c).map_min.symm
 #align min_mul_mul_right min_mul_mul_right
 #align min_add_add_right min_add_add_right
 
 @[to_additive]
-theorem max_mul_mul_right (a b c : α) : max (a * c) (b * c) = max a b * c :=
+lemma max_mul_mul_right (a b c : α) : max (a * c) (b * c) = max a b * c :=
   (monotone_id.mul_const' c).map_max.symm
 #align max_mul_mul_right max_mul_mul_right
 #align max_add_add_right max_add_add_right
@@ -88,7 +88,7 @@ theorem max_mul_mul_right (a b c : α) : max (a * c) (b * c) = max a b * c :=
 end Right
 
 @[to_additive]
-theorem lt_or_lt_of_mul_lt_mul [CovariantClass α α (· * ·) (· ≤ ·)]
+lemma lt_or_lt_of_mul_lt_mul [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ < a₂ * b₂ → a₁ < a₂ ∨ b₁ < b₂ := by
   contrapose!
@@ -97,7 +97,7 @@ theorem lt_or_lt_of_mul_lt_mul [CovariantClass α α (· * ·) (· ≤ ·)]
 #align lt_or_lt_of_add_lt_add lt_or_lt_of_add_lt_add
 
 @[to_additive]
-theorem le_or_lt_of_mul_le_mul [CovariantClass α α (· * ·) (· ≤ ·)]
+lemma le_or_lt_of_mul_le_mul [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ ≤ a₂ * b₂ → a₁ ≤ a₂ ∨ b₁ < b₂ := by
   contrapose!
@@ -106,7 +106,7 @@ theorem le_or_lt_of_mul_le_mul [CovariantClass α α (· * ·) (· ≤ ·)]
 #align le_or_lt_of_add_le_add le_or_lt_of_add_le_add
 
 @[to_additive]
-theorem lt_or_le_of_mul_le_mul [CovariantClass α α (· * ·) (· < ·)]
+lemma lt_or_le_of_mul_le_mul [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ ≤ a₂ * b₂ → a₁ < a₂ ∨ b₁ ≤ b₂ := by
   contrapose!
@@ -115,7 +115,7 @@ theorem lt_or_le_of_mul_le_mul [CovariantClass α α (· * ·) (· < ·)]
 #align lt_or_le_of_add_le_add lt_or_le_of_add_le_add
 
 @[to_additive]
-theorem le_or_le_of_mul_le_mul [CovariantClass α α (· * ·) (· < ·)]
+lemma le_or_le_of_mul_le_mul [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ ≤ a₂ * b₂ → a₁ ≤ a₂ ∨ b₁ ≤ b₂ := by
   contrapose!
@@ -124,7 +124,7 @@ theorem le_or_le_of_mul_le_mul [CovariantClass α α (· * ·) (· < ·)]
 #align le_or_le_of_add_le_add le_or_le_of_add_le_add
 
 @[to_additive]
-theorem mul_lt_mul_iff_of_le_of_le [CovariantClass α α (· * ·) (· ≤ ·)]
+lemma mul_lt_mul_iff_of_le_of_le [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂)
     (hb : b₁ ≤ b₂) : a₁ * b₁ < a₂ * b₂ ↔ a₁ < a₂ ∨ b₁ < b₂ := by
@@ -140,21 +140,21 @@ end Mul
 variable [MulOneClass α]
 
 @[to_additive]
-theorem min_le_mul_of_one_le_right [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (hb : 1 ≤ b) :
+lemma min_le_mul_of_one_le_right [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (hb : 1 ≤ b) :
     min a b ≤ a * b :=
   min_le_iff.2 <| Or.inl <| le_mul_of_one_le_right' hb
 #align min_le_mul_of_one_le_right min_le_mul_of_one_le_right
 #align min_le_add_of_nonneg_right min_le_add_of_nonneg_right
 
 @[to_additive]
-theorem min_le_mul_of_one_le_left [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b : α}
+lemma min_le_mul_of_one_le_left [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b : α}
     (ha : 1 ≤ a) : min a b ≤ a * b :=
   min_le_iff.2 <| Or.inr <| le_mul_of_one_le_left' ha
 #align min_le_mul_of_one_le_left min_le_mul_of_one_le_left
 #align min_le_add_of_nonneg_left min_le_add_of_nonneg_left
 
 @[to_additive]
-theorem max_le_mul_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)]
+lemma max_le_mul_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b : α} (ha : 1 ≤ a) (hb : 1 ≤ b) :
     max a b ≤ a * b :=
   max_le_iff.2 ⟨le_mul_of_one_le_right' hb, le_mul_of_one_le_left' ha⟩

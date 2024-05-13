@@ -262,7 +262,7 @@ theorem AffineIndependent.units_lineMap {p : ι → P} (hp : AffineIndependent k
   exact hp.units_smul fun i => w i
 #align affine_independent.units_line_map AffineIndependent.units_lineMap
 
-theorem AffineIndependent.indicator_eq_of_affineCombination_eq {p : ι → P}
+lemma AffineIndependent.indicator_eq_of_affineCombination_eq {p : ι → P}
     (ha : AffineIndependent k p) (s₁ s₂ : Finset ι) (w₁ w₂ : ι → k) (hw₁ : ∑ i in s₁, w₁ i = 1)
     (hw₂ : ∑ i in s₂, w₂ i = 1) (h : s₁.affineCombination k p w₁ = s₂.affineCombination k p w₂) :
     Set.indicator (↑s₁) w₁ = Set.indicator (↑s₂) w₂ :=
@@ -323,7 +323,7 @@ protected theorem AffineIndependent.range {p : ι → P} (ha : AffineIndependent
   simp [fe, hf]
 #align affine_independent.range AffineIndependent.range
 
-theorem affineIndependent_equiv {ι' : Type*} (e : ι ≃ ι') {p : ι' → P} :
+lemma affineIndependent_equiv {ι' : Type*} (e : ι ≃ ι') {p : ι' → P} :
     AffineIndependent k (p ∘ e) ↔ AffineIndependent k p := by
   refine' ⟨_, AffineIndependent.comp_embedding e.toEmbedding⟩
   intro h
@@ -462,7 +462,7 @@ theorem AffineIndependent.not_mem_affineSpan_diff [Nontrivial k] {p : ι → P}
   simp [ha]
 #align affine_independent.not_mem_affine_span_diff AffineIndependent.not_mem_affineSpan_diff
 
-theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
+lemma exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
     (h : ¬AffineIndependent k ((↑) : t → V)) :
     ∃ f : V → k, ∑ e in t, f e • e = 0 ∧ ∑ e in t, f e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
   classical
@@ -604,7 +604,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
 
 variable (k V)
 
-theorem exists_affineIndependent (s : Set P) :
+lemma exists_affineIndependent (s : Set P) :
     ∃ t ⊆ s, affineSpan k t = affineSpan k s ∧ AffineIndependent k ((↑) : t → P) := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩)
   · exact ⟨∅, Set.empty_subset ∅, rfl, affineIndependent_of_subsingleton k _⟩

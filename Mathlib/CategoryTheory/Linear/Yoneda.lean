@@ -66,26 +66,26 @@ instance linearCoyoneda_obj_additive (Y : Cᵒᵖ) : ((linearCoyoneda R C).obj Y
 #align category_theory.linear_coyoneda_obj_additive CategoryTheory.linearCoyoneda_obj_additive
 
 @[simp]
-theorem whiskering_linearYoneda :
+lemma whiskering_linearYoneda :
     linearYoneda R C ⋙ (whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R)) = yoneda :=
   rfl
 #align category_theory.whiskering_linear_yoneda CategoryTheory.whiskering_linearYoneda
 
 @[simp]
-theorem whiskering_linearYoneda₂ :
+lemma whiskering_linearYoneda₂ :
     linearYoneda R C ⋙ (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}) =
       preadditiveYoneda :=
   rfl
 #align category_theory.whiskering_linear_yoneda₂ CategoryTheory.whiskering_linearYoneda₂
 
 @[simp]
-theorem whiskering_linearCoyoneda :
+lemma whiskering_linearCoyoneda :
     linearCoyoneda R C ⋙ (whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R)) = coyoneda :=
   rfl
 #align category_theory.whiskering_linear_coyoneda CategoryTheory.whiskering_linearCoyoneda
 
 @[simp]
-theorem whiskering_linearCoyoneda₂ :
+lemma whiskering_linearCoyoneda₂ :
     linearCoyoneda R C ⋙
         (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}) =
       preadditiveCoyoneda :=

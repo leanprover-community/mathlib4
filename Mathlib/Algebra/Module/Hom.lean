@@ -43,10 +43,10 @@ instance instDistribMulAction : DistribMulAction R (A →+ B) where
   mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
 #align add_monoid_hom.distrib_mul_action AddMonoidHom.instDistribMulAction
 
-@[simp] theorem coe_smul (r : R) (f : A →+ B) : ⇑(r • f) = r • ⇑f := rfl
+@[simp] lemma coe_smul (r : R) (f : A →+ B) : ⇑(r • f) = r • ⇑f := rfl
 #align add_monoid_hom.coe_smul AddMonoidHom.coe_smul
 
-theorem smul_apply (r : R) (f : A →+ B) (x : A) : (r • f) x = r • f x :=
+lemma smul_apply (r : R) (f : A →+ B) (x : A) : (r • f) x = r • f x :=
   rfl
 #align add_monoid_hom.smul_apply AddMonoidHom.smul_apply
 
@@ -100,9 +100,9 @@ variable [DistribMulAction R A] [DistribMulAction S A]
 instance instDistribMulAction : DistribMulAction R (AddMonoid.End A) :=
   AddMonoidHom.instDistribMulAction
 
-@[simp] theorem coe_smul (r : R) (f : AddMonoid.End A) : ⇑(r • f) = r • ⇑f := rfl
+@[simp] lemma coe_smul (r : R) (f : AddMonoid.End A) : ⇑(r • f) = r • ⇑f := rfl
 
-theorem smul_apply (r : R) (f : AddMonoid.End A) (x : A) : (r • f) x = r • f x :=
+lemma smul_apply (r : R) (f : AddMonoid.End A) (x : A) : (r • f) x = r • f x :=
   rfl
 
 instance smulCommClass [SMulCommClass R S A] : SMulCommClass R S (AddMonoid.End A) :=
@@ -143,7 +143,7 @@ to have addition on `M →+ M`. -/
 protected def smul [Semiring R] [AddCommMonoid M] [Module R M] : R →+ M →+ M :=
   (Module.toAddMonoidEnd R M).toAddMonoidHom
 
-@[simp] theorem coe_smul' [Semiring R] [AddCommMonoid M] [Module R M] :
+@[simp] lemma coe_smul' [Semiring R] [AddCommMonoid M] [Module R M] :
     ⇑(.smul : R →+ M →+ M) = AddMonoidHom.smulLeft := rfl
 
 end AddMonoidHom

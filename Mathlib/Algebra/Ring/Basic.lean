@@ -70,7 +70,7 @@ def mulLeft [NonUnitalNonAssocSemiring R] (r : R) : R →+ R where
 #align add_monoid_hom.mul_left AddMonoidHom.mulLeft
 
 @[simp]
-theorem coe_mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
+lemma coe_mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
     (mulLeft r : R → R) = HMul.hMul r :=
   rfl
 #align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mulLeft
@@ -83,12 +83,12 @@ def mulRight [NonUnitalNonAssocSemiring R] (r : R) : R →+ R where
 #align add_monoid_hom.mul_right AddMonoidHom.mulRight
 
 @[simp]
-theorem coe_mulRight [NonUnitalNonAssocSemiring R] (r : R) :
+lemma coe_mulRight [NonUnitalNonAssocSemiring R] (r : R) :
     (mulRight r) = (· * r) :=
   rfl
 #align add_monoid_hom.coe_mul_right AddMonoidHom.coe_mulRight
 
-theorem mulRight_apply [NonUnitalNonAssocSemiring R] (a r : R) :
+lemma mulRight_apply [NonUnitalNonAssocSemiring R] (a r : R) :
     mulRight r a = a * r :=
   rfl
 #align add_monoid_hom.mul_right_apply AddMonoidHom.mulRight_apply
@@ -114,7 +114,7 @@ section Group
 variable {α : Type*} [Group α] [HasDistribNeg α]
 
 @[simp]
-theorem inv_neg' (a : α) : (-a)⁻¹ = -a⁻¹ := by
+lemma inv_neg' (a : α) : (-a)⁻¹ = -a⁻¹ := by
   rw [eq_comm, eq_inv_iff_mul_eq_one, neg_mul, mul_neg, neg_neg, mul_left_inv]
 #align inv_neg' inv_neg'
 
@@ -142,11 +142,11 @@ set_option linter.uppercaseLean3 false in
 
 end NonUnitalCommRing
 
-theorem succ_ne_self {α : Type*} [NonAssocRing α] [Nontrivial α] (a : α) : a + 1 ≠ a := fun h =>
+lemma succ_ne_self {α : Type*} [NonAssocRing α] [Nontrivial α] (a : α) : a + 1 ≠ a := fun h =>
   one_ne_zero ((add_right_inj a).mp (by simp [h]))
 #align succ_ne_self succ_ne_self
 
-theorem pred_ne_self {α : Type*} [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := fun h ↦
+lemma pred_ne_self {α : Type*} [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := fun h ↦
   one_ne_zero (neg_injective ((add_right_inj a).mp (by simp [← sub_eq_add_neg, h])))
 #align pred_ne_self pred_ne_self
 

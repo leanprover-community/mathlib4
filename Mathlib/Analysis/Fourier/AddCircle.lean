@@ -90,7 +90,7 @@ instance : IsAddHaarMeasure (@haarAddCircle T _) :=
 instance : IsProbabilityMeasure (@haarAddCircle T _) :=
   IsProbabilityMeasure.mk addHaarMeasure_self
 
-theorem volume_eq_smul_haarAddCircle :
+lemma volume_eq_smul_haarAddCircle :
     (volume : Measure (AddCircle T)) = ENNReal.ofReal T • (@haarAddCircle T _) :=
   rfl
 #align add_circle.volume_eq_smul_haar_add_circle AddCircle.volume_eq_smul_haarAddCircle
@@ -109,12 +109,12 @@ def fourier (n : ℤ) : C(AddCircle T, ℂ) where
 #align fourier fourier
 
 @[simp]
-theorem fourier_apply {n : ℤ} {x : AddCircle T} : fourier n x = toCircle (n • x :) :=
+lemma fourier_apply {n : ℤ} {x : AddCircle T} : fourier n x = toCircle (n • x :) :=
   rfl
 #align fourier_apply fourier_apply
 
 -- @[simp] -- Porting note: simp normal form is `fourier_coe_apply'`
-theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
+lemma fourier_coe_apply {n : ℤ} {x : ℝ} :
     fourier n (x : AddCircle T) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [fourier_apply, ← QuotientAddGroup.mk_zsmul, toCircle, Function.Periodic.lift_coe,
     expMapCircle_apply, Complex.ofReal_mul, Complex.ofReal_div, Complex.ofReal_mul, zsmul_eq_mul,
@@ -124,34 +124,34 @@ theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
 #align fourier_coe_apply fourier_coe_apply
 
 @[simp]
-theorem fourier_coe_apply' {n : ℤ} {x : ℝ} :
+lemma fourier_coe_apply' {n : ℤ} {x : ℝ} :
     toCircle (n • (x : AddCircle T) :) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [← fourier_apply]; exact fourier_coe_apply
 
 -- @[simp] -- Porting note: simp normal form is `fourier_zero'`
-theorem fourier_zero {x : AddCircle T} : fourier 0 x = 1 := by
+lemma fourier_zero {x : AddCircle T} : fourier 0 x = 1 := by
   induction x using QuotientAddGroup.induction_on'
   simp only [fourier_coe_apply]
   norm_num
 #align fourier_zero fourier_zero
 
 @[simp]
-theorem fourier_zero' {x : AddCircle T} : @toCircle T 0 = (1 : ℂ) := by
+lemma fourier_zero' {x : AddCircle T} : @toCircle T 0 = (1 : ℂ) := by
   have : fourier 0 x = @toCircle T 0 := by rw [fourier_apply, zero_smul]
   rw [← this]; exact fourier_zero
 
 -- @[simp] -- Porting note: simp normal form is *also* `fourier_zero'`
-theorem fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
+lemma fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
   rw [← QuotientAddGroup.mk_zero, fourier_coe_apply, Complex.ofReal_zero, mul_zero,
     zero_div, Complex.exp_zero]
 #align fourier_eval_zero fourier_eval_zero
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem fourier_one {x : AddCircle T} : fourier 1 x = toCircle x := by rw [fourier_apply, one_zsmul]
+lemma fourier_one {x : AddCircle T} : fourier 1 x = toCircle x := by rw [fourier_apply, one_zsmul]
 #align fourier_one fourier_one
 
 -- @[simp] -- Porting note: simp normal form is `fourier_neg'`
-theorem fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier n x) := by
+lemma fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier n x) := by
   induction x using QuotientAddGroup.induction_on'
   simp_rw [fourier_apply, toCircle]
   rw [← QuotientAddGroup.mk_zsmul, ← QuotientAddGroup.mk_zsmul]
@@ -160,20 +160,20 @@ theorem fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier
 #align fourier_neg fourier_neg
 
 @[simp]
-theorem fourier_neg' {n : ℤ} {x : AddCircle T} : @toCircle T (-(n • x)) = conj (fourier n x) := by
+lemma fourier_neg' {n : ℤ} {x : AddCircle T} : @toCircle T (-(n • x)) = conj (fourier n x) := by
   rw [← neg_smul, ← fourier_apply]; exact fourier_neg
 
 -- @[simp] -- Porting note: simp normal form is `fourier_add'`
-theorem fourier_add {m n : ℤ} {x : AddCircle T} : fourier (m+n) x = fourier m x * fourier n x := by
+lemma fourier_add {m n : ℤ} {x : AddCircle T} : fourier (m+n) x = fourier m x * fourier n x := by
   simp_rw [fourier_apply, add_zsmul, toCircle_add, coe_mul_unitSphere]
 #align fourier_add fourier_add
 
 @[simp]
-theorem fourier_add' {m n : ℤ} {x : AddCircle T} :
+lemma fourier_add' {m n : ℤ} {x : AddCircle T} :
     toCircle ((m + n) • x :) = fourier m x * fourier n x := by
   rw [← fourier_apply]; exact fourier_add
 
-theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
+lemma fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
   rw [ContinuousMap.norm_eq_iSup_norm]
   have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x => abs_coe_circle _
   simp_rw [this]
@@ -257,7 +257,7 @@ abbrev fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) : Lp ℂ p (@haarAd
 set_option linter.uppercaseLean3 false in
 #align fourier_Lp fourierLp
 
-theorem coeFn_fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) :
+lemma coeFn_fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) :
     @fourierLp T hT p _ n =ᵐ[haarAddCircle] fourier n :=
   coeFn_toLp haarAddCircle (fourier n)
 set_option linter.uppercaseLean3 false in
@@ -323,13 +323,13 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
     ← smul_assoc, smul_eq_mul, one_div_mul_cancel hT.out.ne', one_smul]
 #align fourier_coeff_eq_interval_integral fourierCoeff_eq_intervalIntegral
 
-theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
+lemma fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
     fourierCoeff (c • f :) n = c • fourierCoeff f n := by
   simp_rw [fourierCoeff, Pi.smul_apply, ← smul_assoc, smul_eq_mul, mul_comm, ← smul_eq_mul,
     smul_assoc, integral_smul]
 #align fourier_coeff.const_smul fourierCoeff.const_smul
 
-theorem fourierCoeff.const_mul (f : AddCircle T → ℂ) (c : ℂ) (n : ℤ) :
+lemma fourierCoeff.const_mul (f : AddCircle T → ℂ) (c : ℂ) (n : ℤ) :
     fourierCoeff (fun x => c * f x) n = c * fourierCoeff f n :=
   fourierCoeff.const_smul f c n
 #align fourier_coeff.const_mul fourierCoeff.const_mul
@@ -341,7 +341,7 @@ def fourierCoeffOn {a b : ℝ} (hab : a < b) (f : ℝ → E) (n : ℤ) : E :=
   fourierCoeff (AddCircle.liftIoc (b - a) a f) n
 #align fourier_coeff_on fourierCoeffOn
 
-theorem fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : a < b) :
+lemma fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : a < b) :
     fourierCoeffOn hab f n =
       (1 / (b - a)) • ∫ x in a..b, fourier (-n) (x : AddCircle (b - a)) • f x := by
   haveI := Fact.mk (by linarith : 0 < b - a)
@@ -353,18 +353,18 @@ theorem fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : 
   rwa [add_sub, add_sub_cancel_left]
 #align fourier_coeff_on_eq_integral fourierCoeffOn_eq_integral
 
-theorem fourierCoeffOn.const_smul {a b : ℝ} (f : ℝ → E) (c : ℂ) (n : ℤ) (hab : a < b) :
+lemma fourierCoeffOn.const_smul {a b : ℝ} (f : ℝ → E) (c : ℂ) (n : ℤ) (hab : a < b) :
     fourierCoeffOn hab (c • f) n = c • fourierCoeffOn hab f n := by
   haveI := Fact.mk (by linarith : 0 < b - a)
   apply fourierCoeff.const_smul
 #align fourier_coeff_on.const_smul fourierCoeffOn.const_smul
 
-theorem fourierCoeffOn.const_mul {a b : ℝ} (f : ℝ → ℂ) (c : ℂ) (n : ℤ) (hab : a < b) :
+lemma fourierCoeffOn.const_mul {a b : ℝ} (f : ℝ → ℂ) (c : ℂ) (n : ℤ) (hab : a < b) :
     fourierCoeffOn hab (fun x => c * f x) n = c * fourierCoeffOn hab f n :=
   fourierCoeffOn.const_smul _ _ _ _
 #align fourier_coeff_on.const_mul fourierCoeffOn.const_mul
 
-theorem fourierCoeff_liftIoc_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
+lemma fourierCoeff_liftIoc_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     fourierCoeff (AddCircle.liftIoc T a f) n =
     fourierCoeffOn (lt_add_of_pos_right a hT.out) f n := by
   rw [fourierCoeffOn_eq_integral, fourierCoeff_eq_intervalIntegral, add_sub_cancel_left a T]
@@ -374,7 +374,7 @@ theorem fourierCoeff_liftIoc_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     rwa [uIoc_of_le (lt_add_of_pos_right a hT.out).le] at hx
 #align fourier_coeff_lift_Ioc_eq fourierCoeff_liftIoc_eq
 
-theorem fourierCoeff_liftIco_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
+lemma fourierCoeff_liftIco_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     fourierCoeff (AddCircle.liftIco T a f) n =
     fourierCoeffOn (lt_add_of_pos_right a hT.out) f n := by
   rw [fourierCoeffOn_eq_integral, fourierCoeff_eq_intervalIntegral _ _ a, add_sub_cancel_left a T]
@@ -445,7 +445,7 @@ section Convergence
 
 variable (f : C(AddCircle T, ℂ))
 
-theorem fourierCoeff_toLp (n : ℤ) :
+lemma fourierCoeff_toLp (n : ℤ) :
     fourierCoeff (toLp (E := ℂ) 2 haarAddCircle ℂ f) n = fourierCoeff f n :=
   integral_congr_ae (Filter.EventuallyEq.mul (Filter.eventually_of_forall (by tauto))
     (ContinuousMap.coeFn_toAEEqFun haarAddCircle f))
@@ -484,7 +484,7 @@ open scoped Interval
 
 variable (T)
 
-theorem hasDerivAt_fourier (n : ℤ) (x : ℝ) :
+lemma hasDerivAt_fourier (n : ℤ) (x : ℝ) :
     HasDerivAt (fun y : ℝ => fourier n (y : AddCircle T))
       (2 * π * I * n / T * fourier n (x : AddCircle T)) x := by
   simp_rw [fourier_coe_apply]
@@ -495,7 +495,7 @@ theorem hasDerivAt_fourier (n : ℤ) (x : ℝ) :
   ext1 y; ring
 #align has_deriv_at_fourier hasDerivAt_fourier
 
-theorem hasDerivAt_fourier_neg (n : ℤ) (x : ℝ) :
+lemma hasDerivAt_fourier_neg (n : ℤ) (x : ℝ) :
     HasDerivAt (fun y : ℝ => fourier (-n) (y : AddCircle T))
       (-2 * π * I * n / T * fourier (-n) (x : AddCircle T)) x := by
   simpa using hasDerivAt_fourier T (-n) x
@@ -503,7 +503,7 @@ theorem hasDerivAt_fourier_neg (n : ℤ) (x : ℝ) :
 
 variable {T}
 
-theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
+lemma has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => (T : ℂ) / (-2 * π * I * n) * fourier (-n) (y : AddCircle T))
       (fourier (-n) (x : AddCircle T)) x := by
   convert (hasDerivAt_fourier_neg T n x).div_const (-2 * π * I * n / T) using 1

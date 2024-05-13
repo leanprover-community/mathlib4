@@ -139,17 +139,17 @@ namespace EmbeddingLike
 
 variable {F α β γ : Sort*} [FunLike F α β] [i : EmbeddingLike F α β]
 
-protected theorem injective (f : F) : Function.Injective f :=
+protected lemma injective (f : F) : Function.Injective f :=
   injective' f
 #align embedding_like.injective EmbeddingLike.injective
 
 @[simp]
-theorem apply_eq_iff_eq (f : F) {x y : α} : f x = f y ↔ x = y :=
+lemma apply_eq_iff_eq (f : F) {x y : α} : f x = f y ↔ x = y :=
   (EmbeddingLike.injective f).eq_iff
 #align embedding_like.apply_eq_iff_eq EmbeddingLike.apply_eq_iff_eq
 
 @[simp]
-theorem comp_injective {F : Sort*} [FunLike F β γ] [EmbeddingLike F β γ] (f : α → β) (e : F) :
+lemma comp_injective {F : Sort*} [FunLike F β γ] [EmbeddingLike F β γ] (f : α → β) (e : F) :
     Function.Injective (e ∘ f) ↔ Function.Injective f :=
   (EmbeddingLike.injective e).of_comp_iff f
 #align embedding_like.comp_injective EmbeddingLike.comp_injective

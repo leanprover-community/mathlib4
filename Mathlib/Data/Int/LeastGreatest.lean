@@ -68,7 +68,7 @@ theorem exists_least_of_bdd
   exact ⟨lb , H⟩
 #align int.exists_least_of_bdd Int.exists_least_of_bdd
 
-theorem coe_leastOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ} (Hb : ∀ z : ℤ, P z → b ≤ z)
+lemma coe_leastOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ} (Hb : ∀ z : ℤ, P z → b ≤ z)
     (Hb' : ∀ z : ℤ, P z → b' ≤ z) (Hinh : ∃ z : ℤ, P z) :
     (leastOfBdd b Hb Hinh : ℤ) = leastOfBdd b' Hb' Hinh := by
   rcases leastOfBdd b Hb Hinh with ⟨n, hn, h2n⟩
@@ -103,7 +103,7 @@ theorem exists_greatest_of_bdd
   exact ⟨lb, H⟩
 #align int.exists_greatest_of_bdd Int.exists_greatest_of_bdd
 
-theorem coe_greatestOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ}
+lemma coe_greatestOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ}
     (Hb : ∀ z : ℤ, P z → z ≤ b) (Hb' : ∀ z : ℤ, P z → z ≤ b') (Hinh : ∃ z : ℤ, P z) :
     (greatestOfBdd b Hb Hinh : ℤ) = greatestOfBdd b' Hb' Hinh := by
   rcases greatestOfBdd b Hb Hinh with ⟨n, hn, h2n⟩

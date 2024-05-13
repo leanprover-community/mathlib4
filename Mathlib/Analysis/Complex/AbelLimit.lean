@@ -44,7 +44,7 @@ def stolzSet (M : ℝ) : Set ℂ := {z | ‖z‖ < 1 ∧ ‖1 - z‖ < M * (1 - 
 /-- The cone to the left of `1` with angle `2θ` such that `tan θ = s`. -/
 def stolzCone (s : ℝ) : Set ℂ := {z | |z.im| < s * (1 - z.re)}
 
-theorem stolzSet_empty {M : ℝ} (hM : M ≤ 1) : stolzSet M = ∅ := by
+lemma stolzSet_empty {M : ℝ} (hM : M ≤ 1) : stolzSet M = ∅ := by
   ext z
   rw [stolzSet, Set.mem_setOf, Set.mem_empty_iff_false, iff_false, not_and, not_lt, ← sub_pos]
   intro zn
@@ -53,7 +53,7 @@ theorem stolzSet_empty {M : ℝ} (hM : M ≤ 1) : stolzSet M = ∅ := by
     _ = ‖(1 : ℂ)‖ - ‖z‖ := by rw [one_mul, norm_one]
     _ ≤ _ := norm_sub_norm_le _ _
 
-theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
+lemma nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
     (𝓝[<] 1).map ofReal' ≤ 𝓝[stolzSet M] 1 := by
   rw [← tendsto_id']
   refine' tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal'
@@ -238,7 +238,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzCone
   (tendsto_tsum_powerSeries_nhdsWithin_stolzSet h).mono_left
     (nhdsWithin_stolzCone_le_nhdsWithin_stolzSet hs).choose_spec
 
-theorem tendsto_tsum_powerSeries_nhdsWithin_lt
+lemma tendsto_tsum_powerSeries_nhdsWithin_lt
     (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l)) :
     Tendsto (fun z ↦ ∑' n, f n * z ^ n) ((𝓝[<] 1).map ofReal') (𝓝 l) :=
   (tendsto_tsum_powerSeries_nhdsWithin_stolzSet (M := 2) h).mono_left

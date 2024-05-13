@@ -111,23 +111,23 @@ instance : CategoryStruct (Algebra T) where
 lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
 
 @[simp]
-theorem comp_eq_comp {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') :
+lemma comp_eq_comp {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') :
     Algebra.Hom.comp f g = f ≫ g :=
   rfl
 #align category_theory.monad.algebra.comp_eq_comp CategoryTheory.Monad.Algebra.comp_eq_comp
 
 @[simp]
-theorem id_eq_id (A : Algebra T) : Algebra.Hom.id A = 𝟙 A :=
+lemma id_eq_id (A : Algebra T) : Algebra.Hom.id A = 𝟙 A :=
   rfl
 #align category_theory.monad.algebra.id_eq_id CategoryTheory.Monad.Algebra.id_eq_id
 
 @[simp]
-theorem id_f (A : Algebra T) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
+lemma id_f (A : Algebra T) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
   rfl
 #align category_theory.monad.algebra.id_f CategoryTheory.Monad.Algebra.id_f
 
 @[simp]
-theorem comp_f {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g).f = f.f ≫ g.f :=
+lemma comp_f {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g).f = f.f ≫ g.f :=
   rfl
 #align category_theory.monad.algebra.comp_f CategoryTheory.Monad.Algebra.comp_f
 
@@ -304,7 +304,7 @@ def algebraEquivOfIsoMonads {T₁ T₂ : Monad C} (h : T₁ ≅ T₂) : Algebra 
 #align category_theory.monad.algebra_equiv_of_iso_monads CategoryTheory.Monad.algebraEquivOfIsoMonads
 
 @[simp]
-theorem algebra_equiv_of_iso_monads_comp_forget {T₁ T₂ : Monad C} (h : T₁ ⟶ T₂) :
+lemma algebra_equiv_of_iso_monads_comp_forget {T₁ T₂ : Monad C} (h : T₁ ⟶ T₂) :
     algebraFunctorOfMonadHom h ⋙ forget _ = forget _ :=
   rfl
 #align category_theory.monad.algebra_equiv_of_iso_monads_comp_forget CategoryTheory.Monad.algebra_equiv_of_iso_monads_comp_forget
@@ -391,23 +391,23 @@ instance : CategoryStruct (Coalgebra G) where
 lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
 
 @[simp]
-theorem comp_eq_comp {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') :
+lemma comp_eq_comp {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') :
     Coalgebra.Hom.comp f g = f ≫ g :=
   rfl
 #align category_theory.comonad.coalgebra.comp_eq_comp CategoryTheory.Comonad.Coalgebra.comp_eq_comp
 
 @[simp]
-theorem id_eq_id (A : Coalgebra G) : Coalgebra.Hom.id A = 𝟙 A :=
+lemma id_eq_id (A : Coalgebra G) : Coalgebra.Hom.id A = 𝟙 A :=
   rfl
 #align category_theory.comonad.coalgebra.id_eq_id CategoryTheory.Comonad.Coalgebra.id_eq_id
 
 @[simp]
-theorem id_f (A : Coalgebra G) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
+lemma id_f (A : Coalgebra G) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
   rfl
 #align category_theory.comonad.coalgebra.id_f CategoryTheory.Comonad.Coalgebra.id_f
 
 @[simp]
-theorem comp_f {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g).f = f.f ≫ g.f :=
+lemma comp_f {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g).f = f.f ≫ g.f :=
   rfl
 #align category_theory.comonad.coalgebra.comp_f CategoryTheory.Comonad.Coalgebra.comp_f
 

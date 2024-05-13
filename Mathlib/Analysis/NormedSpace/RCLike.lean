@@ -33,7 +33,7 @@ open Metric
 
 variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
 
-theorem RCLike.norm_coe_norm {z : E} : ‖(‖z‖ : 𝕜)‖ = ‖z‖ := by simp
+lemma RCLike.norm_coe_norm {z : E} : ‖(‖z‖ : 𝕜)‖ = ‖z‖ := by simp
 #align is_R_or_C.norm_coe_norm RCLike.norm_coe_norm
 
 variable [NormedSpace 𝕜 E]
@@ -52,7 +52,7 @@ theorem norm_smul_inv_norm' {r : ℝ} (r_nonneg : 0 ≤ r) {x : E} (hx : x ≠ 0
   field_simp [norm_smul, r_nonneg, rclike_simps]
 #align norm_smul_inv_norm' norm_smul_inv_norm'
 
-theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] 𝕜)
+lemma LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] 𝕜)
     (h : ∀ z ∈ sphere (0 : E) r, ‖f z‖ ≤ c) (z : E) : ‖f z‖ ≤ c / r * ‖z‖ := by
   by_cases z_zero : z = 0
   · rw [z_zero]
@@ -82,7 +82,7 @@ theorem LinearMap.bound_of_ball_bound' {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : 
   f.bound_of_sphere_bound r_pos c (fun z hz => h z hz.le) z
 #align linear_map.bound_of_ball_bound' LinearMap.bound_of_ball_bound'
 
-theorem ContinuousLinearMap.opNorm_bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ)
+lemma ContinuousLinearMap.opNorm_bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ)
     (f : E →L[𝕜] 𝕜) (h : ∀ z ∈ closedBall (0 : E) r, ‖f z‖ ≤ c) : ‖f‖ ≤ c / r := by
   apply ContinuousLinearMap.opNorm_le_bound
   · apply div_nonneg _ r_pos.le
@@ -99,7 +99,7 @@ alias ContinuousLinearMap.op_norm_bound_of_ball_bound :=
 
 variable (𝕜)
 
-theorem NormedSpace.sphere_nonempty_rclike [Nontrivial E] {r : ℝ} (hr : 0 ≤ r) :
+lemma NormedSpace.sphere_nonempty_rclike [Nontrivial E] {r : ℝ} (hr : 0 ≤ r) :
     Nonempty (sphere (0 : E) r) :=
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   (NormedSpace.sphere_nonempty.mpr hr).coe_sort

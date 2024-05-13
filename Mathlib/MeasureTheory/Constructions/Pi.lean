@@ -157,11 +157,11 @@ def piPremeasure (m : ∀ i, OuterMeasure (α i)) (s : Set (∀ i, α i)) : ℝ�
   ∏ i, m i (eval i '' s)
 #align measure_theory.pi_premeasure MeasureTheory.piPremeasure
 
-theorem piPremeasure_pi {s : ∀ i, Set (α i)} (hs : (pi univ s).Nonempty) :
+lemma piPremeasure_pi {s : ∀ i, Set (α i)} (hs : (pi univ s).Nonempty) :
     piPremeasure m (pi univ s) = ∏ i, m i (s i) := by simp [hs, piPremeasure]
 #align measure_theory.pi_premeasure_pi MeasureTheory.piPremeasure_pi
 
-theorem piPremeasure_pi' {s : ∀ i, Set (α i)} : piPremeasure m (pi univ s) = ∏ i, m i (s i) := by
+lemma piPremeasure_pi' {s : ∀ i, Set (α i)} : piPremeasure m (pi univ s) = ∏ i, m i (s i) := by
   cases isEmpty_or_nonempty ι
   · simp [piPremeasure]
   rcases (pi univ s).eq_empty_or_nonempty with h | h
@@ -172,12 +172,12 @@ theorem piPremeasure_pi' {s : ∀ i, Set (α i)} : piPremeasure m (pi univ s) = 
   · simp [h, piPremeasure]
 #align measure_theory.pi_premeasure_pi' MeasureTheory.piPremeasure_pi'
 
-theorem piPremeasure_pi_mono {s t : Set (∀ i, α i)} (h : s ⊆ t) :
+lemma piPremeasure_pi_mono {s t : Set (∀ i, α i)} (h : s ⊆ t) :
     piPremeasure m s ≤ piPremeasure m t :=
   Finset.prod_le_prod' fun i _ => (m i).mono' (image_subset _ h)
 #align measure_theory.pi_premeasure_pi_mono MeasureTheory.piPremeasure_pi_mono
 
-theorem piPremeasure_pi_eval {s : Set (∀ i, α i)} :
+lemma piPremeasure_pi_eval {s : Set (∀ i, α i)} :
     piPremeasure m (pi univ fun i => eval i '' s) = piPremeasure m s := by
   simp only [eval, piPremeasure_pi']; rfl
 #align measure_theory.pi_premeasure_pi_eval MeasureTheory.piPremeasure_pi_eval
@@ -192,13 +192,13 @@ protected def pi (m : ∀ i, OuterMeasure (α i)) : OuterMeasure (∀ i, α i) :
   boundedBy (piPremeasure m)
 #align measure_theory.outer_measure.pi MeasureTheory.OuterMeasure.pi
 
-theorem pi_pi_le (m : ∀ i, OuterMeasure (α i)) (s : ∀ i, Set (α i)) :
+lemma pi_pi_le (m : ∀ i, OuterMeasure (α i)) (s : ∀ i, Set (α i)) :
     OuterMeasure.pi m (pi univ s) ≤ ∏ i, m i (s i) := by
   rcases (pi univ s).eq_empty_or_nonempty with h | h; simp [h]
   exact (boundedBy_le _).trans_eq (piPremeasure_pi h)
 #align measure_theory.outer_measure.pi_pi_le MeasureTheory.OuterMeasure.pi_pi_le
 
-theorem le_pi {m : ∀ i, OuterMeasure (α i)} {n : OuterMeasure (∀ i, α i)} :
+lemma le_pi {m : ∀ i, OuterMeasure (α i)} {n : OuterMeasure (∀ i, α i)} :
     n ≤ OuterMeasure.pi m ↔
       ∀ s : ∀ i, Set (α i), (pi univ s).Nonempty → n (pi univ s) ≤ ∏ i, m i (s i) := by
   rw [OuterMeasure.pi, le_boundedBy']; constructor
@@ -229,12 +229,12 @@ protected def tprod (l : List δ) (μ : ∀ i, Measure (π i)) : Measure (TProd 
 #align measure_theory.measure.tprod MeasureTheory.Measure.tprod
 
 @[simp]
-theorem tprod_nil (μ : ∀ i, Measure (π i)) : Measure.tprod [] μ = dirac PUnit.unit :=
+lemma tprod_nil (μ : ∀ i, Measure (π i)) : Measure.tprod [] μ = dirac PUnit.unit :=
   rfl
 #align measure_theory.measure.tprod_nil MeasureTheory.Measure.tprod_nil
 
 @[simp]
-theorem tprod_cons (i : δ) (l : List δ) (μ : ∀ i, Measure (π i)) :
+lemma tprod_cons (i : δ) (l : List δ) (μ : ∀ i, Measure (π i)) :
     Measure.tprod (i :: l) μ = (μ i).prod (Measure.tprod l μ) :=
   rfl
 #align measure_theory.measure.tprod_cons MeasureTheory.Measure.tprod_cons
@@ -246,7 +246,7 @@ instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, Si
   | cons i l ih => rw [tprod_cons]; exact @prod.instSigmaFinite _ _ _ _ _ _ _ ih
 #align measure_theory.measure.sigma_finite_tprod MeasureTheory.Measure.sigmaFinite_tprod
 
-theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)]
+lemma tprod_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)]
     (s : ∀ i, Set (π i)) :
     Measure.tprod l μ (Set.tprod l s) = (l.map fun i => (μ i) (s i)).prod := by
   induction l with
@@ -272,7 +272,7 @@ def pi' : Measure (∀ i, α i) :=
   Measure.map (TProd.elim' mem_sortedUniv) (Measure.tprod (sortedUniv ι) μ)
 #align measure_theory.measure.pi' MeasureTheory.Measure.pi'
 
-theorem pi'_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
+lemma pi'_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
     pi' μ (pi univ s) = ∏ i, μ i (s i) := by
   rw [pi']
   rw [← MeasurableEquiv.piMeasurableEquivTProd_symm_apply, MeasurableEquiv.map_apply,
@@ -283,7 +283,7 @@ theorem pi'_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
 
 end Encodable
 
-theorem pi_caratheodory :
+lemma pi_caratheodory :
     MeasurableSpace.pi ≤ (OuterMeasure.pi fun i => (μ i).toOuterMeasure).caratheodory := by
   refine' iSup_le _
   intro i s hs
@@ -311,7 +311,7 @@ instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, Measur
   ⟨Measure.pi fun _ => volume⟩
 #align measure_theory.measure_space.pi MeasureTheory.MeasureSpace.pi
 
-theorem pi_pi_aux [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) (hs : ∀ i, MeasurableSet (s i)) :
+lemma pi_pi_aux [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) (hs : ∀ i, MeasurableSet (s i)) :
     Measure.pi μ (pi univ s) = ∏ i, μ i (s i) := by
   refine' le_antisymm _ _
   · rw [Measure.pi, toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
@@ -386,24 +386,24 @@ theorem pi_eq {μ' : Measure (∀ i, α i)}
 
 variable (μ)
 
-theorem pi'_eq_pi [Encodable ι] : pi' μ = Measure.pi μ :=
+lemma pi'_eq_pi [Encodable ι] : pi' μ = Measure.pi μ :=
   Eq.symm <| pi_eq fun s _ => pi'_pi μ s
 #align measure_theory.measure.pi'_eq_pi MeasureTheory.Measure.pi'_eq_pi
 
 @[simp]
-theorem pi_pi (s : ∀ i, Set (α i)) : Measure.pi μ (pi univ s) = ∏ i, μ i (s i) := by
+lemma pi_pi (s : ∀ i, Set (α i)) : Measure.pi μ (pi univ s) = ∏ i, μ i (s i) := by
   haveI : Encodable ι := Fintype.toEncodable ι
   rw [← pi'_eq_pi, pi'_pi]
 #align measure_theory.measure.pi_pi MeasureTheory.Measure.pi_pi
 
-nonrec theorem pi_univ : Measure.pi μ univ = ∏ i, μ i univ := by rw [← pi_univ, pi_pi μ]
+nonrec lemma pi_univ : Measure.pi μ univ = ∏ i, μ i univ := by rw [← pi_univ, pi_pi μ]
 #align measure_theory.measure.pi_univ MeasureTheory.Measure.pi_univ
 
-theorem pi_ball [∀ i, MetricSpace (α i)] (x : ∀ i, α i) {r : ℝ} (hr : 0 < r) :
+lemma pi_ball [∀ i, MetricSpace (α i)] (x : ∀ i, α i) {r : ℝ} (hr : 0 < r) :
     Measure.pi μ (Metric.ball x r) = ∏ i, μ i (Metric.ball (x i) r) := by rw [ball_pi _ hr, pi_pi]
 #align measure_theory.measure.pi_ball MeasureTheory.Measure.pi_ball
 
-theorem pi_closedBall [∀ i, MetricSpace (α i)] (x : ∀ i, α i) {r : ℝ} (hr : 0 ≤ r) :
+lemma pi_closedBall [∀ i, MetricSpace (α i)] (x : ∀ i, α i) {r : ℝ} (hr : 0 ≤ r) :
     Measure.pi μ (Metric.closedBall x r) = ∏ i, μ i (Metric.closedBall (x i) r) := by
   rw [closedBall_pi _ hr, pi_pi]
 #align measure_theory.measure.pi_closed_ball MeasureTheory.Measure.pi_closedBall
@@ -433,7 +433,7 @@ instance {α : ι → Type*} [∀ i, MeasureSpace (α i)]
     IsProbabilityMeasure (volume : Measure (∀ i, α i)) :=
   pi.instIsProbabilityMeasure _
 
-theorem pi_of_empty {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
+lemma pi_of_empty {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
     {m : ∀ a, MeasurableSpace (β a)} (μ : ∀ a : α, Measure (β a)) (x : ∀ a, β a := isEmptyElim) :
     Measure.pi μ = dirac x := by
   haveI : ∀ a, SigmaFinite (μ a) := isEmptyElim
@@ -448,12 +448,12 @@ lemma volume_pi_eq_dirac {ι : Type*} [Fintype ι] [IsEmpty ι]
   Measure.pi_of_empty _ _
 
 @[simp]
-theorem pi_empty_univ {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
+lemma pi_empty_univ {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
     {m : ∀ α, MeasurableSpace (β α)} (μ : ∀ a : α, Measure (β a)) :
     Measure.pi μ (Set.univ) = 1 := by
   rw [pi_of_empty, measure_univ]
 
-theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
+lemma pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
     Measure.pi μ (eval i ⁻¹' s) = 0 := by
   -- WLOG, `s` is measurable
   rcases exists_measurable_superset_of_null hs with ⟨t, hst, _, hμt⟩
@@ -464,43 +464,43 @@ theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
   simp [hμt]
 #align measure_theory.measure.pi_eval_preimage_null MeasureTheory.Measure.pi_eval_preimage_null
 
-theorem pi_hyperplane (i : ι) [NoAtoms (μ i)] (x : α i) :
+lemma pi_hyperplane (i : ι) [NoAtoms (μ i)] (x : α i) :
     Measure.pi μ { f : ∀ i, α i | f i = x } = 0 :=
   show Measure.pi μ (eval i ⁻¹' {x}) = 0 from pi_eval_preimage_null _ (measure_singleton x)
 #align measure_theory.measure.pi_hyperplane MeasureTheory.Measure.pi_hyperplane
 
-theorem ae_eval_ne (i : ι) [NoAtoms (μ i)] (x : α i) : ∀ᵐ y : ∀ i, α i ∂Measure.pi μ, y i ≠ x :=
+lemma ae_eval_ne (i : ι) [NoAtoms (μ i)] (x : α i) : ∀ᵐ y : ∀ i, α i ∂Measure.pi μ, y i ≠ x :=
   compl_mem_ae_iff.2 (pi_hyperplane μ i x)
 #align measure_theory.measure.ae_eval_ne MeasureTheory.Measure.ae_eval_ne
 
 variable {μ}
 
-theorem tendsto_eval_ae_ae {i : ι} : Tendsto (eval i) (Measure.pi μ).ae (μ i).ae := fun _ hs =>
+lemma tendsto_eval_ae_ae {i : ι} : Tendsto (eval i) (Measure.pi μ).ae (μ i).ae := fun _ hs =>
   pi_eval_preimage_null μ hs
 #align measure_theory.measure.tendsto_eval_ae_ae MeasureTheory.Measure.tendsto_eval_ae_ae
 
-theorem ae_pi_le_pi : (Measure.pi μ).ae ≤ Filter.pi fun i => (μ i).ae :=
+lemma ae_pi_le_pi : (Measure.pi μ).ae ≤ Filter.pi fun i => (μ i).ae :=
   le_iInf fun _ => tendsto_eval_ae_ae.le_comap
 #align measure_theory.measure.ae_pi_le_pi MeasureTheory.Measure.ae_pi_le_pi
 
-theorem ae_eq_pi {β : ι → Type*} {f f' : ∀ i, α i → β i} (h : ∀ i, f i =ᵐ[μ i] f' i) :
+lemma ae_eq_pi {β : ι → Type*} {f f' : ∀ i, α i → β i} (h : ∀ i, f i =ᵐ[μ i] f' i) :
     (fun (x : ∀ i, α i) i => f i (x i)) =ᵐ[Measure.pi μ] fun x i => f' i (x i) :=
   (eventually_all.2 fun i => tendsto_eval_ae_ae.eventually (h i)).mono fun _ hx => funext hx
 #align measure_theory.measure.ae_eq_pi MeasureTheory.Measure.ae_eq_pi
 
-theorem ae_le_pi {β : ι → Type*} [∀ i, Preorder (β i)] {f f' : ∀ i, α i → β i}
+lemma ae_le_pi {β : ι → Type*} [∀ i, Preorder (β i)] {f f' : ∀ i, α i → β i}
     (h : ∀ i, f i ≤ᵐ[μ i] f' i) :
     (fun (x : ∀ i, α i) i => f i (x i)) ≤ᵐ[Measure.pi μ] fun x i => f' i (x i) :=
   (eventually_all.2 fun i => tendsto_eval_ae_ae.eventually (h i)).mono fun _ hx => hx
 #align measure_theory.measure.ae_le_pi MeasureTheory.Measure.ae_le_pi
 
-theorem ae_le_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i ≤ᵐ[μ i] t i) :
+lemma ae_le_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i ≤ᵐ[μ i] t i) :
     Set.pi I s ≤ᵐ[Measure.pi μ] Set.pi I t :=
   ((eventually_all_finite I.toFinite).2 fun i hi => tendsto_eval_ae_ae.eventually (h i hi)).mono
     fun _ hst hx i hi => hst i hi <| hx i hi
 #align measure_theory.measure.ae_le_set_pi MeasureTheory.Measure.ae_le_set_pi
 
-theorem ae_eq_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i =ᵐ[μ i] t i) :
+lemma ae_eq_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i =ᵐ[μ i] t i) :
     Set.pi I s =ᵐ[Measure.pi μ] Set.pi I t :=
   (ae_le_set_pi fun i hi => (h i hi).le).antisymm (ae_le_set_pi fun i hi => (h i hi).symm.le)
 #align measure_theory.measure.ae_eq_set_pi MeasureTheory.Measure.ae_eq_set_pi
@@ -509,57 +509,57 @@ section Intervals
 
 variable [∀ i, PartialOrder (α i)] [∀ i, NoAtoms (μ i)]
 
-theorem pi_Iio_ae_eq_pi_Iic {s : Set ι} {f : ∀ i, α i} :
+lemma pi_Iio_ae_eq_pi_Iic {s : Set ι} {f : ∀ i, α i} :
     (pi s fun i => Iio (f i)) =ᵐ[Measure.pi μ] pi s fun i => Iic (f i) :=
   ae_eq_set_pi fun _ _ => Iio_ae_eq_Iic
 #align measure_theory.measure.pi_Iio_ae_eq_pi_Iic MeasureTheory.Measure.pi_Iio_ae_eq_pi_Iic
 
-theorem pi_Ioi_ae_eq_pi_Ici {s : Set ι} {f : ∀ i, α i} :
+lemma pi_Ioi_ae_eq_pi_Ici {s : Set ι} {f : ∀ i, α i} :
     (pi s fun i => Ioi (f i)) =ᵐ[Measure.pi μ] pi s fun i => Ici (f i) :=
   ae_eq_set_pi fun _ _ => Ioi_ae_eq_Ici
 #align measure_theory.measure.pi_Ioi_ae_eq_pi_Ici MeasureTheory.Measure.pi_Ioi_ae_eq_pi_Ici
 
-theorem univ_pi_Iio_ae_eq_Iic {f : ∀ i, α i} :
+lemma univ_pi_Iio_ae_eq_Iic {f : ∀ i, α i} :
     (pi univ fun i => Iio (f i)) =ᵐ[Measure.pi μ] Iic f := by
   rw [← pi_univ_Iic]; exact pi_Iio_ae_eq_pi_Iic
 #align measure_theory.measure.univ_pi_Iio_ae_eq_Iic MeasureTheory.Measure.univ_pi_Iio_ae_eq_Iic
 
-theorem univ_pi_Ioi_ae_eq_Ici {f : ∀ i, α i} :
+lemma univ_pi_Ioi_ae_eq_Ici {f : ∀ i, α i} :
     (pi univ fun i => Ioi (f i)) =ᵐ[Measure.pi μ] Ici f := by
   rw [← pi_univ_Ici]; exact pi_Ioi_ae_eq_pi_Ici
 #align measure_theory.measure.univ_pi_Ioi_ae_eq_Ici MeasureTheory.Measure.univ_pi_Ioi_ae_eq_Ici
 
-theorem pi_Ioo_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
+lemma pi_Ioo_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
     (pi s fun i => Ioo (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
   ae_eq_set_pi fun _ _ => Ioo_ae_eq_Icc
 #align measure_theory.measure.pi_Ioo_ae_eq_pi_Icc MeasureTheory.Measure.pi_Ioo_ae_eq_pi_Icc
 
-theorem pi_Ioo_ae_eq_pi_Ioc {s : Set ι} {f g : ∀ i, α i} :
+lemma pi_Ioo_ae_eq_pi_Ioc {s : Set ι} {f g : ∀ i, α i} :
     (pi s fun i => Ioo (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Ioc (f i) (g i) :=
   ae_eq_set_pi fun _ _ => Ioo_ae_eq_Ioc
 #align measure_theory.measure.pi_Ioo_ae_eq_pi_Ioc MeasureTheory.Measure.pi_Ioo_ae_eq_pi_Ioc
 
-theorem univ_pi_Ioo_ae_eq_Icc {f g : ∀ i, α i} :
+lemma univ_pi_Ioo_ae_eq_Icc {f g : ∀ i, α i} :
     (pi univ fun i => Ioo (f i) (g i)) =ᵐ[Measure.pi μ] Icc f g := by
   rw [← pi_univ_Icc]; exact pi_Ioo_ae_eq_pi_Icc
 #align measure_theory.measure.univ_pi_Ioo_ae_eq_Icc MeasureTheory.Measure.univ_pi_Ioo_ae_eq_Icc
 
-theorem pi_Ioc_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
+lemma pi_Ioc_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
     (pi s fun i => Ioc (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
   ae_eq_set_pi fun _ _ => Ioc_ae_eq_Icc
 #align measure_theory.measure.pi_Ioc_ae_eq_pi_Icc MeasureTheory.Measure.pi_Ioc_ae_eq_pi_Icc
 
-theorem univ_pi_Ioc_ae_eq_Icc {f g : ∀ i, α i} :
+lemma univ_pi_Ioc_ae_eq_Icc {f g : ∀ i, α i} :
     (pi univ fun i => Ioc (f i) (g i)) =ᵐ[Measure.pi μ] Icc f g := by
   rw [← pi_univ_Icc]; exact pi_Ioc_ae_eq_pi_Icc
 #align measure_theory.measure.univ_pi_Ioc_ae_eq_Icc MeasureTheory.Measure.univ_pi_Ioc_ae_eq_Icc
 
-theorem pi_Ico_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
+lemma pi_Ico_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
     (pi s fun i => Ico (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
   ae_eq_set_pi fun _ _ => Ico_ae_eq_Icc
 #align measure_theory.measure.pi_Ico_ae_eq_pi_Icc MeasureTheory.Measure.pi_Ico_ae_eq_pi_Icc
 
-theorem univ_pi_Ico_ae_eq_Icc {f g : ∀ i, α i} :
+lemma univ_pi_Ico_ae_eq_Icc {f g : ∀ i, α i} :
     (pi univ fun i => Ico (f i) (g i)) =ᵐ[Measure.pi μ] Icc f g := by
   rw [← pi_univ_Icc]; exact pi_Ico_ae_eq_pi_Icc
 #align measure_theory.measure.univ_pi_Ico_ae_eq_Icc MeasureTheory.Measure.univ_pi_Ico_ae_eq_Icc
@@ -695,23 +695,23 @@ instance {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [�
 
 end Measure
 
-theorem volume_pi [∀ i, MeasureSpace (α i)] :
+lemma volume_pi [∀ i, MeasureSpace (α i)] :
     (volume : Measure (∀ i, α i)) = Measure.pi fun _ => volume :=
   rfl
 #align measure_theory.volume_pi MeasureTheory.volume_pi
 
-theorem volume_pi_pi [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))]
+lemma volume_pi_pi [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))]
     (s : ∀ i, Set (α i)) : volume (pi univ s) = ∏ i, volume (s i) :=
   Measure.pi_pi (fun _ => volume) s
 #align measure_theory.volume_pi_pi MeasureTheory.volume_pi_pi
 
-theorem volume_pi_ball [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))]
+lemma volume_pi_ball [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))]
     [∀ i, MetricSpace (α i)] (x : ∀ i, α i) {r : ℝ} (hr : 0 < r) :
     volume (Metric.ball x r) = ∏ i, volume (Metric.ball (x i) r) :=
   Measure.pi_ball _ _ hr
 #align measure_theory.volume_pi_ball MeasureTheory.volume_pi_ball
 
-theorem volume_pi_closedBall [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))]
+lemma volume_pi_closedBall [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))]
     [∀ i, MetricSpace (α i)] (x : ∀ i, α i) {r : ℝ} (hr : 0 ≤ r) :
     volume (Metric.closedBall x r) = ∏ i, volume (Metric.closedBall (x i) r) :=
   Measure.pi_closedBall _ _ hr
@@ -758,7 +758,7 @@ section MeasurePreserving
 variable {m : ∀ i, MeasurableSpace (α i)} (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)]
 variable [Fintype ι']
 
-theorem measurePreserving_piEquivPiSubtypeProd (p : ι → Prop) [DecidablePred p] :
+lemma measurePreserving_piEquivPiSubtypeProd (p : ι → Prop) [DecidablePred p] :
     MeasurePreserving (MeasurableEquiv.piEquivPiSubtypeProd α p) (Measure.pi μ)
       ((Measure.pi fun i : Subtype p => μ i).prod (Measure.pi fun i => μ i)) := by
   set e := (MeasurableEquiv.piEquivPiSubtypeProd α p).symm
@@ -771,13 +771,13 @@ theorem measurePreserving_piEquivPiSubtypeProd (p : ι → Prop) [DecidablePred 
   exact Fintype.prod_subtype_mul_prod_subtype p fun i => μ i (s i)
 #align measure_theory.measure_preserving_pi_equiv_pi_subtype_prod MeasureTheory.measurePreserving_piEquivPiSubtypeProd
 
-theorem volume_preserving_piEquivPiSubtypeProd (α : ι → Type*)
+lemma volume_preserving_piEquivPiSubtypeProd (α : ι → Type*)
     [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] (p : ι → Prop)
     [DecidablePred p] : MeasurePreserving (MeasurableEquiv.piEquivPiSubtypeProd α p) :=
   measurePreserving_piEquivPiSubtypeProd (fun _ => volume) p
 #align measure_theory.volume_preserving_pi_equiv_pi_subtype_prod MeasureTheory.volume_preserving_piEquivPiSubtypeProd
 
-theorem measurePreserving_piCongrLeft (f : ι' ≃ ι) :
+lemma measurePreserving_piCongrLeft (f : ι' ≃ ι) :
     MeasurePreserving (MeasurableEquiv.piCongrLeft α f)
       (Measure.pi fun i' => μ (f i')) (Measure.pi μ) where
   measurable := (MeasurableEquiv.piCongrLeft α f).measurable
@@ -786,12 +786,12 @@ theorem measurePreserving_piCongrLeft (f : ι' ≃ ι) :
     rw [MeasurableEquiv.map_apply, MeasurableEquiv.coe_piCongrLeft f,
       Equiv.piCongrLeft_preimage_univ_pi, pi_pi _ _, f.prod_comp (fun i => μ i (s i))]
 
-theorem volume_measurePreserving_piCongrLeft (α : ι → Type*) (f : ι' ≃ ι)
+lemma volume_measurePreserving_piCongrLeft (α : ι → Type*) (f : ι' ≃ ι)
     [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] :
     MeasurePreserving (MeasurableEquiv.piCongrLeft α f) volume volume :=
   measurePreserving_piCongrLeft (fun _ ↦ volume) f
 
-theorem measurePreserving_sumPiEquivProdPi_symm {π : ι ⊕ ι' → Type*}
+lemma measurePreserving_sumPiEquivProdPi_symm {π : ι ⊕ ι' → Type*}
     {m : ∀ i, MeasurableSpace (π i)} (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)] :
     MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π).symm
       ((Measure.pi fun i => μ (.inl i)).prod (Measure.pi fun i => μ (.inr i))) (Measure.pi μ) where
@@ -802,23 +802,23 @@ theorem measurePreserving_sumPiEquivProdPi_symm {π : ι ⊕ ι' → Type*}
       Equiv.sumPiEquivProdPi_symm_preimage_univ_pi, Measure.prod_prod, Measure.pi_pi,
       Fintype.prod_sum_type]
 
-theorem volume_measurePreserving_sumPiEquivProdPi_symm (π : ι ⊕ ι' → Type*)
+lemma volume_measurePreserving_sumPiEquivProdPi_symm (π : ι ⊕ ι' → Type*)
     [∀ i, MeasureSpace (π i)] [∀ i, SigmaFinite (volume : Measure (π i))] :
     MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π).symm volume volume :=
   measurePreserving_sumPiEquivProdPi_symm (fun _ ↦ volume)
 
-theorem measurePreserving_sumPiEquivProdPi {π : ι ⊕ ι' → Type*} {_m : ∀ i, MeasurableSpace (π i)}
+lemma measurePreserving_sumPiEquivProdPi {π : ι ⊕ ι' → Type*} {_m : ∀ i, MeasurableSpace (π i)}
     (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)] :
     MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π)
       (Measure.pi μ) ((Measure.pi fun i => μ (.inl i)).prod (Measure.pi fun i => μ (.inr i))) :=
   measurePreserving_sumPiEquivProdPi_symm μ |>.symm
 
-theorem volume_measurePreserving_sumPiEquivProdPi (π : ι ⊕ ι' → Type*)
+lemma volume_measurePreserving_sumPiEquivProdPi (π : ι ⊕ ι' → Type*)
     [∀ i, MeasureSpace (π i)] [∀ i, SigmaFinite (volume : Measure (π i))] :
     MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π) volume volume :=
   measurePreserving_sumPiEquivProdPi (fun _ ↦ volume)
 
-theorem measurePreserving_piFinSuccAbove {n : ℕ} {α : Fin (n + 1) → Type u}
+lemma measurePreserving_piFinSuccAbove {n : ℕ} {α : Fin (n + 1) → Type u}
     {m : ∀ i, MeasurableSpace (α i)} (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)]
     (i : Fin (n + 1)) :
     MeasurePreserving (MeasurableEquiv.piFinSuccAbove α i) (Measure.pi μ)
@@ -831,13 +831,13 @@ theorem measurePreserving_piFinSuccAbove {n : ℕ} {α : Fin (n + 1) → Type u}
   simp [e, i.forall_iff_succAbove]
 #align measure_theory.measure_preserving_pi_fin_succ_above_equiv MeasureTheory.measurePreserving_piFinSuccAbove
 
-theorem volume_preserving_piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type u)
+lemma volume_preserving_piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type u)
     [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] (i : Fin (n + 1)) :
     MeasurePreserving (MeasurableEquiv.piFinSuccAbove α i) :=
   measurePreserving_piFinSuccAbove (fun _ => volume) i
 #align measure_theory.volume_preserving_pi_fin_succ_above_equiv MeasureTheory.volume_preserving_piFinSuccAbove
 
-theorem measurePreserving_piUnique {π : ι → Type*} [Unique ι] {m : ∀ i, MeasurableSpace (π i)}
+lemma measurePreserving_piUnique {π : ι → Type*} [Unique ι] {m : ∀ i, MeasurableSpace (π i)}
     (μ : ∀ i, Measure (π i)) :
     MeasurePreserving (MeasurableEquiv.piUnique π) (Measure.pi μ) (μ default) where
   measurable := (MeasurableEquiv.piUnique π).measurable
@@ -850,22 +850,22 @@ theorem measurePreserving_piUnique {π : ι → Type*} [Unique ι] {m : ∀ i, M
     simp_rw [Measure.pi, OuterMeasure.pi, this, ← coe_toOuterMeasure, boundedBy_eq_self,
       toOuterMeasure_toMeasure, MeasurableEquiv.map_map_symm]
 
-theorem volume_preserving_piUnique (π : ι → Type*) [Unique ι] [∀ i, MeasureSpace (π i)] :
+lemma volume_preserving_piUnique (π : ι → Type*) [Unique ι] [∀ i, MeasureSpace (π i)] :
     MeasurePreserving (MeasurableEquiv.piUnique π) volume volume :=
   measurePreserving_piUnique _
 
-theorem measurePreserving_funUnique {β : Type u} {_m : MeasurableSpace β} (μ : Measure β)
+lemma measurePreserving_funUnique {β : Type u} {_m : MeasurableSpace β} (μ : Measure β)
     (α : Type v) [Unique α] :
     MeasurePreserving (MeasurableEquiv.funUnique α β) (Measure.pi fun _ : α => μ) μ :=
   measurePreserving_piUnique _
 #align measure_theory.measure_preserving_fun_unique MeasureTheory.measurePreserving_funUnique
 
-theorem volume_preserving_funUnique (α : Type u) (β : Type v) [Unique α] [MeasureSpace β] :
+lemma volume_preserving_funUnique (α : Type u) (β : Type v) [Unique α] [MeasureSpace β] :
     MeasurePreserving (MeasurableEquiv.funUnique α β) volume volume :=
   measurePreserving_funUnique volume α
 #align measure_theory.volume_preserving_fun_unique MeasureTheory.volume_preserving_funUnique
 
-theorem measurePreserving_piFinTwo {α : Fin 2 → Type u} {m : ∀ i, MeasurableSpace (α i)}
+lemma measurePreserving_piFinTwo {α : Fin 2 → Type u} {m : ∀ i, MeasurableSpace (α i)}
     (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)] :
     MeasurePreserving (MeasurableEquiv.piFinTwo α) (Measure.pi μ) ((μ 0).prod (μ 1)) := by
   refine' ⟨MeasurableEquiv.measurable _, (Measure.prod_eq fun s t _ _ => _).symm⟩
@@ -874,33 +874,33 @@ theorem measurePreserving_piFinTwo {α : Fin 2 → Type u} {m : ∀ i, Measurabl
   rfl
 #align measure_theory.measure_preserving_pi_fin_two MeasureTheory.measurePreserving_piFinTwo
 
-theorem volume_preserving_piFinTwo (α : Fin 2 → Type u) [∀ i, MeasureSpace (α i)]
+lemma volume_preserving_piFinTwo (α : Fin 2 → Type u) [∀ i, MeasureSpace (α i)]
     [∀ i, SigmaFinite (volume : Measure (α i))] :
     MeasurePreserving (MeasurableEquiv.piFinTwo α) volume volume :=
   measurePreserving_piFinTwo _
 #align measure_theory.volume_preserving_pi_fin_two MeasureTheory.volume_preserving_piFinTwo
 
-theorem measurePreserving_finTwoArrow_vec {α : Type u} {m : MeasurableSpace α} (μ ν : Measure α)
+lemma measurePreserving_finTwoArrow_vec {α : Type u} {m : MeasurableSpace α} (μ ν : Measure α)
     [SigmaFinite μ] [SigmaFinite ν] :
     MeasurePreserving MeasurableEquiv.finTwoArrow (Measure.pi ![μ, ν]) (μ.prod ν) :=
   haveI : ∀ i, SigmaFinite (![μ, ν] i) := Fin.forall_fin_two.2 ⟨‹_›, ‹_›⟩
   measurePreserving_piFinTwo _
 #align measure_theory.measure_preserving_fin_two_arrow_vec MeasureTheory.measurePreserving_finTwoArrow_vec
 
-theorem measurePreserving_finTwoArrow {α : Type u} {m : MeasurableSpace α} (μ : Measure α)
+lemma measurePreserving_finTwoArrow {α : Type u} {m : MeasurableSpace α} (μ : Measure α)
     [SigmaFinite μ] :
     MeasurePreserving MeasurableEquiv.finTwoArrow (Measure.pi fun _ => μ) (μ.prod μ) := by
   simpa only [Matrix.vec_single_eq_const, Matrix.vecCons_const] using
     measurePreserving_finTwoArrow_vec μ μ
 #align measure_theory.measure_preserving_fin_two_arrow MeasureTheory.measurePreserving_finTwoArrow
 
-theorem volume_preserving_finTwoArrow (α : Type u) [MeasureSpace α]
+lemma volume_preserving_finTwoArrow (α : Type u) [MeasureSpace α]
     [SigmaFinite (volume : Measure α)] :
     MeasurePreserving (@MeasurableEquiv.finTwoArrow α _) volume volume :=
   measurePreserving_finTwoArrow volume
 #align measure_theory.volume_preserving_fin_two_arrow MeasureTheory.volume_preserving_finTwoArrow
 
-theorem measurePreserving_pi_empty {ι : Type u} {α : ι → Type v} [Fintype ι] [IsEmpty ι]
+lemma measurePreserving_pi_empty {ι : Type u} {α : ι → Type v} [Fintype ι] [IsEmpty ι]
     {m : ∀ i, MeasurableSpace (α i)} (μ : ∀ i, Measure (α i)) :
     MeasurePreserving (MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit) (Measure.pi μ)
       (Measure.dirac ()) := by
@@ -909,13 +909,13 @@ theorem measurePreserving_pi_empty {ι : Type u} {α : ι → Type v} [Fintype �
   rw [Measure.pi_of_empty, Measure.map_dirac e.measurable]
 #align measure_theory.measure_preserving_pi_empty MeasureTheory.measurePreserving_pi_empty
 
-theorem volume_preserving_pi_empty {ι : Type u} (α : ι → Type v) [Fintype ι] [IsEmpty ι]
+lemma volume_preserving_pi_empty {ι : Type u} (α : ι → Type v) [Fintype ι] [IsEmpty ι]
     [∀ i, MeasureSpace (α i)] :
     MeasurePreserving (MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit) volume volume :=
   measurePreserving_pi_empty fun _ => volume
 #align measure_theory.volume_preserving_pi_empty MeasureTheory.volume_preserving_pi_empty
 
-theorem measurePreserving_piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : Disjoint s t)
+lemma measurePreserving_piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : Disjoint s t)
     (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)] :
     MeasurePreserving (MeasurableEquiv.piFinsetUnion α h)
       ((Measure.pi fun i : s ↦ μ i).prod (Measure.pi fun i : t ↦ μ i))
@@ -924,7 +924,7 @@ theorem measurePreserving_piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : 
   measurePreserving_piCongrLeft (fun i : ↥(s ∪ t) ↦ μ i) e |>.comp <|
     measurePreserving_sumPiEquivProdPi_symm fun b ↦ μ (e b)
 
-theorem volume_preserving_piFinsetUnion (α : ι → Type*) [DecidableEq ι] {s t : Finset ι}
+lemma volume_preserving_piFinsetUnion (α : ι → Type*) [DecidableEq ι] {s t : Finset ι}
     (h : Disjoint s t) [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] :
     MeasurePreserving (MeasurableEquiv.piFinsetUnion α h) volume volume :=
   measurePreserving_piFinsetUnion h (fun _ ↦ volume)

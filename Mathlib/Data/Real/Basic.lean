@@ -44,7 +44,7 @@ namespace CauSeq.Completion
 
 -- this can't go in `Data.Real.CauSeqCompletion` as the structure on `ℚ` isn't available
 @[simp]
-theorem ofRat_rat {abv : ℚ → ℚ} [IsAbsoluteValue abv] (q : ℚ) :
+lemma ofRat_rat {abv : ℚ → ℚ} [IsAbsoluteValue abv] (q : ℚ) :
     ofRat (q : ℚ) = (q : Cauchy abv) :=
   rfl
 #align cau_seq.completion.of_rat_rat CauSeq.Completion.ofRat_rat
@@ -57,11 +57,11 @@ open CauSeq CauSeq.Completion
 
 variable {x y : ℝ}
 
-theorem ext_cauchy_iff : ∀ {x y : Real}, x = y ↔ x.cauchy = y.cauchy
+lemma ext_cauchy_iff : ∀ {x y : Real}, x = y ↔ x.cauchy = y.cauchy
   | ⟨a⟩, ⟨b⟩ => by rw [ofCauchy.injEq]
 #align real.ext_cauchy_iff Real.ext_cauchy_iff
 
-theorem ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
+lemma ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
   ext_cauchy_iff.2
 #align real.ext_cauchy Real.ext_cauchy
 
@@ -111,62 +111,62 @@ instance : Sub ℝ :=
 noncomputable instance : Inv ℝ :=
   ⟨inv'⟩
 
-theorem ofCauchy_zero : (⟨0⟩ : ℝ) = 0 :=
+lemma ofCauchy_zero : (⟨0⟩ : ℝ) = 0 :=
   zero_def.symm
 #align real.of_cauchy_zero Real.ofCauchy_zero
 
-theorem ofCauchy_one : (⟨1⟩ : ℝ) = 1 :=
+lemma ofCauchy_one : (⟨1⟩ : ℝ) = 1 :=
   one_def.symm
 #align real.of_cauchy_one Real.ofCauchy_one
 
-theorem ofCauchy_add (a b) : (⟨a + b⟩ : ℝ) = ⟨a⟩ + ⟨b⟩ :=
+lemma ofCauchy_add (a b) : (⟨a + b⟩ : ℝ) = ⟨a⟩ + ⟨b⟩ :=
   (add_def _ _).symm
 #align real.of_cauchy_add Real.ofCauchy_add
 
-theorem ofCauchy_neg (a) : (⟨-a⟩ : ℝ) = -⟨a⟩ :=
+lemma ofCauchy_neg (a) : (⟨-a⟩ : ℝ) = -⟨a⟩ :=
   (neg_def _).symm
 #align real.of_cauchy_neg Real.ofCauchy_neg
 
-theorem ofCauchy_sub (a b) : (⟨a - b⟩ : ℝ) = ⟨a⟩ - ⟨b⟩ := by
+lemma ofCauchy_sub (a b) : (⟨a - b⟩ : ℝ) = ⟨a⟩ - ⟨b⟩ := by
   rw [sub_eq_add_neg, ofCauchy_add, ofCauchy_neg]
   rfl
 #align real.of_cauchy_sub Real.ofCauchy_sub
 
-theorem ofCauchy_mul (a b) : (⟨a * b⟩ : ℝ) = ⟨a⟩ * ⟨b⟩ :=
+lemma ofCauchy_mul (a b) : (⟨a * b⟩ : ℝ) = ⟨a⟩ * ⟨b⟩ :=
   (mul_def _ _).symm
 #align real.of_cauchy_mul Real.ofCauchy_mul
 
-theorem ofCauchy_inv {f} : (⟨f⁻¹⟩ : ℝ) = ⟨f⟩⁻¹ :=
+lemma ofCauchy_inv {f} : (⟨f⁻¹⟩ : ℝ) = ⟨f⟩⁻¹ :=
   show _ = inv' _ by rw [inv']
 #align real.of_cauchy_inv Real.ofCauchy_inv
 
-theorem cauchy_zero : (0 : ℝ).cauchy = 0 :=
+lemma cauchy_zero : (0 : ℝ).cauchy = 0 :=
   show zero.cauchy = 0 by rw [zero_def]
 #align real.cauchy_zero Real.cauchy_zero
 
-theorem cauchy_one : (1 : ℝ).cauchy = 1 :=
+lemma cauchy_one : (1 : ℝ).cauchy = 1 :=
   show one.cauchy = 1 by rw [one_def]
 #align real.cauchy_one Real.cauchy_one
 
-theorem cauchy_add : ∀ a b, (a + b : ℝ).cauchy = a.cauchy + b.cauchy
+lemma cauchy_add : ∀ a b, (a + b : ℝ).cauchy = a.cauchy + b.cauchy
   | ⟨a⟩, ⟨b⟩ => show (add _ _).cauchy = _ by rw [add_def]
 #align real.cauchy_add Real.cauchy_add
 
-theorem cauchy_neg : ∀ a, (-a : ℝ).cauchy = -a.cauchy
+lemma cauchy_neg : ∀ a, (-a : ℝ).cauchy = -a.cauchy
   | ⟨a⟩ => show (neg _).cauchy = _ by rw [neg_def]
 #align real.cauchy_neg Real.cauchy_neg
 
-theorem cauchy_mul : ∀ a b, (a * b : ℝ).cauchy = a.cauchy * b.cauchy
+lemma cauchy_mul : ∀ a b, (a * b : ℝ).cauchy = a.cauchy * b.cauchy
   | ⟨a⟩, ⟨b⟩ => show (mul _ _).cauchy = _ by rw [mul_def]
 #align real.cauchy_mul Real.cauchy_mul
 
-theorem cauchy_sub : ∀ a b, (a - b : ℝ).cauchy = a.cauchy - b.cauchy
+lemma cauchy_sub : ∀ a b, (a - b : ℝ).cauchy = a.cauchy - b.cauchy
   | ⟨a⟩, ⟨b⟩ => by
     rw [sub_eq_add_neg, ← cauchy_neg, ← cauchy_add]
     rfl
 #align real.cauchy_sub Real.cauchy_sub
 
-theorem cauchy_inv : ∀ f, (f⁻¹ : ℝ).cauchy = f.cauchy⁻¹
+lemma cauchy_inv : ∀ f, (f⁻¹ : ℝ).cauchy = f.cauchy⁻¹
   | ⟨f⟩ => show (inv' _).cauchy = _ by rw [inv']
 #align real.cauchy_inv Real.cauchy_inv
 
@@ -290,7 +290,7 @@ def mk (x : CauSeq ℚ abs) : ℝ :=
   ⟨CauSeq.Completion.mk x⟩
 #align real.mk Real.mk
 
-theorem mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
+lemma mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
   ext_cauchy_iff.trans CauSeq.Completion.mk_eq
 #align real.mk_eq Real.mk_eq
 
@@ -304,32 +304,32 @@ private irreducible_def lt : ℝ → ℝ → Prop
 instance : LT ℝ :=
   ⟨lt⟩
 
-theorem lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g :=
+lemma lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g :=
   show lt _ _ ↔ _ by rw [lt_def]; rfl
 #align real.lt_cauchy Real.lt_cauchy
 
 @[simp]
-theorem mk_lt {f g : CauSeq ℚ abs} : mk f < mk g ↔ f < g :=
+lemma mk_lt {f g : CauSeq ℚ abs} : mk f < mk g ↔ f < g :=
   lt_cauchy
 #align real.mk_lt Real.mk_lt
 
-theorem mk_zero : mk 0 = 0 := by rw [← ofCauchy_zero]; rfl
+lemma mk_zero : mk 0 = 0 := by rw [← ofCauchy_zero]; rfl
 #align real.mk_zero Real.mk_zero
 
-theorem mk_one : mk 1 = 1 := by rw [← ofCauchy_one]; rfl
+lemma mk_one : mk 1 = 1 := by rw [← ofCauchy_one]; rfl
 #align real.mk_one Real.mk_one
 
-theorem mk_add {f g : CauSeq ℚ abs} : mk (f + g) = mk f + mk g := by simp [mk, ← ofCauchy_add]
+lemma mk_add {f g : CauSeq ℚ abs} : mk (f + g) = mk f + mk g := by simp [mk, ← ofCauchy_add]
 #align real.mk_add Real.mk_add
 
-theorem mk_mul {f g : CauSeq ℚ abs} : mk (f * g) = mk f * mk g := by simp [mk, ← ofCauchy_mul]
+lemma mk_mul {f g : CauSeq ℚ abs} : mk (f * g) = mk f * mk g := by simp [mk, ← ofCauchy_mul]
 #align real.mk_mul Real.mk_mul
 
-theorem mk_neg {f : CauSeq ℚ abs} : mk (-f) = -mk f := by simp [mk, ← ofCauchy_neg]
+lemma mk_neg {f : CauSeq ℚ abs} : mk (-f) = -mk f := by simp [mk, ← ofCauchy_neg]
 #align real.mk_neg Real.mk_neg
 
 @[simp]
-theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
+lemma mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
   rw [← mk_zero, mk_lt]
   exact iff_of_eq (congr_arg Pos (sub_zero f))
 #align real.mk_pos Real.mk_pos
@@ -340,22 +340,22 @@ private irreducible_def le (x y : ℝ) : Prop :=
 instance : LE ℝ :=
   ⟨le⟩
 
-private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
+private lemma le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
   show le _ _ ↔ _ by rw [le_def]
 
 @[simp]
-theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
+lemma mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
   simp only [le_def', mk_lt, mk_eq]; rfl
 #align real.mk_le Real.mk_le
 
 @[elab_as_elim]
-protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x := by
+protected lemma ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x := by
   cases' x with x
   induction' x using Quot.induction_on with x
   exact h x
 #align real.ind_mk Real.ind_mk
 
-theorem add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := by
+lemma add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := by
   induction a using Real.ind_mk
   induction b using Real.ind_mk
   induction c using Real.ind_mk
@@ -385,20 +385,20 @@ instance partialOrder : PartialOrder ℝ where
 
 instance : Preorder ℝ := by infer_instance
 
-theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
+lemma ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
   erw [mk_lt]
   exact const_lt
 #align real.rat_cast_lt Real.ratCast_lt
 
-protected theorem zero_lt_one : (0 : ℝ) < 1 := by
+protected lemma zero_lt_one : (0 : ℝ) < 1 := by
   convert ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
 #align real.zero_lt_one Real.zero_lt_one
 
-protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
+protected lemma fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
   ⟨Real.zero_lt_one⟩
 #align real.fact_zero_lt_one Real.fact_zero_lt_one
 
-protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
+protected lemma mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
   induction' a using Real.ind_mk with a
   induction' b using Real.ind_mk with b
   simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
@@ -449,14 +449,14 @@ private irreducible_def sup : ℝ → ℝ → ℝ
 instance : Sup ℝ :=
   ⟨sup⟩
 
-theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ :=
+lemma ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ :=
   show _ = sup _ _ by
     rw [sup_def]
     rfl
 #align real.of_cauchy_sup Real.ofCauchy_sup
 
 @[simp]
-theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
+lemma mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
   ofCauchy_sup _ _
 #align real.mk_sup Real.mk_sup
 
@@ -466,14 +466,14 @@ private irreducible_def inf : ℝ → ℝ → ℝ
 instance : Inf ℝ :=
   ⟨inf⟩
 
-theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ :=
+lemma ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ :=
   show _ = inf _ _ by
     rw [inf_def]
     rfl
 #align real.of_cauchy_inf Real.ofCauchy_inf
 
 @[simp]
-theorem mk_inf (a b) : (mk (a ⊓ b) : ℝ) = mk a ⊓ mk b :=
+lemma mk_inf (a b) : (mk (a ⊓ b) : ℝ) = mk a ⊓ mk b :=
   ofCauchy_inf _ _
 #align real.mk_inf Real.mk_inf
 
@@ -607,7 +607,7 @@ converging to the same number may be printed differently.
 -/
 unsafe instance : Repr ℝ where reprPrec r _ := "Real.ofCauchy " ++ repr r.cauchy
 
-theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
+lemma le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
   intro h
   induction' x using Real.ind_mk with x
   apply le_of_not_lt
@@ -621,14 +621,14 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
   rwa [← sub_eq_add_neg, sub_self_div_two, sub_apply, sub_add_sub_cancel] at this
 #align real.le_mk_of_forall_le Real.le_mk_of_forall_le
 
-theorem mk_le_of_forall_le {f : CauSeq ℚ abs} {x : ℝ} (h : ∃ i, ∀ j ≥ i, (f j : ℝ) ≤ x) :
+lemma mk_le_of_forall_le {f : CauSeq ℚ abs} {x : ℝ} (h : ∃ i, ∀ j ≥ i, (f j : ℝ) ≤ x) :
     mk f ≤ x := by
   cases' h with i H
   rw [← neg_le_neg_iff, ← mk_neg]
   exact le_mk_of_forall_le ⟨i, fun j ij => by simp [H _ ij]⟩
 #align real.mk_le_of_forall_le Real.mk_le_of_forall_le
 
-theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
+lemma mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
     (H : ∃ i, ∀ j ≥ i, |(f j : ℝ) - x| ≤ ε) : |mk f - x| ≤ ε :=
   abs_sub_le_iff.2
     ⟨sub_le_iff_le_add'.2 <|

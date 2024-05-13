@@ -103,7 +103,7 @@ instance category : SmallCategory (WidePullbackShape J) :=
 #align category_theory.limits.wide_pullback_shape.category CategoryTheory.Limits.WidePullbackShape.category
 
 @[simp]
-theorem hom_id (X : WidePullbackShape J) : Hom.id X = 𝟙 X :=
+lemma hom_id (X : WidePullbackShape J) : Hom.id X = 𝟙 X :=
   rfl
 #align category_theory.limits.wide_pullback_shape.hom_id CategoryTheory.Limits.WidePullbackShape.hom_id
 
@@ -219,7 +219,7 @@ instance category : SmallCategory (WidePushoutShape J) :=
 #align category_theory.limits.wide_pushout_shape.category CategoryTheory.Limits.WidePushoutShape.category
 
 @[simp]
-theorem hom_id (X : WidePushoutShape J) : Hom.id X = 𝟙 X :=
+lemma hom_id (X : WidePushoutShape J) : Hom.id X = 𝟙 X :=
   rfl
 #align category_theory.limits.wide_pushout_shape.hom_id CategoryTheory.Limits.WidePushoutShape.hom_id
 
@@ -339,7 +339,7 @@ noncomputable abbrev base : widePullback _ _ arrows ⟶ B :=
 #align category_theory.limits.wide_pullback.base CategoryTheory.Limits.WidePullback.base
 
 @[reassoc (attr := simp)]
-theorem π_arrow (j : J) : π arrows j ≫ arrows _ = base arrows := by
+lemma π_arrow (j : J) : π arrows j ≫ arrows _ = base arrows := by
   apply limit.w (WidePullbackShape.wideCospan _ _ _) (WidePullbackShape.Hom.term j)
 #align category_theory.limits.wide_pullback.π_arrow CategoryTheory.Limits.WidePullback.π_arrow
 
@@ -356,17 +356,17 @@ variable {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j �
 
 -- Porting note (#10618): simp can prove this so removed simp attribute
 @[reassoc]
-theorem lift_π (j : J) : lift f fs w ≫ π arrows j = fs _ := by
+lemma lift_π (j : J) : lift f fs w ≫ π arrows j = fs _ := by
   simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
 #align category_theory.limits.wide_pullback.lift_π CategoryTheory.Limits.WidePullback.lift_π
 
 -- Porting note (#10618): simp can prove this so removed simp attribute
 @[reassoc]
-theorem lift_base : lift f fs w ≫ base arrows = f := by
+lemma lift_base : lift f fs w ≫ base arrows = f := by
   simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
 #align category_theory.limits.wide_pullback.lift_base CategoryTheory.Limits.WidePullback.lift_base
 
-theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
+lemma eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
     (∀ j : J, g ≫ π arrows j = fs j) → g ≫ base arrows = f → g = lift f fs w := by
   intro h1 h2
   apply
@@ -377,7 +377,7 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
   · apply h1
 #align category_theory.limits.wide_pullback.eq_lift_of_comp_eq CategoryTheory.Limits.WidePullback.eq_lift_of_comp_eq
 
-theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
+lemma hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by aesop_cat) := by
   apply eq_lift_of_comp_eq
   · aesop_cat
@@ -385,7 +385,7 @@ theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
 #align category_theory.limits.wide_pullback.hom_eq_lift CategoryTheory.Limits.WidePullback.hom_eq_lift
 
 @[ext 1100]
-theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) : (∀ j : J,
+lemma hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) : (∀ j : J,
     g1 ≫ π arrows j = g2 ≫ π arrows j) → g1 ≫ base arrows = g2 ≫ base arrows → g1 = g2 := by
   intro h1 h2
   apply limit.hom_ext
@@ -412,7 +412,7 @@ noncomputable abbrev head : B ⟶ widePushout B objs arrows :=
 #align category_theory.limits.wide_pushout.head CategoryTheory.Limits.WidePushout.head
 
 @[reassoc (attr := simp)]
-theorem arrow_ι (j : J) : arrows j ≫ ι arrows j = head arrows := by
+lemma arrow_ι (j : J) : arrows j ≫ ι arrows j = head arrows := by
   apply colimit.w (WidePushoutShape.wideSpan _ _ _) (WidePushoutShape.Hom.init j)
 #align category_theory.limits.wide_pushout.arrow_ι CategoryTheory.Limits.WidePushout.arrow_ι
 
@@ -432,17 +432,17 @@ variable {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows
 
 -- Porting note (#10618): simp can prove this so removed simp attribute
 @[reassoc]
-theorem ι_desc (j : J) : ι arrows j ≫ desc f fs w = fs _ := by
+lemma ι_desc (j : J) : ι arrows j ≫ desc f fs w = fs _ := by
   simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
 #align category_theory.limits.wide_pushout.ι_desc CategoryTheory.Limits.WidePushout.ι_desc
 
 -- Porting note (#10618): simp can prove this so removed simp attribute
 @[reassoc]
-theorem head_desc : head arrows ≫ desc f fs w = f := by
+lemma head_desc : head arrows ≫ desc f fs w = f := by
   simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
 #align category_theory.limits.wide_pushout.head_desc CategoryTheory.Limits.WidePushout.head_desc
 
-theorem eq_desc_of_comp_eq (g : widePushout _ _ arrows ⟶ X) :
+lemma eq_desc_of_comp_eq (g : widePushout _ _ arrows ⟶ X) :
     (∀ j : J, ι arrows j ≫ g = fs j) → head arrows ≫ g = f → g = desc f fs w := by
   intro h1 h2
   apply
@@ -453,7 +453,7 @@ theorem eq_desc_of_comp_eq (g : widePushout _ _ arrows ⟶ X) :
   · apply h1
 #align category_theory.limits.wide_pushout.eq_desc_of_comp_eq CategoryTheory.Limits.WidePushout.eq_desc_of_comp_eq
 
-theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
+lemma hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
     g =
       desc (head arrows ≫ g) (fun j => ι arrows j ≫ g) fun j => by
         rw [← Category.assoc]
@@ -464,7 +464,7 @@ theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
 #align category_theory.limits.wide_pushout.hom_eq_desc CategoryTheory.Limits.WidePushout.hom_eq_desc
 
 @[ext 1100]
-theorem hom_ext (g1 g2 : widePushout _ _ arrows ⟶ X) : (∀ j : J,
+lemma hom_ext (g1 g2 : widePushout _ _ arrows ⟶ X) : (∀ j : J,
     ι arrows j ≫ g1 = ι arrows j ≫ g2) → head arrows ≫ g1 = head arrows ≫ g2 → g1 = g2 := by
   intro h1 h2
   apply colimit.hom_ext

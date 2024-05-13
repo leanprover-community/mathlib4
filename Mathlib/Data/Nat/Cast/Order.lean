@@ -29,16 +29,16 @@ variable [AddMonoidWithOne α] [PartialOrder α]
 variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
 
 @[mono]
-theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
+lemma mono_cast : Monotone (Nat.cast : ℕ → α) :=
   monotone_nat_of_le_succ fun n ↦ by
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
 #align nat.mono_cast Nat.mono_cast
 
 @[deprecated mono_cast] -- Since 2024-02-10
-theorem cast_le_cast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
+lemma cast_le_cast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
 
 @[gcongr]
-theorem _root_.GCongr.natCast_le_natCast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
+lemma _root_.GCongr.natCast_le_natCast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
 
 /-- See also `Nat.cast_nonneg`, specialised for an `OrderedSemiring`. -/
 @[simp low]
@@ -64,12 +64,12 @@ theorem ofNat_nonneg {α} [OrderedSemiring α] (n : ℕ) [n.AtLeastTwo] :
   ofNat_nonneg' n
 
 @[simp, norm_cast]
-theorem cast_min {α} [LinearOrderedSemiring α] {a b : ℕ} : ((min a b : ℕ) : α) = min (a : α) b :=
+lemma cast_min {α} [LinearOrderedSemiring α] {a b : ℕ} : ((min a b : ℕ) : α) = min (a : α) b :=
   (@mono_cast α _).map_min
 #align nat.cast_min Nat.cast_min
 
 @[simp, norm_cast]
-theorem cast_max {α} [LinearOrderedSemiring α] {a b : ℕ} : ((max a b : ℕ) : α) = max (a : α) b :=
+lemma cast_max {α} [LinearOrderedSemiring α] {a b : ℕ} : ((max a b : ℕ) : α) = max (a : α) b :=
   (@mono_cast α _).map_max
 #align nat.cast_max Nat.cast_max
 
@@ -77,7 +77,7 @@ section Nontrivial
 
 variable [NeZero (1 : α)]
 
-theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 := by
+lemma cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 := by
   apply zero_lt_one.trans_le
   convert (@mono_cast α _).imp (?_ : 1 ≤ n + 1)
   <;> simp
@@ -109,7 +109,7 @@ end Nontrivial
 
 variable [CharZero α] {m n : ℕ}
 
-theorem strictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
+lemma strictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
   mono_cast.strictMono_of_injective cast_injective
 #align nat.strict_mono_cast Nat.strictMono_cast
 
@@ -121,30 +121,30 @@ def castOrderEmbedding : ℕ ↪o α :=
 #align nat.cast_order_embedding_apply Nat.castOrderEmbedding_apply
 
 @[simp, norm_cast]
-theorem cast_le : (m : α) ≤ n ↔ m ≤ n :=
+lemma cast_le : (m : α) ≤ n ↔ m ≤ n :=
   strictMono_cast.le_iff_le
 #align nat.cast_le Nat.cast_le
 
 @[simp, norm_cast, mono]
-theorem cast_lt : (m : α) < n ↔ m < n :=
+lemma cast_lt : (m : α) < n ↔ m < n :=
   strictMono_cast.lt_iff_lt
 #align nat.cast_lt Nat.cast_lt
 
 @[simp, norm_cast]
-theorem one_lt_cast : 1 < (n : α) ↔ 1 < n := by rw [← cast_one, cast_lt]
+lemma one_lt_cast : 1 < (n : α) ↔ 1 < n := by rw [← cast_one, cast_lt]
 #align nat.one_lt_cast Nat.one_lt_cast
 
 @[simp, norm_cast]
-theorem one_le_cast : 1 ≤ (n : α) ↔ 1 ≤ n := by rw [← cast_one, cast_le]
+lemma one_le_cast : 1 ≤ (n : α) ↔ 1 ≤ n := by rw [← cast_one, cast_le]
 #align nat.one_le_cast Nat.one_le_cast
 
 @[simp, norm_cast]
-theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by
+lemma cast_lt_one : (n : α) < 1 ↔ n = 0 := by
   rw [← cast_one, cast_lt, Nat.lt_succ_iff, ← bot_eq_zero, le_bot_iff]
 #align nat.cast_lt_one Nat.cast_lt_one
 
 @[simp, norm_cast]
-theorem cast_le_one : (n : α) ≤ 1 ↔ n ≤ 1 := by rw [← cast_one, cast_le]
+lemma cast_le_one : (n : α) ≤ 1 ↔ n ≤ 1 := by rw [← cast_one, cast_le]
 #align nat.cast_le_one Nat.cast_le_one
 
 variable [m.AtLeastTwo] [n.AtLeastTwo]
@@ -156,56 +156,56 @@ variable [m.AtLeastTwo] [n.AtLeastTwo]
 
 -- See note [no_index around OfNat.ofNat]
 -- @[simp]
-theorem ofNat_le :
+lemma ofNat_le :
     (no_index (OfNat.ofNat m : α)) ≤ (no_index (OfNat.ofNat n)) ↔
       (OfNat.ofNat m : ℕ) ≤ OfNat.ofNat n :=
   cast_le
 
 -- See note [no_index around OfNat.ofNat]
 -- @[simp]
-theorem ofNat_lt :
+lemma ofNat_lt :
     (no_index (OfNat.ofNat m : α)) < (no_index (OfNat.ofNat n)) ↔
       (OfNat.ofNat m : ℕ) < OfNat.ofNat n :=
   cast_lt
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_le_cast : (no_index (OfNat.ofNat m : α)) ≤ n ↔ (OfNat.ofNat m : ℕ) ≤ n :=
+lemma ofNat_le_cast : (no_index (OfNat.ofNat m : α)) ≤ n ↔ (OfNat.ofNat m : ℕ) ≤ n :=
   cast_le
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_lt_cast : (no_index (OfNat.ofNat m : α)) < n ↔ (OfNat.ofNat m : ℕ) < n :=
+lemma ofNat_lt_cast : (no_index (OfNat.ofNat m : α)) < n ↔ (OfNat.ofNat m : ℕ) < n :=
   cast_lt
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem cast_le_ofNat : (m : α) ≤ (no_index (OfNat.ofNat n)) ↔ m ≤ OfNat.ofNat n :=
+lemma cast_le_ofNat : (m : α) ≤ (no_index (OfNat.ofNat n)) ↔ m ≤ OfNat.ofNat n :=
   cast_le
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem cast_lt_ofNat : (m : α) < (no_index (OfNat.ofNat n)) ↔ m < OfNat.ofNat n :=
+lemma cast_lt_ofNat : (m : α) < (no_index (OfNat.ofNat n)) ↔ m < OfNat.ofNat n :=
   cast_lt
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem one_lt_ofNat : 1 < (no_index (OfNat.ofNat n : α)) :=
+lemma one_lt_ofNat : 1 < (no_index (OfNat.ofNat n : α)) :=
   one_lt_cast.mpr AtLeastTwo.one_lt
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem one_le_ofNat : 1 ≤ (no_index (OfNat.ofNat n : α)) :=
+lemma one_le_ofNat : 1 ≤ (no_index (OfNat.ofNat n : α)) :=
   one_le_cast.mpr NeZero.one_le
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem not_ofNat_le_one : ¬(no_index (OfNat.ofNat n : α)) ≤ 1 :=
+lemma not_ofNat_le_one : ¬(no_index (OfNat.ofNat n : α)) ≤ 1 :=
   (cast_le_one.not.trans not_le).mpr AtLeastTwo.one_lt
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem not_ofNat_lt_one : ¬(no_index (OfNat.ofNat n : α)) < 1 :=
+lemma not_ofNat_lt_one : ¬(no_index (OfNat.ofNat n : α)) < 1 :=
   mt le_of_lt not_ofNat_le_one
 
 end OrderedSemiring
@@ -223,13 +223,13 @@ theorem cast_tsub [CanonicallyOrderedCommSemiring α] [Sub α] [OrderedSub α]
 #align nat.cast_tsub Nat.cast_tsub
 
 @[simp, norm_cast]
-theorem abs_cast [LinearOrderedRing α] (a : ℕ) : |(a : α)| = a :=
+lemma abs_cast [LinearOrderedRing α] (a : ℕ) : |(a : α)| = a :=
   abs_of_nonneg (cast_nonneg a)
 #align nat.abs_cast Nat.abs_cast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem abs_ofNat [LinearOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
+lemma abs_ofNat [LinearOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
     |(no_index (OfNat.ofNat n : α))| = OfNat.ofNat n :=
   abs_cast n
 
@@ -242,7 +242,7 @@ section RingHomClass
 
 variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S] [FunLike F R S]
 
-theorem NeZero.nat_of_injective {n : ℕ} [h : NeZero (n : R)] [RingHomClass F R S] {f : F}
+lemma NeZero.nat_of_injective {n : ℕ} [h : NeZero (n : R)] [RingHomClass F R S] {f : F}
     (hf : Function.Injective f) : NeZero (n : S) :=
   ⟨fun h ↦ NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f]⟩
 #align ne_zero.nat_of_injective NeZero.nat_of_injective

@@ -50,7 +50,7 @@ def rangeSingleton (f : ι →₀ α) : ι →₀ Finset α where
     exact singleton_injective.eq_iff.symm
 #align finsupp.range_singleton Finsupp.rangeSingleton
 
-theorem mem_rangeSingleton_apply_iff : a ∈ f.rangeSingleton i ↔ a = f i :=
+lemma mem_rangeSingleton_apply_iff : a ∈ f.rangeSingleton i ↔ a = f i :=
   mem_singleton
 #align finsupp.mem_range_singleton_apply_iff Finsupp.mem_rangeSingleton_apply_iff
 
@@ -77,11 +77,11 @@ def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
 lemma coe_rangeIcc (f g : ι →₀ α) : rangeIcc f g i = Icc (f i) (g i) := rfl
 
 @[simp]
-theorem rangeIcc_support (f g : ι →₀ α) :
+lemma rangeIcc_support (f g : ι →₀ α) :
     (rangeIcc f g).support = f.support ∪ g.support := rfl
 #align finsupp.range_Icc_support Finsupp.rangeIcc_support
 
-theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g i := mem_Icc
+lemma mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g i := mem_Icc
 #align finsupp.mem_range_Icc_apply_iff Finsupp.mem_rangeIcc_apply_iff
 
 end RangeIcc
@@ -101,26 +101,26 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) :=
       simp_rw [mem_rangeIcc_apply_iff]
       exact forall_and
 
-theorem Icc_eq : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := rfl
+lemma Icc_eq : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := rfl
 #align finsupp.Icc_eq Finsupp.Icc_eq
 
 -- Porting note: removed [DecidableEq ι]
-theorem card_Icc : (Icc f g).card = ∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card := by
+lemma card_Icc : (Icc f g).card = ∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card := by
   simp_rw [Icc_eq, card_finsupp, coe_rangeIcc]
 #align finsupp.card_Icc Finsupp.card_Icc
 
 -- Porting note: removed [DecidableEq ι]
-theorem card_Ico : (Ico f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
+lemma card_Ico : (Ico f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
   rw [card_Ico_eq_card_Icc_sub_one, card_Icc]
 #align finsupp.card_Ico Finsupp.card_Ico
 
 -- Porting note: removed [DecidableEq ι]
-theorem card_Ioc : (Ioc f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
+lemma card_Ioc : (Ioc f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
   rw [card_Ioc_eq_card_Icc_sub_one, card_Icc]
 #align finsupp.card_Ioc Finsupp.card_Ioc
 
 -- Porting note: removed [DecidableEq ι]
-theorem card_Ioo : (Ioo f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 2 := by
+lemma card_Ioo : (Ioo f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 2 := by
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
 #align finsupp.card_Ioo Finsupp.card_Ioo
 
@@ -130,7 +130,7 @@ section Lattice
 variable [Lattice α] [Zero α] [LocallyFiniteOrder α] (f g : ι →₀ α)
 
 -- Porting note: removed [DecidableEq ι]
-theorem card_uIcc :
+lemma card_uIcc :
     (uIcc f g).card = ∏ i in f.support ∪ g.support, (uIcc (f i) (g i)).card := by
   rw [← support_inf_union_support_sup]; exact card_Icc (_ : ι →₀ α) _
 #align finsupp.card_uIcc Finsupp.card_uIcc
@@ -142,12 +142,12 @@ section CanonicallyOrdered
 variable [CanonicallyOrderedAddCommMonoid α] [LocallyFiniteOrder α]
 variable (f : ι →₀ α)
 
-theorem card_Iic : (Iic f).card = ∏ i in f.support, (Iic (f i)).card := by
+lemma card_Iic : (Iic f).card = ∏ i in f.support, (Iic (f i)).card := by
   classical simp_rw [Iic_eq_Icc, card_Icc, Finsupp.bot_eq_zero, support_zero, empty_union,
       zero_apply, bot_eq_zero]
 #align finsupp.card_Iic Finsupp.card_Iic
 
-theorem card_Iio : (Iio f).card = (∏ i in f.support, (Iic (f i)).card) - 1 := by
+lemma card_Iio : (Iio f).card = (∏ i in f.support, (Iic (f i)).card) - 1 := by
   rw [card_Iio_eq_card_Iic_sub_one, card_Iic]
 #align finsupp.card_Iio Finsupp.card_Iio
 

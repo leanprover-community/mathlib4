@@ -57,68 +57,68 @@ def ofDual : αᵒᵈ ≃ α :=
 #align order_dual.of_dual OrderDual.ofDual
 
 @[simp]
-theorem toDual_symm_eq : (@toDual α).symm = ofDual := rfl
+lemma toDual_symm_eq : (@toDual α).symm = ofDual := rfl
 #align order_dual.to_dual_symm_eq OrderDual.toDual_symm_eq
 
 @[simp]
-theorem ofDual_symm_eq : (@ofDual α).symm = toDual := rfl
+lemma ofDual_symm_eq : (@ofDual α).symm = toDual := rfl
 #align order_dual.of_dual_symm_eq OrderDual.ofDual_symm_eq
 
 @[simp]
-theorem toDual_ofDual (a : αᵒᵈ) : toDual (ofDual a) = a :=
+lemma toDual_ofDual (a : αᵒᵈ) : toDual (ofDual a) = a :=
   rfl
 #align order_dual.to_dual_of_dual OrderDual.toDual_ofDual
 
 @[simp]
-theorem ofDual_toDual (a : α) : ofDual (toDual a) = a :=
+lemma ofDual_toDual (a : α) : ofDual (toDual a) = a :=
   rfl
 #align order_dual.of_dual_to_dual OrderDual.ofDual_toDual
 
 -- Porting note:
 -- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
-theorem toDual_inj {a b : α} : toDual a = toDual b ↔ a = b :=
+lemma toDual_inj {a b : α} : toDual a = toDual b ↔ a = b :=
   Iff.rfl
 #align order_dual.to_dual_inj OrderDual.toDual_inj
 
 -- Porting note:
 -- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
-theorem ofDual_inj {a b : αᵒᵈ} : ofDual a = ofDual b ↔ a = b :=
+lemma ofDual_inj {a b : αᵒᵈ} : ofDual a = ofDual b ↔ a = b :=
   Iff.rfl
 #align order_dual.of_dual_inj OrderDual.ofDual_inj
 
 @[simp]
-theorem toDual_le_toDual [LE α] {a b : α} : toDual a ≤ toDual b ↔ b ≤ a :=
+lemma toDual_le_toDual [LE α] {a b : α} : toDual a ≤ toDual b ↔ b ≤ a :=
   Iff.rfl
 #align order_dual.to_dual_le_to_dual OrderDual.toDual_le_toDual
 
 @[simp]
-theorem toDual_lt_toDual [LT α] {a b : α} : toDual a < toDual b ↔ b < a :=
+lemma toDual_lt_toDual [LT α] {a b : α} : toDual a < toDual b ↔ b < a :=
   Iff.rfl
 #align order_dual.to_dual_lt_to_dual OrderDual.toDual_lt_toDual
 
 @[simp]
-theorem ofDual_le_ofDual [LE α] {a b : αᵒᵈ} : ofDual a ≤ ofDual b ↔ b ≤ a :=
+lemma ofDual_le_ofDual [LE α] {a b : αᵒᵈ} : ofDual a ≤ ofDual b ↔ b ≤ a :=
   Iff.rfl
 #align order_dual.of_dual_le_of_dual OrderDual.ofDual_le_ofDual
 
 @[simp]
-theorem ofDual_lt_ofDual [LT α] {a b : αᵒᵈ} : ofDual a < ofDual b ↔ b < a :=
+lemma ofDual_lt_ofDual [LT α] {a b : αᵒᵈ} : ofDual a < ofDual b ↔ b < a :=
   Iff.rfl
 #align order_dual.of_dual_lt_of_dual OrderDual.ofDual_lt_ofDual
 
-theorem le_toDual [LE α] {a : αᵒᵈ} {b : α} : a ≤ toDual b ↔ b ≤ ofDual a :=
+lemma le_toDual [LE α] {a : αᵒᵈ} {b : α} : a ≤ toDual b ↔ b ≤ ofDual a :=
   Iff.rfl
 #align order_dual.le_to_dual OrderDual.le_toDual
 
-theorem lt_toDual [LT α] {a : αᵒᵈ} {b : α} : a < toDual b ↔ b < ofDual a :=
+lemma lt_toDual [LT α] {a : αᵒᵈ} {b : α} : a < toDual b ↔ b < ofDual a :=
   Iff.rfl
 #align order_dual.lt_to_dual OrderDual.lt_toDual
 
-theorem toDual_le [LE α] {a : α} {b : αᵒᵈ} : toDual a ≤ b ↔ ofDual b ≤ a :=
+lemma toDual_le [LE α] {a : α} {b : αᵒᵈ} : toDual a ≤ b ↔ ofDual b ≤ a :=
   Iff.rfl
 #align order_dual.to_dual_le OrderDual.toDual_le
 
-theorem toDual_lt [LT α] {a : α} {b : αᵒᵈ} : toDual a < b ↔ ofDual b < a :=
+lemma toDual_lt [LT α] {a : α} {b : αᵒᵈ} : toDual a < b ↔ ofDual b < a :=
   Iff.rfl
 #align order_dual.to_dual_lt OrderDual.toDual_lt
 
@@ -129,12 +129,12 @@ protected def rec {C : αᵒᵈ → Sort*} (h₂ : ∀ a : α, C (toDual a)) : �
 #align order_dual.rec OrderDual.rec
 
 @[simp]
-protected theorem «forall» {p : αᵒᵈ → Prop} : (∀ a, p a) ↔ ∀ a, p (toDual a) :=
+protected lemma «forall» {p : αᵒᵈ → Prop} : (∀ a, p a) ↔ ∀ a, p (toDual a) :=
   Iff.rfl
 #align order_dual.forall OrderDual.forall
 
 @[simp]
-protected theorem «exists» {p : αᵒᵈ → Prop} : (∃ a, p a) ↔ ∃ a, p (toDual a) :=
+protected lemma «exists» {p : αᵒᵈ → Prop} : (∃ a, p a) ↔ ∃ a, p (toDual a) :=
   Iff.rfl
 #align order_dual.exists OrderDual.exists
 
@@ -171,34 +171,34 @@ def ofLex : Lex α ≃ α :=
 #align of_lex ofLex
 
 @[simp]
-theorem toLex_symm_eq : (@toLex α).symm = ofLex :=
+lemma toLex_symm_eq : (@toLex α).symm = ofLex :=
   rfl
 #align to_lex_symm_eq toLex_symm_eq
 
 @[simp]
-theorem ofLex_symm_eq : (@ofLex α).symm = toLex :=
+lemma ofLex_symm_eq : (@ofLex α).symm = toLex :=
   rfl
 #align of_lex_symm_eq ofLex_symm_eq
 
 @[simp]
-theorem toLex_ofLex (a : Lex α) : toLex (ofLex a) = a :=
+lemma toLex_ofLex (a : Lex α) : toLex (ofLex a) = a :=
   rfl
 #align to_lex_of_lex toLex_ofLex
 
 @[simp]
-theorem ofLex_toLex (a : α) : ofLex (toLex a) = a :=
+lemma ofLex_toLex (a : α) : ofLex (toLex a) = a :=
   rfl
 #align of_lex_to_lex ofLex_toLex
 
 -- Porting note:
 -- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
-theorem toLex_inj {a b : α} : toLex a = toLex b ↔ a = b :=
+lemma toLex_inj {a b : α} : toLex a = toLex b ↔ a = b :=
   Iff.rfl
 #align to_lex_inj toLex_inj
 
 -- Porting note:
 -- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
-theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b :=
+lemma ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b :=
   Iff.rfl
 #align of_lex_inj ofLex_inj
 

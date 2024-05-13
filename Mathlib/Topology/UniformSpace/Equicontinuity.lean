@@ -248,30 +248,30 @@ lemma uniformEquicontinuousOn_empty [h : IsEmpty ι] (F : ι → β → α) (S :
 ### Finite index type
 -/
 
-theorem equicontinuousAt_finite [Finite ι] {F : ι → X → α} {x₀ : X} :
+lemma equicontinuousAt_finite [Finite ι] {F : ι → X → α} {x₀ : X} :
     EquicontinuousAt F x₀ ↔ ∀ i, ContinuousAt (F i) x₀ := by
   simp [EquicontinuousAt, ContinuousAt, (nhds_basis_uniformity' (𝓤 α).basis_sets).tendsto_right_iff,
     UniformSpace.ball, @forall_swap _ ι]
 
-theorem equicontinuousWithinAt_finite [Finite ι] {F : ι → X → α} {S : Set X} {x₀ : X} :
+lemma equicontinuousWithinAt_finite [Finite ι] {F : ι → X → α} {S : Set X} {x₀ : X} :
     EquicontinuousWithinAt F S x₀ ↔ ∀ i, ContinuousWithinAt (F i) S x₀ := by
   simp [EquicontinuousWithinAt, ContinuousWithinAt,
     (nhds_basis_uniformity' (𝓤 α).basis_sets).tendsto_right_iff, UniformSpace.ball,
     @forall_swap _ ι]
 
-theorem equicontinuous_finite [Finite ι] {F : ι → X → α} :
+lemma equicontinuous_finite [Finite ι] {F : ι → X → α} :
     Equicontinuous F ↔ ∀ i, Continuous (F i) := by
   simp only [Equicontinuous, equicontinuousAt_finite, continuous_iff_continuousAt, @forall_swap ι]
 
-theorem equicontinuousOn_finite [Finite ι] {F : ι → X → α} {S : Set X} :
+lemma equicontinuousOn_finite [Finite ι] {F : ι → X → α} {S : Set X} :
     EquicontinuousOn F S ↔ ∀ i, ContinuousOn (F i) S := by
   simp only [EquicontinuousOn, equicontinuousWithinAt_finite, ContinuousOn, @forall_swap ι]
 
-theorem uniformEquicontinuous_finite [Finite ι] {F : ι → β → α} :
+lemma uniformEquicontinuous_finite [Finite ι] {F : ι → β → α} :
     UniformEquicontinuous F ↔ ∀ i, UniformContinuous (F i) := by
   simp only [UniformEquicontinuous, eventually_all, @forall_swap _ ι]; rfl
 
-theorem uniformEquicontinuousOn_finite [Finite ι] {F : ι → β → α} {S : Set β} :
+lemma uniformEquicontinuousOn_finite [Finite ι] {F : ι → β → α} {S : Set β} :
     UniformEquicontinuousOn F S ↔ ∀ i, UniformContinuousOn (F i) S := by
   simp only [UniformEquicontinuousOn, eventually_all, @forall_swap _ ι]; rfl
 
@@ -279,27 +279,27 @@ theorem uniformEquicontinuousOn_finite [Finite ι] {F : ι → β → α} {S : S
 ### Index type with a unique element
 -/
 
-theorem equicontinuousAt_unique [Unique ι] {F : ι → X → α} {x : X} :
+lemma equicontinuousAt_unique [Unique ι] {F : ι → X → α} {x : X} :
     EquicontinuousAt F x ↔ ContinuousAt (F default) x :=
   equicontinuousAt_finite.trans Unique.forall_iff
 
-theorem equicontinuousWithinAt_unique [Unique ι] {F : ι → X → α} {S : Set X} {x : X} :
+lemma equicontinuousWithinAt_unique [Unique ι] {F : ι → X → α} {S : Set X} {x : X} :
     EquicontinuousWithinAt F S x ↔ ContinuousWithinAt (F default) S x :=
   equicontinuousWithinAt_finite.trans Unique.forall_iff
 
-theorem equicontinuous_unique [Unique ι] {F : ι → X → α} :
+lemma equicontinuous_unique [Unique ι] {F : ι → X → α} :
     Equicontinuous F ↔ Continuous (F default) :=
   equicontinuous_finite.trans Unique.forall_iff
 
-theorem equicontinuousOn_unique [Unique ι] {F : ι → X → α} {S : Set X} :
+lemma equicontinuousOn_unique [Unique ι] {F : ι → X → α} {S : Set X} :
     EquicontinuousOn F S ↔ ContinuousOn (F default) S :=
   equicontinuousOn_finite.trans Unique.forall_iff
 
-theorem uniformEquicontinuous_unique [Unique ι] {F : ι → β → α} :
+lemma uniformEquicontinuous_unique [Unique ι] {F : ι → β → α} :
     UniformEquicontinuous F ↔ UniformContinuous (F default) :=
   uniformEquicontinuous_finite.trans Unique.forall_iff
 
-theorem uniformEquicontinuousOn_unique [Unique ι] {F : ι → β → α} {S : Set β} :
+lemma uniformEquicontinuousOn_unique [Unique ι] {F : ι → β → α} {S : Set β} :
     UniformEquicontinuousOn F S ↔ UniformContinuousOn (F default) S :=
   uniformEquicontinuousOn_finite.trans Unique.forall_iff
 
@@ -348,12 +348,12 @@ theorem EquicontinuousWithinAt.continuousWithinAt {F : ι → X → α} {S : Set
     ContinuousWithinAt (F i) S x₀ :=
   (UniformSpace.hasBasis_nhds _).tendsto_right_iff.2 fun U ⟨hU, _⟩ ↦ (h U hU).mono fun _x hx ↦ hx i
 
-protected theorem Set.EquicontinuousAt.continuousAt_of_mem {H : Set <| X → α} {x₀ : X}
+protected lemma Set.EquicontinuousAt.continuousAt_of_mem {H : Set <| X → α} {x₀ : X}
     (h : H.EquicontinuousAt x₀) {f : X → α} (hf : f ∈ H) : ContinuousAt f x₀ :=
   h.continuousAt ⟨f, hf⟩
 #align set.equicontinuous_at.continuous_at_of_mem Set.EquicontinuousAt.continuousAt_of_mem
 
-protected theorem Set.EquicontinuousWithinAt.continuousWithinAt_of_mem {H : Set <| X → α}
+protected lemma Set.EquicontinuousWithinAt.continuousWithinAt_of_mem {H : Set <| X → α}
     {S : Set X} {x₀ : X} (h : H.EquicontinuousWithinAt S x₀) {f : X → α} (hf : f ∈ H) :
     ContinuousWithinAt f S x₀ :=
   h.continuousWithinAt ⟨f, hf⟩
@@ -369,12 +369,12 @@ theorem EquicontinuousOn.continuousOn {F : ι → X → α} {S : Set X} (h : Equ
     (i : ι) : ContinuousOn (F i) S :=
   fun x hx ↦ (h x hx).continuousWithinAt i
 
-protected theorem Set.Equicontinuous.continuous_of_mem {H : Set <| X → α} (h : H.Equicontinuous)
+protected lemma Set.Equicontinuous.continuous_of_mem {H : Set <| X → α} (h : H.Equicontinuous)
     {f : X → α} (hf : f ∈ H) : Continuous f :=
   h.continuous ⟨f, hf⟩
 #align set.equicontinuous.continuous_of_mem Set.Equicontinuous.continuous_of_mem
 
-protected theorem Set.EquicontinuousOn.continuousOn_of_mem {H : Set <| X → α} {S : Set X}
+protected lemma Set.EquicontinuousOn.continuousOn_of_mem {H : Set <| X → α} {S : Set X}
     (h : H.EquicontinuousOn S) {f : X → α} (hf : f ∈ H) : ContinuousOn f S :=
   h.continuousOn ⟨f, hf⟩
 
@@ -390,12 +390,12 @@ theorem UniformEquicontinuousOn.uniformContinuousOn {F : ι → β → α} {S : 
     UniformContinuousOn (F i) S := fun U hU =>
   mem_map.mpr (mem_of_superset (h U hU) fun _ hxy => hxy i)
 
-protected theorem Set.UniformEquicontinuous.uniformContinuous_of_mem {H : Set <| β → α}
+protected lemma Set.UniformEquicontinuous.uniformContinuous_of_mem {H : Set <| β → α}
     (h : H.UniformEquicontinuous) {f : β → α} (hf : f ∈ H) : UniformContinuous f :=
   h.uniformContinuous ⟨f, hf⟩
 #align set.uniform_equicontinuous.uniform_continuous_of_mem Set.UniformEquicontinuous.uniformContinuous_of_mem
 
-protected theorem Set.UniformEquicontinuousOn.uniformContinuousOn_of_mem {H : Set <| β → α}
+protected lemma Set.UniformEquicontinuousOn.uniformContinuousOn_of_mem {H : Set <| β → α}
     {S : Set β} (h : H.UniformEquicontinuousOn S) {f : β → α} (hf : f ∈ H) :
     UniformContinuousOn f S :=
   h.uniformContinuousOn ⟨f, hf⟩
@@ -411,12 +411,12 @@ theorem EquicontinuousWithinAt.comp {F : ι → X → α} {S : Set X} {x₀ : X}
     EquicontinuousWithinAt (F ∘ u) S x₀ :=
   fun U hU ↦ (h U hU).mono fun _ H k => H (u k)
 
-protected theorem Set.EquicontinuousAt.mono {H H' : Set <| X → α} {x₀ : X}
+protected lemma Set.EquicontinuousAt.mono {H H' : Set <| X → α} {x₀ : X}
     (h : H.EquicontinuousAt x₀) (hH : H' ⊆ H) : H'.EquicontinuousAt x₀ :=
   h.comp (inclusion hH)
 #align set.equicontinuous_at.mono Set.EquicontinuousAt.mono
 
-protected theorem Set.EquicontinuousWithinAt.mono {H H' : Set <| X → α} {S : Set X} {x₀ : X}
+protected lemma Set.EquicontinuousWithinAt.mono {H H' : Set <| X → α} {S : Set X} {x₀ : X}
     (h : H.EquicontinuousWithinAt S x₀) (hH : H' ⊆ H) : H'.EquicontinuousWithinAt S x₀ :=
   h.comp (inclusion hH)
 
@@ -429,12 +429,12 @@ theorem Equicontinuous.comp {F : ι → X → α} (h : Equicontinuous F) (u : κ
 theorem EquicontinuousOn.comp {F : ι → X → α} {S : Set X} (h : EquicontinuousOn F S) (u : κ → ι) :
     EquicontinuousOn (F ∘ u) S := fun x hx ↦ (h x hx).comp u
 
-protected theorem Set.Equicontinuous.mono {H H' : Set <| X → α} (h : H.Equicontinuous)
+protected lemma Set.Equicontinuous.mono {H H' : Set <| X → α} (h : H.Equicontinuous)
     (hH : H' ⊆ H) : H'.Equicontinuous :=
   h.comp (inclusion hH)
 #align set.equicontinuous.mono Set.Equicontinuous.mono
 
-protected theorem Set.EquicontinuousOn.mono {H H' : Set <| X → α} {S : Set X}
+protected lemma Set.EquicontinuousOn.mono {H H' : Set <| X → α} {S : Set X}
     (h : H.EquicontinuousOn S) (hH : H' ⊆ H) : H'.EquicontinuousOn S :=
   h.comp (inclusion hH)
 
@@ -448,12 +448,12 @@ theorem UniformEquicontinuousOn.comp {F : ι → β → α} {S : Set β} (h : Un
     (u : κ → ι) : UniformEquicontinuousOn (F ∘ u) S :=
   fun U hU ↦ (h U hU).mono fun _ H k => H (u k)
 
-protected theorem Set.UniformEquicontinuous.mono {H H' : Set <| β → α} (h : H.UniformEquicontinuous)
+protected lemma Set.UniformEquicontinuous.mono {H H' : Set <| β → α} (h : H.UniformEquicontinuous)
     (hH : H' ⊆ H) : H'.UniformEquicontinuous :=
   h.comp (inclusion hH)
 #align set.uniform_equicontinuous.mono Set.UniformEquicontinuous.mono
 
-protected theorem Set.UniformEquicontinuousOn.mono {H H' : Set <| β → α} {S : Set β}
+protected lemma Set.UniformEquicontinuousOn.mono {H H' : Set <| β → α} {S : Set β}
     (h : H.UniformEquicontinuousOn S) (hH : H' ⊆ H) : H'.UniformEquicontinuousOn S :=
   h.comp (inclusion hH)
 
@@ -558,41 +558,41 @@ theorem uniformEquicontinuousOn_iff_uniformContinuousOn {F : ι → β → α} {
   rw [UniformContinuousOn, (UniformFun.hasBasis_uniformity ι α).tendsto_right_iff]
   rfl
 
-theorem equicontinuousWithinAt_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'}
+lemma equicontinuousWithinAt_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'}
     {S : Set X} {x₀ : X} : EquicontinuousWithinAt (uα :=  ⨅ k, u k) F S x₀ ↔
       ∀ k, EquicontinuousWithinAt (uα :=  u k) F S x₀ := by
   simp only [equicontinuousWithinAt_iff_continuousWithinAt (uα := _), topologicalSpace]
   unfold ContinuousWithinAt
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, nhds_iInf, tendsto_iInf]
 
-theorem equicontinuousAt_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'}
+lemma equicontinuousAt_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'}
     {x₀ : X} :
     EquicontinuousAt (uα := ⨅ k, u k) F x₀ ↔ ∀ k, EquicontinuousAt (uα := u k) F x₀ := by
   simp only [← equicontinuousWithinAt_univ (uα := _), equicontinuousWithinAt_iInf_rng]
 
-theorem equicontinuous_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'} :
+lemma equicontinuous_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'} :
     Equicontinuous (uα := ⨅ k, u k) F ↔ ∀ k, Equicontinuous (uα := u k) F := by
   simp_rw [equicontinuous_iff_continuous (uα := _), UniformFun.topologicalSpace]
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, continuous_iInf_rng]
 
-theorem equicontinuousOn_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'}
+lemma equicontinuousOn_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'}
     {S : Set X} :
     EquicontinuousOn (uα := ⨅ k, u k) F S ↔ ∀ k, EquicontinuousOn (uα := u k) F S := by
   simp_rw [EquicontinuousOn, equicontinuousWithinAt_iInf_rng, @forall_swap _ κ]
 
-theorem uniformEquicontinuous_iInf_rng {u : κ → UniformSpace α'} {F : ι → β → α'} :
+lemma uniformEquicontinuous_iInf_rng {u : κ → UniformSpace α'} {F : ι → β → α'} :
     UniformEquicontinuous (uα := ⨅ k, u k) F ↔ ∀ k, UniformEquicontinuous (uα := u k) F := by
   simp_rw [uniformEquicontinuous_iff_uniformContinuous (uα := _)]
   rw [UniformFun.iInf_eq, uniformContinuous_iInf_rng]
 
-theorem uniformEquicontinuousOn_iInf_rng {u : κ → UniformSpace α'} {F : ι → β → α'}
+lemma uniformEquicontinuousOn_iInf_rng {u : κ → UniformSpace α'} {F : ι → β → α'}
     {S : Set β} : UniformEquicontinuousOn (uα := ⨅ k, u k) F S ↔
       ∀ k, UniformEquicontinuousOn (uα := u k) F S := by
   simp_rw [uniformEquicontinuousOn_iff_uniformContinuousOn (uα := _)]
   unfold UniformContinuousOn
   rw [UniformFun.iInf_eq, iInf_uniformity, tendsto_iInf]
 
-theorem equicontinuousWithinAt_iInf_dom {t : κ → TopologicalSpace X'} {F : ι → X' → α}
+lemma equicontinuousWithinAt_iInf_dom {t : κ → TopologicalSpace X'} {F : ι → X' → α}
     {S : Set X'} {x₀ : X'} {k : κ} (hk : EquicontinuousWithinAt (tX := t k) F S x₀) :
     EquicontinuousWithinAt (tX := ⨅ k, t k) F S x₀ := by
   simp [equicontinuousWithinAt_iff_continuousWithinAt (tX := _)] at hk ⊢
@@ -600,29 +600,29 @@ theorem equicontinuousWithinAt_iInf_dom {t : κ → TopologicalSpace X'} {F : ι
   rw [nhds_iInf]
   exact hk.mono_left <| inf_le_inf_right _ <| iInf_le _ k
 
-theorem equicontinuousAt_iInf_dom {t : κ → TopologicalSpace X'} {F : ι → X' → α}
+lemma equicontinuousAt_iInf_dom {t : κ → TopologicalSpace X'} {F : ι → X' → α}
     {x₀ : X'} {k : κ} (hk : EquicontinuousAt (tX := t k) F x₀) :
     EquicontinuousAt (tX := ⨅ k, t k) F x₀ := by
   rw [← equicontinuousWithinAt_univ (tX := _)] at hk ⊢
   exact equicontinuousWithinAt_iInf_dom hk
 
-theorem equicontinuous_iInf_dom {t : κ → TopologicalSpace X'} {F : ι → X' → α}
+lemma equicontinuous_iInf_dom {t : κ → TopologicalSpace X'} {F : ι → X' → α}
     {k : κ} (hk : Equicontinuous (tX := t k) F) :
     Equicontinuous (tX := ⨅ k, t k) F :=
   fun x ↦ equicontinuousAt_iInf_dom (hk x)
 
-theorem equicontinuousOn_iInf_dom {t : κ → TopologicalSpace X'} {F : ι → X' → α}
+lemma equicontinuousOn_iInf_dom {t : κ → TopologicalSpace X'} {F : ι → X' → α}
     {S : Set X'} {k : κ} (hk : EquicontinuousOn (tX := t k) F S) :
     EquicontinuousOn (tX := ⨅ k, t k) F S :=
   fun x hx ↦ equicontinuousWithinAt_iInf_dom (hk x hx)
 
-theorem uniformEquicontinuous_iInf_dom {u : κ → UniformSpace β'} {F : ι → β' → α}
+lemma uniformEquicontinuous_iInf_dom {u : κ → UniformSpace β'} {F : ι → β' → α}
     {k : κ} (hk : UniformEquicontinuous (uβ := u k) F) :
     UniformEquicontinuous (uβ := ⨅ k, u k) F := by
   simp_rw [uniformEquicontinuous_iff_uniformContinuous (uβ := _)] at hk ⊢
   exact uniformContinuous_iInf_dom hk
 
-theorem uniformEquicontinuousOn_iInf_dom {u : κ → UniformSpace β'} {F : ι → β' → α}
+lemma uniformEquicontinuousOn_iInf_dom {u : κ → UniformSpace β'} {F : ι → β' → α}
     {S : Set β'} {k : κ} (hk : UniformEquicontinuousOn (uβ := u k) F S) :
     UniformEquicontinuousOn (uβ := ⨅ k, u k) F S := by
   simp_rw [uniformEquicontinuousOn_iff_uniformContinuousOn (uβ := _)] at hk ⊢
@@ -630,7 +630,7 @@ theorem uniformEquicontinuousOn_iInf_dom {u : κ → UniformSpace β'} {F : ι �
   rw [iInf_uniformity]
   exact hk.mono_left <| inf_le_inf_right _ <| iInf_le _ k
 
-theorem Filter.HasBasis.equicontinuousAt_iff_left {p : κ → Prop} {s : κ → Set X}
+lemma Filter.HasBasis.equicontinuousAt_iff_left {p : κ → Prop} {s : κ → Set X}
     {F : ι → X → α} {x₀ : X} (hX : (𝓝 x₀).HasBasis p s) :
     EquicontinuousAt F x₀ ↔ ∀ U ∈ 𝓤 α, ∃ k, p k ∧ ∀ x ∈ s k, ∀ i, (F i x₀, F i x) ∈ U := by
   rw [equicontinuousAt_iff_continuousAt, ContinuousAt,
@@ -638,14 +638,14 @@ theorem Filter.HasBasis.equicontinuousAt_iff_left {p : κ → Prop} {s : κ → 
   rfl
 #align filter.has_basis.equicontinuous_at_iff_left Filter.HasBasis.equicontinuousAt_iff_left
 
-theorem Filter.HasBasis.equicontinuousWithinAt_iff_left {p : κ → Prop} {s : κ → Set X}
+lemma Filter.HasBasis.equicontinuousWithinAt_iff_left {p : κ → Prop} {s : κ → Set X}
     {F : ι → X → α} {S : Set X} {x₀ : X} (hX : (𝓝[S] x₀).HasBasis p s) :
     EquicontinuousWithinAt F S x₀ ↔ ∀ U ∈ 𝓤 α, ∃ k, p k ∧ ∀ x ∈ s k, ∀ i, (F i x₀, F i x) ∈ U := by
   rw [equicontinuousWithinAt_iff_continuousWithinAt, ContinuousWithinAt,
     hX.tendsto_iff (UniformFun.hasBasis_nhds ι α _)]
   rfl
 
-theorem Filter.HasBasis.equicontinuousAt_iff_right {p : κ → Prop} {s : κ → Set (α × α)}
+lemma Filter.HasBasis.equicontinuousAt_iff_right {p : κ → Prop} {s : κ → Set (α × α)}
     {F : ι → X → α} {x₀ : X} (hα : (𝓤 α).HasBasis p s) :
     EquicontinuousAt F x₀ ↔ ∀ k, p k → ∀ᶠ x in 𝓝 x₀, ∀ i, (F i x₀, F i x) ∈ s k := by
   rw [equicontinuousAt_iff_continuousAt, ContinuousAt,
@@ -653,14 +653,14 @@ theorem Filter.HasBasis.equicontinuousAt_iff_right {p : κ → Prop} {s : κ →
   rfl
 #align filter.has_basis.equicontinuous_at_iff_right Filter.HasBasis.equicontinuousAt_iff_right
 
-theorem Filter.HasBasis.equicontinuousWithinAt_iff_right {p : κ → Prop}
+lemma Filter.HasBasis.equicontinuousWithinAt_iff_right {p : κ → Prop}
     {s : κ → Set (α × α)} {F : ι → X → α} {S : Set X} {x₀ : X} (hα : (𝓤 α).HasBasis p s) :
     EquicontinuousWithinAt F S x₀ ↔ ∀ k, p k → ∀ᶠ x in 𝓝[S] x₀, ∀ i, (F i x₀, F i x) ∈ s k := by
   rw [equicontinuousWithinAt_iff_continuousWithinAt, ContinuousWithinAt,
     (UniformFun.hasBasis_nhds_of_basis ι α _ hα).tendsto_right_iff]
   rfl
 
-theorem Filter.HasBasis.equicontinuousAt_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop} {s₁ : κ₁ → Set X}
+lemma Filter.HasBasis.equicontinuousAt_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop} {s₁ : κ₁ → Set X}
     {p₂ : κ₂ → Prop} {s₂ : κ₂ → Set (α × α)} {F : ι → X → α} {x₀ : X} (hX : (𝓝 x₀).HasBasis p₁ s₁)
     (hα : (𝓤 α).HasBasis p₂ s₂) :
     EquicontinuousAt F x₀ ↔
@@ -670,7 +670,7 @@ theorem Filter.HasBasis.equicontinuousAt_iff {κ₁ κ₂ : Type*} {p₁ : κ₁
   rfl
 #align filter.has_basis.equicontinuous_at_iff Filter.HasBasis.equicontinuousAt_iff
 
-theorem Filter.HasBasis.equicontinuousWithinAt_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop}
+lemma Filter.HasBasis.equicontinuousWithinAt_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop}
     {s₁ : κ₁ → Set X} {p₂ : κ₂ → Prop} {s₂ : κ₂ → Set (α × α)} {F : ι → X → α} {S : Set X} {x₀ : X}
     (hX : (𝓝[S] x₀).HasBasis p₁ s₁) (hα : (𝓤 α).HasBasis p₂ s₂) :
     EquicontinuousWithinAt F S x₀ ↔
@@ -679,7 +679,7 @@ theorem Filter.HasBasis.equicontinuousWithinAt_iff {κ₁ κ₂ : Type*} {p₁ :
     hX.tendsto_iff (UniformFun.hasBasis_nhds_of_basis ι α _ hα)]
   rfl
 
-theorem Filter.HasBasis.uniformEquicontinuous_iff_left {p : κ → Prop}
+lemma Filter.HasBasis.uniformEquicontinuous_iff_left {p : κ → Prop}
     {s : κ → Set (β × β)} {F : ι → β → α} (hβ : (𝓤 β).HasBasis p s) :
     UniformEquicontinuous F ↔
       ∀ U ∈ 𝓤 α, ∃ k, p k ∧ ∀ x y, (x, y) ∈ s k → ∀ i, (F i x, F i y) ∈ U := by
@@ -689,7 +689,7 @@ theorem Filter.HasBasis.uniformEquicontinuous_iff_left {p : κ → Prop}
   rfl
 #align filter.has_basis.uniform_equicontinuous_iff_left Filter.HasBasis.uniformEquicontinuous_iff_left
 
-theorem Filter.HasBasis.uniformEquicontinuousOn_iff_left {p : κ → Prop}
+lemma Filter.HasBasis.uniformEquicontinuousOn_iff_left {p : κ → Prop}
     {s : κ → Set (β × β)} {F : ι → β → α} {S : Set β} (hβ : (𝓤 β ⊓ 𝓟 (S ×ˢ S)).HasBasis p s) :
     UniformEquicontinuousOn F S ↔
       ∀ U ∈ 𝓤 α, ∃ k, p k ∧ ∀ x y, (x, y) ∈ s k → ∀ i, (F i x, F i y) ∈ U := by
@@ -698,7 +698,7 @@ theorem Filter.HasBasis.uniformEquicontinuousOn_iff_left {p : κ → Prop}
   simp only [Prod.forall]
   rfl
 
-theorem Filter.HasBasis.uniformEquicontinuous_iff_right {p : κ → Prop}
+lemma Filter.HasBasis.uniformEquicontinuous_iff_right {p : κ → Prop}
     {s : κ → Set (α × α)} {F : ι → β → α} (hα : (𝓤 α).HasBasis p s) :
     UniformEquicontinuous F ↔ ∀ k, p k → ∀ᶠ xy : β × β in 𝓤 β, ∀ i, (F i xy.1, F i xy.2) ∈ s k := by
   rw [uniformEquicontinuous_iff_uniformContinuous, UniformContinuous,
@@ -706,7 +706,7 @@ theorem Filter.HasBasis.uniformEquicontinuous_iff_right {p : κ → Prop}
   rfl
 #align filter.has_basis.uniform_equicontinuous_iff_right Filter.HasBasis.uniformEquicontinuous_iff_right
 
-theorem Filter.HasBasis.uniformEquicontinuousOn_iff_right {p : κ → Prop}
+lemma Filter.HasBasis.uniformEquicontinuousOn_iff_right {p : κ → Prop}
     {s : κ → Set (α × α)} {F : ι → β → α} {S : Set β} (hα : (𝓤 α).HasBasis p s) :
     UniformEquicontinuousOn F S ↔
       ∀ k, p k → ∀ᶠ xy : β × β in 𝓤 β ⊓ 𝓟 (S ×ˢ S), ∀ i, (F i xy.1, F i xy.2) ∈ s k := by
@@ -714,7 +714,7 @@ theorem Filter.HasBasis.uniformEquicontinuousOn_iff_right {p : κ → Prop}
     (UniformFun.hasBasis_uniformity_of_basis ι α hα).tendsto_right_iff]
   rfl
 
-theorem Filter.HasBasis.uniformEquicontinuous_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop}
+lemma Filter.HasBasis.uniformEquicontinuous_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop}
     {s₁ : κ₁ → Set (β × β)} {p₂ : κ₂ → Prop} {s₂ : κ₂ → Set (α × α)} {F : ι → β → α}
     (hβ : (𝓤 β).HasBasis p₁ s₁) (hα : (𝓤 α).HasBasis p₂ s₂) :
     UniformEquicontinuous F ↔
@@ -725,7 +725,7 @@ theorem Filter.HasBasis.uniformEquicontinuous_iff {κ₁ κ₂ : Type*} {p₁ : 
   rfl
 #align filter.has_basis.uniform_equicontinuous_iff Filter.HasBasis.uniformEquicontinuous_iff
 
-theorem Filter.HasBasis.uniformEquicontinuousOn_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop}
+lemma Filter.HasBasis.uniformEquicontinuousOn_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop}
     {s₁ : κ₁ → Set (β × β)} {p₂ : κ₂ → Prop} {s₂ : κ₂ → Set (α × α)} {F : ι → β → α}
     {S : Set β} (hβ : (𝓤 β ⊓ 𝓟 (S ×ˢ S)).HasBasis p₁ s₁) (hα : (𝓤 α).HasBasis p₂ s₂) :
     UniformEquicontinuousOn F S ↔

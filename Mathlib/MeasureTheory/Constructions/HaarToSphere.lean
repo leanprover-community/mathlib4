@@ -46,26 +46,26 @@ def toSphere (μ : Measure E) : Measure (sphere (0 : E) 1) :=
 
 variable (μ : Measure E)
 
-theorem toSphere_apply_aux (s : Set (sphere (0 : E) 1)) (r : Ioi (0 : ℝ)) :
+lemma toSphere_apply_aux (s : Set (sphere (0 : E) 1)) (r : Ioi (0 : ℝ)) :
     μ ((↑) '' (homeomorphUnitSphereProd E ⁻¹' s ×ˢ Iio r)) = μ (Ioo (0 : ℝ) r • ((↑) '' s)) := by
   rw [← image2_smul, image2_image_right, ← Homeomorph.image_symm, image_image,
     ← image_subtype_val_Ioi_Iio, image2_image_left, image2_swap, ← image_prod]
   rfl
 
-theorem toSphere_apply' {s : Set (sphere (0 : E) 1)} (hs : MeasurableSet s) :
+lemma toSphere_apply' {s : Set (sphere (0 : E) 1)} (hs : MeasurableSet s) :
     μ.toSphere s = dim E * μ (Ioo (0 : ℝ) 1 • ((↑) '' s)) := by
   rw [toSphere, smul_apply, fst_apply hs, restrict_apply (measurable_fst hs),
     ((MeasurableEmbedding.subtype_coe (measurableSet_singleton _).compl).comp
       (Homeomorph.measurableEmbedding _)).comap_apply,
     image_comp, Homeomorph.image_symm, univ_prod, ← Set.prod_eq, nsmul_eq_mul, toSphere_apply_aux]
 
-theorem toSphere_apply_univ' : μ.toSphere univ = dim E * μ (ball 0 1 \ {0}) := by
+lemma toSphere_apply_univ' : μ.toSphere univ = dim E * μ (ball 0 1 \ {0}) := by
   rw [μ.toSphere_apply' .univ, image_univ, Subtype.range_coe, Ioo_smul_sphere_zero] <;> simp
 
 variable [μ.IsAddHaarMeasure]
 
 @[simp]
-theorem toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
+lemma toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
   nontriviality E
   rw [toSphere_apply_univ', measure_diff_null (measure_singleton _)]
 

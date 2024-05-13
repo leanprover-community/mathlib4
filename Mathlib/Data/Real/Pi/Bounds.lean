@@ -25,7 +25,7 @@ open scoped Real
 
 namespace Real
 
-theorem pi_gt_sqrtTwoAddSeries (n : ℕ) :
+lemma pi_gt_sqrtTwoAddSeries (n : ℕ) :
     (2 : ℝ) ^ (n + 1) * √(2 - sqrtTwoAddSeries 0 n) < π := by
   have : √(2 - sqrtTwoAddSeries 0 n) / (2 : ℝ) * (2 : ℝ) ^ (n + 2) < π := by
     rw [← lt_div_iff, ← sin_pi_over_two_pow_succ]
@@ -37,7 +37,7 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) :
   rw [pow_succ' _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; norm_num
 #align real.pi_gt_sqrt_two_add_series Real.pi_gt_sqrtTwoAddSeries
 
-theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
+lemma pi_lt_sqrtTwoAddSeries (n : ℕ) :
     π < (2 : ℝ) ^ (n + 1) * √(2 - sqrtTwoAddSeries 0 n) + 1 / (4 : ℝ) ^ n := by
   have : π <
       (√(2 - sqrtTwoAddSeries 0 n) / (2 : ℝ) + (1 : ℝ) / ((2 : ℝ) ^ n) ^ 3 / 4) *
@@ -82,7 +82,7 @@ theorem pi_lower_bound_start (n : ℕ) {a}
   rwa [le_sub_comm, show (0 : ℝ) = (0 : ℕ) / (1 : ℕ) by rw [Nat.cast_zero, zero_div]]
 #align real.pi_lower_bound_start Real.pi_lower_bound_start
 
-theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtTwoAddSeries (c / d) n ≤ z)
+lemma sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtTwoAddSeries (c / d) n ≤ z)
     (hb : 0 < b) (hd : 0 < d) (h : (2 * b + a) * d ^ 2 ≤ c ^ 2 * b) :
     sqrtTwoAddSeries (a / b) (n + 1) ≤ z := by
   refine' le_trans _ hz; rw [sqrtTwoAddSeries_succ]; apply sqrtTwoAddSeries_monotone_left
@@ -136,7 +136,7 @@ theorem pi_upper_bound_start (n : ℕ) {a}
   · exact pow_pos zero_lt_two _
 #align real.pi_upper_bound_start Real.pi_upper_bound_start
 
-theorem sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
+lemma sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
     (hz : z ≤ sqrtTwoAddSeries (a / b) n) (hb : 0 < b) (hd : 0 < d)
     (h : a ^ 2 * d ≤ (2 * d + c) * b ^ 2) : z ≤ sqrtTwoAddSeries (c / d) (n + 1) := by
   apply le_trans hz; rw [sqrtTwoAddSeries_succ]; apply sqrtTwoAddSeries_monotone_left
@@ -168,36 +168,36 @@ elab "pi_upper_bound " "[" l:term,* "]" : tactic => do
 
 end Tactic
 
-theorem pi_gt_three : 3 < π := by
+lemma pi_gt_three : 3 < π := by
   pi_lower_bound [23/16]
 #align real.pi_gt_three Real.pi_gt_three
 
-theorem pi_gt_314 : 3.14 < π := by
+lemma pi_gt_314 : 3.14 < π := by
   pi_lower_bound [99 / 70, 874 / 473, 1940 / 989, 1447 / 727]
 #align real.pi_gt_314 Real.pi_gt_314
 
-theorem pi_lt_315 : π < 3.15 := by
+lemma pi_lt_315 : π < 3.15 := by
   pi_upper_bound [140 / 99, 279 / 151, 51 / 26, 412 / 207]
 #align real.pi_lt_315 Real.pi_lt_315
 
-theorem pi_gt_31415 : 3.1415 < π := by
+lemma pi_gt_31415 : 3.1415 < π := by
   pi_lower_bound
         [11482 / 8119, 5401 / 2923, 2348 / 1197, 11367 / 5711, 25705 / 12868, 23235 / 11621]
 #align real.pi_gt_31415 Real.pi_gt_31415
 
-theorem pi_lt_31416 : π < 3.1416 := by
+lemma pi_lt_31416 : π < 3.1416 := by
     pi_upper_bound
         [4756 / 3363, 101211 / 54775, 505534 / 257719, 83289 / 41846, 411278 / 205887,
           438142 / 219137, 451504 / 225769, 265603 / 132804, 849938 / 424971]
 #align real.pi_lt_31416 Real.pi_lt_31416
 
-theorem pi_gt_3141592 : 3.141592 < π := by
+lemma pi_gt_3141592 : 3.141592 < π := by
     pi_lower_bound
         [11482 / 8119, 7792 / 4217, 54055 / 27557, 949247 / 476920, 3310126 / 1657059,
           2635492 / 1318143, 1580265 / 790192, 1221775 / 610899, 3612247 / 1806132, 849943 / 424972]
 #align real.pi_gt_3141592 Real.pi_gt_3141592
 
-theorem pi_lt_3141593 : π < 3.141593 := by
+lemma pi_lt_3141593 : π < 3.141593 := by
     pi_upper_bound
         [27720 / 19601, 56935 / 30813, 49359 / 25163, 258754 / 130003, 113599 / 56868,
           1101994 / 551163, 8671537 / 4336095, 3877807 / 1938940, 52483813 / 26242030,

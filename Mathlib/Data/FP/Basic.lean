@@ -84,7 +84,7 @@ def toRat : ∀ f : Float, f.isFinite → ℚ
     if s then -r else r
 #align fp.to_rat FP.toRat
 
-theorem Float.Zero.valid : ValidFinite emin 0 :=
+lemma Float.Zero.valid : ValidFinite emin 0 :=
   ⟨by
     rw [add_sub_assoc]
     apply le_add_of_nonneg_right

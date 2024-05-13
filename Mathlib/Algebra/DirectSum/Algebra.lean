@@ -93,12 +93,12 @@ instance : Algebra R (⨁ i, A i) where
     rw [DirectSum.of_mul_of, ← of_smul]
     apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.smul_def r ⟨i, xi⟩)
 
-theorem algebraMap_apply (r : R) :
+lemma algebraMap_apply (r : R) :
     algebraMap R (⨁ i, A i) r = DirectSum.of A 0 (GAlgebra.toFun r) :=
   rfl
 #align direct_sum.algebra_map_apply DirectSum.algebraMap_apply
 
-theorem algebraMap_toAddMonoid_hom :
+lemma algebraMap_toAddMonoid_hom :
     ↑(algebraMap R (⨁ i, A i)) = (DirectSum.of A 0).comp (GAlgebra.toFun : R →+ A 0) :=
   rfl
 #align direct_sum.algebra_map_to_add_monoid_hom DirectSum.algebraMap_toAddMonoid_hom
@@ -131,7 +131,7 @@ theorem algHom_ext' ⦃f g : (⨁ i, A i) →ₐ[R] B⦄
   AlgHom.toLinearMap_injective <| DirectSum.linearMap_ext _ h
 #align direct_sum.alg_hom_ext' DirectSum.algHom_ext'
 
-theorem algHom_ext ⦃f g : (⨁ i, A i) →ₐ[R] B⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
+lemma algHom_ext ⦃f g : (⨁ i, A i) →ₐ[R] B⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
   algHom_ext' R A fun i => LinearMap.ext <| h i
 #align direct_sum.alg_hom_ext DirectSum.algHom_ext
 

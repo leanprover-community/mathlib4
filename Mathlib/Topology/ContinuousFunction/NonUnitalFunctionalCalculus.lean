@@ -142,7 +142,7 @@ lemma cfcₙHom_eq_of_continuous_of_map_id [UniqueNonUnitalContinuousFunctionalC
   (cfcₙHom ha).ext_continuousMap a φ (cfcₙHom_closedEmbedding ha).continuous hφ₁ <| by
     rw [cfcₙHom_id ha, hφ₂]
 
-theorem cfcₙHom_comp [UniqueNonUnitalContinuousFunctionalCalculus R A] (f : C(σₙ R a, R)₀)
+lemma cfcₙHom_comp [UniqueNonUnitalContinuousFunctionalCalculus R A] (f : C(σₙ R a, R)₀)
     (f' : C(σₙ R a, σₙ R (cfcₙHom ha f))₀)
     (hff' : ∀ x, f x = f' x) (g : C(σₙ R (cfcₙHom ha f), R)₀) :
     cfcₙHom ha (g.comp f') = cfcₙHom (cfcₙHom_predicate ha f) g := by

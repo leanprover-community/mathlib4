@@ -48,7 +48,7 @@ variable {B : V →L[ℝ] V →L[ℝ] ℝ}
 
 local postfix:1024 "♯" => @continuousLinearMapOfBilin ℝ V _ _ _ _
 
-theorem bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * ‖v‖ ≤ ‖B♯ v‖ := by
+lemma bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * ‖v‖ ≤ ‖B♯ v‖ := by
   rcases coercive with ⟨C, C_ge_0, coercivity⟩
   refine' ⟨C, C_ge_0, _⟩
   intro v
@@ -62,7 +62,7 @@ theorem bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * �
     simp [this]
 #align is_coercive.bounded_below IsCoercive.bounded_below
 
-theorem antilipschitz (coercive : IsCoercive B) : ∃ C : ℝ≥0, 0 < C ∧ AntilipschitzWith C B♯ := by
+lemma antilipschitz (coercive : IsCoercive B) : ∃ C : ℝ≥0, 0 < C ∧ AntilipschitzWith C B♯ := by
   rcases coercive.bounded_below with ⟨C, C_pos, below_bound⟩
   refine' ⟨C⁻¹.toNNReal, Real.toNNReal_pos.mpr (inv_pos.mpr C_pos), _⟩
   refine' ContinuousLinearMap.antilipschitz_of_bound B♯ _
@@ -71,20 +71,20 @@ theorem antilipschitz (coercive : IsCoercive B) : ∃ C : ℝ≥0, 0 < C ∧ Ant
   simpa using below_bound
 #align is_coercive.antilipschitz IsCoercive.antilipschitz
 
-theorem ker_eq_bot (coercive : IsCoercive B) : ker B♯ = ⊥ := by
+lemma ker_eq_bot (coercive : IsCoercive B) : ker B♯ = ⊥ := by
   rw [LinearMapClass.ker_eq_bot]
   rcases coercive.antilipschitz with ⟨_, _, antilipschitz⟩
   exact antilipschitz.injective
 #align is_coercive.ker_eq_bot IsCoercive.ker_eq_bot
 
-theorem isClosed_range (coercive : IsCoercive B) : IsClosed (range B♯ : Set V) := by
+lemma isClosed_range (coercive : IsCoercive B) : IsClosed (range B♯ : Set V) := by
   rcases coercive.antilipschitz with ⟨_, _, antilipschitz⟩
   exact antilipschitz.isClosed_range B♯.uniformContinuous
 #align is_coercive.closed_range IsCoercive.isClosed_range
 
 @[deprecated] alias closed_range := isClosed_range -- 2024-03-29
 
-theorem range_eq_top (coercive : IsCoercive B) : range B♯ = ⊤ := by
+lemma range_eq_top (coercive : IsCoercive B) : range B♯ = ⊤ := by
   haveI := coercive.isClosed_range.completeSpace_coe
   rw [← (range B♯).orthogonal_orthogonal]
   rw [Submodule.eq_top_iff']
@@ -112,12 +112,12 @@ def continuousLinearEquivOfBilin (coercive : IsCoercive B) : V ≃L[ℝ] V :=
 #align is_coercive.continuous_linear_equiv_of_bilin IsCoercive.continuousLinearEquivOfBilin
 
 @[simp]
-theorem continuousLinearEquivOfBilin_apply (coercive : IsCoercive B) (v w : V) :
+lemma continuousLinearEquivOfBilin_apply (coercive : IsCoercive B) (v w : V) :
     ⟪coercive.continuousLinearEquivOfBilin v, w⟫_ℝ = B v w :=
   continuousLinearMapOfBilin_apply B v w
 #align is_coercive.continuous_linear_equiv_of_bilin_apply IsCoercive.continuousLinearEquivOfBilin_apply
 
-theorem unique_continuousLinearEquivOfBilin (coercive : IsCoercive B) {v f : V}
+lemma unique_continuousLinearEquivOfBilin (coercive : IsCoercive B) {v f : V}
     (is_lax_milgram : ∀ w, ⟪f, w⟫_ℝ = B v w) : f = coercive.continuousLinearEquivOfBilin v :=
   unique_continuousLinearMapOfBilin B is_lax_milgram
 #align is_coercive.unique_continuous_linear_equiv_of_bilin IsCoercive.unique_continuousLinearEquivOfBilin

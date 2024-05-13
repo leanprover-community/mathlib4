@@ -131,7 +131,7 @@ theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div [CompleteSpace E] [St
 
 #align complex.affine_of_maps_to_ball_of_exists_norm_dslope_eq_div Complex.affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div
 
-theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div' [CompleteSpace E]
+lemma affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div' [CompleteSpace E]
     [StrictConvexSpace ℝ E] (hd : DifferentiableOn ℂ f (ball c R₁))
     (h_maps : Set.MapsTo f (ball c R₁) (ball (f c) R₂))
     (h_z₀ : ∃ z₀ ∈ ball c R₁, ‖dslope f c z₀‖ = R₂ / R₁) :

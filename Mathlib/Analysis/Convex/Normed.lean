@@ -50,29 +50,29 @@ theorem convexOn_univ_norm : ConvexOn ℝ univ (norm : E → ℝ) :=
   convexOn_norm convex_univ
 #align convex_on_univ_norm convexOn_univ_norm
 
-theorem convexOn_dist (z : E) (hs : Convex ℝ s) : ConvexOn ℝ s fun z' => dist z' z := by
+lemma convexOn_dist (z : E) (hs : Convex ℝ s) : ConvexOn ℝ s fun z' => dist z' z := by
   simpa [dist_eq_norm, preimage_preimage] using
     (convexOn_norm (hs.translate (-z))).comp_affineMap (AffineMap.id ℝ E - AffineMap.const ℝ E z)
 #align convex_on_dist convexOn_dist
 
-theorem convexOn_univ_dist (z : E) : ConvexOn ℝ univ fun z' => dist z' z :=
+lemma convexOn_univ_dist (z : E) : ConvexOn ℝ univ fun z' => dist z' z :=
   convexOn_dist z convex_univ
 #align convex_on_univ_dist convexOn_univ_dist
 
-theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (Metric.ball a r) := by
+lemma convex_ball (a : E) (r : ℝ) : Convex ℝ (Metric.ball a r) := by
   simpa only [Metric.ball, sep_univ] using (convexOn_univ_dist a).convex_lt r
 #align convex_ball convex_ball
 
-theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r) := by
+lemma convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r) := by
   simpa only [Metric.closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
 #align convex_closed_ball convex_closedBall
 
-theorem Convex.thickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (thickening δ s) := by
+lemma Convex.thickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (thickening δ s) := by
   rw [← add_ball_zero]
   exact hs.add (convex_ball 0 _)
 #align convex.thickening Convex.thickening
 
-theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthickening δ s) := by
+lemma Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthickening δ s) := by
   obtain hδ | hδ := le_total 0 δ
   · rw [cthickening_eq_iInter_thickening hδ]
     exact convex_iInter₂ fun _ _ => hs.thickening _
@@ -130,12 +130,12 @@ instance (priority := 100) NormedSpace.instLocPathConnectedSpace : LocPathConnec
     (convex_ball x r).isPathConnected <| by simp [r_pos]
 #align normed_space.loc_path_connected NormedSpace.instLocPathConnectedSpace
 
-theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
+lemma Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
     dist x y + dist y z = dist x z := by
   obtain ⟨a, ⟨ha₀, ha₁⟩, rfl⟩ := h
   simp [abs_of_nonneg, ha₀, ha₁, sub_mul]
 
-theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
+lemma dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
     dist x y + dist y z = dist x z :=
   (mem_segment_iff_wbtw.1 h).dist_add_dist
 #align dist_add_dist_of_mem_segment dist_add_dist_of_mem_segment

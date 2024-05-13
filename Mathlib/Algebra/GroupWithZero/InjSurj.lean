@@ -59,14 +59,14 @@ protected theorem Function.Injective.noZeroDivisors [NoZeroDivisors M₀'] : NoZ
         (fun H => hf <| by rwa [zero]) fun H => hf <| by rwa [zero] }
 #align function.injective.no_zero_divisors Function.Injective.noZeroDivisors
 
-protected theorem Function.Injective.isLeftCancelMulZero
+protected lemma Function.Injective.isLeftCancelMulZero
     [IsLeftCancelMulZero M₀'] : IsLeftCancelMulZero M₀ :=
   { mul_left_cancel_of_ne_zero := fun Hne He => by
       have := congr_arg f He
       rw [mul, mul] at this
       exact hf (mul_left_cancel₀ (fun Hfa => Hne <| hf <| by rw [Hfa, zero]) this) }
 
-protected theorem Function.Injective.isRightCancelMulZero
+protected lemma Function.Injective.isRightCancelMulZero
     [IsRightCancelMulZero M₀'] : IsRightCancelMulZero M₀ :=
   { mul_right_cancel_of_ne_zero := fun Hne He => by
       have := congr_arg f He

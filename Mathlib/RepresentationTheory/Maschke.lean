@@ -70,7 +70,7 @@ def conjugate (g : G) : W →ₗ[k] V :=
   .comp (.comp (GroupSMul.linearMap k V g⁻¹) π) (GroupSMul.linearMap k W g)
 #align linear_map.conjugate LinearMap.conjugate
 
-theorem conjugate_apply (g : G) (v : W) :
+lemma conjugate_apply (g : G) (v : W) :
     π.conjugate g v = MonoidAlgebra.single g⁻¹ (1 : k) • π (MonoidAlgebra.single g (1 : k) • v) :=
   rfl
 
@@ -78,7 +78,7 @@ variable (i : V →ₗ[MonoidAlgebra k G] W) (h : ∀ v : V, (π : W → V) (i v
 
 section
 
-theorem conjugate_i (g : G) (v : V) : (conjugate π g : W → V) (i v) = v := by
+lemma conjugate_i (g : G) (v : V) : (conjugate π g : W → V) (i v) = v := by
   rw [conjugate_apply, ← i.map_smul, h, ← mul_smul, single_mul_single, mul_one, mul_left_inv,
     ← one_def, one_smul]
 #align linear_map.conjugate_i LinearMap.conjugate_i
@@ -107,7 +107,7 @@ def sumOfConjugatesEquivariant : W →ₗ[MonoidAlgebra k G] V :=
     simp only [smul_smul, single_mul_single, mul_inv_rev, mul_inv_cancel_left, one_mul]
 #align linear_map.sum_of_conjugates_equivariant LinearMap.sumOfConjugatesEquivariant
 
-theorem sumOfConjugatesEquivariant_apply (v : W) :
+lemma sumOfConjugatesEquivariant_apply (v : W) :
     π.sumOfConjugatesEquivariant G v = ∑ g : G, π.conjugate g v :=
   π.sumOfConjugates_apply G v
 
@@ -122,11 +122,11 @@ def equivariantProjection : W →ₗ[MonoidAlgebra k G] V :=
   ⅟(Fintype.card G : k) • π.sumOfConjugatesEquivariant G
 #align linear_map.equivariant_projection LinearMap.equivariantProjection
 
-theorem equivariantProjection_apply (v : W) :
+lemma equivariantProjection_apply (v : W) :
     π.equivariantProjection G v = ⅟(Fintype.card G : k) • ∑ g : G, π.conjugate g v := by
   simp only [equivariantProjection, smul_apply, sumOfConjugatesEquivariant_apply]
 
-theorem equivariantProjection_condition (v : V) : (π.equivariantProjection G) (i v) = v := by
+lemma equivariantProjection_condition (v : V) : (π.equivariantProjection G) (i v) = v := by
   rw [equivariantProjection_apply]
   simp only [conjugate_i π i h]
   rw [Finset.sum_const, Finset.card_univ, nsmul_eq_smul_cast k, smul_smul,
@@ -147,7 +147,7 @@ variable [Group G]
 variable {V : Type u} [AddCommGroup V] [Module (MonoidAlgebra k G) V]
 variable {W : Type u} [AddCommGroup W] [Module (MonoidAlgebra k G) W]
 
-theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
+lemma exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
     (hf : LinearMap.ker f = ⊥) :
     ∃ g : W →ₗ[MonoidAlgebra k G] V, g.comp f = LinearMap.id := by
   let A := MonoidAlgebra k G
@@ -163,7 +163,7 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
 
 namespace Submodule
 
-theorem exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
+lemma exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
     ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q := by
   rcases MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype with ⟨f, hf⟩
   exact ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| DFunLike.congr_fun hf⟩

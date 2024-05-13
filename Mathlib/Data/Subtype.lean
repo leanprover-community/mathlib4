@@ -49,7 +49,7 @@ theorem prop (x : Subtype p) : p x :=
 #align subtype.prop Subtype.prop
 
 @[simp]
-protected theorem «forall» {q : { a // p a } → Prop} : (∀ x, q x) ↔ ∀ a b, q ⟨a, b⟩ :=
+protected lemma «forall» {q : { a // p a } → Prop} : (∀ x, q x) ↔ ∀ a b, q ⟨a, b⟩ :=
   ⟨fun h a b ↦ h ⟨a, b⟩, fun h ⟨a, b⟩ ↦ h a b⟩
 #align subtype.forall Subtype.forall
 
@@ -60,7 +60,7 @@ protected theorem forall' {q : ∀ x, p x → Prop} : (∀ x h, q x h) ↔ ∀ x
 #align subtype.forall' Subtype.forall'
 
 @[simp]
-protected theorem «exists» {q : { a // p a } → Prop} : (∃ x, q x) ↔ ∃ a b, q ⟨a, b⟩ :=
+protected lemma «exists» {q : { a // p a } → Prop} : (∃ x, q x) ↔ ∃ a b, q ⟨a, b⟩ :=
   ⟨fun ⟨⟨a, b⟩, h⟩ ↦ ⟨a, b, h⟩, fun ⟨a, b, h⟩ ↦ ⟨⟨a, b⟩, h⟩⟩
 #align subtype.exists Subtype.exists
 
@@ -71,15 +71,15 @@ protected theorem exists' {q : ∀ x, p x → Prop} : (∃ x h, q x h) ↔ ∃ x
 #align subtype.exists' Subtype.exists'
 
 @[ext]
-protected theorem ext : ∀ {a1 a2 : { x // p x }}, (a1 : α) = (a2 : α) → a1 = a2
+protected lemma ext : ∀ {a1 a2 : { x // p x }}, (a1 : α) = (a2 : α) → a1 = a2
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 #align subtype.ext Subtype.ext
 
-theorem ext_iff {a1 a2 : { x // p x }} : a1 = a2 ↔ (a1 : α) = (a2 : α) :=
+lemma ext_iff {a1 a2 : { x // p x }} : a1 = a2 ↔ (a1 : α) = (a2 : α) :=
   ⟨congr_arg _, Subtype.ext⟩
 #align subtype.ext_iff Subtype.ext_iff
 
-theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
+lemma heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
     HEq a1 a2 ↔ (a1 : α) = (a2 : α) :=
   Eq.rec (motive := fun (pp: (α → Prop)) _ ↦ ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
          (fun _ ↦ heq_iff_eq.trans ext_iff) (funext <| fun x ↦ propext (h x)) a2
@@ -92,20 +92,20 @@ lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : 
   rw [heq_iff_eq, heq_iff_eq, ext_iff]
 #align subtype.heq_iff_coe_heq Subtype.heq_iff_coe_heq
 
-theorem ext_val {a1 a2 : { x // p x }} : a1.1 = a2.1 → a1 = a2 :=
+lemma ext_val {a1 a2 : { x // p x }} : a1.1 = a2.1 → a1 = a2 :=
   Subtype.ext
 #align subtype.ext_val Subtype.ext_val
 
-theorem ext_iff_val {a1 a2 : { x // p x }} : a1 = a2 ↔ a1.1 = a2.1 :=
+lemma ext_iff_val {a1 a2 : { x // p x }} : a1 = a2 ↔ a1.1 = a2.1 :=
   ext_iff
 #align subtype.ext_iff_val Subtype.ext_iff_val
 
 @[simp]
-theorem coe_eta (a : { a // p a }) (h : p a) : mk (↑a) h = a :=
+lemma coe_eta (a : { a // p a }) (h : p a) : mk (↑a) h = a :=
   Subtype.ext rfl
 #align subtype.coe_eta Subtype.coe_eta
 
-theorem coe_mk (a h) : (@mk α p a h : α) = a :=
+lemma coe_mk (a h) : (@mk α p a h : α) = a :=
   rfl
 #align subtype.coe_mk Subtype.coe_mk
 
@@ -113,30 +113,30 @@ theorem coe_mk (a h) : (@mk α p a h : α) = a :=
 -- Porting note: not clear if "built-in reduction doesn't always work" is still relevant
 -- built-in reduction doesn't always work
 -- @[simp, nolint simp_nf]
-theorem mk_eq_mk {a h a' h'} : @mk α p a h = @mk α p a' h' ↔ a = a' :=
+lemma mk_eq_mk {a h a' h'} : @mk α p a h = @mk α p a' h' ↔ a = a' :=
   ext_iff
 #align subtype.mk_eq_mk Subtype.mk_eq_mk
 
-theorem coe_eq_of_eq_mk {a : { a // p a }} {b : α} (h : ↑a = b) : a = ⟨b, h ▸ a.2⟩ :=
+lemma coe_eq_of_eq_mk {a : { a // p a }} {b : α} (h : ↑a = b) : a = ⟨b, h ▸ a.2⟩ :=
   Subtype.ext h
 #align subtype.coe_eq_of_eq_mk Subtype.coe_eq_of_eq_mk
 
-theorem coe_eq_iff {a : { a // p a }} {b : α} : ↑a = b ↔ ∃ h, a = ⟨b, h⟩ :=
+lemma coe_eq_iff {a : { a // p a }} {b : α} : ↑a = b ↔ ∃ h, a = ⟨b, h⟩ :=
   ⟨fun h ↦ h ▸ ⟨a.2, (coe_eta _ _).symm⟩, fun ⟨_, ha⟩ ↦ ha.symm ▸ rfl⟩
 #align subtype.coe_eq_iff Subtype.coe_eq_iff
 
-theorem coe_injective : Injective (fun (a : Subtype p) ↦ (a : α)) := fun _ _ ↦ Subtype.ext
+lemma coe_injective : Injective (fun (a : Subtype p) ↦ (a : α)) := fun _ _ ↦ Subtype.ext
 #align subtype.coe_injective Subtype.coe_injective
 
-theorem val_injective : Injective (@val _ p) :=
+lemma val_injective : Injective (@val _ p) :=
   coe_injective
 #align subtype.val_injective Subtype.val_injective
 
-theorem coe_inj {a b : Subtype p} : (a : α) = b ↔ a = b :=
+lemma coe_inj {a b : Subtype p} : (a : α) = b ↔ a = b :=
   coe_injective.eq_iff
 #align subtype.coe_inj Subtype.coe_inj
 
-theorem val_inj {a b : Subtype p} : a.val = b.val ↔ a = b :=
+lemma val_inj {a b : Subtype p} : a.val = b.val ↔ a = b :=
   coe_inj
 #align subtype.val_inj Subtype.val_inj
 
@@ -148,7 +148,7 @@ lemma coe_ne_coe {a b : Subtype p} : (a : α) ≠ b ↔ a ≠ b := coe_injective
 -- Porting note: it is unclear why the linter doesn't like this.
 -- If you understand why, please replace this comment with an explanation, or resolve.
 @[simp, nolint simpNF]
-theorem _root_.exists_eq_subtype_mk_iff {a : Subtype p} {b : α} :
+lemma _root_.exists_eq_subtype_mk_iff {a : Subtype p} {b : α} :
     (∃ h : p b, a = Subtype.mk b h) ↔ ↑a = b :=
   coe_eq_iff.symm
 #align exists_eq_subtype_mk_iff exists_eq_subtype_mk_iff
@@ -156,7 +156,7 @@ theorem _root_.exists_eq_subtype_mk_iff {a : Subtype p} {b : α} :
 -- Porting note: it is unclear why the linter doesn't like this.
 -- If you understand why, please replace this comment with an explanation, or resolve.
 @[simp, nolint simpNF]
-theorem _root_.exists_subtype_mk_eq_iff {a : Subtype p} {b : α} :
+lemma _root_.exists_subtype_mk_eq_iff {a : Subtype p} {b : α} :
     (∃ h : p b, Subtype.mk b h = a) ↔ b = a := by
   simp only [@eq_comm _ b, exists_eq_subtype_mk_iff, @eq_comm _ _ a]
 #align exists_subtype_mk_eq_iff exists_subtype_mk_eq_iff
@@ -166,21 +166,21 @@ def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : S
   f x
 #align subtype.restrict Subtype.restrict
 
-theorem restrict_apply {α} {β : α → Type*} (f : ∀ x, β x) (p : α → Prop) (x : Subtype p) :
+lemma restrict_apply {α} {β : α → Type*} (f : ∀ x, β x) (p : α → Prop) (x : Subtype p) :
     restrict p f x = f x.1 := by
   rfl
 #align subtype.restrict_apply Subtype.restrict_apply
 
-theorem restrict_def {α β} (f : α → β) (p : α → Prop) :
+lemma restrict_def {α β} (f : α → β) (p : α → Prop) :
     restrict p f = f ∘ (fun (a : Subtype p) ↦ a) := rfl
 #align subtype.restrict_def Subtype.restrict_def
 
-theorem restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Injective f) :
+lemma restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Injective f) :
     Injective (restrict p f) :=
   h.comp coe_injective
 #align subtype.restrict_injective Subtype.restrict_injective
 
-theorem surjective_restrict {α} {β : α → Type*} [ne : ∀ a, Nonempty (β a)] (p : α → Prop) :
+lemma surjective_restrict {α} {β : α → Type*} [ne : ∀ a, Nonempty (β a)] (p : α → Prop) :
     Surjective fun f : ∀ x, β x ↦ restrict p f := by
   letI := Classical.decPred p
   refine' fun f ↦ ⟨fun x ↦ if h : p x then f ⟨x, h⟩ else Nonempty.some (ne x), funext <| _⟩
@@ -194,17 +194,17 @@ def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α �
 #align subtype.coind Subtype.coind
 #align subtype.coind_coe Subtype.coind_coe
 
-theorem coind_injective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Injective f) :
+lemma coind_injective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Injective f) :
     Injective (coind f h) := fun x y hxy ↦ hf <| by apply congr_arg Subtype.val hxy
 #align subtype.coind_injective Subtype.coind_injective
 
-theorem coind_surjective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Surjective f) :
+lemma coind_surjective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Surjective f) :
     Surjective (coind f h) := fun x ↦
   let ⟨a, ha⟩ := hf x
   ⟨a, coe_injective ha⟩
 #align subtype.coind_surjective Subtype.coind_surjective
 
-theorem coind_bijective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Bijective f) :
+lemma coind_bijective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Bijective f) :
     Bijective (coind f h) :=
   ⟨coind_injective h hf.1, coind_surjective h hf.2⟩
 #align subtype.coind_bijective Subtype.coind_bijective
@@ -218,26 +218,26 @@ def map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → 
 #align subtype.map_coe Subtype.map_coe
 
 #adaptation_note /-- nightly-2024-03-16: added to replace simp [Subtype.map] -/
-theorem map_def {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → q (f a)) :
+lemma map_def {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → q (f a)) :
     map f h = fun x ↦ ⟨f x, h x x.prop⟩ :=
   rfl
 
-theorem map_comp {p : α → Prop} {q : β → Prop} {r : γ → Prop} {x : Subtype p}
+lemma map_comp {p : α → Prop} {q : β → Prop} {r : γ → Prop} {x : Subtype p}
     (f : α → β) (h : ∀ a, p a → q (f a)) (g : β → γ) (l : ∀ a, q a → r (g a)) :
     map g l (map f h x) = map (g ∘ f) (fun a ha ↦ l (f a) <| h a ha) x :=
   rfl
 #align subtype.map_comp Subtype.map_comp
 
-theorem map_id {p : α → Prop} {h : ∀ a, p a → p (id a)} : map (@id α) h = id :=
+lemma map_id {p : α → Prop} {h : ∀ a, p a → p (id a)} : map (@id α) h = id :=
   funext fun _ ↦ rfl
 #align subtype.map_id Subtype.map_id
 
-theorem map_injective {p : α → Prop} {q : β → Prop} {f : α → β} (h : ∀ a, p a → q (f a))
+lemma map_injective {p : α → Prop} {q : β → Prop} {f : α → β} (h : ∀ a, p a → q (f a))
     (hf : Injective f) : Injective (map f h) :=
   coind_injective _ <| hf.comp coe_injective
 #align subtype.map_injective Subtype.map_injective
 
-theorem map_involutive {p : α → Prop} {f : α → α} (h : ∀ a, p a → p (f a))
+lemma map_involutive {p : α → Prop} {f : α → α} (h : ∀ a, p a → p (f a))
     (hf : Involutive f) : Involutive (map f h) :=
   fun x ↦ Subtype.ext (hf x)
 #align subtype.map_involutive Subtype.map_involutive
@@ -245,25 +245,25 @@ theorem map_involutive {p : α → Prop} {f : α → α} (h : ∀ a, p a → p (
 instance [HasEquiv α] (p : α → Prop) : HasEquiv (Subtype p) :=
   ⟨fun s t ↦ (s : α) ≈ (t : α)⟩
 
-theorem equiv_iff [HasEquiv α] {p : α → Prop} {s t : Subtype p} : s ≈ t ↔ (s : α) ≈ (t : α) :=
+lemma equiv_iff [HasEquiv α] {p : α → Prop} {s t : Subtype p} : s ≈ t ↔ (s : α) ≈ (t : α) :=
   Iff.rfl
 #align subtype.equiv_iff Subtype.equiv_iff
 
 variable [Setoid α]
 
-protected theorem refl (s : Subtype p) : s ≈ s :=
+protected lemma refl (s : Subtype p) : s ≈ s :=
   Setoid.refl _
 #align subtype.refl Subtype.refl
 
-protected theorem symm {s t : Subtype p} (h : s ≈ t) : t ≈ s :=
+protected lemma symm {s t : Subtype p} (h : s ≈ t) : t ≈ s :=
   Setoid.symm h
 #align subtype.symm Subtype.symm
 
-protected theorem trans {s t u : Subtype p} (h₁ : s ≈ t) (h₂ : t ≈ u) : s ≈ u :=
+protected lemma trans {s t u : Subtype p} (h₁ : s ≈ t) (h₂ : t ≈ u) : s ≈ u :=
   Setoid.trans h₁ h₂
 #align subtype.trans Subtype.trans
 
-theorem equivalence (p : α → Prop) : Equivalence (@HasEquiv.Equiv (Subtype p) _) :=
+lemma equivalence (p : α → Prop) : Equivalence (@HasEquiv.Equiv (Subtype p) _) :=
   .mk (Subtype.refl) (@Subtype.symm _ p _) (@Subtype.trans _ p _)
 #align subtype.equivalence Subtype.equivalence
 
@@ -278,11 +278,11 @@ namespace Subtype
 variable {α β γ : Type*} {p : α → Prop}
 
 @[simp]
-theorem coe_prop {S : Set α} (a : { a // a ∈ S }) : ↑a ∈ S :=
+lemma coe_prop {S : Set α} (a : { a // a ∈ S }) : ↑a ∈ S :=
   a.prop
 #align subtype.coe_prop Subtype.coe_prop
 
-theorem val_prop {S : Set α} (a : { a // a ∈ S }) : a.val ∈ S :=
+lemma val_prop {S : Set α} (a : { a // a ∈ S }) : a.val ∈ S :=
   a.property
 #align subtype.val_prop Subtype.val_prop
 

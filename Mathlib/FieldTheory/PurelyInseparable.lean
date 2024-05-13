@@ -144,21 +144,21 @@ class IsPurelyInseparable : Prop where
   isIntegral' (x : E) : IsIntegral F x
   inseparable' (x : E) : (minpoly F x).Separable → x ∈ (algebraMap F E).range
 
-theorem IsPurelyInseparable.isAlgebraic [IsPurelyInseparable F E] :
+lemma IsPurelyInseparable.isAlgebraic [IsPurelyInseparable F E] :
     Algebra.IsAlgebraic F E := fun x ↦ (IsPurelyInseparable.isIntegral' x).isAlgebraic
 
 variable {E}
 
-theorem IsPurelyInseparable.isIntegral [IsPurelyInseparable F E] : Algebra.IsIntegral F E :=
+lemma IsPurelyInseparable.isIntegral [IsPurelyInseparable F E] : Algebra.IsIntegral F E :=
   IsPurelyInseparable.isIntegral'
 
-theorem IsPurelyInseparable.inseparable [IsPurelyInseparable F E] :
+lemma IsPurelyInseparable.inseparable [IsPurelyInseparable F E] :
     ∀ x : E, (minpoly F x).Separable → x ∈ (algebraMap F E).range :=
   IsPurelyInseparable.inseparable'
 
 variable {F K}
 
-theorem isPurelyInseparable_iff : IsPurelyInseparable F E ↔ ∀ x : E,
+lemma isPurelyInseparable_iff : IsPurelyInseparable F E ↔ ∀ x : E,
     IsIntegral F x ∧ ((minpoly F x).Separable → x ∈ (algebraMap F E).range) :=
   ⟨fun h x ↦ ⟨h.isIntegral' x, h.inseparable' x⟩, fun h ↦ ⟨fun x ↦ (h x).1, fun x ↦ (h x).2⟩⟩
 
@@ -170,7 +170,7 @@ theorem AlgEquiv.isPurelyInseparable (e : K ≃ₐ[F] E) [IsPurelyInseparable F 
   rw [← minpoly.algEquiv_eq e.symm] at h
   simpa only [RingHom.mem_range, algebraMap_eq_apply] using IsPurelyInseparable.inseparable F _ h
 
-theorem AlgEquiv.isPurelyInseparable_iff (e : K ≃ₐ[F] E) :
+lemma AlgEquiv.isPurelyInseparable_iff (e : K ≃ₐ[F] E) :
     IsPurelyInseparable F K ↔ IsPurelyInseparable F E :=
   ⟨fun _ ↦ e.isPurelyInseparable, fun _ ↦ e.symm.isPurelyInseparable⟩
 
@@ -238,7 +238,7 @@ theorem isPurelyInseparable_iff_pow_mem (q : ℕ) [ExpChar F q] :
     IntermediateField.finrank_eq_one_iff] at hdeg
   simpa only [hdeg] using mem_adjoin_simple_self F x
 
-theorem IsPurelyInseparable.pow_mem (q : ℕ) [ExpChar F q] [IsPurelyInseparable F E] (x : E) :
+lemma IsPurelyInseparable.pow_mem (q : ℕ) [ExpChar F q] [IsPurelyInseparable F E] (x : E) :
     ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range :=
   (isPurelyInseparable_iff_pow_mem F q).1 ‹_› x
 
@@ -271,10 +271,10 @@ def perfectClosure : IntermediateField F E where
 
 variable {F E}
 
-theorem mem_perfectClosure_iff {x : E} :
+lemma mem_perfectClosure_iff {x : E} :
     x ∈ perfectClosure F E ↔ ∃ n : ℕ, x ^ (ringExpChar F) ^ n ∈ (algebraMap F E).range := Iff.rfl
 
-theorem mem_perfectClosure_iff_pow_mem (q : ℕ) [ExpChar F q] {x : E} :
+lemma mem_perfectClosure_iff_pow_mem (q : ℕ) [ExpChar F q] {x : E} :
     x ∈ perfectClosure F E ↔ ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   rw [mem_perfectClosure_iff, ringExpChar.eq F q]
 
@@ -327,7 +327,7 @@ theorem le_perfectClosure_iff (L : IntermediateField F E) :
   obtain ⟨n, y, hy⟩ := h x.2
   exact ⟨n, y, (algebraMap L E).injective hy⟩
 
-theorem separableClosure_inf_perfectClosure : separableClosure F E ⊓ perfectClosure F E = ⊥ :=
+lemma separableClosure_inf_perfectClosure : separableClosure F E ⊓ perfectClosure F E = ⊥ :=
   haveI := (le_separableClosure_iff F E _).mp (inf_le_left (b := perfectClosure F E))
   haveI := (le_perfectClosure_iff F E _).mp (inf_le_right (a := separableClosure F E))
   eq_bot_of_isPurelyInseparable_of_isSeparable _
@@ -439,7 +439,7 @@ theorem isPurelyInseparable_iff_natSepDegree_eq_one :
   obtain ⟨q, _⟩ := ExpChar.exists F
   simp_rw [isPurelyInseparable_iff_pow_mem F q, minpoly.natSepDegree_eq_one_iff_pow_mem q]
 
-theorem IsPurelyInseparable.natSepDegree_eq_one [IsPurelyInseparable F E] (x : E) :
+lemma IsPurelyInseparable.natSepDegree_eq_one [IsPurelyInseparable F E] (x : E) :
     (minpoly F x).natSepDegree = 1 :=
   (isPurelyInseparable_iff_natSepDegree_eq_one F).1 ‹_› x
 
@@ -451,7 +451,7 @@ theorem isPurelyInseparable_iff_minpoly_eq_X_pow_sub_C (q : ℕ) [hF : ExpChar F
   simp_rw [isPurelyInseparable_iff_natSepDegree_eq_one,
     minpoly.natSepDegree_eq_one_iff_eq_X_pow_sub_C q]
 
-theorem IsPurelyInseparable.minpoly_eq_X_pow_sub_C (q : ℕ) [ExpChar F q] [IsPurelyInseparable F E]
+lemma IsPurelyInseparable.minpoly_eq_X_pow_sub_C (q : ℕ) [ExpChar F q] [IsPurelyInseparable F E]
     (x : E) : ∃ (n : ℕ) (y : F), minpoly F x = X ^ q ^ n - C y :=
   (isPurelyInseparable_iff_minpoly_eq_X_pow_sub_C F q).1 ‹_› x
 
@@ -464,7 +464,7 @@ theorem isPurelyInseparable_iff_minpoly_eq_X_sub_C_pow (q : ℕ) [hF : ExpChar F
   simp_rw [isPurelyInseparable_iff_natSepDegree_eq_one,
     minpoly.natSepDegree_eq_one_iff_eq_X_sub_C_pow q]
 
-theorem IsPurelyInseparable.minpoly_eq_X_sub_C_pow (q : ℕ) [ExpChar F q] [IsPurelyInseparable F E]
+lemma IsPurelyInseparable.minpoly_eq_X_sub_C_pow (q : ℕ) [ExpChar F q] [IsPurelyInseparable F E]
     (x : E) : ∃ n : ℕ, (minpoly F x).map (algebraMap F E) = (X - C x) ^ q ^ n :=
   (isPurelyInseparable_iff_minpoly_eq_X_sub_C_pow F q).1 ‹_› x
 
@@ -791,7 +791,7 @@ theorem Algebra.IsAlgebraic.isSepClosed (halg : Algebra.IsAlgebraic F E)
   (isSepClosed_iff_isPurelyInseparable_algebraicClosure E _).mpr
     (IsPurelyInseparable.tower_top F E <| AlgebraicClosure E)
 
-theorem perfectField_of_perfectClosure_eq_bot [h : PerfectField E] (eq : perfectClosure F E = ⊥) :
+lemma perfectField_of_perfectClosure_eq_bot [h : PerfectField E] (eq : perfectClosure F E = ⊥) :
     PerfectField F := by
   let p := ringExpChar F
   haveI := expChar_of_injective_algebraMap (algebraMap F E).injective p

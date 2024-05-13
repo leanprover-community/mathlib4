@@ -26,12 +26,12 @@ open Finset Function
 instance {α : Type*} [Fintype α] : Fintype (Option α) :=
   ⟨Finset.insertNone univ, fun a => by simp⟩
 
-theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
+lemma univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl
 #align univ_option univ_option
 
 @[simp]
-theorem Fintype.card_option {α : Type*} [Fintype α] :
+lemma Fintype.card_option {α : Type*} [Fintype α] :
     Fintype.card (Option α) = Fintype.card α + 1 :=
   (Finset.card_cons (by simp)).trans <| congr_arg₂ _ (card_map _) rfl
 #align fintype.card_option Fintype.card_option

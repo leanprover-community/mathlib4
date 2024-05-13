@@ -47,36 +47,36 @@ def curry : {n : ℕ} → {p : Fin n → Type u} → {τ : Type u} →
   | _ + 1, _, _, f => fun a => curry (fun args => f (Fin.cons a args))
 
 @[simp]
-theorem uncurry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}
+lemma uncurry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}
     (f : Function.FromTypes (vecCons α p) τ) (a : α) (args : (i : Fin n) → p i) :
     uncurry f (Fin.cons a args) = @uncurry _ p _ (f a) args := rfl
 
 @[simp low]
-theorem uncurry_apply_succ {n : ℕ} {p : Fin (n + 1) → Type u} {τ : Type u}
+lemma uncurry_apply_succ {n : ℕ} {p : Fin (n + 1) → Type u} {τ : Type u}
     (f : Function.FromTypes p τ) (args : (i : Fin (n + 1)) → p i) :
     uncurry f args = uncurry (f (args 0)) (Fin.tail args) :=
   @uncurry_apply_cons n (p 0) (vecTail p) τ f (args 0) (Fin.tail args)
 
 @[simp]
-theorem curry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}
+lemma curry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}
     (f : ((i : Fin (n + 1)) → (vecCons α p) i) → τ) (a : α) :
     curry f a = @curry _ p _ (f ∘' Fin.cons a) := rfl
 
 @[simp low]
-theorem curry_apply_succ {n : ℕ} {p : Fin (n + 1) → Type u} {τ : Type u}
+lemma curry_apply_succ {n : ℕ} {p : Fin (n + 1) → Type u} {τ : Type u}
     (f : ((i : Fin (n + 1)) → p i) → τ) (a : p 0) :
     curry f a = curry (f ∘ Fin.cons a) := rfl
 
 variable {n : ℕ} {p : Fin n → Type u} {τ : Type u}
 
 @[simp]
-theorem curry_uncurry (f : Function.FromTypes p τ) : curry (uncurry f) = f := by
+lemma curry_uncurry (f : Function.FromTypes p τ) : curry (uncurry f) = f := by
   induction n with
   | zero => rfl
   | succ n ih => exact funext (ih $ f ·)
 
 @[simp]
-theorem uncurry_curry (f : ((i : Fin n) → p i) → τ) :
+lemma uncurry_curry (f : ((i : Fin n) → p i) → τ) :
     uncurry (curry f) = f := by
   ext args
   induction n with
@@ -114,11 +114,11 @@ def uncurry {n} (f : Function.OfArity α β n) : (Fin n → α) → β := FromTy
 def curry {n} (f : (Fin n → α) → β) : Function.OfArity α β n := FromTypes.curry f
 
 @[simp]
-theorem curry_uncurry {n} (f : Function.OfArity α β n) :
+lemma curry_uncurry {n} (f : Function.OfArity α β n) :
     curry (uncurry f) = f := FromTypes.curry_uncurry f
 
 @[simp]
-theorem uncurry_curry {n} (f : (Fin n → α) → β) :
+lemma uncurry_curry {n} (f : (Fin n → α) → β) :
     uncurry (curry f) = f := FromTypes.uncurry_curry f
 
 /-- `Equiv.curry` for n-ary functions. -/

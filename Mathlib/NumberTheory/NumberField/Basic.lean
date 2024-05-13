@@ -56,7 +56,7 @@ variable (K L : Type*) [Field K] [Field L] [nf : NumberField K]
 -- See note [lower instance priority]
 attribute [instance] NumberField.to_charZero NumberField.to_finiteDimensional
 
-protected theorem isAlgebraic : Algebra.IsAlgebraic ℚ K :=
+protected lemma isAlgebraic : Algebra.IsAlgebraic ℚ K :=
   Algebra.IsAlgebraic.of_finite _ _
 #align number_field.is_algebraic NumberField.isAlgebraic
 
@@ -110,14 +110,14 @@ instance : CoeHead (𝓞 K) K := ⟨val⟩
 
 lemma coe_eq_algebraMap (x : 𝓞 K) : (x : K) = algebraMap _ _ x := rfl
 
-@[ext] theorem ext {x y : 𝓞 K} (h : (x : K) = (y : K)) : x = y :=
+@[ext] lemma ext {x y : 𝓞 K} (h : (x : K) = (y : K)) : x = y :=
   Subtype.ext h
 
-theorem ext_iff {x y : 𝓞 K} : x = y ↔ (x : K) = (y : K) :=
+lemma ext_iff {x y : 𝓞 K} : x = y ↔ (x : K) = (y : K) :=
   Subtype.ext_iff
 
 @[norm_cast]
-theorem eq_iff {x y : 𝓞 K} : (x : K) = (y : K) ↔ x = y :=
+lemma eq_iff {x y : 𝓞 K} : (x : K) = (y : K) ↔ x = y :=
   NumberField.RingOfIntegers.ext_iff.symm
 
 @[simp] lemma map_mk (x : K) (hx) : algebraMap (𝓞 K) K ⟨x, hx⟩ = x := rfl
@@ -186,11 +186,11 @@ This is a convenient abbreviation for `map_ne_zero_iff` applied to
 lemma coe_ne_zero_iff {x : 𝓞 K} : algebraMap _ K x ≠ 0 ↔ x ≠ 0 :=
   map_ne_zero_iff _ coe_injective
 
-theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
+lemma isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
   x.2
 #align number_field.ring_of_integers.is_integral_coe NumberField.RingOfIntegers.isIntegral_coe
 
-theorem isIntegral (x : 𝓞 K) : IsIntegral ℤ x := by
+lemma isIntegral (x : 𝓞 K) : IsIntegral ℤ x := by
   obtain ⟨P, hPm, hP⟩ := x.isIntegral_coe
   refine' ⟨P, hPm, _⟩
   rwa [IsScalarTower.algebraMap_eq (S := 𝓞 K), ← Polynomial.hom_eval₂, coe_eq_zero_iff] at hP
@@ -274,23 +274,23 @@ noncomputable def integralBasis : Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℚ
 #align number_field.integral_basis NumberField.integralBasis
 
 @[simp]
-theorem integralBasis_apply (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
+lemma integralBasis_apply (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
     integralBasis K i = algebraMap (𝓞 K) K (RingOfIntegers.basis K i) :=
   Basis.localizationLocalization_apply ℚ (nonZeroDivisors ℤ) K (RingOfIntegers.basis K) i
 #align number_field.integral_basis_apply NumberField.integralBasis_apply
 
 @[simp]
-theorem integralBasis_repr_apply (x : (𝓞 K)) (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
+lemma integralBasis_repr_apply (x : (𝓞 K)) (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
     (integralBasis K).repr (algebraMap _ _ x) i =
       (algebraMap ℤ ℚ) ((RingOfIntegers.basis K).repr x i) :=
   Basis.localizationLocalization_repr_algebraMap ℚ (nonZeroDivisors ℤ) K _ x i
 
-theorem mem_span_integralBasis {x : K} :
+lemma mem_span_integralBasis {x : K} :
     x ∈ Submodule.span ℤ (Set.range (integralBasis K)) ↔ x ∈ (algebraMap (𝓞 K) K).range := by
   rw [integralBasis, Basis.localizationLocalization_span, LinearMap.mem_range,
       IsScalarTower.coe_toAlgHom', RingHom.mem_range]
 
-theorem RingOfIntegers.rank : FiniteDimensional.finrank ℤ (𝓞 K) = FiniteDimensional.finrank ℚ K :=
+lemma RingOfIntegers.rank : FiniteDimensional.finrank ℤ (𝓞 K) = FiniteDimensional.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)
 #align number_field.ring_of_integers.rank NumberField.RingOfIntegers.rank
 

@@ -118,7 +118,7 @@ instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCo
 end OrderedCancelCommMonoid
 
 set_option linter.deprecated false in
-@[deprecated] theorem bit0_pos [OrderedAddCommMonoid α] {a : α} (h : 0 < a) : 0 < bit0 a :=
+@[deprecated] lemma bit0_pos [OrderedAddCommMonoid α] {a : α} (h : 0 < a) : 0 < bit0 a :=
   add_pos' h h
 #align bit0_pos bit0_pos
 
@@ -160,12 +160,12 @@ section LinearOrderedAddCommMonoidWithTop
 variable [LinearOrderedAddCommMonoidWithTop α] {a b : α}
 
 @[simp]
-theorem top_add (a : α) : ⊤ + a = ⊤ :=
+lemma top_add (a : α) : ⊤ + a = ⊤ :=
   LinearOrderedAddCommMonoidWithTop.top_add' a
 #align top_add top_add
 
 @[simp]
-theorem add_top (a : α) : a + ⊤ = ⊤ :=
+lemma add_top (a : α) : a + ⊤ = ⊤ :=
   Trans.trans (add_comm _ _) (top_add _)
 #align add_top add_top
 
@@ -174,15 +174,15 @@ end LinearOrderedAddCommMonoidWithTop
 variable [LinearOrderedCommMonoid α] {a : α}
 
 @[to_additive (attr := simp)]
-theorem one_le_mul_self_iff : 1 ≤ a * a ↔ 1 ≤ a :=
+lemma one_le_mul_self_iff : 1 ≤ a * a ↔ 1 ≤ a :=
   ⟨(fun h ↦ by push_neg at h ⊢; exact mul_lt_one' h h).mtr, fun h ↦ one_le_mul h h⟩
 
 @[to_additive (attr := simp)]
-theorem one_lt_mul_self_iff : 1 < a * a ↔ 1 < a :=
+lemma one_lt_mul_self_iff : 1 < a * a ↔ 1 < a :=
   ⟨(fun h ↦ by push_neg at h ⊢; exact mul_le_one' h h).mtr, fun h ↦ one_lt_mul'' h h⟩
 
 @[to_additive (attr := simp)]
-theorem mul_self_le_one_iff : a * a ≤ 1 ↔ a ≤ 1 := by simp [← not_iff_not]
+lemma mul_self_le_one_iff : a * a ≤ 1 ↔ a ≤ 1 := by simp [← not_iff_not]
 
 @[to_additive (attr := simp)]
-theorem mul_self_lt_one_iff : a * a < 1 ↔ a < 1 := by simp [← not_iff_not]
+lemma mul_self_lt_one_iff : a * a < 1 ↔ a < 1 := by simp [← not_iff_not]

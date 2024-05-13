@@ -45,12 +45,12 @@ variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
   [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] (F : C ⥤ D) [Additive F] [Linear R F]
 
 @[simp]
-theorem map_smul {X Y : C} (r : R) (f : X ⟶ Y) : F.map (r • f) = r • F.map f :=
+lemma map_smul {X Y : C} (r : R) (f : X ⟶ Y) : F.map (r • f) = r • F.map f :=
   Functor.Linear.map_smul _ _
 #align category_theory.functor.map_smul CategoryTheory.Functor.map_smul
 
 @[simp]
-theorem map_units_smul {X Y : C} (r : Rˣ) (f : X ⟶ Y) : F.map (r • f) = r • F.map f := by
+lemma map_units_smul {X Y : C} (r : Rˣ) (f : X ⟶ Y) : F.map (r • f) = r • F.map f := by
   apply map_smul
 
 instance : Linear R (𝟭 C) where
@@ -66,7 +66,7 @@ def mapLinearMap {X Y : C} : (X ⟶ Y) →ₗ[R] F.obj X ⟶ F.obj Y :=
   { F.mapAddHom with map_smul' := fun r f => F.map_smul r f }
 #align category_theory.functor.map_linear_map CategoryTheory.Functor.mapLinearMap
 
-theorem coe_mapLinearMap {X Y : C} : ⇑(F.mapLinearMap R : (X ⟶ Y) →ₗ[R] _) = F.map := rfl
+lemma coe_mapLinearMap {X Y : C} : ⇑(F.mapLinearMap R : (X ⟶ Y) →ₗ[R] _) = F.map := rfl
 #align category_theory.functor.coe_map_linear_map CategoryTheory.Functor.coe_mapLinearMap
 
 end

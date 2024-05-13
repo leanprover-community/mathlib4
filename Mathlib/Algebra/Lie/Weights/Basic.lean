@@ -161,11 +161,11 @@ end notation_weightSpaceOf
 
 variable (M)
 
-theorem mem_weightSpaceOf (χ : R) (x : L) (m : M) :
+lemma mem_weightSpaceOf (χ : R) (x : L) (m : M) :
     m ∈ weightSpaceOf M χ x ↔ ∃ k : ℕ, ((toEndomorphism R L M x - χ • ↑1) ^ k) m = 0 := by
   simp [weightSpaceOf]
 
-theorem coe_weightSpaceOf_zero (x : L) :
+lemma coe_weightSpaceOf_zero (x : L) :
     ↑(weightSpaceOf M (0 : R) x) = ⨆ k, LinearMap.ker (toEndomorphism R L M x ^ k) := by
   simp [weightSpaceOf, Module.End.maximalGeneralizedEigenspace]
 
@@ -177,7 +177,7 @@ It is a Lie submodule because `L` is nilpotent. -/
 def weightSpace (χ : L → R) : LieSubmodule R L M :=
   ⨅ x, weightSpaceOf M (χ x) x
 
-theorem mem_weightSpace (χ : L → R) (m : M) :
+lemma mem_weightSpace (χ : L → R) (m : M) :
     m ∈ weightSpace M χ ↔ ∀ x, ∃ k : ℕ, ((toEndomorphism R L M x - χ x • ↑1) ^ k) m = 0 := by
   simp [weightSpace, mem_weightSpaceOf]
 
@@ -236,7 +236,7 @@ theorem zero_weightSpace_eq_top_of_nilpotent' [IsNilpotent R L M] :
   simp [weightSpace, weightSpaceOf]
 #align lie_module.zero_weight_space_eq_top_of_nilpotent' LieModule.zero_weightSpace_eq_top_of_nilpotent'
 
-theorem coe_weightSpace_of_top (χ : L → R) :
+lemma coe_weightSpace_of_top (χ : L → R) :
     (weightSpace M (χ ∘ (⊤ : LieSubalgebra R L).incl) : Submodule R M) = weightSpace M χ := by
   ext m
   simp only [mem_weightSpace, LieSubmodule.mem_coeSubmodule, Subtype.forall]
@@ -245,7 +245,7 @@ theorem coe_weightSpace_of_top (χ : L → R) :
 #align lie_module.coe_weight_space_of_top LieModule.coe_weightSpace_of_top
 
 @[simp]
-theorem zero_weightSpace_eq_top_of_nilpotent [IsNilpotent R L M] :
+lemma zero_weightSpace_eq_top_of_nilpotent [IsNilpotent R L M] :
     weightSpace M (0 : (⊤ : LieSubalgebra R L) → R) = ⊤ := by
   ext m
   simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero, Subtype.forall, forall_true_left,
@@ -255,7 +255,7 @@ theorem zero_weightSpace_eq_top_of_nilpotent [IsNilpotent R L M] :
   exact ⟨k, by simp [hk x]⟩
 #align lie_module.zero_weight_space_eq_top_of_nilpotent LieModule.zero_weightSpace_eq_top_of_nilpotent
 
-theorem exists_weightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L → R) (x : L) :
+lemma exists_weightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L → R) (x : L) :
     ∃ k : ℕ,
       weightSpace M χ ≤ LinearMap.ker ((toEndomorphism R L M x - algebraMap R _ (χ x)) ^ k) := by
   use (toEndomorphism R L M x).maximalGeneralizedEigenspaceIndex (χ x)

@@ -38,7 +38,7 @@ namespace Algebra.IsAlgebraic
 variable (R L : Type u) [CommRing R] [CommRing L] [IsDomain L] [Algebra R L]
 variable [NoZeroSMulDivisors R L] (halg : Algebra.IsAlgebraic R L)
 
-theorem cardinal_mk_le_sigma_polynomial :
+lemma cardinal_mk_le_sigma_polynomial :
     #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
   @mk_le_of_injective L (Σ p : R[X], {x : L | x ∈ p.aroots L})
     (fun x : L =>
@@ -93,7 +93,7 @@ variable {ι : Type*} (v : ι → K)
 variable {κ : Type*} (w : κ → L)
 variable (hv : AlgebraicIndependent R v)
 
-theorem isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenceBasis R v) :
+lemma isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenceBasis R v) :
     IsAlgClosure (Algebra.adjoin R (Set.range v)) K :=
   letI := RingHom.domain_nontrivial (algebraMap R K)
   { alg_closed := by infer_instance
@@ -130,7 +130,7 @@ variable [Field K] [Algebra R K] [IsAlgClosed K]
 variable {ι : Type u} (v : ι → K)
 variable (hv : IsTranscendenceBasis R v)
 
-theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
+lemma cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     #K ≤ max (max #R #ι) ℵ₀ :=
   calc
     #K ≤ max #(Algebra.adjoin R (Set.range v)) ℵ₀ :=
@@ -179,7 +179,7 @@ theorem ringEquivOfCardinalEqOfCharZero [CharZero K] [CharZero L] (hK : ℵ₀ <
   exact ⟨equivOfTranscendenceBasis _ _ e hs ht⟩
 #align is_alg_closed.ring_equiv_of_cardinal_eq_of_char_zero IsAlgClosed.ringEquivOfCardinalEqOfCharZero
 
-private theorem ringEquivOfCardinalEqOfCharP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
+private lemma ringEquivOfCardinalEqOfCharP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
     (hK : ℵ₀ < #K) (hKL : #K = #L) : Nonempty (K ≃+* L) := by
   letI : Algebra (ZMod p) K := ZMod.algebra _ _
   letI : Algebra (ZMod p) L := ZMod.algebra _ _

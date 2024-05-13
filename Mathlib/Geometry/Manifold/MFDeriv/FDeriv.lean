@@ -23,7 +23,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 section MFDerivFderiv
 
-theorem uniqueMDiffWithinAt_iff_uniqueDiffWithinAt :
+lemma uniqueMDiffWithinAt_iff_uniqueDiffWithinAt :
     UniqueMDiffWithinAt 𝓘(𝕜, E) s x ↔ UniqueDiffWithinAt 𝕜 s x := by
   simp only [UniqueMDiffWithinAt, mfld_simps]
 #align unique_mdiff_within_at_iff_unique_diff_within_at uniqueMDiffWithinAt_iff_uniqueDiffWithinAt
@@ -33,7 +33,7 @@ alias ⟨UniqueMDiffWithinAt.uniqueDiffWithinAt, UniqueDiffWithinAt.uniqueMDiffW
 #align unique_mdiff_within_at.unique_diff_within_at UniqueMDiffWithinAt.uniqueDiffWithinAt
 #align unique_diff_within_at.unique_mdiff_within_at UniqueDiffWithinAt.uniqueMDiffWithinAt
 
-theorem uniqueMDiffOn_iff_uniqueDiffOn : UniqueMDiffOn 𝓘(𝕜, E) s ↔ UniqueDiffOn 𝕜 s := by
+lemma uniqueMDiffOn_iff_uniqueDiffOn : UniqueMDiffOn 𝓘(𝕜, E) s ↔ UniqueDiffOn 𝕜 s := by
   simp [UniqueMDiffOn, UniqueDiffOn, uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
 #align unique_mdiff_on_iff_unique_diff_on uniqueMDiffOn_iff_uniqueDiffOn
 
@@ -42,11 +42,11 @@ alias ⟨UniqueMDiffOn.uniqueDiffOn, UniqueDiffOn.uniqueMDiffOn⟩ := uniqueMDif
 #align unique_diff_on.unique_mdiff_on UniqueDiffOn.uniqueMDiffOn
 
 -- Porting note (#10618): was `@[simp, mfld_simps]` but `simp` can prove it
-theorem writtenInExtChartAt_model_space : writtenInExtChartAt 𝓘(𝕜, E) 𝓘(𝕜, E') x f = f :=
+lemma writtenInExtChartAt_model_space : writtenInExtChartAt 𝓘(𝕜, E) 𝓘(𝕜, E') x f = f :=
   rfl
 #align written_in_ext_chart_model_space writtenInExtChartAt_model_space
 
-theorem hasMFDerivWithinAt_iff_hasFDerivWithinAt {f'} :
+lemma hasMFDerivWithinAt_iff_hasFDerivWithinAt {f'} :
     HasMFDerivWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x f' ↔ HasFDerivWithinAt f f' s x := by
   simpa only [HasMFDerivWithinAt, and_iff_right_iff_imp, mfld_simps] using
     HasFDerivWithinAt.continuousWithinAt
@@ -57,7 +57,7 @@ alias ⟨HasMFDerivWithinAt.hasFDerivWithinAt, HasFDerivWithinAt.hasMFDerivWithi
 #align has_mfderiv_within_at.has_fderiv_within_at HasMFDerivWithinAt.hasFDerivWithinAt
 #align has_fderiv_within_at.has_mfderiv_within_at HasFDerivWithinAt.hasMFDerivWithinAt
 
-theorem hasMFDerivAt_iff_hasFDerivAt {f'} :
+lemma hasMFDerivAt_iff_hasFDerivAt {f'} :
     HasMFDerivAt 𝓘(𝕜, E) 𝓘(𝕜, E') f x f' ↔ HasFDerivAt f f' x := by
   rw [← hasMFDerivWithinAt_univ, hasMFDerivWithinAt_iff_hasFDerivWithinAt, hasFDerivWithinAt_univ]
 #align has_mfderiv_at_iff_has_fderiv_at hasMFDerivAt_iff_hasFDerivAt

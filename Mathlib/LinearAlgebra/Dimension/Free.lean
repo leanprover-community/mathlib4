@@ -184,22 +184,22 @@ lemma Module.rank_lt_alpeh0_iff :
   exact ⟨fun h ↦ Finite.of_basis (Free.chooseBasis R M),
     fun I ↦ Finite.of_fintype (Free.ChooseBasisIndex R M)⟩
 
-theorem FiniteDimensional.finrank_of_not_finite
+lemma FiniteDimensional.finrank_of_not_finite
     (h : ¬Module.Finite R M) :
     finrank R M = 0 := by
   rw [finrank, toNat_eq_zero, ← not_lt, Module.rank_lt_alpeh0_iff]
   exact .inr h
 
-theorem Module.finite_of_finrank_pos (h : 0 < finrank R M) :
+lemma Module.finite_of_finrank_pos (h : 0 < finrank R M) :
     Module.Finite R M := by
   contrapose h
   simp [finrank_of_not_finite h]
 
-theorem Module.finite_of_finrank_eq_succ {n : ℕ}
+lemma Module.finite_of_finrank_eq_succ {n : ℕ}
     (hn : finrank R M = n.succ) : Module.Finite R M :=
   Module.finite_of_finrank_pos <| by rw [hn]; exact n.succ_pos
 
-theorem Module.finite_iff_of_rank_eq_nsmul {W} [AddCommGroup W]
+lemma Module.finite_iff_of_rank_eq_nsmul {W} [AddCommGroup W]
     [Module R W] [Module.Free R W] {n : ℕ} (hn : n ≠ 0)
     (hVW : Module.rank R M = n • Module.rank R W) :
     Module.Finite R M ↔ Module.Finite R W := by
@@ -234,7 +234,7 @@ noncomputable def basisUnique (ι : Type*) [Unique ι]
 #align finite_dimensional.basis_unique FiniteDimensional.basisUnique
 
 @[simp]
-theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
+lemma basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     {h : finrank R M = 1} {v : M} {i : ι} :
     (basisUnique ι h).repr v i = 0 ↔ v = 0 :=
   ⟨fun hv =>

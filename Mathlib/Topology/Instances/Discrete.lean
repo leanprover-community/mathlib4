@@ -43,12 +43,12 @@ instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable
 #align discrete_topology.second_countable_topology_of_encodable DiscreteTopology.secondCountableTopology_of_countable
 
 @[deprecated DiscreteTopology.secondCountableTopology_of_countable] -- 2024-03-11
-theorem DiscreteTopology.secondCountableTopology_of_encodable {α : Type*}
+lemma DiscreteTopology.secondCountableTopology_of_encodable {α : Type*}
     [TopologicalSpace α] [DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
   DiscreteTopology.secondCountableTopology_of_countable
 #align discrete_topology.second_countable_topology_of_countable DiscreteTopology.secondCountableTopology_of_countable
 
-theorem bot_topologicalSpace_eq_generateFrom_of_pred_succOrder [PartialOrder α] [PredOrder α]
+lemma bot_topologicalSpace_eq_generateFrom_of_pred_succOrder [PartialOrder α] [PredOrder α]
     [SuccOrder α] [NoMinOrder α] [NoMaxOrder α] :
     (⊥ : TopologicalSpace α) = generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a } := by
   refine' (eq_bot_of_singletons_open fun a => _).symm
@@ -63,7 +63,7 @@ theorem bot_topologicalSpace_eq_generateFrom_of_pred_succOrder [PartialOrder α]
   · exact isOpen_generateFrom_of_mem ⟨pred a, Or.inl rfl⟩
 #align bot_topological_space_eq_generate_from_of_pred_succ_order bot_topologicalSpace_eq_generateFrom_of_pred_succOrder
 
-theorem discreteTopology_iff_orderTopology_of_pred_succ' [PartialOrder α] [PredOrder α]
+lemma discreteTopology_iff_orderTopology_of_pred_succ' [PartialOrder α] [PredOrder α]
     [SuccOrder α] [NoMinOrder α] [NoMaxOrder α] : DiscreteTopology α ↔ OrderTopology α := by
   refine' ⟨fun h => ⟨_⟩, fun h => ⟨_⟩⟩
   · rw [h.eq_bot]
@@ -77,7 +77,7 @@ instance (priority := 100) DiscreteTopology.orderTopology_of_pred_succ' [h : Dis
   discreteTopology_iff_orderTopology_of_pred_succ'.1 h
 #align discrete_topology.order_topology_of_pred_succ' DiscreteTopology.orderTopology_of_pred_succ'
 
-theorem LinearOrder.bot_topologicalSpace_eq_generateFrom [LinearOrder α] [PredOrder α]
+lemma LinearOrder.bot_topologicalSpace_eq_generateFrom [LinearOrder α] [PredOrder α]
     [SuccOrder α] : (⊥ : TopologicalSpace α) = generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a } := by
   refine' (eq_bot_of_singletons_open fun a => _).symm
   have h_singleton_eq_inter : {a} = Iic a ∩ Ici a := by rw [inter_comm, Ici_inter_Iic, Icc_self a]
@@ -108,7 +108,7 @@ theorem LinearOrder.bot_topologicalSpace_eq_generateFrom [LinearOrder α] [PredO
       · exact isOpen_generateFrom_of_mem ⟨pred a, Or.inl rfl⟩
 #align linear_order.bot_topological_space_eq_generate_from LinearOrder.bot_topologicalSpace_eq_generateFrom
 
-theorem discreteTopology_iff_orderTopology_of_pred_succ [LinearOrder α] [PredOrder α]
+lemma discreteTopology_iff_orderTopology_of_pred_succ [LinearOrder α] [PredOrder α]
     [SuccOrder α] : DiscreteTopology α ↔ OrderTopology α := by
   refine' ⟨fun h => ⟨_⟩, fun h => ⟨_⟩⟩
   · rw [h.eq_bot]

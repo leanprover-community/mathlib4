@@ -19,12 +19,12 @@ section
 
 variable (R : Type*) [CommRing R] [IsReduced R] (p n : ℕ) [ExpChar R p]
 
-theorem iterateFrobenius_inj : Function.Injective (iterateFrobenius R p n) := fun x y H ↦ by
+lemma iterateFrobenius_inj : Function.Injective (iterateFrobenius R p n) := fun x y H ↦ by
   rw [← sub_eq_zero] at H ⊢
   simp_rw [iterateFrobenius_def, ← sub_pow_expChar_pow] at H
   exact IsReduced.eq_zero _ ⟨_, H⟩
 
-theorem frobenius_inj : Function.Injective (frobenius R p) :=
+lemma frobenius_inj : Function.Injective (frobenius R p) :=
   iterateFrobenius_one (R := R) p ▸ iterateFrobenius_inj R p 1
 #align frobenius_inj frobenius_inj
 
@@ -43,7 +43,7 @@ theorem isSquare_of_charTwo' {R : Type*} [Finite R] [CommRing R] [IsReduced R] [
 variable {R : Type*} [CommRing R] [IsReduced R]
 
 @[simp]
-theorem ExpChar.pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [ExpChar R p] (x : R) :
+lemma ExpChar.pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [ExpChar R p] (x : R) :
     x ^ (p ^ k * m) = 1 ↔ x ^ m = 1 := by
   rw [pow_mul']
   convert ← (iterateFrobenius_inj R p k).eq_iff

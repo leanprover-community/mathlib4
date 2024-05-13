@@ -82,27 +82,27 @@ class inductive Finite (α : Sort*) : Prop
   | intro {n : ℕ} : α ≃ Fin n → Finite _
 #align finite Finite
 
-theorem finite_iff_exists_equiv_fin {α : Sort*} : Finite α ↔ ∃ n, Nonempty (α ≃ Fin n) :=
+lemma finite_iff_exists_equiv_fin {α : Sort*} : Finite α ↔ ∃ n, Nonempty (α ≃ Fin n) :=
   ⟨fun ⟨e⟩ => ⟨_, ⟨e⟩⟩, fun ⟨_, ⟨e⟩⟩ => ⟨e⟩⟩
 #align finite_iff_exists_equiv_fin finite_iff_exists_equiv_fin
 
-theorem Finite.exists_equiv_fin (α : Sort*) [h : Finite α] : ∃ n : ℕ, Nonempty (α ≃ Fin n) :=
+lemma Finite.exists_equiv_fin (α : Sort*) [h : Finite α] : ∃ n : ℕ, Nonempty (α ≃ Fin n) :=
   finite_iff_exists_equiv_fin.mp h
 #align finite.exists_equiv_fin Finite.exists_equiv_fin
 
-theorem Finite.of_equiv (α : Sort*) [h : Finite α] (f : α ≃ β) : Finite β :=
+lemma Finite.of_equiv (α : Sort*) [h : Finite α] (f : α ≃ β) : Finite β :=
   let ⟨e⟩ := h; ⟨f.symm.trans e⟩
 #align finite.of_equiv Finite.of_equiv
 
-theorem Equiv.finite_iff (f : α ≃ β) : Finite α ↔ Finite β :=
+lemma Equiv.finite_iff (f : α ≃ β) : Finite α ↔ Finite β :=
   ⟨fun _ => Finite.of_equiv _ f, fun _ => Finite.of_equiv _ f.symm⟩
 #align equiv.finite_iff Equiv.finite_iff
 
-theorem Function.Bijective.finite_iff {f : α → β} (h : Bijective f) : Finite α ↔ Finite β :=
+lemma Function.Bijective.finite_iff {f : α → β} (h : Bijective f) : Finite α ↔ Finite β :=
   (Equiv.ofBijective f h).finite_iff
 #align function.bijective.finite_iff Function.Bijective.finite_iff
 
-theorem Finite.ofBijective [Finite α] {f : α → β} (h : Bijective f) : Finite β :=
+lemma Finite.ofBijective [Finite α] {f : α → β} (h : Bijective f) : Finite β :=
   h.finite_iff.mp ‹_›
 #align finite.of_bijective Finite.ofBijective
 
@@ -120,16 +120,16 @@ class Infinite (α : Sort*) : Prop where
 #align infinite Infinite
 
 @[simp]
-theorem not_finite_iff_infinite : ¬Finite α ↔ Infinite α :=
+lemma not_finite_iff_infinite : ¬Finite α ↔ Infinite α :=
   ⟨Infinite.mk, fun h => h.1⟩
 #align not_finite_iff_infinite not_finite_iff_infinite
 
 @[simp]
-theorem not_infinite_iff_finite : ¬Infinite α ↔ Finite α :=
+lemma not_infinite_iff_finite : ¬Infinite α ↔ Finite α :=
   not_finite_iff_infinite.not_right.symm
 #align not_infinite_iff_finite not_infinite_iff_finite
 
-theorem Equiv.infinite_iff (e : α ≃ β) : Infinite α ↔ Infinite β :=
+lemma Equiv.infinite_iff (e : α ≃ β) : Infinite α ↔ Infinite β :=
   not_finite_iff_infinite.symm.trans <| e.finite_iff.not.trans not_finite_iff_infinite
 #align equiv.infinite_iff Equiv.infinite_iff
 
@@ -139,7 +139,7 @@ instance [Infinite α] : Infinite (PLift α) :=
 instance {α : Type v} [Infinite α] : Infinite (ULift.{u} α) :=
   Equiv.ulift.infinite_iff.2 ‹_›
 
-theorem finite_or_infinite (α : Sort*) : Finite α ∨ Infinite α :=
+lemma finite_or_infinite (α : Sort*) : Finite α ∨ Infinite α :=
   or_iff_not_imp_left.2 not_finite_iff_infinite.1
 #align finite_or_infinite finite_or_infinite
 
@@ -148,11 +148,11 @@ theorem not_finite (α : Sort*) [Infinite α] [Finite α] : False :=
   @Infinite.not_finite α ‹_› ‹_›
 #align not_finite not_finite
 
-protected theorem Finite.false [Infinite α] (_ : Finite α) : False :=
+protected lemma Finite.false [Infinite α] (_ : Finite α) : False :=
   not_finite α
 #align finite.false Finite.false
 
-protected theorem Infinite.false [Finite α] (_ : Infinite α) : False :=
+protected lemma Infinite.false [Finite α] (_ : Infinite α) : False :=
   @Infinite.not_finite α ‹_› ‹_›
 #align infinite.false Infinite.false
 

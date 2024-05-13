@@ -46,7 +46,7 @@ instance Metric.unitBall.hasDistribNeg [NonUnitalSeminormedRing 𝕜] :
   Subtype.coe_injective.hasDistribNeg ((↑) : ball (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
 
 @[simp, norm_cast]
-theorem coe_mul_unitBall [NonUnitalSeminormedRing 𝕜] (x y : ball (0 : 𝕜) 1) :
+lemma coe_mul_unitBall [NonUnitalSeminormedRing 𝕜] (x y : ball (0 : 𝕜) 1) :
     ↑(x * y) = (x * y : 𝕜) :=
   rfl
 #align coe_mul_unit_ball coe_mul_unitBall
@@ -73,7 +73,7 @@ instance Metric.unitClosedBall.continuousMul [NonUnitalSeminormedRing 𝕜] :
   (Subsemigroup.unitClosedBall 𝕜).continuousMul
 
 @[simp, norm_cast]
-theorem coe_mul_unitClosedBall [NonUnitalSeminormedRing 𝕜] (x y : closedBall (0 : 𝕜) 1) :
+lemma coe_mul_unitClosedBall [NonUnitalSeminormedRing 𝕜] (x y : closedBall (0 : 𝕜) 1) :
     ↑(x * y) = (x * y : 𝕜) :=
   rfl
 #align coe_mul_unit_closed_ball coe_mul_unitClosedBall
@@ -94,13 +94,13 @@ instance Metric.unitClosedBall.commMonoid [SeminormedCommRing 𝕜] [NormOneClas
   SubmonoidClass.toCommMonoid (Submonoid.unitClosedBall 𝕜)
 
 @[simp, norm_cast]
-theorem coe_one_unitClosedBall [SeminormedRing 𝕜] [NormOneClass 𝕜] :
+lemma coe_one_unitClosedBall [SeminormedRing 𝕜] [NormOneClass 𝕜] :
     ((1 : closedBall (0 : 𝕜) 1) : 𝕜) = 1 :=
   rfl
 #align coe_one_unit_closed_ball coe_one_unitClosedBall
 
 @[simp, norm_cast]
-theorem coe_pow_unitClosedBall [SeminormedRing 𝕜] [NormOneClass 𝕜] (x : closedBall (0 : 𝕜) 1)
+lemma coe_pow_unitClosedBall [SeminormedRing 𝕜] [NormOneClass 𝕜] (x : closedBall (0 : 𝕜) 1)
     (n : ℕ) : ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
 #align coe_pow_unit_closed_ball coe_pow_unitClosedBall
@@ -122,7 +122,7 @@ instance Metric.unitSphere.inv [NormedDivisionRing 𝕜] : Inv (sphere (0 : 𝕜
         rw [norm_inv, mem_sphere_zero_iff_norm.1 x.coe_prop, inv_one]⟩⟩
 
 @[simp, norm_cast]
-theorem coe_inv_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) : ↑x⁻¹ = (x⁻¹ : 𝕜) :=
+lemma coe_inv_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) : ↑x⁻¹ = (x⁻¹ : 𝕜) :=
   rfl
 #align coe_inv_unit_sphere coe_inv_unitSphere
 
@@ -134,7 +134,7 @@ instance Metric.unitSphere.div [NormedDivisionRing 𝕜] : Div (sphere (0 : 𝕜
           div_one]⟩⟩
 
 @[simp, norm_cast]
-theorem coe_div_unitSphere [NormedDivisionRing 𝕜] (x y : sphere (0 : 𝕜) 1) :
+lemma coe_div_unitSphere [NormedDivisionRing 𝕜] (x y : sphere (0 : 𝕜) 1) :
     ↑(x / y) = (x / y : 𝕜) :=
   rfl
 #align coe_div_unit_sphere coe_div_unitSphere
@@ -145,7 +145,7 @@ instance Metric.unitSphere.pow [NormedDivisionRing 𝕜] : Pow (sphere (0 : 𝕜
       rw [mem_sphere_zero_iff_norm, norm_zpow, mem_sphere_zero_iff_norm.1 x.coe_prop, one_zpow]⟩⟩
 
 @[simp, norm_cast]
-theorem coe_zpow_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) (n : ℤ) :
+lemma coe_zpow_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) (n : ℤ) :
     ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
 #align coe_zpow_unit_sphere coe_zpow_unitSphere
@@ -154,18 +154,18 @@ instance Metric.unitSphere.monoid [NormedDivisionRing 𝕜] : Monoid (sphere (0 
   SubmonoidClass.toMonoid (Submonoid.unitSphere 𝕜)
 
 @[simp, norm_cast]
-theorem coe_one_unitSphere [NormedDivisionRing 𝕜] : ((1 : sphere (0 : 𝕜) 1) : 𝕜) = 1 :=
+lemma coe_one_unitSphere [NormedDivisionRing 𝕜] : ((1 : sphere (0 : 𝕜) 1) : 𝕜) = 1 :=
   rfl
 #align coe_one_unit_sphere coe_one_unitSphere
 
 @[simp, norm_cast]
-theorem coe_mul_unitSphere [NormedDivisionRing 𝕜] (x y : sphere (0 : 𝕜) 1) :
+lemma coe_mul_unitSphere [NormedDivisionRing 𝕜] (x y : sphere (0 : 𝕜) 1) :
     ↑(x * y) = (x * y : 𝕜) :=
   rfl
 #align coe_mul_unit_sphere coe_mul_unitSphere
 
 @[simp, norm_cast]
-theorem coe_pow_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) (n : ℕ) :
+lemma coe_pow_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) (n : ℕ) :
     ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
 #align coe_pow_unit_sphere coe_pow_unitSphere
@@ -177,12 +177,12 @@ def unitSphereToUnits (𝕜 : Type*) [NormedDivisionRing 𝕜] : sphere (0 : �
 #align unit_sphere_to_units unitSphereToUnits
 
 @[simp]
-theorem unitSphereToUnits_apply_coe [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) :
+lemma unitSphereToUnits_apply_coe [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) :
     (unitSphereToUnits 𝕜 x : 𝕜) = x :=
   rfl
 #align unit_sphere_to_units_apply_coe unitSphereToUnits_apply_coe
 
-theorem unitSphereToUnits_injective [NormedDivisionRing 𝕜] :
+lemma unitSphereToUnits_injective [NormedDivisionRing 𝕜] :
     Function.Injective (unitSphereToUnits 𝕜) := fun x y h =>
   Subtype.eq <| by convert congr_arg Units.val h
 #align unit_sphere_to_units_injective unitSphereToUnits_injective

@@ -39,7 +39,7 @@ noncomputable def selfAdjoint.expUnitary (a : selfAdjoint A) : unitary A :=
 
 open selfAdjoint
 
-theorem Commute.expUnitary_add {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
+lemma Commute.expUnitary_add {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
     expUnitary (a + b) = expUnitary a * expUnitary b := by
   ext
   have hcomm : Commute (I • (a : A)) (I • (b : A)) := by
@@ -48,7 +48,7 @@ theorem Commute.expUnitary_add {a b : selfAdjoint A} (h : Commute (a : A) (b : A
   simpa only [expUnitary_coe, AddSubgroup.coe_add, smul_add] using exp_add_of_commute hcomm
 #align commute.exp_unitary_add Commute.expUnitary_add
 
-theorem Commute.expUnitary {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
+lemma Commute.expUnitary {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
     Commute (expUnitary a) (expUnitary b) :=
   calc
     selfAdjoint.expUnitary a * selfAdjoint.expUnitary b =

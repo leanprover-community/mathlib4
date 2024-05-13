@@ -186,17 +186,17 @@ instance : CommRing (ColimitType.{v} F) :=
       exact Quot.sound (Relation.right_distrib _ _ _) }
 
 @[simp]
-theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType F) :=
+lemma quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType F) :=
   rfl
 #align CommRing.colimits.quot_zero CommRingCat.Colimits.quot_zero
 
 @[simp]
-theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
+lemma quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
   rfl
 #align CommRing.colimits.quot_one CommRingCat.Colimits.quot_one
 
 @[simp]
-theorem quot_neg (x : Prequotient F) :
+lemma quot_neg (x : Prequotient F) :
     -- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type
     -- annotation unless we use `by exact` to change the elaboration order.
     (by exact Quot.mk Setoid.r (neg x) : ColimitType F) = -(by exact Quot.mk Setoid.r x) :=
@@ -206,7 +206,7 @@ theorem quot_neg (x : Prequotient F) :
 -- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
 -- unless we use `by exact` to change the elaboration order.
 @[simp]
-theorem quot_add (x y) :
+lemma quot_add (x y) :
     (by exact Quot.mk Setoid.r (add x y) : ColimitType F) =
       (by exact Quot.mk _ x) + (by exact Quot.mk _ y) :=
   rfl
@@ -215,7 +215,7 @@ theorem quot_add (x y) :
 -- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
 -- unless we use `by exact` to change the elaboration order.
 @[simp]
-theorem quot_mul (x y) :
+lemma quot_mul (x y) :
     (by exact Quot.mk Setoid.r (mul x y) : ColimitType F) =
       (by exact Quot.mk _ x) * (by exact Quot.mk _ y) :=
   rfl
@@ -242,7 +242,7 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
 #align CommRing.colimits.cocone_morphism CommRingCat.Colimits.coconeMorphism
 
 @[simp]
-theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
+lemma cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism F j' = coconeMorphism F j := by
   ext
   apply Quot.sound
@@ -250,7 +250,7 @@ theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
 #align CommRing.colimits.cocone_naturality CommRingCat.Colimits.cocone_naturality
 
 @[simp]
-theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
+lemma cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f, comp_apply]
 #align CommRing.colimits.cocone_naturality_components CommRingCat.Colimits.cocone_naturality_components
