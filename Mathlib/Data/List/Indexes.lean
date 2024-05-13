@@ -222,7 +222,7 @@ theorem nthLe_mapIdx {α β} (l : List α) (f : ℕ → α → β) (i : ℕ) (h 
 theorem mapIdx_eq_ofFn {α β} (l : List α) (f : ℕ → α → β) :
     l.mapIdx f = ofFn fun i : Fin l.length ↦ f (i : ℕ) (l.get i) := by
   induction l generalizing f with
-  | nil => rfl
+  | nil => simp
   | cons _ _ IH => simp [IH]
 #align list.map_with_index_eq_of_fn List.mapIdx_eq_ofFn
 
