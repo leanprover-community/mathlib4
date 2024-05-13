@@ -66,8 +66,8 @@ elab "count_heartbeats " tac:tacticSeq : tactic => do
   logInfo s!"{← runTacForHeartbeats tac (revert := false)}"
 
 /--
-`count_heartbeats! in tac` runs a tactic 10 times, counting the heartbeats used, and logs the range and standard deviation.
-The tactic `count_heartbeats! n in tac` runs it `n` times instead.
+`count_heartbeats! in tac` runs a tactic 10 times, counting the heartbeats used, and logs the range
+and standard deviation. The tactic `count_heartbeats! n in tac` runs it `n` times instead.
 -/
 elab "count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
   let n := match n with
@@ -127,8 +127,8 @@ def elabForHeartbeats (cmd : TSyntax `command) (revert : Bool := true) : Command
   return (← IO.getNumHeartbeats) - start
 
 /--
-`count_heartbeats! in cmd` runs a command `10` times, reporting the range in heartbeats, and the standard deviation.
-The command `count_heartbeats! n in cmd` runs it `n` times instead.
+`count_heartbeats! in cmd` runs a command `10` times, reporting the range in heartbeats, and the
+standard deviation. The command `count_heartbeats! n in cmd` runs it `n` times instead.
 
 Example usage:
 ```
