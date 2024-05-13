@@ -245,11 +245,11 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
         rw [← lift_le.{w'}, lift_lift, lift_lift] at h1
         exact ⟨h2, h1⟩)
       (hN0.trans (by rw [← lift_umax', lift_id]))
-  · letI := (lhomWithConstants L M).reduct N
-    haveI h : N ⊨ L.elementaryDiagram M :=
-      (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
-    refine' ⟨Bundled.of N, ⟨_⟩, hN⟩
-    apply ElementaryEmbedding.ofModelsElementaryDiagram L M N
+  letI := (lhomWithConstants L M).reduct N
+  haveI h : N ⊨ L.elementaryDiagram M :=
+    (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
+  refine' ⟨Bundled.of N, ⟨_⟩, hN⟩
+  apply ElementaryEmbedding.ofModelsElementaryDiagram L M N
 #align first_order.language.exists_elementary_embedding_card_eq_of_ge FirstOrder.Language.exists_elementaryEmbedding_card_eq_of_ge
 
 end
