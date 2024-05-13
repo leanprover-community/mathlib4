@@ -138,9 +138,9 @@ theorem verschiebung_isPoly : IsPoly p fun R _Rcr => @verschiebung p R hp _Rcr :
 @[simp]
 theorem map_verschiebung (f : R →+* S) (x : 𝕎 R) :
     map f (verschiebung x) = verschiebung (map f x) := by
-      ext ⟨-, -⟩
-      · exact f.map_zero
-      · rfl
+  ext ⟨-, -⟩
+  · exact f.map_zero
+  · rfl
 #align witt_vector.map_verschiebung WittVector.map_verschiebung
 
 @[ghost_simps]

@@ -366,9 +366,7 @@ instance (priority := 100) [LocalRing R] [IsBezout R] : ValuationRing R := by
   · simp [h]
   have : x * a + y * b = 1 := by
     apply mul_left_injective₀ h; convert e' using 1 <;> ring
-  cases' LocalRing.isUnit_or_isUnit_of_add_one this with h' h'
-  on_goal 1 => left
-  on_goal 2 => right
+  cases' LocalRing.isUnit_or_isUnit_of_add_one this with h' h' <;> [left; right]
   all_goals exact mul_dvd_mul_right (isUnit_iff_forall_dvd.mp (isUnit_of_mul_isUnit_right h') _) _
 
 theorem iff_local_bezout_domain : ValuationRing R ↔ LocalRing R ∧ IsBezout R :=
