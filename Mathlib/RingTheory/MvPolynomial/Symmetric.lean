@@ -371,7 +371,7 @@ where `μ = (μ₁, μ₂, ...)` is a partition.
 def hsymmMu {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := muProduct σ R (hsymm σ R) μ
 
 lemma hsymmMu_def {n : ℕ} (μ : n.Partition) : hsymmMu σ R μ =
-    Multiset.prod (μ.parts.map (hsymm σ R)) := rfl
+    (μ.parts.map (hsymm σ R)).prod := rfl
 
 @[simp]
 theorem hsymm_zero : hsymm σ R 0 = 1 := by simp [hsymm, eq_nil_of_card_zero]
