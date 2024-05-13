@@ -745,13 +745,9 @@ instance : StarRing (Subsemiring.center (CentroidHom α)) where
     apply SetCoe.ext
     ext a
     have e1 : star (f * g) a = (star g * star f) a := calc
-      star (f * g) a = star (f * g) a := rfl
-      _ = star (g * f) a := by rw [CommMonoid.mul_comm f g]
-      _ = star ((g * f) (star a)) := rfl
+      star (f * g) a = star (g * f) a := by rw [CommMonoid.mul_comm f g]
       _ = star (g (f (star a))) := rfl
       _ = star (g (star (star (f (star a))))) := by simp only [star_star]
-      _ = (star g) ((star f) a) := rfl
-      _ = (star g * star f) a := rfl
       _ = (star g * star f).val a := rfl
     exact e1
 
