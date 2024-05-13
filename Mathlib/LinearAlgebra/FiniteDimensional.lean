@@ -1049,27 +1049,34 @@ theorem finrank_eq_one_iff_of_nonzero' (v : V) (nz : v ≠ 0) :
 
 /-- A module has dimension 1 iff there is some `v : V` so `{v}` is a basis.
 -/
-theorem finrank_eq_one_iff (ι : Type*) [Unique ι] : finrank K V = 1 ↔ Nonempty (Basis ι K V) := by
+theorem finrank_eq_one_iff {K V : Type*} [Ring K] [StrongRankCondition K]
+    [AddCommGroup V] [Module K V] [Module.Free K V] (ι : Type*) [Unique ι] :
+    finrank K V = 1 ↔ Nonempty (Basis ι K V) := by
   constructor
   · intro h
-    haveI : FiniteDimensional K V := .of_finrank_eq_succ h
     exact ⟨FiniteDimensional.basisUnique ι h⟩
   · rintro ⟨b⟩
     simpa using finrank_eq_card_basis b
 #align finrank_eq_one_iff finrank_eq_one_iff
 
+-- TODO: can we remove `IsDomain K`? I have a argument when `K` is `CommRing`
+-- but the original statement is `DivisionRing K` which allows `K` be non-commutative.
+
 /-- A module has dimension 1 iff there is some nonzero `v : V` so every vector is a multiple of `v`.
 -/
-theorem finrank_eq_one_iff' : finrank K V = 1 ↔ ∃ v ≠ 0, ∀ w : V, ∃ c : K, c • v = w := by
+theorem finrank_eq_one_iff' {K V : Type*} [Ring K] [IsDomain K] [StrongRankCondition K]
+    [AddCommGroup V] [Module K V] [Module.Free K V] :
+    finrank K V = 1 ↔ ∃ v ≠ 0, ∀ w : V, ∃ c : K, c • v = w := by
   -- Porting note: was a messy `convert` proof
-  rw [finrank_eq_one_iff PUnit.{u+1}, Basis.basis_singleton_iff PUnit]
+  rw [finrank_eq_one_iff Unit, Basis.basis_singleton_iff]
 #align finrank_eq_one_iff' finrank_eq_one_iff'
 
 -- Not sure why this aren't found automatically.
 /-- A finite dimensional module has dimension at most 1 iff
 there is some `v : V` so every vector is a multiple of `v`.
 -/
-theorem finrank_le_one_iff [FiniteDimensional K V] :
+theorem finrank_le_one_iff {K V : Type*} [Ring K] [IsDomain K] [StrongRankCondition K]
+    [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
     finrank K V ≤ 1 ↔ ∃ v : V, ∀ w : V, ∃ c : K, c • v = w := by
   constructor
   · intro h
