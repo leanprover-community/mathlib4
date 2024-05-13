@@ -319,7 +319,7 @@ theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l�
   fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 #align list.append_subset_of_subset_of_subset List.append_subset_of_subset_of_subset
 
--- Porting note: in Std
+-- Porting note: in Batteries
 #align list.append_subset_iff List.append_subset
 
 alias ⟨eq_nil_of_subset_nil, _⟩ := subset_nil
@@ -350,7 +350,7 @@ theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L�
 
 #align list.append_eq_nil List.append_eq_nil
 
--- Porting note: in Std
+-- Porting note: in Batteries
 #align list.nil_eq_append_iff List.nil_eq_append
 
 @[deprecated] alias append_eq_cons_iff := append_eq_cons -- 2024-03-24
@@ -579,9 +579,9 @@ theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a 
 #align list.length_reverse List.length_reverse
 
 -- Porting note: This one was @[simp] in mathlib 3,
--- but Std contains a competing simp lemma reverse_map.
+-- but Lean contains a competing simp lemma reverse_map.
 -- For now we remove @[simp] to avoid simplification loops.
--- TODO: Change Std lemma to match mathlib 3?
+-- TODO: Change Lean lemma to match mathlib 3?
 theorem map_reverse (f : α → β) (l : List α) : map f (reverse l) = reverse (map f l) :=
   (reverse_map f l).symm
 #align list.map_reverse List.map_reverse
@@ -764,6 +764,9 @@ theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?)
 
 /-! ### head(!?) and tail -/
 
+@[simp]
+theorem head!_nil [Inhabited α] : ([] : List α).head! = default := rfl
+
 @[simp] theorem head_cons_tail (x : List α) (h : x ≠ []) : x.head h :: x.tail = x := by
   cases x <;> simp at h ⊢
 
@@ -925,18 +928,19 @@ def reverseRecOn {motive : List α → Sort*} (l : List α) (nil : motive [])
   | [] => cast (congr_arg motive <| by simpa using congr(reverse $h.symm)) <|
       nil
   | head :: tail =>
-    have : tail.length < l.length := by
-      rw [← length_reverse l, h, length_cons]
-      simp [Nat.lt_succ]
     cast (congr_arg motive <| by simpa using congr(reverse $h.symm)) <|
       append_singleton _ head <| reverseRecOn (reverse tail) nil append_singleton
 termination_by l.length
+decreasing_by
+  simp_wf
+  rw [← length_reverse l, h, length_cons]
+  simp [Nat.lt_succ]
 #align list.reverse_rec_on List.reverseRecOn
 
 @[simp]
 theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
-    reverseRecOn [] nil append_singleton = nil := rfl
+    reverseRecOn [] nil append_singleton = nil := reverseRecOn.eq_1 ..
 
 -- `unusedHavesSuffices` is getting confused by the unfolding of `reverseRecOn`
 @[simp, nolint unusedHavesSuffices]
@@ -982,15 +986,15 @@ termination_by l => l.length
 theorem bidirectionalRec_nil {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) :
-    bidirectionalRec nil singleton cons_append [] = nil :=
-  rfl
+    bidirectionalRec nil singleton cons_append [] = nil := bidirectionalRec.eq_1 ..
+
 
 @[simp]
 theorem bidirectionalRec_singleton {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) (a : α):
     bidirectionalRec nil singleton cons_append [a] = singleton a :=
-  rfl
+  by simp [bidirectionalRec]
 
 @[simp]
 theorem bidirectionalRec_cons_append {motive : List α → Sort*}
@@ -1083,7 +1087,7 @@ theorem eq_nil_of_sublist_nil {l : List α} (s : l <+ []) : l = [] :=
   eq_nil_of_subset_nil <| s.subset
 #align list.eq_nil_of_sublist_nil List.eq_nil_of_sublist_nil
 
--- Porting note: this lemma seems to have been renamed on the occasion of its move to Std4
+-- Porting note: this lemma seems to have been renamed on the occasion of its move to Batteries
 alias sublist_nil_iff_eq_nil := sublist_nil
 #align list.sublist_nil_iff_eq_nil List.sublist_nil_iff_eq_nil
 
@@ -2668,12 +2672,14 @@ variable {p : α → Bool} {l : List α} {a : α}
 #align list.find_nil List.find?_nil
 
 -- @[simp]
--- Later porting note (at time of this lemma moving to Std): removing attribute `nolint simpNF`
+-- Later porting note (at time of this lemma moving to Batteries):
+-- removing attribute `nolint simpNF`
 attribute [simp 1100] find?_cons_of_pos
 #align list.find_cons_of_pos List.find?_cons_of_pos
 
 -- @[simp]
--- Later porting note (at time of this lemma moving to Std): removing attribute `nolint simpNF`
+-- Later porting note (at time of this lemma moving to Batteries):
+-- removing attribute `nolint simpNF`
 attribute [simp 1100] find?_cons_of_neg
 #align list.find_cons_of_neg List.find?_cons_of_neg
 
@@ -2771,14 +2777,13 @@ end Lookmap
 
 #align list.filter_map_nil List.filterMap_nil
 
--- Porting note: List.filterMap is given @[simp] in Std.Data.List.Init.Lemmas
--- @[simp]
--- Later porting note (at time of this lemma moving to Std): removing attribute `nolint simpNF`
+-- Later porting note (at time of this lemma moving to Batteries):
+-- removing attribute `nolint simpNF`
 attribute [simp 1100] filterMap_cons_none
 #align list.filter_map_cons_none List.filterMap_cons_none
 
--- @[simp]
--- Later porting note (at time of this lemma moving to Std): removing attribute `nolint simpNF`
+-- Later porting note (at time of this lemma moving to Batteries):
+-- removing attribute `nolint simpNF`
 attribute [simp 1100] filterMap_cons_some
 #align list.filter_map_cons_some List.filterMap_cons_some
 
@@ -2945,6 +2950,8 @@ theorem span_eq_take_drop (l : List α) : span p l = (takeWhile p l, dropWhile p
 
 #align list.take_while_append_drop List.takeWhile_append_dropWhile
 
+-- TODO update to use `get` instead of `nthLe`
+set_option linter.deprecated false in
 theorem dropWhile_nthLe_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
     ¬p ((l.dropWhile p).nthLe 0 hl) := by
   induction' l with hd tl IH
@@ -2990,6 +2997,8 @@ theorem takeWhile_eq_self_iff : takeWhile p l = l ↔ ∀ x ∈ l, p x := by
   · by_cases hp : p x <;> simp [hp, takeWhile_cons, IH]
 #align list.take_while_eq_self_iff List.takeWhile_eq_self_iff
 
+-- TODO update to use `get` instead of `nthLe`
+set_option linter.deprecated false in
 @[simp]
 theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
   induction' l with x xs IH

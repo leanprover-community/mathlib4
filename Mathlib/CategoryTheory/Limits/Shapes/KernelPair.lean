@@ -143,11 +143,11 @@ theorem comp_of_mono {f₁ : X ⟶ Y} {f₂ : Y ⟶ Z} [Mono f₂] (small_k : Is
       refine' PullbackCone.isLimitAux _
         (fun s => small_k.lift s.fst s.snd (by rw [← cancel_mono f₂, assoc, s.condition, assoc]))
         (by simp) (by simp) _
-      · intro s m hm
-        apply small_k.isLimit.hom_ext
-        apply PullbackCone.equalizer_ext small_k.cone _ _
-        · exact (hm WalkingCospan.left).trans (by simp)
-        · exact (hm WalkingCospan.right).trans (by simp)⟩ }
+      intro s m hm
+      apply small_k.isLimit.hom_ext
+      apply PullbackCone.equalizer_ext small_k.cone _ _
+      · exact (hm WalkingCospan.left).trans (by simp)
+      · exact (hm WalkingCospan.right).trans (by simp)⟩ }
 #align category_theory.is_kernel_pair.comp_of_mono CategoryTheory.IsKernelPair.comp_of_mono
 
 /--

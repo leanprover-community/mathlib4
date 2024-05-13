@@ -178,7 +178,9 @@ theorem continuousLinearMap_symm_apply' {b : B} (hb : b ∈ e₁.baseSet ∩ e�
     (L : F₁ →SL[σ] F₂) :
     (continuousLinearMap σ e₁ e₂).symm b L =
       (e₂.symmL 𝕜₂ b).comp (L.comp <| e₁.continuousLinearMapAt 𝕜₁ b) := by
-  rw [symm_apply]; rfl; exact hb
+  rw [symm_apply]
+  · rfl
+  · exact hb
 #align pretrivialization.continuous_linear_map_symm_apply' Pretrivialization.continuousLinearMap_symm_apply'
 
 theorem continuousLinearMapCoordChange_apply (b : B)

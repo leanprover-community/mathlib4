@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Interval
@@ -7,6 +8,7 @@ import Mathlib.Data.Rat.Order
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
 set_option autoImplicit true
+set_option pp.mvars false
 
 example [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
   linarith
@@ -431,11 +433,18 @@ lemma norm_nonpos_left (x y : ℚ) (h1 : x * x + y * y ≤ 0) : x = 0 := by
 
 variable {E : Type _} [AddGroup E]
 example (f : ℤ → E) (h : 0 = f 0) : 1 ≤ 2 := by nlinarith
-example (a : E) (h : a = a) : 1 ≤ 2  := by nlinarith
+example (a : E) (h : a = a) : 1 ≤ 2 := by nlinarith
 
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
   p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) :=
 by nlinarith
+
+-- note: much faster than the simplex algorithm (the default oracle for `linarith`)
+-- TODO: make the simplex algorithm able to work with sparse matrices. This should speed up
+-- `nlinarith` because it passes large and sparse matrices to the oracle.
+example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
+  p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) :=
+by nlinarith (config := { oracle := some .fourierMotzkin })
 
 -- Tests involving a norm, including that squares in a type where `sq_nonneg` does not apply
 -- do not cause an exception
@@ -574,7 +583,7 @@ example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
 
 /--
 error: Argument passed to linarith has metavariables:
-  p ?a
+  p ?_
 -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
@@ -582,7 +591,7 @@ example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
 
 /--
 error: Argument passed to nlinarith has metavariables:
-  p ?a
+  p ?_
 -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
@@ -601,3 +610,96 @@ example (h : False): True := by
 example (x : Nat) : 0 ≤ x ^ 9890 := by
   fail_if_success linarith -- this should not stack overflow
   apply zero_le
+
+/-- https://github.com/leanprover-community/mathlib4/issues/8875 -/
+example (a b c d e : ℚ)
+    (ha : 2 * a + b + c + d + e = 4)
+    (hb : a + 2 * b + c + d + e = 5)
+    (hc : a + b + 2 * c + d + e = 6)
+    (hd : a + b + c + 2 * d + e = 7)
+    (he : a + b + c + d + 2 * e = 8) :
+    e = 3 := by
+  linarith
+
+/-- https://github.com/leanprover-community/mathlib4/issues/2717 -/
+example :
+    (3 * x4 - x3 - x2 - x1 : ℚ) < 0 →
+    x5 - x4 < 0 →
+    2 * (x5 - x4) < 0 →
+    -x6 + x3 < 0 →
+    -x6 + x2 < 0 →
+    2 * (x6 - x5) < 0 →
+    x8 - x7 < 0 →
+    -x8 + x2 < 0 →
+    -x8 + x7 - x5 + x1 < 0 →
+    x7 - x5 < 0 →
+    False := by
+  intros; linarith
+
+-- TODO: still broken with Fourier-Motzkin
+/--
+error: linarith failed to find a contradiction
+case h1.h
+E : Type _
+inst✝¹ : AddGroup E
+R : Type _
+inst✝ : Ring R
+abs : R → ℚ
+a b c d e : ℚ
+ha : 2 * a + b + c + d + e = 4
+hb : a + 2 * b + c + d + e = 5
+hc : a + b + 2 * c + d + e = 6
+hd : a + b + c + 2 * d + e = 7
+he : a + b + c + d + 2 * e = 8
+a✝ : e < 3
+⊢ False
+failed
+-/
+#guard_msgs in
+/-- https://github.com/leanprover-community/mathlib4/issues/8875 -/
+example (a b c d e : ℚ)
+    (ha : 2 * a + b + c + d + e = 4)
+    (hb : a + 2 * b + c + d + e = 5)
+    (hc : a + b + 2 * c + d + e = 6)
+    (hd : a + b + c + 2 * d + e = 7)
+    (he : a + b + c + d + 2 * e = 8) :
+    e = 3 := by
+  linarith (config := { oracle := some .fourierMotzkin })
+
+-- TODO: still broken with Fourier-Motzkin
+/--
+error: linarith failed to find a contradiction
+E : Type _
+inst✝¹ : AddGroup E
+R : Type _
+inst✝ : Ring R
+abs : R → ℚ
+x4 x3 x2 x1 x5 x6 x8 x7 : ℚ
+a✝⁹ : 3 * x4 - x3 - x2 - x1 < 0
+a✝⁸ : x5 - x4 < 0
+a✝⁷ : 2 * (x5 - x4) < 0
+a✝⁶ : -x6 + x3 < 0
+a✝⁵ : -x6 + x2 < 0
+a✝⁴ : 2 * (x6 - x5) < 0
+a✝³ : x8 - x7 < 0
+a✝² : -x8 + x2 < 0
+a✝¹ : -x8 + x7 - x5 + x1 < 0
+a✝ : x7 - x5 < 0
+⊢ False
+failed
+-/
+#guard_msgs in
+/-- https://github.com/leanprover-community/mathlib4/issues/2717 -/
+example :
+    (3 * x4 - x3 - x2 - x1 : ℚ) < 0 →
+    x5 - x4 < 0 →
+    2 * (x5 - x4) < 0 →
+    -x6 + x3 < 0 →
+    -x6 + x2 < 0 →
+    2 * (x6 - x5) < 0 →
+    x8 - x7 < 0 →
+    -x8 + x2 < 0 →
+    -x8 + x7 - x5 + x1 < 0 →
+    x7 - x5 < 0 → False := by
+  intros
+  linarith (config := { oracle := some .fourierMotzkin })

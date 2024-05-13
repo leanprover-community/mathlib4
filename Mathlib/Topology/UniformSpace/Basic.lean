@@ -585,8 +585,8 @@ theorem uniformity_lift_le_comp {f : Set (α × α) → Filter β} (h : Monotone
   calc
     ((𝓤 α).lift fun s => f (s ○ s)) = ((𝓤 α).lift' fun s : Set (α × α) => s ○ s).lift f := by
       rw [lift_lift'_assoc]
-      exact monotone_id.compRel monotone_id
-      exact h
+      · exact monotone_id.compRel monotone_id
+      · exact h
     _ ≤ (𝓤 α).lift f := lift_mono comp_le_uniformity le_rfl
 #align uniformity_lift_le_comp uniformity_lift_le_comp
 
@@ -1157,6 +1157,8 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
   show 𝓤[t] ≤ ⨅ u ∈ tt, 𝓤[u] from le_iInf₂ h
 
+set_option linter.deprecated false in
+-- TODO update this code to avoid the deprecation
 instance : Top (UniformSpace α) :=
   ⟨.ofNhdsEqComap ⟨⊤, le_top, le_top, le_top⟩ ⊤ fun x ↦ by simp only [nhds_top, comap_top]⟩
 
@@ -1234,8 +1236,8 @@ abbrev UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace �
   comp := le_trans
     (by
       rw [comap_lift'_eq, comap_lift'_eq2]
-      exact lift'_mono' fun s _ ⟨a₁, a₂⟩ ⟨x, h₁, h₂⟩ => ⟨f x, h₁, h₂⟩
-      exact monotone_id.compRel monotone_id)
+      · exact lift'_mono' fun s _ ⟨a₁, a₂⟩ ⟨x, h₁, h₂⟩ => ⟨f x, h₁, h₂⟩
+      · exact monotone_id.compRel monotone_id)
     (comap_mono u.comp)
   toTopologicalSpace := u.toTopologicalSpace.induced f
   nhds_eq_comap_uniformity x := by

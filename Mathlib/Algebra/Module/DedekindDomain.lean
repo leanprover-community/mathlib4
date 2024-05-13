@@ -53,10 +53,10 @@ theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal {I : Ideal R} (hI 
   · intro p hp q hq pq; dsimp
     rw [irreducible_pow_sup]
     · suffices (normalizedFactors _).count p = 0 by rw [this, zero_min, pow_zero, Ideal.one_eq_top]
-      · rw [Multiset.count_eq_zero,
-          normalizedFactors_of_irreducible_pow (prime_of_mem q hq).irreducible,
-          Multiset.mem_replicate]
-        exact fun H => pq <| H.2.trans <| normalize_eq q
+      rw [Multiset.count_eq_zero,
+        normalizedFactors_of_irreducible_pow (prime_of_mem q hq).irreducible,
+        Multiset.mem_replicate]
+      exact fun H => pq <| H.2.trans <| normalize_eq q
     · rw [← Ideal.zero_eq_bot]; apply pow_ne_zero; exact (prime_of_mem q hq).ne_zero
     · exact (prime_of_mem p hp).irreducible
 #align submodule.is_internal_prime_power_torsion_of_is_torsion_by_ideal Submodule.isInternal_prime_power_torsion_of_is_torsion_by_ideal

@@ -181,7 +181,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- so we get that out of the way here.
   by_cases nX : Nonempty X
   swap
-  exact ⟨nA.some, (dist_lt_iff pos).mpr fun x => False.elim (nX ⟨x⟩), nA.choose_spec⟩
+  · exact ⟨nA.some, (dist_lt_iff pos).mpr fun x => False.elim (nX ⟨x⟩), nA.choose_spec⟩
   /-
     The strategy now is to pick a family of continuous functions `g x y` in `A`
     with the property that `g x y x = f x` and `g x y y = f y`
@@ -284,7 +284,7 @@ theorem subalgebra_topologicalClosure_eq_top_of_separatesPoints (A : Subalgebra 
       (fun f fm g gm => sup_mem_closed_subalgebra L A.isClosed_topologicalClosure ⟨f, fm⟩ ⟨g, gm⟩)
       (Subalgebra.SeparatesPoints.strongly
         (Subalgebra.separatesPoints_monotone A.le_topologicalClosure w))
-  · simp [L]
+  simp [L]
 #align continuous_map.subalgebra_topological_closure_eq_top_of_separates_points ContinuousMap.subalgebra_topologicalClosure_eq_top_of_separatesPoints
 
 /-- An alternative statement of the Stone-Weierstrass theorem.

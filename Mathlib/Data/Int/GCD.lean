@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.GroupWithZero.Power
+import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Nat.GCD.Basic
@@ -39,17 +39,11 @@ namespace Nat
 def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
   | 0, _, _, r', s', t' => (r', s', t')
   | succ k, s, t, r', s', t' =>
-    have : r' % succ k < succ k := mod_lt _ <| (succ_pos _).gt
     let q := r' / succ k
     xgcdAux (r' % succ k) (s' - q * s) (t' - q * t) (succ k) s t
+termination_by k => k
+decreasing_by exact mod_lt _ <| (succ_pos _).gt
 #align nat.xgcd_aux Nat.xgcdAux
-
--- Porting note: these are not in mathlib3; these equation lemmas are to fix
--- complaints by the Lean 4 `unusedHavesSuffices` linter obtained when `simp [xgcdAux]` is used.
-theorem xgcdAux_zero {s t : ℤ} {r' : ℕ} {s' t' : ℤ} : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
-
-theorem xgcdAux_succ {k : ℕ} {s t : ℤ} {r' : ℕ} {s' t' : ℤ} : xgcdAux (succ k) s t r' s' t' =
-    xgcdAux (r' % succ k) (s' - (r' / succ k) * s) (t' - (r' / succ k) * t) (succ k) s t := rfl
 
 @[simp]
 theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by simp [xgcdAux]
@@ -58,7 +52,7 @@ theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') :=
 theorem xgcdAux_rec {r s t r' s' t'} (h : 0 < r) :
     xgcdAux r s t r' s' t' = xgcdAux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
   obtain ⟨r, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h.ne'
-  rfl
+  simp [xgcdAux]
 #align nat.xgcd_aux_rec Nat.xgcdAux_rec
 
 /-- Use the extended GCD algorithm to generate the `a` and `b` values
@@ -93,20 +87,16 @@ theorem gcdB_zero_left {s : ℕ} : gcdB 0 s = 1 := by
 theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
   unfold gcdA xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  -- Porting note (https://github.com/leanprover/lean4/issues/2330):
-  -- `simp [xgcdAux_succ]` crashes Lean here
-  rw [xgcdAux_succ]
-  rfl
+  rw [xgcdAux]
+  simp
 #align nat.gcd_a_zero_right Nat.gcdA_zero_right
 
 @[simp]
 theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
   unfold gcdB xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  -- Porting note (https://github.com/leanprover/lean4/issues/2330):
-  -- `simp [xgcdAux_succ]` crashes Lean here
-  rw [xgcdAux_succ]
-  rfl
+  rw [xgcdAux]
+  simp
 #align nat.gcd_b_zero_right Nat.gcdB_zero_right
 
 @[simp]
