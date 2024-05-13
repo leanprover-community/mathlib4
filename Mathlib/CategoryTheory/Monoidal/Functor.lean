@@ -295,6 +295,7 @@ noncomputable def MonoidalFunctor.μIso (F : MonoidalFunctor.{v₁, v₂} C D) (
 #align category_theory.monoidal_functor.μ_iso CategoryTheory.MonoidalFunctor.μIso
 
 /-- The underlying oplax monoidal functor of a (strong) monoidal functor. -/
+@[simps]
 noncomputable def MonoidalFunctor.toOplaxMonoidalFunctor (F : MonoidalFunctor C D) :
     OplaxMonoidalFunctor C D :=
   { F with
