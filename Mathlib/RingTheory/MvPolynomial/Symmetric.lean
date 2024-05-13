@@ -364,10 +364,8 @@ def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
 
 lemma hsymm_def (n : ℕ) : hsymm σ R n = ∑ s : Sym σ n, (s.1.map X).prod := rfl
 
-/--
-`hsymmMu` is the product of the symmetric polynomials `hsymm μᵢ`,
-where `μ = (μ₁, μ₂, ...)` is a partition.
--/
+/-- `hsymmMu` is the product of the symmetric polynomials `hsymm μᵢ`,
+where `μ = (μ₁, μ₂, ...)` is a partition. -/
 def hsymmMu {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := muProduct σ R (hsymm σ R) μ
 
 lemma hsymmMu_def {n : ℕ} (μ : n.Partition) : hsymmMu σ R μ =
