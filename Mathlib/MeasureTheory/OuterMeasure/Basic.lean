@@ -7,6 +7,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.MeasureTheory.OuterMeasure.Defs
 
 #align_import measure_theory.measure.outer_measure from "leanprover-community/mathlib"@"343e80208d29d2d15f8050b929aa50fe4ce71b55"
 
@@ -61,34 +62,11 @@ open BigOperators NNReal Topology ENNReal MeasureTheory
 
 namespace MeasureTheory
 
-/-- An outer measure is a countably subadditive monotone function that sends `∅` to `0`. -/
-structure OuterMeasure (α : Type*) where
-  measureOf : Set α → ℝ≥0∞
-  empty : measureOf ∅ = 0
-  mono : ∀ {s₁ s₂}, s₁ ⊆ s₂ → measureOf s₁ ≤ measureOf s₂
-  iUnion_nat : ∀ s : ℕ → Set α, measureOf (⋃ i, s i) ≤ ∑' i, measureOf (s i)
-#align measure_theory.outer_measure MeasureTheory.OuterMeasure
-#align measure_theory.outer_measure.measure_of MeasureTheory.OuterMeasure.measureOf
-#align measure_theory.outer_measure.empty MeasureTheory.OuterMeasure.empty
-#align measure_theory.outer_measure.mono MeasureTheory.OuterMeasure.mono
-#align measure_theory.outer_measure.Union_nat MeasureTheory.OuterMeasure.iUnion_nat
-
 namespace OuterMeasure
 
 section Basic
 
 variable {α β R R' : Type*} {ms : Set (OuterMeasure α)} {m : OuterMeasure α}
-
-instance instFunLike : FunLike (OuterMeasure α) (Set α) ℝ≥0∞ where
-  coe := measureOf
-  coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
-
-instance instCoeFun : CoeFun (OuterMeasure α) (fun _ => Set α → ℝ≥0∞) :=
-  inferInstance
-#align measure_theory.outer_measure.has_coe_to_fun MeasureTheory.OuterMeasure.instCoeFun
-
-@[simp] theorem measureOf_eq_coe : m.measureOf = m := rfl
-#align measure_theory.outer_measure.measure_of_eq_coe MeasureTheory.OuterMeasure.measureOf_eq_coe
 
 @[simp]
 theorem empty' (m : OuterMeasure α) : m ∅ = 0 :=
@@ -1665,7 +1643,7 @@ theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
     exact ⟨univ, subset_univ s, MeasurableSet.univ, hs _ (subset_univ s) MeasurableSet.univ⟩
   · have : ∀ r > ms, ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t < r := by
       intro r hs
-      have : ∃t, MeasurableSet t ∧ s ⊆ t ∧ measureOf m t < r := by simpa [ms, iInf_lt_iff] using hs
+      have : ∃t, MeasurableSet t ∧ s ⊆ t ∧ m t < r := by simpa [ms, iInf_lt_iff] using hs
       rcases this with ⟨t, hmt, hin, hlt⟩
       exists t
     have : ∀ n : ℕ, ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t < ms + (n : ℝ≥0∞)⁻¹ := by
