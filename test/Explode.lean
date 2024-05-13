@@ -52,19 +52,19 @@ info: application : True ∧ True
 lemma theorem_1 : ∀ (p : Prop), p → p :=
   fun (p : Prop) ↦ (fun hP : p ↦ hP)
 /--
-info: lemma_1 : ∀ (p : Prop), p → p
+info: theorem_1 : ∀ (p : Prop), p → p
 
 0│     │ p  ├ Prop
 1│     │ hP ├ p
 2│0,1,1│ ∀I │ ∀ (p : Prop), p → p
 -/
-#guard_msgs in #explode lemma_1
+#guard_msgs in #explode theorem_1
 
 lemma theorem_2 : ∀ (p : Prop) (q : Prop), p → q → p ∧ q :=
   fun p ↦ fun q ↦ fun hP ↦ fun hQ ↦ And.intro hP hQ
 
 /--
-info: lemma_2 : ∀ (p q : Prop), p → q → p ∧ q
+info: theorem_2 : ∀ (p q : Prop), p → q → p ∧ q
 
 0│         │ p         ├ Prop
 1│         │ q         ├ Prop
@@ -73,7 +73,7 @@ info: lemma_2 : ∀ (p q : Prop), p → q → p ∧ q
 4│2,3      │ And.intro │ p ∧ q
 5│0,1,2,3,4│ ∀I        │ ∀ (p q : Prop), p → q → p ∧ q
 -/
-#guard_msgs in #explode lemma_2
+#guard_msgs in #explode theorem_2
 
 lemma theorem_3 (a : Prop) (h : a) : a ↔ True :=
   Iff.intro
@@ -81,7 +81,7 @@ lemma theorem_3 (a : Prop) (h : a) : a ↔ True :=
     (fun hr ↦ h)
 
 /--
-info: lemma_3 : ∀ (a : Prop), a → (a ↔ True)
+info: theorem_3 : ∀ (a : Prop), a → (a ↔ True)
 
 0│     │ a         ├ Prop
 1│     │ h         ├ a
@@ -93,14 +93,14 @@ info: lemma_3 : ∀ (a : Prop), a → (a ↔ True)
 7│4,6  │ Iff.intro │ a ↔ True
 8│0,1,7│ ∀I        │ ∀ (a : Prop), a → (a ↔ True)
 -/
-#guard_msgs in #explode lemma_3
+#guard_msgs in #explode theorem_3
 
 
 lemma theorem_4 : ∀ p q : Prop, (p → q) → (¬q → ¬p) :=
   fun U ↦ fun W ↦ fun hPQ ↦ fun hNQ ↦ fun hP ↦ False.elim (hNQ (hPQ hP))
 
 /--
-info: lemma_4 : ∀ (p q : Prop), (p → q) → ¬q → ¬p
+info: theorem_4 : ∀ (p q : Prop), (p → q) → ¬q → ¬p
 
 0│           │ U          ├ Prop
 1│           │ W          ├ Prop
@@ -112,7 +112,7 @@ info: lemma_4 : ∀ (p q : Prop), (p → q) → ¬q → ¬p
 7│6          │ False.elim │ False
 8│0,1,2,3,4,7│ ∀I         │ ∀ (U W : Prop), (U → W) → ¬W → U → False
 -/
-#guard_msgs in #explode lemma_4
+#guard_msgs in #explode theorem_4
 
 lemma lemma_5 : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
   fun p ↦ fun q ↦
