@@ -108,7 +108,7 @@ noncomputable def preservesLimitOfLanPreservesLimit {C D : Type u} [SmallCategor
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]
     [PreservesLimitsOfShape J (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F := by
   apply @preservesLimitsOfShapeOfReflectsOfPreserves _ _ _ _ _ _ _ _ F yoneda ?_
-  exact preservesLimitsOfShapeOfNatIso (compYonedaIsoYonedaCompLan F).symm
+  exact preservesLimitsOfShapeOfNatIso (Presheaf.compYonedaIsoYonedaCompLan F).symm
 set_option linter.uppercaseLean3 false in
 #align category_theory.preserves_limit_of_Lan_preserves_limit CategoryTheory.preservesLimitOfLanPreservesLimit
 
