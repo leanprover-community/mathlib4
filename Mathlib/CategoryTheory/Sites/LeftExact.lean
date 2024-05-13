@@ -258,8 +258,6 @@ instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
   intros
   infer_instance
 
-instance : HasWeakSheafify J D := ⟨sheafToPresheafIsRightAdjoint J D⟩
-
 variable (J D)
 
 /-- `plusPlusSheaf` is isomorphic to an arbitrary choice of left adjoint. -/

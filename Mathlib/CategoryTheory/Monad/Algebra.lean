@@ -239,18 +239,8 @@ theorem algebra_mono_of_mono {X Y : Algebra T} (f : X ⟶ Y) [h : Mono f.f] : Mo
   (forget T).mono_of_mono_map h
 #align category_theory.monad.algebra_mono_of_mono CategoryTheory.Monad.algebra_mono_of_mono
 
-instance : IsRightAdjoint T.forget :=
-  ⟨T.free, T.adj⟩
-
-@[simp]
-theorem leftAdjoint_forget : leftAdjoint T.forget = T.free :=
-  rfl
-#align category_theory.monad.left_adjoint_forget CategoryTheory.Monad.leftAdjoint_forget
-
-@[simp]
-theorem ofRightAdjoint_forget : Adjunction.ofRightAdjoint T.forget = T.adj :=
-  rfl
-#align category_theory.monad.of_right_adjoint_forget CategoryTheory.Monad.ofRightAdjoint_forget
+instance : T.forget.IsRightAdjoint  :=
+  ⟨T.free, ⟨T.adj⟩⟩
 
 /--
 Given a monad morphism from `T₂` to `T₁`, we get a functor from the algebras of `T₁` to algebras of
@@ -520,18 +510,8 @@ theorem algebra_mono_of_mono {X Y : Coalgebra G} (f : X ⟶ Y) [h : Mono f.f] : 
   (forget G).mono_of_mono_map h
 #align category_theory.comonad.algebra_mono_of_mono CategoryTheory.Comonad.algebra_mono_of_mono
 
-instance : IsLeftAdjoint G.forget :=
-  ⟨_, G.adj⟩
-
-@[simp]
-theorem rightAdjoint_forget : rightAdjoint G.forget = G.cofree :=
-  rfl
-#align category_theory.comonad.right_adjoint_forget CategoryTheory.Comonad.rightAdjoint_forget
-
-@[simp]
-theorem ofLeftAdjoint_forget : Adjunction.ofLeftAdjoint G.forget = G.adj :=
-  rfl
-#align category_theory.comonad.of_left_adjoint_forget CategoryTheory.Comonad.ofLeftAdjoint_forget
+instance : G.forget.IsLeftAdjoint  :=
+  ⟨_, ⟨G.adj⟩⟩
 
 end Comonad
 

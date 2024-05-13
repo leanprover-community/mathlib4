@@ -673,8 +673,8 @@ theorem measure_le_setLaverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rwa [← toReal_laverage hf, toReal_le_toReal hx (setLaverage_lt_top h).ne] at hfx
-  · simp_rw [ae_iff, not_ne_iff]
-    exact measure_eq_top_of_lintegral_ne_top hf h
+  simp_rw [ae_iff, not_ne_iff]
+  exact measure_eq_top_of_lintegral_ne_top hf h
 #align measure_theory.measure_le_set_laverage_pos MeasureTheory.measure_le_setLaverage_pos
 
 /-- **First moment method**. A measurable function is greater than its mean on a set of positive

@@ -76,7 +76,7 @@ theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     HasSum (fun n : ℕ => cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)) ((jacobiTheta τ - 1) / 2) := by
   have := hasSum_jacobiTheta₂_term 0 hτ
   simp_rw [jacobiTheta₂_term, mul_zero, zero_add, ← jacobiTheta_eq_jacobiTheta₂] at this
-  have := this.sum_nat_of_sum_int
+  have := this.nat_add_neg
   rw [← hasSum_nat_add_iff' 1] at this
   simp_rw [Finset.sum_range_one, Int.cast_neg, Int.cast_natCast, Nat.cast_zero, neg_zero,
     Int.cast_zero, sq (0 : ℂ), mul_zero, zero_mul, neg_sq, ← mul_two,

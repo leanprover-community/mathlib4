@@ -241,8 +241,6 @@ theorem linearization_ε_hom : (linearization k G).ε.hom = Finsupp.lsingle PUni
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_ε_hom Rep.linearization_ε_hom
 
--- This was always a bad simp lemma, but the linter did not notice until lean4#2644
-@[simp, nolint simpNF]
 theorem linearization_ε_inv_hom_apply (r : k) :
     (inv (linearization k G).ε).hom (Finsupp.single PUnit.unit r) = r :=
   IsIso.hom_inv_id_apply (linearization k G).ε r
@@ -348,7 +346,7 @@ theorem leftRegularHom_apply {A : Rep k G} (x : A) :
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [leftRegularHom_hom, Finsupp.lift_apply, Finsupp.sum_single_index, one_smul,
     A.ρ.map_one, LinearMap.one_apply]
-  · rw [zero_smul]
+  rw [zero_smul]
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_apply Rep.leftRegularHom_apply
 
@@ -387,7 +385,7 @@ theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [leftRegularHomEquiv_symm_apply, leftRegularHom_hom, Finsupp.lift_apply,
     Finsupp.sum_single_index, one_smul]
-  · rw [zero_smul]
+  rw [zero_smul]
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_equiv_symm_single Rep.leftRegularHomEquiv_symm_single
 
@@ -474,15 +472,14 @@ set_option linter.uppercaseLean3 false in
 #align Rep.hom_equiv_symm_apply_hom Rep.homEquiv_symm_apply_hom
 
 instance : MonoidalClosed (Rep k G) where
-  closed := fun A =>
-  { isAdj :=
-    { right := Rep.ihom A
+  closed A :=
+    { rightAdj := Rep.ihom A
       adj := Adjunction.mkOfHomEquiv (
       { homEquiv := Rep.homEquiv A
         homEquiv_naturality_left_symm := fun _ _ => Action.Hom.ext _ _
           (TensorProduct.ext' fun _ _ => rfl)
         homEquiv_naturality_right := fun _ _ => Action.Hom.ext _ _ (LinearMap.ext
-          fun _ => LinearMap.ext fun _ => rfl) })}}
+          fun _ => LinearMap.ext fun _ => rfl) })}
 
 @[simp]
 theorem ihom_obj_ρ_def (A B : Rep k G) : ((ihom A).obj B).ρ = ((Rep.ihom A).obj B).ρ :=
@@ -546,16 +543,12 @@ theorem MonoidalClosed.linearHomEquivComm_hom (f : A ⊗ B ⟶ C) :
 set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_closed.linear_hom_equiv_comm_hom Rep.MonoidalClosed.linearHomEquivComm_hom
 
--- This was always a bad simp lemma, but the linter did not notice until lean4#2644
-@[simp, nolint simpNF]
 theorem MonoidalClosed.linearHomEquiv_symm_hom (f : B ⟶ A ⟶[Rep k G] C) :
     ((MonoidalClosed.linearHomEquiv A B C).symm f).hom = TensorProduct.uncurry k A B C f.hom.flip :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_closed.linear_hom_equiv_symm_hom Rep.MonoidalClosed.linearHomEquiv_symm_hom
 
--- This was always a bad simp lemma, but the linter did not notice until lean4#2644
-@[simp, nolint simpNF]
 theorem MonoidalClosed.linearHomEquivComm_symm_hom (f : A ⟶ B ⟶[Rep k G] C) :
     ((MonoidalClosed.linearHomEquivComm A B C).symm f).hom
       = TensorProduct.uncurry k A B C f.hom :=

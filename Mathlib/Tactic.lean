@@ -26,8 +26,8 @@ import Mathlib.Tactic.Change
 import Mathlib.Tactic.Check
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Clean
-import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
+import Mathlib.Tactic.ClearExclamation
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Common
@@ -73,7 +73,7 @@ import Mathlib.Tactic.FunProp.Mor
 import Mathlib.Tactic.FunProp.RefinedDiscrTree
 import Mathlib.Tactic.FunProp.StateList
 import Mathlib.Tactic.FunProp.Theorems
-import Mathlib.Tactic.FunProp.ToStd
+import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GCongr.Core
@@ -97,11 +97,16 @@ import Mathlib.Tactic.Lift
 import Mathlib.Tactic.LiftLets
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Datatypes
-import Mathlib.Tactic.Linarith.Elimination
 import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.Tactic.Linarith.Lemmas
+import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Tactic.Linarith.Preprocessing
+import Mathlib.Tactic.Linarith.SimplexAlgorithm.Datatypes
+import Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
+import Mathlib.Tactic.Linarith.SimplexAlgorithm.PositiveVector
+import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Lint

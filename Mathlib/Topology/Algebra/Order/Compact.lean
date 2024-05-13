@@ -306,7 +306,7 @@ theorem ContinuousOn.exists_isMinOn' [ClosedIicTopology α] {s : Set β} {f : β
   rcases (hasBasis_cocompact.inf_principal _).eventually_iff.1 hc with ⟨K, hK, hKf⟩
   have hsub : insert x₀ (K ∩ s) ⊆ s := insert_subset_iff.2 ⟨h₀, inter_subset_right _ _⟩
   obtain ⟨x, hx, hxf⟩ : ∃ x ∈ insert x₀ (K ∩ s), ∀ y ∈ insert x₀ (K ∩ s), f x ≤ f y :=
-    ((hK.inter_right hsc).insert x₀).exists_forall_le (insert_nonempty _ _) (hf.mono hsub)
+    ((hK.inter_right hsc).insert x₀).exists_isMinOn (insert_nonempty _ _) (hf.mono hsub)
   refine' ⟨x, hsub hx, fun y hy => _⟩
   by_cases hyK : y ∈ K
   exacts [hxf _ (Or.inr ⟨hyK, hy⟩), (hxf _ (Or.inl rfl)).trans (hKf ⟨hyK, hy⟩)]
@@ -340,9 +340,9 @@ theorem ContinuousOn.exists_forall_ge' [ClosedIciTopology α] {s : Set β} {f : 
 away from compact sets, then it has a global minimum. -/
 theorem Continuous.exists_forall_le' [ClosedIicTopology α] {f : β → α} (hf : Continuous f)
     (x₀ : β) (h : ∀ᶠ x in cocompact β, f x₀ ≤ f x) : ∃ x : β, ∀ y : β, f x ≤ f y :=
-  let ⟨x, _, hx⟩ := hf.continuousOn.exists_forall_le' isClosed_univ (mem_univ x₀)
+  let ⟨x, _, hx⟩ := hf.continuousOn.exists_isMinOn' isClosed_univ (mem_univ x₀)
     (by rwa [principal_univ, inf_top_eq])
-  ⟨x, fun y => hx y (mem_univ y)⟩
+  ⟨x, fun y => hx (mem_univ y)⟩
 #align continuous.exists_forall_le' Continuous.exists_forall_le'
 
 /-- The **extreme value theorem**: if a continuous function `f` is smaller than a value in its range
@@ -442,9 +442,9 @@ theorem IsCompact.sSup_lt_iff_of_continuous [ClosedIciTopology α] {f : β → �
     sSup (f '' K) < y ↔ ∀ x ∈ K, f x < y := by
   refine' ⟨fun h x hx => (le_csSup (hK.bddAbove_image hf) <| mem_image_of_mem f hx).trans_lt h,
     fun h => _⟩
-  obtain ⟨x, hx, h2x⟩ := hK.exists_forall_ge h0K hf
+  obtain ⟨x, hx, h2x⟩ := hK.exists_isMaxOn h0K hf
   refine' (csSup_le (h0K.image f) _).trans_lt (h x hx)
-  rintro _ ⟨x', hx', rfl⟩; exact h2x x' hx'
+  rintro _ ⟨x', hx', rfl⟩; exact h2x hx'
 #align is_compact.Sup_lt_iff_of_continuous IsCompact.sSup_lt_iff_of_continuous
 
 theorem IsCompact.lt_sInf_iff_of_continuous [ClosedIicTopology α] {f : β → α} {K : Set β}
