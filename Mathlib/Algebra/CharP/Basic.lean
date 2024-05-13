@@ -105,10 +105,6 @@ theorem CharP.intCast_eq_intCast [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b 
   rw [eq_comm, ← sub_eq_zero, ← Int.cast_sub, CharP.intCast_eq_zero_iff R p, Int.modEq_iff_dvd]
 #align char_p.int_cast_eq_int_cast CharP.intCast_eq_intCast
 
-theorem CharP.intCast_eq_intCast_mod [AddGroupWithOne R] (p : ℕ) [CharP R p] {a : ℤ} :
-    (a : R) = a % (p : ℤ) :=
-  (CharP.intCast_eq_intCast R p).mpr (Int.mod_modEq a p).symm
-
 theorem add_pow_char_of_commute [Semiring R] {p : ℕ} [hp : Fact p.Prime] [CharP R p] (x y : R)
     (h : Commute x y) : (x + y) ^ p = x ^ p + y ^ p := by
   let ⟨r, hr⟩ := h.exists_add_pow_prime_eq hp.out

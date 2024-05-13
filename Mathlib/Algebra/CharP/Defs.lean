@@ -119,6 +119,10 @@ lemma charP_to_charZero [CharP R 0] : CharZero R :=
 lemma charP_zero_iff_charZero : CharP R 0 ↔ CharZero R :=
   ⟨fun _ ↦ charP_to_charZero R, fun _ ↦ ofCharZero R⟩
 
+theorem intCast_eq_intCast_mod : (a : R) = a % (p : ℤ) := by
+  rw [← sub_eq_zero, ← Int.cast_sub, CharP.intCast_eq_zero_iff R p]
+  exact Int.dvd_sub_of_emod_eq rfl
+
 end AddGroupWithOne
 
 section NonAssocSemiring
