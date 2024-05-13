@@ -66,7 +66,7 @@ else
     }
   }' |
   sort | uniq -c | grep -v "^ *2 " |
-  grep '\(`+`\|`-`\)' | sed 's=^ *1 =* ='
+  grep '\(`+`\|`-`\)' | sed 's=^ *1 =* =; s=``==g'
 fi
 
  : <<ReferenceTest
