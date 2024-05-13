@@ -424,7 +424,7 @@ theorem psum_one : psum σ R 1 = ∑ i, X i := by simp [psum]
 
 @[simp]
 theorem psumMu_zero : psumMu σ R (Nat.Partition.indiscrete 0) = 1 := by
-  simp only [psumMu, muProduct_indiscrete_zero]
+  rw [psumMu, muProduct_indiscrete_zero]
 
 @[simp]
 theorem psumMu_onePart {n : ℕ} (npos : n > 0) :
