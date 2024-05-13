@@ -125,10 +125,15 @@ instance : HasForget₂ (ContAction V G) (Action V G) where
   forget₂ := incl V G
 
 /-- The canonical inclusion in `TopCat`. -/
-@[simps]
 def toTopCat : ContAction V G ⥤ TopCat where
   obj X := TopCat.of ((CategoryTheory.forget (ContAction V G)).obj X)
   map {X Y} f := ⟨(CategoryTheory.forget (ContAction V G)).map f, f.isContinuous⟩
+
+@[simp]
+lemma toTopCat_map_apply {X Y : ContAction V G} (f : X ⟶ Y)
+    (a : (CategoryTheory.forget (ContAction V G)).obj X) :
+    (toTopCat V G).map f a = (CategoryTheory.forget (ContAction V G)).map f a := by
+  rfl
 
 instance : HasForget₂ (ContAction V G) TopCat where
   forget₂ := toTopCat V G
