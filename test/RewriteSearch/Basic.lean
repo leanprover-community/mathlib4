@@ -61,7 +61,7 @@ def makeSingleton : Nat → List Nat
 /-- info: Try this: rw [← ih] -/
 #guard_msgs in
 set_option maxHeartbeats 1000 in
-theorem foo (n : Nat) : makeSingleton n = [0] := by
+lemma foo (n : Nat) : makeSingleton n = [0] := by
   induction' n with n' ih
   · simp only [makeSingleton]
   · -- At one point, this failed with: unknown free variable '_uniq.62770'

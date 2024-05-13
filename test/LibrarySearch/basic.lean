@@ -196,7 +196,7 @@ theorem Bool_eq_iff {A B : Bool} : (A = B) = (A ↔ B) :=
 
 /-- info: Try this: exact Bool_eq_iff -/
 #guard_msgs in
-theorem Bool_eq_iff2 {A B : Bool} : (A = B) = (A ↔ B) :=
+lemma Bool_eq_iff2 {A B : Bool} : (A = B) = (A ↔ B) :=
   by apply? -- exact Bool_eq_iff
 
 assert_no_sorry Bool_eq_iff2

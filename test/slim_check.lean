@@ -449,7 +449,7 @@ info: Success
 warning: declaration uses 'sorry'
 -/
 #guard_msgs in
-theorem testBit_pred :
+lemma testBit_pred :
     testBit (pred x) i = (decide (0 < x) &&
       (Bool.xor ((List.range i).all fun j => ! testBit x j) (testBit x i))) := by
   slim_check
