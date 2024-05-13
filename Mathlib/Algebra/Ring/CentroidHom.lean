@@ -709,17 +709,13 @@ instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
   star_add f g := ext fun _ => star_add _ _
 
 instance : Star (Subsemiring.center (CentroidHom α)) where
-  star f := ⟨star (f : CentroidHom α), by
-    rw [Subsemiring.mem_center_iff]
-    intro g
-    ext a
-    simp only [mul_apply]
+  star f := ⟨star (f : CentroidHom α), Subsemiring.mem_center_iff.mpr (fun g => ext (fun a => by
     calc
       g (star (f.val (star a))) = star (star g (f.val (star a))) := by rw [star_apply, star_star]
       _ = star ((star g * f.val) (star a)) := rfl
       _ = star ((f.val * star g) (star a)) := by rw [f.property.comm]
       _ = star (f.val (star g (star a))) := rfl
-      _ = star (f.val (star (g a))) := by rw [star_apply, star_star]⟩
+      _ = star (f.val (star (g a))) := by rw [star_apply, star_star]))⟩
 
 instance : InvolutiveStar (Subsemiring.center (CentroidHom α)) where
   star_involutive f := SetCoe.ext (instInvolutiveStar.star_involutive f.val)
@@ -734,7 +730,6 @@ instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
     cases g
     congr with x
     exact congrFun h x
-
 
 instance : StarRing (Subsemiring.center (CentroidHom α)) where
   __ := instStarAddMonoidCenter
