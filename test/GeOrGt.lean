@@ -1,10 +1,14 @@
 import Mathlib.Tactic.Linter.GeOrGt
 import Mathlib.Tactic.Common
 
-/- Tests for the `ge_or_gt` linter -/
+/-! Tests for the `ge_or_gt` linter -/
 
 -- Doc comments are always ignored: they form a different syntax category.
--- Custom notation (e.g. `ℚ≥0`) is ignored, as the `≥` is part of a token and not a "greater or equal".
+
+-- Custom notation (e.g. `ℚ≥0`) is also ignored, as the `≥` is part of a token
+-- and not a "greater or equal".
+local notation3 "𝕜≥0" => ℕ
+lemma fine : ℚ≥0 := 1
 
 set_option linter.geOrGt false in
 lemma test : 3 ≥ 2 := sorry
