@@ -192,8 +192,79 @@ theorem LaxMonoidalFunctor.associativity_inv (F : LaxMonoidalFunctor C D) (X Y Z
 
 end
 
+/-- A oplax monoidal functor is a functor `F : C ⥤ D` between monoidal categories,
+equipped with morphisms `ε : F.obj (𝟙_ C) ⟶ 𝟙 _D` and `μ X Y : F.obj (X ⊗ Y) ⟶ F.obj X ⊗ F.obj Y`,
+satisfying the appropriate coherences. -/
+structure OplaxMonoidalFunctor extends C ⥤ D where
+  /-- unit morphism -/
+  ε : obj (𝟙_ C) ⟶ 𝟙_ D
+  /-- tensorator -/
+  μ : ∀ X Y : C, obj (X ⊗ Y) ⟶ obj X ⊗ obj Y
+  μ_natural_left :
+    ∀ {X Y : C} (f : X ⟶ Y) (X' : C),
+      μ X X' ≫ map f ▷ obj X' = map (f ▷ X') ≫ μ Y X' := by
+    aesop_cat
+  μ_natural_right :
+    ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
+      μ X' X ≫ obj X' ◁ map f = map (X' ◁ f) ≫ μ X' Y := by
+    aesop_cat
+  /-- associativity of the tensorator -/
+  associativity :
+    ∀ X Y Z : C,
+      μ (X ⊗ Y) Z ≫ μ X Y ▷ obj Z ≫ (α_ (obj X) (obj Y) (obj Z)).hom =
+        map (α_ X Y Z).hom ≫ μ X (Y ⊗ Z) ≫ obj X ◁ μ Y Z := by
+    aesop_cat
+  -- unitality
+  left_unitality : ∀ X : C, (λ_ (obj X)).inv = map (λ_ X).inv ≫ μ (𝟙_ C) X ≫ ε ▷ obj X :=
+    by aesop_cat
+  right_unitality : ∀ X : C, (ρ_ (obj X)).inv = map (ρ_ X).inv ≫ μ X (𝟙_ C) ≫ obj X ◁ ε :=
+    by aesop_cat
+
+initialize_simps_projections OplaxMonoidalFunctor (+toFunctor, -obj, -map)
+
+attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.μ_natural_left
+attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.μ_natural_right
+
+attribute [simp] OplaxMonoidalFunctor.left_unitality
+
+attribute [simp] OplaxMonoidalFunctor.right_unitality
+
+-- Porting note: was `[simp, reassoc.1]`
+attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.associativity
+
+section
+
+variable {C D}
+
+@[reassoc (attr := simp)]
+theorem OplaxMonoidalFunctor.μ_natural (F : OplaxMonoidalFunctor C D) {X Y X' Y' : C}
+    (f : X ⟶ Y) (g : X' ⟶ Y') :
+      F.μ X X' ≫ (F.map f ⊗ F.map g) = F.map (f ⊗ g) ≫ F.μ Y Y' := by
+  simp [tensorHom_def]
+
+@[reassoc (attr := simp)]
+theorem OplaxMonoidalFunctor.left_unitality_hom (F : OplaxMonoidalFunctor C D) (X : C) :
+    F.μ (𝟙_ C) X ≫ F.ε ▷ F.obj X ≫ (λ_ (F.obj X)).hom = F.map (λ_ X).hom := by
+  rw [← Category.assoc, ← Iso.eq_comp_inv, F.left_unitality, ← Category.assoc,
+    ← F.toFunctor.map_comp, Iso.hom_inv_id, F.toFunctor.map_id, id_comp]
+
+@[reassoc (attr := simp)]
+theorem OplaxMonoidalFunctor.right_unitality_hom (F : OplaxMonoidalFunctor C D) (X : C) :
+    F.μ X (𝟙_ C) ≫ F.obj X ◁ F.ε ≫ (ρ_ (F.obj X)).hom = F.map (ρ_ X).hom := by
+  rw [← Category.assoc, ← Iso.eq_comp_inv, F.right_unitality, ← Category.assoc,
+    ← F.toFunctor.map_comp, Iso.hom_inv_id, F.toFunctor.map_id, id_comp]
+
+@[reassoc (attr := simp)]
+theorem OplaxMonoidalFunctor.associativity_inv (F : OplaxMonoidalFunctor C D) (X Y Z : C) :
+    F.μ X (Y ⊗ Z) ≫ F.obj X ◁ F.μ Y Z ≫ (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv =
+      F.map (α_ X Y Z).inv ≫ F.μ (X ⊗ Y) Z ≫ F.μ X Y ▷ F.obj Z := by
+  rw [← Category.assoc, Iso.comp_inv_eq, Category.assoc, Category.assoc, F.associativity,
+    ← Category.assoc, ← F.toFunctor.map_comp, Iso.inv_hom_id, F.toFunctor.map_id, id_comp]
+
+end
+
 /--
-A monoidal functor is a lax monoidal functor for which the tensorator and unitor as isomorphisms.
+A monoidal functor is a lax monoidal functor for which the tensorator and unitor are isomorphisms.
 
 See <https://stacks.math.columbia.edu/tag/0FFL>.
 -/
@@ -223,6 +294,37 @@ noncomputable def MonoidalFunctor.μIso (F : MonoidalFunctor.{v₁, v₂} C D) (
   asIso (F.μ X Y)
 #align category_theory.monoidal_functor.μ_iso CategoryTheory.MonoidalFunctor.μIso
 
+noncomputable def MonoidalFunctor.toOplaxMonoidalFunctor (F : MonoidalFunctor C D) :
+    OplaxMonoidalFunctor C D :=
+  { F with
+    ε := inv F.ε,
+    μ := fun X Y => inv (F.μ X Y),
+    μ_natural_left := by aesop_cat
+    μ_natural_right := by aesop_cat
+    associativity := by
+      intros X Y Z
+      dsimp
+      rw [IsIso.inv_comp_eq, ← inv_whiskerRight, IsIso.inv_comp_eq]
+      slice_rhs 1 3 =>
+        rw [F.associativity]
+      simp
+    left_unitality := by
+      intros X
+      dsimp
+      apply Iso.inv_ext
+      rw [F.left_unitality]
+      slice_lhs 3 4 =>
+        rw [← F.map_comp, Iso.hom_inv_id, F.map_id]
+      simp [inv_whiskerRight]
+    right_unitality := by
+      intros X
+      dsimp
+      apply Iso.inv_ext
+      rw [F.right_unitality]
+      slice_lhs 3 4 =>
+        rw [← F.map_comp, Iso.hom_inv_id, F.map_id]
+      simp }
+
 end
 
 open MonoidalCategory
@@ -243,6 +345,22 @@ instance : Inhabited (LaxMonoidalFunctor C C) :=
   ⟨id C⟩
 
 end LaxMonoidalFunctor
+
+namespace OplaxMonoidalFunctor
+
+variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
+
+/-- The identity lax monoidal functor. -/
+@[simps]
+def id : OplaxMonoidalFunctor.{v₁, v₁} C C :=
+  { 𝟭 C with
+    ε := 𝟙 _
+    μ := fun X Y => 𝟙 _ }
+
+instance : Inhabited (OplaxMonoidalFunctor C C) :=
+  ⟨id C⟩
+
+end OplaxMonoidalFunctor
 
 namespace MonoidalFunctor
 
@@ -372,7 +490,6 @@ namespace LaxMonoidalFunctor
 
 variable (F : LaxMonoidalFunctor.{v₁, v₂} C D) (G : LaxMonoidalFunctor.{v₂, v₃} D E)
 
--- The proofs here are horrendous; rewrite_search helps a lot.
 /-- The composition of two lax monoidal functors is again lax monoidal. -/
 @[simps]
 def comp : LaxMonoidalFunctor.{v₁, v₃} C E :=
@@ -387,8 +504,8 @@ def comp : LaxMonoidalFunctor.{v₁, v₃} C E :=
       simp_rw [comp_obj, F.comp_map, μ_natural_right_assoc, assoc, ← G.map_comp, μ_natural_right]
     associativity := fun X Y Z => by
       dsimp
-      simp only [comp_whiskerRight, assoc, μ_natural_left_assoc, MonoidalCategory.whiskerLeft_comp,
-        μ_natural_right_assoc]
+      simp_rw [comp_whiskerRight, assoc, μ_natural_left_assoc, MonoidalCategory.whiskerLeft_comp,
+        assoc, μ_natural_right_assoc]
       slice_rhs 1 3 => rw [← G.associativity]
       simp_rw [Category.assoc, ← G.toFunctor.map_comp, F.associativity] }
 #align category_theory.lax_monoidal_functor.comp CategoryTheory.LaxMonoidalFunctor.comp
@@ -397,6 +514,39 @@ def comp : LaxMonoidalFunctor.{v₁, v₃} C E :=
 infixr:80 " ⊗⋙ " => comp
 
 end LaxMonoidalFunctor
+
+namespace OplaxMonoidalFunctor
+
+variable (F : OplaxMonoidalFunctor.{v₁, v₂} C D) (G : OplaxMonoidalFunctor.{v₂, v₃} D E)
+
+/-- The composition of two oplax monoidal functors is again oplax monoidal. -/
+@[simps]
+def comp : OplaxMonoidalFunctor.{v₁, v₃} C E :=
+  { F.toFunctor ⋙ G.toFunctor with
+    ε := G.map F.ε ≫ G.ε
+    μ := fun X Y => G.map (F.μ X Y) ≫ G.μ (F.obj X) (F.obj Y)
+    μ_natural_left := by
+      intro X Y f X'
+      simp_rw [comp_obj, Functor.comp_map, ← G.map_comp_assoc, ← F.μ_natural_left, assoc,
+        G.μ_natural_left, ← G.map_comp_assoc]
+    μ_natural_right := by
+      intro X Y f X'
+      simp_rw [comp_obj, Functor.comp_map, ← G.map_comp_assoc, ← F.μ_natural_right, assoc,
+        G.μ_natural_right, ← G.map_comp_assoc]
+    associativity := fun X Y Z => by
+      dsimp
+      simp_rw [comp_whiskerRight, assoc, μ_natural_left_assoc, MonoidalCategory.whiskerLeft_comp,
+        μ_natural_right_assoc]
+      slice_rhs 1 3 =>
+        simp only [← G.toFunctor.map_comp]
+        rw [← F.associativity]
+      rw [G.associativity]
+      simp only [G.map_comp, Category.assoc] }
+
+@[inherit_doc]
+infixr:80 " ⊗⋙ " => comp
+
+end OplaxMonoidalFunctor
 
 namespace LaxMonoidalFunctor
 
