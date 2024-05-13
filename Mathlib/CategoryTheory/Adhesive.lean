@@ -43,7 +43,6 @@ open Limits
 universe v' u' v u
 
 variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
-
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 -- This only makes sense when the original diagram is a pushout.
@@ -172,14 +171,14 @@ theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryE
           rw [Category.assoc, pullback.lift_fst, ← H.w, ← w.w]; exact hf.paste_horiz hc₄
         · apply IsPullback.of_right _ e₂ (IsPullback.of_hasPullback _ _)
           rw [Category.assoc, pullback.lift_fst]; exact hc₃
-    · rw [← Category.id_comp αZ, ← show cmp ≫ pullback.snd = αY from pullback.lift_snd _ _ _]
-      apply IsPullback.paste_vert _ (IsPullback.of_hasPullback αZ i)
-      have : cmp = (hc₂.coconePointUniqueUpToIso hc₄).hom := by
-        apply BinaryCofan.IsColimit.hom_ext hc₂
-        exacts [(hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.left⟩).symm,
-          (hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.right⟩).symm]
-      rw [this]
-      exact IsPullback.of_vert_isIso ⟨by rw [← this, Category.comp_id, pullback.lift_fst]⟩
+    rw [← Category.id_comp αZ, ← show cmp ≫ pullback.snd = αY from pullback.lift_snd _ _ _]
+    apply IsPullback.paste_vert _ (IsPullback.of_hasPullback αZ i)
+    have : cmp = (hc₂.coconePointUniqueUpToIso hc₄).hom := by
+      apply BinaryCofan.IsColimit.hom_ext hc₂
+      exacts [(hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.left⟩).symm,
+        (hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.right⟩).symm]
+    rw [this]
+    exact IsPullback.of_vert_isIso ⟨by rw [← this, Category.comp_id, pullback.lift_fst]⟩
   · rintro ⟨hc₃, hc₄⟩
     exact ⟨(IsPullback.of_hasPullback αY c.inr).paste_horiz hc₄, hc₃⟩
 #align category_theory.is_pushout.is_van_kampen_inl CategoryTheory.IsPushout.isVanKampen_inl
@@ -308,7 +307,7 @@ theorem adhesive_of_preserves_and_reflects_isomorphism (F : C ⥤ D)
     [Adhesive D] [HasPullbacks C] [HasPushouts C]
     [PreservesLimitsOfShape WalkingCospan F]
     [PreservesColimitsOfShape WalkingSpan F]
-    [ReflectsIsomorphisms F] :
+    [F.ReflectsIsomorphisms] :
     Adhesive C := by
   haveI : ReflectsLimitsOfShape WalkingCospan F :=
     reflectsLimitsOfShapeOfReflectsIsomorphisms
@@ -318,7 +317,7 @@ theorem adhesive_of_preserves_and_reflects_isomorphism (F : C ⥤ D)
 
 theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [HasPushouts C]
     [H₂ : ∀ {X Y S : D} (f : S ⟶ X) (g : S ⟶ Y) [Mono f], HasPushout f g]
-    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
+    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
     [PreservesLimitsOfShape WalkingCospan Gl] :
     Adhesive D := by
   have := adj.leftAdjointPreservesColimits

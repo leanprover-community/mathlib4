@@ -21,7 +21,8 @@ example of a proof needing to construct a sequence by induction in the middle of
 -/
 
 
-open Classical Topology BigOperators
+open scoped Classical
+open Topology BigOperators
 
 open Filter Finset
 

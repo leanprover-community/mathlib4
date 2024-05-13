@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.LatticeIntervals
-import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Order.Interval.Set.OrdConnected
 
 #align_import order.complete_lattice_intervals from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -23,7 +23,7 @@ default values for `sSup` and `sInf`.
 -/
 
 
-open Classical
+open scoped Classical
 
 open Set
 
@@ -121,8 +121,7 @@ attribute [local instance] subsetInfSet
 linear order, it suffices that it contain the `sSup` of all its nonempty bounded-above subsets, and
 the `sInf` of all its nonempty bounded-below subsets.
 See note [reducible non-instances]. -/
-@[reducible]
-noncomputable def subsetConditionallyCompleteLinearOrder [Inhabited s]
+noncomputable abbrev subsetConditionallyCompleteLinearOrder [Inhabited s]
     (h_Sup : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddAbove t), sSup ((↑) '' t : Set α) ∈ s)
     (h_Inf : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddBelow t), sInf ((↑) '' t : Set α) ∈ s) :
     ConditionallyCompleteLinearOrder s :=
@@ -218,7 +217,7 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
 /-- Complete linear order structure on `Set.Icc` -/
 noncomputable def Set.Icc.completeLinearOrder [ConditionallyCompleteLinearOrder α]
     {a b : α} (h : a ≤ b) : CompleteLinearOrder (Set.Icc a b) :=
-  { Set.Icc.completeLattice h, Subtype.linearOrder _ with }
+  { Set.Icc.completeLattice h, Subtype.instLinearOrder _ with }
 
 lemma Set.Icc.coe_sSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     {S : Set (Set.Icc a b)} (hS : S.Nonempty) : letI := Set.Icc.completeLattice h

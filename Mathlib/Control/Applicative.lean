@@ -25,9 +25,7 @@ section Lemmas
 open Function
 
 variable {F : Type u → Type v}
-
 variable [Applicative F] [LawfulApplicative F]
-
 variable {α β γ σ : Type u}
 
 theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α) (y : F σ) :
@@ -84,11 +82,8 @@ open Function hiding comp
 open Functor
 
 variable {F : Type u → Type w} {G : Type v → Type u}
-
 variable [Applicative F] [Applicative G]
-
 variable [LawfulApplicative F] [LawfulApplicative G]
-
 variable {α β γ : Type v}
 
 theorem map_pure (f : α → β) (x : α) : (f <$> pure x : Comp F G β) = pure (f x) :=

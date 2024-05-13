@@ -32,15 +32,10 @@ open scoped TensorProduct
 namespace LieModule
 
 variable {L : Type v} {M : Type w} {N : Type w₁} {P : Type w₂} {Q : Type w₃}
-
 variable [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable [AddCommGroup N] [Module R N] [LieRingModule L N] [LieModule R L N]
-
 variable [AddCommGroup P] [Module R P] [LieRingModule L P] [LieModule R L P]
-
 variable [AddCommGroup Q] [Module R Q] [LieRingModule L Q] [LieModule R L Q]
 
 attribute [local ext] TensorProduct.ext
@@ -65,10 +60,10 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
         hasBracketAux ⁅x, y⁆ + (hasBracketAux y).comp (hasBracketAux x) by
       simp only [← LinearMap.add_apply]; rw [← LinearMap.comp_apply, this]; rfl
     ext m n
-    simp only [hasBracketAux, LieRing.of_associative_ring_bracket, LinearMap.mul_apply, mk_apply,
-      LinearMap.lTensor_sub, LinearMap.compr₂_apply, Function.comp_apply, LinearMap.coe_comp,
+    simp only [hasBracketAux, AlgebraTensorModule.curry_apply, curry_apply, sub_tmul, tmul_sub,
+      LinearMap.coe_restrictScalars, Function.comp_apply, LinearMap.coe_comp,
       LinearMap.rTensor_tmul, LieHom.map_lie, toEndomorphism_apply_apply, LinearMap.add_apply,
-      LinearMap.map_add, LinearMap.rTensor_sub, LinearMap.sub_apply, LinearMap.lTensor_tmul]
+      LinearMap.map_add, LieHom.lie_apply, Module.End.lie_apply, LinearMap.lTensor_tmul]
     abel
 #align tensor_product.lie_module.lie_ring_module TensorProduct.LieModule.lieRingModule
 
@@ -96,8 +91,9 @@ def lift : (M →ₗ[R] N →ₗ[R] P) ≃ₗ⁅R,L⁆ M ⊗[R] N →ₗ[R] P :=
   { TensorProduct.lift.equiv R M N P with
     map_lie' := fun {x f} => by
       ext m n
-      simp only [mk_apply, LinearMap.compr₂_apply, lie_tmul_right, LinearMap.sub_apply,
-        lift.equiv_apply, LinearEquiv.toFun_eq_coe, LieHom.lie_apply, LinearMap.map_add]
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
+        AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
+        lift.equiv_apply, LieHom.lie_apply, LinearMap.sub_apply, lie_tmul_right, map_add]
       abel }
 #align tensor_product.lie_module.lift TensorProduct.LieModule.lift
 
@@ -179,9 +175,7 @@ namespace LieModule
 open scoped TensorProduct
 
 variable (R) (L : Type v) (M : Type w)
-
 variable [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 /-- The action of the Lie algebra on one of its modules, regarded as a morphism of Lie modules. -/

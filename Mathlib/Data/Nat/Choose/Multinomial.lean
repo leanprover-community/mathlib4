@@ -55,7 +55,6 @@ theorem multinomial_spec : (∏ i in s, (f i)!) * multinomial s f = (∑ i in s,
 @[simp]
 theorem multinomial_nil : multinomial ∅ f = 1 := by
   dsimp [multinomial]
-  rfl
 #align nat.multinomial_nil Nat.multinomial_nil
 
 variable {s f}
@@ -66,7 +65,7 @@ lemma multinomial_cons (ha : a ∉ s) (f : α → ℕ) :
     multinomial, mul_assoc, mul_left_comm _ (f a)!,
     Nat.div_mul_cancel (prod_factorial_dvd_factorial_sum _ _), ← mul_assoc, Nat.choose_symm_add,
     Nat.add_choose_mul_factorial_mul_factorial, Finset.sum_cons]
-  exact prod_pos fun i _ ↦ by positivity
+  positivity
 
 lemma multinomial_insert [DecidableEq α] (ha : a ∉ s) (f : α → ℕ) :
     multinomial (insert a s) f = (f a + ∑ i in s, f i).choose (f a) * multinomial s f := by
@@ -127,7 +126,7 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
       multinomial {a, b} (Function.update f a (f a).succ) +
       multinomial {a, b} (Function.update f b (f b).succ) := by
   simp only [binomial_eq_choose, Function.update_apply,
-    h, Ne.def, ite_true, ite_false, not_false_eq_true]
+    h, Ne, ite_true, ite_false, not_false_eq_true]
   rw [if_neg h.symm]
   rw [add_succ, choose_succ_succ, succ_add_eq_add_succ]
   ring
@@ -250,7 +249,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       convert (@one_mul R _ _).symm
       dsimp only
       convert @Nat.cast_one R _
-    · rw [_root_.pow_succ, zero_mul]
+    · rw [_root_.pow_succ, mul_zero]
       -- Porting note: Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm

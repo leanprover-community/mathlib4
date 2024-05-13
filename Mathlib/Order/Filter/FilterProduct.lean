@@ -25,7 +25,7 @@ universe u v
 
 variable {α : Type u} {β : Type v} {φ : Ultrafilter α}
 
-open Classical
+open scoped Classical
 
 namespace Filter
 
@@ -37,27 +37,30 @@ open Ultrafilter
 
 local notation "β*" => Germ (φ : Filter α) β
 
-instance groupWithZero [GroupWithZero β] : GroupWithZero β* :=
-  { Germ.divInvMonoid, Germ.monoidWithZero with
-    mul_inv_cancel := fun f => inductionOn f fun f hf => coe_eq.2 <|
-      (φ.em fun y => f y = 0).elim (fun H => (hf <| coe_eq.2 H).elim) fun H =>
-        H.mono fun x => mul_inv_cancel
-    inv_zero := coe_eq.2 <| by
-       simp only [Function.comp, inv_zero]
-       exact EventuallyEq.refl _ fun _ => 0 }
+instance instGroupWithZero [GroupWithZero β] : GroupWithZero β* where
+  __ := instDivInvMonoid
+  __ := instMonoidWithZero
+  mul_inv_cancel f := inductionOn f fun f hf ↦ coe_eq.2 <| (φ.em fun y ↦ f y = 0).elim
+    (fun H ↦ (hf <| coe_eq.2 H).elim) fun H ↦ H.mono fun x ↦ mul_inv_cancel
+  inv_zero := coe_eq.2 <| by simp only [Function.comp, inv_zero, EventuallyEq.rfl]
 
-instance divisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
-  toSemiring := Germ.semiring
-  __ := Germ.groupWithZero
+instance instDivisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
+  toSemiring := instSemiring
+  __ := instGroupWithZero
+  nnqsmul := _
 
-instance divisionRing [DivisionRing β] : DivisionRing β* :=
-  { Germ.ring, Germ.divisionSemiring with }
+instance instDivisionRing [DivisionRing β] : DivisionRing β* where
+  __ := instRing
+  __ := instDivisionSemiring
+  qsmul := _
 
-instance semifield [Semifield β] : Semifield β* :=
-  { Germ.commSemiring, Germ.divisionSemiring with }
+instance instSemifield [Semifield β] : Semifield β* where
+  __ := instCommSemiring
+  __ := instDivisionSemiring
 
-instance field [Field β] : Field β* :=
-  { Germ.commRing, Germ.divisionRing with }
+instance instField [Field β] : Field β* where
+  __ := instCommRing
+  __ := instDivisionRing
 
 theorem coe_lt [Preorder β] {f g : α → β} : (f : β*) < g ↔ ∀* x, f x < g x := by
   simp only [lt_iff_le_not_le, eventually_and, coe_le, eventually_not, EventuallyLE]
@@ -86,46 +89,51 @@ instance isTotal [LE β] [IsTotal β (· ≤ ·)] : IsTotal β* (· ≤ ·) :=
     inductionOn₂ f g fun _f _g => eventually_or.1 <| eventually_of_forall fun _x => total_of _ _ _⟩
 
 /-- If `φ` is an ultrafilter then the ultraproduct is a linear order. -/
-noncomputable instance linearOrder [LinearOrder β] : LinearOrder β* :=
+noncomputable instance instLinearOrder [LinearOrder β] : LinearOrder β* :=
   Lattice.toLinearOrder _
 
 @[to_additive]
 noncomputable instance linearOrderedCommGroup [LinearOrderedCommGroup β] :
-    LinearOrderedCommGroup β* :=
-  { Germ.orderedCommGroup, Germ.linearOrder with }
+    LinearOrderedCommGroup β* where
+  __ := instOrderedCommGroup
+  __ := instLinearOrder
 
-instance strictOrderedSemiring [StrictOrderedSemiring β] : StrictOrderedSemiring β* :=
-  { Germ.orderedSemiring, Germ.orderedAddCancelCommMonoid,
-    Germ.nontrivial with
-    mul_lt_mul_of_pos_left := fun x y z =>
-      inductionOn₃ x y z fun _f _g _h hfg hh =>
-        coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun _a => mul_lt_mul_of_pos_left
-    mul_lt_mul_of_pos_right := fun x y z =>
-      inductionOn₃ x y z fun _f _g _h hfg hh =>
-        coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun _a => mul_lt_mul_of_pos_right }
+instance instStrictOrderedSemiring [StrictOrderedSemiring β] : StrictOrderedSemiring β* where
+  __ := instOrderedSemiring
+  __ := instOrderedAddCancelCommMonoid
+  mul_lt_mul_of_pos_left x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦
+    coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun _a ↦ mul_lt_mul_of_pos_left
+  mul_lt_mul_of_pos_right x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦
+    coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun _a ↦ mul_lt_mul_of_pos_right
 
-instance strictOrderedCommSemiring [StrictOrderedCommSemiring β] : StrictOrderedCommSemiring β* :=
-  { Germ.strictOrderedSemiring, Germ.orderedCommSemiring with }
+instance instStrictOrderedCommSemiring [StrictOrderedCommSemiring β] :
+    StrictOrderedCommSemiring β* where
+  __ := instStrictOrderedSemiring
+  __ := instOrderedCommSemiring
 
-instance strictOrderedRing [StrictOrderedRing β] : StrictOrderedRing β* :=
-  { Germ.ring,
-    Germ.strictOrderedSemiring with
-    zero_le_one := const_le zero_le_one
-    mul_pos := fun x y =>
-      inductionOn₂ x y fun _f _g hf hg =>
-        coe_pos.2 <| (coe_pos.1 hg).mp <| (coe_pos.1 hf).mono fun _x => mul_pos }
+instance instStrictOrderedRing [StrictOrderedRing β] : StrictOrderedRing β* where
+  __ := instRing
+  __ := instStrictOrderedSemiring
+  zero_le_one := const_le zero_le_one
+  mul_pos x y := inductionOn₂ x y fun _f _g hf hg ↦
+    coe_pos.2 <| (coe_pos.1 hg).mp <| (coe_pos.1 hf).mono fun _x ↦ mul_pos
 
-instance strictOrderedCommRing [StrictOrderedCommRing β] : StrictOrderedCommRing β* :=
-  { Germ.strictOrderedRing, Germ.orderedCommRing with }
+instance instStrictOrderedCommRing [StrictOrderedCommRing β] : StrictOrderedCommRing β* where
+  __ := instStrictOrderedRing
+  __ := instOrderedCommRing
 
-noncomputable instance linearOrderedRing [LinearOrderedRing β] : LinearOrderedRing β* :=
-  { Germ.strictOrderedRing, Germ.linearOrder with }
+noncomputable instance instLinearOrderedRing [LinearOrderedRing β] : LinearOrderedRing β* where
+  __ := instStrictOrderedRing
+  __ := instLinearOrder
 
-noncomputable instance linearOrderedField [LinearOrderedField β] : LinearOrderedField β* :=
-  { Germ.linearOrderedRing, Germ.field with }
+noncomputable instance instLinearOrderedField [LinearOrderedField β] : LinearOrderedField β* where
+  __ := instLinearOrderedRing
+  __ := instField
 
-noncomputable instance linearOrderedCommRing [LinearOrderedCommRing β] : LinearOrderedCommRing β* :=
-  { Germ.linearOrderedRing, Germ.commMonoid with }
+noncomputable instance instLinearOrderedCommRing [LinearOrderedCommRing β] :
+    LinearOrderedCommRing β* where
+  __ := instLinearOrderedRing
+  __ := instCommMonoid
 
 theorem max_def [LinearOrder β] (x y : β*) : max x y = map₂ max x y :=
   inductionOn₂ x y fun a b => by

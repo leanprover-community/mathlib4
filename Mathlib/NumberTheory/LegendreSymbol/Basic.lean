@@ -74,7 +74,9 @@ theorem euler_criterion {a : ZMod p} (ha : a ≠ 0) : IsSquare (a : ZMod p) ↔ 
 theorem pow_div_two_eq_neg_one_or_one {a : ZMod p} (ha : a ≠ 0) :
     a ^ (p / 2) = 1 ∨ a ^ (p / 2) = -1 := by
   cases' Prime.eq_two_or_odd (@Fact.out p.Prime _) with hp2 hp_odd
-  · subst p; revert a ha; intro a; fin_cases a; tauto; simp
+  · subst p; revert a ha; intro a; fin_cases a
+    · tauto
+    · simp
   rw [← mul_self_eq_one_iff, ← pow_add, ← two_mul, two_mul_odd_div_two hp_odd]
   exact pow_card_sub_one_eq_one ha
 #align zmod.pow_div_two_eq_neg_one_or_one ZMod.pow_div_two_eq_neg_one_or_one
@@ -127,8 +129,6 @@ theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) :
       · tauto
       · simp
   · convert quadraticChar_eq_pow_of_char_ne_two' hc (a : ZMod p)
-    norm_cast
-    congr
     exact (card p).symm
 #align legendre_sym.eq_pow legendreSym.eq_pow
 
@@ -184,7 +184,7 @@ theorem sq_one' {a : ℤ} (ha : (a : ZMod p) ≠ 0) : legendreSym p (a ^ 2) = 1 
 
 /-- The Legendre symbol depends only on `a` mod `p`. -/
 protected theorem mod (a : ℤ) : legendreSym p a = legendreSym p (a % p) := by
-  simp only [legendreSym, int_cast_mod]
+  simp only [legendreSym, intCast_mod]
 #align legendre_sym.mod legendreSym.mod
 
 /-- When `p ∤ a`, then `legendreSym p a = 1` iff `a` is a square mod `p`. -/
@@ -193,7 +193,10 @@ theorem eq_one_iff {a : ℤ} (ha0 : (a : ZMod p) ≠ 0) : legendreSym p a = 1 �
 #align legendre_sym.eq_one_iff legendreSym.eq_one_iff
 
 theorem eq_one_iff' {a : ℕ} (ha0 : (a : ZMod p) ≠ 0) :
-    legendreSym p a = 1 ↔ IsSquare (a : ZMod p) := by rw [eq_one_iff]; norm_cast; exact mod_cast ha0
+    legendreSym p a = 1 ↔ IsSquare (a : ZMod p) := by
+      rw [eq_one_iff]
+      · norm_cast
+      · exact mod_cast ha0
 #align legendre_sym.eq_one_iff' legendreSym.eq_one_iff'
 
 /-- `legendreSym p a = -1` iff `a` is a nonsquare mod `p`. -/
@@ -265,7 +268,7 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
 /-- If `legendreSym p a = -1` and `p` divides `x^2 - a*y^2`, then `p` must divide `x` and `y`. -/
 theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legendreSym p a = -1) {x y : ℤ}
     (hxy : (p : ℤ) ∣ x ^ 2 - a * y ^ 2) : ↑p ∣ x ∧ ↑p ∣ y := by
-  simp_rw [← ZMod.int_cast_zmod_eq_zero_iff_dvd] at hxy ⊢
+  simp_rw [← ZMod.intCast_zmod_eq_zero_iff_dvd] at hxy ⊢
   push_cast at hxy
   exact eq_zero_mod_of_eq_neg_one h hxy
 #align legendre_sym.prime_dvd_of_eq_neg_one legendreSym.prime_dvd_of_eq_neg_one

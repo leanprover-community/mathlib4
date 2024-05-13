@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Data.Option.Basic
 
 #align_import algebra.group.with_one.basic from "leanprover-community/mathlib"@"4dc134b97a3de65ef2ed881f3513d56260971562"
 
@@ -21,6 +20,7 @@ that were not available in `Algebra/Group/WithOne/Defs`.
 * `WithOne.map`, `WithZero.map`
 -/
 
+assert_not_exists MonoidWithZero
 
 universe u v w
 
@@ -82,7 +82,7 @@ theorem lift_coe (x : α) : lift f x = f x :=
 #align with_one.lift_coe WithOne.lift_coe
 #align with_zero.lift_coe WithZero.lift_coe
 
--- Porting note: removed `simp` attribute to appease `simpNF` linter.
+-- Porting note (#11119): removed `simp` attribute to appease `simpNF` linter.
 @[to_additive]
 theorem lift_one : lift f 1 = 1 :=
   rfl
@@ -171,31 +171,3 @@ theorem _root_.MulEquiv.withOneCongr_trans (e₁ : α ≃* β) (e₂ : β ≃* �
 end Map
 
 end WithOne
-
-namespace WithZero
-
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) :=
-  { WithZero.inv with
-    inv_inv := fun a =>
-      (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
-
-instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) :=
-  { WithZero.divInvMonoid, WithZero.involutiveInv with
-    mul_inv_rev := fun a b =>
-      match a, b with
-      | none, none => rfl
-      | none, some b => rfl
-      | some a, none => rfl
-      | some a, some b => congr_arg some <| mul_inv_rev _ _,
-    inv_eq_of_mul := fun a b ↦
-      match a, b with
-      | none, none => fun _ ↦ rfl
-      | none, some b => fun _ ↦ by contradiction
-      | some a, none => fun _ ↦ by contradiction
-      | some a, some b => fun h ↦
-        congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h }
-
-instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) :=
-  { WithZero.divisionMonoid, WithZero.commSemigroup with }
-
-end WithZero

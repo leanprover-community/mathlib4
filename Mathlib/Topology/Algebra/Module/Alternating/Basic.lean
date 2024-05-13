@@ -45,7 +45,7 @@ add_decl_doc ContinuousAlternatingMap.toContinuousMultilinearMap
 add_decl_doc ContinuousAlternatingMap.toAlternatingMap
 
 @[inherit_doc]
-notation M "[⋀^" ι "]→L[" R "]" N:100 => ContinuousAlternatingMap R M N ι
+notation M " [⋀^" ι "]→L[" R "] " N:100 => ContinuousAlternatingMap R M N ι
 
 namespace ContinuousAlternatingMap
 
@@ -504,7 +504,7 @@ theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ι → M) (s : F
   f.toMultilinearMap.map_piecewise_smul _ _ _
 
 /-- Multiplicativity of a continuous alternating map along all coordinates at the same time,
-writing `f (λ i, c i • m i)` as `(∏ i, c i) • f m`. -/
+writing `f (fun i ↦ c i • m i)` as `(∏ i, c i) • f m`. -/
 theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ι → M) :
     (f fun i => c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ _ _
@@ -543,6 +543,14 @@ def toContinuousMultilinearMapLinear :
   toFun := toContinuousMultilinearMap
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+/-- Linear map version of the map `toAlternatingMap`
+associating to a continuous alternating map the corresponding alternating map. -/
+@[simps (config := .asFn) apply]
+def toAlternatingMapLinear : (M [⋀^ι]→L[A] N) →ₗ[R] (M [⋀^ι]→ₗ[A] N) where
+  toFun := toAlternatingMap
+  map_add' := by simp
+  map_smul' := by simp
 
 /-- `ContinuousAlternatingMap.pi` as a `LinearEquiv`. -/
 @[simps (config := { simpRhs := true })]

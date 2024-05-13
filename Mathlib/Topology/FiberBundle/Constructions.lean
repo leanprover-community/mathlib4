@@ -30,7 +30,8 @@ fiber bundle, fibre bundle, fiberwise product, pullback
 
 open TopologicalSpace Filter Set Bundle
 
-open Topology Classical Bundle
+open scoped Classical
+open Topology Bundle
 
 /-! ### The trivial bundle -/
 
@@ -104,7 +105,6 @@ variable {B : Type*}
 section Defs
 
 variable (F₁ : Type*) (E₁ : B → Type*) (F₂ : Type*) (E₂ : B → Type*)
-
 variable [TopologicalSpace (TotalSpace F₁ E₁)] [TopologicalSpace (TotalSpace F₂ E₂)]
 
 /-- Equip the total space of the fiberwise product of two fiber bundles `E₁`, `E₂` with
@@ -249,7 +249,7 @@ variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSp
 /-- The product of two fiber bundles is a fiber bundle. -/
 noncomputable instance FiberBundle.prod : FiberBundle (F₁ × F₂) (E₁ ×ᵇ E₂) where
   totalSpaceMk_inducing' b := by
-    rw [(Prod.inducing_diag F₁ E₁ F₂ E₂).inducing_iff]
+    rw [← (Prod.inducing_diag F₁ E₁ F₂ E₂).of_comp_iff]
     exact (totalSpaceMk_inducing F₁ E₁ b).prod_map (totalSpaceMk_inducing F₂ E₂ b)
   trivializationAtlas' := { e |
     ∃ (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂ (π F₂ E₂))

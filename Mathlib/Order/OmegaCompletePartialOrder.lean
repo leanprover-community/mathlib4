@@ -7,7 +7,7 @@ import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Part
 import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import order.omega_complete_partial_order from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
@@ -60,7 +60,7 @@ universe u v
 -- Porting note: can this really be a good idea?
 attribute [-simp] Part.bind_eq_bind Part.map_eq_map
 
-open Classical
+open scoped Classical
 
 namespace OrderHom
 
@@ -154,7 +154,7 @@ theorem map_comp : (c.map f).map g = c.map (g.comp f) :=
 
 @[mono]
 theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g :=
-  fun i => by simp [mem_map_iff]; intros; exists i; apply h
+  fun i => by simp [mem_map_iff]; exists i; apply h
 #align omega_complete_partial_order.chain.map_le_map OmegaCompletePartialOrder.Chain.map_le_map
 
 /-- `OmegaCompletePartialOrder.Chain.zip` pairs up the elements of two chains
@@ -194,14 +194,12 @@ class OmegaCompletePartialOrder (α : Type*) extends PartialOrder α where
 namespace OmegaCompletePartialOrder
 
 variable {α : Type u} {β : Type v} {γ : Type*}
-
 variable [OmegaCompletePartialOrder α]
 
 /-- Transfer an `OmegaCompletePartialOrder` on `β` to an `OmegaCompletePartialOrder` on `α`
 using a strictly monotone function `f : β →o α`, a definition of ωSup and a proof that `f` is
 continuous with regard to the provided `ωSup` and the ωCPO on `α`. -/
-@[reducible]
-protected def lift [PartialOrder β] (f : β →o α) (ωSup₀ : Chain β → β)
+protected abbrev lift [PartialOrder β] (f : β →o α) (ωSup₀ : Chain β → β)
     (h : ∀ x y, f x ≤ f y → x ≤ y) (h' : ∀ c, f (ωSup₀ c) = ωSup (c.map f)) :
     OmegaCompletePartialOrder β where
   ωSup := ωSup₀
@@ -233,8 +231,8 @@ theorem ωSup_le_ωSup_of_le {c₀ c₁ : Chain α} (h : c₀ ≤ c₁) : ωSup 
 theorem ωSup_le_iff (c : Chain α) (x : α) : ωSup c ≤ x ↔ ∀ i, c i ≤ x := by
   constructor <;> intros
   · trans ωSup c
-    exact le_ωSup _ _
-    assumption
+    · exact le_ωSup _ _
+    · assumption
   exact ωSup_le _ _ ‹_›
 #align omega_complete_partial_order.ωSup_le_iff OmegaCompletePartialOrder.ωSup_le_iff
 
@@ -296,9 +294,9 @@ lemma isLUB_of_scottContinuous {c : Chain α} {f : α → β} (hf : ScottContinu
 
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f := by
   constructor
-  intro c
-  rw [← (ωSup_eq_of_isLUB (isLUB_of_scottContinuous hf))]
-  simp only [OrderHom.coe_mk]
+  · intro c
+    rw [← (ωSup_eq_of_isLUB (isLUB_of_scottContinuous hf))]
+    simp only [OrderHom.coe_mk]
 
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
   hf.fst
@@ -418,7 +416,7 @@ theorem mem_ωSup (x : α) (c : Chain (Part α)) : x ∈ ωSup c ↔ some x ∈ 
   constructor
   · split_ifs with h
     swap
-    rintro ⟨⟨⟩⟩
+    · rintro ⟨⟨⟩⟩
     intro h'
     have hh := Classical.choose_spec h
     simp only [mem_some_iff] at h'
@@ -529,16 +527,16 @@ theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f)
 
 theorem iSup_continuous {ι : Sort*} {f : ι → α →o β} (h : ∀ i, Continuous (f i)) :
     Continuous (⨆ i, f i) :=
-  sSup_continuous _ <| Set.forall_range_iff.2 h
+  sSup_continuous _ <| Set.forall_mem_range.2 h
 #align complete_lattice.supr_continuous CompleteLattice.iSup_continuous
 
 theorem sSup_continuous' (s : Set (α → β)) (hc : ∀ f ∈ s, Continuous' f) :
     Continuous' (sSup s) := by
   lift s to Set (α →o β) using fun f hf => (hc f hf).to_monotone
-  simp only [Set.ball_image_iff, continuous'_coe] at hc
+  simp only [Set.forall_mem_image, continuous'_coe] at hc
   rw [sSup_image]
   norm_cast
-  exact iSup_continuous fun f => iSup_continuous fun hf => hc f hf
+  exact iSup_continuous fun f ↦ iSup_continuous fun hf ↦ hc hf
 #align complete_lattice.Sup_continuous' CompleteLattice.sSup_continuous'
 
 theorem sup_continuous {f g : α →o β} (hf : Continuous f) (hg : Continuous g) :
@@ -584,7 +582,6 @@ end CompleteLattice
 namespace OmegaCompletePartialOrder
 
 variable {α : Type u} {α' : Type*} {β : Type v} {β' : Type*} {γ : Type*} {φ : Type*}
-
 variable [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
 variable [OmegaCompletePartialOrder γ] [OmegaCompletePartialOrder φ]
 variable [OmegaCompletePartialOrder α'] [OmegaCompletePartialOrder β']
@@ -859,8 +856,8 @@ def apply : (α →𝒄 β) × α →𝒄 β where
       intro j
       apply le_ωSup_of_le (max i j)
       apply apply_mono
-      exact monotone_fst (OrderHom.mono _ (le_max_left _ _))
-      exact monotone_snd (OrderHom.mono _ (le_max_right _ _))
+      · exact monotone_fst (OrderHom.mono _ (le_max_left _ _))
+      · exact monotone_snd (OrderHom.mono _ (le_max_right _ _))
     · apply ωSup_le
       intro i
       apply le_ωSup_of_le i

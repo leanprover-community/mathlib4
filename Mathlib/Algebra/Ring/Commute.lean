@@ -113,13 +113,13 @@ section
 
 variable [MulOneClass R] [HasDistribNeg R] {a : R}
 
--- Porting note: no longer needs to be `@[simp]` since `simp` can prove it.
+-- Porting note (#10618): no longer needs to be `@[simp]` since `simp` can prove it.
 -- @[simp]
 theorem neg_one_right (a : R) : Commute a (-1) :=
   SemiconjBy.neg_one_right a
 #align commute.neg_one_right Commute.neg_one_right
 
--- Porting note: no longer needs to be `@[simp]` since `simp` can prove it.
+-- Porting note (#10618): no longer needs to be `@[simp]` since `simp` can prove it.
 -- @[simp]
 theorem neg_one_left (a : R) : Commute (-1) a :=
   SemiconjBy.neg_one_left a

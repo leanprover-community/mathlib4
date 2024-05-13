@@ -44,7 +44,7 @@ instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing α] :
     SMulCommClass ℤ α α where
   smul_comm n x y :=
     match n with
-    | (n : ℕ) => by simp_rw [coe_nat_zsmul, smul_comm]
+    | (n : ℕ) => by simp_rw [natCast_zsmul, smul_comm]
     | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, mul_neg, mul_smul_comm]
 #align non_unital_non_assoc_ring.int_smul_comm_class NonUnitalNonAssocRing.int_smulCommClass
 
@@ -53,6 +53,6 @@ instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing α] :
     IsScalarTower ℤ α α where
   smul_assoc n x y :=
     match n with
-    | (n : ℕ) => by simp_rw [coe_nat_zsmul, smul_assoc]
+    | (n : ℕ) => by simp_rw [natCast_zsmul, smul_assoc]
     | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, neg_mul, smul_mul_assoc]
 #align non_unital_non_assoc_ring.int_is_scalar_tower NonUnitalNonAssocRing.int_isScalarTower

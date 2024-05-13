@@ -121,20 +121,20 @@ theorem toNat_top : toNat ⊤ = 0 :=
 
 @[simp] theorem toNat_eq_zero : toNat n = 0 ↔ n = 0 ∨ n = ⊤ := WithTop.untop'_eq_self_iff
 
--- Porting note: new definition copied from `WithTop`
+-- Porting note (#11445): new definition copied from `WithTop`
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
 def recTopCoe {C : ℕ∞ → Sort*} (top : C ⊤) (coe : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
   | none => top
   | Option.some a => coe a
 
--- Porting note: new theorem copied from `WithTop`
+-- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) :
     @recTopCoe C d f ⊤ = d :=
   rfl
 
--- Porting note: new theorem copied from `WithTop`
+-- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
     @recTopCoe C d f ↑x = f x :=
@@ -154,7 +154,7 @@ theorem recTopCoe_ofNat {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a
     @recTopCoe C d f (no_index (OfNat.ofNat x)) = f (OfNat.ofNat x) :=
   rfl
 
--- Porting note: new theorem copied from `WithTop`
+-- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
   nofun
@@ -164,7 +164,7 @@ theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
 theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (no_index (OfNat.ofNat a : ℕ∞)) :=
   nofun
 
--- Porting note: new theorem copied from `WithTop`
+-- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
   nofun
@@ -174,7 +174,7 @@ theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
 theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℕ∞)) ≠ ⊤ :=
   nofun
 
--- Porting note: new theorem copied from `WithTop`
+-- Porting note (#10756): new theorem copied from `WithTop`
 @[simp]
 theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
   WithTop.top_sub_coe
@@ -192,7 +192,7 @@ theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - (no_index (OfN
 theorem zero_lt_top : (0 : ℕ∞) < ⊤ :=
   WithTop.zero_lt_top
 
--- Porting note: new theorem copied from `WithTop`
+-- Porting note (#10756): new theorem copied from `WithTop`
 theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
   WithTop.sub_top
 

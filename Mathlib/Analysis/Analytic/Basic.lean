@@ -74,18 +74,16 @@ noncomputable section
 
 variable {𝕜 E F G : Type*}
 
-open Topology Classical BigOperators NNReal Filter ENNReal
+open scoped Classical
+open Topology BigOperators NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 
 namespace FormalMultilinearSeries
 
 variable [Ring 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
-
 variable [TopologicalSpace E] [TopologicalSpace F]
-
 variable [TopologicalAddGroup E] [TopologicalAddGroup F]
-
 variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 
 /-- Given a formal multilinear series `p` and a vector `x`, then `p.sum x` is the sum `Σ pₙ xⁿ`. A
@@ -443,7 +441,7 @@ theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y :
 theorem HasFPowerSeriesOnBall.hasSum_sub (hf : HasFPowerSeriesOnBall f p x r) {y : E}
     (hy : y ∈ EMetric.ball x r) : HasSum (fun n : ℕ => p n fun _ => y - x) (f y) := by
   have : y - x ∈ EMetric.ball (0 : E) r := by simpa [edist_eq_coe_nnnorm_sub] using hy
-  simpa only [add_sub_cancel'_right] using hf.hasSum this
+  simpa only [add_sub_cancel] using hf.hasSum this
 #align has_fpower_series_on_ball.has_sum_sub HasFPowerSeriesOnBall.hasSum_sub
 
 theorem HasFPowerSeriesOnBall.radius_pos (hf : HasFPowerSeriesOnBall f p x r) : 0 < p.radius :=
@@ -1024,9 +1022,7 @@ theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x :
   funext n
   ext x
   rw [← mkPiRing_apply_one_eq_self (p n)]
-  -- Porting note: nasty hack, was `simp [h.apply_eq_zero n 1]`
-  have := Or.intro_right ?_ (h.apply_eq_zero n 1)
-  simpa using this
+  simp [h.apply_eq_zero n 1]
 #align has_fpower_series_at.eq_zero HasFPowerSeriesAt.eq_zero
 
 /-- One-dimensional formal multilinear series representing the same function are equal. -/
@@ -1088,7 +1084,7 @@ $$
 The corresponding power series has thus a `k`-th coefficient equal to
 $\sum_{n} \binom{n}{k} p_n y^{n-k}$. In the general case where `pₙ` is a multilinear map, this has
 to be interpreted suitably: instead of having a binomial coefficient, one should sum over all
-possible subsets `s` of `Fin n` of cardinal `k`, and attribute `z` to the indices in `s` and
+possible subsets `s` of `Fin n` of cardinality `k`, and attribute `z` to the indices in `s` and
 `y` to the indices outside of `s`.
 
 In this paragraph, we implement this. The new power series is called `p.changeOrigin y`. Then, we
@@ -1389,7 +1385,7 @@ theorem HasFPowerSeriesOnBall.analyticAt_of_mem (hf : HasFPowerSeriesOnBall f p 
     (h : y ∈ EMetric.ball x r) : AnalyticAt 𝕜 f y := by
   have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_coe_nnnorm_sub] using h
   have := hf.changeOrigin this
-  rw [add_sub_cancel'_right] at this
+  rw [add_sub_cancel] at this
   exact this.analyticAt
 #align has_fpower_series_on_ball.analytic_at_of_mem HasFPowerSeriesOnBall.analyticAt_of_mem
 
@@ -1447,7 +1443,6 @@ theorem hasFPowerSeriesAt_iff :
       simp only [dist_zero_right] at h
       apply FormalMultilinearSeries.le_radius_of_tendsto
       convert tendsto_norm.comp (h le_z).summable.tendsto_atTop_zero
-      funext
       simp [norm_smul, mul_comm]
     refine' lt_of_lt_of_le _ this
     simp only [ENNReal.coe_pos]
@@ -1461,7 +1456,7 @@ theorem hasFPowerSeriesAt_iff :
 theorem hasFPowerSeriesAt_iff' :
     HasFPowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 z₀, HasSum (fun n => (z - z₀) ^ n • p.coeff n) (f z) := by
   rw [← map_add_left_nhds_zero, eventually_map, hasFPowerSeriesAt_iff]
-  simp_rw [add_sub_cancel']
+  simp_rw [add_sub_cancel_left]
 #align has_fpower_series_at_iff' hasFPowerSeriesAt_iff'
 
 end

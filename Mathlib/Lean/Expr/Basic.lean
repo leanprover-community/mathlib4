@@ -5,12 +5,12 @@ Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lew
 Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean.Meta.Tactic.Rewrite
-import Std.Lean.Expr
-import Std.Lean.Name
-import Std.Data.Rat.Basic
-import Std.Data.List.Basic
-import Std.Lean.Name
-import Std.Logic
+import Batteries.Lean.Expr
+import Batteries.Lean.Name
+import Batteries.Data.Rat.Basic
+import Batteries.Data.List.Basic
+import Batteries.Lean.Name
+import Batteries.Logic
 
 /-!
 # Additional operations on Expr and related types
@@ -75,7 +75,7 @@ def getString : Name → String
   `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
   Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
 def splitAt (nm : Name) (n : Nat) : Name × Name :=
-  let (nm2, nm1) := (nm.componentsRev.splitAt n)
+  let (nm2, nm1) := nm.componentsRev.splitAt n
   (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
 
 /-- `isPrefixOf? pre nm` returns `some post` if `nm = pre ++ post`.
@@ -189,6 +189,23 @@ def getAppApps (e : Expr) : Array Expr :=
   let nargs := e.getAppNumArgs
   getAppAppsAux e (mkArray nargs dummy) (nargs-1)
 
+/-- Erase proofs in an expression by replacing them with `sorry`s.
+
+This function replaces all proofs in the expression
+and in the types that appear in the expression
+by `sorryAx`s.
+The resulting expression has the same type as the old one.
+
+It is useful, e.g., to verify if the proof-irrelevant part of a definition depends on a variable.
+-/
+def eraseProofs (e : Expr) : MetaM Expr :=
+  Meta.transform (skipConstInApp := true) e
+    (pre := fun e => do
+      if (← Meta.isProof e) then
+        return .continue (← mkSyntheticSorry (← inferType e))
+      else
+        return .continue)
+
 /--
 Check if an expression is a "rational in normal form",
 i.e. either an integer number in normal form,
@@ -279,7 +296,7 @@ section recognizers
   - `Nat.succ x` where `isNumeral x`
   - `OfNat.ofNat _ x _` where `isNumeral x` -/
 partial def numeral? (e : Expr) : Option Nat :=
-  if let some n := e.natLit? then n
+  if let some n := e.rawNatLit? then n
   else
     let f := e.getAppFn
     if !f.isConst then none

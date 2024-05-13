@@ -109,11 +109,9 @@ theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition 
     RingHom.RespectsIso @P := by
   constructor
   · introv H
-    skip
     apply hP
     exacts [H, hP' e]
   · introv H
-    skip
     apply hP
     exacts [hP' e, H]
 #align ring_hom.stable_under_composition.respects_iso RingHom.StableUnderComposition.respectsIso

@@ -25,7 +25,6 @@ import Mathlib.Data.Matrix.Basic
 
 
 variable {l m n o p q : Type*} {m' n' p' : o → Type*}
-
 variable {R : Type*} {S : Type*} {α : Type*} {β : Type*}
 
 open BigOperators Matrix

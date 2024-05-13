@@ -3,7 +3,7 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Algebra.Module.LinearMap.Pointwise
+import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Seminorm
@@ -57,9 +57,7 @@ section SeminormedRing
 section Zero
 
 variable (𝕜)
-
 variable [SeminormedRing 𝕜] [SMul 𝕜 E] [Zero E]
-
 variable [TopologicalSpace E]
 
 /-- A set `s` is von Neumann bounded if every neighborhood of 0 absorbs `s`. -/
@@ -86,7 +84,7 @@ theorem _root_.Filter.HasBasis.isVonNBounded_iff {q : ι → Prop} {s : ι → S
   exact (hA i hi).mono_left hV
 #align filter.has_basis.is_vonN_bounded_basis_iff Filter.HasBasis.isVonNBounded_iff
 
-@[deprecated] -- since 12 January 2024
+@[deprecated] -- since 2024-01-12
 alias _root_.Filter.HasBasis.isVonNBounded_basis_iff := Filter.HasBasis.isVonNBounded_iff
 
 /-- Subsets of bounded sets are bounded. -/
@@ -232,7 +230,6 @@ end sequence
 section NormedField
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
 /-- Singletons are bounded. -/
@@ -313,9 +310,8 @@ variable (𝕜 E)
 /-- The von Neumann bornology defined by the von Neumann bounded sets.
 
 Note that this is not registered as an instance, in order to avoid diamonds with the
-metric bornology.-/
-@[reducible]
-def vonNBornology : Bornology E :=
+metric bornology. -/
+abbrev vonNBornology : Bornology E :=
   Bornology.ofBounded (setOf (IsVonNBounded 𝕜)) (isVonNBounded_empty 𝕜 E)
     (fun _ hs _ ht => hs.subset ht) (fun _ hs _ => hs.union) isVonNBounded_singleton
 #align bornology.vonN_bornology Bornology.vonNBornology
@@ -335,7 +331,6 @@ end Bornology
 section UniformAddGroup
 
 variable (𝕜) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [UniformSpace E] [UniformAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
@@ -346,7 +341,7 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     tendsto_add
   rw [add_zero] at h
   have h' := (nhds_basis_balanced 𝕜 E).prod (nhds_basis_balanced 𝕜 E)
-  simp_rw [← nhds_prod_eq, id.def] at h'
+  simp_rw [← nhds_prod_eq, id] at h'
   rcases h.basis_left h' U hU with ⟨x, hx, h''⟩
   rcases hs x.snd hx.2.1 with ⟨t, ht, hs⟩
   refine Absorbs.mono_right ?_ hs
@@ -396,7 +391,7 @@ theorem isVonNBounded_iff' (s : Set E) :
 
 theorem image_isVonNBounded_iff (f : E' → E) (s : Set E') :
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔ ∃ r : ℝ, ∀ x ∈ s, ‖f x‖ ≤ r := by
-  simp_rw [isVonNBounded_iff', Set.ball_image_iff]
+  simp_rw [isVonNBounded_iff', Set.forall_mem_image]
 #align normed_space.image_is_vonN_bounded_iff NormedSpace.image_isVonNBounded_iff
 
 /-- In a normed space, the von Neumann bornology (`Bornology.vonNBornology`) is equal to the

@@ -34,7 +34,6 @@ namespace Language
 open Structure
 
 variable (L : Language) (M : Type*) (N : Type*) {P : Type*} {Q : Type*}
-
 variable [L.Structure M] [L.Structure N] [L.Structure P] [L.Structure Q]
 
 /-- An elementary embedding of first-order structures is an embedding that commutes with the
@@ -53,7 +52,6 @@ structure ElementaryEmbedding where
 #align first_order.language.elementary_embedding.to_fun FirstOrder.Language.ElementaryEmbedding.toFun
 #align first_order.language.elementary_embedding.map_formula' FirstOrder.Language.ElementaryEmbedding.map_formula'
 
--- mathport name: elementary_embedding
 @[inherit_doc FirstOrder.Language.ElementaryEmbedding]
 scoped[FirstOrder] notation:25 A " ↪ₑ[" L "] " B => FirstOrder.Language.ElementaryEmbedding L A B
 
@@ -300,8 +298,8 @@ theorem isElementary_of_exists (f : M ↪[L] N)
       obtain ⟨b, hb⟩ := htv n φ.not xs a (by
           rw [BoundedFormula.realize_not, ← Unique.eq_default (f ∘ default)]
           exact ha)
-      · refine' ⟨b, fun h => hb (Eq.mp _ ((ih _).2 h))⟩
-        rw [Unique.eq_default (f ∘ default), Fin.comp_snoc]
+      refine' ⟨b, fun h => hb (Eq.mp _ ((ih _).2 h))⟩
+      rw [Unique.eq_default (f ∘ default), Fin.comp_snoc]
 #align first_order.language.embedding.is_elementary_of_exists FirstOrder.Language.Embedding.isElementary_of_exists
 
 /-- Bundles an embedding satisfying the Tarski-Vaught test as an elementary embedding. -/

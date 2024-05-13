@@ -3,12 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.Metrizable.Urysohn
 import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Topology.Separation.NotNormal
 import Mathlib.Topology.Baire.Lemmas
 import Mathlib.Topology.Baire.LocallyCompactRegular
@@ -84,7 +84,7 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := b
   haveI : Nonempty { x // x ≤ a } := Set.nonempty_Iic_subtype
   have : (⨅ x : { i // i ≤ a }, 𝓟 (Ici ↑x)) = 𝓟 (Ici a) := by
     refine' (IsLeast.isGLB _).iInf_eq
-    exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_range_iff.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
+    exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_mem_range.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
   simp only [mem_setOf_eq, iInf_and, iInf_exists, @iInf_comm _ (_ ∈ _), @iInf_comm _ (Set ℝₗ),
     iInf_iInf_eq_right, mem_Ico]
   simp_rw [@iInf_comm _ ℝₗ (_ ≤ _), iInf_subtype', ← Ici_inter_Iio, ← inf_principal,
@@ -217,16 +217,16 @@ instance : T5Space ℝₗ := by
       _ ≤ x := (not_lt.1 fun hxy => (hYd y hy).le_bot ⟨⟨hle, hxy⟩, subset_closure hx⟩)
       _ ≤ max x y := le_max_left _ _
 
-theorem denseRange_coe_rat : DenseRange ((↑) : ℚ → ℝₗ) := by
+theorem denseRange_ratCast : DenseRange ((↑) : ℚ → ℝₗ) := by
   refine' dense_iff_inter_open.2 _
   rintro U Uo ⟨x, hx⟩
   rcases isOpen_iff.1 Uo _ hx with ⟨y, hxy, hU⟩
   rcases exists_rat_btwn hxy with ⟨z, hxz, hzy⟩
   exact ⟨z, hU ⟨hxz.le, hzy⟩, mem_range_self _⟩
-#align counterexample.sorgenfrey_line.dense_range_coe_rat Counterexample.SorgenfreyLine.denseRange_coe_rat
+#align counterexample.sorgenfrey_line.dense_range_coe_rat Counterexample.SorgenfreyLine.denseRange_ratCast
 
 instance : SeparableSpace ℝₗ :=
-  ⟨⟨_, countable_range _, denseRange_coe_rat⟩⟩
+  ⟨⟨_, countable_range _, denseRange_ratCast⟩⟩
 
 theorem isClosed_antidiagonal (c : ℝₗ) : IsClosed {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
   isClosed_singleton.preimage continuous_add

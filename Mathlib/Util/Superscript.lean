@@ -3,7 +3,7 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Std.Tactic.Lint
+import Batteries.Tactic.Lint
 
 /-!
 # A parser for superscripts and subscripts
@@ -193,10 +193,32 @@ def scriptParser (m : Mapping) (antiquotName errorMsg : String) (p : Parser)
 def scriptParser.parenthesizer (k : SyntaxNodeKind) (p : Parenthesizer) : Parenthesizer :=
   Parenthesizer.node.parenthesizer k p
 
+/-- Map over the strings in a `Format`. -/
+def _root_.Std.Format.mapStringsM {m} [Monad m] (f : Format) (f' : String → m String) : m Format :=
+  match f with
+  | .group f b => (.group · b) <$> Std.Format.mapStringsM f f'
+  | .tag t g => .tag t <$> Std.Format.mapStringsM g f'
+  | .append f g => .append <$> Std.Format.mapStringsM f f' <*> Std.Format.mapStringsM g f'
+  | .nest n f => .nest n <$> Std.Format.mapStringsM f f'
+  | .text s => .text <$> f' s
+  | .align _ | .line | .nil => pure f
+
 /-- Formatter for the script parser. -/
-def scriptParser.formatter (k : SyntaxNodeKind) (p : Formatter) : Formatter :=
-  -- FIXME, this is wrong since it doesn't superscript the text
+def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p : Formatter) :
+    Formatter := do
+  let stack ← modifyGet fun s => (s.stack, {s with stack := #[]})
   Formatter.node.formatter k p
+  let st ← get
+  let transformed : Except String _ := st.stack.mapM (·.mapStringsM fun s => do
+    let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').find? | .error s
+    .ok ⟨s⟩)
+  match transformed with
+  | .error err =>
+    -- TODO: this only appears if the caller explicitly calls the pretty-printer
+    Lean.logErrorAt (← get).stxTrav.cur s!"Not a {name}: '{err}'"
+    set { st with stack := stack ++ st.stack }
+  | .ok newStack =>
+    set { st with stack := stack ++ newStack }
 
 end Superscript
 
@@ -221,7 +243,8 @@ def superscript (p : Parser) : Parser :=
 def superscript.parenthesizer := Superscript.scriptParser.parenthesizer ``superscript
 /-- Formatter for the superscript parser. -/
 @[combinator_formatter superscript]
-def superscript.formatter := Superscript.scriptParser.formatter ``superscript
+def superscript.formatter :=
+  Superscript.scriptParser.formatter "superscript" .superscript ``superscript
 
 
 /--
@@ -246,26 +269,7 @@ def subscript (p : Parser) : Parser :=
 def subscript.parenthesizer := Superscript.scriptParser.parenthesizer ``subscript
 /-- Formatter for the subscript parser. -/
 @[combinator_formatter subscript]
-def subscript.formatter := Superscript.scriptParser.formatter ``subscript
-
-section deleteme -- lean4#2269
-
-@[nolint docBlame]
-def registerAliasCore {α} (mapRef : IO.Ref (AliasTable α)) (aliasName : Name)
-    (value : AliasValue α) : IO Unit := do
-  if (← mapRef.get).contains aliasName then
-    throw ↑s!"alias '{aliasName}' has already been declared"
-  mapRef.modify (·.insert aliasName value)
-
-@[nolint docBlame]
-def registerAlias (aliasName declName : Name) (p : ParserAliasValue)
-    (kind? : Option SyntaxNodeKind := none) (info : ParserAliasInfo := {}) : IO Unit := do
-  registerAliasCore parserAliasesRef aliasName p
-  if let some kind := kind? then
-    parserAlias2kindRef.modify (·.insert aliasName kind)
-  parserAliases2infoRef.modify (·.insert aliasName { info with declName })
-
-end deleteme
+def subscript.formatter := Superscript.scriptParser.formatter "subscript" .subscript ``subscript
 
 initialize
   registerAlias `superscript ``superscript superscript

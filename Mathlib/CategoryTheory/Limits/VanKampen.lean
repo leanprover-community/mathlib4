@@ -221,13 +221,12 @@ theorem IsVanKampenColimit.of_mapCocone (G : C ⥤ D) {F : J ⥤ C} {c : Cocone 
 #align category_theory.is_van_kampen_colimit.of_map CategoryTheory.IsVanKampenColimit.of_mapCocone
 
 theorem IsVanKampenColimit.mapCocone_iff (G : C ⥤ D) {F : J ⥤ C} {c : Cocone F}
-    [IsEquivalence G] : IsVanKampenColimit (G.mapCocone c) ↔ IsVanKampenColimit c :=
+    [G.IsEquivalence] : IsVanKampenColimit (G.mapCocone c) ↔ IsVanKampenColimit c :=
   ⟨IsVanKampenColimit.of_mapCocone G, fun hc ↦ by
     let e : F ⋙ G ⋙ Functor.inv G ≅ F := NatIso.hcomp (Iso.refl F) G.asEquivalence.unitIso.symm
     apply IsVanKampenColimit.of_mapCocone G.inv
     apply (IsVanKampenColimit.precompose_isIso_iff e.inv).mp
-    refine hc.of_iso (Cocones.ext (G.asEquivalence.unitIso.app c.pt) ?_)
-    simp [e, Functor.asEquivalence]⟩
+    exact hc.of_iso (Cocones.ext (G.asEquivalence.unitIso.app c.pt) (fun j => (by simp [e])))⟩
 
 theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} (hc : IsUniversalColimit c) :
@@ -307,7 +306,7 @@ end Functor
 section reflective
 
 theorem IsUniversalColimit.map_reflective
-    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
+    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
     {F : J ⥤ D} {c : Cocone (F ⋙ Gr)}
     (H : IsUniversalColimit c)
     [∀ X (f : X ⟶ Gl.obj c.pt), HasPullback (Gr.map f) (adj.unit.app c.pt)]
@@ -339,7 +338,7 @@ theorem IsUniversalColimit.map_reflective
   let c'' : Cocone (F' ⋙ Gr) := by
     refine
     { pt := pullback (Gr.map f) (adj.unit.app _)
-      ι := { app := λ j ↦ pullback.lift (Gr.map <| c'.ι.app j) (Gr.map (α'.app j) ≫ c.ι.app j) ?_
+      ι := { app := fun j ↦ pullback.lift (Gr.map <| c'.ι.app j) (Gr.map (α'.app j) ≫ c.ι.app j) ?_
              naturality := ?_ } }
     · rw [← Gr.map_comp, ← hc'']
       erw [← adj.unit_naturality]
@@ -360,7 +359,7 @@ theorem IsUniversalColimit.map_reflective
         exact c.w _
   let cf : (Cocones.precompose β.hom).obj c' ⟶ Gl.mapCocone c'' := by
     refine { hom := pullback.lift ?_ f ?_ ≫ (PreservesPullback.iso _ _ _).inv, w := ?_ }
-    exact (inv <| adj.counit.app c'.pt)
+    · exact inv <| adj.counit.app c'.pt
     · rw [IsIso.inv_comp_eq, ← adj.counit_naturality_assoc f, ← cancel_mono (adj.counit.app <|
         Gl.obj c.pt), Category.assoc, Category.assoc, adj.left_triangle_components]
       erw [Category.comp_id]
@@ -410,7 +409,7 @@ theorem IsUniversalColimit.map_reflective
         pullback.lift_snd]
 
 theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
-    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
+    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
     {F : J ⥤ D} {c : Cocone (F ⋙ Gr)} (H : IsVanKampenColimit c)
     [∀ X (f : X ⟶ Gl.obj c.pt), HasPullback (Gr.map f) (adj.unit.app c.pt)]
     [∀ X (f : X ⟶ Gl.obj c.pt), PreservesLimit (cospan (Gr.map f) (adj.unit.app c.pt)) Gl]
@@ -457,10 +456,10 @@ theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
   have := ((H (colimit.cocone <| F' ⋙ Gr) (whiskerRight α' Gr)
     (colimit.desc _ ⟨_, whiskerRight α' Gr ≫ c.2⟩) ?_ (hα'.whiskerRight Gr)).mp
     ⟨(getColimitCocone <| F' ⋙ Gr).2⟩ j).map Gl
-  convert IsPullback.paste_vert _ this
-  refine IsPullback.of_vert_isIso ⟨?_⟩
-  rw [← IsIso.inv_comp_eq, ← Category.assoc, NatIso.inv_inv_app]
-  exact IsColimit.comp_coconePointUniqueUpToIso_hom hl hr _
+  · convert IsPullback.paste_vert _ this
+    refine IsPullback.of_vert_isIso ⟨?_⟩
+    rw [← IsIso.inv_comp_eq, ← Category.assoc, NatIso.inv_inv_app]
+    exact IsColimit.comp_coconePointUniqueUpToIso_hom hl hr _
   · clear_value α'
     ext j
     simp
@@ -764,6 +763,7 @@ theorem isPullback_initial_to_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {
     Functor.hext (fun i ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp [f])
   clear_value f
   subst this
+  have : ∀ i, Subsingleton (⊥_ C ⟶ (Discrete.functor f).obj i) := inferInstance
   convert isPullback_of_cofan_isVanKampen hc i.as j.as
   exact (if_neg (mt (Discrete.ext _ _) hi.symm)).symm
 

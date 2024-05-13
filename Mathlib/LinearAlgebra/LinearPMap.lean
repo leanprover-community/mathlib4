@@ -123,17 +123,17 @@ noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 �
       rw [← sub_eq_zero, ← sub_smul] at h ⊢
       exact H _ h
     { toFun := fun z => Classical.choose (mem_span_singleton.1 z.prop) • y
-      -- Porting note: `dsimp only []` are required.
+      -- Porting note(#12129): additional beta reduction needed
       -- Porting note: Were `Classical.choose_spec (mem_span_singleton.1 _)`.
       map_add' := fun y z => by
-        dsimp only []
+        beta_reduce
         rw [← add_smul]
         apply H
         simp only [add_smul, sub_smul,
           fun w : R ∙ x => Classical.choose_spec (mem_span_singleton.1 w.prop)]
         apply coe_add
       map_smul' := fun c z => by
-        dsimp only []
+        beta_reduce
         rw [smul_smul]
         apply H
         simp only [mul_smul,
@@ -167,8 +167,7 @@ theorem mkSpanSingleton'_apply_self (x : E) (y : F) (H : ∀ c : R, c • x = 0 
 
 /-- The unique `LinearPMap` on `span R {x}` that sends a non-zero vector `x` to `y`.
 This version works for modules over division rings. -/
-@[reducible]
-noncomputable def mkSpanSingleton {K E F : Type*} [DivisionRing K] [AddCommGroup E] [Module K E]
+noncomputable abbrev mkSpanSingleton {K E F : Type*} [DivisionRing K] [AddCommGroup E] [Module K E]
     [AddCommGroup F] [Module K F] (x : E) (y : F) (hx : x ≠ 0) : E →ₗ.[K] F :=
   mkSpanSingleton' x y fun c hc =>
     (smul_eq_zero.1 hc).elim (fun hc => by rw [hc, zero_smul]) fun hx' => absurd hx' hx
@@ -394,7 +393,6 @@ end Zero
 section SMul
 
 variable {M N : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F]
-
 variable [Monoid N] [DistribMulAction N F] [SMulCommClass R N F]
 
 instance instSMul : SMul M (E →ₗ.[R] F) :=
@@ -487,6 +485,7 @@ instance instAddMonoid : AddMonoid (E →ₗ.[R] F) where
     simp
   add_zero := by
     simp
+  nsmul := nsmulRec
 
 instance instAddCommMonoid : AddCommMonoid (E →ₗ.[R] F) :=
   ⟨fun f g => by
@@ -567,6 +566,7 @@ instance instSubtractionCommMonoid : SubtractionCommMonoid (E →ₗ.[R] F) wher
     simp only [inf_coe, neg_domain, Eq.ndrec, Int.ofNat_eq_coe, add_apply, Subtype.coe_eta,
       ← neg_eq_iff_add_eq_zero] at h'
     rw [h', h]
+  zsmul := zsmulRec
 
 end Sub
 
@@ -615,7 +615,7 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     apply Classical.indefiniteDescription
     have := (mem_sSup_of_directed (cne.image _) hdir).1 x.2
     -- Porting note: + `← bex_def`
-    rwa [Set.bex_image_iff, ← bex_def, SetCoe.exists'] at this
+    rwa [Set.exists_mem_image, ← bex_def, SetCoe.exists'] at this
   set f : ↥(sSup (domain '' c)) → F := fun x => (P x).val.val ⟨x, (P x).property⟩
   have f_eq : ∀ (p : c) (x : ↥(sSup (domain '' c))) (y : p.1.1) (_hxy : (x : E) = y),
       f x = p.1 y := by
@@ -806,13 +806,13 @@ theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
     rcases h with ⟨y, hy, h⟩
     rw [LinearPMap.smul_apply] at h
     rw [Submodule.mem_map]
-    simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id.def,
+    simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id,
       LinearMap.smul_apply, Prod.mk.inj_iff, Prod.exists, exists_exists_and_eq_and]
     use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
-  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id.def, LinearMap.smul_apply,
+  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.smul_apply,
     Prod.mk.inj_iff] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
@@ -831,13 +831,13 @@ theorem neg_graph (f : E →ₗ.[R] F) :
     rcases h with ⟨y, hy, h⟩
     rw [LinearPMap.neg_apply] at h
     rw [Submodule.mem_map]
-    simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id.def,
+    simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id,
       LinearMap.neg_apply, Prod.mk.inj_iff, Prod.exists, exists_exists_and_eq_and]
     use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
-  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id.def, LinearMap.neg_apply,
+  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.neg_apply,
     Prod.mk.inj_iff] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
@@ -952,8 +952,8 @@ theorem le_graph_iff {f g : E →ₗ.[R] F} : f.graph ≤ g.graph ↔ f ≤ g :=
 theorem eq_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) : f = g := by
   -- Porting note: `ext` → `refine ext ..`
   refine ext (Submodule.ext fun x => ?_) (fun x y h' => ?_)
-  exact mem_domain_iff_of_eq_graph h
-  exact (le_of_le_graph h.le).2 h'
+  · exact mem_domain_iff_of_eq_graph h
+  · exact (le_of_le_graph h.le).2 h'
 #align linear_pmap.eq_of_eq_graph LinearPMap.eq_of_eq_graph
 
 end Graph
@@ -1010,7 +1010,7 @@ noncomputable def toLinearPMapAux (g : Submodule R (E × F))
     rw [Prod.smul_mk] at hav'
     exact (existsUnique_from_graph @hg hsmul).unique hav hav'
 
-open Classical in
+open scoped Classical in
 /-- Define a `LinearPMap` from its graph.
 
 In the case that the submodule is not a graph of a `LinearPMap` then the underlying linear map

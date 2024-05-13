@@ -167,7 +167,8 @@ theorem pureOneHom_apply (a : α) : pureOneHom a = pure a :=
 
 variable [One β]
 
-@[to_additive] -- Porting note: removed `simp` attribute because `simpNF` says it can prove it.
+@[to_additive]
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 protected theorem map_one [FunLike F α β] [OneHomClass F α β] (φ : F) : map φ 1 = 1 := by
   rw [Filter.map_one', map_one, pure_one]
 #align filter.map_one Filter.map_one
@@ -375,7 +376,8 @@ theorem mul_pure : f * pure b = f.map (· * b) :=
 #align filter.mul_pure Filter.mul_pure
 #align filter.add_pure Filter.add_pure
 
-@[to_additive] -- Porting note: removed `simp` attribute because `simpNF` says it can prove it.
+@[to_additive]
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_mul_pure : (pure a : Filter α) * pure b = pure (a * b) :=
   map₂_pure
 #align filter.pure_mul_pure Filter.pure_mul_pure
@@ -521,7 +523,8 @@ theorem div_pure : f / pure b = f.map (· / b) :=
 #align filter.div_pure Filter.div_pure
 #align filter.sub_pure Filter.sub_pure
 
-@[to_additive] -- Porting note: removed `simp` attribute because `simpNF` says it can prove it.
+@[to_additive]
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_div_pure : (pure a : Filter α) / pure b = pure (a / b) :=
   map₂_pure
 #align filter.pure_div_pure Filter.pure_div_pure
@@ -568,7 +571,7 @@ end Div
 open Pointwise
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Filter`. See
-Note [pointwise nat action].-/
+Note [pointwise nat action]. -/
 protected def instNSMul [Zero α] [Add α] : SMul ℕ (Filter α) :=
   ⟨nsmulRec⟩
 #align filter.has_nsmul Filter.instNSMul
@@ -590,13 +593,13 @@ protected def instZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Filter α) :=
 multiplication/division!) of a `Filter`. See Note [pointwise nat action]. -/
 @[to_additive existing]
 protected def instZPow [One α] [Mul α] [Inv α] : Pow (Filter α) ℤ :=
-  ⟨fun s n => zpowRec n s⟩
+  ⟨fun s n => zpowRec npowRec n s⟩
 #align filter.has_zpow Filter.instZPow
 
 scoped[Pointwise] attribute [instance] Filter.instNSMul Filter.instNPow
   Filter.instZSMul Filter.instZPow
 
-/-- `Filter α` is a `Semigroup` under pointwise operations if `α` is.-/
+/-- `Filter α` is a `Semigroup` under pointwise operations if `α` is. -/
 @[to_additive "`Filter α` is an `AddSemigroup` under pointwise operations if `α` is."]
 protected def semigroup [Semigroup α] : Semigroup (Filter α) where
   mul := (· * ·)
@@ -698,13 +701,13 @@ theorem pow_mem_pow (hs : s ∈ f) : ∀ n : ℕ, s ^ n ∈ f ^ n
     exact one_mem_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_mem_mul hs (pow_mem_pow hs n)
+    exact mul_mem_mul (pow_mem_pow hs n) hs
 #align filter.pow_mem_pow Filter.pow_mem_pow
 #align filter.nsmul_mem_nsmul Filter.nsmul_mem_nsmul
 
 @[to_additive (attr := simp) nsmul_bot]
 theorem bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Filter α) ^ n = ⊥ := by
-  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, bot_mul]
+  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', bot_mul]
 #align filter.bot_pow Filter.bot_pow
 #align filter.nsmul_bot Filter.nsmul_bot
 
@@ -1051,7 +1054,8 @@ theorem smul_pure : f • pure b = f.map (· • b) :=
 #align filter.smul_pure Filter.smul_pure
 #align filter.vadd_pure Filter.vadd_pure
 
-@[to_additive] -- Porting note: removed `simp` attribute because `simpNF` says it can prove it.
+@[to_additive]
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_smul_pure : (pure a : Filter α) • (pure b : Filter β) = pure (a • b) :=
   map₂_pure
 #align filter.pure_smul_pure Filter.pure_smul_pure
@@ -1164,7 +1168,7 @@ theorem vsub_pure : f -ᵥ pure b = f.map (· -ᵥ b) :=
   map₂_pure_right
 #align filter.vsub_pure Filter.vsub_pure
 
--- Porting note: removed `simp` attribute because `simpNF` says it can prove it.
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_vsub_pure : (pure a : Filter β) -ᵥ pure b = (pure (a -ᵥ b) : Filter α) :=
   map₂_pure
 #align filter.pure_vsub_pure Filter.pure_vsub_pure

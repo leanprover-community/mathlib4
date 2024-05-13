@@ -48,7 +48,7 @@ theorem EssentiallySmall.mk' {C : Type u} [Category.{v} C] {S : Type w} [SmallCa
 
 /-- An arbitrarily chosen small model for an essentially small category.
 -/
---@[nolint has_nonempty_instance]
+-- Porting note(#5171) removed @[nolint has_nonempty_instance]
 @[pp_with_univ]
 def SmallModel (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C] : Type w :=
   Classical.choose (@EssentiallySmall.equiv_smallCategory C _ _)
@@ -72,10 +72,8 @@ theorem essentiallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Cate
     (e : C ≌ D) : EssentiallySmall.{w} C ↔ EssentiallySmall.{w} D := by
   fconstructor
   · rintro ⟨S, 𝒮, ⟨f⟩⟩
-    skip
     exact EssentiallySmall.mk' (e.symm.trans f)
   · rintro ⟨S, 𝒮, ⟨f⟩⟩
-    skip
     exact EssentiallySmall.mk' (e.trans f)
 #align category_theory.essentially_small_congr CategoryTheory.essentiallySmall_congr
 
@@ -102,7 +100,7 @@ instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small (X
   LocallySmall.hom_small X Y
 
 theorem locallySmall_of_faithful {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-    (F : C ⥤ D) [Faithful F] [LocallySmall.{w} D] : LocallySmall.{w} C where
+    (F : C ⥤ D) [F.Faithful] [LocallySmall.{w} D] : LocallySmall.{w} C where
   hom_small {_ _} := small_of_injective F.map_injective
 
 theorem locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
@@ -129,7 +127,7 @@ instance (priority := 100) locallySmall_of_essentiallySmall (C : Type u) [Catego
 /-- We define a type alias `ShrinkHoms C` for `C`. When we have `LocallySmall.{w} C`,
 we'll put a `Category.{w}` instance on `ShrinkHoms C`.
 -/
---@[nolint has_nonempty_instance]
+-- Porting note(#5171): removed @[nolint has_nonempty_instance]
 @[pp_with_univ]
 def ShrinkHoms (C : Type u) :=
   C
@@ -222,13 +220,10 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
   · intro h
     fconstructor
     · rcases h with ⟨S, 𝒮, ⟨e⟩⟩
-      skip
       refine' ⟨⟨Skeleton S, ⟨_⟩⟩⟩
       exact e.skeletonEquiv
-    · skip
-      infer_instance
+    · infer_instance
   · rintro ⟨⟨S, ⟨e⟩⟩, L⟩
-    skip
     let e' := (ShrinkHoms.equivalence C).skeletonEquiv.symm
     letI : Category S := InducedCategory.category (e'.trans e).symm
     refine' ⟨⟨S, this, ⟨_⟩⟩⟩

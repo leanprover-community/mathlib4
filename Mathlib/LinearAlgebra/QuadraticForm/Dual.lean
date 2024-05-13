@@ -129,7 +129,6 @@ end Semiring
 section Ring
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
-
 variable {R M}
 
 /-- The isometry sending `(Q.prod <| -Q)` to `(QuadraticForm.dualProd R M)`.
@@ -145,9 +144,11 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
     (LinearMap.fst _ _ _ - LinearMap.snd _ _ _)
   map_app' x := by
     dsimp only [associated, associatedHom]
-    dsimp
-    -- Porting note: added `()` around `Submonoid.smul_def`
-    simp [polar_comm _ x.1 x.2, ← sub_add, mul_sub, sub_mul, smul_sub, (Submonoid.smul_def), ←
+    dsimp only [LinearMap.smul_apply, LinearMap.coe_mk, AddHom.coe_mk, AddHom.toFun_eq_coe,
+      LinearMap.coe_toAddHom, LinearMap.prod_apply, Pi.prod, LinearMap.add_apply,
+      LinearMap.coe_comp, Function.comp_apply, LinearMap.fst_apply, LinearMap.snd_apply,
+      LinearMap.sub_apply, dualProd_apply, polarBilin_apply_apply, prod_apply, neg_apply]
+    simp [polar_comm _ x.1 x.2, ← sub_add, mul_sub, sub_mul, smul_sub, Submonoid.smul_def, ←
       sub_eq_add_neg (Q x.1) (Q x.2)]
 #align quadratic_form.to_dual_prod QuadraticForm.toDualProdₓ
 

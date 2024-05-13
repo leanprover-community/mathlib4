@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Power
+import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Bitwise
 import Mathlib.Algebra.Parity
 

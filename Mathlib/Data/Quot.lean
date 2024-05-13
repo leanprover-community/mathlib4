@@ -17,9 +17,6 @@ This module extends the core library's treatment of quotient types (`Init.Core`)
 quotient
 -/
 
-set_option autoImplicit true
-
-
 variable {α : Sort*} {β : Sort*}
 
 namespace Setoid
@@ -40,12 +37,11 @@ namespace Quot
 
 variable {ra : α → α → Prop} {rb : β → β → Prop} {φ : Quot ra → Quot rb → Sort*}
 
--- mathport name: mk
 @[inherit_doc Quot.mk]
 local notation3:arg "⟦" a "⟧" => Quot.mk _ a
 
 @[elab_as_elim]
-protected theorem induction_on {α : Sort u} {r : α → α → Prop} {β : Quot r → Prop} (q : Quot r)
+protected theorem induction_on {α : Sort*} {r : α → α → Prop} {β : Quot r → Prop} (q : Quot r)
     (h : ∀ a, β (Quot.mk r a)) : β q :=
   ind h q
 
@@ -170,28 +166,28 @@ protected def recOnSubsingleton₂ {φ : Quot r → Quot s → Sort*}
     [h : ∀ a b, Subsingleton (φ ⟦a⟧ ⟦b⟧)] (q₁ : Quot r)
     (q₂ : Quot s) (f : ∀ a b, φ ⟦a⟧ ⟦b⟧) : φ q₁ q₂ :=
   @Quot.recOnSubsingleton _ r (fun q ↦ φ q q₂)
-    (fun a ↦ Quot.ind (β := λ b => Subsingleton (φ (mk r a) b)) (h a) q₂) q₁
+    (fun a ↦ Quot.ind (β := fun b ↦ Subsingleton (φ (mk r a) b)) (h a) q₂) q₁
     fun a ↦ Quot.recOnSubsingleton q₂ fun b ↦ f a b
 #align quot.rec_on_subsingleton₂ Quot.recOnSubsingleton₂
 
 @[elab_as_elim]
 protected theorem induction_on₂ {δ : Quot r → Quot s → Prop} (q₁ : Quot r) (q₂ : Quot s)
     (h : ∀ a b, δ (Quot.mk r a) (Quot.mk s b)) : δ q₁ q₂ :=
-  Quot.ind (β := λ a => δ a q₂) (fun a₁ ↦ Quot.ind (fun a₂ ↦ h a₁ a₂) q₂) q₁
+  Quot.ind (β := fun a ↦ δ a q₂) (fun a₁ ↦ Quot.ind (fun a₂ ↦ h a₁ a₂) q₂) q₁
 #align quot.induction_on₂ Quot.induction_on₂
 
 @[elab_as_elim]
 protected theorem induction_on₃ {δ : Quot r → Quot s → Quot t → Prop} (q₁ : Quot r)
     (q₂ : Quot s) (q₃ : Quot t) (h : ∀ a b c, δ (Quot.mk r a) (Quot.mk s b) (Quot.mk t c)) :
     δ q₁ q₂ q₃ :=
-  Quot.ind (β := λ a => δ a q₂ q₃) (fun a₁ ↦ Quot.ind (β := λ b => δ _ b q₃)
+  Quot.ind (β := fun a ↦ δ a q₂ q₃) (fun a₁ ↦ Quot.ind (β := fun b ↦ δ _ b q₃)
     (fun a₂ ↦ Quot.ind (fun a₃ ↦ h a₁ a₂ a₃) q₃) q₂) q₁
 #align quot.induction_on₃ Quot.induction_on₃
 
 instance lift.decidablePred (r : α → α → Prop) (f : α → Prop) (h : ∀ a b, r a b → f a = f b)
     [hf : DecidablePred f] :
     DecidablePred (Quot.lift f h) :=
-  fun q ↦ Quot.recOnSubsingleton (motive := λ _ => Decidable _) q hf
+  fun q ↦ Quot.recOnSubsingleton (motive := fun _ ↦ Decidable _) q hf
 
 /-- Note that this provides `DecidableRel (Quot.Lift₂ f ha hb)` when `α = β`. -/
 instance lift₂.decidablePred (r : α → α → Prop) (s : β → β → Prop) (f : α → β → Prop)
@@ -216,7 +212,6 @@ end Quot
 namespace Quotient
 
 variable [sa : Setoid α] [sb : Setoid β]
-
 variable {φ : Quotient sa → Quotient sb → Sort*}
 
 -- Porting note: in mathlib3 this notation took the Setoid as an instance-implicit argument,
@@ -351,6 +346,11 @@ theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} [Setoid α] (f : α → 
 theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.mk r) :=
   Quot.exists_rep
 #align surjective_quot_mk surjective_quot_mk
+
+/-- `Quotient.mk` is a surjective function. -/
+theorem surjective_quotient_mk {α : Sort*} (s : Setoid α) :
+    Function.Surjective (Quotient.mk s) :=
+  Quot.exists_rep
 
 /-- `Quotient.mk'` is a surjective function. -/
 theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
@@ -636,7 +636,7 @@ protected theorem liftOn'_mk'' (f : α → φ) (h) (x : α) :
   rfl
 
 @[simp] lemma surjective_liftOn' {f : α → φ} (h) :
-    Function.Surjective (λ x : Quotient s₁ => x.liftOn' f h) ↔ Function.Surjective f :=
+    Function.Surjective (fun x : Quotient s₁ ↦ x.liftOn' f h) ↔ Function.Surjective f :=
   Quot.surjective_lift _
 #align quotient.surjective_lift_on' Quotient.surjective_liftOn'
 

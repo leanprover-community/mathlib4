@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.Basic
 
 #align_import ring_theory.mv_polynomial.tower from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
 
@@ -28,11 +28,8 @@ namespace MvPolynomial
 section Semiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B]
-
 variable [IsScalarTower R A B]
-
 variable {R B}
 
 theorem aeval_map_algebraMap (x : σ → B) (p : MvPolynomial σ R) :
@@ -45,9 +42,7 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
-
 variable {R A}
 
 theorem aeval_algebraMap_apply (x : σ → A) (p : MvPolynomial σ R) :

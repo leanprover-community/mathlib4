@@ -245,11 +245,11 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
         rw [← lift_le.{w'}, lift_lift, lift_lift] at h1
         exact ⟨h2, h1⟩)
       (hN0.trans (by rw [← lift_umax', lift_id]))
-  · letI := (lhomWithConstants L M).reduct N
-    haveI h : N ⊨ L.elementaryDiagram M :=
-      (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
-    refine' ⟨Bundled.of N, ⟨_⟩, hN⟩
-    apply ElementaryEmbedding.ofModelsElementaryDiagram L M N
+  letI := (lhomWithConstants L M).reduct N
+  haveI h : N ⊨ L.elementaryDiagram M :=
+    (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
+  refine' ⟨Bundled.of N, ⟨_⟩, hN⟩
+  apply ElementaryEmbedding.ofModelsElementaryDiagram L M N
 #align first_order.language.exists_elementary_embedding_card_eq_of_ge FirstOrder.Language.exists_elementaryEmbedding_card_eq_of_ge
 
 end
@@ -298,13 +298,12 @@ theorem exists_model_card_eq (h : ∃ M : ModelType.{u, v, max u v} T, Infinite 
 variable (T)
 
 /-- A theory models a (bounded) formula when any of its nonempty models realizes that formula on all
-  inputs.-/
+  inputs. -/
 def ModelsBoundedFormula (φ : L.BoundedFormula α n) : Prop :=
   ∀ (M : ModelType.{u, v, max u v} T) (v : α → M) (xs : Fin n → M), φ.Realize v xs
 #align first_order.language.Theory.models_bounded_formula FirstOrder.Language.Theory.ModelsBoundedFormula
 
 -- Porting note: In Lean3 it was `⊨` but ambiguous.
--- mathport name: models_bounded_formula
 @[inherit_doc FirstOrder.Language.Theory.ModelsBoundedFormula]
 infixl:51 " ⊨ᵇ " => ModelsBoundedFormula -- input using \|= or \vDash, but not using \models
 
@@ -557,7 +556,7 @@ theorem sup_semanticallyEquivalent_not_inf_not :
 
 theorem inf_semanticallyEquivalent_not_sup_not :
     T.SemanticallyEquivalent (φ ⊓ ψ) (φ.not ⊔ ψ.not).not := fun M v xs => by
-  simp [and_iff_not_or_not]
+  simp
 #align first_order.language.bounded_formula.inf_semantically_equivalent_not_sup_not FirstOrder.Language.BoundedFormula.inf_semanticallyEquivalent_not_sup_not
 
 theorem all_semanticallyEquivalent_not_ex_not (φ : L.BoundedFormula α (n + 1)) :
@@ -570,7 +569,6 @@ theorem ex_semanticallyEquivalent_not_all_not (φ : L.BoundedFormula α (n + 1))
 
 theorem semanticallyEquivalent_all_liftAt : T.SemanticallyEquivalent φ (φ.liftAt 1 n).all :=
   fun M v xs => by
-  skip
   rw [realize_iff, realize_all_liftAt_one_self]
 #align first_order.language.bounded_formula.semantically_equivalent_all_lift_at FirstOrder.Language.BoundedFormula.semanticallyEquivalent_all_liftAt
 

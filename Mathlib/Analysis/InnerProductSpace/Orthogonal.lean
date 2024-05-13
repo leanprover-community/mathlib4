@@ -25,11 +25,8 @@ The proposition that two submodules are orthogonal, `Submodule.IsOrtho`, is deno
 Note this is not the same unicode symbol as `⊥` (`Bot`).
 -/
 
-
-variable {𝕜 E F : Type*} [IsROrC 𝕜]
-
+variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y

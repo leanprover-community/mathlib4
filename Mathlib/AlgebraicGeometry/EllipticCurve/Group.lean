@@ -140,7 +140,7 @@ set_option linter.uppercaseLean3 false in
 
 lemma C_addPolynomial (x y L : R) : mk W (C <| W.addPolynomial x y L) =
     mk W ((Y - C (linePolynomial x y L)) * (W.negPolynomial - C (linePolynomial x y L))) :=
-  AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [W.C_addPolynomial, add_sub_cancel', mul_one]⟩
+  AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [W.C_addPolynomial, add_sub_cancel_left, mul_one]⟩
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.C_add_polynomial WeierstrassCurve.Affine.CoordinateRing.C_addPolynomial
 
@@ -266,7 +266,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁
         XYIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)
           (C <| W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
   have sup_rw : ∀ a b c d : Ideal W.CoordinateRing, a ⊔ (b ⊔ (c ⊔ d)) = a ⊔ d ⊔ b ⊔ c :=
-    fun _ _ c _ => by rw [← sup_assoc, @sup_comm _ _ c, sup_sup_sup_comm, ← sup_assoc]
+    fun _ _ c _ => by rw [← sup_assoc, sup_comm c, sup_sup_sup_comm, ← sup_assoc]
   rw [XYIdeal_add_eq, XIdeal, mul_comm, XYIdeal_eq₁ W x₁ y₁ <| W.slope x₁ x₂ y₁ y₂, XYIdeal,
     XYIdeal_eq₂ h₁ h₂ hxy, XYIdeal, span_pair_mul_span_pair]
   simp_rw [span_insert, sup_rw, Ideal.sup_mul, span_singleton_mul_span_singleton]
@@ -631,6 +631,8 @@ lemma add_assoc (P Q R : W.Point) : P + Q + R = P + (Q + R) :=
 #align weierstrass_curve.point.add_assoc WeierstrassCurve.Affine.Point.add_assoc
 
 noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
+  nsmul := nsmulRec
+  zsmul := zsmulRec
   zero_add := zero_add
   add_zero := add_zero
   add_left_neg := add_left_neg
