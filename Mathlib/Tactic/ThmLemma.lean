@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
+import Lean.Linter.Util
 
 /-!
--- once the replacement is done, uncomment the next import and restore the `logLint` below
---import Lean.Linter.Util
 
 #  The `theorem` vs `lemma` linter
 
@@ -39,13 +38,13 @@ def thmNoDoc : Syntax → Option (Syntax × Syntax)
   | _ => none
 
 /-- The `theorem` vs `lemma` linter emits a warning on a `theorem` without a doc-string. -/
-register_option linter.ThmLemma : Bool := {
+register_option linter.thmLemma : Bool := {
   defValue := true
   descr := "enable the `theorem` vs `lemma` linter"
 }
 
-/-- Gets the value of the `linter.ThmLemma` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.ThmLemma o
+/-- Gets the value of the `linter.thmLemma` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.thmLemma o
 
 /-- The main implementation of the `theorem` vs `lemma` linter. -/
 def thmLemmaLinter : Linter where
@@ -56,9 +55,8 @@ def thmLemmaLinter : Linter where
       return
     match thmNoDoc stx with
     | none => return
-    | some (thm, _id) =>
-      logInfoAt thm ""
---      Linter.logLint linter.ThmLemma thm m!"'theorem' requires a doc-string. \
---                                             Either add one to '{id}' or use 'lemma' instead."
+    | some (thm, id) =>
+      Linter.logLint linter.thmLemma thm m!"'theorem' requires a doc-string. \
+                                            Either add one to '{id}' or use 'lemma' instead."
 
 initialize addLinter thmLemmaLinter
