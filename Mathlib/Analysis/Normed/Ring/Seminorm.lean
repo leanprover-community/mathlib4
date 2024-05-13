@@ -390,23 +390,24 @@ lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) 
       _ ≤ n + 1 := add_le_add_right hn 1
 
 noncomputable section
+open Int
 variable {R : Type*} [Ring R]
 variable {f g : MulRingNorm ℚ}
 
 /-- A multiplicative norm composed with the absolute value on integers equals the norm itself. -/
-lemma f_of_abs_eq_f (x : ℤ) (f : MulRingNorm ℚ) : f (Int.natAbs x) = f x := by
-  obtain ⟨n,rfl|rfl⟩ := Int.eq_nat_or_neg x
-  · simp only [Int.natAbs_ofNat, Int.cast_natCast]
-  · simp only [Int.natAbs_neg, Int.natAbs_ofNat, Int.cast_neg, Int.cast_natCast, map_neg_eq_map]
+lemma MulRingNorm.apply_natAbs_eq (x : ℤ) (f : MulRingNorm R) : f (natAbs x) = f x := by
+  obtain ⟨n,rfl|rfl⟩ := eq_nat_or_neg x
+  · simp only [natAbs_ofNat, cast_natCast]
+  · simp only [natAbs_neg, natAbs_ofNat, cast_neg, cast_natCast, map_neg_eq_map]
 
 /-- Values of a multiplicative norm of the rationals are determined by the values on the
 integers. -/
 lemma NormRat_eq_on_Int_iff_eq_on_Nat : (∀ n : ℕ , f n = g n) ↔ (∀ n : ℤ , f n = g n) := by
   refine' ⟨_, fun a n => a n⟩
   intro h z
-  obtain ⟨n,rfl | rfl ⟩ := Int.eq_nat_or_neg z
+  obtain ⟨n,rfl | rfl ⟩ := eq_nat_or_neg z
   · exact h n
-  · simp only [Int.cast_neg, Int.cast_ofNat, map_neg_eq_map]
+  · simp only [cast_neg, cast_ofNat, map_neg_eq_map]
     exact h n
 
 /-- Values of a multiplicative norm of the rationals are determined by the values on the natural
@@ -415,25 +416,17 @@ lemma NormRat_eq_iff_eq_on_Nat : (∀ n : ℕ , f n = g n) ↔ f = g := by
   refine' ⟨_, fun h n => congrFun (congrArg DFunLike.coe h) ↑n⟩
   intro h
   ext z
-  rw [← Rat.num_div_den z]
-  simp only [map_div₀]
-  rw [h, NormRat_eq_on_Int_iff_eq_on_Nat.mp h]
+  rw [← Rat.num_div_den z, map_div₀, map_div₀, h, NormRat_eq_on_Int_iff_eq_on_Nat.mp h]
 
 /-- The equivalence class of a multiplicative norm on the rationals is determined by its values on
 the natural numbers. -/
 lemma NormRat_equiv_iff_equiv_on_Nat : (∃ c : ℝ, 0 < c ∧ (∀ n : ℕ , (f n)^c = g n)) ↔
     f.equiv g := by
-  constructor
-  · intro h
-    obtain ⟨c, hc, h⟩ := h
+    refine ⟨?_, fun ⟨c, hc, h⟩ ↦ ⟨c, ⟨hc, fun n ↦ by rw [← h]⟩⟩⟩
+    intro ⟨c, hc, h⟩
     use c
     refine ⟨hc, ?_⟩
     ext x
     rw [← Rat.num_div_den x, map_div₀, map_div₀, Real.div_rpow (apply_nonneg f _)
-      (apply_nonneg f _), h x.den, ← f_of_abs_eq_f,← f_of_abs_eq_f,h (Int.natAbs x.num)]
-  · intro h
-    obtain ⟨c, hc, h⟩ := h
-    use c
-    refine ⟨hc, ?_ ⟩
-    intro n
-    rw [← h]
+      (apply_nonneg f _), h x.den, ← MulRingNorm.apply_natAbs_eq,← MulRingNorm.apply_natAbs_eq,
+      h (natAbs x.num)]
