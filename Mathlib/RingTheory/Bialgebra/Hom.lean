@@ -203,6 +203,20 @@ theorem mk_coe {f : A →ₐc[R] B} (h₀ h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨⟨⟨f, h₀⟩, h₁⟩, h₂, h₃⟩, h₄, h₅⟩ : A →ₐc[R] B) = f :=
   rfl
 
+/-- Copy of a `BialgHom` with a new `toFun` equal to the old one. Useful to fix definitional
+equalities. -/
+protected def copy (f : A →ₐc[R] B) (f' : A → B) (h : f' = ⇑f) : A →ₐc[R] B :=
+  { toCoalgHom := (f : A →ₗc[R] B).copy f' h
+    map_one' := by simp_all
+    map_mul' := by intros; simp_all }
+
+@[simp]
+theorem coe_copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=
+  rfl
+
+theorem copy_eq (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : f.copy f' h = f :=
+  DFunLike.ext' h
+
 section
 
 variable (R A)
