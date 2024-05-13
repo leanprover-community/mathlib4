@@ -408,10 +408,8 @@ def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
 
 lemma psum_def (n : ℕ) : psum σ R n = ∑ i, X i ^ n := rfl
 
-/--
-`psumMu` is the product of the symmetric polynomials `psum μᵢ`,
-where `μ = (μ₁, μ₂, ...)` is a partition.
--/
+/-- `psumMu` is the product of the symmetric polynomials `psum μᵢ`,
+where `μ = (μ₁, μ₂, ...)` is a partition. -/
 def psumMu {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
   muProduct σ R (psum σ R) μ
 
