@@ -145,7 +145,7 @@ theorem length_simple (i : B) : ℓ (s i) = 1 := by
   · by_contra! length_lt_one
     have : cs.lengthParity (s i) = Multiplicative.ofAdd 0 := by
       rw [lengthParity_eq_ofAdd_length, Nat.lt_one_iff.mp length_lt_one, Nat.cast_zero]
-    have : Multiplicative.ofAdd 0 = Multiplicative.ofAdd 1 :=
+    have : Multiplicative.ofAdd (0 : ZMod 2) = Multiplicative.ofAdd 1 :=
       this.symm.trans (cs.lengthParity_simple i)
     contradiction
 
