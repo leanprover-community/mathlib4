@@ -391,14 +391,14 @@ lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) 
 
 noncomputable section
 open Int
-variable {R : Type*} [Ring R]
-variable {f g : MulRingNorm ℚ}
 
 /-- A multiplicative norm composed with the absolute value on integers equals the norm itself. -/
-lemma MulRingNorm.apply_natAbs_eq (x : ℤ) (f : MulRingNorm R) : f (natAbs x) = f x := by
+lemma MulRingNorm.apply_natAbs_eq {R : Type*} [Ring R] (x : ℤ) (f : MulRingNorm R) : f (natAbs x) = f x := by
   obtain ⟨n,rfl|rfl⟩ := eq_nat_or_neg x
   · simp only [natAbs_ofNat, cast_natCast]
   · simp only [natAbs_neg, natAbs_ofNat, cast_neg, cast_natCast, map_neg_eq_map]
+
+variable {f g : MulRingNorm ℚ}
 
 /-- Values of a multiplicative norm of the rationals are determined by the values on the
 integers. -/
