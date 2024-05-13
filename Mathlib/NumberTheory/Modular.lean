@@ -311,11 +311,11 @@ theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0
     ⟨⟨x, hx.2⟩⟩
   obtain ⟨g, hg⟩ := Filter.Tendsto.exists_forall_le (tendsto_abs_re_smul z hcd)
   refine' ⟨g, g.2, _⟩
-  · intro g1 hg1
-    have : g1 ∈ (fun g : SL(2, ℤ) => (↑ₘg) 1) ⁻¹' {cd} := by
-      rw [Set.mem_preimage, Set.mem_singleton_iff]
-      exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.2))
-    exact hg ⟨g1, this⟩
+  intro g1 hg1
+  have : g1 ∈ (fun g : SL(2, ℤ) => (↑ₘg) 1) ⁻¹' {cd} := by
+    rw [Set.mem_preimage, Set.mem_singleton_iff]
+    exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.2))
+  exact hg ⟨g1, this⟩
 #align modular_group.exists_row_one_eq_and_min_re ModularGroup.exists_row_one_eq_and_min_re
 
 theorem coe_T_zpow_smul_eq {n : ℤ} : (↑(T ^ n • z) : ℂ) = z + n := by

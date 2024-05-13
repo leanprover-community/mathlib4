@@ -116,12 +116,12 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
     fapply NatIso.ofComponents
     · intro U
       refine' asIso (f.c.app (op (H.openFunctor.obj (unop U)))) ≪≫ X.presheaf.mapIso (eqToIso _)
-      · induction U using Opposite.rec' with | h U => ?_
-        cases U
-        dsimp only [IsOpenMap.functor, Functor.op, Opens.map]
-        congr 2
-        erw [Set.preimage_image_eq _ H.base_open.inj]
-        rfl
+      induction U using Opposite.rec' with | h U => ?_
+      cases U
+      dsimp only [IsOpenMap.functor, Functor.op, Opens.map]
+      congr 2
+      erw [Set.preimage_image_eq _ H.base_open.inj]
+      rfl
     · intro U V i
       simp only [CategoryTheory.eqToIso.hom, TopCat.Presheaf.pushforwardObj_map, Category.assoc,
         Functor.op_map, Iso.trans_hom, asIso_hom, Functor.mapIso_hom, ← X.presheaf.map_comp]
@@ -133,12 +133,12 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
 theorem isoRestrict_hom_ofRestrict : H.isoRestrict.hom ≫ Y.ofRestrict _ = f := by
   -- Porting note: `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ rfl <| NatTrans.ext _ _ <| funext fun x => ?_
-  · simp only [isoRestrict_hom_c_app, NatTrans.comp_app, eqToHom_refl,
-      ofRestrict_c_app, Category.assoc, whiskerRight_id']
-    erw [Category.comp_id, comp_c_app, f.c.naturality_assoc, ← X.presheaf.map_comp]
-    trans f.c.app x ≫ X.presheaf.map (𝟙 _)
-    · congr 1
-    · erw [X.presheaf.map_id, Category.comp_id]
+  simp only [isoRestrict_hom_c_app, NatTrans.comp_app, eqToHom_refl,
+    ofRestrict_c_app, Category.assoc, whiskerRight_id']
+  erw [Category.comp_id, comp_c_app, f.c.naturality_assoc, ← X.presheaf.map_comp]
+  trans f.c.app x ≫ X.presheaf.map (𝟙 _)
+  · congr 1
+  · erw [X.presheaf.map_id, Category.comp_id]
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.iso_restrict_hom_of_restrict AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.isoRestrict_hom_ofRestrict
 
 @[simp]
@@ -291,8 +291,8 @@ instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
     · -- Porting note: was `apply Subsingleton.helim; rw [this]`
       -- See https://github.com/leanprover/lean4/issues/2273
       congr
-      simp only [unop_op]
-      congr
+      · simp only [unop_op]
+        congr
       apply Subsingleton.helim
       rw [this]
     · infer_instance
@@ -1172,11 +1172,11 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
   rw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   -- Porting note (#11224): change `rw` to `erw` on this lemma
-  erw [TopCat.pullback_fst_range]
-  ext
-  constructor
-  · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
-  · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
+  · erw [TopCat.pullback_fst_range]
+    ext
+    constructor
+    · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
+    · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
   · rw [← TopCat.epi_iff_surjective]
     rw [show (inv (pullback.snd : pullback f g ⟶ _)).val.base = _ from
         (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).map_inv _]

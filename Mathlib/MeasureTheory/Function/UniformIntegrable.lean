@@ -354,23 +354,23 @@ theorem Memℒp.snorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf 
       rw [norm_indicator_eq_indicator_norm, Set.indicator_apply]
       · split_ifs with h
         exacts [h, hMpos])
-  · refine' ⟨δ, hδpos, fun s hs hμs => _⟩
-    rw [(_ : f = { x : α | M ≤ ‖f x‖₊ }.indicator f + { x : α | ‖f x‖ < M }.indicator f)]
-    · rw [snorm_indicator_eq_snorm_restrict hs]
-      refine' le_trans (snorm_add_le _ _ hp_one) _
-      · exact StronglyMeasurable.aestronglyMeasurable
-          (hmeas.indicator (measurableSet_le measurable_const hmeas.nnnorm.measurable.subtype_coe))
-      · exact StronglyMeasurable.aestronglyMeasurable
-          (hmeas.indicator (measurableSet_lt hmeas.nnnorm.measurable.subtype_coe measurable_const))
-      · rw [two_mul]
-        refine' add_le_add (le_trans (snorm_mono_measure _ Measure.restrict_le_self) hM) _
-        rw [← snorm_indicator_eq_snorm_restrict hs]
-        exact hδ s hs hμs
-    · ext x
-      by_cases hx : M ≤ ‖f x‖
-      · rw [Pi.add_apply, Set.indicator_of_mem, Set.indicator_of_not_mem, add_zero] <;> simpa
-      · rw [Pi.add_apply, Set.indicator_of_not_mem, Set.indicator_of_mem, zero_add] <;>
-          simpa using hx
+  refine' ⟨δ, hδpos, fun s hs hμs => _⟩
+  rw [(_ : f = { x : α | M ≤ ‖f x‖₊ }.indicator f + { x : α | ‖f x‖ < M }.indicator f)]
+  · rw [snorm_indicator_eq_snorm_restrict hs]
+    refine' le_trans (snorm_add_le _ _ hp_one) _
+    · exact StronglyMeasurable.aestronglyMeasurable
+        (hmeas.indicator (measurableSet_le measurable_const hmeas.nnnorm.measurable.subtype_coe))
+    · exact StronglyMeasurable.aestronglyMeasurable
+        (hmeas.indicator (measurableSet_lt hmeas.nnnorm.measurable.subtype_coe measurable_const))
+    · rw [two_mul]
+      refine' add_le_add (le_trans (snorm_mono_measure _ Measure.restrict_le_self) hM) _
+      rw [← snorm_indicator_eq_snorm_restrict hs]
+      exact hδ s hs hμs
+  · ext x
+    by_cases hx : M ≤ ‖f x‖
+    · rw [Pi.add_apply, Set.indicator_of_mem, Set.indicator_of_not_mem, add_zero] <;> simpa
+    · rw [Pi.add_apply, Set.indicator_of_not_mem, Set.indicator_of_mem, zero_add] <;>
+        simpa using hx
 #align measure_theory.mem_ℒp.snorm_indicator_le' MeasureTheory.Memℒp.snorm_indicator_le'
 
 /-- This lemma is superceded by `MeasureTheory.Memℒp.snorm_indicator_le` which does not require
@@ -808,12 +808,12 @@ theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
           ((hf i).indicator ((hf i).nnnorm.measurableSet_lt stronglyMeasurable_const)))
         (StronglyMeasurable.aestronglyMeasurable
           ((hf i).indicator (stronglyMeasurable_const.measurableSet_le (hf i).nnnorm))) hp)
-      · rw [Pi.add_apply, Set.indicator_apply]
-        split_ifs with hx
-        · rw [Set.indicator_of_not_mem, add_zero]
-          simpa using hx
-        · rw [Set.indicator_of_mem, zero_add]
-          simpa using hx
+      rw [Pi.add_apply, Set.indicator_apply]
+      split_ifs with hx
+      · rw [Set.indicator_of_not_mem, add_zero]
+        simpa using hx
+      · rw [Set.indicator_of_mem, zero_add]
+        simpa using hx
     _ ≤ (C : ℝ≥0∞) * μ Set.univ ^ p.toReal⁻¹ + 1 := by
       have : ∀ᵐ x ∂μ, ‖{ x : α | ‖f i x‖₊ < C }.indicator (f i) x‖₊ ≤ C := by
         filter_upwards
