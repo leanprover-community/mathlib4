@@ -125,7 +125,7 @@ theorem dedup_map_dedup_eq [DecidableEq β] (f : α → β) (s : Multiset α) :
 theorem dedup_map_of_injective [DecidableEq β] {f : α → β} (hinj : f.Injective)
     (s : Multiset α) : dedup (map f s) = map f (dedup s) := by
   rw [← dedup_map_dedup_eq]
-  apply Multiset.dedup_eq_self.mpr
+  apply dedup_eq_self.mpr
   rw [Multiset.nodup_map_iff_of_injective hinj]
   exact Multiset.nodup_dedup s
 
