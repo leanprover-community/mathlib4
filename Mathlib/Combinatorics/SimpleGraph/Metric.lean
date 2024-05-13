@@ -122,14 +122,16 @@ theorem dist_comm {u v : V} : G.dist u v = G.dist v u := by
     simp [h, h', dist_eq_zero_of_not_reachable]
 #align simple_graph.dist_comm SimpleGraph.dist_comm
 
-lemma Reachable.of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) : G.Reachable u v := by
-  apply dist_eq_zero_iff_eq_or_not_reachable.not.mp at h
-  push_neg at h
-  exact h.2
+lemma dist_ne_zero_iff_ne_and_reachable {u v : V} : G.dist u v ≠ 0 ↔ u ≠ v ∧ G.Reachable u v := by
+  rw [ne_eq, dist_eq_zero_iff_eq_or_not_reachable.not]
+  push_neg; rfl
+
+lemma Reachable.of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) : G.Reachable u v :=
+  (dist_ne_zero_iff_ne_and_reachable.mp h).2
 
 lemma exists_walk_of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) :
     ∃ p : G.Walk u v, p.length = G.dist u v :=
-  Reachable.exists_walk_of_dist (Reachable.of_dist_ne_zero h)
+  (Reachable.of_dist_ne_zero h).exists_walk_of_dist
 
 /- The distance between vertices is equal to `1` if and only if these vertices are adjacent. -/
 theorem dist_eq_one_iff_adj {u v : V} : G.dist u v = 1 ↔ G.Adj u v := by
@@ -137,24 +139,20 @@ theorem dist_eq_one_iff_adj {u v : V} : G.dist u v = 1 ↔ G.Adj u v := by
   · let ⟨w, hw⟩ := exists_walk_of_dist_ne_zero (ne_zero_of_eq_one h)
     rw [h] at hw
     apply w.adj_of_length_eq_one hw
-  · have : (Adj.toWalk h).length = 1 := by rw [Walk.length_cons, Walk.length_nil]
+  · have : h.toWalk.length = 1 := by rw [Walk.length_cons, Walk.length_nil]
     have : G.dist u v ≤ 1 := by
       rw [← this]
       apply dist_le
-    rw [← LE.le.ge_iff_eq this, Nat.succ_le_iff]
-    apply Reachable.pos_dist_of_ne
-    · apply Adj.reachable h
-    · apply Adj.ne h
+    rw [← this.ge_iff_eq, Nat.succ_le_iff]
+    exact h.reachable.pos_dist_of_ne h.ne
 
 theorem dist_eq_two_iff {u v : V} :
     G.dist u v = 2 ↔ u ≠ v ∧ ¬ G.Adj u v ∧ Nonempty (G.commonNeighbors u v) := by
   refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun h ↦ ?_⟩
-  · have : G.dist u v ≠ 0 := by simp [h]
-    rw [ne_eq, ← Reachable.dist_eq_zero_iff (Reachable.of_dist_ne_zero this), ← ne_eq]
-    exact this
-  · rw [← dist_eq_one_iff_adj, h]
-    omega
-  · have : G.dist u v ≠ 0 := by simp [h]
+  · have : G.dist u v ≠ 0 := by omega
+    exact (dist_ne_zero_iff_ne_and_reachable.mp this).1
+  · rw [← dist_eq_one_iff_adj, h]; omega
+  · have : G.dist u v ≠ 0 := by omega
     obtain ⟨w, hw⟩ := exists_walk_of_dist_ne_zero this
     rw [h] at hw
     exact w.commonNeighbors_of_length_eq_two hw
@@ -188,8 +186,7 @@ theorem two_lt_dist_iff {u v : V} :
     exact this
   case c =>
     have : G.dist u v ≠ 0 := by omega
-    rw [ne_eq, ← Reachable.dist_eq_zero_iff (Reachable.of_dist_ne_zero this), ← ne_eq]
-    exact this
+    exact (dist_ne_zero_iff_ne_and_reachable.mp this).1
   · have : G.dist u v ≠ 0 := by omega
     exact Reachable.of_dist_ne_zero this
   · obtain ⟨hn, ha, h, hr⟩ := h
