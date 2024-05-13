@@ -38,6 +38,7 @@ structure ContinuousAffineMap (R : Type*) {V W : Type*} (P Q : Type*) [Ring R] [
   cont : Continuous toFun
 #align continuous_affine_map ContinuousAffineMap
 
+/-- A continuous map of affine spaces. -/
 notation:25 P " →ᴬ[" R "] " Q => ContinuousAffineMap R P Q
 
 namespace ContinuousAffineMap
