@@ -19,9 +19,26 @@ open Lean Elab Command
 
 namespace Mathlib.Linter.ge_or_gt
 
+def is_ge_or_gt : Syntax → Bool
+  | `($_ ≥ $_) => true
+  | `($_ > $_) => true
+  | _ => false
+
+/- places where this is allowed:
+- comments and doc comments, obviously
+- custom notation, like `ℚ≥0` (including local notation, e.g.
+  `local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}` in Order/Nonneg/Module.lean)        fine
+
+- under binders, like `∀ ε > 0, ∃ i, ∀ j ≥ i, abv (f j - f i) < ε` (with `∀` or `∃`)
+- just check in theorem statements for now - this is important for rewrites!
+in proofs, we ignore this!
+-/
 def contains_illegal_ge_gt : Syntax → Bool
-  -- TODO: fill in!
-  | _stx => true
+  | `($_:ident) => false
+  | `(Exists $_x:ident > $_y:term) => false -- allow
+  | `(Forall $_x:ident > $_y:term) => false -- allow
+  -- | `($_:missing) => false
+  | _ => true
 
 /-- The `ge_or_gt` linter emits a warning if a declaration contains `≥` or `>`
   in illegal places. -/
@@ -30,7 +47,7 @@ register_option linter.geOrGt : Bool := {
   descr := "enable the `ge_or_gt` linter"
 }
 
--- xxx: should this be moved to a different place?
+-- xxx: should this be moved to a different, common  place?
 /-- Gets the value of the `linter.geOrGt` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.geOrGt o
 
@@ -42,14 +59,20 @@ def getOrGtLinter : Linter where
     if (← MonadState.get).messages.hasErrors then
       return
     -- content here
-    match contains_illegal_ge_gt stx with
+    match stx.findStack? (fun _ ↦ true) is_ge_or_gt with
+    | some ((head, _n)::_chain) =>
+        Linter.logLint linter.geOrGt head m!"'errro message here theorem' requires a doc-string. "--\
+    --                                        Either add one to '{id}' or use 'lemma' instead."
+    | _ => return
+     --true--eturn
+/-    match contains_illegal_ge_gt stx with
       | false => return
       | true => return
     -- | none => return
     -- | some (thm, _id) =>
     -- Linter.logLint linter.geOrGt thm m!"'theorem' requires a doc-string. \
     --                                           Either add one to '{id}' or use 'lemma' instead."
-    --   logInfoAt thm ""
+    --   logInfoAt thm "" -/
 
 initialize addLinter getOrGtLinter
 
