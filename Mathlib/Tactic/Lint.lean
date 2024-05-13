@@ -12,7 +12,7 @@ import Batteries.Tactic.Lint
 
 In this file we define additional linters for mathlib.
 
-Perhaps these should be moved to Std in the future.
+Perhaps these should be moved to Batteries in the future.
 -/
 
 namespace Std.Tactic.Lint

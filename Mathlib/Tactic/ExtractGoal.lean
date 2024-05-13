@@ -47,7 +47,7 @@ example {z : Int} : ∃ n : Nat, ↑n = z := by
   apply int_eq_nat  -- works
 ```
 
-However, importing `Std.Classes.Cast`, makes `extract_goal` produce a different theorem
+However, importing `Batteries.Classes.Cast`, makes `extract_goal` produce a different theorem
 
 ```lean
 import Batteries.Classes.Cast

@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Group.Freiman
+import Mathlib.Combinatorics.Additive.FreimanHom
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.SMul
 
@@ -118,25 +118,55 @@ end Monoid
 section CommMonoid
 variable [CommMonoid α] [CommMonoid β] {s A : Set α} {t B : Set β} {f : α → β} {a : α}
 
-variable [CommMonoid α] [CommMonoid β] {s : Set α} {a : α}
-
-@[to_additive]
-theorem ThreeGPFree.of_image [FunLike F α β] [FreimanHomClass F s β 2] (f : F)
-    (hf : s.InjOn f) (h : ThreeGPFree (f '' s)) : ThreeGPFree s :=
-  fun _ ha _ hb _ hc habc => hf ha hb <|
-    h (mem_image_of_mem _ ha) (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) <|
-      map_mul_map_eq_map_mul_map f ha hc hb hb habc
+/-- Arithmetic progressions of length three are preserved under `2`-Freiman homomorphisms. -/
+@[to_additive
+"Arithmetic progressions of length three are preserved under `2`-Freiman homomorphisms."]
+lemma ThreeGPFree.of_image (hf : IsMulFreimanHom 2 s t f) (hf' : s.InjOn f) (hAs : A ⊆ s)
+    (hA : ThreeGPFree (f '' A)) : ThreeGPFree A :=
+  fun _ ha _ hb _ hc habc ↦ hf' (hAs ha) (hAs hb) <| hA (mem_image_of_mem _ ha)
+    (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) <|
+    hf.mul_eq_mul (hAs ha) (hAs hc) (hAs hb) (hAs hb) habc
 #align mul_salem_spencer.of_image ThreeGPFree.of_image
 #align add_salem_spencer.of_image ThreeAPFree.of_image
 
--- TODO: Generalize to Freiman homs
+/-- Arithmetic progressions of length three are preserved under `2`-Freiman isomorphisms. -/
+@[to_additive
+"Arithmetic progressions of length three are preserved under `2`-Freiman isomorphisms."]
+lemma threeGPFree_image (hf : IsMulFreimanIso 2 s t f) (hAs : A ⊆ s) :
+    ThreeGPFree (f '' A) ↔ ThreeGPFree A := by
+  rw [ThreeGPFree, ThreeGPFree]
+  have := (hf.bijOn.injOn.mono hAs).bijOn_image (f := f)
+  simp (config := { contextual := true }) only
+    [((hf.bijOn.injOn.mono hAs).bijOn_image (f := f)).forall,
+    hf.mul_eq_mul (hAs _) (hAs _) (hAs _) (hAs _), this.injOn.eq_iff]
+
+@[to_additive] alias ⟨_, ThreeGPFree.image⟩ := threeGPFree_image
+#align mul_salem_spencer.image ThreeGPFree.image
+#align add_salem_spencer.image ThreeAPFree.image
+
+/-- Arithmetic progressions of length three are preserved under `2`-Freiman homomorphisms. -/
 @[to_additive]
-theorem ThreeGPFree.image [FunLike F α β] [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
+lemma IsMulFreimanHom.threeGPFree (hf : IsMulFreimanHom 2 s t f) (hf' : s.InjOn f)
+    (ht : ThreeGPFree t) : ThreeGPFree s :=
+  fun _ ha _ hb _ hc habc ↦ hf' ha hb <| ht (hf.mapsTo ha) (hf.mapsTo hb) (hf.mapsTo hc) <|
+    hf.mul_eq_mul ha hc hb hb habc
+
+/-- Arithmetic progressions of length three are preserved under `2`-Freiman isomorphisms. -/
+@[to_additive]
+lemma IsMulFreimanIso.threeGPFree_congr (hf : IsMulFreimanIso 2 s t f) :
+    ThreeGPFree s ↔ ThreeGPFree t where
+  mpr := hf.isMulFreimanHom.threeGPFree hf.bijOn.injOn
+  mp hs a hfa b hfb c hfc habc := by
+    obtain ⟨a, ha, rfl⟩ := hf.bijOn.surjOn hfa
+    obtain ⟨b, hb, rfl⟩ := hf.bijOn.surjOn hfb
+    obtain ⟨c, hc, rfl⟩ := hf.bijOn.surjOn hfc
+    exact congr_arg f $ hs ha hb hc $ (hf.mul_eq_mul ha hc hb hb).1 habc
+
+@[to_additive]
+theorem ThreeGPFree.image' [FunLike F α β] [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
     (h : ThreeGPFree s) : ThreeGPFree (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ habc
   rw [h ha hb hc (hf (mul_mem_mul ha hc) (mul_mem_mul hb hb) <| by rwa [map_mul, map_mul])]
-#align mul_salem_spencer.image ThreeGPFree.image
-#align add_salem_spencer.image ThreeAPFree.image
 
 end CommMonoid
 
@@ -182,13 +212,11 @@ theorem ThreeGPFree.smul_set (hs : ThreeGPFree s) : ThreeGPFree (a • s) := by
 #noalign mul_salem_spencer.mul_right
 #noalign add_salem_spencer.add_right
 
-@[to_additive]
-theorem threeGPFree_smul_set : ThreeGPFree ((a * ·) '' s) ↔ ThreeGPFree s :=
-  ⟨fun hs b hb c hc d hd h ↦
-    mul_left_cancel
+@[to_additive] lemma threeGPFree_smul_set : ThreeGPFree (a • s) ↔ ThreeGPFree s where
+  mp hs b hb c hc d hd h := mul_left_cancel
       (hs (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) (mem_image_of_mem _ hd) <| by
-        rw [mul_mul_mul_comm, h, mul_mul_mul_comm]),
-    ThreeGPFree.smul_set⟩
+        rw [mul_mul_mul_comm, smul_eq_mul, smul_eq_mul, mul_mul_mul_comm, h])
+  mpr := ThreeGPFree.smul_set
 #align mul_salem_spencer_mul_left_iff threeGPFree_smul_set
 #align add_salem_spencer_add_left_iff threeAPFree_vadd_set
 
@@ -217,8 +245,7 @@ section CancelCommMonoidWithZero
 
 variable [CancelCommMonoidWithZero α] [NoZeroDivisors α] {s : Set α} {a : α}
 
-theorem ThreeGPFree.smul_set₀ (hs : ThreeGPFree s) (ha : a ≠ 0) :
-    ThreeGPFree ((a * ·) '' s) := by
+lemma ThreeGPFree.smul_set₀ (hs : ThreeGPFree s) (ha : a ≠ 0) : ThreeGPFree (a • s) := by
   rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩ h
   exact congr_arg (a • ·) $ hs hb hc hd $ by simpa [mul_mul_mul_comm _ _ a, ha] using h
 #align mul_salem_spencer.mul_left₀ ThreeGPFree.smul_set₀
@@ -358,6 +385,40 @@ theorem mulRothNumber_lt_of_forall_not_threeGPFree
 #align add_roth_number_lt_of_forall_not_add_salem_spencer addRothNumber_lt_of_forall_not_threeAPFree
 
 end Monoid
+
+section CommMonoid
+variable [CommMonoid α] [CommMonoid β] [DecidableEq β] {A : Finset α} {B : Finset β} {f : α → β}
+
+/-- Arithmetic progressions can be pushed forward along bijective 2-Freiman homs. -/
+@[to_additive "Arithmetic progressions can be pushed forward along bijective 2-Freiman homs."]
+lemma IsMulFreimanHom.mulRothNumber_mono (hf : IsMulFreimanHom 2 A B f) (hf' : Set.BijOn f A B) :
+    mulRothNumber B ≤ mulRothNumber A := by
+  obtain ⟨s, hsB, hcard, hs⟩ := mulRothNumber_spec B
+  have hsA : invFunOn f A '' s ⊆ A :=
+    (hf'.surjOn.mapsTo_invFunOn.mono (coe_subset.2 hsB) Subset.rfl).image_subset
+  have hfsA : Set.SurjOn f A s := hf'.surjOn.mono Subset.rfl (coe_subset.2 hsB)
+  rw [← hcard, ← s.card_image_of_injOn ((invFunOn_injOn_image f _).mono hfsA)]
+  refine ThreeGPFree.le_mulRothNumber ?_ (mod_cast hsA)
+  rw [coe_image]
+
+  simpa using (hf.subset hsA hfsA.bijOn_subset.mapsTo).threeGPFree (hf'.injOn.mono hsA) hs
+
+/-- Arithmetic progressions are preserved under 2-Freiman isos. -/
+@[to_additive "Arithmetic progressions are preserved under 2-Freiman isos."]
+lemma IsMulFreimanIso.mulRothNumber_congr (hf : IsMulFreimanIso 2 A B f) :
+    mulRothNumber A = mulRothNumber B := by
+  refine le_antisymm ?_ (hf.isMulFreimanHom.mulRothNumber_mono hf.bijOn)
+  obtain ⟨s, hsA, hcard, hs⟩ := mulRothNumber_spec A
+  rw [← coe_subset] at hsA
+  have hfs : Set.InjOn f s := hf.bijOn.injOn.mono hsA
+  have := (hf.subset hsA hfs.bijOn_image).threeGPFree_congr.1 hs
+  rw [← coe_image] at this
+  rw [← hcard, ← Finset.card_image_of_injOn hfs]
+  refine this.le_mulRothNumber ?_
+  rw [← coe_subset, coe_image]
+  exact (hf.bijOn.mapsTo.mono hsA Subset.rfl).image_subset
+
+end CommMonoid
 
 section CancelCommMonoid
 

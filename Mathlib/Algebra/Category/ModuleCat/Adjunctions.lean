@@ -57,8 +57,8 @@ def adj : free R ⊣ forget (ModuleCat.{u} R) :=
             (Finsupp.sum_mapDomain_index_addMonoidHom fun y => (smulAddHom R M).flip (g y)).symm }
 #align Module.adj ModuleCat.adj
 
-instance : IsRightAdjoint (forget (ModuleCat.{u} R)) :=
-  ⟨_, adj R⟩
+instance : (forget (ModuleCat.{u} R)).IsRightAdjoint  :=
+  (adj R).isRightAdjoint
 
 end
 

@@ -17,7 +17,7 @@ import Batteries.Classes.RatCast
 
 This file declares `ℚ` notation for the rationals and defines the nonnegative rationals `ℚ≥0`.
 
-This file is eligible to upstreaming to Std.
+This file is eligible to upstreaming to Batteries.
 -/
 
 @[inherit_doc] notation "ℚ" => Rat

@@ -133,10 +133,10 @@ theorem exists_min (I : (Ideal S)⁰) :
     (by
       obtain ⟨b, b_mem, b_ne_zero⟩ := (I : Ideal S).ne_bot_iff.mp (nonZeroDivisors.coe_ne_zero I)
       exact ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩⟩)
-  · refine' ⟨b, b_mem, b_ne_zero, _⟩
-    intro c hc lt
-    contrapose! lt with c_ne_zero
-    exact min _ ⟨c, hc, c_ne_zero, rfl⟩
+  refine' ⟨b, b_mem, b_ne_zero, _⟩
+  intro c hc lt
+  contrapose! lt with c_ne_zero
+  exact min _ ⟨c, hc, c_ne_zero, rfl⟩
 #align class_group.exists_min ClassGroup.exists_min
 
 section IsAdmissible

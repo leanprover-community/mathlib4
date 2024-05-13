@@ -148,7 +148,7 @@ variable [Monoid α] (s : Submonoid α)
 
 @[to_additive mem_own_leftAddCoset]
 theorem mem_own_leftCoset (a : α) : a ∈ a • (s : Set α) :=
-  suffices a * 1 ∈ a • ↑s by simpa
+  suffices a * 1 ∈ a • (s : Set α) by simpa
   mem_leftCoset a (one_mem s : 1 ∈ s)
 #align mem_own_left_coset mem_own_leftCoset
 #align mem_own_left_add_coset mem_own_leftAddCoset
