@@ -55,7 +55,9 @@ def thmLemmaLinter : Linter where
     match thmNoDoc stx with
     | none => return
     | some (thm, id) =>
+      let rg := thm.getRange?.getD default
       Linter.logLint linter.ThmLemma thm m!"'theorem' requires a doc-string. \
-                                             Either add one to '{id}' or use 'lemma' instead."
+                                             Either add one to '{id}' or use 'lemma' instead.\n\
+                                             Ranges: {(rg.start, rg.stop)}"
 
 initialize addLinter thmLemmaLinter
