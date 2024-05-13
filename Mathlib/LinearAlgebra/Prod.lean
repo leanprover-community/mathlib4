@@ -1005,10 +1005,10 @@ theorem tailings_disjoint_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n :
   · simp only [tailings_zero]
     apply tailing_disjoint_tunnel_succ
   · simp only [tailings_succ]
-    refine' Disjoint.disjoint_sup_left_of_disjoint_sup_right _ _
+    refine Disjoint.disjoint_sup_left_of_disjoint_sup_right ?_ ?_
     · apply tailing_disjoint_tunnel_succ
-    apply Disjoint.mono_right _ ih
-    apply tailing_sup_tunnel_succ_le_tunnel
+    · apply Disjoint.mono_right _ ih
+      apply tailing_sup_tunnel_succ_le_tunnel
 #align linear_map.tailings_disjoint_tunnel LinearMap.tailings_disjoint_tunnel
 
 theorem tailings_disjoint_tailing (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :

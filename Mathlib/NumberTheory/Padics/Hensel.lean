@@ -304,7 +304,7 @@ private theorem newton_seq_dist_aux (n : ℕ) :
     have : 2 ^ n ≤ 2 ^ (n + k) := by
       apply pow_le_pow_right
       · norm_num
-      apply Nat.le_add_right
+      · apply Nat.le_add_right
     calc
       ‖newton_seq (n + (k + 1)) - newton_seq n‖ = ‖newton_seq (n + k + 1) - newton_seq n‖ := by
         rw [add_assoc]

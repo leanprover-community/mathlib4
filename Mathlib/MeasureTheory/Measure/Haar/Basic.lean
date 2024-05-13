@@ -260,7 +260,7 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   simp only [mem_preimage] at h1g₃ h1g₂
   refine' h.le_bot (_ : g₁⁻¹ ∈ _)
   constructor <;> simp only [Set.mem_inv, Set.mem_mul, exists_exists_and_eq_and, exists_and_left]
-  · refine' ⟨_, h2g₂, (g₁ * g₂)⁻¹, _, _⟩
+  · refine ⟨_, h2g₂, (g₁ * g₂)⁻¹, ?_, ?_⟩
     · simp only [inv_inv, h1g₂]
     · simp only [mul_inv_rev, mul_inv_cancel_left]
   · refine' ⟨_, h2g₃, (g₁ * g₃)⁻¹, _, _⟩
