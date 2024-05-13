@@ -57,8 +57,7 @@ helps with instance search.
 
 Porting note: after the port is done, we may want to remove this definition.
 -/
-@[reducible]
-protected def Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
+protected abbrev Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
     [∀ x, TopologicalSpace (E₂ x)] : B → Type _ := fun x => E₁ x →SL[σ] E₂ x
 #align bundle.continuous_linear_map Bundle.ContinuousLinearMap
 
@@ -179,7 +178,9 @@ theorem continuousLinearMap_symm_apply' {b : B} (hb : b ∈ e₁.baseSet ∩ e�
     (L : F₁ →SL[σ] F₂) :
     (continuousLinearMap σ e₁ e₂).symm b L =
       (e₂.symmL 𝕜₂ b).comp (L.comp <| e₁.continuousLinearMapAt 𝕜₁ b) := by
-  rw [symm_apply]; rfl; exact hb
+  rw [symm_apply]
+  · rfl
+  · exact hb
 #align pretrivialization.continuous_linear_map_symm_apply' Pretrivialization.continuousLinearMap_symm_apply'
 
 theorem continuousLinearMapCoordChange_apply (b : B)

@@ -205,7 +205,7 @@ instance (priority := 100) {α : Sort u} {r : α → α → Prop} [Trans r r r] 
   ⟨fun _ _ _ => Trans.trans⟩
 
 /-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
-`x y : X` we have `r x y` or `r y x`.-/
+`x y : X` we have `r x y` or `r y x`. -/
 class IsTotal (α : Sort u) (r : α → α → Prop) : Prop where
   total : ∀ a b, r a b ∨ r b a
 #align is_total IsTotal

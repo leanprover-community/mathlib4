@@ -68,8 +68,7 @@ theorem ghostComponent_verschiebungFun (x : 𝕎 R) (n : ℕ) :
   rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl,
     zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
   rintro i -
-  simp only [pow_succ', mul_assoc, verschiebungFun_coeff, if_neg (Nat.succ_ne_zero i),
-    Nat.succ_sub_succ, tsub_zero]
+  simp only [pow_succ', verschiebungFun_coeff_succ, Nat.succ_sub_succ_eq_sub, mul_assoc]
 #align witt_vector.ghost_component_verschiebung_fun WittVector.ghostComponent_verschiebungFun
 
 /-- The 0th Verschiebung polynomial is 0. For `n > 0`, the `n`th Verschiebung polynomial is the
@@ -90,7 +89,7 @@ theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
   · simp only [verschiebungPoly, Nat.zero_eq, ge_iff_le, tsub_eq_zero_of_le, ite_true, map_zero,
     verschiebungFun_coeff_zero]
   · rw [verschiebungPoly, verschiebungFun_coeff_succ, if_neg n.succ_ne_zero, aeval_X,
-      Nat.succ_eq_add_one, add_tsub_cancel_right]
+      add_tsub_cancel_right]
 #align witt_vector.aeval_verschiebung_poly' WittVector.aeval_verschiebung_poly'
 
 variable (p)
@@ -138,7 +137,10 @@ theorem verschiebung_isPoly : IsPoly p fun R _Rcr => @verschiebung p R hp _Rcr :
 /-- verschiebung is a natural transformation -/
 @[simp]
 theorem map_verschiebung (f : R →+* S) (x : 𝕎 R) :
-    map f (verschiebung x) = verschiebung (map f x) := by ext ⟨-, -⟩; exact f.map_zero; rfl
+    map f (verschiebung x) = verschiebung (map f x) := by
+  ext ⟨-, -⟩
+  · exact f.map_zero
+  · rfl
 #align witt_vector.map_verschiebung WittVector.map_verschiebung
 
 @[ghost_simps]

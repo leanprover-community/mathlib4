@@ -110,7 +110,7 @@ theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F �
   convert T.hasStrictFDerivAt.inner ℝ (hasStrictFDerivAt_id x₀) using 1
   ext y
   rw [ContinuousLinearMap.smul_apply, ContinuousLinearMap.comp_apply, fderivInnerCLM_apply,
-    ContinuousLinearMap.prod_apply, innerSL_apply, id.def, ContinuousLinearMap.id_apply,
+    ContinuousLinearMap.prod_apply, innerSL_apply, id, ContinuousLinearMap.id_apply,
     hT.apply_clm x₀ y, real_inner_comm _ x₀, two_smul]
 #align linear_map.is_symmetric.has_strict_fderiv_at_re_apply_inner_self LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf
 
@@ -248,7 +248,7 @@ theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
   have H₂ : (sphere (0 : E) ‖x‖).Nonempty := ⟨x, by simp⟩
   -- key point: in finite dimension, a continuous function on the sphere has a max
   obtain ⟨x₀, hx₀', hTx₀⟩ :=
-    H₁.exists_forall_ge H₂ T'.val.reApplyInnerSelf_continuous.continuousOn
+    H₁.exists_isMaxOn H₂ T'.val.reApplyInnerSelf_continuous.continuousOn
   have hx₀ : ‖x₀‖ = ‖x‖ := by simpa using hx₀'
   have : IsMaxOn T'.val.reApplyInnerSelf (sphere 0 ‖x₀‖) x₀ := by simpa only [← hx₀] using hTx₀
   have hx₀_ne : x₀ ≠ 0 := by
@@ -268,7 +268,7 @@ theorem hasEigenvalue_iInf_of_finiteDimensional (hT : T.IsSymmetric) :
   have H₂ : (sphere (0 : E) ‖x‖).Nonempty := ⟨x, by simp⟩
   -- key point: in finite dimension, a continuous function on the sphere has a min
   obtain ⟨x₀, hx₀', hTx₀⟩ :=
-    H₁.exists_forall_le H₂ T'.val.reApplyInnerSelf_continuous.continuousOn
+    H₁.exists_isMinOn H₂ T'.val.reApplyInnerSelf_continuous.continuousOn
   have hx₀ : ‖x₀‖ = ‖x‖ := by simpa using hx₀'
   have : IsMinOn T'.val.reApplyInnerSelf (sphere 0 ‖x₀‖) x₀ := by simpa only [← hx₀] using hTx₀
   have hx₀_ne : x₀ ≠ 0 := by

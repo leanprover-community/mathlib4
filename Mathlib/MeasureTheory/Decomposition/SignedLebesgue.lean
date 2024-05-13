@@ -75,7 +75,7 @@ theorem not_haveLebesgueDecomposition_iff (s : SignedMeasure α) (μ : Measure �
   ⟨fun h => not_or_of_imp fun hp hn => h ⟨hp, hn⟩, fun h hl => (not_and_or.2 h) ⟨hl.1, hl.2⟩⟩
 #align measure_theory.signed_measure.not_have_lebesgue_decomposition_iff MeasureTheory.SignedMeasure.not_haveLebesgueDecomposition_iff
 
--- `infer_instance` directly does not work
+-- `inferInstance` directly does not work
 -- see Note [lower instance priority]
 instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite (s : SignedMeasure α)
     (μ : Measure α) [SigmaFinite μ] : s.HaveLebesgueDecomposition μ where
@@ -155,7 +155,7 @@ theorem singularPart_totalVariation (s : SignedMeasure α) (μ : Measure α) :
         s.toJordanDecomposition.negPart.singularPart μ, singularPart_mutuallySingular s μ⟩ := by
     refine' JordanDecomposition.toSignedMeasure_injective _
     rw [toSignedMeasure_toJordanDecomposition, singularPart, JordanDecomposition.toSignedMeasure]
-  · rw [totalVariation, this]
+  rw [totalVariation, this]
 #align measure_theory.signed_measure.singular_part_total_variation MeasureTheory.SignedMeasure.singularPart_totalVariation
 
 nonrec theorem mutuallySingular_singularPart (s : SignedMeasure α) (μ : Measure α) :
@@ -218,11 +218,11 @@ theorem singularPart_add_withDensity_rnDeriv_eq [s.HaveLebesgueDecomposition μ]
     add_assoc (-(s.toJordanDecomposition.negPart.singularPart μ).toSignedMeasure),
     ← toSignedMeasure_add, add_comm, ← add_assoc, ← neg_add, ← toSignedMeasure_add, add_comm,
     ← sub_eq_add_neg]
-  convert rfl
-  -- `convert rfl` much faster than `congr`
-  · exact s.toJordanDecomposition.posPart.haveLebesgueDecomposition_add μ
-  · rw [add_comm]
-    exact s.toJordanDecomposition.negPart.haveLebesgueDecomposition_add μ
+  · convert rfl
+    -- `convert rfl` much faster than `congr`
+    · exact s.toJordanDecomposition.posPart.haveLebesgueDecomposition_add μ
+    · rw [add_comm]
+      exact s.toJordanDecomposition.negPart.haveLebesgueDecomposition_add μ
   all_goals
     first
     | exact (lintegral_rnDeriv_lt_top _ _).ne

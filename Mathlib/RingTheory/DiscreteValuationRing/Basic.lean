@@ -6,7 +6,7 @@ Authors: Kevin Buzzard
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Valuation.PrimeMultiplicity
-import Mathlib.LinearAlgebra.AdicCompletion
+import Mathlib.RingTheory.AdicCompletion.Basic
 
 #align_import ring_theory.discrete_valuation_ring.basic from "leanprover-community/mathlib"@"c163ec99dfc664628ca15d215fce0a5b9c265b68"
 
@@ -121,10 +121,10 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
   · intro RDVR
     rcases id RDVR with ⟨Rlocal⟩
     constructor
-    assumption
+    · assumption
     use LocalRing.maximalIdeal R
     constructor
-    exact ⟨Rlocal, inferInstance⟩
+    · exact ⟨Rlocal, inferInstance⟩
     · rintro Q ⟨hQ1, hQ2⟩
       obtain ⟨q, rfl⟩ := (IsPrincipalIdealRing.principal Q).1
       have hq : q ≠ 0 := by
@@ -179,7 +179,7 @@ theorem unique_irreducible ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible 
   · obtain rfl : n = 0 := by
       clear hn this
       revert H n
-      exact by decide
+      decide
     simp [not_irreducible_one, pow_zero] at this
   · simpa only [pow_one] using hn.symm
   · obtain ⟨n, rfl⟩ : ∃ k, n = 1 + k + 1 := Nat.exists_eq_add_of_lt H

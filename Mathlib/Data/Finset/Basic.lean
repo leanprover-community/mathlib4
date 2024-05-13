@@ -5,9 +5,9 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Multiset.FinsetOps
-import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.Directed
+import Mathlib.Order.Interval.Set.Basic
 
 #align_import data.finset.basic from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
@@ -501,9 +501,10 @@ alias ⟨_, Nonempty.to_set⟩ := coe_nonempty
 alias ⟨_, Nonempty.coe_sort⟩ := nonempty_coe_sort
 #align finset.nonempty.coe_sort Finset.Nonempty.coe_sort
 
-theorem Nonempty.bex {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈ s :=
+theorem Nonempty.exists_mem {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈ s :=
   h
-#align finset.nonempty.bex Finset.Nonempty.bex
+#align finset.nonempty.bex Finset.Nonempty.exists_mem
+@[deprecated] alias Nonempty.bex := Nonempty.exists_mem -- 2024-03-23
 
 theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
   Set.Nonempty.mono hst hs
@@ -807,8 +808,7 @@ theorem eq_empty_of_ssubset_singleton {s : Finset α} {x : α} (hs : s ⊂ {x}) 
 #align finset.eq_empty_of_ssubset_singleton Finset.eq_empty_of_ssubset_singleton
 
 /-- A finset is nontrivial if it has at least two elements. -/
-@[reducible]
-protected def Nontrivial (s : Finset α) : Prop := (s : Set α).Nontrivial
+protected abbrev Nontrivial (s : Finset α) : Prop := (s : Set α).Nontrivial
 #align finset.nontrivial Finset.Nontrivial
 
 @[simp]
@@ -849,6 +849,7 @@ instance (i : α) : Unique ({i} : Finset α) where
   default := ⟨i, mem_singleton_self i⟩
   uniq j := Subtype.ext <| mem_singleton.mp j.2
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
 
@@ -979,7 +980,8 @@ theorem _root_.Disjoint.forall_ne_finset (h : Disjoint s t) (ha : a ∈ s) (hb :
 #align disjoint.forall_ne_finset Disjoint.forall_ne_finset
 
 theorem not_disjoint_iff : ¬Disjoint s t ↔ ∃ a, a ∈ s ∧ a ∈ t :=
-  disjoint_left.not.trans <| not_forall.trans <| exists_congr fun _ => by rw [not_imp, not_not]
+  disjoint_left.not.trans <| not_forall.trans <| exists_congr fun _ => by
+    rw [Classical.not_imp, not_not]
 #align finset.not_disjoint_iff Finset.not_disjoint_iff
 
 theorem disjoint_of_subset_left (h : s ⊆ u) (d : Disjoint u t) : Disjoint s t :=
@@ -2132,9 +2134,11 @@ theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂
   (union_comm _ _).trans (union_sdiff_of_subset h)
 #align finset.sdiff_union_of_subset Finset.sdiff_union_of_subset
 
-theorem inter_sdiff (s t u : Finset α) : s ∩ (t \ u) = (s ∩ t) \ u := by
-  ext x
-  simp [and_assoc]
+lemma inter_sdiff_assoc (s t u : Finset α) : (s ∩ t) \ u = s ∩ (t \ u) := by
+  ext x; simp [and_assoc]
+
+@[deprecated inter_sdiff_assoc] -- 2024-05-01
+theorem inter_sdiff (s t u : Finset α) : s ∩ (t \ u) = (s ∩ t) \ u := (inter_sdiff_assoc _ _ _).symm
 #align finset.inter_sdiff Finset.inter_sdiff
 
 @[simp]
@@ -2320,7 +2324,7 @@ theorem disjoint_of_erase_right (ha : a ∉ s) (hst : Disjoint s (t.erase a)) : 
 #align finset.disjoint_of_erase_right Finset.disjoint_of_erase_right
 
 theorem inter_erase (a : α) (s t : Finset α) : s ∩ t.erase a = (s ∩ t).erase a := by
-  simp only [erase_eq, inter_sdiff]
+  simp only [erase_eq, inter_sdiff_assoc]
 #align finset.inter_erase Finset.inter_erase
 
 @[simp]
@@ -2616,8 +2620,7 @@ theorem filter_comm (s : Finset α) : (s.filter p).filter q = (s.filter q).filte
   simp_rw [filter_filter, and_comm]
 #align finset.filter_comm Finset.filter_comm
 
--- We can simplify an application of filter where the decidability is inferred in "the wrong way"
-@[simp]
+-- We can replace an application of filter where the decidability is inferred in "the wrong way".
 theorem filter_congr_decidable (s : Finset α) (p : α → Prop) (h : DecidablePred p)
     [DecidablePred p] : @filter α p h s = s.filter p := by congr
 #align finset.filter_congr_decidable Finset.filter_congr_decidable
@@ -2630,7 +2633,7 @@ theorem filter_False {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ 
 
 variable {p q}
 
-theorem filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ext_iff]
+@[simp] lemma filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ext_iff]
 #align finset.filter_eq_self Finset.filter_eq_self
 
 theorem filter_eq_empty_iff : s.filter p = ∅ ↔ ∀ ⦃x⦄, x ∈ s → ¬p x := by simp [Finset.ext_iff]
@@ -2810,6 +2813,10 @@ theorem filter_not (s : Finset α) : (s.filter fun a => ¬p a) = s \ s.filter p 
     simp only [Bool.decide_coe, Bool.not_eq_true', mem_filter, and_comm, mem_sdiff, not_and_or,
       Bool.not_eq_true, and_or_left, and_not_self, or_false]
 #align finset.filter_not Finset.filter_not
+
+lemma filter_and_not (s : Finset α) (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
+    s.filter (fun a ↦ p a ∧ ¬ q a) = s.filter p \ s.filter q := by
+  rw [filter_and, filter_not, ← inter_sdiff_assoc, inter_eq_left.2 (filter_subset _ _)]
 
 theorem sdiff_eq_filter (s₁ s₂ : Finset α) : s₁ \ s₂ = filter (· ∉ s₂) s₁ :=
   ext fun _ => by simp [mem_sdiff, mem_filter]
@@ -3138,7 +3145,7 @@ theorem toFinset_eq_singleton_iff (s : Multiset α) (a : α) :
       rw [← mem_toFinset, H, Finset.mem_singleton] at hy
       exact hy.symm
     have hx' : x ∉ s := fun h' ↦ hx <| by rwa [← mem_toFinset, H, Finset.mem_singleton] at h'
-    simp_rw [count_eq_zero_of_not_mem hx', hx, ite_false, mul_zero]
+    simp_rw [count_eq_zero_of_not_mem hx', hx, ite_false, Nat.mul_zero]
   simpa only [toFinset_nsmul _ _ H.1, toFinset_singleton] using congr($(H.2).toFinset)
 
 @[simp]

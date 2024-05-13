@@ -37,8 +37,7 @@ below proof is free, then the proof works nearly verbatim.
 open scoped BigOperators Polynomial
 open Fintype
 
-/- Everything in this namespace is internal to the proof of Wedderburn's little theorem. -/
-
+/-! Everything in this namespace is internal to the proof of Wedderburn's little theorem. -/
 namespace LittleWedderburn
 
 variable (D : Type*) [DivisionRing D]
@@ -58,6 +57,7 @@ private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
     mul_comm := fun x y ↦ Subtype.ext <| hD hR x.2 y.2 }
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- We prove that if every subring of `D` is central, then so is `D`. -/
 private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ := by
   classical

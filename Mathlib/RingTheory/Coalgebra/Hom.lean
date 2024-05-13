@@ -19,7 +19,7 @@ homomorphism.
 
 ## Notations
 
-* `A →ₗc[R] B` : `R`-algebra homomorphism from `A` to `B`.
+* `A →ₗc[R] B` : `R`-coalgebra homomorphism from `A` to `B`.
 
 -/
 
@@ -27,7 +27,7 @@ open TensorProduct Coalgebra BigOperators
 
 universe u v w
 
-/-- Given `R`-modules `A, B` with comultiplcation maps `Δ_A, Δ_B` and counit maps
+/-- Given `R`-modules `A, B` with comultiplication maps `Δ_A, Δ_B` and counit maps
 `ε_A, ε_B`, an `R`-coalgebra homomorphism `A →ₗc[R] B` is an `R`-linear map `f` such that
 `ε_B ∘ f = ε_A` and `(f ⊗ f) ∘ Δ_A = Δ_B ∘ f`. -/
 structure CoalgHom (R A B : Type*) [CommSemiring R]
@@ -66,12 +66,11 @@ variable {R A B F : Type*} [CommSemiring R]
 @[coe]
 def toCoalgHom (f : F) : A →ₗc[R] B :=
   { (f : A →ₗ[R] B) with
-    toFun := f -- is this necessary? Emulating `AlgHomClass.toAlgHom`
+    toFun := f
     counit_comp := CoalgHomClass.counit_comp f
     map_comp_comul := CoalgHomClass.map_comp_comul f }
 
--- should this be `CoeHead` as in `SemilinearMapClass.instCoeToSemilinearMap` from #10758?
-instance coeTC : CoeTC F (A →ₗc[R] B) :=
+instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) :=
   ⟨CoalgHomClass.toCoalgHom⟩
 
 @[simp]
@@ -121,17 +120,6 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f
     ⇑(f : A →ₗc[R] B) = f :=
   rfl
 
--- removed @[simp], linter complains
-theorem toFun_eq_coe (f : A →ₗc[R] B) : f.toFun = f := rfl
-
--- are the next 2 declarations necessary? Can already coerce to an `AddMonoidHom`
-/-- The `AddMonoidHom` underlying a coalgebra homomorphism. -/
-@[coe]
-def toAddMonoidHom' (f : A →ₗc[R] B) : A →+ B := (f : A →ₗ[R] B)
-
-instance coeOutAddMonoidHom : CoeOut (A →ₗc[R] B) (A →+ B) :=
-  ⟨CoalgHom.toAddMonoidHom'⟩
-
 @[simp]
 theorem coe_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A → B) = f :=
   rfl
@@ -152,8 +140,7 @@ theorem toLinearMap_eq_coe (f : A →ₗc[R] B) : f.toLinearMap = f :=
 theorem coe_toLinearMap (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 
--- simp can prove this
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_toAddMonoidHom (f : A →ₗc[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
@@ -191,13 +178,28 @@ theorem ext_of_ring {f g : R →ₗc[R] A} (h : f 1 = g 1) : f = g :=
 theorem mk_coe {f : A →ₗc[R] B} (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
   ext fun _ => rfl
 
+/-- Copy of a `CoalgHom` with a new `toFun` equal to the old one. Useful to fix definitional
+equalities. -/
+protected def copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : A →ₗc[R] B :=
+  { toLinearMap := (f : A →ₗ[R] B).copy f' h
+    counit_comp := by ext; simp_all
+    map_comp_comul := by simp only [(f : A →ₗ[R] B).copy_eq f' h,
+      CoalgHomClass.map_comp_comul] }
+
+@[simp]
+theorem coe_copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=
+  rfl
+
+theorem copy_eq (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : f.copy f' h = f :=
+  DFunLike.ext' h
+
 variable (R A)
 
 /-- Identity map as a `CoalgHom`. -/
 @[simps!] protected def id : A →ₗc[R] A :=
-{ LinearMap.id with
-  counit_comp := by ext; rfl
-  map_comp_comul := by simp only [map_id, LinearMap.id_comp, LinearMap.comp_id] }
+  { LinearMap.id with
+    counit_comp := by ext; rfl
+    map_comp_comul := by simp only [map_id, LinearMap.id_comp, LinearMap.comp_id] }
 
 variable {R A}
 
@@ -256,20 +258,6 @@ theorem mul_apply (φ ψ : A →ₗc[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
 
 end
-
-section AddCommGroup
-
-variable [CommSemiring R] [AddCommGroup A] [AddCommGroup B] [Module R A] [Module R B]
-
-variable [CoalgebraStruct R A] [CoalgebraStruct R B] (φ : A →ₗc[R] B)
-
-protected theorem map_neg (x) : φ (-x) = -φ x :=
-  map_neg _ _
-
-protected theorem map_sub (x y) : φ (x - y) = φ x - φ y :=
-  map_sub _ _ _
-
-end AddCommGroup
 
 end CoalgHom
 

@@ -101,11 +101,12 @@ theorem mem_degreeLT {n : ℕ} {f : R[X]} : f ∈ degreeLT R n ↔ degree f < n 
   rw [degree, Finset.max_eq_sup_coe]
   rw [Finset.sup_lt_iff ?_]
   rotate_left
-  apply WithBot.bot_lt_coe
+  · apply WithBot.bot_lt_coe
   conv_rhs =>
     simp only [mem_support_iff]
     intro b
     rw [Nat.cast_withBot, WithBot.coe_lt_coe, lt_iff_not_le, Ne, not_imp_not]
+  rfl
 #align polynomial.mem_degree_lt Polynomial.mem_degreeLT
 
 @[mono]
@@ -273,7 +274,7 @@ theorem frange_one : frange (1 : R[X]) ⊆ {1} := by
 
 theorem coeff_mem_frange (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.frange := by
   classical
-  simp only [frange, exists_prop, mem_support_iff, (Finset.mem_image), Ne]
+  simp only [frange, exists_prop, mem_support_iff, Finset.mem_image, Ne]
   exact ⟨n, h, rfl⟩
 #align polynomial.coeff_mem_frange Polynomial.coeff_mem_frange
 
@@ -282,7 +283,7 @@ theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
       (Finset.range n).sum fun i : ℕ => (n.choose (i + 1) : R[X]) * X ^ i := by
   ext i
   trans (n.choose (i + 1) : R); swap
-  · simp only [finset_sum_coeff, ← C_eq_nat_cast, coeff_C_mul_X_pow]
+  · simp only [finset_sum_coeff, ← C_eq_natCast, coeff_C_mul_X_pow]
     rw [Finset.sum_eq_single i, if_pos rfl]
     · simp (config := { contextual := true }) only [@eq_comm _ i, if_false, eq_self_iff_true,
         imp_true_iff]
@@ -673,8 +674,8 @@ theorem leadingCoeffNth_mono {m n : ℕ} (H : m ≤ n) : I.leadingCoeffNth m ≤
 
 theorem mem_leadingCoeff (x) : x ∈ I.leadingCoeff ↔ ∃ p ∈ I, Polynomial.leadingCoeff p = x := by
   rw [leadingCoeff, Submodule.mem_iSup_of_directed]
-  simp only [mem_leadingCoeffNth]
-  · constructor
+  · simp only [mem_leadingCoeffNth]
+    constructor
     · rintro ⟨i, p, hpI, _, rfl⟩
       exact ⟨p, hpI, rfl⟩
     rintro ⟨p, hpI, rfl⟩
@@ -998,9 +999,9 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
             exact hp0 H
           have h1 : p.degree = (q * Polynomial.X ^ (k - q.natDegree)).degree := by
             rw [Polynomial.degree_mul', Polynomial.degree_X_pow]
-            rw [Polynomial.degree_eq_natDegree hp0, Polynomial.degree_eq_natDegree hq0]
-            rw [← Nat.cast_add, add_tsub_cancel_of_le, hn]
-            · refine' le_trans (Polynomial.natDegree_le_of_degree_le hdq) (le_of_lt h)
+            · rw [Polynomial.degree_eq_natDegree hp0, Polynomial.degree_eq_natDegree hq0]
+              rw [← Nat.cast_add, add_tsub_cancel_of_le, hn]
+              · refine' le_trans (Polynomial.natDegree_le_of_degree_le hdq) (le_of_lt h)
             rw [Polynomial.leadingCoeff_X_pow, mul_one]
             exact mt Polynomial.leadingCoeff_eq_zero.1 hq0
           have h2 : p.leadingCoeff = (q * Polynomial.X ^ (k - q.natDegree)).leadingCoeff := by

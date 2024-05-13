@@ -196,7 +196,7 @@ theorem snorm_zero : snorm (0 : α → F) p μ = 0 := by
   · simp [h0]
   by_cases h_top : p = ∞
   · simp only [h_top, snorm_exponent_top, snormEssSup_zero]
-  rw [← Ne.def] at h0
+  rw [← Ne] at h0
   simp [snorm_eq_snorm' h0 h_top, ENNReal.toReal_pos h0 h_top]
 #align measure_theory.snorm_zero MeasureTheory.snorm_zero
 
@@ -238,7 +238,7 @@ theorem snorm_measure_zero {f : α → F} : snorm f p (0 : Measure α) = 0 := by
   · simp [h0]
   by_cases h_top : p = ∞
   · simp [h_top]
-  rw [← Ne.def] at h0
+  rw [← Ne] at h0
   simp [snorm_eq_snorm' h0 h_top, snorm', ENNReal.toReal_pos h0 h_top]
 #align measure_theory.snorm_measure_zero MeasureTheory.snorm_measure_zero
 
@@ -667,7 +667,7 @@ theorem snorm_one_smul_measure {f : α → F} (c : ℝ≥0∞) : snorm f 1 (c �
 
 theorem Memℒp.of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
     {f : α → E} (hf : Memℒp f p μ) : Memℒp f p μ' := by
-  refine' ⟨hf.1.mono' (Measure.absolutelyContinuous_of_le_smul hμ'_le), _⟩
+  refine' ⟨hf.1.mono_ac (Measure.absolutelyContinuous_of_le_smul hμ'_le), _⟩
   refine' (snorm_mono_measure f hμ'_le).trans_lt _
   by_cases hc0 : c = 0
   · simp [hc0]
@@ -958,11 +958,11 @@ theorem snorm'_const_smul_le (c : 𝕜) (f : α → F) (hq_pos : 0 < q) :
 theorem snormEssSup_const_smul_le (c : 𝕜) (f : α → F) :
     snormEssSup (c • f) μ ≤ ‖c‖₊ • snormEssSup f μ :=
   snormEssSup_le_nnreal_smul_snormEssSup_of_ae_le_mul
-    (eventually_of_forall fun _ => nnnorm_smul_le _ _)
+    (eventually_of_forall fun _ => by simp [nnnorm_smul_le])
 #align measure_theory.snorm_ess_sup_const_smul_le MeasureTheory.snormEssSup_const_smul_le
 
 theorem snorm_const_smul_le (c : 𝕜) (f : α → F) : snorm (c • f) p μ ≤ ‖c‖₊ • snorm f p μ :=
-  snorm_le_nnreal_smul_snorm_of_ae_le_mul (eventually_of_forall fun _ => nnnorm_smul_le _ _) _
+  snorm_le_nnreal_smul_snorm_of_ae_le_mul (eventually_of_forall fun _ => by simp [nnnorm_smul_le]) _
 #align measure_theory.snorm_const_smul_le MeasureTheory.snorm_const_smul_le
 
 theorem Memℒp.const_smul {f : α → E} (hf : Memℒp f p μ) (c : 𝕜) : Memℒp (c • f) p μ :=

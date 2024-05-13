@@ -147,7 +147,7 @@ theorem ramificationIdx_eq_normalizedFactors_count (hp0 : map f p ≠ ⊥) (hP :
     rw [dvd_iff_normalizedFactors_le_normalizedFactors (pow_ne_zero _ hP0) hp0,
       normalizedFactors_pow, normalizedFactors_irreducible hPirr, normalize_eq,
       Multiset.nsmul_singleton, ← Multiset.le_count_iff_replicate_le]
-  · exact (Nat.lt_succ_self _).not_le
+  exact (Nat.lt_succ_self _).not_le
 #align ideal.is_dedekind_domain.ramification_idx_eq_normalized_factors_count Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count
 
 theorem ramificationIdx_eq_factors_count (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (hP0 : P ≠ ⊥) :
@@ -405,28 +405,28 @@ theorem finrank_quotient_map [IsDomain S] [IsDedekindDomain R] [Algebra K L]
   -- and spans the whole of `Frac(S)`.
   let b'' : ι → L := algebraMap S L ∘ b'
   have b''_li : LinearIndependent K b'' := ?_
-  have b''_sp : Submodule.span K (Set.range b'') = ⊤ := ?_
-  -- Since the two bases have the same index set, the spaces have the same dimension.
-  let c : Basis ι K L := Basis.mk b''_li b''_sp.ge
-  rw [finrank_eq_card_basis b, finrank_eq_card_basis c]
-  -- It remains to show that the basis is indeed linear independent and spans the whole space.
-  · rw [Set.range_comp]
-    refine FinrankQuotientMap.span_eq_top p hp.ne_top _ (top_le_iff.mp ?_)
-    -- The nicest way to show `S ≤ span b' ⊔ pS` is by reducing both sides modulo pS.
-    -- However, this would imply distinguishing between `pS` as `S`-ideal,
-    -- and `pS` as `R`-submodule, since they have different (non-defeq) quotients.
-    -- Instead we'll lift `x mod pS ∈ span b` to `y ∈ span b'` for some `y - x ∈ pS`.
-    intro x _
-    have mem_span_b : ((Submodule.mkQ (map (algebraMap R S) p)) x : S ⧸ map (algebraMap R S) p) ∈
-        Submodule.span (R ⧸ p) (Set.range b) := b.mem_span _
-    rw [← @Submodule.restrictScalars_mem R,
-      Submodule.restrictScalars_span R (R ⧸ p) Ideal.Quotient.mk_surjective, b_eq_b',
-      Set.range_comp, ← Submodule.map_span] at mem_span_b
-    obtain ⟨y, y_mem, y_eq⟩ := Submodule.mem_map.mp mem_span_b
-    suffices y + -(y - x) ∈ _ by simpa
-    rw [LinearMap.restrictScalars_apply, Submodule.mkQ_apply, Submodule.mkQ_apply,
-      Submodule.Quotient.eq] at y_eq
-    exact add_mem (Submodule.mem_sup_left y_mem) (neg_mem <| Submodule.mem_sup_right y_eq)
+  · have b''_sp : Submodule.span K (Set.range b'') = ⊤ := ?_
+    -- Since the two bases have the same index set, the spaces have the same dimension.
+    · let c : Basis ι K L := Basis.mk b''_li b''_sp.ge
+      rw [finrank_eq_card_basis b, finrank_eq_card_basis c]
+    -- It remains to show that the basis is indeed linear independent and spans the whole space.
+    · rw [Set.range_comp]
+      refine FinrankQuotientMap.span_eq_top p hp.ne_top _ (top_le_iff.mp ?_)
+      -- The nicest way to show `S ≤ span b' ⊔ pS` is by reducing both sides modulo pS.
+      -- However, this would imply distinguishing between `pS` as `S`-ideal,
+      -- and `pS` as `R`-submodule, since they have different (non-defeq) quotients.
+      -- Instead we'll lift `x mod pS ∈ span b` to `y ∈ span b'` for some `y - x ∈ pS`.
+      intro x _
+      have mem_span_b : ((Submodule.mkQ (map (algebraMap R S) p)) x : S ⧸ map (algebraMap R S) p) ∈
+          Submodule.span (R ⧸ p) (Set.range b) := b.mem_span _
+      rw [← @Submodule.restrictScalars_mem R,
+        Submodule.restrictScalars_span R (R ⧸ p) Ideal.Quotient.mk_surjective, b_eq_b',
+        Set.range_comp, ← Submodule.map_span] at mem_span_b
+      obtain ⟨y, y_mem, y_eq⟩ := Submodule.mem_map.mp mem_span_b
+      suffices y + -(y - x) ∈ _ by simpa
+      rw [LinearMap.restrictScalars_apply, Submodule.mkQ_apply, Submodule.mkQ_apply,
+        Submodule.Quotient.eq] at y_eq
+      exact add_mem (Submodule.mem_sup_left y_mem) (neg_mem <| Submodule.mem_sup_right y_eq)
   · have := b.linearIndependent; rw [b_eq_b'] at this
     convert FinrankQuotientMap.linearIndependent_of_nontrivial K _
         ((Algebra.linearMap S L).restrictScalars R) _ ((Submodule.mkQ _).restrictScalars R) this
@@ -447,9 +447,13 @@ noncomputable instance Quotient.algebraQuotientPowRamificationIdx : Algebra (R �
   Quotient.algebraQuotientOfLEComap (Ideal.map_le_iff_le_comap.mp le_pow_ramificationIdx)
 #align ideal.quotient.algebra_quotient_pow_ramification_idx Ideal.Quotient.algebraQuotientPowRamificationIdx
 
+-- Adaptation note: 2024-04-23
+-- The right hand side here used to be `Ideal.Quotient.mk _ (f x)` which was somewhat slow,
+-- but this is now even slower without `set_option backward.isDefEq.lazyProjDelta false in`
+-- Instead we've replaced it with `Ideal.Quotient.mk (P ^ e) (f x)` (compare #12412)
 @[simp]
 theorem Quotient.algebraMap_quotient_pow_ramificationIdx (x : R) :
-    algebraMap (R ⧸ p) (S ⧸ P ^ e) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk _ (f x) := rfl
+    algebraMap (R ⧸ p) (S ⧸ P ^ e) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk (P ^ e) (f x) := rfl
 #align ideal.quotient.algebra_map_quotient_pow_ramification_idx Ideal.Quotient.algebraMap_quotient_pow_ramificationIdx
 
 variable [hfp : NeZero (ramificationIdx f p P)]
@@ -466,9 +470,13 @@ set_option synthInstance.checkSynthOrder false -- Porting note: this is okay by 
 -- In this file, the value for `f` can be inferred.
 attribute [local instance] Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero
 
+-- Adaptation note: 2024-04-28
+-- The RHS used to be `Ideal.Quotient.mk _ (f x)`, which was slow,
+-- but this is now even slower without `set_option backward.isDefEq.lazyWhnfCore false in`
+-- (compare https://github.com/leanprover-community/mathlib4/pull/12412)
 @[simp]
 theorem Quotient.algebraMap_quotient_of_ramificationIdx_neZero (x : R) :
-    algebraMap (R ⧸ p) (S ⧸ P) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk _ (f x) := rfl
+    algebraMap (R ⧸ p) (S ⧸ P) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk P (f x) := rfl
 #align ideal.quotient.algebra_map_quotient_of_ramification_idx_ne_zero Ideal.Quotient.algebraMap_quotient_of_ramificationIdx_neZero
 
 /-- The inclusion `(P^(i + 1) / P^e) ⊂ (P^i / P^e)`. -/
@@ -581,8 +589,8 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
   rw [sup_eq_prod_inf_factors _ (pow_ne_zero _ hP0), normalizedFactors_pow,
     normalizedFactors_irreducible ((Ideal.prime_iff_isPrime hP0).mpr hP).irreducible, normalize_eq,
     Multiset.nsmul_singleton, Multiset.inter_replicate, Multiset.prod_replicate]
-  rw [← Submodule.span_singleton_le_iff_mem, Ideal.submodule_span_eq] at a_mem a_not_mem
-  rwa [Ideal.count_normalizedFactors_eq a_mem a_not_mem, min_eq_left i.le_succ]
+  · rw [← Submodule.span_singleton_le_iff_mem, Ideal.submodule_span_eq] at a_mem a_not_mem
+    rwa [Ideal.count_normalizedFactors_eq a_mem a_not_mem, min_eq_left i.le_succ]
   · intro ha
     rw [Ideal.span_singleton_eq_bot.mp ha] at a_not_mem
     have := (P ^ (i + 1)).zero_mem
@@ -625,7 +633,7 @@ theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P �
   let Q : ℕ → Prop :=
     fun i => Module.rank (R ⧸ p) { x // x ∈ map (Quotient.mk (P ^ e)) (P ^ i) }
       = (e - i) • Module.rank (R ⧸ p) (S ⧸ P)
-  refine @Nat.decreasingInduction' Q i e (fun j lt_e _le_j ih => ?_) hi ?_
+  refine Nat.decreasingInduction' (P := Q) (fun j lt_e _le_j ih => ?_) hi ?_
   · dsimp only [Q]
     rw [rank_pow_quot_aux f p P _ lt_e, ih, ← succ_nsmul', Nat.sub_succ, ← Nat.succ_eq_add_one,
       Nat.succ_pred_eq_of_pos (Nat.sub_pos_of_lt lt_e)]
