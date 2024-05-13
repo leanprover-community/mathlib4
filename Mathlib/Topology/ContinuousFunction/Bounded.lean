@@ -825,12 +825,12 @@ theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (
 #align bounded_continuous_function.mul_apply BoundedContinuousFunction.mul_apply
 
 instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where
-  pow f n := {
-    toFun := fun x ↦ (f x) ^ n
-    continuous_toFun := f.continuous.pow n
-    map_bounded' := by
-      obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <| isBounded_pow (isBounded_range f) n
-      exact ⟨C, fun x y ↦ @hC ((f x)^n) (by simp) ((f y)^n) (by simp)⟩ }
+  pow f n :=
+    { toFun := fun x ↦ (f x) ^ n
+      continuous_toFun := f.continuous.pow n
+      map_bounded' := by
+        obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <| isBounded_pow (isBounded_range f) n
+        exact ⟨C, fun x y ↦ @hC ((f x)^n) (by simp) ((f y)^n) (by simp)⟩ }
 
 theorem coe_pow [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) :
     ⇑(f ^ n) = (⇑f) ^ n := rfl
