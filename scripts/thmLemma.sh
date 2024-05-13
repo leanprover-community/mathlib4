@@ -3,7 +3,13 @@
 ##  running `produceSed <build_log>` on the build log produces a list of sed commands
 ##  that replace all doc-string-less `theorem`s by `lemma`s.
 produceSed () {
-  awk -F: -v ti="'" -v sh=4 '($(sh) ~ /^ \.\//){
+  if [ -z "${2}" ]
+  then
+    sh=2
+  else
+    sh="${2}"  ##  if parsing the downloaded logs, set `sh` to `4`
+  fi
+  awk -F: -v ti="'" -v sh="${sh}" '($(sh) ~ /^ \.\//){
     fil=$(sh); gsub(/\.\//, "", fil); row=$(sh+1); col=$(sh+2); gsub(/-.*/, "", col)
     fils[fil]=fils[fil] ":" row "-" col
   } END{
@@ -18,3 +24,5 @@ produceSed () {
     }
   }' "${1}"
 }
+
+#eval "$(lake build | produceSed -)"
