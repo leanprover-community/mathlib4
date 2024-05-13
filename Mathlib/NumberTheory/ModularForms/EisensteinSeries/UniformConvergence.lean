@@ -186,8 +186,8 @@ lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
       fun x hx ↦ ?_⟩
     · apply (box n).summable ((fun x : Fin 2 → ℤ ↦ (((r z) ^ k) *
         (max (x 0).natAbs (x 1).natAbs) ^ k)⁻¹) ∘ (piFinTwoEquiv _).symm)
-    · simp only [one_div, Int.mem_box.mp hx, Nat.cast_max, Fin.isValue, mul_inv_rev, mul_comm, Fin.cons_zero,
-        Fin.cons_one]
+    · simp only [mul_inv_rev, mul_comm, Fin.isValue, Fin.cons_zero, Fin.cons_one,
+      Int.mem_box.mp hx]
   · intro y
     simp only [Pi.zero_apply, Fin.isValue, mul_inv_rev, piFinTwoEquiv_symm_apply,
       Function.comp_apply, Fin.cons_zero, Fin.cons_one]
