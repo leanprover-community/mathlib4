@@ -435,7 +435,7 @@ theorem psumMu_zero : psumMu σ R (Nat.Partition.indiscrete 0) = 1 := by
 @[simp]
 theorem psumMu_onePart {n : ℕ} (npos : n > 0) :
     psumMu σ R (Nat.Partition.indiscrete n) = psum σ R n := by
-  simp only [psumMu, npos, muProduct_indiscrete_of_pos]
+  simp [psumMu, npos]
 
 @[simp]
 theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
