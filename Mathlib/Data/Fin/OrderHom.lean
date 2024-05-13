@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson, Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Fin.Basic
+import Mathlib.Algebra.Group.Fin
 import Mathlib.Order.Hom.Basic
 
 /-!
