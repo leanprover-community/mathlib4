@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yaël Dillies
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.ThmLemma
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.TypeStar
 import Batteries.Classes.RatCast
