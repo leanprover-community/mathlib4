@@ -84,39 +84,66 @@ open Function Set Order
 open scoped Classical
 
 @[english_param const.Set] def param_Set : EnglishParam
--- TODO: get rid of the special case
-| fvarid, _deps, type@(.app _ (.app (.const `Set _) X)), _used => do
-  trace[English] "Using the english_param handler for Set"
-  addNoun' fvarid #[type]
-    { kind := `Set
-      article := .a
-      text := nt!"set{.s} of sets in {X}"
-      inlineText := nt!"set{.s} {fvarid} of sets in {X}" }
 | fvarid, _deps, type@(.app _ X), _used => do
   trace[English] "Using the english_param handler for Set"
-  addNoun' fvarid #[type]
-    { kind := `Set
-      article := .a
-      text := nt!"set{.s} in {X}"
-      inlineText := nt!"set{.s} {fvarid} in {X}" }
+  if X.isApp then
+    let (_, XP) ← english_type true none X
+    addNoun' fvarid #[type]
+      { kind := `Set
+        article := .a
+        text := nt!"set{.s} of {XP}"
+        inlineText := nt!"set{.s} {fvarid} of {XP}" }
+  else
+    addNoun' fvarid #[type]
+      { kind := `Set
+        article := .a
+        text := nt!"set{.s} in {X}"
+        inlineText := nt!"set{.s} {fvarid} in {X}" }
+
 | _, _, _, _ => failure
 
 @[english_param const.Finset] def param_Finset : EnglishParam
--- TODO: get rid of the special case
-| fvarid, _deps, type@(.app _ (.app (.const `Set _) X)), _used => do
-  trace[English] "Using the english_param handler for Finset"
-  addNoun' fvarid #[type]
-    { kind := `Set
-      article := .a
-      text := nt!"finite set{.s} of sets in {X}"
-      inlineText := nt!"finite set{.s} {fvarid} of sets in {X}" }
 | fvarid, _deps, type@(.app _ X), _used => do
   trace[English] "Using the english_param handler for Finset"
+  if X.isApp then
+    let (_, XP) ← english_type true none X
+    addNoun' fvarid #[type]
+      { kind := `Set
+        article := .a
+        text := nt!"finite set{.s} of {XP}"
+        inlineText := nt!"finite set{.s} {fvarid} of {XP}" }
+  else
+    addNoun' fvarid #[type]
+      { kind := `Finset
+        article := .a
+        text := nt!"finite set{.s} in {X}"
+        inlineText := nt!"finite set{.s} {fvarid} in {X}" }
+| _, _, _, _ => failure
+
+@[english_param const.PartialOrder] def param_PartialOrder : EnglishParam
+| fvarid, _deps, type@(mkAppN _ #[X]), _used => do
+  if X.isApp then
+    let (_, XP) ← english_type true none X
+    addNoun' fvarid #[type]
+      { kind := `Set
+        article := .a
+        text := nt!"partial order{.s} on {XP}"
+        inlineText := nt!"partial order{.s} {fvarid} on {XP}" }
+  else
+    addNoun' fvarid #[type]
+      { kind := `Finset
+        article := .a
+        text := nt!"partial order{.s} on {X}"
+        inlineText := nt!"partial order{.s} {fvarid} on {X}" }
+| _, _, _, _ => failure
+
+@[english_param const.GaloisInsertion] def param_GaloisInsertion : EnglishParam
+| fvarid, _deps, type@(mkAppN _ #[_, _, _, _, l, r]), _used => do
   addNoun' fvarid #[type]
-    { kind := `Finset
+    { kind := `GaloisInsertion
       article := .a
-      text := nt!"finite set{.s} in {X}"
-      inlineText := nt!"finite set{.s} {fvarid} in {X}" }
+      text := nt!"Galois insertion{.s} between {l} and {r}"
+      inlineText := nt!"Galois insertion{.s} {fvarid} between {l} and {r}" }
 | _, _, _, _ => failure
 
 @[english_param const.Set.Finite] def param_setFinite : EnglishParam
@@ -186,6 +213,15 @@ latex_pp_app_rules (const := Membership.mk)
 
 latex_pp_app_rules (const := Inhabited.mk)
   | _, #[_α, default] => latexPP default
+
+@[english_param const.Trans] def param_Trans : EnglishParam
+| fvarid, _deps, type@(mkAppN _ #[_, _, _, r₁, r₂, r₃]), _used => do
+  addNoun' fvarid #[type]
+    { kind := `Trans
+      article := .a
+      text := nt!"derivation{.s} of the relation {r₃} from relations {r₁} and {r₂}"
+      inlineText := nt!"derivation{.s} {fvarid} of the relation {r₃} from relations {r₁} and {r₂}" }
+| _, _, _, _ => failure
 
 variable (f : Nat → Nat)
 
@@ -313,6 +349,12 @@ latex_pp_app_rules (const := HasCompl.compl)
   | _, #[_, _, A] => do
     let A ← latexPP A
     return A.sup (LatexData.atomString "c")
+
+latex_pp_app_rules (const := Superset)
+  | _, #[_, _, a, b] => do
+    let a ← latexPP a
+    let b ← latexPP b
+    return a.protectRight 50 ++ LatexData.nonAssocOp " \\supseteq " 50 ++ b.protectLeft 50
 
 latex_pp_app_rules (const := Singleton.singleton)
   | _, #[_, X, _, A] => do
