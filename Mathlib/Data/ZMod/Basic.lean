@@ -935,17 +935,13 @@ theorem val_ne_zero {n : ℕ} (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
   (val_eq_zero a).not
 
 -- should this be a simp lemma?
-theorem val_eq_one {n : ℕ} [h : n.AtLeastTwo] (a : ZMod n) :
-    a.val = 1 ↔ a = 1 := by
-  rcases n with (⟨⟩|⟨n⟩)
-  · have := h.prop
-    simp at this
-  · rcases n with (⟨⟩|⟨n⟩)
-    · have := h.prop
-      norm_num at this
-    · rw [Fin.ext_iff]
-      simp only [Fin.val_one]
-      exact Iff.rfl
+theorem val_eq_one : ∀ {n : ℕ} [n.AtLeastTwo] (a : ZMod n), a.val = 1 ↔ a = 1
+  | 0, ⟨hn⟩, _
+  | 1, ⟨hn⟩, _ => by simp at hn
+  | n + 2, _, _ => by
+    rw [Fin.ext_iff]
+    simp only [Fin.val_one]
+    exact Iff.rfl
 
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
