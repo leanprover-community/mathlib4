@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
 import Mathlib.LinearAlgebra.Reflection
-import Mathlib.GroupTheory.Coxeter.Matrix
+import Mathlib.RepresentationTheory.Basic
+import Mathlib.GroupTheory.Coxeter.Length
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 /-!
