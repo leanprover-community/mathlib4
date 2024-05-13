@@ -3,10 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.FunLike.Order
 import Mathlib.Logic.Equiv.Option
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.Disjoint
+import Mathlib.Order.FunLike
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Util.AssertExists

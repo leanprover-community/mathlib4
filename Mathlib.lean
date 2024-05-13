@@ -1899,7 +1899,6 @@ import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.FunLike.Fintype
-import Mathlib.Data.FunLike.Order
 import Mathlib.Data.HashMap
 import Mathlib.Data.Holor
 import Mathlib.Data.Int.AbsoluteValue
@@ -3200,6 +3199,7 @@ import Mathlib.Order.Filter.Subsingleton
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 import Mathlib.Order.FixedPoints
+import Mathlib.Order.FunLike
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Grade
