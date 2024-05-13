@@ -6,7 +6,6 @@ Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.GroupWithZero.Semiconj
-import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Order.Bounds.Basic
 
