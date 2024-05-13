@@ -36,10 +36,12 @@ instance Prop.instBoundedOrder : BoundedOrder Prop where
   bot_le := @False.elim
 #align Prop.bounded_order Prop.instBoundedOrder
 
+@[simp]
 theorem Prop.bot_eq_false : (⊥ : Prop) = False :=
   rfl
 #align Prop.bot_eq_false Prop.bot_eq_false
 
+@[simp]
 theorem Prop.top_eq_true : (⊤ : Prop) = True :=
   rfl
 #align Prop.top_eq_true Prop.top_eq_true
