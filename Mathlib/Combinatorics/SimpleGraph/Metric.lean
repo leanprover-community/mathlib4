@@ -124,8 +124,7 @@ theorem dist_comm {u v : V} : G.dist u v = G.dist v u := by
 
 lemma dist_ne_zero_iff_ne_and_reachable {u v : V} : G.dist u v ≠ 0 ↔ u ≠ v ∧ G.Reachable u v := by
   rw [ne_eq, dist_eq_zero_iff_eq_or_not_reachable.not]
-  push_neg
-  rfl
+  push_neg; rfl
 
 lemma Reachable.of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) : G.Reachable u v :=
   (dist_ne_zero_iff_ne_and_reachable.mp h).2
