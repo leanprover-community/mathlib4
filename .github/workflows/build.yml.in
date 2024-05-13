@@ -252,11 +252,13 @@ jobs:
       - name: new noisy
         id: new_noisy
         run: |
-          lake build Mathlib Archive Counterexamples |
-            awk '!($1 ~ "^[[?0-9]*/[?0-9]*]"){ print $0 }'
-          grep --after-context=1 "stdout" stdout.log && ret=0
-          grep --after-context=1 "stderr" stdout.log && new=0
-          if [ "${ret}" == "0" ] || [ "${new}"  == "0" ]; then exit 1; fi
+          buildMsgs="$(lake build Mathlib Archive Counterexamples |
+            awk '!($1 ~ "^[[?0-9]*/[?0-9]*]"){ print $0 }')"
+          if [ -n "${buildMsgs}" ]
+          then
+            printf $'%s\n' "${buildMsgs}"
+            exit 1
+          fi
 
       - name: check for noisy stdout lines
         id: noisy
