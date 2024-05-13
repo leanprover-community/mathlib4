@@ -351,9 +351,8 @@ def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
         ContinuousMap.comp_apply, toContinuousMap_apply, funSplitAt_apply,
         ContinuousMap.uncurry_apply, ContinuousMap.coe_mk, Function.uncurry_apply_pair]
       split_ifs
-      on_goal 1 => change f _ = _
-      on_goal 2 => change g _ = _
-      all_goals congr 1)
+      ·show f _ = _; congr 1
+      ·show g _ = _; congr 1)
 #align gen_loop.trans_at GenLoop.transAt
 
 /-- Reversal of a `GenLoop` along the `i`th coordinate. -/

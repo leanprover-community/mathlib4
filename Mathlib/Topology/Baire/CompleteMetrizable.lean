@@ -48,12 +48,11 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     · show min (min (δ / 2) r) (B (n + 1)) ≤ B (n + 1)
       exact min_le_right _ _
     · show z ∈ closedBall x δ
-      exact
-        calc
-          edist z x ≤ edist z y + edist y x := edist_triangle _ _ _
-          _ ≤ min (min (δ / 2) r) (B (n + 1)) + δ / 2 := add_le_add hz (le_of_lt xy)
-          _ ≤ δ / 2 + δ / 2 := (add_le_add (le_trans (min_le_left _ _) (min_le_left _ _)) le_rfl)
-          _ = δ := ENNReal.add_halves δ
+      calc
+        edist z x ≤ edist z y + edist y x := edist_triangle _ _ _
+        _ ≤ min (min (δ / 2) r) (B (n + 1)) + δ / 2 := add_le_add hz (le_of_lt xy)
+        _ ≤ δ / 2 + δ / 2 := (add_le_add (le_trans (min_le_left _ _) (min_le_left _ _)) le_rfl)
+        _ = δ := ENNReal.add_halves δ
     show z ∈ f n
     exact hr (calc
       edist z y ≤ min (min (δ / 2) r) (B (n + 1)) := hz
