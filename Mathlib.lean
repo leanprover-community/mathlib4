@@ -1706,8 +1706,6 @@ import Mathlib.Computability.Partrec
 import Mathlib.Computability.PartrecCode
 import Mathlib.Computability.Primrec
 import Mathlib.Computability.Reduce
-import Mathlib.Computability.RegularExpressionToNFA.Basic
-import Mathlib.Computability.RegularExpressionToNFA.Defs
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMToPartrec

@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
 -/
 import Mathlib.Computability.Language
+import Mathlib.Computability.NFA
+import Mathlib.Data.FinEnum.Option
 import Mathlib.Tactic.AdaptationNote
 
 #align_import computability.regular_expressions from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
@@ -456,29 +458,158 @@ def rec' {α : Type u} {motive : RegularExpression α → Type _}
     (zero : motive zero)
     (epsilon : motive epsilon)
     (char : (a : α) → motive (char a))
-    (plus : (a a_1 : RegularExpression α) → motive a → motive a_1 → motive (plus a a_1))
-    (comp : (a a_1 : RegularExpression α) → motive a → motive a_1 → motive (comp a a_1))
-    (star : (a : RegularExpression α) → motive a → motive (star a)) :
-    (t : RegularExpression α) → motive t
-  | .zero => zero
-  | .epsilon => epsilon
-  | .char a => char a
+    (plus : (l r : RegularExpression α) → motive l → motive r → motive (plus l r))
+    (comp : (l r : RegularExpression α) → motive l → motive r → motive (comp l r))
+    (star : (i : RegularExpression α) → motive i → motive (star i)) :
+    (R : RegularExpression α) → motive R
+  | .zero     => zero
+  | .epsilon  => epsilon
+  | .char a   => char a
   | .plus l r =>
       plus l r (rec' zero epsilon char plus comp star l) (rec' zero epsilon char plus comp star r)
   | .comp l r =>
       comp l r (rec' zero epsilon char plus comp star l) (rec' zero epsilon char plus comp star r)
-  | .star r => star r (rec' zero epsilon char plus comp star r)
+  | .star i   => star i (rec' zero epsilon char plus comp star i)
+
+set_option autoImplicit true
+@[simp]
+theorem rec'_zero : rec' z e c p o s 0 = z := rfl
+@[simp]
+theorem rec'_epsilon : rec' z e c p o s 1 = e := rfl
+@[simp]
+theorem rec'_char : rec' z e c p o s (char a) = c a := rfl
+@[simp]
+theorem rec'_plus : rec' z e c p o s (l + r) = p l r (rec' z e c p o s l) (rec' z e c p o s r) :=
+  rfl
+@[simp]
+theorem rec'_comp : rec' z e c p o s (l * r) = o l r (rec' z e c p o s l) (rec' z e c p o s r) :=
+  rfl
+@[simp]
+theorem rec'_star : rec' z e c p o s (i.star) = s i (rec' z e c p o s i) := rfl
+set_option autoImplicit false
 
 /-- A recursor for regular expressions with the expression as the first argument, since the code
 generator doesn't want to implement it for us. -/
-def recOn' {α : Type u} {motive : RegularExpression α → Type _}
-    (t : RegularExpression α)
+abbrev recOn' {α : Type u} {motive : RegularExpression α → Type _}
+    (R : RegularExpression α)
     (zero : motive zero)
     (epsilon : motive epsilon)
     (char : (a : α) → motive (char a))
-    (plus : (a a_1 : RegularExpression α) → motive a → motive a_1 → motive (plus a a_1))
-    (comp : (a a_1 : RegularExpression α) → motive a → motive a_1 → motive (comp a a_1))
-    (star : (a : RegularExpression α) → motive a → motive (star a)) :
-    motive t := rec' zero epsilon char plus comp star t
+    (plus : (l r : RegularExpression α) → motive l → motive r → motive (plus l r))
+    (comp : (l r : RegularExpression α) → motive l → motive r → motive (comp l r))
+    (star : (i : RegularExpression α) → motive i → motive (star i)) :
+    motive R := rec' zero epsilon char plus comp star R
+
+/-- The state space of the resulting NFA depends on the regular expression's structure. -/
+abbrev State : RegularExpression α → Type _
+  | zero      => Unit
+  | epsilon   => Unit
+  | char _    => Unit ⊕ Unit
+  | plus l r  => l.State ⊕ r.State
+  | comp l r  => l.State ⊕ r.State
+  | star i    => Option i.State
+
+instance {r : RegularExpression α} : Inhabited r.State :=
+  r.recOn'
+    (instInhabitedPUnit)
+    (instInhabitedPUnit)
+    (fun _      ↦  Sum.inhabitedLeft)
+    (fun l r _  ↦ @Sum.inhabitedRight l.State r.State)
+    (fun l r _  ↦ @Sum.inhabitedRight l.State r.State)
+    (fun _ _    ↦  instInhabitedOption)
+
+/-- Recursively converts a regular expression to its corresponding NFA.
+-/
+def toNFA : ∀ r : RegularExpression α, NFA α r.State :=
+  rec' 0 1 ({·}) (fun _ _ ↦ (· + ·)) (fun _ _ ↦ (· * ·)) (fun _ ↦ (·.kstar))
+
+/-- The NFA constructed from a regular expression retains the same language. -/
+@[simp]
+theorem toNFA_correct (r : RegularExpression α) : r.toNFA.accepts = r.matches' :=
+  r.recOn
+    (NFA.zero_correct)
+    (NFA.one_correct)
+    (NFA.singleton_correct)
+    (fun l r hl hr  ↦ l.matches'_add r ▸ hr ▸ hl ▸ l.toNFA.hadd_correct r.toNFA)
+    (fun l r hl hr  ↦ l.matches'_mul r ▸ hr ▸ hl ▸ l.toNFA.hmul_correct r.toNFA)
+    (fun i hi       ↦ i.matches'_star ▸ hi ▸ i.toNFA.kstar_correct)
+
+/-- NFAs constructed from regular expressions have computational meaning.
+One part of that comes from the state space always being finite and enumerable.
+-/
+instance toNFAStateFinEnum {r : RegularExpression α} : FinEnum r.State :=
+  r.recOn'
+    (FinEnum.punit)
+    (FinEnum.punit)
+    (fun _    ↦  FinEnum.sum)
+    (fun l r  ↦ @FinEnum.sum l.State r.State)
+    (fun l r  ↦ @FinEnum.sum l.State r.State)
+    (fun i    ↦ @FinEnum.instFinEnumOptionOfFinEnum i.State)
+
+/-- The number of states that an NFA constructed from a regular expression can be expected to
+have.
+
+TODO: Show equality to `toNFAStateFinEnum.card`
+-/
+def toNFAStateCard : RegularExpression α → ℕ :=
+  rec' 1 1 2 (fun _ _ ↦ Nat.add) (fun _ _ ↦ Nat.add) (fun _ ↦ Nat.succ)
+
+/-- Even the smallest NFAs constructed from regular expressions have at least one state.
+
+TODO: Show via above equality and `Inhabited`
+-/
+theorem toNFAStateCard_pos (r : RegularExpression α) : 0 < r.toNFAStateCard := by
+  induction r <;> simp[toNFAStateCard]
+  all_goals rw[← toNFAStateCard]; left; assumption
+
+mutual
+/-- NFAs constructed from regular expressions have computational meaning.
+One part of that comes from all transition target state sets being defined by `DecidablePred`s.
+-/
+instance decidableStep [DecidableEq α] :
+    ∀ (R : RegularExpression α) p a, DecidablePred (· ∈ R.toNFA.step p a)
+  | zero      =>  NFA.zeroDecidableStep
+  | epsilon   =>  NFA.oneDecidableStep
+  | char a'   =>  NFA.singletonDecidableStep a'
+  | plus l r  => @NFA.haddDecidableStep α _ _ _ _ l.decidableStep r.decidableStep
+  | comp l r  =>
+      @NFA.hmulDecidableStep α _ _ _ _ _
+        l.decidableAccept l.decidableStep r.decidableStart r.decidableStep
+  | star i    => @NFA.kstarDecidableStep α _ _ _ i.decidableStart i.decidableAccept i.decidableStep
+
+/-- NFAs constructed from regular expressions have computational meaning.
+One part of that comes from the start state set being defined by a `DecidablePred`.
+-/
+instance decidableStart [DecidableEq α] :
+    ∀ R : RegularExpression α, DecidablePred R.toNFA.start
+  | zero      =>  NFA.zeroDecidableStart (α := α)
+  | epsilon   =>  NFA.oneDecidableStart (α := α)
+  | char a'   =>  NFA.singletonDecidableStart a'
+  | plus l r  => @NFA.haddDecidableStart α _ _ _ _ l.decidableStart r.decidableStart
+  | comp l r  =>
+      @NFA.hmulDecidableStart α _ _ _ _ _ l.decidableAccept l.decidableStart r.decidableStart
+  | star i    => @NFA.kstarDecidableStart α _ _ i.decidableStart
+termination_by r => r.toNFAStateCard
+decreasing_by
+  all_goals simp_wf; simp[toNFAStateCard]
+  all_goals rw[← toNFAStateCard];exact toNFAStateCard_pos _
+
+/-- NFAs constructed from regular expressions have computational meaning.
+One part of that comes from the accept state set being defined by a `DecidablePred`.
+-/
+instance decidableAccept [DecidableEq α] :
+    ∀ R : RegularExpression α, DecidablePred R.toNFA.accept
+  | zero      =>  NFA.zeroDecidableAccept (α := α)
+  | epsilon   =>  NFA.oneDecidableAccept (α := α)
+  | char a'   =>  NFA.singletonDecidableAccept a'
+  | plus l r  => @NFA.haddDecidableAccept α _ _ _ _ l.decidableAccept r.decidableAccept
+  | comp l r  =>
+      @NFA.hmulDecidableAccept α _ _ _ _ _ l.decidableAccept r.decidableStart r.decidableAccept
+  | star i    => @NFA.kstarDecidableAccept α _ _ i.decidableAccept
+termination_by r => r.toNFAStateCard
+decreasing_by
+  all_goals simp_wf; simp[toNFAStateCard]
+  all_goals rw[← toNFAStateCard];exact toNFAStateCard_pos _
+end
 
 end RegularExpression
