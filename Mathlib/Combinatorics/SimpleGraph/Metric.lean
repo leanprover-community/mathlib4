@@ -131,7 +131,7 @@ lemma Reachable.of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) : G.Reachable u
 
 lemma exists_walk_of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) :
     ∃ p : G.Walk u v, p.length = G.dist u v :=
-  Reachable.exists_walk_of_dist (Reachable.of_dist_ne_zero h)
+  (Reachable.of_dist_ne_zero h).exists_walk_of_dist
 
 /- The distance between vertices is equal to `1` if and only if these vertices are adjacent. -/
 theorem dist_eq_one_iff_adj {u v : V} : G.dist u v = 1 ↔ G.Adj u v := by
