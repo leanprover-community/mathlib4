@@ -33,7 +33,7 @@ variable (n : ℕ) (σ : Equiv.Perm ℕ) (hσ : {x | σ x ≠ x} ⊆ Finset.Icc 
 variable (hx : AntitoneOn x (Finset.Icc 1 n))
 variable (hy : AntitoneOn y (Finset.Icc 1 n))
 
-theorem imo1975_q1 :
+lemma imo1975_q1 :
     ∑ i in Finset.Icc 1 n, (x i - y i) ^ 2 ≤ ∑ i in Finset.Icc 1 n, (x i - y (σ i)) ^ 2 := by
   simp only [sub_sq, Finset.sum_add_distrib, Finset.sum_sub_distrib]
   -- a finite sum is invariant if we permute the order of summation

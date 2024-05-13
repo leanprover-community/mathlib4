@@ -31,13 +31,13 @@ set_option linter.uppercaseLean3 false
 
 namespace Counterexample
 
-theorem mem_zmod_2 (a : ZMod 2) : a = 0 ∨ a = 1 := by
+lemma mem_zmod_2 (a : ZMod 2) : a = 0 ∨ a = 1 := by
   rcases a with ⟨_ | _, _ | _ | _ | _⟩
   · exact Or.inl rfl
   · exact Or.inr rfl
 #align counterexample.mem_zmod_2 Counterexample.mem_zmod_2
 
-theorem add_self_zmod_2 (a : ZMod 2) : a + a = 0 := by rcases mem_zmod_2 a with (rfl | rfl) <;> rfl
+lemma add_self_zmod_2 (a : ZMod 2) : a + a = 0 := by rcases mem_zmod_2 a with (rfl | rfl) <;> rfl
 #align counterexample.add_self_zmod_2 Counterexample.add_self_zmod_2
 
 namespace Nxzmod2
@@ -85,17 +85,17 @@ theorem lt_def : a < b ↔ a.1 < b.1 := by
   exact Nat.lt_asymm h h
 #align counterexample.Nxzmod_2.lt_def Counterexample.Nxzmod2.lt_def
 
-theorem add_left_cancel : ∀ a b c : ℕ × ZMod 2, a + b = a + c → b = c := fun a _ _ h =>
+lemma add_left_cancel : ∀ a b c : ℕ × ZMod 2, a + b = a + c → b = c := fun a _ _ h =>
   (add_right_inj a).mp h
 #align counterexample.Nxzmod_2.add_left_cancel Counterexample.Nxzmod2.add_left_cancel
 
-theorem add_le_add_left : ∀ a b : ℕ × ZMod 2, a ≤ b → ∀ c : ℕ × ZMod 2, c + a ≤ c + b := by
+lemma add_le_add_left : ∀ a b : ℕ × ZMod 2, a ≤ b → ∀ c : ℕ × ZMod 2, c + a ≤ c + b := by
   rintro a b (rfl | ab) c
   · rfl
   · exact Or.inr (by simpa)
 #align counterexample.Nxzmod_2.add_le_add_left Counterexample.Nxzmod2.add_le_add_left
 
-theorem le_of_add_le_add_left : ∀ a b c : ℕ × ZMod 2, a + b ≤ a + c → b ≤ c := by
+lemma le_of_add_le_add_left : ∀ a b c : ℕ × ZMod 2, a + b ≤ a + c → b ≤ c := by
   rintro a b c (bc | bc)
   · exact le_of_eq ((add_right_inj a).mp bc)
   · exact Or.inr (by simpa using bc)
@@ -104,11 +104,11 @@ theorem le_of_add_le_add_left : ∀ a b c : ℕ × ZMod 2, a + b ≤ a + c → b
 instance : ZeroLEOneClass (ℕ × ZMod 2) :=
   ⟨by dsimp only [LE.le]; decide⟩
 
-theorem mul_lt_mul_of_pos_left : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → c * a < c * b :=
+lemma mul_lt_mul_of_pos_left : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → c * a < c * b :=
   fun _ _ _ ab c0 => lt_def.mpr ((mul_lt_mul_left (lt_def.mp c0)).mpr (lt_def.mp ab))
 #align counterexample.Nxzmod_2.mul_lt_mul_of_pos_left Counterexample.Nxzmod2.mul_lt_mul_of_pos_left
 
-theorem mul_lt_mul_of_pos_right : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → a * c < b * c :=
+lemma mul_lt_mul_of_pos_right : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → a * c < b * c :=
   fun _ _ _ ab c0 => lt_def.mpr ((mul_lt_mul_right (lt_def.mp c0)).mpr (lt_def.mp ab))
 #align counterexample.Nxzmod_2.mul_lt_mul_of_pos_right Counterexample.Nxzmod2.mul_lt_mul_of_pos_right
 
@@ -135,7 +135,7 @@ def L : Type :=
   { l : ℕ × ZMod 2 // l ≠ (0, 1) }
 #align counterexample.ex_L.L Counterexample.ExL.L
 
-theorem add_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a + b ≠ (0, 1) := by
+lemma add_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a + b ≠ (0, 1) := by
   rcases a with ⟨a, a2⟩
   rcases b with ⟨b, b2⟩
   match b with
@@ -147,7 +147,7 @@ theorem add_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a 
     simp [(a + b).succ_ne_zero]
 #align counterexample.ex_L.add_L Counterexample.ExL.add_L
 
-theorem mul_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a * b ≠ (0, 1) := by
+lemma mul_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a * b ≠ (0, 1) := by
   rcases a with ⟨a, a2⟩
   rcases b with ⟨b, b2⟩
   cases b
@@ -179,7 +179,7 @@ instance inhabited : Inhabited L :=
   ⟨1⟩
 #align counterexample.ex_L.inhabited Counterexample.ExL.inhabited
 
-theorem bot_le : ∀ a : L, 0 ≤ a := by
+lemma bot_le : ∀ a : L, 0 ≤ a := by
   rintro ⟨⟨an, a2⟩, ha⟩
   cases an
   · rcases mem_zmod_2 a2 with (rfl | rfl)
@@ -194,7 +194,7 @@ instance orderBot : OrderBot L where
   bot_le := bot_le
 #align counterexample.ex_L.order_bot Counterexample.ExL.orderBot
 
-theorem exists_add_of_le : ∀ a b : L, a ≤ b → ∃ c, b = a + c := by
+lemma exists_add_of_le : ∀ a b : L, a ≤ b → ∃ c, b = a + c := by
   rintro a ⟨b, _⟩ (⟨rfl, rfl⟩ | h)
   · exact ⟨0, (add_zero _).symm⟩
   · exact
@@ -202,7 +202,7 @@ theorem exists_add_of_le : ∀ a b : L, a ≤ b → ∃ c, b = a + c := by
         Subtype.ext <| Prod.ext (add_tsub_cancel_of_le h.le).symm (add_sub_cancel _ _).symm⟩
 #align counterexample.ex_L.exists_add_of_le Counterexample.ExL.exists_add_of_le
 
-theorem le_self_add : ∀ a b : L, a ≤ a + b := by
+lemma le_self_add : ∀ a b : L, a ≤ a + b := by
   rintro a ⟨⟨bn, b2⟩, hb⟩
   obtain rfl | h := Nat.eq_zero_or_pos bn
   · obtain rfl | rfl := mem_zmod_2 b2
@@ -211,7 +211,7 @@ theorem le_self_add : ∀ a b : L, a ≤ a + b := by
   · exact Or.inr ((lt_add_iff_pos_right _).mpr h)
 #align counterexample.ex_L.le_self_add Counterexample.ExL.le_self_add
 
-theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ a b : L, a * b = 0 → a = 0 ∨ b = 0 := by
+lemma eq_zero_or_eq_zero_of_mul_eq_zero : ∀ a b : L, a * b = 0 → a = 0 ∨ b = 0 := by
   rintro ⟨⟨a, a2⟩, ha⟩ ⟨⟨b, b2⟩, hb⟩ ab1
   injection ab1 with ab
   injection ab with abn ab2

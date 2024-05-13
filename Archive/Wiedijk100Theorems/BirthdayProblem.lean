@@ -61,7 +61,7 @@ noncomputable instance : MeasureSpace (Fin n → Fin m) :=
 instance : IsProbabilityMeasure (ℙ : Measure (Fin n → Fin (m + 1))) :=
   condCount_isProbabilityMeasure Set.finite_univ Set.univ_nonempty
 
-theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :
+lemma FinFin.measure_apply {s : Set <| Fin n → Fin m} :
     ℙ s = |s.toFinite.toFinset| / ‖Fin n → Fin m‖ := by
   erw [condCount_univ, Measure.count_apply_finite]
 #align theorems_100.fin_fin.measure_apply Theorems100.FinFin.measure_apply

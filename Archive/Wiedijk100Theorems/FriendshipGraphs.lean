@@ -129,7 +129,7 @@ theorem adjMatrix_sq_of_regular (hd : G.IsRegularOfDegree d) :
   · rw [adjMatrix_sq_of_ne R hG h, of_apply, if_neg h]
 #align theorems_100.friendship.adj_matrix_sq_of_regular Theorems100.Friendship.adjMatrix_sq_of_regular
 
-theorem adjMatrix_sq_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
+lemma adjMatrix_sq_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
     (hd : G.IsRegularOfDegree d) : G.adjMatrix (ZMod p) ^ 2 = of fun _ _ => 1 := by
   simp [adjMatrix_sq_of_regular hG hd, dmod]
 #align theorems_100.friendship.adj_matrix_sq_mod_p_of_regular Theorems100.Friendship.adjMatrix_sq_mod_p_of_regular
@@ -203,14 +203,14 @@ theorem card_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1) (hd : G.IsRegu
 
 end Nonempty
 
-theorem adjMatrix_sq_mul_const_one_of_regular (hd : G.IsRegularOfDegree d) :
+lemma adjMatrix_sq_mul_const_one_of_regular (hd : G.IsRegularOfDegree d) :
     G.adjMatrix R * of (fun _ _ => 1) = of (fun _ _ => (d : R)) := by
   ext x
   simp only [← hd x, degree, adjMatrix_mul_apply, sum_const, Nat.smul_one_eq_cast,
     of_apply]
 #align theorems_100.friendship.adj_matrix_sq_mul_const_one_of_regular Theorems100.Friendship.adjMatrix_sq_mul_const_one_of_regular
 
-theorem adjMatrix_mul_const_one_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
+lemma adjMatrix_mul_const_one_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
     (hd : G.IsRegularOfDegree d) :
     G.adjMatrix (ZMod p) * of (fun _ _ => 1) = of (fun _ _ => 1) := by
   rw [adjMatrix_sq_mul_const_one_of_regular hd, dmod]
@@ -305,7 +305,7 @@ theorem neighborFinset_eq_of_degree_eq_two (hd : G.IsRegularOfDegree 2) (v : V) 
     rw [hd]
 #align theorems_100.friendship.neighbor_finset_eq_of_degree_eq_two Theorems100.Friendship.neighborFinset_eq_of_degree_eq_two
 
-theorem existsPolitician_of_degree_eq_two (hd : G.IsRegularOfDegree 2) : ExistsPolitician G := by
+lemma existsPolitician_of_degree_eq_two (hd : G.IsRegularOfDegree 2) : ExistsPolitician G := by
   have v := Classical.arbitrary V
   use v
   intro w hvw
@@ -313,7 +313,7 @@ theorem existsPolitician_of_degree_eq_two (hd : G.IsRegularOfDegree 2) : ExistsP
   exact ⟨hvw.symm, Finset.mem_univ _⟩
 #align theorems_100.friendship.exists_politician_of_degree_eq_two Theorems100.Friendship.existsPolitician_of_degree_eq_two
 
-theorem existsPolitician_of_degree_le_two (hd : G.IsRegularOfDegree d) (h : d ≤ 2) :
+lemma existsPolitician_of_degree_le_two (hd : G.IsRegularOfDegree d) (h : d ≤ 2) :
     ExistsPolitician G := by
   interval_cases d
   iterate 2 apply existsPolitician_of_degree_le_one hG hd; norm_num

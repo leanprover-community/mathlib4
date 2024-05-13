@@ -56,7 +56,7 @@ def aux1 : Foo → ℕ
 macro (name := boom) "boom" : tactic => `(tactic| (repeat' rintro ⟨⟩) <;> decide)
 #align counterexample.foo.boom Counterexample.Foo.boom
 
-theorem aux1_inj : Function.Injective aux1 := by boom
+lemma aux1_inj : Function.Injective aux1 := by boom
 #align counterexample.foo.aux1_inj Counterexample.Foo.aux1_inj
 
 instance linearOrder : LinearOrder Foo :=
@@ -85,7 +85,7 @@ instance : LinearOrderedCommMonoidWithZero Foo :=
     mul_le_mul_left := by rintro ⟨⟩ ⟨⟩ h ⟨⟩ <;> revert h <;> decide
     zero_le_one := by decide }
 
-theorem not_mul_pos : ¬∀ {M : Type} [LinearOrderedCommMonoidWithZero M],
+lemma not_mul_pos : ¬∀ {M : Type} [LinearOrderedCommMonoidWithZero M],
     ∀ a b : M, 0 < a → 0 < b → 0 < a * b := by
   intro h
   specialize h ε ε (by boom) (by boom)

@@ -33,7 +33,7 @@ open scoped BigOperators
 
 namespace Imo2013Q5
 
-theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
+lemma le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
     (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y := by
   by_contra! hxy
   have hxmy : 0 < x - y := sub_pos.mpr hxy
@@ -88,7 +88,7 @@ theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
   exact h_y'_lt_x.not_le (le_of_all_pow_lt_succ hx h1_lt_y' hh)
 #align imo2013_q5.le_of_all_pow_lt_succ' Imo2013Q5.le_of_all_pow_lt_succ'
 
-theorem f_pos_of_pos {f : ℚ → ℝ} {q : ℚ} (hq : 0 < q)
+lemma f_pos_of_pos {f : ℚ → ℝ} {q : ℚ} (hq : 0 < q)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n) :
     0 < f q := by
   have num_pos : 0 < q.num := Rat.num_pos.mpr hq
@@ -107,7 +107,7 @@ theorem f_pos_of_pos {f : ℚ → ℝ} {q : ℚ} (hq : 0 < q)
   exact pos_of_mul_pos_left hmul_pos h_f_denom_pos.le
 #align imo2013_q5.f_pos_of_pos Imo2013Q5.f_pos_of_pos
 
-theorem fx_gt_xm1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 ≤ x)
+lemma fx_gt_xm1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 ≤ x)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y)
     (H2 : ∀ x y, 0 < x → 0 < y → f x + f y ≤ f (x + y)) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n) :
     (x - 1 : ℝ) < f x := by
@@ -124,7 +124,7 @@ theorem fx_gt_xm1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 ≤ x)
     _ = f x := by ring_nf
 #align imo2013_q5.fx_gt_xm1 Imo2013Q5.fx_gt_xm1
 
-theorem pow_f_le_f_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n) {x : ℚ} (hx : 1 < x)
+lemma pow_f_le_f_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n) {x : ℚ} (hx : 1 < x)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n) :
     f (x ^ n) ≤ f x ^ n := by
   induction' n with pn hpn
@@ -139,7 +139,7 @@ theorem pow_f_le_f_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n) {x : ℚ} (hx : 
     _ ≤ f x ^ (pn + 1) * f x := by gcongr; exact (f_pos_of_pos hxp H1 H4).le
 #align imo2013_q5.pow_f_le_f_pow Imo2013Q5.pow_f_le_f_pow
 
-theorem fixed_point_of_pos_nat_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n)
+lemma fixed_point_of_pos_nat_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n)
     (H5 : ∀ x : ℚ, 1 < x → (x : ℝ) ≤ f x) {a : ℚ} (ha1 : 1 < a) (hae : f a = a) :
     f (a ^ n) = a ^ n := by
@@ -151,7 +151,7 @@ theorem fixed_point_of_pos_nat_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n)
   exact mod_cast hh1.antisymm hh0
 #align imo2013_q5.fixed_point_of_pos_nat_pow Imo2013Q5.fixed_point_of_pos_nat_pow
 
-theorem fixed_point_of_gt_1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 < x)
+lemma fixed_point_of_gt_1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 < x)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y)
     (H2 : ∀ x y, 0 < x → 0 < y → f x + f y ≤ f (x + y)) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n)
     (H5 : ∀ x : ℚ, 1 < x → (x : ℝ) ≤ f x) {a : ℚ} (ha1 : 1 < a) (hae : f a = a) : f x = x := by
@@ -178,7 +178,7 @@ end Imo2013Q5
 
 open Imo2013Q5
 
-theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y)
+lemma imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y)
     (H2 : ∀ x y, 0 < x → 0 < y → f x + f y ≤ f (x + y)) (H_fixed_point : ∃ a, 1 < a ∧ f a = a) :
     ∀ x, 0 < x → f x = x := by
   obtain ⟨a, ha1, hae⟩ := H_fixed_point

@@ -39,17 +39,17 @@ namespace IsGood
 
 variable {f : ℝ≥0 → ℝ≥0} (hf : IsGood f) {x y : ℝ≥0}
 
-theorem map_add (x y : ℝ≥0) : f (x + y) = f (x * f y) * f y :=
+lemma map_add (x y : ℝ≥0) : f (x + y) = f (x * f y) * f y :=
   (hf.map_add_rev x y).symm
 
-theorem map_eq_zero : f x = 0 ↔ 2 ≤ x := by
+lemma map_eq_zero : f x = 0 ↔ 2 ≤ x := by
   refine ⟨fun hx₀ ↦ not_lt.1 fun hlt ↦ hf.map_ne_zero x hlt hx₀, fun hle ↦ ?_⟩
   rcases exists_add_of_le hle with ⟨x, rfl⟩
   rw [add_comm, hf.map_add, hf.map_two, mul_zero]
 
-theorem map_ne_zero_iff : f x ≠ 0 ↔ x < 2 := by simp [hf.map_eq_zero]
+lemma map_ne_zero_iff : f x ≠ 0 ↔ x < 2 := by simp [hf.map_eq_zero]
 
-theorem map_of_lt_two (hx : x < 2) : f x = 2 / (2 - x) := by
+lemma map_of_lt_two (hx : x < 2) : f x = 2 / (2 - x) := by
   have hx' : 2 - x ≠ 0 := (tsub_pos_of_lt hx).ne'
   have hfx : f x ≠ 0 := hf.map_ne_zero_iff.2 hx
   apply le_antisymm
@@ -59,14 +59,14 @@ theorem map_of_lt_two (hx : x < 2) : f x = 2 / (2 - x) := by
     refine (mul_eq_zero.1 ?_).resolve_right hfx
     rw [hf.map_add_rev, hf.map_eq_zero, tsub_add_cancel_of_le hx.le]
 
-theorem map_eq (x : ℝ≥0) : f x = 2 / (2 - x) :=
+lemma map_eq (x : ℝ≥0) : f x = 2 / (2 - x) :=
   match lt_or_le x 2 with
   | .inl hx => hf.map_of_lt_two hx
   | .inr hx => by rwa [tsub_eq_zero_of_le hx, div_zero, hf.map_eq_zero]
 
 end IsGood
 
-theorem isGood_iff {f : ℝ≥0 → ℝ≥0} : IsGood f ↔ f = fun x ↦ 2 / (2 - x) := by
+lemma isGood_iff {f : ℝ≥0 → ℝ≥0} : IsGood f ↔ f = fun x ↦ 2 / (2 - x) := by
   refine ⟨fun hf ↦ funext hf.map_eq, ?_⟩
   rintro rfl
   constructor

@@ -71,7 +71,7 @@ instance orderedAddCommGroup : OrderedAddCommGroup ℤ[ε] := by
   (simp only [comp_apply, Pi.toLex_apply, coeff_add, coeff_neg, coeff_sub,
     ← nsmul_eq_mul, ← zsmul_eq_mul]; rfl)
 
-theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
+lemma pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]
   refine'
     ⟨_, fun h =>
@@ -121,7 +121,7 @@ def forgetEpsilons : ℤ[ε] →+*o ℤ where
 #align counterexample.int_with_epsilon.forget_epsilons Counterexample.IntWithEpsilon.forgetEpsilons
 
 @[simp]
-theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
+lemma forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
   rfl
 #align counterexample.int_with_epsilon.forget_epsilons_apply Counterexample.IntWithEpsilon.forgetEpsilons_apply
 

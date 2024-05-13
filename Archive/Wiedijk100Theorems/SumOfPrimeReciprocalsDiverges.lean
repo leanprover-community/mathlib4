@@ -209,7 +209,7 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
     _ ≤ 2 ^ k * x.sqrt := mul_le_mul' card_le_two_pow h2
 #align theorems_100.card_le_two_pow_mul_sqrt Theorems100.card_le_two_pow_mul_sqrt
 
-theorem Real.tendsto_sum_one_div_prime_atTop :
+lemma Real.tendsto_sum_one_div_prime_atTop :
     Tendsto (fun n => ∑ p in Finset.filter (fun p => Nat.Prime p) (range n), 1 / (p : ℝ))
       atTop atTop := by
   -- Assume that the sum of the reciprocals of the primes converges.

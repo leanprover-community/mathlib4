@@ -34,7 +34,7 @@ variable {a b c : ℝ}
 
 namespace Imo2001Q2
 
-theorem bound (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
+lemma bound (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
     a ^ 4 / (a ^ 4 + b ^ 4 + c ^ 4) ≤ a ^ 3 / sqrt ((a ^ 3) ^ 2 + ↑8 * b ^ 3 * c ^ 3) := by
   rw [div_le_div_iff (by positivity) (by positivity)]
   calc a ^ 4 * sqrt ((a ^ 3) ^ 2 + (8:ℝ) * b ^ 3 * c ^ 3)
@@ -50,7 +50,7 @@ theorem bound (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
     _ ≥ 0 := by positivity
 #align imo2001_q2.bound Imo2001Q2.bound
 
-theorem imo2001_q2' (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
+lemma imo2001_q2' (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
     ↑1 ≤ a ^ 3 / sqrt ((a ^ 3) ^ 2 + ↑8 * b ^ 3 * c ^ 3) +
       b ^ 3 / sqrt ((b ^ 3) ^ 2 + ↑8 * c ^ 3 * a ^ 3) +
         c ^ 3 / sqrt ((c ^ 3) ^ 2 + ↑8 * a ^ 3 * b ^ 3) :=
@@ -64,7 +64,7 @@ end Imo2001Q2
 
 open Imo2001Q2
 
-theorem imo2001_q2 (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : ↑1 ≤
+lemma imo2001_q2 (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : ↑1 ≤
     a / sqrt (a ^ 2 + ↑8 * b * c) + b / sqrt (b ^ 2 + ↑8 * c * a) + c / sqrt (c ^ 2 + ↑8 * a * b) :=
   have h3 : ∀ {x : ℝ}, 0 < x → (x ^ (3 : ℝ)⁻¹) ^ 3 = x := fun hx =>
     show ↑3 = (3 : ℝ) by norm_num ▸ rpow_inv_natCast_pow hx.le three_ne_zero

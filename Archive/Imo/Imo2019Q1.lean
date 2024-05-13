@@ -23,7 +23,7 @@ Note that there is a much more compact proof of this fact in Isabelle/HOL
 -/
 
 
-theorem imo2019_q1 (f : ℤ → ℤ) :
+lemma imo2019_q1 (f : ℤ → ℤ) :
     (∀ a b : ℤ, f (2 * a) + 2 * f b = f (f (a + b))) ↔ f = 0 ∨ ∃ c, f = fun x => 2 * x + c := by
   constructor; swap
   -- easy way: f(x)=0 and f(x)=2x+c work.

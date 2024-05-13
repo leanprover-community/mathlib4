@@ -62,14 +62,14 @@ lemma support_subset (f : SmoothSupportedOn 𝕜 E F n s) :
 lemma contDiff (f : SmoothSupportedOn 𝕜 E F n s) :
     ContDiff 𝕜 n f := f.2.2
 
-theorem continuous (f : SmoothSupportedOn 𝕜 E F n s) : Continuous f :=
+lemma continuous (f : SmoothSupportedOn 𝕜 E F n s) : Continuous f :=
   (SmoothSupportedOn.contDiff _).continuous
 
 lemma hasCompactSupport [ProperSpace E] (f : SmoothSupportedOn 𝕜 E F n (closedBall 0 1)) :
     HasCompactSupport f :=
   HasCompactSupport.of_support_subset_isCompact (isCompact_closedBall 0 1) (support_subset f)
 
-theorem integrable_eval_mul (p : MvPolynomial ι ℝ)
+lemma integrable_eval_mul (p : MvPolynomial ι ℝ)
     (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
     Integrable fun (x : EuclideanSpace ℝ ι) ↦ eval x p * f x :=
   (p.continuous_eval.mul (SmoothSupportedOn.contDiff f).continuous).integrable_of_hasCompactSupport

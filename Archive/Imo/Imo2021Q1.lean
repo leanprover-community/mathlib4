@@ -45,7 +45,7 @@ namespace Imo2021Q1
 
 -- We will later make use of the fact that there exists (l : ℕ) such that
 -- n ≤ 2 * l ^ 2 - 4 * l and 2 * l ^ 2 + 4 * l ≤ 2 * n for n ≥ 100.
-theorem exists_numbers_in_interval (n : ℕ) (hn : 100 ≤ n) :
+lemma exists_numbers_in_interval (n : ℕ) (hn : 100 ≤ n) :
     ∃ l : ℕ, n + 4 * l ≤ 2 * l ^ 2 ∧ 2 * l ^ 2 + 4 * l ≤ 2 * n := by
   have hn' : 1 ≤ Nat.sqrt (n + 1) := by
     rw [Nat.le_sqrt]
@@ -63,7 +63,7 @@ theorem exists_numbers_in_interval (n : ℕ) (hn : 100 ≤ n) :
   · linarith only [h₁]
 #align imo2021_q1.exists_numbers_in_interval Imo2021Q1.exists_numbers_in_interval
 
-theorem exists_triplet_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
+lemma exists_triplet_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
     ∃ a b c : ℕ, n ≤ a ∧ a < b ∧ b < c ∧ c ≤ 2 * n ∧
       (∃ k : ℕ, a + b = k ^ 2) ∧ (∃ l : ℕ, c + a = l ^ 2) ∧ ∃ m : ℕ, b + c = m ^ 2 := by
   obtain ⟨l, hl1, hl2⟩ := exists_numbers_in_interval n hn
@@ -78,7 +78,7 @@ theorem exists_triplet_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
 -- Since it will be more convenient to work with sets later on, we will translate the above claim
 -- to state that there always exists a set B ⊆ [n, 2n] of cardinality at least 3, such that each
 -- pair of pairwise unequal elements of B sums to a perfect square.
-theorem exists_finset_3_le_card_with_pairs_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
+lemma exists_finset_3_le_card_with_pairs_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
     ∃ B : Finset ℕ,
       2 * 1 + 1 ≤ B.card ∧
       (∀ a ∈ B, ∀ b ∈ B, a ≠ b → ∃ k, a + b = k ^ 2) ∧
@@ -108,7 +108,7 @@ end Imo2021Q1
 
 open Imo2021Q1
 
-theorem imo2021_q1 :
+lemma imo2021_q1 :
     ∀ n : ℕ, 100 ≤ n → ∀ A ⊆ Finset.Icc n (2 * n),
     (∃ a ∈ A, ∃ b ∈ A, a ≠ b ∧ ∃ k : ℕ, a + b = k ^ 2) ∨
     ∃ a ∈ Finset.Icc n (2 * n) \ A, ∃ b ∈ Finset.Icc n (2 * n) \ A,

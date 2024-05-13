@@ -71,15 +71,15 @@ def toReal : ℝₗ ≃+* ℝ :=
 instance : TopologicalSpace ℝₗ :=
   TopologicalSpace.generateFrom {s : Set ℝₗ | ∃ a b : ℝₗ, Ico a b = s}
 
-theorem isOpen_Ico (a b : ℝₗ) : IsOpen (Ico a b) :=
+lemma isOpen_Ico (a b : ℝₗ) : IsOpen (Ico a b) :=
   TopologicalSpace.GenerateOpen.basic _ ⟨a, b, rfl⟩
 #align counterexample.sorgenfrey_line.is_open_Ico Counterexample.SorgenfreyLine.isOpen_Ico
 
-theorem isOpen_Ici (a : ℝₗ) : IsOpen (Ici a) :=
+lemma isOpen_Ici (a : ℝₗ) : IsOpen (Ici a) :=
   iUnion_Ico_right a ▸ isOpen_iUnion (isOpen_Ico a)
 #align counterexample.sorgenfrey_line.is_open_Ici Counterexample.SorgenfreyLine.isOpen_Ici
 
-theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := by
+lemma nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := by
   rw [TopologicalSpace.nhds_generateFrom]
   haveI : Nonempty { x // x ≤ a } := Set.nonempty_Iic_subtype
   have : (⨅ x : { i // i ≤ a }, 𝓟 (Ici ↑x)) = 𝓟 (Ici a) := by
@@ -94,7 +94,7 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := b
   exact directedOn_iff_directed.2 <| Monotone.directed_ge fun x y hxy ↦ Iio_subset_Iio hxy
 #align counterexample.sorgenfrey_line.nhds_basis_Ico Counterexample.SorgenfreyLine.nhds_basis_Ico
 
-theorem nhds_basis_Ico_rat (a : ℝₗ) :
+lemma nhds_basis_Ico_rat (a : ℝₗ) :
     (𝓝 a).HasCountableBasis (fun r : ℚ => a < r) fun r => Ico a r := by
   refine' ⟨(nhds_basis_Ico a).to_hasBasis (fun b hb => _) fun r hr => ⟨_, hr, Subset.rfl⟩,
     Set.to_countable _⟩
@@ -102,7 +102,7 @@ theorem nhds_basis_Ico_rat (a : ℝₗ) :
   exact ⟨r, har, Ico_subset_Ico_right hrb.le⟩
 #align counterexample.sorgenfrey_line.nhds_basis_Ico_rat Counterexample.SorgenfreyLine.nhds_basis_Ico_rat
 
-theorem nhds_basis_Ico_inv_pnat (a : ℝₗ) :
+lemma nhds_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasBasis (fun _ : ℕ+ => True) fun n => Ico a (a + (n : ℝₗ)⁻¹) := by
   refine' (nhds_basis_Ico a).to_hasBasis (fun b hb => _) fun n hn =>
     ⟨_, lt_add_of_pos_right _ (inv_pos.2 <| Nat.cast_pos.2 n.pos), Subset.rfl⟩
@@ -112,47 +112,47 @@ theorem nhds_basis_Ico_inv_pnat (a : ℝₗ) :
   exact ⟨k.succPNat, trivial, Ico_subset_Ico_right (le_sub_iff_add_le'.1 hk.le)⟩
 #align counterexample.sorgenfrey_line.nhds_basis_Ico_inv_pnat Counterexample.SorgenfreyLine.nhds_basis_Ico_inv_pnat
 
-theorem nhds_countable_basis_Ico_inv_pnat (a : ℝₗ) :
+lemma nhds_countable_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasCountableBasis (fun _ : ℕ+ => True) fun n => Ico a (a + (n : ℝₗ)⁻¹) :=
   ⟨nhds_basis_Ico_inv_pnat a, Set.to_countable _⟩
 #align counterexample.sorgenfrey_line.nhds_countable_basis_Ico_inv_pnat Counterexample.SorgenfreyLine.nhds_countable_basis_Ico_inv_pnat
 
-theorem nhds_antitone_basis_Ico_inv_pnat (a : ℝₗ) :
+lemma nhds_antitone_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasAntitoneBasis fun n : ℕ+ => Ico a (a + (n : ℝₗ)⁻¹) :=
   ⟨nhds_basis_Ico_inv_pnat a, monotone_const.Ico <| Antitone.const_add
     (fun k _l hkl => inv_le_inv_of_le (Nat.cast_pos.2 k.2)
       (Nat.mono_cast <| Subtype.coe_le_coe.2 hkl)) _⟩
 #align counterexample.sorgenfrey_line.nhds_antitone_basis_Ico_inv_pnat Counterexample.SorgenfreyLine.nhds_antitone_basis_Ico_inv_pnat
 
-theorem isOpen_iff {s : Set ℝₗ} : IsOpen s ↔ ∀ x ∈ s, ∃ y > x, Ico x y ⊆ s :=
+lemma isOpen_iff {s : Set ℝₗ} : IsOpen s ↔ ∀ x ∈ s, ∃ y > x, Ico x y ⊆ s :=
   isOpen_iff_mem_nhds.trans <| forall₂_congr fun x _ => (nhds_basis_Ico x).mem_iff
 #align counterexample.sorgenfrey_line.is_open_iff Counterexample.SorgenfreyLine.isOpen_iff
 
-theorem isClosed_iff {s : Set ℝₗ} : IsClosed s ↔ ∀ x, x ∉ s → ∃ y > x, Disjoint (Ico x y) s := by
+lemma isClosed_iff {s : Set ℝₗ} : IsClosed s ↔ ∀ x, x ∉ s → ∃ y > x, Disjoint (Ico x y) s := by
   simp only [← isOpen_compl_iff, isOpen_iff, mem_compl_iff, subset_compl_iff_disjoint_right]
 #align counterexample.sorgenfrey_line.is_closed_iff Counterexample.SorgenfreyLine.isClosed_iff
 
-theorem exists_Ico_disjoint_closed {a : ℝₗ} {s : Set ℝₗ} (hs : IsClosed s) (ha : a ∉ s) :
+lemma exists_Ico_disjoint_closed {a : ℝₗ} {s : Set ℝₗ} (hs : IsClosed s) (ha : a ∉ s) :
     ∃ b > a, Disjoint (Ico a b) s :=
   isClosed_iff.1 hs a ha
 #align counterexample.sorgenfrey_line.exists_Ico_disjoint_closed Counterexample.SorgenfreyLine.exists_Ico_disjoint_closed
 
 @[simp]
-theorem map_toReal_nhds (a : ℝₗ) : map toReal (𝓝 a) = 𝓝[≥] toReal a := by
+lemma map_toReal_nhds (a : ℝₗ) : map toReal (𝓝 a) = 𝓝[≥] toReal a := by
   refine' ((nhds_basis_Ico a).map _).eq_of_same_basis _
   simpa only [toReal.image_eq_preimage] using nhdsWithin_Ici_basis_Ico (toReal a)
 #align counterexample.sorgenfrey_line.map_to_real_nhds Counterexample.SorgenfreyLine.map_toReal_nhds
 
-theorem nhds_eq_map (a : ℝₗ) : 𝓝 a = map toReal.symm (𝓝[≥] (toReal a)) := by
+lemma nhds_eq_map (a : ℝₗ) : 𝓝 a = map toReal.symm (𝓝[≥] (toReal a)) := by
   simp_rw [← map_toReal_nhds, map_map, (· ∘ ·), toReal.symm_apply_apply, map_id']
 #align counterexample.sorgenfrey_line.nhds_eq_map Counterexample.SorgenfreyLine.nhds_eq_map
 
-theorem nhds_eq_comap (a : ℝₗ) : 𝓝 a = comap toReal (𝓝[≥] (toReal a)) := by
+lemma nhds_eq_comap (a : ℝₗ) : 𝓝 a = comap toReal (𝓝[≥] (toReal a)) := by
   rw [← map_toReal_nhds, comap_map toReal.injective]
 #align counterexample.sorgenfrey_line.nhds_eq_comap Counterexample.SorgenfreyLine.nhds_eq_comap
 
 @[continuity]
-theorem continuous_toReal : Continuous toReal :=
+lemma continuous_toReal : Continuous toReal :=
   continuous_iff_continuousAt.2 fun x => by
     rw [ContinuousAt, Tendsto, map_toReal_nhds]
     exact inf_le_left
@@ -168,15 +168,15 @@ instance : ContinuousAdd ℝₗ := by
     nhds_eq_map, nhds_eq_map, prod_map_map_eq, ← nhdsWithin_prod_eq, Ici_prod_Ici]
   exact (continuous_add.tendsto _).inf (MapsTo.tendsto fun x hx => add_le_add hx.1 hx.2)
 
-theorem isClopen_Ici (a : ℝₗ) : IsClopen (Ici a) :=
+lemma isClopen_Ici (a : ℝₗ) : IsClopen (Ici a) :=
   ⟨isClosed_Ici, isOpen_Ici a⟩
 #align counterexample.sorgenfrey_line.is_clopen_Ici Counterexample.SorgenfreyLine.isClopen_Ici
 
-theorem isClopen_Iio (a : ℝₗ) : IsClopen (Iio a) := by
+lemma isClopen_Iio (a : ℝₗ) : IsClopen (Iio a) := by
   simpa only [compl_Ici] using (isClopen_Ici a).compl
 #align counterexample.sorgenfrey_line.is_clopen_Iio Counterexample.SorgenfreyLine.isClopen_Iio
 
-theorem isClopen_Ico (a b : ℝₗ) : IsClopen (Ico a b) :=
+lemma isClopen_Ico (a b : ℝₗ) : IsClopen (Ico a b) :=
   (isClopen_Ici a).inter (isClopen_Iio b)
 #align counterexample.sorgenfrey_line.is_clopen_Ico Counterexample.SorgenfreyLine.isClopen_Ico
 
@@ -217,7 +217,7 @@ instance : T5Space ℝₗ := by
       _ ≤ x := (not_lt.1 fun hxy => (hYd y hy).le_bot ⟨⟨hle, hxy⟩, subset_closure hx⟩)
       _ ≤ max x y := le_max_left _ _
 
-theorem denseRange_ratCast : DenseRange ((↑) : ℚ → ℝₗ) := by
+lemma denseRange_ratCast : DenseRange ((↑) : ℚ → ℝₗ) := by
   refine' dense_iff_inter_open.2 _
   rintro U Uo ⟨x, hx⟩
   rcases isOpen_iff.1 Uo _ hx with ⟨y, hxy, hU⟩
@@ -228,15 +228,15 @@ theorem denseRange_ratCast : DenseRange ((↑) : ℚ → ℝₗ) := by
 instance : SeparableSpace ℝₗ :=
   ⟨⟨_, countable_range _, denseRange_ratCast⟩⟩
 
-theorem isClosed_antidiagonal (c : ℝₗ) : IsClosed {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
+lemma isClosed_antidiagonal (c : ℝₗ) : IsClosed {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
   isClosed_singleton.preimage continuous_add
 #align counterexample.sorgenfrey_line.is_closed_antidiagonal Counterexample.SorgenfreyLine.isClosed_antidiagonal
 
-theorem isClopen_Ici_prod (x : ℝₗ × ℝₗ) : IsClopen (Ici x) :=
+lemma isClopen_Ici_prod (x : ℝₗ × ℝₗ) : IsClopen (Ici x) :=
   (Ici_prod_eq x).symm ▸ (isClopen_Ici _).prod (isClopen_Ici _)
 #align counterexample.sorgenfrey_line.is_clopen_Ici_prod Counterexample.SorgenfreyLine.isClopen_Ici_prod
 
-theorem cardinal_antidiagonal (c : ℝₗ) : #{x : ℝₗ × ℝₗ | x.1 + x.2 = c} = 𝔠 := by
+lemma cardinal_antidiagonal (c : ℝₗ) : #{x : ℝₗ × ℝₗ | x.1 + x.2 = c} = 𝔠 := by
   rw [← Cardinal.mk_real]
   exact Equiv.cardinal_eq ⟨fun x ↦ toReal x.1.1,
     fun x ↦ ⟨(toReal.symm x, c - toReal.symm x), by simp⟩,
@@ -280,7 +280,7 @@ theorem not_separableSpace_antidiagonal (c : ℝₗ) :
   rw [separableSpace_iff_countable, ← Cardinal.mk_le_aleph0_iff, cardinal_antidiagonal, not_le]
   exact Cardinal.aleph0_lt_continuum
 
-theorem nhds_prod_antitone_basis_inv_pnat (x y : ℝₗ) :
+lemma nhds_prod_antitone_basis_inv_pnat (x y : ℝₗ) :
     (𝓝 (x, y)).HasAntitoneBasis fun n : ℕ+ => Ico x (x + (n : ℝₗ)⁻¹) ×ˢ Ico y (y + (n : ℝₗ)⁻¹) := by
   rw [nhds_prod_eq]
   exact (nhds_antitone_basis_Ico_inv_pnat x).prod (nhds_antitone_basis_Ico_inv_pnat y)

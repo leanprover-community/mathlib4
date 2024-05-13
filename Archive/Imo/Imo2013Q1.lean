@@ -33,10 +33,10 @@ open scoped BigOperators
 namespace Imo2013Q1
 
 -- Porting note: simplified proof using `positivity`
-theorem arith_lemma (k n : ℕ) : 0 < 2 * n + 2 ^ k.succ := by positivity
+lemma arith_lemma (k n : ℕ) : 0 < 2 * n + 2 ^ k.succ := by positivity
 #align imo2013_q1.arith_lemma Imo2013Q1.arith_lemma
 
-theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
+lemma prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
     ∏ i : ℕ in Finset.range k, ((1 : ℚ) + 1 / ↑(if i < k then m i else nm)) =
       ∏ i : ℕ in Finset.range k, (1 + 1 / (m i : ℚ)) := by
   suffices ∀ i, i ∈ Finset.range k → (1 : ℚ) + 1 / ↑(if i < k then m i else nm) = 1 + 1 / m i from
@@ -48,7 +48,7 @@ theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
 end Imo2013Q1
 
 open Imo2013Q1
-theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
+lemma imo2013_q1 (n : ℕ+) (k : ℕ) :
     ∃ m : ℕ → ℕ+, (1 : ℚ) + (2 ^ k - 1) / n = ∏ i in Finset.range k, (1 + 1 / (m i : ℚ)) := by
   revert n
   induction' k with pk hpk

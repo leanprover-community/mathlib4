@@ -28,7 +28,7 @@ open Real
 
 namespace Imo2008Q4
 
-theorem abs_eq_one_of_pow_eq_one (x : ℝ) (n : ℕ) (hn : n ≠ 0) (h : x ^ n = 1) : |x| = 1 := by
+lemma abs_eq_one_of_pow_eq_one (x : ℝ) (n : ℕ) (hn : n ≠ 0) (h : x ^ n = 1) : |x| = 1 := by
   rw [← pow_left_inj (abs_nonneg x) zero_le_one hn, one_pow, pow_abs, h, abs_one]
 #align imo2008_q4.abs_eq_one_of_pow_eq_one Imo2008Q4.abs_eq_one_of_pow_eq_one
 
@@ -36,7 +36,7 @@ end Imo2008Q4
 
 open Imo2008Q4
 
-theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
+lemma imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
     (∀ w x y z : ℝ, 0 < w → 0 < x → 0 < y → 0 < z → w * x = y * z →
       (f w ^ 2 + f x ^ 2) / (f (y ^ 2) + f (z ^ 2)) = (w ^ 2 + x ^ 2) / (y ^ 2 + z ^ 2)) ↔
     (∀ x > 0, f x = x) ∨ ∀ x > 0, f x = 1 / x := by

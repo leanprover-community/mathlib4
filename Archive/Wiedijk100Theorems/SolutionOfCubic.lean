@@ -48,7 +48,7 @@ variable [Invertible (2 : K)] [Invertible (3 : K)]
 variable (a b c d : K)
 variable {ω p q r s t : K}
 
-theorem cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 0 := by
+lemma cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 0 := by
   simpa [cyclotomic_prime, Finset.sum_range_succ] using hω.isRoot_cyclotomic (by decide)
 #align theorems_100.cube_root_of_unity_sum Theorems100.cube_root_of_unity_sum
 

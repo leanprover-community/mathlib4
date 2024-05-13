@@ -55,7 +55,7 @@ structure Cube (n : ℕ) : Type where
 
 namespace Cube
 
-theorem hw' (c : Cube n) : 0 ≤ c.w :=
+lemma hw' (c : Cube n) : 0 ≤ c.w :=
   le_of_lt c.hw
 #align theorems_100.«82».cube.hw' Theorems100.«82».Cube.hw'
 
@@ -65,38 +65,38 @@ def side (c : Cube n) (j : Fin n) : Set ℝ :=
 #align theorems_100.«82».cube.side Theorems100.«82».Cube.side
 
 @[simp]
-theorem b_mem_side (c : Cube n) (j : Fin n) : c.b j ∈ c.side j := by simp [side, Cube.hw, le_refl]
+lemma b_mem_side (c : Cube n) (j : Fin n) : c.b j ∈ c.side j := by simp [side, Cube.hw, le_refl]
 #align theorems_100.«82».cube.b_mem_side Theorems100.«82».Cube.b_mem_side
 
 def toSet (c : Cube n) : Set (Fin n → ℝ) :=
   {x | ∀ j, x j ∈ side c j}
 #align theorems_100.«82».cube.to_set Theorems100.«82».Cube.toSet
 
-theorem side_nonempty (c : Cube n) (i : Fin n) : (side c i).Nonempty := by simp [side, c.hw]
+lemma side_nonempty (c : Cube n) (i : Fin n) : (side c i).Nonempty := by simp [side, c.hw]
 #align theorems_100.«82».cube.side_nonempty Theorems100.«82».Cube.side_nonempty
 
-theorem univ_pi_side (c : Cube n) : pi univ (side c) = c.toSet :=
+lemma univ_pi_side (c : Cube n) : pi univ (side c) = c.toSet :=
   ext fun _ => mem_univ_pi
 #align theorems_100.«82».cube.univ_pi_side Theorems100.«82».Cube.univ_pi_side
 
-theorem toSet_subset {c c' : Cube n} : c.toSet ⊆ c'.toSet ↔ ∀ j, c.side j ⊆ c'.side j := by
+lemma toSet_subset {c c' : Cube n} : c.toSet ⊆ c'.toSet ↔ ∀ j, c.side j ⊆ c'.side j := by
   simp only [← univ_pi_side, univ_pi_subset_univ_pi_iff, (c.side_nonempty _).ne_empty, exists_false,
     or_false_iff]
 #align theorems_100.«82».cube.to_set_subset Theorems100.«82».Cube.toSet_subset
 
-theorem toSet_disjoint {c c' : Cube n} :
+lemma toSet_disjoint {c c' : Cube n} :
     Disjoint c.toSet c'.toSet ↔ ∃ j, Disjoint (c.side j) (c'.side j) := by
   simp only [← univ_pi_side, disjoint_univ_pi]
 #align theorems_100.«82».cube.to_set_disjoint Theorems100.«82».Cube.toSet_disjoint
 
-theorem b_mem_toSet (c : Cube n) : c.b ∈ c.toSet := by simp [toSet]
+lemma b_mem_toSet (c : Cube n) : c.b ∈ c.toSet := by simp [toSet]
 #align theorems_100.«82».cube.b_mem_to_set Theorems100.«82».Cube.b_mem_toSet
 
 protected def tail (c : Cube (n + 1)) : Cube n :=
   ⟨tail c.b, c.w, c.hw⟩
 #align theorems_100.«82».cube.tail Theorems100.«82».Cube.tail
 
-theorem side_tail (c : Cube (n + 1)) (j : Fin n) : c.tail.side j = c.side j.succ :=
+lemma side_tail (c : Cube (n + 1)) (j : Fin n) : c.tail.side j = c.side j.succ :=
   rfl
 #align theorems_100.«82».cube.side_tail Theorems100.«82».Cube.side_tail
 
@@ -104,7 +104,7 @@ def bottom (c : Cube (n + 1)) : Set (Fin (n + 1) → ℝ) :=
   {x | x 0 = c.b 0 ∧ tail x ∈ c.tail.toSet}
 #align theorems_100.«82».cube.bottom Theorems100.«82».Cube.bottom
 
-theorem b_mem_bottom (c : Cube (n + 1)) : c.b ∈ c.bottom := by
+lemma b_mem_bottom (c : Cube (n + 1)) : c.b ∈ c.bottom := by
   simp [bottom, toSet, side, Cube.hw, le_refl, Cube.tail]
 #align theorems_100.«82».cube.b_mem_bottom Theorems100.«82».Cube.b_mem_bottom
 
@@ -112,10 +112,10 @@ def xm (c : Cube (n + 1)) : ℝ :=
   c.b 0 + c.w
 #align theorems_100.«82».cube.xm Theorems100.«82».Cube.xm
 
-theorem b_lt_xm (c : Cube (n + 1)) : c.b 0 < c.xm := by simp [xm, hw]
+lemma b_lt_xm (c : Cube (n + 1)) : c.b 0 < c.xm := by simp [xm, hw]
 #align theorems_100.«82».cube.b_lt_xm Theorems100.«82».Cube.b_lt_xm
 
-theorem b_ne_xm (c : Cube (n + 1)) : c.b 0 ≠ c.xm :=
+lemma b_ne_xm (c : Cube (n + 1)) : c.b 0 ≠ c.xm :=
   ne_of_lt c.b_lt_xm
 #align theorems_100.«82».cube.b_ne_xm Theorems100.«82».Cube.b_ne_xm
 
@@ -124,11 +124,11 @@ def shiftUp (c : Cube (n + 1)) : Cube (n + 1) :=
 #align theorems_100.«82».cube.shift_up Theorems100.«82».Cube.shiftUp
 
 @[simp]
-theorem tail_shiftUp (c : Cube (n + 1)) : c.shiftUp.tail = c.tail := by simp [shiftUp, Cube.tail]
+lemma tail_shiftUp (c : Cube (n + 1)) : c.shiftUp.tail = c.tail := by simp [shiftUp, Cube.tail]
 #align theorems_100.«82».cube.tail_shift_up Theorems100.«82».Cube.tail_shiftUp
 
 @[simp]
-theorem head_shiftUp (c : Cube (n + 1)) : c.shiftUp.b 0 = c.xm :=
+lemma head_shiftUp (c : Cube (n + 1)) : c.shiftUp.b 0 = c.xm :=
   rfl
 #align theorems_100.«82».cube.head_shift_up Theorems100.«82».Cube.head_shiftUp
 
@@ -137,7 +137,7 @@ def unitCube : Cube n :=
 #align theorems_100.«82».cube.unit_cube Theorems100.«82».Cube.unitCube
 
 @[simp]
-theorem side_unitCube {j : Fin n} : unitCube.side j = Ico 0 1 := by
+lemma side_unitCube {j : Fin n} : unitCube.side j = Ico 0 1 := by
   norm_num [unitCube, side]
 #align theorems_100.«82».cube.side_unit_cube Theorems100.«82».Cube.side_unitCube
 
@@ -159,34 +159,34 @@ namespace Correct
 
 variable (h : Correct cs)
 
-theorem toSet_subset_unitCube {i} : (cs i).toSet ⊆ unitCube.toSet := by
+lemma toSet_subset_unitCube {i} : (cs i).toSet ⊆ unitCube.toSet := by
   convert h.iUnion_eq ▸ subset_iUnion _ i
 #align theorems_100.«82».correct.to_set_subset_unit_cube Theorems100.«82».Correct.toSet_subset_unitCube
 
-theorem side_subset {i j} : (cs i).side j ⊆ Ico 0 1 := by
+lemma side_subset {i j} : (cs i).side j ⊆ Ico 0 1 := by
   simpa only [side_unitCube] using toSet_subset.1 h.toSet_subset_unitCube j
 #align theorems_100.«82».correct.side_subset Theorems100.«82».Correct.side_subset
 
-theorem zero_le_of_mem_side {i j x} (hx : x ∈ (cs i).side j) : 0 ≤ x :=
+lemma zero_le_of_mem_side {i j x} (hx : x ∈ (cs i).side j) : 0 ≤ x :=
   (side_subset h hx).1
 #align theorems_100.«82».correct.zero_le_of_mem_side Theorems100.«82».Correct.zero_le_of_mem_side
 
-theorem zero_le_of_mem {i p} (hp : p ∈ (cs i).toSet) (j) : 0 ≤ p j :=
+lemma zero_le_of_mem {i p} (hp : p ∈ (cs i).toSet) (j) : 0 ≤ p j :=
   zero_le_of_mem_side h (hp j)
 #align theorems_100.«82».correct.zero_le_of_mem Theorems100.«82».Correct.zero_le_of_mem
 
-theorem zero_le_b {i j} : 0 ≤ (cs i).b j :=
+lemma zero_le_b {i j} : 0 ≤ (cs i).b j :=
   zero_le_of_mem h (cs i).b_mem_toSet j
 #align theorems_100.«82».correct.zero_le_b Theorems100.«82».Correct.zero_le_b
 
-theorem b_add_w_le_one {j} : (cs i).b j + (cs i).w ≤ 1 := by
+lemma b_add_w_le_one {j} : (cs i).b j + (cs i).w ≤ 1 := by
   have : side (cs i) j ⊆ Ico 0 1 := side_subset h
   rw [side, Ico_subset_Ico_iff] at this
   · convert this.2
   · simp [hw]
 #align theorems_100.«82».correct.b_add_w_le_one Theorems100.«82».Correct.b_add_w_le_one
 
-theorem nontrivial_fin : Nontrivial (Fin n) :=
+lemma nontrivial_fin : Nontrivial (Fin n) :=
   Fin.nontrivial_iff_two_le.2 (Nat.le_of_succ_le_succ h.three_le)
 #align theorems_100.«82».correct.nontrivial_fin Theorems100.«82».Correct.nontrivial_fin
 
@@ -284,19 +284,19 @@ def OnBoundary (_ : i ∈ bcubes cs c) (j : Fin n) : Prop :=
   c.b j.succ = (cs i).b j.succ ∨ (cs i).b j.succ + (cs i).w = c.b j.succ + c.w
 #align theorems_100.«82».on_boundary Theorems100.«82».OnBoundary
 
-theorem tail_sub (hi : i ∈ bcubes cs c) : ∀ j, (cs i).tail.side j ⊆ c.tail.side j := by
+lemma tail_sub (hi : i ∈ bcubes cs c) : ∀ j, (cs i).tail.side j ⊆ c.tail.side j := by
   rw [← toSet_subset]; exact hi.2
 #align theorems_100.«82».tail_sub Theorems100.«82».tail_sub
 
-theorem bottom_mem_side (hi : i ∈ bcubes cs c) : c.b 0 ∈ (cs i).side 0 := by
+lemma bottom_mem_side (hi : i ∈ bcubes cs c) : c.b 0 ∈ (cs i).side 0 := by
   convert b_mem_side (cs i) _ using 1; rw [hi.1]
 #align theorems_100.«82».bottom_mem_side Theorems100.«82».bottom_mem_side
 
-theorem b_le_b (hi : i ∈ bcubes cs c) (j : Fin n) : c.b j.succ ≤ (cs i).b j.succ :=
+lemma b_le_b (hi : i ∈ bcubes cs c) (j : Fin n) : c.b j.succ ≤ (cs i).b j.succ :=
   (tail_sub hi j <| b_mem_side _ _).1
 #align theorems_100.«82».b_le_b Theorems100.«82».b_le_b
 
-theorem t_le_t (hi : i ∈ bcubes cs c) (j : Fin n) :
+lemma t_le_t (hi : i ∈ bcubes cs c) (j : Fin n) :
     (cs i).b j.succ + (cs i).w ≤ c.b j.succ + c.w := by
   have h' := tail_sub hi j; dsimp only [side] at h'; rw [Ico_subset_Ico_iff] at h'
   · exact h'.2
@@ -356,15 +356,15 @@ def mi : ι :=
 
 variable {h v}
 
-theorem mi_mem_bcubes : mi h v ∈ bcubes cs c :=
+lemma mi_mem_bcubes : mi h v ∈ bcubes cs c :=
   (Classical.choose_spec <| exists_mi h v).1
 #align theorems_100.«82».mi_mem_bcubes Theorems100.«82».mi_mem_bcubes
 
-theorem mi_minimal (hi : i ∈ bcubes cs c) : (cs <| mi h v).w ≤ (cs i).w :=
+lemma mi_minimal (hi : i ∈ bcubes cs c) : (cs <| mi h v).w ≤ (cs i).w :=
   (Classical.choose_spec <| exists_mi h v).2 i hi
 #align theorems_100.«82».mi_minimal Theorems100.«82».mi_minimal
 
-theorem mi_strict_minimal (hii' : mi h v ≠ i) (hi : i ∈ bcubes cs c) :
+lemma mi_strict_minimal (hii' : mi h v ≠ i) (hi : i ∈ bcubes cs c) :
     (cs <| mi h v).w < (cs i).w :=
   (mi_minimal hi).lt_of_ne <| h.Injective.ne hii'
 #align theorems_100.«82».mi_strict_minimal Theorems100.«82».mi_strict_minimal
@@ -567,13 +567,13 @@ def decreasingSequence (k : ℕ) : ℝ :=
   (cs (sequenceOfCubes h k).1).w
 #align theorems_100.«82».decreasing_sequence Theorems100.«82».decreasingSequence
 
-theorem strictAnti_sequenceOfCubes : StrictAnti <| decreasingSequence h :=
+lemma strictAnti_sequenceOfCubes : StrictAnti <| decreasingSequence h :=
   strictAnti_nat_of_succ_lt fun k => by
     let v := (sequenceOfCubes h k).2; dsimp only [decreasingSequence, sequenceOfCubes]
     apply w_lt_w h v (mi_mem_bcubes : mi h v ∈ _)
 #align theorems_100.«82».strict_anti_sequence_of_cubes Theorems100.«82».strictAnti_sequenceOfCubes
 
-theorem injective_sequenceOfCubes : Injective (sequenceOfCubes h) :=
+lemma injective_sequenceOfCubes : Injective (sequenceOfCubes h) :=
   @Injective.of_comp _ _ _ (fun x : { _i : ι // _ } => (cs x.1).w) _
     (strictAnti_sequenceOfCubes h).injective
 #align theorems_100.«82».injective_sequence_of_cubes Theorems100.«82».injective_sequenceOfCubes

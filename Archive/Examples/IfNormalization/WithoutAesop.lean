@@ -24,7 +24,7 @@ namespace IfExpr
 attribute [local simp] eval normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
   List.disjoint max_add_add_right max_mul_mul_left Nat.lt_add_one_iff le_add_of_le_right
 
-theorem eval_ite_ite' :
+lemma eval_ite_ite' :
     (ite (ite a b c) d e).eval f = (ite a (ite b d e) (ite c d e)).eval f := by
   cases h : eval f a <;> simp_all
 

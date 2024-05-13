@@ -191,7 +191,7 @@ example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" := by
 -/
 
 
-private theorem MIU_der : Derivable "MIU" := by
+private lemma MIU_der : Derivable "MIU" := by
   change Derivable ([M] ++ [I, U])
   apply Derivable.r1 -- reduce to deriving `"MI"`,
   constructor -- which is the base of the inductive construction.

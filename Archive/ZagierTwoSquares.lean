@@ -82,7 +82,7 @@ def obvInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨
   simp only [zagierSet, Set.mem_setOf_eq] at h ⊢
   linarith [h]⟩
 
-theorem obvInvo_sq : obvInvo k ^ 2 = 1 := rfl
+lemma obvInvo_sq : obvInvo k ^ 2 = 1 := rfl
 
 /-- If `obvInvo k` has a fixed point, a representation of `4 * k + 1` as a sum of two squares
 can be extracted from it. -/

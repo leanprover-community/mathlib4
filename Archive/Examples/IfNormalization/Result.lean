@@ -42,13 +42,13 @@ attribute [local simp] apply_ite ite_eq_iff'
 Simp lemmas for `eval`.
 We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we know the shape of `i`.
 -/
-@[simp] theorem eval_lit : (lit b).eval f  = b := rfl
-@[simp] theorem eval_var : (var i).eval f  = f i := rfl
-@[simp] theorem eval_ite_lit :
+@[simp] lemma eval_lit : (lit b).eval f  = b := rfl
+@[simp] lemma eval_var : (var i).eval f  = f i := rfl
+@[simp] lemma eval_ite_lit :
     (ite (.lit b) t e).eval f = bif b then t.eval f else e.eval f := rfl
-@[simp] theorem eval_ite_var :
+@[simp] lemma eval_ite_var :
     (ite (.var i) t e).eval f = bif f i then t.eval f else e.eval f := rfl
-@[simp] theorem eval_ite_ite :
+@[simp] lemma eval_ite_ite :
     (ite (ite a b c) d e).eval f = (ite a (ite b d e) (ite c d e)).eval f := by
   cases h : eval f a <;> simp_all [eval]
 

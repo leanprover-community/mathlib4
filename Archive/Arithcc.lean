@@ -67,11 +67,11 @@ abbrev Register :=
   ℕ
 #align arithcc.register Arithcc.Register
 
-theorem Register.lt_succ_self : ∀ r : Register, r < r + 1 :=
+lemma Register.lt_succ_self : ∀ r : Register, r < r + 1 :=
   Nat.lt_succ_self
 #align arithcc.register.lt_succ_self Arithcc.Register.lt_succ_self
 
-theorem Register.le_of_lt_succ {r₁ r₂ : Register} : r₁ < r₂ + 1 → r₁ ≤ r₂ :=
+lemma Register.le_of_lt_succ {r₁ r₂ : Register} : r₁ < r₂ + 1 → r₁ ≤ r₂ :=
   Nat.le_of_succ_le_succ
 #align arithcc.register.le_of_lt_succ Arithcc.Register.le_of_lt_succ
 
@@ -205,17 +205,17 @@ def StateEqRs (t : Register) (ζ₁ ζ₂ : State) : Prop :=
 notation:50 ζ₁ " ≃[" t "]/ac " ζ₂:50 => StateEqRs t ζ₁ ζ₂
 
 @[refl]
-protected theorem StateEqRs.refl (t : Register) (ζ : State) : ζ ≃[t]/ac ζ := by simp [StateEqRs]
+protected lemma StateEqRs.refl (t : Register) (ζ : State) : ζ ≃[t]/ac ζ := by simp [StateEqRs]
 #align arithcc.state_eq_rs.refl Arithcc.StateEqRs.refl
 
 @[symm]
-protected theorem StateEqRs.symm {t : Register} (ζ₁ ζ₂ : State) :
+protected lemma StateEqRs.symm {t : Register} (ζ₁ ζ₂ : State) :
     ζ₁ ≃[t]/ac ζ₂ → ζ₂ ≃[t]/ac ζ₁ := by
   simp_all [StateEqRs] -- Porting note: was `finish [StateEqRs]`
 #align arithcc.state_eq_rs.symm Arithcc.StateEqRs.symm
 
 @[trans]
-protected theorem StateEqRs.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
+protected lemma StateEqRs.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t]/ac ζ₂ → ζ₂ ≃[t]/ac ζ₃ → ζ₁ ≃[t]/ac ζ₃ := by
   simp_all [StateEqRs] -- Porting note: was `finish [StateEqRs]`
 #align arithcc.state_eq_rs.trans Arithcc.StateEqRs.trans
@@ -228,17 +228,17 @@ def StateEq (t : Register) (ζ₁ ζ₂ : State) : Prop :=
 notation:50 ζ₁ " ≃[" t "] " ζ₂:50 => StateEq t ζ₁ ζ₂
 
 @[refl]
-protected theorem StateEq.refl (t : Register) (ζ : State) : ζ ≃[t] ζ := by simp [StateEq]; rfl
+protected lemma StateEq.refl (t : Register) (ζ : State) : ζ ≃[t] ζ := by simp [StateEq]; rfl
 #align arithcc.state_eq.refl Arithcc.StateEq.refl
 
 @[symm]
-protected theorem StateEq.symm {t : Register} (ζ₁ ζ₂ : State) : ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₁ := by
+protected lemma StateEq.symm {t : Register} (ζ₁ ζ₂ : State) : ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₁ := by
   simp [StateEq]; intros
   constructor <;> (symm; assumption)
 #align arithcc.state_eq.symm Arithcc.StateEq.symm
 
 @[trans]
-protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
+protected lemma StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₃ → ζ₁ ≃[t] ζ₃ := by
   simp [StateEq]; intros
   constructor

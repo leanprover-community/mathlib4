@@ -33,7 +33,7 @@ open Real
 
 namespace Imo2008Q3
 
-theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) (hp_gt_20 : p > 20) :
+lemma p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) (hp_gt_20 : p > 20) :
     ∃ n : ℕ, p ∣ n ^ 2 + 1 ∧ (p : ℝ) > 2 * n + sqrt (2 * n) := by
   haveI := Fact.mk hpp
   have hp_mod_4_ne_3 : p % 4 ≠ 3 := by linarith [show p % 4 = 1 from hp_mod_4_eq_1]
@@ -75,7 +75,7 @@ end Imo2008Q3
 
 open Imo2008Q3
 
-theorem imo2008_q3 : ∀ N : ℕ, ∃ n : ℕ, n ≥ N ∧
+lemma imo2008_q3 : ∀ N : ℕ, ∃ n : ℕ, n ≥ N ∧
     ∃ p : ℕ, Nat.Prime p ∧ p ∣ n ^ 2 + 1 ∧ (p : ℝ) > 2 * n + sqrt (2 * n) := by
   intro N
   obtain ⟨p, hpp, hineq₁, hpmod4⟩ := Nat.exists_prime_gt_modEq_one (N ^ 2 + 20) four_ne_zero

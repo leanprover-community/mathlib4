@@ -103,25 +103,25 @@ def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
   PowerSeries.mk fun n => if n ∈ s then 1 else 0
 #align theorems_100.indicator_series Theorems100.indicatorSeries
 
-theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) :
+lemma coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) :
     coeff α n (indicatorSeries _ s) = if n ∈ s then 1 else 0 :=
   coeff_mk _ _
 #align theorems_100.coeff_indicator Theorems100.coeff_indicator
 
-theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) :
+lemma coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) :
     coeff α n (indicatorSeries _ s) = 1 := by rw [coeff_indicator, if_pos h]
 #align theorems_100.coeff_indicator_pos Theorems100.coeff_indicator_pos
 
-theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
+lemma coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
     coeff α n (indicatorSeries _ s) = 0 := by rw [coeff_indicator, if_neg h]
 #align theorems_100.coeff_indicator_neg Theorems100.coeff_indicator_neg
 
-theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] :
+lemma constantCoeff_indicator (s : Set ℕ) [Semiring α] :
     constantCoeff α (indicatorSeries _ s) = if 0 ∈ s then 1 else 0 :=
   rfl
 #align theorems_100.constant_coeff_indicator Theorems100.constantCoeff_indicator
 
-theorem two_series (i : ℕ) [Semiring α] :
+lemma two_series (i : ℕ) [Semiring α] :
     1 + (X : PowerSeries α) ^ i.succ = indicatorSeries α {0, i.succ} := by
   ext n
   simp only [coeff_indicator, coeff_one, coeff_X_pow, Set.mem_insert_iff, Set.mem_singleton_iff,
@@ -131,7 +131,7 @@ theorem two_series (i : ℕ) [Semiring α] :
   · simp [Nat.succ_ne_zero d]
 #align theorems_100.two_series Theorems100.two_series
 
-theorem num_series' [Field α] (i : ℕ) :
+lemma num_series' [Field α] (i : ℕ) :
     (1 - (X : PowerSeries α) ^ (i + 1))⁻¹ = indicatorSeries α {k | i + 1 ∣ k} := by
   rw [PowerSeries.inv_eq_iff_mul_eq_one]
   · ext n
@@ -181,7 +181,7 @@ def mkOdd : ℕ ↪ ℕ :=
 #align theorems_100.mk_odd Theorems100.mkOdd
 
 -- The main workhorse of the partition theorem proof.
-theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
+lemma partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
     (c : ℕ → Set ℕ) (hc : ∀ i, i ∉ s → 0 ∈ c i) :
     (Finset.card
           ((univ : Finset (Nat.Partition n)).filter fun p =>
@@ -274,7 +274,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         exact not_mem_mono hf h
 #align theorems_100.partial_gf_prop Theorems100.partialGF_prop
 
-theorem partialOddGF_prop [Field α] (n m : ℕ) :
+lemma partialOddGF_prop [Field α] (n m : ℕ) :
     (Finset.card
           ((univ : Finset (Nat.Partition n)).filter fun p =>
             ∀ j ∈ p.parts, j ∈ (range m).map mkOdd) :
@@ -324,7 +324,7 @@ theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
     apply Nat.two_not_dvd_two_mul_add_one
 #align theorems_100.odd_gf_prop Theorems100.oddGF_prop
 
-theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
+lemma partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
     (Finset.card
           ((univ : Finset (Nat.Partition n)).filter fun p =>
             p.parts.Nodup ∧ ∀ j ∈ p.parts, j ∈ (range m).map ⟨Nat.succ, Nat.succ_injective⟩) :
@@ -405,7 +405,7 @@ theorem same_gf [Field α] (m : ℕ) :
     _ = _ := by rw [prod_range_succ]
 #align theorems_100.same_gf Theorems100.same_gf
 
-theorem same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
+lemma same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
     coeff α n (partialOddGF m) = coeff α n (partialDistinctGF m) := by
   rw [← same_gf, coeff_mul_prod_one_sub_of_lt_order]
   rintro i -
@@ -413,7 +413,7 @@ theorem same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
   exact mod_cast Nat.lt_succ_of_le (le_add_right h)
 #align theorems_100.same_coeffs Theorems100.same_coeffs
 
-theorem partition_theorem (n : ℕ) :
+lemma partition_theorem (n : ℕ) :
     (Nat.Partition.odds n).card = (Nat.Partition.distincts n).card := by
   -- We need the counts to live in some field (which contains ℕ), so let's just use ℚ
   suffices ((Nat.Partition.odds n).card : ℚ) = (Nat.Partition.distincts n).card from

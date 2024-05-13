@@ -34,17 +34,17 @@ def B : BilinForm F (F × F) :=
 #align counterexample.B Counterexample.B
 
 @[simp]
-theorem B_apply (x y : F × F) : B F x y = x.1 * y.2 + x.2 * y.1 :=
+lemma B_apply (x y : F × F) : B F x y = x.1 * y.2 + x.2 * y.1 :=
   rfl
 #align counterexample.B_apply Counterexample.B_apply
 
-theorem isSymm_B : (B F).IsSymm := fun x y => by simp [mul_comm, add_comm]
+lemma isSymm_B : (B F).IsSymm := fun x y => by simp [mul_comm, add_comm]
 #align counterexample.is_symm_B Counterexample.isSymm_B
 
-theorem isAlt_B : (B F).IsAlt := fun x => by simp [mul_comm, CharTwo.add_self_eq_zero (x.1 * x.2)]
+lemma isAlt_B : (B F).IsAlt := fun x => by simp [mul_comm, CharTwo.add_self_eq_zero (x.1 * x.2)]
 #align counterexample.is_alt_B Counterexample.isAlt_B
 
-theorem B_ne_zero : B F ≠ 0 := fun h => by simpa using LinearMap.congr_fun₂ h (1, 0) (1, 1)
+lemma B_ne_zero : B F ≠ 0 := fun h => by simpa using LinearMap.congr_fun₂ h (1, 0) (1, 1)
 #align counterexample.B_ne_zero Counterexample.B_ne_zero
 
 /-- `LinearMap.BilinForm.toQuadraticForm` is not injective on symmetric bilinear forms.

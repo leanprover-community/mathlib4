@@ -53,7 +53,7 @@ theorem Int.natAbs_eq_of_chain_dvd {l : Cycle ℤ} {x y : ℤ} (hl : l.Chain (·
   exact Int.natAbs_eq_of_dvd_dvd (hl x hx y hy) (hl y hy x hx)
 #align imo2006_q5.int.nat_abs_eq_of_chain_dvd Imo2006Q5.Int.natAbs_eq_of_chain_dvd
 
-theorem Int.add_eq_add_of_natAbs_eq_of_natAbs_eq {a b c d : ℤ} (hne : a ≠ b)
+lemma Int.add_eq_add_of_natAbs_eq_of_natAbs_eq {a b c d : ℤ} (hne : a ≠ b)
     (h₁ : (c - a).natAbs = (d - b).natAbs) (h₂ : (c - b).natAbs = (d - a).natAbs) :
     a + b = c + d := by
   cases' Int.natAbs_eq_natAbs_iff.1 h₁ with h₁ h₁
@@ -123,7 +123,7 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
       exact isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate ht hn'.symm
 #align imo2006_q5.polynomial.is_periodic_pt_eval_two Imo2006Q5.Polynomial.isPeriodicPt_eval_two
 
-theorem Polynomial.iterate_comp_sub_X_ne {P : Polynomial ℤ} (hP : 1 < P.natDegree) {k : ℕ}
+lemma Polynomial.iterate_comp_sub_X_ne {P : Polynomial ℤ} (hP : 1 < P.natDegree) {k : ℕ}
     (hk : 0 < k) : P.comp^[k] X - X ≠ 0 := by
   rw [sub_ne_zero]
   apply_fun natDegree

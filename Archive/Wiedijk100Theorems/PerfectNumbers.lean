@@ -31,7 +31,7 @@ https://en.wikipedia.org/wiki/Euclid%E2%80%93Euler_theorem
 
 namespace Theorems100
 
-theorem odd_mersenne_succ (k : ℕ) : ¬2 ∣ mersenne (k + 1) := by
+lemma odd_mersenne_succ (k : ℕ) : ¬2 ∣ mersenne (k + 1) := by
   simp [← even_iff_two_dvd, ← Nat.even_add_one, parity_simps]
 #align theorems_100.odd_mersenne_succ Theorems100.odd_mersenne_succ
 
@@ -39,7 +39,7 @@ namespace Nat
 
 open ArithmeticFunction Finset
 
-theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
+lemma sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
   simp_rw [sigma_one_apply, mersenne, show 2 = 1 + 1 from rfl, ← geom_sum_mul_add 1 (k + 1)]
   set_option tactic.skipAssignedInstances false in norm_num
 #align theorems_100.nat.sigma_two_pow_eq_mersenne_succ Theorems100.Nat.sigma_two_pow_eq_mersenne_succ
@@ -56,16 +56,16 @@ theorem perfect_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1))
   · positivity
 #align theorems_100.nat.perfect_two_pow_mul_mersenne_of_prime Theorems100.Nat.perfect_two_pow_mul_mersenne_of_prime
 
-theorem ne_zero_of_prime_mersenne (k : ℕ) (pr : (mersenne (k + 1)).Prime) : k ≠ 0 := by
+lemma ne_zero_of_prime_mersenne (k : ℕ) (pr : (mersenne (k + 1)).Prime) : k ≠ 0 := by
   intro H
   simp [H, mersenne, Nat.not_prime_one] at pr
 #align theorems_100.nat.ne_zero_of_prime_mersenne Theorems100.Nat.ne_zero_of_prime_mersenne
 
-theorem even_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1)).Prime) :
+lemma even_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1)).Prime) :
     Even (2 ^ k * mersenne (k + 1)) := by simp [ne_zero_of_prime_mersenne k pr, parity_simps]
 #align theorems_100.nat.even_two_pow_mul_mersenne_of_prime Theorems100.Nat.even_two_pow_mul_mersenne_of_prime
 
-theorem eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k * m ∧ ¬Even m := by
+lemma eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k * m ∧ ¬Even m := by
   have h := multiplicity.finite_nat_iff.2 ⟨Nat.prime_two.ne_one, hpos⟩
   cases' multiplicity.pow_multiplicity_dvd h with m hm
   use (multiplicity 2 n).get h, m

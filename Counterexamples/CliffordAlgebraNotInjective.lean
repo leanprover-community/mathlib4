@@ -48,7 +48,7 @@ open MvPolynomial
 def kIdeal : Ideal (MvPolynomial (Fin 3) (ZMod 2)) :=
   Ideal.span (Set.range fun i => (X i * X i : MvPolynomial (Fin 3) (ZMod 2)))
 
-theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
+lemma mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
     x ∈ kIdeal ↔ ∀ m : Fin 3 →₀ ℕ, m ∈ x.support → ∃ i, 2 ≤ m i := by
   have :
       kIdeal = Ideal.span ((monomial · (1 : ZMod 2)) '' Set.range (Finsupp.single · 2)) := by
@@ -57,14 +57,14 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
   rw [this, mem_ideal_span_monomial_image]
   simp
 
-theorem X0_X1_X2_not_mem_kIdeal : (X 0 * X 1 * X 2 : MvPolynomial (Fin 3) (ZMod 2)) ∉ kIdeal := by
+lemma X0_X1_X2_not_mem_kIdeal : (X 0 * X 1 * X 2 : MvPolynomial (Fin 3) (ZMod 2)) ∉ kIdeal := by
   intro h
   simp_rw [mem_kIdeal_iff, support_mul_X, support_X, Finset.map_singleton, addRightEmbedding_apply,
     Finset.mem_singleton, forall_eq, ← Fin.sum_univ_three fun i => Finsupp.single i 1,
     ← Finsupp.equivFunOnFinite_symm_eq_sum] at h
   contradiction
 
-theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
+lemma mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
     (h : X 0 * X 1 * X 2 * x ∈ kIdeal) : x * x ∈ kIdeal := by
   rw [mem_kIdeal_iff] at h
   have : x ∈ Ideal.span ((X : Fin 3 → MvPolynomial _ (ZMod 2)) '' Set.univ) := by
@@ -94,7 +94,7 @@ def K : Type _ := _ ⧸ kIdeal
 
 instance : CommRing K := Ideal.Quotient.commRing _
 
-theorem comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZMod 2)) = ⊥ := by
+lemma comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZMod 2)) = ⊥ := by
   refine bot_unique ?_
   refine (Ideal.comap_le_map_of_inverse _ _ _ (constantCoeff_C _)).trans ?_
   rw [kIdeal, Ideal.map_span]
@@ -153,11 +153,11 @@ abbrev L : Type _ := _ ⧸ LinearMap.ker lFunc
 def sq {ι R : Type*} [CommRing R] (i : ι) : QuadraticForm R (ι → R) :=
   QuadraticForm.sq.comp <| LinearMap.proj i
 
-theorem sq_map_add_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a b : ι → R) :
+lemma sq_map_add_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a b : ι → R) :
     sq i (a + b) = sq i a + sq i b :=
   CharTwo.add_mul_self _ _
 
-theorem sq_map_sub_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a b : ι → R) :
+lemma sq_map_sub_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a b : ι → R) :
     sq i (a - b) = sq i a - sq i b := by
   haveI : Nonempty ι := ⟨i⟩
   rw [CharTwo.sub_eq_add, CharTwo.sub_eq_add, sq_map_add_char_two]
@@ -168,24 +168,24 @@ open scoped BigOperators
 def Q' : QuadraticForm K (Fin 3 → K) :=
   ∑ i, sq i
 
-theorem Q'_add (x y : Fin 3 → K) : Q' (x + y) = Q' x + Q' y := by
+lemma Q'_add (x y : Fin 3 → K) : Q' (x + y) = Q' x + Q' y := by
   simp only [Q', QuadraticForm.sum_apply, sq_map_add_char_two, Finset.sum_add_distrib]
 
-theorem Q'_sub (x y : Fin 3 → K) : Q' (x - y) = Q' x - Q' y := by
+lemma Q'_sub (x y : Fin 3 → K) : Q' (x - y) = Q' x - Q' y := by
   simp only [Q', QuadraticForm.sum_apply, sq_map_sub_char_two, Finset.sum_sub_distrib]
 
-theorem Q'_apply (a : Fin 3 → K) : Q' a = a 0 * a 0 + a 1 * a 1 + a 2 * a 2 :=
+lemma Q'_apply (a : Fin 3 → K) : Q' a = a 0 * a 0 + a 1 * a 1 + a 2 * a 2 :=
   calc
     Q' a = a 0 * a 0 + (a 1 * a 1 + (a 2 * a 2 + 0)) := rfl
     _ = _ := by ring
 
-theorem Q'_apply_single (i : Fin 3) (x : K) : Q' (Pi.single i x) = x * x :=
+lemma Q'_apply_single (i : Fin 3) (x : K) : Q' (Pi.single i x) = x * x :=
   calc
     Q' (Pi.single i x) = ∑ j : Fin 3, (Pi.single i x * Pi.single i x : Fin 3 → K) j := by
       simp [Q', sq]
     _ = _ := by simp_rw [← Pi.single_mul, Finset.sum_pi_single', Finset.mem_univ, if_pos]
 
-theorem Q'_zero_under_ideal (v : Fin 3 → K) (hv : v ∈ LinearMap.ker lFunc) : Q' v = 0 := by
+lemma Q'_zero_under_ideal (v : Fin 3 → K) (hv : v ∈ LinearMap.ker lFunc) : Q' v = 0 := by
   rw [LinearMap.mem_ker, lFunc_apply] at hv
   have h0 : α * β * γ * v 0 = 0 := by
     have := congr_arg (β * γ * ·) hv
@@ -258,7 +258,7 @@ theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := 
   rw [← this]
   rw [quot_obv, zero_mul]
 
-theorem algebraMap_αβγ_eq_zero : algebraMap K (CliffordAlgebra Q) (α * β * γ) = 0 := by
+lemma algebraMap_αβγ_eq_zero : algebraMap K (CliffordAlgebra Q) (α * β * γ) = 0 := by
   rw [Algebra.algebraMap_eq_smul_one, αβγ_smul_eq_zero]
 
 /-- Our final result: for the quadratic form `Q60596.Q`, the algebra map to the Clifford algebra

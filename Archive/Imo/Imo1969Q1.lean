@@ -35,7 +35,7 @@ in mathlib.
 -/
 
 
-theorem factorization {m n : ℤ} :
+lemma factorization {m n : ℤ} :
     ((n - m) ^ 2 + m ^ 2) * ((n + m) ^ 2 + m ^ 2) = n ^ 4 + 4 * m ^ 4 :=
   pow_four_add_four_mul_pow_four.symm
 #align imo1969_q1.factorization Imo1969Q1.factorization
@@ -46,10 +46,10 @@ which `nlinarith` can solve since they are each expressed as a sum of squares.
 -/
 
 
-theorem left_factor_large {m : ℤ} (n : ℤ) (h : 1 < m) : 1 < (n - m) ^ 2 + m ^ 2 := by nlinarith
+lemma left_factor_large {m : ℤ} (n : ℤ) (h : 1 < m) : 1 < (n - m) ^ 2 + m ^ 2 := by nlinarith
 #align imo1969_q1.left_factor_large Imo1969Q1.left_factor_large
 
-theorem right_factor_large {m : ℤ} (n : ℤ) (h : 1 < m) : 1 < (n + m) ^ 2 + m ^ 2 := by nlinarith
+lemma right_factor_large {m : ℤ} (n : ℤ) (h : 1 < m) : 1 < (n + m) ^ 2 + m ^ 2 := by nlinarith
 #align imo1969_q1.right_factor_large Imo1969Q1.right_factor_large
 
 /-!
@@ -57,11 +57,11 @@ The factorization is over the integers, but we need the nonprimality over the na
 -/
 
 
-theorem int_large {m : ℤ} (h : 1 < m) : 1 < m.natAbs := by
+lemma int_large {m : ℤ} (h : 1 < m) : 1 < m.natAbs := by
   exact_mod_cast lt_of_lt_of_le h le_natAbs
 #align imo1969_q1.int_large Imo1969Q1.int_large
 
-theorem not_prime_of_int_mul' {m n : ℤ} {c : ℕ} (hm : 1 < m) (hn : 1 < n) (hc : m * n = (c : ℤ)) :
+lemma not_prime_of_int_mul' {m n : ℤ} {c : ℕ} (hm : 1 < m) (hn : 1 < n) (hc : m * n = (c : ℤ)) :
     ¬Nat.Prime c :=
   not_prime_of_int_mul (int_large hm).ne' (int_large hn).ne' hc
 #align imo1969_q1.not_prime_of_int_mul' Imo1969Q1.not_prime_of_int_mul'
@@ -79,7 +79,7 @@ def aChoice (b : ℕ) : ℕ :=
   4 * (2 + b) ^ 4
 #align imo1969_q1.a_choice Imo1969Q1.aChoice
 
-theorem aChoice_good (b : ℕ) : aChoice b ∈ goodNats :=
+lemma aChoice_good (b : ℕ) : aChoice b ∈ goodNats :=
   polynomial_not_prime (show 1 < 2 + b by linarith)
 #align imo1969_q1.a_choice_good Imo1969Q1.aChoice_good
 

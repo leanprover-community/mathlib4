@@ -67,7 +67,7 @@ theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n
       sub_eq_zero, add_zero, ← succ_nsmul', Nat.sub_add_cancel (one_le_two.trans n2), na]
 #align counterexample.zero_divisors_of_periodic Counterexample.zero_divisors_of_periodic
 
-theorem single_zero_one {R A} [Semiring R] [Zero A] :
+lemma single_zero_one {R A} [Semiring R] [Zero A] :
     single (0 : A) (1 : R) = (1 : R[A]) :=
   rfl
 #align counterexample.single_zero_one Counterexample.single_zero_one
@@ -177,7 +177,7 @@ instance : LinearOrder F :=
   LinearOrder.lift' val (by boom)
 
 @[simp]
-theorem z01 : (0 : F) < 1 := by decide
+lemma z01 : (0 : F) < 1 := by decide
 #align counterexample.F.z01 Counterexample.F.z01
 
 instance : Add F where
@@ -215,22 +215,22 @@ theorem f1 : ∀ a : F, 1 + a = 1 := by boom
 #align counterexample.F.f1 Counterexample.F.f1
 
 @[simp]
-theorem f011 : ofLex (Finsupp.single (0 : F) (1 : F)) 1 = 0 :=
+lemma f011 : ofLex (Finsupp.single (0 : F) (1 : F)) 1 = 0 :=
   single_apply_eq_zero.mpr fun h => h
 #align counterexample.F.f011 Counterexample.F.f011
 
 @[simp]
-theorem f010 : ofLex (Finsupp.single (0 : F) (1 : F)) 0 = 1 :=
+lemma f010 : ofLex (Finsupp.single (0 : F) (1 : F)) 0 = 1 :=
   single_eq_same
 #align counterexample.F.f010 Counterexample.F.f010
 
 @[simp]
-theorem f111 : ofLex (Finsupp.single (1 : F) (1 : F)) 1 = 1 :=
+lemma f111 : ofLex (Finsupp.single (1 : F) (1 : F)) 1 = 1 :=
   single_eq_same
 #align counterexample.F.f111 Counterexample.F.f111
 
 @[simp]
-theorem f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
+lemma f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
   single_apply_eq_zero.mpr fun h => h.symm
 #align counterexample.F.f110 Counterexample.F.f110
 

@@ -146,7 +146,7 @@ theorem add_mod2 (a : ℕ) : ∃ t, a + a % 2 = t * 2 := by
   rw [add_mod, mod_mod, ← two_mul, mul_mod_right]
 #align miu.add_mod2 Miu.add_mod2
 
-private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c = 2) :
+private lemma le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c = 2) :
     ∃ m : ℕ, c + 3 * x ≤ 2 ^ m ∧ 2 ^ m % 3 = c % 3 := by
   induction' x with k hk
   · use c + 1
@@ -174,7 +174,7 @@ theorem le_pow2_and_pow2_eq_mod3 (a : ℕ) (h : a % 3 = 1 ∨ a % 3 = 2) :
 
 end Arithmetic
 
-theorem replicate_pow_minus_append {m : ℕ} :
+lemma replicate_pow_minus_append {m : ℕ} :
     M :: replicate (2 ^ m - 1) I ++ [I] = M :: replicate (2 ^ m) I := by
   change M :: replicate (2 ^ m - 1) I ++ replicate 1 I = M :: replicate (2 ^ m) I
   rw [cons_append, ← replicate_add, tsub_add_cancel_of_le (one_le_pow' m 1)]
@@ -294,7 +294,7 @@ relate to `count U`.
 -/
 
 
-theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k) : U ∈ xs := by
+lemma mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k) : U ∈ xs := by
   induction' xs with z zs hzs
   · exfalso; rw [count] at h; contradiction
   · rw [mem_cons]
@@ -303,7 +303,7 @@ theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k)
 set_option linter.uppercaseLean3 false in
 #align miu.mem_of_count_U_eq_succ Miu.mem_of_count_U_eq_succ
 
-theorem eq_append_cons_U_of_count_U_pos {k : ℕ} {zs : Miustr} (h : count U zs = succ k) :
+lemma eq_append_cons_U_of_count_U_pos {k : ℕ} {zs : Miustr} (h : count U zs = succ k) :
     ∃ as bs : Miustr, zs = as ++ ↑(U :: bs) :=
   append_of_mem (mem_of_count_U_eq_succ h)
 set_option linter.uppercaseLean3 false in

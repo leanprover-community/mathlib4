@@ -77,7 +77,7 @@ def π {n : ℕ} : Q n.succ → Q n := fun p => p ∘ Fin.succ
 namespace Q
 
 @[ext]
-theorem ext {n} {f g : Q n} (h : ∀ x, f x = g x) : f = g := funext h
+lemma ext {n} {f g : Q n} (h : ∀ x, f x = g x) : f = g := funext h
 
 /-! `n` will always denote a natural number. -/
 
@@ -96,7 +96,7 @@ a natural number). -/
 
 variable {n}
 
-theorem succ_n_eq (p q : Q n.succ) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
+lemma succ_n_eq (p q : Q n.succ) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
   constructor
   · rintro rfl; exact ⟨rfl, rfl⟩
   · rintro ⟨h₀, h⟩
@@ -158,7 +158,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
 #align sensitivity.Q.adj_iff_proj_adj Sensitivity.Q.adj_iff_proj_adj
 
 @[symm]
-theorem adjacent.symm {p q : Q n} : q ∈ p.adjacent ↔ p ∈ q.adjacent := by
+lemma adjacent.symm {p q : Q n} : q ∈ p.adjacent ↔ p ∈ q.adjacent := by
   simp only [adjacent, ne_comm, Set.mem_setOf_eq]
 #align sensitivity.Q.adjacent.symm Sensitivity.Q.adjacent.symm
 
@@ -176,7 +176,7 @@ def V : ℕ → Type
 namespace V
 
 @[ext]
-theorem ext {n : ℕ} {p q : V n.succ} (h₁ : p.1 = q.1) (h₂ : p.2 = q.2) : p = q := Prod.ext h₁ h₂
+lemma ext {n : ℕ} {p q : V n.succ} (h₁ : p.1 = q.1) (h₂ : p.2 = q.2) : p = q := Prod.ext h₁ h₂
 
 variable (n : ℕ)
 
@@ -198,7 +198,7 @@ noncomputable def e : ∀ {n}, Q n → V n
 #align sensitivity.e Sensitivity.e
 
 @[simp]
-theorem e_zero_apply (x : Q 0) : e x = (1 : ℝ) :=
+lemma e_zero_apply (x : Q 0) : e x = (1 : ℝ) :=
   rfl
 #align sensitivity.e_zero_apply Sensitivity.e_zero_apply
 
@@ -211,7 +211,7 @@ noncomputable def ε : ∀ {n : ℕ}, Q n → V n →ₗ[ℝ] ℝ
 
 variable {n : ℕ}
 
-theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
+lemma duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   induction' n with n IH
   · rw [show p = q from Subsingleton.elim (α := Q 0) p q]
     dsimp [ε, e]
@@ -255,7 +255,7 @@ theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
 since this cardinal is finite, as a natural number in `finrank_V` -/
 
 
-theorem dim_V : Module.rank ℝ (V n) = 2 ^ n := by
+lemma dim_V : Module.rank ℝ (V n) = 2 ^ n := by
   have : Module.rank ℝ (V n) = (2 ^ n : ℕ) := by
     rw [rank_eq_card_basis (dualBases_e_ε _).basis, Q.card]
   assumption_mod_cast
@@ -264,7 +264,7 @@ theorem dim_V : Module.rank ℝ (V n) = 2 ^ n := by
 instance : FiniteDimensional ℝ (V n) :=
   FiniteDimensional.of_fintype_basis (dualBases_e_ε _).basis
 
-theorem finrank_V : finrank ℝ (V n) = 2 ^ n := by
+lemma finrank_V : finrank ℝ (V n) = 2 ^ n := by
   have := @dim_V n
   rw [← finrank_eq_rank] at this; assumption_mod_cast
 #align sensitivity.finrank_V Sensitivity.finrank_V
@@ -286,11 +286,11 @@ The next two lemmas unbury them. -/
 
 
 @[simp]
-theorem f_zero : f 0 = 0 :=
+lemma f_zero : f 0 = 0 :=
   rfl
 #align sensitivity.f_zero Sensitivity.f_zero
 
-theorem f_succ_apply (v : V n.succ) : f n.succ v = (f n v.1 + v.2, v.1 - f n v.2) := by
+lemma f_succ_apply (v : V n.succ) : f n.succ v = (f n v.1 + v.2, v.1 - f n v.2) := by
   cases v
   rw [f]
   simp only [sub_eq_add_neg]
@@ -302,7 +302,7 @@ is necessary since otherwise `n • v` refers to the multiplication defined
 using only the addition of `V`. -/
 
 
-theorem f_squared : ∀ v : V n, (f n) (f n v) = (n : ℝ) • v := by
+lemma f_squared : ∀ v : V n, (f n) (f n v) = (n : ℝ) • v := by
   induction' n with n IH _ <;> intro v
   · simp only [Nat.zero_eq, Nat.cast_zero, zero_smul]; rfl
   · cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc, V]; abel
@@ -312,7 +312,7 @@ theorem f_squared : ∀ v : V n, (f n) (f n v) = (n : ℝ) • v := by
 `q` the column index). -/
 
 
-theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
+lemma f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
   induction' n with n IH
   · intro p q
     dsimp [f]
@@ -340,18 +340,18 @@ variable {m : ℕ}
 /-! Again we unpack what are the values of `g`. -/
 
 
-theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
+lemma g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
   delta g; intro v; erw [LinearMap.prod_apply]; simp
 #align sensitivity.g_apply Sensitivity.g_apply
 
-theorem g_injective : Injective (g m) := by
+lemma g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
   simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk.inj_iff, Pi.prod] at h
   exact h.right
 #align sensitivity.g_injective Sensitivity.g_injective
 
-theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
+lemma f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
   have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
   rw [f_succ_apply, g_apply]

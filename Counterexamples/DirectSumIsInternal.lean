@@ -24,7 +24,7 @@ take `Ring R` and not `Semiring R`.
 
 namespace Counterexample
 
-theorem UnitsInt.one_ne_neg_one : (1 : ℤˣ) ≠ -1 := by decide
+lemma UnitsInt.one_ne_neg_one : (1 : ℤˣ) ≠ -1 := by decide
 #align counterexample.units_int.one_ne_neg_one Counterexample.UnitsInt.one_ne_neg_one
 
 /-- Submodules of positive and negative integers, keyed by sign. -/
@@ -43,11 +43,11 @@ local notation "ℤ≥0" => withSign 1
 
 local notation "ℤ≤0" => withSign (-1)
 
-theorem mem_withSign_one {x : ℤ} : x ∈ ℤ≥0 ↔ 0 ≤ x :=
+lemma mem_withSign_one {x : ℤ} : x ∈ ℤ≥0 ↔ 0 ≤ x :=
   show _ ≤ (_ : ℤˣ) • x ↔ _ by rw [one_smul]
 #align counterexample.mem_with_sign_one Counterexample.mem_withSign_one
 
-theorem mem_withSign_neg_one {x : ℤ} : x ∈ ℤ≤0 ↔ x ≤ 0 :=
+lemma mem_withSign_neg_one {x : ℤ} : x ∈ ℤ≤0 ↔ x ≤ 0 :=
   show _ ≤ (_ : ℤˣ) • x ↔ _ by rw [Units.neg_smul, le_neg, one_smul, neg_zero]
 #align counterexample.mem_with_sign_neg_one Counterexample.mem_withSign_neg_one
 
@@ -71,7 +71,7 @@ def withSign.independent : CompleteLattice.Independent withSign := by
   fin_cases i <;> simp
 #align counterexample.with_sign.independent Counterexample.withSign.independent
 
-theorem withSign.iSup : iSup withSign = ⊤ := by
+lemma withSign.iSup : iSup withSign = ⊤ := by
   rw [← Finset.sup_univ_eq_iSup, UnitsInt.univ, Finset.sup_insert, Finset.sup_singleton]
   exact withSign.isCompl.sup_eq_top
 #align counterexample.with_sign.supr Counterexample.withSign.iSup
