@@ -117,11 +117,11 @@ theorem summand_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : �
   · simp only [hn, box_zero, Finset.mem_singleton, Prod.mk_eq_zero] at hx
     rw [hx.1, hx.2, hn, ← Real.mul_rpow (r_pos z).le (Nat.cast_nonneg 0)]
     simp only [Int.cast_zero, zero_mul, add_zero, map_zero, CharP.cast_eq_zero, mul_zero, le_refl]
-  · have hx2 : x ≠ 0 := by
+  · simp only [ Fin.isValue, Pi.zero_apply, Int.mem_box, Int.natAbs_zero, max_self] at hx
+    have hx2 : x ≠ 0 := by
       contrapose! hn
-      simp only [hn, Fin.isValue, Pi.zero_apply, Int.mem_box, Int.natAbs_zero, max_self] at hx
+      simp only [hn, Fin.isValue, Pi.zero_apply, Int.natAbs_zero, max_self] at hx
       exact hx.symm
-    rw [Int.mem_box] at hx
     rw [Real.rpow_neg (by apply apply_nonneg), Real.rpow_neg ((r_pos z).le),
       Real.rpow_neg (Nat.cast_nonneg n), ← mul_inv, inv_le_inv, ← hx, Nat.cast_max]
     simpa only [Fin.isValue, Nat.cast_max] using (rpow_bound hk z x hx2)
@@ -134,7 +134,7 @@ theorem summand_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : �
     · apply mul_pos (Real.rpow_pos_of_pos (r_pos z) _)
       apply Real.rpow_pos_of_pos (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn))
 
-/-This is a special case of the above, but one that we use more. -/
+/- This is a special case of the above, but one that we use more. -/
 theorem eisSummand_is_bounded_on_box {k : ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hk : 0 ≤ k)
     (hx : (x 0, x 1) ∈ box n) : Complex.abs (eisSummand k x z) ≤ (((r z) ^ k * n ^ k))⁻¹ := by
   have := summand_is_bounded_on_box_rpow (Int.cast_nonneg.2 hk) z n x hx
@@ -158,46 +158,39 @@ end bounding_functions
 
 section summability
 
-lemma summable_r_zpow {k : ℤ} (z : ℍ) (h : 3 ≤ k) :
-    Summable fun n : ℕ => 8 / (r z) ^ k * ((n : ℝ) ^ (k - 1))⁻¹ := by
+/-An auxilary summable lemma needed later. Added the set_option as replacing `v` with
+ `_` didn't work. -/
+set_option linter.unusedVariables false
+lemma summable_over_box {k : ℤ} (z : ℍ) (h : 3 ≤ k):
+    Summable (fun n : ℕ => ∑ v in (box n : Finset (ℤ × ℤ)), ((r z) ^ k * (n : ℝ) ^ k)⁻¹) := by
+  simp only [sum_const, nsmul_eq_mul]
   have hk : 1 < (k - 1 : ℝ) := by norm_cast; exact Int.lt_sub_left_of_add_lt h
-  have nze : (8 / (r z) ^ k : ℝ) ≠ 0 := by
+  have nze : (8 * ((r z) ^ k)⁻¹ : ℝ) ≠ 0 := by
     exact div_ne_zero (OfNat.ofNat_ne_zero 8) (zpow_ne_zero k (ne_of_gt (r_pos z)))
-  rw [← (summable_mul_left_iff nze).symm]
-  apply (Real.summable_nat_rpow_inv.2 hk).congr
+  apply ((summable_mul_left_iff nze).mpr (Real.summable_nat_rpow_inv.2 hk)).congr
   intro b
   norm_cast
-
-lemma summable_over_box {k : ℤ} (z : ℍ) (h : 3 ≤ k):
-    Summable (fun n : ℕ => ∑ v in (box n : Finset (ℤ × ℤ)), (1 / (r z) ^ k) * ((n : ℝ) ^ k)⁻¹) := by
-  simp only [one_div, sum_const, nsmul_eq_mul]
-  apply (summable_r_zpow z h).congr
-  intro b
   by_cases b0 : b = 0
-  · simp only [b0, CharP.cast_eq_zero, box_zero, Finset.card_singleton, Nat.cast_one, one_mul]
-    rw [zero_zpow k (by linarith), zero_zpow (k - 1) (by linarith)]
-    simp only [inv_zero, mul_zero]
+  · simp only [b0, CharP.cast_eq_zero, zero_zpow (k - 1) (by omega), inv_zero, mul_zero,
+    box_zero, Finset.card_singleton, Nat.cast_one, zero_zpow k (by omega)]
   · rw [Int.card_box b0, zpow_sub_one₀ (a:= (b : ℝ)) (Nat.cast_ne_zero.mpr b0) k]
     simp only [mul_inv_rev, inv_inv, Nat.cast_mul, Nat.cast_ofNat]
     ring_nf
 
 lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x : Fin 2 → ℤ) =>
-    (((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs) ^ k)⁻¹ := by
-  set f := fun x : Fin 2 → ℤ ↦ (((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs) ^ k)⁻¹
+    ((r z) ^ k * (max (x 0).natAbs (x 1).natAbs) ^ k)⁻¹ := by
   rw [← (piFinTwoEquiv _).symm.summable_iff,
     summable_partition _ (s := fun n ↦ (box n : Finset (ℤ × ℤ))) Int.existsUnique_mem_box]
-  · simp_rw [coe_sort_coe, Finset.tsum_subtype]
-    simp only [piFinTwoEquiv_symm_apply, Function.comp_apply]
+  · simp_rw [coe_sort_coe, Finset.tsum_subtype, piFinTwoEquiv_symm_apply, Function.comp_apply]
     refine ⟨fun n ↦ ?_, (summable_over_box z h).congr fun n ↦ Finset.sum_congr rfl
       fun x hx ↦ ?_⟩
-    · simpa only [coe_sort_coe, piFinTwoEquiv_symm_apply] using
-      (box n).summable (f ∘ (piFinTwoEquiv _).symm)
-    · rw [Int.mem_box] at hx
-      simp only [one_div, ← hx, Nat.cast_max, Fin.isValue, mul_inv_rev, mul_comm, Fin.cons_zero,
-        Fin.cons_one, f]
+    · apply (box n).summable ((fun x : Fin 2 → ℤ ↦ (((r z) ^ k) *
+        (max (x 0).natAbs (x 1).natAbs) ^ k)⁻¹) ∘ (piFinTwoEquiv _).symm)
+    · simp only [one_div, Int.mem_box.mp hx, Nat.cast_max, Fin.isValue, mul_inv_rev, mul_comm, Fin.cons_zero,
+        Fin.cons_one]
   · intro y
     simp only [Pi.zero_apply, Fin.isValue, mul_inv_rev, piFinTwoEquiv_symm_apply,
-      Function.comp_apply, Fin.cons_zero, Fin.cons_one, f]
+      Function.comp_apply, Fin.cons_zero, Fin.cons_one]
     apply mul_nonneg
     · simp only [piFinTwoEquiv_symm_apply, Fin.cons_zero, Fin.cons_one, inv_nonneg, ge_iff_le,
       le_max_iff, Nat.cast_nonneg, or_self, zpow_nonneg]
@@ -216,14 +209,12 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
   intro K hK
   obtain ⟨A, B, hB, HABK⟩ := subset_verticalStrip_of_isCompact hK
   have hu : Summable fun x : (gammaSet N a) =>
-    (((r ⟨⟨A, B⟩, hB⟩) ^ k) * (max (x.1 0).natAbs (x.1 1).natAbs) ^ k)⁻¹ := by
-    apply ((summable_upper_bound hk ⟨⟨A, B⟩, hB⟩).subtype (gammaSet N a)).congr
-    intro v
-    simp only [zpow_natCast, one_div, Function.comp_apply]
+    ((r ⟨⟨A, B⟩, hB⟩) ^ k * (max (x.1 0).natAbs (x.1 1).natAbs) ^ k)⁻¹ := by
+    apply ((summable_upper_bound hk ⟨⟨A, B⟩, hB⟩).subtype (gammaSet N a)).congr (fun _ => rfl)
   apply tendstoUniformlyOn_tsum hu
   intro v x hx
   apply le_trans (eisSummand_is_bounded_on_box (k := k) (max (v.1 0).natAbs (v.1 1).natAbs) x v
-    (by linarith) (by simp only [Int.mem_box]))
+    (by omega) (by simp only [Int.mem_box]))
   simp only [Fin.isValue, Nat.cast_max, mul_inv_rev]
   have hk0 : 0 ≤ k := by exact le_trans (Int.nonneg_of_normalize_eq_self rfl) hk
   lift k to ℕ using hk0
