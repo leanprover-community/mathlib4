@@ -26,3 +26,5 @@ produceSed () {
 }
 
 #eval "$(lake build | produceSed -)"
+#git commit -am 'feat: doc-less `theorem` to `lemma`'
+#git push
