@@ -216,7 +216,7 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
   apply le_trans (eisSummand_is_bounded_on_box (k := k) (max (v.1 0).natAbs (v.1 1).natAbs) x v
     (by omega) (by simp only [Int.mem_box]))
   simp only [Fin.isValue, Nat.cast_max, mul_inv_rev]
-  have hk0 : 0 ≤ k := by exact le_trans (Int.nonneg_of_normalize_eq_self rfl) hk
+  have hk0 : 0 ≤ k := by omega
   lift k to ℕ using hk0
   gcongr
   · apply pow_pos (r_pos _)
