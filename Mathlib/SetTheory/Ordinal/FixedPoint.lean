@@ -567,8 +567,7 @@ theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * omega := by
   congr; funext n
   induction' n with n hn
   · rw [Nat.cast_zero, mul_zero, iterate_zero_apply]
-  · nth_rw 2 [Nat.succ_eq_one_add]
-    rw [Nat.cast_add, Nat.cast_one, mul_one_add, iterate_succ_apply', hn]
+  · rw [iterate_succ_apply', Nat.add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, hn]
 #align ordinal.nfp_add_zero Ordinal.nfp_add_zero
 
 theorem nfp_add_eq_mul_omega {a b} (hba : b ≤ a * omega) : nfp (a + ·) b = a * omega := by
@@ -617,8 +616,7 @@ theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * ·) 1 = (a^omega) := b
     funext n
     induction' n with n hn
     · rw [Nat.cast_zero, opow_zero, iterate_zero_apply]
-    nth_rw 2 [Nat.succ_eq_one_add]
-    rw [Nat.cast_add, Nat.cast_one, opow_add, opow_one, iterate_succ_apply', hn]
+    rw [iterate_succ_apply', Nat.add_comm, Nat.cast_add, Nat.cast_one, opow_add, opow_one, hn]
   · exact ha
 #align ordinal.nfp_mul_one Ordinal.nfp_mul_one
 
@@ -668,7 +666,7 @@ theorem eq_zero_or_opow_omega_le_of_mul_eq_right {a b : Ordinal} (hab : a * b = 
   rw [or_iff_not_imp_left]
   intro hb
   rw [← nfp_mul_one ha]
-  rw [← Ne.def, ← one_le_iff_ne_zero] at hb
+  rw [← Ne, ← one_le_iff_ne_zero] at hb
   exact nfp_le_fp (mul_isNormal ha).monotone hb (le_of_eq hab)
 #align ordinal.eq_zero_or_opow_omega_le_of_mul_eq_right Ordinal.eq_zero_or_opow_omega_le_of_mul_eq_right
 

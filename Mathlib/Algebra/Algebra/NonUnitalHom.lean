@@ -59,10 +59,10 @@ structure NonUnitalAlgHom [Monoid R] [Monoid S] (φ : R →* S) (A : Type v) (B 
 infixr:25 " →ₙₐ " => NonUnitalAlgHom _
 
 @[inherit_doc]
-notation:25 A " →ₙₐ[" R "] " B => NonUnitalAlgHom (MonoidHom.id R) A B
+notation:25 A " →ₛₙₐ[" φ "] " B => NonUnitalAlgHom φ A B
 
 @[inherit_doc]
-notation:25 A " →ₛₙₐ[" φ "] " B => NonUnitalAlgHom φ A B
+notation:25 A " →ₙₐ[" R "] " B => NonUnitalAlgHom (MonoidHom.id R) A B
 
 attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
@@ -116,7 +116,7 @@ instance (priority := 100) {F : Type*} [FunLike F A B] [Module R B] [NonUnitalAl
   { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := map_smulₛₗ }
 
 /-- Turn an element of a type `F` satisfying `NonUnitalAlgSemiHomClass F φ A B` into an actual
-`NonUnitalAlgSemiHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[φ] B`. -/
+`NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[φ] B`. -/
 @[coe]
 def toNonUnitalAlgSemiHom {F R S : Type*} [Monoid R] [Monoid S] {φ : R →* S} {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
@@ -535,3 +535,33 @@ theorem coe_to_nonUnitalAlgHom (f : A →ₐ[R] B) : ⇑(f.toNonUnitalAlgHom) = 
 #align alg_hom.coe_to_non_unital_alg_hom AlgHom.coe_to_nonUnitalAlgHom
 
 end AlgHom
+
+section RestrictScalars
+
+namespace NonUnitalAlgHom
+
+variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S]
+    [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MulAction R S]
+    [DistribMulAction S A] [DistribMulAction S B] [DistribMulAction R A] [DistribMulAction R B]
+    [IsScalarTower R S A] [IsScalarTower R S B]
+
+/-- If a monoid `R` acts on another monoid `S`, then a non-unital algebra homomorphism
+over `S` can be viewed as a non-unital algebra homomorphism over `R`.  -/
+def restrictScalars (f : A →ₙₐ[S] B) : A →ₙₐ[R] B :=
+  { (f : A →ₙ+* B) with
+    map_smul' := fun r x ↦ by have := map_smul f (r • 1) x; simpa }
+
+@[simp]
+lemma restrictScalars_apply (f : A →ₙₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
+
+lemma coe_restrictScalars (f : A →ₙₐ[S] B) : (f.restrictScalars R : A →ₙ+* B) = f := rfl
+
+lemma coe_restrictScalars' (f : A →ₙₐ[S] B) : (f.restrictScalars R : A → B) = f := rfl
+
+theorem restrictScalars_injective :
+    Function.Injective (restrictScalars R : (A →ₙₐ[S] B) → A →ₙₐ[R] B) :=
+  fun _ _ h ↦ ext (congr_fun h : _)
+
+end NonUnitalAlgHom
+
+end RestrictScalars

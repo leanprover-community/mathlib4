@@ -13,14 +13,12 @@ import Mathlib.Logic.Equiv.Basic
 # Injective functions
 -/
 
-set_option autoImplicit true
-
-
 universe u v w x
 
 namespace Function
 
--- Porting note: in Lean 3 this was tagged @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 /-- `α ↪ β` is a bundled injective function. -/
 structure Embedding (α : Sort*) (β : Sort*) where
   /-- An embedding as a function. Use coercion instead. -/
@@ -44,12 +42,12 @@ initialize_simps_projections Embedding (toFun → apply)
 -- Porting note: this needs `tactic.lift`.
 --instance {α β : Sort*} : CanLift (α → β) (α ↪ β) coeFn Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
-theorem exists_surjective_iff :
+theorem exists_surjective_iff {α β : Sort*} :
     (∃ f : α → β, Surjective f) ↔ Nonempty (α → β) ∧ Nonempty (β ↪ α) :=
   ⟨fun ⟨f, h⟩ ↦ ⟨⟨f⟩, ⟨⟨_, injective_surjInv h⟩⟩⟩, fun ⟨h, ⟨e⟩⟩ ↦ (nonempty_fun.mp h).elim
     (fun _ ↦ ⟨isEmptyElim, (isEmptyElim <| e ·)⟩) fun _ ↦ ⟨_, invFun_surjective e.inj'⟩⟩
 
-instance : CanLift (α → β) (α ↪ β) (↑) Injective where
+instance {α β : Sort*} : CanLift (α → β) (α ↪ β) (↑) Injective where
   prf _ h := ⟨⟨_, h⟩, rfl⟩
 
 end Function
@@ -91,8 +89,7 @@ instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
   ⟨Equiv.toEmbedding⟩
 #align equiv.coe_embedding Equiv.coeEmbedding
 
-@[reducible]
-instance Equiv.Perm.coeEmbedding : Coe (Equiv.Perm α) (α ↪ α) :=
+@[instance] abbrev Equiv.Perm.coeEmbedding : Coe (Equiv.Perm α) (α ↪ α) :=
   Equiv.coeEmbedding
 #align equiv.perm.coe_embedding Equiv.Perm.coeEmbedding
 
@@ -113,6 +110,10 @@ theorem coe_injective {α β} : @Injective (α ↪ β) (α → β) (fun f ↦ �
 theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align function.embedding.ext Function.Embedding.ext
+
+instance {α β : Sort*} [IsEmpty α] : Unique (α ↪ β) where
+  default := ⟨isEmptyElim, Function.injective_of_subsingleton _⟩
+  uniq := by intro; ext v; exact isEmptyElim v
 
 -- Porting note : in Lean 3 `DFunLike.ext_iff.symm` works
 theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
@@ -412,7 +413,7 @@ open Function Embedding
 /-- Given an equivalence to a subtype, produce an embedding to the elements of the corresponding
 set. -/
 @[simps!]
-def asEmbedding {p : β → Prop} (e : α ≃ Subtype p) : α ↪ β :=
+def asEmbedding {β α : Sort*} {p : β → Prop} (e : α ≃ Subtype p) : α ↪ β :=
   e.toEmbedding.trans (subtype p)
 #align equiv.as_embedding Equiv.asEmbedding
 #align equiv.as_embedding_apply Equiv.asEmbedding_apply

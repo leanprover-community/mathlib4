@@ -234,7 +234,7 @@ theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m => ∑ᶠ i, b
   ext m
   simp only [Basis.sumCoords, Basis.coord, Finsupp.lapply_apply, LinearMap.id_coe,
     LinearEquiv.coe_coe, Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp,
-    finsum_eq_sum _ (b.repr m).finite_support, Finsupp.sum, Finset.finite_toSet_toFinset, id.def,
+    finsum_eq_sum _ (b.repr m).finite_support, Finsupp.sum, Finset.finite_toSet_toFinset, id,
     Finsupp.fun_support_eq]
 #align basis.coe_sum_coords_eq_finsum Basis.coe_sumCoords_eq_finsum
 
@@ -244,13 +244,13 @@ theorem coe_sumCoords_of_fintype [Fintype ι] : (b.sumCoords : M → R) = ∑ i,
   -- Porting note: - `eq_self_iff_true`
   --               + `comp_apply` `LinearMap.coeFn_sum`
   simp only [sumCoords, Finsupp.sum_fintype, LinearMap.id_coe, LinearEquiv.coe_coe, coord_apply,
-    id.def, Fintype.sum_apply, imp_true_iff, Finsupp.coe_lsum, LinearMap.coe_comp, comp_apply,
+    id, Fintype.sum_apply, imp_true_iff, Finsupp.coe_lsum, LinearMap.coe_comp, comp_apply,
     LinearMap.coeFn_sum]
 #align basis.coe_sum_coords_of_fintype Basis.coe_sumCoords_of_fintype
 
 @[simp]
 theorem sumCoords_self_apply : b.sumCoords (b i) = 1 := by
-  simp only [Basis.sumCoords, LinearMap.id_coe, LinearEquiv.coe_coe, id.def, Basis.repr_self,
+  simp only [Basis.sumCoords, LinearMap.id_coe, LinearEquiv.coe_coe, id, Basis.repr_self,
     Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp, Finsupp.sum_single_index]
 #align basis.sum_coords_self_apply Basis.sumCoords_self_apply
 
@@ -313,8 +313,8 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
     (x : M) (i : ι) : b.repr x i = f x i := by
   let f_i : M →ₗ[R] R :=
     { toFun := fun x => f x i
-      -- Porting note: `dsimp only []` is required for beta reduction.
-      map_add' := fun _ _ => by dsimp only []; rw [hadd, Pi.add_apply]
+      -- Porting note(#12129): additional beta reduction needed
+      map_add' := fun _ _ => by beta_reduce; rw [hadd, Pi.add_apply]
       map_smul' := fun _ _ => by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by
     refine' b.ext fun j => _
@@ -1537,7 +1537,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     ⋃ k, ((b.repr (v k)).support : Set ι) = Set.univ := by
   -- If that's not the case,
   by_contra h
-  simp only [← Ne.def, ne_univ_iff_exists_not_mem, mem_iUnion, not_exists_not,
+  simp only [← Ne.eq_def, ne_univ_iff_exists_not_mem, mem_iUnion, not_exists_not,
     Finsupp.mem_support_iff, Finset.mem_coe] at h
   -- We have some basis element `b b'` which is not in the support of any of the `v i`.
   obtain ⟨b', w⟩ := h
@@ -1573,8 +1573,8 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
       rw [← eq_neg_iff_add_eq_zero] at z
       replace z := neg_eq_iff_eq_neg.mpr z
       apply_fun fun x => b.repr x b' at z
-      simp only [repr_self, LinearEquiv.map_smul, mul_one, Finsupp.single_eq_same, Pi.neg_apply,
-        Finsupp.smul_single', LinearEquiv.map_neg, Finsupp.coe_neg] at z
+      simp only [repr_self, map_smul, mul_one, Finsupp.single_eq_same, Pi.neg_apply,
+        Finsupp.smul_single', map_neg, Finsupp.coe_neg] at z
       erw [DFunLike.congr_fun (Finsupp.apply_total R (b.repr : M →ₗ[R] ι →₀ R) v l.some) b'] at z
       simpa [Finsupp.total_apply, w] using z
     -- Then all the other coefficients are zero, because `v` is linear independent.

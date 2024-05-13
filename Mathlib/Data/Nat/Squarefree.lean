@@ -5,7 +5,6 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Data.Nat.Factorization.PrimePow
-import Mathlib.RingTheory.Int.Basic
 
 #align_import data.nat.squarefree from "leanprover-community/mathlib"@"3c1368cac4abd5a5cbe44317ba7e87379d51ed88"
 
@@ -272,12 +271,12 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
         x.val.prod := by
   rw [(Finset.nodup _).ext ((Finset.nodup _).map_on _)]
   · intro a
-    simp only [Multiset.mem_filter, id.def, Multiset.mem_map, Finset.filter_val, ← Finset.mem_def,
+    simp only [Multiset.mem_filter, id, Multiset.mem_map, Finset.filter_val, ← Finset.mem_def,
       mem_divisors]
     constructor
     · rintro ⟨⟨an, h0⟩, hsq⟩
       use (UniqueFactorizationMonoid.normalizedFactors a).toFinset
-      simp only [id.def, Finset.mem_powerset]
+      simp only [id, Finset.mem_powerset]
       rcases an with ⟨b, rfl⟩
       rw [mul_ne_zero_iff] at h0
       rw [UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors h0.1] at hsq
@@ -309,12 +308,12 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
     apply UniqueFactorizationMonoid.factors_unique _ _ (associated_iff_eq.2 h)
     · intro z hz
       apply irreducible_of_normalized_factor z
-      rw [← Multiset.mem_toFinset]
-      apply hx hz
+      · rw [← Multiset.mem_toFinset]
+        apply hx hz
     · intro z hz
       apply irreducible_of_normalized_factor z
-      rw [← Multiset.mem_toFinset]
-      apply hy hz
+      · rw [← Multiset.mem_toFinset]
+        apply hy hz
 #align nat.divisors_filter_squarefree Nat.divisors_filter_squarefree
 
 open BigOperators

@@ -8,7 +8,7 @@ import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
-import Std.Classes.Order
+import Batteries.Classes.Order
 
 #align_import init.algebra.order from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
 
@@ -188,6 +188,8 @@ variable [PartialOrder α]
 theorem le_antisymm : ∀ {a b : α}, a ≤ b → b ≤ a → a = b :=
   PartialOrder.le_antisymm _ _
 #align le_antisymm le_antisymm
+
+alias eq_of_le_of_le := le_antisymm
 
 theorem le_antisymm_iff {a b : α} : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun e => ⟨le_of_eq e, le_of_eq e.symm⟩, fun ⟨h1, h2⟩ => le_antisymm h1 h2⟩
@@ -453,7 +455,7 @@ theorem compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.toRel a b 
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt
 
-instance : Std.TransCmp (compare (α := α)) where
+instance : Batteries.TransCmp (compare (α := α)) where
   symm a b := by
     cases h : compare a b <;>
     simp only [Ordering.swap] <;> symm

@@ -45,7 +45,7 @@ namespace PartialFun
 instance : CoeSort PartialFun (Type*) :=
   ⟨id⟩
 
--- Porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note(#5171): removed `@[nolint has_nonempty_instance]`; linter not ported yet
 /-- Turns a type into a `PartialFun`. -/
 def of : Type* → PartialFun :=
   id
@@ -88,7 +88,7 @@ def typeToPartialFun : Type u ⥤ PartialFun where
   map_comp _ _ := PFun.coe_comp _ _
 #align Type_to_PartialFun typeToPartialFun
 
-instance : Faithful typeToPartialFun where
+instance : typeToPartialFun.Faithful where
   map_injective {_ _} := PFun.lift_injective
 
 /-- The functor which deletes the point of a pointed type. In return, this makes the maps partial.
@@ -161,7 +161,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
       (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
       fun {X Y} f ↦ Pointed.Hom.ext _ _ <| funext fun a ↦ by
         obtain _ | ⟨a, ha⟩ := a
-        exact f.map_point.symm
+        · exact f.map_point.symm
         classical
         simp [Option.casesOn'_eq_elim, -Option.elim,
           @Part.elim_toOption _ _ _ (Classical.propDecidable _), ha]

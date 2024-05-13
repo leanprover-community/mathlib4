@@ -9,6 +9,7 @@ import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
+import Mathlib.Topology.Bornology.BoundedOperation
 
 #align_import topology.continuous_function.bounded from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
@@ -485,7 +486,7 @@ theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂
       lift x to ((range f)ᶜ : Set δ) using hx
       calc
         dist (h₁ x) (h₂ x) = dist (h₁.restrict (range f)ᶜ x) (h₂.restrict (range f)ᶜ x) := rfl
-        _ ≤ dist (h₁.restrict (range f)ᶜ) (h₂.restrict (range f)ᶜ) := (dist_coe_le_dist x)
+        _ ≤ dist (h₁.restrict (range f)ᶜ) (h₂.restrict (range f)ᶜ) := dist_coe_le_dist x
         _ ≤ _ := le_max_right _ _
   · refine' (dist_le dist_nonneg).2 fun x => _
     rw [← extend_apply f g₁ h₁, ← extend_apply f g₂ h₂]
@@ -581,7 +582,7 @@ theorem arzela_ascoli₂ (s : Set β) (hs : IsCompact s) (A : Set (α →ᵇ β)
     IsCompact A := by
   /- This version is deduced from the previous one by restricting to the compact type in the target,
   using compactness there and then lifting everything to the original space. -/
-  have M : LipschitzWith 1 (↑) := LipschitzWith.subtype_val s
+  have M : LipschitzWith 1 Subtype.val := LipschitzWith.subtype_val s
   let F : (α →ᵇ s) → α →ᵇ β := comp (↑) M
   refine' IsCompact.of_isClosed_subset ((_ : IsCompact (F ⁻¹' A)).image (continuous_comp M)) closed
       fun f hf => _
@@ -668,8 +669,8 @@ instance instAdd : Add (α →ᵇ β) where
         rw [Prod.dist_eq]
         refine' mul_le_mul_of_nonneg_left _ (LipschitzAdd.C β).coe_nonneg
         apply max_le_max
-        exact Classical.choose_spec f.bounded x y
-        exact Classical.choose_spec g.bounded x y)
+        · exact Classical.choose_spec f.bounded x y
+        · exact Classical.choose_spec g.bounded x y)
 
 @[simp]
 theorem coe_add : ⇑(f + g) = f + g := rfl
@@ -767,6 +768,27 @@ theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) (a : α
 
 end CommHasLipschitzAdd
 
+section sub
+
+variable [TopologicalSpace α]
+variable {R : Type*} [PseudoMetricSpace R] [Sub R] [BoundedSub R] [ContinuousSub R]
+variable (f g : α →ᵇ R)
+
+/-- The pointwise difference of two bounded continuous functions is again bounded continuous. -/
+instance instSub : Sub (α →ᵇ R) where
+  sub f g :=
+    { toFun := fun x ↦ (f x - g x),
+      map_bounded' := sub_bounded_of_bounded_of_bounded f.map_bounded' g.map_bounded' }
+
+theorem sub_apply {x : α} : (f - g) x = f x - g x := rfl
+#align bounded_continuous_function.sub_apply BoundedContinuousFunction.sub_apply
+
+@[simp]
+theorem coe_sub : ⇑(f - g) = f - g := rfl
+#align bounded_continuous_function.coe_sub BoundedContinuousFunction.coe_sub
+
+end sub
+
 section NormedAddCommGroup
 
 /- In this section, if `β` is a normed group, then we show that the space of bounded
@@ -818,7 +840,7 @@ theorem dist_le_two_norm' {f : γ → β} {C : ℝ} (hC : ∀ x, ‖f x‖ ≤ C
     dist (f x) (f y) ≤ 2 * C :=
   calc
     dist (f x) (f y) ≤ ‖f x‖ + ‖f y‖ := dist_le_norm_add_norm _ _
-    _ ≤ C + C := (add_le_add (hC x) (hC y))
+    _ ≤ C + C := add_le_add (hC x) (hC y)
     _ = 2 * C := (two_mul _).symm
 #align bounded_continuous_function.dist_le_two_norm' BoundedContinuousFunction.dist_le_two_norm'
 
@@ -928,27 +950,12 @@ instance : Neg (α →ᵇ β) :=
     ofNormedAddCommGroup (-f) f.continuous.neg ‖f‖ fun x =>
       norm_neg ((⇑f) x) ▸ f.norm_coe_le_norm x⟩
 
-/-- The pointwise difference of two bounded continuous functions is again bounded continuous. -/
-instance instSub : Sub (α →ᵇ β) :=
-  ⟨fun f g =>
-    ofNormedAddCommGroup (f - g) (f.continuous.sub g.continuous) (‖f‖ + ‖g‖) fun x => by
-      simp only [sub_eq_add_neg]
-      exact le_trans (norm_add_le _ _)
-        (add_le_add (f.norm_coe_le_norm x) <| norm_neg ((⇑g) x) ▸ g.norm_coe_le_norm x)⟩
-
 @[simp]
 theorem coe_neg : ⇑(-f) = -f := rfl
 #align bounded_continuous_function.coe_neg BoundedContinuousFunction.coe_neg
 
 theorem neg_apply : (-f) x = -f x := rfl
 #align bounded_continuous_function.neg_apply BoundedContinuousFunction.neg_apply
-
-@[simp]
-theorem coe_sub : ⇑(f - g) = f - g := rfl
-#align bounded_continuous_function.coe_sub BoundedContinuousFunction.coe_sub
-
-theorem sub_apply : (f - g) x = f x - g x := rfl
-#align bounded_continuous_function.sub_apply BoundedContinuousFunction.sub_apply
 
 @[simp]
 theorem mkOfCompact_neg [CompactSpace α] (f : C(α, β)) : mkOfCompact (-f) = -mkOfCompact f := rfl
@@ -1394,7 +1401,7 @@ instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
 
 instance instModule' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
   Module.ofMinimalAxioms
-      (fun _ _ _ => ext fun _ => smul_add _ _ _)
+      (fun c _ _ => ext fun a => smul_add (c a) _ _)
       (fun _ _ _ => ext fun _ => add_smul _ _ _)
       (fun _ _ _ => ext fun _ => mul_smul _ _ _)
       (fun f => ext fun x => one_smul 𝕜 (f x))
