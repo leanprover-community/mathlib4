@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
-import Mathlib.Condensed.Explicit
+import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 import Mathlib.Condensed.Light.Module
 /-!
 
