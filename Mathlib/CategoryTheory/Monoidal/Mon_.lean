@@ -538,9 +538,9 @@ def forgetMonoidal : MonoidalFunctor (Mon_ C) C :=
     ε := 𝟙 _
     μ := fun X Y => 𝟙 _ }
 
-@[simp] theorem forgetMonoidal_toFunctor : forgetMonoidal.toFunctor = forget C := rfl
-@[simp] theorem forgetMonoidal_ε : forgetMonoidal.ε = 𝟙 (𝟙_ C) := rfl
-@[simp] theorem forgetMonoidal_μ (X Y : Mon_ C) : forgetMonoidal.μ X Y = 𝟙 (X.X ⊗ Y.X) := rfl
+@[simp] theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
+@[simp] theorem forgetMonoidal_ε : (forgetMonoidal C).ε = 𝟙 (𝟙_ C) := rfl
+@[simp] theorem forgetMonoidal_μ (X Y : Mon_ C) : (forgetMonoidal C).μ X Y = 𝟙 (X.X ⊗ Y.X) := rfl
 
 end Mon_
 
