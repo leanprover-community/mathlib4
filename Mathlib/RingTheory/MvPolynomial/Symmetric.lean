@@ -472,7 +472,7 @@ theorem rename_msymm {n : ℕ} (μ : n.Partition) (e : σ ≃ τ) :
     rename e (msymm σ R μ) = msymm τ R μ := by
   simp only [msymm._eq_1, Sym.val_eq_coe, map_sum]
   apply Fintype.sum_equiv (Nat.Partition.ofSym_shape_equiv μ e)
-  intro a
+  intro
   rw [← Multiset.prod_hom, Multiset.map_map]
   simp [Nat.Partition.ofSym_shape_equiv]
 
