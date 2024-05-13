@@ -62,7 +62,7 @@ def getOrGtLinter : Linter where
     match stx.findStack? (fun _ ↦ true) is_ge_or_gt with
     | some ((head, _n)::_chain) =>
       -- XXX: exclude remaining case
-        Linter.logLint linter.geOrGt head m!"'≥ or > is used in an illegal position\
+        Linter.logLint linter.geOrGt head m!"'≥ or > is used in an illegal position\n\
         please change the statement to use ≤ or < instead"
     | _ => return
 

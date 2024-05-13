@@ -7,8 +7,8 @@ import Mathlib.Tactic.Common
 
 -- Custom notation (e.g. `ℚ≥0`) is also ignored, as the `≥` is part of a token
 -- and not a "greater or equal".
-local notation3 "𝕜≥0" => ℕ
-lemma fine : ℚ≥0 := 1
+--local notation3 "𝕜≥0" => ℕ
+--lemma fine : ℚ≥0 := 1
 
 set_option linter.geOrGt false in
 lemma test : 3 ≥ 2 := sorry
@@ -21,14 +21,16 @@ lemma test2 : ∀ n ≥ 2, n = 2 := sorry
 
 lemma test3 : ∃ n ≥ 2, n = 2 := by use 2 ; trivial
 
-lemma test4 (h : ∃ n ≥ 2, n = 2) : True := trivial
+lemma test4 (_h : ∃ n ≥ 2, n = 2) : True := trivial
 
 -- the second one is linted, the first not!
 lemma test5 (_h : ∀ n ≥ 42, n = 0) : True := trivial
 
---#guard_message in
-/---/
-lemma test6 (_h : ∀ n ≥ 42, n = 0) : ∃ m, m > 42 := sorry
+/-- warning: '≥ or > is used in an illegal position
+please change the statement to use ≤ or < instead
+note: this linter can be disabled with `set_option linter.geOrGt false` -/
+#guard_msgs in
+lemma test6 (_h : ∀ n ≥ 42, n = 0) : ∃ m, m > 42 := by use 43; omega
 
 -- TODO: this should not be linted!
 def dummy (_r : ℕ → ℕ → Prop) : Bool := True
