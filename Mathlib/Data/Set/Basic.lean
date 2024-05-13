@@ -1350,23 +1350,6 @@ theorem default_coe_singleton (x : α) : (default : ({x} : Set α)) = ⟨x, rfl�
   rfl
 #align set.default_coe_singleton Set.default_coe_singleton
 
-/-! ### Lemmas about pairs -/
-
-
---Porting note (#10618): removed `simp` attribute because `simp` can prove it
-theorem pair_eq_singleton (a : α) : ({a, a} : Set α) = {a} :=
-  union_self _
-#align set.pair_eq_singleton Set.pair_eq_singleton
-
-theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
-  union_comm _ _
-#align set.pair_comm Set.pair_comm
-
-theorem pair_eq_pair_iff {x y z w : α} :
-    ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
-  simp [subset_antisymm_iff, insert_subset_iff]; aesop
-#align set.pair_eq_pair_iff Set.pair_eq_pair_iff
-
 /-! ### Lemmas about sets defined as `{x ∈ s | p x}`. -/
 
 
@@ -2067,9 +2050,63 @@ theorem mem_diff_singleton_empty {t : Set (Set α)} : s ∈ t \ {∅} ↔ s ∈ 
   mem_diff_singleton.trans <| and_congr_right' nonempty_iff_ne_empty.symm
 #align set.mem_diff_singleton_empty Set.mem_diff_singleton_empty
 
+theorem subset_insert_iff {s t : Set α} {x : α} :
+    s ⊆ insert x t ↔ s ⊆ t ∨ (x ∈ s ∧ s \ {x} ⊆ t) := by
+  rw [← diff_singleton_subset_iff]
+  obtain (hx | hx) := em (x ∈ s)
+  · rw [and_iff_right hx, or_iff_right_of_imp (fun h ↦ (diff_subset _ _).trans h)]
+  rw [diff_singleton_eq_self hx, or_iff_left_of_imp And.right]
+
 theorem union_eq_diff_union_diff_union_inter (s t : Set α) : s ∪ t = s \ t ∪ t \ s ∪ s ∩ t :=
   sup_eq_sdiff_sup_sdiff_sup_inf
 #align set.union_eq_diff_union_diff_union_inter Set.union_eq_diff_union_diff_union_inter
+
+/-! ### Lemmas about pairs -/
+
+--Porting note (#10618): removed `simp` attribute because `simp` can prove it
+theorem pair_eq_singleton (a : α) : ({a, a} : Set α) = {a} :=
+  union_self _
+#align set.pair_eq_singleton Set.pair_eq_singleton
+
+theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
+  union_comm _ _
+#align set.pair_comm Set.pair_comm
+
+theorem pair_eq_pair_iff {x y z w : α} :
+    ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
+  simp [subset_antisymm_iff, insert_subset_iff]; aesop
+#align set.pair_eq_pair_iff Set.pair_eq_pair_iff
+
+theorem pair_diff_left {x y : α} (hne : x ≠ y) : ({x, y} : Set α) \ {x} = {y} := by
+  rw [insert_diff_of_mem _ (by exact rfl : x ∈ {x}), diff_singleton_eq_self (by simpa)]
+
+theorem pair_diff_right {x y : α} (hne : x ≠ y) : ({x, y} : Set α) \ {y} = {x} := by
+  rw [pair_comm, pair_diff_left hne.symm]
+
+@[simp] theorem pair_subset_iff {x y : α} {s : Set α} : {x,y} ⊆ s ↔ x ∈ s ∧ y ∈ s := by
+  rw [insert_subset_iff, singleton_subset_iff]
+
+theorem pair_subset {x y : α} {s : Set α} (hx : x ∈ s) (hy : y ∈ s) : {x,y} ⊆ s :=
+  pair_subset_iff.2 ⟨hx,hy⟩
+
+theorem subset_pair_iff {x y : α} {s : Set α} : s ⊆ {x,y} ↔ ∀ a ∈ s, a = x ∨ a = y := by
+  simp [subset_def]
+
+theorem subset_pair_iff_eq {x y : α} {s : Set α} :
+    s ⊆ {x,y} ↔ s = ∅ ∨ s = {x} ∨ s = {y} ∨ s = {x,y} := by
+  obtain (rfl | hne) := eq_or_ne x y
+  · simp only [mem_singleton_iff, insert_eq_of_mem, subset_singleton_iff_eq, or_self]
+  rw [pair_comm, subset_insert_iff, subset_singleton_iff_eq,
+    subset_singleton_iff_eq, diff_eq_empty, and_or_left, ← singleton_subset_iff,
+    and_comm, ← subset_antisymm_iff, ← or_assoc, ← or_assoc, ← or_assoc]
+  apply or_congr_right
+  rw [subset_antisymm_iff, subset_diff, diff_subset_iff, singleton_subset_iff, singleton_subset_iff,
+    union_singleton, disjoint_singleton, and_iff_left hne, ← and_assoc, and_comm, ← and_assoc,
+    ← pair_subset_iff, ← subset_antisymm_iff, pair_comm, eq_comm]
+
+theorem Nonempty.subset_pair_iff_eq {x y : α} {s : Set α} (hs : s.Nonempty) :
+    s ⊆ {x,y} ↔ s = {x} ∨ s = {y} ∨ s = {x,y} := by
+  rw [Set.subset_pair_iff_eq, or_iff_right]; exact hs.ne_empty
 
 /-! ### Symmetric difference -/
 
