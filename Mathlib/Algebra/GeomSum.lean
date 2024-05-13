@@ -588,7 +588,7 @@ theorem geom_sum_neg_iff [LinearOrderedRing α] (hn : n ≠ 0) :
 end Order
 
 theorem pow_sub_pow_le [OrderedCommRing α]
-    {a b : α} (n : ℕ) (hb : 0 ≤ b) (ha : b ≤ a) :
+    {a b : α} (n : ℕ) (hb : 0 ≤ b) (hba : b ≤ a) :
     a ^ n - b ^ n ≤ n * a ^ (n - 1) * (a - b) := by
   rw [← geom_sum₂_mul]
   apply mul_le_mul_of_nonneg_right _ (sub_nonneg.mpr ha)
