@@ -653,7 +653,11 @@ Implementation note: The material in this section could have been written for `L
 and transported by `@[to_additive]`. We choose not to do this because this causes a few lemma
 names (for example, `coe_mul`) to conflict with later lemma names for normed rings; this is only a
 trivial inconvenience, but in any case there are no obvious applications of the multiplicative
-version. -/
+version.
+
+TODO: For consistency and possible generalizations, introduce `BoundedAdd`
+in `Mathlib.Topology.Bornology.BoundedOperation` and and use `BoundedAdd β` here instead
+of `LipschitzAdd β`. -/
 variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β]
 variable [LipschitzAdd β]
 variable (f g : α →ᵇ β) {x : α} {C : ℝ}
