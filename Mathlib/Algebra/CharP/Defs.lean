@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Algebra.Group.ULift
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.Nat.Prime
+import Mathlib.Data.PNat.Defs
+import Mathlib.Data.ULift
 
 #align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
@@ -16,6 +18,9 @@ import Mathlib.Data.Nat.Prime
 -/
 
 assert_not_exists Finset
+-- This file will be used in the implementation of the `ring` tactic,
+-- so we assert it has not been imported to avoid circular dependencies.
+assert_not_exists Mathlib.Tactic.Ring.proveEq
 
 variable (R : Type*)
 
@@ -106,13 +111,6 @@ lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   · lift a to ℕ using le_of_lt h with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
 #align char_p.int_cast_eq_zero_iff CharP.intCast_eq_zero_iff
-
-lemma intCast_eq_intCast : (a : R) = b ↔ a ≡ b [ZMOD p] := by
-  rw [eq_comm, ← sub_eq_zero, ← Int.cast_sub, CharP.intCast_eq_zero_iff R p, Int.modEq_iff_dvd]
-#align char_p.int_cast_eq_int_cast CharP.intCast_eq_intCast
-
-lemma intCast_eq_intCast_mod : (a : R) = a % (p : ℤ) :=
-  (CharP.intCast_eq_intCast R p).mpr (Int.mod_modEq a p).symm
 
 lemma charP_to_charZero [CharP R 0] : CharZero R :=
   charZero_of_inj_zero fun n h0 => eq_zero_of_zero_dvd ((cast_eq_zero_iff R 0 n).mp h0)
