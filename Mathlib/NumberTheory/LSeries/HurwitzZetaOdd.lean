@@ -120,7 +120,7 @@ lemma oddKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : oddKernel a
   induction' a using QuotientAddGroup.induction_on' with a'
   rw [← ofReal_eq_zero, oddKernel_def', jacobiTheta₂_undef, jacobiTheta₂'_undef, zero_div, zero_add,
     mul_zero, mul_zero] <;>
-  rwa [I_mul_ofReal_im]
+  rwa [I_mul_im, ofReal_re]
 
 /-- Auxiliary function appearing in the functional equation for the odd Hurwitz zeta kernel, equal
 to `∑ (n : ℕ), 2 * n * sin (2 * π * n * a) * exp (-π * n ^ 2 * x)`. See `hasSum_nat_sinKernel`
@@ -135,7 +135,8 @@ lemma sinKernel_def (a x : ℝ) : ↑(sinKernel ↑a x) = jacobiTheta₂' a (I *
 
 lemma sinKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : sinKernel a x = 0 := by
   induction' a using QuotientAddGroup.induction_on' with a'
-  rw [← ofReal_eq_zero, sinKernel_def, jacobiTheta₂'_undef _ (I_mul_ofReal_im _ ▸ hx), zero_div]
+  rw [← ofReal_eq_zero, sinKernel_def, jacobiTheta₂'_undef _ (by rwa [I_mul_im, ofReal_re]),
+    zero_div]
 
 lemma oddKernel_neg (a : UnitAddCircle) (x : ℝ) : oddKernel (-a) x = -oddKernel a x := by
   induction' a using QuotientAddGroup.induction_on' with a'
@@ -164,10 +165,10 @@ lemma continuousOn_oddKernel (a : UnitAddCircle) : ContinuousOn (oddKernel a) (I
   · fun_prop
   · have hf : Continuous fun u : ℝ ↦ (a * I * u, I * u) := by fun_prop
     apply ContinuousAt.add
-    · exact ((continuousAt_jacobiTheta₂' (a * I * x) (I_mul_ofReal_im _ ▸ hx)).comp
+    · exact ((continuousAt_jacobiTheta₂' (a * I * x) (by rwa [I_mul_im, ofReal_re])).comp
         (f := fun u : ℝ ↦ (a * I * u, I * u)) hf.continuousAt).div_const _
     · exact continuousAt_const.mul <| (continuousAt_jacobiTheta₂ (a * I * x)
-        (I_mul_ofReal_im _ ▸ hx)).comp (f := fun u : ℝ ↦ (a * I * u, I * u)) hf.continuousAt
+        (by rwa [I_mul_im, ofReal_re])).comp (f := fun u : ℝ ↦ (a * I * u, I * u)) hf.continuousAt
 
 lemma continuousOn_sinKernel (a : UnitAddCircle) : ContinuousOn (sinKernel a) (Ioi 0) := by
   induction' a using QuotientAddGroup.induction_on' with a
@@ -175,7 +176,7 @@ lemma continuousOn_sinKernel (a : UnitAddCircle) : ContinuousOn (sinKernel a) (I
     (continuous_re.comp_continuousOn this).congr fun a _ ↦ (ofReal_re _).symm
   simp_rw [sinKernel_def]
   apply (ContinuousAt.continuousOn (fun x hx ↦ ?_)).div_const
-  have h := continuousAt_jacobiTheta₂' a <| (I_mul_ofReal_im x).symm ▸ hx
+  have h := continuousAt_jacobiTheta₂' a (by rwa [I_mul_im, ofReal_re])
   fun_prop
 
 lemma oddKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
@@ -210,8 +211,8 @@ section sum_formulas
 lemma hasSum_int_oddKernel (a : ℝ) {x : ℝ} (hx : 0 < x) :
     HasSum (fun n : ℤ ↦ (n + a) * rexp (-π * (n + a) ^ 2 * x)) (oddKernel ↑a x) := by
   rw [← hasSum_ofReal, oddKernel_def' a x]
-  have h1 := hasSum_jacobiTheta₂_term (a * I * x) ((I_mul_ofReal_im x).symm ▸ hx)
-  have h2 := hasSum_jacobiTheta₂'_term (a * I * x) ((I_mul_ofReal_im x).symm ▸ hx)
+  have h1 := hasSum_jacobiTheta₂_term (a * I * x) (by rwa [I_mul_im, ofReal_re])
+  have h2 := hasSum_jacobiTheta₂'_term (a * I * x) (by rwa [I_mul_im, ofReal_re])
   refine (((h2.div_const (2 * π * I)).add (h1.mul_left ↑a)).mul_left
     (cexp (-π * a ^ 2 * x))).congr_fun (fun n ↦ ?_)
   rw [jacobiTheta₂'_term, mul_assoc (2 * π * I), mul_div_cancel_left₀ _ two_pi_I_ne_zero, ← add_mul,
@@ -228,7 +229,8 @@ lemma hasSum_int_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) : HasSum
     simp only [neg_mul, ne_eq, neg_eq_zero, mul_eq_zero,
       OfNat.ofNat_ne_zero, ofReal_eq_zero, pi_ne_zero, or_self, not_false_eq_true]
   rw [sinKernel_def]
-  refine ((hasSum_jacobiTheta₂'_term a (I_mul_ofReal_im _ ▸ ht)).div_const _).congr_fun fun n ↦ ?_
+  refine ((hasSum_jacobiTheta₂'_term a
+    (by rwa [I_mul_im, ofReal_re])).div_const _).congr_fun fun n ↦ ?_
   rw [jacobiTheta₂'_term, jacobiTheta₂_term, ofReal_exp, mul_assoc (-I * n), ← Complex.exp_add,
     eq_div_iff h, ofReal_mul, ofReal_mul, ofReal_pow, ofReal_neg, ofReal_intCast,
     mul_comm _ (-2 * π : ℂ), ← mul_assoc]
