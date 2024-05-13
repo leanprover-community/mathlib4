@@ -393,7 +393,8 @@ noncomputable section
 open Int
 
 /-- A multiplicative norm composed with the absolute value on integers equals the norm itself. -/
-lemma MulRingNorm.apply_natAbs_eq {R : Type*} [Ring R] (x : ℤ) (f : MulRingNorm R) : f (natAbs x) = f x := by
+lemma MulRingNorm.apply_natAbs_eq {R : Type*} [Ring R] (x : ℤ) (f : MulRingNorm R) : f (natAbs x) =
+  f x := by
   obtain ⟨n,rfl|rfl⟩ := eq_nat_or_neg x
   · simp only [natAbs_ofNat, cast_natCast]
   · simp only [natAbs_neg, natAbs_ofNat, cast_neg, cast_natCast, map_neg_eq_map]
