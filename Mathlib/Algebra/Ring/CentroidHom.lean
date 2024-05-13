@@ -752,8 +752,9 @@ theorem inr_star (z : NonUnitalStarSubsemiring.center α) :
       _ = (star z) * a := by rw [(star z).property.comm]
       _ = (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) a := rfl
 
-/-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
-def starcenterToCentroidCenter :
+/-- The canonical *-homomorphism from the center of a non-unital, non-associative *-semiring into
+the center of its centroid. -/
+def starCenterToCentroidCenter :
     NonUnitalStarSubsemiring.center α →⋆ₙ+* Subsemiring.center (CentroidHom α) where
   toNonUnitalRingHom := centerToCentroidCenter
   map_star' _ := by
