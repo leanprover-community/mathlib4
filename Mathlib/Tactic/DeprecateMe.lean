@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Std.Data.Array.Init.Lemmas
+import Batteries.Data.Array.Init.Lemmas
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Lemma
 
@@ -123,7 +123,7 @@ def deprecationCommands (bang : Bool) (tk : Syntax) (yy mm dd : TSyntax `num)
     let newEnv ← getEnv
     let allNew := newNames oldEnv newEnv
     let skip ← allNew.filterM (·.isBlackListed)
-    let news := allNew.filter (! · ∈ skip)
+    let news := allNew.filter (! skip.contains ·)
     let newDecl := match getIds cmd with
       | #[d] => d[0]
       | _ => default
