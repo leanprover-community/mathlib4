@@ -64,7 +64,7 @@ namespace AlgebraicGeometry
 
 universe v v₁ v₂ u
 
-variable {C : Type*} [Category C]
+variable {C : Type u} [Category.{v} C]
 
 /-- An open immersion of PresheafedSpaces is an open embedding `f : X ⟶ U ⊆ Y` of the underlying
 spaces, such that the sheaf map `Y(V) ⟶ f _* X(V)` is an iso for each `V ⊆ U`.
@@ -116,12 +116,12 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
     fapply NatIso.ofComponents
     · intro U
       refine' asIso (f.c.app (op (H.openFunctor.obj (unop U)))) ≪≫ X.presheaf.mapIso (eqToIso _)
-      · induction U using Opposite.rec' with | h U => ?_
-        cases U
-        dsimp only [IsOpenMap.functor, Functor.op, Opens.map]
-        congr 2
-        erw [Set.preimage_image_eq _ H.base_open.inj]
-        rfl
+      induction U using Opposite.rec' with | h U => ?_
+      cases U
+      dsimp only [IsOpenMap.functor, Functor.op, Opens.map]
+      congr 2
+      erw [Set.preimage_image_eq _ H.base_open.inj]
+      rfl
     · intro U V i
       simp only [CategoryTheory.eqToIso.hom, TopCat.Presheaf.pushforwardObj_map, Category.assoc,
         Functor.op_map, Iso.trans_hom, asIso_hom, Functor.mapIso_hom, ← X.presheaf.map_comp]
@@ -133,12 +133,12 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
 theorem isoRestrict_hom_ofRestrict : H.isoRestrict.hom ≫ Y.ofRestrict _ = f := by
   -- Porting note: `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ rfl <| NatTrans.ext _ _ <| funext fun x => ?_
-  · simp only [isoRestrict_hom_c_app, NatTrans.comp_app, eqToHom_refl,
-      ofRestrict_c_app, Category.assoc, whiskerRight_id']
-    erw [Category.comp_id, comp_c_app, f.c.naturality_assoc, ← X.presheaf.map_comp]
-    trans f.c.app x ≫ X.presheaf.map (𝟙 _)
-    · congr 1
-    · erw [X.presheaf.map_id, Category.comp_id]
+  simp only [isoRestrict_hom_c_app, NatTrans.comp_app, eqToHom_refl,
+    ofRestrict_c_app, Category.assoc, whiskerRight_id']
+  erw [Category.comp_id, comp_c_app, f.c.naturality_assoc, ← X.presheaf.map_comp]
+  trans f.c.app x ≫ X.presheaf.map (𝟙 _)
+  · congr 1
+  · erw [X.presheaf.map_id, Category.comp_id]
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.iso_restrict_hom_of_restrict AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.isoRestrict_hom_ofRestrict
 
 @[simp]
@@ -251,7 +251,7 @@ theorem app_invApp (U : Opens Y) :
   by erw [← Category.assoc]; rw [IsIso.comp_inv_eq, f.c.naturality]; congr
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.app_inv_app AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.app_invApp
 
-/-- A variant of `app_inv_app` that gives an `eq_to_hom` instead of `hom_of_le`. -/
+/-- A variant of `app_inv_app` that gives an `eqToHom` instead of `homOfLe`. -/
 @[reassoc]
 theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
     f.c.app (op U) ≫ H.invApp ((Opens.map f.base).obj U) =
@@ -291,11 +291,10 @@ instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
     · -- Porting note: was `apply Subsingleton.helim; rw [this]`
       -- See https://github.com/leanprover/lean4/issues/2273
       congr
-      simp only [unop_op]
-      congr
+      · simp only [unop_op]
+        congr
       apply Subsingleton.helim
       rw [this]
-      rfl
     · infer_instance
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.of_restrict AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.ofRestrict
 
@@ -373,7 +372,10 @@ def pullbackConeOfLeftFst :
         intro U V i
         induction U using Opposite.rec'
         induction V using Opposite.rec'
-        simp only [Quiver.Hom.unop_op, Category.assoc, Functor.op_map, inv_naturality_assoc]
+        simp only [Quiver.Hom.unop_op, Category.assoc, Functor.op_map]
+        -- Note: this doesn't fire in `simp` because of reduction of the term via structure eta
+        -- before discrimination tree key generation
+        rw [inv_naturality_assoc]
         -- Porting note: the following lemmas are not picked up by `simp`
         -- See https://github.com/leanprover-community/mathlib4/issues/5026
         erw [g.c.naturality_assoc, TopCat.Presheaf.pushforwardObj_map, ← Y.presheaf.map_comp,
@@ -821,7 +823,7 @@ end Pullback
 section OfStalkIso
 
 variable [HasLimits C] [HasColimits C] [ConcreteCategory C]
-variable [ReflectsIsomorphisms (CategoryTheory.forget C)]
+variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
   [PreservesLimits (CategoryTheory.forget C)]
 
 variable [PreservesFilteredColimits (CategoryTheory.forget C)]
@@ -1122,11 +1124,12 @@ theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.1.base ⊆ Set.rang
     IsIso (pullback.snd : pullback f g ⟶ _) := by
   -- Porting note: was `apply (config := { instances := False }) ...`
   -- See https://github.com/leanprover/lean4/issues/2273
-  have h1 := @ReflectsIsomorphisms.reflects (F := LocallyRingedSpace.forgetToSheafedSpace) _ _ _
+  have h1 := @Functor.ReflectsIsomorphisms.reflects
+    (F := LocallyRingedSpace.forgetToSheafedSpace) _ _ _
   refine @h1 _ _ _ ?_; clear h1
   -- Porting note: was `apply (config := { instances := False }) ...`
   -- See https://github.com/leanprover/lean4/issues/2273
-  have h2 := @ReflectsIsomorphisms.reflects
+  have h2 := @Functor.ReflectsIsomorphisms.reflects
     (F := SheafedSpace.forgetToPresheafedSpace (C := CommRingCat)) _ _ _
   refine @h2 _ _ _ ?_; clear h2
   erw [← PreservesPullback.iso_hom_snd
@@ -1169,11 +1172,11 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
   rw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   -- Porting note (#11224): change `rw` to `erw` on this lemma
-  erw [TopCat.pullback_fst_range]
-  ext
-  constructor
-  · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
-  · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
+  · erw [TopCat.pullback_fst_range]
+    ext
+    constructor
+    · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
+    · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
   · rw [← TopCat.epi_iff_surjective]
     rw [show (inv (pullback.snd : pullback f g ⟶ _)).val.base = _ from
         (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).map_inv _]

@@ -49,7 +49,7 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 
 * `IsClosed.exists_closed_singleton`: Given a closed set `S` in a compact T₀ space,
   there is some `x ∈ S` such that `{x}` is closed.
-* `exists_open_singleton_of_open_finite`: Given an open finite set `S` in a T₀ space,
+* `exists_isOpen_singleton_of_isOpen_finite`: Given an open finite set `S` in a T₀ space,
   there is some `x ∈ S` such that `{x}` is open.
 
 ### T₁ spaces
@@ -190,7 +190,7 @@ theorem t0Space_iff_inseparable (X : Type u) [TopologicalSpace X] :
 
 theorem t0Space_iff_not_inseparable (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun x y : X => ¬Inseparable x y := by
-  simp only [t0Space_iff_inseparable, Ne.def, not_imp_not, Pairwise]
+  simp only [t0Space_iff_inseparable, Ne, not_imp_not, Pairwise]
 #align t0_space_iff_not_inseparable t0Space_iff_not_inseparable
 
 theorem Inseparable.eq [T0Space X] {x y : X} (h : Inseparable x y) : x = y :=
@@ -884,7 +884,7 @@ theorem PreconnectedSpace.trivial_of_discrete [PreconnectedSpace X] [DiscreteTop
     Subsingleton X := by
   rw [← not_nontrivial_iff_subsingleton]
   rintro ⟨x, y, hxy⟩
-  rw [Ne.def, ← mem_singleton_iff, (isClopen_discrete _).eq_univ <| singleton_nonempty y] at hxy
+  rw [Ne, ← mem_singleton_iff, (isClopen_discrete _).eq_univ <| singleton_nonempty y] at hxy
   exact hxy (mem_univ x)
 #align preconnected_space.trivial_of_discrete PreconnectedSpace.trivial_of_discrete
 
@@ -1325,7 +1325,7 @@ theorem R1Space.t2Space_iff_t0Space [R1Space X] : T2Space X ↔ T0Space X := by
 
 /-- A space is T₂ iff the neighbourhoods of distinct points generate the bottom filter. -/
 theorem t2_iff_nhds : T2Space X ↔ ∀ {x y : X}, NeBot (𝓝 x ⊓ 𝓝 y) → x = y := by
-  simp only [t2Space_iff_disjoint_nhds, disjoint_iff, neBot_iff, Ne.def, not_imp_comm, Pairwise]
+  simp only [t2Space_iff_disjoint_nhds, disjoint_iff, neBot_iff, Ne, not_imp_comm, Pairwise]
 #align t2_iff_nhds t2_iff_nhds
 
 theorem eq_of_nhds_neBot [T2Space X] {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) : x = y :=
@@ -1385,6 +1385,19 @@ theorem tendsto_nhds_unique_of_frequently_eq [T2Space X] {f g : Y → X} {l : Fi
   have : ∃ᶠ z : X × X in 𝓝 (a, b), z.1 = z.2 := (ha.prod_mk_nhds hb).frequently hfg
   not_not.1 fun hne => this (isClosed_diagonal.isOpen_compl.mem_nhds hne)
 #align tendsto_nhds_unique_of_frequently_eq tendsto_nhds_unique_of_frequently_eq
+
+/-- If `s` and `t` are compact sets in a T₂ space, then the set neighborhoods filter of `s ∩ t`
+is the infimum of set neighborhoods filters for `s` and `t`.
+
+For general sets, only the `≤` inequality holds, see `nhdsSet_inter_le`. -/
+theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) (ht : IsCompact t) :
+    𝓝ˢ (s ∩ t) = 𝓝ˢ s ⊓ 𝓝ˢ t := by
+  refine le_antisymm (nhdsSet_inter_le _ _) ?_
+  simp_rw [hs.nhdsSet_inf_eq_biSup, ht.inf_nhdsSet_eq_biSup, nhdsSet, sSup_image]
+  refine iSup₂_le fun x hxs ↦ iSup₂_le fun y hyt ↦ ?_
+  rcases eq_or_ne x y with (rfl|hne)
+  · exact le_iSup₂_of_le x ⟨hxs, hyt⟩ (inf_idem _).le
+  · exact (disjoint_nhds_nhds.mpr hne).eq_bot ▸ bot_le
 
 /-- If a function `f` is
 
@@ -1861,6 +1874,10 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_finish
 #align regular_space_tfae regularSpace_TFAE
 
+theorem RegularSpace.of_lift'_closure_le (h : ∀ x : X, (𝓝 x).lift' closure ≤ 𝓝 x) :
+    RegularSpace X :=
+  Iff.mpr ((regularSpace_TFAE X).out 0 4) h
+
 theorem RegularSpace.of_lift'_closure (h : ∀ x : X, (𝓝 x).lift' closure = 𝓝 x) : RegularSpace X :=
   Iff.mpr ((regularSpace_TFAE X).out 0 5) h
 #align regular_space.of_lift'_closure RegularSpace.of_lift'_closure
@@ -1932,6 +1949,22 @@ theorem hasBasis_opens_closure (x : X) : (𝓝 x).HasBasis (fun s => x ∈ s ∧
   (nhds_basis_opens x).nhds_closure
 #align has_basis_opens_closure hasBasis_opens_closure
 
+theorem IsCompact.exists_isOpen_closure_subset {K U : Set X} (hK : IsCompact K) (hU : U ∈ 𝓝ˢ K) :
+    ∃ V, IsOpen V ∧ K ⊆ V ∧ closure V ⊆ U := by
+  have hd : Disjoint (𝓝ˢ K) (𝓝ˢ Uᶜ) := by
+    simpa [hK.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet,
+      ← subset_interior_iff_mem_nhdsSet] using hU
+  rcases ((hasBasis_nhdsSet _).disjoint_iff (hasBasis_nhdsSet _)).1 hd
+    with ⟨V, ⟨hVo, hKV⟩, W, ⟨hW, hUW⟩, hVW⟩
+  refine ⟨V, hVo, hKV, Subset.trans ?_ (compl_subset_comm.1 hUW)⟩
+  exact closure_minimal hVW.subset_compl_right hW.isClosed_compl
+
+theorem IsCompact.lift'_closure_nhdsSet {K : Set X} (hK : IsCompact K) :
+    (𝓝ˢ K).lift' closure = 𝓝ˢ K := by
+  refine le_antisymm (fun U hU ↦ ?_) (le_lift'_closure _)
+  rcases hK.exists_isOpen_closure_subset hU with ⟨V, hVo, hKV, hVU⟩
+  exact mem_of_superset (mem_lift' <| hVo.mem_nhdsSet.2 hKV) hVU
+
 theorem TopologicalSpace.IsTopologicalBasis.nhds_basis_closure {B : Set (Set X)}
     (hB : IsTopologicalBasis B) (x : X) :
     (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ s ∈ B) closure := by
@@ -1992,7 +2025,7 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
 
 /-- In a regular space, if a compact set and a closed set are disjoint, then they have disjoint
 neighborhoods. -/
-lemma SeparatedNhds.of_isCompact_isClosed [RegularSpace X] {s t : Set X}
+lemma SeparatedNhds.of_isCompact_isClosed {s t : Set X}
     (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) : SeparatedNhds s t := by
   simpa only [separatedNhds_iff_disjoint, hs.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet,
     ht.closure_eq, disjoint_left] using hst
@@ -2043,7 +2076,7 @@ a T₂.₅ space.  -/
 class T3Space (X : Type u) [TopologicalSpace X] extends T0Space X, RegularSpace X : Prop
 #align t3_space T3Space
 
-instance (priority := 90) [T0Space X] [RegularSpace X] : T3Space X := ⟨⟩
+instance (priority := 90) instT3Space [T0Space X] [RegularSpace X] : T3Space X := ⟨⟩
 
 theorem RegularSpace.t3Space_iff_t0Space [RegularSpace X] : T3Space X ↔ T0Space X := by
   constructor <;> intro <;> infer_instance
@@ -2371,8 +2404,8 @@ theorem compact_t2_tot_disc_iff_tot_sep : TotallyDisconnectedSpace X ↔ Totally
   rw [connectedComponent_eq_iInter_isClopen, mem_iInter]
   rintro ⟨w : Set X, hw : IsClopen w, hy : y ∈ w⟩
   by_contra hx
-  exact hyp wᶜ w hw.1.isOpen_compl hw.2 hx hy (@isCompl_compl _ w _).symm.codisjoint.top_le
-    disjoint_compl_left
+  exact hyp ⟨wᶜ, w, hw.1.isOpen_compl, hw.2, hx, hy, (@isCompl_compl _ w _).symm.codisjoint.top_le,
+    disjoint_compl_left⟩
 #align compact_t2_tot_disc_iff_tot_sep compact_t2_tot_disc_iff_tot_sep
 
 variable [TotallyDisconnectedSpace X]

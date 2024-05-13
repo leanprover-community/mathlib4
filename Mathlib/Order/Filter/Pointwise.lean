@@ -571,7 +571,7 @@ end Div
 open Pointwise
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Filter`. See
-Note [pointwise nat action].-/
+Note [pointwise nat action]. -/
 protected def instNSMul [Zero α] [Add α] : SMul ℕ (Filter α) :=
   ⟨nsmulRec⟩
 #align filter.has_nsmul Filter.instNSMul
@@ -593,13 +593,13 @@ protected def instZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Filter α) :=
 multiplication/division!) of a `Filter`. See Note [pointwise nat action]. -/
 @[to_additive existing]
 protected def instZPow [One α] [Mul α] [Inv α] : Pow (Filter α) ℤ :=
-  ⟨fun s n => zpowRec n s⟩
+  ⟨fun s n => zpowRec npowRec n s⟩
 #align filter.has_zpow Filter.instZPow
 
 scoped[Pointwise] attribute [instance] Filter.instNSMul Filter.instNPow
   Filter.instZSMul Filter.instZPow
 
-/-- `Filter α` is a `Semigroup` under pointwise operations if `α` is.-/
+/-- `Filter α` is a `Semigroup` under pointwise operations if `α` is. -/
 @[to_additive "`Filter α` is an `AddSemigroup` under pointwise operations if `α` is."]
 protected def semigroup [Semigroup α] : Semigroup (Filter α) where
   mul := (· * ·)
@@ -701,13 +701,13 @@ theorem pow_mem_pow (hs : s ∈ f) : ∀ n : ℕ, s ^ n ∈ f ^ n
     exact one_mem_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_mem_mul hs (pow_mem_pow hs n)
+    exact mul_mem_mul (pow_mem_pow hs n) hs
 #align filter.pow_mem_pow Filter.pow_mem_pow
 #align filter.nsmul_mem_nsmul Filter.nsmul_mem_nsmul
 
 @[to_additive (attr := simp) nsmul_bot]
 theorem bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Filter α) ^ n = ⊥ := by
-  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, bot_mul]
+  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', bot_mul]
 #align filter.bot_pow Filter.bot_pow
 #align filter.nsmul_bot Filter.nsmul_bot
 

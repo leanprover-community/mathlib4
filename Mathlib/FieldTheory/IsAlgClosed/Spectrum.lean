@@ -81,7 +81,7 @@ because it holds over any field, whereas `spectrum.map_polynomial_aeval_of_degre
 theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ σ (aeval a p) := by
   rintro _ ⟨k, hk, rfl⟩
   let q := C (eval k p) - p
-  have hroot : IsRoot q k := by simp only [q, eval_C, eval_sub, sub_self, IsRoot.definition]
+  have hroot : IsRoot q k := by simp only [q, eval_C, eval_sub, sub_self, IsRoot.def]
   rw [← mul_div_eq_iff_isRoot, ← neg_mul_neg, neg_sub] at hroot
   have aeval_q_eq : ↑ₐ (eval k p) - aeval a p = aeval a q := by
     simp only [q, aeval_C, AlgHom.map_sub, sub_left_inj]
@@ -121,8 +121,8 @@ theorem map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X]
     (hnon : (σ a).Nonempty) : σ (aeval a p) = (fun k => eval k p) '' σ a := by
   nontriviality A
   refine' Or.elim (le_or_gt (degree p) 0) (fun h => _) (map_polynomial_aeval_of_degree_pos a p)
-  · rw [eq_C_of_degree_le_zero h]
-    simp only [Set.image_congr, eval_C, aeval_C, scalar_eq, Set.Nonempty.image_const hnon]
+  rw [eq_C_of_degree_le_zero h]
+  simp only [Set.image_congr, eval_C, aeval_C, scalar_eq, Set.Nonempty.image_const hnon]
 #align spectrum.map_polynomial_aeval_of_nonempty spectrum.map_polynomial_aeval_of_nonempty
 
 /-- A specialization of `spectrum.subset_polynomial_aeval` to monic monomials for convenience. -/

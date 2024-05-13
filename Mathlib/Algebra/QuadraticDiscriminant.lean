@@ -3,6 +3,7 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
+import Mathlib.Algebra.Parity
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
@@ -129,7 +130,7 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * x * x + b * x + c) : discrim a
   · rcases eq_or_ne b 0 with (rfl | hb)
     · simp
     · have := h ((-c - 1) / b)
-      rw [mul_div_cancel' _ hb] at this
+      rw [mul_div_cancel₀ _ hb] at this
       linarith
   -- if a > 0
   · have ha' : 0 ≤ 4 * a := mul_nonneg zero_le_four ha.le

@@ -181,7 +181,7 @@ protected def op (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ where
 /-- Given a functor `F : Cᵒᵖ ⥤ Dᵒᵖ` we can take the "unopposite" functor `F : C ⥤ D`.
 In informal mathematics no distinction is made between these.
 -/
-@[simps]
+@[simps, pp_dot]
 protected def unop (F : Cᵒᵖ ⥤ Dᵒᵖ) : C ⥤ D where
   obj X := unop (F.obj (op X))
   map f := (F.map f.op).unop
@@ -244,7 +244,8 @@ protected def rightOp (F : Cᵒᵖ ⥤ D) : C ⥤ Dᵒᵖ where
   map f := (F.map f.op).op
 #align category_theory.functor.right_op CategoryTheory.Functor.rightOp
 
-instance {F : C ⥤ D} [Full F] : Full F.op where preimage := @fun X Y f => (F.preimage f.unop).op
+instance {F : C ⥤ D} [Full F] : Full F.op where
+  map_surjective f := ⟨(F.preimage f.unop).op, by simp⟩
 
 instance {F : C ⥤ D} [Faithful F] : Faithful F.op where
   map_injective h := Quiver.Hom.unop_inj <| by simpa using map_injective F (Quiver.Hom.op_inj h)

@@ -232,7 +232,7 @@ nonrec theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
 
 theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
     e (f.sum g) = f.sum fun i b => e (g i b) :=
-  e.map_sum _ _
+  _root_.map_sum e _ _
 #align alg_equiv.map_finsupp_sum AlgEquiv.map_finsupp_sum
 
 -- Porting note: Added [coe] attribute
@@ -516,6 +516,7 @@ theorem equivCongr_trans (e₁₂ : A₁ ≃ₐ[R] A₂) (e₁₂' : A₁' ≃�
   rfl
 
 /-- If an algebra morphism has an inverse, it is an algebra isomorphism. -/
+@[simps]
 def ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ : f.comp g = AlgHom.id R A₂)
     (h₂ : g.comp f = AlgHom.id R A₁) : A₁ ≃ₐ[R] A₂ :=
   { f with
@@ -662,7 +663,7 @@ end OfLinearEquiv
 
 section OfRingEquiv
 
-/-- Promotes a linear ring_equiv to an AlgEquiv. -/
+/-- Promotes a linear `RingEquiv` to an `AlgEquiv`. -/
 @[simps apply symm_apply toEquiv] -- Porting note: don't want redundant `toEquiv_symm_apply` simps
 def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = algebraMap R A₂ x) :
     A₁ ≃ₐ[R] A₂ :=

@@ -3,8 +3,8 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.NoncommRing
 
 #align_import algebra.algebra.spectrum from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"
@@ -247,14 +247,14 @@ theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
 theorem unit_mem_mul_iff_mem_swap_mul {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) ↔ ↑r ∈ σ (b * a) := by
   have h₁ : ∀ x y : A, IsUnit (1 - x * y) → IsUnit (1 - y * x) := by
     refine' fun x y h => ⟨⟨1 - y * x, 1 + y * h.unit.inv * x, _, _⟩, rfl⟩
-    calc
-      (1 - y * x) * (1 + y * (IsUnit.unit h).inv * x) =
-          1 - y * x + y * ((1 - x * y) * h.unit.inv) * x := by noncomm_ring
-      _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.mul_val_inv, mul_one, sub_add_cancel]
-    calc
-      (1 + y * (IsUnit.unit h).inv * x) * (1 - y * x) =
-          1 - y * x + y * (h.unit.inv * (1 - x * y)) * x := by noncomm_ring
-      _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.val_inv_mul, mul_one, sub_add_cancel]
+    · calc
+        (1 - y * x) * (1 + y * (IsUnit.unit h).inv * x) =
+            1 - y * x + y * ((1 - x * y) * h.unit.inv) * x := by noncomm_ring
+        _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.mul_val_inv, mul_one, sub_add_cancel]
+    · calc
+        (1 + y * (IsUnit.unit h).inv * x) * (1 - y * x) =
+            1 - y * x + y * (h.unit.inv * (1 - x * y)) * x := by noncomm_ring
+        _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.val_inv_mul, mul_one, sub_add_cancel]
   have := Iff.intro (h₁ (r⁻¹ • a) b) (h₁ b (r⁻¹ • a))
   rw [mul_smul_comm r⁻¹ b a] at this
   simpa only [mem_iff, not_iff_not, Algebra.algebraMap_eq_smul_one, ← Units.smul_def,
@@ -483,8 +483,8 @@ variable [IsScalarTower R S A] {a : A} {f : S → R} (h : SpectrumRestricts a f)
 
 theorem algebraMap_image : algebraMap R S '' spectrum R a = spectrum S a := by
   refine' Set.eq_of_subset_of_subset _ fun s hs => ⟨f s, _⟩
-  simpa only [spectrum.preimage_algebraMap] using
-    (spectrum S a).image_preimage_subset (algebraMap R S)
+  · simpa only [spectrum.preimage_algebraMap] using
+      (spectrum S a).image_preimage_subset (algebraMap R S)
   exact ⟨spectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
 
 theorem image : f '' spectrum S a = spectrum R a := by

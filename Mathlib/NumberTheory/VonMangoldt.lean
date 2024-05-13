@@ -150,7 +150,7 @@ theorem sum_moebius_mul_log_eq {n : ℕ} : (∑ d in n.divisors, (μ d : ℝ) * 
   have : (∑ i : ℕ in n.divisors, (μ i : ℝ) * -Real.log (n / i : ℕ)) =
       ∑ i : ℕ in n.divisors, ((μ i : ℝ) * Real.log i - μ i * Real.log n) := by
     apply sum_congr rfl
-    simp only [and_imp, Int.cast_eq_zero, mul_eq_mul_left_iff, Ne.def, neg_inj, mem_divisors]
+    simp only [and_imp, Int.cast_eq_zero, mul_eq_mul_left_iff, Ne, neg_inj, mem_divisors]
     intro m mn hn
     have : (m : ℝ) ≠ 0 := by
       rw [cast_ne_zero]

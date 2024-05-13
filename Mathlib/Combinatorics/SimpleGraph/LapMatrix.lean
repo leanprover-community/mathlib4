@@ -103,7 +103,7 @@ theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
   ring_nf
 
 /-- The Laplacian matrix is positive semidefinite -/
-theorem posSemidef_lapMatrix [LinearOrderedField R] [StarOrderedRing R] [TrivialStar R] :
+theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R] [StarOrderedRing R] [TrivialStar R] :
     PosSemidef (G.lapMatrix R) := by
   constructor
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
@@ -127,10 +127,10 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V →
     Matrix.toLinearMap₂' (G.lapMatrix ℝ) x x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
   refine ⟨?_, fun h i j hA ↦ h i j hA.reachable⟩
-  · intro h i j ⟨w⟩
-    induction' w with w i j _ hA _ h'
-    · rfl
-    · exact (h i j hA).trans h'
+  intro h i j ⟨w⟩
+  induction' w with w i j _ hA _ h'
+  · rfl
+  · exact (h i j hA).trans h'
 
 theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable {x : V → ℝ} :
     Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by

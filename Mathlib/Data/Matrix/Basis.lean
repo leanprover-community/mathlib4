@@ -56,6 +56,14 @@ theorem stdBasisMatrix_add (i : m) (j : n) (a b : α) :
   split_ifs with h <;> simp [h]
 #align matrix.std_basis_matrix_add Matrix.stdBasisMatrix_add
 
+theorem mulVec_stdBasisMatrix [Fintype m] (i : n) (j : m) (c : α) (x : m → α) :
+    mulVec (stdBasisMatrix i j c) x = Function.update (0 : n → α) i (c * x j) := by
+  ext i'
+  simp [stdBasisMatrix, mulVec, dotProduct]
+  rcases eq_or_ne i i' with rfl|h
+  · simp
+  simp [h, h.symm]
+
 theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, stdBasisMatrix i j (x i j) := by
   ext i j; symm
@@ -77,7 +85,8 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
 -- this is not completely trivial because we are indexing by two types, instead of one
 -- TODO: add `std_basis_vec`
 theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
-    stdBasisMatrix i j 1 = vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
+    stdBasisMatrix i j (1 : α) =
+      vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
   ext i' j'
   -- Porting note: was `norm_num [std_basis_matrix, vec_mul_vec]` though there are no numerals
   -- involved.
