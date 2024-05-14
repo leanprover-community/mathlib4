@@ -39,8 +39,10 @@ structure SingleFunctors where
   functor (a : A) : C ⥤ D
   /-- the isomorphism `functor a' ⋙ shiftFunctor D n ≅ functor a` when `n + a = a'` -/
   shiftIso (n a a' : A) (ha' : n + a = a') : functor a' ⋙ shiftFunctor D n ≅ functor a
+  /-- `shiftIso 0` is the obvious isomorphism. -/
   shiftIso_zero (a : A) :
     shiftIso 0 a a (zero_add a) = isoWhiskerLeft _ (shiftFunctorZero D A)
+  /-- `shiftIso (m + n)` is determined by `shiftIso m` and `shiftIso n`. -/
   shiftIso_add (n m a a' a'' : A) (ha' : n + a = a') (ha'' : m + a' = a'') :
     shiftIso (m + n) a a'' (by rw [add_assoc, ha', ha'']) =
       isoWhiskerLeft _ (shiftFunctorAdd D m n) ≪≫ (Functor.associator _ _ _).symm ≪≫
