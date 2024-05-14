@@ -503,8 +503,8 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
   · refine' inductionOn o fun α r _ => _
     change cof (type _) ≤ _
     rw [← (_ : #_ = 1)]
-    apply cof_type_le
-    · refine' fun a => ⟨Sum.inr PUnit.unit, Set.mem_singleton _, _⟩
+    · apply cof_type_le
+      refine' fun a => ⟨Sum.inr PUnit.unit, Set.mem_singleton _, _⟩
       rcases a with (a | ⟨⟨⟨⟩⟩⟩) <;> simp [EmptyRelation]
     · rw [Cardinal.mk_fintype, Set.card_singleton]
       simp
@@ -605,8 +605,8 @@ theorem trans {a o o' : Ordinal.{u}} {f : ∀ b < o, Ordinal.{u}} (hf : IsFundam
   · rw [hf.cof_eq]
     exact hg.1.trans (ord_cof_le o)
   · rw [@blsub_comp.{u, u, u} o _ f (@IsFundamentalSequence.monotone _ _ f hf)]
-    exact hf.2.2
-    exact hg.2.2
+    · exact hf.2.2
+    · exact hg.2.2
 #align ordinal.is_fundamental_sequence.trans Ordinal.IsFundamentalSequence.trans
 
 end IsFundamentalSequence
@@ -1148,8 +1148,8 @@ theorem nfpFamily_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal → Ordinal}
     (hι : Cardinal.lift.{v, u} #ι < c) (hc' : c ≠ ℵ₀) (hf : ∀ (i), ∀ b < c.ord, f i b < c.ord) {a}
     (ha : a < c.ord) : nfpFamily.{u, v} f a < c.ord := by
   apply nfpFamily_lt_ord_lift.{u, v} _ _ hf ha <;> rw [hc.cof_eq]
-  exact lt_of_le_of_ne hc.1 hc'.symm
-  exact hι
+  · exact lt_of_le_of_ne hc.1 hc'.symm
+  · exact hι
 #align cardinal.nfp_family_lt_ord_lift_of_is_regular Cardinal.nfpFamily_lt_ord_lift_of_isRegular
 
 theorem nfpFamily_lt_ord_of_isRegular {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c)
