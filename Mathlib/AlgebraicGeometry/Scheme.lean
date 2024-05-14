@@ -19,7 +19,12 @@ A morphism of schemes is just a morphism of the underlying locally ringed spaces
 
 -/
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 set_option linter.uppercaseLean3 false
+
+universe u
+
 noncomputable section
 
 open TopologicalSpace
@@ -87,7 +92,7 @@ instance : forgetToLocallyRingedSpace.Faithful :=
 @[simp]
 theorem forgetToLocallyRingedSpace_preimage {X Y : Scheme} (f : X ⟶ Y) :
     Scheme.forgetToLocallyRingedSpace.preimage f = f :=
-  rfl
+  Scheme.forgetToLocallyRingedSpace.map_injective (Functor.map_preimage _ _)
 #align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace_preimage AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace_preimage
 
 /-- The forgetful functor from `Scheme` to `TopCat`. -/
@@ -245,7 +250,7 @@ def Spec : CommRingCatᵒᵖ ⥤ Scheme where
 /-- The empty scheme.
 -/
 @[simps]
-def empty.{u} : Scheme.{u} where
+def empty : Scheme where
   carrier := TopCat.of PEmpty
   presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
   IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal

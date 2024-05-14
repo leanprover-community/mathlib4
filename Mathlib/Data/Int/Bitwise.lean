@@ -227,8 +227,8 @@ theorem bit1_val (n : ℤ) : bit1 n = 2 * n + 1 :=
 
 theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b
-  apply (bit0_val n).trans (add_zero _).symm
-  apply bit1_val
+  · apply (bit0_val n).trans (add_zero _).symm
+  · apply bit1_val
 #align int.bit_val Int.bit_val
 
 theorem bit_decomp (n : ℤ) : bit (bodd n) (div2 n) = n :=
@@ -473,7 +473,7 @@ theorem shiftRight_neg (m n : ℤ) : m >>> (-n) = m <<< n := by rw [← shiftLef
 -- Porting note: what's the correct new name?
 @[simp]
 theorem shiftLeft_coe_nat (m n : ℕ) : (m : ℤ) <<< (n : ℤ) = ↑(m <<< n) :=
-  by simp [instShiftLeftInt, HShiftLeft.hShiftLeft]
+  by unfold_projs; simp
 #align int.shiftl_coe_nat Int.shiftLeft_coe_nat
 
 -- Porting note: what's the correct new name?
@@ -539,8 +539,9 @@ theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * (2
 theorem shiftRight_eq_div_pow : ∀ (m : ℤ) (n : ℕ), m >>> (n : ℤ) = m / (2 ^ n : ℕ)
   | (m : ℕ), n => by rw [shiftRight_coe_nat, Nat.shiftRight_eq_div_pow _ _]; simp
   | -[m+1], n => by
-    rw [shiftRight_negSucc, negSucc_ediv, Nat.shiftRight_eq_div_pow]; rfl
-    exact ofNat_lt_ofNat_of_lt (Nat.pow_pos (by decide))
+    rw [shiftRight_negSucc, negSucc_ediv, Nat.shiftRight_eq_div_pow]
+    · rfl
+    · exact ofNat_lt_ofNat_of_lt (Nat.pow_pos (by decide))
 #align int.shiftr_eq_div_pow Int.shiftRight_eq_div_pow
 
 theorem one_shiftLeft (n : ℕ) : 1 <<< (n : ℤ) = (2 ^ n : ℕ) :=

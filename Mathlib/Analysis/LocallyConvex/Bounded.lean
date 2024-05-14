@@ -84,7 +84,7 @@ theorem _root_.Filter.HasBasis.isVonNBounded_iff {q : ι → Prop} {s : ι → S
   exact (hA i hi).mono_left hV
 #align filter.has_basis.is_vonN_bounded_basis_iff Filter.HasBasis.isVonNBounded_iff
 
-@[deprecated] -- since 12 January 2024
+@[deprecated] -- since 2024-01-12
 alias _root_.Filter.HasBasis.isVonNBounded_basis_iff := Filter.HasBasis.isVonNBounded_iff
 
 /-- Subsets of bounded sets are bounded. -/
@@ -311,8 +311,7 @@ variable (𝕜 E)
 
 Note that this is not registered as an instance, in order to avoid diamonds with the
 metric bornology. -/
-@[reducible]
-def vonNBornology : Bornology E :=
+abbrev vonNBornology : Bornology E :=
   Bornology.ofBounded (setOf (IsVonNBounded 𝕜)) (isVonNBounded_empty 𝕜 E)
     (fun _ hs _ ht => hs.subset ht) (fun _ hs _ => hs.union) isVonNBounded_singleton
 #align bornology.vonN_bornology Bornology.vonNBornology

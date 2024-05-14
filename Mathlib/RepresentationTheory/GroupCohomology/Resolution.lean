@@ -119,9 +119,9 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
         Fin.insertNth_zero']
       refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
       · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ] -/
-    · dsimp [actionDiagonalSucc]
-      erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
-      exact Fin.cases rfl (fun i => rfl) x
+    dsimp [actionDiagonalSucc]
+    erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
+    exact Fin.cases rfl (fun i => rfl) x
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.Action_diagonal_succ_hom_apply groupCohomology.resolution.actionDiagonalSucc_hom_apply
 
@@ -211,7 +211,7 @@ theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
     linearization_map_hom_single (actionDiagonalSucc G n).inv (g, f) (a * b)] -/
   change mapDomain (actionDiagonalSucc G n).inv.hom
     (lcongr (Equiv.refl (G × (Fin n → G))) (TensorProduct.lid k k)
-      (finsuppTensorFinsupp k k k G (Fin n → G) (single g a ⊗ₜ[k] single f b)))
+      (finsuppTensorFinsupp k k k k G (Fin n → G) (single g a ⊗ₜ[k] single f b)))
     = single (g • partialProd f) (a * b)
   rw [finsuppTensorFinsupp_single, lcongr_single, mapDomain_single, Equiv.refl_apply,
     actionDiagonalSucc_inv_apply]
@@ -237,7 +237,7 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [diagonalSucc_inv_single_single]
     rw [sum_single_index, mul_comm]
-    · rw [zero_mul, single_zero]
+    rw [zero_mul, single_zero]
 #align group_cohomology.resolution.diagonal_succ_inv_single_left groupCohomology.resolution.diagonalSucc_inv_single_left
 
 theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
@@ -258,7 +258,7 @@ theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [diagonalSucc_inv_single_single]
     rw [sum_single_index]
-    · rw [zero_mul, single_zero]
+    rw [zero_mul, single_zero]
 #align group_cohomology.resolution.diagonal_succ_inv_single_right groupCohomology.resolution.diagonalSucc_inv_single_right
 
 end Rep
@@ -380,14 +380,14 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [diagonalSucc_hom_single]
   erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
-  simp only [one_smul]
-  erw [Representation.linHom_apply]
-  simp only [LinearMap.comp_apply, MonoidHom.one_apply, LinearMap.one_apply]
-  erw [Finsupp.llift_apply]
-  rw [Finsupp.lift_apply]
-  erw [Finsupp.sum_single_index]
-  rw [one_smul]
-  · rw [zero_smul]
+  · simp only [one_smul]
+    erw [Representation.linHom_apply]
+    simp only [LinearMap.comp_apply, MonoidHom.one_apply, LinearMap.one_apply]
+    erw [Finsupp.llift_apply]
+    rw [Finsupp.lift_apply]
+    erw [Finsupp.sum_single_index]
+    · rw [one_smul]
+    · rw [zero_smul]
   · rw [zero_smul]
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_symm_apply Rep.diagonalHomEquiv_symm_apply

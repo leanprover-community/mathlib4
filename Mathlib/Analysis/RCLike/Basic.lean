@@ -398,8 +398,10 @@ theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(r
   tfae_have 4 → 3
   · intro h
     conv_rhs => rw [← re_add_im z, h, ofReal_zero, zero_mul, add_zero]
-  tfae_have 3 → 2; exact fun h => ⟨_, h⟩
-  tfae_have 2 → 1; exact fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
+  tfae_have 3 → 2
+  · exact fun h => ⟨_, h⟩
+  tfae_have 2 → 1
+  · exact fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
   tfae_finish
 #align is_R_or_C.is_real_tfae RCLike.is_real_TFAE
 
@@ -875,6 +877,19 @@ lemma nonpos_iff_exists_ofReal : z ≤ 0 ↔ ∃ x ≤ (0 : ℝ), x = z := by
 
 lemma neg_iff_exists_ofReal : z < 0 ↔ ∃ x < (0 : ℝ), x = z := by
   simp_rw [neg_iff (K := K), ext_iff (K := K)]; aesop
+
+@[simp]
+lemma ofReal_le_ofReal {x y : ℝ} : (x : K) ≤ (y : K) ↔ x ≤ y := by
+  rw [le_iff_re_im]
+  simp
+
+@[simp]
+lemma ofReal_nonneg {x : ℝ} : 0 ≤ (x : K) ↔ 0 ≤ x := by
+  rw [← ofReal_zero, ofReal_le_ofReal]
+
+@[simp]
+lemma ofReal_nonpos {x : ℝ} : (x : K) ≤ 0 ↔ x ≤ 0 := by
+  rw [← ofReal_zero, ofReal_le_ofReal]
 
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)

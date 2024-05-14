@@ -590,7 +590,7 @@ def prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction
   toFun d := if d = 0 then 0 else ∏ p in d.primeFactors, f p
   map_zero' := if_pos rfl
 
-open Std.ExtendedBinder
+open Batteries.ExtendedBinder
 
 /-- `∏ᵖ p ∣ n, f p` is custom notation for `prodPrimeFactors f n` -/
 scoped syntax (name := bigproddvd) "∏ᵖ " extBinder " ∣ " term ", " term:67 : term
@@ -969,7 +969,7 @@ theorem cardFactors_eq_one_iff_prime {n : ℕ} : Ω n = 1 ↔ n.Prime := by
   cases' n with n
   · simp at h
   rcases List.length_eq_one.1 h with ⟨x, hx⟩
-  rw [← prod_factors n.succ_ne_zero, hx, List.prod_singleton]
+  rw [← prod_factors n.add_one_ne_zero, hx, List.prod_singleton]
   apply prime_of_mem_factors
   rw [hx, List.mem_singleton]
 #align nat.arithmetic_function.card_factors_eq_one_iff_prime ArithmeticFunction.cardFactors_eq_one_iff_prime

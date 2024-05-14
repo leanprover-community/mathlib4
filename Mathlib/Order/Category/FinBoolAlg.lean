@@ -99,9 +99,9 @@ instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
   forget_comp := rfl
 #align FinBoolAlg.has_forget_to_FinBddDistLat FinBoolAlg.hasForgetToFinBddDistLat
 
-instance forgetToBoolAlgFull : (forget₂ FinBoolAlg BoolAlg).Full :=
+instance forgetToBoolAlg_full : (forget₂ FinBoolAlg BoolAlg).Full :=
   InducedCategory.full _
-#align FinBoolAlg.forget_to_BoolAlg_full FinBoolAlg.forgetToBoolAlgFull
+#align FinBoolAlg.forget_to_BoolAlg_full FinBoolAlg.forgetToBoolAlg_full
 
 instance forgetToBoolAlgFaithful : (forget₂ FinBoolAlg BoolAlg).Faithful :=
   InducedCategory.faithful _

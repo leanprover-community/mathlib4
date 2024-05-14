@@ -55,7 +55,6 @@ theorem multinomial_spec : (∏ i in s, (f i)!) * multinomial s f = (∑ i in s,
 @[simp]
 theorem multinomial_nil : multinomial ∅ f = 1 := by
   dsimp [multinomial]
-  rfl
 #align nat.multinomial_nil Nat.multinomial_nil
 
 variable {s f}
@@ -66,7 +65,7 @@ lemma multinomial_cons (ha : a ∉ s) (f : α → ℕ) :
     multinomial, mul_assoc, mul_left_comm _ (f a)!,
     Nat.div_mul_cancel (prod_factorial_dvd_factorial_sum _ _), ← mul_assoc, Nat.choose_symm_add,
     Nat.add_choose_mul_factorial_mul_factorial, Finset.sum_cons]
-  exact prod_pos fun i _ ↦ by positivity
+  positivity
 
 lemma multinomial_insert [DecidableEq α] (ha : a ∉ s) (f : α → ℕ) :
     multinomial (insert a s) f = (f a + ∑ i in s, f i).choose (f a) * multinomial s f := by

@@ -1,4 +1,6 @@
-Mathlib/Algebra/BigOperators/Basic.lean : line 1 : ERR_NUM_LIN : 2700 file contains 2509 lines, try to split it up
+Mathlib/Algebra/BigOperators/Basic.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2675 lines, try to split it up
+Mathlib/Algebra/Group/Subgroup/Basic.lean : line 1 : ERR_NUM_LIN : 4000 file contains 3878 lines, try to split it up
+Mathlib/Algebra/Group/Submonoid/Operations.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1504 lines, try to split it up
 Mathlib/Algebra/Lie/Submodule.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1528 lines, try to split it up
 Mathlib/Algebra/MonoidAlgebra/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2158 lines, try to split it up
 Mathlib/Algebra/Order/Floor.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1822 lines, try to split it up
@@ -43,7 +45,7 @@ Mathlib/Data/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2638 lin
 Mathlib/Data/Set/Finite.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1768 lines, try to split it up
 Mathlib/Data/Set/Function.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1858 lines, try to split it up
 Mathlib/Data/Set/Image.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1613 lines, try to split it up
-Mathlib/Data/Set/Intervals/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1970 lines, try to split it up
+Mathlib/Order/Interval/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1970 lines, try to split it up
 Mathlib/Data/Set/Lattice.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2275 lines, try to split it up
 Mathlib/Data/String/Lemmas.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/UInt.lean : line 13 : ERR_MOD : Module docstring missing, or too late
@@ -51,8 +53,7 @@ Mathlib/Data/UnionFind.lean : line 10 : ERR_MOD : Module docstring missing, or t
 Mathlib/FieldTheory/RatFunc.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1781 lines, try to split it up
 Mathlib/Geometry/Manifold/SmoothManifoldWithCorners.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1607 lines, try to split it up
 Mathlib/GroupTheory/MonoidLocalization.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2153 lines, try to split it up
-Mathlib/GroupTheory/Subgroup/Basic.lean : line 1 : ERR_NUM_LIN : 3800 file contains 3629 lines, try to split it up
-Mathlib/GroupTheory/Submonoid/Operations.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1504 lines, try to split it up
+Mathlib/GroupTheory/Perm/Cycle/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1980 lines, try to split it up
 Mathlib/Init/Data/Int/Basic.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Data/Nat/Basic.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Data/Nat/Lemmas.lean : line 13 : ERR_MOD : Module docstring missing, or too late
@@ -66,6 +67,7 @@ Mathlib/LinearAlgebra/Basis.lean : line 1 : ERR_NUM_LIN : 1800 file contains 164
 Mathlib/LinearAlgebra/Dual.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1847 lines, try to split it up
 Mathlib/LinearAlgebra/LinearIndependent.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1537 lines, try to split it up
 Mathlib/LinearAlgebra/Multilinear/Basic.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1819 lines, try to split it up
+Mathlib/LinearAlgebra/TensorProduct/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1660 lines, try to split it up
 Mathlib/Logic/Equiv/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2065 lines, try to split it up
 Mathlib/Mathport/Attributes.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Mathport/Rename.lean : line 9 : ERR_MOD : Module docstring missing, or too late
@@ -95,7 +97,6 @@ Mathlib/Order/LocallyFinite.lean : line 1 : ERR_NUM_LIN : 1700 file contains 153
 Mathlib/Order/SuccPred/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1560 lines, try to split it up
 Mathlib/Order/UpperLower/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2019 lines, try to split it up
 Mathlib/RingTheory/DedekindDomain/Ideal.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1542 lines, try to split it up
-Mathlib/RingTheory/Ideal/Operations.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2324 lines, try to split it up
 Mathlib/RingTheory/UniqueFactorizationDomain.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2066 lines, try to split it up
 Mathlib/SetTheory/Cardinal/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2367 lines, try to split it up
 Mathlib/SetTheory/Cardinal/Ordinal.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1649 lines, try to split it up

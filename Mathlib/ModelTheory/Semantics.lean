@@ -452,9 +452,9 @@ theorem realize_subst {φ : L.BoundedFormula α n} {tf : α → L.Term β} {v : 
     (fun n t x => by
       rw [Term.realize_subst]
       rcongr a
-      · cases a
-        · simp only [Sum.elim_inl, Function.comp_apply, Term.realize_relabel, Sum.elim_comp_inl]
-        · rfl)
+      cases a
+      · simp only [Sum.elim_inl, Function.comp_apply, Term.realize_relabel, Sum.elim_comp_inl]
+      · rfl)
     (by simp)
 #align first_order.language.bounded_formula.realize_subst FirstOrder.Language.BoundedFormula.realize_subst
 
@@ -924,8 +924,8 @@ theorem _root_.FirstOrder.Language.Formula.realize_iAlls
   · intro x
     rw [Formula.Realize, iff_iff_eq]
     congr
-    · funext i
-      exact i.elim0
+    funext i
+    exact i.elim0
 
 @[simp]
 theorem realize_iAlls [Finite γ] {f : α → β ⊕ γ}
@@ -951,8 +951,8 @@ theorem _root_.FirstOrder.Language.Formula.realize_iExs
   · intro x
     rw [Formula.Realize, iff_iff_eq]
     congr
-    · funext i
-      exact i.elim0
+    funext i
+    exact i.elim0
 
 @[simp]
 theorem realize_iExs [Finite γ] {f : α → β ⊕ γ}

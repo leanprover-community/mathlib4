@@ -306,6 +306,7 @@ theorem roots_expand_pow :
 
 theorem roots_expand : (expand R p f).roots = p • f.roots.map (frobeniusEquiv R p).symm := by
   conv_lhs => rw [← pow_one p, roots_expand_pow, iterateFrobeniusEquiv_eq_pow, pow_one]
+  rfl
 
 theorem roots_X_pow_char_pow_sub_C {y : R} :
     (X ^ p ^ n - C y).roots = p ^ n • {(iterateFrobeniusEquiv R p n).symm y} := by

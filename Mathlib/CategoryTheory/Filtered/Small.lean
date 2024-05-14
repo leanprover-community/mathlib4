@@ -76,10 +76,9 @@ private noncomputable def inductiveStepRealization (n : ℕ)
 
 /-- All steps of building the abstract filtered closure together with the realization function,
     as a function of `ℕ`. -/
-private noncomputable def bundledAbstractFilteredClosure : ℕ → Σ t : Type (max v w), t → C :=
-  Nat.strongRec' fun n => match n with
-    | 0 => fun _ => ⟨ULift.{v} α, f ∘ ULift.down⟩
-    | (n + 1) => fun X => ⟨InductiveStep.{w, v, u} (n + 1) X, inductiveStepRealization (n + 1) X⟩
+private noncomputable def bundledAbstractFilteredClosure : ℕ → Σ t : Type (max v w), t → C
+  | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
+  | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ => bundledAbstractFilteredClosure m)⟩
 
 /-- The small type modelling the filtered closure. -/
 private noncomputable def AbstractFilteredClosure : Type (max v w) :=
@@ -206,10 +205,9 @@ private noncomputable def inductiveStepRealization (n : ℕ)
 
 /-- Implementation detail for the instance
     `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`. -/
-private noncomputable def bundledAbstractCofilteredClosure : ℕ → Σ t : Type (max v w), t → C :=
-  Nat.strongRec' fun n => match n with
-    | 0 => fun _ => ⟨ULift.{v} α, f ∘ ULift.down⟩
-    | (n + 1) => fun X => ⟨InductiveStep.{w, v, u} (n + 1) X, inductiveStepRealization (n + 1) X⟩
+private noncomputable def bundledAbstractCofilteredClosure : ℕ → Σ t : Type (max v w), t → C
+  | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
+  | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ => bundledAbstractCofilteredClosure m)⟩
 
 /-- Implementation detail for the instance
     `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`. -/

@@ -1219,6 +1219,7 @@ theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
   degree_le_of_natDegree_le (minpoly.natDegree_le x)
 #align minpoly.degree_le minpoly.degree_le
 
+-- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
 theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
     (h : ∀ i, Algebra.IsAlgebraic K (t i)) :

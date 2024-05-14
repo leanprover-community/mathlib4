@@ -125,8 +125,8 @@ lemma trace_comp_toEndomorphism_weightSpace_eq (χ : L → R) :
   rw [LinearMap.comp_apply, LieHom.coe_toLinearMap, h₁, map_add, h₂]
   simp [mul_comm (χ x)]
 
-@[deprecated] alias trace_comp_toEndomorphism_weight_space_eq :=
-  trace_comp_toEndomorphism_weightSpace_eq -- 2024-04-06
+@[deprecated] -- 2024-04-06
+alias trace_comp_toEndomorphism_weight_space_eq := trace_comp_toEndomorphism_weightSpace_eq
 
 variable {R L M} in
 lemma zero_lt_finrank_weightSpace {χ : L → R} (hχ : weightSpace M χ ≠ ⊥) :

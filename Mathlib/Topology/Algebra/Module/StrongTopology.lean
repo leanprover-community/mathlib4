@@ -444,6 +444,12 @@ def arrowCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) : (E →L[𝕜] H
   e₁.arrowCongrSL e₂
 #align continuous_linear_equiv.arrow_congr ContinuousLinearEquiv.arrowCongr
 
+@[simp] lemma arrowCongr_apply (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) (f : E →L[𝕜] H) (x : F) :
+    e₁.arrowCongr e₂ f x = e₂ (f (e₁.symm x)) := rfl
+
+@[simp] lemma arrowCongr_symm (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) :
+    (e₁.arrowCongr e₂).symm = e₁.symm.arrowCongr e₂.symm := rfl
+
 end Linear
 
 end ContinuousLinearEquiv

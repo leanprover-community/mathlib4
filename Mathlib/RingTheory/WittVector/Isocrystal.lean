@@ -153,12 +153,7 @@ open scoped Isocrystal
 
 /-! ### Classification of isocrystals in dimension 1 -/
 
-
-/-- A helper instance for type class inference. -/
-@[local instance]
-def FractionRing.module : Module K(p, k) K(p, k) :=
-  Semiring.toModule
-#align witt_vector.fraction_ring.module WittVector.FractionRing.module
+#noalign witt_vector.fraction_ring.module
 
 /-- Type synonym for `K(p, k)` to carry the standard 1-dimensional isocrystal structure
 of slope `m : ℤ`.

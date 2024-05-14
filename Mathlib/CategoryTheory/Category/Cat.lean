@@ -162,9 +162,7 @@ instance : Functor.Faithful typeToCat.{u} where
     funext fun x => congr_arg Discrete.as (Functor.congr_obj h ⟨x⟩)
 
 instance : Functor.Full typeToCat.{u} where
-  preimage F := Discrete.as ∘ F.obj ∘ Discrete.mk
-  witness := by
-    intro X Y F
+  map_surjective F := ⟨Discrete.as ∘ F.obj ∘ Discrete.mk, by
     apply Functor.ext
     · intro x y f
       dsimp
@@ -172,6 +170,6 @@ instance : Functor.Full typeToCat.{u} where
       aesop_cat
     · rintro ⟨x⟩
       apply Discrete.ext
-      rfl
+      rfl⟩
 
 end CategoryTheory

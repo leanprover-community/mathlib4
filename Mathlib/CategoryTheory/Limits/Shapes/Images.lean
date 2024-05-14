@@ -110,8 +110,8 @@ theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
   cases' hI
   simp? at hm says simp only [eqToHom_refl, Category.id_comp] at hm
   congr
-  · apply (cancel_mono Fm).1
-    rw [Ffac, hm, Ffac']
+  apply (cancel_mono Fm).1
+  rw [Ffac, hm, Ffac']
 #align category_theory.limits.mono_factorisation.ext CategoryTheory.Limits.MonoFactorisation.ext
 
 /-- Any mono factorisation of `f` gives a mono factorisation of `f ≫ g` when `g` is a mono. -/
@@ -1051,8 +1051,9 @@ theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEqu
           e := F.asEquivalence.counitIso.inv.app X ≫ F.map em.e
           m := F.map em.m ≫ F.asEquivalence.counitIso.hom.app Y
           fac := by
-            simpa only [Category.assoc, ← F.map_comp_assoc, em.fac, IsEquivalence.fun_inv_map,
-              Iso.inv_hom_id_app, Iso.inv_hom_id_app_assoc] using Category.comp_id _ }⟩
+            simp only [asEquivalence_functor, Category.assoc, ← F.map_comp_assoc,
+              MonoFactorisation.fac, fun_inv_map, id_obj, Iso.inv_hom_id_app, Category.comp_id,
+              Iso.inv_hom_id_app_assoc] }⟩
 #align category_theory.functor.has_strong_epi_mono_factorisations_imp_of_is_equivalence CategoryTheory.Functor.hasStrongEpiMonoFactorisations_imp_of_isEquivalence
 
 end CategoryTheory.Functor
