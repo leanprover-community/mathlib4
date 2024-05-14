@@ -248,13 +248,13 @@ end PerfectField
 
 /-- If `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable. -/
 instance Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K] [Field L]
-    [Algebra K L] [PerfectField K] [Algebra.IsAlgebraic K L] : IsSeparable K L :=
+    [Algebra K L] [Algebra.IsAlgebraic K L] [PerfectField K] : IsSeparable K L :=
   ⟨fun x ↦ PerfectField.separable_of_irreducible <|
     minpoly.irreducible (Algebra.IsIntegral.isIntegral x)⟩
 
 /-- If `L / K` is an algebraic extension, `K` is a perfect field, then so is `L`. -/
 theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [PerfectField K] [Algebra.IsAlgebraic K L] : PerfectField L := ⟨fun {f} hf ↦ by
+    [Algebra.IsAlgebraic K L] [PerfectField K] : PerfectField L := ⟨fun {f} hf ↦ by
   obtain ⟨_, _, hi, h⟩ := hf.exists_dvd_monic_irreducible_of_isIntegral (K := K)
   exact (PerfectField.separable_of_irreducible hi).map |>.of_dvd h⟩
 

@@ -150,7 +150,7 @@ variable {E} in
 theorem IsPurelyInseparable.isIntegral' [IsPurelyInseparable F E] (x : E) : IsIntegral F x :=
   Algebra.IsIntegral.isIntegral _
 
-instance IsPurelyInseparable.isAlgebraic [IsPurelyInseparable F E] :
+theorem IsPurelyInseparable.isAlgebraic [IsPurelyInseparable F E] :
     Algebra.IsAlgebraic F E := inferInstance
 
 variable {E}

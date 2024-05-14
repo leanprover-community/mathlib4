@@ -274,7 +274,7 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
     simp only [h, coeff_zero, ne_eq, not_true_eq_false] at this
   · simp only [f, map_sub, map_mul, map_pow, aeval_X, expand_aeval, h]
 
-instance isAlgebraic_of_finite_intermediateField
+theorem isAlgebraic_of_finite_intermediateField
     [Finite (IntermediateField F E)] : Algebra.IsAlgebraic F E := ⟨fun α ↦
   have ⟨_m, _n, hneq, heq⟩ := Finite.exists_ne_map_eq_of_infinite fun n ↦ F⟮α ^ n⟯
   isAlgebraic_of_adjoin_eq_adjoin F E hneq heq⟩
@@ -282,6 +282,7 @@ instance isAlgebraic_of_finite_intermediateField
 theorem FiniteDimensional.of_finite_intermediateField
     [Finite (IntermediateField F E)] : FiniteDimensional F E := by
   let IF := { K : IntermediateField F E // ∃ x, K = F⟮x⟯ }
+  have := isAlgebraic_of_finite_intermediateField F E
   haveI : ∀ K : IF, FiniteDimensional F K.1 := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional
     (Algebra.IsIntegral.isIntegral _)
   have hfin := finiteDimensional_iSup_of_finite (t := fun K : IF ↦ K.1)
