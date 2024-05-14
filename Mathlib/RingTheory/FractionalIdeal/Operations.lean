@@ -848,6 +848,25 @@ theorem exists_eq_spanSingleton_mul (I : FractionalIdeal R₁⁰ K) :
     rwa [hx', ← mul_assoc, inv_mul_cancel map_a_nonzero, one_mul]
 #align fractional_ideal.exists_eq_span_singleton_mul FractionalIdeal.exists_eq_spanSingleton_mul
 
+
+/-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
+`I = a⁻¹J`, then `J` is nonzero. -/
+theorem ideal_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra R K]
+    [IsFractionRing R K] {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R} {J : Ideal R}
+    (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) : J ≠ 0 := fun h ↦ by
+  rw [h, Ideal.zero_eq_bot, coeIdeal_bot, MulZeroClass.mul_zero] at haJ
+  exact hI haJ
+
+/-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
+`I = a⁻¹J`, then `a` is nonzero. -/
+theorem constant_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra R K]
+    [IsFractionRing R K] {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R} {J : Ideal R}
+    (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :
+    (Ideal.span {a} : Ideal R) ≠ 0 := fun h ↦ by
+  rw [Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot] at h
+  rw [h, RingHom.map_zero, inv_zero, spanSingleton_zero, MulZeroClass.zero_mul] at haJ
+  exact hI haJ
+
 instance isPrincipal {R} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [Algebra R K]
     [IsFractionRing R K] (I : FractionalIdeal R⁰ K) : (I : Submodule R K).IsPrincipal := by
   obtain ⟨a, aI, -, ha⟩ := exists_eq_spanSingleton_mul I
