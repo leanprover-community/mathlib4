@@ -20,7 +20,7 @@ See note [foundational algebra order theory].
 ## TODO
 
 Split this file into:
-* `Data.Int.Init` (or maybe `Data.Int.Std`?) for lemmas that could go to Std
+* `Data.Int.Init` (or maybe `Data.Int.Batteries`?) for lemmas that could go to Batteries
 * `Data.Int.Basic` for the lemmas that require mathlib definitions
 -/
 
@@ -47,7 +47,7 @@ variable {m n : ℕ}
 #align int.of_nat_nat_abs_eq_of_nonneg Int.ofNat_natAbs_eq_of_nonnegₓ
 #align int.nat_abs_of_neg_succ_of_nat Int.natAbs_negSucc
 
--- TODO: Tag in Std
+-- TODO: Tag in Lean
 attribute [simp] natAbs_pos
 
 protected lemma one_pos : 0 < (1 : Int) := Int.zero_lt_one
@@ -59,12 +59,12 @@ protected lemma one_nonneg : 0 ≤ (1 : ℤ) := Int.le_of_lt Int.zero_lt_one
 lemma zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n := @le.intro _ _ n (by rw [Int.zero_add]; rfl)
 #align int.zero_le_of_nat Int.zero_le_ofNat
 
-instance instNontrivialInt : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
+instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
 @[simp] lemma ofNat_eq_natCast : Int.ofNat n = n := rfl
 
--- 2024-03-24
-@[deprecated ofNat_eq_natCast] protected lemma natCast_eq_ofNat (n : ℕ) : ↑n = Int.ofNat n := rfl
+@[deprecated ofNat_eq_natCast] -- 2024-03-24
+protected lemma natCast_eq_ofNat (n : ℕ) : ↑n = Int.ofNat n := rfl
 #align int.coe_nat_eq Int.natCast_eq_ofNat
 
 @[norm_cast] lemma natCast_inj : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj

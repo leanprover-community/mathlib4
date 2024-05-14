@@ -199,7 +199,7 @@ theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
     have s : {v} ⊆ G.neighborFinset w \ G.neighborFinset v := by
       rw [singleton_subset_iff, mem_sdiff, mem_neighborFinset]
       exact ⟨hw.symm, G.not_mem_neighborFinset_self v⟩
-    rw [inter_comm, neighborFinset_compl, inter_sdiff, ← sdiff_eq_inter_compl, card_sdiff s,
+    rw [inter_comm, neighborFinset_compl, ← inter_sdiff_assoc, ← sdiff_eq_inter_compl, card_sdiff s,
       card_singleton, ← sdiff_inter_self_left, card_sdiff (by apply inter_subset_left)]
     congr
     · simp [h.regular w]
@@ -208,7 +208,7 @@ theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
       congr!
   · intro w hw
     simp_rw [neighborFinset_compl, mem_sdiff, mem_compl, mem_singleton, mem_neighborFinset,
-      ← Ne.def] at hw
+      ← Ne.eq_def] at hw
     simp_rw [bipartiteBelow, adj_comm, ← mem_neighborFinset, filter_mem_eq_inter,
       neighborFinset_def, ← Set.toFinset_inter, ← h.of_not_adj hw.2.symm hw.1,
       ← Set.toFinset_card]

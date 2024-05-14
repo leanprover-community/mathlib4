@@ -53,14 +53,14 @@ instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
 #align sym.has_coe Sym.hasCoe
 
 -- Porting note: instance needed for Data.Finset.Sym
-instance [DecidableEq α] : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
+instance [DecidableEq α] : DecidableEq (Sym α n) :=
+  inferInstanceAs <| DecidableEq <| Subtype _
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
 
 See note [reducible non-instances].
 -/
-@[reducible]
-def Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
+abbrev Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
   (List.isSetoid α).comap Subtype.val
 #align vector.perm.is_setoid Vector.Perm.isSetoid
 
@@ -439,7 +439,7 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n where
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
 an element of the symmetric power on `{x // x ∈ s}`. -/
 def attach (s : Sym α n) : Sym { x // x ∈ s } n :=
-  ⟨s.val.attach, by conv_rhs => rw [← s.2, ← Multiset.card_attach]⟩
+  ⟨s.val.attach, by (conv_rhs => rw [← s.2, ← Multiset.card_attach]); rfl⟩
 #align sym.attach Sym.attach
 
 @[simp]

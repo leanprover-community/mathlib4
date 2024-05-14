@@ -281,7 +281,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       rw [← ht''] at this
       refine adjoin_induction this ?_ ?_ ?_ ?_
       · rintro _ (⟨x, hx, rfl⟩ | ⟨i, rfl⟩)
-        · rw [algebraMap_eq, ← sub_add_cancel (MvPolynomial.C x)
+        · rw [MvPolynomial.algebraMap_eq, ← sub_add_cancel (MvPolynomial.C x)
             (map (algebraMap R A) (t' ⟨x, hx⟩)), add_comm]
           apply AddSubmonoid.add_mem_sup
           · exact Set.mem_range_self _

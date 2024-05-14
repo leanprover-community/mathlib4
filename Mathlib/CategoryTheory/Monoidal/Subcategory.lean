@@ -129,10 +129,10 @@ def fullMonoidalSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
 
 #align category_theory.monoidal_category.full_monoidal_subcategory.map CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.map
 
-instance fullMonoidalSubcategory.mapFull (h : ∀ ⦃X⦄, P X → P' X) :
+instance fullMonoidalSubcategory.map_full (h : ∀ ⦃X⦄, P X → P' X) :
     (fullMonoidalSubcategory.map h).Full where
-  preimage f := f
-#align category_theory.monoidal_category.full_monoidal_subcategory.map_full CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.mapFull
+  map_surjective f := ⟨f, rfl⟩
+#align category_theory.monoidal_category.full_monoidal_subcategory.map_full CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.map_full
 
 instance fullMonoidalSubcategory.map_faithful (h : ∀ ⦃X⦄, P X → P' X) :
     (fullMonoidalSubcategory.map h).Faithful where
@@ -181,7 +181,7 @@ def fullBraidedSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
 
 instance fullBraidedSubcategory.mapFull (h : ∀ ⦃X⦄, P X → P' X) :
     (fullBraidedSubcategory.map h).Full :=
-  fullMonoidalSubcategory.mapFull h
+  fullMonoidalSubcategory.map_full h
 #align category_theory.monoidal_category.full_braided_subcategory.map_full CategoryTheory.MonoidalCategory.fullBraidedSubcategory.mapFull
 
 instance fullBraidedSubcategory.map_faithful (h : ∀ ⦃X⦄, P X → P' X) :
@@ -217,9 +217,8 @@ variable [ClosedPredicate P]
 
 instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
   closed X :=
-  { isAdj :=
-    { right :=
-        FullSubcategory.lift P (fullSubcategoryInclusion P ⋙ ihom X.1) fun Y => prop_ihom X.2 Y.2
+    { rightAdj := FullSubcategory.lift P (fullSubcategoryInclusion P ⋙ ihom X.1)
+        fun Y => prop_ihom X.2 Y.2
       adj :=
         Adjunction.mkOfUnitCounit
         { unit :=
@@ -229,7 +228,7 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
           { app := fun Y => (ihom.ev X.1).app Y.1
             naturality := fun Y Z f => ihom.ev_naturality X.1 f }
           left_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def]
-          right_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def] } } }
+          right_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def] } }
 #align category_theory.monoidal_category.full_monoidal_closed_subcategory CategoryTheory.MonoidalCategory.fullMonoidalClosedSubcategory
 
 @[simp]

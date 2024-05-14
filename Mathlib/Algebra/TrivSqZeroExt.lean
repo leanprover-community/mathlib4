@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.LinearAlgebra.Prod
 
@@ -531,19 +531,19 @@ instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne 
     natCast_succ := fun _ => by ext <;> simp [Nat.cast] }
 
 @[simp]
-theorem fst_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).fst = n :=
+theorem fst_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).fst = n :=
   rfl
-#align triv_sq_zero_ext.fst_nat_cast TrivSqZeroExt.fst_nat_cast
+#align triv_sq_zero_ext.fst_nat_cast TrivSqZeroExt.fst_natCast
 
 @[simp]
-theorem snd_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).snd = 0 :=
+theorem snd_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).snd = 0 :=
   rfl
-#align triv_sq_zero_ext.snd_nat_cast TrivSqZeroExt.snd_nat_cast
+#align triv_sq_zero_ext.snd_nat_cast TrivSqZeroExt.snd_natCast
 
 @[simp]
-theorem inl_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsze R M) = n :=
+theorem inl_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsze R M) = n :=
   rfl
-#align triv_sq_zero_ext.inl_nat_cast TrivSqZeroExt.inl_nat_cast
+#align triv_sq_zero_ext.inl_nat_cast TrivSqZeroExt.inl_natCast
 
 instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
   { TrivSqZeroExt.addGroup, TrivSqZeroExt.addMonoidWithOne with
@@ -552,19 +552,19 @@ instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsz
     intCast_negSucc := fun _n => ext (Int.cast_negSucc _) neg_zero.symm }
 
 @[simp]
-theorem fst_int_cast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).fst = z :=
+theorem fst_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).fst = z :=
   rfl
-#align triv_sq_zero_ext.fst_int_cast TrivSqZeroExt.fst_int_cast
+#align triv_sq_zero_ext.fst_int_cast TrivSqZeroExt.fst_intCast
 
 @[simp]
-theorem snd_int_cast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).snd = 0 :=
+theorem snd_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).snd = 0 :=
   rfl
-#align triv_sq_zero_ext.snd_int_cast TrivSqZeroExt.snd_int_cast
+#align triv_sq_zero_ext.snd_int_cast TrivSqZeroExt.snd_intCast
 
 @[simp]
-theorem inl_int_cast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (inl z : tsze R M) = z :=
+theorem inl_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (inl z : tsze R M) = z :=
   rfl
-#align triv_sq_zero_ext.inl_int_cast TrivSqZeroExt.inl_int_cast
+#align triv_sq_zero_ext.inl_int_cast TrivSqZeroExt.inl_intCast
 
 instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] :
     NonAssocSemiring (tsze R M) :=
@@ -668,15 +668,17 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
           by simp_rw [smul_add, ← mul_smul, add_assoc, smul_comm, op_mul]
     npow := fun n x => x ^ n
     npow_zero := fun x => ext (pow_zero x.fst) (by simp [snd_pow_eq_sum])
-    npow_succ := fun n x => ext (pow_succ _ _) (by
-      simp_rw [snd_mul, snd_pow_eq_sum, Nat.pred_succ]
-      cases n
-      · simp [List.range_succ]
-      rw [List.sum_range_succ']
-      simp only [pow_zero, op_one, tsub_zero, one_smul, Nat.succ_sub_succ_eq_sub, fst_pow,
-        Nat.pred_succ, List.smul_sum, List.map_map, Function.comp]
-      simp_rw [← smul_comm (_ : R) (_ : Rᵐᵒᵖ), smul_smul, pow_succ]
-      rfl) }
+    npow_succ := fun n x =>
+      ext (pow_succ _ _)
+        (by
+          simp_rw [snd_mul, snd_pow_eq_sum, Nat.pred_succ]
+          cases n
+          · simp [List.range_succ]
+          rw [List.sum_range_succ']
+          simp only [pow_zero, op_one, tsub_zero, one_smul, Nat.succ_sub_succ_eq_sub, fst_pow,
+            Nat.pred_succ, List.smul_sum, List.map_map, Function.comp]
+          simp_rw [← smul_comm (_ : R) (_ : Rᵐᵒᵖ), smul_smul, pow_succ]
+          rfl) }
 
 theorem fst_list_prod [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) : l.prod.fst = (l.map fst).prod :=

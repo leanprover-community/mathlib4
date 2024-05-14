@@ -10,7 +10,7 @@ import Mathlib.Algebra.Ring.Pi
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.FieldTheory.Perfect
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.RingTheory.Valuation.Integers
 
 #align_import ring_theory.perfection from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
@@ -477,7 +477,7 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP K v O hv p} (hx : x ^ p ≠ 0) 
   rw [← (Ideal.Quotient.mk (Ideal.span {(p : O)})).map_mul]
   rw [← (Ideal.Quotient.mk (Ideal.span {(p : O)})).map_pow] at hx hy
   rw [← v_p_lt_val hv] at hx hy ⊢
-  rw [RingHom.map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_nat_cast, ← rpow_mul,
+  rw [RingHom.map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_natCast, ← rpow_mul,
     mul_one_div_cancel (Nat.cast_ne_zero.2 hp.1.ne_zero : (p : ℝ) ≠ 0), rpow_one] at hx hy
   rw [RingHom.map_mul, v.map_mul]; refine' lt_of_le_of_lt _ (mul_lt_mul₀ hx hy)
   by_cases hvp : v p = 0

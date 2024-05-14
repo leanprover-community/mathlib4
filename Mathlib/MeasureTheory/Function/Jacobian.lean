@@ -1204,7 +1204,7 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
     (measurableEmbedding_of_fderivWithin hs hf' hf).integral_map]
   simp only [Set.restrict_apply, ← Function.comp_apply (f := g), ENNReal.ofReal]
   rw [← (MeasurableEmbedding.subtype_coe hs).integral_map, map_comap_subtype_coe hs,
-    set_integral_withDensity_eq_set_integral_smul₀
+    setIntegral_withDensity_eq_setIntegral_smul₀
       (aemeasurable_toNNReal_abs_det_fderivWithin μ hs hf') _ hs]
   congr with x
   rw [NNReal.smul_def, Real.coe_toNNReal _ (abs_nonneg (f' x).det)]

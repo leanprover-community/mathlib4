@@ -264,9 +264,9 @@ theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
 
 @[simp]
 theorem add_ofNat' (m n) : Num.ofNat' (m + n) = Num.ofNat' m + Num.ofNat' n := by
-  -- Porting note: `simp` fails to unify `ofNat' (n + 1)` with `ofNat' n.succ`
-  have : ∀ {n}, ofNat' n.succ = ofNat' n + 1 := ofNat'_succ
-  induction n <;> simp [Nat.add_zero, this, add_zero, Nat.add_succ, add_one, add_succ, *]
+  induction n
+  · simp only [Nat.add_zero, ofNat'_zero, add_zero]
+  · simp only [Nat.add_succ, Nat.add_zero, ofNat'_succ, add_one, add_succ, *]
 #align num.add_of_nat' Num.add_ofNat'
 
 @[simp, norm_cast]
@@ -476,9 +476,9 @@ theorem to_of_nat : ∀ n : ℕ, ((n : Num) : ℕ) = n
 #align num.to_of_nat Num.to_of_nat
 
 @[simp, norm_cast]
-theorem of_nat_cast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n := by
+theorem of_natCast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n := by
   rw [← cast_to_nat, to_of_nat]
-#align num.of_nat_cast Num.of_nat_cast
+#align num.of_nat_cast Num.of_natCast
 
 @[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem of_nat_inj {m n : ℕ} : (m : Num) = n ↔ m = n :=
@@ -894,7 +894,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
       show PosNum.bit0 = PosNum.bit false from rfl, show PosNum.bit1 = PosNum.bit true from rfl,
       show ((1 : Num) : ℕ) = Nat.bit true 0 from rfl]
     all_goals
-      repeat'
+      repeat
         rw [show ∀ b n, (pos (PosNum.bit b n) : ℕ) = Nat.bit b ↑n by
           intros b _; cases b <;> rfl]
       rw [Nat.bitwise_bit gff]
@@ -956,13 +956,13 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
     apply Nat.div_eq_of_lt
     simp
   · trans
-    apply IH
+    · apply IH
     change Nat.shiftRight m n = Nat.shiftRight (_root_.bit1 m) (n + 1)
     rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
     apply congr_arg fun x => Nat.shiftRight x n
     simp [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val]
   · trans
-    apply IH
+    · apply IH
     change Nat.shiftRight m n = Nat.shiftRight (_root_.bit0 m) (n + 1)
     rw [add_comm n 1,  @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
     apply congr_arg fun x => Nat.shiftRight x n
@@ -982,7 +982,7 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     · rfl
     · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_zero]
     · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_zero]
-    · rw [PosNum.cast_one', ← bit1_zero, ← Nat.bit_true, Nat.testBit_bit_succ, Nat.zero_testBit]
+    · simp
     · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_succ, IH]
     · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_succ, IH]
 #align num.test_bit_to_nat Num.castNum_testBit
@@ -1530,14 +1530,14 @@ theorem of_nat_toZNumNeg (n : ℕ) : Num.toZNumNeg n = -n := by rw [← of_nat_t
 #align znum.of_nat_to_znum_neg ZNum.of_nat_toZNumNeg
 
 @[simp, norm_cast]
-theorem of_int_cast [AddGroupWithOne α] (n : ℤ) : ((n : ZNum) : α) = n := by
+theorem of_intCast [AddGroupWithOne α] (n : ℤ) : ((n : ZNum) : α) = n := by
   rw [← cast_to_int, to_of_int]
-#align znum.of_int_cast ZNum.of_int_cast
+#align znum.of_int_cast ZNum.of_intCast
 
 @[simp, norm_cast]
-theorem of_nat_cast [AddGroupWithOne α] (n : ℕ) : ((n : ZNum) : α) = n := by
-  rw [← Int.cast_natCast, of_int_cast, Int.cast_natCast]
-#align znum.of_nat_cast ZNum.of_nat_cast
+theorem of_natCast [AddGroupWithOne α] (n : ℕ) : ((n : ZNum) : α) = n := by
+  rw [← Int.cast_natCast, of_intCast, Int.cast_natCast]
+#align znum.of_nat_cast ZNum.of_natCast
 
 @[simp, norm_cast]
 theorem dvd_to_int (m n : ZNum) : (m : ℤ) ∣ n ↔ m ∣ n :=

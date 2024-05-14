@@ -361,12 +361,14 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
 
 theorem compProd_restrict_left {s : Set β} (hs : MeasurableSet s) :
     kernel.restrict κ hs ⊗ₖ η = kernel.restrict (κ ⊗ₖ η) (hs.prod MeasurableSet.univ) := by
-  rw [← compProd_restrict]; congr; exact kernel.restrict_univ.symm
+  rw [← compProd_restrict]
+  · congr; exact kernel.restrict_univ.symm
 #align probability_theory.kernel.comp_prod_restrict_left ProbabilityTheory.kernel.compProd_restrict_left
 
 theorem compProd_restrict_right {t : Set γ} (ht : MeasurableSet t) :
     κ ⊗ₖ kernel.restrict η ht = kernel.restrict (κ ⊗ₖ η) (MeasurableSet.univ.prod ht) := by
-  rw [← compProd_restrict]; congr; exact kernel.restrict_univ.symm
+  rw [← compProd_restrict]
+  · congr; exact kernel.restrict_univ.symm
 #align probability_theory.kernel.comp_prod_restrict_right ProbabilityTheory.kernel.compProd_restrict_right
 
 end Restrict
@@ -578,8 +580,7 @@ lemma compProd_add_right (μ : kernel α β) (κ η : kernel (α × β) γ)
     [IsSFiniteKernel μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     μ ⊗ₖ (κ + η) = μ ⊗ₖ κ + μ ⊗ₖ η := by
   ext a s hs
-  simp only [compProd_apply _ _ _ hs, coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure,
-    OuterMeasure.coe_add]
+  simp only [compProd_apply _ _ _ hs, coeFn_add, Pi.add_apply, Measure.coe_add]
   rw [lintegral_add_left]
   exact measurable_kernel_prod_mk_left' hs a
 

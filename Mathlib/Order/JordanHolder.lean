@@ -227,10 +227,8 @@ theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) 
     Nat.succ_injective
       ((List.length_ofFn s₁).symm.trans <| (congr_arg List.length h).trans <| List.length_ofFn s₂)
   apply ext_fun h₁
-  -- Porting note: `List.nthLe_ofFn` has been deprecated but `List.get_ofFn` has a
-  --               different type, so we do golf here.
-  exact congr_fun <|
-          List.ofFn_injective <| h.trans <| List.ofFn_congr (congr_arg Nat.succ h₁).symm _
+  exact congr_fun <| List.ofFn_injective <| h.trans <|
+    List.ofFn_congr (congr_arg Nat.succ h₁).symm _
 #align composition_series.to_list_injective CompositionSeries.toList_injective
 
 theorem chain'_toList (s : CompositionSeries X) : List.Chain' IsMaximal s.toList :=

@@ -81,7 +81,7 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
   have h_int : ∀ x : ℝ, x ∈ Ioc (0 : ℝ) 1 →
       ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n) ≤ ENNReal.ofReal (x ^ (-(r⁻¹ * n))) := fun x hx ↦ by
     apply ENNReal.ofReal_le_ofReal
-    rw [← neg_mul, rpow_mul hx.1.le, rpow_nat_cast]
+    rw [← neg_mul, rpow_mul hx.1.le, rpow_natCast]
     refine' pow_le_pow_left _ (by simp only [sub_le_self_iff, zero_le_one]) n
     rw [le_sub_iff_add_le', add_zero]
     refine' Real.one_le_rpow_of_pos_of_le_one_of_nonpos hx.1 hx.2 _

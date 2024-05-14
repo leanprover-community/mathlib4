@@ -162,16 +162,20 @@ section Mul
 
 variable [Semiring k] [Mul G]
 
+/-- The multiplication in a monoid algebra. We make it irreducible so that Lean doesn't unfold
+it trying to unify two things that are different. -/
+@[irreducible] def mul' (f g : MonoidAlgebra k G) : MonoidAlgebra k G :=
+  f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂)
+
 /-- The product of `f g : MonoidAlgebra k G` is the finitely supported function
   whose value at `a` is the sum of `f x * g y` over all pairs `x, y`
   such that `x * y = a`. (Think of the group ring of a group.) -/
-instance mul : Mul (MonoidAlgebra k G) :=
-  ⟨fun f g => f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂)⟩
-#align monoid_algebra.has_mul MonoidAlgebra.mul
+instance instMul : Mul (MonoidAlgebra k G) := ⟨MonoidAlgebra.mul'⟩
+#align monoid_algebra.has_mul MonoidAlgebra.instMul
 
 theorem mul_def {f g : MonoidAlgebra k G} :
-    f * g = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂) :=
-  rfl
+    f * g = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂) := by
+  with_unfolding_all rfl
 #align monoid_algebra.mul_def MonoidAlgebra.mul_def
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra k G) :=
@@ -268,9 +272,9 @@ instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
         mul_one, sum_single] }
 #align monoid_algebra.non_assoc_semiring MonoidAlgebra.nonAssocSemiring
 
-theorem nat_cast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
+theorem natCast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
   rfl
-#align monoid_algebra.nat_cast_def MonoidAlgebra.nat_cast_def
+#align monoid_algebra.nat_cast_def MonoidAlgebra.natCast_def
 
 end MulOneClass
 
@@ -345,10 +349,10 @@ instance nonAssocRing [Ring k] [MulOneClass G] : NonAssocRing (MonoidAlgebra k G
     intCast_negSucc := fun n => by simp; rfl }
 #align monoid_algebra.non_assoc_ring MonoidAlgebra.nonAssocRing
 
-theorem int_cast_def [Ring k] [MulOneClass G] (z : ℤ) :
+theorem intCast_def [Ring k] [MulOneClass G] (z : ℤ) :
     (z : MonoidAlgebra k G) = single (1 : G) (z : k) :=
   rfl
-#align monoid_algebra.int_cast_def MonoidAlgebra.int_cast_def
+#align monoid_algebra.int_cast_def MonoidAlgebra.intCast_def
 
 instance ring [Ring k] [Monoid G] : Ring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonAssocRing, MonoidAlgebra.semiring with }
@@ -382,8 +386,8 @@ instance module [Semiring R] [Semiring k] [Module R k] : Module R (MonoidAlgebra
   Finsupp.module G k
 #align monoid_algebra.module MonoidAlgebra.module
 
-instance faithfulSMul [Monoid R] [Semiring k] [DistribMulAction R k] [FaithfulSMul R k]
-    [Nonempty G] : FaithfulSMul R (MonoidAlgebra k G) :=
+instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
+    FaithfulSMul R (MonoidAlgebra k G) :=
   Finsupp.faithfulSMul
 #align monoid_algebra.has_faithful_smul MonoidAlgebra.faithfulSMul
 
@@ -392,12 +396,12 @@ instance isScalarTower [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMu
   Finsupp.isScalarTower G k
 #align monoid_algebra.is_scalar_tower MonoidAlgebra.isScalarTower
 
-instance smulCommClass [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
-    [DistribMulAction S k] [SMulCommClass R S k] : SMulCommClass R S (MonoidAlgebra k G) :=
+instance smulCommClass [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMulCommClass R S k] :
+    SMulCommClass R S (MonoidAlgebra k G) :=
   Finsupp.smulCommClass G k
 #align monoid_algebra.smul_comm_tower MonoidAlgebra.smulCommClass
 
-instance isCentralScalar [Monoid R] [Semiring k] [DistribMulAction R k] [DistribMulAction Rᵐᵒᵖ k]
+instance isCentralScalar [Semiring k] [SMulZeroClass R k] [SMulZeroClass Rᵐᵒᵖ k]
     [IsCentralScalar R k] : IsCentralScalar R (MonoidAlgebra k G) :=
   Finsupp.isCentralScalar G k
 #align monoid_algebra.is_central_scalar MonoidAlgebra.isCentralScalar
@@ -449,8 +453,9 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
 
 @[simp]
 theorem single_mul_single [Mul G] {a₁ a₂ : G} {b₁ b₂ : k} :
-    single a₁ b₁ * single a₂ b₂ = single (a₁ * a₂) (b₁ * b₂) :=
-  (sum_single_index (by simp only [zero_mul, single_zero, sum_zero])).trans
+    single a₁ b₁ * single a₂ b₂ = single (a₁ * a₂) (b₁ * b₂) := by
+  rw [mul_def]
+  exact (sum_single_index (by simp only [zero_mul, single_zero, sum_zero])).trans
     (sum_single_index (by rw [mul_zero, single_zero]))
 #align monoid_algebra.single_mul_single MonoidAlgebra.single_mul_single
 
@@ -1038,8 +1043,6 @@ def equivariantOfLinearOfComm : V →ₗ[MonoidAlgebra k G] W where
   toFun := f
   map_add' v v' := by simp
   map_smul' c v := by
-    -- Porting note(#12129): additional beta reduction needed
-    beta_reduce
     -- Porting note: Was `apply`.
     refine Finsupp.induction c ?_ ?_
     · simp
@@ -1300,12 +1303,12 @@ variable [Semiring k] [Add G]
   such that `x + y = a`. (Think of the product of multivariate
   polynomials where `α` is the additive monoid of monomial exponents.) -/
 instance hasMul : Mul k[G] :=
-  ⟨fun f g => f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ + a₂) (b₁ * b₂)⟩
+  ⟨fun f g => MonoidAlgebra.mul' (G := Multiplicative G) f g⟩
 #align add_monoid_algebra.has_mul AddMonoidAlgebra.hasMul
 
 theorem mul_def {f g : k[G]} :
     f * g = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ + a₂) (b₁ * b₂) :=
-  rfl
+  MonoidAlgebra.mul_def (G := Multiplicative G)
 #align add_monoid_algebra.mul_def AddMonoidAlgebra.mul_def
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring k[G] :=
@@ -1355,7 +1358,7 @@ section One
 
 variable [Semiring k] [Zero G] [NonAssocSemiring R]
 
-/-- The unit of the multiplication is `single 1 1`, i.e. the function
+/-- The unit of the multiplication is `single 0 1`, i.e. the function
   that is `1` at `0` and zero elsewhere. -/
 instance one : One k[G] :=
   ⟨single 0 1⟩
@@ -1410,9 +1413,9 @@ instance nonAssocSemiring : NonAssocSemiring k[G] :=
         mul_one, sum_single] }
 #align add_monoid_algebra.non_assoc_semiring AddMonoidAlgebra.nonAssocSemiring
 
-theorem nat_cast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
+theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
   rfl
-#align add_monoid_algebra.nat_cast_def AddMonoidAlgebra.nat_cast_def
+#align add_monoid_algebra.nat_cast_def AddMonoidAlgebra.natCast_def
 
 end MulOneClass
 
@@ -1488,10 +1491,10 @@ instance nonAssocRing [Ring k] [AddZeroClass G] : NonAssocRing k[G] :=
     intCast_negSucc := fun n => by simp; rfl }
 #align add_monoid_algebra.non_assoc_ring AddMonoidAlgebra.nonAssocRing
 
-theorem int_cast_def [Ring k] [AddZeroClass G] (z : ℤ) :
+theorem intCast_def [Ring k] [AddZeroClass G] (z : ℤ) :
     (z : k[G]) = single (0 : G) (z : k) :=
   rfl
-#align add_monoid_algebra.int_cast_def AddMonoidAlgebra.int_cast_def
+#align add_monoid_algebra.int_cast_def AddMonoidAlgebra.intCast_def
 
 instance ring [Ring k] [AddMonoid G] : Ring k[G] :=
   { AddMonoidAlgebra.nonAssocRing, AddMonoidAlgebra.semiring with }

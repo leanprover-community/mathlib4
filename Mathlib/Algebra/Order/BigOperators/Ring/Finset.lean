@@ -191,8 +191,7 @@ lemma IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S) [
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 #align is_absolute_value.abv_sum IsAbsoluteValue.abv_sum
 
---  2024-02-14
-@[deprecated] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum
+@[deprecated] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum -- 2024-02-14
 
 nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
@@ -207,3 +206,61 @@ lemma IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCom
 #align is_absolute_value.map_prod IsAbsoluteValue.map_prod
 
 end AbsoluteValue
+
+namespace Mathlib.Meta.Positivity
+open Qq Lean Meta Finset
+
+private alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
+
+/-- The `positivity` extension which proves that `∏ i in s, f i` is nonnegative if `f` is, and
+positive if each `f i` is.
+
+TODO: The following example does not work
+```
+example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.prod f := by positivity
+```
+because `compareHyp` can't look for assumptions behind binders.
+-/
+@[positivity Finset.prod _ _]
+def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
+  match e with
+  | ~q(@Finset.prod $ι _ $instα $s $f) =>
+    let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
+    have body : Q($α) := Expr.betaRev f #[i]
+    let rbody ← core zα pα body
+    let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
+
+    -- Try to show that the product is positive
+    let p_pos : Option Q(0 < $e) := ← do
+      let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
+      -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
+      let .some _instαzeroone ← trySynthInstanceQ q(ZeroLEOneClass $α) | pure none
+      let .some _instαposmul ← trySynthInstanceQ q(PosMulStrictMono $α) | pure none
+      let .some _instαnontriv ← trySynthInstanceQ q(Nontrivial $α) | pure none
+      assertInstancesCommute
+      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
+      return some q(prod_pos fun i _ ↦ $pr i)
+    if let some p_pos := p_pos then return .positive p_pos
+
+    -- Try to show that the product is nonnegative
+    let p_nonneg : Option Q(0 ≤ $e) := ← do
+      let .some pbody := rbody.toNonneg
+        | return none -- Fail if the body is not provably nonnegative
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
+      -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
+      let .some _instαzeroone ← trySynthInstanceQ q(ZeroLEOneClass $α) | pure none
+      let .some _instαposmul ← trySynthInstanceQ q(PosMulMono $α) | pure none
+      assertInstancesCommute
+      return some q(prod_nonneg fun i _ ↦ $pr i)
+    if let some p_nonneg := p_nonneg then return .nonnegative p_nonneg
+
+    -- Fall back to showing that the product is nonzero
+    let pbody ← rbody.toNonzero
+    let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
+    -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
+    let _instαnontriv ← synthInstanceQ q(Nontrivial $α)
+    let _instαnozerodiv ← synthInstanceQ q(NoZeroDivisors $α)
+    assertInstancesCommute
+    return .nonzero q(prod_ne_zero fun i _ ↦ $pr i)
+
+end Mathlib.Meta.Positivity

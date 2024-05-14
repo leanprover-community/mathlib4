@@ -75,6 +75,7 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
 
+/-- Extension of the `positivity` tactic for Bernstein polynomials: they are always non-negative. -/
 @[positivity DFunLike.coe _ _]
 def evalBernstein : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
@@ -123,7 +124,7 @@ theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
   conv_rhs => rw [div_mul_cancel₀ _ h']
   have := bernsteinPolynomial.variance ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
-  simp? [AlgHom.map_sum, Finset.sum_range, ← Polynomial.nat_cast_mul] at this says
+  simp? [AlgHom.map_sum, Finset.sum_range, ← Polynomial.natCast_mul] at this says
     simp only [nsmul_eq_mul, Finset.sum_range, map_sum, map_mul, map_pow, map_sub, map_natCast,
       Polynomial.aeval_X, Polynomial.coe_aeval_eq_eval, map_one] at this
   convert this using 1

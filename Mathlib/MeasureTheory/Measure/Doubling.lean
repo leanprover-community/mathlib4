@@ -96,7 +96,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
           le_trans (measure_mono <| closedBall_subset_closedBall _) (hε.1 x)⟩
     refine' mul_le_mul_of_nonneg_right (ht.trans _) (mem_Ioi.mp hε.2).le
     conv_lhs => rw [← Real.rpow_logb two_pos (by norm_num) (by linarith : 0 < K)]
-    rw [← Real.rpow_nat_cast]
+    rw [← Real.rpow_natCast]
     exact Real.rpow_le_rpow_of_exponent_le one_le_two (Nat.le_ceil (Real.logb 2 K))
 #align is_unif_loc_doubling_measure.exists_eventually_forall_measure_closed_ball_le_mul IsUnifLocDoublingMeasure.exists_eventually_forall_measure_closedBall_le_mul
 

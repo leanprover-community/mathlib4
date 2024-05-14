@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Group.Int
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Ordmap.Ordnode
@@ -256,9 +256,8 @@ def rotateL : Ordnode α → α → Ordnode α → Ordnode α
   | l, x, nil => node' l x nil
 #align ordnode.rotate_l Ordnode.rotateL
 
--- Adaptation note:
--- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
--- See https://github.com/leanprover-community/mathlib4/issues/11647
+-- Porting note (#11467): during the port we marked these lemmas with `@[eqns]`
+-- to emulate the old Lean 3 behaviour.
 
 theorem rotateL_node (l : Ordnode α) (x : α) (sz : ℕ) (m : Ordnode α) (y : α) (r : Ordnode α) :
     rotateL l x (node sz m y r) =
@@ -276,9 +275,8 @@ def rotateR : Ordnode α → α → Ordnode α → Ordnode α
   | nil, y, r => node' nil y r
 #align ordnode.rotate_r Ordnode.rotateR
 
--- Adaptation note:
--- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
--- See https://github.com/leanprover-community/mathlib4/issues/11647
+-- Porting note (#11467): during the port we marked these lemmas with `@[eqns]`
+-- to emulate the old Lean 3 behaviour.
 
 theorem rotateR_node (sz : ℕ) (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
     rotateR (node sz l x m) y r =
@@ -784,9 +782,10 @@ def Raised (n m : ℕ) : Prop :=
 #align ordnode.raised Ordnode.Raised
 
 theorem raised_iff {n m} : Raised n m ↔ n ≤ m ∧ m ≤ n + 1 := by
-  constructor; rintro (rfl | rfl)
-  · exact ⟨le_rfl, Nat.le_succ _⟩
-  · exact ⟨Nat.le_succ _, le_rfl⟩
+  constructor
+  · rintro (rfl | rfl)
+    · exact ⟨le_rfl, Nat.le_succ _⟩
+    · exact ⟨Nat.le_succ _, le_rfl⟩
   · rintro ⟨h₁, h₂⟩
     rcases eq_or_lt_of_le h₁ with (rfl | h₁)
     · exact Or.inl rfl
@@ -1194,7 +1193,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
       rw [l1, r1]
       revert mm; cases size ml <;> cases size mr <;> intro mm
       · decide
-      · rw [Nat.zero_eq, zero_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
+      · rw [zero_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
         decide
       · rcases mm with (_ | ⟨⟨⟩⟩); decide
       · rw [Nat.succ_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
@@ -1427,30 +1426,30 @@ theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o
   cases' r with rs rl rx rr; · exact ⟨hl, rfl⟩
   dsimp [glue]; split_ifs
   · rw [splitMax_eq]
-    cases' Valid'.eraseMax_aux hl with v e
-    suffices H : _ by
-      refine' ⟨Valid'.balanceR v (hr.of_gt _ _) H, _⟩
-      · refine' findMax'_all (P := fun a : α => Bounded nil (a : WithTop α) o₂)
-          lx lr hl.1.2.to_nil (sep.2.2.imp _)
-        exact fun x h => hr.1.2.to_nil.mono_left (le_of_lt h.2.1)
-      · exact @findMax'_all _ (fun a => All (· > a) (.node rs rl rx rr)) lx lr sep.2.1 sep.2.2
-      · rw [size_balanceR v.3 hr.3 v.2 hr.2 H, add_right_comm, ← e, hl.2.1]; rfl
-    refine' Or.inl ⟨_, Or.inr e, _⟩
-    rwa [hl.2.eq_node'] at bal
+    · cases' Valid'.eraseMax_aux hl with v e
+      suffices H : _ by
+        refine' ⟨Valid'.balanceR v (hr.of_gt _ _) H, _⟩
+        · refine' findMax'_all (P := fun a : α => Bounded nil (a : WithTop α) o₂)
+            lx lr hl.1.2.to_nil (sep.2.2.imp _)
+          exact fun x h => hr.1.2.to_nil.mono_left (le_of_lt h.2.1)
+        · exact @findMax'_all _ (fun a => All (· > a) (.node rs rl rx rr)) lx lr sep.2.1 sep.2.2
+        · rw [size_balanceR v.3 hr.3 v.2 hr.2 H, add_right_comm, ← e, hl.2.1]; rfl
+      refine' Or.inl ⟨_, Or.inr e, _⟩
+      rwa [hl.2.eq_node'] at bal
   · rw [splitMin_eq]
-    cases' Valid'.eraseMin_aux hr with v e
-    suffices H : _ by
-      refine' ⟨Valid'.balanceL (hl.of_lt _ _) v H, _⟩
-      · refine' @findMin'_all (P := fun a : α => Bounded nil o₁ (a : WithBot α))
-          rl rx (sep.2.1.1.imp _) hr.1.1.to_nil
-        exact fun y h => hl.1.1.to_nil.mono_right (le_of_lt h)
-      · exact
-          @findMin'_all _ (fun a => All (· < a) (.node ls ll lx lr)) rl rx
-            (all_iff_forall.2 fun x hx => sep.imp fun y hy => all_iff_forall.1 hy.1 _ hx)
-            (sep.imp fun y hy => hy.2.1)
-      · rw [size_balanceL hl.3 v.3 hl.2 v.2 H, add_assoc, ← e, hr.2.1]; rfl
-    refine' Or.inr ⟨_, Or.inr e, _⟩
-    rwa [hr.2.eq_node'] at bal
+    · cases' Valid'.eraseMin_aux hr with v e
+      suffices H : _ by
+        refine' ⟨Valid'.balanceL (hl.of_lt _ _) v H, _⟩
+        · refine' @findMin'_all (P := fun a : α => Bounded nil o₁ (a : WithBot α))
+            rl rx (sep.2.1.1.imp _) hr.1.1.to_nil
+          exact fun y h => hl.1.1.to_nil.mono_right (le_of_lt h)
+        · exact
+            @findMin'_all _ (fun a => All (· < a) (.node ls ll lx lr)) rl rx
+              (all_iff_forall.2 fun x hx => sep.imp fun y hy => all_iff_forall.1 hy.1 _ hx)
+              (sep.imp fun y hy => hy.2.1)
+        · rw [size_balanceL hl.3 v.3 hl.2 v.2 H, add_assoc, ← e, hr.2.1]; rfl
+      refine' Or.inr ⟨_, Or.inr e, _⟩
+      rwa [hr.2.eq_node'] at bal
 #align ordnode.valid'.glue_aux Ordnode.Valid'.glue_aux
 
 theorem Valid'.glue {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂) :
@@ -1478,7 +1477,7 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
           size_balance' v.2 hr.2.2.2, e, hl.2.1, hr.2.1]
         abel
     · rw [e, add_right_comm]; rintro ⟨⟩
-  · intro _ _; rw [e]; unfold delta at hr₂ ⊢; omega
+  intro _ _; rw [e]; unfold delta at hr₂ ⊢; omega
 #align ordnode.valid'.merge_aux₁ Ordnode.Valid'.merge_aux₁
 
 theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
@@ -1527,14 +1526,14 @@ theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ 
         refine' ⟨vl.balanceL h.right H, _⟩
         rw [size_balanceL vl.3 h.3.2.2 vl.2 h.2.2.2 H, h.2.size_eq]
         exact (e.add_right _).add_right _
-      · exact Or.inl ⟨_, e, h.3.1⟩
+      exact Or.inl ⟨_, e, h.3.1⟩
     · have : y < x := lt_of_le_not_le ((total_of (· ≤ ·) _ _).resolve_left h_1) h_1
       rcases insertWith.valid_aux f x hf h.right this br with ⟨vr, e⟩
       suffices H : _ by
         refine' ⟨h.left.balanceR vr H, _⟩
         rw [size_balanceR h.3.2.1 vr.3 h.2.2.1 vr.2 H, h.2.size_eq]
         exact (e.add_left _).add_right _
-      · exact Or.inr ⟨_, e, h.3.1⟩
+      exact Or.inr ⟨_, e, h.3.1⟩
 #align ordnode.insert_with.valid_aux Ordnode.insertWith.valid_aux
 
 theorem insertWith.valid [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (f : α → α) (x : α)
@@ -1621,7 +1620,7 @@ theorem Valid'.erase_aux [@DecidableRel α (· ≤ ·)] (x : α) {t a₁ a₂} (
         · rw [size_balanceR t_l_valid.bal h.right.bal t_l_valid.sz h.right.sz h_balanceable]
           repeat apply Raised.add_right
           exact t_l_size
-      · left; exists t_l.size; exact And.intro t_l_size h.bal.1
+      left; exists t_l.size; exact And.intro t_l_size h.bal.1
     · have h_glue := Valid'.glue h.left h.right h.bal.1
       cases' h_glue with h_glue_valid h_glue_sized
       constructor
@@ -1634,7 +1633,7 @@ theorem Valid'.erase_aux [@DecidableRel α (· ≤ ·)] (x : α) {t a₁ a₂} (
           apply Raised.add_right
           apply Raised.add_left
           exact t_r_size
-      · right; exists t_r.size; exact And.intro t_r_size h.bal.1
+      right; exists t_r.size; exact And.intro t_r_size h.bal.1
 #align ordnode.valid'.erase_aux Ordnode.Valid'.erase_aux
 
 theorem erase.valid [@DecidableRel α (· ≤ ·)] (x : α) {t} (h : Valid t) : Valid (erase x t) :=
@@ -1663,7 +1662,7 @@ theorem size_erase_of_mem [@DecidableRel α (· ≤ ·)] {x : α} {t a₁ a₂} 
       have h_pos_t_l_size := pos_size_of_mem h.left.sz h_mem
       revert h_pos_t_l_size; cases' t_l.size with t_l_size <;> intro h_pos_t_l_size
       · cases h_pos_t_l_size
-      · simp [Nat.succ_add]
+      · simp [Nat.add_right_comm]
     · rw [(Valid'.glue h.left h.right h.bal.1).2, h.sz.1]; rfl
     · have t_ih_r := t_ih_r' h_mem
       clear t_ih_l' t_ih_r'
@@ -1675,7 +1674,7 @@ theorem size_erase_of_mem [@DecidableRel α (· ≤ ·)] {x : α} {t a₁ a₂} 
       have h_pos_t_r_size := pos_size_of_mem h.right.sz h_mem
       revert h_pos_t_r_size; cases' t_r.size with t_r_size <;> intro h_pos_t_r_size
       · cases h_pos_t_r_size
-      · simp [Nat.succ_add, Nat.add_succ]
+      · simp [Nat.add_assoc]
 #align ordnode.size_erase_of_mem Ordnode.size_erase_of_mem
 
 end

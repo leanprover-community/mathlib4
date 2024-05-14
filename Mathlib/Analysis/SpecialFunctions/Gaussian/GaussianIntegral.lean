@@ -219,7 +219,7 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       rw [← integral_comp_polarCoord_symm]
       simp only [polarCoord_symm_apply, ofReal_mul, ofReal_cos, ofReal_sin]
     _ = (∫ r in Ioi (0 : ℝ), r * cexp (-b * (r : ℂ) ^ 2)) * ∫ θ in Ioo (-π) π, 1 := by
-      rw [← set_integral_prod_mul]
+      rw [← setIntegral_prod_mul]
       congr with p : 1
       rw [mul_one]
       congr
@@ -293,8 +293,8 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
       · rw [← ofReal_one, ← ofReal_div]
       · rw [← ofReal_one, ← ofReal_ofNat, ← ofReal_div]
     rw [← ofReal_cpow, ofReal_inj]
-    convert integral_gaussian (1 : ℝ) using 1
-    · rw [sqrt_eq_rpow]
+    · convert integral_gaussian (1 : ℝ) using 1
+      rw [sqrt_eq_rpow]
     · rw [div_one]; exact pi_pos.le
   · -- squares of both sides agree
     dsimp only [Pi.pow_apply]
@@ -338,15 +338,15 @@ theorem integral_gaussian_Ioi (b : ℝ) :
     ∫ x in Ioi (0 : ℝ), exp (-b * x ^ 2) = √(π / b) / 2 := by
   rcases le_or_lt b 0 with (hb | hb)
   · rw [integral_undef, sqrt_eq_zero_of_nonpos, zero_div]
-    exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
-    rwa [← IntegrableOn, integrableOn_Ioi_exp_neg_mul_sq_iff, not_lt]
+    · exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
+    · rwa [← IntegrableOn, integrableOn_Ioi_exp_neg_mul_sq_iff, not_lt]
   rw [← RCLike.ofReal_inj (K := ℂ), ← integral_ofReal, ← RCLike.algebraMap_eq_ofReal,
     coe_algebraMap]
   convert integral_gaussian_complex_Ioi (by rwa [ofReal_re] : 0 < (b : ℂ).re)
   · simp
   · rw [sqrt_eq_rpow, ← ofReal_div, ofReal_div, ofReal_cpow]
-    norm_num
-    exact (div_pos pi_pos hb).le
+    · norm_num
+    · exact (div_pos pi_pos hb).le
 #align integral_gaussian_Ioi integral_gaussian_Ioi
 
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
@@ -354,7 +354,7 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
   rw [Gamma_eq_integral one_half_pos, ← integral_comp_rpow_Ioi_of_pos zero_lt_two]
   convert congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1) using 1
   · rw [← integral_mul_left]
-    refine' set_integral_congr measurableSet_Ioi fun x hx => _
+    refine' setIntegral_congr measurableSet_Ioi fun x hx => _
     dsimp only
     have : (x ^ (2 : ℝ)) ^ (1 / (2 : ℝ) - 1) = x⁻¹ := by
       rw [← rpow_mul (le_of_lt hx)]

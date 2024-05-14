@@ -245,11 +245,11 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
         rw [← lift_le.{w'}, lift_lift, lift_lift] at h1
         exact ⟨h2, h1⟩)
       (hN0.trans (by rw [← lift_umax', lift_id]))
-  · letI := (lhomWithConstants L M).reduct N
-    haveI h : N ⊨ L.elementaryDiagram M :=
-      (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
-    refine' ⟨Bundled.of N, ⟨_⟩, hN⟩
-    apply ElementaryEmbedding.ofModelsElementaryDiagram L M N
+  letI := (lhomWithConstants L M).reduct N
+  haveI h : N ⊨ L.elementaryDiagram M :=
+    (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
+  refine' ⟨Bundled.of N, ⟨_⟩, hN⟩
+  apply ElementaryEmbedding.ofModelsElementaryDiagram L M N
 #align first_order.language.exists_elementary_embedding_card_eq_of_ge FirstOrder.Language.exists_elementaryEmbedding_card_eq_of_ge
 
 end
@@ -556,7 +556,7 @@ theorem sup_semanticallyEquivalent_not_inf_not :
 
 theorem inf_semanticallyEquivalent_not_sup_not :
     T.SemanticallyEquivalent (φ ⊓ ψ) (φ.not ⊔ ψ.not).not := fun M v xs => by
-  simp [and_iff_not_or_not]
+  simp
 #align first_order.language.bounded_formula.inf_semantically_equivalent_not_sup_not FirstOrder.Language.BoundedFormula.inf_semanticallyEquivalent_not_sup_not
 
 theorem all_semanticallyEquivalent_not_ex_not (φ : L.BoundedFormula α (n + 1)) :

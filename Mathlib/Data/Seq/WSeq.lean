@@ -400,7 +400,7 @@ def scanl (f : α → β → α) (a : α) (s : WSeq β) : WSeq α :=
 /-- Get the weak sequence of initial segments of the input sequence -/
 def inits (s : WSeq α) : WSeq (List α) :=
   cons [] <|
-    @Seq.corec (Option (List α)) (Std.DList α × WSeq α)
+    @Seq.corec (Option (List α)) (Batteries.DList α × WSeq α)
       (fun ⟨l, s⟩ =>
         match Seq.destruct s with
         | none => none
@@ -408,7 +408,7 @@ def inits (s : WSeq α) : WSeq (List α) :=
         | some (some a, s') =>
           let l' := l.push a
           some (some l'.toList, l', s'))
-      (Std.DList.empty, s)
+      (Batteries.DList.empty, s)
 #align stream.wseq.inits Stream'.WSeq.inits
 
 /-- Like take, but does not wait for a result. Calculates `n` steps of
@@ -509,8 +509,8 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
       Or.inr h, fun {s t} h => by
       have h : Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t) := by
         cases' h with h h
-        exact liftRel_destruct h
-        assumption
+        · exact liftRel_destruct h
+        · assumption
       apply Computation.LiftRel.imp _ _ _ h
       intro a b
       apply LiftRelO.imp_right
@@ -1041,7 +1041,7 @@ theorem liftRel_dropn_destruct {R : α → β → Prop} {s t} (H : LiftRel R s t
   | n + 1 => by
     simp only [LiftRelO, drop, Nat.add_eq, Nat.add_zero, destruct_tail, tail.aux]
     apply liftRel_bind
-    apply liftRel_dropn_destruct H n
+    · apply liftRel_dropn_destruct H n
     exact fun {a b} o =>
       match a, b, o with
       | none, none, _ => by

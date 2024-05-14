@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Sites.Limits
-import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Adhesive
-import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 #align_import category_theory.sites.left_exact from "leanprover-community/mathlib"@"59382264386afdbaf1727e617f5fdda511992eb9"
 
@@ -21,8 +20,6 @@ open CategoryTheory Limits Opposite
 
 universe w' w v u
 
--- Porting note: was `C : Type max v u` which made most instances non automatically applicable
--- it seems to me it is better to declare `C : Type u`: it works better, and it is more general
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 variable {D : Type w} [Category.{max v u} D]
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
@@ -260,8 +257,6 @@ instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
   intros
   infer_instance
-
-instance : HasWeakSheafify J D := ⟨sheafToPresheafIsRightAdjoint J D⟩
 
 variable (J D)
 

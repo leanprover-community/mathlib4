@@ -7,11 +7,11 @@ import Mathlib.Data.List.Sigma
 import Mathlib.Data.Int.Range
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.ToDFinsupp
-import Std.Data.LazyList
+import Batteries.Data.LazyList
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
-import Std.Data.LazyList
-import Std.Data.List.Perm
+import Batteries.Data.LazyList
+import Batteries.Data.List.Perm
 
 #align_import testing.slim_check.functions from "leanprover-community/mathlib"@"f9c300047a57aeda7c2fe15a3ac2455eb05ec225"
 
@@ -391,7 +391,7 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
     have h₂ := h₁.length_eq
     rw [List.applyId_zip_eq h₀ h₂ _ _ _ hx] at h
     rw [← hx, ← hy]; congr
-    apply List.get?_injective _ (h₁.nodup_iff.1 h₀)
+    apply List.get?_inj _ (h₁.nodup_iff.1 h₀)
     · symm; rw [h]
       rw [← List.applyId_zip_eq] <;> assumption
     · rw [← h₁.length_eq]

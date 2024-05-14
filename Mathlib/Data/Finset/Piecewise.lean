@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Functions defined piecewise on a finset

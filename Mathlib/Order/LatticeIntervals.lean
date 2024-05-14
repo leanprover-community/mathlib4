@@ -38,8 +38,7 @@ instance semilatticeInf [SemilatticeInf α] {a b : α} : SemilatticeInf (Ico a b
   Subtype.semilatticeInf fun _ _ hx hy => ⟨le_inf hx.1 hy.1, lt_of_le_of_lt inf_le_left hx.2⟩
 
 /-- `Ico a b` has a bottom element whenever `a < b`. -/
-@[reducible]
-protected def orderBot [PartialOrder α] {a b : α} (h : a < b) : OrderBot (Ico a b) :=
+protected abbrev orderBot [PartialOrder α] {a b : α} (h : a < b) : OrderBot (Ico a b) :=
   (isLeast_Ico h).orderBot
 #align set.Ico.order_bot Set.Ico.orderBot
 
@@ -58,8 +57,7 @@ instance semilatticeSup [SemilatticeSup α] {a b : α} : SemilatticeSup (Ioc a b
   Subtype.semilatticeSup fun _ _ hx hy => ⟨lt_of_lt_of_le hx.1 le_sup_left, sup_le hx.2 hy.2⟩
 
 /-- `Ioc a b` has a top element whenever `a < b`. -/
-@[reducible]
-protected def orderTop [PartialOrder α] {a b : α} (h : a < b) : OrderTop (Ioc a b) :=
+protected abbrev orderTop [PartialOrder α] {a b : α} (h : a < b) : OrderTop (Ioc a b) :=
   (isGreatest_Ioc h).orderTop
 #align set.Ioc.order_top Set.Ioc.orderTop
 
@@ -159,20 +157,17 @@ instance lattice [Lattice α] {a b : α} : Lattice (Icc a b) :=
   { Icc.semilatticeInf, Icc.semilatticeSup with }
 
 /-- `Icc a b` has a bottom element whenever `a ≤ b`. -/
-@[reducible]
-protected def orderBot [Preorder α] {a b : α} (h : a ≤ b) : OrderBot (Icc a b) :=
+protected abbrev orderBot [Preorder α] {a b : α} (h : a ≤ b) : OrderBot (Icc a b) :=
   (isLeast_Icc h).orderBot
 #align set.Icc.order_bot Set.Icc.orderBot
 
 /-- `Icc a b` has a top element whenever `a ≤ b`. -/
-@[reducible]
-protected def orderTop [Preorder α] {a b : α} (h : a ≤ b) : OrderTop (Icc a b) :=
+protected abbrev orderTop [Preorder α] {a b : α} (h : a ≤ b) : OrderTop (Icc a b) :=
   (isGreatest_Icc h).orderTop
 #align set.Icc.order_top Set.Icc.orderTop
 
 /-- `Icc a b` is a `BoundedOrder` whenever `a ≤ b`. -/
-@[reducible]
-protected def boundedOrder [Preorder α] {a b : α} (h : a ≤ b) : BoundedOrder (Icc a b) :=
+protected abbrev boundedOrder [Preorder α] {a b : α} (h : a ≤ b) : BoundedOrder (Icc a b) :=
   { Icc.orderTop h, Icc.orderBot h with }
 #align set.Icc.bounded_order Set.Icc.boundedOrder
 

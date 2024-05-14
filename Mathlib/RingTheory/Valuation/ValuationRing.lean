@@ -70,11 +70,9 @@ instance : LE (ValueGroup A K) :=
           apply_fun fun t => c⁻¹ • t at he
           simpa [mul_smul] using he
         · rintro ⟨e, he⟩; dsimp
-          use (d⁻¹ : Aˣ) * c * e
-          erw [← he, ← mul_smul, ← mul_smul]
-          congr 1
-          rw [mul_comm]
-          simp only [← mul_assoc, ← Units.val_mul, mul_inv_self, one_mul])
+          use c * e * (d⁻¹ : Aˣ)
+          simp_rw [Units.smul_def, ← he, mul_smul]
+          rw [← mul_smul _ _ b, Units.inv_mul, one_smul])
 
 instance : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 
@@ -430,7 +428,7 @@ instance (priority := 100) of_field : ValuationRing K := by
   intro a b
   by_cases h : b = 0
   · use 0; left; simp [h]
-  · use a * b⁻¹; right; field_simp; rw [mul_comm]
+  · use a * b⁻¹; right; field_simp
 #align valuation_ring.of_field ValuationRing.of_field
 
 end

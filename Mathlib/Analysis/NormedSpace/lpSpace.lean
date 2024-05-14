@@ -266,10 +266,12 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
   · obtain ⟨A, hA⟩ := hf.bddAbove
     refine' memℓp_infty ⟨‖c‖ * A, _⟩
     rintro a ⟨i, rfl⟩
+    dsimp only [Pi.smul_apply]
     refine' (norm_smul_le _ _).trans _
     gcongr
     exact hA ⟨i, rfl⟩
   · apply memℓp_gen
+    dsimp only [Pi.smul_apply]
     have := (hf.summable hp).mul_left (↑(‖c‖₊ ^ p.toReal) : ℝ)
     simp_rw [← coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul, NNReal.summable_coe,
       ← NNReal.mul_rpow] at this ⊢
@@ -883,13 +885,13 @@ theorem _root_.Memℓp.infty_pow {f : ∀ i, B i} (hf : Memℓp f ∞) (n : ℕ)
   (lpInftySubring B).pow_mem hf n
 #align mem_ℓp.infty_pow Memℓp.infty_pow
 
-theorem _root_.nat_cast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :=
+theorem _root_.natCast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :=
   natCast_mem (lpInftySubring B) n
-#align nat_cast_mem_ℓp_infty nat_cast_memℓp_infty
+#align nat_cast_mem_ℓp_infty natCast_memℓp_infty
 
-theorem _root_.int_cast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
+theorem _root_.intCast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
   intCast_mem (lpInftySubring B) z
-#align int_cast_mem_ℓp_infty int_cast_memℓp_infty
+#align int_cast_mem_ℓp_infty intCast_memℓp_infty
 
 @[simp]
 theorem infty_coeFn_one : ⇑(1 : lp B ∞) = 1 :=
@@ -902,14 +904,14 @@ theorem infty_coeFn_pow (f : lp B ∞) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
 #align lp.infty_coe_fn_pow lp.infty_coeFn_pow
 
 @[simp]
-theorem infty_coeFn_nat_cast (n : ℕ) : ⇑(n : lp B ∞) = n :=
+theorem infty_coeFn_natCast (n : ℕ) : ⇑(n : lp B ∞) = n :=
   rfl
-#align lp.infty_coe_fn_nat_cast lp.infty_coeFn_nat_cast
+#align lp.infty_coe_fn_nat_cast lp.infty_coeFn_natCast
 
 @[simp]
-theorem infty_coeFn_int_cast (z : ℤ) : ⇑(z : lp B ∞) = z :=
+theorem infty_coeFn_intCast (z : ℤ) : ⇑(z : lp B ∞) = z :=
   rfl
-#align lp.infty_coe_fn_int_cast lp.infty_coeFn_int_cast
+#align lp.infty_coe_fn_int_cast lp.infty_coeFn_intCast
 
 instance [Nonempty I] : NormOneClass (lp B ∞) where
   norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
@@ -1237,7 +1239,8 @@ theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι
       dist (f x i) (f y i) ≤ dist (f x) (f y) := lp.norm_apply_le_norm top_ne_zero (f x - f y) i
       _ ≤ K * dist x y := hfl x hx y hy
   · intro hgl x hx y hy
-    apply lp.norm_le_of_forall_le; positivity
+    apply lp.norm_le_of_forall_le
+    · positivity
     intro i
     apply hgl i x hx y hy
 
