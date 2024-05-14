@@ -80,10 +80,10 @@ theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surje
   surj_on_stalks x := by
     erw [← localRingHom_comp_stalkIso, CommRingCat.coe_comp, CommRingCat.coe_comp]
     apply Function.Surjective.comp (Function.Surjective.comp _ _) _
-    . let stalk_iso := (StructureSheaf.stalkIso S x).inv
+    · let stalk_iso := (StructureSheaf.stalkIso S x).inv
       exact (ConcreteCategory.bijective_of_isIso stalk_iso).2
-    . exact surjective_localRingHom_of_surjective f h x.asIdeal
-    . let stalk_iso := (StructureSheaf.stalkIso ((CommRingCat.of R))
+    · exact surjective_localRingHom_of_surjective f h x.asIdeal
+    · let stalk_iso := (StructureSheaf.stalkIso ((CommRingCat.of R))
         ((PrimeSpectrum.comap (CommRingCat.ofHom f)) x)).hom
       exact (ConcreteCategory.bijective_of_isIso stalk_iso).2
 
@@ -100,8 +100,8 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
     have h := closedEmbedding (f ≫ g)
     rw [Scheme.comp_val_base] at h
     apply closedEmbedding_of_continuous_injective_closed (Scheme.Hom.continuous f)
-    . exact Function.Injective.of_comp h.inj
-    . intro Z hZ
+    · exact Function.Injective.of_comp h.inj
+    · intro Z hZ
       rw [ClosedEmbedding.closed_iff_image_closed (closedEmbedding g),
         ← Set.image_comp]
       exact ClosedEmbedding.isClosedMap h _ hZ
