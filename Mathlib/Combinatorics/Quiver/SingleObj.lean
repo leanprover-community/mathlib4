@@ -58,14 +58,12 @@ lemma ext {x y : SingleObj α} : x = y := Unit.ext x y
 
 -- See note [reducible non-instances]
 /-- Equip `SingleObj α` with a reverse operation. -/
-@[reducible]
-def hasReverse (rev : α → α) : HasReverse (SingleObj α) := ⟨rev⟩
+abbrev hasReverse (rev : α → α) : HasReverse (SingleObj α) := ⟨rev⟩
 #align quiver.single_obj.has_reverse Quiver.SingleObj.hasReverse
 
 -- See note [reducible non-instances]
 /-- Equip `SingleObj α` with an involutive reverse operation. -/
-@[reducible]
-def hasInvolutiveReverse (rev : α → α) (h : Function.Involutive rev) :
+abbrev hasInvolutiveReverse (rev : α → α) (h : Function.Involutive rev) :
     HasInvolutiveReverse (SingleObj α) where
   toHasReverse := hasReverse rev
   inv' := h

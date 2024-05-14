@@ -324,7 +324,7 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
         f.unop ≫ appHom (homOver α (unop X)) (unop U) x
     symm
     apply sheaf_eq_amalgamation
-    apply G.is_cover_of_isCoverDense
+    · apply G.is_cover_of_isCoverDense
     -- Porting note: the following line closes a goal which didn't exist before reenableeta
     · exact pushforwardFamily_compatible (homOver α Y.unop) (f.unop ≫ x)
     intro Y' f' hf'
@@ -521,10 +521,11 @@ namespace CategoryTheory.Functor.IsCoverDense
 
 open CategoryTheory
 
-variable {C D : Type u} [Category.{v} C] [Category.{v} D]
+universe w'
+variable {C D : Type*} [Category C] [Category D]
 variable (G : C ⥤ D) [Full G] [Faithful G]
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-variable {A : Type w} [Category.{max u v} A] [Limits.HasLimits A]
+variable {A : Type w} [Category.{w'} A] [∀ X, Limits.HasLimitsOfShape (StructuredArrow X G.op) A]
 variable [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K]
 
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by

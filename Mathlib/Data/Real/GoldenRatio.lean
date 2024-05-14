@@ -29,13 +29,11 @@ noncomputable section
 open Polynomial
 
 /-- The golden ratio `φ := (1 + √5)/2`. -/
-@[reducible]
-def goldenRatio : ℝ := (1 + √5) / 2
+abbrev goldenRatio : ℝ := (1 + √5) / 2
 #align golden_ratio goldenRatio
 
 /-- The conjugate of the golden ratio `ψ := (1 - √5)/2`. -/
-@[reducible]
-def goldenConj : ℝ := (1 - √5) / 2
+abbrev goldenConj : ℝ := (1 - √5) / 2
 #align golden_conj goldenConj
 
 @[inherit_doc goldenRatio] scoped[goldenRatio] notation "φ" => goldenRatio

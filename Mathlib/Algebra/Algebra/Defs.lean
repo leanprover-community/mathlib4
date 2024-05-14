@@ -264,8 +264,7 @@ If `(r • 1) * x = x * (r • 1) = r • x` for all `r : R` and `x : A`, then `
 over `R`.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def ofModule' [CommSemiring R] [Semiring A] [Module R A]
+abbrev ofModule' [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x : A), r • (1 : A) * x = r • x)
     (h₂ : ∀ (r : R) (x : A), x * r • (1 : A) = r • x) : Algebra R A where
   toFun r := r • (1 : A)
@@ -282,8 +281,7 @@ If `(r • x) * y = x * (r • y) = r • (x * y)` for all `r : R` and `x y : A`
 is an `Algebra` over `R`.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def ofModule [CommSemiring R] [Semiring A] [Module R A]
+abbrev ofModule [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x y : A), r • x * y = r • (x * y))
     (h₂ : ∀ (r : R) (x y : A), x * r • y = r • (x * y)) : Algebra R A :=
   ofModule' (fun r x => by rw [h₁, one_mul]) fun r x => by rw [h₂, mul_one]

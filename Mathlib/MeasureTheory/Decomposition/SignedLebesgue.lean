@@ -155,7 +155,7 @@ theorem singularPart_totalVariation (s : SignedMeasure α) (μ : Measure α) :
         s.toJordanDecomposition.negPart.singularPart μ, singularPart_mutuallySingular s μ⟩ := by
     refine' JordanDecomposition.toSignedMeasure_injective _
     rw [toSignedMeasure_toJordanDecomposition, singularPart, JordanDecomposition.toSignedMeasure]
-  · rw [totalVariation, this]
+  rw [totalVariation, this]
 #align measure_theory.signed_measure.singular_part_total_variation MeasureTheory.SignedMeasure.singularPart_totalVariation
 
 nonrec theorem mutuallySingular_singularPart (s : SignedMeasure α) (μ : Measure α) :

@@ -590,7 +590,7 @@ def prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction
   toFun d := if d = 0 then 0 else ∏ p in d.primeFactors, f p
   map_zero' := if_pos rfl
 
-open Std.ExtendedBinder
+open Batteries.ExtendedBinder
 
 /-- `∏ᵖ p ∣ n, f p` is custom notation for `prodPrimeFactors f n` -/
 scoped syntax (name := bigproddvd) "∏ᵖ " extBinder " ∣ " term ", " term:67 : term

@@ -133,7 +133,7 @@ private def CacheM.getContext : IO CacheM.Context := do
     ("Archive", root),
     ("Counterexamples", root),
     ("Aesop", LAKEPACKAGESDIR / "aesop"),
-    ("Std", LAKEPACKAGESDIR / "std"),
+    ("Batteries", LAKEPACKAGESDIR / "batteries"),
     ("Cli", LAKEPACKAGESDIR / "Cli"),
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
     ("Qq", LAKEPACKAGESDIR / "Qq"),
@@ -292,6 +292,7 @@ def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
     (packageDir / LIBDIR / path.withExtension "olean.hash", true),
     (packageDir / LIBDIR / path.withExtension "ilean", true),
     (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
+    (packageDir / LIBDIR / path.withExtension "log.json", true),
     (packageDir / IRDIR  / path.withExtension "c", true),
     (packageDir / IRDIR  / path.withExtension "c.hash", true),
     (packageDir / LIBDIR / path.withExtension "extra", false)]

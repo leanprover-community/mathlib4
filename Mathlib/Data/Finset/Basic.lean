@@ -473,7 +473,7 @@ theorem coe_coeEmb : ⇑(coeEmb : Finset α ↪o Set α) = ((↑) : Finset α �
 /-- The property `s.Nonempty` expresses the fact that the finset `s` is not empty. It should be used
 in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks
 to the dot notation. -/
-@[pp_dot] protected def Nonempty (s : Finset α) : Prop := ∃ x : α, x ∈ s
+protected def Nonempty (s : Finset α) : Prop := ∃ x : α, x ∈ s
 #align finset.nonempty Finset.Nonempty
 
 -- Porting note: Much longer than in Lean3
@@ -808,8 +808,7 @@ theorem eq_empty_of_ssubset_singleton {s : Finset α} {x : α} (hs : s ⊂ {x}) 
 #align finset.eq_empty_of_ssubset_singleton Finset.eq_empty_of_ssubset_singleton
 
 /-- A finset is nontrivial if it has at least two elements. -/
-@[reducible]
-protected def Nontrivial (s : Finset α) : Prop := (s : Set α).Nontrivial
+protected abbrev Nontrivial (s : Finset α) : Prop := (s : Set α).Nontrivial
 #align finset.nontrivial Finset.Nontrivial
 
 @[simp]

@@ -78,8 +78,7 @@ theorem isPrecomplete_iff :
 variable (I M)
 
 /-- The Hausdorffification of a module with respect to an ideal. -/
-@[reducible]
-def Hausdorffification : Type _ :=
+abbrev Hausdorffification : Type _ :=
   M ⧸ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M)
 #align Hausdorffification Hausdorffification
 
@@ -507,22 +506,22 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
     rw [mul_pow, pow_add, mul_assoc]
     exact Ideal.mul_mem_right _ (I ^ m) (Ideal.pow_mem_pow hx m)
   obtain ⟨L, hL⟩ := IsPrecomplete.prec toIsPrecomplete @hf
-  · rw [isUnit_iff_exists_inv]
-    use L
-    rw [← sub_eq_zero, neg_mul]
-    apply IsHausdorff.haus (toIsHausdorff : IsHausdorff I R)
-    intro n
-    specialize hL n
-    rw [SModEq.sub_mem, Algebra.id.smul_eq_mul, Ideal.mul_top] at hL ⊢
-    rw [sub_zero]
-    suffices (1 - x * y) * f n - 1 ∈ I ^ n by
-      convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
-      ring
-    cases n
-    · simp only [Ideal.one_eq_top, pow_zero, Nat.zero_eq, mem_top]
-    · rw [← neg_sub _ (1 : R), neg_mul, mul_geom_sum, neg_sub, sub_sub, add_comm, ← sub_sub,
-        sub_self, zero_sub, @neg_mem_iff, mul_pow]
-      exact Ideal.mul_mem_right _ (I ^ _) (Ideal.pow_mem_pow hx _)
+  rw [isUnit_iff_exists_inv]
+  use L
+  rw [← sub_eq_zero, neg_mul]
+  apply IsHausdorff.haus (toIsHausdorff : IsHausdorff I R)
+  intro n
+  specialize hL n
+  rw [SModEq.sub_mem, Algebra.id.smul_eq_mul, Ideal.mul_top] at hL ⊢
+  rw [sub_zero]
+  suffices (1 - x * y) * f n - 1 ∈ I ^ n by
+    convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
+    ring
+  cases n
+  · simp only [Ideal.one_eq_top, pow_zero, Nat.zero_eq, mem_top]
+  · rw [← neg_sub _ (1 : R), neg_mul, mul_geom_sum, neg_sub, sub_sub, add_comm, ← sub_sub,
+      sub_self, zero_sub, @neg_mem_iff, mul_pow]
+    exact Ideal.mul_mem_right _ (I ^ _) (Ideal.pow_mem_pow hx _)
 #align is_adic_complete.le_jacobson_bot IsAdicComplete.le_jacobson_bot
 
 end IsAdicComplete

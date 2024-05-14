@@ -86,7 +86,7 @@ variable {Z : C} (I : InjectiveResolution Z)
 lemma cocomplex_exactAt_succ (n : ℕ) :
     I.cocomplex.ExactAt (n + 1) := by
   rw [← quasiIsoAt_iff_exactAt I.ι (n + 1) (exactAt_succ_single_obj _ _)]
-  · infer_instance
+  infer_instance
 
 lemma exact_succ (n : ℕ):
     (ShortComplex.mk _ _ (I.cocomplex.d_comp_d n (n + 1) (n + 2))).Exact :=

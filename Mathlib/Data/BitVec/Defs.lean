@@ -6,7 +6,7 @@ Authors: Joe Hendrix, Sebastian Ullrich, Harun Khan, Alex Keizer, Abdalrhman M M
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.ZMod.Defs
-import Std.Data.BitVec
+import Batteries.Data.BitVec
 
 #align_import data.bitvec.core from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
