@@ -23,7 +23,8 @@ The key lemma `r_mul_max_le` shows that, for `z ∈ ℍ` and `c, d ∈ ℤ` (not
 (independent of `c, d`) satisfying `0 < r z < 1` for all `z`.
 
 We then show in `summable_one_div_rpow_max` that the sum of `max (|c|, |d|) ^ (-k)` over
-`(c, d) ∈ ℤ × ℤ` is convergent for `3 ≤ k`. This uses
+`(c, d) ∈ ℤ × ℤ` is convergent for `2 < k`. This is proved by decomposing `ℤ × ℤ` using the
+`Finset.box` lemmas.
 -/
 
 noncomputable section
