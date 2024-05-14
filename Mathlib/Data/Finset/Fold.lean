@@ -210,6 +210,7 @@ theorem fold_sup_bot_singleton [DecidableEq α] (s : Finset α) :
 
 section Order
 
+set_option linter.geOrGt false
 variable [LinearOrder β] (c : β)
 
 theorem le_fold_min : c ≤ s.fold min b f ↔ c ≤ b ∧ ∀ x ∈ s, c ≤ f x :=
