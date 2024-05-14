@@ -69,17 +69,17 @@ example (A B : Rat) (h : 0 < A * B) : 0 < A*B/8 := by
 example (A B : Rat) (h : 0 < A * B) : 0 < A/8*B := by
   linarith
 
-example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε :=
+example (ε : Rat) (h1 : 0 < ε) : ε / 2 + ε / 3 + ε / 7 < ε :=
  by linarith
 
 example (x y z : Rat) (h1 : 2*x < 3*y) (h2 : -4*x + z/2 < 0)
         (h3 : 12*y - z < 0)  : False :=
 by linarith
 
-example (ε : Rat) (h1 : ε > 0) : ε / 2 < ε :=
+example (ε : Rat) (h1 : 0 < ε) : ε / 2 < ε :=
 by linarith
 
-example (ε : Rat) (h1 : ε > 0) : ε / 3 + ε / 3 + ε / 3 = ε :=
+example (ε : Rat) (h1 : 0 < ε) : ε / 3 + ε / 3 + ε / 3 = ε :=
 by linarith
 
 -- Make sure special case for division by 1 is handled:
@@ -108,7 +108,7 @@ example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
 -- example (a b c : ℚ) (x y : ℤ) (h1 : x ≤ 3*y) (h2 : b + 2 > 3 + b) : false :=
 -- by linarith (config := {restrict_type := ℚ})
 
-example (g v V c h : Rat) (h1 : h = 0) (h2 : v = V) (h3 : V > 0) (h4 : g > 0)
+example (g v V c h : Rat) (h1 : h = 0) (h2 : v = V) (h3 : 0 < V) (h4 : 0 < g)
     (h5 : 0 ≤ c) (h6 : c < 1) : v ≤ V := by
   linarith
 
@@ -119,10 +119,10 @@ example (x y z : ℤ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0) (h3 : x*y < 5) (h3 
     False := by
   linarith
 
-example (a b c : Rat) (h1 : a > 0) (h2 : b > 5) (h3 : c < -10) (h4 : a + b - c < 3) : False := by
+example (a b c : Rat) (h1 : 0 < a) (h2 : b > 5) (h3 : c < -10) (h4 : a + b - c < 3) : False := by
   linarith
 
-example (a b c : Rat) (h2 : b > 0) (h3 : ¬ b ≥ 0) : False := by
+example (a b c : Rat) (h2 : 0 < b) (h3 : ¬ b ≥ 0) : False := by
   linarith
 
 example (x y z : Rat) (hx : x ≤ 3*y) (h2 : y ≤ 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
@@ -167,10 +167,10 @@ example (w x y z : ℤ) (h1 : 4*x + (-3)*y + 6*w ≤ 0) (h2 : (-1)*x < 0) (h3 : 
 
 section term_arguments
 
-example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
+example (x : Rat) (hx : 0 < x) (h : x.num < 0) : False := by
   linarith [Rat.num_pos.mpr hx, h]
 
-example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
+example (x : Rat) (hx : 0 < x) (h : x.num < 0) : False := by
   fail_if_success
     linarith
   fail_if_success
@@ -185,10 +185,10 @@ example (i n : ℕ) (h : (2:ℤ) ^ i ≤ 2 ^ n) : (0:ℤ) ≤ 2 ^ n - 2 ^ i := b
   linarith
 
 -- Check we use `exfalso` on non-comparison goals.
-example (a b c : Rat) (h2 : b > 0) (h3 : b < 0) : Nat.prime 10 := by
+example (a b c : Rat) (h2 : 0 < b) (h3 : b < 0) : Nat.prime 10 := by
   linarith
 
-example (a b c : Rat) (h2 : (2 : Rat) > 3)  : a + b - c ≥ 3 :=
+example (a b c : Rat) (h2 : 3 < (2 : Rat))  : a + b - c ≥ 3 :=
 by linarith (config := {exfalso := false})
 
 -- Verify that we split conjunctions in hypotheses.

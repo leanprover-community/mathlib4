@@ -70,7 +70,7 @@ example (h : (an : ℝ) = 0) : an = 0 := mod_cast h
 example (h : (an : ℝ) = 42) : an = 42 := mod_cast h
 example (h : (an + 42) ≠ 42) : (an : ℝ) + 42 ≠ 42 := mod_cast h
 
-example (n : ℤ) (h : n + 1 > 0) : ((n + 1 : ℤ) : ℚ) > 0 := mod_cast h
+example (n : ℤ) (h : 0 < n + 1) : 0 < ((n + 1 : ℤ) : ℚ) := mod_cast h
 
 -- testing the heuristic
 example (h : bn ≤ an) : an - bn = 1 ↔ (an - bn : ℤ) = 1 := by norm_cast

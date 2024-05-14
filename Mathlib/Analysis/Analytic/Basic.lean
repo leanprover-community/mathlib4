@@ -1347,7 +1347,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
 #align formal_multilinear_series.change_origin_eval FormalMultilinearSeries.changeOrigin_eval
 
 /-- Power series terms are analytic as we vary the origin -/
-theorem analyticAt_changeOrigin (p : FormalMultilinearSeries 𝕜 E F) (rp : p.radius > 0) (n : ℕ) :
+theorem analyticAt_changeOrigin (p : FormalMultilinearSeries 𝕜 E F) (rp : 0 < p.radius) (n : ℕ) :
     AnalyticAt 𝕜 (fun x ↦ p.changeOrigin x n) 0 :=
   (FormalMultilinearSeries.hasFPowerSeriesOnBall_changeOrigin p n rp).analyticAt
 

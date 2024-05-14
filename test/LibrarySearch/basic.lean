@@ -37,7 +37,7 @@ example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by apply?
 
 /- info: Try this: exact Nat.mul_dvd_mul_left a w -/
 #guard_msgs (drop info) in
-example (_ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
+example (_ha : 0 < a) (w : b ∣ c) : a * b ∣ a * c := by apply?
 
 -- Could be any number of results (`Int.one`, `Int.zero`, etc)
 #guard_msgs (drop info) in
@@ -99,16 +99,16 @@ section synonym
 
 /- info: Try this: exact Nat.add_pos_left ha b -/
 #guard_msgs (drop info) in
-example (a b : ℕ) (_ha : a > 0) (_hb : 0 < b) : 0 < a + b := by apply?
+example (a b : ℕ) (_ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in
-example (a b : ℕ) (h : a ∣ b) (w : b > 0) : a ≤ b :=
+example (a b : ℕ) (h : a ∣ b) (w : 0 < b) : a ≤ b :=
 by apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in
-example (a b : ℕ) (h : a ∣ b) (w : b > 0) : b ≥ a := by apply?
+example (a b : ℕ) (h : a ∣ b) (w : 0 < b) : b ≥ a := by apply?
 
 -- TODO: A lemma with head symbol `¬` can be used to prove `¬ p` or `⊥`
 /-- info: Try this: exact Nat.not_lt_zero a -/
