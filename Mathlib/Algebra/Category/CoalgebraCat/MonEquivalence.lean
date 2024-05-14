@@ -5,7 +5,6 @@ Authors: Amelia Livingston
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.CategoryTheory.Monoidal.Mon_
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.Algebra.Category.CoalgebraCat.Basic
