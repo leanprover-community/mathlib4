@@ -52,41 +52,43 @@ Reasons for admitting a kind in `exclusions` include
 * the tactic is creating new goals, e.g. `constructor`, `cases`, `induction`, ....
 -/
 abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
-  |>.insert ``Lean.Parser.Term.cdot
-  |>.insert ``cdot
-  |>.insert ``cdotTk
-  |>.insert ``Lean.Parser.Tactic.case
-  |>.insert `«;»
-  |>.insert `«<;>»
-  |>.insert ``Lean.Parser.Tactic.«tactic_<;>_»
-  |>.insert `«{»
-  |>.insert `«]»
-  |>.insert `null
-  |>.insert `Batteries.Tactic.tacticSwap
-  |>.insert ``Lean.Parser.Tactic.rotateLeft
-  |>.insert ``Lean.Parser.Tactic.rotateRight
-  |>.insert ``Lean.Parser.Tactic.skip
-  |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
-  |>.insert `Mathlib.Tactic.«tacticSwap_var__,,»
-  |>.insert ``Lean.Parser.Tactic.constructor
-  |>.insert ``Lean.Parser.Tactic.tacticSeqBracketed
-  |>.insert `Mathlib.Tactic.tacticAssumption'
-  |>.insert ``Lean.Parser.Tactic.induction
-  |>.insert ``Lean.Parser.Tactic.tacticTry_
-  |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented
-  |>.insert ``Lean.Parser.Tactic.tacticSeq
-  |>.insert ``Lean.Parser.Tactic.paren
-  |>.insert ``Lean.Parser.Tactic.cases
-  |>.insert ``Lean.Parser.Tactic.«tacticNext_=>_»
-  |>.insert `then
-  |>.insert `else
-  |>.insert ``Lean.Parser.Tactic.intros
-  |>.insert ``Lean.Parser.Tactic.tacticRepeat_
-  |>.insert ``Lean.Parser.Tactic.injections
-  |>.insert ``Lean.Parser.Tactic.substVars
-  |>.insert `Batteries.Tactic.«tacticPick_goal-_»
-  |>.insert ``Lean.Parser.Tactic.case'
-  |>.insert `«tactic#adaptation_note_»
+--  |>.insert ``Lean.Parser.Term.cdot
+  |>.insert ``cdot  -- keep
+  |>.insert ``cdotTk  -- keep
+  |>.insert ``Lean.Parser.Tactic.case  -- keep
+  |>.insert `«;»  -- keep
+--  |>.insert `«<;>»
+--  |>.insert ``Lean.Parser.Tactic.«tactic_<;>_»
+  |>.insert `«{»  -- keep
+  |>.insert `«]»  -- keep
+  |>.insert `null  -- keep
+--  |>.insert `Batteries.Tactic.tacticSwap
+--  |>.insert ``Lean.Parser.Tactic.rotateLeft
+--  |>.insert ``Lean.Parser.Tactic.rotateRight
+--  |>.insert ``Lean.Parser.Tactic.skip
+  |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»  -- keep
+--  |>.insert `Mathlib.Tactic.«tacticSwap_var__,,»
+--  |>.insert ``Lean.Parser.Tactic.constructor
+  |>.insert ``Lean.Parser.Tactic.tacticSeqBracketed  -- keep
+--  |>.insert `Mathlib.Tactic.tacticAssumption'
+--  |>.insert ``Lean.Parser.Tactic.induction
+--  |>.insert ``Lean.Parser.Tactic.tacticTry_
+  |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented  -- keep
+  |>.insert ``Lean.Parser.Tactic.tacticSeq  -- keep
+  |>.insert ``Lean.Parser.Tactic.paren  -- keep
+--  |>.insert ``Lean.Parser.Tactic.cases
+--  |>.insert ``Lean.Parser.Tactic.«tacticNext_=>_»
+--  |>.insert `then
+--  |>.insert `else
+--  |>.insert ``Lean.Parser.Tactic.intros
+  |>.insert ``Lean.Parser.Tactic.tacticRepeat_  -- keep
+--  |>.insert ``Lean.Parser.Tactic.injections
+--  |>.insert ``Lean.Parser.Tactic.substVars
+--  |>.insert `Batteries.Tactic.«tacticPick_goal-_»
+--  |>.insert ``Lean.Parser.Tactic.case'
+--  |>.insert `«tactic#adaptation_note_»
+  |>.insert `Batteries.Tactic.exacts  -- keep
+  |>.insert ``Lean.Parser.Termination.decreasingBy  -- keep
 
 /-- these are `SyntaxNodeKind`s that block the linter. -/
 abbrev ignoreBranch : HashSet SyntaxNodeKind := HashSet.empty
@@ -111,9 +113,9 @@ def getManyGoals : InfoTree → Array (Syntax × Nat)
     if let .ofTacticInfo i := k then
       if ignoreBranch.contains i.stx.getKind then #[] else
       if let  .original .. := i.stx.getHeadInfo then
-        let newGoals := i.goalsAfter.filter (i.goalsBefore.contains ·)
-        if newGoals.length != 0 && !exclusions.contains i.stx.getKind then
-          kargs.push (i.stx, newGoals.length)
+        let activeGoals := i.goalsBefore.length
+        if 2 ≤ activeGoals && !exclusions.contains i.stx.getKind then
+          kargs.push (i.stx, activeGoals)
         else kargs
       else kargs
     else kargs
@@ -148,7 +150,6 @@ def multiGoalLinter : Linter where
     let trees ← getInfoTrees
     for t in trees.toArray do
       for (s, n) in getManyGoals t do
-        let gl := if n == 1 then "goal" else "goals"
-        Linter.logLint linter.multiGoal s (m!"'{s}' leaves {n} {gl} '{s.getKind}'")
+        Linter.logLint linter.multiGoal s (m!"There are {n}>1 active goals at '{s}'\n'{s.getKind}'")
 
 initialize addLinter multiGoalLinter
