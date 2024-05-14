@@ -2645,14 +2645,20 @@ theorem filter_nonempty_iff : (s.filter p).Nonempty ↔ ∃ a ∈ s, p a := by
 #align finset.filter_nonempty_iff Finset.filter_nonempty_iff
 
 /-- If all elements of a `Finset` satisfy the predicate `p`, `s.filter p` is `s`. -/
-@[simp]
 theorem filter_true_of_mem (h : ∀ x ∈ s, p x) : s.filter p = s := filter_eq_self.2 h
 #align finset.filter_true_of_mem Finset.filter_true_of_mem
 
 /-- If all elements of a `Finset` fail to satisfy the predicate `p`, `s.filter p` is `∅`. -/
-@[simp]
 theorem filter_false_of_mem (h : ∀ x ∈ s, ¬p x) : s.filter p = ∅ := filter_eq_empty_iff.2 h
 #align finset.filter_false_of_mem Finset.filter_false_of_mem
+
+-- Specialization of `filter_true_of_mem` that is much faster to apply by `simp`
+@[simp]
+theorem filter_true : s.filter (fun _ => True) = s := filter_true_of_mem (by aesop)
+
+-- Specialization of `filter_false_of_mem` that is much faster to apply by `simp`
+@[simp]
+theorem filter_false : s.filter (fun _ => False) = ∅ := filter_false_of_mem (by aesop)
 
 @[simp]
 theorem filter_const (p : Prop) [Decidable p] (s : Finset α) :
@@ -2665,6 +2671,7 @@ theorem filter_congr {s : Finset α} (H : ∀ x ∈ s, p x ↔ q x) : filter p s
 
 variable (p q)
 
+@[simp]
 theorem filter_empty : filter p ∅ = ∅ :=
   subset_empty.1 <| filter_subset _ _
 #align finset.filter_empty Finset.filter_empty
