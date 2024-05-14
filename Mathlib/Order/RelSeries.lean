@@ -8,6 +8,7 @@ import Mathlib.Data.List.Chain
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -165,9 +166,9 @@ instance membership : Membership α (RelSeries r) :=
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
 
-  variable {r}
+variable {r}
 
-lemma mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
+lemma mem_toList (s : RelSeries r) {x : α} : x ∈ s.toList ↔ x ∈ s := by
   rw [List.mem_ofFn, mem_def]
 
 theorem length_pos_of_mem_ne {s : RelSeries r} {x y : α} (hx : x ∈ s) (hy : y ∈ s)
@@ -175,20 +176,17 @@ theorem length_pos_of_mem_ne {s : RelSeries r} {x y : α} (hx : x ∈ s) (hy : y
   obtain ⟨i, rfl⟩ := hx
   obtain ⟨j, rfl⟩ := hy
   contrapose! hxy
-  simp only [nonpos_iff_eq_zero] at hxy
-  congr
-  apply_fun Fin.castIso (by rw [hxy, zero_add] : s.length + 1 = 1)
-  · exact Subsingleton.elim (α := Fin 1) _ _
-  · exact OrderIso.injective _
+  congr!
+  apply_fun Fin.castIso (by rw [show s.length = 0 by simpa using hxy, zero_add] : s.length + 1 = 1)
+  exact Subsingleton.elim (α := Fin 1) _ _
 
 theorem forall_mem_eq_of_length_eq_zero {s : RelSeries r} (hs : s.length = 0) {x y}
     (hx : x ∈ s) (hy : y ∈ s) : x = y := by
   rcases hx with ⟨i, rfl⟩
   rcases hy with ⟨j, rfl⟩
-  congr
+  congr!
   apply_fun Fin.castIso (by rw [hs, zero_add] : s.length + 1 = 1)
-  · exact Subsingleton.elim (α := Fin 1) _ _
-  · exact OrderIso.injective _
+  exact Subsingleton.elim (α := Fin 1) _ _
 
 /-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
@@ -393,8 +391,7 @@ def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r
 
 @[simp] lemma head_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
     (p.snoc newLast rel).head = p.head := by
-  delta snoc
-  rw [head_append]
+  delta snoc; rw [head_append]
 
 @[simp] lemma last_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
     (p.snoc newLast rel).last = newLast := last_append _ _ _
@@ -405,26 +402,16 @@ def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r
 
 lemma mem_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) (x : α) :
     x ∈ p.snoc newLast rel ↔ x ∈ p ∨ x = newLast := by
-  simp only [snoc]
+  simp only [snoc, append, singleton_length, Nat.add_zero, Nat.reduceAdd, Fin.cast_refl,
+    Function.comp_id, mem_def, id_eq, Set.mem_range]
   constructor
   · rintro ⟨i, rfl⟩
-    refine' Fin.lastCases _ (fun i => _) i
-    · right
-      simp only [append]
-      convert Fin.append_right _ _ 0
-    · left
-      simp only [append]
-      refine ⟨⟨i.1, ?_⟩, ?_⟩
-      · exact i.2
-      convert (Fin.append_left _ _ _).symm
+    exact Fin.lastCases (Or.inr <| Fin.append_right _ _ 0) (fun i => Or.inl ⟨⟨i.1, i.2⟩,
+      (Fin.append_left _ _ _).symm⟩) i
   · intro h
     rcases h with (⟨i, rfl⟩ | rfl)
-    · use Fin.castSucc i
-      simp only [append]
-      convert Fin.append_left _ _ _
-    · use Fin.last _
-      simp only [append]
-      convert Fin.append_right _ _ 0
+    · exact ⟨i.castSucc, Fin.append_left _ _ _⟩
+    · exact ⟨Fin.last _, Fin.append_right _ _ 0⟩
 
 /--
 If a series `a₀ -r→ a₁ -r→ ...` has positive length, then `a₁ -r→ ...` is another series
@@ -466,7 +453,6 @@ def eraseLast (p : RelSeries r) : RelSeries r where
 
 @[simp] lemma last_eraseLast (p : RelSeries r) :
     p.eraseLast.last = p ⟨p.length.pred, Nat.lt_succ_iff.2 (Nat.pred_le _)⟩ := rfl
-
 
 @[elab_as_elim]
 lemma snoc_induction {motive : (x : RelSeries r) → Prop}
@@ -519,7 +505,7 @@ lemma snoc_induction {motive : (x : RelSeries r) → Prop}
 Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
 then `a₀ -r→ ... -r→ X -r→ b ...` is another series obtained by combining the given two.
 -/
-@[simps length]
+@[simps]
 def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
   length := p.length + q.length
   toFun i :=
@@ -550,16 +536,16 @@ def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
         · refine Nat.sub_lt_left_of_lt_add ?_ i.2
           rwa [not_lt] at h₁
 
-@[simp] lemma smash_castAdd {p q : RelSeries r} (connect : p.last = q.head) (i : Fin p.length) :
+lemma smash_castAdd {p q : RelSeries r} (connect : p.last = q.head) (i : Fin p.length) :
     p.smash q connect (Fin.castSucc <| i.castAdd q.length) = p (Fin.castSucc i) := by
   unfold smash
   dsimp
   rw [dif_pos i.2]
   rfl
 
-@[simp] lemma smash_succ_castAdd {p q : RelSeries r} (h : p.last = q.head)
+lemma smash_succ_castAdd {p q : RelSeries r} (h : p.last = q.head)
     (i : Fin p.length) : p.smash q h (i.castAdd q.length).succ = p i.succ := by
-  dsimp [smash]
+  rw [smash_toFun]
   split_ifs with H
   · congr
   · simp only [Fin.val_succ, Fin.coe_castAdd] at H
@@ -572,20 +558,21 @@ def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
       change i.1 + 1 = p.length
       omega
 
-@[simp] lemma smash_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
+lemma smash_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
     smash p q h (Fin.castSucc <| i.natAdd p.length) = q (Fin.castSucc i) := by
   rw [smash_toFun, dif_neg (by simp)]
   congr
   exact Nat.add_sub_self_left _ _
 
-@[simp] lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
+lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
     smash p q h (i.natAdd p.length).succ = q i.succ := by
-  dsimp [smash]
+  rw [smash_toFun]
   split_ifs with H
   · have H' : p.length < p.length + (i.1 + 1) := by omega
     exact (lt_irrefl _ (H.trans H')).elim
   · congr
-    omega
+    simp only [Fin.val_succ, Fin.coe_natAdd]
+    rw [add_assoc, Nat.add_sub_cancel_left]
 
 @[simp] lemma head_smash {p q : RelSeries r} (h : p.last = q.head) :
     (smash p q h).head = p.head := by
