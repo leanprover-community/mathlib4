@@ -107,25 +107,3 @@ lemma proof3 {m n : ℕ} : True := by
   repeat trivial
 
 -- We do check the bodies of definitions... no tests since this file is long enough.
-
-/- Looking at all of mathlib, the following are probably false positives
-- most common issue: used as a comparator function, e.g. in
-   SuccPred/Basic, Data/List/Chain, Data/List/Range, Data/List/Sort, Data/Fintype/Card,
-   Algebra/Lie/Nilpotent, Algebra/Lie/Submodule; MeasureTheory/Function/EssSup
-  or as an order, e.g. IsWellOrder, WellFounded, Directed(On)
-=> this should be fixed now!
-
-- in Order/Ring/Defs:885, entire proof is (line 889 similar):
-  `le_of_not_gt fun ha : a > 0 => (mul_pos ha hb).not_le h` --> similar
-
-- as a branch in meta programming, e.g. `if qa > 0 then` in in NormNum/Inv:150
-other occurrences in Tactic/Ring/Basic, Tactic/Linarith/Datatypes; Data/Finset/Basic
-=< similar, or locally allow the lemma
-
-- similarly, allow if needed
-  Tactic/Linarith/Lemmas has a bunch of `have : xxx > 0`;
-... perhaps these are not ideal, but they probably shouldn't get linted
-- `Data/PNat/Basic` has `have hm : (m : ℕ) > 0 := m.pos` (that is later changed)
-
-- slightly more interesting: `x` in Order/WellFoundedSet
--/

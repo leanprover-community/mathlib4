@@ -98,7 +98,7 @@ theorem nonempty_of_pos_sInf {s : Set ℕ} (h : 0 < sInf s) : s.Nonempty := by
 #align nat.nonempty_of_pos_Inf Nat.nonempty_of_pos_sInf
 
 theorem nonempty_of_sInf_eq_succ {s : Set ℕ} {k : ℕ} (h : sInf s = k + 1) : s.Nonempty :=
-  nonempty_of_pos_sInf (h.symm ▸ succ_pos k : sInf s > 0)
+  nonempty_of_pos_sInf (h.symm ▸ succ_pos k : 0 < sInf s)
 #align nat.nonempty_of_Inf_eq_succ Nat.nonempty_of_sInf_eq_succ
 
 theorem eq_Ici_of_nonempty_of_upward_closed {s : Set ℕ} (hs : s.Nonempty)
