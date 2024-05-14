@@ -70,41 +70,6 @@ theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A
     rw [←spec_toEuclideanLin_eq_spec]
     apply hA.eigenvalue_mem_toEuclideanLin_spectrum_RCLike i
 
---Need unitary_left_cancel, unitary_right_cancel, star_unitary to simplify the following
-
-@[simp]
-theorem unitary_left_cancel (U : unitaryGroup n 𝕜) (A : Matrix n n 𝕜) (B : Matrix n n 𝕜) :
-    (U : Matrix n n 𝕜) * A = (U : Matrix n n 𝕜) * B → A = B := by
-    intro h
-    calc
-     A = 1 * A := by rw [one_mul]
-     _ = ((star U) * U) * A := by simp only [one_mul, unitary.coe_star, SetLike.coe_mem,
-                                            unitary.star_mul_self_of_mem]
-     _ = (star U) * (U * A) := by rw [mul_assoc]
-     _ = (star U) * (U * B) := by rw [h]
-     _ = ((star U) * U) * B := by rw [← mul_assoc]
-     _ = 1 * B := by simp only [unitary.coe_star, SetLike.coe_mem, unitary.star_mul_self_of_mem,
-                                one_mul]
-     _ = B := by rw [one_mul]
-
-@[simp]
-theorem unitary_right_cancel (U : unitaryGroup n 𝕜) (A : Matrix n n 𝕜) (B : Matrix n n 𝕜) :
-    A * (U : Matrix n n 𝕜) = B * (U : Matrix n n 𝕜) → A = B := by
-    intro h
-    calc
-     A = A * 1 := by rw [mul_one]
-     _ = A * (U * star U) := by simp only [mul_one, unitary.coe_star, SetLike.coe_mem,
-                                          unitary.mul_star_self_of_mem]
-     _ = (A * U) * star U := by rw [mul_assoc]
-     _ = (B * U) * star U := by rw [h]
-     _ = B * (U * star U) := by rw [← mul_assoc]
-     _ = B * 1 := by simp only [unitary.coe_star, SetLike.coe_mem, unitary.mul_star_self_of_mem,
-                               mul_one]
-     _ = B := by rw [mul_one]
-
-theorem mul_eq_mul_one_mul (A B : Matrix n n 𝕜) : A * B = A * (1 : Matrix n n 𝕜) * B := by
-    rw [mul_assoc, one_mul B] --maybe this can be used to shorten something?
-
 noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
       diagonal (RCLike.ofReal ∘ g ∘
@@ -118,16 +83,15 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
   map_mul' := by
       simp only [ContinuousMap.coe_mul]
       intro f g
-      have h1 : diagonal 1 = (1 : Matrix n n 𝕜) := rfl
+     -- have h1 : diagonal 1 = (1 : Matrix n n 𝕜) := rfl
       --have h2 : ∀(i : n), OfNat.ofNat 1 i = (1 : 𝕜) := rfl
-      have J : diagonal (φ.toFun (f * g)) =
-               diagonal (φ.toFun f) * diagonal (φ.toFun 1) * diagonal (φ.toFun g) := by
-            simp only [Matrix.diagonal_mul_diagonal']
-            refine diagonal_eq_diagonal_iff.mpr ?_
-            intro i
-            simp only [φ.map_one']
-            sorry
-            --simp only [mul_one, one_mul, Function.comp_apply, Pi.mul_apply, RCLike.ofReal_mul]
+     -- have J : diagonal (φ.toFun (f * g)) =
+     --          diagonal (φ.toFun f) * diagonal (φ.toFun 1) * diagonal (φ.toFun g) := by
+     --       simp only [one_mul, mul_one, Matrix.diagonal_mul_diagonal']
+     --       refine diagonal_eq_diagonal_iff.mpr ?_
+     --       intro i
+            --simp only [ContinuousMap.coe_mul, φ.map_one']
+     --       simp only [mul_one, one_mul, Function.comp_apply, Pi.mul_apply, RCLike.ofReal_mul]
       --rw [H, ←(hA.eigenvectorUnitary).2.1]
       have H : diagonal ((RCLike.ofReal ∘ (⇑f * ⇑g) ∘
       (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))) = diagonal ((RCLike.ofReal ∘ ⇑f ∘
@@ -202,7 +166,37 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
      simp only [star_eq_conjTranspose, diagonal_conjTranspose, H1]
     simp only [H2, mul_assoc]
     exact rfl
-#exit
+
+noncomputable def φ1 : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
+  toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
+    diagonal (RCLike.ofReal ∘ g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
+    * star (eigenvectorUnitary hA : Matrix n n 𝕜)
+  map_one' := by simp [Pi.one_def (f := fun _ : n ↦ 𝕜)]
+  map_mul' f g := by
+    have {a b c d e f : Matrix n n 𝕜} : (a * b * c) * (d * e * f) = a * (b * (c * d) * e) * f := by
+      simp only [mul_assoc]
+    simp only [this, ContinuousMap.coe_mul, SetLike.coe_mem, unitary.star_mul_self_of_mem, mul_one,
+      diagonal_mul_diagonal, Function.comp_apply]
+    congr! with i
+    simp
+  map_zero' := by simp [Pi.zero_def (f := fun _ : n ↦ 𝕜)]
+  map_add' f g := by
+    simp only [ContinuousMap.coe_add, ← add_mul, ← mul_add, diagonal_add, Function.comp_apply]
+    congr! with i
+    simp
+  commutes' r := by
+    simp only [Function.comp, algebraMap_apply, smul_eq_mul, mul_one]
+    rw [show ((fun _ : n ↦ (r : 𝕜)) = algebraMap 𝕜 (n → 𝕜) r) from rfl, ← algebraMap_eq_diagonal,
+      Algebra.right_comm]
+    simp only [SetLike.coe_mem, unitary.mul_star_self_of_mem, one_mul]
+    rw [IsScalarTower.algebraMap_apply ℝ 𝕜 _ r, RCLike.algebraMap_eq_ofReal]
+  map_star' f := by
+    simp only [star_trivial, StarMul.star_mul, star_star, star_eq_conjTranspose (diagonal _),
+      diagonal_conjTranspose, mul_assoc]
+    congr!
+    ext
+    simp
+
 
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
