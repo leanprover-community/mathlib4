@@ -151,10 +151,18 @@ noncomputable instance (priority := 120) (F : C ⥤ D)
     [ReflectsLimits F] : ReflectsFiniteLimits F :=
   ReflectsLimitsOfSize.reflectsFiniteLimits F
 
+/--
+If `F ⋙ G` preserves finite limits and `G` reflects finite limits, then `F` preserves
+finite limits.
+-/
 def preservesFiniteLimitsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteLimits (F ⋙ G)] [ReflectsFiniteLimits G] : PreservesFiniteLimits F where
   preservesFiniteLimits _ _ _ := preservesLimitsOfShapeOfReflectsOfPreserves F G
 
+/--
+If `F ⋙ G` preserves finite products and `G` reflects finite products, then `F` preserves
+finite products.
+-/
 def preservesFiniteProductsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteProducts (F ⋙ G)] [ReflectsFiniteProducts G] : PreservesFiniteProducts F where
   preserves _ _ := preservesLimitsOfShapeOfReflectsOfPreserves F G
@@ -296,10 +304,18 @@ class ReflectsFiniteCoproducts (F : C ⥤ D) where
 
 attribute [instance] ReflectsFiniteCoproducts.reflects
 
+/--
+If `F ⋙ G` preserves finite colimits and `G` reflects finite colimits, then `F` preserves finite
+colimits.
+-/
 def preservesFiniteColimitsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteColimits (F ⋙ G)] [ReflectsFiniteColimits G] : PreservesFiniteColimits F where
   preservesFiniteColimits _ _ _ := preservesColimitsOfShapeOfReflectsOfPreserves F G
 
+/--
+If `F ⋙ G` preserves finite coproducts and `G` reflects finite coproducts, then `F` preserves
+finite coproducts.
+-/
 def preservesFiniteCoproductsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteCoproducts (F ⋙ G)] [ReflectsFiniteCoproducts G] :
     PreservesFiniteCoproducts F where
@@ -324,3 +340,4 @@ noncomputable instance (F : C ⥤ D) [ReflectsFiniteColimits F] : ReflectsFinite
   reflects _ _ := inferInstance
 
 end CategoryTheory.Limits
+#lint
