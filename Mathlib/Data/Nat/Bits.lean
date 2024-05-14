@@ -135,7 +135,7 @@ lemma div2_val (n) : div2 n = n / 2 := by
 #align nat.div2_val Nat.div2_val
 
 @[simp]
-lemma div2_testBit (n : ℕ) (i : ℕ) : n.div2.testBit i = n.testBit (i+1) := by
+lemma div2_testBit (n : ℕ) (i : ℕ) : n.div2.testBit i = n.testBit (i + 1) := by
   rw [Nat.testBit_succ, Nat.div2_val]
 
 lemma bitwise_div2 (f : Bool → Bool → Bool) (h : f false false = false) (n : ℕ) (m : ℕ) :
