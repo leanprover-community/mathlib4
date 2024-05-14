@@ -32,7 +32,7 @@ to perform this update.
 
 # TODO: This is adapted from the linter for mathlib3. It should be rewritten in Lean.
 
-from enum import Enum, unique
+from enum import auto, Enum, unique
 from pathlib import Path
 import re
 import shutil
@@ -57,6 +57,7 @@ class Error(Enum):
     ARR = 18 # space after "←"
     NUM_LIN = 19 # file is too large
     NSP = 20 # non-terminal simp
+    IBACKTICK = auto() # isolated single backtick
 
 def error_message(err):
     '''Return the error message corresponding to a style error.'''
@@ -77,6 +78,8 @@ def error_message(err):
         Error.ARR : "Missing space after '←'.",
         # Error.NUM_LIN deliberately omitted, as its error message is more complex
         Error.NSP : "Non-terminal simp. Replace with `simp?` and use the suggested output",
+        Error.IBACKTICK : "Isolated single backtick: use ``double backticks in meta code"\
+        "for future-proofing"
     }
     if err in d:
         return d[err]
@@ -369,6 +372,48 @@ def left_arrow_check(lines, path):
             errors += [(Error.ARR, line_nr, path)]
         newlines.append((line_nr, new_line))
     return errors, newlines
+
+
+def check_isolated_backticks(lines, path):
+    '''Check for single backticks in meta code: double backticks are more robust.'''
+    errors = []
+    for line_nr, line, in_comment, in_string in annotate_strings(annotate_comments(lines)):
+        # Ignore comments and contents of string literals.
+        if in_comment or in_string:
+            continue
+        # Single backticks are fine if followed by an opening paren
+        # (as in "`(quotation_stuff here)").
+        # All other backticks should be double backticks: let's see if this works :-)
+        single = line.count("`")
+        double = line.count("``")
+        if single != 2 * double:
+            if single != 2 * double + line.count("`("):
+               errors.append((Error.IBACKTICK, line_nr, path))
+               output_message(path, line_nr, "Error.IBACKTICK", "Odd number of backticks in this line")
+    return errors, lines
+
+
+def test_isolated_backticks():
+    def check_fine(input):
+        errors, lines = check_isolated_backticks(enumerate(input.split("\n")), "")
+        if errors:
+            print(f'input should have no errors, but was rejected: {input}', file=sys.stderr)
+    def check_fails(input):
+        errors, lines = check_isolated_backticks(enumerate(input.split("\n")), "")
+        if not errors:
+            print(f'input {input} passed, but should have failed', file=sys.stderr)
+    check_fine("a line without any backticks")
+    check_fine("``double backticks")
+    check_fine("-- inside comments are ignore, `even with")
+    check_fine("-- `backtick items`")
+    check_fine("``double backticks are fine")
+    check_fine("`(also fine)")
+
+    check_fails("`multiple` paired back`ticks` are fine")
+    check_fails("`a lonely backtick")
+    check_fails("`a lonely `backtick paired` with others")
+    check_fails("`a lonely `(backtick) is `fine` when `(paired)")
+
 
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
