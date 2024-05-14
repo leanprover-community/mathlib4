@@ -143,7 +143,8 @@ lemma comp_hom (f : F ⟶ G) (g : G ⟶ H) (a : A) : (f ≫ g).hom a = f.hom a �
 @[ext]
 lemma hom_ext (f g : F ⟶ G) (h : f.hom = g.hom) : f = g := Hom.ext f g h
 
-/-- Constructor for isomorphisms in `SingleFunctors C D A`. -/
+/-- Construct an isomorphism in `SingleFunctors C D A` by giving
+level-wise isomorphisms and checking compatibility only in the forward direction. -/
 @[simps]
 def isoMk (iso : ∀ a, (F.functor a ≅ G.functor a))
     (comm : ∀ (n a a' : A) (ha' : n + a = a'), (F.shiftIso n a a' ha').hom ≫ (iso a).hom =
