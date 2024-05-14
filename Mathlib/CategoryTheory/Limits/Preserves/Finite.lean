@@ -75,20 +75,6 @@ noncomputable instance (priority := 120) PreservesLimits.preservesFiniteLimits (
   PreservesLimitsOfSize.preservesFiniteLimits F
 #align category_theory.limits.preserves_limits.preserves_finite_limits CategoryTheory.Limits.PreservesLimits.preservesFiniteLimits
 
--- -- Porting note: is this unnecessary given the instance
--- -- `PreservesLimitsOfSize0.preservesFiniteLimits`?
--- /-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
--- arbitrary universe. -/
--- def preservesFiniteLimitsOfPreservesFiniteLimitsOfSize (F : C ⥤ D)
---     (h :
---       ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesLimitsOfShape J F) :
---     PreservesFiniteLimits F where
---       preservesFiniteLimits J (_ : SmallCategory J) _ := by
---         letI : Category (ULiftHom (ULift J)) := ULiftHom.category
---         haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
---         exact preservesLimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
--- #align category_theory.limits.preserves_finite_limits_of_preserves_finite_limits_of_size CategoryTheory.Limits.preservesFiniteLimitsOfPreservesFiniteLimitsOfSize
-
 noncomputable instance idPreservesFiniteLimits : PreservesFiniteLimits (𝟭 C) :=
   inferInstance -- should this still be stated explicitly an instance?
 #align category_theory.limits.id_preserves_finite_limits CategoryTheory.Limits.idPreservesFiniteLimits
@@ -202,20 +188,6 @@ noncomputable instance (priority := 120) PreservesColimits.preservesFiniteColimi
     [PreservesColimits F] : PreservesFiniteColimits F :=
   PreservesColimitsOfSize.preservesFiniteColimits F
 #align category_theory.limits.preserves_colimits.preserves_finite_colimits CategoryTheory.Limits.PreservesColimits.preservesFiniteColimits
-
--- -- Porting note: is this unnecessary given the instance
--- -- `PreservesColimitsOfSize0.preservesFiniteColimits`?
--- /-- We can always derive `PreservesFiniteColimits C`
--- by showing that we are preserving colimits at an arbitrary universe. -/
--- def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
---     (h :
---       ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesColimitsOfShape J F) :
---     PreservesFiniteColimits F where
---       preservesFiniteColimits J (_ : SmallCategory J) _ := by
---         letI : Category (ULiftHom (ULift J)) := ULiftHom.category
---         haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
---         exact preservesColimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
--- #align category_theory.limits.preserves_finite_colimits_of_preserves_finite_colimits_of_size CategoryTheory.Limits.preservesFiniteColimitsOfPreservesFiniteColimitsOfSize
 
 noncomputable instance idPreservesFiniteColimits : PreservesFiniteColimits (𝟭 C) :=
   inferInstance -- should this still be stated explicitly an instance?
