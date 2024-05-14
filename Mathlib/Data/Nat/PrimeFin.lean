@@ -56,7 +56,9 @@ lemma pos_of_mem_primeFactors (hp : p ∈ n.primeFactors) : 0 < p :=
 lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
   le_of_dvd (mem_primeFactors.1 h).2.2.bot_lt <| dvd_of_mem_primeFactors h
 
+unseal Nat.factors in
 @[simp] lemma primeFactors_zero : primeFactors 0 = ∅ := rfl
+unseal Nat.factors in
 @[simp] lemma primeFactors_one : primeFactors 1 = ∅ := rfl
 
 @[simp] lemma primeFactors_eq_empty : n.primeFactors = ∅ ↔ n = 0 ∨ n = 1 := by

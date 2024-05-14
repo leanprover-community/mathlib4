@@ -781,6 +781,7 @@ theorem zero_ne_one' [NeZero n] : (0 : Fin (n + 1)) ≠ 1 := Fin.ne_of_lt one_po
 
 #align fin.succ_zero_eq_one' Fin.succ_zero_eq_one
 
+unseal Nat.modCore in
 /--
 The `Fin.succ_one_eq_two` in `Lean` only applies in `Fin (n+2)`.
 This one instead uses a `NeZero n` typeclass hypothesis.

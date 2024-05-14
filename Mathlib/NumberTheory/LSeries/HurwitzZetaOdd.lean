@@ -243,7 +243,7 @@ lemma hasSum_nat_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℕ ↦ 2 * n * Real.sin (2 * π * a * n) * rexp (-π * n ^ 2 * t))
     (sinKernel ↑a t) := by
   rw [← hasSum_ofReal]
-  have := (hasSum_int_sinKernel a ht).sum_nat_of_sum_int
+  have := (hasSum_int_sinKernel a ht).nat_add_neg
   simp only [Int.cast_zero, sq (0 : ℂ), zero_mul, mul_zero, add_zero] at this
   refine this.congr_fun fun n ↦ ?_
   simp_rw [Int.cast_neg, neg_sq, mul_neg, ofReal_mul, Int.cast_natCast, ofReal_natCast,
@@ -418,7 +418,7 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 lemma hasSum_nat_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ Gammaℝ (s + 1) * Real.sin (2 * π * a * n) / (n : ℂ) ^ s)
     (completedSinZeta a s) := by
-  have := (hasSum_int_completedSinZeta a hs).sum_nat_of_sum_int
+  have := (hasSum_int_completedSinZeta a hs).nat_add_neg
   simp_rw [Int.sign_zero, Int.cast_zero, mul_zero, zero_mul, zero_div, add_zero, abs_neg,
     Int.sign_neg, Nat.abs_cast, Int.cast_neg, Int.cast_natCast, ← add_div] at this
   refine this.congr_fun fun n ↦ ?_
@@ -529,7 +529,7 @@ theorem hasSum_int_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 /-- Formula for `sinZeta` as a Dirichlet series in the convergence range, with sum over `ℕ`. -/
 lemma hasSum_nat_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ Real.sin (2 * π * a * n) / (n : ℂ) ^ s) (sinZeta a s) := by
-  have := (hasSum_int_sinZeta a hs).sum_nat_of_sum_int
+  have := (hasSum_int_sinZeta a hs).nat_add_neg
   simp_rw [abs_neg, Int.sign_neg, Int.cast_neg, Nat.abs_cast, Int.cast_natCast, mul_neg, abs_zero,
     Int.cast_zero, zero_cpow (ne_zero_of_one_lt_re hs), div_zero, zero_div, add_zero] at this
   simp_rw [push_cast, Complex.sin]

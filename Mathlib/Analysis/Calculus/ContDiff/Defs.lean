@@ -334,6 +334,22 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
         exact h.2.2
 #align has_ftaylor_series_up_to_on_succ_iff_left hasFTaylorSeriesUpToOn_succ_iff_left
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4119 we need to either use
+`set_option maxSynthPendingDepth 2 in`
+or in the line
+```
+rw [((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm).comp_hasFDerivWithinAt_iff']
+```
+fill in an explicit argument as
+```
+rw [((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm).comp_hasFDerivWithinAt_iff'
+  (f' := (p x m.succ.succ).curryRight.curryLeft)]
+```
+Note that just using `set_option maxSynthPendingDepth 2 in` around the `rw` doesn't work.
+-/
+set_option maxSynthPendingDepth 2 in
 -- Porting note: this was split out from `hasFTaylorSeriesUpToOn_succ_iff_right` to avoid a timeout.
 theorem HasFTaylorSeriesUpToOn.shift_of_succ
     {n : ℕ} (H : HasFTaylorSeriesUpToOn (n + 1 : ℕ) f p s) :
@@ -381,16 +397,19 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ} :
       · have A : (m : ℕ∞) < n := by
           rw [Nat.cast_lt] at hm ⊢
           exact Nat.lt_of_succ_lt_succ hm
-        have :
-          HasFDerivWithinAt ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm ∘ (p · m.succ))
-            ((p x).shift m.succ).curryLeft s x := Htaylor.fderivWithin _ A x hx
-        rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
-        convert this
-        ext y v
-        change
+        have eq : (p x (m + 1).succ).curryLeft =
+            (continuousMultilinearCurryRightEquiv' 𝕜 m E F : ContinuousLinearMap ..).comp
+            ((p x).shift (m + 1)).curryLeft := by
+          ext y v
+          change
           (p x (Nat.succ (Nat.succ m))) (cons y v) =
             (p x m.succ.succ) (snoc (cons y (init v)) (v (last _)))
-        rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
+          rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
+        rw [eq]
+        have :
+          HasFDerivWithinAt ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm ∘ (p · m.succ))
+            ((p x).shift m.succ).curryLeft s x := by apply Htaylor.fderivWithin _ A x hx
+        rwa [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
     · intro m (hm : (m : ℕ∞) ≤ n.succ)
       cases' m with m
       · have : DifferentiableOn 𝕜 (fun x => p x 0) s := fun x hx =>
@@ -853,7 +872,19 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
         rw [fderivWithin_congr A (A x hx)]
       _ = (I ∘ fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
               E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
-        simp only [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]; rfl
+        #adaptation_note
+        /--
+        After https://github.com/leanprover/lean4/pull/4119 we need to either use
+        `set_option maxSynthPendingDepth 2 in`
+        or fill in an explicit argument as
+        ```
+        simp only [LinearIsometryEquiv.comp_fderivWithin _
+          (f := iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) (hs x hx)]
+        ```
+        -/
+        set_option maxSynthPendingDepth 2 in
+          simp only [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
+        rfl
       _ = (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) s x :
               E → E[×n]→L[𝕜] E →L[𝕜] F) (m 0) (init (tail m)) ((tail m) (last n)) := rfl
       _ = iteratedFDerivWithin 𝕜 (Nat.succ n) (fun y => fderivWithin 𝕜 f s y) s x (init m)

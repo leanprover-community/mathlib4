@@ -19,6 +19,7 @@ for ideas about extending this to larger Mersenne primes.
 -- The Lucas-Lehmer test does not apply to `mersenne 2`
 example : ¬ LucasLehmerTest 2 := by norm_num
 
+unseal Nat.minFacAux in
 example : (mersenne 2).Prime := by decide
 
 example : (mersenne 3).Prime :=
