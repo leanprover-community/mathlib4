@@ -34,6 +34,9 @@ The adjunction `Γ ⊣ Spec` is constructed in `Mathlib/AlgebraicGeometry/GammaS
 
 -/
 
+
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 noncomputable section
 
 universe u v

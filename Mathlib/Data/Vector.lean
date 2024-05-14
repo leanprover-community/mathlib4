@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
-import Std.Data.List.Basic
-import Std.Data.List.Lemmas
+import Batteries.Data.List.Basic
+import Batteries.Data.List.Lemmas
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Algebra.Order.Ring.Nat
 
@@ -157,9 +157,11 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 #align vector.take Vector.take
 
 /-- Remove the element at position `i` from a vector of length `n`. -/
-def removeNth (i : Fin n) : Vector α n → Vector α (n - 1)
-  | ⟨l, p⟩ => ⟨List.removeNth l i.1, by rw [l.length_removeNth] <;> rw [p]; exact i.2⟩
-#align vector.remove_nth Vector.removeNth
+def eraseIdx (i : Fin n) : Vector α n → Vector α (n - 1)
+  | ⟨l, p⟩ => ⟨List.eraseIdx l i.1, by rw [l.length_eraseIdx] <;> rw [p]; exact i.2⟩
+#align vector.remove_nth Vector.eraseIdx
+
+@[deprecated (since := "2024-05-04")] alias removeNth := eraseIdx
 
 /-- Vector of length `n` from a function on `Fin n`. -/
 def ofFn : ∀ {n}, (Fin n → α) → Vector α n

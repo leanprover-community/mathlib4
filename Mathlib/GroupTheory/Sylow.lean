@@ -827,8 +827,8 @@ noncomputable def directProductOfNormal [Fintype G]
     apply IsPGroup.disjoint_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
   refine' MulEquiv.trans (N := ∀ p : ps, P p) _ _
   -- There is only one Sylow subgroup for each p, so the inner product is trivial
-  show (∀ p : ps, ∀ P : Sylow p G, P) ≃* ∀ p : ps, P p
-  · -- here we need to help the elaborator with an explicit instantiation
+  · show (∀ p : ps, ∀ P : Sylow p G, P) ≃* ∀ p : ps, P p
+    -- here we need to help the elaborator with an explicit instantiation
     apply @MulEquiv.piCongrRight ps (fun p => ∀ P : Sylow p G, P) (fun p => P p) _ _
     rintro ⟨p, hp⟩
     haveI hp' := Fact.mk (Nat.prime_of_mem_primeFactors hp)
@@ -838,16 +838,16 @@ noncomputable def directProductOfNormal [Fintype G]
   apply MulEquiv.ofBijective (Subgroup.noncommPiCoprod hcomm)
   apply (bijective_iff_injective_and_card _).mpr
   constructor
-  show Injective _
-  · apply Subgroup.injective_noncommPiCoprod_of_independent
+  · show Injective _
+    apply Subgroup.injective_noncommPiCoprod_of_independent
     apply independent_of_coprime_order hcomm
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
     haveI hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)
     haveI hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)
     have hne' : p₁ ≠ p₂ := by simpa using hne
     apply IsPGroup.coprime_card_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
-  show card (∀ p : ps, P p) = card G
-  · calc
+  · show card (∀ p : ps, P p) = card G
+    calc
       card (∀ p : ps, P p) = ∏ p : ps, card (P p) := Fintype.card_pi
       _ = ∏ p : ps, p.1 ^ (card G).factorization p.1 := by
         congr 1 with ⟨p, hp⟩

@@ -134,11 +134,11 @@ theorem nnnorm_apply_le (a : A) : ‖(φ a : B)‖₊ ≤ ‖a‖₊ := by
     exact nonneg_le_nonneg_of_sq_le_sq zero_le' <| by
       simpa only [nnnorm_star_mul_self, map_star, map_mul]
       using this _ (IsSelfAdjoint.star_mul_self a)
-  · intro s hs
-    simpa only [hs.spectralRadius_eq_nnnorm, (hs.starHom_apply φ).spectralRadius_eq_nnnorm,
-      coe_le_coe] using
-      show spectralRadius ℂ (φ s) ≤ spectralRadius ℂ s from
-        iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset φ s)
+  intro s hs
+  simpa only [hs.spectralRadius_eq_nnnorm, (hs.starHom_apply φ).spectralRadius_eq_nnnorm,
+    coe_le_coe] using
+    show spectralRadius ℂ (φ s) ≤ spectralRadius ℂ s from
+      iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset φ s)
 #align star_alg_hom.nnnorm_apply_le StarAlgHom.nnnorm_apply_le
 
 /-- A star algebra homomorphism of complex C⋆-algebras is norm contractive. -/

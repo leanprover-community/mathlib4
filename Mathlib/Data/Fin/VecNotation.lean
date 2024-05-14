@@ -87,7 +87,8 @@ def vecConsUnexpander : Lean.PrettyPrinter.Unexpander
 /-- Unexpander for the `![]` notation. -/
 @[app_unexpander vecEmpty]
 def vecEmptyUnexpander : Lean.PrettyPrinter.Unexpander
-  | _ => `(![])
+  | `($_:ident) => `(![])
+  | _ => throw ()
 
 /-- `vecHead v` gives the first entry of the vector `v` -/
 def vecHead {n : ℕ} (v : Fin n.succ → α) : α :=
