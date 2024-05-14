@@ -96,7 +96,7 @@ noncomputable def ofSheafForgetProfinite
       exact ⟨⟨⟨fun _ _ ↦ inferInstance⟩⟩, hF⟩ }
 
 /--
-The condensed set associated to a presheaf on `CompHaus` which preserves finite products and
+The condensed object associated to a presheaf on `CompHaus` which preserves finite products and
 satisfies the equalizer condition.
 -/
 noncomputable def ofSheafCompHaus
@@ -108,7 +108,7 @@ noncomputable def ofSheafCompHaus
     exact ⟨⟨⟨fun _ _ ↦ inferInstance⟩⟩, hF⟩
 
 /--
-The condensed set associated to a presheaf on `CompHaus` whose postcomposition with the
+The condensed object associated to a presheaf on `CompHaus` whose postcomposition with the
 forgetful functor preserves finite products and satisfies the equalizer condition.
 -/
 noncomputable def ofSheafForgetCompHaus

@@ -27,28 +27,40 @@ open CategoryTheory Limits Opposite Functor Presheaf regularTopology
 
 variable {A : Type*} [Category A]
 
-namespace LightProfinite
-
-theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
-    (F : LightProfinite.{u}ᵒᵖ ⥤ A) :
-    IsSheaf (coherentTopology LightProfinite) F ↔
-    Nonempty (PreservesFiniteProducts F) ∧ EqualizerCondition F := by
-  rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition_general]
-
-end LightProfinite
-
 namespace LightCondensed
 
 /--
-The condensed set associated to a presheaf on `Profinite` which preserves finite products and
-satisfies the equalizer condition.
+The light condensed object associated to a presheaf on `LightProfinite` which preserves finite
+products and satisfies the equalizer condition.
 -/
 noncomputable def ofSheafLightProfinite (F : LightProfinite.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F]
     (hF : EqualizerCondition F) : LightCondensed A where
     val := F
     cond := by
-      rw [LightProfinite.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
+      rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
       exact ⟨⟨⟨fun _ _ ↦ inferInstance⟩⟩, hF⟩
+
+/--
+The light condensed object associated to a presheaf on `LightProfinite` whose postcomposition with
+the forgetful functor preserves finite products and satisfies the equalizer condition.
+-/
+noncomputable def ofSheafForgetLightProfinite
+    [ConcreteCategory A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
+    (F : LightProfinite.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts (F ⋙ CategoryTheory.forget A)]
+    (hF : EqualizerCondition (F ⋙ CategoryTheory.forget A)) : LightCondensed A where
+  val := F
+  cond := by
+    apply isSheaf_coherent_of_hasPullbacks_of_comp F (CategoryTheory.forget A)
+    rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
+    exact ⟨⟨⟨fun _ _ ↦ inferInstance⟩⟩, hF⟩
+
+/-- A light condensed object satisfies the equalizer condition. -/
+theorem equalizerCondition (X : LightCondensed A) : EqualizerCondition X.val :=
+  isSheaf_iff_preservesFiniteProducts_and_equalizerCondition X.val |>.mp X.cond |>.2
+
+/-- A light condensed object preserves finite products. -/
+noncomputable instance (X : LightCondensed A) : PreservesFiniteProducts X.val :=
+  isSheaf_iff_preservesFiniteProducts_and_equalizerCondition X.val |>.mp X.cond |>.1.some
 
 end LightCondensed
 
@@ -58,16 +70,6 @@ namespace LightCondSet
 noncomputable abbrev ofSheafLightProfinite (F : LightProfinite.{u}ᵒᵖ ⥤ Type u)
     [PreservesFiniteProducts F] (hF : EqualizerCondition F) : LightCondSet :=
   LightCondensed.ofSheafLightProfinite F hF
-
-/-- A light condensed set satisfies the equalizer condition. -/
-theorem equalizerCondition (X : LightCondSet) : EqualizerCondition X.val :=
-  LightProfinite.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
-    X.val |>.mp X.cond |>.2
-
-/-- A light condensed set preserves finite products. -/
-noncomputable instance (X : LightCondSet.{u}) : PreservesFiniteProducts X.val :=
-  LightProfinite.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
-    X.val |>.mp X.cond |>.1.some
 
 end LightCondSet
 
