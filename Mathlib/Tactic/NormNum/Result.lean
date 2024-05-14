@@ -108,7 +108,7 @@ def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
     let a' : Q(ℚ) := q(OfNat.ofNat $lit : ℚ)
     pure ⟨a', (q(Eq.refl $a') : Expr)⟩
   else
-    let some n := lit.natLit? | failure
+    let some n := lit.rawNatLit? | failure
     match n with
     | 0 => pure ⟨q(0 : $α), (q(Nat.cast_zero (R := $α)) : Expr)⟩
     | 1 => pure ⟨q(1 : $α), (q(Nat.cast_one (R := $α)) : Expr)⟩

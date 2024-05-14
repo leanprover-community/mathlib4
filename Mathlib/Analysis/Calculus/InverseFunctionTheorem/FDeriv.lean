@@ -217,5 +217,5 @@ theorem isOpenMap_of_hasStrictFDerivAt_equiv [CompleteSpace E] {f : E → F} {f'
     (hf : ∀ x, HasStrictFDerivAt f (f' x : E →L[𝕜] F) x) : IsOpenMap f :=
   isOpenMap_iff_nhds_le.2 fun x => (hf x).map_nhds_eq_of_equiv.ge
 #align open_map_of_strict_fderiv_equiv isOpenMap_of_hasStrictFDerivAt_equiv
-@[deprecated] alias open_map_of_strict_fderiv_equiv :=
-  isOpenMap_of_hasStrictFDerivAt_equiv -- 2024-03-23
+@[deprecated] -- 2024-03-23
+alias open_map_of_strict_fderiv_equiv := isOpenMap_of_hasStrictFDerivAt_equiv

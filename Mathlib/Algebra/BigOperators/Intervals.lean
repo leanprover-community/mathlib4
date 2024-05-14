@@ -295,7 +295,7 @@ lemma prod_range_diag_flip (n : ℕ) (f : ℕ → ℕ → M) :
       Nat.lt_succ_iff, le_add_iff_nonneg_right, Nat.zero_le, and_true, and_imp, imp_self,
       implies_true, Sigma.forall, forall_const, add_tsub_cancel_of_le, Sigma.mk.inj_iff,
       add_tsub_cancel_left, heq_eq_eq]
-  · exact fun a b han hba ↦ lt_of_le_of_lt hba han
+  exact fun a b han hba ↦ lt_of_le_of_lt hba han
 #align sum_range_diag_flip Finset.sum_range_diag_flip
 
 end Generic

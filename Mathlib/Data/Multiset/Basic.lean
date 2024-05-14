@@ -2047,8 +2047,7 @@ theorem mem_filter_of_mem {a : α} {l} (m : a ∈ l) (h : p a) : a ∈ filter p 
 theorem filter_eq_self {s} : filter p s = s ↔ ∀ a ∈ s, p a :=
   Quot.inductionOn s fun _l =>
     Iff.trans ⟨fun h => (filter_sublist _).eq_of_length (@congr_arg _ _ _ _ card h),
-      congr_arg ofList⟩ <|
-      by simpa using List.filter_eq_self (p := (p ·))
+      congr_arg ofList⟩ <| by simp
 #align multiset.filter_eq_self Multiset.filter_eq_self
 
 theorem filter_eq_nil {s} : filter p s = 0 ↔ ∀ a ∈ s, ¬p a :=
@@ -2957,7 +2956,7 @@ lemma filter_attach' (s : Multiset α) (p : {a // a ∈ s} → Prop) [DecidableE
   refine' Multiset.map_injective Subtype.val_injective _
   rw [map_filter' _ Subtype.val_injective]
   simp only [Function.comp, Subtype.exists, coe_mk, Subtype.map,
-    exists_and_right, exists_eq_right, attach_map_val, map_map, map_coe, id.def]
+    exists_and_right, exists_eq_right, attach_map_val, map_map, map_coe, id]
 #align multiset.filter_attach' Multiset.filter_attach'
 
 end Map
@@ -3208,13 +3207,7 @@ theorem coe_subsingletonEquiv [Subsingleton α] :
   rfl
 #align multiset.coe_subsingleton_equiv Multiset.coe_subsingletonEquiv
 
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023-12-27.
--/
-
-@[deprecated] alias card_le_of_le := card_le_card
-@[deprecated] alias card_lt_of_lt := card_lt_card
+@[deprecated] alias card_le_of_le := card_le_card -- 2023-12-27
+@[deprecated] alias card_lt_of_lt := card_lt_card -- 2023-12-27
 
 end Multiset

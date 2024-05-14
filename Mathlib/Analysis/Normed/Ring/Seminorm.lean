@@ -329,14 +329,11 @@ variable {R : Type*} [Ring R]
 def equiv (f : MulRingNorm R) (g : MulRingNorm R) :=
   ∃ c : ℝ, 0 < c ∧ (fun x => (f x) ^ c) = g
 
-/- Equivalence of multiplicative ring norms is an equivalence relation
-
-  1. is reflexive-/
+/-- Equivalence of multiplicative ring norms is reflexive. -/
 lemma equiv_refl (f : MulRingNorm R) : equiv f f := by
     exact ⟨1, Real.zero_lt_one, by simp only [Real.rpow_one]⟩
-/- Equivalence of multiplicative ring norms is an equivalence relation
 
- 2. is symmetric-/
+/-- Equivalence of multiplicative ring norms is symmetric. -/
 lemma equiv_symm {f g : MulRingNorm R} (hfg : equiv f g) : equiv g f := by
   rcases hfg with ⟨c, hcpos, h⟩
   use 1/c
@@ -345,9 +342,7 @@ lemma equiv_symm {f g : MulRingNorm R} (hfg : equiv f g) : equiv g f := by
   ext x
   simpa [← congr_fun h x] using Real.rpow_rpow_inv (apply_nonneg f x) (ne_of_lt hcpos).symm
 
-/- Equivalence of multiplicative ring norms is an equivalence relation
-
- 3. is transitive-/
+/-- Equivalence of multiplicative ring norms is transitive. -/
 lemma equiv_trans {f g k : MulRingNorm R} (hfg : equiv f g) (hgk : equiv g k) :
     equiv f k := by
   rcases hfg with ⟨c, hcPos, hfg⟩
@@ -355,7 +350,6 @@ lemma equiv_trans {f g k : MulRingNorm R} (hfg : equiv f g) (hgk : equiv g k) :
   refine ⟨c*d, (mul_pos_iff_of_pos_left hcPos).mpr hdPos, ?_⟩
   ext x
   rw [Real.rpow_mul (apply_nonneg f x), congr_fun hfg x, congr_fun hgk x]
-
 
 end MulRingNorm
 
@@ -384,7 +378,7 @@ def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
 #align norm_ring_norm normRingNorm
 
 
-/-A multiplicative ring norm satisfies `f n ≤ n` for every `n : ℕ`-/
+/-- A multiplicative ring norm satisfies `f n ≤ n` for every `n : ℕ`. -/
 lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) : f n ≤ n := by
   induction n with
   | zero => simp only [Nat.cast_zero, map_zero, le_refl]

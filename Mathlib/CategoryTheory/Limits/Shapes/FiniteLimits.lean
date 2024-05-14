@@ -146,7 +146,7 @@ instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
       (WalkingParallelPair.recOn j' ∅ [WalkingParallelPairHom.id one].toFinset)
   complete := by
     rintro (_|_) <;> simp
-    · cases j <;> simp
+    cases j <;> simp
 end
 
 instance : FinCategory WalkingParallelPair where
@@ -167,7 +167,7 @@ variable {J : Type v}
 namespace WidePullbackShape
 
 instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
-  instFintypeOption
+  inferInstanceAs <| Fintype (Option _)
 #align category_theory.limits.wide_pullback_shape.fintype_obj CategoryTheory.Limits.WidePullbackShape.fintypeObj
 
 instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where

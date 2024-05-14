@@ -33,7 +33,7 @@ open Function Nat
 namespace Int
 
 instance linearOrderedAddCommGroup : LinearOrderedAddCommGroup ℤ where
-  __ := instLinearOrderInt
+  __ := instLinearOrder
   __ := instAddCommGroup
   add_le_add_left _ _ := Int.add_le_add_left
 
@@ -411,8 +411,8 @@ theorem toNat_le_toNat {a b : ℤ} (h : a ≤ b) : toNat a ≤ toNat b := by
 #align int.to_nat_le_to_nat Int.toNat_le_toNat
 
 theorem toNat_lt_toNat {a b : ℤ} (hb : 0 < b) : toNat a < toNat b ↔ a < b :=
-  ⟨fun h => by cases a; exact lt_toNat.1 h; exact lt_trans (neg_of_sign_eq_neg_one rfl) hb,
-   fun h => by rw [lt_toNat]; cases a; exact h; exact hb⟩
+  ⟨fun h => by cases a; exacts [lt_toNat.1 h, lt_trans (neg_of_sign_eq_neg_one rfl) hb],
+   fun h => by rw [lt_toNat]; cases a; exacts [h, hb]⟩
 #align int.to_nat_lt_to_nat Int.toNat_lt_toNat
 
 theorem lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=

@@ -561,7 +561,7 @@ theorem pow_pos (H : 0 < a) : ∀ n : ℕ, 0 < a ^ n
     exact zero_lt_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_pos  (pow_pos H _) H
+    exact mul_pos (pow_pos H _) H
 #align pow_pos pow_pos
 
 theorem mul_self_lt_mul_self (h1 : 0 ≤ a) (h2 : a < b) : a * a < b * b :=
@@ -1325,12 +1325,7 @@ instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
   { d, LinearOrderedRing.toLinearOrderedSemiring with }
 #align linear_ordered_comm_ring.to_linear_ordered_comm_semiring LinearOrderedCommRing.toLinearOrderedCommSemiring
 
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023/12/23
--/
-
+-- 2023-12-23
 @[deprecated] alias zero_le_mul_left := mul_nonneg_iff_of_pos_left
 @[deprecated] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
 @[deprecated] alias zero_lt_mul_left := mul_pos_iff_of_pos_left

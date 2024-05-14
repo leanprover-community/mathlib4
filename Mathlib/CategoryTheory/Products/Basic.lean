@@ -175,8 +175,8 @@ def braiding : C × D ≌ D × C :=
     (NatIso.ofComponents fun X => eqToIso (by simp))
 #align category_theory.prod.braiding CategoryTheory.Prod.braiding
 
-instance swapIsEquivalence : IsEquivalence (swap C D) :=
-  (by infer_instance : IsEquivalence (braiding C D).functor)
+instance swapIsEquivalence : (swap C D).IsEquivalence :=
+  (by infer_instance : (braiding C D).functor.IsEquivalence)
 #align category_theory.prod.swap_is_equivalence CategoryTheory.Prod.swapIsEquivalence
 
 end Prod

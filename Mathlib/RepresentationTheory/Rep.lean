@@ -373,9 +373,9 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
     simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, leftRegularHom_hom]
     erw [Finsupp.lift_apply]
     rw [Finsupp.sum_single_index, ← this, of_ρ_apply]
-    erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
-    simp only [one_smul, smul_eq_mul, mul_one]
-    · -- This goal didn't exist before leanprover/lean4#2644
+    · erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
+      simp only [one_smul, smul_eq_mul, mul_one]
+      -- This goal didn't exist before leanprover/lean4#2644
       rfl
     · rw [zero_smul]
   right_inv x := leftRegularHom_apply x

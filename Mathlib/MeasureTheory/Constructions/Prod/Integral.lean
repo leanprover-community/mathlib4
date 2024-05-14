@@ -234,9 +234,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
     HasFiniteIntegral f (μ.prod ν) ↔
       (∀ᵐ x ∂μ, HasFiniteIntegral (fun y => f (x, y)) ν) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ := by
-  simp only [HasFiniteIntegral]
-  -- porting note (#10745): was `simp`
-  rw [lintegral_prod_of_measurable _ h1f.ennnorm]
+  simp only [HasFiniteIntegral, lintegral_prod_of_measurable _ h1f.ennnorm]
   have (x) : ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := by filter_upwards with y using norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prod_mk_left).aestronglyMeasurable,
@@ -459,7 +457,7 @@ theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
   apply Integrable.induction
   · intro c s hs h2s
     simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp,
-      integral_indicator (measurable_prod_mk_left hs), set_integral_const, integral_smul_const,
+      integral_indicator (measurable_prod_mk_left hs), setIntegral_const, integral_smul_const,
       integral_toReal (measurable_measure_prod_mk_left hs).aemeasurable
         (ae_measure_lt_top hs h2s.ne)]
     -- Porting note: was `simp_rw`
@@ -500,12 +498,16 @@ theorem integral_integral_swap ⦃f : α → β → E⦄ (hf : Integrable (uncur
 #align measure_theory.integral_integral_swap MeasureTheory.integral_integral_swap
 
 /-- **Fubini's Theorem** for set integrals. -/
-theorem set_integral_prod (f : α × β → E) {s : Set α} {t : Set β}
+theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
     (hf : IntegrableOn f (s ×ˢ t) (μ.prod ν)) :
     ∫ z in s ×ˢ t, f z ∂μ.prod ν = ∫ x in s, ∫ y in t, f (x, y) ∂ν ∂μ := by
   simp only [← Measure.prod_restrict s t, IntegrableOn] at hf ⊢
   exact integral_prod f hf
-#align measure_theory.set_integral_prod MeasureTheory.set_integral_prod
+#align measure_theory.set_integral_prod MeasureTheory.setIntegral_prod
+
+@[deprecated]
+alias set_integral_prod :=
+  setIntegral_prod -- deprecated on 2024-04-17
 
 theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (g : β → E) :
     ∫ z, f z.1 • g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) • ∫ y, g y ∂ν := by
@@ -523,13 +525,17 @@ theorem integral_prod_mul {L : Type*} [RCLike L] (f : α → L) (g : β → L) :
   integral_prod_smul f g
 #align measure_theory.integral_prod_mul MeasureTheory.integral_prod_mul
 
-theorem set_integral_prod_mul {L : Type*} [RCLike L] (f : α → L) (g : β → L) (s : Set α)
+theorem setIntegral_prod_mul {L : Type*} [RCLike L] (f : α → L) (g : β → L) (s : Set α)
     (t : Set β) :
     ∫ z in s ×ˢ t, f z.1 * g z.2 ∂μ.prod ν = (∫ x in s, f x ∂μ) * ∫ y in t, g y ∂ν := by
   -- Porting note: added
   rw [← Measure.prod_restrict s t]
   apply integral_prod_mul
-#align measure_theory.set_integral_prod_mul MeasureTheory.set_integral_prod_mul
+#align measure_theory.set_integral_prod_mul MeasureTheory.setIntegral_prod_mul
+
+@[deprecated]
+alias set_integral_prod_mul :=
+  setIntegral_prod_mul -- deprecated on 2024-04-17
 
 theorem integral_fun_snd (f : β → E) : ∫ z, f z.2 ∂μ.prod ν = (μ univ).toReal • ∫ y, f y ∂ν := by
   simpa using integral_prod_smul (1 : α → ℝ) f
@@ -558,12 +564,12 @@ lemma integral_integral_swap_of_hasCompactSupport
   calc
   ∫ x, (∫ y, f x y ∂ν) ∂μ = ∫ x, (∫ y in V, f x y ∂ν) ∂μ := by
     congr 1 with x
-    apply (set_integral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ ?_)).symm
+    apply (setIntegral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ ?_)).symm
     contrapose! hy
     have : (x, y) ∈ Function.support f.uncurry := hy
     exact mem_image_of_mem _ (subset_tsupport _ this)
   _ = ∫ x in U, (∫ y in V, f x y ∂ν) ∂μ := by
-    apply (set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
+    apply (setIntegral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
     have : ∀ y, f x y = 0 := by
       intro y
       contrapose! hx
@@ -577,7 +583,7 @@ lemma integral_integral_swap_of_hasCompactSupport
     obtain ⟨C, hC⟩ : ∃ C, ∀ p, ‖f.uncurry p‖ ≤ C := hf.bounded_above_of_compact_support h'f
     exact hasFiniteIntegral_of_bounded (C := C) (eventually_of_forall hC)
   _ = ∫ y, (∫ x in U, f x y ∂μ) ∂ν := by
-    apply set_integral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ ?_)
+    apply setIntegral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ ?_)
     have : ∀ x, f x y = 0 := by
       intro x
       contrapose! hy
@@ -586,7 +592,7 @@ lemma integral_integral_swap_of_hasCompactSupport
     simp [this]
   _ = ∫ y, (∫ x, f x y ∂μ) ∂ν := by
     congr 1 with y
-    apply set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)
+    apply setIntegral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)
     contrapose! hx
     have : (x, y) ∈ Function.support f.uncurry := hx
     exact mem_image_of_mem _ (subset_tsupport _ this)

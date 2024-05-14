@@ -280,7 +280,7 @@ def Basis.invertibleToMatrix [DecidableEq ι] [Fintype ι] (b b' : Basis ι R₂
 theorem Basis.toMatrix_reindex (b : Basis ι R M) (v : ι' → M) (e : ι ≃ ι') :
     (b.reindex e).toMatrix v = (b.toMatrix v).submatrix e.symm _root_.id := by
   ext
-  simp only [Basis.toMatrix_apply, Basis.repr_reindex, Matrix.submatrix_apply, id.def,
+  simp only [Basis.toMatrix_apply, Basis.repr_reindex, Matrix.submatrix_apply, _root_.id,
     Finsupp.mapDomain_equiv_apply]
 #align basis.to_matrix_reindex Basis.toMatrix_reindex
 

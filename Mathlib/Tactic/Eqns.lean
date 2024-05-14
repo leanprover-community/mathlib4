@@ -41,7 +41,7 @@ initialize eqnsAttribute : NameMapExtension (Array Name) ←
       if let some _ := Meta.eqnsExt.getState (← getEnv) |>.map.find? declName then
         throwError "There already exist stored eqns for '{declName}'; registering new equations \
           will not have the desired effect."
-      names.mapM resolveGlobalConstNoOverloadWithInfo
+      names.mapM realizeGlobalConstNoOverloadWithInfo
     | _, _ => Lean.Elab.throwUnsupportedSyntax }
 
 initialize Lean.Meta.registerGetEqnsFn (fun name => do

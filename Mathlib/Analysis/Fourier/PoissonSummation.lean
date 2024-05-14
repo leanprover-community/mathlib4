@@ -49,8 +49,6 @@ open TopologicalSpace Filter MeasureTheory Asymptotics
 
 open scoped Real BigOperators Filter FourierTransform
 
-attribute [local instance] Real.fact_zero_lt_one
-
 open ContinuousMap
 
 /-- The key lemma for Poisson summation: the `m`-th Fourier coefficient of the periodic function
@@ -176,9 +174,9 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   rintro ⟨x, hx⟩
   rw [ContinuousMap.restrict_apply_mk]
   refine' (le_of_eq _).trans (ContinuousMap.norm_coe_le_norm _ ⟨-x, _⟩)
-  rw [ContinuousMap.restrict_apply_mk, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
-    ContinuousMap.coe_mk, neg_neg]
-  exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
+  · rw [ContinuousMap.restrict_apply_mk, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
+      ContinuousMap.coe_mk, neg_neg]
+    exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
 set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_bot isBigO_norm_Icc_restrict_atBot
 

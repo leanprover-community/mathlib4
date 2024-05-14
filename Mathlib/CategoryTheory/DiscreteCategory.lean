@@ -54,7 +54,6 @@ structure Discrete (α : Type u₁) where
 
 @[simp]
 theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X := by
-  ext
   rfl
 #align category_theory.discrete.mk_as CategoryTheory.Discrete.mk_as
 

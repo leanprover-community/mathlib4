@@ -274,7 +274,7 @@ def SelfLERadical.cast (hJK : J.radical = K.radical) : SelfLERadical J ⥤ SelfL
 
 -- TODO generalize this to the equivalence of full categories for any `iff`.
 instance SelfLERadical.castIsEquivalence (hJK : J.radical = K.radical) :
-    IsEquivalence (SelfLERadical.cast hJK) where
+    (SelfLERadical.cast hJK).IsEquivalence where
   inverse := SelfLERadical.cast hJK.symm
   unitIso := Iso.refl _
   counitIso := Iso.refl _

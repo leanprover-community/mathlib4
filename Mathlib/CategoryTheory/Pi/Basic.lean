@@ -387,9 +387,9 @@ def pi (E : ∀ i, C i ≌ D i) : (∀ i, C i) ≌ (∀ i, D i) where
   unitIso := NatIso.pi (fun i => (E i).unitIso)
   counitIso := NatIso.pi (fun i => (E i).counitIso)
 
-instance (F : ∀ i, C i ⥤ D i) [∀ i, IsEquivalence (F i)] :
-    IsEquivalence (Functor.pi F) :=
-  IsEquivalence.ofEquivalence (pi (fun i => (F i).asEquivalence))
+instance (F : ∀ i, C i ⥤ D i) [∀ i, (F i).IsEquivalence] :
+    (Functor.pi F).IsEquivalence :=
+  Functor.IsEquivalence.ofEquivalence (pi (fun i => (F i).asEquivalence))
 
 end Equivalence
 

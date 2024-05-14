@@ -80,7 +80,7 @@ if `G` satisfies the solution set condition then `G` is a right adjoint.
 -/
 noncomputable def isRightAdjointOfPreservesLimitsOfSolutionSetCondition [HasLimits D]
     [PreservesLimits G] (hG : SolutionSetCondition G) : IsRightAdjoint G := by
-  refine' @isRightAdjointOfStructuredArrowInitials _ _ _ _ G ?_
+  refine @isRightAdjointOfStructuredArrowInitials _ _ _ _ G ?_
   intro A
   specialize hG A
   choose ι B f g using hG

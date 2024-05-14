@@ -366,6 +366,7 @@ theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
 @[simp]
 theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by
   conv_rhs => rw [← filter_union_filter_neg_eq (fun a => a.1 = a.2) (s ×ˢ s)]
+  rfl
 #align finset.diag_union_off_diag Finset.diag_union_offDiag
 
 @[simp]

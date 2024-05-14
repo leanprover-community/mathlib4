@@ -547,7 +547,7 @@ theorem independent_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R 
     CompleteLattice.Independent N ↔ CompleteLattice.Independent fun i ↦ (N i : Submodule R M) := by
   simp [CompleteLattice.independent_def, disjoint_iff_coe_toSubmodule]
 
-theorem iSup_eq_top_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
+theorem iSup_eq_top_iff_coe_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
     ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
   rw [← iSup_coe_toSubmodule, ← top_coeSubmodule (L := L), coe_toSubmodule_eq_iff]
 
@@ -1104,7 +1104,7 @@ theorem idealRange_eq_map : f.idealRange = LieIdeal.map f ⊤ := by
   rfl
 #align lie_hom.ideal_range_eq_map LieHom.idealRange_eq_map
 
-/-- The condition that the image of a morphism of Lie algebras is an ideal. -/
+/-- The condition that the range of a morphism of Lie algebras is an ideal. -/
 def IsIdealMorphism : Prop :=
   (f.idealRange : LieSubalgebra R L') = f.range
 #align lie_hom.is_ideal_morphism LieHom.IsIdealMorphism
@@ -1113,6 +1113,9 @@ def IsIdealMorphism : Prop :=
 theorem isIdealMorphism_def : f.IsIdealMorphism ↔ (f.idealRange : LieSubalgebra R L') = f.range :=
   Iff.rfl
 #align lie_hom.is_ideal_morphism_def LieHom.isIdealMorphism_def
+
+variable {f} in
+theorem IsIdealMorphism.eq (hf : f.IsIdealMorphism) : f.idealRange = f.range := hf
 
 theorem isIdealMorphism_iff : f.IsIdealMorphism ↔ ∀ (x : L') (y : L), ∃ z : L, ⁅x, f y⁆ = f z := by
   simp only [isIdealMorphism_def, idealRange_eq_lieSpan_range, ←
@@ -1149,7 +1152,7 @@ theorem mem_ker {x : L} : x ∈ ker f ↔ f x = 0 :=
     simp only [ker_coeSubmodule, LinearMap.mem_ker, coe_toLinearMap]
 #align lie_hom.mem_ker LieHom.mem_ker
 
-theorem mem_idealRange {x : L} : f x ∈ idealRange f := by
+theorem mem_idealRange (x : L) : f x ∈ idealRange f := by
   rw [idealRange_eq_map]
   exact LieIdeal.mem_map (LieSubmodule.mem_top x)
 #align lie_hom.mem_ideal_range LieHom.mem_idealRange

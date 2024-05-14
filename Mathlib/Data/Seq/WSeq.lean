@@ -509,8 +509,8 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
       Or.inr h, fun {s t} h => by
       have h : Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t) := by
         cases' h with h h
-        exact liftRel_destruct h
-        assumption
+        · exact liftRel_destruct h
+        · assumption
       apply Computation.LiftRel.imp _ _ _ h
       intro a b
       apply LiftRelO.imp_right
@@ -1041,7 +1041,7 @@ theorem liftRel_dropn_destruct {R : α → β → Prop} {s t} (H : LiftRel R s t
   | n + 1 => by
     simp only [LiftRelO, drop, Nat.add_eq, Nat.add_zero, destruct_tail, tail.aux]
     apply liftRel_bind
-    apply liftRel_dropn_destruct H n
+    · apply liftRel_dropn_destruct H n
     exact fun {a b} o =>
       match a, b, o with
       | none, none, _ => by
@@ -1158,7 +1158,6 @@ theorem liftRel_flatten {R : α → β → Prop} {c1 : Computation (WSeq α)} {c
   ⟨S, ⟨c1, c2, rfl, rfl, h⟩, fun {s t} h =>
     match s, t, h with
     | _, _, ⟨c1, c2, rfl, rfl, h⟩ => by
-      -- Porting note: `exists_and_left` should be excluded.
       simp only [destruct_flatten]; apply liftRel_bind _ _ h
       intro a b ab; apply Computation.LiftRel.imp _ _ _ (liftRel_destruct ab)
       intro a b; apply LiftRelO.imp_right
@@ -1176,7 +1175,6 @@ theorem tail_congr {s t : WSeq α} (h : s ~ʷ t) : tail s ~ʷ tail t := by
   apply flatten_congr
   dsimp only [(· <$> ·)]; rw [← Computation.bind_pure, ← Computation.bind_pure]
   apply liftRel_bind _ _ (destruct_congr h)
-  -- Porting note: These 2 theorems should be excluded.
   intro a b h; simp only [comp_apply, liftRel_pure]
   cases' a with a <;> cases' b with b
   · trivial

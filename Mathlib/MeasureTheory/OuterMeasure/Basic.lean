@@ -176,7 +176,7 @@ theorem iUnion_of_tendsto_zero {ι} (m : OuterMeasure α) {s : ι → Set α} (l
   have A : ∀ k, m S ≤ M + m (S \ s k) := fun k =>
     calc
       m S = m (s k ∪ S \ s k) := by rw [union_diff_self, union_eq_self_of_subset_left hsS]
-      _ ≤ m (s k) + m (S \ s k) := (m.union _ _)
+      _ ≤ m (s k) + m (S \ s k) := m.union _ _
       _ ≤ M + m (S \ s k) := add_le_add_right (le_iSup (m.measureOf ∘ s) k) _
   have B : Tendsto (fun k => M + m (S \ s k)) l (𝓝 (M + 0)) := tendsto_const_nhds.add h0
   rw [add_zero] at B
@@ -217,7 +217,7 @@ theorem diff_null (m : OuterMeasure α) (s : Set α) {t : Set α} (ht : m t = 0)
   refine' le_antisymm (m.mono <| diff_subset _ _) _
   calc
     m s ≤ m (s ∩ t) + m (s \ t) := le_inter_add_diff _
-    _ ≤ m t + m (s \ t) := (add_le_add_right (m.mono <| inter_subset_right _ _) _)
+    _ ≤ m t + m (s \ t) := add_le_add_right (m.mono <| inter_subset_right _ _) _
     _ = m (s \ t) := by rw [ht, zero_add]
 #align measure_theory.outer_measure.diff_null MeasureTheory.OuterMeasure.diff_null
 

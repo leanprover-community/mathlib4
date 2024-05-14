@@ -135,12 +135,11 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotien
     [hasFun : HasFundamentalDomain Γ.op G ν] [QuotientMeasureEqMeasurePreimage ν μ] :
     μ.IsMulLeftInvariant where
   map_mul_left_eq_self x := by
-    apply Measure.ext
-    intro A hA
+    ext A hA
     obtain ⟨x₁, h⟩ := @Quotient.exists_rep _ (QuotientGroup.leftRel Γ) x
     convert measure_preimage_smul x₁ μ A using 1
     · rw [← h, Measure.map_apply (measurable_const_mul _) hA]
-      rfl
+      simp [← MulAction.Quotient.coe_smul_out', ← Quotient.mk''_eq_mk]
     exact smulInvariantMeasure_quotient ν
 
 variable [IsMulLeftInvariant μ] [SigmaFinite μ]
@@ -247,6 +246,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
       ← fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h]
     apply measure_mono
     refine interior_subset.trans ?_
+    rw [QuotientGroup.coe_mk']
     show (K : Set G) ⊆ π ⁻¹' (π '' K)
     exact subset_preimage_image π K
   · show ν (π ⁻¹' (π '' K) ∩ s) ≠ ⊤
@@ -255,7 +255,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     apply measure_mono
     exact inter_subset_right _ s
 
-/- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
+/-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
   properly normalized, satisfies `QuotientMeasureEqMeasurePreimage`. -/
 @[to_additive "Given a normal
@@ -284,7 +284,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_HaarMeasure {𝓕 :
 
 variable (K : PositiveCompacts (G ⧸ Γ))
 
-/- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
+/-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
   properly normalized, satisfies `QuotientMeasureEqMeasurePreimage`. -/
 @[to_additive "Given a
@@ -365,12 +365,12 @@ lemma _root_.MeasureTheory.IsFundamentalDomain.absolutelyContinuous_map
   intro s s_meas hs
   rw [map_apply meas_π s_meas] at hs ⊢
   rw [Measure.restrict_apply] at hs
-  apply h𝓕.measure_zero_of_invariant _ _ hs
-  · intro γ
-    ext g
-    rw [Set.mem_smul_set_iff_inv_smul_mem, mem_preimage, mem_preimage]
-    congr! 1
-    convert QuotientGroup.mk_mul_of_mem g (γ⁻¹).2 using 1
+  · apply h𝓕.measure_zero_of_invariant _ _ hs
+    · intro γ
+      ext g
+      rw [Set.mem_smul_set_iff_inv_smul_mem, mem_preimage, mem_preimage]
+      congr! 1
+      convert QuotientGroup.mk_mul_of_mem g (γ⁻¹).2 using 1
   exact MeasurableSet.preimage s_meas meas_π
 
 attribute [-instance] Quotient.instMeasurableSpace

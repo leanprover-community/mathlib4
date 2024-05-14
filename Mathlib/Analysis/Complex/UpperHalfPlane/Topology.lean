@@ -74,4 +74,23 @@ instance : NoncompactSpace ℍ := by
 instance : LocallyCompactSpace ℍ :=
   openEmbedding_coe.locallyCompactSpace
 
+section strips
+
+/-- The vertical strip of width `A` and height `B`, defined by elements whose real part has absolute
+value less than or equal to `A` and imaginary part is at least `B`. -/
+def verticalStrip (A B : ℝ) := {z : ℍ | |z.re| ≤ A ∧ B ≤ z.im}
+
+theorem mem_verticalStrip_iff (A B : ℝ) (z : ℍ) : z ∈ verticalStrip A B ↔ |z.re| ≤ A ∧ B ≤ z.im :=
+  Iff.rfl
+
+lemma subset_verticalStrip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
+    ∃ A B : ℝ, 0 < B ∧ K ⊆ verticalStrip A B := by
+  rcases K.eq_empty_or_nonempty with rfl | hne
+  · exact ⟨1, 1, Real.zero_lt_one, empty_subset _⟩
+  obtain ⟨u, _, hu⟩ := hK.exists_isMaxOn hne (_root_.continuous_abs.comp continuous_re).continuousOn
+  obtain ⟨v, _, hv⟩ := hK.exists_isMinOn hne continuous_im.continuousOn
+  exact ⟨|re u|, im v, v.im_pos, fun k hk ↦ ⟨isMaxOn_iff.mp hu _ hk, isMinOn_iff.mp hv _ hk⟩⟩
+
+end strips
+
 end UpperHalfPlane

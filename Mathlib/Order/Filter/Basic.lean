@@ -786,8 +786,9 @@ theorem NeBot.nonempty (f : Filter α) [hf : f.NeBot] : Nonempty α :=
 equal. -/
 theorem eq_top_of_neBot [Subsingleton α] (l : Filter α) [NeBot l] : l = ⊤ := by
   refine' top_unique fun s hs => _
-  obtain rfl : s = univ; exact Subsingleton.eq_univ_of_nonempty (nonempty_of_mem hs)
-  exact univ_mem
+  obtain rfl : s = univ
+  · exact Subsingleton.eq_univ_of_nonempty (nonempty_of_mem hs)
+  · exact univ_mem
 #align filter.eq_top_of_ne_bot Filter.eq_top_of_neBot
 
 theorem forall_mem_nonempty_iff_neBot {f : Filter α} :
@@ -1064,10 +1065,15 @@ theorem iInf_principal_finset {ι : Type w} (s : Finset ι) (f : ι → Set α) 
   · rw [Finset.iInf_insert, Finset.set_biInter_insert, hs, inf_principal]
 #align filter.infi_principal_finset Filter.iInf_principal_finset
 
+theorem iInf_principal {ι : Sort w} [Finite ι] (f : ι → Set α) : ⨅ i, 𝓟 (f i) = 𝓟 (⋂ i, f i) := by
+  cases nonempty_fintype (PLift ι)
+  rw [← iInf_plift_down, ← iInter_plift_down]
+  simpa using iInf_principal_finset Finset.univ (f <| PLift.down ·)
+
+/-- A special case of `iInf_principal` that is safe to mark `simp`. -/
 @[simp]
-theorem iInf_principal {ι : Type w} [Finite ι] (f : ι → Set α) : ⨅ i, 𝓟 (f i) = 𝓟 (⋂ i, f i) := by
-  cases nonempty_fintype ι
-  simpa using iInf_principal_finset Finset.univ f
+theorem iInf_principal' {ι : Type w} [Finite ι] (f : ι → Set α) : ⨅ i, 𝓟 (f i) = 𝓟 (⋂ i, f i) :=
+  iInf_principal _
 #align filter.infi_principal Filter.iInf_principal
 
 theorem iInf_principal_finite {ι : Type w} {s : Set ι} (hs : s.Finite) (f : ι → Set α) :
@@ -1407,7 +1413,7 @@ theorem eventually_imp_distrib_right {f : Filter α} {p : α → Prop} {q : Prop
 @[simp]
 theorem frequently_and_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
     (∃ᶠ x in f, p ∧ q x) ↔ p ∧ ∃ᶠ x in f, q x := by
-  simp only [Filter.Frequently, not_and, eventually_imp_distrib_left, not_imp]
+  simp only [Filter.Frequently, not_and, eventually_imp_distrib_left, Classical.not_imp]
 #align filter.frequently_and_distrib_left Filter.frequently_and_distrib_left
 
 @[simp]
@@ -3184,6 +3190,10 @@ theorem tendsto_sup {f : α → β} {x₁ x₂ : Filter α} {y : Filter β} :
 theorem Tendsto.sup {f : α → β} {x₁ x₂ : Filter α} {y : Filter β} :
     Tendsto f x₁ y → Tendsto f x₂ y → Tendsto f (x₁ ⊔ x₂) y := fun h₁ h₂ => tendsto_sup.mpr ⟨h₁, h₂⟩
 #align filter.tendsto.sup Filter.Tendsto.sup
+
+theorem Tendsto.sup_sup {f : α → β} {x₁ x₂ : Filter α} {y₁ y₂ : Filter β}
+    (h₁ : Tendsto f x₁ y₁) (h₂ : Tendsto f x₂ y₂) : Tendsto f (x₁ ⊔ x₂) (y₁ ⊔ y₂) :=
+  tendsto_sup.mpr ⟨h₁.mono_right le_sup_left, h₂.mono_right le_sup_right⟩
 
 @[simp]
 theorem tendsto_iSup {f : α → β} {x : ι → Filter α} {y : Filter β} :

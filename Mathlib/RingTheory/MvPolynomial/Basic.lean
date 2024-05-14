@@ -141,6 +141,10 @@ theorem coe_basisMonomials :
   rfl
 #align mv_polynomial.coe_basis_monomials MvPolynomial.coe_basisMonomials
 
+/-- The `R`-module `MvPolynomial σ R` is free. -/
+instance : Module.Free R (MvPolynomial σ R) :=
+  Module.Free.of_basis (MvPolynomial.basisMonomials σ R)
+
 theorem linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R) :=
   (basisMonomials σ R).linearIndependent.comp (fun s : σ => Finsupp.single s 1)
     (Finsupp.single_left_injective one_ne_zero)

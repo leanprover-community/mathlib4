@@ -663,9 +663,9 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
             (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul _)
         -- Porting note: `show` used to select a goal to work on
         rotate_right
-        show Tendsto _ _ _
-        exact tendsto_const_nhds
-        simp⟩
+        · show Tendsto _ _ _
+          exact tendsto_const_nhds
+        · simp⟩
 #align semi_normed_ring_top_monoid semi_normed_ring_top_monoid
 
 -- see Note [lower instance priority]
@@ -1111,19 +1111,20 @@ theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [SemilatticeSup α] [NoM
   (atTop_basis_Ioi.tendsto_iff Metric.nhds_basis_ball).trans (by simp [dist_eq_norm])
 #align normed_add_comm_group.tendsto_at_top' NormedAddCommGroup.tendsto_atTop'
 
-instance Int.normedCommRing : NormedCommRing ℤ :=
-  { Int.normedAddCommGroup, Int.instRingInt with
-    norm_mul := fun m n => le_of_eq <| by simp only [norm, Int.cast_mul, abs_mul]
-    mul_comm := mul_comm }
+instance Int.instNormedCommRing : NormedCommRing ℤ where
+  __ := instCommRing
+  __ := instNormedAddCommGroup
+  norm_mul m n := by simp only [norm, Int.cast_mul, abs_mul, le_rfl]
 
-instance Int.normOneClass : NormOneClass ℤ :=
+instance Int.instNormOneClass : NormOneClass ℤ :=
   ⟨by simp [← Int.norm_cast_real]⟩
 
-instance Rat.normedField : NormedField ℚ :=
-  { Rat.normedAddCommGroup, Rat.instField with
-    norm_mul' := fun r₁ r₂ => by simp only [norm, Rat.cast_mul, abs_mul] }
+instance Rat.instNormedField : NormedField ℚ where
+  __ := instField
+  __ := instNormedAddCommGroup
+  norm_mul' a b := by simp only [norm, Rat.cast_mul, abs_mul]
 
-instance Rat.denselyNormedField : DenselyNormedField ℚ where
+instance Rat.instDenselyNormedField : DenselyNormedField ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=
     let ⟨q, h⟩ := exists_rat_btwn hr
     ⟨q, by rwa [← Rat.norm_cast_real, Real.norm_eq_abs, abs_of_pos (h₀.trans_lt h.1)]⟩

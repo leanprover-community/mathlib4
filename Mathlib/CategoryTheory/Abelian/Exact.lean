@@ -103,7 +103,7 @@ theorem exact_tfae :
 #align category_theory.abelian.exact_tfae CategoryTheory.Abelian.exact_tfae
 
 nonrec theorem IsEquivalence.exact_iff {D : Type u₁} [Category.{v₁} D] [Abelian D] (F : C ⥤ D)
-    [IsEquivalence F] : Exact (F.map f) (F.map g) ↔ Exact f g := by
+    [F.IsEquivalence] : Exact (F.map f) (F.map g) ↔ Exact f g := by
   simp only [exact_iff, ← F.map_eq_zero_iff, F.map_comp, Category.assoc, ←
     kernelComparison_comp_ι g F, ← π_comp_cokernelComparison f F]
   rw [IsIso.comp_left_eq_zero (kernelComparison g F), ← Category.assoc,

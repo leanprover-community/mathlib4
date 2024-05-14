@@ -35,9 +35,8 @@ namespace Nat
 
 instance : WfDvdMonoid ℕ :=
   ⟨by
-    refine'
-      RelHomClass.wellFounded
-        (⟨fun x : ℕ => if x = 0 then (⊤ : ℕ∞) else x, _⟩ : DvdNotUnit →r (· < ·)) wellFounded_lt
+    refine RelHomClass.wellFounded
+      (⟨fun x : ℕ => if x = 0 then (⊤ : ℕ∞) else x, ?_⟩ : DvdNotUnit →r (· < ·)) wellFounded_lt
     intro a b h
     cases' a with a
     · exfalso
@@ -54,31 +53,6 @@ instance : UniqueFactorizationMonoid ℕ :=
   ⟨fun {_} => Nat.irreducible_iff_prime⟩
 
 end Nat
-
-/-- `ℕ` is a gcd_monoid. -/
-instance : GCDMonoid ℕ where
-  gcd := Nat.gcd
-  lcm := Nat.lcm
-  gcd_dvd_left := Nat.gcd_dvd_left
-  gcd_dvd_right := Nat.gcd_dvd_right
-  dvd_gcd := Nat.dvd_gcd
-  gcd_mul_lcm a b := by rw [Nat.gcd_mul_lcm]; rfl
-  lcm_zero_left := Nat.lcm_zero_left
-  lcm_zero_right := Nat.lcm_zero_right
-
-instance : NormalizedGCDMonoid ℕ :=
-  { (inferInstance : GCDMonoid ℕ),
-    (inferInstance : NormalizationMonoid ℕ) with
-    normalize_gcd := fun _ _ => normalize_eq _
-    normalize_lcm := fun _ _ => normalize_eq _ }
-
-theorem gcd_eq_nat_gcd (m n : ℕ) : gcd m n = Nat.gcd m n :=
-  rfl
-#align gcd_eq_nat_gcd gcd_eq_nat_gcd
-
-theorem lcm_eq_nat_lcm (m n : ℕ) : lcm m n = Nat.lcm m n :=
-  rfl
-#align lcm_eq_nat_lcm lcm_eq_nat_lcm
 
 namespace Int
 
@@ -208,20 +182,6 @@ theorem gcd_ne_one_iff_gcd_mul_right_ne_one {a : ℤ} {m n : ℕ} :
   simp only [gcd_eq_one_iff_coprime, ← not_and_or, not_iff_not, IsCoprime.mul_right_iff]
 #align int.gcd_ne_one_iff_gcd_mul_right_ne_one Int.gcd_ne_one_iff_gcd_mul_right_ne_one
 
-set_option linter.deprecated false in -- trans_rel_left
-/-- If `gcd a (m * n) = 1`, then `gcd a m = 1`. -/
-theorem gcd_eq_one_of_gcd_mul_right_eq_one_left {a : ℤ} {m n : ℕ} (h : a.gcd (m * n) = 1) :
-    a.gcd m = 1 :=
-  Nat.dvd_one.mp <| trans_rel_left _ (gcd_dvd_gcd_mul_right_right a m n) h
-#align int.gcd_eq_one_of_gcd_mul_right_eq_one_left Int.gcd_eq_one_of_gcd_mul_right_eq_one_left
-
-set_option linter.deprecated false in -- trans_rel_left
-/-- If `gcd a (m * n) = 1`, then `gcd a n = 1`. -/
-theorem gcd_eq_one_of_gcd_mul_right_eq_one_right {a : ℤ} {m n : ℕ} (h : a.gcd (m * n) = 1) :
-    a.gcd n = 1 :=
-  Nat.dvd_one.mp <| trans_rel_left _ (gcd_dvd_gcd_mul_left_right a n m) h
-#align int.gcd_eq_one_of_gcd_mul_right_eq_one_right Int.gcd_eq_one_of_gcd_mul_right_eq_one_right
-
 theorem sq_of_gcd_eq_one {a b c : ℤ} (h : Int.gcd a b = 1) (heq : a * b = c ^ 2) :
     ∃ a0 : ℤ, a = a0 ^ 2 ∨ a = -a0 ^ 2 := by
   have h' : IsUnit (GCDMonoid.gcd a b) := by
@@ -253,14 +213,12 @@ end Int
 
 /-- Maps an associate class of integers consisting of `-n, n` to `n : ℕ` -/
 def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
-  refine' ⟨fun z => z.out.natAbs, fun n => Associates.mk n, _, _⟩
-  · refine' fun a =>
-      Quotient.inductionOn a fun a =>
-        Associates.mk_eq_mk_iff_associated.2 <| Associated.symm <| ⟨normUnit a, _⟩
+  refine ⟨(·.out.natAbs), (Associates.mk ·), ?_, fun n ↦ ?_⟩
+  · refine Associates.forall_associated.2 fun a ↦ ?_
+    refine Associates.mk_eq_mk_iff_associated.2 <| Associated.symm <| ⟨normUnit a, ?_⟩
     simp [Int.abs_eq_normalize]
-  · intro n
-    dsimp
-    rw [← normalize_apply, ← Int.abs_eq_normalize, Int.natAbs_abs, Int.natAbs_ofNat]
+  · dsimp only [Associates.out_mk]
+    rw [← Int.abs_eq_normalize, Int.natAbs_abs, Int.natAbs_ofNat]
 #align associates_int_equiv_nat associatesIntEquivNat
 
 theorem Int.Prime.dvd_mul {m n : ℤ} {p : ℕ} (hp : Nat.Prime p) (h : (p : ℤ) ∣ m * n) :

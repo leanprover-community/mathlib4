@@ -617,16 +617,16 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
   left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
     refine' x.recOnSubsingleton fun x => _
-    · cases' x with x hx
-      cases' x with _ x
-      · simp at hx
-      cases' x with _ x
-      · simp at hx
-      cases' x with _ x
-      swap
-      · exfalso
-        simp at hx
-      rfl
+    cases' x with x hx
+    cases' x with _ x
+    · simp at hx
+    cases' x with _ x
+    · simp at hx
+    cases' x with _ x
+    swap
+    · exfalso
+      simp at hx
+    rfl
 #align sym2.sym2_equiv_sym' Sym2.sym2EquivSym'
 
 /-- The symmetric square is equivalent to the second symmetric power. -/

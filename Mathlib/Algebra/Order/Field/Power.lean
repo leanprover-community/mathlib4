@@ -83,8 +83,7 @@ theorem zpow_lt_iff_lt (hx : 1 < a) : a ^ m < a ^ n ↔ m < n :=
 
 @[gcongr] alias ⟨_, GCongr.zpow_lt_of_lt⟩ := zpow_lt_iff_lt
 
-@[deprecated] -- Since 2024-02-10
-alias zpow_lt_of_lt := GCongr.zpow_lt_of_lt
+@[deprecated] alias zpow_lt_of_lt := GCongr.zpow_lt_of_lt -- Since 2024-02-10
 
 @[simp]
 theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
@@ -263,7 +262,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
     | .app (.app (.app (.const `Neg.neg _) _) _) b' =>
       let b' ← whnfR b'
       let .true := b'.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ -n where n is a literal"
-      let some n := (b'.getRevArg! 1).natLit? | throwError "not a ^ -n where n is a literal"
+      let some n := (b'.getRevArg! 1).rawNatLit? | throwError "not a ^ -n where n is a literal"
       guard (n % 2 = 0)
       have m : Q(ℕ) := mkRawNatLit (n / 2)
       haveI' : $b =Q (-$m) + (-$m) := ⟨⟩ -- b = bit0 (-m)

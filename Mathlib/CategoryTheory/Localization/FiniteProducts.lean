@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Localization.Adjunction
 import Mathlib.CategoryTheory.Localization.HasLocalization
 import Mathlib.CategoryTheory.Localization.Pi
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-! The localized category has finite products
 

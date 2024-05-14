@@ -69,6 +69,9 @@ scoped[DirectSum] notation3 "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 --   | `(⨁ ($x:ident) ($y:ident), $p) => `(DirectSum _ (fun $x ↦ fun $y ↦ $p))
 -- end
 
+instance [∀ i, AddCommMonoid (β i)] [∀ i, DecidableEq (β i)] : DecidableEq (DirectSum ι β) :=
+  inferInstanceAs <| DecidableEq (Π₀ i, β i)
+
 namespace DirectSum
 
 variable {ι}

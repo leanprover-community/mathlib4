@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Real.NNReal
-import Mathlib.Data.Set.Intervals.WithBotTop
+import Mathlib.Order.Interval.Set.WithBotTop
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
@@ -870,11 +870,6 @@ def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
 
 end Mathlib.Meta.Positivity
 
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on the 2023/12/23.
--/
-
+-- 2023-12-23
 @[deprecated] protected alias ENNReal.le_inv_smul_iff_of_pos := le_inv_smul_iff_of_pos
 @[deprecated] protected alias ENNReal.inv_smul_le_iff_of_pos := inv_smul_le_iff_of_pos

@@ -158,9 +158,9 @@ variable [Nonempty ι]
 theorem basisSets_smul (U) (hU : U ∈ p.basisSets) :
     ∃ V ∈ 𝓝 (0 : 𝕜), ∃ W ∈ p.addGroupFilterBasis.sets, V • W ⊆ U := by
   rcases p.basisSets_iff.mp hU with ⟨s, r, hr, hU⟩
-  refine' ⟨Metric.ball 0 r.sqrt, Metric.ball_mem_nhds 0 (Real.sqrt_pos.mpr hr), _⟩
-  refine' ⟨(s.sup p).ball 0 r.sqrt, p.basisSets_mem s (Real.sqrt_pos.mpr hr), _⟩
-  refine' Set.Subset.trans (ball_smul_ball (s.sup p) r.sqrt r.sqrt) _
+  refine' ⟨Metric.ball 0 √r, Metric.ball_mem_nhds 0 (Real.sqrt_pos.mpr hr), _⟩
+  refine' ⟨(s.sup p).ball 0 √r, p.basisSets_mem s (Real.sqrt_pos.mpr hr), _⟩
+  refine' Set.Subset.trans (ball_smul_ball (s.sup p) √r √r) _
   rw [hU, Real.mul_self_sqrt (le_of_lt hr)]
 #align seminorm_family.basis_sets_smul SeminormFamily.basisSets_smul
 
@@ -486,7 +486,7 @@ theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E
   rintro U (hU : U ∈ p.basisSets)
   rcases p.basisSets_iff.mp hU with ⟨s, r, hr, hU⟩
   use r, hr
-  rw [hU, id.def]
+  rw [hU, id]
   by_cases h : s.Nonempty
   · rw [Finset.sup_const h]
   rw [Finset.not_nonempty_iff_eq_empty.mp h, Finset.sup_empty, ball_bot _ hr]
@@ -506,7 +506,7 @@ theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp 
   rw [hp.hasBasis.isVonNBounded_iff]
   constructor
   · intro h I
-    simp only [id.def] at h
+    simp only [id] at h
     specialize h ((I.sup p).ball 0 1) (p.basisSets_mem I zero_lt_one)
     rcases h.exists_pos with ⟨r, hr, h⟩
     cases' NormedField.exists_lt_norm 𝕜 r with a ha
@@ -518,7 +518,7 @@ theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp 
     exact (Finset.sup I p).mem_ball_zero.mp h
   intro h s' hs'
   rcases p.basisSets_iff.mp hs' with ⟨I, r, hr, hs'⟩
-  rw [id.def, hs']
+  rw [id, hs']
   rcases h I with ⟨r', _, h'⟩
   simp_rw [← (I.sup p).mem_ball_zero] at h'
   refine' Absorbs.mono_right _ h'
