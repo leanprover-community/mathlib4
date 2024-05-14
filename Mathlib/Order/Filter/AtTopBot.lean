@@ -600,6 +600,7 @@ theorem exists_lt_of_tendsto_atBot [SemilatticeSup α] [Preorder β] [NoMinOrder
   @exists_lt_of_tendsto_atTop _ βᵒᵈ _ _ _ _ h
 #align filter.exists_lt_of_tendsto_at_bot Filter.exists_lt_of_tendsto_atBot
 
+set_option linter.geOrGt false in
 /-- If `u` is a sequence which is unbounded above,
 then after any point, it reaches a value strictly greater than all previous values.
 -/

@@ -290,13 +290,13 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
   let mut ub ← try? (m.initUB e)
   for pf in ubs do
     if let some ub1 ← try? (m.getBound e pf false) then
-      if ub.all (·.1.asUpper > ub1.1.asUpper) then
+      if ub.all (ub1.1.asUpper < ·.1.asUpper) then
         ub := some ub1
     else if mustUseBounds then
       throwError "interval_cases failed: provided bound '{← inferType pf}' cannot be evaluated"
   match lb, ub with
   | some (z1, e1, p1), some (z2, e2, p2) =>
-    if z1.asLower > z2.asUpper then
+    if z2.asUpper < z1.asLower then
       (← g.exfalso).assign (← m.inconsistentBounds z1 z2 e1 e2 p1 p2 e)
       pure #[]
     else

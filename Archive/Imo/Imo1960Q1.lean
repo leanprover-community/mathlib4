@@ -81,7 +81,7 @@ theorem searchUpTo_step {c n} (H : SearchUpTo c n) {c' n'} (ec : c + 1 = c') (en
   obtain ⟨h₁, ⟨m, rfl⟩, h₂⟩ := id p
   by_cases h : 11 * m < c * 11; · exact H _ h p
   obtain rfl : m = c := by linarith
-  rw [Nat.mul_div_cancel_left _ (by norm_num : 11 > 0), mul_comm] at h₂
+  rw [Nat.mul_div_cancel_left _ (by norm_num : 0 < 11), mul_comm] at h₂
   refine' (H' h₂).imp _ _ <;> · rintro rfl; norm_num
 #align imo1960_q1.search_up_to_step Imo1960Q1.searchUpTo_step
 

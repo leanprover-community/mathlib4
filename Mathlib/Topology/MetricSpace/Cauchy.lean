@@ -123,6 +123,7 @@ theorem cauchySeq_bdd {u : ℕ → α} (hu : CauchySeq u) : ∃ R > 0, ∀ m n, 
     exact lt_of_le_of_lt this (lt_add_of_pos_right _ zero_lt_one)
 #align cauchy_seq_bdd cauchySeq_bdd
 
+set_option linter.geOrGt false in
 /-- Yet another metric characterization of Cauchy sequences on integers. This one is often the
 most efficient. -/
 theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :

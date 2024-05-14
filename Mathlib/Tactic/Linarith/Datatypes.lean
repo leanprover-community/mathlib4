@@ -275,6 +275,7 @@ def GlobalPreprocessor.branching (pp : GlobalPreprocessor) : GlobalBranchingPrep
   name := pp.name
   transform := fun g l => do return [⟨g, ← pp.transform l⟩]
 
+set_option linter.geOrGt false in
 /--
 `process pp l` runs `pp.transform` on `l` and returns the result,
 tracing the result if `trace.linarith` is on.

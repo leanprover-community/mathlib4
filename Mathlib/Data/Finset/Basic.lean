@@ -3574,7 +3574,7 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
     catch _ => return none
   -- Fail if there are open goals remaining, this serves as an extra check for the
   -- Aesop configuration option `terminal := true`.
-  if remainingGoals.size > 0 then return none
+  if 0 < remainingGoals.size then return none
   Lean.getExprMVarAssignment? mvar
 
 end Mathlib.Meta
