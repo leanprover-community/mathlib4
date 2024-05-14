@@ -16,7 +16,7 @@ in the category of cochain complexes in an abelian category `C`.
 When restricted to the full subcategory of bounded below cochain complexes in an
 abelian category `C` that has enough injectives, this is the class of
 fibrations for a model category structure on the bounded below
-category of cochain complexes in `C`. In this folder, we intend to prove two factorizations
+category of cochain complexes in `C`. In this folder, we intend to prove two factorization
 lemmas in the category of bounded below cochain complexes (TODO):
 * CM5a: any morphism `K ⟶ L` can be factored as `K ⟶ K' ⟶ L` where `i : K ⟶ K'` is a
 trivial cofibration (a mono that is also a quasi-isomorphisms) and `p : K' ⟶ L` is a fibration.
