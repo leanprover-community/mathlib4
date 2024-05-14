@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Fox Thomson. All rights reserved.
+Copyright (c) 2020 Fox Thomson, 2022 Russell Emerine, 2024 Tom Kranz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson
+Authors: Fox Thomson, Russell Emerine, Tom Kranz
 -/
 import Mathlib.Computability.Language
 import Mathlib.Computability.NFA

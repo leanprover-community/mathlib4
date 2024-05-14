@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Russell Emerine, Tom Kranz
 -/
 import Mathlib.Computability.RegularExpressions
-import Mathlib.Computability.NFA
-import Mathlib.Data.FinEnum
 import Mathlib.Data.FinEnum.Option
 
 #align_import computability.GNFA
@@ -103,131 +101,119 @@ Otherwise, the string can be partitioned into three substrings:
 One that reaches some other state, one that could've moved on to the ripped state
 before ripping and one that could've travelled arbitrarily many loops on the ripped state.
 -/
-lemma rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : x ∈ M.trace q) :
-    (∃ p, q = some p ∧ x ∈ M.rip.trace p) ∨
-    q = none ∧ ∃ (y z : _) (xs : List (List α)) (p : Option σ),
+lemma rip_trace_aux (M : GNFA α (Option σ)) {w q} (hwt : w ∈ M.trace q) :
+    (∃ p, q = some p ∧ w ∈ M.rip.trace p) ∨
+    q = none ∧ ∃ (y z : _) (ws : List (List α)) (p : Option σ),
     (p.map (y ∈ M.rip.trace ·)).getD (y = []) ∧
     z ∈ (M.step (p.map some) (some none)).matches' ∧
-    (∀ x ∈ xs, x ∈ (M.step (some none) (some none)).matches') ∧
-    x = y ++ z ++ xs.join := by
-  refine t.recOn ?_ ?_
+    (∀ w ∈ ws, w ∈ (M.step (some none) (some none)).matches') ∧
+    w = y ++ z ++ ws.join := by
+  refine hwt.recOn ?_ ?_
   · rintro x (⟨⟩ | q) mat
-    · right
-      refine ⟨rfl, [], x, [], none, by dsimp, mat, List.forall_mem_nil _, by simp⟩
-    · left
-      exact ⟨q, rfl, trace.start q (Or.inl mat)⟩
-  · rintro x y z (⟨⟩ | p) (⟨⟩ | q) t mat rfl ih
-    · rcases ih with ⟨_, ⟨⟩, _⟩ | ⟨_, y, z', xs, p, t', matches', x_matches, rfl⟩
-      right
-      refine ⟨rfl, y, z', xs ++ [z], p, t', matches', ?_, by simp⟩
-      rw [List.forall_mem_append, List.forall_mem_singleton]
-      exact ⟨x_matches, mat⟩
-    · left
-      refine ⟨q, rfl, ?_⟩
-      rcases ih with ⟨_, ⟨⟩, _⟩ | ⟨_, y, z', xs, ⟨⟩ | p, t', matches', x_matches, rfl⟩
-      · simp at t'; subst y
-        refine trace.start q ?_
-        right
+    · exact .inr ⟨rfl, [], x, [], none, rfl, mat, List.forall_mem_nil _, by simp⟩
+    · exact .inl ⟨q, rfl, trace.start q (.inl mat)⟩
+  · rintro _ y z (⟨⟩ | p) (⟨⟩ | q) hyt mat rfl ih
+    · rcases ih with ⟨_, ⟨⟩, _⟩ | ⟨_, y, z', xs, p, hyt', mat', loop, rfl⟩
+      refine .inr ⟨rfl, y, z', xs ++ [z], p, hyt', mat', ?_, by simp⟩
+      rw [xs.forall_mem_append, List.forall_mem_singleton]
+      exact ⟨loop, mat⟩
+    · refine .inl ⟨q, rfl, ?_⟩
+      rcases ih with ⟨_, ⟨⟩, _⟩ | ⟨_, y, z', xs, ⟨⟩ | p, hyt', mat', loop, rfl⟩
+      · simp at hyt; subst y
+        refine trace.start q <| .inr ?_
         simp only [List.nil_append, List.append_assoc, Option.map_none', Option.map_some',
           RegularExpression.matches'_mul, RegularExpression.matches'_star]
         rw [← List.append_assoc]
-        exact ⟨_, ⟨_, matches', _, ⟨_, rfl, x_matches⟩, rfl⟩, _, mat, rfl⟩
-      · simp at t'
-        simp only [List.append_assoc, List.append_assoc]
-        refine trace.step _ q t' ?_ rfl
-        right
+        exact ⟨z' ++ xs.join, ⟨z', mat', xs.join, ⟨xs, rfl, loop⟩, rfl⟩, z, mat, rfl⟩
+      · simp only [List.append_assoc]
+        refine trace.step _ q hyt' (.inr ?_) rfl
         rw [← List.append_assoc]
-        exact ⟨_, ⟨_, matches', _, ⟨_, rfl, x_matches⟩, rfl⟩, _, mat, rfl⟩
-    · rcases ih with ⟨p', ⟨⟩, t⟩ | ⟨⟨⟩, _⟩
-      right
-      exact ⟨rfl, y, z, [], some p, by simp [t], mat, List.forall_mem_nil _, by simp⟩
-    · rcases ih with ⟨p', ⟨⟩, t⟩ | ⟨⟨⟩, _⟩
-      left
-      exact ⟨q, rfl, trace.step p q t (Or.inl mat) rfl⟩
+        exact ⟨z' ++ xs.join, ⟨z', mat', xs.join, ⟨xs, rfl, loop⟩, rfl⟩, z, mat, rfl⟩
+    · rcases ih with ⟨p', ⟨rfl⟩, hyt'⟩ | ⟨⟨⟩, _⟩
+      exact .inr ⟨rfl, y, z, [], some p, hyt', mat, List.forall_mem_nil _, by simp⟩
+    · rcases ih with ⟨p', ⟨rfl⟩, hyt'⟩ | ⟨⟨⟩, _⟩
+      exact .inl ⟨q, rfl, trace.step p q hyt' (.inl mat) rfl⟩
 
 /-- Ripping a state preserves the languages of all the remaining internal states. -/
 theorem rip_trace_correct (M : GNFA α (Option σ)) {q : σ} :
     M.trace (some q) = M.rip.trace q := by
-  ext x
+  ext
   constructor
-  · intro t
-    rcases M.rip_trace_aux t with ⟨p, ⟨⟩, t⟩ | ⟨⟨⟩, _⟩
-    exact t
-  · intro t
-    refine t.recOn ?_ ?_
-    · rintro x q (mat | ⟨y, hy, z, hz, rfl⟩)
-      · exact trace.start (some q) mat
+  · intro hxt
+    rcases M.rip_trace_aux hxt with ⟨_, ⟨rfl⟩, hxt'⟩ | ⟨⟨⟩, _⟩
+    exact hxt'
+  · intro hxt'
+    refine hxt'.recOn ?_ ?_
+    · rintro x q (hx | ⟨y, hy, z, hz, rfl⟩)
+      · exact trace.start (some q) hx
       refine trace.step none (some q) ?_ hz rfl
-      rcases hy with ⟨y, hy, z, ⟨xs, rfl, mat⟩, rfl⟩
+      rcases hy with ⟨y, hy, z, ⟨xs, rfl, hxs⟩, rfl⟩
       induction xs using List.reverseRecOn
       · simp; exact trace.start none hy
       rename_i xs x ih
       rw [List.join_append, List.join_singleton]
       simp only [← List.append_assoc]
-      refine trace.step none none (ih ?_) (mat x (by simp)) rfl
+      refine trace.step none none (ih ?_) (hxs x (by simp)) rfl
       intro y mem
-      exact mat y (by simp[mem])
-    · rintro x y z p q _ (mat | ⟨w, hw, x, hx, rfl⟩) rfl ih
-      · exact trace.step (some p) (some q) ih mat rfl
+      exact hxs y (by simp[mem])
+    · rintro x y z p q _ (hz | ⟨w, hw, x, hx, rfl⟩) rfl ih
+      · exact trace.step (some p) (some q) ih hz rfl
       rw [← List.append_assoc]
       refine trace.step none (some q) ?_ hx rfl
       rcases hw with ⟨w, hw, x, hx, rfl⟩
       rw [← List.append_assoc]
-      rcases hx with ⟨xs, rfl, mat⟩
+      rcases hx with ⟨xs, rfl, loop⟩
       induction xs using List.reverseRecOn
       · exact trace.step (some p) none ih hw (by simp)
       rename_i xs x ih
       rw [List.join_append, List.join_singleton, ← List.append_assoc]
-      refine trace.step none none (ih ?_) (mat x (by simp)) rfl
+      refine trace.step none none (ih ?_) (loop x (by simp)) rfl
       intro y mem
-      exact mat y (by simp[mem])
+      exact loop y (by simp[mem])
 
 /-- Ripping a state preserves the language of a GNFA. -/
 -- TODO: maybe mark as @simp
 theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts := by
-  ext
+  ext w
   constructor
-  · rintro (mat | ⟨q, t, mat, rfl⟩)
-    · rcases mat with mat | ⟨_, ⟨x, x_matches, _, ⟨ys, rfl, y_matches⟩, rfl⟩, z, z_matches, rfl⟩
-      · exact accepts.start mat
-      refine accepts.step _ ?_ z_matches rfl
+  · rintro (hw | ⟨q, hyt, hz, rfl⟩)
+    · rcases hw with hw | ⟨_, ⟨x, hx, _, ⟨ys, rfl, loop⟩, rfl⟩, z, hz, rfl⟩
+      · exact accepts.start hw
+      refine accepts.step _ ?_ hz rfl
       induction ys using List.reverseRecOn
       · exact trace.start none (by simpa)
       rename_i ys y ih
       rw [List.join_append, List.join_singleton]
       simp only [← List.append_assoc]
-      refine trace.step none none (ih ?_) (y_matches y (by simp)) rfl
+      refine trace.step none none (ih ?_) (loop y (by simp)) rfl
       intro y mem
-      exact y_matches y (by simp[mem])
-    · rcases mat with mat | ⟨_, ⟨x, x_matches, _, ⟨ys, rfl, y_matches⟩, rfl⟩, z, z_matches, rfl⟩
-      · exact accepts.step _ (M.rip_trace_correct ▸ t) mat rfl
+      exact loop y (by simp[mem])
+    · rcases hz with hz | ⟨_, ⟨x, hx, _, ⟨ys, rfl, loop⟩, rfl⟩, z, hz, rfl⟩
+      · exact accepts.step (some q) (M.rip_trace_correct ▸ hyt) hz rfl
       rw [← List.append_assoc]
-      refine accepts.step _ ?_ z_matches rfl
+      refine accepts.step none ?_ hz rfl
       rw [← List.append_assoc]
       induction ys using List.reverseRecOn
-      · simp; exact trace.step (some q) none (M.rip_trace_correct ▸ t) x_matches rfl
+      · simp; exact trace.step (some q) none (M.rip_trace_correct ▸ hyt) hx rfl
       rename_i ys y ih
       rw [List.join_append, List.join_singleton]
       rw [← List.append_assoc]
-      simp only [List.mem_append] at y_matches
-      refine trace.step none none (ih ?_) (y_matches y (by simp)) rfl
+      simp only [List.mem_append] at loop
+      refine trace.step none none (ih ?_) (loop y (by simp)) rfl
       intro y mem
-      exact y_matches y (Or.inl mem)
-  · rintro (mat | ⟨q, t, mat, rfl⟩)
-    · exact accepts.start (Or.inl mat)
-    rcases M.rip_trace_aux t with ⟨q, rfl, tr⟩ | ⟨rfl, y, z, xs, p, tr, z_matches, x_matches, rfl⟩
-    · exact accepts.step _ tr (Or.inl mat) rfl
+      exact loop y (.inl mem)
+  · rintro (hw | ⟨q, hyt, hz, rfl⟩)
+    · exact accepts.start (.inl hw)
+    rcases M.rip_trace_aux hyt with ⟨q, rfl, hyt'⟩ | ⟨rfl, y, z, xs, p, hyt', hz', loop, rfl⟩
+    · exact accepts.step q hyt' (.inl hz) rfl
     rcases p with ⟨⟩ | p
-    · rw [Option.map_none', Option.getD_none] at tr; subst y
-      refine accepts.start ?_
-      right
-      exact ⟨_, ⟨_, z_matches, _, ⟨xs, rfl, x_matches⟩, rfl⟩, _, mat, rfl⟩
-    · rw [Option.map_some', Option.getD_some] at tr
-      rw [List.append_assoc, List.append_assoc]
-      refine accepts.step _ tr ?_ rfl
-      right
+    · subst y
+      refine accepts.start <| .inr ?_
+      exact ⟨_, ⟨_, hz', _, ⟨xs, rfl, loop⟩, rfl⟩, _, hz, rfl⟩
+    · rw [List.append_assoc, List.append_assoc]
+      refine accepts.step p hyt' (.inr ?_) rfl
       rw [← List.append_assoc]
-      exact ⟨_, ⟨_, z_matches, _, ⟨xs, rfl, x_matches⟩, rfl⟩, _, mat, rfl⟩
+      exact ⟨_, ⟨_, hz', _, ⟨xs, rfl, loop⟩, rfl⟩, _, hz, rfl⟩
 
 /-- Maps a GNFA's states across an equivalence.
 -/
@@ -238,13 +224,14 @@ def mapEquiv {σ τ} (M : GNFA α σ) (e : σ ≃ τ) : GNFA α τ :=
 equivalent GNFA -/
 lemma mapEquiv_trace_aux {σ τ} (M : GNFA α σ) (e : σ ≃ τ) q :
     M.trace q ≤ (M.mapEquiv e).trace (e q) := by
-  intro x t
-  refine t.recOn ?_ ?_ <;>
-    (first
-    | intro _ _ _ p q _ mat eq ih
-      refine trace.step (e p) (e q) ih ?_ eq
-    | intro _ _ mat
-      refine trace.start _ ?_) <;>
+  intro x hxt
+  refine hxt.recOn ?_ ?_ <;>
+    first
+    | rintro _ _ _ p q _ mat rfl ih
+      refine trace.step (e p) (e q) ih ?_ rfl
+    | rintro _ _ mat
+      refine trace.start _ ?_
+  all_goals
   · unfold mapEquiv
     dsimp
     simp only [Equiv.symm_apply_apply]
@@ -255,8 +242,8 @@ theorem mapEquiv_trace {σ τ} (M : GNFA α σ) (e : σ ≃ τ) q :
     M.trace q = (M.mapEquiv e).trace (e q) := by
   ext
   refine ⟨(M.mapEquiv_trace_aux e q ·), ?_⟩
-  intro t
-  have := (M.mapEquiv e).mapEquiv_trace_aux e.symm (e q) t
+  intro hxt
+  have := (M.mapEquiv e).mapEquiv_trace_aux e.symm (e q) hxt
   simp [Equiv.symm_apply_apply, mapEquiv] at this
   exact this
 
@@ -264,9 +251,9 @@ theorem mapEquiv_trace {σ τ} (M : GNFA α σ) (e : σ ≃ τ) q :
 equivalent GNFA -/
 lemma mapEquiv_correct_aux {σ τ} (M : GNFA α σ) (e : σ ≃ τ) :
     M.accepts ≤ (M.mapEquiv e).accepts := by
-  rintro x (mat | ⟨q, t, mat, eq⟩)
-  · exact accepts.start mat
-  refine accepts.step (e q) (M.mapEquiv_trace e q ▸ t) ?_ eq
+  rintro w (hw | ⟨q, hyt, hz, rfl⟩)
+  · exact accepts.start hw
+  refine accepts.step (e q) (M.mapEquiv_trace e q ▸ hyt) ?_ rfl
   unfold mapEquiv
   simpa
 
@@ -284,17 +271,16 @@ theorem mapEquiv_correct {σ τ} (M : GNFA α σ) (e : σ ≃ τ) :
 def sigma_toRegularExpression [enum : FinEnum σ] (M : GNFA α σ) :
     (r : RegularExpression α) ×' M.accepts = r.matches' := by
   induction enum using FinEnum.recOnEmptyOption
-  case of_equiv _ _ e h =>
+  · rename_i _ _ e h
     rcases h (M.mapEquiv e.symm) with ⟨r, hr⟩
     exact ⟨r, hr ▸ M.mapEquiv_correct e.symm⟩
-  case h_empty =>
-    refine ⟨M.step none none, ?_⟩
+  · refine ⟨M.step none none, ?_⟩
     ext
     constructor
     · rintro (mat | ⟨⟨⟩, _, _, _⟩); exact mat
     · exact accepts.start
-  case h_option _ h =>
-    rcases h M.rip with ⟨r, hr⟩
+  · rename_i _ ih
+    rcases ih M.rip with ⟨r, hr⟩
     exact ⟨r, M.rip_correct ▸ hr⟩
 
 end GNFA
@@ -302,8 +288,8 @@ end GNFA
 namespace NFA
 
 variable (M : NFA α σ)
-    [DecidablePred M.start]
-    [DecidablePred M.accept]
+    [DecidablePred (· ∈ M.start)]
+    [DecidablePred (· ∈ M.accept)]
     [∀ p a , DecidablePred (· ∈ M.step p a)]
 
 /-- Convert a computably useful NFA to the corresponding GNFA.
@@ -314,8 +300,8 @@ def toGNFA [alphabet : FinEnum α] : GNFA α σ :=
   ⟨fun p q ↦
     match (p, q) with
     | (none, none) => 0
-    | (none, some q) => if M.start q then 1 else 0
-    | (some p, none) => if M.accept p then 1 else 0
+    | (none, some q) => if q ∈ M.start then 1 else 0
+    | (some p, none) => if p ∈ M.accept then 1 else 0
     | (some p, some q) =>
         (alphabet.toList).filter (q ∈ M.step p ·) |>.map RegularExpression.char |>.sum⟩
 
@@ -325,50 +311,42 @@ theorem toGNFA_correct [alphabet : FinEnum α] : M.accepts = M.toGNFA.accepts :=
   ext x
   constructor
   · rintro ⟨q, accept, eval⟩
-    refine GNFA.accepts.step q ?_ ?_ x.append_nil.symm
-    swap
-    · unfold toGNFA; dsimp
-      rw [Set.mem_def] at accept
-      simp [accept]
+    refine GNFA.accepts.step q ?_ (by simp [toGNFA, accept]) x.append_nil.symm
     clear accept
     induction x using List.reverseRecOn generalizing q
-    case nil =>
-      refine GNFA.trace.start q ?_
-      rw [Set.mem_def, NFA.eval_nil] at eval
-      simp [toGNFA, eval]
-    case append_singleton as a ih =>
-      rw [NFA.eval_append_singleton, NFA.mem_stepSet] at eval
-      rcases eval with ⟨p, mem, step⟩
-      refine' GNFA.trace.step p q (ih p mem) _ rfl
-      simp [toGNFA, Language.mem_sum, alphabet.mem_toList, List.mem_filter]
-      exact ⟨a, step, rfl⟩
-  · rintro (@⟨x, ⟨⟩⟩ | @⟨_, y, z, q, t, step, rfl⟩)
-    rcases h : decide (M.accept q) <;> simp at h <;> simp [toGNFA, h] at step
+    · exact GNFA.trace.start q (by simp [toGNFA, M.eval_nil ▸ eval])
+    rename_i as a ih
+    rw [M.eval_append_singleton, M.mem_stepSet] at eval
+    rcases eval with ⟨p, mem, step⟩
+    refine GNFA.trace.step p q (ih p mem) ?_ rfl
+    simp [toGNFA, Language.mem_sum, alphabet.mem_toList, List.mem_filter]
+    exact ⟨a, step, rfl⟩
+  · rintro (@⟨x, ⟨⟩⟩ | @⟨_, y, z, q, hyt, step, rfl⟩)
+    rcases Decidable.em (q ∈ M.accept) with accept | accept <;> simp [toGNFA, accept] at step
     subst z
-    refine ⟨q, h, ?_⟩
-    clear h
+    refine ⟨q, accept, ?_⟩
+    clear accept
     rw [List.append_nil]
     induction y using List.reverseRecOn generalizing q
-    case nil =>
-      rw [NFA.eval_nil]
-      rcases t with ⟨_, step⟩ | @⟨_, x, y, z, p, t, step, eq⟩
-      · unfold toGNFA at step; simp only at step
-        rcases h : decide (M.start q) <;> simp at h
-        · simp [h] at step
-        · exact h
+    · rw [NFA.eval_nil]
+      rcases hyt with ⟨_, step⟩ | @⟨_, x, y, z, p, hyt, step, eq⟩
+      · simp only [toGNFA] at step
+        rcases Decidable.em (q ∈ M.start) with start | start
+        · exact start
+        · simp [start] at step
       · rw [List.nil_eq_append] at eq
         rcases eq with ⟨rfl, rfl⟩
         simp [toGNFA, Language.mem_sum, List.mem_map] at step
-        rcases step with ⟨a, _, _, ⟨⟩⟩
-    case append_singleton as a ih =>
-      rw [NFA.eval_append_singleton]
-      rcases t with ⟨_, step⟩ | @⟨x, y, z, p, _, t, step, eq⟩
-      · rcases h : decide (M.start q) <;> simp at h <;> simp [toGNFA, h] at step
+        rcases step with ⟨_, _, _, ⟨⟩⟩
+    · rename_i as a ih
+      rw [M.eval_append_singleton]
+      rcases hyt with ⟨_, step⟩ | @⟨x, y, z, p, _, hyt, step, eq⟩
+      · rcases Decidable.em (q ∈ M.start) with start | start <;> simp [toGNFA, start] at step
       simp [toGNFA, Language.mem_sum, List.mem_filter] at step
-      rcases step with ⟨r, mem, rfl⟩
+      rcases step with ⟨r, step, rfl⟩
       rcases List.append_inj' eq rfl with ⟨rfl, ⟨rfl⟩⟩
-      rw [NFA.mem_stepSet]
-      exact ⟨p, ih p t, mem⟩
+      rw [M.mem_stepSet]
+      exact ⟨p, ih p hyt, step⟩
 
 /-- Any computably useful NFA with a `FinEnum` state space has some `RegularExpression` that matches
 its language -/
@@ -385,8 +363,8 @@ theorem toRegularExpression_correct [FinEnum α] [FinEnum σ] :
     M.accepts = M.toRegularExpression.matches' :=
   M.sigma_toRegularExpression.snd
 
-/-- Classically, only a finite state space and alphabet are required for an NFA to permit the
-possibility of having a regular expression that matches its language. -/
+/-- Non-constructively, enumerability of state space and alphabet are not needed for an NFA to
+permit the possibility of having a regular expression that matches its language. -/
 theorem exists_toRegularExpression [Fintype α] [Fintype σ] (M : NFA α σ) :
     ∃ r : RegularExpression α, M.accepts = r.matches' := by
   classical
