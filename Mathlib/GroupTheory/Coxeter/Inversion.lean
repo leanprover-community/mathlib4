@@ -403,8 +403,8 @@ theorem nodup_rightInvSeq_of_isReduced {ω : List B} (rω : cs.IsReduced ω) : L
     rw [h₂, cs.getD_rightInvSeq, cs.getD_rightInvSeq,
       (Nat.sub_add_cancel (by linarith) : j' - 1 + 1 = j'), eraseIdx_eq_take_drop_succ,
       drop_append_eq_append_drop, drop_length_le (by simp; left; linarith), length_take,
-      drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), Nat.succ_eq_add_one,
-      ← add_assoc, Nat.sub_add_cancel (by linarith), mul_left_inj, mul_right_inj]
+      drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), ← add_assoc,
+      Nat.sub_add_cancel (by linarith), mul_left_inj, mul_right_inj]
     congr 2
     -- ⊢ get? (take j ω ++ drop (j + 1) ω) (j' - 1) = get? ω j'
     rw [get?_append_right (by simp; left; exact Nat.le_sub_one_of_lt j_lt_j'), get?_drop]
