@@ -9,7 +9,7 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 /-!
 # Cotangent
 
-This file contains lemmas about the cotangent function. Specifically, useful series expansions.
+This file contains lemmas about the cotangent function, including useful series expansions.
 -/
 
 open Real Complex BigOperators Filter
@@ -30,7 +30,7 @@ lemma cot_eq_exp_ratio (z : ℂ) :
     ring_nf
   rw [h1, h2, mul_div_mul_left _ _ (Complex.exp_ne_zero _)]
 
-/-The version one probably wants to use more. -/
+/- The version one probably wants to use more. -/
 lemma cot_pi_eq_exp_ratio (z : ℂ) :
     cot (π * z) = (Complex.exp (2 * π * I * z) + 1) / (I * (1 - Complex.exp (2 * π * I * z))) := by
   rw [cot_eq_exp_ratio (π * z)]
@@ -43,7 +43,7 @@ theorem UpperHalfPlane.exp_two_pi_I_lt_one (z : ℍ) :
     coe_im, zero_sub, exp_lt_one_iff, Left.neg_neg_iff]
   positivity
 
-/-This is the version one probably wants, which is why the pi's are there. -/
+/- This is the version one probably wants, which is why the pi's are there. -/
 theorem pi_mul_cot_pi_q_exp (z : ℍ) :
     π * cot (π * z) = π * I - 2 * π * I * ∑' n : ℕ, Complex.exp (2 * π * I * z) ^ n := by
   have h1 : π * ((exp (2 * π * I * z) + 1) / (I * (1 - exp (2 * π * I * z)))) =
