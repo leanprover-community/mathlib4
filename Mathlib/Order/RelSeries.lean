@@ -165,6 +165,28 @@ instance membership : Membership α (RelSeries r) :=
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
 
+@[simp]
+theorem mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
+  rw [RelSeries.toList, List.mem_ofFn, RelSeries.mem_def]
+
+theorem length_pos_of_mem_ne {s : RelSeries r} {x y : α} (hx : x ∈ s) (hy : y ∈ s)
+    (hxy : x ≠ y) : 0 < s.length := by
+  obtain ⟨i, rfl⟩ := hx
+  obtain ⟨j, rfl⟩ := hy
+  contrapose! hxy
+  congr!
+  exact Fin.castIso (by rw [show s.length = 0 by simpa using hxy, zero_add] : s.length + 1 = 1)
+    |>.injective <| Subsingleton.elim (α := Fin 1) _ _
+
+variable {r} in
+lemma forall_mem_eq_of_length_eq_zero {s : RelSeries r} (hs : s.length = 0) {x y}
+    (hx : x ∈ s) (hy : y ∈ s) : x = y := by
+  rcases hx with ⟨i, rfl⟩
+  rcases hy with ⟨j, rfl⟩
+  congr!
+  exact Fin.castIso (by rw [hs, zero_add] : s.length + 1 = 1) |>.injective <|
+    Subsingleton.elim (α := Fin 1) _ _
+
 /-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
 Since a relation series is assumed to be non-empty, this is well defined. -/
@@ -357,6 +379,38 @@ def cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) : RelSeries r
     (p.cons newHead rel).last = p.last := by
   delta cons
   rw [last_append]
+
+/--
+Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `aₙ -r→ a` holds, there is
+a series of length `n+1`: `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ a`.
+-/
+@[simps! length]
+def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r :=
+  p.append (singleton r newLast) rel
+
+@[simp] lemma head_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
+    (p.snoc newLast rel).head = p.head := by
+  delta snoc; rw [head_append]
+
+@[simp] lemma last_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
+    (p.snoc newLast rel).last = newLast := last_append _ _ _
+
+@[simp] lemma snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last a)
+    (i : Fin (s.length + 1)) : snoc s a connect (Fin.castSucc i) = s i :=
+  Fin.append_left _ _ i
+
+lemma mem_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) (x : α) :
+    x ∈ p.snoc newLast rel ↔ x ∈ p ∨ x = newLast := by
+  simp only [snoc, append, singleton_length, Nat.add_zero, Nat.reduceAdd, Fin.cast_refl,
+    Function.comp_id, mem_def, id_eq, Set.mem_range]
+  constructor
+  · rintro ⟨i, rfl⟩
+    exact Fin.lastCases (Or.inr <| Fin.append_right _ _ 0) (fun i => Or.inl ⟨⟨i.1, i.2⟩,
+      (Fin.append_left _ _ _).symm⟩) i
+  · intro h
+    rcases h with (⟨i, rfl⟩ | rfl)
+    · exact ⟨i.castSucc, Fin.append_left _ _ _⟩
+    · exact ⟨Fin.last _, Fin.append_right _ _ 0⟩
 
 /--
 If a series `a₀ -r→ a₁ -r→ ...` has positive length, then `a₁ -r→ ...` is another series
