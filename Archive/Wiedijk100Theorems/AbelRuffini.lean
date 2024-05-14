@@ -8,6 +8,7 @@ import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.EisensteinCriterion
+import Mathlib.Tactic.NormNum.Prime
 
 #align_import wiedijk_100_theorems.abel_ruffini from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
@@ -162,11 +163,10 @@ theorem complex_roots_Phi (h : (Φ ℚ a b).Separable) : Fintype.card ((Φ ℚ a
   (card_rootSet_eq_natDegree h (IsAlgClosed.splits_codomain _)).trans (natDegree_Phi a b)
 #align abel_ruffini.complex_roots_Phi AbelRuffini.complex_roots_Phi
 
--- unseal Nat.minFacAux in
 theorem gal_Phi (hab : b < a) (h_irred : Irreducible (Φ ℚ a b)) :
     Bijective (galActionHom (Φ ℚ a b) ℂ) := by
   apply galActionHom_bijective_of_prime_degree' h_irred
-  · simp only [natDegree_Phi]; decide
+  · simp only [natDegree_Phi]; norm_num
   · rw [complex_roots_Phi a b h_irred.separable, Nat.succ_le_succ_iff]
     exact (real_roots_Phi_le a b).trans (Nat.le_succ 3)
   · simp_rw [complex_roots_Phi a b h_irred.separable, Nat.succ_le_succ_iff]

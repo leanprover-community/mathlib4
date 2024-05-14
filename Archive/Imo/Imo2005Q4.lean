@@ -24,13 +24,14 @@ def a (n : ℕ) : ℤ :=
   2 ^ n + 3 ^ n + 6 ^ n - 1
 #align imo2005_q4.a IMO2005Q4.a
 
--- unseal Nat.minFacAux in
 /-- Key lemma (a modular arithmetic calculation):  Given a prime `p` other than `2` or `3`, the
 `(p - 2)`th term of the sequence has `p` as a factor. -/
 theorem find_specified_factor {p : ℕ} (hp : Nat.Prime p) (hp2 : p ≠ 2) (hp3 : p ≠ 3) :
     ↑p ∣ a (p - 2) := by
   -- Since `p` is neither `2` nor `3`, it is coprime with `2`, `3`, and `6`
-  rw [Ne, ← Nat.prime_dvd_prime_iff_eq hp (by decide), ← Nat.Prime.coprime_iff_not_dvd hp]
+  have := Nat.prime_two
+  have := Nat.prime_three
+  rw [Ne, ← Nat.prime_dvd_prime_iff_eq hp (by assumption), ← Nat.Prime.coprime_iff_not_dvd hp]
     at hp2 hp3
   have : Int.gcd p 6 = 1 := Nat.coprime_mul_iff_right.2 ⟨hp2, hp3⟩
   -- Nat arithmetic needed to deal with powers
