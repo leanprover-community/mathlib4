@@ -14,6 +14,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.Algebra.Module.Projective
+import Mathlib.Data.Real.Basic
 
 
 /-!
@@ -685,13 +686,24 @@ lemma divNatThing (j : ℕ) : (j * (j + 1) / 2 : ℕ) = (j * (j + 1) : ℚ) / 2 
 -- ¬ Submodule.map (LinearMap.inr K V W) ⊤ ≤ X (this is probably easier for by_cases)
 -- Submodule.map (LinearMap.inr K V W) ⊤ ∩ X ≠ Submodule.map (LinearMap.inr K V W) ⊤
 
--- the second one is dependent on the first
-def subspacesBijection2 : {X : Submodule K (V × W) | ¬ Submodule.map (LinearMap.inr K V W) ⊤ ≤ X} ≃
-  {((X, φ) : (Submodule K V × W) × (V × W →ₗ[K] W)) | ∀ x ∈ X, x.2 = 0 ∧ ∀ x ∉ X, φ x = 0} where
-    toFun := _
-    invFun := _
-    left_inv := _
-    right_inv := _
+-- example {K V W : Type u} [Field K] [AddCommGroup V] [AddCommGroup W] [Module K V] [Module K W] :
+--     {X : Submodule K (V × W) | ¬ Submodule.map (LinearMap.inr K V W) ⊤ ≤ X} ≃
+--   {(X : Submodule K V) × (X →ₗ[K] W)} := sorry
+
+example : (n : ℕ) × (Fin n → ℕ) := sorry
+
+example {V : Type u} [Field K] [AddCommGroup V] [Module K V] :
+    {X : Submodule K (V × K) | ¬ Submodule.map (LinearMap.inr K V K) ⊤ ≤ X}
+    ≃ (X : Submodule K V) × (X →ₗ[K] K) := sorry
+
+
+-- -- the second one is dependent on the first
+-- def subspacesBijection2 : {X : Submodule K (V × W) | ¬ Submodule.map (LinearMap.inr K V W) ⊤ ≤ X} ≃
+--   {((X, φ) : (Submodule K V × W) × (V × W →ₗ[K] W)) | ∀ x ∈ X, x.2 = 0 ∧ ∀ x ∉ X, φ x = 0} where
+--     toFun := _
+--     invFun := _
+--     left_inv := _
+--     right_inv := _
 
 /-def succDimSubspaces_equivDimSubspaces (a : V) (ha : a ≠ 0) (k : ℕ) :
   {W : Submodule K ((V ⧸ (K ∙ a)) × (K ∙ a))| FiniteDimensional.finrank K W = k + 1 ∧ ⟨0, ⟨a, mem_span_singleton_self a⟩⟩ ∈ W} ≃
