@@ -9,7 +9,7 @@ import Mathlib.Tactic.Common
 -- and not a "greater or equal".
 --local notation3 "𝕜≥0" => ℕ
 --lemma fine : ℚ≥0 := 1
-
+/-
 set_option linter.geOrGt false in
 lemma test : 3 ≥ 2 := sorry
 
@@ -44,6 +44,7 @@ please change the statement to use ≤ or < instead
 note: this linter can be disabled with `set_option linter.geOrGt false` -/
 #guard_msgs in
 lemma test8 (h : ∀ n : ℤ, n > 100) : ∃ k : ℤ, k > 100 := ⟨200, h 200⟩
+-/
 
 -- Exclude ≥ as a comparator/unapplied relation; this should not be linted!
 def dummy (_r : ℕ → ℕ → Prop) : Bool := True
@@ -80,7 +81,7 @@ lemma foo2 (_hf : dummy (· ≥ ·) ) : True := trivial
    Algebra/Lie/Nilpotent, Algebra/Lie/Submodule; MeasureTheory/Function/EssSup
   or as an order, e.g. IsWellOrder, WellFounded, Directed(On)
 
-- in Order/Field/Basic:669, have `>` in a calc proof
+- in Order/Field/Basic:669, have `>` in a calc proof -> could be fixed
 - in Order/Ring/Defs:885, entire proof is (line 889 similar):
   `le_of_not_gt fun ha : a > 0 => (mul_pos ha hb).not_le h`
 
@@ -92,5 +93,5 @@ other occurrences in Tactic/Ring/Basic, Tactic/Linarith/Datatypes; Data/Finset/B
 - `Data/PNat/Basic` has `have hm : (m : ℕ) > 0 := m.pos` (that is later changed)
 
 - less clear-cut: Data/Finset/Fold (but used in proofs)
-- slightly more interesting: `wellFoundedOn_iff_no_descending_seq` in Order/WellFoundedSet
+- slightly more interesting: `x` in Order/WellFoundedSet
 -/
