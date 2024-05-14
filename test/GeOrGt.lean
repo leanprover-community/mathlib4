@@ -115,7 +115,6 @@ lemma proof3 {m n : ℕ} : True := by
   or as an order, e.g. IsWellOrder, WellFounded, Directed(On)
 => this should be fixed now!
 
-- in Order/Field/Basic:669, have `>` in a calc proof -> could be fixed there
 - in Order/Ring/Defs:885, entire proof is (line 889 similar):
   `le_of_not_gt fun ha : a > 0 => (mul_pos ha hb).not_le h` --> similar
 
@@ -128,6 +127,5 @@ other occurrences in Tactic/Ring/Basic, Tactic/Linarith/Datatypes; Data/Finset/B
 ... perhaps these are not ideal, but they probably shouldn't get linted
 - `Data/PNat/Basic` has `have hm : (m : ℕ) > 0 := m.pos` (that is later changed)
 
-- less clear-cut: Data/Finset/Fold (but used in proofs)
 - slightly more interesting: `x` in Order/WellFoundedSet
 -/
