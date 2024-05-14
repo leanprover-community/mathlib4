@@ -8,10 +8,20 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Convert
 
+#align_import init.data.int.comp_lemmas from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
+
 /-!
 # Basic operations on the integers
 
 This file contains some basic lemmas about integers.
+
+See note [foundational algebra order theory].
+
+## TODO
+
+Split this file into:
+* `Data.Int.Init` (or maybe `Data.Int.Batteries`?) for lemmas that could go to Batteries
+* `Data.Int.Basic` for the lemmas that require mathlib definitions
 -/
 
 open Nat
@@ -19,15 +29,42 @@ open Nat
 namespace Int
 variable {m n : ℕ}
 
--- TODO: Tag in Std
+#noalign int.ne_neg_of_ne
+#noalign int.neg_ne_zero_of_ne
+#noalign int.zero_ne_neg_of_ne
+#noalign int.neg_ne_of_pos
+#noalign int.ne_neg_of_pos
+#noalign int.bit0_nonneg
+#noalign int.bit1_nonneg
+#noalign int.nonneg_of_pos
+#noalign int.ne_of_nat_abs_ne_nat_abs_of_nonneg
+#noalign int.ne_of_nat_ne_nonneg_case
+#noalign int.nat_abs_bit0
+#noalign int.nat_abs_bit0_step
+#noalign int.nat_abs_bit1_nonneg
+#noalign int.nat_abs_bit1_nonneg_step
+#align int.neg_succ_lt_zero Int.negSucc_lt_zero
+#align int.of_nat_nat_abs_eq_of_nonneg Int.ofNat_natAbs_eq_of_nonnegₓ
+#align int.nat_abs_of_neg_succ_of_nat Int.natAbs_negSucc
+
+-- TODO: Tag in Lean
 attribute [simp] natAbs_pos
 
-instance instNontrivialInt : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
+protected lemma one_pos : 0 < (1 : Int) := Int.zero_lt_one
+#align int.one_pos Int.one_pos
+
+protected lemma one_nonneg : 0 ≤ (1 : ℤ) := Int.le_of_lt Int.zero_lt_one
+#align int.one_nonneg Int.one_nonneg
+
+lemma zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n := @le.intro _ _ n (by rw [Int.zero_add]; rfl)
+#align int.zero_le_of_nat Int.zero_le_ofNat
+
+instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
 @[simp] lemma ofNat_eq_natCast : Int.ofNat n = n := rfl
 
--- 2024-03-24
-@[deprecated ofNat_eq_natCast] protected lemma natCast_eq_ofNat (n : ℕ) : ↑n = Int.ofNat n := rfl
+@[deprecated ofNat_eq_natCast] -- 2024-03-24
+protected lemma natCast_eq_ofNat (n : ℕ) : ↑n = Int.ofNat n := rfl
 #align int.coe_nat_eq Int.natCast_eq_ofNat
 
 @[norm_cast] lemma natCast_inj : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
@@ -37,6 +74,15 @@ instance instNontrivialInt : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
 @[norm_cast]
 protected lemma natCast_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
+
+lemma natCast_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 := by omega
+#align int.coe_nat_eq_zero Int.natCast_eq_zero
+
+lemma natCast_ne_zero {n : ℕ} : (n : ℤ) ≠ 0 ↔ n ≠ 0 := by omega
+#align int.coe_nat_ne_zero Int.natCast_ne_zero
+
+lemma natCast_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n := by omega
+#align int.coe_nat_ne_zero_iff_pos Int.natCast_ne_zero_iff_pos
 
 #align int.neg_succ_not_nonneg Int.negSucc_not_nonneg
 #align int.neg_succ_not_pos Int.negSucc_not_pos
@@ -138,6 +184,19 @@ lemma succ_neg_natCast_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ
 
 /-! ### nat abs -/
 
+-- TODO: Rename `natAbs_of_Nat` to `natAbs_natCast`
+lemma natAbs_ofNat' (n : ℕ) : natAbs (ofNat n) = n := rfl
+#align int.nat_abs_of_nat_core Int.natAbs_ofNat'
+
+lemma natAbs_add_of_nonneg : ∀ {a b : Int}, 0 ≤ a → 0 ≤ b → natAbs (a + b) = natAbs a + natAbs b
+  | ofNat _, ofNat _, _, _ => rfl
+#align int.nat_abs_add_nonneg Int.natAbs_add_of_nonneg
+
+lemma natAbs_add_of_nonpos {a b : Int} (ha : a ≤ 0) (hb : b ≤ 0) :
+    natAbs (a + b) = natAbs a + natAbs b := by
+  omega
+#align int.nat_abs_add_neg Int.natAbs_add_of_nonpos
+
 lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
 #align int.nat_abs_surjective Int.natAbs_surjective
 
@@ -158,6 +217,13 @@ lemma natAbs_ne_zero_of_ne_zero : ∀ {a : ℤ}, a ≠ 0 → natAbs a ≠ 0 := n
 #align int.nat_abs_lt_nat_abs_of_nonneg_of_lt Int.natAbs_lt_natAbs_of_nonneg_of_lt
 #align int.nat_abs_eq_nat_abs_iff Int.natAbs_eq_natAbs_iff
 #align int.nat_abs_eq_iff Int.natAbs_eq_iff
+
+lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
+  simp [Int.pow_succ, Int.pow_zero, Int.natAbs_mul_self']
+#align int.nat_abs_sq Int.natAbs_sq
+
+alias natAbs_pow_two := natAbs_sq
+#align int.nat_abs_pow_two Int.natAbs_pow_two
 
 /-! ### `/`  -/
 

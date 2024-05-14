@@ -3,7 +3,6 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
-import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Data.Finset.MulAntidiagonal
@@ -74,7 +73,7 @@ end HahnSeries
 /-- We introduce a type alias for `HahnSeries` in order to work with scalar multiplication by
 series. If we wrote a `SMul (HahnSeries Γ R) (HahnSeries Γ V)` instance, then when
 `V = HahnSeries Γ R`, we would have two different actions of `HahnSeries Γ R` on `HahnSeries Γ V`.
-See `Mathlib.Data.Polynomial.Module` for more discussion on this problem. -/
+See `Mathlib.Algebra.Polynomial.Module` for more discussion on this problem. -/
 @[nolint unusedArguments]
 def HahnModule (Γ R V : Type*) [PartialOrder Γ] [Zero V] [SMul R V] :=
   HahnSeries Γ V
@@ -442,6 +441,18 @@ theorem single_mul_single {a b : Γ} {r s : R} :
 #align hahn_series.single_mul_single HahnSeries.single_mul_single
 
 end NonUnitalNonAssocSemiring
+
+section Semiring
+
+variable [Semiring R]
+
+@[simp]
+theorem single_pow (a : Γ) (n : ℕ) (r : R) : single a r ^ n = single (n • a) (r ^ n) := by
+  induction' n with n IH
+  · simp; rfl
+  · rw [pow_succ, pow_succ, IH, single_mul_single, succ_nsmul]
+
+end Semiring
 
 section NonAssocSemiring
 

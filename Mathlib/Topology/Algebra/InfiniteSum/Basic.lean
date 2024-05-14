@@ -61,6 +61,10 @@ theorem Multipliable.congr (hf : Multipliable f) (hfg : ∀ b, f b = g b) : Mult
 #align summable.congr Summable.congr
 
 @[to_additive]
+lemma HasProd.congr_fun (hf : HasProd f a) (h : ∀ x : β, g x = f x) : HasProd g a :=
+  (funext h : g = f) ▸ hf
+
+@[to_additive]
 theorem HasProd.hasProd_of_prod_eq {g : γ → α}
     (h_eq : ∀ u : Finset γ, ∃ v : Finset β, ∀ v', v ⊆ v' →
       ∃ u', u ⊆ u' ∧ ∏ x in u', g x = ∏ b in v', f b)

@@ -3,14 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Data.Polynomial.Lifts
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.IntegralClosure
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 #align_import ring_theory.localization.integral from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -260,7 +260,7 @@ theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
   intro n
   rw [Polynomial.coeff_scaleRoots]
   by_cases h₁ : n ∈ p.support
-  by_cases h₂ : n = p.natDegree
+  on_goal 1 => by_cases h₂ : n = p.natDegree
   · rwa [h₂, Polynomial.coeff_natDegree, tsub_self, pow_zero, _root_.mul_one]
   · have : n + 1 ≤ p.natDegree := lt_of_le_of_ne (Polynomial.le_natDegree_of_mem_supp _ h₁) h₂
     rw [← tsub_add_cancel_of_le (le_tsub_of_add_le_left this), pow_add, pow_one, mul_comm,
@@ -284,8 +284,8 @@ theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [
   -- Porting note: obtain doesn't support side goals
   have :=
     lifts_and_natDegree_eq_and_monic (IsLocalization.scaleRoots_commonDenom_mem_lifts M p ?_) ?_
-  obtain ⟨p', hp'₁, -, hp'₂⟩ := this
-  · refine' ⟨IsLocalization.commonDenom M p.support p.coeff, p', hp'₂, _⟩
+  · obtain ⟨p', hp'₁, -, hp'₂⟩ := this
+    refine' ⟨IsLocalization.commonDenom M p.support p.coeff, p', hp'₂, _⟩
     rw [IsScalarTower.algebraMap_eq R Rₘ S, ← Polynomial.eval₂_map, hp'₁, Submonoid.smul_def,
       Algebra.smul_def, IsScalarTower.algebraMap_apply R Rₘ S]
     exact Polynomial.scaleRoots_eval₂_eq_zero _ hp₂

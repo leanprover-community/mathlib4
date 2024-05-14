@@ -357,7 +357,7 @@ def y (D : ℝ) : E → ℝ :=
 theorem y_neg (D : ℝ) (x : E) : y D (-x) = y D x := by
   apply convolution_neg_of_neg_eq
   · filter_upwards with x
-    simp only [w_def, Real.rpow_nat_cast, mul_inv_rev, smul_neg, u_neg, smul_eq_mul, forall_const]
+    simp only [w_def, Real.rpow_natCast, mul_inv_rev, smul_neg, u_neg, smul_eq_mul, forall_const]
   · filter_upwards with x
     simp only [φ, indicator, mem_closedBall, dist_zero_right, norm_neg, forall_const]
 #align exists_cont_diff_bump_base.Y_neg ExistsContDiffBumpBase.y_neg
@@ -556,7 +556,6 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
           _ = 1 - (R - 1) / (R + 1) := by field_simp; ring
       support := fun R hR => by
         have A : 0 < (R + 1) / 2 := by linarith
-        have A' : 0 < R + 1 := by linarith
         have C : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
         simp only [hR, if_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]

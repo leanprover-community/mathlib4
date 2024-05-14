@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
 import Mathlib.Data.Nat.Defs
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Tactic.Monotonicity.Attr
 
 #align_import data.nat.log from "leanprover-community/mathlib"@"3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6"
@@ -40,7 +40,7 @@ def log (b : ℕ) : ℕ → ℕ
 @[simp]
 theorem log_eq_zero_iff {b n : ℕ} : log b n = 0 ↔ n < b ∨ b ≤ 1 := by
   rw [log, dite_eq_right_iff]
-  simp only [Nat.succ_ne_zero, imp_false, not_and_or, not_le, not_lt]
+  simp only [Nat.add_eq_zero_iff, Nat.one_ne_zero, and_false, imp_false, not_and_or, not_le, not_lt]
 #align nat.log_eq_zero_iff Nat.log_eq_zero_iff
 
 theorem log_of_lt {b n : ℕ} (hb : n < b) : log b n = 0 :=
@@ -53,7 +53,7 @@ theorem log_of_left_le_one {b : ℕ} (hb : b ≤ 1) (n) : log b n = 0 :=
 
 @[simp]
 theorem log_pos_iff {b n : ℕ} : 0 < log b n ↔ b ≤ n ∧ 1 < b := by
-  rw [Nat.pos_iff_ne_zero, Ne.def, log_eq_zero_iff, not_or, not_lt, not_le]
+  rw [Nat.pos_iff_ne_zero, Ne, log_eq_zero_iff, not_or, not_lt, not_le]
 #align nat.log_pos_iff Nat.log_pos_iff
 
 theorem log_pos {b n : ℕ} (hb : 1 < b) (hbn : b ≤ n) : 0 < log b n :=
@@ -93,7 +93,7 @@ theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
   | succ x =>
     rw [log]; split_ifs with h
     · have b_pos : 0 < b := lt_of_succ_lt hb
-      rw [succ_eq_add_one, Nat.add_le_add_iff_right, ← ih (y / b) (div_lt_self
+      rw [Nat.add_le_add_iff_right, ← ih (y / b) (div_lt_self
         (Nat.pos_iff_ne_zero.2 hy) hb) (Nat.div_pos h.1 b_pos).ne', le_div_iff_mul_le b_pos,
         pow_succ', Nat.mul_comm]
     · exact iff_of_false (fun hby => h ⟨(le_self_pow x.succ_ne_zero _).trans hby, hb⟩)
@@ -137,7 +137,7 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
   · rw [le_antisymm_iff, ← Nat.lt_succ_iff, ← pow_le_iff_le_log, ← lt_pow_iff_log_lt, and_comm] <;>
       assumption
   have hm : m ≠ 0 := h.resolve_right hbn
-  rw [not_and_or, not_lt, Ne.def, not_not] at hbn
+  rw [not_and_or, not_lt, Ne, not_not] at hbn
   rcases hbn with (hb | rfl)
   · obtain rfl | rfl := le_one_iff_eq_zero_or_eq_one.1 hb
     any_goals
@@ -294,7 +294,7 @@ theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ 
     exact clog_pos hb
   have b_pos : 0 < b := zero_lt_of_lt hb
   rw [clog]; split_ifs with h
-  · rw [succ_eq_add_one, Nat.add_le_add_iff_right, ← ih ((x + b - 1) / b) (add_pred_div_lt hb h.2),
+  · rw [Nat.add_le_add_iff_right, ← ih ((x + b - 1) / b) (add_pred_div_lt hb h.2),
       Nat.div_le_iff_le_mul_add_pred b_pos, Nat.mul_comm b, ← Nat.pow_succ,
       Nat.add_sub_assoc (Nat.succ_le_of_lt b_pos), Nat.add_le_add_iff_right]
   · exact iff_of_true ((not_lt.1 (not_and.1 h hb)).trans <| succ_le_of_lt <| Nat.pow_pos b_pos)

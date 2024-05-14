@@ -301,7 +301,7 @@ protected theorem injective {α : Type*} [EMetricSpace α] [FunLike F α β]  [D
 /-- The identity is a dilation -/
 protected def id (α) [PseudoEMetricSpace α] : α →ᵈ α where
   toFun := id
-  edist_eq' := ⟨1, one_ne_zero, fun x y => by simp only [id.def, ENNReal.coe_one, one_mul]⟩
+  edist_eq' := ⟨1, one_ne_zero, fun x y => by simp only [id, ENNReal.coe_one, one_mul]⟩
 #align dilation.id Dilation.id
 
 instance : Inhabited (α →ᵈ α) :=

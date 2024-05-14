@@ -176,7 +176,7 @@ theorem Disjoint.set_prod_right (ht : Disjoint t₁ t₂) (s₁ s₂ : Set α) :
 
 theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
   ext ⟨x, y⟩
-  simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]
+  simp (config := { contextual := true }) [image, iff_def, or_imp]
 #align set.insert_prod Set.insert_prod
 
 theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t := by
@@ -682,7 +682,7 @@ theorem offDiag_union (h : Disjoint s t) :
   · rintro (((⟨h0, h1, h2⟩|⟨h0, h1, h2⟩)|⟨h0, h1⟩)|⟨h0, h1⟩) <;> simp [*]
     · rintro h3
       rw [h3] at h0
-      exact (Set.disjoint_left.mp h h0 h1)
+      exact Set.disjoint_left.mp h h0 h1
     · rintro h3
       rw [h3] at h0
       exact (Set.disjoint_right.mp h h0 h1).elim
@@ -737,7 +737,7 @@ theorem pi_congr (h : s₁ = s₂) (h' : ∀ i ∈ s₁, t₁ i = t₂ i) : s₁
 
 theorem pi_eq_empty (hs : i ∈ s) (ht : t i = ∅) : s.pi t = ∅ := by
   ext f
-  simp only [mem_empty_iff_false, not_forall, iff_false_iff, mem_pi, not_imp]
+  simp only [mem_empty_iff_false, not_forall, iff_false_iff, mem_pi, Classical.not_imp]
   exact ⟨i, hs, by simp [ht]⟩
 #align set.pi_eq_empty Set.pi_eq_empty
 

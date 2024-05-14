@@ -7,7 +7,7 @@ import Mathlib.Data.Num.Basic
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Order.LinearOrder
 import Mathlib.Util.CompileInductive
-import Std.Data.RBMap.Basic
+import Batteries.Data.RBMap.Basic
 
 #align_import data.tree from "leanprover-community/mathlib"@"ed989ff568099019c6533a4d94b27d852a5710d8"
 
@@ -47,7 +47,7 @@ variable {α : Type u}
 instance : Inhabited (Tree α) :=
   ⟨nil⟩
 
-open Std (RBNode)
+open Batteries (RBNode)
 
 /-- Makes a `Tree α` out of a red-black tree. -/
 def ofRBNode : RBNode α → Tree α
@@ -145,7 +145,7 @@ def right : Tree α → Tree α
   | node _ _l r => r
 #align tree.right Tree.right
 
--- Notation for making a node with `Unit` data
+/-- A node with `Unit` data -/
 scoped infixr:65 " △ " => Tree.node ()
 
 -- Porting note: workaround for leanprover/lean4#2049

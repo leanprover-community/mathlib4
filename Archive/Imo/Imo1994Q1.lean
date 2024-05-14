@@ -3,13 +3,10 @@ Copyright (c) 2021 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fin.Interval
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.ByContra
 
 #align_import imo.imo1994_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
@@ -70,7 +67,7 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     2 * ∑ i : Fin (m + 1), a i = ∑ i : Fin (m + 1), a i + ∑ i : Fin (m + 1), a i := two_mul _
     _ = ∑ i : Fin (m + 1), a i + ∑ i : Fin (m + 1), a (rev i) := by rw [Equiv.sum_comp rev]
     _ = ∑ i : Fin (m + 1), (a i + a (rev i)) := sum_add_distrib.symm
-    _ ≥ ∑ i : Fin (m + 1), (n + 1) := (sum_le_sum hpair)
+    _ ≥ ∑ i : Fin (m + 1), (n + 1) := sum_le_sum hpair
     _ = (m + 1) * (n + 1) := by rw [sum_const, card_fin, Nat.nsmul_eq_mul]
   -- It remains to prove the key inequality, by contradiction
   rintro k -

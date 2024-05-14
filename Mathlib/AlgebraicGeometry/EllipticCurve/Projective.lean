@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
-import Mathlib.Data.MvPolynomial.CommRing
-import Mathlib.Data.MvPolynomial.PDeriv
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.PDeriv
 
 /-!
 # Projective coordinates for Weierstrass curves
@@ -148,7 +148,7 @@ lemma equation_iff (P : Fin 3 → R) : W.Equation P ↔
 lemma equation_zero (Y : R) : W.Equation ![0, Y, 0] :=
   (W.equation_iff ![0, Y, 0]).mpr <| by matrix_simp; ring1
 
-lemma equation_some (X Y : R) : W.Equation ![X, Y, 1] ↔ W.toAffine.equation X Y := by
+lemma equation_some (X Y : R) : W.Equation ![X, Y, 1] ↔ W.toAffine.Equation X Y := by
   rw [equation_iff, W.toAffine.equation_iff]
   congr! 1 <;> matrix_simp <;> ring1
 
@@ -236,7 +236,7 @@ lemma nonsingular_zero [Nontrivial R] : W.Nonsingular ![0, 1, 0] :=
 lemma nonsingular_zero' [NoZeroDivisors R] {Y : R} (hy : Y ≠ 0) : W.Nonsingular ![0, Y, 0] :=
   (W.nonsingular_iff ![0, Y, 0]).mpr ⟨W.equation_zero Y, by simpa⟩
 
-lemma nonsingular_some (X Y : R) : W.Nonsingular ![X, Y, 1] ↔ W.toAffine.nonsingular X Y := by
+lemma nonsingular_some (X Y : R) : W.Nonsingular ![X, Y, 1] ↔ W.toAffine.Nonsingular X Y := by
   rw [nonsingular_iff]
   matrix_simp
   simp only [W.toAffine.nonsingular_iff, equation_some, and_congr_right_iff,
@@ -277,7 +277,7 @@ lemma nonsingularLift_zero' [NoZeroDivisors R] {Y : R} (hy : Y ≠ 0) :
   W.nonsingular_zero' hy
 
 lemma nonsingularLift_some (X Y : R) :
-    W.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W.toAffine.nonsingular X Y :=
+    W.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W.toAffine.Nonsingular X Y :=
   W.nonsingular_some X Y
 
 variable {F : Type u} [Field F] {W : Projective F}
@@ -287,14 +287,16 @@ lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nons
   rw [fin3_def P, hPz] at hP ⊢
   rw [fin3_def Q, hQz] at hQ ⊢
   simp? [nonsingular_iff, equation_iff] at hP hQ says
-    simp only [Fin.isValue, nonsingular_iff, equation_iff, Matrix.cons_val_one, Matrix.head_cons,
-      Matrix.cons_val_two, Matrix.tail_cons, mul_zero, Matrix.cons_val_zero, add_zero, ne_eq,
-      OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_eq_mul, pow_eq_zero_iff, sub_self,
-      not_true_eq_false, false_or] at hP hQ
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, nonsingular_iff,
+      equation_iff, Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_two, Matrix.tail_cons,
+      mul_zero, Matrix.cons_val_zero, add_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+      zero_pow, zero_eq_mul, pow_eq_zero_iff, not_or, sub_self, not_true_eq_false, false_or]
+    at hP hQ
   simp? [pow_eq_zero hP.left.symm, pow_eq_zero hQ.left.symm] at * says
-    simp only [Fin.isValue, pow_eq_zero hP.left.symm, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
-      zero_pow, or_true, not_true_eq_false, mul_zero, zero_mul, add_zero, pow_eq_zero_iff, false_or,
-      true_and, pow_eq_zero hQ.left.symm] at *
+    simp only [Fin.isValue, pow_eq_zero hP.left.symm, ne_eq, OfNat.ofNat_ne_zero,
+      not_false_eq_true, zero_pow, not_true_eq_false, and_false, mul_zero, zero_mul, add_zero,
+      pow_eq_zero_iff, false_or, true_and, pow_eq_zero hQ.left.symm, Nat.succ_eq_add_one,
+      Nat.reduceAdd] at *
   exact ⟨Units.mk0 (P y / Q y) <| div_ne_zero hP hQ, by simp [div_mul_cancel₀ _ hQ]⟩
 
 lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (h : W.Nonsingular P) (hPz : P z = 0) :
@@ -305,15 +307,15 @@ lemma equiv_some_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : P ≈ ![P x 
   ⟨Units.mk0 _ hPz, by simp [← fin3_def P, mul_div_cancel₀ _ hPz]⟩
 
 lemma nonsingular_iff_affine_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    W.Nonsingular P ↔ W.toAffine.nonsingular (P x / P z) (P y / P z) :=
+    W.Nonsingular P ↔ W.toAffine.Nonsingular (P x / P z) (P y / P z) :=
   (W.nonsingular_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| W.nonsingular_some ..
 
 lemma nonsingular_of_affine_of_Z_ne_zero {P : Fin 3 → F}
-    (h : W.toAffine.nonsingular (P x / P z) (P y / P z)) (hPz : P z ≠ 0) : W.Nonsingular P :=
+    (h : W.toAffine.Nonsingular (P x / P z) (P y / P z)) (hPz : P z ≠ 0) : W.Nonsingular P :=
   (nonsingular_iff_affine_of_Z_ne_zero hPz).mpr h
 
 lemma nonsingular_affine_of_Z_ne_zero {P : Fin 3 → F} (h : W.Nonsingular P) (hPz : P z ≠ 0) :
-    W.toAffine.nonsingular (P x / P z) (P y / P z) :=
+    W.toAffine.Nonsingular (P x / P z) (P y / P z) :=
   (nonsingular_iff_affine_of_Z_ne_zero hPz).mp h
 
 end Equation

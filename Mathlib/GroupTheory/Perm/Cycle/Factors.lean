@@ -313,7 +313,7 @@ end CycleOf
 section cycleFactors
 
 open scoped List in
-/-- Given a list `l : List α` and a permutation `f : perm α` whose nonfixed points are all in `l`,
+/-- Given a list `l : List α` and a permutation `f : Perm α` whose nonfixed points are all in `l`,
   recursively factors `f` into cycles. -/
 def cycleFactorsAux [DecidableEq α] [Fintype α] :
     ∀ (l : List α) (f : Perm α),
@@ -352,8 +352,7 @@ def cycleFactorsAux [DecidableEq α] [Fintype α] :
               have hgm : (g::m.erase g) ~ m :=
                 List.cons_perm_iff_perm_erase.2 ⟨hg, List.Perm.refl _⟩
               have : ∀ h ∈ m.erase g, Disjoint g h :=
-                (List.pairwise_cons.1
-                    ((hgm.pairwise_iff @fun a b (h : Disjoint a b) => h.symm).2 hm₃)).1
+                (List.pairwise_cons.1 ((hgm.pairwise_iff Disjoint.symm).2 hm₃)).1
               by_cases id fun hgy : g y ≠ y =>
                 (disjoint_prod_right _ this y).resolve_right <| by
                   have hsc : SameCycle f⁻¹ x (f y) := by
@@ -608,8 +607,8 @@ theorem cycle_is_cycleOf {f c : Equiv.Perm α} {a : α} (ha : a ∈ c.support)
   let hfc := (Equiv.Perm.disjoint_mul_inv_of_mem_cycleFactorsFinset hc).symm
   let hfc2 := Perm.Disjoint.commute hfc
   rw [← Equiv.Perm.cycleOf_mul_of_apply_right_eq_self hfc2]
-  simp only [hfc2.eq, inv_mul_cancel_right]
-  -- a est dans le support de c, donc pas dans celui de g c⁻¹
+  · simp only [hfc2.eq, inv_mul_cancel_right]
+  -- `a` is in the support of `c`, hence it is not in the support of `g c⁻¹`
   exact
     Equiv.Perm.not_mem_support.mp
       (Finset.disjoint_left.mp (Equiv.Perm.Disjoint.disjoint_support hfc) ha)

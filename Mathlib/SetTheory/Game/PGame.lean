@@ -167,8 +167,7 @@ theorem moveRight_mk {xl xr xL xR} : (⟨xl, xr, xL, xR⟩ : PGame).moveRight = 
 /-- Construct a pre-game from list of pre-games describing the available moves for Left and Right.
 -/
 def ofLists (L R : List PGame.{u}) : PGame.{u} :=
-  mk (ULift (Fin L.length)) (ULift (Fin R.length)) (fun i => L.nthLe i.down i.down.is_lt) fun j ↦
-    R.nthLe j.down j.down.prop
+  mk (ULift (Fin L.length)) (ULift (Fin R.length)) (fun i => L.get i.down) fun j ↦ R.get j.down
 #align pgame.of_lists SetTheory.PGame.ofLists
 
 theorem leftMoves_ofLists (L R : List PGame) : (ofLists L R).LeftMoves = ULift (Fin L.length) :=
@@ -190,26 +189,24 @@ def toOfListsRightMoves {L R : List PGame} : Fin R.length ≃ (ofLists L R).Righ
 #align pgame.to_of_lists_right_moves SetTheory.PGame.toOfListsRightMoves
 
 theorem ofLists_moveLeft {L R : List PGame} (i : Fin L.length) :
-    (ofLists L R).moveLeft (toOfListsLeftMoves i) = L.nthLe i i.is_lt :=
+    (ofLists L R).moveLeft (toOfListsLeftMoves i) = L.get i :=
   rfl
 #align pgame.of_lists_move_left SetTheory.PGame.ofLists_moveLeft
 
 @[simp]
 theorem ofLists_moveLeft' {L R : List PGame} (i : (ofLists L R).LeftMoves) :
-    (ofLists L R).moveLeft i =
-      L.nthLe (toOfListsLeftMoves.symm i) (toOfListsLeftMoves.symm i).is_lt :=
+    (ofLists L R).moveLeft i = L.get (toOfListsLeftMoves.symm i) :=
   rfl
 #align pgame.of_lists_move_left' SetTheory.PGame.ofLists_moveLeft'
 
 theorem ofLists_moveRight {L R : List PGame} (i : Fin R.length) :
-    (ofLists L R).moveRight (toOfListsRightMoves i) = R.nthLe i i.is_lt :=
+    (ofLists L R).moveRight (toOfListsRightMoves i) = R.get i :=
   rfl
 #align pgame.of_lists_move_right SetTheory.PGame.ofLists_moveRight
 
 @[simp]
 theorem ofLists_moveRight' {L R : List PGame} (i : (ofLists L R).RightMoves) :
-    (ofLists L R).moveRight i =
-      R.nthLe (toOfListsRightMoves.symm i) (toOfListsRightMoves.symm i).is_lt :=
+    (ofLists L R).moveRight i = R.get (toOfListsRightMoves.symm i) :=
   rfl
 #align pgame.of_lists_move_right' SetTheory.PGame.ofLists_moveRight'
 
@@ -1273,14 +1270,12 @@ instance : NegZeroClass PGame :=
 @[simp]
 theorem neg_ofLists (L R : List PGame) :
     -ofLists L R = ofLists (R.map fun x => -x) (L.map fun x => -x) := by
-  set_option linter.deprecated false in
-  simp only [ofLists, neg_def, List.nthLe_map', mk.injEq, List.length_map, true_and]
+  simp only [ofLists, neg_def, List.get_map, mk.injEq, List.length_map, true_and]
   constructor
   all_goals
     apply hfunext
     · simp
-    · intro a a' ha
-      congr 2
+    · rintro ⟨⟨a, ha⟩⟩ ⟨⟨b, hb⟩⟩ h
       have :
         ∀ {m n} (_ : m = n) {b : ULift (Fin m)} {c : ULift (Fin n)} (_ : HEq b c),
           (b.down : ℕ) = ↑c.down := by
@@ -1288,7 +1283,8 @@ theorem neg_ofLists (L R : List PGame) :
         simp only [heq_eq_eq]
         rintro rfl
         rfl
-      exact this (List.length_map _ _).symm ha
+      congr 5
+      exact this (List.length_map _ _).symm h
 #align pgame.neg_of_lists SetTheory.PGame.neg_ofLists
 
 theorem isOption_neg {x y : PGame} : IsOption x (-y) ↔ IsOption (-x) y := by
@@ -1807,11 +1803,11 @@ theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
   fun w =>
   calc
     z ≤ z + 0 := (addZeroRelabelling _).symm.le
-    _ ≤ z + (x + -x) := (add_le_add_left (zero_le_add_right_neg x) _)
+    _ ≤ z + (x + -x) := add_le_add_left (zero_le_add_right_neg x) _
     _ ≤ z + x + -x := (addAssocRelabelling _ _ _).symm.le
-    _ ≤ y + x + -x := (add_le_add_right w _)
+    _ ≤ y + x + -x := add_le_add_right w _
     _ ≤ y + (x + -x) := (addAssocRelabelling _ _ _).le
-    _ ≤ y + 0 := (add_le_add_left (add_right_neg_le_zero x) _)
+    _ ≤ y + 0 := add_le_add_left (add_right_neg_le_zero x) _
     _ ≤ y := (addZeroRelabelling _).le
 
 #align pgame.add_lf_add_right SetTheory.PGame.add_lf_add_right
@@ -1866,9 +1862,9 @@ theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x :=
   ⟨fun h => (zero_le_add_right_neg x).trans (add_le_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (zeroAddRelabelling x).symm.le
-      _ ≤ y - x + x := (add_le_add_right h _)
+      _ ≤ y - x + x := add_le_add_right h _
       _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
-      _ ≤ y + 0 := (add_le_add_left (add_left_neg_le_zero x) _)
+      _ ≤ y + 0 := add_le_add_left (add_left_neg_le_zero x) _
       _ ≤ y := (addZeroRelabelling y).le
       ⟩
 #align pgame.le_iff_sub_nonneg SetTheory.PGame.le_iff_sub_nonneg
@@ -1877,9 +1873,9 @@ theorem lf_iff_sub_zero_lf {x y : PGame} : x ⧏ y ↔ 0 ⧏ y - x :=
   ⟨fun h => (zero_le_add_right_neg x).trans_lf (add_lf_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (zeroAddRelabelling x).symm.le
-      _ ⧏ y - x + x := (add_lf_add_right h _)
+      _ ⧏ y - x + x := add_lf_add_right h _
       _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
-      _ ≤ y + 0 := (add_le_add_left (add_left_neg_le_zero x) _)
+      _ ≤ y + 0 := add_le_add_left (add_left_neg_le_zero x) _
       _ ≤ y := (addZeroRelabelling y).le
       ⟩
 #align pgame.lf_iff_sub_zero_lf SetTheory.PGame.lf_iff_sub_zero_lf
@@ -1888,9 +1884,9 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
   ⟨fun h => lt_of_le_of_lt (zero_le_add_right_neg x) (add_lt_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (zeroAddRelabelling x).symm.le
-      _ < y - x + x := (add_lt_add_right h _)
+      _ < y - x + x := add_lt_add_right h _
       _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
-      _ ≤ y + 0 := (add_le_add_left (add_left_neg_le_zero x) _)
+      _ ≤ y + 0 := add_le_add_left (add_left_neg_le_zero x) _
       _ ≤ y := (addZeroRelabelling y).le
       ⟩
 #align pgame.lt_iff_sub_pos SetTheory.PGame.lt_iff_sub_pos

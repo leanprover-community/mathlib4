@@ -144,8 +144,7 @@ We define an auxiliary type `WType' β n` of trees of depth at most `n`, and the
 induction on `n` that these are all encodable. These auxiliary constructions are not interesting in
 and of themselves, so we mark them as `private`.
 -/
-@[reducible]
-private def WType' {α : Type*} (β : α → Type*) [∀ a : α, Fintype (β a)]
+private abbrev WType' {α : Type*} (β : α → Type*) [∀ a : α, Fintype (β a)]
     [∀ a : α, Encodable (β a)] (n : ℕ) :=
   { t : WType β // t.depth ≤ n }
 

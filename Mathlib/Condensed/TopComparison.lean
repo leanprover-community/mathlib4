@@ -30,8 +30,8 @@ universe w w' v u
 
 open CategoryTheory Opposite Limits regularTopology ContinuousMap
 
-variable {C : Type*} [Category C] (G : C ⥤ TopCat)
-  (X : Type*) [TopologicalSpace X]
+variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{w})
+  (X : Type w') [TopologicalSpace X]
 
 /--
 An auxiliary lemma to that allows us to use `QuotientMap.lift` in the proof of

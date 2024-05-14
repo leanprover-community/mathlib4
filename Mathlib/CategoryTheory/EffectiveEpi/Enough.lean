@@ -10,11 +10,6 @@ import Mathlib.CategoryTheory.EffectiveEpi.Basic
 
 We define the class `F.EffectivelyEnough` on a functor `F : C ⥤ D` which says that for every object
 in `D`, there exists an effective epi to it from an object in the image of `F`.
-
-## TODO
-* Show that `Stonean.toCompHaus` and `Stonean.toProfinite` satisfy this property.
-* Use this as one of the sufficient conditions for a functor to induce an equivalence of sheaf
-  categories of coherent and regular sheaves.
 -/
 
 namespace CategoryTheory
