@@ -374,9 +374,17 @@ theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
   rw [← Units.finrank_eq_rank, Zlattice.rank ℝ]
 
-/-- A helper instance -/
-local instance  : CommGroup (𝓞 K)ˣ := inferInstance
-
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4119
+the `Module ℤ (Additive ((𝓞 K)ˣ ⧸ NumberField.Units.torsion K))` instance required below isn't found
+unless we use `set_option maxSynthPendingDepth 2`, or add
+explicit instances:
+```
+local instance : CommGroup (𝓞 K)ˣ := inferInstance
+```
+-/
+set_option maxSynthPendingDepth 2 in
 /-- The linear equivalence between `unitLattice` and `(𝓞 K)ˣ ⧸ (torsion K)` as an additive
 `ℤ`-module. -/
 def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (torsion K)) := by

@@ -348,6 +348,8 @@ theorem HasFTaylorSeriesUpToOn.shift_of_succ
       exact Nat.succ_lt_succ hm
     change HasFDerivWithinAt ((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm ∘ (p · m.succ))
       (p x m.succ.succ).curryRight.curryLeft s x
+    #adaptation_note
+    /-- After https://github.com/leanprover/lean4/pull/4119 we need to specify the `f'` argument. -/
     rw [((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm).comp_hasFDerivWithinAt_iff'
       (f' := (p x m.succ.succ).curryRight.curryLeft)]
     convert H.fderivWithin _ A x hx
@@ -857,6 +859,8 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
         rw [fderivWithin_congr A (A x hx)]
       _ = (I ∘ fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
               E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
+        #adaptation_note
+        /-- After https://github.com/leanprover/lean4/pull/4119 we need to specify the `f` argument. -/
         simp only [LinearIsometryEquiv.comp_fderivWithin _
           (f := iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) (hs x hx)]
         rfl
