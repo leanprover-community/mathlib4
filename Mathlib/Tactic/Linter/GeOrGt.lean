@@ -11,10 +11,16 @@ import Lean.Linter.Util
 ## The `ge_or_gt` linter
 
 A linter for checking whether a declaration contains a `≥` or `>` in an illegal position:
-`≤` or `<` should be used instead. This is bad because it makes rewrites apply in fewer contexts.
+`≤` or `<` should be used instead.
+
+**Why is this bad?**
+`rw` and `simp` require ... equality, so for these tactics,
+`rw` or `simp` will only apply if `≥` or `>` line up --> normal form.
 
 This check excludes, in particular, comments, a `≥` or `>` symbol in custom notation
-and predicate binders like `∃ i ≥ 1`.
+and predicate binders like `∃ i ≥ 1`. We also exclude the bodies of proofs;
+we include hypotheses (unlike in mathlib3) and conclusions of theorems and lemmas.
+
 Unlike in mathlib3, this checks hypotheses, definitions and conclusions as well as proofs. -/
 
 open Lean Elab Command

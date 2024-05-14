@@ -30,11 +30,48 @@ note: this linter can be disabled with `set_option linter.geOrGt false` -/
 #guard_msgs in
 lemma test6 (_h : ∀ n ≥ 42, n = 0) : ∃ m, m > 42 := by use 43; omega
 
--- biggest known
+-- We do check theorem or lemma statements.
+/-- warning: '≥ or > is used in an illegal position
+please change the statement to use ≤ or < instead
+note: this linter can be disabled with `set_option linter.geOrGt false` -/
+#guard_msgs in
+lemma test7 : ∃ k : ℤ, k > 100 := by use 200; omega
 
--- TODO: this should not be linted!
+-- We also check hypotheses.
+
+/-- warning: '≥ or > is used in an illegal position
+please change the statement to use ≤ or < instead
+note: this linter can be disabled with `set_option linter.geOrGt false` -/
+#guard_msgs in
+lemma test8 (h : ∀ n : ℤ, n > 100) : ∃ k : ℤ, k > 100 := ⟨200, h 200⟩
+
+-- Exclude ≥ as a comparator/unapplied relation; this should not be linted!
 def dummy (_r : ℕ → ℕ → Prop) : Bool := True
 lemma foo (_hf : dummy (· ≥ ·) ) : True := trivial
+
+-- Perhaps, we check types of definitions.
+
+-- We do not lint the bodies of proofs.
+lemma proof1 : True := by
+  have : 42 > 0 := sorry
+  trivial
+
+lemma proof2 : 42 > 0 := by
+  have hm (m : ℕ) : m > 0 := sorry
+  -- Meta blocks like `if ...` are also allowed.
+  show 42 > 0
+  omega
+
+lemma proof3 {m n : ℕ} : True := by
+  by_cases _h : m ≥ n
+  repeat trivial
+
+-- We do not check the bodies of definitions either:
+-- we would only see these when unfolding anyway.
+
+-- TODO: this should not be linted!
+def dummy2 (_r : ℕ → ℕ → Prop) : Bool := True
+lemma foo2 (_hf : dummy (· ≥ ·) ) : True := trivial
 -- another case in SuccPred/Basic.lean: h : `IsWellOrder α (· > ·)` should be fine
 
 /- Looking at all of mathlib, the following are probably false positives
@@ -42,7 +79,6 @@ lemma foo (_hf : dummy (· ≥ ·) ) : True := trivial
    SuccPred/Basic, Data/List/Chain, Data/List/Range, Data/List/Sort, Data/Fintype/Card,
    Algebra/Lie/Nilpotent, Algebra/Lie/Submodule; MeasureTheory/Function/EssSup
   or as an order, e.g. IsWellOrder, WellFounded, Directed(On)
-
 
 - in Order/Field/Basic:669, have `>` in a calc proof
 - in Order/Ring/Defs:885, entire proof is (line 889 similar):
@@ -58,8 +94,3 @@ other occurrences in Tactic/Ring/Basic, Tactic/Linarith/Datatypes; Data/Finset/B
 - less clear-cut: Data/Finset/Fold (but used in proofs)
 - slightly more interesting: `wellFoundedOn_iff_no_descending_seq` in Order/WellFoundedSet
 -/
-
--- should the by_cases error? from Data/Int/Lemmas:27
-lemma bar {m n : ℕ} : True := by
-  by_cases h : m ≥ n
-  repeat sorry
