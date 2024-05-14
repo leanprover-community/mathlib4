@@ -30,13 +30,13 @@ open scoped TensorProduct MonoidalCategory
 @[simps] noncomputable instance instMonoidalCategoryStruct :
     MonoidalCategoryStruct.{u} (CoalgebraCat R) where
   tensorObj := fun X Y => CoalgebraCat.of R (X ⊗[R] Y)
-  whiskerLeft := fun X _ _ f => CoalgebraCat.ofHom (f.lTensor X)
-  whiskerRight := fun f X => CoalgebraCat.ofHom (f.rTensor X)
-  tensorHom := fun f g => CoalgebraCat.ofHom (Coalgebra.TensorProduct.map f g)
+  whiskerLeft := fun X _ _ f => CoalgebraCat.ofHom (f.1.lTensor X)
+  whiskerRight := fun f X => CoalgebraCat.ofHom (f.1.rTensor X)
+  tensorHom := fun f g => CoalgebraCat.ofHom (Coalgebra.TensorProduct.map f.1 g.1)
   tensorUnit := CoalgebraCat.of R R
-  associator := fun X Y Z => (Coalgebra.TensorProduct.assoc R X Y Z).toCoalgebraIso
-  leftUnitor := fun X => (Coalgebra.TensorProduct.lid R X).toCoalgebraIso
-  rightUnitor := fun X => (Coalgebra.TensorProduct.rid R X).toCoalgebraIso
+  associator := fun X Y Z => (Coalgebra.TensorProduct.assoc R X Y Z).toIso
+  leftUnitor := fun X => (Coalgebra.TensorProduct.lid R X).toIso
+  rightUnitor := fun X => (Coalgebra.TensorProduct.rid R X).toIso
 
 /-- The data needed to induce a `MonoidalCategory` structure via
 `CoalgebraCat.instMonoidalCategoryStruct` and the forgetful functor to modules. -/
