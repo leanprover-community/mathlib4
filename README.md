@@ -110,7 +110,7 @@ You will need to make a PR after committing the changes to this file.
 Please refer to
 [https://github.com/leanprover-community/mathlib4/wiki/Using-mathlib4-as-a-dependency](https://github.com/leanprover-community/mathlib4/wiki/Using-mathlib4-as-a-dependency)
 
-## Maintainers:
+## Maintainers
 
 For a list containing more detailed information, see https://leanprover-community.github.io/teams/maintainers.html
 
