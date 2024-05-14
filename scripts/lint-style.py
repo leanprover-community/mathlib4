@@ -325,6 +325,44 @@ def check_odd_backticks(lines, path):
             #errors += [(ERR_BACKTICKS, line_nr, path)]
     return errors, lines
 
+# wip copy
+def check_odd_backticks2(lines, path):
+    errors = []
+    for line_nr, line, is_comment in annotate_comments(lines):
+        if is_comment:
+            continue
+        # single backtick, but not followed by ( or `
+        if line.count("`") % 2 == 1:
+            for i in range((len(line) - 1)):
+                if line[i] == "`":
+                    if line[i+1] not in ("`", "("):
+                        output_message(path, line_nr, "ERR_BACKTICKS", "Odd number of backticks in this line")
+            #errors += [(ERR_BACKTICKS, line_nr, path)]
+            #print(format_errors)
+    return errors, lines
+
+
+def test_odd_backticks():
+    def check_fine(input):
+        errors, lines = check_odd_backticks(input.split("\n"))
+        assert '\n'.join(lines) == input
+        if errors:
+            print(f'should have no errors: input {input} yielded some', file=sys.stderr)
+    def check_fails(input):
+        errors, lines = check_odd_backticks(input.split("\n"))
+        assert '\n'.join(lines) == input
+        if not errors:
+            print(f'input {input} passed, but should have failed', file=sys.stderr)
+    check_fine("a line without any backticks")
+    check_fine("``double backticks")
+    check_fine("-- inside comments are ignore, `even with")
+    check_fine("-- `backtick items`")
+    check_fine("`multiple` paired back`ticks` are fine")
+    check_fine("`(also fine)")
+    check_fails("`a lonely backtick")
+    check_fails("`a lonely `backtick paired` with others")
+    check_fails("`a lonely `(backtick) is `fine` when `(paired)")
+
 
 def isolated_by_dot_semicolon_check(lines, path):
     errors = []
