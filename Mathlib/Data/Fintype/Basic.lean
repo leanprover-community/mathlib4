@@ -336,16 +336,17 @@ lemma univ_map_subtype [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype
     univ.map (Function.Embedding.subtype p) = univ.filter p := by
   rw [← subtype_map, subtype_univ]
 
-lemma univ_val_map_subtype [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
+lemma univ_val_map_subtype_val [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
     univ.val.map ((↑) : { a // p a } → α) = (univ.filter p).val := by
   apply (map_val (Function.Embedding.subtype p) univ).symm.trans
   apply congr_arg
   apply univ_map_subtype
 
-lemma univ_val_map_subtype_val [Fintype α] (f : α → β)
+lemma univ_val_map_subtype_restrict [Fintype α] (f : α → β)
     (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
     univ.val.map (Subtype.restrict p f) = (univ.filter p).val.map f := by
-  rw [← univ_val_map_subtype, Multiset.map_map, comp_def]
+  rewrite [← univ_val_map_subtype_val, Multiset.map_map, comp_def]
+  rfl
 
 end Finset
 
