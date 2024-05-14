@@ -414,7 +414,7 @@ protected def vitaliFamily [MetricSpace α] [MeasurableSpace α] [OpensMeasurabl
     let t : Set (ℝ × α × Set α) :=
       { p | p.2.2 ⊆ closedBall p.2.1 p.1 ∧ μ (closedBall p.2.1 (3 * p.1)) ≤ C * μ p.2.2 ∧
             (interior p.2.2).Nonempty ∧ IsClosed p.2.2 ∧ p.2.2 ∈ f p.2.1 ∧ p.2.1 ∈ s }
-    have A : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ p, p ∈ t ∧ p.1 ≤ ε ∧ p.2.1 = x := by
+    have A : ∀ x ∈ s, ∀ (ε : ℝ) > 0, ∃ p, p ∈ t ∧ p.1 ≤ ε ∧ p.2.1 = x := by
       intro x xs ε εpos
       rcases ffine x xs ε εpos with ⟨a, ha, h'a⟩
       rcases fsubset x xs ha with ⟨a_closed, a_int, ⟨r, ar, μr⟩⟩

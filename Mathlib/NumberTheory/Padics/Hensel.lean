@@ -374,7 +374,7 @@ private def soln_gen : ℤ_[p] := (newton_cau_seq hnorm).lim
 
 local notation "soln" => soln_gen hnorm
 
-private theorem soln_spec {ε : ℝ} (hε : ε > 0) :
+private theorem soln_spec {ε : ℝ} (hε : 0 < ε) :
     ∃ N : ℕ, ∀ {i : ℕ}, i ≥ N → ‖soln - newton_cau_seq hnorm i‖ < ε :=
   Setoid.symm (CauSeq.equiv_lim (newton_cau_seq hnorm)) _ hε
 

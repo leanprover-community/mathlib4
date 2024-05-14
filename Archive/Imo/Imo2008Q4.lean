@@ -73,7 +73,7 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, 0 < f x) :
   -- f(a) ≠ 1/a, f(a) = a
   obtain hfb₂ := Or.resolve_left (h₃ b hb) hfb₁
   -- f(b) ≠ b, f(b) = 1/b
-  have hab : a * b > 0 := mul_pos ha hb
+  have hab : 0 < a * b := mul_pos ha hb
   have habss : a * b = sqrt (a * b) * sqrt (a * b) := (mul_self_sqrt (le_of_lt hab)).symm
   specialize H₂ a b (sqrt (a * b)) (sqrt (a * b)) ha hb (sqrt_pos.mpr hab) (sqrt_pos.mpr hab) habss
   rw [sq_sqrt (le_of_lt hab), ← two_mul (f (a * b)), ← two_mul (a * b)] at H₂

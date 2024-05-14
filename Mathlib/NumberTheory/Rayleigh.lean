@@ -85,7 +85,7 @@ private theorem no_anticollision :
   exact h₄.not_lt h₃
 
 /-- Let `0 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B_r` or `B_r` jumps over `j`. -/
-private theorem hit_or_miss (h : r > 0) :
+private theorem hit_or_miss (h : 0 < r) :
     j ∈ {beattySeq r k | k} ∨ ∃ k : ℤ, k < j / r ∧ (j + 1) / r ≤ k + 1 := by
   -- for both cases, the candidate is `k = ⌈(j + 1) / r⌉ - 1`
   cases lt_or_ge ((⌈(j + 1) / r⌉ - 1) * r) j
@@ -97,7 +97,7 @@ private theorem hit_or_miss (h : r > 0) :
     exact ⟨‹_›, Int.ceil_lt_add_one _⟩
 
 /-- Let `0 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B'_r` or `B'_r` jumps over `j`. -/
-private theorem hit_or_miss' (h : r > 0) :
+private theorem hit_or_miss' (h : 0 < r) :
     j ∈ {beattySeq' r k | k} ∨ ∃ k : ℤ, k ≤ j / r ∧ (j + 1) / r < k + 1 := by
   -- for both cases, the candidate is `k = ⌊(j + 1) / r⌋`
   cases le_or_gt (⌊(j + 1) / r⌋ * r) j

@@ -193,7 +193,7 @@ example (α : Type u) : Embedding α α × Unit := by
 -- Note(kmill): mathlib3 `use` would try to rewrite any lingering existentials with
 -- `exists_prop` to turn them into conjunctions. It did not do this recursively.
 
--- example : ∃ (n : Nat) (h : n > 0), n = n :=
+-- example : ∃ (n : Nat) (h : 0 < n), n = n :=
 -- by
 --   use 1
 --   -- goal should now be `1 > 0 ∧ 1 = 1`, whereas it would be `∃ (H : 1 > 0), 1 = 1` after existsi 1.
@@ -208,7 +208,7 @@ by
   decide
 
 -- The discharger knows about `exists_prop`.
-example (h1 : 1 > 0) : ∃ (n : Nat) (_h : n > 0), n = n := by
+example (h1 : 0 < 1) : ∃ (n : Nat) (_h : 0 < n), n = n := by
   use 1
 
 -- Regression test: `use` needs to ensure it does calculations inside the correct local contexts
