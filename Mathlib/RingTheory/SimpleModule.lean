@@ -140,8 +140,8 @@ theorem ker_toSpanSingleton_isMaximal {m : M} (hm : m ≠ 0) :
 /-- if `X` is isomorphic to a submodule of a simple module, then either `X` is trivial or it is that
   simple module-/
 noncomputable def equiv_punit_sum_equiv_of_equiv_submodule
-    {m : Type _} [AddCommGroup m] [Module R m] [hm : IsSimpleModule R m]
-    (X : Type _) [AddCommGroup X] [Module R X] (x : Submodule R m)
+    {m : Type*} [AddCommGroup m] [Module R m] [hm : IsSimpleModule R m]
+    (X : Type*) [AddCommGroup X] [Module R X] (x : Submodule R m)
     (e : X ≃ₗ[R] x) : (X ≃ₗ[R] (PUnit : Type*)) ⊕ (X ≃ₗ[R] m) := by
   classical
   refine Or.by_cases (hm.2 x) (λ EQ ↦ Sum.inl {
@@ -167,11 +167,11 @@ noncomputable def equiv_punit_sum_equiv_of_equiv_submodule
 /-- if `X` is isomorphic to a submodule of a simple module, then either `X` is trivial or it is that
   simple module, a version of `Prop`-/
 lemma equiv_punit_sum_equiv_of_equiv_submodule'
-    {m : Type _} [AddCommGroup m] [Module R m] [hm : IsSimpleModule R m]
-    (X : Type _) [AddCommGroup X] [Module R X] (x : Submodule R m)
+    {m : Type*} [AddCommGroup m] [Module R m] [hm : IsSimpleModule R m]
+    (X : Type*) [AddCommGroup X] [Module R X] (x : Submodule R m)
     (e : X ≃ₗ[R] x) : (Nonempty $ X ≃ₗ[R] (PUnit : Type*)) ∨ (Nonempty $ X ≃ₗ[R] m) := by
   classical
-  exact (equiv_punit_sum_equiv_of_equiv_submodule X x e).elim (Or.inl ∘ Nonempty.intro)
+  exact (equiv_punit_sum_equiv_of_equiv_submodule R X x e).elim (Or.inl ∘ Nonempty.intro)
     (Or.inr ∘ Nonempty.intro)
 
 end IsSimpleModule

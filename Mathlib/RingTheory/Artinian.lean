@@ -632,7 +632,6 @@ theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
 
 proof_wanted IsSemisimpleRing.isArtinianRing [IsSemisimpleRing R] : IsArtinianRing R
 
-variable (R) in
 /--
 collection of all maximal ideals in artinian ring
 -/
@@ -646,7 +645,7 @@ lemma mem_maximalSpectrum (I : Ideal R) :
 lemma maximalSpectrum_card_pos [Nontrivial R] : 0 < (maximalSpectrum R).card := by
   rw [Finset.card_pos]
   obtain ⟨J, hJ⟩ := Ideal.exists_maximal R
-  exact ⟨J, mem_maximalSpectrum _ |>.mp hJ⟩
+  exact ⟨J, mem_maximalSpectrum _ _ |>.mp hJ⟩
 
 lemma jacobson_bot_eq_inf : (maximalSpectrum R).inf id = Ideal.jacobson ⊥ := by
   classical

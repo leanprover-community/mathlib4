@@ -8,6 +8,7 @@ import Mathlib.Order.ListOnPartialOrderTypes
 import Mathlib.Order.JordanHolder
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.RingTheory.SimpleModule
+import Init.Data.List.Lemmas
 
 /-!
 
@@ -146,7 +147,7 @@ noncomputable def interList_qf_equiv (i : Fin s.length) :
     (s.interList_qf N i) ≃ₗ[R] LinearMap.range (s.interList_get_succ_to_qf N i) :=
   aux1 N (s.interList_get_succ_to_qf N i) (s.interList_get_succ_to_qf_ker N i)
 
-private lemma interList_qf_aux (i : Fin s.length) :
+private noncomputable def interList_qf_aux (i : Fin s.length) :
     (s.interList_qf N i ≃ₗ[R] (PUnit : Type)) ⊕ s.interList_qf N i ≃ₗ[R] s.qf i :=
   IsSimpleModule.equiv_punit_sum_equiv_of_equiv_submodule (R := R) (m := s.qf i)
     (e := s.interList_qf_equiv N i)
@@ -345,11 +346,9 @@ lemma ofInterList_head_eq_bot_of_head_eq_bot (s0 : s.head = ⊥) :
     (s.ofInterList N).head = ⊥ := by
   classical
   change List.get _ ⟨0, _⟩ = _
-  have h : 0 < (s.interList N).length := by rw [interList_length]; norm_num
   have := List.dedup_head?_of_chain'_wcovby _ (s.interList_chain'_wcovby N)
-  rw [← List.get_zero h, ← List.get_zero, Option.some.injEq] at this
-  rw [this]
-  apply interList_head_eq_head_of_head_eq_head (s0 := s0)
+  rw [← List.get?_zero, ← List.get?_zero] at this
+  simpa [List.get_eq_get?, this] using interList_head_eq_head_of_head_eq_head (s0 := s0) _
 
 lemma ofInterList_last_eq_top_of_last_eq_top (slast : s.last = ⊤) :
     (s.ofInterList N).last = ⊤ := by
@@ -375,8 +374,8 @@ lemma exists_compositionSeries_with_smaller_length_of_lt_top (h : N < ⊤)
     by_contra rid
     push_neg at rid
     norm_num at rid
-    rw [List.length_eq_zero] at rid
-    exact List.dedup_ne_nil_of_ne_nil _ (List.map_ne_nil_of_ne_nil _ s.toList_ne_empty _) rid
+    exact List.map_ne_nil_of_ne_nil _ s.toList_ne_empty _ rid
+
   apply Nat.sub_lt_right_of_lt_add (H := ineq2) (h := ineq1)
 
 end CompositionSeries

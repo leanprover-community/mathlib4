@@ -247,7 +247,7 @@ theorem lt_last_of_mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.le
 
 theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
-  convert s.step ⟨s.length - 1, Nat.pred_lt (by omega)⟩
+  convert s.step ⟨s.length - 1, Nat.pred_lt (by simpa using by omega)⟩
   refine congr_arg s <| Fin.ext ?_
   simp only [Fin.val_last, Fin.succ_mk]
   omega
@@ -300,8 +300,7 @@ theorem trans {s₁ s₂ s₃ : CompositionSeries X} (h₁ : Equivalent s₁ s�
     fun i => iso_trans (h₁.choose_spec i) (h₂.choose_spec (h₁.choose i))⟩
 #align composition_series.equivalent.trans CompositionSeries.Equivalent.trans
 
-theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
-    (hs : s₁.last = s₂.head) (ht : t₁.last = t₂.head)
+theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X} (hs : s₁.last = s₂.head) (ht : t₁.last = t₂.head)
     (h₁ : Equivalent s₁ t₁) (h₂ : Equivalent s₂ t₂) :
     Equivalent (smash s₁ s₂ hs) (smash t₁ t₂ ht) :=
   let e : Fin (s₁.length + s₂.length) ≃ Fin (t₁.length + t₂.length) :=
@@ -309,10 +308,13 @@ theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
       Fin (s₁.length + s₂.length) ≃ Sum (Fin s₁.length) (Fin s₂.length) := finSumFinEquiv.symm
       _ ≃ Sum (Fin t₁.length) (Fin t₂.length) := Equiv.sumCongr h₁.choose h₂.choose
       _ ≃ Fin (t₁.length + t₂.length) := finSumFinEquiv
-  ⟨e, Fin.addCases
-    (fun i ↦ by simpa [finSumFinEquiv] using h₁.choose_spec i)
-    (fun i ↦ by simpa [finSumFinEquiv] using h₂.choose_spec i)⟩
-#align composition_series.equivalent.combine CompositionSeries.Equivalent.smash
+  ⟨e, by
+    intro i
+    refine' Fin.addCases _ _ i
+    · intro i
+      simpa [-smash_toFun, e, smash_castAdd, smash_succ_castAdd] using h₁.choose_spec i
+    · intro i
+      simpa [-smash_toFun, e, smash_natAdd, smash_succ_natAdd] using h₂.choose_spec i⟩
 
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.last x₁}
     {hsat₂ : IsMaximal s₂.last x₂} (hequiv : Equivalent s₁ s₂)
@@ -324,11 +326,9 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
       _ ≃ Fin (s₂.length + 1) := finSuccEquivLast.symm
   ⟨e, fun i => by
     refine Fin.lastCases ?_ ?_ i
-    · rw [snoc_castSucc, snoc_castSucc]
-      convert hlast using 2
-      · exact last_snoc _ _ _
-      · aesop
-      · simpa using last_append _ _ _
+    · simpa [e, show (snoc s₁ x₁ hsat₁).toFun (Fin.last (s₁.length + 1)) = _ from last_snoc _ _ _,
+        show (snoc s₂ x₂ hsat₂).toFun (Fin.last (s₂.length + 1)) = _ from last_snoc _ _ _]
+        using hlast
     · intro i
       simpa [e, Fin.succ_castSucc] using hequiv.choose_spec i⟩
 #align composition_series.equivalent.snoc CompositionSeries.Equivalent.snoc
@@ -390,7 +390,7 @@ theorem length_pos_of_head_eq_head_of_last_eq_last_of_length_pos {s₁ s₂ : Co
     (hb : s₁.head = s₂.head) (ht : s₁.last = s₂.last) : 0 < s₁.length → 0 < s₂.length :=
   not_imp_not.1
     (by
-      simp only [pos_iff_ne_zero, Ne.def, not_iff_not, Classical.not_not]
+      simp only [pos_iff_ne_zero, ne_eq, Decidable.not_not]
       exact length_eq_zero_of_head_eq_head_of_last_eq_last_of_length_eq_zero hb.symm ht.symm)
 #align composition_series.length_pos_of_head_eq_head_of_last_eq_last_of_length_pos CompositionSeries.length_pos_of_head_eq_head_of_last_eq_last_of_length_pos
 

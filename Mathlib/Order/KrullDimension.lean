@@ -76,7 +76,7 @@ lemma eq_bot_of_isEmpty [IsEmpty α] : krullDimOfRel r = ⊥ := WithBot.ciSup_em
 variable {r s}
 lemma le_of_map (f : α → β) (map : ∀ (x y : α), r x y → s (f x) (f y)) :
     krullDimOfRel r ≤ krullDimOfRel s :=
-  iSup_le $ fun p => le_sSup ⟨p.map _ map, rfl⟩
+  iSup_le $ fun p => le_sSup ⟨p.map ⟨f, fun {_ _} ↦ map _ _⟩, by simp⟩
 
 lemma eq_of_relIso (f : r ≃r s) : krullDimOfRel r = krullDimOfRel s :=
   le_antisymm (le_of_map f fun _ _ h => f.2.mpr h) $ le_of_map f.symm fun _ _ h => f.2.mp $ by
