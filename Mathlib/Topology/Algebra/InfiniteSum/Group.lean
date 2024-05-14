@@ -104,9 +104,9 @@ theorem HasProd.hasProd_iff_compl {s : Set β} (hf : HasProd (f ∘ (↑) : s �
 
 @[to_additive]
 theorem Multipliable.multipliable_compl_iff {s : Set β} (hf : Multipliable (f ∘ (↑) : s → α)) :
-    Multipliable (f ∘ (↑) : ↑sᶜ → α) ↔ Multipliable f :=
-  ⟨fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_compl_iff.1 ha).multipliable, fun ⟨_, ha⟩ ↦
-    (hf.hasProd.hasProd_iff_compl.1 ha).multipliable⟩
+    Multipliable (f ∘ (↑) : ↑sᶜ → α) ↔ Multipliable f where
+  mp := fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_compl_iff.1 ha).multipliable
+  mpr := fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_iff_compl.1 ha).multipliable
 #align summable.summable_compl_iff Summable.summable_compl_iff
 
 @[to_additive]

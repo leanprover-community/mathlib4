@@ -988,8 +988,7 @@ theorem lift_injective_of_ping_pong : Function.Injective (lift f) := by
     rw [(CoprodI.Word.equiv).forall_congr_left']
     intro w Heq
     dsimp [Word.equiv] at *
-    rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq]
-    rfl
+    rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq, Word.prod_empty]
 #align free_product.lift_injective_of_ping_pong Monoid.CoprodI.lift_injective_of_ping_pong
 
 end PingPongLemma

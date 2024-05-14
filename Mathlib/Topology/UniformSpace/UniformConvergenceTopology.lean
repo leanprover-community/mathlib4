@@ -744,8 +744,8 @@ protected theorem uniformity_eq_of_basis {ι : Sort*} {p : ι → Prop} {V : ι 
     𝓤 (α →ᵤ[𝔖] β) = ⨅ s ∈ 𝔖, ⨅ (i) (_ : p i), 𝓟 (UniformOnFun.gen 𝔖 s (V i)) := by
   simp_rw [iInf_uniformity, uniformity_comap,
     (UniformFun.hasBasis_uniformity_of_basis _ _ h).eq_biInf, comap_iInf, comap_principal,
-    Function.comp_apply, UniformFun.gen, Subtype.forall]
-  rfl
+    Function.comp_apply, UniformFun.gen, Subtype.forall, UniformOnFun.gen, preimage_setOf_eq,
+    Prod_map, Function.comp_apply, UniformFun.toFun_ofFun, restrict_apply]
 
 protected theorem uniformity_eq : 𝓤 (α →ᵤ[𝔖] β) = ⨅ s ∈ 𝔖, ⨅ V ∈ 𝓤 β, 𝓟 (UniformOnFun.gen 𝔖 s V) :=
   UniformOnFun.uniformity_eq_of_basis _ _ (𝓤 β).basis_sets
@@ -764,7 +764,7 @@ protected theorem nhds_eq_of_basis {ι : Sort*} {p : ι → Prop} {V : ι → Se
     (h : (𝓤 β).HasBasis p V) (f : α →ᵤ[𝔖] β) :
     𝓝 f = ⨅ s ∈ 𝔖, ⨅ (i) (_ : p i), 𝓟 {g | ∀ x ∈ s, (toFun 𝔖 f x, toFun 𝔖 g x) ∈ V i} := by
   simp_rw [nhds_eq_comap_uniformity, UniformOnFun.uniformity_eq_of_basis _ _ h, comap_iInf,
-    comap_principal]; rfl
+    comap_principal, UniformOnFun.gen, preimage_setOf_eq]
 
 protected theorem nhds_eq (f : α →ᵤ[𝔖] β) :
     𝓝 f = ⨅ s ∈ 𝔖, ⨅ V ∈ 𝓤 β, 𝓟 {g | ∀ x ∈ s, (toFun 𝔖 f x, toFun 𝔖 g x) ∈ V} :=
@@ -948,8 +948,8 @@ protected theorem uniformContinuous_toFun (h : ⋃₀ 𝔖 = univ) :
 of `TendstoUniformlyOn`) for all `S ∈ 𝔖`. -/
 protected theorem tendsto_iff_tendstoUniformlyOn {F : ι → α →ᵤ[𝔖] β} {f : α →ᵤ[𝔖] β} :
     Tendsto F p (𝓝 f) ↔ ∀ s ∈ 𝔖, TendstoUniformlyOn (toFun 𝔖 ∘ F) (toFun 𝔖 f) p s := by
-  simp only [UniformOnFun.nhds_eq, tendsto_iInf, tendsto_principal]
-  rfl
+  simp only [UniformOnFun.nhds_eq, tendsto_iInf, tendsto_principal, TendstoUniformlyOn,
+    Function.comp_apply, mem_setOf]
 #align uniform_on_fun.tendsto_iff_tendsto_uniformly_on UniformOnFun.tendsto_iff_tendstoUniformlyOn
 
 protected lemma continuous_rng_iff {X : Type*} [TopologicalSpace X] {f : X → (α →ᵤ[𝔖] β)} :
@@ -957,8 +957,8 @@ protected lemma continuous_rng_iff {X : Type*} [TopologicalSpace X] {f : X → (
       Continuous (UniformFun.ofFun ∘ s.restrict ∘ UniformOnFun.toFun 𝔖 ∘ f) := by
   simp only [continuous_iff_continuousAt, ContinuousAt,
     UniformOnFun.tendsto_iff_tendstoUniformlyOn, UniformFun.tendsto_iff_tendstoUniformly,
-    tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_swap X]
-  rfl
+    tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_swap X, Function.comp_apply,
+    Function.comp_def, restrict_eq, UniformFun.toFun_ofFun]
 
 instance [CompleteSpace β] : CompleteSpace (α →ᵤ[𝔖] β) := by
   rcases isEmpty_or_nonempty β
