@@ -3,8 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.MeasureTheory.PiSystem
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.MeasureTheory.OuterMeasure.Defs
