@@ -379,3 +379,5 @@ lemma exists_compositionSeries_with_smaller_length_of_lt_top (h : N < ⊤)
   apply Nat.sub_lt_right_of_lt_add (H := ineq2) (h := ineq1)
 
 end CompositionSeries
+
+#lint

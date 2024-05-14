@@ -275,7 +275,7 @@ lemma IsNoetherianRing.pow_le_of_le_radical [noeth : IsNoetherianRing R] (I J : 
       exact Ideal.subset_span ⟨fun i ↦ ⟨g i, hab1 _⟩, rfl⟩
 
 lemma IsNoetherianRing.nilpotent_maximalIdeal_of_zero_dimensional_localRing
-    [noeth : IsNoetherianRing R] [LocalRing R] [Nontrivial R] (dim0 : ringKrullDim R = 0) :
+    [noeth : IsNoetherianRing R] [LocalRing R] (dim0 : ringKrullDim R = 0) :
     IsNilpotent (LocalRing.maximalIdeal R) := by
   obtain ⟨n, hn⟩ := IsNoetherianRing.pow_le_of_le_radical R (LocalRing.maximalIdeal R) ⊥
     (fun r hr ↦ maximalIdeal_locally_nilpotent_of_zero_dimensional_local_ring R dim0 r hr)
@@ -618,8 +618,7 @@ variable [dim0 : Fact (ringKrullDim R = 0)] [IsNoetherianRing R]
 
 noncomputable instance : Fintype (PrimeSpectrum R) := PrimeSpectrum.finTypeOfNoetherian dim0.out
 
-instance isArtinianRing_of_local_dim0_noetherian [Nontrivial R] [LocalRing R] :
-    IsArtinianRing R := by
+instance isArtinianRing_of_local_dim0_noetherian [LocalRing R] : IsArtinianRing R := by
   suffices i1 : IsFiniteLengthModule R R from isArtinian_of_finiteLength R R
   have i2 : Fact (IsNilpotent (LocalRing.maximalIdeal R)) :=
   ⟨IsNoetherianRing.nilpotent_maximalIdeal_of_zero_dimensional_localRing _ dim0.out⟩

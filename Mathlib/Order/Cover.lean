@@ -625,7 +625,7 @@ end Prod
 
 section List
 
-lemma relation.refl_trans_gen_of_chain'_wcovby {X : Type _}  [DecidableEq X] [PartialOrder X]
+lemma relation.refl_trans_gen_of_chain'_wcovby {X : Type*} [PartialOrder X]
     (l : List X) (hl : 0 < l.length) (l_chain : l.Chain' (. ⩿ .)) :
   Relation.ReflTransGen (. ⋖ .) (l.nthLe 0 hl) (l.nthLe (l.length - 1) <| Nat.pred_lt <|
     show l.length ≠ 0 by aesop) := by
