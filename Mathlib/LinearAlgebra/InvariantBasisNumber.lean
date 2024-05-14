@@ -22,7 +22,8 @@ that a surjective linear map `(Fin n → R) →ₗ[R] (Fin m → R)` implies `m 
 the strong rank condition, that an injective linear map `(Fin n → R) →ₗ[R] (Fin m → R)`
 implies `n ≤ m`.
 
-Orzech, Djoković and Ribenboim considered the following property for a ring `R`:
+Orzech [orzech1971], Djoković [djokovic1973] and Ribenboim [ribenboim1971] considered the following
+property for a ring `R`:
 for any finitely generated `R`-module `M`, any surjective homomorphism `f : N → M`
 from a submodule `N` of `M` to `M` is injective.
 It's called `Π`-ring or `Π₁`-ring in their papers.
@@ -32,7 +33,7 @@ It's easy to see that such property implies strong rank condition given the ring
 
 The strong rank condition implies the rank condition, and the rank condition implies
 the invariant basis number property.
-The converse is not true, as we have counterexamples in the book of Lam
+The converse is not true, as we have counterexamples in the book of Lam [lam_1999]
 (see also <https://math.stackexchange.com/questions/4711904>):
 
 - The free algebra `k⟨x, y⟩` satisfies the rank condition but not the strong rank condition.
@@ -53,7 +54,7 @@ We show that every nontrivial left-noetherian ring satisfies the strong rank con
 and then use this to show every nontrivial commutative ring has the invariant basis number property.
 
 More generally, every commutative ring satisfies the strong rank condition. This is proved in
-`LinearAlgebra/FreeModule/StrongRankCondition`. We keep
+`Mathlib/LinearAlgebra/FreeModule/StrongRankCondition.lean`. We keep
 `invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
 
 ## Future work
@@ -72,10 +73,10 @@ variants) should be formalized.
 
 * https://en.wikipedia.org/wiki/Invariant_basis_number
 * https://mathoverflow.net/a/2574/
-* Lam, T. Y. *Lectures on Modules and Rings*
-* Orzech, Morris. *Onto endomorphisms are isomorphisms*
-* Djoković, D. Ž. *Epimorphisms of modules which must be isomorphisms*
-* Ribenboim, Paulo. *Épimorphismes de modules qui sont nécessairement des isomorphismes*
+* [Lam, T. Y. *Lectures on Modules and Rings*][lam_1999]
+* [Orzech, Morris. *Onto endomorphisms are isomorphisms*][orzech1971]
+* [Djoković, D. Ž. *Epimorphisms of modules which must be isomorphisms*][djokovic1973]
+* [Ribenboim, Paulo. *Épimorphismes de modules qui sont nécessairement des isomorphismes*][ribenboim1971]
 
 ## Tags
 
