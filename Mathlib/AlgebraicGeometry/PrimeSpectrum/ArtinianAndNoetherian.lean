@@ -91,14 +91,14 @@ noncomputable def sectionsOnOpenCover (i : PrimeSpectrum R) :
         rcases d with ⟨r, ⟨s, hs⟩⟩
         refine ⟨(openCover i), Set.mem_singleton _, 𝟙 _, r, s, fun p ↦ ⟨?_, ?_⟩⟩
         · rw [Set.mem_singleton_iff.mp p.2]; exact hs
-        · dsimp
+        · dsimp [e]
           rw [Localization.mk_eq_mk', IsLocalization.map_mk']
           erw [IsLocalization.mk'_spec]
           rfl⟩
     left_inv := by
       rintro ⟨f, hf⟩
       simp only [unop_op, StructureSheaf.isLocallyFraction_pred, id_eq,
-        IsLocalization.ringEquivOfRingEquiv_apply, RingEquiv.coe_ringHom_refl]
+        IsLocalization.ringEquivOfRingEquiv_apply, RingEquiv.coe_ringHom_refl, e]
       refine Subtype.ext <| funext fun (x : openCover i) ↦ ?_
       simp only [unop_op]
       have eq1 : x = (⟨i, by simp [openCover]⟩ : openCover i) := Subsingleton.elim _ _
@@ -107,7 +107,7 @@ noncomputable def sectionsOnOpenCover (i : PrimeSpectrum R) :
     right_inv := by
       intro p
       simp only [unop_op, id_eq, IsLocalization.ringEquivOfRingEquiv_apply,
-        RingEquiv.coe_ringHom_refl, IsLocalization.map_id]
+        RingEquiv.coe_ringHom_refl, IsLocalization.map_id, e]
     map_mul' := fun x y ↦ by
       simp only [unop_op, StructureSheaf.isLocallyFraction_pred, id_eq]
       rfl
@@ -193,9 +193,10 @@ lemma _root_.Ideal.pow_eq_span (n : ℕ) (I : Ideal R) :
 
   refine Submodule.span_eq_of_le _ ?_ ?_
   · rintro _ ⟨s, hs, rfl⟩
-    rw [Fin.prod_univ_succ, pow_succ, ← ih]
+    rw [Fin.prod_univ_succ, pow_succ', ← ih]
     exact Ideal.mul_mem_mul (s 0).2 (Submodule.subset_span ⟨_, rfl⟩)
-  · change Submodule.map₂ _ I (I ^ n) ≤ _
+  · rw [pow_succ']
+    change Submodule.map₂ _ I (I ^ n) ≤ _
     rw [Submodule.map₂_le]
     intro r hr s hs
     simp only [LinearMap.mul_apply', Ideal.submodule_span_eq]
@@ -204,6 +205,7 @@ lemma _root_.Ideal.pow_eq_span (n : ℕ) (I : Ideal R) :
     · rintro _ ⟨t, rfl⟩
       refine Ideal.subset_span ⟨Fin.cons ⟨r, hr⟩ t, ?_⟩
       conv_rhs => rw [Fin.prod_univ_succ]
+      simp
     · simp
     · intro t₁ t₂ h₁ h₂
       rw [mul_add]

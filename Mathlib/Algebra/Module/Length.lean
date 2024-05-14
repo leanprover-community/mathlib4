@@ -61,31 +61,26 @@ instance : FiniteLengthModule R PUnit where
 def _root_.CompositionSeries.congr (s : CompositionSeries (Submodule R M))
     {M' : Type _} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
     CompositionSeries (Submodule R M') :=
-  s.map (Submodule.map e) $ λ x y (h : x ⋖ y) ↦ by
-    refine ⟨⟨?_, ?_⟩, ?_⟩
-    · rintro _ ⟨a, ha, rfl⟩; exact ⟨a, h.1.1 ha, rfl⟩
-    · have H := h.1.2
-      contrapose! H
-      rintro b hb
-      obtain ⟨a, ha, ha'⟩ := H $ show e b ∈ y.map e from ⟨b, hb, rfl⟩
-      simp only [EmbeddingLike.apply_eq_iff_eq] at ha'
-      rwa [← ha']
-    · intro z hz r
-      refine h.2 (c := Submodule.map e.symm z) ⟨λ a ha ↦ ⟨e a, hz.1 ⟨_, ha, rfl⟩, e.3 _⟩, ?_⟩
-        ⟨?_, ?_⟩
-      · obtain ⟨m, hm1, hm2⟩ := SetLike.not_le_iff_exists.mp hz.2
-        obtain ⟨n, -, rfl⟩ := r.1 hm1
-        contrapose! hm2
-        specialize hm2 $ show n ∈ _ from ⟨e n, hm1, e.3 _⟩
-        exact ⟨_, hm2, rfl⟩
-      · rintro _ ⟨a, ha, rfl⟩
-        obtain ⟨b, hb1, rfl⟩ := r.1 ha
-        rwa [show e.symm (e b) = b from e.3 b]
-      · have r' := r.2
-        contrapose! r'
-        rintro _ ⟨a, ha, rfl⟩
-        obtain ⟨b, hb, rfl⟩ := r' ha
-        rwa [show e (e.symm b) = b from e.4 _]
+  s.map ⟨Submodule.map e, fun {x y} (⟨⟨h1, h2⟩, h3⟩ : x ⋖ y) ↦ by
+    refine ⟨⟨fun _ ⟨a, ha1, ha2⟩ ↦ ha2 ▸ ⟨a, h1 ha1, rfl⟩, ?_⟩,
+      fun z hz ⟨r1, r2⟩ ↦ h3 (c := Submodule.map e.symm z) ⟨fun a ha ↦ ⟨e a, hz.1 ⟨_, ha, rfl⟩,
+        e.3 _⟩, ?_⟩ ⟨?_, ?_⟩⟩
+    · contrapose! h2
+      intro b hb
+      obtain ⟨a, ha, ha'⟩ := h2 <| show e b ∈ y.map e from ⟨b, hb, rfl⟩
+      rwa [← e.injective ha']
+
+    · obtain ⟨m, hm1, hm2⟩ := SetLike.not_le_iff_exists.mp hz.2
+      obtain ⟨n, -, rfl⟩ := r1 hm1
+      contrapose! hm2
+      exact ⟨_, hm2 ⟨e n, hm1, e.3 _⟩, rfl⟩
+    · rintro _ ⟨a, ha, rfl⟩
+      obtain ⟨b, hb1, rfl⟩ := r1 ha
+      rwa [show e.symm (e b) = b from e.3 b]
+    · contrapose! r2
+      rintro _ ⟨a, ha, rfl⟩
+      obtain ⟨b, hb, rfl⟩ := r2 ha
+      rwa [show e (e.symm b) = b from e.4 _]⟩
 
 noncomputable instance [h : FiniteLengthModule R M] (N : Submodule R M) :
     FiniteLengthModule R N where
@@ -314,9 +309,8 @@ lemma krullDim_submodules_of_infinite_length (h : ¬ IsFiniteLengthModule R M) :
       intro n
       induction' n with n ih
       · simp
-      · simp only [Function.iterate_succ', Function.comp_apply]
-        rw [Nat.succ_le]
-        refine lt_of_le_of_lt ih (hp1 <| x n)
+      · simpa only [x, Function.iterate_succ', Function.comp_apply] using Nat.succ_le |>.mpr <|
+          lt_of_le_of_lt ih (hp1 <| x n)
 
     obtain ⟨y, hy⟩ := rid' (x n)
     specialize hx2 y
@@ -328,15 +322,9 @@ lemma krullDim_submodules_of_infinite_length (h : ¬ IsFiniteLengthModule R M) :
   refine ⟨⟨⟨?_, ?_, ?_⟩⟩⟩
   · refine ⟨x.length, x.toFun, fun i ↦ LTSeries.longestOf_covBy i⟩
   · by_contra! rid
-    have rid' : x.head ≠ ⊥ := rid
-    let x' := RelSeries.cons x ⊥ (bot_lt_iff_ne_bot.mpr rid')
-    have := LTSeries.longestOf_is_longest x'
-    simp only [RelSeries.cons_length, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
+    simpa using LTSeries.longestOf_is_longest (RelSeries.cons x ⊥ (bot_lt_iff_ne_bot.mpr rid))
   · by_contra! rid
-    have rid' : x.last ≠ ⊤ := rid
-    let x' := RelSeries.snoc x ⊤ (lt_top_iff_ne_top.mpr rid')
-    have := LTSeries.longestOf_is_longest x'
-    simp only [RelSeries.snoc_length, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
+    simpa using LTSeries.longestOf_is_longest (RelSeries.snoc x ⊤ (lt_top_iff_ne_top.mpr rid))
 
 lemma moduleLength_eq_krullDim_Submodules :
     moduleLength R M = krullDim (Submodule R M) := by
@@ -391,12 +379,10 @@ lemma _root_.Submodule.exists_of_ne_last (ne_top : N ≠ ⊤) : ∃ (x : Submodu
 
 lemma _root_.Submodule.le_next : N ≤ N.next := by
   delta Submodule.next WellFounded.succ
-  by_cases H : ∃ _, _
-  · exact le_of_lt (WellFounded.lt_succ _ H)
-  · dsimp only
-    split_ifs with h
-    · exact (H h).elim
-    · rfl
+  dsimp
+  split_ifs with H
+  · exact le_of_lt (WellFounded.min_mem _ _ H)
+  · rfl
 
 lemma _root_.Submodule.lt_next_of_ne_last (ne_last : N ≠ ⊤) : N < N.next :=
   WellFounded.lt_succ _ (N.exists_of_ne_last ne_last)
@@ -763,14 +749,14 @@ noncomputable def RelSeries.cdfSuccEquiv (i : Fin x.length) :
 
   let e := @Submodule.quotientQuotientEquivQuotient (R := R) (M := x i.succ)
     (T := x_i) (S := x_0) (fun m hm ↦ by
-      simp only [Submodule.map_top, LinearMap.mem_range, Subtype.exists] at hm ⊢
+      simp only [Submodule.map_top, LinearMap.mem_range, Subtype.exists, x_i, x_0] at hm ⊢
       rcases hm with ⟨n, h1, rfl⟩
       exact ⟨n, LESeries.monotone x (Fin.zero_le _) h1, rfl⟩)
   refine ?_ ≪≫ₗ e.symm ≪≫ₗ ?_
   · refine Submodule.Quotient.equiv _ _ (LinearEquiv.refl R _) ?_
     ext m
     simp only [Submodule.mem_map, Submodule.mem_comap, Submodule.coeSubtype, LinearEquiv.refl_apply,
-      exists_eq_right, Submodule.map_top, LinearMap.mem_range, Subtype.exists]
+      exists_eq_right, Submodule.map_top, LinearMap.mem_range, Subtype.exists, x_i, x_0]
     fconstructor
     · intro h; exact ⟨m.1, h, rfl⟩
     · rintro ⟨n, hn, rfl⟩; exact hn
@@ -778,13 +764,14 @@ noncomputable def RelSeries.cdfSuccEquiv (i : Fin x.length) :
       (Submodule.Quotient.equiv _ _ (LinearEquiv.refl R _) ?_) ?_
     · ext m
       simp only [Submodule.map_top, Submodule.mem_map, LinearMap.mem_range, Subtype.exists,
-        LinearEquiv.refl_apply, exists_eq_right, Submodule.mem_comap, Submodule.coeSubtype]
+        LinearEquiv.refl_apply, exists_eq_right, Submodule.mem_comap, Submodule.coeSubtype,
+        x_i, x_0]
       fconstructor
       · rintro ⟨n, hn, rfl⟩; exact hn
       · intro h; exact ⟨m.1, h, rfl⟩
     · ext m
       simp only [Submodule.Quotient.equiv_refl, Submodule.map_top, Submodule.mem_map,
-        LinearMap.mem_range, Subtype.exists, Submodule.mkQ_apply]
+        LinearMap.mem_range, Subtype.exists, Submodule.mkQ_apply, x_0, x_i]
       fconstructor
       · rintro ⟨_, ⟨n, hn, ⟨⟨n', h0, h1⟩, rfl⟩⟩, h2⟩
         refine ⟨Submodule.Quotient.mk ⟨n', h0⟩, ?_⟩
@@ -862,7 +849,7 @@ lemma Module.finite_iff_artinian_over_divisionRing : IsArtinian K M ↔ Module.F
     let g := fun n ↦ OrderDual.toDual (Submodule.span K (b '' enum' n))
     refine ⟨⟨g, ?_⟩, ?_⟩
     · intro m n h
-      dsimp
+      dsimp [g, b, enum']
       rw [OrderDual.toDual_le_toDual]
       refine Submodule.span_mono ?_
       rintro _ ⟨x, hx, rfl⟩
@@ -875,7 +862,7 @@ lemma Module.finite_iff_artinian_over_divisionRing : IsArtinian K M ↔ Module.F
     refine ⟨n + 1, by norm_num, ?_⟩
     change g n ≠ g (n + 1)
     have mem1 : b (enum (n + 1)) ∈ OrderDual.ofDual (g n) := by
-      simp only [Basis.coe_ofVectorSpace, OrderDual.ofDual_toDual]
+      simp only [Basis.coe_ofVectorSpace, OrderDual.ofDual_toDual, g, b, enum']
       refine Submodule.subset_span ?_
       simp only [Set.mem_image, Set.mem_diff, Set.mem_univ, Set.mem_setOf_eq, not_exists, not_and,
         true_and, Subtype.exists, exists_and_right, exists_eq_right, Subtype.coe_eta,
@@ -884,11 +871,11 @@ lemma Module.finite_iff_artinian_over_divisionRing : IsArtinian K M ↔ Module.F
       norm_num at hx
     suffices mem2 : b (enum (n + 1)) ∉ OrderDual.ofDual (g (n + 1)) by
       intro r
-      dsimp only at r
+      dsimp only [g, b, enum'] at r
       erw [r] at mem1
       exact mem2 mem1
     intro r
-    exact b.linearIndependent.not_mem_span_image (by simp) r
+    exact b.linearIndependent.not_mem_span_image (by simp [g, b, enum']) r
   · rw [← finiteLengthModule_over_field_iff_finite_dimensional]
     intro h
     replace h := Classical.choice h.finite
