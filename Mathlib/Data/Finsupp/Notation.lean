@@ -71,6 +71,6 @@ unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀
       let ret := "fun₀" ++
         Std.Format.join (f.support.val.unquot.map <|
           fun a => " | " ++ repr a ++ " => " ++ repr (f a))
-      if p ≥ leadPrec then Format.paren ret else ret
+      if leadPrec ≤ p then Format.paren ret else ret
 
 end Finsupp

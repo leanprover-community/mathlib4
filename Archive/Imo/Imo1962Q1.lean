@@ -68,7 +68,7 @@ theorem case_1_digit {c n : ℕ} (h1 : (digits 10 c).length = 1) : ¬ProblemPred
   intro h2
   have h3 : 6 * 10 ^ 1 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [h1]
   have h4 : 6 * 10 ^ 1 + c = 4 * (10 * c + 6) := by rw [h3, h2.right, h2.left]
-  have h6 : c > 0 := by linarith
+  have h6 : 0 < c := by linarith
   linarith
 #align imo1962_q1.case_1_digit Imo1962Q1.case_1_digit
 
@@ -76,7 +76,7 @@ theorem case_2_digit {c n : ℕ} (h1 : (digits 10 c).length = 2) : ¬ProblemPred
   intro h2
   have h3 : 6 * 10 ^ 2 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [h1]
   have h4 : 6 * 10 ^ 2 + c = 4 * (10 * c + 6) := by rw [h3, h2.right, h2.left]
-  have h5 : c > 14 := by linarith
+  have h5 : 14 < c := by linarith
   linarith
 #align imo1962_q1.case_2_digit Imo1962Q1.case_2_digit
 

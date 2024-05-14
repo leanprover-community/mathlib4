@@ -373,7 +373,7 @@ theorem pow_eq_one_iff_cases : a ^ n = 1 ↔ n = 0 ∨ a = 1 ∨ a = -1 ∧ Even
 theorem pow_eq_neg_pow_iff (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd n :=
   match n.even_or_odd with
   | .inl he =>
-    suffices a ^ n > -b ^ n by simpa [he] using this.ne'
+    suffices -b ^ n < a ^ n by simpa [he] using this.ne'
     lt_of_lt_of_le (by simp [he.pow_pos hb]) (he.pow_nonneg _)
   | .inr ho => by
     simp only [ho, and_true, ← ho.neg_pow, (ho.strictMono_pow (R := R)).injective.eq_iff]

@@ -63,7 +63,7 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n in range m, abv
   let ⟨P, hP⟩ := ha.bounded
   let ⟨Q, hQ⟩ := hb.bounded
   have hP0 : 0 < P := lt_of_le_of_lt (abs_nonneg _) (hP 0)
-  have hPε0 : 0 < ε / (2 * P) := div_pos ε0 (mul_pos (show (2 : α) > 0 by norm_num) hP0)
+  have hPε0 : 0 < ε / (2 * P) := div_pos ε0 (mul_pos (show 0 < (2 : α) by norm_num) hP0)
   let ⟨N, hN⟩ := hb.cauchy₂ hPε0
   have hQε0 : 0 < ε / (4 * Q) :=
     div_pos ε0 (mul_pos (show (0 : α) < 4 by norm_num) (lt_of_le_of_lt (abv_nonneg _ _) (hQ 0)))
@@ -157,7 +157,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
                 exact add_lt_add_of_le_of_lt hk (lt_of_le_of_lt hk (lt_add_of_pos_right _ ε0))))
         (neg_le.2 <| abs_neg (f n) ▸ le_abs_self _)⟩
   let l := Nat.find h
-  have hl : ∀ n : ℕ, n ≥ m → f n > a - l • ε := Nat.find_spec h
+  have hl : ∀ n ≥ m, a - l • ε < f n := Nat.find_spec h
   have hl0 : l ≠ 0 := fun hl0 ↦
     not_lt_of_ge (ham m le_rfl)
       (lt_of_lt_of_le (by have := hl m (le_refl m); simpa [hl0] using this) (le_abs_self (f m)))

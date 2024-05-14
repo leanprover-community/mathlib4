@@ -947,7 +947,7 @@ theorem sinOrderIso_apply (x : Icc (-(π / 2)) (π / 2)) : sinOrderIso x = ⟨si
 @[simp]
 theorem tan_pi_div_four : tan (π / 4) = 1 := by
   rw [tan_eq_sin_div_cos, cos_pi_div_four, sin_pi_div_four]
-  have h : √2 / 2 > 0 := by positivity
+  have h : 0 < √2 / 2 := by positivity
   exact div_self (ne_of_gt h)
 #align real.tan_pi_div_four Real.tan_pi_div_four
 
