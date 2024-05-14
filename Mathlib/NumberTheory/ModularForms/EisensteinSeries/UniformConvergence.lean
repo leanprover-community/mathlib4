@@ -92,10 +92,8 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, Int.cast_eq_zero,
     right_ne_zero_of_max_eq hx H2, div_self, le_refl]
 
-lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) :
-    (r z) ^ k * (max (x 0).natAbs (x 1).natAbs) ^ k ≤ Complex.abs (x 0 * z + x 1) ^ k := by
-  rw [← Real.mul_rpow (r_pos _).le (Nat.cast_nonneg _)]
-  refine Real.rpow_le_rpow (mul_nonneg (r_pos _).le (Nat.cast_nonneg _)) ?_ hk
+lemma r_mul_max_le (z : ℍ) {x : Fin 2 → ℤ} (hx : x ≠ 0) :
+    r z * (max (x 0).natAbs (x 1).natAbs) ≤ Complex.abs (x 0 * z + x 1) := by
   let n := max (x 0).natAbs (x 1).natAbs
   have hn0 : n ≠ 0 := by
     contrapose! hx
@@ -117,26 +115,17 @@ theorem summand_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : �
   · simp only [hn, box_zero, Finset.mem_singleton, Prod.mk_eq_zero] at hx
     rw [hx.1, hx.2, hn, ← Real.mul_rpow (r_pos z).le (Nat.cast_nonneg 0)]
     simp only [Int.cast_zero, zero_mul, add_zero, map_zero, CharP.cast_eq_zero, mul_zero, le_refl]
-  · simp only [ Fin.isValue, Pi.zero_apply, Int.mem_box, Int.natAbs_zero, max_self] at hx
+  · simp only [Fin.isValue, Pi.zero_apply, Int.mem_box, Int.natAbs_zero, max_self] at hx
     have hx2 : x ≠ 0 := by
       contrapose! hn
-      simp only [hn, Fin.isValue, Pi.zero_apply, Int.natAbs_zero, max_self] at hx
-      exact hx.symm
-    rw [Real.rpow_neg (by apply apply_nonneg), Real.rpow_neg ((r_pos z).le),
-      Real.rpow_neg (Nat.cast_nonneg n), ← mul_inv, inv_le_inv, ← hx, Nat.cast_max]
-    simpa only [Fin.isValue, Nat.cast_max] using (rpow_bound hk z x hx2)
-    · apply Real.rpow_pos_of_pos (Complex.abs.pos (linear_ne_zero ![x 0, x 1] z ?_))
-      have := (Function.comp_ne_zero_iff x Int.cast_injective Int.cast_zero (γ := ℝ)).mpr hx2
-      rw [← Iff.ne (Function.Injective.eq_iff (Equiv.injective (piFinTwoEquiv fun _ ↦ ℝ)))] at this
-      simpa only [Fin.isValue, ne_eq, Matrix.cons_eq_zero_iff, Int.cast_eq_zero, Matrix.zero_empty,
-        and_true, not_and, piFinTwoEquiv_apply, Function.comp_apply, Pi.zero_apply,
-        Prod.mk.injEq] using this
-    · apply mul_pos (Real.rpow_pos_of_pos (r_pos z) _)
-      apply Real.rpow_pos_of_pos (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn))
+      simpa only [hn, Fin.isValue, Pi.zero_apply, Int.natAbs_zero, max_self] using hx.symm
+    rw [← Real.mul_rpow (r_pos _).le (Nat.cast_nonneg _)]
+    exact Real.rpow_le_rpow_of_nonpos (mul_pos (r_pos _) (by positivity)) (hx ▸ r_mul_max_le z hx2)
+      (neg_nonpos.mpr hk)
 
 /- This is a special case of the above, but one that we use more. -/
-theorem eisSummand_is_bounded_on_box {k : ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hk : 0 ≤ k)
-    (hx : (x 0, x 1) ∈ box n) : Complex.abs (eisSummand k x z) ≤ (((r z) ^ k * n ^ k))⁻¹ := by
+theorem eisSummand_is_bounded_on_box_zpow {k : ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hk : 0 ≤ k)
+    (hx : (x 0, x 1) ∈ box n) : Complex.abs (eisSummand k x z) ≤ ((r z) ^ k * n ^ k)⁻¹ := by
   have := summand_is_bounded_on_box_rpow (Int.cast_nonneg.2 hk) z n x hx
   simp_rw [← Int.cast_neg k, Real.rpow_intCast, zpow_neg] at this
   rw [mul_inv, eisSummand, one_div, map_inv₀, map_zpow₀]
@@ -213,16 +202,16 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
     apply ((summable_upper_bound hk ⟨⟨A, B⟩, hB⟩).subtype (gammaSet N a)).congr (fun _ => rfl)
   apply tendstoUniformlyOn_tsum hu
   intro v x hx
-  apply le_trans (eisSummand_is_bounded_on_box (k := k) (max (v.1 0).natAbs (v.1 1).natAbs) x v
+  apply le_trans (eisSummand_is_bounded_on_box_zpow (k := k) (max (v.1 0).natAbs (v.1 1).natAbs) x v
     (by omega) (by simp only [Int.mem_box]))
   simp only [Fin.isValue, Nat.cast_max, mul_inv_rev]
-  have hk0 : 0 ≤ k := by omega
-  lift k to ℕ using hk0
+  lift k to ℕ using (by omega)
   gcongr
   · apply pow_pos (r_pos _)
   · apply (r_pos _).le
   · apply (r_lower_bound_on_verticalStrip hB ⟨x, HABK hx⟩)
 
+/-This is essentially extend by zero outside the upper half plane.-/
 local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm
           (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe))
 
