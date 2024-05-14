@@ -166,7 +166,6 @@ theorem isRightInversion_simple_iff_isRightDescent (w : W) (i : B) :
     cs.IsRightInversion w (s i) ↔ cs.IsRightDescent w i := by
   simp [IsRightInversion, IsRightDescent, cs.isReflection_simple i]
 
-
 @[simp]
 theorem isLeftInversion_simple_iff_isLeftDescent (w : W) (i : B) :
     cs.IsLeftInversion w (s i) ↔ cs.IsLeftDescent w i := by
