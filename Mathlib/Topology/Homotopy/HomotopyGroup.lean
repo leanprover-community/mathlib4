@@ -350,8 +350,9 @@ def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
       dsimp only [Path.trans, fromLoop, Path.coe_mk_mk, Function.comp_apply, mk_apply,
         ContinuousMap.comp_apply, toContinuousMap_apply, funSplitAt_apply,
         ContinuousMap.uncurry_apply, ContinuousMap.coe_mk, Function.uncurry_apply_pair]
-      split_ifs; change f _ = _; swap; change g _ = _
-      all_goals congr 1)
+      split_ifs
+      · show f _ = _; congr 1
+      · show g _ = _; congr 1)
 #align gen_loop.trans_at GenLoop.transAt
 
 /-- Reversal of a `GenLoop` along the `i`th coordinate. -/
@@ -546,12 +547,17 @@ theorem one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦const⟧ :=
 theorem mul_spec [Nonempty N] {i} {p q : Ω^ N X x} :
     -- Porting note (#11215): TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
     ((· * ·) : _ → _ → HomotopyGroup N X x) ⟦p⟧ ⟦q⟧ = ⟦transAt i q p⟧ := by
-  rw [transAt_indep _ q, ← fromLoop_trans_toLoop]; apply Quotient.sound; rfl
+  rw [transAt_indep (Classical.arbitrary N) q, ← fromLoop_trans_toLoop]
+  apply Quotient.sound
+  rfl
 #align homotopy_group.mul_spec HomotopyGroup.mul_spec
 
 /-- Characterization of multiplicative inverse -/
-theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} : ((⟦p⟧)⁻¹ : HomotopyGroup N X x) = ⟦symmAt i p⟧ :=
-  by rw [symmAt_indep _ p, ← fromLoop_symm_toLoop]; apply Quotient.sound; rfl
+theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} :
+    ((⟦p⟧)⁻¹ : HomotopyGroup N X x) = ⟦symmAt i p⟧ := by
+  rw [symmAt_indep (Classical.arbitrary N) p, ← fromLoop_symm_toLoop]
+  apply Quotient.sound
+  rfl
 #align homotopy_group.inv_spec HomotopyGroup.inv_spec
 
 /-- Multiplication on `HomotopyGroup N X x` is commutative for nontrivial `N`.

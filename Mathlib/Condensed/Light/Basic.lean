@@ -10,7 +10,7 @@ import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 # Light condensed objects
 
 This file defines the category of light condensed objects in a category `C`, following the work
-of Clausen-Scholze.
+of Clausen-Scholze (see https://www.youtube.com/playlist?list=PLx5f8IelFRgGmu6gmL-Kf_Rl_6Mm7juZO).
 
 -/
 

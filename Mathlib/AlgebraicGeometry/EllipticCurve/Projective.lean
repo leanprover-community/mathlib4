@@ -148,7 +148,7 @@ lemma equation_iff (P : Fin 3 → R) : W.Equation P ↔
 lemma equation_zero (Y : R) : W.Equation ![0, Y, 0] :=
   (W.equation_iff ![0, Y, 0]).mpr <| by matrix_simp; ring1
 
-lemma equation_some (X Y : R) : W.Equation ![X, Y, 1] ↔ W.toAffine.equation X Y := by
+lemma equation_some (X Y : R) : W.Equation ![X, Y, 1] ↔ W.toAffine.Equation X Y := by
   rw [equation_iff, W.toAffine.equation_iff]
   congr! 1 <;> matrix_simp <;> ring1
 
@@ -236,7 +236,7 @@ lemma nonsingular_zero [Nontrivial R] : W.Nonsingular ![0, 1, 0] :=
 lemma nonsingular_zero' [NoZeroDivisors R] {Y : R} (hy : Y ≠ 0) : W.Nonsingular ![0, Y, 0] :=
   (W.nonsingular_iff ![0, Y, 0]).mpr ⟨W.equation_zero Y, by simpa⟩
 
-lemma nonsingular_some (X Y : R) : W.Nonsingular ![X, Y, 1] ↔ W.toAffine.nonsingular X Y := by
+lemma nonsingular_some (X Y : R) : W.Nonsingular ![X, Y, 1] ↔ W.toAffine.Nonsingular X Y := by
   rw [nonsingular_iff]
   matrix_simp
   simp only [W.toAffine.nonsingular_iff, equation_some, and_congr_right_iff,
@@ -277,7 +277,7 @@ lemma nonsingularLift_zero' [NoZeroDivisors R] {Y : R} (hy : Y ≠ 0) :
   W.nonsingular_zero' hy
 
 lemma nonsingularLift_some (X Y : R) :
-    W.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W.toAffine.nonsingular X Y :=
+    W.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W.toAffine.Nonsingular X Y :=
   W.nonsingular_some X Y
 
 variable {F : Type u} [Field F] {W : Projective F}
@@ -307,15 +307,15 @@ lemma equiv_some_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : P ≈ ![P x 
   ⟨Units.mk0 _ hPz, by simp [← fin3_def P, mul_div_cancel₀ _ hPz]⟩
 
 lemma nonsingular_iff_affine_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    W.Nonsingular P ↔ W.toAffine.nonsingular (P x / P z) (P y / P z) :=
+    W.Nonsingular P ↔ W.toAffine.Nonsingular (P x / P z) (P y / P z) :=
   (W.nonsingular_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| W.nonsingular_some ..
 
 lemma nonsingular_of_affine_of_Z_ne_zero {P : Fin 3 → F}
-    (h : W.toAffine.nonsingular (P x / P z) (P y / P z)) (hPz : P z ≠ 0) : W.Nonsingular P :=
+    (h : W.toAffine.Nonsingular (P x / P z) (P y / P z)) (hPz : P z ≠ 0) : W.Nonsingular P :=
   (nonsingular_iff_affine_of_Z_ne_zero hPz).mpr h
 
 lemma nonsingular_affine_of_Z_ne_zero {P : Fin 3 → F} (h : W.Nonsingular P) (hPz : P z ≠ 0) :
-    W.toAffine.nonsingular (P x / P z) (P y / P z) :=
+    W.toAffine.Nonsingular (P x / P z) (P y / P z) :=
   (nonsingular_iff_affine_of_Z_ne_zero hPz).mp h
 
 end Equation
