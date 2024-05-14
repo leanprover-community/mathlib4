@@ -46,7 +46,8 @@ and Hilbert basis theorem.
 
 * [Orzech, Morris. *Onto endomorphisms are isomorphisms*][orzech1971]
 * [Djoković, D. Ž. *Epimorphisms of modules which must be isomorphisms*][djokovic1973]
-* [Ribenboim, Paulo. *Épimorphismes de modules qui sont nécessairement des isomorphismes*][ribenboim1971]
+* [Ribenboim, Paulo. *Épimorphismes de modules qui sont nécessairement
+  des isomorphismes*][ribenboim1971]
 
 -/
 
