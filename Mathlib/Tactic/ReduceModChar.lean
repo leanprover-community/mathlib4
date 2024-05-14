@@ -61,8 +61,8 @@ partial def normIntNumeral {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (instRing 
   let ⟨ze, ne, pe⟩ ← Result.toInt instRing (← Mathlib.Meta.NormNum.derive e)
   let ⟨n', pn⟩ ← deriveNat n q(instAddMonoidWithOneNat)
   let rr ← evalIntMod.go _ _ ze q(IsInt.raw_refl $ne) _ <|
-    .isNat q(instAddMonoidWithOne) _ q(isNat_cast _ _ (IsNat.raw_refl $n'))
-  let ⟨zr, nr, pr⟩ ← rr.toInt q(Int.instRingInt)
+    .isNat q(instAddMonoidWithOne) _ q(isNat_natCast _ _ (IsNat.raw_refl $n'))
+  let ⟨zr, nr, pr⟩ ← rr.toInt q(Int.instRing)
   return .isInt instRing nr zr q(CharP.isInt_of_mod $instCharP $pe $pn $pr)
 
 lemma CharP.neg_eq_sub_one_mul {α : Type _} [Ring α] (n : ℕ) (inst : CharP α n) (b : α)

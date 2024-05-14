@@ -342,8 +342,8 @@ theorem natSepDegree_eq_of_isAlgClosed [IsAlgClosed E] :
 
 variable (E) in
 theorem natSepDegree_map : (f.map (algebraMap F E)).natSepDegree = f.natSepDegree := by
-  simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure E), aroots_def, map_map]
-  rfl
+  simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure E), aroots_def, map_map,
+    ← IsScalarTower.algebraMap_eq]
 
 @[simp]
 theorem natSepDegree_C_mul {x : F} (hx : x ≠ 0) :

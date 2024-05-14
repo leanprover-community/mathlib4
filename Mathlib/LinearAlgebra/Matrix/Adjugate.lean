@@ -268,7 +268,7 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
     cramer A b = A.adjugate *ᵥ b := by
   nth_rw 2 [← A.transpose_transpose]
   rw [← adjugate_transpose, adjugate_def]
-  have : b = ∑ i, b i • Pi.single i 1 := by
+  have : b = ∑ i, b i • (Pi.single i 1 : n → α) := by
     refine' (pi_eq_sum_univ b).trans _
     congr with j
     -- Porting note: needed to help `Pi.smul_apply`
@@ -510,7 +510,7 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
   have hu : ∀ M : Matrix n n α, IsRegular (g M).det := by
     intro M
     refine' Polynomial.Monic.isRegular _
-    simp only [g, Polynomial.Monic.def', ← Polynomial.leadingCoeff_det_X_one_add_C M, add_comm]
+    simp only [g, Polynomial.Monic.def, ← Polynomial.leadingCoeff_det_X_one_add_C M, add_comm]
   rw [← f'_adj, ← f'_adj, ← f'_adj, ← f'.map_mul, ←
     adjugate_mul_distrib_aux _ _ (hu A).left (hu B).left, RingHom.map_adjugate,
     RingHom.map_adjugate, f'_inv, f'_g_mul]

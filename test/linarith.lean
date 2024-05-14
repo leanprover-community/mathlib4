@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Linarith
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Rat.Order
 

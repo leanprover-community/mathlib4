@@ -72,10 +72,10 @@ noncomputable def map (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :
   { _root_.TensorProduct.map f.toLinearMap g.toLinearMap with
     counit_comp := by
       simp_rw [← tensorHom_toLinearMap]
-      apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).counit_comp
+      apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).1.counit_comp
     map_comp_comul := by
       simp_rw [← tensorHom_toLinearMap, ← comul_tensorObj]
-      apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).map_comp_comul }
+      apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).1.map_comp_comul }
 
 @[simp]
 theorem map_tmul (f : M →ₗc[R] N) (g : P →ₗc[R] Q) (x : M) (y : P) :
@@ -96,12 +96,12 @@ protected noncomputable def assoc :
       simp_rw [← associator_hom_toLinearMap, ← counit_tensorObj_tensorObj_right,
         ← counit_tensorObj_tensorObj_left]
       apply CoalgHom.counit_comp (α_ (CoalgebraCat.of R M) (CoalgebraCat.of R N)
-        (CoalgebraCat.of R P)).hom
+        (CoalgebraCat.of R P)).hom.1
     map_comp_comul := by
       simp_rw [← associator_hom_toLinearMap, ← comul_tensorObj_tensorObj_left,
         ← comul_tensorObj_tensorObj_right]
       exact CoalgHom.map_comp_comul (α_ (CoalgebraCat.of R M)
-        (CoalgebraCat.of R N) (CoalgebraCat.of R P)).hom }
+        (CoalgebraCat.of R N) (CoalgebraCat.of R P)).hom.1 }
 
 variable {R M N P}
 
@@ -127,10 +127,10 @@ protected noncomputable def lid : R ⊗[R] M ≃ₗc[R] M :=
   { _root_.TensorProduct.lid R M with
     counit_comp := by
       simp only [← leftUnitor_hom_toLinearMap]
-      apply CoalgHom.counit_comp (λ_ (CoalgebraCat.of R M)).hom
+      apply CoalgHom.counit_comp (λ_ (CoalgebraCat.of R M)).hom.1
     map_comp_comul := by
       simp_rw [← leftUnitor_hom_toLinearMap, ← comul_tensorObj]
-      apply CoalgHom.map_comp_comul (λ_ (CoalgebraCat.of R M)).hom }
+      apply CoalgHom.map_comp_comul (λ_ (CoalgebraCat.of R M)).hom.1 }
 
 variable {R M}
 
@@ -152,10 +152,10 @@ protected noncomputable def rid : M ⊗[R] R ≃ₗc[R] M :=
   { _root_.TensorProduct.rid R M with
     counit_comp := by
       simp only [← rightUnitor_hom_toLinearMap]
-      apply CoalgHom.counit_comp (ρ_ (CoalgebraCat.of R M)).hom
+      apply CoalgHom.counit_comp (ρ_ (CoalgebraCat.of R M)).hom.1
     map_comp_comul := by
       simp_rw [← rightUnitor_hom_toLinearMap, ← comul_tensorObj]
-      apply CoalgHom.map_comp_comul (ρ_ (CoalgebraCat.of R M)).hom }
+      apply CoalgHom.map_comp_comul (ρ_ (CoalgebraCat.of R M)).hom.1 }
 
 variable {R M}
 

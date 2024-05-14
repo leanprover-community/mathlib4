@@ -33,7 +33,7 @@ def riemannZetaSummandHom (hs : s ≠ 0) : ℕ →*₀ ℂ where
   map_zero' := by simp [hs]
   map_one' := by simp
   map_mul' m n := by
-    simpa only [Nat.cast_mul, ofReal_nat_cast]
+    simpa only [Nat.cast_mul, ofReal_natCast]
       using mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg _
 
 /-- When `χ` is a Dirichlet character and `s ≠ 0`, the map `n ↦ χ n * n^(-s)` is completely
@@ -44,7 +44,7 @@ def dirichletSummandHom {n : ℕ} (χ : DirichletCharacter ℂ n) (hs : s ≠ 0)
   map_zero' := by simp [hs]
   map_one' := by simp
   map_mul' m n := by
-    simp_rw [← ofReal_nat_cast]
+    simp_rw [← ofReal_natCast]
     simpa only [Nat.cast_mul, IsUnit.mul_iff, not_and, map_mul, ofReal_mul,
       mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg _]
       using mul_mul_mul_comm ..
@@ -54,7 +54,7 @@ lemma summable_riemannZetaSummand (hs : 1 < s.re) :
     Summable (fun n ↦ ‖riemannZetaSummandHom (ne_zero_of_one_lt_re hs) n‖) := by
   simp only [riemannZetaSummandHom, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   convert Real.summable_nat_rpow_inv.mpr hs with n
-  rw [← ofReal_nat_cast, Complex.norm_eq_abs,
+  rw [← ofReal_natCast, Complex.norm_eq_abs,
     abs_cpow_eq_rpow_re_of_nonneg (Nat.cast_nonneg n) <| re_neg_ne_zero_of_one_lt_re hs,
     neg_re, Real.rpow_neg <| Nat.cast_nonneg n]
 

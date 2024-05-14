@@ -7,6 +7,7 @@ import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 ## Pseudo-metric spaces
@@ -963,7 +964,7 @@ theorem eventually_nhds_iff_ball {p : α → Prop} :
 #align metric.eventually_nhds_iff_ball Metric.eventually_nhds_iff_ball
 
 /-- A version of `Filter.eventually_prod_iff` where the first filter consists of neighborhoods
-in a pseudo-metric space.-/
+in a pseudo-metric space. -/
 theorem eventually_nhds_prod_iff {f : Filter ι} {x₀ : α} {p : α × ι → Prop} :
     (∀ᶠ x in 𝓝 x₀ ×ˢ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∀ {x}, dist x x₀ < ε → ∀ {i}, pa i → p (x, i) := by
@@ -973,7 +974,7 @@ theorem eventually_nhds_prod_iff {f : Filter ι} {x₀ : α} {p : α × ι → P
 #align metric.eventually_nhds_prod_iff Metric.eventually_nhds_prod_iff
 
 /-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods
-in a pseudo-metric space.-/
+in a pseudo-metric space. -/
 theorem eventually_prod_nhds_iff {f : Filter ι} {x₀ : α} {p : ι × α → Prop} :
     (∀ᶠ x in f ×ˢ 𝓝 x₀, p x) ↔ ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∃ ε > 0, ∀ {i}, pa i → ∀ {x}, dist x x₀ < ε → p (i, x) := by
@@ -1150,7 +1151,7 @@ end Metric
 
 open Metric
 
-/-Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
+/- Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 
@@ -1356,6 +1357,10 @@ theorem Real.nndist_eq' (x y : ℝ) : nndist x y = Real.nnabs (y - x) :=
 
 theorem Real.dist_0_eq_abs (x : ℝ) : dist x 0 = |x| := by simp [Real.dist_eq]
 #align real.dist_0_eq_abs Real.dist_0_eq_abs
+
+theorem Real.sub_le_dist (x y : ℝ) : x - y ≤ dist x y := by
+  rw [Real.dist_eq, le_abs]
+  exact Or.inl (le_refl _)
 
 theorem Real.dist_left_le_of_mem_uIcc {x y z : ℝ} (h : y ∈ uIcc x z) : dist x y ≤ dist x z := by
   simpa only [dist_comm x] using abs_sub_left_of_mem_uIcc h

@@ -1417,7 +1417,7 @@ theorem dense_or_discrete [LinearOrder α] (a₁ a₂ : α) :
 lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
     (h : ∀ ⦃x y z : α⦄, x < y → y < z → False) (x y z : α) : x = y ∨ y = z ∨ x = z := by
   by_contra hne
-  simp only [not_or, ← Ne.def] at hne
+  simp only [not_or, ← Ne.eq_def] at hne
   cases' hne.1.lt_or_lt with h₁ h₁ <;> cases' hne.2.1.lt_or_lt with h₂ h₂ <;>
     cases' hne.2.2.lt_or_lt with h₃ h₃
   exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]

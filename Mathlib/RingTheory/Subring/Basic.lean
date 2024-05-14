@@ -87,13 +87,16 @@ instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
 @[aesop safe apply (rule_sets := [SetLike])]
-theorem coe_int_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
-#align coe_int_mem coe_int_mem
+theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
+#align coe_int_mem intCast_mem
+
+-- 2024-04-05
+@[deprecated _root_.intCast_mem] alias coe_int_mem := intCast_mem
 
 namespace SubringClass
 
 instance (priority := 75) toHasIntCast : IntCast s :=
-  ⟨fun n => ⟨n, coe_int_mem s n⟩⟩
+  ⟨fun n => ⟨n, intCast_mem s n⟩⟩
 #align subring_class.to_has_int_cast SubringClass.toHasIntCast
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
@@ -545,8 +548,7 @@ theorem coe_map (f : R →+* S) (s : Subring R) : (s.map f : Set S) = f '' s :=
 #align subring.coe_map Subring.coe_map
 
 @[simp]
-theorem mem_map {f : R →+* S} {s : Subring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
-  Set.mem_image_iff_bex.trans <| by simp
+theorem mem_map {f : R →+* S} {s : Subring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := Iff.rfl
 #align subring.mem_map Subring.mem_map
 
 @[simp]
@@ -705,7 +707,7 @@ instance : CompleteLattice (Subring R) :=
     bot := ⊥
     bot_le := fun s _x hx =>
       let ⟨n, hn⟩ := mem_bot.1 hx
-      hn ▸ coe_int_mem s n
+      hn ▸ intCast_mem s n
     top := ⊤
     le_top := fun _s _x _hx => trivial
     inf := (· ⊓ ·)
@@ -765,15 +767,15 @@ section DivisionRing
 
 variable {K : Type u} [DivisionRing K]
 
-instance : Field (center K) :=
-  { inferInstanceAs (CommRing (center K)) with
-    inv := fun a => ⟨a⁻¹, Set.inv_mem_center₀ a.prop⟩
-    mul_inv_cancel := fun ⟨a, ha⟩ h => Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne h
-    div := fun a b => ⟨a / b, Set.div_mem_center₀ a.prop b.prop⟩
-    div_eq_mul_inv := fun a b => Subtype.ext <| div_eq_mul_inv _ _
-    inv_zero := Subtype.ext inv_zero
-    -- TODO: use a nicer defeq
-    qsmul := qsmulRec _ }
+instance instField : Field (center K) where
+  inv a := ⟨a⁻¹, Set.inv_mem_center₀ a.prop⟩
+  mul_inv_cancel a ha := Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne ha
+  div a b := ⟨a / b, Set.div_mem_center₀ a.prop b.prop⟩
+  div_eq_mul_inv a b := Subtype.ext <| div_eq_mul_inv _ _
+  inv_zero := Subtype.ext inv_zero
+  -- TODO: use a nicer defeq
+  nnqsmul := _
+  qsmul := _
 
 @[simp]
 theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹ :=

@@ -73,7 +73,7 @@ theorem ofReal_log {x : ℝ} (hx : 0 ≤ x) : (x.log : ℂ) = log x :=
 #align complex.of_real_log Complex.ofReal_log
 
 @[simp, norm_cast]
-lemma natCast_log {n : ℕ} : Real.log n = log n := ofReal_nat_cast n ▸ ofReal_log n.cast_nonneg
+lemma natCast_log {n : ℕ} : Real.log n = log n := ofReal_natCast n ▸ ofReal_log n.cast_nonneg
 
 @[simp]
 lemma ofNat_log {n : ℕ} [n.AtLeastTwo] :
@@ -228,7 +228,10 @@ theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by
   rw [← comap_exp_nhds_zero, map_comap, range_exp, nhdsWithin]
 #align complex.map_exp_comap_re_at_bot Complex.map_exp_comap_re_atBot
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12226
+@[simp, nolint simpNF]
 theorem map_exp_comap_re_atTop : map exp (comap re atTop) = cobounded ℂ := by
   rw [← comap_exp_cobounded, map_comap, range_exp, inf_eq_left, le_principal_iff]
   exact eventually_ne_cobounded _

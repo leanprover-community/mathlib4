@@ -227,7 +227,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
     apply ne_of_lt
     calc
       x * x + x * x = x * x * 2 := by rw [mul_two]
-      _ ≤ x * x * k := (Nat.mul_le_mul_left (x * x) k_lt_one)
+      _ ≤ x * x * k := Nat.mul_le_mul_left (x * x) k_lt_one
       _ < (x * x + 1) * k := by linarith
   · -- Show the descent step.
     intro x y hx x_lt_y _ _ z h_root _ hV₀
