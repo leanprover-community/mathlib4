@@ -22,7 +22,7 @@ this property for the map from any presheaf `P` to its associated sheaf, see
 If this condition holds, there is an induced functor
 `sheafCompose' J F : Sheaf J A ⥤ Sheaf J B`.
 
-Moreover, if we assume `HasSheafCompose J B`, we obtain an isomorphism
+Moreover, if we assume `J.HasSheafCompose F`, we obtain an isomorphism
 `sheafifyComposeIso J F P : sheafify J (P ⋙ F) ≅ sheafify J P ⋙ F`.
 
 We show that under suitable assumption, the forget functor from a concrete
@@ -53,7 +53,7 @@ topology `J` on a category `C` if whenever a morphism of presheaves `f : P₁ �
 in `Cᵒᵖ ⥤ A` is such that becomes an iso after sheafification, then it is
 also the case of `whiskerRight f F : P₁ ⋙ F ⟶ P₂ ⋙ F`. -/
 class PreservesSheafification : Prop where
-  le : J.W ⊆ J.W.inverseImage ((whiskeringRight Cᵒᵖ A B).obj F)
+  le : J.W ≤ J.W.inverseImage ((whiskeringRight Cᵒᵖ A B).obj F)
 
 variable [PreservesSheafification J F]
 
@@ -111,11 +111,11 @@ lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions :
     intro P₁ P₂ f hf
     rw [J.W_iff_isIso_map_of_adjunction adj₁] at hf
     dsimp [MorphismProperty.inverseImage]
-    rw [← J.W_postcomp_iff _ _ (h P₂), ← whiskerRight_comp]
+    rw [← MorphismProperty.postcomp_iff _ _ _ (h P₂), ← whiskerRight_comp]
     erw [adj₁.unit.naturality f]
     dsimp only [Functor.comp_map]
-    rw [whiskerRight_comp, J.W_precomp_iff _ _ (h P₁)]
-    apply J.W_of_isIso
+    rw [whiskerRight_comp, MorphismProperty.precomp_iff _ _ _ (h P₁)]
+    apply Localization.LeftBousfield.W_of_isIso
 
 section HasSheafCompose
 
@@ -172,7 +172,7 @@ lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions_of_hasShea
   intro P
   rw [← J.W_iff_isIso_map_of_adjunction adj₂, ← J.W_sheafToPreheaf_map_iff_isIso,
     ← sheafComposeNatTrans_fac J F adj₁ adj₂,
-    J.W_precomp_iff _ _ (J.W_adj_unit_app adj₂ (P ⋙ F))]
+    MorphismProperty.precomp_iff _ _ _ (J.W_adj_unit_app adj₂ (P ⋙ F))]
 
 variable [J.PreservesSheafification F]
 
@@ -218,11 +218,6 @@ lemma sheafComposeIso_inv_fac :
 
 end HasSheafCompose
 
-#exit
-
-section
-
-
 namespace GrothendieckTopology
 
 section
@@ -240,26 +235,33 @@ variable {D E : Type*} [Category.{max v u} D] [Category.{max v u} E] (F : D ⥤ 
   [PreservesLimits (forget D)] [PreservesLimits (forget E)]
   [(forget D).ReflectsIsomorphisms] [(forget E).ReflectsIsomorphisms]
 
-@[reassoc]
-lemma plusPlusIsoSheafify_hom_sheafifyCompose (P : Cᵒᵖ ⥤ D) :
-    (plusPlusIsoSheafify J _ (P ⋙ F)).hom ≫ sheafifyCompose J F P =
-      (sheafifyCompIso J F P).inv ≫
-        whiskerRight (plusPlusIsoSheafify J _ P).hom F := by
-  sorry
+lemma sheafToPresheaf_map_sheafComposeNatTrans_eq_sheafifyCompIso_inv (P : Cᵒᵖ ⥤ D) :
+    (sheafToPresheaf J E).map
+      ((sheafComposeNatTrans J F (plusPlusAdjunction J D) (plusPlusAdjunction J E)).app P) =
+      (sheafifyCompIso J F P).inv := by
+  suffices (sheafComposeNatTrans J F (plusPlusAdjunction J D) (plusPlusAdjunction J E)).app P =
+    ⟨(sheafifyCompIso J F P).inv⟩ by
+    rw [this]
+    rfl
+  apply ((plusPlusAdjunction J E).homEquiv _ _).injective
+  convert sheafComposeNatTrans_fac J F (plusPlusAdjunction J D) (plusPlusAdjunction J E) P
+  all_goals
+    dsimp [plusPlusAdjunction]
+    simp
 
-@[reassoc]
-lemma sheafifyCompose_eq (P : Cᵒᵖ ⥤ D) :
-    sheafifyCompose J F P =
-      (plusPlusIsoSheafify J _ (P ⋙ F)).inv ≫
-        (sheafifyCompIso J F P).inv ≫
-          whiskerRight (plusPlusIsoSheafify J _ P).hom F := by
-  rw [← cancel_epi (plusPlusIsoSheafify J _ (P ⋙ F)).hom,
-    Iso.hom_inv_id_assoc, plusPlusIsoSheafify_hom_sheafifyCompose]
+instance (P : Cᵒᵖ ⥤ D) :
+    IsIso ((sheafComposeNatTrans J F (plusPlusAdjunction J D) (plusPlusAdjunction J E)).app P) := by
+  rw [← isIso_iff_of_reflects_iso _ (sheafToPresheaf J E),
+    sheafToPresheaf_map_sheafComposeNatTrans_eq_sheafifyCompIso_inv]
+  infer_instance
 
-instance : PreservesSheafification J F :=
-  PreservesSheafification.mk' _ _ (fun P => by
-    rw [J.sheafifyCompose_eq]
-    infer_instance)
+instance : IsIso (sheafComposeNatTrans J F (plusPlusAdjunction J D) (plusPlusAdjunction J E)) :=
+  NatIso.isIso_of_isIso_app _
+
+instance : PreservesSheafification J F := by
+  rw [preservesSheafification_iff_of_adjunctions_of_hasSheafCompose _ _
+    (plusPlusAdjunction J D) (plusPlusAdjunction J E)]
+  infer_instance
 
 end
 
