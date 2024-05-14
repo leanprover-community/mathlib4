@@ -161,14 +161,14 @@ theorem zero_correct : (0 : NFA α σ).accepts = 0 := by
   refine ⟨?_, False.elim⟩
   rintro ⟨q, ⟨⟩, _⟩
 
-instance [Inhabited σ] : One (NFA α σ) :=
+instance : One (NFA α σ) :=
   ⟨⟨fun _ _ ↦ ∅, univ, univ⟩⟩
 
-instance oneDecidableStart [Inhabited σ] : DecidablePred (· ∈ (1 : NFA α σ).start) :=
+instance oneDecidableStart : DecidablePred (· ∈ (1 : NFA α σ).start) :=
   fun _ ↦ decidableTrue
-instance oneDecidableAccept [Inhabited σ] : DecidablePred (· ∈ (1 : NFA α σ).accept) :=
+instance oneDecidableAccept : DecidablePred (· ∈ (1 : NFA α σ).accept) :=
   fun _ ↦ decidableTrue
-instance oneDecidableStep [Inhabited σ] : ∀ q a, DecidablePred (· ∈ (1 : NFA α σ).step q a) :=
+instance oneDecidableStep : ∀ q a, DecidablePred (· ∈ (1 : NFA α σ).step q a) :=
   fun _ _ _ ↦ decidableFalse
 
 @[simp]
@@ -185,15 +185,14 @@ theorem one_correct [Inhabited σ] :
   · rintro ⟨⟨⟩⟩
     exact ⟨default, Set.mem_univ _, Set.mem_univ _⟩
 
-instance [Inhabited σ] [Inhabited σ'] : Singleton α (NFA α (σ ⊕ σ')) :=
-  ⟨fun a ↦
-    ⟨fun p c q ↦ p.isLeft ∧ a = c ∧ q.isRight, (Sum.isLeft ·), (Sum.isRight ·)⟩⟩
+instance : Singleton α (NFA α (σ ⊕ σ')) :=
+  ⟨(⟨fun p c q ↦ p.isLeft ∧ · = c ∧ q.isRight, (Sum.isLeft ·), (Sum.isRight ·)⟩)⟩
 
-instance singletonDecidableStart [Inhabited σ] [Inhabited σ'] [DecidableEq α] (a : α) :
+instance singletonDecidableStart (a : α) :
     DecidablePred (· ∈ ({a} : NFA α (σ ⊕ σ')).start) := fun _ ↦ Bool.decEq _ _
-instance singletonDecidableAccept [Inhabited σ] [Inhabited σ'] [DecidableEq α] (a : α) :
+instance singletonDecidableAccept (a : α) :
     DecidablePred (· ∈ ({a} : NFA α (σ ⊕ σ')).accept) := fun _ ↦ Bool.decEq _ _
-instance singletonDecidableStep [Inhabited σ] [Inhabited σ'] [DecidableEq α] (a' : α) :
+instance singletonDecidableStep [DecidableEq α] (a' : α) :
     ∀ q a, DecidablePred (· ∈ ({a'} : NFA α (σ ⊕ σ')).step q a) :=
   fun _ _ _ ↦ And.decidable
 
