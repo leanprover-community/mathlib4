@@ -3248,7 +3248,6 @@ import Mathlib.Order.Lattice
 import Mathlib.Order.LatticeIntervals
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.ListOnPartialOrderTypes
-import Mathlib.Order.LocallyFinite
 import Mathlib.Order.Max
 import Mathlib.Order.MinMax
 import Mathlib.Order.Minimal
