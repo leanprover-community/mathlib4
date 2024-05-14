@@ -31,13 +31,13 @@ variable (R : Type u) [CommRing R]
 @[simps] noncomputable instance instMonoidalCategoryStruct :
     MonoidalCategoryStruct.{u} (BialgebraCat R) where
   tensorObj := fun X Y => BialgebraCat.of R (X ⊗[R] Y)
-  whiskerLeft := fun X _ _ f => BialgebraCat.ofHom (f.lTensor X)
-  whiskerRight := fun f X => BialgebraCat.ofHom (f.rTensor X)
-  tensorHom := fun f g => BialgebraCat.ofHom (Bialgebra.TensorProduct.map f g)
+  whiskerLeft := fun X _ _ f => BialgebraCat.ofHom (f.1.lTensor X)
+  whiskerRight := fun f X => BialgebraCat.ofHom (f.1.rTensor X)
+  tensorHom := fun f g => BialgebraCat.ofHom (Bialgebra.TensorProduct.map f.1 g.1)
   tensorUnit := BialgebraCat.of R R
-  associator := fun X Y Z => (Bialgebra.TensorProduct.assoc R X Y Z).toBialgebraIso
-  leftUnitor := fun X => (Bialgebra.TensorProduct.lid R X).toBialgebraIso
-  rightUnitor := fun X => (Bialgebra.TensorProduct.rid R X).toBialgebraIso
+  associator := fun X Y Z => (Bialgebra.TensorProduct.assoc R X Y Z).toIso
+  leftUnitor := fun X => (Bialgebra.TensorProduct.lid R X).toIso
+  rightUnitor := fun X => (Bialgebra.TensorProduct.rid R X).toIso
 
 /-- The data needed to induce a `MonoidalCategory` structure via
 `BialgebraCat.instMonoidalCategoryStruct` and the forgetful functor to algebras. -/
