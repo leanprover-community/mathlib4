@@ -647,6 +647,11 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
     show Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
     exact Subsemigroup.closure_le.2 (subset_adjoin R)
 
+@[simp]
+lemma span_eq_toSubmodule (s : NonUnitalSubalgebra R A) :
+    Submodule.span R (s : Set A) = s.toSubmodule := by
+  simp [SetLike.ext'_iff, Submodule.coe_span_eq_self]
+
 variable (R A)
 
 @[simp]
@@ -658,14 +663,16 @@ theorem adjoin_univ : adjoin R (Set.univ : Set A) = ⊤ :=
   eq_top_iff.2 fun _x hx => subset_adjoin R hx
 
 open NonUnitalSubalgebra in
-lemma map_adjoin (f : F) (s : Set A) : map f (adjoin R s) = adjoin R (f '' s) :=
+lemma _root_.NonUnitalAlgHom.map_adjoin (f : F) (s : Set A) :
+    map f (adjoin R s) = adjoin R (f '' s) :=
   Set.image_preimage.l_comm_of_u_comm (gc_map_comap f) NonUnitalAlgebra.gi.gc
     NonUnitalAlgebra.gi.gc fun _t => rfl
 
 open NonUnitalSubalgebra in
 @[simp]
-lemma map_adjoin_singleton (f : F) (x : A) : map f (adjoin R {x}) = adjoin R {f x} := by
-  simp [map_adjoin]
+lemma _root_.NonUnitalAlgHom.map_adjoin_singleton (f : F) (x : A) :
+    map f (adjoin R {x}) = adjoin R {f x} := by
+  simp [NonUnitalAlgHom.map_adjoin]
 
 variable {R A}
 
