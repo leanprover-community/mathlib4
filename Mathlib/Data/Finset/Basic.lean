@@ -2625,9 +2625,11 @@ theorem filter_congr_decidable (s : Finset α) (p : α → Prop) (h : DecidableP
     [DecidablePred p] : @filter α p h s = s.filter p := by congr
 #align finset.filter_congr_decidable Finset.filter_congr_decidable
 
+@[simp]
 theorem filter_True {h} (s : Finset α) : @filter _ (fun _ => True) h s = s := by ext; simp
 #align finset.filter_true Finset.filter_True
 
+@[simp]
 theorem filter_False {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ := by ext; simp
 #align finset.filter_false Finset.filter_False
 
@@ -2651,14 +2653,6 @@ theorem filter_true_of_mem (h : ∀ x ∈ s, p x) : s.filter p = s := filter_eq_
 /-- If all elements of a `Finset` fail to satisfy the predicate `p`, `s.filter p` is `∅`. -/
 theorem filter_false_of_mem (h : ∀ x ∈ s, ¬p x) : s.filter p = ∅ := filter_eq_empty_iff.2 h
 #align finset.filter_false_of_mem Finset.filter_false_of_mem
-
--- Specialization of `filter_true_of_mem` that is much faster to apply by `simp`
-@[simp]
-theorem filter_true : s.filter (fun _ => True) = s := filter_true_of_mem (by aesop)
-
--- Specialization of `filter_false_of_mem` that is much faster to apply by `simp`
-@[simp]
-theorem filter_false : s.filter (fun _ => False) = ∅ := filter_false_of_mem (by aesop)
 
 @[simp]
 theorem filter_const (p : Prop) [Decidable p] (s : Finset α) :
