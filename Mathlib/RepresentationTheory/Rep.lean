@@ -226,7 +226,7 @@ set_option linter.uppercaseLean3 false in
 theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
     (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
 -- Porting note (#11039): broken proof was
-/-simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
+/- simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
   apply IsIso.inv_eq_of_hom_inv_id _
   exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/
   rw [← Action.forget_map, Functor.map_inv]
@@ -373,9 +373,9 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
     simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, leftRegularHom_hom]
     erw [Finsupp.lift_apply]
     rw [Finsupp.sum_single_index, ← this, of_ρ_apply]
-    erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
-    simp only [one_smul, smul_eq_mul, mul_one]
-    · -- This goal didn't exist before leanprover/lean4#2644
+    · erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
+      simp only [one_smul, smul_eq_mul, mul_one]
+      -- This goal didn't exist before leanprover/lean4#2644
       rfl
     · rw [zero_smul]
   right_inv x := leftRegularHom_apply x

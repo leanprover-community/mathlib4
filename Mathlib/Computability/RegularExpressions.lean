@@ -246,7 +246,7 @@ theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
   induction' x with _ _ ih generalizing P Q
   · simp only [rmatch, matchEpsilon, Bool.coe_or_iff]
-  · repeat' rw [rmatch]
+  · repeat rw [rmatch]
     rw [deriv_add]
     exact ih _ _
 #align regular_expression.add_rmatch_iff RegularExpression.add_rmatch_iff
@@ -264,7 +264,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
       cases' List.append_eq_nil.1 h₁.symm with ht hu
       subst ht
       subst hu
-      repeat' rw [rmatch] at h₂
+      repeat rw [rmatch] at h₂
       simp [h₂]
   · rw [rmatch]; simp [deriv]
     split_ifs with hepsilon

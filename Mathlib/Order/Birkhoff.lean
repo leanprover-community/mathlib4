@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Filipo A. E. Nuccio, Sam van Gool
 -/
-import Mathlib.Data.Finset.LocallyFinite.Basic
+import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Irreducible
 import Mathlib.Order.UpperLower.Basic
@@ -102,14 +102,14 @@ end LowerSet
 namespace OrderEmbedding
 
 /-- The **Birkhoff Embedding** of a finite partial order as sup-irreducible elements in its
-lattice of lower sets.-/
+lattice of lower sets. -/
 def supIrredLowerSet : α ↪o {s : LowerSet α // SupIrred s} where
   toFun a := ⟨Iic a, supIrred_Iic _⟩
   inj' _ := by simp
   map_rel_iff' := by simp
 
 /-- The **Birkhoff Embedding** of a finite partial order as inf-irreducible elements in its
-lattice of lower sets.-/
+lattice of lower sets. -/
 def infIrredUpperSet : α ↪o {s : UpperSet α // InfIrred s} where
   toFun a := ⟨Ici a, infIrred_Ici _⟩
   inj' _ := by simp
@@ -249,7 +249,7 @@ variable [DecidableEq α]
 
 @[simp] lemma birkhoffSet_apply (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by
-  simp [birkhoffSet]; convert rfl
+  simp [birkhoffSet]; have : Subsingleton (OrderBot α) := inferInstance; convert rfl
 
 end OrderEmbedding
 

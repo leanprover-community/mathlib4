@@ -273,7 +273,7 @@ theorem young_inequality (a b : ℝ) {p q : ℝ} (hpq : p.IsConjExponent q) :
     a * b ≤ |a| ^ p / p + |b| ^ q / q :=
   calc
     a * b ≤ |a * b| := le_abs_self (a * b)
-    _ = |a| * |b| := (abs_mul a b)
+    _ = |a| * |b| := abs_mul a b
     _ ≤ |a| ^ p / p + |b| ^ q / q :=
       Real.young_inequality_of_nonneg (abs_nonneg a) (abs_nonneg b) hpq
 #align real.young_inequality Real.young_inequality

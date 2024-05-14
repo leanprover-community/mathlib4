@@ -138,7 +138,7 @@ protected theorem Real.continuous_mul : Continuous fun p : ℝ × ℝ => p.1 * p
 
 -- Porting note: moved `TopologicalRing` instance up
 
-instance : CompleteSpace ℝ := by
+instance Real.instCompleteSpace : CompleteSpace ℝ := by
   apply complete_of_cauchySeq_tendsto
   intro u hu
   let c : CauSeq ℝ abs := ⟨u, Metric.cauchySeq_iff'.1 hu⟩

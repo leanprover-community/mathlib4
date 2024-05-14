@@ -64,7 +64,7 @@ theorem convexBodyLT_mem {x : K} :
     mixedEmbedding K x ∈ (convexBodyLT K f) ↔ ∀ w : InfinitePlace K, w x < f w := by
   simp_rw [mixedEmbedding, RingHom.prod_apply, Set.mem_prod, Set.mem_pi, Set.mem_univ,
     forall_true_left, mem_ball_zero_iff, Pi.ringHom_apply, ← Complex.norm_real,
-    embedding_of_isReal_apply, Subtype.forall, ← ball_or_left, ← not_isReal_iff_isComplex, em,
+    embedding_of_isReal_apply, Subtype.forall, ← forall₂_or_left, ← not_isReal_iff_isComplex, em,
     forall_true_left, norm_embedding_eq]
 
 theorem convexBodyLT_neg_mem (x : E K) (hx : x ∈ (convexBodyLT K f)) :
@@ -88,7 +88,7 @@ instance : IsAddHaarMeasure (volume : Measure (E K)) := prod.instIsAddHaarMeasur
 instance : NoAtoms (volume : Measure (E K)) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw : IsReal w
-  exact @prod.instNoAtoms_fst _ _ _ _ volume volume _ (pi_noAtoms ⟨w, hw⟩)
+  · exact @prod.instNoAtoms_fst _ _ _ _ volume volume _ (pi_noAtoms ⟨w, hw⟩)
   · exact @prod.instNoAtoms_snd _ _ _ _ volume volume _
       (pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩)
 
@@ -141,7 +141,7 @@ theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁ 
   · exact fun w hw => Function.update_noteq hw _ f
   · rw [← Finset.mul_prod_erase Finset.univ _ (Finset.mem_univ w₁), Function.update_same,
       Finset.prod_congr rfl fun w hw => by rw [Function.update_noteq (Finset.ne_of_mem_erase hw)],
-      ← NNReal.rpow_nat_cast, ← NNReal.rpow_mul, inv_mul_cancel, NNReal.rpow_one, mul_assoc,
+      ← NNReal.rpow_natCast, ← NNReal.rpow_mul, inv_mul_cancel, NNReal.rpow_one, mul_assoc,
       inv_mul_cancel, mul_one]
     · rw [Finset.prod_ne_zero_iff]
       exact fun w hw => pow_ne_zero _ (hf w (Finset.ne_of_mem_erase hw))
@@ -223,16 +223,16 @@ theorem convexBodyLT'_volume :
   have vol_box : ∀ B : ℝ≥0, volume {x : ℂ | |x.re| < 1 ∧ |x.im| < B^2} = 4*B^2 := by
     intro B
     rw [← (Complex.volume_preserving_equiv_real_prod.symm).measure_preimage]
-    simp_rw [Set.preimage_setOf_eq, Complex.measurableEquivRealProd_symm_apply]
-    rw [show {a : ℝ × ℝ | |a.1| < 1 ∧ |a.2| < B ^ 2} =
-      Set.Ioo (-1:ℝ) (1:ℝ) ×ˢ Set.Ioo (- (B:ℝ) ^ 2) ((B:ℝ) ^ 2) by
-        ext; simp_rw [Set.mem_setOf_eq, Set.mem_prod, Set.mem_Ioo, abs_lt]]
-    simp_rw [volume_eq_prod, prod_prod, Real.volume_Ioo, sub_neg_eq_add, one_add_one_eq_two,
-      ← two_mul, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
-      ofReal_coe_nnreal, ← mul_assoc, show (2:ℝ≥0∞) * 2 = 4 by norm_num]
-    refine MeasurableSet.inter ?_ ?_
-    · exact measurableSet_lt (measurable_norm.comp Complex.measurable_re) measurable_const
-    · exact measurableSet_lt (measurable_norm.comp Complex.measurable_im) measurable_const
+    · simp_rw [Set.preimage_setOf_eq, Complex.measurableEquivRealProd_symm_apply]
+      rw [show {a : ℝ × ℝ | |a.1| < 1 ∧ |a.2| < B ^ 2} =
+        Set.Ioo (-1:ℝ) (1:ℝ) ×ˢ Set.Ioo (- (B:ℝ) ^ 2) ((B:ℝ) ^ 2) by
+          ext; simp_rw [Set.mem_setOf_eq, Set.mem_prod, Set.mem_Ioo, abs_lt]]
+      simp_rw [volume_eq_prod, prod_prod, Real.volume_Ioo, sub_neg_eq_add, one_add_one_eq_two,
+        ← two_mul, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
+        ofReal_coe_nnreal, ← mul_assoc, show (2:ℝ≥0∞) * 2 = 4 by norm_num]
+    · refine MeasurableSet.inter ?_ ?_
+      · exact measurableSet_lt (measurable_norm.comp Complex.measurable_re) measurable_const
+      · exact measurableSet_lt (measurable_norm.comp Complex.measurable_im) measurable_const
   calc
     _ = (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (2 * (f x.val))) *
           ((∏ x in Finset.univ.erase  w₀, ENNReal.ofReal (f x.val) ^ 2 * pi) *
@@ -293,12 +293,12 @@ theorem convexBodySumFun_neg (x : E K) :
 theorem convexBodySumFun_add_le (x y : E K) :
     convexBodySumFun (x + y) ≤ convexBodySumFun x + convexBodySumFun y := by
   simp_rw [convexBodySumFun, Prod.fst_add, Pi.add_apply, Prod.snd_add]
-  refine le_trans (add_le_add
+  refine (add_le_add
     (Finset.sum_le_sum (fun w _ => norm_add_le (x.1 w) (y.1 w)))
     (mul_le_mul_of_nonneg_left
-      (Finset.sum_le_sum (fun w _ => norm_add_le (x.2 w) (y.2 w))) (by norm_num))) ?_
+      (Finset.sum_le_sum (fun w _ => norm_add_le (x.2 w) (y.2 w))) (by norm_num))).trans_eq ?_
   simp_rw [Finset.sum_add_distrib, mul_add]
-  exact le_of_eq (by ring)
+  ring
 
 theorem convexBodySumFun_smul (c : ℝ) (x : E K) :
     convexBodySumFun (c • x) = |c| * convexBodySumFun x := by
@@ -384,8 +384,8 @@ theorem convexBodySum_convex : Convex ℝ (convexBodySum K B) := by
 theorem convexBodySum_isBounded : Bornology.IsBounded (convexBodySum K B) := by
   refine Metric.isBounded_iff.mpr ⟨B + B, fun x hx y hy => ?_⟩
   refine le_trans (norm_sub_le x y) (add_le_add ?_ ?_)
-  exact le_trans (norm_le_convexBodySumFun x) hx
-  exact le_trans (norm_le_convexBodySumFun y) hy
+  · exact le_trans (norm_le_convexBodySumFun x) hx
+  · exact le_trans (norm_le_convexBodySumFun y) hy
 
 theorem convexBodySum_compact : IsCompact (convexBodySum K B) := by
   rw [Metric.isCompact_iff_isClosed_bounded]
@@ -429,14 +429,14 @@ theorem convexBodySum_volume :
       (fun hx => (convexBodySumFun_eq_zero_iff _).mp hx)
       (fun r x => le_of_eq (convexBodySumFun_smul r x)) zero_lt_one]
     simp_rw [mixedEmbedding.finrank, div_one, Gamma_nat_eq_factorial, ofReal_div_of_pos
-      (Nat.cast_pos.mpr (Nat.factorial_pos _)), Real.rpow_one, ofReal_coe_nat]
+      (Nat.cast_pos.mpr (Nat.factorial_pos _)), Real.rpow_one, ofReal_natCast]
     suffices ∫ x : E K, exp (-convexBodySumFun x) =
         (2:ℝ) ^ NrRealPlaces K * (π / 2) ^ NrComplexPlaces K by
       rw [this, convexBodySumFactor, ofReal_mul (by positivity), ofReal_pow zero_le_two,
         ofReal_pow (by positivity), ofReal_div_of_pos zero_lt_two, ofReal_ofNat,
         ← NNReal.coe_real_pi, ofReal_coe_nnreal, coe_div (Nat.cast_ne_zero.mpr
         (Nat.factorial_ne_zero _)), coe_mul, coe_pow, coe_pow, coe_ofNat, coe_div two_ne_zero,
-        coe_ofNat, coe_nat]
+        coe_ofNat, coe_natCast]
     calc
       _ = (∫ x : {w : InfinitePlace K // IsReal w} → ℝ, ∏ w, exp (- ‖x w‖)) *
               (∫ x : {w : InfinitePlace K // IsComplex w} → ℂ, ∏ w, exp (- 2 * ‖x w‖)) := by
@@ -486,10 +486,10 @@ theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
       fractionalIdeal_rank]
   rw [← fundamentalDomain_reindex (fractionalIdealLatticeBasis K I) e,
     measure_fundamentalDomain ((fractionalIdealLatticeBasis K I).reindex e)]
-  rw [show (fractionalIdealLatticeBasis K I).reindex e = (mixedEmbedding K) ∘
-      (basisOfFractionalIdeal K I) ∘ e.symm by
-    ext1; simp only [Basis.coe_reindex, Function.comp_apply, fractionalIdealLatticeBasis_apply]]
-  rw [mixedEmbedding.det_basisOfFractionalIdeal_eq_norm]
+  · rw [show (fractionalIdealLatticeBasis K I).reindex e = (mixedEmbedding K) ∘
+        (basisOfFractionalIdeal K I) ∘ e.symm by
+      ext1; simp only [Basis.coe_reindex, Function.comp_apply, fractionalIdealLatticeBasis_apply]]
+    rw [mixedEmbedding.det_basisOfFractionalIdeal_eq_norm]
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   refine ENNReal.mul_lt_top ?_ ?_
@@ -622,14 +622,14 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   rw [mem_toAddSubgroup, mem_span_fractionalIdealLatticeBasis] at hx
   obtain ⟨a, ha, rfl⟩ := hx
   refine ⟨a, ha, by simpa using h_nz, ?_⟩
-  rw [← rpow_nat_cast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
+  rw [← rpow_natCast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
       (rpow_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel (Nat.cast_ne_zero.mpr
       (ne_of_gt finrank_pos)), rpow_one, le_div_iff' (Nat.cast_pos.mpr finrank_pos)]
   refine le_trans ?_ ((convexBodySum_mem K B).mp h_mem)
   rw [← le_div_iff' (Nat.cast_pos.mpr finrank_pos), ← sum_mult_eq, Nat.cast_sum]
   refine le_trans ?_ (geom_mean_le_arith_mean Finset.univ _ _ (fun _ _ => Nat.cast_nonneg _)
     ?_ (fun _ _ => AbsoluteValue.nonneg _ _))
-  · simp_rw [← prod_eq_abs_norm, rpow_nat_cast]
+  · simp_rw [← prod_eq_abs_norm, rpow_natCast]
     exact le_of_eq rfl
   · rw [← Nat.cast_sum, sum_mult_eq, Nat.cast_pos]
     exact finrank_pos

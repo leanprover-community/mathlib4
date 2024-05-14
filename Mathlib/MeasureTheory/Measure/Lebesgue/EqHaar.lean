@@ -261,7 +261,7 @@ theorem map_linearMap_addHaar_eq_smul_addHaar {f : E →ₗ[ℝ] E} (hf : Linear
   rw [← map_map Cesymm.measurable (Cg.comp Ce).measurable, ← map_map Cg.measurable Ce.measurable]
   haveI : IsAddHaarMeasure (map e μ) := (e : E ≃+ (ι → ℝ)).isAddHaarMeasure_map μ Ce Cesymm
   have ecomp : e.symm ∘ e = id := by
-    ext x; simp only [id.def, Function.comp_apply, LinearEquiv.symm_apply_apply]
+    ext x; simp only [id, Function.comp_apply, LinearEquiv.symm_apply_apply]
   rw [map_linearMap_addHaar_pi_eq_smul_addHaar hf (map e μ), Measure.map_smul,
     map_map Cesymm.measurable Ce.measurable, ecomp, Measure.map_id]
 #align measure_theory.measure.map_linear_map_add_haar_eq_smul_add_haar MeasureTheory.Measure.map_linearMap_addHaar_eq_smul_addHaar

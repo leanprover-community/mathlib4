@@ -401,7 +401,7 @@ protected def addGroupWithOne [AddGroupWithOne β] : AddGroupWithOne α :=
   { e.addMonoidWithOne,
     e.addGroup with
     intCast := fun n => e.symm n
-    intCast_ofNat := fun n => by simp only [Int.cast_ofNat]; rfl
+    intCast_ofNat := fun n => by simp only [Int.cast_natCast]; rfl
     intCast_negSucc := fun n =>
       congr_arg e.symm <| (Int.cast_negSucc _).trans <| congr_arg _ (e.apply_symm_apply _).symm }
 #align equiv.add_group_with_one Equiv.addGroupWithOne
@@ -560,13 +560,18 @@ protected theorem isDomain [Ring α] [Ring β] [IsDomain β] (e : α ≃+* β) :
 noncomputable instance [Small.{v} α] [Ring α] [IsDomain α] : IsDomain (Shrink.{v} α) :=
   Equiv.isDomain  (Shrink.ringEquiv α)
 
-/-- Transfer `RatCast` across an `Equiv` -/
-@[reducible]
-protected def RatCast [RatCast β] : RatCast α where ratCast n := e.symm n
-#align equiv.has_rat_cast Equiv.RatCast
+/-- Transfer `NNRatCast` across an `Equiv` -/
+@[reducible] protected def nnratCast [NNRatCast β] : NNRatCast α where nnratCast q := e.symm q
 
-noncomputable instance [Small.{v} α] [RatCast α] : RatCast (Shrink.{v} α) :=
-  (equivShrink α).symm.RatCast
+/-- Transfer `RatCast` across an `Equiv` -/
+@[reducible] protected def ratCast [RatCast β] : RatCast α where ratCast n := e.symm n
+#align equiv.has_rat_cast Equiv.ratCast
+
+noncomputable instance _root_.Shrink.instNNRatCast [Small.{v} α] [NNRatCast α] :
+    NNRatCast (Shrink.{v} α) := (equivShrink α).symm.nnratCast
+
+noncomputable instance _root_.Shrink.instRatCast [Small.{v} α] [RatCast α] :
+    RatCast (Shrink.{v} α) := (equivShrink α).symm.ratCast
 
 /-- Transfer `DivisionRing` across an `Equiv` -/
 @[reducible]
@@ -577,7 +582,9 @@ protected def divisionRing [DivisionRing β] : DivisionRing α := by
   let mul := e.mul
   let npow := e.pow ℕ
   let zpow := e.pow ℤ
-  let rat_cast := e.RatCast
+  let nnratCast := e.nnratCast
+  let ratCast := e.ratCast
+  let nnqsmul := e.smul ℚ≥0
   let qsmul := e.smul ℚ
   apply e.injective.divisionRing _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.division_ring Equiv.divisionRing
@@ -595,7 +602,9 @@ protected def field [Field β] : Field α := by
   let mul := e.mul
   let npow := e.pow ℕ
   let zpow := e.pow ℤ
-  let rat_cast := e.RatCast
+  let nnratCast := e.nnratCast
+  let ratCast := e.ratCast
+  let nnqsmul := e.smul ℚ≥0
   let qsmul := e.smul ℚ
   apply e.injective.field _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.field Equiv.field
@@ -764,7 +773,7 @@ end Equiv
 
 namespace Finite
 
-attribute [-instance] Fin.instMulFin
+attribute [-instance] Fin.instMul
 
 /-- Any finite group in universe `u` is equivalent to some finite group in universe `0`. -/
 lemma exists_type_zero_nonempty_mulEquiv (G : Type u) [Group G] [Finite G] :

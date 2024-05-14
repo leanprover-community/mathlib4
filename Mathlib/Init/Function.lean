@@ -175,7 +175,7 @@ theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f 
   fun h a b faeqfb =>
   calc
     a = g (f a) := (h a).symm
-    _ = g (f b) := (congr_arg g faeqfb)
+    _ = g (f b) := congr_arg g faeqfb
     _ = b := h b
 #align function.left_inverse.injective Function.LeftInverse.injective
 
@@ -202,7 +202,7 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
   Exists.elim (surjf y) fun x hx =>
     calc
       f (g y) = f (g (f x)) := hx ▸ rfl
-      _ = f x := (Eq.symm (rfg x) ▸ rfl)
+      _ = f x := Eq.symm (rfg x) ▸ rfl
       _ = y := hx
 #align function.left_inverse_of_surjective_of_right_inverse Function.leftInverse_of_surjective_of_rightInverse
 

@@ -143,8 +143,7 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
     · apply Submodule.smul_mem
       apply Submodule.subset_span
       exact ⟨0, Nat.zero_lt_succ _, pow_zero _⟩
-    · rw [Nat.succ_eq_add_one, ← tsub_tsub, tsub_add_cancel_of_le
-        (le_tsub_of_add_le_left (b := 1) hi)]
+    · rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left (b := 1) hi)]
       apply SetLike.le_def.mp ?_
         (Submodule.mul_mem_mul (IH ((Nat.le_succ _).trans hi))
           (Submodule.mem_span_singleton_self x))

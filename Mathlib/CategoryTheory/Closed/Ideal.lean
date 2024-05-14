@@ -180,14 +180,14 @@ noncomputable def bijection (A B : C) (X : D) :
     ((leftAdjoint i).obj (A ⨯ B) ⟶ X) ≃ ((leftAdjoint i).obj A ⨯ (leftAdjoint i).obj B ⟶ X) :=
   calc
     _ ≃ (A ⨯ B ⟶ i.obj X) := (Adjunction.ofRightAdjoint i).homEquiv _ _
-    _ ≃ (B ⨯ A ⟶ i.obj X) := ((Limits.prod.braiding _ _).homCongr (Iso.refl _))
-    _ ≃ (A ⟶ B ⟹ i.obj X) := ((exp.adjunction _).homEquiv _ _)
+    _ ≃ (B ⨯ A ⟶ i.obj X) := (Limits.prod.braiding _ _).homCongr (Iso.refl _)
+    _ ≃ (A ⟶ B ⟹ i.obj X) := (exp.adjunction _).homEquiv _ _
     _ ≃ (i.obj ((leftAdjoint i).obj A) ⟶ B ⟹ i.obj X) :=
       (unitCompPartialBijective _ (ExponentialIdeal.exp_closed (i.obj_mem_essImage _) _))
     _ ≃ (B ⨯ i.obj ((leftAdjoint i).obj A) ⟶ i.obj X) := ((exp.adjunction _).homEquiv _ _).symm
     _ ≃ (i.obj ((leftAdjoint i).obj A) ⨯ B ⟶ i.obj X) :=
       ((Limits.prod.braiding _ _).homCongr (Iso.refl _))
-    _ ≃ (B ⟶ i.obj ((leftAdjoint i).obj A) ⟹ i.obj X) := ((exp.adjunction _).homEquiv _ _)
+    _ ≃ (B ⟶ i.obj ((leftAdjoint i).obj A) ⟹ i.obj X) := (exp.adjunction _).homEquiv _ _
     _ ≃ (i.obj ((leftAdjoint i).obj B) ⟶ i.obj ((leftAdjoint i).obj A) ⟹ i.obj X) :=
       (unitCompPartialBijective _ (ExponentialIdeal.exp_closed (i.obj_mem_essImage _) _))
     _ ≃ (i.obj ((leftAdjoint i).obj A) ⨯ i.obj ((leftAdjoint i).obj B) ⟶ i.obj X) :=
@@ -226,7 +226,7 @@ theorem bijection_natural (A B : C) (X X' : D) (f : (leftAdjoint i).obj (A ⨯ B
   erw [homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq,
     homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq]
   apply i.map_injective
-  rw [i.image_preimage, i.map_comp, i.image_preimage, comp_id, comp_id, comp_id, comp_id, comp_id,
+  rw [i.map_preimage, i.map_comp, i.map_preimage, comp_id, comp_id, comp_id, comp_id, comp_id,
     comp_id, Adjunction.homEquiv_naturality_right, ← assoc, curry_natural_right _ (i.map g),
     unitCompPartialBijective_natural, uncurry_natural_right, ← assoc, curry_natural_right,
     unitCompPartialBijective_natural, uncurry_natural_right, assoc]

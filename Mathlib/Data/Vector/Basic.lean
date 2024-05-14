@@ -120,12 +120,6 @@ theorem get_eq_get (v : Vector α n) (i : Fin n) :
   rfl
 #align vector.nth_eq_nth_le Vector.get_eq_getₓ
 
--- Porting note: `nthLe` deprecated for `get`
-@[deprecated get_eq_get]
-theorem nth_eq_nthLe :
-    ∀ (v : Vector α n) (i), get v i = v.toList.nthLe i.1 (by rw [toList_length]; exact i.2)
-  | ⟨_, _⟩, _ => rfl
-
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
   apply List.get_replicate
@@ -708,8 +702,8 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
     Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Vector.traverse f <$> Vector.traverse g x) := by
   induction' x using Vector.inductionOn with n x xs ih
-  simp! [cast, *, functor_norm]
-  · rfl
+  · simp! [cast, *, functor_norm]
+    rfl
   · rw [Vector.traverse_def, ih]
     simp [functor_norm, (· ∘ ·)]
 #align vector.comp_traverse Vector.comp_traverse

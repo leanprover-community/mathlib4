@@ -304,7 +304,7 @@ section OfEquiv
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 /-- Transport the property of being monoidal closed across a monoidal equivalence of categories -/
-noncomputable def ofEquiv (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
+noncomputable def ofEquiv (F : MonoidalFunctor C D) [F.IsEquivalence]
     [h : MonoidalClosed D] : MonoidalClosed C where
   closed X :=
     { isAdj := by
@@ -319,7 +319,7 @@ monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lem
 resulting currying map `Hom(X ⊗ Y, Z) → Hom(Y, (X ⟶[C] Z))`. (`X ⟶[C] Z` is defined to be
 `F⁻¹(F(X) ⟶[D] F(Z))`, so currying in `C` is given by essentially conjugating currying in
 `D` by `F.`) -/
-theorem ofEquiv_curry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
+theorem ofEquiv_curry_def (F : MonoidalFunctor C D) [F.IsEquivalence]
     [MonoidalClosed D] {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
     @MonoidalClosed.curry _ _ _ _ _ _ ((MonoidalClosed.ofEquiv F).1 _) f =
       (F.1.1.adjunction.homEquiv Y ((ihom _).obj _))
@@ -334,7 +334,7 @@ monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lem
 resulting uncurrying map `Hom(Y, (X ⟶[C] Z)) → Hom(X ⊗ Y ⟶ Z)`. (`X ⟶[C] Z` is
 defined to be `F⁻¹(F(X) ⟶[D] F(Z))`, so uncurrying in `C` is given by essentially conjugating
 uncurrying in `D` by `F.`) -/
-theorem ofEquiv_uncurry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
+theorem ofEquiv_uncurry_def (F : MonoidalFunctor C D) [F.IsEquivalence]
     [MonoidalClosed D] {X Y Z : C}
     (f : Y ⟶ (@ihom _ _ _ X <| (MonoidalClosed.ofEquiv F).1 X).obj Z) :
     @MonoidalClosed.uncurry _ _ _ _ _ _ ((MonoidalClosed.ofEquiv F).1 _) f =

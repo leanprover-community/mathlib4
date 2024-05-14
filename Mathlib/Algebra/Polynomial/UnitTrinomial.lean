@@ -273,10 +273,10 @@ theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
       rw [this] at hp
       exact Or.inl (hq.trans hp.symm)
     rw [tsub_add_eq_add_tsub hmn.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm
-    rw [tsub_add_eq_add_tsub hmn'.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm'
-    exact mul_left_cancel₀ two_ne_zero (hm.trans hm'.symm)
-    exact hmn'.le.trans (Nat.le_add_right n k)
-    exact hmn.le.trans (Nat.le_add_right n k)
+    · rw [tsub_add_eq_add_tsub hmn'.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm'
+      · exact mul_left_cancel₀ two_ne_zero (hm.trans hm'.symm)
+      · exact hmn'.le.trans (Nat.le_add_right n k)
+    · exact hmn.le.trans (Nat.le_add_right n k)
 #align polynomial.is_unit_trinomial.irreducible_aux2 Polynomial.IsUnitTrinomial.irreducible_aux2
 
 theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k < m') (hmn' : m' < n)

@@ -143,6 +143,7 @@ open Lean PrettyPrinter.Delaborator SubExpr in
 def delabSqrt : Delab :=
   whenPPOption getPPNotation <|
   whenNotPPOption getPPAnalysisSkip <|
+  withOverApp 7 <|
   withOptionAtCurrPos `pp.analysis.skip true do
     let e ← getExpr
     guard <| e.isAppOfArity ``Matrix.PosSemidef.sqrt 7
