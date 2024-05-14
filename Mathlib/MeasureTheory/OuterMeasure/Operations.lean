@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.OuterMeasure.Basic
+import Mathlib.MeasureTheory.PiSystem
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Operations on outer measures
