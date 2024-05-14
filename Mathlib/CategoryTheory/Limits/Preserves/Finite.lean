@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.FinCategory.AsType
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 #align_import category_theory.limits.preserves.finite from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
 
@@ -75,6 +75,18 @@ noncomputable instance (priority := 120) PreservesLimits.preservesFiniteLimits (
   PreservesLimitsOfSize.preservesFiniteLimits F
 #align category_theory.limits.preserves_limits.preserves_finite_limits CategoryTheory.Limits.PreservesLimits.preservesFiniteLimits
 
+/-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
+arbitrary universe. -/
+def preservesFiniteLimitsOfPreservesFiniteLimitsOfSize (F : C ⥤ D)
+    (h :
+      ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesLimitsOfShape J F) :
+    PreservesFiniteLimits F where
+      preservesFiniteLimits J (_ : SmallCategory J) _ := by
+        letI : Category (ULiftHom (ULift J)) := ULiftHom.category
+        haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
+        exact preservesLimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
+#align category_theory.limits.preserves_finite_limits_of_preserves_finite_limits_of_size CategoryTheory.Limits.preservesFiniteLimitsOfPreservesFiniteLimitsOfSize
+
 noncomputable instance idPreservesFiniteLimits : PreservesFiniteLimits (𝟭 C) :=
   inferInstance -- should this still be stated explicitly an instance?
 #align category_theory.limits.id_preserves_finite_limits CategoryTheory.Limits.idPreservesFiniteLimits
@@ -139,6 +151,24 @@ noncomputable instance (priority := 120) (F : C ⥤ D)
     [ReflectsLimits F] : ReflectsFiniteLimits F :=
   ReflectsLimitsOfSize.reflectsFiniteLimits F
 
+def preservesFiniteLimitsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
+    [PreservesFiniteLimits (F ⋙ G)] [ReflectsFiniteLimits G] : PreservesFiniteLimits F where
+  preservesFiniteLimits _ _ _ := preservesLimitsOfShapeOfReflectsOfPreserves F G
+
+def preservesFiniteProductsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
+    [PreservesFiniteProducts (F ⋙ G)] [ReflectsFiniteProducts G] : PreservesFiniteProducts F where
+  preserves _ _ := preservesLimitsOfShapeOfReflectsOfPreserves F G
+
+noncomputable instance reflectsFiniteLimitsOfReflectsIsomorphisms (F : C ⥤ D)
+    [F.ReflectsIsomorphisms] [HasFiniteLimits C] [PreservesFiniteLimits F] :
+      ReflectsFiniteLimits F where
+  reflects _ _ _ := reflectsLimitsOfShapeOfReflectsIsomorphisms
+
+noncomputable instance reflectsFiniteProductsOfReflectsIsomorphisms (F : C ⥤ D)
+    [F.ReflectsIsomorphisms] [HasFiniteProducts C] [PreservesFiniteProducts F] :
+      ReflectsFiniteProducts F where
+  reflects _ _ := reflectsLimitsOfShapeOfReflectsIsomorphisms
+
 instance compReflectsFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
     [ReflectsFiniteProducts F] [ReflectsFiniteProducts G] :
     ReflectsFiniteProducts (F ⋙ G) where
@@ -188,6 +218,18 @@ noncomputable instance (priority := 120) PreservesColimits.preservesFiniteColimi
     [PreservesColimits F] : PreservesFiniteColimits F :=
   PreservesColimitsOfSize.preservesFiniteColimits F
 #align category_theory.limits.preserves_colimits.preserves_finite_colimits CategoryTheory.Limits.PreservesColimits.preservesFiniteColimits
+
+/-- We can always derive `PreservesFiniteColimits C`
+by showing that we are preserving colimits at an arbitrary universe. -/
+def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
+    (h :
+      ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesColimitsOfShape J F) :
+    PreservesFiniteColimits F where
+      preservesFiniteColimits J (_ : SmallCategory J) _ := by
+        letI : Category (ULiftHom (ULift J)) := ULiftHom.category
+        haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
+        exact preservesColimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
+#align category_theory.limits.preserves_finite_colimits_of_preserves_finite_colimits_of_size CategoryTheory.Limits.preservesFiniteColimitsOfPreservesFiniteColimitsOfSize
 
 noncomputable instance idPreservesFiniteColimits : PreservesFiniteColimits (𝟭 C) :=
   inferInstance -- should this still be stated explicitly an instance?
@@ -253,6 +295,25 @@ class ReflectsFiniteCoproducts (F : C ⥤ D) where
   reflects : ∀ (J : Type) [Fintype J], ReflectsColimitsOfShape (Discrete J) F
 
 attribute [instance] ReflectsFiniteCoproducts.reflects
+
+def preservesFiniteColimitsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
+    [PreservesFiniteColimits (F ⋙ G)] [ReflectsFiniteColimits G] : PreservesFiniteColimits F where
+  preservesFiniteColimits _ _ _ := preservesColimitsOfShapeOfReflectsOfPreserves F G
+
+def preservesFiniteCoproductsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
+    [PreservesFiniteCoproducts (F ⋙ G)] [ReflectsFiniteCoproducts G] :
+    PreservesFiniteCoproducts F where
+  preserves _ _ := preservesColimitsOfShapeOfReflectsOfPreserves F G
+
+noncomputable instance reflectsFiniteColimitsOfReflectsIsomorphisms (F : C ⥤ D)
+    [F.ReflectsIsomorphisms] [HasFiniteColimits C] [PreservesFiniteColimits F] :
+      ReflectsFiniteColimits F where
+  reflects _ _ _ := reflectsColimitsOfShapeOfReflectsIsomorphisms
+
+noncomputable instance reflectsFiniteCoproductsOfReflectsIsomorphisms (F : C ⥤ D)
+    [F.ReflectsIsomorphisms] [HasFiniteCoproducts C] [PreservesFiniteCoproducts F] :
+      ReflectsFiniteCoproducts F where
+  reflects _ _ := reflectsColimitsOfShapeOfReflectsIsomorphisms
 
 instance compReflectsFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
     [ReflectsFiniteCoproducts F] [ReflectsFiniteCoproducts G] :
