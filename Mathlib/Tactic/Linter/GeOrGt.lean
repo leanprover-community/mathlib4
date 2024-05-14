@@ -46,6 +46,12 @@ register_option linter.geOrGt : Bool := {
 /-- Gets the value of the `linter.geOrGt` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.geOrGt o
 
+-- bug in the elaborator: inlining this fails
+def is_bla (start : Syntax) : Bool :=
+  match start with
+  | `((· > · )) | `((· ≥ ·)) => true
+  | _ => false
+
 /-- docstring here -/
 def getOrGtLinter : Linter where
   run := withSetOptionIn fun stx => do
@@ -54,13 +60,31 @@ def getOrGtLinter : Linter where
     if (← MonadState.get).messages.hasErrors then
       return
     match stx.findStack? (fun _ ↦ true) is_ge_or_gt with
-    | some ((head, _n)::_chain) =>
-      -- remaining case is "(· ≥ ·)" or for >...
-      -- can I use Stack.matches?
-      --if Stack.matches _chain [SyntaxNode.]
-      -- XXX: exclude remaining case
-        Linter.logLint linter.geOrGt head m!"'≥ or > is used in an illegal position\n\
-        please change the statement to use ≤ or < instead"
+    | some ((head, _n)::chain) =>
+      -- if the `≥` or `>` is surrounded by ⬝, this is a comparator: continue
+      let r : Bool := match chain with
+       | (start, _n)::_rest =>
+        is_bla start
+       | _ => false
+      if r then
+        logInfo (toMessageData chain)
+        return
+      -- let r := head.find? is_ge_or_gt
+      -- if let some s ← r then
+      --   return
+      -- let dot := `(sdf)
+      -- xxx how to get item before and after!
+      --match head with
+      --| `(⬝ > ⬝) => return--`(⬝)::[]]
+
+      -- match _chain with
+      --  | body::last =>
+      --   have : _chain ≠ [] := sorry
+      --   return
+      --  | _ => return--if let some l ← _chain.getLast then
+      --Linter.logLint linter.geOrGt last sorry m!"last item is"
+      Linter.logLint linter.geOrGt head m!"'≥ or > is used in an illegal position\n\
+      please change the statement to use ≤ or < instead"
     | _ => return
 
 initialize addLinter getOrGtLinter
