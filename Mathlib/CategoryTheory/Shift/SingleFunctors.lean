@@ -193,8 +193,8 @@ instance (f : F ⟶ G) [IsIso f] (n : A) : IsIso (f.hom n) :=
 
 variable (F)
 
-/-- The postcomposition `SingleFunctors C D A → SingleFunctors C E A` induced
-by a functor `D ⥤ E` which commutes with the shift by `A`. -/
+/-- Given `F : SingleFunctors C D A`, and a functor `G : D ⥤ E` which commutes
+with the shift by `A`, this is the "composition" of `F` and `G` in `SingleFunctors C E A`. -/
 @[simps! functor shiftIso_hom_app shiftIso_inv_app]
 def postcomp (G : D ⥤ E) [G.CommShift A] :
     SingleFunctors C E A where
