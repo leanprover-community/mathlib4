@@ -160,7 +160,7 @@ theorem size_eq_bits_len (n : ℕ) : n.bits.length = n.size := by
   · simpa [bit_eq_zero_iff]
 #align nat.size_eq_bits_len Nat.size_eq_bits_len
 
-lemma size_eq_iff_le_lt (n : ℕ) (i : ℕ) : n.size = i + 1 ↔ 2 ^ i ≤ n ∧ n < 2 ^ (i+1) := by
+lemma size_eq_iff_le_and_lt (n : ℕ) (i : ℕ) : n.size = i + 1 ↔ 2 ^ i ≤ n ∧ n < 2 ^ (i+1) := by
   constructor
   · intro h
     constructor
