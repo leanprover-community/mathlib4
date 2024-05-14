@@ -96,7 +96,7 @@ instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α
 
 instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
   measure_empty m := m.empty'
-  measure_iUnion_nat_le m := m.iUnion
+  measure_iUnion_nat_le m := m.iUnion_nat
   measure_mono m := m.mono
 
 section
