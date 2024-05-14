@@ -340,4 +340,3 @@ noncomputable instance (F : C ⥤ D) [ReflectsFiniteColimits F] : ReflectsFinite
   reflects _ _ := inferInstance
 
 end CategoryTheory.Limits
-#lint
