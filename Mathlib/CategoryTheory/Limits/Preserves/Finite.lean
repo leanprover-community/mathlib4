@@ -116,6 +116,25 @@ instance compPreservesFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
 noncomputable instance (F : C ⥤ D) [PreservesFiniteLimits F] : PreservesFiniteProducts F where
   preserves _ _ := by infer_instance
 
+/--
+A functor is said to reflect finite limits, if it reflects all limits of shape `J`,
+where `J : Type` is a finite category.
+-/
+class ReflectsFiniteLimits (F : C ⥤ D) where
+  reflects : ∀ (J : Type) [SmallCategory J] [FinCategory J], ReflectsLimitsOfShape J F := by
+    infer_instance
+
+attribute [instance] ReflectsFiniteLimits.reflects
+
+/- Similarly to preserving finite products, quantified classes don't behave well. -/
+/--
+A functor `F` preserves finite products if it reflects limits of shape `Discrete J` for finite `J`
+-/
+class ReflectsFiniteProducts (F : C ⥤ D) where
+  reflects : ∀ (J : Type) [Fintype J], ReflectsLimitsOfShape (Discrete J) F
+
+attribute [instance] ReflectsFiniteProducts.reflects
+
 /-- A functor is said to preserve finite colimits, if it preserves all colimits of
 shape `J`, where `J : Type` is a finite category.
 -/

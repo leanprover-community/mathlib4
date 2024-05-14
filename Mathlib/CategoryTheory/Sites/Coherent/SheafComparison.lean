@@ -258,12 +258,6 @@ lemma isSheaf_coherent_of_hasPullbacks_comp [Preregular C] [FinitaryExtensive C]
   refine ⟨⟨inferInstance⟩, fun _ _ π _ c hc ↦ ⟨?_⟩⟩
   exact isLimitForkMapOfIsLimit s _ (hF.2 π c hc).some
 
-class _root_.CategoryTheory.Limits.ReflectsFiniteLimits (F : C ⥤ D) where
-  reflects : ∀ (J : Type) [SmallCategory J] [FinCategory J], ReflectsLimitsOfShape J F := by
-    infer_instance
-
-attribute [instance] _root_.CategoryTheory.Limits.ReflectsFiniteLimits.reflects
-
 lemma isSheaf_coherent_of_hasPullbacks_of_comp [Preregular C] [FinitaryExtensive C]
     [h : ∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f]
     [ReflectsFiniteLimits s]
@@ -279,11 +273,6 @@ lemma isSheaf_coherent_of_projective_comp [Preregular C] [FinitaryExtensive C]
   rw [isSheaf_iff_preservesFiniteProducts_of_projective] at hF ⊢
   have := hF.some
   exact ⟨inferInstance⟩
-
-class _root_.CategoryTheory.Limits.ReflectsFiniteProducts (F : C ⥤ D) where
-  reflects : ∀ (J : Type) [Fintype J], ReflectsLimitsOfShape (Discrete J) F
-
-attribute [instance] _root_.CategoryTheory.Limits.ReflectsFiniteProducts.reflects
 
 lemma isSheaf_coherent_of_projective_of_comp [Preregular C] [FinitaryExtensive C]
     [∀ (X : C), Projective X]
