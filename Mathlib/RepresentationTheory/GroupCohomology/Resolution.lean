@@ -119,9 +119,9 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
         Fin.insertNth_zero']
       refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
       · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ] -/
-    · dsimp [actionDiagonalSucc]
-      erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
-      exact Fin.cases rfl (fun i => rfl) x
+    dsimp [actionDiagonalSucc]
+    erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
+    exact Fin.cases rfl (fun i => rfl) x
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.Action_diagonal_succ_hom_apply groupCohomology.resolution.actionDiagonalSucc_hom_apply
 
@@ -237,7 +237,7 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [diagonalSucc_inv_single_single]
     rw [sum_single_index, mul_comm]
-    · rw [zero_mul, single_zero]
+    rw [zero_mul, single_zero]
 #align group_cohomology.resolution.diagonal_succ_inv_single_left groupCohomology.resolution.diagonalSucc_inv_single_left
 
 theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
@@ -258,7 +258,7 @@ theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [diagonalSucc_inv_single_single]
     rw [sum_single_index]
-    · rw [zero_mul, single_zero]
+    rw [zero_mul, single_zero]
 #align group_cohomology.resolution.diagonal_succ_inv_single_right groupCohomology.resolution.diagonalSucc_inv_single_right
 
 end Rep

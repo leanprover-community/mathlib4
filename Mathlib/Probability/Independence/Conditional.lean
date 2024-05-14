@@ -658,10 +658,10 @@ theorem condIndepFun_iff_condexp_inter_preimage_eq_mul {mβ : MeasurableSpace β
       ∀ s t, MeasurableSet s → MeasurableSet t
         → (μ⟦f ⁻¹' s ∩ g ⁻¹' t | m'⟧) =ᵐ[μ] fun ω ↦ (μ⟦f ⁻¹' s | m'⟧) ω * (μ⟦g ⁻¹' t | m'⟧) ω := by
   rw [condIndepFun_iff _ _ _ _ hf hg]
-  · refine ⟨fun h s t hs ht ↦ ?_, fun h s t ↦ ?_⟩
-    · exact h (f ⁻¹' s) (g ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
-    · rintro ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
-      exact h s t hs ht
+  refine ⟨fun h s t hs ht ↦ ?_, fun h s t ↦ ?_⟩
+  · exact h (f ⁻¹' s) (g ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
+  · rintro ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
+    exact h s t hs ht
 
 theorem iCondIndepFun_iff_condexp_inter_preimage_eq_mul {β : ι → Type*}
     (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) (hf : ∀ i, Measurable (f i)) :

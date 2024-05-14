@@ -385,7 +385,7 @@ instance commRing : CommRing ℚ where
   npow_succ n q := by
     dsimp
     rw [← q.mk'_num_den, mk'_pow, mk'_mul_mk']
-    congr
+    · congr
     · rw [mk'_pow, Int.natAbs_pow]
       exact q.reduced.pow_left _
     · rw [mk'_pow]

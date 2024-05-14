@@ -991,12 +991,12 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     (L₃ (f t)).integrable_comp <| ht.ofNorm L₄ hg hk, _⟩
   refine' (hfgk.const_mul (‖L₃‖ * ‖L₄‖)).mono' h2_meas
     (((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht => _)
-  · simp_rw [convolution_def, mul_apply', mul_mul_mul_comm ‖L₃‖ ‖L₄‖, ← integral_mul_left]
-    rw [Real.norm_of_nonneg (by positivity)]
-    refine' integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
-      ((ht.const_mul _).const_mul _) (eventually_of_forall fun s => _)
-    simp only [← mul_assoc ‖L₄‖]
-    apply_rules [ContinuousLinearMap.le_of_opNorm₂_le_of_le, le_rfl]
+  simp_rw [convolution_def, mul_apply', mul_mul_mul_comm ‖L₃‖ ‖L₄‖, ← integral_mul_left]
+  rw [Real.norm_of_nonneg (by positivity)]
+  refine' integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
+    ((ht.const_mul _).const_mul _) (eventually_of_forall fun s => _)
+  simp only [← mul_assoc ‖L₄‖]
+  apply_rules [ContinuousLinearMap.le_of_opNorm₂_le_of_le, le_rfl]
 #align convolution_assoc MeasureTheory.convolution_assoc
 
 end Assoc

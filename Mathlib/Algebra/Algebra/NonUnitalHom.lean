@@ -59,10 +59,10 @@ structure NonUnitalAlgHom [Monoid R] [Monoid S] (φ : R →* S) (A : Type v) (B 
 infixr:25 " →ₙₐ " => NonUnitalAlgHom _
 
 @[inherit_doc]
-notation:25 A " →ₙₐ[" R "] " B => NonUnitalAlgHom (MonoidHom.id R) A B
+notation:25 A " →ₛₙₐ[" φ "] " B => NonUnitalAlgHom φ A B
 
 @[inherit_doc]
-notation:25 A " →ₛₙₐ[" φ "] " B => NonUnitalAlgHom φ A B
+notation:25 A " →ₙₐ[" R "] " B => NonUnitalAlgHom (MonoidHom.id R) A B
 
 attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
@@ -116,7 +116,7 @@ instance (priority := 100) {F : Type*} [FunLike F A B] [Module R B] [NonUnitalAl
   { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := map_smulₛₗ }
 
 /-- Turn an element of a type `F` satisfying `NonUnitalAlgSemiHomClass F φ A B` into an actual
-`NonUnitalAlgSemiHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[φ] B`. -/
+`NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[φ] B`. -/
 @[coe]
 def toNonUnitalAlgSemiHom {F R S : Type*} [Monoid R] [Monoid S] {φ : R →* S} {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
