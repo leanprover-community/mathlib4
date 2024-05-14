@@ -242,7 +242,7 @@ theorem trace_adjMatrix [AddCommMonoid α] [One α] : Matrix.trace (G.adjMatrix 
 variable {α}
 
 theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
-    (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp
+    (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp [filter_true_of_mem]
 #align simple_graph.adj_matrix_mul_self_apply_self SimpleGraph.adjMatrix_mul_self_apply_self
 
 variable {G}
