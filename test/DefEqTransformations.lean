@@ -111,6 +111,20 @@ example : 2 + 1 = 3 := by
   guard_hyp b :ₛ Fin x := 0
   rfl
 
+syntax (name := refoldLet!Stx) "refold_let!" (ppSpace colGt term:max)*
+  (ppSpace Lean.Parser.Tactic.location)? : tactic
+
+macro_rules
+  | `(tactic| refold_let! $hs:term* at $loc:ident) =>
+    `(tactic| revert $loc; intros $loc; refold_let $hs* at $loc:ident)
+
+example (m : Nat) (h : m + 4 < 25) : let n := m + 4; n < 25 := by
+  intro n
+  guard_hyp h :ₛ m + 4 < 25
+  refold_let! n at h
+  guard_hyp h :ₛ n < 25
+  exact h
+
 example : 1 + 2 = 2 + 1 := by
   unfold_projs
   guard_target =ₛ Nat.add (nat_lit 1) (nat_lit 2) = Nat.add (nat_lit 2) (nat_lit 1)
