@@ -72,7 +72,7 @@ theorem totient_pos : ∀ {n : ℕ}, 0 < n → 0 < φ n
   | 1 => by simp [totient]
   | n + 2 => fun _ =>
   -- Must qualify `Finset.card_pos` because of leanprover/lean4#2849
-    Finset.card_pos.2 ⟨1, mem_filter.2 ⟨mem_range.2 (by simp), coprime_one_right _⟩⟩
+    Finset.card_pos.2 ⟨1, mem_filter.2 ⟨mem_range.2 (by omega), coprime_one_right _⟩⟩
 #align nat.totient_pos Nat.totient_pos
 
 theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
@@ -100,8 +100,8 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
         (Ico k (k + n % a + a * i) ∪ Ico (k + n % a + a * i) (k + n % a + a * i + a))).card := by
       congr
       rw [Ico_union_Ico_eq_Ico]
-      rw [add_assoc]
-      exact le_self_add
+      · rw [add_assoc]
+        exact le_self_add
       exact le_self_add
     _ ≤ (filter a.Coprime (Ico k (k + n % a + a * i))).card + a.totient := by
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]

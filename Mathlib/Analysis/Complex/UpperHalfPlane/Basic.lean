@@ -137,6 +137,18 @@ theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 #align upper_half_plane.ne_zero UpperHalfPlane.ne_zero
 
+/-- Define I := √-1 as an element on the upper half plane. -/
+def I : ℍ := ⟨Complex.I, by simp⟩
+
+@[simp]
+lemma I_im : I.im = 1 := rfl
+
+@[simp]
+lemma I_re : I.re = 0 := rfl
+
+@[simp, norm_cast]
+lemma coe_I : I = Complex.I := rfl
+
 end UpperHalfPlane
 
 namespace Mathlib.Meta.Positivity
@@ -301,14 +313,13 @@ def coe' : SL(2, ℤ) → GL(2, ℝ)⁺ := fun g => ((g : SL(2, ℝ)) : GL(2, �
 instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨coe'⟩
 
-set_option autoImplicit true in
 @[simp]
-theorem coe'_apply_complex : (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
+theorem coe'_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
+    (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
   rfl
 
-set_option autoImplicit true in
 @[simp]
-theorem det_coe' : det (Units.val <| Subtype.val <| coe' g) = 1 := by
+theorem det_coe' {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe' g) = 1 := by
   simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe']
 
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=

@@ -571,7 +571,7 @@ end Div
 open Pointwise
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Filter`. See
-Note [pointwise nat action].-/
+Note [pointwise nat action]. -/
 protected def instNSMul [Zero α] [Add α] : SMul ℕ (Filter α) :=
   ⟨nsmulRec⟩
 #align filter.has_nsmul Filter.instNSMul
@@ -599,7 +599,7 @@ protected def instZPow [One α] [Mul α] [Inv α] : Pow (Filter α) ℤ :=
 scoped[Pointwise] attribute [instance] Filter.instNSMul Filter.instNPow
   Filter.instZSMul Filter.instZPow
 
-/-- `Filter α` is a `Semigroup` under pointwise operations if `α` is.-/
+/-- `Filter α` is a `Semigroup` under pointwise operations if `α` is. -/
 @[to_additive "`Filter α` is an `AddSemigroup` under pointwise operations if `α` is."]
 protected def semigroup [Semigroup α] : Semigroup (Filter α) where
   mul := (· * ·)

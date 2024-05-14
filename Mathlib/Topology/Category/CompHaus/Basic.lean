@@ -8,7 +8,7 @@ import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import topology.category.CompHaus.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -39,9 +39,9 @@ structure CompHaus where
   /-- The underlying topological space of an object of `CompHaus`. -/
   toTop : TopCat
   -- Porting note: Renamed field.
-  /-- The underlying topological space is compact.-/
+  /-- The underlying topological space is compact. -/
   [is_compact : CompactSpace toTop]
-  /-- The underlying topological space is T2.-/
+  /-- The underlying topological space is T2. -/
   [is_hausdorff : T2Space toTop]
 set_option linter.uppercaseLean3 false in
 #align CompHaus CompHaus
@@ -185,11 +185,11 @@ def compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top compHausToTop
 
-instance : Full compHausToTop :=
-  show Full <| inducedFunctor _ from inferInstance
+instance : compHausToTop.Full  :=
+  show (inducedFunctor _).Full from inferInstance
 
-instance : Faithful compHausToTop :=
-  show Faithful <| inducedFunctor _ from inferInstance
+instance : compHausToTop.Faithful :=
+  show (inducedFunctor _).Faithful from inferInstance
 
 -- Porting note (#10754): Adding instance
 instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
@@ -199,7 +199,7 @@ instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
 instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
   show T2Space X.toTop from inferInstance
 
-instance CompHaus.forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget CompHaus.{u}) :=
+instance CompHaus.forget_reflectsIsomorphisms : (forget CompHaus.{u}).ReflectsIsomorphisms :=
   ⟨by intro A B f hf; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
 set_option linter.uppercaseLean3 false in
 #align CompHaus.forget_reflects_isomorphisms CompHaus.forget_reflectsIsomorphisms
@@ -390,3 +390,15 @@ set_option linter.uppercaseLean3 false in
 #align CompHaus.mono_iff_injective CompHaus.mono_iff_injective
 
 end CompHaus
+
+/--
+Many definitions involving universe inequalities in Mathlib are expressed through use of `max u v`.
+Unfortunately, this leads to unbound universes which cannot be solved for during unification, eg
+`max u v =?= max v ?`.
+The current solution is to wrap `Type max u v` in `TypeMax.{u,v}`
+to expose both universe parameters directly.
+Similarly, for other concrete categories for which we need to refer to the maximum of two universes
+(e.g. any category for which we are constructing limits), we need an analogous abbreviation.
+-/
+@[nolint checkUnivs]
+abbrev CompHausMax.{w, w'} := CompHaus.{max w w'}

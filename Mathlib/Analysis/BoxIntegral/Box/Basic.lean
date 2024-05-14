@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Set.Intervals.Monotone
+import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Topology.Order.MonotoneConvergence
@@ -152,12 +152,15 @@ theorem le_def : I ≤ J ↔ ∀ x ∈ I, x ∈ J := Iff.rfl
 
 theorem le_TFAE : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
     Icc I.lower I.upper ⊆ Icc J.lower J.upper, J.lower ≤ I.lower ∧ I.upper ≤ J.upper] := by
-  tfae_have 1 ↔ 2; exact Iff.rfl
+  tfae_have 1 ↔ 2
+  · exact Iff.rfl
   tfae_have 2 → 3
   · intro h
     simpa [coe_eq_pi, closure_pi_set, lower_ne_upper] using closure_mono h
-  tfae_have 3 ↔ 4; exact Icc_subset_Icc_iff I.lower_le_upper
-  tfae_have 4 → 2; exact fun h x hx i ↦ Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
+  tfae_have 3 ↔ 4
+  · exact Icc_subset_Icc_iff I.lower_le_upper
+  tfae_have 4 → 2
+  · exact fun h x hx i ↦ Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
   tfae_finish
 #align box_integral.box.le_tfae BoxIntegral.Box.le_TFAE
 
@@ -532,7 +535,7 @@ theorem diam_Icc_le_of_distortion_le (I : Box ι) (i : ι) {c : ℝ≥0} (h : I.
   diam_le_of_forall_dist_le this fun x hx y hy ↦
     calc
       dist x y ≤ dist I.lower I.upper := Real.dist_le_of_mem_pi_Icc hx hy
-      _ ≤ I.distortion * (I.upper i - I.lower i) := (I.dist_le_distortion_mul i)
+      _ ≤ I.distortion * (I.upper i - I.lower i) := I.dist_le_distortion_mul i
       _ ≤ c * (I.upper i - I.lower i) := by gcongr; exact sub_nonneg.2 (I.lower_le_upper i)
 #align box_integral.box.diam_Icc_le_of_distortion_le BoxIntegral.Box.diam_Icc_le_of_distortion_le
 

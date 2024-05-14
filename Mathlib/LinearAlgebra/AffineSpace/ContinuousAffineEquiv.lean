@@ -35,8 +35,9 @@ open Function
 /-- A continuous affine equivalence, denoted `P₁ ≃ᵃL[k] P₂`, between two affine topological spaces
 is an affine equivalence such that forward and inverse maps are continuous. -/
 structure ContinuousAffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k]
-  [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
-  [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂] extends P₁ ≃ᵃ[k] P₂ where
+    [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
+    [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
+    extends P₁ ≃ᵃ[k] P₂ where
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
@@ -180,13 +181,13 @@ theorem symm_symm (e : P₁ ≃ᵃL[k] P₂) : e.symm.symm = e := by
   ext x
   rfl
 
-theorem symm_symm_apply  (e : P₁ ≃ᵃL[k] P₂) (x : P₁) : e.symm.symm x = e x :=
+theorem symm_symm_apply (e : P₁ ≃ᵃL[k] P₂) (x : P₁) : e.symm.symm x = e x :=
   rfl
 
-theorem symm_apply_eq  (e : P₁ ≃ᵃL[k] P₂)  {x y} : e.symm x = y ↔ x = e y :=
+theorem symm_apply_eq (e : P₁ ≃ᵃL[k] P₂)  {x y} : e.symm x = y ↔ x = e y :=
   e.toAffineEquiv.symm_apply_eq
 
-theorem eq_symm_apply  (e : P₁ ≃ᵃL[k] P₂) {x y} : y = e.symm x ↔ e y = x :=
+theorem eq_symm_apply (e : P₁ ≃ᵃL[k] P₂) {x y} : y = e.symm x ↔ e y = x :=
   e.toAffineEquiv.eq_symm_apply
 
 @[simp]
@@ -206,11 +207,26 @@ protected theorem surjective (e : P₁ ≃ᵃL[k] P₂) : Surjective e :=
 protected theorem injective (e : P₁ ≃ᵃL[k] P₂) : Injective e :=
   e.toEquiv.injective
 
-protected theorem image_eq_preimage  (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e '' s = e.symm ⁻¹' s :=
+protected theorem image_eq_preimage (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage s
 
 protected theorem image_symm_eq_preimage (e : P₁ ≃ᵃL[k] P₂) (s : Set P₂) :
-    e.symm '' s = e ⁻¹' s := by rw [e.symm.image_eq_preimage, e.symm_symm]
+    e.symm '' s = e ⁻¹' s := by
+  rw [e.symm.image_eq_preimage, e.symm_symm]
+
+@[simp]
+theorem image_preimage (e : P₁ ≃ᵃL[k] P₂) (s : Set P₂) : e '' (e ⁻¹' s) = s :=
+  e.surjective.image_preimage s
+
+@[simp]
+theorem preimage_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e ⁻¹' (e '' s) = s :=
+  e.injective.preimage_image s
+
+theorem symm_image_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₁) : e.symm '' (e '' s) = s :=
+  e.toEquiv.symm_image_image s
+
+theorem image_symm_image (e : P₁ ≃ᵃL[k] P₂) (s : Set P₂) : e '' (e.symm '' s) = s :=
+  e.symm.symm_image_image s
 
 @[simp]
 theorem refl_symm : (refl k P₁).symm = refl k P₁ :=

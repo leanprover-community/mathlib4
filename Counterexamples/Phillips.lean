@@ -312,13 +312,13 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
     induction' n with n IH
-    · simp only [s, BoundedAdditiveMeasure.empty, id.def, Nat.cast_zero, zero_mul,
+    · simp only [s, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
         Function.iterate_zero, Subtype.coe_mk, Nat.zero_eq]
       rfl
     · have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
         simpa only [s, Function.iterate_succ', union_diff_self]
           using (diff_union_of_subset <| subset_union_left _ _).symm
-      rw [Nat.succ_eq_add_one, this, f.additive]
+      rw [this, f.additive]
       swap; · exact disjoint_sdiff_self_left
       calc
         ((n + 1 : ℕ) : ℝ) * (ε / 2) = ε / 2 + n * (ε / 2) := by simp only [Nat.cast_succ]; ring
@@ -577,7 +577,7 @@ theorem countable_ne (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ
       ⋃ y ∈ φ.toBoundedAdditiveMeasure.discreteSupport, {x | y ∈ spf Hcont x} := by
     intro x hx
     dsimp at hx
-    rw [← Ne.def, ← nonempty_iff_ne_empty] at hx
+    rw [← Ne, ← nonempty_iff_ne_empty] at hx
     simp only [exists_prop, mem_iUnion, mem_setOf_eq]
     exact hx
   apply Countable.mono (Subset.trans A B)

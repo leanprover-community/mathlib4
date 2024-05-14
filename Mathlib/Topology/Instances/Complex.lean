@@ -35,7 +35,7 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
     rw [← IsClosed.closure_eq hc]
     apply closure_mono
     rintro _ ⟨_, rfl⟩
-    simp only [Function.comp_apply, ofReal_rat_cast, SetLike.mem_coe, SubfieldClass.coe_rat_mem]
+    simp only [Function.comp_apply, ofReal_ratCast, SetLike.mem_coe, SubfieldClass.ratCast_mem]
   nth_rw 1 [range_comp]
   refine' subset_trans _ (image_closure_subset_closure_image continuous_ofReal)
   rw [DenseRange.closure_range Rat.denseEmbedding_coe_real.dense]
@@ -103,7 +103,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
       fun x =>
       ⟨x, by
         convert x.prop
-        simp only [id.def, Set.image_id']
+        simp only [id, Set.image_id']
         rfl ⟩
     convert DenseRange.comp (Function.Surjective.denseRange _)
         (DenseEmbedding.subtype denseEmbedding_id (K : Set ℂ)).dense (by continuity : Continuous j)
@@ -111,7 +111,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
     use
       ⟨y, by
         convert hy
-        simp only [id.def, Set.image_id']
+        simp only [id, Set.image_id']
         rfl ⟩
 #align complex.uniform_continuous_ring_hom_eq_id_or_conj Complex.uniformContinuous_ringHom_eq_id_or_conj
 

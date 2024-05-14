@@ -360,7 +360,10 @@ theorem Cofork.app_zero_eq_comp_π_right (s : Cofork f g) : s.ι.app zero = g �
 def Fork.ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) : Fork f g where
   pt := P
   π :=
-    { app := fun X => by cases X; exact ι; exact ι ≫ f
+    { app := fun X => by
+        cases X
+        · exact ι
+        · exact ι ≫ f
       naturality := fun {X} {Y} f =>
         by cases X <;> cases Y <;> cases f <;> dsimp <;> simp; assumption }
 #align category_theory.limits.fork.of_ι CategoryTheory.Limits.Fork.ofι

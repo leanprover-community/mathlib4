@@ -32,9 +32,6 @@ Relations are also known as set-valued functions, or partial multifunctions.
 * `Function.graph`: Graph of a function as a relation.
 -/
 
-set_option autoImplicit true
-
-
 variable {α β γ : Type*}
 
 /-- A relation on `α` and `β`, aka a set-valued function, aka a partial multifunction -/
@@ -97,7 +94,8 @@ def comp (r : Rel α β) (s : Rel β γ) : Rel α γ := fun x z => ∃ y, r x y 
 /-- Local syntax for composition of relations. -/
 local infixr:90 " • " => Rel.comp
 
-theorem comp_assoc (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) : (r • s) • t = r • (s • t) := by
+theorem comp_assoc {δ : Type*} (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) :
+    (r • s) • t = r • (s • t) := by
   unfold comp; ext (x w); constructor
   · rintro ⟨z, ⟨y, rxy, syz⟩, tzw⟩; exact ⟨y, rxy, z, syz, tzw⟩
   · rintro ⟨y, rxy, z, syz, tzw⟩; exact ⟨z, ⟨y, rxy, syz⟩, tzw⟩
@@ -368,6 +366,15 @@ def graph (f : α → β) : Rel α β := fun x y => f x = y
 #align function.graph Function.graph
 
 @[simp] lemma graph_def (f : α → β) (x y) : f.graph x y ↔ (f x = y) := Iff.rfl
+
+theorem graph_injective : Injective (graph : (α → β) → Rel α β) := by
+  intro _ g h
+  ext x
+  have h2 := congr_fun₂ h x (g x)
+  simp only [graph_def, eq_iff_iff, iff_true] at h2
+  exact h2
+
+@[simp] lemma graph_inj {f g : α → β} : f.graph = g.graph ↔ f = g := graph_injective.eq_iff
 
 theorem graph_id : graph id = @Eq α := by simp  (config := { unfoldPartialApp := true }) [graph]
 

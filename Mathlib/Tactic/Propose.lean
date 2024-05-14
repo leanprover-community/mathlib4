@@ -59,7 +59,8 @@ open Lean.Meta.SolveByElim in
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (orig : MVarId) (goals : Array MVarId) (use : Array Expr) (required : Array Expr)
     (depth) := do
-  let cfg : SolveByElimConfig := { maxDepth := depth, exfalso := true, symm := true }
+  let cfg : SolveByElimConfig :=
+    { maxDepth := depth, exfalso := true, symm := true, intro := false }
   let cfg := if !required.isEmpty then
     cfg.testSolutions (fun _ => do
     let r ← instantiateMVars (.mvar orig)
@@ -67,7 +68,8 @@ def solveByElim (orig : MVarId) (goals : Array MVarId) (use : Array Expr) (requi
   else
     cfg
   let cfg := cfg.synthInstance
-  _ ← SolveByElim.solveByElim cfg (use.toList.map pure) (pure (← getLocalHyps).toList) goals.toList
+  _ ← SolveByElim.solveByElim
+    cfg (use.toList.map pure) (fun _ => return (← getLocalHyps).toList) goals.toList
 
 /--
 Attempts to find lemmas which use all of the `required` expressions as arguments, and

@@ -205,7 +205,7 @@ theorem prod_lift : prod ⟦p₁⟧ ⟦p₂⟧ = ⟦p₁.prod p₂⟧ :=
 variable (r₁ : Path.Homotopic.Quotient a₂ a₃) (r₂ : Path.Homotopic.Quotient b₂ b₃)
 
 /-- Products commute with path composition.
-    This is `trans_prod_eq_prod_trans` descended to the quotient.-/
+    This is `trans_prod_eq_prod_trans` descended to the quotient. -/
 theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ ⬝ r₁) (q₂ ⬝ r₂) := by
   apply Quotient.inductionOn₂ (motive := _) q₁ q₂
   intro a b

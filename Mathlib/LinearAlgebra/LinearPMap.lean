@@ -123,17 +123,17 @@ noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 �
       rw [← sub_eq_zero, ← sub_smul] at h ⊢
       exact H _ h
     { toFun := fun z => Classical.choose (mem_span_singleton.1 z.prop) • y
-      -- Porting note: `dsimp only []` are required.
+      -- Porting note(#12129): additional beta reduction needed
       -- Porting note: Were `Classical.choose_spec (mem_span_singleton.1 _)`.
       map_add' := fun y z => by
-        dsimp only []
+        beta_reduce
         rw [← add_smul]
         apply H
         simp only [add_smul, sub_smul,
           fun w : R ∙ x => Classical.choose_spec (mem_span_singleton.1 w.prop)]
         apply coe_add
       map_smul' := fun c z => by
-        dsimp only []
+        beta_reduce
         rw [smul_smul]
         apply H
         simp only [mul_smul,
@@ -807,13 +807,13 @@ theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
     rcases h with ⟨y, hy, h⟩
     rw [LinearPMap.smul_apply] at h
     rw [Submodule.mem_map]
-    simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id.def,
+    simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id,
       LinearMap.smul_apply, Prod.mk.inj_iff, Prod.exists, exists_exists_and_eq_and]
     use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
-  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id.def, LinearMap.smul_apply,
+  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.smul_apply,
     Prod.mk.inj_iff] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
@@ -832,13 +832,13 @@ theorem neg_graph (f : E →ₗ.[R] F) :
     rcases h with ⟨y, hy, h⟩
     rw [LinearPMap.neg_apply] at h
     rw [Submodule.mem_map]
-    simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id.def,
+    simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id,
       LinearMap.neg_apply, Prod.mk.inj_iff, Prod.exists, exists_exists_and_eq_and]
     use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
-  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id.def, LinearMap.neg_apply,
+  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.neg_apply,
     Prod.mk.inj_iff] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩

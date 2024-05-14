@@ -7,7 +7,6 @@ import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.MorphismProperty
 import Mathlib.CategoryTheory.Preadditive.Injective
 
 /-!
@@ -241,7 +240,7 @@ variable (S)
 
 lemma exact_map_iff_of_faithful [S.HasHomology]
     (F : C ⥤ D) [F.PreservesZeroMorphisms] [F.PreservesLeftHomologyOf S]
-    [F.PreservesRightHomologyOf S] [Faithful F] :
+    [F.PreservesRightHomologyOf S] [F.Faithful] :
     (S.map F).Exact ↔ S.Exact := by
   constructor
   · intro h

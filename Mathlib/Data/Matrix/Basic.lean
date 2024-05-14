@@ -175,9 +175,7 @@ def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
 scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
 
 instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
-  -- Porting note: this instance was called `Pi.inhabited` in lean3-core, which is much
-  -- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
-  instInhabitedForAll_1 _
+  inferInstanceAs <| Inhabited <| m → n → α
 
 -- Porting note: new, Lean3 found this automatically
 instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
@@ -226,8 +224,7 @@ instance unique [Unique α] : Unique (Matrix m n α) :=
   Pi.unique
 
 instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
-  instSubsingletonForAll
--- Porting note: this instance was `Pi.subsingleton` in lean3-core
+  inferInstanceAs <| Subsingleton <| m → n → α
 
 instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
   Function.nontrivial
@@ -580,7 +577,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n
 
 instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (Matrix n n α) where
   intCast_ofNat n := show diagonal _ = diagonal _ by
-    rw [Int.cast_ofNat]
+    rw [Int.cast_natCast]
   intCast_negSucc n := show diagonal _ = -(diagonal _) by
     rw [Int.cast_negSucc, diagonal_neg]
   __ := addGroup
@@ -880,7 +877,7 @@ variable [NonAssocSemiring α]
 
 @[simp]
 theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
-  simp [dotProduct, Fintype.card]
+  simp [dotProduct]
 #align matrix.one_dot_product_one Matrix.one_dotProduct_one
 
 end NonAssocSemiring
@@ -1892,6 +1889,37 @@ theorem vecMul_one (v : m → α) : v ᵥ* 1 = v := by
   rw [← diagonal_one, vecMul_diagonal, mul_one]
 #align matrix.vec_mul_one Matrix.vecMul_one
 
+@[simp]
+theorem diagonal_const_mulVec (x : α) (v : m → α) :
+    (diagonal fun _ => x) *ᵥ v = x • v := by
+  ext; simp [mulVec_diagonal]
+
+@[simp]
+theorem vecMul_diagonal_const (x : α) (v : m → α) :
+    v ᵥ* (diagonal fun _ => x) = MulOpposite.op x • v := by
+  ext; simp [vecMul_diagonal]
+
+@[simp]
+theorem natCast_mulVec (x : ℕ) (v : m → α) : x *ᵥ v = (x : α) • v :=
+  diagonal_const_mulVec _ _
+
+@[simp]
+theorem vecMul_natCast (x : ℕ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v :=
+  vecMul_diagonal_const _ _
+
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_mulVec (x : ℕ) [x.AtLeastTwo] (v : m → α) :
+    OfNat.ofNat (no_index x) *ᵥ v = (OfNat.ofNat x : α) • v :=
+  natCast_mulVec _ _
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
+    v ᵥ* OfNat.ofNat (no_index x) = MulOpposite.op (OfNat.ofNat x : α) • v :=
+  vecMul_natCast _ _
+
 end NonAssocSemiring
 
 section NonUnitalNonAssocRing
@@ -1973,6 +2001,22 @@ theorem mulVec_smul_assoc [Fintype n] (A : Matrix m n α) (b : n → α) (a : α
 #align matrix.mul_vec_smul_assoc Matrix.mulVec_smul_assoc
 
 end CommSemiring
+
+section NonAssocRing
+
+variable [NonAssocRing α]
+
+variable [Fintype m] [DecidableEq m]
+
+@[simp]
+theorem intCast_mulVec (x : ℤ) (v : m → α) : x *ᵥ v = (x : α) • v :=
+  diagonal_const_mulVec _ _
+
+@[simp]
+theorem vecMul_intCast (x : ℤ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v :=
+  vecMul_diagonal_const _ _
+
+end NonAssocRing
 
 section Transpose
 
@@ -2288,7 +2332,10 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
   Matrix.ext <| by simp
 #align matrix.conj_transpose_rat_cast_smul Matrix.conjTranspose_ratCast_smul
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12231
+@[simp, nolint simpNF]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=
   Matrix.ext <| by simp

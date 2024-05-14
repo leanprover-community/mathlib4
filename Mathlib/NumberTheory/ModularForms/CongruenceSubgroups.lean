@@ -43,7 +43,7 @@ theorem SL_reduction_mod_hom_val (N : ℕ) (γ : SL(2, ℤ)) :
 #align SL_reduction_mod_hom_val SL_reduction_mod_hom_val
 
 /-- The full level `N` congruence subgroup of `SL(2, ℤ)` of matrices that reduce to the identity
-modulo `N`.-/
+modulo `N`. -/
 def Gamma (N : ℕ) : Subgroup SL(2, ℤ) :=
   SLMOD(N).ker
 #align Gamma Gamma
@@ -135,7 +135,7 @@ def Gamma0Map (N : ℕ) : Gamma0 N →* ZMod N where
 #align Gamma_0_map Gamma0Map
 
 /-- The congruence subgroup `Gamma1` (as a subgroup of `Gamma0`) of matrices whose bottom
-row is congruent to `(0,1)` modulo `N`.-/
+row is congruent to `(0,1)` modulo `N`. -/
 def Gamma1' (N : ℕ) : Subgroup (Gamma0 N) :=
   (Gamma0Map N).ker
 #align Gamma1' Gamma1'

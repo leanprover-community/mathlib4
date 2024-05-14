@@ -30,7 +30,7 @@ namespace HomologicalComplex₂
 
 variable {C : Type*} [Category C] [Preadditive C]
   {I₁ I₂ I₁₂ : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
-  (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (ψ : L ⟶ M)
+  (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (e : K ≅ L) (ψ : L ⟶ M)
   (c₁₂ : ComplexShape I₁₂) [DecidableEq I₁₂]
   [TotalComplexShape c₁ c₂ c₁₂]
 
@@ -403,6 +403,15 @@ variable [M.HasTotal c₁₂]
 lemma map_comp : map (φ ≫ ψ) c₁₂ = map φ c₁₂ ≫ map ψ c₁₂ := by
   apply (HomologicalComplex.forget _ _).map_injective
   exact GradedObject.mapMap_comp (toGradedObjectMap φ) (toGradedObjectMap ψ) _
+
+/-- The isomorphism `K.total c₁₂ ≅ L.total c₁₂` of homological complexes induced
+by an isomorphism of bicomplexes `K ≅ L`. -/
+@[simps]
+noncomputable def mapIso : K.total c₁₂ ≅ L.total c₁₂ where
+  hom := map e.hom _
+  inv := map e.inv _
+  hom_inv_id := by rw [← map_comp, e.hom_inv_id, map_id]
+  inv_hom_id := by rw [← map_comp, e.inv_hom_id, map_id]
 
 end total
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 
 #align_import data.zmod.algebra from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
@@ -32,7 +32,7 @@ def algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
     smul := fun a r => cast a * r
     commutes' := fun a r =>
       show (cast a * r : R) = r * cast a by
-        rcases ZMod.int_cast_surjective a with ⟨k, rfl⟩
+        rcases ZMod.intCast_surjective a with ⟨k, rfl⟩
         show ZMod.castHom h R k * r = r * ZMod.castHom h R k
         rw [map_intCast, Int.cast_comm]
     smul_def' := fun a r => rfl }

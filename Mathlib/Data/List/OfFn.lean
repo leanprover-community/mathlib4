@@ -67,14 +67,14 @@ theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i 
 #align list.nth_of_fn List.get?_ofFn
 
 set_option linter.deprecated false in
-@[deprecated get_ofFn]
+@[deprecated get_ofFn] -- 2023-01-17
 theorem nthLe_ofFn {n} (f : Fin n → α) (i : Fin n) :
     nthLe (ofFn f) i ((length_ofFn f).symm ▸ i.2) = f i := by
   simp [nthLe]
 #align list.nth_le_of_fn List.nthLe_ofFn
 
 set_option linter.deprecated false in
-@[simp, deprecated get_ofFn]
+@[simp, deprecated get_ofFn] -- 2023-01-17
 theorem nthLe_ofFn' {n} (f : Fin n → α) {i : ℕ} (h : i < (ofFn f).length) :
     nthLe (ofFn f) i h = f ⟨i, length_ofFn f ▸ h⟩ :=
   nthLe_ofFn f ⟨i, length_ofFn f ▸ h⟩
@@ -189,7 +189,7 @@ theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
     exact ofFn_get l
 
 set_option linter.deprecated false in
-@[deprecated ofFn_get]
+@[deprecated ofFn_get] -- 2023-01-17
 theorem ofFn_nthLe : ∀ l : List α, (ofFn fun i => nthLe l i i.2) = l :=
   ofFn_get
 #align list.of_fn_nth_le List.ofFn_nthLe
