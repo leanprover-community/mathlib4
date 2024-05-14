@@ -393,10 +393,10 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     _ ≤ ⨆ n : ℕ, ((rs.map c).restrict { a | (rs.map c) a ≤ f n a }).lintegral μ := by
       gcongr with n
       rw [restrict_lintegral _ (h_meas n)]
-      · refine' le_of_eq (Finset.sum_congr rfl fun r _ => _)
-        congr 2 with a
-        refine' and_congr_right _
-        simp (config := { contextual := true })
+      refine' le_of_eq (Finset.sum_congr rfl fun r _ => _)
+      congr 2 with a
+      refine' and_congr_right _
+      simp (config := { contextual := true })
     _ ≤ ⨆ n, ∫⁻ a, f n a ∂μ := by
       gcongr with n
       rw [← SimpleFunc.lintegral_eq_lintegral]

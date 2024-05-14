@@ -85,7 +85,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
   apply CompletableTopField.nice
   · haveI := denseInducing_coe.comap_nhds_neBot y
     apply cauchy_nhds.comap
-    · rw [Completion.comap_coe_eq_uniformity]
+    rw [Completion.comap_coe_eq_uniformity]
   · have eq_bot : 𝓝 (0 : hat K) ⊓ 𝓝 y = ⊥ := by
       by_contra h
       exact y_ne (eq_of_nhds_neBot <| neBot_iff.mpr h).symm

@@ -230,7 +230,7 @@ lemma carrier_eq_span :
     erw [mem_carrier_iff, HomogeneousLocalization.val_mk'']
     erw [show (Localization.mk s ⟨f ^ l, ⟨_, rfl⟩⟩ : Localization.Away f) =
       (Localization.mk 1 ⟨f^l, ⟨_, rfl⟩⟩ : Localization.Away f) * Localization.mk s 1 by
-      · rw [Localization.mk_mul, mul_one, one_mul]]
+      rw [Localization.mk_mul, mul_one, one_mul]]
     exact Ideal.mul_mem_left _ _ <| Ideal.subset_span ⟨s, hs, rfl⟩
 
 theorem disjoint :
@@ -644,9 +644,9 @@ lemma toSpec_fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x :
   · erw [ToSpec.mem_carrier_iff]
     obtain ⟨k, (k_spec : f^k = z.den)⟩ := z.den_mem
     rw [show z.val = (Localization.mk z.num ⟨f^k, ⟨k, rfl⟩⟩ : Away f) by
-        · rw [z.eq_num_div_den]; congr; exact k_spec.symm,
+        rw [z.eq_num_div_den]; congr; exact k_spec.symm,
       show (mk z.num ⟨f^k, ⟨k, rfl⟩⟩ : Away f) = mk z.num 1 * (mk 1 ⟨f^k, ⟨k, rfl⟩⟩ : Away f) by
-        · rw [mk_mul, mul_one, one_mul]]
+        rw [mk_mul, mul_one, one_mul]]
     refine Ideal.mul_mem_right _ _ <| Ideal.subset_span ⟨z.num, ?_, rfl⟩
 
     intro j
@@ -703,7 +703,7 @@ lemma fromSpec_toSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x :
     dsimp only [GradedAlgebra.proj_apply]
     rw [show (mk (decompose 𝒜 z i ^ m) ⟨f^i, ⟨i, rfl⟩⟩ : Away f) =
       (decompose 𝒜 z i ^ m : A) • (mk 1 ⟨f^i, ⟨i, rfl⟩⟩ : Away f) by
-      · rw [smul_mk, smul_eq_mul, mul_one], Algebra.smul_def]
+      rw [smul_mk, smul_eq_mul, mul_one], Algebra.smul_def]
     exact Ideal.mul_mem_right _ _ <|
       Ideal.subset_span ⟨_, ⟨Ideal.pow_mem_of_mem _ (x.1.asHomogeneousIdeal.2 i hz) _ hm, rfl⟩⟩
 
