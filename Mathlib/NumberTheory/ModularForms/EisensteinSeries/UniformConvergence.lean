@@ -33,13 +33,6 @@ open Complex UpperHalfPlane Set Finset
 
 open scoped BigOperators Matrix UpperHalfPlane Complex
 
-/-- move this somewhere! -/
-lemma tendstoLocallyUniformly_iff_forall_isCompact {α β ι : Type*} [TopologicalSpace α]
-    [LocallyCompactSpace α] [UniformSpace β] {F : ι → α → β} {f : α → β} {p : Filter ι} :
-    TendstoLocallyUniformly F f p ↔ ∀ K : Set α, IsCompact K → TendstoUniformlyOn F f p K := by
-  simp only [← tendstoLocallyUniformlyOn_univ,
-    tendstoLocallyUniformlyOn_iff_forall_isCompact isOpen_univ, Set.subset_univ, forall_true_left]
-
 variable (z : ℍ)
 
 namespace EisensteinSeries
