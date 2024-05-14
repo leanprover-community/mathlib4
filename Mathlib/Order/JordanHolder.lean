@@ -355,7 +355,8 @@ theorem trans {s₁ s₂ s₃ : CompositionSeries X} (h₁ : Equivalent s₁ s�
     fun i => iso_trans (h₁.choose_spec i) (h₂.choose_spec (h₁.choose i))⟩
 #align composition_series.equivalent.trans CompositionSeries.Equivalent.trans
 
-protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X} (hs : s₁.last = s₂.head) (ht : t₁.last = t₂.head)
+protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
+    (hs : s₁.last = s₂.head) (ht : t₁.last = t₂.head)
     (h₁ : Equivalent s₁ t₁) (h₂ : Equivalent s₂ t₂) :
     Equivalent (smash s₁ s₂ hs) (smash t₁ t₂ ht) :=
   let e : Fin (s₁.length + s₂.length) ≃ Fin (t₁.length + t₂.length) :=
