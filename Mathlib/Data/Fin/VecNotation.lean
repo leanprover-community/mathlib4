@@ -211,18 +211,15 @@ theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead 
   rfl
 #align matrix.cons_val_one Matrix.cons_val_one
 
-unseal Nat.modCore in
 @[simp]
 theorem cons_val_two (x : α) (u : Fin m.succ.succ → α) : vecCons x u 2 = vecHead (vecTail u) :=
   rfl
 
-unseal Nat.modCore in
 @[simp]
 lemma cons_val_three (x : α) (u : Fin m.succ.succ.succ → α) :
     vecCons x u 3 = vecHead (vecTail (vecTail u)) :=
   rfl
 
-unseal Nat.modCore in
 @[simp]
 lemma cons_val_four (x : α) (u : Fin m.succ.succ.succ.succ → α) :
     vecCons x u 4 = vecHead (vecTail (vecTail (vecTail u))) :=
