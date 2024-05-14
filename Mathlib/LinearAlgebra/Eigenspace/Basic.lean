@@ -6,6 +6,7 @@ Authors: Alexander Bentkamp
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.RingTheory.Nilpotent.Basic
 
 #align_import linear_algebra.eigenspace.basic from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
@@ -118,20 +119,21 @@ theorem HasEigenvalue.exists_hasEigenvector {f : End R M} {μ : R} (hμ : f.HasE
   Submodule.exists_mem_ne_zero_of_ne_bot hμ
 #align module.End.has_eigenvalue.exists_has_eigenvector Module.End.HasEigenvalue.exists_hasEigenvector
 
-theorem mem_spectrum_of_hasEigenvalue {f : End R M} {μ : R} (hμ : HasEigenvalue f μ) :
+theorem HasEigenvalue.mem_spectrum {f : End R M} {μ : R} (hμ : HasEigenvalue f μ) :
     μ ∈ spectrum R f := by
   refine' spectrum.mem_iff.mpr fun h_unit => _
   set f' := LinearMap.GeneralLinearGroup.toLinearEquiv h_unit.unit
   rcases hμ.exists_hasEigenvector with ⟨v, hv⟩
   refine' hv.2 ((LinearMap.ker_eq_bot'.mp f'.ker) v (_ : μ • v - f v = 0))
   rw [hv.apply_eq_smul, sub_self]
-#align module.End.mem_spectrum_of_has_eigenvalue Module.End.mem_spectrum_of_hasEigenvalue
+#align module.End.mem_spectrum_of_has_eigenvalue Module.End.HasEigenvalue.mem_spectrum
 
 theorem hasEigenvalue_iff_mem_spectrum [FiniteDimensional K V] {f : End K V} {μ : K} :
-    f.HasEigenvalue μ ↔ μ ∈ spectrum K f :=
-  Iff.intro mem_spectrum_of_hasEigenvalue fun h => by
-    rwa [spectrum.mem_iff, IsUnit.sub_iff, LinearMap.isUnit_iff_ker_eq_bot] at h
+    f.HasEigenvalue μ ↔ μ ∈ spectrum K f := by
+  rw [spectrum.mem_iff, IsUnit.sub_iff, LinearMap.isUnit_iff_ker_eq_bot, HasEigenvalue, eigenspace]
 #align module.End.has_eigenvalue_iff_mem_spectrum Module.End.hasEigenvalue_iff_mem_spectrum
+
+alias ⟨_, HasEigenvalue.of_mem_spectrum⟩ := hasEigenvalue_iff_mem_spectrum
 
 theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
     eigenspace f (a / b) = LinearMap.ker (b • f - algebraMap K (End K V) a) :=
@@ -368,7 +370,8 @@ theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M)
       Finset.supIndep_iff_disjoint_erase]
     exact fun s μ _ ↦ this _ _ (s.not_mem_erase μ)
   intro μ₁ s
-  induction' s using Finset.induction_on with μ₂ s _ ih; simp
+  induction' s using Finset.induction_on with μ₂ s _ ih
+  · simp
   intro hμ₁₂
   obtain ⟨hμ₁₂ : μ₁ ≠ μ₂, hμ₁ : μ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hμ₁₂
   specialize ih hμ₁
@@ -479,7 +482,7 @@ theorem pos_finrank_generalizedEigenspace_of_hasEigenvalue [FiniteDimensional K 
     0 < finrank K (f.generalizedEigenspace μ k) :=
   calc
     0 = finrank K (⊥ : Submodule K V) := by rw [finrank_bot]
-    _ < finrank K (f.eigenspace μ) := (Submodule.finrank_lt_finrank_of_lt (bot_lt_iff_ne_bot.2 hx))
+    _ < finrank K (f.eigenspace μ) := Submodule.finrank_lt_finrank_of_lt (bot_lt_iff_ne_bot.2 hx)
     _ ≤ finrank K (f.generalizedEigenspace μ k) :=
       Submodule.finrank_mono ((f.generalizedEigenspace μ).monotone (Nat.succ_le_of_lt hk))
 

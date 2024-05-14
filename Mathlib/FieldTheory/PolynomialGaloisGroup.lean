@@ -163,7 +163,7 @@ theorem mapRoots_bijective [h : Fact (p.Splits (algebraMap F E))] :
         ((splits_id_iff_splits _).mpr (IsSplittingField.splits p.SplittingField p))
     rw [map_map, AlgHom.comp_algebraMap] at key
     have hy := Subtype.mem y
-    simp only [rootSet, Finset.mem_coe, (Multiset.mem_toFinset), key, Multiset.mem_map] at hy
+    simp only [rootSet, Finset.mem_coe, Multiset.mem_toFinset, key, Multiset.mem_map] at hy
     rcases hy with ⟨x, hx1, hx2⟩
     exact ⟨⟨x, (@Multiset.mem_toFinset _ (Classical.decEq _) _ _).mpr hx1⟩, Subtype.ext hx2⟩
 #align polynomial.gal.map_roots_bijective Polynomial.Gal.mapRoots_bijective

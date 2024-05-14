@@ -54,8 +54,7 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
 
 open Asymptotics in
 lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 1) :
-    Tendsto (rpow b) atTop (𝓝 (0:ℝ)) := by
-  show Tendsto (fun z => b^z) atTop (𝓝 0)
+    Tendsto (b ^ · : ℝ → ℝ) atTop (𝓝 (0:ℝ)) := by
   rcases lt_trichotomy b 0 with hb|rfl|hb
   case inl => -- b < 0
     simp_rw [Real.rpow_def_of_nonpos hb.le, hb.ne, ite_false]
@@ -80,21 +79,19 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
     exact (log_neg_iff hb).mpr hb₁
 
 lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) :
-    Tendsto (rpow b) atBot (𝓝 (0:ℝ)) := by
-  show Tendsto (fun z => b^z) atBot (𝓝 0)
+    Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 (0:ℝ)) := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
   refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_pos ?_).mpr tendsto_id
   exact (log_pos_iff (by positivity)).mpr <| by aesop
 
 lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) :
-    Tendsto (rpow b) atBot atTop := by
-  show Tendsto (fun z => b^z) atBot atTop
+    Tendsto (b ^ · : ℝ → ℝ) atBot atTop := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
   refine tendsto_exp_atTop.comp <| (tendsto_const_mul_atTop_iff_neg <| tendsto_id (α := ℝ)).mpr ?_
   exact (log_neg_iff hb₀).mpr hb₁
 
-lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) : Tendsto (rpow b) atBot (𝓝 0) := by
-  show Tendsto (fun z => b^z) atBot (𝓝 0)
+lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) :
+    Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 0) := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
   refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_iff_pos <| tendsto_id (α := ℝ)).mpr ?_
   exact (log_pos_iff (by positivity)).mpr <| by aesop
@@ -136,7 +133,7 @@ theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x
   cases' archimedean_iff_nat_lt.1 Real.instArchimedean s with n hn
   refine' tendsto_atTop_mono' _ _ (tendsto_exp_div_pow_atTop n)
   filter_upwards [eventually_gt_atTop (0 : ℝ), eventually_ge_atTop (1 : ℝ)] with x hx₀ hx₁
-  rw [div_le_div_left (exp_pos _) (pow_pos hx₀ _) (rpow_pos_of_pos hx₀ _), ← Real.rpow_nat_cast]
+  rw [div_le_div_left (exp_pos _) (pow_pos hx₀ _) (rpow_pos_of_pos hx₀ _), ← Real.rpow_natCast]
   exact rpow_le_rpow_of_exponent_le hx₁ hn.le
 #align tendsto_exp_div_rpow_at_top tendsto_exp_div_rpow_atTop
 
@@ -155,8 +152,8 @@ theorem tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero (s : ℝ) (b : ℝ) (hb : 0
   refine' (tendsto_exp_mul_div_rpow_atTop s b hb).inv_tendsto_atTop.congr' _
   filter_upwards with x using by simp [exp_neg, inv_div, div_eq_mul_inv _ (exp _)]
 #align tendsto_rpow_mul_exp_neg_mul_at_top_nhds_0 tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
-@[deprecated] alias tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 :=
-  tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
+@[deprecated] --2024-01-31
+alias tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
 
 nonrec theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
     Tendsto (fun x : ℝ≥0 => x ^ y) atTop atTop := by
@@ -265,7 +262,7 @@ theorem IsBigOWith.rpow (h : IsBigOWith c l f g) (hc : 0 ≤ c) (hr : 0 ≤ r) (
   filter_upwards [hg, h.bound] with x hgx hx
   calc
     |f x ^ r| ≤ |f x| ^ r := abs_rpow_le_abs_rpow _ _
-    _ ≤ (c * |g x|) ^ r := (rpow_le_rpow (abs_nonneg _) hx hr)
+    _ ≤ (c * |g x|) ^ r := rpow_le_rpow (abs_nonneg _) hx hr
     _ = c ^ r * |g x ^ r| := by rw [mul_rpow hc (abs_nonneg _), abs_rpow_of_nonneg hgx]
 #align asymptotics.is_O_with.rpow Asymptotics.IsBigOWith.rpow
 
@@ -298,7 +295,7 @@ theorem isLittleO_rpow_exp_pos_mul_atTop (s : ℝ) {b : ℝ} (hb : 0 < b) :
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any integer `k` and positive `b`. -/
 theorem isLittleO_zpow_exp_pos_mul_atTop (k : ℤ) {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => x ^ k) =o[atTop] fun x => exp (b * x) := by
-  simpa only [Real.rpow_int_cast] using isLittleO_rpow_exp_pos_mul_atTop k hb
+  simpa only [Real.rpow_intCast] using isLittleO_rpow_exp_pos_mul_atTop k hb
 #align is_o_zpow_exp_pos_mul_at_top isLittleO_zpow_exp_pos_mul_atTop
 
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any natural `k` and positive `b`. -/

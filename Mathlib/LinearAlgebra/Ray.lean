@@ -3,10 +3,10 @@ Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Order.Module.Algebra
-import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.RingTheory.Subring.Units
+import Mathlib.Algebra.Ring.Subring.Units
 
 #align_import linear_algebra.ray from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
 
@@ -210,7 +210,7 @@ theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z
 
 end SameRay
 
--- Porting note: removed has_nonempty_instance nolint, no such linter
+-- Porting note(#5171): removed has_nonempty_instance nolint, no such linter
 set_option linter.unusedVariables false in
 /-- Nonzero vectors, as used to define rays. This type depends on an unused argument `R` so that
 `RayVector.Setoid` can be an instance. -/
@@ -238,7 +238,7 @@ instance RayVector.Setoid : Setoid (RayVector R M)
       exact hxy.trans hyz fun hy => (y.2 hy).elim⟩
 
 /-- A ray (equivalence class of nonzero vectors with common positive multiples) in a module. -/
--- Porting note: removed has_nonempty_instance nolint, no such linter
+-- Porting note(#5171): removed has_nonempty_instance nolint, no such linter
 def Module.Ray :=
   Quotient (RayVector.Setoid R M)
 #align module.ray Module.Ray

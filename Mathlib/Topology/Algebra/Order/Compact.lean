@@ -78,7 +78,7 @@ instance [TopologicalSpace α] [Preorder α] [CompactIccSpace α] : CompactIccSp
 instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (α : Type*)
     [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] :
     CompactIccSpace α := by
-  refine' .mk'' fun {a b} hlt => ?_
+  refine .mk'' fun {a b} hlt => ?_
   rcases le_or_lt a b with hab | hab
   swap
   · simp [hab]
@@ -306,7 +306,7 @@ theorem ContinuousOn.exists_isMinOn' [ClosedIicTopology α] {s : Set β} {f : β
   rcases (hasBasis_cocompact.inf_principal _).eventually_iff.1 hc with ⟨K, hK, hKf⟩
   have hsub : insert x₀ (K ∩ s) ⊆ s := insert_subset_iff.2 ⟨h₀, inter_subset_right _ _⟩
   obtain ⟨x, hx, hxf⟩ : ∃ x ∈ insert x₀ (K ∩ s), ∀ y ∈ insert x₀ (K ∩ s), f x ≤ f y :=
-    ((hK.inter_right hsc).insert x₀).exists_forall_le (insert_nonempty _ _) (hf.mono hsub)
+    ((hK.inter_right hsc).insert x₀).exists_isMinOn (insert_nonempty _ _) (hf.mono hsub)
   refine' ⟨x, hsub hx, fun y hy => _⟩
   by_cases hyK : y ∈ K
   exacts [hxf _ (Or.inr ⟨hyK, hy⟩), (hxf _ (Or.inl rfl)).trans (hKf ⟨hyK, hy⟩)]
@@ -340,9 +340,9 @@ theorem ContinuousOn.exists_forall_ge' [ClosedIciTopology α] {s : Set β} {f : 
 away from compact sets, then it has a global minimum. -/
 theorem Continuous.exists_forall_le' [ClosedIicTopology α] {f : β → α} (hf : Continuous f)
     (x₀ : β) (h : ∀ᶠ x in cocompact β, f x₀ ≤ f x) : ∃ x : β, ∀ y : β, f x ≤ f y :=
-  let ⟨x, _, hx⟩ := hf.continuousOn.exists_forall_le' isClosed_univ (mem_univ x₀)
+  let ⟨x, _, hx⟩ := hf.continuousOn.exists_isMinOn' isClosed_univ (mem_univ x₀)
     (by rwa [principal_univ, inf_top_eq])
-  ⟨x, fun y => hx y (mem_univ y)⟩
+  ⟨x, fun y => hx (mem_univ y)⟩
 #align continuous.exists_forall_le' Continuous.exists_forall_le'
 
 /-- The **extreme value theorem**: if a continuous function `f` is smaller than a value in its range
@@ -442,9 +442,9 @@ theorem IsCompact.sSup_lt_iff_of_continuous [ClosedIciTopology α] {f : β → �
     sSup (f '' K) < y ↔ ∀ x ∈ K, f x < y := by
   refine' ⟨fun h x hx => (le_csSup (hK.bddAbove_image hf) <| mem_image_of_mem f hx).trans_lt h,
     fun h => _⟩
-  obtain ⟨x, hx, h2x⟩ := hK.exists_forall_ge h0K hf
+  obtain ⟨x, hx, h2x⟩ := hK.exists_isMaxOn h0K hf
   refine' (csSup_le (h0K.image f) _).trans_lt (h x hx)
-  rintro _ ⟨x', hx', rfl⟩; exact h2x x' hx'
+  rintro _ ⟨x', hx', rfl⟩; exact h2x hx'
 #align is_compact.Sup_lt_iff_of_continuous IsCompact.sSup_lt_iff_of_continuous
 
 theorem IsCompact.lt_sInf_iff_of_continuous [ClosedIicTopology α] {f : β → α} {K : Set β}
@@ -571,19 +571,17 @@ theorem eq_Icc_of_connected_compact {s : Set α} (h₁ : IsConnected s) (h₂ : 
   eq_Icc_csInf_csSup_of_connected_bdd_closed h₁ h₂.bddBelow h₂.bddAbove h₂.isClosed
 #align eq_Icc_of_connected_compact eq_Icc_of_connected_compact
 
-/- If `f : γ → β → α` is a function that is continuous as a function on `γ × β`, `α` is a
+/-- If `f : γ → β → α` is a function that is continuous as a function on `γ × β`, `α` is a
 conditionally complete linear order, and `K : Set β` is a compact set, then
-`fun x ↦ sSup (f x '' K)` is a continuous function.
-
-Porting note (#11215): TODO: generalize. The following version seems to be true:
+`fun x ↦ sSup (f x '' K)` is a continuous function. -/
+/- Porting note (#11215): TODO: generalize. The following version seems to be true:
 ```
 theorem IsCompact.tendsto_sSup {f : γ → β → α} {g : β → α} {K : Set β} {l : Filter γ}
     (hK : IsCompact K) (hf : ∀ y ∈ K, Tendsto ↿f (l ×ˢ 𝓝[K] y) (𝓝 (g y)))
     (hgc : ContinuousOn g K) :
     Tendsto (fun x => sSup (f x '' K)) l (𝓝 (sSup (g '' K))) := _
 ```
-Moreover, it seems that `hgc` follows from `hf` (Yury Kudryashov).
--/
+Moreover, it seems that `hgc` follows from `hf` (Yury Kudryashov). -/
 theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCompact K)
     (hf : Continuous ↿f) : Continuous fun x => sSup (f x '' K) := by
   rcases eq_empty_or_nonempty K with (rfl | h0K)

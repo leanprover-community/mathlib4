@@ -236,8 +236,8 @@ end EqToHom
 @[simp]
 theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
   apply Functor.ext
-  intro _ _ _
-  · simp
+  · intro _ _ _
+    simp
   · intro _
     rfl
 #align category_theory.functor.pi'_eval CategoryTheory.Functor.pi'_eval
@@ -387,9 +387,9 @@ def pi (E : ∀ i, C i ≌ D i) : (∀ i, C i) ≌ (∀ i, D i) where
   unitIso := NatIso.pi (fun i => (E i).unitIso)
   counitIso := NatIso.pi (fun i => (E i).counitIso)
 
-instance (F : ∀ i, C i ⥤ D i) [∀ i, IsEquivalence (F i)] :
-    IsEquivalence (Functor.pi F) :=
-  IsEquivalence.ofEquivalence (pi (fun i => (F i).asEquivalence))
+instance (F : ∀ i, C i ⥤ D i) [∀ i, (F i).IsEquivalence] :
+    (Functor.pi F).IsEquivalence :=
+  (pi (fun i => (F i).asEquivalence)).isEquivalence_functor
 
 end Equivalence
 

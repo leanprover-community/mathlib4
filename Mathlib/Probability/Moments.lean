@@ -61,7 +61,7 @@ def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ := by
 @[simp]
 theorem moment_zero (hp : p ≠ 0) : moment 0 p μ = 0 := by
   simp only [moment, hp, zero_pow, Ne, not_false_iff, Pi.zero_apply, integral_const,
-    smul_eq_mul, mul_zero]
+    smul_eq_mul, mul_zero, integral_zero]
 #align probability_theory.moment_zero ProbabilityTheory.moment_zero
 
 @[simp]
@@ -188,7 +188,7 @@ theorem mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω
   simp_rw [mgf]
   have : ∫ x : Ω, exp (t * X x) ∂μ = ∫ x : Ω in Set.univ, exp (t * X x) ∂μ := by
     simp only [Measure.restrict_univ]
-  rw [this, set_integral_pos_iff_support_of_nonneg_ae _ _]
+  rw [this, setIntegral_pos_iff_support_of_nonneg_ae _ _]
   · have h_eq_univ : (Function.support fun x : Ω => exp (t * X x)) = Set.univ := by
       ext1 x
       simp only [Function.mem_support, Set.mem_univ, iff_true_iff]

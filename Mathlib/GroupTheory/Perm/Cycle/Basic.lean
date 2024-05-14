@@ -250,8 +250,8 @@ instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f
     ⟨fun ⟨n, _, hn⟩ => ⟨n, hn⟩, fun ⟨i, hi⟩ => ⟨(i % orderOf f).natAbs,
       List.mem_range.2 (Int.ofNat_lt.1 <| by
         rw [Int.natAbs_of_nonneg (Int.emod_nonneg _ <| Int.natCast_ne_zero.2 (orderOf_pos _).ne')]
-        · refine' (Int.emod_lt _ <| Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _).trans_le _
-          simp [orderOf_le_card_univ]),
+        refine' (Int.emod_lt _ <| Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _).trans_le _
+        simp [orderOf_le_card_univ]),
       by
         rw [← zpow_natCast, Int.natAbs_of_nonneg (Int.emod_nonneg _ <|
           Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _), zpow_mod_orderOf, hi]⟩⟩
@@ -814,10 +814,10 @@ theorem isCycleOn_swap [DecidableEq α] (hab : a ≠ b) : (swap a b).IsCycleOn {
   ⟨bijOn_swap (by simp) (by simp), fun x hx y hy => by
     rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hx hy
     obtain rfl | rfl := hx <;> obtain rfl | rfl := hy
-    · exact ⟨0, by rw [zpow_zero, coe_one, id.def]⟩
+    · exact ⟨0, by rw [zpow_zero, coe_one, id]⟩
     · exact ⟨1, by rw [zpow_one, swap_apply_left]⟩
     · exact ⟨1, by rw [zpow_one, swap_apply_right]⟩
-    · exact ⟨0, by rw [zpow_zero, coe_one, id.def]⟩⟩
+    · exact ⟨0, by rw [zpow_zero, coe_one, id]⟩⟩
 #align equiv.perm.is_cycle_on_swap Equiv.Perm.isCycleOn_swap
 
 protected theorem IsCycleOn.apply_ne (hf : f.IsCycleOn s) (hs : s.Nontrivial) (ha : a ∈ s) :
@@ -979,7 +979,6 @@ section
 
 variable [DecidableEq α] {l : List α}
 
-set_option linter.deprecated false in -- nthLe
 theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
     l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine' ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => _⟩
@@ -987,7 +986,7 @@ theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
   rw [← List.indexOf_get ha, ← List.indexOf_get hb]
   refine' ⟨l.indexOf b - l.indexOf a, _⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_natCast,
-    Equiv.Perm.coe_mul, ← List.nthLe_eq, List.formPerm_pow_apply_nthLe _ h, Function.comp]
+    Equiv.Perm.coe_mul, List.formPerm_pow_apply_get _ h, Function.comp]
   rw [add_comm]
 #align list.nodup.is_cycle_on_form_perm List.Nodup.isCycleOn_formPerm
 
@@ -1002,7 +1001,7 @@ variable [DecidableEq α] [Fintype α]
 theorem exists_cycleOn (s : Finset α) :
     ∃ f : Perm α, f.IsCycleOn s ∧ f.support ⊆ s := by
   refine ⟨s.toList.formPerm, ?_, fun x hx => by
-    simpa using List.mem_of_formPerm_apply_ne _ _ (Perm.mem_support.1 hx)⟩
+    simpa using List.mem_of_formPerm_apply_ne (Perm.mem_support.1 hx)⟩
   convert s.nodup_toList.isCycleOn_formPerm
   simp
 #align finset.exists_cycle_on Finset.exists_cycleOn
@@ -1018,7 +1017,7 @@ theorem Countable.exists_cycleOn (hs : s.Countable) :
   classical
   obtain hs' | hs' := s.finite_or_infinite
   · refine ⟨hs'.toFinset.toList.formPerm, ?_, fun x hx => by
-      simpa using List.mem_of_formPerm_apply_ne _ _ hx⟩
+      simpa using List.mem_of_formPerm_apply_ne hx⟩
     convert hs'.toFinset.nodup_toList.isCycleOn_formPerm
     simp
   · haveI := hs.to_subtype

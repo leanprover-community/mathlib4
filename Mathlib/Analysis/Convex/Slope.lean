@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudriashov, Malo Jaffré
 -/
 import Mathlib.Analysis.Convex.Function
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 
@@ -20,9 +21,9 @@ The main use is to show convexity/concavity from monotonicity of the derivative.
 
 variable {𝕜 : Type*} [LinearOrderedField 𝕜] {s : Set 𝕜} {f : 𝕜 → 𝕜}
 
--- Adaptation note: after v4.7.0-rc1, there is a performance problem in `field_simp`.
--- (Part of the code was ignoring the `maxDischargeDepth` setting: now that we have to increase it,
--- other paths becomes slow.)
+#adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
+(Part of the code was ignoring the `maxDischargeDepth` setting:
+ now that we have to increase it, other paths become slow.) -/
 set_option maxHeartbeats 400000 in
 /-- If `f : 𝕜 → 𝕜` is convex, then for any three points `x < y < z` the slope of the secant line of
 `f` on `[x, y]` is less than the slope of the secant line of `f` on `[x, z]`. -/
@@ -293,7 +294,7 @@ theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x
   have hb : 0 < (y - x) / (z - x) := by positivity
   calc
     f y = f ((z - y) / (z - x) * x + (y - x) / (z - x) * z) := ?_
-    _ < (z - y) / (z - x) * f x + (y - x) / (z - x) * f z := (hf.2 hx hz (by linarith) ha hb ?_)
+    _ < (z - y) / (z - x) * f x + (y - x) / (z - x) * f z := hf.2 hx hz (by linarith) ha hb ?_
     _ = ((z - y) * f x + (y - x) * f z) / (z - x) := ?_
   · congr 1
     field_simp

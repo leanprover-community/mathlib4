@@ -361,12 +361,14 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
 
 theorem compProd_restrict_left {s : Set β} (hs : MeasurableSet s) :
     kernel.restrict κ hs ⊗ₖ η = kernel.restrict (κ ⊗ₖ η) (hs.prod MeasurableSet.univ) := by
-  rw [← compProd_restrict]; congr; exact kernel.restrict_univ.symm
+  rw [← compProd_restrict]
+  · congr; exact kernel.restrict_univ.symm
 #align probability_theory.kernel.comp_prod_restrict_left ProbabilityTheory.kernel.compProd_restrict_left
 
 theorem compProd_restrict_right {t : Set γ} (ht : MeasurableSet t) :
     κ ⊗ₖ kernel.restrict η ht = kernel.restrict (κ ⊗ₖ η) (MeasurableSet.univ.prod ht) := by
-  rw [← compProd_restrict]; congr; exact kernel.restrict_univ.symm
+  rw [← compProd_restrict]
+  · congr; exact kernel.restrict_univ.symm
 #align probability_theory.kernel.comp_prod_restrict_right ProbabilityTheory.kernel.compProd_restrict_right
 
 end Restrict
@@ -542,7 +544,7 @@ theorem compProd_apply_univ_le (κ : kernel α β) (η : kernel (α × β) γ) [
   calc
     ∫⁻ b, η (a, b) Set.univ ∂κ a ≤ ∫⁻ _, Cη ∂κ a :=
       lintegral_mono fun b => measure_le_bound η (a, b) Set.univ
-    _ = Cη * κ a Set.univ := (MeasureTheory.lintegral_const Cη)
+    _ = Cη * κ a Set.univ := MeasureTheory.lintegral_const Cη
     _ = κ a Set.univ * Cη := mul_comm _ _
 #align probability_theory.kernel.comp_prod_apply_univ_le ProbabilityTheory.kernel.compProd_apply_univ_le
 
@@ -578,10 +580,28 @@ lemma compProd_add_right (μ : kernel α β) (κ η : kernel (α × β) γ)
     [IsSFiniteKernel μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     μ ⊗ₖ (κ + η) = μ ⊗ₖ κ + μ ⊗ₖ η := by
   ext a s hs
-  simp only [compProd_apply _ _ _ hs, coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure,
-    OuterMeasure.coe_add]
+  simp only [compProd_apply _ _ _ hs, coeFn_add, Pi.add_apply, Measure.coe_add]
   rw [lintegral_add_left]
   exact measurable_kernel_prod_mk_left' hs a
+
+lemma comapRight_compProd_id_prod {δ : Type*} {mδ : MeasurableSpace δ}
+    (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ) [IsSFiniteKernel η]
+    {f : δ → γ} (hf : MeasurableEmbedding f) :
+    comapRight (κ ⊗ₖ η) (MeasurableEmbedding.id.prod_mk hf) = κ ⊗ₖ (comapRight η hf) := by
+  ext a t ht
+  rw [comapRight_apply' _ _ _ ht, compProd_apply, compProd_apply _ _ _ ht]
+  swap; · exact (MeasurableEmbedding.id.prod_mk hf).measurableSet_image.mpr ht
+  refine lintegral_congr (fun b ↦ ?_)
+  simp only [id_eq, Set.mem_image, Prod.mk.injEq, Prod.exists]
+  rw [comapRight_apply']
+  swap; · exact measurable_prod_mk_left ht
+  congr with x
+  simp only [Set.mem_setOf_eq, Set.mem_image]
+  constructor
+  · rintro ⟨b', c, h, rfl, rfl⟩
+    exact ⟨c, h, rfl⟩
+  · rintro ⟨c, h, rfl⟩
+    exact ⟨b, c, h, rfl, rfl⟩
 
 end CompositionProduct
 

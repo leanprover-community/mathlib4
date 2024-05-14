@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.Ring
 import Mathlib.Algebra.Star.Unitary
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Tactic.Ring
 
 #align_import number_theory.zsqrtd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -541,13 +542,13 @@ theorem norm_one : norm (1 : ℤ√d) = 1 := by simp [norm]
 #align zsqrtd.norm_one Zsqrtd.norm_one
 
 @[simp]
-theorem norm_int_cast (n : ℤ) : norm (n : ℤ√d) = n * n := by simp [norm]
-#align zsqrtd.norm_int_cast Zsqrtd.norm_int_cast
+theorem norm_intCast (n : ℤ) : norm (n : ℤ√d) = n * n := by simp [norm]
+#align zsqrtd.norm_int_cast Zsqrtd.norm_intCast
 
 @[simp]
-theorem norm_nat_cast (n : ℕ) : norm (n : ℤ√d) = n * n :=
-  norm_int_cast n
-#align zsqrtd.norm_nat_cast Zsqrtd.norm_nat_cast
+theorem norm_natCast (n : ℕ) : norm (n : ℤ√d) = n * n :=
+  norm_intCast n
+#align zsqrtd.norm_nat_cast Zsqrtd.norm_natCast
 
 @[simp]
 theorem norm_mul (n m : ℤ√d) : norm (n * m) = norm n * norm m := by
@@ -899,7 +900,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
   Or.elim g.eq_zero_or_pos
     (fun H => ⟨Nat.eq_zero_of_gcd_eq_zero_left H, Nat.eq_zero_of_gcd_eq_zero_right H⟩) fun gpos =>
     False.elim <| by
-      let ⟨m, n, co, (hx : x = m * g), (hy : y = n * g)⟩ := Nat.exists_coprime gpos
+      let ⟨m, n, co, (hx : x = m * g), (hy : y = n * g)⟩ := Nat.exists_coprime _ _
       rw [hx, hy] at h
       have : m * m = d * (n * n) := by
         refine mul_left_cancel₀ (mul_pos gpos gpos).ne' ?_

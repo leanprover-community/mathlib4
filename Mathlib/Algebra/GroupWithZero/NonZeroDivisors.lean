@@ -3,11 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.MulOpposite
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.Submonoid.Operations
-import Mathlib.GroupTheory.Submonoid.Membership
-import Mathlib.GroupTheory.Submonoid.MulOpposite
 import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.Algebra.Ring.Opposite
 
 #align_import ring_theory.non_zero_divisors from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -186,6 +187,9 @@ theorem isUnit_of_mem_nonZeroDivisors {G₀ : Type*} [GroupWithZero G₀] {x : G
     inv_mul_cancel (nonZeroDivisors.ne_zero hx)⟩, rfl⟩
 #align is_unit_of_mem_non_zero_divisors isUnit_of_mem_nonZeroDivisors
 
+lemma IsUnit.mem_nonZeroDivisors {a : M} (ha : IsUnit a) : a ∈ M⁰ :=
+  fun _ h ↦ ha.mul_left_eq_zero.mp h
+
 theorem eq_zero_of_ne_zero_of_mul_right_eq_zero [NoZeroDivisors M] {x y : M} (hnx : x ≠ 0)
     (hxy : y * x = 0) : y = 0 :=
   Or.resolve_right (eq_zero_or_eq_zero_of_mul_eq_zero hxy) hnx
@@ -240,6 +244,15 @@ theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M'
     [MonoidWithZeroHomClass F M M'] (f : F) (hf : Function.Injective f) : M⁰ ≤ M'⁰.comap f :=
   Submonoid.le_comap_of_map_le _ (map_le_nonZeroDivisors_of_injective _ hf le_rfl)
 #align non_zero_divisors_le_comap_non_zero_divisors_of_injective nonZeroDivisors_le_comap_nonZeroDivisors_of_injective
+
+/-- In a finite ring, an element is a unit iff it is a non-zero-divisor. -/
+lemma isUnit_iff_mem_nonZeroDivisors_of_finite [Finite R] {a : R} :
+    IsUnit a ↔ a ∈ nonZeroDivisors R := by
+  refine ⟨IsUnit.mem_nonZeroDivisors, fun ha ↦ ?_⟩
+  rw [IsUnit.isUnit_iff_mulRight_bijective, ← Finite.injective_iff_bijective]
+  intro b c hbc
+  rw [← sub_eq_zero, ← sub_mul] at hbc
+  exact sub_eq_zero.mp (ha _ hbc)
 
 end nonZeroDivisors
 

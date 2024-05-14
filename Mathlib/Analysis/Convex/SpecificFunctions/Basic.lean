@@ -63,7 +63,7 @@ theorem convexOn_exp : ConvexOn ℝ univ exp :=
   strictConvexOn_exp.convexOn
 #align convex_on_exp convexOn_exp
 
-/- `Real.log` is strictly concave on $(0, +∞)$. -/
+/-- `Real.log` is strictly concave on `(0, +∞)`. -/
 theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
   apply strictConcaveOn_of_slope_strict_anti_adjacent (convex_Ioi (0 : ℝ))
   intro x y z (hx : 0 < x) (hz : 0 < z) hxy hyz
@@ -78,7 +78,7 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
       simp [h]
     calc
       log z - log y = log (z / y) := by rw [← log_div hz.ne' hy.ne']
-      _ < z / y - 1 := (log_lt_sub_one_of_pos hyz' hyz'')
+      _ < z / y - 1 := log_lt_sub_one_of_pos hyz' hyz''
       _ = y⁻¹ * (z - y) := by field_simp
   · have h : 0 < y - x := by linarith
     rw [lt_div_iff h]
@@ -217,7 +217,7 @@ theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   have hxy' : -x ≠ -y := by contrapose! hxy; linarith
   calc
     a • log x + b • log y = a • log (-x) + b • log (-y) := by simp_rw [log_neg_eq_log]
-    _ < log (a • -x + b • -y) := (strictConcaveOn_log_Ioi.2 hx' hy' hxy' ha hb hab)
+    _ < log (a • -x + b • -y) := strictConcaveOn_log_Ioi.2 hx' hy' hxy' ha hb hab
     _ = log (-(a • x + b • y)) := by congr 1; simp only [Algebra.id.smul_eq_mul]; ring
     _ = _ := by rw [log_neg_eq_log]
 #align strict_concave_on_log_Iio strictConcaveOn_log_Iio

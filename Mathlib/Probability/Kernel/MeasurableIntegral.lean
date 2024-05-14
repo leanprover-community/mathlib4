@@ -234,7 +234,7 @@ theorem _root_.Measurable.set_lintegral_kernel {f : β → ℝ≥0∞} (hf : Mea
     (hs : MeasurableSet s) : Measurable fun a => ∫⁻ b in s, f b ∂κ a := by
   -- Porting note: was term mode proof (`Function.comp` reducibility)
   refine Measurable.set_lintegral_kernel_prod_right ?_ hs
-  convert (hf.comp measurable_snd)
+  convert hf.comp measurable_snd
 #align measurable.set_lintegral_kernel Measurable.set_lintegral_kernel
 
 end Lintegral
@@ -253,12 +253,14 @@ open ProbabilityTheory ProbabilityTheory.kernel
 
 namespace MeasureTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [IsSFiniteKernel κ]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [IsSFiniteKernel κ]
   [IsSFiniteKernel η]
 
 theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂κ x := by
   classical
+  by_cases hE : CompleteSpace E; swap
+  · simp [integral, hE, stronglyMeasurable_const]
   borelize E
   haveI : TopologicalSpace.SeparableSpace (range (uncurry f) ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton
@@ -319,9 +321,9 @@ theorem StronglyMeasurable.integral_kernel_prod_right'' {f : β × γ → E}
   -- Porting note: was (`Function.comp` reducibility)
   -- refine' MeasureTheory.StronglyMeasurable.integral_kernel_prod_right' _
   -- exact hf.comp_measurable (measurable_fst.snd.prod_mk measurable_snd)
-  have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_right' (κ := η)
-    (hf.comp_measurable (measurable_fst.snd.prod_mk measurable_snd))
-  simpa using this
+  · have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_right' (κ := η)
+      (hf.comp_measurable (measurable_fst.snd.prod_mk measurable_snd))
+    simpa using this
 #align measure_theory.strongly_measurable.integral_kernel_prod_right'' MeasureTheory.StronglyMeasurable.integral_kernel_prod_right''
 
 theorem StronglyMeasurable.integral_kernel_prod_left ⦃f : β → α → E⦄
@@ -343,9 +345,9 @@ theorem StronglyMeasurable.integral_kernel_prod_left'' {f : γ × β → E} (hf 
   -- Porting note: was (`Function.comp` reducibility)
   -- refine' MeasureTheory.StronglyMeasurable.integral_kernel_prod_left' _
   -- exact hf.comp_measurable (measurable_fst.prod_mk measurable_snd.snd)
-  have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_left' (κ := η)
-    (hf.comp_measurable (measurable_fst.prod_mk measurable_snd.snd))
-  simpa using this
+  · have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_left' (κ := η)
+      (hf.comp_measurable (measurable_fst.prod_mk measurable_snd.snd))
+    simpa using this
 #align measure_theory.strongly_measurable.integral_kernel_prod_left'' MeasureTheory.StronglyMeasurable.integral_kernel_prod_left''
 
 end MeasureTheory

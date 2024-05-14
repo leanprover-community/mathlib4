@@ -52,7 +52,7 @@ theorem zero_trim (hm : m ≤ m0) : (0 : Measure α).trim hm = (0 : @Measure α 
 #align measure_theory.zero_trim MeasureTheory.zero_trim
 
 theorem trim_measurableSet_eq (hm : m ≤ m0) (hs : @MeasurableSet α m s) : μ.trim hm s = μ s := by
-  rw [Measure.trim, toMeasure_apply (ms := m) _ _ hs]
+  rw [Measure.trim, toMeasure_apply (ms := m) _ _ hs, Measure.coe_toOuterMeasure]
 #align measure_theory.trim_measurable_set_eq MeasureTheory.trim_measurableSet_eq
 
 theorem le_trim (hm : m ≤ m0) : μ s ≤ μ.trim hm s := by

@@ -91,8 +91,7 @@ def ofFinite [Finite α] [MeasurableSingletonClass α] (f : α → β) : α →�
   measurableSet_fiber' x := (toFinite (f ⁻¹' {x})).measurableSet
   finite_range' := Set.finite_range f
 
-@[deprecated] -- Since 2024/02/05
-alias ofFintype := ofFinite
+@[deprecated] alias ofFintype := ofFinite -- Since 2024-02-05
 
 /-- Simple function defined on the empty type. -/
 def ofIsEmpty [IsEmpty α] : α →ₛ β := ofFinite isEmptyElim
@@ -287,7 +286,7 @@ def bind (f : α →ₛ β) (g : β → α →ₛ γ) : α →ₛ γ :=
   ⟨fun a => g (f a) a, fun c =>
     f.measurableSet_cut (fun a b => g b a = c) fun b => (g b).measurableSet_preimage {c},
     (f.finite_range.biUnion fun b _ => (g b).finite_range).subset <| by
-      rintro _ ⟨a, rfl⟩; simp; exact ⟨a, a, rfl⟩⟩
+      rintro _ ⟨a, rfl⟩; simp⟩
 #align measure_theory.simple_func.bind MeasureTheory.SimpleFunc.bind
 
 @[simp]
@@ -939,7 +938,7 @@ theorem sum_eapproxDiff (f : α → ℝ≥0∞) (n : ℕ) (a : α) :
   induction' n with n IH
   · simp only [Nat.zero_eq, Nat.zero_add, Finset.sum_singleton, Finset.range_one]
     rfl
-  · erw [Finset.sum_range_succ, Nat.succ_eq_add_one, IH, eapproxDiff, coe_map, Function.comp_apply,
+  · erw [Finset.sum_range_succ, IH, eapproxDiff, coe_map, Function.comp_apply,
       coe_sub, Pi.sub_apply, ENNReal.coe_toNNReal,
       add_tsub_cancel_of_le (monotone_eapprox f (Nat.le_succ _) _)]
     apply (lt_of_le_of_lt _ (eapprox_lt_top f (n + 1) a)).ne
@@ -1218,7 +1217,7 @@ protected theorem pair {g : α →ₛ γ} (hf : f.FinMeasSupp μ) (hg : g.FinMea
     (pair f g).FinMeasSupp μ :=
   calc
     μ (support <| pair f g) = μ (support f ∪ support g) := congr_arg μ <| support_prod_mk f g
-    _ ≤ μ (support f) + μ (support g) := (measure_union_le _ _)
+    _ ≤ μ (support f) + μ (support g) := measure_union_le _ _
     _ < _ := add_lt_top.2 ⟨hf, hg⟩
 #align measure_theory.simple_func.fin_meas_supp.pair MeasureTheory.SimpleFunc.FinMeasSupp.pair
 

@@ -63,9 +63,7 @@ ordered map, ordered set, data structure
 
 -/
 
-set_option autoImplicit true
-
-
+universe u
 
 /- ./././Mathport/Syntax/Translate/Command.lean:355:30: infer kinds are unsupported in Lean 4:
   nil {} -/
@@ -137,9 +135,8 @@ def size : Ordnode α → ℕ
   | node sz _ _ _ => sz
 #align ordnode.size Ordnode.size
 
--- Adaptation note:
--- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
--- See https://github.com/leanprover-community/mathlib4/issues/11647
+-- Porting note(#11647): during the port we marked these lemmas with `@[eqns]`
+-- to emulate the old Lean 3 behaviour.
 
 @[simp] theorem size_nil : size (nil : Ordnode α) = 0 :=
   rfl
