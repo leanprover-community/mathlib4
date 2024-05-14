@@ -264,12 +264,8 @@ theorem mem_coeffs_iff {p : R[X]} {c : R} : c ∈ p.coeffs ↔ ∃ n ∈ p.suppo
 
 theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
   classical
-  simp only [coeffs]
-  rw [Finset.image_subset_iff]
-  simp only [mem_support_iff, ne_eq, mem_singleton, ← C_1, coeff_C]
-  intro n hn
-  simp only [exists_prop, ite_eq_right_iff, not_forall] at hn
-  simp [hn]
+    simp_rw [coeffs, Finset.image_subset_iff]
+    simp_all [coeff_one]
 #align polynomial.frange_one Polynomial.coeffs_one
 
 theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
