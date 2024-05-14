@@ -780,12 +780,12 @@ theorem eq_iff_eq_on_prime_powers [CommMonoidWithZero R] (f : ArithmeticFunction
   exact Finset.prod_congr rfl fun p hp ↦ h p _ (Nat.prime_of_mem_primeFactors hp)
 #align nat.arithmetic_function.is_multiplicative.eq_iff_eq_on_prime_powers ArithmeticFunction.IsMultiplicative.eq_iff_eq_on_prime_powers
 
-unseal Nat.factors in
 @[arith_mult]
 theorem prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) :
     IsMultiplicative (prodPrimeFactors f) := by
   rw [iff_ne_zero]
-  refine ⟨prodPrimeFactors_apply one_ne_zero, ?_⟩
+  simp only [ne_eq, one_ne_zero, not_false_eq_true, prodPrimeFactors_apply, primeFactors_one,
+    prod_empty, true_and]
   intro x y hx hy hxy
   have hxy₀ : x * y ≠ 0 := mul_ne_zero hx hy
   rw [prodPrimeFactors_apply hxy₀, prodPrimeFactors_apply hx, prodPrimeFactors_apply hy,
@@ -958,10 +958,16 @@ theorem cardFactors_apply {n : ℕ} : Ω n = n.factors.length :=
   rfl
 #align nat.arithmetic_function.card_factors_apply ArithmeticFunction.cardFactors_apply
 
+-- It's unclear to me that this needs to be a `dsimp` lemma.
+-- If that's not the case, we can avoid the `unseal` by changing the proof to
+-- `by simp`.
 unseal Nat.factors in
 @[simp, nolint simpNF] -- this is a `dsimp` lemma
-lemma cardFactors_zero : Ω 0 = 0 := rfl
+lemma cardFactors_zero : Ω 0 = 0 := by rfl
 
+-- It's unclear to me that this needs to be a `dsimp` lemma.
+-- If that's not the case, we can avoid the `unseal` by changing the proof to
+-- `by simp [cardFactors_apply]`.
 unseal Nat.factors in
 @[simp] theorem cardFactors_one : Ω 1 = 0 := rfl
 #align nat.arithmetic_function.card_factors_one ArithmeticFunction.cardFactors_one

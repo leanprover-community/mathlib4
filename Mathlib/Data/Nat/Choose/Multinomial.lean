@@ -99,7 +99,6 @@ result a binomial coefficient. We use `binomial` in the names of lemmas that
 involves `Nat.multinomial {a, b}`.
 -/
 
-
 theorem binomial_eq [DecidableEq α] (h : a ≠ b) :
     multinomial {a, b} f = (f a + f b)! / ((f a)! * (f b)!) := by
   simp [multinomial, Finset.sum_pair h, Finset.prod_pair h]
@@ -213,9 +212,9 @@ theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     · rw [not_ne_iff.1 h, Function.update_same]
 #align multiset.multinomial_filter_ne Multiset.multinomial_filter_ne
 
-unseal Nat.div in
 @[simp]
-theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := rfl
+theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := by
+  simp [multinomial, Finsupp.multinomial]
 
 end Multiset
 
@@ -225,7 +224,6 @@ namespace Finset
 
 variable {α : Type*} [DecidableEq α] (s : Finset α) {R : Type*}
 
-unseal Nat.div in
 /-- The multinomial theorem
 
   Proof is by induction on the number of summands.
@@ -250,6 +248,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
         exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
       convert @Nat.cast_one R _
+      simp
     · rw [_root_.pow_succ, mul_zero]
       -- Porting note: Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
