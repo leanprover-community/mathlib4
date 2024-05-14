@@ -433,8 +433,7 @@ instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹_›
 
 /-- The total space of the fiber bundle, as a convenience function for dot notation.
 It is by definition equal to `Bundle.TotalSpace F Z.Fiber`. -/
-@[reducible]
-def TotalSpace := Bundle.TotalSpace F Z.Fiber
+abbrev TotalSpace := Bundle.TotalSpace F Z.Fiber
 #align fiber_bundle_core.total_space FiberBundleCore.TotalSpace
 
 /-- The projection from the total space of a fiber bundle core, on its base. -/

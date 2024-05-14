@@ -951,7 +951,7 @@ numbers are represented.
 -/
 unsafe instance instRepr : Repr ℂ where
   reprPrec f p :=
-    (if p > 65 then (Std.Format.bracket "(" . ")") else (·)) <|
+    (if p > 65 then (Std.Format.bracket "(" · ")") else (·)) <|
       reprPrec f.re 65 ++ " + " ++ reprPrec f.im 70 ++ "*I"
 
 end Complex

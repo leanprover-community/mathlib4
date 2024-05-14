@@ -217,7 +217,7 @@ lemma Set.Finite.isCompact_exterior (hs : s.Finite) : IsCompact (exterior s) := 
   refine ⟨hs.toFinset.attach.image fun a ↦
     g a.1 <| subset_exterior <| (Finite.mem_toFinset _).1 a.2,
     (isOpen_iUnion fun i ↦ isOpen_iUnion ?_).exterior_subset.2 ?_⟩
-  exact fun _ ↦ hf _
+  · exact fun _ ↦ hf _
   refine fun a ha ↦ mem_iUnion₂.2 ⟨_, ?_, hg _ <| subset_exterior ha⟩
   simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists, Finite.mem_toFinset]
   exact ⟨a, ha, rfl⟩

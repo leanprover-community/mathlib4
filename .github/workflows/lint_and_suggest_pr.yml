@@ -27,8 +27,6 @@ jobs:
           ./scripts/lint-style.sh --fix
 
       - name: suggester / lint-style
-        # temporary fix for https://github.com/reviewdog/reviewdog/issues/1696#issue-2206596164
-        if: ${{ github.event.pull_request.changed_files < 301 }}
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: lint-style
@@ -44,8 +42,6 @@ jobs:
           ./scripts/lint-bib.sh
 
       - name: suggester / lint-bib
-        # temporary fix for https://github.com/reviewdog/reviewdog/issues/1696#issue-2206596164
-        if: ${{ github.event.pull_request.changed_files < 301 }}
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: lint-bib
@@ -78,8 +74,6 @@ jobs:
           git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
 
       - name: suggester / import list
-        # temporary fix for https://github.com/reviewdog/reviewdog/issues/1696#issue-2206596164
-        if: ${{ github.event.pull_request.changed_files < 301 }}
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: imports

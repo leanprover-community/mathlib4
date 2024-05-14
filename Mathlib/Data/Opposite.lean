@@ -33,10 +33,15 @@ variable (α : Sort u)
 
 -/
 structure Opposite :=
+  /-- The canonical map `α → αᵒᵖ`. -/
+  op ::
   /-- The canonical map `αᵒᵖ → α`. -/
   unop : α
 #align opposite Opposite
 #align opposite.unop Opposite.unop
+#align opposite.op Opposite.op
+
+-- Porting note: pp_nodot has not been implemented for Opposite.op
 
 @[inherit_doc]
 notation:max -- Use a high right binding power (like that of postfix ⁻¹) so that, for example,
@@ -46,12 +51,6 @@ notation:max -- Use a high right binding power (like that of postfix ⁻¹) so t
 namespace Opposite
 
 variable {α}
-
-/-- The canonical map `α → αᵒᵖ`. -/
--- Porting note: pp_nodot has not been implemented.
---@[pp_nodot]
-def op (x : α) : αᵒᵖ := ⟨x⟩
-#align opposite.op Opposite.op
 
 theorem op_injective : Function.Injective (op : α → αᵒᵖ) := fun _ _ => congr_arg Opposite.unop
 #align opposite.op_injective Opposite.op_injective
@@ -64,14 +63,12 @@ theorem op_unop (x : αᵒᵖ) : op (unop x) = x :=
   rfl
 #align opposite.op_unop Opposite.op_unop
 
-@[simp]
 theorem unop_op (x : α) : unop (op x) = x :=
   rfl
 #align opposite.unop_op Opposite.unop_op
 
 -- We could prove these by `Iff.rfl`, but that would make these eligible for `dsimp`. That would be
 -- a bad idea because `Opposite` is irreducible.
-@[simp]
 theorem op_inj_iff (x y : α) : op x = op y ↔ x = y :=
   op_injective.eq_iff
 #align opposite.op_inj_iff Opposite.op_inj_iff

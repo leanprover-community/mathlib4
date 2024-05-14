@@ -32,6 +32,8 @@ case the unit and the counit would switch to each other.
 
 -/
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 set_option linter.uppercaseLean3 false
 
 noncomputable section
@@ -478,31 +480,31 @@ instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
 
 /-- Spec is a full functor. -/
 instance : Spec.toLocallyRingedSpace.Full  :=
-  R_full_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
+  ΓSpec.locallyRingedSpaceAdjunction.R_full_of_counit_isIso
 
 instance Spec.full : Scheme.Spec.Full  :=
-  R_full_of_counit_isIso ΓSpec.adjunction
+  ΓSpec.adjunction.R_full_of_counit_isIso
 #align algebraic_geometry.Spec.full AlgebraicGeometry.Spec.full
 
 /-- Spec is a faithful functor. -/
 instance : Spec.toLocallyRingedSpace.Faithful :=
-  R_faithful_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
+  ΓSpec.locallyRingedSpaceAdjunction.R_faithful_of_counit_isIso
 
 instance Spec.faithful : Scheme.Spec.Faithful :=
-  R_faithful_of_counit_isIso ΓSpec.adjunction
+  ΓSpec.adjunction.R_faithful_of_counit_isIso
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
 
-instance : IsRightAdjoint Spec.toLocallyRingedSpace :=
-  ⟨_, ΓSpec.locallyRingedSpaceAdjunction⟩
+instance : Spec.toLocallyRingedSpace.IsRightAdjoint  :=
+  (ΓSpec.locallyRingedSpaceAdjunction).isRightAdjoint
 
-instance : IsRightAdjoint Scheme.Spec :=
-  ⟨_, ΓSpec.adjunction⟩
+instance : Scheme.Spec.IsRightAdjoint  :=
+  (ΓSpec.adjunction).isRightAdjoint
 
-instance : Reflective Spec.toLocallyRingedSpace :=
-  ⟨⟩
+instance : Reflective Spec.toLocallyRingedSpace where
+  adj := ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.reflective : Reflective Scheme.Spec :=
-  ⟨⟩
+instance Spec.reflective : Reflective Scheme.Spec where
+  adj := ΓSpec.adjunction
 #align algebraic_geometry.Spec.reflective AlgebraicGeometry.Spec.reflective
 
 end AlgebraicGeometry
