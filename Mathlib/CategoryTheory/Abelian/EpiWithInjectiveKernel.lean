@@ -36,7 +36,7 @@ def epiWithInjectiveKernel : MorphismProperty C :=
 the short complex `I ⟶ X ⟶ Y` has a splitting. -/
 lemma epiWithInjectiveKernel_iff {X Y : C} (g : X ⟶ Y) :
     epiWithInjectiveKernel g ↔ ∃ (I : C) (_ : Injective I) (f : I ⟶ X) (w : f ≫ g = 0),
-      Nonempty (ShortComplex.mk _ _ w).Splitting := by
+      Nonempty (ShortComplex.mk f g w).Splitting := by
   constructor
   · rintro ⟨_, _⟩
     let S := ShortComplex.mk (kernel.ι g) g (by simp)
