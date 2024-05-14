@@ -151,8 +151,8 @@ variable [Bialgebra R X] [Bialgebra R Y] [Bialgebra R Z]
 `BialgEquiv`. -/
 @[simps]
 def toIso (e : X ≃ₐc[R] Y) : BialgebraCat.of R X ≅ BialgebraCat.of R Y where
-  hom := BialgHom.ofHom e
-  inv := BialgHom.ofHom e.symm
+  hom := BialgebraCat.ofHom e
+  inv := BialgebraCat.ofHom e.symm
   hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
 
