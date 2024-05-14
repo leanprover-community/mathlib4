@@ -141,10 +141,8 @@ lemma div2_testBit (n : ℕ) (i : ℕ) : n.div2.testBit i = n.testBit (i + 1) :=
 lemma bitwise_div2 (f : Bool → Bool → Bool) (h : f false false = false) (n : ℕ) (m : ℕ) :
     (bitwise f n m).div2 = bitwise f n.div2 m.div2 := by
   apply Nat.eq_of_testBit_eq
-  intro i
-  rw [div2_testBit, Nat.testBit_bitwise, Nat.testBit_bitwise, div2_testBit, div2_testBit]
-  exact h
-  exact h
+  intro
+  simp only [div2_testBit, testBit_bitwise, h]
 
 @[simp]
 lemma xor_div2 (n : ℕ) (m : ℕ) : (n ^^^ m).div2 = n.div2 ^^^ m.div2 := by

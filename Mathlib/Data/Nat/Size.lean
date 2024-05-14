@@ -164,28 +164,28 @@ lemma size_eq_iff_le_lt (n : ℕ) (i : ℕ) : n.size = i + 1 ↔ 2 ^ i ≤ n ∧
   constructor
   · intro h
     constructor
-    rw [← Nat.lt_size, h]
+    rw [← lt_size, h]
     apply lt_succ_self
-    exact h ▸ Nat.lt_size_self n
+    exact h ▸ lt_size_self n
   · rintro ⟨h1, h2⟩
     apply le_antisymm
-    exact Nat.size_le.mpr h2
-    exact Nat.succ_le_iff.mp (Nat.lt_size.mpr h1)
+    exact size_le.mpr h2
+    exact succ_le_iff.mp (lt_size.mpr h1)
 
 lemma size_eq_iff_testBit (n : ℕ) (i : ℕ) : n.size = i + 1 ↔
     n.testBit i ∧ ∀ j > i, n.testBit j = false := by
   rw [size_eq_iff_le_lt]
   constructor
   · rintro ⟨lb, ub⟩
-    have ⟨j, ⟨h1, h2⟩⟩ := Nat.ge_two_pow_implies_high_bit_true lb
-    have t2 (j : ℕ) (hj : j > i) : n.testBit j = false :=
-      Nat.testBit_lt_two_pow (ub.trans_le (Nat.pow_le_pow_right (by decide) hj))
-    convert And.intro h2 t2
+    have ⟨j, _, h⟩ := ge_two_pow_implies_high_bit_true lb
+    have t (j : ℕ) (hj : j > i) : n.testBit j = false :=
+      testBit_lt_two_pow (ub.trans_le (Nat.pow_le_pow_right (by decide) hj))
+    convert And.intro h t
     suffices j ≤ i by omega
     by_contra nh
     rw [← Bool.true_eq_false]
-    exact h2 ▸ t2 j (not_le.mp nh)
+    exact h ▸ t j (not_le.mp nh)
   · rintro ⟨h1, h2⟩
-    exact ⟨Nat.testBit_implies_ge h1, Nat.lt_pow_two_of_testBit n h2⟩
+    exact ⟨testBit_implies_ge h1, lt_pow_two_of_testBit n h2⟩
 
 end Nat
