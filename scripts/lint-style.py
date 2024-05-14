@@ -43,6 +43,7 @@ ERR_LIN = 3 # line length
 ERR_OPT = 6 # set_option
 ERR_AUT = 7 # malformed authors list
 ERR_TAC = 9 # imported Mathlib.Tactic
+# fairly cheap to do, copy lake
 ERR_IBY = 11 # isolated by
 ERR_DOT = 12 # isolated or low focusing dot
 ERR_SEM = 13 # the substring " ;"
