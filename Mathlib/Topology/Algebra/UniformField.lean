@@ -3,9 +3,9 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.UniformRing
+import Mathlib.Algebra.Field.Subfield
 import Mathlib.Topology.Algebra.Field
-import Mathlib.FieldTheory.Subfield
+import Mathlib.Topology.Algebra.UniformRing
 
 #align_import topology.algebra.uniform_field from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -158,6 +158,7 @@ instance instField : Field (hat K) where
   mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
   inv_zero := by simp only [Inv.inv, ite_true]
   -- TODO: use a better defeq
+  nnqsmul := _
   qsmul := _
 #align uniform_space.completion.field UniformSpace.Completion.instField
 

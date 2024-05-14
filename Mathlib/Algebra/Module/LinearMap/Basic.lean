@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Star.Basic
@@ -389,7 +390,7 @@ variable (M M₂)
 /-- A typeclass for `SMul` structures which can be moved through a `LinearMap`.
 This typeclass is generated automatically from an `IsScalarTower` instance, but exists so that
 we can also add an instance for `AddCommGroup.intModule`, allowing `z •` to be moved even if
-`R` does not support negation.
+`S` does not support negation.
 -/
 class CompatibleSMul (R S : Type*) [Semiring S] [SMul R M] [Module S M] [SMul R M₂]
   [Module S M₂] : Prop where
@@ -677,7 +678,7 @@ def toSemilinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M�
 
 instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
 
-instance : CoeTC (M →ₑ+[σ.toMonoidHom] M₂) (M →ₛₗ[σ] M₂) :=
+instance instCoeTCSemilinearMap : CoeTC (M →ₑ+[σ.toMonoidHom] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toSemilinearMap⟩
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/

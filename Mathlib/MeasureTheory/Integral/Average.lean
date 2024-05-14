@@ -695,7 +695,7 @@ theorem measure_setLaverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rw [← toReal_laverage hg.aemeasurable, toReal_le_toReal (setLaverage_lt_top hint).ne hx] at hfx
-  exact hfx.trans (hgf _)
+  · exact hfx.trans (hgf _)
   · simp_rw [ae_iff, not_ne_iff]
     exact measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint
 #align measure_theory.measure_set_laverage_le_pos MeasureTheory.measure_setLaverage_le_pos

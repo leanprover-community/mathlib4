@@ -64,7 +64,7 @@ namespace AlgebraicGeometry
 
 universe v v₁ v₂ u
 
-variable {C : Type*} [Category C]
+variable {C : Type u} [Category.{v} C]
 
 /-- An open immersion of PresheafedSpaces is an open embedding `f : X ⟶ U ⊆ Y` of the underlying
 spaces, such that the sheaf map `Y(V) ⟶ f _* X(V)` is an iso for each `V ⊆ U`.
@@ -295,7 +295,6 @@ instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
       congr
       apply Subsingleton.helim
       rw [this]
-      rfl
     · infer_instance
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.of_restrict AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.ofRestrict
 
@@ -373,7 +372,10 @@ def pullbackConeOfLeftFst :
         intro U V i
         induction U using Opposite.rec'
         induction V using Opposite.rec'
-        simp only [Quiver.Hom.unop_op, Category.assoc, Functor.op_map, inv_naturality_assoc]
+        simp only [Quiver.Hom.unop_op, Category.assoc, Functor.op_map]
+        -- Note: this doesn't fire in `simp` because of reduction of the term via structure eta
+        -- before discrimination tree key generation
+        rw [inv_naturality_assoc]
         -- Porting note: the following lemmas are not picked up by `simp`
         -- See https://github.com/leanprover-community/mathlib4/issues/5026
         erw [g.c.naturality_assoc, TopCat.Presheaf.pushforwardObj_map, ← Y.presheaf.map_comp,

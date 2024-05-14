@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
@@ -296,7 +295,7 @@ theorem exists_rat_btwn {x y : α} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : α)
   rw [Int.cast_add, Int.cast_one]
   refine' lt_of_le_of_lt (add_le_add_right ((zh _).1 le_rfl) _) _
   rwa [← lt_sub_iff_add_lt', ← sub_mul, ← div_lt_iff' (sub_pos.2 h), one_div]
-  · rw [Rat.coe_int_den, Nat.cast_one]
+  · rw [Rat.den_intCast, Nat.cast_one]
     exact one_ne_zero
   · intro H
     rw [Rat.num_natCast, Int.cast_natCast, Nat.cast_eq_zero] at H

@@ -266,10 +266,12 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
   · obtain ⟨A, hA⟩ := hf.bddAbove
     refine' memℓp_infty ⟨‖c‖ * A, _⟩
     rintro a ⟨i, rfl⟩
+    dsimp only [Pi.smul_apply]
     refine' (norm_smul_le _ _).trans _
     gcongr
     exact hA ⟨i, rfl⟩
   · apply memℓp_gen
+    dsimp only [Pi.smul_apply]
     have := (hf.summable hp).mul_left (↑(‖c‖₊ ^ p.toReal) : ℝ)
     simp_rw [← coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul, NNReal.summable_coe,
       ← NNReal.mul_rpow] at this ⊢

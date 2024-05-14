@@ -167,8 +167,7 @@ theorem mkSpanSingleton'_apply_self (x : E) (y : F) (H : ∀ c : R, c • x = 0 
 
 /-- The unique `LinearPMap` on `span R {x}` that sends a non-zero vector `x` to `y`.
 This version works for modules over division rings. -/
-@[reducible]
-noncomputable def mkSpanSingleton {K E F : Type*} [DivisionRing K] [AddCommGroup E] [Module K E]
+noncomputable abbrev mkSpanSingleton {K E F : Type*} [DivisionRing K] [AddCommGroup E] [Module K E]
     [AddCommGroup F] [Module K F] (x : E) (y : F) (hx : x ≠ 0) : E →ₗ.[K] F :=
   mkSpanSingleton' x y fun c hc =>
     (smul_eq_zero.1 hc).elim (fun hc => by rw [hc, zero_smul]) fun hx' => absurd hx' hx

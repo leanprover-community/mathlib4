@@ -6,8 +6,8 @@ Authors: Floris van Doorn
 import Lean.Elab.Tactic.Simp
 import Lean.Elab.App
 import Mathlib.Tactic.Simps.NotationClass
-import Std.Data.String.Basic
-import Std.Util.LibraryNote
+import Batteries.Data.String.Basic
+import Batteries.Util.LibraryNote
 import Mathlib.Lean.Expr.Basic
 
 /-!
@@ -82,7 +82,7 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
     simpOnlyBuiltins.foldlM (·.addConst ·) ({} : SimpTheorems)
   else
     getSimpTheorems
-  let simprocs := #[if simpOnly then {} else ← Simp.getSimprocs]
+  let simprocs := #[← if simpOnly then pure {} else Simp.getSimprocs]
   let congrTheorems ← getSimpCongrTheorems
   let ctx : Simp.Context := {
     config       := cfg
@@ -627,7 +627,10 @@ def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedP
   let nrCustomProjections := projs.toList.countP (·.isCustom)
   let env ← getEnv
   let customDeclarations := env.constants.map₂.foldl (init := #[]) fun xs nm _ =>
-    if (str ++ `Simps).isPrefixOf nm && !nm.isInternalDetail then xs.push nm else xs
+    if (str ++ `Simps).isPrefixOf nm && !nm.isInternalDetail && !isReservedName env nm then
+      xs.push nm
+    else
+      xs
   if nrCustomProjections < customDeclarations.size then
     Linter.logLintIf linter.simpsUnusedCustomDeclarations stx m!"\
       Not all of the custom declarations {customDeclarations} are used. Double check the \
@@ -894,7 +897,7 @@ def getProjectionExprs (stx : Syntax) (tgt : Expr) (rhs : Expr) (cfg : Config) :
   let rhsArgs := rhs.getAppArgs.toList.drop params.size
   let (rawUnivs, projDeclata) ← getRawProjections stx str
   return projDeclata.map fun proj ↦
-    (rhsArgs.getD (a₀ := default) proj.projNrs.head!,
+    (rhsArgs.getD (fallback := default) proj.projNrs.head!,
       { proj with
         expr := (proj.expr.instantiateLevelParams rawUnivs
           tgt.getAppFn.constLevels!).instantiateLambdasOrApps params

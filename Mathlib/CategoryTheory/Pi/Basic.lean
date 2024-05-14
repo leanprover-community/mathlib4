@@ -389,7 +389,7 @@ def pi (E : ∀ i, C i ≌ D i) : (∀ i, C i) ≌ (∀ i, D i) where
 
 instance (F : ∀ i, C i ⥤ D i) [∀ i, (F i).IsEquivalence] :
     (Functor.pi F).IsEquivalence :=
-  Functor.IsEquivalence.ofEquivalence (pi (fun i => (F i).asEquivalence))
+  (pi (fun i => (F i).asEquivalence)).isEquivalence_functor
 
 end Equivalence
 

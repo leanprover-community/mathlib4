@@ -147,8 +147,8 @@ theorem fourierIntegral_convergent_iff (he : Continuous e)
   exact this
 #align vector_fourier.fourier_integral_convergent_iff VectorFourier.fourierIntegral_convergent_iff
 
-@[deprecated] alias fourier_integral_convergent_iff :=
-  VectorFourier.fourierIntegral_convergent_iff -- 2024-03-29
+@[deprecated] -- 2024-03-29
+alias fourier_integral_convergent_iff := VectorFourier.fourierIntegral_convergent_iff
 
 variable [CompleteSpace E]
 
@@ -463,8 +463,8 @@ theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
     mul_assoc]
 #align real.fourier_integral_eq_integral_exp_smul Real.fourierIntegral_real_eq_integral_exp_smul
 
-@[deprecated] alias fourierIntegral_eq_integral_exp_smul :=
-  fourierIntegral_real_eq_integral_exp_smul -- deprecated on 2024-02-21
+@[deprecated] -- deprecated on 2024-02-21
+alias fourierIntegral_eq_integral_exp_smul := fourierIntegral_real_eq_integral_exp_smul
 
 @[simp] theorem fourierIntegral_convergent_iff {μ : Measure V} {f : V → E} (w : V) :
     Integrable (fun v : V ↦ 𝐞 (- ⟪v, w⟫) • f v) μ ↔ Integrable f μ :=

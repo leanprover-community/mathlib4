@@ -75,7 +75,9 @@ theorem inv_nonzero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
 
 theorem coe_inv_of_nonzero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     (↑J⁻¹ : Submodule R₁ K) = IsLocalization.coeSubmodule K ⊤ / (J : Submodule R₁ K) := by
-  rw [inv_nonzero]; rfl; assumption
+  rw [inv_nonzero]
+  · rfl
+  · assumption
 #align fractional_ideal.coe_inv_of_nonzero FractionalIdeal.coe_inv_of_nonzero
 
 variable {K}
@@ -588,6 +590,7 @@ noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal A�
   inv_zero := inv_zero' _
   div_eq_mul_inv := FractionalIdeal.div_eq_mul_inv
   mul_inv_cancel _ := FractionalIdeal.mul_inv_cancel
+  nnqsmul := _
 #align fractional_ideal.semifield FractionalIdeal.semifield
 
 /-- Fractional ideals have cancellative multiplication in a Dedekind domain.

@@ -109,7 +109,7 @@ lemma measure_eq_zero_of_subset_diff_everywherePosSubset
 its everywhere positive subset. -/
 lemma everywherePosSubset_ae_eq [OpensMeasurableSpace α] [InnerRegular μ] (hs : MeasurableSet s) :
     μ.everywherePosSubset s =ᵐ[μ] s := by
-  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), OuterMeasure.empty',
+  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact, ENNReal.iSup_eq_zero]
   intro k hk h'k
   exact measure_eq_zero_of_subset_diff_everywherePosSubset h'k hk
@@ -121,7 +121,7 @@ lemma everywherePosSubset_ae_eq_of_measure_ne_top
     μ.everywherePosSubset s =ᵐ[μ] s := by
   have A : μ (s \ μ.everywherePosSubset s) ≠ ∞ :=
     ((measure_mono (diff_subset _ _ )).trans_lt h's.lt_top).ne
-  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), OuterMeasure.empty',
+  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact_of_ne_top A,
     ENNReal.iSup_eq_zero]
   intro k hk h'k

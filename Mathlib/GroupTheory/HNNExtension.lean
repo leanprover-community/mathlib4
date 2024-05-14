@@ -472,10 +472,12 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     -- This used to be the end of the proof before leanprover/lean4#2644
     dsimp
     congr 1
+    · conv_lhs => erw [IsComplement.equiv_mul_left]
+      simp? says
+        simp only [toSubgroup_one, SetLike.coe_sort_coe, map_mul, Submonoid.coe_mul,
+          coe_toSubmonoid]
     conv_lhs => erw [IsComplement.equiv_mul_left]
-    simp? says
-      simp only [toSubgroup_one, SetLike.coe_sort_coe, map_mul, Submonoid.coe_mul, coe_toSubmonoid]
-    conv_lhs => erw [IsComplement.equiv_mul_left]
+    rfl
 
 noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
   MulAction.ofEndHom <| (MulAction.toEndHom (M := Equiv.Perm (NormalWord d))).comp

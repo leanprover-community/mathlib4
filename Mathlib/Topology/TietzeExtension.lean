@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.Set.Intervals.IsoIoo
+import Mathlib.Order.Interval.Set.IsoIoo
 import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.UrysohnsBounded
 
@@ -317,9 +317,9 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
   inhabit X
   -- Put `a = ⨅ x, f x` and `b = ⨆ x, f x`
   obtain ⟨a, ha⟩ : ∃ a, IsGLB (range f) a
-  exact ⟨_, isGLB_ciInf (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1⟩
+  · exact ⟨_, isGLB_ciInf (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1⟩
   obtain ⟨b, hb⟩ : ∃ b, IsLUB (range f) b
-  exact ⟨_, isLUB_ciSup (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).2⟩
+  · exact ⟨_, isLUB_ciSup (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).2⟩
   -- Then `f x ∈ [a, b]` for all `x`
   have hmem : ∀ x, f x ∈ Icc a b := fun x => ⟨ha.1 ⟨x, rfl⟩, hb.1 ⟨x, rfl⟩⟩
   -- Rule out the trivial case `a = b`

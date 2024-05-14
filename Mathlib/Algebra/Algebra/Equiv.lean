@@ -232,7 +232,7 @@ nonrec theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
 
 theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
     e (f.sum g) = f.sum fun i b => e (g i b) :=
-  e.map_sum _ _
+  _root_.map_sum e _ _
 #align alg_equiv.map_finsupp_sum AlgEquiv.map_finsupp_sum
 
 -- Porting note: Added [coe] attribute

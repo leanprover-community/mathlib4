@@ -67,9 +67,9 @@ class RepresentablyFlat (F : C ⥤ D) : Prop where
 
 attribute [instance] RepresentablyFlat.cofiltered
 
-instance RepresentablyFlat.of_isRightAdjoint (F : C ⥤ D) [IsRightAdjoint F] :
+instance RepresentablyFlat.of_isRightAdjoint (F : C ⥤ D) [F.IsRightAdjoint] :
     RepresentablyFlat F where
-  cofiltered _ := IsCofiltered.of_isInitial _ (mkInitialOfLeftAdjoint _ (.ofRightAdjoint F) _)
+  cofiltered _ := IsCofiltered.of_isInitial _ (mkInitialOfLeftAdjoint _ (.ofIsRightAdjoint F) _)
 
 theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 #align category_theory.representably_flat.id CategoryTheory.RepresentablyFlat.id

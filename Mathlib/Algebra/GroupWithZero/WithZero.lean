@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
+import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Option.Basic
@@ -14,10 +15,15 @@ import Mathlib.Data.Option.NAry
 # Adjoining a zero to a group
 
 This file proves that one can adjoin a new zero element to a group and get a group with zero.
+
+## Main definitions
+
+* `WithZero.map'`: the `MonoidWithZero` homomorphism `WithZero α →* WithZero β` induced by
+  a monoid homomorphism `f : α →* β`.
 -/
 
 namespace WithZero
-variable {α : Type*}
+variable {α β γ : Type*}
 
 section One
 variable [One α]
@@ -41,6 +47,10 @@ instance mulZeroClass : MulZeroClass (WithZero α) where
 @[simp, norm_cast] lemma coe_mul (a b : α) : (↑(a * b) : WithZero α) = a * b := rfl
 #align with_zero.coe_mul WithZero.coe_mul
 
+lemma unzero_mul {x y : WithZero α} (hxy : x * y ≠ 0) :
+    unzero hxy = unzero (left_ne_zero_of_mul hxy) * unzero (right_ne_zero_of_mul hxy) := by
+  simp only [← coe_inj, coe_mul, coe_unzero]
+
 instance noZeroDivisors : NoZeroDivisors (WithZero α) := ⟨Option.map₂_eq_none_iff.1⟩
 
 end Mul
@@ -53,10 +63,81 @@ instance commSemigroup [CommSemigroup α] : CommSemigroup (WithZero α) where
   __ := semigroupWithZero
   mul_comm _ _ := Option.map₂_comm mul_comm
 
+section MulOneClass
+variable [MulOneClass α]
+
 instance mulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) where
   __ := mulZeroClass
   one_mul := Option.map₂_left_identity one_mul
   mul_one := Option.map₂_right_identity mul_one
+
+/-- Coercion as a monoid hom. -/
+@[simps apply]
+def coeMonoidHom : α →* WithZero α where
+  toFun        := (↑)
+  map_one'     := rfl
+  map_mul' _ _ := rfl
+
+section lift
+variable [MulZeroOneClass β]
+
+-- See note [partially-applied ext lemmas]
+@[ext high]
+theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
+    (h : f.toMonoidHom.comp coeMonoidHom = g.toMonoidHom.comp coeMonoidHom) :
+    f = g :=
+  DFunLike.ext _ _ fun
+    | 0 => (map_zero f).trans (map_zero g).symm
+    | (g : α) => DFunLike.congr_fun h g
+
+/-- The (multiplicative) universal property of `WithZero`. -/
+@[simps! symm_apply_apply]
+noncomputable nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
+  toFun f :=
+    { toFun := fun
+        | 0 => 0
+        | (a : α) => f a
+      map_zero' := rfl
+      map_one' := map_one f
+      map_mul' := fun
+        | 0, _ => (zero_mul _).symm
+        | (_ : α), 0 => (mul_zero _).symm
+        | (_ : α), (_ : α) => map_mul f _ _ }
+  invFun F := F.toMonoidHom.comp coeMonoidHom
+  left_inv _ := rfl
+  right_inv _ := monoidWithZeroHom_ext rfl
+
+lemma lift'_zero (f : α →* β) : lift' f (0 : WithZero α) = 0 := rfl
+
+@[simp] lemma lift'_coe (f : α →* β) (x : α) : lift' f (x : WithZero α) = f x := rfl
+
+lemma lift'_unique (f : WithZero α →*₀ β) : f = lift' (f.toMonoidHom.comp coeMonoidHom) :=
+  (lift'.apply_symm_apply f).symm
+
+end lift
+
+variable [MulOneClass β] [MulOneClass γ]
+
+/-- The `MonoidWithZero` homomorphism `WithZero α →* WithZero β` induced by a monoid homomorphism
+  `f : α →* β`. -/
+noncomputable def map' (f : α →* β) : WithZero α →*₀ WithZero β := lift' (coeMonoidHom.comp f)
+
+lemma map'_zero (f : α →* β) : map' f 0 = 0 := rfl
+
+@[simp] lemma map'_coe (f : α →* β) (x : α) : map' f (x : WithZero α) = f x := rfl
+
+@[simp]
+lemma map'_id : map' (MonoidHom.id β) = MonoidHom.id (WithZero β) := by
+  ext x; induction x using WithOne.cases_on <;> rfl
+
+lemma map'_map'  (f : α →* β) (g : β →* γ) (x) : map' g (map' f x) = map' (g.comp f) x := by
+  induction x using WithOne.cases_on <;> rfl
+
+@[simp]
+lemma map'_comp (f : α →* β) (g : β →* γ) : map' (g.comp f) = (map' g).comp (map' f) :=
+  MonoidWithZeroHom.ext fun x => (map'_map' f g x).symm
+
+end MulOneClass
 
 section Pow
 variable [One α] [Pow α ℕ]
@@ -174,7 +255,7 @@ instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZe
 section Group
 variable [Group α]
 
-/-- If `G` is a group then `WithZero G` is a group with zero. -/
+/-- If `α` is a group then `WithZero α` is a group with zero. -/
 instance groupWithZero : GroupWithZero (WithZero α) where
   __ := monoidWithZero
   __ := divInvMonoid

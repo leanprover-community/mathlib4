@@ -835,8 +835,8 @@ theorem linearIndependent_iUnion_finite {η : Type*} {ιs : η → Type*} {f : �
   apply LinearIndependent.of_subtype_range
   · rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ hxy
     by_cases h_cases : x₁ = y₁
-    subst h_cases
-    · apply Sigma.eq
+    · subst h_cases
+      apply Sigma.eq
       rw [LinearIndependent.injective (hindep _) hxy]
       rfl
     · have h0 : f x₁ x₂ = 0 := by
@@ -866,7 +866,7 @@ def LinearIndependent.totalEquiv (hv : LinearIndependent R v) :
   apply LinearEquiv.ofBijective (LinearMap.codRestrict (span R (range v)) (Finsupp.total ι M R v) _)
   constructor
   · rw [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
-    apply hv
+    · apply hv
     · intro l
       rw [← Finsupp.range_total]
       rw [LinearMap.mem_range]

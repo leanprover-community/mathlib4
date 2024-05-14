@@ -104,8 +104,7 @@ variable (R : Type uR) (A : Type uA) (M : Type uM)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The dual space of an R-module M is the R-module of linear maps `M → R`. -/
-@[reducible]
-def Dual :=
+abbrev Dual :=
   M →ₗ[R] R
 #align module.dual Module.Dual
 

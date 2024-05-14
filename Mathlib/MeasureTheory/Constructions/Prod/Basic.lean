@@ -156,7 +156,7 @@ theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   refine' induction_on_inter (C := fun s => Measurable fun x => ν (Prod.mk x ⁻¹' s))
     generateFrom_prod.symm isPiSystem_prod _ _ _ _ hs
-  · simp [measurable_zero, const_def]
+  · simp
   · rintro _ ⟨s, hs, t, _, rfl⟩
     simp only [mk_preimage_prod_right_eq_if, measure_if]
     exact measurable_const.indicator hs

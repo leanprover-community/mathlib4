@@ -69,8 +69,7 @@ open scoped Classical
 open Nat multiplicity padicNorm CauSeq CauSeq.Completion Metric
 
 /-- The type of Cauchy sequences of rationals with respect to the `p`-adic norm. -/
-@[reducible]
-def PadicSeq (p : ℕ) :=
+abbrev PadicSeq (p : ℕ) :=
   CauSeq _ (padicNorm p)
 #align padic_seq PadicSeq
 

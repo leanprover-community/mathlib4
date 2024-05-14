@@ -230,8 +230,7 @@ theorem even_mul_pred_self : ∀ n : ℕ, Even (n * (n - 1))
   | (n + 1) => mul_comm (n + 1 - 1) (n + 1) ▸ even_mul_succ_self n
 #align nat.even_mul_self_pred Nat.even_mul_pred_self
 
-@[deprecated] -- 2024-01-20
-alias even_mul_self_pred := even_mul_pred_self
+@[deprecated] alias even_mul_self_pred := even_mul_pred_self -- 2024-01-20
 
 theorem two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h =>
   Nat.mul_div_cancel_left' (even_iff_two_dvd.mp h)

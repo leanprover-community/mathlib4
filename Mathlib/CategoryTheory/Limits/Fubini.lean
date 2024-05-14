@@ -482,8 +482,8 @@ noncomputable def colimitIsoColimitCurryCompColim : colimit G ≅ colimit (curry
   have i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unitIso.app G
   haveI : Limits.HasColimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasColimitOfIso i.symm
   trans colimit (uncurry.obj ((@curry J _ K _ C _).obj G))
-  apply HasColimit.isoOfNatIso i
-  exact colimitUncurryIsoColimitCompColim ((@curry J _ K _ C _).obj G)
+  · apply HasColimit.isoOfNatIso i
+  · exact colimitUncurryIsoColimitCompColim ((@curry J _ K _ C _).obj G)
 
 @[simp, reassoc]
 theorem colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :

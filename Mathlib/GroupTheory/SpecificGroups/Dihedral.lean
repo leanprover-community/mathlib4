@@ -63,17 +63,17 @@ instance : Group (DihedralGroup n) where
   one := one
   one_mul := by
     rintro (a | a)
-    exact congr_arg r (zero_add a)
-    exact congr_arg sr (sub_zero a)
+    · exact congr_arg r (zero_add a)
+    · exact congr_arg sr (sub_zero a)
   mul_one := by
     rintro (a | a)
-    exact congr_arg r (add_zero a)
-    exact congr_arg sr (add_zero a)
+    · exact congr_arg r (add_zero a)
+    · exact congr_arg sr (add_zero a)
   inv := inv
   mul_left_inv := by
     rintro (a | a)
-    exact congr_arg r (neg_add_self a)
-    exact congr_arg r (sub_self a)
+    · exact congr_arg r (neg_add_self a)
+    · exact congr_arg r (sub_self a)
 
 @[simp]
 theorem r_mul_r (i j : ZMod n) : r i * r j = r (i + j) :=
