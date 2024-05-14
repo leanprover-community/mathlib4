@@ -31,13 +31,9 @@ identical no matter the choice of field of fractions for `R`.
 
 
 variable {R K L : Type*} [CommRing R]
-
 variable [Field K] [Field L] [DecidableEq L]
-
 variable [Algebra R K] [IsFractionRing R K]
-
 variable [Algebra K L] [FiniteDimensional K L]
-
 variable [Algebra R L] [IsScalarTower R K L]
 
 open scoped nonZeroDivisors
@@ -90,7 +86,6 @@ instance PrincipalIdeals.normal : (toPrincipalIdeal R K).range.Normal :=
 end
 
 variable (R)
-
 variable [IsDomain R]
 
 /-- The ideal class group of `R` is the group of invertible fractional ideals
@@ -141,12 +136,12 @@ theorem ClassGroup.mk_eq_mk_of_coe_ideal {I J : (FractionalIdeal R⁰ <| Fractio
     exact ⟨_, _, sec_fst_ne_zero (R := R) le_rfl x.ne_zero,
       sec_snd_ne_zero (R := R) le_rfl (x : FractionRing R), hJ⟩
   · rintro ⟨x, y, hx, hy, h⟩
-    constructor
+    have : IsUnit (mk' (FractionRing R) x ⟨y, mem_nonZeroDivisors_of_ne_zero hy⟩) := by
+      simpa only [isUnit_iff_ne_zero, ne_eq, mk'_eq_zero_iff_eq_zero] using hx
+    refine ⟨this.unit, ?_⟩
     rw [mul_comm, ← Units.eq_iff, Units.val_mul, coe_toPrincipalIdeal]
     convert
       (mk'_mul_coeIdeal_eq_coeIdeal (FractionRing R) <| mem_nonZeroDivisors_of_ne_zero hy).2 h
-    apply (Ne.isUnit _).unit_spec
-    rwa [Ne, mk'_eq_zero_iff_eq_zero]
 #align class_group.mk_eq_mk_of_coe_ideal ClassGroup.mk_eq_mk_of_coe_ideal
 
 theorem ClassGroup.mk_eq_one_of_coe_ideal {I : (FractionalIdeal R⁰ <| FractionRing R)ˣ}

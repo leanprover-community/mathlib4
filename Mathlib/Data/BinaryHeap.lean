@@ -3,7 +3,7 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Std.Data.Fin.Basic
+import Batteries.Data.Fin.Basic
 
 set_option autoImplicit true
 
@@ -36,7 +36,6 @@ def heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
     let ⟨a₂, h₂⟩ := heapifyDown lt a' j'
     ⟨a₂, h₂.trans (a.size_swap i j)⟩
 termination_by a.size - i
-decreasing_by assumption
 
 @[simp] theorem size_heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
   (heapifyDown lt a i).1.size = a.size := (heapifyDown lt a i).2
@@ -69,8 +68,6 @@ if i0 : i.1 = 0 then ⟨a, rfl⟩ else
     let ⟨a₂, h₂⟩ := heapifyUp lt a' ⟨j.1, by rw [a.size_swap i j]; exact j.2⟩
     ⟨a₂, h₂.trans (a.size_swap i j)⟩
   else ⟨a, rfl⟩
-termination_by i.1
-decreasing_by assumption
 
 @[simp] theorem size_heapifyUp (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
   (heapifyUp lt a i).1.size = a.size := (heapifyUp lt a i).2
@@ -137,7 +134,7 @@ def insertExtractMax {lt} (self : BinaryHeap α lt) (x : α) : α × BinaryHeap 
   | some m =>
     if lt x m then
       let a := self.1.set ⟨0, size_pos_of_max e⟩ x
-      (m, ⟨heapifyDown lt a ⟨0, by simp [a]; exact size_pos_of_max e⟩⟩)
+      (m, ⟨heapifyDown lt a ⟨0, by simp only [Array.size_set, a]; exact size_pos_of_max e⟩⟩)
     else (x, self)
 
 /-- `O(log n)`. Equivalent to `(self.max, self.popMax.insert x)`. -/
@@ -146,7 +143,7 @@ def replaceMax {lt} (self : BinaryHeap α lt) (x : α) : Option α × BinaryHeap
   | none => (none, ⟨self.1.push x⟩)
   | some m =>
     let a := self.1.set ⟨0, size_pos_of_max e⟩ x
-    (some m, ⟨heapifyDown lt a ⟨0, by simp [a]; exact size_pos_of_max e⟩⟩)
+    (some m, ⟨heapifyDown lt a ⟨0, by simp only [Array.size_set, a]; exact size_pos_of_max e⟩⟩)
 
 /-- `O(log n)`. Replace the value at index `i` by `x`. Assumes that `x ≤ self.get i`. -/
 def decreaseKey {lt} (self : BinaryHeap α lt) (i : Fin self.size) (x : α) : BinaryHeap α lt where
@@ -173,5 +170,4 @@ def Array.toBinaryHeap (lt : α → α → Bool) (a : Array α) : BinaryHeap α 
         simp; exact Nat.sub_lt (BinaryHeap.size_pos_of_max e) Nat.zero_lt_one
       loop a.popMax (out.push x)
     termination_by a.size
-    decreasing_by assumption
   loop (a.toBinaryHeap gt) #[]

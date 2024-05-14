@@ -18,9 +18,11 @@ imports developing either positive compacts or the compact open topology.
 -/
 
 
-open Classical Set Filter TopologicalSpace Function
+open scoped Classical
+open Set Filter TopologicalSpace Function
 
-open Classical Topology Filter Pointwise
+open scoped Classical
+open Topology Filter Pointwise
 
 universe u v w x
 

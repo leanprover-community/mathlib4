@@ -53,7 +53,7 @@ class Bicategory.Strict : Prop where
     aesop_cat
 #align category_theory.bicategory.strict CategoryTheory.Bicategory.Strict
 
--- porting note: not adding simp to:
+-- Porting note: not adding simp to:
 -- Bicategory.Strict.id_comp
 -- Bicategory.Strict.comp_id
 -- Bicategory.Strict.assoc

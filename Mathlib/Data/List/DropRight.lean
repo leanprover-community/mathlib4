@@ -3,7 +3,6 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Infix
 
 #align_import data.list.rdrop from "leanprover-community/mathlib"@"26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2"
@@ -32,6 +31,8 @@ another function that takes a `L : ℕ` and use `L - n`. Under a proof condition
 
 -/
 
+-- Make sure we don't import algebra
+assert_not_exists Monoid
 
 variable {α : Type*} (p : α → Bool) (l : List α) (n : ℕ)
 
@@ -140,7 +141,7 @@ theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by s
 
 -- it is in this file because it requires `List.Infix`
 @[simp]
-theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
+theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
   cases' l with hd tl
   · simp only [dropWhile, true_iff]
     intro h
@@ -149,13 +150,13 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
   · rw [dropWhile]
     refine' ⟨fun h => _, fun h => _⟩
     · intro _ H
-      rw [nthLe, get] at H
+      rw [get] at H
       refine' (cons_ne_self hd tl) (Sublist.antisymm _ (sublist_cons _ _))
       rw [← h]
       simp only [H]
       exact List.IsSuffix.sublist (dropWhile_suffix p)
     · have := h (by simp only [length, Nat.succ_pos])
-      rw [nthLe, get] at this
+      rw [get] at this
       simp_rw [this]
 #align list.drop_while_eq_self_iff List.dropWhile_eq_self_iff
 
@@ -167,10 +168,10 @@ theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (
   refine' ⟨fun h hl => _, fun h hl => _⟩
   · rw [← length_pos, ← length_reverse] at hl
     have := h hl
-    rwa [nthLe, get_reverse'] at this
+    rwa [get_reverse'] at this
   · rw [length_reverse, length_pos] at hl
     have := h hl
-    rwa [nthLe, get_reverse']
+    rwa [get_reverse']
 #align list.rdrop_while_eq_self_iff List.rdropWhile_eq_self_iff
 
 variable (p) (l)

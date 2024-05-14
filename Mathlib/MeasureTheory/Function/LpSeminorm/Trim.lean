@@ -39,6 +39,7 @@ theorem limsup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] 
     rw [h_set_eq]
   ext1 a
   suffices h_meas_eq : μ { x | ¬f x ≤ a } = μ.trim hm { x | ¬f x ≤ a } by
+    set_option tactic.skipAssignedInstances false in
     simp_rw [Set.mem_setOf_eq, ae_iff, h_meas_eq]; rfl
   refine' (trim_measurableSet_eq hm _).symm
   refine' @MeasurableSet.compl _ _ m (@measurableSet_le ℝ≥0∞ _ _ _ _ m _ _ _ _ _ hf _)

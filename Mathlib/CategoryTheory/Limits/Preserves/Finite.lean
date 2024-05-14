@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.FinCategory.AsType
 
 #align_import category_theory.limits.preserves.finite from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
 
@@ -32,11 +32,8 @@ namespace CategoryTheory.Limits
 universe w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {E : Type u₃} [Category.{v₃} E]
-
 variable {J : Type w} [SmallCategory J] {K : J ⥤ C}
 
 /-- A functor is said to preserve finite limits, if it preserves all limits of shape `J`,
@@ -111,6 +108,14 @@ class PreservesFiniteProducts (F : C ⥤ D) where
 
 attribute [instance] PreservesFiniteProducts.preserves
 
+instance compPreservesFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
+    [PreservesFiniteProducts F] [PreservesFiniteProducts G] :
+    PreservesFiniteProducts (F ⋙ G) where
+  preserves _ _ := by infer_instance
+
+noncomputable instance (F : C ⥤ D) [PreservesFiniteLimits F] : PreservesFiniteProducts F where
+  preserves _ _ := by infer_instance
+
 /-- A functor is said to preserve finite colimits, if it preserves all colimits of
 shape `J`, where `J : Type` is a finite category.
 -/
@@ -165,7 +170,7 @@ def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
         exact preservesColimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
 #align category_theory.limits.preserves_finite_colimits_of_preserves_finite_colimits_of_size CategoryTheory.Limits.preservesFiniteColimitsOfPreservesFiniteColimitsOfSize
 
--- porting note: the proof `⟨fun _ _ _ => by infer_instance⟩` used for `idPreservesFiniteLimits`
+-- Porting note: the proof `⟨fun _ _ _ => by infer_instance⟩` used for `idPreservesFiniteLimits`
 -- did not work here because of universe problems, could this be solved by tweaking the priorities
 -- of some instances?
 noncomputable instance idPreservesFiniteColimits : PreservesFiniteColimits (𝟭 C) :=
@@ -186,5 +191,13 @@ class PreservesFiniteCoproducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
 
 attribute [instance] PreservesFiniteCoproducts.preserves
+
+instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
+    [PreservesFiniteCoproducts F] [PreservesFiniteCoproducts G] :
+    PreservesFiniteCoproducts (F ⋙ G) where
+  preserves _ _ := by infer_instance
+
+noncomputable instance (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteCoproducts F where
+  preserves _ _ := by infer_instance
 
 end CategoryTheory.Limits

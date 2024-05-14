@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.Trim
+import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
 
 #align_import measure_theory.measure.ae_measurable from "leanprover-community/mathlib"@"3310acfa9787aa171db6d4cba3945f6f275fe9f2"
 
@@ -15,7 +16,8 @@ function. This property, called `AEMeasurable f μ`, is defined in the file `Mea
 We discuss several of its properties that are analogous to properties of measurable functions.
 -/
 
-open MeasureTheory MeasureTheory.Measure Filter Set Function Classical ENNReal
+open scoped Classical
+open MeasureTheory MeasureTheory.Measure Filter Set Function ENNReal
 
 variable {ι α β γ δ R : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ] {f g : α → β} {μ ν : Measure α}
@@ -375,7 +377,7 @@ theorem MeasureTheory.Measure.restrict_map_of_aemeasurable {f : α → δ} (hf :
     (μ.map f).restrict s = (μ.map (hf.mk f)).restrict s := by
       congr 1
       apply Measure.map_congr hf.ae_eq_mk
-    _ = (μ.restrict <| hf.mk f ⁻¹' s).map (hf.mk f) := (Measure.restrict_map hf.measurable_mk hs)
+    _ = (μ.restrict <| hf.mk f ⁻¹' s).map (hf.mk f) := Measure.restrict_map hf.measurable_mk hs
     _ = (μ.restrict <| hf.mk f ⁻¹' s).map f :=
       (Measure.map_congr (ae_restrict_of_ae hf.ae_eq_mk.symm))
     _ = (μ.restrict <| f ⁻¹' s).map f := by

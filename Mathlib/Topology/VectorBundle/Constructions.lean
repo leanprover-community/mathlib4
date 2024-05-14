@@ -31,7 +31,8 @@ Vector bundle, direct sum, pullback
 
 noncomputable section
 
-open Bundle Set FiberBundle Classical
+open scoped Classical
+open Bundle Set FiberBundle
 
 /-! ### The trivial vector bundle -/
 
@@ -128,10 +129,10 @@ variable [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [∀ x, A
 instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂ E₂] :
     VectorBundle 𝕜 (F₁ × F₂) (E₁ ×ᵇ E₂) where
   trivialization_linear' := by
-    rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩; skip
+    rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩
     infer_instance
   continuousOn_coordChange' := by
-    rintro _ _ ⟨e₁, e₂, he₁, he₂, rfl⟩ ⟨e₁', e₂', he₁', he₂', rfl⟩; skip
+    rintro _ _ ⟨e₁, e₂, he₁, he₂, rfl⟩ ⟨e₁', e₂', he₁', he₂', rfl⟩
     refine' (((continuousOn_coordChange 𝕜 e₁ e₁').mono _).prod_mapL 𝕜
       ((continuousOn_coordChange 𝕜 e₂ e₂').mono _)).congr _ <;>
       dsimp only [baseSet_prod, mfld_simps]
@@ -148,7 +149,7 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
 
 variable {𝕜 F₁ E₁ F₂ E₂}
 
-@[simp] -- porting note: changed arguments to make `simpNF` happy: merged `hx₁` and `hx₂` into `hx`
+@[simp] -- Porting note: changed arguments to make `simpNF` happy: merged `hx₁` and `hx₂` into `hx`
 theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ (π F₁ E₁)}
     {e₂ : Trivialization F₂ (π F₂ E₂)} [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B}
     (hx : x ∈ (e₁.prod e₂).baseSet) :

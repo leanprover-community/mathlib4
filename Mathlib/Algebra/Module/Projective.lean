@@ -3,7 +3,7 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Antoine Labelle
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
 
@@ -157,7 +157,7 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
   -- get it from `ι → (P →₀ R)` coming from `b`.
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
   intro m
-  simp only [b.constr_apply, mul_one, id.def, Finsupp.smul_single', Finsupp.total_single,
+  simp only [b.constr_apply, mul_one, id, Finsupp.smul_single', Finsupp.total_single,
     map_finsupp_sum]
   exact b.total_repr m
 #align module.projective_of_basis Module.Projective.of_basis
@@ -171,7 +171,7 @@ end Ring
 --This is in a different section because special universe restrictions are required.
 section OfLiftingProperty
 
--- porting note: todo: generalize to `P : Type v`?
+-- Porting note (#11215): TODO: generalize to `P : Type v`?
 /-- A module which satisfies the universal property is projective. Note that the universe variables
 in `huniv` are somewhat restricted. -/
 theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max u v}
@@ -185,7 +185,7 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max 
   .of_lifting_property'' (huniv · _)
 #align module.projective_of_lifting_property' Module.Projective.of_lifting_property'
 
--- porting note: todo: generalize to `P : Type v`?
+-- Porting note (#11215): TODO: generalize to `P : Type v`?
 /-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
 which only requires quantifying over modules with an `AddCommGroup` instance. -/
 theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]

@@ -37,8 +37,7 @@ as this is not needed for the proof of the fundamental theorem on Galois categor
 
 ## References
 
-* H. W. Lenstra. Galois theory for schemes
-  <https://websites.math.leidenuniv.nl/algebra/GSchemes.pdf>
+* [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
 
 -/
 
@@ -90,7 +89,7 @@ class FiberFunctor {C : Type u₁} [Category.{u₂, u₁} C] [PreGaloisCategory 
   preservesQuotientsByFiniteGroups (G : Type u₂) [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) F := by infer_instance
   /-- `F` reflects isomorphisms (G6). -/
-  reflectsIsos : ReflectsIsomorphisms F := by infer_instance
+  reflectsIsos : F.ReflectsIsomorphisms := by infer_instance
 
 /-- An object of a category `C` is connected if it is not initial
 and has no non-trivial subobjects. Lenstra, 3.12. -/
@@ -146,7 +145,7 @@ instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
   exact (pullback.diagonal_isKernelPair f).mono_of_isIso_fst
 
 /-- Fiber functors are faithful. -/
-instance : Faithful F where
+instance : F.Faithful where
   map_injective {X Y} f g h := by
     haveI : IsIso (equalizer.ι (F.map f) (F.map g)) := equalizer.ι_of_eq h
     haveI : IsIso (F.map (equalizer.ι f g)) := by
@@ -244,7 +243,7 @@ lemma isIso_of_mono_of_eqCardFiber {X Y : C} (f : X ⟶ Y) [Mono f]
 
 /-- Along a mono that is not an iso, the cardinality of the fiber strictly increases. -/
 lemma ltCardFiber_of_mono_of_notIso {X Y : C} (f : X ⟶ Y) [Mono f]
-    (h : ¬ IsIso f ) : Nat.card (F.obj X) < Nat.card (F.obj Y) := by
+    (h : ¬ IsIso f) : Nat.card (F.obj X) < Nat.card (F.obj Y) := by
   by_contra hlt
   apply h
   apply isIso_of_mono_of_eqCardFiber F f

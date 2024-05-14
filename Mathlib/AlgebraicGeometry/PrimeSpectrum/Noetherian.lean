@@ -20,7 +20,6 @@ namespace PrimeSpectrum
 open Submodule
 
 variable (R : Type u) [CommRing R] [IsNoetherianRing R]
-
 variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 
 /-- In a noetherian ring, every ideal contains a product of prime ideals

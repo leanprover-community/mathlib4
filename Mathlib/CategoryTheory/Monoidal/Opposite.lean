@@ -25,7 +25,7 @@ open CategoryTheory.MonoidalCategory
 
 /-- The type of objects of the opposite (or "reverse") monoidal category.
 Use the notation `Cᴹᵒᵖ`. -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
 structure MonoidalOpposite (C : Type u₁) where
   /-- The object of `MonoidalOpposite C` that represents `x : C`. -/ mop ::
   /-- The object of `C` represented by `x : MonoidalOpposite C`. -/ unmop : C
@@ -152,13 +152,11 @@ variable {C}
 namespace Iso
 
 /-- An isomorphism in `C` gives an isomorphism in `Cᴹᵒᵖ`. -/
-@[reducible]
-def mop {X Y : C} (f : X ≅ Y) : mop X ≅ mop Y := (mopFunctor C).mapIso f
+abbrev mop {X Y : C} (f : X ≅ Y) : mop X ≅ mop Y := (mopFunctor C).mapIso f
 #align category_theory.iso.mop CategoryTheory.Iso.mop
 
 /-- An isomorphism in `Cᴹᵒᵖ` gives an isomorphism in `C`. -/
-@[reducible]
-def unmop {X Y : Cᴹᵒᵖ} (f : X ≅ Y) : unmop X ≅ unmop Y := (unmopFunctor C).mapIso f
+abbrev unmop {X Y : Cᴹᵒᵖ} (f : X ≅ Y) : unmop X ≅ unmop Y := (unmopFunctor C).mapIso f
 
 end Iso
 
@@ -174,8 +172,6 @@ end IsIso
 variable [MonoidalCategory.{v₁} C]
 
 open Opposite MonoidalCategory
-
-attribute [local simp] id_tensorHom tensorHom_id
 
 instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   tensorObj X Y := op (unop X ⊗ unop Y)
@@ -251,6 +247,11 @@ section OppositeLemmas
 @[simp] lemma unop_inv_rightUnitor (X : Cᵒᵖ) : (ρ_ X).inv.unop = (ρ_ (unop X)).hom := rfl
 
 end OppositeLemmas
+
+theorem op_tensor_op {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f.op ⊗ g.op = (f ⊗ g).op := rfl
+
+theorem unop_tensor_unop {W X Y Z : Cᵒᵖ} (f : W ⟶ X) (g : Y ⟶ Z) :
+    f.unop ⊗ g.unop = (f ⊗ g).unop := rfl
 
 instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   tensorObj X Y := mop (unmop Y ⊗ unmop X)

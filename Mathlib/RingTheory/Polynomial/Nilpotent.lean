@@ -3,12 +3,13 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Uthaiwat, Oliver Nash
 -/
-import Mathlib.RingTheory.Nilpotent
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Div
-import Mathlib.Data.Polynomial.Identities
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Div
+import Mathlib.Algebra.Polynomial.Identities
 import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Polynomial.Tower
+import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!
 # Nilpotency in polynomial rings.
@@ -120,8 +121,8 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
   · simp_rw [← h, hdeg₂]
   · simp_rw [eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
   · by_cases H : i ≤ P₁.natDegree
-    simp_rw [eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
-    simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
+    · simp_rw [eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
+    · simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
 
 /-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
 except its constant term which is a unit.
@@ -200,7 +201,7 @@ variable {P}
 lemma isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub
     (hb : IsUnit (aeval b P)) (hab : IsNilpotent (a - b)) :
     IsUnit (aeval a P) := by
-  rw [← add_sub_cancel'_right (aeval b P) (aeval a P)]
+  rw [← add_sub_cancel (aeval b P) (aeval a P)]
   refine IsNilpotent.isUnit_add_left_of_commute ?_ hb (Commute.all _ _)
   exact isNilpotent_aeval_sub_of_isNilpotent_sub P hab
 

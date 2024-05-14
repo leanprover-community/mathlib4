@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Data.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.Tactic.ComputeDegree
 
@@ -40,7 +40,7 @@ theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
     natDegree (det ((X : α[X]) • A.map C + B.map C : Matrix n n α[X])) ≤ Fintype.card n := by
   rw [det_apply]
   refine' (natDegree_sum_le _ _).trans _
-  refine' Multiset.max_nat_le_of_forall_le _ _ _
+  refine' Multiset.max_le_of_forall_le _ _ _
   simp only [forall_apply_eq_imp_iff, true_and_iff, Function.comp_apply, Multiset.map_map,
     Multiset.mem_map, exists_imp, Finset.mem_univ_val]
   intro g

@@ -405,8 +405,8 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
   · exact zero_mem _
   · refine' fun x a l _ _ => add_mem _
     by_cases h : ∃ i, x ∈ s i <;> simp [h]
-    · cases' h with i hi
-      exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
+    cases' h with i hi
+    exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
 #align finsupp.supported_Union Finsupp.supported_iUnion
 
 theorem supported_union (s t : Set α) : supported M R (s ∪ t) = supported M R s ⊔ supported M R t :=
@@ -1087,7 +1087,6 @@ end Sum
 section Sigma
 
 variable {η : Type*} [Fintype η] {ιs : η → Type*} [Zero α]
-
 variable (R)
 
 /-- On a `Fintype η`, `Finsupp.split` is a linear equivalence between
@@ -1162,9 +1161,7 @@ end Finsupp
 section Fintype
 
 variable {α M : Type*} (R : Type*) [Fintype α] [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable (S : Type*) [Semiring S] [Module S M] [SMulCommClass R S M]
-
 variable (v : α → M)
 
 /-- `Fintype.total R S v f` is the linear combination of vectors in `v` with weights in `f`.
@@ -1249,7 +1246,6 @@ end SpanRange
 end Fintype
 
 variable {R : Type*} {M : Type*} {N : Type*}
-
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 section

@@ -94,7 +94,7 @@ open Filter
 variable (𝕜 E)
 
 /-- Given a unit-length element `x` of a normed space `E` over a field `𝕜`, the natural linear
-    isometry map from `𝕜` to `E` by taking multiples of `x`.-/
+    isometry map from `𝕜` to `E` by taking multiples of `x`. -/
 def _root_.LinearIsometry.toSpanSingleton {v : E} (hv : ‖v‖ = 1) : 𝕜 →ₗᵢ[𝕜] E :=
   { LinearMap.toSpanSingleton 𝕜 E v with norm_map' := fun x => by simp [norm_smul, hv] }
 #align linear_isometry.to_span_singleton LinearIsometry.toSpanSingleton
@@ -150,9 +150,7 @@ theorem isLeast_opNorm [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
   simp only [setOf_and, setOf_forall]
   refine isClosed_Ici.inter <| isClosed_iInter fun _ ↦ isClosed_le ?_ ?_ <;> continuity
 
-@[deprecated]
-alias isLeast_op_norm :=
-  isLeast_opNorm -- deprecated on 2024-02-02
+@[deprecated] alias isLeast_op_norm := isLeast_opNorm -- deprecated on 2024-02-02
 
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
 theorem opNorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ x, ‖f x‖ ≤ M * ‖x‖) :
@@ -160,9 +158,7 @@ theorem opNorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M) (hM 
   csInf_le bounds_bddBelow ⟨hMp, hM⟩
 #align continuous_linear_map.op_norm_le_bound ContinuousLinearMap.opNorm_le_bound
 
-@[deprecated]
-alias op_norm_le_bound :=
-  opNorm_le_bound -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_le_bound := opNorm_le_bound -- deprecated on 2024-02-02
 
 /-- If one controls the norm of every `A x`, `‖x‖ ≠ 0`, then one controls the norm of `A`. -/
 theorem opNorm_le_bound' (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M)
@@ -172,18 +168,14 @@ theorem opNorm_le_bound' (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M)
       simp only [h, mul_zero, norm_image_of_norm_zero f f.2 h, le_refl]
 #align continuous_linear_map.op_norm_le_bound' ContinuousLinearMap.opNorm_le_bound'
 
-@[deprecated]
-alias op_norm_le_bound' :=
-  opNorm_le_bound' -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_le_bound' := opNorm_le_bound' -- deprecated on 2024-02-02
 
 theorem opNorm_le_of_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : LipschitzWith K f) : ‖f‖ ≤ K :=
   f.opNorm_le_bound K.2 fun x => by
     simpa only [dist_zero_right, f.map_zero] using hf.dist_le_mul x 0
 #align continuous_linear_map.op_norm_le_of_lipschitz ContinuousLinearMap.opNorm_le_of_lipschitz
 
-@[deprecated]
-alias op_norm_le_of_lipschitz :=
-  opNorm_le_of_lipschitz -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_le_of_lipschitz := opNorm_le_of_lipschitz -- 2024-02-02
 
 theorem opNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} {M : ℝ} (M_nonneg : 0 ≤ M)
     (h_above : ∀ x, ‖φ x‖ ≤ M * ‖x‖) (h_below : ∀ N ≥ 0, (∀ x, ‖φ x‖ ≤ N * ‖x‖) → M ≤ N) :
@@ -193,33 +185,25 @@ theorem opNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} {M : ℝ} (M_nonneg : 0 �
       fun N ⟨N_nonneg, hN⟩ => h_below N N_nonneg hN)
 #align continuous_linear_map.op_norm_eq_of_bounds ContinuousLinearMap.opNorm_eq_of_bounds
 
-@[deprecated]
-alias op_norm_eq_of_bounds :=
-  opNorm_eq_of_bounds -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_eq_of_bounds := opNorm_eq_of_bounds -- deprecated on 2024-02-02
 
 theorem opNorm_neg (f : E →SL[σ₁₂] F) : ‖-f‖ = ‖f‖ := by simp only [norm_def, neg_apply, norm_neg]
 #align continuous_linear_map.op_norm_neg ContinuousLinearMap.opNorm_neg
 
-@[deprecated]
-alias op_norm_neg :=
-  opNorm_neg -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_neg := opNorm_neg -- deprecated on 2024-02-02
 
 theorem opNorm_nonneg (f : E →SL[σ₁₂] F) : 0 ≤ ‖f‖ :=
   Real.sInf_nonneg _ fun _ ↦ And.left
 #align continuous_linear_map.op_norm_nonneg ContinuousLinearMap.opNorm_nonneg
 
-@[deprecated]
-alias op_norm_nonneg :=
-  opNorm_nonneg -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_nonneg := opNorm_nonneg -- deprecated on 2024-02-02
 
 /-- The norm of the `0` operator is `0`. -/
 theorem opNorm_zero : ‖(0 : E →SL[σ₁₂] F)‖ = 0 :=
   le_antisymm (opNorm_le_bound _ le_rfl fun _ ↦ by simp) (opNorm_nonneg _)
 #align continuous_linear_map.op_norm_zero ContinuousLinearMap.opNorm_zero
 
-@[deprecated]
-alias op_norm_zero :=
-  opNorm_zero -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_zero := opNorm_zero -- deprecated on 2024-02-02
 
 /-- The norm of the identity is at most `1`. It is in fact `1`, except when the space is trivial
 where it is `0`. It means that one can not do better than an inequality in general. -/
@@ -236,75 +220,57 @@ variable [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₃] (f g : E →SL[
 theorem le_opNorm : ‖f x‖ ≤ ‖f‖ * ‖x‖ := (isLeast_opNorm f).1.2 x
 #align continuous_linear_map.le_op_norm ContinuousLinearMap.le_opNorm
 
-@[deprecated]
-alias le_op_norm :=
-  le_opNorm -- deprecated on 2024-02-02
+@[deprecated] alias le_op_norm := le_opNorm -- deprecated on 2024-02-02
 
 theorem dist_le_opNorm (x y : E) : dist (f x) (f y) ≤ ‖f‖ * dist x y := by
   simp_rw [dist_eq_norm, ← map_sub, f.le_opNorm]
 #align continuous_linear_map.dist_le_op_norm ContinuousLinearMap.dist_le_opNorm
 
-@[deprecated]
-alias dist_le_op_norm :=
-  dist_le_opNorm -- deprecated on 2024-02-02
+@[deprecated] alias dist_le_op_norm := dist_le_opNorm -- deprecated on 2024-02-02
 
 theorem le_of_opNorm_le_of_le {x} {a b : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) :
     ‖f x‖ ≤ a * b :=
   (f.le_opNorm x).trans <| by gcongr; exact (opNorm_nonneg f).trans hf
 
-@[deprecated]
-alias le_of_op_norm_le_of_le :=
-  le_of_opNorm_le_of_le -- deprecated on 2024-02-02
+@[deprecated] alias le_of_op_norm_le_of_le := le_of_opNorm_le_of_le -- deprecated on 2024-02-02
 
 theorem le_opNorm_of_le {c : ℝ} {x} (h : ‖x‖ ≤ c) : ‖f x‖ ≤ ‖f‖ * c :=
   f.le_of_opNorm_le_of_le le_rfl h
 #align continuous_linear_map.le_op_norm_of_le ContinuousLinearMap.le_opNorm_of_le
 
-@[deprecated]
-alias le_op_norm_of_le :=
-  le_opNorm_of_le -- deprecated on 2024-02-02
+@[deprecated] alias le_op_norm_of_le := le_opNorm_of_le -- deprecated on 2024-02-02
 
 theorem le_of_opNorm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : E) : ‖f x‖ ≤ c * ‖x‖ :=
   f.le_of_opNorm_le_of_le h le_rfl
 #align continuous_linear_map.le_of_op_norm_le ContinuousLinearMap.le_of_opNorm_le
 
-@[deprecated]
-alias le_of_op_norm_le :=
-  le_of_opNorm_le -- deprecated on 2024-02-02
+@[deprecated] alias le_of_op_norm_le := le_of_opNorm_le -- deprecated on 2024-02-02
 
 theorem opNorm_le_iff {f : E →SL[σ₁₂] F} {M : ℝ} (hMp : 0 ≤ M) :
     ‖f‖ ≤ M ↔ ∀ x, ‖f x‖ ≤ M * ‖x‖ :=
   ⟨f.le_of_opNorm_le, opNorm_le_bound f hMp⟩
 
-@[deprecated]
-alias op_norm_le_iff :=
-  opNorm_le_iff -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_le_iff := opNorm_le_iff -- deprecated on 2024-02-02
 
 theorem ratio_le_opNorm : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_nonneg_of_le_mul (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)
 #align continuous_linear_map.ratio_le_op_norm ContinuousLinearMap.ratio_le_opNorm
 
-@[deprecated]
-alias ratio_le_op_norm :=
-  ratio_le_opNorm -- deprecated on 2024-02-02
+@[deprecated] alias ratio_le_op_norm := ratio_le_opNorm -- deprecated on 2024-02-02
 
 /-- The image of the unit ball under a continuous linear map is bounded. -/
 theorem unit_le_opNorm : ‖x‖ ≤ 1 → ‖f x‖ ≤ ‖f‖ :=
   mul_one ‖f‖ ▸ f.le_opNorm_of_le
 #align continuous_linear_map.unit_le_op_norm ContinuousLinearMap.unit_le_opNorm
 
-@[deprecated]
-alias unit_le_op_norm :=
-  unit_le_opNorm -- deprecated on 2024-02-02
+@[deprecated] alias unit_le_op_norm := unit_le_opNorm -- deprecated on 2024-02-02
 
 theorem opNorm_le_of_shell {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 < ε) (hC : 0 ≤ C) {c : 𝕜}
     (hc : 1 < ‖c‖) (hf : ∀ x, ε / ‖c‖ ≤ ‖x‖ → ‖x‖ < ε → ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C :=
   f.opNorm_le_bound' hC fun _ hx => SemilinearMapClass.bound_of_shell_semi_normed f ε_pos hc hf hx
 #align continuous_linear_map.op_norm_le_of_shell ContinuousLinearMap.opNorm_le_of_shell
 
-@[deprecated]
-alias op_norm_le_of_shell :=
-  opNorm_le_of_shell -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_le_of_shell := opNorm_le_of_shell -- deprecated on 2024-02-02
 
 theorem opNorm_le_of_ball {f : E →SL[σ₁₂] F} {ε : ℝ} {C : ℝ} (ε_pos : 0 < ε) (hC : 0 ≤ C)
     (hf : ∀ x ∈ ball (0 : E) ε, ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C := by
@@ -313,9 +279,7 @@ theorem opNorm_le_of_ball {f : E →SL[σ₁₂] F} {ε : ℝ} {C : ℝ} (ε_pos
   rwa [ball_zero_eq]
 #align continuous_linear_map.op_norm_le_of_ball ContinuousLinearMap.opNorm_le_of_ball
 
-@[deprecated]
-alias op_norm_le_of_ball :=
-  opNorm_le_of_ball -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_le_of_ball := opNorm_le_of_ball -- deprecated on 2024-02-02
 
 theorem opNorm_le_of_nhds_zero {f : E →SL[σ₁₂] F} {C : ℝ} (hC : 0 ≤ C)
     (hf : ∀ᶠ x in 𝓝 (0 : E), ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C :=
@@ -323,9 +287,7 @@ theorem opNorm_le_of_nhds_zero {f : E →SL[σ₁₂] F} {C : ℝ} (hC : 0 ≤ C
   opNorm_le_of_ball ε0 hC hε
 #align continuous_linear_map.op_norm_le_of_nhds_zero ContinuousLinearMap.opNorm_le_of_nhds_zero
 
-@[deprecated]
-alias op_norm_le_of_nhds_zero :=
-  opNorm_le_of_nhds_zero -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_le_of_nhds_zero := opNorm_le_of_nhds_zero -- deprecated on 2024-02-02
 
 theorem opNorm_le_of_shell' {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 < ε) (hC : 0 ≤ C) {c : 𝕜}
     (hc : ‖c‖ < 1) (hf : ∀ x, ε * ‖c‖ ≤ ‖x‖ → ‖x‖ < ε → ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C := by
@@ -338,9 +300,7 @@ theorem opNorm_le_of_shell' {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 <
     rwa [norm_inv, div_eq_mul_inv, inv_inv]
 #align continuous_linear_map.op_norm_le_of_shell' ContinuousLinearMap.opNorm_le_of_shell'
 
-@[deprecated]
-alias op_norm_le_of_shell' :=
-  opNorm_le_of_shell' -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_le_of_shell' := opNorm_le_of_shell' -- deprecated on 2024-02-02
 
 /-- For a continuous real linear map `f`, if one controls the norm of every `f x`, `‖x‖ = 1`, then
 one controls the norm of `f`. -/
@@ -353,9 +313,7 @@ theorem opNorm_le_of_unit_norm [NormedSpace ℝ E] [NormedSpace ℝ F] {f : E �
   exact (norm_nonneg x).lt_of_ne' hx
 #align continuous_linear_map.op_norm_le_of_unit_norm ContinuousLinearMap.opNorm_le_of_unit_norm
 
-@[deprecated]
-alias op_norm_le_of_unit_norm :=
-  opNorm_le_of_unit_norm -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_le_of_unit_norm := opNorm_le_of_unit_norm -- deprecated on 2024-02-02
 
 /-- The operator norm satisfies the triangle inequality. -/
 theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
@@ -363,9 +321,7 @@ theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
     (norm_add_le_of_le (f.le_opNorm x) (g.le_opNorm x)).trans_eq (add_mul _ _ _).symm
 #align continuous_linear_map.op_norm_add_le ContinuousLinearMap.opNorm_add_le
 
-@[deprecated]
-alias op_norm_add_le :=
-  opNorm_add_le -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_add_le := opNorm_add_le -- deprecated on 2024-02-02
 
 /-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
 (Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
@@ -379,13 +335,11 @@ theorem norm_id_of_nontrivial_seminorm (h : ∃ x : E, ‖x‖ ≠ 0) : ‖id �
 theorem opNorm_smul_le {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F]
     (c : 𝕜') (f : E →SL[σ₁₂] F) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun _ => by
-    erw [norm_smul, mul_assoc]
+    rw [smul_apply, norm_smul, mul_assoc]
     exact mul_le_mul_of_nonneg_left (le_opNorm _ _) (norm_nonneg _)
 #align continuous_linear_map.op_norm_smul_le ContinuousLinearMap.opNorm_smul_le
 
-@[deprecated]
-alias op_norm_smul_le :=
-  opNorm_smul_le -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_smul_le := opNorm_smul_le -- deprecated on 2024-02-02
 
 /-- Operator seminorm on the space of continuous (semi)linear maps, as `Seminorm`.
 
@@ -397,7 +351,7 @@ protected def seminorm : Seminorm 𝕜₂ (E →SL[σ₁₂] F) :=
 
 private lemma uniformity_eq_seminorm :
     𝓤 (E →SL[σ₁₂] F) = ⨅ r > 0, 𝓟 {f | ‖f.1 - f.2‖ < r} := by
-  refine ContinuousLinearMap.seminorm.uniformity_eq_of_hasBasis
+  refine ContinuousLinearMap.seminorm (σ₁₂ := σ₁₂) (E := E) (F := F) |>.uniformity_eq_of_hasBasis
     (ContinuousLinearMap.hasBasis_nhds_zero_of_basis Metric.nhds_basis_closedBall)
     ?_ fun (s, r) ⟨hs, hr⟩ ↦ ?_
   · rcases NormedField.exists_lt_norm 𝕜 1 with ⟨c, hc⟩
@@ -447,9 +401,7 @@ theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * 
       exact h.le_opNorm_of_le (f.le_opNorm x)⟩
 #align continuous_linear_map.op_norm_comp_le ContinuousLinearMap.opNorm_comp_le
 
-@[deprecated]
-alias op_norm_comp_le :=
-  opNorm_comp_le -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_comp_le := opNorm_comp_le -- deprecated on 2024-02-02
 
 /-- Continuous linear maps form a seminormed ring with respect to the operator norm. -/
 instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
@@ -478,18 +430,14 @@ theorem opNorm_subsingleton [Subsingleton E] : ‖f‖ = 0 := by
   simp [Subsingleton.elim x 0]
 #align continuous_linear_map.op_norm_subsingleton ContinuousLinearMap.opNorm_subsingleton
 
-@[deprecated]
-alias op_norm_subsingleton :=
-  opNorm_subsingleton -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_subsingleton := opNorm_subsingleton -- deprecated on 2024-02-02
 
 end OpNorm
 
 section RestrictScalars
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
-
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜' 𝕜 E]
-
 variable [NormedSpace 𝕜' Fₗ] [IsScalarTower 𝕜' 𝕜 Fₗ]
 
 @[simp]
@@ -499,7 +447,6 @@ theorem norm_restrictScalars (f : E →L[𝕜] Fₗ) : ‖f.restrictScalars 𝕜
 #align continuous_linear_map.norm_restrict_scalars ContinuousLinearMap.norm_restrictScalars
 
 variable (𝕜 E Fₗ 𝕜') (𝕜'' : Type*) [Ring 𝕜'']
-
 variable [Module 𝕜'' Fₗ] [ContinuousConstSMul 𝕜'' Fₗ]
   [SMulCommClass 𝕜 𝕜'' Fₗ] [SMulCommClass 𝕜' 𝕜'' Fₗ]
 

@@ -18,7 +18,7 @@ which is the `Σ j, ι j`-indexed basis of `Π j, M j`. The basis vectors are gi
 
 The standard basis on `R^η`, i.e. `η → R` is called `Pi.basisFun`.
 
-To give a concrete example, `LinearMap.stdBasis R (λ (i : Fin 3), R) i 1`
+To give a concrete example, `LinearMap.stdBasis R (fun (i : Fin 3) ↦ R) i 1`
 gives the `i`th unit basis vector in `R³`, and `Pi.basisFun R (Fin 3)` proves
 this is a basis over `Fin 3 → R`.
 
@@ -181,25 +181,25 @@ theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i,
     intro j
     exact (hs j).map' _ (ker_stdBasis _ _ _)
   apply linearIndependent_iUnion_finite hs'
-  · intro j J _ hiJ
-    have h₀ :
-      ∀ j, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
-        LinearMap.range (stdBasis R Ms j) := by
-      intro j
-      rw [span_le, LinearMap.range_coe]
-      apply range_comp_subset_range
-    have h₁ :
-      span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
-        ⨆ i ∈ ({j} : Set _), LinearMap.range (stdBasis R Ms i) := by
-      rw [@iSup_singleton _ _ _ fun i => LinearMap.range (stdBasis R (Ms) i)]
-      apply h₀
-    have h₂ :
-      ⨆ j ∈ J, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
-        ⨆ j ∈ J, LinearMap.range (stdBasis R (fun j : η => Ms j) j) :=
-      iSup₂_mono fun i _ => h₀ i
-    have h₃ : Disjoint (fun i : η => i ∈ ({j} : Set _)) J := by
-      convert Set.disjoint_singleton_left.2 hiJ using 0
-    exact (disjoint_stdBasis_stdBasis _ _ _ _ h₃).mono h₁ h₂
+  intro j J _ hiJ
+  have h₀ :
+    ∀ j, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
+      LinearMap.range (stdBasis R Ms j) := by
+    intro j
+    rw [span_le, LinearMap.range_coe]
+    apply range_comp_subset_range
+  have h₁ :
+    span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
+      ⨆ i ∈ ({j} : Set _), LinearMap.range (stdBasis R Ms i) := by
+    rw [@iSup_singleton _ _ _ fun i => LinearMap.range (stdBasis R (Ms) i)]
+    apply h₀
+  have h₂ :
+    ⨆ j ∈ J, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
+      ⨆ j ∈ J, LinearMap.range (stdBasis R (fun j : η => Ms j) j) :=
+    iSup₂_mono fun i _ => h₀ i
+  have h₃ : Disjoint (fun i : η => i ∈ ({j} : Set _)) J := by
+    convert Set.disjoint_singleton_left.2 hiJ using 0
+  exact (disjoint_stdBasis_stdBasis _ _ _ _ h₃).mono h₁ h₂
 #align pi.linear_independent_std_basis Pi.linearIndependent_stdBasis
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
