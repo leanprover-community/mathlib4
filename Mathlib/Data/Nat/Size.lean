@@ -169,8 +169,8 @@ lemma size_eq_iff_le_and_lt (n : ℕ) (i : ℕ) : n.size = i + 1 ↔ 2 ^ i ≤ n
     exact h ▸ lt_size_self n
   · rintro ⟨h1, h2⟩
     apply le_antisymm
-    exact size_le.mpr h2
-    exact succ_le_iff.mp (lt_size.mpr h1)
+    · exact size_le.mpr h2
+    · exact succ_le_iff.mp (lt_size.mpr h1)
 
 lemma size_eq_iff_testBit (n : ℕ) (i : ℕ) : n.size = i + 1 ↔
     n.testBit i ∧ ∀ j > i, n.testBit j = false := by
