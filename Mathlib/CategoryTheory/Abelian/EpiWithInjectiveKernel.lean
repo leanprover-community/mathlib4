@@ -62,33 +62,25 @@ instance : (epiWithInjectiveKernel : MorphismProperty C).IsMultiplicative where
     rw [epiWithInjectiveKernel_iff] at hg₁ hg₂ ⊢
     obtain ⟨I₁, _, f₁, w₁, ⟨σ₁⟩⟩ := hg₁
     obtain ⟨I₂, _, f₂, w₂, ⟨σ₂⟩⟩ := hg₂
-    have s_g₁ := σ₁.s_g
-    have s_g₂ := σ₂.s_g
-    have f_r₁ := σ₁.f_r
-    have f_r₂ := σ₂.f_r
-    have id₁ := σ₁.id
-    have id₂ := σ₂.id
-    dsimp at s_g₁ s_g₂ f_r₁ f_r₂ id₁ id₂
     refine' ⟨I₁ ⊞ I₂, inferInstance, biprod.fst ≫ f₁ + biprod.snd ≫ f₂ ≫ σ₁.s, _, ⟨_⟩⟩
     · ext
       · simp [reassoc_of% w₁]
-      · simp [reassoc_of% s_g₁, w₂]
+      · simp [reassoc_of% σ₁.s_g, w₂]
     · exact
         { r := σ₁.r ≫ biprod.inl + g₁ ≫ σ₂.r ≫ biprod.inr
           s := σ₂.s ≫ σ₁.s
           f_r := by
             ext
-            · simp [f_r₁]
+            · simp [σ₁.f_r]
             · simp [reassoc_of% w₁]
             · simp
-            · simp [reassoc_of% s_g₁, f_r₂]
-          s_g := by simp [reassoc_of% s_g₁, s_g₂]
+            · simp [reassoc_of% σ₁.s_g, σ₂.f_r]
+          s_g := by simp [reassoc_of% σ₁.s_g, σ₂.s_g]
           id := by
             dsimp
-            have h := g₁ ≫= id₂ =≫ σ₁.s
+            have h := g₁ ≫= σ₂.id =≫ σ₁.s
             simp only [add_comp, assoc, comp_add, id_comp] at h
-            rw [← h] at id₁
-            rw [← id₁]
+            rw [← σ₁.id, ← h]
             simp only [comp_add, add_comp, assoc, BinaryBicone.inl_fst_assoc,
               BinaryBicone.inr_fst_assoc, zero_comp, comp_zero, add_zero,
               BinaryBicone.inl_snd_assoc, BinaryBicone.inr_snd_assoc, zero_add]
