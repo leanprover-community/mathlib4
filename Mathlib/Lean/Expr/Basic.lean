@@ -64,7 +64,6 @@ def updateLast (f : String → String) : Name → Name
   | .str n s => .str n (f s)
   | n        => n
 
-
 /-- Get the last field of a name as a string.
 Doesn't raise an error when the last component is a numeric field. -/
 def lastComponentAsString : Name → String
