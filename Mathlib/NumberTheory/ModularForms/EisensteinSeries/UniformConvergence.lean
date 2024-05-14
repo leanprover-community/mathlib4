@@ -136,12 +136,11 @@ lemma r_lower_bound_on_verticalStrip {A B : ℝ} (h : 0 < B) (z : verticalStrip 
   rcases z with ⟨z, hz⟩
   simp only [mem_verticalStrip_iff, abs_ofReal] at hz
   apply min_le_min hz.2
-  · rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le)]
-    simp only [r1_eq, div_pow, one_div]
-    rw [inv_le_inv (by positivity) (by positivity), add_le_add_iff_right]
-    apply div_le_div (sq_nonneg _) _ (by positivity)
-    · exact pow_le_pow_left h.le hz.2 2
-    · simpa only [even_two.pow_abs] using pow_le_pow_left (abs_nonneg _) hz.1 2
+  rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le)]
+  simp only [r1_eq, div_pow, one_div]
+  rw [inv_le_inv (by positivity) (by positivity), add_le_add_iff_right]
+  apply div_le_div (sq_nonneg _) _ (by positivity) (pow_le_pow_left h.le hz.2 2)
+  simpa only [even_two.pow_abs] using pow_le_pow_left (abs_nonneg _) hz.1 2
 
 end bounding_functions
 
@@ -154,7 +153,7 @@ lemma summable_over_box {k : ℤ} (z : ℍ) (h : 3 ≤ k):
     Summable (fun n : ℕ => ∑ v in (box n : Finset (ℤ × ℤ)), ((r z) ^ k * (n : ℝ) ^ k)⁻¹) := by
   simp only [sum_const, nsmul_eq_mul]
   have hk : 1 < (k - 1 : ℝ) := by norm_cast; exact Int.lt_sub_left_of_add_lt h
-  have nze : (8 * ((r z) ^ k)⁻¹ : ℝ) ≠ 0 := by
+  have nze : 8 * ((r z) ^ k)⁻¹ ≠ 0 := by
     exact div_ne_zero (OfNat.ofNat_ne_zero 8) (zpow_ne_zero k (ne_of_gt (r_pos z)))
   apply ((summable_mul_left_iff nze).mpr (Real.summable_nat_rpow_inv.2 hk)).congr
   intro b
