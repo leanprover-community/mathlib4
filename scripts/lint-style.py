@@ -78,8 +78,7 @@ def error_message(err):
         Error.ARR : "Missing space after '←'.",
         # Error.NUM_LIN deliberately omitted, as its error message is more complex
         Error.NSP : "Non-terminal simp. Replace with `simp?` and use the suggested output",
-        Error.IBACKTICK : "Isolated single backtick: use ``double backticks in meta code"\
-        "for future-proofing"
+        Error.IBACKTICK : "Isolated single backtick: use ``double backticks in meta code for future-proofing"
     }
     if err in d:
         return d[err]
@@ -381,6 +380,9 @@ def check_isolated_backticks(lines, path):
         # Ignore comments and contents of string literals.
         if in_comment or in_string:
             continue
+        # Also ignore inline comments for analysis.
+        if "-- " in line:
+            line = line[0:line.index("-- ")]
         # Single backticks are fine if followed by an opening paren
         # (as in "`(quotation_stuff here)").
         # All other backticks should be double backticks: let's see if this works :-)
@@ -389,7 +391,7 @@ def check_isolated_backticks(lines, path):
         if single != 2 * double:
             if single != 2 * double + line.count("`("):
                errors.append((Error.IBACKTICK, line_nr, path))
-               output_message(path, line_nr, "Error.IBACKTICK", "Odd number of backticks in this line")
+               #output_message(path, line_nr, "Error.IBACKTICK", "Odd number of backticks in this line")
     return errors, lines
 
 
