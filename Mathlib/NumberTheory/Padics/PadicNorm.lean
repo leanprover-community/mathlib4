@@ -176,8 +176,8 @@ protected theorem of_int (z : ℤ) : padicNorm p z ≤ 1 :=
 
 private theorem nonarchimedean_aux {q r : ℚ} (h : padicValRat p q ≤ padicValRat p r) :
     padicNorm p (q + r) ≤ max (padicNorm p q) (padicNorm p r) :=
-  have hnqp : padicNorm p q ≥ 0 := padicNorm.nonneg _
-  have hnrp : padicNorm p r ≥ 0 := padicNorm.nonneg _
+  have hnqp : 0 ≤ padicNorm p q := padicNorm.nonneg _
+  have hnrp : 0 ≤ padicNorm p r := padicNorm.nonneg _
   if hq : q = 0 then by simp [hq, max_eq_right hnrp, le_max_right]
   else
     if hr : r = 0 then by simp [hr, max_eq_left hnqp, le_max_left]

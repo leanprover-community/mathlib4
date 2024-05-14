@@ -221,7 +221,7 @@ unsafe def ofRat : RMode → ℚ → Float
       if r = toRat _ hf then high
       else
         if lf : low.isFinite then
-          if r - toRat _ lf > toRat _ hf - r then high
+          if toRat _ hf - r < r - toRat _ lf then high
           else
             if r - toRat _ lf < toRat _ hf - r then low
             else
