@@ -165,7 +165,6 @@ instance membership : Membership α (RelSeries r) :=
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
 
-@[simp]
 theorem mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
   rw [RelSeries.toList, List.mem_ofFn, RelSeries.mem_def]
 
