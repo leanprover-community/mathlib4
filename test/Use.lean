@@ -33,8 +33,9 @@ example (n : Fin 3) : ∃ x : Nat, x = x := show_term by use n
 example : ∃ x : Nat, ∃ y : Nat, x = y := by use 42, 42
 
 /--
-error: failed to synthesize instance
+error: failed to synthesize
   OfNat (Nat × Nat) 42
+use `set_option diagnostics true` to get diagnostic information
 -/
 #guard_msgs in
 example : ∃ p : Nat × Nat, p.1 = p.2 := by use 42; sorry
@@ -85,15 +86,17 @@ example : Σ _x _y : Int, (Int × Int) × Int := by
 
 -- There are two constructors, so applying a constructor fails and it tries to just refine
 /--
-error: failed to synthesize instance
+error: failed to synthesize
   OfNat (Option Nat) 1
+use `set_option diagnostics true` to get diagnostic information
 -/
 #guard_msgs in
 example : Option Nat := by use 1
 
 /--
-error: failed to synthesize instance
+error: failed to synthesize
   OfNat (Nat → Nat) 1
+use `set_option diagnostics true` to get diagnostic information
 -/
 #guard_msgs in
 example : Nat → Nat := by use 1
