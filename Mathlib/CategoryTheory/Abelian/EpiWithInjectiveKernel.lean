@@ -57,7 +57,7 @@ lemma epiWithInjectiveKernel_of_iso {X Y : C} (f : X ⟶ Y) [IsIso f] :
     ⟨ShortComplex.Splitting.ofIsZeroOfIsIso _ (isZero_zero C) (by dsimp; infer_instance)⟩⟩
 
 instance : (epiWithInjectiveKernel : MorphismProperty C).IsMultiplicative where
-  id_mem _ := by apply epiWithInjectiveKernel_of_iso
+  id_mem _ := epiWithInjectiveKernel_of_iso _
   comp_mem {X Y Z} g₁ g₂ hg₁ hg₂ := by
     rw [epiWithInjectiveKernel_iff] at hg₁ hg₂ ⊢
     obtain ⟨I₁, _, f₁, w₁, ⟨σ₁⟩⟩ := hg₁
