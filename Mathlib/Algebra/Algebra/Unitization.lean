@@ -3,7 +3,7 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.StarAlgHom
@@ -57,7 +57,7 @@ extension to a (unital) algebra homomorphism from `Unitization R A` to `B`.
 
 
 /-- The minimal unitization of a non-unital `R`-algebra `A`. This is just a type synonym for
-`R × A`.-/
+`R × A`. -/
 def Unitization (R A : Type*) :=
   R × A
 #align unitization Unitization

@@ -3,6 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.Bool.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Init.Data.Bool.Lemmas
 

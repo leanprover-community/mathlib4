@@ -51,7 +51,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     exact
       calc
         edist z x ≤ edist z y + edist y x := edist_triangle _ _ _
-        _ ≤ min (min (δ / 2) r) (B (n + 1)) + δ / 2 := (add_le_add hz (le_of_lt xy))
+        _ ≤ min (min (δ / 2) r) (B (n + 1)) + δ / 2 := add_le_add hz (le_of_lt xy)
         _ ≤ δ / 2 + δ / 2 := (add_le_add (le_trans (min_le_left _ _) (min_le_left _ _)) le_rfl)
         _ = δ := ENNReal.add_halves δ
     show z ∈ f n

@@ -68,7 +68,7 @@ theorem separable_minpoly_mod {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
     simp only [map_sub, map_pow, coe_mapRingHom, map_X, map_one]
   refine' Separable.of_dvd (separable_X_pow_sub_C 1 _ one_ne_zero) hdvd
   by_contra hzero
-  exact hdiv ((ZMod.nat_cast_zmod_eq_zero_iff_dvd n p).1 hzero)
+  exact hdiv ((ZMod.natCast_zmod_eq_zero_iff_dvd n p).1 hzero)
 #align is_primitive_root.separable_minpoly_mod IsPrimitiveRoot.separable_minpoly_mod
 
 /-- The reduction modulo `p` of the minimal polynomial of a root of unity `μ` is squarefree. -/
@@ -77,7 +77,7 @@ theorem squarefree_minpoly_mod {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
   (separable_minpoly_mod h hdiv).squarefree
 #align is_primitive_root.squarefree_minpoly_mod IsPrimitiveRoot.squarefree_minpoly_mod
 
-/- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
+/-- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
 `μ ^ p`, where `p` is a natural number that does not divide `n`. Then `P` divides `expand ℤ p Q`. -/
 theorem minpoly_dvd_expand {p : ℕ} (hdiv : ¬p ∣ n) :
     minpoly ℤ μ ∣ expand ℤ p (minpoly ℤ (μ ^ p)) := by
@@ -90,7 +90,7 @@ theorem minpoly_dvd_expand {p : ℕ} (hdiv : ¬p ∣ n) :
     exact minpoly.aeval _ _
 #align is_primitive_root.minpoly_dvd_expand IsPrimitiveRoot.minpoly_dvd_expand
 
-/- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
+/-- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
 `μ ^ p`, where `p` is a prime that does not divide `n`. Then `P` divides `Q ^ p` modulo `p`. -/
 theorem minpoly_dvd_pow_mod {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
     map (Int.castRingHom (ZMod p)) (minpoly ℤ μ) ∣
@@ -104,7 +104,7 @@ theorem minpoly_dvd_pow_mod {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n)
   exact minpoly_dvd_expand h hdiv
 #align is_primitive_root.minpoly_dvd_pow_mod IsPrimitiveRoot.minpoly_dvd_pow_mod
 
-/- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
+/-- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
 `μ ^ p`, where `p` is a prime that does not divide `n`. Then `P` divides `Q` modulo `p`. -/
 theorem minpoly_dvd_mod_p {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
     map (Int.castRingHom (ZMod p)) (minpoly ℤ μ) ∣
@@ -155,7 +155,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
     lt_of_lt_of_le (PartENat.coe_lt_coe.2 one_lt_two)
       (multiplicity.le_multiplicity_of_pow_dvd (dvd_trans habs prod))
   have hfree : Squarefree (X ^ n - 1 : (ZMod p)[X]) :=
-    (separable_X_pow_sub_C 1 (fun h => hdiv <| (ZMod.nat_cast_zmod_eq_zero_iff_dvd n p).1 h)
+    (separable_X_pow_sub_C 1 (fun h => hdiv <| (ZMod.natCast_zmod_eq_zero_iff_dvd n p).1 h)
         one_ne_zero).squarefree
   cases'
     (multiplicity.squarefree_iff_multiplicity_le_one (X ^ n - 1)).1 hfree
@@ -198,7 +198,7 @@ then the minimal polynomial of a primitive `n`-th root of unity `μ`
 has `μ ^ m` as root. -/
 theorem pow_isRoot_minpoly {m : ℕ} (hcop : Nat.Coprime m n) :
     IsRoot (map (Int.castRingHom K) (minpoly ℤ μ)) (μ ^ m) := by
-  simp only [minpoly_eq_pow_coprime h hcop, IsRoot.definition, eval_map]
+  simp only [minpoly_eq_pow_coprime h hcop, IsRoot.def, eval_map]
   exact minpoly.aeval ℤ (μ ^ m)
 #align is_primitive_root.pow_is_root_minpoly IsPrimitiveRoot.pow_isRoot_minpoly
 
@@ -225,9 +225,9 @@ theorem totient_le_degree_minpoly : Nat.totient n ≤ (minpoly ℤ μ).natDegree
   -- minimal polynomial of `μ` sent to `K[X]`
   calc
     n.totient = (primitiveRoots n K).card := h.card_primitiveRoots.symm
-    _ ≤ P_K.roots.toFinset.card := (Finset.card_le_card (is_roots_of_minpoly h))
-    _ ≤ Multiset.card P_K.roots := (Multiset.toFinset_card_le _)
-    _ ≤ P_K.natDegree := (card_roots' _)
+    _ ≤ P_K.roots.toFinset.card := Finset.card_le_card (is_roots_of_minpoly h)
+    _ ≤ Multiset.card P_K.roots := Multiset.toFinset_card_le _
+    _ ≤ P_K.natDegree := card_roots' _
     _ ≤ P.natDegree := natDegree_map_le _ _
 #align is_primitive_root.totient_le_degree_minpoly IsPrimitiveRoot.totient_le_degree_minpoly
 

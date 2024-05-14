@@ -124,8 +124,8 @@ lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈
   have := h₀ k <| by simp
   let c := w j + w k
   have hc : w j / c + w k / c = 1 := by field_simp
-  have hcj : c * (w j / c) = w j := by field_simp; ring
-  have hck : c * (w k / c) = w k := by field_simp; ring
+  have hcj : c * (w j / c) = w j := by field_simp
+  have hck : c * (w k / c) = w k := by field_simp
   calc f (w j • p j + (w k • p k + ∑ x in u, w x • p x))
     _ = f (c • ((w j / c) • p j + (w k / c) • p k) + ∑ x in u, w x • p x) := by
       rw [smul_add, ← mul_smul, ← mul_smul, hcj, hck, add_assoc]

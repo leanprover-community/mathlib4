@@ -82,8 +82,8 @@ theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t
     apply (all_card_le_biUnion_card_iff_existsInjective' fun i : ι' => t i).mp
     intro s'
     convert h (s'.image (↑)) using 1
-    simp only [card_image_of_injective s' Subtype.coe_injective]
-    rw [image_biUnion]
+    · simp only [card_image_of_injective s' Subtype.coe_injective]
+    · rw [image_biUnion]
 #align hall_matchings_on.nonempty hallMatchingsOn.nonempty
 
 /-- This is the `hallMatchingsOn` sets assembled into a directed system.

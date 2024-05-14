@@ -6,6 +6,7 @@ Authors: Patrick Massot, Yury Kudryashov
 import Mathlib.Topology.Order.LocalExtr
 import Mathlib.Topology.Order.IntermediateValue
 import Mathlib.Topology.Support
+import Mathlib.Topology.Order.IsLUB
 
 #align_import topology.algebra.order.compact from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 
@@ -77,7 +78,7 @@ instance [TopologicalSpace α] [Preorder α] [CompactIccSpace α] : CompactIccSp
 instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (α : Type*)
     [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] :
     CompactIccSpace α := by
-  refine' .mk'' fun {a b} hlt => ?_
+  refine .mk'' fun {a b} hlt => ?_
   rcases le_or_lt a b with hab | hab
   swap
   · simp [hab]
@@ -570,19 +571,17 @@ theorem eq_Icc_of_connected_compact {s : Set α} (h₁ : IsConnected s) (h₂ : 
   eq_Icc_csInf_csSup_of_connected_bdd_closed h₁ h₂.bddBelow h₂.bddAbove h₂.isClosed
 #align eq_Icc_of_connected_compact eq_Icc_of_connected_compact
 
-/- If `f : γ → β → α` is a function that is continuous as a function on `γ × β`, `α` is a
+/-- If `f : γ → β → α` is a function that is continuous as a function on `γ × β`, `α` is a
 conditionally complete linear order, and `K : Set β` is a compact set, then
-`fun x ↦ sSup (f x '' K)` is a continuous function.
-
-Porting note (#11215): TODO: generalize. The following version seems to be true:
+`fun x ↦ sSup (f x '' K)` is a continuous function. -/
+/- Porting note (#11215): TODO: generalize. The following version seems to be true:
 ```
 theorem IsCompact.tendsto_sSup {f : γ → β → α} {g : β → α} {K : Set β} {l : Filter γ}
     (hK : IsCompact K) (hf : ∀ y ∈ K, Tendsto ↿f (l ×ˢ 𝓝[K] y) (𝓝 (g y)))
     (hgc : ContinuousOn g K) :
     Tendsto (fun x => sSup (f x '' K)) l (𝓝 (sSup (g '' K))) := _
 ```
-Moreover, it seems that `hgc` follows from `hf` (Yury Kudryashov).
--/
+Moreover, it seems that `hgc` follows from `hf` (Yury Kudryashov). -/
 theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCompact K)
     (hf : Continuous ↿f) : Continuous fun x => sSup (f x '' K) := by
   rcases eq_empty_or_nonempty K with (rfl | h0K)

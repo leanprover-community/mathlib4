@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
 -/
 import Std.Util.Cache
+import Lean.HeadIndex
+import Lean.Elab.Command
 
 /-!
 # The `#find` command and tactic.

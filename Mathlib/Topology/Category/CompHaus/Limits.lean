@@ -24,7 +24,7 @@ So far, we have the following:
 
 namespace CompHaus
 
-universe u
+universe u w
 
 open CategoryTheory Limits
 
@@ -138,7 +138,7 @@ end Pullbacks
 
 section FiniteCoproducts
 
-variable {α : Type} [Finite α] (X : α → CompHaus.{u})
+variable {α : Type w} [Finite α] (X : α → CompHausMax.{u, w})
 
 /--
 The coproduct of a finite family of objects in `CompHaus`, constructed as the disjoint
@@ -158,7 +158,7 @@ To construct a morphism from the explicit finite coproduct, it suffices to
 specify a morphism from each of its factors.
 This is essentially the universal property of the coproduct.
 -/
-def finiteCoproduct.desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) :
+def finiteCoproduct.desc {B : CompHausMax.{u, w}} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
   toFun := fun ⟨a,x⟩ => e a x
   continuous_toFun := by
@@ -166,10 +166,10 @@ def finiteCoproduct.desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) :
     intro a; exact (e a).continuous
 
 @[reassoc (attr := simp)]
-lemma finiteCoproduct.ι_desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
+lemma finiteCoproduct.ι_desc {B : CompHausMax.{u, w}} (e : (a : α) → (X a ⟶ B)) (a : α) :
     finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
 
-lemma finiteCoproduct.hom_ext {B : CompHaus.{u}} (f g : finiteCoproduct X ⟶ B)
+lemma finiteCoproduct.hom_ext {B : CompHausMax.{u, w}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
   ext ⟨a,x⟩
   specialize h a
@@ -243,5 +243,19 @@ instance : FinitaryExtensive CompHaus :=
   finitaryExtensive_of_preserves_and_reflects compHausToTop
 
 end FiniteCoproducts
+
+section Terminal
+
+/-- A one-element space is terminal in `CompHaus` -/
+def isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) :=
+  haveI : ∀ X, Unique (X ⟶ CompHaus.of PUnit.{u + 1}) := fun X =>
+    ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext; aesop⟩
+  Limits.IsTerminal.ofUnique _
+
+/-- The isomorphism from an arbitrary terminal object of `CompHaus` to a one-element space. -/
+noncomputable def terminalIsoPUnit : ⊤_ CompHaus.{u} ≅ CompHaus.of PUnit :=
+  terminalIsTerminal.uniqueUpToIso CompHaus.isTerminalPUnit
+
+end Terminal
 
 end CompHaus

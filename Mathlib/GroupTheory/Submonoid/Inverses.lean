@@ -17,10 +17,10 @@ since the inverses are unique. When `N ≤ IsUnit.Submonoid M`, this is precisel
 the pointwise inverse of `N`, and we may define `leftInvEquiv : S.leftInv ≃* S`.
 
 For the pointwise inverse of submonoids of groups, please refer to
-`GroupTheory.Submonoid.Pointwise`.
+`Mathlib.GroupTheory.Submonoid.Pointwise`.
 
-`N.leftInv` is distinct from `N.units`, which is the subgroup of `Mˣ` containing all units that
-are in `N`. See the implementation notes of `GroupTheory/Submonoid/Units` for more details on
+`N.leftInv` is distinct from `N.units`, which is the subgroup of `Mˣ` containing all units that are
+in `N`. See the implementation notes of `Mathlib.GroupTheory.Submonoid.Units` for more details on
 related constructions.
 
 ## TODO

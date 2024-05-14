@@ -7,7 +7,7 @@ import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import topology.category.Top.limits.products from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -179,7 +179,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
     toFun := fun s => (S.fst s, S.snd s)
     -- Porting note: continuity failed again here. Lean cannot infer
     -- ContinuousMapClass (X ⟶ Y) X Y for X Y : TopCat which may be one of the problems
-    continuous_toFun := (Continuous.prod_mk)
+    continuous_toFun := Continuous.prod_mk
       (BinaryFan.fst S).continuous_toFun (BinaryFan.snd S).continuous_toFun }
   fac := by
     rintro S (_ | _) <;> {dsimp; ext; rfl}

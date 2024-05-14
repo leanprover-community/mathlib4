@@ -171,9 +171,9 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
   rw [mul_one_div (↑(n.choose x) : ℚ), one_div_mul_one_div]
   symm
   rw [div_eq_iff, div_mul_eq_mul_div, one_mul, choose_eq_factorial_div_factorial]
-  norm_cast
-  rw [cast_div_charZero]
-  · apply factorial_mul_factorial_dvd_factorial (mem_range_succ_iff.1 hx)
+  · norm_cast
+    rw [cast_div_charZero]
+    apply factorial_mul_factorial_dvd_factorial (mem_range_succ_iff.1 hx)
   · apply mem_range_succ_iff.1 hx
   · rintro h
     apply factorial_ne_zero n

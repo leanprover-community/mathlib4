@@ -319,15 +319,14 @@ theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : I
     simp⟩
 #align category_theory.adjunction.map_injective CategoryTheory.Adjunction.map_injective
 
-theorem injective_of_map_injective (adj : F ⊣ G) [Full G] [Faithful G] (I : D)
+theorem injective_of_map_injective (adj : F ⊣ G) [G.Full] [G.Faithful] (I : D)
     (hI : Injective (G.obj I)) : Injective I :=
   ⟨fun {X} {Y} f g => by
     intro
     haveI : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjointPreservesLimits
     rcases hI.factors (G.map f) (G.map g) with ⟨w,h⟩
     use inv (adj.counit.app _) ≫ F.map w ≫ adj.counit.app _
-    refine' Faithful.map_injective (F := G) _
-    simpa⟩
+    exact G.map_injective (by simpa)⟩
 #align category_theory.adjunction.injective_of_map_injective CategoryTheory.Adjunction.injective_of_map_injective
 
 /-- Given an adjunction `F ⊣ G` such that `F` preserves monos, `G` maps an injective presentation
@@ -367,7 +366,7 @@ lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
 /-- An equivalence of categories transfers enough injectives. -/
 lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
     [Category.{v₁} C] [Category.{v₂} D]
-    (e : C ⥤ D) [IsEquivalence e] [EnoughInjectives D] : EnoughInjectives C :=
+    (e : C ⥤ D) [e.IsEquivalence] [EnoughInjectives D] : EnoughInjectives C :=
   EnoughInjectives.of_adjunction (adj := e.asEquivalence.toAdjunction)
 
 namespace Equivalence

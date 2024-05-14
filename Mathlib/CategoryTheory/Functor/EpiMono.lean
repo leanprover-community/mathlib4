@@ -221,20 +221,15 @@ section
 variable (F : C ⥤ D) {X Y : C} (f : X ⟶ Y)
 
 /-- If `F` is a fully faithful functor, split epimorphisms are preserved and reflected by `F`. -/
-def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi (F.map f)
+noncomputable def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi (F.map f)
     where
   toFun f := f.map F
-  invFun s := by
-    refine' ⟨F.preimage s.section_, _⟩
+  invFun s := ⟨F.preimage s.section_, by
     apply F.map_injective
-    simp only [map_comp, image_preimage, map_id]
-    apply SplitEpi.id
+    simp only [map_comp, map_preimage, map_id]
+    apply SplitEpi.id⟩
   left_inv := by aesop_cat
-  right_inv := by
-      simp only [Function.RightInverse,Function.LeftInverse]
-      intro x
-      simp only [SplitEpi.map, preimage]
-      aesop_cat
+  right_inv x := by aesop_cat
 #align category_theory.functor.split_epi_equiv CategoryTheory.Functor.splitEpiEquiv
 
 @[simp]
@@ -247,20 +242,15 @@ theorem isSplitEpi_iff [Full F] [Faithful F] : IsSplitEpi (F.map f) ↔ IsSplitE
 #align category_theory.functor.is_split_epi_iff CategoryTheory.Functor.isSplitEpi_iff
 
 /-- If `F` is a fully faithful functor, split monomorphisms are preserved and reflected by `F`. -/
-def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMono (F.map f)
+noncomputable def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMono (F.map f)
     where
   toFun f := f.map F
-  invFun s := by
-    refine' ⟨F.preimage s.retraction, _⟩
+  invFun s := ⟨F.preimage s.retraction, by
     apply F.map_injective
-    simp only [map_comp, image_preimage, map_id]
-    apply SplitMono.id
+    simp only [map_comp, map_preimage, map_id]
+    apply SplitMono.id⟩
   left_inv := by aesop_cat
-  right_inv := by
-    simp only [Function.RightInverse, Function.LeftInverse]
-    intro x
-    simp only [SplitMono.map,preimage]
-    aesop_cat
+  right_inv x := by aesop_cat
 #align category_theory.functor.split_mono_equiv CategoryTheory.Functor.splitMonoEquiv
 
 @[simp]
@@ -316,7 +306,7 @@ theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [h₁ : F'.Pre
     infer_instance⟩
 #align category_theory.adjunction.strong_epi_map_of_strong_epi CategoryTheory.Adjunction.strongEpi_map_of_strongEpi
 
-instance strongEpi_map_of_isEquivalence [IsEquivalence F] (f : A ⟶ B) [_h : StrongEpi f] :
+instance strongEpi_map_of_isEquivalence [F.IsEquivalence] (f : A ⟶ B) [_h : StrongEpi f] :
     StrongEpi (F.map f) :=
   F.asEquivalence.toAdjunction.strongEpi_map_of_strongEpi f
 #align category_theory.adjunction.strong_epi_map_of_is_equivalence CategoryTheory.Adjunction.strongEpi_map_of_isEquivalence

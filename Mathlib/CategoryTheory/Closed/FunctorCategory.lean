@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
 import Mathlib.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 #align_import category_theory.closed.functor_category from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"

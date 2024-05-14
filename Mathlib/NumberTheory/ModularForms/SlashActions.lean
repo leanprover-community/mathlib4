@@ -39,7 +39,7 @@ local notation:1024 "↑ₘ" A:1024 =>
 local notation:1024 "↑ₘ[" R "]" A:1024 =>
   ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
 
-/-- A general version of the slash action of the space of modular forms.-/
+/-- A general version of the slash action of the space of modular forms. -/
 class SlashAction (β G α γ : Type*) [Group G] [AddMonoid α] [SMul γ α] where
   map : β → G → α → α
   zero_slash : ∀ (k : β) (g : G), map k g 0 = 0
@@ -72,7 +72,7 @@ theorem SlashAction.smul_slash_of_tower {R β G α : Type*} (γ : Type*) [Group 
 attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.smul_slash
   SlashAction.add_slash
 
-/-- Slash_action induced by a monoid homomorphism.-/
+/-- Slash_action induced by a monoid homomorphism. -/
 def monoidHomSlashAction {β G H α γ : Type*} [Group G] [AddMonoid α] [SMul γ α] [Group H]
     [SlashAction β G α γ] (h : H →* G) : SlashAction β H α γ where
   map k g := SlashAction.map γ k (h g)

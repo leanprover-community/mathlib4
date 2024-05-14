@@ -124,7 +124,7 @@ theorem tendsto_abv_atTop {R k α : Type*} [Ring R] [LinearOrderedField k] (abv 
     [IsAbsoluteValue abv] (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α → R}
     (hz : Tendsto (abv ∘ z) l atTop) : Tendsto (fun x => abv (p.eval (z x))) l atTop := by
   apply tendsto_abv_eval₂_atTop _ _ _ h _ hz
-  exact (mt leadingCoeff_eq_zero.1 (ne_zero_of_degree_gt h))
+  exact mt leadingCoeff_eq_zero.1 (ne_zero_of_degree_gt h)
 #align polynomial.tendsto_abv_at_top Polynomial.tendsto_abv_atTop
 
 theorem tendsto_abv_aeval_atTop {R A k α : Type*} [CommSemiring R] [Ring A] [Algebra R A]
@@ -203,7 +203,9 @@ theorem coeff_bdd_of_roots_le {B : ℝ} {d : ℕ} (f : F →+* K) {p : F[X]} (h1
     calc
       _ ≤ max B 1 ^ (p.natDegree - i) * p.natDegree.choose i := by gcongr; apply le_max_left
       _ ≤ max B 1 ^ d * p.natDegree.choose i := by
-        gcongr; apply le_max_right; exact le_trans (Nat.sub_le _ _) h3
+        gcongr
+        · apply le_max_right
+        · exact le_trans (Nat.sub_le _ _) h3
       _ ≤ max B 1 ^ d * d.choose (d / 2) := by
         gcongr; exact (i.choose_mono h3).trans (i.choose_le_middle d)
   · rw [eq_one_of_roots_le hB h1 h2 h4, Polynomial.map_one, coeff_one]

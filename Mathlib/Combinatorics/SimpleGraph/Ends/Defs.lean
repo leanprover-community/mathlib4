@@ -248,7 +248,7 @@ theorem infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
 
 end ComponentCompl
 
-/- For a locally finite preconnected graph, the number of components outside of any finite set
+/-- For a locally finite preconnected graph, the number of components outside of any finite set
 is finite. -/
 instance componentCompl_finite [LocallyFinite G] [Gpc : Fact G.Preconnected] (K : Finset V) :
     Finite (G.ComponentCompl K) := by

@@ -21,11 +21,11 @@ an assignment of values to `x₁, ..., xₙ` such that every inequality in `S` i
 
 Specifically, we aim to show that they are *not* satisfiable. This amounts to proving a
 contradiction. If our goal is also a linear inequality, we negate it and move it to a hypothesis
-before trying to prove `false`.
+before trying to prove `False`.
 
 When the inequalities are over a dense linear order, `linarith` is a decision procedure: it will
-prove `false` if and only if the inequalities are unsatisfiable. `linarith` will also run on some
-types like `ℤ` that are not dense orders, but it will fail to prove `false` on some unsatisfiable
+prove `False` if and only if the inequalities are unsatisfiable. `linarith` will also run on some
+types like `ℤ` that are not dense orders, but it will fail to prove `False` on some unsatisfiable
 problems. It will run over concrete types like `ℕ`, `ℚ`, and `ℝ`, as well as abstract types that
 are instances of `LinearOrderedCommRing`.
 
@@ -90,7 +90,7 @@ A variant, `nlinarith`, adds an extra preprocessing step to handle some basic no
 There is a hook in the `linarith_config` configuration object to add custom preprocessing routines.
 
 The certificate checking step is *not* by reflection. `linarith` converts the certificate into a
-proof term of type `false`.
+proof term of type `False`.
 
 Some of the behavior of `linarith` can be inspected with the option
 `set_option trace.linarith true`.
@@ -109,7 +109,7 @@ The components of `linarith` are spread between a number of files for the sake o
   hypotheses into a shape suitable for the main routine.
 * `Parsing.lean` contains functions used to compute the linear structure of an expression.
 * `Elimination.lean` contains the Fourier-Motzkin elimination routine.
-* `Verification.lean` contains the certificate checking functions that produce a proof of `false`.
+* `Verification.lean` contains the certificate checking functions that produce a proof of `False`.
 * `Frontend.lean` contains the control methods and user-facing components of the tactic.
 
 ## Tags
@@ -198,8 +198,8 @@ def partitionByType (l : List Expr) : MetaM (ExprMultiMap Expr) :=
 
 /--
 Given a list `ls` of lists of proofs of comparisons, `findLinarithContradiction cfg ls` will try to
-prove `false` by calling `linarith` on each list in succession. It will stop at the first proof of
-`false`, and fail if no contradiction is found with any list.
+prove `False` by calling `linarith` on each list in succession. It will stop at the first proof of
+`False`, and fail if no contradiction is found with any list.
 -/
 def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId) (ls : List (List Expr)) :
     MetaM Expr :=
@@ -273,11 +273,11 @@ partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig :
       linarith only_on hyps cfg g₂
       return
 
-  /- If we are proving a comparison goal (and not just `false`), we consider the type of the
+  /- If we are proving a comparison goal (and not just `False`), we consider the type of the
     elements in the comparison to be the "preferred" type. That is, if we find comparison
     hypotheses in multiple types, we will run `linarith` on the goal type first.
     In this case we also receive a new variable from moving the goal to a hypothesis.
-    Otherwise, there is no preferred type and no new variable; we simply change the goal to `false`.
+    Otherwise, there is no preferred type and no new variable; we simply change the goal to `False`.
   -/
 
   let (g, target_type, new_var) ← match ← applyContrLemma g with
@@ -356,9 +356,9 @@ optional arguments:
 * If `splitNe` is `true`, `linarith` will case split on disequality hypotheses.
   For a given `x ≠ y` hypothesis, `linarith` is run with both `x < y` and `x > y`,
   and so this runs linarith exponentially many times with respect to the number of
-  disequality hypotheses. (False by default.)
-* If `exfalso` is false, `linarith` will fail when the goal is neither an inequality nor `false`.
-  (True by default.)
+  disequality hypotheses. (`false` by default.)
+* If `exfalso` is `false`, `linarith` will fail when the goal is neither an inequality nor `False`.
+  (`true` by default.)
 * `restrict_type` (not yet implemented in mathlib4)
   will only use hypotheses that are inequalities over `tp`. This is useful
   if you have e.g. both integer and rational valued inequalities in the local context, which can

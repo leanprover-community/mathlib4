@@ -3,9 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.GroupTheory.GroupAction.Pi
 
 /-!
 # Maps (semi)conjugating a shift to a shift
@@ -34,7 +36,7 @@ structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
   /-- The underlying function of an `AddConstMap`.
   Use automatic coercion to function instead. -/
   protected toFun : G → H
-  /-- An `AddConstMap` satisfies `f (x + a) = f x + b`. Use `map_add_const` instead.-/
+  /-- An `AddConstMap` satisfies `f (x + a) = f x + b`. Use `map_add_const` instead. -/
   map_add_const' (x : G) : toFun (x + a) = toFun x + b
 
 @[inherit_doc]
