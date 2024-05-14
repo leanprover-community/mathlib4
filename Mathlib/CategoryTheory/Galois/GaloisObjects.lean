@@ -135,7 +135,7 @@ lemma exists_autMap {A B : C} (f : A ⟶ B) [IsConnected A] [IsGalois B] (σ : A
     simpa using congr_fun (F.congr_map hτ) a
 
 /-- A morphism from a connected object to a Galois object induces a map on automorphism
-groups. This is a group homomorphism (see `autMapMul`). -/
+groups. This is a group homomorphism (see `autMapHom`). -/
 noncomputable def autMap {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut A) :
     Aut B :=
   (exists_autMap f σ).choose
@@ -189,7 +189,8 @@ lemma autMap_apply_mul {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ 
   simp [Aut.Aut_mul_def]
 
 /-- `MonoidHom` version of `autMap`. -/
-noncomputable def autMapMul {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) :
+@[simps!]
+noncomputable def autMapHom {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) :
      Aut A →* Aut B :=
   MonoidHom.mk' (autMap f) (autMap_apply_mul f)
 

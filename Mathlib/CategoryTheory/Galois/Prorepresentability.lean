@@ -169,17 +169,15 @@ open PointedGaloisObject
 as an object of `C`. -/
 noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GroupCat.{u₂} where
   obj := fun A ↦ GroupCat.of <| Aut (A : C)
-  map := fun {A B} f ↦ (autMapMul f : Aut (A : C) →* Aut (B : C))
+  map := fun {A B} f ↦ (autMapHom f : Aut (A : C) →* Aut (B : C))
   map_id := fun A ↦ by
-    ext (σ : Aut (A : C))
-    show autMap (𝟙 A.obj) σ = σ
-    apply evaluation_aut_injective_of_isConnected F A A.pt
+    ext (σ : Aut A.obj)
     simp
+    rfl
   map_comp {A B C} f g := by
     ext (σ : Aut A.obj)
-    show autMap (f ≫ g).val σ = autMap g.val (autMap f.val σ)
-    apply evaluation_aut_injective_of_isConnected F C C.pt
     simp
+    rfl
 
 end PreGaloisCategory
 
