@@ -38,7 +38,8 @@ theorem r1_pos (z : ℍ) : 0 < r1 z := by
   dsimp only [r1]
   positivity
 
-/-- This function is used to give an upper bound on Eisenstein series. -/
+/-- This function is used to give an upper bound on Eisenstein series, defined as
+the minimun of `z.im` and `√(z.im ^ 2 / (z.re ^ 2 + z.im ^ 2))`. -/
 def r (z : ℍ) : ℝ := min z.im √(r1 z)
 
 lemma r_pos (z : ℍ) : 0 < r z := by
@@ -123,10 +124,10 @@ theorem summand_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : �
     exact Real.rpow_le_rpow_of_nonpos (mul_pos (r_pos _) (by positivity)) (hx ▸ r_mul_max_le z hx2)
       (neg_nonpos.mpr hk)
 
-/- This is a special case of the above, but one that we use more. -/
+/- This is a special case of the above, but one that we use more for Eisenstein series. -/
 theorem eisSummand_is_bounded_on_box_zpow {k : ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hk : 0 ≤ k)
     (hx : (x 0, x 1) ∈ box n) : Complex.abs (eisSummand k x z) ≤ ((r z) ^ k * n ^ k)⁻¹ := by
-  have := summand_is_bounded_on_box_rpow (Int.cast_nonneg.2 hk) z n x hx
+  have := summand_is_bounded_on_box_rpow (Int.cast_nonneg.mpr hk) z n x hx
   simp_rw [← Int.cast_neg k, Real.rpow_intCast, zpow_neg] at this
   rw [mul_inv, eisSummand, one_div, map_inv₀, map_zpow₀]
   exact this
@@ -134,12 +135,10 @@ theorem eisSummand_is_bounded_on_box_zpow {k : ℤ} (n : ℕ) (z : ℍ) (x : Fin
 lemma r_lower_bound_on_verticalStrip {A B : ℝ} (h : 0 < B) (z : verticalStrip A B) :
     r ⟨⟨A, B⟩, h⟩ ≤ r z.1 := by
   rcases z with ⟨z, hz⟩
-  simp only [mem_verticalStrip_iff, abs_ofReal] at hz
-  apply min_le_min hz.2
-  rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le)]
-  simp only [r1_eq, div_pow, one_div]
+  apply min_le_min ((mem_verticalStrip_iff A B z).mp hz).2
+  simp_rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le), r1_eq, div_pow, one_div]
   rw [inv_le_inv (by positivity) (by positivity), add_le_add_iff_right]
-  apply div_le_div (sq_nonneg _) _ (by positivity) (pow_le_pow_left h.le hz.2 2)
+  apply div_le_div (sq_nonneg _) ?_ (by positivity) (pow_le_pow_left h.le hz.2 2)
   simpa only [even_two.pow_abs] using pow_le_pow_left (abs_nonneg _) hz.1 2
 
 end bounding_functions
@@ -155,14 +154,14 @@ lemma summable_over_box {k : ℤ} (z : ℍ) (h : 3 ≤ k):
   have hk : 1 < (k - 1 : ℝ) := by norm_cast; exact Int.lt_sub_left_of_add_lt h
   have nze : 8 * ((r z) ^ k)⁻¹ ≠ 0 := by
     exact div_ne_zero (OfNat.ofNat_ne_zero 8) (zpow_ne_zero k (ne_of_gt (r_pos z)))
-  apply ((summable_mul_left_iff nze).mpr (Real.summable_nat_rpow_inv.2 hk)).congr
+  apply ((summable_mul_left_iff nze).mpr (Real.summable_nat_rpow_inv.mpr hk)).congr
   intro b
   norm_cast
   by_cases b0 : b = 0
   · simp only [b0, CharP.cast_eq_zero, zero_zpow (k - 1) (by omega), inv_zero, mul_zero,
     box_zero, Finset.card_singleton, Nat.cast_one, zero_zpow k (by omega)]
-  · rw [Int.card_box b0, zpow_sub_one₀ (a:= (b : ℝ)) (Nat.cast_ne_zero.mpr b0) k]
-    simp only [mul_inv_rev, inv_inv, Nat.cast_mul, Nat.cast_ofNat]
+  · rw [Int.card_box b0, zpow_sub_one₀ (a:= (b : ℝ)) (Nat.cast_ne_zero.mpr b0) k,
+      mul_inv_rev, inv_inv, Nat.cast_mul, Nat.cast_ofNat]
     ring_nf
 
 lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x : Fin 2 → ℤ) =>
@@ -177,18 +176,15 @@ lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
     · simp only [mul_inv_rev, mul_comm, Fin.isValue, Fin.cons_zero, Fin.cons_one,
       Int.mem_box.mp hx]
   · intro y
-    simp only [Pi.zero_apply, Fin.isValue, mul_inv_rev, piFinTwoEquiv_symm_apply,
+    simp only [Pi.zero_apply, Fin.isValue, Nat.cast_max, mul_inv_rev, piFinTwoEquiv_symm_apply,
       Function.comp_apply, Fin.cons_zero, Fin.cons_one]
-    apply mul_nonneg
-    · simp only [piFinTwoEquiv_symm_apply, Fin.cons_zero, Fin.cons_one, inv_nonneg, ge_iff_le,
-      le_max_iff, Nat.cast_nonneg, or_self, zpow_nonneg]
-    · simp only [one_div, inv_nonneg]
-      apply zpow_nonneg (r_pos z).le
+    apply mul_nonneg ?_ (inv_nonneg.mpr ((zpow_nonneg (r_pos z).le) k))
+    simp only [inv_nonneg, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self, zpow_nonneg]
 
 end summability
 
-theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : ℕ)
-    (a : Fin 2 → ZMod N) : TendstoLocallyUniformly (fun (s : Finset (gammaSet N a)) =>
+theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} {N : ℕ} (hk : 3 ≤ k) (a : Fin 2 → ZMod N) :
+    TendstoLocallyUniformly (fun (s : Finset (gammaSet N a)) =>
       (fun (z : ℍ) => ∑ x in s, eisSummand k x z))
         (fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop := by
   rw [← tendstoLocallyUniformlyOn_univ,tendstoLocallyUniformlyOn_iff_forall_isCompact
