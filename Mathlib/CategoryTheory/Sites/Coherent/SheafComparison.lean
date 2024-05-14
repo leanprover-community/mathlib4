@@ -231,7 +231,7 @@ theorem isSheaf_coherent_iff_regular_and_extensive [Preregular C] [FinitaryPreEx
   rw [← extensive_regular_generate_coherent]
   exact isSheaf_sup (extensiveCoverage C) (regularCoverage C) F
 
-theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition_general
+theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
     [Preregular C] [FinitaryExtensive C]
     [h : ∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f] :
     IsSheaf (coherentTopology C) F ↔ Nonempty (PreservesFiniteProducts F) ∧
@@ -240,5 +240,12 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition_general
   apply and_congr
   · exact isSheaf_iff_preservesFiniteProducts _
   · exact (@equalizerCondition_iff_isSheaf _ _ _ _ F _ h).symm
+
+theorem isSheaf_iff_preservesFiniteProducts_of_projective [Preregular C] [FinitaryExtensive C]
+    [∀ (X : C), Projective X] :
+    IsSheaf (coherentTopology C) F ↔ Nonempty (PreservesFiniteProducts F) := by
+  rw [isSheaf_coherent_iff_regular_and_extensive, and_iff_left ?_]
+  · rw [Presheaf.isSheaf_iff_preservesFiniteProducts]
+  · exact isSheaf_of_projective F
 
 end CategoryTheory.Presheaf
