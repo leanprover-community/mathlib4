@@ -174,7 +174,7 @@ lemma size_eq_iff_le_and_lt (n : ℕ) (i : ℕ) : n.size = i + 1 ↔ 2 ^ i ≤ n
 
 lemma size_eq_iff_testBit (n : ℕ) (i : ℕ) : n.size = i + 1 ↔
     n.testBit i ∧ ∀ j > i, n.testBit j = false := by
-  rw [size_eq_iff_le_lt]
+  rw [size_eq_iff_le_and_lt]
   constructor
   · rintro ⟨lb, ub⟩
     have ⟨j, _, h⟩ := ge_two_pow_implies_high_bit_true lb
