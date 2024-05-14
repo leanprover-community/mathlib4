@@ -29,13 +29,13 @@ variable (R : Type u) [CommRing R]
 @[simps] noncomputable instance instMonoidalCategoryStruct :
     MonoidalCategoryStruct.{u} (HopfAlgebraCat R) where
   tensorObj := fun X Y => HopfAlgebraCat.of R (X ⊗[R] Y)
-  whiskerLeft := fun X _ _ f => HopfAlgebraCat.ofHom (f.lTensor X)
-  whiskerRight := fun f X => HopfAlgebraCat.ofHom (f.rTensor X)
-  tensorHom := fun f g => HopfAlgebraCat.ofHom (Bialgebra.TensorProduct.map f g)
+  whiskerLeft := fun X _ _ f => HopfAlgebraCat.ofHom (f.1.lTensor X)
+  whiskerRight := fun f X => HopfAlgebraCat.ofHom (f.1.rTensor X)
+  tensorHom := fun f g => HopfAlgebraCat.ofHom (Bialgebra.TensorProduct.map f.1 g.1)
   tensorUnit := HopfAlgebraCat.of R R
-  associator := fun X Y Z => (Bialgebra.TensorProduct.assoc R X Y Z).toHopfAlgebraIso
-  leftUnitor := fun X => (Bialgebra.TensorProduct.lid R X).toHopfAlgebraIso
-  rightUnitor := fun X => (Bialgebra.TensorProduct.rid R X).toHopfAlgebraIso
+  associator := fun X Y Z => (Bialgebra.TensorProduct.assoc R X Y Z).toHopfAlgebraCatIso
+  leftUnitor := fun X => (Bialgebra.TensorProduct.lid R X).toHopfAlgebraCatIso
+  rightUnitor := fun X => (Bialgebra.TensorProduct.rid R X).toHopfAlgebraCatIso
 
 /-- The data needed to induce a `MonoidalCategory` structure via
 `HopfAlgebraCat.instMonoidalCategoryStruct` and the forgetful functor to bialgebras. -/
@@ -46,11 +46,11 @@ noncomputable def MonoidalCategory.inducingFunctorData :
   whiskerRight_eq := fun X f => by ext; rfl
   tensorHom_eq := fun f g => by ext; rfl
   εIso := Iso.refl _
-  associator_eq := fun X Y Z => BialgHom.coe_linearMap_injective <|
+  associator_eq := fun X Y Z => BialgebraCat.Hom.ext _ _ <| BialgHom.coe_linearMap_injective <|
     TensorProduct.ext <| TensorProduct.ext (by ext; rfl)
-  leftUnitor_eq := fun X => BialgHom.coe_linearMap_injective <|
+  leftUnitor_eq := fun X => BialgebraCat.Hom.ext _ _ <| BialgHom.coe_linearMap_injective <|
     TensorProduct.ext (by ext; rfl)
-  rightUnitor_eq := fun X => BialgHom.coe_linearMap_injective <|
+  rightUnitor_eq := fun X => BialgebraCat.Hom.ext _ _ <| BialgHom.coe_linearMap_injective <|
     TensorProduct.ext (by ext; rfl)
 
 noncomputable instance instMonoidalCategory : MonoidalCategory (HopfAlgebraCat R) :=
