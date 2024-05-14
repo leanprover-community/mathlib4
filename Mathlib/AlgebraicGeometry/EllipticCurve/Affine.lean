@@ -832,7 +832,7 @@ lemma map_slope {F : Type u} [Field F] (W : Affine F) {K : Type v} [Field K] (φ
   by_cases hx : x₁ = x₂
   · by_cases hy : y₁ = W.negY x₂ y₂
     · rw [slope_of_Yeq hx hy, slope_of_Yeq <| congr_arg _ hx, map_zero]
-      · rw [hy, map_negY]
+      rw [hy, map_negY]
     · rw [slope_of_Yne hx hy, slope_of_Yne <| congr_arg _ hx]
       · simp only [negY]
         map_simp
@@ -925,7 +925,7 @@ def map : W⟮F⟯ →+ W⟮K⟯ where
     · by_cases hy : y₁ = (W.baseChange F).toAffine.negY x₂ y₂
       · simp only [some_add_some_of_Yeq hx hy, mapFun]
         rw [some_add_some_of_Yeq <| congr_arg _ hx]
-        · rw [hy, baseChange_negY]
+        rw [hy, baseChange_negY]
       · simp only [some_add_some_of_Yne hx hy, mapFun]
         rw [some_add_some_of_Yne <| congr_arg _ hx]
         · simp only [some.injEq, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope]

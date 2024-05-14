@@ -5,7 +5,6 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Data.Nat.Factorization.PrimePow
-import Mathlib.RingTheory.Int.Basic
 
 #align_import data.nat.squarefree from "leanprover-community/mathlib"@"3c1368cac4abd5a5cbe44317ba7e87379d51ed88"
 
@@ -255,6 +254,7 @@ theorem squarefree_iff_minSqFac {n : ℕ} : Squarefree n ↔ n.minSqFac = none :
 instance : DecidablePred (Squarefree : ℕ → Prop) := fun _ =>
   decidable_of_iff' _ squarefree_iff_minSqFac
 
+unseal Nat.factors in
 theorem squarefree_two : Squarefree 2 := by
   rw [squarefree_iff_nodup_factors] <;> decide
 #align nat.squarefree_two Nat.squarefree_two

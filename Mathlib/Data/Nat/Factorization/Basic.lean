@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
 import Mathlib.Data.Finsupp.Multiset
+import Mathlib.Data.Nat.GCD.BigOperators
+import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal
-import Mathlib.Data.Nat.GCD.BigOperators
 
 #align_import data.nat.factorization.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -113,10 +114,12 @@ theorem factorization_inj : Set.InjOn factorization { x : ℕ | x ≠ 0 } := fun
   eq_of_factorization_eq ha hb fun p => by simp [h]
 #align nat.factorization_inj Nat.factorization_inj
 
+unseal Nat.factors in
 @[simp]
 theorem factorization_zero : factorization 0 = 0 := by decide
 #align nat.factorization_zero Nat.factorization_zero
 
+unseal Nat.factors in
 @[simp]
 theorem factorization_one : factorization 1 = 0 := by decide
 #align nat.factorization_one Nat.factorization_one

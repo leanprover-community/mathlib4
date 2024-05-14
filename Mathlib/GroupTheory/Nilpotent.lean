@@ -323,7 +323,8 @@ theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
 /-- The lower central series of a group is a descending central series. -/
 theorem lowerCentralSeries_isDescendingCentralSeries :
     IsDescendingCentralSeries (lowerCentralSeries G) := by
-  constructor; rfl
+  constructor
+  · rfl
   intro x n hxn g
   exact commutator_mem_commutator hxn (mem_top g)
 #align lower_central_series_is_descending_central_series lowerCentralSeries_isDescendingCentralSeries
@@ -476,7 +477,7 @@ theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
 
 instance (priority := 100) Group.isNilpotent_of_subsingleton [Subsingleton G] : IsNilpotent G :=
   nilpotent_iff_lowerCentralSeries.2 ⟨0, Subsingleton.elim ⊤ ⊥⟩
-#align is_nilpotent_of_subsingleton isNilpotent_of_subsingleton
+#align is_nilpotent_of_subsingleton Group.isNilpotent_of_subsingleton
 
 theorem upperCentralSeries.map {H : Type*} [Group H] {f : G →* H} (h : Function.Surjective f)
     (n : ℕ) : Subgroup.map f (upperCentralSeries G n) ≤ upperCentralSeries H n := by

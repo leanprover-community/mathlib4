@@ -45,11 +45,11 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
     have := hx'.mem_span_pow (y := ⟨y, hy⟩)
     rw [← minpoly.algebraMap_eq hST] at this
     apply this
-    · rw [adjoin_singleton_eq_range_aeval] at hy
-      obtain ⟨f, rfl⟩ := (aeval x).mem_range.mp hy
-      use f
-      ext
-      exact aeval_algebraMap_apply S (⟨x, _⟩ : adjoin K {x}) _
+    rw [adjoin_singleton_eq_range_aeval] at hy
+    obtain ⟨f, rfl⟩ := (aeval x).mem_range.mp hy
+    use f
+    ext
+    exact aeval_algebraMap_apply S (⟨x, _⟩ : adjoin K {x}) _
 #align algebra.adjoin.power_basis_aux Algebra.adjoin.powerBasisAux
 
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K[x]`,
