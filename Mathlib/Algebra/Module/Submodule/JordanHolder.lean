@@ -279,7 +279,6 @@ lemma eq_interList_get_of_head_eq_head_and_interList_nodup (s0 : s.head = ⊥)
     simp only [Fin.cast_mk, SetLike.mem_coe] at hy
     rw [s.interList_get_eq_aux N i ((lt_add_one _).trans hi), Submodule.mem_comap] at hy
     exact hy.1
-  have si_le : s ⟨i, (lt_add_one _).trans hi⟩ ≤ N := by rw [ih'']; exact inf_le_left
 
   rw [List.chain'_iff_get] at inter_chain
   have h1 := inter_chain i (by
@@ -379,5 +378,3 @@ lemma exists_compositionSeries_with_smaller_length_of_lt_top (h : N < ⊤)
   apply Nat.sub_lt_right_of_lt_add (H := ineq2) (h := ineq1)
 
 end CompositionSeries
-
-#lint
