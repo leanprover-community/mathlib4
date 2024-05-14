@@ -793,7 +793,7 @@ partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum s
     let ⟨_, vc, pc⟩ := evalPowProd sα va vb
     ⟨_, vc.toSum, q(single_pow $pc)⟩
   | va, vb =>
-    if vb.coeff > 1 then
+    if 1 < vb.coeff then
       let ⟨k, _, vc, pc⟩ := extractCoeff vb
       let ⟨_, vd, pd⟩ := evalPow₁ va vc
       let ⟨_, ve, pe⟩ := evalPowNat sα vd k

@@ -291,14 +291,14 @@ theorem rotateR_nil (y : α) (r : Ordnode α) : rotateR nil y r = node' nil y r 
 not too far from balanced. -/
 def balanceL' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
   if size l + size r ≤ 1 then node' l x r
-  else if size l > delta * size r then rotateR l x r else node' l x r
+  else if delta * size r < size l then rotateR l x r else node' l x r
 #align ordnode.balance_l' Ordnode.balanceL'
 
 /-- A right balance operation. This will rebalance a concatenation, assuming the original nodes are
 not too far from balanced. -/
 def balanceR' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
   if size l + size r ≤ 1 then node' l x r
-  else if size r > delta * size l then rotateL l x r else node' l x r
+  else if delta * size l < size r then rotateL l x r else node' l x r
 #align ordnode.balance_r' Ordnode.balanceR'
 
 /-- The full balance operation. This is the same as `balance`, but with less manual inlining.
@@ -306,8 +306,8 @@ It is somewhat easier to work with this version in proofs. -/
 def balance' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
   if size l + size r ≤ 1 then node' l x r
   else
-    if size r > delta * size l then rotateL l x r
-    else if size l > delta * size r then rotateR l x r else node' l x r
+    if delta * size l < size r then rotateL l x r
+    else if delta * size r < size l then rotateR l x r else node' l x r
 #align ordnode.balance' Ordnode.balance'
 
 theorem dual_node' (l : Ordnode α) (x : α) (r : Ordnode α) :
@@ -772,7 +772,7 @@ theorem balanceL_eq_balance {l x r} (sl : Sized l) (sr : Sized r) (H1 : size l =
       cases sr.2.1.size_eq_zero.1 this.1
       cases sr.2.2.size_eq_zero.1 this.2
       rw [sr.eq_node']; rfl
-    · replace H2 : ¬rs > delta * ls := not_lt_of_le (H2 sl.pos sr.pos)
+    · replace H2 : ¬(delta * ls < rs) := not_lt_of_le (H2 sl.pos sr.pos)
       simp [balanceL, balance, H2]; split_ifs <;> simp [add_comm]
 #align ordnode.balance_l_eq_balance Ordnode.balanceL_eq_balance
 
@@ -973,6 +973,7 @@ theorem Bounded.mem_lt : ∀ {t o} {x : α}, Bounded t o x → All (· < x) t
     ⟨h₁.mem_lt.imp fun _ h => lt_trans h h₂.to_lt, h₂.to_lt, h₂.mem_lt⟩
 #align ordnode.bounded.mem_lt Ordnode.Bounded.mem_lt
 
+set_option linter.geOrGt false in
 theorem Bounded.mem_gt : ∀ {t o} {x : α}, Bounded t x o → All (· > x) t
   | nil, _, _, _ => ⟨⟩
   | node _ _ _ _, _, _, ⟨h₁, h₂⟩ => ⟨h₁.mem_gt, h₁.to_lt, h₂.mem_gt.imp fun _ => lt_trans h₁.to_lt⟩
@@ -984,6 +985,7 @@ theorem Bounded.of_lt :
   | node _ _ _ _, _, _, _, ⟨h₁, h₂⟩, _, ⟨_, al₂, al₃⟩ => ⟨h₁, h₂.of_lt al₂ al₃⟩
 #align ordnode.bounded.of_lt Ordnode.Bounded.of_lt
 
+set_option linter.geOrGt false in
 theorem Bounded.of_gt :
     ∀ {t o₁ o₂} {x : α}, Bounded t o₁ o₂ → Bounded nil x o₂ → All (· > x) t → Bounded t x o₂
   | nil, _, _, _, _, hn, _ => hn
@@ -1050,6 +1052,7 @@ theorem Valid'.of_lt {t : Ordnode α} {x : α} {o₁ o₂} (H : Valid' o₁ t o�
   ⟨H.1.of_lt h₁ h₂, H.2, H.3⟩
 #align ordnode.valid'.of_lt Ordnode.Valid'.of_lt
 
+set_option linter.geOrGt false in
 theorem Valid'.of_gt {t : Ordnode α} {x : α} {o₁ o₂} (H : Valid' o₁ t o₂) (h₁ : Bounded nil x o₂)
     (h₂ : All (· > x) t) : Valid' x t o₂ :=
   ⟨H.1.of_gt h₁ h₂, H.2, H.3⟩
@@ -1247,13 +1250,13 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
     intro l0; rw [l0] at H3
     exact
       (or_iff_right_of_imp fun h => (mul_le_mul_left (by decide)).1 (le_trans h (by decide))).1 H3
-  have H3p : size l > 0 → 2 * (size rl + size rr) ≤ 9 * size l + 3 := fun l0 : 1 ≤ size l =>
+  have H3p : 0 < size l → 2 * (size rl + size rr) ≤ 9 * size l + 3 := fun l0 : 1 ≤ size l =>
     (or_iff_left_of_imp <| by omega).1 H3
   have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by omega
-  have hlp : size l > 0 → ¬size rl + size rr ≤ 1 := fun l0 hb =>
+  have hlp : 0 < size l → ¬size rl + size rr ≤ 1 := fun l0 hb =>
     absurd (le_trans (le_trans (Nat.mul_le_mul_left _ l0) H2) hb) (by decide)
   rw [Ordnode.rotateL_node]; split_ifs with h
-  · have rr0 : size rr > 0 :=
+  · have rr0 : 0 < size rr :=
       (mul_lt_mul_left (by decide)).1 (lt_of_le_of_lt (Nat.zero_le _) h : ratio * 0 < _)
     suffices BalancedSz (size l) (size rl) ∧ BalancedSz (size l + size rl + 1) (size rr) by
       exact hl.node3L hr.left hr.right this.1 this.2
@@ -1419,6 +1422,7 @@ theorem eraseMax.valid {t} (h : @Valid α _ t) : Valid (eraseMax t) := by
   rw [Valid.dual_iff, dual_eraseMax]; exact eraseMin.valid h.dual
 #align ordnode.erase_max.valid Ordnode.eraseMax.valid
 
+set_option linter.geOrGt false in
 theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
     (sep : l.All fun x => r.All fun y => x < y) (bal : BalancedSz (size l) (size r)) :
     Valid' o₁ (@glue α l r) o₂ ∧ size (glue l r) = size l + size r := by

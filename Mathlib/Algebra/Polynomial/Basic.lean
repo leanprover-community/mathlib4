@@ -1306,7 +1306,7 @@ protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
     | [(tprec, t)] => if tprec ≤ prec then Lean.Format.paren t else t
     | ts =>
       -- multiple terms, use `+` precedence
-      (if prec ≥ 65 then Lean.Format.paren else id)
+      (if 65 ≤ prec then Lean.Format.paren else id)
       (Lean.Format.fill
         (Lean.Format.joinSep (ts.map Prod.snd) (" +" ++ Lean.Format.line)))⟩
 #align polynomial.has_repr Polynomial.repr

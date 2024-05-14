@@ -89,6 +89,7 @@ theorem Closeds.edist_eq {s t : Closeds α} : edist s t = hausdorffEdist (s : Se
   rfl
 #align emetric.closeds.edist_eq EMetric.Closeds.edist_eq
 
+set_option linter.geOrGt false in
 /-- In a complete space, the type of closed subsets is complete for the
 Hausdorff edistance. -/
 instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
