@@ -125,7 +125,11 @@ def mk {β : Type*} [TopologicalSpace β] (f : α → β) (hf : AEStronglyMeasur
 functions to functions. -/
 @[coe]
 def cast (f : α →ₘ[μ] β) : α → β :=
-  AEStronglyMeasurable.mk _ (Quotient.out' f : { f : α → β // AEStronglyMeasurable f μ }).2
+  if h : ∃ (g : α → β) (hg : AEStronglyMeasurable g μ), f = mk g hg ∧
+    (g ∈ range (Function.const α) ∨ (∃ (_ : TopologicalSpace α) (_ : BorelSpace α) /- more stuff-/, Continuous g)) then
+    Classical.choose h else
+    AEStronglyMeasurable.mk _ (Quotient.out' f : { f : α → β // AEStronglyMeasurable f μ }).2
+
 
 /-- A measurable representative of an `AEEqFun` [f] -/
 instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
