@@ -61,14 +61,12 @@ infixr:25 " →⋆ₙ+* " => NonUnitalStarRingHom
 by forgetting the interaction with the star operation. -/
 add_decl_doc NonUnitalStarRingHom.toNonUnitalRingHom
 
-/-- `StarAlgHomClass F R A B` states that `F` is a type of ⋆-algebra homomorphisms.
+/-- `NonUnitalStarRingHomClass F A B` states that `F` is a type of non-unital ⋆-ring homomorphisms.
 
-You should also extend this typeclass when you extend `StarAlgHom`. -/
+You should also extend this typeclass when you extend `NonUnitalStarRingHom`. -/
 class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*)
      [NonUnitalNonAssocSemiring A] [Star A] [NonUnitalNonAssocSemiring B] [Star B]
     [FunLike F A B] [NonUnitalRingHomClass F A B] extends StarHomClass F A B : Prop
-
-
 
 namespace NonUnitalStarRingHom
 
@@ -82,9 +80,7 @@ variable [NonUnitalNonAssocSemiring C] [Star C]
 instance : FunLike (A →⋆ₙ+* B) A B
     where
   coe f := f.toFun
-  coe_injective' := by
-    rintro ⟨⟨⟨f, _⟩,  _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h
-    congr
+  coe_injective' := by rintro ⟨⟨⟨f, _⟩,  _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
 instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B
     where
@@ -96,18 +92,13 @@ instance : NonUnitalStarRingHomClass (A →⋆ₙ+* B) A B
     where
   map_star f := f.map_star'
 
-/-- The composition of non-unital ⋆-algebra homomorphisms, as a non-unital ⋆-algebra
-homomorphism. -/
+/-- The composition of non-unital ⋆-ring homomorphisms, as a non-unital ⋆-ring homomorphism. -/
 def comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : A →⋆ₙ+* C :=
   { f.toNonUnitalRingHom.comp g.toNonUnitalRingHom with
-    map_star' := fun a => (by
-      have e1 : (f ∘ g) (star a) = star ((f ∘ g) a) := calc
-        (f ∘ g) (star a) = f ( g (star a)) := rfl
-        _ = f ( star (g a)) := by rw [map_star]
-        _ = star (f (g a)) := by rw [map_star]
-        _ = star ((f ∘ g) a) := rfl
-      exact e1
-    )}
+    map_star' := fun a => (calc
+      (f ∘ g) (star a) = f ( g (star a)) := rfl
+      _ = star (f (g a)) := by rw [map_star, map_star]
+      _ = star ((f ∘ g) a) := rfl )}
 
 end
 
