@@ -63,6 +63,7 @@ jobs:
           # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
           rm -rf .lake/packages/proofwidgets/.lake/build/lib
           rm -rf .lake/packages/proofwidgets/.lake/build/ir
+          lake build ProofWidgets
 
       - name: Check environments using lean4checker
         id: lean4checker
