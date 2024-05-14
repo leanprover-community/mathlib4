@@ -114,6 +114,29 @@ theorem isAtom : IsAtom m :=
   isSimpleModule_iff_isAtom.1 hm
 #align is_simple_module.is_atom IsSimpleModule.isAtom
 
+variable [IsSimpleModule R M] (R)
+open LinearMap
+
+theorem span_singleton_eq_top {m : M} (hm : m ≠ 0) : Submodule.span R {m} = ⊤ :=
+  (eq_bot_or_eq_top _).resolve_left fun h ↦ hm (h.le <| Submodule.mem_span_singleton_self m)
+
+instance (S : Submodule R M) : S.IsPrincipal where
+  principal' := by
+    obtain rfl | rfl := eq_bot_or_eq_top S
+    · exact ⟨0, Submodule.span_zero.symm⟩
+    have := IsSimpleModule.nontrivial R M
+    have ⟨m, hm⟩ := exists_ne (0 : M)
+    exact ⟨m, (span_singleton_eq_top R hm).symm⟩
+
+theorem toSpanSingleton_surjective {m : M} (hm : m ≠ 0) :
+    Function.Surjective (toSpanSingleton R M m) := by
+  rw [← range_eq_top, ← span_singleton_eq_range, span_singleton_eq_top R hm]
+
+theorem ker_toSpanSingleton_isMaximal {m : M} (hm : m ≠ 0) :
+    Ideal.IsMaximal (ker (toSpanSingleton R M m)) := by
+  rw [Ideal.isMaximal_def, ← isSimpleModule_iff_isCoatom]
+  exact congr (quotKerEquivOfSurjective _ <| toSpanSingleton_surjective R hm)
+
 /-- if `X` is isomorphic to a submodule of a simple module, then either `X` is trivial or it is that
   simple module-/
 noncomputable def equiv_punit_sum_equiv_of_equiv_submodule

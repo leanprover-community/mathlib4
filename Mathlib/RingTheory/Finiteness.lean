@@ -583,6 +583,26 @@ theorem exists_fin [Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.spa
   Submodule.fg_iff_exists_fin_generating_family.mp out
 #align module.finite.exists_fin Module.Finite.exists_fin
 
+variable (R M) in
+lemma exists_fin' [Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
+  have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
+  refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
+  rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
+
+theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) : Finite R N :=
+  ⟨by
+    rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
+    exact hM.1.map f⟩
+#align module.finite.of_surjective Module.Finite.of_surjective
+
+theorem of_surjective' [hM : Finite R M]
+    {S : Type*} [Semiring S] {σ : R →+* S} [RingHomSurjective σ]
+    {N : Type*} [AddCommMonoid N] [Module S N]
+    (f : M →ₛₗ[σ] N) (hf : Surjective f) : Finite S N :=
+  ⟨by
+    rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
+    exact hM.1.map' f⟩
+
 lemma exists_strictMono_of_not_finite.aux (h : ¬ Finite R M) :
     ∀ (S : Finset M), ∃ (m : M), m ∉ S ∧ m ∉ span R S:= by
   classical
@@ -622,26 +642,6 @@ lemma exists_strictMono_of_not_finite (h : ¬ Finite R M) :
     rw [Function.iterate_succ', Function.comp_apply]
     apply hS2
   refine ⟨f, hf1⟩
-
-lemma exists_fin' (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] [Finite R M] :
-    ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
-  have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
-  refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
-  rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
-
-theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) : Finite R N :=
-  ⟨by
-    rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
-    exact hM.1.map f⟩
-#align module.finite.of_surjective Module.Finite.of_surjective
-
-theorem of_surjective' [hM : Finite R M]
-    {S : Type*} [Semiring S] {σ : R →+* S} [RingHomSurjective σ]
-    {N : Type*} [AddCommMonoid N] [Module S N]
-    (f : M →ₛₗ[σ] N) (hf : Surjective f) : Finite S N :=
-  ⟨by
-    rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
-    exact hM.1.map' f⟩
 
 instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
     [SMul R A] [IsScalarTower R A M] [Finite R M]
