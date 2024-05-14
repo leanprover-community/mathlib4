@@ -315,11 +315,14 @@ def check_odd_backticks(lines, path):
     for line_nr, line, is_comment in annotate_comments(lines):
         if is_comment:
             continue
-        # single backtick, but not a double backtick
-        if 2 * line.count("`") != line.count("``"):
-            output_message(path, line_nr, "ERR_BACKTICKS", "Odd number of backticks in this line")
+        # single backtick, but not followed by ( or `
+        # FIXME: this is slow, add a fast path!
+        for i in 0..len(line) - 2:
+            s = line[i]
+            t = line[i + 1]
+            if s == "`" and t not in ("`", "("):
+                output_message(path, line_nr, "ERR_BACKTICKS", "Odd number of backticks in this line")
             #errors += [(ERR_BACKTICKS, line_nr, path)]
-            #print(format_errors)
     return errors, lines
 
 
