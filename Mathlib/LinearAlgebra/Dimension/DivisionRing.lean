@@ -119,13 +119,19 @@ variable [AddCommGroup V'] [Module K V']
 
 See also `FiniteDimensional.finBasis`.
 -/
-def Basis.ofRankEqZero {ι : Type*} [IsEmpty ι] (hV : Module.rank K V = 0) : Basis ι K V :=
-  haveI : Subsingleton V := rank_zero_iff.1 hV
+def Basis.ofRankEqZero {K V : Type*} [Ring K] [StrongRankCondition K] [AddCommGroup V]
+    [Module K V] [Module.Free K V] {ι : Type*} [IsEmpty ι] (hV : Module.rank K V = 0) :
+    Basis ι K V :=
+  haveI : Subsingleton V := by
+    obtain ⟨_, b⟩ := Module.Free.exists_basis (R := K) (M := V)
+    haveI := Cardinal.mk_eq_zero_iff.1 (hV ▸ b.mk_eq_rank'')
+    exact b.repr.toEquiv.subsingleton
   Basis.empty _
 #align basis.of_rank_eq_zero Basis.ofRankEqZero
 
 @[simp]
-theorem Basis.ofRankEqZero_apply {ι : Type*} [IsEmpty ι] (hV : Module.rank K V = 0) (i : ι) :
+theorem Basis.ofRankEqZero_apply {K V : Type*} [Ring K] [StrongRankCondition K] [AddCommGroup V]
+    [Module K V] [Module.Free K V] {ι : Type*} [IsEmpty ι] (hV : Module.rank K V = 0) (i : ι) :
     Basis.ofRankEqZero hV i = 0 :=
   rfl
 #align basis.of_rank_eq_zero_apply Basis.ofRankEqZero_apply
@@ -154,18 +160,22 @@ theorem le_rank_iff_exists_linearIndependent_finset {n : ℕ} : ↑n ≤ Module.
 
 /-- A vector space has dimension at most `1` if and only if there is a
 single vector of which all vectors are multiples. -/
-theorem rank_le_one_iff : Module.rank K V ≤ 1 ↔ ∃ v₀ : V, ∀ v, ∃ r : K, r • v₀ = v := by
-  let b := Basis.ofVectorSpace K V
+theorem rank_le_one_iff {K V : Type*} [Ring K] [StrongRankCondition K] [AddCommGroup V]
+    [Module K V] [Module.Free K V] :
+    Module.rank K V ≤ 1 ↔ ∃ v₀ : V, ∀ v, ∃ r : K, r • v₀ = v := by
+  obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := K) (M := V)
   constructor
   · intro hd
-    rw [← b.mk_eq_rank'', Cardinal.le_one_iff_subsingleton, subsingleton_coe] at hd
-    rcases eq_empty_or_nonempty (ofVectorSpaceIndex K V) with (hb | ⟨⟨v₀, hv₀⟩⟩)
+    rw [← b.mk_eq_rank'', Cardinal.le_one_iff_subsingleton] at hd
+    rcases isEmpty_or_nonempty κ with hb | ⟨⟨i⟩⟩
     · use 0
-      have h' : ∀ v : V, v = 0 := by simpa [b, hb, Submodule.eq_bot_iff] using b.span_eq.symm
+      have h' : ∀ v : V, v = 0 := by
+        simpa [range_eq_empty, Submodule.eq_bot_iff] using b.span_eq.symm
       intro v
       simp [h' v]
-    · use v₀
-      have h' : (K ∙ v₀) = ⊤ := by simpa [b, hd.eq_singleton_of_mem hv₀] using b.span_eq
+    · use b i
+      have h' : (K ∙ b i) = ⊤ :=
+        (subsingleton_range b).eq_singleton_of_mem (mem_range_self i) ▸ b.span_eq
       intro v
       have hv : v ∈ (⊤ : Submodule K V) := mem_top
       rwa [← h', mem_span_singleton] at hv
