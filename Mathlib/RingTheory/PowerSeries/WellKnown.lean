@@ -72,8 +72,10 @@ section invOneSubPow
 variable {S : Type*} [CommRing S] (d : ℕ)
 
 /--
-Note that `mk 1` is the constant function `1` so the power series `1 + X + X^2 + ...`.
-This theorem states that `mk 1 : S⟦X⟧` multiplied by `1 - X : S⟦X⟧` equals `1`.
+(1 + X + X^2 + ...) * (1 - X) = 1.
+
+Note that the power series `1 + X + X^2 + ...` is written as `mk 1` where `1` is the constant
+function so that `mk 1` is the power series with all coefficients equal to one.
 -/
 theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
   rw [mul_comm, ext_iff]
@@ -88,8 +90,8 @@ theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
       simp only [one_mul, map_sub, coeff_mk, Pi.one_apply, coeff_succ_X_mul, sub_self]
 
 /--
-Note that `mk 1` is the constant function `1` so the power series `1 + X + X^2 + ...`. This
-theorem states that for any `d : ℕ`, `(mk 1 : S⟦X⟧) ^ (d + 1)` is equal to the power series
+Note that `mk 1` is the constant function `1` so the power series `1 + X + X^2 + ...`. This theorem
+states that for any `d : ℕ`, `(1 + X + X^2 + ... : S⟦X⟧) ^ (d + 1)` is equal to the power series
 `mk fun n => Nat.choose (d + n) d : S⟦X⟧`.
 -/
 theorem mk_one_pow_eq_mk_choose_add :
