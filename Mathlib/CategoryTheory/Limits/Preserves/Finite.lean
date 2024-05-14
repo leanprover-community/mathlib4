@@ -75,28 +75,28 @@ noncomputable instance (priority := 120) PreservesLimits.preservesFiniteLimits (
   PreservesLimitsOfSize.preservesFiniteLimits F
 #align category_theory.limits.preserves_limits.preserves_finite_limits CategoryTheory.Limits.PreservesLimits.preservesFiniteLimits
 
--- Porting note: is this unnecessary given the instance
--- `PreservesLimitsOfSize0.preservesFiniteLimits`?
-/-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
-arbitrary universe. -/
-def preservesFiniteLimitsOfPreservesFiniteLimitsOfSize (F : C ⥤ D)
-    (h :
-      ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesLimitsOfShape J F) :
-    PreservesFiniteLimits F where
-      preservesFiniteLimits J (_ : SmallCategory J) _ := by
-        letI : Category (ULiftHom (ULift J)) := ULiftHom.category
-        haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
-        exact preservesLimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
-#align category_theory.limits.preserves_finite_limits_of_preserves_finite_limits_of_size CategoryTheory.Limits.preservesFiniteLimitsOfPreservesFiniteLimitsOfSize
+-- -- Porting note: is this unnecessary given the instance
+-- -- `PreservesLimitsOfSize0.preservesFiniteLimits`?
+-- /-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
+-- arbitrary universe. -/
+-- def preservesFiniteLimitsOfPreservesFiniteLimitsOfSize (F : C ⥤ D)
+--     (h :
+--       ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesLimitsOfShape J F) :
+--     PreservesFiniteLimits F where
+--       preservesFiniteLimits J (_ : SmallCategory J) _ := by
+--         letI : Category (ULiftHom (ULift J)) := ULiftHom.category
+--         haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
+--         exact preservesLimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
+-- #align category_theory.limits.preserves_finite_limits_of_preserves_finite_limits_of_size CategoryTheory.Limits.preservesFiniteLimitsOfPreservesFiniteLimitsOfSize
 
 noncomputable instance idPreservesFiniteLimits : PreservesFiniteLimits (𝟭 C) :=
-  ⟨fun _ _ _ => by infer_instance⟩
+  inferInstance -- should this still be stated explicitly an instance?
 #align category_theory.limits.id_preserves_finite_limits CategoryTheory.Limits.idPreservesFiniteLimits
 
 /-- The composition of two left exact functors is left exact. -/
 def compPreservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits F]
     [PreservesFiniteLimits G] : PreservesFiniteLimits (F ⋙ G) :=
-  ⟨fun _ _ _ => by infer_instance⟩
+  ⟨fun _ _ _ => inferInstance⟩
 #align category_theory.limits.comp_preserves_finite_limits CategoryTheory.Limits.compPreservesFiniteLimits
 
 /- Porting note: adding this class because quantified classes don't behave well
@@ -111,10 +111,10 @@ attribute [instance] PreservesFiniteProducts.preserves
 instance compPreservesFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteProducts F] [PreservesFiniteProducts G] :
     PreservesFiniteProducts (F ⋙ G) where
-  preserves _ _ := by infer_instance
+  preserves _ _ := inferInstance
 
 noncomputable instance (F : C ⥤ D) [PreservesFiniteLimits F] : PreservesFiniteProducts F where
-  preserves _ _ := by infer_instance
+  preserves _ _ := inferInstance
 
 /--
 A functor is said to reflect finite limits, if it reflects all limits of shape `J`,
@@ -135,19 +135,47 @@ class ReflectsFiniteProducts (F : C ⥤ D) where
 
 attribute [instance] ReflectsFiniteProducts.reflects
 
+-- This is a dangerous instance as it has unbound universe variables.
+/-- If we reflect limits of some arbitrary size, then we reflect all finite limits. -/
+noncomputable def ReflectsLimitsOfSize.reflectsFiniteLimits
+    (F : C ⥤ D) [ReflectsLimitsOfSize.{w, w₂} F] : ReflectsFiniteLimits F where
+  reflects J (sJ : SmallCategory J) fJ := by
+    haveI := reflectsSmallestLimitsOfReflectsLimits F
+    exact reflectsLimitsOfShapeOfEquiv (FinCategory.equivAsType J) F
+
+-- Added as a specialization of the dangerous instance above, for colimits indexed in Type 0.
+noncomputable instance (priority := 120) (F : C ⥤ D) [ReflectsLimitsOfSize.{0, 0} F] :
+    ReflectsFiniteLimits F :=
+  ReflectsLimitsOfSize.reflectsFiniteLimits F
+
+-- An alternative specialization of the dangerous instance for small colimits.
+noncomputable instance (priority := 120) (F : C ⥤ D)
+    [ReflectsLimits F] : ReflectsFiniteLimits F :=
+  ReflectsLimitsOfSize.reflectsFiniteLimits F
+
+instance compReflectsFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
+    [ReflectsFiniteProducts F] [ReflectsFiniteProducts G] :
+    ReflectsFiniteProducts (F ⋙ G) where
+  reflects _ _ := inferInstance
+
+noncomputable instance (F : C ⥤ D) [ReflectsFiniteLimits F] : ReflectsFiniteProducts F where
+  reflects _ _ := inferInstance
+
 /-- A functor is said to preserve finite colimits, if it preserves all colimits of
 shape `J`, where `J : Type` is a finite category.
 -/
 class PreservesFiniteColimits (F : C ⥤ D) where
   preservesFiniteColimits :
     ∀ (J : Type) [SmallCategory J] [FinCategory J], PreservesColimitsOfShape J F := by
-    infer_instance
+      infer_instance
 #align category_theory.limits.preserves_finite_colimits CategoryTheory.Limits.PreservesFiniteColimits
 
 attribute [instance] PreservesFiniteColimits.preservesFiniteColimits
 
-/-- Preserving finite limits also implies preserving limits over finite shapes in higher universes,
-though through a noncomputable instance. -/
+/--
+Preserving finite colimits also implies preserving colimits over finite shapes in higher
+universes, though through a noncomputable instance.
+-/
 noncomputable instance (priority := 100) preservesColimitsOfShapeOfPreservesFiniteColimits
     (F : C ⥤ D) [PreservesFiniteColimits F] (J : Type w) [SmallCategory J] [FinCategory J] :
     PreservesColimitsOfShape J F := by
@@ -175,31 +203,28 @@ noncomputable instance (priority := 120) PreservesColimits.preservesFiniteColimi
   PreservesColimitsOfSize.preservesFiniteColimits F
 #align category_theory.limits.preserves_colimits.preserves_finite_colimits CategoryTheory.Limits.PreservesColimits.preservesFiniteColimits
 
--- Porting note: is this unnecessary given the instance
--- `PreservesColimitsOfSize0.preservesFiniteColimits`?
-/-- We can always derive `PreservesFiniteColimits C`
-by showing that we are preserving colimits at an arbitrary universe. -/
-def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
-    (h :
-      ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesColimitsOfShape J F) :
-    PreservesFiniteColimits F where
-      preservesFiniteColimits J (_ : SmallCategory J) _ := by
-        letI : Category (ULiftHom (ULift J)) := ULiftHom.category
-        haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
-        exact preservesColimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
-#align category_theory.limits.preserves_finite_colimits_of_preserves_finite_colimits_of_size CategoryTheory.Limits.preservesFiniteColimitsOfPreservesFiniteColimitsOfSize
+-- -- Porting note: is this unnecessary given the instance
+-- -- `PreservesColimitsOfSize0.preservesFiniteColimits`?
+-- /-- We can always derive `PreservesFiniteColimits C`
+-- by showing that we are preserving colimits at an arbitrary universe. -/
+-- def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
+--     (h :
+--       ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesColimitsOfShape J F) :
+--     PreservesFiniteColimits F where
+--       preservesFiniteColimits J (_ : SmallCategory J) _ := by
+--         letI : Category (ULiftHom (ULift J)) := ULiftHom.category
+--         haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
+--         exact preservesColimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
+-- #align category_theory.limits.preserves_finite_colimits_of_preserves_finite_colimits_of_size CategoryTheory.Limits.preservesFiniteColimitsOfPreservesFiniteColimitsOfSize
 
--- Porting note: the proof `⟨fun _ _ _ => by infer_instance⟩` used for `idPreservesFiniteLimits`
--- did not work here because of universe problems, could this be solved by tweaking the priorities
--- of some instances?
 noncomputable instance idPreservesFiniteColimits : PreservesFiniteColimits (𝟭 C) :=
-  PreservesColimits.preservesFiniteColimits.{v₁, v₁} _
+  inferInstance -- should this still be stated explicitly an instance?
 #align category_theory.limits.id_preserves_finite_colimits CategoryTheory.Limits.idPreservesFiniteColimits
 
 /-- The composition of two right exact functors is right exact. -/
 def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColimits F]
     [PreservesFiniteColimits G] : PreservesFiniteColimits (F ⋙ G) :=
-  ⟨fun _ _ _ => by infer_instance⟩
+  ⟨fun _ _ _ => inferInstance⟩
 #align category_theory.limits.comp_preserves_finite_colimits CategoryTheory.Limits.compPreservesFiniteColimits
 
 /- Porting note: adding this class because quantified classes don't behave well
@@ -214,9 +239,55 @@ attribute [instance] PreservesFiniteCoproducts.preserves
 instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteCoproducts F] [PreservesFiniteCoproducts G] :
     PreservesFiniteCoproducts (F ⋙ G) where
-  preserves _ _ := by infer_instance
+  preserves _ _ := inferInstance
 
 noncomputable instance (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteCoproducts F where
-  preserves _ _ := by infer_instance
+  preserves _ _ := inferInstance
+
+/--
+A functor is said to reflect finite colimits, if it reflects all colimits of shape `J`,
+where `J : Type` is a finite category.
+-/
+class ReflectsFiniteColimits (F : C ⥤ D) where
+  reflects : ∀ (J : Type) [SmallCategory J] [FinCategory J], ReflectsColimitsOfShape J F := by
+    infer_instance
+
+attribute [instance] ReflectsFiniteColimits.reflects
+
+-- This is a dangerous instance as it has unbound universe variables.
+/-- If we reflect colimits of some arbitrary size, then we reflect all finite colimits. -/
+noncomputable def ReflectsColimitsOfSize.reflectsFiniteColimits
+    (F : C ⥤ D) [ReflectsColimitsOfSize.{w, w₂} F] : ReflectsFiniteColimits F where
+  reflects J (sJ : SmallCategory J) fJ := by
+    haveI := reflectsSmallestColimitsOfReflectsColimits F
+    exact reflectsColimitsOfShapeOfEquiv (FinCategory.equivAsType J) F
+
+-- Added as a specialization of the dangerous instance above, for colimits indexed in Type 0.
+noncomputable instance (priority := 120) (F : C ⥤ D) [ReflectsColimitsOfSize.{0, 0} F] :
+    ReflectsFiniteColimits F :=
+  ReflectsColimitsOfSize.reflectsFiniteColimits F
+
+-- An alternative specialization of the dangerous instance for small colimits.
+noncomputable instance (priority := 120) (F : C ⥤ D)
+    [ReflectsColimits F] : ReflectsFiniteColimits F :=
+  ReflectsColimitsOfSize.reflectsFiniteColimits F
+
+/- Similarly to preserving finite coproducts, quantified classes don't behave well. -/
+/--
+A functor `F` preserves finite coproducts if it reflects colimits of shape `Discrete J` for
+finite `J`
+-/
+class ReflectsFiniteCoproducts (F : C ⥤ D) where
+  reflects : ∀ (J : Type) [Fintype J], ReflectsColimitsOfShape (Discrete J) F
+
+attribute [instance] ReflectsFiniteCoproducts.reflects
+
+instance compReflectsFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
+    [ReflectsFiniteCoproducts F] [ReflectsFiniteCoproducts G] :
+    ReflectsFiniteCoproducts (F ⋙ G) where
+  reflects _ _ := inferInstance
+
+noncomputable instance (F : C ⥤ D) [ReflectsFiniteColimits F] : ReflectsFiniteCoproducts F where
+  reflects _ _ := inferInstance
 
 end CategoryTheory.Limits
