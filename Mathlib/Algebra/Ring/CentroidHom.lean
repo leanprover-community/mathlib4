@@ -692,7 +692,7 @@ abbrev commRing
 
 end NonUnitalRing
 
-section StarRing
+section NonUnitalNonAssocStarSemiring
 
 variable [NonUnitalNonAssocSemiring α] [StarRing α]
 
@@ -741,6 +741,14 @@ instance : StarRing (Subsemiring.center (CentroidHom α)) where
       _ = star (g (star (star (f (star a))))) := by simp only [star_star]
       _ = (star g * star f) a := rfl
 
+def centerStarEmbedding : Subsemiring.center (CentroidHom α) →⋆ₙ+* CentroidHom α where
+  toNonUnitalRingHom :=
+    (SubsemiringClass.subtype (Subsemiring.center (CentroidHom α))).toNonUnitalRingHom
+  map_star' f := by
+    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+      MonoidHom.coe_coe, SubsemiringClass.coe_subtype]
+    exact rfl
+
 theorem inr_star (z : NonUnitalStarSubsemiring.center α) :
     (star (centerToCentroidCenter z))  =
     (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) := by
@@ -761,6 +769,10 @@ def starCenterToCentroidCenter :
     simp only [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom]
     exact (inr_star _).symm
 
+/-- The canonical homomorphism from the center into the centroid -/
+def starCenterToCentroid : NonUnitalStarSubsemiring.center α →⋆ₙ+* CentroidHom α :=
+  NonUnitalStarRingHom.comp (centerStarEmbedding) (starCenterToCentroidCenter)
+
 /--
 Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
 -/
@@ -771,6 +783,6 @@ def starRingOfCommCentroidHom (mul_comm : Std.Commutative (α := CentroidHom α)
   star_mul _ _ := ext (fun _ => by
     rw [mul_comm.comm, star_apply, mul_apply, mul_apply, star_apply, star_apply, star_star])
 
-end StarRing
+end NonUnitalNonAssocStarSemiring
 
 end CentroidHom

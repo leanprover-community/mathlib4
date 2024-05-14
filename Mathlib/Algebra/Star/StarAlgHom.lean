@@ -61,6 +61,58 @@ infixr:25 " →⋆ₙ+* " => NonUnitalStarRingHom
 by forgetting the interaction with the star operation. -/
 add_decl_doc NonUnitalStarRingHom.toNonUnitalRingHom
 
+/-- `StarAlgHomClass F R A B` states that `F` is a type of ⋆-algebra homomorphisms.
+
+You should also extend this typeclass when you extend `StarAlgHom`. -/
+class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*)
+     [NonUnitalNonAssocSemiring A] [Star A] [NonUnitalNonAssocSemiring B] [Star B]
+    [FunLike F A B] [NonUnitalRingHomClass F A B] extends StarHomClass F A B : Prop
+
+
+
+namespace NonUnitalStarRingHom
+
+section
+
+variable {A B C : Type*}
+variable [NonUnitalNonAssocSemiring A] [Star A]
+variable [NonUnitalNonAssocSemiring B] [Star B]
+variable [NonUnitalNonAssocSemiring C] [Star C]
+
+instance : FunLike (A →⋆ₙ+* B) A B
+    where
+  coe f := f.toFun
+  coe_injective' := by
+    rintro ⟨⟨⟨f, _⟩,  _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h
+    congr
+
+instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B
+    where
+  map_mul f := f.map_mul'
+  map_add f := f.map_add'
+  map_zero f := f.map_zero'
+
+instance : NonUnitalStarRingHomClass (A →⋆ₙ+* B) A B
+    where
+  map_star f := f.map_star'
+
+/-- The composition of non-unital ⋆-algebra homomorphisms, as a non-unital ⋆-algebra
+homomorphism. -/
+def comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : A →⋆ₙ+* C :=
+  { f.toNonUnitalRingHom.comp g.toNonUnitalRingHom with
+    map_star' := fun a => (by
+      have e1 : (f ∘ g) (star a) = star ((f ∘ g) a) := calc
+        (f ∘ g) (star a) = f ( g (star a)) := rfl
+        _ = f ( star (g a)) := by rw [map_star]
+        _ = star (f (g a)) := by rw [map_star]
+        _ = star ((f ∘ g) a) := rfl
+      exact e1
+    )}
+
+end
+
+end NonUnitalStarRingHom
+
 /-! ### Non-unital star algebra homomorphisms -/
 
 
