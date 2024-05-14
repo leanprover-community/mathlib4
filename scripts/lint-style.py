@@ -452,7 +452,8 @@ def lint(path, fix=False):
                             isolated_by_dot_semicolon_check,
                             set_option_check,
                             left_arrow_check,
-                            nonterminal_simp_check]:
+                            nonterminal_simp_check,
+                            check_isolated_backticks]:
             errs, newlines = error_check(newlines, path)
             format_errors(errs)
 
