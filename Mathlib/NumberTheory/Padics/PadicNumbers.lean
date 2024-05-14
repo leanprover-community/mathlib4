@@ -505,10 +505,14 @@ def mk : PadicSeq p → ℚ_[p] :=
 
 @[elab_as_elim]
 protected
-def induction_on {motive : ℚ_[p] → Prop} (q : ℚ_[p]) (h : ∀ a : PadicSeq p, motive (.mk a)) :
+theorem induction_on {motive : ℚ_[p] → Prop} (q : ℚ_[p]) (h : ∀ a : PadicSeq p, motive (.mk a)) :
     motive q :=
   Quotient.inductionOn q h
 
+/--
+If `f : PadicSeq p → β` respects the equivalence relation `≈`,
+then it lifts to a function on `Padic` such that `Padic.lift f h (Padic.mk a) = f a`.
+-/
 protected
 def lift {β : Sort*} (f : PadicSeq p → β) : (∀ a b : PadicSeq p, a ≈ b → f a = f b) → ℚ_[p] → β :=
   Quotient.lift f
