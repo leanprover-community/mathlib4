@@ -7,7 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Ring.Hom.Defs
-import Std.Data.Option.Lemmas
+import Batteries.Data.Option.Lemmas
 
 #align_import algebra.order.ring.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 

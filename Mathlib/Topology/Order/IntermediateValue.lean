@@ -272,7 +272,7 @@ theorem IsPreconnected.Ioi_csInf_subset {s : Set α} (hs : IsPreconnected s) (hb
 
 theorem IsPreconnected.Iio_csSup_subset {s : Set α} (hs : IsPreconnected s) (hb : ¬BddBelow s)
     (ha : BddAbove s) : Iio (sSup s) ⊆ s :=
-  @IsPreconnected.Ioi_csInf_subset αᵒᵈ _ _ _ s hs ha hb
+  IsPreconnected.Ioi_csInf_subset (α := αᵒᵈ) hs ha hb
 #align is_preconnected.Iio_cSup_subset IsPreconnected.Iio_csSup_subset
 
 /-- A preconnected set in a conditionally complete linear order is either one of the intervals
@@ -282,18 +282,15 @@ theorem IsPreconnected.Iio_csSup_subset {s : Set α} (hs : IsPreconnected s) (hb
 theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
     s ∈
       ({Icc (sInf s) (sSup s), Ico (sInf s) (sSup s), Ioc (sInf s) (sSup s), Ioo (sInf s) (sSup s),
-          Ici (sInf s), Ioi (sInf s), Iic (sSup s), Iio (sSup s), univ, ∅} :
-        Set (Set α)) := by
+          Ici (sInf s), Ioi (sInf s), Iic (sSup s), Iio (sSup s), univ, ∅} : Set (Set α)) := by
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · apply_rules [Or.inr, mem_singleton]
   have hs' : IsConnected s := ⟨hne, hs⟩
   by_cases hb : BddBelow s <;> by_cases ha : BddAbove s
-  · rcases mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset (hs'.Ioo_csInf_csSup_subset hb ha)
-        (subset_Icc_csInf_csSup hb ha) with (hs | hs | hs | hs)
-    · exact Or.inl hs
-    · exact Or.inr <| Or.inl hs
-    · exact Or.inr <| Or.inr <| Or.inl hs
-    · exact Or.inr <| Or.inr <| Or.inr <| Or.inl hs
+  · refine mem_of_subset_of_mem ?_ <| mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset
+      (hs'.Ioo_csInf_csSup_subset hb ha) (subset_Icc_csInf_csSup hb ha)
+    simp only [insert_subset_iff, mem_insert_iff, mem_singleton_iff, true_or, or_true,
+      singleton_subset_iff, and_self]
   · refine' Or.inr <| Or.inr <| Or.inr <| Or.inr _
     cases'
       mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_csInf_subset hb ha) fun x hx => csInf_le hb hx with
@@ -311,7 +308,7 @@ theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
 
 /-- A preconnected set is either one of the intervals `Icc`, `Ico`, `Ioc`, `Ioo`, `Ici`, `Ioi`,
 `Iic`, `Iio`, or `univ`, or `∅`. The converse statement requires `α` to be densely ordered. Though
-one can represent `∅` as `(Inf s, Inf s)`, we include it into the list of possible cases to improve
+one can represent `∅` as `(Inf ∅, Inf ∅)`, we include it into the list of possible cases to improve
 readability. -/
 theorem setOf_isPreconnected_subset_of_ordered :
     { s : Set α | IsPreconnected s } ⊆
@@ -320,17 +317,9 @@ theorem setOf_isPreconnected_subset_of_ordered :
       -- unbounded intervals and `univ`
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
   intro s hs
-  rcases hs.mem_intervals with (hs | hs | hs | hs | hs | hs | hs | hs | hs | hs)
-  · exact Or.inl <| Or.inl <| Or.inl <| Or.inl ⟨(sInf s, sSup s), hs.symm⟩
-  · exact Or.inl <| Or.inl <| Or.inl <| Or.inr ⟨(sInf s, sSup s), hs.symm⟩
-  · exact Or.inl <| Or.inl <| Or.inr ⟨(sInf s, sSup s), hs.symm⟩
-  · exact Or.inl <| Or.inr ⟨(sInf s, sSup s), hs.symm⟩
-  · exact Or.inr <| Or.inl <| Or.inl <| Or.inl <| Or.inl ⟨sInf s, hs.symm⟩
-  · exact Or.inr <| Or.inl <| Or.inl <| Or.inl <| Or.inr ⟨sInf s, hs.symm⟩
-  · exact Or.inr <| Or.inl <| Or.inl <| Or.inr ⟨sSup s, hs.symm⟩
-  · exact Or.inr <| Or.inl <| Or.inr ⟨sSup s, hs.symm⟩
-  · exact Or.inr <| Or.inr <| Or.inl hs
-  · exact Or.inr <| Or.inr <| Or.inr hs
+  rcases hs.mem_intervals with (hs | hs | hs | hs | hs | hs | hs | hs | hs | hs) <;> rw [hs] <;>
+    simp only [union_insert, union_singleton, mem_insert_iff, mem_union, mem_range, Prod.exists,
+      uncurry_apply_pair, exists_apply_eq_apply, true_or, or_true, exists_apply_eq_apply2]
 #align set_of_is_preconnected_subset_of_ordered setOf_isPreconnected_subset_of_ordered
 
 /-!
@@ -659,7 +648,7 @@ surjective. We formulate the conclusion as `Function.surjOn f s Set.univ`. -/
 theorem ContinuousOn.surjOn_of_tendsto' {f : α → δ} {s : Set α} [OrdConnected s] (hs : s.Nonempty)
     (hf : ContinuousOn f s) (hbot : Tendsto (fun x : s => f x) atBot atTop)
     (htop : Tendsto (fun x : s => f x) atTop atBot) : SurjOn f s univ :=
-  @ContinuousOn.surjOn_of_tendsto α _ _ _ _ δᵒᵈ _ _ _ _ _ _ hs hf hbot htop
+  ContinuousOn.surjOn_of_tendsto (δ := δᵒᵈ) hs hf hbot htop
 #align continuous_on.surj_on_of_tendsto' ContinuousOn.surjOn_of_tendsto'
 
 theorem Continuous.strictMono_of_inj_boundedOrder [BoundedOrder α] {f : α → δ}

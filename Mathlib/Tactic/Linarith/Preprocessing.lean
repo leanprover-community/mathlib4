@@ -6,7 +6,7 @@ Authors: Robert Y. Lewis
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
 import Mathlib.Tactic.CancelDenoms.Core
-import Std.Data.RBMap.Basic
+import Batteries.Data.RBMap.Basic
 import Mathlib.Data.HashMap
 import Mathlib.Control.Basic
 
@@ -147,7 +147,7 @@ def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
       return none
 
 
-open Std
+open Batteries
 
 /-- Ordering on `Expr`. -/
 def Expr.Ord : Ord Expr :=

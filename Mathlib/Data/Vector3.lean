@@ -83,14 +83,12 @@ theorem cons_fs (a : α) (v : Vector3 α n) (i) : (a :: v) (fs i) = v i :=
 #align vector3.cons_fs Vector3.cons_fs
 
 /-- Get the `i`th element of a vector -/
-@[reducible]
-def nth (i : Fin2 n) (v : Vector3 α n) : α :=
+abbrev nth (i : Fin2 n) (v : Vector3 α n) : α :=
   v i
 #align vector3.nth Vector3.nth
 
 /-- Construct a vector from a function on `Fin2`. -/
-@[reducible]
-def ofFn (f : Fin2 n → α) : Vector3 α n :=
+abbrev ofFn (f : Fin2 n → α) : Vector3 α n :=
   f
 #align vector3.of_fn Vector3.ofFn
 

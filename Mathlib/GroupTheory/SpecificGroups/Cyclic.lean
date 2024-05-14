@@ -482,7 +482,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
       · simp [h1]
       · simp [card_orderOf_eq_totient_aux₁ hn hmc h1]
     _ < ∑ m in c.divisors, φ m :=
-      (sum_erase_lt_of_pos (mem_divisors.2 ⟨hd, hc0.ne'⟩) (totient_pos (pos_of_dvd_of_pos hd hc0)))
+      sum_erase_lt_of_pos (mem_divisors.2 ⟨hd, hc0.ne'⟩) (totient_pos.2 (pos_of_dvd_of_pos hd hc0))
     _ = c := sum_totient _
 #align card_order_of_eq_totient_aux₂ card_orderOf_eq_totient_aux₂
 
@@ -490,8 +490,8 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
 theorem isCyclic_of_card_pow_eq_one_le : IsCyclic α :=
   have : (univ.filter fun a : α => orderOf a = Fintype.card α).Nonempty :=
     card_pos.1 <| by
-      rw [card_orderOf_eq_totient_aux₂ hn dvd_rfl];
-        exact totient_pos (Fintype.card_pos_iff.2 ⟨1⟩)
+      rw [card_orderOf_eq_totient_aux₂ hn dvd_rfl, totient_pos]
+      apply Fintype.card_pos
   let ⟨x, hx⟩ := this
   isCyclic_of_orderOf_eq_card x (Finset.mem_filter.1 hx).2
 #align is_cyclic_of_card_pow_eq_one_le isCyclic_of_card_pow_eq_one_le

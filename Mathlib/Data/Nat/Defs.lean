@@ -31,13 +31,13 @@ See note [foundational algebra order theory].
 ## TODO
 
 Split this file into:
-* `Data.Nat.Init` (or maybe `Data.Nat.Std`?) for lemmas that could go to Std
+* `Data.Nat.Init` (or maybe `Data.Nat.Batteries`?) for lemmas that could go to Batteries
 * `Data.Nat.Basic` for the lemmas that require mathlib definitions
 -/
 
 library_note "foundational algebra order theory"/--
-Std has a home-baked development of the algebraic and order theoretic theory of `ℕ` and `ℤ` which,
-in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
+Batteries has a home-baked development of the algebraic and order theoretic theory of `ℕ` and `ℤ
+which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
 libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in
 finsets, powers in groups, ...).
 
@@ -65,6 +65,8 @@ namespace Nat
 variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
 
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
+
+@[simp] theorem default_eq_zero : default = 0 := rfl
 
 attribute [gcongr] Nat.succ_le_succ
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
@@ -95,7 +97,7 @@ lemma succ_succ_ne_one (n : ℕ) : n.succ.succ ≠ 1 := by simp
 lemma one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ := succ_lt_succ <| succ_pos n
 #align nat.one_lt_succ_succ Nat.one_lt_succ_succ
 
--- Moved to Std
+-- Moved to Batteries
 #align nat.succ_le_succ_iff Nat.succ_le_succ_iff
 #align nat.succ_lt_succ_iff Nat.succ_lt_succ_iff
 #align nat.le_pred_of_lt Nat.le_pred_of_lt
@@ -174,7 +176,7 @@ lemma one_le_of_lt (h : a < b) : 1 ≤ b := Nat.lt_of_le_of_lt (Nat.zero_le _) h
 #align nat.min_eq_zero_iff Nat.min_eq_zero_iff
 #align nat.max_eq_zero_iff Nat.max_eq_zero_iff
 
--- Moved to Std
+-- Moved to Batteries
 #align nat.succ_eq_one_add Nat.succ_eq_one_add
 #align nat.one_add Nat.one_add
 #align nat.zero_max Nat.zero_max
@@ -1237,7 +1239,7 @@ protected lemma mul_dvd_mul_iff_right (hc : 0 < c) : a * c ∣ b * c ↔ a ∣ b
 #align nat.dvd_one Nat.dvd_one
 #align nat.mod_mod_of_dvd Nat.mod_mod_of_dvd
 
--- Moved to Std
+-- Moved to Batteries
 #align nat.mod_mod Nat.mod_mod
 #align nat.mod_add_mod Nat.mod_add_mod
 #align nat.add_mod_mod Nat.add_mod_mod
@@ -1251,7 +1253,7 @@ lemma add_mod_eq_add_mod_left (c : ℕ) (H : a % d = b % d) : (c + a) % d = (c +
   rw [Nat.add_comm, add_mod_eq_add_mod_right _ H, Nat.add_comm]
 #align nat.add_mod_eq_add_mod_left Nat.add_mod_eq_add_mod_left
 
--- Moved to Std
+-- Moved to Batteries
 #align nat.mul_mod Nat.mul_mod
 
 lemma mul_dvd_of_dvd_div (hcb : c ∣ b) (h : a ∣ b / c) : c * a ∣ b :=
@@ -1272,7 +1274,7 @@ protected theorem div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 :
   calc a / c ≤ b / c := Nat.div_le_div_right h1
     _ ≤ b / d := Nat.div_le_div_left h2 (Nat.pos_of_ne_zero h3)
 
--- Moved to Std
+-- Moved to Batteries
 #align nat.mul_div_le Nat.mul_div_le
 
 lemma lt_mul_div_succ (a : ℕ) (hb : 0 < b) : a < b * (a / b + 1) := by
@@ -1280,7 +1282,7 @@ lemma lt_mul_div_succ (a : ℕ) (hb : 0 < b) : a < b * (a / b + 1) := by
   exact lt_succ_self _
 #align nat.lt_mul_div_succ Nat.lt_mul_div_succ
 
--- TODO: Std4 claimed this name but flipped the order of multiplication
+-- TODO: Batteries claimed this name but flipped the order of multiplication
 lemma mul_add_mod' (a b c : ℕ) : (a * b + c) % b = c % b := by rw [Nat.mul_comm, Nat.mul_add_mod]
 #align nat.mul_add_mod Nat.mul_add_mod'
 
@@ -1473,7 +1475,7 @@ private lemma AM_GM : {a b : ℕ} → (4 * a * b ≤ (a + b) * (a + b))
       Nat.mul_one, Nat.add_assoc, Nat.add_left_comm, Nat.add_le_add_iff_left]
       using Nat.add_le_add_right (@AM_GM a b) 4
 
--- These two lemmas seem like they belong to `Std.Data.Nat.Basic`.
+-- These two lemmas seem like they belong to `Batteries.Data.Nat.Basic`.
 
 lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess ≤ n := by
   unfold sqrt.iter
@@ -1511,7 +1513,7 @@ lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) 
   · simpa only [dif_neg h] using hn
 
 #align nat.sqrt Nat.sqrt
--- Porting note: the implementation òf `Nat.sqrt` in `Std` no longer needs `sqrt_aux`.
+-- Porting note: the implementation of `Nat.sqrt` in `Batteries` no longer needs `sqrt_aux`.
 #noalign nat.sqrt_aux_dec
 #noalign nat.sqrt_aux
 #noalign nat.sqrt_aux_0

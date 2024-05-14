@@ -231,9 +231,9 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     intro (x : StoneCech X)
     refine' congr_fun _ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
-    rintro _ ⟨y, rfl⟩
-    apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
-    apply continuous_stoneCechUnit
+    · rintro _ ⟨y, rfl⟩
+      apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
+      apply continuous_stoneCechUnit
   right_inv := by
     rintro ⟨f : (X : Type _) ⟶ Y, hf : Continuous f⟩
     -- Porting note: `ext` fails.
@@ -258,7 +258,8 @@ set_option linter.uppercaseLean3 false in
 /-- The category of compact Hausdorff spaces is reflective in the category of topological spaces.
 -/
 noncomputable instance compHausToTop.reflective : Reflective compHausToTop where
-  toIsRightAdjoint := ⟨topToCompHaus, Adjunction.adjunctionOfEquivLeft _ _⟩
+  L := topToCompHaus
+  adj := Adjunction.adjunctionOfEquivLeft _ _
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top.reflective compHausToTop.reflective
 
@@ -282,8 +283,7 @@ namespace CompHaus
 /-- An explicit limit cone for a functor `F : J ⥤ CompHaus`, defined in terms of
 `TopCat.limitCone`. -/
 def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Limits.Cone F :=
-  -- Porting note: Exploit the `TopCatMax` trick.
-  letI FF : J ⥤ TopCatMax.{v,u} := F ⋙ compHausToTop
+  letI FF : J ⥤ TopCat := F ⋙ compHausToTop
   { pt := {
       toTop := (TopCat.limitCone FF).pt
       is_compact := by
@@ -321,7 +321,7 @@ set_option linter.uppercaseLean3 false in
 /-- The limit cone `CompHaus.limitCone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) :
     Limits.IsLimit.{v} (limitCone.{v,u} F) :=
-  letI FF : J ⥤ TopCatMax.{v,u} := F ⋙ compHausToTop
+  letI FF : J ⥤ TopCat := F ⋙ compHausToTop
   { lift := fun S => (TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S)
     fac := fun S => (TopCat.limitConeIsLimit FF).fac (compHausToTop.mapCone S)
     uniq := fun S => (TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) }
@@ -390,15 +390,3 @@ set_option linter.uppercaseLean3 false in
 #align CompHaus.mono_iff_injective CompHaus.mono_iff_injective
 
 end CompHaus
-
-/--
-Many definitions involving universe inequalities in Mathlib are expressed through use of `max u v`.
-Unfortunately, this leads to unbound universes which cannot be solved for during unification, eg
-`max u v =?= max v ?`.
-The current solution is to wrap `Type max u v` in `TypeMax.{u,v}`
-to expose both universe parameters directly.
-Similarly, for other concrete categories for which we need to refer to the maximum of two universes
-(e.g. any category for which we are constructing limits), we need an analogous abbreviation.
--/
-@[nolint checkUnivs]
-abbrev CompHausMax.{w, w'} := CompHaus.{max w w'}

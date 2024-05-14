@@ -361,34 +361,34 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
         linarith [εs_pos n, dist_nonneg (x := μs n) (y := ν)]
     rw [add_zero] at ε_of_room
     have key := (tendsto_integral_meas_thickening_le f (A := Ioc 0 ‖f‖) (by simp) P).comp ε_of_room'
-    · have aux : ∀ (z : ℝ), Iio (z + δ/2) ∈ 𝓝 z := fun z ↦ Iio_mem_nhds (by linarith)
-      filter_upwards [key (aux _), ε_of_room <| Iio_mem_nhds <| half_pos <|
-                        Real.mul_pos (inv_pos.mpr norm_f_pos) δ_pos]
-        with n hn hn'
-      simp only [gt_iff_lt, eventually_atTop, ge_iff_le, ne_eq, mem_map,
-                 mem_atTop_sets, mem_preimage, mem_Iio] at *
-      specialize εs_pos n
-      have bound := BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt
-                      (Ps n) P (ε := dist (μs n) ν + εs n) ?_ ?_ f ?_
-      · refine bound.trans ?_
-        apply (add_le_add_right hn.le _).trans
-        rw [BoundedContinuousFunction.integral_eq_integral_meas_le]
-        · simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
-          rw [add_assoc, mul_comm]
-          gcongr
-          calc
-            δ / 2 + ‖f‖ * (dist (μs n) ν + εs n)
-            _ ≤ δ / 2 + ‖f‖ * (‖f‖⁻¹ * δ / 2) := by gcongr
-            _ = δ := by field_simp; ring
-        · exact eventually_of_forall f_nn
-      · positivity
-      · rw [ENNReal.ofReal_add (by positivity) (by positivity), ← add_zero (levyProkhorovEDist _ _)]
-        apply ENNReal.add_lt_add_of_le_of_lt (levyProkhorovEDist_ne_top _ _)
-              (le_of_eq ?_) (ofReal_pos.mpr εs_pos)
-        rw [LevyProkhorov.dist_def, levyProkhorovDist,
-            ofReal_toReal (levyProkhorovEDist_ne_top _ _)]
-        simp only [Ps, P, LevyProkhorov.probabilityMeasure]
+    have aux : ∀ (z : ℝ), Iio (z + δ/2) ∈ 𝓝 z := fun z ↦ Iio_mem_nhds (by linarith)
+    filter_upwards [key (aux _), ε_of_room <| Iio_mem_nhds <| half_pos <|
+                      Real.mul_pos (inv_pos.mpr norm_f_pos) δ_pos]
+      with n hn hn'
+    simp only [gt_iff_lt, eventually_atTop, ge_iff_le, ne_eq, mem_map,
+               mem_atTop_sets, mem_preimage, mem_Iio] at *
+    specialize εs_pos n
+    have bound := BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt
+                    (Ps n) P (ε := dist (μs n) ν + εs n) ?_ ?_ f ?_
+    · refine bound.trans ?_
+      apply (add_le_add_right hn.le _).trans
+      rw [BoundedContinuousFunction.integral_eq_integral_meas_le]
+      · simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+        rw [add_assoc, mul_comm]
+        gcongr
+        calc
+          δ / 2 + ‖f‖ * (dist (μs n) ν + εs n)
+          _ ≤ δ / 2 + ‖f‖ * (‖f‖⁻¹ * δ / 2) := by gcongr
+          _ = δ := by field_simp; ring
       · exact eventually_of_forall f_nn
+    · positivity
+    · rw [ENNReal.ofReal_add (by positivity) (by positivity), ← add_zero (levyProkhorovEDist _ _)]
+      apply ENNReal.add_lt_add_of_le_of_lt (levyProkhorovEDist_ne_top _ _)
+            (le_of_eq ?_) (ofReal_pos.mpr εs_pos)
+      rw [LevyProkhorov.dist_def, levyProkhorovDist,
+          ofReal_toReal (levyProkhorovEDist_ne_top _ _)]
+      simp only [Ps, P, LevyProkhorov.probabilityMeasure]
+    · exact eventually_of_forall f_nn
   · simp only [IsCoboundedUnder, IsCobounded, eventually_map, eventually_atTop,
                ge_iff_le, forall_exists_index]
     refine ⟨0, fun a i hia ↦ le_trans (integral_nonneg f_nn) (hia i le_rfl)⟩

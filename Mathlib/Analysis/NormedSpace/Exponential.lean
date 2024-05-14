@@ -473,6 +473,12 @@ theorem exp_continuous : Continuous (exp 𝕂 : 𝔸 → 𝔸) := by
   exact continuousOn_exp
 #align exp_continuous NormedSpace.exp_continuous
 
+open Topology in
+lemma _root_.Filter.Tendsto.exp {α : Type*} {l : Filter α} {f : α → 𝔸} {a : 𝔸}
+    (hf : Tendsto f l (𝓝 a)) :
+    Tendsto (fun x => exp 𝕂 (f x)) l (𝓝 (exp 𝕂 a)) :=
+  (exp_continuous.tendsto _).comp hf
+
 theorem exp_analytic (x : 𝔸) : AnalyticAt 𝕂 (exp 𝕂) x :=
   analyticAt_exp_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 #align exp_analytic NormedSpace.exp_analytic

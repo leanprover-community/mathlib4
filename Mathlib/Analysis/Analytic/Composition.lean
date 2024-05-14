@@ -331,9 +331,7 @@ the norms of the relevant bits of `q` and `p`. -/
 theorem compAlongComposition_norm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
     ‖q.compAlongComposition p c‖ ≤ ‖q c.length‖ * ∏ i, ‖p (c.blocksFun i)‖ :=
-  ContinuousMultilinearMap.opNorm_le_bound _
-    (mul_nonneg (norm_nonneg _) (Finset.prod_nonneg fun _i _hi => norm_nonneg _))
-    (compAlongComposition_bound _ _ _)
+  ContinuousMultilinearMap.opNorm_le_bound _ (by positivity) (compAlongComposition_bound _ _ _)
 #align formal_multilinear_series.comp_along_composition_norm FormalMultilinearSeries.compAlongComposition_norm
 
 theorem compAlongComposition_nnnorm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
@@ -393,18 +391,18 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) : p.comp (id 𝕜 E) = p 
   ext1 n
   dsimp [FormalMultilinearSeries.comp]
   rw [Finset.sum_eq_single (Composition.ones n)]
-  show compAlongComposition p (id 𝕜 E) (Composition.ones n) = p n
-  · ext v
+  · show compAlongComposition p (id 𝕜 E) (Composition.ones n) = p n
+    ext v
     rw [compAlongComposition_apply]
     apply p.congr (Composition.ones_length n)
     intros
     rw [applyComposition_ones]
     refine' congr_arg v _
     rw [Fin.ext_iff, Fin.coe_castLE, Fin.val_mk]
-  show
+  · show
     ∀ b : Composition n,
       b ∈ Finset.univ → b ≠ Composition.ones n → compAlongComposition p (id 𝕜 E) b = 0
-  · intro b _ hb
+    intro b _ hb
     obtain ⟨k, hk, lt_k⟩ : ∃ (k : ℕ), k ∈ Composition.blocks b ∧ 1 < k :=
       Composition.ne_ones_iff.1 hb
     obtain ⟨i, hi⟩ : ∃ (i : Fin b.blocks.length), b.blocks.get i = k :=
@@ -432,16 +430,16 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (h : p 0 = 0) : (id 𝕜 
   · dsimp [FormalMultilinearSeries.comp]
     have n_pos : 0 < n := bot_lt_iff_ne_bot.mpr hn
     rw [Finset.sum_eq_single (Composition.single n n_pos)]
-    show compAlongComposition (id 𝕜 F) p (Composition.single n n_pos) = p n
-    · ext v
+    · show compAlongComposition (id 𝕜 F) p (Composition.single n n_pos) = p n
+      ext v
       rw [compAlongComposition_apply, id_apply_one' _ _ (Composition.single_length n_pos)]
       dsimp [applyComposition]
       refine' p.congr rfl fun i him hin => congr_arg v <| _
       ext; simp
-    show
+    · show
       ∀ b : Composition n,
         b ∈ Finset.univ → b ≠ Composition.single n n_pos → compAlongComposition (id 𝕜 F) p b = 0
-    · intro b _ hb
+      intro b _ hb
       have A : b.length ≠ 1 := by simpa [Composition.eq_single_iff_length] using hb
       ext v
       rw [compAlongComposition_apply, id_apply_ne_one _ _ A]
@@ -1122,7 +1120,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
       have A : length (gather a b) = List.length (splitWrtComposition a.blocks b) := by
         simp only [length, gather, length_map, length_splitWrtComposition]
       congr! 2
-      · exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
+      exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
     · have B : Composition.length (Composition.gather a b) = List.length b.blocks :=
         Composition.length_gather _ _
       conv_rhs => rw [← ofFn_get b.blocks]
@@ -1146,14 +1144,14 @@ def sigmaEquivSigmaPi (n : ℕ) :
       simp only [map_ofFn]
       rfl
     · rw [Fin.heq_fun_iff]
-      intro i
-      dsimp [Composition.sigmaCompositionAux]
-      rw [get_of_eq (splitWrtComposition_join _ _ _)]
-      · simp only [get_ofFn]
-        rfl
-      · simp only [map_ofFn]
-        rfl
-      · congr
+      · intro i
+        dsimp [Composition.sigmaCompositionAux]
+        rw [get_of_eq (splitWrtComposition_join _ _ _)]
+        · simp only [get_ofFn]
+          rfl
+        · simp only [map_ofFn]
+          rfl
+        · congr
 #align composition.sigma_equiv_sigma_pi Composition.sigmaEquivSigmaPi
 
 end Composition
