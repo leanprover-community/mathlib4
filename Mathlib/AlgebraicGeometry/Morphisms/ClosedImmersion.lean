@@ -3,7 +3,7 @@ Copyright (c) 2023 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.RingTheory.LocalProperties
 
@@ -68,7 +68,7 @@ instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion f]
   MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance
 
 /-- Composition with an isomorphism preserves closed immersions. -/
-instance : MorphismProperty.RespectsIso @IsClosedImmersion := by
+lemma respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
   constructor <;> intro X Y Z e f hf <;> infer_instance
 
 /-- Given two commutative rings `R S : CommRingCat` and a surjective morphism
@@ -80,12 +80,11 @@ theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surje
   surj_on_stalks x := by
     erw [← localRingHom_comp_stalkIso, CommRingCat.coe_comp, CommRingCat.coe_comp]
     apply Function.Surjective.comp (Function.Surjective.comp _ _) _
-    · let stalk_iso := (StructureSheaf.stalkIso S x).inv
-      exact (ConcreteCategory.bijective_of_isIso stalk_iso).2
+    · exact (ConcreteCategory.bijective_of_isIso (StructureSheaf.stalkIso S x).inv).2
     · exact surjective_localRingHom_of_surjective f h x.asIdeal
-    · let stalk_iso := (StructureSheaf.stalkIso ((CommRingCat.of R))
+    · let g := (StructureSheaf.stalkIso ((CommRingCat.of R))
         ((PrimeSpectrum.comap (CommRingCat.ofHom f)) x)).hom
-      exact (ConcreteCategory.bijective_of_isIso stalk_iso).2
+      exact (ConcreteCategory.bijective_of_isIso g).2
 
 /-- For any ideal `I` in a commutative ring `R`, the quotient map `specObj R ⟶ specObj (R ⧸ I)`
 is a closed immersion. -/
