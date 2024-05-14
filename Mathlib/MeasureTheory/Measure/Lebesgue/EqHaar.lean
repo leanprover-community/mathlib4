@@ -377,8 +377,7 @@ theorem addHaar_preimage_smul {r : ℝ} (hr : r ≠ 0) (s : Set E) :
     μ ((r • ·) ⁻¹' s) = Measure.map (r • ·) μ s :=
       ((Homeomorph.smul (isUnit_iff_ne_zero.2 hr).unit).toMeasurableEquiv.map_apply s).symm
     _ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) * μ s := by
-      rw [map_addHaar_smul μ hr, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
-        smul_eq_mul]
+      rw [map_addHaar_smul μ hr, coe_smul, Pi.smul_apply, smul_eq_mul]
 #align measure_theory.measure.add_haar_preimage_smul MeasureTheory.Measure.addHaar_preimage_smul
 
 /-- Rescaling a set by a factor `r` multiplies its measure by `abs (r ^ dim)`. -/

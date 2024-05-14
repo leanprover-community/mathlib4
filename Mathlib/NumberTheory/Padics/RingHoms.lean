@@ -3,8 +3,8 @@ Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.Padics.PadicIntegers
+import Mathlib.RingTheory.ZMod
 
 #align_import number_theory.padics.ring_homs from "leanprover-community/mathlib"@"565eb991e264d0db702722b4bde52ee5173c9950"
 
@@ -290,8 +290,8 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
     rw [← sub_zero x] at h
     dsimp [toZMod, toZModHom]
     convert zmod_congr_of_sub_mem_max_ideal x _ 0 _ h
-    norm_cast
-    apply sub_zmodRepr_mem
+    · norm_cast
+    · apply sub_zmodRepr_mem
 #align padic_int.ker_to_zmod PadicInt.ker_toZMod
 
 /-- `appr n x` gives a value `v : ℕ` such that `x` and `↑v : ℤ_p` are congruent mod `p^n`.

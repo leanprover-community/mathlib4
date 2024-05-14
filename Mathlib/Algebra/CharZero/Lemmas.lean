@@ -206,7 +206,7 @@ section RingHom
 
 variable {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
-theorem RingHom.charZero (ϕ : R →+* S) [hS : CharZero S] : CharZero R :=
+theorem RingHom.charZero (ϕ : R →+* S) [CharZero S] : CharZero R :=
   ⟨fun a b h => CharZero.cast_injective (by rw [← map_natCast ϕ, ← map_natCast ϕ, h])⟩
 #align ring_hom.char_zero RingHom.charZero
 

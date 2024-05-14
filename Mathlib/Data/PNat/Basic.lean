@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
 import Mathlib.Data.PNat.Defs
-import Mathlib.Data.Nat.Bits
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
@@ -68,8 +67,15 @@ theorem natPred_inj {m n : ℕ+} : m.natPred = n.natPred ↔ m = n :=
   natPred_injective.eq_iff
 #align pnat.nat_pred_inj PNat.natPred_inj
 
+@[simp, norm_cast]
+lemma val_ofNat (n : ℕ) [NeZero n] :
+    ((no_index (OfNat.ofNat n) : ℕ+) : ℕ) = OfNat.ofNat n :=
+  rfl
+
 @[simp]
-lemma val_ofNat (n : ℕ) : ((no_index (OfNat.ofNat n.succ) : ℕ+) : ℕ) = n.succ := rfl
+lemma mk_ofNat (n : ℕ) (h : 0 < n) :
+    @Eq ℕ+ (⟨no_index (OfNat.ofNat n), h⟩ : ℕ+) (haveI : NeZero n := ⟨h.ne'⟩; OfNat.ofNat n) :=
+  rfl
 
 end PNat
 
@@ -222,17 +228,6 @@ section deprecated
 
 set_option linter.deprecated false
 
--- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
-@[simp, deprecated]
-theorem mk_bit0 (n) {h} : (⟨bit0 n, h⟩ : ℕ+) = (bit0 ⟨n, pos_of_bit0_pos h⟩ : ℕ+) :=
-  rfl
-#align pnat.mk_bit0 PNat.mk_bit0
-
-@[simp, deprecated]
-theorem mk_bit1 (n) {h} {k} : (⟨bit1 n, h⟩ : ℕ+) = (bit1 ⟨n, k⟩ : ℕ+) :=
-  rfl
-#align pnat.mk_bit1 PNat.mk_bit1
-
 -- Some lemmas that rewrite inequalities between explicit numerals in `ℕ+`
 -- into the corresponding inequalities in `ℕ`.
 -- TODO: perhaps this should not be attempted by `simp`,
@@ -291,23 +286,6 @@ theorem lt_add_left (n m : ℕ+) : n < m + n :=
 theorem lt_add_right (n m : ℕ+) : n < n + m :=
   (lt_add_left n m).trans_eq (add_comm _ _)
 #align pnat.lt_add_right PNat.lt_add_right
-
--- Porting note (#11229): deprecated
-section deprecated
-
-set_option linter.deprecated false
-
-@[simp, norm_cast, deprecated]
-theorem coe_bit0 (a : ℕ+) : ((bit0 a : ℕ+) : ℕ) = bit0 (a : ℕ) :=
-  rfl
-#align pnat.coe_bit0 PNat.coe_bit0
-
-@[simp, norm_cast, deprecated]
-theorem coe_bit1 (a : ℕ+) : ((bit1 a : ℕ+) : ℕ) = bit1 (a : ℕ) :=
-  rfl
-#align pnat.coe_bit1 PNat.coe_bit1
-
-end deprecated
 
 @[simp, norm_cast]
 theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=

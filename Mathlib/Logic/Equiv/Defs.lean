@@ -84,8 +84,7 @@ instance {F} [EquivLike F α β] : CoeTC F (α ≃ β) :=
   ⟨EquivLike.toEquiv⟩
 
 /-- `Perm α` is the type of bijections from `α` to itself. -/
-@[reducible]
-def Equiv.Perm (α : Sort*) :=
+abbrev Equiv.Perm (α : Sort*) :=
   Equiv α α
 #align equiv.perm Equiv.Perm
 
@@ -788,7 +787,7 @@ def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :
 namespace Perm
 
 /-- A family of permutations `Π a, Perm (β a)` generates a permutation `Perm (Σ a, β₁ a)`. -/
-@[reducible] def sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm (Σ a, β a) :=
+abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm (Σ a, β a) :=
   Equiv.sigmaCongrRight F
 #align equiv.perm.sigma_congr_right Equiv.Perm.sigmaCongrRight
 

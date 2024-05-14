@@ -172,8 +172,7 @@ theorem empty_arrow {V : Type u} (a b : Empty V) : (a ⟶ b) = PEmpty := rfl
 #align quiver.empty_arrow Quiver.empty_arrow
 
 /-- A quiver is thin if it has no parallel arrows. -/
-@[reducible]
-def IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶ b)
+abbrev IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶ b)
 #align quiver.is_thin Quiver.IsThin
 
 end Quiver

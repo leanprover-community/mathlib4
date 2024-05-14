@@ -286,7 +286,7 @@ def bind (f : α →ₛ β) (g : β → α →ₛ γ) : α →ₛ γ :=
   ⟨fun a => g (f a) a, fun c =>
     f.measurableSet_cut (fun a b => g b a = c) fun b => (g b).measurableSet_preimage {c},
     (f.finite_range.biUnion fun b _ => (g b).finite_range).subset <| by
-      rintro _ ⟨a, rfl⟩; simp; exact ⟨a, a, rfl⟩⟩
+      rintro _ ⟨a, rfl⟩; simp⟩
 #align measure_theory.simple_func.bind MeasureTheory.SimpleFunc.bind
 
 @[simp]

@@ -63,15 +63,20 @@ namespace NumberField.Units
 
 section coe
 
+instance : CoeHTC (𝓞 K)ˣ K :=
+  ⟨fun x => algebraMap _ K (Units.val x)⟩
+
 theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
-  fun _ _ h => by rwa [SetLike.coe_eq_coe, Units.eq_iff] at h
+  RingOfIntegers.coe_injective.comp Units.ext
 
 variable {K}
 
+theorem coe_coe (u : (𝓞 K)ˣ) : ((u : 𝓞 K) : K) = (u : K) := rfl
+
 theorem coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
 
-theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : (↑(x ^ n) : K) = (x : K) ^ n := by
-  rw [← SubmonoidClass.coe_pow, ← val_pow_eq_pow_val]
+theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : ((x ^ n : (𝓞 K)ˣ) : K) = (x : K) ^ n := by
+  rw [← map_pow, ← val_pow_eq_pow_val]
 
 theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (↑(x ^ n) : K) = (x : K) ^ n := by
   change ((Units.coeHom K).comp (map (algebraMap (𝓞 K) K))) (x ^ n) = _
@@ -98,11 +103,9 @@ theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
   rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion]
   refine ⟨fun hx φ ↦ (((φ.comp $ algebraMap (𝓞 K) K).toMonoidHom.comp $
     Units.coeHom _).isOfFinOrder hx).norm_eq_one, fun h ↦ isOfFinOrder_iff_pow_eq_one.2 ?_⟩
-  obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.prop h
-  exact ⟨n, hn, by ext; rw [coe_pow, hx, coe_one]⟩
-
-/-- Shortcut instance because Lean tends to time out before finding the general instance. -/
-instance : Nonempty (torsion K) := One.instNonempty
+  obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.isIntegral_coe h
+  exact ⟨n, hn, by ext; rw [NumberField.RingOfIntegers.coe_eq_algebraMap, coe_pow, hx,
+    NumberField.RingOfIntegers.coe_eq_algebraMap, coe_one]⟩
 
 /-- The torsion subgroup is finite. -/
 instance [NumberField K] : Fintype (torsion K) := by
@@ -115,8 +118,7 @@ instance [NumberField K] : Fintype (torsion K) := by
   · rw [← h_ua]
     exact le_of_eq ((eq_iff_eq _ 1).mp ((mem_torsion K).mp h_tors) φ)
 
--- a shortcut instance to stop the next instance from timing out
-instance [NumberField K] : Finite (torsion K) := inferInstance
+instance : Nonempty (torsion K) := One.instNonempty
 
 /-- The torsion subgroup is cylic. -/
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _

@@ -625,8 +625,8 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
     · rintro ⟨y, rfl⟩
       rw [← pow_two, ← pow_mul, hodd]
       apply_fun Units.val using Units.ext
-      · push_cast
-        exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
+      push_cast
+      exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
     · subst a; intro h
       have key : 2 * (Fintype.card F / 2) ∣ n * (Fintype.card F / 2) := by
         rw [← pow_mul] at h

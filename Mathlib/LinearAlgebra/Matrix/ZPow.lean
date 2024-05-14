@@ -115,8 +115,7 @@ theorem zpow_neg_natCast (A : M) (n : ℕ) : A ^ (-n : ℤ) = (A ^ n)⁻¹ := by
   · exact DivInvMonoid.zpow_neg' _ _
 #align matrix.zpow_neg_coe_nat Matrix.zpow_neg_natCast
 
--- 2024-04-05
-@[deprecated] alias zpow_neg_coe_nat := zpow_neg_natCast
+@[deprecated (since := "2024-04-05")] alias zpow_neg_coe_nat := zpow_neg_natCast
 
 theorem _root_.IsUnit.det_zpow {A : M} (h : IsUnit A.det) (n : ℤ) : IsUnit (A ^ n).det := by
   cases' n with n n

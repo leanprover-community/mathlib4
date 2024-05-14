@@ -318,20 +318,17 @@ inductive BoundedFormula : ℕ → Type max u v u'
 #align first_order.language.bounded_formula FirstOrder.Language.BoundedFormula
 
 /-- `Formula α` is the type of formulas with all free variables indexed by `α`. -/
-@[reducible]
-def Formula :=
+abbrev Formula :=
   L.BoundedFormula α 0
 #align first_order.language.formula FirstOrder.Language.Formula
 
 /-- A sentence is a formula with no free variables. -/
-@[reducible]
-def Sentence :=
+abbrev Sentence :=
   L.Formula Empty
 #align first_order.language.sentence FirstOrder.Language.Sentence
 
 /-- A theory is a set of sentences. -/
-@[reducible]
-def Theory :=
+abbrev Theory :=
   Set L.Sentence
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory FirstOrder.Language.Theory
