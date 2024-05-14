@@ -8,7 +8,6 @@ import Mathlib.Algebra.Module.Submodule.JordanHolder
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Artinian
 import Mathlib.Order.KrullDimension
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.Algebra.BigOperators.WithTop

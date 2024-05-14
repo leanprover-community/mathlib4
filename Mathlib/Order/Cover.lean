@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van 
 -/
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Antisymmetrization
+import Mathlib.Data.List.Chain
 
 #align_import order.cover from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -628,25 +629,16 @@ lemma relation.refl_trans_gen_of_chain'_wcovby {X : Type _}  [DecidableEq X] [Pa
     (l : List X) (hl : 0 < l.length) (l_chain : l.Chain' (. ⩿ .)) :
   Relation.ReflTransGen (. ⋖ .) (l.nthLe 0 hl) (l.nthLe (l.length - 1) <| Nat.pred_lt <|
     show l.length ≠ 0 by aesop) := by
-  cases l with | nil => ?_ | cons x0 l => ?_
-  · dsimp at hl
-    cases hl
-
-  induction l generalizing x0 with | nil => ?_ | cons x1 l ih => ?_
-  · dsimp
-    exact Relation.ReflTransGen.refl
-  · dsimp at *
-    specialize ih x1 (Nat.zero_lt_succ _) (List.chain'_cons'.mp l_chain).2
-    have h1 : Relation.ReflTransGen (. ⋖ .) x0 x1 := by
-      rw [List.chain'_cons] at l_chain
-      by_cases eq0 : x0 = x1
-      · subst eq0
-        exact Relation.ReflTransGen.refl
-      · rw [Relation.ReflTransGen.cases_head_iff]
-        right
-        refine ⟨_, l_chain.1.covBy_of_ne eq0, by rfl⟩
-    simp only [ge_iff_le, Nat.succ_sub_succ_eq_sub, nonpos_iff_eq_zero, add_eq_zero, and_false,
-      tsub_zero] at ih ⊢
-    exact Relation.ReflTransGen.trans h1 ih
+  cases l with
+  | nil => cases hl
+  | cons x0 l =>
+  induction l generalizing x0 with
+  | nil => exact Relation.ReflTransGen.refl
+  | cons x1 l ih =>
+    refine Relation.ReflTransGen.trans
+      (eq_or_ne x0 x1 |>.elim (fun h ↦ h ▸ Relation.ReflTransGen.refl) fun h ↦
+        Relation.ReflTransGen.cases_head_iff.mpr <| Or.inr
+          ⟨_, (List.chain'_cons.mp l_chain).1.covBy_of_ne h, by rfl⟩) <| ih x1 (Nat.zero_lt_succ _)
+      (List.chain'_cons'.mp l_chain).2
 
 end List
