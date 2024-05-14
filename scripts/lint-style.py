@@ -54,6 +54,7 @@ ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
 ERR_NUM_LIN = 19 # file is too large
 ERR_NSP = 20 # non-terminal simp
+ERR_BACKTICKS = 22 # backticks
 
 exceptions = []
 
@@ -309,6 +310,19 @@ def banned_import_check(lines, path):
             errors += [(ERR_TAC, line_nr, path)]
     return errors, lines
 
+def check_odd_backticks(lines, path):
+    errors = []
+    for line_nr, line, is_comment in annotate_comments(lines):
+        if is_comment:
+            continue
+        # single backtick, but not a double backtick
+        if 2 * line.count("`") != line.count("``"):
+            output_message(path, line_nr, "ERR_BACKTICKS", "Odd number of backticks in this line")
+            #errors += [(ERR_BACKTICKS, line_nr, path)]
+            #print(format_errors)
+    return errors, lines
+
+
 def isolated_by_dot_semicolon_check(lines, path):
     errors = []
     newlines = []
@@ -412,6 +426,7 @@ def lint(path, fix=False):
                             long_lines_check,
                             isolated_by_dot_semicolon_check,
                             set_option_check,
+                            check_odd_backticks,
                             left_arrow_check,
                             nonterminal_simp_check]:
             errs, newlines = error_check(newlines, path)
