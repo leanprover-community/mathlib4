@@ -384,7 +384,8 @@ explicit instances:
 local instance : CommGroup (𝓞 K)ˣ := inferInstance
 ```
 -/
-set_option maxSynthPendingDepth 2 in
+set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of the file.
+
 /-- The linear equivalence between `unitLattice` and `(𝓞 K)ˣ ⧸ (torsion K)` as an additive
 `ℤ`-module. -/
 def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (torsion K)) := by
