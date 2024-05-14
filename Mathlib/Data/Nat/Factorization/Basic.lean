@@ -994,7 +994,7 @@ See `Nat.card_multiples` for a "shifted-by-one" version. -/
 lemma card_multiples' (N n : ℕ) :
     ((Finset.range N.succ).filter (fun k ↦ k ≠ 0 ∧ n ∣ k)).card = N / n := by
   induction N with
-    | zero => simp
+    | zero => simp [Finset.filter_false_of_mem]
     | succ N ih =>
         rw [Finset.range_succ, Finset.filter_insert]
         by_cases h : n ∣ N.succ
