@@ -305,7 +305,7 @@ theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F
           simp only [w', add_neg_cancel_right, sub_eq_add_neg]
         rw [h₂] at h₁
         exact h₁
-      have ge : ⟪u - v, w⟫_ℝ ≥ 0 := by
+      have ge : 0 ≤ ⟪u - v, w⟫_ℝ := by
         let w'' := -w + v
         have : w'' ∈ K := Submodule.add_mem _ (Submodule.neg_mem _ hw) hv
         have h₁ := h w'' this
