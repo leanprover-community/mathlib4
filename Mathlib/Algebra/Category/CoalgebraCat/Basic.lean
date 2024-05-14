@@ -39,7 +39,7 @@ instance : CoeSort (CoalgebraCat.{v} R) (Type v) :=
   rfl
 
 variable (R)
--- do I need simp lemmas for the coalgebra struct?
+
 /-- The object in the category of `R`-coalgebras associated to an `R`-coalgebra. -/
 @[simps]
 def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
@@ -60,7 +60,7 @@ lemma of_counit {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
 algebraic spellings of composition. -/
 @[ext]
 structure Hom (V W : CoalgebraCat.{v} R) :=
-  /-- The underlying isometry -/
+  /-- The underlying `CoalgHom` -/
   toCoalgHom : V →ₗc[R] W
 
 lemma Hom.toCoalgHom_injective (V W : CoalgebraCat.{v} R) :
@@ -81,7 +81,7 @@ lemma hom_ext {M N : CoalgebraCat.{v} R} (f g : M ⟶ N) (h : f.toCoalgHom = g.t
     f = g :=
   Hom.ext _ _ h
 
-/-- Typecheck a `QuadraticForm.CoalgHom` as a morphism in `CoalgebraCat R`. -/
+/-- Typecheck a `CoalgHom` as a morphism in `CoalgebraCat R`. -/
 abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
     [Coalgebra R X] [Coalgebra R Y] (f : X →ₗc[R] Y) :
     of R X ⟶ of R Y :=
@@ -131,8 +131,8 @@ variable [Coalgebra R X] [Coalgebra R Y] [Coalgebra R Z]
 `CoalgEquiv`. -/
 @[simps]
 def toIso (e : X ≃ₗc[R] Y) : CoalgebraCat.of R X ≅ CoalgebraCat.of R Y where
-  hom := ⟨e.toCoalgHom⟩
-  inv := ⟨e.symm.toCoalgHom⟩
+  hom := CoalgebraCat.ofHom e
+  inv := CoalgebraCat.ofHom e.symm
   hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
 
@@ -156,12 +156,14 @@ variable {X Y Z : CoalgebraCat.{v} R}
 
 /-- Build a `CoalgEquiv` from an isomorphism in the category
 `CoalgebraCat R`. -/
-@[simps! toCoalgHom]
 def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
   { i.hom.toCoalgHom with
     invFun := i.inv.toCoalgHom
     left_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgebraCat.Hom.toCoalgHom i.3) x
     right_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgebraCat.Hom.toCoalgHom i.4) x }
+
+@[simp] theorem toCoalgEquiv_toCoalgHom (i : X ≅ Y) :
+    i.toCoalgEquiv = i.hom.toCoalgHom := rfl
 
 @[simp] theorem toCoalgEquiv_refl : toCoalgEquiv (.refl X) = .refl _ _ :=
   rfl
