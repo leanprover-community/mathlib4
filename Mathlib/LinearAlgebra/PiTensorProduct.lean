@@ -317,6 +317,7 @@ theorem tprod_eq_tprodCoeff_one :
 theorem tprodCoeff_eq_smul_tprod (z : R) (f : Π i, s i) : tprodCoeff R z f = z • tprod R f := by
   have : z = z • (1 : R) := by simp only [mul_one, Algebra.id.smul_eq_mul]
   conv_lhs => rw [this]
+  rfl
 #align pi_tensor_product.tprod_coeff_eq_smul_tprod PiTensorProduct.tprodCoeff_eq_smul_tprod
 
 /-- The image of an element `p` of `FreeAddMonoid (R × Π i, s i)` in the `PiTensorProduct` is
@@ -330,7 +331,7 @@ lemma _root_.FreeAddMonoid.toPiTensorProduct (p : FreeAddMonoid (R × Π i, s i)
   | x :: ps => rw [List.map_cons, List.sum_cons, ← List.singleton_append, ← toPiTensorProduct ps,
                  ← tprodCoeff_eq_smul_tprod]; rfl
 
-/-- The set of lifts of an element `x` of `⨂[R] i, s i` in `FreeAddMonoid (R × Π i, s i)`.-/
+/-- The set of lifts of an element `x` of `⨂[R] i, s i` in `FreeAddMonoid (R × Π i, s i)`. -/
 def lifts (x : ⨂[R] i, s i) : Set (FreeAddMonoid (R × Π i, s i)) :=
   {p | AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p = x}
 
@@ -398,7 +399,7 @@ theorem ext {φ₁ φ₂ : (⨂[R] i, s i) →ₗ[R] E}
 #align pi_tensor_product.ext PiTensorProduct.ext
 
 /-- The pure tensors (i.e. the elements of the image of `PiTensorProduct.tprod`) span
-the tensor product.-/
+the tensor product. -/
 theorem span_tprod_eq_top :
     Submodule.span R (Set.range (tprod R)) = (⊤ : Submodule R (⨂[R] i, s i)) :=
   Submodule.eq_top_iff'.mpr fun t ↦ t.induction_on
@@ -569,7 +570,7 @@ theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
     map (fun i ↦ f₁ i * f₂ i) = map f₁ * map f₂ :=
   map_comp f₁ f₂
 
-/-- Upgrading `PiTensorProduct.map` to a `MonoidHom` when `s = t`.-/
+/-- Upgrading `PiTensorProduct.map` to a `MonoidHom` when `s = t`. -/
 @[simps]
 def mapMonoidHom : (Π i, s i →ₗ[R] s i) →* ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, s i) where
   toFun := map
@@ -716,7 +717,7 @@ section
 variable (R M)
 
 variable (s) in
-/-- Re-index the components of the tensor power by `e`.-/
+/-- Re-index the components of the tensor power by `e`. -/
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
   let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
   let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
@@ -807,7 +808,7 @@ variable {t : ι → Type*}
 variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
 
 /-- Re-indexing the components of the tensor product by an equivalence `e` is compatible
-with `PiTensorProduct.map`.-/
+with `PiTensorProduct.map`. -/
 theorem map_comp_reindex_eq (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
     map (fun i ↦ f (e.symm i)) ∘ₗ reindex R s e = reindex R t e ∘ₗ map f := by
   ext m

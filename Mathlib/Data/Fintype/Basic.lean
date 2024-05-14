@@ -439,6 +439,8 @@ instance subsingleton (α : Type*) : Subsingleton (Fintype α) :=
   ⟨fun ⟨s₁, h₁⟩ ⟨s₂, h₂⟩ => by congr; simp [Finset.ext_iff, h₁, h₂]⟩
 #align fintype.subsingleton Fintype.subsingleton
 
+instance (α : Type*) : Lean.Meta.FastSubsingleton (Fintype α) := {}
+
 /-- Given a predicate that can be represented by a finset, the subtype
 associated to the predicate is a fintype. -/
 protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
@@ -1309,3 +1311,29 @@ theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : 
   · apply symm
     exact hf' n m h
 #align exists_seq_of_forall_finset_exists' exists_seq_of_forall_finset_exists'
+
+open Std.ExtendedBinder Lean Meta
+
+/-- `finset% t` elaborates `t` as a `Finset`.
+If `t` is a `Set`, then inserts `Set.toFinset`.
+Does not make use of the expected type; useful for big operators over finsets.
+```
+#check finset% Finset.range 2 -- Finset Nat
+#check finset% (Set.univ : Set Bool) -- Finset Bool
+```
+-/
+elab (name := finsetStx) "finset% " t:term : term => do
+  let u ← mkFreshLevelMVar
+  let ty ← mkFreshExprMVar (mkSort (.succ u))
+  let x ← Elab.Term.elabTerm t (mkApp (.const ``Finset [u]) ty)
+  let xty ← whnfR (← inferType x)
+  if xty.isAppOfArity ``Set 1 then
+    Elab.Term.elabAppArgs (.const ``Set.toFinset [u]) #[] #[.expr x] none false false
+  else
+    return x
+
+open Lean.Elab.Term.Quotation in
+/-- `quot_precheck` for the `finset%` syntax. -/
+@[quot_precheck finsetStx] def precheckFinsetStx : Precheck
+  | `(finset% $t) => precheck t
+  | _ => Elab.throwUnsupportedSyntax

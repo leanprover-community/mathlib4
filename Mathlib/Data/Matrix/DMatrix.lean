@@ -115,7 +115,7 @@ instance [∀ i j, Unique (α i j)] : Unique (DMatrix m n α) :=
   Pi.unique
 
 instance [∀ i j, Subsingleton (α i j)] : Subsingleton (DMatrix m n α) :=
-  instSubsingletonForAll
+  inferInstanceAs <| Subsingleton <| ∀ i j, α i j
 
 @[simp]
 theorem zero_apply [∀ i j, Zero (α i j)] (i j) : (0 : DMatrix m n α) i j = 0 := rfl

@@ -7,6 +7,7 @@ import Mathlib.Data.ZMod.Quotient
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.GCDMonoid.Finset
+import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Peel
@@ -59,7 +60,7 @@ section Monoid
 variable (G) [Monoid G]
 
 /-- A predicate on a monoid saying that there is a positive integer `n` such that `g ^ n = 1`
-  for all `g`.-/
+  for all `g`. -/
 @[to_additive
       "A predicate on an additive monoid saying that there is a positive integer `n` such\n
       that `n • g = 0` for all `g`."]
@@ -69,7 +70,7 @@ def ExponentExists :=
 #align add_monoid.exponent_exists AddMonoid.ExponentExists
 
 /-- The exponent of a group is the smallest positive integer `n` such that `g ^ n = 1` for all
-  `g ∈ G` if it exists, otherwise it is zero by convention.-/
+  `g ∈ G` if it exists, otherwise it is zero by convention. -/
 @[to_additive
       "The exponent of an additive group is the smallest positive integer `n` such that\n
       `n • g = 0` for all `g ∈ G` if it exists, otherwise it is zero by convention."]
@@ -93,7 +94,7 @@ open MulOpposite in
 theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := by
   simp only [Monoid.exponent, ExponentExists]
   congr!
-  all_goals exact ⟨(op_injective <| · <| op ·), (unop_injective <| . <| unop .)⟩
+  all_goals exact ⟨(op_injective <| · <| op ·), (unop_injective <| · <| unop ·)⟩
 
 @[to_additive]
 theorem ExponentExists.isOfFinOrder (h : ExponentExists G) {g : G} : IsOfFinOrder g :=
@@ -243,7 +244,7 @@ theorem exponent_dvd {n : ℕ} : exponent G ∣ n ↔ ∀ g : G, orderOf g ∣ n
 
 variable (G)
 
-@[to_additive (attr := deprecated)]
+@[to_additive (attr := deprecated)] -- 2024-02-17
 theorem exponent_dvd_of_forall_orderOf_dvd (n : ℕ) (h : ∀ g : G, orderOf g ∣ n) : exponent G ∣ n :=
   exponent_dvd.mpr h
 
@@ -494,8 +495,8 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   rw [(Commute.all _ g).orderOf_mul_eq_mul_orderOf_of_coprime hcoprime, hpk',
     hg, ha, hk, pow_add, pow_add, pow_one, ← mul_assoc, ← mul_assoc,
     Nat.div_mul_cancel, mul_assoc, lt_mul_iff_one_lt_right <| hG.orderOf_pos t, ← pow_succ]
-  exact one_lt_pow hp.one_lt a.succ_ne_zero
-  exact hpk
+  · exact one_lt_pow hp.one_lt a.succ_ne_zero
+  · exact hpk
 
 @[to_additive]
 theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
@@ -550,8 +551,7 @@ section Group
 
 variable [Group G]
 
--- Deprecated: 2024-02-17
-@[to_additive (attr := deprecated Monoid.one_lt_exponent) AddGroup.one_lt_exponent]
+@[to_additive (attr := deprecated Monoid.one_lt_exponent) AddGroup.one_lt_exponent] -- 2024-02-17
 lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G :=
   Monoid.one_lt_exponent
 
@@ -718,7 +718,7 @@ lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
     x⁻¹ = x :=
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
 
--- TODO: Delete
+-- TODO: Delete; deprecated on 2024-02-17
 /-- Any group of exponent two is abelian. -/
 @[to_additive (attr := reducible, deprecated) "Any additive group of exponent two is abelian."]
 def instCommGroupOfExponentTwo (hG : Monoid.exponent G = 2) : CommGroup G where

@@ -673,7 +673,7 @@ theorem trivial_eq_closure : trivial G = Group.closure ∅ :=
 
 end IsSubgroup
 
-/-The normal closure of a set s is the subgroup closure of all the conjugates of
+/- The normal closure of a set s is the subgroup closure of all the conjugates of
 elements of s. It is the smallest normal subgroup containing s. -/
 namespace Group
 

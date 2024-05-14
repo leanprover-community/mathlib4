@@ -297,14 +297,14 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
       simp only [Real.norm_eq_abs, abs_toReal]
       exact (ENNReal.toReal_le_toReal (measure_ne_top _ _) (measure_ne_top _ _)).mpr
             <| measure_mono (subset_univ _)
-  apply le_trans (set_integral_mono (s := Ioc 0 ‖f‖) ?_ ?_ key)
-  rw [integral_add]
-  · apply add_le_add_left
-    simp only [integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
-                Real.volume_Ioc, sub_zero, norm_nonneg, toReal_ofReal, smul_eq_mul,
-                (mul_comm _ ε).le]
-  · exact intble₂
-  · exact integrable_const ε
+  apply le_trans (setIntegral_mono (s := Ioc 0 ‖f‖) ?_ ?_ key)
+  · rw [integral_add]
+    · apply add_le_add_left
+      simp only [integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
+                  Real.volume_Ioc, sub_zero, norm_nonneg, toReal_ofReal, smul_eq_mul,
+                  (mul_comm _ ε).le]
+    · exact intble₂
+    · exact integrable_const ε
   · exact intble₁
   · exact intble₂.add <| integrable_const ε
 
@@ -330,9 +330,9 @@ lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
   · apply eventually_of_forall (fun t ↦ ?_)
     simp only [NNReal.tendsto_coe]
     apply (ENNReal.tendsto_toNNReal _).comp
-    apply (tendsto_measure_thickening_of_isClosed ?_ ?_)
-    · exact ⟨1, ⟨Real.zero_lt_one, measure_ne_top _ _⟩⟩
-    · exact isClosed_le continuous_const f.continuous
+    · apply tendsto_measure_thickening_of_isClosed ?_ ?_
+      · exact ⟨1, ⟨Real.zero_lt_one, measure_ne_top _ _⟩⟩
+      · exact isClosed_le continuous_const f.continuous
     · exact measure_ne_top _ _
 
 /-- The coercion `LevyProkhorov (ProbabilityMeasure Ω) → ProbabilityMeasure Ω` is continuous. -/
@@ -398,7 +398,7 @@ distribution. -/
 theorem levyProkhorov_le_convergenceInDistribution :
     TopologicalSpace.coinduced (LevyProkhorov.probabilityMeasure (Ω := Ω)) inferInstance
       ≤ (inferInstance : TopologicalSpace (ProbabilityMeasure Ω)) :=
-  (continuous_levyProkhorov_to_probabilityMeasure).coinduced_le
+  continuous_levyProkhorov_to_probabilityMeasure.coinduced_le
 
 end Levy_Prokhorov_comparison
 

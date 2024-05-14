@@ -208,6 +208,7 @@ lemma uniformEquicontinuous_restrict_iff (F : ι → β → α) {S : Set β} :
     UniformEquicontinuous (S.restrict ∘ F) ↔ UniformEquicontinuousOn F S := by
   rw [UniformEquicontinuous, UniformEquicontinuousOn]
   conv in _ ⊓ _ => rw [← Subtype.range_val (s := S), ← range_prod_map, ← map_comap]
+  rfl
 
 /-!
 ### Empty index type
@@ -909,7 +910,7 @@ protected theorem Set.UniformEquicontinuous.closure {A : Set <| β → α}
 
 /-- If a set of functions is uniformly equicontinuous on a set `S`, its closure for the product
 topology is also uniformly equicontinuous. This would also be true for the coarser topology of
-pointwise convergence on `S`, see `UniformEquicontinuousOn.closure'`.-/
+pointwise convergence on `S`, see `UniformEquicontinuousOn.closure'`. -/
 protected theorem Set.UniformEquicontinuousOn.closure {A : Set <| β → α} {S : Set β}
     (hA : A.UniformEquicontinuousOn S) : (closure A).UniformEquicontinuousOn S :=
   UniformEquicontinuousOn.closure' (u := id) hA (Pi.continuous_restrict _)

@@ -56,7 +56,7 @@ class ConcreteCategory (C : Type u) [Category.{v} C] where
   /-- We have a functor to Type -/
   protected forget : C ⥤ Type w
   /-- That functor is faithful -/
-  [forget_faithful : Faithful forget]
+  [forget_faithful : forget.Faithful]
 #align category_theory.concrete_category CategoryTheory.ConcreteCategory
 #align category_theory.concrete_category.forget CategoryTheory.ConcreteCategory.forget
 
@@ -103,10 +103,10 @@ def ConcreteCategory.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where
   coe_injective' _ _ h := (forget C).map_injective h
 attribute [local instance] ConcreteCategory.instFunLike
 
-/-- In any concrete category, we can test equality of morphisms by pointwise evaluations.-/
+/-- In any concrete category, we can test equality of morphisms by pointwise evaluations. -/
 @[ext low] -- Porting note: lowered priority
 theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x = g x) : f = g := by
-  apply @Faithful.map_injective C _ (Type w) _ (forget C) _ X Y
+  apply (forget C).map_injective
   dsimp [forget]
   funext x
   exact w x
@@ -189,7 +189,7 @@ theorem ConcreteCategory.bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
 
 /-- If the forgetful functor of a concrete category reflects isomorphisms, being an isomorphism
 is equivalent to being bijective. -/
-theorem ConcreteCategory.isIso_iff_bijective [ReflectsIsomorphisms (forget C)]
+theorem ConcreteCategory.isIso_iff_bijective [(forget C).ReflectsIsomorphisms]
     {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective ((forget C).map f) := by
   rw [← CategoryTheory.isIso_iff_bijective]
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ isIso_of_reflects_iso f (forget C)⟩
@@ -229,7 +229,7 @@ lemma forget₂_comp_apply {C : Type u} {D : Type u'} [Category.{v} C] [Concrete
   rw [Functor.map_comp, comp_apply]
 
 instance forget₂_faithful (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} C]
-    [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] : Faithful (forget₂ C D) :=
+    [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] : (forget₂ C D).Faithful :=
   HasForget₂.forget_comp.faithful_of_comp
 #align category_theory.forget₂_faithful CategoryTheory.forget₂_faithful
 
@@ -285,8 +285,8 @@ def HasForget₂.mk' {C : Type u} {D : Type u'} [Category.{v} C] [ConcreteCatego
     (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq ((forget D).map (map f)) ((forget C).map f)) : HasForget₂ C D
     where
-  forget₂ := Faithful.div _ _ _ @h_obj _ @h_map
-  forget_comp := by apply Faithful.div_comp
+  forget₂ := Functor.Faithful.div _ _ _ @h_obj _ @h_map
+  forget_comp := by apply Functor.Faithful.div_comp
 #align category_theory.has_forget₂.mk' CategoryTheory.HasForget₂.mk'
 
 /-- Every forgetful functor factors through the identity functor. This is not a global instance as

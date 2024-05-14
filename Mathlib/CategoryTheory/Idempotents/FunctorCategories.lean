@@ -118,9 +118,9 @@ def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C wher
   map := KaroubiFunctorCategoryEmbedding.map
 #align category_theory.idempotents.karoubi_functor_category_embedding CategoryTheory.Idempotents.karoubiFunctorCategoryEmbedding
 
-instance : Full (karoubiFunctorCategoryEmbedding J C) where
-  preimage {P Q} f :=
-    { f :=
+instance : (karoubiFunctorCategoryEmbedding J C).Full where
+  map_surjective {P Q} f :=
+   ⟨{ f :=
         { app := fun j => (f.app j).f
           naturality := fun j j' φ => by
             rw [← Karoubi.comp_p_assoc]
@@ -130,10 +130,9 @@ instance : Full (karoubiFunctorCategoryEmbedding J C) where
             erw [← h, assoc, ← P.p.naturality_assoc φ, p_comp (f.app j')] }
       comm := by
         ext j
-        exact (f.app j).comm }
-  witness f := rfl
+        exact (f.app j).comm }, rfl⟩
 
-instance : Faithful (karoubiFunctorCategoryEmbedding J C) where
+instance : (karoubiFunctorCategoryEmbedding J C).Faithful where
   map_injective h := by
     ext j
     exact hom_ext_iff.mp (congr_app h j)

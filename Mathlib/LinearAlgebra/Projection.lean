@@ -362,7 +362,7 @@ theorem coe_isComplEquivProj_symm_apply (f : { f : E →ₗ[R] p // ∀ x : p, f
 #align submodule.coe_is_compl_equiv_proj_symm_apply Submodule.coe_isComplEquivProj_symm_apply
 
 /-- The idempotent endomorphisms of a module with range equal to a submodule are in 1-1
-correspondence with linear maps to the submodule that restrict to the identity on the submodule.-/
+correspondence with linear maps to the submodule that restrict to the identity on the submodule. -/
 @[simps] def isIdempotentElemEquiv :
     { f : Module.End R E // IsIdempotentElem f ∧ range f = p } ≃
     { f : E →ₗ[R] p // ∀ x : p, f x = x } where

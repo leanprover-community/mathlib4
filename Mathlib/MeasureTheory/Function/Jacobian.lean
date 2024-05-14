@@ -154,7 +154,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
       simpa only [sub_pos] using mem_ball_iff_norm.mp hz
     obtain ⟨δ, δpos, hδ⟩ :
       ∃ (δ : ℝ), 0 < δ ∧ ball x δ ∩ s ⊆ {y | ‖f y - f x - (f' x) (y - x)‖ ≤ ε * ‖y - x‖} :=
-      Metric.mem_nhdsWithin_iff.1 ((hf' x xs).isLittleO.definition εpos)
+      Metric.mem_nhdsWithin_iff.1 ((hf' x xs).isLittleO.def εpos)
     obtain ⟨n, hn⟩ : ∃ n, u n < δ := ((tendsto_order.1 u_lim).2 _ δpos).exists
     refine' ⟨n, ⟨z, zT⟩, ⟨xs, _⟩⟩
     intro y hy
@@ -163,7 +163,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
         congr 1
         simp only [ContinuousLinearMap.coe_sub', map_sub, Pi.sub_apply]
         abel
-      _ ≤ ‖f y - f x - (f' x) (y - x)‖ + ‖(f' x - f' z) (y - x)‖ := (norm_add_le _ _)
+      _ ≤ ‖f y - f x - (f' x) (y - x)‖ + ‖(f' x - f' z) (y - x)‖ := norm_add_le _ _
       _ ≤ ε * ‖y - x‖ + ‖f' x - f' z‖ * ‖y - x‖ := by
         refine' add_le_add (hδ _) (ContinuousLinearMap.le_opNorm _ _)
         rw [inter_comm]
@@ -209,7 +209,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
     refine' yM.2 _ ⟨hx.1, _⟩
     calc
       dist x y ≤ dist x (d p) + dist y (d p) := dist_triangle_right _ _ _
-      _ ≤ u n / 3 + u n / 3 := (add_le_add hx.2.2 hy.2.2)
+      _ ≤ u n / 3 + u n / 3 := add_le_add hx.2.2 hy.2.2
       _ < u n := by linarith [u_pos n]
   -- the sets `K n z p` are also closed, again by design.
   have K_closed : ∀ (n) (z : T) (p), IsClosed (K n z p) := fun n z p =>
@@ -372,7 +372,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
         apply measure_mono
         rw [← image_iUnion, ← inter_iUnion]
         exact image_subset _ (subset_inter (Subset.refl _) st)
-      _ ≤ ∑' x : t, μ (f '' (s ∩ closedBall x (r x))) := (measure_iUnion_le _)
+      _ ≤ ∑' x : t, μ (f '' (s ∩ closedBall x (r x))) := measure_iUnion_le _
       _ ≤ ∑' x : t, m * μ (closedBall x (r x)) :=
         (ENNReal.tsum_le_tsum fun x => I x (r x) (ts x.2) (rpos x x.2).le)
       _ ≤ m * (μ s + a) := by rw [ENNReal.tsum_mul_left]; exact mul_le_mul_left' μt _
@@ -493,7 +493,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
       (measure_closedBall_pos μ z εpos).ne'
   obtain ⟨ρ, ρpos, hρ⟩ :
     ∃ ρ > 0, ball x ρ ∩ s ⊆ {y : E | ‖f y - f x - (f' x) (y - x)‖ ≤ ε * ‖y - x‖} :=
-    mem_nhdsWithin_iff.1 ((hf' x xs).isLittleO.definition εpos)
+    mem_nhdsWithin_iff.1 ((hf' x xs).isLittleO.def εpos)
   -- for small enough `r`, the rescaled ball `r • closedBall z ε` is included in the set where
   -- `f y - f x` is well approximated by `f' x (y - x)`.
   have B₂ : ∀ᶠ r in 𝓝[>] (0 : ℝ), {x} + r • closedBall z ε ⊆ ball x ρ := by
@@ -512,7 +512,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
   have norm_a : ‖a‖ ≤ ‖z‖ + ε :=
     calc
       ‖a‖ = ‖z + (a - z)‖ := by simp only [add_sub_cancel]
-      _ ≤ ‖z‖ + ‖a - z‖ := (norm_add_le _ _)
+      _ ≤ ‖z‖ + ‖a - z‖ := norm_add_le _ _
       _ ≤ ‖z‖ + ε := add_le_add_left (mem_closedBall_iff_norm.1 az) _
   -- use the approximation properties to control `(f' x - A) a`, and then `(f' x - A) z` as `z` is
   -- close to `a`.
@@ -524,7 +524,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
         congr 1
         simp only [ya, add_sub_cancel_left, sub_sub_sub_cancel_left, ContinuousLinearMap.coe_sub',
           eq_self_iff_true, sub_left_inj, Pi.sub_apply, ContinuousLinearMap.map_smul, smul_sub]
-      _ ≤ ‖f y - f x - A (y - x)‖ + ‖f y - f x - (f' x) (y - x)‖ := (norm_sub_le _ _)
+      _ ≤ ‖f y - f x - A (y - x)‖ + ‖f y - f x - (f' x) (y - x)‖ := norm_sub_le _ _
       _ ≤ δ * ‖y - x‖ + ε * ‖y - x‖ := (add_le_add (hf _ ys _ xs) (hρ ⟨rρ hy, ys⟩))
       _ = r * (δ + ε) * ‖a‖ := by
         simp only [ya, add_sub_cancel_left, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
@@ -536,7 +536,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
       congr 1
       simp only [ContinuousLinearMap.coe_sub', map_sub, Pi.sub_apply]
       abel
-    _ ≤ ‖(f' x - A) a‖ + ‖(f' x - A) (z - a)‖ := (norm_add_le _ _)
+    _ ≤ ‖(f' x - A) a‖ + ‖(f' x - A) (z - a)‖ := norm_add_le _ _
     _ ≤ (δ + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ‖z - a‖ := by
       apply add_le_add
       · rw [mul_assoc] at I; exact (mul_le_mul_left rpos).1 I
@@ -585,7 +585,7 @@ theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : Diffe
       apply measure_mono
       rw [← image_iUnion, ← inter_iUnion]
       exact image_subset f (subset_inter Subset.rfl t_cover)
-    _ ≤ ∑' n, μ (f '' (s ∩ t n)) := (measure_iUnion_le _)
+    _ ≤ ∑' n, μ (f '' (s ∩ t n)) := measure_iUnion_le _
     _ ≤ ∑' n, (Real.toNNReal |(A n).det| + 1 : ℝ≥0) * μ (s ∩ t n) := by
       apply ENNReal.tsum_le_tsum fun n => ?_
       apply (hδ (A n)).2
@@ -627,7 +627,7 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero_aux
       apply measure_mono
       rw [← image_iUnion, ← inter_iUnion]
       exact image_subset f (subset_inter Subset.rfl t_cover)
-    _ ≤ ∑' n, μ (f '' (s ∩ t n)) := (measure_iUnion_le _)
+    _ ≤ ∑' n, μ (f '' (s ∩ t n)) := measure_iUnion_le _
     _ ≤ ∑' n, (Real.toNNReal |(A n).det| + ε : ℝ≥0) * μ (s ∩ t n) := by
       apply ENNReal.tsum_le_tsum fun n => ?_
       apply (hδ (A n)).2
@@ -770,7 +770,7 @@ theorem aemeasurable_toNNReal_abs_det_fderivWithin (hs : MeasurableSet s)
 #align measure_theory.ae_measurable_to_nnreal_abs_det_fderiv_within MeasureTheory.aemeasurable_toNNReal_abs_det_fderivWithin
 
 /-- If a function is differentiable and injective on a measurable set,
-then the image is measurable.-/
+then the image is measurable. -/
 theorem measurable_image_of_fderivWithin (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) : MeasurableSet (f '' s) :=
   haveI : DifferentiableOn ℝ f s := fun x hx => (hf' x hx).differentiableWithinAt
@@ -841,7 +841,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
       apply measure_mono
       rw [← image_iUnion, ← inter_iUnion]
       exact image_subset f (subset_inter Subset.rfl t_cover)
-    _ ≤ ∑' n, μ (f '' (s ∩ t n)) := (measure_iUnion_le _)
+    _ ≤ ∑' n, μ (f '' (s ∩ t n)) := measure_iUnion_le _
     _ ≤ ∑' n, (ENNReal.ofReal |(A n).det| + ε) * μ (s ∩ t n) := by
       apply ENNReal.tsum_le_tsum fun n => ?_
       apply (hδ (A n)).2.2
@@ -857,7 +857,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
       have I : |(A n).det| ≤ |(f' x).det| + ε :=
         calc
           |(A n).det| = |(f' x).det - ((f' x).det - (A n).det)| := by congr 1; abel
-          _ ≤ |(f' x).det| + |(f' x).det - (A n).det| := (abs_sub _ _)
+          _ ≤ |(f' x).det| + |(f' x).det - (A n).det| := abs_sub _ _
           _ ≤ |(f' x).det| + ε := add_le_add le_rfl ((hδ (A n)).2.1 _ hx)
       calc
         ENNReal.ofReal |(A n).det| + ε ≤ ENNReal.ofReal (|(f' x).det| + ε) + ε :=
@@ -1001,7 +1001,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
       have I : |(f' x).det| ≤ |(A n).det| + ε :=
         calc
           |(f' x).det| = |(A n).det + ((f' x).det - (A n).det)| := by congr 1; abel
-          _ ≤ |(A n).det| + |(f' x).det - (A n).det| := (abs_add _ _)
+          _ ≤ |(A n).det| + |(f' x).det - (A n).det| := abs_add _ _
           _ ≤ |(A n).det| + ε := add_le_add le_rfl ((hδ (A n)).2.1 _ hx)
       calc
         ENNReal.ofReal |(f' x).det| ≤ ENNReal.ofReal (|(A n).det| + ε) :=
@@ -1204,7 +1204,7 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
     (measurableEmbedding_of_fderivWithin hs hf' hf).integral_map]
   simp only [Set.restrict_apply, ← Function.comp_apply (f := g), ENNReal.ofReal]
   rw [← (MeasurableEmbedding.subtype_coe hs).integral_map, map_comap_subtype_coe hs,
-    set_integral_withDensity_eq_set_integral_smul₀
+    setIntegral_withDensity_eq_setIntegral_smul₀
       (aemeasurable_toNNReal_abs_det_fderivWithin μ hs hf') _ hs]
   congr with x
   rw [NNReal.smul_def, Real.coe_toNNReal _ (abs_nonneg (f' x).det)]

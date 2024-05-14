@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.Topology.Sheaves.Init
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import topology.sheaves.presheaf from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
@@ -42,7 +42,7 @@ variable (C : Type u) [Category.{v} C]
 namespace TopCat
 
 /-- The category of `C`-valued presheaves on a (bundled) topological space `X`. -/
--- Porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 def Presheaf (X : TopCat.{w}) : Type max u v w :=
   (Opens X)ᵒᵖ ⥤ C
 set_option linter.uppercaseLean3 false in
@@ -346,8 +346,8 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
   have hx : IsTerminal x :=
     { lift := fun s ↦ by
         fapply CostructuredArrow.homMk
-        change op (unop _) ⟶ op (⟨_, H⟩ : Opens _)
-        · refine' (homOfLE _).op
+        · change op (unop _) ⟶ op (⟨_, H⟩ : Opens _)
+          refine' (homOfLE _).op
           apply (Set.image_subset f s.pt.hom.unop.le).trans
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
         · simp [autoParam, eq_iff_true_of_subsingleton]
@@ -419,8 +419,8 @@ theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presh
   · intros a b f
     ext U
     · erw [NatTrans.congr f (Opens.op_map_id_obj (op U))]
-      simp only [Functor.op_obj, eqToHom_refl, CategoryTheory.Functor.map_id,
-        Category.comp_id, Category.id_comp, Functor.id_obj, Functor.id_map]
+      · simp only [Functor.op_obj, eqToHom_refl, CategoryTheory.Functor.map_id,
+          Category.comp_id, Category.id_comp, Functor.id_obj, Functor.id_map]
       apply Pushforward.id_eq
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.id_pushforward TopCat.Presheaf.id_pushforward

@@ -20,7 +20,7 @@ the underlying types are just the limits in the category of types.
 
 -/
 
-set_option linter.uppercaseLean3 false -- `Mon`
+set_option linter.uppercaseLean3 false
 
 noncomputable section
 
@@ -141,7 +141,8 @@ end HasLimits
 open HasLimits
 
 /-- The category of monoids has all limits. -/
-@[to_additive "The category of additive monoids has all limits."]
+@[to_additive "The category of additive monoids has all limits.",
+  to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} MonCat.{u} where
   has_limits_of_shape _ _ := { }
 #align Mon.has_limits_of_size MonCat.hasLimitsOfSize
@@ -270,7 +271,8 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommMonCat.{u} wher
   has_limit _ := inferInstance
 
 /-- The category of commutative monoids has all limits. -/
-@[to_additive "The category of additive commutative monoids has all limits."]
+@[to_additive "The category of additive commutative monoids has all limits.",
+  to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommMonCat.{u} where
   has_limits_of_shape _ _ := { }
 #align CommMon.has_limits_of_size CommMonCat.hasLimitsOfSize

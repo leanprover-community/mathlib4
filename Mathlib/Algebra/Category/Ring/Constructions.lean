@@ -42,13 +42,13 @@ def pushoutCocone : Limits.PushoutCocone f g := by
   letI := RingHom.toAlgebra f
   letI := RingHom.toAlgebra g
   fapply Limits.PushoutCocone.mk
-  show CommRingCat; exact CommRingCat.of (A ⊗[R] B)
-  show A ⟶ _; exact Algebra.TensorProduct.includeLeftRingHom
-  show B ⟶ _; exact Algebra.TensorProduct.includeRight.toRingHom
-  ext r
-  trans algebraMap R (A ⊗[R] B) r
-  · exact Algebra.TensorProduct.includeLeft.commutes (R := R) r
-  · exact (Algebra.TensorProduct.includeRight.commutes (R := R) r).symm
+  · show CommRingCat; exact CommRingCat.of (A ⊗[R] B)
+  · show A ⟶ _; exact Algebra.TensorProduct.includeLeftRingHom
+  · show B ⟶ _; exact Algebra.TensorProduct.includeRight.toRingHom
+  · ext r
+    trans algebraMap R (A ⊗[R] B) r
+    · exact Algebra.TensorProduct.includeLeft.commutes (R := R) r
+    · exact (Algebra.TensorProduct.includeRight.commutes (R := R) r).symm
 set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone CommRingCat.pushoutCocone
 
@@ -147,7 +147,7 @@ section Terminal
 /-- The trivial ring is the (strict) terminal object of `CommRingCat`. -/
 def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
   refine IsTerminal.ofUnique (h := fun X => ⟨⟨⟨⟨1, rfl⟩, fun _ _ => rfl⟩, ?_, ?_⟩, ?_⟩)
-  · dsimp
+  · rfl
   · intros; dsimp
   · intros f; ext; rfl
 set_option linter.uppercaseLean3 false in

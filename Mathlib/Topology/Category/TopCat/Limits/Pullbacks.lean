@@ -67,14 +67,14 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
     (by
       intro S
       constructor; swap
-      exact
-        { toFun := fun x =>
-            ⟨⟨S.fst x, S.snd x⟩, by simpa using ConcreteCategory.congr_hom S.condition x⟩
-          continuous_toFun := by
-            apply Continuous.subtype_mk <| Continuous.prod_mk ?_ ?_
-            · exact (PullbackCone.fst S)|>.continuous_toFun
-            · exact (PullbackCone.snd S)|>.continuous_toFun
-        }
+      · exact
+          { toFun := fun x =>
+              ⟨⟨S.fst x, S.snd x⟩, by simpa using ConcreteCategory.congr_hom S.condition x⟩
+            continuous_toFun := by
+              apply Continuous.subtype_mk <| Continuous.prod_mk ?_ ?_
+              · exact (PullbackCone.fst S)|>.continuous_toFun
+              · exact (PullbackCone.snd S)|>.continuous_toFun
+          }
       refine' ⟨_, _, _⟩
       · delta pullbackCone
         ext a

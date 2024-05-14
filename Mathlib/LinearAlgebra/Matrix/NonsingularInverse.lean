@@ -152,6 +152,10 @@ theorem isUnit_iff_isUnit_det : IsUnit A ↔ IsUnit A.det := by
   simp only [← nonempty_invertible_iff_isUnit, (invertibleEquivDetInvertible A).nonempty_congr]
 #align matrix.is_unit_iff_is_unit_det Matrix.isUnit_iff_isUnit_det
 
+@[simp]
+theorem isUnits_det_units (A : (Matrix n n α)ˣ) : IsUnit (A : Matrix n n α).det :=
+  isUnit_iff_isUnit_det _ |>.mp A.isUnit
+
 /-! #### Variants of the statements above with `IsUnit`-/
 
 
@@ -206,7 +210,7 @@ theorem isUnit_det_transpose (h : IsUnit A.det) : IsUnit Aᵀ.det := by
 /-! ### A noncomputable `Inv` instance  -/
 
 
-/-- The inverse of a square matrix, when it is invertible (and zero otherwise).-/
+/-- The inverse of a square matrix, when it is invertible (and zero otherwise). -/
 noncomputable instance inv : Inv (Matrix n n α) :=
   ⟨fun A => Ring.inverse A.det • A.adjugate⟩
 
