@@ -19,7 +19,7 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
-/-- The category of `R`-Hopf algebrass. -/
+/-- The category of `R`-Hopf algebras. -/
 structure HopfAlgebraCat extends Bundled Ring.{v} where
   isHopfAlgebra : HopfAlgebra R α
 
@@ -64,7 +64,7 @@ lemma of_counit {X : Type v} [Ring X] [HopfAlgebra R X] :
 algebraic spellings of composition. -/
 @[ext]
 structure Hom (V W : HopfAlgebraCat.{v} R) :=
-  /-- The underlying isometry -/
+  /-- The underlying `BialgHom`. -/
   toBialgHom : V →ₐc[R] W
 
 lemma Hom.toBialgHom_injective (V W : HopfAlgebraCat.{v} R) :
@@ -106,7 +106,7 @@ instance concreteCategory : ConcreteCategory.{v} (HopfAlgebraCat.{v} R) where
   forget_faithful :=
     { map_injective := @fun M N => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
 
-instance hasForgetToAlgebra : HasForget₂ (HopfAlgebraCat R) (BialgebraCat R) where
+instance hasForgetToBialgebra : HasForget₂ (HopfAlgebraCat R) (BialgebraCat R) where
   forget₂ :=
     { obj := fun X => BialgebraCat.of R X
       map := fun {X Y} f => BialgebraCat.ofHom f.toBialgHom }

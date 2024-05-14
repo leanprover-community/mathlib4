@@ -65,7 +65,7 @@ lemma of_counit {X : Type v} [Ring X] [Bialgebra R X] :
 algebraic spellings of composition. -/
 @[ext]
 structure Hom (V W : BialgebraCat.{v} R) :=
-  /-- The underlying isometry -/
+  /-- The underlying `BialgHom` -/
   toBialgHom : V →ₐc[R] W
 
 lemma Hom.toBialgHom_injective (V W : BialgebraCat.{v} R) :
@@ -151,8 +151,8 @@ variable [Bialgebra R X] [Bialgebra R Y] [Bialgebra R Z]
 `BialgEquiv`. -/
 @[simps]
 def toIso (e : X ≃ₐc[R] Y) : BialgebraCat.of R X ≅ BialgebraCat.of R Y where
-  hom := ⟨e.toBialgHom⟩
-  inv := ⟨e.symm.toBialgHom⟩
+  hom := BialgebraCat.ofHom e
+  inv := BialgebraCat.ofHom e.symm
   hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
 

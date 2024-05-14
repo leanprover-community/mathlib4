@@ -5,7 +5,7 @@ Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Parity
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.GroupWithZero.Power
+import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.Bitwise
