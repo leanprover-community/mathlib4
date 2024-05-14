@@ -64,12 +64,15 @@ def updateLast (f : String → String) : Name → Name
   | .str n s => .str n (f s)
   | n        => n
 
+
 /-- Get the last field of a name as a string.
 Doesn't raise an error when the last component is a numeric field. -/
-def getString : Name → String
+def lastComponentAsString : Name → String
   | .str _ s => s
   | .num _ n => toString n
   | .anonymous => ""
+
+@[deprecated (since := "2024-05-14")] alias getString := lastComponentAsString
 
 /-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`, i.e.
   `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
