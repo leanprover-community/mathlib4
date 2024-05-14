@@ -332,6 +332,21 @@ theorem coe_filter_univ (p : α → Prop) [DecidablePred p] : (univ.filter p : S
 @[simp] lemma subtype_univ [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
     univ.subtype p = univ := by simp
 
+lemma univ_map_subtype [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
+    univ.map (Function.Embedding.subtype p) = univ.filter p := by
+  rw [← subtype_map, subtype_univ]
+
+lemma univ_val_map_subtype [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
+    univ.val.map ((↑) : { a // p a } → α) = (univ.filter p).val := by
+  apply (map_val (Function.Embedding.subtype p) univ).symm.trans
+  apply congr_arg
+  apply univ_map_subtype
+
+lemma univ_val_map_subtype_val [Fintype α] (f : α → β)
+    (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
+    univ.val.map (fun a : { a // p a } => f a.val) = (univ.filter p).val.map f := by
+  rw [← univ_val_map_subtype, Multiset.map_map, comp_def]
+
 end Finset
 
 open Finset Function
