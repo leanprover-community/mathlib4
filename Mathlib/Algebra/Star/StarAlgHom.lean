@@ -104,6 +104,61 @@ end
 
 end NonUnitalStarRingHom
 
+/-! ### Unital star ring homomorphisms -/
+
+/-- A *unital ⋆-ring homomorphism* is a (unital) ring homomorphism between (unital)
+non-associative semirings `A` and `B` equipped with a `star` operation, and this homomorphism is
+also `star`-preserving. -/
+structure StarRingHom (A B : Type*) [NonAssocSemiring A]
+  [Star A] [NonAssocSemiring B]
+  [Star B] extends A →+* B where
+  /-- By definition, a non-unital ⋆-algebra homomorphism preserves the `star` operation. -/
+  map_star' : ∀ a : A, toFun (star a) = star (toFun a)
+
+/-- `α →⋆+* β` denotes the type of non-unital ring homomorphisms from `α` to `β`. -/
+infixr:25 " →⋆+* " => StarRingHom
+
+/-- Reinterpret a (unital) star ring homomorphism as a (unital) ring homomorphism
+by forgetting the interaction with the star operation. -/
+add_decl_doc StarRingHom.toRingHom
+
+/-- `StarRingHomClass F A B` states that `F` is a type of (unital) ⋆-ring homomorphisms.
+
+You should also extend this typeclass when you extend `StarRingHom`. -/
+class StarRingHomClass (F : Type*) (A B : outParam Type*)
+     [NonAssocSemiring A] [Star A] [NonAssocSemiring B] [Star B]
+    [FunLike F A B] [RingHomClass F A B] extends StarHomClass F A B : Prop
+
+
+/-! ### Star ring equivalences -/
+
+/-- A *⋆-ring* equivalence is an equivalence preserving addition, multiplication, and the star
+operation, which allows for considering both unital and non-unital equivalences with a single
+structure. -/
+structure StarRingEquiv (A B : Type*) [Add A] [Add B] [Mul A] [Mul B] [Star A] [Star B]
+    extends A ≃+* B where
+  /-- By definition, a ⋆-algebra equivalence preserves the `star` operation. -/
+  map_star' : ∀ a : A, toFun (star a) = star (toFun a)
+
+@[inherit_doc StarRingEquiv] infixr:25 " ≃⋆+* " => StarRingEquiv _
+
+@[inherit_doc] notation:25 A " ≃⋆+* " B => StarRingEquiv A B
+
+/-- Reinterpret a star ring equivalence as a `RingEquiv` by forgetting the interaction with the star
+operation. -/
+add_decl_doc StarRingEquiv.toRingEquiv
+
+/-- `StarRingEquivClass F A B` asserts `F` is a type of bundled ⋆-ring equivalences between `A` and
+`B`.
+
+You should also extend this typeclass when you extend `StarRingEquiv`. -/
+class StarRingEquivClass (F : Type*) (A B : outParam Type*)
+  [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B] [EquivLike F A B] [RingEquivClass F A B] : Prop
+  where
+  /-- By definition, a ⋆-algebra equivalence preserves the `star` operation. -/
+  map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
+
+
 /-! ### Non-unital star algebra homomorphisms -/
 
 
