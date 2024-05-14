@@ -601,13 +601,6 @@ instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] 
 abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
   Rel.InfiniteDimensional ((· < ·) : γ → γ → Prop)
 
-instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] :
-    FiniteDimensionalOrder γ where
-  exists_longest_relSeries := ⟨.singleton _ default,
-    fun x ↦ by
-      by_contra! r
-      exact (ne_of_lt <| x.step ⟨0, by omega⟩) <| Subsingleton.elim _ _⟩
-
 section LTSeries
 
 variable (α) [Preorder α] [Preorder β]
@@ -651,11 +644,8 @@ lemma longestOf_covBy [FiniteDimensionalOrder α]
   refine ⟨(LTSeries.longestOf α).step i, ?_⟩
   by_contra! rid
   obtain ⟨a, ha1, ha2⟩ := rid
-  let x := RelSeries.insertNth (LTSeries.longestOf α) i a ha1 ha2
-  have := LTSeries.longestOf_is_longest x
-  simp only [RelSeries.insertNth_length, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
-
-
+  simpa [RelSeries.insertNth_length, add_le_iff_nonpos_right, nonpos_iff_eq_zero, x] using
+    LTSeries.longestOf_is_longest <| (LTSeries.longestOf α).insertNth i a ha1 ha2
 
 lemma strictMono (x : LTSeries α) : StrictMono x :=
   fun _ _ h => x.rel_of_lt h

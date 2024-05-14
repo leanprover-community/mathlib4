@@ -133,7 +133,7 @@ lemma Pi_fg_of_unPi_fg (I : Ideal (Π i, f i)) (H : ∀ i, (unPi I i).FG) : I.FG
       inj' := Pi.single_injective _ _ }
   refine ⟨S, ?_⟩
   simp only [Finset.coe_biUnion, Finset.coe_univ, Set.mem_univ, Finset.coe_map,
-    Function.Embedding.coeFn_mk, Set.iUnion_true]
+    Function.Embedding.coeFn_mk, Set.iUnion_true, S]
   rw [Ideal.span_iUnion]
   refine le_antisymm ?_ ?_
   · simp_rw [iSup_le_iff, Ideal.span_le]

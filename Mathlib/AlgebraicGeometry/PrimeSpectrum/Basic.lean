@@ -61,7 +61,6 @@ It is a fundamental building block in algebraic geometry. -/
 @[ext]
 structure PrimeSpectrum [CommSemiring R] where
   asIdeal : Ideal R
-  /--the underlying ideal is prime.-/
   IsPrime : asIdeal.IsPrime
 #align prime_spectrum PrimeSpectrum
 

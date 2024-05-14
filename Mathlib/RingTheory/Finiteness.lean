@@ -623,25 +623,13 @@ lemma exists_strictMono_of_not_finite.aux (h : ¬ Finite R M) :
 lemma exists_strictMono_of_not_finite (h : ¬ Finite R M) :
     ∃ f : ℕ → Submodule R M, StrictMono f := by
   classical
-  have h1 := exists_strictMono_of_not_finite.aux h
-  have h2 : ∀ (S : Finset M), ∃ (S' : Finset M),
-      S ⊂ S' ∧ (span R S : Submodule R M) < span R S' := by
-    intro S
-    specialize h1 S
-    obtain ⟨m, hm1, hm2⟩ := h1
-    refine ⟨insert m S, Finset.ssubset_insert hm1,
-      lt_of_le_of_ne (span_mono <| Finset.subset_insert _ _) ?_⟩
-    contrapose! hm2
-    rw [hm2]
-    refine subset_span <| by simp
-  choose S _ hS2 using h2
-  let f : ℕ → Submodule R M := fun m : ℕ ↦ span R <| S^[m] ∅
-  have hf1 : StrictMono f := by
-    refine strictMono_nat_of_lt_succ fun n ↦ ?_
-    simp only [Function.Embedding.coeFn_mk]
-    rw [Function.iterate_succ', Function.comp_apply]
-    apply hS2
-  refine ⟨f, hf1⟩
+  have h (S : Finset M) : ∃ (S' : Finset M), S ⊂ S' ∧ (span R S : Submodule R M) < span R S' := by
+    obtain ⟨m, hm1, hm2⟩ := exists_strictMono_of_not_finite.aux h S
+    exact ⟨insert m S, Finset.ssubset_insert hm1, lt_of_le_of_ne (span_mono <|
+      Finset.subset_insert _ _) <| by contrapose! hm2; exact hm2.symm ▸ subset_span <| by simp⟩
+  choose S _ hS using h
+  refine ⟨fun m : ℕ ↦ span R <| S^[m] ∅, strictMono_nat_of_lt_succ fun n ↦ ?_⟩
+  simpa only [Function.iterate_succ', Function.comp_apply] using hS _
 
 instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
     [SMul R A] [IsScalarTower R A M] [Finite R M]

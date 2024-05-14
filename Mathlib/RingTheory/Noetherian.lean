@@ -6,6 +6,8 @@ Authors: Mario Carneiro, Kevin Buzzard
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.RingTheory.Localization.Ideal
+import Mathlib.RingTheory.Ideal.Pi
 
 #align_import ring_theory.noetherian from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"
 
@@ -644,8 +646,7 @@ lemma IsNoetherianRing.Localization
   change IsNoetherian _ _ at noeth ⊢
   rw [← monotone_stabilizes_iff_noetherian] at noeth ⊢
   intro f
-  let f' : ℕ →o Submodule R R := OrderHom.comp (IsLocalization.orderEmbedding s S) f
-  obtain ⟨n, hn⟩ := noeth f'
+  obtain ⟨n, hn⟩ := noeth <| OrderHom.comp (IsLocalization.orderEmbedding s S) f
   refine ⟨n, fun m hm ↦ ?_⟩
   specialize hn m hm
   simpa using hn
