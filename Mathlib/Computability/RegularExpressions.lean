@@ -13,13 +13,15 @@ import Mathlib.Tactic.AdaptationNote
 /-!
 # Regular Expressions
 
-This file contains the formal definition for regular expressions and basic lemmas. Note these are
-regular expressions in terms of formal language theory. Note this is different to regex's used in
-computer science such as the POSIX standard.
+This file contains the definition for regular expressions of formal language theory. Note that these
+are strictly less expressive than those found in most practical applications, for example POSIX.2 or
+Perl-compatible regular expressions.
 
-## TODO
-
-* Show that this regular expressions and DFA/NFA's are equivalent. -/
+Being descriptors of regular languages, any formal regular expression has a corresponding `NFA`
+describing the same language. This formalization obtains such automata using Thompson's
+construction. The reverse direction, i.e. regular expressions from finite automata, has been
+formalized using `GNFA`s.
+-/
 
 -- Porting note: this has been commented out
 -- * `attribute [pattern] has_mul.mul` has been added into this file, it could be moved.

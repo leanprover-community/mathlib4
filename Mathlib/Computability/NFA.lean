@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Fox Thomson. All rights reserved.
+Copyright (c) 2020 Fox Thomson, 2022 Russell Emerine, 2024 Tom Kranz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson
+Authors: Fox Thomson, Russell Emerine, Tom Kranz
 -/
 import Mathlib.Computability.DFA
 import Mathlib.Data.Fintype.Powerset
@@ -144,7 +144,15 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
   exact M.toDFA.pumping_lemma hx hlen
 #align NFA.pumping_lemma NFA.pumping_lemma
 
-/-! ### Regex-like operations -/
+/-! ### Regex-like operations
+
+Since NFAs are models for regular languages, they provide decision procedures for the empty set,
+singleton sets with members of at most length 1 as well as a notion of closedness under union,
+concatenation and application of the Kleene star.
+
+Cf. <https://en.wikipedia.org/wiki/Thompson%27s_construction> for the basic idea in a setting
+permitting ε-moves.
+-/
 instance : Zero (NFA α σ) :=
   ⟨default⟩
 
