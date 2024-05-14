@@ -62,9 +62,9 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert `«{»  -- keep
   |>.insert `«]»  -- keep
   |>.insert `null  -- keep
---  |>.insert `Batteries.Tactic.tacticSwap
---  |>.insert ``Lean.Parser.Tactic.rotateLeft
---  |>.insert ``Lean.Parser.Tactic.rotateRight
+  |>.insert `Batteries.Tactic.tacticSwap  -- keep
+  |>.insert ``Lean.Parser.Tactic.rotateLeft  -- keep
+  |>.insert ``Lean.Parser.Tactic.rotateRight  -- keep
 --  |>.insert ``Lean.Parser.Tactic.skip
   |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»  -- keep
 --  |>.insert `Mathlib.Tactic.«tacticSwap_var__,,»
