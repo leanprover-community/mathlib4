@@ -432,7 +432,7 @@ theorem ofRestrict_top_c (X : PresheafedSpace C) :
   ext
   dsimp [ofRestrict]
   erw [eqToHom_map, eqToHom_app]
-  simp
+  on_goal 1 => simp
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.of_restrict_top_c AlgebraicGeometry.PresheafedSpace.ofRestrict_top_c
 

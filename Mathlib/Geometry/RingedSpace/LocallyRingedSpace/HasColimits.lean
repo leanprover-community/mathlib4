@@ -192,9 +192,9 @@ theorem imageBasicOpen_image_preimage :
     simp_rw [types_comp_apply, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
     congr 2
     exact coequalizer.condition f.1 g.1
-  · apply isColimitCoforkMapOfIsColimit (forget TopCat)
-    apply isColimitCoforkMapOfIsColimit (SheafedSpace.forget _)
-    exact coequalizerIsCoequalizer f.1 g.1
+  · exact isColimitCoforkMapOfIsColimit (forget TopCat) _
+      (isColimitCoforkMapOfIsColimit (SheafedSpace.forget CommRingCat) _
+        (coequalizerIsCoequalizer f.val g.val))
   · suffices
       (TopologicalSpace.Opens.map f.1.base).obj (imageBasicOpen f g U s) =
         (TopologicalSpace.Opens.map g.1.base).obj (imageBasicOpen f g U s)

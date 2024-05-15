@@ -129,7 +129,7 @@ theorem prod_X_sub_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s
     rw [sub_eq_add_neg]
     rw [← map_neg C x]
   convert prod_X_add_C_coeff (map (fun t => -t) s) _ using 1
-  · rw [map_map]; rfl
+  · rw [map_map]; on_goal 1 => rfl
   · rw [esymm_neg, card_map]
   · rwa [card_map]
 set_option linter.uppercaseLean3 false in
