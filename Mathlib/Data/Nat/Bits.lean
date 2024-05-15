@@ -136,11 +136,11 @@ lemma div2_val (n) : div2 n = n / 2 := by
 
 @[simp]
 lemma div2_testBit (n : ℕ) (i : ℕ) : n.div2.testBit i = n.testBit (i + 1) := by
-  rw [Nat.testBit_succ, Nat.div2_val]
+  rw [testBit_succ, div2_val]
 
 lemma bitwise_div2 (f : Bool → Bool → Bool) (h : f false false = false) (n : ℕ) (m : ℕ) :
     (bitwise f n m).div2 = bitwise f n.div2 m.div2 := by
-  apply Nat.eq_of_testBit_eq
+  apply eq_of_testBit_eq
   intro
   simp only [div2_testBit, testBit_bitwise, h]
 
