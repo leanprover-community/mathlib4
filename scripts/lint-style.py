@@ -389,6 +389,8 @@ def check_isolated_backticks(lines, path):
         single = line.count("`")
         double = line.count("``")
         if single != 2 * double:
+            if line.lstrip().startswith(("initialize registerTraceClass ", "registerTraceClass ")):
+                continue
             if single != 2 * double + line.count("`("):
                #errors.append((Error.IBACKTICK, line_nr, path))
                print(f"{path}:{line_nr} : {error_message(Error.IBACKTICK)}")
