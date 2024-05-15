@@ -3,7 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.Algebra.UniformRing
 
@@ -181,7 +181,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} 
         exact ⟨n, trivial, h⟩
       · rcases H with ⟨n, -, hn⟩
         rw [mem_nhds_iff]
-        refine' ⟨_, hn, H₁ n, (J ^ n).zero_mem⟩
+        exact ⟨_, hn, H₁ n, (J ^ n).zero_mem⟩
 #align is_adic_iff isAdic_iff
 
 variable [TopologicalSpace R] [TopologicalRing R]
@@ -229,7 +229,6 @@ class WithIdeal (R : Type*) [CommRing R] where
 namespace WithIdeal
 
 variable (R)
-
 variable [WithIdeal R]
 
 instance (priority := 100) : TopologicalSpace R :=

@@ -8,7 +8,7 @@ import Mathlib.Data.Nat.Parity
 #align_import data.nat.even_odd_rec from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 /-! # A recursion principle based on even and odd numbers. -/
 
--- porting note: TODO:
+-- Porting note (#11215): TODO:
 -- Remove dependence on deprecated definitions bit0, bit1.
 set_option linter.deprecated false
 
@@ -38,7 +38,10 @@ theorem evenOddRec_even (n : ℕ) (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i
     (2 * n).evenOddRec h0 h_even h_odd = h_even n (evenOddRec h0 h_even h_odd n) :=
   have : ∀ a, bit false n = a →
       HEq (@evenOddRec _ h0 h_even h_odd a) (h_even n (evenOddRec h0 h_even h_odd n))
-    | _, rfl => by rw [evenOddRec, binaryRec_eq]; apply eq_rec_heq; exact H
+    | _, rfl => by
+      rw [evenOddRec, binaryRec_eq]
+      · apply eq_rec_heq
+      · exact H
   eq_of_heq (this _ (bit0_val _))
 #align nat.even_odd_rec_even Nat.evenOddRec_even
 
@@ -48,7 +51,10 @@ theorem evenOddRec_odd (n : ℕ) (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i,
     (2 * n + 1).evenOddRec h0 h_even h_odd = h_odd n (evenOddRec h0 h_even h_odd n) :=
   have : ∀ a, bit true n = a →
       HEq (@evenOddRec _ h0 h_even h_odd a) (h_odd n (evenOddRec h0 h_even h_odd n))
-    | _, rfl => by rw [evenOddRec, binaryRec_eq]; apply eq_rec_heq; exact H
+    | _, rfl => by
+      rw [evenOddRec, binaryRec_eq]
+      · apply eq_rec_heq
+      · exact H
   eq_of_heq (this _ (bit1_val _))
 #align nat.even_odd_rec_odd Nat.evenOddRec_odd
 

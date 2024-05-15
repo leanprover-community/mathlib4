@@ -3,7 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.GroupTheory.Submonoid.Operations
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.GroupTheory.Subsemigroup.Center
 
 #align_import group_theory.submonoid.center from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
@@ -72,9 +72,8 @@ instance center.commMonoid : CommMonoid (center M) :=
   { (center M).toMonoid, Subsemigroup.center.commSemigroup with }
 
 -- no instance diamond, unlike the primed version
-example :
-    center.commMonoid.toMonoid = Submonoid.toMonoid (center M) :=
-  rfl
+example : center.commMonoid.toMonoid = Submonoid.toMonoid (center M) := by
+  with_reducible_and_instances rfl
 
 @[to_additive]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by

@@ -3,7 +3,8 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Baire
+import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-! # Open mapping theorem for morphisms of topological groups
 
@@ -57,7 +58,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
     · rintro ⟨n, ⟨g, hg⟩⟩
       apply IsCompact.isClosed
       suffices H : IsCompact ((fun (g : G) ↦ g • x) '' (K n ∩ g • V)) by
-        simpa only [smul_singleton] using H
+        simpa only [F, smul_singleton] using H
       apply IsCompact.image
       · exact (isCompact_compactCovering G n).inter_right (V_closed.smul g)
       · exact continuous_id.smul continuous_const
@@ -65,8 +66,8 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
       obtain ⟨h, rfl⟩ : ∃ h, h • x = y := exists_smul_eq G x y
       obtain ⟨n, hn⟩ : ∃ n, h ∈ K n := exists_mem_compactCovering h
       obtain ⟨g, gs, hg⟩ : ∃ g ∈ s, h ∈ g • V := exists_set_mem_of_union_eq_top s _ hs _
-      simp only [smul_singleton, mem_iUnion, mem_image, mem_inter_iff, Prod.exists, Subtype.exists,
-        exists_prop]
+      simp only [F, smul_singleton, mem_iUnion, mem_image, mem_inter_iff, Prod.exists,
+        Subtype.exists, exists_prop]
       exact ⟨n, g, gs, h, ⟨hn, hg⟩, rfl⟩
   have I : (interior ((g • V) • {x})).Nonempty := by
     apply hi.mono

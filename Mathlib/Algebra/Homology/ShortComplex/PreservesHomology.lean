@@ -112,7 +112,7 @@ noncomputable def map : (S.map F).LeftHomologyData := by
       parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa using hf') (by simp)
     refine' IsColimit.precomposeInvEquiv e _
       (IsColimit.ofIsoColimit (CokernelCofork.mapIsColimit _ h.hπ' F) _)
-    exact Cofork.ext (Iso.refl _) (by simp)
+    exact Cofork.ext (Iso.refl _) (by simp [e])
   exact
     { K := F.obj h.K
       H := F.obj h.H
@@ -193,7 +193,7 @@ noncomputable def map : (S.map F).RightHomologyData := by
       parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa using hg') (by simp)
     refine' IsLimit.postcomposeHomEquiv e _
       (IsLimit.ofIsoLimit (KernelFork.mapIsLimit _ h.hι' F) _)
-    exact Fork.ext (Iso.refl _) (by simp)
+    exact Fork.ext (Iso.refl _) (by simp [e])
   exact
     { Q := F.obj h.Q
       H := F.obj h.H
@@ -763,7 +763,7 @@ instance quasiIso_map_of_preservesLeftHomology
 
 lemma quasiIso_map_iff_of_preservesLeftHomology
     [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂]
-    [ReflectsIsomorphisms F] :
+    [F.ReflectsIsomorphisms] :
     QuasiIso (F.mapShortComplex.map φ) ↔ QuasiIso φ := by
   have γ : LeftHomologyMapData φ S₁.leftHomologyData S₂.leftHomologyData := default
   rw [γ.quasiIso_iff, (γ.map F).quasiIso_iff, LeftHomologyMapData.map_φH]
@@ -785,7 +785,7 @@ instance quasiIso_map_of_preservesRightHomology
 
 lemma quasiIso_map_iff_of_preservesRightHomology
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]
-    [ReflectsIsomorphisms F] :
+    [F.ReflectsIsomorphisms] :
     QuasiIso (F.mapShortComplex.map φ) ↔ QuasiIso φ := by
   have γ : RightHomologyMapData φ S₁.rightHomologyData S₂.rightHomologyData := default
   rw [γ.quasiIso_iff, (γ.map F).quasiIso_iff, RightHomologyMapData.map_φH]

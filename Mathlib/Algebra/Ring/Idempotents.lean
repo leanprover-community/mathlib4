@@ -3,8 +3,10 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
 import Mathlib.Tactic.Conv
 
@@ -30,7 +32,6 @@ projection, idempotent
 
 
 variable {M N S M₀ M₁ R G G₀ : Type*}
-
 variable [Mul M] [Monoid N] [Semigroup S] [MulZeroClass M₀] [MulOneClass M₁] [NonAssocRing R]
   [Group G] [CancelMonoidWithZero G₀]
 
@@ -75,7 +76,7 @@ theorem one_sub_iff {p : R} : IsIdempotentElem (1 - p) ↔ IsIdempotentElem p :=
 theorem pow {p : N} (n : ℕ) (h : IsIdempotentElem p) : IsIdempotentElem (p ^ n) :=
   Nat.recOn n ((pow_zero p).symm ▸ one) fun n _ =>
     show p ^ n.succ * p ^ n.succ = p ^ n.succ by
-      conv_rhs => rw [← h.eq] --Porting note: was `nth_rw 3 [← h.eq]`
+      conv_rhs => rw [← h.eq] -- Porting note: was `nth_rw 3 [← h.eq]`
       rw [← sq, ← sq, ← pow_mul, ← pow_mul']
 #align is_idempotent_elem.pow IsIdempotentElem.pow
 

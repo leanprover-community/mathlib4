@@ -44,9 +44,7 @@ open scoped Matrix
 section CommRing
 
 variable [Fintype l] [Fintype m] [Fintype n]
-
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
-
 variable [CommRing α]
 
 /-- LDU decomposition of a block matrix with an invertible top-left corner, using the
@@ -58,7 +56,7 @@ theorem fromBlocks_eq_of_invertible₁₁ (A : Matrix m m α) (B : Matrix m n α
         fromBlocks 1 (⅟ A * B) 0 1 := by
   simp only [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, add_zero, zero_add,
     Matrix.one_mul, Matrix.mul_one, invOf_mul_self, Matrix.mul_invOf_self_assoc,
-    Matrix.mul_invOf_mul_self_cancel, Matrix.mul_assoc, add_sub_cancel'_right]
+    Matrix.mul_invOf_mul_self_cancel, Matrix.mul_assoc, add_sub_cancel]
 #align matrix.from_blocks_eq_of_invertible₁₁ Matrix.fromBlocks_eq_of_invertible₁₁
 
 /-- LDU decomposition of a block matrix with an invertible bottom-right corner, using the
@@ -327,7 +325,7 @@ def invertibleOfFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n �
     fromBlocksZero₂₁Invertible _ _ _
   letI iBDC := Invertible.copy ‹_› _ (fromBlocks_eq_of_invertible₂₂ A B C D).symm
   refine' (iBD.mulLeft _).symm _
-  refine' (iDC.mulRight _).symm iBDC
+  exact (iDC.mulRight _).symm iBDC
 #align matrix.invertible_of_from_blocks₂₂_invertible Matrix.invertibleOfFromBlocks₂₂Invertible
 
 /-- If a block matrix is invertible and so is its bottom left element, then so is the corresponding
@@ -339,7 +337,7 @@ def invertibleOfFromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n �
   letI iABCD' :=
     submatrixEquivInvertible (fromBlocks A B C D) (Equiv.sumComm _ _) (Equiv.sumComm _ _)
   letI iDCBA := iABCD'.copy _ (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
-  refine' invertibleOfFromBlocks₂₂Invertible D C B A
+  exact invertibleOfFromBlocks₂₂Invertible D C B A
 #align matrix.invertible_of_from_blocks₁₁_invertible Matrix.invertibleOfFromBlocks₁₁Invertible
 
 /-- `Matrix.invertibleOfFromBlocks₂₂Invertible` and `Matrix.fromBlocks₂₂Invertible` as an
@@ -479,7 +477,7 @@ end CommRing
 
 section StarOrderedRing
 
-variable {𝕜 : Type*} [CommRing 𝕜] [PartialOrder 𝕜] [StarOrderedRing 𝕜]
+variable {𝕜 : Type*} [CommRing 𝕜] [PartialOrder 𝕜] [StarRing 𝕜] [StarOrderedRing 𝕜]
 
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 
@@ -556,9 +554,7 @@ theorem PosSemidef.fromBlocks₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A :
   rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
   convert PosSemidef.fromBlocks₁₁ Bᴴ A hD <;>
-    first
-    | infer_instance
-    | simp
+    simp
 #align matrix.pos_semidef.from_blocks₂₂ Matrix.PosSemidef.fromBlocks₂₂
 
 end StarOrderedRing

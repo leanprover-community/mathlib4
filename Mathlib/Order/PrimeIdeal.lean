@@ -43,7 +43,8 @@ namespace Ideal
 
 /-- A pair of an `Order.Ideal` and an `Order.PFilter` which form a partition of `P`.
 -/
--- porting note: no attr @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure PrimePair (P : Type*) [Preorder P] where
   I : Ideal P
   F : PFilter P
@@ -157,7 +158,7 @@ instance (priority := 100) IsMaximal.isPrime [IsMaximal I] : IsPrime I := by
   let J := I ⊔ principal x
   have hJuniv : (J : Set P) = Set.univ :=
     IsMaximal.maximal_proper (lt_sup_principal_of_not_mem ‹_›)
-  have hyJ : y ∈ ↑J := Set.eq_univ_iff_forall.mp hJuniv y
+  have hyJ : y ∈ (J : Set P) := Set.eq_univ_iff_forall.mp hJuniv y
   rw [coe_sup_eq] at hyJ
   rcases hyJ with ⟨a, ha, b, hb, hy⟩
   rw [hy]

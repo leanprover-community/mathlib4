@@ -196,7 +196,7 @@ lemma NatTrans.leftDerivedToHomotopyCategory_comp {F G H : C ⥤ D} (α : F ⟶ 
       NatTrans.leftDerivedToHomotopyCategory α ≫
         NatTrans.leftDerivedToHomotopyCategory β := rfl
 
-/-- The natural transformation between left-derived functors induced by a natural transformation.-/
+/-- The natural transformation between left-derived functors induced by a natural transformation. -/
 noncomputable def NatTrans.leftDerived
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) :
     F.leftDerived n ⟶ G.leftDerived n :=

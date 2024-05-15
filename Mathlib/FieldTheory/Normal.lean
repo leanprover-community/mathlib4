@@ -148,7 +148,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
     exact ⟨hp, minpoly.ne_zero hx⟩
 #align normal.of_is_splitting_field Normal.of_isSplittingField
 
-instance Polynomial.SplittingField.instNormal [Field F] (p : F[X]) : Normal F p.SplittingField :=
+instance Polynomial.SplittingField.instNormal (p : F[X]) : Normal F p.SplittingField :=
   Normal.of_isSplittingField p
 #align polynomial.splitting_field.normal Polynomial.SplittingField.instNormal
 

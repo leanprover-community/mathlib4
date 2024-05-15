@@ -389,9 +389,9 @@ variable [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α 
 
 theorem add_tsub_add_eq_tsub_right (a c b : α) : a + c - (b + c) = a - b := by
   refine' add_tsub_add_le_tsub_right.antisymm (tsub_le_iff_right.2 <| le_of_add_le_add_right _)
-  exact c
-  rw [add_assoc]
-  exact le_tsub_add
+  · exact c
+  · rw [add_assoc]
+    exact le_tsub_add
 #align add_tsub_add_eq_tsub_right add_tsub_add_eq_tsub_right
 
 theorem add_tsub_add_eq_tsub_left (a b c : α) : a + b - (a + c) = b - c := by

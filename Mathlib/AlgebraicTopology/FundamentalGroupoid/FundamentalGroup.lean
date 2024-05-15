@@ -22,7 +22,6 @@ of `x` i.e. the group with elements being loops based at `x` (quotiented by homo
 universe u v
 
 variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
-
 variable {x₀ x₁ : X}
 
 noncomputable section
@@ -47,7 +46,7 @@ namespace FundamentalGroup
 
 attribute [local instance] Path.Homotopic.setoid
 
--- porting note: removed this attribute
+-- Porting note: removed this attribute
 --attribute [local reducible] FundamentalGroupoid
 
 /-- Get an isomorphism between the fundamental groups at two points given a path -/

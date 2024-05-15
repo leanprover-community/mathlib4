@@ -44,7 +44,7 @@ The field `app` provides the components of the natural transformation.
 
 Naturality is expressed by `α.naturality`.
 -/
-@[ext, pp_dot]
+@[ext]
 structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
   /-- The component of a natural transformation. -/
   app : ∀ X : C, F.obj X ⟶ G.obj X
@@ -65,8 +65,6 @@ theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) :
 #align category_theory.congr_app CategoryTheory.congr_app
 
 namespace NatTrans
-
-attribute [pp_dot] NatTrans.app
 
 /-- `NatTrans.id F` is the identity natural transformation on a functor `F`. -/
 protected def id (F : C ⥤ D) : NatTrans F F where app X := 𝟙 (F.obj X)

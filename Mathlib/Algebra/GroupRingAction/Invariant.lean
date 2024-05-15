@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 
 #align_import algebra.group_ring_action.invariant from "leanprover-community/mathlib"@"e7bab9a85e92cf46c02cb4725a7be2f04691e3a7"
 
@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Subring.Basic
 section Ring
 
 variable (M R : Type*) [Monoid M] [Ring R] [MulSemiringAction M R]
-
 variable (S : Subring R)
 
 open MulAction
@@ -42,9 +41,7 @@ end Ring
 section
 
 variable (M : Type*) [Monoid M]
-
 variable {R' : Type*} [Ring R'] [MulSemiringAction M R']
-
 variable (U : Subring R') [IsInvariantSubring M U]
 
 /-- The canonical inclusion from an invariant subring. -/
