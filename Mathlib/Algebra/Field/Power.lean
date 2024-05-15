@@ -5,8 +5,9 @@ Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.GroupWithZero.Bitwise
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Algebra.Ring.Parity
+import Mathlib.Data.Int.Parity
 
 #align_import algebra.field.power from "leanprover-community/mathlib"@"1e05171a5e8cf18d98d9cf7b207540acb044acae"
 
