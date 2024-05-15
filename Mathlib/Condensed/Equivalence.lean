@@ -42,11 +42,11 @@ namespace StoneanCompHaus
 
 instance : Stonean.toCompHaus.PreservesEffectiveEpis where
   preserves f h :=
-    ((CompHaus.effectiveEpi_tfae f).out 0 2).mpr (((Stonean.effectiveEpi_tfae f).out 0 2).mp h)
+    ((CompHaus.effectiveEpi_tfae _).out 0 2).mpr (((Stonean.effectiveEpi_tfae f).out 0 2).mp h)
 
 instance : Stonean.toCompHaus.ReflectsEffectiveEpis where
   reflects f h :=
-    ((Stonean.effectiveEpi_tfae f).out 0 2).mpr (((CompHaus.effectiveEpi_tfae f).out 0 2).mp h)
+    ((Stonean.effectiveEpi_tfae f).out 0 2).mpr (((CompHaus.effectiveEpi_tfae _).out 0 2).mp h)
 
 /--
 An effective presentation of an `X : CompHaus` with respect to the inclusion functor from `Stonean`
@@ -59,6 +59,8 @@ noncomputable def stoneanToCompHausEffectivePresentation (X : CompHaus) :
 
 instance : Stonean.toCompHaus.EffectivelyEnough where
   presentation X := ⟨stoneanToCompHausEffectivePresentation X⟩
+
+instance : PreservesFiniteCoproducts Stonean.toCompHaus := sorry
 
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
     (i.e. condensed sets). -/
@@ -91,6 +93,8 @@ noncomputable def stoneanToProfiniteEffectivePresentation (X : Profinite) :
 
 instance : Stonean.toProfinite.EffectivelyEnough where
   presentation X := ⟨stoneanToProfiniteEffectivePresentation X⟩
+
+instance : PreservesFiniteCoproducts Stonean.toProfinite := sorry
 
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `Profinite`. -/
 noncomputable
