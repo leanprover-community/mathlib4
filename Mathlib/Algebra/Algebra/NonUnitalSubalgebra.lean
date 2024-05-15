@@ -616,7 +616,7 @@ variable (R A)
 
 @[simp]
 theorem adjoin_empty : adjoin R (∅ : Set A) = ⊥ :=
-  show adjoin R ⊥ = ⊥ by apply GaloisConnection.l_bot; exact NonUnitalAlgebra.gc
+  show adjoin R ⊥ = ⊥ from GaloisConnection.l_bot <| NonUnitalAlgebra.gc
 
 @[simp]
 theorem adjoin_univ : adjoin R (Set.univ : Set A) = ⊤ :=

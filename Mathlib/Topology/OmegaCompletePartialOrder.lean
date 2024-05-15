@@ -137,6 +137,5 @@ theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
   change Continuous' (s ∘ f)
   cases' hs with hs hs'
   cases' hf with hf hf'
-  apply Continuous.of_bundled
-  apply continuous_comp _ _ hf' hs'
+  apply (continuous_comp _ _ hf' hs').of_bundled
 #align continuous_of_Scott_continuous continuous_of_scottContinuous
