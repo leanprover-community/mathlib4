@@ -78,13 +78,11 @@ variable {R : Type u} [CommRing R] (W : Affine R)
 -- In Lean 4, this is no longer an issue and is now an `abbrev`. See Zulip thread:
 -- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/.E2.9C.94.20class_group.2Emk
 /-- The coordinate ring $R[W] := R[X, Y] / \langle W(X, Y) \rangle$ of `W`. -/
-@[pp_dot]
 abbrev CoordinateRing : Type u :=
   AdjoinRoot W.polynomial
 #align weierstrass_curve.coordinate_ring WeierstrassCurve.Affine.CoordinateRing
 
 /-- The function field $R(W) := \mathrm{Frac}(R[W])$ of `W`. -/
-@[pp_dot]
 abbrev FunctionField : Type u :=
   FractionRing W.CoordinateRing
 #align weierstrass_curve.function_field WeierstrassCurve.Affine.FunctionField
@@ -652,7 +650,6 @@ namespace Point
 variable {R : Type} [Nontrivial R] [CommRing R] (E : EllipticCurve R)
 
 /-- An affine point on an elliptic curve `E` over `R`. -/
-@[pp_dot]
 def mk {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Point :=
   WeierstrassCurve.Affine.Point.some <| nonsingular E h
 #align elliptic_curve.point.mk EllipticCurve.Affine.Point.mk
