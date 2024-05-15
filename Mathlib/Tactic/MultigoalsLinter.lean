@@ -70,7 +70,7 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
 --  |>.insert `Mathlib.Tactic.«tacticSwap_var__,,»
 --  |>.insert ``Lean.Parser.Tactic.constructor
   |>.insert ``Lean.Parser.Tactic.tacticSeqBracketed  -- keep
---  |>.insert `Mathlib.Tactic.tacticAssumption'
+  |>.insert `Mathlib.Tactic.tacticAssumption'  -- keep
 --  |>.insert ``Lean.Parser.Tactic.induction
 --  |>.insert ``Lean.Parser.Tactic.tacticTry_
   |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented  -- keep
@@ -84,7 +84,7 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.tacticRepeat_  -- keep
 --  |>.insert ``Lean.Parser.Tactic.injections
 --  |>.insert ``Lean.Parser.Tactic.substVars
---  |>.insert `Batteries.Tactic.«tacticPick_goal-_»
+  |>.insert `Batteries.Tactic.«tacticPick_goal-_»  -- keep
 --  |>.insert ``Lean.Parser.Tactic.case'
 --  |>.insert `«tactic#adaptation_note_»
   |>.insert `Batteries.Tactic.exacts  -- keep
