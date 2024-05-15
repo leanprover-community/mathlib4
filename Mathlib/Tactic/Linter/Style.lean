@@ -52,11 +52,11 @@ def setOptionLinter : Linter where
     match stx.findStack? (fun _ ↦ true) is_set_option with
     | some ((head, _n)::_chain) =>
       match parse_set_option head with
-      | some (__name) =>
-        Linter.logLint linter.setOption head m!"Forbidden set_option {__name}; please remove"
-        /-let name := "foo"
+      | some (name) =>
+        -- Drop a leading `
+        let name := (toString name).drop 1
         if name.startsWith "pp." || name.startsWith "profiler." || name.startsWith "trace." then
-          Linter.logLint linter.setOption head m!"Forbidden set_option {name}; please remove" -/
+          Linter.logLint linter.setOption head m!"Forbidden set_option `{name}`; please remove"
       | _ => return
     | _ => return
 
