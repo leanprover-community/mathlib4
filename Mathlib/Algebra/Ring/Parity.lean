@@ -274,8 +274,7 @@ lemma even_xor_odd (n : ℕ) : Xor' (Even n) (Odd n) := by
   simp [Xor', odd_iff_not_even, Decidable.em (Even n)]
 #align nat.even_xor_odd Nat.even_xor_odd
 
-lemma even_or_odd (n : ℕ) : Even n ∨ Odd n :=
-  (even_xor_odd n).or
+lemma even_or_odd (n : ℕ) : Even n ∨ Odd n := (even_xor_odd n).or
 #align nat.even_or_odd Nat.even_or_odd
 
 lemma even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
@@ -283,7 +282,7 @@ lemma even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
 #align nat.even_or_odd' Nat.even_or_odd'
 
 lemma even_xor_odd' (n : ℕ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
-  rcases even_or_odd n with (⟨k, rfl⟩ | ⟨k, rfl⟩) <;> use k
+  obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := even_or_odd n <;> use k
   · simpa only [← two_mul, eq_self_iff_true, xor_true] using (succ_ne_self (2 * k)).symm
   · simpa only [xor_true, xor_comm] using (succ_ne_self _)
 #align nat.even_xor_odd' Nat.even_xor_odd'
@@ -445,12 +444,12 @@ lemma iterate_two_mul (hf : Involutive f) (n : ℕ) : f^[2 * n] = id := by
   rw [iterate_mul, involutive_iff_iter_2_eq_id.1 hf, iterate_id]
 
 lemma iterate_even (hf : Involutive f) (hn : Even n) : f^[n] = id := by
-  rcases hn with ⟨m, rfl⟩
+  obtain ⟨m, rfl⟩ := hn
   rw [← two_mul, hf.iterate_two_mul]
 #align function.involutive.iterate_even Function.Involutive.iterate_even
 
 lemma iterate_odd (hf : Involutive f) (hn : Odd n) : f^[n] = f := by
-  rcases hn with ⟨m, rfl⟩
+  obtain ⟨m, rfl⟩ := hn
   rw [iterate_add, hf.iterate_two_mul, id_comp, iterate_one]
 #align function.involutive.iterate_odd Function.Involutive.iterate_odd
 
@@ -467,7 +466,7 @@ end Involutive
 end Function
 
 lemma neg_one_pow_eq_one_iff_even {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ}
-    (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n :=
-  ⟨fun h' ↦ of_not_not fun hn ↦ h <| (Odd.neg_one_pow <| odd_iff_not_even.mpr hn).symm.trans h',
-    Even.neg_one_pow⟩
+    (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n where
+  mp h' := of_not_not fun hn ↦ h <| (Odd.neg_one_pow <| odd_iff_not_even.mpr hn).symm.trans h'
+  mpr := Even.neg_one_pow
 #align neg_one_pow_eq_one_iff_even neg_one_pow_eq_one_iff_even

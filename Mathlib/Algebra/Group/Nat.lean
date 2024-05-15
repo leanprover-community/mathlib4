@@ -158,7 +158,7 @@ lemma div_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by simp [*, parity_simps]
 
-/- Porting note: the `simp` lemmas about `bit*` no longer apply. -/
+-- Porting note: the `simp` lemmas about `bit*` no longer apply.
 example : ¬Even 25394535 := by decide
 
 end Nat
