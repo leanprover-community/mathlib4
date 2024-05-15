@@ -1453,6 +1453,7 @@ import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Functorial
+import Mathlib.CategoryTheory.Monoidal.Induced
 import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Internal.Limits
 import Mathlib.CategoryTheory.Monoidal.Internal.Module
@@ -4217,3 +4218,4 @@ import Mathlib.Util.TermBeta
 import Mathlib.Util.Time
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
+import Mathlib.test
