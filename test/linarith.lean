@@ -8,6 +8,7 @@ import Mathlib.Data.Rat.Order
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
 set_option autoImplicit true
+set_option linter.setOption false
 set_option pp.mvars false
 
 set_option linter.geOrGt false
