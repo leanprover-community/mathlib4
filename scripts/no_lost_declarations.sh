@@ -66,16 +66,14 @@ else
   echo "No declarations were harmed in the making of this PR! 🐙"
 fi
 
-printf $'\n---\n\nYou can run this locally using
+printf $'\n---\n\nYou can run this locally as follows
 ```bash
+## summary with just the declaration names:
+./scripts/no_lost_declarations.sh short <optional_commit>
+
+## more verbose report:
 ./scripts/no_lost_declarations.sh <optional_commit>
 ```
-
-Running
-```bash
-./scripts/no_lost_declarations.sh short <optional_commit>
-```
-produces a diff of just the declaration names.
 '
  : <<ReferenceTest
 theorem oh hello
