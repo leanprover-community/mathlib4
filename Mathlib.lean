@@ -1526,6 +1526,7 @@ import Mathlib.CategoryTheory.Shift.Induced
 import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 import Mathlib.CategoryTheory.Shift.Localization
 import Mathlib.CategoryTheory.Shift.Opposite
+import Mathlib.CategoryTheory.Shift.Predicate
 import Mathlib.CategoryTheory.Shift.Pullback
 import Mathlib.CategoryTheory.Shift.Quotient
 import Mathlib.CategoryTheory.Shift.ShiftSequence
@@ -1600,6 +1601,7 @@ import Mathlib.CategoryTheory.Triangulated.Opposite
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 import Mathlib.CategoryTheory.Triangulated.Rotate
 import Mathlib.CategoryTheory.Triangulated.Subcategory
+import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Types
