@@ -2756,7 +2756,6 @@ def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X wher
 #align category_theory.limits.base_change CategoryTheory.Over.baseChange
 
 /-- The adjunction `Over.map ⊣ baseChange` -/
-
 @[simps! homEquiv_apply homEquiv_symm_apply unit_app counit_app]
 def mapAdjunction [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ baseChange f :=
   Adjunction.mkOfHomEquiv
