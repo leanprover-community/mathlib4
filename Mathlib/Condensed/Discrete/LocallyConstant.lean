@@ -23,6 +23,145 @@ open CategoryTheory Limits Condensed LocallyConstant Opposite
 
 namespace Condensed
 
+section
+
+-- variable {S T : CompHaus.{u}} {Y : Type w} (f : S → Y) (f' : LocallyConstant S Y) (g : T ⟶ S)
+
+variable {S T Y : Type*}
+  [TopologicalSpace S] [CompactSpace S] [TopologicalSpace T] [CompactSpace T]
+  (f : S → Y) (f' : LocallyConstant S Y) (g : C(T, S))
+
+section Index
+/-!
+
+# Locally constant maps and partitions
+
+A locally constant map out of a compact Hausdorff space corresponds to a finite partition of the
+space whose components are the fibers of the map. Each component is itself a compact Hausdorff
+space.
+
+In this section we define the indexing set for this partition and prove some API lemmas.
+-/
+
+/-- The indexing set of the partition. -/
+def α : Type _ := Set.range (fun (x : Set.range f) ↦ f ⁻¹' {x.val})
+
+/--
+The map from `α f`. When `f` is locally constant, `S` is the coproduct of `σ f` in `CompHaus`.
+-/
+def σ : α f → Type _ := fun x ↦ x.val
+
+instance (x : α f') : CompactSpace x.val := by
+  obtain ⟨y, hy⟩ := x.prop
+  erw [← isCompact_iff_compactSpace, ← hy]
+  exact (f'.2.isClosed_fiber _).isCompact
+
+instance (x : α f) : TopologicalSpace (σ f x) := (inferInstance : TopologicalSpace <| x.val)
+
+instance (x : α f) [T2Space S] : T2Space (σ f x) := (inferInstance : T2Space <| x.val)
+
+instance (x : α f') : CompactSpace (σ f' x) := (inferInstance : CompactSpace x.val)
+
+/--
+Any `a : α f` is of the form `f ⁻¹' {x}` for some `x` in the image of `f`. We define `a.image` 
+as `x`.
+-/
+noncomputable def α.image (a : α f) : Y := a.2.choose.1
+
+lemma α.eq_fiber_image (a : α f) : a.1 = f ⁻¹' {a.image} := a.2.choose_spec.symm
+
+/--
+Given `s : S`, `α.mk f s` is the fiber of `f` that `s` belongs to, as an element of `α f`.
+-/
+def α.mk (s : S) : α f := ⟨f ⁻¹' {f s}, by simp⟩
+
+/-- `s : S` as a term of the type `α.mk f s` -/
+def α.mkSelf (s : S) : (mk f s).val := ⟨s, rfl⟩
+
+lemma α.map_eq_image (a : α f) (x : a.1) : f x = a.image := by
+  have := a.2.choose_spec
+  rw [← Set.mem_singleton_iff, ← Set.mem_preimage]
+  convert x.prop
+
+lemma α.mk_image (s : S) : (α.mk f s).image = f s :=
+  (map_eq_image (x := mkSelf f s)).symm
+
+lemma α.mem_iff_eq_image (s : S) (a : α f) : s ∈ a.val ↔ f s = a.image := by
+  constructor
+  · intro h
+    exact a.map_eq_image _ ⟨s, h⟩
+  · intro h
+    rw [a.eq_fiber_image]
+    exact h
+
+/-- An arbitrary element of `a : α f`. -/
+noncomputable def α.preimage (a : α f) : S := a.2.choose.2.choose
+
+lemma α.map_preimage_eq_image (a : α f) : f a.preimage = a.image := a.2.choose.2.choose_spec
+
+instance : Finite (α f') :=
+  have : Finite (Set.range f') := range_finite f'
+  Finite.Set.finite_range _
+
+lemma α.map_preimage_eq_image_map {X : Type w} (g : Y → X) (a : α (g ∘ f)) :
+    g (f a.preimage) = a.image := by rw [← map_preimage_eq_image]; rfl
+
+lemma α.map_eq_image_comap (a : α (f'.comap g)) (x : a.1) : f' (g x.val) = a.image := by
+  rw [← map_eq_image (f'.comap g) a x]; rfl
+
+lemma α.map_preimage_eq_image_comap (a : α (f'.comap g)) : f' (g a.preimage) = a.image := by
+  rw [← map_preimage_eq_image]; rfl
+
+lemma α.image_eq_image_mk (a : α (f'.comap g)) : a.image = (α.mk f' (g (a.preimage _))).image := by
+  rw [← map_preimage_eq_image_comap, mk_image]
+
+end Index
+
+/-- The canonical map from the coproduct induced by `f` to `S`. -/
+@[simps apply]
+def sigmaIsoHom : C((x : α f) × x.val, S) where
+  toFun := fun ⟨a, x⟩ ↦ x.val
+
+lemma sigmaIsoHom_inj : Function.Injective (sigmaIsoHom f) := by
+  rintro ⟨⟨_, _, rfl⟩, ⟨_, hx⟩⟩ ⟨⟨_, _, rfl⟩, ⟨_, hy⟩⟩ h
+  refine Sigma.subtype_ext ?_ h
+  simp only [sigmaIsoHom_apply] at h
+  rw [Set.mem_preimage, Set.mem_singleton_iff] at hx hy
+  simp [← hx, ← hy, h]
+
+lemma sigmaIsoHom_surj : Function.Surjective (sigmaIsoHom f) :=
+  fun _ ↦ ⟨⟨⟨_, ⟨⟨_, Set.mem_range_self _⟩, rfl⟩⟩, ⟨_, rfl⟩⟩, rfl⟩
+
+/-- The inclusion map from a component of the coproduct induced by `f` into `S`. -/
+def sigmaIncl (a : α f) : C(a.val, S) where
+  toFun := fun x ↦ x.val
+
+/--
+This is an auxiliary definition, the details do not matter. What's important is that this map exists
+so that the lemma `sigmaIncl_comp_sigmaIncl` works.
+-/
+def sigmaInclIncl {X : Type w} (g : Y → X) (a : α (f'.map g))
+    (b : α (f'.comap (sigmaIncl (map g f') a))) :
+    C(b.val, (α.mk f' (b.preimage).val).val) where
+  toFun x := ⟨x.val.val, by
+    rw [α.mem_iff_eq_image, α.mk_image]
+    simp only [map_apply, CompHaus.coe_of, sigmaIncl, coe_comap,
+      ContinuousMap.coe_mk]
+    have := x.prop
+    rw [α.mem_iff_eq_image] at this
+    simp only [map_apply, CompHaus.coe_of, sigmaIncl, coe_comap,
+      ContinuousMap.coe_mk, Function.comp_apply] at this
+    rw [this]
+    exact (α.map_preimage_eq_image _ _).symm⟩
+  continuous_toFun := Continuous.subtype_mk (continuous_induced_dom.comp continuous_induced_dom) _
+
+lemma sigmaIncl_comp_sigmaIncl {X : Type w} (g : Y → X) (a : α (f'.map g))
+    (b : α (f'.comap (sigmaIncl (f'.map g) a))) :
+    (sigmaIncl (f'.map g) a).comp (sigmaIncl (f'.comap (sigmaIncl (f'.map g) a)) b) =
+      (sigmaIncl f' (α.mk f' (b.preimage).val)).comp (sigmaInclIncl f' g a b) := rfl
+
+end
+
 section SigmaComparison
 
 open CompHaus
@@ -126,145 +265,6 @@ noncomputable def functorIsoTopCatToCondensed :
     (NatIso.ofComponents (fun X ↦ functorToPresheavesIsoTopCatToCondensed.{u, w} X))
   -- why aren't these `Full` and `Faithful` instances found automatically??
 
-section
-
-variable {S T : CompHaus.{u}} {Y : Type w} (f : S → Y) (f' : LocallyConstant S Y) (g : T ⟶ S)
-
-section Index
-/-!
-
-# Locally constant maps and partitions
-
-A locally constant map out of a compact Hausdorff space corresponds to a finite partition of the
-space whose components are the fibers of the map. Each component is itself a compact Hausdorff
-space.
-
-In this section we define the indexing set for this partition and prove some API lemmas.
--/
-
-/-- The indexing set of the partition. -/
-def α : Type u := Set.range (fun (x : Set.range f) ↦ f ⁻¹' {x.val})
-
-/--
-The map from `α f`. When `f` is locally constant, `S` is the coproduct of `σ f` in `CompHaus`.
--/
-def σ : α f → Type u := fun x ↦ x.val
-
-instance (x : α f') : CompactSpace x.val := by
-  obtain ⟨y, hy⟩ := x.prop
-  erw [← isCompact_iff_compactSpace, ← hy]
-  exact (f'.2.isClosed_fiber _).isCompact
-
-instance (x : α f) : TopologicalSpace (σ f x) := (inferInstance : TopologicalSpace <| x.val)
-
-instance (x : α f) : T2Space (σ f x) := (inferInstance : T2Space <| x.val)
-
-instance (x : α f') : CompactSpace (σ f' x) := (inferInstance : CompactSpace x.val)
-
-/--
-Any `a : α f` is of the form `f ⁻¹' {x}` for some `x` in the image of `f`. We define `a.image` 
-as `x`.
--/
-noncomputable def α.image (a : α f) : Y := a.2.choose.1
-
-lemma α.eq_fiber_image (a : α f) : a.1 = f ⁻¹' {a.image} := a.2.choose_spec.symm
-
-/--
-Given `s : S`, `α.mk f s` is the fiber of `f` that `s` belongs to, as an element of `α f`.
--/
-def α.mk (s : S) : α f := ⟨f ⁻¹' {f s}, by simp⟩
-
-/-- `s : S` as a term of the type `α.mk f s` -/
-def α.mkSelf (s : S) : (mk f s).val := ⟨s, rfl⟩
-
-lemma α.map_eq_image (a : α f) (x : a.1) : f x = a.image := by
-  have := a.2.choose_spec
-  rw [← Set.mem_singleton_iff, ← Set.mem_preimage]
-  convert x.prop
-
-lemma α.mk_image (s : S) : (α.mk f s).image = f s :=
-  (map_eq_image (x := mkSelf f s)).symm
-
-lemma α.mem_iff_eq_image (s : S) (a : α f) : s ∈ a.val ↔ f s = a.image := by
-  constructor
-  · intro h
-    exact a.map_eq_image _ ⟨s, h⟩
-  · intro h
-    rw [a.eq_fiber_image]
-    exact h
-
-/-- An arbitrary element of `a : α f`. -/
-noncomputable def α.preimage (a : α f) : S := a.2.choose.2.choose
-
-lemma α.map_preimage_eq_image (a : α f) : f a.preimage = a.image := a.2.choose.2.choose_spec
-
-instance : Finite (α f') :=
-  have : Finite (Set.range f') := range_finite f'
-  Finite.Set.finite_range _
-
-lemma α.map_preimage_eq_image_map {X : Type w} (g : Y → X) (a : α (g ∘ f)) :
-    g (f a.preimage) = a.image := by rw [← map_preimage_eq_image]; rfl
-
-lemma α.map_eq_image_comap (a : α (f'.comap g)) (x : a.1) : f' (g x.val) = a.image := by
-  rw [← map_eq_image (f'.comap g) a x]; rfl
-
-lemma α.map_preimage_eq_image_comap (a : α (f'.comap g)) : f' (g a.preimage) = a.image := by
-  rw [← map_preimage_eq_image]; rfl
-
-lemma α.image_eq_image_mk (a : α (f'.comap g)) : a.image = (α.mk f' (g (a.preimage _))).image := by
-  rw [← map_preimage_eq_image_comap, mk_image]
-
-end Index
-
-/-- The canonical map from the coproduct induced by `f` to `S`. -/
-@[simps apply]
-def sigmaIsoHom : C((x : α f) × x.val, S) where
-  toFun := fun ⟨a, x⟩ ↦ x.val
-
-lemma sigmaIsoHom_inj : Function.Injective (sigmaIsoHom f) := by
-  rintro ⟨⟨_, _, rfl⟩, ⟨_, hx⟩⟩ ⟨⟨_, _, rfl⟩, ⟨_, hy⟩⟩ h
-  refine Sigma.subtype_ext ?_ h
-  simp only [sigmaIsoHom_apply] at h
-  rw [Set.mem_preimage, Set.mem_singleton_iff] at hx hy
-  simp [← hx, ← hy, h]
-
-lemma sigmaIsoHom_surj : Function.Surjective (sigmaIsoHom f) :=
-  fun _ ↦ ⟨⟨⟨_, ⟨⟨_, Set.mem_range_self _⟩, rfl⟩⟩, ⟨_, rfl⟩⟩, rfl⟩
-
-/-- The canonical map from the coproduct induced by `f` to `S` as an isomorphism in `CompHaus`. -/
-noncomputable def sigmaIso : (CompHaus.of <| (x : α f') × x.val) ≅ S :=
-  CompHaus.isoOfBijective (sigmaIsoHom f') ⟨sigmaIsoHom_inj f', sigmaIsoHom_surj f'⟩
-
-/-- The inclusion map from a component of the coproduct induced by `f` into `S`. -/
-def sigmaIncl (a : α f') : CompHaus.of a.val ⟶ S where
-  toFun := fun x ↦ x.val
-
-/--
-This is an auxiliary definition, the details do not matter. What's important is that this map exists
-so that the lemma `sigmaIncl_comp_sigmaIncl` works.
--/
-def sigmaInclIncl {X : Type w} (g : Y → X) (a : α (f'.map g))
-    (b : α (f'.comap (sigmaIncl (map g f') a))) :
-    CompHaus.of b.val ⟶ CompHaus.of (α.mk f' (b.preimage).val).val where
-  toFun x := ⟨x.val.val, by
-    rw [α.mem_iff_eq_image, α.mk_image]
-    simp only [map_apply, CompHaus.coe_of, sigmaIncl, coe_comap,
-      ContinuousMap.coe_mk]
-    have := x.prop
-    rw [α.mem_iff_eq_image] at this
-    simp only [map_apply, CompHaus.coe_of, sigmaIncl, coe_comap,
-      ContinuousMap.coe_mk, Function.comp_apply] at this
-    rw [this]
-    exact (α.map_preimage_eq_image _ _).symm⟩
-  continuous_toFun := Continuous.subtype_mk (continuous_induced_dom.comp continuous_induced_dom) _
-
-lemma sigmaIncl_comp_sigmaIncl {X : Type w} (g : Y → X) (a : α (f'.map g))
-    (b : α (f'.comap (sigmaIncl (f'.map g) a))) :
-    sigmaIncl (f'.comap (sigmaIncl (f'.map g) a)) b ≫ sigmaIncl (f'.map g) a =
-      (sigmaInclIncl _ _ a b) ≫ sigmaIncl f' (α.mk f' (b.preimage).val) := rfl
-
-end
-
 section Adjunction
 /-!
 
@@ -278,6 +278,42 @@ variable {S T : CompHaus.{u}} (g : T ⟶ S) {Y : CompHaus.{u}ᵒᵖ ⥤ Type max
     (f : LocallyConstant S (Y.obj (op (CompHaus.of PUnit.{u+1}))))
   --{Y : CondensedSet.{u}}
   --(f : LocallyConstant S (Y.val.obj (op (⊤_ _))))
+
+/-- The inclusion map from a component of the coproduct induced by `f` into `S`. -/
+def sigmaIncl (a : α f) : CompHaus.of a.val ⟶ S := Condensed.sigmaIncl _ a
+
+/-- The canonical map from the coproduct induced by `f` to `S` as an isomorphism in `CompHaus`. -/
+noncomputable def sigmaIso : (CompHaus.of <| (x : α f) × x.val) ≅ S :=
+  CompHaus.isoOfBijective (sigmaIsoHom f) ⟨sigmaIsoHom_inj f, sigmaIsoHom_surj f⟩
+
+lemma _root_.CompHaus.comp {X Y Z : CompHaus} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    f ≫ g = (g : C(_, _)).comp f := rfl
+
+-- /--
+-- This is an auxiliary definition, the details do not matter. What's important is that this map exists
+-- so that the lemma `sigmaIncl_comp_sigmaIncl` works.
+-- -/
+-- def sigmaInclIncl {X : Type w}
+--     (g : (Y.obj (op (CompHaus.of PUnit.{u+1}))) → X) (a : α (f.map g))
+--     (b : α (f.comap (sigmaIncl (f.map g) a))) :
+--     CompHaus.of b.val ⟶ CompHaus.of (α.mk f (b.preimage).val).val where
+--   toFun x := ⟨x.val.val, by
+--     rw [α.mem_iff_eq_image, α.mk_image]
+--     simp only [map_apply, CompHaus.coe_of, sigmaIncl, coe_comap,
+--       ContinuousMap.coe_mk]
+--     have := x.prop
+--     rw [α.mem_iff_eq_image] at this
+--     simp only [map_apply, CompHaus.coe_of, sigmaIncl, coe_comap,
+--       ContinuousMap.coe_mk, Function.comp_apply] at this
+--     rw [this]
+--     exact (α.map_preimage_eq_image _ _).symm⟩
+--   continuous_toFun := Continuous.subtype_mk (continuous_induced_dom.comp continuous_induced_dom)
+
+-- lemma sigmaIncl_comp_sigmaIncl {X : Type w}
+--     (g : (Y.obj (op (CompHaus.of PUnit.{u+1}))) → X) (a : α (f.map g))
+--     (b : α (f.comap (sigmaIncl (f.map g) a))) :
+--     sigmaIncl (f.comap (sigmaIncl (f.map g) a)) b ≫ sigmaIncl (f.map g) a =
+--       (sigmaInclIncl _ _ a b) ≫ sigmaIncl f (α.mk f (b.preimage).val) := rfl
 
 lemma sigmaComparison_comp_sigmaIso' (X : CompHaus.{u}ᵒᵖ ⥤ Type max u w) (a : α f):
     (X.mapIso (sigmaIso f).op).hom ≫ sigmaComparison X (σ f) ≫ (fun g ↦ g a) =
@@ -293,7 +329,7 @@ lemma sigmaComparison_comp_sigmaIso (a : α f):
 
 /-- The projection of the counit. -/
 noncomputable def counitAppAppImage : (a : α f) → Y.obj ⟨CompHaus.of <| a.val⟩ :=
-  fun a ↦ Y.map (IsTerminal.from CompHaus.isTerminalPUnit _).op a.image
+  fun a ↦ Y.map (CompHaus.isTerminalPUnit.from _).op a.image
 
 /--
 The counit is defined as follows: given a locally constant map `f : S → Y(*)`, let
@@ -335,7 +371,7 @@ def component_hom (a : α (f.comap g)) :
     CompHaus.of a.val ⟶ CompHaus.of (α.mk f (g a.preimage)).val where
   toFun x := ⟨g x.val, by
     simp only [α.mk, Set.mem_preimage, Set.mem_singleton_iff]
-    rw [α.map_eq_image_comap, α.map_preimage_eq_image_comap]
+    erw [α.map_eq_image_comap, α.map_preimage_eq_image_comap]
     ⟩
   continuous_toFun := Continuous.subtype_mk (Continuous.comp g.continuous continuous_subtype_val) _
 
@@ -380,21 +416,22 @@ theorem hom_apply_counitAppApp (X : CompHaus.{u}ᵒᵖ ⥤ Type max u w)
   rw [← α.map_preimage_eq_image_map f (g.app (op (CompHaus.of PUnit.{u+1})))]
   change (_ ≫ X.map _) _ = (_ ≫ X.map _) _
   simp only [← g.naturality]
-  rw [sigmaIncl_comp_sigmaIncl]
-  simp only [coe_comap, map_apply, CompHaus.coe_of, op_comp, Functor.map_comp, types_comp_apply]
-  rw [incl_of_counitAppApp]
-  simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
-    terminal.comp_from]
-  erw [α.mk_image]
-  change (Y.map _ ≫ _) _ = (Y.map _ ≫ _) _
-  simp only [g.naturality]
-  simp only [types_comp_apply]
-  have := α.map_preimage_eq_image (f := g.app _ ∘ f) (a := a)
-  simp only [Function.comp_apply] at this
-  rw [this]
-  apply congrArg
-  erw [← α.mem_iff_eq_image (f := g.app _ ∘ f)]
-  exact (b.preimage).prop
+  sorry
+  -- rw [CompHaus.comp, sigmaIncl_comp_sigmaIncl]
+  -- simp only [coe_comap, map_apply, CompHaus.coe_of, op_comp, Functor.map_comp, types_comp_apply]
+  -- rw [incl_of_counitAppApp]
+  -- simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
+  --   terminal.comp_from]
+  -- erw [α.mk_image]
+  -- change (Y.map _ ≫ _) _ = (Y.map _ ≫ _) _
+  -- simp only [g.naturality]
+  -- simp only [types_comp_apply]
+  -- have := α.map_preimage_eq_image (f := g.app _ ∘ f) (a := a)
+  -- simp only [Function.comp_apply] at this
+  -- rw [this]
+  -- apply congrArg
+  -- erw [← α.mem_iff_eq_image (f := g.app _ ∘ f)]
+  -- exact (b.preimage).prop
 
 /-- The counit is natural in both the compact Hausdorff space `S` and the condensed set `Y` -/
 @[simps]
