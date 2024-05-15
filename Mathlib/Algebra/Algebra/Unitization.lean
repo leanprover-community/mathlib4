@@ -793,14 +793,16 @@ section StarNormal
 variable {R A : Type*} [Semiring R] [AddCommMonoid A] [Mul A] [SMulWithZero R A]
 variable [StarAddMonoid R] [Star A] {a : A}
 
+@[simp]
 lemma isStarNormal_inr : IsStarNormal (a : Unitization R A) ↔ IsStarNormal a := by
-  simp only [isStarNormal_iff, ← inr_star, ← inr_mul, inr_injective.eq_iff]
+  simp only [isStarNormal_iff, commute_iff_eq, ← inr_star, ← inr_mul, inr_injective.eq_iff]
 
 variable (R a) in
-lemma instIsStarNormal (a : A) [IsStarNormal a] :
+instance instIsStarNormal (a : A) [IsStarNormal a] :
     IsStarNormal (a : Unitization R A) :=
   isStarNormal_inr.mpr ‹_›
 
+@[simp]
 lemma isSelfAdjoint_inr : IsSelfAdjoint (a : Unitization R A) ↔ IsSelfAdjoint a := by
   simp only [isSelfAdjoint_iff, ← inr_star, ← inr_mul, inr_injective.eq_iff]
 

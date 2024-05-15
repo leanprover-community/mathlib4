@@ -50,6 +50,7 @@ def IsSelfAdjoint [Star R] (x : R) : Prop :=
 #align is_self_adjoint IsSelfAdjoint
 
 /-- An element of a star monoid is normal if it commutes with its adjoint. -/
+@[mk_iff]
 class IsStarNormal [Mul R] [Star R] (x : R) : Prop where
   /-- A normal element of a star monoid commutes with its adjoint. -/
   star_comm_self : Commute (star x) x
@@ -60,10 +61,6 @@ export IsStarNormal (star_comm_self)
 theorem star_comm_self' [Mul R] [Star R] (x : R) [IsStarNormal x] : star x * x = x * star x :=
   IsStarNormal.star_comm_self
 #align star_comm_self' star_comm_self'
-
-lemma isStarNormal_iff [Mul R] [Star R] {x : R} :
-    IsStarNormal x ↔ star x * x = x * star x :=
-  ⟨fun ⟨h⟩ ↦ h.eq, (⟨·⟩)⟩
 
 namespace IsSelfAdjoint
 
