@@ -547,9 +547,9 @@ theorem measure_iInter_eq_iInf [Countable ι] {s : ι → Set α} (h : ∀ i, Me
     · rcases hd i k with ⟨j, hji, hjk⟩
       use j
       rw [← measure_diff hjk (h _) (this _ hjk)]
-      exact measure_mono (diff_subset_diff_right hji)
+      gcongr
     · rw [tsub_le_iff_right, ← measure_union, Set.union_comm]
-      · exact measure_mono (diff_subset_iff.1 <| Subset.refl _)
+      · exact measure_mono (diff_subset_iff.1 Subset.rfl)
       · apply disjoint_sdiff_left
       · apply h i
   · exact hd.mono_comp _ fun _ _ => diff_subset_diff_right
@@ -595,7 +595,7 @@ theorem tendsto_measure_iUnion' {α ι : Type*} [MeasurableSpace α] {μ : Measu
     [Preorder ι] [IsDirected ι (· ≤ ·)] {f : ι → Set α} :
     Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
   rw [measure_iUnion_eq_iSup']
-  exact tendsto_atTop_iSup fun i j hij ↦ measure_mono <| monotone_accumulate hij
+  exact tendsto_atTop_iSup fun i j hij ↦ by gcongr
 
 /-- Continuity from above: the measure of the intersection of a decreasing sequence of measurable
 sets is the limit of the measures. -/
@@ -793,15 +793,13 @@ then for any measurable set `s` one also has `μ (t ∩ s) = μ (u ∩ s)`. -/
 theorem measure_inter_eq_of_measure_eq {s t u : Set α} (hs : MeasurableSet s) (h : μ t = μ u)
     (htu : t ⊆ u) (ht_ne_top : μ t ≠ ∞) : μ (t ∩ s) = μ (u ∩ s) := by
   rw [h] at ht_ne_top
-  refine' le_antisymm (measure_mono (inter_subset_inter_left _ htu)) _
+  refine le_antisymm (by gcongr) ?_
   have A : μ (u ∩ s) + μ (u \ s) ≤ μ (t ∩ s) + μ (u \ s) :=
     calc
       μ (u ∩ s) + μ (u \ s) = μ u := measure_inter_add_diff _ hs
       _ = μ t := h.symm
       _ = μ (t ∩ s) + μ (t \ s) := (measure_inter_add_diff _ hs).symm
-      _ ≤ μ (t ∩ s) + μ (u \ s) :=
-        add_le_add le_rfl (measure_mono (diff_subset_diff htu Subset.rfl))
-
+      _ ≤ μ (t ∩ s) + μ (u \ s) := by gcongr
   have B : μ (u \ s) ≠ ∞ := (lt_of_le_of_lt (measure_mono (diff_subset _ _)) ht_ne_top.lt_top).ne
   exact ENNReal.le_of_add_le_add_right B A
 #align measure_theory.measure.measure_inter_eq_of_measure_eq MeasureTheory.Measure.measure_inter_eq_of_measure_eq
