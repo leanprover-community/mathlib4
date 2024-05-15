@@ -1,5 +1,5 @@
-import KolmogorovExtension4.CompactSystem
-import KolmogorovExtension4.AdditiveOfContinuous
+import Mathlib.KolmogorovExtension4.CompactSystem
+import Mathlib.KolmogorovExtension4.AdditiveOfContinuous
 
 open scoped ENNReal BigOperators
 

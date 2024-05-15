@@ -1,7 +1,7 @@
 import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Logic.Denumerable
-import KolmogorovExtension4.AuxLemmas
+import Mathlib.KolmogorovExtension4.AuxLemmas
 
 open Set MeasureTheory
 

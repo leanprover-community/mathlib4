@@ -1,5 +1,5 @@
 import Mathlib.MeasureTheory.Measure.Trim
-import KolmogorovExtension4.Content
+import Mathlib.KolmogorovExtension4.Content
 
 open Finset Set MeasureTheory Order
 
@@ -207,8 +207,8 @@ noncomputable def Measure.ofAddSubaddCaratheodory (hC : SetSemiring C)
   letI : MeasurableSpace α := (inducedOuterMeasure m hC.empty_mem m_empty).caratheodory
   exact { inducedOuterMeasure m hC.empty_mem m_empty with
     m_iUnion := fun f hf hd ↦ OuterMeasure.iUnion_eq_of_caratheodory _ hf hd
-    trimmed := by
-      refine le_antisymm (le_inducedOuterMeasure.mpr fun s hs ↦ ?_) (OuterMeasure.le_trim _)
+    trim_le := by
+      refine le_inducedOuterMeasure.mpr fun s hs ↦ ?_
       have hs_meas : MeasurableSet[(inducedOuterMeasure m hC.empty_mem m_empty).caratheodory] s := by
         show (inducedOuterMeasure m hC.empty_mem m_empty).IsCaratheodory s
         exact caratheodory_semiring_extension hC m m_empty m_add hs

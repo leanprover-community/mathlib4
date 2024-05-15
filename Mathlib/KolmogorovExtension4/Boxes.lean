@@ -1,5 +1,5 @@
 import Mathlib.MeasureTheory.Constructions.Pi
-import KolmogorovExtension4.Semiring
+import Mathlib.KolmogorovExtension4.Semiring
 
 /-! # π-systems generating `MeasurableSpace.pi`
 
@@ -70,6 +70,8 @@ lemma continuous_projCompl {i : ι} : Continuous (projCompl α i) :=
 def X (α : ι → Type _) [∀ i, TopologicalSpace (α i)] (i : ι) (s : Set ((j : ι) → α j)) :
     Set ((j : { k // k ≠ i }) → α j) := projCompl α i '' s
 
+variable (i : ι) (x : ∀ i, α i)
+
 lemma projCompl_mem (hx : x ∈ s) : projCompl α i x ∈ X α i s := by
   simp only [ne_eq, projCompl, X, mem_image]
   exact ⟨x, hx, rfl⟩
@@ -87,7 +89,7 @@ def XY (α : ι → Type _) [∀ i, TopologicalSpace (α i)] (i : ι) (s : Set (
 
 lemma subset_xy : s ⊆ XY α i s := fun x hx ↦ ⟨x, hx, rfl⟩
 
-lemma mem_xy_of_mem (hx : x ∈ s) : x ∈ XY α i s := subset_xy hx
+lemma mem_xy_of_mem (hx : x ∈ s) : x ∈ XY α i s := subset_xy i hx
 
 def fromXProd (α : ι → Type _) [∀ i, TopologicalSpace (α i)] (i : ι) (s : Set ((j : ι) → α j))
     [DecidableEq ι] :
@@ -118,7 +120,7 @@ lemma fromXProd_mem_XY (p : X α i s × α i) [DecidableEq ι] :
     fromXProd α i s p ∈ XY α i s := by
   simp only [XY, mem_image, mem_setOf_eq]
   obtain ⟨y, hy_mem_s, hy_eq⟩ := p.1.2
-  exact ⟨y, hy_mem_s, hy_eq.trans (projCompl_fromXProd _).symm⟩
+  exact ⟨y, hy_mem_s, hy_eq.trans (projCompl_fromXProd _ _).symm⟩
 
 lemma fromXProd_projCompl (x : XY α i s) [DecidableEq ι] :
     fromXProd α i s ⟨⟨projCompl α i x, x.2⟩, (x : ∀ j, α j) i⟩ = (x : ∀ j, α j) := by
@@ -133,7 +135,7 @@ def XYEquiv (α : ι → Type _) [∀ i, TopologicalSpace (α i)] (i : ι) (s : 
     [DecidableEq ι] :
     XY α i s ≃ₜ X α i s × α i :=
 { toFun := fun x ↦ ⟨⟨projCompl α i x, x.2⟩, (x : ∀ j, α j) i⟩
-  invFun := fun p ↦ ⟨fromXProd α i s p, fromXProd_mem_XY p⟩
+  invFun := fun p ↦ ⟨fromXProd α i s p, fromXProd_mem_XY _ p⟩
   left_inv := fun x ↦ by
     ext j
     simp only [ne_eq]
@@ -144,12 +146,12 @@ def XYEquiv (α : ι → Type _) [∀ i, TopologicalSpace (α i)] (i : ι) (s : 
     · simp only
       rw [projCompl_fromXProd]
     · simp only
-      exact fromXProd_same _
+      exact fromXProd_same _ _
   continuous_toFun := by
     refine Continuous.prod_mk ?_ ?_
     · exact Continuous.subtype_mk (continuous_projCompl.comp continuous_subtype_val) _
     · exact (continuous_apply _).comp continuous_subtype_val
-  continuous_invFun := Continuous.subtype_mk continuous_fromXProd _}
+  continuous_invFun := Continuous.subtype_mk (continuous_fromXProd _) _}
 
 lemma snd_xyEquiv_preimage [DecidableEq ι] :
     Prod.snd '' (XYEquiv α i s '' ((fun (x : XY α i s) ↦ (x : ∀ j, α j)) ⁻¹' s))
@@ -162,7 +164,7 @@ lemma snd_xyEquiv_preimage [DecidableEq ι] :
   · rintro ⟨y, _, z, hz_mem, _, hzx⟩
     exact ⟨z, hz_mem, hzx⟩
   · rintro ⟨z, hz_mem, hzx⟩
-    exact ⟨projCompl α i z, projCompl_mem hz_mem, z, hz_mem, ⟨⟨mem_xy_of_mem hz_mem, rfl⟩, hzx⟩⟩
+    exact ⟨projCompl α i z, projCompl_mem _ _ hz_mem, z, hz_mem, ⟨⟨mem_xy_of_mem _ _ hz_mem, rfl⟩, hzx⟩⟩
 
 theorem isClosed_proj (hs_compact : IsCompact s) (hs_closed : IsClosed s) (i : ι) :
     IsClosed ((fun x : ∀ j, α j ↦ x i) '' s) := by
@@ -170,9 +172,9 @@ theorem isClosed_proj (hs_compact : IsCompact s) (hs_closed : IsClosed s) (i : �
   classical
   have h_image_eq : πi '' s
       = Prod.snd '' (XYEquiv α i s '' ((fun (x : XY α i s) ↦ (x : ∀ j, α j)) ⁻¹' s)) := by
-    exact snd_xyEquiv_preimage.symm
+    exact (snd_xyEquiv_preimage _).symm
   rw [h_image_eq]
-  have : CompactSpace (X α i s) := compactSpace_X hs_compact
+  have : CompactSpace (X α i s) := compactSpace_X _ hs_compact
   refine isClosedMap_snd_of_compactSpace _ ?_
   rw [Homeomorph.isClosed_image]
   exact IsClosed.preimage continuous_subtype_val hs_closed
@@ -334,7 +336,7 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty ((i : ι) → α i)] (s : F
     (S : Set (∀ i : s, α i)) : cylinder s S = ∅ ↔ S = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · by_contra hS
-    rw [← Ne.def, ← nonempty_iff_ne_empty] at hS
+    rw [← Ne, ← nonempty_iff_ne_empty] at hS
     let f := hS.some
     have hf : f ∈ S := hS.choose_spec
     classical

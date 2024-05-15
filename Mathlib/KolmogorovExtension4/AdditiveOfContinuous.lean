@@ -1,4 +1,4 @@
-import KolmogorovExtension4.Content
+import Mathlib.KolmogorovExtension4.Content
 
 open Filter
 

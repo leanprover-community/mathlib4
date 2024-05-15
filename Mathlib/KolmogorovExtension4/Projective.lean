@@ -1,4 +1,4 @@
-import KolmogorovExtension4.Boxes
+import Mathlib.KolmogorovExtension4.Boxes
 
 open Set
 

@@ -1,8 +1,8 @@
-import KolmogorovExtension4.CaratheodoryExtension
-import KolmogorovExtension4.Projective
-import KolmogorovExtension4.RegularityCompacts
+import Mathlib.KolmogorovExtension4.CaratheodoryExtension
+import Mathlib.KolmogorovExtension4.Projective
+import Mathlib.KolmogorovExtension4.RegularityCompacts
 import Mathlib.MeasureTheory.Constructions.Polish
-import KolmogorovExtension4.RegularContent
+import Mathlib.KolmogorovExtension4.RegularContent
 
 open Set
 

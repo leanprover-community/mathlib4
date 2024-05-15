@@ -1,4 +1,4 @@
-import KolmogorovExtension4.Boxes
+import Mathlib.KolmogorovExtension4.Boxes
 
 open Set
 
@@ -69,6 +69,8 @@ lemma mem_projCylinder (hs : ∀ n, s n ∈ closedCompactCylinders α) (n : ℕ)
 theorem preimage_projCylinder (hs : ∀ n, s n ∈ closedCompactCylinders α) (n : ℕ) :
     (fun (f : ∀ i, α i) (i : allProj hs) ↦ f i) ⁻¹' (projCylinder hs n) = s n := by
   conv_rhs => rw [closedCompactCylinders.eq_cylinder (hs n)]
+  simp [projCylinder]
+  aesop
 
 lemma nonempty_projCylinder (hs : ∀ n, s n ∈ closedCompactCylinders α)
     (n : ℕ) (hs_nonempty : (s n).Nonempty) :
@@ -294,7 +296,7 @@ end definition
 
 section cylinders
 
-variable {α : ι → Type*} [∀ i, Nonempty (α i)] [∀ i, MeasurableSpace (α i)]
+variable {ι : Type*} {α : ι → Type*} [∀ i, Nonempty (α i)] [∀ i, MeasurableSpace (α i)]
   [∀ i, TopologicalSpace (α i)] [∀ i, SecondCountableTopology (α i)]
   [∀ i, OpensMeasurableSpace (α i)]
 
