@@ -92,6 +92,12 @@ instance : NonUnitalStarRingHomClass (A →⋆ₙ+* B) A B
     where
   map_star f := f.map_star'
 
+initialize_simps_projections NonUnitalStarRingHom (toFun → apply)
+
+@[simp]
+theorem coe_toNonUnitalRingHom (f : A →⋆ₙ+* B) : ⇑f.toNonUnitalRingHom = f :=
+  rfl
+
 /-- The composition of non-unital ⋆-ring homomorphisms, as a non-unital ⋆-ring homomorphism. -/
 def comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : A →⋆ₙ+* C :=
   { f.toNonUnitalRingHom.comp g.toNonUnitalRingHom with
