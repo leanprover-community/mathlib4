@@ -2729,7 +2729,14 @@ instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [h : Cate
   haveI I := @hasWidePushouts_shrink.{0, w} D h h'
   infer_instance
 
-variable {C}
+end Limits
+
+namespace Over
+
+open Limits
+
+universe u v
+variable {C : Type u} [Category.{v} C]
 
 -- Porting note: removed semireducible from the simps config
 /-- Given a morphism `f : X ⟶ Y`, we can take morphisms over `Y` to morphisms over `X` via
@@ -2746,11 +2753,11 @@ def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X wher
     apply Over.OverMorphism.ext; apply pullback.hom_ext
     · dsimp; simp
     · dsimp; simp
-#align category_theory.limits.base_change CategoryTheory.Limits.baseChange
+#align category_theory.limits.base_change CategoryTheory.Over.baseChange
 
 /-- The adjunction `Over.map ⊣ baseChange` -/
 
-def Over.mapAdjunction [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ baseChange f :=
+def mapAdjunction [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ baseChange f :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun x y ↦
         { toFun := fun u ↦ Over.homMk (pullback.lift u.left x.hom (by simp))
@@ -2768,4 +2775,4 @@ def Over.mapAdjunction [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣
             · rw [pullback.lift_snd, ← Over.w v]
               dsimp }}
 
-end CategoryTheory.Limits
+end Over
