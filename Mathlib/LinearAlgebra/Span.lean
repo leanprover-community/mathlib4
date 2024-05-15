@@ -99,6 +99,19 @@ theorem span_eq_span (hs : s ⊆ span R t) (ht : t ⊆ span R s) : span R s = sp
   le_antisymm (span_le.2 hs) (span_le.2 ht)
 #align submodule.span_eq_span Submodule.span_eq_span
 
+/-- A version of `Submodule.span_eq` for subobjects closed under addition and scalar multiplication
+and containing zero. In general, this should not be used directly, but can be used to quickly
+generate proofs for specific types of subobjects. -/
+lemma coe_span_eq_self [SetLike S M] [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) :
+    (span R (s : Set M) : Set M) = s := by
+  refine le_antisymm ?_ subset_span
+  let s' : Submodule R M :=
+    { carrier := s
+      add_mem' := add_mem
+      zero_mem' := zero_mem _
+      smul_mem' := SMulMemClass.smul_mem }
+  exact span_le (p := s') |>.mpr le_rfl
+
 /-- A version of `Submodule.span_eq` for when the span is by a smaller ring. -/
 @[simp]
 theorem span_coe_eq_restrictScalars [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
@@ -886,6 +899,11 @@ instance : IsModularLattice (Submodule R M) :=
     refine' ⟨b, hb, c, mem_inf.2 ⟨hc, _⟩, rfl⟩
     rw [← add_sub_cancel_right c b, add_comm]
     apply z.sub_mem haz (xz hb)⟩
+
+lemma isCompl_comap_subtype_of_isCompl_of_le {p q r : Submodule R M}
+    (h₁ : IsCompl q r) (h₂ : q ≤ p) :
+    IsCompl (q.comap p.subtype) (r.comap p.subtype) := by
+  simpa [p.mapIic.isCompl_iff, Iic.isCompl_iff] using Iic.isCompl_inf_inf_of_isCompl_of_le h₁ h₂
 
 end AddCommGroup
 
