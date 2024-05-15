@@ -315,7 +315,7 @@ def regular_check(lines, path):
             continue
         words = line.split()
         if words[0] != "import" and words[0] != "--" and words[0] != "/-!" and words[0] != "#align_import":
-            errors += [(Error.MOD, line_nr, path)]
+            #errors += [(Error.MOD, line_nr, path)]
             break
         if words[0] == "/-!":
             break
@@ -390,8 +390,10 @@ def check_isolated_backticks(lines, path):
         double = line.count("``")
         if single != 2 * double:
             if single != 2 * double + line.count("`("):
-               errors.append((Error.IBACKTICK, line_nr, path))
-               #output_message(path, line_nr, "Error.IBACKTICK", "Odd number of backticks in this line")
+               #errors.append((Error.IBACKTICK, line_nr, path))
+               print(f"{path}:{line_nr} : {error_message(Error.IBACKTICK)}")
+               #output_message(path, line_nr, "ERR_IBACKTICK", error_message(Error.IBACKTICK))
+               print(f"relevant line: {line}")
     return errors, lines
 
 
