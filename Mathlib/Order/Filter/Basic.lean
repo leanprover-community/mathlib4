@@ -242,7 +242,7 @@ structure Filter (α : Type*) where
 #align filter Filter
 
 open Lean in
-def stealEntity (fvarid : FVarId) (requireNoun : Bool) : EnglishM (Option Entity) := do
+private def stealEntity (fvarid : FVarId) (requireNoun : Bool) : EnglishM (Option Entity) := do
   trace s!"Will look for an entity describing {← fvarid.toLatex} if nothing after it depends on it"
   let entities := (← get).entities
   let some i := entities.findIdx? fun entity => entity.fvarid == fvarid
