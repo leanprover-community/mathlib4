@@ -157,9 +157,8 @@ theorem coeff_def {s : Unit →₀ ℕ} {n : ℕ} (h : s () = n) : coeff R n = M
 @[ext]
 theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff R n φ = coeff R n ψ) : φ = ψ :=
   MvPowerSeries.ext fun n => by
-    rw [← coeff_def]
-    · apply h
-    rfl
+    rw [← coeff_def rfl]
+    apply h
 #align power_series.ext PowerSeries.ext
 
 /-- Two formal power series are equal if all their coefficients are equal. -/
@@ -662,7 +661,7 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     coeff R d (∏ j in s, f j) = ∑ l in piAntidiagonal s d, ∏ i in s, coeff R (l i) (f i) := by
   simp only [coeff]
-  convert MvPowerSeries.coeff_prod _ _ _
+  convert MvPowerSeries.coeff_prod f _ _
   rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_piAntidiagonal_eq, sum_map, sum_congr rfl]
   intro x _
   apply prod_congr rfl

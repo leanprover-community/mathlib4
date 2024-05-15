@@ -486,10 +486,10 @@ theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
       fractionalIdeal_rank]
   rw [← fundamentalDomain_reindex (fractionalIdealLatticeBasis K I) e,
     measure_fundamentalDomain ((fractionalIdealLatticeBasis K I).reindex e)]
-  · rw [show (fractionalIdealLatticeBasis K I).reindex e = (mixedEmbedding K) ∘
-        (basisOfFractionalIdeal K I) ∘ e.symm by
-      ext1; simp only [Basis.coe_reindex, Function.comp_apply, fractionalIdealLatticeBasis_apply]]
-    rw [mixedEmbedding.det_basisOfFractionalIdeal_eq_norm]
+  · have : (fractionalIdealLatticeBasis K I).reindex e = (mixedEmbedding K) ∘
+        (basisOfFractionalIdeal K I) ∘ e.symm := by
+      ext1; simp only [Basis.coe_reindex, Function.comp_apply, fractionalIdealLatticeBasis_apply]
+    rw [this, mixedEmbedding.det_basisOfFractionalIdeal_eq_norm]
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   refine ENNReal.mul_lt_top ?_ ?_

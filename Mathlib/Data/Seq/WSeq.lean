@@ -1665,7 +1665,7 @@ theorem liftRel_join (R : α → β → Prop) {S : WSeq (WSeq α)} {T : WSeq (WS
           rw [← LiftRelO.swap]
           apply liftRel_join.lem (swap R)
           · rw [← LiftRel.swap R, ← LiftRel.swap]
-            apply ST
+            · apply ST
           · rw [← LiftRel.swap R, ← LiftRel.swap (LiftRel R)]
             exact fun s1 s2 ⟨s, t, S, T, h1, h2, st, ST⟩ => ⟨t, s, T, S, h2, h1, st, ST⟩
           · exact mb⟩

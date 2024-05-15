@@ -147,7 +147,7 @@ theorem inner_condexpL2_eq_inner_fun (hm : m ≤ m0) (f g : α →₂[μ] E)
 
 section Real
 
-variable {hm : m ≤ m0}
+variable {hm : m ≤ m0}  -- should assumption really be implicit?
 
 theorem integral_condexpL2_eq_of_fin_meas_real (f : Lp 𝕜 2 μ) (hs : MeasurableSet[m] s)
     (hμs : μ s ≠ ∞) : ∫ x in s, (condexpL2 𝕜 𝕜 hm f : α → 𝕜) x ∂μ = ∫ x in s, f x ∂μ := by
@@ -178,7 +178,7 @@ theorem lintegral_nnnorm_condexpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠
   · rw [IntegrableOn, integrable_congr hg_eq_restrict]
     exact integrableOn_condexpL2_of_measure_ne_top hm hμs f
   · intro t ht hμt
-    rw [← integral_condexpL2_eq_of_fin_meas_real f ht hμt.ne]
+    rw [← integral_condexpL2_eq_of_fin_meas_real (hm := hm) f ht hμt.ne]
     exact setIntegral_congr_ae (hm t ht) (hg_eq.mono fun x hx _ => hx)
 #align measure_theory.lintegral_nnnorm_condexp_L2_le MeasureTheory.lintegral_nnnorm_condexpL2_le
 
