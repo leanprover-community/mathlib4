@@ -80,7 +80,7 @@ extension of the restricted measure. -/
 structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α where
   m_iUnion ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
     toOuterMeasure (⋃ i, f i) = ∑' i, toOuterMeasure (f i)
-  trimmed : toOuterMeasure.trim = toOuterMeasure
+  trim_le : toOuterMeasure.trim ≤ toOuterMeasure
 #align measure_theory.measure MeasureTheory.Measure
 
 theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
@@ -94,11 +94,19 @@ instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α
 
 #noalign measure_theory.measure.has_coe_to_fun
 
+instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
+  measure_empty m := m.empty'
+  measure_iUnion_nat_le m := m.iUnion
+  measure_mono m := m.mono
+
 section
 
 variable [MeasurableSpace α] {μ μ₁ μ₂ : Measure α} {s s₁ s₂ t : Set α}
 
 namespace Measure
+
+theorem trimmed (μ : Measure α) : μ.toOuterMeasure.trim = μ.toOuterMeasure :=
+  le_antisymm μ.trim_le μ.1.le_trim
 
 /-! ### General facts about measures -/
 
@@ -108,16 +116,13 @@ def ofMeasurable (m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞) (m0 : m �
       ∀ ⦃f : ℕ → Set α⦄ (h : ∀ i, MeasurableSet (f i)),
         Pairwise (Disjoint on f) → m (⋃ i, f i) (MeasurableSet.iUnion h) = ∑' i, m (f i) (h i)) :
     Measure α :=
-  { inducedOuterMeasure m _ m0 with
+  { toOuterMeasure := inducedOuterMeasure m _ m0
     m_iUnion := fun f hf hd =>
       show inducedOuterMeasure m _ m0 (iUnion f) = ∑' i, inducedOuterMeasure m _ m0 (f i) by
         rw [inducedOuterMeasure_eq m0 mU, mU hf hd]
         congr; funext n; rw [inducedOuterMeasure_eq m0 mU]
-    trimmed :=
-      show (inducedOuterMeasure m _ m0).trim = inducedOuterMeasure m _ m0 by
-        unfold OuterMeasure.trim
-        congr; funext s hs
-        exact inducedOuterMeasure_eq m0 mU hs }
+    trim_le := le_inducedOuterMeasure.2 fun s hs ↦ by
+      rw [OuterMeasure.trim_eq _ hs, inducedOuterMeasure_eq m0 mU hs] }
 #align measure_theory.measure.of_measurable MeasureTheory.Measure.ofMeasurable
 
 theorem ofMeasurable_apply {m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞}
