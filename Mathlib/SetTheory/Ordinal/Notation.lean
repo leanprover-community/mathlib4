@@ -359,7 +359,6 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
       subst IHa; exact rfl
 #align onote.cmp_compares ONote.cmp_compares
 
-set_option linter.geOrGt false in
 theorem repr_inj {a b} [NF a] [NF b] : repr a = repr b ↔ a = b :=
   ⟨fun e => match cmp a b, cmp_compares a b with
     | Ordering.lt, (h : repr a < repr b) => (ne_of_lt h e).elim

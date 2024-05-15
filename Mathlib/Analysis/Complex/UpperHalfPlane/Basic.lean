@@ -226,7 +226,7 @@ theorem denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : denom g z ≠ 0 := by
       Complex.ofReal_eq_zero] at H
     rw [Matrix.det_fin_two (↑ₘg : Matrix (Fin 2) (Fin 2) ℝ)] at DET
     simp only [H, H1, mul_zero, sub_zero, lt_self_iff_false] at DET
-  · change z.im > 0 at hz
+  · change 0 < z.im at hz
     linarith
 #align upper_half_plane.denom_ne_zero UpperHalfPlane.denom_ne_zero
 

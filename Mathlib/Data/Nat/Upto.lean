@@ -39,7 +39,6 @@ namespace Upto
 
 variable {p : ℕ → Prop}
 
-set_option linter.geOrGt false in
 /-- Lift the "greater than" relation on natural numbers to `Nat.Upto`. -/
 protected def GT (p) (x y : Upto p) : Prop :=
   x.1 > y.1

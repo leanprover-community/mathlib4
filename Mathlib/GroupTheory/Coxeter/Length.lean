@@ -229,7 +229,7 @@ theorem isReduced_take {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsRe
 theorem isReduced_drop {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.drop j) :=
   (isReduced_take_and_drop _ hω _).2
 
-theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (hm : m > M i i') :
+theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (hm : M i i' < m) :
     ¬cs.IsReduced (alternatingWord i i' m) := by
   induction' hm with m _ ih
   · -- Base case; m = M i i' + 1

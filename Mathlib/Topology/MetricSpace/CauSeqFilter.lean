@@ -30,7 +30,7 @@ theorem CauSeq.tendsto_limit [NormedRing β] [hn : IsAbsoluteValue (norm : β �
   tendsto_nhds.mpr
     (by
       intro s os lfs
-      suffices ∃ a : ℕ, ∀ b : ℕ, b ≥ a → f b ∈ s by simpa using this
+      suffices ∃ a : ℕ, ∀ b ≥ a, f b ∈ s by simpa using this
       rcases Metric.isOpen_iff.1 os _ lfs with ⟨ε, ⟨hε, hεs⟩⟩
       cases' Setoid.symm (CauSeq.equiv_lim f) _ hε with N hN
       exists N
@@ -68,7 +68,7 @@ theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
   refine' cauchy_iff.2 ⟨by infer_instance, fun s hs => _⟩
   rcases mem_uniformity_dist.1 hs with ⟨ε, ⟨hε, hεs⟩⟩
   cases' CauSeq.cauchy₂ f hε with N hN
-  exists { n | n ≥ N }.image f
+  exists { n | N ≤ n }.image f
   simp only [exists_prop, mem_atTop_sets, mem_map, mem_image, ge_iff_le, mem_setOf_eq]
   constructor
   · exists N

@@ -117,7 +117,6 @@ structure PComp : Type where
   which appear in the `history` set. -/
   vars : RBSet ℕ Ord.compare
 
-set_option linter.geOrGt false in
 /--
 Any comparison whose history is not minimal is redundant,
 and need not be included in the new set of comparisons.
