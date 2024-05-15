@@ -773,6 +773,9 @@ def starCenterToCentroidCenter :
 def starCenterToCentroid : NonUnitalStarSubsemiring.center α →⋆ₙ+* CentroidHom α :=
   NonUnitalStarRingHom.comp (centerStarEmbedding) (starCenterToCentroidCenter)
 
+lemma starCenterToCentroid_apply (z : NonUnitalStarSubsemiring.center α) (a : α) :
+    (starCenterToCentroid z) a = z * a := rfl
+
 /--
 Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
 -/
@@ -789,18 +792,15 @@ section NonAssocStarSemiring
 
 variable [NonAssocSemiring α] [StarRing α]
 
-#check StarSubsemiring.center α
-
-#check StarRingEquiv (NonUnitalStarSubsemiring.center α)
-
-#check StarRingEquiv (A := (StarSubsemiring.center α))
-
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
 def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α :=
   { starCenterToCentroid with
     invFun := fun T ↦
       ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
-    left_inv := fun z ↦ Subtype.ext <| by simp [centerToCentroid_apply]
+    left_inv := fun z ↦ Subtype.ext <| by
+      rw [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom, NonUnitalStarRingHom.coe_toNonUnitalRingHom]
+      simp only
+      rw [starCenterToCentroid_apply, mul_one]
     right_inv := fun T ↦ CentroidHom.ext <| by simp [centerToCentroid_apply, ← map_mul_right] }
 
 
