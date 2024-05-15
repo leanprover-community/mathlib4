@@ -5,8 +5,8 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import group_theory.congruence from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -1088,7 +1088,7 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
     toFun := kerLift f
     invFun := (↑) ∘ g
     left_inv := fun x => kerLift_injective _ (by rw [Function.comp_apply, kerLift_mk, hf])
-    right_inv := fun x => by conv_rhs => rw [← hf x]; rfl }
+    right_inv := fun x => by (conv_rhs => rw [← hf x]); rfl }
 #align con.quotient_ker_equiv_of_right_inverse Con.quotientKerEquivOfRightInverse
 #align add_con.quotient_ker_equiv_of_right_inverse AddCon.quotientKerEquivOfRightInverse
 #align con.quotient_ker_equiv_of_right_inverse_symm_apply Con.quotientKerEquivOfRightInverse_symm_apply

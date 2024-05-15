@@ -550,7 +550,7 @@ theorem hasPullback_of_cover : HasPullback f g :=
 instance affine_hasPullback {A B C : CommRingCat}
     (f : Spec.obj (Opposite.op A) ⟶ Spec.obj (Opposite.op C))
     (g : Spec.obj (Opposite.op B) ⟶ Spec.obj (Opposite.op C)) : HasPullback f g := by
-  rw [← Spec.image_preimage f, ← Spec.image_preimage g]
+  rw [← Spec.map_preimage f, ← Spec.map_preimage g]
   exact
     ⟨⟨⟨_, isLimitOfHasPullbackOfPreservesLimit Spec (Spec.preimage f) (Spec.preimage g)⟩⟩⟩
 #align algebraic_geometry.Scheme.pullback.affine_has_pullback AlgebraicGeometry.Scheme.Pullback.affine_hasPullback
@@ -661,10 +661,14 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
       (𝒰.map i) pullback.snd pullback.snd g pullback.condition.symm pullback.condition.symm
       (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
       (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
+  -- Adaptation note: nightly-2024-04-01
+  -- Previously we just had `(limit.isoLimitCone ⟨_, this⟩).inv` inlined in the `refine'` below.
+  -- Now that doesn't type check,
+  -- and we need to introduce a `let` with a manual type annotation on the source of the morphism.
+  let h : pullback pullback.snd pullback.snd ⟶ _ := (limit.isoLimitCone ⟨_, this⟩).inv
   refine'
     @openCoverOfIsIso
-      (f := (pullbackSymmetry _ _).hom ≫
-        (limit.isoLimitCone ⟨_, this⟩).inv ≫ pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) ?_
+      (f := (pullbackSymmetry _ _).hom ≫ h ≫ pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) ?_
   · simp only [Category.comp_id, Category.id_comp, ← pullback.condition]
     -- Porting note: `simpa` failed, but this is indeed `rfl`
     rfl

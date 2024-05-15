@@ -119,8 +119,7 @@ def dual (M : Matroid α) : Matroid α := M.dualIndepMatroid.matroid
   (This is distinct from the usual `*` symbol for multiplication, due to precedence issues. )-/
 postfix:max "✶" => Matroid.dual
 
-theorem dual_indep_iff_exists' : (M✶.Indep I) ↔ I ⊆ M.E ∧ (∃ B, M.Base B ∧ Disjoint I B) := by
-  simp [dual]
+theorem dual_indep_iff_exists' : (M✶.Indep I) ↔ I ⊆ M.E ∧ (∃ B, M.Base B ∧ Disjoint I B) := Iff.rfl
 
 @[simp] theorem dual_ground : M✶.E = M.E := rfl
 
@@ -130,7 +129,8 @@ theorem dual_indep_iff_exists' : (M✶.Indep I) ↔ I ⊆ M.E ∧ (∃ B, M.Base
 
 theorem dual_dep_iff_forall : (M✶.Dep I) ↔ (∀ B, M.Base B → (I ∩ B).Nonempty) ∧ I ⊆ M.E := by
   simp_rw [dep_iff, dual_indep_iff_exists', dual_ground, and_congr_left_iff, not_and,
-    not_exists, not_and, not_disjoint_iff_nonempty_inter, imp_iff_right_iff, iff_true_intro Or.inl]
+    not_exists, not_and, not_disjoint_iff_nonempty_inter, Classical.imp_iff_right_iff,
+    iff_true_intro Or.inl]
 
 instance dual_finite [M.Finite] : M✶.Finite :=
   ⟨M.ground_finite⟩

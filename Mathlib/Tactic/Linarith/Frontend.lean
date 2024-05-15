@@ -80,7 +80,7 @@ disequality hypotheses, since this would lead to a number of runs exponential in
 disequalities in the context.
 
 The Fourier-Motzkin oracle is very modular. It can easily be replaced with another function of type
-`certificateOracle := List Comp → ℕ → TacticM ((Std.HashMap ℕ ℕ))`,
+`certificateOracle := List Comp → ℕ → TacticM ((Batteries.HashMap ℕ ℕ))`,
 which takes a list of comparisons and the largest variable
 index appearing in those comparisons, and returns a map from comparison indices to coefficients.
 An alternate oracle can be specified in the `LinarithConfig` object.
@@ -120,7 +120,7 @@ linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear progra
 set_option autoImplicit true
 
 open Lean Elab Tactic Meta
-open Std
+open Batteries
 
 
 namespace Linarith

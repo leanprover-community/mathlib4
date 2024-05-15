@@ -228,8 +228,7 @@ support of `f`, or `⊥` if `f` is zero.
 Often, the Type `B` is `WithBot A`,
 If, further, `A` has a linear order, then this notion coincides with the usual one,
 using the maximum of the exponents. -/
-@[reducible]
-def supDegree (f : R[A]) : B :=
+abbrev supDegree (f : R[A]) : B :=
   f.support.sup D
 
 variable {D}
@@ -331,8 +330,7 @@ support of `f`, or `⊤` if `f` is zero.
 Often, the Type `T` is `WithTop A`,
 If, further, `A` has a linear order, then this notion coincides with the usual one,
 using the minimum of the exponents. -/
-@[reducible]
-def infDegree (f : R[A]) : T :=
+abbrev infDegree (f : R[A]) : T :=
   f.support.inf D
 
 theorem le_infDegree_add (f g : R[A]) :

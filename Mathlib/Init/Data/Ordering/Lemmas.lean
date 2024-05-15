@@ -5,7 +5,6 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Ordering.Basic
-import Mathlib.Logic.Basic
 
 #align_import init.data.ordering.lemmas from "leanprover-community/lean"@"4bd314f7bd5e0c9e813fc201f1279a23f13f9f1d"
 

@@ -341,6 +341,7 @@ instance mvqpfFix : MvQPF (Fix F) where
     conv =>
       rhs
       dsimp [MvFunctor.map]
+    rfl
 #align mvqpf.mvqpf_fix MvQPF.mvqpfFix
 
 /-- Dependent recursor for `fix F` -/

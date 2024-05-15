@@ -287,9 +287,8 @@ instance lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
     LawfulFix ((x y : _) → γ x y) where
   fix_eq {_f} hc := by
     dsimp [fix]
-    conv =>
-      lhs
-      erw [LawfulFix.fix_eq (uncurry_curry_continuous hc)]
+    conv_lhs => erw [LawfulFix.fix_eq (uncurry_curry_continuous hc)]
+    rfl
 #align pi.pi.lawful_fix' Pi.lawfulFix'
 
 end Pi

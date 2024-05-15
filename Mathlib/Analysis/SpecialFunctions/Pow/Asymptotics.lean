@@ -54,8 +54,7 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
 
 open Asymptotics in
 lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 1) :
-    Tendsto (rpow b) atTop (𝓝 (0:ℝ)) := by
-  show Tendsto (fun z => b^z) atTop (𝓝 0)
+    Tendsto (b ^ · : ℝ → ℝ) atTop (𝓝 (0:ℝ)) := by
   rcases lt_trichotomy b 0 with hb|rfl|hb
   case inl => -- b < 0
     simp_rw [Real.rpow_def_of_nonpos hb.le, hb.ne, ite_false]
@@ -80,21 +79,19 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
     exact (log_neg_iff hb).mpr hb₁
 
 lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) :
-    Tendsto (rpow b) atBot (𝓝 (0:ℝ)) := by
-  show Tendsto (fun z => b^z) atBot (𝓝 0)
+    Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 (0:ℝ)) := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
   refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_pos ?_).mpr tendsto_id
   exact (log_pos_iff (by positivity)).mpr <| by aesop
 
 lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) :
-    Tendsto (rpow b) atBot atTop := by
-  show Tendsto (fun z => b^z) atBot atTop
+    Tendsto (b ^ · : ℝ → ℝ) atBot atTop := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
   refine tendsto_exp_atTop.comp <| (tendsto_const_mul_atTop_iff_neg <| tendsto_id (α := ℝ)).mpr ?_
   exact (log_neg_iff hb₀).mpr hb₁
 
-lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) : Tendsto (rpow b) atBot (𝓝 0) := by
-  show Tendsto (fun z => b^z) atBot (𝓝 0)
+lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) :
+    Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 0) := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
   refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_iff_pos <| tendsto_id (α := ℝ)).mpr ?_
   exact (log_pos_iff (by positivity)).mpr <| by aesop
