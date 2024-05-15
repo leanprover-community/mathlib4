@@ -9,6 +9,17 @@ import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Star.Center
 
+/-!
+# Non-unital Star Subsemirings
+
+In this file we define `NonUnitalStarSubsemiring`s and the usual operations on them.
+
+## Implementation
+
+This file is heavily inspired by `Mathlib.Algebra.Star.NonUnitalSubalgebra`.
+
+-/
+
 universe v w w'
 
 variable {A : Type v} {B : Type w} {C : Type w'}
