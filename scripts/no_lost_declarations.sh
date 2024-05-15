@@ -74,12 +74,13 @@ else
     }
   }' |
   sort | uniq -c | grep -v "^ *2 " |
-  grep '\(`+`\|`-`\)' | sed 's=^ *1 =* =; s=``==g'
+  grep '\(`+`\|`-`\)' | sed 's=^ *1 =* =; s=``==g; s=` =` `=; s=$=`='
 fi
 
  : <<ReferenceTest
 theorem oh hello
 inductive counts even if it is not lean code
 instance [I pretend] {to be a nameless} instance where
+def ohMy im a def
 instance [I also pretend] {to be a nameless} instance :=
 ReferenceTest
