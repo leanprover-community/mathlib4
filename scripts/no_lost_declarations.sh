@@ -58,7 +58,13 @@ then
   echo "${full_output}"
 else
   echo "${full_output}" |
-  awk '{ acc[$7]=acc[$7] $4 } END{
+  awk '{
+    if(($6 == "`instance") && !($7 ~ /^[a-zA-Z]/)) {
+      rest="instance"
+      for(i=7; i<=NF-1; i++){rest=rest" "$i}
+      gsub(/`/, "", rest)
+      acc[rest]=acc[rest] $4
+    } else { acc[$7]=acc[$7] $4 } } END{
     for(d in acc) {
       if ((acc[d] == "`+``-`") || (acc[d] == "`-``+`")) {
         printf "" } else { printf("%s %s\n", acc[d], d)
