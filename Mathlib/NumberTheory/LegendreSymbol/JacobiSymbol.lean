@@ -566,8 +566,8 @@ decreasing_by
   · exact a.div_lt_self ha0 (by decide)
   · exact b.mod_lt ha0
 
-private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a > 0}
-    (hb2 : b % 2 = 1) (hb1 : b > 1) :
+private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : 0 < a}
+    (hb2 : b % 2 = 1) (hb1 : 1 < b) :
     fastJacobiSymAux a b flip ha0 = if flip then -J(a | b) else J(a | b) := by
   induction' a using Nat.strongInductionOn with a IH generalizing b flip
   unfold fastJacobiSymAux

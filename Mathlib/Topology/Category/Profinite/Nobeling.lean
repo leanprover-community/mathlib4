@@ -309,12 +309,13 @@ instance : LinearOrder (Products I) :=
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (·<·) l.val m.val := by
   cases l; cases m; rw [Subtype.mk_lt_mk]; exact Iff.rfl
 
+set_option linter.geOrGt false in
 instance : IsWellFounded (Products I) (·<·) := by
   have : (· < · : Products I → _ → _) = (fun l m ↦ List.Lex (·<·) l.val m.val) := by
     ext; exact lt_iff_lex_lt _ _
   rw [this]
   dsimp [Products]
-  rw [(by rfl : (·>· : I → _) = flip (·<·))]
+  rw [(by rfl : (· > · : I → _) = flip (·<·))]
   infer_instance
 
 /-- The evaluation `e C i₁ ··· e C iᵣ : C → ℤ`  of a formal product `[i₁, i₂, ..., iᵣ]`. -/
@@ -1556,7 +1557,7 @@ theorem max_eq_eval_unapply :
 
 theorem chain'_cons_of_lt (l : MaxProducts C ho)
     (q : Products I) (hq : q < l.val.Tail) :
-    List.Chain' (fun x x_1 ↦ x > x_1) (term I ho :: q.val) := by
+    List.Chain' (fun x x_1 ↦ x_1 < x) (term I ho :: q.val) := by
   have : Inhabited I := ⟨term I ho⟩
   rw [List.chain'_iff_pairwise]
   simp only [gt_iff_lt, List.pairwise_cons]
