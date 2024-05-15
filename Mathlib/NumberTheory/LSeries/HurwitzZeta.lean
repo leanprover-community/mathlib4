@@ -30,6 +30,7 @@ This file gives the definition and properties of the following two functions:
 * `expZeta`: the exponential zeta function
 * `hasSum_nat_hurwitzZeta_of_mem_Icc` and `hasSum_expZeta_of_one_lt_re`:
   relation to Dirichlet series for `1 < re s`
+* ` hurwitzZeta_residue_one` shows that the residue at `s = 1` equals `1`
 * `differentiableAt_hurwitzZeta` and `differentiableAt_expZeta`: analyticity away from `s = 1`
 * `hurwitzZeta_one_sub` and `expZeta_one_sub`: functional equations `s ↔ 1 - s`.
 -/
@@ -48,12 +49,12 @@ noncomputable def hurwitzZeta (a : UnitAddCircle) (s : ℂ) :=
 
 lemma hurwitzZetaEven_eq (a : UnitAddCircle) (s : ℂ) :
     hurwitzZetaEven a s = (hurwitzZeta a s + hurwitzZeta (-a) s) / 2 := by
-  simp_rw [hurwitzZeta, hurwitzZetaEven_neg, hurwitzZetaOdd_neg]
+  simp only [hurwitzZeta, hurwitzZetaEven_neg, hurwitzZetaOdd_neg]
   ring_nf
 
 lemma hurwitzZetaOdd_eq (a : UnitAddCircle) (s : ℂ) :
     hurwitzZetaOdd a s = (hurwitzZeta a s - hurwitzZeta (-a) s) / 2 := by
-  simp_rw [hurwitzZeta, hurwitzZetaEven_neg, hurwitzZetaOdd_neg]
+  simp only [hurwitzZeta, hurwitzZetaEven_neg, hurwitzZetaOdd_neg]
   ring_nf
 
 /-- The Hurwitz zeta function is differentiable away from `s = 1`. -/
@@ -73,7 +74,7 @@ lemma hasSum_nat_hurwitzZeta_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : ℂ}
 /-- The residue of the Hurwitz zeta function at `s = 1` is `1`. -/
 lemma hurwitzZeta_residue_one (a : UnitAddCircle) :
     Tendsto (fun s ↦ (s - 1) * hurwitzZeta a s) (𝓝[≠] 1) (𝓝 1) := by
-  simp_rw [hurwitzZeta, mul_add, (by simp : 𝓝 (1 : ℂ) = 𝓝 (1 + (1 - 1) * hurwitzZetaOdd a 1))]
+  simp only [hurwitzZeta, mul_add, (by simp : 𝓝 (1 : ℂ) = 𝓝 (1 + (1 - 1) * hurwitzZetaOdd a 1))]
   refine (hurwitzZetaEven_residue_one a).add ((Tendsto.mul ?_ ?_).mono_left nhdsWithin_le_nhds)
   exacts [tendsto_id.sub_const _, (differentiable_hurwitzZetaOdd a).continuous.tendsto _]
 
@@ -87,14 +88,14 @@ undefined, but our construction assigns some value to it; this lemma is mostly o
 determining what that value is). -/
 lemma tendsto_hurwitzZeta_sub_one_div_nhds_one (a : UnitAddCircle) :
     Tendsto (fun s ↦ hurwitzZeta a s - 1 / (s - 1) / Gammaℝ s) (𝓝 1) (𝓝 (hurwitzZeta a 1)) := by
-  simp_rw [hurwitzZeta, add_sub_right_comm]
+  simp only [hurwitzZeta, add_sub_right_comm]
   refine (tendsto_hurwitzZetaEven_sub_one_div_nhds_one a).add ?_
   exact (differentiable_hurwitzZetaOdd a 1).continuousAt.tendsto
 
 /-- The difference of two Hurwitz zeta functions is differentiable everywhere. -/
 lemma differentiable_hurwitzZeta_sub_hurwitzZeta (a b : UnitAddCircle) :
     Differentiable ℂ (fun s ↦ hurwitzZeta a s - hurwitzZeta b s) := by
-  simp_rw [hurwitzZeta, add_sub_add_comm]
+  simp only [hurwitzZeta, add_sub_add_comm]
   refine (differentiable_hurwitzZetaEven_sub_hurwitzZetaEven a b).add (Differentiable.sub ?_ ?_)
   all_goals apply differentiable_hurwitzZetaOdd
 
@@ -140,7 +141,7 @@ lemma differentiable_expZeta_of_ne_zero {a : UnitAddCircle} (ha : a ≠ 0) :
 ## The functional equation
 -/
 
-/-- Functional equation for Hurwitz zeta function. -/
+/-- Functional equation for the Hurwitz zeta function. -/
 lemma hurwitzZeta_one_sub (a : UnitAddCircle) {s : ℂ}
     (hs : ∀ (n : ℕ), s ≠ -n) (hs' : a ≠ 0 ∨ s ≠ 1) :
     hurwitzZeta a (1 - s) = (2 * π) ^ (-s) * Gamma s *
@@ -149,7 +150,7 @@ lemma hurwitzZeta_one_sub (a : UnitAddCircle) {s : ℂ}
     expZeta, expZeta, Complex.cos, Complex.sin, sinZeta_neg, cosZeta_neg]
   ring_nf
 
-/-- Functional equation for exponential zeta function. -/
+/-- Functional equation for the exponential zeta function. -/
 lemma expZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1 - n) :
     expZeta a (1 - s) = (2 * π) ^ (-s) * Gamma s *
     (exp (π * I * s / 2) * hurwitzZeta a s + exp (-π * I * s / 2) * hurwitzZeta (-a) s) := by
