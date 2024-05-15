@@ -65,3 +65,36 @@ def setOptionLinter : Linter where
 initialize addLinter setOptionLinter
 
 end Mathlib.Linter.Style.SetOption
+
+namespace Mathlib.Linter.Style.BroadImport
+
+-- parse_imports; see my file
+
+/-- The `broadImport` linter emits a warning on an `import Mathlib.Tactic` statement. -/
+register_option linter.broadImport : Bool := {
+  defValue := true
+  descr := "enable the `broadImport` linter"
+}
+
+/-- Gets the value of the `linter.broadImport` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.broadImport o
+
+/-- The `broadImport` linter: this lints any `import Mathlib.Tactic` statement.
+
+**Why is this bad?** This line imports the whole tactic folder: this is both unnecessarily broad
+and can in fact create import cycles.
+**How to fix this?** Minimize the import: only import the tactics you need.
+`import Mathlib.Tactic.Common` is reasonable to import and will suffice.
+-/
+def broadImportLinter : Linter where
+  run := withSetOptionIn fun stx => do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    match stx.findStack? (fun _ ↦ true) true /- is_broad_import-/ with
+    | _ => return -- TODO: implement
+
+initialize addLinter broadImportLinter
+
+end Mathlib.Linter.Style.BroadImport
