@@ -69,8 +69,6 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
             exceptions += [(ERR_MOD, path, None)]
         elif errno == "ERR_LIN":
             exceptions += [(ERR_LIN, path, None)]
-        elif errno == "ERR_OPT":
-            exceptions += [(ERR_OPT, path, None)]
         elif errno == "ERR_AUT":
             exceptions += [(ERR_AUT, path, None)]
         elif errno == "ERR_TAC":
