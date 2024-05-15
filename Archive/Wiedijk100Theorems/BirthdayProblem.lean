@@ -26,7 +26,6 @@ local notation "|" x "|" => Finset.card x
 
 local notation "‖" x "‖" => Fintype.card x
 
-set_option linter.geOrGt false in
 /-- **Birthday Problem**: set cardinality interpretation. -/
 theorem birthday :
     2 * ‖Fin 23 ↪ Fin 365‖ < ‖Fin 23 → Fin 365‖ ∧ 2 * ‖Fin 22 ↪ Fin 365‖ > ‖Fin 22 → Fin 365‖ := by

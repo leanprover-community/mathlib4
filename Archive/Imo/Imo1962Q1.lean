@@ -108,7 +108,6 @@ theorem case_5_digit {c n : ℕ} (h1 : (digits 10 c).length = 5) (h2 : ProblemPr
   exact helper_5_digit h4
 #align imo1962_q1.case_5_digit Imo1962Q1.case_5_digit
 
-set_option linter.geOrGt false in -- because of a calc block
 /-- `linarith` fails on numbers this large, so this lemma spells out some of the arithmetic
 that normally would be automated.
 -/

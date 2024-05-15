@@ -48,7 +48,6 @@ end Imo1994Q1
 
 open Imo1994Q1
 
-set_option linter.geOrGt false in -- because of a calc block
 theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     (hrange : ∀ a ∈ A, 0 < a ∧ a ≤ n)
     (hadd : ∀ a ∈ A, ∀ b ∈ A, a + b ≤ n → a + b ∈ A) :

@@ -9,7 +9,7 @@ theorem euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
   use p
   have prime : p.Prime := by
     apply minFac_prime
-    observe : n.factorial > 0
+    observe : 0 < n.factorial
     omega
   constructor
   · by_contra!
