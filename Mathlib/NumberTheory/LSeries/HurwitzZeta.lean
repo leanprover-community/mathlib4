@@ -64,7 +64,7 @@ lemma differentiableAt_hurwitzZeta (a : UnitAddCircle) {s : ℂ} (hs : s ≠ 1) 
 
 /-- Formula for `hurwitzZeta s` as a Dirichlet series in the convergence range. We
 restrict to `a ∈ Icc 0 1` to simplify the statement. -/
-lemma hasSum_nat_hurwitzZeta_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : ℂ} (hs : 1 < re s) :
+lemma hasSum_hurwitzZeta_of_one_lt_re {a : ℝ} (ha : a ∈ Icc 0 1) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ 1 / (n + a : ℂ) ^ s) (hurwitzZeta a s) := by
   convert (hasSum_nat_hurwitzZetaEven_of_mem_Icc ha hs).add
       (hasSum_nat_hurwitzZetaOdd_of_mem_Icc ha hs) using 1
@@ -80,7 +80,7 @@ lemma hurwitzZeta_residue_one (a : UnitAddCircle) :
 
 lemma differentiableAt_hurwitzZeta_sub_one_div (a : UnitAddCircle) :
     DifferentiableAt ℂ (fun s ↦ hurwitzZeta a s - 1 / (s - 1) / Gammaℝ s) 1 := by
-  simp_rw [hurwitzZeta, add_sub_right_comm]
+  simp only [hurwitzZeta, add_sub_right_comm]
   exact (differentiableAt_hurwitzZetaEven_sub_one_div a).add (differentiable_hurwitzZetaOdd a 1)
 
 /-- Expression for `hurwitzZeta a 1` as a limit. (Mathematically `hurwitzZeta a 1` is
@@ -123,7 +123,7 @@ lemma hasSum_expZeta_of_one_lt_re (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ cexp (2 * π * I * a * n) / n ^ s) (expZeta a s) := by
   convert (hasSum_nat_cosZeta a hs).add ((hasSum_nat_sinZeta a hs).mul_left I) using 1
   ext1 n
-  simp_rw [push_cast, ← mul_div_assoc, ← add_div, mul_comm I _, cos_add_sin_I]
+  simp only [mul_right_comm _ I, ← cos_add_sin_I, push_cast]
   ring_nf
 
 lemma differentiableAt_expZeta (a : UnitAddCircle) (s : ℂ) (hs : s ≠ 1 ∨ a ≠ 0) :
@@ -136,6 +136,14 @@ lemma differentiableAt_expZeta (a : UnitAddCircle) (s : ℂ) (hs : s ≠ 1 ∨ a
 lemma differentiable_expZeta_of_ne_zero {a : UnitAddCircle} (ha : a ≠ 0) :
     Differentiable ℂ (expZeta a) :=
   (differentiableAt_expZeta a · (Or.inr ha))
+
+/-- Reformulation of `hasSum_expZeta_of_one_lt_re` using `LSeriesHasSum`. -/
+lemma LSeriesHasSum_exp (a : ℝ) {s : ℂ} (hs : 1 < re s) :
+    LSeriesHasSum (cexp <| 2 * π * I * a * ·) s (expZeta a s) := by
+  refine (hasSum_expZeta_of_one_lt_re a hs).congr_fun (fun n ↦ ?_)
+  rcases eq_or_ne n 0 with rfl | hn
+  · rw [LSeries.term_zero, Nat.cast_zero, zero_cpow (ne_zero_of_one_lt_re hs), div_zero]
+  · apply LSeries.term_of_ne_zero hn
 
 /-!
 ## The functional equation
