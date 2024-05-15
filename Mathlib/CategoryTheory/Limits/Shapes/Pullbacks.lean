@@ -27,9 +27,9 @@ noncomputable section
 
 open CategoryTheory
 
-namespace CategoryTheory.Limits
-
 universe w v₁ v₂ v u u₂
+
+namespace CategoryTheory.Limits
 
 -- attribute [local tidy] tactic.case_bash Porting note: no tidy, no local
 
@@ -2735,7 +2735,6 @@ namespace Over
 
 open Limits
 
-universe u v
 variable {C : Type u} [Category.{v} C]
 
 -- Porting note: removed semireducible from the simps config
@@ -2754,6 +2753,9 @@ def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X wher
     · dsimp; simp
     · dsimp; simp
 #align category_theory.limits.base_change CategoryTheory.Over.baseChange
+
+-- deprecated on 2024-05-15
+@[deprecated] noncomputable alias Limits.baseChange := Over.baseChange
 
 /-- The adjunction `Over.map ⊣ baseChange` -/
 @[simps! homEquiv_apply homEquiv_symm_apply unit_app counit_app]
