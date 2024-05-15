@@ -3075,6 +3075,7 @@ import Mathlib.NumberTheory.Modular
 import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Manifold
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
