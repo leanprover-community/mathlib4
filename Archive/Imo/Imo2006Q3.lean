@@ -37,7 +37,7 @@ namespace Imo2006Q3
 /-- Replacing `x` and `y` with their average increases the left side. -/
 theorem lhs_ineq {x y : ℝ} (hxy : 0 ≤ x * y) :
     16 * x ^ 2 * y ^ 2 * (x + y) ^ 2 ≤ ((x + y) ^ 2) ^ 3 := by
-  have : (x - y) ^ 2 * ((x + y) ^ 2 + 4 * (x * y)) ≥ 0 := by positivity
+  have : 0 ≤ (x - y) ^ 2 * ((x + y) ^ 2 + 4 * (x * y)) := by positivity
   calc 16 * x ^ 2 * y ^ 2 * (x + y) ^ 2 ≤ ((x + y) ^ 2) ^ 2 * (x + y) ^ 2 := by gcongr; linarith
     _ = ((x + y) ^ 2) ^ 3 := by ring
 #align imo2006_q3.lhs_ineq Imo2006Q3.lhs_ineq

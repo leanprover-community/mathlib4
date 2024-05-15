@@ -21,6 +21,7 @@ of positive integers.  Suppose that, for any two integers
 
 open Int
 
+set_option linter.geOrGt false in
 theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m n : ℤ, f (m - n) ∣ f m - f n) :
     ∀ m n : ℤ, f m ≤ f n → f m ∣ f n := by
   intro m n h_fm_le_fn
@@ -43,7 +44,7 @@ theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m
       rw [← dvd_neg, neg_sub]
       exact hdvd m n
     have h_d_eq_zero : d = 0 := by
-      obtain hd | hd | hd : 0 < d ∨ d = 0 ∨ d < 0 := trichotomous d 0
+      obtain hd | hd | hd : d > 0 ∨ d = 0 ∨ d < 0 := trichotomous d 0
       · -- d > 0
         have h₁ : f n ≤ d := le_of_dvd hd h_fn_dvd_d
         have h₂ : ¬f n ≤ d := not_le.mpr h_d_lt_fn

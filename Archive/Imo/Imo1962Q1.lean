@@ -84,7 +84,7 @@ theorem case_3_digit {c n : ℕ} (h1 : (digits 10 c).length = 3) : ¬ProblemPred
   intro h2
   have h3 : 6 * 10 ^ 3 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [h1]
   have h4 : 6 * 10 ^ 3 + c = 4 * (10 * c + 6) := by rw [h3, h2.right, h2.left]
-  have h5 : c > 153 := by linarith
+  have h5 : 153 < c := by linarith
   linarith
 #align imo1962_q1.case_3_digit Imo1962Q1.case_3_digit
 
@@ -92,7 +92,7 @@ theorem case_4_digit {c n : ℕ} (h1 : (digits 10 c).length = 4) : ¬ProblemPred
   intro h2
   have h3 : 6 * 10 ^ 4 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [h1]
   have h4 : 6 * 10 ^ 4 + c = 4 * (10 * c + 6) := by rw [h3, h2.right, h2.left]
-  have h5 : c > 1537 := by linarith
+  have h5 : 1537 < c := by linarith
   linarith
 #align imo1962_q1.case_4_digit Imo1962Q1.case_4_digit
 
@@ -108,11 +108,12 @@ theorem case_5_digit {c n : ℕ} (h1 : (digits 10 c).length = 5) (h2 : ProblemPr
   exact helper_5_digit h4
 #align imo1962_q1.case_5_digit Imo1962Q1.case_5_digit
 
+set_option linter.geOrGt false in -- because of a calc block
 /-- `linarith` fails on numbers this large, so this lemma spells out some of the arithmetic
 that normally would be automated.
 -/
-theorem case_more_digits {c n : ℕ} (h1 : (digits 10 c).length ≥ 6) (h2 : ProblemPredicate' c n) :
-    n ≥ 153846 := by
+theorem case_more_digits {c n : ℕ} (h1 : 6 ≤ (digits 10 c).length) (h2 : ProblemPredicate' c n) :
+    153846 ≤ n := by
   have h3 : c ≠ 0 := by
     intro h4
     have h5 : (digits 10 c).length = 0 := by simp [h4]
@@ -134,9 +135,9 @@ theorem satisfied_by_153846 : ProblemPredicate 153846 := by
   decide
 #align imo1962_q1.satisfied_by_153846 Imo1962Q1.satisfied_by_153846
 
-theorem no_smaller_solutions (n : ℕ) (h1 : ProblemPredicate n) : n ≥ 153846 := by
+theorem no_smaller_solutions (n : ℕ) (h1 : ProblemPredicate n) : 153846 ≤ n := by
   have ⟨c, h2⟩ := without_digits h1
-  have h3 : (digits 10 c).length < 6 ∨ (digits 10 c).length ≥ 6 := by apply lt_or_ge
+  have h3 : (digits 10 c).length < 6 ∨ 6 ≤ (digits 10 c).length := by apply lt_or_ge
   cases h3 with
   | inr h3 => exact case_more_digits h3 h2
   | inl h3 =>

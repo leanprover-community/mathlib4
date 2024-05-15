@@ -318,7 +318,7 @@ theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 
     dsimp [f]
     simp [Q.not_adjacent_zero]
   · intro p q
-    have ite_nonneg : ite (π q = π p) (1 : ℝ) 0 ≥ 0 := by split_ifs <;> norm_num
+    have ite_nonneg : 0 ≤ ite (π q = π p) (1 : ℝ) 0 := by split_ifs <;> norm_num
     dsimp only [e, ε, f, V]; rw [LinearMap.prod_apply]; dsimp; cases hp : p 0 <;> cases hq : q 0
     all_goals
       repeat rw [Bool.cond_true]
@@ -395,7 +395,7 @@ theory of lattices, with inf and sup (also known as meet and join). -/
 /-- If a subset `H` of `Q (m+1)` has cardinal at least `2^m + 1` then the
 subspace of `V (m+1)` spanned by the corresponding basis vectors non-trivially
 intersects the range of `g m`. -/
-theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
+theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : 2 ^ m + 1 ≤ Card H) :
     ∃ y ∈ Span (e '' H) ⊓ range (g m), y ≠ (0 : _) := by
   let W := Span (e '' H)
   let img := range (g m)
@@ -428,7 +428,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
 #align sensitivity.exists_eigenvalue Sensitivity.exists_eigenvalue
 
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/
-theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
+theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : 2 ^ m + 1 ≤ Card H) :
     ∃ q, q ∈ H ∧ √ (m + 1) ≤ Card H ∩ q.adjacent := by
   rcases exists_eigenvalue H hH with ⟨y, ⟨⟨y_mem_H, y_mem_g⟩, y_ne⟩⟩
   have coeffs_support : ((dualBases_e_ε m.succ).coeffs y).support ⊆ H.toFinset := by
