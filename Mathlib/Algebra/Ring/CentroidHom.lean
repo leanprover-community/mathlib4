@@ -743,6 +743,7 @@ instance : StarRing (Subsemiring.center (CentroidHom α)) where
       _ = star (g (star (star (f (star a))))) := by simp only [star_star]
       _ = (star g * star f) a := rfl
 
+/-- The canonical *-homomorphism embedding the center of `CentroidHom α` into `CentroidHom α`. -/
 def centerStarEmbedding : Subsemiring.center (CentroidHom α) →⋆ₙ+* CentroidHom α where
   toNonUnitalRingHom :=
     (SubsemiringClass.subtype (Subsemiring.center (CentroidHom α))).toNonUnitalRingHom
@@ -803,8 +804,8 @@ def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α :=
       rw [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom, NonUnitalStarRingHom.coe_toNonUnitalRingHom]
       simp only
       rw [starCenterToCentroid_apply, mul_one]
-    right_inv := fun T ↦ CentroidHom.ext <| by simp [centerToCentroid_apply, ← map_mul_right] }
-
+    right_inv := fun T ↦ CentroidHom.ext <| fun _ => by
+      simp [starCenterToCentroid_apply, ← map_mul_right] }
 
 end NonAssocStarSemiring
 
