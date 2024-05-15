@@ -78,4 +78,5 @@ fi
  : <<ReferenceTest
 theorem oh hello
 inductive counts even if it is not lean code
+instance [I pretend] {to be a nameless} instance where
 ReferenceTest
