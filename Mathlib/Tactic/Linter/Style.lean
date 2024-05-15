@@ -26,6 +26,7 @@ def parse_set_option : Syntax → Option (Ident)
   | `(tactic|set_option $name:ident $_val in $_x) => some name
   | _ => none
 
+/-- Whether a given piece of syntax is a `set_option` command, tactic or term. -/
 def is_set_option : Syntax → Bool :=
   fun stx ↦ match parse_set_option stx with
   | some _name => true
@@ -40,6 +41,8 @@ register_option linter.setOption : Bool := {
 /-- Gets the value of the `linter.setOption` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.setOption o
 
+/-- The `setOption` linter: this lints any `set_option` command, term or tactic
+which sets a `pp`, `profiler` or `trace` option. -/
 def setOptionLinter : Linter where
   run := withSetOptionIn fun stx => do
     unless getLinterHash (← getOptions) do
@@ -59,17 +62,20 @@ def setOptionLinter : Linter where
 
 initialize addLinter setOptionLinter
 
+/-- If a piece of syntax is an `import` statement, return the corresponding module name. -/
 def parse_import : Syntax → Option (String)
+  -- FIXME: implement this properly
   --| `(import $name:ident) => some ("profiler.42")
   | _ => none
 
+/-- Whether a given piece of syntax is an `import` statement. -/
 def is_import : Syntax → Bool :=
   fun stx ↦ match parse_import stx with
   | some _name => true
   | none => false
 
-/-- The `broadImport` linter emits a warning on broad import, like
-  `import Mathlib.Tactic` in a mathlib file. -/
+/-- The `broadImport` linter emits a warning on broad import,
+such as `import Mathlib.Tactic` (which should not be imported in mathlib). -/
 register_option linter.broadImport : Bool := {
   defValue := true
   descr := "enable the `broadImport` linter"
@@ -78,5 +84,6 @@ register_option linter.broadImport : Bool := {
 /-- Gets the value of the `linter.broadImport` option. -/
 def getLinterHash' (o : Options) : Bool := Linter.getLinterValue linter.broadImport o
 
+-- FIXME: now implement the actual linter
 
 end Mathlib.Linter.Style

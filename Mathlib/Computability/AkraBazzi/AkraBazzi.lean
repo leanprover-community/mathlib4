@@ -677,6 +677,7 @@ lemma eventually_atTop_sumTransform_le :
          _ = c₂ * g n := by rw [div_self (by positivity), mul_one]
          _ ≤ max c₂ (c₂ / c₁ ^ ((p a b) + 1)) * g n := by gcongr; exact le_max_left _ _
 
+set_option linter.geOrGt false in -- because of a calc block
 lemma eventually_atTop_sumTransform_ge :
     ∃ c > 0, ∀ᶠ (n:ℕ) in atTop, ∀ i, c * g n ≤ sumTransform (p a b) g (r i n) n := by
   obtain ⟨c₁, hc₁_mem, hc₁⟩ := R.exists_eventually_const_mul_le_r
@@ -1289,6 +1290,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
                                               · exact le_of_lt <| h_smoothing_gt_half n hn
         _ = C * ((1 - ε n) * asympBound g a b n) := by ring
 
+set_option linter.geOrGt false in -- because of a calc block
 /-- The main proof of the lower bound part of the Akra-Bazzi theorem. The factor
 `1 + ε n` does not change the asymptotic order, but is needed for the induction step to go
 through. -/

@@ -360,6 +360,7 @@ lemma GrowsPolynomially.const_mul {f : ℝ → ℝ} {c : ℝ} (hf : GrowsPolynom
     GrowsPolynomially fun x => c * f x :=
   GrowsPolynomially.mul growsPolynomially_const hf
 
+set_option linter.geOrGt false in -- because of a calc block
 protected lemma GrowsPolynomially.add {f g : ℝ → ℝ} (hf : GrowsPolynomially f)
     (hg : GrowsPolynomially g) (hf' : 0 ≤ᶠ[atTop] f) (hg' : 0 ≤ᶠ[atTop] g) :
     GrowsPolynomially fun x => f x + g x := by
@@ -400,6 +401,7 @@ protected lemma GrowsPolynomially.add {f g : ℝ → ℝ} (hf : GrowsPolynomiall
                           · exact (hf u hu).2
                           · exact (hg u hu).2
 
+set_option linter.geOrGt false in -- because of a calc block
 lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomially f)
     (hfg : g =o[atTop] f) : GrowsPolynomially fun x => f x + g x := by
   intro b hb
