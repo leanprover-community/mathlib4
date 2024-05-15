@@ -489,7 +489,7 @@ theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure s = �
 #align submonoid.dense_induction Submonoid.dense_induction
 #align add_submonoid.dense_induction AddSubmonoid.dense_induction
 
-/-- The `Submonoid.closure` of a set is `1` union the its `Subsemigroup.closure`. -/
+/-- The `Submonoid.closure` of a set is the union of `{1}` and its `Subsemigroup.closure`. -/
 lemma closure_eq_one_union (s : Set M) :
     closure s = {(1 : M)} ∪ (Subsemigroup.closure s : Set M) := by
   apply le_antisymm
