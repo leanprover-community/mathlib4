@@ -252,7 +252,6 @@ instance : IsAbsoluteValue (padicNorm p)
   abv_add' := padicNorm.triangle_ineq
   abv_mul' := padicNorm.mul
 
-set_option pp.proofs true in
 theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z ≤ (p : ℚ) ^ (-n : ℤ) := by
   unfold padicNorm; split_ifs with hz
   · norm_cast at hz
