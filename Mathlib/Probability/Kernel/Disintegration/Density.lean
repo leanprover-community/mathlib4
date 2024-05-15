@@ -391,8 +391,7 @@ lemma tendsto_densityProcess_atTop_empty_of_antitone (κ : kernel α (γ × β))
       simp only [le_eq_subset, prod_subset_prod_iff, subset_rfl, true_and]
       exact Or.inl <| hseq hmm'
     · exact ⟨0, measure_ne_top _ _⟩
-  · simp only [prod_empty, OuterMeasure.empty', ne_eq, not_true_eq_false, false_or, h0,
-      not_false_iff]
+  · exact .inr h0
 
 lemma tendsto_densityProcess_atTop_of_antitone (κ : kernel α (γ × β)) (ν : kernel α γ)
     [IsFiniteKernel κ] (n : ℕ) (a : α) (x : γ)
@@ -674,7 +673,7 @@ lemma tendsto_integral_density_of_antitone (hκν : fst κ ≤ ν) [IsFiniteKern
   · refine ⟨0, measure_ne_top _ _⟩
   convert h
   rw [← prod_iInter, hseq_iInter]
-  simp only [ne_eq, prod_empty, OuterMeasure.empty', forall_exists_index]
+  simp
 
 lemma tendsto_density_atTop_ae_of_antitone (hκν : fst κ ≤ ν) [IsFiniteKernel ν] (a : α)
     (seq : ℕ → Set β) (hseq : Antitone seq) (hseq_iInter : ⋂ i, seq i = ∅)

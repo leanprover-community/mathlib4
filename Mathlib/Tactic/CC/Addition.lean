@@ -712,11 +712,11 @@ def addSymmCongruenceTable (e : Expr) : CCM Unit := do
       { ccs with symmCongruences := ccs.symmCongruences.insert k [newP] }
     checkEqTrue e
 
-/-- Given subsingleton elements `a` and `b` which are not necessarily is the same type, if the
+/-- Given subsingleton elements `a` and `b` which are not necessarily of the same type, if the
 types of `a` and `b` are equivalent, add the (heterogeneous) equality proof between `a` and `b` to
 the todo list. -/
 def pushSubsingletonEq (a b : Expr) : CCM Unit := do
-  -- Remark: we must use normalize here because we have use it before
+  -- Remark: we must normalize here because we have to do so before
   -- internalizing the types of `a` and `b`.
   let A ← normalize (← inferType a)
   let B ← normalize (← inferType b)
@@ -744,7 +744,9 @@ def checkNewSubsingletonEq (oldRoot newRoot : Expr) : CCM Unit := do
     modify fun ccs =>
       { ccs with subsingletonReprs := ccs.subsingletonReprs.insert newRoot it₁ }
 
-/-- Get all lambda expressions in the equivalence class of `e` and append to `r`. -/
+/-- Get all lambda expressions in the equivalence class of `e` and append to `r`.
+
+`e` must be the root of its equivalence class. -/
 def getEqcLambdas (e : Expr) (r : Array Expr := #[]) : CCM (Array Expr) := do
   guard ((← getRoot e) == e)
   let mut r := r
@@ -759,8 +761,8 @@ def getEqcLambdas (e : Expr) (r : Array Expr := #[]) : CCM (Array Expr) := do
   until it == e
   return r
 
-/-- Filter `fn` and expressions whose type isn't def-eq to `fn` out from `lambdas`, append reversed
-`args` to it, and append it to `newLambdaApps`. -/
+/-- Remove `fn` and expressions whose type isn't def-eq to `fn`'s type out from `lambdas`,
+return the remaining lambdas applied to the reversed arguments. -/
 def propagateBeta (fn : Expr) (revArgs : Array Expr) (lambdas : Array Expr)
     (newLambdaApps : Array Expr := #[]) : CCM (Array Expr) := do
   let mut newLambdaApps := newLambdaApps
@@ -795,7 +797,7 @@ def mkNeOfNeOfEq (aNeB₁ b₁ b : Expr) : CCM (Option Expr) := do
   | some b₁EqB => mkAppM ``ne_of_ne_of_eq #[aNeB₁, b₁EqB]
 
 /-- If `e` is of the form `op e₁ e₂` where `op` is an associative and commutative binary operator,
-return the conanocal form of `op`. -/
+return the canonical form of `op`. -/
 def isAC (e : Expr) : CCM (Option Expr) := do
   let .app (.app op _) _ := e | return none
   let ccs ← get
@@ -856,15 +858,15 @@ def mkACSimpProof (tr t s r sr : ACApps) (tEqs : DelayedExpr) : MetaM DelayedExp
   else
     let .apps op _ := tr | failure
     let some re := r.toExpr | failure
-    let opr := op.app re
     let some te := t.toExpr | failure
-    let rt := opr.app te
     let some se := s.toExpr | failure
-    let rs := mkApp2 op re se
-    let rtEqrs := DelayedExpr.congrArg opr tEqs
     let some tre := tr.toExpr | failure
-    let trEqrt ← mkACProof tre rt
     let some sre := sr.toExpr | failure
+    let opr := op.app re -- `(*) r`
+    let rt := mkApp2 op re te -- `r * t`
+    let rs := mkApp2 op re se -- `r * s`
+    let rtEqrs := DelayedExpr.congrArg opr tEqs
+    let trEqrt ← mkACProof tre rt
     let rsEqsr ← mkACProof rs sre
     return .eqTrans (.eqTrans trEqrt rtEqrs) rsEqsr
 
@@ -876,23 +878,23 @@ def mkACSuperposeProof (ra sb a b r s ts tr : ACApps) (tsEqa trEqb : DelayedExpr
     MetaM DelayedExpr := do
   let .apps _ _ := tr | failure
   let .apps op _ := ts | failure
-  let tsrEqar := DelayedExpr.congrFun (.congrArg op tsEqa) r
-  let trsEqbs := DelayedExpr.congrFun (.congrArg op trEqb) s
   let some tse := ts.toExpr | failure
   let some re := r.toExpr | failure
-  let tsr := mkApp2 op tse re
   let some tre := tr.toExpr | failure
   let some se := s.toExpr | failure
-  let trs := mkApp2 op tre se
-  let tsrEqtrs ← mkACProof tsr trs
   let some ae := a.toExpr | failure
-  let ar := mkApp2 op ae re
   let some be := b.toExpr | failure
-  let bs := mkApp2 op be se
   let some rae := ra.toExpr | failure
-  let raEqar ← mkACProof rae ar
   let some sbe := sb.toExpr | failure
-  let bsEqsb ← mkACProof bs sbe
+  let tsrEqar := DelayedExpr.congrFun (.congrArg op tsEqa) r -- `(t * s) * r = a * r`
+  let trsEqbs := DelayedExpr.congrFun (.congrArg op trEqb) s -- `(t * r) * s = b * s`
+  let tsr := mkApp2 op tse re -- `(t * s) * r`
+  let trs := mkApp2 op tre se -- `(t * r) * s`
+  let ar := mkApp2 op ae re -- `a * r`
+  let bs := mkApp2 op be se -- `b * r`
+  let tsrEqtrs ← mkACProof tsr trs -- `(t * s) * r = (t * r) * s`
+  let raEqar ← mkACProof rae ar -- `r * a = a * r`
+  let bsEqsb ← mkACProof bs sbe -- `b * s = s * b`
   return .eqTrans raEqar (.eqTrans (.eqSymm tsrEqar) (.eqTrans tsrEqtrs (.eqTrans trsEqbs bsEqsb)))
 
 /-- Given `e := lhs * r` and `H : lhs = rhs`, return `rhs * r` and the proof of `e = rhs * r`. -/
@@ -911,7 +913,10 @@ def simplifyACCore (e lhs rhs : ACApps) (H : DelayedExpr) :
     let newPr ← mkACSimpProof e lhs rhs r newE H
     return (newE, newPr)
 
-/-- The single step of `simplifyAC`. -/
+/-- The single step of `simplifyAC`.
+
+Simplifies an expression `e` by either simplifying one argument to the AC operator, or the whole
+expression. -/
 def simplifyACStep (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
   if let .apps _ args := e then
     for h : i in [:args.size] do
@@ -920,9 +925,9 @@ def simplifyACStep (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
         let occs := ae.RLHSOccs
         let mut Rlhs? : Option ACApps := none
         for Rlhs in occs do
-          if Rlhs?.isNone then
-            if Rlhs.isSubset e then
-              Rlhs? := some Rlhs
+          if Rlhs.isSubset e then
+            Rlhs? := some Rlhs
+            break
         if let some Rlhs := Rlhs? then
           let some (Rrhs, H) := (← get).acR.find? Rlhs | failure
           return (some <| ← simplifyACCore e Rlhs Rrhs H)
@@ -1045,8 +1050,8 @@ def collapseAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
             ofFormat (Format.line ++ ":=" ++ .line) ++ ccs.ppACApps newRlhs)
 
 open MessageData in
-/-- Given `tsEqa : ts = a`, for each equality `trEqb : tr = b` in equalities in `acR` where
-the intersection `t` of `ts` and `tr` is nonempty, let `ts = t*s` and `tr := t*r`, add an new
+/-- Given `tsEqa : ts = a`, for each equality `trEqb : tr = b` in `acR` where
+the intersection `t` of `ts` and `tr` is nonempty, let `ts = t*s` and `tr := t*r`, add a new
 equality `r*a = s*b`. -/
 def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
   let .apps op args := ts | return
@@ -1106,7 +1111,7 @@ def processAC : CCM Unit := do
     if lhs != lhs₀ || rhs != rhs₀ then
       dbgTraceACEq "after simp:" lhs rhs
 
-    -- Check trivial
+    -- Skip propagation if the equality is trivial.
     if lhs == rhs then
       trace[Debug.Meta.Tactic.cc.ac] "trivial"
       continue

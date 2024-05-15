@@ -308,7 +308,8 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme.{u}} (f : X ⟶ Y)
     swap
     · refine' X.presheaf.map
           (@homOfLE _ _ ((IsOpenMap.functor _).obj _) ((IsOpenMap.functor _).obj _) _).op
-      rw [unop_op, unop_op, Opens.openEmbedding_obj_top, Opens.openEmbedding_obj_top]
+      dsimp
+      rw [Opens.openEmbedding_obj_top, Opens.openEmbedding_obj_top]
       exact X.basicOpen_le _
     · rw [op_comp, op_comp, Functor.map_comp, Functor.map_comp]
       refine' (Eq.trans _ (Category.assoc (obj := CommRingCat) _ _ _).symm : _)

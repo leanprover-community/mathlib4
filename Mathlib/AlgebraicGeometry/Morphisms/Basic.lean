@@ -551,7 +551,7 @@ theorem AffineTargetMorphismProperty.diagonalOfTargetAffineLocally
   specialize H g₁
   rw [← affine_cancel_left_isIso hP.1 (pullbackDiagonalMapIso f _ f₁ f₂).hom]
   convert H
-  · apply pullback.hom_ext <;>
+  apply pullback.hom_ext <;>
     simp only [Category.assoc, pullback.lift_fst, pullback.lift_snd, pullback.lift_fst_assoc,
       pullback.lift_snd_assoc, Category.comp_id, pullbackDiagonalMapIso_hom_fst,
       pullbackDiagonalMapIso_hom_snd]
