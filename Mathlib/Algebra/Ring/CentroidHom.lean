@@ -800,10 +800,9 @@ def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α :=
   { starCenterToCentroid with
     invFun := fun T ↦
       ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
-    left_inv := fun z ↦ Subtype.ext <| by
-      rw [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom, NonUnitalStarRingHom.coe_toNonUnitalRingHom]
-      simp only
-      rw [starCenterToCentroid_apply, mul_one]
+    left_inv := fun z ↦ Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
+      NonUnitalRingHom.coe_toMulHom, NonUnitalStarRingHom.coe_toNonUnitalRingHom,
+      starCenterToCentroid_apply, mul_one]
     right_inv := fun T ↦ CentroidHom.ext <| fun _ => by
       simp [starCenterToCentroid_apply, ← map_mul_right] }
 
