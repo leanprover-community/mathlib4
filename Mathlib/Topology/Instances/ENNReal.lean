@@ -847,7 +847,6 @@ protected theorem tsum_add : ∑' a, (f a + g a) = ∑' a, f a + ∑' a, g a :=
   tsum_add ENNReal.summable ENNReal.summable
 #align ennreal.tsum_add ENNReal.tsum_add
 
-@[gcongr]
 protected theorem tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a, g a :=
   tsum_le_tsum h ENNReal.summable ENNReal.summable
 #align ennreal.tsum_le_tsum ENNReal.tsum_le_tsum
