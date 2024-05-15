@@ -154,7 +154,8 @@ lemma odd_two_mul_add_one (a : α) : Odd (2 * a + 1) := ⟨_, rfl⟩
 @[simp] lemma odd_add_self_one' : Odd (a + (a + 1)) := by simp [← add_assoc]
 @[simp] lemma odd_add_one_self : Odd (a + 1 + a) := by simp [add_comm _ a]
 @[simp] lemma odd_add_one_self' : Odd (a + (1 + a)) := by simp [add_comm 1 a]
-@[simp] lemma odd_one_add_add_self : Odd (1 + a + a) := by simp [add_comm 1 a]
+
+#noalign one_add_self_self
 
 lemma Odd.map [FunLike F α β] [RingHomClass F α β] (f : F) : Odd a → Odd (f a) := by
   rintro ⟨a, rfl⟩; exact ⟨f a, by simp [two_mul]⟩
