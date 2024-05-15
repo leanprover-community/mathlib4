@@ -268,6 +268,8 @@ theorem cons_equiv_eq_equiv_cons (α : Type*) (n : ℕ) (a : α) (s : Sym α n) 
 instance instZeroSym : Zero (Sym α 0) :=
   ⟨⟨0, rfl⟩⟩
 
+@[simp] theorem toMultiset_zero : toMultiset (0 : Sym α 0) = 0 := rfl
+
 instance : EmptyCollection (Sym α 0) :=
   ⟨0⟩
 
