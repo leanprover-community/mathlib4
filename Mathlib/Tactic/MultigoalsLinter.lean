@@ -77,7 +77,7 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.tacticSeq  -- keep
   |>.insert ``Lean.Parser.Tactic.paren  -- keep
 --  |>.insert ``Lean.Parser.Tactic.cases
---  |>.insert ``Lean.Parser.Tactic.«tacticNext_=>_»
+  |>.insert ``Lean.Parser.Tactic.«tacticNext_=>_»  -- keep
 --  |>.insert `then
 --  |>.insert `else
 --  |>.insert ``Lean.Parser.Tactic.intros
