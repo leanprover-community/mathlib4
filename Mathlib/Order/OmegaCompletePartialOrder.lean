@@ -1,15 +1,15 @@
 /-
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon
+Authors: Simon Hudon, Ira Fesefeldt
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Part
 import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
 import Mathlib.Algebra.Order.Ring.Nat
-
-#align_import order.omega_complete_partial_order from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
+import Mathlib.Dynamics.FixedPoints.Basic
+import Mathlib.Order.FixedPoints
 
 /-!
 # Omega Complete Partial Orders
@@ -27,6 +27,7 @@ supremum helps define the meaning of recursive procedures.
 
  * class `OmegaCompletePartialOrder`
  * `ite`, `map`, `bind`, `seq` as continuous morphisms
+ * the chain `approx` approximating fixed points
 
 ## Instances of `OmegaCompletePartialOrder`
 
@@ -917,5 +918,94 @@ noncomputable def seq {β γ : Type v} (f : α →𝒄 Part (β → γ)) (g : α
 #align omega_complete_partial_order.continuous_hom.seq_apply OmegaCompletePartialOrder.ContinuousHom.seq_apply
 
 end ContinuousHom
+
+namespace fixedPoints
+
+open Function
+
+variable (f : α →𝒄 α) (x : α)
+
+def approx' (f : α →𝒄 α) (x : α) : ℕ → α
+  | 0 => x
+  | Nat.succ n => f (approx' f x n)
+
+theorem approx'_le (h : x ≤ f x) (n : ℕ) :
+    approx' f x n ≤ f (approx' f x n) := by
+  induction n with
+  | zero => exact h
+  | succ n h_ind => exact f.monotone h_ind
+
+theorem le_approx' (h : x ≤ f x) {n : ℕ} :
+    x ≤ f (approx' f x n) := by
+  induction n with
+  | zero => exact h
+  | succ n h_ind => exact le_trans h <| f.monotone <| h_ind
+
+theorem monotone_approx' (h : x ≤ f x) :
+    Monotone (approx' f x) := by
+  intro a b h_ab
+  induction b, h_ab using Nat.le_induction with
+  | base => exact le_rfl
+  | succ n _ h_ind => exact le_trans h_ind (approx'_le f x h n)
+
+def approx (h : x ≤ f x) : Chain α :=
+    ⟨approx' f x, monotone_approx' f x h⟩
+
+theorem approx_le (h : x ≤ f x) (n : ℕ) :
+    approx f x h n ≤ f (approx f x h n) := approx'_le f x h n
+
+theorem le_approx (h : x ≤ f x) {n : ℕ} :
+    x ≤ f (approx f x h n) := le_approx' f x h
+
+/-- **Kleenes Fixed Point Theorem**:
+  The supremum of function compositions is a fixed point -/
+theorem approx_mem_fixedPoint (h : x ≤ f x) :
+    ωSup (approx f x h) ∈ fixedPoints f := by
+  rw [mem_fixedPoints, IsFixedPt, f.continuous]
+  apply le_antisymm
+  · apply ωSup_le
+    intro n
+    simp only [Chain.map_coe, OrderHomClass.coe_coe, comp_apply]
+    have : f (approx f x h n) = approx f x h (n+1) := rfl
+    rw [this]
+    apply le_ωSup
+  · apply ωSup_le
+    intro n
+    cases n
+    case a.a.zero =>
+      apply le_trans h
+      have : f x = ((approx f x h).map f) 0 := rfl
+      rw [this]
+      apply le_ωSup
+    case a.a.succ n =>
+      have : f (approx f x h n) = approx f x h (n+1) := rfl
+      rw [←this]
+      have : (approx f x h).map f n = f (approx f x h n) := rfl
+      rw [←this]
+      apply le_ωSup
+
+  theorem approx_le_fixedPoint (h : x ≤ f x) {a : α}
+      (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) (n : ℕ) :
+      approx f x h n ≤ a := by
+    induction n with
+    | zero => exact h_x_le_a
+    | succ n h_ind =>
+      rw [mem_fixedPoints] at h_a
+      rw [←h_a]
+      exact f.monotone h_ind
+
+  theorem ωSup_approx_le_fixedPoint (h : x ≤ f x) {a : α}
+      (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) :
+      ωSup (approx f x h) ≤ a := by
+    apply ωSup_le
+    exact fun n => approx_le_fixedPoint f x h h_a h_x_le_a n
+
+  -- open OrderHom
+
+  -- theorem lfp_eq_ωSup_approx [CompleteLattice α] :
+  --     OrderHom.lfp f.1 = (ωSup (approx f ⊥ bot_le)) :=
+  --   sorry
+
+end fixedPoints
 
 end OmegaCompletePartialOrder
