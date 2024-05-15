@@ -3,19 +3,15 @@ import Mathlib.KolmogorovExtension4.Projective
 
 open Set MeasureTheory
 
-theorem lol {ι : Type*} {X : ι → Type*} (I J : Finset ι) [∀ j : J, Decidable (j.1 ∈ I)] (hIJ : I ⊆ J)
-    (s : ∀ i : I, Set (X i)) :
+theorem preimage_proj {ι : Type*} {X : ι → Type*} (I J : Finset ι) [∀ j : J, Decidable (j.1 ∈ I)]
+    (hIJ : I ⊆ J) (s : ∀ i : I, Set (X i)) :
     (fun t : (∀ j : J, X j) ↦ fun i : I ↦ t ⟨i, hIJ i.2⟩) ⁻¹' (univ.pi s) =
     (@univ J).pi (fun j ↦ if h : j.1 ∈ I then s ⟨j.1, h⟩ else univ) := by
-  ext x
-  simp
-  constructor
-  · intro h i hi
-    by_cases i_mem : i ∈ I
-    · simp [i_mem, h i i_mem]
-    · simp [i_mem]
-  · intro h i i_mem
-    simpa [i_mem] using h i (hIJ i_mem)
+  ext x; simp
+  refine ⟨fun h i hi ↦ ?_, fun h i i_mem ↦ by simpa [i_mem] using h i (hIJ i_mem)⟩
+  by_cases i_mem : i ∈ I
+  · simp [i_mem, h i i_mem]
+  · simp [i_mem]
 
 variable (X : ℕ → Type*) [∀ n, MeasurableSpace (X n)]
 variable (μ : (n : ℕ) → Measure (X n)) [∀ n, IsProbabilityMeasure (μ n)]
@@ -23,10 +19,10 @@ variable (μ : (n : ℕ) → Measure (X n)) [∀ n, IsProbabilityMeasure (μ n)]
 theorem isProjectiveMeasureFamily_prod :
     IsProjectiveMeasureFamily (fun S : Finset ℕ ↦ (Measure.pi (fun n : S ↦ μ n))) := by
   intro T S hST
-  simp
-  apply Measure.pi_eq
-  intro s ms
-  rw [Measure.map_apply, lol S T hST, Measure.pi_pi]
+  -- simp only
+  refine Measure.pi_eq (fun s ms ↦ ?_)
+  rw [Measure.map_apply (measurable_proj₂' (α := X) T S hST) (MeasurableSet.univ_pi ms),
+    preimage_proj S T hST, Measure.pi_pi]
   let e : S ≃ {a : T | a.1 ∈ S} :=
     {
       toFun := fun a ↦ ⟨⟨a.1, hST a.2⟩, a.2⟩,
@@ -38,24 +34,16 @@ theorem isProjectiveMeasureFamily_prod :
     change Finset.univ.prod (fun i ↦ ((fun i : S ↦ (μ i) (s i)) ∘ e.invFun) (e i))
     rw [e.prod_comp]
   have : (fun i ↦ (((fun j : S ↦ (μ j) (s j)) ∘ e.invFun) i)) =
-      fun i : {a : T | a.1 ∈ S} ↦ (fun i : T ↦ (μ i) (if h : i.1 ∈ S then s ⟨i, h⟩ else univ)) i := by
+      fun i : {a : T | a.1 ∈ S} ↦
+      (fun i : T ↦ (μ i) (if h : i.1 ∈ S then s ⟨i, h⟩ else univ)) i := by
     ext i
     have : i.1.1 ∈ S := i.2
     simp [this]
-  rw [this]
-  rw [Finset.prod_set_coe (f := fun i : T ↦ (μ i) (if h : i.1 ∈ S then s ⟨i, h⟩ else univ))]
-  refine (Finset.prod_subset ?_ ?_).symm
-  simp
-  rintro x - hx
-  simp at hx
+  rw [this, Finset.prod_set_coe (f := fun i : T ↦ (μ i) (if h : i.1 ∈ S then s ⟨i, h⟩ else univ))]
+  refine (Finset.prod_subset (Finset.subset_univ _) (fun x _ hx ↦ ?_)).symm
+  simp only [mem_setOf_eq, toFinset_setOf, Finset.univ_eq_attach, Finset.mem_filter,
+    Finset.mem_attach, true_and] at hx
   simp [hx]
-  exact measurable_proj₂' (α := X) T S hST
-  exact MeasurableSet.univ_pi ms
-  -- induction T using Finset.induction with
-  -- | empty =>
-  --   rw [Finset.le_iff_subset, Finset.subset_empty] at hST
-  --   simp [hST]
-  -- | @insert n T hn hind =>
 
 
 theorem cylinders_nat : cylinders X =
