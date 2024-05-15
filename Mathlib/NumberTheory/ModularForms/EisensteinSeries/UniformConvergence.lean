@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck
+Authors: Chris Birkbeck, David Loeffler
 -/
 
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
@@ -185,8 +185,8 @@ local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm (openEmbedding_coe.to
 /-- Variant of `eisensteinSeries_tendstoLocallyUniformly` formulated with maps `ℂ → ℂ`, which is
 nice to have for holomorphicity later. -/
 lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤ k)
-    (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a)) ↦
-      ↑ₕ(fun (z : ℍ) ↦ ∑ x in s, eisSummand k x z)) (↑ₕ(eisensteinSeries_SIF a k).toFun)
+    (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) ↦
+      ↑ₕ(fun (z : ℍ) ↦ ∑ x in s, eisSummand k x z )) (↑ₕ(eisensteinSeries_SIF a k).toFun)
           Filter.atTop (UpperHalfPlane.coe '' ⊤) := by
   apply TendstoLocallyUniformlyOn.comp (s := ⊤) _ _ _ (PartialHomeomorph.continuousOn_symm _)
   · simp only [SlashInvariantForm.toFun_eq_coe, Set.top_eq_univ, tendstoLocallyUniformlyOn_univ]
