@@ -567,13 +567,13 @@ theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _
   simp only [one_apply, Pi.single_apply, eq_comm]
 #align matrix.one_eq_pi_single Matrix.one_eq_pi_single
 
-lemma zero_le_one_elem [Preorder α] [ZeroLEOneClass α] (i i' : n) :
-    0 ≤ (1 : Matrix n n α) i i' := by
-  by_cases hi : i = i' <;> simp [hi]
+lemma zero_le_one_elem [Preorder α] [ZeroLEOneClass α] (i j : n) :
+    0 ≤ (1 : Matrix n n α) i j := by
+  by_cases hi : i = j <;> simp [hi]
 
 lemma zero_le_one_row [Preorder α] [ZeroLEOneClass α] (i : n) :
     0 ≤ (1 : Matrix n n α) i :=
-  zero_le_one_elem _
+  zero_le_one_elem i
 
 end One
 
