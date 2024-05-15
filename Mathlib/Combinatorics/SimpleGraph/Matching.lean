@@ -158,20 +158,6 @@ lemma even_card_of_isPerfectMatching (c : ConnectedComponent G) (hM : M.IsPerfec
     Even (Fintype.card c.supp) := by
   classical simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
-theorem mem_coe_supp_of_adj {H : Subgraph G} {c : ConnectedComponent H.coe}
-    (hv : v ∈ (c.supp : Set V)) (hw : w ∈ H.verts)
-    (hadj : H.Adj v w) : w ∈ (c.supp : Set V) := by
-  rw [Set.mem_image]
-  obtain ⟨v' , hv'⟩ := hv
-  use ⟨w, hw⟩
-  rw [ConnectedComponent.mem_supp_iff]
-  refine ⟨?_, rfl⟩
-  rw [← (ConnectedComponent.mem_supp_iff _ _).mp hv'.1]
-  apply ConnectedComponent.connectedComponentMk_eq_of_adj
-  apply SimpleGraph.Subgraph.Adj.coe
-  rw [hv'.2]
-  exact hadj.symm
-
 lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.deleteVerts ⊤ u).coe}
     (hM : M.IsPerfectMatching) (codd : Odd (Nat.card c.supp)) :
     ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.supp := by
@@ -183,7 +169,7 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
       use w
       have hwnu : w ∉ u := fun hw' ↦ h w hw' ⟨v', hv'⟩ (hw.1) hv
       refine ⟨⟨⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩, ⟨?_, hw.1⟩⟩, fun _ hy ↦ hw.2 _ hy.2.2⟩
-      apply mem_coe_supp_of_adj ⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩ ⟨by trivial, hwnu⟩
+      apply ConnectedComponent.mem_coe_supp_of_adj ⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩ ⟨by trivial, hwnu⟩
       simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.mem_diff, Set.mem_univ, true_and,
         Subgraph.induce_adj, hwnu, not_false_eq_true, and_self, Subgraph.top_adj, M.adj_sub hw.1,
         and_true] at hv' ⊢

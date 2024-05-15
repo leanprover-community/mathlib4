@@ -2294,6 +2294,20 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
   right_inv v := Subtype.ext_val (φ.toEquiv.right_inv ↑v)
 #align simple_graph.connected_component.iso_equiv_supp SimpleGraph.ConnectedComponent.isoEquivSupp
 
+lemma mem_coe_supp_of_adj {H : Subgraph G} {c : ConnectedComponent H.coe}
+    (hv : v ∈ (c.supp : Set V)) (hw : w ∈ H.verts)
+    (hadj : H.Adj v w) : w ∈ (c.supp : Set V) := by
+  rw [Set.mem_image]
+  obtain ⟨v' , hv'⟩ := hv
+  use ⟨w, hw⟩
+  rw [ConnectedComponent.mem_supp_iff]
+  refine ⟨?_, rfl⟩
+  rw [← (ConnectedComponent.mem_supp_iff _ _).mp hv'.1]
+  apply ConnectedComponent.connectedComponentMk_eq_of_adj
+  apply SimpleGraph.Subgraph.Adj.coe
+  rw [hv'.2]
+  exact hadj.symm
+
 end ConnectedComponent
 
 theorem Preconnected.set_univ_walk_nonempty (hconn : G.Preconnected) (u v : V) :
