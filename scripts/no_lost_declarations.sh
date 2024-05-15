@@ -78,6 +78,6 @@ Running
 produces a diff of just the declaration names.
 '
  : <<ReferenceTest
-theorem ohohoh oh hello
+theorem oh hello
 inductive counts even if it is not lean code
 ReferenceTest
