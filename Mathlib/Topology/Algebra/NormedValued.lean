@@ -94,7 +94,7 @@ def toNormedField : NormedField L :=
     norm_mul' := fun x y => by simp only [norm, ← NNReal.coe_mul, _root_.map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
-      letI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
+      haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
       ext U
       rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_directed]
       · simp only [exists_true_left, mem_principal, Subtype.exists, gt_iff_lt,
