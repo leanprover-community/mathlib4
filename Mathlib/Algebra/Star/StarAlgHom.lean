@@ -281,6 +281,32 @@ theorem zero_apply (a : A) : (0 : A →⋆ₙₐ[R] B) a = 0 :=
 
 end Zero
 
+section RestrictScalars
+
+variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S] [Star A] [Star B]
+    [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MulAction R S]
+    [DistribMulAction S A] [DistribMulAction S B] [DistribMulAction R A] [DistribMulAction R B]
+    [IsScalarTower R S A] [IsScalarTower R S B]
+
+/-- If a monoid `R` acts on another monoid `S`, then a non-unital star algebra homomorphism
+over `S` can be viewed as a non-unital star algebra homomorphism over `R`.  -/
+def restrictScalars (f : A →⋆ₙₐ[S] B) : A →⋆ₙₐ[R] B :=
+  { (f : A →ₙₐ[S] B).restrictScalars R with
+    map_star' := map_star f }
+
+@[simp]
+lemma restrictScalars_apply (f : A →⋆ₙₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
+
+lemma coe_restrictScalars (f : A →⋆ₙₐ[S] B) : (f.restrictScalars R : A →ₙ+* B) = f := rfl
+
+lemma coe_restrictScalars' (f : A →⋆ₙₐ[S] B) : (f.restrictScalars R : A → B) = f := rfl
+
+theorem restrictScalars_injective :
+    Function.Injective (restrictScalars R : (A →⋆ₙₐ[S] B) → A →⋆ₙₐ[R] B) :=
+  fun _ _ h ↦ ext (DFunLike.congr_fun h : _)
+
+end RestrictScalars
+
 end NonUnitalStarAlgHom
 
 /-! ### Unital star algebra homomorphisms -/

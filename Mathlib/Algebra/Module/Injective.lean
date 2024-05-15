@@ -241,8 +241,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: helper function. Lean looks for an instance of `Sup (Type u)` when the
 -- right hand side is substituted in directly
-@[reducible]
-def supExtensionOfMaxSingleton (y : N) : Submodule R N :=
+abbrev supExtensionOfMaxSingleton (y : N) : Submodule R N :=
   (extensionOfMax i f).domain ⊔ (Submodule.span R {y})
 
 variable {f}

@@ -1389,12 +1389,12 @@ theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {
           lt_of_le_of_lt (ih (n.le_succ.trans h))
             (lt_of_le_of_ne (h1 n.le_succ) (h2 n (Nat.succ_le_succ_iff.mp h))))
         n
-  · obtain ⟨n, hn1, hn2⟩ := key
-    replace key : ∀ k : ℕ, f (n + k) = f (n + k + 1) ∧ f (n + k) = f n := fun k =>
-      Nat.rec ⟨hn2, rfl⟩ (fun k ih => ⟨h3 _ ih.1, ih.1.symm.trans ih.2⟩) k
-    replace key : ∀ k : ℕ, n ≤ k → f k = f n := fun k hk =>
-      (congr_arg f (add_tsub_cancel_of_le hk)).symm.trans (key (k - n)).2
-    exact fun k hk => (key k (hn1.trans hk)).trans (key B hn1).symm
+  obtain ⟨n, hn1, hn2⟩ := key
+  replace key : ∀ k : ℕ, f (n + k) = f (n + k + 1) ∧ f (n + k) = f n := fun k =>
+    Nat.rec ⟨hn2, rfl⟩ (fun k ih => ⟨h3 _ ih.1, ih.1.symm.trans ih.2⟩) k
+  replace key : ∀ k : ℕ, n ≤ k → f k = f n := fun k hk =>
+    (congr_arg f (add_tsub_cancel_of_le hk)).symm.trans (key (k - n)).2
+  exact fun k hk => (key k (hn1.trans hk)).trans (key B hn1).symm
 #align group.card_pow_eq_card_pow_card_univ_aux Group.card_pow_eq_card_pow_card_univ_aux
 #align add_group.card_nsmul_eq_card_nsmul_card_univ_aux AddGroup.card_nsmul_eq_card_nsmul_card_univ_aux
 

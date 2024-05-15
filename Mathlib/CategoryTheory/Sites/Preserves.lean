@@ -30,11 +30,11 @@ See `preservesProductOfIsSheafFor`.
 See `isSheafFor_of_preservesProduct`.
 -/
 
-universe v u
+universe v u w
 
 namespace CategoryTheory.Presieve
 
-variable {C : Type u} [Category.{v} C] {I : C} (F : Cᵒᵖ ⥤ Type (max u v))
+variable {C : Type u} [Category.{v} C] {I : C} (F : Cᵒᵖ ⥤ Type w)
 
 open Limits Opposite
 

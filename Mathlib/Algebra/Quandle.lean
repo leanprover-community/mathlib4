@@ -224,14 +224,14 @@ theorem act_invAct_eq (x y : R) : x ◃ x ◃⁻¹ y = y :=
 
 theorem left_cancel (x : R) {y y' : R} : x ◃ y = x ◃ y' ↔ y = y' := by
   constructor
-  apply (act' x).injective
+  · apply (act' x).injective
   rintro rfl
   rfl
 #align rack.left_cancel Rack.left_cancel
 
 theorem left_cancel_inv (x : R) {y y' : R} : x ◃⁻¹ y = x ◃⁻¹ y' ↔ y = y' := by
   constructor
-  apply (act' x).symm.injective
+  · apply (act' x).symm.injective
   rintro rfl
   rfl
 #align rack.left_cancel_inv Rack.left_cancel_inv
@@ -305,11 +305,12 @@ theorem self_invAct_act_eq {x y : R} : (x ◃⁻¹ x) ◃ y = x ◃ y := by
 #align rack.self_inv_act_act_eq Rack.self_invAct_act_eq
 
 theorem self_act_eq_iff_eq {x y : R} : x ◃ x = y ◃ y ↔ x = y := by
-  constructor; swap; rintro rfl; rfl
+  constructor; swap
+  · rintro rfl; rfl
   intro h
   trans (x ◃ x) ◃⁻¹ x ◃ x
-  rw [← left_cancel (x ◃ x), right_inv, self_act_act_eq]
-  rw [h, ← left_cancel (y ◃ y), right_inv, self_act_act_eq]
+  · rw [← left_cancel (x ◃ x), right_inv, self_act_act_eq]
+  · rw [h, ← left_cancel (y ◃ y), right_inv, self_act_act_eq]
 #align rack.self_act_eq_iff_eq Rack.self_act_eq_iff_eq
 
 theorem self_invAct_eq_iff_eq {x y : R} : x ◃⁻¹ x = y ◃⁻¹ y ↔ x = y := by
@@ -426,8 +427,7 @@ instance oppositeQuandle : Quandle Qᵐᵒᵖ where
 the corresponding inner automorphism.
 -/
 -- Porting note: no need for `nolint` and added `reducible`
-@[reducible]
-def Conj (G : Type*) := G
+abbrev Conj (G : Type*) := G
 #align quandle.conj Quandle.Conj
 
 instance Conj.quandle (G : Type*) [Group G] : Quandle (Conj G)

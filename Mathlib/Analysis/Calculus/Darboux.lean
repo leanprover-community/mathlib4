@@ -35,7 +35,7 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
     intro x hx
     simpa using (hf x hx).sub ((hasDerivWithinAt_id x _).const_mul m)
   obtain ⟨c, cmem, hc⟩ : ∃ c ∈ Icc a b, IsMinOn g (Icc a b) c :=
-    isCompact_Icc.exists_forall_le (nonempty_Icc.2 <| hab) fun x hx => (hg x hx).continuousWithinAt
+    isCompact_Icc.exists_isMinOn (nonempty_Icc.2 <| hab) fun x hx => (hg x hx).continuousWithinAt
   have cmem' : c ∈ Ioo a b := by
     rcases cmem.1.eq_or_lt with (rfl | hac)
     -- Show that `c` can't be equal to `a`

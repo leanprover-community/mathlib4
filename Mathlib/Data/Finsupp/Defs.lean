@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
 import Mathlib.Algebra.Function.Indicator
+import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Data.Set.Finite
-import Mathlib.GroupTheory.Submonoid.Basic
 
 #align_import data.finsupp.defs from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
 
@@ -633,8 +633,8 @@ def erase (a : α) (f : α →₀ M) : α →₀ M where
     classical
     rw [mem_erase, mem_support_iff]; dsimp
     split_ifs with h
-    exact ⟨fun H _ => H.1 h, fun H => (H rfl).elim⟩
-    exact and_iff_right h
+    · exact ⟨fun H _ => H.1 h, fun H => (H rfl).elim⟩
+    · exact and_iff_right h
 #align finsupp.erase Finsupp.erase
 
 @[simp]

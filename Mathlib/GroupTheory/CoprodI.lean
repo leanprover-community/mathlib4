@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
-import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.Data.List.Chain
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Data.Set.Pointwise.SMul
@@ -350,8 +350,8 @@ def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
     ne_one := by
       simp only [List.mem_cons]
       rintro l (rfl | hl)
-      exact h1
-      exact w.ne_one l hl
+      · exact h1
+      · exact w.ne_one l hl
     chain_ne := w.chain_ne.cons' (fstIdx_ne_iff.mp hmw) }
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -394,7 +394,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
 theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
       m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
-  simp only [rcons._eq_1, cons._eq_1, ne_eq]
+  simp only [rcons, cons, ne_eq]
   by_cases hij : i = j
   · subst i
     by_cases hm : m = p.head
@@ -489,7 +489,7 @@ theorem mem_equivPair_tail_iff {i j : ι} {w : Word M} (m : M i) :
     · subst k
       by_cases hij : j = i <;> simp_all
     · by_cases hik : i = k
-      · subst i; simp_all [eq_comm, and_comm, or_comm]
+      · subst i; simp_all [@eq_comm _ m g, @eq_comm _ k j, or_comm]
       · simp [hik, Ne.symm hik]
 
 theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
@@ -581,7 +581,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
         · simp
         · simp (config := {contextual := true}) [Sigma.ext_iff]
   · rcases w with ⟨_ | _, _, _⟩ <;>
-    simp [or_comm, hij, Ne.symm hij, eq_comm]
+    simp [or_comm, hij, Ne.symm hij]; rw [eq_comm]
 
 theorem mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {m₂ : M j} {w : Word M} :
     ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔ ⟨i, m₁⟩ ∈ w.toList := by
@@ -758,7 +758,7 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
       obtain ⟨i, j, w', hw' : w'.toList = y::l⟩ := hi
       obtain rfl : y = ⟨i, w'.head⟩ := by simpa [hw'] using w'.toList_head?
       refine' ⟨x.1, j, append (singleton x.2 hnot1.1) hchain.1 w', _⟩
-      · simpa [toWord] using hw'
+      simpa [toWord] using hw'
 #align free_product.neword.of_word Monoid.CoprodI.NeWord.of_word
 
 /-- A non-empty reduced word determines an element of the free product, given by multiplication. -/
@@ -809,8 +809,8 @@ def replaceHead : ∀ {i j : ι} (x : M i) (_hnotone : x ≠ 1) (_w : NeWord M i
 theorem replaceHead_head {i j : ι} (x : M i) (hnotone : x ≠ 1) (w : NeWord M i j) :
     (replaceHead x hnotone w).head = x := by
   induction w
-  rfl
-  simp [*]
+  · rfl
+  · simp [*]
 #align free_product.neword.replace_head_head Monoid.CoprodI.NeWord.replaceHead_head
 
 /-- One can multiply an element from the left to a non-empty reduced word if it does not cancel
@@ -823,8 +823,8 @@ def mulHead {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1)
 theorem mulHead_head {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1) :
     (mulHead w x hnotone).head = x * w.head := by
   induction w
-  rfl
-  simp [*]
+  · rfl
+  · simp [*]
 #align free_product.neword.mul_head_head Monoid.CoprodI.NeWord.mulHead_head
 
 @[simp]
@@ -986,10 +986,10 @@ theorem lift_injective_of_ping_pong : Function.Injective (lift f) := by
   classical
     apply (injective_iff_map_eq_one (lift f)).mpr
     rw [(CoprodI.Word.equiv).forall_congr_left']
-    · intro w Heq
-      dsimp [Word.equiv] at *
-      · rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq]
-        rfl
+    intro w Heq
+    dsimp [Word.equiv] at *
+    rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq]
+    rfl
 #align free_product.lift_injective_of_ping_pong Monoid.CoprodI.lift_injective_of_ping_pong
 
 end PingPongLemma
@@ -1018,8 +1018,8 @@ instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGrou
 def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
     FreeGroup ι ≃* CoprodI fun _ : ι => FreeGroup Unit := by
   refine' MonoidHom.toMulEquiv _ _ _ _
-  exact FreeGroup.lift fun i => @CoprodI.of ι _ _ i (FreeGroup.of Unit.unit)
-  exact CoprodI.lift fun i => FreeGroup.lift fun _ => FreeGroup.of i
+  · exact FreeGroup.lift fun i => @CoprodI.of ι _ _ i (FreeGroup.of Unit.unit)
+  · exact CoprodI.lift fun i => FreeGroup.lift fun _ => FreeGroup.of i
   · ext; simp
   · ext i a; cases a; simp
 #align free_group_equiv_free_product freeGroupEquivCoprodI
@@ -1068,18 +1068,18 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   let f : ∀ i, H i →* G := fun i => FreeGroup.lift fun _ => a i
   let X' : ι → Set α := fun i => X i ∪ Y i
   apply lift_injective_of_ping_pong f _ X'
-  show ∀ i, (X' i).Nonempty
-  · exact fun i => Set.Nonempty.inl (hXnonempty i)
-  show Pairwise fun i j => Disjoint (X' i) (X' j)
-  · intro i j hij
+  · show ∀ i, (X' i).Nonempty
+    exact fun i => Set.Nonempty.inl (hXnonempty i)
+  · show Pairwise fun i j => Disjoint (X' i) (X' j)
+    intro i j hij
     simp only [X']
     apply Disjoint.union_left <;> apply Disjoint.union_right
     · exact hXdisj hij
     · exact hXYdisj i j
     · exact (hXYdisj j i).symm
     · exact hYdisj hij
-  show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
-  · rintro i j hij
+  · show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
+    rintro i j hij
     -- use free_group unit ≃ ℤ
     refine' FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr _
     intro n hne1
@@ -1134,13 +1134,13 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
               _ ⊆ Y i := hi
         _ ⊆ X' i := Set.subset_union_right _ _
   show _ ∨ ∃ i, 3 ≤ #(H i)
-  · inhabit ι
-    right
-    use Inhabited.default
-    simp only [H]
-    rw [FreeGroup.freeGroupUnitEquivInt.cardinal_eq, Cardinal.mk_denumerable]
-    apply le_of_lt
-    exact nat_lt_aleph0 3
+  inhabit ι
+  right
+  use Inhabited.default
+  simp only [H]
+  rw [FreeGroup.freeGroupUnitEquivInt.cardinal_eq, Cardinal.mk_denumerable]
+  apply le_of_lt
+  exact nat_lt_aleph0 3
 #align free_group.injective_lift_of_ping_pong FreeGroup.injective_lift_of_ping_pong
 
 end PingPongLemma

@@ -127,9 +127,8 @@ def ofNat : ℕ → ONote
   | Nat.succ n => oadd 0 n.succPNat 0
 #align onote.of_nat ONote.ofNat
 
--- Adaptation note:
--- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
--- See https://github.com/leanprover-community/mathlib4/issues/11647
+-- Porting note (#11467): during the port we marked these lemmas with `@[eqns]`
+-- to emulate the old Lean 3 behaviour.
 
 @[simp] theorem ofNat_zero : ofNat 0 = 0 :=
   rfl
@@ -551,7 +550,7 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
                 le_of_lt <|
                   oadd_lt_oadd_2 h₁ <|
                     lt_of_le_of_ne (tsub_eq_zero_iff_le.1 mn) (mt PNat.eq en)).symm
-      · simp [Nat.succPNat, -Nat.cast_succ]
+      · simp [Nat.succPNat]
         rw [(tsub_eq_iff_eq_add_of_le <| le_of_lt <| Nat.lt_of_sub_eq_succ mn).1 mn, add_comm,
           Nat.cast_add, mul_add, add_assoc, add_sub_add_cancel]
         refine'
@@ -597,7 +596,7 @@ theorem oadd_mul_nfBelow {e₁ n₁ a₁ b₁} (h₁ : NFBelow (oadd e₁ n₁ a
     · haveI := h₁.fst
       haveI := h₂.fst
       apply NFBelow.oadd
-      infer_instance
+      · infer_instance
       · rwa [repr_add]
       · rw [repr_add, add_lt_add_iff_left]
         exact h₂.lt
@@ -626,7 +625,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
       rw [natCast_succ x, add_mul_succ _ ao, mul_assoc]
     · haveI := h₁.fst
       haveI := h₂.fst
-      simp only [Mul.mul, mul, e0, ite_false, repr._eq_2, repr_add, opow_add, IH, repr, mul_add]
+      simp only [Mul.mul, mul, e0, ite_false, repr.eq_2, repr_add, opow_add, IH, repr, mul_add]
       rw [← mul_assoc]
       congr 2
       have := mt repr_inj.1 e0
@@ -850,8 +849,10 @@ theorem scale_opowAux (e a0 a : ONote) [NF e] [NF a0] [NF a] :
     by_cases h : m = 0
     · simp [h, opowAux, mul_add, opow_add, mul_assoc, scale_opowAux _ _ _ k]
     · -- Porting note: rewrote proof
-      rw [opowAux]; swap; assumption
-      rw [opowAux]; swap; assumption
+      rw [opowAux]; swap
+      · assumption
+      rw [opowAux]; swap
+      · assumption
       rw [repr_add, repr_scale, scale_opowAux _ _ _ k]
       simp only [repr_add, repr_scale, opow_add, mul_assoc, zero_add, mul_add]
 #align onote.scale_opow_aux ONote.scale_opowAux
@@ -927,8 +928,8 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · simp [opow_mul, opow_add, mul_assoc]
       rw [Ordinal.mul_lt_mul_iff_left ω00, ← Ordinal.opow_add]
       have : _ < ω ^ (repr a0 + repr a0) := (No.below_of_lt ?_).repr_lt
-      refine' mul_lt_omega_opow rr0 this (nat_lt_omega _)
-      simpa using (add_lt_add_iff_left (repr a0)).2 e0
+      · refine' mul_lt_omega_opow rr0 this (nat_lt_omega _)
+      · simpa using (add_lt_add_iff_left (repr a0)).2 e0
     · refine'
         lt_of_lt_of_le Rl
           (opow_le_opow_right omega_pos <|
@@ -975,15 +976,15 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     · cases' e₂ : split' o₂ with b' k
       cases' nf_repr_split' e₂ with _ r₂
       by_cases h : m = 0
-      · simp [opow_def, opow, e₁, h, r₁, e₂, r₂, -Nat.cast_succ, ← Nat.one_eq_succ_zero]
+      · simp [opow_def, opow, e₁, h, r₁, e₂, r₂, ← Nat.one_eq_succ_zero]
       simp only [opow_def, opowAux2, opow, e₁, h, r₁, e₂, r₂, repr,
           opow_zero, Nat.succPNat_coe, Nat.cast_succ, Nat.cast_zero, _root_.zero_add, mul_one,
           add_zero, one_opow, npow_eq_pow]
       rw [opow_add, opow_mul, opow_omega, add_one_eq_succ]
-      congr
-      conv_lhs =>
-        dsimp [(· ^ ·)]
-        simp [Pow.pow, opow, Ordinal.succ_ne_zero]
+      · congr
+        conv_lhs =>
+          dsimp [(· ^ ·)]
+          simp [Pow.pow, opow, Ordinal.succ_ne_zero]
       · simpa [Nat.one_le_iff_ne_zero]
       · rw [← Nat.cast_succ, lt_omega]
         exact ⟨_, rfl⟩
@@ -998,9 +999,9 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     simp only [opow_def, opow, e₁, r₁, split_eq_scale_split' e₂, opowAux2, repr]
     cases' k with k
     · simp [r₂, opow_mul, repr_opow_aux₁ a00 al aa, add_assoc]
-    · simp? [r₂, opow_add, opow_mul, mul_assoc, add_assoc, -repr]
-        says simp only [mulNat_eq_mul, repr_add, repr_scale, repr_mul, repr_ofNat, opow_add,
-        opow_mul, mul_assoc, add_assoc, r₂, Nat.cast_succ, add_one_eq_succ, opow_succ]
+    · simp? [r₂, opow_add, opow_mul, mul_assoc, add_assoc, -repr] says
+        simp only [mulNat_eq_mul, repr_add, repr_scale, repr_mul, repr_ofNat, opow_add, opow_mul,
+          mul_assoc, add_assoc, r₂, Nat.cast_add, Nat.cast_one, add_one_eq_succ, opow_succ]
       simp only [repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero, opow_one]
       rw [repr_opow_aux₁ a00 al aa, scale_opowAux]
       simp only [repr_mul, repr_scale, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one,
@@ -1096,7 +1097,7 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
       rw [e, FundamentalSequenceProp] at iha <;>
       (try rw [show m = 1 by
             have := PNat.natPred_add_one m; rw [e'] at this; exact PNat.coe_inj.1 this.symm]) <;>
-      (try rw [show m = m'.succ.succPNat by
+      (try rw [show m = (m' + 1).succPNat by
               rw [← e', ← PNat.coe_inj, Nat.succPNat_coe, ← Nat.add_one, PNat.natPred_add_one]]) <;>
       simp only [repr, iha, ihb, opow_lt_opow_iff_right one_lt_omega, add_lt_add_iff_left, add_zero,
         eq_self_iff_true, lt_add_iff_pos_right, lt_def, mul_one, Nat.cast_zero, Nat.cast_succ,
@@ -1204,7 +1205,7 @@ theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
 theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]
   suffices ∀ a b, Nat.succ^[a] b = b + a from this _ _
-  intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_succ, -Function.iterate_succ]
+  intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_assoc, -Function.iterate_succ]
 #align onote.fast_growing_one ONote.fastGrowing_one
 
 section

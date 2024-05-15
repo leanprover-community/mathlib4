@@ -217,8 +217,7 @@ instance : Unique (Finpartition (⊥ : α)) :=
 
 -- See note [reducible non instances]
 /-- There's a unique partition of an atom. -/
-@[reducible]
-def _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a)
+abbrev _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a)
     where
   default := indiscrete ha.1
   uniq P := by

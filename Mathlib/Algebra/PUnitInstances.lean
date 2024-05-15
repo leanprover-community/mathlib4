@@ -3,9 +3,9 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Order.CompleteBooleanAlgebra
 
@@ -148,7 +148,7 @@ instance : SMulCommClass R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
 @[to_additive]
-instance [SMul R S] : IsScalarTower R S PUnit :=
+instance instIsScalarTowerOfSMul [SMul R S] : IsScalarTower R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
 instance smulWithZero [Zero R] : SMulWithZero R PUnit := by

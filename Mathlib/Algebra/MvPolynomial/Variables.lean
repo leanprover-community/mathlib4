@@ -259,7 +259,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
     rw [Finset.sum_eq_single (0 : σ →₀ ℕ)]
     · rw [Finsupp.prod_zero_index, mul_one]
       rfl
-    intro d hd hd0
+    on_goal 1 => intro d hd hd0
   on_goal 3 =>
     rw [constantCoeff_eq, coeff, ← Ne, ← Finsupp.mem_support_iff] at h0
     intro

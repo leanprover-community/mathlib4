@@ -281,6 +281,11 @@ lemma coe_neg {α : Type*} [One α] [SubtractionMonoid α] (s : SignType) :
     (↑(-s) : α) = -↑s := by
   cases s <;> simp
 
+/-- Casting `SignType → ℤ → α` is the same as casting directly `SignType → α`. -/
+@[simp, norm_cast]
+lemma intCast_cast {α : Type*} [AddGroupWithOne α] (s : SignType) : ((s : ℤ) : α) = s :=
+  map_cast' _ Int.cast_one Int.cast_zero (@Int.cast_one α _ ▸ Int.cast_neg 1) _
+
 end cast
 
 /-- `SignType.cast` as a `MulWithZeroHom`. -/
@@ -361,7 +366,7 @@ theorem sign_eq_neg_one_iff : sign a = -1 ↔ a < 0 := by
   refine' ⟨fun h => _, fun h => sign_neg h⟩
   rw [sign_apply] at h
   split_ifs at h
-  · assumption
+  assumption
 #align sign_eq_neg_one_iff sign_eq_neg_one_iff
 
 end Preorder
@@ -417,6 +422,16 @@ theorem sign_one : sign (1 : α) = 1 :=
 #align sign_one sign_one
 
 end OrderedSemiring
+
+section OrderedRing
+
+@[simp]
+lemma sign_intCast {α : Type*} [OrderedRing α] [Nontrivial α]
+    [DecidableRel ((· < ·) : α → α → Prop)] (n : ℤ) :
+    sign (n : α) = sign n := by
+  simp only [sign_apply, Int.cast_pos, Int.cast_lt_zero]
+
+end OrderedRing
 
 section LinearOrderedRing
 

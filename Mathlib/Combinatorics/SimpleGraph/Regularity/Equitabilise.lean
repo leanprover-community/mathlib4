@@ -46,7 +46,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
           (Q.parts.filter fun i => card i = m + 1).card = b := by
   -- Get rid of the easy case `m = 0`
   obtain rfl | m_pos := m.eq_zero_or_pos
-  · refine' ⟨⊥, by simp, _, by simpa using hs.symm⟩
+  · refine' ⟨⊥, by simp, _, by simpa [Finset.filter_true_of_mem] using hs.symm⟩
     simp only [le_zero_iff, card_eq_zero, mem_biUnion, exists_prop, mem_filter, id, and_assoc,
       sdiff_eq_empty_iff_subset, subset_iff]
     exact fun x hx a ha =>
@@ -60,7 +60,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     -- Porting note: to synthesize `Finpartition ∅`, `have` is required
     have : P = Finpartition.empty _ := Unique.eq_default (α := Finpartition ⊥) P
     exact ⟨Finpartition.empty _, by simp, by simp [this], by simp [hab.2]⟩
-  simp_rw [not_and_or, ← Ne.def, ← pos_iff_ne_zero] at hab
+  simp_rw [not_and_or, ← Ne.eq_def, ← pos_iff_ne_zero] at hab
   -- `n` will be the size of the smallest part
   set n := if 0 < a then m else m + 1 with hn
   -- Some easy facts about it
