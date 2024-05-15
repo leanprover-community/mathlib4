@@ -707,9 +707,6 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
     centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
     reflectionCircumcenterWeightsWithCircumcenter, ite_smul, zero_smul, sub_zero,
     apply_ite₂ (· + ·), add_zero, ← add_smul, hc, zero_sub, neg_smul, sub_self, add_zero]
-  -- Porting note: was `convert sum_const_zero`
-  rw [← sum_const_zero]
-  congr
   norm_num
 #align affine.simplex.reflection_circumcenter_eq_affine_combination_of_points_with_circumcenter Affine.Simplex.reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter
 

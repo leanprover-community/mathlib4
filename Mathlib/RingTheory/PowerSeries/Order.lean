@@ -323,7 +323,7 @@ theorem order_one : order (1 : R⟦X⟧) = 0 := by
 /-- The order of an invertible power series is `0`. -/
 theorem order_zero_of_unit {f : PowerSeries R} : IsUnit f → f.order = 0 := by
   rintro ⟨⟨u, v, hu, hv⟩, hf⟩
-  apply And.left
+  apply And.left (b := v.order = 0)
   rw [← add_eq_zero_iff, ← hf, ← nonpos_iff_eq_zero, ← @order_one R _ _, ← hu]
   exact order_mul_ge _ _
 
