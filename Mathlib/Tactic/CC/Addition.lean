@@ -1185,7 +1185,10 @@ partial def convertAC (op e : Expr) (args : Array Expr := #[]) : CCM (Array Expr
   return (args.push e, e)
 
 open MessageData in
-/-- Internalize `e` so that the AC module can deal with the given expression. -/
+/-- Internalize `e` so that the AC module can deal with the given expression.
+
+If the expression does not contain an AC operator, or the parent expression
+is already processed by `internalizeAC`, this operation does nothing. -/
 def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
   let some op ← isAC e | return
   let parentOp? ← parent?.casesOn (pure none) isAC
@@ -1437,7 +1440,7 @@ partial def propagateIteUp (e : Expr) : CCM Unit := do
     -- `a = b     → (ite c a b) = a`
     pushEq e a (mkApp6 (.const ``if_eq_of_eq [lvl]) c d A a b (← getPropEqProof a b))
 
-/-- Propagate equality from `a` and `b` to `a = b`. -/
+/-- Propagate equality from `a` and `b` to *disprove* `a = b`. -/
 partial def propagateEqUp (e : Expr) : CCM Unit := do
   -- Remark: the positive case is implemented at `checkEqTrue` for any reflexive relation.
   let some (_, a, b) := e.eq? | failure
@@ -1482,8 +1485,9 @@ This method is invoked during internalization and eagerly apply basic equivalenc
 Examples:
 - If `e := cast H e'`, then it merges the equivalence classes of `cast H e'` and `e'`
 
-In principle, we could mark theorems such as `cast_eq` as simplification rules, but this creates
-problems with the builtin support for cast-introduction in the ematching module.
+In principle, we could mark theorems such as `cast_eq` as simplification rules, but this created
+problems with the builtin support for cast-introduction in the ematching module in Lean 3.
+TODO: check if this is now possible in Lean 4.
 
 Eagerly merging the equivalence classes is also more efficient. -/
 partial def applySimpleEqvs (e : Expr) : CCM Unit := do
@@ -1547,6 +1551,8 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
 to the todo list or register `e` as the canonical form of itself. -/
 partial def processSubsingletonElem (e : Expr) : CCM Unit := do
   let type ← inferType e
+  -- TODO: this is likely to become a bottleneck. See e.g.
+  -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/convert.20is.20often.20slow/near/433830798
   let ss ← synthInstance? (← mkAppM ``Subsingleton #[type])
   if ss.isNone then return -- type is not a subsingleton
   let type ← normalize type
@@ -1583,7 +1589,8 @@ def mayPropagate (e : Expr) : Bool :=
     e.isAppOfArity ``Not 1 || e.isArrow || e.isIte
 
 /-- Remove parents of `e` from the congruence table and the symm congruence table, and append
-parents to propagate equality, to `parentsToPropagate`. -/
+parents to propagate equality, to `parentsToPropagate`.
+Returns the new value of `parentsToPropagate`. -/
 def removeParents (e : Expr) (parentsToPropagate : Array Expr := #[]) : CCM (Array Expr) := do
   let some ps := (← get).parents.find? e | return parentsToPropagate
   let mut parentsToPropagate := parentsToPropagate
@@ -1642,7 +1649,8 @@ partial def invertTrans (e : Expr) (newFlipped : Bool := false) (newTarget : Opt
       proof := newProof }
   modify fun ccs => { ccs with entries := ccs.entries.insert e newN }
 
-/-- Traverse the `root`'s equivalence class, and collect the function's equivalence class roots. -/
+/-- Traverse the `root`'s equivalence class, and for each function application,
+collect the function's equivalence class root. -/
 def collectFnRoots (root : Expr) (fnRoots : Array Expr := #[]) : CCM (Array Expr) := do
   guard ((← getRoot root) == root)
   let mut fnRoots : Array Expr := fnRoots
@@ -1658,7 +1666,9 @@ def collectFnRoots (root : Expr) (fnRoots : Array Expr := #[]) : CCM (Array Expr
   until it == root
   return fnRoots
 
-/-- Reinsert parents of `e` to the congruence table and the symm congruence table. -/
+/-- Reinsert parents of `e` to the congruence table and the symm congruence table.
+
+Together with `removeParents`, this allows modifying parents of an expression. -/
 def reinsertParents (e : Expr) : CCM Unit := do
   let some ps := (← get).parents.find? e | return
   for p in ps do
@@ -1782,7 +1792,7 @@ def propagateValueInconsistency (e₁ e₂ : Expr) : CCM Unit := do
   let H ← mkAbsurd trueEqFalse eqProof neProof
   pushEq (.const ``True []) (.const ``False []) H
 
-/-- Propagate equality from `a ∧ b` to `a` and `b`. -/
+/-- Propagate equality from `a ∧ b = True` to `a = True` and `b = True`. -/
 def propagateAndDown (e : Expr) : CCM Unit := do
   if ← isEqTrue e then
     let some (a, b) := e.and? | failure
@@ -1790,7 +1800,7 @@ def propagateAndDown (e : Expr) : CCM Unit := do
     pushEq a (.const ``True []) (mkApp3 (.const ``eq_true_of_and_eq_true_left []) a b h)
     pushEq b (.const ``True []) (mkApp3 (.const ``eq_true_of_and_eq_true_right []) a b h)
 
-/-- Propagate equality from `a ∨ b` to `a` and `b`. -/
+/-- Propagate equality from `a ∨ b = False` to `a = False` and `b = False`. -/
 def propagateOrDown (e : Expr) : CCM Unit := do
   if ← isEqFalse e then
     let some (a, b) := e.app2? ``Or | failure
@@ -1809,7 +1819,7 @@ def propagateNotDown (e : Expr) : CCM Unit := do
     pushEq a (.const ``True [])
       (mkApp2 (.const ``eq_true_of_not_eq_false []) a (← getEqFalseProof e))
 
-/-- Propagate equality from `a = b` to `a` and `b`. -/
+/-- Propagate equality from `(a = b) = True` to `a = b`. -/
 def propagateEqDown (e : Expr) : CCM Unit := do
   if ← isEqTrue e then
     let some (a, b) := e.eqOrIff? | failure
@@ -1836,7 +1846,10 @@ def propagateDown (e : Expr) : CCM Unit := do
   else if e.isAppOfArity ``Exists 2 then
     propagateExistsDown e
 
-/-- Performs one step in the process when the new equation is added. -/
+/-- Performs one step in the process when the new equation is added.
+
+Here, `H` contains the proof that `e₁ = e₂` (if `heqProof` is false)
+or `HEq e₁ e₂` (if `heqProof` is true). -/
 def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
   let some n₁ ← getEntry e₁ | return -- `e₁` have not been internalized
   let some n₂ ← getEntry e₂ | return -- `e₂` have not been internalized
@@ -1868,6 +1881,8 @@ where
   /-- The auxiliary definition for `addEqvStep` to flip the input. -/
   go (e₁ e₂: Expr) (n₁ n₂ r₁ r₂ : Entry) (flipped : Bool) (H : EntryExpr) (heqProof : Bool) :
       CCM Unit := do
+    -- Interpreted values are already in the correct equivalence class,
+    -- so merging two different classes means we found an inconsistency.
     let mut valueInconsistency := false
     if r₁.interpreted && r₂.interpreted then
       if n₁.root.isConstOf ``True || n₂.root.isConstOf ``True then
@@ -1877,7 +1892,6 @@ where
       else
         valueInconsistency := true
 
-    let constructorEq := r₁.constructor && r₂.constructor
     let e₁Root := n₁.root
     let e₂Root := n₂.root
     trace[Debug.Meta.Tactic.cc] "merging\n{e₁} ==> {e₁Root}\nwith\n{e₂Root} <== {e₂}"
@@ -1947,6 +1961,7 @@ where
     let lambdaAppsToInternalize ← propagateBetaToEqc fnRoots₁ lambdas₂ lambdaAppsToInternalize
 
     -- copy `e₁Root` parents to `e₂Root`
+    let constructorEq := r₁.constructor && r₂.constructor
     if let some ps₁ := (← get).parents.find? e₁Root then
       let mut ps₂ : ParentOccSet := ∅
       if let some it' := (← get).parents.find? e₂Root then
