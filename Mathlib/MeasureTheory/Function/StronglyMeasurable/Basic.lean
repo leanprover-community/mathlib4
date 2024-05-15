@@ -300,14 +300,14 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     simp [hxt]
   refine' ⟨fs, _, fun x => _⟩
   · simp_rw [SimpleFunc.support_eq]
-    refine' fun n => (measure_biUnion_finset_le _ _).trans_lt _
+    refine' fun n => (measure_biUnion_finset_le _ _ _).trans_lt _
     refine' ENNReal.sum_lt_top_iff.mpr fun y hy => _
     rw [SimpleFunc.restrict_preimage_singleton _ ((hS_meas n).inter ht)]
     swap
     · letI : (y : β) → Decidable (y = 0) := fun y => Classical.propDecidable _
       rw [Finset.mem_filter] at hy
       exact hy.2
-    refine' (measure_mono (Set.inter_subset_left _ _)).trans_lt _
+    refine' (measure_mono _ (Set.inter_subset_left _ _)).trans_lt _
     have h_lt_top := measure_spanningSets_lt_top (μ.restrict t) n
     rwa [Measure.restrict_apply' ht] at h_lt_top
   · by_cases hxt : x ∈ t
@@ -1058,7 +1058,7 @@ theorem exists_set_sigmaFinite [Zero β] [TopologicalSpace β] [T2Space β]
   · refine' ⟨⟨⟨fun n => tᶜ ∪ T n, fun _ => trivial, fun n => _, _⟩⟩⟩
     · rw [Measure.restrict_apply' (MeasurableSet.iUnion hT_meas), Set.union_inter_distrib_right,
         Set.compl_inter_self t, Set.empty_union]
-      exact (measure_mono (Set.inter_subset_left _ _)).trans_lt (hT_lt_top n)
+      exact (measure_mono _ (Set.inter_subset_left _ _)).trans_lt (hT_lt_top n)
     · rw [← Set.union_iUnion tᶜ T]
       exact Set.compl_union_self _
 #align measure_theory.fin_strongly_measurable.exists_set_sigma_finite MeasureTheory.FinStronglyMeasurable.exists_set_sigmaFinite
@@ -1080,15 +1080,15 @@ protected theorem mul [MonoidWithZero β] [ContinuousMul β] (hf : FinStronglyMe
     ⟨fun n => hf.approx n * hg.approx n, _, fun x =>
       (hf.tendsto_approx x).mul (hg.tendsto_approx x)⟩
   intro n
-  exact (measure_mono (support_mul_subset_left _ _)).trans_lt (hf.fin_support_approx n)
+  exact (measure_mono _ (support_mul_subset_left _ _)).trans_lt (hf.fin_support_approx n)
 #align measure_theory.fin_strongly_measurable.mul MeasureTheory.FinStronglyMeasurable.mul
 
 @[aesop safe 20 (rule_sets := [Measurable])]
 protected theorem add [AddMonoid β] [ContinuousAdd β] (hf : FinStronglyMeasurable f μ)
     (hg : FinStronglyMeasurable g μ) : FinStronglyMeasurable (f + g) μ :=
   ⟨fun n => hf.approx n + hg.approx n, fun n =>
-    (measure_mono (Function.support_add _ _)).trans_lt
-      ((measure_union_le _ _).trans_lt
+    (measure_mono _ (Function.support_add _ _)).trans_lt
+      ((measure_union_le _ _ _).trans_lt
         (ENNReal.add_lt_top.mpr ⟨hf.fin_support_approx n, hg.fin_support_approx n⟩)),
     fun x => (hf.tendsto_approx x).add (hg.tendsto_approx x)⟩
 #align measure_theory.fin_strongly_measurable.add MeasureTheory.FinStronglyMeasurable.add
@@ -1106,8 +1106,8 @@ protected theorem neg [AddGroup β] [TopologicalAddGroup β] (hf : FinStronglyMe
 protected theorem sub [AddGroup β] [ContinuousSub β] (hf : FinStronglyMeasurable f μ)
     (hg : FinStronglyMeasurable g μ) : FinStronglyMeasurable (f - g) μ :=
   ⟨fun n => hf.approx n - hg.approx n, fun n =>
-    (measure_mono (Function.support_sub _ _)).trans_lt
-      ((measure_union_le _ _).trans_lt
+    (measure_mono _ (Function.support_sub _ _)).trans_lt
+      ((measure_union_le _ _ _).trans_lt
         (ENNReal.add_lt_top.mpr ⟨hf.fin_support_approx n, hg.fin_support_approx n⟩)),
     fun x => (hf.tendsto_approx x).sub (hg.tendsto_approx x)⟩
 #align measure_theory.fin_strongly_measurable.sub MeasureTheory.FinStronglyMeasurable.sub
@@ -1118,7 +1118,7 @@ protected theorem const_smul {𝕜} [TopologicalSpace 𝕜] [AddMonoid β] [Mono
     FinStronglyMeasurable (c • f) μ := by
   refine' ⟨fun n => c • hf.approx n, fun n => _, fun x => (hf.tendsto_approx x).const_smul c⟩
   rw [SimpleFunc.coe_smul]
-  exact (measure_mono (support_const_smul_subset c _)).trans_lt (hf.fin_support_approx n)
+  exact (measure_mono _ (support_const_smul_subset c _)).trans_lt (hf.fin_support_approx n)
 #align measure_theory.fin_strongly_measurable.const_smul MeasureTheory.FinStronglyMeasurable.const_smul
 
 end Arithmetic
@@ -1133,7 +1133,7 @@ protected theorem sup [SemilatticeSup β] [ContinuousSup β] (hf : FinStronglyMe
   refine'
     ⟨fun n => hf.approx n ⊔ hg.approx n, fun n => _, fun x =>
       (hf.tendsto_approx x).sup_nhds (hg.tendsto_approx x)⟩
-  refine' (measure_mono (support_sup _ _)).trans_lt _
+  refine' (measure_mono _ (support_sup _ _)).trans_lt _
   exact measure_union_lt_top_iff.mpr ⟨hf.fin_support_approx n, hg.fin_support_approx n⟩
 #align measure_theory.fin_strongly_measurable.sup MeasureTheory.FinStronglyMeasurable.sup
 
@@ -1143,7 +1143,7 @@ protected theorem inf [SemilatticeInf β] [ContinuousInf β] (hf : FinStronglyMe
   refine'
     ⟨fun n => hf.approx n ⊓ hg.approx n, fun n => _, fun x =>
       (hf.tendsto_approx x).inf_nhds (hg.tendsto_approx x)⟩
-  refine' (measure_mono (support_inf _ _)).trans_lt _
+  refine' (measure_mono _ (support_inf _ _)).trans_lt _
   exact measure_union_lt_top_iff.mpr ⟨hf.fin_support_approx n, hg.fin_support_approx n⟩
 #align measure_theory.fin_strongly_measurable.inf MeasureTheory.FinStronglyMeasurable.inf
 

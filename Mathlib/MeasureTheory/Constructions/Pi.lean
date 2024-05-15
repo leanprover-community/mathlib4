@@ -297,8 +297,8 @@ theorem pi_caratheodory :
   simp_rw [piPremeasure]
   refine' Finset.prod_add_prod_le' (Finset.mem_univ i) _ _ _
   · simp [image_inter_preimage, image_diff_preimage, measure_inter_add_diff _ hs, le_refl]
-  · rintro j - _; apply mono'; apply image_subset; apply inter_subset_left
-  · rintro j - _; apply mono'; apply image_subset; apply diff_subset
+  · rintro j - _; gcongr; apply inter_subset_left
+  · rintro j - _; gcongr; apply diff_subset
 #align measure_theory.measure.pi_caratheodory MeasureTheory.Measure.pi_caratheodory
 
 /-- `Measure.pi μ` is the finite product of the measures `{μ i | i : ι}`.
@@ -348,7 +348,7 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
   · calc
       Measure.pi μ (Set.pi univ fun i => (hμ i).set (e n i)) ≤
           Measure.pi μ (Set.pi univ fun i => toMeasurable (μ i) ((hμ i).set (e n i))) :=
-        measure_mono (pi_mono fun i _ => subset_toMeasurable _ _)
+        measure_mono _ (pi_mono fun i _ => subset_toMeasurable _ _)
       _ = ∏ i, μ i (toMeasurable (μ i) ((hμ i).set (e n i))) :=
         (pi_pi_aux μ _ fun i => measurableSet_toMeasurable _ _)
       _ = ∏ i, μ i ((hμ i).set (e n i)) := by simp only [measure_toMeasurable]
@@ -654,7 +654,7 @@ instance pi.isOpenPosMeasure [∀ i, TopologicalSpace (α i)] [∀ i, IsOpenPosM
   constructor
   rintro U U_open ⟨a, ha⟩
   obtain ⟨s, ⟨hs, hsU⟩⟩ := isOpen_pi_iff'.1 U_open a ha
-  refine' ne_of_gt (lt_of_lt_of_le _ (measure_mono hsU))
+  refine ne_of_gt (lt_of_lt_of_le ?_ (measure_mono _ hsU))
   simp only [pi_pi]
   rw [CanonicallyOrderedCommSemiring.prod_pos]
   intro i _
@@ -672,7 +672,7 @@ instance pi.isFiniteMeasureOnCompacts [∀ i, TopologicalSpace (α i)]
   constructor
   intro K hK
   suffices Measure.pi μ (Set.univ.pi fun j => Function.eval j '' K) < ⊤ by
-    exact lt_of_le_of_lt (measure_mono (univ.subset_pi_eval_image K)) this
+    exact lt_of_le_of_lt (measure_mono _ (univ.subset_pi_eval_image K)) this
   rw [Measure.pi_pi]
   refine' WithTop.prod_lt_top _
   exact fun i _ => ne_of_lt (IsCompact.measure_lt_top (IsCompact.image hK (continuous_apply i)))

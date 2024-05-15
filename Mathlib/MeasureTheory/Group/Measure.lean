@@ -614,7 +614,7 @@ lemma eventually_nhds_one_measure_smul_diff_lt [LocallyCompactSpace G]
   filter_upwards [hV1] with g hg
   calc
     μ (g • k \ k) ≤ μ (U \ k) := by
-      refine measure_mono (diff_subset_diff_left ?_)
+      gcongr
       exact (smul_set_subset_smul hg).trans hVkU
     _ < ε := measure_diff_lt_of_lt_add h'k.measurableSet hUk hk.measure_lt_top.ne hμUk
 
@@ -645,8 +645,8 @@ theorem isOpenPosMeasure_of_mulLeftInvariant_of_compact (K : Set G) (hK : IsComp
   obtain ⟨t, hKt⟩ : ∃ t : Finset G, K ⊆ ⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U :=
     compact_covered_by_mul_left_translates hK hne
   calc
-    μ K ≤ μ (⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono hKt
-    _ ≤ ∑ g in t, μ ((fun h : G => g * h) ⁻¹' U) := measure_biUnion_finset_le _ _
+    μ K ≤ μ (⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono _ hKt
+    _ ≤ ∑ g in t, μ ((fun h : G => g * h) ⁻¹' U) := measure_biUnion_finset_le _ _ _
     _ = 0 := by simp [measure_preimage_mul, h]
 #align measure_theory.is_open_pos_measure_of_mul_left_invariant_of_compact MeasureTheory.isOpenPosMeasure_of_mulLeftInvariant_of_compact
 #align measure_theory.is_open_pos_measure_of_add_left_invariant_of_compact MeasureTheory.isOpenPosMeasure_of_addLeftInvariant_of_compact
@@ -702,8 +702,8 @@ theorem measure_lt_top_of_isCompact_of_isMulLeftInvariant (U : Set G) (hU : IsOp
   obtain ⟨t, hKt⟩ : ∃ t : Finset G, K ⊆ ⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U :=
     compact_covered_by_mul_left_translates hK h'U
   calc
-    μ K ≤ μ (⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono hKt
-    _ ≤ ∑ g in t, μ ((fun h : G => g * h) ⁻¹' U) := measure_biUnion_finset_le _ _
+    μ K ≤ μ (⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono _ hKt
+    _ ≤ ∑ g in t, μ ((fun h : G => g * h) ⁻¹' U) := measure_biUnion_finset_le _ _ _
     _ = Finset.card t * μ U := by simp only [measure_preimage_mul, Finset.sum_const, nsmul_eq_mul]
     _ < ∞ := ENNReal.mul_lt_top (ENNReal.natCast_ne_top _) h
 #align measure_theory.measure_lt_top_of_is_compact_of_is_mul_left_invariant MeasureTheory.measure_lt_top_of_isCompact_of_isMulLeftInvariant
@@ -717,7 +717,7 @@ mass to any compact set."]
 theorem measure_lt_top_of_isCompact_of_isMulLeftInvariant' {U : Set G}
     (hU : (interior U).Nonempty) (h : μ U ≠ ∞) {K : Set G} (hK : IsCompact K) : μ K < ∞ :=
   measure_lt_top_of_isCompact_of_isMulLeftInvariant (interior U) isOpen_interior hU
-    ((measure_mono interior_subset).trans_lt (lt_top_iff_ne_top.2 h)).ne hK
+    ((measure_mono _ interior_subset).trans_lt (lt_top_iff_ne_top.2 h)).ne hK
 #align measure_theory.measure_lt_top_of_is_compact_of_is_mul_left_invariant' MeasureTheory.measure_lt_top_of_isCompact_of_isMulLeftInvariant'
 #align measure_theory.measure_lt_top_of_is_compact_of_is_add_left_invariant' MeasureTheory.measure_lt_top_of_isCompact_of_isAddLeftInvariant'
 
@@ -767,7 +767,7 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
     exact ENNReal.tendsto_nat_nhds_top.comp (tendsto_add_atTop_nat _)
   simp only [ENNReal.top_mul', K_pos.ne', if_false] at N
   apply top_le_iff.1
-  exact le_of_tendsto' N fun n => measure_mono (subset_univ _)
+  exact le_of_tendsto' N fun n => measure_mono _ (subset_univ _)
 #align measure_theory.measure_univ_of_is_mul_left_invariant MeasureTheory.measure_univ_of_isMulLeftInvariant
 #align measure_theory.measure_univ_of_is_add_left_invariant MeasureTheory.measure_univ_of_isAddLeftInvariant
 
@@ -791,7 +791,7 @@ lemma _root_.IsCompact.closure_subset_of_measurableSet_of_group {k s : Set G}
 @[to_additive (attr := simp)]
 lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
     μ (s * (closure {1} : Set G)) = μ s := by
-  apply le_antisymm ?_ (measure_mono (subset_mul_closure_one s))
+  apply le_antisymm ?_ (measure_mono _ (subset_mul_closure_one s))
   conv_rhs => rw [measure_eq_iInf]
   simp only [le_iInf_iff]
   intro t kt t_meas

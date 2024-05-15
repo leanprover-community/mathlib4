@@ -280,7 +280,7 @@ theorem tendsto_setIntegral_of_antitone {ι : Type*} [Countable ι] [Semilattice
   rcases hfi with ⟨i₀, hi₀⟩
   have νi₀ : ν (s i₀) ≠ ∞ := by
     simpa [hsm i₀, ν, ENNReal.ofReal, norm_toNNReal] using hi₀.norm.lintegral_lt_top.ne
-  have νS : ν S ≠ ∞ := ((measure_mono (hsub i₀)).trans_lt νi₀.lt_top).ne
+  have νS : ν S ≠ ∞ := ((measure_mono _ (hsub i₀)).trans_lt νi₀.lt_top).ne
   have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) := by
     apply tendsto_measure_iInter hsm h_anti ⟨i₀, νi₀⟩
     apply ENNReal.Icc_mem_nhds νS (ENNReal.coe_pos.2 ε0).ne'

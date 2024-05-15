@@ -1184,11 +1184,11 @@ theorem finMeasSupp_iff_support : f.FinMeasSupp μ ↔ μ (support f) < ∞ :=
 
 theorem finMeasSupp_iff : f.FinMeasSupp μ ↔ ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞ := by
   constructor
-  · refine' fun h y hy => lt_of_le_of_lt (measure_mono _) h
+  · refine' fun h y hy => lt_of_le_of_lt (measure_mono _ _) h
     exact fun x hx (H : f x = 0) => hy <| H ▸ Eq.symm hx
   · intro H
     rw [finMeasSupp_iff_support, support_eq]
-    refine' lt_of_le_of_lt (measure_biUnion_finset_le _ _) (sum_lt_top _)
+    refine' lt_of_le_of_lt (measure_biUnion_finset_le _ _ _) (sum_lt_top _)
     exact fun y hy => (H y (Finset.mem_filter.1 hy).2).ne
 #align measure_theory.simple_func.fin_meas_supp_iff MeasureTheory.SimpleFunc.finMeasSupp_iff
 
@@ -1200,12 +1200,12 @@ theorem meas_preimage_singleton_ne_zero (h : f.FinMeasSupp μ) {y : β} (hy : y 
 #align measure_theory.simple_func.fin_meas_supp.meas_preimage_singleton_ne_zero MeasureTheory.SimpleFunc.FinMeasSupp.meas_preimage_singleton_ne_zero
 
 protected theorem map {g : β → γ} (hf : f.FinMeasSupp μ) (hg : g 0 = 0) : (f.map g).FinMeasSupp μ :=
-  flip lt_of_le_of_lt hf (measure_mono <| support_comp_subset hg f)
+  flip lt_of_le_of_lt hf (measure_mono _ <| support_comp_subset hg f)
 #align measure_theory.simple_func.fin_meas_supp.map MeasureTheory.SimpleFunc.FinMeasSupp.map
 
 theorem of_map {g : β → γ} (h : (f.map g).FinMeasSupp μ) (hg : ∀ b, g b = 0 → b = 0) :
     f.FinMeasSupp μ :=
-  flip lt_of_le_of_lt h <| measure_mono <| support_subset_comp @(hg) _
+  flip lt_of_le_of_lt h <| measure_mono _ <| support_subset_comp @(hg) _
 #align measure_theory.simple_func.fin_meas_supp.of_map MeasureTheory.SimpleFunc.FinMeasSupp.of_map
 
 theorem map_iff {g : β → γ} (hg : ∀ {b}, g b = 0 ↔ b = 0) :
@@ -1217,7 +1217,7 @@ protected theorem pair {g : α →ₛ γ} (hf : f.FinMeasSupp μ) (hg : g.FinMea
     (pair f g).FinMeasSupp μ :=
   calc
     μ (support <| pair f g) = μ (support f ∪ support g) := congr_arg μ <| support_prod_mk f g
-    _ ≤ μ (support f) + μ (support g) := measure_union_le _ _
+    _ ≤ μ (support f) + μ (support g) := measure_union_le _ _ _
     _ < _ := add_lt_top.2 ⟨hf, hg⟩
 #align measure_theory.simple_func.fin_meas_supp.pair MeasureTheory.SimpleFunc.FinMeasSupp.pair
 

@@ -75,7 +75,7 @@ lemma restrict_compl_nullSet (h : μ ⟂ₘ ν) : ν.restrict h.nullSetᶜ = 0 :
 
 @[simp]
 theorem zero_right : μ ⟂ₘ 0 :=
-  ⟨∅, MeasurableSet.empty, measure_empty, rfl⟩
+  ⟨∅, MeasurableSet.empty, measure_empty _, rfl⟩
 #align measure_theory.measure.mutually_singular.zero_right MeasureTheory.Measure.MutuallySingular.zero_right
 
 @[symm]

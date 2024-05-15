@@ -255,7 +255,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   -- the family `u` will be the desired family
   refine' ⟨u, fun a hat' => (ut' hat').1, u_count, u_disj, _⟩
   -- it suffices to show that it covers almost all `s` locally around each point `x`.
-  refine' null_of_locally_null _ fun x _ => _
+  refine' measure_null_of_locally_null _ fun x _ => _
   -- let `v` be the subfamily of `u` made of those sets intersecting the small ball `ball x (r x)`
   let v := { a ∈ u | (B a ∩ ball x (R x)).Nonempty }
   have vu : v ⊆ u := fun a ha => ha.1
@@ -291,7 +291,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
         rcases (mem_image _ _ _).1 r'mem with ⟨a, hav, rfl⟩
         exact ⟨a, hav, hr'⟩
       refine' ⟨8 * R0, _, _⟩
-      · apply lt_of_le_of_lt (measure_mono _) (hRμ (c a))
+      · apply lt_of_le_of_lt (measure_mono _ _) (hRμ (c a))
         apply closedBall_subset_closedBall'
         rw [dist_comm]
         linarith [Idist_v a hav, (ut' (vu hav)).2]
@@ -310,7 +310,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
       (∑' a : v, μ (B a)) = μ (⋃ a ∈ v, B a) := by
         rw [measure_biUnion (u_count.mono vu) _ fun a ha => (h't _ (vu.trans ut ha)).measurableSet]
         exact u_disj.subset vu
-      _ ≤ μ (closedBall x K) := (measure_mono (iUnion₂_subset fun a ha => hK a (vu ha) ha.2))
+      _ ≤ μ (closedBall x K) := (measure_mono _ (iUnion₂_subset fun a ha => hK a (vu ha) ha.2))
       _ < ∞ := μK
   -- we can obtain a finite subfamily of `v`, such that the measures of the remaining elements
   -- add up to an arbitrarily small number, say `ε / C`.
@@ -382,8 +382,8 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   haveI : Countable v := (u_count.mono vu).to_subtype
   calc
     μ ((s \ ⋃ a ∈ u, B a) ∩ ball x (R x)) ≤ μ (⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)) :=
-      measure_mono M
-    _ ≤ ∑' a : { a // a ∉ w }, μ (closedBall (c a) (3 * r a)) := measure_iUnion_le _
+      measure_mono _ M
+    _ ≤ ∑' a : { a // a ∉ w }, μ (closedBall (c a) (3 * r a)) := measure_iUnion_le _ _
     _ ≤ ∑' a : { a // a ∉ w }, C * μ (B a) := (ENNReal.tsum_le_tsum fun a => μB a (ut (vu a.1.2)))
     _ = C * ∑' a : { a // a ∉ w }, μ (B a) := ENNReal.tsum_mul_left
     _ ≤ C * (ε / C) := mul_le_mul_left' hw.le _
@@ -420,7 +420,7 @@ protected def vitaliFamily [MetricSpace α] [MeasurableSpace α] [OpensMeasurabl
       rcases fsubset x xs ha with ⟨a_closed, a_int, ⟨r, ar, μr⟩⟩
       refine' ⟨⟨min r ε, x, a⟩, ⟨_, _, a_int, a_closed, ha, xs⟩, min_le_right _ _, rfl⟩
       · rcases min_cases r ε with (h' | h') <;> rwa [h'.1]
-      · apply le_trans (measure_mono (closedBall_subset_closedBall _)) μr
+      · apply le_trans (measure_mono _ (closedBall_subset_closedBall _)) μr
         exact mul_le_mul_of_nonneg_left (min_le_left _ _) zero_le_three
     rcases exists_disjoint_covering_ae μ s t C (fun p => p.1) (fun p => p.2.1) (fun p => p.2.2)
         (fun p hp => hp.1) (fun p hp => hp.2.1) (fun p hp => hp.2.2.1) (fun p hp => hp.2.2.2.1) A

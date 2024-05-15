@@ -354,7 +354,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
       (measurableSet_toMeasurable _ _).prod (measurableSet_toMeasurable _ _)
     calc
       μ.prod ν (s ×ˢ t) ≤ μ.prod ν ST :=
-        measure_mono <| Set.prod_mono (subset_toMeasurable _ _) (subset_toMeasurable _ _)
+        measure_mono _ <| Set.prod_mono (subset_toMeasurable _ _) (subset_toMeasurable _ _)
       _ = μ (toMeasurable μ s) * ν (toMeasurable ν t) := by
         rw [prod_apply hSTm]
         simp_rw [ST, mk_preimage_prod_right_eq_if, measure_if,
@@ -368,9 +368,9 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
     set f : α → ℝ≥0∞ := fun x => ν (Prod.mk x ⁻¹' ST)
     have hfm : Measurable f := measurable_measure_prod_mk_left hSTm
     set s' : Set α := { x | ν t ≤ f x }
-    have hss' : s ⊆ s' := fun x hx => measure_mono fun y hy => hST <| mk_mem_prod hx hy
+    have hss' : s ⊆ s' := fun x hx => measure_mono _ fun y hy => hST <| mk_mem_prod hx hy
     calc
-      μ s * ν t ≤ μ s' * ν t := mul_le_mul_right' (measure_mono hss') _
+      μ s * ν t ≤ μ s' * ν t := mul_le_mul_right' (measure_mono _ hss') _
       _ = ∫⁻ _ in s', ν t ∂μ := by rw [set_lintegral_const, mul_comm]
       _ ≤ ∫⁻ x in s', f x ∂μ := set_lintegral_mono measurable_const hfm fun x => id
       _ ≤ ∫⁻ x, f x ∂μ := lintegral_mono' restrict_le_self le_rfl
@@ -392,7 +392,7 @@ instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [Topologic
   constructor
   rintro U U_open ⟨⟨x, y⟩, hxy⟩
   rcases isOpen_prod_iff.1 U_open x y hxy with ⟨u, v, u_open, v_open, xu, yv, huv⟩
-  refine' ne_of_gt (lt_of_lt_of_le _ (measure_mono huv))
+  refine ne_of_gt (lt_of_lt_of_le ?_ (measure_mono _ huv))
   simp only [prod_prod, CanonicallyOrderedCommSemiring.mul_pos]
   constructor
   · exact u_open.measure_pos μ ⟨x, xu⟩
@@ -439,11 +439,10 @@ instance prod.instIsFiniteMeasureOnCompacts {α β : Type*} [TopologicalSpace α
     simp only [L, prod_mk_mem_set_prod_eq, mem_image, Prod.exists, exists_and_right,
       exists_eq_right]
     exact ⟨⟨y, hxy⟩, ⟨x, hxy⟩⟩
-  apply lt_of_le_of_lt (measure_mono this)
+  apply lt_of_le_of_lt (measure_mono _ this)
   rw [hL, prod_prod]
-  exact
-    mul_lt_top (IsCompact.measure_lt_top (hK.image continuous_fst)).ne
-      (IsCompact.measure_lt_top (hK.image continuous_snd)).ne
+  exact mul_lt_top (IsCompact.measure_lt_top (hK.image continuous_fst)).ne
+    (IsCompact.measure_lt_top (hK.image continuous_snd)).ne
 #align measure_theory.measure.prod.measure_theory.is_finite_measure_on_compacts MeasureTheory.Measure.prod.instIsFiniteMeasureOnCompacts
 
 instance {X Y : Type*}
@@ -483,7 +482,7 @@ theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0)
   rw [measure_prod_null mt] at ht
   rw [eventuallyLE_antisymm_iff]
   exact
-    ⟨EventuallyLE.trans_eq (eventually_of_forall fun x => (measure_mono (preimage_mono hst) : _))
+    ⟨EventuallyLE.trans_eq (eventually_of_forall fun x => (measure_mono _ (preimage_mono hst) : _))
         ht,
       eventually_of_forall fun x => zero_le _⟩
 #align measure_theory.measure.measure_ae_null_of_prod_null MeasureTheory.Measure.measure_ae_null_of_prod_null
@@ -533,8 +532,7 @@ lemma set_prod_ae_eq {s s' : Set α} {t t' : Set β} (hs : s =ᵐ[μ] s') (ht : 
 lemma measure_prod_compl_eq_zero {s : Set α} {t : Set β}
     (s_ae_univ : μ sᶜ = 0) (t_ae_univ : ν tᶜ = 0) :
     μ.prod ν (s ×ˢ t)ᶜ = 0 := by
-  rw [Set.compl_prod_eq_union]
-  apply le_antisymm ((measure_union_le _ _).trans _) (zero_le _)
+  rw [Set.compl_prod_eq_union, measure_union_null_iff]
   simp [s_ae_univ, t_ae_univ]
 
 lemma _root_.MeasureTheory.NullMeasurableSet.prod {s : Set α} {t : Set β}

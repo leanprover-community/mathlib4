@@ -45,36 +45,44 @@ variable {α ι F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F 
 
 @[simp]
 theorem measure_empty (μ : F) : μ ∅ = 0 := OuterMeasureClass.measure_empty μ
+#align measure_theory.measure_empty MeasureTheory.measure_empty
 
 @[mono, gcongr]
 theorem measure_mono (μ : F) (h : s ⊆ t) : μ s ≤ μ t :=
   OuterMeasureClass.measure_mono μ h
+#align measure_theory.measure_mono MeasureTheory.measure_mono
 
 theorem measure_mono_null (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 :=
   eq_bot_mono (measure_mono μ h) ht
+#align measure_theory.measure_mono_null MeasureTheory.measure_mono_null
 
 theorem measure_pos_of_superset (h : s ⊆ t) (hs : μ s ≠ 0) : 0 < μ t :=
   hs.bot_lt.trans_le (measure_mono μ h)
 
 theorem measure_iUnion_le (μ : F) [Countable ι] (s : ι → Set α) : μ (⋃ i, s i) ≤ ∑' i, μ (s i) :=
   rel_iSup_tsum μ (measure_empty μ) (· ≤ ·) (OuterMeasureClass.measure_iUnion_nat_le μ) s
+#align measure_theory.measure_Union_le MeasureTheory.measure_iUnion_le
 
 theorem measure_biUnion_le {I : Set ι} (μ : F) (hI : I.Countable) (s : ι → Set α) :
     μ (⋃ i ∈ I, s i) ≤ ∑' i : I, μ (s i) := by
   have := hI.to_subtype
   rw [biUnion_eq_iUnion]
   apply measure_iUnion_le
+#align measure_theory.measure_bUnion_le MeasureTheory.measure_biUnion_le
 
 theorem measure_biUnion_finset_le (μ : F) (I : Finset ι) (s : ι → Set α) :
     μ (⋃ i ∈ I, s i) ≤ ∑ i in I, μ (s i) :=
   (measure_biUnion_le μ I.countable_toSet s).trans_eq <| I.tsum_subtype (μ <| s ·)
+#align measure_theory.measure_bUnion_finset_le MeasureTheory.measure_biUnion_finset_le
 
 theorem measure_iUnion_fintype_le [Fintype ι] (μ : F) (s : ι → Set α) :
     μ (⋃ i, s i) ≤ ∑ i, μ (s i) := by
   simpa using measure_biUnion_finset_le μ Finset.univ s
+#align measure_theory.measure_Union_fintype_le MeasureTheory.measure_iUnion_fintype_le
 
 theorem measure_union_le (μ : F) (s t : Set α) : μ (s ∪ t) ≤ μ s + μ t := by
   simpa [union_eq_iUnion] using measure_iUnion_fintype_le μ (cond · s t)
+#align measure_theory.measure_union_le MeasureTheory.measure_union_le
 
 theorem measure_le_inter_add_diff (μ : F) (s t : Set α) : μ s ≤ μ (s ∩ t) + μ (s \ t) := by
   simpa using measure_union_le μ (s ∩ t) (s \ t)
@@ -84,29 +92,36 @@ theorem measure_diff_null (μ : F) (s : Set α) (ht : μ t = 0) : μ (s \ t) = �
     μ s ≤ μ (s ∩ t) + μ (s \ t) := measure_le_inter_add_diff _ _ _
     _ ≤ μ t + μ (s \ t) := by gcongr; apply inter_subset_right
     _ = μ (s \ t) := by simp [ht]
+#align measure_theory.measure_diff_null MeasureTheory.measure_diff_null
 
 theorem measure_biUnion_null_iff {I : Set ι} (hI : I.Countable) {s : ι → Set α} :
     μ (⋃ i ∈ I, s i) = 0 ↔ ∀ i ∈ I, μ (s i) = 0 := by
   refine ⟨fun h i hi ↦ measure_mono_null (subset_biUnion_of_mem hi) h, fun h ↦ ?_⟩
   have _ := hI.to_subtype
   simpa [h] using measure_iUnion_le μ fun x : I ↦ s x
+#align measure_theory.measure_bUnion_null_iff MeasureTheory.measure_biUnion_null_iff
 
 theorem measure_sUnion_null_iff {S : Set (Set α)} (hS : S.Countable) :
     μ (⋃₀ S) = 0 ↔ ∀ s ∈ S, μ s = 0 := by
   rw [sUnion_eq_biUnion, measure_biUnion_null_iff hS]
+#align measure_theory.measure_sUnion_null_iff MeasureTheory.measure_sUnion_null_iff
 
 @[simp]
 theorem measure_iUnion_null_iff {ι : Sort*} [Countable ι] {s : ι → Set α} :
     μ (⋃ i, s i) = 0 ↔ ∀ i, μ (s i) = 0 := by
   rw [← sUnion_range, measure_sUnion_null_iff (countable_range s), forall_mem_range]
+#align measure_theory.measure_Union_null_iff MeasureTheory.measure_iUnion_null_iff
 
 alias ⟨_, measure_iUnion_null⟩ := measure_iUnion_null_iff
+#align measure_theory.measure_Union_null MeasureTheory.measure_iUnion_null
 
 @[simp]
 theorem measure_union_null_iff : μ (s ∪ t) = 0 ↔ μ s = 0 ∧ μ t = 0 := by
   simp [union_eq_iUnion, and_comm]
+#align measure_theory.measure_union_null_iff MeasureTheory.measure_union_null_iff
 
 theorem measure_union_null (hs : μ s = 0) (ht : μ t = 0) : μ (s ∪ t) = 0 := by simp [*]
+#align measure_theory.measure_union_null MeasureTheory.measure_union_null
 
 /-- Let `μ` be an (outer) measure; let `s : ι → Set α` be a sequence of sets, `S = ⋃ n, s n`.
 If `μ (S \ s n)` tends to zero along some nontrivial filter (usually `Filter.atTop` on `ι = ℕ`),
@@ -122,6 +137,26 @@ theorem measure_iUnion_of_tendsto_zero {ι} (μ : F) {s : ι → Set α} (l : Fi
     _ ≤ M + μ (S \ s k) := by gcongr; exact le_iSup (μ ∘ s) k
   have B : Tendsto (fun k ↦ M + μ (S \ s k)) l (𝓝 M) := by simpa using tendsto_const_nhds.add h0
   exact ge_of_tendsto' B A
+
+/-- If a set has zero measure in a neighborhood of each of its points, then it has zero measure
+in a second-countable space. -/
+theorem measure_null_of_locally_null [TopologicalSpace α] [SecondCountableTopology α]
+    (s : Set α) (hs : ∀ x ∈ s, ∃ u ∈ 𝓝[s] x, μ u = 0) : μ s = 0 := by
+  choose! u hxu hu₀ using hs
+  choose t ht using TopologicalSpace.countable_cover_nhdsWithin hxu
+  rcases ht with ⟨ts, t_count, ht⟩
+  apply measure_mono_null ht
+  exact (measure_biUnion_null_iff t_count).2 fun x hx => hu₀ x (ts hx)
+#align measure_theory.null_of_locally_null MeasureTheory.measure_null_of_locally_null
+
+/-- If `m s ≠ 0`, then for some point `x ∈ s` and any `t ∈ 𝓝[s] x` we have `0 < m t`. -/
+theorem exists_mem_forall_mem_nhdsWithin_pos_measure [TopologicalSpace α]
+    [SecondCountableTopology α] {s : Set α} (hs : μ s ≠ 0) :
+    ∃ x ∈ s, ∀ t ∈ 𝓝[s] x, 0 < μ t := by
+  contrapose! hs
+  simp only [nonpos_iff_eq_zero] at hs
+  exact measure_null_of_locally_null s hs
+#align measure_theory.exists_mem_forall_mem_nhds_within_pos_measure MeasureTheory.exists_mem_forall_mem_nhdsWithin_pos_measure
 
 end OuterMeasureClass
 
@@ -194,21 +229,17 @@ protected theorem union (m : OuterMeasure α) (s₁ s₂ : Set α) : m (s₁ ∪
 
 /-- If a set has zero measure in a neighborhood of each of its points, then it has zero measure
 in a second-countable space. -/
+@[deprecated measure_null_of_locally_null (since := "2024-05-14")]
 theorem null_of_locally_null [TopologicalSpace α] [SecondCountableTopology α] (m : OuterMeasure α)
-    (s : Set α) (hs : ∀ x ∈ s, ∃ u ∈ 𝓝[s] x, m u = 0) : m s = 0 := by
-  choose! u hxu hu₀ using hs
-  choose t ht using TopologicalSpace.countable_cover_nhdsWithin hxu
-  rcases ht with ⟨ts, t_count, ht⟩
-  apply m.mono_null ht
-  exact (m.biUnion_null_iff t_count).2 fun x hx => hu₀ x (ts hx)
+    (s : Set α) (hs : ∀ x ∈ s, ∃ u ∈ 𝓝[s] x, m u = 0) : m s = 0 :=
+  measure_null_of_locally_null s hs
 #align measure_theory.outer_measure.null_of_locally_null MeasureTheory.OuterMeasure.null_of_locally_null
 
 /-- If `m s ≠ 0`, then for some point `x ∈ s` and any `t ∈ 𝓝[s] x` we have `0 < m t`. -/
+@[deprecated exists_mem_forall_mem_nhdsWithin_pos_measure (since := "2024-05-14")]
 theorem exists_mem_forall_mem_nhds_within_pos [TopologicalSpace α] [SecondCountableTopology α]
-    (m : OuterMeasure α) {s : Set α} (hs : m s ≠ 0) : ∃ x ∈ s, ∀ t ∈ 𝓝[s] x, 0 < m t := by
-  contrapose! hs
-  simp only [nonpos_iff_eq_zero] at hs
-  exact m.null_of_locally_null s hs
+    (m : OuterMeasure α) {s : Set α} (hs : m s ≠ 0) : ∃ x ∈ s, ∀ t ∈ 𝓝[s] x, 0 < m t :=
+  exists_mem_forall_mem_nhdsWithin_pos_measure hs
 #align measure_theory.outer_measure.exists_mem_forall_mem_nhds_within_pos MeasureTheory.OuterMeasure.exists_mem_forall_mem_nhds_within_pos
 
 /-- If `s : ι → Set α` is a sequence of sets, `S = ⋃ n, s n`, and `m (S \ s n)` tends to zero along
@@ -223,8 +254,8 @@ then `m (⋃ n, s n) = ⨆ n, m (s n)`. -/
 theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ → Set α}
     (h_mono : ∀ n, s n ⊆ s (n + 1)) (h0 : (∑' k, m (s (k + 1) \ s k)) ≠ ∞) :
     m (⋃ n, s n) = ⨆ n, m (s n) := by
-  refine' m.iUnion_of_tendsto_zero atTop _
-  refine' tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n => _
+  refine measure_iUnion_of_tendsto_zero m atTop ?_
+  refine tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n => ?_
   refine' (m.mono _).trans (m.iUnion _)
   -- Current goal: `(⋃ k, s k) \ s n ⊆ ⋃ k, s (k + n + 1) \ s (k + n)`
   have h' : Monotone s := @monotone_nat_of_le_succ (Set α) _ _ h_mono

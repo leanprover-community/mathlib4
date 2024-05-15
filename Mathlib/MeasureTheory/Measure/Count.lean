@@ -77,7 +77,7 @@ theorem count_apply_infinite (hs : s.Infinite) : count s = ∞ := by
     (t.card : ℝ≥0∞) = ∑ i in t, 1 := by simp
     _ = ∑' i : (t : Set α), 1 := (t.tsum_subtype 1).symm
     _ ≤ count (t : Set α) := le_count_apply
-    _ ≤ count s := measure_mono ht
+    _ ≤ count s := measure_mono _ ht
 #align measure_theory.measure.count_apply_infinite MeasureTheory.Measure.count_apply_infinite
 
 @[simp]

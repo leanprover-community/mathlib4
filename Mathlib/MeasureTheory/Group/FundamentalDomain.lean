@@ -132,7 +132,7 @@ theorem mk_of_measure_univ_le [IsFiniteMeasure μ] [Countable G] (h_meas : NullM
       have h_meas' : NullMeasurableSet {a | ∃ g : G, g • a ∈ s} μ := by
         rw [← iUnion_smul_eq_setOf_exists]; exact .iUnion h_meas
       rw [ae_iff_measure_eq h_meas', ← iUnion_smul_eq_setOf_exists]
-      refine' le_antisymm (measure_mono <| subset_univ _) _
+      refine' le_antisymm (measure_mono _ <| subset_univ _) _
       rw [measure_iUnion₀ aedisjoint h_meas]
       exact h_measure_univ_le }
 #align measure_theory.is_fundamental_domain.mk_of_measure_univ_le MeasureTheory.IsFundamentalDomain.mk_of_measure_univ_le
@@ -152,7 +152,7 @@ theorem measure_ne_zero [MeasurableSpace G] [Countable G] [MeasurableSMul G α]
   have hc := measure_univ_pos.mpr hμ
   contrapose! hc
   rw [← measure_congr h.iUnion_smul_ae_eq]
-  refine le_trans (measure_iUnion_le _) ?_
+  refine le_trans (measure_iUnion_le _ _) ?_
   simp_rw [measure_smul, hc, tsum_zero, le_refl]
 
 @[to_additive]
@@ -516,7 +516,7 @@ theorem measure_le_of_pairwise_disjoint (hs : IsFundamentalDomain G s μ)
     μ t = ∑' g : G, μ (g • t ∩ s) := hs.measure_eq_tsum t
     _ = μ (⋃ g : G, g • t ∩ s) := Eq.symm <| measure_iUnion₀ hd fun _ =>
       (ht.smul _).inter hs.nullMeasurableSet
-    _ ≤ μ s := measure_mono (iUnion_subset fun _ => inter_subset_right _ _)
+    _ ≤ μ s := measure_mono _ (iUnion_subset fun _ => inter_subset_right _ _)
 #align measure_theory.is_fundamental_domain.measure_le_of_pairwise_disjoint MeasureTheory.IsFundamentalDomain.measure_le_of_pairwise_disjoint
 #align measure_theory.is_add_fundamental_domain.measure_le_of_pairwise_disjoint MeasureTheory.IsAddFundamentalDomain.measure_le_of_pairwise_disjoint
 
@@ -967,7 +967,7 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
     rw [fund_dom_s.projection_respects_measure_apply (μ := μ) measπAn, this, iUnion_inter]
     refine lt_of_le_of_lt ?_ (hA n)
     rw [fund_dom_s.measure_eq_tsum (A n)]
-    exact measure_iUnion_le _
+    exact measure_iUnion_le _ _
   · rw [← image_iUnion, hA']
     refine image_univ_of_surjective (by convert surjective_quotient_mk' α)
 

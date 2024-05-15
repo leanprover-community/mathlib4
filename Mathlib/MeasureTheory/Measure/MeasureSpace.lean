@@ -143,7 +143,7 @@ lemma measure_symmDiff_eq (hs : MeasurableSet s) (ht : MeasurableSet t) :
 
 lemma measure_symmDiff_le (s t u : Set α) :
     μ (s ∆ u) ≤ μ (s ∆ t) + μ (t ∆ u) :=
-  le_trans (μ.mono <| symmDiff_triangle s t u) (measure_union_le (s ∆ t) (t ∆ u))
+  le_trans (μ.mono <| symmDiff_triangle s t u) (measure_union_le _ (s ∆ t) (t ∆ u))
 
 theorem measure_add_measure_compl (h : MeasurableSet s) : μ s + μ sᶜ = μ univ :=
   measure_add_measure_compl₀ h.nullMeasurableSet
@@ -194,7 +194,8 @@ theorem tsum_meas_le_meas_iUnion_of_disjoint₀ {ι : Type*} [MeasurableSpace α
   refine' tendsto_le_of_eventuallyLE hS tendsto_const_nhds (eventually_of_forall _)
   intro s
   simp only [← measure_biUnion_finset₀ (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
-  exact measure_mono (iUnion₂_subset_iUnion (fun i : ι => i ∈ s) fun i : ι => As i)
+  gcongr
+  exact iUnion_subset fun _ ↦ Subset.rfl
 
 /-- The measure of a disjoint union (even uncountable) of measurable sets is at least the sum of
 the measures of the sets. -/
@@ -228,10 +229,6 @@ theorem measure_diff_null' (h : μ (s₁ ∩ s₂) = 0) : μ (s₁ \ s₂) = μ 
   measure_congr <| diff_ae_eq_self.2 h
 #align measure_theory.measure_diff_null' MeasureTheory.measure_diff_null'
 
-theorem measure_diff_null (h : μ s₂ = 0) : μ (s₁ \ s₂) = μ s₁ :=
-  measure_diff_null' <| measure_mono_null (inter_subset_right _ _) h
-#align measure_theory.measure_diff_null MeasureTheory.measure_diff_null
-
 theorem measure_add_diff (hs : MeasurableSet s) (t : Set α) : μ s + μ (t \ s) = μ (s ∪ t) := by
   rw [← measure_union' disjoint_sdiff_right hs, union_diff_self]
 #align measure_theory.measure_add_diff MeasureTheory.measure_add_diff
@@ -246,12 +243,8 @@ theorem measure_diff (h : s₂ ⊆ s₁) (h₂ : MeasurableSet s₂) (h_fin : μ
 #align measure_theory.measure_diff MeasureTheory.measure_diff
 
 theorem le_measure_diff : μ s₁ - μ s₂ ≤ μ (s₁ \ s₂) :=
-  tsub_le_iff_left.2 <|
-    calc
-      μ s₁ ≤ μ (s₂ ∪ s₁) := measure_mono (subset_union_right _ _)
-      _ = μ (s₂ ∪ s₁ \ s₂) := congr_arg μ union_diff_self.symm
-      _ ≤ μ s₂ + μ (s₁ \ s₂) := measure_union_le _ _
-
+  tsub_le_iff_left.2 <| (measure_le_inter_add_diff μ s₁ s₂).trans <| by
+    gcongr; apply inter_subset_right
 #align measure_theory.le_measure_diff MeasureTheory.le_measure_diff
 
 /-- If the measure of the symmetric difference of two sets is finite,
@@ -266,7 +259,7 @@ theorem measure_eq_top_iff_of_symmDiff (hμst : μ (s ∆ t) ≠ ∞) : μ s = �
   calc
     ∞ = μ u - μ v := (WithTop.sub_eq_top_iff.2 ⟨hμu, hμv⟩).symm
     _ ≤ μ (u \ v) := le_measure_diff
-    _ ≤ μ (u \ v ∪ v \ u) := measure_mono <| subset_union_left ..
+    _ ≤ μ (u \ v ∪ v \ u) := measure_mono _ <| subset_union_left ..
 
 /-- If the measure of the symmetric difference of two sets is finite,
 then one has finite measure if and only if the other one does. -/
@@ -276,7 +269,7 @@ theorem measure_ne_top_iff_of_symmDiff (hμst : μ (s ∆ t) ≠ ∞) : μ s ≠
 theorem measure_diff_lt_of_lt_add (hs : MeasurableSet s) (hst : s ⊆ t) (hs' : μ s ≠ ∞) {ε : ℝ≥0∞}
     (h : μ t < μ s + ε) : μ (t \ s) < ε := by
   rw [measure_diff hst hs hs']; rw [add_comm] at h
-  exact ENNReal.sub_lt_of_lt_add (measure_mono hst) h
+  exact ENNReal.sub_lt_of_lt_add (measure_mono _ hst) h
 #align measure_theory.measure_diff_lt_of_lt_add MeasureTheory.measure_diff_lt_of_lt_add
 
 theorem measure_diff_le_iff_le_add (hs : MeasurableSet s) (hst : s ⊆ t) (hs' : μ s ≠ ∞) {ε : ℝ≥0∞} :
@@ -290,14 +283,13 @@ theorem measure_eq_measure_of_null_diff {s t : Set α} (hst : s ⊆ t) (h_nulldi
 
 theorem measure_eq_measure_of_between_null_diff {s₁ s₂ s₃ : Set α} (h12 : s₁ ⊆ s₂) (h23 : s₂ ⊆ s₃)
     (h_nulldiff : μ (s₃ \ s₁) = 0) : μ s₁ = μ s₂ ∧ μ s₂ = μ s₃ := by
-  have le12 : μ s₁ ≤ μ s₂ := measure_mono h12
-  have le23 : μ s₂ ≤ μ s₃ := measure_mono h23
+  have le12 : μ s₁ ≤ μ s₂ := measure_mono _ h12
+  have le23 : μ s₂ ≤ μ s₃ := measure_mono _ h23
   have key : μ s₃ ≤ μ s₁ :=
     calc
       μ s₃ = μ (s₃ \ s₁ ∪ s₁) := by rw [diff_union_of_subset (h12.trans h23)]
-      _ ≤ μ (s₃ \ s₁) + μ s₁ := measure_union_le _ _
+      _ ≤ μ (s₃ \ s₁) + μ s₁ := measure_union_le _ _ _
       _ = μ s₁ := by simp only [h_nulldiff, zero_add]
-
   exact ⟨le12.antisymm (le23.trans key), le23.antisymm (key.trans le12)⟩
 #align measure_theory.measure_eq_measure_of_between_null_diff MeasureTheory.measure_eq_measure_of_between_null_diff
 
@@ -323,7 +315,7 @@ lemma measure_inter_conull' (ht : μ (s \ t) = 0) : μ (s ∩ t) = μ s := by
   rw [← diff_compl, measure_diff_null']; rwa [← diff_eq]
 
 lemma measure_inter_conull (ht : μ tᶜ = 0) : μ (s ∩ t) = μ s := by
-  rw [← diff_compl, measure_diff_null ht]
+  rw [← diff_compl, measure_diff_null _ _ ht]
 
 @[simp]
 theorem union_ae_eq_left_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] s ↔ t ≤ᵐ[μ] s := by
@@ -358,10 +350,10 @@ theorem measure_iUnion_congr_of_subset [Countable β] {s : β → Set α} {t : �
     (hsub : ∀ b, s b ⊆ t b) (h_le : ∀ b, μ (t b) ≤ μ (s b)) : μ (⋃ b, s b) = μ (⋃ b, t b) := by
   rcases Classical.em (∃ b, μ (t b) = ∞) with (⟨b, hb⟩ | htop)
   · calc
-      μ (⋃ b, s b) = ∞ := top_unique (hb ▸ (h_le b).trans <| measure_mono <| subset_iUnion _ _)
-      _ = μ (⋃ b, t b) := Eq.symm <| top_unique <| hb ▸ measure_mono (subset_iUnion _ _)
+      μ (⋃ b, s b) = ∞ := top_unique (hb ▸ (h_le b).trans <| measure_mono _ <| subset_iUnion _ _)
+      _ = μ (⋃ b, t b) := Eq.symm <| top_unique <| hb ▸ measure_mono _ (subset_iUnion _ _)
   push_neg at htop
-  refine' le_antisymm (measure_mono (iUnion_mono hsub)) _
+  refine' le_antisymm (measure_mono _ (iUnion_mono hsub)) _
   set M := toMeasurable μ
   have H : ∀ b, (M (t b) ∩ M (⋃ b, s b) : Set α) =ᵐ[μ] M (t b) := by
     refine' fun b => ae_eq_of_subset_of_measure_ge (inter_subset_left _ _) _ _ _
@@ -369,16 +361,16 @@ theorem measure_iUnion_congr_of_subset [Countable β] {s : β → Set α} {t : �
         μ (M (t b)) = μ (t b) := measure_toMeasurable _
         _ ≤ μ (s b) := h_le b
         _ ≤ μ (M (t b) ∩ M (⋃ b, s b)) :=
-          measure_mono <|
+          measure_mono _ <|
             subset_inter ((hsub b).trans <| subset_toMeasurable _ _)
               ((subset_iUnion _ _).trans <| subset_toMeasurable _ _)
     · exact (measurableSet_toMeasurable _ _).inter (measurableSet_toMeasurable _ _)
     · rw [measure_toMeasurable]
       exact htop b
   calc
-    μ (⋃ b, t b) ≤ μ (⋃ b, M (t b)) := measure_mono (iUnion_mono fun b => subset_toMeasurable _ _)
+    μ (⋃ b, t b) ≤ μ (⋃ b, M (t b)) := measure_mono _ (iUnion_mono fun b => subset_toMeasurable _ _)
     _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) := measure_congr (EventuallyEq.countable_iUnion H).symm
-    _ ≤ μ (M (⋃ b, s b)) := measure_mono (iUnion_subset fun b => inter_subset_right _ _)
+    _ ≤ μ (M (⋃ b, s b)) := measure_mono _ (iUnion_subset fun b => inter_subset_right _ _)
     _ = μ (⋃ b, s b) := measure_toMeasurable _
 #align measure_theory.measure_Union_congr_of_subset MeasureTheory.measure_iUnion_congr_of_subset
 
@@ -420,7 +412,7 @@ theorem sum_measure_le_measure_univ {s : Finset ι} {t : ι → Set α}
     (h : ∀ i ∈ s, MeasurableSet (t i)) (H : Set.PairwiseDisjoint (↑s) t) :
     (∑ i in s, μ (t i)) ≤ μ (univ : Set α) := by
   rw [← measure_biUnion_finset H h]
-  exact measure_mono (subset_univ _)
+  exact measure_mono _ (subset_univ _)
 #align measure_theory.sum_measure_le_measure_univ MeasureTheory.sum_measure_le_measure_univ
 
 theorem tsum_measure_le_measure_univ {s : ι → Set α} (hs : ∀ i, MeasurableSet (s i))
@@ -462,8 +454,7 @@ theorem nonempty_inter_of_measure_lt_add {m : MeasurableSpace α} (μ : Measure 
   contrapose! h
   calc
     μ s + μ t = μ (s ∪ t) := (measure_union h ht).symm
-    _ ≤ μ u := measure_mono (union_subset h's h't)
-
+    _ ≤ μ u := measure_mono _ (union_subset h's h't)
 #align measure_theory.nonempty_inter_of_measure_lt_add MeasureTheory.nonempty_inter_of_measure_lt_add
 
 /-- If two sets `s` and `t` are included in a set `u`, and `μ s + μ t > μ u`,
@@ -491,25 +482,25 @@ theorem measure_iUnion_eq_iSup [Countable ι] {s : ι → Set α} (hd : Directed
     exact this.trans (iSup_extend_bot Encodable.encode_injective _)
   clear! ι
   -- The `≥` inequality is trivial
-  refine' le_antisymm _ (iSup_le fun i => measure_mono <| subset_iUnion _ _)
+  refine' le_antisymm _ (iSup_le fun i => measure_mono _ <| subset_iUnion _ _)
   -- Choose `T n ⊇ t n` of the same measure, put `Td n = disjointed T`
   set T : ℕ → Set α := fun n => toMeasurable μ (t n)
   set Td : ℕ → Set α := disjointed T
   have hm : ∀ n, MeasurableSet (Td n) :=
     MeasurableSet.disjointed fun n => measurableSet_toMeasurable _ _
   calc
-    μ (⋃ n, t n) ≤ μ (⋃ n, T n) := measure_mono (iUnion_mono fun i => subset_toMeasurable _ _)
+    μ (⋃ n, t n) ≤ μ (⋃ n, T n) := measure_mono _ (iUnion_mono fun i => subset_toMeasurable _ _)
     _ = μ (⋃ n, Td n) := by rw [iUnion_disjointed]
-    _ ≤ ∑' n, μ (Td n) := measure_iUnion_le _
+    _ ≤ ∑' n, μ (Td n) := measure_iUnion_le _ _
     _ = ⨆ I : Finset ℕ, ∑ n in I, μ (Td n) := ENNReal.tsum_eq_iSup_sum
     _ ≤ ⨆ n, μ (t n) := iSup_le fun I => by
       rcases hd.finset_le I with ⟨N, hN⟩
       calc
         (∑ n in I, μ (Td n)) = μ (⋃ n ∈ I, Td n) :=
           (measure_biUnion_finset ((disjoint_disjointed T).set_pairwise I) fun n _ => hm n).symm
-        _ ≤ μ (⋃ n ∈ I, T n) := measure_mono (iUnion₂_mono fun n _hn => disjointed_subset _ _)
+        _ ≤ μ (⋃ n ∈ I, T n) := measure_mono _ (iUnion₂_mono fun n _hn => disjointed_subset _ _)
         _ = μ (⋃ n ∈ I, t n) := measure_biUnion_toMeasurable I.countable_toSet _
-        _ ≤ μ (t N) := measure_mono (iUnion₂_subset hN)
+        _ ≤ μ (t N) := measure_mono _ (iUnion₂_subset hN)
         _ ≤ ⨆ n, μ (t n) := le_iSup (μ ∘ t) N
 #align measure_theory.measure_Union_eq_supr MeasureTheory.measure_iUnion_eq_iSup
 
@@ -537,9 +528,9 @@ sets is the infimum of the measures. -/
 theorem measure_iInter_eq_iInf [Countable ι] {s : ι → Set α} (h : ∀ i, MeasurableSet (s i))
     (hd : Directed (· ⊇ ·) s) (hfin : ∃ i, μ (s i) ≠ ∞) : μ (⋂ i, s i) = ⨅ i, μ (s i) := by
   rcases hfin with ⟨k, hk⟩
-  have : ∀ t ⊆ s k, μ t ≠ ∞ := fun t ht => ne_top_of_le_ne_top hk (measure_mono ht)
+  have : ∀ t ⊆ s k, μ t ≠ ∞ := fun t ht => ne_top_of_le_ne_top hk (measure_mono _ ht)
   rw [← ENNReal.sub_sub_cancel hk (iInf_le _ k), ENNReal.sub_iInf, ←
-    ENNReal.sub_sub_cancel hk (measure_mono (iInter_subset _ k)), ←
+    ENNReal.sub_sub_cancel hk (measure_mono _ (iInter_subset _ k)), ←
     measure_diff (iInter_subset _ k) (MeasurableSet.iInter h) (this _ (iInter_subset _ k)),
     diff_iInter, measure_iUnion_eq_iSup]
   · congr 1
@@ -547,9 +538,9 @@ theorem measure_iInter_eq_iInf [Countable ι] {s : ι → Set α} (h : ∀ i, Me
     · rcases hd i k with ⟨j, hji, hjk⟩
       use j
       rw [← measure_diff hjk (h _) (this _ hjk)]
-      exact measure_mono (diff_subset_diff_right hji)
+      gcongr
     · rw [tsub_le_iff_right, ← measure_union, Set.union_comm]
-      · exact measure_mono (diff_subset_iff.1 <| Subset.refl _)
+      · exact measure_mono _ (diff_subset_iff.1 <| Subset.refl _)
       · apply disjoint_sdiff_left
       · apply h i
   · exact hd.mono_comp _ fun _ _ => diff_subset_diff_right
@@ -578,7 +569,7 @@ theorem measure_iInter_eq_iInf' {α ι : Type*} [MeasurableSpace α] {μ : Measu
   have hfin' : ∃ i, μ (s i) ≠ ∞ := by
     rcases hfin with ⟨i, hi⟩
     rcases directed_of (· ≤ ·) i i with ⟨j, rij, -⟩
-    exact ⟨j, ne_top_of_le_ne_top hi <| measure_mono <| biInter_subset_of_mem rij⟩
+    exact ⟨j, ne_top_of_le_ne_top hi <| measure_mono _ <| biInter_subset_of_mem rij⟩
   exact iInter_eq ▸ measure_iInter_eq_iInf ms hd hfin'
 
 /-- Continuity from below: the measure of the union of an increasing sequence of (not necessarily
@@ -586,7 +577,7 @@ measurable) sets is the limit of the measures. -/
 theorem tendsto_measure_iUnion [Preorder ι] [IsDirected ι (· ≤ ·)] [Countable ι]
     {s : ι → Set α} (hm : Monotone s) : Tendsto (μ ∘ s) atTop (𝓝 (μ (⋃ n, s n))) := by
   rw [measure_iUnion_eq_iSup hm.directed_le]
-  exact tendsto_atTop_iSup fun n m hnm => measure_mono <| hm hnm
+  exact tendsto_atTop_iSup fun n m hnm => measure_mono _ <| hm hnm
 #align measure_theory.tendsto_measure_Union MeasureTheory.tendsto_measure_iUnion
 
 /-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
@@ -595,7 +586,7 @@ theorem tendsto_measure_iUnion' {α ι : Type*} [MeasurableSpace α] {μ : Measu
     [Preorder ι] [IsDirected ι (· ≤ ·)] {f : ι → Set α} :
     Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
   rw [measure_iUnion_eq_iSup']
-  exact tendsto_atTop_iSup fun i j hij ↦ measure_mono <| monotone_accumulate hij
+  exact tendsto_atTop_iSup fun i j hij ↦ measure_mono _ <| monotone_accumulate hij
 
 /-- Continuity from above: the measure of the intersection of a decreasing sequence of measurable
 sets is the limit of the measures. -/
@@ -603,7 +594,7 @@ theorem tendsto_measure_iInter [Countable ι] [Preorder ι] [IsDirected ι (· �
     (hs : ∀ n, MeasurableSet (s n)) (hm : Antitone s) (hf : ∃ i, μ (s i) ≠ ∞) :
     Tendsto (μ ∘ s) atTop (𝓝 (μ (⋂ n, s n))) := by
   rw [measure_iInter_eq_iInf hs hm.directed_ge hf]
-  exact tendsto_atTop_iInf fun n m hnm => measure_mono <| hm hnm
+  exact tendsto_atTop_iInf fun n m hnm => measure_mono _ <| hm hnm
 #align measure_theory.tendsto_measure_Inter MeasureTheory.tendsto_measure_iInter
 
 /-- Continuity from above: the measure of the intersection of a sequence of measurable
@@ -614,7 +605,7 @@ theorem tendsto_measure_iInter' {α ι : Type*} [MeasurableSpace α] {μ : Measu
     Tendsto (fun i ↦ μ (⋂ j ∈ {j | j ≤ i}, f j)) atTop (𝓝 (μ (⋂ i, f i))) := by
   rw [measure_iInter_eq_iInf' hm hf]
   exact tendsto_atTop_iInf
-    fun i j hij ↦ measure_mono <| biInter_subset_biInter_left fun k hki ↦ le_trans hki hij
+    fun i j hij ↦ measure_mono _ <| biInter_subset_biInter_left fun k hki ↦ le_trans hki hij
 
 /-- The measure of the intersection of a decreasing sequence of measurable
 sets indexed by a linear order with first countable topology is the limit of the measures. -/
@@ -624,7 +615,7 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
     (hf : ∃ r > a, μ (s r) ≠ ∞) : Tendsto (μ ∘ s) (𝓝[Ioi a] a) (𝓝 (μ (⋂ r > a, s r))) := by
   refine' tendsto_order.2 ⟨fun l hl => _, fun L hL => _⟩
   · filter_upwards [self_mem_nhdsWithin (s := Ioi a)] with r hr using hl.trans_le
-        (measure_mono (biInter_subset_of_mem hr))
+        (measure_mono _ (biInter_subset_of_mem hr))
   obtain ⟨u, u_anti, u_pos, u_lim⟩ :
     ∃ u : ℕ → ι, StrictAnti u ∧ (∀ n : ℕ, a < u n) ∧ Tendsto u atTop (𝓝 a) := by
     rcases hf with ⟨r, ar, _⟩
@@ -637,7 +628,7 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
     · rcases hf with ⟨r, rpos, hr⟩
       obtain ⟨n, hn⟩ : ∃ n : ℕ, u n < r := ((tendsto_order.1 u_lim).2 r rpos).exists
       refine' ⟨n, ne_of_lt (lt_of_le_of_lt _ hr.lt_top)⟩
-      exact measure_mono (hm _ _ (u_pos n) hn.le)
+      exact measure_mono _ (hm _ _ (u_pos n) hn.le)
   have B : ⋂ n, s (u n) = ⋂ r > a, s r := by
     apply Subset.antisymm
     · simp only [subset_iInter_iff, gt_iff_lt]
@@ -651,7 +642,7 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
   rw [B] at A
   obtain ⟨n, hn⟩ : ∃ n, μ (s (u n)) < L := ((tendsto_order.1 A).2 _ hL).exists
   have : Ioc a (u n) ∈ 𝓝[>] a := Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, u_pos n⟩
-  filter_upwards [this] with r hr using lt_of_le_of_lt (measure_mono (hm _ _ hr.1 hr.2)) hn
+  filter_upwards [this] with r hr using lt_of_le_of_lt (measure_mono _ (hm _ _ hr.1 hr.2)) hn
 #align measure_theory.tendsto_measure_bInter_gt MeasureTheory.tendsto_measure_biInter_gt
 
 /-- One direction of the **Borel-Cantelli lemma** (sometimes called the "*first* Borel-Cantelli
@@ -678,8 +669,8 @@ theorem measure_limsup_eq_zero {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠
     le_of_tendsto_of_tendsto'
       (tendsto_measure_iInter
         (fun i => MeasurableSet.iUnion fun b => measurableSet_toMeasurable _ _) _
-        ⟨0, ne_top_of_le_ne_top ht (measure_iUnion_le t)⟩)
-      (ENNReal.tendsto_sum_nat_add (μ ∘ t) ht) fun n => measure_iUnion_le _
+        ⟨0, ne_top_of_le_ne_top ht (measure_iUnion_le _ t)⟩)
+      (ENNReal.tendsto_sum_nat_add (μ ∘ t) ht) fun n => measure_iUnion_le _ _
   intro n m hnm x
   simp only [Set.mem_iUnion]
   exact fun ⟨i, hi⟩ => ⟨i + (m - n), by simpa only [add_assoc, tsub_add_cancel_of_le hnm] using hi⟩
@@ -793,16 +784,14 @@ then for any measurable set `s` one also has `μ (t ∩ s) = μ (u ∩ s)`. -/
 theorem measure_inter_eq_of_measure_eq {s t u : Set α} (hs : MeasurableSet s) (h : μ t = μ u)
     (htu : t ⊆ u) (ht_ne_top : μ t ≠ ∞) : μ (t ∩ s) = μ (u ∩ s) := by
   rw [h] at ht_ne_top
-  refine' le_antisymm (measure_mono (inter_subset_inter_left _ htu)) _
+  refine' le_antisymm (by gcongr) _
   have A : μ (u ∩ s) + μ (u \ s) ≤ μ (t ∩ s) + μ (u \ s) :=
     calc
       μ (u ∩ s) + μ (u \ s) = μ u := measure_inter_add_diff _ hs
       _ = μ t := h.symm
       _ = μ (t ∩ s) + μ (t \ s) := (measure_inter_add_diff _ hs).symm
-      _ ≤ μ (t ∩ s) + μ (u \ s) :=
-        add_le_add le_rfl (measure_mono (diff_subset_diff htu Subset.rfl))
-
-  have B : μ (u \ s) ≠ ∞ := (lt_of_le_of_lt (measure_mono (diff_subset _ _)) ht_ne_top.lt_top).ne
+      _ ≤ μ (t ∩ s) + μ (u \ s) := by gcongr
+  have B : μ (u \ s) ≠ ∞ := (lt_of_le_of_lt (measure_mono _ (diff_subset _ _)) ht_ne_top.lt_top).ne
   exact ENNReal.le_of_add_le_add_right B A
 #align measure_theory.measure.measure_inter_eq_of_measure_eq MeasureTheory.Measure.measure_inter_eq_of_measure_eq
 
@@ -986,11 +975,11 @@ theorem ae_smul_measure_iff {p : α → Prop} {c : ℝ≥0∞} (hc : c ≠ 0) :
 
 theorem measure_eq_left_of_subset_of_measure_add_eq {s t : Set α} (h : (μ + ν) t ≠ ∞) (h' : s ⊆ t)
     (h'' : (μ + ν) s = (μ + ν) t) : μ s = μ t := by
-  refine' le_antisymm (measure_mono h') _
+  refine' le_antisymm (measure_mono _ h') _
   have : μ t + ν t ≤ μ s + ν t :=
     calc
       μ t + ν t = μ s + ν s := h''.symm
-      _ ≤ μ s + ν t := add_le_add le_rfl (measure_mono h')
+      _ ≤ μ s + ν t := by gcongr
   apply ENNReal.le_of_add_le_add_right _ this
   simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at h
   exact h.2
@@ -1078,7 +1067,7 @@ theorem sInf_caratheodory (s : Set α) (hs : MeasurableSet s) :
     intro s t hst
     rw [OuterMeasure.sInfGen_def]
     refine' iInf_le_of_le μ.toOuterMeasure (iInf_le_of_le (mem_image_of_mem _ hμ) _)
-    exact measure_mono hst
+    exact measure_mono _ hst
   rw [← measure_inter_add_diff u hs]
   exact add_le_add (hm <| inter_subset_inter_left _ htu) (hm <| diff_subset_diff_left htu)
 #align measure_theory.measure.Inf_caratheodory MeasureTheory.Measure.sInf_caratheodory
@@ -1112,7 +1101,7 @@ instance instCompleteLattice [MeasurableSpace α] : CompleteLattice (Measure α)
       { toOuterMeasure := ⊤,
         m_iUnion := by
           intro f _ _
-          refine (OuterMeasure.iUnion _ _).antisymm ?_
+          refine (measure_iUnion_le ⊤ _).antisymm ?_
           if hne : (⋃ i, f i).Nonempty then
             rw [OuterMeasure.top_apply hne]
             exact le_top
@@ -1159,7 +1148,7 @@ theorem nonpos_iff_eq_zero' : μ ≤ 0 ↔ μ = 0 :=
 
 @[simp]
 theorem measure_univ_eq_zero : μ univ = 0 ↔ μ = 0 :=
-  ⟨fun h => bot_unique fun s => (h ▸ measure_mono (subset_univ s) : μ s ≤ 0), fun h =>
+  ⟨fun h => bot_unique fun s => (h ▸ measure_mono _ (subset_univ s) : μ s ≤ 0), fun h =>
     h.symm ▸ rfl⟩
 #align measure_theory.measure.measure_univ_eq_zero MeasureTheory.Measure.measure_univ_eq_zero
 
@@ -1351,7 +1340,7 @@ theorem map_mono {f : α → β} (h : μ ≤ ν) (hf : Measurable f) : μ.map f 
 theorem le_map_apply {f : α → β} (hf : AEMeasurable f μ) (s : Set β) : μ (f ⁻¹' s) ≤ μ.map f s :=
   calc
     μ (f ⁻¹' s) ≤ μ (f ⁻¹' toMeasurable (μ.map f) s) :=
-      measure_mono <| preimage_mono <| subset_toMeasurable _ _
+      measure_mono _ <| preimage_mono <| subset_toMeasurable _ _
     _ = μ.map f (toMeasurable (μ.map f) s) :=
       (map_apply_of_aemeasurable hf <| measurableSet_toMeasurable _ _).symm
     _ = μ.map f s := measure_toMeasurable _
@@ -1359,7 +1348,7 @@ theorem le_map_apply {f : α → β} (hf : AEMeasurable f μ) (s : Set β) : μ 
 
 theorem le_map_apply_image {f : α → β} (hf : AEMeasurable f μ) (s : Set α) :
     μ s ≤ μ.map f (f '' s) :=
-  (measure_mono (subset_preimage_image f s)).trans (le_map_apply hf _)
+  (measure_mono _ (subset_preimage_image f s)).trans (le_map_apply hf _)
 
 /-- Even if `s` is not measurable, `map f μ s = 0` implies that `μ (f ⁻¹' s) = 0`. -/
 theorem preimage_null_of_map_null {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
@@ -1498,7 +1487,7 @@ theorem sum_apply₀ (f : ι → Measure α) {s : Set α} (hs : NullMeasurableSe
   calc
   sum f s = sum f t := measure_congr ht.symm
   _ = ∑' i, f i t := sum_apply _ t_meas
-  _ ≤ ∑' i, f i s := ENNReal.tsum_le_tsum (fun i ↦ measure_mono ts)
+  _ ≤ ∑' i, f i s := ENNReal.tsum_le_tsum (fun i ↦ measure_mono _ ts)
 
 /-! For the next theorem, the countability assumption is necessary. For a counterexample, consider
 an uncountable space, with a distinguished point `x₀`, and the sigma-algebra made of countable sets
@@ -1513,7 +1502,7 @@ theorem sum_apply_of_countable [Countable ι] (f : ι → Measure α) (s : Set �
   apply le_antisymm ?_ (le_sum_apply _ _)
   rcases exists_measurable_superset_forall_eq f s with ⟨t, hst, htm, ht⟩
   calc
-  sum f s ≤ sum f t := measure_mono hst
+  sum f s ≤ sum f t := measure_mono _ hst
   _ = ∑' i, f i t := sum_apply _ htm
   _ = ∑' i, f i s := by simp [ht]
 
@@ -1524,13 +1513,7 @@ theorem le_sum (μ : ι → Measure α) (i : ι) : μ i ≤ sum μ :=
 @[simp]
 theorem sum_apply_eq_zero [Countable ι] {μ : ι → Measure α} {s : Set α} :
     sum μ s = 0 ↔ ∀ i, μ i s = 0 := by
-  refine'
-    ⟨fun h i => nonpos_iff_eq_zero.1 <| h ▸ le_iff'.1 (le_sum μ i) _, fun h =>
-      nonpos_iff_eq_zero.1 _⟩
-  rcases exists_measurable_superset_forall_eq μ s with ⟨t, hst, htm, ht⟩
-  calc
-    sum μ s ≤ sum μ t := measure_mono hst
-    _ = 0 := by simp [*]
+  simp [sum_apply_of_countable]
 #align measure_theory.measure.sum_apply_eq_zero MeasureTheory.Measure.sum_apply_eq_zero
 
 theorem sum_apply_eq_zero' {μ : ι → Measure α} {s : Set α} (hs : MeasurableSet s) :
@@ -1952,8 +1935,8 @@ end Pointwise
 
 /-- The filter of sets `s` such that `sᶜ` has finite measure. -/
 def cofinite {m0 : MeasurableSpace α} (μ : Measure α) : Filter α :=
-  comk (μ · < ∞) (by simp) (fun t ht s hs ↦ (measure_mono hs).trans_lt ht) fun s hs t ht ↦
-    (measure_union_le s t).trans_lt <| ENNReal.add_lt_top.2 ⟨hs, ht⟩
+  comk (μ · < ∞) (by simp) (fun t ht s hs ↦ (measure_mono _ hs).trans_lt ht) fun s hs t ht ↦
+    (measure_union_le _ s t).trans_lt <| ENNReal.add_lt_top.2 ⟨hs, ht⟩
 #align measure_theory.measure.cofinite MeasureTheory.Measure.cofinite
 
 theorem mem_cofinite : s ∈ μ.cofinite ↔ μ sᶜ < ∞ :=
@@ -2074,7 +2057,7 @@ theorem tendsto_measure_Ico_atTop [SemilatticeSup α] [NoMaxOrder α]
     Tendsto (fun x => μ (Ico a x)) atTop (𝓝 (μ (Ici a))) := by
   haveI : Nonempty α := ⟨a⟩
   have h_mono : Monotone fun x => μ (Ico a x) := fun i j hij =>
-    measure_mono (Ico_subset_Ico_right hij)
+    measure_mono _ (Ico_subset_Ico_right hij)
   convert tendsto_atTop_iSup h_mono
   obtain ⟨xs, hxs_mono, hxs_tendsto⟩ := exists_seq_monotone_tendsto_atTop_atTop α
   have h_Ici : Ici a = ⋃ n, Ico a (xs n) := by
@@ -2093,7 +2076,7 @@ theorem tendsto_measure_Ioc_atBot [SemilatticeInf α] [NoMinOrder α]
     Tendsto (fun x => μ (Ioc x a)) atBot (𝓝 (μ (Iic a))) := by
   haveI : Nonempty α := ⟨a⟩
   have h_mono : Antitone fun x => μ (Ioc x a) := fun i j hij =>
-    measure_mono (Ioc_subset_Ioc_left hij)
+    measure_mono _ (Ioc_subset_Ioc_left hij)
   convert tendsto_atBot_iSup h_mono
   obtain ⟨xs, hxs_mono, hxs_tendsto⟩ := exists_seq_antitone_tendsto_atTop_atBot α
   have h_Iic : Iic a = ⋃ n, Ioc (xs n) a := by
@@ -2114,7 +2097,7 @@ theorem tendsto_measure_Iic_atTop [SemilatticeSup α] [(atTop : Filter α).IsCou
     have h2 : (univ : Set α) = ∅ := Subsingleton.elim _ _
     simp_rw [h1, h2]
     exact tendsto_const_nhds
-  have h_mono : Monotone fun x => μ (Iic x) := fun i j hij => measure_mono (Iic_subset_Iic.mpr hij)
+  have h_mono : Monotone fun x ↦ μ (Iic x) := fun i j hij ↦ measure_mono _ (Iic_subset_Iic.mpr hij)
   convert tendsto_atTop_iSup h_mono
   obtain ⟨xs, hxs_mono, hxs_tendsto⟩ := exists_seq_monotone_tendsto_atTop_atTop α
   have h_univ : (univ : Set α) = ⋃ n, Iic (xs n) := by
@@ -2190,7 +2173,7 @@ nonrec theorem map_apply (μ : Measure α) (s : Set β) : μ.map f s = μ (f ⁻
     rw [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
       hf.injective.preimage_image]
   calc
-    μ.map f s ≤ μ.map f t := measure_mono hst
+    μ.map f s ≤ μ.map f t := by gcongr
     _ = μ (f ⁻¹' s) := by rw [map_apply hf.measurable htm, hft, measure_toMeasurable]
 #align measurable_embedding.map_apply MeasurableEmbedding.map_apply
 

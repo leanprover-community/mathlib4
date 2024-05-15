@@ -388,7 +388,7 @@ theorem measure_preimage_lt_top_of_integrable (f : α →ₛ E) (hf : Integrable
 theorem measure_support_lt_top [Zero β] (f : α →ₛ β) (hf : ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞) :
     μ (support f) < ∞ := by
   rw [support_eq]
-  refine' (measure_biUnion_finset_le _ _).trans_lt (ENNReal.sum_lt_top_iff.mpr fun y hy => _)
+  refine' (measure_biUnion_finset_le _ _ _).trans_lt (ENNReal.sum_lt_top_iff.mpr fun y hy => _)
   rw [Finset.mem_filter] at hy
   exact hf y hy.2
 #align measure_theory.simple_func.measure_support_lt_top MeasureTheory.SimpleFunc.measure_support_lt_top

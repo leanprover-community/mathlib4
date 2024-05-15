@@ -98,7 +98,7 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : Measurab
     convert (measure_biUnion_null_iff <| to_countable _).2 hN
     rw [← inter_iUnion₂]
     rfl
-  have : μ ((s ∩ f^[n] ⁻¹' s) \ T) ≠ 0 := by rwa [measure_diff_null hμT]
+  have : μ ((s ∩ f^[n] ⁻¹' s) \ T) ≠ 0 := by rwa [measure_diff_null _ _ hμT]
   rcases hf.exists_mem_iterate_mem ((hs.inter (hf.measurable.iterate n hs)).diff hT) this with
     ⟨x, ⟨⟨hxs, _⟩, hxT⟩, m, hm0, ⟨_, hxm⟩, _⟩
   refine' hxT ⟨hxs, mem_iUnion₂.2 ⟨n + m, _, _⟩⟩

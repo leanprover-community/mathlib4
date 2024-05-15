@@ -165,7 +165,7 @@ theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [NormedAddCommGroup E
     calc
       μ s ≤ ∑' n : ℕ, μ (s ∩ closedBall 0 n) := by
         conv_lhs => rw [← iUnion_inter_closedBall_nat s 0]
-        exact measure_iUnion_le _
+        exact measure_iUnion_le _ _
       _ = 0 := by simp only [H, tsum_zero]
   intro R
   apply addHaar_eq_zero_of_disjoint_translates_aux μ u
@@ -319,7 +319,7 @@ theorem addHaar_image_linearMap (f : E →ₗ[ℝ] E) (s : Set E) :
   · simp only [hf, zero_mul, ENNReal.ofReal_zero, abs_zero]
     have : μ (LinearMap.range f) = 0 :=
       addHaar_submodule μ _ (LinearMap.range_lt_top_of_det_eq_zero hf).ne
-    exact le_antisymm (le_trans (measure_mono (image_subset_range _ _)) this.le) (zero_le _)
+    exact le_antisymm (le_trans (measure_mono _ (image_subset_range _ _)) this.le) (zero_le _)
 #align measure_theory.measure.add_haar_image_linear_map MeasureTheory.Measure.addHaar_image_linearMap
 
 /-- The image of a set `s` under a continuous linear map `f` has measure
@@ -499,7 +499,7 @@ theorem addHaar_closedBall' (x : E) {r : ℝ} (hr : 0 ≤ r) :
 
 theorem addHaar_closed_unit_ball_eq_addHaar_unit_ball :
     μ (closedBall (0 : E) 1) = μ (ball 0 1) := by
-  apply le_antisymm _ (measure_mono ball_subset_closedBall)
+  apply le_antisymm _ (measure_mono _ ball_subset_closedBall)
   have A : Tendsto
       (fun r : ℝ => ENNReal.ofReal (r ^ finrank ℝ E) * μ (closedBall (0 : E) 1)) (𝓝[<] 1)
         (𝓝 (ENNReal.ofReal ((1 : ℝ) ^ finrank ℝ E) * μ (closedBall (0 : E) 1))) := by
@@ -510,7 +510,7 @@ theorem addHaar_closed_unit_ball_eq_addHaar_unit_ball :
   refine' mem_nhdsWithin_Iio_iff_exists_Ioo_subset.2 ⟨(0 : ℝ), by simp, fun r hr => _⟩
   dsimp
   rw [← addHaar_closedBall' μ (0 : E) hr.1.le]
-  exact measure_mono (closedBall_subset_ball hr.2)
+  exact measure_mono _ (closedBall_subset_ball hr.2)
 #align measure_theory.measure.add_haar_closed_unit_ball_eq_add_haar_unit_ball MeasureTheory.Measure.addHaar_closed_unit_ball_eq_addHaar_unit_ball
 
 theorem addHaar_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
@@ -649,13 +649,9 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
         (eventually_of_forall fun b => zero_le _)
     filter_upwards [self_mem_nhdsWithin]
     rintro r (rpos : 0 < r)
-    apply mul_le_mul_right' (measure_mono (inter_subset_inter_right _ _)) _
-    intro y hy
-    have : y - x ∈ r • closedBall (0 : E) 1 := by
-      apply smul_set_mono t_bound
-      simpa [neg_add_eq_sub] using hy
-    simpa only [smul_closedBall _ _ zero_le_one, Real.norm_of_nonneg rpos.le,
-      mem_closedBall_iff_norm, mul_one, sub_zero, smul_zero]
+    rw [← affinity_unitClosedBall rpos.le, singleton_add, ← image_vadd]
+    gcongr
+    exact smul_set_mono t_bound
   have B :
     Tendsto (fun r : ℝ => μ (closedBall x r) / μ ({x} + r • u)) (𝓝[>] 0)
       (𝓝 (μ (closedBall x 1) / μ ({x} + u))) := by
@@ -737,7 +733,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
       rw [H]; simpa only [ENNReal.zero_div] using εpos
     apply le_antisymm _ (zero_le _)
     calc
-      μ (s ∩ ({x} + r • t)) ≤ μ ({x} + r • t) := measure_mono (inter_subset_right _ _)
+      μ (s ∩ ({x} + r • t)) ≤ μ ({x} + r • t) := measure_mono _ (inter_subset_right _ _)
       _ = 0 := by
         simp only [h't, addHaar_smul, image_add_left, measure_preimage_add, singleton_add,
           mul_zero]
@@ -746,7 +742,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
       Tendsto (fun n : ℕ => μ (t \ closedBall 0 n)) atTop
         (𝓝 (μ (⋂ n : ℕ, t \ closedBall 0 n))) := by
       have N : ∃ n : ℕ, μ (t \ closedBall 0 n) ≠ ∞ :=
-        ⟨0, ((measure_mono (diff_subset t _)).trans_lt h''t.lt_top).ne⟩
+        ⟨0, ((measure_mono _ (diff_subset t _)).trans_lt h''t.lt_top).ne⟩
       refine' tendsto_measure_iInter (fun n ↦ ht.diff measurableSet_closedBall) (fun m n hmn ↦ _) N
       exact diff_subset_diff Subset.rfl (closedBall_subset_closedBall (Nat.cast_le.2 hmn))
     have : ⋂ n : ℕ, t \ closedBall 0 n = ∅ := by
@@ -770,9 +766,9 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
           μ (s ∩ ({x} + r • (t ∩ closedBall 0 n)) ∪ s ∩ ({x} + r • (t \ closedBall 0 n))) :=
         by rw [← inter_union_distrib_left, ← add_union, ← smul_set_union, inter_union_diff]
       _ ≤ μ (s ∩ ({x} + r • (t ∩ closedBall 0 n))) + μ (s ∩ ({x} + r • (t \ closedBall 0 n))) :=
-        (measure_union_le _ _)
+        (measure_union_le _ _ _)
       _ ≤ μ (s ∩ ({x} + r • (t ∩ closedBall 0 n))) + μ ({x} + r • (t \ closedBall 0 n)) :=
-        add_le_add le_rfl (measure_mono (inter_subset_right _ _))
+        add_le_add le_rfl (measure_mono _ (inter_subset_right _ _))
   calc
     μ (s ∩ ({x} + r • t)) / μ ({x} + r • t) ≤
         (μ (s ∩ ({x} + r • (t ∩ closedBall 0 n))) + μ ({x} + r • (t \ closedBall 0 n))) /
@@ -798,7 +794,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Meas
     · simp only [uzero, ENNReal.inv_eq_top, imp_true_iff, Ne, not_false_iff]
     congr 1
     apply
-      ENNReal.sub_eq_of_add_eq (ne_top_of_le_ne_top utop (measure_mono (inter_subset_right _ _)))
+      ENNReal.sub_eq_of_add_eq (ne_top_of_le_ne_top utop (measure_mono _ (inter_subset_right _ _)))
     rw [inter_comm _ u, inter_comm _ u]
     exact measure_inter_add_diff u vmeas
   have L : Tendsto (fun r => μ (sᶜ ∩ closedBall x r) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 0) := by
@@ -853,12 +849,12 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one (s : Set E) (x : E)
         t ht h't h''t
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' h tendsto_const_nhds
     · refine' eventually_of_forall fun r => mul_le_mul_right' _ _
-      exact measure_mono (inter_subset_inter_left _ (subset_toMeasurable _ _))
+      exact measure_mono _ (inter_subset_inter_left _ (subset_toMeasurable _ _))
     · filter_upwards [self_mem_nhdsWithin]
       rintro r -
       apply ENNReal.div_le_of_le_mul
       rw [one_mul]
-      exact measure_mono (inter_subset_right _ _)
+      exact measure_mono _ (inter_subset_right _ _)
   refine this.congr fun r => ?_
   congr 1
   apply measure_toMeasurable_inter_of_sFinite

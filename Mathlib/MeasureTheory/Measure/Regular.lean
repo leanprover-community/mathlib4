@@ -324,7 +324,7 @@ instance (priority := 100) Regular.weaklyRegular [R1Space α] [Regular μ] :
   innerRegular := fun _U hU r hr ↦
     let ⟨K, KU, K_comp, hK⟩ := Regular.innerRegular hU r hr
     ⟨closure K, K_comp.closure_subset_of_isOpen hU KU, isClosed_closure,
-      hK.trans_le (measure_mono subset_closure)⟩
+      hK.trans_le (measure_mono _ subset_closure)⟩
 #align measure_theory.measure.regular.weakly_regular MeasureTheory.Measure.Regular.weaklyRegular
 
 namespace OuterRegular
@@ -423,14 +423,14 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
     have H₁ : ∀ t, μ.restrict (s n) t = μ (t ∩ s n) := fun t => restrict_apply' (hm n)
     have Ht : μ.restrict (s n) (A n) ≠ ∞ := by
       rw [H₁]
-      exact ((measure_mono ((inter_subset_left _ _).trans (subset_iUnion A n))).trans_lt HA).ne
+      exact ((measure_mono _ ((inter_subset_left _ _).trans (subset_iUnion A n))).trans_lt HA).ne
     rcases (A n).exists_isOpen_lt_add Ht (δ0 n).ne' with ⟨U, hAU, hUo, hU⟩
     rw [H₁, H₁, inter_eq_self_of_subset_left (hAs _)] at hU
     exact ⟨U ∩ s n, subset_inter hAU (hAs _), hUo.inter (h' n), hU⟩
   choose U hAU hUo hU using this
   refine' ⟨⋃ n, U n, iUnion_mono hAU, isOpen_iUnion hUo, _⟩
   calc
-    μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _
+    μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _ _
     _ ≤ ∑' n, (μ (A n) + δ n) := ENNReal.tsum_le_tsum fun n => (hU n).le
     _ = ∑' n, μ (A n) + ∑' n, δ n := ENNReal.tsum_add
     _ = μ (⋃ n, A n) + ∑' n, δ n := (congr_arg₂ (· + ·) (measure_iUnion hAd hAm).symm rfl)
@@ -440,10 +440,10 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
 that assumes the `σ`-algebra to be the Borel `σ`-algebra but makes no assumptions on `μ`. -/
 lemma measure_closure_eq_of_isCompact [R1Space α] [OuterRegular μ]
     {k : Set α} (hk : IsCompact k) : μ (closure k) = μ k := by
-  apply le_antisymm ?_ (measure_mono subset_closure)
+  apply le_antisymm ?_ (measure_mono _ subset_closure)
   simp only [measure_eq_iInf_isOpen k, le_iInf_iff]
   intro u ku u_open
-  exact measure_mono (hk.closure_subset_of_isOpen u_open ku)
+  exact measure_mono _ (hk.closure_subset_of_isOpen u_open ku)
 
 end OuterRegular
 
@@ -467,7 +467,7 @@ theorem measurableSet_of_isOpen [OuterRegular μ] (H : InnerRegularWRT μ p IsOp
     InnerRegularWRT μ p fun s => MeasurableSet s ∧ μ s ≠ ∞ := by
   rintro s ⟨hs, hμs⟩ r hr
   have h0 : p ∅ := by
-    have : 0 < μ univ := (bot_le.trans_lt hr).trans_le (measure_mono (subset_univ _))
+    have : 0 < μ univ := (bot_le.trans_lt hr).trans_le (measure_mono _ (subset_univ _))
     obtain ⟨K, -, hK, -⟩ : ∃ K, K ⊆ univ ∧ p K ∧ 0 < μ K := H isOpen_univ _ this
     simpa using hd hK isOpen_univ
   obtain ⟨ε, hε, hεs, rfl⟩ : ∃ ε ≠ 0, ε + ε ≤ μ s ∧ r = μ s - (ε + ε) := by
@@ -548,7 +548,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
           exacts [fun k _ n _ hkn => (hsd hkn).mono (hFs k) (hFs n),
             fun k _ => (hFc k).measurableSet]
     · calc
-        μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _
+        μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _ _
         _ ≤ ∑' n, (μ (s n) + δ n) := ENNReal.tsum_le_tsum hU
         _ = μ (⋃ n, s n) + ∑' n, δ n := by rw [measure_iUnion hsd hsm, ENNReal.tsum_add]
         _ ≤ μ (⋃ n, s n) + ε := add_le_add_left (hδε.le.trans ENNReal.half_le_self) _
@@ -609,11 +609,11 @@ lemma restrict (h : InnerRegularWRT μ p (fun s ↦ MeasurableSet s ∧ μ s ≠
     have : r < μ ((toMeasurable μ (s ∩ A)) ∩ s) := by
       apply hr.trans_le
       rw [restrict_apply s_meas]
-      exact measure_mono <| subset_inter (subset_toMeasurable μ (s ∩ A)) (inter_subset_left _ _)
+      exact measure_mono _ <| subset_inter (subset_toMeasurable μ (s ∩ A)) (inter_subset_left _ _)
     refine h ⟨(measurableSet_toMeasurable _ _).inter s_meas, ?_⟩ _ this
     apply (lt_of_le_of_lt _ hs.lt_top).ne
     rw [← measure_toMeasurable (s ∩ A)]
-    exact measure_mono (inter_subset_left _ _)
+    exact measure_mono _ (inter_subset_left _ _)
   refine ⟨K, K_subs.trans (inter_subset_right _ _), pK, ?_⟩
   calc
   r < μ K := rK
@@ -647,7 +647,7 @@ lemma of_sigmaFinite [SigmaFinite μ] :
   rw [this] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   refine ⟨s ∩ B n, inter_subset_left _ _, ⟨hs.inter (measurable_spanningSets μ n), ?_⟩, hn⟩
-  exact ((measure_mono (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top μ n)).ne
+  exact ((measure_mono _ (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top μ n)).ne
 
 end InnerRegularWRT
 
@@ -677,7 +677,7 @@ lemma innerRegularWRT_isClosed_isOpen [R1Space α] [OpensMeasurableSpace α] [h 
   intro U hU r hr
   rcases h.innerRegular hU.measurableSet r hr with ⟨K, KU, K_comp, hK⟩
   exact ⟨closure K, K_comp.closure_subset_of_isOpen hU KU, isClosed_closure,
-    hK.trans_le (measure_mono subset_closure)⟩
+    hK.trans_le (measure_mono _ subset_closure)⟩
 
 theorem exists_compact_not_null [InnerRegular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
   simp_rw [Ne, ← measure_univ_eq_zero, MeasurableSet.univ.measure_eq_iSup_isCompact,
@@ -731,10 +731,8 @@ theorem _root_.MeasurableSet.exists_isCompact_diff_lt [OpensMeasurableSpace α] 
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ K, K ⊆ A ∧ IsCompact K ∧ μ (A \ K) < ε := by
   rcases hA.exists_isCompact_lt_add h'A hε with ⟨K, hKA, hKc, hK⟩
-  exact
-    ⟨K, hKA, hKc,
-      measure_diff_lt_of_lt_add hKc.measurableSet hKA (ne_top_of_le_ne_top h'A <| measure_mono hKA)
-        hK⟩
+  exact ⟨K, hKA, hKc, measure_diff_lt_of_lt_add hKc.measurableSet hKA
+    (ne_top_of_le_ne_top h'A <| measure_mono _ hKA) hK⟩
 #align measurable_set.exists_is_compact_diff_lt MeasurableSet.exists_isCompact_diff_lt
 
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets,
@@ -794,7 +792,7 @@ protected lemma _root_.IsCompact.measure_eq_iInf_isOpen [InnerRegularCompactLTTo
     μ K = ⨅ (U : Set α) (_ : K ⊆ U) (_ : IsOpen U), μ U := by
   apply le_antisymm
   · simp only [le_iInf_iff]
-    exact fun U KU _ ↦ measure_mono KU
+    exact fun U KU _ ↦ measure_mono _ KU
   · apply le_of_forall_lt'
     simpa only [iInf_lt_iff, exists_prop, exists_and_left] using hK.exists_isOpen_lt_of_lt
 
@@ -879,10 +877,8 @@ theorem _root_.MeasurableSet.exists_isClosed_diff_lt [OpensMeasurableSpace α] [
     ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ F, F ⊆ A ∧ IsClosed F ∧ μ (A \ F) < ε := by
   rcases hA.exists_isClosed_lt_add h'A hε with ⟨F, hFA, hFc, hF⟩
-  exact
-    ⟨F, hFA, hFc,
-      measure_diff_lt_of_lt_add hFc.measurableSet hFA (ne_top_of_le_ne_top h'A <| measure_mono hFA)
-        hF⟩
+  exact ⟨F, hFA, hFc, measure_diff_lt_of_lt_add hFc.measurableSet hFA
+    (ne_top_of_le_ne_top h'A <| measure_mono _ hFA) hF⟩
 #align measurable_set.exists_is_closed_diff_lt MeasurableSet.exists_isClosed_diff_lt
 
 /-- Given a weakly regular measure, any measurable set of finite mass can be approximated from
@@ -1007,7 +1003,7 @@ theorem restrict_of_measure_ne_top [R1Space α] [BorelSpace α] [Regular μ]
   intro V hV r hr
   have R : restrict μ A V ≠ ∞ := by
     rw [restrict_apply hV.measurableSet]
-    exact ((measure_mono (inter_subset_right _ _)).trans_lt h'A.lt_top).ne
+    exact ((measure_mono _ (inter_subset_right _ _)).trans_lt h'A.lt_top).ne
   exact MeasurableSet.exists_lt_isCompact_of_ne_top hV.measurableSet R hr
 
 end Regular
