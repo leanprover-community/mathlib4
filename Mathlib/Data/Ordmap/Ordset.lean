@@ -973,7 +973,6 @@ theorem Bounded.mem_lt : ∀ {t o} {x : α}, Bounded t o x → All (· < x) t
     ⟨h₁.mem_lt.imp fun _ h => lt_trans h h₂.to_lt, h₂.to_lt, h₂.mem_lt⟩
 #align ordnode.bounded.mem_lt Ordnode.Bounded.mem_lt
 
-set_option linter.geOrGt false in
 theorem Bounded.mem_gt : ∀ {t o} {x : α}, Bounded t x o → All (· > x) t
   | nil, _, _, _ => ⟨⟩
   | node _ _ _ _, _, _, ⟨h₁, h₂⟩ => ⟨h₁.mem_gt, h₁.to_lt, h₂.mem_gt.imp fun _ => lt_trans h₁.to_lt⟩
@@ -985,7 +984,6 @@ theorem Bounded.of_lt :
   | node _ _ _ _, _, _, _, ⟨h₁, h₂⟩, _, ⟨_, al₂, al₃⟩ => ⟨h₁, h₂.of_lt al₂ al₃⟩
 #align ordnode.bounded.of_lt Ordnode.Bounded.of_lt
 
-set_option linter.geOrGt false in
 theorem Bounded.of_gt :
     ∀ {t o₁ o₂} {x : α}, Bounded t o₁ o₂ → Bounded nil x o₂ → All (· > x) t → Bounded t x o₂
   | nil, _, _, _, _, hn, _ => hn
@@ -1052,7 +1050,6 @@ theorem Valid'.of_lt {t : Ordnode α} {x : α} {o₁ o₂} (H : Valid' o₁ t o�
   ⟨H.1.of_lt h₁ h₂, H.2, H.3⟩
 #align ordnode.valid'.of_lt Ordnode.Valid'.of_lt
 
-set_option linter.geOrGt false in
 theorem Valid'.of_gt {t : Ordnode α} {x : α} {o₁ o₂} (H : Valid' o₁ t o₂) (h₁ : Bounded nil x o₂)
     (h₂ : All (· > x) t) : Valid' x t o₂ :=
   ⟨H.1.of_gt h₁ h₂, H.2, H.3⟩
@@ -1422,7 +1419,6 @@ theorem eraseMax.valid {t} (h : @Valid α _ t) : Valid (eraseMax t) := by
   rw [Valid.dual_iff, dual_eraseMax]; exact eraseMin.valid h.dual
 #align ordnode.erase_max.valid Ordnode.eraseMax.valid
 
-set_option linter.geOrGt false in
 theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
     (sep : l.All fun x => r.All fun y => x < y) (bal : BalancedSz (size l) (size r)) :
     Valid' o₁ (@glue α l r) o₂ ∧ size (glue l r) = size l + size r := by

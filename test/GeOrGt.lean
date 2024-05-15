@@ -73,10 +73,16 @@ note: this linter can be disabled with `set_option linter.geOrGt false` -/
 set_option linter.geOrGt true in
 lemma test8' (h : ∀ n : ℤ, n ≥ 100) : ∃ k : ℤ, k ≥ 100 := ⟨200, h 200⟩
 
--- Exclude ≥ as a comparator/unapplied relation; this should not be linted!
+-- Exclude `≥` as a comparator/unapplied relation; this should not be linted!
 def dummy (_r : ℕ → ℕ → Prop) : Bool := True
 lemma foo (_hf : dummy (· ≥ ·) ) : True := trivial
 lemma foo' (_hf : dummy (· > ·) ) : True := trivial
+-- Also exclude `≥` as a predicate.
+def dummy' (_r : ℕ → Prop) : Bool := True
+lemma bar {a : ℕ} (_h : dummy' (· ≥ a)) : True := trivial
+lemma bar' {a : ℕ} (_h : dummy' (a ≥ ·)) : True := trivial
+lemma baz {a : ℕ} (_h : dummy' (· > a)) : True := trivial
+lemma baz' {a : ℕ} (_h : dummy' (a > ·)) : True := trivial
 
 -- We also check types of definitions.
 

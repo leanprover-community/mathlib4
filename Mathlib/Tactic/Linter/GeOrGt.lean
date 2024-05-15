@@ -51,6 +51,8 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.geOrGt o
 def is_in_comparator (stx : Syntax) : Bool :=
   match stx with
   | `((· > · )) | `((· ≥ ·)) => true
+  | `((· > $_x:ident )) | `((· ≥ $_x:ident)) => true
+  | `(($_x:ident > · )) | `(($_x:ident ≥ ·)) => true
   | _ => false
 
 /-- docstring here -/
