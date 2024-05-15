@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang
+Authors: Scott Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
@@ -2733,7 +2733,7 @@ variable {C}
 
 -- Porting note: removed semireducible from the simps config
 /-- Given a morphism `f : X ⟶ Y`, we can take morphisms over `Y` to morphisms over `X` via
-pullbacks. This is right adjoint to `over.map` (TODO) -/
+pullbacks. -/
 @[simps! (config := { simpRhs := true}) obj_left obj_hom map_left]
 def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd : pullback g.hom f ⟶ _)
@@ -2747,5 +2747,46 @@ def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X wher
     · dsimp; simp
     · dsimp; simp
 #align category_theory.limits.base_change CategoryTheory.Limits.baseChange
+
+/-- The adjunction `Over.map ⊣ baseChange` -/
+
+def hasPullbackOverAdj [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ baseChange f :=
+  Adjunction.mkOfHomEquiv {
+    homEquiv := fun x y ↦ {
+      toFun := fun u ↦ {
+        left := by
+          simp
+          fapply pullback.lift
+          · exact u.left
+          · exact x.hom
+          · aesop_cat
+        right := by
+          apply eqToHom
+          aesop
+        w := by simp}
+      invFun := fun v ↦ {
+        left := by
+          simp at*
+          exact v.left ≫ pullback.fst
+        right := by
+          apply eqToHom
+          aesop
+        w := by
+          simp
+          rw [pullback.condition]
+          rw [← Category.assoc]
+          apply eq_whisker
+          simpa using v.w}
+      left_inv := by aesop_cat
+      right_inv := fun v ↦ Over.OverMorphism.ext (by
+        simp
+        apply pullback.hom_ext
+        · aesop_cat
+        · rw [pullback.lift_snd]
+          have vtriangle := v.w
+          simp at vtriangle
+          exact vtriangle.symm)}
+    homEquiv_naturality_left_symm := by aesop_cat
+    homEquiv_naturality_right := by aesop_cat}
 
 end CategoryTheory.Limits
