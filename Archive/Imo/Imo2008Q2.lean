@@ -45,14 +45,14 @@ theorem subst_abc {x y z : ℝ} (h : x * y * z = 1) :
 #align imo2008_q2.subst_abc Imo2008Q2.subst_abc
 
 theorem imo2008_q2a (x y z : ℝ) (h : x * y * z = 1) (hx : x ≠ 1) (hy : y ≠ 1) (hz : z ≠ 1) :
-    x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 ≥ 1 := by
+    1 ≤ x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 := by
   obtain ⟨a, b, c, ha, hb, hc, rfl, rfl, rfl⟩ := subst_abc h
   obtain ⟨m, n, rfl, rfl⟩ : ∃ m n, b = c - m ∧ a = c - m - n := by use c - b, b - a; simp
   have hm_ne_zero : m ≠ 0 := by contrapose! hy; field_simp; assumption
   have hn_ne_zero : n ≠ 0 := by contrapose! hx; field_simp; assumption
   have hmn_ne_zero : m + n ≠ 0 := by contrapose! hz; field_simp; linarith
   have hc_sub_sub : c - (c - m - n) = m + n := by abel
-  rw [ge_iff_le, ← sub_nonneg]
+  rw [← sub_nonneg]
   convert sq_nonneg ((c * (m ^ 2 + n ^ 2 + m * n) - m * (m + n) ^ 2) / (m * n * (m + n)))
   field_simp [hc_sub_sub]; ring
 #align imo2008_q2.imo2008_q2a Imo2008Q2.imo2008_q2a
