@@ -121,7 +121,7 @@ theorem LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_isNegInvariant
     (hf : LocallyIntegrable f μ) (hsymm : norm ∘ f =ᵐ[μ] norm ∘ f ∘ Neg.neg) (ho : f =O[atTop] g)
     (hg : IntegrableAtFilter g atTop μ) : Integrable f μ := by
   have h_int := (hf.locallyIntegrableOn (Ici 0)).integrableOn_of_isBigO_atTop ho hg
-  rw [← integrableOn_univ, ← Iic_union_Ici_of_le le_rfl, integrableOn_union]
+  rw [← integrableOn_univ, ← Iic_union_Ici_of_le (a := 0) le_rfl, integrableOn_union]
   refine ⟨?_, h_int⟩
   have h_map_neg : (μ.restrict (Ici 0)).map Neg.neg = μ.restrict (Iic 0) := by
     conv => rhs; rw [← Measure.map_neg_eq_self μ, measurableEmbedding_neg.restrict_map]

@@ -234,7 +234,7 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
     apply HasDerivAt.comp_ofReal (e := fun y => (y : ℂ) ^ (r + 1) / (r + 1))
     convert HasDerivAt.div_const (𝕜 := ℂ) ?_ (r + 1) using 1
     · exact (mul_div_cancel_right₀ _ hr).symm
-    · convert HasDerivAt.cpow_const ?_ ?_ using 1
+    · convert HasDerivAt.cpow_const (f' := 1) ?_ ?_ using 1
       · rw [add_sub_cancel_right, mul_comm]; exact (mul_one _).symm
       · exact hasDerivAt_id (x : ℂ)
       · simp [hx]
@@ -260,7 +260,7 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
     suffices HasDerivAt (fun y : ℂ => y ^ (r + 1)) ((r + 1) * ↑(-x) ^ r) ↑(-x) by
       exact this.comp_ofReal
     conv in ↑_ ^ _ => rw [(by ring : r = r + 1 - 1)]
-    convert HasDerivAt.cpow_const ?_ ?_ using 1
+    convert HasDerivAt.cpow_const (f' := 1) ?_ ?_ using 1
     · rw [add_sub_cancel_right, add_sub_cancel_right]; exact (mul_one _).symm
     · exact hasDerivAt_id ((-x : ℝ) : ℂ)
     · simp [hx]

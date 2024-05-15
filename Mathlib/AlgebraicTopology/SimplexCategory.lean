@@ -382,13 +382,13 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
         (Fin.castSucc_lt_succ_iff.mpr h)), ← Fin.succ_castSucc, Fin.pred_succ,
         Fin.succ_predAbove_succ]
         rw [Fin.predAbove_of_castSucc_lt i _ (Fin.castSucc_lt_succ_iff.mpr _), Fin.pred_succ]
-        rcases le_or_lt k j with (hkj | hkj)
-        · rwa [Fin.predAbove_of_le_castSucc _ _ (Fin.castSucc_le_castSucc_iff.mpr hkj),
-          Fin.castPred_castSucc]
-        · rw [Fin.predAbove_of_castSucc_lt _ _ (Fin.castSucc_lt_castSucc_iff.mpr hkj),
-          Fin.le_pred_iff,
-          Fin.succ_le_castSucc_iff]
-          exact H.trans_lt hkj
+        · rcases le_or_lt k j with (hkj | hkj)
+          · rwa [Fin.predAbove_of_le_castSucc _ _ (Fin.castSucc_le_castSucc_iff.mpr hkj),
+              Fin.castPred_castSucc]
+          · rw [Fin.predAbove_of_castSucc_lt _ _ (Fin.castSucc_lt_castSucc_iff.mpr hkj),
+              Fin.le_pred_iff,
+              Fin.succ_le_castSucc_iff]
+            exact H.trans_lt hkj
       · simp_rw [Fin.predAbove_of_le_castSucc i.castSucc _ (Fin.castSucc_le_castSucc_iff.mpr
         (Fin.succ_le_castSucc_iff.mpr h)), Fin.castPred_castSucc, ← Fin.succ_castSucc,
         Fin.succ_predAbove_succ]
@@ -608,7 +608,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
     -- This was not needed before leanprover/lean4#2644
     dsimp
     rw [Fin.predAbove_of_castSucc_lt i b.succ _, Fin.pred_succ]
-    rw [not_le] at h
+    on_goal 1 => rw [not_le] at h
     rw [Fin.lt_iff_val_lt_val] at h ⊢
     simpa only [Fin.val_succ, Fin.coe_castSucc] using Nat.lt.step h
 

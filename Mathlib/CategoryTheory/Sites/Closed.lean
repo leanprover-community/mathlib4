@@ -196,13 +196,13 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
     · intro hf
       rw [J₁.covers_iff]
       apply J₁.superset_covering (Sieve.pullback_monotone f inf_le_left)
-      rw [← MSNS]
-      apply J₁.arrow_intersect f M S hf (J₁.pullback_stable _ hS)
+      · rw [← MSNS]
+        apply J₁.arrow_intersect f M S hf (J₁.pullback_stable _ hS)
     · intro hf
       rw [J₁.covers_iff]
       apply J₁.superset_covering (Sieve.pullback_monotone f inf_le_left)
-      rw [MSNS]
-      apply J₁.arrow_intersect f N S hf (J₁.pullback_stable _ hS)
+      · rw [MSNS]
+        apply J₁.arrow_intersect f N S hf (J₁.pullback_stable _ hS)
   · intro x hx
     rw [Presieve.compatible_iff_sieveCompatible] at hx
     let M := Sieve.bind S fun Y f hf => (x f hf).1
