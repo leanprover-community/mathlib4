@@ -125,7 +125,7 @@ def isoEquivHomeo {X Y : CompHausLike.{u} P} : (X ≅ Y) ≃ (X ≃ₜ Y) where
     ext
     rfl
 
-end CompHausLike
+variable (P)
 
 /-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
 -- Porting note: `semireducible` -> `.default`.
@@ -145,11 +145,11 @@ instance (X : CompHausLike P) : CompactSpace ((compHausLikeToTop P).obj X) :=
 instance (X : CompHausLike P) : T2Space ((compHausLikeToTop P).obj X) :=
   show T2Space X.toTop from inferInstance
 
-namespace CompHausLike
-
 instance forget_reflectsIsomorphisms :
     (forget (CompHausLike.{u} P)).ReflectsIsomorphisms :=
   ⟨by intro A B f hf; exact isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
+
+variable {P}
 
 theorem epi_iff_surjective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
@@ -175,8 +175,6 @@ theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y)
     exact this
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget (CompHausLike P)).mono_of_mono_map
-
-end CompHausLike
 
 abbrev CompHaus := CompHausLike (fun _ ↦ True)
 
