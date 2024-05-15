@@ -91,7 +91,7 @@ This version is stated in terms of `HasProd`. -/
 theorem riemannZeta_eulerProduct_hasProd (hs : 1 < s.re) :
     HasProd (fun p : Primes ↦ (1 - (p : ℂ) ^ (-s))⁻¹) (riemannZeta s) := by
   rw [← tsum_riemannZetaSummand hs]
-  convert eulerProduct_completely_multiplicative_hasProd <| summable_riemannZetaSummand hs
+  apply eulerProduct_completely_multiplicative_hasProd <| summable_riemannZetaSummand hs
 
 /-- The Euler product for the Riemann ζ function, valid for `s.re > 1`.
 This version is stated in terms of `tprod`. -/
@@ -105,7 +105,7 @@ theorem riemannZeta_eulerProduct (hs : 1 < s.re) :
     Tendsto (fun n : ℕ ↦ ∏ p in primesBelow n, (1 - (p : ℂ) ^ (-s))⁻¹) atTop
       (𝓝 (riemannZeta s)) := by
   rw [← tsum_riemannZetaSummand hs]
-  convert eulerProduct_completely_multiplicative <| summable_riemannZetaSummand hs
+  apply eulerProduct_completely_multiplicative <| summable_riemannZetaSummand hs
 
 open scoped LSeries.notation
 
@@ -124,9 +124,10 @@ theorem dirichletLSeries_eulerProduct_tprod {N : ℕ} (χ : DirichletCharacter �
     ∏' p : Primes, (1 - χ p * (p : ℂ) ^ (-s))⁻¹ = L ↗χ s :=
   (dirichletLSeries_eulerProduct_hasProd χ hs).tprod_eq
 
-/-- The Euler product for Dirichlet L-series, valid for `s.re > 1`. -/
+/-- The Euler product for Dirichlet L-series, valid for `s.re > 1`.
+This version is stated in the form of convergence of finite partial products. -/
 theorem dirichletLSeries_eulerProduct {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 1 < s.re) :
     Tendsto (fun n : ℕ ↦ ∏ p in primesBelow n, (1 - χ p * (p : ℂ) ^ (-s))⁻¹) atTop
       (𝓝 (L ↗χ s)) := by
   rw [← tsum_dirichletSummand χ hs]
-  convert eulerProduct_completely_multiplicative <| summable_dirichletSummand χ hs
+  apply eulerProduct_completely_multiplicative <| summable_dirichletSummand χ hs
