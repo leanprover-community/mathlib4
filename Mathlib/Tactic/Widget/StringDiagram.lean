@@ -188,9 +188,6 @@ def Node.toPenroseVar (n : Node) : PenroseVar :=
 def Strand.toPenroseVar (s : Strand) : PenroseVar :=
   ⟨"f", [s.vPos, s.hPos], s.atom₁.e⟩
 
-/-- Expressions to display as labels in a diagram. -/
-abbrev ExprEmbeds := Array (String × Expr)
-
 /-! ## Widget for general string diagrams -/
 
 open ProofWidgets
