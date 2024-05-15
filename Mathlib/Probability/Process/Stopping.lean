@@ -210,7 +210,7 @@ theorem IsStoppingTime.measurableSet_ge (hτ : IsStoppingTime f τ) (i : ι) :
 set_option linter.geOrGt false in
 theorem IsStoppingTime.measurableSet_eq (hτ : IsStoppingTime f τ) (i : ι) :
     MeasurableSet[f i] {ω | τ ω = i} := by
-  have : {ω | τ ω = i} = {ω | τ ω ≤ i} ∩ {ω | τ ω ≥ i} := by
+  have : {ω | τ ω = i} = {ω | τ ω ≤ i} ∩ {ω | i ≤ τ ω} := by
     ext1 ω; simp only [Set.mem_setOf_eq, ge_iff_le, Set.mem_inter_iff, le_antisymm_iff]
   rw [this]
   exact (hτ.measurableSet_le i).inter (hτ.measurableSet_ge i)

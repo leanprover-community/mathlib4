@@ -275,7 +275,6 @@ def GlobalPreprocessor.branching (pp : GlobalPreprocessor) : GlobalBranchingPrep
   name := pp.name
   transform := fun g l => do return [⟨g, ← pp.transform l⟩]
 
-set_option linter.geOrGt false in
 /--
 `process pp l` runs `pp.transform` on `l` and returns the result,
 tracing the result if `trace.linarith` is on.
@@ -283,7 +282,7 @@ tracing the result if `trace.linarith` is on.
 def GlobalBranchingPreprocessor.process (pp : GlobalBranchingPreprocessor)
     (g : MVarId) (l : List Expr) : MetaM (List Branch) := g.withContext do
   let branches ← pp.transform g l
-  if branches.length > 1 then
+  if 1 < branches.length then
     trace[linarith] "Preprocessing: {pp.name} has branched, with branches:"
   for ⟨goal, hyps⟩ in branches do
     goal.withContext do
