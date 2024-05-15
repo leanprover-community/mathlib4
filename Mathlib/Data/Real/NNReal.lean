@@ -1225,8 +1225,8 @@ theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*�
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
   real `r`, there exists `d : Γ₀ˣ` with `f d < r`. -/
-theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f) {r : ℝ}
-    (hr : 0 < r) : ∃ d : Γ₀ˣ, (f d : ℝ) < r := by
+theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
+    {r : ℝ} (hr : 0 < r) : ∃ d : Γ₀ˣ, (f d : ℝ) < r := by
   set s : NNReal := ⟨r, le_of_lt hr⟩
   have hs : 0 < s := hr
   exact NNReal.exists_lt_of_strictMono hf hs
