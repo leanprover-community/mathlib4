@@ -57,7 +57,7 @@ def isLimitConeLeftOpOfCocone (F : J ⥤ Cᵒᵖ) {c : Cocone F} (hc : IsColimit
         coconeOfConeLeftOp_ι_app, op_unop]
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
-    simpa only [Quiver.Hom.op_unop, IsColimit.fac, coconeOfConeLeftOp_ι_app] using w (op j)
+    simpa [IsColimit.fac, coconeOfConeLeftOp_ι_app] using w (op j)
 #align category_theory.limits.is_limit_cone_left_op_of_cocone CategoryTheory.Limits.isLimitConeLeftOpOfCocone
 
 /-- Turn a limit of `F : J ⥤ Cᵒᵖ` into a colimit of `F.leftOp : Jᵒᵖ ⥤ C`. -/
@@ -72,7 +72,7 @@ def isColimitCoconeLeftOpOfCone (F : J ⥤ Cᵒᵖ) {c : Cone F} (hc : IsLimit c
         coneOfCoconeLeftOp_π_app, op_unop]
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
-    simpa only [Quiver.Hom.op_unop, IsLimit.fac, coneOfCoconeLeftOp_π_app] using w (op j)
+    simpa [IsLimit.fac, coneOfCoconeLeftOp_π_app] using w (op j)
 #align category_theory.limits.is_colimit_cocone_left_op_of_cone CategoryTheory.Limits.isColimitCoconeLeftOpOfCone
 
 /-- Turn a colimit for `F : Jᵒᵖ ⥤ C` into a limit for `F.rightOp : J ⥤ Cᵒᵖ`. -/
@@ -108,7 +108,7 @@ def isLimitConeUnopOfCocone (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cocone F} (hc : IsCol
   fac s j := Quiver.Hom.op_inj (by simp)
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
-    simpa only [Quiver.Hom.op_unop, IsColimit.fac] using w (unop j)
+    simpa [IsColimit.fac] using w (unop j)
 #align category_theory.limits.is_limit_cone_unop_of_cocone CategoryTheory.Limits.isLimitConeUnopOfCocone
 
 /-- Turn a limit of `F : Jᵒᵖ ⥤ Cᵒᵖ` into a colimit of `F.unop : J ⥤ C`. -/
@@ -120,7 +120,7 @@ def isColimitCoconeUnopOfCone (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F} (hc : IsLim
   fac s j := Quiver.Hom.op_inj (by simp)
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
-    simpa only [Quiver.Hom.op_unop, IsLimit.fac] using w (unop j)
+    simpa [IsLimit.fac] using w (unop j)
 #align category_theory.limits.is_colimit_cocone_unop_of_cone CategoryTheory.Limits.isColimitCoconeUnopOfCone
 
 /-- Turn a colimit for `F.leftOp : Jᵒᵖ ⥤ C` into a limit for `F : J ⥤ Cᵒᵖ`. -/
@@ -162,7 +162,7 @@ def isLimitConeOfCoconeRightOp (F : Jᵒᵖ ⥤ C) {c : Cocone F.rightOp} (hc : 
   fac s j := Quiver.Hom.op_inj (by simp)
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
-    simpa only [Quiver.Hom.op_unop, IsColimit.fac] using w (op j)
+    simpa [IsColimit.fac] using w (op j)
 #align category_theory.limits.is_limit_cone_of_cocone_right_op CategoryTheory.Limits.isLimitConeOfCoconeRightOp
 
 /-- Turn a limit for `F.rightOp : J ⥤ Cᵒᵖ` into a limit for `F : Jᵒᵖ ⥤ C`. -/
@@ -174,7 +174,7 @@ def isColimitCoconeOfConeRightOp (F : Jᵒᵖ ⥤ C) {c : Cone F.rightOp} (hc : 
   fac s j := Quiver.Hom.op_inj (by simp)
   uniq s m w := by
     refine' Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj _)
-    simpa only [Quiver.Hom.op_unop, IsLimit.fac] using w (op j)
+    simpa [IsLimit.fac] using w (op j)
 #align category_theory.limits.is_colimit_cocone_of_cone_right_op CategoryTheory.Limits.isColimitCoconeOfConeRightOp
 
 /-- Turn a colimit for `F.unop : J ⥤ C` into a limit for `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/
@@ -888,7 +888,7 @@ def CokernelCofork.IsColimit.ofπUnop {X Y Q : Cᵒᵖ} (p : Y ⟶ Q) {f : X ⟶
     (fun x hx => (h.desc (CokernelCofork.ofπ x.op (Quiver.Hom.unop_inj hx))).unop)
     (fun x hx => Quiver.Hom.op_inj (Cofork.IsColimit.π_desc h))
     (fun x hx b hb => Quiver.Hom.op_inj (Cofork.IsColimit.hom_ext h
-      (by simpa only [Quiver.Hom.op_unop, Cofork.IsColimit.π_desc] using Quiver.Hom.unop_inj hb)))
+      (by simpa [CokernelCofork.ofπ, Cofork.ofπ] using Quiver.Hom.unop_inj hb)))
 
 /-- A limit kernel fork gives a colimit cokernel cofork in the opposite category -/
 def KernelFork.IsLimit.ofιOp {K X Y : C} (i : K ⟶ X) {f : X ⟶ Y}
@@ -911,7 +911,7 @@ def KernelFork.IsLimit.ofιUnop {K X Y : Cᵒᵖ} (i : K ⟶ X) {f : X ⟶ Y}
     (fun x hx => (h.lift (KernelFork.ofι x.op (Quiver.Hom.unop_inj hx))).unop)
     (fun x hx => Quiver.Hom.op_inj (Fork.IsLimit.lift_ι h))
     (fun x hx b hb => Quiver.Hom.op_inj (Fork.IsLimit.hom_ext h (by
-      simpa only [Quiver.Hom.op_unop, Fork.IsLimit.lift_ι] using Quiver.Hom.unop_inj hb)))
+      simpa [KernelFork.ofι, Fork.ofι, Fork.IsLimit.lift_ι] using Quiver.Hom.unop_inj hb)))
 
 end HasZeroMorphisms
 

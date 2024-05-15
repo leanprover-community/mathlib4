@@ -184,20 +184,23 @@ theorem unop_left_comp_underlyingIso_hom_unop {A : CostructuredArrow S T}
 theorem lift_projectQuotient [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T} :
     ∀ (P : Subobject (op A)) {q} (hq : S.map (projectQuotient P).arrow.unop ≫ q = A.hom),
       liftQuotient (projectQuotient P) hq = P :=
-  Subobject.ind _
-    (by
-      intro P f hf q hq
+  Subobject.ind _ fun P f hf q hq => (by
       fapply Subobject.mk_eq_mk_of_comm
-      · refine' (Iso.op (isoMk _ _) : _ ≅ op (unop P))
+      · refine (Iso.op (isoMk ?_ ?_) : _ ≅ op (unop P))
         · exact (Subobject.underlyingIso f.unop.left.op).unop
-        · refine' (cancel_epi (S.map f.unop.left)).1 _
-          simpa [← Category.assoc, ← S.map_comp] using hq
-      · exact Quiver.Hom.unop_inj (by aesop_cat))
+        · refine (cancel_epi (S.map f.unop.left)).1 ?_
+          rw [← Category.assoc, ← S.map_comp]
+          erw [unop_left_comp_underlyingIso_hom_unop f]
+          simpa using hq
+      · exact Quiver.Hom.unop_inj (by
+          simp only [projectQuotient_mk, Iso.op_hom, unop_comp, Quiver.Hom.unop_op, hom_eq_iff,
+            mk_left, comp_left, isoMk_hom_left, Iso.unop_hom, homMk_left]
+          erw [unop_left_comp_underlyingIso_hom_unop] ))
 #align category_theory.costructured_arrow.lift_project_quotient CategoryTheory.CostructuredArrow.lift_projectQuotient
 
 /-- Technical lemma for `quotientEquiv`. -/
 theorem unop_left_comp_ofMkLEMk_unop {A : CostructuredArrow S T} {P Q : (CostructuredArrow S T)ᵒᵖ}
-    {f : P ⟶ op A} {g : Q ⟶ op A} [Mono f.unop.left.op] [Mono g.unop.left.op]
+    {f : P ⟶  op A} {g : Q ⟶  op A} [Mono f.unop.left.op] [Mono g.unop.left.op]
     (h : Subobject.mk f.unop.left.op ≤ Subobject.mk g.unop.left.op) :
     g.unop.left ≫ (Subobject.ofMkLEMk f.unop.left.op g.unop.left.op h).unop = f.unop.left := by
   conv_lhs =>
@@ -215,16 +218,17 @@ def quotientEquiv [HasColimits C] [PreservesColimits S] (A : CostructuredArrow S
   toFun P := ⟨projectQuotient P, projectQuotient_factors P⟩
   invFun P := liftQuotient P.val P.prop.choose_spec
   left_inv P := lift_projectQuotient _ _
-  right_inv P := Subtype.ext (by simp only [liftQuotient, Quiver.Hom.unop_op, homMk_left,
-      Quiver.Hom.op_unop, projectQuotient_mk, Subobject.mk_arrow])
+  right_inv P := Subtype.ext (by simp only [liftQuotient, Functor.const_obj_obj, projectQuotient_mk,
+    mk_left, op_unop, Quiver.Hom.unop_op, homMk_left, Subobject.mk_arrow])
   map_rel_iff' := by
     apply Subobject.ind₂
     intro P Q f g hf hg
     refine' ⟨fun h => Subobject.mk_le_mk_of_comm _ _, fun h => _⟩
     · refine' (homMk (Subobject.ofMkLEMk _ _ h).unop ((cancel_epi (S.map g.unop.left)).1 _)).op
       dsimp
-      simp only [← S.map_comp_assoc, unop_left_comp_ofMkLEMk_unop, unop_op, CommaMorphism.w,
-        Functor.const_obj_obj, right_eq_id, Functor.const_obj_map, Category.comp_id]
+      rw [← S.map_comp_assoc]
+      erw [unop_left_comp_ofMkLEMk_unop]
+      simp
     · apply Quiver.Hom.unop_inj
       ext
       exact unop_left_comp_ofMkLEMk_unop _

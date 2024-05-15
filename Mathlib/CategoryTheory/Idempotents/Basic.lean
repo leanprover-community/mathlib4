@@ -192,7 +192,6 @@ theorem isIdempotentComplete_of_isIdempotentComplete_opposite (h : IsIdempotentC
   · simp only [← unop_comp, h₁]
     rfl
   · simp only [← unop_comp, h₂]
-    rfl
 #align category_theory.idempotents.is_idempotent_complete_of_is_idempotent_complete_opposite CategoryTheory.Idempotents.isIdempotentComplete_of_isIdempotentComplete_opposite
 
 theorem isIdempotentComplete_iff_opposite : IsIdempotentComplete Cᵒᵖ ↔ IsIdempotentComplete C := by

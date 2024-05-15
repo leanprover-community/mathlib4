@@ -219,8 +219,7 @@ noncomputable def functor : (Triangle C)ᵒᵖ ⥤ Triangle Cᵒᵖ where
       comm₃ := by
         dsimp
         rw [assoc, ← Functor.map_comp, ← op_comp, ← φ.unop.comm₃, op_comp, Functor.map_comp,
-          opShiftFunctorEquivalence_counitIso_inv_naturality_assoc]
-        rfl }
+          opShiftFunctorEquivalence_counitIso_inv_naturality_assoc] }
 
 /-- The functor which sends a triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` in `Cᵒᵖ` to the triangle
 `Z.unop ⟶ Y.unop ⟶ X.unop ⟶ Z.unop⟦1⟧` in `C` (without introducing signs). -/

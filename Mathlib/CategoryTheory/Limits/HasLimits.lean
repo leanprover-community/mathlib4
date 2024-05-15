@@ -1271,7 +1271,6 @@ def IsLimit.unop {t : Cone F.op} (P : IsLimit t) : IsColimit t.unop where
   uniq s m w := by
     dsimp
     rw [← P.uniq s.op m.op]
-    · rfl
     · dsimp
       intro j
       rw [← w]
@@ -1287,7 +1286,6 @@ def IsColimit.unop {t : Cocone F.op} (P : IsColimit t) : IsLimit t.unop where
   uniq s m w := by
     dsimp
     rw [← P.uniq s.op m.op]
-    · rfl
     · dsimp
       intro j
       rw [← w]
