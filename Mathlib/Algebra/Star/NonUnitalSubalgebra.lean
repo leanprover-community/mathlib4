@@ -837,7 +837,8 @@ lemma _root_.NonUnitalStarAlgHom.map_adjoin (f : F) (s : Set A) :
     NonUnitalStarAlgebra.gi.gc fun _t => rfl
 
 @[simp]
-lemma map_adjoin_singleton (f : F) (x : A) : map f (adjoin R {x}) = adjoin R {f x} := by
+lemma _root_.NonUnitalStarAlgHom.map_adjoin_singleton (f : F) (x : A) :
+    map f (adjoin R {x}) = adjoin R {f x} := by
   simp [NonUnitalStarAlgHom.map_adjoin]
 
 instance subsingleton_of_subsingleton [Subsingleton A] :
