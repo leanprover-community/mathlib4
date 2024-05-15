@@ -9,6 +9,25 @@ import Mathlib.Algebra.Star.Basic
 /-!
 # Morphisms of star rings
 
+This file defines morphisms between (non-unital) rings `A` and `B` where both
+`A` and `B` are equipped with a `star` operation. This morphisms, namely `NonUnitalStarRingHom` is
+a direct extension of its non-`star`red counterpart with a field `map_star` which guarantees it
+preserves the star operation. We keep the type classes as generic
+as possible, in keeping with the definition of `NonUnitalAlgHom` in the non-unital case.
+
+As with `NonUnitalAlgHom`, the multiplications are not assumed to be associative or unital.
+
+## Main definitions
+
+  * `NonUnitalRingAlgHom`
+
+## Implementation
+
+This file is heavily inspired by `Mathlib.Algebra.Star.StarAlgHom`.
+
+## Tags
+
+non-unital, ring, morphism, star
 -/
 
 /-! ### Non-unital star ring homomorphisms -/
