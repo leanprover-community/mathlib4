@@ -99,7 +99,38 @@ add_decl_doc StarRingEquiv.toRingEquiv
 `B`.
 You should also extend this typeclass when you extend `StarRingEquiv`. -/
 class StarRingEquivClass (F : Type*) (A B : outParam Type*)
-  [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B] [EquivLike F A B] [RingEquivClass F A B] : Prop
+  [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B] [EquivLike F A B]
+  extends RingEquivClass F A B : Prop
   where
   /-- By definition, a ⋆-algebra equivalence preserves the `star` operation. -/
   map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
+
+namespace StarRingEquiv
+
+section Basic
+
+variable {A B : Type*} [Add A] [Add B] [Mul A] [Mul B] [Star A] [Star B]
+
+instance : EquivLike (A ≃⋆+* B) A B
+    where
+  coe f := f.toFun
+  inv f := f.invFun
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
+  coe_injective' f g h₁ h₂ := by
+    rcases f with ⟨⟨⟨_, _, _⟩, _⟩, _⟩
+    rcases g with ⟨⟨⟨_, _, _⟩, _⟩, _⟩
+    congr
+
+instance : RingEquivClass (A ≃⋆+* B) A B
+    where
+  map_mul f := f.map_mul'
+  map_add f := f.map_add'
+
+instance : StarRingEquivClass (A ≃⋆+* B) A B
+    where
+  map_star := map_star'
+
+end Basic
+
+end StarRingEquiv
