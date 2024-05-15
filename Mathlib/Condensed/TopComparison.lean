@@ -108,18 +108,23 @@ Associate to a `(u+1)`-small topological space the corresponding condensed set, 
 `yonedaPresheaf`.
 -/
 -- @[simps!]
-noncomputable def TopCat.toCondensed (X : TopCat.{u+1}) : CondensedSet.{u} :=
-  @CondensedSet.ofSheafCompHaus (yonedaPresheaf.{u, u+1, u, u+1} compHausToTop.{u} X) _ (by
+noncomputable def TopCat.toCondensed (X : TopCat.{max u w}) : Condensed.{u} (Type max u w) :=
+  @Condensed.ofSheafCompHaus _ _ (yonedaPresheaf.{u, max u w, u, u+1} compHausToTop.{u} X) _ (by
     apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
       compHausToTop.{u} X
     intro Z B π he
     rw [((CompHaus.effectiveEpi_tfae π).out 0 2 :)] at he
     apply QuotientMap.of_surjective_continuous he π.continuous )
 
+/--
+`TopCat.toCondensed` yields a functor from `TopCat.{max u w}` to `Condensed.{u} (Type max u w)`.
+-/
+noncomputable def topCatToCondensed : TopCat.{max u w} ⥤ Condensed.{u} (Type max u w) where
+  obj X := X.toCondensed
+  map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩
 
 /--
 `TopCat.toCondensed` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
 -/
-noncomputable def topCatToCondensed : TopCat.{u+1} ⥤ CondensedSet.{u} where
-  obj X := X.toCondensed
-  map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩
+noncomputable def topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u} :=
+  topCatToCondensed.{u+1, u}
