@@ -256,7 +256,7 @@ instance : DecidablePred (Squarefree : ℕ → Prop) := fun _ =>
 
 unseal Nat.factors in
 theorem squarefree_two : Squarefree 2 := by
-  rw [squarefree_iff_nodup_factors] <;> decide
+  rw [squarefree_iff_nodup_factors] <;> simp
 #align nat.squarefree_two Nat.squarefree_two
 
 theorem divisors_filter_squarefree_of_squarefree {n : ℕ} (hn : Squarefree n) :
