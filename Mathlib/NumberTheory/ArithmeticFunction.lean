@@ -957,10 +957,9 @@ theorem cardFactors_apply {n : ℕ} : Ω n = n.factors.length :=
   rfl
 #align nat.arithmetic_function.card_factors_apply ArithmeticFunction.cardFactors_apply
 
-@[simp, nolint simpNF] -- this is a `dsimp` lemma
-lemma cardFactors_zero : Ω 0 = 0 := rfl
+lemma cardFactors_zero : Ω 0 = 0 := by simp
 
-@[simp] theorem cardFactors_one : Ω 1 = 0 := rfl
+@[simp] theorem cardFactors_one : Ω 1 = 0 := by simp [cardFactors_apply]
 #align nat.arithmetic_function.card_factors_one ArithmeticFunction.cardFactors_one
 
 @[simp]
