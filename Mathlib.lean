@@ -2968,7 +2968,10 @@ import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.Order.Group.Lattice
 import Mathlib.MeasureTheory.Order.Lattice
 import Mathlib.MeasureTheory.OuterMeasure.Basic
+import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 import Mathlib.MeasureTheory.OuterMeasure.Defs
+import Mathlib.MeasureTheory.OuterMeasure.Induced
+import Mathlib.MeasureTheory.OuterMeasure.OfFunction
 import Mathlib.MeasureTheory.OuterMeasure.Operations
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.SetAlgebra
