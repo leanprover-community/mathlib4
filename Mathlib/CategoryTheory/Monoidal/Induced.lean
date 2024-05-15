@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
+import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-
 # The monoidal category structure induced by a monoidal functor
@@ -89,5 +89,40 @@ noncomputable instance : MonoidalCategory (InducedCategory D F.obj) where
       LaxMonoidalFunctor.μ_natural_left]
     erw [← F.map_comp]
     simp
+
+def inducedMonoidalFunctor : MonoidalFunctor (InducedCategory D F.obj) D where
+  toFunctor := inducedFunctor F.obj
+  ε := F.ε
+  μ := F.μ
+  μ_natural_left := sorry
+  μ_natural_right := sorry
+  associativity := F.associativity
+  left_unitality := F.left_unitality
+  right_unitality := F.right_unitality
+
+noncomputable def toInducedMonoidalFunctor : MonoidalFunctor C (InducedCategory D F.obj) where
+  obj := id
+  map := F.map
+  ε := 𝟙 _
+  μ _ _ := 𝟙 _
+  ε_isIso := by dsimp; infer_instance
+  μ_isIso := by dsimp; infer_instance
+  μ_natural_left := sorry
+  μ_natural_right := sorry
+  associativity := sorry
+  left_unitality := sorry
+  right_unitality := sorry
+
+noncomputable def toInducedCompInducedMonoidalFunctor :
+    toInducedMonoidalFunctor F ⊗⋙ inducedMonoidalFunctor F ≅ F where
+  -- needs a constructor for isomorphisms in the category of monoidal functors
+  hom :=
+    { app := fun X => 𝟙 _
+      naturality := sorry
+      unit := sorry
+      tensor := sorry }
+  inv := sorry
+  hom_inv_id := sorry
+  inv_hom_id := sorry
 
 end CategoryTheory.MonoidalCategory
