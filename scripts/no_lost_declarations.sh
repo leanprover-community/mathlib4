@@ -74,7 +74,7 @@ else
     }
   }' |
   sort | uniq -c | grep -v "^ *2 " |
-  grep '\(`+`\|`-`\)' | sed 's=^ *1 =* =; s=``==g; s=` =` `=; s=$=`='
+  grep '\(`+`\|`-`\)' | sed 's=^ *1 ==; s=``==g; s=` = =; s=$=`='
 fi
 
  : <<ReferenceTest
