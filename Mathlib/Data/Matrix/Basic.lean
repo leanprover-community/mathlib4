@@ -573,7 +573,7 @@ lemma zero_le_one_elem [Preorder α] [ZeroLEOneClass α] (i i' : n) :
 
 lemma zero_le_one_row [Preorder α] [ZeroLEOneClass α] (i : n) :
     0 ≤ (1 : Matrix n n α) i :=
-  fun i' => zero_le_one_elem i i'
+  zero_le_one_elem _
 
 end One
 
