@@ -229,7 +229,6 @@ attribute [simp] OplaxMonoidalFunctor.left_unitality
 
 attribute [simp] OplaxMonoidalFunctor.right_unitality
 
--- Porting note: was `[simp, reassoc.1]`
 attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.associativity
 
 section
