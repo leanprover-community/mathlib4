@@ -63,6 +63,8 @@ else
       rest="instance"
       for(i=7; i<=NF-1; i++){rest=rest" "$i}
       gsub(/`/, "", rest)
+      gsub(/ where.*/, "", rest)
+      gsub(/ :=.*/, "", rest)
       acc[rest]=acc[rest] $4
     } else { acc[$7]=acc[$7] $4 } } END{
     for(d in acc) {
@@ -79,4 +81,5 @@ fi
 theorem oh hello
 inductive counts even if it is not lean code
 instance [I pretend] {to be a nameless} instance where
+instance [I also pretend] {to be a nameless} instance :=
 ReferenceTest
