@@ -1,6 +1,6 @@
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.ExtremallyDisconnected
-import Mathlib.Topology.Sets.Closeds
+-- import Mathlib.Topology.ExtremallyDisconnected
+-- import Mathlib.Topology.Sets.Closeds
 
 universe u
 
@@ -175,6 +175,8 @@ theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y)
     exact this
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget (CompHausLike P)).mono_of_mono_map
+
+#exit
 
 abbrev CompHaus := CompHausLike (fun _ ↦ True)
 

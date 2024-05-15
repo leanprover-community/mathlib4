@@ -44,11 +44,7 @@ open CategoryTheory
 open Topology
 
 /-- The type of profinite topological spaces. -/
-structure Profinite where
-  /-- The underlying compact Hausdorff space of a profinite space. -/
-  toCompHaus : CompHaus
-  /-- A profinite space is totally disconnected. -/
-  [isTotallyDisconnected : TotallyDisconnectedSpace toCompHaus]
+abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 #align Profinite Profinite
 
 namespace Profinite
@@ -56,28 +52,28 @@ namespace Profinite
 /-- Construct a term of `Profinite` from a type endowed with the structure of a
 compact, Hausdorff and totally disconnected topological space.
 -/
-def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] : Profinite :=
-  ⟨⟨⟨X, inferInstance⟩⟩⟩
+  CompHausLike.of _ X (inferInstance : TotallyDisconnectedSpace X)
 #align Profinite.of Profinite.of
 
 instance : Inhabited Profinite :=
   ⟨Profinite.of PEmpty⟩
 
-instance category : Category Profinite :=
-  InducedCategory.category toCompHaus
-#align Profinite.category Profinite.category
+-- instance category : Category Profinite :=
+--   InducedCategory.category toCompHaus
+-- #align Profinite.category Profinite.category
 
-instance concreteCategory : ConcreteCategory Profinite :=
-  InducedCategory.concreteCategory _
-#align Profinite.concrete_category Profinite.concreteCategory
+-- instance concreteCategory : ConcreteCategory Profinite :=
+--   InducedCategory.concreteCategory _
+-- #align Profinite.concrete_category Profinite.concreteCategory
 
 instance hasForget₂ : HasForget₂ Profinite TopCat :=
   InducedCategory.hasForget₂ _
 #align Profinite.has_forget₂ Profinite.hasForget₂
 
-instance : CoeSort Profinite (Type*) :=
-  ⟨fun X => X.toCompHaus⟩
+example : CoeSort Profinite (Type*) :=
+  inferInstance
 
 -- Porting note (#10688): This lemma was not needed in mathlib3
 @[simp]
@@ -86,7 +82,7 @@ lemma forget_ContinuousMap_mk {X Y : Profinite} (f : X → Y) (hf : Continuous f
   rfl
 
 instance {X : Profinite} : TotallyDisconnectedSpace X :=
-  X.isTotallyDisconnected
+  X.prop
 
 -- We check that we automatically infer that Profinite sets are compact and Hausdorff.
 example {X : Profinite} : CompactSpace X :=
@@ -96,21 +92,16 @@ example {X : Profinite} : T2Space X :=
   inferInstance
 
 -- Porting note: the next four instances were not needed previously.
-instance {X : Profinite} : TopologicalSpace ((forget Profinite).obj X) := by
-  change TopologicalSpace X
-  exact inferInstance
+example {X : Profinite} : TopologicalSpace ((forget Profinite).obj X) := inferInstance
 
 instance {X : Profinite} : TotallyDisconnectedSpace ((forget Profinite).obj X) := by
   change TotallyDisconnectedSpace X
   exact inferInstance
 
-instance {X : Profinite} : CompactSpace ((forget Profinite).obj X) := by
-  change CompactSpace X
-  exact inferInstance
+example {X : Profinite} : CompactSpace ((forget Profinite).obj X) :=
+  inferInstance
 
-instance {X : Profinite} : T2Space ((forget Profinite).obj X) := by
-  change T2Space X
-  exact inferInstance
+example {X : Profinite} : T2Space ((forget Profinite).obj X) := inferInstance
 
 -- Porting note: removed, as it is a syntactic tautology.
 -- @[simp]
@@ -136,7 +127,7 @@ end Profinite
 /-- The fully faithful embedding of `Profinite` in `CompHaus`. -/
 @[simps!]
 def profiniteToCompHaus : Profinite ⥤ CompHaus :=
-  inducedFunctor _
+  compHausLikeToCompHaus _
 -- Porting note: deriving fails, adding manually.
 -- deriving Full, Faithful
 #align Profinite_to_CompHaus profiniteToCompHaus
@@ -149,13 +140,12 @@ instance : profiniteToCompHaus.Faithful :=
 
 -- Porting note: added, as it is not found otherwise.
 instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
-  X.isTotallyDisconnected
+  X.prop
 
 /-- The fully faithful embedding of `Profinite` in `TopCat`.
 This is definitionally the same as the obvious composite. -/
-@[simps!]
-def Profinite.toTopCat : Profinite ⥤ TopCat :=
-  forget₂ _ _
+abbrev Profinite.toTopCat : Profinite ⥤ TopCat :=
+  CompHausLike.compHausLikeToTop _
 -- Porting note: deriving fails, adding manually.
 -- deriving Full, Faithful
 #align Profinite.to_Top Profinite.toTopCat
@@ -182,11 +172,10 @@ to Profinite spaces, given by quotienting a space by its connected components.
 See: https://stacks.math.columbia.edu/tag/0900
 -/
 def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
-  toCompHaus :=
-    { toTop := TopCat.of (ConnectedComponents X)
-      is_compact := Quotient.compactSpace
-      is_hausdorff := ConnectedComponents.t2 }
-  isTotallyDisconnected := ConnectedComponents.totallyDisconnectedSpace
+  toTop := TopCat.of (ConnectedComponents X)
+  is_compact := Quotient.compactSpace
+  is_hausdorff := ConnectedComponents.t2
+  prop := ConnectedComponents.totallyDisconnectedSpace
 #align CompHaus.to_Profinite_obj CompHaus.toProfiniteObj
 
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of Profinite
@@ -252,8 +241,8 @@ namespace Profinite
 `CompHaus.limitCone`, which is defined in terms of `TopCat.limitCone`. -/
 def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u v}) : Limits.Cone F where
   pt :=
-    { toCompHaus := (CompHaus.limitCone.{v, u} (F ⋙ profiniteToCompHaus)).pt
-      isTotallyDisconnected := by
+    { toTop := (CompHaus.limitCone.{v, u} (F ⋙ profiniteToCompHaus)).pt.toTop
+      prop := by
         change TotallyDisconnectedSpace ({ u : ∀ j : J, F.obj j | _ } : Type _)
         exact Subtype.totallyDisconnectedSpace }
   π :=
@@ -312,7 +301,7 @@ variable {X Y : Profinite.{u}} (f : X ⟶ Y)
 
 /-- Any morphism of profinite spaces is a closed map. -/
 theorem isClosedMap : IsClosedMap f :=
-  CompHaus.isClosedMap _
+  CompHausLike.isClosedMap _
 #align Profinite.is_closed_map Profinite.isClosedMap
 
 /-- Any continuous bijection of profinite spaces induces an isomorphism. -/
@@ -334,11 +323,8 @@ instance forget_reflectsIsomorphisms : (forget Profinite).ReflectsIsomorphisms :
 #align Profinite.forget_reflects_isomorphisms Profinite.forget_reflectsIsomorphisms
 
 /-- Construct an isomorphism from a homeomorphism. -/
-@[simps! hom inv]
-noncomputable
-def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
-  @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ profiniteToCompHaus
-    (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
+abbrev isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
+  CompHausLike.isoOfHomeo f
 #align Profinite.iso_of_homeo Profinite.isoOfHomeo
 
 /-- Construct a homeomorphism from an isomorphism. -/
@@ -395,24 +381,16 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     apply (forget Profinite).epi_of_epi_map
 #align Profinite.epi_iff_surjective Profinite.epi_iff_surjective
 
-instance {X Y : Profinite} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [CompHaus.epi_iff_surjective, ← epi_iff_surjective]; assumption
+-- instance {X Y : Profinite} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
+--   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+--   erw [CompHaus.epi_iff_surjective, ← epi_iff_surjective]; assumption
 
-instance {X Y : Profinite} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [epi_iff_surjective, ← CompHaus.epi_iff_surjective]; assumption
+-- instance {X Y : Profinite} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
+--   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+--   erw [epi_iff_surjective, ← CompHaus.epi_iff_surjective]; assumption
 
-theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
-  constructor
-  · intro h
-    haveI : Limits.PreservesLimits profiniteToCompHaus := inferInstance
-    haveI : Mono (profiniteToCompHaus.map f) := inferInstance
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [← CompHaus.mono_iff_injective]
-    assumption
-  · rw [← CategoryTheory.mono_iff_injective]
-    exact (forget Profinite).mono_of_mono_map (f := f)
+theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f :=
+  CompHausLike.mono_iff_injective f (inferInstance : TotallyDisconnectedSpace PUnit.{u+1})
 #align Profinite.mono_iff_injective Profinite.mono_iff_injective
 
 end Profinite

@@ -111,6 +111,10 @@ lemma Sigma.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a
   change ((Sigma.ι Z a) ≫ (coproductIsoCoproduct Z).inv) x = _
   simp [coproductIsoCoproduct]
 
+#exit
+/- TODO: refactor limits in `Stonean`, `Profinite` and `LightProfinite` to general stuff about
+`CompHausLike` -/
+
 instance : PreservesFiniteCoproducts Stonean.toCompHaus := by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) Stonean.toCompHaus from

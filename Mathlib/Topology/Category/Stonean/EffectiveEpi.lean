@@ -81,6 +81,8 @@ instance : Preregular Stonean where
     have := epiOfEffectiveEpi π
     exact ⟨X, 𝟙 X, inferInstance, Projective.factors f π⟩
 
+instance : FinitaryExtensive Stonean := sorry
+
 example : Precoherent Stonean.{u} := inferInstance
 
 -- TODO: prove this for `Type*`

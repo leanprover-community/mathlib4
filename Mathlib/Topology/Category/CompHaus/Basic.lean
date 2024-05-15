@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.UrysohnsLemma
+import Mathlib.Topology.Category.CompHausLike.Basic
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Data.Set.Subsingleton
 
@@ -34,41 +35,34 @@ universe v u
 
 open CategoryTheory
 
-/-- The type of Compact Hausdorff topological spaces. -/
-structure CompHaus where
-  /-- The underlying topological space of an object of `CompHaus`. -/
-  toTop : TopCat
-  -- Porting note: Renamed field.
-  /-- The underlying topological space is compact. -/
-  [is_compact : CompactSpace toTop]
-  /-- The underlying topological space is T2. -/
-  [is_hausdorff : T2Space toTop]
+abbrev CompHaus := CompHausLike (fun _ ↦ True)
 set_option linter.uppercaseLean3 false in
 #align CompHaus CompHaus
 
 namespace CompHaus
 
 instance : Inhabited CompHaus :=
-  ⟨{ toTop := { α := PEmpty } }⟩
+  ⟨{ toTop := { α := PEmpty }
+     prop := trivial }⟩
 
-instance : CoeSort CompHaus (Type*) :=
-  ⟨fun X => X.toTop⟩
+example : CoeSort CompHaus (Type*) :=
+  inferInstance
 
-instance {X : CompHaus} : CompactSpace X :=
-  X.is_compact
+example {X : CompHaus} : CompactSpace X :=
+  inferInstance
 
-instance {X : CompHaus} : T2Space X :=
-  X.is_hausdorff
+example {X : CompHaus} : T2Space X :=
+  inferInstance
 
-instance category : Category CompHaus :=
-  InducedCategory.category toTop
-set_option linter.uppercaseLean3 false in
-#align CompHaus.category CompHaus.category
+-- instance category : Category CompHaus :=
+--   InducedCategory.category toTop
+-- set_option linter.uppercaseLean3 false in
+-- #align CompHaus.category CompHaus.category
 
-instance concreteCategory : ConcreteCategory CompHaus :=
-  InducedCategory.concreteCategory _
-set_option linter.uppercaseLean3 false in
-#align CompHaus.concrete_category CompHaus.concreteCategory
+-- instance concreteCategory : ConcreteCategory CompHaus :=
+--   InducedCategory.concreteCategory _
+-- set_option linter.uppercaseLean3 false in
+-- #align CompHaus.concrete_category CompHaus.concreteCategory
 
 /-
 -- Porting note: This is now a syntactic tautology.
@@ -84,123 +78,81 @@ variable (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 /-- A constructor for objects of the category `CompHaus`,
 taking a type, and bundling the compact Hausdorff topology
 found by typeclass inference. -/
-def of : CompHaus where
-  toTop := TopCat.of X
-  is_compact := ‹_›
-  is_hausdorff := ‹_›
+abbrev of : CompHaus := CompHausLike.of _ X trivial
 set_option linter.uppercaseLean3 false in
 #align CompHaus.of CompHaus.of
 
-@[simp]
-theorem coe_of : (CompHaus.of X : Type _) = X :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align CompHaus.coe_of CompHaus.coe_of
+-- @[simp]
+-- theorem coe_of : (CompHaus.of X : Type _) = X :=
+--   rfl
+-- set_option linter.uppercaseLean3 false in
+-- #align CompHaus.coe_of CompHaus.coe_of
 
 -- Porting note (#10754): Adding instance
-instance (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
-  show TopologicalSpace X.toTop from inferInstance
+example (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
+  inferInstance
 
 -- Porting note (#10754): Adding instance
-instance (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
-  show CompactSpace X.toTop from inferInstance
+example (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
+  inferInstance
 
 -- Porting note (#10754): Adding instance
-instance (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
-  show T2Space X.toTop from inferInstance
+example (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
+  inferInstance
 
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/
-theorem isClosedMap {X Y : CompHaus.{u}} (f : X ⟶ Y) : IsClosedMap f := fun _ hC =>
-  (hC.isCompact.image f.continuous).isClosed
+theorem isClosedMap {X Y : CompHaus.{u}} (f : X ⟶ Y) : IsClosedMap f := CompHausLike.isClosedMap _
 set_option linter.uppercaseLean3 false in
 #align CompHaus.is_closed_map CompHaus.isClosedMap
 
 /-- Any continuous bijection of compact Hausdorff spaces is an isomorphism. -/
 theorem isIso_of_bijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bijective f) :
-    IsIso f := by
-  let E := Equiv.ofBijective _ bij
-  have hE : Continuous E.symm := by
-    rw [continuous_iff_isClosed]
-    intro S hS
-    rw [← E.image_eq_preimage]
-    exact isClosedMap f S hS
-  refine' ⟨⟨⟨E.symm, hE⟩, _, _⟩⟩
-  · ext x
-    apply E.symm_apply_apply
-  · ext x
-    apply E.apply_symm_apply
+    IsIso f := CompHausLike.isIso_of_bijective f bij
 set_option linter.uppercaseLean3 false in
 #align CompHaus.is_iso_of_bijective CompHaus.isIso_of_bijective
 
 /-- Any continuous bijection of compact Hausdorff spaces induces an isomorphism. -/
 noncomputable def isoOfBijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bijective f) :
-    X ≅ Y :=
-  letI := isIso_of_bijective _ bij
-  asIso f
+    X ≅ Y := CompHausLike.isoOfBijective f bij
 set_option linter.uppercaseLean3 false in
 #align CompHaus.iso_of_bijective CompHaus.isoOfBijective
 
 /-- Construct an isomorphism from a homeomorphism. -/
-@[simps hom inv]
-def isoOfHomeo {X Y : CompHaus.{u}} (f : X ≃ₜ Y) : X ≅ Y where
-  hom := ⟨f, f.continuous⟩
-  inv := ⟨f.symm, f.symm.continuous⟩
-  hom_inv_id := by
-    ext x
-    exact f.symm_apply_apply x
-  inv_hom_id := by
-    ext x
-    exact f.apply_symm_apply x
+abbrev isoOfHomeo {X Y : CompHaus.{u}} (f : X ≃ₜ Y) : X ≅ Y := CompHausLike.isoOfHomeo f
 
 /-- Construct a homeomorphism from an isomorphism. -/
-@[simps]
-def homeoOfIso {X Y : CompHaus.{u}} (f : X ≅ Y) : X ≃ₜ Y where
-  toFun := f.hom
-  invFun := f.inv
-  left_inv x := by simp
-  right_inv x := by simp
-  continuous_toFun := f.hom.continuous
-  continuous_invFun := f.inv.continuous
+abbrev homeoOfIso {X Y : CompHaus.{u}} (f : X ≅ Y) : X ≃ₜ Y := CompHausLike.homeoOfIso f
 
 /-- The equivalence between isomorphisms in `CompHaus` and homeomorphisms
 of topological spaces. -/
-@[simps]
-def isoEquivHomeo {X Y : CompHaus.{u}} : (X ≅ Y) ≃ (X ≃ₜ Y) where
-  toFun := homeoOfIso
-  invFun := isoOfHomeo
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
+abbrev isoEquivHomeo {X Y : CompHaus.{u}} : (X ≅ Y) ≃ (X ≃ₜ Y) := CompHausLike.isoEquivHomeo
 
 end CompHaus
 
 /-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
 -- Porting note: `semireducible` -> `.default`.
-@[simps (config := { rhsMd := .default })]
-def compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
-  inducedFunctor _ -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
+abbrev compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
+  CompHausLike.compHausLikeToTop _
+  -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top compHausToTop
 
-instance : compHausToTop.Full  :=
-  show (inducedFunctor _).Full from inferInstance
+example : compHausToTop.Full  :=
+  inferInstance
 
-instance : compHausToTop.Faithful :=
-  show (inducedFunctor _).Faithful from inferInstance
-
--- Porting note (#10754): Adding instance
-instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
-  show CompactSpace X.toTop from inferInstance
+example : compHausToTop.Faithful :=
+  inferInstance
 
 -- Porting note (#10754): Adding instance
-instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
-  show T2Space X.toTop from inferInstance
+example (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
+  inferInstance
+
+-- Porting note (#10754): Adding instance
+example (X : CompHaus) : T2Space (compHausToTop.obj X) :=
+  inferInstance
 
 instance CompHaus.forget_reflectsIsomorphisms : (forget CompHaus.{u}).ReflectsIsomorphisms :=
-  ⟨by intro A B f hf; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
+  inferInstance
 set_option linter.uppercaseLean3 false in
 #align CompHaus.forget_reflects_isomorphisms CompHaus.forget_reflectsIsomorphisms
 
@@ -307,7 +259,8 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
         · exact continuous_apply j
       is_hausdorff :=
         show T2Space { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j } from
-          inferInstance }
+          inferInstance
+      prop := trivial }
     π := {
       app := fun j => (TopCat.limitCone FF).π.app j
       naturality := by
@@ -390,3 +343,7 @@ set_option linter.uppercaseLean3 false in
 #align CompHaus.mono_iff_injective CompHaus.mono_iff_injective
 
 end CompHaus
+
+def compHausLikeToCompHaus (P : TopCat → Prop) : CompHausLike P ⥤ CompHaus where
+  obj X := CompHaus.of X
+  map f := f
