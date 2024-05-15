@@ -3,7 +3,7 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 
 #align_import ring_theory.ideal.prod from "leanprover-community/mathlib"@"052f6013363326d50cb99c6939814a4b8eb7b301"
 

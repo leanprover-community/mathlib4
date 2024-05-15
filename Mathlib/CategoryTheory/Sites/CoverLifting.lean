@@ -377,13 +377,15 @@ lemma Functor.toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A)
     toSheafify J (G.op ⋙ F) ≫
     ((G.pushforwardContinuousSheafificationCompatibility A J K).hom.app F).val =
     whiskerLeft _ (toSheafify K _) := by
-  dsimp [pushforwardContinuousSheafificationCompatibility, Adjunction.leftAdjointUniq]
+  dsimp [pushforwardContinuousSheafificationCompatibility]
+  simp only [Adjunction.leftAdjointUniq, Iso.symm_hom, Adjunction.natIsoEquiv_apply_inv,
+    Iso.refl_inv, Adjunction.natTransEquiv_apply_app, comp_obj, whiskeringLeft_obj_obj,
+    sheafToPresheaf_obj, whiskerLeft_id', Category.comp_id, comp_map, whiskeringLeft_obj_map,
+    Sheaf.instCategorySheaf_comp_val]
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
   ext E : 2
-  dsimp [Functor.preimage, Coyoneda.preimage, coyoneda, Adjunction.leftAdjointsCoyonedaEquiv]
-  erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
-  dsimp [Adjunction.comp]
+  dsimp [Functor.preimage, Coyoneda.preimage, coyoneda, Adjunction.comp]
   simp only [Category.comp_id, map_id, whiskerLeft_id', map_comp, Sheaf.instCategorySheaf_comp_val,
     sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift,
     Category.id_comp, Category.assoc, toSheafify_sheafifyLift]

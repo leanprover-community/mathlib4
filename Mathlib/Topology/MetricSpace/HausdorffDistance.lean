@@ -229,8 +229,8 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     have : infEdist x Uᶜ ≠ 0 := ((ENNReal.pow_pos a_pos _).trans_le hx).ne'
     exact this (infEdist_zero_of_mem h)
   refine ⟨F, fun n => IsClosed.preimage continuous_infEdist isClosed_Ici, F_subset, ?_, ?_⟩
-  show ⋃ n, F n = U
-  · refine' Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => _
+  · show ⋃ n, F n = U
+    refine' Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => _
     have : ¬x ∈ Uᶜ := by simpa using hx
     rw [mem_iff_infEdist_zero_of_closed hU.isClosed_compl] at this
     have B : 0 < infEdist x Uᶜ := by simpa [pos_iff_ne_zero] using this
@@ -240,9 +240,9 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     simp only [mem_iUnion, mem_Ici, mem_preimage]
     exact ⟨n, hn.le⟩
   show Monotone F
-  · intro m n hmn x hx
-    simp only [F, mem_Ici, mem_preimage] at hx ⊢
-    apply le_trans (pow_le_pow_right_of_le_one' a_lt_one.le hmn) hx
+  intro m n hmn x hx
+  simp only [F, mem_Ici, mem_preimage] at hx ⊢
+  apply le_trans (pow_le_pow_right_of_le_one' a_lt_one.le hmn) hx
 #align is_open.exists_Union_is_closed IsOpen.exists_iUnion_isClosed
 
 theorem _root_.IsCompact.exists_infEdist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :
