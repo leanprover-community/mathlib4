@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Devon Tuma
 -/
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.Tactic.AdaptationNote
 
 #align_import ring_theory.polynomial.scale_roots from "leanprover-community/mathlib"@"40ac1b258344e0c2b4568dc37bfad937ec35a727"
 
@@ -171,7 +173,7 @@ theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+
   set_option tactic.skipAssignedInstances false in
   nontriviality S using Subsingleton.eq_zero
   convert @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
-  rw [← mul_div_assoc, mul_comm, mul_div_cancel]
+  rw [← mul_div_assoc, mul_comm, mul_div_cancel_right₀]
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
 #align polynomial.scale_roots_eval₂_eq_zero_of_eval₂_div_eq_zero Polynomial.scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero
 
@@ -229,9 +231,9 @@ lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = nat
       p.scaleRoots r + q.scaleRoots r := by
   ext n; simp only [coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
     mul_comm (r ^ _), ← pow_add, ← h, ← add_mul, add_comm (_ - n)]
-  -- Adaptation note: v4.7.0-rc1
-  -- Previously `mul_assoc` was part of the `simp only` above, and this `rw` was not needed.
-  -- but this now causes a max rec depth error.
+  #adaptation_note /-- v4.7.0-rc1
+  Previously `mul_assoc` was part of the `simp only` above, and this `rw` was not needed.
+  but this now causes a max rec depth error. -/
   rw [mul_assoc, ← pow_add]
   cases lt_or_le (natDegree (p + q)) n with
   | inl hn => simp only [← coeff_add, coeff_eq_zero_of_natDegree_lt hn, zero_mul]

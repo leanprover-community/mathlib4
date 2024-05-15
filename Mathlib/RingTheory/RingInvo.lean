@@ -64,10 +64,10 @@ variable {R} [Semiring R] [EquivLike F R Rᵐᵒᵖ]
 
 /-- Any type satisfying `RingInvoClass` can be cast into `RingInvo` via
 `RingInvoClass.toRingInvo`. -/
-instance [Semiring R] [RingInvoClass F R] : CoeTC F (RingInvo R) :=
+instance [RingInvoClass F R] : CoeTC F (RingInvo R) :=
   ⟨RingInvoClass.toRingInvo⟩
 
-instance [Semiring R] : EquivLike (RingInvo R) R Rᵐᵒᵖ where
+instance : EquivLike (RingInvo R) R Rᵐᵒᵖ where
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' e f h₁ h₂ := by
@@ -78,7 +78,7 @@ instance [Semiring R] : EquivLike (RingInvo R) R Rᵐᵒᵖ where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
-instance [Semiring R] : RingInvoClass (RingInvo R) R where
+instance : RingInvoClass (RingInvo R) R where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
   involution f := f.involution'

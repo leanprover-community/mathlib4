@@ -47,7 +47,7 @@ theorem constantCoeff_invUnitsSub (u : Rˣ) : constantCoeff R (invUnitsSub u) = 
 theorem invUnitsSub_mul_X (u : Rˣ) : invUnitsSub u * X = invUnitsSub u * C R u - 1 := by
   ext (_ | n)
   · simp
-  · simp [n.succ_ne_zero, pow_succ]
+  · simp [n.succ_ne_zero, pow_succ']
 set_option linter.uppercaseLean3 false in
 #align power_series.inv_units_sub_mul_X PowerSeries.invUnitsSub_mul_X
 
@@ -171,9 +171,9 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
   rw [mul_one_div (↑(n.choose x) : ℚ), one_div_mul_one_div]
   symm
   rw [div_eq_iff, div_mul_eq_mul_div, one_mul, choose_eq_factorial_div_factorial]
-  norm_cast
-  rw [cast_div_charZero]
-  · apply factorial_mul_factorial_dvd_factorial (mem_range_succ_iff.1 hx)
+  · norm_cast
+    rw [cast_div_charZero]
+    apply factorial_mul_factorial_dvd_factorial (mem_range_succ_iff.1 hx)
   · apply mem_range_succ_iff.1 hx
   · rintro h
     apply factorial_ne_zero n
@@ -191,7 +191,7 @@ theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (
   · simp only [rescale_zero, constantCoeff_exp, Function.comp_apply, map_one, cast_zero, zero_eq,
       pow_zero (exp A), coe_comp]
   · simpa only [succ_eq_add_one, cast_add, ← exp_mul_exp_eq_exp_add (k : A), ← h, cast_one,
-    id_apply, rescale_one] using pow_succ' (exp A) k
+    id_apply, rescale_one] using pow_succ (exp A) k
 #align power_series.exp_pow_eq_rescale_exp PowerSeries.exp_pow_eq_rescale_exp
 
 /-- Shows that

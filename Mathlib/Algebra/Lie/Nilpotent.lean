@@ -10,7 +10,7 @@ import Mathlib.Algebra.Lie.Normalizer
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.RingTheory.Artinian
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.Tactic.Monotonicity
 
 #align_import algebra.lie.nilpotent from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
@@ -134,7 +134,7 @@ variable (R L M)
 theorem antitone_lowerCentralSeries : Antitone <| lowerCentralSeries R L M := by
   intro l k
   induction' k with k ih generalizing l <;> intro h
-  · exact (le_zero_iff.mp h).symm ▸ le_rfl
+  · exact (Nat.le_zero.mp h).symm ▸ le_rfl
   · rcases Nat.of_le_succ h with (hk | hk)
     · rw [lowerCentralSeries_succ]
       exact (LieSubmodule.mono_lie_right _ _ ⊤ (ih hk)).trans (LieSubmodule.lie_le_right _ _)
@@ -175,7 +175,8 @@ theorem iterate_toEndomorphism_mem_lowerCentralSeries (x : L) (m : M) (k : ℕ) 
 theorem iterate_toEndomorphism_mem_lowerCentralSeries₂ (x y : L) (m : M) (k : ℕ) :
     (toEndomorphism R L M x ∘ₗ toEndomorphism R L M y)^[k] m ∈
       lowerCentralSeries R L M (2 * k) := by
-  induction' k with k ih; simp
+  induction' k with k ih
+  · simp
   have hk : 2 * k.succ = (2 * k + 1) + 1 := rfl
   simp only [lowerCentralSeries_succ, Function.comp_apply, Function.iterate_succ', hk,
       toEndomorphism_apply_apply, LinearMap.coe_comp, toEndomorphism_apply_apply]
@@ -860,7 +861,8 @@ variable (R A L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 lemma LieSubmodule.lowerCentralSeries_tensor_eq_baseChange (k : ℕ) :
     lowerCentralSeries A (A ⊗[R] L) (A ⊗[R] M) k =
     (lowerCentralSeries R L M k).baseChange A := by
-  induction' k with k ih; simp
+  induction' k with k ih
+  · simp
   simp only [lowerCentralSeries_succ, ih, ← baseChange_top, lie_baseChange]
 
 instance LieModule.instIsNilpotentTensor [IsNilpotent R L M] :

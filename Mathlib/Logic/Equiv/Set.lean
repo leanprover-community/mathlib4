@@ -140,6 +140,10 @@ theorem eq_preimage_iff_image_eq {α β} (e : α ≃ β) (s t) : s = e ⁻¹' t 
   Set.eq_preimage_iff_image_eq e.bijective
 #align equiv.eq_preimage_iff_image_eq Equiv.eq_preimage_iff_image_eq
 
+lemma setOf_apply_symm_eq_image_setOf {α β} (e : α ≃ β) (p : α → Prop) :
+    {b | p (e.symm b)} = e '' {a | p a} := by
+  rw [Equiv.image_eq_preimage, preimage_setOf_eq]
+
 @[simp]
 theorem prod_assoc_preimage {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
     Equiv.prodAssoc α β γ ⁻¹' s ×ˢ t ×ˢ u = (s ×ˢ t) ×ˢ u := by
@@ -723,3 +727,28 @@ theorem dite_comp_equiv_update {α : Type*} {β : Sort*} {γ : Sort*} {p : α �
       rwa [← h] at this
     simp [h, this]
 #align dite_comp_equiv_update dite_comp_equiv_updateₓ
+
+section Swap
+
+variable {α : Type*} [DecidableEq α] {a b : α} {s : Set α}
+
+theorem Equiv.swap_bijOn_self (hs : a ∈ s ↔ b ∈ s) : BijOn (Equiv.swap a b) s s := by
+  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn _, fun x hx ↦ ?_⟩
+  · obtain (rfl | hxa) := eq_or_ne x a; rwa [swap_apply_left, ← hs]
+    obtain (rfl | hxb) := eq_or_ne x b; rwa [swap_apply_right, hs]
+    rwa [swap_apply_of_ne_of_ne hxa hxb]
+  obtain (rfl | hxa) := eq_or_ne x a; simp [hs.1 hx]
+  obtain (rfl | hxb) := eq_or_ne x b; simp [hs.2 hx]
+  exact ⟨x, hx, swap_apply_of_ne_of_ne hxa hxb⟩
+
+theorem Equiv.swap_bijOn_exchange (ha : a ∈ s) (hb : b ∉ s) :
+    BijOn (Equiv.swap a b) s (insert b (s \ {a})) := by
+  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn _, fun x hx ↦ ?_⟩
+  · obtain (rfl | hxa) := eq_or_ne x a; simp [swap_apply_left]
+    rw [swap_apply_of_ne_of_ne hxa (by rintro rfl; contradiction)]
+    exact .inr ⟨hx, hxa⟩
+  obtain (rfl | hxb) := eq_or_ne x b; exact ⟨a, ha, by simp⟩
+  simp only [mem_insert_iff, mem_diff, mem_singleton_iff, or_iff_right hxb] at hx
+  exact ⟨x, hx.1, swap_apply_of_ne_of_ne hx.2 hxb⟩
+
+end Swap

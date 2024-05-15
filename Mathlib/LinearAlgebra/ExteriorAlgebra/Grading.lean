@@ -95,7 +95,7 @@ instance gradedAlgebra : GradedAlgebra (fun i : ℕ ↦ ⋀[R]^i M) :=
 #align exterior_algebra.graded_algebra ExteriorAlgebra.gradedAlgebra
 
 /-- The union of the images of the maps `ExteriorAlgebra.ιMulti R n` for `n` running through
-all natural numbers spans the exterior algebra.-/
+all natural numbers spans the exterior algebra. -/
 lemma ιMulti_span :
     Submodule.span R (Set.range fun x : Σ n, (Fin n → M) => ιMulti R x.1 x.2) = ⊤ := by
   rw [Submodule.eq_top_iff']

@@ -75,7 +75,7 @@ theorem hyperoperation_two : hyperoperation 2 = (· * ·) := by
     -- Porting note: was `ring`
     dsimp only
     nth_rewrite 1 [← mul_one m]
-    rw [← mul_add, add_comm, Nat.succ_eq_add_one]
+    rw [← mul_add, add_comm]
 #align hyperoperation_two hyperoperation_two
 
 @[simp]
@@ -85,7 +85,7 @@ theorem hyperoperation_three : hyperoperation 3 = (· ^ ·) := by
   · rw [hyperoperation_ge_three_eq_one]
     exact (pow_zero m).symm
   · rw [hyperoperation_recursion, hyperoperation_two, bih]
-    exact (pow_succ m bn).symm
+    exact (pow_succ' m bn).symm
 #align hyperoperation_three hyperoperation_three
 
 theorem hyperoperation_ge_two_eq_self (n m : ℕ) : hyperoperation (n + 2) m 1 = m := by

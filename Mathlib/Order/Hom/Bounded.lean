@@ -181,8 +181,6 @@ def BotHomClass.toBotHom [Bot α] [Bot β] [BotHomClass F α β] (f : F) : BotHo
 instance [Bot α] [Bot β] [BotHomClass F α β] : CoeTC F (BotHom α β) :=
   ⟨BotHomClass.toBotHom⟩
 
-variable [FunLike F α β]
-
 /-- Turn an element of a type `F` satisfying `BoundedOrderHomClass F α β` into an actual
 `BoundedOrderHom`. This is declared as the default coercion from `F` to `BoundedOrderHom α β`. -/
 @[coe]

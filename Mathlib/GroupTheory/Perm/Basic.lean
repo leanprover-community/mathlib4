@@ -203,7 +203,7 @@ theorem sumCongr_one {α β : Type*} : sumCongr (1 : Perm α) (1 : Perm β) = 1 
   sumCongr_refl
 #align equiv.perm.sum_congr_one Equiv.Perm.sumCongr_one
 
-/-- `Equiv.Perm.sumCongr` as a `MonoidHom`, with its two arguments bundled into a single `prod`.
+/-- `Equiv.Perm.sumCongr` as a `MonoidHom`, with its two arguments bundled into a single `Prod`.
 
 This is particularly useful for its `MonoidHom.range` projection, which is the subgroup of
 permutations which do not exchange elements between `α` and `β`. -/
@@ -401,7 +401,7 @@ theorem inv_subtypePerm (f : Perm α) (hf) :
 
 private theorem pow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℕ} (x), p x ↔ p ((f ^ n) x)
   | 0, _ => Iff.rfl
-  | _ + 1, _ => (pow_aux hf _).trans (hf _)
+  | _ + 1, _ => (hf _).trans (pow_aux hf _)
 
 @[simp]
 theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :

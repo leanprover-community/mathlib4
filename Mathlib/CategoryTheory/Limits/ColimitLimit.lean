@@ -25,13 +25,13 @@ is that when `C = Type`, filtered colimits commute with finite limits.
 -/
 
 
-universe v u
+universe v₁ v₂ v u₁ u₂ u
 
 open CategoryTheory
 
 namespace CategoryTheory.Limits
 
-variable {J K : Type v} [SmallCategory J] [SmallCategory K]
+variable {J : Type u₁} {K : Type u₂} [Category.{v₁} J] [Category.{v₂} K]
 variable {C : Type u} [Category.{v} C]
 variable (F : J × K ⥤ C)
 
@@ -94,12 +94,15 @@ theorem ι_colimitLimitToLimitColimit_π (j) (k) :
 #align category_theory.limits.ι_colimit_limit_to_limit_colimit_π CategoryTheory.Limits.ι_colimitLimitToLimitColimit_π
 
 @[simp]
-theorem ι_colimitLimitToLimitColimit_π_apply (F : J × K ⥤ Type v) (j : J) (k : K) (f) :
-    limit.π (curry.obj F ⋙ colim) j
+theorem ι_colimitLimitToLimitColimit_π_apply [Small.{v} J] [Small.{v} K] (F : J × K ⥤ Type v)
+    (j : J) (k : K) (f) : limit.π (curry.obj F ⋙ colim) j
         (colimitLimitToLimitColimit F (colimit.ι (curry.obj (Prod.swap K J ⋙ F) ⋙ lim) k f)) =
       colimit.ι ((curry.obj F).obj j) k (limit.π ((curry.obj (Prod.swap K J ⋙ F)).obj k) j f) := by
   dsimp [colimitLimitToLimitColimit]
-  simp
+  rw [Types.Limit.lift_π_apply]
+  dsimp only
+  rw [Types.Colimit.ι_desc_apply]
+  dsimp
 #align category_theory.limits.ι_colimit_limit_to_limit_colimit_π_apply CategoryTheory.Limits.ι_colimitLimitToLimitColimit_π_apply
 
 /-- The map `colimit_limit_to_limit_colimit` realized as a map of cones. -/

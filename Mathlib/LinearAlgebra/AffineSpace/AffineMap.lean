@@ -657,7 +657,7 @@ theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => 
 are the same. -/
 theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ => f 0 := by
   rw [decomp]
-  simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel, zero_add]
+  simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel_right, zero_add]
 #align affine_map.decomp' AffineMap.decomp'
 
 theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
@@ -717,8 +717,8 @@ variable [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
 instance distribMulAction : DistribMulAction R (P1 →ᵃ[k] V2) where
-  smul_add _c _f _g := ext fun _p => smul_add _ _ _
-  smul_zero _c := ext fun _p => smul_zero _
+  smul_add _ _ _ := ext fun _ => smul_add _ _ _
+  smul_zero _ := ext fun _ => smul_zero _
 
 end DistribMulAction
 

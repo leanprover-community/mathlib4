@@ -7,6 +7,7 @@ import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 ## Pseudo-metric spaces
@@ -58,8 +59,7 @@ def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist
 
 -- Porting note: dropped the `dist_self` argument
 /-- Construct a bornology from a distance function and metric space axioms. -/
-@[reducible]
-def Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀ x y, dist x y = dist y x)
+abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀ x y, dist x y = dist y x)
     (dist_triangle : ∀ x y z, dist x z ≤ dist x y + dist y z) : Bornology α :=
   Bornology.ofBounded { s : Set α | ∃ C, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → dist x y ≤ C }
     ⟨0, fun x hx y => hx.elim⟩ (fun s ⟨c, hc⟩ t h => ⟨c, fun x hx y hy => hc (h hx) (h hy)⟩)
@@ -666,7 +666,7 @@ theorem iUnion_inter_closedBall_nat (s : Set α) (x : α) : ⋃ n : ℕ, s ∩ c
 #align metric.Union_inter_closed_ball_nat Metric.iUnion_inter_closedBall_nat
 
 theorem ball_subset (h : dist x y ≤ ε₂ - ε₁) : ball x ε₁ ⊆ ball y ε₂ := fun z zx => by
-  rw [← add_sub_cancel'_right ε₁ ε₂]
+  rw [← add_sub_cancel ε₁ ε₂]
   exact lt_of_le_of_lt (dist_triangle z x y) (add_lt_add_of_lt_of_le zx h)
 #align metric.ball_subset Metric.ball_subset
 
@@ -963,7 +963,7 @@ theorem eventually_nhds_iff_ball {p : α → Prop} :
 #align metric.eventually_nhds_iff_ball Metric.eventually_nhds_iff_ball
 
 /-- A version of `Filter.eventually_prod_iff` where the first filter consists of neighborhoods
-in a pseudo-metric space.-/
+in a pseudo-metric space. -/
 theorem eventually_nhds_prod_iff {f : Filter ι} {x₀ : α} {p : α × ι → Prop} :
     (∀ᶠ x in 𝓝 x₀ ×ˢ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∀ {x}, dist x x₀ < ε → ∀ {i}, pa i → p (x, i) := by
@@ -973,7 +973,7 @@ theorem eventually_nhds_prod_iff {f : Filter ι} {x₀ : α} {p : α × ι → P
 #align metric.eventually_nhds_prod_iff Metric.eventually_nhds_prod_iff
 
 /-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods
-in a pseudo-metric space.-/
+in a pseudo-metric space. -/
 theorem eventually_prod_nhds_iff {f : Filter ι} {x₀ : α} {p : ι × α → Prop} :
     (∀ᶠ x in f ×ˢ 𝓝 x₀, p x) ↔ ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∃ ε > 0, ∀ {i}, pa i → ∀ {x}, dist x x₀ < ε → p (i, x) := by
@@ -1150,7 +1150,7 @@ end Metric
 
 open Metric
 
-/-Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
+/- Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 
@@ -1239,8 +1239,7 @@ theorem Metric.inseparable_iff {x y : α} : Inseparable x y ↔ dist x y = 0 := 
 (but typically non-definitionaly) equal to some given uniform structure.
 See Note [forgetful inheritance].
 -/
-@[reducible]
-def PseudoMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
+abbrev PseudoMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoMetricSpace α :=
   { m with
     toUniformSpace := U
@@ -1262,8 +1261,7 @@ example {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
 provably (but typically non-definitionaly) equal to some given topological structure.
 See Note [forgetful inheritance].
 -/
-@[reducible]
-def PseudoMetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : PseudoMetricSpace γ)
+abbrev PseudoMetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : PseudoMetricSpace γ)
     (H : U = m.toUniformSpace.toTopologicalSpace) : PseudoMetricSpace γ :=
   @PseudoMetricSpace.replaceUniformity γ (m.toUniformSpace.replaceTopology H) m rfl
 #align pseudo_metric_space.replace_topology PseudoMetricSpace.replaceTopology
@@ -1279,8 +1277,7 @@ is everywhere finite, by pushing the edistance to reals. We set it up so that th
 uniformity are defeq in the pseudometric space and the pseudoemetric space. In this definition, the
 distance is given separately, to be able to prescribe some expression which is not defeq to the
 push-forward of the edistance to reals. See note [reducible non-instances]. -/
-@[reducible]
-def PseudoEMetricSpace.toPseudoMetricSpaceOfDist {α : Type u} [e : PseudoEMetricSpace α]
+abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {α : Type u} [e : PseudoEMetricSpace α]
     (dist : α → α → ℝ) (edist_ne_top : ∀ x y : α, edist x y ≠ ⊤)
     (h : ∀ x y, dist x y = ENNReal.toReal (edist x y)) : PseudoMetricSpace α where
   dist := dist
@@ -1300,8 +1297,7 @@ def PseudoEMetricSpace.toPseudoMetricSpaceOfDist {α : Type u} [e : PseudoEMetri
 /-- One gets a pseudometric space from an emetric space if the edistance
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
 uniformity are defeq in the pseudometric space and the emetric space. -/
-@[reducible]
-def PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace α]
+abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace α]
     (h : ∀ x y : α, edist x y ≠ ⊤) : PseudoMetricSpace α :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist (fun x y => ENNReal.toReal (edist x y)) h fun _ _ =>
     rfl
@@ -1311,8 +1307,7 @@ def PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace α]
 (but typically non-definitionaly) equal to some given bornology structure.
 See Note [forgetful inheritance].
 -/
-@[reducible]
-def PseudoMetricSpace.replaceBornology {α} [B : Bornology α] (m : PseudoMetricSpace α)
+abbrev PseudoMetricSpace.replaceBornology {α} [B : Bornology α] (m : PseudoMetricSpace α)
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :
     PseudoMetricSpace α :=
   { m with
@@ -1357,6 +1352,10 @@ theorem Real.nndist_eq' (x y : ℝ) : nndist x y = Real.nnabs (y - x) :=
 theorem Real.dist_0_eq_abs (x : ℝ) : dist x 0 = |x| := by simp [Real.dist_eq]
 #align real.dist_0_eq_abs Real.dist_0_eq_abs
 
+theorem Real.sub_le_dist (x y : ℝ) : x - y ≤ dist x y := by
+  rw [Real.dist_eq, le_abs]
+  exact Or.inl (le_refl _)
+
 theorem Real.dist_left_le_of_mem_uIcc {x y z : ℝ} (h : y ∈ uIcc x z) : dist x y ≤ dist x z := by
   simpa only [dist_comm x] using abs_sub_left_of_mem_uIcc h
 #align real.dist_left_le_of_mem_uIcc Real.dist_left_le_of_mem_uIcc
@@ -1397,13 +1396,13 @@ theorem Real.closedBall_eq_Icc {x r : ℝ} : closedBall x r = Icc (x - r) (x + r
 #align real.closed_ball_eq_Icc Real.closedBall_eq_Icc
 
 theorem Real.Ioo_eq_ball (x y : ℝ) : Ioo x y = ball ((x + y) / 2) ((y - x) / 2) := by
-  rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel', add_self_div_two,
-    ← add_div, add_assoc, add_sub_cancel'_right, add_self_div_two]
+  rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
+    ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
 #align real.Ioo_eq_ball Real.Ioo_eq_ball
 
 theorem Real.Icc_eq_closedBall (x y : ℝ) : Icc x y = closedBall ((x + y) / 2) ((y - x) / 2) := by
-  rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel', add_self_div_two, ←
-    add_div, add_assoc, add_sub_cancel'_right, add_self_div_two]
+  rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
+    ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
 #align real.Icc_eq_closed_ball Real.Icc_eq_closedBall
 
 section MetricOrdered
@@ -1490,8 +1489,7 @@ theorem tendsto_closedBall_smallSets (x : α) : Tendsto (closedBall x) (𝓝 0) 
 end Real
 
 /-- Pseudometric space structure pulled back by a function. -/
-@[reducible]
-def PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace β) :
+abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace β) :
     PseudoMetricSpace α where
   dist x y := dist (f x) (f y)
   dist_self x := dist_self _
@@ -1593,6 +1591,24 @@ theorem NNReal.le_add_nndist (a b : ℝ≥0) : a ≤ b + nndist a b := by
   rw [← sub_le_iff_le_add']
   exact le_of_abs_le (dist_eq a b).ge
 #align nnreal.le_add_nndist NNReal.le_add_nndist
+
+lemma NNReal.ball_zero_eq_Ico' (c : ℝ≥0) :
+    Metric.ball (0 : ℝ≥0) c.toReal = Set.Ico 0 c := by ext x; simp
+
+lemma NNReal.ball_zero_eq_Ico (c : ℝ) :
+    Metric.ball (0 : ℝ≥0) c = Set.Ico 0 c.toNNReal := by
+  by_cases c_pos : 0 < c
+  · convert NNReal.ball_zero_eq_Ico' ⟨c, c_pos.le⟩
+    simp [Real.toNNReal, c_pos.le]
+  simp [not_lt.mp c_pos]
+
+lemma NNReal.closedBall_zero_eq_Icc' (c : ℝ≥0) :
+    Metric.closedBall (0 : ℝ≥0) c.toReal = Set.Icc 0 c := by ext x; simp
+
+lemma NNReal.closedBall_zero_eq_Icc {c : ℝ} (c_nn : 0 ≤ c) :
+    Metric.closedBall (0 : ℝ≥0) c = Set.Icc 0 c.toNNReal := by
+  convert NNReal.closedBall_zero_eq_Icc' ⟨c, c_nn⟩
+  simp [Real.toNNReal, c_nn]
 
 end NNReal
 

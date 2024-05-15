@@ -3,10 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Image
-import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Bounds
+import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Data.Real.Basic
+import Mathlib.Order.Interval.Set.Disjoint
 
 #align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
 
@@ -56,7 +56,7 @@ theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ,
     ⟨n, le_of_lt hn⟩)
 #align real.exists_floor Real.exists_floor
 
-theorem exists_isLUB (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ x, IsLUB S x := by
+theorem exists_isLUB {S : Set ℝ} (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ x, IsLUB S x := by
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩
   have : ∀ d : ℕ, BddAbove { m : ℤ | ∃ y ∈ S, (m : ℝ) ≤ y * d } := by
     cases' exists_int_gt U with k hk
@@ -107,11 +107,19 @@ theorem exists_isLUB (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ 
           le_trans hx (h xS)⟩
 #align real.exists_is_lub Real.exists_isLUB
 
+/-- A nonempty, bounded below set of real numbers has a greatest lower bound. -/
+theorem exists_isGLB {S : Set ℝ} (hne : S.Nonempty) (hbdd : BddBelow S) : ∃ x, IsGLB S x := by
+  have hne' : (-S).Nonempty := Set.nonempty_neg.mpr hne
+  have hbdd' : BddAbove (-S) := bddAbove_neg.mpr hbdd
+  use -Classical.choose (Real.exists_isLUB hne' hbdd')
+  rw [← isLUB_neg]
+  exact Classical.choose_spec (Real.exists_isLUB hne' hbdd')
+
 noncomputable instance : SupSet ℝ :=
-  ⟨fun S => if h : S.Nonempty ∧ BddAbove S then Classical.choose (exists_isLUB S h.1 h.2) else 0⟩
+  ⟨fun S => if h : S.Nonempty ∧ BddAbove S then Classical.choose (exists_isLUB h.1 h.2) else 0⟩
 
 theorem sSup_def (S : Set ℝ) :
-    sSup S = if h : S.Nonempty ∧ BddAbove S then Classical.choose (exists_isLUB S h.1 h.2) else 0 :=
+    sSup S = if h : S.Nonempty ∧ BddAbove S then Classical.choose (exists_isLUB h.1 h.2) else 0 :=
   rfl
 #align real.Sup_def Real.sSup_def
 
@@ -345,5 +353,25 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
     · refine' hf_mono (le_trans _ hyq.le)
       norm_cast
 #align infi_Ioi_eq_infi_rat_gt Real.iInf_Ioi_eq_iInf_rat_gt
+
+theorem not_bddAbove_coe : ¬ (BddAbove <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
+  dsimp only [BddAbove, upperBounds]
+  rw [Set.not_nonempty_iff_eq_empty]
+  ext
+  simpa using exists_rat_gt _
+
+theorem not_bddBelow_coe : ¬ (BddBelow <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
+  dsimp only [BddBelow, lowerBounds]
+  rw [Set.not_nonempty_iff_eq_empty]
+  ext
+  simpa using exists_rat_lt _
+
+theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
+  exact iUnion_Iic_of_not_bddAbove_range not_bddAbove_coe
+#align real.Union_Iic_rat Real.iUnion_Iic_rat
+
+theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
+  exact iInter_Iic_eq_empty_iff.mpr not_bddBelow_coe
+#align real.Inter_Iic_rat Real.iInter_Iic_rat
 
 end Real

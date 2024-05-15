@@ -111,8 +111,9 @@ theorem sInf_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, 
   constructor
   · intro H
     rw [eq_Ici_of_nonempty_of_upward_closed (nonempty_of_sInf_eq_succ _) hs, H, mem_Ici, mem_Ici]
-    exact ⟨le_rfl, k.not_succ_le_self⟩;
-    exact k; assumption
+    · exact ⟨le_rfl, k.not_succ_le_self⟩;
+    · exact k
+    · assumption
   · rintro ⟨H, H'⟩
     rw [sInf_def (⟨_, H⟩ : s.Nonempty), find_eq_iff]
     exact ⟨H, fun n hnk hns ↦ H' <| hs n k (Nat.lt_succ_iff.mp hnk) hns⟩

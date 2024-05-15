@@ -31,7 +31,7 @@ for `Set α`, and some more set constructions.
   `f ⁻¹ y ⊆ s`.
 * `Set.seq`: Union of the image of a set under a **seq**uence of functions. `seq s t` is the union
   of `f '' t` over all `f ∈ s`, where `t : Set α` and `s : Set (α → β)`.
-* `Set.iUnion_eq_sigma_of_disjoint`: Equivalence between `⋃ i, t i` and `Σ i, t i`, where `t` is an
+* `Set.unionEqSigmaOfDisjoint`: Equivalence between `⋃ i, t i` and `Σ i, t i`, where `t` is an
   indexed family of disjoint sets.
 
 ## Naming convention
@@ -53,9 +53,6 @@ In lemma names,
 * `⋃₀`: `Set.sUnion`
 * `⋂₀`: `Set.sInter`
 -/
-
-set_option autoImplicit true
-
 
 open Function Set
 
@@ -536,15 +533,6 @@ theorem diff_iUnion [Nonempty ι] (s : Set β) (t : ι → Set β) : (s \ ⋃ i,
 theorem diff_iInter (s : Set β) (t : ι → Set β) : (s \ ⋂ i, t i) = ⋃ i, s \ t i := by
   rw [diff_eq, compl_iInter, inter_iUnion]; rfl
 #align set.diff_Inter Set.diff_iInter
-
-theorem directed_on_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
-    (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
-  simp only [DirectedOn, exists_prop, mem_iUnion, exists_imp]
-  exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
-    let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
-    let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
-    ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
-#align set.directed_on_Union Set.directed_on_iUnion
 
 theorem iUnion_inter_subset {ι α} {s t : ι → Set α} : ⋃ i, s i ∩ t i ⊆ (⋃ i, s i) ∩ ⋃ i, t i :=
   le_iSup_inf_iSup s t
@@ -1513,7 +1501,7 @@ theorem injective_iff_injective_of_iUnion_eq_univ :
     Injective f ↔ ∀ i, Injective ((U i).restrictPreimage f) := by
   refine' ⟨fun H i => (U i).restrictPreimage_injective H, fun H x y e => _⟩
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp
-      (show f x ∈ Set.iUnion U by rw [hU]; triv)
+      (show f x ∈ Set.iUnion U by rw [hU]; trivial)
   injection @H i ⟨x, hi⟩ ⟨y, show f y ∈ U i from e ▸ hi⟩ (Subtype.ext e)
 #align set.injective_iff_injective_of_Union_eq_univ Set.injective_iff_injective_of_iUnion_eq_univ
 
@@ -1522,7 +1510,7 @@ theorem surjective_iff_surjective_of_iUnion_eq_univ :
   refine' ⟨fun H i => (U i).restrictPreimage_surjective H, fun H x => _⟩
   obtain ⟨i, hi⟩ :=
     Set.mem_iUnion.mp
-      (show x ∈ Set.iUnion U by rw [hU]; triv)
+      (show x ∈ Set.iUnion U by rw [hU]; trivial)
   exact ⟨_, congr_arg Subtype.val (H i ⟨x, hi⟩).choose_spec⟩
 #align set.surjective_iff_surjective_of_Union_eq_univ Set.surjective_iff_surjective_of_iUnion_eq_univ
 
@@ -1542,7 +1530,7 @@ theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} 
     (f '' ⋂ i, s i) = ⋂ i, f '' s i := by
   inhabit ι
   refine' Subset.antisymm (image_iInter_subset s f) fun y hy => _
-  simp only [mem_iInter, mem_image_iff_bex] at hy
+  simp only [mem_iInter, mem_image] at hy
   choose x hx hy using hy
   refine' ⟨x default, mem_iInter.2 fun i => _, hy _⟩
   suffices x default = x i by
@@ -1733,6 +1721,15 @@ theorem preimage_iUnion {f : α → β} {s : ι → Set β} : (f ⁻¹' ⋃ i, s
 theorem preimage_iUnion₂ {f : α → β} {s : ∀ i, κ i → Set β} :
     (f ⁻¹' ⋃ (i) (j), s i j) = ⋃ (i) (j), f ⁻¹' s i j := by simp_rw [preimage_iUnion]
 #align set.preimage_Union₂ Set.preimage_iUnion₂
+
+theorem image_sUnion {f : α → β} {s : Set (Set α)} : (f '' ⋃₀ s) = ⋃₀ (image f '' s) := by
+  ext b
+  simp only [mem_image, mem_sUnion, exists_prop, sUnion_image, mem_iUnion]
+  constructor
+  · rintro ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
+    exact ⟨t, ht₁, a, ht₂, rfl⟩
+  · rintro ⟨t, ht₁, a, ht₂, rfl⟩
+    exact ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
 
 @[simp]
 theorem preimage_sUnion {f : α → β} {s : Set (Set β)} : f ⁻¹' ⋃₀s = ⋃ t ∈ s, f ⁻¹' t := by
@@ -2035,6 +2032,27 @@ theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)
 
 end Pi
 
+section Directed
+
+theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
+    (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
+  simp only [DirectedOn, exists_prop, mem_iUnion, exists_imp]
+  exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
+    let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
+    let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
+    ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
+#align set.directed_on_Union Set.directedOn_iUnion
+
+@[deprecated (since := "2024-05-05")]
+alias directed_on_iUnion := directedOn_iUnion
+
+theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
+    (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by
+  rw [sUnion_eq_iUnion]
+  exact directedOn_iUnion (directedOn_iff_directed.mp hd) (fun i ↦ h i.1 i.2)
+
+end Directed
+
 end Set
 
 namespace Function
@@ -2191,6 +2209,15 @@ theorem sigmaToiUnion_bijective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
   ⟨sigmaToiUnion_injective t h, sigmaToiUnion_surjective t⟩
 #align set.sigma_to_Union_bijective Set.sigmaToiUnion_bijective
 
+/-- Equivalence from the disjoint union of a family of sets forming a partition of `β`, to `β`
+itself. -/
+noncomputable def sigmaEquiv (s : α → Set β) (hs : ∀ b, ∃! i, b ∈ s i) :
+    (Σ i, s i) ≃ β where
+  toFun | ⟨_, b⟩ => b
+  invFun b := ⟨(hs b).choose, b, (hs b).choose_spec.1⟩
+  left_inv | ⟨i, b, hb⟩ => Sigma.subtype_ext ((hs b).choose_spec.2 i hb).symm rfl
+  right_inv _ := rfl
+
 /-- Equivalence between a disjoint union and a dependent sum. -/
 noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}
     (h : Pairwise fun i j => Disjoint (t i) (t j)) :
@@ -2216,7 +2243,7 @@ theorem _root_.Antitone.iInter_nat_add {f : ℕ → Set α} (hf : Antitone f) (k
   hf.iInf_nat_add k
 #align antitone.Inter_nat_add Antitone.iInter_nat_add
 
-/-Porting note: removing `simp`. LHS does not simplify. Possible linter bug. Zulip discussion:
+/- Porting note: removing `simp`. LHS does not simplify. Possible linter bug. Zulip discussion:
 https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
 -/
 theorem iUnion_iInter_ge_nat_add (f : ℕ → Set α) (k : ℕ) :
@@ -2266,10 +2293,10 @@ lemma iInf_sUnion (S : Set (Set α)) (f : α → β) :
     (⨅ x ∈ ⋃₀ S, f x) = ⨅ (s ∈ S) (x ∈ s), f x := by
   rw [sUnion_eq_iUnion, iInf_iUnion, ← iInf_subtype'']
 
-lemma forall_sUnion {p : α → Prop} :
+lemma forall_sUnion {S : Set (Set α)} {p : α → Prop} :
     (∀ x ∈ ⋃₀ S, p x) ↔ ∀ s ∈ S, ∀ x ∈ s, p x := by
   simp_rw [← iInf_Prop_eq, iInf_sUnion]
 
-lemma exists_sUnion {p : α → Prop} :
+lemma exists_sUnion {S : Set (Set α)} {p : α → Prop} :
     (∃ x ∈ ⋃₀ S, p x) ↔ ∃ s ∈ S, ∃ x ∈ s, p x := by
   simp_rw [← exists_prop, ← iSup_Prop_eq, iSup_sUnion]

@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Subgroup.Simple
@@ -118,7 +118,7 @@ theorem MonoidHom.map_cyclic {G : Type*} [Group G] [h : IsCyclic G] (σ : G →*
   rw [MonoidHom.map_zpow, ← hm, ← zpow_mul, ← zpow_mul']
 #align monoid_hom.map_cyclic MonoidHom.map_cyclic
 #align monoid_add_hom.map_add_cyclic AddMonoidHom.map_addCyclic
-/- 2024-02-21 -/ @[deprecated] alias MonoidAddHom.map_add_cyclic := AddMonoidHom.map_addCyclic
+@[deprecated] alias MonoidAddHom.map_add_cyclic := AddMonoidHom.map_addCyclic -- 2024-02-21
 
 @[to_additive]
 theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fintype.card α) :
@@ -130,8 +130,8 @@ theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fint
     exact Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
 #align is_cyclic_of_order_of_eq_card isCyclic_of_orderOf_eq_card
 #align is_add_cyclic_of_order_of_eq_card isAddCyclic_of_addOrderOf_eq_card
-/- 2024-02-21 -/ @[deprecated] alias isAddCyclic_of_orderOf_eq_card :=
-  isAddCyclic_of_addOrderOf_eq_card
+@[deprecated] -- 2024-02-21
+alias isAddCyclic_of_orderOf_eq_card := isAddCyclic_of_addOrderOf_eq_card
 
 /-- Any non-identity element of a finite group of prime order generates the group. -/
 @[to_additive "Any non-identity element of a finite group of prime order generates the group."]
@@ -255,13 +255,13 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
             rw [← zpow_add, Int.emod_add_ediv, hk]; exact hx
         have hk₄ : k % Nat.find hex = (k % Nat.find hex).natAbs := by
           rw [Int.natAbs_of_nonneg
-              (Int.emod_nonneg _ (Int.coe_nat_ne_zero_iff_pos.2 (Nat.find_spec hex).1))]
+              (Int.emod_nonneg _ (Int.natCast_ne_zero_iff_pos.2 (Nat.find_spec hex).1))]
         have hk₅ : g ^ (k % Nat.find hex).natAbs ∈ H := by rwa [← zpow_natCast, ← hk₄]
         have hk₆ : (k % (Nat.find hex : ℤ)).natAbs = 0 :=
           by_contradiction fun h =>
             Nat.find_min hex
               (Int.ofNat_lt.1 <| by
-                rw [← hk₄]; exact Int.emod_lt_of_pos _ (Int.coe_nat_pos.2 (Nat.find_spec hex).1))
+                rw [← hk₄]; exact Int.emod_lt_of_pos _ (Int.natCast_pos.2 (Nat.find_spec hex).1))
               ⟨Nat.pos_of_ne_zero h, hk₅⟩
         ⟨k / (Nat.find hex : ℤ),
           Subtype.ext_iff_val.2
@@ -319,8 +319,8 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
       exact le_of_dvd hn0 (Nat.gcd_dvd_left _ _)
 #align is_cyclic.card_pow_eq_one_le IsCyclic.card_pow_eq_one_le
 #align is_add_cyclic.card_pow_eq_one_le IsAddCyclic.card_nsmul_eq_zero_le
-/- 2024-02-21 -/
-@[deprecated] alias IsAddCyclic.card_pow_eq_one_le := IsAddCyclic.card_nsmul_eq_zero_le
+@[deprecated] -- 2024-02-21
+alias IsAddCyclic.card_pow_eq_one_le := IsAddCyclic.card_nsmul_eq_zero_le
 
 end Classical
 
@@ -331,6 +331,26 @@ theorem IsCyclic.exists_monoid_generator [Finite α] [IsCyclic α] :
   exact IsCyclic.exists_generator
 #align is_cyclic.exists_monoid_generator IsCyclic.exists_monoid_generator
 #align is_add_cyclic.exists_add_monoid_generator IsAddCyclic.exists_addMonoid_generator
+
+@[to_additive]
+lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf g = Nat.card α := by
+  obtain ⟨g, hg⟩ := h.exists_generator
+  use g
+  rw [← card_zpowers g, (eq_top_iff' (zpowers g)).mpr hg]
+  exact Nat.card_congr (Equiv.Set.univ α)
+
+@[to_additive]
+lemma isCyclic_iff_exists_ofOrder_eq_natCard [Finite α] :
+    IsCyclic α ↔ ∃ g : α, orderOf g = Nat.card α := by
+  refine ⟨fun h ↦ h.exists_ofOrder_eq_natCard, fun h ↦ ?_⟩
+  obtain ⟨g, hg⟩ := h
+  cases nonempty_fintype α
+  refine isCyclic_of_orderOf_eq_card g ?_
+  simp [hg]
+
+@[to_additive (attr := deprecated)] -- 2024-04-20
+protected alias IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
+  isCyclic_iff_exists_ofOrder_eq_natCard
 
 section
 
@@ -359,7 +379,7 @@ theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
   · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
       Int.modEq_comm, Int.modEq_iff_add_fac, ← ZMod.int_coe_zmod_eq_iff]
   · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
-      ← ZMod.int_cast_eq_int_cast_iff] at hy
+      ← ZMod.intCast_eq_intCast_iff] at hy
     simp [hy]
 
 @[to_additive]
@@ -369,8 +389,8 @@ lemma IsCyclic.ext {G : Type*} [Group G] [Fintype G] [IsCyclic G] {d : ℕ} {a b
   specialize h g
   subst hGcard
   rw [pow_eq_pow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers hg,
-    ← ZMod.nat_cast_eq_nat_cast_iff] at h
-  simpa [ZMod.nat_cast_val, ZMod.cast_id'] using h
+    ← ZMod.natCast_eq_natCast_iff] at h
+  simpa [ZMod.natCast_val, ZMod.cast_id'] using h
 
 end
 
@@ -439,7 +459,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   by_contra h0
   -- Must qualify `Finset.card_eq_zero` because of leanprover/lean4#2849
   -- Must specify the argument `α` to avoid mathlib4#10830
-  simp_rw [not_lt, _root_.le_zero_iff (α := ℕ), Finset.card_eq_zero] at h0
+  simp_rw [not_lt, Nat.le_zero, Finset.card_eq_zero] at h0
   apply lt_irrefl c
   calc
     c = ∑ m in c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
@@ -462,7 +482,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
       · simp [h1]
       · simp [card_orderOf_eq_totient_aux₁ hn hmc h1]
     _ < ∑ m in c.divisors, φ m :=
-      (sum_erase_lt_of_pos (mem_divisors.2 ⟨hd, hc0.ne'⟩) (totient_pos (pos_of_dvd_of_pos hd hc0)))
+      sum_erase_lt_of_pos (mem_divisors.2 ⟨hd, hc0.ne'⟩) (totient_pos.2 (pos_of_dvd_of_pos hd hc0))
     _ = c := sum_totient _
 #align card_order_of_eq_totient_aux₂ card_orderOf_eq_totient_aux₂
 
@@ -470,14 +490,14 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
 theorem isCyclic_of_card_pow_eq_one_le : IsCyclic α :=
   have : (univ.filter fun a : α => orderOf a = Fintype.card α).Nonempty :=
     card_pos.1 <| by
-      rw [card_orderOf_eq_totient_aux₂ hn dvd_rfl];
-        exact totient_pos (Fintype.card_pos_iff.2 ⟨1⟩)
+      rw [card_orderOf_eq_totient_aux₂ hn dvd_rfl, totient_pos]
+      apply Fintype.card_pos
   let ⟨x, hx⟩ := this
   isCyclic_of_orderOf_eq_card x (Finset.mem_filter.1 hx).2
 #align is_cyclic_of_card_pow_eq_one_le isCyclic_of_card_pow_eq_one_le
 
-/- 2024-02-21 -/
-@[deprecated] alias isAddCyclic_of_card_pow_eq_one_le := isAddCyclic_of_card_nsmul_eq_zero_le
+@[deprecated] -- 2024-02-21
+alias isAddCyclic_of_card_pow_eq_one_le := isAddCyclic_of_card_nsmul_eq_zero_le
 
 end Totient
 
@@ -487,8 +507,8 @@ theorem IsCyclic.card_orderOf_eq_totient [IsCyclic α] [Fintype α] {d : ℕ}
   classical apply card_orderOf_eq_totient_aux₂ (fun n => IsCyclic.card_pow_eq_one_le) hd
 #align is_cyclic.card_order_of_eq_totient IsCyclic.card_orderOf_eq_totient
 
-/- 2024-02-21 -/
-@[deprecated] alias IsAddCyclic.card_orderOf_eq_totient := IsAddCyclic.card_addOrderOf_eq_totient
+@[deprecated] -- 2024-02-21
+alias IsAddCyclic.card_orderOf_eq_totient := IsAddCyclic.card_addOrderOf_eq_totient
 
 /-- A finite group of prime order is simple. -/
 @[to_additive "A finite group of prime order is simple."]
@@ -543,7 +563,7 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic H] (f : G →* H) (hf : 
 #align commutative_of_cyclic_center_quotient commutative_of_cyclic_center_quotient
 #align commutative_of_add_cyclic_center_quotient commutative_of_addCyclic_center_quotient
 
-/- 2024-02-21 -/ @[deprecated]
+@[deprecated] -- 2024-02-21
 alias commutative_of_add_cyclic_center_quotient := commutative_of_addCyclic_center_quotient
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
@@ -625,7 +645,7 @@ section SpecificInstances
 instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
 
 instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) :=
-  isAddCyclic_of_surjective (Int.castRingHom _) ZMod.int_cast_surjective
+  isAddCyclic_of_surjective (Int.castRingHom _) ZMod.intCast_surjective
 
 instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
   AddCommGroup.is_simple_iff_isAddCyclic_and_prime_card.2
@@ -737,7 +757,7 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
     congr
     rw [← Nat.card_zmultiples]
     exact Nat.card_congr (Equiv.subtypeUnivEquiv surj)
-  exact (Int.quotientZMultiplesNatEquivZMod n)
+  exact Int.quotientZMultiplesNatEquivZMod n
     |>.symm.trans <| QuotientAddGroup.quotientAddEquivOfEq kereq
     |>.symm.trans <| QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj
 

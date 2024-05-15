@@ -32,7 +32,7 @@ variable {α : Type u} {β : Type*} {γ : Type*} {δ : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Uniform isomorphism between `α` and `β` -/
---@[nolint has_nonempty_instance] -- Porting note: missing linter?
+--@[nolint has_nonempty_instance] -- Porting note(#5171): linter not yet ported
 structure UniformEquiv (α : Type*) (β : Type*) [UniformSpace α] [UniformSpace β] extends
   α ≃ β where
   /-- Uniform continuity of the function -/
@@ -240,13 +240,16 @@ protected theorem uniformInducing (h : α ≃ᵤ β) : UniformInducing h :=
     simp only [symm_comp_self, uniformInducing_id]
 #align uniform_equiv.uniform_inducing UniformEquiv.uniformInducing
 
-theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› := by
-  ext : 1; exact h.uniformInducing.comap_uniformity
+theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› :=
+  h.uniformInducing.comap_uniformSpace
 #align uniform_equiv.comap_eq UniformEquiv.comap_eq
 
 protected theorem uniformEmbedding (h : α ≃ᵤ β) : UniformEmbedding h :=
   ⟨h.uniformInducing, h.injective⟩
 #align uniform_equiv.uniform_embedding UniformEquiv.uniformEmbedding
+
+theorem completeSpace_iff (h : α ≃ᵤ β) : CompleteSpace α ↔ CompleteSpace β :=
+  completeSpace_congr h.uniformEmbedding
 
 /-- Uniform equiv given a uniform embedding. -/
 noncomputable def ofUniformEmbedding (f : α → β) (hf : UniformEmbedding f) : α ≃ᵤ Set.range f

@@ -91,7 +91,7 @@ variable {R : Type u} {S : Type*} {A : Type v} [CommRing R]
 variable [CommRing S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
 variable [IsScalarTower R S A]
 
-/-- An integral element of an algebra is algebraic.-/
+/-- An integral element of an algebra is algebraic. -/
 theorem IsIntegral.isAlgebraic [Nontrivial R] {x : A} : IsIntegral R x → IsAlgebraic R x :=
   fun ⟨p, hp, hpx⟩ => ⟨p, hp.ne_zero, hpx⟩
 #align is_integral.is_algebraic IsIntegral.isAlgebraic
@@ -216,7 +216,7 @@ section Field
 
 variable {K : Type u} {A : Type v} [Field K] [Ring A] [Algebra K A]
 
-/-- An element of an algebra over a field is algebraic if and only if it is integral.-/
+/-- An element of an algebra over a field is algebraic if and only if it is integral. -/
 theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x := by
   refine' ⟨_, IsIntegral.isAlgebraic⟩
   rintro ⟨p, hp, hpx⟩
@@ -252,7 +252,7 @@ theorem IsAlgebraic.tower_top_of_injective
     (A_alg : IsAlgebraic R x) : IsAlgebraic S x :=
   let ⟨p, hp₁, hp₂⟩ := A_alg
   ⟨p.map (algebraMap _ _), by
-    rwa [Ne.def, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
+    rwa [Ne, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
 #align is_algebraic_of_larger_base_of_injective IsAlgebraic.tower_top_of_injective
 
 /-- If A is an algebraic algebra over R, then A is algebraic over S when S is an extension of R,
@@ -375,8 +375,7 @@ theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function
 variable (K L)
 
 /-- Bijection between algebra equivalences and algebra homomorphisms -/
-@[reducible]
-noncomputable def algEquivEquivAlgHom [FiniteDimensional K L] :
+noncomputable abbrev algEquivEquivAlgHom [FiniteDimensional K L] :
     (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) :=
   (Algebra.IsAlgebraic.of_finite K L).algEquivEquivAlgHom K L
 #align alg_equiv_equiv_alg_hom algEquivEquivAlgHom
@@ -412,7 +411,7 @@ theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S]
     ⟨IsIntegralClosure.mk' S (c : L) c.2, d, d_ne, IsIntegralClosure.algebraMap_injective S R L _⟩
   simp only [Algebra.smul_def, RingHom.map_mul, IsIntegralClosure.algebraMap_mk', ← hx, ←
     IsScalarTower.algebraMap_apply]
-  rw [← mul_assoc _ (_ / _), mul_div_cancel' (algebraMap S L a), mul_comm]
+  rw [← mul_assoc _ (_ / _), mul_div_cancel₀ (algebraMap S L a), mul_comm]
   exact mt ((injective_iff_map_eq_zero _).mp (IsIntegralClosure.algebraMap_injective S R L) _) hb
 #align is_integral_closure.exists_smul_eq_mul IsIntegralClosure.exists_smul_eq_mul
 
@@ -424,8 +423,8 @@ theorem inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (div
     x⁻¹ = aeval x (divX p) / (aeval x p - algebraMap _ _ (p.coeff 0)) := by
   rw [inv_eq_iff_eq_inv, inv_div, eq_comm, div_eq_iff, sub_eq_iff_eq_add, mul_comm]
   conv_lhs => rw [← divX_mul_X_add p]
-  rw [AlgHom.map_add, AlgHom.map_mul, aeval_X, aeval_C]
-  exact aeval_ne
+  · rw [AlgHom.map_add, AlgHom.map_mul, aeval_X, aeval_C]
+  · exact aeval_ne
 set_option linter.uppercaseLean3 false in
 #align inv_eq_of_aeval_div_X_ne_zero inv_eq_of_aeval_divX_ne_zero
 
