@@ -226,12 +226,8 @@ lemma mapEquiv_trace_aux {σ τ} (M : GNFA α σ) (e : σ ≃ τ) q :
     M.trace q ≤ (M.mapEquiv e).trace (e q) := by
   intro x hxt
   refine hxt.recOn ?_ ?_ <;>
-    first
-    | rintro _ _ _ p q _ mat rfl ih
-      refine trace.step (e p) (e q) ih ?_ rfl
-    | rintro _ _ mat
-      refine trace.start _ ?_
-  all_goals
+  [ (rintro _ _ mat; refine trace.start _ ?_)
+  ; (rintro _ _ _ p q _ mat rfl ih; refine trace.step (e p) (e q) ih ?_ rfl)] <;>
   · unfold mapEquiv
     dsimp
     simp only [Equiv.symm_apply_apply]
@@ -321,7 +317,7 @@ theorem toGNFA_correct [alphabet : FinEnum α] : M.accepts = M.toGNFA.accepts :=
     refine GNFA.trace.step p q (ih p mem) ?_ rfl
     simp [toGNFA, Language.mem_sum, alphabet.mem_toList, List.mem_filter]
     exact ⟨a, step, rfl⟩
-  · rintro (@⟨x, ⟨⟩⟩ | @⟨_, y, z, q, hyt, step, rfl⟩)
+  · rintro (⟨⟨⟩⟩ | @⟨_, y, z, q, hyt, step, rfl⟩)
     rcases Decidable.em (q ∈ M.accept) with accept | accept <;> simp [toGNFA, accept] at step
     subst z
     refine ⟨q, accept, ?_⟩

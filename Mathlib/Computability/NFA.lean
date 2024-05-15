@@ -256,11 +256,8 @@ theorem hadd_correct (P₁ : NFA α σ) (P₂ : NFA α σ') :
     (P₁ + P₂).accepts = P₁.accepts + P₂.accepts := by
   ext x
   constructor
-  · rintro ⟨q | q, accept, eval⟩ <;>
-    · first
-      | left; exists q
-      | right; exists q
-      refine ⟨accept, ?_⟩
+  · rintro ⟨q | q, accept, eval⟩ <;> [left; right] <;>
+    · refine ⟨q, accept, ?_⟩
       clear accept
       induction x using List.reverseRecOn generalizing q
       · exact eval
