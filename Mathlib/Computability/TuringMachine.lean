@@ -2555,7 +2555,7 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
         -- https://github.com/leanprover-community/mathlib4/issues/5164
         erw [Tape.move_right_n_head, List.length, Tape.mk'_nth_nat, this,
           addBottom_modifyNth fun a ↦ update a k (some (f v)), Nat.add_one, iterate_succ']
-        rfl⟩
+        · rfl⟩
     refine' ListBlank.ext fun i ↦ _
     rw [ListBlank.nth_map, ListBlank.nth_modifyNth, proj, PointedMap.mk_val]
     by_cases h' : k' = k

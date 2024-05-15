@@ -548,7 +548,7 @@ noncomputable irreducible_def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i
 @[simp]
 lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
   simp only [p]
-  exact Function.invFun_eq (by rw [← Set.mem_range]; exact R.one_mem_range_sumCoeffsExp)
+  refine Function.invFun_eq (by rw [← Set.mem_range]; focus exact R.one_mem_range_sumCoeffsExp)
 
 /-!
 #### The sum transform

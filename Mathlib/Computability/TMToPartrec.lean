@@ -1600,8 +1600,7 @@ theorem trNormal_respects (c k v s) :
     let o : Option Γ' := List.casesOn v none fun _ _ => some Γ'.cons
     refine' ⟨_, ⟨o, rfl⟩, _⟩; convert clear_ok _ using 2
     · simp; rfl
-    swap
-    refine' splitAtPred_eq _ _ (trNat v.headI) _ _ (trNat_natEnd _) _
+    on_goal 2 => refine' splitAtPred_eq _ _ (trNat v.headI) _ _ (trNat_natEnd _) _
     cases v <;> simp [o]
   | cons f fs IHf _ =>
     obtain ⟨c, h₁, h₂⟩ := IHf (Cont.cons₁ fs v k) v none

@@ -85,27 +85,27 @@ namespace Graph
 lemma in₀₁_iff' :
     (graph t).Adj (in₀ a) (in₁ b) ↔ ∃ x : α × β × γ, x ∈ t ∧ x.1 = a ∧ x.2.1 = b where
   mp := by rintro ⟨⟩; exact ⟨_, ‹_›, by simp⟩
-  mpr := by rintro ⟨⟨a, b, c⟩, h, rfl, rfl⟩; constructor; assumption
+  mpr := by rintro ⟨⟨a, b, c⟩, h, rfl, rfl⟩; constructor; on_goal 1 => assumption
 lemma in₁₀_iff' :
     (graph t).Adj (in₁ b) (in₀ a) ↔ ∃ x : α × β × γ, x ∈ t ∧ x.2.1 = b ∧ x.1 = a where
   mp := by rintro ⟨⟩; exact ⟨_, ‹_›, by simp⟩
-  mpr := by rintro ⟨⟨a, b, c⟩, h, rfl, rfl⟩; constructor; assumption
+  mpr := by rintro ⟨⟨a, b, c⟩, h, rfl, rfl⟩; constructor; on_goal 1 => assumption
 lemma in₀₂_iff' :
     (graph t).Adj (in₀ a) (in₂ c) ↔ ∃ x : α × β × γ, x ∈ t ∧ x.1 = a ∧ x.2.2 = c where
   mp := by rintro ⟨⟩; exact ⟨_, ‹_›, by simp⟩
-  mpr := by rintro ⟨⟨a, b, c⟩, h, rfl, rfl⟩; constructor; assumption
+  mpr := by rintro ⟨⟨a, b, c⟩, h, rfl, rfl⟩; constructor; on_goal 1 => assumption
 lemma in₂₀_iff' :
     (graph t).Adj (in₂ c) (in₀ a) ↔ ∃ x : α × β × γ, x ∈ t ∧ x.2.2 = c ∧ x.1 = a where
   mp := by rintro ⟨⟩; exact ⟨_, ‹_›, by simp⟩
-  mpr := by rintro ⟨⟨a, b, c⟩, h, rfl, rfl⟩; constructor; assumption
+  mpr := by rintro ⟨⟨a, b, c⟩, h, rfl, rfl⟩; constructor; on_goal 1 => assumption
 lemma in₁₂_iff' :
     (graph t).Adj (in₁ b) (in₂ c) ↔ ∃ x : α × β × γ, x ∈ t ∧ x.2.1 = b ∧ x.2.2 = c where
   mp := by rintro ⟨⟩; exact ⟨_, ‹_›, by simp⟩
-  mpr := by rintro ⟨⟨a, b, c⟩, h, rfl, rfl⟩; constructor; assumption
+  mpr := by rintro ⟨⟨a, b, c⟩, h, rfl, rfl⟩; constructor; on_goal 1 => assumption
 lemma in₂₁_iff' :
     (graph t).Adj (in₂ c) (in₁ b) ↔ ∃ x : α × β × γ, x ∈ t ∧ x.2.2 = c ∧ x.2.1 = b where
   mp := by rintro ⟨⟩; exact ⟨_, ‹_›, by simp⟩
-  mpr := by rintro ⟨⟨a, b, c⟩, h, rfl, rfl⟩; constructor; assumption
+  mpr := by rintro ⟨⟨a, b, c⟩, h, rfl, rfl⟩; constructor; on_goal 1 => assumption
 
 end Graph
 

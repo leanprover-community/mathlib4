@@ -761,8 +761,8 @@ theorem dropFun_id {α : TypeVec (n + 1)} : dropFun (@TypeVec.id _ α) = id :=
 theorem prod_map_id {α β : TypeVec n} : (@TypeVec.id _ α ⊗' @TypeVec.id _ β) = id := by
   ext i x : 2
   induction i <;> simp only [TypeVec.prod.map, *, dropFun_id]
-  cases x
-  · rfl
+  · cases x
+    rfl
   · rfl
 #align typevec.prod_map_id TypeVec.prod_map_id
 
