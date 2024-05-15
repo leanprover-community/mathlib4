@@ -26,8 +26,9 @@ expansions.
 
 ## To do
 
- * negative powers.
-
+  * negative powers.
+  * Change API to use `R`-algebra hom `R[[X]] →ₐ[R] HahnSeries Γ R` given by substitution.  Then we
+    can use the power series API for expansion of `1/(u-x)`.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -108,10 +109,16 @@ abbrev UnitBinomial {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha :
 theorem UnitBinomial_val {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : IsUnit a)
     (b : R) : (UnitBinomial hg hgg' ha b).val = single g (IsUnit.unit ha).val + single g' b :=
   rfl
-
+/-!
+theorem UnitBinimial_inv_coeff {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : IsUnit a)
+    (b : R) : (UnitBinomial hg hgg' ha b).inv = sorry := --hsum
+  sorry -- induction, telescoping.
+-/
 /-- A function for describing coefficients of powers of invertible binomials.-/
 def UnitBinomialPow_coeff_aux {a : R} (ha : IsUnit a) (b : R) (n : ℤ) :
     ℕ → R := fun k => (IsUnit.unit ha) ^ (n - k) • b ^ k • Ring.choose n k
+
+
 
 end Binomial
 

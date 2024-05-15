@@ -169,6 +169,11 @@ instance instHahnModule : Module (HahnSeries Γ R) (HetVertexOperator Γ' R V W)
     ext _ _
     simp only [zero_smul, LinearMap.zero_apply, HahnModule.of_symm_zero, HahnSeries.zero_coeff]
 
+@[simp]
+theorem smul_eq {x : HahnSeries Γ R} {A : HetVertexOperator Γ' R V W} {v : V} :
+    (x • A) v = x • (A v) :=
+  rfl
+
 end  Module
 
 section Products
@@ -287,7 +292,7 @@ theorem lex_basis_lt : (toLex (0,1) : ℤ ×ₗ ℤ) < (toLex (1,0) : ℤ ×ₗ 
 
 theorem toLex_vAdd_of_sub (k l m n : ℤ) :
     toLex ((m : ℤ) , (n : ℤ)) +ᵥ toLex (k - m, l - n) = toLex (k, l) := by
-  rw [vadd_eq_add, ← @toLex_add, Prod.mk_add_mk, Int.add_comm, Int.sub_add_cancel, Int.add_comm,
+  rw [vadd_eq_add, ← toLex_add, Prod.mk_add_mk, Int.add_comm, Int.sub_add_cancel, Int.add_comm,
     Int.sub_add_cancel]
 --#find_home! toLex_vAdd_of_sub --[Mathlib.RingTheory.HahnSeries.Multiplication]
 
@@ -342,14 +347,26 @@ theorem subRight_leadingCoeff [Nontrivial R] : (subRight R).val.leadingCoeff = (
 theorem subRight_order [Nontrivial R] : (subRight R).val.order = toLex (0,1) := by
   rw [subRight_eq, add_comm, HahnSeries.order_single_add_single lex_basis_lt one_ne_zero]
 
+theorem subRight_smul_eq (A : HetVertexOperator (ℤ ×ₗ ℤ) R V W) :
+    (subRight R) • A = (subRight R).val • A :=
+  rfl
+
+theorem subRight_smul_coeff (A : HetVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : ℤ) :
+    ((subRight R) • A).coeff (toLex (k, l)) =
+      A.coeff (toLex (k, l - 1)) - A.coeff (toLex (k - 1, l)) := by
+  rw [subRight_smul_eq, subRight_eq, add_smul, add_coeff_apply]
+  ext v
+  simp only [LinearMap.add_apply, coeff_apply, LinearMap.sub_apply, smul_eq]
+  nth_rw 1 [← toLex_vAdd_of_sub k l 1 0]
+  rw [sub_zero, HahnModule.single_smul_coeff_add, neg_one_smul, ← toLex_vAdd_of_sub k l 0 1,
+    sub_zero, HahnModule.single_smul_coeff_add, one_smul, neg_add_eq_sub]
+
 --describe coefficients of powers
 
-/-!
 theorem subLeft_smul_eq_subRight_smul (A B : HetVertexOperator (ℤ ×ₗ ℤ) R V W)
     (h : ∀ (k l : ℤ), A.coeff (toLex (k, l)) = B.coeff (toLex (l, k))) (k l : ℤ) :
-    ((subLeft R).val • A).coeff (toLex (k, l)) = ((subRight R).val • B).coeff (toLex (l, k)) := by
-  sorry
--/
+    ((subLeft R).val • A).coeff (toLex (k, l)) = ((subRight R) • B).coeff (toLex (l, k)) := by
+  rw [subLeft_smul_coeff, subRight_smul_coeff, h k (l-1), h (k-1) l]
 
 end Binomial
 

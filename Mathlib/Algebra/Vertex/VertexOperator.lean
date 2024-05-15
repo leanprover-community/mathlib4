@@ -260,20 +260,22 @@ vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to sw
 since `BA` takes values in the opposite-order Hahn series. -/
 def IsLocalToOrderLeq (R V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
     (A B : VertexOperator R V) (n : ℕ) : Prop :=
-  ∀ (k l : ℤ), (((subLeft R)^n).val • (hetComp A B)).coeff (toLex (k, l)) =
-    (((subRight R)^n).val • (hetComp B A)).coeff (toLex (l, k))
+  ∀ (k l : ℤ), ((subLeft R)^n • (hetComp A B)).coeff (toLex (k, l)) =
+    ((subRight R)^n • (hetComp B A)).coeff (toLex (l, k))
 
-/-!
 theorem isLocalToOrderLeqAdd (R V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
     (A B : VertexOperator R V) (m n : ℕ) (h : IsLocalToOrderLeq R V A B n) :
     IsLocalToOrderLeq R V A B (n + m) := by
-  intro k l
-  rw [pow_add, Units.val_mul, mul_smul]
-  -- better to use induction to get explicit coefficient comparison.
-  sorry
--/
+  induction m with
+  | zero => exact h
+  | succ m ih =>
+    intro k l
+    rw [← add_assoc, pow_succ', mul_smul, subLeft_smul_eq, subLeft_smul_coeff, pow_succ', mul_smul,
+      subRight_smul_coeff, ih, ih]
+
 --show `A` and `B` local to order `n` implies `∂^[k]A` and `B` are local to order `n+k`.
 --show any vertex operator is local with identity.
+
 end Local
 
 /-!

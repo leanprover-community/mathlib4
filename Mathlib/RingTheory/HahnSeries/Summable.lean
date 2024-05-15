@@ -3,8 +3,9 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
-import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.RingTheory.HahnSeries.Multiplication
+import Mathlib.RingTheory.PowerSeries.Basic
+
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
 
@@ -56,12 +57,22 @@ theorem support_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R] 
   · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
     exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (ih hi) (AddSubmonoid.subset_closure hj))
 
-theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Semiring R]
+theorem support_smul_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R]
+    (f : ℕ → R) (x : HahnSeries Γ R) (n : ℕ) :
+    support (f n • x ^ n) ⊆ AddSubmonoid.closure (support x) :=
+  (Function.support_const_smul_subset (f n) (x ^ n).coeff).trans (support_pow_subset_closure x n)
+
+theorem isPWO_iUnion_support_smul_pow [LinearOrderedCancelAddCommMonoid Γ] [Semiring R] (f : ℕ → R)
     (x : HahnSeries Γ R) (hx : 0 ≤ x.order) :
-    (⋃ n : ℕ, (x ^ n).support).IsPWO :=
+    (⋃ n : ℕ, (f n • x ^ n).support).IsPWO :=
   (x.isPWO_support'.addSubmonoid_closure
     fun _ hg => le_trans hx (order_le_of_coeff_ne_zero (Function.mem_support.mp hg))).mono
-    (Set.iUnion_subset fun n => support_pow_subset_closure x n)
+    (Set.iUnion_subset fun n => support_smul_pow_subset_closure f x n)
+
+theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Semiring R]
+    (x : HahnSeries Γ R) (hx : 0 ≤ x.order) : (⋃ n : ℕ, (x ^ n).support).IsPWO := by
+  have _ := isPWO_iUnion_support_smul_pow (fun n => 1) x hx
+  simp_all only [one_smul]
 #align hahn_series.is_pwo_Union_support_powers HahnSeries.isPWO_iUnion_support_powers
 
 section
@@ -328,6 +339,17 @@ theorem hsum_sub {R : Type*} [Ring R] {s t : SummableFamily Γ R α} :
   rw [← lsum_apply, LinearMap.map_sub, lsum_apply, lsum_apply]
 #align hahn_series.summable_family.hsum_sub HahnSeries.SummableFamily.hsum_sub
 
+/-!
+instance {β : Type*} : HSMul (SummableFamily Γ R α) (SummableFamily Γ R β)
+    (SummableFamily Γ R (α × β)) where
+  hSMul s t :=
+  {
+    toFun := fun a => s (a.1) * t (a.2)
+    isPWO_iUnion_support' := sorry
+    finite_co_support' := sorry
+  }
+-/
+
 end Semiring
 
 section OfFinsupp
@@ -460,6 +482,92 @@ theorem pow_finite_co_support (g : Γ) : Set.Finite {a | ((fun n ↦ x ^ n) a).c
       refine' Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨j, i⟩, Set.mem_iUnion.2 ⟨_, hi⟩⟩, rfl⟩
       simp only [mem_coe, mem_addAntidiagonal, mem_support, ne_eq, Set.mem_iUnion]
       exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
+
+theorem smul_pow_finite_co_support (f : ℕ → R) (g : Γ) :
+    Set.Finite {a | ((fun n ↦ f n • x ^ n) a).coeff g ≠ 0} := by
+  refine Set.Finite.subset (pow_finite_co_support hx g) ?_
+  intro n hn hng
+  simp_all
+
+/-- A summable family of Hahn series given by substituting the power series variable `X` into the
+positive order Hahn series `x`.-/
+@[simps]
+def powerSeriesFamily (f : PowerSeries R) : SummableFamily Γ R ℕ where
+  toFun n := (PowerSeries.coeff R n f) • x ^ n
+  isPWO_iUnion_support' := isPWO_iUnion_support_smul_pow (fun n => PowerSeries.coeff R n f) x
+    (zero_le_order_of_orderTop <| le_of_lt hx)
+  finite_co_support' g := smul_pow_finite_co_support hx (fun n => PowerSeries.coeff R n f) g
+
+theorem powerSeriesFamilyAdd (f g : PowerSeries R) :
+    powerSeriesFamily hx (f + g) = powerSeriesFamily hx f + powerSeriesFamily hx g := by
+  ext1 n
+  simp [add_smul]
+
+theorem powerSeriesFamilySMul (r : R) (f : PowerSeries R) :
+    powerSeriesFamily hx (r • f) = (single (0 : Γ) r) • (powerSeriesFamily hx f) := by
+  ext1 n
+  rw [powerSeriesFamily_toFun, LinearMapClass.map_smul, smul_apply, powerSeriesFamily_toFun,
+    single_zero_mul_eq_smul, smul_assoc]
+
+/-!
+/-- A summable family of Hahn series given by subtituting ... -/
+def powerSeriesProdFamily (f g : PowerSeries R) : SummableFamily Γ R (ℕ × ℕ) where
+  toFun n := ((PowerSeries.coeff R n.1 f) * (PowerSeries.coeff R n.2 g)) • x ^ (n.1 + n.2)
+  isPWO_iUnion_support' := (x.isPWO_support'.addSubmonoid_closure fun _ hg => le_trans
+    (zero_le_order_of_orderTop <| le_of_lt hx)
+    (order_le_of_coeff_ne_zero (Function.mem_support.mp hg))).mono
+    (Set.iUnion_subset fun n => (Function.support_const_smul_subset
+      ((PowerSeries.coeff R n.1 f) * (PowerSeries.coeff R n.2 g)) (x ^ (n.1 + n.2)).coeff).trans
+      (support_pow_subset_closure x (n.1 + n.2)))
+  finite_co_support' a := by
+    let s : ℕ → Set (ℕ × ℕ) := fun n => {k ∈ addAntidiagonal _ _ n | (((PowerSeries.coeff R k.1) f * (PowerSeries.coeff R k.2) g) • x ^ (k.1 + k.2)).coeff a ≠ 0} --nonzero coeff a in antidiagonal n
+    let t : Set ℕ := {k | ((fun n ↦ x ^ n) k).coeff a ≠ 0}
+    have ht := (pow_finite_co_support hx a)
+    have hs : Prop := sorry --finite antidiagonal: ∀ i ∈ t, (s i).Finite
+    have he : Prop := sorry--coeff a is zero away from cosupport
+    refine Set.Finite.subset (Set.Finite.iUnion ht (fun k => Set.AddAntidiagonal.finite_of_isPWO ?_ ?_ k) ?_) ?_
+    sorry
+
+theorem xxx (n : ℕ) : Finite (Set.addAntidiagonal Set.univ Set.univ n) :=
+  Set.AddAntidiagonal.finite_of_isWF (Set.isWF_univ_iff.mpr wellFounded_lt)
+    (Set.isWF_univ_iff.mpr wellFounded_lt) n
+
+
+/-- The ring homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
+variable `X` to a positive order element `x`. -/
+def powerSeriesComp : PowerSeries R →ₐ[R] HahnSeries Γ R where
+  toFun f := (powerSeriesFamily hx f).hsum
+  map_one' := by
+    simp only [hsum, powerSeriesFamily_toFun, PowerSeries.coeff_one, ite_smul, one_smul, zero_smul]
+    ext g
+    simp only
+    rw [finsum_eq_single (fun i => (if i = 0 then x ^ i else 0).coeff g) (0 : ℕ)
+      (fun n hn => by simp_all), pow_zero, ← zero_pow_eq 0, pow_zero]
+  map_mul' a b := by
+    ext g
+    simp only [hsum, powerSeriesFamily_toFun, mul_coeff]
+
+    -- write f * g as a double sum. write each coefficient of X ^ n as a finite sum.
+    -- make a summable family parametrized by ℕ × ℕ.
+    sorry
+  map_zero' := by
+    simp only [hsum, powerSeriesFamily_toFun, map_zero, zero_smul, zero_coeff, finsum_zero]
+    exact rfl
+  map_add' a b := by
+    simp [powerSeriesFamilyAdd]
+  commutes' r := by
+    simp only
+    rw [@PowerSeries.algebraMap_apply]
+    rw [@algebraMap_apply]
+    simp only [Algebra.id.map_eq_id, RingHom.id_apply, C_apply]
+    ext g
+    simp only [hsum_coeff, powerSeriesFamily_toFun, smul_coeff, smul_eq_mul]
+
+    sorry
+-/
+-- define composition with any `f : R[[X]]`.  Show that multiplication of substituted power series
+--corresponds to substitution of products., i.e., elements of strictly positive orderTop yield
+-- ring homomorphisms.
 
 /-- Powers of an element of positive order (or zero) form a summable family. -/
 @[simps]
