@@ -23,11 +23,13 @@ example {n k : ℕ} (h : 2 * k ≤ n + 2) (h' : 8 ≤ n) : (0 : ℝ) ≤ 3 * n -
   rify at *
   linarith
 
+set_option linter.geOrGt false in
 example {n k : ℕ} (h₁ : 8 ≤ n) (h₂ : 2 * k > n) (h₃: k + 1 < n) :
     n - (k + 1) + 3 ≤ n := by
   rify [h₃] at *
   linarith
 
+set_option linter.geOrGt false in
 example {n k : ℕ} (h₁ : 8 ≤ n) (h₂ : 2 * k > n) (h₃: k + 1 < n) :
     n - (n - (k + 1)) = k + 1 := by
   have f₁ : k + 1 ≤ n := by linarith

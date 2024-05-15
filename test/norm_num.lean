@@ -30,6 +30,8 @@ example : 43 ≤ 74 + (33 : ℤ) := by norm_num1
 -- example : 374 + (32 - (2 * 8123) : ℤ) - 61 * 50 = 86 + 32 * 32 - 4 * 5000
 --       ∧ 43 ≤ 74 + (33 : ℤ) := by norm_num1
 
+set_option linter.geOrGt false
+
 example : ¬ (7-2)/(2*3) ≥ (1:ℝ) + 2/(3^2) := by norm_num1
 example : (6:ℝ) + 9 = 15 := by norm_num1
 example : (2:ℝ)/4 + 4 = 3*3/2 := by norm_num1

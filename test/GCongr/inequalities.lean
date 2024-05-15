@@ -11,6 +11,8 @@ import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Tactic.NormNum.OfScientific
 
+set_option linter.geOrGt false
+
 private axiom test_sorry : ∀ {α}, α
 /-! # Inequality tests for the `gcongr` tactic -/
 

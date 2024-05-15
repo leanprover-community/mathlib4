@@ -103,12 +103,12 @@ example (a b : ℕ) (_ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in
-example (a b : ℕ) (h : a ∣ b) (w : 0 < b) : a ≤ b :=
-by apply?
+example (a b : ℕ) (h : a ∣ b) (w : 0 < b) : a ≤ b := by apply?
 
+set_option linter.geOrGt false in
 /-- info: Try this: exact Nat.le_of_dvd w h -/
-#guard_msgs in
-example (a b : ℕ) (h : a ∣ b) (w : 0 < b) : b ≥ a := by apply?
+#guard_msgs (info) in
+example (a b : ℕ) (h : a ∣ b) (w : b > 0) : b ≥ a := by apply?
 
 -- TODO: A lemma with head symbol `¬` can be used to prove `¬ p` or `⊥`
 /-- info: Try this: exact Nat.not_lt_zero a -/
@@ -123,6 +123,7 @@ example (a : ℕ) (h : a < 0) : False := by apply?
 inductive P : ℕ → Prop
   | gt_in_head {n : ℕ} : n < 0 → P n
 
+set_option linter.geOrGt false in
 -- This lemma with `>` as its head symbol should also be found for goals with head symbol `<`.
 theorem lemma_with_gt_in_head (a : ℕ) (h : P a) : 0 > a := by cases h; assumption
 
@@ -130,8 +131,9 @@ theorem lemma_with_gt_in_head (a : ℕ) (h : P a) : 0 > a := by cases h; assumpt
 theorem lemma_with_false_in_head (a b : ℕ) (_h1 : a < b) (h2 : P a) : False := by
   apply Nat.not_lt_zero; cases h2; assumption
 
+set_option linter.geOrGt false in
 /-- info: Try this: exact lemma_with_gt_in_head a h -/
-#guard_msgs in
+#guard_msgs (info) in
 example (a : ℕ) (h : P a) : 0 > a := by apply?
 /-- info: Try this: exact lemma_with_gt_in_head a h -/
 #guard_msgs in

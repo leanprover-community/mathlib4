@@ -13,7 +13,7 @@ example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
   cancel_denoms at h
   exact h
 
-example (h : 0 < a) : a / 5 > 0 := by
+example (h : 0 < a) : 0 < a / 5 := by
   cancel_denoms
   exact h
 
@@ -22,7 +22,7 @@ example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   rw [← h]
   ring
 
-example (h : 0 < a) : a / (3/2) > 0 := by
+example (h : 0 < a) : 0 < a / (3/2) := by
   cancel_denoms
   exact h
 
@@ -56,7 +56,7 @@ example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
   cancel_denoms at h
   exact h
 
-example (h : 0 < a) : a / 5 > 0 := by
+example (h : 0 < a) : 0 < a / 5 := by
   cancel_denoms
   exact h
 
@@ -97,7 +97,7 @@ example (h : 27 ≤ (a + 3) ^ 3) : 1 ≤ (a / 3 + 1) ^ 3 := by
   cancel_denoms
   assumption
 
-example (h : a > 2) : 1 < 2⁻¹ * a := by
+example (h : 2 < a) : 1 < 2⁻¹ * a := by
   cancel_denoms
   assumption
 

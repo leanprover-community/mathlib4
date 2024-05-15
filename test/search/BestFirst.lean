@@ -12,6 +12,7 @@ open Lean MLList Function
 def Point := Int × Int
 deriving Repr
 
+set_option linter.geOrGt false in
 def wall : Point → Bool :=
   fun ⟨x, y⟩ => x ≤ 3 || y ≤ 3 || x ≥ 20 || y ≥ 20 || (x ≥ 6 && y ≥ 6)
 

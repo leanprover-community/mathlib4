@@ -93,6 +93,7 @@ example (x y : ℝ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
   fail_if_success peel this
   linarith
 
+set_option linter.geOrGt false in
 example (p q : ℝ → ℝ → Prop) (h : ∀ ε > 0, ∃ δ > 0, p ε δ)
     (hpq : ∀ x y, x > 0 → y > 0 → p x y → q x y) :
     ∀ ε > 0, ∃ δ > 0, q ε δ := by
@@ -100,6 +101,7 @@ example (p q : ℝ → ℝ → Prop) (h : ∀ ε > 0, ∃ δ > 0, p ε δ)
   guard_target =ₐ q ε δ
   exact hpq ε δ hε hδ h
 
+set_option linter.geOrGt false in
 example (p q : ℝ → ℝ → Prop) (h : ∀ ε > 0, ∃ δ > 0, p ε δ)
     (hpq : ∀ x y, x > 0 → y > 0 → p x y → q x y) :
     ∀ ε > 0, ∃ δ > 0, q ε δ := by

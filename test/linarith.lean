@@ -10,6 +10,8 @@ set_option linter.unusedVariables false
 set_option autoImplicit true
 set_option pp.mvars false
 
+set_option linter.geOrGt false
+
 example [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
   linarith
 

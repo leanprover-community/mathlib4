@@ -29,7 +29,10 @@ example : (an : ℤ) ≠ (bn : ℤ) ↔ an ≠ bn := by norm_cast
 
 -- zero and one cause special problems
 example : 0 < (bq : ℝ) ↔ 0 < bq := by norm_cast
+
+set_option linter.geOrGt false in
 example : az > (1 : ℕ) ↔ az > 1 := by norm_cast
+set_option linter.geOrGt false in
 example : az > (0 : ℕ) ↔ az > 0 := by norm_cast
 example : (an : ℤ) ≠ 0 ↔ an ≠ 0 := by norm_cast
 example : aq < (1 : ℕ) ↔ (aq : ℚ) < (1 : ℤ) := by norm_cast
