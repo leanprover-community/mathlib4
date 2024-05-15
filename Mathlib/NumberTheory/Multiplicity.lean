@@ -64,13 +64,13 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
       mul_one, Nat.cast_zero, zero_add, Nat.succ_eq_add_one, add_tsub_cancel_left]
     suffices p ^ 2 ∣ ∑ i : ℕ in range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
       convert this; abel
-    · apply Finset.dvd_sum
-      intro y hy
-      calc
-        p ^ 2 ∣ p ^ (n + 1 - y) :=
-          pow_dvd_pow p (le_tsub_of_add_le_left (by linarith [Finset.mem_range.mp hy]))
-        _ ∣ x ^ y * p ^ (n + 1 - y) * ↑((n + 1).choose y) :=
-          dvd_mul_of_dvd_left (dvd_mul_left _ _) _
+    apply Finset.dvd_sum
+    intro y hy
+    calc
+      p ^ 2 ∣ p ^ (n + 1 - y) :=
+        pow_dvd_pow p (le_tsub_of_add_le_left (by linarith [Finset.mem_range.mp hy]))
+      _ ∣ x ^ y * p ^ (n + 1 - y) * ↑((n + 1).choose y) :=
+        dvd_mul_of_dvd_left (dvd_mul_left _ _) _
 #align sq_dvd_add_pow_sub_sub sq_dvd_add_pow_sub_sub
 
 theorem not_dvd_geom_sum₂ {p : R} (hp : Prime p) (hxy : p ∣ x - y) (hx : ¬p ∣ x) (hn : ¬p ∣ n) :
@@ -258,8 +258,8 @@ theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
   · simp only [pow_zero, pow_one, range_zero, prod_empty, one_mul, Nat.zero_eq]
   · suffices x ^ 2 ^ d.succ - y ^ 2 ^ d.succ = (x ^ 2 ^ d + y ^ 2 ^ d) * (x ^ 2 ^ d - y ^ 2 ^ d) by
       rw [this, hd, Finset.prod_range_succ, ← mul_assoc, mul_comm (x ^ 2 ^ d + y ^ 2 ^ d)]
-    · rw [Nat.succ_eq_add_one]
-      ring
+    rw [Nat.succ_eq_add_one]
+    ring
 #align pow_two_pow_sub_pow_two_pow pow_two_pow_sub_pow_two_pow
 
 -- Porting note: simplified proof because `fin_cases` was not available in that case

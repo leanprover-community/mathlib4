@@ -374,7 +374,8 @@ theorem even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
     if_neg (Nat.mod_two_ne_zero.mpr hb2)]
   have := Nat.mod_lt b (by decide : 0 < 8)
   interval_cases h : b % 8 <;> simp_all <;>
-    exact absurd (hb2 ▸ h ▸ Nat.mod_mod_of_dvd b (by decide : 2 ∣ 8)) zero_ne_one
+  · have := hb2 ▸ h ▸ Nat.mod_mod_of_dvd b (by decide : 2 ∣ 8)
+    simp_all
 
 end jacobiSym
 

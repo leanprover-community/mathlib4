@@ -18,7 +18,7 @@ This file characterises sheaves for the extensive topology.
   extensive topology are precisely those preserving finite products.
 -/
 
-universe v u
+universe v u w
 
 namespace CategoryTheory
 
@@ -49,7 +49,7 @@ A finite product preserving presheaf is a sheaf for the extensive topology on a 
 `FinitaryPreExtensive`.
 -/
 theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.Extensive]
-    (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] : S.IsSheafFor F  := by
+    (F : Cᵒᵖ ⥤ Type w) [PreservesFiniteProducts F] : S.IsSheafFor F  := by
   obtain ⟨α, _, Z, π, rfl, ⟨hc⟩⟩ := Extensive.arrows_nonempty_isColimit (R := S)
   have : (ofArrows Z (Cofan.mk X π).inj).hasPullbacks :=
     (inferInstance : (ofArrows Z π).hasPullbacks)
@@ -62,7 +62,7 @@ instance {α : Type} [Finite α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.�
 /--
 A presheaf on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite products.
 -/
-theorem isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ ⥤ Type max u v) :
+theorem isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ ⥤ Type w) :
     Presieve.IsSheaf (extensiveCoverage C).toGrothendieck F ↔
     Nonempty (PreservesFiniteProducts F) := by
   refine ⟨fun hF ↦ ⟨⟨fun α _ ↦ ⟨fun {K} ↦ ?_⟩⟩⟩, fun hF ↦ ?_⟩
