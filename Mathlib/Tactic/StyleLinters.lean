@@ -69,6 +69,8 @@ end Mathlib.Linter.Style.SetOption
 namespace Mathlib.Linter.Style.BroadImport
 
 -- parse_imports; see my file
+-- if not in a comment
+-- "import Mathlib.Tactic" is bad
 
 /-- The `broadImport` linter emits a warning on an `import Mathlib.Tactic` statement. -/
 register_option linter.broadImport : Bool := {
