@@ -1206,7 +1206,7 @@ variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
   `r : ℝ≥0`, there exists `d : Γ₀ˣ` with `f d < r`. -/
-theorem NNReal.exists_strictMono_lt [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
+theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
     {r : ℝ≥0} (hr : 0 < r) : ∃ d : Γ₀ˣ, f d < r := by
   obtain ⟨g, hg1⟩ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mp h
   set u : Γ₀ˣ := if g < 1 then g else g⁻¹ with hu
@@ -1221,16 +1221,15 @@ theorem NNReal.exists_strictMono_lt [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ 
       exact hf hg1'
   obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hr hfu
   use u ^ n
-  rw [Units.val_pow_eq_pow_val, _root_.map_pow]
-  exact hn
+  rwa [Units.val_pow_eq_pow_val, _root_.map_pow]
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
   real `r`, there exists `d : Γ₀ˣ` with `f d < r`. -/
-theorem Real.exists_strictMono_lt [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f) {r : ℝ}
+theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f) {r : ℝ}
     (hr : 0 < r) : ∃ d : Γ₀ˣ, (f d : ℝ) < r := by
   set s : NNReal := ⟨r, le_of_lt hr⟩
   have hs : 0 < s := hr
-  exact NNReal.exists_strictMono_lt hf hs
+  exact NNReal.exists_lt_of_strictMono hf hs
 
 end StrictMono
 

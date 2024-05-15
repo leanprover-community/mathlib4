@@ -7,7 +7,6 @@ import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valuation
 
-
 /-!
 # Correspondence between nontrivial nonarchimedean norms and rank one valuations
 
@@ -64,35 +63,35 @@ variable {L : Type*} [Field L] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero �
   [val : Valued L Γ₀] [hv : RankOne val.v]
 
 /-- The norm function determined by a rank one valuation on a field `L`. -/
-def norm_def : L → ℝ := fun x : L => hv.hom (Valued.v x)
+def norm : L → ℝ := fun x : L => hv.hom (Valued.v x)
 
-theorem norm_def_nonneg (x : L) : 0 ≤ norm_def x := by simp only [norm_def, NNReal.zero_le_coe]
+theorem norm_nonneg (x : L) : 0 ≤ norm x := by simp only [norm, NNReal.zero_le_coe]
 
-theorem norm_def_add_le (x y : L) : norm_def (x + y) ≤ max (norm_def x) (norm_def y) := by
-  simp only [norm_def, NNReal.coe_le_coe, le_max_iff, StrictMono.le_iff_le hv.strictMono]
+theorem norm_add_le (x y : L) : norm (x + y) ≤ max (norm x) (norm y) := by
+  simp only [norm, NNReal.coe_le_coe, le_max_iff, StrictMono.le_iff_le hv.strictMono]
   exact le_max_iff.mp (Valuation.map_add_le_max' val.v _ _)
 
-theorem norm_def_eq_zero {x : L} (hx : norm_def x = 0) : x = 0 := by
-  simpa [norm_def, NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, zero_iff] using hx
+theorem norm_eq_zero {x : L} (hx : norm x = 0) : x = 0 := by
+  simpa [norm, NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, zero_iff] using hx
 
 variable (L) (Γ₀)
 
 /-- The normed field structure determined by a rank one valuation. -/
 def toNormedField : NormedField L :=
   { (inferInstance : Field L) with
-    norm := norm_def
-    dist := fun x y => norm_def (x - y)
+    norm := norm
+    dist := fun x y => norm (x - y)
     dist_self := fun x => by
-      simp only [sub_self, norm_def, Valuation.map_zero, hv.hom.map_zero, NNReal.coe_zero]
-    dist_comm := fun x y => by simp only [norm_def]; rw [← neg_sub, Valuation.map_neg]
+      simp only [sub_self, norm, Valuation.map_zero, hv.hom.map_zero, NNReal.coe_zero]
+    dist_comm := fun x y => by simp only [norm]; rw [← neg_sub, Valuation.map_neg]
     dist_triangle := fun x y z => by
       simp only [← sub_add_sub_cancel x y z]
-      exact le_trans (norm_def_add_le _ _)
-        (max_le_add_of_nonneg (norm_def_nonneg _) (norm_def_nonneg _))
-    edist_dist := fun x y => by simp only [ENNReal.ofReal_eq_coe_nnreal (norm_def_nonneg _)]
-    eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_def_eq_zero hxy)
+      exact le_trans (norm_add_le _ _)
+        (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _))
+    edist_dist := fun x y => by simp only [ENNReal.ofReal_eq_coe_nnreal (norm_nonneg _)]
+    eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_eq_zero hxy)
     dist_eq := fun x y => rfl
-    norm_mul' := fun x y => by simp only [norm_def, ← NNReal.coe_mul, _root_.map_mul]
+    norm_mul' := fun x y => by simp only [norm, ← NNReal.coe_mul, _root_.map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
       letI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
@@ -108,16 +107,16 @@ def toNormedField : NormedField L :=
           use δ, hδ_pos
           apply subset_trans _ hε
           intro x hx
-          simp only [mem_setOf_eq, norm_def, hδ, NNReal.val_eq_coe, NNReal.coe_lt_coe] at hx
+          simp only [mem_setOf_eq, norm, hδ, NNReal.val_eq_coe, NNReal.coe_lt_coe] at hx
           rw [mem_setOf, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
-        · letI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
+        · haveI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
             ⟨RankOne.unit val.v, RankOne.unit_ne_one val.v⟩
-          obtain ⟨u, hu⟩ := Real.exists_strictMono_lt hv.strictMono hr_pos
+          obtain ⟨u, hu⟩ := Real.exists_lt_of_strictMono hv.strictMono hr_pos
           use u
           apply subset_trans _ hr
           intro x hx
-          simp only [norm_def, mem_setOf_eq]
+          simp only [norm, mem_setOf_eq]
           apply lt_trans _ hu
           rw [NNReal.coe_lt_coe, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mpr hx
