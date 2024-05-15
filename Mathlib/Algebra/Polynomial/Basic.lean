@@ -1303,7 +1303,7 @@ protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
       (p.support.sort (· ≤ ·));
     match termPrecAndReprs with
     | [] => "0"
-    | [(tprec, t)] => if trec ≤ prec then Lean.Format.paren t else t
+    | [(tprec, t)] => if tprec ≤ prec then Lean.Format.paren t else t
     | ts =>
       -- multiple terms, use `+` precedence
       (if prec ≥ 65 then Lean.Format.paren else id)
