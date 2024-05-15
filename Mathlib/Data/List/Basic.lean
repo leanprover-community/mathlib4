@@ -632,8 +632,7 @@ theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
   induction' l₁ with _ _ ih
   · simp
   · simp only [cons_append]
-    rw [List.getLast_cons]
-    exact ih
+    rwa [List.getLast_cons]
 #align list.last_append List.getLast_append'
 
 theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a :=
