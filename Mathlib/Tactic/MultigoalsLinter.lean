@@ -58,7 +58,7 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.case  -- keep
   |>.insert `«;»  -- keep
   |>.insert `«<;>»  -- keep
---  |>.insert ``Lean.Parser.Tactic.«tactic_<;>_»
+  |>.insert ``Lean.Parser.Tactic.«tactic_<;>_»  -- keep
   |>.insert `«{»  -- keep
   |>.insert `«]»  -- keep
   |>.insert `null  -- keep
