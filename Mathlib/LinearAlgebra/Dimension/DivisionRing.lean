@@ -136,19 +136,26 @@ theorem Basis.ofRankEqZero_apply {K V : Type*} [Ring K] [StrongRankCondition K] 
   rfl
 #align basis.of_rank_eq_zero_apply Basis.ofRankEqZero_apply
 
-theorem le_rank_iff_exists_linearIndependent {c : Cardinal} :
+theorem le_rank_iff_exists_linearIndependent {K V : Type*} [Ring K] [StrongRankCondition K]
+    [AddCommGroup V] [Module K V] [Module.Free K V] {c : Cardinal} :
     c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndependent K ((↑) : s → V) := by
+  haveI := nontrivial_of_invariantBasisNumber K
   constructor
   · intro h
-    let t := Basis.ofVectorSpace K V
+    obtain ⟨κ, t'⟩ := Module.Free.exists_basis (R := K) (M := V)
+    let t := t'.reindexRange
+    have : LinearIndependent K ((↑) : Set.range t' → V) := by
+      convert t.linearIndependent
+      ext; exact (Basis.reindexRange_apply _ _).symm
     rw [← t.mk_eq_rank'', Cardinal.le_mk_iff_exists_subset] at h
     rcases h with ⟨s, hst, hsc⟩
-    exact ⟨s, hsc, (ofVectorSpaceIndex.linearIndependent K V).mono hst⟩
+    exact ⟨s, hsc, this.mono hst⟩
   · rintro ⟨s, rfl, si⟩
     exact si.cardinal_le_rank
 #align le_rank_iff_exists_linear_independent le_rank_iff_exists_linearIndependent
 
-theorem le_rank_iff_exists_linearIndependent_finset {n : ℕ} : ↑n ≤ Module.rank K V ↔
+theorem le_rank_iff_exists_linearIndependent_finset {K V : Type*} [Ring K] [StrongRankCondition K]
+    [AddCommGroup V] [Module K V] [Module.Free K V] {n : ℕ} : ↑n ≤ Module.rank K V ↔
     ∃ s : Finset V, s.card = n ∧ LinearIndependent K ((↑) : ↥(s : Set V) → V) := by
   simp only [le_rank_iff_exists_linearIndependent, Cardinal.mk_set_eq_nat_iff_finset]
   constructor
@@ -191,7 +198,8 @@ theorem rank_le_one_iff {K V : Type*} [Ring K] [StrongRankCondition K] [AddCommG
 /-- A submodule has dimension at most `1` if and only if there is a
 single vector in the submodule such that the submodule is contained in
 its span. -/
-theorem rank_submodule_le_one_iff (s : Submodule K V) :
+theorem rank_submodule_le_one_iff {K V : Type*} [Ring K] [StrongRankCondition K] [AddCommGroup V]
+    [Module K V] (s : Submodule K V) [Module.Free K s] :
     Module.rank K s ≤ 1 ↔ ∃ v₀ ∈ s, s ≤ K ∙ v₀ := by
   simp_rw [rank_le_one_iff, le_span_singleton_iff]
   constructor
@@ -200,15 +208,13 @@ theorem rank_submodule_le_one_iff (s : Submodule K V) :
     intro v hv
     obtain ⟨r, hr⟩ := h ⟨v, hv⟩
     use r
-    simp_rw [Subtype.ext_iff, coe_smul] at hr
-    exact hr
+    rwa [Subtype.ext_iff, coe_smul] at hr
   · rintro ⟨v₀, hv₀, h⟩
     use ⟨v₀, hv₀⟩
     rintro ⟨v, hv⟩
     obtain ⟨r, hr⟩ := h v hv
     use r
-    simp_rw [Subtype.ext_iff, coe_smul]
-    exact hr
+    rwa [Subtype.ext_iff, coe_smul]
 #align rank_submodule_le_one_iff rank_submodule_le_one_iff
 
 /-- A submodule has dimension at most `1` if and only if there is a
@@ -234,7 +240,8 @@ theorem rank_submodule_le_one_iff' (s : Submodule K V) :
       simp [hw]
 #align rank_submodule_le_one_iff' rank_submodule_le_one_iff'
 
-theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) :
+theorem Submodule.rank_le_one_iff_isPrincipal {K V : Type*} [Ring K] [StrongRankCondition K]
+    [AddCommGroup V] [Module K V] (W : Submodule K V) [Module.Free K W] :
     Module.rank K W ≤ 1 ↔ W.IsPrincipal := by
   simp only [rank_le_one_iff, Submodule.isPrincipal_iff, le_antisymm_iff, le_span_singleton_iff,
     span_singleton_le_iff_mem]
@@ -247,8 +254,10 @@ theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) :
     exact ⟨⟨a, ha⟩, fun v => ⟨f v.1 v.2, Subtype.ext (hf v.1 v.2)⟩⟩
 #align submodule.rank_le_one_iff_is_principal Submodule.rank_le_one_iff_isPrincipal
 
-theorem Module.rank_le_one_iff_top_isPrincipal :
+theorem Module.rank_le_one_iff_top_isPrincipal {K V : Type*} [Ring K] [StrongRankCondition K]
+    [AddCommGroup V] [Module K V] [Module.Free K V]:
     Module.rank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by
+  haveI := Module.Free.of_equiv (topEquiv (R := K) (M := V)).symm
   rw [← Submodule.rank_le_one_iff_isPrincipal, rank_top]
 #align module.rank_le_one_iff_top_is_principal Module.rank_le_one_iff_top_isPrincipal
 
