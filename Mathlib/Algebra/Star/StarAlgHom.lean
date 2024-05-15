@@ -110,32 +110,6 @@ end
 
 end NonUnitalStarRingHom
 
-/-! ### Unital star ring homomorphisms -/
-
-/-- A *unital ⋆-ring homomorphism* is a (unital) ring homomorphism between (unital)
-non-associative semirings `A` and `B` equipped with a `star` operation, and this homomorphism is
-also `star`-preserving. -/
-structure StarRingHom (A B : Type*) [NonAssocSemiring A]
-  [Star A] [NonAssocSemiring B]
-  [Star B] extends A →+* B where
-  /-- By definition, a non-unital ⋆-algebra homomorphism preserves the `star` operation. -/
-  map_star' : ∀ a : A, toFun (star a) = star (toFun a)
-
-/-- `α →⋆+* β` denotes the type of non-unital ring homomorphisms from `α` to `β`. -/
-infixr:25 " →⋆+* " => StarRingHom
-
-/-- Reinterpret a (unital) star ring homomorphism as a (unital) ring homomorphism
-by forgetting the interaction with the star operation. -/
-add_decl_doc StarRingHom.toRingHom
-
-/-- `StarRingHomClass F A B` states that `F` is a type of (unital) ⋆-ring homomorphisms.
-
-You should also extend this typeclass when you extend `StarRingHom`. -/
-class StarRingHomClass (F : Type*) (A B : outParam Type*)
-     [NonAssocSemiring A] [Star A] [NonAssocSemiring B] [Star B]
-    [FunLike F A B] [RingHomClass F A B] extends StarHomClass F A B : Prop
-
-
 /-! ### Star ring equivalences -/
 
 /-- A *⋆-ring* equivalence is an equivalence preserving addition, multiplication, and the star
