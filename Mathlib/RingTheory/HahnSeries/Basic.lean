@@ -244,8 +244,7 @@ instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
 section Order
 
 /-- An orderTop of a Hahn series `x` is a minimal element of `WithTop Γ` where `x` has a nonzero
-  coefficient if `x ≠ 0`, and is `⊤` when `x = 0`. This is uniquely defined when `Γ` is a linear
-  order. -/
+  coefficient if `x ≠ 0`, and is `⊤` when `x = 0`. -/
 def orderTop (x : HahnSeries Γ R) : WithTop Γ :=
   if h : x = 0 then ⊤ else x.isWF_support.min (support_nonempty_iff.2 h)
 
@@ -294,6 +293,9 @@ theorem orderTop_single_le : a ≤ (single a r).orderTop := by
     exact OrderTop.le_top (a : WithTop Γ)
   · rw [orderTop_single hr]
 
+theorem lt_orderTop_single {g g' : Γ} (hgg' : g < g') : g < (single g' r).orderTop :=
+  lt_of_lt_of_le (WithTop.coe_lt_coe.mpr hgg') orderTop_single_le
+
 theorem coeff_eq_zero_of_lt_orderTop {x : HahnSeries Γ R} {i : Γ} (hi : i < x.orderTop) :
     x.coeff i = 0 := by
   rcases eq_or_ne x 0 with (rfl | hx)
@@ -336,11 +338,16 @@ theorem orderTop_le_of_coeffTop_ne_zero {Γ} [LinearOrder Γ] {x : HahnSeries Γ
     rw [orderTop_of_ne (ne_zero_of_coeffTop_ne_zero h), WithTop.coe_le_coe]
     exact Set.IsWF.min_le _ _ ((mem_support _ _).2 h)
 
+theorem coeffTop_eq_zero_of_lt_orderTop {x : HahnSeries Γ R} {i : WithTop Γ} (hi : i < x.orderTop) :
+    x.coeffTop i = 0 := by
+  match i with
+  | ⊤ => exact rfl
+  | (i : Γ) => rw [coeffTop_eq, coeff_eq_zero_of_lt_orderTop hi]
+
 /-- A leading coefficient of a Hahn series is the coefficient of a lowest-order nonzero term, or
-  zero if the series vanishes. This is uniquely defined if `Γ` is a linear order. -/
+zero if the series vanishes. -/
 def leadingCoeff (x : HahnSeries Γ R) : R :=
   x.coeffTop x.orderTop
-  --if h : x = 0 then 0 else x.coeff (x.isWF_support.min (support_nonempty_iff.2 h))
 
 @[simp]
 theorem leadingCoeff_zero : leadingCoeff (0 : HahnSeries Γ R) = 0 := by
@@ -366,8 +373,7 @@ theorem leadingCoeff_of_single {a : Γ} {r : R} : leadingCoeff (single a r) = r 
   · simp_all only [map_zero, orderTop_zero, coeffTop_Top]
   · simp_all only [ne_eq, not_false_eq_true, orderTop_single, coeffTop_eq, single_coeff_same]
 
-/-- A leading term of a Hahn series is a Hahn series with subsingleton support at minimal-order.
-  This is uniquely defined if `Γ` is a linear order. -/
+/-- A leading term of a Hahn series is a Hahn series with subsingleton support at minimal-order. -/
 def leadingTerm (x : HahnSeries Γ R) : HahnSeries Γ R :=
   if h : x = 0 then 0
     else single (x.isWF_support.min (support_nonempty_iff.2 h)) x.leadingCoeff
@@ -400,8 +406,7 @@ theorem leadingCoeff_leadingTerm {x : HahnSeries Γ R} :
 variable [Zero Γ]
 
 /-- The order of a nonzero Hahn series `x` is a minimal element of `Γ` where `x` has a
-  nonzero coefficient, and is defined so that the order of 0 is 0.  It is uniquely defined if `Γ` is
-  a linear order.-/
+nonzero coefficient, and is defined so that the order of 0 is 0. -/
 def order (x : HahnSeries Γ R) : Γ :=
   if h : x = 0 then 0 else x.isWF_support.min (support_nonempty_iff.2 h)
 #align hahn_series.order HahnSeries.order
