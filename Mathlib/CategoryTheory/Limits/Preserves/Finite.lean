@@ -87,10 +87,6 @@ def preservesFiniteLimitsOfPreservesFiniteLimitsOfSize (F : C ⥤ D)
         exact preservesLimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
 #align category_theory.limits.preserves_finite_limits_of_preserves_finite_limits_of_size CategoryTheory.Limits.preservesFiniteLimitsOfPreservesFiniteLimitsOfSize
 
-noncomputable instance idPreservesFiniteLimits : PreservesFiniteLimits (𝟭 C) :=
-  inferInstance -- should this still be stated explicitly an instance?
-#align category_theory.limits.id_preserves_finite_limits CategoryTheory.Limits.idPreservesFiniteLimits
-
 /-- The composition of two left exact functors is left exact. -/
 def compPreservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits F]
     [PreservesFiniteLimits G] : PreservesFiniteLimits (F ⋙ G) :=
@@ -238,10 +234,6 @@ def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
         haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
         exact preservesColimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
 #align category_theory.limits.preserves_finite_colimits_of_preserves_finite_colimits_of_size CategoryTheory.Limits.preservesFiniteColimitsOfPreservesFiniteColimitsOfSize
-
-noncomputable instance idPreservesFiniteColimits : PreservesFiniteColimits (𝟭 C) :=
-  inferInstance -- should this still be stated explicitly an instance?
-#align category_theory.limits.id_preserves_finite_colimits CategoryTheory.Limits.idPreservesFiniteColimits
 
 /-- The composition of two right exact functors is right exact. -/
 def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColimits F]
