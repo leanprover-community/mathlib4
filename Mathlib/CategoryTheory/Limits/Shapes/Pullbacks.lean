@@ -2750,43 +2750,22 @@ def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X wher
 
 /-- The adjunction `Over.map ⊣ baseChange` -/
 
-def hasPullbackOverAdj [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ baseChange f :=
-  Adjunction.mkOfHomEquiv {
-    homEquiv := fun x y ↦ {
-      toFun := fun u ↦ {
-        left := by
-          simp
-          fapply pullback.lift
-          · exact u.left
-          · exact x.hom
-          · aesop_cat
-        right := by
-          apply eqToHom
-          aesop
-        w := by simp}
-      invFun := fun v ↦ {
-        left := by
-          simp at*
-          exact v.left ≫ pullback.fst
-        right := by
-          apply eqToHom
-          aesop
-        w := by
-          simp
-          rw [pullback.condition]
-          rw [← Category.assoc]
-          apply eq_whisker
-          simpa using v.w}
-      left_inv := by aesop_cat
-      right_inv := fun v ↦ Over.OverMorphism.ext (by
-        simp
-        apply pullback.hom_ext
-        · aesop_cat
-        · rw [pullback.lift_snd]
-          have vtriangle := v.w
-          simp at vtriangle
-          exact vtriangle.symm)}
-    homEquiv_naturality_left_symm := by aesop_cat
-    homEquiv_naturality_right := by aesop_cat}
+def Over.mapAdjunction [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ baseChange f :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv := fun x y ↦
+        { toFun := fun u ↦ Over.homMk (pullback.lift u.left x.hom (by simp))
+          invFun := fun v ↦ Over.homMk (v.left ≫ pullback.fst) (by
+            dsimp
+            rw [Category.assoc, pullback.condition, ← Over.w v, Category.assoc]
+            dsimp)
+          left_inv := by aesop_cat
+          right_inv := fun v ↦ by
+            dsimp
+            ext
+            dsimp
+            ext
+            · simp
+            · rw [pullback.lift_snd, ← Over.w v]
+              dsimp }}
 
 end CategoryTheory.Limits
