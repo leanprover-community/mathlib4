@@ -209,8 +209,7 @@ instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
   reflects {α B} X π _ := by
     let i : (a : α) → X a ⟶ (inv F).obj (F.obj (X a)) := fun a ↦ (asEquivalence F).unit.app _
     have : EffectiveEpiFamily X (fun a ↦ (i a) ≫ (inv F).map (F.map (π a))) := inferInstance
-    simp only [asEquivalence_functor, asEquivalence_inverse, IsEquivalence.inv_fun_map, comp_obj,
-      id_obj, Iso.hom_inv_id_app_assoc, i] at this
+    simp only [inv_fun_map, Iso.hom_inv_id_app_assoc, i] at this
     have : EffectiveEpiFamily X (fun a ↦ (π a ≫ (asEquivalence F).unit.app B) ≫
         (asEquivalence F).unitInv.app _) := inferInstance
     simpa

@@ -89,7 +89,7 @@ theorem prod_toMultiset [CommMonoid α] (f : α →₀ ℕ) :
   · intro a n f _ _ ih
     rw [toMultiset_add, Multiset.prod_add, ih, toMultiset_single, Multiset.prod_nsmul,
       Finsupp.prod_add_index' pow_zero pow_add, Finsupp.prod_single_index, Multiset.prod_singleton]
-    · exact pow_zero a
+    exact pow_zero a
 #align finsupp.prod_to_multiset Finsupp.prod_toMultiset
 
 @[simp]

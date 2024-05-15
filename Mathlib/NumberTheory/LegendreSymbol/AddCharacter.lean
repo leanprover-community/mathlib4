@@ -276,7 +276,7 @@ theorem sum_eq_card_of_is_trivial {ψ : AddChar R R'} (hψ : ¬IsNontrivial ψ) 
     ∑ a, ψ a = Fintype.card R := by
   simp only [IsNontrivial] at hψ
   push_neg at hψ
-  simp only [hψ, Finset.sum_const, Nat.smul_one_eq_coe]
+  simp only [hψ, Finset.sum_const, Nat.smul_one_eq_cast]
   rfl
 #align add_char.sum_eq_card_of_is_trivial AddChar.sum_eq_card_of_is_trivial
 
@@ -290,7 +290,7 @@ theorem sum_mulShift {R : Type*} [CommRing R] [Fintype R] [DecidableEq R]
     (hψ : IsPrimitive ψ) : ∑ x : R, ψ (x * b) = if b = 0 then Fintype.card R else 0 := by
   split_ifs with h
   · -- case `b = 0`
-    simp only [h, mul_zero, map_zero_one, Finset.sum_const, Nat.smul_one_eq_coe]
+    simp only [h, mul_zero, map_zero_one, Finset.sum_const, Nat.smul_one_eq_cast]
     rfl
   · -- case `b ≠ 0`
     simp_rw [mul_comm]

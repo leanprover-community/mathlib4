@@ -31,7 +31,7 @@ open scoped BigOperators
 theorem eval_one_cyclotomic_prime {R : Type*} [CommRing R] {p : ℕ} [hn : Fact p.Prime] :
     eval 1 (cyclotomic p R) = p := by
   simp only [cyclotomic_prime, eval_X, one_pow, Finset.sum_const, eval_pow, eval_finset_sum,
-    Finset.card_range, smul_one_eq_coe]
+    Finset.card_range, smul_one_eq_cast]
 #align polynomial.eval_one_cyclotomic_prime Polynomial.eval_one_cyclotomic_prime
 
 -- @[simp] -- Porting note (#10618): simp already proves this
@@ -43,7 +43,7 @@ theorem eval₂_one_cyclotomic_prime {R S : Type*} [CommRing R] [Semiring S] (f 
 theorem eval_one_cyclotomic_prime_pow {R : Type*} [CommRing R] {p : ℕ} (k : ℕ)
     [hn : Fact p.Prime] : eval 1 (cyclotomic (p ^ (k + 1)) R) = p := by
   simp only [cyclotomic_prime_pow_eq_geom_sum hn.out, eval_X, one_pow, Finset.sum_const, eval_pow,
-    eval_finset_sum, Finset.card_range, smul_one_eq_coe]
+    eval_finset_sum, Finset.card_range, smul_one_eq_cast]
 #align polynomial.eval_one_cyclotomic_prime_pow Polynomial.eval_one_cyclotomic_prime_pow
 
 -- @[simp] -- Porting note (#10618): simp already proves this

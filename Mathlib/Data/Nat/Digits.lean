@@ -13,6 +13,7 @@ import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 #align_import data.nat.digits from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
@@ -191,6 +192,9 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
   · simpa [List.range_succ_eq_map, List.zipWith_map_left, ofDigits_eq_sum_map_with_index_aux] using
       Or.inl hl
 #align nat.of_digits_eq_sum_map_with_index Nat.ofDigits_eq_sum_mapIdx
+
+@[simp]
+theorem ofDigits_nil {b : ℕ} : ofDigits b [] = 0 := rfl
 
 @[simp]
 theorem ofDigits_singleton {b n : ℕ} : ofDigits b [n] = n := by simp [ofDigits]
@@ -659,6 +663,19 @@ theorem ofDigits_modEq (b k : ℕ) (L : List ℕ) : ofDigits b L ≡ ofDigits (b
 theorem ofDigits_mod (b k : ℕ) (L : List ℕ) : ofDigits b L % k = ofDigits (b % k) L % k :=
   ofDigits_modEq b k L
 #align nat.of_digits_mod Nat.ofDigits_mod
+
+theorem ofDigits_mod_eq_head! (b : ℕ) (l : List ℕ) : ofDigits b l % b = l.head! % b := by
+  induction l <;> simp [Nat.ofDigits, Int.ModEq]
+
+theorem head!_digits {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b := by
+  by_cases hb : 1 < b
+  · rcases n with _ | n
+    · simp
+    · nth_rw 2 [← Nat.ofDigits_digits b (n + 1)]
+      rw [Nat.ofDigits_mod_eq_head! _ _]
+      exact (Nat.mod_eq_of_lt (Nat.digits_lt_base hb <| List.head!_mem_self <|
+          Nat.digits_ne_nil_iff_ne_zero.mpr <| Nat.succ_ne_zero n)).symm
+  · rcases n with _ | _ <;> simp_all [show b = 0 by omega]
 
 theorem ofDigits_zmodeq' (b b' : ℤ) (k : ℕ) (h : b ≡ b' [ZMOD k]) (L : List ℕ) :
     ofDigits b L ≡ ofDigits b' L [ZMOD k] := by
