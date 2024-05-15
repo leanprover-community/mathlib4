@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Scott Morrison
 -/
 import Mathlib.Algebra.Quotient
+import Mathlib.Algebra.Group.Subgroup.Actions
+import Mathlib.Algebra.Group.Subgroup.MulOpposite
 import Mathlib.Data.Fintype.Prod
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.Subgroup.MulOpposite
-import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.GroupTheory.GroupAction.Basic
 
 #align_import group_theory.coset from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -148,7 +148,7 @@ variable [Monoid α] (s : Submonoid α)
 
 @[to_additive mem_own_leftAddCoset]
 theorem mem_own_leftCoset (a : α) : a ∈ a • (s : Set α) :=
-  suffices a * 1 ∈ a • ↑s by simpa
+  suffices a * 1 ∈ a • (s : Set α) by simpa
   mem_leftCoset a (one_mem s : 1 ∈ s)
 #align mem_own_left_coset mem_own_leftCoset
 #align mem_own_left_add_coset mem_own_leftAddCoset

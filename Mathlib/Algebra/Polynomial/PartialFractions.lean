@@ -109,28 +109,28 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
       (IsCoprime.prod_right fun i hi =>
         hcop (Finset.mem_coe.2 (b.mem_insert_self a))
           (Finset.mem_coe.2 (Finset.mem_insert_of_mem hi)) (by rintro rfl; exact hab hi))
-  · obtain ⟨q, r, hrdeg, IH⟩ :=
-      Hind _ (fun i hi => hg i (Finset.mem_insert_of_mem hi))
-        (Set.Pairwise.mono (Finset.coe_subset.2 fun i hi => Finset.mem_insert_of_mem hi) hcop)
-    refine ⟨q₀ + q, fun i => if i = a then r₁ else r i, ?_, ?_⟩
-    · intro i
-      dsimp only
-      split_ifs with h1
-      · cases h1
-        intro
-        exact hdeg₁
-      · intro hi
-        exact hrdeg i (Finset.mem_of_mem_insert_of_ne hi h1)
-    norm_cast at hf IH ⊢
-    rw [Finset.prod_insert hab, hf, IH, Finset.sum_insert hab, if_pos rfl]
-    trans (↑(q₀ + q : R[X]) : K) + (↑r₁ / ↑(g a) + ∑ i : ι in b, (r i : K) / (g i : K))
-    · push_cast
-      ring
-    congr 2
-    refine' Finset.sum_congr rfl fun x hxb => _
-    rw [if_neg]
-    rintro rfl
-    exact hab hxb
+  obtain ⟨q, r, hrdeg, IH⟩ :=
+    Hind _ (fun i hi => hg i (Finset.mem_insert_of_mem hi))
+      (Set.Pairwise.mono (Finset.coe_subset.2 fun i hi => Finset.mem_insert_of_mem hi) hcop)
+  refine ⟨q₀ + q, fun i => if i = a then r₁ else r i, ?_, ?_⟩
+  · intro i
+    dsimp only
+    split_ifs with h1
+    · cases h1
+      intro
+      exact hdeg₁
+    · intro hi
+      exact hrdeg i (Finset.mem_of_mem_insert_of_ne hi h1)
+  norm_cast at hf IH ⊢
+  rw [Finset.prod_insert hab, hf, IH, Finset.sum_insert hab, if_pos rfl]
+  trans (↑(q₀ + q : R[X]) : K) + (↑r₁ / ↑(g a) + ∑ i : ι in b, (r i : K) / (g i : K))
+  · push_cast
+    ring
+  congr 2
+  refine' Finset.sum_congr rfl fun x hxb => _
+  rw [if_neg]
+  rintro rfl
+  exact hab hxb
 #align div_eq_quo_add_sum_rem_div div_eq_quo_add_sum_rem_div
 
 end NDenominators

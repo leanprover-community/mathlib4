@@ -108,8 +108,8 @@ theorem natDegree_cyclotomic' {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     (cyclotomic' n R).natDegree = Nat.totient n := by
   rw [cyclotomic']
   rw [natDegree_prod (primitiveRoots n R) fun z : R => X - C z]
-  simp only [IsPrimitiveRoot.card_primitiveRoots h, mul_one, natDegree_X_sub_C, Nat.cast_id,
-    Finset.sum_const, nsmul_eq_mul]
+  · simp only [IsPrimitiveRoot.card_primitiveRoots h, mul_one, natDegree_X_sub_C, Nat.cast_id,
+      Finset.sum_const, nsmul_eq_mul]
   intro z _
   exact X_sub_C_ne_zero z
 #align polynomial.nat_degree_cyclotomic' Polynomial.natDegree_cyclotomic'
@@ -354,7 +354,7 @@ theorem natDegree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
 /-- The degree of `cyclotomic n R` is positive. -/
 theorem degree_cyclotomic_pos (n : ℕ) (R : Type*) (hpos : 0 < n) [Ring R] [Nontrivial R] :
     0 < (cyclotomic n R).degree := by
-  rw [degree_cyclotomic n R, Nat.cast_pos]; exact Nat.totient_pos hpos
+  rwa [degree_cyclotomic n R, Nat.cast_pos, Nat.totient_pos]
 #align polynomial.degree_cyclotomic_pos Polynomial.degree_cyclotomic_pos
 
 open Finset

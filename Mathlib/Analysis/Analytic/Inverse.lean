@@ -476,8 +476,7 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {n : ℕ} (hn : 2 ≤ n + 1)
       gcongr
       apply (compAlongComposition_norm _ _ _).trans
       gcongr
-      · exact prod_nonneg fun j _ => norm_nonneg _
-      · apply hp
+      apply hp
     _ =
         I * a +
           I * C *

@@ -513,8 +513,7 @@ end
 /-- A (semi)ring is Noetherian if it is Noetherian as a module over itself,
 i.e. all its ideals are finitely generated.
 -/
-@[reducible]
-def IsNoetherianRing (R) [Semiring R] :=
+abbrev IsNoetherianRing (R) [Semiring R] :=
   IsNoetherian R R
 #align is_noetherian_ring IsNoetherianRing
 

@@ -1084,7 +1084,7 @@ $$
 The corresponding power series has thus a `k`-th coefficient equal to
 $\sum_{n} \binom{n}{k} p_n y^{n-k}$. In the general case where `pₙ` is a multilinear map, this has
 to be interpreted suitably: instead of having a binomial coefficient, one should sum over all
-possible subsets `s` of `Fin n` of cardinal `k`, and attribute `z` to the indices in `s` and
+possible subsets `s` of `Fin n` of cardinality `k`, and attribute `z` to the indices in `s` and
 `y` to the indices outside of `s`.
 
 In this paragraph, we implement this. The new power series is called `p.changeOrigin y`. Then, we

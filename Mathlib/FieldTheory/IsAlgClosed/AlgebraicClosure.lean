@@ -44,8 +44,7 @@ namespace AlgebraicClosure
 open MvPolynomial
 
 /-- The subtype of monic irreducible polynomials -/
-@[reducible]
-def MonicIrreducible : Type u :=
+abbrev MonicIrreducible : Type u :=
   { f : k[X] // Monic f ∧ Irreducible f }
 #align algebraic_closure.monic_irreducible AlgebraicClosure.MonicIrreducible
 
@@ -143,10 +142,10 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
     | h_C => exact isIntegral_algebraMap
     | h_add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
     | h_X p f ih =>
-      · refine @IsIntegral.mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) ?_
-        refine ⟨f, f.2.1, ?_⟩
-        erw [AdjoinMonic.algebraMap, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
-        exact le_maxIdeal k (Ideal.subset_span ⟨f, rfl⟩)
+      refine @IsIntegral.mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) ?_
+      refine ⟨f, f.2.1, ?_⟩
+      erw [AdjoinMonic.algebraMap, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
+      exact le_maxIdeal k (Ideal.subset_span ⟨f, rfl⟩)
 #align algebraic_closure.adjoin_monic.is_integral AlgebraicClosure.AdjoinMonic.isIntegral
 
 theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f) :

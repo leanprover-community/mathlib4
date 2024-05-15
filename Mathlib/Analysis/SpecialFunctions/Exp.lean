@@ -136,23 +136,24 @@ variable {α : Type*}
 
 open Real
 
-theorem Filter.Tendsto.exp {l : Filter α} {f : α → ℝ} {z : ℝ} (hf : Tendsto f l (𝓝 z)) :
+theorem Filter.Tendsto.rexp {l : Filter α} {f : α → ℝ} {z : ℝ} (hf : Tendsto f l (𝓝 z)) :
     Tendsto (fun x => exp (f x)) l (𝓝 (exp z)) :=
   (continuous_exp.tendsto _).comp hf
-#align filter.tendsto.exp Filter.Tendsto.exp
+#align filter.tendsto.exp Filter.Tendsto.rexp
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {x : α}
 
+-- TODO: the two next theorems should be `rexp` as well
 nonrec
 theorem ContinuousWithinAt.exp (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun y => exp (f y)) s x :=
-  h.exp
+  h.rexp
 #align continuous_within_at.exp ContinuousWithinAt.exp
 
 @[fun_prop]
 nonrec
 theorem ContinuousAt.exp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
-  h.exp
+  h.rexp
 #align continuous_at.exp ContinuousAt.exp
 
 @[fun_prop]
@@ -442,12 +443,14 @@ lemma summable_pow_mul_exp_neg_nat_mul (k : ℕ) {r : ℝ} (hr : 0 < r) :
 
 end Real
 
+open Real in
+/-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
+lemma HasSum.rexp {ι} {f : ι → ℝ} {a : ℝ} (h : HasSum f a) : HasProd (rexp ∘ f) (rexp a) :=
+  Tendsto.congr (fun s ↦ exp_sum s f) <| Tendsto.rexp h
+
 namespace Complex
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/12226
-@[simp, nolint simpNF]
+@[simp]
 theorem comap_exp_cobounded : comap exp (cobounded ℂ) = comap re atTop :=
   calc
     comap exp (cobounded ℂ) = comap re (comap Real.exp atTop) := by
@@ -489,3 +492,8 @@ theorem tendsto_exp_comap_re_atBot_nhdsWithin : Tendsto exp (comap re atBot) (�
 #align complex.tendsto_exp_comap_re_at_bot_nhds_within Complex.tendsto_exp_comap_re_atBot_nhdsWithin
 
 end Complex
+
+open Complex in
+/-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
+lemma HasSum.cexp {ι : Type*} {f : ι → ℂ} {a : ℂ} (h : HasSum f a) : HasProd (cexp ∘ f) (cexp a) :=
+  Filter.Tendsto.congr (fun s ↦ exp_sum s f) <| Filter.Tendsto.cexp h

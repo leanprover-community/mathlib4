@@ -199,8 +199,7 @@ variable [OmegaCompletePartialOrder α]
 /-- Transfer an `OmegaCompletePartialOrder` on `β` to an `OmegaCompletePartialOrder` on `α`
 using a strictly monotone function `f : β →o α`, a definition of ωSup and a proof that `f` is
 continuous with regard to the provided `ωSup` and the ωCPO on `α`. -/
-@[reducible]
-protected def lift [PartialOrder β] (f : β →o α) (ωSup₀ : Chain β → β)
+protected abbrev lift [PartialOrder β] (f : β →o α) (ωSup₀ : Chain β → β)
     (h : ∀ x y, f x ≤ f y → x ≤ y) (h' : ∀ c, f (ωSup₀ c) = ωSup (c.map f)) :
     OmegaCompletePartialOrder β where
   ωSup := ωSup₀

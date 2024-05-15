@@ -115,6 +115,12 @@ theorem sum_degrees_eq_twice_card_edges : ∑ v, G.degree v = 2 * G.edgeFinset.c
   G.dart_card_eq_sum_degrees.symm.trans G.dart_card_eq_twice_card_edges
 #align simple_graph.sum_degrees_eq_twice_card_edges SimpleGraph.sum_degrees_eq_twice_card_edges
 
+lemma two_mul_card_edgeFinset :
+    2 * G.edgeFinset.card = (univ.filter fun (x, y) ↦ G.Adj x y).card := by
+  rw [← dart_card_eq_twice_card_edges, ← card_univ]
+  refine card_congr (fun d _ ↦ (d.fst, d.snd)) (by simp) (by simp [Dart.ext_iff, ← and_imp]) ?_
+  exact fun xy h ↦ ⟨⟨xy, (mem_filter.1 h).2⟩, mem_univ _, Prod.mk.eta⟩
+
 end DegreeSum
 
 /-- The handshaking lemma.  See also `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
