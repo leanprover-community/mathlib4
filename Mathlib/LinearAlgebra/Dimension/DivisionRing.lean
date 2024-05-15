@@ -220,24 +220,18 @@ theorem rank_submodule_le_one_iff {K V : Type*} [Ring K] [StrongRankCondition K]
 /-- A submodule has dimension at most `1` if and only if there is a
 single vector, not necessarily in the submodule, such that the
 submodule is contained in its span. -/
-theorem rank_submodule_le_one_iff' (s : Submodule K V) :
+theorem rank_submodule_le_one_iff' {K V : Type*} [Ring K] [StrongRankCondition K] [AddCommGroup V]
+    [Module K V] (s : Submodule K V) [Module.Free K s] :
     Module.rank K s ≤ 1 ↔ ∃ v₀, s ≤ K ∙ v₀ := by
-  rw [rank_submodule_le_one_iff]
+  haveI := nontrivial_of_invariantBasisNumber K
   constructor
-  · rintro ⟨v₀, _, h⟩
+  · rw [rank_submodule_le_one_iff]
+    rintro ⟨v₀, _, h⟩
     exact ⟨v₀, h⟩
   · rintro ⟨v₀, h⟩
-    by_cases hw : ∃ w : V, w ∈ s ∧ w ≠ 0
-    · rcases hw with ⟨w, hw, hw0⟩
-      use w, hw
-      rcases mem_span_singleton.1 (h hw) with ⟨r', rfl⟩
-      have h0 : r' ≠ 0 := by
-        rintro rfl
-        simp at hw0
-      rwa [span_singleton_smul_eq (IsUnit.mk0 _ h0) _]
-    · push_neg at hw
-      rw [← Submodule.eq_bot_iff] at hw
-      simp [hw]
+    obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := K) (M := s)
+    simpa [b.mk_eq_rank''] using b.linearIndependent.map' _ (ker_inclusion _ _ h)
+      |>.cardinal_le_rank.trans (rank_span_le {v₀})
 #align rank_submodule_le_one_iff' rank_submodule_le_one_iff'
 
 theorem Submodule.rank_le_one_iff_isPrincipal {K V : Type*} [Ring K] [StrongRankCondition K]
