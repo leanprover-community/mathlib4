@@ -72,37 +72,65 @@ end Ioi
 
 namespace Iic
 
-instance semilatticeInf [SemilatticeInf α] {a : α} : SemilatticeInf (Iic a) :=
+variable {a : α}
+
+instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (Iic a) :=
   Subtype.semilatticeInf fun _ _ hx _ => le_trans inf_le_left hx
 
-instance semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup (Iic a) :=
+@[simp, norm_cast]
+protected lemma coe_inf [SemilatticeInf α] {x y : Iic a} :
+    (↑(x ⊓ y) : α) = (x : α) ⊓ (y : α) :=
+  rfl
+
+instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (Iic a) :=
   Subtype.semilatticeSup fun _ _ hx hy => sup_le hx hy
 
-instance [Lattice α] {a : α} : Lattice (Iic a) :=
+@[simp, norm_cast]
+protected lemma coe_sup [SemilatticeSup α] {x y : Iic a} :
+    (↑(x ⊔ y) : α) = (x : α) ⊔ (y : α) :=
+  rfl
+
+instance [Lattice α] : Lattice (Iic a) :=
   { Iic.semilatticeInf, Iic.semilatticeSup with }
 
-instance orderTop [Preorder α] {a : α} :
+instance orderTop [Preorder α] :
     OrderTop (Iic a) where
   top := ⟨a, le_refl a⟩
   le_top x := x.prop
 
 @[simp]
-theorem coe_top [Preorder α] {a : α} : (⊤ : Iic a) = a :=
+theorem coe_top [Preorder α] : (⊤ : Iic a) = a :=
   rfl
 #align set.Iic.coe_top Set.Iic.coe_top
 
-instance orderBot [Preorder α] [OrderBot α] {a : α} :
+protected lemma eq_top_iff [Preorder α] {x : Iic a} :
+    x = ⊤ ↔ (x : α) = a := by
+  simp [Subtype.ext_iff]
+
+instance orderBot [Preorder α] [OrderBot α] :
     OrderBot (Iic a) where
   bot := ⟨⊥, bot_le⟩
   bot_le := fun ⟨_, _⟩ => Subtype.mk_le_mk.2 bot_le
 
 @[simp]
-theorem coe_bot [Preorder α] [OrderBot α] {a : α} : (⊥ : Iic a) = (⊥ : α) :=
+theorem coe_bot [Preorder α] [OrderBot α] : (⊥ : Iic a) = (⊥ : α) :=
   rfl
 #align set.Iic.coe_bot Set.Iic.coe_bot
 
-instance [Preorder α] [OrderBot α] {a : α} : BoundedOrder (Iic a) :=
+instance [Preorder α] [OrderBot α] : BoundedOrder (Iic a) :=
   { Iic.orderTop, Iic.orderBot with }
+
+protected lemma disjoint_iff [SemilatticeInf α] [OrderBot α] {x y : Iic a} :
+    Disjoint x y ↔ Disjoint (x : α) (y : α) := by
+  simp [_root_.disjoint_iff, Subtype.ext_iff]
+
+protected lemma codisjoint_iff [SemilatticeSup α] {x y : Iic a} :
+    Codisjoint x y ↔ (x : α) ⊔ (y : α) = a := by
+  simpa only [_root_.codisjoint_iff] using Iic.eq_top_iff
+
+protected lemma isCompl_iff [Lattice α] [BoundedOrder α] {x y : Iic a} :
+    IsCompl x y ↔ Disjoint (x : α) (y : α) ∧ (x : α) ⊔ (y : α) = a := by
+  rw [_root_.isCompl_iff, Iic.disjoint_iff, Iic.codisjoint_iff]
 
 end Iic
 
