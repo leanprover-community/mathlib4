@@ -107,3 +107,17 @@ lemma proof3 {m n : ℕ} : True := by
   repeat trivial
 
 -- We do check the bodies of definitions... no tests since this file is long enough.
+
+-- We currently warn on calc blocks: it is debatable whether this behaviour is desirable.
+-- At the moment, the number of exceptions is small enough.
+set_option linter.geOrGt false in
+/--
+warning: '≥ or > is used in an illegal position
+please change the statement to use ≤ or < instead
+note: this linter can be disabled with `set_option linter.geOrGt false`
+-/
+#guard_msgs in
+set_option linter.geOrGt true in
+lemma in_calc {n m : ℕ} (h : n < m) : n < m :=
+  calc
+    m > n := h
