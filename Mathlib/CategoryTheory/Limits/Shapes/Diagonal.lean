@@ -81,7 +81,6 @@ open pullback
 section
 
 variable {U V₁ V₂ : C} (f : X ⟶ Y) (i : U ⟶ Y)
-
 variable (i₁ : V₁ ⟶ pullback f i) (i₂ : V₂ ⟶ pullback f i)
 
 @[reassoc (attr := simp)]
@@ -199,9 +198,7 @@ end
 section
 
 variable {S T : C} (f : X ⟶ T) (g : Y ⟶ T) (i : T ⟶ S)
-
 variable [HasPullback i i] [HasPullback f g] [HasPullback (f ≫ i) (g ≫ i)]
-
 variable
   [HasPullback (diagonal i)
       (pullback.map (f ≫ i) (g ≫ i) i i f g (𝟙 _) (Category.comp_id _) (Category.comp_id _))]
@@ -224,13 +221,14 @@ def pullbackDiagonalMapIdIso :
       pullback f g := by
   refine' _ ≪≫
     pullbackDiagonalMapIso i (𝟙 _) (f ≫ inv pullback.fst) (g ≫ inv pullback.fst) ≪≫ _
-  · refine' @asIso _ _ _ _ (pullback.map _ _ _ _ (𝟙 T) ((pullback.congrHom _ _).hom) (𝟙 _) _ _) ?_
+  · refine @asIso _ _ _ _ (pullback.map _ _ _ _ (𝟙 T) ((pullback.congrHom ?_ ?_).hom) (𝟙 _) ?_ ?_)
+      ?_
     · rw [← Category.comp_id pullback.snd, ← condition, Category.assoc, IsIso.inv_hom_id_assoc]
     · rw [← Category.comp_id pullback.snd, ← condition, Category.assoc, IsIso.inv_hom_id_assoc]
     · rw [Category.comp_id, Category.id_comp]
     · ext <;> simp
     · infer_instance
-  · refine' @asIso _ _ _ _ (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) pullback.fst _ _) ?_
+  · refine @asIso _ _ _ _ (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) pullback.fst ?_ ?_) ?_
     · rw [Category.assoc, IsIso.inv_hom_id, Category.comp_id, Category.id_comp]
     · rw [Category.assoc, IsIso.inv_hom_id, Category.comp_id, Category.id_comp]
     · infer_instance

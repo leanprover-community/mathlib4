@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
 -/
 import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.NormedSpace.IsROrC
+import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Order.Filter.Curry
 
 #align_import analysis.calculus.uniform_limits_deriv from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
@@ -101,7 +101,7 @@ open scoped uniformity Filter Topology
 
 section LimitsOfDerivatives
 
-variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [IsROrC 𝕜]
+variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [RCLike 𝕜]
   [NormedSpace 𝕜 E] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
   {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
 
@@ -130,7 +130,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
     obtain ⟨a, b, c, d, e⟩ := eventually_prod_iff.1 ((hf' ε hε).and this)
     obtain ⟨R, hR, hR'⟩ := Metric.nhds_basis_ball.eventually_iff.mp d
     let r := min 1 R
-    have hr : 0 < r := by simp [hR]
+    have hr : 0 < r := by simp [r, hR]
     have hr' : ∀ ⦃y : E⦄, y ∈ Metric.ball x r → c y := fun y hy =>
       hR' (lt_of_lt_of_le (Metric.mem_ball.mp hy) (min_le_right _ _))
     have hxy : ∀ y : E, y ∈ Metric.ball x r → ‖y - x‖ < 1 := by
@@ -189,10 +189,8 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
         (l ×ˢ l) (Metric.ball x r) by
     have := this.1.add this.2
     rw [add_zero] at this
-    refine' this.congr _
-    apply eventually_of_forall
-    intro n z _
-    simp
+    refine this.congr ?_
+    filter_upwards with n z _ using (by simp)
   constructor
   · -- This inequality follows from the mean value theorem
     rw [Metric.tendstoUniformlyOn_iff] at hf' ⊢
@@ -231,7 +229,7 @@ theorem cauchy_map_of_uniformCauchySeqOn_fderiv {s : Set E} (hs : IsOpen s) (h's
     Cauchy (map (fun n => f n x) l) := by
   have : NeBot l := (cauchy_map_iff.1 hfg).1
   let t := { y | y ∈ s ∧ Cauchy (map (fun n => f n y) l) }
-  suffices H : s ⊆ t; exact (H hx).2
+  suffices H : s ⊆ t from (H hx).2
   have A : ∀ x ε, x ∈ t → Metric.ball x ε ⊆ s → Metric.ball x ε ⊆ t := fun x ε xt hx y hy =>
     ⟨hx hy,
       (uniformCauchySeqOn_ball_of_fderiv (hf'.mono hx) (fun n y hy => hf n y (hx hy))
@@ -243,7 +241,7 @@ theorem cauchy_map_of_uniformCauchySeqOn_fderiv {s : Set E} (hs : IsOpen s) (h's
     rcases Metric.isOpen_iff.1 hs x hx.1 with ⟨ε, εpos, hε⟩
     exact ⟨ε, εpos, A x ε hx hε⟩
   have st_nonempty : (s ∩ t).Nonempty := ⟨x₀, hx₀, ⟨hx₀, hfg⟩⟩
-  suffices H : closure t ∩ s ⊆ t; exact h's.subset_of_closure_inter_subset open_t st_nonempty H
+  suffices H : closure t ∩ s ⊆ t from h's.subset_of_closure_inter_subset open_t st_nonempty H
   rintro x ⟨xt, xs⟩
   obtain ⟨ε, εpos, hε⟩ : ∃ (ε : ℝ), ε > 0 ∧ Metric.ball x ε ⊆ s := Metric.isOpen_iff.1 hs x xs
   obtain ⟨y, yt, hxy⟩ : ∃ (y : E), y ∈ t ∧ dist x y < ε / 2 :=
@@ -261,7 +259,7 @@ theorem difference_quotients_converge_uniformly (hf' : TendstoUniformlyOnFilter 
     (hfg : ∀ᶠ y : E in 𝓝 x, Tendsto (fun n => f n y) l (𝓝 (g y))) :
     TendstoUniformlyOnFilter (fun n : ι => fun y : E => (‖y - x‖⁻¹ : 𝕜) • (f n y - f n x))
       (fun y : E => (‖y - x‖⁻¹ : 𝕜) • (g y - g x)) l (𝓝 x) := by
-  let : NormedSpace ℝ E; exact NormedSpace.restrictScalars ℝ 𝕜 _
+  let A : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   rcases eq_or_ne l ⊥ with (hl | hl)
   · simp only [hl, TendstoUniformlyOnFilter, bot_prod, eventually_bot, imp_true_iff]
   haveI : NeBot l := ⟨hl⟩
@@ -285,7 +283,7 @@ theorem difference_quotients_converge_uniformly (hf' : TendstoUniformlyOnFilter 
     ⟨_, b, fun e : E => Metric.ball x r e,
       eventually_mem_set.mpr (Metric.nhds_basis_ball.mem_of_mem hr), fun {n} hn {y} hy => _⟩
   simp only [Pi.zero_apply, dist_zero_left]
-  rw [← smul_sub, norm_smul, norm_inv, IsROrC.norm_coe_norm]
+  rw [← smul_sub, norm_smul, norm_inv, RCLike.norm_coe_norm]
   refine' lt_of_le_of_lt _ hqε
   by_cases hyz' : x = y; · simp [hyz', hqpos.le]
   have hyz : 0 < ‖y - x‖ := by rw [norm_pos_iff]; intro hy'; exact hyz' (eq_of_sub_eq_zero hy').symm
@@ -336,7 +334,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   conv =>
     congr
     ext
-    rw [← abs_norm, ← abs_inv, ← @IsROrC.norm_ofReal 𝕜 _ _, IsROrC.ofReal_inv, ← norm_smul]
+    rw [← abs_norm, ← abs_inv, ← @RCLike.norm_ofReal 𝕜 _ _, RCLike.ofReal_inv, ← norm_smul]
   rw [← tendsto_zero_iff_norm_tendsto_zero]
   have :
     (fun a : ι × E => (‖a.2 - x‖⁻¹ : 𝕜) • (g a.2 - g x - (g' x) (a.2 - x))) =
@@ -349,11 +347,11 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     -- Porting note: added
     abel
   simp_rw [this]
-  have : 𝓝 (0 : G) = 𝓝 (0 + 0 + 0); simp only [add_zero]
+  have : 𝓝 (0 : G) = 𝓝 (0 + 0 + 0) := by simp only [add_zero]
   rw [this]
   refine' Tendsto.add (Tendsto.add _ _) _
-  simp only
-  · have := difference_quotients_converge_uniformly hf' hf hfg
+  · simp only
+    have := difference_quotients_converge_uniformly hf' hf hfg
     rw [Metric.tendstoUniformlyOnFilter_iff] at this
     rw [Metric.tendsto_nhds]
     intro ε hε
@@ -372,7 +370,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     refine' (this ε hε).mono fun y hy => _
     rw [dist_eq_norm] at hy ⊢
     simp only [sub_zero, map_sub, norm_mul, norm_inv, norm_norm] at hy ⊢
-    rw [norm_smul, norm_inv, IsROrC.norm_coe_norm]
+    rw [norm_smul, norm_inv, RCLike.norm_coe_norm]
     exact hy
   · -- hfg' after specializing to `x` and applying the definition of the operator norm
     refine' Tendsto.mono_left _ curry_le_prod
@@ -385,7 +383,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     refine' squeeze_zero_norm _
       (tendsto_zero_iff_norm_tendsto_zero.mp (tendsto_fst.comp (h2.prod_map tendsto_id)))
     intro n
-    simp_rw [norm_smul, norm_inv, IsROrC.norm_coe_norm]
+    simp_rw [norm_smul, norm_inv, RCLike.norm_coe_norm]
     by_cases hx : x = n.2; · simp [hx]
     have hnx : 0 < ‖n.2 - x‖ := by
       rw [norm_pos_iff]; intro hx'; exact hx (eq_of_sub_eq_zero hx').symm
@@ -437,7 +435,7 @@ theorem hasFDerivAt_of_tendstoUniformly [NeBot l] (hf' : TendstoUniformly f' g' 
   have hf : ∀ n : ι, ∀ x : E, x ∈ Set.univ → HasFDerivAt (f n) (f' n x) x := by simp [hf]
   have hfg : ∀ x : E, x ∈ Set.univ → Tendsto (fun n => f n x) l (𝓝 (g x)) := by simp [hfg]
   have hf' : TendstoUniformlyOn f' g' l Set.univ := by rwa [tendstoUniformlyOn_univ]
-  refine' hasFDerivAt_of_tendstoUniformlyOn isOpen_univ hf' hf hfg x (Set.mem_univ x)
+  exact hasFDerivAt_of_tendstoUniformlyOn isOpen_univ hf' hf hfg x (Set.mem_univ x)
 #align has_fderiv_at_of_tendsto_uniformly hasFDerivAt_of_tendstoUniformly
 
 end LimitsOfDerivatives
@@ -450,7 +448,7 @@ In this section, we provide `deriv` equivalents of the `fderiv` lemmas in the pr
 -/
 
 
-variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [IsROrC 𝕜] {G : Type*} [NormedAddCommGroup G]
+variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [RCLike 𝕜] {G : Type*} [NormedAddCommGroup G]
   [NormedSpace 𝕜 G] {f : ι → 𝕜 → G} {g : 𝕜 → G} {f' : ι → 𝕜 → G} {g' : 𝕜 → G} {x : 𝕜}
 
 /-- If our derivatives converge uniformly, then the Fréchet derivatives converge uniformly -/
@@ -505,7 +503,7 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   let F' n z := (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)
   let G' z := (1 : 𝕜 →L[𝕜] 𝕜).smulRight (g' z)
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hf ⊢
-  -- Now we need to rewrite hf' in terms of continuous_linear_maps. The tricky part is that
+  -- Now we need to rewrite hf' in terms of `ContinuousLinearMap`s. The tricky part is that
   -- operator norms are written in terms of `≤` whereas metrics are written in terms of `<`. So we
   -- need to shrink `ε` utilizing the archimedean property of `ℝ`
   have hf' : TendstoUniformlyOnFilter F' G' l (𝓝 x) := by
@@ -518,8 +516,8 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     simp only [dist_eq_norm] at hn ⊢
     refine' ContinuousLinearMap.opNorm_le_bound _ hq.le _
     intro z
-    simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.smulRight_apply,
-      ContinuousLinearMap.one_apply]
+    simp only [F', G', ContinuousLinearMap.coe_sub', Pi.sub_apply,
+      ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply]
     rw [← smul_sub, norm_smul, mul_comm]
     gcongr
   exact hasFDerivAt_of_tendstoUniformlyOnFilter hf' hf hfg

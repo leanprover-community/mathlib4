@@ -589,7 +589,7 @@ theorem trans_assoc (ePP₂ : P ≃ᵃⁱ[𝕜] P₂) (eP₂G : P₂ ≃ᵃⁱ[�
 #align affine_isometry_equiv.trans_assoc AffineIsometryEquiv.trans_assoc
 
 /-- The group of affine isometries of a `NormedAddTorsor`, `P`. -/
-instance : Group (P ≃ᵃⁱ[𝕜] P) where
+instance instGroup : Group (P ≃ᵃⁱ[𝕜] P) where
   mul e₁ e₂ := e₂.trans e₁
   one := refl _ _
   inv := symm
@@ -645,7 +645,7 @@ protected theorem surjective : Surjective e :=
   e.1.surjective
 #align affine_isometry_equiv.surjective AffineIsometryEquiv.surjective
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem map_eq_iff {x y : P} : e x = e y ↔ x = y :=
   e.injective.eq_iff
 #align affine_isometry_equiv.map_eq_iff AffineIsometryEquiv.map_eq_iff
@@ -847,10 +847,7 @@ theorem AffineMap.continuous_linear_iff {f : P →ᵃ[𝕜] P₂} : Continuous f
       (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
         f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
     ext v
-    -- Porting note: was just `simp`
-    simp only [(AffineIsometryEquiv.coe_toHomeomorph), Function.comp_apply, (AffineMap.map_vadd),
-      eq_self_iff_true, (AffineIsometryEquiv.toHomeomorph_symm),
-      (AffineIsometryEquiv.coe_vaddConst), (vadd_vsub), (AffineIsometryEquiv.coe_vaddConst_symm)]
+    simp
   rw [this]
   simp only [Homeomorph.comp_continuous_iff, Homeomorph.comp_continuous_iff']
 #align affine_map.continuous_linear_iff AffineMap.continuous_linear_iff
@@ -863,10 +860,7 @@ theorem AffineMap.isOpenMap_linear_iff {f : P →ᵃ[𝕜] P₂} : IsOpenMap f.l
       (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
         f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
     ext v
-    -- Porting note: was just `simp`
-    simp only [(AffineIsometryEquiv.coe_toHomeomorph), Function.comp_apply, (AffineMap.map_vadd),
-      eq_self_iff_true, (AffineIsometryEquiv.toHomeomorph_symm),
-      (AffineIsometryEquiv.coe_vaddConst), (vadd_vsub), (AffineIsometryEquiv.coe_vaddConst_symm)]
+    simp
   rw [this]
   simp only [Homeomorph.comp_isOpenMap_iff, Homeomorph.comp_isOpenMap_iff']
 #align affine_map.is_open_map_linear_iff AffineMap.isOpenMap_linear_iff

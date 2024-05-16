@@ -35,11 +35,8 @@ namespace CategoryTheory
 universe v v₂ u u₂
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (G : C ⥤ D)
-
 variable {X Y : C} (f g : X ⟶ Y)
 
 /-- A split coequalizer diagram consists of morphisms

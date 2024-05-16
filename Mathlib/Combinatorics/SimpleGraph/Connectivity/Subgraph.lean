@@ -15,10 +15,9 @@ import Mathlib.Combinatorics.SimpleGraph.Connectivity
 
 -/
 
-set_option autoImplicit true
-
 namespace SimpleGraph
 
+universe u v
 variable {V : Type u} {V' : Type v} {G : SimpleGraph V} {G' : SimpleGraph V'}
 
 namespace Subgraph
@@ -156,7 +155,8 @@ end Subgraph
 
 section induced_subgraphs
 
-lemma connected_induce_iff : (G.induce s).Connected ↔ ((⊤ : G.Subgraph).induce s).Connected := by
+lemma connected_induce_iff {s : Set V} :
+    (G.induce s).Connected ↔ ((⊤ : G.Subgraph).induce s).Connected := by
   rw [induce_eq_coe_induce_top, ← Subgraph.connected_iff']
 
 lemma induce_union_connected {s t : Set V}
@@ -181,7 +181,7 @@ lemma Walk.connected_induce_support {u v : V} (p : G.Walk u v) :
   rw [← p.verts_toSubgraph]
   exact p.toSubgraph_connected.induce_verts
 
-lemma induce_connected_adj_union {s t : Set V}
+lemma induce_connected_adj_union {v w : V} {s t : Set V}
     (sconn : (G.induce s).Connected) (tconn : (G.induce t).Connected)
     (hv : v ∈ s) (hw : w ∈ t) (ha : G.Adj v w) :
     (G.induce (s ∪ t)).Connected := by
@@ -223,7 +223,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
   obtain ⟨u, ut⟩ := tn
   refine ⟨t.biUnion (fun v => (Gpc u v).some.support.toFinset), fun v vt => ?_, ?_⟩
   · simp only [Finset.mem_biUnion, List.mem_toFinset, exists_prop]
-    refine ⟨v, vt, Walk.end_mem_support _⟩
+    exact ⟨v, vt, Walk.end_mem_support _⟩
   · apply G.induce_connected_of_patches u
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset, Set.mem_iUnion,
                  Set.mem_setOf_eq, Walk.start_mem_support, exists_prop, and_true]

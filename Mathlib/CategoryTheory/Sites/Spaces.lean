@@ -63,8 +63,8 @@ def pretopology : Pretopology (Opens T) where
   pullbacks X Y f S hS x hx := by
     rcases hS _ (f.le hx) with ⟨U, g, hg, hU⟩
     refine' ⟨_, _, Presieve.pullbackArrows.mk _ _ hg, _⟩
-    have : U ⊓ Y ≤ pullback g f
-    refine' leOfHom (pullback.lift (homOfLE inf_le_left) (homOfLE inf_le_right) rfl)
+    have : U ⊓ Y ≤ pullback g f :=
+      leOfHom (pullback.lift (homOfLE inf_le_left) (homOfLE inf_le_right) rfl)
     apply this ⟨hU, hx⟩
   transitive X S Ti hS hTi x hx := by
     rcases hS x hx with ⟨U, f, hf, hU⟩

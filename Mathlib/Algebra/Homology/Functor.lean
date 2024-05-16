@@ -28,7 +28,6 @@ open CategoryTheory.Limits
 namespace HomologicalComplex
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
-
 variable {ι : Type*} {c : ComplexShape ι}
 
 /-- A complex of functors gives a functor to complexes. -/

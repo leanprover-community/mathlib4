@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Data.ENat.Basic
-import Mathlib.SetTheory.Cardinal.ToNat
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Conversion between `Cardinal` and `ℕ∞`
@@ -197,7 +197,7 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
       · simp
       · simp only [toENatAux_eq_top hy]
         rw [toENatAux_eq_top, ENat.mul_top]
-        · rwa [Ne.def, toENatAux_eq_zero]
+        · rwa [Ne, toENatAux_eq_zero]
         · exact le_mul_of_one_le_of_le (one_le_iff_ne_zero.2 hx) hy
   map_add' x y := by
     wlog hle : x ≤ y; · rw [add_comm, this y x (le_of_not_le hle), add_comm]
@@ -224,7 +224,7 @@ noncomputable def gciENat : GaloisCoinsertion (↑) toENat :=
   enat_gc.toGaloisCoinsertion fun n ↦ (toENat_ofENat n).le
 
 lemma toENat_strictMonoOn : StrictMonoOn toENat (Iic ℵ₀) := by
-  simp only [← range_ofENat, StrictMonoOn, forall_range_iff, toENat_ofENat, ofENat_lt_ofENat]
+  simp only [← range_ofENat, StrictMonoOn, forall_mem_range, toENat_ofENat, ofENat_lt_ofENat]
   exact fun _ _ ↦ id
 
 lemma toENat_injOn : InjOn toENat (Iic ℵ₀) := toENat_strictMonoOn.injOn
@@ -287,11 +287,5 @@ def ofENatHom : ℕ∞ →+*o Cardinal where
   map_zero' := ofENat_zero
   map_add' := ofENat_add
   monotone' := ofENat_mono
-
-@[simp] -- TODO: redefine `Cardinal.toNat` as the composition of `ENat.toNat` and `Cardinal.toENat`
-lemma toNat_toENat (a : Cardinal) : ENat.toNat (toENat a) = toNat a :=
-  match lt_or_le a ℵ₀ with
-  | .inl h => by lift a to ℕ using h; simp
-  | .inr h => by rw [toENat_eq_top.2 h, ENat.toNat_top, toNat_apply_of_aleph0_le h]
 
 end Cardinal

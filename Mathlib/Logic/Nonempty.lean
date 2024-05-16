@@ -20,10 +20,7 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
   instance.
 -/
 
-set_option autoImplicit true
-
-
-variable {γ : α → Type*}
+variable {α β : Type*} {γ : α → Type*}
 
 instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α :=
   ⟨0⟩
@@ -127,14 +124,12 @@ noncomputable def Classical.inhabited_of_nonempty' {α} [h : Nonempty α] : Inha
 #align classical.inhabited_of_nonempty' Classical.inhabited_of_nonempty'
 
 /-- Using `Classical.choice`, extracts a term from a `Nonempty` type. -/
-@[reducible]
-protected noncomputable def Nonempty.some {α} (h : Nonempty α) : α :=
+protected noncomputable abbrev Nonempty.some {α} (h : Nonempty α) : α :=
   Classical.choice h
 #align nonempty.some Nonempty.some
 
 /-- Using `Classical.choice`, extracts a term from a `Nonempty` type. -/
-@[reducible]
-protected noncomputable def Classical.arbitrary (α) [h : Nonempty α] : α :=
+protected noncomputable abbrev Classical.arbitrary (α) [h : Nonempty α] : α :=
   Classical.choice h
 #align classical.arbitrary Classical.arbitrary
 

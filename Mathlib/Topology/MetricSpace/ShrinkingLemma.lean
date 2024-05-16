@@ -28,7 +28,6 @@ open Set Metric
 open Topology
 
 variable {α : Type u} {ι : Type v} [MetricSpace α] [ProperSpace α] {c : ι → α}
-
 variable {x : α} {r : ℝ} {s : Set α}
 
 /-- **Shrinking lemma** for coverings by open balls in a proper metric space. A point-finite open

@@ -69,7 +69,7 @@ theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Typ
   { trivial := fun x y => h₁ <|
       calc
         f ⁅x, y⁆ = ⁅f x, f y⁆ := LieHom.map_lie f x y
-        _ = 0 := (trivial_lie_zero _ _ _ _)
+        _ = 0 := trivial_lie_zero _ _ _ _
         _ = f 0 := f.map_zero.symm}
 #align function.injective.is_lie_abelian Function.Injective.isLieAbelian
 
@@ -99,11 +99,8 @@ theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
 section Center
 
 variable (R : Type u) (L : Type v) (M : Type w) (N : Type w₁)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable [AddCommGroup N] [Module R N] [LieRingModule L N] [LieModule R L N]
 
 namespace LieModule
@@ -307,16 +304,13 @@ section IdealOperations
 open LieSubmodule LieSubalgebra
 
 variable {R : Type u} {L : Type v} {M : Type w}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-
 variable [LieRingModule L M] [LieModule R L M]
-
 variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 @[simp]
 theorem LieSubmodule.trivial_lie_oper_zero [LieModule.IsTrivial L M] : ⁅I, N⁆ = ⊥ := by
-  suffices : ⁅I, N⁆ ≤ ⊥; exact le_bot_iff.mp this
+  suffices ⁅I, N⁆ ≤ ⊥ from le_bot_iff.mp this
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
   rintro m ⟨x, n, h⟩; rw [trivial_lie_zero] at h; simp [← h]
 #align lie_submodule.trivial_lie_oper_zero LieSubmodule.trivial_lie_oper_zero
