@@ -23,7 +23,7 @@ jobs:
           git checkout -q master
           printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)" >> "$GITHUB_OUTPUT"
 
-      - name: Post mathlib stats on Zulip
+      - name: Post stats on Zulip
         if: success()
         uses: zulip/github-actions-zulip/send-message@v1
         with:
