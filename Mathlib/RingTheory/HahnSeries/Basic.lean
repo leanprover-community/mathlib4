@@ -245,11 +245,11 @@ theorem ne_zero_iff_orderTop {x : HahnSeries Γ R} : x ≠ 0 ↔ orderTop x ≠ 
   · contrapose!
     simp_all only [orderTop_zero, implies_true]
 
-theorem zero_iff_orderTop {x : HahnSeries Γ R} : x = 0 ↔ orderTop x = ⊤ := by
+theorem orderTop_eq_top_iff {x : HahnSeries Γ R} : orderTop x = ⊤ ↔ x = 0 := by
   constructor
-  simp_all only [orderTop_zero, implies_true]
-  contrapose!
-  exact ne_zero_iff_orderTop.mp
+  · contrapose!
+    exact ne_zero_iff_orderTop.mp
+  · simp_all only [orderTop_zero, implies_true]
 
 theorem untop_orderTop_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :
     WithTop.untop x.orderTop (ne_zero_iff_orderTop.mp hx) =
