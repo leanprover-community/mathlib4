@@ -73,7 +73,7 @@ example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε :=
  by linarith
 
 example (x y z : Rat) (h1 : 2*x < 3*y) (h2 : -4*x + z/2 < 0)
-    (h3 : 12*y - z < 0)  : False := by
+    (h3 : 12*y - z < 0) : False := by
   linarith
 
 example (ε : Rat) (h1 : 0 < ε) : ε / 2 < ε := by linarith
@@ -186,7 +186,7 @@ example (i n : ℕ) (h : (2:ℤ) ^ i ≤ 2 ^ n) : (0:ℤ) ≤ 2 ^ n - 2 ^ i := b
 example (a b c : Rat) (h2 : b > 0) (h3 : b < 0) : Nat.prime 10 := by
   linarith
 
-example (a b c : Rat) (h2 : 3 < (2 : Rat))  : a + b - c ≥ 3 := by
+example (a b c : Rat) (h2 : (2 : Rat) > 3) : a + b - c ≥ 3 := by
   linarith (config := {exfalso := false})
 
 -- Verify that we split conjunctions in hypotheses.
@@ -208,7 +208,7 @@ example (h1 : (1 : ℕ) < 1) : False := by
 example (a b c : ℕ) : a + b ≥ a := by
   linarith
 
-example (a b i : ℕ) (h1 :  ¬ a < i) (h2 : b < i) (h3 : a ≤ b) : False := by
+example (a b i : ℕ) (h1 : ¬ a < i) (h2 : b < i) (h3 : a ≤ b) : False := by
   linarith
 
 example (x y : ℕ) (h : x < 3 * y) : True := by
@@ -249,7 +249,7 @@ example (a b c : ℚ) (h1 : 1 / a < b) (h2 : b < c) : 1 / a < c := by
   linarith
 
 example (N : ℕ) (n : ℕ) (Hirrelevant : n > N) (A : Rat) (l : Rat) (h : A - l ≤ -(A - l))
-    (h_1 : ¬A ≤ -A) (h_2 : ¬l ≤ -l) (h_3 : -(A - l) < 1) :  A < l + 1 := by
+    (h_1 : ¬A ≤ -A) (h_2 : ¬l ≤ -l) (h_3 : -(A - l) < 1) : A < l + 1 := by
   linarith
 
 example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1)*n ≥ 0) (h2 : d = 2/3*(((q : Rat) - 1)*n)) :
@@ -439,7 +439,7 @@ example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
 -- TODO: make the simplex algorithm able to work with sparse matrices. This should speed up
 -- `nlinarith` because it passes large and sparse matrices to the oracle.
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
-    p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) :=  by
+    p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) := by
   nlinarith (config := { oracle := some .fourierMotzkin })
 
 -- Tests involving a norm, including that squares in a type where `sq_nonneg` does not apply
