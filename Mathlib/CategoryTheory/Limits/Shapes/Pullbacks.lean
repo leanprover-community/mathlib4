@@ -2760,22 +2760,19 @@ def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X wher
 /-- The adjunction `Over.map ⊣ baseChange` -/
 @[simps! unit_app counit_app]
 def mapAdjunction [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ baseChange f :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun x y ↦
-        { toFun := fun u ↦ Over.homMk (pullback.lift u.left x.hom (by simp))
-          invFun := fun v ↦ Over.homMk (v.left ≫ pullback.fst) (by
-            dsimp
-            rw [Category.assoc, pullback.condition, ← Over.w v, Category.assoc]
-            dsimp)
-          left_inv := by aesop_cat
-          right_inv := fun v ↦ by
-            dsimp
-            ext
-            dsimp
-            ext
-            · simp
-            · rw [pullback.lift_snd, ← Over.w v]
-              dsimp }}
+  .mkOfHomEquiv <| {
+    homEquiv := fun X Y => {
+      toFun := fun u => Over.homMk (pullback.lift u.left X.hom <| by simp)
+      invFun := fun v => Over.homMk (v.left ≫ pullback.fst) <|
+        by simp [← Over.w v, pullback.condition]
+      left_inv := by aesop_cat
+      right_inv := by
+        intro v
+        ext
+        dsimp
+        ext
+        · simp
+        · simpa using Over.w v |>.symm  } }
 
 end Over
 
