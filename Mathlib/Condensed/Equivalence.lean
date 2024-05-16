@@ -127,6 +127,8 @@ noncomputable def profiniteToCompHausEffectivePresentation (X : CompHaus) :
 instance : profiniteToCompHaus.EffectivelyEnough where
   presentation X := ⟨profiniteToCompHausEffectivePresentation X⟩
 
+instance : PreservesFiniteCoproducts profiniteToCompHaus := sorry
+
 /-- The equivalence from coherent sheaves on `Profinite` to coherent sheaves on `CompHaus`
     (i.e. condensed sets). -/
 noncomputable

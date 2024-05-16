@@ -161,7 +161,7 @@ def lightProfiniteConeOfHom :
 
 instance [Mono f] : IsIso ((Profinite.limitConeIsLimit ((lightProfiniteDiagramOfHom f) ⋙
     FintypeCat.toProfinite)).lift (lightProfiniteConeOfHom f)) := by
-  apply Profinite.isIso_of_bijective
+  apply CompHausLike.isIso_of_bijective
   refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
   · have hf : Function.Injective f := by rwa [← Profinite.mono_iff_injective]
     suffices f a = f b by exact hf this
@@ -188,10 +188,9 @@ instance [Mono f] : IsIso ((Profinite.limitConeIsLimit ((lightProfiniteDiagramOf
           (T1Space.t1 _)).isCompact)
         (fun _ ↦ IsClosed.preimage (lightProfiniteConeOfHom_π_app _ _).continuous (T1Space.t1 _))
       intro i j h x hx
-      simp only [Functor.comp_obj, CompHausLike.compHausLikeToTop_obj,
-        profiniteToCompHaus_obj_toTop_α, toProfinite_obj_toTop_α, Functor.comp_map,
-        profiniteToCompHaus_map, CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq,
-        Set.mem_preimage, Set.mem_singleton_iff]
+      simp only [Functor.comp_obj, CompHausLike.compHausLikeToTop_obj, Functor.comp_map,
+        CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq, Set.mem_preimage,
+        Set.mem_singleton_iff]
       have := (lightProfiniteConeOfHom f).π.naturality (homOfLE h).op
       simp only [lightProfiniteConeOfHom, Functor.const_obj_obj, Functor.comp_obj,
         Functor.const_obj_map, Category.id_comp, Functor.comp_map] at this
