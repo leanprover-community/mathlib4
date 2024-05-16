@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Order.Hom.Order
+import Mathlib.Order.OmegaCompletePartialOrder
 
 #align_import order.fixed_points from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
 
@@ -314,3 +315,28 @@ instance completeLattice : CompleteLattice (fixedPoints f) where
   bot := ⟨lfp f, f.isFixedPt_lfp⟩
   le_top x := f.le_gfp x.2.ge
   bot_le x := f.lfp_le x.2.le
+
+
+  open OmegaCompletePartialOrder fixedPoints
+
+  /-- **Kleenes fixed point Theorem**: The least fixed point in a complete lattice is the supremum of
+  iterating a function to bottom arbitrary often. -/
+  theorem lfp_eq_sSup_approx (h : Continuous f) :
+      lfp f = sSup { approx f ⊥ n | n : Nat} := by
+    apply le_antisymm
+    · apply lfp_le_fixed
+      exact Function.mem_fixedPoints.mp (approx_mem_fixedPoint ⟨f, h⟩ ⊥ bot_le)
+    · apply le_lfp
+      intro a h_a
+      exact ωSup_approx_le_prefixedPoint ⟨f, h⟩ ⊥ bot_le h_a bot_le
+
+  theorem gfp_eq_sSup_approx (h : Continuous (OrderHom.dual f)) :
+      gfp f = sInf { approx f ⊤ n | n : Nat} :=
+    lfp_eq_sSup_approx (OrderHom.dual f) h
+
+
+
+
+
+
+end fixedPoints

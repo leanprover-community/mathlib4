@@ -9,7 +9,6 @@ import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Order.FixedPoints
 
 /-!
 # Omega Complete Partial Orders
@@ -580,6 +579,7 @@ theorem inf_continuous' {f g : α → β} (hf : Continuous' f) (hg : Continuous'
 
 end CompleteLattice
 
+
 namespace OmegaCompletePartialOrder
 
 variable {α : Type u} {α' : Type*} {β : Type v} {β' : Type*} {γ : Type*} {φ : Type*}
@@ -925,48 +925,41 @@ open Function
 
 variable (f : α →𝒄 α) (x : α)
 
-def approx' (f : α →𝒄 α) (x : α) : ℕ → α
+/-- Approximation chain of the least fixed point. This definition is equivalent to Nat.repeat. -/
+def approx (f : α → α) (x : α) : ℕ → α
   | 0 => x
-  | Nat.succ n => f (approx' f x n)
+  | Nat.succ n => f (approx f x n)
 
-theorem approx'_le (h : x ≤ f x) (n : ℕ) :
-    approx' f x n ≤ f (approx' f x n) := by
+theorem approx_eq_repeat {n : ℕ} : approx f x n = Nat.repeat f n x := by
+  induction n with
+  | zero => exact rfl
+  | succ n h_ind => exact congrArg f h_ind
+
+theorem approx_le (h : x ≤ f x) (n : ℕ) :
+    approx f x n ≤ f (approx f x n) := by
   induction n with
   | zero => exact h
   | succ n h_ind => exact f.monotone h_ind
 
-theorem le_approx' (h : x ≤ f x) {n : ℕ} :
-    x ≤ f (approx' f x n) := by
-  induction n with
-  | zero => exact h
-  | succ n h_ind => exact le_trans h <| f.monotone <| h_ind
-
-theorem monotone_approx' (h : x ≤ f x) :
-    Monotone (approx' f x) := by
+theorem monotone_approx (h : x ≤ f x) :
+    Monotone (approx f x) := by
   intro a b h_ab
   induction b, h_ab using Nat.le_induction with
   | base => exact le_rfl
-  | succ n _ h_ind => exact le_trans h_ind (approx'_le f x h n)
+  | succ n _ h_ind => exact le_trans h_ind (approx_le f x h n)
 
-def approx (h : x ≤ f x) : Chain α :=
-    ⟨approx' f x, monotone_approx' f x h⟩
+def approxAsChain (h : x ≤ f x) : Chain α :=
+    ⟨approx f x, monotone_approx f x h⟩
 
-theorem approx_le (h : x ≤ f x) (n : ℕ) :
-    approx f x h n ≤ f (approx f x h n) := approx'_le f x h n
-
-theorem le_approx (h : x ≤ f x) {n : ℕ} :
-    x ≤ f (approx f x h n) := le_approx' f x h
-
-/-- **Kleenes Fixed Point Theorem**:
-  The supremum of function compositions is a fixed point -/
+/-- The supremum of iterating a function on x arbitrary often is a fixed point -/
 theorem approx_mem_fixedPoint (h : x ≤ f x) :
-    ωSup (approx f x h) ∈ fixedPoints f := by
+    ωSup (approxAsChain f x h) ∈ fixedPoints f := by
   rw [mem_fixedPoints, IsFixedPt, f.continuous]
   apply le_antisymm
   · apply ωSup_le
     intro n
     simp only [Chain.map_coe, OrderHomClass.coe_coe, comp_apply]
-    have : f (approx f x h n) = approx f x h (n+1) := rfl
+    have : f (approxAsChain f x h n) = approxAsChain f x h (n+1) := rfl
     rw [this]
     apply le_ωSup
   · apply ωSup_le
@@ -974,37 +967,41 @@ theorem approx_mem_fixedPoint (h : x ≤ f x) :
     cases n
     case a.a.zero =>
       apply le_trans h
-      have : f x = ((approx f x h).map f) 0 := rfl
+      have : f x = ((approxAsChain f x h).map f) 0 := rfl
       rw [this]
       apply le_ωSup
     case a.a.succ n =>
-      have : f (approx f x h n) = approx f x h (n+1) := rfl
+      have : f (approxAsChain f x h n) = approxAsChain f x h (n+1) := rfl
       rw [←this]
-      have : (approx f x h).map f n = f (approx f x h n) := rfl
+      have : (approxAsChain f x h).map f n = f (approxAsChain f x h n) := rfl
       rw [←this]
       apply le_ωSup
 
-  theorem approx_le_fixedPoint (h : x ≤ f x) {a : α}
-      (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) (n : ℕ) :
-      approx f x h n ≤ a := by
+  theorem approx_le_prefixedPoint {a : α} (h_a : f a ≤ a) (h_x_le_a : x ≤ a) (n : ℕ) :
+      approx f x n ≤ a := by
     induction n with
     | zero => exact h_x_le_a
-    | succ n h_ind =>
-      rw [mem_fixedPoints] at h_a
-      rw [←h_a]
-      exact f.monotone h_ind
+    | succ n h_ind => exact le_trans (f.monotone h_ind) h_a
 
+  /-- The supremum of iterating a function on x arbitrary often is smaller than any prefixed point-/
+  theorem ωSup_approx_le_prefixedPoint (h : x ≤ f x) {a : α}
+      (h_a : f a ≤ a) (h_x_le_a : x ≤ a) :
+      ωSup (approxAsChain f x h) ≤ a := by
+    apply ωSup_le
+    exact fun n => approx_le_prefixedPoint f x h_a h_x_le_a n
+
+  theorem approx_le_fixedPoint {a : α} (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) (n : ℕ) :
+      approx f x n ≤ a := by
+    rw [mem_fixedPoints] at h_a
+    obtain h_a := Eq.le h_a
+    exact approx_le_prefixedPoint f x h_a h_x_le_a n
+
+  /-- The supremum of iterating a function on x arbitrary often is smaller than any fixed point-/
   theorem ωSup_approx_le_fixedPoint (h : x ≤ f x) {a : α}
       (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) :
-      ωSup (approx f x h) ≤ a := by
+      ωSup (approxAsChain f x h) ≤ a := by
     apply ωSup_le
-    exact fun n => approx_le_fixedPoint f x h h_a h_x_le_a n
-
-  -- open OrderHom
-
-  -- theorem lfp_eq_ωSup_approx [CompleteLattice α] :
-  --     OrderHom.lfp f.1 = (ωSup (approx f ⊥ bot_le)) :=
-  --   sorry
+    exact fun n => approx_le_fixedPoint f x h_a h_x_le_a n
 
 end fixedPoints
 
