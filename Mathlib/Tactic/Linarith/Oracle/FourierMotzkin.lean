@@ -28,7 +28,8 @@ We recursively eliminate all variables from the system. If we derive an empty cl
 we conclude that the original system was unsatisfiable.
 -/
 
-open Std
+open Batteries
+open Std (format ToFormat)
 
 namespace Linarith
 
@@ -255,7 +256,7 @@ structure LinarithData : Type where
 The linarith monad extends an exceptional monad with a `LinarithData` state.
 An exception produces a contradictory `PComp`.
 -/
-@[reducible] def LinarithM : Type → Type :=
+abbrev LinarithM : Type → Type :=
   StateT LinarithData (ExceptT PComp Id)
 
 /-- Returns the current max variable. -/
@@ -323,14 +324,9 @@ those hypotheses. It produces an initial state for the elimination monad.
 def mkLinarithData (hyps : List Comp) (maxVar : ℕ) : LinarithData :=
   ⟨maxVar, .ofList (hyps.enum.map fun ⟨n, cmp⟩ => PComp.assump cmp n) _⟩
 
-/--
-`produceCertificate hyps vars` tries to derive a contradiction from the comparisons in `hyps`
-by eliminating all variables ≤ `maxVar`.
-If successful, it returns a map `coeff : ℕ → ℕ` as a certificate.
-This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
--/
-def FourierMotzkin.produceCertificate : CertificateOracle :=
-  fun hyps maxVar => match ExceptT.run
+/-- An oracle that uses Fourier-Motzkin elimination. -/
+def CertificateOracle.fourierMotzkin : CertificateOracle where
+  produceCertificate hyps maxVar := match ExceptT.run
       (StateT.run (do validate; elimAllVarsM : LinarithM Unit) (mkLinarithData hyps maxVar)) with
   | (Except.ok _) => failure
   | (Except.error contr) => return contr.src.flatten

@@ -533,7 +533,6 @@ theorem LocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : LocalRing.maximalI
 
 namespace RingEquiv
 
-@[reducible]
 protected theorem localRing {A B : Type*} [CommSemiring A] [LocalRing A] [CommSemiring B]
     (e : A ≃+* B) : LocalRing B :=
   haveI := e.symm.toEquiv.nontrivial

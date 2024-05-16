@@ -44,7 +44,7 @@ namespace List
 variable (α)
 
 /-- The product of a family of types over a list. -/
-def TProd (l : List ι) : Type v :=
+abbrev TProd (l : List ι) : Type v :=
   l.foldr (fun i β => α i × β) PUnit
 #align list.tprod List.TProd
 

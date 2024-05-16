@@ -1057,8 +1057,7 @@ theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂
 #align continuous_linear_map.ker_cod_restrict ContinuousLinearMap.ker_codRestrict
 
 /-- Restrict the codomain of a continuous linear map `f` to `f.range`. -/
-@[reducible]
-def rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :=
+abbrev rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :=
   f.codRestrict (LinearMap.range f) (LinearMap.mem_range_self f)
 
 @[simp]

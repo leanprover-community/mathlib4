@@ -341,7 +341,7 @@ Analysis:
     fundamental theorem of calculus, part 2: 'intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le'
     Fubini's theorem: 'MeasureTheory.integral_prod'
     product of finitely many measures: 'MeasureTheory.Measure.pi'
-    convolution: 'convolution'
+    convolution: 'MeasureTheory.convolution'
     approximation by convolution: 'ContDiffBump.convolution_tendsto_right'
     regularization by convolution: 'HasCompactSupport.contDiff_convolution_left'
     change of variables formula: 'MeasureTheory.integral_image_eq_integral_abs_det_fderiv_smul'
@@ -453,7 +453,7 @@ Data structures:
     list: 'List'
     array: 'Array'
     # buffer: 'buffer'
-    difference list: 'Std.DList'
+    difference list: 'Batteries.DList'
     lazy list: 'LazyList'
     stream: 'Stream'''
     sequence: 'Stream''.Seq'
@@ -467,14 +467,14 @@ Data structures:
 
   Maps:
     key-value map: 'AList'
-    red-black map: 'Std.RBMap'
-    hash map: 'Std.HashMap'
+    red-black map: 'Batteries.RBMap'
+    hash map: 'Batteries.HashMap'
     finitely supported function: 'Finsupp'
     finite map: 'Finmap'
 
   Trees:
     tree: 'Tree'
-    red-black tree: 'Std.RBSet'
+    red-black tree: 'Batteries.RBSet'
     size-balanced binary search tree: 'Ordnode'
     W type: 'WType'
 
