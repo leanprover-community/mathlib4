@@ -295,6 +295,25 @@ def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * 
         fun x₁ x₂ y₁ h₁ h₂ => by rw [mul_assoc x₂, ← h₂, ← mul_assoc x₂, ← h₁, ← mul_assoc] }
 #align algebra.adjoin_comm_semiring_of_comm Algebra.adjoinCommSemiringOfComm
 
+variable {R}
+
+lemma commute_of_mem_adjoin_of_forall_mem_commute {a b : A} {s : Set A}
+    (hb : b ∈ adjoin R s) (h : ∀ b ∈ s, Commute a b) :
+    Commute a b :=
+  adjoin_induction hb h (fun r ↦ commute_algebraMap_right r a) (fun _ _ ↦ Commute.add_right)
+    (fun _ _ ↦ Commute.mul_right)
+
+lemma commute_of_mem_adjoin_singleton_of_commute {a b c : A}
+    (hc : c ∈ adjoin R {b}) (h : Commute a b) :
+    Commute a c :=
+  commute_of_mem_adjoin_of_forall_mem_commute hc <| by simpa
+
+lemma commute_of_mem_adjoin_self {a b : A} (hb : b ∈ adjoin R {a}) :
+    Commute a b :=
+  commute_of_mem_adjoin_singleton_of_commute hb rfl
+
+variable (R)
+
 theorem adjoin_singleton_one : adjoin R ({1} : Set A) = ⊥ :=
   eq_bot_iff.2 <| adjoin_le <| Set.singleton_subset_iff.2 <| SetLike.mem_coe.2 <| one_mem _
 #align algebra.adjoin_singleton_one Algebra.adjoin_singleton_one

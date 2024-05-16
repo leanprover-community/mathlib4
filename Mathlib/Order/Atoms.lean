@@ -987,7 +987,7 @@ namespace «Prop»
   simp [IsCoatom, show ⊤ = True from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]; tauto
 
 instance : IsSimpleOrder Prop where
-  eq_bot_or_eq_top p := by by_cases h : p <;> simp [h] <;> tauto
+  eq_bot_or_eq_top p := by simp [em']
 
 end «Prop»
 
