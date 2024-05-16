@@ -265,10 +265,8 @@ theorem hadd_correct (P₁ : NFA α σ) (P₂ : NFA α σ') :
       rw [eval_append_singleton, mem_stepSet] at eval ⊢
       rcases eval with ⟨p | p, mem, step⟩ <;>
         first | exact ⟨p, ih p mem, step⟩ | cases step
-  · rintro (hx | hx) <;>
-    · rcases hx with ⟨q, accept, eval⟩
-      first | exists .inl q | exists .inr q
-      refine ⟨accept, ?_⟩
+  · rintro (⟨q, accept, eval⟩ | ⟨q, accept, eval⟩) <;> [exists .inl q; exists .inr q] <;>
+    · refine ⟨accept, ?_⟩
       clear accept
       induction x using List.reverseRecOn generalizing q
       · exact eval

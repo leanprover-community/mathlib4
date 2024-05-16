@@ -225,9 +225,9 @@ equivalent GNFA -/
 lemma mapEquiv_trace_aux {σ τ} (M : GNFA α σ) (e : σ ≃ τ) q :
     M.trace q ≤ (M.mapEquiv e).trace (e q) := by
   intro x hxt
-  refine hxt.recOn ?_ ?_ <;>
-  [ (rintro _ _ mat; refine trace.start _ ?_)
-  ; (rintro _ _ _ p q _ mat rfl ih; refine trace.step (e p) (e q) ih ?_ rfl)] <;>
+  refine hxt.recOn
+    (fun _ mat ↦ trace.start _ ?_)
+    (fun p q _ mat eq ih ↦ trace.step (e p) (e q) ih ?_ eq) <;>
   · unfold mapEquiv
     dsimp
     simp only [Equiv.symm_apply_apply]
