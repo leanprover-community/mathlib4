@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Group.Int
-import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import category_theory.graded_object from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -32,8 +31,6 @@ introduced: if `p : I → J` is a map such that `C` has coproducts indexed by `p
 have a functor `map : GradedObject I C ⥤ GradedObject J C`.
 
 -/
-
-set_option autoImplicit true
 
 namespace CategoryTheory
 
@@ -72,7 +69,7 @@ instance categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObjec
 
 -- Porting note (#10688): added to ease automation
 @[ext]
-lemma hom_ext {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
+lemma hom_ext {β : Type*} {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext
   apply h
 
@@ -128,7 +125,7 @@ abbrev comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C
 
 -- Porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
 @[simp]
-theorem eqToHom_proj {x x' : GradedObject I C} (h : x = x') (i : I) :
+theorem eqToHom_proj {I : Type*} {x x' : GradedObject I C} (h : x = x') (i : I) :
     (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
   subst h
   rfl
@@ -150,7 +147,6 @@ theorem comapEq_trans {β γ : Type w} {f g h : β → γ} (k : f = g) (l : g = 
     comapEq C (k.trans l) = comapEq C k ≪≫ comapEq C l := by aesop_cat
 #align category_theory.graded_object.comap_eq_trans CategoryTheory.GradedObject.comapEq_trans
 
-@[simp]
 theorem eqToHom_apply {β : Type w} {X Y : β → C} (h : X = Y) (b : β) :
     (eqToHom h : X ⟶ Y) b = eqToHom (by rw [h]) := by
   subst h

@@ -3,9 +3,8 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Duplicate
+import Mathlib.Data.List.Sort
 
 #align_import data.list.nodup_equiv_fin from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -41,7 +40,7 @@ for a version giving an equivalence when there is decidable equality. -/
 @[simps]
 def getBijectionOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
     { f : Fin l.length → α // Function.Bijective f } :=
-  ⟨fun i => l.get i, fun _ _ h => Fin.ext <| (nd.nthLe_inj_iff _ _).1 h,
+  ⟨fun i => l.get i, fun _ _ h => nd.get_inj_iff.1 h,
    fun x =>
     let ⟨i, hl⟩ := List.mem_iff_get.1 (h x)
     ⟨i, hl⟩⟩
@@ -220,7 +219,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
     · rintro ⟨f, hf⟩
       refine' ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩,
         f.lt_iff_lt.2 (show (0 : ℕ) < 1 from zero_lt_one), _⟩
-      · rw [← hf, ← hf]; simp
+      rw [← hf, ← hf]; simp
     · rintro ⟨n, m, hnm, h, h'⟩
       refine' ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) _, _⟩
       · rintro ⟨⟨_ | i⟩, hi⟩ ⟨⟨_ | j⟩, hj⟩
@@ -234,10 +233,11 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
         · simpa using h
         · simpa using h'
 
+set_option linter.deprecated false in
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.
 -/
-@[deprecated duplicate_iff_exists_distinct_get]
+@[deprecated duplicate_iff_exists_distinct_get] -- 2023-01-19
 theorem duplicate_iff_exists_distinct_nthLe {l : List α} {x : α} :
     l.Duplicate x ↔
       ∃ (n : ℕ) (hn : n < l.length) (m : ℕ) (hm : m < l.length) (_ : n < m),

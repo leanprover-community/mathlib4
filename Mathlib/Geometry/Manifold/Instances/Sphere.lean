@@ -245,8 +245,8 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   · simp [a, inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
       mul_pow, Real.norm_eq_abs, sq_abs, norm_smul]
     -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
-    · rw [split, add_comm]
-      ac_rfl
+    rw [split, add_comm]
+    ac_rfl
   -- Porting note: this branch did not exit in ml3
   · rw [split, add_comm]
     congr!
@@ -424,8 +424,8 @@ instance EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (fin
         stereographic'_source]
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm, Set.preimage_id,
         Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
-      simp only [id.def, comp_apply, Submodule.subtypeL_apply, PartialHomeomorph.coe_coe_symm,
-        innerSL_apply, Ne.def, sphere_ext_iff, real_inner_comm (v' : E)]
+      simp only [id, comp_apply, Submodule.subtypeL_apply, PartialHomeomorph.coe_coe_symm,
+        innerSL_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)
 
 /-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is smooth.  -/

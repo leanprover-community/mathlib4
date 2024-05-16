@@ -54,9 +54,6 @@ In lemma names,
 * `⋂₀`: `Set.sInter`
 -/
 
-set_option autoImplicit true
-
-
 open Function Set
 
 universe u
@@ -536,15 +533,6 @@ theorem diff_iUnion [Nonempty ι] (s : Set β) (t : ι → Set β) : (s \ ⋃ i,
 theorem diff_iInter (s : Set β) (t : ι → Set β) : (s \ ⋂ i, t i) = ⋃ i, s \ t i := by
   rw [diff_eq, compl_iInter, inter_iUnion]; rfl
 #align set.diff_Inter Set.diff_iInter
-
-theorem directed_on_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
-    (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
-  simp only [DirectedOn, exists_prop, mem_iUnion, exists_imp]
-  exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
-    let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
-    let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
-    ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
-#align set.directed_on_Union Set.directed_on_iUnion
 
 theorem iUnion_inter_subset {ι α} {s t : ι → Set α} : ⋃ i, s i ∩ t i ⊆ (⋃ i, s i) ∩ ⋃ i, t i :=
   le_iSup_inf_iSup s t
@@ -2044,6 +2032,27 @@ theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)
 
 end Pi
 
+section Directed
+
+theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
+    (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
+  simp only [DirectedOn, exists_prop, mem_iUnion, exists_imp]
+  exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
+    let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
+    let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
+    ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
+#align set.directed_on_Union Set.directedOn_iUnion
+
+@[deprecated (since := "2024-05-05")]
+alias directed_on_iUnion := directedOn_iUnion
+
+theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
+    (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by
+  rw [sUnion_eq_iUnion]
+  exact directedOn_iUnion (directedOn_iff_directed.mp hd) (fun i ↦ h i.1 i.2)
+
+end Directed
+
 end Set
 
 namespace Function
@@ -2200,6 +2209,15 @@ theorem sigmaToiUnion_bijective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
   ⟨sigmaToiUnion_injective t h, sigmaToiUnion_surjective t⟩
 #align set.sigma_to_Union_bijective Set.sigmaToiUnion_bijective
 
+/-- Equivalence from the disjoint union of a family of sets forming a partition of `β`, to `β`
+itself. -/
+noncomputable def sigmaEquiv (s : α → Set β) (hs : ∀ b, ∃! i, b ∈ s i) :
+    (Σ i, s i) ≃ β where
+  toFun | ⟨_, b⟩ => b
+  invFun b := ⟨(hs b).choose, b, (hs b).choose_spec.1⟩
+  left_inv | ⟨i, b, hb⟩ => Sigma.subtype_ext ((hs b).choose_spec.2 i hb).symm rfl
+  right_inv _ := rfl
+
 /-- Equivalence between a disjoint union and a dependent sum. -/
 noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}
     (h : Pairwise fun i j => Disjoint (t i) (t j)) :
@@ -2275,10 +2293,10 @@ lemma iInf_sUnion (S : Set (Set α)) (f : α → β) :
     (⨅ x ∈ ⋃₀ S, f x) = ⨅ (s ∈ S) (x ∈ s), f x := by
   rw [sUnion_eq_iUnion, iInf_iUnion, ← iInf_subtype'']
 
-lemma forall_sUnion {p : α → Prop} :
+lemma forall_sUnion {S : Set (Set α)} {p : α → Prop} :
     (∀ x ∈ ⋃₀ S, p x) ↔ ∀ s ∈ S, ∀ x ∈ s, p x := by
   simp_rw [← iInf_Prop_eq, iInf_sUnion]
 
-lemma exists_sUnion {p : α → Prop} :
+lemma exists_sUnion {S : Set (Set α)} {p : α → Prop} :
     (∃ x ∈ ⋃₀ S, p x) ↔ ∃ s ∈ S, ∃ x ∈ s, p x := by
   simp_rw [← exists_prop, ← iSup_Prop_eq, iSup_sUnion]

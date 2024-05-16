@@ -36,6 +36,7 @@ structure LightProfinite : Type (u+1) where
   isLimit : IsLimit cone
 
 /-- A finite set can be regarded as a light profinite set as the limit of the constant diagram. -/
+@[simps]
 def FintypeCat.toLightProfinite (X : FintypeCat) : LightProfinite where
   diagram := (Functor.const _).obj X
   cone := {
@@ -58,7 +59,8 @@ theorem ext {Y : LightProfinite} {a b : Y.cone.pt}
 Given a functor from `ℕᵒᵖ` to finite sets we can take its limit in `Profinite` and obtain a light
 profinite set. 
 -/
-noncomputable def of (F : ℕᵒᵖ ⥤ FintypeCat) : LightProfinite where
+@[simps]
+noncomputable def of (F : ℕᵒᵖ ⥤ FintypeCat) : LightProfinite.{u} where
   diagram := F
   isLimit := limit.isLimit (F ⋙ FintypeCat.toProfinite)
 
@@ -79,8 +81,6 @@ instance : lightToProfinite.Faithful := show (inducedFunctor _).Faithful from in
 
 instance : lightToProfinite.Full := show (inducedFunctor _).Full from inferInstance
 
-instance : lightToProfinite.ReflectsEpimorphisms := inferInstance
-
 instance {X : LightProfinite} : TopologicalSpace ((forget LightProfinite).obj X) :=
   (inferInstance : TopologicalSpace X.cone.pt)
 
@@ -94,13 +94,31 @@ instance {X : LightProfinite} : T2Space ((forget LightProfinite).obj X) :=
   (inferInstance : T2Space X.cone.pt )
 
 /-- The explicit functor `FintypeCat ⥤ LightProfinite`.  -/
+@[simps]
 def fintypeCatToLightProfinite : FintypeCat ⥤ LightProfinite.{u} where
   obj X := X.toLightProfinite
   map f := FintypeCat.toProfinite.map f
 
+instance : fintypeCatToLightProfinite.Faithful where
+  map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
+
+instance : fintypeCatToLightProfinite.Full where
+  map_surjective f := ⟨fun x ↦ f x, rfl⟩
+
+/-- The fully faithful embedding of `LightProfinite` in `TopCat`. -/
+@[simps!]
+def toTopCat : LightProfinite ⥤ TopCat :=
+  lightToProfinite ⋙ Profinite.toTopCat
+
+instance : toTopCat.Faithful := Functor.Faithful.comp _ _
+
+instance : toTopCat.Full := Functor.Full.comp _ _
+
 end LightProfinite
 
 noncomputable section EssentiallySmall
+
+open LightProfinite
 
 /-- This is an auxiliary definition used to show that `LightProfinite` is essentially small. -/
 structure LightProfinite' : Type u where
@@ -120,19 +138,17 @@ def LightProfinite'.toLightFunctor : LightProfinite'.{u} ⥤ LightProfinite.{u} 
 
 instance : LightProfinite'.toLightFunctor.{u}.Faithful := ⟨id⟩
 
-instance : LightProfinite'.toLightFunctor.{u}.Full := ⟨id, fun _ ↦ rfl⟩
+instance : LightProfinite'.toLightFunctor.{u}.Full where
+  map_surjective f := ⟨f, rfl⟩
 
 instance : LightProfinite'.toLightFunctor.{u}.EssSurj where
-  mem_essImage Y := by
-    let i : limit (((Y.diagram ⋙ Skeleton.equivalence.inverse) ⋙ Skeleton.equivalence.functor) ⋙
-      toProfinite) ≅ Y.cone.pt := (Limits.lim.mapIso (isoWhiskerRight ((Functor.associator _ _ _) ≪≫
-      (isoWhiskerLeft Y.diagram Skeleton.equivalence.counitIso)) toProfinite)) ≪≫
-      IsLimit.conePointUniqueUpToIso (limit.isLimit _) Y.isLimit
-    exact ⟨⟨Y.diagram ⋙ Skeleton.equivalence.inverse⟩, ⟨⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩⟩⟩
-    -- why can't I just write `i` instead of `⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩`?
+  mem_essImage Y :=
+    ⟨⟨Y.diagram ⋙ Skeleton.equivalence.inverse⟩, ⟨lightToProfinite.preimageIso (
+      (Limits.lim.mapIso (isoWhiskerRight ((isoWhiskerLeft Y.diagram
+      Skeleton.equivalence.counitIso)) toProfinite)) ≪≫
+      (limit.isLimit _).conePointUniqueUpToIso Y.isLimit)⟩⟩
 
-instance : LightProfinite'.toLightFunctor.IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance : LightProfinite'.toLightFunctor.IsEquivalence where
 
 /-- The equivalence beween `LightProfinite` and a small category. -/
 def LightProfinite.equivSmall : LightProfinite.{u} ≌ LightProfinite'.{u} :=

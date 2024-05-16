@@ -190,17 +190,17 @@ def structuredArrowEquivalence : F.Elements ≌ StructuredArrow PUnit F :=
 open Opposite
 
 /-- The forward direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
-given by `CategoryTheory.yonedaSections`.
+given by `CategoryTheory.yonedaEquiv`.
 -/
 @[simps]
 def toCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : F.Elementsᵒᵖ ⥤ CostructuredArrow yoneda F
     where
-  obj X := CostructuredArrow.mk ((yonedaSections (unop (unop X).fst) F).inv (ULift.up (unop X).2))
+  obj X := CostructuredArrow.mk (yonedaEquiv.symm (unop X).2)
   map f := by
     fapply CostructuredArrow.homMk
     · exact f.unop.val.unop
     · ext Z y
-      dsimp
+      dsimp [yonedaEquiv]
       simp only [FunctorToTypes.map_comp_apply, ← f.unop.2]
 #align category_theory.category_of_elements.to_costructured_arrow CategoryTheory.CategoryOfElements.toCostructuredArrow
 

@@ -80,5 +80,5 @@ def adj : free ⊣ forget MonCat.{u} :=
       homEquiv_naturality_left_symm := fun _ _ => FreeMonoid.hom_eq (fun _ => rfl) }
 #align adj adj
 
-instance : IsRightAdjoint (forget MonCat.{u}) :=
-  ⟨_, adj⟩
+instance : (forget MonCat.{u}).IsRightAdjoint :=
+  ⟨_, ⟨adj⟩⟩

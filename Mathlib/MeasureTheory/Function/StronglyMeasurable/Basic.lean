@@ -138,7 +138,7 @@ theorem StronglyMeasurable.of_finite [Finite α] {_ : MeasurableSpace α}
     (f : α → β) : StronglyMeasurable f :=
   ⟨fun _ => SimpleFunc.ofFinite f, fun _ => tendsto_const_nhds⟩
 
-@[deprecated] -- Since 2024/02/05
+@[deprecated] -- Since 2024-02-05
 alias stronglyMeasurable_of_fintype := StronglyMeasurable.of_finite
 
 @[deprecated StronglyMeasurable.of_finite]
@@ -1617,7 +1617,7 @@ theorem comp_measurable {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpa
 theorem comp_quasiMeasurePreserving {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpace α}
     {f : γ → α} {μ : Measure γ} {ν : Measure α} (hg : AEStronglyMeasurable g ν)
     (hf : QuasiMeasurePreserving f μ ν) : AEStronglyMeasurable (g ∘ f) μ :=
-  (hg.mono' hf.absolutelyContinuous).comp_measurable hf.measurable
+  (hg.mono_ac hf.absolutelyContinuous).comp_measurable hf.measurable
 #align measure_theory.ae_strongly_measurable.comp_quasi_measure_preserving MeasureTheory.AEStronglyMeasurable.comp_quasiMeasurePreserving
 
 theorem comp_measurePreserving {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpace α}

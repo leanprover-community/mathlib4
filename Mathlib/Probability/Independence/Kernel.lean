@@ -328,9 +328,8 @@ theorem iIndepSets.indepSets {s : ι → Set (Set Ω)} {_mΩ : MeasurableSpace �
 
 theorem iIndep.indep {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α}
-    (h_indep : iIndep m κ μ) {i j : ι} (hij : i ≠ j) : Indep (m i) (m j) κ μ := by
-  change IndepSets ((fun x => MeasurableSet[m x]) i) ((fun x => MeasurableSet[m x]) j) κ μ
-  exact iIndepSets.indepSets h_indep hij
+    (h_indep : iIndep m κ μ) {i j : ι} (hij : i ≠ j) : Indep (m i) (m j) κ μ :=
+  iIndepSets.indepSets h_indep hij
 
 theorem iIndepFun.indepFun {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} {β : ι → Type*}
@@ -971,8 +970,7 @@ lemma iIndepFun.indepFun_mul_left (hf_indep : iIndepFun (fun _ ↦ m) f κ μ)
     IndepFun (f i * f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prod_mk hf_meas i j k hik hjk
-  change IndepFun ((fun p : β × β => p.fst * p.snd) ∘ fun ω => (f i ω, f j ω)) (id ∘ f k) κ μ
-  exact this.comp (measurable_fst.mul measurable_snd) measurable_id
+  simpa using this.comp (measurable_fst.mul measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_right (hf_indep : iIndepFun (fun _ ↦ m) f κ μ)
@@ -1000,8 +998,7 @@ lemma iIndepFun.indepFun_div_left (hf_indep : iIndepFun (fun _ ↦ m) f κ μ)
     IndepFun (f i / f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prod_mk hf_meas i j k hik hjk
-  change IndepFun ((fun p : β × β => p.fst / p.snd) ∘ fun ω => (f i ω, f j ω)) (id ∘ f k) κ μ
-  exact this.comp (measurable_fst.div measurable_snd) measurable_id
+  simpa using this.comp (measurable_fst.div measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_div_right (hf_indep : iIndepFun (fun _ ↦ m) f κ μ)

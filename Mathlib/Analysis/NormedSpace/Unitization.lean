@@ -113,8 +113,7 @@ section Aux
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This does not give us the desired topology,
 uniformity or bornology on `Unitization 𝕜 A` (which we want to agree with `Prod`), so we only use
 it as a local instance to build the real one. -/
-@[reducible]
-noncomputable def normedRingAux : NormedRing (Unitization 𝕜 A) :=
+noncomputable abbrev normedRingAux : NormedRing (Unitization 𝕜 A) :=
   NormedRing.induced (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A) (splitMul_injective 𝕜 A)
 
 attribute [local instance] Unitization.normedRingAux
@@ -122,8 +121,7 @@ attribute [local instance] Unitization.normedRingAux
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This uses the wrong `NormedRing` instance (i.e.,
 `Unitization.normedRingAux`), so we only use it as a local instance to build the real one. -/
-@[reducible]
-noncomputable def normedAlgebraAux : NormedAlgebra 𝕜 (Unitization 𝕜 A) :=
+noncomputable abbrev normedAlgebraAux : NormedAlgebra 𝕜 (Unitization 𝕜 A) :=
   NormedAlgebra.induced 𝕜 (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A)
 
 attribute [local instance] Unitization.normedAlgebraAux
@@ -150,7 +148,7 @@ theorem lipschitzWith_addEquiv :
   rw [← Real.toNNReal_ofNat]
   refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => ?_
   rw [norm_eq_sup, Prod.norm_def]
-  refine' max_le ?_ ?_
+  refine max_le ?_ ?_
   · rw [sup_eq_max, mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
     exact le_max_of_le_left ((le_add_of_nonneg_left (norm_nonneg _)).trans_eq (two_mul _).symm)
   · nontriviality A

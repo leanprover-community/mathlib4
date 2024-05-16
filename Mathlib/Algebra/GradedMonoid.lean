@@ -7,8 +7,8 @@ import Mathlib.Algebra.BigOperators.List.Basic
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Data.List.FinRange
 import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Data.Sigma.Basic
 import Lean.Elab.Tactic
 

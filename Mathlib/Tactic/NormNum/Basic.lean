@@ -8,7 +8,7 @@ import Mathlib.Tactic.HaveI
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Algebra.Ring.Int
 import Mathlib.Algebra.Invertible.Basic
-import Mathlib.Tactic.Clear!
+import Mathlib.Tactic.ClearExclamation
 import Mathlib.Data.Nat.Cast.Basic
 
 /-!
@@ -101,7 +101,7 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
 
 /-! # Casts -/
 
-theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
+theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
 /-- The `norm_num` extension which identifies an expression `Nat.cast n`, returning `n`. -/
@@ -111,12 +111,12 @@ theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
   guard <|← withNewMCtxDepth <| isDefEq n q(Nat.cast (R := $α))
   let ⟨na, pa⟩ ← deriveNat a q(instAddMonoidWithOneNat)
   haveI' : $e =Q $a := ⟨⟩
-  return .isNat sα na q(isNat_cast $a $na $pa)
+  return .isNat sα na q(isNat_natCast $a $na $pa)
 
-theorem isNat_int_cast {R} [Ring R] (n : ℤ) (m : ℕ) :
+theorem isNat_intCast {R} [Ring R] (n : ℤ) (m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_cast {R} [Ring R] (n m : ℤ) :
+theorem isintCast {R} [Ring R] (n m : ℤ) :
     IsInt n m → IsInt (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
 /-- The `norm_num` extension which identifies an expression `Int.cast n`, returning `n`. -/
@@ -128,11 +128,11 @@ theorem isInt_cast {R} [Ring R] (n m : ℤ) :
   | .isNat _ na pa =>
     assumeInstancesCommute
     haveI' : $e =Q Int.cast $a := ⟨⟩
-    return .isNat _ na q(isNat_int_cast $a $na $pa)
+    return .isNat _ na q(isNat_intCast $a $na $pa)
   | .isNegNat _ na pa =>
     assumeInstancesCommute
     haveI' : $e =Q Int.cast $a := ⟨⟩
-    return .isNegNat _ na q(isInt_cast $a (.negOfNat $na) $pa)
+    return .isNegNat _ na q(isintCast $a (.negOfNat $na) $pa)
   | _ => failure
 
 /-! # Arithmetic -/

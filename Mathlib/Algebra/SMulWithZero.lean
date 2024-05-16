@@ -82,8 +82,7 @@ variable [Zero R'] [Zero M'] [SMul R M']
 
 /-- Pullback a `SMulWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
-@[reducible]
-protected def Function.Injective.smulWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
+protected abbrev Function.Injective.smulWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
     (smul : ∀ (a : R) (b), f (a • b) = a • f b) :
     SMulWithZero R M' where
   smul := (· • ·)
@@ -93,8 +92,7 @@ protected def Function.Injective.smulWithZero (f : ZeroHom M' M) (hf : Function.
 
 /-- Pushforward a `SMulWithZero` structure along a surjective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
-@[reducible]
-protected def Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function.Surjective f)
+protected abbrev Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function.Surjective f)
     (smul : ∀ (a : R) (b), f (a • b) = a • f b) :
     SMulWithZero R M' where
   smul := (· • ·)
@@ -180,17 +178,16 @@ lemma boole_smul (a : M) : (if p then 1 else 0 : R) • a = if p then a else 0 :
 
 /-- Pullback a `MulActionWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
-@[reducible]
-protected def Function.Injective.mulActionWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
+protected abbrev Function.Injective.mulActionWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
     (smul : ∀ (a : R) (b), f (a • b) = a • f b) : MulActionWithZero R M' :=
   { hf.mulAction f smul, hf.smulWithZero f smul with }
 #align function.injective.mul_action_with_zero Function.Injective.mulActionWithZero
 
 /-- Pushforward a `MulActionWithZero` structure along a surjective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
-@[reducible]
-protected def Function.Surjective.mulActionWithZero (f : ZeroHom M M') (hf : Function.Surjective f)
-    (smul : ∀ (a : R) (b), f (a • b) = a • f b) : MulActionWithZero R M' :=
+protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom M M')
+    (hf : Function.Surjective f) (smul : ∀ (a : R) (b), f (a • b) = a • f b) :
+    MulActionWithZero R M' :=
   { hf.mulAction f smul, hf.smulWithZero f smul with }
 #align function.surjective.mul_action_with_zero Function.Surjective.mulActionWithZero
 

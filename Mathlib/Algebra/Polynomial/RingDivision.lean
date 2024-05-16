@@ -30,9 +30,6 @@ This file starts looking like the ring theory of $R[X]$
 
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 open Polynomial
@@ -341,22 +338,23 @@ theorem Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : 
   cases subsingleton_or_nontrivial R
   · simp [natDegree_of_subsingleton] at hnd
   rw [hm.irreducible_iff_natDegree', and_iff_right, hnd]
-  push_neg; constructor
-  · rintro ⟨a, b, ha, hb, rfl, hdb⟩
-    simp only [zero_lt_two, Nat.div_self, ge_iff_le,
-      Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hdb
-    have hda := hnd
-    rw [ha.natDegree_mul hb, hdb] at hda
-    use a.coeff 0, b.coeff 0, mul_coeff_zero a b
-    simpa only [nextCoeff, hnd, add_right_cancel hda, hdb] using ha.nextCoeff_mul hb
-  · rintro ⟨c₁, c₂, hmul, hadd⟩
-    refine
-      ⟨X + C c₁, X + C c₂, monic_X_add_C _, monic_X_add_C _, ?_, ?_⟩
-    · rw [p.as_sum_range_C_mul_X_pow, hnd, Finset.sum_range_succ, Finset.sum_range_succ,
-        Finset.sum_range_one, ← hnd, hm.coeff_natDegree, hnd, hmul, hadd, C_mul, C_add, C_1]
-      ring
-    · rw [mem_Ioc, natDegree_X_add_C _]
-      simp
+  · push_neg
+    constructor
+    · rintro ⟨a, b, ha, hb, rfl, hdb⟩
+      simp only [zero_lt_two, Nat.div_self, ge_iff_le,
+        Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hdb
+      have hda := hnd
+      rw [ha.natDegree_mul hb, hdb] at hda
+      use a.coeff 0, b.coeff 0, mul_coeff_zero a b
+      simpa only [nextCoeff, hnd, add_right_cancel hda, hdb] using ha.nextCoeff_mul hb
+    · rintro ⟨c₁, c₂, hmul, hadd⟩
+      refine
+        ⟨X + C c₁, X + C c₂, monic_X_add_C _, monic_X_add_C _, ?_, ?_⟩
+      · rw [p.as_sum_range_C_mul_X_pow, hnd, Finset.sum_range_succ, Finset.sum_range_succ,
+          Finset.sum_range_one, ← hnd, hm.coeff_natDegree, hnd, hmul, hadd, C_mul, C_add, C_1]
+        ring
+      · rw [mem_Ioc, natDegree_X_add_C _]
+        simp
   · rintro rfl
     simp [natDegree_one] at hnd
 #align polynomial.monic.not_irreducible_iff_exists_add_mul_eq_coeff Polynomial.Monic.not_irreducible_iff_exists_add_mul_eq_coeff
@@ -738,7 +736,7 @@ theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
 #align polynomial.is_root_of_mem_roots Polynomial.isRoot_of_mem_roots
 
 -- Porting note: added during port.
-lemma mem_roots_iff_aeval_eq_zero (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 0 := by
+lemma mem_roots_iff_aeval_eq_zero {x : R} (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 0 := by
   rw [mem_roots w, IsRoot.def, aeval_def, eval₂_eq_eval_map]
   simp
 
@@ -861,11 +859,10 @@ theorem roots_prod {ι : Type*} (f : ι → R[X]) (s : Finset ι) :
 @[simp]
 theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
   induction' n with n ihn
-  · rw [pow_zero, roots_one, Nat.zero_eq, zero_smul, empty_eq_zero]
+  · rw [pow_zero, roots_one, zero_smul, empty_eq_zero]
   · rcases eq_or_ne p 0 with (rfl | hp)
     · rw [zero_pow n.succ_ne_zero, roots_zero, smul_zero]
-    · rw [pow_succ, roots_mul (mul_ne_zero (pow_ne_zero _ hp) hp), ihn, Nat.succ_eq_add_one,
-        add_smul, one_smul]
+    · rw [pow_succ, roots_mul (mul_ne_zero (pow_ne_zero _ hp) hp), ihn, add_smul, one_smul]
 #align polynomial.roots_pow Polynomial.roots_pow
 
 theorem roots_X_pow (n : ℕ) : (X ^ n : R[X]).roots = n • ({0} : Multiset R) := by
@@ -1619,7 +1616,7 @@ theorem isUnit_of_isUnit_leadingCoeff_of_isUnit_map {f : R[X]} (hf : IsUnit f.le
     convert hf
     change coeff f 0 = coeff f (natDegree f)
     rw [(degree_eq_iff_natDegree_eq _).1 dz]
-    rfl
+    · rfl
     rintro rfl
     simp at H
   · intro h

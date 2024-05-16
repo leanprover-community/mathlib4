@@ -1394,6 +1394,18 @@ theorem IsBigO.trans_tendsto_nhds (hfg : f =O[l] g') {y : F'} (hg : Tendsto g' l
   hfg.trans <| hg.isBigO_one F
 #align asymptotics.is_O.trans_tendsto_nhds Asymptotics.IsBigO.trans_tendsto_nhds
 
+/-- The condition `f = O[𝓝[≠] a] 1` is equivalent to `f = O[𝓝 a] 1`. -/
+lemma isBigO_one_nhds_ne_iff [TopologicalSpace α] {a : α} :
+    f =O[𝓝[≠] a] (fun _ ↦ 1 : α → F) ↔ f =O[𝓝 a] (fun _ ↦ 1 : α → F) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.mono nhdsWithin_le_nhds⟩
+  simp only [isBigO_one_iff, IsBoundedUnder, IsBounded, eventually_map] at h ⊢
+  obtain ⟨c, hc⟩ := h
+  use max c ‖f a‖
+  filter_upwards [eventually_nhdsWithin_iff.mp hc] with b hb
+  rcases eq_or_ne b a with rfl | hb'
+  · apply le_max_right
+  · exact (hb hb').trans (le_max_left ..)
+
 end
 
 theorem isLittleO_const_iff {c : F''} (hc : c ≠ 0) :
@@ -2124,13 +2136,15 @@ theorem IsBigOWith.right_le_sub_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
       · exact le_trans (sub_le_sub_left hx _) (norm_sub_norm_le _ _)
       · exact sub_pos.2 hc
 #align asymptotics.is_O_with.right_le_sub_of_lt_1 Asymptotics.IsBigOWith.right_le_sub_of_lt_one
-@[deprecated] alias IsBigOWith.right_le_sub_of_lt_1 := IsBigOWith.right_le_sub_of_lt_one
 
 theorem IsBigOWith.right_le_add_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWith c l f₁ f₂) (hc : c < 1) :
     IsBigOWith (1 / (1 - c)) l f₂ fun x => f₁ x + f₂ x :=
   (h.neg_right.right_le_sub_of_lt_one hc).neg_right.of_neg_left.congr rfl (fun x ↦ rfl) fun x ↦ by
     rw [neg_sub, sub_neg_eq_add]
 #align asymptotics.is_O_with.right_le_add_of_lt_1 Asymptotics.IsBigOWith.right_le_add_of_lt_one
+
+-- 2024-01-31
+@[deprecated] alias IsBigOWith.right_le_sub_of_lt_1 := IsBigOWith.right_le_sub_of_lt_one
 @[deprecated] alias IsBigOWith.right_le_add_of_lt_1 := IsBigOWith.right_le_add_of_lt_one
 
 theorem IsLittleO.right_isBigO_sub {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
@@ -2205,15 +2219,15 @@ theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, Norme
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
 #align asymptotics.is_o_pi Asymptotics.isLittleO_pi
 
-theorem IsBigO.nat_cast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
+theorem IsBigO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
     {f : R → E} {g : R → F} (h : f =O[atTop] g) :
     (fun (n : ℕ) => f n) =O[atTop] (fun n => g n) :=
-  IsBigO.comp_tendsto h tendsto_nat_cast_atTop_atTop
+  IsBigO.comp_tendsto h tendsto_natCast_atTop_atTop
 
-theorem IsLittleO.nat_cast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
+theorem IsLittleO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
     {f : R → E} {g : R → F} (h : f =o[atTop] g) :
     (fun (n : ℕ) => f n) =o[atTop] (fun n => g n) :=
-  IsLittleO.comp_tendsto h tendsto_nat_cast_atTop_atTop
+  IsLittleO.comp_tendsto h tendsto_natCast_atTop_atTop
 
 theorem isBigO_atTop_iff_eventually_exists {α : Type*} [SemilatticeSup α] [Nonempty α]
     {f : α → E} {g : α → F} : f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c, ∀ n ≥ n₀, ‖f n‖ ≤ c * ‖g n‖ := by

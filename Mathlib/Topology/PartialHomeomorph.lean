@@ -51,7 +51,7 @@ variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
   [TopologicalSpace Z] [TopologicalSpace Z']
 
 /-- Partial homeomorphisms, defined on open subsets of the space -/
--- Porting note: commented @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure PartialHomeomorph (X : Type*) (Y : Type*) [TopologicalSpace X]
   [TopologicalSpace Y] extends PartialEquiv X Y where
   open_source : IsOpen source
