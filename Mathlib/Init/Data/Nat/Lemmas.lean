@@ -3,8 +3,8 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Std.Data.Nat.Lemmas
-import Std.WF
+import Batteries.Data.Nat.Lemmas
+import Batteries.WF
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Order.Defs
 
@@ -107,7 +107,7 @@ theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
 
 #align nat.lt_iff_le_not_le Nat.lt_iff_le_not_le
 
-instance linearOrder : LinearOrder ℕ where
+instance instLinearOrder : LinearOrder ℕ where
   le := Nat.le
   le_refl := @Nat.le_refl
   le_trans := @Nat.le_trans
@@ -118,7 +118,7 @@ instance linearOrder : LinearOrder ℕ where
   decidableLT := inferInstance
   decidableLE := inferInstance
   decidableEq := inferInstance
-#align nat.linear_order Nat.linearOrder
+#align nat.linear_order Nat.instLinearOrder
 
 #align nat.eq_zero_of_le_zero Nat.eq_zero_of_le_zero
 
@@ -270,8 +270,8 @@ protected theorem bit0_inj : ∀ {n m : ℕ}, bit0 n = bit0 m → n = m
   | n + 1, 0, h => by contradiction
   | n + 1, m + 1, h => by
     have : succ (succ (n + n)) = succ (succ (m + m)) := by
-      unfold bit0 at h; simp [add_one, add_succ, succ_add] at h
-      have aux : n + n = m + m := h; rw [aux]
+      unfold bit0 at h; simp only [add_one, add_succ, succ_add, succ_inj'] at h
+      rw [h]
     have : n + n = m + m := by repeat injection this with this
     have : n = m := Nat.bit0_inj this
     rw [this]

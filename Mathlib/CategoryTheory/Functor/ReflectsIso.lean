@@ -37,34 +37,37 @@ variable {E : Type u₃} [Category.{v₃} E]
 morphism `f : A ⟶ B`, if `F.map f` is an isomorphism then `f` is as well.
 Note that we do not assume or require that `F` is faithful.
 -/
-class ReflectsIsomorphisms (F : C ⥤ D) : Prop where
+class Functor.ReflectsIsomorphisms (F : C ⥤ D) : Prop where
   /-- For any `f`, if `F.map f` is an iso, then so was `f`-/
   reflects : ∀ {A B : C} (f : A ⟶ B) [IsIso (F.map f)], IsIso f
-#align category_theory.reflects_isomorphisms CategoryTheory.ReflectsIsomorphisms
+#align category_theory.reflects_isomorphisms CategoryTheory.Functor.ReflectsIsomorphisms
+
+-- deprecated on 2024-04-06
+@[deprecated] alias ReflectsIsomorphisms := Functor.ReflectsIsomorphisms
 
 /-- If `F` reflects isos and `F.map f` is an iso, then `f` is an iso. -/
 theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.map f)]
-    [ReflectsIsomorphisms F] : IsIso f :=
+    [F.ReflectsIsomorphisms] : IsIso f :=
   ReflectsIsomorphisms.reflects F f
 #align category_theory.is_iso_of_reflects_iso CategoryTheory.isIso_of_reflects_iso
 
 instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
-    (F : C ⥤ D) [Full F] [Faithful F] :
-    ReflectsIsomorphisms F where
+    (F : C ⥤ D) [F.Full] [F.Faithful] :
+    F.ReflectsIsomorphisms where
   reflects f i :=
     ⟨⟨F.preimage (inv (F.map f)), ⟨F.map_injective (by simp), F.map_injective (by simp)⟩⟩⟩
 #align category_theory.of_full_and_faithful CategoryTheory.reflectsIsomorphisms_of_full_and_faithful
 
 instance reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
-    [ReflectsIsomorphisms F] [ReflectsIsomorphisms G] :
-    ReflectsIsomorphisms (F ⋙ G) :=
+    [F.ReflectsIsomorphisms] [G.ReflectsIsomorphisms] :
+    (F ⋙ G).ReflectsIsomorphisms :=
   ⟨fun f (hf : IsIso (G.map _)) => by
     haveI := isIso_of_reflects_iso (F.map f) G
     exact isIso_of_reflects_iso f F⟩
 
 instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms
     [Balanced C] (F : C ⥤ D) [ReflectsMonomorphisms F] [ReflectsEpimorphisms F] :
-    ReflectsIsomorphisms F where
+    F.ReflectsIsomorphisms where
   reflects f hf := by
     haveI : Epi f := epi_of_epi_map F inferInstance
     haveI : Mono f := mono_of_mono_map F inferInstance

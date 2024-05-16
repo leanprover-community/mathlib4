@@ -73,7 +73,7 @@ variable {F : J ⥤ C}
 section Limit
 
 /-- `LimitCone F` contains a cone over `F` together with the information that it is a limit. -/
--- @[nolint has_nonempty_instance] -- Porting note: removed
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): removed; linter not ported yet
 structure LimitCone (F : J ⥤ C) where
   /-- The cone itself -/
   cone : Cone F
@@ -580,7 +580,7 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim where
 #align category_theory.limits.const_lim_adj CategoryTheory.Limits.constLimAdj
 
 instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=
-  ⟨_, constLimAdj⟩
+  ⟨_, ⟨constLimAdj⟩⟩
 
 end LimFunctor
 
@@ -659,7 +659,7 @@ section Colimit
 
 /-- `ColimitCocone F` contains a cocone over `F` together with the information that it is a
     colimit. -/
--- @[nolint has_nonempty_instance] -- Porting note: removed
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): removed; linter not ported yet
 structure ColimitCocone (F : J ⥤ C) where
   /-- The cocone itself -/
   cocone : Cocone F
@@ -1184,7 +1184,7 @@ def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J where
 #align category_theory.limits.colim_const_adj CategoryTheory.Limits.colimConstAdj
 
 instance : IsLeftAdjoint (colim : (J ⥤ C) ⥤ C) :=
-  ⟨_, colimConstAdj⟩
+  ⟨_, ⟨colimConstAdj⟩⟩
 
 end ColimFunctor
 

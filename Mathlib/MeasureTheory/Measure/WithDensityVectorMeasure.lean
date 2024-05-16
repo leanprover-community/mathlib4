@@ -134,7 +134,7 @@ theorem withDensityᵥ_smul_eq_withDensityᵥ_withDensity {f : α → ℝ≥0} {
   ext s hs
   rw [withDensityᵥ_apply hfg hs,
     withDensityᵥ_apply ((integrable_withDensity_iff_integrable_smul₀ hf).mpr hfg) hs,
-    set_integral_withDensity_eq_set_integral_smul₀ hf.restrict _ hs]
+    setIntegral_withDensity_eq_setIntegral_smul₀ hf.restrict _ hs]
   rfl
 
 theorem withDensityᵥ_smul_eq_withDensityᵥ_withDensity' {f : α → ℝ≥0∞} {g : α → E}
@@ -158,7 +158,7 @@ theorem Measure.withDensityᵥ_absolutelyContinuous (μ : Measure α) (f : α �
 /-- Having the same density implies the underlying functions are equal almost everywhere. -/
 theorem Integrable.ae_eq_of_withDensityᵥ_eq {f g : α → E} (hf : Integrable f μ)
     (hg : Integrable g μ) (hfg : μ.withDensityᵥ f = μ.withDensityᵥ g) : f =ᵐ[μ] g := by
-  refine' hf.ae_eq_of_forall_set_integral_eq f g hg fun i hi _ => _
+  refine' hf.ae_eq_of_forall_setIntegral_eq f g hg fun i hi _ => _
   rw [← withDensityᵥ_apply hf hi, hfg, withDensityᵥ_apply hg hi]
 #align measure_theory.integrable.ae_eq_of_with_densityᵥ_eq MeasureTheory.Integrable.ae_eq_of_withDensityᵥ_eq
 

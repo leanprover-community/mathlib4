@@ -144,12 +144,12 @@ instance (priority := 900) quasiSeparatedOfMono {X Y : Scheme} (f : X ⟶ Y) [Mo
   ⟨inferInstance⟩
 #align algebraic_geometry.quasi_separated_of_mono AlgebraicGeometry.quasiSeparatedOfMono
 
-theorem quasiSeparated_stableUnderComposition :
-    MorphismProperty.StableUnderComposition @QuasiSeparated :=
+instance quasiSeparated_isStableUnderComposition :
+    MorphismProperty.IsStableUnderComposition @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸
-    quasiCompact_stableUnderComposition.diagonal quasiCompact_respectsIso
-      quasiCompact_stableUnderBaseChange
-#align algebraic_geometry.quasi_separated_stable_under_composition AlgebraicGeometry.quasiSeparated_stableUnderComposition
+    (MorphismProperty.diagonal_isStableUnderComposition
+        quasiCompact_respectsIso quasiCompact_stableUnderBaseChange)
+#align algebraic_geometry.quasi_separated_stable_under_composition AlgebraicGeometry.quasiSeparated_isStableUnderComposition
 
 theorem quasiSeparated_stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @QuasiSeparated :=
@@ -159,7 +159,7 @@ theorem quasiSeparated_stableUnderBaseChange :
 
 instance quasiSeparatedComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f]
     [QuasiSeparated g] : QuasiSeparated (f ≫ g) :=
-  quasiSeparated_stableUnderComposition f g inferInstance inferInstance
+  MorphismProperty.comp_mem _ f g inferInstance inferInstance
 #align algebraic_geometry.quasi_separated_comp AlgebraicGeometry.quasiSeparatedComp
 
 theorem quasiSeparated_respectsIso : MorphismProperty.RespectsIso @QuasiSeparated :=
@@ -242,7 +242,7 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated f] :
 
 instance {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f] [QuasiSeparated g] :
     QuasiSeparated (f ≫ g) :=
-  quasiSeparated_stableUnderComposition f g inferInstance inferInstance
+  MorphismProperty.comp_mem _ f g inferInstance inferInstance
 
 theorem quasiSeparatedSpace_of_quasiSeparated {X Y : Scheme} (f : X ⟶ Y)
     [hY : QuasiSeparatedSpace Y.carrier] [QuasiSeparated f] : QuasiSeparatedSpace X.carrier := by
@@ -261,12 +261,12 @@ instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] :
   rw [e, e', Set.iUnion₂_inter]
   simp_rw [Set.inter_iUnion₂]
   apply hs.isCompact_biUnion
-  · intro i _
-    apply hs'.isCompact_biUnion
-    intro i' _
-    change IsCompact (X.basicOpen i ⊓ X.basicOpen i').1
-    rw [← Scheme.basicOpen_mul]
-    exact ((topIsAffineOpen _).basicOpenIsAffine _).isCompact
+  intro i _
+  apply hs'.isCompact_biUnion
+  intro i' _
+  change IsCompact (X.basicOpen i ⊓ X.basicOpen i').1
+  rw [← Scheme.basicOpen_mul]
+  exact ((topIsAffineOpen _).basicOpenIsAffine _).isCompact
 #align algebraic_geometry.quasi_separated_space_of_is_affine AlgebraicGeometry.quasiSeparatedSpace_of_isAffine
 
 theorem IsAffineOpen.isQuasiSeparated {X : Scheme} {U : Opens X.carrier} (hU : IsAffineOpen U) :
@@ -393,12 +393,16 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     replace hs : S ⊓ U.1 = iSup fun i : s => (i : Opens X.carrier) := by ext1; simpa using hs
     have hs₁ : ∀ i : s, i.1.1 ≤ S := by
       intro i; change (i : Opens X.carrier) ≤ S
-      refine' le_trans _ inf_le_left; swap; exact U.1; erw [hs]
+      refine' le_trans _ inf_le_left; swap
+      · exact U.1
+      erw [hs]
       -- Porting note: have to add argument explicitly
       exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
     have hs₂ : ∀ i : s, i.1.1 ≤ U.1 := by
       intro i; change (i : Opens X.carrier) ≤ U
-      refine' le_trans _ inf_le_right; swap; exact S; erw [hs]
+      refine' le_trans _ inf_le_right; swap
+      · exact S
+      erw [hs]
       -- Porting note: have to add argument explicitly
       exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
     -- On each affine open in the intersection, we have `f ^ (n + n₂) * y₁ = f ^ (n + n₁) * y₂`

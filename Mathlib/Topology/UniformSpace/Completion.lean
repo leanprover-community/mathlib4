@@ -39,7 +39,7 @@ In this file we introduce the following concepts:
 This formalization is mostly based on
   N. Bourbaki: General Topology
   I. M. James: Topologies and Uniformities
-From a slightly different perspective in order to reuse material in topology.uniform_space.basic.
+From a slightly different perspective in order to reuse material in `Topology.UniformSpace.Basic`.
 -/
 
 

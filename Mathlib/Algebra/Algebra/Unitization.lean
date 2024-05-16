@@ -3,7 +3,7 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.StarAlgHom
@@ -57,7 +57,7 @@ extension to a (unital) algebra homomorphism from `Unitization R A` to `B`.
 
 
 /-- The minimal unitization of a non-unital `R`-algebra `A`. This is just a type synonym for
-`R × A`.-/
+`R × A`. -/
 def Unitization (R A : Type*) :=
   R × A
 #align unitization Unitization
@@ -787,5 +787,32 @@ theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
   rfl
 
 end StarAlgHom
+
+section StarNormal
+
+variable {R A : Type*} [Semiring R] [AddCommMonoid A] [Mul A] [SMulWithZero R A]
+variable [StarAddMonoid R] [Star A] {a : A}
+
+@[simp]
+lemma isStarNormal_inr : IsStarNormal (a : Unitization R A) ↔ IsStarNormal a := by
+  simp only [isStarNormal_iff, commute_iff_eq, ← inr_star, ← inr_mul, inr_injective.eq_iff]
+
+variable (R a) in
+instance instIsStarNormal (a : A) [IsStarNormal a] :
+    IsStarNormal (a : Unitization R A) :=
+  isStarNormal_inr.mpr ‹_›
+
+@[simp]
+lemma isSelfAdjoint_inr : IsSelfAdjoint (a : Unitization R A) ↔ IsSelfAdjoint a := by
+  simp only [isSelfAdjoint_iff, ← inr_star, ← inr_mul, inr_injective.eq_iff]
+
+variable (R) in
+lemma _root_.IsSelfAdjoint.inr (ha : IsSelfAdjoint a) : IsSelfAdjoint (a : Unitization R A) :=
+  isSelfAdjoint_inr.mpr ha
+
+alias ⟨_root_.IsSelfAdjoint.of_inr, _⟩ := isSelfAdjoint_inr
+alias ⟨_root_.IsStarNormal.of_inr, _⟩ := isStarNormal_inr
+
+end StarNormal
 
 end Unitization

@@ -143,10 +143,10 @@ instance commMonoid [CommMonoid α] : CommMonoid (ULift α) :=
 #align ulift.comm_monoid ULift.commMonoid
 #align ulift.add_comm_monoid ULift.addCommMonoid
 
-instance natCast [NatCast α] : NatCast (ULift α) := ⟨(up ·)⟩
-#align ulift.has_nat_cast ULift.natCast
-instance intCast [IntCast α] : IntCast (ULift α) := ⟨(up ·)⟩
-#align ulift.has_int_cast ULift.intCast
+instance instNatCast [NatCast α] : NatCast (ULift α) := ⟨(up ·)⟩
+instance instIntCast [IntCast α] : IntCast (ULift α) := ⟨(up ·)⟩
+#align ulift.has_nat_cast ULift.instNatCast
+#align ulift.has_int_cast ULift.instIntCast
 
 @[simp, norm_cast]
 theorem up_natCast [NatCast α] (n : ℕ) : up (n : α) = n :=
@@ -223,7 +223,7 @@ instance commGroup [CommGroup α] : CommGroup (ULift α) :=
 instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (ULift α) :=
   { ULift.addMonoidWithOne, ULift.addGroup with
       intCast := (⟨·⟩),
-      intCast_ofNat := fun _ => congr_arg ULift.up (Int.cast_ofNat _),
+      intCast_ofNat := fun _ => congr_arg ULift.up (Int.cast_natCast _),
       intCast_negSucc := fun _ => congr_arg ULift.up (Int.cast_negSucc _) }
 #align ulift.add_group_with_one ULift.addGroupWithOne
 

@@ -103,17 +103,23 @@ end NormedRing
 
 section NormedField
 
-variable [NormedField 𝕜] [CompleteSpace 𝕜]
+variable [NormedField 𝕜] [NormedDivisionRing R] [Algebra 𝕜 R] [CompleteSpace R]
 
-theorem isUnit_iff_forall_ne_zero (f : C(X, 𝕜)) : IsUnit f ↔ ∀ x, f x ≠ 0 := by
+theorem isUnit_iff_forall_ne_zero (f : C(X, R)) : IsUnit f ↔ ∀ x, f x ≠ 0 := by
   simp_rw [f.isUnit_iff_forall_isUnit, isUnit_iff_ne_zero]
 #align continuous_map.is_unit_iff_forall_ne_zero ContinuousMap.isUnit_iff_forall_ne_zero
 
-theorem spectrum_eq_range (f : C(X, 𝕜)) : spectrum 𝕜 f = Set.range f := by
+theorem spectrum_eq_preimage_range (f : C(X, R)) :
+    spectrum 𝕜 f = algebraMap _ _ ⁻¹' Set.range f := by
   ext x
-  simp only [spectrum.mem_iff, isUnit_iff_forall_ne_zero, not_forall, coe_sub, Pi.sub_apply,
-    algebraMap_apply, Algebra.id.smul_eq_mul, mul_one, Classical.not_not, Set.mem_range,
-    sub_eq_zero, @eq_comm _ x _]
+  simp only [spectrum.mem_iff, isUnit_iff_forall_ne_zero, not_forall, sub_apply,
+    algebraMap_apply, mul_one, Classical.not_not, Set.mem_range,
+    sub_eq_zero, @eq_comm _ (x • 1 : R) _, Set.mem_preimage, Algebra.algebraMap_eq_smul_one,
+    smul_apply, one_apply]
+
+theorem spectrum_eq_range [CompleteSpace 𝕜] (f : C(X, 𝕜)) : spectrum 𝕜 f = Set.range f := by
+  rw [spectrum_eq_preimage_range, Algebra.id.map_eq_id]
+  exact Set.preimage_id
 #align continuous_map.spectrum_eq_range ContinuousMap.spectrum_eq_range
 
 end NormedField

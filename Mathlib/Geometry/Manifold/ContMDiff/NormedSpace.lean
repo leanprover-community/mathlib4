@@ -50,7 +50,7 @@ section Module
 
 theorem contMDiffWithinAt_iff_contDiffWithinAt {f : E → E'} {s : Set E} {x : E} :
     ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') n f s x ↔ ContDiffWithinAt 𝕜 n f s x := by
-  simp (config := { contextual := true }) only [ContMDiffWithinAt, LiftPropWithinAt,
+  simp (config := { contextual := true }) only [ContMDiffWithinAt, liftPropWithinAt_iff',
     ContDiffWithinAtProp, iff_def, mfld_simps]
   exact ContDiffWithinAt.continuousWithinAt
 #align cont_mdiff_within_at_iff_cont_diff_within_at contMDiffWithinAt_iff_contDiffWithinAt
@@ -235,7 +235,6 @@ theorem ContMDiff.clm_postcomp {f : M → F₂ →L[𝕜] F₃} (hf : ContMDiff 
       (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x ↦
   (hf x).clm_postcomp
 
-set_option maxHeartbeats 400000 in
 theorem ContMDiffWithinAt.cle_arrowCongr {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄}
     {s : Set M} {x : M}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) n (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) s x)
@@ -244,7 +243,7 @@ theorem ContMDiffWithinAt.cle_arrowCongr {f : M → F₁ ≃L[𝕜] F₂} {g : M
       (fun y ↦ (f y).arrowCongr (g y) : M → (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄)) s x :=
   show ContMDiffWithinAt I 𝓘(𝕜, (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄)) n
     (fun y ↦ (((f y).symm : F₂ →L[𝕜] F₁).precomp F₄).comp ((g y : F₃ →L[𝕜] F₄).postcomp F₁)) s x
-  from hf.clm_precomp.clm_comp hg.clm_postcomp
+  from hf.clm_precomp (F₃ := F₄) |>.clm_comp <| hg.clm_postcomp (F₁ := F₁)
 
 nonrec theorem ContMDiffAt.cle_arrowCongr {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄} {x : M}
     (hf : ContMDiffAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) n (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) x)

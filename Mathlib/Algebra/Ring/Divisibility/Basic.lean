@@ -58,6 +58,15 @@ theorem two_dvd_bit0 [Semiring α] {a : α} : 2 ∣ bit0 a :=
   ⟨a, bit0_eq_two_mul _⟩
 #align two_dvd_bit0 two_dvd_bit0
 
+section Semiring
+variable [Semiring α] {a b c : α} {m n : ℕ}
+
+lemma min_pow_dvd_add (ha : c ^ m ∣ a) (hb : c ^ n ∣ b) : c ^ min m n ∣ a + b :=
+  ((pow_dvd_pow c (m.min_le_left n)).trans ha).add ((pow_dvd_pow c (m.min_le_right n)).trans hb)
+#align min_pow_dvd_add min_pow_dvd_add
+
+end Semiring
+
 section NonUnitalCommSemiring
 
 variable [NonUnitalCommSemiring α] [NonUnitalCommSemiring β] {a b c : α}
@@ -155,13 +164,13 @@ theorem two_dvd_bit1 : 2 ∣ bit1 a ↔ (2 : α) ∣ 1 :=
   dvd_add_right two_dvd_bit0
 #align two_dvd_bit1 two_dvd_bit1
 
-/-- An element a divides the sum a + b if and only if a divides b.-/
+/-- An element a divides the sum a + b if and only if a divides b. -/
 @[simp]
 theorem dvd_add_self_left {a b : α} : a ∣ a + b ↔ a ∣ b :=
   dvd_add_right (dvd_refl a)
 #align dvd_add_self_left dvd_add_self_left
 
-/-- An element a divides the sum b + a if and only if a divides b.-/
+/-- An element a divides the sum b + a if and only if a divides b. -/
 @[simp]
 theorem dvd_add_self_right {a b : α} : a ∣ b + a ↔ a ∣ b :=
   dvd_add_left (dvd_refl a)

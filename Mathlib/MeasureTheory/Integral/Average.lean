@@ -363,11 +363,11 @@ theorem average_congr {f g : α → E} (h : f =ᵐ[μ] g) : ⨍ x, f x ∂μ = �
 #align measure_theory.average_congr MeasureTheory.average_congr
 
 theorem setAverage_congr (h : s =ᵐ[μ] t) : ⨍ x in s, f x ∂μ = ⨍ x in t, f x ∂μ := by
-  simp only [setAverage_eq, set_integral_congr_set_ae h, measure_congr h]
+  simp only [setAverage_eq, setIntegral_congr_set_ae h, measure_congr h]
 #align measure_theory.set_average_congr MeasureTheory.setAverage_congr
 
 theorem setAverage_congr_fun (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
-    ⨍ x in s, f x ∂μ = ⨍ x in s, g x ∂μ := by simp only [average_eq, set_integral_congr_ae hs h]
+    ⨍ x in s, f x ∂μ = ⨍ x in s, g x ∂μ := by simp only [average_eq, setIntegral_congr_ae hs h]
 #align measure_theory.set_average_congr_fun MeasureTheory.setAverage_congr_fun
 
 theorem average_add_measure [IsFiniteMeasure μ] {ν : Measure α} [IsFiniteMeasure ν] {f : α → E}
@@ -525,7 +525,7 @@ theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf
     exact AEStronglyMeasurable.nullMeasurableSet_le hf.1 aestronglyMeasurable_const
   haveI := Fact.mk hμ₁.lt_top
   refine' (integral_sub_average (μ.restrict s) f).not_gt _
-  refine' (set_integral_pos_iff_support_of_nonneg_ae _ _).2 _
+  refine' (setIntegral_pos_iff_support_of_nonneg_ae _ _).2 _
   · refine' eq_bot_mono (measure_mono fun x hx => _) H
     simp only [Pi.zero_apply, sub_nonneg, mem_compl_iff, mem_setOf_eq, not_le] at hx
     exact hx.le
@@ -673,8 +673,8 @@ theorem measure_le_setLaverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rwa [← toReal_laverage hf, toReal_le_toReal hx (setLaverage_lt_top h).ne] at hfx
-  · simp_rw [ae_iff, not_ne_iff]
-    exact measure_eq_top_of_lintegral_ne_top hf h
+  simp_rw [ae_iff, not_ne_iff]
+  exact measure_eq_top_of_lintegral_ne_top hf h
 #align measure_theory.measure_le_set_laverage_pos MeasureTheory.measure_le_setLaverage_pos
 
 /-- **First moment method**. A measurable function is greater than its mean on a set of positive
@@ -695,7 +695,7 @@ theorem measure_setLaverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rw [← toReal_laverage hg.aemeasurable, toReal_le_toReal (setLaverage_lt_top hint).ne hx] at hfx
-  exact hfx.trans (hgf _)
+  · exact hfx.trans (hgf _)
   · simp_rw [ae_iff, not_ne_iff]
     exact measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint
 #align measure_theory.measure_set_laverage_le_pos MeasureTheory.measure_setLaverage_le_pos
@@ -863,7 +863,7 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
       intro x hx
       have : g i x = 0 := by rw [← Function.nmem_support]; exact fun h ↦ hx (hi h)
       simp [this]
-    rw [← set_integral_eq_integral_of_forall_compl_eq_zero this (μ := μ)]
+    rw [← setIntegral_eq_integral_of_forall_compl_eq_zero this (μ := μ)]
     refine' integral_mono_of_nonneg (eventually_of_forall (fun x ↦ by positivity)) _
       (eventually_of_forall (fun x ↦ _))
     · apply (Integrable.sub h''i _).norm.const_mul

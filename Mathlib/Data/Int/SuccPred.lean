@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.SuccPred
 
 #align_import data.int.succ_pred from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
@@ -20,13 +20,11 @@ open Function Order
 namespace Int
 
 -- so that Lean reads `Int.succ` through `SuccOrder.succ`
-@[reducible]
-instance : SuccOrder ℤ :=
+@[instance] abbrev instSuccOrder : SuccOrder ℤ :=
   { SuccOrder.ofSuccLeIff succ fun {_ _} => Iff.rfl with succ := succ }
 
 -- so that Lean reads `Int.pred` through `PredOrder.pred`
-@[reducible]
-instance : PredOrder ℤ where
+@[instance] abbrev instPredOrder : PredOrder ℤ where
   pred := pred
   pred_le _ := (sub_one_lt_of_le le_rfl).le
   min_of_le_pred ha := ((sub_one_lt_of_le le_rfl).not_le ha).elim

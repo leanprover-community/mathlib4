@@ -99,7 +99,7 @@ subordinate to `U`, see `SmoothBumpCovering.exists_isSubordinate`.
 
 This covering can be used, e.g., to construct a partition of unity and to prove the weak
 Whitney embedding theorem. -/
--- Porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 structure SmoothBumpCovering (s : Set M := univ) where
   /-- The center point of each bump in the smooth covering. -/
   c : ι → M
@@ -801,7 +801,7 @@ theorem exists_msmooth_support_eq_eq_one_iff
         apply lt_of_le_of_ne (g_pos x) (Ne.symm ?_)
         rw [← mem_support, g_supp]
         contrapose! xs
-        simp? at xs says simp only [mem_compl_iff, not_not] at xs
+        simp? at xs says simp only [mem_compl_iff, Decidable.not_not] at xs
         exact h.trans f_supp.symm.subset xs
       linarith [f_pos x]
   refine ⟨fun x ↦ f x / (f x + g x), ?_, ?_, ?_, ?_⟩
