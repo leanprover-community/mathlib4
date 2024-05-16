@@ -211,7 +211,6 @@ namespace Finpartition
 
 /-- The pairs of parts of a partition `P` which are not `ε`-dense in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-dense with itself. -/
-@[pp_dot]
 def sparsePairs (ε : 𝕜) : Finset (Finset α × Finset α) :=
   P.parts.offDiag.filter fun (u, v) ↦ G.edgeDensity u v < ε
 
@@ -225,7 +224,6 @@ lemma sparsePairs_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.sparsePairs G ε ⊆
 
 /-- The pairs of parts of a partition `P` which are not `ε`-uniform in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/
-@[pp_dot]
 def nonUniforms (ε : 𝕜) : Finset (Finset α × Finset α) :=
   P.parts.offDiag.filter fun (u, v) ↦ ¬G.IsUniform ε u v
 #align finpartition.non_uniforms Finpartition.nonUniforms
