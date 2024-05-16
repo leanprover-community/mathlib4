@@ -21,8 +21,6 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/
 
-set_option autoImplicit true
-
 open BigOperators
 
 universe u v w u₁ v₁
