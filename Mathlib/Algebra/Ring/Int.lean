@@ -75,9 +75,6 @@ instance instSemiring     : Semiring ℤ     := inferInstance
 instance instRing         : Ring ℤ         := inferInstance
 instance instDistrib      : Distrib ℤ      := inferInstance
 
-instance instCharZero : CharZero ℤ where
-  cast_injective _ _ := ofNat.inj
-
 /-! ### Miscellaneous lemmas -/
 
 /-! #### Units -/
