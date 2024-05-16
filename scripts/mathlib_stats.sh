@@ -14,7 +14,12 @@ date=${hashAndDate/#* /}
 gdiff="$(git diff --shortstat "${commit}"...HEAD)"
 
 ## percentage breakdown of changes
-percent="$(git diff --dirstat "${commit}"...HEAD)"
+percent="$(printf '|%%|Folder|\n|-:|:-|\n'; git diff --dirstat "${commit}"...HEAD |
+  sed 's=^ *=|=; s=  *=|`=g; s=$=`|='
+#awk 'BEGIN{FS=" "; OFS="|"} {for(i=1; i<=NF; i++){printf $i}}'
+)"
+
+printf -v today '%(%Y-%m-%d)T\n' -1
 
 ## insertions-deletions
 net=$(awk -v gd="${gdiff}" 'BEGIN{
@@ -26,4 +31,4 @@ net=$(awk -v gd="${gdiff}" 'BEGIN{
   print -tot }')
 
 ## final report
-printf '%s, %s total((+)-(-))\n\n%s\n\n since %s (commit: %s).\n\nTake also a look at the [`Mathlib` stats page](%s).\n' "${gdiff}" "${net}" "${percent}" "${date}" "${commit}" "${statsURL}"
+printf -- '---\n## Weekly stats (%s %(%Y-%m-%d)T)\n\n%s, %s total(insertions-deletions)\n---\n\n%s\n\n commits: old %s, current %s.\n\nTake also a look at the [`Mathlib` stats page](%s).\n' "${date}" -1 "${gdiff}" "${net}" "${percent}" "${commit}" "$(git rev-parse --short HEAD)" "${statsURL}"
