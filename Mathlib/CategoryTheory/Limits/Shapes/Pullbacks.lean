@@ -2778,3 +2778,5 @@ def mapAdjunction [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ base
               dsimp }}
 
 end Over
+
+end CategoryTheory
