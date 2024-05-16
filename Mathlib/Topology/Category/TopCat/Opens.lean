@@ -325,10 +325,10 @@ def IsOpenMap.adjunction {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :
 
 instance IsOpenMap.functorFullOfMono {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) [H : Mono f] :
     hf.functor.Full where
-  preimage i :=
-    homOfLE fun x hx => by
+  map_surjective i :=
+    ⟨homOfLE fun x hx => by
       obtain ⟨y, hy, eq⟩ := i.le ⟨x, hx, rfl⟩
-      exact (TopCat.mono_iff_injective f).mp H eq ▸ hy
+      exact (TopCat.mono_iff_injective f).mp H eq ▸ hy, rfl⟩
 #align is_open_map.functor_full_of_mono IsOpenMap.functorFullOfMono
 
 instance IsOpenMap.functor_faithful {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :

@@ -175,11 +175,11 @@ noncomputable instance coyonedaFunctorPreservesLimits :
   infer_instance
 #align category_theory.coyoneda_functor_preserves_limits CategoryTheory.coyonedaFunctorPreservesLimits
 
-instance yonedaFunctorReflectsLimits :
+noncomputable instance yonedaFunctorReflectsLimits :
     ReflectsLimitsOfSize.{t, w} (@yoneda C _) := inferInstance
 #align category_theory.yoneda_functor_reflects_limits CategoryTheory.yonedaFunctorReflectsLimits
 
-instance coyonedaFunctorReflectsLimits :
+noncomputable instance coyonedaFunctorReflectsLimits :
     ReflectsLimitsOfSize.{t, w} (@coyoneda C _) := inferInstance
 #align category_theory.coyoneda_functor_reflects_limits CategoryTheory.coyonedaFunctorReflectsLimits
 

@@ -1394,6 +1394,18 @@ theorem IsBigO.trans_tendsto_nhds (hfg : f =O[l] g') {y : F'} (hg : Tendsto g' l
   hfg.trans <| hg.isBigO_one F
 #align asymptotics.is_O.trans_tendsto_nhds Asymptotics.IsBigO.trans_tendsto_nhds
 
+/-- The condition `f = O[𝓝[≠] a] 1` is equivalent to `f = O[𝓝 a] 1`. -/
+lemma isBigO_one_nhds_ne_iff [TopologicalSpace α] {a : α} :
+    f =O[𝓝[≠] a] (fun _ ↦ 1 : α → F) ↔ f =O[𝓝 a] (fun _ ↦ 1 : α → F) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.mono nhdsWithin_le_nhds⟩
+  simp only [isBigO_one_iff, IsBoundedUnder, IsBounded, eventually_map] at h ⊢
+  obtain ⟨c, hc⟩ := h
+  use max c ‖f a‖
+  filter_upwards [eventually_nhdsWithin_iff.mp hc] with b hb
+  rcases eq_or_ne b a with rfl | hb'
+  · apply le_max_right
+  · exact (hb hb').trans (le_max_left ..)
+
 end
 
 theorem isLittleO_const_iff {c : F''} (hc : c ≠ 0) :
@@ -2124,13 +2136,15 @@ theorem IsBigOWith.right_le_sub_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
       · exact le_trans (sub_le_sub_left hx _) (norm_sub_norm_le _ _)
       · exact sub_pos.2 hc
 #align asymptotics.is_O_with.right_le_sub_of_lt_1 Asymptotics.IsBigOWith.right_le_sub_of_lt_one
-@[deprecated] alias IsBigOWith.right_le_sub_of_lt_1 := IsBigOWith.right_le_sub_of_lt_one
 
 theorem IsBigOWith.right_le_add_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWith c l f₁ f₂) (hc : c < 1) :
     IsBigOWith (1 / (1 - c)) l f₂ fun x => f₁ x + f₂ x :=
   (h.neg_right.right_le_sub_of_lt_one hc).neg_right.of_neg_left.congr rfl (fun x ↦ rfl) fun x ↦ by
     rw [neg_sub, sub_neg_eq_add]
 #align asymptotics.is_O_with.right_le_add_of_lt_1 Asymptotics.IsBigOWith.right_le_add_of_lt_one
+
+-- 2024-01-31
+@[deprecated] alias IsBigOWith.right_le_sub_of_lt_1 := IsBigOWith.right_le_sub_of_lt_one
 @[deprecated] alias IsBigOWith.right_le_add_of_lt_1 := IsBigOWith.right_le_add_of_lt_one
 
 theorem IsLittleO.right_isBigO_sub {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :

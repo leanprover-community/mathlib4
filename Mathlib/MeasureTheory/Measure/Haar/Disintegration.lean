@@ -138,8 +138,8 @@ lemma ae_ae_add_linearMap_mem_iff [LocallyCompactSpace F] {s : Set F} (hs : Meas
   have A : ∀ x, M x ∈ s ↔ x ∈ M ⁻¹' s := fun x ↦ Iff.rfl
   simp_rw [← ae_comp_linearMap_mem_iff M (ν.prod μ) ν hM hs, A]
   rw [Measure.ae_prod_mem_iff_ae_ae_mem]
-  simp only [M, mem_preimage, LinearMap.coprod_apply, LinearMap.id_coe, id_eq]
-  exact M_cont.measurable hs
+  · simp only [M, mem_preimage, LinearMap.coprod_apply, LinearMap.id_coe, id_eq]
+  · exact M_cont.measurable hs
 
 /-- To check that a property holds almost everywhere with respect to an additive Haar measure, it
 suffices to check it almost everywhere along all translates of a given vector subspace. This is an

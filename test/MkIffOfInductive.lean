@@ -1,4 +1,4 @@
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Data.List.Perm
 
@@ -9,8 +9,10 @@ example {α : Type _} (R : α → α → Prop) (a : α) (al : List α) :
   test.chain_iff R a al
 
 -- check that the statement prints nicely
-/-- info: test.chain_iff.{u_1} {α : Type u_1} (R : α → α → Prop) (a✝ : α) (a✝¹ : List α) :
-  List.Chain R a✝ a✝¹ ↔ a✝¹ = [] ∨ ∃ b l, R a✝ b ∧ List.Chain R b l ∧ a✝¹ = b :: l -/
+/--
+info: test.chain_iff.{u_1} {α : Type u_1} (R : α → α → Prop) :
+  ∀ (a : α) (a_1 : List α), List.Chain R a a_1 ↔ a_1 = [] ∨ ∃ b l, R a b ∧ List.Chain R b l ∧ a_1 = b :: l
+-/
 #guard_msgs in
 #check test.chain_iff
 

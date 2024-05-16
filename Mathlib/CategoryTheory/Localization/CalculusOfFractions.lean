@@ -693,6 +693,21 @@ lemma map_eq_of_map_eq {X Y : C}
   apply (Localization.uniq L₂ L₁ W).functor.map_injective
   rw [map_compatibility φ₁ L₂ L₁, map_compatibility φ₂ L₂ L₁, h]
 
+lemma map_comp_map_eq_map {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
+    (z₃ : W.LeftFraction z₁.Y' z₂.Y') (h₃ : z₂.f ≫ z₃.s = z₁.s ≫ z₃.f)
+    (L : C ⥤ D) [L.IsLocalization W] :
+    z₁.map L (Localization.inverts L W) ≫ z₂.map L (Localization.inverts L W) =
+      (z₁.comp₀ z₂ z₃).map L (Localization.inverts L W) := by
+  have := Localization.inverts L W _ z₂.hs
+  have := Localization.inverts L W _ z₃.hs
+  have : IsIso (L.map (z₂.s ≫ z₃.s)) := by
+    rw [L.map_comp]
+    infer_instance
+  dsimp [LeftFraction.comp₀]
+  rw [← cancel_mono (L.map (z₂.s ≫ z₃.s)), map_comp_map_s,
+    L.map_comp, assoc, map_comp_map_s_assoc, ← L.map_comp, h₃,
+    L.map_comp, map_comp_map_s_assoc, L.map_comp]
+
 end
 
 end LeftFraction

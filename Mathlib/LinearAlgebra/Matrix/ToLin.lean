@@ -706,8 +706,9 @@ theorem LinearMap.toMatrix_mul (f g : M₁ →ₗ[R] M₁) :
 
 lemma LinearMap.toMatrix_pow (f : M₁ →ₗ[R] M₁) (k : ℕ) :
     (toMatrix v₁ v₁ f) ^ k = toMatrix v₁ v₁ (f ^ k) := by
-  induction' k with k ih; simp
-  rw [pow_succ, pow_succ, ih, ← toMatrix_mul]
+  induction k with
+  | zero => simp
+  | succ k ih => rw [pow_succ, pow_succ, ih, ← toMatrix_mul]
 
 theorem Matrix.toLin_mul [Finite l] [DecidableEq m] (A : Matrix l m R) (B : Matrix m n R) :
     Matrix.toLin v₁ v₃ (A * B) = (Matrix.toLin v₂ v₃ A).comp (Matrix.toLin v₁ v₂ B) := by

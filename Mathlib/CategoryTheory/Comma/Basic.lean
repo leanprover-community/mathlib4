@@ -48,12 +48,15 @@ comma, slice, coslice, over, under, arrow
 
 namespace CategoryTheory
 
+open Category
+
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]
 variable {T : Type u₃} [Category.{v₃} T]
+variable {A' B' T' : Type*} [Category A'] [Category B'] [Category T']
 
 /-- The objects of the comma category are triples of an object `left : A`, an object
    `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`.  -/
@@ -196,6 +199,68 @@ def isoMk {X Y : Comma L₁ R₁} (l : X.left ≅ Y.left) (r : X.right ≅ Y.rig
         simp }
 #align category_theory.comma.iso_mk CategoryTheory.Comma.isoMk
 
+section
+
+variable {L R}
+variable {L' : A' ⥤ T'} {R' : B' ⥤ T'}
+  {F₁ : A ⥤ A'} {F₂ : B ⥤ B'} {F : T ⥤ T'}
+  (α : F₁ ⋙ L' ⟶ L ⋙ F) (β : R ⋙ F ⟶ F₂ ⋙ R')
+
+/-- The functor `Comma L R ⥤ Comma L' R'` induced by three functors `F₁`, `F₂`, `F`
+and two natural transformations `F₁ ⋙ L' ⟶ L ⋙ F` and `R ⋙ F ⟶ F₂ ⋙ R'`. -/
+@[simps]
+def map : Comma L R ⥤ Comma L' R' where
+  obj X :=
+    { left := F₁.obj X.left
+      right := F₂.obj X.right
+      hom := α.app X.left ≫ F.map X.hom ≫ β.app X.right }
+  map {X Y} φ :=
+    { left := F₁.map φ.left
+      right := F₂.map φ.right
+      w := by
+        dsimp
+        rw [assoc, assoc]
+        erw [α.naturality_assoc, ← β.naturality]
+        dsimp
+        rw [← F.map_comp_assoc, ← F.map_comp_assoc, φ.w] }
+
+instance faithful_map [F₁.Faithful] [F₂.Faithful] : (map α β).Faithful where
+  map_injective {X Y} f g h := by
+    ext
+    · exact F₁.map_injective (congr_arg CommaMorphism.left h)
+    · exact F₂.map_injective (congr_arg CommaMorphism.right h)
+
+instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (map α β).Full where
+  map_surjective {X Y} φ :=
+   ⟨{ left := F₁.preimage φ.left
+      right := F₂.preimage φ.right
+      w := F.map_injective (by
+        rw [← cancel_mono (β.app _), ← cancel_epi (α.app _), F.map_comp, F.map_comp,
+          assoc, assoc]
+        erw [← α.naturality_assoc, β.naturality]
+        dsimp
+        rw [F₁.map_preimage, F₂.map_preimage]
+        simpa using φ.w) }, by aesop_cat⟩
+
+instance essSurj_map [F₁.EssSurj] [F₂.EssSurj] [F.Full] [IsIso α] [IsIso β] :
+    (map α β).EssSurj where
+  mem_essImage X :=
+    ⟨{  left := F₁.objPreimage X.left
+        right := F₂.objPreimage X.right
+        hom := F.preimage ((inv α).app _ ≫ L'.map (F₁.objObjPreimageIso X.left).hom ≫
+          X.hom ≫ R'.map (F₂.objObjPreimageIso X.right).inv ≫ (inv β).app _) },
+            ⟨isoMk (F₁.objObjPreimageIso X.left) (F₂.objObjPreimageIso X.right) (by
+              dsimp
+              simp only [NatIso.isIso_inv_app, Functor.comp_obj, Functor.map_preimage, assoc,
+                IsIso.inv_hom_id, comp_id, IsIso.hom_inv_id_assoc]
+              rw [← R'.map_comp, Iso.inv_hom_id, R'.map_id, comp_id])⟩⟩
+
+noncomputable instance isEquivalenceMap
+    [F₁.IsEquivalence] [F₂.IsEquivalence] [F.Faithful] [F.Full] [IsIso α] [IsIso β] :
+    (map α β).IsEquivalence where
+
+end
+
 /-- A natural transformation `L₁ ⟶ L₂` induces a functor `Comma L₂ R ⥤ Comma L₁ R`. -/
 @[simps]
 def mapLeft (l : L₁ ⟶ L₂) : Comma L₂ R ⥤ Comma L₁ R where
@@ -210,39 +275,25 @@ def mapLeft (l : L₁ ⟶ L₂) : Comma L₂ R ⥤ Comma L₁ R where
 
 /-- The functor `Comma L R ⥤ Comma L R` induced by the identity natural transformation on `L` is
     naturally isomorphic to the identity functor. -/
-@[simps]
-def mapLeftId : mapLeft R (𝟙 L) ≅ 𝟭 _ where
-  hom :=
-    { app := fun X =>
-        { left := 𝟙 _
-          right := 𝟙 _ } }
-  inv :=
-    { app := fun X =>
-        { left := 𝟙 _
-          right := 𝟙 _ } }
+@[simps!]
+def mapLeftId : mapLeft R (𝟙 L) ≅ 𝟭 _ :=
+  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 #align category_theory.comma.map_left_id CategoryTheory.Comma.mapLeftId
 
 /-- The functor `Comma L₁ R ⥤ Comma L₃ R` induced by the composition of two natural transformations
     `l : L₁ ⟶ L₂` and `l' : L₂ ⟶ L₃` is naturally isomorphic to the composition of the two functors
     induced by these natural transformations. -/
-@[simps]
+@[simps!]
 def mapLeftComp (l : L₁ ⟶ L₂) (l' : L₂ ⟶ L₃) :
-    mapLeft R (l ≫ l') ≅ mapLeft R l' ⋙ mapLeft R l where
-  hom :=
-    { app := fun X =>
-        { left := 𝟙 _
-          right := 𝟙 _ } }
-  inv :=
-    { app := fun X =>
-        { left := 𝟙 _
-          right := 𝟙 _ } }
+    mapLeft R (l ≫ l') ≅ mapLeft R l' ⋙ mapLeft R l :=
+  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 #align category_theory.comma.map_left_comp CategoryTheory.Comma.mapLeftComp
 
 /-- Two equal natural transformations `L₁ ⟶ L₂` yield naturally isomorphic functors
     `Comma L₁ R ⥤ Comma L₂ R`. -/
 @[simps!]
 def mapLeftEq (l l' : L₁ ⟶ L₂) (h : l = l') : mapLeft R l ≅ mapLeft R l' :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
 /-- A natural isomorphism `L₁ ≅ L₂` induces an equivalence of categories
     `Comma L₁ R ≌ Comma L₂ R`. -/
@@ -266,39 +317,25 @@ def mapRight (r : R₁ ⟶ R₂) : Comma L R₁ ⥤ Comma L R₂ where
 
 /-- The functor `Comma L R ⥤ Comma L R` induced by the identity natural transformation on `R` is
     naturally isomorphic to the identity functor. -/
-@[simps]
-def mapRightId : mapRight L (𝟙 R) ≅ 𝟭 _ where
-  hom :=
-    { app := fun X =>
-        { left := 𝟙 _
-          right := 𝟙 _ } }
-  inv :=
-    { app := fun X =>
-        { left := 𝟙 _
-          right := 𝟙 _ } }
+@[simps!]
+def mapRightId : mapRight L (𝟙 R) ≅ 𝟭 _ :=
+  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 #align category_theory.comma.map_right_id CategoryTheory.Comma.mapRightId
 
 /-- The functor `Comma L R₁ ⥤ Comma L R₃` induced by the composition of the natural transformations
     `r : R₁ ⟶ R₂` and `r' : R₂ ⟶ R₃` is naturally isomorphic to the composition of the functors
     induced by these natural transformations. -/
-@[simps]
+@[simps!]
 def mapRightComp (r : R₁ ⟶ R₂) (r' : R₂ ⟶ R₃) :
-    mapRight L (r ≫ r') ≅ mapRight L r ⋙ mapRight L r' where
-  hom :=
-    { app := fun X =>
-        { left := 𝟙 _
-          right := 𝟙 _ } }
-  inv :=
-    { app := fun X =>
-        { left := 𝟙 _
-          right := 𝟙 _ } }
+    mapRight L (r ≫ r') ≅ mapRight L r ⋙ mapRight L r' :=
+  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 #align category_theory.comma.map_right_comp CategoryTheory.Comma.mapRightComp
 
 /-- Two equal natural transformations `R₁ ⟶ R₂` yield naturally isomorphic functors
     `Comma L R₁ ⥤ Comma L R₂`. -/
 @[simps!]
 def mapRightEq (r r' : R₁ ⟶ R₂) (h : r = r') : mapRight L r ≅ mapRight L r' :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
 /-- A natural isomorphism `R₁ ≅ R₂` induces an equivalence of categories
     `Comma L R₁ ≌ Comma L R₂`. -/
@@ -327,23 +364,24 @@ def preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) : Comma (F ⋙ L) R ⥤ Co
       w := by simpa using f.w }
 #align category_theory.comma.pre_left CategoryTheory.Comma.preLeft
 
-instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Faithful] : (preLeft F L R).Faithful where
-  map_injective {X Y} f g h := hom_ext _ _ (F.map_injective (congrArg CommaMorphism.left h))
-    (by apply congrArg CommaMorphism.right h)
+/-- `Comma.preLeft` is a particular case of `Comma.map`,
+but with better definitional properties. -/
+def preLeftIso (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) :
+    preLeft F L R ≅ map (F ⋙ L).rightUnitor.inv (R.rightUnitor.hom ≫ R.leftUnitor.inv) :=
+  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Full] : (preLeft F L R).Full where
-  preimage {X Y} f := CommaMorphism.mk (F.preimage f.left) f.right (by simpa using f.w)
+instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Faithful] : (preLeft F L R).Faithful :=
+  Functor.Faithful.of_iso (preLeftIso F L R).symm
 
-instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.EssSurj] : (preLeft F L R).EssSurj where
-  mem_essImage Y :=
-    ⟨Comma.mk (F.objPreimage Y.left) Y.right ((L.mapIso (F.objObjPreimageIso _)).hom ≫ Y.hom),
-     ⟨isoMk (F.objObjPreimageIso _) (Iso.refl _) (by simp)⟩⟩
+instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Full] : (preLeft F L R).Full :=
+  Functor.Full.of_iso (preLeftIso F L R).symm
+
+instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.EssSurj] : (preLeft F L R).EssSurj :=
+  Functor.essSurj_of_iso (preLeftIso F L R).symm
 
 /-- If `F` is an equivalence, then so is `preLeft F L R`. -/
-noncomputable def isEquivalencePreLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.IsEquivalence] :
-    (preLeft F L R).IsEquivalence :=
-  have := Equivalence.essSurj_of_equivalence F
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance isEquivalence_preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.IsEquivalence] :
+    (preLeft F L R).IsEquivalence where
 
 /-- The functor `(F ⋙ L, R) ⥤ (L, R)` -/
 @[simps]
@@ -357,23 +395,24 @@ def preRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) : Comma L (F ⋙ R) ⥤ C
       right := F.map f.right }
 #align category_theory.comma.pre_right CategoryTheory.Comma.preRight
 
-instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.Faithful] : (preRight L F R).Faithful where
-  map_injective {X Y } f g h := hom_ext _ _ (by apply congrArg CommaMorphism.left h)
-    (F.map_injective (congrArg CommaMorphism.right h))
+/-- `Comma.preRight` is a particular case of `Comma.map`,
+but with better definitional properties. -/
+def preRightIso (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) :
+    preRight L F R ≅ map (L.leftUnitor.hom ≫ L.rightUnitor.inv) (F ⋙ R).rightUnitor.hom :=
+  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.Full] : (preRight L F R).Full where
-  preimage {X Y} f := CommaMorphism.mk f.left (F.preimage f.right) (by simpa using f.w)
+instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.Faithful] : (preRight L F R).Faithful :=
+  Functor.Faithful.of_iso (preRightIso L F R).symm
 
-instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.EssSurj] : (preRight L F R).EssSurj where
-  mem_essImage Y :=
-    ⟨Comma.mk Y.left (F.objPreimage Y.right) (Y.hom ≫ (R.mapIso (F.objObjPreimageIso _)).inv),
-     ⟨isoMk (Iso.refl _) (F.objObjPreimageIso _) (by simp [← R.map_comp])⟩⟩
+instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.Full] : (preRight L F R).Full :=
+  Functor.Full.of_iso (preRightIso L F R).symm
+
+instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.EssSurj] : (preRight L F R).EssSurj :=
+  Functor.essSurj_of_iso (preRightIso L F R).symm
 
 /-- If `F` is an equivalence, then so is `preRight L F R`. -/
-noncomputable def isEquivalencePreRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.IsEquivalence] :
-    (preRight L F R).IsEquivalence :=
-  have := Equivalence.essSurj_of_equivalence F
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance isEquivalence_preRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.IsEquivalence] :
+    (preRight L F R).IsEquivalence where
 
 /-- The functor `(L, R) ⥤ (L ⋙ F, R ⋙ F)` -/
 @[simps]

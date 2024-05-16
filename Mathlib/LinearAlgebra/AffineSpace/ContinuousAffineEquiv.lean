@@ -35,8 +35,9 @@ open Function
 /-- A continuous affine equivalence, denoted `P₁ ≃ᵃL[k] P₂`, between two affine topological spaces
 is an affine equivalence such that forward and inverse maps are continuous. -/
 structure ContinuousAffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k]
-  [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
-  [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂] extends P₁ ≃ᵃ[k] P₂ where
+    [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
+    [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
+    extends P₁ ≃ᵃ[k] P₂ where
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 

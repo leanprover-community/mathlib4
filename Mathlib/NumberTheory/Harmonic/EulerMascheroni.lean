@@ -14,7 +14,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 We define the constant `γ`, and give upper and lower bounds for it.
 
-## Main definitions and results
+## Main definitions and results
 
 * `Real.eulerMascheroniConstant`: the constant `γ`
 * `Real.tendsto_harmonic_sub_log`: the sequence `n ↦ harmonic n - log n` tends to `γ` as `n → ∞`
@@ -84,7 +84,7 @@ lemma strictAnti_eulerMascheroniSeq' : StrictAnti eulerMascheroniSeq' := by
   refine strictAnti_nat_of_succ_lt (fun n ↦ ?_)
   rcases Nat.eq_zero_or_pos n with rfl | hn
   · simp [eulerMascheroniSeq']
-  simp_rw [eulerMascheroniSeq', (by simp : (n + 1 = 0) = False), eq_false_intro hn.ne', if_false]
+  simp_rw [eulerMascheroniSeq', eq_false_intro hn.ne', if_false]
   rw [← sub_pos, sub_sub_sub_comm,
     harmonic_succ, Rat.cast_add, ← sub_sub, sub_self, zero_sub, sub_eq_add_neg, neg_sub,
     ← sub_eq_neg_add, sub_pos, ← log_div (by positivity) (by positivity), ← neg_lt_neg_iff,
@@ -105,7 +105,7 @@ lemma eulerMascheroniSeq'_six_lt_two_thirds : eulerMascheroniSeq' 6 < 2 / 3 := b
   refine lt_trans this ?_
   rw [← rpow_lt_rpow_iff (z := 60), ← rpow_mul, div_mul_cancel₀, ← Nat.cast_ofNat,
     ← Nat.cast_ofNat, rpow_natCast, Nat.cast_ofNat, ← Nat.cast_ofNat (n := 60), rpow_natCast]
-  norm_num
+  · norm_num
   all_goals positivity
 
 lemma eulerMascheroniSeq_lt_eulerMascheroniSeq' (m n : ℕ) :
@@ -127,8 +127,8 @@ noncomputable def eulerMascheroniConstant : ℝ := limUnder atTop eulerMascheron
 lemma tendsto_eulerMascheroniSeq :
     Tendsto eulerMascheroniSeq atTop (𝓝 eulerMascheroniConstant) := by
   have := tendsto_atTop_ciSup strictMono_eulerMascheroniSeq.monotone ?_
-  rwa [eulerMascheroniConstant, this.limUnder_eq]
-  exact ⟨_, fun _ ⟨_, hn⟩ ↦ hn ▸ (eulerMascheroniSeq_lt_eulerMascheroniSeq' _ 1).le⟩
+  · rwa [eulerMascheroniConstant, this.limUnder_eq]
+  · exact ⟨_, fun _ ⟨_, hn⟩ ↦ hn ▸ (eulerMascheroniSeq_lt_eulerMascheroniSeq' _ 1).le⟩
 
 lemma tendsto_harmonic_sub_log_add_one :
     Tendsto (fun n : ℕ ↦ harmonic n - log (n + 1)) atTop (𝓝 eulerMascheroniConstant) :=

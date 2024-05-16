@@ -3,7 +3,6 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Benjamin Davidson
 -/
-import Mathlib.Algebra.Parity
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Set.Subsingleton
@@ -139,6 +138,9 @@ set_option linter.deprecated false in
 theorem not_even_bit1 (n : ℕ) : ¬Even (bit1 n) := by simp [bit1, parity_simps]
 #align nat.not_even_bit1 Nat.not_even_bit1
 
+theorem not_even_two_mul_add_one (n : ℕ) : ¬Even (2 * n + 1) :=
+  odd_iff_not_even.mp <| odd_two_mul_add_one n
+
 theorem two_not_dvd_two_mul_add_one (n : ℕ) : ¬2 ∣ 2 * n + 1 := by simp [add_mod]
 #align nat.two_not_dvd_two_mul_add_one Nat.two_not_dvd_two_mul_add_one
 
@@ -230,8 +232,7 @@ theorem even_mul_pred_self : ∀ n : ℕ, Even (n * (n - 1))
   | (n + 1) => mul_comm (n + 1 - 1) (n + 1) ▸ even_mul_succ_self n
 #align nat.even_mul_self_pred Nat.even_mul_pred_self
 
-@[deprecated] -- 2024-01-20
-alias even_mul_self_pred := even_mul_pred_self
+@[deprecated] alias even_mul_self_pred := even_mul_pred_self -- 2024-01-20
 
 theorem two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h =>
   Nat.mul_div_cancel_left' (even_iff_two_dvd.mp h)

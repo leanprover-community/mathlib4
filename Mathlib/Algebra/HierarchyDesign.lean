@@ -3,7 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Eric Wieser
 -/
-import Std.Util.LibraryNote
+import Batteries.Util.LibraryNote
 import Mathlib.Mathport.Rename
 
 #align_import algebra.hierarchy_design from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
@@ -84,15 +84,13 @@ when applicable:
 * Definitions for transferring the proof fields of instances along
   injective or surjective functions that agree on the data fields,
   like `Function.Injective.monoid` and `Function.Surjective.monoid`.
-  We make these definitions `@[reducible]`, see note [reducible non-instances].
+  We make these definitions `abbrev`, see note [reducible non-instances].
   See `Mathlib.Algebra.Group.InjSurj` for more examples.
   ```
-  @[reducible]
-  def Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)
+  abbrev Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₁ := ...
 
-  @[reducible]
-  def Function.Surjective.Z [Z M₁] (f : M₁ → M₂) (hf : f.Surjective)
+  abbrev Function.Surjective.Z [Z M₁] (f : M₁ → M₂) (hf : f.Surjective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₂ := ...
   ```
 * Instances transferred elementwise to `Finsupp`s, like `Finsupp.semigroup`.
