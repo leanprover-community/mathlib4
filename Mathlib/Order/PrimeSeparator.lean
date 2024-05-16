@@ -94,8 +94,8 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
 
   have a₁J₁ : a₁ ∈ J₁ := mem_of_subset_of_mem (le_sup_right : _ ≤ J ⊔ _) mem_principal_self
   have a₂J₂ : a₂ ∈ J₂ := mem_of_subset_of_mem (le_sup_right : _ ≤ J ⊔ _) mem_principal_self
-  have J₁J : ↑J₁ ≠ Jset := by refine ne_of_mem_of_not_mem' a₁J₁ ha₁
-  have J₂J : ↑J₂ ≠ Jset := by refine ne_of_mem_of_not_mem' a₂J₂ ha₂
+  have J₁J : ↑J₁ ≠ Jset := ne_of_mem_of_not_mem' a₁J₁ ha₁
+  have J₂J : ↑J₂ ≠ Jset := ne_of_mem_of_not_mem' a₂J₂ ha₂
 
   -- Therefore, since J is maximal, we must have Jᵢ ∉ S.
   have J₁S : ↑J₁ ∉ S := fun h => J₁J (Jmax J₁ h (le_sup_left : J ≤ J₁))
@@ -144,12 +144,10 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   -- Now, if we would have a₁ ⊓ a₂ ∈ J, then, since J is an ideal and b ∈ J, we would also get
   -- b ⊔ (a₁ ⊓ a₂) ∈ J. But this contradicts that J is disjoint from F.
 
-  intro ha₁a₂
-  have notdis : ¬ (Disjoint (F : Set α) J) := by
-    rw [Set.not_disjoint_iff]
-    use b ⊔ (a₁ ⊓ a₂)
-    exact ⟨ba₁a₂F, sup_mem bJ ha₁a₂⟩
-  exact notdis JF
+  contrapose! JF with ha₁a₂
+  rw [Set.not_disjoint_iff]
+  use b ⊔ (a₁ ⊓ a₂)
+  exact ⟨ba₁a₂F, sup_mem bJ ha₁a₂⟩
 
 -- TODO: Define prime filters in Mathlib so that the following corollary can be stated and proved.
 -- theorem prime_filter_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : Set α)) :
