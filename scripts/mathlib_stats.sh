@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-statsURL=""
+statsURL="https://leanprover-community.github.io/mathlib_stats.html"
 
 ## results in 'hash YYYY-MM-DD'
 hashAndDate="$(git log master --since='one week ago' --date=short --pretty="%h %ad" | tail -1)"
