@@ -126,17 +126,15 @@ def ofIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ
   coeff := fun g => coeff (coeff x g.1) g.2
   isPWO_support' := by
     refine Set.PartiallyWellOrderedOn.subsetProdLex ?_ ?_
-    · have h : ((fun (x : Γ ×ₗ Γ') ↦ x.1) '' Function.support fun g ↦ (x.coeff g.1).coeff g.2) ⊆
-          Function.support x.coeff :=
-        Set.image_subset_iff.mpr <| support_subset_iff.mpr fun g hg => Set.mem_preimage.mpr <|
-        Function.mem_support.mpr <| ne_zero_of_coeff_ne_zero hg
-      exact Set.IsPWO.mono x.isPWO_support' h
-    · intro a
-      have h : {y | (a, y) ∈ Function.support fun g ↦ (x.coeff g.1).coeff g.2} =
-          Function.support fun b => (x.coeff a).coeff b := by
-        exact rfl
-      simp_all only [Function.mem_support, ne_eq]
-      exact (x.coeff a).isPWO_support'
+    · refine Set.IsPWO.mono x.isPWO_support' ?_
+      simp_rw [Set.image_subset_iff, support_subset_iff, Set.mem_preimage, Function.mem_support]
+      exact fun _ ↦ ne_zero_of_coeff_ne_zero
+    · exact fun a => by simpa [Function.mem_support, ne_eq] using (x.coeff a).isPWO_support'
+
+@[simp]
+lemma mk_eq_zero (f : Γ → R) (h) : HahnSeries.mk f h = 0 ↔ f = 0 := by
+  rw [HahnSeries.ext_iff]
+  rfl
 
 /-- Change a Hahn series on a lex product to a Hahn series with coefficients in a Hahn series. -/
 def toIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
@@ -149,22 +147,8 @@ def toIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R)
     have h₁ : (Function.support fun g => HahnSeries.mk (fun g' => x.coeff (g, g'))
         (Set.PartiallyWellOrderedOn.fiberProdLex x.isPWO_support' g)) = Function.support
         fun g => fun g' => x.coeff (g, g') := by
-      rw [@support_eq_iff]
-      constructor
-      · intro y hy
-        simp_all only [Function.mem_support, ne_eq]
-        refine Not.intro ?left.h
-        rw [@HahnSeries.ext_iff]
-        simp only [imp_false, ne_eq]
-        exact hy
-      · intro y hy
-        simp_all only [Function.mem_support, ne_eq, not_not]
-        exact rfl
-    rw [h₁]
-    have h : (Function.support fun g => fun g' => x.coeff (g, g')) =
-        ((fun x ↦ x.1) '' Function.support x.coeff) := by
-      exact Function.support_on_image (fun g => x.coeff g)
-    rw [h]
+      simp only [Function.support, ne_eq, mk_eq_zero]
+    rw [h₁, Function.support_on_image x.coeff]
     exact Set.PartiallyWellOrderedOn.imageProdLex x.isPWO_support'
 
 /-- The equivalence between iterated Hahn series and Hahn series on the lex product. -/
