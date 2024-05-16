@@ -1435,6 +1435,97 @@ theorem Set.InjOn.exists_isOpen_superset {X Y : Type*} [TopologicalSpace X] [Top
   let ⟨u, huo, hsu, hut⟩ := mem_nhdsSet_iff_exists.1 hst
   ⟨u, huo, hsu, ht.mono hut⟩
 
+ 
+section
+variable (X)
+
+lemma sInf_rel {α : Type*} {S : Set (Setoid α)} {x y : α} :
+  (sInf S).Rel x y ↔ ∀ s ∈ S, s.Rel x y := Iff.rfl
+
+lemma sInf_equiv {α : Type*} {S : Set (Setoid α)} {x y : α} :
+  letI := sInf S
+  x ≈ y ↔ ∀ s ∈ S, s.Rel x y := Iff.rfl
+
+lemma quotient_mk_sInf_eq {α : Type*} {S : Set (Setoid α)} {x y : α} :
+    Quotient.mk (sInf S) x = Quotient.mk (sInf S) y ↔ ∀ s ∈ S, s.Rel x y := by
+  simp 
+  rfl
+
+def Setoid.map_of_le {α : Type*} {s t : Setoid α} (h : s ≤ t) : Quotient s → Quotient t :=
+  Quotient.map' id h
+
+def Setoid.map_sInf {α : Type*} {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) : 
+    Quotient (sInf S) → Quotient s :=
+  Setoid.map_of_le fun _ _ a ↦ a s h
+
+lemma continuous_map_of_le {α : Type*} [TopologicalSpace α] 
+    {s t : Setoid α} (h : s ≤ t) : Continuous (Setoid.map_of_le h) := 
+  continuous_coinduced_rng
+
+lemma continuous_map_sInf {α : Type*} [TopologicalSpace α] 
+    {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) : Continuous (Setoid.map_sInf h) := 
+  continuous_coinduced_rng
+
+def t2Setoid : Setoid X := sInf {s | T2Space (Quotient s)}
+
+def t2Quotient := Quotient (t2Setoid X)
+
+instance : TopologicalSpace (t2Quotient X) := 
+inferInstanceAs <| TopologicalSpace (Quotient _)
+
+lemma Continuous.disjoint_nhds_of_different_image {X Y Z : Type*} 
+    [TopologicalSpace Y] [T2Space Y]
+    [TopologicalSpace Z] {f : X → Y} {k : X → Z} {g : Z → Y}
+    (hg : Continuous g) (h : g ∘ k = f) {x x' : X} (hxx' : f x ≠ f x') :
+    Disjoint (𝓝 (k x)) (𝓝 (k x')) := by
+  have := disjoint_nhds_nhds.mpr hxx'
+  rw [← h] at *
+  have d₁ : 𝓝 (k x) ≤ comap g (𝓝 (g (k x))) := by refine tendsto_iff_comap.mp hg.continuousAt
+  have d₂ : 𝓝 (k x') ≤ comap g (𝓝 (g (k x'))) := by refine tendsto_iff_comap.mp hg.continuousAt
+  exact (disjoint_comap this).mono d₁ d₂
+
+instance : T2Space (t2Quotient X) := by
+  rw [t2Space_iff_disjoint_nhds]
+  rintro ⟨x⟩ ⟨y⟩ (h : ¬  Quotient.mk _ x = Quotient.mk _ y)
+  obtain ⟨s, hs, hsxy⟩ : ∃ s, T2Space (Quotient s) ∧ Quotient.mk s x ≠ Quotient.mk s y := by
+    erw [quotient_mk_sInf_eq] at h
+    simpa using h
+  have hs' : s ∈ {s | T2Space (Quotient s)} := hs
+  apply (continuous_map_sInf hs').disjoint_nhds_of_different_image _ hsxy
+  ext
+  rfl
+
+  -- rw [t2Space_iff_nhds]
+  -- rintro ⟨x⟩ ⟨y⟩ (h : ¬  Quotient.mk _ x = Quotient.mk _ y)
+  -- obtain ⟨s, hs, hsxy⟩ : ∃ s : Setoid X, 
+  --   T2Space (Quotient s) ∧ Quotient.mk s x ≠ Quotient.mk s y := by
+  --   erw [quotient_mk_sInf_eq] at h
+  --   simpa using h
+  -- obtain ⟨u, v, hu, hv, huv⟩ := t2_separation_nhds hsxy 
+  -- set π := Quot.mk (t2Setoid X).r
+  -- set π' := Quotient.mk s
+  -- change s ∈ {s | T2Space (Quotient s)} at hs
+  -- set σ := Setoid.map_sInf hs
+  -- rw [show π' = σ ∘ π by ext ; rfl] at hu hv
+  -- have σcont : Continuous σ := continuous_map_sInf hs
+  -- exact ⟨σ ⁻¹' u, σcont.continuousAt hu, σ ⁻¹' v, σcont.continuousAt hv, Disjoint.preimage σ huv⟩
+
+def t2Quotient.lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y] 
+    {f : X → Y} (hf : Continuous f) : t2Quotient X → Y := 
+  Quotient.lift f fun x y hxy ↦ by
+    set g : Quotient (Setoid.ker f) → Y := Quotient.lift f (fun _ _ ↦ id)
+    have gcont : Continuous g := hf.quotient_lift (fun _ _ ↦ id)
+    change (Setoid.ker f).Rel x y 
+    apply hxy 
+    dsimp
+    
+    rw [t2Space_iff_nhds]
+    rintro ⟨x⟩ ⟨x'⟩ (h : ¬  Quotient.mk _ x = Quotient.mk _ x')
+    replace h : f x ≠ f x' := by simpa using h
+    obtain ⟨u, v, hu, hv, huv⟩ := t2_separation_nhds h
+    exact ⟨g ⁻¹' u, gcont.continuousAt hu, g ⁻¹' v, gcont.continuousAt hv, Disjoint.preimage g huv⟩
+end
+
 /-- A T₂.₅ space, also known as a Urysohn space, is a topological space
   where for every pair `x ≠ y`, there are two open sets, with the intersection of closures
   empty, one containing `x` and the other `y` . -/
