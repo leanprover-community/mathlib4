@@ -18,9 +18,10 @@ jobs:
 
       - id: print_it
         run: |
-          git checkout -q master
+          git checkout master
           # should the next step be removed for Zulip?
-          git checkout -q -
+          git checkout -
+          git checkout adomani/periodic_reports_dev
           printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)"
 
       - id: mathlib_stats
