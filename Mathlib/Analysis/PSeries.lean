@@ -56,7 +56,7 @@ theorem le_sum_schlomilch' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
   · simp
   suffices (∑ k in Ico (u n) (u (n + 1)), f k) ≤ (u (n + 1) - u n) • f (u n) by
     rw [sum_range_succ, ← sum_Ico_consecutive]
-    exact add_le_add ihn this
+    · exact add_le_add ihn this
     exacts [hu n.zero_le, hu n.le_succ]
   have : ∀ k ∈ Ico (u n) (u (n + 1)), f k ≤ f (u n) := fun k hk =>
     hf (Nat.succ_le_of_lt (h_pos n)) (mem_Ico.mp hk).1
@@ -287,14 +287,14 @@ theorem summable_nat_rpow_inv {p : ℝ} :
   · suffices ¬Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) by
       have : ¬1 < p := fun hp₁ => hp.not_le (zero_le_one.trans hp₁.le)
       simpa only [this, iff_false]
-    · intro h
-      obtain ⟨k : ℕ, hk₁ : ((k : ℝ) ^ p)⁻¹ < 1, hk₀ : k ≠ 0⟩ :=
-        ((h.tendsto_cofinite_zero.eventually (gt_mem_nhds zero_lt_one)).and
-            (eventually_cofinite_ne 0)).exists
-      apply hk₀
-      rw [← pos_iff_ne_zero, ← @Nat.cast_pos ℝ] at hk₀
-      simpa [inv_lt_one_iff_of_pos (rpow_pos_of_pos hk₀ _), one_lt_rpow_iff_of_pos hk₀, hp,
-        hp.not_lt, hk₀] using hk₁
+    intro h
+    obtain ⟨k : ℕ, hk₁ : ((k : ℝ) ^ p)⁻¹ < 1, hk₀ : k ≠ 0⟩ :=
+      ((h.tendsto_cofinite_zero.eventually (gt_mem_nhds zero_lt_one)).and
+          (eventually_cofinite_ne 0)).exists
+    apply hk₀
+    rw [← pos_iff_ne_zero, ← @Nat.cast_pos ℝ] at hk₀
+    simpa [inv_lt_one_iff_of_pos (rpow_pos_of_pos hk₀ _), one_lt_rpow_iff_of_pos hk₀, hp,
+      hp.not_lt, hk₀] using hk₁
 #align real.summable_nat_rpow_inv Real.summable_nat_rpow_inv
 
 @[simp]

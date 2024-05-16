@@ -8,7 +8,7 @@ import Batteries.Classes.Order
 import Mathlib.Mathport.Rename
 
 /-!
-# Align statements for declarations from Std
+# Align statements for declarations from Batteries
 -/
 
 #align ordering.swap_inj Ordering.swap_inj

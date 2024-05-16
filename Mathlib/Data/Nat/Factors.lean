@@ -36,8 +36,8 @@ def factors : ℕ → List ℕ
   | 1 => []
   | k + 2 =>
     let m := minFac (k + 2)
-    have : (k + 2) / m < (k + 2) := factors_lemma
     m :: factors ((k + 2) / m)
+decreasing_by show (k + 2) / m < (k + 2); exact factors_lemma
 #align nat.factors Nat.factors
 
 @[simp]
@@ -47,6 +47,9 @@ theorem factors_zero : factors 0 = [] := by rw [factors]
 @[simp]
 theorem factors_one : factors 1 = [] := by rw [factors]
 #align nat.factors_one Nat.factors_one
+
+@[simp]
+theorem factors_two : factors 2 = [2] := by simp [factors]
 
 theorem prime_of_mem_factors {n : ℕ} : ∀ {p : ℕ}, (h : p ∈ factors n) → Prime p := by
   match n with

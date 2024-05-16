@@ -1036,14 +1036,14 @@ protected theorem ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs
     have : p x m.succ = ftaylorSeriesWithin 𝕜 f s x m.succ := by
       change p x m.succ = iteratedFDerivWithin 𝕜 m.succ f s x
       rw [← iteratedFDerivWithin_inter_open o_open xo]
-      exact (Hp.mono ho).eq_ftaylor_series_of_uniqueDiffOn le_rfl (hs.inter o_open) ⟨hx, xo⟩
+      exact (Hp.mono ho).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl (hs.inter o_open) ⟨hx, xo⟩
     rw [← this, ← hasFDerivWithinAt_inter (IsOpen.mem_nhds o_open xo)]
     have A : ∀ y ∈ s ∩ o, p y m = ftaylorSeriesWithin 𝕜 f s y m := by
       rintro y ⟨hy, yo⟩
       change p y m = iteratedFDerivWithin 𝕜 m f s y
       rw [← iteratedFDerivWithin_inter_open o_open yo]
       exact
-        (Hp.mono ho).eq_ftaylor_series_of_uniqueDiffOn (WithTop.coe_le_coe.2 (Nat.le_succ m))
+        (Hp.mono ho).eq_iteratedFDerivWithin_of_uniqueDiffOn (WithTop.coe_le_coe.2 (Nat.le_succ m))
           (hs.inter o_open) ⟨hy, yo⟩
     exact
       ((Hp.mono ho).fderivWithin m (WithTop.coe_lt_coe.2 (lt_add_one m)) x ⟨hx, xo⟩).congr
@@ -1060,7 +1060,7 @@ protected theorem ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs
       rintro y ⟨hy, yo⟩
       change p y m = iteratedFDerivWithin 𝕜 m f s y
       rw [← iteratedFDerivWithin_inter_open o_open yo]
-      exact (Hp.mono ho).eq_ftaylor_series_of_uniqueDiffOn le_rfl (hs.inter o_open) ⟨hy, yo⟩
+      exact (Hp.mono ho).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl (hs.inter o_open) ⟨hy, yo⟩
     exact ((Hp.mono ho).cont m le_rfl).congr fun y hy => (A y hy).symm
 #align cont_diff_on.ftaylor_series_within ContDiffOn.ftaylorSeriesWithin
 

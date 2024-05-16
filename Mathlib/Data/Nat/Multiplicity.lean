@@ -295,8 +295,8 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
       simp only [ne_eq, bit_eq_zero, true_and, Bool.not_eq_false] at h
       simp only [h, bit_true, bit1_zero, factorial, mul_one, Nat.isUnit_iff, cast_one]
       rw [Prime.multiplicity_one]
-      simp only [zero_lt_one]
-      decide
+      · simp only [zero_lt_one]
+      · decide
     have : multiplicity 2 (2 * n)! < (2 * n : ℕ) := by
       rw [prime_two.multiplicity_factorial_mul]
       refine' (PartENat.add_lt_add_right (ih hn) (PartENat.natCast_ne_top _)).trans_le _
