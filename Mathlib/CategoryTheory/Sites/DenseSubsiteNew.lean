@@ -271,12 +271,12 @@ noncomputable def extensionObjRestrict {X : Cᵒᵖ} {Y₀ : C₀} (f : F.obj Y�
 
 noncomputable def extensionObjRestrict_map_eq_extensionObjRestrict'
     {X : Cᵒᵖ} {Y₀ W₀ : C₀} (f : F.obj Y₀ ⟶ X.unop)
-    (g : W₀ ⟶ Y₀) (i : (F.oneHypercoverDenseData J₀ J X.unop).I₀)
+    (g : Opposite.op Y₀ ⟶ Opposite.op W₀) (i : (F.oneHypercoverDenseData J₀ J X.unop).I₀)
     (a : W₀ ⟶ (F.oneHypercoverDenseData J₀ J X.unop).X i)
-    (fac : F.map a ≫ (F.oneHypercoverDenseData J₀ J X.unop).f i = F.map g ≫ f) :
-    extensionObjRestrict F J₀ J hP₀ f ≫ P₀.map g.op =
-      extensionObjRestrict' F J₀ J P₀ (F.map g ≫ f) ⟨i, a, fac⟩ :=
-  hP₀.amalgamate_map _ _ _ ⟨W₀, g, by exact ⟨_, _, _, ⟨i⟩, fac⟩⟩
+    (fac : F.map a ≫ (F.oneHypercoverDenseData J₀ J X.unop).f i = F.map g.unop ≫ f) :
+    extensionObjRestrict F J₀ J hP₀ f ≫ P₀.map g =
+      extensionObjRestrict' F J₀ J P₀ (F.map g.unop ≫ f) ⟨i, a, fac⟩ :=
+  hP₀.amalgamate_map _ _ _ ⟨W₀, g.unop, by exact ⟨_, _, _, ⟨i⟩, fac⟩⟩
 
 lemma extensionObjRestrict_eq_π {X : Cᵒᵖ} (i : (F.oneHypercoverDenseData J₀ J X.unop).I₀) :
     extensionObjRestrict F J₀ J hP₀ ((F.oneHypercoverDenseData J₀ J X.unop).f i) =
@@ -292,8 +292,19 @@ lemma extensionObjRestrict_eq_π {X : Cᵒᵖ} (i : (F.oneHypercoverDenseData J�
 def extensionObjRestrict_map {X : Cᵒᵖ} {Y₀ Z₀ : C₀} (f : F.obj Y₀ ⟶ X.unop)
     (g : Opposite.op Y₀ ⟶ Opposite.op Z₀) :
     extensionObjRestrict F J₀ J hP₀ f ≫ P₀.map g =
-      extensionObjRestrict F J₀ J hP₀ (F.map g.unop ≫ f) := by
-  sorry
+      extensionObjRestrict F J₀ J hP₀ (F.map g.unop ≫ f) :=
+  hP₀.hom_ext ⟨_, F.cover_lift J₀ J (J.pullback_stable (F.map g.unop ≫ f)
+    (F.oneHypercoverDenseData J₀ J X.unop).mem₀)⟩ _ _ (by
+      rintro ⟨T, a, ha⟩
+      obtain ⟨W, b, c, ⟨i⟩, fac⟩ := ha
+      obtain ⟨b, rfl⟩ := F.map_surjective b
+      dsimp at a g i fac ⊢
+      rw [assoc, ← P₀.map_comp, extensionObjRestrict_map_eq_extensionObjRestrict'
+          F J₀ J hP₀ f (g ≫ a.op) i b (by simpa using fac),
+        extensionObjRestrict_map_eq_extensionObjRestrict' F J₀ J hP₀
+          (F.map g.unop ≫ f) a.op i b (by simpa using fac)]
+      simp
+      )
 
 noncomputable def extensionMap {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     extensionObj F J₀ J P₀ X ⟶ extensionObj F J₀ J P₀ Y :=
