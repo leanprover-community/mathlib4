@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Integral.Bochner
-import Mathlib.MeasureTheory.Constructions.Prod.Basic
+import Mathlib.MeasureTheory.Measure.GiryMonad
 
 #align_import probability.kernel.basic from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -64,11 +64,21 @@ noncomputable def kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace �
   add_mem' hf hg := Measurable.add hf hg
 #align probability_theory.kernel ProbabilityTheory.kernel
 
--- Porting note: using `FunLike` instead of `CoeFun` to use `FunLike.coe`
+-- Porting note: using `FunLike` instead of `CoeFun` to use `DFunLike.coe`
 instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
-    FunLike (kernel α β) α fun _ => Measure β where
+    FunLike (kernel α β) α (Measure β) where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
+
+instance kernel.instCovariantAddLE {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    CovariantClass (kernel α β) (kernel α β) (· + ·) (· ≤ ·) :=
+  ⟨fun _ _ _ hμ a ↦ add_le_add_left (hμ a) _⟩
+
+noncomputable
+instance kernel.instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    OrderBot (kernel α β) where
+  bot := 0
+  bot_le κ a := by simp only [ZeroMemClass.coe_zero, Pi.zero_apply, Measure.zero_le]
 
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
@@ -123,8 +133,9 @@ class IsFiniteKernel (κ : kernel α β) : Prop where
 /-- A constant `C : ℝ≥0∞` such that `C < ∞` (`ProbabilityTheory.IsFiniteKernel.bound_lt_top κ`) and
 for all `a : α` and `s : Set β`, `κ a s ≤ C` (`ProbabilityTheory.kernel.measure_le_bound κ a s`).
 
-Porting note: TODO: does it make sense to make `ProbabilityTheory.IsFiniteKernel.bound` the least
-possible bound? Should it be an `NNReal` number? -/
+Porting note (#11215): TODO: does it make sense to
+-- make `ProbabilityTheory.IsFiniteKernel.bound` the least possible bound?
+-- Should it be an `NNReal` number? -/
 noncomputable def IsFiniteKernel.bound (κ : kernel α β) [h : IsFiniteKernel κ] : ℝ≥0∞ :=
   h.exists_univ_le.choose
 #align probability_theory.is_finite_kernel.bound ProbabilityTheory.IsFiniteKernel.bound
@@ -158,6 +169,10 @@ instance IsFiniteKernel.add (κ η : kernel α β) [IsFiniteKernel κ] [IsFinite
   exact add_le_add (kernel.measure_le_bound _ _ _) (kernel.measure_le_bound _ _ _)
 #align probability_theory.is_finite_kernel.add ProbabilityTheory.IsFiniteKernel.add
 
+lemma isFiniteKernel_of_le {κ ν : kernel α β} [hν : IsFiniteKernel ν] (hκν : κ ≤ ν) :
+    IsFiniteKernel κ := by
+  refine ⟨hν.bound, hν.bound_lt_top, fun a ↦ (hκν _ _).trans (kernel.measure_le_bound ν a Set.univ)⟩
+
 variable {κ : kernel α β}
 
 instance IsMarkovKernel.is_probability_measure' [IsMarkovKernel κ] (a : α) :
@@ -177,10 +192,10 @@ instance (priority := 100) IsMarkovKernel.isFiniteKernel [IsMarkovKernel κ] :
 namespace kernel
 
 @[ext]
-theorem ext {η : kernel α β} (h : ∀ a, κ a = η a) : κ = η := FunLike.ext _ _ h
+theorem ext {η : kernel α β} (h : ∀ a, κ a = η a) : κ = η := DFunLike.ext _ _ h
 #align probability_theory.kernel.ext ProbabilityTheory.kernel.ext
 
-theorem ext_iff {η : kernel α β} : κ = η ↔ ∀ a, κ a = η a := FunLike.ext_iff
+theorem ext_iff {η : kernel α β} : κ = η ↔ ∀ a, κ a = η a := DFunLike.ext_iff
 #align probability_theory.kernel.ext_iff ProbabilityTheory.kernel.ext_iff
 
 theorem ext_iff' {η : kernel α β} :
@@ -281,7 +296,10 @@ class _root_.ProbabilityTheory.IsSFiniteKernel (κ : kernel α β) : Prop where
 
 instance (priority := 100) IsFiniteKernel.isSFiniteKernel [h : IsFiniteKernel κ] :
     IsSFiniteKernel κ :=
-  ⟨⟨fun n => if n = 0 then κ else 0, fun n => by simp only; split_ifs; exact h; infer_instance, by
+  ⟨⟨fun n => if n = 0 then κ else 0, fun n => by
+      simp only; split_ifs
+      · exact h
+      · infer_instance, by
       ext a s hs
       rw [kernel.sum_apply' _ _ hs]
       have : (fun i => ((ite (i = 0) κ 0) a) s) = fun i => ite (i = 0) (κ a s) 0 := by
@@ -419,20 +437,28 @@ theorem integral_deterministic {E : Type*} [NormedAddCommGroup E] [NormedSpace �
   rw [kernel.deterministic_apply, integral_dirac _ (g a)]
 #align probability_theory.kernel.integral_deterministic ProbabilityTheory.kernel.integral_deterministic
 
-theorem set_integral_deterministic' {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem setIntegral_deterministic' {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [CompleteSpace E] {f : β → E} {g : α → β} {a : α} (hg : Measurable g)
     (hf : StronglyMeasurable f) {s : Set β} (hs : MeasurableSet s) [Decidable (g a ∈ s)] :
     ∫ x in s, f x ∂kernel.deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
-  rw [kernel.deterministic_apply, set_integral_dirac' hf _ hs]
-#align probability_theory.kernel.set_integral_deterministic' ProbabilityTheory.kernel.set_integral_deterministic'
+  rw [kernel.deterministic_apply, setIntegral_dirac' hf _ hs]
+#align probability_theory.kernel.set_integral_deterministic' ProbabilityTheory.kernel.setIntegral_deterministic'
+
+@[deprecated]
+alias set_integral_deterministic' :=
+  setIntegral_deterministic' -- deprecated on 2024-04-17
 
 @[simp]
-theorem set_integral_deterministic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem setIntegral_deterministic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [CompleteSpace E] {f : β → E} {g : α → β} {a : α} (hg : Measurable g)
     [MeasurableSingletonClass β] (s : Set β) [Decidable (g a ∈ s)] :
     ∫ x in s, f x ∂kernel.deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
-  rw [kernel.deterministic_apply, set_integral_dirac f _ s]
-#align probability_theory.kernel.set_integral_deterministic ProbabilityTheory.kernel.set_integral_deterministic
+  rw [kernel.deterministic_apply, setIntegral_dirac f _ s]
+#align probability_theory.kernel.set_integral_deterministic ProbabilityTheory.kernel.setIntegral_deterministic
+
+@[deprecated]
+alias set_integral_deterministic :=
+  setIntegral_deterministic -- deprecated on 2024-04-17
 
 end Deterministic
 
@@ -453,6 +479,9 @@ theorem const_apply (μβ : Measure β) (a : α) : const α μβ a = μβ :=
 @[simp]
 lemma const_zero : kernel.const α (0 : Measure β) = 0 := by
   ext x s _; simp [kernel.const_apply]
+
+lemma const_add (β : Type*) [MeasurableSpace β] (μ ν : Measure α) :
+    const β (μ + ν) = const β μ + const β ν := by ext; simp
 
 lemma sum_const [Countable ι] (μ : ι → Measure β) :
     kernel.sum (fun n ↦ const α (μ n)) = const α (Measure.sum μ) := by
@@ -491,10 +520,14 @@ theorem integral_const {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 #align probability_theory.kernel.integral_const ProbabilityTheory.kernel.integral_const
 
 @[simp]
-theorem set_integral_const {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem setIntegral_const {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : β → E} {μ : Measure β} {a : α} {s : Set β} :
     ∫ x in s, f x ∂kernel.const α μ a = ∫ x in s, f x ∂μ := by rw [kernel.const_apply]
-#align probability_theory.kernel.set_integral_const ProbabilityTheory.kernel.set_integral_const
+#align probability_theory.kernel.set_integral_const ProbabilityTheory.kernel.setIntegral_const
+
+@[deprecated]
+alias set_integral_const :=
+  setIntegral_const -- deprecated on 2024-04-17
 
 end Const
 
@@ -547,11 +580,15 @@ theorem set_lintegral_restrict (κ : kernel α β) (hs : MeasurableSet s) (a : �
 #align probability_theory.kernel.set_lintegral_restrict ProbabilityTheory.kernel.set_lintegral_restrict
 
 @[simp]
-theorem set_integral_restrict {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem setIntegral_restrict {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : β → E} {a : α} (hs : MeasurableSet s) (t : Set β) :
     ∫ x in t, f x ∂kernel.restrict κ hs a = ∫ x in t ∩ s, f x ∂κ a := by
   rw [restrict_apply, Measure.restrict_restrict' hs]
-#align probability_theory.kernel.set_integral_restrict ProbabilityTheory.kernel.set_integral_restrict
+#align probability_theory.kernel.set_integral_restrict ProbabilityTheory.kernel.setIntegral_restrict
+
+@[deprecated]
+alias set_integral_restrict :=
+  setIntegral_restrict -- deprecated on 2024-04-17
 
 instance IsFiniteKernel.restrict (κ : kernel α β) [IsFiniteKernel κ] (hs : MeasurableSet s) :
     IsFiniteKernel (kernel.restrict κ hs) := by
@@ -597,6 +634,10 @@ theorem comapRight_apply' (κ : kernel α β) (hf : MeasurableEmbedding f) (a : 
   rw [comapRight_apply,
     Measure.comap_apply _ hf.injective (fun s => hf.measurableSet_image.mpr) _ ht]
 #align probability_theory.kernel.comap_right_apply' ProbabilityTheory.kernel.comapRight_apply'
+
+@[simp]
+lemma comapRight_id (κ : kernel α β) : comapRight κ MeasurableEmbedding.id = κ := by
+  ext _ _ hs; rw [comapRight_apply' _ _ _ hs]; simp
 
 theorem IsMarkovKernel.comapRight (κ : kernel α β) (hf : MeasurableEmbedding f)
     (hκ : ∀ a, κ a (Set.range f) = 1) : IsMarkovKernel (comapRight κ hf) := by
@@ -691,12 +732,16 @@ theorem integral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
   simp_rw [piecewise_apply]; split_ifs <;> rfl
 #align probability_theory.kernel.integral_piecewise ProbabilityTheory.kernel.integral_piecewise
 
-theorem set_integral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem setIntegral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (a : α) (g : β → E) (t : Set β) :
     ∫ b in t, g b ∂piecewise hs κ η a =
       if a ∈ s then ∫ b in t, g b ∂κ a else ∫ b in t, g b ∂η a :=
   by simp_rw [piecewise_apply]; split_ifs <;> rfl
-#align probability_theory.kernel.set_integral_piecewise ProbabilityTheory.kernel.set_integral_piecewise
+#align probability_theory.kernel.set_integral_piecewise ProbabilityTheory.kernel.setIntegral_piecewise
+
+@[deprecated]
+alias set_integral_piecewise :=
+  setIntegral_piecewise -- deprecated on 2024-04-17
 
 end Piecewise
 

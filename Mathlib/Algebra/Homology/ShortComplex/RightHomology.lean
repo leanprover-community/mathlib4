@@ -27,8 +27,6 @@ In `Homology.lean`, when `S` has two compatible left and right homology data
 
 -/
 
-set_option autoImplicit true
-
 namespace CategoryTheory
 
 open Category Limits
@@ -397,7 +395,7 @@ instance : Inhabited (RightHomologyMapData φ h₁ h₂) := ⟨by
       RightHomologyData.p_g', φ.comm₂₃, RightHomologyData.p_g'_assoc]
   let φH : h₁.H ⟶ h₂.H := h₂.liftH (h₁.ι ≫ φQ)
     (by rw [assoc, commg', RightHomologyData.ι_g'_assoc, zero_comp])
-  exact ⟨φQ, φH, by simp, commg', by simp⟩⟩
+  exact ⟨φQ, φH, by simp [φQ], commg', by simp [φH]⟩⟩
 
 instance : Unique (RightHomologyMapData φ h₁ h₂) := Unique.mk' _
 
@@ -513,21 +511,21 @@ instance : Mono S.rightHomologyι := by
   dsimp only [rightHomologyι]
   infer_instance
 
-lemma rightHomology_ext_iff (f₁ f₂ : A ⟶ S.rightHomology) :
+lemma rightHomology_ext_iff {A : C} (f₁ f₂ : A ⟶ S.rightHomology) :
     f₁ = f₂ ↔ f₁ ≫ S.rightHomologyι = f₂ ≫ S.rightHomologyι := by
   rw [cancel_mono]
 
 @[ext]
-lemma rightHomology_ext (f₁ f₂ : A ⟶ S.rightHomology)
+lemma rightHomology_ext {A : C} (f₁ f₂ : A ⟶ S.rightHomology)
     (h : f₁ ≫ S.rightHomologyι = f₂ ≫ S.rightHomologyι) : f₁ = f₂ := by
   simpa only [rightHomology_ext_iff]
 
-lemma opcycles_ext_iff (f₁ f₂ : S.opcycles ⟶ A) :
+lemma opcycles_ext_iff {A : C} (f₁ f₂ : S.opcycles ⟶ A) :
     f₁ = f₂ ↔ S.pOpcycles ≫ f₁ = S.pOpcycles ≫ f₂ := by
   rw [cancel_epi]
 
 @[ext]
-lemma opcycles_ext (f₁ f₂ : S.opcycles ⟶ A)
+lemma opcycles_ext {A : C} (f₁ f₂ : S.opcycles ⟶ A)
     (h : S.pOpcycles ≫ f₁ = S.pOpcycles ≫ f₂) : f₁ = f₂ := by
   simpa only [opcycles_ext_iff]
 

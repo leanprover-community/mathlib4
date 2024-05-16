@@ -67,9 +67,9 @@ theorem exact_iff : Exact f g ↔ f ≫ g = 0 ∧ kernel.ι g ≫ cokernel.π f 
   constructor
   · exact fun h ↦ ⟨h.1, kernel_comp_cokernel f g h⟩
   · refine fun h ↦ ⟨h.1, ?_⟩
-    suffices hl :
-      IsLimit (KernelFork.ofι (imageSubobject f).arrow (imageSubobject_arrow_comp_eq_zero h.1))
-    · have : imageToKernel f g h.1 = (hl.conePointUniqueUpToIso (limit.isLimit _)).hom ≫
+    suffices hl : IsLimit
+        (KernelFork.ofι (imageSubobject f).arrow (imageSubobject_arrow_comp_eq_zero h.1)) by
+      have : imageToKernel f g h.1 = (hl.conePointUniqueUpToIso (limit.isLimit _)).hom ≫
           (kernelSubobjectIso _).inv := by ext; simp
       rw [this]
       infer_instance
@@ -77,8 +77,7 @@ theorem exact_iff : Exact f g ↔ f ≫ g = 0 ∧ kernel.ι g ≫ cokernel.π f 
     · refine kernel.lift (cokernel.π f) u ?_ ≫ (imageIsoImage f).hom ≫ (imageSubobjectIso _).inv
       rw [← kernel.lift_ι g u hu, Category.assoc, h.2, comp_zero]
     · aesop_cat
-    · intros
-      rw [← cancel_mono (imageSubobject f).arrow, h]
+    · rw [← cancel_mono (imageSubobject f).arrow, h]
       simp
 #align category_theory.abelian.exact_iff CategoryTheory.Abelian.exact_iff
 
@@ -104,7 +103,7 @@ theorem exact_tfae :
 #align category_theory.abelian.exact_tfae CategoryTheory.Abelian.exact_tfae
 
 nonrec theorem IsEquivalence.exact_iff {D : Type u₁} [Category.{v₁} D] [Abelian D] (F : C ⥤ D)
-    [IsEquivalence F] : Exact (F.map f) (F.map g) ↔ Exact f g := by
+    [F.IsEquivalence] : Exact (F.map f) (F.map g) ↔ Exact f g := by
   simp only [exact_iff, ← F.map_eq_zero_iff, F.map_comp, Category.assoc, ←
     kernelComparison_comp_ι g F, ← π_comp_cokernelComparison f F]
   rw [IsIso.comp_left_eq_zero (kernelComparison g F), ← Category.assoc,
@@ -165,7 +164,7 @@ theorem exact_cokernel : Exact f (cokernel.π f) := by
   aesop_cat
 #align category_theory.abelian.exact_cokernel CategoryTheory.Abelian.exact_cokernel
 
--- porting note: this can no longer be an instance in Lean4
+-- Porting note: this can no longer be an instance in Lean4
 lemma mono_cokernel_desc_of_exact (h : Exact f g) : Mono (cokernel.desc f g h.w) :=
   suffices h : cokernel.desc f g h.w =
       (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (isColimitImage f g h)).hom ≫
@@ -173,14 +172,14 @@ lemma mono_cokernel_desc_of_exact (h : Exact f g) : Mono (cokernel.desc f g h.w)
     from h.symm ▸ mono_comp _ _
   (cancel_epi (cokernel.π f)).1 <| by simp
 
--- porting note: this can no longer be an instance in Lean4
+-- Porting note: this can no longer be an instance in Lean4
 /-- If `ex : Exact f g` and `epi g`, then `cokernel.desc _ _ ex.w` is an isomorphism. -/
 lemma isIso_cokernel_desc_of_exact_of_epi (ex : Exact f g) [Epi g] :
     IsIso (cokernel.desc f g ex.w) :=
   have := mono_cokernel_desc_of_exact _ _ ex
   isIso_of_mono_of_epi (Limits.cokernel.desc f g ex.w)
 
--- porting note: removed the simp attribute because the lemma may never apply automatically
+-- Porting note: removed the simp attribute because the lemma may never apply automatically
 @[reassoc (attr := nolint unusedHavesSuffices)]
 theorem cokernel.desc.inv [Epi g] (ex : Exact f g) :
     have := isIso_cokernel_desc_of_exact_of_epi _ _ ex
@@ -189,12 +188,12 @@ theorem cokernel.desc.inv [Epi g] (ex : Exact f g) :
   simp
 #align category_theory.abelian.cokernel.desc.inv CategoryTheory.Abelian.cokernel.desc.inv
 
--- porting note: this can no longer be an instance in Lean4
+-- Porting note: this can no longer be an instance in Lean4
 lemma isIso_kernel_lift_of_exact_of_mono (ex : Exact f g) [Mono f] : IsIso (kernel.lift g f ex.w) :=
   have := ex.epi_kernel_lift
   isIso_of_mono_of_epi (Limits.kernel.lift g f ex.w)
 
--- porting note: removed the simp attribute because the lemma may never apply automatically
+-- Porting note: removed the simp attribute because the lemma may never apply automatically
 @[reassoc (attr := nolint unusedHavesSuffices)]
 theorem kernel.lift.inv [Mono f] (ex : Exact f g) :
     have := isIso_kernel_lift_of_exact_of_mono _ _ ex
@@ -326,7 +325,6 @@ namespace Functor
 section
 
 variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
-
 variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 
 instance (priority := 100) reflectsExactSequencesOfPreservesZeroMorphismsOfFaithful [Faithful F] :
@@ -352,9 +350,7 @@ namespace Functor
 open Limits Abelian
 
 variable {A : Type u₁} {B : Type u₂} [Category.{v₁} A] [Category.{v₂} B]
-
 variable [Abelian A] [Abelian B]
-
 variable (L : A ⥤ B)
 
 section

@@ -3,9 +3,9 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Monad.Products
-import Mathlib.CategoryTheory.Over
 
 #align_import category_theory.adjunction.over from "leanprover-community/mathlib"@"cea27692b3fdeb328a2ddba6aabf181754543184"
 
@@ -49,7 +49,7 @@ def forgetAdjStar [HasBinaryProducts C] : Over.forget X ⊣ star X :=
 /-- Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
 -/
-instance [HasBinaryProducts C] : IsLeftAdjoint (Over.forget X) :=
-  ⟨_, forgetAdjStar X⟩
+instance [HasBinaryProducts C] : (Over.forget X).IsLeftAdjoint  :=
+  ⟨_, ⟨forgetAdjStar X⟩⟩
 
 end CategoryTheory

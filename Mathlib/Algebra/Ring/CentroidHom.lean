@@ -3,11 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Module.Hom
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.RingTheory.Subsemiring.Basic
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -23,7 +23,7 @@ $$
 In mathlib we call elements of the centroid "centroid homomorphisms" (`CentroidHom`) in keeping
 with `AddMonoidHom` etc.
 
-We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
@@ -61,8 +61,8 @@ attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 /-- `CentroidHomClass F α` states that `F` is a type of centroid homomorphisms.
 
 You should extend this class when you extend `CentroidHom`. -/
-class CentroidHomClass (F : Type*) (α : outParam <| Type*) [NonUnitalNonAssocSemiring α] extends
-  AddMonoidHomClass F α α where
+class CentroidHomClass (F α : Type*) [NonUnitalNonAssocSemiring α] [FunLike F α α] extends
+  AddMonoidHomClass F α α : Prop where
   /-- Commutativity of centroid homomorphims with left multiplication. -/
   map_mul_left (f : F) (a b : α) : f (a * b) = a * f b
   /-- Commutativity of centroid homomorphims with right multiplication. -/
@@ -72,7 +72,8 @@ class CentroidHomClass (F : Type*) (α : outParam <| Type*) [NonUnitalNonAssocSe
 
 export CentroidHomClass (map_mul_left map_mul_right)
 
-instance [NonUnitalNonAssocSemiring α] [CentroidHomClass F α] : CoeTC F (CentroidHom α) :=
+instance [NonUnitalNonAssocSemiring α] [FunLike F α α] [CentroidHomClass F α] :
+    CoeTC F (CentroidHom α) :=
   ⟨fun f ↦
     { (f : α →+ α) with
       toFun := f
@@ -81,29 +82,30 @@ instance [NonUnitalNonAssocSemiring α] [CentroidHomClass F α] : CoeTC F (Centr
 
 /-! ### Centroid homomorphisms -/
 
-
 namespace CentroidHom
 
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
 
-instance : CentroidHomClass (CentroidHom α) α where
+instance : FunLike (CentroidHom α) α α where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
     cases g
     congr with x
     exact congrFun h x
+
+instance : CentroidHomClass (CentroidHom α) α where
   map_zero f := f.map_zero'
   map_add f := f.map_add'
   map_mul_left f := f.map_mul_left'
   map_mul_right f := f.map_mul_right'
 
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.CoeFun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.CoeFun`
 directly. -/
-/- Porting note: Lean gave me `unknown constant 'FunLike.CoeFun'` and says `CoeFun` is a type
+/- Porting note: Lean gave me `unknown constant 'DFunLike.CoeFun'` and says `CoeFun` is a type
 mismatch, so I used `library_search`. -/
 instance : CoeFun (CentroidHom α) fun _ ↦ α → α :=
   inferInstanceAs (CoeFun (CentroidHom α) fun _ ↦ α → α)
@@ -115,7 +117,7 @@ theorem toFun_eq_coe {f : CentroidHom α} : f.toFun = f := rfl
 
 @[ext]
 theorem ext {f g : CentroidHom α} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align centroid_hom.ext CentroidHom.ext
 
 @[simp, norm_cast]
@@ -130,7 +132,7 @@ theorem toAddMonoidHom_eq_coe (f : CentroidHom α) : f.toAddMonoidHom = f :=
 
 theorem coe_toAddMonoidHom_injective : Injective ((↑) : CentroidHom α → α →+ α) :=
   fun _f _g h => ext fun a ↦
-    haveI := FunLike.congr_fun h a
+    haveI := DFunLike.congr_fun h a
     this
 #align centroid_hom.coe_to_add_monoid_hom_injective CentroidHom.coe_toAddMonoidHom_injective
 
@@ -158,7 +160,7 @@ theorem coe_copy (f : CentroidHom α) (f' : α → α) (h : f' = f) : ⇑(f.copy
 #align centroid_hom.coe_copy CentroidHom.coe_copy
 
 theorem copy_eq (f : CentroidHom α) (f' : α → α) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align centroid_hom.copy_eq CentroidHom.copy_eq
 
 variable (α)
@@ -231,7 +233,7 @@ theorem id_comp (f : CentroidHom α) : (CentroidHom.id α).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ f : CentroidHom α} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h ↦ ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun a ↦ congrFun (congrArg comp a) f⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun a ↦ congrFun (congrArg comp a) f⟩
 #align centroid_hom.cancel_right CentroidHom.cancel_right
 
 @[simp]
@@ -292,19 +294,18 @@ instance isScalarTowerRight : IsScalarTower M (CentroidHom α) (CentroidHom α) 
 
 instance hasNPowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
-    { (f.toEnd ^ n : AddMonoid.End α) with
+    { toAddMonoidHom := (f.toEnd ^ n : AddMonoid.End α)
       map_mul_left' := fun a b ↦ by
         induction' n with n ih
         · exact rfl
-        · simp
-          rw [pow_succ]
+        · rw [pow_succ']
           exact (congr_arg f.toEnd ih).trans (f.map_mul_left' _ _)
       map_mul_right' := fun a b ↦ by
         induction' n with n ih
         · exact rfl
-        · simp
-          rw [pow_succ]
-          exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _) }⟩
+        · rw [pow_succ']
+          exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _)
+        }⟩
 #align centroid_hom.has_npow_nat CentroidHom.hasNPowNat
 
 @[simp, norm_cast]
@@ -380,13 +381,13 @@ instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α
 
 -- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, norm_cast, nolint simpNF]
-theorem coe_nat_cast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
+theorem coe_natCast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
   rfl
-#align centroid_hom.coe_nat_cast CentroidHom.coe_nat_cast
+#align centroid_hom.coe_nat_cast CentroidHom.coe_natCast
 
-theorem nat_cast_apply (n : ℕ) (m : α) : (n : CentroidHom α) m = n • m :=
+theorem natCast_apply (n : ℕ) (m : α) : (n : CentroidHom α) m = n • m :=
   rfl
-#align centroid_hom.nat_cast_apply CentroidHom.nat_cast_apply
+#align centroid_hom.nat_cast_apply CentroidHom.natCast_apply
 
 @[simp]
 theorem toEnd_one : (1 : CentroidHom α).toEnd = 1 :=
@@ -404,14 +405,14 @@ theorem toEnd_pow (x : CentroidHom α) (n : ℕ) : (x ^ n).toEnd = x.toEnd ^ n :
 #align centroid_hom.to_End_pow CentroidHom.toEnd_pow
 
 @[simp, norm_cast]
-theorem toEnd_nat_cast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
+theorem toEnd_natCast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
   rfl
-#align centroid_hom.to_End_nat_cast CentroidHom.toEnd_nat_cast
+#align centroid_hom.to_End_nat_cast CentroidHom.toEnd_natCast
 
 -- cf `add_monoid.End.semiring`
 instance : Semiring (CentroidHom α) :=
-  toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul (swap toEnd_smul) toEnd_pow
-    toEnd_nat_cast
+  toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_smul toEnd_pow
+    toEnd_natCast
 
 variable (α) in
 /-- `CentroidHom.toEnd` as a `RingHom`. -/
@@ -468,7 +469,6 @@ Let `α` be an algebra over `R`, such that the canonical ring homomorphism of `R
 -/
 
 variable {R : Type*}
-
 variable [CommSemiring R]
 variable [Module R α] [SMulCommClass R α α] [IsScalarTower R α α]
 
@@ -514,18 +514,19 @@ def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α wh
     ext a
     exact (((Set.mem_center_iff _).mp z₁.prop).left_assoc z₂ a).symm
 
-lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α }) (a : α) :
+lemma centerToCentroid_apply (z : NonUnitalSubsemiring.center α) (a : α) :
     (centerToCentroid z) a = z * a := rfl
 
-lemma center_iff_op_centroid (a : α) :
-    a ∈ NonUnitalSubsemiring.center α ↔ L a = R a ∧ (L a) ∈ Set.range CentroidHom.toEnd := by
+lemma _root_.NonUnitalNonAssocSemiring.mem_center_iff (a : α) :
+    a ∈ NonUnitalSubsemiring.center α ↔ R a = L a ∧ (L a) ∈ RingHom.rangeS (toEndRingHom α) := by
   constructor
-  · exact fun ha ↦ ⟨AddMonoidHom.ext <| IsMulCentral.comm ha, ⟨centerToCentroid ⟨a, ha⟩, rfl⟩⟩
+  · exact fun ha ↦ ⟨AddMonoidHom.ext <| fun _ => (IsMulCentral.comm ha _).symm,
+      ⟨centerToCentroid ⟨a, ha⟩, rfl⟩⟩
   · rintro ⟨hc, ⟨T, hT⟩⟩
     have e1 (d : α) : T d = a * d := congr($hT d)
-    have e2 (d : α) : T d = d * a := congr($(hT.trans hc) d)
+    have e2 (d : α) : T d = d * a := congr($(hT.trans hc.symm) d)
     constructor
-    case comm => exact (congr($hc ·))
+    case comm => exact (congr($hc.symm ·))
     case left_assoc => simpa [e1] using (map_mul_right T · ·)
     case mid_assoc => exact fun b c ↦ by simpa [e1 c, e2 b] using
       (map_mul_right T b c).symm.trans <| map_mul_left T b c
@@ -533,12 +534,29 @@ lemma center_iff_op_centroid (a : α) :
 
 end NonUnitalNonAssocSemiring
 
+section NonUnitalNonAssocCommSemiring
+
+variable [NonUnitalNonAssocCommSemiring α]
+
+/-
+Left and right multiplication coincide as α is commutative
+-/
+local notation "L" => AddMonoid.End.mulLeft
+
+lemma _root_.NonUnitalNonAssocCommSemiring.mem_center_iff (a : α) :
+    a ∈ NonUnitalSubsemiring.center α ↔ ∀ b : α, Commute (L b) (L a) := by
+  rw [NonUnitalNonAssocSemiring.mem_center_iff, CentroidHom.centroid_eq_centralizer_mulLeftRight,
+    Subsemiring.mem_centralizer_iff, AddMonoid.End.mulRight_eq_mulLeft, Set.union_self]
+  aesop
+
+end NonUnitalNonAssocCommSemiring
+
 section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
-def centerIsoCentroid : NonUnitalSubsemiring.center α ≃+* CentroidHom α :=
+def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
     invFun := fun T ↦
       ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
@@ -578,13 +596,13 @@ instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α
 
 -- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, norm_cast, nolint simpNF]
-theorem coe_int_cast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
+theorem coe_intCast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
   rfl
-#align centroid_hom.coe_int_cast CentroidHom.coe_int_cast
+#align centroid_hom.coe_int_cast CentroidHom.coe_intCast
 
-theorem int_cast_apply (z : ℤ) (m : α) : (z : CentroidHom α) m = z • m :=
+theorem intCast_apply (z : ℤ) (m : α) : (z : CentroidHom α) m = z • m :=
   rfl
-#align centroid_hom.int_cast_apply CentroidHom.int_cast_apply
+#align centroid_hom.int_cast_apply CentroidHom.intCast_apply
 
 @[simp]
 theorem toEnd_neg (x : CentroidHom α) : (-x).toEnd = -x.toEnd :=
@@ -623,13 +641,13 @@ theorem sub_apply (f g : CentroidHom α) (a : α) : (f - g) a = f a - g a :=
 #align centroid_hom.sub_apply CentroidHom.sub_apply
 
 @[simp, norm_cast]
-theorem toEnd_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
+theorem toEnd_intCast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
-#align centroid_hom.to_End_int_cast CentroidHom.toEnd_int_cast
+#align centroid_hom.to_End_int_cast CentroidHom.toEnd_intCast
 
 instance instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
-    (swap toEnd_smul) (swap toEnd_smul) toEnd_pow toEnd_nat_cast toEnd_int_cast
+    toEnd_smul toEnd_smul toEnd_pow toEnd_natCast toEnd_intCast
 
 end NonUnitalNonAssocRing
 
@@ -640,8 +658,8 @@ variable [NonUnitalRing α]
 -- Porting note: Not sure why Lean didn't like `CentroidHom.Ring`
 -- See note [reducible non instances]
 /-- A prime associative ring has commutative centroid. -/
-@[reducible]
-def commRing (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
+abbrev commRing
+    (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
   { CentroidHom.instRing with
     mul_comm := fun f g ↦ by
       ext

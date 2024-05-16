@@ -29,9 +29,7 @@ variable {ι : Type*}
 section
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V] [HasZeroObject V]
-
 variable [HasEqualizers V] [HasImages V] [HasImageMaps V] [HasCokernels V]
-
 variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
 
 /-- A chain map is a quasi-isomorphism if it induces isomorphisms on homology.
@@ -205,7 +203,7 @@ end ToSingle₀
 end HomologicalComplex.Hom
 
 variable {A : Type*} [Category A] [Abelian A] {B : Type*} [Category B] [Abelian B] (F : A ⥤ B)
-  [Functor.Additive F] [PreservesFiniteLimits F] [PreservesFiniteColimits F] [Faithful F]
+  [Functor.Additive F] [PreservesFiniteLimits F] [PreservesFiniteColimits F] [F.Faithful]
 
 theorem CategoryTheory.Functor.quasiIso'_of_map_quasiIso' {C D : HomologicalComplex A c}
     (f : C ⟶ D) (hf : QuasiIso' ((F.mapHomologicalComplex _).map f)) : QuasiIso' f :=
@@ -440,7 +438,7 @@ instance quasiIsoAt_map_of_preservesHomology [hφ : QuasiIsoAt φ i] :
   exact ShortComplex.quasiIso_map_of_preservesLeftHomology F
     ((shortComplexFunctor C₁ c i).map φ)
 
-lemma quasiIsoAt_map_iff_of_preservesHomology [ReflectsIsomorphisms F] :
+lemma quasiIsoAt_map_iff_of_preservesHomology [F.ReflectsIsomorphisms] :
     QuasiIsoAt ((F.mapHomologicalComplex c).map φ) i ↔ QuasiIsoAt φ i := by
   simp only [quasiIsoAt_iff]
   exact ShortComplex.quasiIso_map_iff_of_preservesLeftHomology F
@@ -457,7 +455,7 @@ variable [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
 instance quasiIso_map_of_preservesHomology [hφ : QuasiIso φ] :
     QuasiIso ((F.mapHomologicalComplex c).map φ) where
 
-lemma quasiIso_map_iff_of_preservesHomology [ReflectsIsomorphisms F] :
+lemma quasiIso_map_iff_of_preservesHomology [F.ReflectsIsomorphisms] :
     QuasiIso ((F.mapHomologicalComplex c).map φ) ↔ QuasiIso φ := by
   simp only [quasiIso_iff, quasiIsoAt_map_iff_of_preservesHomology φ F]
 
@@ -468,13 +466,13 @@ end PreservesHomology
 variable (C c)
 
 /-- The morphism property on `HomologicalComplex C c` given by quasi-isomorphisms. -/
-def qis [CategoryWithHomology C] :
+def quasiIso [CategoryWithHomology C] :
     MorphismProperty (HomologicalComplex C c) := fun _ _ f => QuasiIso f
 
 variable {C c}
 
 @[simp]
-lemma qis_iff [CategoryWithHomology C] (f : K ⟶ L) : qis C c f ↔ QuasiIso f := by rfl
+lemma mem_quasiIso_iff [CategoryWithHomology C] (f : K ⟶ L) : quasiIso C c f ↔ QuasiIso f := by rfl
 
 end HomologicalComplex
 
@@ -497,8 +495,10 @@ instance : QuasiIso e.hom where
 
 instance : QuasiIso e.inv := (inferInstance : QuasiIso e.symm.hom)
 
-lemma homotopyEquivalences_subset_qis [CategoryWithHomology C] :
-    homotopyEquivalences C c ⊆ qis C c := by
+variable (C c)
+
+lemma homotopyEquivalences_le_quasiIso [CategoryWithHomology C] :
+    homotopyEquivalences C c ≤ quasiIso C c := by
   rintro K L _ ⟨e, rfl⟩
-  simp only [qis_iff]
+  simp only [HomologicalComplex.mem_quasiIso_iff]
   infer_instance

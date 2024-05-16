@@ -176,7 +176,7 @@ lemma Derives.append_left {v w : List (Symbol T g.NT)}
     g.Derives (p ++ v) (p ++ w) := by
   induction hvw with
   | refl => rfl
-  | tail _ last ih => exact ih.trans_produces $ last.append_left p
+  | tail _ last ih => exact ih.trans_produces <| last.append_left p
 
 /-- Add extra prefix to context-free deriving. -/
 lemma Derives.append_right {v w : List (Symbol T g.NT)}
@@ -184,6 +184,6 @@ lemma Derives.append_right {v w : List (Symbol T g.NT)}
     g.Derives (v ++ p) (w ++ p) := by
   induction hvw with
   | refl => rfl
-  | tail _ last ih => exact ih.trans_produces $ last.append_right p
+  | tail _ last ih => exact ih.trans_produces <| last.append_right p
 
 end ContextFreeGrammar

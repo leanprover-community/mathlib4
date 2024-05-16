@@ -3,7 +3,6 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Sigma.Basic
 import Mathlib.Order.RelClasses
 
 #align_import data.sigma.lex from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
@@ -85,7 +84,7 @@ theorem lex_swap : Lex (Function.swap r) s a b ↔ Lex r (fun i => Function.swap
 #align sigma.lex_swap Sigma.lex_swap
 
 instance [∀ i, IsRefl (α i) (s i)] : IsRefl _ (Lex r s) :=
-  ⟨fun ⟨_, _⟩ => Lex.right _ _ $ refl _⟩
+  ⟨fun ⟨_, _⟩ => Lex.right _ _ <| refl _⟩
 
 instance [IsIrrefl ι r] [∀ i, IsIrrefl (α i) (s i)] : IsIrrefl _ (Lex r s) :=
   ⟨by
@@ -117,7 +116,7 @@ instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s
     · exact (asymm hij hji).elim
     · exact (irrefl _ hij).elim
     · exact (irrefl _ hji).elim
-    · exact ext rfl (heq_of_eq $ antisymm hab hba)⟩
+    · exact ext rfl (heq_of_eq <| antisymm hab hba)⟩
 
 instance [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r s) :=
   ⟨by
@@ -137,8 +136,8 @@ instance [IsTrichotomous ι r] [∀ i, IsTrichotomous (α i) (s i)] : IsTrichoto
     · obtain hab | rfl | hba := trichotomous_of (s i) a b
       · exact Or.inl (Lex.right _ _ hab)
       · exact Or.inr (Or.inl rfl)
-      · exact Or.inr (Or.inr $ Lex.right _ _ hba)
-    · exact Or.inr (Or.inr $ Lex.left _ _ hji)⟩
+      · exact Or.inr (Or.inr <| Lex.right _ _ hba)
+    · exact Or.inr (Or.inr <| Lex.left _ _ hji)⟩
 
 end Sigma
 

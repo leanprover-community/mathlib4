@@ -3,11 +3,10 @@ Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.Subgroup.Basic
-import Mathlib.GroupTheory.Coset
-import Mathlib.GroupTheory.Subgroup.Pointwise
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Data.Set.Basic
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.Coset
 
 #align_import group_theory.double_coset from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -24,7 +23,7 @@ this is the usual left or right quotient of a group by a subgroup.
 * `rel`: The double coset relation defined by two subgroups `H K` of `G`.
 * `Doset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
--- porting note: removed import
+-- Porting note: removed import
 -- import Mathlib.Tactic.Group
 
 variable {G : Type*} [Group G] {α : Type*} [Mul α] (J : Subgroup G) (g : G)
@@ -178,7 +177,7 @@ theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
   constructor
   · rintro ⟨y, h_h⟩
     refine' ⟨x * (y⁻¹ * a⁻¹), h_h, y, y.2, _⟩
-    simp only [← mul_assoc, Subgroup.coe_mk, inv_mul_cancel_right, SubgroupClass.coe_inv]
+    simp only [← mul_assoc, Subgroup.coe_mk, inv_mul_cancel_right, InvMemClass.coe_inv]
   · rintro ⟨x, hx, y, hy, hxy⟩
     refine' ⟨⟨y, hy⟩, _⟩
     simp only [hxy, ← mul_assoc, hx, mul_inv_cancel_right, Subgroup.coe_mk]
@@ -191,7 +190,7 @@ theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
   constructor
   · rintro ⟨y, h_h⟩
     refine' ⟨y, y.2, a⁻¹ * y⁻¹ * x, h_h, _⟩
-    simp only [← mul_assoc, one_mul, mul_right_inv, mul_inv_cancel_right, SubgroupClass.coe_inv]
+    simp only [← mul_assoc, one_mul, mul_right_inv, mul_inv_cancel_right, InvMemClass.coe_inv]
   · rintro ⟨x, hx, y, hy, hxy⟩
     refine' ⟨⟨x, hx⟩, _⟩
     simp only [hxy, ← mul_assoc, hy, one_mul, mul_left_inv, Subgroup.coe_mk, inv_mul_cancel_right]

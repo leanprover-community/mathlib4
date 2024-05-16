@@ -23,7 +23,6 @@ namespace Valuation
 section Ring
 
 variable {R : Type u} {Γ₀ : Type v} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
-
 variable (v : Valuation R Γ₀)
 
 /-- The ring of integers under a given valuation is the subring of elements with valuation ≤ 1. -/
@@ -36,14 +35,14 @@ def integer : Subring R where
   neg_mem' {x} hx := by simp only [Set.mem_setOf_eq] at hx; simpa only [Set.mem_setOf_eq, map_neg]
 #align valuation.integer Valuation.integer
 
+lemma mem_integer_iff (r : R) : r ∈ v.integer ↔ v r ≤ 1 := by rfl
+
 end Ring
 
 section CommRing
 
 variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZero Γ₀]
-
 variable (v : Valuation R Γ₀)
-
 variable (O : Type w) [CommRing O] [Algebra O R]
 
 /-- Given a valuation v : R → Γ₀ and a ring homomorphism O →+* R, we say that O is the integers of v
@@ -66,16 +65,20 @@ theorem integer.integers : v.Integers v.integer :=
 
 namespace Integers
 
-variable {v O} [CommRing O] [Algebra O R] (hv : Integers v O)
+variable {v O} [CommRing O] [Algebra O R]
 
-
-theorem one_of_isUnit {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
+theorem one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) ≤ 1) :
+    v (algebraMap O R x) = 1 :=
   let ⟨u, hu⟩ := hx
-  le_antisymm (hv.2 _) <| by
+  le_antisymm (H _) <| by
     rw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
       (algebraMap O R).map_mul, v.map_mul]
-    exact mul_le_mul_left' (hv.2 (u⁻¹ : Units O)) _
-#align valuation.integers.one_of_is_unit Valuation.Integers.one_of_isUnit
+    exact mul_le_mul_left' (H (u⁻¹ : Units O)) _
+
+variable (hv : Integers v O)
+
+theorem one_of_isUnit {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
+  one_of_isUnit' hx hv.map_le_one
 
 theorem isUnit_of_one {x : O} (hx : IsUnit (algebraMap O R x)) (hvx : v (algebraMap O R x) = 1) :
     IsUnit x :=
@@ -103,7 +106,6 @@ end CommRing
 section Field
 
 variable {F : Type u} {Γ₀ : Type v} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
-
 variable {v : Valuation F Γ₀} {O : Type w} [CommRing O] [Algebra O F] (hv : Integers v O)
 
 namespace Integers
