@@ -11,7 +11,7 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Data.Int.Units
+import Mathlib.Algebra.Ring.Int
 
 #align_import data.list.big_operators.lemmas from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 

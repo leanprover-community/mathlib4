@@ -3,9 +3,7 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Defs
 import Mathlib.Order.Hom.Set
 
@@ -72,8 +70,7 @@ This file expands on the development in the core library.
 
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists Ring
+assert_not_exists Monoid
 
 universe u v
 
@@ -538,12 +535,6 @@ theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
 
 section Monoid
 
-instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
-  add := (· + ·)
-  add_assoc := by simp [ext_iff, add_def, Nat.add_assoc]
-  add_comm := by simp [ext_iff, add_def, Nat.add_comm]
-#align fin.add_comm_semigroup Fin.addCommSemigroup
-
 -- Porting note (#10618): removing `simp`, `simp` can prove it with AddCommMonoid instance
 protected theorem add_zero [NeZero n] (k : Fin n) : k + 0 = k := by
   simp only [add_def, val_zero', Nat.add_zero, mod_eq_of_lt (is_lt k)]
@@ -576,23 +567,10 @@ section from_ad_hoc
 
 end from_ad_hoc
 
-instance (n) : AddCommSemigroup (Fin n) where
-  add_assoc := by simp [ext_iff, add_def, Nat.add_assoc]
-  add_comm := by simp [ext_iff, add_def, add_comm]
-
-instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
-  zero_add := Fin.zero_add
-  add_zero := Fin.add_zero
-  nsmul := nsmulRec
-  __ := Fin.addCommSemigroup n
-#align fin.add_comm_monoid Fin.addCommMonoid
-
-instance instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
-  __ := inferInstanceAs (AddCommMonoid (Fin n))
+instance instNatCast [NeZero n] : NatCast (Fin n) where
   natCast n := Fin.ofNat'' n
-  natCast_zero := rfl
-  natCast_succ _ := ext (add_mod _ _ _)
-#align fin.add_monoid_with_one Fin.instAddMonoidWithOne
+
+lemma natCast_def [NeZero n] (a : ℕ) : (a : Fin n) = ⟨a % n, mod_lt _ n.pos_of_neZero⟩ := rfl
 
 end Monoid
 
@@ -724,7 +702,7 @@ end OfNatCoe
 
 @[simp]
 theorem one_eq_zero_iff [NeZero n] : (1 : Fin n) = 0 ↔ n = 1 := by
-  rw [← Nat.cast_one, natCast_eq_zero, Nat.dvd_one]
+  obtain _ | _ | n := n <;> simp [Fin.ext_iff]
 #align fin.one_eq_zero_iff Fin.one_eq_zero_iff
 
 @[simp]
@@ -1533,40 +1511,6 @@ open Nat Int
 instance neg (n : ℕ) : Neg (Fin n) :=
   ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
 
-/-- Abelian group structure on `Fin n`. -/
-instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
-  { Fin.addCommMonoid n, Fin.neg n with
-    add_left_neg := fun ⟨a, ha⟩ =>
-      Fin.ext <| (Nat.mod_add_mod _ _ _).trans <| by
-        rw [Fin.val_zero', Nat.sub_add_cancel, Nat.mod_self]
-        exact le_of_lt ha
-    sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ =>
-      Fin.ext <| show (a + (n - b)) % n = (a + (n - b) % n) % n by simp
-    sub := Fin.sub
-    zsmul := zsmulRec }
-
-/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
-instance instInvolutiveNeg (n : ℕ) : InvolutiveNeg (Fin n) where
-  neg := Neg.neg
-  neg_neg := Nat.casesOn n finZeroElim fun _i => neg_neg
-#align fin.involutive_neg Fin.instInvolutiveNeg
-
-/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
-instance instIsCancelAdd (n : ℕ) : IsCancelAdd (Fin n) where
-  add_left_cancel := Nat.casesOn n finZeroElim fun _i _ _ _ => add_left_cancel
-  add_right_cancel := Nat.casesOn n finZeroElim fun _i _ _ _ => add_right_cancel
-#align fin.is_cancel_add Fin.instIsCancelAdd
-
-/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
-instance instAddLeftCancelSemigroup (n : ℕ) : AddLeftCancelSemigroup (Fin n) :=
-  { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
-#align fin.add_left_cancel_semigroup Fin.instAddLeftCancelSemigroup
-
-/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
-instance instAddRightCancelSemigroup (n : ℕ) : AddRightCancelSemigroup (Fin n) :=
-  { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
-#align fin.add_right_cancel_semigroup Fin.instAddRightCancelSemigroup
-
 protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
   rfl
 #align fin.coe_neg Fin.coe_neg
@@ -1593,42 +1537,6 @@ theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   rw [Fin.coe_neg, Fin.val_one, Nat.add_one_sub_one, Nat.mod_eq_of_lt]
   constructor
 #align fin.coe_neg_one Fin.coe_neg_one
-
-theorem coe_sub_one {n} (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a - 1 := by
-  cases n
-  · simp
-  split_ifs with h
-  · simp [h]
-  rw [sub_eq_add_neg, val_add_eq_ite, coe_neg_one, if_pos, Nat.add_comm, Nat.add_sub_add_left]
-  conv_rhs => rw [Nat.add_comm]
-  rw [Nat.add_le_add_iff_left, Nat.one_le_iff_ne_zero]
-  rwa [Fin.ext_iff] at h
-#align fin.coe_sub_one Fin.coe_sub_one
-#align fin.coe_sub_iff_le Fin.coe_sub_iff_le
-#align fin.coe_sub_iff_lt Fin.coe_sub_iff_lt
-
-@[simp]
-theorem lt_sub_one_iff {n : ℕ} {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
-  rcases k with ⟨_ | k, hk⟩
-  · simp only [zero_eta, zero_sub, lt_iff_val_lt_val, val_zero, coe_neg_one, zero_lt_succ]
-  have : (k + 1 + (n + 1)) % (n + 2) = k % (n + 2) := by
-    rw [Nat.add_right_comm, Nat.add_assoc, Nat.add_assoc, add_mod_right]
-  simp [lt_iff_val_lt_val, ext_iff, Fin.coe_sub, succ_eq_add_one, this,
-    mod_eq_of_lt ((lt_succ_self _).trans hk)]
-#align fin.lt_sub_one_iff Fin.lt_sub_one_iff
-
-@[simp]
-theorem le_sub_one_iff {n : ℕ} {k : Fin (n + 1)} : k ≤ k - 1 ↔ k = 0 := by
-  cases n
-  · simp [fin_one_eq_zero k]
-  rw [← lt_sub_one_iff, le_iff_lt_or_eq, lt_sub_one_iff, or_iff_left_iff_imp, eq_comm,
-    sub_eq_iff_eq_add]
-  simp
-#align fin.le_sub_one_iff Fin.le_sub_one_iff
-
-theorem sub_one_lt_iff {n : ℕ} {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
-  not_iff_not.1 <| by simp only [not_lt, le_sub_one_iff, le_zero_iff]
-#align fin.sub_one_lt_iff Fin.sub_one_lt_iff
 
 theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
   ext <| by rw [coe_sub_iff_le.2 i.le_last, val_last, val_rev, Nat.succ_sub_succ_eq_sub]
@@ -1664,12 +1572,6 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
   · rw [Fin.le_iff_val_le_val, Fin.val_add_one]
     split_ifs <;> simp [Nat.succ_le_iff, hkb]
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
-
-@[simp]
-theorem neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
-
-theorem neg_natCast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
-  simp only [natCast_eq_last, neg_last]
 
 lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
     0 < a :=
