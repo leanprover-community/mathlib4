@@ -585,7 +585,7 @@ theorem not_correct : ¬Correct cs := fun h =>
 
 /-- **Dissection of Cubes**: A cube cannot be cubed. -/
 theorem cannot_cube_a_cube :
-    ∀ {n : ℕ}, n ≥ 3 →                         -- In ℝ^n for n ≥ 3
+    ∀ {n : ℕ}, 3 ≤ n →                         -- In ℝ^n for n ≥ 3
     ∀ {s : Set (Cube n)}, s.Finite →           -- given a finite collection of (hyper)cubes
     s.Nontrivial →                             -- containing at least two elements
     s.PairwiseDisjoint Cube.toSet →            -- which is pairwise disjoint

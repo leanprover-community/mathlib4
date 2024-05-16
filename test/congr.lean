@@ -67,7 +67,7 @@ theorem ex14 {α : Type} (f : Nat → Nat) (h : ∀ x, f x = 0) (z : α) (hz : H
 theorem ex15 (p q : Nat → Prop) :
     (∀ ε > 0, p ε) ↔ ∀ ε > 0, q ε := by
   congr! 2 with ε hε
-  guard_hyp hε : ε > 0
+  guard_hyp hε : 0 < ε
   guard_target = p ε ↔ q ε
   exact test_sorry
 

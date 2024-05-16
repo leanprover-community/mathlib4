@@ -882,11 +882,11 @@ theorem neg_of_mul_neg_right (h : a * b < 0) (ha : 0 ≤ a) : b < 0 :=
 #align neg_of_mul_neg_right neg_of_mul_neg_right
 
 theorem nonpos_of_mul_nonpos_left (h : a * b ≤ 0) (hb : 0 < b) : a ≤ 0 :=
-  le_of_not_gt fun ha : a > 0 => (mul_pos ha hb).not_le h
+  le_of_not_gt fun ha : 0 < a => (mul_pos ha hb).not_le h
 #align nonpos_of_mul_nonpos_left nonpos_of_mul_nonpos_left
 
 theorem nonpos_of_mul_nonpos_right (h : a * b ≤ 0) (ha : 0 < a) : b ≤ 0 :=
-  le_of_not_gt fun hb : b > 0 => (mul_pos ha hb).not_le h
+  le_of_not_gt fun hb : 0 < b => (mul_pos ha hb).not_le h
 #align nonpos_of_mul_nonpos_right nonpos_of_mul_nonpos_right
 
 @[simp]

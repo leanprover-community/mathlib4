@@ -664,10 +664,10 @@ theorem div_neg_of_pos_of_neg (ha : 0 < a) (hb : b < 0) : a / b < 0 :=
 
 theorem div_le_iff_of_neg (hc : c < 0) : b / c ≤ a ↔ a * c ≤ b :=
   ⟨fun h => div_mul_cancel₀ b (ne_of_lt hc) ▸ mul_le_mul_of_nonpos_right h hc.le, fun h =>
-    calc
-      a = a * c * (1 / c) := mul_mul_div a (ne_of_lt hc)
-      _ ≥ b * (1 / c) := mul_le_mul_of_nonpos_right h (one_div_neg.2 hc).le
-      _ = b / c := (div_eq_mul_one_div b c).symm
+    calc b / c
+      _ = b * (1 / c) := div_eq_mul_one_div _ _
+      _ ≤ a * c * (1 / c) := mul_le_mul_of_nonpos_right h (one_div_neg.2 hc).le
+      _ = a := (mul_mul_div a (ne_of_lt hc)).symm
       ⟩
 #align div_le_iff_of_neg div_le_iff_of_neg
 

@@ -35,12 +35,12 @@ open Finset multiplicity
 
 namespace Imo2019Q4
 
-theorem upper_bound {k n : ℕ} (hk : k > 0)
+theorem upper_bound {k n : ℕ} (hk : 0 < k)
     (h : (k ! : ℤ) = ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i)) : n < 6 := by
   have h2 : ∑ i in range n, i < k := by
     suffices multiplicity 2 (k ! : ℤ) = ↑(∑ i in range n, i : ℕ) by
       rw [← PartENat.coe_lt_coe, ← this]; change multiplicity ((2 : ℕ) : ℤ) _ < _
-      simp_rw [Int.natCast_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
+      simp_rw [Int.natCast_multiplicity, multiplicity_two_factorial_lt hk.gt.ne.symm]
     rw [h, multiplicity.Finset.prod Int.prime_two, Nat.cast_sum]
     apply sum_congr rfl; intro i hi
     rw [multiplicity_sub_of_gt, multiplicity_pow_self_of_prime Int.prime_two]
@@ -80,7 +80,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
 
 end Imo2019Q4
 
-theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
+theorem imo2019_q4 {k n : ℕ} (hk : 0 < k) (hn : 0 < n) :
     (k ! : ℤ) = ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ↔ (k, n) = (1, 1) ∨ (k, n) = (3, 2) := by
   -- The implication `←` holds.
   constructor

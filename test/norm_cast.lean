@@ -29,7 +29,10 @@ example : (an : ℤ) ≠ (bn : ℤ) ↔ an ≠ bn := by norm_cast
 
 -- zero and one cause special problems
 example : 0 < (bq : ℝ) ↔ 0 < bq := by norm_cast
+
+set_option linter.geOrGt false in
 example : az > (1 : ℕ) ↔ az > 1 := by norm_cast
+set_option linter.geOrGt false in
 example : az > (0 : ℕ) ↔ az > 0 := by norm_cast
 example : (an : ℤ) ≠ 0 ↔ an ≠ 0 := by norm_cast
 example : aq < (1 : ℕ) ↔ (aq : ℚ) < (1 : ℤ) := by norm_cast
@@ -70,7 +73,7 @@ example (h : (an : ℝ) = 0) : an = 0 := mod_cast h
 example (h : (an : ℝ) = 42) : an = 42 := mod_cast h
 example (h : (an + 42) ≠ 42) : (an : ℝ) + 42 ≠ 42 := mod_cast h
 
-example (n : ℤ) (h : n + 1 > 0) : ((n + 1 : ℤ) : ℚ) > 0 := mod_cast h
+example (n : ℤ) (h : 0 < n + 1) : 0 < ((n + 1 : ℤ) : ℚ) := mod_cast h
 
 -- testing the heuristic
 example (h : bn ≤ an) : an - bn = 1 ↔ (an - bn : ℤ) = 1 := by norm_cast

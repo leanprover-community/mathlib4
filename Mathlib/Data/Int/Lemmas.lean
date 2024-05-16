@@ -18,15 +18,14 @@ This file contains lemmas about integers, which require further imports than
 
 -/
 
-
 open Nat
 
 namespace Int
 
 theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
-  by_cases h : m ≥ n
-  · exact le_of_eq (Int.ofNat_sub h).symm
-  · simp [le_of_not_ge h, ofNat_le]
+  by_cases h : m ≤ n
+  · simp [h, ofNat_lt]
+  · exact le_of_eq (Int.ofNat_sub (Nat.le_of_not_ge h)).symm
 #align int.le_coe_nat_sub Int.le_natCast_sub
 
 /-! ### `succ` and `pred` -/

@@ -14,7 +14,7 @@ set_option autoImplicit true
 open Finset Function Nat NNReal ENNReal
 open scoped BigOperators
 
-variable {ι α β : Type _}
+variable {ι α β : Type*}
 
 /- ## Numeric goals -/
 
@@ -48,6 +48,9 @@ example (ha : a = 0) : 0 ≤ a := by positivity
 end
 
 /- ### Reversing hypotheses -/
+section reversing
+
+set_option linter.geOrGt false
 
 example {a : ℤ} (ha : a > 0) : 0 < a := by positivity
 example {a : ℤ} (ha : a > 0) : 0 ≤ a := by positivity
@@ -62,6 +65,8 @@ example {a : ℤ} (ha : a ≠ 0) : 0 ≠ a := by positivity
 example {a : ℤ} (ha : a = 0) : a ≥ 0 := by positivity
 example {a : ℤ} (ha : 0 = a) : 0 ≤ a := by positivity
 example {a : ℤ} (ha : 0 = a) : a ≥ 0 := by positivity
+
+end reversing
 
 /- ### Calling `norm_num` -/
 
@@ -236,8 +241,10 @@ example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity
 
 example {a : ℤ} (ha : 3 < a) : 0 < a ^ 2 + a := by positivity
 
+set_option linter.geOrGt false in
 example {a b : ℤ} (ha : 3 < a) (hb : b ≥ 4) : 0 ≤ 3 * a ^ 2 * b + b * 7 + 14 := by positivity
 
+set_option linter.geOrGt false in
 example {a b : ℤ} (ha : 3 < a) (hb : b ≥ 4) : 0 < 3 * a ^ 2 * b + b * 7 + 14 := by positivity
 
 example {a : ℤ} : 0 ≤ |a| := by positivity
@@ -420,6 +427,7 @@ example : (0 : ℝ) < ↑(3 : ℝ≥0) := by positivity
 example (x : ℝ≥0) : (0:ℝ) ≤ ↑x := by positivity
 
 /- ## Tests that the tactic is agnostic on reversed inequalities -/
+set_option linter.geOrGt false
 
 example {a : ℤ} (ha : a > 0) : 0 ≤ a := by positivity
 

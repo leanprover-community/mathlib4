@@ -290,14 +290,14 @@ theorem rotateR_nil (y : α) (r : Ordnode α) : rotateR nil y r = node' nil y r 
 not too far from balanced. -/
 def balanceL' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
   if size l + size r ≤ 1 then node' l x r
-  else if size l > delta * size r then rotateR l x r else node' l x r
+  else if delta * size r < size l then rotateR l x r else node' l x r
 #align ordnode.balance_l' Ordnode.balanceL'
 
 /-- A right balance operation. This will rebalance a concatenation, assuming the original nodes are
 not too far from balanced. -/
 def balanceR' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
   if size l + size r ≤ 1 then node' l x r
-  else if size r > delta * size l then rotateL l x r else node' l x r
+  else if delta * size l < size r then rotateL l x r else node' l x r
 #align ordnode.balance_r' Ordnode.balanceR'
 
 /-- The full balance operation. This is the same as `balance`, but with less manual inlining.
@@ -305,8 +305,8 @@ It is somewhat easier to work with this version in proofs. -/
 def balance' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
   if size l + size r ≤ 1 then node' l x r
   else
-    if size r > delta * size l then rotateL l x r
-    else if size l > delta * size r then rotateR l x r else node' l x r
+    if delta * size l < size r then rotateL l x r
+    else if delta * size r < size l then rotateR l x r else node' l x r
 #align ordnode.balance' Ordnode.balance'
 
 theorem dual_node' (l : Ordnode α) (x : α) (r : Ordnode α) :
@@ -771,7 +771,7 @@ theorem balanceL_eq_balance {l x r} (sl : Sized l) (sr : Sized r) (H1 : size l =
       cases sr.2.1.size_eq_zero.1 this.1
       cases sr.2.2.size_eq_zero.1 this.2
       rw [sr.eq_node']; rfl
-    · replace H2 : ¬rs > delta * ls := not_lt_of_le (H2 sl.pos sr.pos)
+    · replace H2 : ¬(delta * ls < rs) := not_lt_of_le (H2 sl.pos sr.pos)
       simp [balanceL, balance, H2]; split_ifs <;> simp [add_comm]
 #align ordnode.balance_l_eq_balance Ordnode.balanceL_eq_balance
 
@@ -1246,13 +1246,13 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
     intro l0; rw [l0] at H3
     exact
       (or_iff_right_of_imp fun h => (mul_le_mul_left (by decide)).1 (le_trans h (by decide))).1 H3
-  have H3p : size l > 0 → 2 * (size rl + size rr) ≤ 9 * size l + 3 := fun l0 : 1 ≤ size l =>
+  have H3p : 0 < size l → 2 * (size rl + size rr) ≤ 9 * size l + 3 := fun l0 : 1 ≤ size l =>
     (or_iff_left_of_imp <| by omega).1 H3
   have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by omega
-  have hlp : size l > 0 → ¬size rl + size rr ≤ 1 := fun l0 hb =>
+  have hlp : 0 < size l → ¬size rl + size rr ≤ 1 := fun l0 hb =>
     absurd (le_trans (le_trans (Nat.mul_le_mul_left _ l0) H2) hb) (by decide)
   rw [Ordnode.rotateL_node]; split_ifs with h
-  · have rr0 : size rr > 0 :=
+  · have rr0 : 0 < size rr :=
       (mul_lt_mul_left (by decide)).1 (lt_of_le_of_lt (Nat.zero_le _) h : ratio * 0 < _)
     suffices BalancedSz (size l) (size rl) ∧ BalancedSz (size l + size rl + 1) (size rr) by
       exact hl.node3L hr.left hr.right this.1 this.2

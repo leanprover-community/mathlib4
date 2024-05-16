@@ -7,6 +7,8 @@ Authors: Scott Morrison
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Set
 
+set_option linter.geOrGt false
+
 example (n : ℕ) : True := by
   fail_if_success interval_cases n
   trivial
@@ -159,7 +161,7 @@ example {x : ℕ} (hx2 : x < 2) (h : False) : False := by
 In Lean 3 this one didn't work! It reported:
   `deep recursion was detected at 'expression equality test'`
 -/
-example (n : ℕ) (w₁ : n > 1000000) (w₁ : n < 1000002) : n < 2000000 := by
+example (n : ℕ) (w₁ : 1000000 < n) (w₁ : n < 1000002) : n < 2000000 := by
   interval_cases n
   norm_num
 

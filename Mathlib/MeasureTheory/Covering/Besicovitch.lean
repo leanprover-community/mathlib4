@@ -1089,7 +1089,7 @@ theorem tendsto_filterAt (μ : Measure α) [SigmaFinite μ] (x : α) :
   intro s hs
   simp only [mem_map]
   obtain ⟨ε, εpos, hε⟩ :
-    ∃ (ε : ℝ), ε > 0 ∧
+    ∃ (ε : ℝ), 0 < ε ∧
       ∀ a : Set α, a ∈ (Besicovitch.vitaliFamily μ).setsAt x → a ⊆ closedBall x ε → a ∈ s :=
     (VitaliFamily.mem_filterAt_iff _).1 hs
   have : Ioc (0 : ℝ) ε ∈ 𝓝[>] (0 : ℝ) := Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, εpos⟩

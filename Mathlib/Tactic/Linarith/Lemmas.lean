@@ -40,12 +40,12 @@ theorem lt_of_lt_of_eq {α} [OrderedSemiring α] {a b : α} (ha : a < 0) (hb : b
   simp [*]
 
 theorem mul_neg {α} [StrictOrderedRing α] {a b : α} (ha : a < 0) (hb : 0 < b) : b * a < 0 :=
-  have : (-b)*a > 0 := mul_pos_of_neg_of_neg (neg_neg_of_pos hb) ha
+  have : 0 < (-b)*a := mul_pos_of_neg_of_neg (neg_neg_of_pos hb) ha
   neg_of_neg_pos (by simpa)
 
-theorem mul_nonpos {α} [OrderedRing α] {a b : α} (ha : a ≤ 0) (hb : 0 < b) : b * a ≤ 0 :=
-  have : (-b)*a ≥ 0 := mul_nonneg_of_nonpos_of_nonpos (le_of_lt (neg_neg_of_pos hb)) ha
-  by simpa
+theorem mul_nonpos {α} [OrderedRing α] {a b : α} (ha : a ≤ 0) (hb : 0 < b) : b * a ≤ 0 := by
+  have : 0 ≤ (-b) * a := mul_nonneg_of_nonpos_of_nonpos (le_of_lt (neg_neg_of_pos hb)) ha
+  simpa only [neg_mul, Left.nonneg_neg_iff]
 
 -- used alongside `mul_neg` and `mul_nonpos`, so has the same argument pattern for uniformity
 @[nolint unusedArguments]
@@ -75,6 +75,8 @@ section
 open Function
 -- These lemmas can be removed when their originals are ported.
 
+set_option linter.geOrGt false
 theorem lt_zero_of_zero_gt [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
 
+set_option linter.geOrGt false
 theorem le_zero_of_zero_ge [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h

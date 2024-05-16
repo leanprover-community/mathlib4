@@ -8,7 +8,10 @@ import Mathlib.Data.Rat.Order
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
 set_option autoImplicit true
+set_option linter.setOption false
 set_option pp.mvars false
+
+set_option linter.geOrGt false
 
 example [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
   linarith
@@ -69,18 +72,16 @@ example (A B : Rat) (h : 0 < A * B) : 0 < A*B/8 := by
 example (A B : Rat) (h : 0 < A * B) : 0 < A/8*B := by
   linarith
 
-example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε :=
+example (ε : Rat) (h1 : 0 < ε) : ε / 2 + ε / 3 + ε / 7 < ε :=
  by linarith
 
 example (x y z : Rat) (h1 : 2*x < 3*y) (h2 : -4*x + z/2 < 0)
-        (h3 : 12*y - z < 0)  : False :=
-by linarith
+    (h3 : 12*y - z < 0)  : False := by
+  linarith
 
-example (ε : Rat) (h1 : ε > 0) : ε / 2 < ε :=
-by linarith
+example (ε : Rat) (h1 : 0 < ε) : ε / 2 < ε := by linarith
 
-example (ε : Rat) (h1 : ε > 0) : ε / 3 + ε / 3 + ε / 3 = ε :=
-by linarith
+example (ε : Rat) (h1 : 0 < ε) : ε / 3 + ε / 3 + ε / 3 = ε := by linarith
 
 -- Make sure special case for division by 1 is handled:
 example (x : Rat) (h : 0 < x) : 0 < x/1 := by linarith
@@ -108,7 +109,7 @@ example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
 -- example (a b c : ℚ) (x y : ℤ) (h1 : x ≤ 3*y) (h2 : b + 2 > 3 + b) : false :=
 -- by linarith (config := {restrict_type := ℚ})
 
-example (g v V c h : Rat) (h1 : h = 0) (h2 : v = V) (h3 : V > 0) (h4 : g > 0)
+example (g v V c h : Rat) (h1 : h = 0) (h2 : v = V) (h3 : 0 < V) (h4 : 0 < g)
     (h5 : 0 ≤ c) (h6 : c < 1) : v ≤ V := by
   linarith
 
@@ -119,10 +120,10 @@ example (x y z : ℤ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0) (h3 : x*y < 5) (h3 
     False := by
   linarith
 
-example (a b c : Rat) (h1 : a > 0) (h2 : b > 5) (h3 : c < -10) (h4 : a + b - c < 3) : False := by
+example (a b c : Rat) (h1 : 0 < a) (h2 : b > 5) (h3 : c < -10) (h4 : a + b - c < 3) : False := by
   linarith
 
-example (a b c : Rat) (h2 : b > 0) (h3 : ¬ b ≥ 0) : False := by
+example (a b c : Rat) (h2 : 0 < b) (h3 : ¬ b ≥ 0) : False := by
   linarith
 
 example (x y z : Rat) (hx : x ≤ 3*y) (h2 : y ≤ 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
@@ -167,10 +168,10 @@ example (w x y z : ℤ) (h1 : 4*x + (-3)*y + 6*w ≤ 0) (h2 : (-1)*x < 0) (h3 : 
 
 section term_arguments
 
-example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
+example (x : Rat) (hx : 0 < x) (h : x.num < 0) : False := by
   linarith [Rat.num_pos.mpr hx, h]
 
-example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
+example (x : Rat) (hx : 0 < x) (h : x.num < 0) : False := by
   fail_if_success
     linarith
   fail_if_success
@@ -185,11 +186,11 @@ example (i n : ℕ) (h : (2:ℤ) ^ i ≤ 2 ^ n) : (0:ℤ) ≤ 2 ^ n - 2 ^ i := b
   linarith
 
 -- Check we use `exfalso` on non-comparison goals.
-example (a b c : Rat) (h2 : b > 0) (h3 : b < 0) : Nat.prime 10 := by
+example (a b c : Rat) (h2 : 0 < b) (h3 : b < 0) : Nat.prime 10 := by
   linarith
 
-example (a b c : Rat) (h2 : (2 : Rat) > 3)  : a + b - c ≥ 3 :=
-by linarith (config := {exfalso := false})
+example (a b c : Rat) (h2 : 3 < (2 : Rat))  : a + b - c ≥ 3 := by
+  linarith (config := {exfalso := false})
 
 -- Verify that we split conjunctions in hypotheses.
 example (x y : Rat)
@@ -262,142 +263,140 @@ example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1)*n ≥ 0) (h2 : d = 2/3*(((q 
     ((q : Rat) - 1)*n - d = 1/3 * (((q : Rat) - 1)*n) := by
   linarith
 
-example (x y z : ℚ) (hx : x < 5) (hx2 : x > 5) (hy : y < 5000000000) (hz : z > 34*y) : false :=
-by linarith only [hx, hx2]
+example (x y z : ℚ) (hx : x < 5) (hx2 : x > 5) (hy : y < 5000000000) (hz : z > 34*y) : false := by
+  linarith only [hx, hx2]
 
-example (x y z : ℚ) (hx : x < 5) (hy : y < 5000000000) (hz : z > 34*y) : x ≤ 5 :=
-by linarith only [hx]
+example (x y z : ℚ) (hx : x < 5) (hy : y < 5000000000) (hz : z > 34*y) : x ≤ 5 := by
+  linarith only [hx]
 
 example (u v x y A B : ℚ)
-(a : 0 < A)
-(a_1 : 0 <= 1 - A)
-(a_2 : 0 <= B - 1)
-(a_3 : 0 <= B - x)
-(a_4 : 0 <= B - y)
-(a_5 : 0 <= u)
-(a_6 : 0 <= v)
-(a_7 : 0 < A - u)
-(a_8 : 0 < A - v) :
- u * y + v * x + u * v < 3 * A * B :=
- by nlinarith
+    (a : 0 < A)
+    (a_1 : 0 <= 1 - A)
+    (a_2 : 0 <= B - 1)
+    (a_3 : 0 <= B - x)
+    (a_4 : 0 <= B - y)
+    (a_5 : 0 <= u)
+    (a_6 : 0 <= v)
+    (a_7 : 0 < A - u)
+    (a_8 : 0 < A - v) :
+    u * y + v * x + u * v < 3 * A * B := by
+  nlinarith
 
 example (u v x y A B : ℚ) : (0 < A) → (A ≤ 1) → (1 ≤ B)
-→ (x ≤ B) → (y ≤ B)
-→ (0 ≤ u ) → (0 ≤ v )
-→ (u < A) → (v < A)
-→ (u * y + v * x + u * v < 3 * A * B) := by
+    → (x ≤ B) → (y ≤ B)
+    → (0 ≤ u ) → (0 ≤ v )
+    → (u < A) → (v < A)
+    → (u * y + v * x + u * v < 3 * A * B) := by
   intros
   nlinarith
 
 example (u v x y A B : Rat)
-(a_7 : 0 < A - u)
-(a_8 : 0 < A - v) :
-(0 <= A * (1 - A))
--> (0 <= A * (B - 1))
--> (0 < A * (A - u))
--> (0 <= (B - 1) * (A - u))
--> (0 <= (B - 1) * (A - v))
--> (0 <= (B - x) * v)
--> (0 <= (B - y) * u)
--> (0 <= u * (A - v))
-->
- u * y + v * x + u * v < 3 * A * B := by
+    (a_7 : 0 < A - u)
+    (a_8 : 0 < A - v) :
+    (0 <= A * (1 - A))
+    -> (0 <= A * (B - 1))
+    -> (0 < A * (A - u))
+    -> (0 <= (B - 1) * (A - u))
+    -> (0 <= (B - 1) * (A - v))
+    -> (0 <= (B - x) * v)
+    -> (0 <= (B - y) * u)
+    -> (0 <= u * (A - v))
+    -> u * y + v * x + u * v < 3 * A * B := by
   intros
   linarith
 
 example (u v x y A B : Rat)
-(a : 0 < A)
-(a_1 : 0 <= 1 - A)
-(a_2 : 0 <= B - 1)
-(a_3 : 0 <= B - x)
-(a_4 : 0 <= B - y)
-(a_5 : 0 <= u)
-(a_6 : 0 <= v)
-(a_7 : 0 < A - u)
-(a_8 : 0 < A - v) :
- (0 < A * A)
--> (0 <= A * (1 - A))
--> (0 <= A * (B - 1))
--> (0 <= A * (B - x))
--> (0 <= A * (B - y))
--> (0 <= A * u)
--> (0 <= A * v)
--> (0 < A * (A - u))
--> (0 < A * (A - v))
--> (0 <= (1 - A) * A)
--> (0 <= (1 - A) * (1 - A))
--> (0 <= (1 - A) * (B - 1))
--> (0 <= (1 - A) * (B - x))
--> (0 <= (1 - A) * (B - y))
--> (0 <= (1 - A) * u)
--> (0 <= (1 - A) * v)
--> (0 <= (1 - A) * (A - u))
--> (0 <= (1 - A) * (A - v))
--> (0 <= (B - 1) * A)
--> (0 <= (B - 1) * (1 - A))
--> (0 <= (B - 1) * (B - 1))
--> (0 <= (B - 1) * (B - x))
--> (0 <= (B - 1) * (B - y))
--> (0 <= (B - 1) * u)
--> (0 <= (B - 1) * v)
--> (0 <= (B - 1) * (A - u))
--> (0 <= (B - 1) * (A - v))
--> (0 <= (B - x) * A)
--> (0 <= (B - x) * (1 - A))
--> (0 <= (B - x) * (B - 1))
--> (0 <= (B - x) * (B - x))
--> (0 <= (B - x) * (B - y))
--> (0 <= (B - x) * u)
--> (0 <= (B - x) * v)
--> (0 <= (B - x) * (A - u))
--> (0 <= (B - x) * (A - v))
--> (0 <= (B - y) * A)
--> (0 <= (B - y) * (1 - A))
--> (0 <= (B - y) * (B - 1))
--> (0 <= (B - y) * (B - x))
--> (0 <= (B - y) * (B - y))
--> (0 <= (B - y) * u)
--> (0 <= (B - y) * v)
--> (0 <= (B - y) * (A - u))
--> (0 <= (B - y) * (A - v))
--> (0 <= u * A)
--> (0 <= u * (1 - A))
--> (0 <= u * (B - 1))
--> (0 <= u * (B - x))
--> (0 <= u * (B - y))
--> (0 <= u * u)
--> (0 <= u * v)
--> (0 <= u * (A - u))
--> (0 <= u * (A - v))
--> (0 <= v * A)
--> (0 <= v * (1 - A))
--> (0 <= v * (B - 1))
--> (0 <= v * (B - x))
--> (0 <= v * (B - y))
--> (0 <= v * u)
--> (0 <= v * v)
--> (0 <= v * (A - u))
--> (0 <= v * (A - v))
--> (0 < (A - u) * A)
--> (0 <= (A - u) * (1 - A))
--> (0 <= (A - u) * (B - 1))
--> (0 <= (A - u) * (B - x))
--> (0 <= (A - u) * (B - y))
--> (0 <= (A - u) * u)
--> (0 <= (A - u) * v)
--> (0 < (A - u) * (A - u))
--> (0 < (A - u) * (A - v))
--> (0 < (A - v) * A)
--> (0 <= (A - v) * (1 - A))
--> (0 <= (A - v) * (B - 1))
--> (0 <= (A - v) * (B - x))
--> (0 <= (A - v) * (B - y))
--> (0 <= (A - v) * u)
--> (0 <= (A - v) * v)
--> (0 < (A - v) * (A - u))
--> (0 < (A - v) * (A - v))
-->
- u * y + v * x + u * v < 3 * A * B := by
+    (a : 0 < A)
+    (a_1 : 0 <= 1 - A)
+    (a_2 : 0 <= B - 1)
+    (a_3 : 0 <= B - x)
+    (a_4 : 0 <= B - y)
+    (a_5 : 0 <= u)
+    (a_6 : 0 <= v)
+    (a_7 : 0 < A - u)
+    (a_8 : 0 < A - v) :
+    (0 < A * A)
+    -> (0 <= A * (1 - A))
+    -> (0 <= A * (B - 1))
+    -> (0 <= A * (B - x))
+    -> (0 <= A * (B - y))
+    -> (0 <= A * u)
+    -> (0 <= A * v)
+    -> (0 < A * (A - u))
+    -> (0 < A * (A - v))
+    -> (0 <= (1 - A) * A)
+    -> (0 <= (1 - A) * (1 - A))
+    -> (0 <= (1 - A) * (B - 1))
+    -> (0 <= (1 - A) * (B - x))
+    -> (0 <= (1 - A) * (B - y))
+    -> (0 <= (1 - A) * u)
+    -> (0 <= (1 - A) * v)
+    -> (0 <= (1 - A) * (A - u))
+    -> (0 <= (1 - A) * (A - v))
+    -> (0 <= (B - 1) * A)
+    -> (0 <= (B - 1) * (1 - A))
+    -> (0 <= (B - 1) * (B - 1))
+    -> (0 <= (B - 1) * (B - x))
+    -> (0 <= (B - 1) * (B - y))
+    -> (0 <= (B - 1) * u)
+    -> (0 <= (B - 1) * v)
+    -> (0 <= (B - 1) * (A - u))
+    -> (0 <= (B - 1) * (A - v))
+    -> (0 <= (B - x) * A)
+    -> (0 <= (B - x) * (1 - A))
+    -> (0 <= (B - x) * (B - 1))
+    -> (0 <= (B - x) * (B - x))
+    -> (0 <= (B - x) * (B - y))
+    -> (0 <= (B - x) * u)
+    -> (0 <= (B - x) * v)
+    -> (0 <= (B - x) * (A - u))
+    -> (0 <= (B - x) * (A - v))
+    -> (0 <= (B - y) * A)
+    -> (0 <= (B - y) * (1 - A))
+    -> (0 <= (B - y) * (B - 1))
+    -> (0 <= (B - y) * (B - x))
+    -> (0 <= (B - y) * (B - y))
+    -> (0 <= (B - y) * u)
+    -> (0 <= (B - y) * v)
+    -> (0 <= (B - y) * (A - u))
+    -> (0 <= (B - y) * (A - v))
+    -> (0 <= u * A)
+    -> (0 <= u * (1 - A))
+    -> (0 <= u * (B - 1))
+    -> (0 <= u * (B - x))
+    -> (0 <= u * (B - y))
+    -> (0 <= u * u)
+    -> (0 <= u * v)
+    -> (0 <= u * (A - u))
+    -> (0 <= u * (A - v))
+    -> (0 <= v * A)
+    -> (0 <= v * (1 - A))
+    -> (0 <= v * (B - 1))
+    -> (0 <= v * (B - x))
+    -> (0 <= v * (B - y))
+    -> (0 <= v * u)
+    -> (0 <= v * v)
+    -> (0 <= v * (A - u))
+    -> (0 <= v * (A - v))
+    -> (0 < (A - u) * A)
+    -> (0 <= (A - u) * (1 - A))
+    -> (0 <= (A - u) * (B - 1))
+    -> (0 <= (A - u) * (B - x))
+    -> (0 <= (A - u) * (B - y))
+    -> (0 <= (A - u) * u)
+    -> (0 <= (A - u) * v)
+    -> (0 < (A - u) * (A - u))
+    -> (0 < (A - u) * (A - v))
+    -> (0 < (A - v) * A)
+    -> (0 <= (A - v) * (1 - A))
+    -> (0 <= (A - v) * (B - 1))
+    -> (0 <= (A - v) * (B - x))
+    -> (0 <= (A - v) * (B - y))
+    -> (0 <= (A - v) * u)
+    -> (0 <= (A - v) * v)
+    -> (0 < (A - v) * (A - u))
+    -> (0 < (A - v) * (A - v))
+    -> u * y + v * x + u * v < 3 * A * B := by
   intros
   linarith
 
@@ -436,15 +435,15 @@ example (f : ℤ → E) (h : 0 = f 0) : 1 ≤ 2 := by nlinarith
 example (a : E) (h : a = a) : 1 ≤ 2 := by nlinarith
 
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
-  p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) :=
-by nlinarith
+    p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) := by
+  nlinarith
 
 -- note: much faster than the simplex algorithm (the default oracle for `linarith`)
 -- TODO: make the simplex algorithm able to work with sparse matrices. This should speed up
 -- `nlinarith` because it passes large and sparse matrices to the oracle.
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
-  p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) :=
-by nlinarith (config := { oracle := some .fourierMotzkin })
+    p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) :=  by
+  nlinarith (config := { oracle := some .fourierMotzkin })
 
 -- Tests involving a norm, including that squares in a type where `sq_nonneg` does not apply
 -- do not cause an exception
@@ -452,14 +451,14 @@ variable {R : Type _} [Ring R] (abs : R → ℚ)
 
 axiom abs_nonneg' : ∀ r, 0 ≤ abs r
 
-example (t : R) (a b : ℚ) (h : a ≤ b) : abs (t^2) * a ≤ abs (t^2) * b :=
-by nlinarith [abs_nonneg' abs (t^2)]
+example (t : R) (a b : ℚ) (h : a ≤ b) : abs (t^2) * a ≤ abs (t^2) * b := by
+  nlinarith [abs_nonneg' abs (t^2)]
 
-example (t : R) (a b : ℚ) (h : a ≤ b) : a ≤ abs (t^2) + b :=
-by linarith [abs_nonneg' abs (t^2)]
+example (t : R) (a b : ℚ) (h : a ≤ b) : a ≤ abs (t^2) + b := by
+  linarith [abs_nonneg' abs (t^2)]
 
-example (t : R) (a b : ℚ) (h : a ≤ b) : abs t * a ≤ abs t * b :=
-by nlinarith [abs_nonneg' abs t]
+example (t : R) (a b : ℚ) (h : a ≤ b) : abs t * a ≤ abs t * b := by
+  nlinarith [abs_nonneg' abs t]
 
 axiom T : Type
 

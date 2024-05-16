@@ -107,7 +107,7 @@ def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
       have ea' : Q(ℕ) := mkRawNatLit a.natAbs
       have eb' : Q(ℕ) := mkRawNatLit b.natAbs
       if d = 1 then
-        if a ≥ 0 then
+        if 0 ≤ a then
           have pt : Q($ex * $ea' = $ey * $eb' + 1) := (q(Eq.refl ($ex * $ea')) : Expr)
           ⟨mkRawNatLit 1, q(nat_gcd_helper_2' $ex $ey $ea' $eb' $pt)⟩
         else
@@ -117,7 +117,7 @@ def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
         have ed : Q(ℕ) := mkRawNatLit d
         have pu : Q(Nat.mod $ex $ed = 0) := (q(Eq.refl (nat_lit 0)) : Expr)
         have pv : Q(Nat.mod $ey $ed = 0) := (q(Eq.refl (nat_lit 0)) : Expr)
-        if a ≥ 0 then
+        if 0 ≤ a then
           have pt : Q($ex * $ea' = $ey * $eb' + $ed) := (q(Eq.refl ($ex * $ea')) : Expr)
           ⟨ed, q(nat_gcd_helper_2 $ed $ex $ey $ea' $eb' $pu $pv $pt)⟩
         else

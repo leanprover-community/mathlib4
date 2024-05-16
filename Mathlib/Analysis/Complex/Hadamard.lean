@@ -95,11 +95,11 @@ lemma sSupNormIm_nonneg (x : ℝ) : 0 ≤ sSupNormIm f x := by
 
 /-- `sSup` of `norm` translated by `ε > 0` is positive applied to the image of `f` on the
 vertical line `re z = x` -/
-lemma sSupNormIm_eps_pos {ε : ℝ} (hε : ε > 0) (x : ℝ) : 0 < ε + sSupNormIm f x := by
+lemma sSupNormIm_eps_pos {ε : ℝ} (hε : 0 < ε) (x : ℝ) : 0 < ε + sSupNormIm f x := by
    linarith [sSupNormIm_nonneg f x]
 
 /-- Useful rewrite for the absolute value of `invInterpStrip`-/
-lemma abs_invInterpStrip {ε : ℝ} (hε : ε > 0) :
+lemma abs_invInterpStrip {ε : ℝ} (hε : 0 < ε) :
     abs (invInterpStrip f z ε) =
     (ε + sSupNormIm f 0) ^ (z.re - 1) * (ε + sSupNormIm f 1) ^ (-z.re) := by
   simp only [invInterpStrip, map_mul]
@@ -108,7 +108,7 @@ lemma abs_invInterpStrip {ε : ℝ} (hε : ε > 0) :
   simp only [sub_re, one_re, neg_re]
 
 /-- The function `invInterpStrip` is `diffContOnCl`. -/
-lemma diffContOnCl_invInterpStrip {ε : ℝ} (hε : ε > 0) :
+lemma diffContOnCl_invInterpStrip {ε : ℝ} (hε : 0 < ε) :
     DiffContOnCl ℂ (fun z ↦ invInterpStrip f z ε) (verticalStrip 0 1) := by
   apply Differentiable.diffContOnCl
   apply Differentiable.mul
@@ -132,13 +132,13 @@ lemma norm_le_sSupNormIm (f : ℂ → E) (z : ℂ) (hD : z ∈ verticalClosedStr
     simp only [mem_preimage, mem_singleton]
 
 /-- Alternative version of `norm_le_sSupNormIm` with a strict inequality and a positive `ε`. -/
-lemma norm_lt_sSupNormIm_eps (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
+lemma norm_lt_sSupNormIm_eps (f : ℂ → E) (ε : ℝ) (hε : 0 < ε) (z : ℂ)
     (hD : z ∈ verticalClosedStrip 0 1) (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) :
     ‖f z‖ < ε + sSupNormIm f (z.re) :=
   lt_add_of_pos_of_le hε (norm_le_sSupNormIm f z hD hB)
 
 /-- When the function `f` is bounded above on a vertical strip, then so is `F`. -/
-lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
+lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : 0 < ε)
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) :
     BddAbove ((norm ∘ (F f ε)) '' (verticalClosedStrip 0 1)) := by
  -- Rewriting goal
@@ -178,7 +178,7 @@ lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
         (le_of_lt hM1_one) (neg_le_neg_iff.mpr hset.2)]
 
 /-- Proof that `F` is bounded by one one the edges. -/
-lemma F_edge_le_one (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
+lemma F_edge_le_one (f : ℂ → E) (ε : ℝ) (hε : 0 < ε) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) (hz : z ∈ re ⁻¹' {0, 1}) :
     ‖F f ε z‖ ≤ 1 := by
   simp only [F, norm_smul, norm_eq_abs, map_mul, abs_cpow_eq_rpow_re_of_pos,
@@ -292,7 +292,7 @@ lemma diffContOnCl_interpStrip :
       · apply differentiableAt_id'
       · left; simp only [Ne, ofReal_eq_zero]; rwa [eq_comm]
 
-lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 0) (z : ℂ)
+lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : 0 < ε) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalClosedStrip 0 1) :
     ‖f z‖ ≤  ‖((ε + sSupNormIm f 0) ^ (1-z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by

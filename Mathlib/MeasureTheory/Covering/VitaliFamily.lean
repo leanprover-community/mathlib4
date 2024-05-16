@@ -203,7 +203,7 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
   covering := by
     intro s f fset ffine
     let g : α → Set (Set α) := fun x => f x ∩ v.setsAt x
-    have : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ (a : Set α), a ∈ g x ∧ a ⊆ closedBall x ε := by
+    have : ∀ x ∈ s, ∀ (ε : ℝ), 0 < ε → ∃ (a : Set α), a ∈ g x ∧ a ⊆ closedBall x ε := by
       intro x hx ε εpos
       obtain ⟨a, af, ha⟩ : ∃ a ∈ f x, a ⊆ closedBall x (min ε δ) :=
         ffine x hx (min ε δ) (lt_min εpos δpos)

@@ -429,6 +429,7 @@ issue: 1 = 0 does not hold
     exact test_sorry
   trivial
 
+set_option linter.geOrGt false in
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/slim_check.20question/near/412709012
 open scoped BigOperators in
 /--

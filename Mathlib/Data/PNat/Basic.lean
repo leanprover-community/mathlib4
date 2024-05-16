@@ -377,7 +377,7 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
   change (mod m k : ℕ) ≤ (m : ℕ) ∧ (mod m k : ℕ) ≤ (k : ℕ)
   rw [mod_coe]
   split_ifs with h
-  · have hm : (m : ℕ) > 0 := m.pos
+  · have hm : 0 < (m : ℕ) := m.pos
     rw [← Nat.mod_add_div (m : ℕ) (k : ℕ), h, zero_add] at hm ⊢
     by_cases h₁ : (m : ℕ) / (k : ℕ) = 0
     · rw [h₁, mul_zero] at hm

@@ -4,14 +4,16 @@ import Mathlib.Data.Set.Lattice
 section PiNotation
 variable (P : Nat → Prop) (α : Nat → Type) (s : Set ℕ)
 
+set_option linter.geOrGt false in
 /-- info: ∀ x > 0, P x : Prop -/
-#guard_msgs in
+#guard_msgs (info) in
 #check ∀ x, x > 0 → P x
 
 /-- info: ∀ x > 0, P x : Prop -/
 #guard_msgs in
 #check ∀ x > 0, P x
 
+set_option linter.geOrGt false in
 /-- info: ∀ x ≥ 0, P x : Prop -/
 #guard_msgs in
 #check ∀ x, x ≥ 0 → P x
@@ -128,12 +130,14 @@ end CompleteLattice
 
 section existential
 
+set_option linter.geOrGt false in
 /-- info: ∃ i ≥ 3, i = i : Prop -/
-#guard_msgs in
+#guard_msgs (info) in
 #check ∃ (i : Nat), i ≥ 3 ∧ i = i
 
+set_option linter.geOrGt false in
 /-- info: ∃ i > 3, i = i : Prop -/
-#guard_msgs in
+#guard_msgs (info) in
 #check ∃ (i : Nat), i > 3 ∧ i = i
 
 /-- info: ∃ i ≤ 3, i = i : Prop -/

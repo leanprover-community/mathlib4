@@ -103,7 +103,7 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedFi
   constructor
   · intro h i j
     by_contra! hn
-    suffices hc : toLinearMap₂' (G.lapMatrix α) x x > 0 from gt_irrefl _ (h ▸ hc)
+    suffices hc : 0 < toLinearMap₂' (G.lapMatrix α) x x from gt_irrefl _ (h ▸ hc)
     rw [lapMatrix_toLinearMap₂']
     refine div_pos (sum_pos' (fun k _ ↦ sum_nonneg' (fun l ↦ ?_)) ?_) two_pos
     · exact ite_nonneg (sq_nonneg _) le_rfl

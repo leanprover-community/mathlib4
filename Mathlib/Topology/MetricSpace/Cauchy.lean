@@ -135,7 +135,7 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
       the supremum of the distances between `s n` and `s m` for `n m ≥ N`.
       First, we prove that all these distances are bounded, as otherwise the Sup
       would not make sense. -/
-    let S N := (fun p : ℕ × ℕ => dist (s p.1) (s p.2)) '' { p | p.1 ≥ N ∧ p.2 ≥ N }
+    let S N := (fun p : ℕ × ℕ => dist (s p.1) (s p.2)) '' { p | N ≤ p.1 ∧ N ≤ p.2 }
     have hS : ∀ N, ∃ x, ∀ y ∈ S N, y ≤ x := by
       rcases cauchySeq_bdd hs with ⟨R, -, hR⟩
       refine' fun N => ⟨R, _⟩
