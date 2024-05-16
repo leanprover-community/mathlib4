@@ -43,6 +43,8 @@ S integer, S-integer, S unit, S-unit
 -/
 
 
+open scoped AlgebraOrderInstances
+
 namespace Set
 
 noncomputable section

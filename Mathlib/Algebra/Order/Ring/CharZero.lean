@@ -12,6 +12,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 # Strict ordered semiring have characteristic zero
 -/
 
+open scoped AlgebraOrderInstances
 
 variable {α : Type*}
 

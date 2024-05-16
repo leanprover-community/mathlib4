@@ -32,6 +32,8 @@ The next steps are:
 
 -/
 
+open scoped AlgebraOrderInstances
+
 open ContinuousLinearMap Filter Set
 
 /-- A proper cone is a pointed cone `K` that is closed. Proper cones have the nice property that

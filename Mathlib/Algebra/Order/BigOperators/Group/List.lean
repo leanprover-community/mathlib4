@@ -14,6 +14,8 @@ This file contains the results concerning the interaction of list big operators 
 groups/monoids.
 -/
 
+open scoped AlgebraOrderInstances
+
 variable {ι α M N P M₀ G R : Type*}
 
 namespace List

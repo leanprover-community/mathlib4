@@ -47,6 +47,8 @@ def s : Multiset ℕ := {0, 0, 0}
   For `PNat`, we will recover the set of divisors of a strictly positive integer.
 -/
 
+open scoped AlgebraOrderInstances
+
 open Function
 
 namespace Finset

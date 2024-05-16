@@ -16,6 +16,8 @@ import Mathlib.Algebra.Order.Ring.Canonical
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton
 
+open scoped AlgebraOrderInstances
+
 open Function Int
 
 variable {α M R : Type*}

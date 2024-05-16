@@ -50,6 +50,8 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
 -/
 
 
+open scoped AlgebraOrderInstances
+
 variable {R : Type*} [LinearOrderedSemifield R] [FloorSemiring R]
 
 namespace Int

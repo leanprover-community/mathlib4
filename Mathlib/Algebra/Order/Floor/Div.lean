@@ -47,6 +47,9 @@ Note in both cases we only allow dividing by positive inputs. We enforce the fol
 * Prove `⌈a / b⌉ = a ⌈/⌉ b` when `a, b : ℕ`
 -/
 
+
+open scoped AlgebraOrderInstances
+
 variable {ι α β : Type*}
 
 section OrderedAddCommMonoid

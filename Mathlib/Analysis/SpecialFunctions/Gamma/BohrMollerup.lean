@@ -37,6 +37,8 @@ to a constant, and it should be possible to deduce the value of this constant us
 formula).
 -/
 
+open scoped AlgebraOrderInstances
+
 set_option linter.uppercaseLean3 false
 
 noncomputable section

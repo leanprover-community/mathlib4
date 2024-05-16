@@ -16,6 +16,8 @@ This file defines the lexicographic order on `DFinsupp`.
 -/
 
 
+open scoped AlgebraOrderInstances
+
 variable {ι : Type*} {α : ι → Type*}
 
 namespace DFinsupp

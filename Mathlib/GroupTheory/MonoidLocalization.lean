@@ -78,6 +78,8 @@ localization, monoid localization, quotient monoid, congruence relation, charact
 commutative monoid, grothendieck group
 -/
 
+open scoped AlgebraOrderInstances
+
 open Function
 namespace AddSubmonoid
 

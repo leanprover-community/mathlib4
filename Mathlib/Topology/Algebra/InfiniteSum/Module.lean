@@ -10,6 +10,8 @@ import Mathlib.Topology.Algebra.Module.Basic
 
 /-! # Infinite sums in topological vector spaces -/
 
+open scoped AlgebraOrderInstances
+
 variable {α β γ δ : Type*}
 
 open Filter Finset Function

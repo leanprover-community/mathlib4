@@ -25,6 +25,8 @@ This file lifts order structures on `α` to `ι →₀ α`.
 --   functions and multisets.
 
 
+open scoped AlgebraOrderInstances
+
 noncomputable section
 
 open BigOperators

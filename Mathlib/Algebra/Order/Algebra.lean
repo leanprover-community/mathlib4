@@ -30,6 +30,8 @@ mixin.
 ordered algebra
 -/
 
+open scoped AlgebraOrderInstances
+
 section OrderedAlgebra
 
 variable {R A : Type*} {a b : A} {r : R}

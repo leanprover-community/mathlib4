@@ -21,6 +21,7 @@ may differ between the multiplicative and the additive version of a lemma.
 The reason is that we did not want to change existing names in the library.
 -/
 
+open scoped AlgebraOrderInstances
 
 open Function
 
@@ -1290,6 +1291,18 @@ theorem StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x => (f x)â
 #align strict_anti_on.neg StrictAntiOn.neg
 
 end
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] OrderedAddCommGroup.toAddCommGroup
+attribute [instance 50] OrderedCommGroup.toCommGroup
+attribute [instance 50] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
+
+-- add higer-priority versions in scope `AlgebraOrderInstances`
+namespace AlgebraOrderInstances
+attribute [scoped instance 1000] OrderedAddCommGroup.toAddCommGroup
+attribute [scoped instance 1000] OrderedCommGroup.toCommGroup
+attribute [scoped instance 1000] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
+end AlgebraOrderInstances
 
 /-
 `NeZero` should not be needed at this point in the ordered algebraic hierarchy.

@@ -22,6 +22,8 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
 * `FactorMultiset n`: Multiset of prime factors of `n`.
 -/
 
+open scoped AlgebraOrderInstances
+
 -- Porting note: `deriving` contained Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
 -- SemilatticeSup, OrderBot, Sub, OrderedSub
 /-- The type of multisets of prime numbers.  Unique factorization

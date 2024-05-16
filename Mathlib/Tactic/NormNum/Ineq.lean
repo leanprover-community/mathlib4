@@ -14,6 +14,8 @@ import Mathlib.Algebra.Order.Invertible
 
 set_option autoImplicit true
 
+open scoped AlgebraOrderInstances
+
 open Lean Meta Qq
 
 namespace Mathlib.Meta.NormNum

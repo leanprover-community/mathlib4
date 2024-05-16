@@ -12,6 +12,7 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 # Lemma about subtraction in ordered monoids with a top element adjoined.
 -/
 
+open scoped AlgebraOrderInstances
 
 variable {α β : Type*}
 

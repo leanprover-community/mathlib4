@@ -9,6 +9,8 @@ import Mathlib.Algebra.Module.Submodule.Basic
 # Ordered instances on submodules
 -/
 
+open scoped AlgebraOrderInstances
+
 namespace Submodule
 variable {R M : Type*}
 

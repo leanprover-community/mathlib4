@@ -26,6 +26,8 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
    value
 -/
 
+open scoped AlgebraOrderInstances
+
 variable {ι α R S : Type*}
 
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:

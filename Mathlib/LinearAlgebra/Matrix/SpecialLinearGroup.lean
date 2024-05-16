@@ -51,6 +51,8 @@ matrix group, group, matrix inverse
 -/
 
 
+open scoped AlgebraOrderInstances
+
 namespace Matrix
 
 universe u v

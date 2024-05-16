@@ -19,6 +19,8 @@ These are implemented as the quotient of a list by permutations.
 We define the global infix notation `::ₘ` for `Multiset.cons`.
 -/
 
+open scoped AlgebraOrderInstances
+
 universe v
 
 open List Subtype Nat Function

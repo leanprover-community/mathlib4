@@ -18,6 +18,7 @@ In this file we provide an order isomorphism `orderIsoIooNegOneOne` between the 
 
 /- Porting note: `Mathlib.Algebra.Order.Field.Basic` added to imports for `abs` -/
 
+open scoped AlgebraOrderInstances
 
 open Set
 

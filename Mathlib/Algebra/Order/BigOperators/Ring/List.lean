@@ -12,6 +12,8 @@ import Mathlib.Algebra.Order.Ring.Canonical
 This file contains the results concerning the interaction of list big operators with ordered rings.
 -/
 
+open scoped AlgebraOrderInstances
+
 variable {R : Type*}
 
 namespace List

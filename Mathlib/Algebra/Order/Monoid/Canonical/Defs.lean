@@ -14,6 +14,8 @@ import Mathlib.Algebra.Order.Monoid.Defs
 # Canonically ordered monoids
 -/
 
+open scoped AlgebraOrderInstances
+
 universe u
 
 variable {α : Type u}

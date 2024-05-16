@@ -13,7 +13,7 @@ import Mathlib.Order.Bounds.OrderIso
 This file proves order properties of pointwise operations of sets.
 -/
 
-open scoped Pointwise
+open scoped Pointwise AlgebraOrderInstances
 
 variable {α β : Type*}
 

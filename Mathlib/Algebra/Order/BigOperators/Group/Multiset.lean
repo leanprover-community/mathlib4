@@ -16,6 +16,8 @@ This file contains the results concerning the interaction of multiset big operat
 groups.
 -/
 
+open scoped AlgebraOrderInstances
+
 variable {ι α β : Type*}
 
 namespace Multiset

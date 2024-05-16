@@ -36,6 +36,9 @@ Further more, these properties are stable under compositions (resp. base change)
 
 -- Explicit universe annotations were used in this file to improve perfomance #12737
 
+
+open scoped AlgebraOrderInstances
+
 universe u
 
 open CategoryTheory Opposite TopologicalSpace CategoryTheory.Limits AlgebraicGeometry

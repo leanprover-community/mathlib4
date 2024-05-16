@@ -39,6 +39,8 @@ assert_not_exists Module
 assert_not_exists Submonoid
 assert_not_exists FloorRing
 
+open scoped AlgebraOrderInstances
+
 variable {α β : Type*}
 
 open IsAbsoluteValue

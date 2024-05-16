@@ -17,6 +17,8 @@ promoted to an order isomorphism.
 -/
 
 
+open scoped AlgebraOrderInstances
+
 open Finset
 
 open BigOperators

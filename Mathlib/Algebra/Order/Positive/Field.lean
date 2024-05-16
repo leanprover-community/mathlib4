@@ -15,6 +15,7 @@ In this file we prove that the set of positive elements of a linear ordered fiel
 ordered commutative group.
 -/
 
+open scoped AlgebraOrderInstances
 
 variable {K : Type*} [LinearOrderedField K]
 

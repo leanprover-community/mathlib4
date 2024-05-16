@@ -17,6 +17,8 @@ This file contains the results concerning the interaction of multiset big operat
 groups/monoids.
 -/
 
+open scoped AlgebraOrderInstances
+
 open Function
 
 open BigOperators

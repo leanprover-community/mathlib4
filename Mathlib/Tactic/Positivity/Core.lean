@@ -21,6 +21,8 @@ and elsewhere.
 
 set_option autoImplicit true
 
+open scoped AlgebraOrderInstances
+
 open Lean hiding Rat
 open Lean.Meta Qq Lean.Elab Term
 

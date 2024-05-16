@@ -617,3 +617,6 @@ instance : BooleanRing Bool where
   mul_zero a := by cases a <;> rfl
   nsmul := nsmulRec
   zsmul := zsmulRec
+
+-- lower instance priority to avoid instance synthesis trying this early
+attribute [instance 50] BooleanRing.toRing

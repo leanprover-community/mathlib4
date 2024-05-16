@@ -414,3 +414,13 @@ protected abbrev kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [M
 #align function.injective.kleene_algebra Function.Injective.kleeneAlgebra
 
 end Function.Injective
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] IdemSemiring.toSemiring
+attribute [instance 50] IdemCommSemiring.toCommSemiring
+
+-- add higer-priority versions in scope `AlgebraOrderInstances`
+namespace AlgebraOrderInstances
+attribute [scoped instance 200] IdemSemiring.toSemiring
+attribute [scoped instance 200] IdemCommSemiring.toCommSemiring
+end AlgebraOrderInstances

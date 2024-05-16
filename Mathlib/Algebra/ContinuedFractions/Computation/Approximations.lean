@@ -49,6 +49,8 @@ the error term indeed gets smaller. As a corollary, we will be able to show that
 -/
 
 
+open scoped AlgebraOrderInstances
+
 namespace GeneralizedContinuedFraction
 
 open GeneralizedContinuedFraction (of)

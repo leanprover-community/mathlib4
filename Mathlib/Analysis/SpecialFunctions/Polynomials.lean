@@ -23,6 +23,8 @@ polynomials.
 -/
 
 
+open scoped AlgebraOrderInstances
+
 open Filter Finset Asymptotics
 
 open Asymptotics Polynomial Topology

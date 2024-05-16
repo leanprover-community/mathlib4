@@ -44,7 +44,7 @@ assert_not_exists Real
 
 open Set LinearMap
 
-open scoped Classical
+open scoped Classical AlgebraOrderInstances
 open Pointwise
 
 variable {𝕜 E F G : Type*}

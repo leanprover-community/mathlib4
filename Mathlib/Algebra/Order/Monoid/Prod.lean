@@ -12,6 +12,8 @@ import Mathlib.Data.Prod.Lex
 
 /-! # Products of ordered monoids -/
 
+open scoped AlgebraOrderInstances
+
 namespace Prod
 
 variable {α β : Type*}

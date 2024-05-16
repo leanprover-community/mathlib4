@@ -106,6 +106,8 @@ immediate predecessors and what conditions are added to each of them.
   - `CommRing` & `IsDomain` & linear order structure
 -/
 
+open scoped AlgebraOrderInstances
+
 open Function
 
 universe u
@@ -1326,5 +1328,29 @@ instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
 @[deprecated] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
 @[deprecated] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
 @[deprecated] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] OrderedSemiring.toSemiring
+attribute [instance 50] OrderedCommSemiring.toCommSemiring
+attribute [instance 50] OrderedRing.toRing
+attribute [instance 50] OrderedCommRing.toCommRing
+attribute [instance 50] StrictOrderedSemiring.toSemiring
+attribute [instance 50] StrictOrderedCommSemiring.toCommSemiring
+attribute [instance 50] StrictOrderedRing.toRing
+attribute [instance 50] StrictOrderedCommRing.toCommRing
+attribute [instance 50] LinearOrderedCommRing.toCommMonoid
+
+-- add higer-priority versions in scope `AlgebraOrderInstances`
+namespace AlgebraOrderInstances
+attribute [scoped instance 1000] OrderedSemiring.toSemiring
+attribute [scoped instance 1000] OrderedCommSemiring.toCommSemiring
+attribute [scoped instance 1000] OrderedRing.toRing
+attribute [scoped instance 1000] OrderedCommRing.toCommRing
+attribute [scoped instance 1000] StrictOrderedSemiring.toSemiring
+attribute [scoped instance 1000] StrictOrderedCommSemiring.toCommSemiring
+attribute [scoped instance 1000] StrictOrderedRing.toRing
+attribute [scoped instance 1000] StrictOrderedCommRing.toCommRing
+attribute [scoped instance 1000] LinearOrderedCommRing.toCommMonoid
+end AlgebraOrderInstances
 
 assert_not_exists MonoidHom

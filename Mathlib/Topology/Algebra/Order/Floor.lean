@@ -27,6 +27,8 @@ This file proves statements about limits and continuity of functions involving `
 -/
 
 
+open scoped AlgebraOrderInstances
+
 open Filter Function Int Set Topology
 
 variable {α β γ : Type*} [LinearOrderedRing α] [FloorRing α]

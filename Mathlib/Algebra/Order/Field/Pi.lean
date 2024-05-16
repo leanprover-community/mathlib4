@@ -15,6 +15,7 @@ import Mathlib.Data.Fintype.Card
 We split this from `Algebra.Order.Field.Basic` to avoid importing the finiteness hierarchy there.
 -/
 
+open scoped AlgebraOrderInstances
 
 variable {α ι : Type*} [LinearOrderedSemifield α]
 

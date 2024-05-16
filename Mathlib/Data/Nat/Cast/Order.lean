@@ -16,6 +16,8 @@ import Mathlib.Algebra.Order.Ring.Nat
 
 -/
 
+open scoped AlgebraOrderInstances
+
 variable {α β : Type*}
 
 namespace Nat
