@@ -17,10 +17,10 @@ between sheaves on these two sites. With the terminology of nLab, `Stonean` is a
 *dense subsite* of `CompHaus`: see https://ncatlab.org/nlab/show/dense+sub-site
 
 Since Stonean spaces are the projective objects in `CompHaus`, which has enough projectives,
-and the notions of effective epimorphism, epimorphism and surjective conitnuous map are equivalent
+and the notions of effective epimorphism, epimorphism and surjective continuous map are equivalent
 in `CompHaus` and `Stonean`, we can use the general setup in
-`CategoryTheory/Sites/Coherent/SheafComparison` to deduce the equivalence of categories. We give
-the corresponding statements for `Profinite` as well.
+`Mathlib.CategoryTheory.Sites.Coherent.SheafComparison` to deduce the equivalence of categories.
+We give the corresponding statements for `Profinite` as well.
 
 ## Main results
 
@@ -63,7 +63,8 @@ instance : Stonean.toCompHaus.EffectivelyEnough where
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
     (i.e. condensed sets). -/
 noncomputable
-def equivalence (A : Type*) [Category.{u+1} A] [HasLimits A] :
+def equivalence (A : Type*) [Category A]
+    [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A] :
     Sheaf (coherentTopology Stonean) A ≌ Condensed.{u} A :=
   coherentTopology.equivalence' Stonean.toCompHaus A
 
@@ -93,7 +94,8 @@ instance : Stonean.toProfinite.EffectivelyEnough where
 
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `Profinite`. -/
 noncomputable
-def equivalence (A : Type*) [Category.{u+1} A] [HasLimits A] :
+def equivalence (A : Type*) [Category A]
+    [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toProfinite.op) A] :
     Sheaf (coherentTopology Stonean) A ≌ Sheaf (coherentTopology Profinite) A :=
   coherentTopology.equivalence' Stonean.toProfinite A
 
@@ -124,19 +126,24 @@ instance : profiniteToCompHaus.EffectivelyEnough where
 /-- The equivalence from coherent sheaves on `Profinite` to coherent sheaves on `CompHaus`
     (i.e. condensed sets). -/
 noncomputable
-def equivalence (A : Type*) [Category.{u+1} A] [HasLimits A] :
+def equivalence (A : Type*) [Category A]
+    [∀ X, HasLimitsOfShape (StructuredArrow X profiniteToCompHaus.op) A] :
     Sheaf (coherentTopology Profinite) A ≌ Condensed.{u} A :=
   coherentTopology.equivalence' profiniteToCompHaus A
 
 end ProfiniteCompHaus
 
-variable {A : Type*} [Category.{u+1} A] [HasLimits A] (X : Condensed.{u} A)
+variable {A : Type*} [Category A] (X : Condensed.{u} A)
 
-lemma isSheafProfinite : Presheaf.IsSheaf (coherentTopology Profinite)
+lemma isSheafProfinite
+    [∀ Y, HasLimitsOfShape (StructuredArrow Y profiniteToCompHaus.{u}.op) A] :
+    Presheaf.IsSheaf (coherentTopology Profinite)
     (profiniteToCompHaus.op ⋙ X.val) :=
   ((ProfiniteCompHaus.equivalence A).inverse.obj X).cond
 
-lemma isSheafStonean : Presheaf.IsSheaf (coherentTopology Stonean)
+lemma isSheafStonean
+    [∀ Y, HasLimitsOfShape (StructuredArrow Y Stonean.toCompHaus.{u}.op) A] :
+    Presheaf.IsSheaf (coherentTopology Stonean)
     (Stonean.toCompHaus.op ⋙ X.val) :=
   ((StoneanCompHaus.equivalence A).inverse.obj X).cond
 

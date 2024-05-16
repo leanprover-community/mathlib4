@@ -488,7 +488,7 @@ instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :
 set_option linter.uppercaseLean3 false in
 #align CommRing.has_forget_to_CommSemiRing CommRingCat.hasForgetToCommSemiRingCat
 
-instance : (forget₂ CommRingCat CommSemiRingCat).Full where preimage {X Y} f := f
+instance : (forget₂ CommRingCat CommSemiRingCat).Full where map_surjective f := ⟨f, rfl⟩
 
 end CommRingCat
 

@@ -156,7 +156,7 @@ theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   refine' induction_on_inter (C := fun s => Measurable fun x => ν (Prod.mk x ⁻¹' s))
     generateFrom_prod.symm isPiSystem_prod _ _ _ _ hs
-  · simp [measurable_zero, const_def]
+  · simp
   · rintro _ ⟨s, hs, t, _, rfl⟩
     simp only [mk_preimage_prod_right_eq_if, measure_if]
     exact measurable_const.indicator hs
@@ -637,9 +637,9 @@ theorem prod_eq_generateFrom {μ : Measure α} {ν : Measure β} {C : Set (Set �
     (h3C.prod h3D).ext
       (generateFrom_eq_prod hC hD h3C.isCountablySpanning h3D.isCountablySpanning).symm
       (h2C.prod h2D) _
-  · rintro _ ⟨s, hs, t, ht, rfl⟩
-    haveI := h3D.sigmaFinite
-    rw [h₁ s hs t ht, prod_prod]
+  rintro _ ⟨s, hs, t, ht, rfl⟩
+  haveI := h3D.sigmaFinite
+  rw [h₁ s hs t ht, prod_prod]
 #align measure_theory.measure.prod_eq_generate_from MeasureTheory.Measure.prod_eq_generateFrom
 
 /- Note that the next theorem is not true for s-finite measures: let `μ = ν = ∞ • Leb` on `[0,1]`

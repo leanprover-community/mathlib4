@@ -22,16 +22,17 @@ open Set LinearMap Submodule
 
 section CommSemiring
 
-variable {R : Type*} {M : Type*} {N : Type*} {ι : Type*} {κ : Type*}
-  [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable {R : Type*} {S : Type*} {M : Type*} {N : Type*} {ι : Type*} {κ : Type*}
+  [CommSemiring R] [CommSemiring S] [Algebra R S] [AddCommMonoid M] [Module R M] [Module S M]
+  [IsScalarTower R S M] [AddCommMonoid N] [Module R N]
 
 /-- If `b : ι → M` and `c : κ → N` are bases then so is `fun i ↦ b i.1 ⊗ₜ c i.2 : ι × κ → M ⊗ N`. -/
-def Basis.tensorProduct (b : Basis ι R M) (c : Basis κ R N) :
-    Basis (ι × κ) R (TensorProduct R M N) :=
+def Basis.tensorProduct (b : Basis ι S M) (c : Basis κ R N) :
+    Basis (ι × κ) S (TensorProduct R M N) :=
   Finsupp.basisSingleOne.map
-    ((TensorProduct.congr b.repr c.repr).trans <|
-        (finsuppTensorFinsupp R _ _ _ _).trans <|
-          Finsupp.lcongr (Equiv.refl _) (TensorProduct.lid R R)).symm
+    ((TensorProduct.AlgebraTensorModule.congr b.repr c.repr).trans <|
+        (finsuppTensorFinsupp R S _ _ _ _).trans <|
+          Finsupp.lcongr (Equiv.refl _) (TensorProduct.AlgebraTensorModule.rid R S S)).symm
 #align basis.tensor_product Basis.tensorProduct
 
 @[simp]
@@ -49,7 +50,7 @@ theorem Basis.tensorProduct_apply' (b : Basis ι R M) (c : Basis κ R N) (i : ι
 theorem Basis.tensorProduct_repr_tmul_apply (b : Basis ι R M) (c : Basis κ R N) (m : M) (n : N)
     (i : ι) (j : κ) :
     (Basis.tensorProduct b c).repr (m ⊗ₜ n) (i, j) = b.repr m i * c.repr n j := by
-  simp [Basis.tensorProduct]
+  simp [Basis.tensorProduct, mul_comm]
 #align basis.tensor_product_repr_tmul_apply Basis.tensorProduct_repr_tmul_apply
 
 end CommSemiring

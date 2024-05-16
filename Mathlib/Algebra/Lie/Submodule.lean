@@ -372,6 +372,10 @@ theorem bot_coeSubmodule : ((⊥ : LieSubmodule R L M) : Submodule R M) = ⊥ :=
 theorem coeSubmodule_eq_bot_iff : (N : Submodule R M) = ⊥ ↔ N = ⊥ := by
   rw [← coe_toSubmodule_eq_iff, bot_coeSubmodule]
 
+@[simp] theorem mk_eq_bot_iff {N : Submodule R M} {h} :
+    (⟨N, h⟩ : LieSubmodule R L M) = ⊥ ↔ N = ⊥ := by
+  rw [← coe_toSubmodule_eq_iff, bot_coeSubmodule]
+
 @[simp]
 theorem mem_bot (x : M) : x ∈ (⊥ : LieSubmodule R L M) ↔ x = 0 :=
   mem_singleton_iff
@@ -392,6 +396,10 @@ theorem top_coeSubmodule : ((⊤ : LieSubmodule R L M) : Submodule R M) = ⊤ :=
 
 @[simp]
 theorem coeSubmodule_eq_top_iff : (N : Submodule R M) = ⊤ ↔ N = ⊤ := by
+  rw [← coe_toSubmodule_eq_iff, top_coeSubmodule]
+
+@[simp] theorem mk_eq_top_iff {N : Submodule R M} {h} :
+    (⟨N, h⟩ : LieSubmodule R L M) = ⊤ ↔ N = ⊤ := by
   rw [← coe_toSubmodule_eq_iff, top_coeSubmodule]
 
 @[simp]
@@ -547,7 +555,7 @@ theorem independent_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R 
     CompleteLattice.Independent N ↔ CompleteLattice.Independent fun i ↦ (N i : Submodule R M) := by
   simp [CompleteLattice.independent_def, disjoint_iff_coe_toSubmodule]
 
-theorem iSup_eq_top_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
+theorem iSup_eq_top_iff_coe_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
     ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
   rw [← iSup_coe_toSubmodule, ← top_coeSubmodule (L := L), coe_toSubmodule_eq_iff]
 
@@ -1113,6 +1121,9 @@ def IsIdealMorphism : Prop :=
 theorem isIdealMorphism_def : f.IsIdealMorphism ↔ (f.idealRange : LieSubalgebra R L') = f.range :=
   Iff.rfl
 #align lie_hom.is_ideal_morphism_def LieHom.isIdealMorphism_def
+
+variable {f} in
+theorem IsIdealMorphism.eq (hf : f.IsIdealMorphism) : f.idealRange = f.range := hf
 
 theorem isIdealMorphism_iff : f.IsIdealMorphism ↔ ∀ (x : L') (y : L), ∃ z : L, ⁅x, f y⁆ = f z := by
   simp only [isIdealMorphism_def, idealRange_eq_lieSpan_range, ←

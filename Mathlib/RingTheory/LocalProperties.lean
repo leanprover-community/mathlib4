@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.RingHomProperties
 import Mathlib.Data.Set.Subsingleton
 

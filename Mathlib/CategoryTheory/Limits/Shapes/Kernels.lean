@@ -452,6 +452,7 @@ instance hasKernel_iso_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [H
         isLimit := isLimitAux _ (fun s => kernel.lift _ (s.ι ≫ f) (by aesop_cat))
             (by aesop_cat) fun s m w => by
           simp_rw [← w]
+          symm -- Adaptation note: nightly-2024-04-01 This `symm` wasn't previously necessary.
           apply equalizer.hom_ext
           simp }⟩
 #align category_theory.limits.has_kernel_iso_comp CategoryTheory.Limits.hasKernel_iso_comp
@@ -938,6 +939,7 @@ instance hasCokernel_comp_iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasCokern
               cokernel.desc _ (g ≫ s.π) (by rw [← Category.assoc, CokernelCofork.condition]))
             (by aesop_cat) fun s m w => by
             simp_rw [← w]
+            symm -- Adaptation note: nightly-2024-04-01 This `symm` wasn't previously necessary.
             apply coequalizer.hom_ext
             simp }⟩
 #align category_theory.limits.has_cokernel_comp_iso CategoryTheory.Limits.hasCokernel_comp_iso

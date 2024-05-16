@@ -412,7 +412,7 @@ instance instIsProbabilityMeasureCondCDF (ρ : Measure (α × ℝ)) (a : α) :
 theorem measurable_measure_condCDF (ρ : Measure (α × ℝ)) :
     Measurable fun a => (condCDF ρ a).measure := by
   rw [Measure.measurable_measure]
-  refine' fun s hs => ?_
+  refine fun s hs => ?_
   -- Porting note: supplied `C`
   refine' MeasurableSpace.induction_on_inter
     (C := fun s => Measurable fun b ↦ StieltjesFunction.measure (condCDF ρ b) s)

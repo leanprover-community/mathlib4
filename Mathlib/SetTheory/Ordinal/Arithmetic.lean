@@ -619,8 +619,8 @@ theorem one_add_omega : 1 + ω = ω := by
   rw [omega, ← lift_one.{_, 0}, ← lift_add, lift_le, ← type_unit, ← type_sum_lex]
   refine' ⟨RelEmbedding.collapse (RelEmbedding.ofMonotone _ _)⟩
   · apply Sum.rec
-    exact fun _ => 0
-    exact Nat.succ
+    · exact fun _ => 0
+    · exact Nat.succ
   · intro a b
     cases a <;> cases b <;> intro H <;> cases' H with _ _ H _ _ H <;>
       [exact H.elim; exact Nat.succ_pos _; exact Nat.succ_lt_succ H]
@@ -983,7 +983,9 @@ theorem isLimit_add_iff {a b} : IsLimit (a + b) ↔ IsLimit b ∨ b = 0 ∧ IsLi
     apply sub_isLimit h
     suffices a + 0 < a + b by simpa only [add_zero] using this
     rwa [add_lt_add_iff_left, Ordinal.pos_iff_ne_zero]
-  rcases h with (h | ⟨rfl, h⟩); exact add_isLimit a h; simpa only [add_zero]
+  rcases h with (h | ⟨rfl, h⟩)
+  · exact add_isLimit a h
+  · simpa only [add_zero]
 #align ordinal.is_limit_add_iff Ordinal.isLimit_add_iff
 
 theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ c)

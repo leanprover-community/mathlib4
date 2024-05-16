@@ -255,14 +255,14 @@ lemma rnDeriv_add_right_of_mutuallySingular {ν' : Measure α}
   have h₂ := rnDeriv_add' (μ.singularPart ν') (ν'.withDensity (μ.rnDeriv ν')) ν
   refine (Filter.EventuallyEq.trans (h_ac.ae_le h₁) ?_).trans h₂.symm
   have h₃ := rnDeriv_add_right_of_mutuallySingular' (?_ : μ.singularPart ν' ⟂ₘ ν') hνν'
-  have h₄ : (ν'.withDensity (rnDeriv μ ν')).rnDeriv (ν + ν') =ᵐ[ν] 0 := by
-    refine rnDeriv_eq_zero_of_mutuallySingular ?_ h_ac
-    exact hνν'.symm.withDensity
-  have h₅ : (ν'.withDensity (rnDeriv μ ν')).rnDeriv ν =ᵐ[ν] 0 := by
-    rw [rnDeriv_eq_zero]
-    exact hνν'.symm.withDensity
-  filter_upwards [h₃, h₄, h₅] with x hx₃ hx₄ hx₅
-  rw [Pi.add_apply, Pi.add_apply, hx₃, hx₄, hx₅]
+  · have h₄ : (ν'.withDensity (rnDeriv μ ν')).rnDeriv (ν + ν') =ᵐ[ν] 0 := by
+      refine rnDeriv_eq_zero_of_mutuallySingular ?_ h_ac
+      exact hνν'.symm.withDensity
+    have h₅ : (ν'.withDensity (rnDeriv μ ν')).rnDeriv ν =ᵐ[ν] 0 := by
+      rw [rnDeriv_eq_zero]
+      exact hνν'.symm.withDensity
+    filter_upwards [h₃, h₄, h₅] with x hx₃ hx₄ hx₅
+    rw [Pi.add_apply, Pi.add_apply, hx₃, hx₄, hx₅]
   exact mutuallySingular_singularPart μ ν'
 
 lemma rnDeriv_withDensity_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
@@ -397,7 +397,7 @@ lemma integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ 
 
 end integral
 
-lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite κ]
+lemma rnDeriv_mul_rnDeriv {κ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite κ]
     (hμν : μ ≪ ν) :
     μ.rnDeriv ν * ν.rnDeriv κ =ᵐ[κ] μ.rnDeriv κ := by
   refine (rnDeriv_withDensity_left ?_ ?_ ?_).symm.trans ?_
@@ -405,6 +405,12 @@ lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite μ] [SigmaFinite 
   · exact (Measure.measurable_rnDeriv _ _).aemeasurable
   · exact rnDeriv_ne_top _ _
   · rw [Measure.withDensity_rnDeriv_eq _ _ hμν]
+
+lemma rnDeriv_le_one_of_le (hμν : μ ≤ ν) [SigmaFinite ν] : μ.rnDeriv ν ≤ᵐ[ν] 1 := by
+  refine ae_le_of_forall_set_lintegral_le_of_sigmaFinite (μ.measurable_rnDeriv ν) measurable_const
+    (fun s _ _ ↦ ?_)
+  simp only [Pi.one_apply, MeasureTheory.set_lintegral_one]
+  exact (Measure.set_lintegral_rnDeriv_le s).trans (hμν s)
 
 end Measure
 

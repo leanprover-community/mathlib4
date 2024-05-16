@@ -482,6 +482,14 @@ theorem adjoin_le_iff {S : StarSubalgebra R A} {s : Set A} : adjoin R s ≤ S �
   StarAlgebra.gc _ _
 #align star_subalgebra.adjoin_le_iff StarAlgebra.adjoin_le_iff
 
+lemma adjoin_eq (S : StarSubalgebra R A) : adjoin R (S : Set A) = S :=
+  le_antisymm (adjoin_le le_rfl) (subset_adjoin R (S : Set A))
+
+open Submodule in
+lemma adjoin_eq_span (s : Set A) :
+    Subalgebra.toSubmodule (adjoin R s).toSubalgebra = span R (Submonoid.closure (s ∪ star s)) := by
+  rw [adjoin_toSubalgebra, Algebra.adjoin_eq_span]
+
 theorem _root_.Subalgebra.starClosure_eq_adjoin (S : Subalgebra R A) :
     S.starClosure = adjoin R (S : Set A) :=
   le_antisymm (Subalgebra.starClosure_le_iff.2 <| subset_adjoin R (S : Set A))
@@ -549,8 +557,8 @@ variable (R)
 
 /-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
 `star s`, then `StarSubalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/
-@[reducible]
-def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a : A, a ∈ s → ∀ b : A, b ∈ s → a * b = b * a)
+abbrev adjoinCommSemiringOfComm {s : Set A}
+    (hcomm : ∀ a : A, a ∈ s → ∀ b : A, b ∈ s → a * b = b * a)
     (hcomm_star : ∀ a : A, a ∈ s → ∀ b : A, b ∈ s → a * star b = star b * a) :
     CommSemiring (adjoin R s) :=
   { (adjoin R s).toSubalgebra.toSemiring with
@@ -573,9 +581,8 @@ def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a : A, a ∈ s → ∀ b :
 
 /-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
 `star s`, then `StarSubalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/
-@[reducible]
-def adjoinCommRingOfComm (R : Type u) {A : Type v} [CommRing R] [StarRing R] [Ring A] [Algebra R A]
-    [StarRing A] [StarModule R A] {s : Set A}
+abbrev adjoinCommRingOfComm (R : Type u) {A : Type v} [CommRing R] [StarRing R] [Ring A]
+    [Algebra R A] [StarRing A] [StarModule R A] {s : Set A}
     (hcomm : ∀ a : A, a ∈ s → ∀ b : A, b ∈ s → a * b = b * a)
     (hcomm_star : ∀ a : A, a ∈ s → ∀ b : A, b ∈ s → a * star b = star b * a) :
     CommRing (adjoin R s) :=

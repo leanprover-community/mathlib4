@@ -142,8 +142,8 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :
         obtain ⟨ijk, hijijk, hjkijk⟩ := directed_of (· ≤ ·) ij jk
         refine' ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, _⟩
         rw [← DirectedSystem.map_map, hij, DirectedSystem.map_map]
-        symm
-        rw [← DirectedSystem.map_map, ← hjk, DirectedSystem.map_map] <;> assumption⟩
+        · symm
+          rw [← DirectedSystem.map_map, ← hjk, DirectedSystem.map_map] <;> assumption⟩
 #align first_order.language.direct_limit.setoid FirstOrder.Language.DirectLimit.setoid
 
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.

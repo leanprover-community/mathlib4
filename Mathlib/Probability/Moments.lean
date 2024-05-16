@@ -61,7 +61,7 @@ def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ := by
 @[simp]
 theorem moment_zero (hp : p ≠ 0) : moment 0 p μ = 0 := by
   simp only [moment, hp, zero_pow, Ne, not_false_iff, Pi.zero_apply, integral_const,
-    smul_eq_mul, mul_zero]
+    smul_eq_mul, mul_zero, integral_zero]
 #align probability_theory.moment_zero ProbabilityTheory.moment_zero
 
 @[simp]

@@ -118,34 +118,68 @@ end
 
 open Finset
 
-@[simp]
-nonrec theorem Fintype.card_sigma {α : Type*} (β : α → Type*) [Fintype α] [∀ a, Fintype (β a)] :
-    Fintype.card (Sigma β) = ∑ a, Fintype.card (β a) :=
-  card_sigma _ _
-#align fintype.card_sigma Fintype.card_sigma
+section Pi
+variable {ι κ : Type*} {α : ι → Type*} [DecidableEq ι] [DecidableEq κ] [Fintype ι]
+  [∀ i, DecidableEq (α i)]
 
-@[simp]
-theorem Finset.card_pi [DecidableEq α] {δ : α → Type*} (s : Finset α) (t : ∀ a, Finset (δ a)) :
-    (s.pi t).card = ∏ a in s, card (t a) :=
-  Multiset.card_pi _ _
+@[simp] lemma Finset.card_pi (s : Finset ι) (t : ∀ i, Finset (α i)) :
+    (s.pi t).card = ∏ i in s, card (t i) := Multiset.card_pi _ _
 #align finset.card_pi Finset.card_pi
 
-@[simp]
-theorem Fintype.card_piFinset [DecidableEq α] [Fintype α] {δ : α → Type*} (t : ∀ a, Finset (δ a)) :
-    (Fintype.piFinset t).card = ∏ a, Finset.card (t a) := by simp [Fintype.piFinset, card_map]
+namespace Fintype
+
+@[simp] lemma card_piFinset (s : ∀ i, Finset (α i)) :
+    (piFinset s).card = ∏ i, (s i).card := by simp [piFinset, card_map]
 #align fintype.card_pi_finset Fintype.card_piFinset
 
-@[simp]
-theorem Fintype.card_pi {β : α → Type*} [DecidableEq α] [Fintype α] [∀ a, Fintype (β a)] :
-    Fintype.card (∀ a, β a) = ∏ a, Fintype.card (β a) :=
-  Fintype.card_piFinset _
+@[simp] lemma card_pi [DecidableEq ι] [∀ i, Fintype (α i)] : card (∀ i, α i) = ∏ i, card (α i) :=
+  card_piFinset _
 #align fintype.card_pi Fintype.card_pi
 
--- FIXME ouch, this should be in the main file.
-@[simp]
+@[simp] nonrec lemma card_sigma [Fintype ι] [∀ i, Fintype (α i)] :
+    card (Sigma α) = ∑ i, card (α i) := card_sigma _ _
+#align fintype.card_sigma Fintype.card_sigma
+
+/-- The number of dependent maps `f : Π j, s j` for which the `i` component is `a` is the product
+over all `j ≠ i` of `(s j).card`.
+
+Note that this is just a composition of easier lemmas, but there's some glue missing to make that
+smooth enough not to need this lemma. -/
+lemma card_filter_piFinset_eq_of_mem (s : ∀ i, Finset (α i)) (i : ι) {a : α i} (ha : a ∈ s i) :
+    ((piFinset s).filter fun f ↦ f i = a).card = ∏ j in univ.erase i, (s j).card := by
+  calc
+    _ = ∏ j, (Function.update s i {a} j).card := by
+      rw [← piFinset_update_singleton_eq_filter_piFinset_eq _ _ ha, Fintype.card_piFinset]
+    _ = ∏ j, Function.update (fun j ↦ (s j).card) i 1 j :=
+      Fintype.prod_congr _ _ fun j ↦ by obtain rfl | hji := eq_or_ne j i <;> simp [*]
+    _ = _ := by simp [prod_update_of_mem, erase_eq]
+
+lemma card_filter_piFinset_const_eq_of_mem (s : Finset κ) (i : ι) {x : κ} (hx : x ∈ s) :
+    ((piFinset fun _ ↦ s).filter fun f ↦ f i = x).card = s.card ^ (card ι - 1) :=
+  (card_filter_piFinset_eq_of_mem _ _ hx).trans $ by
+    rw [prod_const s.card, card_erase_of_mem (mem_univ _), card_univ]
+
+lemma card_filter_piFinset_eq (s : ∀ i, Finset (α i)) (i : ι) (a : α i) :
+    ((piFinset s).filter fun f ↦ f i = a).card =
+      if a ∈ s i then ∏ b in univ.erase i, (s b).card else 0 := by
+  split_ifs with h
+  · rw [card_filter_piFinset_eq_of_mem _ _ h]
+  · rw [filter_piFinset_of_not_mem _ _ _ h, Finset.card_empty]
+
+lemma card_filter_piFinset_const (s : Finset κ) (i : ι) (j : κ) :
+    ((piFinset fun _ ↦ s).filter fun f ↦ f i = j).card =
+      if j ∈ s then s.card ^ (card ι - 1) else 0 :=
+  (card_filter_piFinset_eq _ _ _).trans $ by
+    rw [prod_const s.card, card_erase_of_mem (mem_univ _), card_univ]
+
+end Fintype
+end Pi
+
+-- TODO: this is a basic thereom about `Fintype.card`,
+-- and ideally could be moved to `Mathlib.Data.Fintype.Card`.
 theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
     Fintype.card (α → β) = Fintype.card β ^ Fintype.card α := by
-  rw [Fintype.card_pi, Finset.prod_const]; rfl
+  simp
 #align fintype.card_fun Fintype.card_fun
 
 @[simp]

@@ -9,7 +9,7 @@ import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Tactic.Ring
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Pi
@@ -589,50 +589,50 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
     Finset.mem_filter.trans ⟨fun h => h.2, fun h => ⟨Finset.mem_univ _, h⟩⟩
   rw [← Finset.sum_subset (Finset.subset_univ preserving_snd) _]
   -- And that these are in bijection with `o → Equiv.Perm m`.
-  refine (Finset.sum_bij (fun σ _ => prodCongrLeft fun k ↦ σ k (mem_univ k)) ?_ ?_ ?_ ?_).symm
-  · intro σ _
-    rw [mem_preserving_snd]
-    rintro ⟨-, x⟩
-    simp only [prodCongrLeft_apply]
-  · intro σ _ σ' _ eq
-    ext x hx k
-    simp only at eq
-    have :
-      ∀ k x,
-        prodCongrLeft (fun k => σ k (Finset.mem_univ _)) (k, x) =
-          prodCongrLeft (fun k => σ' k (Finset.mem_univ _)) (k, x) :=
-      fun k x => by rw [eq]
-    simp only [prodCongrLeft_apply, Prod.mk.inj_iff] at this
-    exact (this k x).1
-  · intro σ hσ
-    rw [mem_preserving_snd] at hσ
-    have hσ' : ∀ x, (σ⁻¹ x).snd = x.snd := by
-      intro x
-      conv_rhs => rw [← Perm.apply_inv_self σ x, hσ]
-    have mk_apply_eq : ∀ k x, ((σ (x, k)).fst, k) = σ (x, k) := by
-      intro k x
-      ext
-      · simp only
-      · simp only [hσ]
-    have mk_inv_apply_eq : ∀ k x, ((σ⁻¹ (x, k)).fst, k) = σ⁻¹ (x, k) := by
-      intro k x
-      conv_lhs => rw [← Perm.apply_inv_self σ (x, k)]
-      ext
-      · simp only [apply_inv_self]
-      · simp only [hσ']
-    refine' ⟨fun k _ => ⟨fun x => (σ (x, k)).fst, fun x => (σ⁻¹ (x, k)).fst, _, _⟩, _, _⟩
-    · intro x
-      simp only [mk_apply_eq, inv_apply_self]
-    · intro x
-      simp only [mk_inv_apply_eq, apply_inv_self]
-    · apply Finset.mem_univ
-    · ext ⟨k, x⟩
-      · simp only [coe_fn_mk, prodCongrLeft_apply]
-      · simp only [prodCongrLeft_apply, hσ]
-  · intro σ _
-    rw [Finset.prod_mul_distrib, ← Finset.univ_product_univ, Finset.prod_product_right]
-    simp only [sign_prodCongrLeft, Units.coe_prod, Int.cast_prod, blockDiagonal_apply_eq,
-      prodCongrLeft_apply]
+  · refine (Finset.sum_bij (fun σ _ => prodCongrLeft fun k ↦ σ k (mem_univ k)) ?_ ?_ ?_ ?_).symm
+    · intro σ _
+      rw [mem_preserving_snd]
+      rintro ⟨-, x⟩
+      simp only [prodCongrLeft_apply]
+    · intro σ _ σ' _ eq
+      ext x hx k
+      simp only at eq
+      have :
+        ∀ k x,
+          prodCongrLeft (fun k => σ k (Finset.mem_univ _)) (k, x) =
+            prodCongrLeft (fun k => σ' k (Finset.mem_univ _)) (k, x) :=
+        fun k x => by rw [eq]
+      simp only [prodCongrLeft_apply, Prod.mk.inj_iff] at this
+      exact (this k x).1
+    · intro σ hσ
+      rw [mem_preserving_snd] at hσ
+      have hσ' : ∀ x, (σ⁻¹ x).snd = x.snd := by
+        intro x
+        conv_rhs => rw [← Perm.apply_inv_self σ x, hσ]
+      have mk_apply_eq : ∀ k x, ((σ (x, k)).fst, k) = σ (x, k) := by
+        intro k x
+        ext
+        · simp only
+        · simp only [hσ]
+      have mk_inv_apply_eq : ∀ k x, ((σ⁻¹ (x, k)).fst, k) = σ⁻¹ (x, k) := by
+        intro k x
+        conv_lhs => rw [← Perm.apply_inv_self σ (x, k)]
+        ext
+        · simp only [apply_inv_self]
+        · simp only [hσ']
+      refine' ⟨fun k _ => ⟨fun x => (σ (x, k)).fst, fun x => (σ⁻¹ (x, k)).fst, _, _⟩, _, _⟩
+      · intro x
+        simp only [mk_apply_eq, inv_apply_self]
+      · intro x
+        simp only [mk_inv_apply_eq, apply_inv_self]
+      · apply Finset.mem_univ
+      · ext ⟨k, x⟩
+        · simp only [coe_fn_mk, prodCongrLeft_apply]
+        · simp only [prodCongrLeft_apply, hσ]
+    · intro σ _
+      rw [Finset.prod_mul_distrib, ← Finset.univ_product_univ, Finset.prod_product_right]
+      simp only [sign_prodCongrLeft, Units.coe_prod, Int.cast_prod, blockDiagonal_apply_eq,
+        prodCongrLeft_apply]
   · intro σ _ hσ
     rw [mem_preserving_snd] at hσ
     obtain ⟨⟨k, x⟩, hkx⟩ := not_forall.mp hσ
@@ -651,37 +651,37 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     simp_rw [det_apply']
     convert Eq.symm <|
       sum_subset (β := R) (subset_univ ((sumCongrHom m n).range : Set (Perm (Sum m n))).toFinset) ?_
-    simp_rw [sum_mul_sum, ← sum_product', univ_product_univ]
-    refine sum_nbij (fun σ ↦ σ.fst.sumCongr σ.snd) ?_ ?_ ?_ ?_
-    · intro σ₁₂ _
-      simp only
-      erw [Set.mem_toFinset, MonoidHom.mem_range]
-      use σ₁₂
-      simp only [sumCongrHom_apply]
-    · intro σ₁ _ σ₂ _
-      dsimp only
-      intro h
-      have h2 : ∀ x, Perm.sumCongr σ₁.fst σ₁.snd x = Perm.sumCongr σ₂.fst σ₂.snd x :=
-        DFunLike.congr_fun h
-      simp only [Sum.map_inr, Sum.map_inl, Perm.sumCongr_apply, Sum.forall, Sum.inl.injEq,
-        Sum.inr.injEq] at h2
-      ext x
-      · exact h2.left x
-      · exact h2.right x
-    · intro σ hσ
-      erw [Set.mem_toFinset, MonoidHom.mem_range] at hσ
-      obtain ⟨σ₁₂, hσ₁₂⟩ := hσ
-      use σ₁₂
-      rw [← hσ₁₂]
-      simp
-    · simp only [forall_prop_of_true, Prod.forall, mem_univ]
-      intro σ₁ σ₂
-      rw [Fintype.prod_sum_type]
-      simp_rw [Equiv.sumCongr_apply, Sum.map_inr, Sum.map_inl, fromBlocks_apply₁₁,
-        fromBlocks_apply₂₂]
-      rw [mul_mul_mul_comm]
-      congr
-      rw [sign_sumCongr, Units.val_mul, Int.cast_mul]
+    · simp_rw [sum_mul_sum, ← sum_product', univ_product_univ]
+      refine sum_nbij (fun σ ↦ σ.fst.sumCongr σ.snd) ?_ ?_ ?_ ?_
+      · intro σ₁₂ _
+        simp only
+        erw [Set.mem_toFinset, MonoidHom.mem_range]
+        use σ₁₂
+        simp only [sumCongrHom_apply]
+      · intro σ₁ _ σ₂ _
+        dsimp only
+        intro h
+        have h2 : ∀ x, Perm.sumCongr σ₁.fst σ₁.snd x = Perm.sumCongr σ₂.fst σ₂.snd x :=
+          DFunLike.congr_fun h
+        simp only [Sum.map_inr, Sum.map_inl, Perm.sumCongr_apply, Sum.forall, Sum.inl.injEq,
+          Sum.inr.injEq] at h2
+        ext x
+        · exact h2.left x
+        · exact h2.right x
+      · intro σ hσ
+        erw [Set.mem_toFinset, MonoidHom.mem_range] at hσ
+        obtain ⟨σ₁₂, hσ₁₂⟩ := hσ
+        use σ₁₂
+        rw [← hσ₁₂]
+        simp
+      · simp only [forall_prop_of_true, Prod.forall, mem_univ]
+        intro σ₁ σ₂
+        rw [Fintype.prod_sum_type]
+        simp_rw [Equiv.sumCongr_apply, Sum.map_inr, Sum.map_inl, fromBlocks_apply₁₁,
+          fromBlocks_apply₂₂]
+        rw [mul_mul_mul_comm]
+        congr
+        rw [sign_sumCongr, Units.val_mul, Int.cast_mul]
     · rintro σ - hσn
       have h1 : ¬∀ x, ∃ y, Sum.inl y = σ (Sum.inl x) := by
         rw [Set.mem_toFinset] at hσn

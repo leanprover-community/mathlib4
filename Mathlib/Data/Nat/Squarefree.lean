@@ -5,7 +5,6 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Data.Nat.Factorization.PrimePow
-import Mathlib.RingTheory.Int.Basic
 
 #align_import data.nat.squarefree from "leanprover-community/mathlib"@"3c1368cac4abd5a5cbe44317ba7e87379d51ed88"
 
@@ -256,7 +255,7 @@ instance : DecidablePred (Squarefree : ℕ → Prop) := fun _ =>
   decidable_of_iff' _ squarefree_iff_minSqFac
 
 theorem squarefree_two : Squarefree 2 := by
-  rw [squarefree_iff_nodup_factors] <;> decide
+  rw [squarefree_iff_nodup_factors] <;> simp
 #align nat.squarefree_two Nat.squarefree_two
 
 theorem divisors_filter_squarefree_of_squarefree {n : ℕ} (hn : Squarefree n) :
@@ -309,12 +308,12 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
     apply UniqueFactorizationMonoid.factors_unique _ _ (associated_iff_eq.2 h)
     · intro z hz
       apply irreducible_of_normalized_factor z
-      rw [← Multiset.mem_toFinset]
-      apply hx hz
+      · rw [← Multiset.mem_toFinset]
+        apply hx hz
     · intro z hz
       apply irreducible_of_normalized_factor z
-      rw [← Multiset.mem_toFinset]
-      apply hy hz
+      · rw [← Multiset.mem_toFinset]
+        apply hy hz
 #align nat.divisors_filter_squarefree Nat.divisors_filter_squarefree
 
 open BigOperators

@@ -77,8 +77,7 @@ specifically we can build two mathematically-different `bracket A A`s:
     (and thus `⁅a, b⁆ = a * b`)
 
 See note [reducible non-instances] -/
-@[reducible]
-def LieRingModule.ofAssociativeModule : LieRingModule A M where
+abbrev LieRingModule.ofAssociativeModule : LieRingModule A M where
   bracket := (· • ·)
   add_lie := add_smul
   lie_add := smul_add
@@ -377,7 +376,7 @@ def lieConj : Module.End R M₁ ≃ₗ⁅R⁆ Module.End R M₂ :=
     map_lie' := fun {f g} =>
       show e.conj ⁅f, g⁆ = ⁅e.conj f, e.conj g⁆ by
         simp only [LieRing.of_associative_ring_bracket, LinearMap.mul_eq_comp, e.conj_comp,
-          LinearEquiv.map_sub] }
+          map_sub] }
 #align linear_equiv.lie_conj LinearEquiv.lieConj
 
 @[simp]
