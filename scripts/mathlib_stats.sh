@@ -31,4 +31,4 @@ net=$(awk -v gd="${gdiff}" 'BEGIN{
   print -tot }')
 
 ## final report
-printf -- '---\n## Weekly stats (%s %(%Y-%m-%d)T)\n\n%s, %s total(insertions-deletions)\n---\n\n%s\n\n commits: old %s, current %s.\n\nTake also a look at the [`Mathlib` stats page](%s).\n' "${date}" -1 "${gdiff}" "${net}" "${percent}" "${commit}" "$(git rev-parse --short HEAD)" "${statsURL}"
+printf -- '---\n\n## Weekly stats (%s %(%Y-%m-%d)T)\n\n%s, %s total(insertions-deletions)\n\n---\n\n%s\n\n commits: old %s, current %s.\n\nTake also a look at the [`Mathlib` stats page](%s).\n' "${date}" -1 "${gdiff}" "${net}" "${percent}" "${commit}" "$(git rev-parse --short HEAD)" "${statsURL}"
