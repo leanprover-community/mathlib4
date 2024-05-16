@@ -108,21 +108,22 @@ instance [DecidableEq α] : DecidableEq (Greedoid α) := fun G₁ G₂ =>
 
 variable {G : Greedoid α}
 
+variable {s : Finset α}
+variable {s₁ : Finset α} (hs₁ : s₁ ∈ G)
+variable {s₂ : Finset α} (hs₂ : s₂ ∈ G)
+
 instance : Accessible G.feasible_set := ⟨G.accessible_property⟩
 
 section Membership
 
 @[simp]
-theorem system_feasible_set_mem_mem {s : Finset α} : s ∈ G.feasible_set ↔ s ∈ G := by rfl
+theorem system_feasible_set_mem_mem : s ∈ G.feasible_set ↔ s ∈ G := by rfl
 
-theorem mem_accessible {s : Finset α} (hs₁ : s ∈ G.feasible_set) (hs₂ : s.Nonempty) :
+theorem mem_accessible (hs₁ : s ∈ G.feasible_set) (hs₂ : s.Nonempty) :
     ∃ t, t ⊆ s ∧ t.card + 1 = s.card ∧ t ∈ G :=
   G.accessible_property hs₁ hs₂
 
-theorem mem_exchange
-  {s₁ : Finset α} (hs₁ : s₁ ∈ G)
-  {s₂ : Finset α} (hs₂ : s₂ ∈ G)
-  (hs : s₂.card < s₁.card) :
+theorem mem_exchange (hs : s₂.card < s₁.card) :
     ∃ x ∈ s₁, ∃ h : x ∉ s₂, cons x s₂ h ∈ G :=
   G.exchange_property hs₁ hs₂ hs
 
