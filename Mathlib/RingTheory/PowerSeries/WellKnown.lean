@@ -79,15 +79,14 @@ function so that `mk 1` is the power series with all coefficients equal to one.
 -/
 theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
   rw [mul_comm, ext_iff]
-  exact fun n => by
-    by_cases hn : n = 0
-    · subst hn
-      simp only [coeff_zero_eq_constantCoeff, map_mul, map_sub, map_one, constantCoeff_X, sub_zero,
-        one_mul, coeff_one, ↓reduceIte]
-      rfl
-    · simp only [one_mul, map_sub, coeff_mk, coeff_one, hn, ↓reduceIte]
-      rw [show n = n - 1 + 1 by exact (Nat.succ_pred hn).symm, sub_mul]
-      simp only [one_mul, map_sub, coeff_mk, Pi.one_apply, coeff_succ_X_mul, sub_self]
+  intro n
+  by_cases hn : n = 0
+  · subst hn
+    simp only [coeff_zero_eq_constantCoeff, map_mul, map_sub, map_one, constantCoeff_X, sub_zero,
+      one_mul, coeff_one, ↓reduceIte]
+    rfl
+  · rw [show n = n - 1 + 1 by exact (Nat.succ_pred hn).symm, sub_mul]
+    simp
 
 /--
 Note that `mk 1` is the constant function `1` so the power series `1 + X + X^2 + ...`. This theorem
@@ -123,15 +122,20 @@ theorem invOneSubPow_val_eq_mk_choose_add :
 
 theorem invOneSubPow_val_zero_eq_invUnitSub_one :
     (invOneSubPow 0).val = invUnitsSub (1 : Sˣ) := by
-  rw [invOneSubPow, invUnitsSub]
-  simp only [zero_add, Nat.choose_zero_right, Nat.cast_one, one_pow, divp_one]
+  simp [invOneSubPow, invUnitsSub]
 
+/--
+The theorem `PowerSeries.mk_one_mul_one_sub_eq_one` implies that `1 - X : S⟦X⟧` is a unit whose
+inverse is the power series `1 + X + X^2 + ...`. This theorem states that for any `d : ℕ`,
+`PowerSeries.invOneSubPow d` is equal to `(1 - X)⁻¹ ^ (d + 1)`.
+-/
 theorem invOneSubPow_eq_inv_one_sub_pow :
-    invOneSubPow d = ⟨1 - X, (mk 1 : S⟦X⟧), by rw [mul_comm]; exact mk_one_mul_one_sub_eq_one,
-    mk_one_mul_one_sub_eq_one⟩⁻¹ ^ (d + 1) := by
-  rw [inv_pow]; exact (DivisionMonoid.inv_eq_of_mul _ (invOneSubPow d) <| by
-  rw [← Units.val_eq_one, Units.val_mul, Units.val_pow_eq_pow_val];
-  exact (invOneSubPow d).inv_val).symm
+    invOneSubPow d = (Units.mkOfMulEqOne (1 - X) (mk 1 : S⟦X⟧)
+    <| Eq.trans (mul_comm _ _) mk_one_mul_one_sub_eq_one)⁻¹ ^ (d + 1) := by
+  rw [inv_pow]
+  exact (DivisionMonoid.inv_eq_of_mul _ (invOneSubPow d) <| by
+    rw [← Units.val_eq_one, Units.val_mul, Units.val_pow_eq_pow_val]
+    exact (invOneSubPow d).inv_val).symm
 
 theorem invOneSubPow_inv_eq_one_sub_pow :
     (invOneSubPow d).inv = (1 - X : S⟦X⟧) ^ (d + 1) := rfl
