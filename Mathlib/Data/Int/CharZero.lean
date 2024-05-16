@@ -24,7 +24,7 @@ namespace Int
 theorem cast_eq_zero [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) = 0 ↔ n = 0 :=
   ⟨fun h => by
     cases n
-    · erw [Int.cast_ofNat] at h
+    · erw [Int.cast_natCast] at h
       exact congr_arg _ (Nat.cast_eq_zero.1 h)
     · rw [cast_negSucc, neg_eq_zero, Nat.cast_eq_zero] at h
       contradiction,
@@ -65,7 +65,7 @@ theorem cast_div_charZero {k : Type*} [DivisionRing k] [CharZero k] {m n : ℤ} 
 @[simp, norm_cast]
 theorem cast_div_ofNat_charZero {k : Type*} [DivisionRing k] [CharZero k] {m n : ℕ}
     (n_dvd : n ∣ m) : (((m : ℤ) / (n : ℤ) : ℤ) : k) = m / n := by
-  rw [cast_div_charZero (Int.ofNat_dvd.mpr n_dvd), cast_ofNat, cast_ofNat]
+  rw [cast_div_charZero (Int.ofNat_dvd.mpr n_dvd), cast_natCast, cast_natCast]
 
 end Int
 
@@ -77,12 +77,12 @@ theorem RingHom.injective_int {α : Type*} [NonAssocRing α] (f : ℤ →+* α) 
 namespace Function
 variable [AddGroupWithOne β] [CharZero β] {n : ℤ}
 
-lemma support_int_cast (hn : n ≠ 0) : support (n : α → β) = univ :=
+lemma support_intCast (hn : n ≠ 0) : support (n : α → β) = univ :=
   support_const <| Int.cast_ne_zero.2 hn
-#align function.support_int_cast Function.support_int_cast
+#align function.support_int_cast Function.support_intCast
 
-lemma mulSupport_int_cast (hn : n ≠ 1) : mulSupport (n : α → β) = univ :=
+lemma mulSupport_intCast (hn : n ≠ 1) : mulSupport (n : α → β) = univ :=
   mulSupport_const <| Int.cast_ne_one.2 hn
-#align function.mul_support_int_cast Function.mulSupport_int_cast
+#align function.mul_support_int_cast Function.mulSupport_intCast
 
 end Function

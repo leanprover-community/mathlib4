@@ -234,7 +234,7 @@ namespace Filter
 variable (g : Set (Set α))
 
 /-- `Filter.CountableGenerateSets g` is the (sets of the)
-greatest `countableInterFilter` containing `g`.-/
+greatest `countableInterFilter` containing `g`. -/
 inductive CountableGenerateSets : Set α → Prop
   | basic {s : Set α} : s ∈ g → CountableGenerateSets s
   | univ : CountableGenerateSets univ
@@ -243,7 +243,7 @@ inductive CountableGenerateSets : Set α → Prop
     S.Countable → (∀ s ∈ S, CountableGenerateSets s) → CountableGenerateSets (⋂₀ S)
 #align filter.countable_generate_sets Filter.CountableGenerateSets
 
-/-- `Filter.countableGenerate g` is the greatest `countableInterFilter` containing `g`.-/
+/-- `Filter.countableGenerate g` is the greatest `countableInterFilter` containing `g`. -/
 def countableGenerate : Filter α :=
   ofCountableInter (CountableGenerateSets g) (fun _ => CountableGenerateSets.sInter) fun _ _ =>
     CountableGenerateSets.superset
@@ -291,7 +291,7 @@ theorem le_countableGenerate_iff_of_countableInterFilter {f : Filter α} [Counta
 
 variable (g)
 
-/-- `countableGenerate g` is the greatest `countableInterFilter` containing `g`.-/
+/-- `countableGenerate g` is the greatest `countableInterFilter` containing `g`. -/
 theorem countableGenerate_isGreatest :
     IsGreatest { f : Filter α | CountableInterFilter f ∧ g ⊆ f.sets } (countableGenerate g) := by
   refine' ⟨⟨inferInstance, fun s => CountableGenerateSets.basic⟩, _⟩

@@ -48,13 +48,12 @@ def ofEquiv (α) {β} [FinEnum α] (h : β ≃ α) : FinEnum β
 #align fin_enum.of_equiv FinEnum.ofEquiv
 
 /-- create a `FinEnum` instance from an exhaustive list without duplicates -/
-def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' : List.Nodup xs) : FinEnum α
-    where
+def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' : List.Nodup xs) :
+    FinEnum α where
   card := xs.length
   equiv :=
-    ⟨fun x => ⟨xs.indexOf x, by rw [List.indexOf_lt_length]; apply h⟩, fun ⟨i, h⟩ =>
-      xs.nthLe _ h, fun x => by simp, fun ⟨i, h⟩ => by
-      simp [*]⟩
+    ⟨fun x => ⟨xs.indexOf x, by rw [List.indexOf_lt_length]; apply h⟩, xs.get, fun x => by simp,
+      fun i => by ext; simp [List.get_indexOf h']⟩
 #align fin_enum.of_nodup_list FinEnum.ofNodupList
 
 /-- create a `FinEnum` instance from an exhaustive list; duplicates are removed -/
@@ -233,7 +232,7 @@ theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : L
   · ext a ⟨⟩
   · exists Pi.cons xs_hd xs_tl (f _ (List.mem_cons_self _ _))
     constructor
-    exact ⟨_, rfl⟩
+    · exact ⟨_, rfl⟩
     exists Pi.tail f
     constructor
     · apply xs_ih

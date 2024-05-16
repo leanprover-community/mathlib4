@@ -164,7 +164,10 @@ theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
       abs (q.P.objAppend1 a₀ (g ⊚ f'₀) fun x => q.P.wMap g (f₀ x)) =
         abs (q.P.objAppend1 a₁ (g ⊚ f'₁) fun x => q.P.wMap g (f₁ x))
     rw [← q.P.map_objAppend1, ← q.P.map_objAppend1, abs_map, abs_map, h]
-  | trans x y z _ _ ih₁ ih₂ => apply MvQPF.WEquiv.trans; apply ih₁; apply ih₂
+  | trans x y z _ _ ih₁ ih₂ =>
+    apply MvQPF.WEquiv.trans
+    · apply ih₁
+    · apply ih₂
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv_map MvQPF.wEquiv_map
 
@@ -188,6 +191,7 @@ def Fix {n : ℕ} (F : TypeVec (n + 1) → Type*) [MvFunctor F] [q : MvQPF F] (�
   Quotient (wSetoid α : Setoid (q.P.W α))
 #align mvqpf.fix MvQPF.Fix
 
+-- Porting note(#5171): this linter isn't ported yet.
 --attribute [nolint has_nonempty_instance] Fix
 
 /-- `Fix F` is a functor -/
@@ -337,6 +341,7 @@ instance mvqpfFix : MvQPF (Fix F) where
     conv =>
       rhs
       dsimp [MvFunctor.map]
+    rfl
 #align mvqpf.mvqpf_fix MvQPF.mvqpfFix
 
 /-- Dependent recursor for `fix F` -/

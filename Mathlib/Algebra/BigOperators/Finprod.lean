@@ -5,7 +5,8 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Function.Finite
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Data.Set.Subsingleton
 
 #align_import algebra.big_operators.finprod from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -107,7 +108,7 @@ attribute [to_additive existing] finprod_def'
 
 end
 
-open Std.ExtendedBinder
+open Batteries.ExtendedBinder
 
 /-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the
 support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arguments or
@@ -1032,9 +1033,9 @@ theorem finprod_subtype_eq_finprod_cond (p : α → Prop) :
 theorem finprod_mem_inter_mul_diff' (t : Set α) (h : (s ∩ mulSupport f).Finite) :
     ((∏ᶠ i ∈ s ∩ t, f i) * ∏ᶠ i ∈ s \ t, f i) = ∏ᶠ i ∈ s, f i := by
   rw [← finprod_mem_union', inter_union_diff]
-  rw [disjoint_iff_inf_le]
-  exacts [fun x hx => hx.2.2 hx.1.2, h.subset fun x hx => ⟨hx.1.1, hx.2⟩,
-    h.subset fun x hx => ⟨hx.1.1, hx.2⟩]
+  · rw [disjoint_iff_inf_le]
+    exact fun x hx => hx.2.2 hx.1.2
+  exacts [h.subset fun x hx => ⟨hx.1.1, hx.2⟩, h.subset fun x hx => ⟨hx.1.1, hx.2⟩]
 #align finprod_mem_inter_mul_diff' finprod_mem_inter_mul_diff'
 #align finsum_mem_inter_add_diff' finsum_mem_inter_add_diff'
 

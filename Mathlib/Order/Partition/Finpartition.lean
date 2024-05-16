@@ -217,8 +217,7 @@ instance : Unique (Finpartition (⊥ : α)) :=
 
 -- See note [reducible non instances]
 /-- There's a unique partition of an atom. -/
-@[reducible]
-def _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a)
+abbrev _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a)
     where
   default := indiscrete ha.1
   uniq P := by
@@ -304,8 +303,8 @@ instance : Inf (Finpartition a) :=
     ofErase ((P.parts ×ˢ Q.parts).image fun bc ↦ bc.1 ⊓ bc.2)
       (by
         rw [supIndep_iff_disjoint_erase]
-        simp only [mem_image, and_imp, exists_prop, forall_exists_index, id.def, Prod.exists,
-          mem_product, Finset.disjoint_sup_right, mem_erase, Ne.def]
+        simp only [mem_image, and_imp, exists_prop, forall_exists_index, id, Prod.exists,
+          mem_product, Finset.disjoint_sup_right, mem_erase, Ne]
         rintro _ x₁ y₁ hx₁ hy₁ rfl _ h x₂ y₂ hx₂ hy₂ rfl
         rcases eq_or_ne x₁ x₂ with (rfl | xdiff)
         · refine' Disjoint.mono inf_le_right inf_le_right (Q.disjoint hy₁ hy₂ _)

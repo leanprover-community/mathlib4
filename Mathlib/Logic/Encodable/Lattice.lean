@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Logic.Pairwise
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import logic.encodable.lattice from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 

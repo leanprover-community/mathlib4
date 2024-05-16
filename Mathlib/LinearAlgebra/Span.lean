@@ -99,6 +99,19 @@ theorem span_eq_span (hs : s ⊆ span R t) (ht : t ⊆ span R s) : span R s = sp
   le_antisymm (span_le.2 hs) (span_le.2 ht)
 #align submodule.span_eq_span Submodule.span_eq_span
 
+/-- A version of `Submodule.span_eq` for subobjects closed under addition and scalar multiplication
+and containing zero. In general, this should not be used directly, but can be used to quickly
+generate proofs for specific types of subobjects. -/
+lemma coe_span_eq_self [SetLike S M] [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) :
+    (span R (s : Set M) : Set M) = s := by
+  refine le_antisymm ?_ subset_span
+  let s' : Submodule R M :=
+    { carrier := s
+      add_mem' := add_mem
+      zero_mem' := zero_mem _
+      smul_mem' := SMulMemClass.smul_mem }
+  exact span_le (p := s') |>.mpr le_rfl
+
 /-- A version of `Submodule.span_eq` for when the span is by a smaller ring. -/
 @[simp]
 theorem span_coe_eq_restrictScalars [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
@@ -326,7 +339,6 @@ theorem sup_span : p ⊔ span R s = span R (p ∪ s) := by rw [Submodule.span_un
 theorem span_sup : span R s ⊔ p = span R (s ∪ p) := by rw [Submodule.span_union, p.span_eq]
 #align submodule.span_sup Submodule.span_sup
 
--- mathport name: «expr ∙ »
 notation:1000
   /- Note that the character `∙` U+2219 used below is different from the scalar multiplication
 character `•` U+2022. -/
@@ -336,7 +348,7 @@ theorem span_eq_iSup_of_singleton_spans (s : Set M) : span R s = ⨆ x ∈ s, R 
   simp only [← span_iUnion, Set.biUnion_of_singleton s]
 #align submodule.span_eq_supr_of_singleton_spans Submodule.span_eq_iSup_of_singleton_spans
 
-theorem span_range_eq_iSup {ι : Type*} {v : ι → M} : span R (range v) = ⨆ i, R ∙ v i := by
+theorem span_range_eq_iSup {ι : Sort*} {v : ι → M} : span R (range v) = ⨆ i, R ∙ v i := by
   rw [span_eq_iSup_of_singleton_spans, iSup_range]
 #align submodule.span_range_eq_supr Submodule.span_range_eq_iSup
 
@@ -888,6 +900,11 @@ instance : IsModularLattice (Submodule R M) :=
     rw [← add_sub_cancel_right c b, add_comm]
     apply z.sub_mem haz (xz hb)⟩
 
+lemma isCompl_comap_subtype_of_isCompl_of_le {p q r : Submodule R M}
+    (h₁ : IsCompl q r) (h₂ : q ≤ p) :
+    IsCompl (q.comap p.subtype) (r.comap p.subtype) := by
+  simpa [p.mapIic.isCompl_iff, Iic.isCompl_iff] using Iic.isCompl_inf_inf_of_isCompl_of_le h₁ h₂
+
 end AddCommGroup
 
 section AddCommGroup
@@ -1030,7 +1047,7 @@ def toSpanSingleton (x : M) : R →ₗ[R] M :=
   LinearMap.id.smulRight x
 #align linear_map.to_span_singleton LinearMap.toSpanSingleton
 
-/-- The range of `toSpanSingleton x` is the span of `x`.-/
+/-- The range of `toSpanSingleton x` is the span of `x`. -/
 theorem span_singleton_eq_range (x : M) : (R ∙ x) = range (toSpanSingleton R M x) :=
   Submodule.ext fun y => by
     refine' Iff.trans _ LinearMap.mem_range.symm
@@ -1098,7 +1115,7 @@ theorem ext_on {s : Set M} {f g : F} (hv : span R s = ⊤) (h : Set.EqOn f g s) 
 
 /-- If the range of `v : ι → M` generates the whole module and linear maps `f`, `g` are equal at
 each `v i`, then they are equal. -/
-theorem ext_on_range {ι : Type*} {v : ι → M} {f g : F} (hv : span R (Set.range v) = ⊤)
+theorem ext_on_range {ι : Sort*} {v : ι → M} {f g : F} (hv : span R (Set.range v) = ⊤)
     (h : ∀ i, f (v i) = g (v i)) : f = g :=
   ext_on hv (Set.forall_mem_range.2 h)
 #align linear_map.ext_on_range LinearMap.ext_on_range

@@ -38,7 +38,7 @@ instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
 variable (U V W : Type*) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} W]
 
 /-- A quiver `HasReverse` if we can reverse an arrow `p` from `a` to `b` to get an arrow
-    `p.reverse` from `b` to `a`.-/
+    `p.reverse` from `b` to `a`. -/
 class HasReverse where
   /-- the map which sends an arrow to its reverse -/
   reverse' : ∀ {a b : V}, (a ⟶ b) → (b ⟶ a)
