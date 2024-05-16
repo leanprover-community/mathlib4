@@ -165,6 +165,8 @@ variable {R M N P : Type*} [CommRing R]
 
 open Function LinearMap
 
+-- Some of these should be in a different file
+
 lemma LinearMap.exact_subtype_mkQ (Q : Submodule R N) :
     Exact (Submodule.subtype Q) (Submodule.mkQ Q) := by
   rw [exact_iff, Submodule.ker_mkQ, Submodule.range_subtype Q]
@@ -415,6 +417,77 @@ theorem TensorProduct.map_ker :
     Submodule.map_top]
   rw [range_eq_top.mpr (rTensor_surjective M' hg), Submodule.map_top]
   rw [Exact.linearMap_ker_eq (lTensor_exact P hfg' hg')]
+
+variable (M)
+
+-- TODO: Figure out appropriate typeclasses assumptions for this
+-- (e.g. should `R` be an algebra over some base comm ring?)
+noncomputable def lTensor_ring_mod_ideal_equiv_mod_ideal_smul (I : Ideal R) :
+    ((R⧸I) ⊗[R] M) ≃ₗ[R] M⧸(I • (⊤ : Submodule R M)) :=
+  (rTensor.equiv M (exact_subtype_mkQ I) I.mkQ_surjective).symm.trans <|
+    Submodule.Quotient.equiv _ _ (TensorProduct.lid R M) <| by
+      refine Eq.trans (LinearMap.range_comp _ _).symm ?_
+      refine Eq.trans ?_ (map₂_eq_range_lift_comp_mapIncl _ _ _).symm
+      refine Eq.trans ?_ (Submodule.map_top _)
+      refine Eq.trans ?_ <| congrArg _ <|
+        range_eq_top.mpr (Submodule.topEquiv.lTensor I).symm.surjective
+      refine Eq.trans (congrArg range ?_) (LinearMap.range_comp _ _)
+      ext; rfl
+
+noncomputable def rTensor_ring_mod_ideal_equiv_mod_ideal_smul (I : Ideal R) :
+    (M ⊗[R] (R⧸I)) ≃ₗ[R] M⧸(I • (⊤ : Submodule R M)) :=
+  (lTensor.equiv M (exact_subtype_mkQ I) I.mkQ_surjective).symm.trans <|
+    Submodule.Quotient.equiv _ _ (TensorProduct.rid R M) <| by
+      refine Eq.trans (LinearMap.range_comp _ _).symm ?_
+      refine Eq.trans ?_ (Submodule.map₂_flip _ _ _)
+      refine Eq.trans ?_ (map₂_eq_range_lift_comp_mapIncl _ _ _).symm
+      refine Eq.trans ?_ (Submodule.map_top _)
+      refine Eq.trans ?_ <| congrArg _ <|
+        range_eq_top.mpr (Submodule.topEquiv.rTensor I).symm.surjective
+      refine Eq.trans (congrArg range ?_) (LinearMap.range_comp _ _)
+      ext; rfl
+
+variable {M}
+
+-- TODO: Get rid of the `maxHeartbeats` annotation once lean4#4092 is available in mathlib
+set_option maxHeartbeats 800000 in
+@[simp]
+lemma lTensor_ring_mod_ideal_equiv_mod_ideal_smul_apply
+    (I : Ideal R) (r : R) (x : M) :
+    lTensor_ring_mod_ideal_equiv_mod_ideal_smul M I
+      (Ideal.Quotient.mk I r ⊗ₜ[R] x) = Submodule.Quotient.mk (r • x) :=
+  (lTensor_ring_mod_ideal_equiv_mod_ideal_smul M I).eq_symm_apply.mp <|
+    Eq.trans (congrArg (· ⊗ₜ[R] x) <|
+        Eq.trans (congrArg (Ideal.Quotient.mk I)
+                    (Eq.trans (smul_eq_mul R) (mul_one r))).symm <|
+          Submodule.Quotient.mk_smul I r 1) <|
+      smul_tmul r _ x
+
+@[simp]
+lemma lTensor_ring_mod_ideal_equiv_mod_ideal_smul_symm_apply
+    (I : Ideal R) (x : M) :
+    (lTensor_ring_mod_ideal_equiv_mod_ideal_smul M I).symm
+      (Submodule.Quotient.mk x) = 1 ⊗ₜ[R] x := rfl
+
+-- TODO: Get rid of the `maxHeartbeats` annotation once lean4#4092 is available in mathlib
+set_option maxHeartbeats 800000 in
+@[simp]
+lemma rTensor_ring_mod_ideal_equiv_mod_ideal_smul_apply
+    (I : Ideal R) (r : R) (x : M) :
+    rTensor_ring_mod_ideal_equiv_mod_ideal_smul M I
+      (x ⊗ₜ[R] Ideal.Quotient.mk I r) = Submodule.Quotient.mk (r • x) :=
+  (rTensor_ring_mod_ideal_equiv_mod_ideal_smul M I).eq_symm_apply.mp <|
+    Eq.trans (congrArg (x ⊗ₜ[R] ·) <|
+        Eq.trans (congrArg (Ideal.Quotient.mk I)
+                    (Eq.trans (smul_eq_mul R) (mul_one r))).symm <|
+          Submodule.Quotient.mk_smul I r 1)
+      (smul_tmul r x _).symm
+
+@[simp]
+lemma rTensor_ring_mod_ideal_equiv_mod_ideal_smul_symm_apply
+    (I : Ideal R) (x : M) :
+    (rTensor_ring_mod_ideal_equiv_mod_ideal_smul M I).symm
+      (Submodule.Quotient.mk x) = x ⊗ₜ[R] 1 := rfl
 
 end Modules
 

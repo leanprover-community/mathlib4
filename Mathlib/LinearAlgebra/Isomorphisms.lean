@@ -182,6 +182,12 @@ def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ 
     right_inv := fun x => Quotient.inductionOn' x fun x => by simp }
 #align submodule.quotient_quotient_equiv_quotient Submodule.quotientQuotientEquivQuotient
 
+/-- Essentially the same equivalence as in the third isomorphism theorem,
+except restated in terms of suprema/addition of submodules instead of `≤`. -/
+def quotientQuotientEquivQuotientSup : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ S ⊔ T :=
+  quotEquivOfEq _ _ (by rw [map_sup, mkQ_map_self, bot_sup_eq]) ≪≫ₗ
+    quotientQuotientEquivQuotient S (S ⊔ T) le_sup_left
+
 /-- Corollary of the third isomorphism theorem: `[S : T] [M : S] = [M : T]` -/
 theorem card_quotient_mul_card_quotient (S T : Submodule R M) (hST : T ≤ S)
     [DecidablePred fun x => x ∈ S.map T.mkQ] [Fintype (M ⧸ S)] [Fintype (M ⧸ T)] :

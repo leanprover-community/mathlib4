@@ -868,6 +868,12 @@ lemma range_mapIncl (p : Submodule R P) (q : Submodule R Q) :
   rw [mapIncl, map_range_eq_span_tmul]
   congr; ext; simp
 
+theorem map₂_eq_range_lift_comp_mapIncl (f : P →ₗ[R] Q →ₗ[R] M)
+    (p : Submodule R P) (q : Submodule R Q) :
+    Submodule.map₂ f p q = LinearMap.range (lift f ∘ₗ mapIncl p q) := by
+  simp_rw [LinearMap.range_comp, range_mapIncl, Submodule.map_span,
+    Set.image_image2, Submodule.map₂_eq_span_image2, lift.tmul]
+
 section
 
 variable {P' Q' : Type*}
@@ -1333,9 +1339,9 @@ theorem lTensor_smul_action (r : R) :
 
 @[simp]
 theorem rTensor_smul_action (r : R) :
-    (DistribMulAction.toLinearMap R M r).rTensor N =
-      DistribMulAction.toLinearMap R (M ⊗[R] N) r :=
-  Eq.trans (rTensor_smul N r LinearMap.id) (congrArg _ (rTensor_id N M))
+    (DistribMulAction.toLinearMap R N r).rTensor M =
+      DistribMulAction.toLinearMap R (N ⊗[R] M) r :=
+  Eq.trans (rTensor_smul M r LinearMap.id) (congrArg _ (rTensor_id M N))
 
 variable {N}
 

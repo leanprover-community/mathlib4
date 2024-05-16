@@ -156,11 +156,16 @@ theorem Forall₂.length_eq : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → length 
   | _, _, Forall₂.cons _ h₂ => congr_arg succ (Forall₂.length_eq h₂)
 #align list.forall₂.length_eq List.Forall₂.length_eq
 
-theorem Forall₂.nthLe :
-    ∀ {x : List α} {y : List β} (_ : Forall₂ R x y) ⦃i : ℕ⦄ (hx : i < x.length) (hy : i < y.length),
-      R (x.nthLe i hx) (y.nthLe i hy)
+theorem Forall₂.get :
+    {x : List α} → {y : List β} → Forall₂ R x y → ⦃i : ℕ⦄ →
+      (hx : i < x.length) → (hy : i < y.length) → R (x.get ⟨i, hx⟩) (y.get ⟨i, hy⟩)
   | _, _, Forall₂.cons ha _, 0, _, _ => ha
-  | _, _, Forall₂.cons _ hl, succ _, _, _ => hl.nthLe _ _
+  | _, _, Forall₂.cons _ hl, succ _, _, _ => hl.get _ _
+
+@[deprecated]
+theorem Forall₂.nthLe {x : List α} {y : List β} (h : Forall₂ R x y) ⦃i : ℕ⦄
+    (hx : i < x.length) (hy : i < y.length) : R (x.nthLe i hx) (y.nthLe i hy) :=
+  h.get hx hy
 #align list.forall₂.nth_le List.Forall₂.nthLe
 
 theorem forall₂_of_length_eq_of_nthLe :

@@ -405,6 +405,15 @@ def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
 
 end Module
 
+lemma comm_DistribMulAction_toLinearMap [Semiring R] [Monoid S]
+    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+    [DistribMulAction S M] [SMulCommClass S R M] [DistribMulAction S N]
+    [SMulCommClass S R N] [MulActionHomClass (M →ₗ[R] N) S M N]
+    (f : M →ₗ[R] N) (s : S) :
+    f ∘ₗ (DistribMulAction.toLinearMap R M s) =
+      (DistribMulAction.toLinearMap R N s) ∘ₗ f :=
+  DFunLike.ext _ _ (map_smul f s)
+
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]

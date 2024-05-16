@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
 import Mathlib.Algebra.Module.Torsion
+import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.Ideal.AssociatedPrime
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # Lemmas about the `IsSmulRegular` Predicate
@@ -43,11 +45,11 @@ lemma isSMulRegular_on_submodule_of_isSMulRegular {R : Type*} [Semiring R]
     (h : IsSMulRegular M r) : IsSMulRegular N r :=
   isSMulRegular_of_injective_of_isSMulRegular N.subtype N.injective_subtype h
 
-variable {R : Type*} (M : Type*)
+variable {R : Type*} (M M' M'' : Type*)
 
 section Ring
 
-variable {M' M'' : Type*} [Ring R] [AddCommGroup M] [Module R M]
+variable {M' M''} [Ring R] [AddCommGroup M] [Module R M]
     [AddCommGroup M'] [Module R M'] [AddCommGroup M''] [Module R M'']
 
 lemma isSMulRegular_iff_smul_eq_zero_imp_eq_zero (r : R) :
@@ -76,7 +78,7 @@ lemma isSMulRegular_on_quot_iff_smul_mem_implies_mem
       simp_rw [← map_smul, N.mkQ_apply, Submodule.Quotient.mk_eq_zero]
 
 lemma mem_of_isSMulRegular_on_quot_of_smul_mem {N : Submodule R M}
-    {r : R} {x : M} (h1 : IsSMulRegular (M⧸N) r) (h2 : r • x ∈ N) : x ∈ N :=
+    {r : R} (h1 : IsSMulRegular (M⧸N) r) {x : M} (h2 : r • x ∈ N) : x ∈ N :=
   (isSMulRegular_on_quot_iff_smul_mem_implies_mem N r).mp h1 x h2
 
 /-- Given a left exact sequence `0 → M → M' → M''`, if `r` is regular on both
@@ -101,7 +103,7 @@ lemma isSMulRegular_of_isSMulRegular_on_submodule_on_quotient {r : R}
 end Ring
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
-    {I : Ideal R} (N : Submodule R M) (r : R)
+    [AddCommGroup M'] [Module R M'] {I : Ideal R} (N : Submodule R M) (r : R)
 
 lemma isSMulRegular_iff_ker_smul_eq_bot :
     IsSMulRegular M r ↔ LinearMap.ker (DistribMulAction.toLinearMap R M r) = ⊥ :=
@@ -120,6 +122,20 @@ lemma isSMulRegular_on_quotient_ideal_smul_iff_isSMulRegular_over_quotient :
       IsSMulRegular (M⧸I•(⊤ : Submodule R M)) (Ideal.Quotient.mk I r) :=
   (Equiv.refl _).isSMulRegular_congr fun _ => rfl
 
+open scoped TensorProduct in
+lemma isSMulRegular_lTensor [Module.Flat R M] (h : IsSMulRegular M' r) :
+    IsSMulRegular (M ⊗[R] M') r :=
+  have h1 := congrArg DFunLike.coe (LinearMap.lTensor_smul_action M M' r)
+  Eq.mp (congrArg Function.Injective h1) <|
+    Module.Flat.lTensor_preserves_injective_linearMap _ h
+
+open scoped TensorProduct in
+lemma isSMulRegular_rTensor [Module.Flat R M] (h : IsSMulRegular M' r) :
+    IsSMulRegular (M' ⊗[R] M) r :=
+  have h1 := congrArg DFunLike.coe (LinearMap.rTensor_smul_action M M' r)
+  Eq.mp (congrArg (Function.Injective) h1) <|
+    Module.Flat.rTensor_preserves_injective_linearMap _ h
+
 variable {M}
 
 lemma isSMulRegular_on_submodule_iff_disjoint_ker_smul_submodule :
@@ -132,7 +148,29 @@ lemma isSMulRegular_on_quot_iff_smul_comap_le :
     IsSMulRegular (M⧸N) r ↔ N.comap (DistribMulAction.toLinearMap R M r) ≤ N :=
   isSMulRegular_on_quot_iff_smul_mem_implies_mem N r
 
-variable (R)
+lemma isSMulRegular_on_quot_iff_smul_comap_eq :
+    IsSMulRegular (M⧸N) r ↔ N.comap (DistribMulAction.toLinearMap R M r) = N :=
+  Iff.trans (isSMulRegular_on_quot_iff_smul_comap_le N r) <|
+    LE.le.le_iff_eq (fun _ => N.smul_mem r)
+
+variable {r}
+
+open Submodule Pointwise in
+lemma isSMulRegular_on_quot_iff_smul_top_inf_eq_smul_of_isSMulRegular :
+    IsSMulRegular M r → (IsSMulRegular (M⧸N) r ↔ r • ⊤ ⊓ N ≤ r • N) := by
+  intro (h : Function.Injective (DistribMulAction.toLinearMap R M r))
+  rw [isSMulRegular_on_quot_iff_smul_comap_le, ← map_le_map_iff_of_injective h,
+    map_comap_eq, LinearMap.range_eq_map]; rfl
+
+variable {N}
+
+open Submodule Pointwise in
+lemma smul_top_inf_eq_smul_of_isSMulRegular_on_quot :
+    IsSMulRegular (M⧸N) r → r • ⊤ ⊓ N ≤ r • N := by
+  convert map_mono ∘ (isSMulRegular_on_quot_iff_smul_comap_le N r).mp using 2
+  exact Eq.trans (congrArg (· ⊓ N) (Submodule.map_top _)) (map_comap_eq _ _).symm
+
+variable (R r)
 
 lemma biUnion_associatedPrimes_eq_non_regular [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R M, p = { r : R | ¬ IsSMulRegular M r } :=
@@ -141,3 +179,99 @@ lemma biUnion_associatedPrimes_eq_non_regular [IsNoetherianRing R] :
       not_forall, exists_prop, and_comm]
 
 end IsSMulRegular
+
+
+-- Probably these should be moved
+section
+
+open scoped Pointwise
+
+variable {R} (M : Type*) {M' M''} [CommRing R]
+    [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
+    [AddCommGroup M''] [Module R M'']
+
+/-- An abbreviation for `M⧸rM` that keeps us from having to write
+`(⊤ : Submodule R M)` over and over to satisfy the typechecker. -/
+abbrev ModSMulBy (r : R) := M ⧸ r • (⊤ : Submodule R M)
+
+namespace ModSMulBy
+
+open Submodule Function
+
+open TensorProduct in
+noncomputable def equiv_lTensor_ring_mod (r : R) :
+    ModSMulBy M r ≃ₗ[R] ((R⧸Ideal.span {r}) ⊗[R] M) :=
+  quotEquivOfEq _ _ (ideal_span_singleton_smul _ _).symm ≪≫ₗ
+   (lTensor_ring_mod_ideal_equiv_mod_ideal_smul M _).symm
+
+variable {M}
+
+def map (r : R) : (M →ₗ[R] M') →ₗ[R] ModSMulBy M r →ₗ[R] ModSMulBy M' r :=
+  Submodule.mapQLinear _ _ ∘ₗ LinearMap.id.codRestrict _ fun _ =>
+    map_le_iff_le_comap.mp <| le_of_eq_of_le (map_element_smul _ _ _) <|
+      smul_mono_right r le_top
+
+@[simp]
+lemma map_apply_apply (r : R) (f : M →ₗ[R] M') (x : M) :
+    map r f (Submodule.Quotient.mk x) =
+      (Submodule.Quotient.mk (f x) : ModSMulBy M' r) := rfl
+
+lemma map_comp_mkQ (r : R) (f : M →ₗ[R] M') :
+    map r f ∘ₗ mkQ (r • ⊤) = mkQ (r • ⊤) ∘ₗ f := rfl
+
+variable (M)
+
+@[simp]
+lemma map_id (r : R) : map r (LinearMap.id : M →ₗ[R] M) = .id :=
+  DFunLike.ext _ _ <| (mkQ_surjective _).forall.mpr fun _ => rfl
+
+variable {M}
+
+@[simp]
+lemma map_comp (r : R) (g : M' →ₗ[R] M'') (f : M →ₗ[R] M') :
+    map r (g ∘ₗ f) = map r g ∘ₗ map r f :=
+  DFunLike.ext _ _ <| (mkQ_surjective _).forall.mpr fun _ => rfl
+
+lemma equiv_lTensor_ring_mod_naturality_apply (r : R) (f : M →ₗ[R] M') (x : M) :
+    equiv_lTensor_ring_mod M' r (map r f (Submodule.Quotient.mk x)) =
+      f.lTensor (R⧸Ideal.span {r})
+        (equiv_lTensor_ring_mod M r (Submodule.Quotient.mk x)) := by
+  simp only [equiv_lTensor_ring_mod, map_apply_apply, LinearEquiv.trans_apply,
+    quotEquivOfEq_mk, lTensor_ring_mod_ideal_equiv_mod_ideal_smul_symm_apply,
+    LinearMap.lTensor_tmul]
+
+lemma equiv_lTensor_ring_mod_naturality (r : R) (f : M →ₗ[R] M') :
+    equiv_lTensor_ring_mod M' r ∘ₗ map r f =
+      f.lTensor (R⧸Ideal.span {r}) ∘ₗ equiv_lTensor_ring_mod M r := by
+  ext x; exact equiv_lTensor_ring_mod_naturality_apply r f x
+
+lemma map_surjective (r : R) {f : M →ₗ[R] M'} (hf : Surjective f) :
+    Surjective (map r f) :=
+  @Surjective.of_comp _ _ _ _ (mkQ (r • ⊤)) <|
+    show Surjective ⇑(map r f ∘ₗ mkQ (r • ⊤)) from
+    Eq.mpr (congrArg (Surjective ∘ DFunLike.coe) (liftQ_mkQ _ _ _)) <|
+      (mkQ_surjective _).comp hf
+
+lemma map_exact (r : R) {f : M →ₗ[R] M'} {g : M' →ₗ[R] M''}
+    (hfg : Exact f g) (hg : Surjective g) : Exact (map r f) (map r g) :=
+  (Exact.iff_of_ladder_linear_equiv (equiv_lTensor_ring_mod_naturality r f).symm
+                             (equiv_lTensor_ring_mod_naturality r g).symm).mp
+    (lTensor_exact (R⧸Ideal.span {r}) hfg hg)
+
+-- Who knew this didn't rely on exactness at the right!?
+open IsSMulRegular LinearMap in
+lemma map_first_exact_on_four_term_exact_of_isSMulRegular_last {M₂ M₃}
+    [AddCommGroup M₂] [Module R M₂] [AddCommGroup M₃] [Module R M₃]
+    {r : R} {f₁ : M →ₗ[R] M'} {f₂ : M' →ₗ[R] M₂} {f₃ : M₂ →ₗ[R] M₃}
+    (h₁₂ : Exact f₁ f₂) (h₂₃ : Exact f₂ f₃) (h : IsSMulRegular M₃ r) :
+    Exact (map r f₁) (map r f₂) := by
+  dsimp [map, mapQLinear]
+  refine (Exact.descends_to_quotient_iff h₁₂ _ _).mpr ?_
+  rw [map_element_smul, Submodule.map_top, inf_comm]
+  refine smul_top_inf_eq_smul_of_isSMulRegular_on_quot ?_
+  have := ker_liftQ_eq_bot' _ _ h₂₃.linearMap_ker_eq.symm
+  exact h.isSMulRegular_of_injective_of_isSMulRegular _ <| ker_eq_bot.mp this
+
+end ModSMulBy
+
+end
