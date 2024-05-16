@@ -366,7 +366,7 @@ theorem natDegree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha :
   natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_monic_of_not_isUnit hu ha
 
 open nonZeroDivisors Nat Set in
-/-- *McCoy theorem*: a polynomial `P : R[X]` is not a zerodivisor if and only if there is `a : R`
+/-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`
 such that `a ≠ 0` and `a • P = 0`. We follow the proof given in
 https://math.stackexchange.com/questions/83121/zero-divisor-in-rx/83171#83171. -/
 theorem nmem_nonZeroDivisors_iff (P : R[X]) : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
