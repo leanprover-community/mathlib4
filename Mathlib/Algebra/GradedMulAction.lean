@@ -41,7 +41,7 @@ Note that there is no need for `SetLike.graded_mul_action` or similar, as all th
 would contain is already supplied by `GradedSMul` when the objects within `A` and `M` have
 a `MulAction` instance.
 
-## tags
+## Tags
 
 graded action
 -/

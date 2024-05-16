@@ -197,7 +197,8 @@ lemma NatTrans.rightDerivedToHomotopyCategory_comp {F G H : C ⥤ D} (α : F ⟶
       NatTrans.rightDerivedToHomotopyCategory α ≫
         NatTrans.rightDerivedToHomotopyCategory β := rfl
 
-/-- The natural transformation between right-derived functors induced by a natural transformation.-/
+/-- The natural transformation between right-derived functors
+induced by a natural transformation. -/
 noncomputable def NatTrans.rightDerived
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) :
     F.rightDerived n ⟶ G.rightDerived n :=

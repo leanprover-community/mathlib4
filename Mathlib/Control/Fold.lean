@@ -10,6 +10,7 @@ import Mathlib.Control.Traversable.Lemmas
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Category.KleisliCat
+import Mathlib.Tactic.AdaptationNote
 
 #align_import control.fold from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 
@@ -61,7 +62,6 @@ open ULift CategoryTheory MulOpposite
 namespace Monoid
 
 variable {m : Type u → Type u} [Monad m]
-
 variable {α β : Type u}
 
 /-- For a list, foldl f x [y₀,y₁] reduces as follows:
@@ -88,10 +88,11 @@ We can view the above as a composition of functions:
 
 We can use traverse and const to construct this composition:
 ```
-calc   const.run (traverse (λ y, const.mk' (flip f y)) [y₀,y₁]) x
-     = const.run ((::) <$> const.mk' (flip f y₀) <*> traverse (λ y, const.mk' (flip f y)) [y₁]) x
+calc   const.run (traverse (fun y ↦ const.mk' (flip f y)) [y₀,y₁]) x
+     = const.run ((::) <$> const.mk' (flip f y₀) <*>
+         traverse (fun y ↦ const.mk' (flip f y)) [y₁]) x
 ...  = const.run ((::) <$> const.mk' (flip f y₀) <*>
-         ( (::) <$> const.mk' (flip f y₁) <*> traverse (λ y, const.mk' (flip f y)) [] )) x
+         ( (::) <$> const.mk' (flip f y₁) <*> traverse (fun y ↦ const.mk' (flip f y)) [] )) x
 ...  = const.run ((::) <$> const.mk' (flip f y₀) <*>
          ( (::) <$> const.mk' (flip f y₁) <*> pure [] )) x
 ...  = const.run ( ((::) <$> const.mk' (flip f y₁) <*> pure []) ∘
@@ -104,8 +105,7 @@ calc   const.run (traverse (λ y, const.mk' (flip f y)) [y₀,y₁]) x
 And this is how `const` turns a monoid into an applicative functor and
 how the monoid of endofunctions define `Foldl`.
 -/
-@[reducible]
-def Foldl (α : Type u) : Type u :=
+abbrev Foldl (α : Type u) : Type u :=
   (End α)ᵐᵒᵖ
 #align monoid.foldl Monoid.Foldl
 
@@ -123,11 +123,15 @@ def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl 
   toFun xs := op <| flip (List.foldl f) (FreeMonoid.toList xs)
   map_one' := rfl
   map_mul' := by
-    intros; simp only [FreeMonoid.toList_mul, flip, unop_op, List.foldl_append, op_inj]; rfl
+    intros
+    #adaptation_note /-- nightly-2024-03-16: simp was
+    simp only [FreeMonoid.toList_mul, flip, unop_op, List.foldl_append, op_inj] -/
+    simp only [FreeMonoid.toList_mul, unop_op, List.foldl_append, op_inj, Function.flip_def,
+      List.foldl_append]
+    rfl
 #align monoid.foldl.of_free_monoid Monoid.Foldl.ofFreeMonoid
 
-@[reducible]
-def Foldr (α : Type u) : Type u :=
+abbrev Foldr (α : Type u) : Type u :=
   End α
 #align monoid.foldr Monoid.Foldr
 
@@ -147,8 +151,7 @@ def Foldr.ofFreeMonoid (f : α → β → β) : FreeMonoid α →* Monoid.Foldr 
   map_mul' _ _ := funext fun _ => List.foldr_append _ _ _ _
 #align monoid.foldr.of_free_monoid Monoid.Foldr.ofFreeMonoid
 
-@[reducible]
-def foldlM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
+abbrev foldlM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   MulOpposite <| End <| KleisliCat.mk m α
 #align monoid.mfoldl Monoid.foldlM
 
@@ -168,8 +171,7 @@ def foldlM.ofFreeMonoid [LawfulMonad m] (f : β → α → m β) : FreeMonoid α
   map_mul' := by intros; apply unop_injective; funext; apply List.foldlM_append
 #align monoid.mfoldl.of_free_monoid Monoid.foldlM.ofFreeMonoid
 
-@[reducible]
-def foldrM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
+abbrev foldrM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   End <| KleisliCat.mk m α
 #align monoid.mfoldr Monoid.foldrM
 
@@ -271,7 +273,6 @@ theorem foldl.unop_ofFreeMonoid (f : β → α → β) (xs : FreeMonoid α) (a :
 #align traversable.foldl.unop_of_free_monoid Traversable.foldl.unop_ofFreeMonoid
 
 variable (m : Type u → Type u) [Monad m] [LawfulMonad m]
-
 variable {t : Type u → Type u} [Traversable t] [LawfulTraversable t]
 
 open LawfulTraversable
@@ -299,7 +300,6 @@ open LawfulTraversable
 open List (cons)
 
 variable {α β γ : Type u}
-
 variable {t : Type u → Type u} [Traversable t] [LawfulTraversable t]
 
 @[simp]
@@ -318,7 +318,12 @@ theorem foldr.ofFreeMonoid_comp_of (f : β → α → α) :
 theorem foldlm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β → m α) :
     foldlM.ofFreeMonoid f ∘ FreeMonoid.of = foldlM.mk ∘ flip f := by
   ext1 x
-  simp [(· ∘ ·), foldlM.ofFreeMonoid, foldlM.mk, flip]
+  #adaptation_note /-- nightly-2024-03-16: simp was
+  simp only [foldlM.ofFreeMonoid, flip, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply,
+    FreeMonoid.toList_of, List.foldlM_cons, List.foldlM_nil, bind_pure, foldlM.mk, op_inj] -/
+  simp only [foldlM.ofFreeMonoid, Function.flip_def, MonoidHom.coe_mk, OneHom.coe_mk,
+    Function.comp_apply, FreeMonoid.toList_of, List.foldlM_cons, List.foldlM_nil, bind_pure,
+    foldlM.mk, op_inj]
   rfl
 #align traversable.mfoldl.of_free_monoid_comp_of Traversable.foldlm.ofFreeMonoid_comp_of
 
@@ -326,7 +331,9 @@ theorem foldlm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β
 theorem foldrm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : β → α → m α) :
     foldrM.ofFreeMonoid f ∘ FreeMonoid.of = foldrM.mk ∘ f := by
   ext
-  simp [(· ∘ ·), foldrM.ofFreeMonoid, foldrM.mk, flip]
+  #adaptation_note /-- nightly-2024-03-16: simp was
+  simp [(· ∘ ·), foldrM.ofFreeMonoid, foldrM.mk, flip] -/
+  simp [(· ∘ ·), foldrM.ofFreeMonoid, foldrM.mk, Function.flip_def]
 #align traversable.mfoldr.of_free_monoid_comp_of Traversable.foldrm.ofFreeMonoid_comp_of
 
 theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMonoid.of xs) :=
@@ -337,12 +344,14 @@ theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMon
           by simp only [List.reverse_reverse]
       _ = FreeMonoid.toList (List.foldr cons [] (foldMap FreeMonoid.of xs).reverse).reverse :=
           by simp only [List.foldr_eta]
-      _ = (unop (Foldl.ofFreeMonoid (flip cons) (foldMap FreeMonoid.of xs)) []).reverse :=
-          by simp [flip, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op]
-      _ = toList xs :=
-          by rw [foldMap_hom_free (Foldl.ofFreeMonoid (flip <| @cons α))]
-             simp only [toList, foldl, List.reverse_inj, Foldl.get, foldl.ofFreeMonoid_comp_of,
-               Function.comp_apply]
+      _ = (unop (Foldl.ofFreeMonoid (flip cons) (foldMap FreeMonoid.of xs)) []).reverse := by
+            #adaptation_note /-- nightly-2024-03-16: simp was
+            simp [flip, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op] -/
+            simp [Function.flip_def, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op]
+      _ = toList xs := by
+            rw [foldMap_hom_free (Foldl.ofFreeMonoid (flip <| @cons α))]
+            simp only [toList, foldl, List.reverse_inj, Foldl.get, foldl.ofFreeMonoid_comp_of,
+              Function.comp_apply]
 #align traversable.to_list_spec Traversable.toList_spec
 
 theorem foldMap_map [Monoid γ] (f : α → β) (g : β → γ) (xs : t α) :
@@ -371,7 +380,9 @@ theorem toList_map (f : α → β) (xs : t α) : toList (f <$> xs) = f <$> toLis
 @[simp]
 theorem foldl_map (g : β → γ) (f : α → γ → α) (a : α) (l : t β) :
     foldl f a (g <$> l) = foldl (fun x y => f x (g y)) a l := by
-  simp only [foldl, foldMap_map, (· ∘ ·), flip]
+  #adaptation_note /-- nightly-2024-03-16: simp was
+  simp only [foldl, foldMap_map, (· ∘ ·), flip] -/
+  simp only [foldl, foldMap_map, (· ∘ ·), Function.flip_def]
 #align traversable.foldl_map Traversable.foldl_map
 
 @[simp]
@@ -382,9 +393,9 @@ theorem foldr_map (g : β → γ) (f : γ → α → α) (a : α) (l : t β) :
 @[simp]
 theorem toList_eq_self {xs : List α} : toList xs = xs := by
   simp only [toList_spec, foldMap, traverse]
-  induction xs
-  case nil => rfl
-  case cons _ _ ih => conv_rhs => rw [← ih]; rfl
+  induction xs with
+  | nil => rfl
+  | cons _ _ ih => (conv_rhs => rw [← ih]); rfl
 #align traversable.to_list_eq_self Traversable.toList_eq_self
 
 theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by
@@ -419,7 +430,9 @@ theorem foldrm_toList (f : α → β → m β) (x : β) (xs : t α) :
 @[simp]
 theorem foldlm_map (g : β → γ) (f : α → γ → m α) (a : α) (l : t β) :
     foldlm f a (g <$> l) = foldlm (fun x y => f x (g y)) a l := by
-  simp only [foldlm, foldMap_map, (· ∘ ·), flip]
+  #adaptation_note /-- nightly-2024-03-16: simp was
+  simp only [foldlm, foldMap_map, (· ∘ ·), flip] -/
+  simp only [foldlm, foldMap_map, (· ∘ ·), Function.flip_def]
 #align traversable.mfoldl_map Traversable.foldlm_map
 
 @[simp]

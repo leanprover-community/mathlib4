@@ -3,8 +3,8 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Finset.Sigma
+import Mathlib.Data.Fintype.Card
 
 #align_import data.finset.pi_induction from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
@@ -49,8 +49,7 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
   · rcases sigma_nonempty.1 hne with ⟨i, -, hi⟩
     rcases H_ex i (f i) hi with ⟨x, x_mem, hr⟩
     set g := update f i ((f i).erase x) with hg
--- Porting note: this tactic does not exist yet
---  clear_value g
+    clear_value g
     have hx' : x ∉ g i := by
       rw [hg, update_same]
       apply not_mem_erase
@@ -71,9 +70,7 @@ maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i
 See also `Finset.induction_on_pi_max` and `Finset.induction_on_pi_min` for specialized versions
 that require `∀ i, LinearOrder (α i)`.  -/
 theorem induction_on_pi {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
-    (step :
-      ∀ (g : ∀ i, Finset (α i)) (i : ι) (x : α i) (_ : x ∉ g i),
-        p g → p (update g i (insert x (g i)))) :
+    (step : ∀ (g : ∀ i, Finset (α i)) (i : ι), ∀ x ∉ g i, p g → p (update g i (insert x (g i)))) :
     p f :=
   induction_on_pi_of_choice (fun _ x s ↦ x ∉ s) (fun _ s ⟨x, hx⟩ ↦ ⟨x, hx, not_mem_erase x s⟩) f
     h0 step

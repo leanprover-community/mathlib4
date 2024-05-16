@@ -3,9 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
-import Mathlib.GroupTheory.Submonoid.Operations
-import Mathlib.GroupTheory.Submonoid.Membership
-import Mathlib.GroupTheory.Subgroup.MulOpposite
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.MulOpposite
+import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.Ring.Opposite
+import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.Algebra.Ring.Opposite
 
 #align_import ring_theory.non_zero_divisors from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -86,7 +89,7 @@ def nonZeroDivisors (R : Type*) [MonoidWithZero R] : Submonoid R where
 scoped[nonZeroDivisors] notation:9000 R "⁰" => nonZeroDivisors R
 
 /-- Let `R` be a monoid with zero and `M` an additive monoid with an `R`-action, then the collection
-of non-zero smul-divisors forms a submonoid. These elements are also called `M`-regular.-/
+of non-zero smul-divisors forms a submonoid. These elements are also called `M`-regular. -/
 def nonZeroSMulDivisors (R : Type*) [MonoidWithZero R] (M : Type _) [Zero M] [MulAction R M] :
     Submonoid R where
   carrier := { r | ∀ m : M, r • m = 0 → m = 0}
@@ -155,8 +158,11 @@ theorem dvd_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : r 
 theorem dvd_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : c * x ∣ c * y ↔ x ∣ y :=
   dvd_cancel_left_mem_nonZeroDivisors c.prop
 
-theorem nonZeroDivisors.ne_zero [Nontrivial M] {x} (hx : x ∈ M⁰) : x ≠ 0 := fun h ↦
-  one_ne_zero (hx _ <| (one_mul _).trans h)
+theorem zero_not_mem_nonZeroDivisors [Nontrivial M] : 0 ∉ M⁰ :=
+  fun h ↦ one_ne_zero <| h 1 <| mul_zero _
+
+theorem nonZeroDivisors.ne_zero [Nontrivial M] {x} (hx : x ∈ M⁰) : x ≠ 0 :=
+  ne_of_mem_of_not_mem hx zero_not_mem_nonZeroDivisors
 #align non_zero_divisors.ne_zero nonZeroDivisors.ne_zero
 
 theorem nonZeroDivisors.coe_ne_zero [Nontrivial M] (x : M⁰) : (x : M) ≠ 0 :=
@@ -181,6 +187,9 @@ theorem isUnit_of_mem_nonZeroDivisors {G₀ : Type*} [GroupWithZero G₀] {x : G
     inv_mul_cancel (nonZeroDivisors.ne_zero hx)⟩, rfl⟩
 #align is_unit_of_mem_non_zero_divisors isUnit_of_mem_nonZeroDivisors
 
+lemma IsUnit.mem_nonZeroDivisors {a : M} (ha : IsUnit a) : a ∈ M⁰ :=
+  fun _ h ↦ ha.mul_left_eq_zero.mp h
+
 theorem eq_zero_of_ne_zero_of_mul_right_eq_zero [NoZeroDivisors M] {x y : M} (hnx : x ≠ 0)
     (hxy : y * x = 0) : y = 0 :=
   Or.resolve_right (eq_zero_or_eq_zero_of_mul_eq_zero hxy) hnx
@@ -198,6 +207,8 @@ theorem mem_nonZeroDivisors_of_ne_zero [NoZeroDivisors M] {x : M} (hx : x ≠ 0)
 theorem mem_nonZeroDivisors_iff_ne_zero [NoZeroDivisors M] [Nontrivial M] {x : M} :
     x ∈ M⁰ ↔ x ≠ 0 := ⟨nonZeroDivisors.ne_zero, mem_nonZeroDivisors_of_ne_zero⟩
 #align mem_non_zero_divisors_iff_ne_zero mem_nonZeroDivisors_iff_ne_zero
+
+variable [FunLike F M M']
 
 theorem map_ne_zero_of_mem_nonZeroDivisors [Nontrivial M] [ZeroHomClass F M M'] (g : F)
     (hg : Function.Injective (g : M → M')) {x : M} (h : x ∈ M⁰) : g x ≠ 0 := fun h0 ↦
@@ -234,23 +245,14 @@ theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M'
   Submonoid.le_comap_of_map_le _ (map_le_nonZeroDivisors_of_injective _ hf le_rfl)
 #align non_zero_divisors_le_comap_non_zero_divisors_of_injective nonZeroDivisors_le_comap_nonZeroDivisors_of_injective
 
-theorem prod_zero_iff_exists_zero [NoZeroDivisors M₁] [Nontrivial M₁] {s : Multiset M₁} :
-    s.prod = 0 ↔ ∃ (r : M₁) (_ : r ∈ s), r = 0 := by
-  constructor; swap
-  · rintro ⟨r, hrs, rfl⟩
-    exact Multiset.prod_eq_zero hrs
-  induction' s using Multiset.induction_on with a s ih
-  · intro habs
-    simp at habs
-  · rw [Multiset.prod_cons]
-    intro hprod
-    replace hprod := eq_zero_or_eq_zero_of_mul_eq_zero hprod
-    cases' hprod with ha hb
-    · exact ⟨a, Multiset.mem_cons_self a s, ha⟩
-    · apply (ih hb).imp _
-      rintro b ⟨hb₁, hb₂⟩
-      exact ⟨Multiset.mem_cons_of_mem hb₁, hb₂⟩
-#align prod_zero_iff_exists_zero prod_zero_iff_exists_zero
+/-- In a finite ring, an element is a unit iff it is a non-zero-divisor. -/
+lemma isUnit_iff_mem_nonZeroDivisors_of_finite [Finite R] {a : R} :
+    IsUnit a ↔ a ∈ nonZeroDivisors R := by
+  refine ⟨IsUnit.mem_nonZeroDivisors, fun ha ↦ ?_⟩
+  rw [IsUnit.isUnit_iff_mulRight_bijective, ← Finite.injective_iff_bijective]
+  intro b c hbc
+  rw [← sub_eq_zero, ← sub_mul] at hbc
+  exact sub_eq_zero.mp (ha _ hbc)
 
 end nonZeroDivisors
 

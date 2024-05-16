@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Mario Carneiro
 import Qq.MetaM
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.SolveByElim
 
 /-! # The `nontriviality` tactic. -/
 
@@ -44,18 +43,20 @@ def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) 
     g.assign q(subsingleton_or_nontrivial_elim $g₁ $g₂)
     pure g₂.mvarId!
 
+open Lean.Elab.Tactic.SolveByElim in
 /--
 Tries to generate a `Nontrivial α` instance using `nontrivial_of_ne` or `nontrivial_of_lt`
 and local hypotheses.
 -/
 def nontrivialityByAssumption (g : MVarId) : MetaM Unit := do
   g.inferInstance <|> do
-    _ ← SolveByElim.solveByElim.processSyntax {maxDepth := 6}
+    _ ← processSyntax {maxDepth := 6}
       false false [← `(nontrivial_of_ne), ← `(nontrivial_of_lt)] [] #[] [g]
 
 /-- Attempts to generate a `Nontrivial α` hypothesis.
 
-The tactic first looks for an instance using `infer_instance`.
+The tactic first checks to see that there is not already a `Nontrivial α` instance
+before trying to synthesize one using other techniques.
 
 If the goal is an (in)equality, the type `α` is inferred from the goal.
 Otherwise, the type needs to be specified in the tactic invocation, as `nontriviality α`.
@@ -109,8 +110,8 @@ syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)?
       if let some (α, _) := tgt.eq? then return α
       if let some (α, _) := tgt.app4? ``LE.le then return α
       if let some (α, _) := tgt.app4? ``LT.lt then return α
-      throwError "The goal is not an (in)equality, so you'll need to specify the desired {""
-        }`Nontrivial α` instance by invoking `nontriviality α`.")
+      throwError "The goal is not an (in)equality, so you'll need to specify the desired \
+        `Nontrivial α` instance by invoking `nontriviality α`.")
     let .sort u ← whnf (← inferType α) | unreachable!
     let some v := u.dec | throwError "not a type{indentExpr α}"
     let α : Q(Type v) := α

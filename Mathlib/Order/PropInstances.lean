@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Disjoint
-import Mathlib.Order.WithBot
 
 #align_import order.prop_instances from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -16,11 +15,8 @@ Instances on `Prop` such as `DistribLattice`, `BoundedOrder`, `LinearOrder`.
 
 -/
 
-set_option autoImplicit true
-
-
 /-- Propositions form a distributive lattice. -/
-instance Prop.distribLattice : DistribLattice Prop where
+instance Prop.instDistribLattice : DistribLattice Prop where
   sup := Or
   le_sup_left := @Or.inl
   le_sup_right := @Or.inr
@@ -30,20 +26,22 @@ instance Prop.distribLattice : DistribLattice Prop where
   inf_le_right := @And.right
   le_inf := fun _ _ _ Hab Hac Ha => And.intro (Hab Ha) (Hac Ha)
   le_sup_inf := fun _ _ _ => or_and_left.2
-#align Prop.distrib_lattice Prop.distribLattice
+#align Prop.distrib_lattice Prop.instDistribLattice
 
 /-- Propositions form a bounded order. -/
-instance Prop.boundedOrder : BoundedOrder Prop where
+instance Prop.instBoundedOrder : BoundedOrder Prop where
   top := True
   le_top _ _ := True.intro
   bot := False
   bot_le := @False.elim
-#align Prop.bounded_order Prop.boundedOrder
+#align Prop.bounded_order Prop.instBoundedOrder
 
+@[simp]
 theorem Prop.bot_eq_false : (⊥ : Prop) = False :=
   rfl
 #align Prop.bot_eq_false Prop.bot_eq_false
 
+@[simp]
 theorem Prop.top_eq_true : (⊤ : Prop) = True :=
   rfl
 #align Prop.top_eq_true Prop.top_eq_true
@@ -112,8 +110,10 @@ theorem Prop.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
   by_cases P <;> by_cases Q <;> simp [*]
 #align Prop.is_compl_iff Prop.isCompl_iff
 
--- porting note: Lean 3 would unfold these for us, but we need to do it manually now
+-- Porting note: Lean 3 would unfold these for us, but we need to do it manually now
 section decidable_instances
+
+universe u
 variable {α : Type u}
 
 instance Prop.decidablePredBot : DecidablePred (⊥ : α → Prop) := fun _ => instDecidableFalse

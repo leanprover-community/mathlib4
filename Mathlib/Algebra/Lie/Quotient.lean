@@ -35,11 +35,8 @@ universe u v w w₁ w₂
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-
 variable [LieRingModule L M] [LieModule R L M]
-
 variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 /-- The quotient of a Lie module by a Lie submodule. It is a Lie module. -/
@@ -130,6 +127,7 @@ instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
     · apply lie_mem_left R L I (x₁ - y₁) y₂ h₁⟩
 #align lie_submodule.quotient.lie_quotient_has_bracket LieSubmodule.Quotient.lieQuotientHasBracket
 
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 @[simp]
 theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L ⧸ I)⁆ :=
   rfl
@@ -192,7 +190,7 @@ theorem surjective_mk' : Function.Surjective (mk' N) := surjective_quot_mk _
 theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by simp [LieModuleHom.range_eq_top]
 
 instance isNoetherian [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
-  Submodule.Quotient.isNoetherian (N : Submodule R M)
+  inferInstanceAs (IsNoetherian R (M ⧸ (N : Submodule R M)))
 
 -- Porting note: LHS simplifies @[simp]
 theorem mk_eq_zero {m : M} : mk' N m = 0 ↔ m ∈ N :=
@@ -233,9 +231,7 @@ end LieSubmodule
 namespace LieHom
 
 variable {R L L' : Type*}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
-
 variable (f : L →ₗ⁅R⁆ L')
 
 /-- The first isomorphism theorem for morphisms of Lie algebras. -/

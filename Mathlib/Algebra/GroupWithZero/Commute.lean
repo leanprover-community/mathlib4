@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Tactic.Nontriviality
 
 #align_import algebra.group_with_zero.commute from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
+#align_import algebra.group_with_zero.power from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
 /-!
 # Lemmas about commuting elements in a `MonoidWithZero` or a `GroupWithZero`.
@@ -16,12 +17,11 @@ import Mathlib.Tactic.Nontriviality
 
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
-
 variable [MonoidWithZero M₀]
 
 namespace Ring
 
-open Classical
+open scoped Classical
 
 theorem mul_inverse_rev' {a b : M₀} (h : Commute a b) :
     inverse (a * b) = inverse b * inverse a := by
@@ -90,3 +90,12 @@ theorem div_left (hac : Commute a c) (hbc : Commute b c) : Commute (a / b) c := 
 #align commute.div_left Commute.div_left
 
 end Commute
+
+section GroupWithZero
+variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀} {m n : ℕ}
+
+theorem pow_inv_comm₀ (a : G₀) (m n : ℕ) : a⁻¹ ^ m * a ^ n = a ^ n * a⁻¹ ^ m :=
+  (Commute.refl a).inv_left₀.pow_pow m n
+#align pow_inv_comm₀ pow_inv_comm₀
+
+end GroupWithZero

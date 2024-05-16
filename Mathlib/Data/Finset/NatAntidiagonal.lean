@@ -3,9 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Data.Finset.Antidiagonal
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.NatAntidiagonal
-import Mathlib.Data.Finset.Antidiagonal
 
 #align_import data.finset.nat_antidiagonal from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -71,7 +72,7 @@ theorem antidiagonal_succ (n : ℕ) :
         (by simp) := by
   apply eq_of_veq
   rw [cons_val, map_val]
-  · apply Multiset.Nat.antidiagonal_succ
+  apply Multiset.Nat.antidiagonal_succ
 #align finset.nat.antidiagonal_succ Finset.Nat.antidiagonal_succ
 
 theorem antidiagonal_succ' (n : ℕ) :
@@ -99,10 +100,10 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
 #align finset.nat.antidiagonal_succ_succ' Finset.Nat.antidiagonal_succ_succ'
 
 theorem antidiagonal.fst_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.1 < n + 1 :=
-  Nat.lt_succ_of_le $ antidiagonal.fst_le hlk
+  Nat.lt_succ_of_le <| antidiagonal.fst_le hlk
 
 theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.2 < n + 1 :=
-  Nat.lt_succ_of_le $ antidiagonal.snd_le hlk
+  Nat.lt_succ_of_le <| antidiagonal.snd_le hlk
 
 @[simp] lemma antidiagonal_filter_snd_le_of_le {n k : ℕ} (h : k ≤ n) :
     (antidiagonal n).filter (fun a ↦ a.snd ≤ k) = (antidiagonal k).map

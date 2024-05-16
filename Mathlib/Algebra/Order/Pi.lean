@@ -5,7 +5,6 @@ Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Pi
-import Mathlib.Tactic.Positivity
 
 #align_import algebra.order.pi from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
@@ -30,9 +29,10 @@ namespace Pi
       "The product of a family of ordered additive commutative monoids is
 an ordered additive commutative monoid."]
 instance orderedCommMonoid {ι : Type*} {Z : ι → Type*} [∀ i, OrderedCommMonoid (Z i)] :
-    OrderedCommMonoid (∀ i, Z i) :=
-  { Pi.partialOrder, Pi.commMonoid with
-    mul_le_mul_left := fun _ _ w _ i => mul_le_mul_left' (w i) _ }
+    OrderedCommMonoid (∀ i, Z i) where
+  __ := Pi.partialOrder
+  __ := Pi.commMonoid
+  mul_le_mul_left _ _ w _ := fun i => mul_le_mul_left' (w i) _
 #align pi.ordered_comm_monoid Pi.orderedCommMonoid
 #align pi.ordered_add_comm_monoid Pi.orderedAddCommMonoid
 
@@ -50,9 +50,11 @@ instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ 
       "The product of a family of canonically ordered additive monoids is
 a canonically ordered additive monoid."]
 instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedCommMonoid (Z i)] :
-    CanonicallyOrderedCommMonoid (∀ i, Z i) :=
-  { Pi.orderBot, Pi.orderedCommMonoid, Pi.existsMulOfLe with
-    le_self_mul := fun _ _ _ => le_self_mul }
+    CanonicallyOrderedCommMonoid (∀ i, Z i) where
+  __ := Pi.instOrderBot
+  __ := Pi.orderedCommMonoid
+  __ := Pi.existsMulOfLe
+  le_self_mul _ _ := fun _ => le_self_mul
 
 @[to_additive]
 instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
@@ -60,7 +62,7 @@ instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
   __ := Pi.commMonoid
   le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)
   mul_le_mul_left _ _ c h i := mul_le_mul_left' (c i) (h i)
---Porting note: Old proof was
+-- Porting note: Old proof was
   -- refine_struct
   --     { Pi.partialOrder, Pi.monoid with
   --       mul := (· * ·)
@@ -73,31 +75,36 @@ instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
 #align pi.ordered_cancel_add_comm_monoid Pi.orderedAddCancelCommMonoid
 
 @[to_additive]
-instance orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (∀ i : I, f i) :=
-  { Pi.commGroup, Pi.orderedCommMonoid with
-    npow := Monoid.npow }
+instance orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (∀ i : I, f i) where
+  __ := Pi.commGroup
+  __ := Pi.orderedCommMonoid
+  npow := Monoid.npow
 #align pi.ordered_comm_group Pi.orderedCommGroup
 #align pi.ordered_add_comm_group Pi.orderedAddCommGroup
 
-instance orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i, f i) :=
-  { Pi.semiring,
-    Pi.partialOrder with
-    add_le_add_left := fun _ _ hab _ _ => add_le_add_left (hab _) _
-    zero_le_one := fun i => zero_le_one (α := f i)
-    mul_le_mul_of_nonneg_left := fun _ _ _ hab hc _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
-    mul_le_mul_of_nonneg_right := fun _ _ _ hab hc _ => mul_le_mul_of_nonneg_right (hab _) <| hc _ }
+instance orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i, f i) where
+  __ := Pi.semiring
+  __ := Pi.partialOrder
+  add_le_add_left _ _ hab _ := fun _ => add_le_add_left (hab _) _
+  zero_le_one := fun i => zero_le_one (α := f i)
+  mul_le_mul_of_nonneg_left _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
+  mul_le_mul_of_nonneg_right _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_right (hab _) <| hc _
 #align pi.ordered_semiring Pi.orderedSemiring
 
-instance orderedCommSemiring [∀ i, OrderedCommSemiring (f i)] : OrderedCommSemiring (∀ i, f i) :=
-  { Pi.commSemiring, Pi.orderedSemiring with }
+instance orderedCommSemiring [∀ i, OrderedCommSemiring (f i)] : OrderedCommSemiring (∀ i, f i) where
+  __ := Pi.commSemiring
+  __ := Pi.orderedSemiring
 #align pi.ordered_comm_semiring Pi.orderedCommSemiring
 
-instance orderedRing [∀ i, OrderedRing (f i)] : OrderedRing (∀ i, f i) :=
-  { Pi.ring, Pi.orderedSemiring with mul_nonneg := fun _ _ ha hb _ => mul_nonneg (ha _) (hb _) }
+instance orderedRing [∀ i, OrderedRing (f i)] : OrderedRing (∀ i, f i) where
+  __ := Pi.ring
+  __ := Pi.orderedSemiring
+  mul_nonneg _ _ ha hb := fun _ => mul_nonneg (ha _) (hb _)
 #align pi.ordered_ring Pi.orderedRing
 
-instance orderedCommRing [∀ i, OrderedCommRing (f i)] : OrderedCommRing (∀ i, f i) :=
-  { Pi.commRing, Pi.orderedRing with }
+instance orderedCommRing [∀ i, OrderedCommRing (f i)] : OrderedCommRing (∀ i, f i) where
+  __ := Pi.commRing
+  __ := Pi.orderedRing
 #align pi.ordered_comm_ring Pi.orderedCommRing
 
 end Pi
@@ -136,11 +143,11 @@ theorem const_le_one : const β a ≤ 1 ↔ a ≤ 1 :=
 #align function.const_le_one Function.const_le_one
 #align function.const_nonpos Function.const_nonpos
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) const_neg']
 theorem const_lt_one : const β a < 1 ↔ a < 1 :=
   @const_lt_const _ _ _ _ _ 1
 #align function.const_lt_one Function.const_lt_one
-#align function.const_neg Function.const_neg
+#align function.const_neg Function.const_neg'
 
 end const
 
@@ -155,7 +162,7 @@ variable [One γ] [LE γ] {f : α → β} {g : α → γ} {e : β → γ}
 
 end extend
 end Function
---Porting note: Tactic code not ported yet
+-- Porting note: Tactic code not ported yet
 -- namespace Tactic
 
 -- open Function
