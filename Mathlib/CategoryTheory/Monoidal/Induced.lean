@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+import Mathlib.CategoryTheory.Monoidal.Transport
 
 /-
 # The monoidal category structure induced by a monoidal functor
@@ -32,7 +33,9 @@ def isoMk {X Y : InducedCategory D F} (e : F X ≅ F Y) : X ≅ Y where
 
 end CategoryTheory.InducedCategory
 
-namespace CategoryTheory.MonoidalCategory
+namespace CategoryTheory
+
+namespace MonoidalCategory
 
 open InducedCategory Category
 
@@ -54,51 +57,23 @@ noncomputable instance inducedCategoryMonoidal :
   leftUnitor X := InducedCategory.isoMk (F.mapIso (leftUnitor (C := C) X))
   rightUnitor X := InducedCategory.isoMk (F.mapIso (rightUnitor (C := C) X))
 
--- very draft, this will be cleaned up when `InducedCategory`
--- is refactored using 1-field structures
-noncomputable instance : MonoidalCategory (InducedCategory D F.obj) where
-  tensor_id X Y := by
-    dsimp [inducedCategoryMonoidal]
-    erw [tensor_id]
-    simp
-    rfl
-  tensor_comp := sorry
-  tensorHom_def := sorry
-  whiskerLeft_id X Y := by
-    dsimp [inducedCategoryMonoidal]
-    erw [whiskerLeft_id]
-    simp
-    rfl
-  id_whiskerRight X Y := by
-    dsimp [inducedCategoryMonoidal]
-    erw [id_whiskerRight]
-    simp
-    rfl
-  associator_naturality := sorry
-  leftUnitor_naturality := sorry
-  rightUnitor_naturality := sorry
-  pentagon X Y Z T := by
-    dsimp [inducedCategoryMonoidal, homMk]
-    simp only [LaxMonoidalFunctor.μ_natural_left, MonoidalFunctor.μ_inv_hom_id_assoc,
-      LaxMonoidalFunctor.μ_natural_right]
-    erw [← F.map_comp, ← F.map_comp, ← F.map_comp]
-    simp
-  triangle X Y := by
-    dsimp [inducedCategoryMonoidal, homMk]
-    simp only [LaxMonoidalFunctor.μ_natural_right, MonoidalFunctor.μ_inv_hom_id_assoc,
-      LaxMonoidalFunctor.μ_natural_left]
-    erw [← F.map_comp]
-    simp
+noncomputable def inducedCategoryFunctorData :
+    Monoidal.InducingFunctorData (inducedFunctor F.obj) where
+  μIso := fun X Y => F.μIso X Y
+  εIso := F.εIso
+  whiskerLeft_eq := sorry
+  whiskerRight_eq := sorry
+  tensorHom_eq := sorry
+  associator_eq := sorry
+  leftUnitor_eq := sorry
+  rightUnitor_eq := sorry
 
-def inducedMonoidalFunctor : MonoidalFunctor (InducedCategory D F.obj) D where
-  toFunctor := inducedFunctor F.obj
-  ε := F.ε
-  μ := F.μ
-  μ_natural_left := sorry
-  μ_natural_right := sorry
-  associativity := F.associativity
-  left_unitality := F.left_unitality
-  right_unitality := F.right_unitality
+noncomputable instance : MonoidalCategory (InducedCategory D F.obj) :=
+  CategoryTheory.Monoidal.induced _ (inducedCategoryFunctorData F)
+
+@[simps!]
+noncomputable def inducedMonoidalFunctor : MonoidalFunctor (InducedCategory D F.obj) D :=
+  Monoidal.fromInduced _ (inducedCategoryFunctorData F)
 
 noncomputable def toInducedMonoidalFunctor : MonoidalFunctor C (InducedCategory D F.obj) where
   obj := id
@@ -124,5 +99,6 @@ noncomputable def toInducedCompInducedMonoidalFunctor :
   inv := sorry
   hom_inv_id := sorry
   inv_hom_id := sorry
+
 
 end CategoryTheory.MonoidalCategory
