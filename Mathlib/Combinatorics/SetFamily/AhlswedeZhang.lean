@@ -121,7 +121,7 @@ lemma truncatedSup_of_not_mem (h : a ∉ lowerClosure s) : truncatedSup s a = �
 @[simp] lemma truncatedSup_empty (a : α) : truncatedSup ∅ a = ⊤ := truncatedSup_of_not_mem $ by simp
 
 @[simp] lemma truncatedSup_singleton (b a : α) : truncatedSup {b} a = if a ≤ b then b else ⊤ := by
-  simp [truncatedSup]; split_ifs <;> simp [*]
+  simp [truncatedSup]; split_ifs <;> simp [Finset.filter_true_of_mem, *]
 
 lemma le_truncatedSup : a ≤ truncatedSup s a := by
   rw [truncatedSup]
@@ -136,7 +136,7 @@ lemma map_truncatedSup (e : α ≃o β) (s : Finset α) (a : α) :
   simp_rw [truncatedSup, apply_dite e, map_finset_sup', map_top, this]
   congr with h
   simp only [filter_map, Function.comp, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
-    OrderIso.le_iff_le, id.def]
+    OrderIso.le_iff_le, id]
   rw [sup'_map]
   -- TODO: Why can't `simp` use `Finset.sup'_map`?
   simp only [sup'_map, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv, Function.comp_apply]
@@ -200,7 +200,7 @@ lemma truncatedInf_le : truncatedInf s a ≤ a := by
 @[simp] lemma truncatedInf_singleton (b a : α) : truncatedInf {b} a = if b ≤ a then b else ⊥ := by
   simp only [truncatedInf, coe_singleton, upperClosure_singleton, UpperSet.mem_Ici_iff,
     filter_congr_decidable, id_eq]
-  split_ifs <;> simp [*]
+  split_ifs <;> simp [Finset.filter_true_of_mem, *]
 
 lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
     e (truncatedInf s a) = truncatedInf (s.map e.toEquiv.toEmbedding) (e a) := by
@@ -208,7 +208,7 @@ lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
   simp_rw [truncatedInf, apply_dite e, map_finset_inf', map_bot, this]
   congr with h
   simp only [filter_map, Function.comp, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
-    OrderIso.le_iff_le, id.def, inf'_map]
+    OrderIso.le_iff_le, id, inf'_map]
 
 variable [DecidableEq α]
 

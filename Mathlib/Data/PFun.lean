@@ -328,11 +328,9 @@ theorem fix_fwd {f : α →. Sum β α} {b : β} {a a' : α} (hb : b ∈ f.fix a
 def fixInduction {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') : C a := by
   have h₂ := (Part.mem_assert_iff.1 h).snd
-  -- Porting note: revert/intro trick required to address `generalize_proofs` bug
-  revert h₂
-  generalize_proofs h₁
-  intro h₂; clear h
-  induction' h₁ with a ha IH
+  generalize_proofs at h₂
+  clear h
+  induction' ‹Acc _ _› with a ha IH
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 #align pfun.fix_induction PFun.fixInduction
@@ -341,9 +339,8 @@ theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') :
     @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
-  -- Porting note: `generalize` required to address `generalize_proofs` bug
-  generalize @fixInduction.proof_1 α β f b a h = ha
-  induction ha
+  generalize_proofs
+  induction ‹Acc _ _›
   rfl
 #align pfun.fix_induction_spec PFun.fixInduction_spec
 

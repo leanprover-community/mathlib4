@@ -5,6 +5,8 @@ Authors: Anne Baanen, Devon Tuma
 -/
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.Tactic.AdaptationNote
 
 #align_import ring_theory.polynomial.scale_roots from "leanprover-community/mathlib"@"40ac1b258344e0c2b4568dc37bfad937ec35a727"
 
@@ -229,9 +231,9 @@ lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = nat
       p.scaleRoots r + q.scaleRoots r := by
   ext n; simp only [coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
     mul_comm (r ^ _), ← pow_add, ← h, ← add_mul, add_comm (_ - n)]
-  -- Adaptation note: v4.7.0-rc1
-  -- Previously `mul_assoc` was part of the `simp only` above, and this `rw` was not needed.
-  -- but this now causes a max rec depth error.
+  #adaptation_note /-- v4.7.0-rc1
+  Previously `mul_assoc` was part of the `simp only` above, and this `rw` was not needed.
+  but this now causes a max rec depth error. -/
   rw [mul_assoc, ← pow_add]
   cases lt_or_le (natDegree (p + q)) n with
   | inl hn => simp only [← coeff_add, coeff_eq_zero_of_natDegree_lt hn, zero_mul]

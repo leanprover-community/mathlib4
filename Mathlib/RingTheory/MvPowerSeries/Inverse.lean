@@ -61,7 +61,7 @@ well-founded recursion on the coefficients of the inverse.
 /-- Auxiliary definition that unifies
  the totalised inverse formal power series `(_)⁻¹` and
  the inverse formal power series that depends on
- an inverse of the constant coefficient `invOfUnit`.-/
+ an inverse of the constant coefficient `invOfUnit`. -/
 protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerSeries σ R
   | n =>
     letI := Classical.decEq σ
@@ -84,7 +84,7 @@ theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPower
     rfl
 #align mv_power_series.coeff_inv_aux MvPowerSeries.coeff_inv_aux
 
-/-- A multivariate formal power series is invertible if the constant coefficient is invertible.-/
+/-- A multivariate formal power series is invertible if the constant coefficient is invertible. -/
 def invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) : MvPowerSeries σ R :=
   inv.aux (↑u⁻¹) φ
 #align mv_power_series.inv_of_unit MvPowerSeries.invOfUnit
