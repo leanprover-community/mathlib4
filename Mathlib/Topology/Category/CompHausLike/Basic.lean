@@ -19,16 +19,15 @@ structure CompHausLike where
   /-- The underlying topological space satisfies P. -/
   prop : P toTop
 
+-- Porting note (#10754): Adding instance
+attribute [instance] CompHausLike.is_compact
+-- Porting note (#10754): Adding instance
+attribute [instance] CompHausLike.is_hausdorff
+
 namespace CompHausLike
 
 instance : CoeSort (CompHausLike P) (Type u) :=
   ⟨fun X => X.toTop⟩
-
-instance {X : CompHausLike P} : CompactSpace X :=
-  X.is_compact
-
-instance {X : CompHausLike P} : T2Space X :=
-  X.is_hausdorff
 
 instance category : Category (CompHausLike P) :=
   InducedCategory.category toTop
@@ -151,14 +150,10 @@ instance forget_reflectsIsomorphisms :
 
 variable {P}
 
-theorem epi_iff_surjective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
-    Epi f ↔ Function.Surjective f := by
-  constructor
-  · sorry
-    /- This direction is not true in general, and there probably isn't a simple condition on `P` 
-    that makes it true. -/
-  · rw [← CategoryTheory.epi_iff_surjective]
-    apply (forget (CompHausLike P)).epi_of_epi_map
+theorem epi_of_surjective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (hf : Function.Surjective f) :
+    Epi f := by
+  rw [← CategoryTheory.epi_iff_surjective] at hf
+  exact (forget (CompHausLike P)).epi_of_epi_map hf
 
 theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y)
     (hPUnit : P (TopCat.of PUnit) /- Added that the one-point space satisfies `P` -/) :

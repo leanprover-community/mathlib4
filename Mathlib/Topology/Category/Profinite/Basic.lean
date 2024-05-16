@@ -306,7 +306,7 @@ theorem isClosedMap : IsClosedMap f :=
 
 /-- Any continuous bijection of profinite spaces induces an isomorphism. -/
 theorem isIso_of_bijective (bij : Function.Bijective f) : IsIso f :=
-  haveI := CompHaus.isIso_of_bijective (profiniteToCompHaus.map f) bij
+  haveI := CompHausLike.isIso_of_bijective (profiniteToCompHaus.map f) bij
   isIso_of_fully_faithful profiniteToCompHaus _
 #align Profinite.is_iso_of_bijective Profinite.isIso_of_bijective
 
@@ -329,7 +329,7 @@ abbrev isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
 
 /-- Construct a homeomorphism from an isomorphism. -/
 @[simps!]
-def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHaus.homeoOfIso (profiniteToCompHaus.mapIso f)
+def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHausLike.homeoOfIso f
 #align Profinite.homeo_of_iso Profinite.homeoOfIso
 
 /-- The equivalence between isomorphisms in `Profinite` and homeomorphisms

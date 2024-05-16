@@ -25,7 +25,7 @@ The fully faithful functor `CompHaus ⥤ TopCat` is denoted `compHausToTop`.
 which is defined as the category of algebras for the ultrafilter monad, and `CompHaus`.
 `CompactumToCompHaus` is the functor from `Compactum` to `CompHaus` which is proven to be an
 equivalence of categories in `CompactumToCompHaus.isEquivalence`.
-See `topology/category/Compactum.lean` for a more detailed discussion where these definitions are
+See `Topology/Category/Compactum.lean` for a more detailed discussion where these definitions are
 introduced.
 
 -/
@@ -54,16 +54,6 @@ example {X : CompHaus} : CompactSpace X :=
 example {X : CompHaus} : T2Space X :=
   inferInstance
 
--- instance category : Category CompHaus :=
---   InducedCategory.category toTop
--- set_option linter.uppercaseLean3 false in
--- #align CompHaus.category CompHaus.category
-
--- instance concreteCategory : ConcreteCategory CompHaus :=
---   InducedCategory.concreteCategory _
--- set_option linter.uppercaseLean3 false in
--- #align CompHaus.concrete_category CompHaus.concreteCategory
-
 /-
 -- Porting note: This is now a syntactic tautology.
 @[simp]
@@ -82,51 +72,6 @@ abbrev of : CompHaus := CompHausLike.of _ X trivial
 set_option linter.uppercaseLean3 false in
 #align CompHaus.of CompHaus.of
 
--- @[simp]
--- theorem coe_of : (CompHaus.of X : Type _) = X :=
---   rfl
--- set_option linter.uppercaseLean3 false in
--- #align CompHaus.coe_of CompHaus.coe_of
-
--- Porting note (#10754): Adding instance
-example (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
-  inferInstance
-
--- Porting note (#10754): Adding instance
-example (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
-  inferInstance
-
--- Porting note (#10754): Adding instance
-example (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
-  inferInstance
-
-/-- Any continuous function on compact Hausdorff spaces is a closed map. -/
-theorem isClosedMap {X Y : CompHaus.{u}} (f : X ⟶ Y) : IsClosedMap f := CompHausLike.isClosedMap _
-set_option linter.uppercaseLean3 false in
-#align CompHaus.is_closed_map CompHaus.isClosedMap
-
-/-- Any continuous bijection of compact Hausdorff spaces is an isomorphism. -/
-theorem isIso_of_bijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bijective f) :
-    IsIso f := CompHausLike.isIso_of_bijective f bij
-set_option linter.uppercaseLean3 false in
-#align CompHaus.is_iso_of_bijective CompHaus.isIso_of_bijective
-
-/-- Any continuous bijection of compact Hausdorff spaces induces an isomorphism. -/
-noncomputable def isoOfBijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bijective f) :
-    X ≅ Y := CompHausLike.isoOfBijective f bij
-set_option linter.uppercaseLean3 false in
-#align CompHaus.iso_of_bijective CompHaus.isoOfBijective
-
-/-- Construct an isomorphism from a homeomorphism. -/
-abbrev isoOfHomeo {X Y : CompHaus.{u}} (f : X ≃ₜ Y) : X ≅ Y := CompHausLike.isoOfHomeo f
-
-/-- Construct a homeomorphism from an isomorphism. -/
-abbrev homeoOfIso {X Y : CompHaus.{u}} (f : X ≅ Y) : X ≃ₜ Y := CompHausLike.homeoOfIso f
-
-/-- The equivalence between isomorphisms in `CompHaus` and homeomorphisms
-of topological spaces. -/
-abbrev isoEquivHomeo {X Y : CompHaus.{u}} : (X ≅ Y) ≃ (X ≃ₜ Y) := CompHausLike.isoEquivHomeo
-
 end CompHaus
 
 /-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
@@ -136,25 +81,6 @@ abbrev compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
   -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top compHausToTop
-
-example : compHausToTop.Full  :=
-  inferInstance
-
-example : compHausToTop.Faithful :=
-  inferInstance
-
--- Porting note (#10754): Adding instance
-example (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
-  inferInstance
-
--- Porting note (#10754): Adding instance
-example (X : CompHaus) : T2Space (compHausToTop.obj X) :=
-  inferInstance
-
-instance CompHaus.forget_reflectsIsomorphisms : (forget CompHaus.{u}).ReflectsIsomorphisms :=
-  inferInstance
-set_option linter.uppercaseLean3 false in
-#align CompHaus.forget_reflects_isomorphisms CompHaus.forget_reflectsIsomorphisms
 
 /-- (Implementation) The object part of the compactification functor from topological spaces to
 compact Hausdorff spaces.
@@ -326,19 +252,8 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
 set_option linter.uppercaseLean3 false in
 #align CompHaus.epi_iff_surjective CompHaus.epi_iff_surjective
 
-theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
-  constructor
-  · intro hf x₁ x₂ h
-    let g₁ : of PUnit ⟶ X := ⟨fun _ => x₁, continuous_const⟩
-    let g₂ : of PUnit ⟶ X := ⟨fun _ => x₂, continuous_const⟩
-    have : g₁ ≫ f = g₂ ≫ f := by
-      ext
-      exact h
-    rw [cancel_mono] at this
-    apply_fun fun e => e PUnit.unit at this
-    exact this
-  · rw [← CategoryTheory.mono_iff_injective]
-    apply (forget CompHaus).mono_of_mono_map
+theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f :=
+  CompHausLike.mono_iff_injective f trivial
 set_option linter.uppercaseLean3 false in
 #align CompHaus.mono_iff_injective CompHaus.mono_iff_injective
 

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Adam Topaz. All rights reserved.
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
 
 import Mathlib.Topology.Category.CompHausLike.Basic
@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 # Explicit limits and colimits
 
-This file collects some constructions of explicit limits and colimits in `CompHaus`,
+This file collects some constructions of explicit limits and colimits in `CompHausLike P`,
 which may be useful due to their definitional properties.
 
 So far, we have the following:
@@ -114,6 +114,16 @@ def pullback.isLimit : Limits.IsLimit (pullback.cone f g hP) :=
 theorem hasPullback : HasLimit (cospan f g) where
   exists_limit := ⟨⟨pullback.cone f g hP, pullback.isLimit f g hP⟩⟩
 
+noncomputable def createsPullback : CreatesLimit (cospan f g) (compHausLikeToTop P) := by
+  refine createsLimitOfFullyFaithfulOfIso (pullback f g hP)
+    (((TopCat.pullbackConeIsLimit f g).conePointUniqueUpToIso
+        (limit.isLimit _)) ≪≫ Limits.lim.mapIso (?_ ≪≫ (diagramIsoCospan _).symm))
+  exact Iso.refl _
+
+noncomputable def preservesPullback : PreservesLimit (cospan f g) (compHausLikeToTop P) :=
+  letI := createsPullback f g hP
+  preservesLimitOfCreatesLimitAndHasLimit _ _
+
 theorem hasPullbacks (hP : ∀ ⦃X Y B : CompHausLike P⦄ (f : X ⟶ B) (g : Y ⟶ B),
       P (TopCat.of { xy : X × Y | f xy.fst = g xy.snd })) :
     HasPullbacks (CompHausLike P) where
@@ -121,7 +131,6 @@ theorem hasPullbacks (hP : ∀ ⦃X Y B : CompHausLike P⦄ (f : X ⟶ B) (g : Y
     have : HasLimit (cospan (F.map WalkingCospan.Hom.inl) (F.map WalkingCospan.Hom.inr)) :=
       hasPullback _ _ (hP _ _)
     hasLimitOfIso (diagramIsoCospan F).symm
-
 
 end Pullbacks
 
@@ -251,13 +260,21 @@ theorem hasPullbacksOfInclusions
       apply Sigma.openEmbedding_ι
       exact hP _ }
 
-def preservesPullbacksOfInclusions
+noncomputable def preservesPullbacksOfInclusions
     (hP : ∀ {α : Type} [Finite α] (X : α → CompHausLike.{u} P),
       P (TopCat.of.{u} (Σ (a : α), (X a).toTop)))
     (hP' : ∀ ⦃X Y B : CompHausLike.{u} P⦄ (f : X ⟶ B) (g : Y ⟶ B)
-      (hg : OpenEmbedding g), P (TopCat.of.{u} { xy : X × Y | f xy.fst = g xy.snd })) :
+      (_ : OpenEmbedding g), P (TopCat.of.{u} { xy : X × Y | f xy.fst = g xy.snd })) :
     have := has_finite_coproducts.{u} hP
-    PreservesPullbacksOfInclusions (compHausLikeToTop P) := sorry
+    PreservesPullbacksOfInclusions (compHausLikeToTop P) :=
+  haveI := has_finite_coproducts.{u} hP
+  { preservesPullbackInl := by
+      intros X Y Z f
+      apply (config := { allowSynthFailures := true }) preservesPullbackSymmetry
+      apply preservesPullback
+      apply hP'
+      apply Sigma.openEmbedding_ι
+      exact hP _  }
 
 theorem finitaryExtensive
     (hP : ∀ {α : Type} [Finite α] (X : α → CompHausLike P), P (TopCat.of (Σ (a : α), X a)))
