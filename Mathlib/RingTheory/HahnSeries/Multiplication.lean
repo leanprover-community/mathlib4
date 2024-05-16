@@ -102,11 +102,11 @@ variable {V : Type*} [AddCommMonoid V] [SMul R V]
 
 instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommMonoid (HahnSeries Γ V)
-instance instRSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
+instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
     SMul R (HahnModule Γ R V) :=
   inferInstanceAs <| SMul R (HahnSeries Γ V)
 
-instance instRModule [Semiring R] [Module R V] : Module R (HahnModule Γ R V) :=
+instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ R V) :=
   inferInstanceAs <| Module R (HahnSeries Γ V)
 
 @[simp] theorem of_zero : of R (0 : HahnSeries Γ V) = 0 := rfl
