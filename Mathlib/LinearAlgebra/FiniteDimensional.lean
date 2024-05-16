@@ -1030,8 +1030,7 @@ section finrank_eq_one
 -/
 theorem finrank_eq_one_iff_of_nonzero (v : V) (nz : v ≠ 0) :
     finrank K V = 1 ↔ span K ({v} : Set V) = ⊤ :=
-  -- Porting note: need explicit universe on PUnit
-  ⟨fun h => by simpa using (basisSingleton PUnit.{u+1} h v nz).span_eq, fun s =>
+  ⟨fun h => by simpa using (basisSingleton Unit h v nz).span_eq, fun s =>
     finrank_eq_card_basis
       (Basis.mk (linearIndependent_singleton nz)
         (by
@@ -1059,47 +1058,34 @@ theorem finrank_eq_one_iff {K V : Type*} [Ring K] [StrongRankCondition K]
     simpa using finrank_eq_card_basis b
 #align finrank_eq_one_iff finrank_eq_one_iff
 
--- TODO: can we remove `IsDomain K`? I have a argument when `K` is `CommRing`
--- but the original statement is `DivisionRing K` which allows `K` be non-commutative.
-
 /-- A module has dimension 1 iff there is some nonzero `v : V` so every vector is a multiple of `v`.
 -/
-theorem finrank_eq_one_iff' {K V : Type*} [Ring K] [IsDomain K] [StrongRankCondition K]
+theorem finrank_eq_one_iff' {K V : Type*} [Ring K] [StrongRankCondition K]
     [AddCommGroup V] [Module K V] [Module.Free K V] :
     finrank K V = 1 ↔ ∃ v ≠ 0, ∀ w : V, ∃ c : K, c • v = w := by
-  -- Porting note: was a messy `convert` proof
-  rw [finrank_eq_one_iff Unit, Basis.basis_singleton_iff]
+  rw [← rank_eq_one_iff]
+  exact Cardinal.toNat_eq_iff one_ne_zero
 #align finrank_eq_one_iff' finrank_eq_one_iff'
 
 -- Not sure why this aren't found automatically.
 /-- A finite dimensional module has dimension at most 1 iff
 there is some `v : V` so every vector is a multiple of `v`.
 -/
-theorem finrank_le_one_iff {K V : Type*} [Ring K] [IsDomain K] [StrongRankCondition K]
+theorem finrank_le_one_iff {K V : Type*} [Ring K] [StrongRankCondition K]
     [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
     finrank K V ≤ 1 ↔ ∃ v : V, ∀ w : V, ∃ c : K, c • v = w := by
-  constructor
-  · intro h
-    by_cases h' : finrank K V = 0
-    · use 0
-      intro w
-      use 0
-      haveI := finrank_zero_iff.mp h'
-      apply Subsingleton.elim
-    · replace h' := zero_lt_iff.mpr h'
-      have : finrank K V = 1 := by omega
-      obtain ⟨v, -, p⟩ := finrank_eq_one_iff'.mp this
-      use v, p
-  · rintro ⟨v, p⟩
-    exact finrank_le_one v p
+  rw [← rank_le_one_iff, ← finrank_eq_rank, ← Cardinal.natCast_le,
+    Nat.cast_one]
 #align finrank_le_one_iff finrank_le_one_iff
 
-theorem Submodule.finrank_le_one_iff_isPrincipal (W : Submodule K V) [FiniteDimensional K W] :
+theorem Submodule.finrank_le_one_iff_isPrincipal {K V : Type*} [Ring K] [StrongRankCondition K]
+    [AddCommGroup V] [Module K V] (W : Submodule K V) [Module.Free K W] [Module.Finite K W] :
     finrank K W ≤ 1 ↔ W.IsPrincipal := by
   rw [← W.rank_le_one_iff_isPrincipal, ← finrank_eq_rank, ← Cardinal.natCast_le, Nat.cast_one]
 #align submodule.finrank_le_one_iff_is_principal Submodule.finrank_le_one_iff_isPrincipal
 
-theorem Module.finrank_le_one_iff_top_isPrincipal [FiniteDimensional K V] :
+theorem Module.finrank_le_one_iff_top_isPrincipal {K V : Type*} [Ring K] [StrongRankCondition K]
+    [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
     finrank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by
   rw [← Module.rank_le_one_iff_top_isPrincipal, ← finrank_eq_rank, ← Cardinal.natCast_le,
     Nat.cast_one]
@@ -1171,50 +1157,63 @@ theorem Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra
   Subalgebra.finite_bot
 #align subalgebra.finite_dimensional_bot Subalgebra.finiteDimensional_bot
 
-theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F S ≤ 1) :
-    S = ⊥ := by
+theorem Subalgebra.eq_bot_of_rank_le_one
+    {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E] [Algebra F E]
+    {S : Subalgebra F E} (h : Module.rank F S ≤ 1) [Module.Free F S] : S = ⊥ := by
   nontriviality E
-  obtain ⟨m, _, he⟩ := Cardinal.exists_nat_eq_of_le_nat (h.trans_eq Nat.cast_one.symm)
-  -- Porting note: fails without explicit type
-  haveI : FiniteDimensional F S := .of_rank_eq_nat he
-  rw [← not_bot_lt_iff, ← Subalgebra.toSubmodule.lt_iff_lt]
-  -- Porting note: fails without explicit type
-  haveI : FiniteDimensional F (Subalgebra.toSubmodule S) :=
-    S.toSubmoduleEquiv.symm.finiteDimensional
-  refine fun hl => (Submodule.finrank_lt_finrank_of_lt hl).not_le (natCast_le.1 ?_)
-  iterate 2 rw [Subalgebra.finrank_toSubmodule, finrank_eq_rank]
-  exact h.trans_eq Subalgebra.rank_bot.symm
+  obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := F) (M := S)
+  by_cases h1 : Module.rank F S = 1
+  · refine bot_unique fun x hx ↦ Algebra.mem_bot.2 ?_
+    rw [← b.mk_eq_rank'', Cardinal.eq_one_iff_unique, ← unique_iff_subsingleton_and_nonempty] at h1
+    obtain ⟨h1⟩ := h1
+    obtain ⟨y, hy⟩ := (bijective_algebraMap_of_linearEquiv (b.repr ≪≫ₗ
+      Finsupp.LinearEquiv.finsuppUnique _ _ _).symm).surjective ⟨x, hx⟩
+    exact ⟨y, congr(Subtype.val $(hy))⟩
+  haveI := Cardinal.mk_eq_zero_iff.1 (b.mk_eq_rank''.symm ▸ lt_one_iff_zero.1 (h.lt_of_ne h1))
+  haveI := b.repr.toEquiv.subsingleton
+  exact False.elim <| one_ne_zero congr(S.val $(Subsingleton.elim 1 0))
 #align subalgebra.eq_bot_of_rank_le_one Subalgebra.eq_bot_of_rank_le_one
 
 theorem Subalgebra.eq_bot_of_finrank_one
     {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E] [Algebra F E]
     {S : Subalgebra F E} (h : finrank F S = 1) [Module.Free F S] : S = ⊥ := by
-  refine bot_unique fun x hx ↦ Algebra.mem_bot.2 ?_
-  obtain ⟨y, hy⟩ := (bijective_algebraMap_of_linearEquiv ((basisUnique Unit h).repr ≪≫ₗ
-    Finsupp.LinearEquiv.finsuppUnique _ _ _).symm).surjective ⟨x, hx⟩
-  exact ⟨y, congr(Subtype.val $(hy))⟩
+  refine Subalgebra.eq_bot_of_rank_le_one ?_
+  rw [finrank, Cardinal.toNat_eq_one] at h
+  rw [h]
 #align subalgebra.eq_bot_of_finrank_one Subalgebra.eq_bot_of_finrank_one
 
+-- TODO: `NoZeroSMulDivisors` is not needed since we have `Module.Free`
 @[simp]
-theorem Subalgebra.rank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
+theorem Subalgebra.rank_eq_one_iff {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E]
+    [Algebra F E] [NoZeroSMulDivisors F E] [Nontrivial E]
+    {S : Subalgebra F E} [Module.Free F S] :
     Module.rank F S = 1 ↔ S = ⊥ :=
   ⟨fun h => Subalgebra.eq_bot_of_rank_le_one h.le, fun h => h.symm ▸ Subalgebra.rank_bot⟩
 #align subalgebra.rank_eq_one_iff Subalgebra.rank_eq_one_iff
 
+-- TODO: `NoZeroSMulDivisors` is not needed since we have `Module.Free`
 @[simp]
-theorem Subalgebra.finrank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
+theorem Subalgebra.finrank_eq_one_iff {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E]
+    [Algebra F E] [NoZeroSMulDivisors F E] [Nontrivial E]
+    {S : Subalgebra F E} [Module.Free F S] :
     finrank F S = 1 ↔ S = ⊥ :=
   ⟨fun h ↦ Subalgebra.eq_bot_of_finrank_one h, fun h ↦ h.symm ▸ Subalgebra.finrank_bot⟩
 #align subalgebra.finrank_eq_one_iff Subalgebra.finrank_eq_one_iff
 
-theorem Subalgebra.bot_eq_top_iff_rank_eq_one [Nontrivial E] :
+-- TODO: `NoZeroSMulDivisors` is not needed since we have `Module.Free`
+theorem Subalgebra.bot_eq_top_iff_rank_eq_one {F E : Type*} [CommRing F] [StrongRankCondition F]
+    [Ring E] [Algebra F E] [NoZeroSMulDivisors F E] [Nontrivial E] [Module.Free F E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
+  haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
   -- Porting note: removed `subalgebra_top_rank_eq_submodule_top_rank`
   rw [← rank_top, Subalgebra.rank_eq_one_iff, eq_comm]
 #align subalgebra.bot_eq_top_iff_rank_eq_one Subalgebra.bot_eq_top_iff_rank_eq_one
 
-theorem Subalgebra.bot_eq_top_iff_finrank_eq_one [Nontrivial E] :
+-- TODO: `NoZeroSMulDivisors` is not needed since we have `Module.Free`
+theorem Subalgebra.bot_eq_top_iff_finrank_eq_one {F E : Type*} [CommRing F] [StrongRankCondition F]
+    [Ring E] [Algebra F E] [NoZeroSMulDivisors F E] [Nontrivial E] [Module.Free F E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ finrank F E = 1 := by
+  haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
   rw [← finrank_top, ← subalgebra_top_finrank_eq_submodule_top_finrank,
     Subalgebra.finrank_eq_one_iff, eq_comm]
 #align subalgebra.bot_eq_top_iff_finrank_eq_one Subalgebra.bot_eq_top_iff_finrank_eq_one
