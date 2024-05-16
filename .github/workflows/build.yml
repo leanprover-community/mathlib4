@@ -302,7 +302,10 @@ jobs:
 
       - name: check for unused imports
         id: shake
-        run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
+        uses: liskin/gh-problem-matcher-wrap@v3
+        with:
+          linters: gcc
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
