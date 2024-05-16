@@ -297,6 +297,10 @@ theorem const_div [Div γ] [MeasurableDiv γ] (h : IdentDistrib f g μ ν) (c : 
 #align probability_theory.ident_distrib.const_div ProbabilityTheory.IdentDistrib.const_div
 #align probability_theory.ident_distrib.const_sub ProbabilityTheory.IdentDistrib.const_sub
 
+@[to_additive]
+lemma inv [Inv γ] [MeasurableInv γ] (h : IdentDistrib f g μ ν) :
+    IdentDistrib f⁻¹ g⁻¹ μ ν := h.comp measurable_inv
+
 theorem evariance_eq {f : α → ℝ} {g : β → ℝ} (h : IdentDistrib f g μ ν) :
     evariance f μ = evariance g ν := by
   convert (h.sub_const (∫ x, f x ∂μ)).nnnorm.coe_nnreal_ennreal.sq.lintegral_eq
