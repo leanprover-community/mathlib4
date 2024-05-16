@@ -22,6 +22,8 @@ import Mathlib.FieldTheory.RatFunc.FunLike
 * Defines `LaurentSeries.powerSeriesPart`
 * Defines the localization map `LaurentSeries.of_powerSeries_localization` which evaluates to
   `HahnSeries.ofPowerSeries`.
+* Embedding of rational functions into Laurent series, provided as a coercion, utilizing
+the underlying `RatFunc.coeAlgHom`.
 
 ## Main Results
 * Basic properties of Hasse derivatives

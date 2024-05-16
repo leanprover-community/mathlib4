@@ -11,6 +11,10 @@ import Mathlib.RingTheory.Polynomial.Content
 /-!
 # Generalities on the polynomial structure of rational functions
 
+## Main definitions
+- `RatFunc.C` is the constant polynomial
+- `RatFunc.X` is the indeterminate
+- `RatFunc.eval` evaluates a rational function given a value for the indeterminate
 -/
 
 noncomputable section

@@ -12,61 +12,19 @@ import Mathlib.Algebra.Polynomial.RingDivision
 # The field of rational functions
 
 Files in this folder define the field `RatFunc K` of rational functions over a field `K`, show it
-is the field of fractions of `K[X]` and provide the main results concerning it.
+is the field of fractions of `K[X]` and provide the main results concerning it. This file contains
+the basic definition.
 
 For connections with Laurent Series, see `Mathlib.RingTheory.LaurentSeries`.
 
 ## Main definitions
-
-Working with rational functions as polynomials:
- - `RatFunc.instField` provides a field structure
- - `RatFunc.C` is the constant polynomial
- - `RatFunc.X` is the indeterminate
- - `RatFunc.eval` evaluates a rational function given a value for the indeterminate
-You can use `IsFractionRing` API to treat `RatFunc` as the field of fractions of polynomials:
- * `algebraMap K[X] (RatFunc K)` maps polynomials to rational functions
- * `IsFractionRing.algEquiv` maps other fields of fractions of `K[X]` to `RatFunc K`,
-in particular:
- * `FractionRing.algEquiv K[X] (RatFunc K)` maps the generic field of
-    fraction construction to `RatFunc K`. Combine this with `AlgEquiv.restrictScalars` to change
-    the `FractionRing K[X] ≃ₐ[K[X]] RatFunc K` to
-    `FractionRing K[X] ≃ₐ[K] RatFunc K`.
-
-Working with rational functions as fractions:
- - `RatFunc.num` and `RatFunc.denom` give the numerator and denominator.
-   These values are chosen to be coprime and such that `RatFunc.denom` is monic.
-
-Embedding of rational functions into Laurent series, provided as a coercion, utilizing
-the underlying `RatFunc.coeAlgHom`.
-
-Lifting homomorphisms of polynomials to other types, by mapping and dividing, as long
-as the homomorphism retains the non-zero-divisor property:
-  - `RatFunc.liftMonoidWithZeroHom` lifts a `K[X] →*₀ G₀` to
-      a `RatFunc K →*₀ G₀`, where `[CommRing K] [CommGroupWithZero G₀]`
-  - `RatFunc.liftRingHom` lifts a `K[X] →+* L` to a `RatFunc K →+* L`,
-      where `[CommRing K] [Field L]`
-  - `RatFunc.liftAlgHom` lifts a `K[X] →ₐ[S] L` to a `RatFunc K →ₐ[S] L`,
-      where `[CommRing K] [Field L] [CommSemiring S] [Algebra S K[X]] [Algebra S L]`
-This is satisfied by injective homs.
-We also have lifting homomorphisms of polynomials to other polynomials,
-with the same condition on retaining the non-zero-divisor property across the map:
-  - `RatFunc.map` lifts `K[X] →* R[X]` when `[CommRing K] [CommRing R]`
-  - `RatFunc.mapRingHom` lifts `K[X] →+* R[X]` when `[CommRing K] [CommRing R]`
-  - `RatFunc.mapAlgHom` lifts `K[X] →ₐ[S] R[X]` when
-    `[CommRing K] [IsDomain K] [CommRing R] [IsDomain R]`
-
-We also have a set of recursion and induction principles:
+We provide a set of recursion and induction principles:
  - `RatFunc.liftOn`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
    if `f` is well-defined in the sense that `p/q = p'/q' → f p q = f p' q'`.
  - `RatFunc.liftOn'`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
    if `f` is well-defined in the sense that `f (a * p) (a * q) = f p' q'`.
  - `RatFunc.induction_on`: if `P` holds on `p / q` for all polynomials `p q`, then `P` holds on all
    rational functions
-
-We define the degree of a rational function, with values in `ℤ`:
- - `intDegree` is the degree of a rational function, defined as the difference between the
-   `natDegree` of its numerator and the `natDegree` of its denominator. In particular,
-   `intDegree 0 = 0`.
 
 ## Implementation notes
 
