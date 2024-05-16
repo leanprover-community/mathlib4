@@ -268,8 +268,10 @@ jobs:
 
       - name: test mathlib
         id: test
-        run: |
-          lake test
+        uses: liskin/gh-problem-matcher-wrap@v3
+        with:
+          linters: gcc
+          run: lake test
 
       - name: check for unused imports
         id: shake
