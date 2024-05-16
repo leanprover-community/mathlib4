@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.GroupPower.Hom
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Multiset.Basic
 

@@ -113,15 +113,6 @@ lemma isUnit_eq_one_or (hu : IsUnit u) : u = 1 ∨ u = -1 := by
   simpa only [natAbs_of_isUnit hu] using natAbs_eq u
 #align int.is_unit_eq_one_or Int.isUnit_eq_one_or
 
--- theorem units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
---   simpa only [Units.ext_iff, units_natAbs] using natAbs_eq u
--- #align int.units_eq_one_or Int.units_eq_one_or
-
--- theorem units_ne_iff_eq_neg {u u' : ℤˣ} : u ≠ u' ↔ u = -u' := by
---   rcases units_eq_one_or u with rfl | rfl <;>
---   rcases units_eq_one_or u' with rfl | rfl <;>
---   decide
-
 lemma isUnit_ne_iff_eq_neg (hu : IsUnit u) (hv : IsUnit v) : u ≠ v ↔ u = -v := by
   obtain rfl | rfl := isUnit_eq_one_or hu <;> obtain rfl | rfl := isUnit_eq_one_or hv <;> decide
 

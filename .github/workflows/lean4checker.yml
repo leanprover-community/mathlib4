@@ -3,11 +3,11 @@ name: lean4checker Workflow
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs at 00:00 UTC every day
+    - cron: '0 0 * * *'   # Runs at 00:00 UTC every day
 
 jobs:
   check-lean4checker:
-    runs-on: ubuntu-latest
+    runs-on: pr
     steps:
 
       - name: cleanup
@@ -62,13 +62,14 @@ jobs:
           # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
           rm -rf .lake/packages/proofwidgets/.lake/build/lib
           rm -rf .lake/packages/proofwidgets/.lake/build/ir
+          lake build ProofWidgets
 
       - name: Check environments using lean4checker
         id: lean4checker
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          git checkout toolchain/v4.7.0
+          git checkout v4.8.0-rc1
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .
