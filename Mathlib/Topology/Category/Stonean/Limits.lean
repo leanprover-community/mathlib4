@@ -180,9 +180,9 @@ def pullback.fst : pullback f hi ⟶ X :=
 /-- The projection from the pullback to the second component. -/
 noncomputable
 def pullback.snd : pullback f hi ⟶ Y :=
-  ⟨(Homeomorph.ofEmbedding i hi.toEmbedding).symm ∘
+  ⟨hi.toHomeomorph.symm ∘
     Set.MapsTo.restrict f _ _ (Set.mapsTo_preimage f (Set.range i)),
-    (Homeomorph.ofEmbedding i hi.toEmbedding).symm.continuous.comp (Continuous.restrict
+    hi.toHomeomorph.symm.continuous.comp (Continuous.restrict
     (Set.mapsTo_preimage f (Set.range i)) f.continuous)⟩
 
 /--
@@ -211,8 +211,8 @@ lemma pullback.condition {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [← hy, @ContinuousMap.coe_mk _ _ (Stonean.instTopologicalSpace (pullback f hi)) _ _ _]
   congr
-  apply_fun (Homeomorph.ofEmbedding i hi.toEmbedding)
-  simpa only [Homeomorph.ofEmbedding, Homeomorph.homeomorph_mk_coe, Equiv.ofInjective_apply,
+  apply_fun hi.toHomeomorph
+  simpa only [Embedding.toHomeomorph, Homeomorph.homeomorph_mk_coe, Equiv.ofInjective_apply,
     Homeomorph.homeomorph_mk_coe_symm, Set.MapsTo.restrict, Subtype.map, Function.comp_apply,
     Equiv.apply_symm_apply, Subtype.mk.injEq]
 
@@ -227,10 +227,10 @@ lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : Op
   ext z
   have := congr_fun (DFunLike.ext'_iff.mp w.symm) z
   have h : i (b z) = f (a z) := this
-  suffices b z = (Homeomorph.ofEmbedding i hi.toEmbedding).symm (⟨f (a z), by rw [← h]; simp⟩) from
+  suffices b z = hi.toHomeomorph.symm (⟨f (a z), by rw [← h]; simp⟩) from
     this.symm
-  apply_fun (Homeomorph.ofEmbedding i hi.toEmbedding)
-  simpa only [Homeomorph.ofEmbedding, Homeomorph.homeomorph_mk_coe, Equiv.ofInjective_apply,
+  apply_fun hi.toHomeomorph
+  simpa only [Embedding.toHomeomorph, Homeomorph.homeomorph_mk_coe, Equiv.ofInjective_apply,
     Homeomorph.homeomorph_mk_coe_symm, Equiv.apply_symm_apply, Subtype.mk.injEq]
 
 /-- The pullback cone whose cone point is the explicit pullback. -/

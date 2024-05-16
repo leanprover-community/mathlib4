@@ -324,7 +324,7 @@ theorem to_iso (f : X ⟶ Y) [h : IsOpenImmersion f] [h' : Epi f.base] : IsIso f
     convert @IsOpenImmersion.c_iso _ _ _ _ _ h ((Opens.map f.base).obj (unop U))
   have : IsIso f.base := by
     let t : X ≃ₜ Y :=
-      (Homeomorph.ofEmbedding _ h.base_open.toEmbedding).trans
+      h.base_open.toHomeomorph.trans
         { toFun := Subtype.val
           invFun := fun x =>
             ⟨x, by rw [Set.range_iff_surjective.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩
