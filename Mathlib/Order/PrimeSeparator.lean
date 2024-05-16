@@ -46,7 +46,7 @@ lemma mem_ideal_sup_principal (a b : α) (J : Ideal α) : b ∈ J ⊔ principal 
 theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : Set α)) :
     ∃ J : Ideal α, (IsPrime J) ∧ I ≤ J ∧ Disjoint (F : Set α) J := by
 
-  -- Let S be the set of proper ideals containing I and disjoint from F
+  -- Let S be the set of ideals containing I and disjoint from F.
   set S : Set (Set α) := { J : Set α | IsIdeal J ∧ I ≤ J ∧ Disjoint (F : Set α) J }
 
   -- Then I is in S...
@@ -64,10 +64,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
             ⟨le_trans (hcS hJ).2.1 (le_sSup hJ), fun J hJ ↦ (hcS hJ).2.2⟩⟩
 
   -- Thus, by Zorn's lemma, we can pick a maximal ideal J in S.
-  have zorn := zorn_subset_nonempty S chainub I IinS
-  have hJ := Exists.choose_spec zorn
-  set Jset := Exists.choose zorn
-  obtain ⟨⟨Jidl, IJ, JF⟩, ⟨_, Jmax⟩⟩ := hJ
+  obtain ⟨Jset, ⟨Jidl, IJ, JF⟩, ⟨_, Jmax⟩⟩ := zorn_subset_nonempty S chainub I IinS
   set J := IsIdeal.toIdeal Jidl
   use J
   have IJ' : I ≤ J := IJ
@@ -97,8 +94,8 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   have IJ₂ : I ≤ J₂ := le_trans IJ' le_sup_left
   have a₁J₁ : a₁ ∈ J₁ := mem_of_subset_of_mem (le_sup_right : _ ≤ J ⊔ _) mem_principal_self
   have a₂J₂ : a₂ ∈ J₂ := mem_of_subset_of_mem (le_sup_right : _ ≤ J ⊔ _) mem_principal_self
-  have J₁J : ↑J₁ ≠ Jset := by refine ne_of_mem_of_not_mem' a₁J₁ ha₁
-  have J₂J : ↑J₂ ≠ Jset := by refine ne_of_mem_of_not_mem' a₂J₂ ha₂
+  have J₁J : ↑J₁ ≠ Jset := ne_of_mem_of_not_mem' a₁J₁ ha₁
+  have J₂J : ↑J₂ ≠ Jset := ne_of_mem_of_not_mem' a₂J₂ ha₂
 
   -- Therefore, since J is maximal, we must have Jᵢ ∉ S.
   have J₁S : ↑J₁ ∉ S := fun h => J₁J (Jmax J₁ h JsubJ₁)
@@ -129,11 +126,8 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   let b := b₁ ⊔ b₂
   have bJ : b ∈ J := sup_mem b₁J b₂J
 
+  -- We now prove a key inequality, using crucially that the lattice is distributive.
   have ineq : c₁ ⊓ c₂ ≤ b ⊔ (a₁ ⊓ a₂) :=
-  -- Now we compute: b ⊔ (a₁ ⊓ a₂) = (b ⊔ a₁) ⊓ (b ⊔ a₂) by distributivity
-  -- and b ⊔ aᵢ ≥ bᵢ ⊔ aᵢ by definition of b and monotonicity of ⊔.
-  -- Thus, b ⊔ (a₁ ⊓ a₂) ≥ (b₁ ⊔ a₁) ⊓ (b₂ ⊔ a₂) ≥ c₁ ⊓ c₂,
-  -- with the last inequality holding by monotonicity of inf.
   calc
     c₁ ⊓ c₂ ≤ (b₁ ⊔ a₁) ⊓ (b₂ ⊔ a₂) := inf_le_inf cba₁ cba₂
     _       ≤ (b  ⊔ a₁) ⊓ (b  ⊔ a₂) := by
@@ -146,10 +140,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
 
   -- Now, if we would have a₁ ⊓ a₂ ∈ J, then, since J is an ideal and b ∈ J, we would also get
   -- b ⊔ (a₁ ⊓ a₂) ∈ J. But this contradicts that J is disjoint from F.
-
-  intro ha₁a₂
-  have notdis : ¬ (Disjoint (F : Set α) J) := by
-    rw [Set.not_disjoint_iff]
-    use b ⊔ (a₁ ⊓ a₂)
-    exact ⟨ba₁a₂F, sup_mem bJ ha₁a₂⟩
-  exact notdis JF
+  contrapose! JF with ha₁a₂
+  rw [Set.not_disjoint_iff]
+  use b ⊔ (a₁ ⊓ a₂)
+  exact ⟨ba₁a₂F, sup_mem bJ ha₁a₂⟩
