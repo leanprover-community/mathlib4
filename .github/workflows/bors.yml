@@ -307,7 +307,10 @@ jobs:
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
-        run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
+        uses: liskin/gh-problem-matcher-wrap@v3
+        with:
+          linters: gcc
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
 
       - name: check environments using lean4checker
         id: lean4checker
