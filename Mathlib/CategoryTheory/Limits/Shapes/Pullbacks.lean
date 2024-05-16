@@ -2758,7 +2758,7 @@ def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X wher
 @[deprecated] noncomputable alias Limits.baseChange := Over.baseChange
 
 /-- The adjunction `Over.map ⊣ baseChange` -/
-@[simps! homEquiv_apply homEquiv_symm_apply unit_app counit_app]
+@[simps! unit_app counit_app]
 def mapAdjunction [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ baseChange f :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun x y ↦
