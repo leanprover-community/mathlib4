@@ -179,7 +179,7 @@ lemma InducedMap_comp {p : 𝒳 ⥤ 𝒮} {R R' R'' S: 𝒮} {a a' a'' b : 𝒳}
     (H : f' = g ≫ f) (H' : f'' = h ≫ f') {φ : a ⟶ b} {φ' : a' ⟶ b} {φ'' : a'' ⟶ b}
     (hφ : IsPullback p f φ) (hφ' : IsPullback p f' φ') (hφ'' : IsHomLift p f'' φ'') :
     InducedMap hφ' H' hφ'' ≫ InducedMap hφ H hφ'.toIsHomLift
-      = InducedMap hφ (show f'' = (h ≫ g) ≫ f by rwa [assoc, ←H]) hφ'' := by
+      = InducedMap hφ (show f'' = (h ≫ g) ≫ f by rwa [assoc, ← H]) hφ'' := by
   apply InducedMap_unique
   · apply IsHomLift.comp
     apply InducedMap_IsHomLift
@@ -202,7 +202,7 @@ protected lemma comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c: 𝒳} {f : R ⟶
   · intro a' h τ hτ
     use InducedMap hφ rfl (InducedMap_IsHomLift hψ rfl ((assoc h f g).symm ▸ hτ))
     refine ⟨⟨InducedMap_IsHomLift hφ rfl _, ?_⟩, ?_⟩
-    · rw [←assoc, (InducedMap_Diagram hφ rfl _), (InducedMap_Diagram hψ rfl _)]
+    · rw [← assoc, (InducedMap_Diagram hφ rfl _), (InducedMap_Diagram hψ rfl _)]
     · intro π' hπ'
       -- TODO: maybe this can be golfed with new uniqueness lemma
       apply InducedMap_unique hφ _ _ hπ'.1
@@ -233,10 +233,10 @@ protected lemma of_comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c: 𝒳} {f : R 
     · rw [assoc, (InducedMap_Diagram hcomp rfl h₁)]
   -- Finally, uniqueness of π comes from the universal property of φ ≫ ψ
   intro π' hπ'
-  apply InducedMap_unique _ _ _ hπ'.1 (by rw [←hπ'.2, assoc])
+  apply InducedMap_unique _ _ _ hπ'.1 (by rw [← hπ'.2, assoc])
 
-lemma of_iso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ≅ b} (hφ : IsHomLift p f φ.hom)
-    : IsPullback p f φ.hom := by
+lemma of_iso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ≅ b} (hφ : IsHomLift p f φ.hom) :
+    IsPullback p f φ.hom := by
   apply IsPullback.mk hφ
   intro a' g τ hτ
   use τ ≫ φ.inv
@@ -269,7 +269,7 @@ lemma comp_eqToHom {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
 
 /-- A pullback over an isomorphism is an isomorphism. -/
 lemma isIso_of_base_isIso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
-  (hφ : IsPullback p f φ) (hf : IsIso f) : IsIso φ := by
+    (hφ : IsPullback p f φ) (hf : IsIso f) : IsIso φ := by
   -- The inverse will be given by applying the universal property to f⁻¹ : S ⟶ R and 𝟙 b
   let φ' := InducedMap hφ (IsIso.inv_hom_id f).symm (IsHomLift.id hφ.ObjLiftCodomain)
   use φ'
@@ -278,7 +278,7 @@ lemma isIso_of_base_isIso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R �
     (IsHomLift.id hφ.ObjLiftCodomain)
   refine ⟨?_, inv_hom⟩
   have h₁ : IsHomLift p (𝟙 R) (φ  ≫ φ') := by
-    rw [←IsIso.hom_inv_id f]
+    rw [← IsIso.hom_inv_id f]
     apply IsHomLift.comp hφ.toIsHomLift
     apply InducedMap_IsHomLift
   have h₂ : IsHomLift p f (φ ≫ φ' ≫ φ) := by simpa using IsHomLift.comp h₁ hφ.toIsHomLift
