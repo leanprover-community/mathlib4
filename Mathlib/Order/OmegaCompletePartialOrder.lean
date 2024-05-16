@@ -971,10 +971,10 @@ theorem approx_mem_fixedPoint (h : x ≤ f x) :
       rw [this]
       apply le_ωSup
     case a.a.succ n =>
-      have : f (approxAsChain f x h n) = approxAsChain f x h (n+1) := rfl
-      rw [←this]
-      have : (approxAsChain f x h).map f n = f (approxAsChain f x h n) := rfl
-      rw [←this]
+      have : approxAsChain f x h (n+1) = f (approxAsChain f x h n) := rfl
+      rw [this]
+      have : f (approxAsChain f x h n) = (approxAsChain f x h).map f n := rfl
+      rw [this]
       apply le_ωSup
 
   theorem approx_le_prefixedPoint {a : α} (h_a : f a ≤ a) (h_x_le_a : x ≤ a) (n : ℕ) :
