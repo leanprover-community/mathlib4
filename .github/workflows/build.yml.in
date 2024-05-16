@@ -274,6 +274,9 @@ jobs:
           rm import_graph.dot
 
       - name: test mathlib
+        # We previously ran `liskin/gh-problem-matcher-wrap@v3` here
+        # but this has been broken since `v4.8.0-rc1`.
+        # See https://github.com/leanprover-community/mathlib4/issues/12946
         id: test
         run: |
           bash -o pipefail -c "
