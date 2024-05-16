@@ -497,6 +497,9 @@ instance : CompleteLattice (RingCon R) where
 @[simp, norm_cast]
 theorem coe_top : ⇑(⊤ : RingCon R) = ⊤ := rfl
 
+@[simp, norm_cast]
+theorem coe_bot : ⇑(⊥ : RingCon R) = Eq := rfl
+
 /-- The infimum of two congruence relations equals the infimum of the underlying binary
 operations. -/
 @[simp, norm_cast]

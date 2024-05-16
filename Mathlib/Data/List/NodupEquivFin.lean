@@ -40,7 +40,7 @@ for a version giving an equivalence when there is decidable equality. -/
 @[simps]
 def getBijectionOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
     { f : Fin l.length → α // Function.Bijective f } :=
-  ⟨fun i => l.get i, fun _ _ h => Fin.ext <| (nd.nthLe_inj_iff _ _).1 h,
+  ⟨fun i => l.get i, fun _ _ h => nd.get_inj_iff.1 h,
    fun x =>
     let ⟨i, hl⟩ := List.mem_iff_get.1 (h x)
     ⟨i, hl⟩⟩
@@ -233,6 +233,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
         · simpa using h
         · simpa using h'
 
+set_option linter.deprecated false in
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.
 -/

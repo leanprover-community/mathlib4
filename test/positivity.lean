@@ -196,6 +196,10 @@ example (hq : 0 ≤ q) : 0 ≤ q.num := by positivity
 
 end
 
+example (a : ℤ) : 0 ≤ a⁺ := by positivity
+example (a : ℤ) (ha : 0 < a) : 0 < a⁺ := by positivity
+example (a : ℤ) : 0 ≤ a⁻ := by positivity
+
 /-! ### Exponentiation -/
 
 example [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 := by positivity

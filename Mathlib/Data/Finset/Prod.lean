@@ -182,10 +182,12 @@ theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q
     exact (disjoint_compl_right.inf_left _).inf_right _
 #align finset.filter_product_card Finset.filter_product_card
 
+@[simp]
 theorem empty_product (t : Finset β) : (∅ : Finset α) ×ˢ t = ∅ :=
   rfl
 #align finset.empty_product Finset.empty_product
 
+@[simp]
 theorem product_empty (s : Finset α) : s ×ˢ (∅ : Finset β) = ∅ :=
   eq_empty_of_forall_not_mem fun _ h => not_mem_empty _ (Finset.mem_product.1 h).2
 #align finset.product_empty Finset.product_empty
