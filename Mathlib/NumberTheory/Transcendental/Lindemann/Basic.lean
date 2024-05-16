@@ -6,7 +6,6 @@ Authors: Yuyang Zhao
 import Mathlib.Algebra.Order.Floor.Prime
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AlgebraicPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
-import Mathlib.NumberTheory.Transcendental.Lindemann.Init.ExistsLargePrime
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.SumAEvalARoots
 
 /-!
