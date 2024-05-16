@@ -57,8 +57,7 @@ helps with instance search.
 
 Porting note: after the port is done, we may want to remove this definition.
 -/
-@[reducible]
-protected def Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
+protected abbrev Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
     [∀ x, TopologicalSpace (E₂ x)] : B → Type _ := fun x => E₁ x →SL[σ] E₂ x
 #align bundle.continuous_linear_map Bundle.ContinuousLinearMap
 

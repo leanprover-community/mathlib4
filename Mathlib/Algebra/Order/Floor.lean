@@ -1077,7 +1077,7 @@ theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a *
   induction' b with c hc
   · use 0; simp
   · rcases hc with ⟨z, hz⟩
-    rw [Nat.succ_eq_add_one, Nat.cast_add, mul_add, mul_add, Nat.cast_one, mul_one, mul_one]
+    rw [Nat.cast_add, mul_add, mul_add, Nat.cast_one, mul_one, mul_one]
     rcases fract_add (a * c) a with ⟨y, hy⟩
     use z - y
     rw [Int.cast_sub, ← hz, ← hy]

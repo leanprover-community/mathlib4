@@ -375,8 +375,7 @@ theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function
 variable (K L)
 
 /-- Bijection between algebra equivalences and algebra homomorphisms -/
-@[reducible]
-noncomputable def algEquivEquivAlgHom [FiniteDimensional K L] :
+noncomputable abbrev algEquivEquivAlgHom [FiniteDimensional K L] :
     (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) :=
   (Algebra.IsAlgebraic.of_finite K L).algEquivEquivAlgHom K L
 #align alg_equiv_equiv_alg_hom algEquivEquivAlgHom

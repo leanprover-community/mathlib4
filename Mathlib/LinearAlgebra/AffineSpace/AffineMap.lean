@@ -717,8 +717,8 @@ variable [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
 instance distribMulAction : DistribMulAction R (P1 →ᵃ[k] V2) where
-  smul_add _c _f _g := ext fun _p => smul_add _ _ _
-  smul_zero _c := ext fun _p => smul_zero _
+  smul_add _ _ _ := ext fun _ => smul_add _ _ _
+  smul_zero _ := ext fun _ => smul_zero _
 
 end DistribMulAction
 

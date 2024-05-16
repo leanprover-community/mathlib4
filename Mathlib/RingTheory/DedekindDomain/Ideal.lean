@@ -75,7 +75,9 @@ theorem inv_nonzero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
 
 theorem coe_inv_of_nonzero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     (↑J⁻¹ : Submodule R₁ K) = IsLocalization.coeSubmodule K ⊤ / (J : Submodule R₁ K) := by
-  rw [inv_nonzero]; rfl; assumption
+  rw [inv_nonzero]
+  · rfl
+  · assumption
 #align fractional_ideal.coe_inv_of_nonzero FractionalIdeal.coe_inv_of_nonzero
 
 variable {K}
@@ -819,11 +821,11 @@ theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι
     ↑J / I = ↑J * I⁻¹ := div_eq_mul_inv (↑J) I
     _ < 1 * I⁻¹ := mul_right_strictMono (inv_ne_zero hI0) ?_
     _ = I⁻¹ := one_mul _
-  · rw [← coeIdeal_top]
-    -- And multiplying by `I⁻¹` is indeed strictly monotone.
-    exact
-      strictMono_of_le_iff_le (fun _ _ => (coeIdeal_le_coeIdeal K).symm)
-        (lt_top_iff_ne_top.mpr hJ)
+  rw [← coeIdeal_top]
+  -- And multiplying by `I⁻¹` is indeed strictly monotone.
+  exact
+    strictMono_of_le_iff_le (fun _ _ => (coeIdeal_le_coeIdeal K).symm)
+      (lt_top_iff_ne_top.mpr hJ)
 #align ideal.exist_integer_multiples_not_mem Ideal.exist_integer_multiples_not_mem
 
 section Gcd

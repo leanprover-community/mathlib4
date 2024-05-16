@@ -287,13 +287,17 @@ theorem universally_le (P : MorphismProperty C) : P.universally ≤ P := by
   exact hf (𝟙 _) (𝟙 _) _ (IsPullback.of_vert_isIso ⟨by rw [Category.comp_id, Category.id_comp]⟩)
 #align category_theory.morphism_property.universally_le CategoryTheory.MorphismProperty.universally_le
 
+theorem universally_eq_iff {P : MorphismProperty C} :
+    P.universally = P ↔ P.StableUnderBaseChange :=
+  ⟨(· ▸ P.universally_stableUnderBaseChange),
+    fun hP ↦ P.universally_le.antisymm fun _ _ _ hf _ _ _ _ _ H => hP H.flip hf⟩
+
 theorem StableUnderBaseChange.universally_eq {P : MorphismProperty C}
-    (hP : P.StableUnderBaseChange) : P.universally = P :=
-  P.universally_le.antisymm fun _ _ _ hf _ _ _ _ _ H => hP H.flip hf
+    (hP : P.StableUnderBaseChange) : P.universally = P := universally_eq_iff.mpr hP
 #align category_theory.morphism_property.stable_under_base_change.universally_eq CategoryTheory.MorphismProperty.StableUnderBaseChange.universally_eq
 
 theorem universally_mono : Monotone (universally : MorphismProperty C → MorphismProperty C) :=
-  fun _ _ h _ _ _ h₁ _ _ _ _ _ H => h _ _ _ (h₁ _ _ _ H)
+  fun _ _ h _ _ _ h₁ _ _ _ _ _ H => h _ (h₁ _ _ _ H)
 #align category_theory.morphism_property.universally_mono CategoryTheory.MorphismProperty.universally_mono
 
 end Universally

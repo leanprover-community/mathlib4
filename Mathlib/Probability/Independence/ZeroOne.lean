@@ -21,6 +21,9 @@ is measurable with respect to the tail σ-algebra `limsup s atTop` has probabili
   σ-algebras `s` has probability 0 or 1.
 -/
 
+-- See https://github.com/leanprover-community/mathlib4/issues/12532
+-- This option is needed so often in this file that we set it for the whole file.
+set_option backward.synthInstance.canonInstances false
 
 open MeasureTheory MeasurableSpace
 

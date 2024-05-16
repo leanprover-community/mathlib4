@@ -196,8 +196,7 @@ adjacency relation. This gives a map between `SimpleGraph V` and `SimpleGraph s`
 There is also a notion of induced subgraphs (see `SimpleGraph.subgraph.induce`). -/
 /-- Restrict a graph to the vertices in the set `s`, deleting all edges incident to vertices
 outside the set. This is a wrapper around `SimpleGraph.comap`. -/
-@[reducible]
-def induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
+abbrev induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
   G.comap (Function.Embedding.subtype _)
 #align simple_graph.induce SimpleGraph.induce
 
@@ -207,8 +206,7 @@ def induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
 /-- Given a graph on a set of vertices, we can make it be a `SimpleGraph V` by
 adding in the remaining vertices without adding in any additional edges.
 This is a wrapper around `SimpleGraph.map`. -/
-@[reducible]
-def spanningCoe {s : Set V} (G : SimpleGraph s) : SimpleGraph V :=
+abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : SimpleGraph V :=
   G.map (Function.Embedding.subtype _)
 #align simple_graph.spanning_coe SimpleGraph.spanningCoe
 
@@ -437,14 +435,12 @@ theorem map_apply (f : V ↪ W) (G : SimpleGraph V) (v : V) :
 
 Note that if `G.induce s = ⊤` (i.e., if `s` is a clique) then this gives the embedding of a
 complete graph. -/
-@[reducible]
-protected def induce (s : Set V) : G.induce s ↪g G :=
+protected abbrev induce (s : Set V) : G.induce s ↪g G :=
   SimpleGraph.Embedding.comap (Function.Embedding.subtype _) G
 #align simple_graph.embedding.induce SimpleGraph.Embedding.induce
 
 /-- Graphs on a set of vertices embed in their `spanningCoe`. -/
-@[reducible]
-protected def spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanningCoe :=
+protected abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanningCoe :=
   SimpleGraph.Embedding.map (Function.Embedding.subtype _) G
 #align simple_graph.embedding.spanning_coe SimpleGraph.Embedding.spanningCoe
 

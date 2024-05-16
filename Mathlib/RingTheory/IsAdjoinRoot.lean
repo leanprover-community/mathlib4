@@ -221,14 +221,14 @@ def lift (h : IsAdjoinRoot S f) : S →+* T where
   map_add' z w := by
     dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z + h.repr w), eval₂_add]
-    · rw [map_add, map_repr, map_repr]
+    rw [map_add, map_repr, map_repr]
   map_one' := by
     beta_reduce -- Porting note (#12129): additional beta reduction needed
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_one _), eval₂_one]
   map_mul' z w := by
     dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z * h.repr w), eval₂_mul]
-    · rw [map_mul, map_repr, map_repr]
+    rw [map_mul, map_repr, map_repr]
 #align is_adjoin_root.lift IsAdjoinRoot.lift
 
 variable {i x}
@@ -429,7 +429,7 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         refine coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le ?_ hi)
         dsimp -- Porting note (#11227):added a `dsimp`
         rw [natDegree_lt_natDegree_iff hx]
-        · exact degree_modByMonic_lt _ h.Monic
+        exact degree_modByMonic_lt _ h.Monic
       right_inv := fun g => by
         nontriviality R
         ext i

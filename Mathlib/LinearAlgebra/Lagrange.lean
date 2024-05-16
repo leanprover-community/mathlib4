@@ -488,7 +488,7 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
     sdiff_singleton_eq_erase, pair_comm,
     sdiff_insert_insert_of_mem_of_not_mem hj (not_mem_singleton.mpr hij.symm),
     sdiff_singleton_eq_erase]
-  · exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
+  exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
 #align lagrange.interpolate_eq_add_interpolate_erase Lagrange.interpolate_eq_add_interpolate_erase
 
 end Interpolate
@@ -588,6 +588,7 @@ theorem eval_nodal_derivative_eval_node_eq [DecidableEq ι] {i : ι} (hi : i ∈
   exact sum_eq_zero fun j hj => (eval_nodal_at_node (mem_erase.mpr ⟨(mem_erase.mp hj).1.symm, hi⟩))
 #align lagrange.eval_nodal_derivative_eval_node_eq Lagrange.eval_nodal_derivative_eval_node_eq
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/
 @[simp] theorem nodal_subgroup_eq_X_pow_card_sub_one [IsDomain R]
   (G : Subgroup Rˣ) [Fintype G] :

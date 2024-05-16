@@ -3,12 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-
+import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
-import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Tactic.NormNum.Ineq
 
@@ -340,7 +339,7 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
     signAux3 (f * g) hs = signAux3 f hs * signAux3 g hs ∧
       Pairwise fun x y => signAux3 (swap x y) hs = -1 := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin α
-  obtain ⟨l, rfl⟩ := Quotient.exists_rep s
+  induction s using Quotient.inductionOn with | _ l => ?_
   show
     signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧
     Pairwise fun x y => signAux2 l (swap x y) = -1

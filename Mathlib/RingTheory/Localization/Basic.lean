@@ -1264,9 +1264,7 @@ variable {Q : Type*} [CommRing Q] {g : R →+* P} [Algebra P Q]
 variable (A : Type*) [CommRing A] [IsDomain A]
 
 /-- A `CommRing` `S` which is the localization of a ring `R` without zero divisors at a subset of
-non-zero elements does not have zero divisors.
-See note [reducible non-instances]. -/
-@[reducible]
+non-zero elements does not have zero divisors. -/
 theorem noZeroDivisors_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocalization M S]
     (hM : M ≤ nonZeroDivisors A) : NoZeroDivisors S :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := by
@@ -1283,9 +1281,7 @@ theorem noZeroDivisors_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [Is
 #align is_localization.no_zero_divisors_of_le_non_zero_divisors IsLocalization.noZeroDivisors_of_le_nonZeroDivisors
 
 /-- A `CommRing` `S` which is the localization of an integral domain `R` at a subset of
-non-zero elements is an integral domain.
-See note [reducible non-instances]. -/
-@[reducible]
+non-zero elements is an integral domain. -/
 theorem isDomain_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocalization M S]
     (hM : M ≤ nonZeroDivisors A) : IsDomain S := by
   apply @NoZeroDivisors.to_isDomain _ _ (id _) (id _)
@@ -1297,9 +1293,7 @@ theorem isDomain_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocali
 
 variable {A}
 
-/-- The localization of an integral domain to a set of non-zero elements is an integral domain.
-See note [reducible non-instances]. -/
-@[reducible]
+/-- The localization of an integral domain to a set of non-zero elements is an integral domain. -/
 theorem isDomain_localization {M : Submonoid A} (hM : M ≤ nonZeroDivisors A) :
     IsDomain (Localization M) :=
   isDomain_of_le_nonZeroDivisors _ hM

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.EMetricSpace.Lipschitz
@@ -434,7 +433,7 @@ protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
 theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
   induction' n with n IH
   · simp [continuous_const]
-  simp_rw [Nat.succ_eq_add_one, pow_add, pow_one, continuous_iff_continuousAt]
+  simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
   intro x
   refine' ENNReal.Tendsto.mul (IH.tendsto _) _ tendsto_id _ <;> by_cases H : x = 0
   · simp only [H, zero_ne_top, Ne, or_true_iff, not_false_iff]
@@ -648,8 +647,8 @@ theorem finset_sum_iSup_nat {α} {ι} [SemilatticeSup ι] {s : Finset α} {f : �
 theorem mul_iSup {ι : Sort*} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : a * iSup f = ⨆ i, a * f i := by
   by_cases hf : ∀ i, f i = 0
   · obtain rfl : f = fun _ => 0
-    exact funext hf
-    simp only [iSup_zero_eq_zero, mul_zero]
+    · exact funext hf
+    · simp only [iSup_zero_eq_zero, mul_zero]
   · refine' (monotone_id.const_mul' _).map_iSup_of_continuousAt _ (mul_zero a)
     refine' ENNReal.Tendsto.const_mul tendsto_id (Or.inl _)
     exact mt iSup_eq_zero.1 hf
@@ -1203,8 +1202,8 @@ theorem indicator_summable {f : α → ℝ≥0} (hf : Summable f) (s : Set α) :
     Summable (s.indicator f) := by
   refine' NNReal.summable_of_le (fun a => le_trans (le_of_eq (s.indicator_apply f a)) _) hf
   split_ifs
-  exact le_refl (f a)
-  exact zero_le_coe
+  · exact le_refl (f a)
+  · exact zero_le_coe
 #align nnreal.indicator_summable NNReal.indicator_summable
 
 theorem tsum_indicator_ne_zero {f : α → ℝ≥0} (hf : Summable f) {s : Set α} (h : ∃ a ∈ s, f a ≠ 0) :
@@ -1352,53 +1351,6 @@ theorem ENNReal.ofReal_tsum_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤
   simp_rw [ENNReal.ofReal, ENNReal.tsum_coe_eq (NNReal.hasSum_real_toNNReal_of_nonneg hf_nonneg hf)]
 #align ennreal.of_real_tsum_of_nonneg ENNReal.ofReal_tsum_of_nonneg
 
-theorem not_summable_iff_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
-    ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i in Finset.range n, f i) atTop atTop := by
-  lift f to ℕ → ℝ≥0 using hf
-  exact mod_cast NNReal.not_summable_iff_tendsto_nat_atTop
-#align not_summable_iff_tendsto_nat_at_top_of_nonneg not_summable_iff_tendsto_nat_atTop_of_nonneg
-
-theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
-    Summable f ↔ ¬Tendsto (fun n : ℕ => ∑ i in Finset.range n, f i) atTop atTop := by
-  rw [← not_iff_not, Classical.not_not, not_summable_iff_tendsto_nat_atTop_of_nonneg hf]
-#align summable_iff_not_tendsto_nat_at_top_of_nonneg summable_iff_not_tendsto_nat_atTop_of_nonneg
-
-theorem summable_sigma_of_nonneg {β : α → Type*} {f : (Σ x, β x) → ℝ} (hf : ∀ x, 0 ≤ f x) :
-    Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x => ∑' y, f ⟨x, y⟩ := by
-  lift f to (Σx, β x) → ℝ≥0 using hf
-  exact mod_cast NNReal.summable_sigma
-#align summable_sigma_of_nonneg summable_sigma_of_nonneg
-
-theorem summable_prod_of_nonneg {f : (α × β) → ℝ} (hf : 0 ≤ f) :
-    Summable f ↔ (∀ x, Summable fun y ↦ f (x, y)) ∧ Summable fun x ↦ ∑' y, f (x, y) :=
-  (Equiv.sigmaEquivProd _ _).summable_iff.symm.trans <| summable_sigma_of_nonneg fun _ ↦ hf _
-
-theorem summable_of_sum_le {ι : Type*} {f : ι → ℝ} {c : ℝ} (hf : 0 ≤ f)
-    (h : ∀ u : Finset ι, ∑ x in u, f x ≤ c) : Summable f :=
-  ⟨⨆ u : Finset ι, ∑ x in u, f x,
-    tendsto_atTop_ciSup (Finset.sum_mono_set_of_nonneg hf) ⟨c, fun _ ⟨u, hu⟩ => hu ▸ h u⟩⟩
-#align summable_of_sum_le summable_of_sum_le
-
-theorem summable_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ f n)
-    (h : ∀ n, ∑ i in Finset.range n, f i ≤ c) : Summable f := by
-  refine (summable_iff_not_tendsto_nat_atTop_of_nonneg hf).2 fun H => ?_
-  rcases exists_lt_of_tendsto_atTop H 0 c with ⟨n, -, hn⟩
-  exact lt_irrefl _ (hn.trans_le (h n))
-#align summable_of_sum_range_le summable_of_sum_range_le
-
-theorem Real.tsum_le_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ f n)
-    (h : ∀ n, ∑ i in Finset.range n, f i ≤ c) : ∑' n, f n ≤ c :=
-  _root_.tsum_le_of_sum_range_le (summable_of_sum_range_le hf h) h
-#align real.tsum_le_of_sum_range_le Real.tsum_le_of_sum_range_le
-
-/-- If a sequence `f` with non-negative terms is dominated by a sequence `g` with summable
-series and at least one term of `f` is strictly smaller than the corresponding term in `g`,
-then the series of `f` is strictly smaller than the series of `g`. -/
-theorem tsum_lt_tsum_of_nonneg {i : ℕ} {f g : ℕ → ℝ} (h0 : ∀ b : ℕ, 0 ≤ f b)
-    (h : ∀ b : ℕ, f b ≤ g b) (hi : f i < g i) (hg : Summable g) : ∑' n, f n < ∑' n, g n :=
-  tsum_lt_tsum h hi (.of_nonneg_of_le h0 h hg) hg
-#align tsum_lt_tsum_of_nonneg tsum_lt_tsum_of_nonneg
-
 section
 
 variable [EMetricSpace β]
@@ -1496,6 +1448,27 @@ theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : 
     (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => edist (f x) (g x)) x (𝓝 (edist a b)) :=
   (continuous_edist.tendsto (a, b)).comp (hf.prod_mk_nhds hg)
 #align filter.tendsto.edist Filter.Tendsto.edist
+
+/-- If the extended distance between consecutive points of a sequence is estimated
+by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
+theorem cauchySeq_of_edist_le_of_summable [PseudoEMetricSpace α] {f : ℕ → α} (d : ℕ → ℝ≥0)
+    (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f := by
+  refine EMetric.cauchySeq_iff_NNReal.2 fun ε εpos ↦ ?_
+  -- Actually we need partial sums of `d` to be a Cauchy sequence.
+  replace hd : CauchySeq fun n : ℕ ↦ ∑ x in Finset.range n, d x :=
+    let ⟨_, H⟩ := hd
+    H.tendsto_sum_nat.cauchySeq
+  -- Now we take the same `N` as in one of the definitions of a Cauchy sequence.
+  refine (Metric.cauchySeq_iff'.1 hd ε (NNReal.coe_pos.2 εpos)).imp fun N hN n hn ↦ ?_
+  specialize hN n hn
+  -- We simplify the known inequality.
+  rw [dist_nndist, NNReal.nndist_eq, ← Finset.sum_range_add_sum_Ico _ hn, add_tsub_cancel_left,
+    NNReal.coe_lt_coe, max_lt_iff] at hN
+  rw [edist_comm]
+  -- Then use `hf` to simplify the goal to the same form.
+  refine lt_of_le_of_lt (edist_le_Ico_sum_of_edist_le hn fun _ _ ↦ hf _) ?_
+  exact mod_cast hN.1
+#align cauchy_seq_of_edist_le_of_summable cauchySeq_of_edist_le_of_summable
 
 theorem cauchySeq_of_edist_le_of_tsum_ne_top {f : ℕ → α} (d : ℕ → ℝ≥0∞)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : tsum d ≠ ∞) : CauchySeq f := by

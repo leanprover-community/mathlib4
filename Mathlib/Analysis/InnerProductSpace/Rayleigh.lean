@@ -248,7 +248,7 @@ theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
   have H₂ : (sphere (0 : E) ‖x‖).Nonempty := ⟨x, by simp⟩
   -- key point: in finite dimension, a continuous function on the sphere has a max
   obtain ⟨x₀, hx₀', hTx₀⟩ :=
-    H₁.exists_forall_ge H₂ T'.val.reApplyInnerSelf_continuous.continuousOn
+    H₁.exists_isMaxOn H₂ T'.val.reApplyInnerSelf_continuous.continuousOn
   have hx₀ : ‖x₀‖ = ‖x‖ := by simpa using hx₀'
   have : IsMaxOn T'.val.reApplyInnerSelf (sphere 0 ‖x₀‖) x₀ := by simpa only [← hx₀] using hTx₀
   have hx₀_ne : x₀ ≠ 0 := by
@@ -268,7 +268,7 @@ theorem hasEigenvalue_iInf_of_finiteDimensional (hT : T.IsSymmetric) :
   have H₂ : (sphere (0 : E) ‖x‖).Nonempty := ⟨x, by simp⟩
   -- key point: in finite dimension, a continuous function on the sphere has a min
   obtain ⟨x₀, hx₀', hTx₀⟩ :=
-    H₁.exists_forall_le H₂ T'.val.reApplyInnerSelf_continuous.continuousOn
+    H₁.exists_isMinOn H₂ T'.val.reApplyInnerSelf_continuous.continuousOn
   have hx₀ : ‖x₀‖ = ‖x‖ := by simpa using hx₀'
   have : IsMinOn T'.val.reApplyInnerSelf (sphere 0 ‖x₀‖) x₀ := by simpa only [← hx₀] using hTx₀
   have hx₀_ne : x₀ ≠ 0 := by

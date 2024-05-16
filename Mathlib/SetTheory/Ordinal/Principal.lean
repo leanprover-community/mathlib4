@@ -88,6 +88,11 @@ theorem nfp_le_of_principal {op : Ordinal → Ordinal → Ordinal} {a o : Ordina
 
 /-! ### Principal ordinals are unbounded -/
 
+-- Adaptation note: 2024-04-23
+-- After https://github.com/leanprover/lean4/pull/3965,
+-- we need to write `lt_blsub₂.{u}` twice below,
+-- where previously the universe annotation was not necessary.
+-- This appears to be correct behaviour, as `lt_blsub₂.{0}` also works.
 theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     Principal op (nfp (fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b)) o) :=
   fun a b ha hb => by
@@ -99,10 +104,10 @@ theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordin
     ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[n] o) with h h
   · use n + 1
     rw [Function.iterate_succ']
-    exact lt_blsub₂ (@fun a _ b _ => op a b) (hm.trans_le h) hn
+    exact lt_blsub₂.{u} (@fun a _ b _ => op a b) (hm.trans_le h) hn
   · use m + 1
     rw [Function.iterate_succ']
-    exact lt_blsub₂ (@fun a _ b _ => op a b) hm (hn.trans_le h)
+    exact lt_blsub₂.{u} (@fun a _ b _ => op a b) hm (hn.trans_le h)
 #align ordinal.principal_nfp_blsub₂ Ordinal.principal_nfp_blsub₂
 
 theorem unbounded_principal (op : Ordinal → Ordinal → Ordinal) :

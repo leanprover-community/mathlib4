@@ -717,7 +717,7 @@ lemma measurableAtom_subset {s : Set β} {x : β} (hs : MeasurableSet s) (hx : x
 
 lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
     MeasurableSet (measurableAtom x) := by
-  have : ∀ (y : β), y ∉ measurableAtom x → ∃ s, MeasurableSet s ∧ x ∈ s ∧ y ∉ s :=
+  have : ∀ (y : β), y ∉ measurableAtom x → ∃ s, x ∈ s ∧ MeasurableSet s ∧ y ∉ s :=
     fun y hy ↦ by simpa [measurableAtom] using hy
   choose! s hs using this
   have : measurableAtom x = ⋂ (y ∈ (measurableAtom x)ᶜ), s y := by
@@ -726,13 +726,13 @@ lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
       simp only [mem_iInter, mem_compl_iff]
       intro i hi
       show z ∈ s i
-      exact mem_of_mem_measurableAtom hz (hs i hi).1 (hs i hi).2.1
+      exact mem_of_mem_measurableAtom hz (hs i hi).2.1 (hs i hi).1
     · apply compl_subset_compl.1
       intro z hz
       simp only [compl_iInter, mem_iUnion, mem_compl_iff, exists_prop]
       exact ⟨z, hz, (hs z hz).2.2⟩
   rw [this]
-  exact MeasurableSet.biInter (to_countable (measurableAtom x)ᶜ) (fun i hi ↦ (hs i hi).1)
+  exact MeasurableSet.biInter (to_countable (measurableAtom x)ᶜ) (fun i hi ↦ (hs i hi).2.1)
 
 end Atoms
 

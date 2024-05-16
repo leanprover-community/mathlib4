@@ -176,11 +176,11 @@ def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H 
                         ?_ ≫ η.app a ◁ θ.naturality f ▷ H.map g ≫ ?_ :=
         ?_
       _ = _ := ?_
-    exact (α_ _ _ _).inv
-    exact (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom
-    exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
-    exact (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv
-    exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
+    · exact (α_ _ _ _).inv
+    · exact (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom
+    · exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
+    · exact (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv
+    · exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
     · rw [whisker_exchange_assoc]
       simp
     · simp

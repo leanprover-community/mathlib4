@@ -659,7 +659,7 @@ theorem HasBasis.inf_principal_neBot_iff (hl : l.HasBasis p s) {t : Set α} :
 -- Porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
 theorem HasBasis.disjoint_iff (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s') :
     Disjoint l l' ↔ ∃ i, p i ∧ ∃ i', p' i' ∧ Disjoint (s i) (s' i') :=
-  not_iff_not.mp <| by simp only [_root_.disjoint_iff, ← Ne.def, ← neBot_iff, inf_eq_inter,
+  not_iff_not.mp <| by simp only [_root_.disjoint_iff, ← Ne.eq_def, ← neBot_iff, inf_eq_inter,
     hl.inf_basis_neBot_iff hl', not_exists, not_and, bot_eq_empty, ← nonempty_iff_ne_empty]
 #align filter.has_basis.disjoint_iff Filter.HasBasis.disjoint_iffₓ
 

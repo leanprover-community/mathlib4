@@ -336,8 +336,8 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
     calc
       ENNReal.ofReal ‖F n a - f a‖ ≤ ENNReal.ofReal ‖F n a‖ + ENNReal.ofReal ‖f a‖ := by
         rw [← ENNReal.ofReal_add]
-        apply ofReal_le_ofReal
-        · apply norm_sub_le
+        · apply ofReal_le_ofReal
+          apply norm_sub_le
         · exact norm_nonneg _
         · exact norm_nonneg _
       _ ≤ ENNReal.ofReal (bound a) + ENNReal.ofReal (bound a) := add_le_add h₁ h₂

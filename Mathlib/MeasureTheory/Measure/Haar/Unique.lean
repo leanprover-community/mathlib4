@@ -492,7 +492,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     · simpa using (u_mem n).2.le
   have I1 := I μ' (by infer_instance)
   simp_rw [M] at I1
-  have J1 : ∫ (x : G), indicator {1} (fun _ ↦ 1) (f x) ∂μ'
+  have J1 : ∫ (x : G), indicator {1} (fun _ ↦ (1 : ℝ)) (f x) ∂μ'
       = ∫ (x : G), indicator {1} (fun _ ↦ 1) (f x) ∂(haarScalarFactor μ' μ • μ) :=
     tendsto_nhds_unique I1 (I (haarScalarFactor μ' μ • μ) (by infer_instance))
   have J2 : ENNReal.toReal (μ' (f ⁻¹' {1}))
@@ -732,7 +732,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
       have : y ∈ y • (k * k⁻¹) := by
         simpa using mem_leftCoset y (Set.mul_mem_mul one_k (Set.inv_mem_inv.mpr one_k))
       exact mem_biUnion ym this
-    · obtain ⟨x, -, xm, z, zy, zx⟩ : ∃ x, y ≠ x ∧ x ∈ m ∧ ∃ z, z ∈ y • k ∧ z ∈ x • k := by
+    · obtain ⟨x, xm, -, z, zy, zx⟩ : ∃ x ∈ m, y ≠ x ∧ ∃ z, z ∈ y • k ∧ z ∈ x • k := by
         simpa [A, mA.1, hy, insert_subset_iff, pairwiseDisjoint_insert, mA.2, not_disjoint_iff]
           using h'y
       have : y ∈ x • (k * k⁻¹) := by

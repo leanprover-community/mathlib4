@@ -505,3 +505,49 @@ theorem mulSingle_strictMono : StrictMono (Pi.mulSingle i : f i → ∀ i, f i) 
 #align pi.single_strict_mono Pi.single_strictMono
 
 end Pi
+
+namespace Sigma
+
+variable {α : Type*} {β : α → Type*} {γ : ∀ a, β a → Type*}
+
+@[to_additive (attr := simp)]
+theorem curry_one [∀ a b, One (γ a b)] : Sigma.curry (1 : (i : Σ a, β a) → γ i.1 i.2) = 1 :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem uncurry_one [∀ a b, One (γ a b)] : Sigma.uncurry (1 : ∀ a b, γ a b) = 1 :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem curry_mul [∀ a b, Mul (γ a b)] (x y : (i : Σ a, β a) → γ i.1 i.2) :
+    Sigma.curry (x * y) = Sigma.curry x * Sigma.curry y :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem uncurry_mul [∀ a b, Mul (γ a b)] (x y : ∀ a b, γ a b) :
+    Sigma.uncurry (x * y) = Sigma.uncurry x * Sigma.uncurry y :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem curry_inv [∀ a b, Inv (γ a b)] (x : (i : Σ a, β a) → γ i.1 i.2) :
+    Sigma.curry (x⁻¹) = (Sigma.curry x)⁻¹ :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem uncurry_inv [∀ a b, Inv (γ a b)] (x : ∀ a b, γ a b) :
+    Sigma.uncurry (x⁻¹) = (Sigma.uncurry x)⁻¹ :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem curry_mulSingle [DecidableEq α] [∀ a, DecidableEq (β a)] [∀ a b, One (γ a b)]
+    (i : Σ a, β a) (x : γ i.1 i.2) :
+    Sigma.curry (Pi.mulSingle i x) = Pi.mulSingle i.1 (Pi.mulSingle i.2 x) := by
+  simp only [Pi.mulSingle, Sigma.curry_update, Sigma.curry_one, Pi.one_apply]
+
+@[to_additive (attr := simp)]
+theorem uncurry_mulSingle_mulSingle [DecidableEq α] [∀ a, DecidableEq (β a)] [∀ a b, One (γ a b)]
+    (a : α) (b : β a) (x : γ a b) :
+    Sigma.uncurry (Pi.mulSingle a (Pi.mulSingle b x)) = Pi.mulSingle (Sigma.mk a b) x := by
+  rw [← curry_mulSingle ⟨a, b⟩, uncurry_curry]
+
+end Sigma

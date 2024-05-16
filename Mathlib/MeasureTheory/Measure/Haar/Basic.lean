@@ -273,12 +273,12 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
   rcases index_elim hK hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   apply Nat.sInf_le; rw [mem_image]
   refine' ⟨s.map (Equiv.mulRight g⁻¹).toEmbedding, _, Finset.card_map _⟩
-  · simp only [mem_setOf_eq]; refine' Subset.trans (image_subset _ h1s) _
-    rintro _ ⟨g₁, ⟨_, ⟨g₂, rfl⟩, ⟨_, ⟨hg₂, rfl⟩, hg₁⟩⟩, rfl⟩
-    simp only [mem_preimage] at hg₁;
-    simp only [exists_prop, mem_iUnion, Finset.mem_map, Equiv.coe_mulRight,
-      exists_exists_and_eq_and, mem_preimage, Equiv.toEmbedding_apply]
-    refine' ⟨_, hg₂, _⟩; simp only [mul_assoc, hg₁, inv_mul_cancel_left]
+  simp only [mem_setOf_eq]; refine' Subset.trans (image_subset _ h1s) _
+  rintro _ ⟨g₁, ⟨_, ⟨g₂, rfl⟩, ⟨_, ⟨hg₂, rfl⟩, hg₁⟩⟩, rfl⟩
+  simp only [mem_preimage] at hg₁;
+  simp only [exists_prop, mem_iUnion, Finset.mem_map, Equiv.coe_mulRight,
+    exists_exists_and_eq_and, mem_preimage, Equiv.toEmbedding_apply]
+  refine' ⟨_, hg₂, _⟩; simp only [mul_assoc, hg₁, inv_mul_cancel_left]
 #align measure_theory.measure.haar.mul_left_index_le MeasureTheory.Measure.haar.mul_left_index_le
 #align measure_theory.measure.haar.add_left_add_index_le MeasureTheory.Measure.haar.add_left_addIndex_le
 
@@ -636,8 +636,7 @@ instance isMulLeftInvariant_haarMeasure (K₀ : PositiveCompacts G) :
 @[to_additive]
 theorem haarMeasure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ K₀ = 1 := by
   haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
-  simp only [haarMeasure, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
-    smul_eq_mul]
+  simp only [haarMeasure, coe_smul, Pi.smul_apply, smul_eq_mul]
   rw [← OuterRegular.measure_closure_eq_of_isCompact K₀.isCompact,
     Content.measure_apply _ isClosed_closure.measurableSet, ENNReal.inv_mul_cancel]
   · exact (haarContent_outerMeasure_closure_pos K₀).ne'
@@ -718,7 +717,7 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
     rcases MeasurableSet.exists_lt_isCompact hE hEpos with ⟨K, KE, K_comp, K_meas⟩
     refine ⟨closure K, ?_, K_comp.closure, isClosed_closure, ?_⟩
     · exact K_comp.closure_subset_measurableSet hE KE
-    · rwa [K_comp.measure_closure_eq_of_group]
+    · rwa [K_comp.measure_closure]
   filter_upwards [eventually_nhds_one_measure_smul_diff_lt hK K_closed hKpos.ne' (μ := μ)] with g hg
   have : ¬Disjoint (g • K) K := fun hd ↦ by
     rw [hd.symm.sdiff_eq_right, measure_smul] at hg

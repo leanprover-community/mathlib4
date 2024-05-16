@@ -175,8 +175,8 @@ theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
   | h_monomial n a =>
     cases n with
     | zero => simp only [Nat.zero_eq, monomial_zero_left, smeval_C, npow_zero, coeff_C_zero]
-    | succ n => rw [coeff_monomial_succ, smeval_monomial, ← Nat.add_one, npow_add, npow_one,
-      mul_zero, zero_smul, smul_zero]
+    | succ n => rw [coeff_monomial_succ, smeval_monomial, npow_add, npow_one, mul_zero, zero_smul,
+        smul_zero]
 
 theorem smeval_mul_X : (p * X).smeval x = p.smeval x * x := by
     induction p using Polynomial.induction_on' with
