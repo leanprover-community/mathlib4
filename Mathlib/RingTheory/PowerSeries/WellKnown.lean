@@ -123,8 +123,8 @@ theorem invOneSubPow_val_zero_eq_invUnitSub_one :
   simp [invOneSubPow, invUnitsSub]
 
 /--
-The theorem `PowerSeries.mk_one_mul_one_sub_eq_one` implies that `1 - X : S⟦X⟧` is a unit whose
-inverse is the power series `1 + X + X^2 + ...`. This theorem states that for any `d : ℕ`,
+The theorem `PowerSeries.mk_one_mul_one_sub_eq_one` implies that `1 - X` is a unit in `S⟦X⟧`
+whose inverse is the power series `1 + X + X^2 + ...`. This theorem states that for any `d : ℕ`,
 `PowerSeries.invOneSubPow d` is equal to `(1 - X)⁻¹ ^ (d + 1)`.
 -/
 theorem invOneSubPow_eq_inv_one_sub_pow :
