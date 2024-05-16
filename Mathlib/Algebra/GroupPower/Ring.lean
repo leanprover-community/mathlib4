@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.Ring.Defs
 
 #align_import algebra.group_power.ring from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
