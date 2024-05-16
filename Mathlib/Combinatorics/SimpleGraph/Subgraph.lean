@@ -1016,7 +1016,6 @@ protected def restrict {G' : G.Subgraph} : G.Subgraph → G'.coe.Subgraph :=
   Subgraph.comap G'.hom
 #align simple_graph.subgraph.restrict SimpleGraph.Subgraph.restrict
 
-@[simp]
 lemma coeSubgraph_verts {G' : Subgraph G} (G'' : Subgraph G'.coe) :
     G''.coeSubgraph.verts = (G''.verts : Set V) := rfl
 
