@@ -203,7 +203,6 @@ protected lemma comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c: 𝒳} {f : R ⟶
     refine ⟨⟨InducedMap_IsHomLift hφ rfl _, ?_⟩, ?_⟩
     · rw [← assoc, (InducedMap_Diagram hφ rfl _), (InducedMap_Diagram hψ rfl _)]
     · intro π' hπ'
-      -- TODO: maybe this can be golfed with new uniqueness lemma
       apply InducedMap_unique hφ _ _ hπ'.1
       apply InducedMap_unique hψ _ _ (IsHomLift.comp hπ'.1 hφ.toIsHomLift)
       simp only [assoc, hπ'.2]
@@ -245,26 +244,6 @@ lemma of_iso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a
 lemma of_isIso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳}
     {f : R ⟶ S} {φ : a ⟶ b} (hφ : IsHomLift p f φ) [IsIso φ] : IsPullback p f φ :=
   IsPullback.of_iso (φ := asIso φ) hφ
-
-/- eqToHom interactions. LEAVE THESE OUT OF FIRST PR! -/
-
--- TODO: eqToHom is a pullback over eqToHom (should be only one lemma! Should assume IsHomLift!)
-
-lemma eqToHom_codomain {p : 𝒳 ⥤ 𝒮} {a b : 𝒳} (hba : b = a) {S : 𝒮} (hS : p.obj a = S) :
-    IsPullback p (𝟙 S) (eqToHom hba) :=
-  of_isIso (eqToHom_codomain_lift_id hba hS)
-
-lemma eqToHom_domain {p : 𝒳 ⥤ 𝒮} {a b : 𝒳} (hba : b = a) {S : 𝒮} (hS : p.obj b = S) :
-    IsPullback p (𝟙 S) (eqToHom hba) :=
-  of_isIso (eqToHom_domain_lift_id hba hS)
-
-lemma eqToHom_comp {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
-    {φ : b ⟶ a} (hφ : IsPullback p f φ) (hc : c = b) : IsPullback p f (eqToHom hc ≫ φ) :=
-  id_comp f ▸ IsPullback.comp (eqToHom_codomain hc hφ.ObjLiftDomain) hφ
-
-lemma comp_eqToHom {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
-    {φ : b ⟶ a} (hφ : IsPullback p f φ) (hc : a = c) : IsPullback p f (φ ≫ eqToHom hc) :=
-  comp_id f ▸ IsPullback.comp hφ (eqToHom_domain hc hφ.ObjLiftCodomain)
 
 /-- A pullback over an isomorphism is an isomorphism. -/
 lemma isIso_of_base_isIso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
