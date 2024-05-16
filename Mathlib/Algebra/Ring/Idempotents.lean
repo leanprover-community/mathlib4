@@ -3,8 +3,10 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
 import Mathlib.Tactic.Conv
 

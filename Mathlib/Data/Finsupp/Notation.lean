@@ -63,7 +63,7 @@ def updateUnexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- Display `Finsupp` using `fun₀` notation. -/
-unsafe instance {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) where
+unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) where
   reprPrec f p :=
     if f.support.card = 0 then
       "0"

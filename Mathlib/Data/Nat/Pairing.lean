@@ -127,13 +127,13 @@ theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair
   · by_cases h₂ : a₂ < b <;> simp [pair, h₂, h]
     simp? at h₂ says simp only [not_lt] at h₂
     apply Nat.add_lt_add_of_le_of_lt
-    exact Nat.mul_self_le_mul_self h₂
-    exact Nat.lt_add_right _ h
+    · exact Nat.mul_self_le_mul_self h₂
+    · exact Nat.lt_add_right _ h
   · simp at h₁
     simp only [not_lt_of_gt (lt_of_le_of_lt h₁ h), ite_false]
     apply add_lt_add
-    exact Nat.mul_self_lt_mul_self h
-    apply Nat.add_lt_add_right; assumption
+    · exact Nat.mul_self_lt_mul_self h
+    · apply Nat.add_lt_add_right; assumption
 #align nat.mkpair_lt_mkpair_left Nat.pair_lt_pair_left
 
 theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pair a b₂ := by
@@ -155,7 +155,7 @@ theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
 theorem max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n := by
   rw [pair]
   cases' lt_or_le m n with h h
-  rw [if_pos h, max_eq_right h.le, min_eq_left h.le, Nat.pow_two]
+  · rw [if_pos h, max_eq_right h.le, min_eq_left h.le, Nat.pow_two]
   rw [if_neg h.not_lt, max_eq_left h, min_eq_right h, Nat.pow_two, Nat.add_assoc,
     Nat.add_le_add_iff_left]
   exact Nat.le_add_left _ _

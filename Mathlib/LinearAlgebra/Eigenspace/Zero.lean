@@ -69,10 +69,7 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
     rw [← mem_ker] at hk
     exact Submodule.mem_iSup_of_mem _ hk
   tfae_have 2 ↔ 4
-  · rw [← φ.charpoly_natDegree]
-    refine ⟨?_, φ.charpoly_monic.eq_X_pow_of_natTrailingDegree_eq_natDegree⟩
-    intro h
-    rw [← natTrailingDegree_X_pow (R := R) φ.charpoly.natDegree, ← h]
+  · rw [← φ.charpoly_natDegree, φ.charpoly_monic.eq_X_pow_iff_natTrailingDegree_eq_natDegree]
   tfae_finish
 
 lemma charpoly_eq_X_pow_iff [IsNoetherian R M] (φ : Module.End R M) :

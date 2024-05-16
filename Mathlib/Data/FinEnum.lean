@@ -232,7 +232,7 @@ theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : L
   · ext a ⟨⟩
   · exists Pi.cons xs_hd xs_tl (f _ (List.mem_cons_self _ _))
     constructor
-    exact ⟨_, rfl⟩
+    · exact ⟨_, rfl⟩
     exists Pi.tail f
     constructor
     · apply xs_ih

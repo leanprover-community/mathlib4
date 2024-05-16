@@ -43,7 +43,7 @@ theorem det_le {A : Matrix n n R} {abv : AbsoluteValue R S} {x : S} (hx : ∀ i 
     _ ≤ ∑ σ : Perm n, abv (Perm.sign σ • ∏ i, A (σ i) i) := abv.sum_le _ _
     _ = ∑ σ : Perm n, ∏ i, abv (A (σ i) i) :=
       (sum_congr rfl fun σ _ => by rw [abv.map_units_int_smul, abv.map_prod])
-    _ ≤ ∑ σ : Perm n, ∏ _i : n, x :=
+    _ ≤ ∑ _σ : Perm n, ∏ _i : n, x :=
       (sum_le_sum fun _ _ => prod_le_prod (fun _ _ => abv.nonneg _) fun _ _ => hx _ _)
     _ = ∑ _σ : Perm n, x ^ Fintype.card n :=
       (sum_congr rfl fun _ _ => by rw [prod_const, Finset.card_univ])

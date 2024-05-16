@@ -1055,10 +1055,10 @@ theorem surjective_onto_range : Surjective (rangeFactorization f) := fun ⟨_, �
 theorem image_eq_range (f : α → β) (s : Set α) : f '' s = range fun x : s => f x := by
   ext
   constructor
-  rintro ⟨x, h1, h2⟩
-  exact ⟨⟨x, h1⟩, h2⟩
-  rintro ⟨⟨x, h1⟩, h2⟩
-  exact ⟨x, h1, h2⟩
+  · rintro ⟨x, h1, h2⟩
+    exact ⟨⟨x, h1⟩, h2⟩
+  · rintro ⟨⟨x, h1⟩, h2⟩
+    exact ⟨x, h1, h2⟩
 #align set.image_eq_range Set.image_eq_range
 
 theorem _root_.Sum.range_eq (f : Sum α β → γ) :
@@ -1083,8 +1083,8 @@ theorem range_ite_subset' {p : Prop} [Decidable p] {f g : α → β} :
 theorem range_ite_subset {p : α → Prop} [DecidablePred p] {f g : α → β} :
     (range fun x => if p x then f x else g x) ⊆ range f ∪ range g := by
   rw [range_subset_iff]; intro x; by_cases h : p x
-  simp only [if_pos h, mem_union, mem_range, exists_apply_eq_apply, true_or]
-  simp [if_neg h, mem_union, mem_range_self]
+  · simp only [if_pos h, mem_union, mem_range, exists_apply_eq_apply, true_or]
+  · simp [if_neg h, mem_union, mem_range_self]
 #align set.range_ite_subset Set.range_ite_subset
 
 @[simp]

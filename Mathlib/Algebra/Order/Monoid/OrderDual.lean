@@ -88,7 +88,6 @@ instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :
 @[to_additive OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass]
 instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid α] :
     ContravariantClass αᵒᵈ αᵒᵈ HMul.hMul LE.le where
-    -- Porting note: need to specify `α`; not sure why
     elim a b c := OrderedCancelCommMonoid.le_of_mul_le_mul_left (α := α) a c b
 -- Porting note: Lean 3 to_additive name omits first namespace part
 #align ordered_cancel_add_comm_monoid.to_contravariant_class OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass

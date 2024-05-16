@@ -186,10 +186,10 @@ theorem condexpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
     (hf : f =ᵐ[μ.restrict s] 0) : condexpL2 ℝ ℝ hm f =ᵐ[μ.restrict s] (0 : α → ℝ) := by
   suffices h_nnnorm_eq_zero : ∫⁻ x in s, ‖(condexpL2 ℝ ℝ hm f : α → ℝ) x‖₊ ∂μ = 0 by
     rw [lintegral_eq_zero_iff] at h_nnnorm_eq_zero
-    refine' h_nnnorm_eq_zero.mono fun x hx => _
-    dsimp only at hx
-    rw [Pi.zero_apply] at hx ⊢
-    · rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
+    · refine' h_nnnorm_eq_zero.mono fun x hx => _
+      dsimp only at hx
+      rw [Pi.zero_apply] at hx ⊢
+      · rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
     · refine' Measurable.coe_nnreal_ennreal (Measurable.nnnorm _)
       rw [lpMeas_coe]
       exact (Lp.stronglyMeasurable _).measurable

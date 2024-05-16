@@ -225,9 +225,9 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
   rfl
 #align category_theory.ulift_functor_map CategoryTheory.uliftFunctor_map
 
-instance uliftFunctorFull : Functor.Full.{u} uliftFunctor where
-  preimage f x := (f (ULift.up x)).down
-#align category_theory.ulift_functor_full CategoryTheory.uliftFunctorFull
+instance uliftFunctor_full : Functor.Full.{u} uliftFunctor where
+  map_surjective f := ⟨fun x => (f (ULift.up x)).down, rfl⟩
+#align category_theory.ulift_functor_full CategoryTheory.uliftFunctor_full
 
 instance uliftFunctor_faithful : uliftFunctor.Faithful where
   map_injective {_X} {_Y} f g p :=
@@ -355,7 +355,6 @@ open CategoryTheory
 variable {X Y : Type u}
 
 /-- Any isomorphism between types gives an equivalence. -/
-@[pp_dot]
 def toEquiv (i : X ≅ Y) : X ≃ Y where
   toFun := i.hom
   invFun := i.inv
