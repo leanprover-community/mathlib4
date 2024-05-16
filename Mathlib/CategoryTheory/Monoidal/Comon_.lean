@@ -243,7 +243,7 @@ Comonoid objects in a braided category form a monoidal category.
 This definition is via transporting back and forth to monoids in the opposite category,
 -/
 instance [BraidedCategory C] : MonoidalCategory (Comon_ C) :=
-  Monoidal.transport (Comon_equiv_Mon_op_op C).symm
+  Monoidal.transport (Comon_EquivMon_OpOp C).symm
 
 variable [BraidedCategory C]
 
