@@ -42,7 +42,7 @@ one edge, and the edges of the subgraph represent the paired vertices.
 open Function
 
 namespace SimpleGraph
-variable {V : Type*} {G : SimpleGraph V} {M : Subgraph G} {v w : V}
+variable {V : Type*} {G G': SimpleGraph V} {M M' : Subgraph G} {v w : V}
 
 namespace Subgraph
 
@@ -76,6 +76,89 @@ theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching)
     h.toEdge ⟨v, hv⟩ = h.toEdge ⟨w, hw⟩ := by
   rw [h.toEdge_eq_of_adj hv ha, h.toEdge_eq_of_adj hw (M.symm ha), Subtype.mk_eq_mk, Sym2.eq_swap]
 #align simple_graph.subgraph.is_matching.to_edge_eq_to_edge_of_adj SimpleGraph.Subgraph.IsMatching.toEdge_eq_toEdge_of_adj
+
+lemma IsMatching.map_hom_ofLE_IsMatching (h : M.IsMatching) (hGG' : G ≤ G') :
+    (M.map (Hom.ofLE hGG')).IsMatching := by
+  intro v hv
+  obtain ⟨ v' , ⟨ hv' , hv'' ⟩ ⟩ := (Set.mem_image _ _ _).mp hv
+  obtain ⟨ w' , hw' ⟩ := h hv'
+  use w'
+  dsimp at hw' ⊢
+  simpa only [Relation.map_id_id] using hv'' ▸ hw'
+
+lemma sup_IsMatching (hM : M.IsMatching) (hM' : M'.IsMatching)
+    (hd : Disjoint (M.support) (M'.support)) : (M ⊔ M').IsMatching := by
+  intro v hv
+  rw [SimpleGraph.Subgraph.verts_sup] at hv
+  have aux {N N' : Subgraph G} (hN : N.IsMatching) (hd : Disjoint (N.support) (N'.support))
+    (hmN: v ∈ N.verts) : ∃! w, (N ⊔ N').Adj v w := by
+    obtain ⟨ w , hw ⟩ := hN hmN
+    use w
+    refine ⟨SimpleGraph.Subgraph.sup_adj.mpr (.inl hw.1), ?_⟩
+    intro y hy
+    rw [SimpleGraph.Subgraph.sup_adj] at hy
+    cases hy with
+    | inl h1 => exact hw.2 y h1
+    | inr h2 =>
+      rw [Set.disjoint_left] at hd
+      simpa [(SimpleGraph.Subgraph.mem_support _).mpr ⟨w, hw.1⟩,
+        (SimpleGraph.Subgraph.mem_support _).mpr ⟨y, h2⟩] using @hd v
+  cases Set.mem_or_mem_of_mem_union hv with
+  | inl hmM => exact aux hM hd hmM
+  | inr hmM' =>
+    rw [sup_comm]
+    exact aux hM' (Disjoint.symm hd) hmM'
+
+lemma iSup_IsMatching {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (f i).IsMatching)
+    (hd : (i j : ι) → (i ≠ j) →  Disjoint ((f i).support) ((f j).support)) :
+    (⨆ i , f i).IsMatching := by
+  intro v hv
+  obtain ⟨ i , hi ⟩ := Set.mem_iUnion.mp (SimpleGraph.Subgraph.verts_iSup ▸ hv)
+  obtain ⟨ w , hw ⟩ := hM i hi
+  use w
+  refine ⟨SimpleGraph.Subgraph.iSup_adj.mpr ⟨i, hw.1⟩, ?_⟩
+  intro y hy
+  obtain ⟨ i' , hi' ⟩ := SimpleGraph.Subgraph.iSup_adj.mp hy
+  if heq : i = i' then
+    exact hw.2 y (heq.symm ▸ hi')
+  else
+    have := hd _ _ heq
+    rw [Set.disjoint_left] at this
+    simpa [(SimpleGraph.Subgraph.mem_support _).mpr ⟨w, hw.1⟩,
+        (SimpleGraph.Subgraph.mem_support _).mpr ⟨y, hi'⟩] using @this v
+
+lemma subgraphOfAdj_IsMatching (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching := by
+  intro v' hv'
+  simp only [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at hv'
+  cases hv' with
+  | inl hl =>
+    use w
+    simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, and_true,
+      Prod.swap_prod_mk]
+    refine ⟨.inl hl.symm, ?_⟩
+    intro y hy
+    aesop
+  | inr hr =>
+    use v
+    simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk,
+      true_and]
+    refine ⟨.inr hr.symm, ?_⟩
+    intro y hy
+    aesop
+
+lemma coe_IsMatching {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsMatching) :
+    M.coeSubgraph.IsMatching := by
+  intro v hv
+  obtain ⟨ w , hw ⟩ := hM (Set.mem_of_mem_image_val ((Subgraph.coeSubgraph_verts M).symm ▸ hv))
+  use w
+  constructor
+  · simp_rw [Subgraph.coeSubgraph_adj]
+    simp only [Subtype.forall, Subtype.coe_eta, Subtype.coe_prop, exists_const] at *
+    obtain ⟨ v' , hv' ⟩ := (Set.mem_image _ _ _).mp ((Subgraph.coeSubgraph_verts M).symm ▸ hv)
+    exact ⟨hv'.2 ▸ v'.2, hw.1⟩
+  · intro y hy
+    obtain ⟨ hv' , ⟨ hw' , hvw ⟩ ⟩ := (SimpleGraph.Subgraph.coeSubgraph_adj _ _ _).mp hy
+    rw [← hw.2 ⟨ y , hw' ⟩ hvw]
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
