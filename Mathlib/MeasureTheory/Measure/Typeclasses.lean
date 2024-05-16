@@ -1089,7 +1089,7 @@ instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, Sigma
     rintro i -
     exact (measure_mono <| iInter_subset _ i).trans_lt (measure_spanningSets_lt_top (μ i) n)
   · rw [iUnion_iInter_of_monotone]
-    simp_rw [iUnion_spanningSets, iInter_univ]
+    · simp_rw [iUnion_spanningSets, iInter_univ]
     exact fun i => monotone_spanningSets (μ i)
 #align measure_theory.sum.sigma_finite MeasureTheory.sum.sigmaFinite
 
