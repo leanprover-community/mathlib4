@@ -1,0 +1,51 @@
+name: Mathlib stats Workflow
+
+on:
+  schedule:
+   - cron: '0 */2 * * *' # Runs every two hours while we're debugging.
+   # - cron: '0 0 * * *'   # Runs at 00:00 UTC every day
+
+jobs:
+  mathlib_stats:
+    runs-on: pr
+    steps:
+
+      - name: Checkout master branch
+        uses: actions/checkout@v4
+        with:
+          ## fetch the whole repository, to get the history of the last week
+          fetch-depth: 0
+          ref: 'master'
+
+      - name: mathlib_stats
+      - id: mathlib_stats
+        run: |
+          git checkout -q master
+          printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)" >> "$GITHUB_OUTPUT"
+
+      - name: Post mathlib stats on Zulip
+        if: success()
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib reviewers'
+          type: 'stream'
+          topic: 'Mathlib weekly reports'
+          content: |
+            ${{ steps.mathlib_stats.outputs.summary }}
+
+      - name: Post failure message on Zulip
+        if: failure()
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib reviewers'
+          type: 'stream'
+          topic: 'Mathlib weekly reports'
+          content: |
+            ❌ Mathlib stats failed
+        continue-on-error: true
