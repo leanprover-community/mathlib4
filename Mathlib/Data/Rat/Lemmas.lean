@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Int.Div
+import Mathlib.Algebra.Ring.Int
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Rat.Defs
 
@@ -135,9 +135,7 @@ theorem mul_num_den' (q r : ℚ) :
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.num) hs
   rw [c_mul_num, mul_assoc, mul_comm]
   nth_rw 1 [c_mul_den]
-  repeat rw [Int.mul_assoc]
-  apply mul_eq_mul_left_iff.2
-  rw [or_iff_not_imp_right]
+  rw [Int.mul_assoc, Int.mul_assoc, mul_eq_mul_left_iff, or_iff_not_imp_right]
   intro
   have h : _ = s := divInt_mul_divInt q.num r.num (mod_cast q.den_ne_zero) (mod_cast r.den_ne_zero)
   rw [num_divInt_den, num_divInt_den] at h
@@ -176,15 +174,6 @@ protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
   rw [← num_divInt_den q]
   simp only [Rat.neg_divInt, Rat.inv_divInt', eq_self_iff_true, Rat.divInt_neg]
 #align rat.inv_neg Rat.inv_neg
-
-@[simp]
-theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
-  suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
-    conv => pattern (occs := 1) q; (rw [← num_divInt_den q])
-    simp only [intCast_eq_divInt, natCast_eq_divInt, num_divInt_den] at this ⊢; assumption
-  have : (q.den : ℤ) ≠ 0 := ne_of_gt (mod_cast q.pos)
-  rw [Rat.divInt_mul_divInt _ _ this one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
-#align rat.mul_denom_eq_num Rat.mul_den_eq_num
 
 theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m := by
   replace hn : (n : ℚ) ≠ 0 := by rwa [Ne, ← Int.cast_zero, coe_int_inj]

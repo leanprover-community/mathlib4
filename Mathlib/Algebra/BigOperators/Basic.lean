@@ -2675,5 +2675,5 @@ theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
 
 end AddCommMonoid
 
-@[deprecated] alias Equiv.prod_comp' := Fintype.prod_equiv -- 2023-12-23
-@[deprecated] alias Equiv.sum_comp' := Fintype.sum_equiv -- 2023-12-23
+@[deprecated (since := "2023-12-23")] alias Equiv.prod_comp' := Fintype.prod_equiv
+@[deprecated (since := "2023-12-23")] alias Equiv.sum_comp' := Fintype.sum_equiv
