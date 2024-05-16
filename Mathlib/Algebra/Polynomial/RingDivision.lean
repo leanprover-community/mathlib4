@@ -414,11 +414,8 @@ theorem McCoy (P : R[X]) : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 
   refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1 (C a)) <| smul_eq_C_mul a ▸ h⟩
   let S := {Q | Q * P = 0 ∧ Q ≠ 0}
 
-  obtain ⟨Q, hQ, hQdeg⟩ : ∃ Q ∈ {Q | Q * P = 0 ∧ Q ≠ 0}, Q.natDegree = sInf (natDegree '' S) := by
-    simp only [mem_nonZeroDivisors_iff, not_forall, Classical.not_imp] at hP
-    obtain ⟨Q₁, hQ₁, hQ₁0⟩ := hP
-    exact sInf_mem
-      (image_nonempty.2 ⟨Q₁, hQ₁, hQ₁0⟩ : (natDegree '' {Q | Q * P = 0 ∧ Q ≠ 0}).Nonempty)
+  obtain ⟨Q, hQ, hQdeg⟩ : ∃ Q ∈ {Q | Q * P = 0 ∧ Q ≠ 0}, Q.natDegree = sInf (natDegree '' S) :=
+    sInf_mem <| image_nonempty.2 <| nmem_nonZeroDivisors_iff.1 hP
   suffices sInf (natDegree '' S) = 0 by
     rw [this, natDegree_eq_zero] at hQdeg
     obtain ⟨a, ha⟩ := hQdeg
