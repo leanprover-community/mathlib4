@@ -353,8 +353,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
     have hSTm : MeasurableSet ST :=
       (measurableSet_toMeasurable _ _).prod (measurableSet_toMeasurable _ _)
     calc
-      μ.prod ν (s ×ˢ t) ≤ μ.prod ν ST :=
-        measure_mono <| Set.prod_mono (subset_toMeasurable _ _) (subset_toMeasurable _ _)
+      μ.prod ν (s ×ˢ t) ≤ μ.prod ν ST := by gcongr <;> apply subset_toMeasurable
       _ = μ (toMeasurable μ s) * ν (toMeasurable ν t) := by
         rw [prod_apply hSTm]
         simp_rw [ST, mk_preimage_prod_right_eq_if, measure_if,
