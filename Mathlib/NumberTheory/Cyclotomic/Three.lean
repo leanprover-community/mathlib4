@@ -17,7 +17,7 @@ root of unity in `K`, `η` is the element in the ring of integers corresponding 
 
 ## Main results
 * `IsCyclotomicExtension.Rat.Three.Units.mem`: Given a unit `u : (𝓞 K)ˣ`, we have that
-`u ∈ ({1, -1, η, -η, η^2, -η^2}`.
+`u ∈ {1, -1, η, -η, η^2, -η^2}`.
 
 * `IsCyclotomicExtension.Rat.Three.Units.mem.eq_one_or_neg_one_of_unit_of_congruent`: Given a unit
 `u : (𝓞 K)ˣ`, if `u` is congruent to an integer modulo `3`, then `u = 1` or `u = -1`.
