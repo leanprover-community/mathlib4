@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.Order.Ring.CharZero
-import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Order.Bounds.Basic

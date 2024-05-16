@@ -41,19 +41,9 @@ fi |
     print fin| "sort -k6 -k8"; close("sort -k6 -k8")
     printf("---\n* %s  added declarations\n* %s  removed declarations\n* %s  paired declarations", added, removed, paired)
   }'
-printf $'\n---\n\nYou can run this locally using
-```bash
-./scripts/no_lost_declarations.sh <optional_commit>
-```
+)
 
-Running
-```bash
-./scripts/no_lost_declarations.sh short <optional_commit>
-```
-produces a diff of just the declaration names.
-')
-
-if [ "${short}" == "0" ]
+report="$(if [ "${short}" == "0" ]
 then
   echo "${full_output}"
 else
@@ -67,8 +57,24 @@ else
   }' |
   sort | uniq -c | grep -v "^ *2 " |
   grep '\(`+`\|`-`\)' | sed 's=^ *1 =* =; s=``==g'
+fi)"
+
+if [ -n "${report}" ]
+then
+  echo "${report}"
+else
+  echo "No declarations were harmed in the making of this PR! 🐙"
 fi
 
+printf $'\n---\n\nYou can run this locally as follows
+```bash
+## summary with just the declaration names:
+./scripts/no_lost_declarations.sh short <optional_commit>
+
+## more verbose report:
+./scripts/no_lost_declarations.sh <optional_commit>
+```
+'
  : <<ReferenceTest
 theorem oh hello
 inductive counts even if it is not lean code
