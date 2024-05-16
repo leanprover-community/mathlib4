@@ -138,6 +138,9 @@ set_option linter.deprecated false in
 theorem not_even_bit1 (n : ℕ) : ¬Even (bit1 n) := by simp [bit1, parity_simps]
 #align nat.not_even_bit1 Nat.not_even_bit1
 
+theorem not_even_two_mul_add_one (n : ℕ) : ¬Even (2 * n + 1) :=
+  odd_iff_not_even.mp <| odd_two_mul_add_one n
+
 theorem two_not_dvd_two_mul_add_one (n : ℕ) : ¬2 ∣ 2 * n + 1 := by simp [add_mod]
 #align nat.two_not_dvd_two_mul_add_one Nat.two_not_dvd_two_mul_add_one
 
