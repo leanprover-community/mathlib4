@@ -299,6 +299,7 @@ jobs:
       - name: check for unused imports
         id: shake
         uses: liskin/gh-problem-matcher-wrap@v3
+        # The `--gh-style` flag below produces output that `liskin/gh-problem-matcher-wrap` understands.
         with:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
