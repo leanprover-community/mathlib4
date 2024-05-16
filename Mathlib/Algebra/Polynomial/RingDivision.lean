@@ -370,12 +370,12 @@ open nonZeroDivisors Nat Set in
 such that `a ≠ 0` and `a • P = 0`. We follow the proof given in
 https://math.stackexchange.com/questions/83121/zero-divisor-in-rx/83171#83171. -/
 theorem nmem_nonZeroDivisors_iff (P : R[X]) : P ∉ R[X]⁰ ↔ ∃ (a : R), a ≠ 0 ∧ a • P = 0 := by
-  refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1 (C a)) <| smul_eq_C_mul a ▸ h⟩
+  refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1 _) <| smul_eq_C_mul a ▸ h⟩
   let S := {Q | Q * P = 0 ∧ Q ≠ 0}
-
-  obtain ⟨Q, hQ, hQdeg⟩ : ∃ Q ∈ {Q | Q * P = 0 ∧ Q ≠ 0}, Q.natDegree = sInf (natDegree '' S) :=
+  set m := sInf (natDegree '' S) with hm
+  obtain ⟨Q, hQ, hQdeg⟩ : ∃ Q ∈ {Q | Q * P = 0 ∧ Q ≠ 0}, Q.natDegree = m :=
     sInf_mem <| image_nonempty.2 <| _root_.nmem_nonZeroDivisors_iff.1 hP
-  suffices sInf (natDegree '' S) = 0 by
+  suffices m = 0 by
     rw [this, natDegree_eq_zero] at hQdeg
     obtain ⟨a, ha⟩ := hQdeg
     exact ⟨a, fun ha0 ↦ hQ.2 (by simpa [← ha] using ha0), by rw [smul_eq_C_mul, ha, hQ.1]⟩
@@ -385,14 +385,11 @@ theorem nmem_nonZeroDivisors_iff (P : R[X]) : P ∉ R[X]⁰ ↔ ∃ (a : R), a �
     refine sSup_mem ?_ ⟨P.natDegree, fun i hi ↦ ?_⟩
     · rsuffices ⟨i, hi⟩ : ∃ i, Q.leadingCoeff * P.coeff i ≠ 0
       · refine ⟨i, ?_⟩
-        rw [mem_setOf_eq, ← leadingCoeff_ne_zero, smul_eq_C_mul, leadingCoeff_mul',
-          leadingCoeff_C, mul_comm]
-        · exact hi
-        · rw [leadingCoeff_C, mul_comm]
-          exact hi
+        rw [mem_setOf_eq, ← leadingCoeff_ne_zero, smul_eq_C_mul, leadingCoeff_mul']
+        all_goals rwa [leadingCoeff_C, mul_comm]
       by_contra! H
       refine Hdeg <| le_zero.1 ?_
-      simp only [nonpos_iff_eq_zero, sInf_eq_zero, Set.mem_image, Set.image_eq_empty]
+      simp only [hm, nonpos_iff_eq_zero, sInf_eq_zero, Set.mem_image, Set.image_eq_empty]
       left
       refine ⟨C Q.leadingCoeff, ⟨?_, by simp [hQ.2]⟩, by simp⟩
       rw [← smul_eq_C_mul]
@@ -409,17 +406,15 @@ theorem nmem_nonZeroDivisors_iff (P : R[X]) : P ∉ R[X]⁰ ↔ ∃ (a : R), a �
       exact hi (by rw [coeff_eq_zero_of_natDegree_lt H, zero_smul])
   refine lt_of_le_of_ne (natDegree_smul_le (coeff P l) Q) (fun h ↦ Hl ?_)
   rw [← leadingCoeff_eq_zero, ← coeff_natDegree, coeff_smul, h, coeff_natDegree]
-  suffices (Q * P).coeff (l + sInf (natDegree '' S)) = P.coeff l • Q.leadingCoeff by
+  suffices (Q * P).coeff (l + m) = P.coeff l • Q.leadingCoeff by
     simp only [← this, hQ.1, coeff_zero]
-  rw [mul_comm Q, coeff_mul, sum_antidiagonal_eq_sum_range_succ (fun i j ↦ P.coeff i * Q.coeff j),
-    ← succ_add, sum_range_add, sum_range_succ,
-    show P.coeff l * Q.coeff (l + sInf (natDegree '' S) - l) = P.coeff l • Q.leadingCoeff
-    by simp [leadingCoeff, hQdeg], add_comm _ (P.coeff l • Q.leadingCoeff), add_assoc, smul_eq_mul]
-  nth_rewrite 2 [← add_zero (P.coeff l * _)]
-  rw [← zero_add 0]
+  have : P.coeff l * Q.coeff (l+m-l) = P.coeff l • Q.leadingCoeff := by simp [leadingCoeff, hQdeg]
+  rw [smul_eq_mul, ← add_zero (P.coeff l * _), mul_comm Q, coeff_mul, ← zero_add 0,
+    sum_antidiagonal_eq_sum_range_succ (fun i j ↦ P.coeff i * Q.coeff j), ← succ_add, sum_range_add,
+    sum_range_succ, this, add_comm _ (P.coeff l • _), add_assoc]
   congr
   · refine sum_eq_zero (fun k hk ↦ ?_)
-    suffices sInf (natDegree '' S) < l + sInf (natDegree '' S) - k by
+    suffices m < l + m - k by
       nth_rewrite 1 [← hQdeg] at this
       rw [coeff_eq_zero_of_natDegree_lt this, mul_zero]
     simp only [Finset.mem_range] at hk
