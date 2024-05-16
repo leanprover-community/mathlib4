@@ -181,8 +181,8 @@ lemma bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
 
 @[simp]
 lemma bit_true_succ (n : ℕ) : bit true n + 1 = bit false (n + 1) := by
-  rw [bit_val, bit_val, cond_true, cond_false]
-  omega
+  rw [bit_val, bit_val]
+  rfl
 
 @[simp]
 lemma bit_false_succ (n : ℕ) : bit false n + 1 = bit true n := by
