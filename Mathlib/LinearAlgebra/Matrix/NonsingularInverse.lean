@@ -118,7 +118,7 @@ def invertibleEquivDetInvertible : Invertible A ≃ Invertible A.det where
 variable {A B}
 
 theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 :=
-  suffices ∀ A B, A * B = 1 → B * A = 1 from ⟨this A B, this B A⟩
+  suffices ∀ A B : Matrix n n α, A * B = 1 → B * A = 1 from ⟨this A B, this B A⟩
   fun A B h => by
   letI : Invertible B.det := detInvertibleOfLeftInverse _ _ h
   letI : Invertible B := invertibleOfDetInvertible B

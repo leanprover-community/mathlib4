@@ -701,17 +701,17 @@ theorem coeff_prod [DecidableEq σ]
   | @insert a s ha ih =>
     rw [piAntidiagonal_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
     · apply Finset.sum_congr rfl
-      · simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
-        rintro u v rfl
-        rw [ih, Finset.mul_sum, ← Finset.sum_attach]
-        apply Finset.sum_congr rfl
-        simp only [mem_attach, Finset.prod_insert ha, Function.update_same, forall_true_left,
-          Subtype.forall]
-        rintro x -
-        rw [Finset.prod_congr rfl]
-        intro i hi
-        rw [Function.update_noteq]
-        exact ne_of_mem_of_not_mem hi ha
+      simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
+      rintro u v rfl
+      rw [ih, Finset.mul_sum, ← Finset.sum_attach]
+      apply Finset.sum_congr rfl
+      simp only [mem_attach, Finset.prod_insert ha, Function.update_same, forall_true_left,
+        Subtype.forall]
+      rintro x -
+      rw [Finset.prod_congr rfl]
+      intro i hi
+      rw [Function.update_noteq]
+      exact ne_of_mem_of_not_mem hi ha
     · simp only [Set.PairwiseDisjoint, Set.Pairwise, mem_coe, mem_antidiagonal, ne_eq,
         disjoint_left, mem_map, mem_attach, Function.Embedding.coeFn_mk, true_and, Subtype.exists,
         exists_prop, not_exists, not_and, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,

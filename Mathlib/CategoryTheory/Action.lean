@@ -201,13 +201,13 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
     map_one' := by
       dsimp
       ext1
-      ext b
-      exact F_map_eq.symm.trans (F.map_id b)
+      · ext b
+        exact F_map_eq.symm.trans (F.map_id b)
       rfl
     map_mul' := by
       intro g h
       ext b
-      exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
+      · exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
       rfl }
 #align category_theory.action_category.curry CategoryTheory.ActionCategory.curry
 

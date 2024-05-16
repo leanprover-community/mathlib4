@@ -281,7 +281,7 @@ noncomputable def mkIdInitial [T.Full] [T.Faithful] : IsInitial (mk (𝟙 (T.obj
     apply CommaMorphism.ext
     · aesop_cat
     · apply T.map_injective
-      simpa only [homMk_right, T.image_preimage, ← w m] using (Category.id_comp _).symm
+      simpa only [homMk_right, T.map_preimage, ← w m] using (Category.id_comp _).symm
 #align category_theory.structured_arrow.mk_id_initial CategoryTheory.StructuredArrow.mkIdInitial
 
 variable {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]
@@ -326,6 +326,33 @@ instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] : (post S F G).EssSurj whe
 /-- If `G` is fully faithful, then `post S F G : (S, F) ⥤ (G(S), F ⋙ G)` is an equivalence. -/
 instance isEquivalence_post (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] [G.Faithful] :
     (post S F G).IsEquivalence where
+
+section
+
+variable {L : D} {R : C ⥤ D} {L' : B} {R' : A ⥤ B} {F : C ⥤ A} {G : D ⥤ B}
+  (α : L' ⟶ G.obj L) (β : R ⋙ G ⟶ F ⋙ R')
+
+/-- The functor `StructuredArrow L R ⥤ StructuredArrow L' R'` that is deduced from
+a natural transformation `R ⋙ G ⟶ F ⋙ R'` and a morphism `L' ⟶ G.obj L.` -/
+@[simps!]
+def map₂ : StructuredArrow L R ⥤ StructuredArrow L' R' :=
+  Comma.map (F₁ := 𝟭 (Discrete PUnit)) (Discrete.natTrans (fun _ => α)) β
+
+instance faithful_map₂ [F.Faithful] : (map₂ α β).Faithful := by
+  apply Comma.faithful_map
+
+instance full_map₂ [G.Faithful] [F.Full] [IsIso α] [IsIso β] : (map₂ α β).Full := by
+  apply Comma.full_map
+
+instance essSurj_map₂ [F.EssSurj] [G.Full] [IsIso α] [IsIso β] : (map₂ α β).EssSurj := by
+  apply Comma.essSurj_map
+
+noncomputable instance isEquivalenceMap₂
+    [F.IsEquivalence] [G.Faithful] [G.Full] [IsIso α] [IsIso β] :
+    (map₂ α β).IsEquivalence := by
+  apply Comma.isEquivalenceMap
+
+end
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
@@ -618,7 +645,7 @@ noncomputable def mkIdTerminal [S.Full] [S.Faithful] : IsTerminal (mk (𝟙 (S.o
     rintro c m -
     ext
     apply S.map_injective
-    simpa only [homMk_left, S.image_preimage, ← w m] using (Category.comp_id _).symm
+    simpa only [homMk_left, S.map_preimage, ← w m] using (Category.comp_id _).symm
 #align category_theory.costructured_arrow.mk_id_terminal CategoryTheory.CostructuredArrow.mkIdTerminal
 
 variable {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]
@@ -663,6 +690,33 @@ instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [G.Full] : (post F G S).EssSurj whe
 /-- If `G` is fully faithful, then `post F G S : (F, S) ⥤ (F ⋙ G, G(S))` is an equivalence. -/
 instance isEquivalence_post (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] [G.Faithful] :
     (post F G S).IsEquivalence where
+
+section
+
+variable {U : A ⥤ B} {V : B} {F : C ⥤ A} {G : D ⥤ B}
+  (α : F ⋙ U ⟶ S ⋙ G) (β : G.obj T ⟶ V)
+
+/-- The functor `CostructuredArrow S T ⥤ CostructuredArrow U V` that is deduced from
+a natural transformation `F ⋙ U ⟶ S ⋙ G` and a morphism `G.obj T ⟶ V` -/
+@[simps!]
+def map₂ : CostructuredArrow S T ⥤ CostructuredArrow U V :=
+  Comma.map (F₂ := 𝟭 (Discrete PUnit)) α (Discrete.natTrans (fun _ => β))
+
+instance faithful_map₂ [F.Faithful] : (map₂ α β).Faithful := by
+  apply Comma.faithful_map
+
+instance full_map₂ [G.Faithful] [F.Full] [IsIso α] [IsIso β] : (map₂ α β).Full := by
+  apply Comma.full_map
+
+instance essSurj_map₂ [F.EssSurj] [G.Full] [IsIso α] [IsIso β] : (map₂ α β).EssSurj := by
+  apply Comma.essSurj_map
+
+noncomputable instance isEquivalenceMap₂
+    [F.IsEquivalence] [G.Faithful] [G.Full] [IsIso α] [IsIso β] :
+    (map₂ α β).IsEquivalence := by
+  apply Comma.isEquivalenceMap
+
+end
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by

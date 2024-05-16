@@ -307,7 +307,6 @@ theorem to_skyscraper_fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skys
   split_ifs with h
   · erw [← Category.assoc, colimit.ι_desc, Category.assoc, eqToHom_trans, eqToHom_refl,
       Category.comp_id]
-    simp only [unop_op, op_unop]
   · exact ((if_neg h).symm.ndrec terminalIsTerminal).hom_ext ..
 #align stalk_skyscraper_presheaf_adjunction_auxs.to_skyscraper_from_stalk StalkSkyscraperPresheafAdjunctionAuxs.to_skyscraper_fromStalk
 

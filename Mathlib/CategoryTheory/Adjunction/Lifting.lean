@@ -192,9 +192,9 @@ lemma monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint U] {R : A �
   rsuffices : R'.IsRightAdjoint
   · let this : (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv).IsRightAdjoint := by
       infer_instance
-    · refine' ((Adjunction.ofIsRightAdjoint
-        (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv)).ofNatIsoRight _).isRightAdjoint
-      exact isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm ≪≫ R.rightUnitor
+    refine' ((Adjunction.ofIsRightAdjoint
+      (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv)).ofNatIsoRight _).isRightAdjoint
+    exact isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm ≪≫ R.rightUnitor
   let this : (R' ⋙ Monad.forget (monadicAdjunction U).toMonad).IsRightAdjoint := by
     refine' ((Adjunction.ofIsRightAdjoint (R ⋙ U)).ofNatIsoRight _).isRightAdjoint
     exact isoWhiskerLeft R (Monad.comparisonForget (monadicAdjunction U)).symm
