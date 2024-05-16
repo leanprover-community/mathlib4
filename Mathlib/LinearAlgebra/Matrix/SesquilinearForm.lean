@@ -363,100 +363,135 @@ a module with a fixed basis.
 -/
 
 
-variable [CommSemiring R]
+variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₁]
 
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid N₂]
   [Module R N₂] --[SMulCommClass R R N₂]
    --[IsCentralScalar R N₂]
+
+variable [Module R₂ N₂] [SMulCommClass R₂ R N₂]  [Module R₂ M₂] [Module R₁ M₁]
+
+variable [Module R₁ N₂] [SMulCommClass R₁ R N₂] [SMulCommClass R₁ R₂ N₂] [SMulCommClass R₂ R₁ N₂]
+
 variable [DecidableEq n] [Fintype n]
 variable [DecidableEq m] [Fintype m]
-variable (b₁ : Basis n R M₁) (b₂ : Basis m R M₂)
+
+section
+
+variable (b₁ : Basis n R₁ M₁) (b₂ : Basis m R₂ M₂)
+
+#check b₂.equivFun.arrowCongr
+
+noncomputable def test1 : (M₂ →ₗ[R₂] N₂) ≃ₗ[R₂] (m → R₂) →ₗ[R₂] N₂ :=
+  b₂.equivFun.arrowCongr' (M₂₁ := N₂) (M₂₂ := N₂) (LinearEquiv.refl R₂ N₂) (by exact
+    { map_add := fun x ↦ congrFun rfl, map_smul := fun c ↦ congrFun rfl })
+
+noncomputable def test2 : (M₂ →ₗ[R₂] N₂) ≃ₗ[R₁] (m → R₂) →ₗ[R₂] N₂ :=
+  b₂.equivFun.arrowCongr' (M₂₁ := N₂) (M₂₂ := N₂) (LinearEquiv.refl R₂ N₂)
+  ({ map_add := fun _ ↦ congrFun rfl, map_smul := fun _ ↦ congrFun rfl })
+
+instance testInst : IsLinearMap R₁ (test2 (N₂ := N₂) (R₁ := R₁) b₂) :=
+  { map_add := fun _ ↦ congrFun rfl, map_smul := fun _ ↦ congrFun rfl }
+
+#check b₁.equivFun.arrowCongr' (test2 (N₂ := N₂)  b₂) (testInst b₂)
+
+noncomputable def test3 : (M₁ →ₗ[R₁] M₂ →ₗ[R₂] N₂) ≃ₗ[R] (n → R₁) →ₗ[R₁] (m → R₂) →ₗ[R₂] N₂ :=
+  b₁.equivFun.arrowCongr' (test2 (N₂ := N₂) (R₁ := R₁) b₂) (testInst b₂)
+
+--end
+
+--variable (b₁ : Basis n R M₁) (b₂ : Basis m R M₂)
 
 /-- `LinearMap.toMatrix₂ b₁ b₂` is the equivalence between `R`-bilinear maps on `M` and
 `n`-by-`m` matrices with entries in `R`, if `b₁` and `b₂` are `R`-bases for `M₁` and `M₂`,
 respectively. -/
-noncomputable def LinearMap.toMatrix₂ : (M₁ →ₗ[R] M₂ →ₗ[R] N₂) ≃ₗ[R] Matrix n m N₂ :=
-  (b₁.equivFun.arrowCongr (b₂.equivFun.arrowCongr (LinearEquiv.refl R N₂))).trans
+noncomputable def LinearMap.toMatrix₂ : (M₁ →ₗ[R₁] M₂ →ₗ[R₂] N₂) ≃ₗ[R] Matrix n m N₂ :=
+  (b₁.equivFun.arrowCongr' (b₂.equivFun.arrowCongr' (LinearEquiv.refl R₂ N₂)
+    ({ map_add := fun _ ↦ congrFun rfl, map_smul := fun _ ↦ congrFun rfl })) (
+      { map_add := fun x ↦ congrFun rfl, map_smul := fun c ↦ congrFun (by exact rfl) })).trans
     LinearMap.toMatrix₂'
 #align linear_map.to_matrix₂ LinearMap.toMatrix₂
 
 /-- `Matrix.toLinearMap₂ b₁ b₂` is the equivalence between `R`-bilinear maps on `M` and
 `n`-by-`m` matrices with entries in `R`, if `b₁` and `b₂` are `R`-bases for `M₁` and `M₂`,
 respectively; this is the reverse direction of `LinearMap.toMatrix₂ b₁ b₂`. -/
-noncomputable def Matrix.toLinearMap₂ : Matrix n m N₂ ≃ₗ[R] M₁ →ₗ[R] M₂ →ₗ[R] N₂ :=
+noncomputable def Matrix.toLinearMap₂ : Matrix n m N₂ ≃ₗ[R] M₁ →ₗ[R₁] M₂ →ₗ[R₂] N₂ :=
   (LinearMap.toMatrix₂ b₁ b₂).symm
 #align matrix.to_linear_map₂ Matrix.toLinearMap₂
 
 -- We make this and not `LinearMap.toMatrix₂` a `simp` lemma to avoid timeouts
 @[simp]
-theorem LinearMap.toMatrix₂_apply (B : M₁ →ₗ[R] M₂ →ₗ[R] N₂) (i : n) (j : m) :
-    LinearMap.toMatrix₂ b₁ b₂ B i j = B (b₁ i) (b₂ j) := by
-  simp only [LinearMap.toMatrix₂, LinearEquiv.trans_apply, LinearMap.toMatrix₂'_apply,
-    LinearEquiv.trans_apply, LinearMap.toMatrix₂'_apply, LinearEquiv.arrowCongr_apply,
-    Basis.equivFun_symm_stdBasis, LinearEquiv.refl_apply]
+theorem LinearMap.toMatrix₂_apply (B : M₁ →ₗ[R₁] M₂ →ₗ[R₂] N₂) (i : n) (j : m) :
+    LinearMap.toMatrix₂ (R := R) b₁ b₂ B i j = B (b₁ i) (b₂ j) := by
+  simp only [toMatrix₂, LinearEquiv.trans_apply, toMatrix₂'_apply, LinearEquiv.arrowCongr_apply',
+    Basis.equivFun_symm_apply, stdBasis_apply', ite_smul, one_smul, zero_smul, sum_ite_eq, mem_univ,
+    ↓reduceIte, LinearEquiv.refl_apply]
 #align linear_map.to_matrix₂_apply LinearMap.toMatrix₂_apply
 
 @[simp]
-theorem Matrix.toLinearMap₂_apply (M : Matrix n m N₂) (x : M₁) (y : M₂) :
-    Matrix.toLinearMap₂ b₁ b₂ M x y = ∑ i, ∑ j, b₁.repr x i • b₂.repr y j • M i j := by
+theorem Matrix.toLinearMap₂_apply [Algebra R₁ R₂] [IsScalarTower R₁ R₂ N₂] (M : Matrix n m N₂)
+    (x : M₁) (y : M₂) :
+    Matrix.toLinearMap₂ (R := R) b₁ b₂ M x y = ∑ i, ∑ j, b₁.repr x i • b₂.repr y j • M i j := by
   exact Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ =>
-        smul_algebra_smul_comm ((RingHom.id R) ((Basis.equivFun b₁) x _))
-          ((RingHom.id R) ((Basis.equivFun b₂) y _)) (M _ _)
+        smul_algebra_smul_comm ((RingHom.id R₁) ((Basis.equivFun b₁) x _))
+          ((RingHom.id R₂) ((Basis.equivFun b₂) y _)) (M _ _)
 #align matrix.to_linear_map₂_apply Matrix.toLinearMap₂_apply
 
 -- Not a `simp` lemma since `LinearMap.toMatrix₂` needs an extra argument
-theorem LinearMap.toMatrix₂Aux_eq (B : M₁ →ₗ[R] M₂ →ₗ[R] N₂) :
-    LinearMap.toMatrix₂Aux R b₁ b₂ B = LinearMap.toMatrix₂ b₁ b₂ B :=
+theorem LinearMap.toMatrix₂Aux_eq (B : M₁ →ₗ[R₁] M₂ →ₗ[R₂] N₂) :
+    LinearMap.toMatrix₂Aux R b₁ b₂ B = LinearMap.toMatrix₂ (R := R) b₁ b₂ B :=
   Matrix.ext fun i j => by rw [LinearMap.toMatrix₂_apply, LinearMap.toMatrix₂Aux_apply]
 #align linear_map.to_matrix₂_aux_eq LinearMap.toMatrix₂Aux_eq
 
 @[simp]
 theorem LinearMap.toMatrix₂_symm :
-    (LinearMap.toMatrix₂ b₁ b₂).symm = Matrix.toLinearMap₂ (N₂ := N₂) b₁ b₂ :=
+    (LinearMap.toMatrix₂ b₁ b₂).symm = Matrix.toLinearMap₂ (R := R) (N₂ := N₂) b₁ b₂ :=
   rfl
 #align linear_map.to_matrix₂_symm LinearMap.toMatrix₂_symm
 
 @[simp]
 theorem Matrix.toLinearMap₂_symm :
-    (Matrix.toLinearMap₂ b₁ b₂).symm = LinearMap.toMatrix₂ (N₂ := N₂) b₁ b₂ :=
+    (Matrix.toLinearMap₂ b₁ b₂).symm = LinearMap.toMatrix₂ (R := R) (N₂ := N₂) b₁ b₂ :=
   (LinearMap.toMatrix₂ b₁ b₂).symm_symm
 #align matrix.to_linear_map₂_symm Matrix.toLinearMap₂_symm
 
 theorem Matrix.toLinearMap₂_basisFun :
-    Matrix.toLinearMap₂ (Pi.basisFun R n) (Pi.basisFun R m) = Matrix.toLinearMap₂' (N₂ := N₂) := by
+    Matrix.toLinearMap₂ (Pi.basisFun R n) (Pi.basisFun R m) = Matrix.toLinearMap₂' (R := R)
+    (N₂ := N₂) := by
   ext M
   simp only [coe_comp, coe_single, Function.comp_apply, toLinearMap₂_apply, Pi.basisFun_repr,
     toLinearMap₂'_apply]
 #align matrix.to_linear_map₂_basis_fun Matrix.toLinearMap₂_basisFun
 
 theorem LinearMap.toMatrix₂_basisFun :
-    LinearMap.toMatrix₂ (Pi.basisFun R n) (Pi.basisFun R m) = LinearMap.toMatrix₂' (N₂ := N₂) := by
+    LinearMap.toMatrix₂ (Pi.basisFun R n) (Pi.basisFun R m) =
+    LinearMap.toMatrix₂' (R := R) (N₂ := N₂) := by
   ext B
   rw [LinearMap.toMatrix₂_apply, LinearMap.toMatrix₂'_apply, Pi.basisFun_apply, Pi.basisFun_apply]
 #align linear_map.to_matrix₂_basis_fun LinearMap.toMatrix₂_basisFun
 
 @[simp]
-theorem Matrix.toLinearMap₂_toMatrix₂ (B : M₁ →ₗ[R] M₂ →ₗ[R] N₂) :
-    Matrix.toLinearMap₂ b₁ b₂ (LinearMap.toMatrix₂ b₁ b₂ B) = B :=
+theorem Matrix.toLinearMap₂_toMatrix₂ (B : M₁ →ₗ[R₁] M₂ →ₗ[R₂] N₂) :
+    Matrix.toLinearMap₂ (R := R) b₁ b₂ (LinearMap.toMatrix₂ (R := R) b₁ b₂ B) = B :=
   (Matrix.toLinearMap₂ b₁ b₂).apply_symm_apply B
 #align matrix.to_linear_map₂_to_matrix₂ Matrix.toLinearMap₂_toMatrix₂
 
 @[simp]
 theorem LinearMap.toMatrix₂_toLinearMap₂ (M : Matrix n m N₂) :
-    LinearMap.toMatrix₂ b₁ b₂ (Matrix.toLinearMap₂ b₁ b₂ M) = M :=
+    LinearMap.toMatrix₂ (R := R) b₁ b₂ (Matrix.toLinearMap₂ (R := R) b₁ b₂ M) = M :=
   (LinearMap.toMatrix₂ b₁ b₂).apply_symm_apply M
 #align linear_map.to_matrix₂_to_linear_map₂ LinearMap.toMatrix₂_toLinearMap₂
 
 variable [AddCommMonoid M₁'] [Module R M₁']
-variable [AddCommMonoid M₂'] [Module R M₂']
+variable [AddCommMonoid M₂'] [Module R M₂'] [Module R₂ M₁'] [Module R₂ M₂']
 variable (b₁' : Basis n' R M₁')
 variable (b₂' : Basis m' R M₂')
 variable [Fintype n'] [Fintype m']
 variable [DecidableEq n'] [DecidableEq m']
 
 -- Cannot be a `simp` lemma because `b₁` and `b₂` must be inferred.
-theorem LinearMap.toMatrix₂_compl₁₂ (B : M₁ →ₗ[R] M₂ →ₗ[R] R) (l : M₁' →ₗ[R] M₁)
-    (r : M₂' →ₗ[R] M₂) :
+theorem LinearMap.toMatrix₂_compl₁₂ (B : M₁ →ₗ[R₁] M₂ →ₗ[R₂] N₂) (l : M₁' →ₗ[R₁] M₁)
+    (r : M₂' →ₗ[R₂] M₂) :
     LinearMap.toMatrix₂ b₁' b₂' (B.compl₁₂ l r) =
       (toMatrix b₁' b₁ l)ᵀ * LinearMap.toMatrix₂ b₁ b₂ B * toMatrix b₂' b₂ r := by
   ext i j

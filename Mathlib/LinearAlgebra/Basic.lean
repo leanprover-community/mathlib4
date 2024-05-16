@@ -572,6 +572,9 @@ end Neg
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+
+variable {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂]
+
 variable [Module R M] [Module R M₂] [Module R M₃]
 
 open LinearMap
@@ -602,6 +605,37 @@ def arrowCongr {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommM
     ext x
     simp only [smul_apply, Function.comp_apply, coe_comp, map_smulₛₗ e₂, coe_coe]
 #align linear_equiv.arrow_congr LinearEquiv.arrowCongr
+
+/-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
+linear isomorphism between the two function spaces. -/
+def arrowCongr' {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
+    [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R₁ M₁] [Module R₁ M₂] [Module R₁ M₂₁]
+    [Module R₁ M₂₂] [Module R M₂₁] [Module R M₂₂] [SMulCommClass R₁ R M₂₁] [SMulCommClass R₁ R M₂₂]
+    (e₁ : M₁ ≃ₗ[R₁] M₂) (e₂ : M₂₁ ≃ₗ[R₁] M₂₂) (h : IsLinearMap R e₂) :
+    (M₁ →ₗ[R₁] M₂₁) ≃ₗ[R] M₂ →ₗ[R₁] M₂₂ where
+  toFun := fun f : M₁ →ₗ[R₁] M₂₁ => (e₂ : M₂₁ →ₗ[R₁] M₂₂).comp <| f.comp (e₁.symm : M₂ →ₗ[R₁] M₁)
+  invFun f := (e₂.symm : M₂₂ →ₗ[R₁] M₂₁).comp <| f.comp (e₁ : M₁ →ₗ[R₁] M₂)
+  left_inv f := by
+    ext x
+    simp only [symm_apply_apply, Function.comp_apply, coe_comp, coe_coe]
+  right_inv f := by
+    ext x
+    simp only [Function.comp_apply, apply_symm_apply, coe_comp, coe_coe]
+  map_add' f g := by
+    ext x
+    simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
+  map_smul' c f := by
+    ext x
+    simp  [smul_apply, Function.comp_apply, coe_comp, map_smulₛₗ e₂, coe_coe, IsLinearMap.map_smul]
+    simp_rw [h.map_smul]
+
+@[simp]
+theorem arrowCongr_apply' {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁]
+    [AddCommMonoid M₂] [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R₁ M₁] [Module R₁ M₂]
+    [Module R₁ M₂₁] [Module R₁ M₂₂] [Module R M₂₁] [Module R M₂₂] [SMulCommClass R₁ R M₂₁]
+    [SMulCommClass R₁ R M₂₂] (e₁ : M₁ ≃ₗ[R₁] M₂) (e₂ : M₂₁ ≃ₗ[R₁] M₂₂) (h : IsLinearMap R e₂)
+    (f : M₁ →ₗ[R₁] M₂₁) (x : M₂) : arrowCongr' e₁ e₂ h f x = e₂ (f (e₁.symm x)) :=
+  rfl
 
 @[simp]
 theorem arrowCongr_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁]
