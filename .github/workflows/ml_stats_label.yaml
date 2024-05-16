@@ -21,6 +21,7 @@ jobs:
           git checkout -q master
           # should the next step be removed for Zulip?
           git checkout -q -
+          printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)"
           printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)" >> "$GITHUB_OUTPUT"
 
       - name: Add comment
