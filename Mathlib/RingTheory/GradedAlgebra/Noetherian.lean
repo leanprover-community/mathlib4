@@ -9,9 +9,8 @@ import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 /-!
 # The properties of a graded Noetherian ring.
 
-This file proves some properties of a graded Noetherian ring:
-
-1. The 0-th grade of a Noetherian ring is also a Noetherian ring.
+This file proves that the 0-th grade of a Noetherian ring is
+also a Noetherian ring.
 -/
 
 variable {ι A σ : Type*}
