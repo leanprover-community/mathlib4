@@ -533,8 +533,7 @@ lemma set_prod_ae_eq {s s' : Set α} {t t' : Set β} (hs : s =ᵐ[μ] s') (ht : 
 lemma measure_prod_compl_eq_zero {s : Set α} {t : Set β}
     (s_ae_univ : μ sᶜ = 0) (t_ae_univ : ν tᶜ = 0) :
     μ.prod ν (s ×ˢ t)ᶜ = 0 := by
-  rw [Set.compl_prod_eq_union]
-  apply le_antisymm ((measure_union_le _ _).trans _) (zero_le _)
+  rw [Set.compl_prod_eq_union, measure_union_null_iff]
   simp [s_ae_univ, t_ae_univ]
 
 lemma _root_.MeasureTheory.NullMeasurableSet.prod {s : Set α} {t : Set β}

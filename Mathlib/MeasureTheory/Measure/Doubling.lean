@@ -87,14 +87,14 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
   rcases lt_or_le K 1 with (hK | hK)
   · refine' ⟨1, _⟩
     simp only [ENNReal.coe_one, one_mul]
-    exact
-      eventually_mem_nhdsWithin.mono fun ε hε x t ht =>
-        measure_mono <| closedBall_subset_closedBall (by nlinarith [mem_Ioi.mp hε])
+    refine eventually_mem_nhdsWithin.mono fun ε hε x t ht ↦ ?_
+    gcongr
+    exact closedBall_subset_closedBall (by nlinarith [mem_Ioi.mp hε])
   · refine'
       ⟨C ^ ⌈Real.logb 2 K⌉₊,
         ((hμ ⌈Real.logb 2 K⌉₊).and eventually_mem_nhdsWithin).mono fun ε hε x t ht =>
-          le_trans (measure_mono <| closedBall_subset_closedBall _) (hε.1 x)⟩
-    refine' mul_le_mul_of_nonneg_right (ht.trans _) (mem_Ioi.mp hε.2).le
+          le_trans (measure_mono _ <| closedBall_subset_closedBall _) (hε.1 x)⟩
+    refine mul_le_mul_of_nonneg_right (ht.trans ?_) (mem_Ioi.mp hε.2).le
     conv_lhs => rw [← Real.rpow_logb two_pos (by norm_num) (by linarith : 0 < K)]
     rw [← Real.rpow_natCast]
     exact Real.rpow_le_rpow_of_exponent_le one_le_two (Nat.le_ceil (Real.logb 2 K))
