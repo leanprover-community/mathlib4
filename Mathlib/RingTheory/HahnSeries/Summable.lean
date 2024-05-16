@@ -345,8 +345,24 @@ instance {β : Type*} : HSMul (SummableFamily Γ R α) (SummableFamily Γ R β)
   hSMul s t :=
   {
     toFun := fun a => s (a.1) * t (a.2)
-    isPWO_iUnion_support' := sorry
-    finite_co_support' := sorry
+    isPWO_iUnion_support' := by
+      apply (s.isPWO_iUnion_support.add t.isPWO_iUnion_support).mono
+      refine Set.Subset.trans (Set.iUnion_mono fun a => support_mul_subset_add_support) ?_
+      simp_all only [Set.iUnion_subset_iff, Prod.forall]
+      exact fun a b => Set.add_subset_add (Set.subset_iUnion_of_subset a fun x y ↦ y)
+        (Set.subset_iUnion_of_subset b fun x y ↦ y)
+    finite_co_support' := fun g => by
+      refine
+        ((addAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g).finite_toSet.biUnion'
+          fun ij _ => ?_).subset
+            fun a ha => ?_
+      · exact fun ij _ => Function.support fun a => (t a).coeff ij.2
+      · apply t.finite_co_support
+      · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support ha
+        simp only [exists_prop, Set.mem_iUnion, mem_addAntidiagonal, mul_coeff, mem_support,
+          isPWO_support, Prod.exists]
+        exact ⟨i, j, mem_coe.2 (mem_addAntidiagonal.2 ⟨hi, Set.mem_iUnion.2 ⟨a, hj⟩, rfl⟩), hj⟩ }
+
   }
 -/
 
@@ -520,13 +536,16 @@ def powerSeriesProdFamily (f g : PowerSeries R) : SummableFamily Γ R (ℕ × �
       ((PowerSeries.coeff R n.1 f) * (PowerSeries.coeff R n.2 g)) (x ^ (n.1 + n.2)).coeff).trans
       (support_pow_subset_closure x (n.1 + n.2)))
   finite_co_support' a := by
-    let s : ℕ → Set (ℕ × ℕ) := fun n => {k ∈ addAntidiagonal _ _ n | (((PowerSeries.coeff R k.1) f * (PowerSeries.coeff R k.2) g) • x ^ (k.1 + k.2)).coeff a ≠ 0} --nonzero coeff a in antidiagonal n
+    let s : ℕ → Set (ℕ × ℕ) :=
+      fun n => {k ∈ addAntidiagonal _ _ n | (((PowerSeries.coeff R k.1) f *
+        (PowerSeries.coeff R k.2) g) • x ^ (k.1 + k.2)).coeff a ≠ 0}
     let t : Set ℕ := {k | ((fun n ↦ x ^ n) k).coeff a ≠ 0}
     have ht := (pow_finite_co_support hx a)
     have hs : Prop := sorry --finite antidiagonal: ∀ i ∈ t, (s i).Finite
+      --(fun k => Set.AddAntidiagonal.finite_of_isPWO ?_ ?_ k)
     have he : Prop := sorry--coeff a is zero away from cosupport
-    refine Set.Finite.subset (Set.Finite.iUnion ht (fun k => Set.AddAntidiagonal.finite_of_isPWO ?_ ?_ k) ?_) ?_
-    sorry
+    refine Set.Finite.subset (Set.Finite.iUnion ht hs he) ?_ -- need to show cosupport ⊆ iUnion
+    sorry -- try finsum_mem_biUnion
 
 theorem xxx (n : ℕ) : Finite (Set.addAntidiagonal Set.univ Set.univ n) :=
   Set.AddAntidiagonal.finite_of_isWF (Set.isWF_univ_iff.mpr wellFounded_lt)
@@ -549,6 +568,7 @@ def powerSeriesComp : PowerSeries R →ₐ[R] HahnSeries Γ R where
 
     -- write f * g as a double sum. write each coefficient of X ^ n as a finite sum.
     -- make a summable family parametrized by ℕ × ℕ.
+    -- try finsum_mem_biUnion
     sorry
   map_zero' := by
     simp only [hsum, powerSeriesFamily_toFun, map_zero, zero_smul, zero_coeff, finsum_zero]
