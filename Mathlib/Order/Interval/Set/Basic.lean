@@ -954,6 +954,22 @@ theorem mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset {s : Set α} (ho : Ioo a b ⊆ s
       apply_rules [subset_diff_singleton]
 #align set.mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset Set.mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset
 
+theorem sInterIio_eq_sInterIio_inter_Ico {α β : Type _} [LinearOrder β] {X : β → Set α} {D N : β}
+    (hND : N ≤ D) : (⋂ d ∈ Iio D, X d) = (⋂ d ∈ Iio N, X d) ∩ ⋂ d ∈ Ico N D, X d := by
+  by_cases hND₀ : N = D
+  · simp only [mem_Iio, hND₀, gt_iff_lt, lt_self_iff_false, not_false_eq_true, Ico_eq_empty,
+      mem_empty_iff_false, iInter_of_empty, iInter_univ, inter_univ]
+  · replace hND := lt_of_le_of_ne hND hND₀
+    rw [← iInter_inter_distrib, ← max_eq_right (le_refl D), ← Iio_union_Ioo (min_lt_of_left_lt hND),
+      max_eq_right (le_refl D)]
+    congr with d
+    simp only [mem_union, mem_Iio, mem_Ico, mem_Ioo, mem_iInter, mem_inter_iff, and_imp]
+    refine ⟨fun h b => ⟨fun H => h b <| Or.inl <| H.trans hND, fun _ h_ND => h b <| Or.inl h_ND⟩,
+      fun h b H => ?_⟩
+    rcases H with (Ha | Hb)
+    by_cases H_bN : b < N
+    exacts [(h b).1 H_bN, (h b).2 (le_of_not_lt H_bN) Ha, (h b).2 (le_of_lt Hb.1) Hb.2]
+
 theorem eq_left_or_mem_Ioo_of_mem_Ico {x : α} (hmem : x ∈ Ico a b) : x = a ∨ x ∈ Ioo a b :=
   hmem.1.eq_or_gt.imp_right fun h => ⟨h, hmem.2⟩
 #align set.eq_left_or_mem_Ioo_of_mem_Ico Set.eq_left_or_mem_Ioo_of_mem_Ico
