@@ -121,22 +121,27 @@ def mk {β : Type*} [TopologicalSpace β] (f : α → β) (hf : AEStronglyMeasur
   Quotient.mk'' ⟨f, hf⟩
 #align measure_theory.ae_eq_fun.mk MeasureTheory.AEEqFun.mk
 
+/-- Auxiliary condition used in the cast function. -/
+def cast.Cond (f : α →ₘ[μ] β) : Prop :=
+  ∃ (g : α → β) (hg : StronglyMeasurable g),
+    f = mk g hg.aestronglyMeasurable ∧ g ∈ range (Function.const α)
+
 /-- Coercion from a space of equivalence classes of almost everywhere strongly measurable
 functions to functions. -/
 @[coe]
 def cast (f : α →ₘ[μ] β) : α → β :=
-  if h : ∃ (g : α → β) (hg : AEStronglyMeasurable g μ), f = mk g hg ∧
-    (g ∈ range (Function.const α) ∨ (∃ (_ : TopologicalSpace α) (_ : BorelSpace α) /- more stuff-/, Continuous g)) then
-    Classical.choose h else
+  if h : cast.Cond f then Classical.choose h else
     AEStronglyMeasurable.mk _ (Quotient.out' f : { f : α → β // AEStronglyMeasurable f μ }).2
-
 
 /-- A measurable representative of an `AEEqFun` [f] -/
 instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
 #align measure_theory.ae_eq_fun.has_coe_to_fun MeasureTheory.AEEqFun.instCoeFun
 
-protected theorem stronglyMeasurable (f : α →ₘ[μ] β) : StronglyMeasurable f :=
-  AEStronglyMeasurable.stronglyMeasurable_mk _
+protected theorem stronglyMeasurable (f : α →ₘ[μ] β) : StronglyMeasurable f := by
+  simp only [cast]
+  split_ifs with h
+  · exact (Classical.choose_spec h).1
+  · apply AEStronglyMeasurable.stronglyMeasurable_mk
 #align measure_theory.ae_eq_fun.strongly_measurable MeasureTheory.AEEqFun.stronglyMeasurable
 
 protected theorem aestronglyMeasurable (f : α →ₘ[μ] β) : AEStronglyMeasurable f μ :=
@@ -145,7 +150,7 @@ protected theorem aestronglyMeasurable (f : α →ₘ[μ] β) : AEStronglyMeasur
 
 protected theorem measurable [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     (f : α →ₘ[μ] β) : Measurable f :=
-  AEStronglyMeasurable.measurable_mk _
+  f.stronglyMeasurable.measurable
 #align measure_theory.ae_eq_fun.measurable MeasureTheory.AEEqFun.measurable
 
 protected theorem aemeasurable [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
@@ -166,10 +171,11 @@ theorem mk_eq_mk {f g : α → β} {hf hg} : (mk f hf : α →ₘ[μ] β) = mk g
 
 @[simp]
 theorem mk_coeFn (f : α →ₘ[μ] β) : mk f f.aestronglyMeasurable = f := by
+  conv_lhs => simp only [cast]
+  split_ifs with h
+  · exact Classical.choose_spec h |>.2.1.symm
   conv_rhs => rw [← Quotient.out_eq' f]
-  set g : { f : α → β // AEStronglyMeasurable f μ } := Quotient.out' f
-  have : g = ⟨g.1, g.2⟩ := Subtype.eq rfl
-  rw [this, ← mk, mk_eq_mk]
+  rw [← mk, mk_eq_mk]
   exact (AEStronglyMeasurable.ae_eq_mk _).symm
 #align measure_theory.ae_eq_fun.mk_coe_fn MeasureTheory.AEEqFun.mk_coeFn
 
@@ -183,8 +189,7 @@ theorem ext_iff {f g : α →ₘ[μ] β} : f = g ↔ f =ᵐ[μ] g :=
 #align measure_theory.ae_eq_fun.ext_iff MeasureTheory.AEEqFun.ext_iff
 
 theorem coeFn_mk (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β) =ᵐ[μ] f := by
-  apply (AEStronglyMeasurable.ae_eq_mk _).symm.trans
-  exact @Quotient.mk_out' _ (μ.aeEqSetoid β) (⟨f, hf⟩ : { f // AEStronglyMeasurable f μ })
+  rw [← mk_eq_mk, mk_coeFn]
 #align measure_theory.ae_eq_fun.coe_fn_mk MeasureTheory.AEEqFun.coeFn_mk
 
 @[elab_as_elim]
@@ -612,12 +617,24 @@ variable (α)
 /-- The equivalence class of a constant function: `[fun _ : α => b]`, based on the equivalence
 relation of being almost everywhere equal -/
 def const (b : β) : α →ₘ[μ] β :=
-  mk (fun _ : α => b) aestronglyMeasurable_const
+  mk (fun _ : α ↦ b) aestronglyMeasurable_const
 #align measure_theory.ae_eq_fun.const MeasureTheory.AEEqFun.const
 
 theorem coeFn_const (b : β) : (const α b : α →ₘ[μ] β) =ᵐ[μ] Function.const α b :=
   coeFn_mk _ _
 #align measure_theory.ae_eq_fun.coe_fn_const MeasureTheory.AEEqFun.coeFn_const
+
+/-- If the measure is nonzero, we can strengthen `coeFn_const` to get an equality. -/
+theorem coeFn_const_eq [NeZero μ] (b : β) (x : α) : (const α b : α →ₘ[μ] β) x = b := by
+  simp only [cast]
+  have h : cast.Cond (const α b : α →ₘ[μ] β) :=
+    ⟨(fun _ : α ↦ b), stronglyMeasurable_const, rfl, ⟨b, rfl⟩⟩
+  rw [dif_pos h]
+  obtain ⟨hf, h2f, c', h3f⟩ := Classical.choose_spec h
+  nth_rw 1 [const] at h2f
+  rw [mk_eq_mk, ← h3f, EventuallyEq, ← const_def] at h2f
+  simp only [eventually_const] at h2f
+  rw [← h3f, h2f, Function.const]
 
 variable {α}
 
@@ -639,9 +656,13 @@ theorem one_def [One β] : (1 : α →ₘ[μ] β) = mk (fun _ : α => 1) aestron
 
 @[to_additive]
 theorem coeFn_one [One β] : ⇑(1 : α →ₘ[μ] β) =ᵐ[μ] 1 :=
-  coeFn_const _ _
+  coeFn_const ..
 #align measure_theory.ae_eq_fun.coe_fn_one MeasureTheory.AEEqFun.coeFn_one
 #align measure_theory.ae_eq_fun.coe_fn_zero MeasureTheory.AEEqFun.coeFn_zero
+
+@[to_additive (attr := simp)]
+theorem coeFn_one_eq [NeZero μ] [One β] {x : α} : ⇑(1 : α →ₘ[μ] β) x = 1 :=
+  coeFn_const_eq ..
 
 @[to_additive (attr := simp)]
 theorem one_toGerm [One β] : (1 : α →ₘ[μ] β).toGerm = 1 :=
