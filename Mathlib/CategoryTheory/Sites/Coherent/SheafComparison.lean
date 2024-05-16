@@ -263,7 +263,7 @@ lemma isSheaf_coherent_of_hasPullbacks_of_comp [Preregular C] [FinitaryExtensive
     [ReflectsFiniteLimits s]
     (hF : IsSheaf (coherentTopology C) (F ⋙ s)) : IsSheaf (coherentTopology C) F := by
   rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition (h := h)] at hF ⊢
-  refine ⟨⟨⟨fun J _ ↦ ⟨@fun K ↦ ⟨@fun c hc ↦ ?_⟩⟩⟩⟩, fun _ _ π _ c hc ↦ ⟨?_⟩⟩
+  refine ⟨⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩⟩, fun _ _ π _ c hc ↦ ⟨?_⟩⟩
   · exact isLimitOfReflects s ((hF.1.some.1 J).1.1 hc)
   · exact isLimitOfIsLimitForkMap s _ (hF.2 π c hc).some
 
@@ -279,7 +279,7 @@ lemma isSheaf_coherent_of_projective_of_comp [Preregular C] [FinitaryExtensive C
     [ReflectsFiniteProducts s]
     (hF : IsSheaf (coherentTopology C) (F ⋙ s)) : IsSheaf (coherentTopology C) F := by
   rw [isSheaf_iff_preservesFiniteProducts_of_projective] at hF ⊢
-  refine ⟨⟨fun J _ ↦ ⟨@fun K ↦ ⟨@fun c hc ↦ ?_⟩⟩⟩⟩
+  refine ⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩⟩
   exact isLimitOfReflects s ((hF.some.1 J).1.1 hc)
 
 instance [Preregular C] [FinitaryExtensive C]
