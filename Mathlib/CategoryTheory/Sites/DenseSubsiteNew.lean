@@ -29,6 +29,7 @@ namespace PreOneHypercoverDenseData
 attribute [reassoc] w
 
 variable {F}
+
 variable {X : C} (data : F.PreOneHypercoverDenseData X)
 
 @[simps]
@@ -75,14 +76,15 @@ structure OneHypercoverDenseData (S : C) extends PreOneHypercoverDenseData.{w} F
   mem₁₀ (i₁ i₂ : I₀) ⦃W₀ : C₀⦄ (p₁ : W₀ ⟶ X i₁) (p₂ : W₀ ⟶ X i₂)
     (w : F.map p₁ ≫ f i₁ = F.map p₂ ≫ f i₂) :
     toPreOneHypercoverDenseData.sieve₁₀ p₁ p₂ ∈ J₀ W₀
+    -- mem₁₀ can be deduced from mem₁ using cocontinuity and F fully faithful
 
 namespace OneHypercoverDenseData
 
 variable {F}
-variable {X : C} (data : F.OneHypercoverDenseData J₀ J X)
 
 @[simps toPreOneHypercover]
-def toOneHypercover : J.OneHypercover X where
+def toOneHypercover {X : C} (data : F.OneHypercoverDenseData J₀ J X) :
+    J.OneHypercover X where
   toPreOneHypercover := data.toPreOneHypercover
   mem₀ := data.mem₀
   mem₁ := data.mem₁
@@ -191,7 +193,7 @@ instance full_sheafPushforwardContinuous [F.Full] :
     obtain ⟨f₀, hf₀⟩ := restriction_map_surjective F J₀ J ((sheafToPresheaf _ _).map f) Q.cond
     exact ⟨⟨f₀⟩, by ext1; exact hf₀⟩
 
-variable [HasLimitsOfSize.{w, w} A] [F.Full]
+variable [HasLimitsOfSize.{w, w} A] [F.Full] [F.Faithful]
 
 namespace essSurj_sheafPushforwardContinuous
 
@@ -303,8 +305,7 @@ def extensionObjRestrict_map {X : Cᵒᵖ} {Y₀ Z₀ : C₀} (f : F.obj Y₀ �
           F J₀ J hP₀ f (g ≫ a.op) i b (by simpa using fac),
         extensionObjRestrict_map_eq_extensionObjRestrict' F J₀ J hP₀
           (F.map g.unop ≫ f) a.op i b (by simpa using fac)]
-      simp
-      )
+      simp)
 
 noncomputable def extensionMap {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     extensionObj F J₀ J P₀ X ⟶ extensionObj F J₀ J P₀ Y :=
@@ -316,8 +317,30 @@ noncomputable def extensionMap {X Y : Cᵒᵖ} (f : X ⟶ Y) :
 @[reassoc (attr := simp)]
 lemma extensionMap_restrict {X Y : Cᵒᵖ} (f : X ⟶ Y) {X₀ : C₀} (g : F.obj X₀ ⟶ Y.unop) :
     extensionMap F J₀ J hP₀ f ≫ extensionObjRestrict F J₀ J hP₀ g =
-      extensionObjRestrict F J₀ J hP₀ (g ≫ f.unop) := by
-  sorry
+      extensionObjRestrict F J₀ J hP₀ (g ≫ f.unop) :=
+  hP₀.hom_ext ⟨_, F.cover_lift J₀ J (J.pullback_stable g
+    (F.oneHypercoverDenseData J₀ J Y.unop).mem₀)⟩ _ _ (by
+      rintro ⟨W₀, φ, hφ⟩
+      obtain ⟨T₀, a, b, hb, fac⟩ := hφ
+      obtain ⟨i, rfl, hi⟩ := hb.exists
+      obtain ⟨a, rfl⟩ := F.map_surjective a
+      dsimp at hi a b
+      rw [id_comp] at hi
+      subst hi
+      dsimp
+      rw [assoc, extensionObjRestrict_map]
+      dsimp
+      rw [← fac]
+      erw [← extensionObjRestrict_map]
+      rw [extensionObjRestrict_eq_π]
+      dsimp only [extensionMap]
+      rw [limit.lift_π_assoc]
+      dsimp
+      rw [extensionObjRestrict_map, extensionObjRestrict_map]
+      congr 1
+      dsimp
+      rw [← reassoc_of% fac]
+      rfl)
 
 variable {F J₀ J} in
 lemma extensionObj_hom_ext {X : Cᵒᵖ} {T : A} {f g : T ⟶ extensionObj F J₀ J P₀ X}
@@ -333,14 +356,28 @@ noncomputable def extension : Cᵒᵖ ⥤ A where
   map_id X := extensionObj_hom_ext hP₀ (by aesop_cat)
   map_comp f g := extensionObj_hom_ext hP₀ (by aesop_cat)
 
-instance (X₀ : C₀) : IsIso (extensionObjRestrict F J₀ J hP₀ (𝟙 (F.obj X₀))) := sorry
+variable (P₀) in
+noncomputable def extensionIsoAppInv (X₀ : C₀ᵒᵖ) :
+    P₀.obj X₀ ⟶ extensionObj F J₀ J P₀ (F.op.obj X₀) :=
+  Multiequalizer.lift _ _
+    (fun i => P₀.map (F.preimage ((F.oneHypercoverDenseData J₀ J (F.obj X₀.unop)).f i)).op) (by
+      rintro ⟨⟨i₁, i₂⟩, j⟩
+      dsimp at i₁ i₂ j ⊢
+      simp only [← P₀.map_comp, ← op_comp]
+      congr 2
+      apply F.map_injective
+      simp [(F.oneHypercoverDenseData J₀ J (F.obj X₀.unop)).w j])
 
+@[simps! hom]
 noncomputable def extensionIsoApp (X₀ : C₀ᵒᵖ) :
-    extensionObj F J₀ J P₀ (F.op.obj X₀) ≅ P₀.obj X₀ :=
-  asIso (extensionObjRestrict F J₀ J hP₀ (𝟙 (F.obj X₀.unop)))
+    extensionObj F J₀ J P₀ (F.op.obj X₀) ≅ P₀.obj X₀ where
+  hom := extensionObjRestrict F J₀ J hP₀ (𝟙 (F.obj X₀.unop))
+  inv := extensionIsoAppInv F J₀ J P₀ X₀
+  hom_inv_id := sorry
+  inv_hom_id := sorry
 
 noncomputable def extensionIso : F.op ⋙ extension F J₀ J hP₀ ≅ P₀ :=
-  NatIso.ofComponents (fun X₀ => asIso (extensionObjRestrict F J₀ J hP₀ (𝟙 (F.obj X₀.unop))))
+  NatIso.ofComponents (fun X₀ => extensionIsoApp F J₀ J hP₀ X₀)
 
 lemma extension_isSheaf : Presheaf.IsSheaf J (extension F J₀ J hP₀) := sorry
 
