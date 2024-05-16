@@ -3,8 +3,9 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
+import Mathlib.Algebra.Group.Fin
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Control.ULiftable
-import Mathlib.Data.Fin.Basic
 
 #align_import control.random from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
@@ -95,7 +96,7 @@ def randBound (α : Type u)
   (BoundedRandom.randomR lo hi h : RandGT g _ _)
 
 def randFin {n : Nat} [RandomGen g] : RandGT g m (Fin n.succ) :=
-  λ ⟨g⟩ => pure <| randNat g 0 n.succ |>.map Fin.ofNat ULift.up
+  fun ⟨g⟩ ↦ pure <| randNat g 0 n |>.map Fin.ofNat ULift.up
 
 instance {n : Nat} : Random m (Fin n.succ) where
   random := randFin

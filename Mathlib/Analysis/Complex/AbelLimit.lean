@@ -104,9 +104,6 @@ lemma stolzCone_subset_stolzSet_aux {s : ℝ} (hs : 0 < s) :
     ← abs_eq_sqrt_sq_add_sq, ← norm_eq_abs] at H
   exact ⟨sub_pos.mp <| (mul_pos_iff_of_pos_left hM).mp <| (norm_nonneg _).trans_lt H, H⟩
 
-@[deprecated] -- 2024-03-02
-alias stolzCone_subset_StolzSet_aux := stolzCone_subset_stolzSet_aux
-
 lemma nhdsWithin_stolzCone_le_nhdsWithin_stolzSet {s : ℝ} (hs : 0 < s) :
     ∃ M, 𝓝[stolzCone s] 1 ≤ 𝓝[stolzSet M] 1 := by
   obtain ⟨M, ε, _, hε, H⟩ := stolzCone_subset_stolzSet_aux hs
@@ -228,8 +225,8 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
         rw [tsum_geometric_of_lt_one (by positivity) zn, ← div_eq_mul_inv]
       _ < M * (1 - ‖z‖) * (ε / 4 / M) / (1 - ‖z‖) := by gcongr; linarith only [zn]
       _ = _ := by
-        rw [← mul_rotate, mul_div_cancel _ (by linarith only [zn]),
-          div_mul_cancel _ (by linarith only [hM])]
+        rw [← mul_rotate, mul_div_cancel_right₀ _ (by linarith only [zn]),
+          div_mul_cancel₀ _ (by linarith only [hM])]
   convert add_lt_add S₁ S₂ using 1
   linarith only
 

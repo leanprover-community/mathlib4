@@ -151,9 +151,7 @@ instance (priority := 100) sSupHomClass.toSupBotHomClass [CompleteLattice α]
       rw [← sSup_pair, map_sSup]
       simp only [Set.image_pair, sSup_insert, sSup_singleton]
     map_bot := fun f => by
-      rw [← sSup_empty, map_sSup, Set.image_empty]
-      -- Porting note: rw [sSup_empty] does not work, but exact sSup_empty does?
-      exact sSup_empty }
+      rw [← sSup_empty, map_sSup, Set.image_empty, sSup_empty] }
 #align Sup_hom_class.to_sup_bot_hom_class sSupHomClass.toSupBotHomClass
 
 -- See note [lower instance priority]
@@ -164,9 +162,7 @@ instance (priority := 100) sInfHomClass.toInfTopHomClass [CompleteLattice α]
       rw [← sInf_pair, map_sInf, Set.image_pair]
       simp only [Set.image_pair, sInf_insert, sInf_singleton]
     map_top := fun f => by
-      rw [← sInf_empty, map_sInf, Set.image_empty]
-      -- Porting note: rw [sInf_empty] does not work, but exact sInf_empty does?
-      exact sInf_empty }
+      rw [← sInf_empty, map_sInf, Set.image_empty, sInf_empty] }
 #align Inf_hom_class.to_inf_top_hom_class sInfHomClass.toInfTopHomClass
 
 -- See note [lower instance priority]
@@ -946,14 +942,8 @@ theorem setPreimage_comp (g : β → γ) (f : α → β) :
 
 end CompleteLatticeHom
 
-theorem Set.image_sSup {f : α → β} (s : Set (Set α)) : f '' sSup s = sSup (image f '' s) := by
-  ext b
-  simp only [sSup_eq_sUnion, mem_image, mem_sUnion, exists_prop, sUnion_image, mem_iUnion]
-  constructor
-  · rintro ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
-    exact ⟨t, ht₁, a, ht₂, rfl⟩
-  · rintro ⟨t, ht₁, a, ht₂, rfl⟩
-    exact ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
+theorem Set.image_sSup {f : α → β} (s : Set (Set α)) : f '' sSup s = sSup (image f '' s) :=
+  Set.image_sUnion
 #align set.image_Sup Set.image_sSup
 
 /-- Using `Set.image`, a function between types yields a `sSupHom` between their lattices of
@@ -973,8 +963,8 @@ def Equiv.toOrderIsoSet (e : α ≃ β) : Set α ≃o Set β
     where
   toFun s := e '' s
   invFun s := e.symm '' s
-  left_inv s := by simp only [← image_comp, Equiv.symm_comp_self, id.def, image_id']
-  right_inv s := by simp only [← image_comp, Equiv.self_comp_symm, id.def, image_id']
+  left_inv s := by simp only [← image_comp, Equiv.symm_comp_self, id, image_id']
+  right_inv s := by simp only [← image_comp, Equiv.self_comp_symm, id, image_id']
   map_rel_iff' :=
     ⟨fun h => by simpa using @monotone_image _ _ e.symm _ _ h, fun h => monotone_image h⟩
 #align equiv.to_order_iso_set Equiv.toOrderIsoSet

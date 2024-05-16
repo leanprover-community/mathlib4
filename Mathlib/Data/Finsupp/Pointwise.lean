@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Data.Finsupp.Defs
 
@@ -58,7 +58,7 @@ theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
     (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support := by
   intro a h
   simp only [mul_apply, mem_support_iff] at h
-  simp only [mem_support_iff, mem_inter, Ne.def]
+  simp only [mem_support_iff, mem_inter, Ne]
   rw [← not_or]
   intro w
   apply h
@@ -101,7 +101,7 @@ instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β) where
   smul f g :=
     Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
       apply Set.Finite.subset g.finite_support
-      simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne.def,
+      simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne,
         Finsupp.fun_support_eq, Finset.mem_coe]
       intro x hx h
       apply hx

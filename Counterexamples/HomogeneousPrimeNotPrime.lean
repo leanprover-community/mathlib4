@@ -134,7 +134,7 @@ theorem grading.left_inv : Function.LeftInverse (coeLinearMap (grading R)) gradi
   cases' zz with a b
   unfold grading.decompose
   simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, map_add, coeLinearMap_of, Prod.mk_add_mk,
-    add_zero, add_sub_cancel'_right]
+    add_zero, add_sub_cancel]
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.grading.left_inv Counterexample.CounterexampleNotPrimeButHomogeneousPrime.grading.left_inv
 
 instance : GradedAlgebra (grading R) where

@@ -29,9 +29,7 @@ open Set Metric
 open Topology
 
 variable {𝕜 : Type*} [NormedField 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-- Riesz's lemma, which usually states that it is possible to find a
@@ -68,7 +66,7 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
       _ < d := by
         rw [← dist_eq_norm]
         exact (lt_div_iff' hlt).1 hxy₀
-      _ ≤ dist x (y₀ + y) := (Metric.infDist_le_dist_of_mem hy₀y)
+      _ ≤ dist x (y₀ + y) := Metric.infDist_le_dist_of_mem hy₀y
       _ = ‖x - y₀ - y‖ := by rw [sub_sub, dist_eq_norm]
 #align riesz_lemma riesz_lemma
 

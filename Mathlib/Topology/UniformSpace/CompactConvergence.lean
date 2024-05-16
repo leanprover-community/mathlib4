@@ -91,7 +91,6 @@ open scoped Uniformity Topology UniformConvergence
 open UniformSpace Set Filter
 
 variable {α : Type u₁} {β : Type u₂} [TopologicalSpace α] [UniformSpace β]
-
 variable (K : Set α) (V : Set (β × β)) (f : C(α, β))
 
 namespace ContinuousMap
@@ -164,7 +163,7 @@ and replace the topology with `compactOpen` to avoid non-defeq diamonds,
 see Note [forgetful inheritance].  -/
 instance compactConvergenceUniformSpace : UniformSpace C(α, β) :=
   .replaceTopology (.comap toUniformOnFunIsCompact inferInstance) <| by
-    refine eq_of_nhds_eq_nhds fun f ↦ eq_of_forall_le_iff fun l ↦ ?_
+    refine TopologicalSpace.ext_nhds fun f ↦ eq_of_forall_le_iff fun l ↦ ?_
     simp_rw [← tendsto_id', tendsto_iff_forall_compact_tendstoUniformlyOn,
       nhds_induced, tendsto_comap_iff, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
     rfl

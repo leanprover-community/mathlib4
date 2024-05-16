@@ -5,8 +5,9 @@ Authors: David Wärn
 -/
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
+import Mathlib.Order.Chain
 import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import order.ideal from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
@@ -468,7 +469,6 @@ end SemilatticeSupOrderBot
 section DistribLattice
 
 variable [DistribLattice P]
-
 variable {I J : Ideal P}
 
 theorem eq_sup_of_le_sup {x i j : P} (hi : i ∈ I) (hj : j ∈ J) (hx : x ≤ i ⊔ j) :
@@ -601,4 +601,22 @@ theorem cofinal_meets_idealOfCofinals (i : ι) : ∃ x : P, x ∈ 𝒟 i ∧ x �
 
 end IdealOfCofinals
 
+section sUnion
+
+variable [Preorder P]
+
+/-- A non-empty directed union of ideals of sets in a preorder is an ideal. -/
+lemma isIdeal_sUnion_of_directedOn {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
+    (hD : DirectedOn (· ⊆ ·) C) (hNe : C.Nonempty) : IsIdeal C.sUnion := by
+  refine ⟨isLowerSet_sUnion (fun I hI ↦ (hidl I hI).1), Set.nonempty_sUnion.2 ?_,
+    directedOn_sUnion hD (fun J hJ => (hidl J hJ).3)⟩
+  let ⟨I, hI⟩ := hNe
+  exact ⟨I, ⟨hI, (hidl I hI).2⟩⟩
+
+/-- A union of a nonempty chain of ideals of sets is an ideal. -/
+lemma isIdeal_sUnion_of_isChain {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
+    (hC : IsChain (· ⊆ ·) C) (hNe : C.Nonempty) : IsIdeal C.sUnion :=
+  isIdeal_sUnion_of_directedOn hidl hC.directedOn hNe
+
+end sUnion
 end Order

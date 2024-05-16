@@ -5,7 +5,7 @@ Authors: Scott Morrison, Johan Commelin, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.LinearAlgebra.Basic
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 #align_import ring_theory.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 
@@ -62,20 +62,14 @@ open Algebra (lsmul)
 section Semiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-
 variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
-
 variable [AddCommMonoid N] [Module R N]
-
 variable [AddCommMonoid P] [Module R P] [Module A P] [Module B P]
 variable [IsScalarTower R A P] [IsScalarTower R B P] [SMulCommClass A B P]
-
 variable [AddCommMonoid Q] [Module R Q]
-
 variable [AddCommMonoid P'] [Module R P'] [Module A P'] [Module B P']
 variable [IsScalarTower R A P'] [IsScalarTower R B P'] [SMulCommClass A B P']
-
 variable [AddCommMonoid Q'] [Module R Q']
 
 theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M a).rTensor N x :=
@@ -322,17 +316,12 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B]
-
 variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
-
 variable [AddCommMonoid N] [Module R N]
-
 variable [AddCommMonoid P] [Module R P] [Module A P] [Module B P]
 variable [IsScalarTower R A P] [IsScalarTower R B P] [SMulCommClass A B P]
-
 variable [AddCommMonoid Q] [Module R Q]
-
 variable (R A B M N P Q)
 
 attribute [local ext high] TensorProduct.ext

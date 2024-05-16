@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.CategoryTheory.Monoidal.Linear
 
 #align_import algebra.category.Module.monoidal.basic from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
@@ -138,7 +138,7 @@ private theorem pentagon_aux (W X Y Z : Type*) [AddCommMonoid W] [AddCommMonoid 
     [AddCommMonoid Y] [AddCommMonoid Z] [Module R W] [Module R X] [Module R Y] [Module R Z] :
     (((assoc R X Y Z).toLinearMap.lTensor W).comp
             (assoc R W (X ⊗[R] Y) Z).toLinearMap).comp
-        ((assoc R W X Y).rTensor Z) =
+        ((assoc R W X Y).toLinearMap.rTensor Z) =
       (assoc R W X (Y ⊗[R] Z)).toLinearMap.comp (assoc R (W ⊗[R] X) Y Z).toLinearMap := by
   apply TensorProduct.ext_fourfold
   intro w x y z

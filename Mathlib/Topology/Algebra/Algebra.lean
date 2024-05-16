@@ -35,9 +35,7 @@ universe u v w
 section TopologicalAlgebra
 
 variable (R : Type*) (A : Type u)
-
 variable [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable [TopologicalSpace R] [TopologicalSpace A] [TopologicalSemiring A]
 
 theorem continuous_algebraMap_iff_smul :
@@ -81,9 +79,7 @@ end TopologicalAlgebra
 section TopologicalAlgebra
 
 variable {R : Type*} [CommSemiring R]
-
 variable {A : Type u} [TopologicalSpace A]
-
 variable [Semiring A] [Algebra R A]
 
 #align subalgebra.has_continuous_smul SMulMemClass.continuousSMul
@@ -146,17 +142,13 @@ end TopologicalAlgebra
 section Ring
 
 variable {R : Type*} [CommRing R]
-
 variable {A : Type u} [TopologicalSpace A]
-
 variable [Ring A]
-
 variable [Algebra R A] [TopologicalRing A]
 
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 See note [reducible non-instances]. -/
-@[reducible]
-def Subalgebra.commRingTopologicalClosure [T2Space A] (s : Subalgebra R A)
+abbrev Subalgebra.commRingTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
   { s.topologicalClosure.toRing, s.toSubmonoid.commMonoidTopologicalClosure hs with }
 #align subalgebra.comm_ring_topological_closure Subalgebra.commRingTopologicalClosure

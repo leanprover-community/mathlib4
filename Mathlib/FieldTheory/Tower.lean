@@ -42,16 +42,11 @@ variable (F : Type u) (K : Type v) (A : Type w)
 section Field
 
 variable [DivisionRing F] [DivisionRing K] [AddCommGroup A]
-
 variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
 
 namespace FiniteDimensional
 
 open IsNoetherian
-
-theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional F A :=
-  Module.Finite.trans K A
-#align finite_dimensional.trans FiniteDimensional.trans
 
 /-- In a tower of field extensions `A / K / F`, if `A / F` is finite, so is `K / F`.
 

@@ -37,19 +37,12 @@ open Filter Set
 section NormedField
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {f f₀ f₁ g : 𝕜 → F}
-
 variable {f' f₀' f₁' g' : F}
-
 variable {x : 𝕜}
-
 variable {s t : Set 𝕜}
-
 variable {L L₁ L₂ : Filter 𝕜}
 
 /-- If the domain has dimension one, then Fréchet derivative is equivalent to the classical
@@ -136,7 +129,7 @@ theorem range_derivWithin_subset_closure_span_image
     suffices A : f x ∈ closure (f '' (s ∩ t)) from
       closure_mono (image_subset _ (inter_subset_right _ _)) A
     apply ContinuousWithinAt.mem_closure_image
-    apply H'.continuousWithinAt.mono (inter_subset_left _ _)
+    · apply H'.continuousWithinAt.mono (inter_subset_left _ _)
     rw [mem_closure_iff_nhdsWithin_neBot]
     exact I.mono (nhdsWithin_mono _ (diff_subset _ _))
 

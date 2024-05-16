@@ -117,7 +117,6 @@ theorem WalkingParallelFamily.hom_id (X : WalkingParallelFamily J) :
   CategoryTheory.Limits.WalkingParallelFamily.hom_id
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : C} (f : J → (X ⟶ Y))
 
 /-- `parallelFamily f` is the diagram in `C` consisting of the given family of morphisms, each with
@@ -429,7 +428,7 @@ theorem Cotrident.IsColimit.homIso_natural [Nonempty J] {t : Cotrident f} {Z Z' 
 
 /-- This is a helper construction that can be useful when verifying that a category has certain wide
     equalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
-    `parallelFamily (λ j, F.map (line j))`, and a trident on `fun j ↦ F.map (line j)`,
+    `parallelFamily (fun j ↦ F.map (line j))`, and a trident on `fun j ↦ F.map (line j)`,
     we get a cone on `F`.
 
     If you're thinking about using this, have a look at

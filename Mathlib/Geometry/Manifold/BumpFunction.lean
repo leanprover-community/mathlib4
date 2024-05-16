@@ -194,7 +194,7 @@ theorem nonempty_support : (support f).Nonempty :=
 
 theorem isCompact_symm_image_closedBall :
     IsCompact ((extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I)) :=
-  ((isCompact_closedBall _ _).inter_right I.closed_range).image_of_continuousOn <|
+  ((isCompact_closedBall _ _).inter_right I.isClosed_range).image_of_continuousOn <|
     (continuousOn_extChartAt_symm _ _).mono f.closedBall_subset
 #align smooth_bump_function.is_compact_symm_image_closed_ball SmoothBumpFunction.isCompact_symm_image_closedBall
 
@@ -217,7 +217,7 @@ theorem isClosed_image_of_isClosed {s : Set M} (hsc : IsClosed s) (hs : s ⊆ su
   rw [f.image_eq_inter_preimage_of_subset_support hs]
   refine' ContinuousOn.preimage_isClosed_of_isClosed
     ((continuousOn_extChartAt_symm _ _).mono f.closedBall_subset) _ hsc
-  exact IsClosed.inter isClosed_ball I.closed_range
+  exact IsClosed.inter isClosed_ball I.isClosed_range
 #align smooth_bump_function.is_closed_image_of_is_closed SmoothBumpFunction.isClosed_image_of_isClosed
 
 /-- If `f` is a smooth bump function and `s` closed subset of the support of `f` (i.e., of the open
@@ -269,7 +269,7 @@ theorem tsupport_subset_extChartAt_source : tsupport f ⊆ (extChartAt I c).sour
   calc
     tsupport f ⊆ (extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I) :=
       f.tsupport_subset_symm_image_closedBall
-    _ ⊆ (extChartAt I c).symm '' (extChartAt I c).target := (image_subset _ f.closedBall_subset)
+    _ ⊆ (extChartAt I c).symm '' (extChartAt I c).target := image_subset _ f.closedBall_subset
     _ = (extChartAt I c).source := (extChartAt I c).symm_image_target_eq_source
 #align smooth_bump_function.tsupport_subset_ext_chart_at_source SmoothBumpFunction.tsupport_subset_extChartAt_source
 
@@ -338,7 +338,7 @@ theorem smooth_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
   -- Porting note: was a more readable `calc`
   -- calc
   --   x ∈ tsupport fun x => f x • g x := hx
-  --   _ ⊆ tsupport f := (tsupport_smul_subset_left _ _)
+  --   _ ⊆ tsupport f := tsupport_smul_subset_left _ _
   --   _ ⊆ (chart_at _ c).source := f.tsupport_subset_chartAt_source
     f.tsupport_subset_chartAt_source <| tsupport_smul_subset_left _ _ hx
   exact f.smoothAt.smul ((hg _ this).contMDiffAt <| (chartAt _ _).open_source.mem_nhds this)

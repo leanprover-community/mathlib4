@@ -32,25 +32,15 @@ noncomputable section
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-
 variable {f f₀ f₁ g : E → F}
-
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
-
 variable (e : E →L[𝕜] F)
-
 variable {x : E}
-
 variable {s t : Set E}
-
 variable {L L₁ L₂ : Filter E}
 
 namespace ContinuousLinearEquiv
@@ -178,6 +168,25 @@ theorem comp_fderiv {f : G → E} {x : G} :
   rw [← fderivWithin_univ, ← fderivWithin_univ]
   exact iso.comp_fderivWithin uniqueDiffWithinAt_univ
 #align continuous_linear_equiv.comp_fderiv ContinuousLinearEquiv.comp_fderiv
+
+lemma _root_.fderivWithin_continuousLinearEquiv_comp (L : G ≃L[𝕜] G') (f : E → (F →L[𝕜] G))
+    (hs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 (fun x ↦ (L : G →L[𝕜] G').comp (f x)) s x =
+      (((ContinuousLinearEquiv.refl 𝕜 F).arrowCongr L)) ∘L (fderivWithin 𝕜 f s x) := by
+  change fderivWithin 𝕜 (((ContinuousLinearEquiv.refl 𝕜 F).arrowCongr L) ∘ f) s x = _
+  rw [ContinuousLinearEquiv.comp_fderivWithin _ hs]
+
+lemma _root_.fderiv_continuousLinearEquiv_comp (L : G ≃L[𝕜] G') (f : E → (F →L[𝕜] G)) (x : E) :
+    fderiv 𝕜 (fun x ↦ (L : G →L[𝕜] G').comp (f x)) x =
+      (((ContinuousLinearEquiv.refl 𝕜 F).arrowCongr L)) ∘L (fderiv 𝕜 f x) := by
+  change fderiv 𝕜 (((ContinuousLinearEquiv.refl 𝕜 F).arrowCongr L) ∘ f) x = _
+  rw [ContinuousLinearEquiv.comp_fderiv]
+
+lemma _root_.fderiv_continuousLinearEquiv_comp' (L : G ≃L[𝕜] G') (f : E → (F →L[𝕜] G)) :
+    fderiv 𝕜 (fun x ↦ (L : G →L[𝕜] G').comp (f x)) =
+      fun x ↦ (((ContinuousLinearEquiv.refl 𝕜 F).arrowCongr L)) ∘L (fderiv 𝕜 f x) := by
+  ext x : 1
+  exact fderiv_continuousLinearEquiv_comp L f x
 
 theorem comp_right_differentiableWithinAt_iff {f : F → G} {s : Set F} {x : E} :
     DifferentiableWithinAt 𝕜 (f ∘ iso) (iso ⁻¹' s) x ↔ DifferentiableWithinAt 𝕜 f s (iso x) := by
@@ -366,6 +375,11 @@ theorem comp_fderiv {f : G → E} {x : G} :
   (iso : E ≃L[𝕜] F).comp_fderiv
 #align linear_isometry_equiv.comp_fderiv LinearIsometryEquiv.comp_fderiv
 
+theorem comp_fderiv' {f : G → E} :
+    fderiv 𝕜 (iso ∘ f) = fun x ↦ (iso : E →L[𝕜] F).comp (fderiv 𝕜 f x) := by
+  ext x : 1
+  exact LinearIsometryEquiv.comp_fderiv iso
+
 end LinearIsometryEquiv
 
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
@@ -467,9 +481,7 @@ section
   of the Fréchet derivative.
 -/
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-
 variable {f : E → F} {f' : E →L[ℝ] F} {x : E}
 
 theorem has_fderiv_at_filter_real_equiv {L : Filter E} :

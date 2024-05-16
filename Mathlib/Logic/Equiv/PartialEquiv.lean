@@ -566,8 +566,7 @@ protected theorem ext {e e' : PartialEquiv α β} (h : ∀ x, e x = e' x)
   have I' : e' '' e'.source = e'.target := e'.image_source_eq_target
   rw [A, hs, I'] at I
   cases e; cases e'
-  simp [*] at *
-  simp [*]
+  simp_all
 #align local_equiv.ext PartialEquiv.ext
 
 /-- Restricting a partial equivalence to `e.source ∩ s` -/
@@ -898,18 +897,10 @@ def prod (e : PartialEquiv α β) (e' : PartialEquiv γ δ) : PartialEquiv (α �
   target := e.target ×ˢ e'.target
   toFun p := (e p.1, e' p.2)
   invFun p := (e.symm p.1, e'.symm p.2)
-  map_source' p hp := by
-    simp at hp
-    simp [hp]
-  map_target' p hp := by
-    simp at hp
-    simp [map_target, hp]
-  left_inv' p hp := by
-    simp at hp
-    simp [hp]
-  right_inv' p hp := by
-    simp at hp
-    simp [hp]
+  map_source' p hp := by simp_all
+  map_target' p hp := by simp_all
+  left_inv' p hp   := by simp_all
+  right_inv' p hp  := by simp_all
 #align local_equiv.prod PartialEquiv.prod
 
 @[simp, mfld_simps]

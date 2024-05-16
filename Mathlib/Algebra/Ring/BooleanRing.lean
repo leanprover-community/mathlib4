@@ -248,7 +248,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
   { Lattice.mk' sup_comm sup_assoc inf_comm inf_assoc sup_inf_self inf_sup_self with
     le_sup_inf := le_sup_inf
     top := 1
-    le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, (add_comm a 1),
+    le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, add_comm a 1,
                                                      add_assoc, add_self, add_zero]
     bot := 0
     bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
@@ -434,8 +434,7 @@ following data:
 * `-a` unfolds to `a`
 * `0` unfolds to `⊥`
 -/
-@[reducible]
-def GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α] :
+abbrev GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α] :
     NonUnitalCommRing α where
   add := (· ∆ ·)
   add_assoc := symmDiff_assoc
@@ -452,6 +451,8 @@ def GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α]
   mul_comm := inf_comm
   left_distrib := inf_symmDiff_distrib_left
   right_distrib := inf_symmDiff_distrib_right
+  nsmul := letI : Zero α := ⟨⊥⟩; letI : Add α := ⟨(· ∆ ·)⟩; nsmulRec
+  zsmul := letI : Zero α := ⟨⊥⟩; letI : Add α := ⟨(· ∆ ·)⟩; letI : Neg α := ⟨id⟩; zsmulRec
 #align generalized_boolean_algebra.to_non_unital_comm_ring GeneralizedBooleanAlgebra.toNonUnitalCommRing
 
 instance [GeneralizedBooleanAlgebra α] : NonUnitalCommRing (AsBoolRing α) :=
@@ -468,8 +469,7 @@ variable [BooleanAlgebra α] [BooleanAlgebra β] [BooleanAlgebra γ]
 * `0` unfolds to `⊥`
 * `1` unfolds to `⊤`
 -/
-@[reducible]
-def BooleanAlgebra.toBooleanRing : BooleanRing α where
+abbrev BooleanAlgebra.toBooleanRing : BooleanRing α where
   __ := GeneralizedBooleanAlgebra.toNonUnitalCommRing
   one := ⊤
   one_mul := top_inf_eq
@@ -588,19 +588,25 @@ def RingEquiv.asBoolRingAsBoolAlg (α : Type*) [BooleanRing α] : AsBoolRing (As
 
 open Bool
 
+instance : Zero Bool where zero := false
+
+instance : One Bool where one := true
+
+instance : Add Bool where add := xor
+
+instance : Neg Bool where neg := id
+
+instance : Sub Bool where sub := xor
+
+instance : Mul Bool where mul := and
+
 instance : BooleanRing Bool where
-  add := xor
   add_assoc := xor_assoc
-  zero := false
   zero_add := Bool.false_xor
   add_zero := Bool.xor_false
-  neg := id
-  sub := xor
   sub_eq_add_neg _ _ := rfl
   add_left_neg := Bool.xor_self
   add_comm := xor_comm
-  one := true
-  mul := and
   mul_assoc := and_assoc
   one_mul := Bool.true_and
   mul_one := Bool.and_true
@@ -609,3 +615,5 @@ instance : BooleanRing Bool where
   mul_self := Bool.and_self
   zero_mul a := rfl
   mul_zero a := by cases a <;> rfl
+  nsmul := nsmulRec
+  zsmul := zsmulRec

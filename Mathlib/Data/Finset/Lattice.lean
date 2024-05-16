@@ -8,6 +8,7 @@ import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Multiset.Lattice
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Hom.Lattice
 
@@ -16,9 +17,6 @@ import Mathlib.Order.Hom.Lattice
 /-!
 # Lattice operations on finsets
 -/
-
-set_option autoImplicit true
-
 
 variable {F α β γ ι κ : Type*}
 
@@ -268,7 +266,7 @@ theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s 
       -- z ∈ s is above x and y
       obtain ⟨z, hzs, ⟨hxz, hyz⟩⟩ := hdir x hxs y hys
       use z, hzs
-      rw [sup_insert, id.def, sup_le_iff]
+      rw [sup_insert, id, sup_le_iff]
       exact ⟨le_trans hay hyz, le_trans hsx_sup hxz⟩
 #align finset.sup_le_of_le_directed Finset.sup_le_of_le_directed
 
@@ -610,7 +608,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   -- Porting note: `simpa` doesn't support placeholders in proof terms
   have := h (fun j hj => if hji : j = i then cast (congr_arg κ hji.symm) a
       else g _ <| mem_of_mem_insert_of_ne hj hji) (fun j hj => ?_)
-  simpa only [cast_eq, dif_pos, Function.comp, Subtype.coe_mk, dif_neg, aux] using this
+  · simpa only [cast_eq, dif_pos, Function.comp, Subtype.coe_mk, dif_neg, aux] using this
   rw [mem_insert] at hj
   obtain (rfl | hj) := hj
   · simpa
@@ -1029,7 +1027,8 @@ theorem inf'_le {b : β} (h : b ∈ s) : s.inf' ⟨b, h⟩ f ≤ f b :=
   le_sup' (α := αᵒᵈ) f h
 #align finset.inf'_le Finset.inf'_le
 
-theorem inf'_le_of_le (hb : b ∈ s) (h : f b ≤ a) : s.inf' ⟨b, hb⟩ f ≤ a := (inf'_le _ hb).trans h
+theorem inf'_le_of_le {a : α} {b : β} (hb : b ∈ s) (h : f b ≤ a) :
+    s.inf' ⟨b, hb⟩ f ≤ a := (inf'_le _ hb).trans h
 #align finset.inf'_le_of_le Finset.inf'_le_of_le
 
 @[simp]
@@ -1240,8 +1239,9 @@ section DistribLattice
 variable [DistribLattice α] {s : Finset ι} {t : Finset κ} (hs : s.Nonempty) (ht : t.Nonempty)
   {f : ι → α} {g : κ → α} {a : α}
 
-theorem sup'_inf_distrib_left (f : ι → α) (a : α) : a ⊓ s.sup' hs f = s.sup' hs λ i => a ⊓ f i := by
-  refine' hs.cons_induction (fun i => _) fun i s hi hs ih => _
+theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
+    a ⊓ s.sup' hs f = s.sup' hs fun i ↦ a ⊓ f i := by
+  refine hs.cons_induction (fun i ↦ ?_) fun i s hi hs ih ↦ ?_
   · simp
   · simp_rw [sup'_cons hs, inf_sup_left]
     rw [ih]
@@ -1290,7 +1290,7 @@ theorem lt_sup'_iff : a < s.sup' H f ↔ ∃ b ∈ s, a < f b := by
 @[simp]
 theorem sup'_lt_iff : s.sup' H f < a ↔ ∀ i ∈ s, f i < a := by
   rw [← WithBot.coe_lt_coe, coe_sup', Finset.sup_lt_iff (WithBot.bot_lt_coe a)]
-  exact ball_congr (fun _ _ => WithBot.coe_lt_coe)
+  exact forall₂_congr (fun _ _ => WithBot.coe_lt_coe)
 #align finset.sup'_lt_iff Finset.sup'_lt_iff
 
 @[simp]
@@ -1385,7 +1385,7 @@ theorem max_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.max = a
 theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
   ⟨fun h ↦ s.eq_empty_or_nonempty.elim id fun H ↦ by
       obtain ⟨a, ha⟩ := max_of_nonempty H
-      rw [h] at ha; cases ha; done, -- Porting note: error without `done`
+      rw [h] at ha; cases ha; , -- the `;` is needed since the `cases` syntax allows `cases a, b`
     fun h ↦ h.symm ▸ max_empty⟩
 #align finset.max_eq_bot Finset.max_eq_bot
 
@@ -1469,7 +1469,7 @@ theorem min_eq_top {s : Finset α} : s.min = ⊤ ↔ s = ∅ :=
   ⟨fun h =>
     s.eq_empty_or_nonempty.elim id fun H => by
       let ⟨a, ha⟩ := min_of_nonempty H
-      rw [h] at ha; cases ha; done, -- Porting note: error without `done`
+      rw [h] at ha; cases ha; , -- Porting note: error without `done`
     fun h => h.symm ▸ min_empty⟩
 #align finset.min_eq_top Finset.min_eq_top
 
@@ -1768,13 +1768,13 @@ theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
   convert @max_erase_ne_self αᵒᵈ _ (toDual x) (s.map toDual.toEmbedding) using 1
   apply congr_arg -- Porting note: forces unfolding to see `Finset.min` is `Finset.max`
   congr!
-  · ext; simp only [mem_map_equiv]; exact Iff.rfl
+  ext; simp only [mem_map_equiv]; exact Iff.rfl
 #align finset.min_erase_ne_self Finset.min_erase_ne_self
 
 theorem exists_next_right {x : α} {s : Finset α} (h : ∃ y ∈ s, x < y) :
     ∃ y ∈ s, x < y ∧ ∀ z ∈ s, x < z → y ≤ z :=
   have Hne : (s.filter (x < ·)).Nonempty := h.imp fun y hy => mem_filter.2 (by simpa)
-  have aux := (mem_filter.1 (min'_mem _ Hne))
+  have aux := mem_filter.1 (min'_mem _ Hne)
   ⟨min' _ Hne, aux.1, by simp, fun z hzs hz => min'_le _ _ <| mem_filter.2 ⟨hzs, by simpa⟩⟩
 #align finset.exists_next_right Finset.exists_next_right
 

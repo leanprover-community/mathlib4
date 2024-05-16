@@ -24,9 +24,7 @@ This file proves lemmas about the action of multilinear maps on basis vectors.
 open MultilinearMap
 
 variable {R : Type*} {ι : Type*} {n : ℕ} {M : Fin n → Type*} {M₂ : Type*} {M₃ : Type*}
-
 variable [CommSemiring R] [AddCommMonoid M₂] [AddCommMonoid M₃] [∀ i, AddCommMonoid (M i)]
-
 variable [∀ i, Module R (M i)] [Module R M₂] [Module R M₃]
 
 /-- Two multilinear maps indexed by `Fin n` are equal if they are equal when all arguments are

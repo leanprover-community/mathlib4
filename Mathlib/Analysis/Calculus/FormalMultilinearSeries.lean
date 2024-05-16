@@ -67,13 +67,13 @@ end Module
 
 namespace FormalMultilinearSeries
 
-@[simp] -- Porting note: new; was not needed in Lean 3
+@[simp] -- Porting note (#10756): new theorem; was not needed in Lean 3
 theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
 
-@[simp] -- Porting note: new; was not needed in Lean 3
+@[simp] -- Porting note (#10756): new theorem; was not needed in Lean 3
 theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
 
-@[ext] -- Porting note: new theorem
+@[ext] -- Porting note (#10756): new theorem
 protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=
   funext h
 
@@ -137,9 +137,7 @@ theorem compContinuousLinearMap_apply (p : FormalMultilinearSeries 𝕜 F G) (u 
 #align formal_multilinear_series.comp_continuous_linear_map_apply FormalMultilinearSeries.compContinuousLinearMap_apply
 
 variable (𝕜) [Ring 𝕜'] [SMul 𝕜 𝕜']
-
 variable [Module 𝕜' E] [ContinuousConstSMul 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
-
 variable [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 
 /-- Reinterpret a formal `𝕜'`-multilinear series as a formal `𝕜`-multilinear series. -/
@@ -300,7 +298,6 @@ theorem mkPiRing_coeff_eq (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) :
 @[simp]
 theorem apply_eq_prod_smul_coeff : p n y = (∏ i, y i) • p.coeff n := by
   convert (p n).toMultilinearMap.map_smul_univ y 1
-  funext
   simp only [Pi.one_apply, Algebra.id.smul_eq_mul, mul_one]
 #align formal_multilinear_series.apply_eq_prod_smul_coeff FormalMultilinearSeries.apply_eq_prod_smul_coeff
 

@@ -87,25 +87,17 @@ attribute [local instance] endofunctorMonoidalCategory
 @[simp] theorem endofunctorMonoidalCategory_rightUnitor_inv_app (F : C ⥤ C) (X : C) :
   (ρ_ F).inv.app X = 𝟙 _ := rfl
 
--- Porting note: used `dsimp [endofunctorMonoidalCategory]` when necessary instead
--- attribute [local reducible] endofunctorMonoidalCategory
-
 /-- Tensoring on the right gives a monoidal functor from `C` into endofunctors of `C`.
 -/
 @[simps!]
 def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C) :=
   { tensoringRight C with
     ε := (rightUnitorNatIso C).inv
-    μ := fun X Y => { app := fun Z => (α_ Z X Y).hom }
-    μ_isIso := fun X Y =>
-      -- We could avoid needing to do this explicitly by
-      -- constructing a partially applied analogue of `associatorNatIso`.
-      ⟨⟨{ app := fun Z => (α_ Z X Y).inv },
-          by aesop_cat⟩⟩ }
+    μ := fun X Y => (isoWhiskerRight (curriedAssociatorNatIso C)
+      ((evaluation C (C ⥤ C)).obj X ⋙ (evaluation C C).obj Y)).hom }
 #align category_theory.tensoring_right_monoidal CategoryTheory.tensoringRightMonoidal
 
 variable {C}
-
 variable {M : Type*} [Category M] [MonoidalCategory M] (F : MonoidalFunctor M (C ⥤ C))
 
 @[reassoc (attr := simp)]
@@ -302,7 +294,7 @@ theorem obj_μ_zero_app (m₁ m₂ : M) (X : C) :
     (F.μ (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫
     (F.map (λ_ m₂).hom).app ((F.obj m₁).obj X) ≫ (F.obj m₂).map ((F.map (ρ_ m₁).inv).app X) := by
   rw [← obj_ε_inv_app_assoc, ← Functor.map_comp]
-  congr; simp
+  simp
 #align category_theory.obj_μ_zero_app CategoryTheory.obj_μ_zero_app
 
 /-- If `m ⊗ n ≅ 𝟙_M`, then `F.obj m` is a left inverse of `F.obj n`. -/

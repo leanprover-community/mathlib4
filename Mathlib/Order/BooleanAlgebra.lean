@@ -555,8 +555,7 @@ instance (priority := 100) BooleanAlgebra.toBoundedOrder [h : BooleanAlgebra α]
 
 -- See note [reducible non instances]
 /-- A bounded generalized boolean algebra is a boolean algebra. -/
-@[reducible]
-def GeneralizedBooleanAlgebra.toBooleanAlgebra [GeneralizedBooleanAlgebra α] [OrderTop α] :
+abbrev GeneralizedBooleanAlgebra.toBooleanAlgebra [GeneralizedBooleanAlgebra α] [OrderTop α] :
     BooleanAlgebra α where
   __ := ‹GeneralizedBooleanAlgebra α›
   __ := GeneralizedBooleanAlgebra.toOrderBot
@@ -704,7 +703,7 @@ theorem compl_inf : (x ⊓ y)ᶜ = xᶜ ⊔ yᶜ :=
 
 @[simp]
 theorem compl_le_compl_iff_le : yᶜ ≤ xᶜ ↔ x ≤ y :=
-  ⟨fun h => by have h := compl_le_compl h; simp at h; assumption, compl_le_compl⟩
+  ⟨fun h => by have h := compl_le_compl h; simpa using h, compl_le_compl⟩
 #align compl_le_compl_iff_le compl_le_compl_iff_le
 
 @[simp] lemma compl_lt_compl_iff_lt : yᶜ < xᶜ ↔ x < y :=
@@ -727,15 +726,13 @@ theorem compl_le_iff_compl_le : xᶜ ≤ y ↔ yᶜ ≤ x :=
 theorem sdiff_compl : x \ yᶜ = x ⊓ y := by rw [sdiff_eq, compl_compl]
 #align sdiff_compl sdiff_compl
 
-instance OrderDual.booleanAlgebra (α) [BooleanAlgebra α] : BooleanAlgebra αᵒᵈ where
-  __ := OrderDual.distribLattice α
-  __ := OrderDual.boundedOrder α
-  compl a := toDual (ofDual aᶜ)
-  sdiff a b := toDual (ofDual b ⇨ ofDual a); himp := fun a b => toDual (ofDual b \ ofDual a)
-  inf_compl_le_bot a := (@codisjoint_hnot_right _ _ (ofDual a)).top_le
-  top_le_sup_compl a := (@disjoint_compl_right _ _ (ofDual a)).le_bot
+instance OrderDual.instBooleanAlgebra : BooleanAlgebra αᵒᵈ where
+  __ := instDistribLattice α
+  __ := instHeytingAlgebra
   sdiff_eq _ _ := @himp_eq α _ _ _
   himp_eq _ _ := @sdiff_eq α _ _ _
+  inf_compl_le_bot a := (@codisjoint_hnot_right _ _ (ofDual a)).top_le
+  top_le_sup_compl a := (@disjoint_compl_right _ _ (ofDual a)).le_bot
 
 @[simp]
 theorem sup_inf_inf_compl : x ⊓ y ⊔ x ⊓ yᶜ = x := by rw [← sdiff_eq, sup_inf_sdiff _ _]
@@ -789,39 +786,38 @@ lemma himp_ne_right : x ⇨ y ≠ x ↔ x ≠ ⊤ ∨ y ≠ ⊤ := himp_eq_left.
 
 end BooleanAlgebra
 
-instance Prop.booleanAlgebra : BooleanAlgebra Prop where
-  __ := Prop.heytingAlgebra
+instance Prop.instBooleanAlgebra : BooleanAlgebra Prop where
+  __ := Prop.instHeytingAlgebra
   __ := GeneralizedHeytingAlgebra.toDistribLattice
   compl := Not
   himp_eq p q := propext imp_iff_or_not
   inf_compl_le_bot p H := H.2 H.1
   top_le_sup_compl p _ := Classical.em p
-#align Prop.boolean_algebra Prop.booleanAlgebra
+#align Prop.boolean_algebra Prop.instBooleanAlgebra
 
-instance Prod.booleanAlgebra (α β) [BooleanAlgebra α] [BooleanAlgebra β] :
+instance Prod.instBooleanAlgebra [BooleanAlgebra α] [BooleanAlgebra β] :
     BooleanAlgebra (α × β) where
-  __ := Prod.heytingAlgebra
-  __ := Prod.distribLattice α β
+  __ := instDistribLattice α β
+  __ := instHeytingAlgebra
   himp_eq x y := by ext <;> simp [himp_eq]
   sdiff_eq x y := by ext <;> simp [sdiff_eq]
   inf_compl_le_bot x := by constructor <;> simp
   top_le_sup_compl x := by constructor <;> simp
 
-instance Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlgebra (α i)] :
+instance Pi.instBooleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlgebra (α i)] :
     BooleanAlgebra (∀ i, α i) where
-  __ := Pi.sdiff
-  __ := Pi.heytingAlgebra
-  __ := @Pi.distribLattice ι α _
+  __ := instDistribLattice
+  __ := instHeytingAlgebra
   sdiff_eq _ _ := funext fun _ => sdiff_eq
   himp_eq _ _ := funext fun _ => himp_eq
   inf_compl_le_bot _ _ := BooleanAlgebra.inf_compl_le_bot _
   top_le_sup_compl _ _ := BooleanAlgebra.top_le_sup_compl _
-#align pi.boolean_algebra Pi.booleanAlgebra
+#align pi.boolean_algebra Pi.instBooleanAlgebra
 
 instance Bool.instBooleanAlgebra : BooleanAlgebra Bool where
-  __ := Bool.linearOrder
-  __ := Bool.boundedOrder
-  __ := Bool.instDistribLattice
+  __ := instDistribLattice
+  __ := linearOrder
+  __ := instBoundedOrder
   compl := not
   inf_compl_le_bot a := a.and_not_self.le
   top_le_sup_compl a := a.or_not_self.ge
@@ -845,8 +841,7 @@ section lift
 
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedBooleanAlgebra` along an injection. -/
-@[reducible]
-protected def Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] [Bot α] [SDiff α]
+protected abbrev Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] [Bot α] [SDiff α]
     [GeneralizedBooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_bot : f ⊥ = ⊥) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
@@ -859,8 +854,7 @@ protected def Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] [Bo
 
 -- See note [reducible non-instances]
 /-- Pullback a `BooleanAlgebra` along an injection. -/
-@[reducible]
-protected def Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot α] [HasCompl α]
+protected abbrev Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot α] [HasCompl α]
     [SDiff α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
@@ -879,7 +873,7 @@ protected def Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot 
 
 end lift
 
-instance PUnit.booleanAlgebra : BooleanAlgebra PUnit := by
+instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit := by
   refine'
-  { PUnit.biheytingAlgebra with
+  { PUnit.instBiheytingAlgebra with
     .. } <;> (intros; trivial)

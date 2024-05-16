@@ -218,7 +218,6 @@ theorem basicOpen_mul {U : Opens X} (f g : X.presheaf.obj (op U)) :
   ext1
   dsimp [RingedSpace.basicOpen]
   rw [← Set.image_inter Subtype.coe_injective]
-  congr
   ext x
   simp [map_mul, Set.mem_image]
 set_option linter.uppercaseLean3 false in

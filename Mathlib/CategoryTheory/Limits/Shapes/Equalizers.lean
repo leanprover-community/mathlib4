@@ -202,7 +202,6 @@ theorem walkingParallelPairOpEquiv_counitIso_one :
 #align category_theory.limits.walking_parallel_pair_op_equiv_counit_iso_one CategoryTheory.Limits.walkingParallelPairOpEquiv_counitIso_one
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : C}
 
 /-- `parallelPair f g` is the diagram in `C` consisting of the two morphisms `f` and `g` with
@@ -361,7 +360,10 @@ theorem Cofork.app_zero_eq_comp_π_right (s : Cofork f g) : s.ι.app zero = g �
 def Fork.ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) : Fork f g where
   pt := P
   π :=
-    { app := fun X => by cases X; exact ι; exact ι ≫ f
+    { app := fun X => by
+        cases X
+        · exact ι
+        · exact ι ≫ f
       naturality := fun {X} {Y} f =>
         by cases X <;> cases Y <;> cases f <;> dsimp <;> simp; assumption }
 #align category_theory.limits.fork.of_ι CategoryTheory.Limits.Fork.ofι
@@ -693,10 +695,28 @@ def Fork.ext {s t : Fork f g} (i : s.pt ≅ t.pt) (w : i.hom ≫ t.ι = s.ι := 
   inv := Fork.mkHom i.inv (by rw [← w, Iso.inv_hom_id_assoc])
 #align category_theory.limits.fork.ext CategoryTheory.Limits.Fork.ext
 
+/-- Two forks of the form `ofι` are isomorphic whenever their `ι`'s are equal. -/
+def ForkOfι.ext {P : C} {ι ι' : P ⟶ X} (w : ι ≫ f = ι ≫ g) (w' : ι' ≫ f = ι' ≫ g) (h : ι = ι') :
+    Fork.ofι ι w ≅ Fork.ofι ι' w' :=
+  Fork.ext (Iso.refl _) (by simp [h])
+
 /-- Every fork is isomorphic to one of the form `Fork.of_ι _ _`. -/
 def Fork.isoForkOfι (c : Fork f g) : c ≅ Fork.ofι c.ι c.condition :=
   Fork.ext (by simp only [Fork.ofι_pt, Functor.const_obj_obj]; rfl) (by simp)
 #align category_theory.limits.fork.iso_fork_of_ι CategoryTheory.Limits.Fork.isoForkOfι
+
+/--
+Given two forks with isomorphic components in such a way that the natural diagrams commute, then if
+one is a limit, then the other one is as well.
+-/
+def Fork.isLimitOfIsos {X' Y' : C} (c : Fork f g) (hc : IsLimit c)
+    {f' g' : X' ⟶ Y'} (c' : Fork f' g')
+    (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
+    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) : IsLimit c' :=
+  let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
+  (IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)) hc
 
 /-- Helper function for constructing morphisms between coequalizer coforks.
 -/
@@ -1116,7 +1136,7 @@ This is an isomorphism iff `G` preserves the equalizer of `f,g`; see
 noncomputable def equalizerComparison [HasEqualizer f g] [HasEqualizer (G.map f) (G.map g)] :
     G.obj (equalizer f g) ⟶ equalizer (G.map f) (G.map g) :=
   equalizer.lift (G.map (equalizer.ι _ _))
-    (by simp only [← G.map_comp]; rw[equalizer.condition])
+    (by simp only [← G.map_comp]; rw [equalizer.condition])
 #align category_theory.limits.equalizer_comparison CategoryTheory.Limits.equalizerComparison
 
 @[reassoc (attr := simp)]
