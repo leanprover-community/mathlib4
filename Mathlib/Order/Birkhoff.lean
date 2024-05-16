@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Filipo A. E. Nuccio, Sam van Gool
 -/
-import Mathlib.Data.Finset.LocallyFinite.Basic
+import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Irreducible
 import Mathlib.Order.UpperLower.Basic
@@ -239,17 +239,17 @@ variable [DecidableEq α]
     birkhoffFinset (a ⊔ b) = birkhoffFinset a ∪ birkhoffFinset b := by
   dsimp [OrderEmbedding.birkhoffFinset]
   rw [birkhoffSet_sup, OrderIso.coe_toOrderEmbedding]
-  simpa using OrderIso.map_sup _ _ _
+  simp
 
 @[simp] lemma birkhoffFinset_inf (a b : α) :
     birkhoffFinset (a ⊓ b) = birkhoffFinset a ∩ birkhoffFinset b := by
   dsimp [OrderEmbedding.birkhoffFinset]
   rw [birkhoffSet_inf, OrderIso.coe_toOrderEmbedding]
-  simpa using OrderIso.map_inf _ _ _
+  simp
 
 @[simp] lemma birkhoffSet_apply (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by
-  simp [birkhoffSet]; convert rfl
+  simp [birkhoffSet]; have : Subsingleton (OrderBot α) := inferInstance; convert rfl
 
 end OrderEmbedding
 

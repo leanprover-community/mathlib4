@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.Order.Minimal
 
@@ -79,11 +80,11 @@ theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes 
   ext p
   refine' ⟨_, _⟩ <;> rintro ⟨⟨a, ha⟩, b⟩
   · refine' ⟨⟨a, a.radical_le_iff.1 ha⟩, _⟩
-    · simp only [Set.mem_setOf_eq, and_imp] at *
-      exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.2 h3) h4
+    simp only [Set.mem_setOf_eq, and_imp] at *
+    exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.2 h3) h4
   · refine' ⟨⟨a, a.radical_le_iff.2 ha⟩, _⟩
-    · simp only [Set.mem_setOf_eq, and_imp] at *
-      exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.1 h3) h4
+    simp only [Set.mem_setOf_eq, and_imp] at *
+    exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.1 h3) h4
 #align ideal.radical_minimal_primes Ideal.radical_minimalPrimes
 
 @[simp]

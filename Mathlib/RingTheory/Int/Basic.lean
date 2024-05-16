@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Data.Nat.Factors
-import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 
 #align_import ring_theory.int.basic from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
@@ -29,55 +27,6 @@ prime, irreducible, natural numbers, integers, normalization monoid, gcd monoid,
 greatest common divisor, prime factorization, prime factors, unique factorization,
 unique factors
 -/
-
-
-namespace Nat
-
-instance : WfDvdMonoid ℕ :=
-  ⟨by
-    refine RelHomClass.wellFounded
-      (⟨fun x : ℕ => if x = 0 then (⊤ : ℕ∞) else x, ?_⟩ : DvdNotUnit →r (· < ·)) wellFounded_lt
-    intro a b h
-    cases' a with a
-    · exfalso
-      revert h
-      simp [DvdNotUnit]
-    cases b
-    · simpa [succ_ne_zero] using WithTop.coe_lt_top (a + 1)
-    cases' dvd_and_not_dvd_iff.2 h with h1 h2
-    simp only [succ_ne_zero, cast_lt, if_false]
-    refine lt_of_le_of_ne (Nat.le_of_dvd (Nat.succ_pos _) h1) fun con => h2 ?_
-    rw [con]⟩
-
-instance : UniqueFactorizationMonoid ℕ :=
-  ⟨fun {_} => Nat.irreducible_iff_prime⟩
-
-end Nat
-
-/-- `ℕ` is a gcd_monoid. -/
-instance : GCDMonoid ℕ where
-  gcd := Nat.gcd
-  lcm := Nat.lcm
-  gcd_dvd_left := Nat.gcd_dvd_left
-  gcd_dvd_right := Nat.gcd_dvd_right
-  dvd_gcd := Nat.dvd_gcd
-  gcd_mul_lcm a b := by rw [Nat.gcd_mul_lcm]; rfl
-  lcm_zero_left := Nat.lcm_zero_left
-  lcm_zero_right := Nat.lcm_zero_right
-
-instance : NormalizedGCDMonoid ℕ :=
-  { (inferInstance : GCDMonoid ℕ),
-    (inferInstance : NormalizationMonoid ℕ) with
-    normalize_gcd := fun _ _ => normalize_eq _
-    normalize_lcm := fun _ _ => normalize_eq _ }
-
-theorem gcd_eq_nat_gcd (m n : ℕ) : gcd m n = Nat.gcd m n :=
-  rfl
-#align gcd_eq_nat_gcd gcd_eq_nat_gcd
-
-theorem lcm_eq_nat_lcm (m n : ℕ) : lcm m n = Nat.lcm m n :=
-  rfl
-#align lcm_eq_nat_lcm lcm_eq_nat_lcm
 
 namespace Int
 
@@ -207,20 +156,6 @@ theorem gcd_ne_one_iff_gcd_mul_right_ne_one {a : ℤ} {m n : ℕ} :
   simp only [gcd_eq_one_iff_coprime, ← not_and_or, not_iff_not, IsCoprime.mul_right_iff]
 #align int.gcd_ne_one_iff_gcd_mul_right_ne_one Int.gcd_ne_one_iff_gcd_mul_right_ne_one
 
-set_option linter.deprecated false in -- trans_rel_left
-/-- If `gcd a (m * n) = 1`, then `gcd a m = 1`. -/
-theorem gcd_eq_one_of_gcd_mul_right_eq_one_left {a : ℤ} {m n : ℕ} (h : a.gcd (m * n) = 1) :
-    a.gcd m = 1 :=
-  Nat.dvd_one.mp <| trans_rel_left _ (gcd_dvd_gcd_mul_right_right a m n) h
-#align int.gcd_eq_one_of_gcd_mul_right_eq_one_left Int.gcd_eq_one_of_gcd_mul_right_eq_one_left
-
-set_option linter.deprecated false in -- trans_rel_left
-/-- If `gcd a (m * n) = 1`, then `gcd a n = 1`. -/
-theorem gcd_eq_one_of_gcd_mul_right_eq_one_right {a : ℤ} {m n : ℕ} (h : a.gcd (m * n) = 1) :
-    a.gcd n = 1 :=
-  Nat.dvd_one.mp <| trans_rel_left _ (gcd_dvd_gcd_mul_left_right a n m) h
-#align int.gcd_eq_one_of_gcd_mul_right_eq_one_right Int.gcd_eq_one_of_gcd_mul_right_eq_one_right
-
 theorem sq_of_gcd_eq_one {a b c : ℤ} (h : Int.gcd a b = 1) (heq : a * b = c ^ 2) :
     ∃ a0 : ℤ, a = a0 ^ 2 ∨ a = -a0 ^ 2 := by
   have h' : IsUnit (GCDMonoid.gcd a b) := by
@@ -298,42 +233,6 @@ theorem Int.exists_prime_and_dvd {n : ℤ} (hn : n.natAbs ≠ 1) : ∃ p, Prime 
   exact ⟨p, Nat.prime_iff_prime_int.mp pp, Int.natCast_dvd.mpr pd⟩
 #align int.exists_prime_and_dvd Int.exists_prime_and_dvd
 
-open UniqueFactorizationMonoid
-
-theorem Nat.factors_eq {n : ℕ} : normalizedFactors n = n.factors := by
-  cases n with
-  | zero => simp
-  | succ n =>
-    rw [← Multiset.rel_eq, ← associated_eq_eq]
-    apply UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor _
-    · rw [Multiset.prod_coe, Nat.prod_factors n.succ_ne_zero]
-      apply normalizedFactors_prod (Nat.succ_ne_zero _)
-    · intro x hx
-      rw [Nat.irreducible_iff_prime, ← Nat.prime_iff]
-      exact Nat.prime_of_mem_factors hx
-#align nat.factors_eq Nat.factors_eq
-
-theorem Nat.factors_multiset_prod_of_irreducible {s : Multiset ℕ}
-    (h : ∀ x : ℕ, x ∈ s → Irreducible x) : normalizedFactors s.prod = s := by
-  rw [← Multiset.rel_eq, ← associated_eq_eq]
-  apply
-    UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor h
-      (normalizedFactors_prod _)
-  rw [Ne, Multiset.prod_eq_zero_iff]
-  intro con
-  exact not_irreducible_zero (h 0 con)
-#align nat.factors_multiset_prod_of_irreducible Nat.factors_multiset_prod_of_irreducible
-
-theorem induction_on_primes {P : ℕ → Prop} (h₀ : P 0) (h₁ : P 1)
-    (h : ∀ p a : ℕ, p.Prime → P a → P (p * a)) (n : ℕ) : P n := by
-  apply UniqueFactorizationMonoid.induction_on_prime
-  · exact h₀
-  · intro n h
-    rw [Nat.isUnit_iff.1 h]
-    exact h₁
-  · intro a p _ hp ha
-    exact h p a hp.nat_prime ha
-#align induction_on_primes induction_on_primes
 
 theorem Int.associated_natAbs (k : ℤ) : Associated k k.natAbs :=
   associated_of_dvd_dvd (Int.dvd_natCast.mpr dvd_rfl) (Int.natAbs_dvd.mpr dvd_rfl)

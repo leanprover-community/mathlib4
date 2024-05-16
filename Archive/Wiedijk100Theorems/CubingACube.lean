@@ -3,10 +3,10 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
-import Mathlib.Data.Set.Intervals.Disjoint
-import Mathlib.Data.Set.Intervals.Group
+import Mathlib.Order.Interval.Set.Disjoint
 
 #align_import wiedijk_100_theorems.cubing_a_cube from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
@@ -182,8 +182,8 @@ theorem zero_le_b {i j} : 0 ≤ (cs i).b j :=
 theorem b_add_w_le_one {j} : (cs i).b j + (cs i).w ≤ 1 := by
   have : side (cs i) j ⊆ Ico 0 1 := side_subset h
   rw [side, Ico_subset_Ico_iff] at this
-  convert this.2
-  simp [hw]
+  · convert this.2
+  · simp [hw]
 #align theorems_100.«82».correct.b_add_w_le_one Theorems100.«82».Correct.b_add_w_le_one
 
 theorem nontrivial_fin : Nontrivial (Fin n) :=
@@ -199,9 +199,12 @@ theorem w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 := by
   have h2p : p ∈ (cs i).toSet := by
     intro j; constructor
     trans (0 : ℝ)
-    · rw [← add_le_add_iff_right (1 : ℝ)]; convert b_add_w_le_one h; rw [hi]; rw [zero_add]
-    apply zero_le_b h; apply lt_of_lt_of_le (side_subset h <| (cs i').b_mem_side j).2
-    simp [hi, zero_le_b h]
+    · rw [← add_le_add_iff_right (1 : ℝ)]; convert b_add_w_le_one h
+      · rw [hi]
+      · rw [zero_add]
+    · apply zero_le_b h
+    · apply lt_of_lt_of_le (side_subset h <| (cs i').b_mem_side j).2
+      simp [hi, zero_le_b h]
   exact (h.PairwiseDisjoint hi').le_bot ⟨hp, h2p⟩
 #align theorems_100.«82».correct.w_ne_one Theorems100.«82».Correct.w_ne_one
 
@@ -213,7 +216,9 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
   have : p ∈ (unitCube : Cube (n + 1)).toSet := by
     simp only [toSet, forall_fin_succ, hp0, side_unitCube, mem_setOf_eq, mem_Ico, head_shiftUp]
     refine' ⟨⟨_, _⟩, _⟩
-    · rw [← zero_add (0 : ℝ)]; apply add_le_add; apply zero_le_b h; apply (cs i).hw'
+    · rw [← zero_add (0 : ℝ)]; apply add_le_add
+      · apply zero_le_b h
+      · apply (cs i).hw'
     · exact lt_of_le_of_ne (b_add_w_le_one h) hc
     intro j; exact side_subset h (hps j)
   rw [← h.2, mem_iUnion] at this; rcases this with ⟨i', hi'⟩
@@ -222,9 +227,9 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
   have := h.1 this
   rw [onFun, comp_apply, comp_apply, toSet_disjoint, exists_fin_succ] at this
   rcases this with (h0 | ⟨j, hj⟩)
-  rw [hp0]; symm; apply eq_of_Ico_disjoint h0 (by simp [hw]) _
-  convert hi' 0; rw [hp0]; rfl
-  exfalso; apply not_disjoint_iff.mpr ⟨tail p j, hps j, hi' j.succ⟩ hj
+  · rw [hp0]; symm; apply eq_of_Ico_disjoint h0 (by simp [hw]) _
+    convert hi' 0; rw [hp0]; rfl
+  · exfalso; apply not_disjoint_iff.mpr ⟨tail p j, hps j, hi' j.succ⟩ hj
 #align theorems_100.«82».correct.shift_up_bottom_subset_bottoms Theorems100.«82».Correct.shiftUp_bottom_subset_bottoms
 
 end Correct
@@ -255,11 +260,15 @@ theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube :=
     intro h0 hv
     have : v ∈ (unitCube : Cube (n + 1)).toSet := by
       dsimp only [toSet, unitCube, mem_setOf_eq]
-      rw [forall_fin_succ, h0]; constructor; norm_num [side, unitCube]; exact hv
+      rw [forall_fin_succ, h0]; constructor
+      · norm_num [side, unitCube]
+      · exact hv
     rw [← h.2, mem_iUnion] at this; rcases this with ⟨i, hi⟩
     use i
     constructor
-    · apply le_antisymm; rw [h0]; exact h.zero_le_b; exact (hi 0).1
+    · apply le_antisymm
+      · rw [h0]; exact h.zero_le_b
+      · exact (hi 0).1
     intro j; exact hi _
   · intro i _ _; rw [toSet_subset]; intro j; convert h.side_subset using 1; simp [side_tail]
   · intro i _; exact h.w_ne_one i
@@ -290,7 +299,8 @@ theorem b_le_b (hi : i ∈ bcubes cs c) (j : Fin n) : c.b j.succ ≤ (cs i).b j.
 theorem t_le_t (hi : i ∈ bcubes cs c) (j : Fin n) :
     (cs i).b j.succ + (cs i).w ≤ c.b j.succ + c.w := by
   have h' := tail_sub hi j; dsimp only [side] at h'; rw [Ico_subset_Ico_iff] at h'
-  exact h'.2; simp [hw]
+  · exact h'.2
+  · simp [hw]
 #align theorems_100.«82».t_le_t Theorems100.«82».t_le_t
 
 /-- Every cube in the valley must be smaller than it -/
@@ -362,9 +372,11 @@ theorem mi_strict_minimal (hii' : mi h v ≠ i) (hi : i ∈ bcubes cs c) :
 /-- The top of `mi` cannot be 1, since there is a larger cube in the valley -/
 theorem mi_xm_ne_one : (cs <| mi h v).xm ≠ 1 := by
   apply ne_of_lt; rcases (nontrivial_bcubes h v).exists_ne (mi h v) with ⟨i, hi, h2i⟩
-  apply lt_of_lt_of_le _ h.b_add_w_le_one; exact i; exact 0
-  rw [xm, mi_mem_bcubes.1, hi.1, _root_.add_lt_add_iff_left]
-  exact mi_strict_minimal h2i.symm hi
+  · apply lt_of_lt_of_le _ h.b_add_w_le_one
+    · exact i
+    · exact 0
+    rw [xm, mi_mem_bcubes.1, hi.1, _root_.add_lt_add_iff_left]
+    exact mi_strict_minimal h2i.symm hi
 #align theorems_100.«82».mi_xm_ne_one Theorems100.«82».mi_xm_ne_one
 
 /-- If `mi` lies on the boundary of the valley in dimension j, then this lemma expresses that all
@@ -382,8 +394,8 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
     · simp [side, bi, hw', w_lt_w h v hi]
     · intro h'; simpa [lt_irrefl] using h'.2
     intro i' hi' i'_i h2i'; constructor
-    apply le_trans h2i'.1
-    · simp [hw']
+    · apply le_trans h2i'.1
+      simp [hw']
     apply lt_of_lt_of_le (add_lt_add_left (mi_strict_minimal i'_i.symm hi') _)
     simp [bi.symm, b_le_b hi']
   let s := bcubes cs c \ {i}
@@ -401,7 +413,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
     rw [add_assoc, le_add_iff_nonneg_right, ← sub_eq_add_neg, sub_nonneg]
     apply le_of_lt (w_lt_w h v hi')
   · simp only [side, not_and_or, not_lt, not_le, mem_Ico]; left; exact hx
-  intro i'' hi'' h2i'' h3i''; constructor; swap; apply lt_trans hx h3i''.2
+  intro i'' hi'' h2i'' h3i''; constructor; swap; · apply lt_trans hx h3i''.2
   rw [le_sub_iff_add_le]
   refine' le_trans _ (t_le_t hi'' j); rw [add_le_add_iff_left]; apply h3i' i'' ⟨hi'', _⟩
   simp [mem_singleton, h2i'']
@@ -429,14 +441,16 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
   have h2i' : i' ∈ bcubes cs c := ⟨hi'.1.symm, v.2.1 i' hi'.1.symm ⟨tail p, hi'.2, hp.2⟩⟩
   have i_i' : i ≠ i' := by rintro rfl; simpa [p, side_tail, h2x] using hi'.2 j
   have : Nonempty (↥((cs i').tail.side j' \ (cs i).tail.side j')) := by
-    apply nonempty_Ico_sdiff; apply mi_strict_minimal i_i' h2i'; apply hw
+    apply nonempty_Ico_sdiff
+    · apply mi_strict_minimal i_i' h2i'
+    · apply hw
   rcases this with ⟨⟨x', hx'⟩⟩
   let p' : Fin (n + 1) → ℝ := cons (c.b 0) fun j₂ => if j₂ = j' then x' else (cs i).b j₂.succ
   have hp' : p' ∈ c.bottom := by
     suffices ∀ j : Fin n, ite (j = j') x' ((cs i).b j.succ) ∈ c.side j.succ by
       simpa [p', bottom, toSet, tail, side_tail]
     intro j₂
-    by_cases hj₂ : j₂ = j'; simp [hj₂]; apply tail_sub h2i'; apply hx'.1
+    by_cases hj₂ : j₂ = j'; · simp [hj₂]; apply tail_sub h2i'; apply hx'.1
     simp only [if_congr, if_false, hj₂]; apply tail_sub hi; apply b_mem_side
   rcases v.1 hp' with ⟨_, ⟨i'', rfl⟩, hi''⟩
   have h2i'' : i'' ∈ bcubes cs c := ⟨hi''.1.symm, v.2.1 i'' hi''.1.symm ⟨tail p', hi''.2, hp'.2⟩⟩
@@ -474,7 +488,7 @@ theorem mi_not_onBoundary' (j : Fin n) :
   have := mi_not_onBoundary h v j
   simp only [OnBoundary, not_or] at this; cases' this with h1 h2
   constructor
-  apply lt_of_le_of_ne (b_le_b mi_mem_bcubes _) h1
+  · apply lt_of_le_of_ne (b_le_b mi_mem_bcubes _) h1
   apply lt_of_le_of_ne _ h2
   apply ((Ico_subset_Ico_iff _).mp (tail_sub mi_mem_bcubes j)).2
   simp [hw]
@@ -512,7 +526,9 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     rcases v.1 hp with ⟨_, ⟨i'', rfl⟩, hi''⟩
     have h2i'' : i'' ∈ bcubes cs c := by
       use hi''.1.symm; apply v.2.1 i'' hi''.1.symm
-      use tail p; constructor; exact hi''.2; rw [tail_cons]; exact h3p3
+      use tail p; constructor
+      · exact hi''.2
+      · rw [tail_cons]; exact h3p3
     have h3i'' : (cs i).w < (cs i'').w := by
       apply mi_strict_minimal _ h2i''; rintro rfl; apply h2p3; convert hi''.2
     let p' := @cons n (fun _ => ℝ) (cs i).xm p3

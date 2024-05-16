@@ -209,8 +209,8 @@ theorem y_neg (a : Solution₁ d) : (-a).y = -a.y :=
 theorem eq_zero_of_d_neg (h₀ : d < 0) (a : Solution₁ d) : a.x = 0 ∨ a.y = 0 := by
   have h := a.prop
   contrapose! h
-  have h1 := sq_pos_of_ne_zero a.x h.1
-  have h2 := sq_pos_of_ne_zero a.y h.2
+  have h1 := sq_pos_of_ne_zero h.1
+  have h2 := sq_pos_of_ne_zero h.2
   nlinarith
 #align pell.solution₁.eq_zero_of_d_neg Pell.Solution₁.eq_zero_of_d_neg
 
@@ -462,7 +462,7 @@ theorem exists_pos_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   obtain ⟨x, y, h, hy⟩ := exists_of_not_isSquare h₀ hd
   refine' ⟨mk |x| |y| (by rwa [sq_abs, sq_abs]), _, abs_pos.mpr hy⟩
   rw [x_mk, ← one_lt_sq_iff_one_lt_abs, eq_add_of_sub_eq h, lt_add_iff_pos_right]
-  exact mul_pos h₀ (sq_pos_of_ne_zero y hy)
+  exact mul_pos h₀ (sq_pos_of_ne_zero hy)
 #align pell.solution₁.exists_pos_of_not_is_square Pell.Solution₁.exists_pos_of_not_isSquare
 
 end Solution₁

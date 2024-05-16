@@ -517,12 +517,12 @@ def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y �
   fconstructor
   · rintro ⟨eX, eY⟩
     fconstructor
-    exact (idZeroEquivIsoZero X).symm eX
-    exact (idZeroEquivIsoZero Y).symm eY
+    · exact (idZeroEquivIsoZero X).symm eX
+    · exact (idZeroEquivIsoZero Y).symm eY
   · rintro ⟨hX, hY⟩
     fconstructor
-    exact (idZeroEquivIsoZero X) hX
-    exact (idZeroEquivIsoZero Y) hY
+    · exact (idZeroEquivIsoZero X) hX
+    · exact (idZeroEquivIsoZero Y) hY
   · aesop_cat
   · aesop_cat
 #align category_theory.limits.is_iso_zero_equiv_iso_zero CategoryTheory.Limits.isIsoZeroEquivIsoZero
@@ -548,7 +548,7 @@ theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
   refine' ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩⟩
   calc
     f = f ≫ 𝟙 _ := (Category.comp_id _).symm
-    _ = f ≫ 0 := by congr!
+    _ = f ≫ 0 := by congr!; apply Subsingleton.elim
     _ = 0 := HasZeroMorphisms.comp_zero _ _
 #align category_theory.limits.has_zero_object_of_has_initial_object CategoryTheory.Limits.hasZeroObject_of_hasInitial_object
 
@@ -558,7 +558,7 @@ theorem hasZeroObject_of_hasTerminal_object [HasZeroMorphisms C] [HasTerminal C]
   refine' ⟨⟨⊤_ C, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩⟩⟩
   calc
     f = 𝟙 _ ≫ f := (Category.id_comp _).symm
-    _ = 0 ≫ f := by congr!
+    _ = 0 ≫ f := by congr!; apply Subsingleton.elim
     _ = 0 := zero_comp
 #align category_theory.limits.has_zero_object_of_has_terminal_object CategoryTheory.Limits.hasZeroObject_of_hasTerminal_object
 

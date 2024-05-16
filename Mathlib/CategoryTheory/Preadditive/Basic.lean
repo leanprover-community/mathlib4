@@ -5,7 +5,7 @@ Authors: Markus Himmel, Jakob von Raumer
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 

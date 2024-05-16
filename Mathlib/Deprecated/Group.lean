@@ -412,8 +412,7 @@ namespace Units
 variable {M : Type*} {N : Type*} [Monoid M] [Monoid N]
 
 /-- The group homomorphism on units induced by a multiplicative morphism. -/
-@[reducible]
-def map' {f : M → N} (hf : IsMonoidHom f) : Mˣ →* Nˣ :=
+abbrev map' {f : M → N} (hf : IsMonoidHom f) : Mˣ →* Nˣ :=
   map (MonoidHom.of hf)
 #align units.map' Units.map'
 

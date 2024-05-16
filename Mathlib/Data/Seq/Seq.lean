@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Std.Data.LazyList
+import Batteries.Data.LazyList
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Seq.Computation
 
@@ -128,7 +128,7 @@ def Terminates (s : Seq α) : Prop :=
 #align stream.seq.terminates Stream'.Seq.Terminates
 
 theorem not_terminates_iff {s : Seq α} : ¬s.Terminates ↔ ∀ n, (s.get? n).isSome := by
-  simp only [Terminates, TerminatedAt, ← Ne.def, Option.ne_none_iff_isSome, not_exists, iff_self]
+  simp only [Terminates, TerminatedAt, ← Ne.eq_def, Option.ne_none_iff_isSome, not_exists, iff_self]
 #align stream.seq.not_terminates_iff Stream'.Seq.not_terminates_iff
 
 /-- Functorial action of the functor `Option (α × _)` -/
@@ -377,9 +377,9 @@ def IsBisimulation :=
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
   apply Subtype.eq
   apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
-  dsimp [Stream'.IsBisimulation]
-  intro t₁ t₂ e
-  exact
+  · dsimp [Stream'.IsBisimulation]
+    intro t₁ t₂ e
+    exact
     match t₁, t₂, e with
     | _, _, ⟨s, s', rfl, rfl, r⟩ => by
       suffices head s = head s' ∧ R (tail s) (tail s') from
@@ -401,9 +401,9 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
         rw [head_cons, head_cons, tail_cons, tail_cons]
         cases' this with h1 h2
         constructor
-        rw [h1]
-        exact h2
-  exact ⟨s₁, s₂, rfl, rfl, r⟩
+        · rw [h1]
+        · exact h2
+  · exact ⟨s₁, s₂, rfl, rfl, r⟩
 #align stream.seq.eq_of_bisim Stream'.Seq.eq_of_bisim
 
 end Bisim
@@ -843,7 +843,7 @@ theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
 @[simp]
 theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
   induction' n with n IH generalizing s; · rfl
-  rw [Nat.succ_eq_add_one, ← get?_tail, ← dropn_tail]; apply IH
+  rw [← get?_tail, ← dropn_tail]; apply IH
 #align stream.seq.head_dropn Stream'.Seq.head_dropn
 
 theorem mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈ map f s
@@ -973,7 +973,7 @@ theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
 
 @[simp]
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
-  simp only [bind, map, ret._eq_1, map_nil]
+  simp only [bind, map, ret.eq_1, map_nil]
   cases' f a with a s
   apply recOn s <;> intros <;> simp
 #align stream.seq1.ret_bind Stream'.Seq1.ret_bind

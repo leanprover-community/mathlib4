@@ -732,7 +732,7 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
   rcases Nat.even_or_odd' k with ⟨m, rfl | rfl⟩
   · cases' m with m m
     ·-- k = 0 : evaluate explicitly
-      rw [Nat.zero_eq, mul_zero, Nat.cast_zero, pow_zero, one_mul, zero_add, neg_zero, zero_add,
+      rw [mul_zero, Nat.cast_zero, pow_zero, one_mul, zero_add, neg_zero, zero_add,
         div_one, bernoulli_one, riemannZeta_zero]
       norm_num
     · -- k = 2 * (m + 1) : both sides "trivially" zero
@@ -767,7 +767,7 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
           push_cast; ring_nf]
     -- substitute in what we know about zeta values at positive integers
     have step1 := congr_arg ((↑) : ℝ → ℂ) (hasSum_zeta_nat (by norm_num : m + 1 ≠ 0)).tsum_eq
-    have step2 := zeta_nat_eq_tsum_of_gt_one (by rw [mul_add]; norm_num : 1 < 2 * (m + 1))
+    have step2 := zeta_nat_eq_tsum_of_gt_one (by rw [mul_add]; omega : 1 < 2 * (m + 1))
     simp_rw [ofReal_tsum, ofReal_div, ofReal_one, ofReal_pow, ofReal_natCast] at step1
     rw [step1, (by norm_cast : (↑(2 * (m + 1)) : ℂ) = 2 * ↑m + 2)] at step2
     rw [step2, mul_div]

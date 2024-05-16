@@ -246,10 +246,10 @@ def MulAction.prodEquiv :
   right_inv := by
     rintro ⟨hM, hN, -⟩
     dsimp only; congr 1
-    · ext m a; conv_rhs => rw [← hN.one_smul a]; rfl
+    · ext m a; (conv_rhs => rw [← hN.one_smul a]); rfl
     congr 1
-    · funext; congr; ext m a; conv_rhs => rw [← hN.one_smul a]; rfl
-    · ext n a; conv_rhs => rw [← hM.one_smul (SMul.smul n a)]; rfl
+    · funext; congr; ext m a; (conv_rhs => rw [← hN.one_smul a]); rfl
+    · ext n a; (conv_rhs => rw [← hM.one_smul (SMul.smul n a)]); rfl
     · apply heq_prop
 
 variable [AddMonoid α]
@@ -279,10 +279,10 @@ def DistribMulAction.prodEquiv : DistribMulAction (M × N) α ≃
   right_inv := by
     rintro ⟨_, x, _⟩
     dsimp only; congr 1
-    · ext m a; conv_rhs => rw [← one_smul N a]; rfl
+    · ext m a; (conv_rhs => rw [← one_smul N a]); rfl
     congr 1
-    · funext i; congr; ext m a; clear i; conv_rhs => rw [← one_smul N a]; rfl
-    · ext n a; conv_rhs => rw [← one_smul M (SMul.smul n a)]; rfl
+    · funext i; congr; ext m a; clear i; (conv_rhs => rw [← one_smul N a]); rfl
+    · ext n a; (conv_rhs => rw [← one_smul M (SMul.smul n a)]); rfl
     · apply heq_prop
 
 end Action_by_Prod

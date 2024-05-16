@@ -817,9 +817,7 @@ theorem coe_toLinearEquiv_symm (h : ∀ (c : R) (x), e (c • x) = c • e x) :
 /-- An additive equivalence between commutative additive monoids is a linear equivalence between
 ℕ-modules -/
 def toNatLinearEquiv : M ≃ₗ[ℕ] M₂ :=
-  e.toLinearEquiv fun c a => by
-    erw [e.toAddMonoidHom.map_nsmul]
-    rfl
+  e.toLinearEquiv fun c a => by rw [map_nsmul]
 #align add_equiv.to_nat_linear_equiv AddEquiv.toNatLinearEquiv
 
 @[simp]

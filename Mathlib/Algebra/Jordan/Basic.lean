@@ -28,7 +28,7 @@ Jordan algebras arising this way are said to be special.
 
 A real Jordan algebra `A` can be introduced by
 ```lean
-variable {A : Type*} [NonUnitalNonAssocRing A] [Module ℝ A] [SMulCommClass ℝ A A]
+variable {A : Type*} [NonUnitalNonAssocCommRing A] [Module ℝ A] [SMulCommClass ℝ A A]
   [IsScalarTower ℝ A A] [IsCommJordan A]
 ```
 

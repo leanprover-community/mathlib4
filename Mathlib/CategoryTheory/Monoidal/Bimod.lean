@@ -624,6 +624,7 @@ theorem hom_inv_id : hom P Q L ≫ inv P Q L = 𝟙 _ := by
   slice_lhs 1 3 => rw [Iso.hom_inv_id_assoc]
   dsimp only [TensorBimod.X]
   slice_rhs 2 3 => rw [Category.comp_id]
+  rfl
 set_option linter.uppercaseLean3 false in
 #align Bimod.associator_Bimod.hom_inv_id Bimod.AssociatorBimod.hom_inv_id
 
@@ -639,6 +640,7 @@ theorem inv_hom_id : inv P Q L ≫ hom P Q L = 𝟙 _ := by
   slice_lhs 1 3 => rw [Iso.inv_hom_id_assoc]
   dsimp only [TensorBimod.X]
   slice_rhs 2 3 => rw [Category.comp_id]
+  rfl
 set_option linter.uppercaseLean3 false in
 #align Bimod.associator_Bimod.inv_hom_id Bimod.AssociatorBimod.inv_hom_id
 
@@ -889,6 +891,7 @@ theorem comp_whiskerLeft_bimod {W X Y Z : Mon_ C} (M : Bimod W X) (N : Bimod X Y
   slice_rhs 2 3 => rw [associator_inv_naturality_right]
   slice_rhs 1 3 => rw [Iso.hom_inv_id_assoc]
   slice_lhs 1 2 => rw [← whisker_exchange]
+  rfl
 set_option linter.uppercaseLean3 false in
 #align Bimod.comp_whisker_left_Bimod Bimod.comp_whiskerLeft_bimod
 
@@ -945,6 +948,7 @@ theorem whiskerRight_comp_bimod {W X Y Z : Mon_ C} {M M' : Bimod W X} (f : M ⟶
   slice_rhs 2 3 => rw [associator_naturality_left]
   slice_rhs 1 3 => rw [Iso.inv_hom_id_assoc]
   slice_lhs 1 2 => rw [whisker_exchange]
+  rfl
 set_option linter.uppercaseLean3 false in
 #align Bimod.whisker_right_comp_Bimod Bimod.whiskerRight_comp_bimod
 

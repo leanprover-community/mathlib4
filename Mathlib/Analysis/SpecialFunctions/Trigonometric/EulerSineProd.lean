@@ -213,7 +213,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
   rcases eq_or_ne z 0 with (rfl | hz)
   · simp
   induction' n with n hn
-  · simp_rw [Nat.zero_eq, mul_zero, pow_zero, mul_one, Finset.prod_range_zero, mul_one,
+  · simp_rw [mul_zero, pow_zero, mul_one, Finset.prod_range_zero, mul_one,
       integral_one, sub_zero]
     rw [integral_cos_mul_complex (mul_ne_zero two_ne_zero hz), Complex.ofReal_zero,
       mul_zero, Complex.sin_zero, zero_div, sub_zero,

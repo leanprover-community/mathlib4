@@ -6,6 +6,7 @@ Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 import Mathlib.Data.Finset.Order
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.RingTheory.FreeCommRing
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.Tactic.SuppressCompilation
 
@@ -705,14 +706,15 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           isSupported_sub (isSupported_of.2 <| Or.inr rfl) (isSupported_of.2 <| Or.inl rfl),
             fun [_] => _⟩
       · rintro k (rfl | ⟨rfl | _⟩)
-        exact hij
-        rfl
+        · exact hij
+        · rfl
       · rw [(restriction _).map_sub, RingHom.map_sub, restriction_of, dif_pos,
           restriction_of, dif_pos, lift_of, lift_of]
-        dsimp only
-        have := DirectedSystem.map_map (fun i j h => f' i j h) hij (le_refl j : j ≤ j)
-        rw [this]
-        exact sub_self _
+        on_goal 1 =>
+          dsimp only
+          have := DirectedSystem.map_map (fun i j h => f' i j h) hij (le_refl j : j ≤ j)
+          rw [this]
+          · exact sub_self _
         exacts [Or.inl rfl, Or.inr rfl]
     · refine' ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, fun [_] => _⟩
       · rintro k (rfl | h)
@@ -731,9 +733,10 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       · rw [(restriction _).map_sub, (restriction _).map_add, restriction_of, restriction_of,
           restriction_of, dif_pos, dif_pos, dif_pos, RingHom.map_sub,
           (FreeCommRing.lift _).map_add, lift_of, lift_of, lift_of]
-        dsimp only
-        rw [(f' i i _).map_add]
-        exact sub_self _
+        on_goal 1 =>
+          dsimp only
+          rw [(f' i i _).map_add]
+          · exact sub_self _
         all_goals tauto
     · refine'
         ⟨i, {⟨i, x * y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
@@ -744,9 +747,10 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       · rw [(restriction _).map_sub, (restriction _).map_mul, restriction_of, restriction_of,
           restriction_of, dif_pos, dif_pos, dif_pos, RingHom.map_sub,
           (FreeCommRing.lift _).map_mul, lift_of, lift_of, lift_of]
-        dsimp only
-        rw [(f' i i _).map_mul]
-        exact sub_self _
+        on_goal 1 =>
+          dsimp only
+          rw [(f' i i _).map_mul]
+          · exact sub_self _
         all_goals tauto
         -- Porting note: was
         --exacts [sub_self _, Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
@@ -758,17 +762,17 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
     have : ∀ z : Σi, G i, z ∈ s ∪ t → z.1 ≤ k := by
       rintro z (hz | hz)
-      exact le_trans (hi z hz) hik
-      exact le_trans (hj z hz) hjk
+      · exact le_trans (hi z hz) hik
+      · exact le_trans (hj z hz) hjk
     refine'
       ⟨k, s ∪ t, this,
         isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
           (isSupported_upwards hyt <| Set.subset_union_right s t), fun [_] => _⟩
-    · -- Porting note: was `(restriction _).map_add`
-      classical rw [RingHom.map_add, (FreeCommRing.lift _).map_add, ←
-        of.zero_exact_aux2 G f' hxs hi this hik (Set.subset_union_left s t), ←
-        of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right s t), ihs,
-        (f' i k hik).map_zero, iht, (f' j k hjk).map_zero, zero_add]
+    -- Porting note: was `(restriction _).map_add`
+    classical rw [RingHom.map_add, (FreeCommRing.lift _).map_add, ←
+      of.zero_exact_aux2 G f' hxs hi this hik (Set.subset_union_left s t), ←
+      of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right s t), ihs,
+      (f' i k hik).map_zero, iht, (f' j k hjk).map_zero, zero_add]
   · rintro x y ⟨j, t, hj, hyt, iht⟩
     rw [smul_eq_mul]
     rcases exists_finset_support x with ⟨s, hxs⟩
@@ -970,9 +974,9 @@ instance nontrivial [DirectedSystem G fun i j h => f' i j h] :
       Nonempty.elim (by infer_instance) fun i : ι => by
         change (0 : Ring.DirectLimit G fun i j h => f' i j h) ≠ 1
         rw [← (Ring.DirectLimit.of _ _ _).map_one]
-        intro H; rcases Ring.DirectLimit.of.zero_exact H.symm with ⟨j, hij, hf⟩
-        rw [(f' i j hij).map_one] at hf
-        exact one_ne_zero hf⟩⟩
+        · intro H; rcases Ring.DirectLimit.of.zero_exact H.symm with ⟨j, hij, hf⟩
+          rw [(f' i j hij).map_one] at hf
+          exact one_ne_zero hf⟩⟩
 #align field.direct_limit.nontrivial Field.DirectLimit.nontrivial
 
 theorem exists_inv {p : Ring.DirectLimit G f} : p ≠ 0 → ∃ y, p * y = 1 :=
@@ -1002,15 +1006,15 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
 
 /-- Noncomputable field structure on the direct limit of fields.
 See note [reducible non-instances]. -/
-@[reducible]
-protected noncomputable def field [DirectedSystem G fun i j h => f' i j h] :
-    Field (Ring.DirectLimit G fun i j h => f' i j h) :=
+protected noncomputable abbrev field [DirectedSystem G fun i j h => f' i j h] :
+    Field (Ring.DirectLimit G fun i j h => f' i j h) where
   -- This used to include the parent CommRing and Nontrivial instances,
   -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
-  { inv := inv G fun i j h => f' i j h
-    mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
-    inv_zero := dif_pos rfl
-    qsmul := qsmulRec _ }
+  inv := inv G fun i j h => f' i j h
+  mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
+  inv_zero := dif_pos rfl
+  nnqsmul := _
+  qsmul := _
 #align field.direct_limit.field Field.DirectLimit.field
 
 end

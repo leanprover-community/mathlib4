@@ -483,7 +483,10 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     HasProduct fun p : Σ i, f i => g p.1 p.2 where
   exists_limit := Nonempty.intro
     { cone := Fan.mk (∏ fun i => ∏ g i) (fun X => Pi.π (fun i => ∏ g i) X.1 ≫ Pi.π (g X.1) X.2)
-      isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩) }
+      isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩)
+        -- Adaptation note: nightly-2024-04-01
+        -- Both of these proofs were previously by `aesop_cat`.
+        (by aesop_cat) (by intro s m w; simp only [Fan.mk_pt]; symm; ext i x; simp_all) }
 
 /-- An iterated product is a product over a sigma type. -/
 @[simps]
@@ -500,7 +503,10 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     { cocone := Cofan.mk (∐ fun i => ∐ g i)
         (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i => ∐ g i) X.1)
       isColimit := mkCofanColimit _
-        (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩) }
+        (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩)
+        -- Adaptation note: nightly-2024-04-01
+        -- Both of these proofs were previously by `aesop_cat`.
+        (by aesop_cat) (by intro s m w; simp only [Cofan.mk_pt]; symm; ext i x; simp_all) }
 
 /-- An iterated coproduct is a coproduct over a sigma type. -/
 @[simps]

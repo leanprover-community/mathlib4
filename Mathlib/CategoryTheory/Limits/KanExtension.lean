@@ -118,8 +118,8 @@ def equiv (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] (G : L ⥤ D) :
         let t : StructuredArrow.mk (𝟙 (ι.obj x)) ⟶
           (StructuredArrow.map (ι.map ff)).obj (StructuredArrow.mk (𝟙 (ι.obj y))) :=
           StructuredArrow.homMk ff ?_
-        convert (limit.w (diagram ι F (ι.obj x)) t).symm using 1
-        simp }
+        · convert (limit.w (diagram ι F (ι.obj x)) t).symm using 1
+        · simp }
   invFun f :=
     { app := fun x => limit.lift (diagram ι F x) (cone _ f)
       naturality := by

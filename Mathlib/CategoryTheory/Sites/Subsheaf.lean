@@ -115,9 +115,9 @@ theorem Subpresheaf.homOfLe_ι {G G' : Subpresheaf F} (h : G ≤ G') :
 
 instance : IsIso (Subpresheaf.ι (⊤ : Subpresheaf F)) := by
   refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ ?_
-  · intro X
-    rw [isIso_iff_bijective]
-    exact ⟨Subtype.coe_injective, fun x => ⟨⟨x, _root_.trivial⟩, rfl⟩⟩
+  intro X
+  rw [isIso_iff_bijective]
+  exact ⟨Subtype.coe_injective, fun x => ⟨⟨x, _root_.trivial⟩, rfl⟩⟩
 
 theorem Subpresheaf.eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
   constructor

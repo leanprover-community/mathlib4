@@ -1071,6 +1071,11 @@ theorem ofReal_norm_eq_coe_nnnorm' (a : E) : ENNReal.ofReal ‖a‖ = ‖a‖₊
 #align of_real_norm_eq_coe_nnnorm' ofReal_norm_eq_coe_nnnorm'
 #align of_real_norm_eq_coe_nnnorm ofReal_norm_eq_coe_nnnorm
 
+/-- The non negative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
+@[to_additive toReal_coe_nnnorm "The non negative norm seen as an `ENNReal` and
+then as a `Real` is equal to the norm."]
+theorem toReal_coe_nnnorm' (a : E) : (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := rfl
+
 @[to_additive]
 theorem edist_eq_coe_nnnorm_div (a b : E) : edist a b = ‖a / b‖₊ := by
   rw [edist_dist, dist_eq_norm_div, ofReal_norm_eq_coe_nnnorm']
@@ -1420,7 +1425,10 @@ theorem norm_pos_iff''' [T0Space E] {a : E} : 0 < ‖a‖ ↔ a ≠ 1 := by
 @[to_additive]
 theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ} {l : Filter ι} :
     TendstoUniformlyOn f 1 l s ↔ ∀ ε > 0, ∀ᶠ i in l, ∀ x ∈ s, ‖f i x‖ < ε := by
-  simp_rw [tendstoUniformlyOn_iff, Pi.one_apply, dist_one_left]
+  -- Adaptation note: nightly-2024-03-11.
+  -- Originally this was `simp_rw` instead of `simp only`,
+  -- but this creates a bad proof term with nested `OfNat.ofNat` that trips up `@[to_additive]`.
+  simp only [tendstoUniformlyOn_iff, Pi.one_apply, dist_one_left]
 #align seminormed_group.tendsto_uniformly_on_one SeminormedGroup.tendstoUniformlyOn_one
 #align seminormed_add_group.tendsto_uniformly_on_zero SeminormedAddGroup.tendstoUniformlyOn_zero
 
@@ -1912,7 +1920,7 @@ end Real
 
 namespace Int
 
-instance normedAddCommGroup : NormedAddCommGroup ℤ where
+instance instNormedAddCommGroup : NormedAddCommGroup ℤ where
   norm n := ‖(n : ℝ)‖
   dist_eq m n := by simp only [Int.dist_eq, norm, Int.cast_sub]
 
@@ -1929,8 +1937,7 @@ theorem norm_eq_abs (n : ℤ) : ‖n‖ = |(n : ℝ)| :=
 theorem norm_natCast (n : ℕ) : ‖(n : ℤ)‖ = n := by simp [Int.norm_eq_abs]
 #align int.norm_coe_nat Int.norm_natCast
 
--- 2024-04-05
-@[deprecated] alias norm_coe_nat := norm_natCast
+@[deprecated] alias norm_coe_nat := norm_natCast -- 2024-04-05
 
 theorem _root_.NNReal.natCast_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :=
   NNReal.eq <|
@@ -1948,7 +1955,7 @@ end Int
 
 namespace Rat
 
-instance normedAddCommGroup : NormedAddCommGroup ℚ where
+instance instNormedAddCommGroup : NormedAddCommGroup ℚ where
   norm r := ‖(r : ℝ)‖
   dist_eq r₁ r₂ := by simp only [Rat.dist_eq, norm, Rat.cast_sub]
 
