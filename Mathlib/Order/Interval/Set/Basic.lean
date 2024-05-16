@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
 import Mathlib.Order.MinMax
-import Mathlib.Order.SetNotation
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.Says
 
