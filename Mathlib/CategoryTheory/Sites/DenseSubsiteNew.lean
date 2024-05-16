@@ -269,10 +269,24 @@ noncomputable def extensionObjRestrict {X : Cᵒᵖ} {Y₀ : C₀} (f : F.obj Y�
         apply Multiequalizer.condition_assoc
           ((F.oneHypercoverDenseData J₀ J X.unop).multicospanIndex P₀) ⟨⟨i₁, i₂⟩, j⟩)
 
+noncomputable def extensionObjRestrict_map_eq_extensionObjRestrict'
+    {X : Cᵒᵖ} {Y₀ W₀ : C₀} (f : F.obj Y₀ ⟶ X.unop)
+    (g : W₀ ⟶ Y₀) (i : (F.oneHypercoverDenseData J₀ J X.unop).I₀)
+    (a : W₀ ⟶ (F.oneHypercoverDenseData J₀ J X.unop).X i)
+    (fac : F.map a ≫ (F.oneHypercoverDenseData J₀ J X.unop).f i = F.map g ≫ f) :
+    extensionObjRestrict F J₀ J hP₀ f ≫ P₀.map g.op =
+      extensionObjRestrict' F J₀ J P₀ (F.map g ≫ f) ⟨i, a, fac⟩ :=
+  hP₀.amalgamate_map _ _ _ ⟨W₀, g, by exact ⟨_, _, _, ⟨i⟩, fac⟩⟩
+
 lemma extensionObjRestrict_eq_π {X : Cᵒᵖ} (i : (F.oneHypercoverDenseData J₀ J X.unop).I₀) :
     extensionObjRestrict F J₀ J hP₀ ((F.oneHypercoverDenseData J₀ J X.unop).f i) =
       Multiequalizer.ι ((F.oneHypercoverDenseData J₀ J X.unop).multicospanIndex P₀) i := by
-  sorry
+  have eq := extensionObjRestrict_map_eq_extensionObjRestrict' F J₀ J hP₀
+      ((F.oneHypercoverDenseData J₀ J X.unop).f i) (𝟙 _) i (𝟙 _) (by simp)
+  dsimp at eq
+  simp only [map_id, comp_id, id_comp] at eq
+  rw [eq, extensionObjRestrict'_eq F J₀ J hP₀ _ i (𝟙 _) (by simp)]
+  simp
 
 @[reassoc (attr := simp)]
 def extensionObjRestrict_map {X : Cᵒᵖ} {Y₀ Z₀ : C₀} (f : F.obj Y₀ ⟶ X.unop)
