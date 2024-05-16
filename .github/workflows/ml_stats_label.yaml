@@ -16,6 +16,10 @@ jobs:
           fetch-depth: 0
           ref: 'master'
 
+      - id: print_it
+        run: |
+          printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)"
+
       - id: mathlib_stats
         run: |
           git checkout -q master
