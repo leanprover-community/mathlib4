@@ -86,7 +86,7 @@ theorem neg_npow_assoc {R : Type*} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] 
   induction k with
   | zero => simp only [npow_zero, one_mul]
   | succ k ih =>
-    rw [← Nat.add_one, npow_add, npow_one, ← neg_mul_comm, mul_one]
+    rw [npow_add, npow_one, ← neg_mul_comm, mul_one]
     simp only [neg_mul, ih]
 
 end Neg

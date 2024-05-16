@@ -134,8 +134,7 @@ theorem ascPochhammer_smeval_neg_eq_descPochhammer (r : R) (k : ℕ) :
     have h : (X + (k : ℕ[X])).smeval (-r) = - (X + (-k : ℤ[X])).smeval r := by
       simp only [smeval_add, smeval_X, npow_one, smeval_neg, smeval_natCast, npow_zero, nsmul_one]
       abel
-    rw [h, ← neg_mul_comm, neg_mul_eq_neg_mul, ← mul_neg_one, ← neg_npow_assoc, ← Nat.add_one,
-      npow_add, npow_one]
+    rw [h, ← neg_mul_comm, neg_mul_eq_neg_mul, ← mul_neg_one, ← neg_npow_assoc, npow_add, npow_one]
 
 end Polynomial
 
