@@ -309,12 +309,12 @@ jobs:
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
       - name: lint mathlib
+        # We previously ran `liskin/gh-problem-matcher-wrap@v3` here
+        # but this was not working.
+        # See https://github.com/leanprover-community/mathlib4/issues/12946
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
-        uses: liskin/gh-problem-matcher-wrap@v3
-        with:
-          linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
 
       - name: check environments using lean4checker
         id: lean4checker
