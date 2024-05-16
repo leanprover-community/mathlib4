@@ -120,7 +120,9 @@ theorem mem_accessible {s : Finset α} (hs₁ : s ∈ G.feasible_set) (hs₂ : s
   G.accessible_property hs₁ hs₂
 
 theorem mem_exchange
-  {s₁ : Finset α} (hs₁ : s₁ ∈ G) {s₂ : Finset α} (hs₂ : s₂ ∈ G) (hs : s₂.card < s₁.card) :
+  {s₁ : Finset α} (hs₁ : s₁ ∈ G)
+  {s₂ : Finset α} (hs₂ : s₂ ∈ G)
+  (hs : s₂.card < s₁.card) :
     ∃ x ∈ s₁, ∃ h : x ∉ s₂, cons x s₂ h ∈ G :=
   G.exchange_property hs₁ hs₂ hs
 
