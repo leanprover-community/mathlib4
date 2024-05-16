@@ -661,7 +661,7 @@ theorem coeFn_one [One β] : ⇑(1 : α →ₘ[μ] β) =ᵐ[μ] 1 :=
 #align measure_theory.ae_eq_fun.coe_fn_zero MeasureTheory.AEEqFun.coeFn_zero
 
 @[to_additive (attr := simp)]
-theorem coeFn_one_eq [NeZero μ] [One β] {x : α} : ⇑(1 : α →ₘ[μ] β) x = 1 :=
+theorem coeFn_one_eq [NeZero μ] [One β] {x : α} : (1 : α →ₘ[μ] β) x = 1 :=
   coeFn_const_eq ..
 
 @[to_additive (attr := simp)]
