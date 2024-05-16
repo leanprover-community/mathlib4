@@ -80,11 +80,11 @@ theorem isIntegrallyClosed_dvd {s : S} (hs : IsIntegral R s) {p : R[X]}
   have := FractionRing.isScalarTower_liftAlgebra R L
   have : minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (p %ₘ minpoly R s) := by
     rw [map_modByMonic _ (minpoly.monic hs), modByMonic_eq_sub_mul_div]
-    refine' dvd_sub (minpoly.dvd K (algebraMap S L s) _) _
-    rw [← map_aeval_eq_aeval_map, hp, map_zero]
-    rw [← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
-    apply dvd_mul_of_dvd_left
-    rw [isIntegrallyClosed_eq_field_fractions K L hs]
+    · refine' dvd_sub (minpoly.dvd K (algebraMap S L s) _) _
+      · rw [← map_aeval_eq_aeval_map, hp, map_zero]
+        rw [← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
+      apply dvd_mul_of_dvd_left
+      rw [isIntegrallyClosed_eq_field_fractions K L hs]
     exact Monic.map _ (minpoly.monic hs)
   rw [isIntegrallyClosed_eq_field_fractions _ _ hs,
     map_dvd_map (algebraMap R K) (IsFractionRing.injective R K) (minpoly.monic hs)] at this

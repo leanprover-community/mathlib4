@@ -2176,7 +2176,7 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] [A
 
 @[simp]
 lemma mapDomainAlgHom_id (k A) [CommSemiring k] [Semiring A] [Algebra k A] [AddMonoid G] :
-    mapDomainAlgHom k A (AddMonoidHom.id G) = AlgHom.id k A[G] := by
+    mapDomainAlgHom k A (AddMonoidHom.id G) = AlgHom.id k (AddMonoidAlgebra A G) := by
   ext; simp [AddMonoidHom.id, ← Function.id_def]
 
 @[simp]

@@ -277,7 +277,7 @@ def link (self : UnionFind α) (x y : Fin self.size)
     have : UFModel.Agrees arr₁ (·.parent) parent :=
       hm.1.set (fun i h ↦ by simp [parent]; rw [if_neg h.symm]) (fun _ ↦ by simp [parent])
     have H1 : UFModel.Agrees arr₂ (·.parent) parent := by
-      simp only [arr₂, getElem_fin]; split
+      simp only [arr₂, Fin.getElem_fin]; split
       · exact this.set (fun i h ↦ by simp [h.symm]) fun _ ↦ by simp [ne, hm.parent_eq', ny, parent]
       · exact this
     have : UFModel.Agrees arr₁ (·.rank) (fun i : Fin n ↦ m.rank i) :=

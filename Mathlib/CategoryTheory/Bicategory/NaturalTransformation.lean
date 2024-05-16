@@ -176,11 +176,11 @@ def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H 
                         ?_ ≫ η.app a ◁ θ.naturality f ▷ H.map g ≫ ?_ :=
         ?_
       _ = _ := ?_
-    exact (α_ _ _ _).inv
-    exact (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom
-    exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
-    exact (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv
-    exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
+    · exact (α_ _ _ _).inv
+    · exact (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom
+    · exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
+    · exact (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv
+    · exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
     · rw [whisker_exchange_assoc]
       simp
     · simp
@@ -216,8 +216,6 @@ structure Modification (η θ : F ⟶ G) where
 #align category_theory.oplax_nat_trans.modification.app CategoryTheory.OplaxNatTrans.Modification
 #align category_theory.oplax_nat_trans.modification.naturality' CategoryTheory.OplaxNatTrans.Modification.naturality
 #align category_theory.oplax_nat_trans.modification.naturality CategoryTheory.OplaxNatTrans.Modification.naturality
-
-attribute [pp_dot] Modification.app
 
 attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.Modification.app
   CategoryTheory.OplaxNatTrans.Modification.naturality
