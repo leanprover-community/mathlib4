@@ -292,7 +292,7 @@ Returns `(pos, neg, notPresent)`.
 def splitSetByVarSign (a : ℕ) (comps : PCompSet) : PCompSet × PCompSet × PCompSet :=
   comps.foldl (fun ⟨pos, neg, notPresent⟩ pc =>
     let n := pc.c.coeffOf a
-    if n > 0 then ⟨pos.insert pc, neg, notPresent⟩
+    if 0 < n then ⟨pos.insert pc, neg, notPresent⟩
     else if n < 0 then ⟨pos, neg.insert pc, notPresent⟩
     else ⟨pos, neg, notPresent.insert pc⟩)
     ⟨RBSet.empty, RBSet.empty, RBSet.empty⟩

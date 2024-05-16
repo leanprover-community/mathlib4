@@ -57,7 +57,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
   set s : ℕ → G := fun n => ∑ k in range (n + 1), u k
   have : CauchySeq s := by
     apply NormedAddCommGroup.cauchy_series_of_le_geometric'' (by norm_num) one_half_lt_one
-    · rintro n (hn : n ≥ 1)
+    · rintro n (hn : 1 ≤ n)
       calc
         ‖u n‖ ≤ C * ‖v n‖ := hnorm_u n
         _ ≤ C * b n := by gcongr; exact (hv _ <| Nat.succ_le_iff.mp hn).le

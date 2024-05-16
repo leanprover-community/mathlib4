@@ -35,7 +35,7 @@ open Finset multiplicity
 
 namespace Imo2019Q4
 
-theorem upper_bound {k n : ℕ} (hk : k > 0)
+theorem upper_bound {k n : ℕ} (hk : 0 < k)
     (h : (k ! : ℤ) = ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i)) : n < 6 := by
   have h2 : ∑ i in range n, i < k := by
     suffices multiplicity 2 (k ! : ℤ) = ↑(∑ i in range n, i : ℕ) by
@@ -80,7 +80,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
 
 end Imo2019Q4
 
-theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
+theorem imo2019_q4 {k n : ℕ} (hk : 0 < k) (hn : 0 < n) :
     (k ! : ℤ) = ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ↔ (k, n) = (1, 1) ∨ (k, n) = (3, 2) := by
   -- The implication `←` holds.
   constructor

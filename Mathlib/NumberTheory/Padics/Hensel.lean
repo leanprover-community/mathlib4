@@ -273,7 +273,7 @@ private theorem newton_seq_succ_dist (n : ℕ) :
       ((div_le_div_right (deriv_norm_pos hnorm)).2 (newton_seq_norm_le hnorm _))
     _ = ‖F.derivative.eval a‖ * T ^ 2 ^ n := div_sq_cancel _ _
 
-private theorem T_pos : T > 0 := by
+private theorem T_pos : 0 < T := by
   rw [T_def]
   exact div_pos (norm_pos_iff.2 hnsol) (deriv_sq_norm_pos hnorm)
 
@@ -352,7 +352,7 @@ private theorem bound' : Tendsto (fun n : ℕ => ‖F.derivative.eval a‖ * T ^
         (Nat.tendsto_pow_atTop_atTop_of_one_lt (by norm_num)))
 
 private theorem bound :
-    ∀ {ε}, ε > 0 → ∃ N : ℕ, ∀ {n}, n ≥ N → ‖F.derivative.eval a‖ * T ^ 2 ^ n < ε := fun hε ↦
+    ∀ {ε}, 0 < ε → ∃ N : ℕ, ∀ {n}, N ≤ n → ‖F.derivative.eval a‖ * T ^ 2 ^ n < ε := fun hε ↦
   eventually_atTop.1 <| (bound' hnorm).eventually <| gt_mem_nhds hε
 
 private theorem bound'_sq :
@@ -374,8 +374,8 @@ private def soln_gen : ℤ_[p] := (newton_cau_seq hnorm).lim
 
 local notation "soln" => soln_gen hnorm
 
-private theorem soln_spec {ε : ℝ} (hε : ε > 0) :
-    ∃ N : ℕ, ∀ {i : ℕ}, i ≥ N → ‖soln - newton_cau_seq hnorm i‖ < ε :=
+private theorem soln_spec {ε : ℝ} (hε : 0 < ε) :
+    ∃ N : ℕ, ∀ i ≥ N, ‖soln - newton_cau_seq hnorm i‖ < ε :=
   Setoid.symm (CauSeq.equiv_lim (newton_cau_seq hnorm)) _ hε
 
 private theorem soln_deriv_norm : ‖F.derivative.eval soln‖ = ‖F.derivative.eval a‖ :=

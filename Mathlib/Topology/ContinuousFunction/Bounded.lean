@@ -530,7 +530,7 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
     sets exist by compactness of the source and range. Then, to check that these
     data determine the function up to `ε`, one uses the control on the modulus of
     continuity to extend the closeness on tα to closeness everywhere. -/
-  have ε₂0 : ε₂ > 0 := half_pos (half_pos ε₁0)
+  have ε₂0 : 0 < ε₂ := half_pos (half_pos ε₁0)
   have : ∀ x : α, ∃ U, x ∈ U ∧ IsOpen U ∧
       ∀ y ∈ U, ∀ z ∈ U, ∀ {f : α →ᵇ β}, f ∈ A → dist (f y) (f z) < ε₂ := fun x =>
     let ⟨U, nhdsU, hU⟩ := H x _ ε₂0

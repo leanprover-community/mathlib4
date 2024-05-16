@@ -548,7 +548,7 @@ open NumberTheorySymbols jacobiSym
 
 /-- Computes `J(a | b)` (or `-J(a | b)` if `flip` is set to `true`) given assumptions, by reducing
 `a` to odd by repeated division and then using quadratic reciprocity to swap `a`, `b`. -/
-private def fastJacobiSymAux (a b : ℕ) (flip : Bool) (ha0 : a > 0) : ℤ :=
+private def fastJacobiSymAux (a b : ℕ) (flip : Bool) (ha0 : 0 < a) : ℤ :=
   if ha4 : a % 4 = 0 then
     fastJacobiSymAux (a / 4) b flip
       (a.div_pos (Nat.le_of_dvd ha0 (Nat.dvd_of_mod_eq_zero ha4)) (by decide))
@@ -567,8 +567,8 @@ decreasing_by
   · exact a.div_lt_self ha0 (by decide)
   · exact b.mod_lt ha0
 
-private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a > 0}
-    (hb2 : b % 2 = 1) (hb1 : b > 1) :
+private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : 0 < a}
+    (hb2 : b % 2 = 1) (hb1 : 1 < b) :
     fastJacobiSymAux a b flip ha0 = if flip then -J(a | b) else J(a | b) := by
   induction' a using Nat.strongInductionOn with a IH generalizing b flip
   unfold fastJacobiSymAux

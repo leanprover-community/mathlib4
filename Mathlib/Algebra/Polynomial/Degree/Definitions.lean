@@ -602,8 +602,8 @@ theorem ne_zero_of_degree_gt {n : WithBot ℕ} (h : n < degree p) : p ≠ 0 :=
 
 theorem ne_zero_of_degree_ge_degree (hpq : p.degree ≤ q.degree) (hp : p ≠ 0) : q ≠ 0 :=
   Polynomial.ne_zero_of_degree_gt
-    (lt_of_lt_of_le (bot_lt_iff_ne_bot.mpr (by rwa [Ne, Polynomial.degree_eq_bot])) hpq :
-      q.degree > ⊥)
+    (lt_of_lt_of_le (bot_lt_iff_ne_bot.mpr (by rwa [Ne, Polynomial.degree_eq_bot]))
+      hpq : ⊥ < q.degree)
 #align polynomial.ne_zero_of_degree_ge_degree Polynomial.ne_zero_of_degree_ge_degree
 
 theorem ne_zero_of_natDegree_gt {n : ℕ} (h : n < natDegree p) : p ≠ 0 := fun H => by
@@ -752,7 +752,7 @@ theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingC
     | Or.inl hlt => by
       rw [degree_add_eq_right_of_degree_lt hlt, max_eq_right_of_lt hlt]
     | Or.inr (Or.inl HEq) =>
-      le_of_not_gt fun hlt : max (degree p) (degree q) > degree (p + q) =>
+      le_of_not_gt fun hlt : degree (p + q) < max (degree p) (degree q) =>
         h <|
           show leadingCoeff p + leadingCoeff q = 0 by
             rw [HEq, max_self] at hlt

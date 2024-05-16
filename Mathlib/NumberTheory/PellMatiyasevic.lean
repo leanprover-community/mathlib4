@@ -722,7 +722,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
                   rw [ile, a2, n1]; exact ⟨rfl, rfl, rfl, rfl⟩
           · rw [ein, Nat.mod_self, add_zero]
             exact strictMono_x _ (Nat.pred_lt npos.ne'))
-        fun jn : j > n =>
+        fun jn : n < j =>
         have lem1 : j ≠ n → xn a1 j % xn a1 n < xn a1 (j + 1) % xn a1 n →
             xn a1 i % xn a1 n < xn a1 (j + 1) % xn a1 n :=
           fun jn s =>

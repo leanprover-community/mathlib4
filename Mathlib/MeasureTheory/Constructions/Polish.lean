@@ -478,10 +478,10 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
     apply t2_separation
     exact disjoint_iff_forall_ne.1 h (mem_range_self _) (mem_range_self _)
   letI : MetricSpace (ℕ → ℕ) := metricSpaceNatNat
-  obtain ⟨εx, εxpos, hεx⟩ : ∃ (εx : ℝ), εx > 0 ∧ Metric.ball x εx ⊆ f ⁻¹' u := by
+  obtain ⟨εx, εxpos, hεx⟩ : ∃ (εx : ℝ), 0 < εx ∧ Metric.ball x εx ⊆ f ⁻¹' u := by
     apply Metric.mem_nhds_iff.1
     exact hf.continuousAt.preimage_mem_nhds (u_open.mem_nhds xu)
-  obtain ⟨εy, εypos, hεy⟩ : ∃ (εy : ℝ), εy > 0 ∧ Metric.ball y εy ⊆ g ⁻¹' v := by
+  obtain ⟨εy, εypos, hεy⟩ : ∃ (εy : ℝ), 0 < εy ∧ Metric.ball y εy ⊆ g ⁻¹' v := by
     apply Metric.mem_nhds_iff.1
     exact hg.continuousAt.preimage_mem_nhds (v_open.mem_nhds yv)
   obtain ⟨n, hn⟩ : ∃ n : ℕ, (1 / 2 : ℝ) ^ n < min εx εy :=

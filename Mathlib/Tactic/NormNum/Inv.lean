@@ -147,7 +147,7 @@ such that `norm_num` successfully recognises `a`. -/
   core : Option (Result e) := do
     let ⟨qa, na, da, pa⟩ ← ra.toRat' dα
     let qb := qa⁻¹
-    if qa > 0 then
+    if 0 < qa then
       if let some i := i then
         have lit : Q(ℕ) := na.appArg!
         haveI : $na =Q Int.ofNat $lit := ⟨⟩
