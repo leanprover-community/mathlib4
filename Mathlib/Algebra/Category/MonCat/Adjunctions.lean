@@ -84,3 +84,5 @@ def adj : free ⊣ forget MonCat.{u} :=
 
 instance : (forget MonCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
+
+end MonCat
