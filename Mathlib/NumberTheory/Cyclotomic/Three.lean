@@ -35,7 +35,7 @@ local notation3 "η" => hζ.toInteger
 local notation3 "λ" => hζ.toInteger - 1
 
 /-- Let `u` be a unit in `(𝓞 K)ˣ`, then `u ∈ {1, -1, η, -η, η^2, -η^2}`. -/
-theorem Units.mem : ↑u ∈({1, -1, η, -η, η ^ 2, -η ^ 2} : Set (𝓞 K)) := by
+theorem Units.mem : ↑u ∈ ({1, -1, η, -η, η ^ 2, -η ^ 2} : Set (𝓞 K)) := by
   have hrank : rank K = 0 := by
     dsimp [rank]
     rw [card_eq_nrRealPlaces_add_nrComplexPlaces, nrRealPlaces_eq_zero (n := 3) K (by decide),
