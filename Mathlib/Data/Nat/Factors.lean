@@ -48,6 +48,9 @@ theorem factors_zero : factors 0 = [] := by rw [factors]
 theorem factors_one : factors 1 = [] := by rw [factors]
 #align nat.factors_one Nat.factors_one
 
+@[simp]
+theorem factors_two : factors 2 = [2] := by simp [factors]
+
 theorem prime_of_mem_factors {n : ℕ} : ∀ {p : ℕ}, (h : p ∈ factors n) → Prime p := by
   match n with
   | 0 => simp
