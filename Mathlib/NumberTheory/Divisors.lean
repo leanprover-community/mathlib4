@@ -3,9 +3,10 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.Factors
+import Mathlib.Order.GameAdd
 import Mathlib.Order.Interval.Finset.Nat
 
 #align_import number_theory.divisors from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
