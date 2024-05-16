@@ -60,6 +60,13 @@ export Module.Oriented (positiveOrientation)
 
 variable {R M}
 
+/-- An induction principle for `Module.Ray`. -/
+@[induction_eliminator]
+theorem Orientation.ind {C : Orientation R M ι → Prop}
+    (h : ∀ (v) (hv : v ≠ 0), C (rayOfNeZero R v hv))
+    (x : Orientation R M ι) : C x :=
+  Module.Ray.ind h x
+
 /-- An equivalence between modules implies an equivalence between orientations. -/
 def Orientation.map (e : M ≃ₗ[R] N) : Orientation R M ι ≃ Orientation R N ι :=
   Module.Ray.map <| AlternatingMap.domLCongr R R ι R e

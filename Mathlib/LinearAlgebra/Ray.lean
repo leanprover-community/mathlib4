@@ -258,14 +258,14 @@ def rayOfNeZero (v : M) (h : v ≠ 0) : Module.Ray R M :=
   ⟦⟨v, h⟩⟧
 #align ray_of_ne_zero rayOfNeZero
 
+variable {R}
+
 /-- An induction principle for `Module.Ray`. -/
 @[induction_eliminator]
 theorem Module.Ray.ind {C : Module.Ray R M → Prop} (h : ∀ (v) (hv : v ≠ 0), C (rayOfNeZero R v hv))
     (x : Module.Ray R M) : C x :=
   Quotient.ind (Subtype.rec <| h) x
 #align module.ray.ind Module.Ray.ind
-
-variable {R}
 
 instance [Nontrivial M] : Nonempty (Module.Ray R M) :=
   Nonempty.map Quotient.mk' inferInstance
@@ -302,7 +302,7 @@ theorem Module.Ray.map_apply (e : M ≃ₗ[R] N) (v : M) (hv : v ≠ 0) :
 
 @[simp]
 theorem Module.Ray.map_refl : (Module.Ray.map <| LinearEquiv.refl R M) = Equiv.refl _ :=
-  Equiv.ext <| Module.Ray.ind R fun _ _ => rfl
+  Equiv.ext <| Module.Ray.ind fun _ _ => rfl
 #align module.ray.map_refl Module.Ray.map_refl
 
 @[simp]
@@ -471,7 +471,7 @@ variable {R}
 instance : InvolutiveNeg (Module.Ray R M)
     where
   neg := Neg.neg
-  neg_neg x := by apply ind R (by simp) x
+  neg_neg x := by apply ind (by simp) x
   -- Quotient.ind (fun a => congr_arg Quotient.mk' <| neg_neg _) x
 
 /-- A ray does not equal its own negation. -/
