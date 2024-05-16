@@ -5,6 +5,7 @@ Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.Topology.Category.Profinite.Limits
+import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 
 /-!
 # Effective epimorphisms and finite effective epimorphic families in `Profinite`
@@ -33,32 +34,9 @@ As a consequence, we obtain instances that `Profinite` is precoherent and prereg
 
 universe u
 
-open CategoryTheory Limits
+open CategoryTheory Limits CompHausLike
 
 namespace Profinite
-
-/--
-Implementation: If `π` is a surjective morphism in `Profinite`, then it is an effective epi.
-The theorem `Profinite.effectiveEpi_tfae` should be used instead.
--/
-noncomputable
-def struct {B X : Profinite.{u}} (π : X ⟶ B) (hπ : Function.Surjective π) :
-    EffectiveEpiStruct π where
-  desc e h := (QuotientMap.of_surjective_continuous hπ π.continuous).lift e fun a b hab ↦
-    DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-    (by ext; exact hab)) a
-  fac e h := ((QuotientMap.of_surjective_continuous hπ π.continuous).lift_comp e
-    fun a b hab ↦ DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-    (by ext; exact hab)) a)
-  uniq e h g hm := by
-    suffices g = (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv ⟨e,
-      fun a b hab ↦ DFunLike.congr_fun
-        (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩ (by ext; exact hab))
-        a⟩ by assumption
-    rw [← Equiv.symm_apply_eq (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv]
-    ext
-    simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
-    rfl
 
 open List in
 theorem effectiveEpi_tfae
@@ -73,18 +51,15 @@ theorem effectiveEpi_tfae
   tfae_have 2 ↔ 3
   · exact epi_iff_surjective π
   tfae_have 3 → 1
-  · exact fun hπ ↦ ⟨⟨struct π hπ⟩⟩
+  · exact fun hπ ↦ ⟨⟨CompHausLike.struct π hπ⟩⟩
   tfae_finish
 
-instance : Preregular Profinite where
-  exists_fac := by
-    intro X Y Z f π hπ
-    refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
-    have := fun X Y (f : X ⟶ Y) ↦ (effectiveEpi_tfae f).out 0 2
-    rw [this] at hπ ⊢
-    intro y
-    obtain ⟨z,hz⟩ := hπ (f y)
-    exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
+instance : Preregular Profinite := by
+  apply preregular
+  · intro X Y _ _ _
+    exact show TotallyDisconnectedSpace {xy : X × Y | _} from inferInstance
+  · intro _ _ _
+    exact ((effectiveEpi_tfae _).out 0 2).mp
 
 -- Was an `example`, but that made the linter complain about unused imports
 instance : Precoherent Profinite.{u} := inferInstance
@@ -114,8 +89,8 @@ theorem effectiveEpiFamily_tfae
     simpa using h
   tfae_have 2 → 3
   · intro e; rw [epi_iff_surjective] at e
-    let i : ∐ X ≅ finiteCoproduct X :=
-      (colimit.isColimit _).coconePointUniqueUpToIso (finiteCoproduct.isColimit _)
+    let i : ∐ X ≅ finiteCoproduct X (inferInstance : TotallyDisconnectedSpace (Σ (a : α), X a)) :=
+      (colimit.isColimit _).coconePointUniqueUpToIso (finiteCoproduct.isColimit _ _)
     intro b
     obtain ⟨t, rfl⟩ := e b
     let q := i.hom t
@@ -123,7 +98,7 @@ theorem effectiveEpiFamily_tfae
     have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id]; rfl
     rw [this]
     show _ = (i.inv ≫ Sigma.desc π) (i.hom t)
-    suffices i.inv ≫ Sigma.desc π = finiteCoproduct.desc X π by
+    suffices i.inv ≫ Sigma.desc π = finiteCoproduct.desc X _ π by
       rw [this]; rfl
     rw [Iso.inv_comp_eq]
     apply colimit.hom_ext

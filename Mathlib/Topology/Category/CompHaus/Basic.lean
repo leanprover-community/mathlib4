@@ -45,15 +45,6 @@ instance : Inhabited CompHaus :=
   ⟨{ toTop := { α := PEmpty }
      prop := trivial }⟩
 
-example : CoeSort CompHaus (Type*) :=
-  inferInstance
-
-example {X : CompHaus} : CompactSpace X :=
-  inferInstance
-
-example {X : CompHaus} : T2Space X :=
-  inferInstance
-
 /-
 -- Porting note: This is now a syntactic tautology.
 @[simp]

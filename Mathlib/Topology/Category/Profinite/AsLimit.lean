@@ -33,7 +33,7 @@ There are a handful of definitions in this file, given `X : Profinite`:
 
 noncomputable section
 
-open CategoryTheory
+open CategoryTheory CompHausLike
 
 namespace Profinite
 
