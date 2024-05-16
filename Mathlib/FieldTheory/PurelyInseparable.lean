@@ -559,11 +559,12 @@ theorem isPurelyInseparable_iff_fd_isPurelyInseparable [Algebra.IsAlgebraic F E]
   exact ⟨y, congr_arg (algebraMap _ E) h⟩
 
 /-- A purely inseparable extension is normal. -/
-instance IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E := by
-  refine ⟨isAlgebraic F E, fun x ↦ ?_⟩
-  obtain ⟨n, h⟩ := IsPurelyInseparable.minpoly_eq_X_sub_C_pow F (ringExpChar F) x
-  rw [← splits_id_iff_splits, h]
-  exact splits_pow _ (splits_X_sub_C _) _
+instance IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E where
+  toIsAlgebraic := isAlgebraic F E
+  splits' x := by
+    obtain ⟨n, h⟩ := IsPurelyInseparable.minpoly_eq_X_sub_C_pow F (ringExpChar F) x
+    rw [← splits_id_iff_splits, h]
+    exact splits_pow _ (splits_X_sub_C _) _
 
 /-- If `E / F` is algebraic, then `E` is purely inseparable over the
 separable closure of `F` in `E`. -/

@@ -112,7 +112,7 @@ noncomputable def IsNormalClosure.lift [h : IsNormalClosure F K L] {L'} [Field L
     (splits : ∀ x : K, (minpoly F x).Splits (algebraMap F L')) : L →ₐ[F] L' := by
   have := h.adjoin_rootSet; rw [← gc.l_iSup] at this
   refine Nonempty.some <| nonempty_algHom_of_adjoin_splits
-    (fun x hx ↦ ⟨isAlgebraic_iff_isIntegral.mp (Normal.isAlgebraic h.normal x), ?_⟩) this
+    (fun x hx ↦ ⟨isAlgebraic_iff_isIntegral.mp ((h.normal).isAlgebraic x), ?_⟩) this
   obtain ⟨y, hx⟩ := Set.mem_iUnion.mp hx
   by_cases iy : IsIntegral F y
   · exact splits_of_splits_of_dvd _ (minpoly.ne_zero iy)
@@ -124,7 +124,7 @@ noncomputable def IsNormalClosure.equiv {L'} [Field L'] [Algebra F L']
     [h : IsNormalClosure F K L] [h' : IsNormalClosure F K L'] : L ≃ₐ[F] L' :=
   have := h.normal
   AlgEquiv.ofBijective _ <| And.left <|
-    Normal.isAlgebraic'.algHom_bijective₂
+    Normal.toIsAlgebraic.algHom_bijective₂
       (IsNormalClosure.lift fun _ : K ↦ h'.splits _)
       (IsNormalClosure.lift fun _ : K ↦ h.splits _)
 
@@ -133,14 +133,14 @@ variable (F K L)
 instance isNormalClosure_normalClosure [ne : Nonempty (K →ₐ[F] L)] [h : Normal F L] :
     IsNormalClosure F K (normalClosure F K L) := by
   have ⟨φ⟩ := ne
-  apply (h.isAlgebraic'.of_injective φ φ.injective).isNormalClosure_normalClosure
+  apply (h.toIsAlgebraic.of_injective φ φ.injective).isNormalClosure_normalClosure
   simp_rw [← minpoly.algHom_eq _ φ.injective]
   exact fun _ ↦ h.splits _
 
 theorem normalClosure_eq_iSup_adjoin' [ne : Nonempty (K →ₐ[F] L)] [h : Normal F L] :
     normalClosure F K L = ⨆ x : K, adjoin F ((minpoly F x).rootSet L) := by
   have ⟨φ⟩ := ne
-  refine h.isAlgebraic'.of_injective φ φ.injective
+  refine h.toIsAlgebraic.of_injective φ φ.injective
     |>.normalClosure_eq_iSup_adjoin_of_splits fun x ↦ ?_
   rw [← minpoly.algHom_eq _ φ.injective]
   apply h.splits

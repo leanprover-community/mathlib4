@@ -223,9 +223,9 @@ theorem isAlgClosure_iff (K : Type v) [Field K] [Algebra k K] :
 #align is_alg_closure_iff isAlgClosure_iff
 
 instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K] [Algebra R K]
-    [IsAlgClosure R K] : Normal R K :=
-  ⟨IsAlgClosure.algebraic, fun _ =>
-    @IsAlgClosed.splits_codomain _ _ _ (IsAlgClosure.alg_closed R) _ _ _⟩
+    [IsAlgClosure R K] : Normal R K where
+  toIsAlgebraic := IsAlgClosure.algebraic
+  splits' _ := @IsAlgClosed.splits_codomain _ _ _ (IsAlgClosure.alg_closed R) _ _ _
 #align is_alg_closure.normal IsAlgClosure.normal
 
 instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field K] [Algebra R K]
