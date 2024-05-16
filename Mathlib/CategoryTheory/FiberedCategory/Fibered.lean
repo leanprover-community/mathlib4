@@ -46,9 +46,9 @@ In particular, given a lift
   v          v
   R' --f'--> S
 ```
-such that `f' = g ≫ f`, there is a unique induced map .... (TODO)
-This definition gives us some flexibility in that it allows us to take `f'` to be non-definitionally
-equal to `g ≫ f`, and `p(a')` to be non-definitionally equal to `R'`.
+such that `f' = g ≫ f`, there is a unique induced map `τ : a' ⟶ a` lifting `g` and such that
+`τ ≫ φ = φ'`. This definition gives us some flexibility in that it allows us to take `f'` to be
+non-definitionally equal to `g ≫ f`, and `p(a')` to be non-definitionally equal to `R'`.
 
 Similarly, `IsFibered p` is phrased as saying that for every `f : R ⟶ S`, and every `a` such that
 `p(a)=S`, there is a pullback `φ` lying over `f`. The alternate constructor `IsFibered.mk` only
@@ -141,7 +141,6 @@ lemma InducedMap_unique {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶
     (hcomp : ψ ≫ φ = φ') : ψ = InducedMap hφ hf' hφ' :=
   (Classical.choose_spec (hφ.UniversalProperty hf' hφ')).2 ψ ⟨hψ, hcomp⟩
 
--- TODO: API to deal with the f' = g ≫ f stuff...?
 /-- Given a diagram:
 ```
 a'        a --φ--> b
@@ -163,16 +162,16 @@ lemma InducedMap_self_eq_id {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R
   (InducedMap_unique hφ (id_comp f).symm hφ.toIsHomLift (IsHomLift.id hφ.ObjLiftDomain)
     (id_comp _)).symm
 
-/- The composition of two induced maps is also an induced map...
-TODO MAYBE A SLIGHTLY DIFFERENT VERSION OF THIS... (look into where its applied)
-
-Given a diagram:
+/- The composition of two induced maps is also an induced map.
+Given a diagrams
 ```
-a''         a'        a --φ--> b
-|           |         |        |
-v           v         v        v
-R'' --h'--> R' --h--> R --f--> S
-``` -/
+a''         a'        a --φ--> b          a' --φ'--> b          a'' --φ''--> b
+|           |         |        |    and   |          |    and   |            |
+v           v         v        v          v          v          v            v
+R'' --h'--> R' --h--> R --f--> S          R' --f'--> S          R'' --f''--> S
+```
+such that `φ` and `φ'` are pullbacks. Composing the induced map from `a'' ⟶ a'` with the induced
+map from `a' ⟶ a` gives the induced map from `a'' ⟶ a`. -/
 @[simp]
 lemma InducedMap_comp {p : 𝒳 ⥤ 𝒮} {R R' R'' S: 𝒮} {a a' a'' b : 𝒳}
     {f : R ⟶ S} {f' : R' ⟶ S} {f'' : R'' ⟶ S} {g : R' ⟶ R} {h : R'' ⟶ R'}
@@ -270,19 +269,20 @@ lemma comp_eqToHom {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
 /-- A pullback over an isomorphism is an isomorphism. -/
 lemma isIso_of_base_isIso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
     (hφ : IsPullback p f φ) (hf : IsIso f) : IsIso φ := by
-  -- The inverse will be given by applying the universal property to f⁻¹ : S ⟶ R and 𝟙 b
+  -- The inverse will be given by applying the universal property to the arrows f⁻¹ : S ⟶ R and 𝟙 b
   let φ' := InducedMap hφ (IsIso.inv_hom_id f).symm (IsHomLift.id hφ.ObjLiftCodomain)
   use φ'
-  -- φ' ≫ φ = 𝟙 b follows immediately from the universal property
+  -- `φ' ≫ φ = 𝟙 b` follows immediately from the universal property
   have inv_hom : φ' ≫ φ = 𝟙 b := InducedMap_Diagram hφ (IsIso.inv_hom_id f).symm
     (IsHomLift.id hφ.ObjLiftCodomain)
   refine ⟨?_, inv_hom⟩
+  -- We now show that `φ ≫ φ' = 𝟙 a` by applying the universal property of `φ` to the equality
+  -- `φ ≫ φ' ≫ φ = φ ≫ 𝟙 b = 𝟙 a ≫ φ`
   have h₁ : IsHomLift p (𝟙 R) (φ  ≫ φ') := by
     rw [← IsIso.hom_inv_id f]
     apply IsHomLift.comp hφ.toIsHomLift
     apply InducedMap_IsHomLift
   have h₂ : IsHomLift p f (φ ≫ φ' ≫ φ) := by simpa using IsHomLift.comp h₁ hφ.toIsHomLift
-  -- φ ≫ φ' = 𝟙 a follows from TODO
   apply IsPullback.uniqueness hφ (id_comp f).symm h₂ h₁ (IsHomLift.id hφ.ObjLiftDomain)
   · apply Category.assoc
   · simp only [inv_hom, id_comp, comp_id]
