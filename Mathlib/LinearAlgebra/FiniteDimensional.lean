@@ -1182,36 +1182,41 @@ theorem Subalgebra.eq_bot_of_finrank_one
   rw [h]
 #align subalgebra.eq_bot_of_finrank_one Subalgebra.eq_bot_of_finrank_one
 
--- TODO: `NoZeroSMulDivisors` is not needed since we have `Module.Free`
 @[simp]
 theorem Subalgebra.rank_eq_one_iff {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E]
-    [Algebra F E] [NoZeroSMulDivisors F E] [Nontrivial E]
-    {S : Subalgebra F E} [Module.Free F S] :
-    Module.rank F S = 1 ↔ S = ⊥ :=
-  ⟨fun h => Subalgebra.eq_bot_of_rank_le_one h.le, fun h => h.symm ▸ Subalgebra.rank_bot⟩
+    [Algebra F E] [Nontrivial E] {S : Subalgebra F E} [Module.Free F S] :
+    Module.rank F S = 1 ↔ S = ⊥ := by
+  refine ⟨fun h ↦ Subalgebra.eq_bot_of_rank_le_one h.le, ?_⟩
+  rintro rfl
+  obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := F) (M := (⊥ : Subalgebra F E))
+  refine le_antisymm ?_ ?_
+  · have := lift_rank_range_le (Algebra.linearMap F E)
+    rwa [← one_eq_range, rank_self, lift_one, lift_le_one_iff] at this
+  · by_contra H
+    rw [not_le, lt_one_iff_zero] at H
+    haveI := Cardinal.mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
+    haveI := b.repr.toEquiv.subsingleton
+    exact one_ne_zero congr((⊥ : Subalgebra F E).val $(Subsingleton.elim 1 0))
 #align subalgebra.rank_eq_one_iff Subalgebra.rank_eq_one_iff
 
--- TODO: `NoZeroSMulDivisors` is not needed since we have `Module.Free`
 @[simp]
 theorem Subalgebra.finrank_eq_one_iff {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E]
-    [Algebra F E] [NoZeroSMulDivisors F E] [Nontrivial E]
-    {S : Subalgebra F E} [Module.Free F S] :
-    finrank F S = 1 ↔ S = ⊥ :=
-  ⟨fun h ↦ Subalgebra.eq_bot_of_finrank_one h, fun h ↦ h.symm ▸ Subalgebra.finrank_bot⟩
+    [Algebra F E] [Nontrivial E] {S : Subalgebra F E} [Module.Free F S] :
+    finrank F S = 1 ↔ S = ⊥ := by
+  rw [← Subalgebra.rank_eq_one_iff]
+  exact Cardinal.toNat_eq_iff one_ne_zero
 #align subalgebra.finrank_eq_one_iff Subalgebra.finrank_eq_one_iff
 
--- TODO: `NoZeroSMulDivisors` is not needed since we have `Module.Free`
 theorem Subalgebra.bot_eq_top_iff_rank_eq_one {F E : Type*} [CommRing F] [StrongRankCondition F]
-    [Ring E] [Algebra F E] [NoZeroSMulDivisors F E] [Nontrivial E] [Module.Free F E] :
+    [Ring E] [Algebra F E] [Nontrivial E] [Module.Free F E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
   haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
   -- Porting note: removed `subalgebra_top_rank_eq_submodule_top_rank`
   rw [← rank_top, Subalgebra.rank_eq_one_iff, eq_comm]
 #align subalgebra.bot_eq_top_iff_rank_eq_one Subalgebra.bot_eq_top_iff_rank_eq_one
 
--- TODO: `NoZeroSMulDivisors` is not needed since we have `Module.Free`
 theorem Subalgebra.bot_eq_top_iff_finrank_eq_one {F E : Type*} [CommRing F] [StrongRankCondition F]
-    [Ring E] [Algebra F E] [NoZeroSMulDivisors F E] [Nontrivial E] [Module.Free F E] :
+    [Ring E] [Algebra F E] [Nontrivial E] [Module.Free F E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ finrank F E = 1 := by
   haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
   rw [← finrank_top, ← subalgebra_top_finrank_eq_submodule_top_finrank,
@@ -1326,6 +1331,7 @@ open Module
 
 open Cardinal
 
+-- TODO: this works for any finitely generated free modules
 theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [DivisionRing K] [AddCommGroup V]
     [Module K V] [FiniteDimensional K V] : #V = #K ^ Module.rank K V := by
   let s := Basis.ofVectorSpaceIndex K V
@@ -1336,9 +1342,9 @@ theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [DivisionRing K
     _ = _ := by rw [← Cardinal.lift_inj.1 hs.mk_eq_rank, Cardinal.power_def]
 #align cardinal_mk_eq_cardinal_mk_field_pow_rank cardinal_mk_eq_cardinal_mk_field_pow_rank
 
+-- TODO: this works for any finitely generated free modules
 theorem cardinal_lt_aleph0_of_finiteDimensional (K V : Type u) [DivisionRing K] [AddCommGroup V]
     [Module K V] [Finite K] [FiniteDimensional K V] : #V < ℵ₀ := by
-  letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
   rw [cardinal_mk_eq_cardinal_mk_field_pow_rank K V]
   exact Cardinal.power_lt_aleph0 (Cardinal.lt_aleph0_of_finite K) (rank_lt_aleph0 K V)
 #align cardinal_lt_aleph_0_of_finite_dimensional cardinal_lt_aleph0_of_finiteDimensional
