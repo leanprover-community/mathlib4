@@ -631,7 +631,7 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
   rw [← Eval_V'', Eval_toConjAlgEquiv_symm, ← add_sum_erase _ _ zero_mem]
   congr 1
   simp_rw [GalConjClasses.orbit_zero, Set.toFinset_singleton, sum_singleton, map_zero, exp_zero,
-    Rat.smul_one_eq_coe]
+    Rat.smul_one_eq_cast]
 #align linear_independent_exp_aux2 linear_independent_exp_aux2
 
 instance : AddZeroClass { x // x ∈ ratCoeff s } := inferInstance
