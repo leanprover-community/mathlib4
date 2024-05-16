@@ -71,9 +71,9 @@ theorem Units.mem : ↑u ∈ ({1, -1, η, -η, η ^ 2, -η ^ 2} : Set (𝓞 K)) 
         Set.mem_singleton_iff, true_or, or_true]
   · rcases hru with (h | h)
     · simp only [h, zero_add, pow_one, Set.mem_insert_iff, eq_neg_self_iff, Set.mem_singleton_iff,
-      true_or, or_true]
+        true_or, or_true]
     · simp only [h, zero_add, pow_one, Set.mem_insert_iff, neg_inj, neg_eq_self_iff,
-      Set.mem_singleton_iff, true_or, or_true]
+        Set.mem_singleton_iff, true_or, or_true]
   · rcases hru with (h | h)
     · apply Set.mem_insert_of_mem; apply Set.mem_insert_of_mem; simp [h]
     · apply Set.mem_insert_of_mem; apply Set.mem_insert_of_mem; simp [h]
