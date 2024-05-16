@@ -437,7 +437,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X �
     convert_to
       IsIso
         (TopCat.isoOfHomeo
-            (Homeomorph.homeomorphOfContinuousOpen
+            (.ofContinuousOpenEquiv
               (Equiv.ofBijective _ ⟨h₂.inj, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
               h₂.isOpenMap)).hom
     infer_instance
