@@ -144,8 +144,8 @@ instance : Category PointedSpace where
   id := Hom.id
   comp := Hom.comp
 
-@[simp] theorem map_base {X Y : PointedSpace} (f : X ⟶ Y) : f.map X.base = Y.base := f.base
-@[simp] theorem map_base' {X Y : PointedSpace} (f : X ⟶ Y) : f.map X.base = Y.base := f.base
+-- @[simp] theorem map_base {X Y : PointedSpace} (f : X ⟶ Y) : f.map X.base = Y.base := f.base
+
 -- @[simp] theorem id_map {X : PointedSpace} : Hom.map (𝟙 X) = ContinuousMap.id X.X := rfl
 -- @[simp] theorem comp_map {X Y Z : PointedSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :
 --   Hom.map (f ≫ g) = g.map.comp f.map := rfl
@@ -175,7 +175,7 @@ namespace TopCat
 --   (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) ConcreteCategory.instFunLike
 --   no_index { toFun := toFun, continuous_toFun := h } x = toFun x := rfl
 
-@[simp] theorem fpp' {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] {f : C(X, Y)} {x} :
+@[simp] theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] {f : C(X, Y)} {x} :
 @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
   (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) ConcreteCategory.instFunLike
   f x =
