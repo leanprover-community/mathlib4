@@ -111,11 +111,9 @@ noncomputable def invOneSubPow : S⟦X⟧ˣ where
   val := mk fun n => Nat.choose (d + n) d
   inv := (1 - X) ^ (d + 1)
   val_inv := by
-    rw [← mk_one_pow_eq_mk_choose_add, ← mul_pow, mk_one_mul_one_sub_eq_one]
-    exact one_pow (d + 1)
+    rw [← mk_one_pow_eq_mk_choose_add, ← mul_pow, mk_one_mul_one_sub_eq_one, one_pow]
   inv_val := by
-    rw [← mk_one_pow_eq_mk_choose_add, ← mul_pow, mul_comm, mk_one_mul_one_sub_eq_one]
-    exact one_pow (d + 1)
+    rw [← mk_one_pow_eq_mk_choose_add, ← mul_pow, mul_comm, mk_one_mul_one_sub_eq_one, one_pow]
 
 theorem invOneSubPow_val_eq_mk_choose_add :
     (invOneSubPow d).val = (mk fun n => Nat.choose (d + n) d : S⟦X⟧) := rfl
