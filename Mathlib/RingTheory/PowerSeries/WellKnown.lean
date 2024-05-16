@@ -98,7 +98,7 @@ theorem mk_one_pow_eq_mk_choose_add :
   induction d with
   | zero => ext; simp
   | succ d hd =>
-      ext n; rw [Nat.succ_eq_add_one, pow_add, hd, pow_one, mul_comm, coeff_mul]
+      ext n; rw [pow_add, hd, pow_one, mul_comm, coeff_mul]
       simp_rw [coeff_mk, Pi.one_apply, one_mul]; norm_cast
       rw [Finset.sum_antidiagonal_choose_add, ← Nat.choose_succ_succ]; congr
       exact add_right_comm d n 1
