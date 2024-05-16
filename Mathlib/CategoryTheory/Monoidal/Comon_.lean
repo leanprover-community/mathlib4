@@ -178,7 +178,7 @@ variable (C)
 /--
 Turn a comonoid object into a monoid object in the opposite category.
 -/
-@[simps] def Comon_to_Mon_op_op_obj' (A : Comon_ C) : Mon_ (Cᵒᵖ) where
+@[simps] def Comon_ToMon_OpOp_obj' (A : Comon_ C) : Mon_ (Cᵒᵖ) where
   X := op A.X
   one := A.counit.op
   mul := A.comul.op
@@ -196,8 +196,8 @@ Turn a comonoid object into a monoid object in the opposite category.
 /--
 The contravariant functor turning comonoid objects into monoid objects in the opposite category.
 -/
-@[simps] def Comon_to_Mon_op_op : Comon_ C ⥤ (Mon_ (Cᵒᵖ))ᵒᵖ where
-  obj A := op (Comon_to_Mon_op_op_obj' C A)
+@[simps] def Comon_ToMon_OpOp : Comon_ C ⥤ (Mon_ (Cᵒᵖ))ᵒᵖ where
+  obj A := op (Comon_ToMon_OpOp_obj' C A)
   map := fun f => op <|
     { hom := f.hom.op
       one_hom := by apply Quiver.Hom.unop_inj; simp
@@ -206,7 +206,7 @@ The contravariant functor turning comonoid objects into monoid objects in the op
 /--
 Turn a monoid object in the opposite category into a comonoid object.
 -/
-@[simps] def Mon_op_op_to_Comon_obj' (A : (Mon_ (Cᵒᵖ))) : Comon_ C where
+@[simps] def Mon_OpOpToComon_obj' (A : (Mon_ (Cᵒᵖ))) : Comon_ C where
   X := unop A.X
   counit := A.one.unop
   comul := A.mul.unop
@@ -220,8 +220,8 @@ Turn a monoid object in the opposite category into a comonoid object.
 The contravariant functor turning monoid objects in the opposite category into comonoid objects.
 -/
 @[simps]
-def Mon_op_op_to_Comon : (Mon_ (Cᵒᵖ))ᵒᵖ ⥤ Comon_ C where
-  obj A := Mon_op_op_to_Comon_obj' C (unop A)
+def Mon_OpOpToComon_ : (Mon_ (Cᵒᵖ))ᵒᵖ ⥤ Comon_ C where
+  obj A := Mon_OpOpToComon_obj' C (unop A)
   map := fun f =>
     { hom := f.unop.hom.unop
       hom_counit := by apply Quiver.Hom.op_inj; simp
@@ -231,9 +231,9 @@ def Mon_op_op_to_Comon : (Mon_ (Cᵒᵖ))ᵒᵖ ⥤ Comon_ C where
 Comonoid objects are contravariantly equivalent to monoid objects in the opposite category.
 -/
 @[simps]
-def Comon_equiv_Mon_op_op : Comon_ C ≌ (Mon_ (Cᵒᵖ))ᵒᵖ :=
-  { functor := Comon_to_Mon_op_op C
-    inverse := Mon_op_op_to_Comon C
+def Comon_EquivMon_OpOp : Comon_ C ≌ (Mon_ (Cᵒᵖ))ᵒᵖ :=
+  { functor := Comon_ToMon_OpOp C
+    inverse := Mon_OpOpToComon_ C
     unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
     counitIso := NatIso.ofComponents (fun _ => Iso.refl _) }
 
