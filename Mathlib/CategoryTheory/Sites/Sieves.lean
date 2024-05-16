@@ -138,6 +138,12 @@ inductive ofArrows {ι : Type*} (Y : ι → C) (f : ∀ i, Y i ⟶ X) : Presieve
   | mk (i : ι) : ofArrows _ _ (f i)
 #align category_theory.presieve.of_arrows CategoryTheory.Presieve.ofArrows
 
+lemma ofArrows.exists {ι : Type*} (Y : ι → C) {f : ∀ i, Y i ⟶ X} {Z : C} {g : Z ⟶ X}
+    (h : ofArrows Y f g) :
+    ∃ (i : ι) (hZ : Z = Y i), g = eqToHom hZ ≫ f i := by
+  obtain ⟨i⟩ := h
+  exact ⟨i, rfl, by simp⟩
+
 theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
   funext Y
   ext g
