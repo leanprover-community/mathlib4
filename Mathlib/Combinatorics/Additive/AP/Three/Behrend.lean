@@ -195,8 +195,8 @@ nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → �
     { toFun := fun f => ((↑) : ℕ → ℝ) ∘ f
       map_zero' := funext fun _ => cast_zero
       map_add' := fun _ _ => funext fun _ => cast_add _ _ }
-  refine' ThreeAPFree.of_image (f.toAddFreimanHom (sphere n d k : Set (Fin n → ℕ)) 2) _ _
-  · exact cast_injective.comp_left.injOn _
+  refine ThreeAPFree.of_image (AddMonoidHomClass.isAddFreimanHom f (Set.mapsTo_image _ _))
+    (cast_injective.comp_left.injOn _) (Set.subset_univ _) ?_
   refine' (threeAPFree_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => _)
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
   exact norm_of_mem_sphere
@@ -205,7 +205,7 @@ nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → �
 theorem threeAPFree_image_sphere :
     ThreeAPFree ((sphere n d k).image (map (2 * d - 1)) : Set ℕ) := by
   rw [coe_image]
-  refine' ThreeAPFree.image (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
+  refine' ThreeAPFree.image' (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
     (map_injOn.mono _) threeAPFree_sphere
   · exact x
   rw [Set.add_subset_iff]

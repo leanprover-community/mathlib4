@@ -299,7 +299,7 @@ theorem Basis.opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E
     set φ := v.equivFunL.toContinuousLinearMap
     calc
       ‖u e‖₊ = ‖u (∑ i, v.equivFun e i • v i)‖₊ := by rw [v.sum_equivFun]
-      _ = ‖∑ i, v.equivFun e i • (u <| v i)‖₊ := by simp [u.map_sum, LinearMap.map_smul]
+      _ = ‖∑ i, v.equivFun e i • (u <| v i)‖₊ := by simp [map_sum, LinearMap.map_smul]
       _ ≤ ∑ i, ‖v.equivFun e i • (u <| v i)‖₊ := nnnorm_sum_le _ _
       _ = ∑ i, ‖v.equivFun e i‖₊ * ‖u (v i)‖₊ := by simp only [nnnorm_smul]
       _ ≤ ∑ i, ‖v.equivFun e i‖₊ * M := by gcongr; apply hu
@@ -466,7 +466,10 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
     intro n
     simp only [g, norm_smul, dist_zero_right, Metric.mem_closedBall]
     calc
-      ‖c‖ * ‖f n‖ ≤ r / R * R := by gcongr; exact hc.2.le; apply fle
+      ‖c‖ * ‖f n‖ ≤ r / R * R := by
+        gcongr
+        · exact hc.2.le
+        · apply fle
       _ = r := by field_simp [(zero_lt_one.trans Rgt).ne']
   -- Porting note: moved type ascriptions because of exists_prop changes
   obtain ⟨x : E, _ : x ∈ Metric.closedBall (0 : E) r, φ : ℕ → ℕ, φmono : StrictMono φ,

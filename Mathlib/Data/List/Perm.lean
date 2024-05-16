@@ -778,6 +778,7 @@ theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
     · simpa [get] using IH _ _
 #align list.nth_le_permutations'_aux List.get_permutations'Aux
 
+set_option linter.deprecated false in
 @[deprecated get_permutations'Aux] -- 2024-04-23
 theorem nthLe_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :

@@ -34,6 +34,8 @@ Further more, these properties are stable under compositions (resp. base change)
 
 -/
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 universe u
 
 open CategoryTheory Opposite TopologicalSpace CategoryTheory.Limits AlgebraicGeometry
@@ -68,7 +70,7 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme.{u}} [IsAf
   congr 1
 #align ring_hom.respects_iso.basic_open_iff RingHom.RespectsIso.basicOpen_iff
 
-theorem RespectsIso.basicOpen_iff_localization (hP : RespectsIso @P) {X Y : Scheme} [IsAffine X]
+theorem RespectsIso.basicOpen_iff_localization (hP : RespectsIso @P) {X Y : Scheme.{u}} [IsAffine X]
     [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) :
     P (Scheme.Γ.map (f ∣_ Y.basicOpen r).op) ↔ P (Localization.awayMap (Scheme.Γ.map f.op) r) := by
   refine (hP.basicOpen_iff _ _).trans ?_
@@ -134,7 +136,7 @@ def sourceAffineLocally : AffineTargetMorphismProperty := fun X _ f _ =>
 /-- For `P` a property of ring homomorphisms, `affineLocally P` holds for `f : X ⟶ Y` if for each
 affine open `U = Spec A ⊆ Y` and `V = Spec B ⊆ f ⁻¹' U`, the ring hom `A ⟶ B` satisfies `P`.
 Also see `affineLocally_iff_affineOpens_le`. -/
-abbrev affineLocally : MorphismProperty Scheme :=
+abbrev affineLocally : MorphismProperty Scheme.{u} :=
   targetAffineLocally (sourceAffineLocally @P)
 #align algebraic_geometry.affine_locally AlgebraicGeometry.affineLocally
 
@@ -306,7 +308,8 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme.{u}} (f : X ⟶ Y)
     swap
     · refine' X.presheaf.map
           (@homOfLE _ _ ((IsOpenMap.functor _).obj _) ((IsOpenMap.functor _).obj _) _).op
-      rw [unop_op, unop_op, Opens.openEmbedding_obj_top, Opens.openEmbedding_obj_top]
+      dsimp
+      rw [Opens.openEmbedding_obj_top, Opens.openEmbedding_obj_top]
       exact X.basicOpen_le _
     · rw [op_comp, op_comp, Functor.map_comp, Functor.map_comp]
       refine' (Eq.trans _ (Category.assoc (obj := CommRingCat) _ _ _).symm : _)
