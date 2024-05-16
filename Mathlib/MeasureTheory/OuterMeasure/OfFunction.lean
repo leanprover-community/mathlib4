@@ -60,7 +60,7 @@ protected def ofFunction : OuterMeasure α :=
         ((iInf_le_of_le fun _ => ∅) <| iInf_le_of_le (empty_subset _) <| by simp [m_empty])
         (zero_le _)
     mono := fun {s₁ s₂} hs => iInf_mono fun f => iInf_mono' fun hb => ⟨hs.trans hb, le_rfl⟩
-    iUnion_nat := fun s =>
+    iUnion_nat := fun s _ =>
       ENNReal.le_of_forall_pos_le_add <| by
         intro ε hε (hb : (∑' i, μ (s i)) < ∞)
         rcases ENNReal.exists_pos_sum_of_countable (ENNReal.coe_pos.2 hε).ne' ℕ with ⟨ε', hε', hl⟩
@@ -265,7 +265,7 @@ theorem boundedBy_eq (s : Set α) (m_empty : m ∅ = 0) (m_mono : ∀ ⦃t : Set
 
 @[simp]
 theorem boundedBy_eq_self (m : OuterMeasure α) : boundedBy m = m :=
-  ext fun _ => boundedBy_eq _ m.empty' (fun _ ht => m.mono' ht) m.iUnion_nat
+  ext fun _ => boundedBy_eq _ m.empty' (fun _ ht => m.mono' ht) m.iUnion
 #align measure_theory.outer_measure.bounded_by_eq_self MeasureTheory.OuterMeasure.boundedBy_eq_self
 
 theorem le_boundedBy {μ : OuterMeasure α} : μ ≤ boundedBy m ↔ ∀ s, μ s ≤ m s := by
