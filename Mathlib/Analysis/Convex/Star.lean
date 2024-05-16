@@ -450,16 +450,16 @@ theorem Set.OrdConnected.starConvex [OrderedSemiring 𝕜] [OrderedAddCommMonoid
   intro y hy a b ha hb hab
   obtain hxy | hyx := h _ hy
   · refine' hs.out hx hy (mem_Icc.2 ⟨_, _⟩)
-    calc
-      x = a • x + b • x := (Convex.combo_self hab _).symm
-      _ ≤ a • x + b • y := by gcongr
+    · calc
+        x = a • x + b • x := (Convex.combo_self hab _).symm
+        _ ≤ a • x + b • y := by gcongr
     calc
       a • x + b • y ≤ a • y + b • y := by gcongr
       _ = y := Convex.combo_self hab _
   · refine' hs.out hy hx (mem_Icc.2 ⟨_, _⟩)
-    calc
-      y = a • y + b • y := (Convex.combo_self hab _).symm
-      _ ≤ a • x + b • y := by gcongr
+    · calc
+        y = a • y + b • y := (Convex.combo_self hab _).symm
+        _ ≤ a • x + b • y := by gcongr
     calc
       a • x + b • y ≤ a • x + b • x := by gcongr
       _ = x := Convex.combo_self hab _

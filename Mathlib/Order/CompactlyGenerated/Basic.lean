@@ -10,7 +10,7 @@ import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.Zorn
 import Mathlib.Data.Finset.Order
-import Mathlib.Data.Set.Intervals.OrderIso
+import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Data.Finite.Set
 import Mathlib.Tactic.TFAE
 
@@ -90,10 +90,10 @@ theorem isCompactElement_iff.{u} {α : Type u} [CompleteLattice α] (k : α) :
       have : ∀ x : t, ∃ i, s i = x := fun x => ht x.prop
       choose f hf using this
       refine' ⟨Finset.univ.image f, ht'.trans _⟩
-      · rw [Finset.sup_le_iff]
-        intro b hb
-        rw [← show s (f ⟨b, hb⟩) = id b from hf _]
-        exact Finset.le_sup (Finset.mem_image_of_mem f <| Finset.mem_univ (Subtype.mk b hb))
+      rw [Finset.sup_le_iff]
+      intro b hb
+      rw [← show s (f ⟨b, hb⟩) = id b from hf _]
+      exact Finset.le_sup (Finset.mem_image_of_mem f <| Finset.mem_univ (Subtype.mk b hb))
     · intro H s hs
       obtain ⟨t, ht⟩ :=
         H s Subtype.val
@@ -135,7 +135,7 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
         apply sSup_le_sSup
         intro x hx
         use {x}
-        simpa only [and_true_iff, id.def, Finset.coe_singleton, eq_self_iff_true,
+        simpa only [and_true_iff, id, Finset.coe_singleton, eq_self_iff_true,
           Finset.sup_singleton, Set.singleton_subset_iff]
       have Sne : S.Nonempty := by
         suffices ⊥ ∈ S from Set.nonempty_of_mem this
@@ -254,7 +254,7 @@ theorem isSupFiniteCompact_iff_all_elements_compact :
   · obtain ⟨t, ⟨hts, htsup⟩⟩ := h (sSup s) s (by rfl)
     have : sSup s = t.sup id := by
       suffices t.sup id ≤ sSup s by apply le_antisymm <;> assumption
-      simp only [id.def, Finset.sup_le_iff]
+      simp only [id, Finset.sup_le_iff]
       intro x hx
       exact le_sSup _ _ (hts hx)
     exact ⟨t, hts, this⟩
@@ -593,13 +593,13 @@ theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a }
         ⟨CompleteLattice.independent_sUnion_of_directed hc2.directedOn fun s hs => (hc1 hs).1, ?_,
           fun a ⟨s, sc, as⟩ => (hc1 sc).2.2 a as⟩,
         fun _ => Set.subset_sUnion_of_mem⟩
-  obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ := this
   swap
   · rw [sSup_sUnion, ← sSup_image, DirectedOn.disjoint_sSup_right]
     · rintro _ ⟨s, hs, rfl⟩
       exact (hc1 hs).2.1
     · rw [directedOn_image]
       exact hc2.directedOn.mono @fun s t => sSup_le_sSup
+  obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ := this
   refine' ⟨s, s_ind, ⟨b_inf_Sup_s, _⟩, s_atoms⟩
   rw [codisjoint_iff_le_sup, ← h, sSup_le_iff]
   intro a ha

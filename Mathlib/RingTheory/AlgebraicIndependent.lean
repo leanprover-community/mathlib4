@@ -102,7 +102,7 @@ namespace AlgebraicIndependent
 variable (hx : AlgebraicIndependent R x)
 
 theorem algebraMap_injective : Injective (algebraMap R A) := by
-  simpa [← MvPolynomial.algebraMap_eq, Function.comp] using
+  simpa [Function.comp] using
     (Injective.of_comp_iff (algebraicIndependent_iff_injective_aeval.1 hx) MvPolynomial.C).2
       (MvPolynomial.C_injective _ _)
 #align algebraic_independent.algebra_map_injective AlgebraicIndependent.algebraMap_injective

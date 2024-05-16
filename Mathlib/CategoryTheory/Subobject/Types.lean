@@ -5,7 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.CategoryTheory.Types
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import category_theory.subobject.types from "leanprover-community/mathlib"@"610955826b3be3caaab5170fef04ecd5458521bf"
 

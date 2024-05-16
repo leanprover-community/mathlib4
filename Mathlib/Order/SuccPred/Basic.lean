@@ -281,7 +281,7 @@ theorem succ_mono : Monotone (succ : α → α) := fun _ _ => succ_le_succ
 #align order.succ_mono Order.succ_mono
 
 theorem le_succ_iterate (k : ℕ) (x : α) : x ≤ succ^[k] x := by
-  conv_lhs => rw [(by simp only [Function.iterate_id, id.def] : x = id^[k] x)]
+  conv_lhs => rw [(by simp only [Function.iterate_id, id] : x = id^[k] x)]
   exact Monotone.le_iterate_of_le succ_mono le_succ k x
 #align order.le_succ_iterate Order.le_succ_iterate
 
@@ -655,7 +655,7 @@ theorem pred_mono : Monotone (pred : α → α) := fun _ _ => pred_le_pred
 #align order.pred_mono Order.pred_mono
 
 theorem pred_iterate_le (k : ℕ) (x : α) : pred^[k] x ≤ x := by
-  conv_rhs => rw [(by simp only [Function.iterate_id, id.def] : x = id^[k] x)]
+  conv_rhs => rw [(by simp only [Function.iterate_id, id] : x = id^[k] x)]
   exact Monotone.iterate_le_of_le pred_mono pred_le k x
 #align order.pred_iterate_le Order.pred_iterate_le
 
@@ -966,7 +966,7 @@ theorem pred_succ [NoMaxOrder α] (a : α) : pred (succ a) = a :=
 theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax (succ^[n - 1] i)) :
     pred^[n] (succ^[n] i) = i := by
   induction' n with n hn
-  · simp only [Nat.zero_eq, Function.iterate_zero, id.def]
+  · simp only [Nat.zero_eq, Function.iterate_zero, id]
   rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hin
   have h_not_max : ¬IsMax (succ^[n - 1] i) := by
     cases' n with n

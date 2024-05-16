@@ -112,7 +112,8 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
   left_inv x := ext (by simp) <| by ext; apply List.get_ofFn
   right_inv x := by
     refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => List.get_ofFn _ _)
-    simp [Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1]
+    have := Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1
+    simp_all
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
 
@@ -194,7 +195,7 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
       lt_trichotomy i (Fin.castLE (by omega) (Fin.last _ : Fin (p.length + 1)))
     · convert p.step ⟨i.1, hi⟩ <;> convert Fin.append_left p q _ <;> rfl
     · convert connect
-      · convert Fin.append_left p q _; rfl
+      · convert Fin.append_left p q _
       · convert Fin.append_right p q _; rfl
     · set x := _; set y := _
       change r (Fin.append p q x) (Fin.append p q y)
@@ -207,6 +208,7 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
         dsimp
         conv_rhs => rw [Nat.add_comm p.length 1, add_assoc,
           Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi), add_comm]
+        rfl
       rw [hx, Fin.append_right, hy, Fin.append_right]
       convert q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
         by convert i.2 using 1; abel⟩
@@ -256,7 +258,7 @@ For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves
 def map (p : RelSeries r) (f : r →r s) : RelSeries s where
   length := p.length
   toFun := f.1.comp p
-  step := (f.2 <| p.step .)
+  step := (f.2 <| p.step ·)
 
 @[simp] lemma map_apply (p : RelSeries r) (f : r →r s) (i : Fin (p.length + 1)) :
     p.map f i = f (p i) := rfl
@@ -277,15 +279,18 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     · convert p.step ⟨m, hm.trans i.2⟩
       · show Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
-        pick_goal 2; exact hm.trans (lt_add_one _)
+        pick_goal 2
+        · exact hm.trans (lt_add_one _)
         simp
       · show Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
-        pick_goal 2; change m.1 + 1 < i.1 + 1; rwa [add_lt_add_iff_right]
+        pick_goal 2
+        · change m.1 + 1 < i.1 + 1; rwa [add_lt_add_iff_right]
         simp; rfl
     · rw [show x = p m from show Fin.insertNth _ _ _ _ = _ by
         rw [Fin.insertNth_apply_below]
-        pick_goal 2; show m.1 < i.1 + 1; exact hm ▸ lt_add_one _
+        pick_goal 2
+        · show m.1 < i.1 + 1; exact hm ▸ lt_add_one _
         simp]
       convert prev_connect
       · ext; exact hm
@@ -300,7 +305,8 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           aesop
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
-          swap; exact hm.trans (lt_add_one _)
+          swap
+          · exact hm.trans (lt_add_one _)
           simp only [Fin.val_succ, Nat.zero_eq, Fin.pred_succ, eq_rec_constant, ge_iff_le,
             Fin.succ_mk]
           congr
@@ -310,7 +316,8 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           rw [show m.castSucc = i.succ.castSucc from Fin.ext hm.symm, Fin.insertNth_apply_same]
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
-          swap; change i.1 + 1 < m.1 + 1; rw [hm]; exact lt_add_one _
+          swap
+          · change i.1 + 1 < m.1 + 1; rw [hm]; exact lt_add_one _
           simp only [Fin.pred_succ, eq_rec_constant]
           congr; ext; exact hm.symm
 
@@ -479,7 +486,7 @@ end RelSeries
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
-  Rel.FiniteDimensional ((. < .) : γ → γ → Prop)
+  Rel.FiniteDimensional ((· < ·) : γ → γ → Prop)
 
 instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] :
     FiniteDimensionalOrder γ where
@@ -489,7 +496,7 @@ instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] 
 
 /-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
 abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
-  Rel.InfiniteDimensional ((. < .) : γ → γ → Prop)
+  Rel.InfiniteDimensional ((· < ·) : γ → γ → Prop)
 
 section LTSeries
 
@@ -497,7 +504,7 @@ variable (α) [Preorder α] [Preorder β]
 /--
 If `α` is a preorder, a LTSeries is a relation series of the less than relation.
 -/
-abbrev LTSeries := RelSeries ((. < .) : Rel α α)
+abbrev LTSeries := RelSeries ((· < ·) : Rel α α)
 
 namespace LTSeries
 

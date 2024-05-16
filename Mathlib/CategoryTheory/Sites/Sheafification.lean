@@ -3,7 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -30,7 +30,7 @@ variable (A : Type u₂) [Category.{v₂} A]
 /--
 A proposition saying that the inclusion functor from sheaves to presheaves admits a left adjoint.
 -/
-abbrev HasWeakSheafify := Nonempty (IsRightAdjoint (sheafToPresheaf J A))
+abbrev HasWeakSheafify : Prop := (sheafToPresheaf J A).IsRightAdjoint
 
 /--
 `HasSheafify` means that the inclusion functor from sheaves to presheaves admits a left exact
@@ -41,42 +41,36 @@ Given a finite limit preserving functor `F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A` and 
 -/
 class HasSheafify : Prop where
   isRightAdjoint : HasWeakSheafify J A
-  isLeftExact : letI := isRightAdjoint.some
-    Nonempty (PreservesFiniteLimits (leftAdjoint (sheafToPresheaf J A)))
+  isLeftExact : Nonempty (PreservesFiniteLimits ((sheafToPresheaf J A).leftAdjoint))
 
 instance [HasSheafify J A] : HasWeakSheafify J A := HasSheafify.isRightAdjoint
 
-instance [IsRightAdjoint <| sheafToPresheaf J A] : HasWeakSheafify J A := ⟨inferInstance⟩
-
 noncomputable section
 
-instance [h : HasWeakSheafify J A] : IsRightAdjoint (sheafToPresheaf J A) := h.some
-
-instance [HasSheafify J A] : PreservesFiniteLimits (leftAdjoint (sheafToPresheaf J A)) :=
+instance [HasSheafify J A] : PreservesFiniteLimits ((sheafToPresheaf J A).leftAdjoint) :=
   HasSheafify.isLeftExact.some
 
 theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafToPresheaf J A)
     [PreservesFiniteLimits F] : HasSheafify J A where
-  isRightAdjoint := ⟨⟨F, adj⟩⟩
-  isLeftExact :=
-    let i : (h : IsRightAdjoint (sheafToPresheaf J A) := ⟨F, adj⟩) →
-      F ≅ leftAdjoint (sheafToPresheaf J A) := fun _ ↦
-      adj.leftAdjointUniq (Adjunction.ofRightAdjoint (sheafToPresheaf J A))
-    ⟨⟨fun _ ↦ preservesLimitsOfShapeOfNatIso (i _)⟩⟩
+  isRightAdjoint := ⟨F, ⟨adj⟩⟩
+  isLeftExact := ⟨by
+    have : (sheafToPresheaf J A).IsRightAdjoint := ⟨_, ⟨adj⟩⟩
+    exact ⟨fun _ _ _ ↦ preservesLimitsOfShapeOfNatIso
+      (adj.leftAdjointUniq (Adjunction.ofIsRightAdjoint (sheafToPresheaf J A)))⟩⟩
 
 /-- The sheafification functor, left adjoint to the inclusion. -/
 def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
-  leftAdjoint (sheafToPresheaf J A)
+  (sheafToPresheaf J A).leftAdjoint
 
 instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
   HasSheafify.isLeftExact.some
 
 /-- The sheafification-inclusion adjunction. -/
 def sheafificationAdjunction [HasWeakSheafify J A] :
-    presheafToSheaf J A ⊣ sheafToPresheaf J A := IsRightAdjoint.adj
+    presheafToSheaf J A ⊣ sheafToPresheaf J A := Adjunction.ofIsRightAdjoint _
 
-instance [HasWeakSheafify J A] : IsLeftAdjoint <| presheafToSheaf J A where
-  adj := sheafificationAdjunction J A
+instance [HasWeakSheafify J A] : (presheafToSheaf J A).IsLeftAdjoint :=
+  ⟨_, ⟨sheafificationAdjunction J A⟩⟩
 
 end
 
@@ -141,7 +135,7 @@ theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso
     rfl
   · change (sheafToPresheaf _ _).map _ ≫ _ = _
     change _ ≫ (sheafificationAdjunction J D).unit.app ((sheafToPresheaf J D).obj ⟨P, hP⟩) = _
-    erw [← inv_counit_map (sheafificationAdjunction J D) (X := ⟨P, hP⟩), comp_inv_eq_id]
+    erw [← (sheafificationAdjunction J D).inv_counit_map  (X := ⟨P, hP⟩), comp_inv_eq_id]
 
 /-- If `P` is a sheaf, then `P` is isomorphic to `sheafify J P`. -/
 noncomputable def isoSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : P ≅ sheafify J P :=

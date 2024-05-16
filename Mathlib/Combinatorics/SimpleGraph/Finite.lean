@@ -49,8 +49,7 @@ section EdgeFinset
 variable {G₁ G₂ : SimpleGraph V} [Fintype G.edgeSet] [Fintype G₁.edgeSet] [Fintype G₂.edgeSet]
 
 /-- The `edgeSet` of the graph as a `Finset`. -/
-@[reducible]
-def edgeFinset : Finset (Sym2 V) :=
+abbrev edgeFinset : Finset (Sym2 V) :=
   Set.toFinset G.edgeSet
 #align simple_graph.edge_finset SimpleGraph.edgeFinset
 
@@ -78,7 +77,7 @@ theorem edgeFinset_subset_edgeFinset : G₁.edgeFinset ⊆ G₂.edgeFinset ↔ G
 theorem edgeFinset_ssubset_edgeFinset : G₁.edgeFinset ⊂ G₂.edgeFinset ↔ G₁ < G₂ := by simp
 #align simple_graph.edge_finset_ssubset_edge_finset SimpleGraph.edgeFinset_ssubset_edgeFinset
 
-alias ⟨_, edgeFinset_mono⟩ := edgeFinset_subset_edgeFinset
+@[gcongr] alias ⟨_, edgeFinset_mono⟩ := edgeFinset_subset_edgeFinset
 #align simple_graph.edge_finset_mono SimpleGraph.edgeFinset_mono
 
 alias ⟨_, edgeFinset_strict_mono⟩ := edgeFinset_ssubset_edgeFinset
@@ -288,8 +287,7 @@ end FiniteAt
 section LocallyFinite
 
 /-- A graph is locally finite if every vertex has a finite neighbor set. -/
-@[reducible]
-def LocallyFinite :=
+abbrev LocallyFinite :=
   ∀ v : V, Fintype (G.neighborSet v)
 #align simple_graph.locally_finite SimpleGraph.LocallyFinite
 

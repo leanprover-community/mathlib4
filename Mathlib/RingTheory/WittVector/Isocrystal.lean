@@ -132,15 +132,13 @@ variable (V)
 scoped[Isocrystal] notation "Φ(" p ", " k ")" => WittVector.Isocrystal.frobenius p k
 
 /-- A homomorphism between isocrystals respects the Frobenius map. -/
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5171):
--- removed @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalHom extends V →ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearMap x) = toLinearMap (Φ(p, k) x)
 #align witt_vector.isocrystal_hom WittVector.IsocrystalHom
 
 /-- An isomorphism between isocrystals respects the Frobenius map. -/
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5171):
--- removed @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalEquiv extends V ≃ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearEquiv x) = toLinearEquiv (Φ(p, k) x)
 #align witt_vector.isocrystal_equiv WittVector.IsocrystalEquiv
@@ -155,19 +153,13 @@ open scoped Isocrystal
 
 /-! ### Classification of isocrystals in dimension 1 -/
 
-
-/-- A helper instance for type class inference. -/
-@[local instance]
-def FractionRing.module : Module K(p, k) K(p, k) :=
-  Semiring.toModule
-#align witt_vector.fraction_ring.module WittVector.FractionRing.module
+#noalign witt_vector.fraction_ring.module
 
 /-- Type synonym for `K(p, k)` to carry the standard 1-dimensional isocrystal structure
 of slope `m : ℤ`.
 -/
 @[nolint unusedArguments]
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5171):
--- removed @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
 #align witt_vector.standard_one_dim_isocrystal WittVector.StandardOneDimIsocrystal

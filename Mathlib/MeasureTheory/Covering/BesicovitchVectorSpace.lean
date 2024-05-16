@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Covering.Besicovitch
+import Mathlib.Tactic.AdaptationNote
 
 #align_import measure_theory.covering.besicovitch_vector_space from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -169,7 +170,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
         have I : 0 < δ := by norm_num
         simp only [div_pow, μ.addHaar_ball_of_pos _ I]
         simp only [one_div, one_pow, Finset.sum_const, nsmul_eq_mul, mul_assoc]
-      _ ≤ μ (ball (0 : E) ρ) := (measure_mono A_subset)
+      _ ≤ μ (ball (0 : E) ρ) := measure_mono A_subset
       _ = ENNReal.ofReal (ρ ^ finrank ℝ E) * μ (ball 0 1) := by
         simp only [μ.addHaar_ball_of_pos _ ρpos]
   have J : (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) ≤ ENNReal.ofReal (ρ ^ finrank ℝ E) :=
@@ -381,9 +382,9 @@ theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
 
 variable [NormedSpace ℝ E]
 
--- Adaptation note: after v4.7.0-rc1, there is a performance problem in `field_simp`.
--- (Part of the code was ignoring the `maxDischargeDepth` setting: now that we have to increase it,
--- other paths becomes slow.)
+#adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
+(Part of the code was ignoring the `maxDischargeDepth` setting:
+ now that we have to increase it, other paths becomes slow.) -/
 set_option maxHeartbeats 400000 in
 theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastc : a.c (last N) = 0) (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4)
@@ -414,7 +415,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     have C : a.r j ≤ 4 :=
       calc
         a.r j ≤ τ * a.r i := H.2
-        _ ≤ τ * 2 := (mul_le_mul_of_nonneg_left I τpos.le)
+        _ ≤ τ * 2 := mul_le_mul_of_nonneg_left I τpos.le
         _ ≤ 5 / 4 * 2 := (mul_le_mul_of_nonneg_right (by linarith only [hδ1, hδ2]) zero_le_two)
         _ ≤ 4 := by norm_num
     calc
@@ -423,7 +424,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
         refine' mul_le_of_le_one_left δnonneg _
         linarith only [C]
       _ = (1 - δ / 4) * a.r j := by ring
-      _ ≤ (1 - δ / 4) * (τ * a.r i) := (mul_le_mul_of_nonneg_left H.2 D)
+      _ ≤ (1 - δ / 4) * (τ * a.r i) := mul_le_mul_of_nonneg_left H.2 D
       _ ≤ 1 * a.r i := by rw [← mul_assoc]; apply mul_le_mul_of_nonneg_right J (a.rpos _).le
       _ ≤ ‖a.c i - a.c j‖ := by rw [one_mul]; exact H.1
   set d := (2 / ‖a.c j‖) • a.c j with hd

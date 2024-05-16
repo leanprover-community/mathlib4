@@ -250,8 +250,8 @@ theorem ContinuousLinearMap.iteratedFDerivWithin_comp_left {f : E → F} (g : F 
     (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {i : ℕ} (hi : (i : ℕ∞) ≤ n) :
     iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
       g.compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) :=
-  (((hf.ftaylorSeriesWithin hs).continuousLinearMap_comp g).eq_ftaylor_series_of_uniqueDiffOn hi hs
-      hx).symm
+  (((hf.ftaylorSeriesWithin hs).continuousLinearMap_comp g).eq_iteratedFDerivWithin_of_uniqueDiffOn
+    hi hs hx).symm
 #align continuous_linear_map.iterated_fderiv_within_comp_left ContinuousLinearMap.iteratedFDerivWithin_comp_left
 
 /-- The iterated derivative of the composition with a linear map on the left is
@@ -416,8 +416,8 @@ theorem ContinuousLinearMap.iteratedFDerivWithin_comp_right {f : E → F} (g : G
     (hx : g x ∈ s) {i : ℕ} (hi : (i : ℕ∞) ≤ n) :
     iteratedFDerivWithin 𝕜 i (f ∘ g) (g ⁻¹' s) x =
       (iteratedFDerivWithin 𝕜 i f s (g x)).compContinuousLinearMap fun _ => g :=
-  (((hf.ftaylorSeriesWithin hs).compContinuousLinearMap g).eq_ftaylor_series_of_uniqueDiffOn hi h's
-      hx).symm
+  (((hf.ftaylorSeriesWithin hs).compContinuousLinearMap g).eq_iteratedFDerivWithin_of_uniqueDiffOn
+    hi h's hx).symm
 #align continuous_linear_map.iterated_fderiv_within_comp_right ContinuousLinearMap.iteratedFDerivWithin_comp_right
 
 /-- The iterated derivative within a set of the composition with a linear equiv on the right is
@@ -578,10 +578,9 @@ proof would work fine, but this is not the case. One could still write the proof
 in any universe in `u, v, w, max u v, max v w, max u v w`, but it would be extremely tedious and
 lead to a lot of duplication. Instead, we formulate the above proof when all spaces live in the same
 universe (where everything is fine), and then we deduce the general result by lifting all our spaces
-to a common universe. We use the trick that any space `H` is isomorphic through a continuous linear
-equiv to `ContinuousMultilinearMap (fun (i : Fin 0) ↦ E × F × G) H` to change the universe level,
-and then argue that composing with such a linear equiv does not change the fact of being `C^n`,
-which we have already proved previously.
+to a common universe through `ULift`. This lifting is done through a continuous linear equiv.
+We have already proved that composing with such a linear equiv does not change the fact of
+being `C^n`, which concludes the proof.
 -/
 
 
@@ -607,19 +606,19 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
     have wu : w ⊆ u := fun y hy => hy.2.1
     have ws : w ⊆ s := fun y hy => hy.1
     refine' ⟨w, _, fun y => (g' (f y)).comp (f' y), _, _⟩
-    show w ∈ 𝓝[s] x
-    · apply Filter.inter_mem self_mem_nhdsWithin
+    · show w ∈ 𝓝[s] x
+      apply Filter.inter_mem self_mem_nhdsWithin
       apply Filter.inter_mem hu
       apply ContinuousWithinAt.preimage_mem_nhdsWithin'
       · rw [← continuousWithinAt_inter' hu]
         exact (hf' x xu).differentiableWithinAt.continuousWithinAt.mono (inter_subset_right _ _)
       · apply nhdsWithin_mono _ _ hv
         exact Subset.trans (image_subset_iff.mpr st) (subset_insert (f x) t)
-    show ∀ y ∈ w, HasFDerivWithinAt (g ∘ f) ((g' (f y)).comp (f' y)) w y
-    · rintro y ⟨-, yu, yv⟩
+    · show ∀ y ∈ w, HasFDerivWithinAt (g ∘ f) ((g' (f y)).comp (f' y)) w y
+      rintro y ⟨-, yu, yv⟩
       exact (hg' (f y) yv).comp y ((hf' y yu).mono wu) wv
-    show ContDiffOn 𝕜 n (fun y => (g' (f y)).comp (f' y)) w
-    · have A : ContDiffOn 𝕜 n (fun y => g' (f y)) w :=
+    · show ContDiffOn 𝕜 n (fun y => (g' (f y)).comp (f' y)) w
+      have A : ContDiffOn 𝕜 n (fun y => g' (f y)) w :=
         IH g'_diff ((hf.of_le (WithTop.coe_le_coe.2 (Nat.le_succ n))).mono ws) wv
       have B : ContDiffOn 𝕜 n f' w := f'_diff.mono wu
       have C : ContDiffOn 𝕜 n (fun y => (g' (f y), f' y)) w := A.prod B
@@ -1085,7 +1084,7 @@ theorem ContDiffWithinAt.iteratedFderivWithin_right {i : ℕ} (hf : ContDiffWith
     (hs : UniqueDiffOn 𝕜 s) (hmn : (m + i : ℕ∞) ≤ n) (hx₀s : x₀ ∈ s) :
     ContDiffWithinAt 𝕜 m (iteratedFDerivWithin 𝕜 i f s) s x₀ := by
   induction' i with i hi generalizing m
-  · rw [Nat.zero_eq, ENat.coe_zero, add_zero] at hmn
+  · rw [ENat.coe_zero, add_zero] at hmn
     exact (hf.of_le hmn).continuousLinearMap_comp
       ((continuousMultilinearCurryFin0 𝕜 E F).symm : _ →L[𝕜] E [×0]→L[𝕜] F)
   · rw [Nat.cast_succ, add_comm _ 1, ← add_assoc] at hmn
@@ -1305,7 +1304,7 @@ theorem iteratedFDerivWithin_add_apply {f g : E → F} (hf : ContDiffOn 𝕜 i f
     iteratedFDerivWithin 𝕜 i (f + g) s x =
       iteratedFDerivWithin 𝕜 i f s x + iteratedFDerivWithin 𝕜 i g s x :=
   Eq.symm <| ((hf.ftaylorSeriesWithin hu).add
-    (hg.ftaylorSeriesWithin hu)).eq_ftaylor_series_of_uniqueDiffOn le_rfl hu hx
+    (hg.ftaylorSeriesWithin hu)).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hu hx
 #align iterated_fderiv_within_add_apply iteratedFDerivWithin_add_apply
 
 /-- The iterated derivative of the sum of two functions is the sum of the iterated derivatives.
@@ -1672,6 +1671,10 @@ theorem iteratedFDeriv_const_smul_apply {x : E} (hf : ContDiff 𝕜 i f) :
   simp_rw [← contDiffOn_univ, ← iteratedFDerivWithin_univ] at *
   exact iteratedFDerivWithin_const_smul_apply hf uniqueDiffOn_univ (Set.mem_univ _)
 #align iterated_fderiv_const_smul_apply iteratedFDeriv_const_smul_apply
+
+theorem iteratedFDeriv_const_smul_apply' {x : E} (hf : ContDiff 𝕜 i f) :
+    iteratedFDeriv 𝕜 i (fun x ↦ a • f x) x = a • iteratedFDeriv 𝕜 i f x :=
+  iteratedFDeriv_const_smul_apply hf
 
 end ConstSMul
 

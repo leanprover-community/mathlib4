@@ -45,8 +45,7 @@ section Monoid
 variable [Monoid α] [Monoid β]
 
 /-- `multiplicity.Finite a b` indicates that the multiplicity of `a` in `b` is finite. -/
-@[reducible]
-def Finite (a b : α) : Prop :=
+abbrev Finite (a b : α) : Prop :=
   ∃ n : ℕ, ¬a ^ (n + 1) ∣ b
 #align multiplicity.finite multiplicity.Finite
 
@@ -216,7 +215,7 @@ theorem eq_top_iff_not_finite {a b : α} : multiplicity a b = ⊤ ↔ ¬Finite a
 #align multiplicity.eq_top_iff_not_finite multiplicity.eq_top_iff_not_finite
 
 theorem ne_top_iff_finite {a b : α} : multiplicity a b ≠ ⊤ ↔ Finite a b := by
-  rw [Ne.def, eq_top_iff_not_finite, Classical.not_not]
+  rw [Ne, eq_top_iff_not_finite, Classical.not_not]
 #align multiplicity.ne_top_iff_finite multiplicity.ne_top_iff_finite
 
 theorem lt_top_iff_finite {a b : α} : multiplicity a b < ⊤ ↔ Finite a b := by
@@ -289,7 +288,7 @@ theorem dvd_iff_multiplicity_pos {a b : α} : (0 : PartENat) < multiplicity a b 
 #align multiplicity.dvd_iff_multiplicity_pos multiplicity.dvd_iff_multiplicity_pos
 
 theorem finite_nat_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 < b := by
-  rw [← not_iff_not, not_finite_iff_forall, not_and_or, Ne.def, Classical.not_not, not_lt,
+  rw [← not_iff_not, not_finite_iff_forall, not_and_or, Ne, Classical.not_not, not_lt,
     Nat.le_zero]
   exact
     ⟨fun h =>
@@ -448,8 +447,8 @@ theorem multiplicity_add_of_gt {p a b : α} (h : multiplicity p b < multiplicity
     cases' PartENat.ne_top_iff.mp (PartENat.ne_top_of_lt h) with k hk
     rw [hk]
     rw_mod_cast [multiplicity_lt_iff_not_dvd, dvd_add_right]
-    intro h_dvd
-    · apply multiplicity.is_greatest _ h_dvd
+    · intro h_dvd
+      apply multiplicity.is_greatest _ h_dvd
       rw [hk, ← Nat.succ_eq_add_one]
       norm_cast
       apply Nat.lt_succ_self k
@@ -608,7 +607,7 @@ protected theorem pow' {p a : α} (hp : Prime p) (ha : Finite p a) :
   induction' k with k hk
   · simp [one_right hp.not_unit]
   · have : multiplicity p (a ^ (k + 1)) = multiplicity p (a * a ^ k) := by rw [_root_.pow_succ']
-    rw [succ_eq_add_one, get_eq_get_of_eq _ _ this,
+    rw [get_eq_get_of_eq _ _ this,
       multiplicity.mul' hp, hk, add_mul, one_mul, add_comm]
 #align multiplicity.pow' multiplicity.pow'
 
