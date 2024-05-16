@@ -130,8 +130,6 @@ def adj : free ⊣ forget GroupCat.{u} :=
 instance : (forget GroupCat.{u}).IsRightAdjoint  :=
   ⟨_, ⟨adj⟩⟩
 
-end GroupCat
-
 section Abelianization
 
 /-- The abelianization functor `Group ⥤ CommGroup` sending a group `G` to its abelianization `Gᵃᵇ`.
@@ -151,7 +149,7 @@ def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
   map_comp := by
     intros; simp only [coe_comp];
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
-#align abelianize abelianize
+#align abelianize GroupCat.abelianize
 
 /-- The abelianization-forgetful adjuction from `Group` to `CommGroup`. -/
 def abelianizeAdj : abelianize ⊣ forget₂ CommGroupCat.{u} GroupCat.{u} :=
@@ -166,9 +164,11 @@ def abelianizeAdj : abelianize ⊣ forget₂ CommGroupCat.{u} GroupCat.{u} :=
         apply Abelianization.lift.unique
         intros
         apply Abelianization.lift.of }
-#align abelianize_adj abelianizeAdj
+#align abelianize_adj GroupCat.abelianizeAdj
 
 end Abelianization
+
+end GroupCat
 
 /-- The functor taking a monoid to its subgroup of units. -/
 @[simps]
