@@ -18,6 +18,10 @@ In this file we define the following power series:
 * `PowerSeries.invUnitsSub`: given `u : Rˣ`, this is the series for `1 / (u - x)`.
   It is given by `∑ n, x ^ n /ₚ u ^ (n + 1)`.
 
+* `PowerSeries.invOneSubPow`: given a commutative ring `S` and a number `d : ℕ`,
+  `PowerSeries.invOneSubPow d : S⟦X⟧ˣ` is the power series `∑ n, Nat.choose (d + n) d`
+  whose multiplicative inverse is `(1 - X) ^ (d + 1)`.
+
 * `PowerSeries.sin`, `PowerSeries.cos`, `PowerSeries.exp` : power series for sin, cosine, and
   exponential functions.
 -/
