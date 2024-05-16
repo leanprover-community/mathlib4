@@ -198,11 +198,8 @@ jobs:
 
       - name: build mathlib
         id: build
-        uses: liskin/gh-problem-matcher-wrap@v3
-        with:
-          linters: gcc
-          run: |
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+        run: |
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: upload cache
         # We only upload the cache if the build ran (either succeeding or failing),
@@ -292,27 +289,18 @@ jobs:
 
       - name: test mathlib
         id: test
-        uses: liskin/gh-problem-matcher-wrap@v3
-        with:
-          linters: gcc
-          run: |
-            bash -o pipefail -c "
-            make -k -j 8 test"
+        run: |
+          bash -o pipefail -c "
+          make -k -j 8 test"
 
       - name: check for unused imports
         id: shake
-        uses: liskin/gh-problem-matcher-wrap@v3
-        with:
-          linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
-        uses: liskin/gh-problem-matcher-wrap@v3
-        with:
-          linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
 
       - name: check environments using lean4checker
         id: lean4checker
