@@ -344,10 +344,11 @@ theorem compl₂_id : f.compl₂ LinearMap.id = f := by
   rw [compl₂_apply, id_coe, _root_.id]
 #align linear_map.compl₂_id LinearMap.compl₂_id
 
-variable {R₁ : Type*} [CommSemiring R₁] {R₂ : Type*} [CommSemiring R₂] [Module R₂ Nₗ] [Module R₂ Pₗ] [Module R₁ Pₗ] [Module R₁ Mₗ]
-    [SMulCommClass R₁ R₂ Pₗ] [SMulCommClass R₂ R₁ Pₗ] [Module R₁ Qₗ] [Module R₂ Qₗ']
-
-def compl₂' (h: Qₗ →ₗ[R₁] Nₗ →ₗ[R₂] Pₗ) (g : Qₗ' →ₗ[R₂] Nₗ) : Qₗ →ₗ[R₁] Qₗ' →ₗ[R₂] Pₗ where
+/-- Composing a linear map `Q → N` and a bilinear map `M → N → P` to
+form a bilinear map `M → Q → P`. -/
+def compl₂' {R₁ : Type*} [CommSemiring R₁]  [Module R₂ Nₗ] [Module R₂ Pₗ] [Module R₁ Pₗ]
+    [SMulCommClass R₂ R₁ Pₗ] [Module R₁ Qₗ] [Module R₂ Qₗ'] (h: Qₗ →ₗ[R₁] Nₗ →ₗ[R₂] Pₗ)
+    (g : Qₗ' →ₗ[R₂] Nₗ) : Qₗ →ₗ[R₁] Qₗ' →ₗ[R₂] Pₗ where
   toFun a := (lcompₛₗ Pₗ (RingHom.id R₂) g) (h a)
   map_add' a b := by simp only [map_add]
   map_smul' r a := by
