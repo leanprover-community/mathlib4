@@ -489,7 +489,7 @@ theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
       (v.asIdeal : FractionalIdeal R⁰ K) ^ exps v) = exps v := by
   convert count_finsupp_prod K v (Finsupp.mk h_exps.toFinset exps (fun _ ↦ h_exps.mem_toFinset))
   rw [finprod_eq_finset_prod_of_mulSupport_subset (s := h_exps.toFinset), Finsupp.prod]
-  rfl
+  · rfl
   · rw [Finite.coe_toFinset]
     intro v hv h
     rw [mem_mulSupport, h, zpow_zero] at hv
