@@ -338,7 +338,6 @@ jobs:
           COUNTEREXAMPLE_OUTCOME: ${{ steps.counterexamples.outcome }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
-          CHECK_OUTCOME: ${{ steps.lean4checker.outcome }}
         run: |
           scripts/lean-pr-testing-comments.sh
 
