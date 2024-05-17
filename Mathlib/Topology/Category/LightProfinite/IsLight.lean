@@ -148,16 +148,8 @@ def lightProfiniteConeOfHom :
   pt := X
   π := {
     app := fun n ↦ lightProfiniteConeOfHom_π_app f n
-    naturality := by
-      intro n m h
-      have := Y.cone.π.naturality h
-      simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map, Category.id_comp,
-        Functor.comp_map] at this
-      simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map, Category.id_comp,
-        Functor.comp_map]
-      sorry
-      -- rfl
-       }
+    naturality := fun _ _ h ↦
+      ContinuousMap.ext fun _ ↦ Subtype.ext <| ContinuousMap.congr_fun (Y.cone.π.naturality h) _ }
 
 instance [Mono f] : IsIso ((Profinite.limitConeIsLimit ((lightProfiniteDiagramOfHom f) ⋙
     FintypeCat.toProfinite)).lift (lightProfiniteConeOfHom f)) := by
