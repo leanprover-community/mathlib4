@@ -224,6 +224,7 @@ def long_lines_check(lines, path):
             errors += [(ERR_LIN, line_nr, path)]
     return errors, lines
 
+# True if the file consists only of imports and comments.
 def import_only_check(lines, path):
     for _, line, is_comment in annotate_comments(lines):
         if is_comment:

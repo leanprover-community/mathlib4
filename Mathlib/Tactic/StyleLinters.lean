@@ -95,62 +95,67 @@ def contains_broad_imports(lines : Array String) : Option Int := do
         in_doc_comment := True
   none
 
-/-- Lint a collection of input lines if they are missing an appropriate copyright header. -/
+/-- Return with a string is a correct-looking authors like in a copyright header. -/
+def is_correct_authors_line (line : String) : Bool :=
+  -- We cannot reasonably validate the author names, so we look only for the three common mistakes:
+  -- the file starting wrong, using ' and ' between names, and a '.' at the end of line.
+  !(line.startsWith "Authors: " && line.containsSubstr "  "
+    && line.containsSubstr " and " && line.endsWith ".")
+
+def toOptionWithDefault {α : Type} (a : α) : Bool → Option α :=
+  fun b ↦ match b with
+    | true => some a
+    | false => none
+
+/-- Given two `Option Int`, computes the minimal value contained in them. -/
+def option_min (a b : Option Int) : Option Int :=
+    match (a, b) with
+    | (some a, some b) => some (min a b)
+    | (some a, none) => some a
+    | (none, x) => x
+
+/-- Like `option_min`, but for four arguments. -/
+def option_min4 (a b c d : Option Int) := option_min (option_min a b) (option_min c d)
+
+/-- Lint a collection of input lines if they are missing an appropriate copyright header.
+
+A copyright header should start at the very beginning of the file and contain precisely five lines,
+including the copy year and holder, the license and main author(s) of the file (in this order).
+-/
 def copyright_header(lines : Array String) : Option Int := do
--- TODO: pass in line numbers also, or enumerate internally
-  let mut copy_started : Bool := False
-  let mut copy_done : Bool := False
-  for line in lines do
-    if !copy_started then
-      if line == "\n" then
-        -- error: copyright, with line number and path
-        let sdf := 42
-      else
-        if line == "/-\n" then
-          copy_started := true
-          --copy_start_line_nr = line_nr
-    else
-      -- error errors += [(ERR_COP, line_nr, path)]
-      let foo := 42
-  return 42
-
-
--- def regular_check(lines, path):
---     errors = []
---     copy_started = False
---     copy_done = False
---     copy_start_line_nr = 1
---     copy_lines = ""
---     for line_nr, line in lines:
---         if not copy_started and line == "\n":
---             errors += [(ERR_COP, copy_start_line_nr, path)]
---             continue
---         if not copy_started and line == "/-\n":
---             copy_started = True
---             copy_start_line_nr = line_nr
---             continue
---         if not copy_started:
---             errors += [(ERR_COP, line_nr, path)]
---         if copy_started and not copy_done:
---             copy_lines += line
---             if "Author" in line:
---                 # Validating names is not a reasonable thing to do,
---                 # so we just look for the two common variations:
---                 # using ' and ' between names, and a '.' at the end of line.
---                 if ((not line.startswith("Authors: ")) or
---                     ("  " in line) or
---                     (" and " in line) or
---                     (line[-2] == '.')):
---                     errors += [(ERR_AUT, line_nr, path)]
---             if line == "-/\n":
---                 if ((not "Copyright" in copy_lines) or
---                     (not "Apache" in copy_lines) or
---                     (not "Authors: " in copy_lines)):
---                     errors += [(ERR_COP, copy_start_line_nr, path)]
---                 copy_done = True
---             continue
---         if copy_done and line == "\n":
---             continue
+  -- Unlike the Python script, we just emit one warning.
+  let start := lines.extract 0 4
+  -- The header should start and end with blank comments.
+  let start_end := match (start.get? 0, start.get? 4) with
+  | (some "/-", some "-/") => none
+  | (some "/-", _) => some 4
+  | _ => some 0
+  -- The first real line should be a copyright.
+  let copyright_matches : Bool := if let some copy := (start.get? 1) then
+    copy.startsWith "Copyright (c) " && copy.endsWith ". All rights reserved."
+  else
+    false
+  let copy := toOptionWithDefault 3 copyright_matches
+  -- The second line should be standard.
+  let second_line := match start.get? 2 with
+   | "Released under Apache 2.0 license as described in the file LICENSE." => none
+   | _ => some 3
+  -- The third line should contain authors.
+  let authors_match := match start.get? 3 with
+      | some line => line.containsSubstr "Author"
+      | none => false
+  let authors_match := match authors_match with
+   | true => some 3
+   | false => none
+  let result := option_min4 start_end copy second_line authors_match
+  -- If it does, we check that author formatting is right.
+  if let some line := start.get? 3  then
+    if !is_correct_authors_line line then
+      -- new error for malformed authors line
+      let sdf := 42
+  result
+  -- xxx: is there a nicer way to do the options/bool manipulation
+-- optional: include module docstring code
 --         words = line.split()
 --         if words[0] != "import" and words[0] != "--" and words[0] != "/-!" and words[0] != "#align_import":
 --             errors += [(ERR_MOD, line_nr, path)]
@@ -158,8 +163,6 @@ def copyright_header(lines : Array String) : Option Int := do
 --         if words[0] == "/-!":
 --             break
 --     return errors, lines
-
-
 
 
 def check_all_files : IO Bool := do
