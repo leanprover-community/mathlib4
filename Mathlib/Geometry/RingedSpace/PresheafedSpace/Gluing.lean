@@ -423,7 +423,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
     rintro ⟨y, h1, h2⟩
     convert h1 using 1
-    delta ι Multicoequalizer.π at h2
+    delta ι Multicoequalizer.inj at h2
     apply_fun (D.ι _).base
     · exact h2.symm
     · have := D.ι_gluedIso_inv (PresheafedSpace.forget _) i
