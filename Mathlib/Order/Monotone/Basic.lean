@@ -583,21 +583,6 @@ theorem strictAnti_of_le_iff_le [Preorder α] [Preorder β] {f : α → β}
   fun _ _ ↦ (lt_iff_lt_of_le_iff_le' (h _ _) (h _ _)).1
 #align strict_anti_of_le_iff_le strictAnti_of_le_iff_le
 
--- Porting note: mathlib3 proof uses `contrapose` tactic
-theorem injective_of_lt_imp_ne [LinearOrder α] {f : α → β} (h : ∀ x y, x < y → f x ≠ f y) :
-    Injective f := by
-  intro x y hf
-  rcases lt_trichotomy x y with (hxy | rfl | hxy)
-  · exact absurd hf <| h _ _ hxy
-  · rfl
-  · exact absurd hf.symm <| h _ _ hxy
-#align injective_of_lt_imp_ne injective_of_lt_imp_ne
-
-theorem injective_of_le_imp_le [PartialOrder α] [Preorder β] (f : α → β)
-    (h : ∀ {x y}, f x ≤ f y → x ≤ y) : Injective f :=
-  fun _ _ hxy ↦ (h hxy.le).antisymm (h hxy.ge)
-#align injective_of_le_imp_le injective_of_le_imp_le
-
 section Preorder
 
 variable [Preorder α] [Preorder β] {f g : α → β} {a : α}

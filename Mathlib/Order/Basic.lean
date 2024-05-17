@@ -566,6 +566,20 @@ theorem le_implies_le_of_le_of_le {a b c d : α} [Preorder α] (hca : c ≤ a) (
   fun hab ↦ (hca.trans hab).trans hbd
 #align le_implies_le_of_le_of_le le_implies_le_of_le_of_le
 
+theorem injective_of_lt_imp_ne [LinearOrder α] {f : α → β} (h : ∀ x y, x < y → f x ≠ f y) :
+    Injective f := by
+  intro x y hf
+  rcases lt_trichotomy x y with (hxy | rfl | hxy)
+  · exact absurd hf <| h _ _ hxy
+  · rfl
+  · exact absurd hf.symm <| h _ _ hxy
+#align injective_of_lt_imp_ne injective_of_lt_imp_ne
+
+theorem injective_of_le_imp_le [PartialOrder α] [Preorder β] (f : α → β)
+    (h : ∀ {x y}, f x ≤ f y → x ≤ y) : Injective f :=
+  fun _ _ hxy ↦ (h hxy.le).antisymm (h hxy.ge)
+#align injective_of_le_imp_le injective_of_le_imp_le
+
 section PartialOrder
 
 variable [PartialOrder α]
