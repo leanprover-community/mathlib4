@@ -80,7 +80,7 @@ protected lemma id {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a : 𝒳} (ha : p.obj a = R) 
   ha ▸ (p.map_id _ ▸ self p (𝟙 a))
 
 instance comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
-    {g : S ⟶ T} {φ : a ⟶ b} {ψ : b ⟶ c} [hφ : IsHomLift p f φ]
+    {g : S ⟶ T} {φ : a ⟶ b} (ψ : b ⟶ c) [hφ : IsHomLift p f φ]
     [hψ : IsHomLift p g ψ] : IsHomLift p (f ≫ g) (φ ≫ ψ) where
   domain_eq := hφ.1
   codomain_eq := hψ.2
@@ -89,7 +89,7 @@ instance comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
 /-- If `φ : a ⟶ b` and `ψ : b ⟶ c` lift `𝟙 S`, then so does `φ ≫ ψ` -/
 instance lift_id_comp {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a b c : 𝒳} {φ : a ⟶ b} {ψ : b ⟶ c}
     (hφ : IsHomLift p (𝟙 R) φ) [IsHomLift p (𝟙 R) ψ] : IsHomLift p (𝟙 R) (φ ≫ ψ) :=
-  comp_id (𝟙 R) ▸ hφ.comp
+  comp_id (𝟙 R) ▸ hφ.comp ψ
 
 /-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ  ≫ ψ` lifts `f` -/
 lemma comp_lift_id {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
@@ -121,7 +121,7 @@ lemma id_lift_eqToHom_codomain {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} (hRS : R = S)
 
 instance comp_eqToHom_lift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a' a b : 𝒳} {f : R ⟶ S}
     {φ : a ⟶ b} {h : a' = a} [hφ : IsHomLift p f φ] : IsHomLift p f (eqToHom h ≫ φ) :=
-  id_comp f ▸ (eqToHom_codomain_lift_id h hφ.domain_eq).comp
+  id_comp f ▸ (eqToHom_codomain_lift_id h hφ.domain_eq).comp φ
 
 instance eqToHom_comp_lift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b b' : 𝒳} {f : R ⟶ S}
     {φ : a ⟶ b} {h : b = b'} [hφ : IsHomLift p f φ] : IsHomLift p f (φ ≫ eqToHom h) :=
@@ -129,7 +129,7 @@ instance eqToHom_comp_lift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b b' : 𝒳} {f :
 
 instance lift_eqToHom_comp {p : 𝒳 ⥤ 𝒮} {R' R S : 𝒮} {a b : 𝒳} {f : R ⟶ S}
     {φ : a ⟶ b} (h : R' = R) [hφ : IsHomLift p f φ] : IsHomLift p ((eqToHom h) ≫ f) φ :=
-  id_comp φ ▸ (IsHomLift.id_lift_eqToHom_codomain h hφ.domain_eq).comp
+  id_comp φ ▸ (IsHomLift.id_lift_eqToHom_codomain h hφ.domain_eq).comp φ
 
 instance lift_comp_eqToHom {p : 𝒳 ⥤ 𝒮} {R S S': 𝒮} {a b : 𝒳} {f : R ⟶ S}
     {φ : a ⟶ b} (h : S = S') [hφ : IsHomLift p f φ] : IsHomLift p (f ≫ (eqToHom h)) φ :=
