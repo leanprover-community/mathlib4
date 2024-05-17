@@ -393,8 +393,8 @@ theorem isComplete_iUnion_separated {ι : Sort*} {s : ι → Set α} (hs : ∀ i
   cases' cauchy_iff.1 hl with hl_ne hl'
   obtain ⟨t, htS, htl, htU⟩ : ∃ t, t ⊆ S ∧ t ∈ l ∧ t ×ˢ t ⊆ U := by
     rcases hl' U hU with ⟨t, htl, htU⟩
-    exact ⟨t ∩ S, inter_subset_right _ _, inter_mem htl hls,
-      (Set.prod_mono (inter_subset_left _ _) (inter_subset_left _ _)).trans htU⟩
+    refine ⟨t ∩ S, inter_subset_right _ _, inter_mem htl hls, Subset.trans ?_ htU⟩
+    gcongr <;> apply inter_subset_left
   obtain ⟨i, hi⟩ : ∃ i, t ⊆ s i := by
     rcases Filter.nonempty_of_mem htl with ⟨x, hx⟩
     rcases mem_iUnion.1 (htS hx) with ⟨i, hi⟩
