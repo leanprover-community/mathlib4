@@ -243,16 +243,18 @@ theorem prod_iInf_right [Nonempty ι] {f : Filter α} {g : ι → Filter β} :
   simp only [Filter.prod, eq_self_iff_true]
 #align filter.prod_infi_right Filter.prod_iInf_right
 
-@[mono]
+@[mono, gcongr]
 theorem prod_mono {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) :
     f₁ ×ˢ g₁ ≤ f₂ ×ˢ g₂ :=
   inf_le_inf (comap_mono hf) (comap_mono hg)
 #align filter.prod_mono Filter.prod_mono
 
+@[gcongr]
 theorem prod_mono_left (g : Filter β) {f₁ f₂ : Filter α} (hf : f₁ ≤ f₂) : f₁ ×ˢ g ≤ f₂ ×ˢ g :=
   Filter.prod_mono hf rfl.le
 #align filter.prod_mono_left Filter.prod_mono_left
 
+@[gcongr]
 theorem prod_mono_right (f : Filter α) {g₁ g₂ : Filter β} (hf : g₁ ≤ g₂) : f ×ˢ g₁ ≤ f ×ˢ g₂ :=
   Filter.prod_mono rfl.le hf
 #align filter.prod_mono_right Filter.prod_mono_right

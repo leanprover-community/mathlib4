@@ -43,14 +43,17 @@ noncomputable instance decidableMemProd [DecidablePred (· ∈ s)] [DecidablePre
     DecidablePred (· ∈ s ×ˢ t) := fun _ => And.decidable
 #align set.decidable_mem_prod Set.decidableMemProd
 
+@[gcongr]
 theorem prod_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : s₁ ×ˢ t₁ ⊆ s₂ ×ˢ t₂ :=
   fun _ ⟨h₁, h₂⟩ => ⟨hs h₁, ht h₂⟩
 #align set.prod_mono Set.prod_mono
 
+@[gcongr]
 theorem prod_mono_left (hs : s₁ ⊆ s₂) : s₁ ×ˢ t ⊆ s₂ ×ˢ t :=
   prod_mono hs Subset.rfl
 #align set.prod_mono_left Set.prod_mono_left
 
+@[gcongr]
 theorem prod_mono_right (ht : t₁ ⊆ t₂) : s ×ˢ t₁ ⊆ s ×ˢ t₂ :=
   prod_mono Subset.rfl ht
 #align set.prod_mono_right Set.prod_mono_right

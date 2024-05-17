@@ -186,7 +186,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
     exact μ.mono (diff_subset _ _)
   suffices μ (⋃ n, S n) ≤ ⨆ n, μ (S n) by calc
     μ (s ∩ t) + μ (s \ t) = μ (s ∩ t) + μ (⋃ n, S n) := by rw [iUnion_S]
-    _ ≤ μ (s ∩ t) + ⨆ n, μ (S n) := add_le_add le_rfl this
+    _ ≤ μ (s ∩ t) + ⨆ n, μ (S n) := by gcongr
     _ = ⨆ n, μ (s ∩ t) + μ (S n) := ENNReal.add_iSup
     _ ≤ μ s := iSup_le hSs
   /- It suffices to show that `∑' k, μ (S (k + 1) \ S k) ≠ ∞`. Indeed, if we have this,
@@ -987,13 +987,14 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     refine' ⟨f, fun i => ⟨_, _⟩⟩
     · calc
         (a i : ℝ) + ⌊(x i - a i) * n⌋₊ / n ≤ (a i : ℝ) + (x i - a i) * n / n := by
-          refine' add_le_add le_rfl ((div_le_div_right npos).2 _)
+          gcongr
           exact Nat.floor_le (mul_nonneg (sub_nonneg.2 (hx i).1.le) npos.le)
         _ = x i := by field_simp [npos.ne']
     · calc
         x i = (a i : ℝ) + (x i - a i) * n / n := by field_simp [npos.ne']
-        _ ≤ (a i : ℝ) + (⌊(x i - a i) * n⌋₊ + 1) / n :=
-          add_le_add le_rfl ((div_le_div_right npos).2 (Nat.lt_floor_add_one _).le)
+        _ ≤ (a i : ℝ) + (⌊(x i - a i) * n⌋₊ + 1) / n := by
+          gcongr
+          exact (Nat.lt_floor_add_one _).le
   calc
     μH[Fintype.card ι] (Set.pi univ fun i : ι => Ioo (a i : ℝ) (b i)) ≤
         liminf (fun n : ℕ => ∑ i : γ n, diam (t n i) ^ ((Fintype.card ι) : ℝ)) atTop :=

@@ -153,7 +153,7 @@ theorem measure_iUnionNotConvergentSeq (hε : 0 < ε) (hf : ∀ n, StronglyMeasu
   simp_rw [ENNReal.ofReal_mul (half_pos hε).le]
   rw [ENNReal.tsum_mul_left, ← ENNReal.ofReal_tsum_of_nonneg, inv_eq_one_div, tsum_geometric_two,
     ← ENNReal.ofReal_mul (half_pos hε).le, div_mul_cancel₀ ε two_ne_zero]
-  · exact fun n => pow_nonneg (by norm_num) _
+  · intro n; positivity
   · rw [inv_eq_one_div]
     exact summable_geometric_two
 #align measure_theory.egorov.measure_Union_not_convergent_seq MeasureTheory.Egorov.measure_iUnionNotConvergentSeq

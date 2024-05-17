@@ -359,8 +359,7 @@ instance Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := 
 
 theorem _root_.Set.Countable.measure_zero (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
     μ s = 0 := by
-  rw [← biUnion_of_singleton s, ← nonpos_iff_eq_zero]
-  refine' le_trans (measure_biUnion_le h _) _
+  rw [← biUnion_of_singleton s, measure_biUnion_null_iff h]
   simp
 #align set.countable.measure_zero Set.Countable.measure_zero
 
@@ -881,7 +880,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
         _ ⊆ ⋃ n, toMeasurable μ (t ∩ disjointed w n) :=
           iUnion_mono fun n => subset_toMeasurable _ _
     refine' ⟨t', tt', MeasurableSet.iUnion fun n => measurableSet_toMeasurable μ _, fun u hu => _⟩
-    apply le_antisymm _ (measure_mono (inter_subset_inter tt' Subset.rfl))
+    apply le_antisymm _ (by gcongr)
     calc
       μ (t' ∩ u) ≤ ∑' n, μ (toMeasurable μ (t ∩ disjointed w n) ∩ u) := by
         rw [ht', iUnion_inter]
@@ -892,8 +891,9 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
         apply measure_toMeasurable_inter hu
         apply ne_of_lt
         calc
-          μ (t ∩ disjointed w n) ≤ μ (t ∩ w n) :=
-            measure_mono (inter_subset_inter_right _ (disjointed_le w n))
+          μ (t ∩ disjointed w n) ≤ μ (t ∩ w n) := by
+            gcongr
+            exact disjointed_le w n
           _ ≤ μ (w n) := measure_mono (inter_subset_right _ _)
           _ < ∞ := hw n
       _ = ∑' n, μ.restrict (t ∩ u) (disjointed w n) := by
