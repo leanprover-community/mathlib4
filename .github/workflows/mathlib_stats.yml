@@ -11,11 +11,11 @@ jobs:
     steps:
 
       - name: Checkout master branch
-        uses: actions/checkout@v4
-        with:
-          ## fetch the whole repository, to get the history of the last week
-          fetch-depth: 0
-          ref: 'master'
+        uses: adomani/get_mathlib4_with_cache/tree/first_attempt@v1 #actions/checkout@v4
+        #with:
+        #  ## fetch the whole repository, to get the history of the last week
+        #  fetch-depth: 0
+        #  ref: 'master'
 
 #      - name: mathlib_stats
       - id: mathlib_stats
