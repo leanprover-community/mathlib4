@@ -6,6 +6,7 @@ Authors: Mitchell Lee
 import Mathlib.LinearAlgebra.Reflection
 import Mathlib.GroupTheory.Coxeter.Matrix
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Tactic.Polyrith
 
 /-!
 # The standard geometric representation
@@ -43,8 +44,6 @@ variable (M : CoxeterMatrix B)
 
 local notation "V" => B →₀ ℝ
 
-private local instance : AddCommMonoid V := Finsupp.instAddCommMonoid
-
 /-- The simple root at index `i`. That is, the standard basis vector of `B →₀ ℝ` at index `i`. -/
 def simpleRoot (i : B) : V := Finsupp.single i 1
 
@@ -55,8 +54,7 @@ for `i j : B`, where {αᵢ} is the standard basis of `B →₀ ℝ` and `M` is 
 This is positive definite if and only if the associated Coxeter group is finite. -/
 def standardBilinForm : LinearMap.BilinForm ℝ V :=
   (Finsupp.lift (V →ₗ[ℝ] ℝ) ℝ B)
-    (fun i ↦ ((Finsupp.lift ℝ ℝ B)
-      (fun i' ↦ -cos (π / M i i'))))
+    (fun i ↦ ((Finsupp.lift ℝ ℝ B) (fun i' ↦ -cos (π / M i i'))))
 
 local notation:max "⟪"  a  ","  b  "⟫" => M.standardBilinForm a b
 
@@ -75,14 +73,18 @@ theorem standardBilinForm_comm (v v' : V) : ⟪v, v'⟫ = ⟪v', v⟫ := M.isSym
 
 /-- The orthogonal reflection in the vector `v` under the standard bilinear form.
 -/
-def orthoReflection {v : V} (hv : ⟪v, v⟫ = 1) :
-    V →ₗ[ℝ] V := Module.reflection (show ((2 : ℝ) • (standardBilinForm M v)) v = 2 by
-      rw [LinearMap.smul_apply, hv]; norm_num)
+def orthoReflection {v : V} (hv : ⟪v, v⟫ = 1) : V →ₗ[ℝ] V :=
+  Module.reflection (show ((2 : ℝ) • (standardBilinForm M v)) v = 2 by
+      rw [LinearMap.smul_apply, hv, smul_eq_mul, mul_one])
 
 local prefix:100 "r" => M.orthoReflection
 
 attribute [local simp] Module.reflection
 attribute [local simp] Module.preReflection
+
+theorem orthoReflection_apply {v : V} (hv : ⟪v, v⟫ = 1) (w : V) :
+    (r hv) w = w - (2 * ⟪v, w⟫) • v :=
+  Module.reflection_apply _ _
 
 @[simp]
 theorem orthoReflection_apply_self {v : V} (hv : ⟪v, v⟫ = 1) : (r hv) v = -v :=
@@ -98,33 +100,28 @@ theorem orthoReflection_eq_orthoReflection_iff {v v' : V} (hv : ⟪v, v⟫ = 1) 
     r hv = r hv' ↔ ∃ μ : ℝ, v' = μ • v := by
   constructor
   · intro h
-    have h₁ : (r hv) v' = (r hv') v' := LinearMap.ext_iff.mp h v'
-    rw [M.orthoReflection_apply_self hv'] at h₁
-    dsimp [orthoReflection] at h₁
-    apply congrArg (v' + ·) at h₁
-    rw [add_right_neg, add_sub, ← two_smul ℝ v'] at h₁
-    apply sub_eq_zero.mp at h₁
-    apply congrArg (((1 : ℝ) / 2) • ·) at h₁
-    rw [smul_smul, smul_smul, ← mul_assoc] at h₁
-    norm_num at h₁
     use ⟪v, v'⟫
+    apply_fun (· v') at h
+    rw [M.orthoReflection_apply_self hv', M.orthoReflection_apply] at h
+    apply_fun (v' + ·) at h
+    rw [add_right_neg, add_sub, ← two_smul ℝ v', sub_eq_zero] at h
+    apply_fun (((1 : ℝ) / 2) • ·) at h
+    rw [smul_smul, smul_smul, ← mul_assoc] at h
+    norm_num at h
+    exact h
   · rintro ⟨μ, rfl⟩
-    simp only [map_smul, LinearMap.smul_apply, smul_eq_mul] at hv'
-    simp only [map_smul, smul_apply, smul_eq_mul, hv, mul_one] at hv'
-    -- hv': μ * μ = 1
+    have hμ : μ * μ = 1 := by
+      simpa only [map_smul, LinearMap.smul_apply, smul_eq_mul, hv, mul_one] using hv'
     apply LinearMap.ext
     intro w
-    dsimp [orthoReflection]
-    rw [smul_smul, map_smul, LinearMap.smul_apply, smul_eq_mul, mul_assoc 2,
-        mul_comm _ μ, ← mul_assoc μ, hv']
-    simp
+    simp only [orthoReflection_apply, map_smul, smul_apply, smul_eq_mul, mul_comm μ, smul_smul,
+      mul_assoc, hμ, mul_one]
 
 @[simp]
 theorem standardBilinForm_orthoReflection_apply {v : V} {hv : ⟪v, v⟫ = 1} (w w' : V) :
     ⟪(r hv) w, (r hv) w'⟫ = ⟪w, w'⟫ := by
-  dsimp [orthoReflection]
-  simp only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
-  simp only [← M.isSymm_standardBilinForm.eq v w, RingHom.id_apply, hv]
+  simp only [orthoReflection_apply, map_sub, map_smul, sub_apply, smul_apply, smul_eq_mul,
+    ← M.isSymm_standardBilinForm.eq v w, RingHom.id_apply, hv]
   ring
 
 /-- Any orthogonal reflection is orthogonal with respect to the standard bilinear form. -/
@@ -140,10 +137,8 @@ local prefix:100 "σ" => M.simpleOrthoReflection
 theorem simpleOrthoReflection_simpleRoot (i i' : B) :
     (σ i) (α i') = α i' + (2 * cos (π / M i i')) • α i := by
   dsimp [simpleOrthoReflection, orthoReflection]
-  rw [standardBilinForm_simpleRoot_simpleRoot]
-  rw [sub_eq_add_neg, ← neg_smul]
-  congr
-  ring
+  rw [standardBilinForm_simpleRoot_simpleRoot, sub_eq_add_neg, ← neg_smul]
+  ring_nf
 
 @[simp] theorem simpleOrthoReflection_simpleRoot_self (i : B) : (σ i) (α i) = -α i := by
   simp [simpleOrthoReflection_simpleRoot, M.diagonal i, two_smul]
@@ -161,12 +156,10 @@ theorem orthoReflection_mul_orthoReflection_pow_apply {v v' : V} {m : ℕ} (k : 
   induction' k with k ih
   · simp [div_self (sin_pi_div_m_ne_zero hm)]
   · -- Apply inductive hypothesis.
+    letI _inst : AddCommMonoid V := Finsupp.instAddCommMonoid
     rw [pow_succ', LinearMap.mul_apply, ih, LinearMap.mul_apply]
     -- Expand everything out.
-    simp only [map_sub, map_add, map_smul]
-    dsimp [orthoReflection]
-    simp only [map_sub, map_add, map_smul, smul_sub, smul_add, smul_smul, hv, hv',
-      map_smul, LinearMap.smul_apply]
+    simp only [map_add, map_smul, orthoReflection_apply, smul_sub, smul_smul, hv', map_sub, hv]
     -- Rewrite using - cos (π / m) = ⟪v, v'⟫.
     rw [M.standardBilinForm_comm v' v, hvv']
     clear hv hv' hvv' ih
@@ -248,16 +241,14 @@ private lemma can_decomp_into_parallel_and_orthogonal {v v' : V} (w : V) {m : �
   field_simp [sin_pi_div_m_ne_zero hm]
   ring_nf
   constructor
-  all_goals {
+  all_goals
     rw [Real.sin_sq]
     ring
-  }
 
 lemma orthoReflection_apply_eq_self_of_orthogonal
     {v : V} (hv : ⟪v, v⟫ = 1) (w : V) (hvw : ⟪v, w⟫ = 0) :
     (r hv) w = w := by
-  dsimp [orthoReflection]
-  simp [hvw]
+  simp [orthoReflection_apply, hvw]
 
 private lemma fixed_of_orthogonal {v v' : V} (w : V) {m : ℕ}
     (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) (hvw : ⟪v, w⟫ = 0) (hv'w : ⟪v', w⟫ = 0) :
