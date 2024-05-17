@@ -127,7 +127,7 @@ theorem orderTop_add_eq {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
   have hcxyne : (x+y).coeff g ≠ 0 := by
     rw [show (x+y).coeff g = x.coeff g + y.coeff g from rfl,
       coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy), add_zero]
-    exact coeff_orderTop_ne_zero (orderTop_of_ne hx)
+    exact coeff_orderTop_ne (orderTop_of_ne hx)
   have hxyx : (x + y).orderTop ≤ x.orderTop := by
     rw [orderTop_of_ne hx]
     exact orderTop_le_of_coeff_ne_zero hcxyne
@@ -468,7 +468,7 @@ theorem support_subset_add_single_support : y.support ⊆ x.support := by
   intro g hg
   by_cases hgx : g = orderTop x
   · intro hx
-    apply (coeff_orderTop_ne_zero hgx.symm) hx
+    apply (coeff_orderTop_ne hgx.symm) hx
   · exact fun hxg => hg (Eq.mp (congrArg (fun r ↦ r = 0)
     (coeff_eq_of_not_orderTop hxy g hgx).symm) hxg)
 

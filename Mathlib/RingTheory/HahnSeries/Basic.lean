@@ -259,11 +259,18 @@ theorem orderTop_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
     orderTop x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
   dif_neg hx
 
+@[simp]
 theorem ne_zero_iff_orderTop {x : HahnSeries Γ R} : x ≠ 0 ↔ orderTop x ≠ ⊤ := by
   constructor
   · exact fun hx => Eq.mpr (congrArg (fun h ↦ h ≠ ⊤) (orderTop_of_ne hx)) WithTop.coe_ne_top
   · contrapose!
-    exact fun hx ↦ Eq.mpr (congrArg (fun y ↦ orderTop y = ⊤) hx) orderTop_zero
+    simp_all only [orderTop_zero, implies_true]
+
+theorem orderTop_eq_top_iff {x : HahnSeries Γ R} : orderTop x = ⊤ ↔ x = 0 := by
+  constructor
+  · contrapose!
+    exact ne_zero_iff_orderTop.mp
+  · simp_all only [orderTop_zero, implies_true]
 
 theorem untop_orderTop_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :
     WithTop.untop x.orderTop (ne_zero_iff_orderTop.mp hx) =
@@ -271,7 +278,7 @@ theorem untop_orderTop_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :
   WithTop.coe_inj.mp ((WithTop.coe_untop (orderTop x) (ne_zero_iff_orderTop.mp hx)).trans
     (orderTop_of_ne hx))
 
-theorem coeff_orderTop_ne_zero {x : HahnSeries Γ R} {g : Γ} (hg : x.orderTop = g) :
+theorem coeff_orderTop_ne {x : HahnSeries Γ R} {g : Γ} (hg : x.orderTop = g) :
     x.coeff g ≠ 0 := by
   have h : orderTop x ≠ ⊤ := by simp_all only [ne_eq, WithTop.coe_ne_top, not_false_eq_true]
   have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr h
@@ -364,7 +371,7 @@ theorem leadingCoeff_ne_iff {x : HahnSeries Γ R} : x ≠ 0 ↔ x.leadingCoeff �
   constructor
   · intro hx
     rw [leadingCoeff_of_ne hx]
-    exact coeff_orderTop_ne_zero (orderTop_of_ne hx)
+    exact coeff_orderTop_ne (orderTop_of_ne hx)
   · contrapose!
     intro hx
     rw [hx]
