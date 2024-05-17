@@ -420,8 +420,8 @@ variable [IsScalarTower R S A] (h : QuasispectrumRestricts a f)
 
 theorem algebraMap_image : algebraMap R S '' quasispectrum R a = quasispectrum S a := by
   refine' Set.eq_of_subset_of_subset _ fun s hs => ⟨f s, _⟩
-  simpa only [quasispectrum.preimage_algebraMap] using
-    (quasispectrum S a).image_preimage_subset (algebraMap R S)
+  · simpa only [quasispectrum.preimage_algebraMap] using
+      (quasispectrum S a).image_preimage_subset (algebraMap R S)
   exact ⟨quasispectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
 
 theorem image : f '' quasispectrum S a = quasispectrum R a := by
@@ -501,8 +501,8 @@ variable [IsScalarTower R S A] (h : SpectrumRestricts a f)
 
 theorem algebraMap_image : algebraMap R S '' spectrum R a = spectrum S a := by
   refine' Set.eq_of_subset_of_subset _ fun s hs => ⟨f s, _⟩
-  simpa only [spectrum.preimage_algebraMap] using
-    (spectrum S a).image_preimage_subset (algebraMap R S)
+  · simpa only [spectrum.preimage_algebraMap] using
+      (spectrum S a).image_preimage_subset (algebraMap R S)
   exact ⟨spectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
 
 theorem image : f '' spectrum S a = spectrum R a := by

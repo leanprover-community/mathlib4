@@ -46,7 +46,7 @@ theorem continuous_barycentric_coord (i : ι) : Continuous (b.coord i) :=
 #align continuous_barycentric_coord continuous_barycentric_coord
 
 theorem smooth_barycentric_coord (b : AffineBasis ι 𝕜 E) (i : ι) : ContDiff 𝕜 ⊤ (b.coord i) :=
-  (⟨b.coord i, continuous_barycentric_coord b i⟩ : E →A[𝕜] 𝕜).contDiff
+  (⟨b.coord i, continuous_barycentric_coord b i⟩ : E →ᴬ[𝕜] 𝕜).contDiff
 #align smooth_barycentric_coord smooth_barycentric_coord
 
 end Barycentric
