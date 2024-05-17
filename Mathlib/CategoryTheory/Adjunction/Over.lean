@@ -38,7 +38,8 @@ open Limits
 variable {C : Type u} [Category.{v} C]
 
 -- Porting note: removed semireducible from the simps config
-/-- Given a morphism `f : X ⟶ Y`, the functor `baseChange f` takes morphisms over `Y` to morphisms over `X` via pullbacks. -/
+/-- Given a morphism `f : X ⟶ Y`, the functor `baseChange f` takes morphisms over `Y` to morphisms
+over `X` via pullbacks. -/
 @[simps! (config := { simpRhs := true}) obj_left obj_hom map_left]
 def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd : pullback g.hom f ⟶ _)
