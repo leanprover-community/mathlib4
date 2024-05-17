@@ -68,8 +68,8 @@ namespace TensorProduct
 variable {ι : Type u} [Fintype ι] {m : ι → M} {n : ι → N}
 
 variable (m n) in
-/-- The proposition that the expression $\sum_i m_i \otimes n_i$ in $M \otimes N$
-*vanishes trivially*. That is, there exist a finite index type $\kappa$,
+/-- An expression $\sum_i m_i \otimes n_i$ in $M \otimes N$
+*vanishes trivially* if there exist a finite index type $\kappa$,
 elements $(y_j)_{j \in \kappa}$ of $N$, and elements $(a_{ij})_{i \in \iota, j \in \kappa}$ of $R$
 such that for all $i$,
 $$n_i = \sum_j a_{ij} y_j$$
