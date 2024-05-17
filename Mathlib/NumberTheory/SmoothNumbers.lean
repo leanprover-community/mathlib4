@@ -291,8 +291,8 @@ lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : N.succ.smoothNumbers = N.
 lemma mem_smoothNumbers_of_lt (m n : ℕ) (hm : 0 < m) (hmn : m < n) : m ∈ n.smoothNumbers := by
   rw [smoothNumbers_eq_factoredNumbers]
   constructor
-  . exact not_eq_zero_of_lt hm
-  . intro p; intro h
+  · exact not_eq_zero_of_lt hm
+  · intro p; intro h
     apply Nat.le_of_mem_factors at h
     rw [Finset.mem_range]
     exact Nat.lt_of_le_of_lt h hmn
