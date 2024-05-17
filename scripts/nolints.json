@@ -184,7 +184,6 @@
  ["docBlame", "FirstOrder.«term∀'_»"],
  ["docBlame", "FirstOrder.«term∃'_»"],
  ["docBlame", "FirstOrder.«term∼_»"],
- ["docBlame", "Flow.toFun"],
  ["docBlame", "Function.app"],
  ["docBlame", "Function.compLeft"],
  ["docBlame", "Function.compRight"],
