@@ -30,7 +30,7 @@ and minimal ones are nilpotent (TODO), hence Cartan subalgebras.
   if it is contained in the Engel subalgebra of all its elements.
 -/
 
-open BigOperators LieAlgebra LieModule
+open LieAlgebra LieModule
 
 variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -66,6 +66,14 @@ lemma mem_engel_iff (x y : L) :
 lemma self_mem_engel (x : L) : x ∈ engel R x := by
   simp only [mem_engel_iff]
   exact ⟨1, by simp⟩
+
+@[simp]
+lemma engel_zero : engel R (0 : L) = ⊤ := by
+  rw [eq_top_iff]
+  rintro x -
+  rw [mem_engel_iff, LieHom.map_zero]
+  use 1
+  simp only [pow_one, LinearMap.zero_apply]
 
 /-- Engel subalgebras are self-normalizing.
 See `LieSubalgebra.normalizer_eq_self_of_engel_le` for a proof that Lie-subalgebras
@@ -115,7 +123,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     rw [Submodule.map_le_iff_le_comap]
     intro y hy
     simp only [Submodule.mem_comap, mem_engel_iff, mem_coe_submodule]
-    use (k+1)
+    use k+1
     clear hk; revert hy
     generalize k+1 = k
     induction k generalizing y with

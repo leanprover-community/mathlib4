@@ -185,8 +185,7 @@ theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α →
   let ⟨_⟩ := nonempty_fintype α
   hasFiniteIntegral_of_bounded <| ae_of_all μ <| norm_le_pi_norm f
 
-@[deprecated] -- Since 2024/02/05
-alias hasFiniteIntegral_of_fintype := HasFiniteIntegral.of_finite
+@[deprecated] alias hasFiniteIntegral_of_fintype := HasFiniteIntegral.of_finite -- Since 2024-02-05
 
 theorem HasFiniteIntegral.mono_measure {f : α → β} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
     HasFiniteIntegral f μ :=
@@ -337,11 +336,11 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
     calc
       ENNReal.ofReal ‖F n a - f a‖ ≤ ENNReal.ofReal ‖F n a‖ + ENNReal.ofReal ‖f a‖ := by
         rw [← ENNReal.ofReal_add]
-        apply ofReal_le_ofReal
-        · apply norm_sub_le
+        · apply ofReal_le_ofReal
+          apply norm_sub_le
         · exact norm_nonneg _
         · exact norm_nonneg _
-      _ ≤ ENNReal.ofReal (bound a) + ENNReal.ofReal (bound a) := (add_le_add h₁ h₂)
+      _ ≤ ENNReal.ofReal (bound a) + ENNReal.ofReal (bound a) := add_le_add h₁ h₂
       _ = b a := by rw [← two_mul]
   -- On the other hand, `F n a --> f a` implies that `‖F n a - f a‖ --> 0`
   have h : ∀ᵐ a ∂μ, Tendsto (fun n => ENNReal.ofReal ‖F n a - f a‖) atTop (𝓝 0) := by
@@ -500,8 +499,7 @@ theorem Integrable.of_finite [Finite α] [MeasurableSpace α] [MeasurableSinglet
     (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) : Integrable (fun a ↦ f a) μ :=
   ⟨(StronglyMeasurable.of_finite f).aestronglyMeasurable, .of_finite⟩
 
-@[deprecated] -- Since 2024/02/05
-alias integrable_of_fintype := Integrable.of_finite
+@[deprecated] alias integrable_of_fintype := Integrable.of_finite -- Since 2024-02-05
 
 theorem Memℒp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by
@@ -569,6 +567,11 @@ theorem Integrable.smul_measure {f : α → β} (h : Integrable f μ) {c : ℝ�
   rw [← memℒp_one_iff_integrable] at h ⊢
   exact h.smul_measure hc
 #align measure_theory.integrable.smul_measure MeasureTheory.Integrable.smul_measure
+
+theorem Integrable.smul_measure_nnreal {f : α → β} (h : Integrable f μ) {c : ℝ≥0} :
+    Integrable f (c • μ) := by
+  apply h.smul_measure
+  simp
 
 theorem integrable_smul_measure {f : α → β} {c : ℝ≥0∞} (h₁ : c ≠ 0) (h₂ : c ≠ ∞) :
     Integrable f (c • μ) ↔ Integrable f μ :=
@@ -663,7 +666,7 @@ theorem Integrable.add' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
         -- After leanprover/lean4#2734, we need to do beta reduction before `exact mod_cast`
         beta_reduce
         exact mod_cast nnnorm_add_le _ _
-    _ = _ := (lintegral_nnnorm_add_left hf.aestronglyMeasurable _)
+    _ = _ := lintegral_nnnorm_add_left hf.aestronglyMeasurable _
     _ < ∞ := add_lt_top.2 ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩
 #align measure_theory.integrable.add' MeasureTheory.Integrable.add'
 
@@ -691,6 +694,27 @@ theorem Integrable.neg {f : α → β} (hf : Integrable f μ) : Integrable (-f) 
 theorem integrable_neg_iff {f : α → β} : Integrable (-f) μ ↔ Integrable f μ :=
   ⟨fun h => neg_neg f ▸ h.neg, Integrable.neg⟩
 #align measure_theory.integrable_neg_iff MeasureTheory.integrable_neg_iff
+
+@[simp]
+lemma integrable_add_iff_integrable_right {f g : α → β} (hf : Integrable f μ) :
+    Integrable (f + g) μ ↔ Integrable g μ :=
+  ⟨fun h ↦ show g = f + g + (-f) by simp only [add_neg_cancel_comm] ▸ h.add hf.neg,
+    fun h ↦ hf.add h⟩
+
+@[simp]
+lemma integrable_add_iff_integrable_left {f g : α → β} (hf : Integrable f μ) :
+    Integrable (g + f) μ ↔ Integrable g μ := by
+  rw [add_comm, integrable_add_iff_integrable_right hf]
+
+@[simp]
+lemma integrable_add_const_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
+    Integrable (fun x ↦ f x + c) μ ↔ Integrable f μ :=
+  integrable_add_iff_integrable_left (integrable_const _)
+
+@[simp]
+lemma integrable_const_add_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
+    Integrable (fun x ↦ c + f x) μ ↔ Integrable f μ :=
+  integrable_add_iff_integrable_right (integrable_const _)
 
 theorem Integrable.sub {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (f - g) μ := by simpa only [sub_eq_add_neg] using hf.add hg.neg
@@ -749,7 +773,7 @@ theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace �
   have hg' : snorm g ∞ μ ≠ ∞ := by rwa [snorm_exponent_top]
   calc
     snorm (fun x : α => g x • f x) 1 μ ≤ _ :=
-      MeasureTheory.snorm_smul_le_mul_snorm hf.1 g_aestronglyMeasurable h
+      by simpa using MeasureTheory.snorm_smul_le_mul_snorm hf.1 g_aestronglyMeasurable h
     _ < ∞ := ENNReal.mul_lt_top hg' hf.2.ne
 #align measure_theory.integrable.ess_sup_smul MeasureTheory.Integrable.essSup_smul
 
@@ -766,7 +790,7 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β]
   have hg' : snorm g ∞ μ ≠ ∞ := by rwa [snorm_exponent_top]
   calc
     snorm (fun x : α => f x • g x) 1 μ ≤ _ :=
-      MeasureTheory.snorm_smul_le_mul_snorm g_aestronglyMeasurable hf.1 h
+      by simpa using MeasureTheory.snorm_smul_le_mul_snorm g_aestronglyMeasurable hf.1 h
     _ < ∞ := ENNReal.mul_lt_top hf.2.ne hg'
 #align measure_theory.integrable.smul_ess_sup MeasureTheory.Integrable.smul_essSup
 
@@ -1300,7 +1324,8 @@ section BoundedSMul
 variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
 
 theorem Integrable.smul {c : 𝕜} {f : α →ₘ[μ] β} : Integrable f → Integrable (c • f) :=
-  induction_on f fun _f hfm hfi => (integrable_mk _).2 <| ((integrable_mk hfm).1 hfi).smul _
+  induction_on f fun _f hfm hfi => (integrable_mk _).2 <|
+    by simpa using ((integrable_mk hfm).1 hfi).smul c
 #align measure_theory.ae_eq_fun.integrable.smul MeasureTheory.AEEqFun.Integrable.smul
 
 end BoundedSMul
@@ -1512,6 +1537,17 @@ theorem ContinuousLinearMap.integrable_comp {φ : α → H} (L : H →L[𝕜] E)
     (L.continuous.comp_aestronglyMeasurable φ_int.aestronglyMeasurable)
     (eventually_of_forall fun a => L.le_opNorm (φ a))
 #align continuous_linear_map.integrable_comp ContinuousLinearMap.integrable_comp
+
+@[simp]
+theorem ContinuousLinearEquiv.integrable_comp_iff {φ : α → H} (L : H ≃L[𝕜] E) :
+    Integrable (fun a : α ↦ L (φ a)) μ ↔ Integrable φ μ :=
+  ⟨fun h ↦ by simpa using ContinuousLinearMap.integrable_comp (L.symm : E →L[𝕜] H) h,
+  fun h ↦ ContinuousLinearMap.integrable_comp (L : H →L[𝕜] E) h⟩
+
+@[simp]
+theorem LinearIsometryEquiv.integrable_comp_iff {φ : α → H} (L : H ≃ₗᵢ[𝕜] E) :
+    Integrable (fun a : α ↦ L (φ a)) μ ↔ Integrable φ μ :=
+  ContinuousLinearEquiv.integrable_comp_iff (L : H ≃L[𝕜] E)
 
 theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →L[𝕜] E}
     (φ_int : Integrable φ μ) (v : H) : Integrable (fun a => φ a v) μ :=

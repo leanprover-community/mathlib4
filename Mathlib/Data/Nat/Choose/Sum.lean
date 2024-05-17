@@ -3,13 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Patrick Stevens
 -/
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 #align_import data.nat.choose.sum from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -183,7 +183,7 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
     (∑ m in x.powerset, (-1 : ℤ) ^ m.card) = 0 := by
   classical
     rw [sum_powerset_neg_one_pow_card, if_neg]
-    rw [← Ne.def, ← nonempty_iff_ne_empty]
+    rw [← Ne, ← nonempty_iff_ne_empty]
     apply h0
 #align finset.sum_powerset_neg_one_pow_card_of_nonempty Finset.sum_powerset_neg_one_pow_card_of_nonempty
 
@@ -234,5 +234,12 @@ theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
         ∑ ij in antidiagonal n, (n.choose ij.2 : R) * f (ij.1 + 1) ij.2 := by
   simpa only [nsmul_eq_mul] using sum_antidiagonal_choose_succ_nsmul f n
 #align finset.sum_antidiagonal_choose_succ_mul Finset.sum_antidiagonal_choose_succ_mul
+
+theorem sum_antidiagonal_choose_add (d n : ℕ) :
+    (Finset.sum (antidiagonal n) fun ij => (d + ij.2).choose d) =
+    (d + n).choose d + (d + n).choose (succ d) := by
+  induction n with
+  | zero => simp
+  | succ n hn => simpa [Nat.sum_antidiagonal_succ] using hn
 
 end Finset

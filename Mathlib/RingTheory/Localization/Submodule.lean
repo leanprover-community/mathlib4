@@ -138,8 +138,9 @@ variable {S} (M)
 theorem mem_span_iff {N : Type*} [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
     {x : N} {a : Set N} :
     x ∈ Submodule.span S a ↔ ∃ y ∈ Submodule.span R a, ∃ z : M, x = mk' S 1 z • y := by
-  constructor; intro h
-  · refine' Submodule.span_induction h _ _ _ _
+  constructor
+  · intro h
+    refine' Submodule.span_induction h _ _ _ _
     · rintro x hx
       exact ⟨x, Submodule.subset_span hx, 1, by rw [mk'_one, _root_.map_one, one_smul]⟩
     · exact ⟨0, Submodule.zero_mem _, 1, by rw [mk'_one, _root_.map_one, one_smul]⟩

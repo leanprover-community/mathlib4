@@ -92,7 +92,7 @@ theorem continuousAt_cpow {p : ℂ × ℂ} (hp_fst : p.fst ∈ slitPlane) :
 #align continuous_at_cpow continuousAt_cpow
 
 theorem continuousAt_cpow_const {a b : ℂ} (ha : a ∈ slitPlane) :
-    ContinuousAt (fun x => cpow x b) a :=
+    ContinuousAt (· ^ b) a :=
   Tendsto.comp (@continuousAt_cpow (a, b) ha) (continuousAt_id.prod continuousAt_const)
 #align continuous_at_cpow_const continuousAt_cpow_const
 
@@ -167,21 +167,15 @@ section RpowLimits
 
 namespace Real
 
-theorem continuousAt_const_rpow {a b : ℝ} (h : a ≠ 0) : ContinuousAt (rpow a) b := by
-  have : rpow a = fun x : ℝ => ((a : ℂ) ^ (x : ℂ)).re := by
-    ext1 x
-    rw [rpow_eq_pow, rpow_def]
-  rw [this]
-  refine' Complex.continuous_re.continuousAt.comp _
-  refine' (continuousAt_const_cpow _).comp Complex.continuous_ofReal.continuousAt
+theorem continuousAt_const_rpow {a b : ℝ} (h : a ≠ 0) : ContinuousAt (a ^ ·) b := by
+  simp only [rpow_def]
+  refine Complex.continuous_re.continuousAt.comp ?_
+  refine (continuousAt_const_cpow ?_).comp Complex.continuous_ofReal.continuousAt
   norm_cast
 #align real.continuous_at_const_rpow Real.continuousAt_const_rpow
 
-theorem continuousAt_const_rpow' {a b : ℝ} (h : b ≠ 0) : ContinuousAt (rpow a) b := by
-  have : rpow a = fun x : ℝ => ((a : ℂ) ^ (x : ℂ)).re := by
-    ext1 x
-    rw [rpow_eq_pow, rpow_def]
-  rw [this]
+theorem continuousAt_const_rpow' {a b : ℝ} (h : b ≠ 0) : ContinuousAt (a ^ ·) b := by
+  simp only [rpow_def]
   refine' Complex.continuous_re.continuousAt.comp _
   refine' (continuousAt_const_cpow' _).comp Complex.continuous_ofReal.continuousAt
   norm_cast
@@ -440,7 +434,7 @@ theorem eventually_pow_one_div_le (x : ℝ≥0) {y : ℝ≥0} (hy : 1 < y) :
   rw [tsub_add_cancel_of_le hy.le] at hm
   refine' eventually_atTop.2 ⟨m + 1, fun n hn => _⟩
   simpa only [NNReal.rpow_one_div_le_iff (Nat.cast_pos.2 <| m.succ_pos.trans_le hn),
-    NNReal.rpow_nat_cast] using hm.le.trans (pow_le_pow_right hy.le (m.le_succ.trans hn))
+    NNReal.rpow_natCast] using hm.le.trans (pow_le_pow_right hy.le (m.le_succ.trans hn))
 #align nnreal.eventually_pow_one_div_le NNReal.eventually_pow_one_div_le
 
 end NNReal

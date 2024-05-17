@@ -41,7 +41,7 @@ lemma VectorFourier.fourierSMulRightSchwartz_apply (f : 𝓢(D, V)) (d : D) :
 
 /-- The Fourier transform of a Schwartz map `f` has a Fréchet derivative (everywhere in its domain)
 and its derivative is the Fourier transform of the Schwartz map `mul_L_schwartz L f`. -/
-theorem SchwartzMap.hasFDerivAt_fourierIntegral [CompleteSpace V] [MeasurableSpace D] [BorelSpace D]
+theorem SchwartzMap.hasFDerivAt_fourierIntegral [MeasurableSpace D] [BorelSpace D]
     {μ : Measure D} [SecondCountableTopology D] [HasTemperateGrowth μ] (f : 𝓢(D, V)) (w : E) :
     HasFDerivAt (fourierIntegral fourierChar μ L.toLinearMap₂ f)
       (fourierIntegral fourierChar μ L.toLinearMap₂ (fourierSMulRightSchwartz L f) w) w :=

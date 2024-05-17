@@ -374,7 +374,7 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
       simp [smul_quot, neg_quot, add_mul]
     intCast := intCast r
     intCast_ofNat := fun n => congrArg RingQuot.mk <| by
-      exact congrArg (Quot.mk _) (Int.cast_ofNat _)
+      exact congrArg (Quot.mk _) (Int.cast_natCast _)
     intCast_negSucc := fun n => congrArg RingQuot.mk <| by
       simp_rw [neg_def]
       exact congrArg (Quot.mk _) (Int.cast_negSucc n) }

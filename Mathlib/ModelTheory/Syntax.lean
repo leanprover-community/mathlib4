@@ -318,20 +318,17 @@ inductive BoundedFormula : ℕ → Type max u v u'
 #align first_order.language.bounded_formula FirstOrder.Language.BoundedFormula
 
 /-- `Formula α` is the type of formulas with all free variables indexed by `α`. -/
-@[reducible]
-def Formula :=
+abbrev Formula :=
   L.BoundedFormula α 0
 #align first_order.language.formula FirstOrder.Language.Formula
 
 /-- A sentence is a formula with no free variables. -/
-@[reducible]
-def Sentence :=
+abbrev Sentence :=
   L.Formula Empty
 #align first_order.language.sentence FirstOrder.Language.Sentence
 
 /-- A theory is a set of sentences. -/
-@[reducible]
-def Theory :=
+abbrev Theory :=
   Set L.Sentence
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory FirstOrder.Language.Theory
@@ -667,11 +664,11 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (Sum α (Fin 
 
 /-- take the disjunction of a finite set of formulas -/
 noncomputable def iSup (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  (s.toList.map f).foldr (. ⊔ .) ⊥
+  (s.toList.map f).foldr (· ⊔ ·) ⊥
 
 /-- take the conjunction of a finite set of formulas -/
 noncomputable def iInf (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  (s.toList.map f).foldr (. ⊓ .) ⊤
+  (s.toList.map f).foldr (· ⊓ ·) ⊤
 
 
 variable {l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}
@@ -892,11 +889,11 @@ theorem id_onBoundedFormula :
   ext f
   induction' f with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
-  · rw [onBoundedFormula, LHom.id_onTerm, id.def, id.def, id.def, Term.bdEqual]
+  · rw [onBoundedFormula, LHom.id_onTerm, id, id, id, Term.bdEqual]
   · rw [onBoundedFormula, LHom.id_onTerm]
     rfl
-  · rw [onBoundedFormula, ih1, ih2, id.def, id.def, id.def]
-  · rw [onBoundedFormula, ih3, id.def, id.def]
+  · rw [onBoundedFormula, ih1, ih2, id, id, id]
+  · rw [onBoundedFormula, ih3, id, id]
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Lhom.id_on_bounded_formula FirstOrder.Language.LHom.id_onBoundedFormula
 

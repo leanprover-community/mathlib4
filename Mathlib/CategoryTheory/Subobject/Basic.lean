@@ -564,7 +564,7 @@ theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
 #align category_theory.subobject.pullback_comp CategoryTheory.Subobject.pullback_comp
 
-instance (f : X ⟶ Y) : Faithful (pullback f) where
+instance (f : X ⟶ Y) : (pullback f).Faithful where
 
 end Pullback
 
