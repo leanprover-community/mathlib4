@@ -334,16 +334,6 @@ def compl₂ (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₃] Q →ₛₗ[�
   (lcompₛₗ _ _ g).comp f
 #align linear_map.compl₂ LinearMap.compl₂
 
-@[simp]
-theorem compl₂_apply (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) : f.compl₂ g m q = f m (g q) := rfl
-#align linear_map.compl₂_apply LinearMap.compl₂_apply
-
-@[simp]
-theorem compl₂_id : f.compl₂ LinearMap.id = f := by
-  ext
-  rw [compl₂_apply, id_coe, _root_.id]
-#align linear_map.compl₂_id LinearMap.compl₂_id
-
 /-- Composing a linear map `Q → N` and a bilinear map `M → N → P` to
 form a bilinear map `M → Q → P`. -/
 def compl₂' {R₁ : Type*} [CommSemiring R₁]  [Module R₂ Nₗ] [Module R₂ Pₗ] [Module R₁ Pₗ]
@@ -355,6 +345,16 @@ def compl₂' {R₁ : Type*} [CommSemiring R₁]  [Module R₂ Nₗ] [Module R�
     simp only [LinearMapClass.map_smul, RingHom.id_apply]
     rw [lcompₛₗ]
     rfl
+
+@[simp]
+theorem compl₂_apply (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) : f.compl₂ g m q = f m (g q) := rfl
+#align linear_map.compl₂_apply LinearMap.compl₂_apply
+
+@[simp]
+theorem compl₂_id : f.compl₂ LinearMap.id = f := by
+  ext
+  rw [compl₂_apply, id_coe, _root_.id]
+#align linear_map.compl₂_id LinearMap.compl₂_id
 
 /-- Composing linear maps `Q → M` and `Q' → N` with a bilinear map `M → N → P` to
 form a bilinear map `Q → Q' → P`. -/
