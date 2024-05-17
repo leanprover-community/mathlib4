@@ -1485,11 +1485,8 @@ lemma Continuous.disjoint_nhds_of_different_image {X Y Z : Type*}
     [TopologicalSpace Z] {f : X → Y} {k : X → Z} {g : Z → Y}
     (hg : Continuous g) (h : g ∘ k = f) {x x' : X} (hxx' : f x ≠ f x') :
     Disjoint (𝓝 (k x)) (𝓝 (k x')) := by
-  have := disjoint_nhds_nhds.mpr hxx'
-  rw [← h] at *
-  have d₁ : 𝓝 (k x) ≤ comap g (𝓝 (g (k x))) := by refine tendsto_iff_comap.mp hg.continuousAt
-  have d₂ : 𝓝 (k x') ≤ comap g (𝓝 (g (k x'))) := by refine tendsto_iff_comap.mp hg.continuousAt
-  exact (disjoint_comap this).mono d₁ d₂
+  subst h
+  exact Tendsto.disjoint hg.continuousAt (disjoint_nhds_nhds.mpr hxx') hg.continuousAt
 
 instance : T2Space (t2Quotient X) := by
   rw [t2Space_iff_disjoint_nhds]
