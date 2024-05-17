@@ -336,6 +336,7 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
 
 #adaptation_note
 /--
+<<<<<<< HEAD
 After https://github.com/leanprover/lean4/pull/4119 we need to either use
 `set_option maxSynthPendingDepth 2 in`
 or in the line
@@ -348,6 +349,10 @@ rw [((continuousMultilinearCurryRightEquiv' 𝕜 m E F).symm).comp_hasFDerivWith
   (f' := (p x m.succ.succ).curryRight.curryLeft)]
 ```
 Note that just using `set_option maxSynthPendingDepth 2 in` around the `rw` doesn't work.
+=======
+After https://github.com/leanprover/lean4/pull/4119,
+without `set_option maxSynthPendingDepth 2` this proof needs substantial repair.
+>>>>>>> bump/v4.9.0
 -/
 set_option maxSynthPendingDepth 2 in
 -- Porting note: this was split out from `hasFTaylorSeriesUpToOn_succ_iff_right` to avoid a timeout.

@@ -331,7 +331,7 @@ theorem le_trim : m ≤ m.trim := le_trim_iff.2 fun _ _ ↦ le_rfl
 
 @[simp] -- Porting note: added `simp`
 theorem trim_eq {s : Set α} (hs : MeasurableSet s) : m.trim s = m s :=
-  inducedOuterMeasure_eq' MeasurableSet.iUnion (fun f _hf => m.iUnion_nat f)
+  inducedOuterMeasure_eq' MeasurableSet.iUnion (fun f _hf => m.iUnion f)
     (fun _ _ _ _ h => m.mono h) hs
 #align measure_theory.outer_measure.trim_eq MeasureTheory.OuterMeasure.trim_eq
 
@@ -365,7 +365,7 @@ theorem trim_eq_trim_iff {m₁ m₂ : OuterMeasure α} :
 theorem trim_eq_iInf (s : Set α) : m.trim s = ⨅ (t) (_ : s ⊆ t) (_ : MeasurableSet t), m t := by
   simp (config := { singlePass := true }) only [iInf_comm]
   exact
-    inducedOuterMeasure_eq_iInf MeasurableSet.iUnion (fun f _ => m.iUnion_nat f)
+    inducedOuterMeasure_eq_iInf MeasurableSet.iUnion (fun f _ => m.iUnion f)
       (fun _ _ _ _ h => m.mono h) s
 #align measure_theory.outer_measure.trim_eq_infi MeasureTheory.OuterMeasure.trim_eq_iInf
 
