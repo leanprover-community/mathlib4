@@ -196,7 +196,7 @@ protected instance inv_lift_inv {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f
 
 /-- Given `φ : a ≅ b` and `f : R ⟶ S`, such that `φ.hom` lifts `f`, then `φ.inv` lifts the
 inverse of `f` given by `isoOfIsoLift`. -/
-protected instance inv_lift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ≅ b}
+protected lemma inv_lift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ≅ b)
     [hφ : IsHomLift p f φ.hom] : IsHomLift p (hφ.isoOfIsoLift).inv φ.inv where
   domain_eq := hφ.2
   codomain_eq := hφ.1
