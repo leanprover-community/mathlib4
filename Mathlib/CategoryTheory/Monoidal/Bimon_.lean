@@ -12,6 +12,18 @@ We define bimonoids in a braided monoidal category `C`
 as comonoid objects in the category of monoid objects in `C`.
 
 We verify that this is equivalent to the monoid objects in the category of comonoid objects.
+
+## TODO
+* Define Hopf monoids, which in a cartesian monoidal category are exactly group objects,
+  and use this to define group schemes.
+* Construct the category of modules, and show that it is monoidal with a monoidal forgetful functor
+  to `C`.
+* Relax the requirement that `C` is braided, instead requiring that the structure morphisms are
+  central. This would require completely replacing the definition.
+* Some form of Tannaka reconstruction: given a central monoidal functor `F : C ⥤ D`,
+  the internal endomorphisms of `F` form a bimonoid in presheaves on `D`,
+  in good circumstances this is representable by a bimonoid in `D`, and then
+  `C` is monoidally equivalent to the modules over that bimonoid.
 -/
 
 noncomputable section
