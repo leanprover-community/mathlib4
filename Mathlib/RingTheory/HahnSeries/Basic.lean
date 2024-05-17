@@ -567,4 +567,3 @@ theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
 end LocallyFiniteLinearOrder
 
 end HahnSeries
-#lint
