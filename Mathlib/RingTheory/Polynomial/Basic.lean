@@ -254,13 +254,19 @@ def coeffs (p : R[X]) : Finset R :=
   Finset.image (fun n => p.coeff n) p.support
 #align polynomial.frange Polynomial.coeffs
 
+@[deprecated (since := "2024-05-17")] noncomputable alias frange := coeffs
+
 theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
   rfl
 #align polynomial.frange_zero Polynomial.coeffs_zero
 
+@[deprecated (since := "2024-05-17")] alias frange_zero := coeffs_zero
+
 theorem mem_coeffs_iff {p : R[X]} {c : R} : c ∈ p.coeffs ↔ ∃ n ∈ p.support, c = p.coeff n := by
   simp [coeffs, eq_comm, (Finset.mem_image)]
 #align polynomial.mem_frange_iff Polynomial.mem_coeffs_iff
+
+@[deprecated (since := "2024-05-17")] alias mem_frange_iff := mem_coeffs_iff
 
 theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
   classical
@@ -268,11 +274,15 @@ theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
     simp_all [coeff_one]
 #align polynomial.frange_one Polynomial.coeffs_one
 
+@[deprecated (since := "2024-05-17")] alias frange_one := coeffs_one
+
 theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
   classical
   simp only [coeffs, exists_prop, mem_support_iff, Finset.mem_image, Ne]
   exact ⟨n, h, rfl⟩
 #align polynomial.coeff_mem_frange Polynomial.coeff_mem_coeffs
+
+@[deprecated (since := "2024-05-17")] alias coeff_mem_frange := coeff_mem_coeffs
 
 theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
     (∑ i in range n, (X : R[X]) ^ i).comp (X + 1) =
@@ -506,6 +516,8 @@ theorem coeffs_ofSubring {p : T[X]} : (↑(p.ofSubring T).coeffs : Set R) ⊆ T 
   rw [← h'n, coeff_ofSubring]
   exact Subtype.mem (coeff p n : T)
 #align polynomial.frange_of_subring Polynomial.coeffs_ofSubring
+
+@[deprecated (since := "2024-05-17")] alias frange_ofSubring := coeffs_ofSubring
 
 end Ring
 
