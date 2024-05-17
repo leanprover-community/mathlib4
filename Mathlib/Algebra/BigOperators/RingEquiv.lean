@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.BigOperators.List.Lemmas
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Opposite
 
