@@ -71,7 +71,9 @@ variable {ι : Type*}
 /-- A nontrivial rectangular box in `ι → ℝ` with corners `lower` and `upper`. Represents the product
 of half-open intervals `(lower i, upper i]`. -/
 structure Box (ι : Type*) where
+  /-- coordinates of the lower and upper corners of the box -/
   (lower upper : ι → ℝ)
+  /-- Each lower coordinate is less than its upper coordinate: i.e., the box is non-empty -/
   lower_lt_upper : ∀ i, lower i < upper i
 #align box_integral.box BoxIntegral.Box
 
@@ -96,6 +98,8 @@ instance : Membership (ι → ℝ) (Box ι) :=
   ⟨fun x I ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
 
 -- Porting note: added
+/-- The set of points in this box: this is the product of half-open intervals `(lower i, upper i]`,
+where `lower` and `upper` are this box' corners. -/
 @[coe]
 def toSet (I : Box ι) : Set (ι → ℝ) := { x | x ∈ I }
 
@@ -267,6 +271,7 @@ In this section we define coercion from `WithBot (Box ι)` to `Set (ι → ℝ)`
 -/
 
 -- Porting note: added
+/-- The set underlying this box: `⊥` is mapped to `∅`. -/
 @[coe]
 def withBotToSet (o : WithBot (Box ι)) : Set (ι → ℝ) := o.elim ∅ (↑)
 

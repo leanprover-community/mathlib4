@@ -40,7 +40,10 @@ variable {ι : Type*}
 prepartition. For simplicity we require that `tag` is defined for all boxes in `ι → ℝ` but
 we will use only the values of `tag` on the boxes of the partition. -/
 structure TaggedPrepartition (I : Box ι) extends Prepartition I where
+  /-- Choice of tagged point of each box in this prepartition:
+    we extend this to a total function, on all boxes in `ι → ℝ`. -/
   tag : Box ι → ι → ℝ
+  /-- Each tagged point belongs to `I` -/
   tag_mem_Icc : ∀ J, tag J ∈ Box.Icc I
 #align box_integral.tagged_prepartition BoxIntegral.TaggedPrepartition
 

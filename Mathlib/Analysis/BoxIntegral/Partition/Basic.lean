@@ -53,8 +53,11 @@ variable {ι : Type*}
 /-- A prepartition of `I : BoxIntegral.Box ι` is a finite set of pairwise disjoint subboxes of
 `I`. -/
 structure Prepartition (I : Box ι) where
+  /-- The underlying set of boxes -/
   boxes : Finset (Box ι)
+  /-- Each box is a sub-box of `I` -/
   le_of_mem' : ∀ J ∈ boxes, J ≤ I
+  /-- The boxes in a prepartition are pairwise disjoint. -/
   pairwiseDisjoint : Set.Pairwise (↑boxes) (Disjoint on ((↑) : Box ι → Set (ι → ℝ)))
 #align box_integral.prepartition BoxIntegral.Prepartition
 
