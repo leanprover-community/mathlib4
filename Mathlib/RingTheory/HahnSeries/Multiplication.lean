@@ -39,13 +39,11 @@ open BigOperators Pointwise
 
 noncomputable section
 
-variable {Γ R : Type*}
-
-section Multiplication
-
-variable [OrderedCancelAddCommMonoid Γ]
+variable {Γ Γ' R V : Type*}
 
 namespace HahnSeries
+
+variable [PartialOrder Γ] [Zero Γ]
 
 instance [Zero R] [One R] : One (HahnSeries Γ R) :=
   ⟨single 0 1⟩
@@ -92,22 +90,19 @@ def HahnModule (Γ R V : Type*) [PartialOrder Γ] [Zero V] [SMul R V] :=
 
 namespace HahnModule
 
-section
-
-variable {Γ R V : Type*} [PartialOrder Γ] [Zero V] [SMul R V]
-
 /-- The casting function to the type synonym. -/
 def of {Γ : Type*} (R : Type*) {V : Type*} [PartialOrder Γ] [Zero V] [SMul R V] :
     HahnSeries Γ V ≃ HahnModule Γ R V := Equiv.refl _
 
 /-- Recursion principle to reduce a result about the synonym to the original type. -/
 @[elab_as_elim]
-def rec {motive : HahnModule Γ R V → Sort*} (h : ∀ x : HahnSeries Γ V, motive (of R x)) :
-    ∀ x, motive x :=
+def rec [PartialOrder Γ] [Zero V] [SMul R V] {motive : HahnModule Γ R V → Sort*}
+    (h : ∀ x : HahnSeries Γ V, motive (of R x)) : ∀ x, motive x :=
   fun x => h <| (of R).symm x
 
 @[ext]
-theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
+theorem ext [PartialOrder Γ] [Zero V] [SMul R V] (x y : HahnModule Γ R V)
+    (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
   (of R).symm.injective <| HahnSeries.coeff_inj.1 h
 
 theorem ext_iff {Γ R V : Type*} [PartialOrder Γ] [Zero V] [SMul R V]
@@ -122,6 +117,9 @@ variable [PartialOrder Γ]
 
 instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommMonoid (HahnSeries Γ V)
+instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
+    SMul R (HahnModule Γ R V) :=
+  inferInstanceAs <| SMul R (HahnSeries Γ V)
 
 @[simp] theorem of_zero : of R (0 : HahnSeries Γ V) = 0 := rfl
 @[simp] theorem of_add (x y : HahnSeries Γ V) : of R (x + y) = of R x + of R y := rfl
@@ -130,7 +128,7 @@ instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
 @[simp] theorem of_symm_add (x y : HahnModule Γ R V) :
   (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
 
-instance instRMod {V} [Semiring R] [AddCommMonoid V] [Module R V] :
+instance instBaseMod {V} [Semiring R] [AddCommMonoid V] [Module R V] :
     Module R (HahnModule Γ R V) :=
   inferInstanceAs <| Module R (HahnSeries Γ V)
 
@@ -165,7 +163,7 @@ section SMulZeroClass
 
 variable [PartialOrder Γ] [PartialOrder Γ'] [OrderedCancelVAdd Γ Γ'] [Zero R] [AddCommMonoid V]
 
-instance instRSMulZeroClass [PartialOrder Γ] [SMulZeroClass R V] :
+instance instBaseSMulZeroClass [PartialOrder Γ] [SMulZeroClass R V] :
     SMulZeroClass R (HahnModule Γ R V) :=
   inferInstanceAs <| SMulZeroClass R (HahnSeries Γ V)
 
