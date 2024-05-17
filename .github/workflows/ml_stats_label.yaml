@@ -10,11 +10,19 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ## fetch the whole repository, to get the history of the last week
-          fetch-depth: 0
-          ref: 'master'
+
+      - name: Checkout master branch
+        uses: adomani/get_mathlib4_with_cache/tree/first_attempt@v1 #actions/checkout@v4
+        #with:
+        #  ## fetch the whole repository, to get the history of the last week
+        #  fetch-depth: 0
+        #  ref: 'master'
+
+        #- uses: actions/checkout@v4
+        #  with:
+        #    ## fetch the whole repository, to get the history of the last week
+        #    fetch-depth: 0
+        #    ref: 'master'
 
       - id: mathlib_stats
         run: |
