@@ -872,38 +872,16 @@ theorem imageProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
 theorem fiberProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
     (hαβ : s.IsPWO) (a : α) : {y | toLex (a, y) ∈ s}.IsPWO := by
   let f : α ×ₗ β → β := fun x => (ofLex x).2
-  have h : MonotoneOn f (s ∩ (fun x ↦ (ofLex x).1) ⁻¹' {a}) := by
-    intro b hb c hc hbc
-    have h'' : (ofLex b).1 < (ofLex c).1 ∨ (ofLex b).1 = (ofLex c).1 ∧ (ofLex b).2 ≤ (ofLex c).2 :=
-      (Prod.Lex.le_iff b c).mp hbc
-    have nbc : ¬ (ofLex b).1 < (ofLex c).1 := by
-      refine Eq.not_lt ?_
-      have hba : (ofLex b).1 = a := by
-        simp_all only [mem_inter_iff, mem_preimage, mem_singleton_iff, true_and, false_or]
-      have hca : (ofLex c).1 = a := by
-        simp_all only [mem_inter_iff, mem_preimage, mem_singleton_iff, true_and, false_or]
-      exact hba.trans hca.symm
-    simp_all only [lt_self_iff_false, true_and, false_or]
-  have h' : (f '' (s ∩ (fun x ↦ (ofLex x).1) ⁻¹' {a})) = {y | toLex (a, y) ∈ s} := by
-    refine ext ?h
-    intro x
-    refine iff_def.mpr ?_
-    constructor
-    · intro hx
-      simp only [mem_setOf_eq]
-      simp only [mem_image, mem_inter_iff, mem_preimage, mem_singleton_iff, Lex.exists,
-        Prod.exists] at hx
-      let a' : α := Exists.choose hx
-      let b' : β := Exists.choose (Exists.choose_spec hx)
-      have hab' : (toLex (a', b') ∈ s ∧ (a', b').1 = a) ∧ (a', b').2 = x :=
-        Exists.choose_spec (Exists.choose_spec hx)
-      aesop
-    · intro hx
-      simp_all only [mem_setOf_eq, mem_image, mem_inter_iff, mem_preimage, mem_singleton_iff]
-      exact Exists.intro (toLex (a, x)) { left := { left := hx, right := rfl }, right := rfl }
-  rw [← h']
-  exact IsPWO.image_of_monotoneOn
-    (IsPWO.mono hαβ <| inter_subset_left s ((fun x ↦ (ofLex x).1) ⁻¹' {a})) h
+  have h : {y | toLex (a, y) ∈ s} = f '' (s ∩ (fun x ↦ (ofLex x).1) ⁻¹' {a}) := by
+    ext x
+    simp [f]
+  rw [h]
+  apply IsPWO.image_of_monotoneOn (hαβ.mono (inter_subset_left s _))
+  rintro b ⟨-, hb⟩ c ⟨-, hc⟩ hbc
+  simp only [mem_preimage, mem_singleton_iff] at hb hc
+  have : (ofLex b).1 < (ofLex c).1 ∨ (ofLex b).1 = (ofLex c).1 ∧ f b ≤ f c :=
+    (Prod.Lex.le_iff b c).mp hbc
+  simp_all only [lt_self_iff_false, true_and, false_or]
 
 theorem ProdLex_iff [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)} :
     s.IsPWO ↔
