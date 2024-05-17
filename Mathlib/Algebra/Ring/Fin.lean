@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.GroupWithZero.Prod
 
 #align_import algebra.ring.fin from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 

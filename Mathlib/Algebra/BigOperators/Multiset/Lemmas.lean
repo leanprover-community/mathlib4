@@ -5,7 +5,7 @@ Authors: Chris Hughes, Bhavik Mehta, Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.GroupWithZero.Prod
 
 #align_import algebra.big_operators.multiset.lemmas from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 

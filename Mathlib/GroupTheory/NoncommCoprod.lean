@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.Algebra.Group.Commute.Hom
-import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.GroupWithZero.Prod
 
 /-!
 # Canonical homomorphism from a pair of monoids

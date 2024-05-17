@@ -7,6 +7,7 @@ Authors: Scott Carnahan
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Data.PNat.Basic
 import Mathlib.GroupTheory.GroupAction.Prod
 
