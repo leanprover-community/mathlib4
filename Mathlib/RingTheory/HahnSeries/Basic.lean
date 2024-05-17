@@ -19,10 +19,14 @@ These generalize Laurent series (with value group `ℤ`), and Laurent series are
 in the file `RingTheory/LaurentSeries`.
 
 ## Main Definitions
-  * If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of
+* If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of
   formal series over `Γ` with coefficients in `R`, whose supports are partially well-ordered.
-  * Laurent series over `R` are implemented as `HahnSeries ℤ R` in the file
-    `RingTheory/LaurentSeries`.
+* `support x` is the subset of `Γ` whose coefficients are nonzero.
+* `single a r` is the Hahn series which has coefficient `r` at `a` and zero otherwise.
+* `orderTop x` is a minimal element of `WithTop Γ` where `x` has a nonzero
+  coefficient if `x ≠ 0`, and is `⊤` when `x = 0`.
+* `order x` is a minimal element of `Γ` where `x` has a nonzero coefficient if `x ≠ 0`, and is zero
+  when `x = 0`.
 
 ## TODO
   * Equivalence between `HahnSeries Γ (HahnSeries Γ' R)` and `HahnSeries (Γ × Γ') R`
@@ -42,7 +46,6 @@ noncomputable section
   formal series over `Γ` with coefficients in `R`, whose supports are well-founded. -/
 @[ext]
 structure HahnSeries (Γ : Type*) (R : Type*) [PartialOrder Γ] [Zero R] where
-  /-- The coefficient function of a Hahn series. -/
   coeff : Γ → R
   isPWO_support' : (Function.support coeff).IsPWO
 #align hahn_series HahnSeries
