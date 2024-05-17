@@ -22,7 +22,7 @@ one consequence being that the number of Dyck words with length `2n` is `catalan
 ## Main definitions
 
 * `DyckPath`: a list of `U` and `D` steps without any restrictions.
-* `DyckPath.IsBalanced`: the property defining Dyck words.
+* `DyckPath.IsDyckWord`: the property defining Dyck words.
 
 ## Main results
 
@@ -36,7 +36,6 @@ one consequence being that the number of Dyck words with length `2n` is `catalan
 While any two-valued type could have been used for `Step`, a new enumerated type has been created
 here to emphasise that the definition of a Dyck word does not depend on that underlying type.
 -/
-
 
 open List
 
@@ -64,12 +63,12 @@ lemma count_U_add_count_D_eq_length : p.count U + p.count D = p.length := by
   rw [count]; congr!; rename_i s
   cases' s <;> simp
 
-/-- A Dyck path is balanced if its running `D`-count never exceeds its running `U`-count
+/-- A Dyck path is a Dyck word if its running `D`-count never exceeds its running `U`-count
 and both counts are equal at the end. -/
-def IsBalanced : Prop :=
+def IsDyckWord : Prop :=
   p.count U = p.count D ∧ ∀ i, (p.take i).count D ≤ (p.take i).count U
 
-instance : DecidablePred IsBalanced := fun q ↦
+instance : DecidablePred IsDyckWord := fun q ↦
   decidable_of_iff
     (q.count U = q.count D ∧ ∀ i < q.length, (q.take i).count D ≤ (q.take i).count U) <| by
     constructor <;> (intro ⟨h1, h2⟩; refine' ⟨h1, _⟩)
@@ -83,20 +82,20 @@ end Defs
 
 section Lemmas
 
-variable {p : DyckPath} (bp : p.IsBalanced)
+variable {p : DyckPath} (bp : p.IsDyckWord)
 
-lemma IsBalanced.length_even : Even p.length := by
+lemma IsDyckWord.length_even : Even p.length := by
   use p.count U
   rw [← count_U_add_count_D_eq_length, bp.1]
 
 /-- If `x` and `y` are balanced Dyck paths then so is `xy`. -/
-lemma IsBalanced.append {q : DyckPath} (bq : q.IsBalanced) : (p ++ q).IsBalanced := by
-  simp only [IsBalanced, take_append_eq_append_take, count_append]
+lemma IsDyckWord.append {q : DyckPath} (bq : q.IsDyckWord) : (p ++ q).IsDyckWord := by
+  simp only [IsDyckWord, take_append_eq_append_take, count_append]
   exact ⟨by rw [bp.1, bq.1], fun _ ↦ add_le_add (bp.2 _) (bq.2 _)⟩
 
 /-- If `x` is a balanced Dyck path then so is `(x)`. -/
-lemma IsBalanced.nest : (↑[U] ++ p ++ ↑[D]).IsBalanced := by
-  simp only [IsBalanced, take_append_eq_append_take, count_append]
+lemma IsDyckWord.nest : (↑[U] ++ p ++ ↑[D]).IsDyckWord := by
+  simp only [IsDyckWord, take_append_eq_append_take, count_append]
   refine' ⟨by rw [bp.1]; simp [add_comm], fun i ↦ _⟩
   rw [← add_rotate (count D _), ← add_rotate (count U _)]
   apply add_le_add _ (bp.2 _)
@@ -107,8 +106,8 @@ lemma IsBalanced.nest : (↑[U] ++ p ++ ↑[D]).IsBalanced := by
   exact add_le_add (zero_le _) ((count_le_length _ _).trans (by simp))
 
 /-- A balanced Dyck path is split into two parts. If one part is balanced, so is the other. -/
-lemma IsBalanced.split (i : ℕ) : IsBalanced (p.take i) ↔ IsBalanced (p.drop i) := by
-  rw [IsBalanced, ← p.take_append_drop i] at bp
+lemma IsDyckWord.split (i : ℕ) : IsDyckWord (p.take i) ↔ IsDyckWord (p.drop i) := by
+  rw [IsDyckWord, ← p.take_append_drop i] at bp
   simp_rw [take_append_eq_append_take, count_append] at bp
   obtain ⟨b1, b2⟩ := bp
   constructor <;> intro bh
@@ -122,20 +121,20 @@ lemma IsBalanced.split (i : ℕ) : IsBalanced (p.take i) ↔ IsBalanced (p.drop 
       simp_rw [show j - (p.take i).length = 0 by omega, take_zero, count_nil, add_zero] at b2
       exact b2
 
-/-- If `p.take i` satisfies the equality part of `IsBalanced`, it also satisfies the other part
+/-- If `p.take i` satisfies the equality part of `IsDyckWord`, it also satisfies the other part
 and is balanced itself. -/
-lemma IsBalanced.take {i : ℕ} (h : (p.take i).count U = (p.take i).count D) :
-    IsBalanced (p.take i) := ⟨h, fun j ↦ by rw [take_take]; apply bp.2⟩
+lemma IsDyckWord.take {i : ℕ} (h : (p.take i).count U = (p.take i).count D) :
+    IsDyckWord (p.take i) := ⟨h, fun j ↦ by rw [take_take]; apply bp.2⟩
 
 variable (np : p ≠ [])
 
 /-- The first element of a nonempty balanced Dyck path is `U`. -/
-lemma IsBalanced.head_eq_U : p.head np = U := by
+lemma IsDyckWord.head_eq_U : p.head np = U := by
   cases' p with h _; · tauto
   by_contra f; simpa [(step_cases h).resolve_left f] using bp.2 1
 
 /-- The last element of a nonempty balanced Dyck path is `D`. -/
-lemma IsBalanced.getLast_eq_D : p.getLast np = D := by
+lemma IsDyckWord.getLast_eq_D : p.getLast np = D := by
   by_contra f; have s := bp.1
   rw [← dropLast_append_getLast np, (step_cases _).resolve_right f] at s
   simp_rw [dropLast_eq_take, count_append, count_singleton', ite_true, ite_false] at s
@@ -156,11 +155,11 @@ lemma cons_tail_dropLast_concat : U :: tail (dropLast p) ++ [D] = p := by
   rw [bp.getLast_eq_D, drop_one, (denest_aux bp np).2.1, bp.head_eq_U]
   rfl
 
-/-- If the inequality part of `IsBalanced` is strict in the interior of a nonempty
+/-- If the inequality part of `IsDyckWord` is strict in the interior of a nonempty
 balanced Dyck path, the interior is itself balanced. -/
-lemma IsBalanced.denest
+lemma IsDyckWord.denest
     (h : ∀ i (_ : 0 < i ∧ i < p.length), (p.take i).count D < (p.take i).count U) :
-    IsBalanced p.dropLast.tail := by
+    IsDyckWord p.dropLast.tail := by
   obtain ⟨l1, _, l3⟩ := denest_aux bp np
   constructor
   · replace bp := (cons_tail_dropLast_concat bp np).symm ▸ bp.1
@@ -185,7 +184,7 @@ section FirstReturn
 def firstReturn (p : DyckPath) : ℕ :=
   (range p.length).findIdx (fun i ↦ (p.take (i + 1)).count U = (p.take (i + 1)).count D)
 
-variable {p : DyckPath} (bp : p.IsBalanced) (np : p ≠ [])
+variable {p : DyckPath} (bp : p.IsDyckWord) (np : p ≠ [])
 
 lemma firstReturn_lt_length : p.firstReturn < p.length := by
   have lp := length_pos_of_ne_nil np
@@ -195,7 +194,7 @@ lemma firstReturn_lt_length : p.firstReturn < p.length := by
   use p.length - 1
   exact ⟨by omega, by rw [Nat.sub_add_cancel lp, take_all_of_le (le_refl _), bp.1]⟩
 
-lemma take_firstReturn_isBalanced : IsBalanced (p.take (p.firstReturn + 1)) := by
+lemma take_firstReturn_isBalanced : IsDyckWord (p.take (p.firstReturn + 1)) := by
   have := findIdx_get (w := (length_range p.length).symm ▸ firstReturn_lt_length bp np)
   simp only [get_range, decide_eq_true_eq] at this
   exact bp.take this
@@ -227,14 +226,14 @@ def leftPart (p : DyckPath) : DyckPath := (p.take p.firstReturn).tail
 /-- The right part of the Dyck word decomposition. -/
 def rightPart (p : DyckPath) : DyckPath := p.drop (p.firstReturn + 1)
 
-variable {p : DyckPath} (bp : p.IsBalanced) (np : p ≠ [])
+variable {p : DyckPath} (bp : p.IsDyckWord) (np : p ≠ [])
 
 lemma count_U_eq_count_D_of_firstReturn :
     (p.take (p.firstReturn + 1)).count U = (p.take (p.firstReturn + 1)).count D := by
   have := findIdx_get (w := (length_range p.length).symm ▸ firstReturn_lt_length bp np)
   simpa only [get_range, decide_eq_true_eq]
 
-theorem leftPart_isBalanced : p.leftPart.IsBalanced := by
+theorem leftPart_isBalanced : p.leftPart.IsDyckWord := by
   have := firstReturn_lt_length bp np
   rw [leftPart, take_firstReturn_eq_dropLast bp np]
   apply (bp.take (count_U_eq_count_D_of_firstReturn bp np)).denest
@@ -246,7 +245,7 @@ theorem leftPart_isBalanced : p.leftPart.IsBalanced := by
   rw [get_range, decide_eq_true_eq, ← ne_eq, Nat.sub_add_cancel hi.1] at ne
   exact lt_of_le_of_ne (bp.2 i) ne.symm
 
-theorem rightPart_isBalanced : p.rightPart.IsBalanced :=
+theorem rightPart_isBalanced : p.rightPart.IsDyckWord :=
   (bp.split _).mp <| bp.take (count_U_eq_count_D_of_firstReturn bp np)
 
 theorem eq_U_leftPart_D_rightPart : p = ↑[U] ++ p.leftPart ++ ↑[D] ++ p.rightPart := by
@@ -300,7 +299,7 @@ section Tree
 open Tree
 
 /-- Convert a balanced Dyck path to a binary rooted tree. -/
-def treeEquivToFun (st : { p : DyckPath // p.IsBalanced }) : Tree Unit :=
+def treeEquivToFun (st : { p : DyckPath // p.IsDyckWord }) : Tree Unit :=
   if e : st.1 = [] then nil else by
     obtain ⟨p, bp⟩ := st
     have := leftPart_length_lt bp e
@@ -316,13 +315,13 @@ def treeEquivInvFun' (tr : Tree Unit) : DyckPath :=
   | Tree.nil => []
   | Tree.node _ l r => ↑[U] ++ treeEquivInvFun' l ++ ↑[D] ++ treeEquivInvFun' r
 
-theorem isBalanced_treeEquivInvFun' (tr : Tree Unit) : (treeEquivInvFun' tr).IsBalanced := by
+theorem isBalanced_treeEquivInvFun' (tr : Tree Unit) : (treeEquivInvFun' tr).IsDyckWord := by
   induction' tr with _ l r bl br
   · rw [treeEquivInvFun']; decide
   · rw [treeEquivInvFun']; exact bl.nest.append br
 
 /-- Convert a binary rooted tree to a balanced Dyck path. -/
-def treeEquivInvFun (tr : Tree Unit) : { p : DyckPath // p.IsBalanced } :=
+def treeEquivInvFun (tr : Tree Unit) : { p : DyckPath // p.IsDyckWord } :=
   ⟨treeEquivInvFun' tr, isBalanced_treeEquivInvFun' tr⟩
 
 @[nolint unusedHavesSuffices]
@@ -357,14 +356,14 @@ theorem treeEquiv_right_inv (tr) : treeEquivToFun (treeEquivInvFun tr) = tr := b
   exact ⟨ttl, ttr⟩
 
 /-- Equivalence between Dyck words and rooted binary trees. -/
-def treeEquiv : { p : DyckPath // p.IsBalanced } ≃ Tree Unit where
+def treeEquiv : { p : DyckPath // p.IsDyckWord } ≃ Tree Unit where
   toFun := treeEquivToFun
   invFun := treeEquivInvFun
   left_inv st := treeEquiv_left_inv st rfl
   right_inv := treeEquiv_right_inv
 
 @[nolint unusedHavesSuffices]
-theorem length_eq_two_mul_iff_numNodes_eq {n : ℕ} (st : { p : DyckPath // p.IsBalanced }) :
+theorem length_eq_two_mul_iff_numNodes_eq {n : ℕ} (st : { p : DyckPath // p.IsDyckWord }) :
     st.1.length = 2 * n ↔ (treeEquiv st).numNodes = n := by
   induction' n using Nat.strongInductionOn with n ih generalizing st
   cases' eq_or_ne st.1 [] with j j
@@ -402,7 +401,7 @@ theorem length_eq_two_mul_iff_numNodes_eq {n : ℕ} (st : { p : DyckPath // p.Is
 /-- Equivalence between Dyck words of length `2 * n` and
 rooted binary trees with `n` internal nodes. -/
 def finiteTreeEquiv (n : ℕ) :
-    { p : DyckPath // p.IsBalanced ∧ p.length = 2 * n } ≃ treesOfNumNodesEq n where
+    { p : DyckPath // p.IsDyckWord ∧ p.length = 2 * n } ≃ treesOfNumNodesEq n where
   toFun := fun ⟨p, ⟨bp, len⟩⟩ ↦
     ⟨treeEquiv ⟨p, bp⟩, by rw [mem_treesOfNumNodesEq, ← length_eq_two_mul_iff_numNodes_eq, len]⟩
   invFun := fun ⟨tr, sz⟩ ↦
@@ -412,12 +411,12 @@ def finiteTreeEquiv (n : ℕ) :
   right_inv := fun ⟨tr, sz⟩ ↦ by simp only [Subtype.coe_eta, Equiv.apply_symm_apply]
 
 instance instFintypeDyckWords {n : ℕ} :
-    Fintype { p : DyckPath // p.IsBalanced ∧ p.length = 2 * n } :=
+    Fintype { p : DyckPath // p.IsDyckWord ∧ p.length = 2 * n } :=
   Fintype.ofEquiv _ (finiteTreeEquiv n).symm
 
 /-- There are `catalan n` Dyck words of length `2 * n`. -/
 theorem card_isBalanced_eq_catalan (n : ℕ) :
-    Fintype.card { p : DyckPath // p.IsBalanced ∧ p.length = 2 * n } = catalan n := by
+    Fintype.card { p : DyckPath // p.IsDyckWord ∧ p.length = 2 * n } = catalan n := by
   rw [← Fintype.ofEquiv_card (finiteTreeEquiv n), ← treesOfNumNodesEq_card_eq_catalan]
   convert Fintype.card_coe _
 
