@@ -115,11 +115,11 @@ theorem factorization_inj : Set.InjOn factorization { x : ℕ | x ≠ 0 } := fun
 #align nat.factorization_inj Nat.factorization_inj
 
 @[simp]
-theorem factorization_zero : factorization 0 = 0 := by decide
+theorem factorization_zero : factorization 0 = 0 := by ext; simp [factorization]
 #align nat.factorization_zero Nat.factorization_zero
 
 @[simp]
-theorem factorization_one : factorization 1 = 0 := by decide
+theorem factorization_one : factorization 1 = 0 := by ext; simp [factorization]
 #align nat.factorization_one Nat.factorization_one
 
 #noalign nat.support_factorization
@@ -994,7 +994,7 @@ See `Nat.card_multiples` for a "shifted-by-one" version. -/
 lemma card_multiples' (N n : ℕ) :
     ((Finset.range N.succ).filter (fun k ↦ k ≠ 0 ∧ n ∣ k)).card = N / n := by
   induction N with
-    | zero => simp
+    | zero => simp [Finset.filter_false_of_mem]
     | succ N ih =>
         rw [Finset.range_succ, Finset.filter_insert]
         by_cases h : n ∣ N.succ
