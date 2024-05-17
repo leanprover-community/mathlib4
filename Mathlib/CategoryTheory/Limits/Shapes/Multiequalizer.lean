@@ -474,6 +474,26 @@ theorem ofPiFork_π_app_right (c : Fork I.fstPiMap I.sndPiMap) (a) :
   rfl
 #align category_theory.limits.multifork.of_pi_fork_π_app_right CategoryTheory.Limits.Multifork.ofPiFork_π_app_right
 
+variable {K I}
+lemma IsLimit.hom_ext (hK : IsLimit K) {T : C} {f g : T ⟶ K.pt}
+    (h : ∀ a, f ≫ K.ι a = g ≫ K.ι a) : f = g := by
+  apply hK.hom_ext
+  rintro (_|b)
+  · apply h
+  · dsimp
+    rw [app_right_eq_ι_comp_fst, reassoc_of% h]
+
+def IsLimit.lift (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
+  (hk : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) :
+    T ⟶ K.pt :=
+  hK.lift (Multifork.ofι _ _ k hk)
+
+@[reassoc (attr := simp)]
+lemma IsLimit.fac (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
+  (hk : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) (a : I.L):
+    IsLimit.lift hK k hk ≫ K.ι a = k a :=
+  hK.fac _ _
+
 end Multifork
 
 namespace MulticospanIndex
