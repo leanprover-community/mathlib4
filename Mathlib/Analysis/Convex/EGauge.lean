@@ -17,6 +17,9 @@ It is defined as the infimum of the norms of `c : 𝕜` such that `x ∈ c • s
 In particular, for `𝕜 = ℝ≥0` this definition gives an `ℝ≥0∞`-valued version of `gauge`
 defined in `Mathlib/Analysis/Convex/Gauge.lean`.
 
+This definition can be used to generalize the notion of Fréchet derivative
+to maps between topological vector spaces without norms.
+
 Currently, we can't reuse results about `egauge` for `gauge`,
 because we lack a theory of normed semifields.
 -/
