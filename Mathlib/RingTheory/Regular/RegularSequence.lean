@@ -418,7 +418,7 @@ the sequence obtained from `rs` by prepending `r` is weakly regular on `M`.
 
 This is the induction principle produced by the inductive definition above.
 The motive will usually be valued in `Prop`, but `Sort*` works too. -/
-@[eliminator]
+@[induction_eliminator]
 def recIterModByRegular
     {motive : (M : Type v) → [AddCommGroup M] → [Module R M] → (rs : List R) →
       IsWeaklyRegular M rs → Sort*}
@@ -550,7 +550,7 @@ sequence obtained from `rs` by prepending `r` is regular on `M`.
 
 This is the induction principle produced by the inductive definition above.
 The motive will usually be valued in `Prop`, but `Sort*` works too. -/
-@[eliminator]
+@[induction_eliminator]
 def recIterModByRegular
     {motive : (M : Type v) → [AddCommGroup M] → [Module R M] → (rs : List R) →
       IsRegular M rs → Sort*}
