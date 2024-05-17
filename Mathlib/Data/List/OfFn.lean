@@ -112,7 +112,7 @@ theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
 /-- `ofFn` on an empty domain is the empty list. -/
 @[simp]
 theorem ofFn_zero (f : Fin 0 → α) : ofFn f = [] :=
-  rfl
+  ext_get (by simp) (fun i hi₁ hi₂ => by contradiction)
 #align list.of_fn_zero List.ofFn_zero
 
 @[simp]
@@ -188,7 +188,7 @@ theorem ofFn_mul' {m n} (f : Fin (m * n) → α) :
 
 @[simp]
 theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
-  | [] => rfl
+  | [] => by rw [ofFn_zero]
   | a :: l => by
     rw [ofFn_succ]
     congr
@@ -218,7 +218,7 @@ theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
 
 @[simp]
 theorem ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replicate n c
-  | 0, c => rfl
+  | 0, c => by rw [ofFn_zero, replicate_zero]
   | n+1, c => by rw [replicate, ← ofFn_const n]; simp
 #align list.of_fn_const List.ofFn_const
 
