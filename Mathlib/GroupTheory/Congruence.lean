@@ -412,7 +412,7 @@ instance : LE (Con M) where
   le c d := ∀ ⦃x y⦄, c x y → d x y
 
 @[to_additive]
-instance : DFunLike.PointwiseLE (Con M) where
+instance instPointwiseLE : DFunLike.PointwiseLE (Con M) where
 
 /-- Definition of `≤` for congruence relations. -/
 @[to_additive "Definition of `≤` for additive congruence relations."]
