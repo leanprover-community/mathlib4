@@ -40,14 +40,14 @@ For example, if we want to do introductions for propositions like `¬p`,
 the `¬` needs to be unfolded into `→ False`, and `intros` does not do such unfolding. -/
 partial def intros! (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
   run #[] mvarId
-  where
+where
   /-- Implementation of `intros!`. -/
   run (acc : Array FVarId) (g : MVarId) :=
-  try
-    let ⟨f, g⟩ ← mvarId.intro1
-    run (acc.push f) g
-  catch _ =>
-    pure (acc, g)
+    try
+      let ⟨f, g⟩ ← mvarId.intro1
+      run (acc.push f) g
+    catch _ =>
+      pure (acc, g)
 
 end Lean.MVarId
 

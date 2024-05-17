@@ -77,8 +77,7 @@ def isPullbackOfIsTerminalIsProduct {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
 
 /-- Any category with pullbacks and a terminal object has a limit cone for each walking pair. -/
 noncomputable def limitConeOfTerminalAndPullbacks [HasTerminal C] [HasPullbacks C]
-    (F : Discrete WalkingPair ⥤ C) : LimitCone F
-    where
+    (F : Discrete WalkingPair ⥤ C) : LimitCone F where
   cone :=
     { pt :=
         pullback (terminal.from (F.obj ⟨WalkingPair.left⟩))
@@ -127,8 +126,7 @@ def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : 
       IsColimit
         (PushoutCocone.mk (c.ι.app ⟨WalkingPair.left⟩) (c.ι.app ⟨WalkingPair.right⟩ : _) <|
           hX.hom_ext (f ≫ _) (g ≫ _))) :
-    IsColimit c
-    where
+    IsColimit c where
   desc s :=
     hc.desc
       (PushoutCocone.mk (s.ι.app ⟨WalkingPair.left⟩) (s.ι.app ⟨WalkingPair.right⟩) (hX.hom_ext _ _))
