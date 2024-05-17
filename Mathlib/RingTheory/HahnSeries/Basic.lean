@@ -19,10 +19,14 @@ These generalize Laurent series (with value group `ℤ`), and Laurent series are
 in the file `RingTheory/LaurentSeries`.
 
 ## Main Definitions
-  * If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of
+* If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of
   formal series over `Γ` with coefficients in `R`, whose supports are partially well-ordered.
-  * Laurent series over `R` are implemented as `HahnSeries ℤ R` in the file
-    `RingTheory/LaurentSeries`.
+* `support x` is the subset of `Γ` whose coefficients are nonzero.
+* `single a r` is the Hahn series which has coefficient `r` at `a` and zero otherwise.
+* `orderTop x` is a minimal element of `WithTop Γ` where `x` has a nonzero
+  coefficient if `x ≠ 0`, and is `⊤` when `x = 0`.
+* `order x` is a minimal element of `Γ` where `x` has a nonzero coefficient if `x ≠ 0`, and is zero
+  when `x = 0`.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -39,6 +43,7 @@ noncomputable section
   formal series over `Γ` with coefficients in `R`, whose supports are well-founded. -/
 @[ext]
 structure HahnSeries (Γ : Type*) (R : Type*) [PartialOrder Γ] [Zero R] where
+  /-- The coefficient function of a Hahn Series. -/
   coeff : Γ → R
   isPWO_support' : (Function.support coeff).IsPWO
 #align hahn_series HahnSeries
@@ -220,6 +225,66 @@ instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
 
 section Order
 
+/-- The orderTop of a Hahn series `x` is a minimal element of `WithTop Γ` where `x` has a nonzero
+coefficient if `x ≠ 0`, and is `⊤` when `x = 0`. -/
+def orderTop (x : HahnSeries Γ R) : WithTop Γ :=
+  if h : x = 0 then ⊤ else x.isWF_support.min (support_nonempty_iff.2 h)
+
+@[simp]
+theorem orderTop_zero : orderTop (0 : HahnSeries Γ R) = ⊤ :=
+  dif_pos rfl
+
+theorem orderTop_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
+    orderTop x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
+  dif_neg hx
+
+@[simp]
+theorem ne_zero_iff_orderTop {x : HahnSeries Γ R} : x ≠ 0 ↔ orderTop x ≠ ⊤ := by
+  constructor
+  · exact fun hx => Eq.mpr (congrArg (fun h ↦ h ≠ ⊤) (orderTop_of_ne hx)) WithTop.coe_ne_top
+  · contrapose!
+    simp_all only [orderTop_zero, implies_true]
+
+theorem orderTop_eq_top_iff {x : HahnSeries Γ R} : orderTop x = ⊤ ↔ x = 0 := by
+  constructor
+  · contrapose!
+    exact ne_zero_iff_orderTop.mp
+  · simp_all only [orderTop_zero, implies_true]
+
+theorem untop_orderTop_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :
+    WithTop.untop x.orderTop (ne_zero_iff_orderTop.mp hx) =
+      x.isWF_support.min (support_nonempty_iff.2 hx) :=
+    WithTop.coe_inj.mp ((WithTop.coe_untop (orderTop x) (ne_zero_iff_orderTop.mp hx)).trans
+      (orderTop_of_ne hx))
+
+theorem coeff_orderTop_ne {x : HahnSeries Γ R} {g : Γ} (hg : x.orderTop = g) :
+    x.coeff g ≠ 0 := by
+  have h : orderTop x ≠ ⊤ := by simp_all only [ne_eq, WithTop.coe_ne_top, not_false_eq_true]
+  have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr h
+  rw [orderTop_of_ne hx, WithTop.coe_eq_coe] at hg
+  rw [← hg]
+  exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
+
+theorem orderTop_le_of_coeff_ne_zero {Γ} [LinearOrder Γ] {x : HahnSeries Γ R}
+    {g : Γ} (h : x.coeff g ≠ 0) : x.orderTop ≤ g := by
+  rw [orderTop_of_ne (ne_zero_of_coeff_ne_zero h), WithTop.coe_le_coe]
+  exact Set.IsWF.min_le _ _ ((mem_support _ _).2 h)
+
+@[simp]
+theorem orderTop_single (h : r ≠ 0) : (single a r).orderTop = a :=
+  (orderTop_of_ne (single_ne_zero h)).trans
+    (WithTop.coe_inj.mpr (support_single_subset
+      ((single a r).isWF_support.min_mem (support_nonempty_iff.2 (single_ne_zero h)))))
+
+theorem coeff_eq_zero_of_lt_orderTop {x : HahnSeries Γ R} {i : Γ} (hi : i < x.orderTop) :
+    x.coeff i = 0 := by
+  rcases eq_or_ne x 0 with (rfl | hx)
+  · exact zero_coeff
+  contrapose! hi
+  rw [← mem_support] at hi
+  rw [orderTop_of_ne hx, WithTop.coe_lt_coe]
+  exact Set.IsWF.not_lt_min _ _ hi
+
 variable [Zero Γ]
 
 /-- The order of a nonzero Hahn series `x` is a minimal element of `Γ` where `x` has a
@@ -237,6 +302,9 @@ theorem order_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
     order x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
   dif_neg hx
 #align hahn_series.order_of_ne HahnSeries.order_of_ne
+
+theorem order_eq_orderTop_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) : order x = orderTop x := by
+  rw [order_of_ne hx, orderTop_of_ne hx]
 
 theorem coeff_order_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) : x.coeff x.order ≠ 0 := by
   rw [order_of_ne hx]
