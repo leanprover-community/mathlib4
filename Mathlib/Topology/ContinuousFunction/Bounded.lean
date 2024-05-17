@@ -1640,10 +1640,9 @@ def CompactlySupportedBoundedContinuousFunction : Ideal (α →ᵇ γ) where
     simp only [ContinuousMap.coe_zero, Function.support_zero', closure_empty,
       isCompact_empty]
   smul_mem' := by
-    intro a f
-    simp only [mem_setOf_eq, smul_eq_mul, coe_mul]
-    intro hf
-    exact HasCompactSupport.mul_left hf
+    intro _ _ h
+    rw [mem_setOf_eq, smul_eq_mul, coe_mul]
+    exact h.mul_left
 
 @[inherit_doc]
 scoped[BoundedContinuousFunction] notation (priority := 2000)
