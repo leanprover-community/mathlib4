@@ -470,7 +470,7 @@ set_option linter.uppercaseLean3 false in
 @[simp, elementwise nosimp]
 theorem ι_fromOpenSubsetsGlue (i : J) :
     (ofOpenSubsets U).toGlueData.ι i ≫ fromOpenSubsetsGlue U = Opens.inclusion _ :=
-  Multicoequalizer.π_desc _ _ _ _ _
+  Multicoequalizer.inj_desc _ _ _ _ _
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_from_open_subsets_glue TopCat.GlueData.ι_fromOpenSubsetsGlue
 
