@@ -25,14 +25,14 @@ If this condition holds, there is an induced functor
 Moreover, if we assume `J.HasSheafCompose F`, we obtain an isomorphism
 `sheafifyComposeIso J F P : sheafify J (P ⋙ F) ≅ sheafify J P ⋙ F`.
 
-We show that under suitable assumption, the forget functor from a concrete
+We show that under suitable assumptions, the forget functor from a concrete
 category preserves sheafification; this holds more generally for
 functors between such concrete categories which commute both with
 suitable limits and colimits.
 
 ## TODO
 * construct an isomorphism `sheafCompose' J F ≅ sheafCompose J F`
-* show that the free abelian group functor `Type u ⥤ AddCommGroupCat.{u}`
+* show that the free module functor `Type u ⥤ ModuleCat.{u} R`
 preserves sheafification
 
 -/
@@ -155,14 +155,6 @@ lemma sheafComposeNatTrans_app_uniq (P : Cᵒᵖ ⥤ A)
   erw [Equiv.apply_symm_apply]
   rw [← hα]
   apply adj₂.homEquiv_unit
-
-lemma _root_.CategoryTheory.NatTrans.isIso_iff_isIso_app {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} (τ : F ⟶ G) : IsIso τ ↔ ∀ X, IsIso (τ.app X) := by
-  constructor
-  · intros
-    infer_instance
-  · intro
-    apply NatIso.isIso_of_isIso_app
 
 lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions_of_hasSheafCompose :
     J.PreservesSheafification F ↔ IsIso (sheafComposeNatTrans J F adj₁ adj₂) := by
