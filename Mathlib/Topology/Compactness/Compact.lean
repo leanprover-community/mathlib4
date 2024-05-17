@@ -551,20 +551,6 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
   contradiction
 #align exists_subset_nhds_of_is_compact' exists_subset_nhds_of_isCompact'
 
-lemma eq_sUnion_finset_of_isTopologicalBasis__of_isCompact_open (b : Set (Set X))
-    (hb : IsTopologicalBasis b) (U : Set X) (hUc : IsCompact U) (hUo : IsOpen U) :
-    ∃ s : Finset b, U = s.toSet.sUnion := by
-  obtain ⟨Y, f, e, hf⟩ := hb.open_eq_iUnion hUo
-  obtain ⟨t, ht⟩ := hUc.elim_finite_subcover f (fun i => hb.isOpen (hf _)) (by rw [e])
-  let f' : Y → b := fun i ↦ ⟨f i, hf i⟩
-  refine ⟨t.image f', ?_⟩
-  have : U = ⋃ i ∈ t, f i := by
-    refine le_antisymm ht ?_
-    simp only [e, le_eq_subset, iUnion_subset_iff]
-    intro i _
-    exact subset_iUnion_of_subset i fun _ a ↦ a
-  simp [this]
-
 lemma eq_finite_iUnion_of_isTopologicalBasis__of_isCompact_open (b : ι → Set X)
     (hb : IsTopologicalBasis (Set.range b)) (U : Set X) (hUc : IsCompact U) (hUo : IsOpen U) :
     ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
@@ -585,6 +571,17 @@ lemma eq_finite_iUnion_of_isTopologicalBasis__of_isCompact_open (b : ι → Set 
     obtain ⟨j, -, rfl⟩ := Finset.mem_image.mp hi
     rw [e]
     exact Set.subset_iUnion (b ∘ f') j
+
+lemma eq_sUnion_finset_of_isTopologicalBasis__of_isCompact_open' (b : Set (Set X))
+    (hb : IsTopologicalBasis b) (U : Set X) (hUc : IsCompact U) (hUo : IsOpen U) :
+    ∃ s : Finset b, U = s.toSet.sUnion := by
+  have hb' : b = range (fun i ↦ i : b → Set X) := by simp
+  rw [hb'] at hb
+  choose s hs hU using eq_finite_iUnion_of_isTopologicalBasis__of_isCompact_open _ hb U hUc hUo
+  have : Finite s := hs
+  let _ : Fintype s := Fintype.ofFinite _
+  use s.toFinset
+  simp [hU]
 
 /-- If `X` has a basis consisting of compact opens, then an open set in `X` is compact open iff
   it is a finite union of some elements in the basis -/
