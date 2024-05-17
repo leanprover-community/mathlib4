@@ -1634,11 +1634,7 @@ def CompactlySupportedBoundedContinuousFunction : Ideal (α →ᵇ γ) where
   add_mem' := by
     intro _ _ h₁ h₂
     exact h₁.add h₂
-  zero_mem' := by
-    simp only [mem_setOf_eq, coe_zero]
-    rw [HasCompactSupport, tsupport]
-    simp only [ContinuousMap.coe_zero, Function.support_zero', closure_empty,
-      isCompact_empty]
+  zero_mem' := by simp [HasCompactSupport, tsupport]
   smul_mem' := by
     intro _ _ h
     rw [mem_setOf_eq, smul_eq_mul, coe_mul]
