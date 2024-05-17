@@ -138,12 +138,8 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
           (Set.subset_univ (tsupport f))
         }
   invFun f := f
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
+  left_inv f := rfl
+  right_inv f := rfl
 
 /-- A continuous function on a compact space has automatically compact support. This is not an
 instance to avoid type class loops. -/
