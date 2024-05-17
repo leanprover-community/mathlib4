@@ -3,7 +3,7 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Prod
+import Mathlib.Algebra.Group.Prod
 
 #align_import data.nat.cast.prod from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
 
@@ -11,6 +11,8 @@ import Mathlib.Algebra.GroupWithZero.Prod
 # The product of two `AddMonoidWithOne`s.
 -/
 
+-- TODO: After #11855,
+-- assert_not_exists MonoidWithZero
 
 variable {α β : Type*}
 

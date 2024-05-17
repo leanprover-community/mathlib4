@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Prod
+import Mathlib.Algebra.Group.Prod
 import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import group_theory.group_action.prod from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
@@ -28,6 +28,9 @@ https://leanprover.zulipchat.com/#narrow/near/316087838
 
 This was not done as part of the port in order to stay as close as possible to the mathlib3 code.
 -/
+
+-- TODO: After #11855,
+-- assert_not_exists MonoidWithZero
 
 variable {M N P E α β : Type*}
 

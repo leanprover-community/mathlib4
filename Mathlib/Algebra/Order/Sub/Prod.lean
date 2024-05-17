@@ -3,12 +3,15 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.GroupWithZero.Prod
+import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.Sub.Defs
 
 /-!
 # Products of `OrderedSub` types.
 -/
+
+-- TODO: After #11855,
+-- assert_not_exists MonoidWithZero
 
 variable {α β : Type*}
 

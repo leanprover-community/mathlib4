@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky, Jireh Loreaux
 -/
-import Mathlib.Algebra.GroupWithZero.Prod
+import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Subsemigroup.Basic
 import Mathlib.Algebra.Group.TypeTags
 
@@ -64,6 +64,8 @@ necessary.
 subsemigroup, range, product, map, comap
 -/
 
+-- TODO: After #11855,
+-- assert_not_exists MonoidWithZero
 
 variable {M N P σ : Type*}
 

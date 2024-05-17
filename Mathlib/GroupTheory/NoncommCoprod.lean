@@ -3,9 +3,8 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-
 import Mathlib.Algebra.Group.Commute.Hom
-import Mathlib.Algebra.GroupWithZero.Prod
+import Mathlib.Algebra.Group.Prod
 
 /-!
 # Canonical homomorphism from a pair of monoids
@@ -28,6 +27,9 @@ There is an analogue `MulHom.noncommCoprod` when `f` and `g` are only `MulHom`s.
 
 For a product of a family of morphisms of monoids, see `MonoidHom.noncommPiCoprod`.
 -/
+
+-- TODO: After #11855,
+-- assert_not_exists MonoidWithZero
 
 namespace MulHom
 
