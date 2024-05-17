@@ -148,7 +148,7 @@ theorem isRightInversion_mul_left_iff {w : W} :
 
 theorem not_isRightInversion_mul_left_iff {w : W} :
     ¬cs.IsRightInversion (w * t) t ↔ cs.IsRightInversion w t :=
-  (iff_not_comm.mp ht.isRightInversion_mul_left_iff).symm
+  ht.isRightInversion_mul_left_iff.not_left
 
 theorem isLeftInversion_mul_right_iff {w : W} :
     cs.IsLeftInversion (t * w) t ↔ ¬cs.IsLeftInversion w t := by
@@ -157,7 +157,7 @@ theorem isLeftInversion_mul_right_iff {w : W} :
 
 theorem not_isLeftInversion_mul_right_iff {w : W}  :
     ¬cs.IsLeftInversion (t * w) t ↔ cs.IsLeftInversion w t :=
-  (iff_not_comm.mp ht.isLeftInversion_mul_right_iff).symm
+  ht.isLeftInversion_mul_right_iff.not_left
 
 end IsReflection
 
@@ -241,7 +241,8 @@ theorem leftInvSeq_reverse (ω : List B) :
   simp [leftInvSeq_eq_reverse_rightInvSeq_reverse]
 
 theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
-    (ris ω).getD j 1 = (π (ω.drop (j + 1)))⁻¹
+    (ris ω).getD j 1 =
+      (π (ω.drop (j + 1)))⁻¹
         * (Option.map (cs.simple) (ω.get? j)).getD 1
         * π (ω.drop (j + 1)) := by
   induction' ω with i ω ih generalizing j
@@ -252,7 +253,8 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
     · simp [getD_cons_succ, ih j']
 
 theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
-    (lis ω).getD j 1 = π (ω.take j)
+    (lis ω).getD j 1 =
+      π (ω.take j)
         * (Option.map (cs.simple) (ω.get? j)).getD 1
         * (π (ω.take j))⁻¹ := by
   induction' ω with i ω ih generalizing j
@@ -272,7 +274,7 @@ theorem getD_rightInvSeq_mul_self (ω : List B) (j : ℕ) :
   rcases em (j < ω.length) with hj | nhj
   · rw [get?_eq_get hj]
     simp [← mul_assoc]
-  · rw [get?_eq_none.mpr (by linarith)]
+  · rw [get?_eq_none.mpr (by omega)]
     simp
 
 theorem getD_leftInvSeq_mul_self (ω : List B) (j : ℕ) :
@@ -281,7 +283,7 @@ theorem getD_leftInvSeq_mul_self (ω : List B) (j : ℕ) :
   rcases em (j < ω.length) with hj | nhj
   · rw [get?_eq_get hj]
     simp [← mul_assoc]
-  · rw [get?_eq_none.mpr (by linarith)]
+  · rw [get?_eq_none.mpr (by omega)]
     simp
 
 theorem rightInvSeq_drop (ω : List B) (j : ℕ) :
@@ -294,14 +296,13 @@ theorem rightInvSeq_drop (ω : List B) (j : ℕ) :
 
 theorem leftInvSeq_take (ω : List B) (j : ℕ) :
     lis (ω.take j) = (lis ω).take j := by
-  rcases em (j ≤ ω.length) with le | gt
+  obtain le | ge := Nat.le_or_ge j ω.length
   · simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse]
     rw [List.reverse_take j (by simpa)]
     nth_rw 1 [← List.reverse_reverse ω]
     rw [List.reverse_take j (by simpa)]
     simp [rightInvSeq_drop]
-  · have : ω.length ≤ j := by linarith
-    rw [take_length_le this, take_length_le (by simpa)]
+  · rw [take_length_le ge, take_length_le (by simpa)]
 
 theorem isReflection_of_mem_rightInvSeq (ω : List B) {t : W} (ht : t ∈ ris ω) :
     cs.IsReflection t := by
@@ -323,11 +324,11 @@ theorem wordProd_mul_getD_rightInvSeq (ω : List B) (j : ℕ) :
   rw [getD_rightInvSeq, eraseIdx_eq_take_drop_succ]
   nth_rw 1 [← take_append_drop (j + 1) ω]
   rw [take_succ]
-  rcases em (j < ω.length) with hj | nhj
-  · rw [get?_eq_get hj]
+  obtain lt | le := lt_or_le j ω.length
+  · rw [get?_eq_get lt]
     simp only [wordProd_append, wordProd_cons, mul_assoc]
     simp
-  · rw [get?_eq_none.mpr (by linarith)]
+  · rw [get?_eq_none.mpr le]
     simp
 
 theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
@@ -335,11 +336,11 @@ theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
   rw [getD_leftInvSeq, eraseIdx_eq_take_drop_succ]
   nth_rw 4 [← take_append_drop (j + 1) ω]
   rw [take_succ]
-  rcases em (j < ω.length) with hj | nhj
-  · rw [get?_eq_get hj]
+  obtain lt | le := lt_or_le j ω.length
+  · rw [get?_eq_get lt]
     simp only [wordProd_append, wordProd_cons, mul_assoc]
     simp
-  · rw [get?_eq_none.mpr (by linarith)]
+  · rw [get?_eq_none.mpr le]
     simp
 
 theorem isRightInversion_of_mem_rightInvSeq {ω : List B} (hω : cs.IsReduced ω) {t : W}
@@ -387,29 +388,27 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
   rw [wordProd_reverse]
   exact cs.prod_rightInvSeq _
 
-theorem nodup_rightInvSeq_of_isReduced {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (ris ω) := by
+theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (ris ω) := by
   apply List.nodup_iff_get?_ne_get?.mpr
-  intro j j' j_lt_j' j'_lt_length dup
-  -- dup : get? (rightInvSeq cs ω) j = get? (rightInvSeq cs ω) j'
-  -- ⊢ False
-  simp at j'_lt_length
-  -- j'_lt_length: j' < List.length ω
-  rw [get?_eq_get (by simp; linarith), get?_eq_get (by simp; linarith)] at dup
+  intro j j' j_lt_j' j'_lt_length (dup : get? (rightInvSeq cs ω) j = get? (rightInvSeq cs ω) j')
+  show False
+  replace j'_lt_length : j' < List.length ω := by simpa using j'_lt_length
+  rw [get?_eq_get (by simp; omega), get?_eq_get (by simp; omega)] at dup
   apply Option.some_injective at dup
   rw [← getD_eq_get _ 1, ← getD_eq_get _ 1] at dup
   set! t := (ris ω).getD j 1 with h₁
   set! t' := (ris (ω.eraseIdx j)).getD (j' - 1) 1 with h₂
   have h₃ : t' = (ris ω).getD j' 1                    := by
     rw [h₂, cs.getD_rightInvSeq, cs.getD_rightInvSeq,
-      (Nat.sub_add_cancel (by linarith) : j' - 1 + 1 = j'), eraseIdx_eq_take_drop_succ,
-      drop_append_eq_append_drop, drop_length_le (by simp; left; linarith), length_take,
+      (Nat.sub_add_cancel (by omega) : j' - 1 + 1 = j'), eraseIdx_eq_take_drop_succ,
+      drop_append_eq_append_drop, drop_length_le (by simp; left; omega), length_take,
       drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), ← add_assoc,
-      Nat.sub_add_cancel (by linarith), mul_left_inj, mul_right_inj]
+      Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
     congr 2
-    -- ⊢ get? (take j ω ++ drop (j + 1) ω) (j' - 1) = get? ω j'
+    show get? (take j ω ++ drop (j + 1) ω) (j' - 1) = get? ω j'
     rw [get?_append_right (by simp; left; exact Nat.le_sub_one_of_lt j_lt_j'), get?_drop]
     congr
-    -- ⊢ j + 1 + (j' - 1 - List.length (take j ω)) = j'
+    show j + 1 + (j' - 1 - List.length (take j ω)) = j'
     rw [length_take]
     omega
   have h₄ : t * t' = 1                                := by
@@ -428,16 +427,16 @@ theorem nodup_rightInvSeq_of_isReduced {ω : List B} (rω : cs.IsReduced ω) : L
   have h₇ := add_le_add_right (add_le_add_right h₆ 1) 1
   have h₈ : j' - 1 < List.length (eraseIdx ω j)           := by
     apply (@Nat.add_lt_add_iff_right 1).mp
-    rw [Nat.sub_add_cancel (by linarith)]
-    rw [length_eraseIdx_add_one (by linarith)]
-    linarith
+    rw [Nat.sub_add_cancel (by omega)]
+    rw [length_eraseIdx_add_one (by omega)]
+    omega
   rw [length_eraseIdx_add_one h₈] at h₇
-  rw [length_eraseIdx_add_one (by linarith)] at h₇
-  linarith
+  rw [length_eraseIdx_add_one (by omega)] at h₇
+  omega
 
-theorem nodup_leftInvSeq_of_isReduced {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (lis ω) := by
+theorem IsReduced.nodup_leftInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (lis ω) := by
   simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse, nodup_reverse]
-  apply nodup_rightInvSeq_of_isReduced
+  apply nodup_rightInvSeq
   rwa [isReduced_reverse]
 
 end CoxeterSystem
