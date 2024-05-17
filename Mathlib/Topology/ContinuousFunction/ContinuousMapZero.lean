@@ -98,15 +98,24 @@ variable [TopologicalSpace R]
 instance instZero [Zero R] : Zero C(X, R)₀ where
   zero := ⟨0, rfl⟩
 
+@[simp] lemma coe_zero [Zero R] : ⇑(0 : C(X, R)₀) = 0 := rfl
+
 instance instAdd [AddZeroClass R] [ContinuousAdd R] : Add C(X, R)₀ where
   add f g := ⟨f + g, by simp⟩
+
+@[simp] lemma coe_add [AddZeroClass R] [ContinuousAdd R] (f g : C(X, R)₀) : ⇑(f + g) = f + g := rfl
 
 instance instMul [MulZeroClass R] [ContinuousMul R] : Mul C(X, R)₀ where
   mul f g := ⟨f * g, by simp⟩
 
+@[simp] lemma coe_mul [MulZeroClass R] [ContinuousMul R] (f g : C(X, R)₀) : ⇑(f * g) = f * g := rfl
+
 instance instSMul {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul M R] :
     SMul M C(X, R)₀ where
   smul m f := ⟨m • f, by simp⟩
+
+@[simp] lemma coe_smul {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul M R]
+    (m : M) (f : C(X, R)₀) : ⇑(m • f) = m • f := rfl
 
 section Semiring
 
@@ -137,13 +146,7 @@ instance instStarRing [StarRing R] [ContinuousStar R] : StarRing C(X, R)₀ wher
   star_mul _ _ := ext fun _ ↦ star_mul ..
   star_add _ _ := ext fun _ ↦ star_add ..
 
-@[simp] lemma coe_add (f g : C(X, R)₀) : ⇑(f + g) = f + g := rfl
-@[simp] lemma coe_mul (f g : C(X, R)₀) : ⇑(f * g) = f * g := rfl
-@[simp] lemma coe_zero : ⇑(0 : C(X, R)₀) = 0 := rfl
 @[simp] lemma coe_star [StarRing R] [ContinuousStar R] (f : C(X, R)₀) : ⇑(star f) = star ⇑f := rfl
-
-@[simp] lemma coe_smul {M : Type*} [Semiring M] [Module M R] [ContinuousConstSMul M R]
-    (m : M) (f : C(X, R)₀) : ⇑(m • f) = m • f := rfl
 
 instance instCanLift : CanLift C(X, R) C(X, R)₀ (↑) (fun f ↦ f 0 = 0) where
   prf f hf := ⟨⟨f, hf⟩, rfl⟩
