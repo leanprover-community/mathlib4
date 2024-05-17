@@ -41,6 +41,17 @@ namespace ContinuousMap
 variable {α β E : Type*} [TopologicalSpace α] [CompactSpace α] [MetricSpace β]
   [NormedAddCommGroup E]
 
+section Support
+
+variable {F γ : Type*} [Zero γ] [TopologicalSpace γ] [FunLike F α γ]
+
+/-- In a compact space `α`, any continuous function has compact support. -/
+theorem isCompact_tsupport_of_CompactSpace [ContinuousMapClass F α γ] (f : F) :
+    HasCompactSupport f :=
+  IsCompact.of_isClosed_subset isCompact_univ (isClosed_tsupport f) (Set.subset_univ (tsupport f))
+
+end Support
+
 section
 
 variable (α β)
