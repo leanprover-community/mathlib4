@@ -83,7 +83,6 @@ Mathlib/MeasureTheory/Integral/SetToL1.lean : line 1 : ERR_NUM_LIN : 2000 file c
 Mathlib/MeasureTheory/MeasurableSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2250 lines, try to split it up
 Mathlib/MeasureTheory/Measure/MeasureSpace.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2191 lines, try to split it up
 Mathlib/MeasureTheory/Measure/Typeclasses.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1564 lines, try to split it up
-Mathlib/MeasureTheory/OuterMeasure/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1785 lines, try to split it up
 Mathlib/Order/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1547 lines, try to split it up
 Mathlib/Order/Bounds/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1714 lines, try to split it up
 Mathlib/Order/CompleteLattice.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2015 lines, try to split it up
@@ -107,6 +106,8 @@ Mathlib/SetTheory/ZFC/Basic.lean : line 1 : ERR_NUM_LIN : 2000 file contains 180
 Mathlib/Tactic/ApplyWith.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Basic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ByContra.lean : line 8 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/CC/Addition.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2008 lines, try to split it up
+Mathlib/Tactic/CC/Addition.lean : line 1555 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/ClearExcept.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Coe.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Constructor.lean : line 9 : ERR_MOD : Module docstring missing, or too late
