@@ -2,6 +2,7 @@ import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.KolmogorovExtension4.Projective
 import Mathlib.KolmogorovExtension4.KolmogorovExtension
 import Mathlib.Topology.Defs.Filter
+import Mathlib.KolmogorovExtension4.section_file
 
 open Set MeasureTheory Filter Topology ENNReal Finset
 
@@ -111,6 +112,7 @@ theorem test (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylinders X)
   choose NA SA mSA A_eq using A_cyl
   set μ_proj := isProjectiveMeasureFamily_prod μ
   set μ_proj' := fun n ↦ isProjectiveMeasureFamily_prod (fun k : {k | k ≥ n} ↦ μ k.1)
+  set μ_proj'' := fun n ↦ isProjectiveMeasureFamily_prod (fun k ↦ μ (k + n))
   have anti : Antitone (kolContent μ_proj ∘ A) := by
     refine fun m n hmn ↦ kolContent_mono μ_proj (A_mem n) (A_mem m) <| A_anti hmn
   have := tendsto_of_antitone anti
@@ -120,53 +122,102 @@ theorem test (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylinders X)
   convert hlim
   by_contra zero_ne_l
   have := fun n ↦ anti.le_of_tendsto hlim n
-  let produit : X 0 → (∀ n : {k | k ≥ 1}, X n) → (∀ n, X n) :=
-    fun x₀ x n ↦ by
-      cases n with
-      | zero => use x₀
-      | succ m => use x ⟨m + 1, by simp⟩
   have : ∀ n, (kolContent μ_proj) (A n) =
-      ∫⁻ x₀ : X 0, kolContent (μ_proj' 1) ((produit x₀) ⁻¹' (A n)) ∂(μ 0) := by
+      ∫⁻ x₀ : X 0, kolContent (μ_proj'' 1) (slice x₀ (A n)) ∂(μ 0) := by
     intro n
-    -- let extension : (∀ n : Finset.range (NA n), X (n + 1)) → (∀ n, X (n + 1)) :=
-    --   fun x k ↦ by
-    --     by_cases h : k < NA n
-    --     · use x ⟨k, Finset.mem_range.2 h⟩
-    --     · use Some
-    let aux : X 0 → (∀ n : (Finset.range (NA n + 1)).erase 0, X n) →
-        (∀ n : Finset.range (NA n + 1), X n) :=
-      fun x₀ x k ↦ by
-        have := k.2
-        induction (k : ℕ) generalizing this with
-        | zero => use x₀
-        | succ m =>
-      -- if h : k = ⟨0, zero_mem_range⟩ then h ▸ x₀ else by
-      -- rw [← ne_eq, ← Subtype.val_inj.ne] at h
-      -- have : k.1 - 1 ∈ Finset.range (NA n) := by
-      --   rw [Finset.mem_range, Nat.sub_lt_iff_lt_add, add_comm 1]
-      --   exact Finset.mem_range.1 k.2
-      --   exact Nat.one_le_iff_ne_zero.2 h
-      -- use Nat.succ_pred_eq_of_ne_zero h ▸ x ⟨k.1 - 1, this⟩
     have : ∀ x₀ : X 0, ∀ S : Set ((n : Finset.range (NA n + 1)) → X n),
-        (produit x₀) ⁻¹' (cylinder (Finset.range (NA n + 1)) S) =
-        cylinder (Finset.range (NA n)) ((aux x₀) ⁻¹' S) := by
+        slice x₀ (cylinder (Finset.range (NA n + 1)) S) =
+        cylinder (Finset.range (NA n)) (slice_range (NA n) x₀ S) := by
       intro x₀ S
       ext x
-      simp [produit, aux]
+      simp [slice, slice_range, produit, produit_range]
       congrm ?_ ∈ S
-      ext k
-      by_cases h : k = ⟨0, zero_mem_range⟩
-      · have : k.1 = 0 := by rw [h]
-        simp [h, this]
-        have : k = ⟨0, zero_mem_range⟩ ↔ k.1 = 0 := by
-          refine ⟨fun h ↦ by rw [h], fun h' ↦ ?_⟩
-          ext
-          exact h'
-
-    have : ∀ x₀, kolContent (μ_proj' 1) ((produit x₀) ⁻¹' (A n)) =
-        Measure.pi (fun n : (Finset.range (NA n + 1)).erase 0 ↦ μ n) ((aux x₀) ⁻¹' (SA n)) := by
+      ext i
+      cases i with
+        | mk j hj => cases j with
+          | zero => simp [produit_range]
+          | succ => simp [produit_range]
+    have : ∀ x₀, kolContent (μ_proj'' 1) (slice x₀ (A n)) =
+        Measure.pi (fun n : Finset.range (NA n) ↦ μ (n + 1)) (slice_range (NA n) x₀ (SA n)) := by
       intro x₀
-      simp
-      rw [kolContent_eq (μ_proj' 1)]
-    rw [kolContent_eq μ_proj (A_mem n), kolmogorovFun_congr μ_proj (A_mem n) (A_eq n) (mSA n)]
-    simp [kolContent_eq (μ_proj' 1), kolmogorovFun_congr μ_proj (A_mem n) (A_eq n) (mSA n)]
+      rw [A_eq n, this x₀ (SA n), kolContent_eq,
+        kolmogorovFun_congr (μ_proj'' 1) (cylinder_mem_cylinders (Finset.range (NA n))
+        (slice_range (NA n) x₀ (SA n)) _)]
+      rfl
+      apply measurable_slice_range (mSA n)
+      apply measurable_slice_range (mSA n)
+
+      -- constructor
+      -- · rintro ⟨y, hy, rfl, rfl⟩
+      --   use fun i : Finset.range (NA n + 1) ↦ y i
+      -- · rintro ⟨y, hy, hy', hy''⟩
+      --   refine ⟨produit x₀ x, ?_, ?_, ?_⟩
+      --   · have : (fun i : Finset.range (NA n + 1) ↦ produit x₀ x i) = y := by
+      --       ext i
+      --       cases i with
+      --       | mk j hj =>
+      --         cases j with
+      --         | zero => simp [produit, hy']
+      --         | succ m =>
+      --           have : produit x₀ x (m + 1) = x m := by
+      --             simp [produit]
+      --           rw [this]
+      --           have : x m = (fun i : Finset.range (NA n) ↦ x i) ⟨m, ok.2 hj⟩ := by simp
+      --           rw [this, ← hy'']
+      --     exact this ▸ hy
+      --   · simp [produit]
+      --   · ext n
+      --     simp [produit]
+
+    -- let extension : (∀ n : (Finset.range (NA n + 1)).erase 0, X n) → (∀ n : {k | k ≥ 1}, X n) :=
+    --   fun x k ↦ by
+    --     by_cases h : k.1 < NA n + 1
+    --     · use x ⟨k.1, Finset.mem_erase.2 ⟨Nat.one_le_iff_ne_zero.1 k.2, Finset.mem_range.2 h⟩⟩
+    --     · use Classical.ofNonempty
+    -- let e : (Finset.range (NA n + 1)).erase 0 ≃
+    --     {k : {k | k ≥ 1} | k.1 ∈ (Finset.range (NA n + 1)).erase 0} :=
+    --   {
+    --     toFun := fun x ↦ ⟨⟨x.1, Nat.one_le_iff_ne_zero.2 (Finset.mem_erase.1 x.2).1⟩, x.2⟩
+    --     invFun := fun x ↦ ⟨x.1.1, x.2⟩
+    --     left_inv := by simp [Function.LeftInverse]
+    --     right_inv := by simp [Function.RightInverse, Function.LeftInverse]
+    --   }
+    -- have : Fintype {k : {k | k ≥ 1} | k.1 ∈ (Finset.range (NA n + 1)).erase 0} := by
+    --   exact Fintype.ofEquiv ((Finset.range (NA n + 1)).erase 0) e
+    -- let aux : X 0 → (∀ n : {k : {k | k ≥ 1} | k.1 ∈ (Finset.range (NA n + 1)).erase 0}.toFinset, X n) →
+    --     (∀ n : Finset.range (NA n + 1), X n) :=
+    --   fun x₀ x ↦
+    --     (fun y : ∀ n, X n ↦ fun k : Finset.range (NA n + 1) ↦ y k.1) ((produit x₀) (extension
+    --     (fun k : (Finset.range (NA n + 1)).erase 0 ↦
+    --     x ⟨⟨k.1, Nat.one_le_iff_ne_zero.2 (Finset.mem_erase.1 k.2).1⟩, k.2⟩)))
+    --   -- if h : k = ⟨0, zero_mem_range⟩ then h ▸ x₀ else by
+    --   -- rw [← ne_eq, ← Subtype.val_inj.ne] at h
+    --   -- have : k.1 - 1 ∈ Finset.range (NA n) := by
+    --   --   rw [Finset.mem_range, Nat.sub_lt_iff_lt_add, add_comm 1]
+    --   --   exact Finset.mem_range.1 k.2
+    --   --   exact Nat.one_le_iff_ne_zero.2 h
+    --   -- use Nat.succ_pred_eq_of_ne_zero h ▸ x ⟨k.1 - 1, this⟩
+    -- have : ∀ x₀ : X 0, ∀ S : Set ((n : Finset.range (NA n + 1)) → X n),
+    --     (produit x₀) ⁻¹' (cylinder (Finset.range (NA n + 1)) S) =
+    --     cylinder (α := fun k : {k | k ≥ 1} ↦ X k)
+    --     {k : {k | k ≥ 1} | k.1 ∈ (Finset.range (NA n + 1)).erase 0}.toFinset ((aux x₀) ⁻¹' S) := by
+    --   intro x₀ S
+    --   ext x
+    --   simp [produit, aux]
+    --   congrm ?_ ∈ S
+    --   ext k
+    --   by_cases h : k = ⟨0, zero_mem_range⟩
+    --   · have : k.1 = 0 := by rw [h]
+    --     simp [h, this]
+    --     have : k = ⟨0, zero_mem_range⟩ ↔ k.1 = 0 := by
+    --       refine ⟨fun h ↦ by rw [h], fun h' ↦ ?_⟩
+    --       ext
+    --       exact h'
+
+    -- have : ∀ x₀, kolContent (μ_proj' 1) ((produit x₀) ⁻¹' (A n)) =
+    --     Measure.pi (fun n : (Finset.range (NA n + 1)).erase 0 ↦ μ n) ((aux x₀) ⁻¹' (SA n)) := by
+    --   intro x₀
+    --   simp
+    --   rw [kolContent_eq (μ_proj' 1)]
+    -- rw [kolContent_eq μ_proj (A_mem n), kolmogorovFun_congr μ_proj (A_mem n) (A_eq n) (mSA n)]
+    -- simp [kolContent_eq (μ_proj' 1), kolmogorovFun_congr μ_proj (A_mem n) (A_eq n) (mSA n)]
