@@ -29,7 +29,7 @@ jobs:
           git checkout origin/adomani/periodic_reports_dev_custom_action scripts/mathlib_stats.sh scripts/count_decls.lean
           printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)" >> "$GITHUB_OUTPUT"
 
-          printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)"
+          printf '%s\n' "$(./scripts/mathlib_stats.sh)"
 
       - name: Add comment
         run: gh pr comment "$NUMBER" --body "$BODY"
