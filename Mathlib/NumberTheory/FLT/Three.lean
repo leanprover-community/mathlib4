@@ -153,16 +153,16 @@ namespace FermatLastTheoremForThreeGen
 where `a`, `b`, `c` and `u` are as in `FermatLastTheoremForThreeGen`.
 See `Solution` for the actual structure on which we will do the descent. -/
 structure Solution' where
-  (a : 𝓞 K)
-  (b : 𝓞 K)
-  (c : 𝓞 K)
-  (u : (𝓞 K)ˣ)
-  (ha : ¬ λ ∣ a)
-  (hb : ¬ λ ∣ b)
-  (hc : c ≠ 0)
-  (coprime : IsCoprime a b)
-  (hcdvd : λ ∣ c)
-  (H : a ^ 3 + b ^ 3 = u * c ^ 3)
+  a : 𝓞 K
+  b : 𝓞 K
+  c : 𝓞 K
+  u : (𝓞 K)ˣ
+  ha : ¬ λ ∣ a
+  hb : ¬ λ ∣ b
+  hc : c ≠ 0
+  coprime : IsCoprime a b
+  hcdvd : λ ∣ c
+  H : a ^ 3 + b ^ 3 = u * c ^ 3
 attribute [nolint docBlame] Solution'.a
 attribute [nolint docBlame] Solution'.b
 attribute [nolint docBlame] Solution'.c
@@ -170,7 +170,7 @@ attribute [nolint docBlame] Solution'.u
 
 /-- `Solution` is the same as `Solution'` with the additional assumption that `λ ^ 2 ∣ a + b`. -/
 structure Solution extends Solution' hζ where
-  (hab : λ ^ 2 ∣ a + b)
+  hab : λ ^ 2 ∣ a + b
 
 variable {hζ} (S : Solution hζ) (S' : Solution' hζ) [DecidableRel fun (a b : 𝓞 K) ↦ a ∣ b]
 
