@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Logic.Equiv.Defs
 
 #align_import algebra.invertible from "leanprover-community/mathlib"@"722b3b152ddd5e0cf21c0a29787c76596cb6b422"
 /-!
