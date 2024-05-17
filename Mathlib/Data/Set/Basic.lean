@@ -1804,6 +1804,9 @@ theorem diff_subset (s t : Set α) : s \ t ⊆ s :=
   show s \ t ≤ s from sdiff_le
 #align set.diff_subset Set.diff_subset
 
+theorem diff_subset_compl (s t : Set α) : s \ t ⊆ tᶜ :=
+  diff_eq_compl_inter ▸ inter_subset_left _ _
+
 theorem union_diff_cancel' {s t u : Set α} (h₁ : s ⊆ t) (h₂ : t ⊆ u) : t ∪ u \ s = u :=
   sup_sdiff_cancel' h₁ h₂
 #align set.union_diff_cancel' Set.union_diff_cancel'
