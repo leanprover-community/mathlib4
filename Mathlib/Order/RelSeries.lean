@@ -162,29 +162,60 @@ lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
 instance membership : Membership α (RelSeries r) :=
   ⟨(· ∈ Set.range ·)⟩
 
-theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
+@[simp] theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
 
-theorem mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
+@[simp] theorem mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
   rw [RelSeries.toList, List.mem_ofFn, RelSeries.mem_def]
 
-theorem length_pos_of_mem_ne {s : RelSeries r} {x y : α} (hx : x ∈ s) (hy : y ∈ s)
-    (hxy : x ≠ y) : 0 < s.length := by
-  obtain ⟨i, rfl⟩ := hx
-  obtain ⟨j, rfl⟩ := hy
-  contrapose! hxy
+variable {r} in
+theorem length_ne_zero_of_nontrivial {s : RelSeries r} (h : {x | x ∈ s}.Nontrivial) :
+    s.length ≠ 0 := by
+  rcases h with ⟨-, ⟨i, rfl⟩, -, ⟨j, rfl⟩, h⟩
+  contrapose! h
   congr!
-  exact Fin.castIso (by rw [show s.length = 0 by simpa using hxy, zero_add] : s.length + 1 = 1)
+  exact Fin.castIso (by rw [h, zero_add] : s.length + 1 = 1)
     |>.injective <| Subsingleton.elim (α := Fin 1) _ _
 
 variable {r} in
-lemma forall_mem_eq_of_length_eq_zero {s : RelSeries r} (hs : s.length = 0) {x y}
-    (hx : x ∈ s) (hy : y ∈ s) : x = y := by
-  rcases hx with ⟨i, rfl⟩
-  rcases hy with ⟨j, rfl⟩
+theorem length_ne_zero (irrefl : Irreflexive r) {s : RelSeries r} :
+    s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivial := by
+  refine ⟨fun h ↦ ⟨s 0, by simp, s 1, by simp, fun rid ↦ irrefl (s 0) ?_⟩,
+    length_ne_zero_of_nontrivial⟩
+  nth_rw 2 [rid]
+  convert s.step ⟨0, by omega⟩
+  ext
+  simpa [Nat.pos_iff_ne_zero]
+
+variable {r} in
+theorem length_pos_of_nontrivial {s : RelSeries r} (h : {x | x ∈ s}.Nontrivial) :
+    0 < s.length :=
+  Nat.pos_iff_ne_zero.mpr <| length_ne_zero_of_nontrivial h
+
+variable {r} in
+theorem length_pos (irrefl : Irreflexive r) {s : RelSeries r} :
+    0 < s.length ↔ {x | x ∈ s}.Nontrivial :=
+  Nat.pos_iff_ne_zero.trans <| length_ne_zero irrefl
+
+variable {r} in
+theorem subsingleton_of_length_eq_zero {s : RelSeries r} (hs : s.length = 0) :
+    {x | x ∈ s}.Subsingleton := by
+  rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
   congr!
   exact Fin.castIso (by rw [hs, zero_add] : s.length + 1 = 1) |>.injective <|
     Subsingleton.elim (α := Fin 1) _ _
+
+variable {r} in
+theorem length_eq_zero (irrefl : Irreflexive r) {s : RelSeries r} :
+    s.length = 0 ↔ {x | x ∈ s}.Subsingleton := by
+  refine ⟨subsingleton_of_length_eq_zero, fun h ↦ ?_⟩
+  by_contra!
+  refine irrefl (s 0) ?_
+  nth_rw 2 [@h (s 0) (by simp) (s 1) (by simp)]
+  convert s.step ⟨0, by omega⟩
+  ext
+  simpa [Nat.pos_iff_ne_zero]
+
 
 /-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
