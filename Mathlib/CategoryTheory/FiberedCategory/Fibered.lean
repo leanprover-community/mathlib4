@@ -268,7 +268,7 @@ lemma isIso_of_base_isIso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R �
 
 /-- The canonical isomorphism between the domains of two cartesian arrows lying over
 isomorphic objects. -/
-noncomputable def IsCartesianIso_of_base_Iso {p : 𝒳 ⥤ 𝒮}
+noncomputable def Iso_of_base_Iso {p : 𝒳 ⥤ 𝒮}
   {R R' S : 𝒮} {a a' b : 𝒳} {f : R ⟶ S} {f' : R' ⟶ S} {g : R' ≅ R}
   (H : f' = g.hom ≫ f) {φ : a ⟶ b} {φ' : a' ⟶ b}
   (hφ : IsCartesian p f φ) (hφ' : IsCartesian p f' φ') : a' ≅ a where
@@ -277,9 +277,9 @@ noncomputable def IsCartesianIso_of_base_Iso {p : 𝒳 ⥤ 𝒮}
 
 /-- The canonical isomorphism between the domains of two cartesian arrows
 lying over the same object. -/
-noncomputable def IsCartesianIso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a' a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
+noncomputable def NaturalIso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a' a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
     {φ' : a' ⟶ b} (hφ : IsCartesian p f φ) (hφ' : IsCartesian p f φ') : a' ≅ a :=
-  IsCartesianIso_of_base_Iso (show f = (Iso.refl R).hom ≫ f by simp) hφ hφ'
+  Iso_of_base_Iso (show f = (Iso.refl R).hom ≫ f by simp) hφ hφ'
 
 end IsCartesian
 
@@ -334,7 +334,7 @@ we have an isomorphism `T ×_S a ≅ T ×_R (R ×_S a)` -/
 noncomputable def PullbackPullbackIso {p : 𝒳 ⥤ 𝒮} [IsFibered p]
     {R S T : 𝒮}  {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) (g : T ⟶ R) :
       PullbackObj ha (g ≫ f) ≅ PullbackObj (PullbackObj_proj ha f) g :=
-  IsCartesianIso (IsCartesian.comp (PullbackMap.IsCartesian (PullbackObj_proj ha f) g)
+  NaturalIso (IsCartesian.comp (PullbackMap.IsCartesian (PullbackObj_proj ha f) g)
     (PullbackMap.IsCartesian ha f))
       (PullbackMap.IsCartesian ha (g ≫ f))
 
