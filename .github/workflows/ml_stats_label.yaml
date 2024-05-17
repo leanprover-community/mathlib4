@@ -18,11 +18,7 @@ jobs:
 
       - id: mathlib_stats
         run: |
-          #git checkout adomani/periodic_reports_dev
-          #git checkout -q master
           git checkout origin/adomani/periodic_reports_dev scripts/mathlib_stats.sh
-          ## should the next step be removed for Zulip?
-          #git checkout -q -
           printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)"
           printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)" >> "$GITHUB_OUTPUT"
 
