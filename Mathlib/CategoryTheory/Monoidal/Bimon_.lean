@@ -10,6 +10,8 @@ import Mathlib.CategoryTheory.Monoidal.Comon_
 
 We define bimonoids in a braided monoidal category `C`
 as comonoid objects in the category of monoid objects in `C`.
+
+We verify that this is equivalent to the monoid objects in the category ofcomonoid objects.
 -/
 
 noncomputable section
@@ -26,7 +28,18 @@ category of monoid objects in `C`.
 -/
 def Bimon_ := Comon_ (Mon_ C)
 
+namespace Bimon_
+
 instance : Category (Bimon_ C) := inferInstanceAs (Category (Comon_ (Mon_ C)))
+
+@[ext] lemma ext {X Y : Bimon_ C} {f g : X ⟶ Y} (w : f.hom.hom = g.hom.hom) : f = g :=
+  Comon_.Hom.ext _ _ (Mon_.Hom.ext _ _ w)
+
+@[simp] theorem id_hom' (M : Bimon_ C) : Comon_.Hom.hom (𝟙 M) = 𝟙 M.X := rfl
+
+@[simp]
+theorem comp_hom' {M N K : Bimon_ C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).hom = f.hom ≫ g.hom :=
+  rfl
 
 /-- The forgetful functor from bimonoid objects to monoid objects. -/
 abbrev toMon_ : Bimon_ C ⥤ Mon_ C := Comon_.forget (Mon_ C)
@@ -44,37 +57,44 @@ def toComon_ : Bimon_ C ⥤ Comon_ C := (Mon_.forgetMonoidal C).toOplaxMonoidalF
 @[simp]
 theorem toComon_forget : toComon_ C ⋙ Comon_.forget C = forget C := rfl
 
-@[simp] theorem foo {V} [Quiver V] {X Y x} :
-    @Quiver.Hom.unop V _ X Y (Opposite.op (unop := x)) = x := rfl
-
-@[simps]
-def to_Mon_Comon_obj (M : Bimon_ C) : Mon_ (Comon_ C) where
+/-- The object level part of the forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
+def toMon_Comon_obj (M : Bimon_ C) : Mon_ (Comon_ C) where
   X := (toComon_ C).obj M
   one := { hom := M.X.one }
-  mul := { hom := M.X.mul, hom_comul := sorry, }
-  mul_one := by
-    ext
-    simp
-    fail_if_success
-      simp only [foo] -- Doesn't work as a simp lemma until we specify the universe levels explicitly!
-    simp only [foo.{v₁ + 1}]
-    -- This should just be by `Quiver.Hom.unop_mk`, but I can't get that to fire at all.
-    simp
-  one_mul := sorry
-  mul_assoc := sorry
+  mul :=
+  { hom := M.X.mul,
+    hom_comul := by dsimp; simp [tensor_μ] }
 
-def to_Mon_Comon : Bimon_ C ⥤ Mon_ (Comon_ C) where
-  obj := to_Mon_Comon_obj C
+attribute [simps] toMon_Comon_obj -- We add this after the fact to avoid a timeout.
+
+/-- The forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
+@[simps]
+def toMon_Comon_ : Bimon_ C ⥤ Mon_ (Comon_ C) where
+  obj := toMon_Comon_obj C
   map f :=
-  { hom := (toComon_ C).map f,
-    one_hom := by
-      ext
-      simp,
-    mul_hom := by
-      ext
-      simp
-      sorry }
+  { hom := (toComon_ C).map f }
 
-def equiv_Mon_Comon : Bimon_ C ≌ Mon_ (Comon_ C) := sorry
+/-- The object level part of the backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
+@[simps]
+def ofMon_Comon_obj (M : Mon_ (Comon_ C)) : Bimon_ C where
+  X := (Comon_.forgetMonoidal C).toLaxMonoidalFunctor.mapMon.obj M
+  counit := { hom := M.X.counit }
+  comul :=
+  { hom := M.X.comul,
+    mul_hom := by dsimp; simp [tensor_μ] }
 
-end
+/-- The backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
+@[simps]
+def ofMon_Comon_ : Mon_ (Comon_ C) ⥤ Bimon_ C where
+  obj := ofMon_Comon_obj C
+  map f :=
+  { hom := (Comon_.forgetMonoidal C).toLaxMonoidalFunctor.mapMon.map f }
+
+/-- The equivalence `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
+def equivMon_Comon_ : Bimon_ C ≌ Mon_ (Comon_ C) where
+  functor := toMon_Comon_ C
+  inverse := ofMon_Comon_ C
+  unitIso := NatIso.ofComponents (fun _ => Comon_.mkIso (Mon_.mkIso (Iso.refl _)))
+  counitIso := NatIso.ofComponents (fun _ => Mon_.mkIso (Comon_.mkIso (Iso.refl _)))
+
+end Bimon_

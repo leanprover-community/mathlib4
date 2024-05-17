@@ -164,8 +164,8 @@ instance : (forget C).ReflectsIsomorphisms where
 and checking compatibility with unit and multiplication only in the forward direction.
 -/
 @[simps]
-def isoOfIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one)
-    (mul_f : M.mul ≫ f.hom = (f.hom ⊗ f.hom) ≫ N.mul) : M ≅ N where
+def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one := by aesop_cat)
+    (mul_f : M.mul ≫ f.hom = (f.hom ⊗ f.hom) ≫ N.mul := by aesop_cat) : M ≅ N where
   hom :=
     { hom := f.hom
       one_hom := one_f
@@ -177,7 +177,7 @@ def isoOfIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one)
         rw [← cancel_mono f.hom]
         slice_rhs 2 3 => rw [mul_f]
         simp }
-#align Mon_.iso_of_iso Mon_.isoOfIso
+#align Mon_.iso_of_iso Mon_.mkIso
 
 instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
   default :=
@@ -491,9 +491,9 @@ instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
     whiskerRight := fun f Y => tensorHom f (𝟙 Y)
     whiskerLeft := fun X _ _ g => tensorHom (𝟙 X) g
     tensorUnit := trivial C
-    associator := fun M N P ↦ isoOfIso (α_ M.X N.X P.X) one_associator mul_associator
-    leftUnitor := fun M ↦ isoOfIso (λ_ M.X) one_leftUnitor mul_leftUnitor
-    rightUnitor := fun M ↦ isoOfIso (ρ_ M.X) one_rightUnitor mul_rightUnitor }
+    associator := fun M N P ↦ mkIso (α_ M.X N.X P.X) one_associator mul_associator
+    leftUnitor := fun M ↦ mkIso (λ_ M.X) one_leftUnitor mul_leftUnitor
+    rightUnitor := fun M ↦ mkIso (ρ_ M.X) one_rightUnitor mul_rightUnitor }
 
 @[simp]
 theorem tensorUnit_X : (𝟙_ (Mon_ C)).X = 𝟙_ C := rfl

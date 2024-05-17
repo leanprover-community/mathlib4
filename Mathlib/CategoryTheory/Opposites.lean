@@ -50,6 +50,10 @@ theorem Quiver.Hom.unop_op {X Y : C} (f : X ⟶ Y) : f.op.unop = f :=
 #align quiver.hom.unop_op Quiver.Hom.unop_op
 
 @[simp]
+theorem Quiver.Hom.unop_op' {X Y : Cᵒᵖ} {x} :
+    @Quiver.Hom.unop C _ X Y no_index (Opposite.op (unop := x)) = x := rfl
+
+@[simp]
 theorem Quiver.Hom.op_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) : f.unop.op = f :=
   rfl
 #align quiver.hom.op_unop Quiver.Hom.op_unop
