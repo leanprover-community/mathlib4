@@ -921,46 +921,23 @@ end ContinuousHom
 
 namespace fixedPoints
 
-open Function
+open Function OrderHom.Nat
 
-variable (f : α →𝒄 α) (x : α)
+variable {f : α →𝒄 α} {x : α}
 
-/-- Approximation chain of the least fixed point. This definition is equivalent to Nat.repeat. -/
-def approx (f : α → α) (x : α) : ℕ → α
-  | 0 => x
-  | Nat.succ n => f (approx f x n)
-
-theorem approx_eq_repeat {n : ℕ} : approx f x n = Nat.repeat f n x := by
-  induction n with
-  | zero => exact rfl
-  | succ n h_ind => exact congrArg f h_ind
-
-theorem approx_le (h : x ≤ f x) (n : ℕ) :
-    approx f x n ≤ f (approx f x n) := by
-  induction n with
-  | zero => exact h
-  | succ n h_ind => exact f.monotone h_ind
-
-theorem monotone_approx (h : x ≤ f x) :
-    Monotone (approx f x) := by
-  intro a b h_ab
-  induction b, h_ab using Nat.le_induction with
-  | base => exact le_rfl
-  | succ n _ h_ind => exact le_trans h_ind (approx_le f x h n)
-
-/-- approx as a monoton chain on natural numbers for use in ωSup -/
-def approxAsChain (h : x ≤ f x) : Chain α :=
-    ⟨approx f x, monotone_approx f x h⟩
+/-- Iteration of a function on an initial element interpreted as a chain. -/
+def repeatChain (f : α →o α) (x : α) (h : x ≤ f x) : Chain α :=
+  ⟨fun n => Nat.repeat f n x, monotone_repeat h⟩
 
 /-- The supremum of iterating a function on x arbitrary often is a fixed point -/
 theorem approx_mem_fixedPoint (h : x ≤ f x) :
-    ωSup (approxAsChain f x h) ∈ fixedPoints f := by
+    ωSup (repeatChain f x h) ∈ fixedPoints f := by
   rw [mem_fixedPoints, IsFixedPt, f.continuous]
   apply le_antisymm
   · apply ωSup_le
     intro n
     simp only [Chain.map_coe, OrderHomClass.coe_coe, comp_apply]
-    have : f (approxAsChain f x h n) = approxAsChain f x h (n+1) := rfl
+    have : f (repeatChain f x h n) = repeatChain f x h (n+1) := rfl
     rw [this]
     apply le_ωSup
   · apply ωSup_le
@@ -968,41 +945,31 @@ theorem approx_mem_fixedPoint (h : x ≤ f x) :
     cases n
     case a.a.zero =>
       apply le_trans h
-      have : f x = ((approxAsChain f x h).map f) 0 := rfl
+      have : f x = ((repeatChain f x h).map f) 0 := rfl
       rw [this]
       apply le_ωSup
     case a.a.succ n =>
-      have : approxAsChain f x h (n+1) = f (approxAsChain f x h n) := rfl
-      rw [this]
-      have : f (approxAsChain f x h n) = (approxAsChain f x h).map f n := rfl
+      have : repeatChain f x h (n+1) = (repeatChain f x h).map f n := rfl
       rw [this]
       apply le_ωSup
 
-  theorem approx_le_prefixedPoint {a : α} (h_a : f a ≤ a) (h_x_le_a : x ≤ a) (n : ℕ) :
-      approx f x n ≤ a := by
+  /-- The supremum of iterating a function on x arbitrary often is smaller than any prefixed point-/
+  theorem ωSup_repeat_le_prefixedPoint (h : x ≤ f x) {a : α}
+      (h_a : f a ≤ a) (h_x_le_a : x ≤ a) :
+      ωSup (repeatChain f x h) ≤ a := by
+    apply ωSup_le
+    intro n
     induction n with
     | zero => exact h_x_le_a
     | succ n h_ind => exact le_trans (f.monotone h_ind) h_a
 
-  /-- The supremum of iterating a function on x arbitrary often is smaller than any prefixed point-/
-  theorem ωSup_approx_le_prefixedPoint (h : x ≤ f x) {a : α}
-      (h_a : f a ≤ a) (h_x_le_a : x ≤ a) :
-      ωSup (approxAsChain f x h) ≤ a := by
-    apply ωSup_le
-    exact fun n => approx_le_prefixedPoint f x h_a h_x_le_a n
-
-  theorem approx_le_fixedPoint {a : α} (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) (n : ℕ) :
-      approx f x n ≤ a := by
+  /-- The supremum of iterating a function on x arbitrary often is smaller than any fixed point-/
+  theorem ωSup_repeat_le_fixedPoint (h : x ≤ f x) {a : α}
+      (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) :
+      ωSup (repeatChain f x h) ≤ a := by
     rw [mem_fixedPoints] at h_a
     obtain h_a := Eq.le h_a
-    exact approx_le_prefixedPoint f x h_a h_x_le_a n
-
-  /-- The supremum of iterating a function on x arbitrary often is smaller than any fixed point-/
-  theorem ωSup_approx_le_fixedPoint (h : x ≤ f x) {a : α}
-      (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) :
-      ωSup (approxAsChain f x h) ≤ a := by
-    apply ωSup_le
-    exact fun n => approx_le_fixedPoint f x h_a h_x_le_a n
+    exact ωSup_repeat_le_prefixedPoint h h_a h_x_le_a
 
 end fixedPoints
 

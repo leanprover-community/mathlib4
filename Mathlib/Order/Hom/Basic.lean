@@ -9,6 +9,7 @@ import Mathlib.Order.Disjoint
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Util.AssertExists
+import Mathlib.Data.Nat.Defs
 
 #align_import order.hom.basic from "leanprover-community/mathlib"@"62a5626868683c104774de8d85b9855234ac807c"
 
@@ -599,6 +600,19 @@ protected def withTopMap (f : α →o β) : WithTop α →o WithTop β :=
   ⟨WithTop.map f, f.mono.withTop_map⟩
 #align order_hom.with_top_map OrderHom.withTopMap
 #align order_hom.with_top_map_coe OrderHom.withTopMap_coe
+
+theorem Nat.repeat_le {f : α →o α} {x : α} (h : x ≤ f x) (n : ℕ):
+    Nat.repeat f n x ≤ f (Nat.repeat f n x) := by
+  induction n with
+  | zero => exact h
+  | succ n h_ind => exact f.monotone h_ind
+
+theorem Nat.monotone_repeat {f : α →o α} {x : α} (h : x ≤ f x) :
+    Monotone (fun n => Nat.repeat f n x) := by
+  intro a b h_ab
+  induction b, h_ab using Nat.le_induction with
+  | base => exact le_rfl
+  | succ n _ h_ind => exact le_trans h_ind (repeat_le h n)
 
 end OrderHom
 
