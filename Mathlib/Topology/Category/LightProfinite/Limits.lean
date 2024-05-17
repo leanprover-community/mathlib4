@@ -3,7 +3,7 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.LightProfinite.IsLight
+import Mathlib.Topology.Category.LightProfinite.Equivalence
 import Mathlib.Topology.Category.Profinite.Limits
 /-!
 
@@ -24,6 +24,45 @@ which may be useful due to their definitional properties.
 universe u w
 
 open CategoryTheory Profinite TopologicalSpace Limits
+
+namespace LightCompHausLike
+
+open CompHausLike
+
+instance : HasFiniteCoproducts LightCompHausLike := by
+  apply has_finite_coproducts
+  intro α _ X
+  refine ⟨show TotallyDisconnectedSpace (Σ (a : α), X a) from inferInstance, ?_⟩
+  change Countable (Clopens (Σ (a : α), X a))
+  refine @Function.Surjective.countable ((a : α) → Clopens (X a)) _ inferInstance
+    (fun f ↦ ⟨⋃ (a : α), Sigma.mk a '' (f a).1, ?_⟩) ?_
+  · apply isClopen_iUnion_of_finite
+    intro i
+    exact ⟨isClosedMap_sigmaMk _ (f i).2.1, isOpenMap_sigmaMk _ (f i).2.2⟩
+  · intro ⟨s, ⟨hsc, hso⟩⟩
+    rw [isOpen_sigma_iff] at hso
+    rw [isClosed_sigma_iff] at hsc
+    refine ⟨fun i ↦ ⟨_, ⟨hsc i, hso i⟩⟩, ?_⟩
+    simp only [Subtype.mk.injEq]
+    ext ⟨i, xi⟩
+    refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+    · simp only [Clopens.coe_mk, Set.mem_iUnion] at hx
+      obtain ⟨_, _, hj, hxj⟩ := hx
+      simpa [hxj] using hj
+    · simp only [Clopens.coe_mk, Set.mem_iUnion]
+      refine ⟨i, xi, (by simpa using hx), rfl⟩
+
+instance : HasPullbacks LightCompHausLike := by
+  apply hasPullbacks
+  intro X Y B f g
+  refine ⟨show TotallyDisconnectedSpace {xy : X × Y | _} from inferInstance, ?_⟩
+  sorry
+  -- let i : (CompHausLike.pullback f g _ : Profinite) ⟶ _ := sorry
+
+
+end LightCompHausLike
+
+#exit
 
 namespace LightProfinite
 

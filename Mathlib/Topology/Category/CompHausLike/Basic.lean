@@ -202,29 +202,3 @@ theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y)
     exact this
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget (CompHausLike P)).mono_of_mono_map
-
-#exit
-
-abbrev CompHaus := CompHausLike (fun _ ↦ True)
-
-variable (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
-
-abbrev CompHaus.of : CompHaus := CompHausLike.of _ X trivial
-
-abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
-
-abbrev Profinite.of [TotallyDisconnectedSpace X] : Profinite :=
-  CompHausLike.of _ X (inferInstance : TotallyDisconnectedSpace X)
-
-abbrev Stonean := CompHausLike (fun X ↦ ExtremallyDisconnected X)
-
-abbrev Stonean.of [ExtremallyDisconnected X] : Stonean :=
-  CompHausLike.of _ X (inferInstance : ExtremallyDisconnected X)
-
-open TopologicalSpace
-
-abbrev LightProfinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X ∧ Countable (Clopens X))
-
-abbrev LightProfinite.of [TotallyDisconnectedSpace X] [Countable (Clopens X)] : LightProfinite :=
-  CompHausLike.of _ X ⟨(inferInstance : TotallyDisconnectedSpace X),
-    (inferInstance : Countable (Clopens X))⟩
