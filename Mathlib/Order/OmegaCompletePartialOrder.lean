@@ -948,6 +948,7 @@ theorem monotone_approx (h : x ≤ f x) :
   | base => exact le_rfl
   | succ n _ h_ind => exact le_trans h_ind (approx_le f x h n)
 
+/-- approx as a monoton chain on natural numbers for use in ωSup -/
 def approxAsChain (h : x ≤ f x) : Chain α :=
     ⟨approx f x, monotone_approx f x h⟩
 
