@@ -47,8 +47,8 @@ often drawn as:
   R --f--> S
 ``` -/
 class Functor.IsHomLift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) : Prop where
-  domain_eq : p.obj a = R
-  codomain_eq : p.obj b = S
+  domain_eq : p.obj a = R := by aesop_cat
+  codomain_eq : p.obj b = S := by aesop_cat
   homlift : CommSq (p.map φ) (eqToHom domain_eq) (eqToHom codomain_eq) f
 
 namespace Functor.IsHomLift
