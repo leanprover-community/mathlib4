@@ -297,8 +297,7 @@ theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔
   rw [Set.mem_setOf_eq] at this
   exact this.mono h
 
--- 2024-03-21
-@[deprecated Colorable.chromaticNumber_le]
+@[deprecated Colorable.chromaticNumber_le (since := "2024-03-21")]
 theorem chromaticNumber_le_card [Fintype α] (C : G.Coloring α) :
     G.chromaticNumber ≤ Fintype.card α := C.colorable.chromaticNumber_le
 #align simple_graph.chromatic_number_le_card SimpleGraph.chromaticNumber_le_card

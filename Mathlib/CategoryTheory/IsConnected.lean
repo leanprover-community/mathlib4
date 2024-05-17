@@ -388,8 +388,7 @@ theorem isPreconnected_zigzag [IsPreconnected J] (j₁ j₂ : J) : Zigzag j₁ j
     (@fun _ _ f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
 #align category_theory.is_connected_zigzag CategoryTheory.isPreconnected_zigzag
 
--- deprecated on 2024-02-19
-@[deprecated] alias isConnected_zigzag := isPreconnected_zigzag
+@[deprecated (since := "2024-02-19")] alias isConnected_zigzag := isPreconnected_zigzag
 
 theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPreconnected J := by
   apply IsPreconnected.of_constant_of_preserves_morphisms
