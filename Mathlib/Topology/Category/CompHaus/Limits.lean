@@ -38,4 +38,8 @@ def isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) :=
 noncomputable def terminalIsoPUnit : ⊤_ CompHaus.{u} ≅ CompHaus.of PUnit :=
   terminalIsTerminal.uniqueUpToIso CompHaus.isTerminalPUnit
 
+noncomputable instance : PreservesFiniteCoproducts compHausToTop := by
+  apply CompHausLike.preservesFiniteCoproducts
+  simp only [implies_true]
+
 end CompHaus
