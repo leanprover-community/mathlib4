@@ -363,7 +363,7 @@ a module with a fixed basis.
 -/
 
 
-variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₁]
+variable [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
 
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid N₂]
   [Module R N₂] --[SMulCommClass R R N₂]
@@ -482,10 +482,10 @@ theorem LinearMap.toMatrix₂_toLinearMap₂ (M : Matrix n m N₂) :
   (LinearMap.toMatrix₂ b₁ b₂).apply_symm_apply M
 #align linear_map.to_matrix₂_to_linear_map₂ LinearMap.toMatrix₂_toLinearMap₂
 
-variable [AddCommMonoid M₁'] [Module R M₁']
+variable [AddCommMonoid M₁'] [Module R M₁'] [Module R₁ M₁']
 variable [AddCommMonoid M₂'] [Module R M₂'] [Module R₂ M₁'] [Module R₂ M₂']
-variable (b₁' : Basis n' R M₁')
-variable (b₂' : Basis m' R M₂')
+variable (b₁' : Basis n' R₁ M₁')
+variable (b₂' : Basis m' R₂ M₂')
 variable [Fintype n'] [Fintype m']
 variable [DecidableEq n'] [DecidableEq m']
 
