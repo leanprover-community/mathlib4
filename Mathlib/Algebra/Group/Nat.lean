@@ -26,7 +26,7 @@ namespace Nat
 
 /-! ### Instances -/
 
-instance instAddCommMonoid : AddCommMonoid ℕ where
+instance instAddCancelCommMonoid : AddCancelCommMonoid ℕ where
   add := Nat.add
   add_assoc := Nat.add_assoc
   zero := Nat.zero
@@ -36,6 +36,7 @@ instance instAddCommMonoid : AddCommMonoid ℕ where
   nsmul m n := m * n
   nsmul_zero := Nat.zero_mul
   nsmul_succ := succ_mul
+  add_left_cancel _ _ _ := Nat.add_left_cancel
 
 instance instCommMonoid : CommMonoid ℕ where
   mul := Nat.mul
@@ -54,6 +55,7 @@ instance instCommMonoid : CommMonoid ℕ where
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/
 
+instance instAddCommMonoid    : AddCommMonoid ℕ    := by infer_instance
 instance instAddMonoid        : AddMonoid ℕ        := by infer_instance
 instance instMonoid           : Monoid ℕ           := by infer_instance
 instance instCommSemigroup    : CommSemigroup ℕ    := by infer_instance
