@@ -930,7 +930,7 @@ def repeatChain (f : α →o α) (x : α) (h : x ≤ f x) : Chain α :=
   ⟨fun n => Nat.repeat f n x, monotone_repeat h⟩
 
 /-- The supremum of iterating a function on x arbitrary often is a fixed point -/
-theorem approx_mem_fixedPoint (h : x ≤ f x) :
+theorem ωSup_repeat_mem_fixedPoint (h : x ≤ f x) :
     ωSup (repeatChain f x h) ∈ fixedPoints f := by
   rw [mem_fixedPoints, IsFixedPt, f.continuous]
   apply le_antisymm
