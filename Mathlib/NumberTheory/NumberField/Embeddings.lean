@@ -126,7 +126,7 @@ theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ 
   refine ⟨a - b, tsub_pos_of_lt hlt, ?_⟩
   rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
   refine h.resolve_right fun hp => ?_
-  specialize hx (IsAlgClosed.lift (NumberField.isAlgebraic K)).toRingHom
+  specialize hx (IsAlgClosed.lift (R := ℚ)).toRingHom
   rw [pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
 #align number_field.embeddings.pow_eq_one_of_norm_eq_one NumberField.Embeddings.pow_eq_one_of_norm_eq_one
 
@@ -651,10 +651,11 @@ lemma isReal_comap_iff (f : k ≃+* K) {w : InfinitePlace K} :
     IsReal (w.comap (f : k →+* K)) ↔ IsReal w := by
   rw [← mk_embedding w, comap_mk, isReal_mk_iff, isReal_mk_iff, ComplexEmbedding.isReal_comp_iff]
 
-lemma comap_surjective [Algebra k K] (h : Algebra.IsAlgebraic k K) :
+lemma comap_surjective [Algebra k K] [Algebra.IsAlgebraic k K] :
     Function.Surjective (comap · (algebraMap k K)) := fun w ↦
   letI := w.embedding.toAlgebra
-  ⟨mk (IsAlgClosed.lift (M := ℂ) h), by simp [comap_mk, RingHom.algebraMap_toAlgebra]⟩
+  ⟨mk (IsAlgClosed.lift (M := ℂ) (R := k)).toRingHom,
+    by simp [comap_mk, RingHom.algebraMap_toAlgebra]⟩
 
 lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤ mult w := by
   rw [mult, mult]
@@ -670,7 +671,7 @@ variable (k K)
 lemma card_mono [NumberField k] [NumberField K] :
     card (InfinitePlace k) ≤ card (InfinitePlace K) :=
   have := Module.Finite.of_restrictScalars_finite ℚ k K
-  Fintype.card_le_of_surjective _ (comap_surjective (Algebra.IsAlgebraic.of_finite k K))
+  Fintype.card_le_of_surjective _ comap_surjective
 
 variable {k K}
 
@@ -739,7 +740,7 @@ def orbitRelEquiv [IsGalois k K] :
   · rintro ⟨w⟩ ⟨w'⟩ e
     exact Quotient.sound (mem_orbit_iff.mpr e.symm)
   · intro w
-    obtain ⟨w', hw⟩ := comap_surjective (Normal.isAlgebraic' (K := K)) w
+    obtain ⟨w', hw⟩ := comap_surjective (K := K) w
     exact ⟨⟦w'⟧, hw⟩
 
 lemma orbitRelEquiv_apply_mk'' [IsGalois k K] (w : InfinitePlace K) :
@@ -934,14 +935,14 @@ lemma isUnramifiedIn_comap [IsGalois k K] {w : InfinitePlace K} :
 lemma even_card_aut_of_not_isUnramifiedIn [IsGalois k K] [FiniteDimensional k K]
     {w : InfinitePlace k} (hw : ¬ w.IsUnramifiedIn K) :
     Even (Fintype.card <| K ≃ₐ[k] K) := by
-  obtain ⟨v, rfl⟩ := comap_surjective (Normal.isAlgebraic' (K := K)) w
+  obtain ⟨v, rfl⟩ := comap_surjective (K := K) w
   rw [isUnramifiedIn_comap] at hw
   exact even_card_aut_of_not_isUnramified hw
 
 lemma even_finrank_of_not_isUnramifiedIn
     [IsGalois k K] {w : InfinitePlace k} (hw : ¬ w.IsUnramifiedIn K) :
     Even (finrank k K) := by
-  obtain ⟨v, rfl⟩ := comap_surjective (Normal.isAlgebraic' (K := K)) w
+  obtain ⟨v, rfl⟩ := comap_surjective (K := K) w
   rw [isUnramifiedIn_comap] at hw
   exact even_finrank_of_not_isUnramified hw
 
@@ -956,7 +957,7 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
     (t := (univ.filter <| IsUnramifiedIn K (k := k))), ← smul_eq_mul, ← sum_const]
   · refine sum_congr rfl (fun w hw ↦ ?_)
-    obtain ⟨w, rfl⟩ := comap_surjective (Normal.isAlgebraic' (K := K)) w
+    obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
     simp only [mem_univ, forall_true_left, mem_filter, true_and] at hw
     trans Finset.card (MulAction.orbit (K ≃ₐ[k] K) w).toFinset
     · congr; ext w'
@@ -978,7 +979,7 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
     (t := (univ.filter <| IsUnramifiedIn K (k := k))ᶜ), ← smul_eq_mul, ← sum_const]
   · refine sum_congr rfl (fun w hw ↦ ?_)
-    obtain ⟨w, rfl⟩ := comap_surjective (Normal.isAlgebraic' (K := K)) w
+    obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
     simp only [mem_univ, forall_true_left, compl_filter, not_not, mem_filter, true_and] at hw
     trans Finset.card (MulAction.orbit (K ≃ₐ[k] K) w).toFinset
     · congr; ext w'
@@ -1020,10 +1021,10 @@ lemma IsUnramifiedAtInfinitePlaces.top [h : IsUnramifiedAtInfinitePlaces k F] :
   isUnramified w := (h.1 w).of_restrictScalars K
 
 lemma IsUnramifiedAtInfinitePlaces.bot [h₁ : IsUnramifiedAtInfinitePlaces k F]
-    (h : Algebra.IsAlgebraic K F) :
+    [Algebra.IsAlgebraic K F] :
     IsUnramifiedAtInfinitePlaces k K where
   isUnramified w := by
-    obtain ⟨w, rfl⟩ := InfinitePlace.comap_surjective h w
+    obtain ⟨w, rfl⟩ := InfinitePlace.comap_surjective (K := F) w
     exact (h₁.1 w).comap K
 
 variable {K}
