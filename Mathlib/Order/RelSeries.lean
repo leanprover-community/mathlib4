@@ -409,7 +409,7 @@ def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r
     (i : Fin (s.length + 1)) : snoc s a connect (Fin.castSucc i) = s i :=
   Fin.append_left _ _ i
 
-lemma mem_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) (x : α) :
+lemma mem_snoc {p : RelSeries r} {newLast : α} {rel : r p.last newLast} {x : α} :
     x ∈ p.snoc newLast rel ↔ x ∈ p ∨ x = newLast := by
   simp only [snoc, append, singleton_length, Nat.add_zero, Nat.reduceAdd, Fin.cast_refl,
     Function.comp_id, mem_def, id_eq, Set.mem_range]
