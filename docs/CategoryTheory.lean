@@ -1,5 +1,6 @@
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.GroupTheory.Abelianization
 -- import Mathlib
 noncomputable section -- Let's do some maths.
 
@@ -103,15 +104,27 @@ def forget' : CommRingCat ⥤ RingCat where
 --     simp at *
 --     sorry
 
--- def abelianize : GroupCat ⥤ CommGroupCat where
---   obj G := CommGroupCat.of (Abelianization G)
---   map f := Abelianization.lift (Abelianization.of.comp f)
---   map_id := by
---     intros; simp only [MonoidHom.mk_coe, coe_id]
---     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
---   map_comp := by
---     intros; simp only [coe_comp];
---     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
+universe u
+
+@[simp] theorem MonoidHom.comp_id' {G : GroupCat.{u}} {H : Type u} [Group H] (f : G →* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (GroupCat.ofHom f)
+
+-- attribute [simp] CommGroupCat.coe_of
+def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
+  obj G := CommGroupCat.of (Abelianization G)
+  map f := Abelianization.lift (Abelianization.of.comp f)
+  map_id := by
+    -- aesop_cat
+    intros--; simp only [MonoidHom.mk_coe, coe_id]
+    ext
+    dsimp -- but doesn't work `at *`!
+    simp [CommGroupCat.coe_of] -- but if we use this in `dsimp`, we get stuck!
+  map_comp := by
+    intros
+    ext
+    dsimp
+    simp [CommGroupCat.coe_of]
+    sorry
 
 structure PointedSpace where
   X : Type
@@ -130,10 +143,8 @@ attribute [simp] Hom.base
 
 namespace Hom
 
--- @[simps]
 def id (X : PointedSpace) : Hom X X := ⟨ContinuousMap.id _, rfl⟩
 
--- @[simps]
 def comp {X Y Z : PointedSpace} (f : Hom X Y) (g : Hom Y Z) : Hom X Z :=
    ⟨g.map.comp f.map, by simp⟩
 
@@ -144,76 +155,28 @@ instance : Category PointedSpace where
   id := Hom.id
   comp := Hom.comp
 
--- @[simp] theorem map_base {X Y : PointedSpace} (f : X ⟶ Y) : f.map X.base = Y.base := f.base
-
--- @[simp] theorem id_map {X : PointedSpace} : Hom.map (𝟙 X) = ContinuousMap.id X.X := rfl
--- @[simp] theorem comp_map {X Y Z : PointedSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :
---   Hom.map (f ≫ g) = g.map.comp f.map := rfl
-
--- @[ext] theorem hom_ext {X Y : PointedSpace} (f g : X ⟶ Y) (w : ∀ x : X.X, f.map x = g.map x) : f = g := sorry
-
 end PointedSpace
 
 
-universe u
-namespace TopCat
+def PointedSpaceEquiv_functor : PointedSpace ⥤ Under (TopCat.of Unit) where
+  obj := fun X => Under.mk (Y := TopCat.of X.X) (ContinuousMap.mk fun _ => X.base)
+  map := fun f => Under.homMk f.map
 
--- @[simp] theorem hom_eq {X Y : TopCat} : (X ⟶ Y) = C(X, Y) := rfl
+def PointedSpaceEquiv_inverse : Under (TopCat.of Unit) ⥤ PointedSpace where
+  obj := fun X =>
+  { X := X.right
+    base := X.hom () }
+  map := fun f =>
+  { map := f.right
+    base := by
+      have := f.w
+      replace this := DFunLike.congr_fun this ()
+      simp [- Under.w] at this    -- Because `simp at this` gives us an unhelpful `True`!
+      simp
+      exact this.symm }
 
--- @[simp] theorem coe_id (X : TopCat) :
---     @DFunLike.coe C(X, X) X (fun _ ↦ X) ContinuousMap.funLike (𝟙 X) = id := rfl
--- @[simp] theorem coe_id' (X : Type u) [TopologicalSpace X] :
---     @DFunLike.coe C(X, X) X (fun _ ↦ X) ContinuousMap.funLike (𝟙 (TopCat.of X)) = id := rfl
-
--- @[simp] theorem coe_comp {X Y Z : Type u}
---     [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] (f : C(X, Y)) (g : C(Y, Z)) :
---     @DFunLike.coe C(X, Z) X (fun _ => Z) ContinuousMap.funLike
---     (@CategoryStruct.comp TopCat _ (TopCat.of X) (TopCat.of Y) (TopCat.of Z) f g) = g ∘ f := rfl
-
--- @[simp] theorem fpp {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] {toFun} {h} {x} :
--- @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
---   (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) ConcreteCategory.instFunLike
---   no_index { toFun := toFun, continuous_toFun := h } x = toFun x := rfl
-
-@[simp] theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] {f : C(X, Y)} {x} :
-@DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
-  (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) ConcreteCategory.instFunLike
-  f x =
-@DFunLike.coe C(X, Y) X
-  (fun _ ↦ Y) _
-  f x := rfl
-
-end TopCat
-
-set_option maxHeartbeats 400000 in
 def equiv : PointedSpace ≌ Under (TopCat.of Unit) where
-  functor :=
-  { obj := fun X => Under.mk (Y := TopCat.of X.X) (ContinuousMap.mk fun _ => X.base)
-    map := fun f => Under.homMk f.map --(by intros; ext; dsimp; simp)
-    -- map_id := sorry
-    -- map_comp := sorry
-    }
-  inverse :=
-  { obj := fun X =>
-    { X := X.right
-      base := X.hom ()
-       }
-    map := fun f =>
-    { map := f.right
-      base := by
-        have := f.w
-        simp [- Under.w] at this
-        simp
-        have := DFunLike.congr_fun this ()
-        exact this.symm
-         }
-    -- map_id := by intros; ext; simp
-    -- map_comp := by intros; ext; simp
-    }
-  unitIso := NatIso.ofComponents (fun X => Iso.refl _) --sorry
-  counitIso := NatIso.ofComponents (fun X => Iso.refl _) --sorry
-  -- functor_unitIso_comp := by
-  --   intros
-  --   ext
-  --   -- dsimp -- Without this we end up in a terrible state..
-  --   simp
+  functor := PointedSpaceEquiv_functor
+  inverse := PointedSpaceEquiv_inverse
+  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun X => Iso.refl _)
