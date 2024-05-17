@@ -14,6 +14,15 @@ import Mathlib.NumberTheory.ModularForms.Identities
 
 We show that Eisenstein series of weight `k` and level `Γ(N)` with congruence condition
 `a : Fin 2 → ZMod N` are bounded at infinity.
+
+## Outline of argument
+
+We need to bound the value of the Eisenstein series (acted on by `A : SL(2,ℤ)`)
+at a given point `z` in the upper half plane. Since these are modular forms of level `Γ(N)`,
+it suffices to prove this for `z ∈ verticalStrip N z.im`.
+
+We can then, first observe that the slash action just changes our `a` to `(a ᵥ* A)` and
+we then use our bounds for Eisenstein series in these vertical strips to get the result.
 -/
 
 noncomputable section
@@ -38,7 +47,7 @@ lemma summable_lem (k : ℤ) (hk : 3 ≤ k) (z : ℍ) : Summable fun (x : Fin 2 
   norm_cast at *
 
 lemma abs_le_tsum_abs (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k) (z : ℍ):
-    Complex.abs ((((eisensteinSeries a k))) z) ≤ ∑' (x : Fin 2 → ℤ),
+    Complex.abs (eisensteinSeries a k z) ≤ ∑' (x : Fin 2 → ℤ),
       Complex.abs (eisSummand k x z) := by
   simp_rw [← Complex.norm_eq_abs, eisensteinSeries]
   apply le_trans (norm_tsum_le_tsum_norm ?_) (tsum_subtype_le (fun (x : Fin 2 → ℤ) =>
