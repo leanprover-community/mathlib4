@@ -163,6 +163,10 @@ structure Solution' where
   (coprime : IsCoprime a b)
   (hcdvd : λ ∣ c)
   (H : a ^ 3 + b ^ 3 = u * c ^ 3)
+attribute [nolint docBlame] Solution'.a
+attribute [nolint docBlame] Solution'.b
+attribute [nolint docBlame] Solution'.c
+attribute [nolint docBlame] Solution'.u
 
 /-- `Solution` is the same as `Solution'` with the additional assumption that `λ ^ 2 ∣ a + b`. -/
 structure Solution extends Solution' hζ where
