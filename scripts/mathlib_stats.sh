@@ -14,6 +14,10 @@ currentCommitURL="[${currentCommit:0:10}](https://github.com/leanprover-communit
 ## just the date
 date=${hashAndDate/#* /}
 
+#####################
+# Git-based reports #
+#####################
+
 ## 'x files changed, y insertions(+), z deletions(-)'
 gdiff="$(git diff --shortstat "${oldCommit}"...${currentCommit})"
 
