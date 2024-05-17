@@ -199,7 +199,7 @@ def glued : C :=
 
 /-- The map `D.U i ⟶ D.glued` for each `i`. -/
 def ι (i : D.J) : D.U i ⟶ D.glued :=
-  Multicoequalizer.π D.diagram i
+  Multicoequalizer.inj D.diagram i
 #align category_theory.glue_data.ι CategoryTheory.GlueData.ι
 
 @[elementwise (attr := simp)]
