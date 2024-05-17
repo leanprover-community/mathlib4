@@ -244,6 +244,16 @@ theorem mulSupport_along_fiber_subset (f : α × β → M) (a : α) :
 #align function.mul_support_along_fiber_subset Function.mulSupport_along_fiber_subset
 #align function.support_along_fiber_subset Function.support_along_fiber_subset
 
+@[to_additive]
+theorem mulSupport_curry (f : α × β → M) :
+    (mulSupport f.curry) = (mulSupport f).image Prod.fst := by
+  simp [mulSupport, funext_iff, image]
+
+@[to_additive]
+theorem mulSupport_curry' (f : α × β → M) :
+    (mulSupport fun a b ↦ f (a, b)) = (mulSupport f).image Prod.fst :=
+  mulSupport_curry f
+
 end One
 
 @[to_additive]
