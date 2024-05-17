@@ -41,6 +41,7 @@ net=$(awk -v gd="${gdiff}" 'BEGIN{
 newDecls="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
 # { defs := 73590, thms := 230958, inductives := 2451, other := 6148 }
 # total: 313147
+echo "${newDecls}"
 git checkout "${oldCommit}"
 # 'detached HEAD' state
 
