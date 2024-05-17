@@ -371,7 +371,7 @@ variable [FunLike F β γ] [CompactlySupportedContinuousMapClass F β γ]
 
 lemma zero_at_infty_of_hasCompactSupport [TopologicalSpace β] [Zero β]
     (f : C_c(α, β)) :
-    Filter.Tendsto f (Filter.cocompact α) (nhds 0) := by
+    Filter.Tendsto f (Filter.cocompact α) (𝓝 0) := by
   rw [_root_.tendsto_nhds]
   intro s _ hzero
   rw [Filter.mem_cocompact]
