@@ -196,7 +196,7 @@ theorem isPrime_carrier : Ideal.IsPrime (carrier x) := by
   refine Ideal.IsPrime.comap _ (hK := ?_)
   exact IsLocalization.isPrime_of_isPrime_disjoint
     (Submonoid.powers f) _ _ inferInstance
-    (disjoint_powers_iff_not_mem _ (Ideal.IsPrime.isRadical inferInstance))
+    ((disjoint_powers_iff_not_mem _ (Ideal.IsPrime.isRadical inferInstance)).mpr x.2)
 
 variable (f)
 
