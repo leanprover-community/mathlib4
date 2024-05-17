@@ -193,7 +193,7 @@ theorem coe_mul [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : ⇑(f
 theorem mul_apply [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : (f * g) x = f x * g x :=
   rfl
 
--- the product of `(f : C(α, β))` and `(g : C_c(α, β))` is in `C_c(α, β)`
+-- the product of `f : C(α, β)` and `g : C_c(α, β)` is in `C_c(α, β)`
 instance instSMulC [MulZeroClass β] [ContinuousMul β] : SMul C(α, β) C_c(α, β) :=
   ⟨fun f g => ⟨f * g, HasCompactSupport.mul_left g.2⟩⟩
 
