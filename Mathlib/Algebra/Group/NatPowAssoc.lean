@@ -79,6 +79,18 @@ theorem npow_mul' (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ n) ^ m := by
 
 end MulOneClass
 
+section Neg
+
+theorem neg_npow_assoc {R : Type*} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] (a b : R) (k : ℕ) :
+    (-1)^k * a * b = (-1)^k * (a * b) := by
+  induction k with
+  | zero => simp only [npow_zero, one_mul]
+  | succ k ih =>
+    rw [npow_add, npow_one, ← neg_mul_comm, mul_one]
+    simp only [neg_mul, ih]
+
+end Neg
+
 instance Pi.instNatPowAssoc {ι : Type*} {α : ι → Type*} [∀ i, MulOneClass <| α i] [∀ i, Pow (α i) ℕ]
     [∀ i, NatPowAssoc <| α i] : NatPowAssoc (∀ i, α i) where
     npow_add _ _ _ := by ext; simp [npow_add]

@@ -338,6 +338,14 @@ theorem descPochhammer_succ_comp_X_sub_one (n : ℕ) :
   rw [← sub_mul, descPochhammer_succ_right ℤ n, mul_comp, mul_comm, sub_comp, X_comp, natCast_comp]
   ring
 
+theorem descPochhammer_eq_ascPochhammer (n : ℕ) :
+    descPochhammer ℤ n = (ascPochhammer ℤ n).comp ((X:ℤ[X])  - n + 1) := by
+  induction n with
+  | zero => rw [descPochhammer_zero, ascPochhammer_zero, one_comp]
+  | succ n ih =>
+    rw [Nat.cast_succ, sub_add, add_sub_cancel_right, descPochhammer_succ_right,
+      ascPochhammer_succ_left, ih, X_mul, mul_X_comp, comp_assoc, add_comp, X_comp, one_comp]
+
 theorem descPochhammer_eval_eq_ascPochhammer (r : R) (n : ℕ) :
     (descPochhammer R n).eval r = (ascPochhammer R n).eval (r - n + 1) := by
   induction n with
