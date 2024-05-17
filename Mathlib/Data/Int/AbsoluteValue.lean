@@ -6,7 +6,6 @@ Authors: Anne Baanen
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Int.Units
 import Mathlib.GroupTheory.GroupAction.Units
 
 #align_import data.int.absolute_value from "leanprover-community/mathlib"@"9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef"

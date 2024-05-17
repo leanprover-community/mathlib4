@@ -359,8 +359,7 @@ instance Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := 
 
 theorem _root_.Set.Countable.measure_zero (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
     μ s = 0 := by
-  rw [← biUnion_of_singleton s, ← nonpos_iff_eq_zero]
-  refine' le_trans (measure_biUnion_le h _) _
+  rw [← biUnion_of_singleton s, measure_biUnion_null_iff h]
   simp
 #align set.countable.measure_zero Set.Countable.measure_zero
 
@@ -538,6 +537,16 @@ instance isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure
 
 lemma sum_sFiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sFiniteSeq μ) = μ :=
   h.1.choose_spec.2.symm
+
+instance : SFinite (0 : Measure α) := ⟨fun _ ↦ 0, inferInstance, by rw [Measure.sum_zero]⟩
+
+@[simp]
+lemma sFiniteSeq_zero (n : ℕ) : sFiniteSeq (0 : Measure α) n = 0 := by
+  ext s hs
+  have h : ∑' n, sFiniteSeq (0 : Measure α) n s = 0 := by
+    simp [← Measure.sum_apply _ hs, sum_sFiniteSeq]
+  simp only [ENNReal.tsum_eq_zero] at h
+  exact h n
 
 /-- A countable sum of finite measures is s-finite.
 This lemma is superseeded by the instance below. -/
@@ -871,7 +880,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
         _ ⊆ ⋃ n, toMeasurable μ (t ∩ disjointed w n) :=
           iUnion_mono fun n => subset_toMeasurable _ _
     refine' ⟨t', tt', MeasurableSet.iUnion fun n => measurableSet_toMeasurable μ _, fun u hu => _⟩
-    apply le_antisymm _ (measure_mono (inter_subset_inter tt' Subset.rfl))
+    apply le_antisymm _ (by gcongr)
     calc
       μ (t' ∩ u) ≤ ∑' n, μ (toMeasurable μ (t ∩ disjointed w n) ∩ u) := by
         rw [ht', iUnion_inter]
@@ -882,8 +891,9 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
         apply measure_toMeasurable_inter hu
         apply ne_of_lt
         calc
-          μ (t ∩ disjointed w n) ≤ μ (t ∩ w n) :=
-            measure_mono (inter_subset_inter_right _ (disjointed_le w n))
+          μ (t ∩ disjointed w n) ≤ μ (t ∩ w n) := by
+            gcongr
+            exact disjointed_le w n
           _ ≤ μ (w n) := measure_mono (inter_subset_right _ _)
           _ < ∞ := hw n
       _ = ∑' n, μ.restrict (t ∩ u) (disjointed w n) := by
@@ -999,8 +1009,8 @@ end FiniteSpanningSetsIn
 
 theorem sigmaFinite_of_countable {S : Set (Set α)} (hc : S.Countable) (hμ : ∀ s ∈ S, μ s < ∞)
     (hU : ⋃₀ S = univ) : SigmaFinite μ := by
-  obtain ⟨s, hμ, hs⟩ : ∃ s : ℕ → Set α, (∀ n, μ (s n) < ∞) ∧ ⋃ n, s n = univ
-  exact (@exists_seq_cover_iff_countable _ (fun x => μ x < ∞) ⟨∅, by simp⟩).2 ⟨S, hc, hμ, hU⟩
+  obtain ⟨s, hμ, hs⟩ : ∃ s : ℕ → Set α, (∀ n, μ (s n) < ∞) ∧ ⋃ n, s n = univ :=
+    (@exists_seq_cover_iff_countable _ (fun x => μ x < ∞) ⟨∅, by simp⟩).2 ⟨S, hc, hμ, hU⟩
   exact ⟨⟨⟨fun n => s n, fun _ => trivial, hμ, hs⟩⟩⟩
 #align measure_theory.measure.sigma_finite_of_countable MeasureTheory.Measure.sigmaFinite_of_countable
 
@@ -1079,7 +1089,7 @@ instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, Sigma
     rintro i -
     exact (measure_mono <| iInter_subset _ i).trans_lt (measure_spanningSets_lt_top (μ i) n)
   · rw [iUnion_iInter_of_monotone]
-    simp_rw [iUnion_spanningSets, iInter_univ]
+    · simp_rw [iUnion_spanningSets, iInter_univ]
     exact fun i => monotone_spanningSets (μ i)
 #align measure_theory.sum.sigma_finite MeasureTheory.sum.sigmaFinite
 
@@ -1544,8 +1554,7 @@ noncomputable irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [T
     by_contra h'T
     rw [not_nonempty_iff_eq_empty.1 h'T, sUnion_empty] at hT
     simpa only [← hT] using mem_univ (default : α)
-  obtain ⟨f, hf⟩ : ∃ f : ℕ → Set α, T = range f
-  exact T_count.exists_eq_range T_ne
+  obtain ⟨f, hf⟩ : ∃ f : ℕ → Set α, T = range f := T_count.exists_eq_range T_ne
   have fS : ∀ n, f n ∈ S := by
     intro n
     apply TS

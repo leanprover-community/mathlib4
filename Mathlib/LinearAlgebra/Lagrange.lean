@@ -488,7 +488,7 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
     sdiff_singleton_eq_erase, pair_comm,
     sdiff_insert_insert_of_mem_of_not_mem hj (not_mem_singleton.mpr hij.symm),
     sdiff_singleton_eq_erase]
-  · exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
+  exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
 #align lagrange.interpolate_eq_add_interpolate_erase Lagrange.interpolate_eq_add_interpolate_erase
 
 end Interpolate

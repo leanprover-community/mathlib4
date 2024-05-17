@@ -119,6 +119,12 @@ variable {μ} in
 lemma cond_absolutelyContinuous : μ[|s] ≪ μ :=
   smul_absolutelyContinuous.trans restrict_le_self.absolutelyContinuous
 
+variable {μ} in
+lemma absolutelyContinuous_cond_univ [IsFiniteMeasure μ] : μ ≪ μ[|univ] := by
+  rw [cond, restrict_univ]
+  refine absolutelyContinuous_smul ?_
+  simp [measure_ne_top]
+
 section Bayes
 
 @[simp]
