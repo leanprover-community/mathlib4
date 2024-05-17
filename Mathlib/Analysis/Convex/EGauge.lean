@@ -77,11 +77,18 @@ section Module
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {α E : Type*} [AddCommGroup E] [Module 𝕜 E]
     {c : 𝕜} {s t : Set E} {x y : E} {r : ℝ≥0∞}
 
-lemma egauge_le_of_smul_mem_of_ne (h : c • x ∈ s) (hc : c ≠ 0) : egauge 𝕜 s x ≤ ‖c‖₊⁻¹ := by
+/-- If `c • x ∈ s` and `c ≠ 0`, then `egauge 𝕜 s x` is at most `((‖c‖₊⁻¹ : ℝ≥0) : ℝ≥0∞).
+
+See also `egauge_le_of_smul_mem`. -/
+lemma egauge_le_of_smul_mem_of_ne (h : c • x ∈ s) (hc : c ≠ 0) :
+    egauge 𝕜 s x ≤ ↑(‖c‖₊⁻¹ : ℝ≥0) := by
   rw [← nnnorm_inv]
   exact egauge_le_of_mem_smul <| (mem_inv_smul_set_iff₀ hc _ _).2 h
 
-lemma egauge_le_of_smul_mem (h : c • x ∈ s) : egauge 𝕜 s x ≤ (↑‖c‖₊)⁻¹ := by
+/-- If `c • x ∈ s`, then `egauge 𝕜 s x` is at most `(‖c‖₊ : ℝ≥0∞)⁻¹.
+
+See also `egauge_le_of_smul_mem_of_ne`. -/
+lemma egauge_le_of_smul_mem (h : c • x ∈ s) : egauge 𝕜 s x ≤ (‖c‖₊ : ℝ≥0∞)⁻¹ := by
   rcases eq_or_ne c 0 with rfl | hc
   · simp
   · exact (egauge_le_of_smul_mem_of_ne h hc).trans ENNReal.coe_inv_le
