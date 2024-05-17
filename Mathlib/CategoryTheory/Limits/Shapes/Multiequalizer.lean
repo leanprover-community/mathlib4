@@ -464,7 +464,8 @@ theorem toPiFork_π_app_zero : K.toPiFork.ι = Pi.lift K.proj :=
 #align category_theory.limits.multifork.to_pi_fork_π_app_zero CategoryTheory.Limits.Multifork.toPiFork_π_app_zero
 
 @[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
-theorem toPiFork_π_app_one : K.toPiFork.π.app WalkingParallelPair.one = Pi.lift K.proj ≫ I.fstPiMap :=
+theorem toPiFork_π_app_one :
+    K.toPiFork.π.app WalkingParallelPair.one = Pi.lift K.proj ≫ I.fstPiMap :=
   rfl
 #align category_theory.limits.multifork.to_pi_fork_π_app_one CategoryTheory.Limits.Multifork.toPiFork_π_app_one
 
@@ -609,7 +610,8 @@ theorem condition (a) : I.fst a ≫ K.inj (I.fstFrom a) = I.snd a ≫ K.inj (I.s
 @[simps]
 def IsColimit.mk (desc : ∀ E : Multicofork I, K.pt ⟶ E.pt)
     (fac : ∀ (E : Multicofork I) (i : I.R), K.inj i ≫ desc E = E.inj i)
-    (uniq : ∀ (E : Multicofork I) (m : K.pt ⟶ E.pt), (∀ i : I.R, K.inj i ≫ m = E.inj i) → m = desc E) :
+    (uniq : ∀ (E : Multicofork I) (m : K.pt ⟶ E.pt),
+      (∀ i : I.R, K.inj i ≫ m = E.inj i) → m = desc E) :
     IsColimit K :=
   { desc
     fac := by
@@ -898,7 +900,8 @@ theorem multicofork_ι_app_right' (b) :
 
 @[reassoc]
 theorem condition (a) :
-    I.fst a ≫ Multicoequalizer.inj I (I.fstFrom a) = I.snd a ≫ Multicoequalizer.inj I (I.sndFrom a) :=
+    I.fst a ≫ Multicoequalizer.inj I (I.fstFrom a) =
+      I.snd a ≫ Multicoequalizer.inj I (I.sndFrom a) :=
   Multicofork.condition _ _
 #align category_theory.limits.multicoequalizer.condition CategoryTheory.Limits.Multicoequalizer.condition
 
