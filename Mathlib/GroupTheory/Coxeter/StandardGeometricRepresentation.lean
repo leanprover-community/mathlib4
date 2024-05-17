@@ -67,11 +67,8 @@ theorem standardBilinForm_simpleRoot_simpleRoot (i i' : B) :
     ⟪α i, α i'⟫ = - cos (π / M i i') := by simp [standardBilinForm, simpleRoot]
 
 theorem isSymm_standardBilinForm : LinearMap.IsSymm (standardBilinForm M) := by
-  apply LinearMap.isSymm_iff_eq_flip.mpr
-  apply (Finsupp.basisSingleOne).ext
-  intro i
-  apply (Finsupp.basisSingleOne).ext
-  intro i'
+  rw [LinearMap.isSymm_iff_eq_flip]
+  ext i i'
   simp [standardBilinForm, M.symmetric i i']
 
 theorem standardBilinForm_comm (v v' : V) : ⟪v, v'⟫ = ⟪v', v⟫ := M.isSymm_standardBilinForm.eq v v'
@@ -202,12 +199,11 @@ theorem orthoReflection_mul_orthoReflection_pow_apply {v v' : V} {m : ℕ} (k : 
     -- Now equate the coefficients of `v` and `v'`.
     congr
     · field_simp [sin_pi_div_m_ne_zero hm]
-      have := sin_sq_add_cos_sq (π / m)
       linear_combination
-        (3 * sin (2 * k * π / m) * cos (π / m) + cos (2 * k * π / m) * sin (π / m)) * this
+        (3 * sin (2 * k * π / m) * cos (π / m) + cos (2 * k * π / m) * sin (π / m)) *
+          sin_sq_add_cos_sq (π / m)
     · field_simp [sin_pi_div_m_ne_zero hm]
-      have := sin_sq_add_cos_sq (π / m)
-      linear_combination sin (2 * k * π / m) * this
+      linear_combination sin (2 * k * π / m) * sin_sq_add_cos_sq (π / m)
 
 private lemma orthoReflection_mul_orthoReflection_pow_order_apply_v {v v' : V} {m : ℕ} (hm : 1 < m)
     (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) (hvv' : ⟪v, v'⟫ = -cos (π / m)) :
@@ -233,17 +229,19 @@ private lemma orthoReflection_mul_orthoReflection_pow_order_apply_v' {v v' : V} 
   _ = -(b v')                          := by
     congr
     apply M.orthoReflection_mul_orthoReflection_pow_order_apply_v hm hv' hv
-    · rwa [← M.standardBilinForm_comm v v']
+    rwa [← M.standardBilinForm_comm v v']
   _ = -(-v')                           := congrArg _ (M.orthoReflection_apply_self hv')
   _ = v'                               := neg_neg v'
 
 private lemma can_decomp_into_parallel_and_orthogonal {v v' : V} (w : V) {m : ℕ}
     (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) (hvv' : ⟪v, v'⟫ = -cos (π / m)) (hm : m > 1) :
-    ∃ μ₁ μ₂ : ℝ, ⟪v, w - μ₁ • v - μ₂ • v'⟫ = 0 ∧ ⟪v', w - μ₁ • v - μ₂ • v'⟫ = 0 := by
-  use (1 / (sin (π / m)) ^ 2) * (⟪v, w⟫ + cos (π / m) * ⟪v', w⟫)
-  use (1 / (sin (π / m)) ^ 2) * (⟪v', w⟫ + cos (π / m) * ⟪v, w⟫)
+    ∃ (μ₁ μ₂ : ℝ) (w' : V), w = w' + μ₁ • v + μ₂ • v' ∧ ⟪v, w'⟫ = 0 ∧ ⟪v', w'⟫ = 0 := by
+  let μ₁ := (1 / (sin (π / m)) ^ 2) * (⟪v, w⟫ + cos (π / m) * ⟪v', w⟫)
+  let μ₂ := (1 / (sin (π / m)) ^ 2) * (⟪v', w⟫ + cos (π / m) * ⟪v, w⟫)
+  use μ₁, μ₂, w - μ₁ • v - μ₂ • v', by abel
   -- Expand everything out.
-  simp only [mul_add, LinearMap.map_sub, LinearMap.map_add, LinearMap.map_smul, smul_eq_mul]
+  simp only [mul_add, LinearMap.map_sub, LinearMap.map_add, LinearMap.map_smul, smul_eq_mul,
+    μ₁, μ₂]
   -- Use known values of bilinear form.
   rw [(by rw [← M.isSymm_standardBilinForm.eq v' v]; simp : ⟪v', v⟫ = ⟪v, v'⟫)]
   simp only [hv, hv', hvv']
@@ -255,14 +253,20 @@ private lemma can_decomp_into_parallel_and_orthogonal {v v' : V} (w : V) {m : �
     ring
   }
 
+lemma orthoReflection_apply_eq_self_of_orthogonal
+    {v : V} (hv : ⟪v, v⟫ = 1) (w : V) (hvw : ⟪v, w⟫ = 0) :
+    (r hv) w = w := by
+  dsimp [orthoReflection]
+  simp [hvw]
+
 private lemma fixed_of_orthogonal {v v' : V} (w : V) {m : ℕ}
     (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) (hvw : ⟪v, w⟫ = 0) (hv'w : ⟪v', w⟫ = 0) :
     (((r hv) * (r hv')) ^ m) w = w := by
   induction' m with m ih
   · simp
   · rw [pow_succ', LinearMap.mul_apply, ih, LinearMap.mul_apply]
-    dsimp [orthoReflection]
-    simp [hvw, hv'w]
+    simp [M.orthoReflection_apply_eq_self_of_orthogonal hv w hvw,
+      M.orthoReflection_apply_eq_self_of_orthogonal hv' w hv'w]
 
 private lemma orthoReflection_mul_orthoReflection_pow_order {v v' : V} {m : ℕ}
     (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) (hvv' : ⟪v, v'⟫ = -cos (π / m)) (hm : m ≠ 1) :
@@ -271,12 +275,8 @@ private lemma orthoReflection_mul_orthoReflection_pow_order {v v' : V} {m : ℕ}
   · simp [Nat.lt_one_iff.mp mlt]
   · apply LinearMap.ext
     intro w
-    rcases M.can_decomp_into_parallel_and_orthogonal w hv hv' hvv' mgt with ⟨μ₁, μ₂, hμ⟩
-    set! w' := w - μ₁ • v - μ₂ • v' with hw'
-    rw [← hw'] at hμ
-    rcases hμ with ⟨h₁, h₂⟩
-    have h₃ : w = w' + μ₁ • v + μ₂ • v' := by rw [hw']; abel
-    simp only [h₃, LinearMap.map_add, LinearMap.map_smul, LinearMap.one_apply]
+    obtain ⟨μ₁, μ₂, w', rfl, h₁, h₂⟩ := M.can_decomp_into_parallel_and_orthogonal w hv hv' hvv' mgt
+    simp only [LinearMap.map_add, LinearMap.map_smul, LinearMap.one_apply]
     congr
     · exact M.fixed_of_orthogonal w' hv hv' h₁ h₂
     · exact M.orthoReflection_mul_orthoReflection_pow_order_apply_v mgt hv hv' hvv'
