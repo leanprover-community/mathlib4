@@ -182,10 +182,10 @@ theorem zero_apply [Zero β] : (0 : C_c(α, β)) x = 0 :=
 instance [MulZeroClass β] [ContinuousMul β] : Mul C_c(α, β) :=
   ⟨fun f g => ⟨f * g, HasCompactSupport.mul_left g.2⟩⟩
 
+@[simp]
 theorem coe_mul [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : ⇑(f * g) = f * g :=
   rfl
 
-@[simp]
 theorem mul_apply [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : (f * g) x = f x * g x :=
   rfl
 
