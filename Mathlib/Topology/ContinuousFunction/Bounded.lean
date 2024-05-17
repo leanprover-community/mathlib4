@@ -1632,8 +1632,8 @@ variable {𝕜 : Type*} [NormedField 𝕜] [TopologicalSpace α] [NormedRing γ]
 def CompactlySupportedBoundedContinuousFunction : Ideal (α →ᵇ γ) where
   carrier := { f : α →ᵇ γ | HasCompactSupport f }
   add_mem' := by
-    intro f g hf hg
-    exact HasCompactSupport.add hf hg
+    intro _ _ h₁ h₂
+    exact h₁.add h₂
   zero_mem' := by
     simp only [mem_setOf_eq, coe_zero]
     rw [HasCompactSupport, tsupport]
