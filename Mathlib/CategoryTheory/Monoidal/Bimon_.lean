@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Monoidal.Comon_
 We define bimonoids in a braided monoidal category `C`
 as comonoid objects in the category of monoid objects in `C`.
 
-We verify that this is equivalent to the monoid objects in the category ofcomonoid objects.
+We verify that this is equivalent to the monoid objects in the category of comonoid objects.
 -/
 
 noncomputable section
