@@ -307,7 +307,7 @@ theorem cancel_left {g : TopHom β γ} {f₁ f₂ : TopHom α β} (hg : Injectiv
 
 end Top
 
-instance [LE β] [Top β] : LE (TopHom α β) where
+instance instLE [LE β] [Top β] : LE (TopHom α β) where
   le f g := (f : α → β) ≤ g
 
 instance [Preorder β] [Top β] : Preorder (TopHom α β) :=
@@ -503,7 +503,7 @@ theorem cancel_left {g : BotHom β γ} {f₁ f₂ : BotHom α β} (hg : Injectiv
 
 end Bot
 
-instance [LE β] [Bot β] : LE (BotHom α β) where
+instance instLE [LE β] [Bot β] : LE (BotHom α β) where
   le f g := (f : α → β) ≤ g
 
 instance [Preorder β] [Bot β] : Preorder (BotHom α β) :=
