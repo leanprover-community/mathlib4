@@ -7,6 +7,7 @@ Amelia Livingston, Yury Kudryashov
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Int.Order.Lemmas
 

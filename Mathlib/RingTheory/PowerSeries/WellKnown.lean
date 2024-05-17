@@ -3,10 +3,10 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Data.Nat.Parity
-import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.RingTheory.PowerSeries.Basic
 
 #align_import ring_theory.power_series.well_known from "leanprover-community/mathlib"@"8199f6717c150a7fe91c4534175f4cf99725978f"
 

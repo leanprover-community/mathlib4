@@ -5,9 +5,9 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Log
-import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Digits
 import Mathlib.RingTheory.Multiplicity

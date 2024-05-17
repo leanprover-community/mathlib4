@@ -3,15 +3,15 @@ Copyright (c) 2020 Bhavik Mehta, Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Aaron Anderson
 -/
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Combinatorics.Enumerative.Partition
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Data.Finset.PiAntidiagonal
+import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Order
-import Mathlib.Combinatorics.Enumerative.Partition
-import Mathlib.Data.Nat.Parity
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Fin.Tuple.NatAntidiagonal
-import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.Finset.PiAntidiagonal
+import Mathlib.Tactic.IntervalCases
 
 #align_import wiedijk_100_theorems.partition from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 

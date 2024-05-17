@@ -3,9 +3,9 @@ Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
-import Mathlib.Data.PNat.Basic
-import Mathlib.Data.Nat.Parity
 import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.PNat.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Positivity.Basic

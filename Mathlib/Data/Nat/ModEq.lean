@@ -421,15 +421,6 @@ theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n])
 #align nat.mod_mul_right_mod Nat.mod_mul_right_mod
 #align nat.mod_mul_left_mod Nat.mod_mul_left_mod
 
-theorem div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
-  if hb0 : b = 0 then by simp [hb0]
-  else by
-    rw [← @add_right_cancel_iff _ _ _ (c * (a / b / c)), mod_add_div, Nat.div_div_eq_div_mul, ←
-      mul_right_inj' hb0, ← @add_left_cancel_iff _ _ _ (a % b), mod_add_div, mul_add, ←
-      @add_left_cancel_iff _ _ _ (a % (b * c) % b), add_left_comm, ← add_assoc (a % (b * c) % b),
-      mod_add_div, ← mul_assoc, mod_add_div, mod_mul_right_mod]
-#align nat.div_mod_eq_mod_mul_div Nat.div_mod_eq_mod_mul_div
-
 theorem add_mod_add_ite (a b c : ℕ) :
     ((a + b) % c + if c ≤ a % c + b % c then c else 0) = a % c + b % c :=
   have : (a + b) % c = (a % c + b % c) % c := ((mod_modEq _ _).add <| mod_modEq _ _).symm
