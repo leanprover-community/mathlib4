@@ -13,7 +13,8 @@ import Mathlib.Analysis.Complex.HalfPlane
 # Holomorphicity of Eisenstein series
 
 We show that Eisenstein series of weight `k` and level `Γ(N)` with congruence condition
-`a : Fin 2 → ZMod N` are holomorphic on the upper half plane.
+`a : Fin 2 → ZMod N` are holomorphic on the upper half plane, which is stated as being
+MDifferentiable.
 -/
 
 noncomputable section
@@ -46,7 +47,7 @@ lemma div_linear_zpow_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
     exact differentiableOn_const (0 ^ k)⁻¹
 
 /--Auxilary lemma showing that for any `k : ℤ` and `(a : Fin 2 → ℤ)`
-the function `eisSummand` is differentiable on `{z : ℂ | 0 < z.im}`.-/
+the extension of `eisSummand` is differentiable on `{z : ℂ | 0 < z.im}`.-/
 lemma eisSummad_extension_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
     DifferentiableOn ℂ (↑ₕeisSummand k a) {z : ℂ | 0 < z.im} := by
   apply DifferentiableOn.congr (div_linear_zpow_differentiableOn k a)

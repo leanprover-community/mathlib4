@@ -53,19 +53,17 @@ lemma MDifferentiable_iff_extension_DifferentiableOn (f : ℍ → ℂ) : MDiffer
       modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_coe,
       OpenEmbedding.toPartialHomeomorph_source, coe_coe_symm, CompTriple.comp_eq,
       modelWithCornersSelf_coe, range_id, toFun_eq_coe, OpenEmbedding.toPartialHomeomorph_apply,
-      image_univ] at *
+      image_univ] at H ⊢
     apply H.2.mono (Set.subset_univ _)
   · intro h z
     have ha : UpperHalfPlane.coe '' ⊤ ∈ 𝓝 ↑z := by
-      exact IsOpenMap.image_mem_nhds (OpenEmbedding.isOpenMap openEmbedding_coe)
-        (by simp only [top_eq_univ, univ_mem])
+      exact IsOpenMap.image_mem_nhds (OpenEmbedding.isOpenMap openEmbedding_coe) (by simp)
     constructor
     · rw [continuousWithinAt_univ, continuousAt_iff_continuousAt_comp_right
         (e := (PartialHomeomorph.symm (OpenEmbedding.toPartialHomeomorph
         UpperHalfPlane.coe openEmbedding_coe)))]
       · exact ContinuousOn.continuousAt (h.continuousOn) ha
-      · simp only [symm_toPartialEquiv, PartialEquiv.symm_target,
-        OpenEmbedding.toPartialHomeomorph_source, mem_univ]
+      · simp
     · simp only [DifferentiableWithinAtProp, modelWithCornersSelf_coe, refl_partialEquiv,
       PartialEquiv.refl_source, singletonChartedSpace_chartAt_eq, refl_apply,
       OpenEmbedding.toPartialHomeomorph_source, CompTriple.comp_eq, modelWithCornersSelf_coe_symm,
