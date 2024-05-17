@@ -155,6 +155,9 @@ protected noncomputable def withLength [r.InfiniteDimensional] (n : ℕ) : RelSe
     (RelSeries.withLength r n).length = n :=
   (Rel.InfiniteDimensional.exists_relSeries_with_length n).choose_spec
 
+section
+variable {r} {s : RelSeries r} {x : α}
+
 /-- If a relation on `α` is infinite dimensional, then `α` is nonempty. -/
 lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
@@ -162,24 +165,23 @@ lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
 instance membership : Membership α (RelSeries r) :=
   ⟨(· ∈ Set.range ·)⟩
 
-theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
-  Iff.rfl
+theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 
-@[simp] theorem mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
+@[simp] theorem mem_toList : x ∈ s.toList ↔ x ∈ s := by
   rw [RelSeries.toList, List.mem_ofFn, RelSeries.mem_def]
 
-variable {r} in
-theorem length_ne_zero_of_nontrivial {s : RelSeries r} (h : {x | x ∈ s}.Nontrivial) :
-    s.length ≠ 0 := by
-  rcases h with ⟨-, ⟨i, rfl⟩, -, ⟨j, rfl⟩, h⟩
-  contrapose! h
+theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsingleton := by
+  rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
   congr!
-  exact Fin.castIso (by rw [h, zero_add] : s.length + 1 = 1)
-    |>.injective <| Subsingleton.elim (α := Fin 1) _ _
+  exact Fin.castIso (by rw [hs, zero_add]) |>.injective <| Subsingleton.elim (α := Fin 1) _ _
 
-variable {r} in
-theorem length_ne_zero (irrefl : Irreflexive r) {s : RelSeries r} :
-    s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivial := by
+theorem length_ne_zero_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : s.length ≠ 0 :=
+  fun hs ↦ h.not_subsingleton $ subsingleton_of_length_eq_zero hs
+
+theorem length_pos_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : 0 < s.length :=
+  Nat.pos_iff_ne_zero.mpr <| length_ne_zero_of_nontrivial h
+
+theorem length_ne_zero (irrefl : Irreflexive r) : s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivial := by
   refine ⟨fun h ↦ ⟨s 0, by simp [mem_def], s 1, by simp [mem_def], fun rid ↦ irrefl (s 0) ?_⟩,
     length_ne_zero_of_nontrivial⟩
   nth_rw 2 [rid]
@@ -187,35 +189,11 @@ theorem length_ne_zero (irrefl : Irreflexive r) {s : RelSeries r} :
   ext
   simpa [Nat.pos_iff_ne_zero]
 
-variable {r} in
-theorem length_pos_of_nontrivial {s : RelSeries r} (h : {x | x ∈ s}.Nontrivial) :
-    0 < s.length :=
-  Nat.pos_iff_ne_zero.mpr <| length_ne_zero_of_nontrivial h
-
-variable {r} in
-theorem length_pos (irrefl : Irreflexive r) {s : RelSeries r} :
-    0 < s.length ↔ {x | x ∈ s}.Nontrivial :=
+theorem length_pos (irrefl : Irreflexive r) : 0 < s.length ↔ {x | x ∈ s}.Nontrivial :=
   Nat.pos_iff_ne_zero.trans <| length_ne_zero irrefl
 
-variable {r} in
-theorem subsingleton_of_length_eq_zero {s : RelSeries r} (hs : s.length = 0) :
-    {x | x ∈ s}.Subsingleton := by
-  rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
-  congr!
-  exact Fin.castIso (by rw [hs, zero_add] : s.length + 1 = 1) |>.injective <|
-    Subsingleton.elim (α := Fin 1) _ _
-
-variable {r} in
-theorem length_eq_zero (irrefl : Irreflexive r) {s : RelSeries r} :
-    s.length = 0 ↔ {x | x ∈ s}.Subsingleton := by
-  refine ⟨subsingleton_of_length_eq_zero, fun h ↦ ?_⟩
-  by_contra!
-  refine irrefl (s 0) ?_
-  nth_rw 2 [@h (s 0) (by simp [mem_def]) (s 1) (by simp [mem_def])]
-  convert s.step ⟨0, by omega⟩
-  ext
-  simpa [Nat.pos_iff_ne_zero]
-
+lemma length_eq_zero (irrefl : Irreflexive r) : s.length = 0 ↔ {x | x ∈ s}.Subsingleton := by
+  rw [← not_ne_iff, length_ne_zero irrefl, Set.not_nontrivial_iff]
 
 /-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
@@ -230,6 +208,8 @@ def last (x : RelSeries r) : α := x <| Fin.last _
 lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 
 lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
+
+end
 
 variable {r s}
 
