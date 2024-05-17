@@ -567,6 +567,14 @@ theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _
   simp only [one_apply, Pi.single_apply, eq_comm]
 #align matrix.one_eq_pi_single Matrix.one_eq_pi_single
 
+lemma zero_le_one_elem [Preorder α] [ZeroLEOneClass α] (i j : n) :
+    0 ≤ (1 : Matrix n n α) i j := by
+  by_cases hi : i = j <;> simp [hi]
+
+lemma zero_le_one_row [Preorder α] [ZeroLEOneClass α] (i : n) :
+    0 ≤ (1 : Matrix n n α) i :=
+  zero_le_one_elem i
+
 end One
 
 instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n n α) where
@@ -893,6 +901,9 @@ theorem neg_dotProduct : -v ⬝ᵥ w = -(v ⬝ᵥ w) := by simp [dotProduct]
 @[simp]
 theorem dotProduct_neg : v ⬝ᵥ -w = -(v ⬝ᵥ w) := by simp [dotProduct]
 #align matrix.dot_product_neg Matrix.dotProduct_neg
+
+lemma neg_dotProduct_neg : -v ⬝ᵥ -w = v ⬝ᵥ w := by
+  rw [neg_dotProduct, dotProduct_neg, neg_neg]
 
 @[simp]
 theorem sub_dotProduct : (u - v) ⬝ᵥ w = u ⬝ᵥ w - v ⬝ᵥ w := by simp [sub_eq_add_neg]
@@ -1936,6 +1947,9 @@ theorem vecMul_neg [Fintype m] (v : m → α) (A : Matrix m n α) : v ᵥ* (-A) 
   apply dotProduct_neg
 #align matrix.vec_mul_neg Matrix.vecMul_neg
 
+lemma neg_vecMul_neg [Fintype m] (v : m → α) (A : Matrix m n α) : (-v) ᵥ* (-A) = v ᵥ* A := by
+  rw [vecMul_neg, neg_vecMul, neg_neg]
+
 theorem neg_mulVec [Fintype n] (v : n → α) (A : Matrix m n α) : (-A) *ᵥ v = - (A *ᵥ v) := by
   ext
   apply neg_dotProduct
@@ -1945,6 +1959,9 @@ theorem mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : A *ᵥ (-v) 
   ext
   apply dotProduct_neg
 #align matrix.mul_vec_neg Matrix.mulVec_neg
+
+lemma neg_mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : (-A) *ᵥ (-v) = A *ᵥ v := by
+  rw [mulVec_neg, neg_mulVec, neg_neg]
 
 theorem mulVec_sub [Fintype n] (A : Matrix m n α) (x y : n → α) :
     A *ᵥ (x - y) = A *ᵥ x - A *ᵥ y := by
