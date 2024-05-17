@@ -309,7 +309,7 @@ end CompactSupport
 section CompactSupport2
 section Monoid
 
-variable [TopologicalSpace α] [Monoid β]
+variable [TopologicalSpace α] [MulOneClass β]
 variable {f f' : α → β} {x : α}
 
 @[to_additive]
