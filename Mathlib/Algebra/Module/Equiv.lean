@@ -520,9 +520,6 @@ theorem symm_symm (e : M ≃ₛₗ[σ] M₂) : e.symm.symm = e := by
   rfl
 #align linear_equiv.symm_symm LinearEquiv.symm_symm
 
-@[simp]
-theorem symm_symm_apply (e : M ≃ₛₗ[σ] M₂) (x : M) : e.symm.symm x = e x := rfl
-
 theorem symm_bijective [Module R M] [Module S M₂] [RingHomInvPair σ' σ] [RingHomInvPair σ σ'] :
     Function.Bijective (symm : (M ≃ₛₗ[σ] M₂) → M₂ ≃ₛₗ[σ'] M) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩

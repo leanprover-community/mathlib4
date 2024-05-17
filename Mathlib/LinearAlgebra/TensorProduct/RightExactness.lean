@@ -450,7 +450,7 @@ noncomputable def rTensor_ring_mod_ideal_equiv_mod_ideal_smul (I : Ideal R) :
 variable {M}
 
 -- TODO: Get rid of the `maxHeartbeats` annotation once lean4#4092 is available in mathlib
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 1200000 in
 @[simp]
 lemma lTensor_ring_mod_ideal_equiv_mod_ideal_smul_apply
     (I : Ideal R) (r : R) (x : M) :
@@ -470,7 +470,7 @@ lemma lTensor_ring_mod_ideal_equiv_mod_ideal_smul_symm_apply
       (Submodule.Quotient.mk x) = 1 ⊗ₜ[R] x := rfl
 
 -- TODO: Get rid of the `maxHeartbeats` annotation once lean4#4092 is available in mathlib
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 1200000 in
 @[simp]
 lemma rTensor_ring_mod_ideal_equiv_mod_ideal_smul_apply
     (I : Ideal R) (r : R) (x : M) :
