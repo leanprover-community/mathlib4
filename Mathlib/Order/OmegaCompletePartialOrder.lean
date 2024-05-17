@@ -923,11 +923,12 @@ namespace fixedPoints
 
 open Function OrderHom.Nat
 
-variable {f : α →𝒄 α} {x : α}
 
 /-- Iteration of a function on an initial element interpreted as a chain. -/
 def repeatChain (f : α →o α) (x : α) (h : x ≤ f x) : Chain α :=
   ⟨fun n => Nat.repeat f n x, monotone_repeat h⟩
+
+variable (f : α →𝒄 α) (x : α)
 
 /-- The supremum of iterating a function on x arbitrary often is a fixed point -/
 theorem ωSup_repeat_mem_fixedPoint (h : x ≤ f x) :
@@ -969,7 +970,7 @@ theorem ωSup_repeat_mem_fixedPoint (h : x ≤ f x) :
       ωSup (repeatChain f x h) ≤ a := by
     rw [mem_fixedPoints] at h_a
     obtain h_a := Eq.le h_a
-    exact ωSup_repeat_le_prefixedPoint h h_a h_x_le_a
+    exact ωSup_repeat_le_prefixedPoint f x h h_a h_x_le_a
 
 end fixedPoints
 
