@@ -22,7 +22,7 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 * When `P` is commutative, `f.coprod g : M × N →* P` sends `(x, y)` to `f x * g y`
   (without the commutativity assumption on `P`, see `MonoidHom.noncommPiCoprod`);
 * `f.prodMap g : M × N → M' × N'`: `prod.map f g` as a `MonoidHom`,
-  sends `(x, y)` to `(f x, g y)`.*
+  sends `(x, y)` to `(f x, g y)`.
 
 ## Main declarations
 
