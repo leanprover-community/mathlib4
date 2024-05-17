@@ -397,8 +397,7 @@ def pullbackP1Iso (i : 𝒰.J) : pullback (p1 𝒰 f g) (𝒰.map i) ≅ pullbac
     · simp_rw [Category.assoc, pullback.lift_snd, pullback.lift_fst, Category.id_comp]
   · apply pullback.hom_ext
     · simp_rw [Category.assoc, pullback.lift_fst, pullback.lift_snd, Category.id_comp]
-    · simp_rw [Category.assoc, pullback.lift_snd, pullback.lift_fst_assoc, Category.id_comp, p2]
-      simp
+    · simp [p2]
 #align algebraic_geometry.Scheme.pullback.pullback_p1_iso AlgebraicGeometry.Scheme.Pullback.pullbackP1Iso
 
 @[simp, reassoc]
