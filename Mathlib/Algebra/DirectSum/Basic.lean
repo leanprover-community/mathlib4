@@ -109,8 +109,7 @@ variable (β)
 
 /-- `mk β s x` is the element of `⨁ i, β i` that is zero outside `s`
 and has coefficient `x i` for `i` in `s`. -/
-def mk (s : Finset ι) : (∀ i : (↑s : Set ι), β i.1) →+ ⨁ i, β i
-    where
+def mk (s : Finset ι) : (∀ i : (↑s : Set ι), β i.1) →+ ⨁ i, β i where
   toFun := DFinsupp.mk s
   map_add' _ _ := DFinsupp.mk_add
   map_zero' := DFinsupp.mk_zero
@@ -315,8 +314,7 @@ section Sigma
 variable {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddCommMonoid (δ i j)]
 
 /-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`. -/
-def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j
-    where
+def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j where
   toFun := DFinsupp.sigmaCurry (δ := δ)
   map_zero' := DFinsupp.sigmaCurry_zero
   map_add' f g := DFinsupp.sigmaCurry_add f g
@@ -331,8 +329,7 @@ theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) 
 /-- The natural map between `⨁ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
 def sigmaUncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
-    (⨁ (i) (j), δ i j) →+ ⨁ i : Σ _i, _, δ i.1 i.2
-    where
+    (⨁ (i) (j), δ i j) →+ ⨁ i : Σ _i, _, δ i.1 i.2 where
   toFun := DFinsupp.sigmaUncurry
   map_zero' := DFinsupp.sigmaUncurry_zero
   map_add' := DFinsupp.sigmaUncurry_add

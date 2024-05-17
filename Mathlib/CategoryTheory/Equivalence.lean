@@ -295,8 +295,7 @@ variable {E : Type u₃} [Category.{v₃} E]
 
 /-- Equivalence of categories is transitive. -/
 @[trans, simps]
-def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E
-    where
+def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
   functor := e.functor ⋙ f.functor
   inverse := f.inverse ⋙ e.inverse
   unitIso := by
@@ -567,8 +566,7 @@ end IsEquivalence
 
 /-- A quasi-inverse `D ⥤ C` to a functor that `F : C ⥤ D` that is an equivalence,
 i.e. faithful, full, and essentially surjective. -/
-noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C
-    where
+noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
   obj X := F.objPreimage X
   map {X Y} f := F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv)
   map_id X := by apply F.map_injective; aesop_cat
