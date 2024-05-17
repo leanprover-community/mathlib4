@@ -42,14 +42,17 @@ class Functor.ReflectsIsomorphisms (F : C ⥤ D) : Prop where
   reflects : ∀ {A B : C} (f : A ⟶ B) [IsIso (F.map f)], IsIso f
 #align category_theory.reflects_isomorphisms CategoryTheory.Functor.ReflectsIsomorphisms
 
--- deprecated on 2024-04-06
-@[deprecated] alias ReflectsIsomorphisms := Functor.ReflectsIsomorphisms
+@[deprecated (since := "2024-04-06")] alias ReflectsIsomorphisms := Functor.ReflectsIsomorphisms
 
 /-- If `F` reflects isos and `F.map f` is an iso, then `f` is an iso. -/
 theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.map f)]
     [F.ReflectsIsomorphisms] : IsIso f :=
   ReflectsIsomorphisms.reflects F f
 #align category_theory.is_iso_of_reflects_iso CategoryTheory.isIso_of_reflects_iso
+
+lemma isIso_iff_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [F.ReflectsIsomorphisms] :
+    IsIso (F.map f) ↔ IsIso f :=
+  ⟨fun _ => isIso_of_reflects_iso f F, fun _ => inferInstance⟩
 
 instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
     (F : C ⥤ D) [F.Full] [F.Faithful] :
