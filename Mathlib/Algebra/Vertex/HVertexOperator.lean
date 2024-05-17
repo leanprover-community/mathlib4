@@ -76,8 +76,8 @@ condition, we produce a heterogeneous vertex operator. -/
 @[simps]
 def HetVertexOperator.of_coeff (f : Γ → V →ₗ[R] W)
     (hf : ∀(x : V), (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
-  toFun := fun x => {
-    coeff := fun g => f g x
+  toFun := fun x =>
+  { coeff := fun g => f g x
     isPWO_support' := hf x }
   map_add' := by
     intros
