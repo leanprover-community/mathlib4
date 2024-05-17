@@ -75,8 +75,7 @@ namespace Stonean
 --   show Category (InducedCategory CompHaus (·.compHaus)) from inferInstance
 
 /-- The (forgetful) functor from Stonean spaces to compact Hausdorff spaces. -/
-@[simps!]
-def toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
+abbrev toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
   compHausLikeToCompHaus _
 
 /-- Construct a term of `Stonean` from a type endowed with the structure of a
@@ -122,6 +121,8 @@ def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
     { toTop := X.toTop,
       prop := show TotallyDisconnectedSpace X from inferInstance }
   map f := f
+
+instance (X : Stonean.{u}) : TotallyDisconnectedSpace X := inferInstance
 
 /-- The functor from Stonean spaces to profinite spaces is full. -/
 instance : toProfinite.Full where

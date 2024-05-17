@@ -250,6 +250,5 @@ set_option linter.uppercaseLean3 false in
 
 end CompHaus
 
-def compHausLikeToCompHaus (P : TopCat → Prop) : CompHausLike P ⥤ CompHaus where
-  obj X := CompHaus.of X
-  map f := f
+abbrev compHausLikeToCompHaus (P : TopCat → Prop) : CompHausLike P ⥤ CompHaus :=
+  CompHausLike.toCompHausLike (by simp only [implies_true])

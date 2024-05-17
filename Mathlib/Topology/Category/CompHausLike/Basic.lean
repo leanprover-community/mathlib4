@@ -141,6 +141,18 @@ def isoEquivHomeo {X Y : CompHausLike.{u} P} : (X ≅ Y) ≃ (X ≃ₜ Y) where
     ext
     rfl
 
+@[simps]
+def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
+    CompHausLike P ⥤ CompHausLike P' where
+  obj X := CompHausLike.of _ X (h _ X.prop)
+  map f := f
+
+instance {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
+    (toCompHausLike h).Full := show (inducedFunctor _).Full from inferInstance
+
+instance {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
+    (toCompHausLike h).Faithful := show (inducedFunctor _).Faithful from inferInstance
+
 variable (P)
 
 /-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
@@ -148,6 +160,9 @@ variable (P)
 @[simps (config := { rhsMd := .default })]
 def compHausLikeToTop : CompHausLike.{u} P ⥤ TopCat.{u} :=
   inducedFunctor _ -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
+
+example {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
+    toCompHausLike h ⋙ compHausLikeToTop P' = compHausLikeToTop P := rfl
 
 instance : (compHausLikeToTop P).Full  :=
   show (inducedFunctor _).Full from inferInstance

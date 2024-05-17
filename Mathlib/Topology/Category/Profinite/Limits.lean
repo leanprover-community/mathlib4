@@ -34,4 +34,9 @@ instance : FinitaryExtensive Profinite := by
   · intro X Y _ _ _ _
     exact show TotallyDisconnectedSpace {xy : X × Y | _} from inferInstance
 
+noncomputable instance : PreservesFiniteCoproducts profiniteToCompHaus := by
+  apply CompHausLike.preservesFiniteCoproducts'
+  intro α _ X
+  exact show TotallyDisconnectedSpace (Σ (a : α), X a) from inferInstance
+
 end Profinite

@@ -77,4 +77,16 @@ instance : PreservesPullbacksOfInclusions
 instance : FinitaryExtensive Stonean.{u} :=
   finitaryExtensive_of_preserves_and_reflects (CompHausLike.compHausLikeToTop _ : Stonean ⥤ _)
 
+noncomputable instance : PreservesFiniteCoproducts Stonean.toCompHaus := by
+  apply CompHausLike.preservesFiniteCoproducts'
+  intro α _ X
+  exact show ExtremallyDisconnected (Σ (a : α), X a) from inferInstance
+
+noncomputable instance : PreservesFiniteCoproducts Stonean.toProfinite := by
+  apply CompHausLike.preservesFiniteCoproducts'
+  · intro α _ X
+    exact show ExtremallyDisconnected (Σ (a : α), X a) from inferInstance
+  · intro X _
+    infer_instance
+
 end Stonean

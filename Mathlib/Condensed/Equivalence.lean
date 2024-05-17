@@ -60,8 +60,6 @@ noncomputable def stoneanToCompHausEffectivePresentation (X : CompHaus) :
 instance : Stonean.toCompHaus.EffectivelyEnough where
   presentation X := ⟨stoneanToCompHausEffectivePresentation X⟩
 
-instance : PreservesFiniteCoproducts Stonean.toCompHaus := sorry
-
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
     (i.e. condensed sets). -/
 noncomputable
@@ -94,8 +92,6 @@ noncomputable def stoneanToProfiniteEffectivePresentation (X : Profinite) :
 instance : Stonean.toProfinite.EffectivelyEnough where
   presentation X := ⟨stoneanToProfiniteEffectivePresentation X⟩
 
-instance : PreservesFiniteCoproducts Stonean.toProfinite := sorry
-
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `Profinite`. -/
 noncomputable
 def equivalence (A : Type*) [Category A]
@@ -126,8 +122,6 @@ noncomputable def profiniteToCompHausEffectivePresentation (X : CompHaus) :
 
 instance : profiniteToCompHaus.EffectivelyEnough where
   presentation X := ⟨profiniteToCompHausEffectivePresentation X⟩
-
-instance : PreservesFiniteCoproducts profiniteToCompHaus := sorry
 
 /-- The equivalence from coherent sheaves on `Profinite` to coherent sheaves on `CompHaus`
     (i.e. condensed sets). -/

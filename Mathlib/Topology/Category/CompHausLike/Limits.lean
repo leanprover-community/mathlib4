@@ -124,6 +124,13 @@ noncomputable def preservesPullback : PreservesLimit (cospan f g) (compHausLikeT
   letI := createsPullback f g hP
   preservesLimitOfCreatesLimitAndHasLimit _ _
 
+noncomputable def preservesPullback' {P' : TopCat → Prop}
+    (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
+    PreservesLimit (cospan f g) (toCompHausLike h) := by
+  have hh := preservesPullback f g hP
+  change PreservesLimit _ (toCompHausLike h ⋙ compHausLikeToTop P') at hh
+  exact preservesLimitOfReflectsOfPreserves (toCompHausLike h) (compHausLikeToTop P')
+
 theorem hasPullbacks (hP : ∀ ⦃X Y B : CompHausLike P⦄ (f : X ⟶ B) (g : Y ⟶ B),
       P (TopCat.of { xy : X × Y | f xy.fst = g xy.snd })) :
     HasPullbacks (CompHausLike P) where
@@ -204,6 +211,8 @@ lemma finiteCoproduct.ι_desc_apply {B : CompHausLike P} {π : (a : α) → X a 
 theorem has_coproduct : HasCoproduct X where
   exists_colimit := ⟨finiteCoproduct.cofan X hP, finiteCoproduct.isColimit X hP⟩
 
+variable {P : TopCat.{u} → Prop}
+
 theorem has_finite_coproducts
     (hP : ∀ {α : Type} [Finite α] (X : α → CompHausLike P),
       P (TopCat.of (Σ (a : α), (X a).toTop))) :
@@ -240,6 +249,14 @@ def preservesFiniteCoproducts
   apply preservesColimitOfPreservesColimitCocone (CompHausLike.finiteCoproduct.isColimit _ _)
   · exact TopCat.sigmaCofanIsColimit _
   · exact hP _
+
+noncomputable def preservesFiniteCoproducts' (hP : ∀ {α : Type} [Finite α] (X : α → CompHausLike P),
+      P (TopCat.of (Σ (a : α), (X a).toTop)))
+      {P' : TopCat.{u} → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
+    PreservesFiniteCoproducts (toCompHausLike h) := by
+  have hh := preservesFiniteCoproducts hP
+  change PreservesFiniteCoproducts (toCompHausLike h ⋙ compHausLikeToTop P') at hh
+  exact preservesFiniteCoproductsOfReflectsOfPreserves (toCompHausLike h) (compHausLikeToTop P')
 
 variable {P : TopCat.{u} → Prop}
 
