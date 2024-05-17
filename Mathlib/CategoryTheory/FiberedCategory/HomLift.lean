@@ -60,6 +60,9 @@ macro "subst_hom_lift" p:ident f:ident φ:ident : tactic =>
 instance {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ where
   cond := by constructor
 
+instance (p : 𝒳 ⥤ 𝒮) (a : 𝒳) : IsHomLift p (𝟙 (p.obj a)) (𝟙 a) :=
+  p.map_id _ ▸ self p (𝟙 a)
+
 @[simp]
 instance (a : 𝒳) : p.IsHomLift (𝟙 (p.obj a)) (𝟙 a) := by
   rw [← p.map_id]; infer_instance
