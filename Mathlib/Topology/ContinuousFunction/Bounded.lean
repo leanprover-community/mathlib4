@@ -1626,10 +1626,7 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
 
 end
 
-variable (α : Type*) [TopologicalSpace α]
-variable (γ : Type*)
-variable {𝕜 : Type*} [NormedField 𝕜]
-variable [NormedRing γ] [NormedAlgebra 𝕜 γ]
+variable {𝕜 : Type*} [NormedField 𝕜] [TopologicalSpace α] [NormedRing γ]
 
 /-- The subtype of compactly supported functions as an ideal. -/
 def CompactlySupportedBoundedContinuousFunction : Ideal (α →ᵇ γ) where
