@@ -76,8 +76,7 @@ instance instDenselyOrdered [Preorder α] [DenselyOrdered α] {a : α} :
 #align nonneg.densely_ordered Nonneg.instDenselyOrdered
 
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
-@[reducible]
-protected noncomputable def conditionallyCompleteLinearOrder [ConditionallyCompleteLinearOrder α]
+protected noncomputable abbrev conditionallyCompleteLinearOrder [ConditionallyCompleteLinearOrder α]
     {a : α} : ConditionallyCompleteLinearOrder { x : α // a ≤ x } :=
   { @ordConnectedSubsetConditionallyCompleteLinearOrder α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩ _ with }
 #align nonneg.conditionally_complete_linear_order Nonneg.conditionallyCompleteLinearOrder
@@ -87,9 +86,9 @@ protected noncomputable def conditionallyCompleteLinearOrder [ConditionallyCompl
 This instance uses data fields from `Subtype.linearOrder` to help type-class inference.
 The `Set.Ici` data fields are definitionally equal, but that requires unfolding semireducible
 definitions, so type-class inference won't see this. -/
-@[reducible]
-protected noncomputable def conditionallyCompleteLinearOrderBot [ConditionallyCompleteLinearOrder α]
-    (a : α) : ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
+protected noncomputable abbrev conditionallyCompleteLinearOrderBot
+    [ConditionallyCompleteLinearOrder α] (a : α) :
+    ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
   { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with
     csSup_empty := by
       rw [@subset_sSup_def α (Set.Ici a) _ _ ⟨⟨a, le_rfl⟩⟩]; simp [bot_eq] }

@@ -69,7 +69,7 @@ instance struct : CategoryStruct (WidePullbackShape J) where
   id j := Hom.id j
   comp f g := by
     cases f
-    exact g
+    · exact g
     cases g
     apply Hom.term _
 #align category_theory.limits.wide_pullback_shape.struct CategoryTheory.Limits.WidePullbackShape.struct
@@ -93,7 +93,9 @@ instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by
   constructor
   intro a b
   casesm* WidePullbackShape _, (_: WidePullbackShape _) ⟶ (_ : WidePullbackShape _)
-  rfl; rfl; rfl
+  · rfl
+  · rfl
+  · rfl
 #align category_theory.limits.wide_pullback_shape.subsingleton_hom CategoryTheory.Limits.WidePullbackShape.subsingleton_hom
 
 instance category : SmallCategory (WidePullbackShape J) :=
@@ -186,7 +188,7 @@ instance struct : CategoryStruct (WidePushoutShape J) where
   id j := Hom.id j
   comp f g := by
     cases f
-    exact g
+    · exact g
     cases g
     apply Hom.init _
 #align category_theory.limits.wide_pushout_shape.struct CategoryTheory.Limits.WidePushoutShape.struct
@@ -378,8 +380,8 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
 theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by aesop_cat) := by
   apply eq_lift_of_comp_eq
-  aesop_cat
-  rfl  -- Porting note: quite a few missing refl's in aesop_cat now
+  · aesop_cat
+  · rfl  -- Porting note: quite a few missing refl's in aesop_cat now
 #align category_theory.limits.wide_pullback.hom_eq_lift CategoryTheory.Limits.WidePullback.hom_eq_lift
 
 @[ext 1100]
@@ -457,8 +459,8 @@ theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
         rw [← Category.assoc]
         simp := by
   apply eq_desc_of_comp_eq
-  aesop_cat
-  rfl -- Porting note: another missing rfl
+  · aesop_cat
+  · rfl -- Porting note: another missing rfl
 #align category_theory.limits.wide_pushout.hom_eq_desc CategoryTheory.Limits.WidePushout.hom_eq_desc
 
 @[ext 1100]

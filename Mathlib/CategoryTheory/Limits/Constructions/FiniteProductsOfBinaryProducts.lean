@@ -140,7 +140,7 @@ noncomputable def preservesFinOfPreservesBinaryAndTerminal :
         (isLimitOfHasBinaryProductOfPreservesLimit F _ _)
     refine' IsLimit.ofIsoLimit this _
     apply Cones.ext _ _
-    apply Iso.refl _
+    · apply Iso.refl _
     rintro ⟨j⟩
     refine Fin.inductionOn j ?_ ?_
     · apply (Category.id_comp _).symm
@@ -280,7 +280,7 @@ noncomputable def preservesFinOfPreservesBinaryAndInitial :
         (isColimitOfHasBinaryCoproductOfPreservesColimit F _ _)
     refine' IsColimit.ofIsoColimit this _
     apply Cocones.ext _ _
-    apply Iso.refl _
+    · apply Iso.refl _
     rintro ⟨j⟩
     refine Fin.inductionOn j ?_ ?_
     · apply Category.comp_id

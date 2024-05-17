@@ -64,6 +64,10 @@ theorem map_injective (F : C ⥤ D) [Faithful F] :
   Faithful.map_injective
 #align category_theory.functor.map_injective CategoryTheory.Functor.map_injective
 
+lemma map_injective_iff (F : C ⥤ D) [Faithful F] {X Y : C} (f g : X ⟶ Y) :
+    F.map f = F.map g ↔ f = g :=
+  ⟨fun h => F.map_injective h, fun h => by rw [h]⟩
+
 theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
     Function.Injective <| (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y))  := fun _ _ h =>
   Iso.ext (map_injective F (congr_arg Iso.hom h : _))
@@ -75,7 +79,6 @@ theorem map_surjective (F : C ⥤ D) [Full F] :
 #align category_theory.functor.map_surjective CategoryTheory.Functor.map_surjective
 
 /-- The choice of a preimage of a morphism under a full functor. -/
-@[pp_dot]
 noncomputable def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X ⟶ Y :=
   (F.map_surjective f).choose
 #align category_theory.functor.preimage CategoryTheory.Functor.preimage

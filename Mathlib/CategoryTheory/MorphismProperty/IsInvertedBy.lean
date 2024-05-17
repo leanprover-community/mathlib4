@@ -34,7 +34,7 @@ def IsInvertedBy (P : MorphismProperty C) (F : C ⥤ D) : Prop :=
 
 namespace IsInvertedBy
 
-lemma of_subset (P Q : MorphismProperty C) (F : C ⥤ D) (hQ : Q.IsInvertedBy F) (h : P ⊆ Q) :
+lemma of_le (P Q : MorphismProperty C) (F : C ⥤ D) (hQ : Q.IsInvertedBy F) (h : P ≤ Q) :
     P.IsInvertedBy F :=
   fun _ _ _ hf => hQ _ (h _ hf)
 
@@ -136,7 +136,7 @@ lemma IsInvertedBy.isoClosure_iff (W : MorphismProperty C) (F : C ⥤ D) :
     W.isoClosure.IsInvertedBy F ↔ W.IsInvertedBy F := by
   constructor
   · intro h X Y f hf
-    exact h _ (W.subset_isoClosure _ hf)
+    exact h _ (W.le_isoClosure _ hf)
   · intro h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
     have : f = e.inv.left ≫ f' ≫ e.hom.right := by
       erw [← e.hom.w, ← Arrow.comp_left_assoc, e.inv_hom_id, Category.id_comp]
@@ -156,19 +156,17 @@ lemma IsInvertedBy.iff_comp {C₁ C₂ C₃ : Type*} [Category C₁] [Category C
   · intro hF
     exact IsInvertedBy.of_comp W F hF G
 
-lemma IsInvertedBy.iff_map_subset_isomorphisms (W : MorphismProperty C) (F : C ⥤ D) :
-    W.IsInvertedBy F ↔ W.map F ⊆ isomorphisms D := by
-  rw [map_subset_iff _ _ _ (RespectsIso.isomorphisms D)]
-  constructor
-  · intro h X Y f hf
-    exact h f hf
-  · intro h X Y f hf
-    exact h X Y f hf
+lemma IsInvertedBy.iff_le_inverseImage_isomorphisms (W : MorphismProperty C) (F : C ⥤ D) :
+    W.IsInvertedBy F ↔ W ≤ (isomorphisms D).inverseImage F := Iff.rfl
+
+lemma IsInvertedBy.iff_map_le_isomorphisms (W : MorphismProperty C) (F : C ⥤ D) :
+    W.IsInvertedBy F ↔ W.map F ≤ isomorphisms D := by
+  rw [iff_le_inverseImage_isomorphisms, map_le_iff (RespectsIso.isomorphisms D)]
 
 lemma IsInvertedBy.map_iff {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (G : C₂ ⥤ C₃) :
     (W.map F).IsInvertedBy G ↔ W.IsInvertedBy (F ⋙ G) := by
-  simp only [IsInvertedBy.iff_map_subset_isomorphisms, map_map]
+  simp only [IsInvertedBy.iff_map_le_isomorphisms, map_map]
 
 end MorphismProperty
 

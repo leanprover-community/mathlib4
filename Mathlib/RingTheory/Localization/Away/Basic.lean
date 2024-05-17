@@ -295,13 +295,13 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
         (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
     simp only [map_zero, ← hy, map_pow] at H
     apply ((injective_iff_map_eq_zero' (algebraMap R B)).mp _ a₀).mpr.mt
-    rw [← H]
-    apply mul_ne_zero hb (pow_ne_zero _ _)
-    exact
-      IsLocalization.to_map_ne_zero_of_mem_nonZeroDivisors B
-        (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
-        (mem_nonZeroDivisors_iff_ne_zero.mpr hx.ne_zero)
-    exact IsLocalization.injective B (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
+    · rw [← H]
+      apply mul_ne_zero hb (pow_ne_zero _ _)
+      exact
+        IsLocalization.to_map_ne_zero_of_mem_nonZeroDivisors B
+          (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
+          (mem_nonZeroDivisors_iff_ne_zero.mpr hx.ne_zero)
+    · exact IsLocalization.injective B (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
   simp only [← hy] at H
   obtain ⟨m, a, hyp1, hyp2⟩ := WfDvdMonoid.max_power_factor ha₀ hx
   refine' ⟨a, m - d, _⟩

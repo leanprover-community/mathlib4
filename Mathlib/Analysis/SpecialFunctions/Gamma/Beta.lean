@@ -148,7 +148,7 @@ theorem Gamma_mul_Gamma_eq_betaIntegral {s t : ℂ} (hs : 0 < re s) (ht : 0 < re
   congr 1 with y : 1
   push_cast
   suffices Complex.exp (-x) = Complex.exp (-y) * Complex.exp (-(x - y)) by rw [this]; ring
-  · rw [← Complex.exp_add]; congr 1; abel
+  rw [← Complex.exp_add]; congr 1; abel
 #align complex.Gamma_mul_Gamma_eq_beta_integral Complex.Gamma_mul_Gamma_eq_betaIntegral
 
 /-- Recurrence formula for the Beta function. -/
@@ -174,8 +174,8 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
     intro x hx
     have U : HasDerivAt (fun y : ℂ => y ^ u) (u * (x : ℂ) ^ (u - 1)) ↑x := by
       have := @HasDerivAt.cpow_const _ _ _ u (hasDerivAt_id (x : ℂ)) (Or.inl ?_)
-      simp only [id_eq, mul_one] at this
-      · exact this
+      · simp only [id_eq, mul_one] at this
+        exact this
       · rw [id_eq, ofReal_re]; exact hx.1
     have V : HasDerivAt (fun y : ℂ => (1 - y) ^ v) (-v * (1 - (x : ℂ)) ^ (v - 1)) ↑x := by
       have A := @HasDerivAt.cpow_const _ _ _ v (hasDerivAt_id (1 - (x : ℂ))) (Or.inl ?_)
@@ -313,8 +313,8 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
       Tendsto (fun n : ℕ => f n x) atTop (𝓝 <| ↑(Real.exp (-x)) * (x : ℂ) ^ (s - 1)) := by
     intro x hx
     apply Tendsto.congr'
-    show ∀ᶠ n : ℕ in atTop, ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1) = f n x
-    · filter_upwards [eventually_ge_atTop ⌈x⌉₊] with n hn
+    · show ∀ᶠ n : ℕ in atTop, ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1) = f n x
+      filter_upwards [eventually_ge_atTop ⌈x⌉₊] with n hn
       rw [Nat.ceil_le] at hn
       dsimp only [f]
       rw [indicator_of_mem]

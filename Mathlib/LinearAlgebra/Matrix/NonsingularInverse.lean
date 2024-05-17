@@ -118,7 +118,7 @@ def invertibleEquivDetInvertible : Invertible A ≃ Invertible A.det where
 variable {A B}
 
 theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 :=
-  suffices ∀ A B, A * B = 1 → B * A = 1 from ⟨this A B, this B A⟩
+  suffices ∀ A B : Matrix n n α, A * B = 1 → B * A = 1 from ⟨this A B, this B A⟩
   fun A B h => by
   letI : Invertible B.det := detInvertibleOfLeftInverse _ _ h
   letI : Invertible B := invertibleOfDetInvertible B
@@ -151,6 +151,10 @@ def unitOfDetInvertible [Invertible A.det] : (Matrix n n α)ˣ :=
 theorem isUnit_iff_isUnit_det : IsUnit A ↔ IsUnit A.det := by
   simp only [← nonempty_invertible_iff_isUnit, (invertibleEquivDetInvertible A).nonempty_congr]
 #align matrix.is_unit_iff_is_unit_det Matrix.isUnit_iff_isUnit_det
+
+@[simp]
+theorem isUnits_det_units (A : (Matrix n n α)ˣ) : IsUnit (A : Matrix n n α).det :=
+  isUnit_iff_isUnit_det _ |>.mp A.isUnit
 
 /-! #### Variants of the statements above with `IsUnit`-/
 

@@ -45,8 +45,7 @@ open Zsqrtd Complex
 open scoped ComplexConjugate
 
 /-- The Gaussian integers, defined as `ℤ√(-1)`. -/
-@[reducible]
-def GaussianInt : Type :=
+abbrev GaussianInt : Type :=
   Zsqrtd (-1)
 #align gaussian_int GaussianInt
 

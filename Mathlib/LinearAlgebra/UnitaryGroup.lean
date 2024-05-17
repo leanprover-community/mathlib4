@@ -111,6 +111,10 @@ theorem star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
   A.2.1
 #align matrix.unitary_group.star_mul_self Matrix.UnitaryGroup.star_mul_self
 
+@[simp]
+theorem det_isUnit (A : unitaryGroup n α) : IsUnit (A : Matrix n n α).det :=
+  isUnit_iff_isUnit_det _ |>.mp <| (unitary.toUnits A).isUnit
+
 section CoeLemmas
 
 variable (A B : unitaryGroup n α)

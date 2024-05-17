@@ -691,7 +691,10 @@ theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
   (normSq_nonneg z).lt_iff_ne.trans <| not_congr (eq_comm.trans normSq_eq_zero)
 #align complex.norm_sq_pos Complex.normSq_pos
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12228
+@[simp, nolint simpNF]
 theorem normSq_neg (z : ℂ) : normSq (-z) = normSq z := by simp [normSq]
 #align complex.norm_sq_neg Complex.normSq_neg
 
@@ -948,7 +951,7 @@ numbers are represented.
 -/
 unsafe instance instRepr : Repr ℂ where
   reprPrec f p :=
-    (if p > 65 then (Std.Format.bracket "(" . ")") else (·)) <|
+    (if p > 65 then (Std.Format.bracket "(" · ")") else (·)) <|
       reprPrec f.re 65 ++ " + " ++ reprPrec f.im 70 ++ "*I"
 
 end Complex

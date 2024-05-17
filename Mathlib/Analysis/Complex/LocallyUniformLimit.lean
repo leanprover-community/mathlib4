@@ -81,7 +81,7 @@ theorem norm_cderiv_lt (hr : 0 < r) (hfM : ∀ w ∈ sphere z r, ‖f w‖ < M)
   obtain ⟨L, hL1, hL2⟩ : ∃ L < M, ∀ w ∈ sphere z r, ‖f w‖ ≤ L := by
     have e1 : (sphere z r).Nonempty := NormedSpace.sphere_nonempty.mpr hr.le
     have e2 : ContinuousOn (fun w => ‖f w‖) (sphere z r) := continuous_norm.comp_continuousOn hf
-    obtain ⟨x, hx, hx'⟩ := (isCompact_sphere z r).exists_forall_ge e1 e2
+    obtain ⟨x, hx, hx'⟩ := (isCompact_sphere z r).exists_isMaxOn e1 e2
     exact ⟨‖f x‖, hfM x hx, hx'⟩
   exact (norm_cderiv_le hr hL2).trans_lt ((div_lt_div_right hr).mpr hL1)
 #align complex.norm_cderiv_lt Complex.norm_cderiv_lt

@@ -23,8 +23,9 @@ open Finset Finsupp
 variable {k : Type u₁} {G : Type u₂} [Semiring k]
 
 theorem support_mul [Mul G] [DecidableEq G] (a b : MonoidAlgebra k G) :
-    (a * b).support ⊆ a.support * b.support :=
-  support_sum.trans <| biUnion_subset.2 fun _x hx ↦
+    (a * b).support ⊆ a.support * b.support := by
+  rw [MonoidAlgebra.mul_def]
+  exact support_sum.trans <| biUnion_subset.2 fun _x hx ↦
     support_sum.trans <| biUnion_subset.2 fun _y hy ↦
       support_single_subset.trans <| singleton_subset_iff.2 <| mem_image₂_of_mem hx hy
 #align monoid_algebra.support_mul MonoidAlgebra.support_mul

@@ -64,9 +64,9 @@ theorem prod_X_add_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s
   · rw [if_pos (Nat.sub_sub_self h).symm]
   · intro j hj1 hj2
     suffices k ≠ card s - j by rw [if_neg this]
-    · intro hn
-      rw [hn, Nat.sub_sub_self (Nat.lt_succ_iff.mp (Finset.mem_range.mp hj1))] at hj2
-      exact Ne.irrefl hj2
+    intro hn
+    rw [hn, Nat.sub_sub_self (Nat.lt_succ_iff.mp (Finset.mem_range.mp hj1))] at hj2
+    exact Ne.irrefl hj2
   · rw [Finset.mem_range]
     exact Nat.lt_succ_of_le (Nat.sub_le (Multiset.card s) k)
 set_option linter.uppercaseLean3 false in
@@ -97,7 +97,8 @@ theorem esymm_neg (s : Multiset R) (k : ℕ) : (map Neg.neg s).esymm k = (-1) ^ 
   intro x hx
   rw [(mem_powersetCard.mp hx).right.symm, ← prod_replicate, ← Multiset.map_const]
   nth_rw 3 [← map_id' x]
-  rw [← prod_map_mul, map_congr (Eq.refl _)];rfl
+  rw [← prod_map_mul, map_congr (Eq.refl _)]
+  · rfl
   exact fun z _ => neg_one_mul z
 #align multiset.esymm_neg Multiset.esymm_neg
 

@@ -593,13 +593,13 @@ theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a }
         ⟨CompleteLattice.independent_sUnion_of_directed hc2.directedOn fun s hs => (hc1 hs).1, ?_,
           fun a ⟨s, sc, as⟩ => (hc1 sc).2.2 a as⟩,
         fun _ => Set.subset_sUnion_of_mem⟩
-  obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ := this
   swap
   · rw [sSup_sUnion, ← sSup_image, DirectedOn.disjoint_sSup_right]
     · rintro _ ⟨s, hs, rfl⟩
       exact (hc1 hs).2.1
     · rw [directedOn_image]
       exact hc2.directedOn.mono @fun s t => sSup_le_sSup
+  obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ := this
   refine' ⟨s, s_ind, ⟨b_inf_Sup_s, _⟩, s_atoms⟩
   rw [codisjoint_iff_le_sup, ← h, sSup_le_iff]
   intro a ha

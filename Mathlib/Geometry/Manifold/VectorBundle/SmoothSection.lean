@@ -48,8 +48,7 @@ structure ContMDiffSection where
 #align cont_mdiff_section ContMDiffSection
 
 /-- Bundled smooth sections of a vector bundle. -/
-@[reducible]
-def SmoothSection :=
+abbrev SmoothSection :=
   ContMDiffSection I F ⊤ V
 #align smooth_section SmoothSection
 
@@ -200,7 +199,7 @@ instance instNSMul : SMul ℕ Cₛ^n⟮I; F, V⟯ :=
 @[simp]
 theorem coe_nsmul (s : Cₛ^n⟮I; F, V⟯) (k : ℕ) : ⇑(k • s : Cₛ^n⟮I; F, V⟯) = k • ⇑s := by
   induction' k with k ih
-  · simp_rw [Nat.zero_eq, zero_smul]; rfl
+  · simp_rw [zero_smul]; rfl
   simp_rw [succ_nsmul, ← ih]; rfl
 #align cont_mdiff_section.coe_nsmul ContMDiffSection.coe_nsmul
 
@@ -211,10 +210,10 @@ instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
 @[simp]
 theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • ⇑s := by
   cases' z with n n
-  refine' (coe_nsmul s n).trans _
-  simp only [Int.ofNat_eq_coe, natCast_zsmul]
-  refine' (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans _
-  simp only [negSucc_zsmul, neg_inj]
+  · refine' (coe_nsmul s n).trans _
+    simp only [Int.ofNat_eq_coe, natCast_zsmul]
+  · refine' (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans _
+    simp only [negSucc_zsmul, neg_inj]
 #align cont_mdiff_section.coe_zsmul ContMDiffSection.coe_zsmul
 
 instance instAddCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=

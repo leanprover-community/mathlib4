@@ -135,9 +135,7 @@ uniform convergence
 
 noncomputable section
 
-open scoped Classical
-open Topology Uniformity Filter
-
+open scoped Classical Topology Uniformity
 open Set Filter
 
 section TypeAlias
@@ -777,6 +775,27 @@ protected theorem gen_mem_nhds (f : α →ᵤ[𝔖] β) (hs : s ∈ 𝔖) {V : S
   rw [UniformOnFun.nhds_eq]
   apply_rules [mem_iInf_of_mem, mem_principal_self]
 
+theorem uniformContinuous_ofUniformFun :
+    UniformContinuous fun f : α →ᵤ β ↦ ofFun 𝔖 (UniformFun.toFun f) := by
+  simp only [UniformContinuous, UniformOnFun.uniformity_eq, tendsto_iInf, tendsto_principal,
+    (UniformFun.hasBasis_uniformity _ _).eventually_iff]
+  exact fun _ _ U hU ↦ ⟨U, hU, fun f hf x _ ↦ hf x⟩
+
+/-- The uniformity on `α →ᵤ[𝔖] β` is the same as the uniformity on `α →ᵤ β`,
+provided that `Set.univ ∈ 𝔖`.
+
+Here we formulate it as a `UniformEquiv`. -/
+def uniformEquivUniformFun (h : univ ∈ 𝔖) : (α →ᵤ[𝔖] β) ≃ᵤ (α →ᵤ β) where
+  toFun f := UniformFun.ofFun <| toFun _ f
+  invFun f := ofFun _ <| UniformFun.toFun f
+  left_inv _ := rfl
+  right_inv _ := rfl
+  uniformContinuous_toFun := by
+    simp only [UniformContinuous, (UniformFun.hasBasis_uniformity _ _).tendsto_right_iff]
+    intro U hU
+    filter_upwards [UniformOnFun.gen_mem_uniformity _ _ h hU] with f hf x using hf x (mem_univ _)
+  uniformContinuous_invFun := uniformContinuous_ofUniformFun _ _
+
 /-- Let `u₁`, `u₂` be two uniform structures on `γ` and `𝔖₁ 𝔖₂ : Set (Set α)`. If `u₁ ≤ u₂` and
 `𝔖₂ ⊆ 𝔖₁` then `𝒱(α, γ, 𝔖₁, u₁) ≤ 𝒱(α, γ, 𝔖₂, u₂)`. -/
 protected theorem mono ⦃u₁ u₂ : UniformSpace γ⦄ (hu : u₁ ≤ u₂) ⦃𝔖₁ 𝔖₂ : Set (Set α)⦄
@@ -793,6 +812,11 @@ theorem uniformContinuous_eval_of_mem {x : α} (hxs : x ∈ s) (hs : s ∈ 𝔖)
   (UniformFun.uniformContinuous_eval β (⟨x, hxs⟩ : s)).comp
     (UniformOnFun.uniformContinuous_restrict α β 𝔖 hs)
 #align uniform_on_fun.uniform_continuous_eval_of_mem UniformOnFun.uniformContinuous_eval_of_mem
+
+theorem uniformContinuous_eval_of_mem_sUnion {x : α} (hx : x ∈ ⋃₀ 𝔖) :
+    UniformContinuous ((Function.eval x : (α → β) → β) ∘ toFun 𝔖) :=
+  let ⟨_s, hs, hxs⟩ := hx
+  uniformContinuous_eval_of_mem _ _ hxs hs
 
 variable {β} {𝔖}
 
@@ -936,6 +960,24 @@ protected lemma continuous_rng_iff {X : Type*} [TopologicalSpace X] {f : X → (
     tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_swap X]
   rfl
 
+instance [CompleteSpace β] : CompleteSpace (α →ᵤ[𝔖] β) := by
+  rcases isEmpty_or_nonempty β
+  · infer_instance
+  · refine ⟨fun {F} hF ↦ ?_⟩
+    have := hF.1
+    have : ∀ x ∈ ⋃₀ 𝔖, ∃ y : β, Tendsto (toFun 𝔖 · x) F (𝓝 y) := fun x hx ↦
+      CompleteSpace.complete (hF.map (uniformContinuous_eval_of_mem_sUnion _ _ hx))
+    choose! g hg using this
+    use ofFun 𝔖 g
+    simp_rw [UniformOnFun.nhds_eq_of_basis _ _ uniformity_hasBasis_closed, le_iInf₂_iff,
+      le_principal_iff]
+    intro s hs U ⟨hU, hUc⟩
+    rcases cauchy_iff.mp hF |>.2 _ <| UniformOnFun.gen_mem_uniformity _ _ hs hU
+      with ⟨V, hV, hVU⟩
+    filter_upwards [hV] with f hf x hx
+    refine hUc.mem_of_tendsto ((hg x ⟨s, hs, hx⟩).prod_mk_nhds tendsto_const_nhds) ?_
+    filter_upwards [hV] with g' hg' using hVU (mk_mem_prod hg' hf) _ hx
+
 /-- The natural bijection between `α → β × γ` and `(α → β) × (α → γ)`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] β × γ` and `(α →ᵤ[𝔖] β) × (α →ᵤ[𝔖] γ)`. -/
 protected def uniformEquivProdArrow [UniformSpace γ] :
@@ -1005,3 +1047,10 @@ theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
   simpa only [continuous_iSup_dom, continuous_coinduced_dom] using fun s hs ↦ (hcont s hs).restrict
 
 end UniformOnFun
+
+namespace UniformFun
+
+instance {α β : Type*} [UniformSpace β] [CompleteSpace β] : CompleteSpace (α →ᵤ β) :=
+  (UniformOnFun.uniformEquivUniformFun β {univ} (mem_singleton _)).completeSpace_iff.1 inferInstance
+
+end UniformFun

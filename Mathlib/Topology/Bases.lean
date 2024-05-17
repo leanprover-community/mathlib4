@@ -1029,3 +1029,9 @@ protected theorem Embedding.secondCountableTopology [SecondCountableTopology β]
     SecondCountableTopology α :=
   hf.1.secondCountableTopology
 #align embedding.second_countable_topology Embedding.secondCountableTopology
+
+protected theorem Embedding.separableSpace [TopologicalSpace α]
+    [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : Embedding f) :
+    TopologicalSpace.SeparableSpace α := by
+  have := hf.secondCountableTopology
+  exact SecondCountableTopology.to_separableSpace

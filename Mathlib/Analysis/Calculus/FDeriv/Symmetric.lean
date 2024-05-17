@@ -169,7 +169,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       zero_smul, Ne, not_false_iff, bit0_eq_zero, zero_pow]
     abel
   · simp only [Real.norm_eq_abs, abs_mul, add_nonneg (norm_nonneg v) (norm_nonneg w), abs_of_nonneg,
-      hpos.le, mul_assoc, pow_bit0_abs, norm_nonneg, abs_pow]
+      hpos.le, mul_assoc, norm_nonneg, abs_pow]
 #align convex.taylor_approx_two_segment Convex.taylor_approx_two_segment
 
 /-- One can get `f'' v w` as the limit of `h ^ (-2)` times the alternate sum of the values of `f`

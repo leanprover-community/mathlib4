@@ -1043,7 +1043,7 @@ nonrec theorem integral_indicator {a₁ a₂ a₃ : ℝ} (h : a₂ ∈ Icc a₁ 
   have : {x | x ≤ a₂} ∩ Ioc a₁ a₃ = Ioc a₁ a₂ := Iic_inter_Ioc_of_le h.2
   rw [integral_of_le h.1, integral_of_le (h.1.trans h.2), integral_indicator,
     Measure.restrict_restrict, this]
-  exact measurableSet_Iic
+  · exact measurableSet_Iic
   all_goals apply measurableSet_Iic
 #align interval_integral.integral_indicator intervalIntegral.integral_indicator
 

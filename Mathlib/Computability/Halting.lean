@@ -206,7 +206,14 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
           ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
-  aesop
+  simp only [Bool.cond_decide] at e
+  by_cases H : eval c ∈ C
+  · simp only [H, if_true] at e
+    change (fun b => g b) ∈ C
+    rwa [← e]
+  · simp only [H, if_false] at e
+    rw [e] at H
+    contradiction
 #align computable_pred.rice ComputablePred.rice
 
 theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C ↔ cg ∈ C)) :
