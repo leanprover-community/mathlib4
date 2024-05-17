@@ -290,7 +290,7 @@ the preimage in `α` of `𝓝 a` tends to `𝓝 (f.extend a : β)`, then the com
 between `pkg` and `pkg'` composed with the extension of `f` to `pkg`` coincides with the
 extension of `f` to `pkg'` -/
 theorem CompareComp_Compare (γ : Type*) [TopologicalSpace γ] extend_compare_extend
-  [T3Space γ] (f : α → γ) (cont_f : Continuous f) :
+    [T3Space γ] (f : α → γ) (cont_f : Continuous f) :
   let _ := pkg.uniformStruct.toTopologicalSpace
   let _ := pkg'.uniformStruct.toTopologicalSpace
   (_ : ∀ a : pkg.space,
