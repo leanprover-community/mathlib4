@@ -49,6 +49,7 @@ In particular, given a lift
 such that `f' = g ≫ f`, there is a unique induced map `τ : a' ⟶ a` lifting `g` and such that
 `τ ≫ φ = φ'`. This definition gives us some flexibility in that it allows us to take `f'` to be
 non-definitionally equal to `g ≫ f`, and `p(a')` to be non-definitionally equal to `R'`.
+`IsCartesian.mk` only requires us to check this condition for `f' = g ≫ f` and `R=p(a')`.
 
 Similarly, `IsFibered p` is phrased as saying that for every `f : R ⟶ S`, and every `a` such that
 `p(a)=S`, there is a cartesian arrow `φ` lying over `f`. The alternate constructor `IsFibered.mk`
@@ -77,11 +78,6 @@ structure IsCartesian (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S
     (_ : f' = g ≫ f) {φ' : a' ⟶ b} (_ : IsHomLift p f' φ') :
       ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ')
 
-/-- Definition of a Fibered category. -/
-class IsFibered (p : 𝒳 ⥤ 𝒮) : Prop where mk' ::
-  (has_pullbacks {a : 𝒳} {R S : 𝒮} (_ : p.obj a = S) (f : R ⟶ S) :
-    ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ)
-
 protected lemma IsCartesian.mk {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : b ⟶ a}
     (hφ : IsHomLift p f φ) (h : ∀ (a' : 𝒳) (g : p.obj a' ⟶ R) (φ' : a' ⟶ a),
       IsHomLift p (g ≫ f) φ' → ∃! χ : a' ⟶ b, IsHomLift p g χ ∧ χ ≫ φ = φ') :
@@ -93,6 +89,11 @@ protected lemma IsCartesian.mk {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f 
     subst this
     subst hf'
     apply h a' g φ' hφ'
+
+/-- Definition of a Fibered category. -/
+class IsFibered (p : 𝒳 ⥤ 𝒮) : Prop where mk' ::
+  (has_pullbacks {a : 𝒳} {R S : 𝒮} (_ : p.obj a = S) (f : R ⟶ S) :
+    ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ)
 
 protected lemma IsFibered.mk {p : 𝒳 ⥤ 𝒮} (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
     ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ) : IsFibered p where
