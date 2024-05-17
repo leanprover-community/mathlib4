@@ -181,7 +181,7 @@ lemma Solution'.multiplicity_lambda_c_finite :
 
 /-- Given `S' : Solution'`, `S'.multiplicity` is the multiplicity of `λ` in `S'.c`, as a natural
 number. -/
-def Solution'.multiplicity  :=
+def Solution'.multiplicity :=
   (_root_.multiplicity (hζ.toInteger - 1) S'.c).get (multiplicity_lambda_c_finite S')
 
 /-- Given `S : Solution`, `S.multiplicity` is the multiplicity of `λ` in `S.c`, as a natural
