@@ -125,41 +125,45 @@ theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :
   support_eq_empty_iff.trans coeff_fun_eq_zero_iff
 #align hahn_series.support_eq_empty_iff HahnSeries.support_eq_empty_iff
 
-/-!
 /-- Change a HahnSeries with coefficients in HahnSeries to a HahnSeries on the Lex product. -/
-def of_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
+def ofIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
     HahnSeries (Γ ×ₗ Γ') R where
   coeff := fun g => coeff (coeff x g.1) g.2
   isPWO_support' := by
-    intro f hf
-    simp_all only
-    have hf' : ∀ n, (f n).1 ∈ Function.support fun g ↦ x.coeff g := by
-      intro n hn
-      simp_all only [Function.mem_support, ne_eq]
-      specialize hf n
-      rw [hn] at hf
-      exact hf rfl
-    sorry
--- See Mathlib.Algebra.MvPolynomial.Monad for join and bind operations
-need a monotone pair. have:
-nonrec theorem IsPWO.exists_monotone_subseq (h : s.IsPWO) (f : ℕ → α) (hf : ∀ n, f n ∈ s) :
-    ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
-  h.exists_monotone_subseq f hf
-#align set.is_pwo.exists_monotone_subseq Set.IsPWO.exists_monotone_subseq
-map sequence to Γ, get monotone subsequence (use ext property)
-if stationary at a ∈ Γ, look inside {a} × Γ', get monotone subsequence.
-if not stationary, use lex order.
+    refine Set.PartiallyWellOrderedOn.subsetProdLex ?_ ?_
+    · refine Set.IsPWO.mono x.isPWO_support' ?_
+      simp_rw [Set.image_subset_iff, support_subset_iff, Set.mem_preimage, Function.mem_support]
+      exact fun _ ↦ ne_zero_of_coeff_ne_zero
+    · exact fun a => by simpa [Function.mem_support, ne_eq] using (x.coeff a).isPWO_support'
+
+@[simp]
+lemma mk_eq_zero (f : Γ → R) (h) : HahnSeries.mk f h = 0 ↔ f = 0 := by
+  rw [HahnSeries.ext_iff]
+  rfl
+
 /-- Change a Hahn series on a lex product to a Hahn series with coefficients in a Hahn series. -/
-def to_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
+def toIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
     HahnSeries Γ (HahnSeries Γ' R) where
   coeff := fun g => {
     coeff := fun g' => coeff x (g, g')
-    isPWO_support' := sorry
+    isPWO_support' := Set.PartiallyWellOrderedOn.fiberProdLex x.isPWO_support' g
   }
-  isPWO_support' := sorry
-  * Equivalence between `HahnSeries Γ (HahnSeries Γ' R)` and `HahnSeries (Γ × Γ') R`
-  * Use Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber to iterate. (need PWO version)
--/
+  isPWO_support' := by
+    have h₁ : (Function.support fun g => HahnSeries.mk (fun g' => x.coeff (g, g'))
+        (Set.PartiallyWellOrderedOn.fiberProdLex x.isPWO_support' g)) = Function.support
+        fun g => fun g' => x.coeff (g, g') := by
+      simp only [Function.support, ne_eq, mk_eq_zero]
+    rw [h₁, Function.support_curry' x.coeff]
+    exact Set.PartiallyWellOrderedOn.imageProdLex x.isPWO_support'
+
+/-- The equivalence between iterated Hahn series and Hahn series on the lex product. -/
+@[simps]
+def iterateEquiv {Γ' : Type*} [PartialOrder Γ'] :
+    HahnSeries Γ (HahnSeries Γ' R) ≃ HahnSeries (Γ ×ₗ Γ') R where
+  toFun := ofIterate
+  invFun := toIterate
+  left_inv := congrFun rfl
+  right_inv := congrFun rfl
 
 /-- `single a r` is the Hahn series which has coefficient `r` at `a` and zero otherwise. -/
 def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
