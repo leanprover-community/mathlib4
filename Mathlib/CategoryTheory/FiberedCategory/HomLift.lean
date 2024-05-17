@@ -66,7 +66,7 @@ protected lemma hom_eq' {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶
 
 lemma eq_of_IsHomLift {p : 𝒳 ⥤ 𝒮} (a b : 𝒳) {f : p.obj a ⟶ p.obj b} {φ : a ⟶ b}
    [hφ : IsHomLift p f φ] : f = p.map φ := by
-  simpa using hφ.hom_eq
+  simpa only [eqToHom_refl, comp_id, id_comp] using hφ.hom_eq
 
 /-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`-/
 @[simp]
@@ -97,7 +97,7 @@ lemma comp_lift_id {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ 
     IsHomLift p f (φ ≫ ψ) where
   domain_eq := hφ.domain_eq
   codomain_eq := by rw [hψ.codomain_eq, ← hψ.domain_eq, hφ.codomain_eq]
-  homlift := ⟨by simp [hψ.hom_eq', hφ.3.1]⟩
+  homlift := ⟨by simp only [map_comp, hψ.hom_eq', id_comp, eqToHom_trans, assoc, hφ.3.1]⟩
 
 @[simp]
 lemma eqToHom_domain_lift_id {p : 𝒳 ⥤ 𝒮} {a b : 𝒳} (hab : a = b) {R : 𝒮}
