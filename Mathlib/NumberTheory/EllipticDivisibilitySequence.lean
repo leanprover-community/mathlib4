@@ -125,24 +125,24 @@ def preNormEDS' (b c d : R) : ℕ → R
 variable (b c d : R)
 
 @[simp]
-lemma preNormEDS'_zero : preNormEDS' b c d 0 = 0 :=
-  rfl
+lemma preNormEDS'_zero : preNormEDS' b c d 0 = 0 := by
+  rw [preNormEDS']
 
 @[simp]
-lemma preNormEDS'_one : preNormEDS' b c d 1 = 1 :=
-  rfl
+lemma preNormEDS'_one : preNormEDS' b c d 1 = 1 := by
+  rw [preNormEDS']
 
 @[simp]
-lemma preNormEDS'_two : preNormEDS' b c d 2 = 1 :=
-  rfl
+lemma preNormEDS'_two : preNormEDS' b c d 2 = 1 := by
+  rw [preNormEDS']
 
 @[simp]
-lemma preNormEDS'_three : preNormEDS' b c d 3 = c :=
-  rfl
+lemma preNormEDS'_three : preNormEDS' b c d 3 = c := by
+  rw [preNormEDS']
 
 @[simp]
-lemma preNormEDS'_four : preNormEDS' b c d 4 = d :=
-  rfl
+lemma preNormEDS'_four : preNormEDS' b c d 4 = d := by
+  rw [preNormEDS']
 
 lemma preNormEDS'_odd (m : ℕ) : preNormEDS' b c d (2 * (m + 2) + 1) =
     preNormEDS' b c d (m + 4) * preNormEDS' b c d (m + 2) ^ 3 * (if Even m then b else 1) -
