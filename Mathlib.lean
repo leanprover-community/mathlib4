@@ -31,9 +31,8 @@ import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.List.Basic
-import Mathlib.Algebra.BigOperators.List.Lemmas
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
@@ -41,6 +40,7 @@ import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Option
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.Bounds
@@ -251,7 +251,6 @@ import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Algebra.GroupPower.NegOnePow
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupRingAction.Basic
@@ -625,6 +624,7 @@ import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Int
 import Mathlib.Algebra.Ring.MinimalAxioms
 import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.OrderSynonym
 import Mathlib.Algebra.Ring.Parity
@@ -665,6 +665,7 @@ import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
+import Mathlib.Algebra.Vertex.HVertexOperator
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
@@ -1417,6 +1418,7 @@ import Mathlib.CategoryTheory.Linear.FunctorCategory
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Localization.Adjunction
+import Mathlib.CategoryTheory.Localization.Bousfield
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
@@ -1566,6 +1568,7 @@ import Mathlib.CategoryTheory.Sites.InducedTopology
 import Mathlib.CategoryTheory.Sites.IsSheafFor
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Sites.Localization
 import Mathlib.CategoryTheory.Sites.NonabelianCohomology.H1
 import Mathlib.CategoryTheory.Sites.OneHypercover
 import Mathlib.CategoryTheory.Sites.Over
@@ -1920,8 +1923,6 @@ import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.ConditionallyCompleteOrder
 import Mathlib.Data.Int.Defs
-import Mathlib.Data.Int.Div
-import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Interval
 import Mathlib.Data.Int.LeastGreatest
@@ -2083,7 +2084,6 @@ import Mathlib.Data.Nat.Nth
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Pairing
-import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.PartENat
 import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.Nat.Prime
@@ -2762,6 +2762,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Opposite
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.LinearAlgebra.TensorProduct.Vanishing
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.LinearAlgebra.Vandermonde
@@ -2976,7 +2977,11 @@ import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.Order.Group.Lattice
 import Mathlib.MeasureTheory.Order.Lattice
 import Mathlib.MeasureTheory.OuterMeasure.Basic
+import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 import Mathlib.MeasureTheory.OuterMeasure.Defs
+import Mathlib.MeasureTheory.OuterMeasure.Induced
+import Mathlib.MeasureTheory.OuterMeasure.OfFunction
+import Mathlib.MeasureTheory.OuterMeasure.Operations
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.SetAlgebra
 import Mathlib.MeasureTheory.SetSemiring
@@ -3270,6 +3275,7 @@ import Mathlib.Order.PartialSups
 import Mathlib.Order.Partition.Equipartition
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Order.PrimeIdeal
+import Mathlib.Order.PrimeSeparator
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic
@@ -3381,6 +3387,7 @@ import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Bezout
 import Mathlib.RingTheory.Bialgebra.Basic
+import Mathlib.RingTheory.Bialgebra.Equiv
 import Mathlib.RingTheory.Bialgebra.Hom
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.ChainOfDivisors

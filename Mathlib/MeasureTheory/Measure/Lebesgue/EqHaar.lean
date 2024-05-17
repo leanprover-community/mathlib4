@@ -649,13 +649,9 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
         (eventually_of_forall fun b => zero_le _)
     filter_upwards [self_mem_nhdsWithin]
     rintro r (rpos : 0 < r)
-    apply mul_le_mul_right' (measure_mono (inter_subset_inter_right _ _)) _
-    intro y hy
-    have : y - x ∈ r • closedBall (0 : E) 1 := by
-      apply smul_set_mono t_bound
-      simpa [neg_add_eq_sub] using hy
-    simpa only [smul_closedBall _ _ zero_le_one, Real.norm_of_nonneg rpos.le,
-      mem_closedBall_iff_norm, mul_one, sub_zero, smul_zero]
+    rw [← affinity_unitClosedBall rpos.le, singleton_add, ← image_vadd]
+    gcongr
+    exact smul_set_mono t_bound
   have B :
     Tendsto (fun r : ℝ => μ (closedBall x r) / μ ({x} + r • u)) (𝓝[>] 0)
       (𝓝 (μ (closedBall x 1) / μ ({x} + u))) := by

@@ -139,8 +139,7 @@ variable [Zero M] [Zero N] [Zero P]
 
 /-- `Finsupp.mapRange` as an equiv. -/
 @[simps apply]
-def mapRange.equiv (f : M ≃ N) (hf : f 0 = 0) (hf' : f.symm 0 = 0) : (α →₀ M) ≃ (α →₀ N)
-    where
+def mapRange.equiv (f : M ≃ N) (hf : f 0 = 0) (hf' : f.symm 0 = 0) : (α →₀ M) ≃ (α →₀ N) where
   toFun := (mapRange f hf : (α →₀ M) → α →₀ N)
   invFun := (mapRange f.symm hf' : (α →₀ N) → α →₀ M)
   left_inv x := by
@@ -181,8 +180,7 @@ variable [Zero M] [Zero N] [Zero P]
 /-- Composition with a fixed zero-preserving homomorphism is itself a zero-preserving homomorphism
 on functions. -/
 @[simps]
-def mapRange.zeroHom (f : ZeroHom M N) : ZeroHom (α →₀ M) (α →₀ N)
-    where
+def mapRange.zeroHom (f : ZeroHom M N) : ZeroHom (α →₀ M) (α →₀ N) where
   toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
   map_zero' := mapRange_zero
 #align finsupp.map_range.zero_hom Finsupp.mapRange.zeroHom
@@ -208,8 +206,7 @@ variable {F : Type*} [FunLike F M N] [AddMonoidHomClass F M N]
 /-- Composition with a fixed additive homomorphism is itself an additive homomorphism on functions.
 -/
 @[simps]
-def mapRange.addMonoidHom (f : M →+ N) : (α →₀ M) →+ α →₀ N
-    where
+def mapRange.addMonoidHom (f : M →+ N) : (α →₀ M) →+ α →₀ N where
   toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
   map_zero' := mapRange_zero
   map_add' a b := by dsimp only; exact mapRange_add f.map_add _ _; -- Porting note: `dsimp` needed
@@ -308,8 +305,7 @@ namespace Finsupp
 
 /-- Given `f : α ≃ β`, we can map `l : α →₀ M` to `equivMapDomain f l : β →₀ M` (computably)
 by mapping the support forwards and the function backwards. -/
-def equivMapDomain (f : α ≃ β) (l : α →₀ M) : β →₀ M
-    where
+def equivMapDomain (f : α ≃ β) (l : α →₀ M) : β →₀ M where
   support := l.support.map f.toEmbedding
   toFun a := l (f.symm a)
   mem_support_toFun a := by simp only [Finset.mem_map_equiv, mem_support_toFun]; rfl
@@ -513,8 +509,7 @@ theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) :
 
 /-- `Finsupp.mapDomain` is an `AddMonoidHom`. -/
 @[simps]
-def mapDomain.addMonoidHom (f : α → β) : (α →₀ M) →+ β →₀ M
-    where
+def mapDomain.addMonoidHom (f : α → β) : (α →₀ M) →+ β →₀ M where
   toFun := mapDomain f
   map_zero' := mapDomain_zero
   map_add' _ _ := mapDomain_add
@@ -689,8 +684,8 @@ section ComapDomain
 the preimage of `l.support`, `comapDomain f l hf` is the finitely supported function
 from `α` to `M` given by composing `l` with `f`. -/
 @[simps support]
-def comapDomain [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.InjOn f (f ⁻¹' ↑l.support)) : α →₀ M
-    where
+def comapDomain [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.InjOn f (f ⁻¹' ↑l.support)) :
+    α →₀ M where
   support := l.support.preimage f hf
   toFun a := l (f a)
   mem_support_toFun := by
@@ -779,8 +774,7 @@ theorem comapDomain_add_of_injective (hf : Function.Injective f) (v₁ v₂ : β
 
 /-- `Finsupp.comapDomain` is an `AddMonoidHom`. -/
 @[simps]
-def comapDomain.addMonoidHom (hf : Function.Injective f) : (β →₀ M) →+ α →₀ M
-    where
+def comapDomain.addMonoidHom (hf : Function.Injective f) : (β →₀ M) →+ α →₀ M where
   toFun x := comapDomain f x (hf.injOn _)
   map_zero' := comapDomain_zero f
   map_add' := comapDomain_add_of_injective hf
@@ -1017,8 +1011,7 @@ variable [Zero M] {p : α → Prop}
 
 /--
 `subtypeDomain p f` is the restriction of the finitely supported function `f` to subtype `p`. -/
-def subtypeDomain (p : α → Prop) (f : α →₀ M) : Subtype p →₀ M
-    where
+def subtypeDomain (p : α → Prop) (f : α →₀ M) : Subtype p →₀ M where
   support :=
     haveI := Classical.decPred p
     f.support.subtype p
@@ -1075,16 +1068,14 @@ theorem subtypeDomain_add {v v' : α →₀ M} :
 #align finsupp.subtype_domain_add Finsupp.subtypeDomain_add
 
 /-- `subtypeDomain` but as an `AddMonoidHom`. -/
-def subtypeDomainAddMonoidHom : (α →₀ M) →+ Subtype p →₀ M
-    where
+def subtypeDomainAddMonoidHom : (α →₀ M) →+ Subtype p →₀ M where
   toFun := subtypeDomain p
   map_zero' := subtypeDomain_zero
   map_add' _ _ := subtypeDomain_add
 #align finsupp.subtype_domain_add_monoid_hom Finsupp.subtypeDomainAddMonoidHom
 
 /-- `Finsupp.filter` as an `AddMonoidHom`. -/
-def filterAddHom (p : α → Prop) [DecidablePred p]: (α →₀ M) →+ α →₀ M
-    where
+def filterAddHom (p : α → Prop) [DecidablePred p]: (α →₀ M) →+ α →₀ M where
   toFun := filter p
   map_zero' := filter_zero p
   map_add' f g := DFunLike.coe_injective <| by
@@ -1248,8 +1239,7 @@ protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M :=
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
-def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M)
-    where
+def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
   left_inv f := by
@@ -1331,8 +1321,7 @@ theorem sumElim_inr {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →�
 
 This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/
 @[simps apply symm_apply]
-def sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] : (Sum α β →₀ γ) ≃ (α →₀ γ) × (β →₀ γ)
-    where
+def sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] : (Sum α β →₀ γ) ≃ (α →₀ γ) × (β →₀ γ) where
   toFun f :=
     ⟨f.comapDomain Sum.inl (Sum.inl_injective.injOn _),
       f.comapDomain Sum.inr (Sum.inr_injective.injOn _)⟩
@@ -1437,8 +1426,7 @@ theorem comapSMul_single (g : G) (a : α) (b : M) : g • single a b = single (g
 #align finsupp.comap_smul_single Finsupp.comapSMul_single
 
 /-- `Finsupp.comapSMul` is multiplicative -/
-def comapMulAction : MulAction G (α →₀ M)
-    where
+def comapMulAction : MulAction G (α →₀ M) where
   one_smul f := by rw [comapSMul_def, one_smul_eq_id, mapDomain_id]
   mul_smul g g' f := by
     rw [comapSMul_def, comapSMul_def, comapSMul_def, ← comp_smul_left, mapDomain_comp]
@@ -1447,8 +1435,7 @@ def comapMulAction : MulAction G (α →₀ M)
 attribute [local instance] comapMulAction
 
 /-- `Finsupp.comapSMul` is distributive -/
-def comapDistribMulAction : DistribMulAction G (α →₀ M)
-    where
+def comapDistribMulAction : DistribMulAction G (α →₀ M) where
   smul_zero g := by
     ext a
     simp only [comapSMul_def]
@@ -1792,8 +1779,7 @@ def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
 
 This is `Finsupp.equivCongrLeft` as an `AddEquiv`. -/
 @[simps apply]
-protected def domCongr [AddCommMonoid M] (e : α ≃ β) : (α →₀ M) ≃+ (β →₀ M)
-    where
+protected def domCongr [AddCommMonoid M] (e : α ≃ β) : (α →₀ M) ≃+ (β →₀ M) where
   toFun := equivMapDomain e
   invFun := equivMapDomain e.symm
   left_inv v := by
@@ -1871,8 +1857,7 @@ theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l
 an `ι`-indexed family `g` of functions from `(αs i →₀ β)` to `γ`, `split_comp` defines a
 finitely supported function from the index type `ι` to `γ` given by composing `g i` with
 `split l i`. -/
-def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 ↔ g i x = 0) : ι →₀ N
-    where
+def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 ↔ g i x = 0) : ι →₀ N where
   support := splitSupport l
   toFun i := g i (split l i)
   mem_support_toFun := by
@@ -1898,8 +1883,7 @@ variable {η : Type*} [Fintype η] {ιs : η → Type*} [Zero α]
 and `Π j, (ιs j →₀ α)`.
 
 This is the `Finsupp` version of `Equiv.Pi_curry`. -/
-noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σj, ιs j) →₀ α) ≃ ∀ j, ιs j →₀ α
-    where
+noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σj, ιs j) →₀ α) ≃ ∀ j, ιs j →₀ α where
   toFun := split
   invFun f :=
     onFinset (Finset.univ.sigma fun j => (f j).support) (fun ji => f ji.1 ji.2) fun g hg =>
