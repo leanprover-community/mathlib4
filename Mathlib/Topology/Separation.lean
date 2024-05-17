@@ -1480,6 +1480,9 @@ lemma t2Quotient.induction_on {motive : t2Quotient X → Prop} (q : t2Quotient X
 instance : TopologicalSpace (t2Quotient X) :=
 inferInstanceAs <| TopologicalSpace (Quotient _)
 
+lemma t2Quotient.continuous_mk : Continuous (t2Quotient.mk : X → t2Quotient X) := 
+  continuous_quotient_mk'
+
 instance : T2Space (t2Quotient X) := by
   rw [t2Space_iff_disjoint_nhds]
   rintro ⟨x⟩ ⟨y⟩ (h : ¬  t2Quotient.mk x = t2Quotient.mk y)
@@ -1518,6 +1521,10 @@ lemma t2Quotient.unique_lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpac
   apply surjective_quotient_mk (t2Setoid X) |>.right_cancellable |>.mp <| funext _
   simp [← hfg]
 end
+
+lemma t2Quotient.continuous_lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
+    {f : X → Y} (hf : Continuous f) : Continuous (t2Quotient.lift hf) := 
+  continuous_coinduced_dom.mpr hf
 
 /-- A T₂.₅ space, also known as a Urysohn space, is a topological space
   where for every pair `x ≠ y`, there are two open sets, with the intersection of closures

@@ -314,8 +314,8 @@ theorem stoneCechExtend_extends : stoneCechExtend hf ∘ stoneCechUnit = f :=
   ultrafilter_extend_extends f
 #align stone_cech_extend_extends stoneCechExtend_extends
 
-theorem stoneCechExtend_extends' : stoneCechExtend' hf ∘ stoneCechUnit' = f :=
-  ultrafilter_extend_extends f
+theorem stoneCechExtend_extends' : stoneCechExtend' hg ∘ stoneCechUnit' = g :=
+  ultrafilter_extend_extends g
 
 lemma eq_if_stoneCechUnit_eq {a b : α} {f : α → γ} (hcf : Continuous f) :
     stoneCechUnit a = stoneCechUnit b → f a = f b := by
@@ -399,22 +399,66 @@ instance StoneCech.t2Space : T2Space (StoneCech α) := by
   exact tendsto_nhds_unique (lim x gx) (lim y gy)
 #align stone_cech.t2_space StoneCech.t2Space
 
-instance StoneCech'.t2Space : T2Space (StoneCech' α) := by
-  rw [t2_iff_ultrafilter]
-  rintro ⟨x⟩ ⟨y⟩ g gx gy
-  apply Quot.sound
-  stop
-  intro γ tγ h₁ h₂ f hf
-  let ff := stoneCechExtend hf
-  change ff ⟦x⟧ = ff ⟦y⟧
-  have lim := fun (z : Ultrafilter α) (gz : (g : Filter (StoneCech α)) ≤ 𝓝 ⟦z⟧) =>
-    ((continuous_stoneCechExtend hf).tendsto _).mono_left gz
-  exact tendsto_nhds_unique (lim x gx) (lim y gy)
-
 instance StoneCech.compactSpace : CompactSpace (StoneCech α) :=
   Quotient.compactSpace
 #align stone_cech.compact_space StoneCech.compactSpace
 
 instance StoneCech'.compactSpace : CompactSpace (StoneCech' α) :=
   Quot.compactSpace
+
+def StoneCech'' (α : Type*) [TopologicalSpace α] := t2Quotient (StoneCech' α)
+
+instance : TopologicalSpace (StoneCech'' α) := 
+  inferInstanceAs <| TopologicalSpace (t2Quotient _)
+
+instance : T2Space (StoneCech'' α) := 
+  inferInstanceAs <| T2Space (t2Quotient _)
+
+
+instance : CompactSpace (StoneCech'' α) :=
+  Quot.compactSpace
+
+/-- The natural map from α to its Stone-Čech compactification. -/
+def stoneCechUnit'' (x : α) : StoneCech'' α :=
+  t2Quotient.mk (stoneCechUnit' x)
+
+theorem continuous_stoneCechUnit'' : Continuous (stoneCechUnit'' : α → StoneCech'' α) := 
+  t2Quotient.continuous_mk.comp continuous_stoneCechUnit'
+ 
+/-- The image of stone_cech_unit is dense. (But stone_cech_unit need
+  not be an embedding, for example if α is not Hausdorff.) -/
+theorem denseRange_stoneCechUnit'' : DenseRange (stoneCechUnit'' : α → StoneCech'' α) := by
+  unfold stoneCechUnit'' t2Quotient.mk
+  have : Function.Surjective (t2Quotient.mk : StoneCech' α → StoneCech'' α) := by
+    exact surjective_quot_mk _
+  exact this.denseRange.comp denseRange_stoneCechUnit' continuous_coinduced_rng
+  
+section Extension
+
+variable {β : Type v} [TopologicalSpace β] [T2Space β] [CompactSpace β]
+variable {g : α → β} (hg : Continuous g)
+
+
+/-- The extension of a continuous function from α to a compact
+  Hausdorff space γ to the Stone-Čech compactification of α. -/
+def stoneCechExtend'' : StoneCech'' α → β :=
+  t2Quotient.lift (continuous_stoneCechExtend' hg)
+
+theorem stoneCechExtend_extends'' : stoneCechExtend'' hg ∘ stoneCechUnit'' = g := by
+  ext x
+  erw [stoneCechExtend'', Function.comp_apply, t2Quotient.lift_mk]
+  apply congrFun (stoneCechExtend_extends' hg)
+
+theorem continuous_stoneCechExtend'' : Continuous (stoneCechExtend'' hg) := 
+  continuous_coinduced_dom.mpr (continuous_stoneCechExtend' hg)
+
+theorem stoneCech_hom_ext'' {g₁ g₂ : StoneCech'' α → β} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
+    (h : g₁ ∘ stoneCechUnit'' = g₂ ∘ stoneCechUnit'') : g₁ = g₂ := by
+  apply h₁.ext_on denseRange_stoneCechUnit'' h₂
+  rintro _ ⟨x, rfl⟩
+  exact congr_fun h x
+
+end Extension
+
+
 end StoneCech
