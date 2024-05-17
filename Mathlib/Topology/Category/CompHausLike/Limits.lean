@@ -132,7 +132,7 @@ noncomputable def preservesPullback' {P' : TopCat → Prop}
   exact preservesLimitOfReflectsOfPreserves (toCompHausLike h) (compHausLikeToTop P')
 
 theorem hasPullbacks (hP : ∀ ⦃X Y B : CompHausLike P⦄ (f : X ⟶ B) (g : Y ⟶ B),
-      P (TopCat.of { xy : X × Y | f xy.fst = g xy.snd })) :
+    P (TopCat.of { xy : X × Y | f xy.fst = g xy.snd })) :
     HasPullbacks (CompHausLike P) where
   has_limit F :=
     have : HasLimit (cospan (F.map WalkingCospan.Hom.inl) (F.map WalkingCospan.Hom.inr)) :=
