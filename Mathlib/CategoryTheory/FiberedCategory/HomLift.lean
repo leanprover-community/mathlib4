@@ -18,7 +18,6 @@ for given morphisms `φ` and `f`.
 
 Given morphism `φ : a ⟶ b` in `𝒳` and `f : R ⟶ S` in `𝒮`, `IsHomLift p f φ` is defined as a
 structure containing the data that `p(a) = R`, `p(b) = S` and the fact that the following square
-commutes:
 commutes
 ```
   p(a) --p(φ)--> p(b)
