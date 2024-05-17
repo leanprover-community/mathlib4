@@ -57,8 +57,7 @@ theorem vertexGroup.inv_eq_inv (c : C) (γ : c ⟶ c) : γ⁻¹ = CategoryTheory
 its endpoints.
 -/
 @[simps]
-def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d)
-    where
+def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d) where
   toFun γ := inv f ≫ γ ≫ f
   invFun δ := f ≫ δ ≫ inv f
   left_inv γ := by

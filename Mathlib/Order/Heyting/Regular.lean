@@ -202,8 +202,7 @@ theorem toRegular_coe (a : Regular α) : toRegular (a : α) = a :=
 #align heyting.regular.to_regular_coe Heyting.Regular.toRegular_coe
 
 /-- The Galois insertion between `Regular.toRegular` and `coe`. -/
-def gi : GaloisInsertion toRegular ((↑) : Regular α → α)
-    where
+def gi : GaloisInsertion toRegular ((↑) : Regular α → α) where
   choice a ha := ⟨a, ha.antisymm le_compl_compl⟩
   gc _ b :=
     coe_le_coe.symm.trans <|

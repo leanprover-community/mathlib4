@@ -5,10 +5,11 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Group.Int
-import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.Units
 import Mathlib.Data.Int.Cast.Basic
 
 #align_import data.int.basic from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
+#align_import data.int.units from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
 /-!
 # The integers are a ring
@@ -38,6 +39,11 @@ instance instCommRing : CommRing ℤ where
   intCast := (·)
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
+
+instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℤ where
+  mul_left_cancel_of_ne_zero {_a _b _c} ha := (mul_eq_mul_left_iff ha).1
+
+instance instCharZero : CharZero ℤ where cast_injective _ _ := ofNat.inj
 
 instance instMulDivCancelClass : MulDivCancelClass ℤ where mul_div_cancel _ _ := mul_ediv_cancel _
 
@@ -69,8 +75,16 @@ instance instSemiring     : Semiring ℤ     := inferInstance
 instance instRing         : Ring ℤ         := inferInstance
 instance instDistrib      : Distrib ℤ      := inferInstance
 
-instance instCharZero : CharZero ℤ where
-  cast_injective _ _ := ofNat.inj
+/-! ### Miscellaneous lemmas -/
+
+/-! #### Units -/
+
+lemma units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
+  simpa only [Units.ext_iff] using isUnit_eq_one_or u.isUnit
+#align int.units_eq_one_or Int.units_eq_one_or
+
+lemma units_ne_iff_eq_neg {u v : ℤˣ} : u ≠ v ↔ u = -v := by
+  simpa only [Ne, Units.ext_iff] using isUnit_ne_iff_eq_neg u.isUnit v.isUnit
 
 end Int
 
