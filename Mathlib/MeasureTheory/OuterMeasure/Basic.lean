@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Order.Disjointed
 import Mathlib.MeasureTheory.OuterMeasure.Defs
 
 #align_import measure_theory.measure.outer_measure from "leanprover-community/mathlib"@"343e80208d29d2d15f8050b929aa50fe4ce71b55"
@@ -62,8 +63,12 @@ theorem pos_of_subset_ne_zero (m : OuterMeasure α) {a b : Set α} (hs : a ⊆ b
 #align measure_theory.outer_measure.pos_of_subset_ne_zero MeasureTheory.OuterMeasure.pos_of_subset_ne_zero
 
 protected theorem iUnion (m : OuterMeasure α) {β} [Countable β] (s : β → Set α) :
-    m (⋃ i, s i) ≤ ∑' i, m (s i) :=
-  rel_iSup_tsum m m.empty (· ≤ ·) m.iUnion_nat s
+    m (⋃ i, s i) ≤ ∑' i, m (s i) := by
+  refine rel_iSup_tsum m m.empty (· ≤ ·) (fun t ↦ ?_) _
+  calc
+    m (⋃ i, t i) = m (⋃ i, disjointed t i) := by rw [iUnion_disjointed]
+    _ ≤ ∑' i, m (disjointed t i) := m.iUnion_nat _ (disjoint_disjointed _)
+    _ ≤ ∑' i, m (t i) := ENNReal.tsum_le_tsum fun _ ↦ m.mono <| disjointed_subset _ _
 #align measure_theory.outer_measure.Union MeasureTheory.OuterMeasure.iUnion
 
 theorem biUnion_null_iff (m : OuterMeasure α) {s : Set β} (hs : s.Countable) {t : β → Set α} :
@@ -94,11 +99,11 @@ theorem iUnion_null_iff' (m : OuterMeasure α) {ι : Prop} {s : ι → Set α} :
 
 protected theorem iUnion_finset (m : OuterMeasure α) (s : β → Set α) (t : Finset β) :
     m (⋃ i ∈ t, s i) ≤ ∑ i in t, m (s i) :=
-  rel_iSup_sum m m.empty (· ≤ ·) m.iUnion_nat s t
+  rel_iSup_sum m m.empty (· ≤ ·) m.iUnion s t
 #align measure_theory.outer_measure.Union_finset MeasureTheory.OuterMeasure.iUnion_finset
 
 protected theorem union (m : OuterMeasure α) (s₁ s₂ : Set α) : m (s₁ ∪ s₂) ≤ m s₁ + m s₂ :=
-  rel_sup_add m m.empty (· ≤ ·) m.iUnion_nat s₁ s₂
+  rel_sup_add m m.empty (· ≤ ·) m.iUnion s₁ s₂
 #align measure_theory.outer_measure.union MeasureTheory.OuterMeasure.union
 
 /-- If a set has zero measure in a neighborhood of each of its points, then it has zero measure

@@ -41,7 +41,7 @@ instance instZero : Zero (OuterMeasure α) :=
   ⟨{  measureOf := fun _ => 0
       empty := rfl
       mono := by intro _ _ _; exact le_refl 0
-      iUnion_nat := fun s => zero_le _ }⟩
+      iUnion_nat := fun s _ => zero_le _ }⟩
 #align measure_theory.outer_measure.has_zero MeasureTheory.OuterMeasure.instZero
 
 @[simp]
@@ -58,12 +58,11 @@ instance instAdd : Add (OuterMeasure α) :=
     { measureOf := fun s => m₁ s + m₂ s
       empty := show m₁ ∅ + m₂ ∅ = 0 by simp [OuterMeasure.empty]
       mono := fun {s₁ s₂} h => add_le_add (m₁.mono h) (m₂.mono h)
-      iUnion_nat := fun s =>
+      iUnion_nat := fun s _ =>
         calc
           m₁ (⋃ i, s i) + m₂ (⋃ i, s i) ≤ (∑' i, m₁ (s i)) + ∑' i, m₂ (s i) :=
-            add_le_add (m₁.iUnion_nat s) (m₂.iUnion_nat s)
-          _ = _ := ENNReal.tsum_add.symm
-           }⟩
+            add_le_add (m₁.iUnion s) (m₂.iUnion s)
+          _ = _ := ENNReal.tsum_add.symm }⟩
 #align measure_theory.outer_measure.has_add MeasureTheory.OuterMeasure.instAdd
 
 @[simp]
@@ -88,9 +87,9 @@ instance instSMul : SMul R (OuterMeasure α) :=
         simp only
         rw [← smul_one_mul c, ← smul_one_mul c (m t)]
         exact ENNReal.mul_left_mono (m.mono h)
-      iUnion_nat := fun s => by
+      iUnion_nat := fun s _ => by
         simp_rw [← smul_one_mul c (m _), ENNReal.tsum_mul_left]
-        exact ENNReal.mul_left_mono (m.iUnion_nat _) }⟩
+        exact ENNReal.mul_left_mono (m.iUnion _) }⟩
 
 @[simp]
 theorem coe_smul (c : R) (m : OuterMeasure α) : ⇑(c • m) = c • ⇑m :=
@@ -178,10 +177,10 @@ instance instSupSet : SupSet (OuterMeasure α) :=
     { measureOf := fun s => ⨆ m ∈ ms, (m : OuterMeasure α) s
       empty := nonpos_iff_eq_zero.1 <| iSup₂_le fun m _ => le_of_eq m.empty
       mono := fun {s₁ s₂} hs => iSup₂_mono fun m _ => m.mono hs
-      iUnion_nat := fun f =>
+      iUnion_nat := fun f _ =>
         iSup₂_le fun m hm =>
           calc
-            m (⋃ i, f i) ≤ ∑' i : ℕ, m (f i) := m.iUnion_nat _
+            m (⋃ i, f i) ≤ ∑' i : ℕ, m (f i) := m.iUnion _
             _ ≤ ∑' i, ⨆ m ∈ ms, (m : OuterMeasure α) (f i) :=
                ENNReal.tsum_le_tsum fun i => by apply le_iSup₂ m hm
              }⟩
@@ -234,7 +233,7 @@ def map {β} (f : α → β) : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure �
     { measureOf := fun s => m (f ⁻¹' s)
       empty := m.empty
       mono := fun {s t} h => m.mono (preimage_mono h)
-      iUnion_nat := fun s => by simp; apply m.iUnion_nat fun i => f ⁻¹' s i }
+      iUnion_nat := fun s _ => by simpa using m.iUnion fun i => f ⁻¹' s i }
   map_add' m₁ m₂ := coe_fn_injective rfl
   map_smul' c m := coe_fn_injective rfl
 #align measure_theory.outer_measure.map MeasureTheory.OuterMeasure.map
@@ -280,7 +279,7 @@ def dirac (a : α) : OuterMeasure α where
   measureOf s := indicator s (fun _ => 1) a
   empty := by simp
   mono {s t} h := indicator_le_indicator_of_subset h (fun _ => zero_le _) a
-  iUnion_nat s := calc
+  iUnion_nat s _ := calc
     indicator (⋃ n, s n) 1 a = ⨆ n, indicator (s n) 1 a :=
       indicator_iUnion_apply (M := ℝ≥0∞) rfl _ _ _
     _ ≤ ∑' n, indicator (s n) 1 a := iSup_le fun _ ↦ ENNReal.le_tsum _
@@ -296,8 +295,8 @@ def sum {ι} (f : ι → OuterMeasure α) : OuterMeasure α where
   measureOf s := ∑' i, f i s
   empty := by simp
   mono {s t} h := ENNReal.tsum_le_tsum fun i => (f i).mono' h
-  iUnion_nat s := by
-    rw [ENNReal.tsum_comm]; exact ENNReal.tsum_le_tsum fun i => (f i).iUnion_nat _
+  iUnion_nat s _ := by
+    rw [ENNReal.tsum_comm]; exact ENNReal.tsum_le_tsum fun i => (f i).iUnion _
 #align measure_theory.outer_measure.sum MeasureTheory.OuterMeasure.sum
 
 @[simp]
@@ -316,10 +315,7 @@ def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure
     { measureOf := fun s => m (f '' s)
       empty := by simp
       mono := fun {s t} h => m.mono <| image_subset f h
-      iUnion_nat := fun s => by
-        simp only
-        rw [image_iUnion]
-        apply m.iUnion_nat }
+      iUnion_nat := fun s _ => by simpa only [image_iUnion] using m.iUnion _ }
   map_add' m₁ m₂ := rfl
   map_smul' c m := rfl
 #align measure_theory.outer_measure.comap MeasureTheory.OuterMeasure.comap
