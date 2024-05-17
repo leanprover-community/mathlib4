@@ -473,7 +473,7 @@ theorem coe_coeEmb : ⇑(coeEmb : Finset α ↪o Set α) = ((↑) : Finset α �
 /-- The property `s.Nonempty` expresses the fact that the finset `s` is not empty. It should be used
 in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks
 to the dot notation. -/
-@[pp_dot] protected def Nonempty (s : Finset α) : Prop := ∃ x : α, x ∈ s
+protected def Nonempty (s : Finset α) : Prop := ∃ x : α, x ∈ s
 #align finset.nonempty Finset.Nonempty
 
 -- Porting note: Much longer than in Lean3
@@ -2625,15 +2625,17 @@ theorem filter_congr_decidable (s : Finset α) (p : α → Prop) (h : DecidableP
     [DecidablePred p] : @filter α p h s = s.filter p := by congr
 #align finset.filter_congr_decidable Finset.filter_congr_decidable
 
+@[simp]
 theorem filter_True {h} (s : Finset α) : @filter _ (fun _ => True) h s = s := by ext; simp
 #align finset.filter_true Finset.filter_True
 
+@[simp]
 theorem filter_False {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ := by ext; simp
 #align finset.filter_false Finset.filter_False
 
 variable {p q}
 
-@[simp] lemma filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ext_iff]
+lemma filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ext_iff]
 #align finset.filter_eq_self Finset.filter_eq_self
 
 theorem filter_eq_empty_iff : s.filter p = ∅ ↔ ∀ ⦃x⦄, x ∈ s → ¬p x := by simp [Finset.ext_iff]
@@ -2645,12 +2647,10 @@ theorem filter_nonempty_iff : (s.filter p).Nonempty ↔ ∃ a ∈ s, p a := by
 #align finset.filter_nonempty_iff Finset.filter_nonempty_iff
 
 /-- If all elements of a `Finset` satisfy the predicate `p`, `s.filter p` is `s`. -/
-@[simp]
 theorem filter_true_of_mem (h : ∀ x ∈ s, p x) : s.filter p = s := filter_eq_self.2 h
 #align finset.filter_true_of_mem Finset.filter_true_of_mem
 
 /-- If all elements of a `Finset` fail to satisfy the predicate `p`, `s.filter p` is `∅`. -/
-@[simp]
 theorem filter_false_of_mem (h : ∀ x ∈ s, ¬p x) : s.filter p = ∅ := filter_eq_empty_iff.2 h
 #align finset.filter_false_of_mem Finset.filter_false_of_mem
 
@@ -2665,6 +2665,7 @@ theorem filter_congr {s : Finset α} (H : ∀ x ∈ s, p x ↔ q x) : filter p s
 
 variable (p q)
 
+@[simp]
 theorem filter_empty : filter p ∅ = ∅ :=
   subset_empty.1 <| filter_subset _ _
 #align finset.filter_empty Finset.filter_empty

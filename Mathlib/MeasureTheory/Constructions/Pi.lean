@@ -118,7 +118,9 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
     apply MeasurableSet.iUnion
     intro n; apply measurableSet_generateFrom
     apply mem_image_of_mem; intro j _; dsimp only
-    by_cases h : j = i; subst h; rwa [update_same]; rw [update_noteq h]; apply h1t
+    by_cases h : j = i
+    · subst h; rwa [update_same]
+    · rw [update_noteq h]; apply h1t
   · apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩
     rw [univ_pi_eq_iInter]; apply MeasurableSet.iInter; intro i
     apply @measurable_pi_apply _ _ (fun i => generateFrom (C i))
@@ -194,7 +196,8 @@ protected def pi (m : ∀ i, OuterMeasure (α i)) : OuterMeasure (∀ i, α i) :
 
 theorem pi_pi_le (m : ∀ i, OuterMeasure (α i)) (s : ∀ i, Set (α i)) :
     OuterMeasure.pi m (pi univ s) ≤ ∏ i, m i (s i) := by
-  rcases (pi univ s).eq_empty_or_nonempty with h | h; simp [h]
+  rcases (pi univ s).eq_empty_or_nonempty with h | h
+  · simp [h]
   exact (boundedBy_le _).trans_eq (piPremeasure_pi h)
 #align measure_theory.outer_measure.pi_pi_le MeasureTheory.OuterMeasure.pi_pi_le
 
@@ -294,8 +297,8 @@ theorem pi_caratheodory :
   simp_rw [piPremeasure]
   refine' Finset.prod_add_prod_le' (Finset.mem_univ i) _ _ _
   · simp [image_inter_preimage, image_diff_preimage, measure_inter_add_diff _ hs, le_refl]
-  · rintro j - _; apply mono'; apply image_subset; apply inter_subset_left
-  · rintro j - _; apply mono'; apply image_subset; apply diff_subset
+  · rintro j - _; gcongr; apply inter_subset_left
+  · rintro j - _; gcongr; apply diff_subset
 #align measure_theory.measure.pi_caratheodory MeasureTheory.Measure.pi_caratheodory
 
 /-- `Measure.pi μ` is the finite product of the measures `{μ i | i : ι}`.

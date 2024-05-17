@@ -34,19 +34,14 @@ variable (F K : Type*) [Field F] [Field K] [Algebra F K]
 
 /-- Typeclass for normal field extension: `K` is a normal extension of `F` iff the minimal
 polynomial of every element `x` in `K` splits in `K`, i.e. every conjugate of `x` is in `K`. -/
-class Normal : Prop where
-  isAlgebraic' : Algebra.IsAlgebraic F K
+class Normal extends Algebra.IsAlgebraic F K : Prop where
   splits' (x : K) : Splits (algebraMap F K) (minpoly F x)
 #align normal Normal
 
 variable {F K}
 
-theorem Normal.isAlgebraic (_ : Normal F K) (x : K) : IsAlgebraic F x :=
-  Normal.isAlgebraic' x
-#align normal.is_algebraic Normal.isAlgebraic
-
-theorem Normal.isIntegral (h : Normal F K) (x : K) : IsIntegral F x :=
-  (h.isAlgebraic' x).isIntegral
+theorem Normal.isIntegral (_ : Normal F K) (x : K) : IsIntegral F x :=
+  Algebra.IsIntegral.isIntegral x
 #align normal.is_integral Normal.isIntegral
 
 theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpoly F x) :=
@@ -55,7 +50,8 @@ theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpol
 
 theorem normal_iff : Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
   ⟨fun h x => ⟨h.isIntegral x, h.splits x⟩, fun h =>
-    ⟨fun x => (h x).1.isAlgebraic, fun x => (h x).2⟩⟩
+    { isAlgebraic := fun x => (h x).1.isAlgebraic
+      splits' := fun x => (h x).2 }⟩
 #align normal_iff normal_iff
 
 theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
@@ -64,9 +60,9 @@ theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebr
 
 variable (F K)
 
-instance normal_self : Normal F F :=
-  ⟨fun _ => isIntegral_algebraMap.isAlgebraic, fun x =>
-    (minpoly.eq_X_sub_C' x).symm ▸ splits_X_sub_C _⟩
+instance normal_self : Normal F F where
+  isAlgebraic := fun _ => isIntegral_algebraMap.isAlgebraic
+  splits' := fun x => (minpoly.eq_X_sub_C' x).symm ▸ splits_X_sub_C _
 #align normal_self normal_self
 
 theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] :
@@ -104,7 +100,7 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
 #align normal.tower_top_of_normal Normal.tower_top_of_normal
 
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
-  h.isAlgebraic'.bijective_of_isScalarTower' ϕ
+  h.toIsAlgebraic.bijective_of_isScalarTower' ϕ
 #align alg_hom.normal_bijective AlgHom.normal_bijective
 
 -- Porting note: `[Field F] [Field E] [Algebra F E]` added by hand.
@@ -159,7 +155,7 @@ namespace IntermediateField
 /-- A compositum of normal extensions is normal -/
 instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
     Normal F (⨆ i, t i : IntermediateField F K) := by
-  refine' ⟨isAlgebraic_iSup fun i => (h i).1, fun x => _⟩
+  refine { toIsAlgebraic := isAlgebraic_iSup fun i => (h i).1, splits' := fun x => ?_ }
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
   let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 : _)).rootSet K)
   have hF : Normal F E := by

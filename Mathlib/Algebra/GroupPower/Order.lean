@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 import Mathlib.Algebra.GroupPower.CovariantClass
-import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Algebra.Parity
 
 #align_import algebra.group_power.order from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
