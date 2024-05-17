@@ -6,6 +6,12 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Asymptotics.Theta
 
+/-!
+# Lemmas about asymptotics and the natural embedding `ℝ → ℂ`
+
+In this file we prove several trivial lemmas about `Asymptotics.IsBigO` etc and `(↑) : ℝ → ℂ`.
+-/
+
 namespace Complex
 
 variable {α E : Type*} [Norm E] {l : Filter α}
