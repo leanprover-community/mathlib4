@@ -20,7 +20,7 @@ such that `P Z`, the precomposition with `f` induces a bijection
 in the context of model categories.)
 
 When `G ⊣ F` is an adjunction with `F : C ⥤ D` fully faithful, then
-`G : D ⥤ C` is a localization functor for the class `W (Set.range F.obj)`,
+`G : D ⥤ C` is a localization functor for the class `W (· ∈ Set.range F.obj)`,
 which then identifies to the inverse image by `G` of the class of
 isomorphisms in `C`.
 
@@ -44,7 +44,7 @@ section
 
 variable (P : C → Prop)
 
-/-- Given a functor `P : C → Prop`, this is the class of morphisms `f : X ⟶ Y`
+/-- Given a predicate `P : C → Prop`, this is the class of morphisms `f : X ⟶ Y`
 such that for all `Z : C` such that `P Z`, the precomposition with `f` induces
 a bijection `(Y ⟶ Z) ≃ (X ⟶ Z)`. -/
 def W : MorphismProperty C := fun _ _ f =>
@@ -101,13 +101,13 @@ section
 
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : G ⊣ F) [F.Full] [F.Faithful]
 
-lemma W_adj_unit_app (X : D) : W (Set.range F.obj) (adj.unit.app X) := by
+lemma W_adj_unit_app (X : D) : W (· ∈ Set.range F.obj) (adj.unit.app X) := by
   rintro _ ⟨Y, rfl⟩
   convert ((equivOfFullyFaithful F).symm.trans (adj.homEquiv X Y)).bijective using 1
   aesop
 
 lemma W_iff_isIso_map {X Y : D} (f : X ⟶ Y) :
-    W (Set.range F.obj) f ↔ IsIso (G.map f) := by
+    W (· ∈ Set.range F.obj) f ↔ IsIso (G.map f) := by
   rw [← MorphismProperty.postcomp_iff _ _ _ (W_adj_unit_app adj Y)]
   erw [adj.unit.naturality f]
   rw [MorphismProperty.precomp_iff _ _ _ (W_adj_unit_app adj X),
@@ -121,12 +121,12 @@ lemma W_iff_isIso_map {X Y : D} (f : X ⟶ Y) :
     infer_instance
 
 lemma W_eq_inverseImage_isomorphisms :
-    W (Set.range F.obj) = (MorphismProperty.isomorphisms _).inverseImage G := by
+    W (· ∈ Set.range F.obj) = (MorphismProperty.isomorphisms _).inverseImage G := by
   ext P₁ P₂ f
   rw [W_iff_isIso_map adj]
   rfl
 
-lemma isLocalization : G.IsLocalization (W (Set.range F.obj)) := by
+lemma isLocalization : G.IsLocalization (W (· ∈ Set.range F.obj)) := by
   rw [W_eq_inverseImage_isomorphisms adj]
   exact adj.isLocalization
 

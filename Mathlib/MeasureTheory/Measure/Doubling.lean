@@ -87,17 +87,17 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
   rcases lt_or_le K 1 with (hK | hK)
   · refine' ⟨1, _⟩
     simp only [ENNReal.coe_one, one_mul]
-    exact
-      eventually_mem_nhdsWithin.mono fun ε hε x t ht =>
-        measure_mono <| closedBall_subset_closedBall (by nlinarith [mem_Ioi.mp hε])
-  · refine'
-      ⟨C ^ ⌈Real.logb 2 K⌉₊,
-        ((hμ ⌈Real.logb 2 K⌉₊).and eventually_mem_nhdsWithin).mono fun ε hε x t ht =>
-          le_trans (measure_mono <| closedBall_subset_closedBall _) (hε.1 x)⟩
-    refine' mul_le_mul_of_nonneg_right (ht.trans _) (mem_Ioi.mp hε.2).le
-    conv_lhs => rw [← Real.rpow_logb two_pos (by norm_num) (by linarith : 0 < K)]
-    rw [← Real.rpow_natCast]
-    exact Real.rpow_le_rpow_of_exponent_le one_le_two (Nat.le_ceil (Real.logb 2 K))
+    refine eventually_mem_nhdsWithin.mono fun ε hε x t ht ↦ ?_
+    gcongr
+    nlinarith [mem_Ioi.mp hε]
+  · use C ^ ⌈Real.logb 2 K⌉₊
+    filter_upwards [hμ ⌈Real.logb 2 K⌉₊, eventually_mem_nhdsWithin] with ε hε hε₀ x t ht
+    refine le_trans ?_ (hε x)
+    gcongr
+    · exact (mem_Ioi.mp hε₀).le
+    · refine ht.trans ?_
+      rw [← Real.rpow_natCast, ← Real.logb_le_iff_le_rpow]
+      exacts [Nat.le_ceil _, by norm_num, by linarith]
 #align is_unif_loc_doubling_measure.exists_eventually_forall_measure_closed_ball_le_mul IsUnifLocDoublingMeasure.exists_eventually_forall_measure_closedBall_le_mul
 
 /-- A variant of `IsUnifLocDoublingMeasure.doublingConstant` which allows for scaling the
@@ -125,8 +125,9 @@ theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
   · simp only [mul_zero, closedBall_zero]
     refine' le_mul_of_one_le_of_le _ le_rfl
     apply ENNReal.one_le_coe_iff.2 (le_max_right _ _)
-  · apply (hR ⟨rpos, hr⟩ x t ht.2).trans _
-    exact mul_le_mul_right' (ENNReal.coe_le_coe.2 (le_max_left _ _)) _
+  · apply (hR ⟨rpos, hr⟩ x t ht.2).trans
+    gcongr
+    apply le_max_left
 #align is_unif_loc_doubling_measure.eventually_measure_mul_le_scaling_constant_of_mul IsUnifLocDoublingMeasure.eventually_measure_mul_le_scalingConstantOf_mul
 
 theorem eventually_measure_le_scaling_constant_mul (K : ℝ) :
