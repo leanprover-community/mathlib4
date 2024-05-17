@@ -109,4 +109,37 @@ def equivMon_Comon_ : Bimon_ C ≌ Mon_ (Comon_ C) where
   unitIso := NatIso.ofComponents (fun _ => Comon_.mkIso (Mon_.mkIso (Iso.refl _)))
   counitIso := NatIso.ofComponents (fun _ => Mon_.mkIso (Comon_.mkIso (Iso.refl _)))
 
+/-! # Additional simp lemmas -/
+
+@[reassoc (attr := simp)] theorem comul_counit_hom (M : Bimon_ C) :
+    M.comul.hom ≫ (_ ◁ M.counit.hom) = (ρ_ _).inv := by
+  simpa [- Comon_.comul_counit] using congr_arg Mon_.Hom.hom M.comul_counit
+
+@[reassoc (attr := simp)] theorem counit_comul_hom (M : Bimon_ C) :
+    M.comul.hom ≫ (M.counit.hom ▷ _) = (λ_ _).inv := by
+  simpa [- Comon_.counit_comul] using congr_arg Mon_.Hom.hom M.counit_comul
+
+/-! # The convolution monoid of a bimonoid. -/
+
+variable {C}
+
+def Conv (M : Bimon_ C) : Type v₁ := M.X.X ⟶ M.X.X
+
+variable {M : Bimon_ C}
+
+instance : One (Conv M) where
+  one := M.counit.hom ≫ M.X.one
+
+@[simp] theorem one_eq : (1 : Conv M) = M.counit.hom ≫ M.X.one := rfl
+
+instance : Mul (Conv M) where
+  mul := fun f g => M.comul.hom ≫ f ▷ M.X.X ≫ M.X.X ◁ g ≫ M.X.mul
+
+@[simp] theorem mul_eq (f g : Conv M) : f * g = M.comul.hom ≫ f ▷ M.X.X ≫ M.X.X ◁ g ≫ M.X.mul := rfl
+
+instance : Monoid (Conv M) where
+  one_mul f := by simp [← whisker_exchange_assoc]
+  mul_one f := by simp [← whisker_exchange_assoc]
+  mul_assoc f g h := sorry
+
 end Bimon_
