@@ -45,6 +45,8 @@ class IsLight (S : Profinite) : Prop where
 
 attribute [instance] Profinite.IsLight.countable_clopens
 
+instance (S : Profinite) [S.IsLight] : SecondCountableTopology S := sorry
+
 instance instIsLightProd (X Y : Profinite) [X.IsLight] [Y.IsLight] :
     (Profinite.of (X × Y)).IsLight where
   countable_clopens := Clopens.countable_prod
