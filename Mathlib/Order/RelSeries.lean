@@ -162,7 +162,7 @@ lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
 instance membership : Membership α (RelSeries r) :=
   ⟨(· ∈ Set.range ·)⟩
 
-@[simp] theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
+theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
 
 @[simp high] theorem mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
@@ -180,7 +180,7 @@ theorem length_ne_zero_of_nontrivial {s : RelSeries r} (h : {x | x ∈ s}.Nontri
 variable {r} in
 theorem length_ne_zero (irrefl : Irreflexive r) {s : RelSeries r} :
     s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivial := by
-  refine ⟨fun h ↦ ⟨s 0, by simp, s 1, by simp, fun rid ↦ irrefl (s 0) ?_⟩,
+  refine ⟨fun h ↦ ⟨s 0, by simp [mem_def], s 1, by simp [mem_def], fun rid ↦ irrefl (s 0) ?_⟩,
     length_ne_zero_of_nontrivial⟩
   nth_rw 2 [rid]
   convert s.step ⟨0, by omega⟩
@@ -211,7 +211,7 @@ theorem length_eq_zero (irrefl : Irreflexive r) {s : RelSeries r} :
   refine ⟨subsingleton_of_length_eq_zero, fun h ↦ ?_⟩
   by_contra!
   refine irrefl (s 0) ?_
-  nth_rw 2 [@h (s 0) (by simp) (s 1) (by simp)]
+  nth_rw 2 [@h (s 0) (by simp [mem_def]) (s 1) (by simp [mem_def])]
   convert s.step ⟨0, by omega⟩
   ext
   simpa [Nat.pos_iff_ne_zero]
@@ -659,3 +659,5 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
 end LTSeries
 
 end LTSeries
+
+#lint
