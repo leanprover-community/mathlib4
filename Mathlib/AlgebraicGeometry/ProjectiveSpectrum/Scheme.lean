@@ -192,22 +192,11 @@ theorem MemCarrier.eventually_exists {z : A⁰_ f} (hz : z ∈ carrier x) :
   · rw [_root_.map_mul, e₁, ← Algebra.smul_def, ← mul_smul, ← pow_add,
       tsub_add_cancel_of_le ((Nat.le_add_left _ _).trans hn')]
 
-theorem disjoint :
-    Disjoint (x.1.asHomogeneousIdeal : Set A) (Submonoid.powers f : Set A) := by
-  rw [Set.disjoint_iff]
-  rintro g ⟨hg1 : _ ∈ x.1.asHomogeneousIdeal.toIdeal, ⟨k, (rfl : f ^ k = _)⟩⟩
-  by_cases k_ineq : 0 < k
-  · rw [x.1.isPrime.pow_mem_iff_mem _ k_ineq] at hg1
-    exact x.2 hg1
-  · rw [show k = 0 by omega, pow_zero, ← Ideal.eq_top_iff_one] at hg1
-    apply x.1.isPrime.1
-    exact hg1
-#align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.disjoint AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.disjoint
-
 theorem isPrime_carrier : Ideal.IsPrime (carrier x) := by
   refine Ideal.IsPrime.comap _ (hK := ?_)
   exact IsLocalization.isPrime_of_isPrime_disjoint
-    (Submonoid.powers f) _ _ inferInstance (disjoint x).symm
+    (Submonoid.powers f) _ _ inferInstance
+    (disjoint_powers_iff_not_mem _ (Ideal.IsPrime.isRadical inferInstance))
 
 variable (f)
 

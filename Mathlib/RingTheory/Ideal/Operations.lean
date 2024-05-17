@@ -962,6 +962,14 @@ theorem IsPrime.radical (H : IsPrime I) : radical I = I :=
   IsRadical.radical H.isRadical
 #align ideal.is_prime.radical Ideal.IsPrime.radical
 
+theorem disjoint_powers_iff_not_mem (y : R) (hI : I.IsRadical) :
+    Disjoint (Submonoid.powers y : Set R) ↑I ↔ y ∉ I.1 := by
+  refine'
+    ⟨fun h => Set.disjoint_left.1 h (mem_powers _), fun h => disjoint_iff.mpr (eq_bot_iff.mpr _)⟩
+  rintro x ⟨⟨n, rfl⟩, hx'⟩
+  exact h (hI <| mem_radical_of_pow_mem <| le_radical hx')
+#align ideal.disjoint_powers_iff_not_mem Ideal.disjoint_powers_iff_not_mem
+
 variable (I J)
 
 theorem radical_sup : radical (I ⊔ J) = radical (radical I ⊔ radical J) :=
