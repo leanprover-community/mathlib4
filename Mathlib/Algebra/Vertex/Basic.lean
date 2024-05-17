@@ -58,20 +58,10 @@ variable {R : Type*} {V : Type*}
 
 namespace VertexAlg
 
-open HetVertexOperator
+open HVertexOperator
 section VertexOperator
 
 variable [CommRing R] [AddCommGroup V] [Module R V]
-
-/-!
-theorem isLocalToOrderLeq_succ (A B : VertexOperator R V) (n : ℕ)
-    (h : isLocalToOrderLeq R V A B n) : isLocalToOrderLeq R V A B (n + 1) := by
-  unfold isLocalToOrderLeq
-  intro k l x
-  -- use conv_pow_succ_X_sub_Y
-  sorry
--- isAssocToOrderLeq_succ
--/
 
 end VertexOperator
 

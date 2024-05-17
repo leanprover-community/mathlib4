@@ -3,7 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Vertex.HetVertexOperator
+import Mathlib.Algebra.Vertex.HVertexOperator
 import Mathlib.RingTheory.LaurentSeries
 
 /-!
@@ -37,11 +37,11 @@ variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 Laurent series with coefficients in `V`.  We write this as a specialization of the heterogeneous
 case. -/
 abbrev VertexOperator (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V]
-    [Module R V] := HetVertexOperator ℤ R V V
+    [Module R V] := HVertexOperator ℤ R V V
 
 namespace VertexAlg
 
-open HetVertexOperator
+open HVertexOperator
 
 /-- We write `ncoef` instead of `coefficient of a vertex operator under normalized indexing`.
 Alternative suggestions welcome. -/
@@ -76,7 +76,7 @@ theorem ncoef_ofForallLTEqZero (f : ℤ → V) (n : ℤ) (h : ∀(m : ℤ), n < 
 we produce a vertex operator. -/
 noncomputable def VertexOperator.of_coeff (f : ℤ → Module.End R V)
     (hf : ∀(x : V), ∃(n : ℤ), ∀(m : ℤ), m < n → (f m) x = 0) : VertexOperator R V :=
-  HetVertexOperator.of_coeff f
+  HVertexOperator.of_coeff f
     (fun x => HahnSeries.suppBddBelow_supp_PWO (fun n => (f n) x)
       (HahnSeries.forallLTEqZero_supp_BddBelow (fun n => (f n) x)
         (Exists.choose (hf x)) (Exists.choose_spec (hf x))))
@@ -253,7 +253,7 @@ end HasseDerivative
 
 section Local
 
-open HetVertexOperator
+open HVertexOperator
 
 /-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
 vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to switch coordinates,
@@ -440,7 +440,7 @@ def isLocal (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
 -/
 section ResidueProduct
 
-open HetVertexOperator
+open HVertexOperator
 
 /-- The left side of the `m`-th residue product, given by the residue of `(x-y)^m A(x)B(y)` at
 `x=0`, where we formally expand `(x-y)^m` as `x^m(1-y/x)^m` in `R((x))((y))` using binomials. -/

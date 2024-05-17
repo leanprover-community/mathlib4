@@ -36,7 +36,7 @@ arXiv:hep-th/9706118
 
 section StateFieldMap
 
-open HetVertexOperator
+open HVertexOperator
 
 /-- The state-field correspondence. -/
 abbrev stateFieldMap (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V] :=
@@ -56,7 +56,7 @@ class NonAssocNonUnitalVertexAlgebra (R : Type*) (V : Type*) [CommRing R] [AddCo
   Y: V →ₗ[R] VertexOperator R V
 
 namespace VertexAlg
-open HetVertexOperator
+open HVertexOperator
 variable (R : Type*) {V : Type*} [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
 
 /-- The multiplication in a vertex algebra. -/
@@ -195,7 +195,7 @@ section Unital
 
 namespace VertexAlg
 
-open HetVertexOperator
+open HVertexOperator
 
 variable (R : Type*) {V : Type*} [CommRing R] [AddCommGroupWithOne V] [Module R V]
 
@@ -234,7 +234,7 @@ end Unital
 
 section VertexAlgebra
 
-open HetVertexOperator
+open HVertexOperator
 
 /-- A vertex algebra over a commutative ring `R` is an `R`-module `V` with a distinguished unit
 element `1`, together with a multiplication operation that takes values in Laurent series with
