@@ -166,7 +166,7 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
   else
     n % 4 * n :: reciprocalFactors (n / 4 + 1)
 
-@[simp] lemma reciprocalFactors_zero : reciprocalFactors 0 = [0] :=  by
+@[simp] lemma reciprocalFactors_zero : reciprocalFactors 0 = [0] := by
   unfold reciprocalFactors; rfl
 
 @[simp] lemma reciprocalFactors_one : reciprocalFactors 1 = [] := by

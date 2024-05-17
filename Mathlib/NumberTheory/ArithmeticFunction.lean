@@ -958,18 +958,9 @@ theorem cardFactors_apply {n : ℕ} : Ω n = n.factors.length :=
   rfl
 #align nat.arithmetic_function.card_factors_apply ArithmeticFunction.cardFactors_apply
 
--- It's unclear to me that this needs to be a `dsimp` lemma.
--- If that's not the case, we can avoid the `unseal` by changing the proof to
--- `by simp`.
-unseal Nat.factors in
-@[simp, nolint simpNF] -- this is a `dsimp` lemma
-lemma cardFactors_zero : Ω 0 = 0 := by rfl
+lemma cardFactors_zero : Ω 0 = 0 := by simp
 
--- It's unclear to me that this needs to be a `dsimp` lemma.
--- If that's not the case, we can avoid the `unseal` by changing the proof to
--- `by simp [cardFactors_apply]`.
-unseal Nat.factors in
-@[simp] theorem cardFactors_one : Ω 1 = 0 := rfl
+@[simp] theorem cardFactors_one : Ω 1 = 0 := by simp [cardFactors_apply]
 #align nat.arithmetic_function.card_factors_one ArithmeticFunction.cardFactors_one
 
 @[simp]
