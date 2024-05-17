@@ -236,15 +236,13 @@ lemma gluing_ι (j : 𝒰.J) :
 
 /-- The first projection from the glued scheme into `X`. -/
 def p1 : (gluing 𝒰 f g).glued ⟶ X := by
-  fapply Multicoequalizer.desc
-  · exact fun i => pullback.fst ≫ 𝒰.map i
-  simp [reassoc_of% t_fst_fst, ← pullback.condition]
+  apply Multicoequalizer.desc (gluing 𝒰 f g).diagram _ fun i ↦ pullback.fst ≫ 𝒰.map i
+  simp [t_fst_fst_assoc, ← pullback.condition]
 #align algebraic_geometry.Scheme.pullback.p1 AlgebraicGeometry.Scheme.Pullback.p1
 
 /-- The second projection from the glued scheme into `Y`. -/
 def p2 : (gluing 𝒰 f g).glued ⟶ Y := by
-  fapply Multicoequalizer.desc
-  · exact fun i => pullback.snd
+  apply Multicoequalizer.desc _ _ fun i ↦ pullback.snd
   simp [t_fst_snd]
 #align algebraic_geometry.Scheme.pullback.p2 AlgebraicGeometry.Scheme.Pullback.p2
 
@@ -297,9 +295,8 @@ maps factors through `gluedLiftPullbackMap`.
 -/
 def gluedLift : s.pt ⟶ (gluing 𝒰 f g).glued := by
   fapply (𝒰.pullbackCover s.fst).glueMorphisms
-  · exact fun i => (pullbackSymmetry _ _).hom ≫
-      pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition ≫
-        (gluing 𝒰 f g).ι i
+  · exact fun i ↦ (pullbackSymmetry _ _).hom ≫
+      pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition ≫ (gluing 𝒰 f g).ι i
   intro i j
   rw [← gluedLiftPullbackMap_fst_assoc, ← gluing_f, ← (gluing 𝒰 f g).glue_condition i j,
     gluing_t, gluing_f]
