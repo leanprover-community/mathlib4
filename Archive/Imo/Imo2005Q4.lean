@@ -24,7 +24,6 @@ def a (n : ℕ) : ℤ :=
   2 ^ n + 3 ^ n + 6 ^ n - 1
 #align imo2005_q4.a IMO2005Q4.a
 
-unseal Nat.minFacAux in
 /-- Key lemma (a modular arithmetic calculation):  Given a prime `p` other than `2` or `3`, the
 `(p - 2)`th term of the sequence has `p` as a factor. -/
 theorem find_specified_factor {p : ℕ} (hp : Nat.Prime p) (hp2 : p ≠ 2) (hp3 : p ≠ 3) :

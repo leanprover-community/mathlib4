@@ -212,7 +212,6 @@ theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     · rw [not_ne_iff.1 h, Function.update_same]
 #align multiset.multinomial_filter_ne Multiset.multinomial_filter_ne
 
-unseal Nat.div in
 @[simp]
 theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := by
   simp [multinomial, Finsupp.multinomial]
@@ -225,7 +224,6 @@ namespace Finset
 
 variable {α : Type*} [DecidableEq α] (s : Finset α) {R : Type*}
 
-unseal Nat.div in
 /-- The multinomial theorem
 
   Proof is by induction on the number of summands.
