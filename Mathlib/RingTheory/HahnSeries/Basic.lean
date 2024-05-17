@@ -148,7 +148,7 @@ def toIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R)
         (Set.PartiallyWellOrderedOn.fiberProdLex x.isPWO_support' g)) = Function.support
         fun g => fun g' => x.coeff (g, g') := by
       simp only [Function.support, ne_eq, mk_eq_zero]
-    rw [h₁, Function.support_on_image x.coeff]
+    rw [h₁, Function.support_curry' x.coeff]
     exact Set.PartiallyWellOrderedOn.imageProdLex x.isPWO_support'
 
 /-- The equivalence between iterated Hahn series and Hahn series on the lex product. -/
