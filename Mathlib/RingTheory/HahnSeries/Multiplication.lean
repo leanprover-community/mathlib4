@@ -39,11 +39,13 @@ open BigOperators Pointwise
 
 noncomputable section
 
-variable {Γ Γ' R V : Type*}
+variable {Γ R : Type*}
+
+section Multiplication
+
+variable [OrderedCancelAddCommMonoid Γ]
 
 namespace HahnSeries
-
-variable [PartialOrder Γ] [Zero Γ]
 
 instance [Zero R] [One R] : One (HahnSeries Γ R) :=
   ⟨single 0 1⟩
@@ -90,19 +92,22 @@ def HahnModule (Γ R V : Type*) [PartialOrder Γ] [Zero V] [SMul R V] :=
 
 namespace HahnModule
 
+section
+
+variable {Γ R V : Type*} [PartialOrder Γ] [Zero V] [SMul R V]
+
 /-- The casting function to the type synonym. -/
 def of {Γ : Type*} (R : Type*) {V : Type*} [PartialOrder Γ] [Zero V] [SMul R V] :
     HahnSeries Γ V ≃ HahnModule Γ R V := Equiv.refl _
 
 /-- Recursion principle to reduce a result about the synonym to the original type. -/
 @[elab_as_elim]
-def rec {Γ R V : Type*} [PartialOrder Γ] [Zero V] [SMul R V] {motive : HahnModule Γ R V → Sort*}
-    (h : ∀ x : HahnSeries Γ V, motive (of R x)) : ∀ x, motive x :=
+def rec {motive : HahnModule Γ R V → Sort*} (h : ∀ x : HahnSeries Γ V, motive (of R x)) :
+    ∀ x, motive x :=
   fun x => h <| (of R).symm x
 
 @[ext]
-theorem ext {Γ R V : Type*} [PartialOrder Γ] [Zero V] [SMul R V]
-    (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
+theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
   (of R).symm.injective <| HahnSeries.coeff_inj.1 h
 
 theorem ext_iff {Γ R V : Type*} [PartialOrder Γ] [Zero V] [SMul R V]
@@ -117,9 +122,6 @@ variable [PartialOrder Γ]
 
 instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommMonoid (HahnSeries Γ V)
-instance instRSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
-    SMul R (HahnModule Γ R V) :=
-  inferInstanceAs <| SMul R (HahnSeries Γ V)
 
 @[simp] theorem of_zero : of R (0 : HahnSeries Γ V) = 0 := rfl
 @[simp] theorem of_add (x y : HahnSeries Γ V) : of R (x + y) = of R x + of R y := rfl
@@ -368,6 +370,8 @@ theorem smul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Z
 end DistribSMul
 
 end HahnModule
+
+variable [OrderedCancelAddCommMonoid Γ]
 
 variable [OrderedCancelAddCommMonoid Γ]
 

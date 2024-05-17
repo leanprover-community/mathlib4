@@ -833,97 +833,60 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl
 #align set.partially_well_ordered_on.partially_well_ordered_on_sublist_forall₂ Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_sublistForall₂
 
 theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
-    (hα : ((fun (x : α ×ₗ β) => x.1)'' s).IsPWO)
-    (hβ : ∀ a, {y | (a, y) ∈ s}.IsPWO) : s.IsPWO := by
+    (hα : ((fun (x : α ×ₗ β) => (ofLex x).1)'' s).IsPWO)
+    (hβ : ∀ a, {y | toLex (a, y) ∈ s}.IsPWO) : s.IsPWO := by
   intro f hf
   rw [isPWO_iff_exists_monotone_subseq] at hα
-  have hg : ∃ (g : (ℕ ↪o ℕ)), Monotone fun n => (f (g n)).1 :=
-    hα (fun n => (f n).1) (fun k => mem_image_of_mem (fun x => x.1) (hf k))
-  let g : (ℕ ↪o ℕ) := Exists.choose hg
-  have hhg : ∀ n, (f (g 0)).1 ≤ (f (g n)).1 := fun n => hg.choose_spec <| Nat.zero_le n
-  by_cases hc : ∃ n, (f (g 0)).1 < (f (g n)).1
-  · use (g 0), (g (Exists.choose hc))
-    let n := Exists.choose hc
+  obtain ⟨g, hg⟩ : ∃ (g : (ℕ ↪o ℕ)), Monotone fun n => (ofLex f (g n)).1 :=
+    hα (fun n => (ofLex f n).1) (fun k => mem_image_of_mem (fun x => (ofLex x).1) (hf k))
+  have hhg : ∀ n, (ofLex f (g 0)).1 ≤ (ofLex f (g n)).1 := fun n => hg n.zero_le
+  by_cases hc : ∃ n, (ofLex f (g 0)).1 < (ofLex f (g n)).1
+  · obtain ⟨n, hn⟩ := hc
+    use (g 0), (g n)
     constructor
     · by_contra hx
-      rw [Nat.not_lt] at hx
-      have hhc : (f (g 0)).1 < (f (g n)).1 := hc.choose_spec
-      have hhg : g n = g 0 := by
-        simp_all only [OrderEmbedding.le_iff_le, nonpos_iff_eq_zero]
-        exact congrArg (⇑g) hx
-      simp_all [hhg]
-    · refine (Prod.Lex.le_iff (f (g 0)) _).mpr ?_
-      left
-      exact hc.choose_spec
-  · have hhc : ∀ n, (f (g 0)).1 = (f (g n)).1 := by
+      simp_all
+    · exact (Prod.Lex.le_iff (f (g 0)) _).mpr <| Or.inl hn
+  · have hhc : ∀ n, (ofLex f (g 0)).1 = (ofLex f (g n)).1 := by
       intro n
-      rw [@not_exists] at hc
-      exact (LE.le.not_lt_iff_eq (hhg n)).mp (hc n)
-    specialize hβ (f (g 0)).1
-    rw [isPWO_iff_exists_monotone_subseq] at hβ
-    specialize hβ fun n => (f (g n)).2
-    have hfg : ∀ (n : ℕ), ((f (g 0)).1, (f (g n)).2) ∈ s :=
-      fun n => mem_of_eq_of_mem (congrFun (congrArg Prod.mk (hhc n)) (f ((Exists.choose hg) n)).2)
-      (hf ((Exists.choose hg) n))
-    specialize hβ fun n => hfg n
-    let g' := Exists.choose hβ
+      rw [not_exists] at hc
+      exact (hhg n).eq_of_not_lt (hc n)
+    obtain ⟨g', hg'⟩ : ∃ g' : ℕ ↪o ℕ, Monotone ((fun n ↦ (ofLex f (g (g' n))).2)) := by
+      simp_rw [isPWO_iff_exists_monotone_subseq] at hβ
+      apply hβ (ofLex f (g 0)).1 fun n ↦ (ofLex f (g n)).2
+      intro n
+      rw [hhc n]
+      simpa using hf _
     use (g (g' 0)), (g (g' 1))
-    constructor
-    · simp only [OrderEmbedding.lt_iff_lt, zero_lt_one]
-    · have h: Monotone fun n => (f (g (g' n))).2 := hβ.choose_spec
-      refine (Prod.Lex.le_iff (f (g (g' 0))) (f (g (g' 1)))).mpr ?_
+    suffices (f (g (g' 0))) ≤ (f (g (g' 1))) by simpa
+    · refine (Prod.Lex.le_iff (f (g (g' 0))) (f (g (g' 1)))).mpr ?_
       right
       constructor
       · exact (hhc (g' 0)).symm.trans (hhc (g' 1))
-      · exact h zero_le_one
+      · exact hg' zero_le_one
 
 theorem imageProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
-    (hαβ : s.IsPWO) : ((fun (x : α ×ₗ β) => x.1)'' s).IsPWO :=
+    (hαβ : s.IsPWO) : ((fun (x : α ×ₗ β) => (ofLex x).1)'' s).IsPWO :=
   IsPWO.image_of_monotone hαβ Prod.Lex.monotone_fst
 
 theorem fiberProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
-    (hαβ : s.IsPWO) (a : α) : {y | (a, y) ∈ s}.IsPWO := by
-  let f : α ×ₗ β → β := fun x => x.2
-  have h : MonotoneOn f (s ∩ (fun x ↦ x.1) ⁻¹' {a}) := by
-    intro b hb c hc hbc
-    have h'' : b.1 < c.1 ∨ b.1 = c.1 ∧ b.2 ≤ c.2 := (Prod.Lex.le_iff b c).mp hbc
-    have nbc : ¬ b.1 < c.1 := by
-      refine Eq.not_lt ?_
-      have hba : b.1 = a := by
-        simp_all only [mem_inter_iff, mem_preimage, mem_singleton_iff, true_and, false_or]
-      have hca : c.1 = a := by
-        simp_all only [mem_inter_iff, mem_preimage, mem_singleton_iff, true_and, false_or]
-      exact hba.trans hca.symm
-    simp_all only [lt_self_iff_false, true_and, false_or]
-  have h' : (f '' (s ∩ (fun x ↦ x.1) ⁻¹' {a})) = {y | (a, y) ∈ s} := by
-    refine ext ?h
-    intro x
-    refine iff_def.mpr ?_
-    constructor
-    · intro hx
-      simp only [mem_setOf_eq]
-      simp only [mem_image, mem_inter_iff, mem_preimage, mem_singleton_iff, Lex.exists,
-        Prod.exists] at hx
-      let a' : α := Exists.choose hx
-      let b' : β := Exists.choose (Exists.choose_spec hx)
-      have hab' : (toLex (a', b') ∈ s ∧ (toLex (a', b')).1 = a) ∧ (toLex (a', b')).2 = x :=
-        Exists.choose_spec (Exists.choose_spec hx)
-      aesop
-    · intro hx
-      simp_all only [mem_setOf_eq, mem_image, mem_inter_iff, mem_preimage, mem_singleton_iff]
-      exact Exists.intro (a, x) { left := { left := hx, right := rfl }, right := rfl }
-  rw [← h']
-  exact IsPWO.image_of_monotoneOn (IsPWO.mono hαβ <| inter_subset_left s ((fun x ↦ x.1) ⁻¹' {a})) h
+    (hαβ : s.IsPWO) (a : α) : {y | toLex (a, y) ∈ s}.IsPWO := by
+  let f : α ×ₗ β → β := fun x => (ofLex x).2
+  have h : {y | toLex (a, y) ∈ s} = f '' (s ∩ (fun x ↦ (ofLex x).1) ⁻¹' {a}) := by
+    ext x
+    simp [f]
+  rw [h]
+  apply IsPWO.image_of_monotoneOn (hαβ.mono (inter_subset_left s _))
+  rintro b ⟨-, hb⟩ c ⟨-, hc⟩ hbc
+  simp only [mem_preimage, mem_singleton_iff] at hb hc
+  have : (ofLex b).1 < (ofLex c).1 ∨ (ofLex b).1 = (ofLex c).1 ∧ f b ≤ f c :=
+    (Prod.Lex.le_iff b c).mp hbc
+  simp_all only [lt_self_iff_false, true_and, false_or]
 
 theorem ProdLex_iff [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)} :
-    s.IsPWO ↔ ((fun (x : α ×ₗ β) => x.1)'' s).IsPWO ∧
-    ∀ a, {y | (a, y) ∈ s}.IsPWO := by
-  constructor
-  · intro h
-    constructor
-    · exact imageProdLex h
-    · exact fun a => fiberProdLex h a
-  · exact fun h => subsetProdLex h.1 h.2
+    s.IsPWO ↔
+      ((fun (x : α ×ₗ β) ↦ (ofLex x).1) '' s).IsPWO ∧ ∀ a, {y | toLex (a, y) ∈ s}.IsPWO :=
+  ⟨fun h ↦ ⟨imageProdLex h, fiberProdLex h⟩, fun h ↦ subsetProdLex h.1 h.2⟩
 
 end Set.PartiallyWellOrderedOn
 
