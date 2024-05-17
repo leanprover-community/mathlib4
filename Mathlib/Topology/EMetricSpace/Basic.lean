@@ -587,10 +587,12 @@ theorem mem_closedBall_comm : x ∈ closedBall y ε ↔ y ∈ closedBall x ε :=
   rw [mem_closedBall', mem_closedBall]
 #align emetric.mem_closed_ball_comm EMetric.mem_closedBall_comm
 
+@[gcongr]
 theorem ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ := fun _y (yx : _ < ε₁) =>
   lt_of_lt_of_le yx h
 #align emetric.ball_subset_ball EMetric.ball_subset_ball
 
+@[gcongr]
 theorem closedBall_subset_closedBall (h : ε₁ ≤ ε₂) : closedBall x ε₁ ⊆ closedBall x ε₂ :=
   fun _y (yx : _ ≤ ε₁) => le_trans yx h
 #align emetric.closed_ball_subset_closed_ball EMetric.closedBall_subset_closedBall
@@ -965,6 +967,7 @@ theorem diam_triple : diam ({x, y, z} : Set α) = max (max (edist x y) (edist x 
 #align emetric.diam_triple EMetric.diam_triple
 
 /-- The diameter is monotonous with respect to inclusion -/
+@[gcongr]
 theorem diam_mono {s t : Set α} (h : s ⊆ t) : diam s ≤ diam t :=
   diam_le fun _x hx _y hy => edist_le_diam_of_mem (h hx) (h hy)
 #align emetric.diam_mono EMetric.diam_mono

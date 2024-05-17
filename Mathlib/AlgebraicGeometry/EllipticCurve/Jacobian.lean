@@ -117,7 +117,6 @@ abbrev PointClass (R : Type u) [CommRing R] : Type u :=
   MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
 
 /-- The coercion to a Weierstrass curve in affine coordinates. -/
-@[pp_dot]
 abbrev toAffine : Affine R :=
   W
 
@@ -128,7 +127,6 @@ section Equation
 /-- The polynomial $W(X, Y, Z) := Y^2 + a_1XYZ + a_3YZ^3 - (X^3 + a_2X^2Z^2 + a_4XZ^4 + a_6Z^6)$
 associated to a Weierstrass curve `W` over `R`. This is represented as a term of type
 `MvPolynomial (Fin 3) R`, where `X 0`, `X 1`, and `X 2` represent $X$, $Y$, and $Z$ respectively. -/
-@[pp_dot]
 noncomputable def polynomial : MvPolynomial (Fin 3) R :=
   X 1 ^ 2 + C W.a₁ * X 0 * X 1 * X 2 + C W.a₃ * X 1 * X 2 ^ 3
     - (X 0 ^ 3 + C W.a₂ * X 0 ^ 2 * X 2 ^ 2 + C W.a₄ * X 0 * X 2 ^ 4 + C W.a₆ * X 2 ^ 6)
@@ -141,7 +139,6 @@ lemma eval_polynomial (P : Fin 3 → R) : eval P W.polynomial =
 
 /-- The proposition that a point representative $(x, y, z)$ lies in `W`.
 In other words, $W(x, y, z) = 0$. -/
-@[pp_dot]
 def Equation (P : Fin 3 → R) : Prop :=
   eval P W.polynomial = 0
 
@@ -167,7 +164,6 @@ lemma equation_smul_iff (P : Fin 3 → R) (u : Rˣ) : W.Equation (u • P) ↔ W
   ⟨fun h => by convert this u⁻¹ h; rw [inv_smul_smul], this u⟩
 
 /-- The partial derivative $W_X(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $X$. -/
-@[pp_dot]
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
   pderiv x W.polynomial
 
@@ -183,7 +179,6 @@ lemma eval_polynomialX (P : Fin 3 → R) : eval P W.polynomialX =
   eval_simp
 
 /-- The partial derivative $W_Y(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Y$. -/
-@[pp_dot]
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
   pderiv y W.polynomial
 
@@ -199,7 +194,6 @@ lemma eval_polynomialY (P : Fin 3 → R) :
   eval_simp
 
 /-- The partial derivative $W_Z(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Z$. -/
-@[pp_dot]
 noncomputable def polynomialZ : MvPolynomial (Fin 3) R :=
   pderiv z W.polynomial
 
@@ -218,7 +212,6 @@ lemma eval_polynomialZ (P : Fin 3 → R) : eval P W.polynomialZ =
 
 /-- The proposition that a point representative $(x, y, z)$ in `W` is nonsingular.
 In other words, either $W_X(x, y, z) \ne 0$, $W_Y(x, y, z) \ne 0$, or $W_Z(x, y, z) \ne 0$. -/
-@[pp_dot]
 def Nonsingular (P : Fin 3 → R) : Prop :=
   W.Equation P ∧ (eval P W.polynomialX ≠ 0 ∨ eval P W.polynomialY ≠ 0 ∨ eval P W.polynomialZ ≠ 0)
 
@@ -266,7 +259,6 @@ lemma nonsingular_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W.Nonsingular P �
 
 /-- The proposition that a point class on `W` is nonsingular. If `P` is a point representative,
 then `W.NonsingularLift ⟦P⟧` is definitionally equivalent to `W.Nonsingular P`. -/
-@[pp_dot]
 def NonsingularLift (P : PointClass R) : Prop :=
   P.lift W.Nonsingular fun _ _ => propext ∘ W.nonsingular_of_equiv
 

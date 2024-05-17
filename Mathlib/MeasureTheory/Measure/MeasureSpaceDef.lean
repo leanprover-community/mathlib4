@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.OuterMeasure.Basic
+import Mathlib.MeasureTheory.OuterMeasure.Induced
 import Mathlib.Order.Filter.CountableInter
 
 #align_import measure_theory.measure.measure_space_def from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
@@ -96,7 +96,7 @@ instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α
 
 instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
   measure_empty m := m.empty'
-  measure_iUnion_nat_le m := m.iUnion
+  measure_iUnion_nat_le m := m.iUnion_nat
   measure_mono m := m.mono
 
 section
