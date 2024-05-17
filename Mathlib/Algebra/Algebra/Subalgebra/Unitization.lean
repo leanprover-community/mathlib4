@@ -74,6 +74,24 @@ theorem NonUnitalSubalgebra.toSubalgebra_toNonUnitalSubalgebra (S : NonUnitalSub
     (h1 : (1 : A) ∈ S) : (NonUnitalSubalgebra.toSubalgebra S h1).toNonUnitalSubalgebra = S := by
   cases S; rfl
 
+open Submodule in
+lemma Algebra.adjoin_nonUnitalSubalgebra_eq_span (s : NonUnitalSubalgebra R A) :
+    Subalgebra.toSubmodule (adjoin R (s : Set A)) = span R {1} ⊔ s.toSubmodule := by
+  rw [adjoin_eq_span, Submonoid.closure_eq_one_union, span_union, ← NonUnitalAlgebra.adjoin_eq_span,
+      NonUnitalAlgebra.adjoin_eq]
+
+variable (R)
+
+lemma NonUnitalAlgebra.adjoin_le_algebra_adjoin (s : Set A) :
+    adjoin R s ≤ (Algebra.adjoin R s).toNonUnitalSubalgebra :=
+  adjoin_le Algebra.subset_adjoin
+
+lemma Algebra.adjoin_nonUnitalSubalgebra (s : Set A) :
+    adjoin R (NonUnitalAlgebra.adjoin R s : Set A) = adjoin R s :=
+  le_antisymm
+    (adjoin_le <| NonUnitalAlgebra.adjoin_le_algebra_adjoin R s)
+    (adjoin_le <| (NonUnitalAlgebra.subset_adjoin R).trans subset_adjoin)
+
 end Subalgebra
 
 namespace Unitization
@@ -308,6 +326,24 @@ theorem NonUnitalStarSubalgebra.toStarSubalgebra_toNonUnitalStarSubalgebra
     (S : NonUnitalStarSubalgebra R A) (h1 : (1 : A) ∈ S) :
     (S.toStarSubalgebra h1).toNonUnitalStarSubalgebra = S := by
   cases S; rfl
+
+open Submodule in
+lemma StarAlgebra.adjoin_nonUnitalStarSubalgebra_eq_span (s : NonUnitalStarSubalgebra R A) :
+    Subalgebra.toSubmodule (adjoin R (s : Set A)).toSubalgebra = span R {1} ⊔ s.toSubmodule := by
+  rw [adjoin_eq_span, Submonoid.closure_eq_one_union, span_union,
+    ← NonUnitalStarAlgebra.adjoin_eq_span, NonUnitalStarAlgebra.adjoin_eq]
+
+variable (R)
+
+lemma NonUnitalStarAlgebra.adjoin_le_starAlgebra_adjoin (s : Set A) :
+    adjoin R s ≤ (StarAlgebra.adjoin R s).toNonUnitalStarSubalgebra :=
+  adjoin_le <| StarAlgebra.subset_adjoin R s
+
+lemma StarAlgebra.adjoin_nonUnitalStarSubalgebra (s : Set A) :
+    adjoin R (NonUnitalStarAlgebra.adjoin R s : Set A) = adjoin R s :=
+  le_antisymm
+    (adjoin_le <| NonUnitalStarAlgebra.adjoin_le_starAlgebra_adjoin R s)
+    (adjoin_le <| (NonUnitalStarAlgebra.subset_adjoin R s).trans <| subset_adjoin R _)
 
 end StarSubalgebra
 

@@ -352,7 +352,7 @@ theorem diagonalObjPullbackFstIso_inv_snd_snd {X Y Z : C} (f : X ⟶ Z) (g : Y �
 theorem diagonal_pullback_fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     diagonal (pullback.fst : pullback f g ⟶ _) =
       (pullbackSymmetry _ _).hom ≫
-        ((baseChange f).map
+        ((Over.baseChange f).map
               (Over.homMk (diagonal g) : Over.mk g ⟶ Over.mk (pullback.snd ≫ g))).left ≫
           (diagonalObjPullbackFstIso f g).inv := by
   ext <;> dsimp <;> simp
