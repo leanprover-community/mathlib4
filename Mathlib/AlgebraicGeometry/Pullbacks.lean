@@ -291,7 +291,7 @@ def p2 : (gluing 𝒰 f g).glued ⟶ Y := by
 theorem p_comm : p1 𝒰 f g ≫ f = p2 𝒰 f g ≫ g := by
   apply Multicoequalizer.hom_ext
   intro i
-  erw [Multicoequalizer.π_desc_assoc, Multicoequalizer.π_desc_assoc]
+  erw [Multicoequalizer.inj_desc_assoc, Multicoequalizer.inj_desc_assoc]
   rw [Category.assoc, pullback.condition]
 #align algebraic_geometry.Scheme.pullback.p_comm AlgebraicGeometry.Scheme.Pullback.p_comm
 
@@ -371,13 +371,13 @@ theorem gluedLift_p1 : gluedLift 𝒰 f g s ≫ p1 𝒰 f g = s.fst := by
   rw [← cancel_epi (𝒰.pullbackCover s.fst).fromGlued]
   apply Multicoequalizer.hom_ext
   intro b
-  erw [Multicoequalizer.π_desc_assoc, Multicoequalizer.π_desc_assoc]
+  erw [Multicoequalizer.inj_desc_assoc, Multicoequalizer.inj_desc_assoc]
   delta gluedLift
   simp_rw [← Category.assoc]
   rw [(𝒰.pullbackCover s.fst).ι_glueMorphisms]
   simp_rw [Category.assoc]
   -- Porting note: `Category.comp_id` is no longer necessary, don't know where `𝟙 _` has gone
-  erw [Multicoequalizer.π_desc, pullback.lift_fst_assoc, pullback.condition]
+  erw [Multicoequalizer.inj_desc, pullback.lift_fst_assoc, pullback.condition]
   rw [pullbackSymmetry_hom_comp_snd_assoc]
   rfl
 #align algebraic_geometry.Scheme.pullback.glued_lift_p1 AlgebraicGeometry.Scheme.Pullback.gluedLift_p1
@@ -386,12 +386,12 @@ theorem gluedLift_p2 : gluedLift 𝒰 f g s ≫ p2 𝒰 f g = s.snd := by
   rw [← cancel_epi (𝒰.pullbackCover s.fst).fromGlued]
   apply Multicoequalizer.hom_ext
   intro b
-  erw [Multicoequalizer.π_desc_assoc, Multicoequalizer.π_desc_assoc]
+  erw [Multicoequalizer.inj_desc_assoc, Multicoequalizer.inj_desc_assoc]
   delta gluedLift
   simp_rw [← Category.assoc]
   rw [(𝒰.pullbackCover s.fst).ι_glueMorphisms]
   simp_rw [Category.assoc]
-  erw [Multicoequalizer.π_desc, pullback.lift_snd]
+  erw [Multicoequalizer.inj_desc, pullback.lift_snd]
   rw [pullbackSymmetry_hom_comp_snd_assoc]
   rfl
 #align algebraic_geometry.Scheme.pullback.glued_lift_p2 AlgebraicGeometry.Scheme.Pullback.gluedLift_p2
@@ -405,7 +405,7 @@ def pullbackFstιToV (i j : 𝒰.J) :
     pullback (pullback.fst : pullback (p1 𝒰 f g) (𝒰.map i) ⟶ _) ((gluing 𝒰 f g).ι j) ⟶
       v 𝒰 f g j i :=
   (pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso (p1 𝒰 f g) (𝒰.map i) _).hom ≫
-    (pullback.congrHom (Multicoequalizer.π_desc _ _ _ _ _) rfl).hom
+    (pullback.congrHom (Multicoequalizer.inj_desc _ _ _ _ _) rfl).hom
 #align algebraic_geometry.Scheme.pullback.pullback_fst_ι_to_V AlgebraicGeometry.Scheme.Pullback.pullbackFstιToV
 
 @[simp, reassoc]
@@ -454,7 +454,7 @@ theorem lift_comp_ι (i : 𝒰.J) :
     -- Porting note: in the following two bullet points, `rfl` was not necessary
     · rw [t_fst_fst, pullback.lift_fst, pullbackFstιToV_snd]; rfl
     · rw [t_fst_snd, pullback.lift_snd, pullbackFstιToV_fst_assoc, pullback.condition_assoc]
-      erw [Multicoequalizer.π_desc]
+      erw [Multicoequalizer.inj_desc]
       rfl
   · rw [pullback.condition, ← Category.assoc]
     congr 1
@@ -471,14 +471,14 @@ def pullbackP1Iso (i : 𝒰.J) : pullback (p1 𝒰 f g) (𝒰.map i) ≅ pullbac
   · exact
       pullback.lift pullback.snd (pullback.fst ≫ p2 𝒰 f g)
         (by rw [← pullback.condition_assoc, Category.assoc, p_comm])
-  · refine' pullback.lift ((gluing 𝒰 f g).ι i) pullback.fst (by erw [Multicoequalizer.π_desc])
+  · refine' pullback.lift ((gluing 𝒰 f g).ι i) pullback.fst (by erw [Multicoequalizer.inj_desc])
   · apply pullback.hom_ext
     · simpa using lift_comp_ι 𝒰 f g i
     · simp only [Category.assoc, pullback.lift_snd, pullback.lift_fst, Category.id_comp]
   · apply pullback.hom_ext
     · simp only [Category.assoc, pullback.lift_fst, pullback.lift_snd, Category.id_comp]
     · simp only [Category.assoc, pullback.lift_snd, pullback.lift_fst_assoc, Category.id_comp]
-      erw [Multicoequalizer.π_desc]
+      erw [Multicoequalizer.inj_desc]
 #align algebraic_geometry.Scheme.pullback.pullback_p1_iso AlgebraicGeometry.Scheme.Pullback.pullbackP1Iso
 
 @[simp, reassoc]
@@ -616,7 +616,7 @@ def openCoverOfLeft (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
     simp only [limit.isoLimitCone_inv_π, PullbackCone.mk_π_app_left, Category.comp_id,
       PullbackCone.mk_π_app_right, Category.assoc, pullback.lift_fst, pullback.lift_snd]
     symm
-    exact Multicoequalizer.π_desc _ _ _ _ _
+    exact Multicoequalizer.inj_desc _ _ _ _ _
 #align algebraic_geometry.Scheme.pullback.open_cover_of_left AlgebraicGeometry.Scheme.Pullback.openCoverOfLeft
 
 /-- Given an open cover `{ Yᵢ }` of `Y`, then `X ×[Z] Y` is covered by `X ×[Z] Yᵢ`. -/
