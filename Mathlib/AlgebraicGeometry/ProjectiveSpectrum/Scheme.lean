@@ -351,7 +351,7 @@ theorem mem_carrier_iff_of_mem (hm : 0 < m) (q : Spec.T A⁰_ f) (a : A) {n} (hn
   · simp only [proj_apply, decompose_of_mem_same _ hn]
 
 theorem mem_carrier_iff_of_mem_mul (hm : 0 < m)
-      (q : Spec.T A⁰_ f) (a : A) {n} (hn : a ∈ 𝒜 (n * m)) :
+    (q : Spec.T A⁰_ f) (a : A) {n} (hn : a ∈ 𝒜 (n * m)) :
     a ∈ carrier f_deg q ↔ (Quotient.mk'' ⟨m * n, ⟨a, mul_comm n m ▸ hn⟩,
         ⟨f ^ n, by rw [mul_comm]; mem_tac⟩, ⟨_, rfl⟩⟩ : A⁰_ f) ∈ q.asIdeal := by
   rw [mem_carrier_iff_of_mem f_deg hm q a hn, iff_iff_eq, eq_comm,
