@@ -57,7 +57,7 @@ structure Prepartition (I : Box ι) where
   boxes : Finset (Box ι)
   /-- Each box is a sub-box of `I` -/
   le_of_mem' : ∀ J ∈ boxes, J ≤ I
-  /-- The boxes in a prepartition are pairwise disjoing -/
+  /-- The boxes in a prepartition are pairwise disjoint. -/
   pairwiseDisjoint : Set.Pairwise (↑boxes) (Disjoint on ((↑) : Box ι → Set (ι → ℝ)))
 #align box_integral.prepartition BoxIntegral.Prepartition
 
