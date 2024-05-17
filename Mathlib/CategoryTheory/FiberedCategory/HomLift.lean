@@ -46,165 +46,179 @@ often drawn as:
   v        v
   R --f--> S
 ``` -/
-structure IsHomLift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) : Prop where
-  (ObjLiftDomain : p.obj a = R)
-  (ObjLiftCodomain : p.obj b = S)
-  (HomLift : CommSq (p.map φ) (eqToHom ObjLiftDomain) (eqToHom ObjLiftCodomain) f)
+class Functor.IsHomLift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) : Prop where
+  domain_eq : p.obj a = R
+  codomain_eq : p.obj b = S
+  homlift : CommSq (p.map φ) (eqToHom domain_eq) (eqToHom codomain_eq) f
 
-namespace IsHomLift
+namespace Functor.IsHomLift
 
 protected lemma hom_eq {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
-    (hφ : IsHomLift p f φ) : f = eqToHom hφ.ObjLiftDomain.symm ≫ p.map φ ≫
-      eqToHom hφ.ObjLiftCodomain :=
-  ((eqToHom_comp_iff hφ.ObjLiftDomain _ _).1 hφ.HomLift.w.symm)
+    [hφ : IsHomLift p f φ] : f = eqToHom hφ.domain_eq.symm ≫ p.map φ ≫
+      eqToHom hφ.codomain_eq :=
+  ((eqToHom_comp_iff hφ.domain_eq _ _).1 hφ.homlift.w.symm)
 
 protected lemma hom_eq' {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
-    (hφ : IsHomLift p f φ) : p.map φ = eqToHom hφ.ObjLiftDomain ≫ f ≫
-      eqToHom hφ.ObjLiftCodomain.symm := by
-  rw [← assoc, ← comp_eqToHom_iff hφ.ObjLiftCodomain _ _]
-  exact hφ.HomLift.w
+   [hφ : IsHomLift p f φ] : p.map φ = eqToHom hφ.domain_eq ≫ f ≫
+      eqToHom hφ.codomain_eq.symm := by
+  rw [← assoc, ← comp_eqToHom_iff hφ.codomain_eq _ _]
+  exact hφ.homlift.w
 
 lemma eq_of_IsHomLift {p : 𝒳 ⥤ 𝒮} (a b : 𝒳) {f : p.obj a ⟶ p.obj b} {φ : a ⟶ b}
-    (hφ : IsHomLift p f φ) : f = p.map φ := by
-  simpa using IsHomLift.hom_eq hφ
+   [hφ : IsHomLift p f φ] : f = p.map φ := by
+  simpa using hφ.hom_eq
 
 /-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`-/
 @[simp]
 protected lemma self (p : 𝒳 ⥤ 𝒮) {a b : 𝒳} (φ : a ⟶ b) : IsHomLift p (p.map φ) φ where
-  ObjLiftDomain := rfl
-  ObjLiftCodomain := rfl
-  HomLift := ⟨by simp only [eqToHom_refl, comp_id, id_comp]⟩
+  domain_eq := rfl
+  codomain_eq := rfl
+  homlift := ⟨by simp only [eqToHom_refl, comp_id, id_comp]⟩
 
 @[simp]
 protected lemma id {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a : 𝒳} (ha : p.obj a = R) : IsHomLift p (𝟙 R) (𝟙 a) :=
   ha ▸ (p.map_id _ ▸ IsHomLift.self p (𝟙 a))
 
 protected lemma comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
-    {g : S ⟶ T} {φ : a ⟶ b} {ψ : b ⟶ c} (hφ : IsHomLift p f φ)
-    (hψ : IsHomLift p g ψ) : IsHomLift p (f ≫ g) (φ ≫ ψ) where
-  ObjLiftDomain := hφ.1
-  ObjLiftCodomain := hψ.2
-  HomLift := (p.map_comp _ _).symm ▸ CommSq.horiz_comp hφ.3 hψ.3
+    {g : S ⟶ T} {φ : a ⟶ b} {ψ : b ⟶ c} [hφ : IsHomLift p f φ]
+    [hψ : IsHomLift p g ψ] : IsHomLift p (f ≫ g) (φ ≫ ψ) where
+  domain_eq := hφ.1
+  codomain_eq := hψ.2
+  homlift := (p.map_comp _ _).symm ▸ CommSq.horiz_comp hφ.3 hψ.3
 
 /-- If `φ : a ⟶ b` and `ψ : b ⟶ c` lift `𝟙 S`, then so does `φ ≫ ψ` -/
 lemma lift_id_comp {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a b c : 𝒳} {φ : a ⟶ b} {ψ : b ⟶ c}
-    (hφ : IsHomLift p (𝟙 R) φ) (hψ : IsHomLift p (𝟙 R) ψ) : IsHomLift p (𝟙 R) (φ ≫ ψ) :=
-  comp_id (𝟙 R) ▸ IsHomLift.comp hφ hψ
+    (hφ : IsHomLift p (𝟙 R) φ) [IsHomLift p (𝟙 R) ψ] : IsHomLift p (𝟙 R) (φ ≫ ψ) :=
+  comp_id (𝟙 R) ▸ hφ.comp
 
 /-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ  ≫ ψ` lifts `f` -/
 lemma comp_lift_id {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
-    {φ : a ⟶ b} (hφ : IsHomLift p f φ) {ψ : b ⟶ c} (hψ : IsHomLift p (𝟙 T) ψ) :
+    {φ : a ⟶ b} [hφ : IsHomLift p f φ] {ψ : b ⟶ c} [hψ : IsHomLift p (𝟙 T) ψ] :
     IsHomLift p f (φ ≫ ψ) where
-  ObjLiftDomain := hφ.ObjLiftDomain
-  ObjLiftCodomain := by rw [hψ.ObjLiftCodomain, ← hψ.ObjLiftDomain, hφ.ObjLiftCodomain]
-  HomLift := ⟨by simp [IsHomLift.hom_eq' hψ, hφ.3.1]⟩
+  domain_eq := hφ.domain_eq
+  codomain_eq := by rw [hψ.codomain_eq, ← hψ.domain_eq, hφ.codomain_eq]
+  homlift := ⟨by simp [hψ.hom_eq', hφ.3.1]⟩
 
 @[simp]
 lemma eqToHom_domain_lift_id {p : 𝒳 ⥤ 𝒮} {a b : 𝒳} (hab : a = b) {R : 𝒮}
     (hR : p.obj a = R) : IsHomLift p (𝟙 R) (eqToHom hab) where
-      ObjLiftDomain := hR
-      ObjLiftCodomain := hab ▸ hR
-      HomLift := ⟨by simp only [eqToHom_map, eqToHom_trans, comp_id]⟩
+  domain_eq := hR
+  codomain_eq := hab ▸ hR
+  homlift := ⟨by simp only [eqToHom_map, eqToHom_trans, comp_id]⟩
 
 @[simp]
 lemma eqToHom_codomain_lift_id {p : 𝒳 ⥤ 𝒮} {a b : 𝒳} (hab : a = b) {S : 𝒮}
     (hS : p.obj b = S) : IsHomLift p (𝟙 S) (eqToHom hab) where
-      ObjLiftDomain := hab ▸ hS
-      ObjLiftCodomain := hS
-      HomLift := ⟨by simp only [eqToHom_map, eqToHom_trans, comp_id]⟩
+  domain_eq := hab ▸ hS
+  codomain_eq := hS
+  homlift := ⟨by simp only [eqToHom_map, eqToHom_trans, comp_id]⟩
 
 @[simp]
 lemma id_lift_eqToHom_domain {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} (hRS : R = S)
     {a : 𝒳} (ha : p.obj a = R) : IsHomLift p (eqToHom hRS) (𝟙 a) where
-      ObjLiftDomain := ha
-      ObjLiftCodomain := hRS ▸ ha
-      HomLift := ⟨by simp only [map_id, id_comp, eqToHom_trans]⟩
+  domain_eq := ha
+  codomain_eq := hRS ▸ ha
+  homlift := ⟨by simp only [map_id, id_comp, eqToHom_trans]⟩
 
 @[simp]
 lemma id_lift_eqToHom_codomain {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} (hRS : R = S)
     {b : 𝒳} (hb : p.obj b = S) : IsHomLift p (eqToHom hRS) (𝟙 b) where
-      ObjLiftDomain := hRS ▸ hb
-      ObjLiftCodomain := hb
-      HomLift := ⟨by simp only [map_id, id_comp, eqToHom_trans]⟩
+  domain_eq := hRS ▸ hb
+  codomain_eq := hb
+  homlift := ⟨by simp only [map_id, id_comp, eqToHom_trans]⟩
+
+instance comp_eqToHom_lift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a' a b : 𝒳} {f : R ⟶ S}
+    {φ : a ⟶ b} {h : a' = a} [hφ : IsHomLift p f φ] : IsHomLift p f (eqToHom h ≫ φ) :=
+  id_comp f ▸ (eqToHom_codomain_lift_id h hφ.domain_eq).comp
+
+instance eqToHom_comp_lift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b b' : 𝒳} {f : R ⟶ S}
+    {φ : a ⟶ b} {h : b = b'} [hφ : IsHomLift p f φ] : IsHomLift p f (φ ≫ eqToHom h) :=
+  comp_id f ▸ hφ.comp (hψ := eqToHom_domain_lift_id h hφ.codomain_eq)
+
+instance lift_eqToHom_comp {p : 𝒳 ⥤ 𝒮} {R' R S : 𝒮} {a b : 𝒳} {f : R ⟶ S}
+    {φ : a ⟶ b} (h : R' = R) [hφ : IsHomLift p f φ] : IsHomLift p ((eqToHom h) ≫ f) φ :=
+  id_comp φ ▸ (IsHomLift.id_lift_eqToHom_codomain h hφ.domain_eq).comp
+
+instance lift_comp_eqToHom {p : 𝒳 ⥤ 𝒮} {R S S': 𝒮} {a b : 𝒳} {f : R ⟶ S}
+    {φ : a ⟶ b} (h : S = S') [hφ : IsHomLift p f φ] : IsHomLift p (f ≫ (eqToHom h)) φ :=
+  comp_id φ ▸ hφ.comp (hψ := IsHomLift.id_lift_eqToHom_domain h hφ.codomain_eq)
 
 @[simp]
 lemma comp_eqToHom_lift_iff {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a' a b : 𝒳} {f : R ⟶ S}
     {φ : a ⟶ b} {h : a' = a} : IsHomLift p f (eqToHom h ≫ φ) ↔ IsHomLift p f φ where
   mp := by intro hφ'; subst h; simpa using hφ'
-  mpr := fun hφ => id_comp f ▸ IsHomLift.comp (eqToHom_codomain_lift_id h hφ.ObjLiftDomain) hφ
+  mpr := fun hφ => inferInstance
 
 @[simp]
 lemma eqToHom_comp_lift_iff {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b b' : 𝒳} {f : R ⟶ S}
     {φ : a ⟶ b} {h : b = b'} : IsHomLift p f (φ ≫ eqToHom h) ↔ IsHomLift p f φ where
   mp := by intro hφ'; subst h; simpa using hφ'
-  mpr := fun hφ => comp_id f ▸ IsHomLift.comp hφ (eqToHom_domain_lift_id h hφ.ObjLiftCodomain)
+  mpr := fun hφ => inferInstance
 
 @[simp]
 lemma lift_eqToHom_comp_iff {p : 𝒳 ⥤ 𝒮} {R' R S : 𝒮} {a b : 𝒳} {f : R ⟶ S}
     {φ : a ⟶ b} (h : R' = R) : IsHomLift p ((eqToHom h) ≫ f) φ ↔ IsHomLift p f φ where
   mp := by intro hφ'; subst h; simpa using hφ'
-  mpr := fun hφ =>
-    id_comp φ ▸ IsHomLift.comp (IsHomLift.id_lift_eqToHom_codomain h hφ.ObjLiftDomain) hφ
+  mpr := fun hφ => inferInstance
 
 @[simp]
 lemma lift_comp_eqToHom_iff {p : 𝒳 ⥤ 𝒮} {R S S': 𝒮} {a b : 𝒳} {f : R ⟶ S}
     {φ : a ⟶ b} (h : S = S') : IsHomLift p (f ≫ (eqToHom h)) φ ↔ IsHomLift p f φ where
   mp := by intro hφ'; subst h; simpa using hφ'
-  mpr := fun hφ =>
-    comp_id φ ▸ IsHomLift.comp hφ (IsHomLift.id_lift_eqToHom_domain h hφ.ObjLiftCodomain)
+  mpr := fun hφ => inferInstance
 
 /-- The isomorphism `R ≅ S` obtained from an isomorphism `φ : a ≅ b` lifting `f` -/
 def Iso_of_Iso_lift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ≅ b}
-    (hφ : IsHomLift p f φ.hom) : R ≅ S :=
-  eqToIso hφ.ObjLiftDomain.symm ≪≫ p.mapIso φ ≪≫ eqToIso hφ.ObjLiftCodomain
+    [hφ : IsHomLift p f φ.hom] : R ≅ S :=
+  eqToIso hφ.domain_eq.symm ≪≫ p.mapIso φ ≪≫ eqToIso hφ.codomain_eq
 
 @[simp]
 lemma Iso_of_Iso_lift_hom {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ≅ b}
-    (hφ : IsHomLift p f φ.hom) : (Iso_of_Iso_lift hφ).hom = f := by
-  simp [Iso_of_Iso_lift, IsHomLift.hom_eq hφ]
+    [hφ : IsHomLift p f φ.hom] : (hφ.Iso_of_Iso_lift).hom = f := by
+  simp [Iso_of_Iso_lift, hφ.hom_eq]
 
 @[simp]
 lemma Iso_of_Iso_lift_comp {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ≅ b}
-    (hφ : IsHomLift p f φ.hom) : (Iso_of_Iso_lift hφ).inv ≫ f = 𝟙 S := by
+    [hφ : IsHomLift p f φ.hom] : (hφ.Iso_of_Iso_lift).inv ≫ f = 𝟙 S := by
   rw [CategoryTheory.Iso.inv_comp_eq]
   simp only [Iso_of_Iso_lift_hom, comp_id]
 
 @[simp]
 lemma comp_Iso_of_Iso_lift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ≅ b}
-    (hφ : IsHomLift p f φ.hom) : f ≫ (Iso_of_Iso_lift hφ).inv = 𝟙 R := by
+    [hφ : IsHomLift p f φ.hom] : f ≫ (hφ.Iso_of_Iso_lift).inv = 𝟙 R := by
   rw [CategoryTheory.Iso.comp_inv_eq]
   simp only [Iso_of_Iso_lift_hom, id_comp]
 
 /-- If `φ : a ⟶ b` lifts `f : R ⟶ S` and `φ` is an isomorphism, then so is `f`. -/
 lemma IsIso_of_lift_IsIso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
-    (hφ : IsHomLift p f φ) [IsIso φ] : IsIso f :=
-  (IsHomLift.hom_eq hφ) ▸ inferInstance
+   [hφ : IsHomLift p f φ] [IsIso φ] : IsIso f :=
+  hφ.hom_eq ▸ inferInstance
 
 /-- Given `φ : a ≅ b` and `f : R ≅ S`, such that `φ.hom` lifts `f.hom`, then `φ.inv` lifts
 `f.inv`. -/
-protected lemma inv_lift_inv {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ≅ S} {φ : a ≅ b}
-    (hφ : IsHomLift p f.hom φ.hom) : IsHomLift p f.inv φ.inv where
-  ObjLiftDomain := hφ.2
-  ObjLiftCodomain := hφ.1
-  HomLift := CommSq.horiz_inv (f:=p.mapIso φ) (i:=f) hφ.3
+protected instance inv_lift_inv {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ≅ S} {φ : a ≅ b}
+    [hφ : IsHomLift p f.hom φ.hom] : IsHomLift p f.inv φ.inv where
+  domain_eq := hφ.2
+  codomain_eq := hφ.1
+  homlift := CommSq.horiz_inv (f:=p.mapIso φ) (i:=f) hφ.3
 
 /-- Given `φ : a ≅ b` and `f : R ⟶ S`, such that `φ.hom` lifts `f`, then `φ.inv` lifts the
 inverse of `f` given by `Iso_of_Iso_lift`. -/
-protected lemma inv_lift_inv' {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ≅ b}
-    (hφ : IsHomLift p f φ.hom) : IsHomLift p (Iso_of_Iso_lift hφ).inv φ.inv where
-  ObjLiftDomain := hφ.2
-  ObjLiftCodomain := hφ.1
-  HomLift := CommSq.horiz_inv (f:=p.mapIso φ) (i:=Iso_of_Iso_lift hφ) (by simpa using hφ.3)
+protected instance inv_lift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ≅ b}
+    [hφ : IsHomLift p f φ.hom] : IsHomLift p (hφ.Iso_of_Iso_lift).inv φ.inv where
+  domain_eq := hφ.2
+  codomain_eq := hφ.1
+  homlift := CommSq.horiz_inv (f:=p.mapIso φ) (i:=hφ.Iso_of_Iso_lift) (by simpa using hφ.3)
 
 /-- If `φ : a ⟶ b` lifts `f : R ⟶ S` and both are isomorphisms, then `φ⁻¹` lifts `f⁻¹`. -/
-protected lemma inv {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
-    (hφ : IsHomLift p f φ) [IsIso φ] [IsIso f] : IsHomLift p (inv f) (inv φ) :=
-  IsHomLift.inv_lift_inv (f:=asIso f) (φ:= asIso φ) hφ
+protected instance inv {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
+    [hφ : IsHomLift p f φ] [IsIso φ] [IsIso f] : IsHomLift p (inv f) (inv φ) :=
+  IsHomLift.inv_lift_inv (f := asIso f) (φ := asIso φ) (hφ := hφ)
 
 /-- If `φ : a ⟶ b` is an isomorphism, and lifts `𝟙 S` for some `S : 𝒮`, then `φ⁻¹` also
 lifts `𝟙 S` -/
-lemma lift_id_inv {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a b : 𝒳} {φ : a ⟶ b} [IsIso φ]
-    (hφ : IsHomLift p (𝟙 S) φ) : IsHomLift p (𝟙 S) (inv φ) :=
-  (IsIso.inv_id (X:=S)) ▸ IsHomLift.inv hφ
+instance lift_id_inv {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a b : 𝒳} {φ : a ⟶ b} [IsIso φ]
+    [hφ : IsHomLift p (𝟙 S) φ] : IsHomLift p (𝟙 S) (inv φ) :=
+  (IsIso.inv_id (X:=S)) ▸ hφ.inv
 
-end IsHomLift
+end Functor.IsHomLift
