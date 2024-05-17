@@ -466,6 +466,25 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     intro x hx
     have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
     simp (config := {contextual := true}) [List.mem_filter, this, hx]
+
+lemma Nodup.get_not_mem_take {α : Type*} {l : List α}
+    (hl : l.Nodup) (n : ℕ) (hn : n < l.length) : l.get ⟨n, hn⟩ ∉ l.take n := by
+  revert n
+  induction' l with a l ih
+  · simp
+  · intro n hn
+    induction' n with n
+    · simp
+    · simp only [List.length_cons, List.get_cons_succ, List.take_cons_succ, Bool.not_eq_true,
+        List.mem_cons, not_or] at hn ⊢
+      refine ⟨?_, ih (List.nodup_cons.mp hl).2 _ <| Nat.succ_lt_succ_iff.mp hn⟩
+      rintro eq1
+      have := hl.get_inj_iff (i := ⟨0,  by simp only [List.length_cons, zero_lt_succ]⟩)
+        (j := ⟨n.succ, by rw [List.length_cons]; exact hn⟩)
+      simp only [List.length_cons, Fin.zero_eta, List.get_cons_zero, ← eq1, List.get_cons_succ,
+        true_iff] at this
+      cases this
+
 end List
 
 theorem Option.toList_nodup {α} : ∀ o : Option α, o.toList.Nodup

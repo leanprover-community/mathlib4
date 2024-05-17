@@ -144,4 +144,19 @@ theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1
   simp_rw [count_eq_of_nodup <| nodup_dedup l, mem_dedup]
 #align list.count_dedup List.count_dedup
 
+lemma dedup_length_lt_of_not_nodup (l : List α) (h : ¬ l.Nodup) :
+    l.dedup.length < l.length := by
+  contrapose! h
+  have h' := _root_.le_antisymm h (List.Sublist.length_le (List.dedup_sublist l))
+  rw [← List.dedup_eq_self]
+  exact List.Sublist.eq_of_length (List.dedup_sublist _) h'.symm
+
+lemma dedup_ne_nil_of_ne_nil (l : List α) (h : l ≠ List.nil) :
+    l.dedup ≠ List.nil := by
+  contrapose! h
+  rw [List.eq_nil_iff_forall_not_mem] at h ⊢
+  intros a
+  rw [← List.mem_dedup]
+  exact h a
+
 end List

@@ -336,6 +336,12 @@ theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
   cases h hxx'; exact hx'
 #align list.map_subset_iff List.map_subset_iff
 
+lemma map_ne_nil_of_ne_nil (l : List α) (h : l ≠ List.nil)
+    (f : α → β) : l.map f ≠ List.nil := by
+  cases l with | nil => ?_ | cons x l => ?_
+  · cases h rfl
+  · dsimp; exact List.cons_ne_nil _ _
+
 /-! ### append -/
 
 theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ :=

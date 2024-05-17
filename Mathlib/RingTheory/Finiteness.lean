@@ -208,6 +208,14 @@ theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
   fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image, ht.2]⟩
 #align submodule.fg.map Submodule.FG.map
 
+theorem FG.map' {S : Type*} [Semiring S]  {P : Type*} [AddCommMonoid P] [Module S P]
+    {σ : R →+* S} [RingHomSurjective σ]
+    (f : M →ₛₗ[σ] P)
+    {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
+  let ⟨t, ht⟩ := fg_def.1 hs
+  fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image, ht.2]⟩
+
+
 variable {f}
 
 theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {N : Submodule R M}
@@ -586,6 +594,42 @@ theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) 
     rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
     exact hM.1.map f⟩
 #align module.finite.of_surjective Module.Finite.of_surjective
+
+theorem of_surjective' [hM : Finite R M]
+    {S : Type*} [Semiring S] {σ : R →+* S} [RingHomSurjective σ]
+    {N : Type*} [AddCommMonoid N] [Module S N]
+    (f : M →ₛₗ[σ] N) (hf : Surjective f) : Finite S N :=
+  ⟨by
+    rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
+    exact hM.1.map' f⟩
+
+lemma exists_strictMono_of_not_finite.aux (h : ¬ Finite R M) :
+    ∀ (S : Finset M), ∃ (m : M), m ∉ S ∧ m ∉ span R S:= by
+  classical
+  rw [finite_def] at h
+  delta FG at h
+  push_neg at h
+  replace h : ∀ (S : Finset M), ∃ (m : M), m ∉ S ∧ m ∉ span R S := by
+    intro S
+    specialize h S
+    contrapose! h
+    rw [eq_top_iff]
+    intro x _
+    by_cases hx : x ∈ S
+    · refine subset_span hx
+    apply h; assumption
+  exact h
+
+lemma exists_strictMono_of_not_finite (h : ¬ Finite R M) :
+    ∃ f : ℕ → Submodule R M, StrictMono f := by
+  classical
+  have h (S : Finset M) : ∃ (S' : Finset M), S ⊂ S' ∧ (span R S : Submodule R M) < span R S' := by
+    obtain ⟨m, hm1, hm2⟩ := exists_strictMono_of_not_finite.aux h S
+    exact ⟨insert m S, Finset.ssubset_insert hm1, lt_of_le_of_ne (span_mono <|
+      Finset.subset_insert _ _) <| by contrapose! hm2; exact hm2.symm ▸ subset_span <| by simp⟩
+  choose S _ hS using h
+  refine ⟨fun m : ℕ ↦ span R <| S^[m] ∅, strictMono_nat_of_lt_succ fun n ↦ ?_⟩
+  simpa only [Function.iterate_succ', Function.comp_apply] using hS _
 
 instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
     [SMul R A] [IsScalarTower R A M] [Finite R M]

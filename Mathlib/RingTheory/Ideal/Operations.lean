@@ -705,6 +705,17 @@ theorem iInf_sup_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s
     (⨅ i ∈ s, J i) ⊔ I = ⊤ := by rw [sup_comm, sup_iInf_eq_top]; intro i hi; rw [sup_comm, h i hi]
 #align ideal.infi_sup_eq_top Ideal.iInf_sup_eq_top
 
+theorem prod_eq_inf_of_pairwise_coprime {s : Finset (Ideal R)}
+    (h : Set.Pairwise s (fun I J : Ideal R ↦ I ⊔ J = ⊤))  : s.prod id = s.inf id := by
+  classical
+  induction' s using Finset.induction_on with I s hI ih
+  · simp only [id_eq, Finset.prod_empty, one_eq_top, Finset.inf_empty]
+  · rw [Finset.prod_insert hI, id, Finset.inf_insert, id, ih (h.mono <| by simp),
+      mul_eq_inf_of_coprime]
+    rw [Finset.inf_eq_iInf]
+    exact sup_iInf_eq_top fun J hJ ↦ @h I (Finset.mem_insert_self _ _) J
+      (Finset.mem_insert_of_mem hJ) fun r ↦ hI <| r ▸ hJ
+
 theorem sup_pow_eq_top {n : ℕ} (h : I ⊔ J = ⊤) : I ⊔ J ^ n = ⊤ := by
   rw [← Finset.card_range n, ← Finset.prod_const]
   exact sup_prod_eq_top fun _ _ => h
@@ -1083,6 +1094,10 @@ theorem IsPrime.multiset_prod_map_le {s : Multiset ι} (f : ι → Ideal R) {P :
     (hp : IsPrime P) : (s.map f).prod ≤ P ↔ ∃ i ∈ s, f i ≤ P := by
   simp_rw [hp.multiset_prod_le, Multiset.mem_map, exists_exists_and_eq_and]
 #align ideal.is_prime.multiset_prod_map_le Ideal.IsPrime.multiset_prod_map_le
+
+theorem IsPrime.list_prod_le (l : List (Ideal R)) {P : Ideal R} (hp : IsPrime P) :
+    l.prod ≤ P ↔ ∃ i ∈ l, i ≤ P := by
+  simp_rw [← Multiset.prod_coe, hp.multiset_prod_le, Multiset.mem_coe]
 
 theorem IsPrime.multiset_prod_mem_iff_exists_mem {I : Ideal R} (hI : I.IsPrime) (s : Multiset R) :
     s.prod ∈ I ↔ ∃ p ∈ s, p ∈ I := by

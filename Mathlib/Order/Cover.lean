@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van 
 -/
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Antisymmetrization
+import Mathlib.Data.List.Chain
 
 #align_import order.cover from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -621,3 +622,23 @@ theorem covBy_iff : x ⋖ y ↔ x.1 ⋖ y.1 ∧ x.2 = y.2 ∨ x.2 ⋖ y.2 ∧ x.
 #align prod.covby_iff Prod.covBy_iff
 
 end Prod
+
+section List
+
+lemma relation.refl_trans_gen_of_chain'_wcovby {X : Type*} [PartialOrder X]
+    (l : List X) (hl : 0 < l.length) (l_chain : l.Chain' (. ⩿ .)) :
+  Relation.ReflTransGen (. ⋖ .) (l.nthLe 0 hl) (l.nthLe (l.length - 1) <| Nat.pred_lt <|
+    show l.length ≠ 0 by aesop) := by
+  cases l with
+  | nil => cases hl
+  | cons x0 l =>
+  induction l generalizing x0 with
+  | nil => exact Relation.ReflTransGen.refl
+  | cons x1 l ih =>
+    refine Relation.ReflTransGen.trans
+      (eq_or_ne x0 x1 |>.elim (fun h ↦ h ▸ Relation.ReflTransGen.refl) fun h ↦
+        Relation.ReflTransGen.cases_head_iff.mpr <| Or.inr
+          ⟨_, (List.chain'_cons.mp l_chain).1.covBy_of_ne h, by rfl⟩) <| ih x1 (Nat.zero_lt_succ _)
+      (List.chain'_cons'.mp l_chain).2
+
+end List

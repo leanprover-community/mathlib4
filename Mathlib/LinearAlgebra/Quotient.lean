@@ -299,6 +299,9 @@ theorem unique_quotient_iff_eq_top : Nonempty (Unique (M ⧸ p)) ↔ p = ⊤ :=
     by rintro rfl; exact ⟨QuotientTop.unique⟩⟩
 #align submodule.unique_quotient_iff_eq_top Submodule.unique_quotient_iff_eq_top
 
+theorem unique_quotient_iff_forall_mem : Nonempty (Unique (M ⧸ p)) ↔ ∀ (m : M), m ∈ p :=
+  unique_quotient_iff_eq_top.trans $ eq_top_iff.trans ⟨λ x _ ↦ x ⟨⟩, λ hx _ _ ↦ hx _⟩
+
 variable (p)
 
 noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintype (M ⧸ S) :=
