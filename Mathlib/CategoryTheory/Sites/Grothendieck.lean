@@ -690,7 +690,7 @@ using this.
 -/
 abbrev multifork {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
     Limits.Multifork (S.index P) :=
-  Limits.Multifork.ofι _ (P.obj (Opposite.op X)) (fun I => P.map I.f.op)
+  Limits.Multifork.ofProj _ (P.obj (Opposite.op X)) (fun I => P.map I.f.op)
     (by
       intro I
       dsimp [index]

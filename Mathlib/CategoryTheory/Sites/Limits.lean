@@ -64,7 +64,7 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
   pt := S.pt
   π :=
     { app := fun k => (Presheaf.isLimitOfIsSheaf J (F.obj k).1 W (F.obj k).2).lift <|
-        Multifork.ofι _ S.pt (fun i => S.ι i ≫ (E.π.app k).app (op i.Y))
+        Multifork.ofProj _ S.pt (fun i => S.proj i ≫ (E.π.app k).app (op i.Y))
           (by
             intro i
             simp only [Category.assoc]
@@ -81,7 +81,7 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
         intro ii
         rw [Presheaf.IsSheaf.amalgamate_map, Category.assoc, ← (F.map f).val.naturality, ←
           Category.assoc, Presheaf.IsSheaf.amalgamate_map]
-        dsimp [Multifork.ofι]
+        dsimp [Multifork.ofProj]
         erw [Category.assoc, ← E.w f]
         aesop_cat }
 set_option linter.uppercaseLean3 false in
@@ -104,7 +104,7 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       intro S i
       apply (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op i.Y)) hE).hom_ext
       intro k
-      dsimp [Multifork.ofι]
+      dsimp [Multifork.ofProj]
       erw [Category.assoc, (E.π.app k).naturality]
       dsimp
       rw [← Category.assoc]
@@ -123,8 +123,8 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       intro i
       dsimp only [multiforkEvaluationCone, Presheaf.isLimitOfIsSheaf]
       rw [(F.obj k).cond.amalgamate_map]
-      dsimp [Multifork.ofι]
-      change _ = S.ι i ≫ _
+      dsimp [Multifork.ofProj]
+      change _ = S.proj i ≫ _
       erw [← hm, Category.assoc, ← (E.π.app k).naturality, Category.assoc]
       rfl)
 set_option linter.uppercaseLean3 false in

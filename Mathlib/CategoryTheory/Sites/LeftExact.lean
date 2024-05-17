@@ -37,13 +37,13 @@ def coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation {X : C} {K : Type m
     Cone (F ⋙ (evaluation _ _).obj (op i.Y)) where
   pt := E.pt
   π :=
-    { app := fun k => E.π.app k ≫ Multiequalizer.ι (W.index (F.obj k)) i
+    { app := fun k => E.π.app k ≫ Multiequalizer.proj (W.index (F.obj k)) i
       naturality := by
         intro a b f
         dsimp
         rw [Category.id_comp, Category.assoc, ← E.w f]
         dsimp [diagramNatTrans]
-        simp only [Multiequalizer.lift_ι, Category.assoc] }
+        simp only [Multiequalizer.lift_proj, Category.assoc] }
 #align category_theory.grothendieck_topology.cone_comp_evaluation_of_cone_comp_diagram_functor_comp_evaluation CategoryTheory.GrothendieckTopology.coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation
 
 /-- An auxiliary definition to be used in the proof of the fact that
@@ -79,7 +79,7 @@ instance preservesLimit_diagramFunctor
           intro E k
           dsimp [diagramNatTrans]
           refine' Multiequalizer.hom_ext _ _ _ (fun a => _)
-          simp only [Multiequalizer.lift_ι, Multiequalizer.lift_ι_assoc, Category.assoc]
+          simp only [Multiequalizer.lift_proj, Multiequalizer.lift_proj_assoc, Category.assoc]
           change (_ ≫ _) ≫ _ = _
           dsimp [evaluateCombinedCones]
           erw [Category.comp_id, Category.assoc, ← NatTrans.comp_app, limit.lift_π, limit.lift_π]
@@ -88,7 +88,7 @@ instance preservesLimit_diagramFunctor
           intro E m hm
           refine' Multiequalizer.hom_ext _ _ _ (fun a => limit_obj_ext (fun j => _))
           delta liftToDiagramLimitObj
-          erw [Multiequalizer.lift_ι, Category.assoc]
+          erw [Multiequalizer.lift_proj, Category.assoc]
           change _ = (_ ≫ _) ≫ _
           dsimp [evaluateCombinedCones]
           erw [Category.comp_id, Category.assoc, ← NatTrans.comp_app, limit.lift_π, limit.lift_π]

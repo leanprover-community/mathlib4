@@ -130,7 +130,7 @@ def multicospanIndex (F : Cᵒᵖ ⥤ A) : MulticospanIndex A where
 /-- The multifork attached to a presheaf `F : Cᵒᵖ ⥤ A`, `S : C` and `E : PreOneHypercover S`. -/
 def multifork (F : Cᵒᵖ ⥤ A) :
     Multifork (E.multicospanIndex F) :=
-  Multifork.ofι _ (F.obj (Opposite.op S)) (fun i₀ => F.map (E.f i₀).op) (by
+  Multifork.ofProj _ (F.obj (Opposite.op S)) (fun i₀ => F.map (E.f i₀).op) (by
     rintro ⟨⟨i₁, i₂⟩, (j : E.I₁ i₁ i₂)⟩
     dsimp
     simp only [← F.map_comp, ← op_comp, E.w])
@@ -182,7 +182,7 @@ variable (c : Multifork (E.multicospanIndex F.val))
 
 /-- Auxiliary definition of `isLimitMultifork`. -/
 noncomputable def multiforkLift : c.pt ⟶ F.val.obj (Opposite.op S) :=
-  F.cond.amalgamateOfArrows _ E.mem₀ c.ι (fun W i₁ i₂ p₁ p₂ w => by
+  F.cond.amalgamateOfArrows _ E.mem₀ c.proj (fun W i₁ i₂ p₁ p₂ w => by
     apply F.cond.hom_ext ⟨_, E.mem₁ _ _ _ _ w⟩
     rintro ⟨T, g, j, h, fac₁, fac₂⟩
     dsimp
@@ -191,7 +191,7 @@ noncomputable def multiforkLift : c.pt ⟶ F.val.obj (Opposite.op S) :=
     simpa using c.condition ⟨⟨i₁, i₂⟩, j⟩ =≫ F.val.map h.op)
 
 @[reassoc]
-lemma multiforkLift_map (i₀ : E.I₀) : multiforkLift c ≫ F.val.map (E.f i₀).op = c.ι i₀ := by
+lemma multiforkLift_map (i₀ : E.I₀) : multiforkLift c ≫ F.val.map (E.f i₀).op = c.proj i₀ := by
   simp [multiforkLift]
 
 end

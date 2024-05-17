@@ -42,7 +42,7 @@ variable (P : Cᵒᵖ ⥤ D)
 def diagram (X : C) : (J.Cover X)ᵒᵖ ⥤ D where
   obj S := multiequalizer (S.unop.index P)
   map {S _} f :=
-    Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) (I.map f.unop)) fun I =>
+    Multiequalizer.lift _ _ (fun I => Multiequalizer.proj (S.unop.index P) (I.map f.unop)) fun I =>
       Multiequalizer.condition (S.unop.index P) (I.map f.unop)
 #align category_theory.grothendieck_topology.diagram CategoryTheory.GrothendieckTopology.diagram
 
@@ -50,7 +50,7 @@ def diagram (X : C) : (J.Cover X)ᵒᵖ ⥤ D where
 @[simps]
 def diagramPullback {X Y : C} (f : X ⟶ Y) : J.diagram P Y ⟶ (J.pullback f).op ⋙ J.diagram P X where
   app S :=
-    Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) I.base) fun I =>
+    Multiequalizer.lift _ _ (fun I => Multiequalizer.proj (S.unop.index P) I.base) fun I =>
       Multiequalizer.condition (S.unop.index P) I.base
   naturality S T f := Multiequalizer.hom_ext _ _ _ (fun I => by dsimp; simp; rfl)
 #align category_theory.grothendieck_topology.diagram_pullback CategoryTheory.GrothendieckTopology.diagramPullback
@@ -60,7 +60,7 @@ between diagrams whose colimits define the values of `plus`. -/
 @[simps]
 def diagramNatTrans {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (X : C) : J.diagram P X ⟶ J.diagram Q X where
   app W :=
-    Multiequalizer.lift _ _ (fun i => Multiequalizer.ι _ _ ≫ η.app _) (fun i => by
+    Multiequalizer.lift _ _ (fun i => Multiequalizer.proj _ _ ≫ η.app _) (fun i => by
       dsimp only
       erw [Category.assoc, Category.assoc, ← η.naturality, ← η.naturality,
         Multiequalizer.condition_assoc]
@@ -73,7 +73,7 @@ theorem diagramNatTrans_id (X : C) (P : Cᵒᵖ ⥤ D) :
   ext : 2
   refine' Multiequalizer.hom_ext _ _ _ (fun i => _)
   dsimp
-  simp only [limit.lift_π, Multifork.ofι_pt, Multifork.ofι_π_app, Category.id_comp]
+  simp only [limit.lift_π, Multifork.ofProj_pt, Multifork.ofProj_π_app, Category.id_comp]
   erw [Category.comp_id]
 #align category_theory.grothendieck_topology.diagram_nat_trans_id CategoryTheory.GrothendieckTopology.diagramNatTrans_id
 
@@ -81,9 +81,7 @@ theorem diagramNatTrans_id (X : C) (P : Cᵒᵖ ⥤ D) :
 theorem diagramNatTrans_zero [Preadditive D] (X : C) (P Q : Cᵒᵖ ⥤ D) :
     J.diagramNatTrans (0 : P ⟶ Q) X = 0 := by
   ext : 2
-  refine' Multiequalizer.hom_ext _ _ _ (fun i => _)
-  dsimp
-  rw [zero_comp, Multiequalizer.lift_ι, comp_zero]
+  exact Multiequalizer.hom_ext _ _ _ (by simp)
 #align category_theory.grothendieck_topology.diagram_nat_trans_zero CategoryTheory.GrothendieckTopology.diagramNatTrans_zero
 
 @[simp]
@@ -123,7 +121,7 @@ def plusObj : Cᵒᵖ ⥤ D where
     convert Category.id_comp (colimit.ι (diagram J P (unop X)) S)
     refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
     dsimp
-    simp only [Multiequalizer.lift_ι, Category.id_comp, Category.assoc]
+    simp only [Multiequalizer.lift_proj, Category.id_comp, Category.assoc]
     dsimp [Cover.Arrow.map, Cover.Arrow.base]
     cases I
     congr
@@ -140,7 +138,7 @@ def plusObj : Cᵒᵖ ⥤ D where
     congr 1
     refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
     dsimp
-    simp only [Multiequalizer.lift_ι, Category.assoc]
+    simp only [Multiequalizer.lift_proj, Category.assoc]
     cases I
     dsimp only [Cover.Arrow.base, Cover.Arrow.map]
     congr 2
@@ -211,7 +209,7 @@ def toPlus : P ⟶ J.plusObj P where
     rw [← colimit.w _ e.op, ← Category.assoc, ← Category.assoc, ← Category.assoc]
     congr 1
     refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
-    simp only [Multiequalizer.lift_ι, Category.assoc]
+    simp only [Multiequalizer.lift_proj, Category.assoc]
     dsimp [Cover.Arrow.base]
     simp
 #align category_theory.grothendieck_topology.to_plus CategoryTheory.GrothendieckTopology.toPlus
@@ -248,9 +246,9 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
   rw [ι_colimMap, ← colimit.w _ e.op, ← Category.assoc, ← Category.assoc]
   congr 1
   refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
-  erw [Multiequalizer.lift_ι]
+  erw [Multiequalizer.lift_proj]
   simp only [unop_op, op_unop, diagram_map, Category.assoc, limit.lift_π,
-    Multifork.ofι_π_app]
+    Multifork.ofProj_π_app]
   let ee : (J.pullback (I.map e).f).obj S.unop ⟶ ⊤ := homOfLE (OrderTop.le_top _)
   erw [← colimit.w _ ee.op, ι_colimMap_assoc, colimit.ι_pre, diagramPullback_app,
     ← Category.assoc, ← Category.assoc]
@@ -261,10 +259,10 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
         Sieve.downward_closed _ I.hf _, by simp⟩) using 1
   · dsimp [diagram]
     cases I
-    simp only [Category.assoc, limit.lift_π, Multifork.ofι_pt, Multifork.ofι_π_app,
+    simp only [Category.assoc, limit.lift_π, Multifork.ofProj_pt, Multifork.ofProj_π_app,
       Cover.Arrow.map_Y, Cover.Arrow.map_f]
     rfl
-  · erw [Multiequalizer.lift_ι]
+  · erw [Multiequalizer.lift_proj]
     dsimp [Cover.index]
     simp only [Functor.map_id, Category.comp_id]
     rfl

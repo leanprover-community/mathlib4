@@ -50,21 +50,21 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
       apply Multiequalizer.hom_ext
       dsimp
       simp only [Functor.mapCone_π_app, Multiequalizer.multifork_π_app_left, Iso.symm_hom,
-        Multiequalizer.lift_ι, eqToHom_refl, Category.comp_id,
+        Multiequalizer.lift_proj, eqToHom_refl, Category.comp_id,
         limit.conePointUniqueUpToIso_hom_comp,
         GrothendieckTopology.Cover.multicospanComp_hom_inv_left, HasLimit.isoOfNatIso_hom_π,
         Category.assoc]
-      simp only [← F.map_comp, limit.lift_π, Multifork.ofι_π_app, implies_true])
+      simp only [← F.map_comp, limit.lift_π, Multifork.ofProj_π_app, implies_true])
 #align category_theory.grothendieck_topology.diagram_comp_iso CategoryTheory.GrothendieckTopology.diagramCompIso
 
 @[reassoc (attr := simp)]
-theorem diagramCompIso_hom_ι (X : C) (W : (J.Cover X)ᵒᵖ) (i : W.unop.Arrow) :
-    (J.diagramCompIso F P X).hom.app W ≫ Multiequalizer.ι ((unop W).index (P ⋙ F)) i =
-  F.map (Multiequalizer.ι _ _) := by
+theorem diagramCompIso_hom_proj (X : C) (W : (J.Cover X)ᵒᵖ) (i : W.unop.Arrow) :
+    (J.diagramCompIso F P X).hom.app W ≫ Multiequalizer.proj ((unop W).index (P ⋙ F)) i =
+  F.map (Multiequalizer.proj _ _) := by
   delta diagramCompIso
   dsimp
   simp
-#align category_theory.grothendieck_topology.diagram_comp_iso_hom_ι CategoryTheory.GrothendieckTopology.diagramCompIso_hom_ι
+#align category_theory.grothendieck_topology.diagram_comp_iso_hom_ι CategoryTheory.GrothendieckTopology.diagramCompIso_hom_proj
 
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
@@ -107,8 +107,8 @@ def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
       ext
       dsimp
       simp only [Category.assoc]
-      erw [Multiequalizer.lift_ι, diagramCompIso_hom_ι, diagramCompIso_hom_ι, ← F.map_comp,
-        Multiequalizer.lift_ι])
+      erw [Multiequalizer.lift_proj, diagramCompIso_hom_proj, diagramCompIso_hom_proj,
+        ← F.map_comp, Multiequalizer.lift_proj])
 #align category_theory.grothendieck_topology.plus_comp_iso CategoryTheory.GrothendieckTopology.plusCompIso
 
 @[reassoc (attr := simp)]
@@ -120,12 +120,8 @@ theorem ι_plusCompIso_hom (X) (W) :
     Cocones.forget_map, Iso.trans_hom, NatIso.ofComponents_hom_app, Functor.mapIso_hom, ←
     Category.assoc]
   erw [(isColimitOfPreserves F (colimit.isColimit (J.diagram P (unop X)))).fac]
-  simp only [Category.assoc, HasLimit.isoOfNatIso_hom_π, Iso.symm_hom,
-    Cover.multicospanComp_hom_inv_left, eqToHom_refl, Category.comp_id,
-    limit.conePointUniqueUpToIso_hom_comp, Functor.mapCone_π_app,
-    Multiequalizer.multifork_π_app_left, Multiequalizer.lift_ι, Functor.map_comp, eq_self_iff_true,
-    Category.assoc, Iso.trans_hom, Iso.cancel_iso_hom_left, NatIso.ofComponents_hom_app,
-    colimit.cocone_ι, Category.assoc, HasColimit.isoOfNatIso_ι_hom]
+  simp only [diagram_obj, colimit.cocone_x, colimit.cocone_ι, Functor.comp_obj,
+    HasColimit.isoOfNatIso_ι_hom, NatIso.ofComponents_hom_app, Iso.trans_hom, Category.assoc]
 #align category_theory.grothendieck_topology.ι_plus_comp_iso_hom CategoryTheory.GrothendieckTopology.ι_plusCompIso_hom
 
 @[reassoc (attr := simp)]
@@ -186,9 +182,9 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   apply Multiequalizer.hom_ext
   intro a
   dsimp
-  simp only [diagramCompIso_hom_ι_assoc, Multiequalizer.lift_ι, diagramCompIso_hom_ι,
+  simp only [diagramCompIso_hom_proj_assoc, Multiequalizer.lift_proj, diagramCompIso_hom_proj,
     Category.assoc]
-  simp only [← F.map_comp, Multiequalizer.lift_ι]
+  simp only [← F.map_comp, Multiequalizer.lift_proj]
 #align category_theory.grothendieck_topology.plus_comp_iso_whisker_right CategoryTheory.GrothendieckTopology.plusCompIso_whiskerRight
 
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`, functorially in `P`. -/
@@ -209,8 +205,8 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   congr 1
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext; intro a
-  rw [Category.assoc, diagramCompIso_hom_ι, ← F.map_comp]
-  simp only [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map]
+  rw [Category.assoc, diagramCompIso_hom_proj, ← F.map_comp]
+  simp only [unop_op, limit.lift_π, Multifork.ofProj_π_app, Functor.comp_obj, Functor.comp_map]
 #align category_theory.grothendieck_topology.whisker_right_to_plus_comp_plus_comp_iso_hom CategoryTheory.GrothendieckTopology.whiskerRight_toPlus_comp_plusCompIso_hom
 
 @[simp]

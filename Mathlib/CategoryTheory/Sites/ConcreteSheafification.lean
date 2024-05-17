@@ -122,14 +122,14 @@ noncomputable def equiv {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) [HasMultiequ
 @[simp]
 theorem equiv_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} [HasMultiequalizer (S.index P)]
     (x : (multiequalizer (S.index P) : D)) (I : S.Arrow) :
-    equiv P S x I = Multiequalizer.ι (S.index P) I x :=
+    equiv P S x I = Multiequalizer.proj (S.index P) I x :=
   rfl
 #align category_theory.meq.equiv_apply CategoryTheory.Meq.equiv_apply
 
 @[simp]
 theorem equiv_symm_eq_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} [HasMultiequalizer (S.index P)]
     (x : Meq P S) (I : S.Arrow) :
-    Multiequalizer.ι (S.index P) I ((Meq.equiv P S).symm x) = x I := by
+    Multiequalizer.proj (S.index P) I ((Meq.equiv P S).symm x) = x I := by
   rw [← equiv_apply]
   simp
 #align category_theory.meq.equiv_symm_eq_apply CategoryTheory.Meq.equiv_symm_eq_apply
@@ -166,7 +166,7 @@ theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x :
   ext i
   simp only [Functor.op_obj, unop_op, pullback_obj, diagram_obj, Functor.comp_obj,
     diagramPullback_app, Meq.equiv_apply, Meq.pullback_apply]
-  erw [← comp_apply, Multiequalizer.lift_ι, Meq.equiv_symm_eq_apply]
+  erw [← comp_apply, Multiequalizer.lift_proj, Meq.equiv_symm_eq_apply]
   cases i; rfl
 #align category_theory.grothendieck_topology.plus.res_mk_eq_mk_pullback CategoryTheory.GrothendieckTopology.Plus.res_mk_eq_mk_pullback
 
@@ -181,7 +181,7 @@ theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X))
   dsimp [diagram]
   apply Concrete.multiequalizer_ext
   intro i
-  simp only [← comp_apply, Category.assoc, Multiequalizer.lift_ι, Category.comp_id,
+  simp only [← comp_apply, Category.assoc, Multiequalizer.lift_proj, Category.comp_id,
     Meq.equiv_symm_eq_apply]
   rfl
 #align category_theory.grothendieck_topology.plus.to_plus_mk CategoryTheory.GrothendieckTopology.Plus.toPlus_mk
@@ -201,8 +201,8 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   apply Concrete.multiequalizer_ext
   intro i
   dsimp [diagram]
-  rw [← comp_apply, ← comp_apply, ← comp_apply, Multiequalizer.lift_ι, Multiequalizer.lift_ι,
-    Multiequalizer.lift_ι]
+  rw [← comp_apply, ← comp_apply, ← comp_apply, Multiequalizer.lift_proj,
+    Multiequalizer.lift_proj, Multiequalizer.lift_proj]
   erw [Meq.equiv_symm_eq_apply]
   let RR : S.Relation :=
     ⟨_, _, _, i.f, 𝟙 _, I.f, i.f ≫ I.f, I.hf, Sieve.downward_closed _ I.hf _, by simp⟩
@@ -219,7 +219,7 @@ theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : P.obj (op X)) :
   apply congr_arg
   apply (Meq.equiv P ⊤).injective
   ext i
-  rw [Meq.equiv_apply, Equiv.apply_symm_apply, ← comp_apply, Multiequalizer.lift_ι]
+  rw [Meq.equiv_apply, Equiv.apply_symm_apply, ← comp_apply, Multiequalizer.lift_proj]
   rfl
 #align category_theory.grothendieck_topology.plus.to_plus_eq_mk CategoryTheory.GrothendieckTopology.Plus.toPlus_eq_mk
 
@@ -241,11 +241,11 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     obtain ⟨W, h1, h2, hh⟩ := Concrete.colimit_exists_of_rep_eq.{u} _ _ _ h
     use W.unop, h1.unop, h2.unop
     ext I
-    apply_fun Multiequalizer.ι (W.unop.index P) I at hh
+    apply_fun Multiequalizer.proj (W.unop.index P) I at hh
     convert hh
     all_goals
       dsimp [diagram]
-      erw [← comp_apply, Multiequalizer.lift_ι, Meq.equiv_symm_eq_apply]
+      erw [← comp_apply, Multiequalizer.lift_proj, Meq.equiv_symm_eq_apply]
       cases I; rfl
   · rintro ⟨S, h1, h2, e⟩
     apply Concrete.colimit_rep_eq_of_exists
@@ -256,7 +256,7 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     convert e
     all_goals
       dsimp [diagram]
-      rw [← comp_apply, Multiequalizer.lift_ι]
+      rw [← comp_apply, Multiequalizer.lift_proj]
       erw [Meq.equiv_symm_eq_apply]
       cases i; rfl
 #align category_theory.grothendieck_topology.plus.eq_mk_iff_exists CategoryTheory.GrothendieckTopology.Plus.eq_mk_iff_exists
@@ -427,7 +427,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     intro I
     apply_fun Meq.equiv _ _ at h
     apply_fun fun e => e I at h
-    convert h <;> erw [Meq.equiv_apply, ← comp_apply, Multiequalizer.lift_ι] <;> rfl
+    convert h <;> erw [Meq.equiv_apply, ← comp_apply, Multiequalizer.lift_proj] <;> rfl
   · rintro (x : (multiequalizer (S.index _) : D))
     obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (Meq.equiv _ _ x)
     use t
@@ -436,7 +436,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     ext i
     dsimp
     erw [← comp_apply]
-    rw [Multiequalizer.lift_ι]
+    rw [Multiequalizer.lift_proj]
     rfl
 #align category_theory.grothendieck_topology.plus.is_sheaf_of_sep CategoryTheory.GrothendieckTopology.Plus.isSheaf_of_sep
 
