@@ -788,4 +788,31 @@ theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
 
 end StarAlgHom
 
+section StarNormal
+
+variable {R A : Type*} [Semiring R] [AddCommMonoid A] [Mul A] [SMulWithZero R A]
+variable [StarAddMonoid R] [Star A] {a : A}
+
+@[simp]
+lemma isStarNormal_inr : IsStarNormal (a : Unitization R A) ↔ IsStarNormal a := by
+  simp only [isStarNormal_iff, commute_iff_eq, ← inr_star, ← inr_mul, inr_injective.eq_iff]
+
+variable (R a) in
+instance instIsStarNormal (a : A) [IsStarNormal a] :
+    IsStarNormal (a : Unitization R A) :=
+  isStarNormal_inr.mpr ‹_›
+
+@[simp]
+lemma isSelfAdjoint_inr : IsSelfAdjoint (a : Unitization R A) ↔ IsSelfAdjoint a := by
+  simp only [isSelfAdjoint_iff, ← inr_star, ← inr_mul, inr_injective.eq_iff]
+
+variable (R) in
+lemma _root_.IsSelfAdjoint.inr (ha : IsSelfAdjoint a) : IsSelfAdjoint (a : Unitization R A) :=
+  isSelfAdjoint_inr.mpr ha
+
+alias ⟨_root_.IsSelfAdjoint.of_inr, _⟩ := isSelfAdjoint_inr
+alias ⟨_root_.IsStarNormal.of_inr, _⟩ := isStarNormal_inr
+
+end StarNormal
+
 end Unitization

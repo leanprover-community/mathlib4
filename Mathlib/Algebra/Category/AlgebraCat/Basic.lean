@@ -190,8 +190,7 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
         rfl }
 #align Algebra.adj AlgebraCat.adj
 
-instance : IsRightAdjoint (forget (AlgebraCat.{u} R)) :=
-  ⟨_, adj R⟩
+instance : (forget (AlgebraCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 
 end AlgebraCat
 

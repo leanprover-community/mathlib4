@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.Ring
 import Mathlib.Algebra.Star.Unitary
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Tactic.Ring
 
 #align_import number_theory.zsqrtd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 

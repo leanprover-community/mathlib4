@@ -129,6 +129,3 @@ theorem cast_pow (q : ℚ) (k : ℕ) : ↑(q ^ k) = (q : α) ^ k :=
 end WithDivRing
 
 end Rat
-
--- Guard against import creep regression.
-assert_not_exists zpow_add₀

@@ -403,11 +403,11 @@ def imageForgetAdj : image ⊣ forget X :=
             exact (Over.w k).symm } }
 #align category_theory.mono_over.image_forget_adj CategoryTheory.MonoOver.imageForgetAdj
 
-instance : IsRightAdjoint (forget X) where
-  left := image
-  adj := imageForgetAdj
+instance : (forget X).IsRightAdjoint :=
+  ⟨_, ⟨imageForgetAdj⟩⟩
 
 instance reflective : Reflective (forget X) where
+  adj := imageForgetAdj
 #align category_theory.mono_over.reflective CategoryTheory.MonoOver.reflective
 
 /-- Forgetting that a monomorphism over `X` is a monomorphism, then taking its image,

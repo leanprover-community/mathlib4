@@ -150,8 +150,7 @@ def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ where
 /-- Restrict the codomain of a linear map `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-@[reducible]
-def rangeRestrict [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) : M →ₛₗ[τ₁₂] LinearMap.range f :=
+abbrev rangeRestrict [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) : M →ₛₗ[τ₁₂] LinearMap.range f :=
   f.codRestrict (LinearMap.range f) (LinearMap.mem_range_self f)
 #align linear_map.range_restrict LinearMap.rangeRestrict
 
@@ -325,7 +324,9 @@ theorem map_subtype_range_inclusion {p p' : Submodule R M} (h : p ≤ p') :
     map p'.subtype (range <| inclusion h) = p := by simp [range_inclusion, map_comap_eq, h]
 #align submodule.map_subtype_range_of_le Submodule.map_subtype_range_inclusion
 
-/-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N` -/
+/-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`.
+
+See also `Submodule.mapIic`. -/
 def MapSubtype.relIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } where
   toFun p' := ⟨map p.subtype p', map_subtype_le p _⟩
   invFun q := comap p.subtype q
@@ -349,6 +350,16 @@ theorem map_subtype_embedding_eq (p' : Submodule R p) :
     MapSubtype.orderEmbedding p p' = map p.subtype p' :=
   rfl
 #align submodule.map_subtype_embedding_eq Submodule.map_subtype_embedding_eq
+
+/-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`. -/
+def mapIic [Semiring R] [AddCommMonoid M] [Module R M] (p : Submodule R M) :
+    Submodule R p ≃o Set.Iic p :=
+  Submodule.MapSubtype.relIso p
+
+@[simp] lemma coe_mapIic_apply [Semiring R] [AddCommMonoid M] [Module R M]
+    (p : Submodule R M) (q : Submodule R p) :
+    (p.mapIic q : Submodule R M) = q.map p.subtype :=
+  rfl
 
 end AddCommMonoid
 
