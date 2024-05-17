@@ -364,7 +364,7 @@ def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
 
 @[simp, reassoc]
 theorem ι_fromGlued (x : 𝒰.J) : 𝒰.gluedCover.ι x ≫ 𝒰.fromGlued = 𝒰.map x :=
-  Multicoequalizer.π_desc _ _ _ _ _
+  Multicoequalizer.inj_desc _ _ _ _ _
 #align algebraic_geometry.Scheme.open_cover.ι_from_glued AlgebraicGeometry.Scheme.OpenCover.ι_fromGlued
 
 theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
@@ -466,15 +466,15 @@ theorem ι_glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
     (hf : ∀ x y, (pullback.fst : pullback (𝒰.map x) (𝒰.map y) ⟶ _) ≫ f x = pullback.snd ≫ f y)
     (x : 𝒰.J) : 𝒰.map x ≫ 𝒰.glueMorphisms f hf = f x := by
   rw [← ι_fromGlued, Category.assoc]
-  erw [IsIso.hom_inv_id_assoc, Multicoequalizer.π_desc]
+  erw [IsIso.hom_inv_id_assoc, Multicoequalizer.inj_desc]
 #align algebraic_geometry.Scheme.open_cover.ι_glue_morphisms AlgebraicGeometry.Scheme.OpenCover.ι_glueMorphisms
 
 theorem hom_ext {Y : Scheme} (f₁ f₂ : X ⟶ Y) (h : ∀ x, 𝒰.map x ≫ f₁ = 𝒰.map x ≫ f₂) : f₁ = f₂ := by
   rw [← cancel_epi 𝒰.fromGlued]
   apply Multicoequalizer.hom_ext
   intro x
-  erw [Multicoequalizer.π_desc_assoc]
-  erw [Multicoequalizer.π_desc_assoc]
+  erw [Multicoequalizer.inj_desc_assoc]
+  erw [Multicoequalizer.inj_desc_assoc]
   exact h x
 #align algebraic_geometry.Scheme.open_cover.hom_ext AlgebraicGeometry.Scheme.OpenCover.hom_ext
 
