@@ -57,3 +57,5 @@ oldDecls="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env l
 
 ## final report
 printf -- '---\n\n## Weekly stats (%s %(%Y-%m-%d)T)\n\n%s, %s total(insertions-deletions)\n\n---\n\n%s\n\n commits: old %s, current %s.\n\nTake also a look at the [`Mathlib` stats page](%s).\nNew Declaration:\n%s\nOld Declarations:\n%s' "${date}" -1 "${gdiff}" "${net}" "${percent}" "${oldCommitURL}" "${currentCommitURL}" "${statsURL}" "${newDecls}" "${oldDecls}
+
+git checkout "${currentCommit}"
