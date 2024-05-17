@@ -358,8 +358,8 @@ def compl₂' {R₁ : Type*} [CommSemiring R₁]  [Module R₂ Nₗ] [Module R�
 
 /-- Composing linear maps `Q → M` and `Q' → N` with a bilinear map `M → N → P` to
 form a bilinear map `Q → Q' → P`. -/
-def compl₁₂ {R₁ : Type*} [CommSemiring R₁] [Module R₂ Nₗ] [Module R₂ Pₗ] [Module R₁ Pₗ] [Module R₁ Mₗ]
-    [SMulCommClass R₁ R₂ Pₗ] [SMulCommClass R₂ R₁ Pₗ] [Module R₁ Qₗ] [Module R₂ Qₗ']
+def compl₁₂ {R₁ : Type*} [CommSemiring R₁] [Module R₂ Nₗ] [Module R₂ Pₗ] [Module R₁ Pₗ]
+    [Module R₁ Mₗ] [SMulCommClass R₁ R₂ Pₗ] [SMulCommClass R₂ R₁ Pₗ] [Module R₁ Qₗ] [Module R₂ Qₗ']
     (f : Mₗ →ₗ[R₁] Nₗ →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] Nₗ) :
     Qₗ →ₗ[R₁] Qₗ' →ₗ[R₂] Pₗ :=
   (f.comp g).compl₂' g'
