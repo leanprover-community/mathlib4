@@ -276,6 +276,14 @@ theorem orderTop_single (h : r ≠ 0) : (single a r).orderTop = a :=
     (WithTop.coe_inj.mpr (support_single_subset
       ((single a r).isWF_support.min_mem (support_nonempty_iff.2 (single_ne_zero h)))))
 
+theorem orderTop_single_le : a ≤ (single a r).orderTop := by
+  by_cases hr : r = 0
+  · simp only [hr, map_zero, orderTop_zero, le_top]
+  · rw [orderTop_single hr]
+
+theorem lt_orderTop_single {g g' : Γ} (hgg' : g < g') : g < (single g' r).orderTop :=
+  lt_of_lt_of_le (WithTop.coe_lt_coe.mpr hgg') orderTop_single_le
+
 theorem coeff_eq_zero_of_lt_orderTop {x : HahnSeries Γ R} {i : Γ} (hi : i < x.orderTop) :
     x.coeff i = 0 := by
   rcases eq_or_ne x 0 with (rfl | hx)
@@ -284,6 +292,104 @@ theorem coeff_eq_zero_of_lt_orderTop {x : HahnSeries Γ R} {i : Γ} (hi : i < x.
   rw [← mem_support] at hi
   rw [orderTop_of_ne hx, WithTop.coe_lt_coe]
   exact Set.IsWF.not_lt_min _ _ hi
+
+/-- A variant of the coefficient function that takes inputs in `WithTop Γ`. -/
+def coeffTop (x : HahnSeries Γ R) (g : WithTop Γ) : R :=
+  match g with
+  | ⊤ => 0
+  | (g : Γ) => x.coeff g
+
+@[simp]
+theorem coeffTop_eq (x : HahnSeries Γ R) (g : Γ) : x.coeffTop g = x.coeff g :=
+  rfl
+
+@[simp]
+theorem coeffTop_Top (x : HahnSeries Γ R) : x.coeffTop ⊤ = 0 :=
+  rfl
+
+@[simp]
+theorem coeff_untop_eq {x : HahnSeries Γ R} {g : WithTop Γ} (hg : g ≠ ⊤) :
+    x.coeff (WithTop.untop g hg) = x.coeffTop g := by
+  rw [← coeffTop_eq, WithTop.coe_untop]
+
+theorem ne_zero_of_coeffTop_ne_zero {x : HahnSeries Γ R} {g : WithTop Γ} (h : x.coeffTop g ≠ 0) :
+    x ≠ 0 := by
+  match g with
+  | ⊤ => exact fun _ ↦ h rfl
+  | (g : Γ) => exact ne_zero_of_coeff_ne_zero h
+
+theorem orderTop_le_of_coeffTop_ne_zero {Γ} [LinearOrder Γ] {x : HahnSeries Γ R}
+    {g : WithTop Γ} (h : x.coeffTop g ≠ 0) : x.orderTop ≤ g := by
+  match g with
+  | ⊤ => exact (h rfl).elim
+  | (g : Γ) =>
+    rw [orderTop_of_ne (ne_zero_of_coeffTop_ne_zero h), WithTop.coe_le_coe]
+    exact Set.IsWF.min_le _ _ ((mem_support _ _).2 h)
+
+theorem coeffTop_eq_zero_of_lt_orderTop {x : HahnSeries Γ R} {i : WithTop Γ} (hi : i < x.orderTop) :
+    x.coeffTop i = 0 := by
+  match i with
+  | ⊤ => exact rfl
+  | (i : Γ) => rw [coeffTop_eq, coeff_eq_zero_of_lt_orderTop hi]
+
+/-- A leading coefficient of a Hahn series is the coefficient of a lowest-order nonzero term, or
+zero if the series vanishes. -/
+def leadingCoeff (x : HahnSeries Γ R) : R :=
+  x.coeffTop x.orderTop
+
+@[simp]
+theorem leadingCoeff_zero : leadingCoeff (0 : HahnSeries Γ R) = 0 := by
+  simp [leadingCoeff]
+
+theorem leadingCoeff_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
+    x.leadingCoeff = x.coeff (x.isWF_support.min (support_nonempty_iff.2 hx)) := by
+  rw [leadingCoeff, orderTop_of_ne hx, coeffTop_eq]
+
+theorem leadingCoeff_ne_iff {x : HahnSeries Γ R} : x ≠ 0 ↔ x.leadingCoeff ≠ 0 := by
+  constructor
+  · intro hx
+    rw [leadingCoeff_of_ne hx]
+    exact coeff_orderTop_ne (orderTop_of_ne hx)
+  · contrapose!
+    intro hx
+    rw [hx]
+    exact leadingCoeff_zero
+
+theorem leadingCoeff_of_single {a : Γ} {r : R} : leadingCoeff (single a r) = r := by
+  simp only [leadingCoeff, single_eq_zero_iff]
+  by_cases h : r = 0
+  · simp_all only [map_zero, orderTop_zero, coeffTop_Top]
+  · simp_all only [ne_eq, not_false_eq_true, orderTop_single, coeffTop_eq, single_coeff_same]
+
+/-- A leading term of a Hahn series is a Hahn series with subsingleton support at minimal-order. -/
+def leadingTerm (x : HahnSeries Γ R) : HahnSeries Γ R :=
+  if h : x = 0 then 0
+    else single (x.isWF_support.min (support_nonempty_iff.2 h)) x.leadingCoeff
+
+@[simp]
+theorem leadingTerm_zero : leadingTerm (0 : HahnSeries Γ R) = 0 :=
+  dif_pos rfl
+
+theorem leadingTerm_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
+    leadingTerm x = single (x.isWF_support.min (support_nonempty_iff.2 hx)) x.leadingCoeff :=
+  dif_neg hx
+
+theorem leadingTerm_ne_iff {x : HahnSeries Γ R} : leadingTerm x ≠ 0 ↔ x ≠ 0 := by
+  constructor
+  · contrapose!
+    intro hx
+    rw [hx]
+    exact leadingTerm_zero
+  · intro hx
+    rw [leadingTerm_of_ne hx]
+    simp_all only [ne_eq, single_eq_zero_iff]
+    exact leadingCoeff_ne_iff.mp hx
+
+theorem leadingCoeff_leadingTerm {x : HahnSeries Γ R} :
+    leadingCoeff (leadingTerm x) = leadingCoeff x := by
+  by_cases h : x = 0
+  · rw [h, leadingTerm_zero]
+  · rw [leadingTerm_of_ne h, leadingCoeff_of_single]
 
 variable [Zero Γ]
 
@@ -461,3 +567,4 @@ theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
 end LocallyFiniteLinearOrder
 
 end HahnSeries
+#lint
