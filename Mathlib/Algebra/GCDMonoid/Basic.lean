@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
 import Mathlib.Algebra.Associates
+import Mathlib.Algebra.Ring.Associated
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Tactic.Common
 
