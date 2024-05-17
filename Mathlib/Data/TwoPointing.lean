@@ -65,8 +65,6 @@ theorem swap_snd : p.swap.snd = p.fst := rfl
 theorem swap_swap : p.swap.swap = p := rfl
 #align two_pointing.swap_swap TwoPointing.swap_swap
 
--- See note [reducible non instances]
-@[reducible]
 theorem to_nontrivial : Nontrivial α :=
   ⟨⟨p.fst, p.snd, p.fst_ne_snd⟩⟩
 #align two_pointing.to_nontrivial TwoPointing.to_nontrivial

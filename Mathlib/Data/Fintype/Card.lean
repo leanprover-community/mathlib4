@@ -1293,31 +1293,3 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
     rw [hn] at hlt
     exact ih (Fintype.card β) hlt _ rfl
 #align fintype.induction_subsingleton_or_nontrivial Fintype.induction_subsingleton_or_nontrivial
-
-namespace Tactic
-
---open Positivity
-
-private theorem card_univ_pos (α : Type*) [Fintype α] [Nonempty α] :
-    0 < (Finset.univ : Finset α).card :=
-  Finset.univ_nonempty.card_pos
-
---Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
--- /-- Extension for the `positivity` tactic: `Finset.card s` is positive if `s` is nonempty. -/
--- @[positivity]
--- unsafe def positivity_finset_card : expr → tactic strictness
---   | q(Finset.card $(s)) => do
---     let p
---       ← -- TODO: Partial decision procedure for `Finset.nonempty`
---             to_expr
---             ``(Finset.Nonempty $(s)) >>=
---           find_assumption
---     positive <$> mk_app `` Finset.Nonempty.card_pos [p]
---   | q(@Fintype.card $(α) $(i)) => positive <$> mk_mapp `` Fintype.card_pos [α, i, none]
---   | e =>
---     pp e >>=
---       fail ∘
---       format.bracket "The expression `" "` isn't of the form `Finset.card s` or `Fintype.card α`"
--- #align tactic.positivity_finset_card tactic.positivity_finset_card
-
-end Tactic

@@ -17,7 +17,7 @@ import Mathlib.Order.Filter.Bases
 #align_import order.filter.at_top_bot from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
 /-!
-# `Filter.atTop` and `Filter.atBot` filters on preorded sets, monoids and groups.
+# `Filter.atTop` and `Filter.atBot` filters on preorders, monoids and groups.
 
 In this file we define the filters
 

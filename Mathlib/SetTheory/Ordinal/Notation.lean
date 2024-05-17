@@ -127,9 +127,8 @@ def ofNat : ℕ → ONote
   | Nat.succ n => oadd 0 n.succPNat 0
 #align onote.of_nat ONote.ofNat
 
--- Adaptation note:
--- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
--- See https://github.com/leanprover-community/mathlib4/issues/11647
+-- Porting note (#11467): during the port we marked these lemmas with `@[eqns]`
+-- to emulate the old Lean 3 behaviour.
 
 @[simp] theorem ofNat_zero : ofNat 0 = 0 :=
   rfl
@@ -597,7 +596,7 @@ theorem oadd_mul_nfBelow {e₁ n₁ a₁ b₁} (h₁ : NFBelow (oadd e₁ n₁ a
     · haveI := h₁.fst
       haveI := h₂.fst
       apply NFBelow.oadd
-      infer_instance
+      · infer_instance
       · rwa [repr_add]
       · rw [repr_add, add_lt_add_iff_left]
         exact h₂.lt
@@ -850,8 +849,10 @@ theorem scale_opowAux (e a0 a : ONote) [NF e] [NF a0] [NF a] :
     by_cases h : m = 0
     · simp [h, opowAux, mul_add, opow_add, mul_assoc, scale_opowAux _ _ _ k]
     · -- Porting note: rewrote proof
-      rw [opowAux]; swap; assumption
-      rw [opowAux]; swap; assumption
+      rw [opowAux]; swap
+      · assumption
+      rw [opowAux]; swap
+      · assumption
       rw [repr_add, repr_scale, scale_opowAux _ _ _ k]
       simp only [repr_add, repr_scale, opow_add, mul_assoc, zero_add, mul_add]
 #align onote.scale_opow_aux ONote.scale_opowAux
@@ -927,8 +928,8 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · simp [opow_mul, opow_add, mul_assoc]
       rw [Ordinal.mul_lt_mul_iff_left ω00, ← Ordinal.opow_add]
       have : _ < ω ^ (repr a0 + repr a0) := (No.below_of_lt ?_).repr_lt
-      refine' mul_lt_omega_opow rr0 this (nat_lt_omega _)
-      simpa using (add_lt_add_iff_left (repr a0)).2 e0
+      · refine' mul_lt_omega_opow rr0 this (nat_lt_omega _)
+      · simpa using (add_lt_add_iff_left (repr a0)).2 e0
     · refine'
         lt_of_lt_of_le Rl
           (opow_le_opow_right omega_pos <|
@@ -980,10 +981,10 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
           opow_zero, Nat.succPNat_coe, Nat.cast_succ, Nat.cast_zero, _root_.zero_add, mul_one,
           add_zero, one_opow, npow_eq_pow]
       rw [opow_add, opow_mul, opow_omega, add_one_eq_succ]
-      congr
-      conv_lhs =>
-        dsimp [(· ^ ·)]
-        simp [Pow.pow, opow, Ordinal.succ_ne_zero]
+      · congr
+        conv_lhs =>
+          dsimp [(· ^ ·)]
+          simp [Pow.pow, opow, Ordinal.succ_ne_zero]
       · simpa [Nat.one_le_iff_ne_zero]
       · rw [← Nat.cast_succ, lt_omega]
         exact ⟨_, rfl⟩

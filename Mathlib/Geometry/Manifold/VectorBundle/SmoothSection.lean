@@ -48,8 +48,7 @@ structure ContMDiffSection where
 #align cont_mdiff_section ContMDiffSection
 
 /-- Bundled smooth sections of a vector bundle. -/
-@[reducible]
-def SmoothSection :=
+abbrev SmoothSection :=
   ContMDiffSection I F ⊤ V
 #align smooth_section SmoothSection
 

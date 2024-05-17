@@ -526,7 +526,7 @@ lemma IsSeparable.prod {β : Type*} [TopologicalSpace β]
   rcases ht with ⟨ct, ct_count, hct⟩
   refine ⟨cs ×ˢ ct, cs_count.prod ct_count, ?_⟩
   rw [closure_prod_eq]
-  exact Set.prod_mono hcs hct
+  gcongr
 
 theorem IsSeparable.image {β : Type*} [TopologicalSpace β] {s : Set α} (hs : IsSeparable s)
     {f : α → β} (hf : Continuous f) : IsSeparable (f '' s) := by
@@ -1029,3 +1029,9 @@ protected theorem Embedding.secondCountableTopology [SecondCountableTopology β]
     SecondCountableTopology α :=
   hf.1.secondCountableTopology
 #align embedding.second_countable_topology Embedding.secondCountableTopology
+
+protected theorem Embedding.separableSpace [TopologicalSpace α]
+    [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : Embedding f) :
+    TopologicalSpace.SeparableSpace α := by
+  have := hf.secondCountableTopology
+  exact SecondCountableTopology.to_separableSpace
