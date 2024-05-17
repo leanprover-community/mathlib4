@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Data.Countable.Basic
-import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Logic.Encodable.Basic
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Order.SuccPred.Basic
+import Mathlib.Order.Interval.Finset.Defs
 
 #align_import order.succ_pred.linear_locally_finite from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
@@ -219,15 +217,13 @@ theorem iterate_pred_toZ (i : ι) (hi : i < i0) : pred^[(-toZ i0 i).toNat] i0 = 
   exact Nat.find_spec (exists_pred_iterate_of_le hi.le)
 #align iterate_pred_to_Z iterate_pred_toZ
 
-theorem toZ_nonneg (hi : i0 ≤ i) : 0 ≤ toZ i0 i := by
-  rw [toZ_of_ge hi]
-  exact Nat.cast_nonneg _
+lemma toZ_nonneg (hi : i0 ≤ i) : 0 ≤ toZ i0 i := by rw [toZ_of_ge hi]; exact Int.natCast_nonneg _
 #align to_Z_nonneg toZ_nonneg
 
 theorem toZ_neg (hi : i < i0) : toZ i0 i < 0 := by
   refine' lt_of_le_of_ne _ _
-  · rw [toZ_of_lt hi, neg_nonpos]
-    exact Nat.cast_nonneg _
+  · rw [toZ_of_lt hi]
+    omega
   · by_contra h
     have h_eq := iterate_pred_toZ i hi
     rw [← h_eq, h] at hi
@@ -244,8 +240,9 @@ theorem toZ_iterate_pred_ge (n : ℕ) : -(n : ℤ) ≤ toZ i0 (pred^[n] i0) := b
   rcases le_or_lt i0 (pred^[n] i0) with h | h
   · have h_eq : pred^[n] i0 = i0 := le_antisymm (pred_iterate_le _ _) h
     rw [h_eq, toZ_of_eq]
-    simp only [Right.neg_nonpos_iff, Nat.cast_nonneg]
-  · rw [toZ_of_lt h, neg_le_neg_iff]
+    omega
+  · rw [toZ_of_lt h]
+    refine Int.neg_le_neg ?_
     norm_cast
     exact Nat.find_min' _ rfl
 #align to_Z_iterate_pred_ge toZ_iterate_pred_ge
@@ -257,7 +254,7 @@ theorem toZ_iterate_succ_of_not_isMax (n : ℕ) (hn : ¬IsMax (succ^[n] i0)) :
   by_cases hmn : m = n
   · nth_rw 2 [← hmn]
     rw [Int.toNat_eq_max, toZ_of_ge (le_succ_iterate _ _), max_eq_left]
-    exact Nat.cast_nonneg _
+    exact Int.natCast_nonneg _
   suffices IsMax (succ^[n] i0) from absurd this hn
   exact isMax_iterate_succ_of_eq_of_ne h_eq.symm (Ne.symm hmn)
 #align to_Z_iterate_succ_of_not_is_max toZ_iterate_succ_of_not_isMax
@@ -277,7 +274,7 @@ theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin (pred^[n] i0)) :
   · nth_rw 2 [← hmn]
     rw [Int.toNat_eq_max, toZ_of_lt this, max_eq_left, neg_neg]
     rw [neg_neg]
-    exact Nat.cast_nonneg _
+    exact Int.natCast_nonneg _
   · suffices IsMin (pred^[n.succ] i0) from absurd this hn
     exact isMin_iterate_pred_of_eq_of_ne h_eq.symm (Ne.symm hmn)
 #align to_Z_iterate_pred_of_not_is_min toZ_iterate_pred_of_not_isMin
@@ -290,7 +287,7 @@ theorem le_of_toZ_le {j : ι} (h_le : toZ i0 i ≤ toZ i0 j) : i ≤ j := by
   · exact hi.le.trans hj
   · rw [← iterate_pred_toZ i hi, ← iterate_pred_toZ j hj]
     refine' Monotone.antitone_iterate_of_map_le pred_mono (pred_le _) (Int.toNat_le_toNat _)
-    exact neg_le_neg h_le
+    exact Int.neg_le_neg h_le
 #align le_of_to_Z_le le_of_toZ_le
 
 theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
@@ -398,7 +395,7 @@ noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι
       exact Int.toNat_of_nonneg hn
     · simp_rw [if_neg (not_le.mpr hn)]
       rw [toZ_iterate_pred]
-      simp only [hn.le, Int.toNat_of_nonneg, Right.nonneg_neg_iff, neg_neg]
+      simp only [hn.le, Int.toNat_of_nonneg, Int.neg_nonneg_of_nonpos, Int.neg_neg]
   map_rel_iff' := by intro i j; exact toZ_le_iff i j
 #align order_iso_int_of_linear_succ_pred_arch orderIsoIntOfLinearSuccPredArch
 
